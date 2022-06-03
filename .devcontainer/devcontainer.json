@@ -1,4 +1,4 @@
-{
+{  
     "name": "virtual-fluids-environment",
     "extensions": [
         "mhutchie.git-graph",
@@ -7,7 +7,8 @@
         "ms-vscode.cpptools",
         "visualstudioexptteam.vscodeintellicode",
         "xaver.clang-format",
-        "notskm.clang-tidy"
+        "notskm.clang-tidy",
+        "streetsidesoftware.code-spell-checker"
     ],
     "runArgs": ["--gpus","all"],
     "image": "git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu20_04:1.2"

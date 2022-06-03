@@ -5312,7 +5312,8 @@ extern "C" void ScaleCF_RhoSq_comp_27(   real* DC,
 										 unsigned int nxF, 
 										 unsigned int nyF,
 										 unsigned int numberOfThreads,
-										 OffCF offCF)
+										 OffCF offCF,
+                                         CUstream_st *stream)
 {
    int Grid = (kCF / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -5329,7 +5330,7 @@ extern "C" void ScaleCF_RhoSq_comp_27(   real* DC,
    dim3 gridINT_CF(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      scaleCF_RhoSq_comp_27<<< gridINT_CF, threads >>>( DC,  
+      scaleCF_RhoSq_comp_27<<< gridINT_CF, threads, 0, stream >>>( DC,  
 														DF, 
 														neighborCX,
 														neighborCY,
@@ -6382,7 +6383,8 @@ extern "C" void ScaleFC_RhoSq_comp_27(real* DC,
 									  unsigned int nxF, 
 									  unsigned int nyF,
 									  unsigned int numberOfThreads,
-									  OffFC offFC)
+									  OffFC offFC,
+                                      CUstream_st *stream)
 {
    int Grid = (kFC / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -6399,7 +6401,8 @@ extern "C" void ScaleFC_RhoSq_comp_27(real* DC,
    dim3 gridINT_FC(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      scaleFC_RhoSq_comp_27<<< gridINT_FC, threads >>>(DC, 
+      scaleFC_RhoSq_comp_27<<<gridINT_FC, threads, 0, stream>>>(
+													   DC, 
 													   DF, 
 													   neighborCX,
 													   neighborCY,
@@ -6423,6 +6426,7 @@ extern "C" void ScaleFC_RhoSq_comp_27(real* DC,
 													   offFC);
       getLastCudaError("scaleFC_RhoSq_27 execution failed"); 
 }
+
 //////////////////////////////////////////////////////////////////////////
 extern "C" void ScaleFC_RhoSq_3rdMom_comp_27( real* DC, 
 											  real* DF, 
@@ -6961,7 +6965,8 @@ extern "C" void GetSendFsPreDev27(real* DD,
 								  unsigned int* neighborZ,
 								  unsigned int size_Mat, 
 								  bool evenOrOdd,
-								  unsigned int numberOfThreads)
+								  unsigned int numberOfThreads,
+								  cudaStream_t stream)
 {
 	int Grid = (buffmax / numberOfThreads)+1;
 	int Grid1, Grid2;
@@ -6978,7 +6983,7 @@ extern "C" void GetSendFsPreDev27(real* DD,
 	dim3 grid(Grid1, Grid2);
 	dim3 threads(numberOfThreads, 1, 1 );
 
-	getSendFsPre27<<< grid, threads >>>(DD, 
+	getSendFsPre27<<< grid, threads, 0, stream >>>(DD, 
 										bufferFs, 
 										sendIndex, 
 										buffmax,
@@ -6999,7 +7004,8 @@ extern "C" void GetSendFsPostDev27(real* DD,
 								   unsigned int* neighborZ,
 								   unsigned int size_Mat, 
 								   bool evenOrOdd,
-								   unsigned int numberOfThreads)
+								   unsigned int numberOfThreads, 
+								   cudaStream_t stream)
 {
 	int Grid = (buffmax / numberOfThreads)+1;
 	int Grid1, Grid2;
@@ -7016,7 +7022,7 @@ extern "C" void GetSendFsPostDev27(real* DD,
 	dim3 grid(Grid1, Grid2);
 	dim3 threads(numberOfThreads, 1, 1 );
 
-	getSendFsPost27<<< grid, threads >>>(DD, 
+	getSendFsPost27<<< grid, threads, 0, stream >>>(DD, 
 										 bufferFs, 
 										 sendIndex, 
 										 buffmax,
@@ -7037,7 +7043,8 @@ extern "C" void SetRecvFsPreDev27(real* DD,
 								  unsigned int* neighborZ,
 								  unsigned int size_Mat, 
 								  bool evenOrOdd,
-								  unsigned int numberOfThreads)
+								  unsigned int numberOfThreads, 
+	                              cudaStream_t stream)
 {
 	int Grid = (buffmax / numberOfThreads)+1;
 	int Grid1, Grid2;
@@ -7054,7 +7061,7 @@ extern "C" void SetRecvFsPreDev27(real* DD,
 	dim3 grid(Grid1, Grid2);
 	dim3 threads(numberOfThreads, 1, 1 );
 
-	setRecvFsPre27<<< grid, threads >>>(DD, 
+	setRecvFsPre27<<< grid, threads, 0, stream >>>(DD, 
 										bufferFs, 
 										recvIndex, 
 										buffmax,
@@ -7074,8 +7081,9 @@ extern "C" void SetRecvFsPostDev27(real* DD,
 								   unsigned int* neighborY,
 								   unsigned int* neighborZ,
 								   unsigned int size_Mat, 
-								   bool evenOrOdd,
-								   unsigned int numberOfThreads)
+								   bool evenOrOdd, 
+	                               unsigned int numberOfThreads, 
+	                               cudaStream_t stream)
 {
 	int Grid = (buffmax / numberOfThreads)+1;
 	int Grid1, Grid2;
@@ -7092,7 +7100,7 @@ extern "C" void SetRecvFsPostDev27(real* DD,
 	dim3 grid(Grid1, Grid2);
 	dim3 threads(numberOfThreads, 1, 1 );
 
-	setRecvFsPost27<<< grid, threads >>>(DD, 
+	setRecvFsPost27<<< grid, threads, 0, stream >>>(DD, 
 										 bufferFs, 
 										 recvIndex, 
 										 buffmax,
@@ -7517,6 +7525,61 @@ extern "C" void generateRandomValuesDevice( curandState* state,
 
    generateRandomValues<<< gridQ, threads >>> (state,randArray);
    getLastCudaError("generateRandomValues execution failed"); 
+}
+//////////////////////////////////////////////////////////////////////////
+extern "C" void CalcTurbulenceIntensityDevice(
+   real* vxx,
+   real* vyy,
+   real* vzz,
+   real* vxy,
+   real* vxz,
+   real* vyz,
+   real* vx_mean,
+   real* vy_mean,
+   real* vz_mean,
+   real* DD, 
+   uint* typeOfGridNode, 
+   unsigned int* neighborX,
+   unsigned int* neighborY,
+   unsigned int* neighborZ,
+   unsigned int size_Mat, 
+   bool evenOrOdd,
+   uint numberOfThreads)
+{
+   int Grid = (size_Mat / numberOfThreads)+1;
+   int Grid1, Grid2;
+   if (Grid>512)
+   {
+      Grid1 = 512;
+      Grid2 = (Grid/Grid1)+1;
+   } 
+   else
+   {
+      Grid1 = 1;
+      Grid2 = Grid;
+   }
+   dim3 gridQ(Grid1, Grid2);
+   dim3 threads(numberOfThreads, 1, 1 );
+
+   CalcTurbulenceIntensity<<<gridQ, threads>>>(
+     vxx,
+     vyy,
+     vzz,
+	 vxy,
+     vxz,
+     vyz,
+     vx_mean,
+     vy_mean,
+     vz_mean,
+     DD, 
+     typeOfGridNode, 
+     neighborX,
+     neighborY,
+     neighborZ,
+     size_Mat, 
+     evenOrOdd);
+
+   getLastCudaError("CalcTurbulenceIntensity execution failed"); 
 }
 
 

@@ -9,9 +9,9 @@
 #include <GPU/CudaMemoryManager.h>
 
 
-std::shared_ptr<GridProvider> GridProvider::makeGridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager)
+std::shared_ptr<GridProvider> GridProvider::makeGridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager, vf::gpu::Communicator& communicator)
 {
-    return std::shared_ptr<GridProvider>(new GridGenerator(builder, para, cudaManager));
+    return std::shared_ptr<GridProvider>(new GridGenerator(builder, para, cudaManager, communicator));
 }
 
 std::shared_ptr<GridProvider> GridProvider::makeGridReader(FILEFORMAT format, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager)
@@ -27,6 +27,17 @@ void GridProvider::setNumberOfNodes(const int numberOfNodes, const int level) co
     para->getParH(level)->mem_size_int_SP = sizeof(uint) * para->getParH(level)->size_Mat_SP;
     para->getParD(level)->mem_size_real_SP = sizeof(real) * para->getParD(level)->size_Mat_SP;
     para->getParD(level)->mem_size_int_SP = sizeof(uint) * para->getParD(level)->size_Mat_SP;
+}
+
+void GridProvider::setNumberOfFluidNodes(const int numberOfNodes, const int level) const
+{
+    para->getParH(level)->numberOfFluidNodes = numberOfNodes;
+    para->getParD(level)->numberOfFluidNodes = numberOfNodes;
+}
+
+void GridProvider::setNumberOfFluidNodesBorder(const int numberOfNodes, const int level) const {
+    para->getParH(level)->numberOffluidNodesBorder = numberOfNodes;
+    para->getParD(level)->numberOffluidNodesBorder = numberOfNodes;
 }
 
 void GridProvider::setInitalNodeValues(const int numberOfNodes, const int level) const

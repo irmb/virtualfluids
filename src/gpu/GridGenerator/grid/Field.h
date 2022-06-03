@@ -33,7 +33,7 @@
 #ifndef FIELD_H
 #define FIELD_H
 
-#include "global.h"
+#include "gpu/GridGenerator/global.h"
 
 struct Vertex;
 

@@ -7,72 +7,204 @@
 //#include "Output/UnstructuredGridWriter.hpp"
 #include "Communication/ExchangeData27.h"
 #include "Kernel/Kernel.h"
+#include "Parameter/CudaStreamManager.h"
 #include "GPU/TurbulentViscosity.h"
 
-void updateGrid27(Parameter* para, 
-                  vf::gpu::Communicator& comm, 
-                  CudaMemoryManager* cudaManager, 
-                  std::vector<std::shared_ptr<PorousMedia>>& pm, 
-                  int level, 
-                  unsigned int t, 
-                  std::vector < SPtr< Kernel>>& kernels)
+void UpdateGrid27::updateGrid(int level, unsigned int t)
 {
     //////////////////////////////////////////////////////////////////////////
-    
-    if( level != para->getFine() )
-    {
-        updateGrid27(para, comm, cudaManager, pm, level+1, t, kernels);
-        updateGrid27(para, comm, cudaManager, pm, level+1, t, kernels);
+
+    if (level != para->getFine()) {
+        updateGrid(level + 1, t);
+        updateGrid(level + 1, t);
     }
 
     //////////////////////////////////////////////////////////////////////////
-    
-    collision(para, pm, level, t, kernels);
-    
-    //////////////////////////////////////////////////////////////////////////
-    
-    exchangeMultiGPU(para, comm, cudaManager, level);
-    
-    //////////////////////////////////////////////////////////////////////////
-    
-    postCollisionBC(para, level, t);
-    
+
+    (this->*collisionAndExchange)(level, t);
+
     //////////////////////////////////////////////////////////////////////////
 
-    swapBetweenEvenAndOddTimestep(para, level);
+    postCollisionBC(para.get(), level, t);
+
+    //////////////////////////////////////////////////////////////////////////
+
+    swapBetweenEvenAndOddTimestep(para.get(), level);
 
 	//////////////////////////////////////////////////////////////////////////
-    
-    if (para->getUseWale())
-		calcMacroscopicQuantities(para, level);
+
+	if (para->getUseWale())
+		calcMacroscopicQuantities(para.get(), level);
 
     if (para->getUseTurbulentViscosity())
-        calcTurbulentViscosity(para, level);
-    
+        calcTurbulentViscosity(para.get(), level);
+
+	//////////////////////////////////////////////////////////////////////////
+
+    preCollisionBC(para.get(), cudaManager.get(), level, t);
+
     //////////////////////////////////////////////////////////////////////////
-    
-    preCollisionBC(para, cudaManager, level, t);
-    
-    //////////////////////////////////////////////////////////////////////////
-    
     if( level != para->getFine() )
     {
-        fineToCoarse(para, level);
-
-        exchangeMultiGPU(para, comm, cudaManager, level);
-
-        coarseToFine(para, level);
+        (this->*refinementAndExchange)(level);
     }
+        
+    interactWithActuators(para.get(), cudaManager.get(), level, t);
     
-    interactWithActuators(para, cudaManager, level, t);
-    
-    interactWithProbes(para, cudaManager, level, t);
-    //////////////////////////////////////////////////////////////////////////
+    interactWithProbes(para.get(), cudaManager.get(), level, t);
+}
+
+void UpdateGrid27::refinementAndExchange_noRefinementAndExchange(int level) {}
+
+void UpdateGrid27::refinementAndExchange_streams_onlyExchangeInterface(int level)
+{
+    int borderStreamIndex = para->getStreamManager()->getBorderStreamIndex();
+    int bulkStreamIndex   = para->getStreamManager()->getBulkStreamIndex();
+
+    // fine to coarse border
+    fineToCoarseWithStream(para.get(), level, para->getParD(level)->intFCBorder.ICellFCC,
+                           para->getParD(level)->intFCBorder.ICellFCF, para->getParD(level)->intFCBorder.kFC,
+                           borderStreamIndex);
+
+    // prepare exchange and trigger bulk kernel when finished
+    prepareExchangeMultiGPUAfterFtoC(para.get(), level, borderStreamIndex);
+    if (para->getUseStreams())
+        para->getStreamManager()->triggerStartBulkKernel(borderStreamIndex);
+
+    // launch bulk kernels (f to c and c to f)
+    para->getStreamManager()->waitOnStartBulkKernelEvent(bulkStreamIndex);
+    fineToCoarseWithStream(para.get(), level, para->getParD(level)->intFCBulk.ICellFCC,
+                           para->getParD(level)->intFCBulk.ICellFCF, para->getParD(level)->intFCBulk.kFC,
+                           bulkStreamIndex);
+    coarseToFineWithStream(para.get(), level, para->getParD(level)->intCFBulk.ICellCFC,
+                           para->getParD(level)->intCFBulk.ICellCFF, para->getParD(level)->intCFBulk.kCF, para->getParD(level)->offCFBulk,
+                           bulkStreamIndex);
+
+    // exchange
+    exchangeMultiGPUAfterFtoC(para.get(), comm, cudaManager.get(), level, borderStreamIndex);
+
+    // coarse to fine border
+    coarseToFineWithStream(para.get(), level, para->getParD(level)->intCFBorder.ICellCFC,
+                           para->getParD(level)->intCFBorder.ICellCFF, para->getParD(level)->intCFBorder.kCF, para->getParD(level)->offCF,
+                           borderStreamIndex);
+    cudaDeviceSynchronize(); 
+}
+
+void UpdateGrid27::refinementAndExchange_streams_completeExchange(int level)
+{
+    int borderStreamIndex = para->getStreamManager()->getBorderStreamIndex();
+    int bulkStreamIndex   = para->getStreamManager()->getBulkStreamIndex();
+
+    // fine to coarse border
+    fineToCoarseWithStream(para.get(), level, para->getParD(level)->intFCBorder.ICellFCC,
+                           para->getParD(level)->intFCBorder.ICellFCF, para->getParD(level)->intFCBorder.kFC,
+                           borderStreamIndex);
+
+    // prepare exchange and trigger bulk kernel when finished
+    prepareExchangeMultiGPU(para.get(), level, borderStreamIndex);
+    if (para->getUseStreams())
+        para->getStreamManager()->triggerStartBulkKernel(borderStreamIndex);
+
+    // launch bulk kernels (f to c and c to f)
+    para->getStreamManager()->waitOnStartBulkKernelEvent(bulkStreamIndex);
+    fineToCoarseWithStream(para.get(), level, para->getParD(level)->intFCBulk.ICellFCC,
+                           para->getParD(level)->intFCBulk.ICellFCF, para->getParD(level)->intFCBulk.kFC,
+                           bulkStreamIndex);
+    coarseToFineWithStream(para.get(), level, para->getParD(level)->intCFBulk.ICellCFC,
+                           para->getParD(level)->intCFBulk.ICellCFF, para->getParD(level)->intCFBulk.kCF, para->getParD(level)->offCFBulk,
+                           bulkStreamIndex);
+
+    // exchange
+    exchangeMultiGPU(para.get(), comm, cudaManager.get(), level, borderStreamIndex);
+
+    // coarse to fine border
+    coarseToFineWithStream(para.get(), level, para->getParD(level)->intCFBorder.ICellCFC,
+                           para->getParD(level)->intCFBorder.ICellCFF, para->getParD(level)->intCFBorder.kCF, para->getParD(level)->offCF,
+                           borderStreamIndex);
+    cudaDeviceSynchronize(); 
+}
+
+void UpdateGrid27::refinementAndExchange_noStreams_onlyExchangeInterface(int level)
+{
+    fineToCoarse(para.get(), level);
+
+    exchangeMultiGPU_noStreams_withPrepare(para.get(), comm, cudaManager.get(), level, true);
+
+    coarseToFine(para.get(), level);
+}
+
+void UpdateGrid27::refinementAndExchange_noStreams_completeExchange(int level)
+{
+    fineToCoarse(para.get(), level);
+
+    exchangeMultiGPU_noStreams_withPrepare(para.get(), comm, cudaManager.get(), level, false);
+
+    coarseToFine(para.get(), level);
+}
+
+void UpdateGrid27::refinementAndExchange_noExchange(int level)
+{
+    fineToCoarse(para.get(), level);
+    coarseToFine(para.get(), level);
+}
+
+void UpdateGrid27::collisionAndExchange_noStreams_indexKernel(int level, unsigned int t)
+{
+    collisionUsingIndex(para.get(), pm, level, t, kernels, para->getParD(level)->fluidNodeIndices,
+                            para->getParD(level)->numberOfFluidNodes, -1);
+    exchangeMultiGPU_noStreams_withPrepare(para.get(), comm, cudaManager.get(), level, false);
+}
+
+void UpdateGrid27::collisionAndExchange_noStreams_oldKernel(int level, unsigned int t)
+{
+    collision(para.get(), pm, level, t, kernels);
+    exchangeMultiGPU_noStreams_withPrepare(para.get(), comm, cudaManager.get(), level, false);
+}
+
+void UpdateGrid27::collisionAndExchange_streams(int level, unsigned int t)
+{
+    int borderStreamIndex = para->getStreamManager()->getBorderStreamIndex();
+    int bulkStreamIndex   = para->getStreamManager()->getBulkStreamIndex();
+    // launch border kernel
+    collisionUsingIndex(para.get(), pm, level, t, kernels, para->getParD(level)->fluidNodeIndicesBorder,
+                        para->getParD(level)->numberOffluidNodesBorder, borderStreamIndex);
+
+    // prepare exchange and trigger bulk kernel when finished
+    prepareExchangeMultiGPU(para.get(), level, borderStreamIndex);
+    if (para->getUseStreams())
+        para->getStreamManager()->triggerStartBulkKernel(borderStreamIndex);
+
+    // launch bulk kernel
+    para->getStreamManager()->waitOnStartBulkKernelEvent(bulkStreamIndex);
+    collisionUsingIndex(para.get(), pm, level, t, kernels, para->getParD(level)->fluidNodeIndices,
+                        para->getParD(level)->numberOfFluidNodes, bulkStreamIndex);
+
+    exchangeMultiGPU(para.get(), comm, cudaManager.get(), level, borderStreamIndex);
 }
 
 void collision(Parameter* para, std::vector<std::shared_ptr<PorousMedia>>& pm, int level, unsigned int t, std::vector < SPtr< Kernel>>& kernels)
 {
     kernels.at(level)->run();
+
+    //////////////////////////////////////////////////////////////////////////
+
+    if (para->getSimulatePorousMedia())
+        collisionPorousMedia(para, pm, level);
+
+    //////////////////////////////////////////////////////////////////////////
+
+    if (para->getDiffOn())
+        collisionAdvectionDiffusion(para, level);
+}
+
+void collisionUsingIndex(Parameter *para, std::vector<std::shared_ptr<PorousMedia>> &pm, int level, unsigned int t,
+                         std::vector<SPtr<Kernel>> &kernels, uint *fluidNodeIndices, uint numberOfFluidNodes, int stream)
+{
+    if (fluidNodeIndices != nullptr && numberOfFluidNodes != 0)
+        kernels.at(level)->runOnIndices(fluidNodeIndices, numberOfFluidNodes, stream);
+    else
+        std::cout << "In collision: fluidNodeIndices or numberOfFluidNodes not definded"
+                      << std::endl;
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -158,35 +290,115 @@ void collisionAdvectionDiffusion(Parameter* para, int level)
 	}
 }
 
-void exchangeMultiGPU(Parameter* para, vf::gpu::Communicator& comm, CudaMemoryManager* cudaManager, int level)
+void prepareExchangeMultiGPU(Parameter *para, int level, int streamIndex)
 {
-    if (para->getNumprocs() > 1)
-	{
-        // St. Lenz: exchange for post-collision data and pre-collision data are identical!
+    prepareExchangeCollDataXGPU27AllNodes(para, level, streamIndex);
+    prepareExchangeCollDataYGPU27AllNodes(para, level, streamIndex);
+    prepareExchangeCollDataZGPU27AllNodes(para, level, streamIndex);
+}
 
-		//////////////////////////////////////////////////////////////////////////
-		//3D domain decomposition
-		exchangePostCollDataXGPU27(para, comm, cudaManager, level);
-		exchangePostCollDataYGPU27(para, comm, cudaManager, level);
-		exchangePostCollDataZGPU27(para, comm, cudaManager, level);
+void prepareExchangeMultiGPUAfterFtoC(Parameter *para, int level, int streamIndex)
+{
+    prepareExchangeCollDataXGPU27AfterFtoC(para, level, streamIndex);
+    prepareExchangeCollDataYGPU27AfterFtoC(para, level, streamIndex);
+    prepareExchangeCollDataZGPU27AfterFtoC(para, level, streamIndex);
+}
 
-		//////////////////////////////////////////////////////////////////////////
-		//3D domain decomposition convection diffusion
-		if (para->getDiffOn()==true)
-		{
-			exchangePostCollDataADXGPU27(para, comm, cudaManager, level);
-			exchangePostCollDataADYGPU27(para, comm, cudaManager, level);
-			exchangePostCollDataADZGPU27(para, comm, cudaManager, level);
-		}
+void exchangeMultiGPU(Parameter *para, vf::gpu::Communicator &comm, CudaMemoryManager *cudaManager, int level,
+                      int streamIndex)
+{
+    //////////////////////////////////////////////////////////////////////////
+    // 3D domain decomposition
+    exchangeCollDataXGPU27AllNodes(para, comm, cudaManager, level, streamIndex);
+    exchangeCollDataYGPU27AllNodes(para, comm, cudaManager, level, streamIndex);
+    exchangeCollDataZGPU27AllNodes(para, comm, cudaManager, level, streamIndex);
 
-        //////////////////////////////////////////////////////////////////////////
-        // D E P R E C A T E D
-        //////////////////////////////////////////////////////////////////////////
-		
-		//////////////////////////////////////////////////////////////////////////
-		//1D domain decomposition
-		//exchangePostCollDataGPU27(para, comm, level);
-	}
+    scatterNodesFromRecvBufferXGPU27AllNodes(para, level, streamIndex);
+    scatterNodesFromRecvBufferYGPU27AllNodes(para, level, streamIndex);
+    scatterNodesFromRecvBufferZGPU27AllNodes(para, level, streamIndex);
+
+    //////////////////////////////////////////////////////////////////////////
+    // 3D domain decomposition convection diffusion
+    if (para->getDiffOn()) {
+        if (para->getUseStreams())
+            std::cout << "Warning: Cuda streams not yet implemented for convection diffusion" << std::endl;
+        exchangePostCollDataADXGPU27(para, comm, cudaManager, level);
+        exchangePostCollDataADYGPU27(para, comm, cudaManager, level);
+        exchangePostCollDataADZGPU27(para, comm, cudaManager, level);
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    // D E P R E C A T E D
+    //////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////
+    // 1D domain decomposition
+    // exchangePostCollDataGPU27(para, comm, level);
+}
+void exchangeMultiGPU_noStreams_withPrepare(Parameter *para, vf::gpu::Communicator &comm, CudaMemoryManager *cudaManager, int level, bool useReducedComm)
+{
+    //////////////////////////////////////////////////////////////////////////
+    // 3D domain decomposition
+    if (useReducedComm) {
+        // X
+        prepareExchangeCollDataXGPU27AfterFtoC(para, level, -1);
+        exchangeCollDataXGPU27AfterFtoC(para, comm, cudaManager, level, -1);
+        scatterNodesFromRecvBufferXGPU27AfterFtoC(para, level, -1);
+        // Y
+        prepareExchangeCollDataYGPU27AfterFtoC(para, level, -1);
+        exchangeCollDataYGPU27AfterFtoC(para, comm, cudaManager, level, -1);
+        scatterNodesFromRecvBufferYGPU27AfterFtoC(para, level, -1);
+        // Z
+        prepareExchangeCollDataZGPU27AfterFtoC(para, level, -1);
+        exchangeCollDataZGPU27AfterFtoC(para, comm, cudaManager, level, -1);
+        scatterNodesFromRecvBufferZGPU27AfterFtoC(para, level, -1);  
+    } else {
+        // X
+        prepareExchangeCollDataXGPU27AllNodes(para, level, -1);
+        exchangeCollDataXGPU27AllNodes(para, comm, cudaManager, level, -1);
+        scatterNodesFromRecvBufferXGPU27AllNodes(para, level, -1);
+        // Y
+        prepareExchangeCollDataYGPU27AllNodes(para, level, -1);
+        exchangeCollDataYGPU27AllNodes(para, comm, cudaManager, level, -1);
+        scatterNodesFromRecvBufferYGPU27AllNodes(para, level, -1);
+        // Z
+        prepareExchangeCollDataZGPU27AllNodes(para, level, -1);
+        exchangeCollDataZGPU27AllNodes(para, comm, cudaManager, level, -1);
+        scatterNodesFromRecvBufferZGPU27AllNodes(para, level, -1);   
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    // 3D domain decomposition convection diffusion
+    if (para->getDiffOn()) {
+        if (para->getUseStreams())
+            std::cout << "Warning: Cuda streams not yet implemented for convection diffusion" << std::endl;
+        exchangePostCollDataADXGPU27(para, comm, cudaManager, level);
+        exchangePostCollDataADYGPU27(para, comm, cudaManager, level);
+        exchangePostCollDataADZGPU27(para, comm, cudaManager, level);
+    }
+}
+void exchangeMultiGPUAfterFtoC(Parameter *para, vf::gpu::Communicator &comm, CudaMemoryManager *cudaManager, int level,
+                               int streamIndex)
+{
+    //////////////////////////////////////////////////////////////////////////
+    // 3D domain decomposition
+    exchangeCollDataXGPU27AfterFtoC(para, comm, cudaManager, level, streamIndex);
+    exchangeCollDataYGPU27AfterFtoC(para, comm, cudaManager, level, streamIndex);
+    exchangeCollDataZGPU27AfterFtoC(para, comm, cudaManager, level, streamIndex);
+
+    scatterNodesFromRecvBufferXGPU27AfterFtoC(para, level, streamIndex);
+    scatterNodesFromRecvBufferYGPU27AfterFtoC(para, level, streamIndex);
+    scatterNodesFromRecvBufferZGPU27AfterFtoC(para, level, streamIndex);
+
+    //////////////////////////////////////////////////////////////////////////
+    // 3D domain decomposition convection diffusion
+    if (para->getDiffOn()) {
+        if (para->getUseStreams())
+            std::cout << "Warning: Cuda streams not yet implemented for convection diffusion" << std::endl;
+        exchangePostCollDataADXGPU27(para, comm, cudaManager, level);
+        exchangePostCollDataADYGPU27(para, comm, cudaManager, level);
+        exchangePostCollDataADZGPU27(para, comm, cudaManager, level);
+    }
 }
 
 void postCollisionBC(Parameter* para, int level, unsigned int t)
@@ -205,20 +417,20 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
         //           para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
         //getLastCudaError("QVelDev27 execution failed");
         
-        //QVelDevComp27( para->getParD(level)->numberofthreads, para->getParD(level)->nx,           para->getParD(level)->ny,
-        //               para->getParD(level)->Qinflow.Vx,      para->getParD(level)->Qinflow.Vy,   para->getParD(level)->Qinflow.Vz,
-        //               para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qinflow.k,    para->getParD(level)->Qinflow.q27[0], 
-        //               para->getParD(level)->kInflowQ,        para->getParD(level)->kInflowQ,     para->getParD(level)->omega,
-        //               para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
-        //               para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
-        //getLastCudaError("QVelDevComp27 execution failed");
+        // QVelDevComp27( para->getParD(level)->numberofthreads, para->getParD(level)->nx,           para->getParD(level)->ny,
+        //                para->getParD(level)->Qinflow.Vx,      para->getParD(level)->Qinflow.Vy,   para->getParD(level)->Qinflow.Vz,
+        //                para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qinflow.k,    para->getParD(level)->Qinflow.q27[0], 
+        //                para->getParD(level)->kInflowQ,        para->getParD(level)->kInflowQ,     para->getParD(level)->omega,
+        //                para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+        //                para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+        // getLastCudaError("QVelDevComp27 execution failed");
 
         QVelDevCompZeroPress27(para->getParD(level)->numberofthreads, para->getParD(level)->nx,             para->getParD(level)->ny,
-                               para->getParD(level)->Qinflow.Vx,      para->getParD(level)->Qinflow.Vy,     para->getParD(level)->Qinflow.Vz,
-                               para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qinflow.k,      para->getParD(level)->Qinflow.q27[0],
-                               para->getParD(level)->kInflowQ,        para->getParD(level)->Qinflow.kArray, para->getParD(level)->omega,
-                               para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP,   para->getParD(level)->neighborZ_SP,
-                               para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+                              para->getParD(level)->Qinflow.Vx,      para->getParD(level)->Qinflow.Vy,     para->getParD(level)->Qinflow.Vz,
+                              para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qinflow.k,      para->getParD(level)->Qinflow.q27[0],
+                              para->getParD(level)->kInflowQ,        para->getParD(level)->Qinflow.kArray, para->getParD(level)->omega,
+                              para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP,   para->getParD(level)->neighborZ_SP,
+                              para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
         getLastCudaError("QVelDevCompZeroPress27 execution failed");
 
         //////////////////////////////////////////////////////////////////////////
@@ -380,21 +592,21 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
         //           para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
         //getLastCudaError("QDevComp27 (Geom) execution failed");
 
-        //QVelDevComp27(para->getParD(level)->numberofthreads, para->getParD(level)->nx,           para->getParD(level)->ny,
-        //              para->getParD(level)->QGeom.Vx,        para->getParD(level)->QGeom.Vy,     para->getParD(level)->QGeom.Vz,
-        //              para->getParD(level)->d0SP.f[0],       para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0], 
-        //              para->getParD(level)->QGeom.kQ,        para->getParD(level)->QGeom.kQ,     para->getParD(level)->omega,
-        //              para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
-        //              para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
-        //getLastCudaError("QVelDevComp27 execution failed");
+        QVelDevComp27(para->getParD(level)->numberofthreads, para->getParD(level)->nx,           para->getParD(level)->ny,
+                      para->getParD(level)->QGeom.Vx,        para->getParD(level)->QGeom.Vy,     para->getParD(level)->QGeom.Vz,
+                      para->getParD(level)->d0SP.f[0],       para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0], 
+                      para->getParD(level)->QGeom.kQ,        para->getParD(level)->QGeom.kQ,     para->getParD(level)->omega,
+                      para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+                      para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+        getLastCudaError("QVelDevComp27 execution failed");
 
-   		QVelDevCompZeroPress27(	para->getParD(0)->numberofthreads, para->getParD(0)->nx,           para->getParD(0)->ny,
-								para->getParD(0)->QGeom.Vx,        para->getParD(0)->QGeom.Vy,     para->getParD(0)->QGeom.Vz,
-								para->getParD(0)->d0SP.f[0],       para->getParD(0)->QGeom.k,      para->getParD(0)->QGeom.q27[0], 
-								para->getParD(0)->QGeom.kQ,        para->getParD(0)->QGeom.kQ,     para->getParD(0)->omega,
-								para->getParD(0)->neighborX_SP,    para->getParD(0)->neighborY_SP, para->getParD(0)->neighborZ_SP,
-								para->getParD(0)->size_Mat_SP,     para->getParD(0)->evenOrOdd);
-		getLastCudaError("QVelDevCompZeroPress27 execution failed");
+        //QVelDevCompZeroPress27(	para->getParD(0)->numberofthreads, para->getParD(0)->nx,           para->getParD(0)->ny,
+		//						para->getParD(0)->QGeom.Vx,        para->getParD(0)->QGeom.Vy,     para->getParD(0)->QGeom.Vz,
+		//						para->getParD(0)->d0SP.f[0],       para->getParD(0)->QGeom.k,      para->getParD(0)->QGeom.q27[0], 
+		//						para->getParD(0)->QGeom.kQ,        para->getParD(0)->QGeom.kQ,     para->getParD(0)->omega,
+		//						para->getParD(0)->neighborX_SP,    para->getParD(0)->neighborY_SP, para->getParD(0)->neighborZ_SP,
+		//						para->getParD(0)->size_Mat_SP,     para->getParD(0)->evenOrOdd);
+		//getLastCudaError("QVelDevCompZeroPress27 execution failed");
 
         //QDev3rdMomentsComp27( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
         //                      para->getParD(level)->d0SP.f[0],             para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0], 
@@ -854,10 +1066,10 @@ void preCollisionBC(Parameter* para, CudaMemoryManager* cudaManager, int level, 
 	if (para->getParD(level)->QPress.kQ > 0)
 	{
 		QPressNoRhoDev27(para->getParD(level)->numberofthreads, para->getParD(level)->QPress.RhoBC,
-		                 para->getParD(level)->d0SP.f[0],       para->getParD(level)->QPress.k,
-		                 para->getParD(level)->QPress.kN,       para->getParD(level)->QPress.kQ,     para->getParD(level)->omega,
-		                 para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP,  para->getParD(level)->neighborZ_SP,
-		                 para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+		                para->getParD(level)->d0SP.f[0],       para->getParD(level)->QPress.k,
+		                para->getParD(level)->QPress.kN,       para->getParD(level)->QPress.kQ,     para->getParD(level)->omega,
+		                para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP,  para->getParD(level)->neighborZ_SP,
+		                para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
 		getLastCudaError("QPressNoRhoDev27 execution failed");
 
 		//QPressDevEQZ27(para->getParD(level)->numberofthreads, para->getParD(level)->QPress.RhoBC, 
@@ -885,12 +1097,12 @@ void preCollisionBC(Parameter* para, CudaMemoryManager* cudaManager, int level, 
         //getLastCudaError("QPressDevIncompNEQ27 execution failed");
         //////////////////////////////////////////////////////////////////////////////////
         //press NEQ compressible
-        //QPressDevNEQ27( para->getParD(level)->numberofthreads, para->getParD(level)->QPress.RhoBC, 
-        //                para->getParD(level)->d0SP.f[0],       para->getParD(level)->QPress.k,  
-        //                para->getParD(level)->QPress.kN,       para->getParD(level)->QPress.kQ,    para->getParD(level)->omega,
-        //                para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
-        //                para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
-        //getLastCudaError("QPressDevNEQ27 execution failed");
+        // QPressDevNEQ27( para->getParD(level)->numberofthreads, para->getParD(level)->QPress.RhoBC, 
+        //                 para->getParD(level)->d0SP.f[0],       para->getParD(level)->QPress.k,  
+        //                 para->getParD(level)->QPress.kN,       para->getParD(level)->QPress.kQ,    para->getParD(level)->omega,
+        //                 para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+        //                 para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+        // getLastCudaError("QPressDevNEQ27 execution failed");
 
 	}
 
@@ -971,7 +1183,7 @@ void fineToCoarse(Parameter* para, int level)
 							para->getParD(level)->K_FC,           para->getParD(level)->omega,           para->getParD(level+1)->omega, 
 							para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny, 
 							para->getParD(level+1)->nx,           para->getParD(level+1)->ny,            para->getParD(level)->numberofthreads,
-							para->getParD(level)->offFC);
+							para->getParD(level)->offFC,          CU_STREAM_LEGACY);
     getLastCudaError("ScaleFC27_RhoSq_comp execution failed");
 
 	//ScaleFC_AA2016_comp_27( para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0], 
@@ -1116,6 +1328,30 @@ void fineToCoarse(Parameter* para, int level)
 
 }
 
+void fineToCoarseWithStream(Parameter *para, int level, uint *iCellFCC, uint *iCellFCF, uint k_FC, int streamIndex)
+{
+    cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
+
+    ScaleFC_RhoSq_comp_27(	para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0], 
+							para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP, 
+							para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP, 
+							para->getParD(level)->size_Mat_SP,    para->getParD(level+1)->size_Mat_SP,   para->getParD(level)->evenOrOdd,
+							iCellFCC,                             iCellFCF, 
+							k_FC,                                 para->getParD(level)->omega,           para->getParD(level + 1)->omega, 
+							para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny, 
+							para->getParD(level+1)->nx,           para->getParD(level+1)->ny,            para->getParD(level)->numberofthreads,
+							para->getParD(level)->offFC,          stream);
+    getLastCudaError("ScaleFC27_RhoSq_comp execution failed");
+
+    //////////////////////////////////////////////////////////////////////////
+    // A D V E C T I O N    D I F F U S I O N
+    //////////////////////////////////////////////////////////////////////////
+
+    if (para->getDiffOn()) {
+        printf("fineToCoarseWithStream Advection Diffusion not implemented"); // TODO
+    }
+}
+
 void coarseToFine(Parameter* para, int level)
 {
     //ScaleCF_comp_D3Q27F3(para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],     para->getParD(level+1)->g6.g[0],
@@ -1159,7 +1395,7 @@ void coarseToFine(Parameter* para, int level)
                           para->getParD(level)->K_CF,             para->getParD(level)->omega,            para->getParD(level + 1)->omega,
                           para->getParD(level)->vis,              para->getParD(level)->nx,               para->getParD(level)->ny,
                           para->getParD(level + 1)->nx,           para->getParD(level + 1)->ny,           para->getParD(level)->numberofthreads,
-                          para->getParD(level)->offCF);
+                          para->getParD(level)->offCF,            cudaStreamLegacy);
     getLastCudaError("ScaleCF27_RhoSq_comp execution failed");
 
     //ScaleCF_AA2016_comp_27( para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],                
@@ -1302,6 +1538,92 @@ void coarseToFine(Parameter* para, int level)
         }
     } 
 
+}
+
+void coarseToFineWithStream(Parameter *para, int level, uint *iCellCFC, uint *iCellCFF, uint k_CF, OffCF &offCF,
+                            int streamIndex)
+{
+    cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
+
+	ScaleCF_RhoSq_comp_27(para->getParD(level)->d0SP.f[0],        para->getParD(level + 1)->d0SP.f[0],
+                          para->getParD(level)->neighborX_SP,     para->getParD(level)->neighborY_SP,     para->getParD(level)->neighborZ_SP,
+                          para->getParD(level + 1)->neighborX_SP, para->getParD(level + 1)->neighborY_SP, para->getParD(level + 1)->neighborZ_SP,
+                          para->getParD(level)->size_Mat_SP,      para->getParD(level + 1)->size_Mat_SP,  para->getParD(level)->evenOrOdd,
+                          iCellCFC,                               iCellCFF,
+                          k_CF,                                   para->getParD(level)->omega,            para->getParD(level + 1)->omega,
+                          para->getParD(level)->vis,              para->getParD(level)->nx,               para->getParD(level)->ny,
+                          para->getParD(level + 1)->nx,           para->getParD(level + 1)->ny,           para->getParD(level)->numberofthreads,
+                          offCF,                                  stream);
+    getLastCudaError("ScaleCF27_RhoSq_comp execution failed");
+
+    if (para->getDiffOn()) {
+        printf("CoarseToFineWithStream Advection Diffusion not implemented"); // TODO
+    }
+}
+
+
+UpdateGrid27::UpdateGrid27(SPtr<Parameter> para, vf::gpu::Communicator &comm, SPtr<CudaMemoryManager> cudaManager,
+                           std::vector<std::shared_ptr<PorousMedia>> &pm, std::vector<SPtr<Kernel>> &kernels)
+    : para(para), comm(comm), cudaManager(cudaManager), pm(pm), kernels(kernels)
+{ 
+    chooseFunctionForCollisionAndExchange();
+    chooseFunctionForRefinementAndExchange();
+}
+
+
+void UpdateGrid27::chooseFunctionForCollisionAndExchange()
+{
+    std::cout << "Function used for collisionAndExchange: ";
+    if (para->getUseStreams() && para->getNumprocs() > 1 && para->getKernelNeedsFluidNodeIndicesToRun()) {
+        this->collisionAndExchange = &UpdateGrid27::collisionAndExchange_streams; 
+        std::cout << "collisionAndExchange_streams()" << std::endl;
+
+    } else if (para->getUseStreams() && !para->getKernelNeedsFluidNodeIndicesToRun()) {
+        std::cout << "Cuda Streams can only be used with kernels which run using fluidNodesIndices." << std::endl;
+
+    } else if (para->getUseStreams() && para->getNumprocs() <= 1) {
+        std::cout << "Cuda Streams can only be used with multiple MPI processes." << std::endl;
+
+    } else if (!para->getUseStreams() && para->getKernelNeedsFluidNodeIndicesToRun()) {
+        this->collisionAndExchange = &UpdateGrid27::collisionAndExchange_noStreams_indexKernel;
+        std::cout << "collisionAndExchange_noStreams_indexKernel()" << std::endl;
+
+    } else if (!para->getUseStreams() && !para->getKernelNeedsFluidNodeIndicesToRun()) {
+        this->collisionAndExchange = &UpdateGrid27::collisionAndExchange_noStreams_oldKernel;
+        std::cout << "collisionAndExchange_noStreams_oldKernel()" << std::endl;
+
+    } else {
+        std::cout << "Invalid Configuration for collision and exchange" << std::endl;
+    }
+}
+
+void UpdateGrid27::chooseFunctionForRefinementAndExchange()
+{
+    std::cout << "Function used for refinementAndExchange: ";
+    if (para->getMaxLevel() == 0) {
+        this->refinementAndExchange = &UpdateGrid27::refinementAndExchange_noRefinementAndExchange;
+        std::cout << "only one level - no function needed." << std::endl;
+
+    } else if (para->getNumprocs() == 1) {
+        this->refinementAndExchange = &UpdateGrid27::refinementAndExchange_noExchange;
+        std::cout << "refinementAndExchange_noExchange()" << std::endl;
+    
+    } else if (para->getNumprocs() > 1 && para->getUseStreams() && para->useReducedCommunicationAfterFtoC) {
+        this->refinementAndExchange = &UpdateGrid27::refinementAndExchange_streams_onlyExchangeInterface;
+        std::cout << "refinementAndExchange_streams_onlyExchangeInterface()" << std::endl;
+    
+    } else if(para->getNumprocs() > 1 && para->getUseStreams() && !para->useReducedCommunicationAfterFtoC){
+        this->refinementAndExchange = &UpdateGrid27::refinementAndExchange_streams_completeExchange; 
+        std::cout << "refinementAndExchange_streams_completeExchange()" << std::endl;
+    
+    } else if (para->getNumprocs() > 1 && !para->getUseStreams() && para->useReducedCommunicationAfterFtoC) {
+        this->refinementAndExchange = &UpdateGrid27::refinementAndExchange_noStreams_onlyExchangeInterface;
+        std::cout << "refinementAndExchange_noStreams_onlyExchangeInterface()" << std::endl;
+
+    } else {
+        this->refinementAndExchange = &UpdateGrid27::refinementAndExchange_noStreams_completeExchange;
+        std::cout << "refinementAndExchange_noStreams_completeExchange()" << std::endl;
+    }
 }
 
 void interactWithActuators(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t)

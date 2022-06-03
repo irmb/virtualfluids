@@ -37,6 +37,7 @@
 #include <iostream>
 #include <omp.h>
 #include <sstream>
+# include <algorithm>
 #include <cmath>
 
 #include "global.h"
@@ -907,6 +908,53 @@ void GridImp::updateSparseIndices()
     sparseSize = size - removedNodes;
 }
 
+void GridImp::findFluidNodeIndices(bool splitDomain) 
+{
+    // find sparse index of all fluid nodes
+    this->fluidNodeIndices.clear();
+    for (uint index = 0; index < this->size; index++) {
+        int sparseIndex = this->getSparseIndex(index);
+        if (sparseIndex == -1)
+            continue;
+        if (this->field.isFluid(index))
+            this->fluidNodeIndices.push_back((uint)sparseIndex+1); // + 1 for numbering shift between GridGenerator and VF_GPU
+    }
+
+    // If splitDomain: find fluidNodeIndicesBorder and remove all indices in fluidNodeIndicesBorder from fluidNodeIndices
+    if (splitDomain) {
+        findFluidNodeIndicesBorder();
+        std::sort(this->fluidNodeIndices.begin(), this->fluidNodeIndices.end());
+        auto iterator = std::set_difference(this->fluidNodeIndices.begin(), this->fluidNodeIndices.end(),
+                            this->fluidNodeIndicesBorder.begin(), this->fluidNodeIndicesBorder.end(),
+                            this->fluidNodeIndices.begin());
+        this->fluidNodeIndices.resize(iterator - this->fluidNodeIndices.begin());
+    }
+}
+
+void GridImp::findFluidNodeIndicesBorder() {
+    this->fluidNodeIndicesBorder.clear();
+
+    // resize fluidNodeIndicesBorder (for better performance in copy operation)
+    size_t newSize = 0;
+    for (CommunicationIndices& ci : this->communicationIndices)
+        newSize += ci.sendIndices.size();    
+    this->fluidNodeIndicesBorder.reserve(newSize);
+
+    // copy all send indices to fluidNodeIndicesBorder
+    for (CommunicationIndices& ci : this->communicationIndices)
+        std::copy(ci.sendIndices.begin(), ci.sendIndices.end(), std::back_inserter(this->fluidNodeIndicesBorder));
+
+    // remove duplicate elements
+    std::sort(this->fluidNodeIndicesBorder.begin(), this->fluidNodeIndicesBorder.end());
+    this->fluidNodeIndicesBorder.erase(
+        std::unique(this->fluidNodeIndicesBorder.begin(), this->fluidNodeIndicesBorder.end()),
+        this->fluidNodeIndicesBorder.end());
+
+    // + 1 for numbering shift between GridGenerator and VF_GPU
+    for (size_t i = 0; i < this->fluidNodeIndicesBorder.size(); i++)
+        this->fluidNodeIndicesBorder[i] = this->getSparseIndex(this->fluidNodeIndicesBorder[i])+1;
+}
+
 void GridImp::setNeighborIndices(uint index)
 {
     real x, y, z;
@@ -1638,6 +1686,27 @@ void GridImp::findCommunicationIndex( uint index, real coordinate, real limit, i
 	}
 }
 
+bool GridImp::isSendNode(int index) const
+{
+    bool isSendNode = false;
+    for (size_t direction = 0; direction < this->communicationIndices.size(); direction++)
+        if (std::find(this->communicationIndices[direction].sendIndices.begin(),
+                      this->communicationIndices[direction].sendIndices.end(), index) != this->communicationIndices[direction].sendIndices.end())
+            isSendNode = true;
+    return isSendNode;
+}
+
+bool GridImp::isReceiveNode(int index) const
+{
+    bool isReceiveNode = false;
+    for (size_t direction = 0; direction < this->communicationIndices.size(); direction++)
+        if (std::find(this->communicationIndices[direction].receiveIndices.begin(),
+                      this->communicationIndices[direction].receiveIndices.end(),
+                      index) != this->communicationIndices[direction].receiveIndices.end())
+            isReceiveNode = true;
+    return isReceiveNode;
+}
+
 uint GridImp::getNumberOfSendNodes(int direction)
 {
     return (uint)this->communicationIndices[direction].sendIndices.size();
@@ -1658,7 +1727,7 @@ uint GridImp::getReceiveIndex(int direction, uint index)
     return this->communicationIndices[direction].receiveIndices[ index ];
 }
 
-void GridImp::repairCommunicationInices(int direction )
+void GridImp::repairCommunicationIndices(int direction)
 {
     this->communicationIndices[direction].sendIndices.insert( this->communicationIndices[direction].sendIndices.end(), 
                                                               this->communicationIndices[direction+1].sendIndices.begin(), 
@@ -1799,7 +1868,11 @@ uint GridImp::getSize() const
 
 uint GridImp::getSparseSize() const
 {
-    return this->sparseSize;
+    return this->sparseSize; 
+}
+
+uint GridImp::getNumberOfFluidNodes() const { 
+    return (uint)this->fluidNodeIndices.size(); 
 }
 
 Field GridImp::getField() const
@@ -1942,6 +2015,12 @@ void GridImp::getGridInterface(uint* gridInterfaceList, const uint* oldGridInter
         gridInterfaceList[i] = oldGridInterfaceList[i] + 1; // + 1 for numbering shift between GridGenerator and VF_GPU
 }
 
+bool GridImp::isSparseIndexInFluidNodeIndicesBorder(uint &sparseIndex) const
+{
+    return std::find(this->fluidNodeIndicesBorder.begin(), this->fluidNodeIndicesBorder.end(), sparseIndex) !=
+           this->fluidNodeIndicesBorder.end();
+}
+
 #define GEOFLUID 19
 #define GEOSOLID 16
 
@@ -1956,7 +2035,7 @@ void GridImp::getNodeValues(real *xCoords, real *yCoords, real *zCoords, uint *n
     geo[0] = GEOSOLID;
 
     int nodeNumber = 0;
-    for (uint i = 0; i < this->getSize(); i++)
+    for (uint i = 0; i < this->size; i++)
     {
         if (this->sparseIndices[i] == -1)
             continue;
@@ -1984,6 +2063,23 @@ void GridImp::getNodeValues(real *xCoords, real *yCoords, real *zCoords, uint *n
         geo[nodeNumber + 1] = type;
         nodeNumber++;
     }
+}
+
+void GridImp::getFluidNodeIndices(uint *fluidNodeIndices) const 
+{ 
+    for (uint nodeNumber = 0; nodeNumber < (uint)this->fluidNodeIndices.size(); nodeNumber++)
+        fluidNodeIndices[nodeNumber] = this->fluidNodeIndices[nodeNumber];
+}
+
+uint GridImp::getNumberOfFluidNodesBorder() const 
+{ 
+    return (uint)this->fluidNodeIndicesBorder.size(); 
+}
+
+void GridImp::getFluidNodeIndicesBorder(uint *fluidNodeIndicesBorder) const 
+{
+    for (uint nodeNumber = 0; nodeNumber < (uint)this->fluidNodeIndicesBorder.size(); nodeNumber++)
+        fluidNodeIndicesBorder[nodeNumber] = this->fluidNodeIndicesBorder[nodeNumber];
 }
 
 void GridImp::print() const

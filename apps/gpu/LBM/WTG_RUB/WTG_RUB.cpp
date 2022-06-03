@@ -86,8 +86,11 @@ std::string simulationName("");
 // 4: setup 3 of MSch (small/test)  (3 level, 4.0 cm -> 1.0  cm)
 int setupDomain = 4;
 
-std::string path("D:/out/WTG_RUB"); //Mollok
-std::string inputPath("D:/out/WTG_RUB/input/");
+// std::string path("D:/out/WTG_RUB"); // Mollok
+// std::string inputPath("D:/out/WTG_RUB/input/");
+
+std::string path("/workspaces/VirtualFluids_dev/output/WTG_RUB_Results/"); // Aragorn
+std::string inputPath("/workspaces/VirtualFluids_dev/stl/WTG_RUB/");
 
 // const uint timeStepStartOut = 0;
 const uint timeStepOut = 10000;
@@ -329,7 +332,7 @@ void multipleLevel(const std::string& configPath)
 
     SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
 
-    SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
+    SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
 
     Simulation sim (communicator);
     SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());

@@ -9,12 +9,14 @@
 #include "Communication/Communicator.h"
 #include "Communication/ExchangeData27.h"
 #include "Parameter/Parameter.h"
+#include "Parameter/CudaStreamManager.h"
 #include "GPU/GPU_Interface.h"
 #include "basics/utilities/UbFileOutputASCII.h"
 //////////////////////////////////////////////////////////////////////////
 #include "Output/MeasurePointWriter.hpp"
 #include "Output/AnalysisData.hpp"
 #include "Output/InterfaceDebugWriter.hpp"
+#include "Output/EdgeNodeDebugWriter.hpp"
 #include "Output/VeloASCIIWriter.hpp"
 //////////////////////////////////////////////////////////////////////////
 #include "Utilities/Buffer2D.hpp"
@@ -34,6 +36,7 @@
 #include "Calculation/Cp.h"
 #include "Calculation/Calc2ndMoments.h"
 #include "Calculation/CalcMedian.h"
+#include "Calculation/CalcTurbulenceIntensity.h"
 #include "Calculation/ForceCalculations.h"
 #include "Calculation/PorousMedia.h"
 //////////////////////////////////////////////////////////////////////////
@@ -94,6 +97,11 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
 
    gridProvider->allocAndCopyForcing();
    gridProvider->allocAndCopyQuadricLimiters();
+   if (para->getKernelNeedsFluidNodeIndicesToRun()) {
+       gridProvider->allocArrays_fluidNodeIndices();
+       gridProvider->allocArrays_fluidNodeIndicesBorder();
+   }
+
    gridProvider->setDimensions();
    gridProvider->setBoundingBox();
 
@@ -110,6 +118,13 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    if(para->getMyID() == 0) output.setConsoleOut(true);
    output.clearLogFile();
    //////////////////////////////////////////////////////////////////////////
+   // CUDA streams
+   if (para->getUseStreams()) {
+       para->getStreamManager()->launchStreams(2u);
+       para->getStreamManager()->createCudaEvents();
+   }
+   //////////////////////////////////////////////////////////////////////////
+   // 
    //output << para->getNeedInterface().at(0) << "\n";
    //output << para->getNeedInterface().at(1) << "\n";
    //output << para->getNeedInterface().at(2) << "\n";
@@ -138,10 +153,7 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    /////////////////////////////////////////////////////////////////////////
    cudaManager->setMemsizeGPU(0, true);
    //////////////////////////////////////////////////////////////////////////
-   gridProvider->allocArrays_CoordNeighborGeo();
-   gridProvider->allocArrays_BoundaryValues();
-   gridProvider->allocArrays_BoundaryQs();
-   gridProvider->allocArrays_OffsetScale();
+   allocNeighborsOffsetsScalesAndBoundaries(gridProvider);
 
 	for( SPtr<PreCollisionInteractor> actuator: para->getActuators()){
 		actuator->init(para.get(), gridProvider.get(), cudaManager.get());
@@ -213,11 +225,19 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    //////////////////////////////////////////////////////////////////////////
    if (para->getCalcMedian())
    {
-       output << "alloc Calculation for Mean Valus  " << "\n";
+       output << "alloc Calculation for Mean Values  " << "\n";
 	   if (para->getDiffOn())	allocMedianAD(para.get(), cudaManager.get());
 	   else						allocMedian(para.get(), cudaManager.get());
    }
 
+
+   //////////////////////////////////////////////////////////////////////////
+   // Turbulence Intensity
+   //////////////////////////////////////////////////////////////////////////
+   if (para->getCalcTurbulenceIntensity()) {
+       output << "alloc arrays for calculating Turbulence Intensity  " << "\n";
+       allocTurbulenceIntensity(para.get(), cudaManager.get());
+   }
 
    //////////////////////////////////////////////////////////////////////////
    //allocate memory and initialize 2nd, 3rd and higher order moments
@@ -310,7 +330,14 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    //findPressQShip(para);
    //output << "done.\n";
 
-
+   //////////////////////////////////////////////////////////////////////////
+   // find indices of corner nodes for multiGPU communication
+   //////////////////////////////////////////////////////////////////////////
+   if (para->getDevices().size() > 2) {
+       output << "Find indices of edge nodes for multiGPU communication ...";
+       para->findEdgeNodesCommMultiGPU();
+       output << "done.\n";
+   }
    //////////////////////////////////////////////////////////////////////////
    //Memory alloc for CheckPoint / Restart
    //////////////////////////////////////////////////////////////////////////
@@ -363,6 +390,11 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    }
 
    //////////////////////////////////////////////////////////////////////////
+   // Init UpdateGrid
+   //////////////////////////////////////////////////////////////////////////
+   this->updateGrid27 = std::make_unique<UpdateGrid27>(para, communicator, cudaManager, pm, kernels);
+
+   //////////////////////////////////////////////////////////////////////////
    //Print Init
    //////////////////////////////////////////////////////////////////////////
    output << "Print files Init...";
@@ -373,10 +405,29 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
 
    //////////////////////////////////////////////////////////////////////////
    output << "used Device Memory: " << cudaManager->getMemsizeGPU() / 1000000.0 << " MB\n";
+   // std::cout << "Process " << communicator.getPID() <<": used device memory" << cudaManager->getMemsizeGPU() / 1000000.0 << " MB\n" << std::endl;
    //////////////////////////////////////////////////////////////////////////
 
    //InterfaceDebugWriter::writeInterfaceLinesDebugCF(para.get());
    //InterfaceDebugWriter::writeInterfaceLinesDebugFC(para.get());
+
+   // writers for version with communication hiding
+   //    if(para->getNumprocs() > 1 && para->getUseStreams()){
+   //        InterfaceDebugWriter::writeInterfaceFCC_Send(para.get());
+   //        InterfaceDebugWriter::writeInterfaceCFC_Recv(para.get());
+   //        InterfaceDebugWriter::writeSendNodesStream(para.get());
+   //        InterfaceDebugWriter::writeRecvNodesStream(para.get());
+   //        EdgeNodeDebugWriter::writeEdgeNodesXZ_Send(para);
+   //        EdgeNodeDebugWriter::writeEdgeNodesXZ_Recv(para);
+   //    }
+}
+
+void Simulation::allocNeighborsOffsetsScalesAndBoundaries(SPtr<GridProvider> &gridProvider)
+{
+    gridProvider->allocArrays_CoordNeighborGeo();
+    gridProvider->allocArrays_OffsetScale();
+    gridProvider->allocArrays_BoundaryValues(); // allocArrays_BoundaryValues() has to be called after allocArrays_OffsetScale() because of initCommunicationArraysForCommAfterFinetoCoarse() 
+    gridProvider->allocArrays_BoundaryQs();
 }
 
 void Simulation::bulk()
@@ -387,6 +438,7 @@ void Simulation::bulk()
 void Simulation::run()
 {
    unsigned int t, t_prev;
+   uint t_turbulenceIntensity = 0;
    unsigned int t_MP = 0;
 
    //////////////////////////////////////////////////////////////////////////
@@ -418,9 +470,8 @@ void Simulation::run()
 	////////////////////////////////////////////////////////////////////////////////
 	for(t=para->getTStart();t<=para->getTEnd();t++)
 	{
-		
-        updateGrid27(para.get(), communicator, cudaManager.get(), pm, 0, t, kernels);
-		
+        this->updateGrid27->updateGrid(0, t);
+
 	    ////////////////////////////////////////////////////////////////////////////////
 	    //Particles
 	    ////////////////////////////////////////////////////////////////////////////////
@@ -434,7 +485,10 @@ void Simulation::run()
         // run Analyzers for kinetic energy and enstrophy for TGV in 3D
         // these analyzers only work on level 0
 	    ////////////////////////////////////////////////////////////////////////////////
-        if( this->kineticEnergyAnalyzer || this->enstrophyAnalyzer ) exchangeMultiGPU(para.get(), communicator, cudaManager.get(), 0);
+        if (this->kineticEnergyAnalyzer || this->enstrophyAnalyzer) {
+            prepareExchangeMultiGPU(para.get(), 0, -1);
+            exchangeMultiGPU(para.get(), communicator, cudaManager.get(), 0, -1);
+        }
 
 	    if( this->kineticEnergyAnalyzer ) this->kineticEnergyAnalyzer->run(t);
 	    if( this->enstrophyAnalyzer     ) this->enstrophyAnalyzer->run(t);
@@ -482,6 +536,30 @@ void Simulation::run()
         
           }
         }
+
+		if (para->getCalcTurbulenceIntensity()) {
+            for (int lev = para->getCoarse(); lev <= para->getFine(); lev++) {
+				CalcTurbulenceIntensityDevice(
+				    para->getParD(lev)->vxx,
+				    para->getParD(lev)->vyy,
+				    para->getParD(lev)->vzz,
+				    para->getParD(lev)->vxy,
+				    para->getParD(lev)->vxz,
+				    para->getParD(lev)->vyz,
+				    para->getParD(lev)->vx_mean,
+				    para->getParD(lev)->vy_mean,
+				    para->getParD(lev)->vz_mean,
+				    para->getParD(lev)->d0SP.f[0], 
+				    para->getParD(lev)->geoSP,
+				    para->getParD(lev)->neighborX_SP,
+				    para->getParD(lev)->neighborY_SP, 
+				    para->getParD(lev)->neighborZ_SP,
+				    para->getParD(lev)->size_Mat_SP,
+				    para->getParD(lev)->evenOrOdd,
+				    para->getParD(lev)->numberofthreads
+				);
+			}
+		}
         ////////////////////////////////////////////////////////////////////////////////
 
 
@@ -497,19 +575,19 @@ void Simulation::run()
             
             if( para->getDoCheckPoint() )
             {
-                output << "Dateien fuer CheckPoint kopieren t=" << t << "...\n";
+                output << "Copy data for CheckPoint t=" << t << "...\n";
                 
                 for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
                 {
                     cudaManager->cudaCopyFsForCheckPoint(lev);
                 }
                 
-                output << "Dateien fuer CheckPoint schreiben t=" << t << "...";
+                output << "Write data for CheckPoint t=" << t << "...";
 
 				const auto name = getFileName(para->getFName(), t, para->getMyID());
 				restart_object->serialize(name, para);
 
-                output << "\n fertig\n";
+                output << "\n done\n";
             }
             //////////////////////////////////////////////////////////////////////////
 			averageTimer->startTimer();
@@ -628,17 +706,18 @@ void Simulation::run()
 
 		//////////////////////////////////////////////////////////////////////////
 		averageTimer->stopTimer();
-		averageTimer->outputPerformance(t, para.get());
+		averageTimer->outputPerformance(t, para.get(), communicator);
 		//////////////////////////////////////////////////////////////////////////
 
          if( para->getPrintFiles() )
          {
-            output << "Dateien schreiben t=" << t << "...";
+            output << "Write files t=" << t << "... ";
             for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
             {
 		        //////////////////////////////////////////////////////////////////////////
 		        //exchange data for valid post process
-		        exchangeMultiGPU(para.get(), communicator, cudaManager.get(), lev);
+                prepareExchangeMultiGPU(para.get(), lev, -1);
+		        exchangeMultiGPU(para.get(), communicator, cudaManager.get(), lev, -1);
                 //////////////////////////////////////////////////////////////////////////
                //if (para->getD3Qxx()==19)
                //{
@@ -891,8 +970,19 @@ void Simulation::run()
 				resetMedian(para.get());
 				/////////////////////////////////
 			}
+            if (para->getCalcTurbulenceIntensity()) 
+			{
+                uint t_diff = t - t_turbulenceIntensity;
+                calcTurbulenceIntensity(para.get(), cudaManager.get(), t_diff);
+                //writeAllTiDatafToFile(para.get(), t);
+            }
 			////////////////////////////////////////////////////////////////////////
 			dataWriter->writeTimestep(para, t);
+			////////////////////////////////////////////////////////////////////////
+            if (para->getCalcTurbulenceIntensity()) {
+                t_turbulenceIntensity = t;
+                resetVelocityFluctuationsAndMeans(para.get(), cudaManager.get());
+            }
 			////////////////////////////////////////////////////////////////////////
             if (para->getCalcDragLift()) printDragLift(para.get(), cudaManager.get(), t);
 			////////////////////////////////////////////////////////////////////////
@@ -906,6 +996,8 @@ void Simulation::run()
 		averageTimer->startTimer();
       }
 	}
+
+	/////////////////////////////////////////////////////////////////////////
 
 	////////////////////////////////////////////////////////////////////////////////
 	//printDragLift(para);
@@ -1084,8 +1176,14 @@ void Simulation::definePMarea(std::shared_ptr<PorousMedia> pMedia)
 
 void Simulation::free()
 {
+	// Cuda Streams
+    if (para->getUseStreams()) {
+        para->getStreamManager()->destroyCudaEvents();
+        para->getStreamManager()->terminateStreams();
+	}
+
 	//CudaFreeHostMemory
-	for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
+    for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
 	{
 		//para->cudaFreeFull(lev);
 		cudaManager->cudaFreeCoord(lev);
@@ -1215,6 +1313,9 @@ void Simulation::free()
 		}
 	}
 	//////////////////////////////////////////////////////////////////////////
+	// Turbulence Intensity
+	if (para->getCalcTurbulenceIntensity()) {
+        cudaFreeTurbulenceIntensityArrays(para.get(), cudaManager.get());
 	//PreCollisionInteractors
 	for( SPtr<PreCollisionInteractor> actuator: para->getActuators()){
 		actuator->free(para.get(), cudaManager.get());
@@ -1224,4 +1325,5 @@ void Simulation::free()
 		probe->free(para.get(), cudaManager.get());
 	}
 	//////////////////////////////////////////////////////////////////////////
+    }
 }

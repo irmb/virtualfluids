@@ -57,6 +57,10 @@ public:
     void stopTimer();
     double getTime();
     int mapCudaDevice(const int &rank, const int &size, const std::vector<unsigned int> &devices, const int &maxdev);
+    std::vector<double> gatherNUPS(double processNups);
+    double sumNups(double processNups);
+    //////////////////////////////////////////////////////////////////////////
+    void exchangeIndices(uint *rbuf, int count_r, int nb_rank_r, uint *sbuf, int count_s, int nb_rank_s);
 private:
    int numprocs, PID;
    int nbrbottom, nbrtop; 

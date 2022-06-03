@@ -8,10 +8,13 @@
 //random numbers
 #include <curand.h>
 #include <curand_kernel.h>
+#include <cuda_runtime.h>
 
 #include <DataTypes.h>
 #include "LBM/LB.h"
 
+#ifndef GPU_INTERFACE_H
+#define GPU_INTERFACE_H
 
 //////////////////////////////////////////////////////////////////////////
 //Kernel
@@ -1913,7 +1916,8 @@ extern "C" void ScaleCF_RhoSq_comp_27(  real* DC,
 										unsigned int nxF, 
 										unsigned int nyF,
 										unsigned int numberOfThreads,
-										OffCF offCF);
+										OffCF offCF,
+                                        CUstream_st *stream);
 
 extern "C" void ScaleCF_RhoSq_3rdMom_comp_27( real* DC, 
 											  real* DF, 
@@ -2154,8 +2158,9 @@ extern "C" void ScaleFC_RhoSq_comp_27(  real* DC,
 										unsigned int nyC, 
 										unsigned int nxF, 
 										unsigned int nyF,
-										unsigned int numberOfThreads,
-										OffFC offFC);
+										unsigned int numberOfThreads, 
+	                                    OffFC offFC,
+                                        CUstream_st *stream);
 
 extern "C" void ScaleFC_RhoSq_3rdMom_comp_27( real* DC, 
 											  real* DF, 
@@ -2412,7 +2417,8 @@ extern "C" void GetSendFsPreDev27(real* DD,
 								  unsigned int* neighborZ,
 								  unsigned int size_Mat, 
 								  bool evenOrOdd,
-								  unsigned int numberOfThreads);
+								  unsigned int numberOfThreads, 
+	                              cudaStream_t stream = CU_STREAM_LEGACY);
 
 extern "C" void GetSendFsPostDev27(real* DD,
 								   real* bufferFs,
@@ -2423,7 +2429,8 @@ extern "C" void GetSendFsPostDev27(real* DD,
 								   unsigned int* neighborZ,
 								   unsigned int size_Mat, 
 								   bool evenOrOdd,
-								   unsigned int numberOfThreads);
+								   unsigned int numberOfThreads, 
+	                               cudaStream_t stream = CU_STREAM_LEGACY);
 
 extern "C" void SetRecvFsPreDev27(real* DD,
 								  real* bufferFs,
@@ -2433,8 +2440,8 @@ extern "C" void SetRecvFsPreDev27(real* DD,
 								  unsigned int* neighborY,
 								  unsigned int* neighborZ,
 								  unsigned int size_Mat, 
-								  bool evenOrOdd,
-								  unsigned int numberOfThreads);
+								  bool evenOrOdd, unsigned int numberOfThreads, 
+	                              cudaStream_t stream = CU_STREAM_LEGACY);
 
 extern "C" void SetRecvFsPostDev27(real* DD,
 								   real* bufferFs,
@@ -2445,7 +2452,8 @@ extern "C" void SetRecvFsPostDev27(real* DD,
 								   unsigned int* neighborZ,
 								   unsigned int size_Mat, 
 								   bool evenOrOdd,
-								   unsigned int numberOfThreads);
+								   unsigned int numberOfThreads,
+                                   cudaStream_t stream = CU_STREAM_LEGACY);
 
 extern "C" void getSendGsDevF3(
 	real* G6,
@@ -2584,3 +2592,23 @@ extern "C" void generateRandomValuesDevice(curandState* state,
 										   real* randArray,
 										   unsigned int numberOfThreads);
 
+extern "C" void CalcTurbulenceIntensityDevice(
+   real* vxx,
+   real* vyy,
+   real* vzz,
+   real* vxy,
+   real* vxz,
+   real* vyz,
+   real* vx_mean,
+   real* vy_mean,
+   real* vz_mean,
+   real* DD, 
+   uint *typeOfGridNode, 
+   unsigned int* neighborX,
+   unsigned int* neighborY,
+   unsigned int* neighborZ,
+   unsigned int size_Mat, 
+   bool evenOrOdd,
+   uint numberOfThreads);
+
+#endif

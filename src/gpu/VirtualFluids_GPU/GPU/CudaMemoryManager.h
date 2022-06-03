@@ -91,22 +91,29 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	//3D domain decomposition
 	void cudaAllocProcessNeighborX(int lev, unsigned int processNeighbor);
-	void cudaCopyProcessNeighborXFsHD(int lev, unsigned int processNeighbor);
-	void cudaCopyProcessNeighborXFsDH(int lev, unsigned int processNeighbor);
+    void cudaCopyProcessNeighborXFsHD(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsRecv,
+                                      int streamIndex);
+    void cudaCopyProcessNeighborXFsDH(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsSend,
+                                      int streamIndex);
 	void cudaCopyProcessNeighborXIndex(int lev, unsigned int processNeighbor);
 	void cudaFreeProcessNeighborX(int lev, unsigned int processNeighbor);
 	//
 	void cudaAllocProcessNeighborY(int lev, unsigned int processNeighbor);
-	void cudaCopyProcessNeighborYFsHD(int lev, unsigned int processNeighbor);
-	void cudaCopyProcessNeighborYFsDH(int lev, unsigned int processNeighbor);
+    void cudaCopyProcessNeighborYFsHD(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsRecv,
+                                      int streamIndex);
+    void cudaCopyProcessNeighborYFsDH(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsSend,
+                                      int streamIndex);
 	void cudaCopyProcessNeighborYIndex(int lev, unsigned int processNeighbor);
-	void cudaFreeProcessNeighborY(int lev, unsigned int processNeighbor);
+    void cudaFreeProcessNeighborY(int lev, unsigned int processNeighbor);
 	//
 	void cudaAllocProcessNeighborZ(int lev, unsigned int processNeighbor);
-	void cudaCopyProcessNeighborZFsHD(int lev, unsigned int processNeighbor);
-	void cudaCopyProcessNeighborZFsDH(int lev, unsigned int processNeighbor);
+    void cudaCopyProcessNeighborZFsHD(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsRecv,
+                                      int streamIndex);
+    void cudaCopyProcessNeighborZFsDH(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsSend,
+                                      int streamIndex);
 	void cudaCopyProcessNeighborZIndex(int lev, unsigned int processNeighbor);
 	void cudaFreeProcessNeighborZ(int lev, unsigned int processNeighbor);
+
 	//////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////
@@ -134,6 +141,11 @@ public:
     void cudaCopyTurbulentViscosityHD(int lev);
     void cudaCopyTurbulentViscosityDH(int lev);
     void cudaFreeTurbulentViscosity(int lev);
+
+    void cudaAllocTurbulenceIntensity(int lev, uint size);
+    void cudaCopyTurbulenceIntensityHD(int lev, uint size);
+    void cudaCopyTurbulenceIntensityDH(int lev, uint size);
+    void cudaFreeTurbulenceIntensity(int lev);
     
     void cudaAllocMedianSP(int lev);
     void cudaCopyMedianSP(int lev);
@@ -151,6 +163,7 @@ public:
     
     void cudaAllocInterfaceFC(int lev);
     void cudaCopyInterfaceFC(int lev);
+    void cudaCheckInterfaceFCBulk(int lev);
     void cudaFreeInterfaceFC(int lev);
     
     void cudaAllocInterfaceOffCF(int lev);
@@ -331,7 +344,15 @@ public:
     void cudaCopyProcessNeighborADZFsDH(int lev, unsigned int processNeighbor);
     void cudaCopyProcessNeighborADZIndex(int lev, unsigned int processNeighbor);
     void cudaFreeProcessNeighborADZ(int lev, unsigned int processNeighbor);
-
+    
+    void cudaAllocFluidNodeIndices(int lev);
+    void cudaCopyFluidNodeIndices(int lev);
+    void cudaFreeFluidNodeIndices(int lev);
+    void cudaAllocFluidNodeIndicesBorder(int lev);
+    void cudaCopyFluidNodeIndicesBorder(int lev);
+    void cudaFreeFluidNodeIndicesBorder(int lev);  
+      
+    // Actuator Line
     void cudaAllocBladeRadii(ActuatorLine* actuatorLine);
     void cudaCopyBladeRadiiHtoD(ActuatorLine* actuatorLine);
     void cudaCopyBladeRadiiDtoH(ActuatorLine* actuatorLine);

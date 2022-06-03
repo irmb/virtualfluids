@@ -28,13 +28,16 @@ class KernelFactory;
 class PreProcessor;
 class PreProcessorFactory;
 class TrafficMovementFactory;
+class UpdateGrid27;
 
 class VIRTUALFLUIDS_GPU_EXPORT Simulation
 {
 public:
 	Simulation(vf::gpu::Communicator& communicator);
 	void run();
-	void init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std::shared_ptr<DataWriter> dataWriter, std::shared_ptr<CudaMemoryManager> cudaManager);
+    void init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std::shared_ptr<DataWriter> dataWriter,
+              std::shared_ptr<CudaMemoryManager> cudaManager);
+    void allocNeighborsOffsetsScalesAndBoundaries(SPtr<GridProvider> &gridProvider);
 	void free();
 	void bulk();
 	void porousMedia();
@@ -104,5 +107,6 @@ protected:
 	SPtr<EnstrophyAnalyzer> enstrophyAnalyzer;
 	////////////////////////////////////////////////////////////////////////////
 
+	SPtr<UpdateGrid27> updateGrid27;
  };
 #endif
