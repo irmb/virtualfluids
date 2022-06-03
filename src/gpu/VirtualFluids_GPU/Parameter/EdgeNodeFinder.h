@@ -29,7 +29,7 @@
 //! \file EdgeNodeFinder.h
 //! \ingroup Parameter
 //! \author Anna Wellmann
-//! \brief functions for finding edge nodes in the multi-gpu implementation
+//! \brief Functions for finding edge nodes in the multi-gpu implementation
 //! \details Edge nodes are nodes, which are part of the communication in multiple directions
 //! \ref master thesis of Anna Wellmann (p. 54-57)
 
