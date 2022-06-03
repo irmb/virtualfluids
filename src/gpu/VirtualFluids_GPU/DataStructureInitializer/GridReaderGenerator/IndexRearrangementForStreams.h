@@ -23,10 +23,6 @@ class Communicator;
 
 class IndexRearrangementForStreams
 {
-private:
-    std::shared_ptr<GridBuilder> builder;
-    std::shared_ptr<Parameter> para;
-    vf::gpu::Communicator& communicator;
 public:
     //! \brief construct IndexRearrangementForStreams object
     IndexRearrangementForStreams(std::shared_ptr<Parameter> para, std::shared_ptr<GridBuilder> builder, vf::gpu::Communicator& communicator);
@@ -155,6 +151,11 @@ private:
     //! border and bulk. The fine cells (iCellFCF) are reordered accordingly.
     void getGridInterfaceIndicesBorderBulkFC(int level);
 
+
+private:
+    std::shared_ptr<GridBuilder> builder;
+    std::shared_ptr<Parameter> para;
+    vf::gpu::Communicator& communicator;
 
     // used for tests
     friend class IndexRearrangementForStreamsTest_reorderSendIndices;
