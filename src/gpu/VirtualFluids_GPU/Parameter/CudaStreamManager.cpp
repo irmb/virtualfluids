@@ -31,10 +31,6 @@
 #include <helper_cuda.h>
 #include <iostream>
 
-CudaStreamManager::CudaStreamManager() {}
-
-CudaStreamManager::~CudaStreamManager() {}
-
 void CudaStreamManager::launchStreams(uint numberOfStreams)
 {
     cudaStreams.resize(numberOfStreams);
