@@ -579,7 +579,6 @@ public:
     void setADKernel(std::string adKernel);
 
     // adder
-
     void addActuator(SPtr<PreCollisionInteractor> actuator);
     void addProbe(SPtr<PreCollisionInteractor> probes);
 
