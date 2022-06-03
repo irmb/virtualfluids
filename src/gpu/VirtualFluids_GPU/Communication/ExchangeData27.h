@@ -10,7 +10,7 @@
 //! \file ExchangeData27.h
 //! \ingroup GPU
 //! \author Martin Schoenherr, Anna Wellmann
-//! \brief routines for data exchange when running simulations on multiple GPUs
+//! \brief Routines for data exchange when running simulations on multiple GPUs
 
 //////////////////////////////////////////////////////////////////////////
 // 1D domain decomposition
@@ -23,19 +23,19 @@ extern "C" void exchangePostCollDataGPU27(Parameter *para, vf::gpu::Communicator
 
 // functions used for all directions
 
-//! \brief collect the send nodes in a buffer on the gpu
+//! \brief Collect the send nodes in a buffer on the gpu
 extern "C" void collectNodesInSendBufferGPU(Parameter *para, int level, int streamIndex,
                                             std::vector<ProcessNeighbor27> *sendProcessNeighbor,
                                             unsigned int numberOfSendProcessNeighbors);
-//! \brief distribute the receive nodes from the buffer on the gpu
+//! \brief Distribute the receive nodes from the buffer on the gpu
 extern "C" void scatterNodesFromRecvBufferGPU(Parameter *para, int level, int streamIndex,
                                               std::vector<ProcessNeighbor27> *recvProcessNeighborDev,
                                               unsigned int numberOfRecvProcessNeighbors);
-//! \brief copy nodes which are part of the communication in multiple directions
+//! \brief Copy nodes which are part of the communication in multiple directions
 //! \details The nodes are copied from the receive buffer in one direction to the send buffer in another direction. The
 //! copy operation is conducted on the cpu. 
-//! \ref see master thesis of Anna Wellmann (p. 56f: "Communication Hiding bei
-//! der Verwendung eines uniformen Simulationsgitters") 
+//! See [master thesis of Anna Wellmann (p. 56f: "Communication Hiding bei
+//! der Verwendung eines uniformen Simulationsgitters")]
 //! \param edgeNodes determines from where to where the nodes are
 //! copied 
 //! \param recvProcessNeighborHost is a reference to the receive buffer on the host, nodes are copied from here
@@ -47,16 +47,16 @@ extern "C" void copyEdgeNodes(std::vector<LBMSimulationParameter::EdgeNodePositi
 //////////////////////////////////////////////////////////////////////////
 // x
 
-//! \brief collect the send nodes for communication in the x direction in a buffer on the gpu
-//! \details needed to exchange all nodes, used in the communication after collision step
+//! \brief Collect the send nodes for communication in the x direction in a buffer on the gpu
+//! \details Needed to exchange all nodes, used in the communication after collision step
 extern "C" void prepareExchangeCollDataXGPU27AllNodes(Parameter *para, int level, int streamIndex);
-//! \brief collect the send nodes for communication in the x direction in a buffer on the gpu
+//! \brief Collect the send nodes for communication in the x direction in a buffer on the gpu
 //! \details Only exchange nodes which are part of the interpolation process on refined grids. This function is used in
 //! the exchange which takes place after the interpolation fine to coarse and before the interpolation coarse to fine.
-//! \ref see master thesis of Anna Wellmann
+//! See [master thesis of Anna Wellmann]
 extern "C" void prepareExchangeCollDataXGPU27AfterFtoC(Parameter *para, int level, int streamIndex);
-//! \brief exchange routine in x direction for simulations on multiple gpus
-//! \details send and receive the nodes from the communication buffers on the gpus
+//! \brief Exchange routine in x direction for simulations on multiple gpus
+//! \details Send and receive the nodes from the communication buffers on the gpus.
 //! \param Communicator is needed for the communication between the processes with mpi
 //! \param CudaMemoryManager is needed for moving the data between host and device
 //! \param streamIndex is the index of a CUDA Stream, which is needed for communication hiding
@@ -68,23 +68,24 @@ extern "C" void exchangeCollDataXGPU27(Parameter *para, vf::gpu::Communicator &c
                                        std::vector<ProcessNeighbor27> *recvProcessNeighborDev,
                                        std::vector<ProcessNeighbor27> *sendProcessNeighborHost,
                                        std::vector<ProcessNeighbor27> *recvProcessNeighborHost);
-//! \brief calls exchangeCollDataXGPU27() for exchanging all nodes
-//! \details used in the communication after collision step
+//! \brief Calls exchangeCollDataXGPU27() for exchanging all nodes
+//! \details Used in the communication after collision step
 extern "C" void exchangeCollDataXGPU27AllNodes(Parameter *para, vf::gpu::Communicator &comm,
                                                CudaMemoryManager *cudaManager, int level, int streamIndex);
-//! \brief calls exchangeCollDataXGPU27() for exchanging the nodes, which are part of the communication between the two
-//! interpolation processes on refined grids \details Only exchange nodes which are part of the interpolation process on
+//! \brief Calls exchangeCollDataXGPU27() for exchanging the nodes, which are part of the communication between the two
+//! interpolation processes on refined grids 
+//! \details Only exchange nodes which are part of the interpolation process on
 //! refined grids. This function is used in the exchange which takes place after the interpolation fine to coarse and
-//! before the interpolation coarse to fine. \ref see master thesis of Anna Wellmann
+//! before the interpolation coarse to fine. See [master thesis of Anna Wellmann]
 extern "C" void exchangeCollDataXGPU27AfterFtoC(Parameter *para, vf::gpu::Communicator &comm,
                                                 CudaMemoryManager *cudaManager, int level, int streamIndex);
-//! \brief distribute the receive nodes (x direction) from the buffer on the gpu
-//! \details needed to exchange all nodes, used in the communication after collision step
+//! \brief Distribute the receive nodes (x direction) from the buffer on the gpu
+//! \details Needed to exchange all nodes, used in the communication after collision step
 extern "C" void scatterNodesFromRecvBufferXGPU27AllNodes(Parameter *para, int level, int streamIndex);
-//! \brief distribute the receive nodes (x direction) from the buffer on the gpu
+//! \brief Distribute the receive nodes (x direction) from the buffer on the gpu
 //! \details Only exchange nodes which are part of the interpolation process on refined grids. This function is used in
 //! the exchange which takes place after the interpolation fine to coarse and before the interpolation coarse to fine.
-//! \ref see master thesis of Anna Wellmann
+//! See [master thesis of Anna Wellmann]
 extern "C" void scatterNodesFromRecvBufferXGPU27AfterFtoC(Parameter *para, int level, int streamIndex);
 
 //////////////////////////////////////////////////////////////////////////
