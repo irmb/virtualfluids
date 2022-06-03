@@ -16,13 +16,10 @@
 
 class Parameter;
 class GridBuilder;
-namespace vf
-{
-namespace gpu
+namespace vf::gpu
 {
 class Communicator;
 }
-} // namespace vf
 
 class IndexRearrangementForStreams
 {
