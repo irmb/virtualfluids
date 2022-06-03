@@ -295,7 +295,6 @@ private:
     std::unique_ptr<IndexRearrangementForStreams> createTestSubjectReorderSendIndices()
     {
         logging::Logger::addStream(&std::cout);
-        MPI_Init(NULL, NULL);
 
         SPtr<GridImpDouble> grid =
             GridImpDouble::makeShared(nullptr, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, Distribution(), 1);
