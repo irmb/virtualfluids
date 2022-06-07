@@ -54,10 +54,11 @@ void findEdgeNodesCommMultiGPU(SPtr<Parameter> parameter);
 // anonymous namespace
 namespace
 {
-static bool findIndexInSendNodes(int nodeIndex, const std::vector<ProcessNeighbor27>& sendProcessNeighbor, int &indexOfProcessNeighborSend, int &indexInSendBuffer);
-static void findEdgeNodesXY(int level, SPtr<Parameter> parameter);
-static void findEdgeNodesXZ(int level, SPtr<Parameter> parameter);
-static void findEdgeNodesYZ(int level, SPtr<Parameter> parameter);
+bool findIndexInSendNodes(int nodeIndex, const std::vector<ProcessNeighbor27> &sendProcessNeighbor,
+                          int &indexOfProcessNeighborSend, int &indexInSendBuffer);
+void findEdgeNodesXY(int level, SPtr<Parameter> parameter);
+void findEdgeNodesXZ(int level, SPtr<Parameter> parameter);
+void findEdgeNodesYZ(int level, SPtr<Parameter> parameter);
 } // namespace
 
 #endif

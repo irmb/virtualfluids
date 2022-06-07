@@ -22,8 +22,8 @@ void findEdgeNodesXY(int level, SPtr<Parameter> parameter)
     for (uint i = 0; i < (unsigned int)(parameter->getNumberOfProcessNeighborsX(level, "recv")); i++) {
         for (int j = 0; j < parameter->getParH(level)->recvProcessNeighborX[i].numberOfNodes; j++) {
             int nodeIndex = parameter->getParH(level)->recvProcessNeighborX[i].index[j];
-            bool foundIndex =
-                findIndexInSendNodes(nodeIndex, parameter->getParH(level)->sendProcessNeighborY, indexOfProcessNeighborSend,  indexInSendBuffer);
+            bool foundIndex = findIndexInSendNodes(nodeIndex, parameter->getParH(level)->sendProcessNeighborY,
+                                                   indexOfProcessNeighborSend, indexInSendBuffer);
             if (foundIndex) {
                 parameter->getParH(level)->edgeNodesXtoY.emplace_back(i, j, indexOfProcessNeighborSend,
                                                                       indexInSendBuffer);
@@ -39,8 +39,8 @@ void findEdgeNodesXZ(int level, SPtr<Parameter> parameter)
     for (uint i = 0; i < (unsigned int)(parameter->getNumberOfProcessNeighborsX(level, "recv")); i++) {
         for (int j = 0; j < parameter->getParH(level)->recvProcessNeighborX[i].numberOfNodes; j++) {
             int nodeIndex = parameter->getParH(level)->recvProcessNeighborX[i].index[j];
-            bool foundIndex =
-                findIndexInSendNodes(nodeIndex, parameter->getParH(level)->sendProcessNeighborZ, indexOfProcessNeighborSend,  indexInSendBuffer);
+            bool foundIndex = findIndexInSendNodes(nodeIndex, parameter->getParH(level)->sendProcessNeighborZ,
+                                                   indexOfProcessNeighborSend, indexInSendBuffer);
             if (foundIndex) {
                 parameter->getParH(level)->edgeNodesXtoZ.emplace_back(i, j, indexOfProcessNeighborSend,
                                                                       indexInSendBuffer);
@@ -56,8 +56,8 @@ void findEdgeNodesYZ(int level, SPtr<Parameter> parameter)
     for (uint i = 0; i < (unsigned int)(parameter->getNumberOfProcessNeighborsY(level, "recv")); i++) {
         for (int j = 0; j < parameter->getParH(level)->recvProcessNeighborY[i].numberOfNodes; j++) {
             int nodeIndex = parameter->getParH(level)->recvProcessNeighborY[i].index[j];
-            bool foundIndex =
-                findIndexInSendNodes(nodeIndex, parameter->getParH(level)->sendProcessNeighborZ,indexOfProcessNeighborSend,  indexInSendBuffer);
+            bool foundIndex = findIndexInSendNodes(nodeIndex, parameter->getParH(level)->sendProcessNeighborZ,
+                                                   indexOfProcessNeighborSend, indexInSendBuffer);
             if (foundIndex) {
                 parameter->getParH(level)->edgeNodesYtoZ.emplace_back(i, j, indexOfProcessNeighborSend,
                                                                       indexInSendBuffer);
@@ -66,7 +66,8 @@ void findEdgeNodesYZ(int level, SPtr<Parameter> parameter)
     }
 }
 
-bool findIndexInSendNodes(int nodeIndex, const std::vector<ProcessNeighbor27>& sendProcessNeighbor, int &indexOfProcessNeighborSend, int &indexInSendBuffer)
+bool findIndexInSendNodes(int nodeIndex, const std::vector<ProcessNeighbor27> &sendProcessNeighbor,
+                          int &indexOfProcessNeighborSend, int &indexInSendBuffer)
 {
     for (uint neighbor = 0; neighbor < (unsigned int)sendProcessNeighbor.size(); neighbor++) {
         for (int node = 0; node < sendProcessNeighbor[neighbor].numberOfNodes; node++) {
