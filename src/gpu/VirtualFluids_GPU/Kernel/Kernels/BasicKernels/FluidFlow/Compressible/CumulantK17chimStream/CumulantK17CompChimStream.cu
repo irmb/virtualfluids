@@ -14,11 +14,7 @@ std::shared_ptr<CumulantK17CompChimStream> CumulantK17CompChimStream::getNewInst
 
 void CumulantK17CompChimStream::run()
 {
-    dim3 grid, threads;
-    std::tie(grid, threads) =
-        *calcGridDimensions(para->getParD(level)->numberOfFluidNodes, para->getParD(level)->numberofthreads);
-
-	LB_Kernel_CumulantK17CompChimStream <<< grid, threads >>>(
+	LB_Kernel_CumulantK17CompChimStream <<< cudaGrid.grid, cudaGrid.threads >>>(
 		para->getParD(level)->omega,
 		para->getParD(level)->neighborX_SP,
 		para->getParD(level)->neighborY_SP,
@@ -36,13 +32,9 @@ void CumulantK17CompChimStream::run()
 
 void CumulantK17CompChimStream::runOnIndices(const unsigned int *indices, unsigned int size_indices, int streamIndex)
 {
-    dim3 grid, threads;
-    std::tie(grid, threads) =
-        *calcGridDimensions(para->getParD(level)->numberOfFluidNodes, para->getParD(level)->numberofthreads);
-
     cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
 
-    LB_Kernel_CumulantK17CompChimStream<<<grid, threads, 0, stream>>>(
+    LB_Kernel_CumulantK17CompChimStream<<< cudaGrid.grid, cudaGrid.threads, 0, stream>>>(
         para->getParD(level)->omega, 
 	    para->getParD(level)->neighborX_SP, 
 	    para->getParD(level)->neighborY_SP,
@@ -59,13 +51,10 @@ void CumulantK17CompChimStream::runOnIndices(const unsigned int *indices, unsign
     
 }
 
-CumulantK17CompChimStream::CumulantK17CompChimStream(std::shared_ptr<Parameter> para, int level)
+CumulantK17CompChimStream::CumulantK17CompChimStream(std::shared_ptr<Parameter> para, int level): KernelImp(para, level)
 {
-	this->para = para;
-	this->level = level;
-
 	myPreProcessorTypes.push_back(InitCompSP27);
-
 	myKernelGroup = BasicKernel;
+	this->cudaGrid = vf::cuda::CudaGrid(para->getParD(level)->numberofthreads, para->getParD(level)->size_Mat_SP);
 }
 

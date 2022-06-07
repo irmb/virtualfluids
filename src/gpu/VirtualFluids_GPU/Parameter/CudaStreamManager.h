@@ -44,9 +44,6 @@ private:
     const int bulkStreamIndex         = 0;
 
 public:
-    CudaStreamManager();
-    ~CudaStreamManager();
-
     void launchStreams(uint numberOfStreams);
     void terminateStreams();
     cudaStream_t &getStream(uint streamIndex);

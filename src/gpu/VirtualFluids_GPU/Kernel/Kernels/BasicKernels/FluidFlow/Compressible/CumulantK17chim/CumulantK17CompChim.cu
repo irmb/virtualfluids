@@ -2,6 +2,7 @@
 
 #include "Parameter/Parameter.h"
 #include "CumulantK17CompChim_Device.cuh"
+#include "cuda/CudaGrid.h"
 
 std::shared_ptr<CumulantK17CompChim> CumulantK17CompChim::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {
@@ -10,11 +11,7 @@ std::shared_ptr<CumulantK17CompChim> CumulantK17CompChim::getNewInstance(std::sh
 
 void CumulantK17CompChim::run()
 {
-    dim3 grid, threads;
-    std::tie(grid, threads) =
-        *calcGridDimensions(para->getParD(level)->size_Mat_SP, para->getParD(level)->numberofthreads);
-
-	LB_Kernel_CumulantK17CompChim <<< grid, threads >>>(
+	LB_Kernel_CumulantK17CompChim <<< cudaGrid.grid, cudaGrid.threads >>>(
 		para->getParD(level)->omega,
 		para->getParD(level)->geoSP,
 		para->getParD(level)->neighborX_SP,
@@ -33,12 +30,9 @@ void CumulantK17CompChim::run()
 	getLastCudaError("LB_Kernel_CumulantK17CompChim execution failed");
 }
 
-CumulantK17CompChim::CumulantK17CompChim(std::shared_ptr<Parameter> para, int level)
+CumulantK17CompChim::CumulantK17CompChim(std::shared_ptr<Parameter> para, int level): KernelImp(para, level)
 {
-	this->para = para;
-	this->level = level;
-
 	myPreProcessorTypes.push_back(InitCompSP27);
-
 	myKernelGroup = BasicKernel;
+	this->cudaGrid = vf::cuda::CudaGrid(para->getParD(level)->numberofthreads, para->getParD(level)->size_Mat_SP);
 }
