@@ -1,5 +1,4 @@
 #include "EdgeNodeFinder.h"
-#include "Parameter.h"
 
 namespace vf::gpu
 {
@@ -15,52 +14,38 @@ void findEdgeNodesCommMultiGPU(SPtr<Parameter> parameter)
 
 namespace
 {
+
 void findEdgeNodesXY(int level, SPtr<Parameter> parameter)
 {
-    int indexOfProcessNeighborSend;
-    int indexInSendBuffer;
-    for (uint i = 0; i < (unsigned int)(parameter->getNumberOfProcessNeighborsX(level, "recv")); i++) {
-        for (int j = 0; j < parameter->getParH(level)->recvProcessNeighborX[i].numberOfNodes; j++) {
-            int nodeIndex = parameter->getParH(level)->recvProcessNeighborX[i].index[j];
-            bool foundIndex = findIndexInSendNodes(nodeIndex, parameter->getParH(level)->sendProcessNeighborY,
-                                                   indexOfProcessNeighborSend, indexInSendBuffer);
-            if (foundIndex) {
-                parameter->getParH(level)->edgeNodesXtoY.emplace_back(i, j, indexOfProcessNeighborSend,
-                                                                      indexInSendBuffer);
-            }
-        }
-    }
+    findEdgeNodes(parameter->getParH(level)->recvProcessNeighborX, parameter->getParH(level)->sendProcessNeighborY,
+                  parameter->getParH(level)->edgeNodesXtoY);
 }
 
 void findEdgeNodesXZ(int level, SPtr<Parameter> parameter)
 {
-    int indexOfProcessNeighborSend;
-    int indexInSendBuffer;
-    for (uint i = 0; i < (unsigned int)(parameter->getNumberOfProcessNeighborsX(level, "recv")); i++) {
-        for (int j = 0; j < parameter->getParH(level)->recvProcessNeighborX[i].numberOfNodes; j++) {
-            int nodeIndex = parameter->getParH(level)->recvProcessNeighborX[i].index[j];
-            bool foundIndex = findIndexInSendNodes(nodeIndex, parameter->getParH(level)->sendProcessNeighborZ,
-                                                   indexOfProcessNeighborSend, indexInSendBuffer);
-            if (foundIndex) {
-                parameter->getParH(level)->edgeNodesXtoZ.emplace_back(i, j, indexOfProcessNeighborSend,
-                                                                      indexInSendBuffer);
-            }
-        }
-    }
+    findEdgeNodes(parameter->getParH(level)->recvProcessNeighborX, parameter->getParH(level)->sendProcessNeighborZ,
+                  parameter->getParH(level)->edgeNodesXtoZ);
 }
 
 void findEdgeNodesYZ(int level, SPtr<Parameter> parameter)
 {
+    findEdgeNodes(parameter->getParH(level)->recvProcessNeighborY, parameter->getParH(level)->sendProcessNeighborZ,
+                  parameter->getParH(level)->edgeNodesYtoZ);
+}
+
+void findEdgeNodes(const std::vector<ProcessNeighbor27> &recvProcessNeighbor,
+                   const std::vector<ProcessNeighbor27> &sendProcessNeighbor,
+                   std::vector<LBMSimulationParameter::EdgeNodePositions> &edgeNodes)
+{
     int indexOfProcessNeighborSend;
     int indexInSendBuffer;
-    for (uint i = 0; i < (unsigned int)(parameter->getNumberOfProcessNeighborsY(level, "recv")); i++) {
-        for (int j = 0; j < parameter->getParH(level)->recvProcessNeighborY[i].numberOfNodes; j++) {
-            int nodeIndex = parameter->getParH(level)->recvProcessNeighborY[i].index[j];
-            bool foundIndex = findIndexInSendNodes(nodeIndex, parameter->getParH(level)->sendProcessNeighborZ,
-                                                   indexOfProcessNeighborSend, indexInSendBuffer);
+    for (uint i = 0; i < (unsigned int)(recvProcessNeighbor.size()); i++) {
+        for (int j = 0; j < recvProcessNeighbor[i].numberOfNodes; j++) {
+            int nodeIndex = recvProcessNeighbor[i].index[j];
+            bool foundIndex =
+                findIndexInSendNodes(nodeIndex, sendProcessNeighbor, indexOfProcessNeighborSend, indexInSendBuffer);
             if (foundIndex) {
-                parameter->getParH(level)->edgeNodesYtoZ.emplace_back(i, j, indexOfProcessNeighborSend,
-                                                                      indexInSendBuffer);
+                edgeNodes.emplace_back(i, j, indexOfProcessNeighborSend, indexInSendBuffer);
             }
         }
     }

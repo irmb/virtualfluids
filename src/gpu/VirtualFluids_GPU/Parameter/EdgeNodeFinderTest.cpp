@@ -2,7 +2,6 @@
 
 #include <filesystem>
 
-#include "Parameter.h"
 #include "basics/config/ConfigurationFile.h"
 #include "EdgeNodeFinder.h"
 

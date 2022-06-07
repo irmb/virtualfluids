@@ -42,8 +42,7 @@
 #include "Core/DataTypes.h"
 #include "basics/PointerDefinitions.h"
 #include "gpu/VirtualFluids_GPU/LBM/LB.h"
-
-class Parameter;
+#include "Parameter.h"
 
 namespace vf::gpu
 {
@@ -54,8 +53,10 @@ void findEdgeNodesCommMultiGPU(SPtr<Parameter> parameter);
 // anonymous namespace
 namespace
 {
-bool findIndexInSendNodes(int nodeIndex, const std::vector<ProcessNeighbor27> &sendProcessNeighbor,
-                          int &indexOfProcessNeighborSend, int &indexInSendBuffer);
+void findEdgeNodes(const std::vector<ProcessNeighbor27> &recvProcessNeighbor,
+                   const std::vector<ProcessNeighbor27> &sendProcessNeighbor, 
+                   std::vector<LBMSimulationParameter::EdgeNodePositions> &edgeNodes);
+bool findIndexInSendNodes(int nodeIndex, const std::vector<ProcessNeighbor27>& sendProcessNeighbor, int &indexOfProcessNeighborSend, int &indexInSendBuffer);
 void findEdgeNodesXY(int level, SPtr<Parameter> parameter);
 void findEdgeNodesXZ(int level, SPtr<Parameter> parameter);
 void findEdgeNodesYZ(int level, SPtr<Parameter> parameter);
