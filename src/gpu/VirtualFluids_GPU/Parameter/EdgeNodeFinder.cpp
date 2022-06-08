@@ -1,4 +1,5 @@
 #include <vector>
+#include <optional>
 
 #include "EdgeNodeFinder.h"
 #include "Parameter.h"
