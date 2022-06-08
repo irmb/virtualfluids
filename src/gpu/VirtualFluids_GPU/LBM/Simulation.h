@@ -83,19 +83,19 @@ private:
 	//PorousMedia* pm2;
 
 	//KQ - Schlaff
-	unsigned int            kNQ, kSQ, kEQ, kWQ;
-	QforBoundaryConditions  QnH, QnD;
-	QforBoundaryConditions  QsH, QsD;
-	QforBoundaryConditions  QeH, QeD;
-	QforBoundaryConditions  QwH, QwD;
-	real *VxNH,          *VyNH,       *VzNH,       *deltaVNH;
-	real *VxND,          *VyND,       *VzND,       *deltaVND;
-	real *VxSH,          *VySH,       *VzSH,       *deltaVSH;
-	real *VxSD,          *VySD,       *VzSD,       *deltaVSD;
-	real *VxEH,          *VyEH,       *VzEH,       *deltaVEH;
-	real *VxED,          *VyED,       *VzED,       *deltaVED;
-	real *VxWH,          *VyWH,       *VzWH,       *deltaVWH;
-	real *VxWD,          *VyWD,       *VzWD,       *deltaVWD;
+	// unsigned int            kNQ, kSQ, kEQ, kWQ;
+	// QforBoundaryConditions  QnH, QnD;
+	// QforBoundaryConditions  QsH, QsD;
+	// QforBoundaryConditions  QeH, QeD;
+	// QforBoundaryConditions  QwH, QwD;
+	// real *VxNH,          *VyNH,       *VzNH,       *deltaVNH;
+	// real *VxND,          *VyND,       *VzND,       *deltaVND;
+	// real *VxSH,          *VySH,       *VzSH,       *deltaVSH;
+	// real *VxSD,          *VySD,       *VzSD,       *deltaVSD;
+	// real *VxEH,          *VyEH,       *VzEH,       *deltaVEH;
+	// real *VxED,          *VyED,       *VzED,       *deltaVED;
+	// real *VxWH,          *VyWH,       *VzWH,       *deltaVWH;
+	// real *VxWD,          *VyWD,       *VzWD,       *deltaVWD;
 
 
     std::unique_ptr<KineticEnergyAnalyzer> kineticEnergyAnalyzer;

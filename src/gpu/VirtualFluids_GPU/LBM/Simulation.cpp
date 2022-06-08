@@ -417,9 +417,9 @@ void Simulation::addEnstrophyAnalyzer(uint tAnalyse)
     this->enstrophyAnalyzer = std::make_unique<EnstrophyAnalyzer>(this->para, tAnalyse);
 }
 
-void Simulation::setDataWriter(std::unique_ptr<DataWriter>&& dataWriter)
+void Simulation::setDataWriter(std::unique_ptr<DataWriter>&& dataWriter_)
 {
-    dataWriter = std::move(dataWriter);
+    dataWriter = std::move(dataWriter_);
 }
 
 
