@@ -14,8 +14,8 @@ void findEdgeNodesYZ(const int level, SPtr<Parameter> parameter);
 void findEdgeNodes(const std::vector<ProcessNeighbor27> &recvProcessNeighbor,
                    const std::vector<ProcessNeighbor27> &sendProcessNeighbor,
                    std::vector<LBMSimulationParameter::EdgeNodePositions> &edgeNodes);
-bool findIndexInSendNodes(const int nodeIndex, const std::vector<ProcessNeighbor27> &sendProcessNeighbor,
-                          int &indexOfProcessNeighborSend, int &indexInSendBuffer);
+std::optional<std::pair<int, int>> findIndexInSendNodes(const int nodeIndex,
+                                                        const std::vector<ProcessNeighbor27> &sendProcessNeighbor);
 
 void findEdgeNodesCommMultiGPU(SPtr<Parameter> parameter)
 {
@@ -48,33 +48,26 @@ void findEdgeNodes(const std::vector<ProcessNeighbor27> &recvProcessNeighbor,
                    const std::vector<ProcessNeighbor27> &sendProcessNeighbor,
                    std::vector<LBMSimulationParameter::EdgeNodePositions> &edgeNodes)
 {
-    int indexOfProcessNeighborSend;
-    int indexInSendBuffer;
-    for (uint i = 0; i < (unsigned int)(recvProcessNeighbor.size()); i++) {
-        for (int j = 0; j < recvProcessNeighbor[i].numberOfNodes; j++) {
-            const int nodeIndex = recvProcessNeighbor[i].index[j];
-            const bool foundIndex =
-                findIndexInSendNodes(nodeIndex, sendProcessNeighbor, indexOfProcessNeighborSend, indexInSendBuffer);
-            if (foundIndex) {
-                edgeNodes.emplace_back(i, j, indexOfProcessNeighborSend, indexInSendBuffer);
+    for (uint neighbor = 0; neighbor < (unsigned int)(recvProcessNeighbor.size()); neighbor++) {
+        for (int index = 0; index < recvProcessNeighbor[neighbor].numberOfNodes; index++) {
+            if (auto sendIndices = findIndexInSendNodes(recvProcessNeighbor[neighbor].index[index], sendProcessNeighbor)) {
+                edgeNodes.emplace_back(neighbor, index, sendIndices->first, sendIndices->second);
             }
         }
     }
 }
 
-bool findIndexInSendNodes(const int nodeIndex, const std::vector<ProcessNeighbor27> &sendProcessNeighbor,
-                          int &indexOfProcessNeighborSend, int &indexInSendBuffer)
+std::optional<std::pair<int, int>> findIndexInSendNodes(const int nodeIndex,
+                                                        const std::vector<ProcessNeighbor27> &sendProcessNeighbor)
 {
     for (uint neighbor = 0; neighbor < (unsigned int)sendProcessNeighbor.size(); neighbor++) {
         for (int node = 0; node < sendProcessNeighbor[neighbor].numberOfNodes; node++) {
             if (sendProcessNeighbor[neighbor].index[node] == nodeIndex) {
-                indexOfProcessNeighborSend = neighbor;
-                indexInSendBuffer = node;
-                return true;
+                return std::pair<int, int>(neighbor, node);
             }
         }
     }
-    return false;
+    return std::nullopt;
 }
 
 } // namespace vf::gpu
