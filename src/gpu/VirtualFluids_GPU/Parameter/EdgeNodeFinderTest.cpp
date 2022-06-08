@@ -15,8 +15,8 @@ static std::shared_ptr<Parameter> initParameterClass()
     return std::make_shared<Parameter>(config, 1, 0);
 }
 
-static bool compareEdgeNodesRecv(std::vector<LBMSimulationParameter::EdgeNodePositions> &actual,
-                                 std::vector<std::pair<int, int>> &expected)
+bool compareEdgeNodesRecv(const std::vector<LBMSimulationParameter::EdgeNodePositions> &actual,
+                          const std::vector<std::pair<int, int>> &expected)
 {
     for (int i = 0; i < (int)expected.size(); i++) {
         if (actual[i].indexOfProcessNeighborRecv != expected[i].first) {
@@ -29,8 +29,8 @@ static bool compareEdgeNodesRecv(std::vector<LBMSimulationParameter::EdgeNodePos
     return true;
 }
 
-static bool compareEdgeNodesSend(std::vector<LBMSimulationParameter::EdgeNodePositions> &actual,
-                                 std::vector<std::pair<int, int>> &expected)
+bool compareEdgeNodesSend(const std::vector<LBMSimulationParameter::EdgeNodePositions> &actual,
+                          const std::vector<std::pair<int, int>> &expected)
 {
     for (int i = 0; i < (int)expected.size(); i++) {
         if (actual[i].indexOfProcessNeighborSend != expected[i].first) {
@@ -47,7 +47,7 @@ class EdgeNodeFinderTest_findEdgeNodes : public testing::Test
 {
 protected:
     std::shared_ptr<Parameter> para;
-    int level = 0;
+    const int level = 0;
 
 private:
     void SetUp() override
@@ -63,8 +63,8 @@ TEST_F(EdgeNodeFinderTest_findEdgeNodes, shouldReturnCorrectVectorForXY)
     para->parH[level]->sendProcessNeighborY.push_back(ProcessNeighbor27());
     para->parH[level]->sendProcessNeighborY.push_back(ProcessNeighbor27());
 
-    int numRecvNeighbor = (int)para->parH[level]->recvProcessNeighborX.size() - 1;
-    int numSendNeighbor = (int)para->parH[level]->sendProcessNeighborY.size() - 1;
+    const int numRecvNeighbor = (int)para->parH[level]->recvProcessNeighborX.size() - 1;
+    const int numSendNeighbor = (int)para->parH[level]->sendProcessNeighborY.size() - 1;
 
     const int sizeRecv = 6;
     const int sizeSend = 10;
@@ -79,13 +79,13 @@ TEST_F(EdgeNodeFinderTest_findEdgeNodes, shouldReturnCorrectVectorForXY)
 
     vf::gpu::findEdgeNodesCommMultiGPU(para);
 
-    std::vector<std::pair<int, int>> expectedEdgeNodesXtoYRecv = { std::pair(numRecvNeighbor, 0),
-                                                                   std::pair(numRecvNeighbor, 4),
-                                                                   std::pair(numRecvNeighbor, 5) };
+    const std::vector<std::pair<int, int>> expectedEdgeNodesXtoYRecv = { std::pair(numRecvNeighbor, 0),
+                                                                         std::pair(numRecvNeighbor, 4),
+                                                                         std::pair(numRecvNeighbor, 5) };
 
-    std::vector<std::pair<int, int>> expectedEdgeNodesXtoYSend = { std::pair(numSendNeighbor, 1),
-                                                                   std::pair(numSendNeighbor, 6),
-                                                                   std::pair(numSendNeighbor, 4) };
+    const std::vector<std::pair<int, int>> expectedEdgeNodesXtoYSend = { std::pair(numSendNeighbor, 1),
+                                                                         std::pair(numSendNeighbor, 6),
+                                                                         std::pair(numSendNeighbor, 4) };
 
     EXPECT_THAT(para->parH[level]->edgeNodesXtoY.size(), testing::Eq(expectedEdgeNodesXtoYRecv.size()));
     EXPECT_TRUE(compareEdgeNodesRecv(para->parH[level]->edgeNodesXtoY, expectedEdgeNodesXtoYRecv))
@@ -100,8 +100,8 @@ TEST_F(EdgeNodeFinderTest_findEdgeNodes, shouldReturnCorrectVectorForXZ)
     para->parH[level]->sendProcessNeighborZ.push_back(ProcessNeighbor27());
     para->parH[level]->sendProcessNeighborZ.push_back(ProcessNeighbor27());
 
-    int numRecvNeighbor = (int)para->parH[level]->recvProcessNeighborX.size() - 1;
-    int numSendNeighbor = (int)para->parH[level]->sendProcessNeighborZ.size() - 1;
+    const int numRecvNeighbor = (int)para->parH[level]->recvProcessNeighborX.size() - 1;
+    const int numSendNeighbor = (int)para->parH[level]->sendProcessNeighborZ.size() - 1;
 
     const int sizeRecv = 10;
     const int sizeSend = 6;
@@ -116,12 +116,12 @@ TEST_F(EdgeNodeFinderTest_findEdgeNodes, shouldReturnCorrectVectorForXZ)
 
     vf::gpu::findEdgeNodesCommMultiGPU(para);
 
-    std::vector<std::pair<int, int>> expectedEdgeNodesXtoZRecv = { std::pair(numRecvNeighbor, 1),
-                                                                   std::pair(numRecvNeighbor, 4),
-                                                                   std::pair(numRecvNeighbor, 6) };
-    std::vector<std::pair<int, int>> expectedEdgeNodesXtoZSend = { std::pair(numSendNeighbor, 0),
-                                                                   std::pair(numSendNeighbor, 5),
-                                                                   std::pair(numSendNeighbor, 4) };
+    const std::vector<std::pair<int, int>> expectedEdgeNodesXtoZRecv = { std::pair(numRecvNeighbor, 1),
+                                                                         std::pair(numRecvNeighbor, 4),
+                                                                         std::pair(numRecvNeighbor, 6) };
+    const std::vector<std::pair<int, int>> expectedEdgeNodesXtoZSend = { std::pair(numSendNeighbor, 0),
+                                                                         std::pair(numSendNeighbor, 5),
+                                                                         std::pair(numSendNeighbor, 4) };
 
     EXPECT_THAT(para->parH[level]->edgeNodesXtoZ.size(), testing::Eq(expectedEdgeNodesXtoZRecv.size()));
     EXPECT_TRUE(compareEdgeNodesRecv(para->parH[level]->edgeNodesXtoZ, expectedEdgeNodesXtoZRecv))
@@ -154,10 +154,12 @@ TEST_F(EdgeNodeFinderTest_findEdgeNodes, shouldReturnCorrectVectorForYZ)
 
     vf::gpu::findEdgeNodesCommMultiGPU(para);
 
-    std::vector<std::pair<int, int>> expectedEdgeNodesYtoZRecv = { std::pair(0, 1), std::pair(0, 2), std::pair(0, 4),
-                                                                   std::pair(0, 6), std::pair(0, 8) };
-    std::vector<std::pair<int, int>> expectedEdgeNodesYtoZSend = { std::pair(0, 0), std::pair(1, 2), std::pair(0, 5),
-                                                                   std::pair(0, 4), std::pair(1, 4) };
+    const std::vector<std::pair<int, int>> expectedEdgeNodesYtoZRecv = { std::pair(0, 1), std::pair(0, 2),
+                                                                         std::pair(0, 4), std::pair(0, 6),
+                                                                         std::pair(0, 8) };
+    const std::vector<std::pair<int, int>> expectedEdgeNodesYtoZSend = { std::pair(0, 0), std::pair(1, 2),
+                                                                         std::pair(0, 5), std::pair(0, 4),
+                                                                         std::pair(1, 4) };
 
     EXPECT_THAT(para->parH[level]->edgeNodesYtoZ.size(), testing::Eq(expectedEdgeNodesYtoZRecv.size()));
     EXPECT_TRUE(compareEdgeNodesRecv(para->parH[level]->edgeNodesYtoZ, expectedEdgeNodesYtoZRecv))
