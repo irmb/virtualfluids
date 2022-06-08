@@ -12,6 +12,8 @@
 #include "Parameter/CudaStreamManager.h"
 #include "Parameter/EdgeNodeFinder.h"
 #include "GPU/GPU_Interface.h"
+#include "GPU/KineticEnergyAnalyzer.h"
+#include "GPU/EnstrophyAnalyzer.h"
 #include "basics/utilities/UbFileOutputASCII.h"
 //////////////////////////////////////////////////////////////////////////
 #include "Output/MeasurePointWriter.hpp"
@@ -55,386 +57,380 @@
 
 #include <logger/Logger.h>
 
+#include "Output/FileWriter.h"
 
-Simulation::Simulation(vf::gpu::Communicator& communicator) : communicator(communicator)
-{
-
-}
 
 std::string getFileName(const std::string& fname, int step, int myID)
 {
     return std::string(fname + "_Restart_" + UbSystem::toString(myID) + "_" +  UbSystem::toString(step));
 }
 
-
-void Simulation::setFactories(std::shared_ptr<KernelFactory> kernelFactory, std::shared_ptr<PreProcessorFactory> preProcessorFactory)
+Simulation::Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> memoryManager, vf::gpu::Communicator &communicator,
+                       std::unique_ptr<KernelFactory> &&kernelFactory_,
+                       std::unique_ptr<PreProcessorFactory> &&preProcessorFactory_, GridProvider &gridProvider)
+    : para(para), cudaManager(memoryManager), communicator(communicator), kernelFactory(std::move(kernelFactory_)),
+      preProcessorFactory(std::move(preProcessorFactory_)), dataWriter(std::make_unique<FileWriter>())
 {
-	this->kernelFactory = kernelFactory;
-	this->preProcessorFactory = preProcessorFactory;
+    gridProvider.initalGridInformations();
+
+    vf::cuda::verifyAndSetDevice(
+        communicator.mapCudaDevice(para->getMyID(), para->getNumprocs(), para->getDevices(), para->getMaxDev()));
+
+    para->initLBMSimulationParameter();
+
+    gridProvider.allocAndCopyForcing();
+    gridProvider.allocAndCopyQuadricLimiters();
+    if (para->getKernelNeedsFluidNodeIndicesToRun()) {
+        gridProvider.allocArrays_fluidNodeIndices();
+        gridProvider.allocArrays_fluidNodeIndicesBorder();
+    }
+
+    gridProvider.setDimensions();
+    gridProvider.setBoundingBox();
+
+    para->setRe(para->getVelocity() * (real)1.0 / para->getViscosity());
+    para->setlimitOfNodesForVTK(30000000); // max 30 Million nodes per VTK file
+    if (para->getDoRestart())
+        para->setStartTurn(para->getTimeDoRestart());
+    else
+        para->setStartTurn((unsigned int)0); // 100000
+
+    restart_object = std::make_shared<ASCIIRestartObject>();
+    //////////////////////////////////////////////////////////////////////////
+    output.setName(para->getFName() + StringUtil::toString<int>(para->getMyID()) + ".log");
+    if (para->getMyID() == 0)
+        output.setConsoleOut(true);
+    output.clearLogFile();
+    //////////////////////////////////////////////////////////////////////////
+    // CUDA streams
+    if (para->getUseStreams()) {
+        para->getStreamManager()->launchStreams(2u);
+        para->getStreamManager()->createCudaEvents();
+    }
+    //////////////////////////////////////////////////////////////////////////
+    //
+    // output << para->getNeedInterface().at(0) << "\n";
+    // output << para->getNeedInterface().at(1) << "\n";
+    // output << para->getNeedInterface().at(2) << "\n";
+    // output << para->getNeedInterface().at(3) << "\n";
+    // output << para->getNeedInterface().at(4) << "\n";
+    // output << para->getNeedInterface().at(5) << "\n";
+    //////////////////////////////////////////////////////////////////////////
+    // output << "      \t GridX \t GridY \t GridZ \t DistX \t DistY \t DistZ\n";
+    // for (int testout=0; testout<=para->getMaxLevel();testout++)
+    //{
+    //   output << "Level " << testout << ":  " << para->getGridX().at(testout) << " \t " <<
+    //   para->getGridY().at(testout) << " \t " << para->getGridZ().at(testout) << " \t " <<
+    //   para->getDistX().at(testout) << " \t " << para->getDistY().at(testout) << " \t " <<
+    //   para->getDistZ().at(testout) << " \n";
+    //}
+    //////////////////////////////////////////////////////////////////////////
+    output << "LB_Modell:  D3Q" << para->getD3Qxx() << "\n";
+    output << "Re:         " << para->getRe() << "\n";
+    output << "vis_ratio:  " << para->getViscosityRatio() << "\n";
+    output << "u0_ratio:   " << para->getVelocityRatio() << "\n";
+    output << "delta_rho:  " << para->getDensityRatio() << "\n";
+    output << "QuadricLimiters:  " << para->getQuadricLimitersHost()[0] << "\t" << para->getQuadricLimitersHost()[1]
+           << "\t" << para->getQuadricLimitersHost()[2] << "\n";
+    if (para->getUseAMD())
+        output << "AMD SGS model:  " << para->getSGSConstant() << "\n";
+    //////////////////////////////////////////////////////////////////////////
+
+    /////////////////////////////////////////////////////////////////////////
+    cudaManager->setMemsizeGPU(0, true);
+    //////////////////////////////////////////////////////////////////////////
+    allocNeighborsOffsetsScalesAndBoundaries(gridProvider);
+
+    for (SPtr<PreCollisionInteractor> actuator : para->getActuators()) {
+        actuator->init(para.get(), &gridProvider, cudaManager.get());
+    }
+
+    for (SPtr<PreCollisionInteractor> probe : para->getProbes()) {
+        probe->init(para.get(), &gridProvider, cudaManager.get());
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    // Kernel init
+    //////////////////////////////////////////////////////////////////////////
+    output << "make Kernels  "
+           << "\n";
+    kernels = kernelFactory->makeKernels(para);
+
+    output << "make AD Kernels  "
+           << "\n";
+    if (para->getDiffOn())
+        adKernels = kernelFactory->makeAdvDifKernels(para);
+
+    //////////////////////////////////////////////////////////////////////////
+    // PreProcessor init
+    //////////////////////////////////////////////////////////////////////////
+    output << "make Preprocessors  "
+           << "\n";
+    std::vector<PreProcessorType> preProTypes = kernels.at(0)->getPreProcessorTypes();
+    preProcessor = preProcessorFactory->makePreProcessor(preProTypes, para);
+
+    //////////////////////////////////////////////////////////////////////////
+    // Particles preprocessing
+    //////////////////////////////////////////////////////////////////////////
+    if (para->getCalcParticle()) {
+        rearrangeGeometry(para.get(), cudaManager.get());
+        //////////////////////////////////////////////////////////////////////////
+        allocParticles(para.get(), cudaManager.get());
+        //////////////////////////////////////////////////////////////////////////
+        ////CUDA random number generation
+        // para->cudaAllocRandomValues();
+
+        ////init
+        // initRandomDevice(para->getRandomState(),
+        // para->getParD(0)->plp.numberOfParticles,
+        // para->getParD(0)->numberofthreads);
+
+        ////generate random values
+        // generateRandomValuesDevice(  para->getRandomState(),
+        // para->getParD(0)->plp.numberOfParticles,
+        // para->getParD(0)->plp.randomLocationInit,
+        // para->getParD(0)->numberofthreads);
+
+        //////////////////////////////////////////////////////////////////////////////
+        initParticles(para.get());
+    }
+    ////////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////
+    // Allocate Memory for Drag Lift Calculation
+    //////////////////////////////////////////////////////////////////////////
+    if (para->getCalcDragLift())
+        allocDragLift(para.get(), cudaManager.get());
+
+    //////////////////////////////////////////////////////////////////////////
+    // Allocate Memory for Plane Conc Calculation
+    //////////////////////////////////////////////////////////////////////////
+    // if (para->getDiffOn()) allocPlaneConc(para.get(), cudaManager.get());
+
+    //////////////////////////////////////////////////////////////////////////
+    // Median
+    //////////////////////////////////////////////////////////////////////////
+    if (para->getCalcMedian()) {
+        output << "alloc Calculation for Mean Values  "
+               << "\n";
+        if (para->getDiffOn())
+            allocMedianAD(para.get(), cudaManager.get());
+        else
+            allocMedian(para.get(), cudaManager.get());
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    // Turbulence Intensity
+    //////////////////////////////////////////////////////////////////////////
+    if (para->getCalcTurbulenceIntensity()) {
+        output << "alloc arrays for calculating Turbulence Intensity  "
+               << "\n";
+        allocTurbulenceIntensity(para.get(), cudaManager.get());
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    // allocate memory and initialize 2nd, 3rd and higher order moments
+    //////////////////////////////////////////////////////////////////////////
+    if (para->getCalc2ndOrderMoments()) {
+        alloc2ndMoments(para.get(), cudaManager.get());
+        init2ndMoments(para.get());
+    }
+    if (para->getCalc3rdOrderMoments()) {
+        alloc3rdMoments(para.get(), cudaManager.get());
+        init3rdMoments(para.get());
+    }
+    if (para->getCalcHighOrderMoments()) {
+        allocHigherOrderMoments(para.get(), cudaManager.get());
+        initHigherOrderMoments(para.get());
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    // MeasurePoints
+    //////////////////////////////////////////////////////////////////////////
+    if (para->getUseMeasurePoints()) {
+        output << "read measure points...";
+        readMeasurePoints(para.get(), cudaManager.get());
+        output << "done.\n";
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    // Porous Media
+    //////////////////////////////////////////////////////////////////////////
+    if (para->getSimulatePorousMedia()) {
+        output << "define area(s) of porous media...";
+        porousMedia();
+        kernelFactory->setPorousMedia(pm);
+        output << "done.\n";
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    // enSightGold
+    //////////////////////////////////////////////////////////////////////////
+    // excludeGridInterfaceNodesForMirror(para, 7);
+    ////output << "print case file...";
+    // printCaseFile(para);
+    ////output << "done.\n";
+    ////output << "print geo file...";
+    // printGeoFile(para, true);  //true for binary
+    ////output << "done.\n";
+
+    //////////////////////////////////////////////////////////////////////////
+    // Forcing
+    //////////////////////////////////////////////////////////////////////////
+    ////allocVeloForForcing(para);
+    // output << "new object forceCalulator  " << "\n";
+    // forceCalculator = std::make_shared<ForceCalculations>(para.get());
+
+    //////////////////////////////////////////////////////////////////////////
+    // output << "define the Grid..." ;
+    // defineGrid(para, communicator);
+    ////allocateMemory();
+    // output << "done.\n";
+
+    output << "init lattice...";
+    initLattice(para, preProcessor, cudaManager);
+    output << "done.\n";
+
+    // output << "set geo for Q...\n" ;
+    // setGeoForQ();
+    // output << "done.\n";
+
+    // if (maxlevel>1)
+    //{
+    // output << "find Qs...\n" ;
+    // findQ27(para);
+    // output << "done.\n";
+    //}
+
+    // if (para->getDiffOn()==true)
+    //{
+    //   output << "define TempBC...\n" ;
+    //   findTempSim(para);
+    //   output << "done.\n";
+
+    //   output << "define TempVelBC...\n" ;
+    //   findTempVelSim(para);
+    //   output << "done.\n";
+
+    //   output << "define TempPressBC...\n" ;
+    //   findTempPressSim(para);
+    //   output << "done.\n";
+    //}
+
+    // output << "find Qs-BC...\n" ;
+    // findBC27(para);
+    // output << "done.\n";
+
+    // output << "find Press-BC...\n" ;
+    // findPressQShip(para);
+    // output << "done.\n";
+
+    //////////////////////////////////////////////////////////////////////////
+    // find indices of corner nodes for multiGPU communication
+    //////////////////////////////////////////////////////////////////////////
+    if (para->getDevices().size() > 2) {
+        output << "Find indices of edge nodes for multiGPU communication ...";
+        vf::gpu::findEdgeNodesCommMultiGPU(para);
+        output << "done.\n";
+    }
+    //////////////////////////////////////////////////////////////////////////
+    // Memory alloc for CheckPoint / Restart
+    //////////////////////////////////////////////////////////////////////////
+    if (para->getDoCheckPoint() || para->getDoRestart()) {
+        output << "Alloc Memory for CheckPoint / Restart...";
+        for (int lev = para->getCoarse(); lev <= para->getFine(); lev++) {
+            cudaManager->cudaAllocFsForCheckPointAndRestart(lev);
+        }
+        output << "done.\n";
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    // Restart
+    //////////////////////////////////////////////////////////////////////////
+    if (para->getDoRestart()) {
+        output << "Restart...\n...get the Object...\n";
+
+        const auto name = getFileName(para->getFName(), para->getTimeDoRestart(), para->getMyID());
+        restart_object->deserialize(name, para);
+
+        output << "...copy Memory for Restart...\n";
+        for (int lev = para->getCoarse(); lev <= para->getFine(); lev++) {
+            //////////////////////////////////////////////////////////////////////////
+            cudaManager->cudaCopyFsForRestart(lev);
+            //////////////////////////////////////////////////////////////////////////
+            // macroscopic values
+            CalcMacSP27(para->getParD(lev)->vx_SP, para->getParD(lev)->vy_SP, para->getParD(lev)->vz_SP,
+                        para->getParD(lev)->rho_SP, para->getParD(lev)->press_SP, para->getParD(lev)->geoSP,
+                        para->getParD(lev)->neighborX_SP, para->getParD(lev)->neighborY_SP,
+                        para->getParD(lev)->neighborZ_SP, para->getParD(lev)->size_Mat_SP,
+                        para->getParD(lev)->numberofthreads, para->getParD(lev)->d0SP.f[0],
+                        para->getParD(lev)->evenOrOdd);
+            getLastCudaError("Kernel CalcMacSP27 execution failed");
+            //////////////////////////////////////////////////////////////////////////
+            // test...should not work...and does not
+            // para->getEvenOrOdd(lev)==false;
+        }
+        output << "done.\n";
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    // Init UpdateGrid
+    //////////////////////////////////////////////////////////////////////////
+    this->updateGrid27 = std::make_unique<UpdateGrid27>(para, communicator, cudaManager, pm, kernels);
+
+    //////////////////////////////////////////////////////////////////////////
+    // Print Init
+    //////////////////////////////////////////////////////////////////////////
+    output << "Print files Init...";
+    dataWriter->writeInit(para, cudaManager);
+    if (para->getCalcParticle())
+        copyAndPrintParticles(para.get(), cudaManager.get(), 0, true);
+    output << "done.\n";
+
+    //////////////////////////////////////////////////////////////////////////
+    output << "used Device Memory: " << cudaManager->getMemsizeGPU() / 1000000.0 << " MB\n";
+    // std::cout << "Process " << communicator.getPID() <<": used device memory" << cudaManager->getMemsizeGPU() /
+    // 1000000.0 << " MB\n" << std::endl;
+    //////////////////////////////////////////////////////////////////////////
+
+    // InterfaceDebugWriter::writeInterfaceLinesDebugCF(para.get());
+    // InterfaceDebugWriter::writeInterfaceLinesDebugFC(para.get());
+
+    // writers for version with communication hiding
+    //    if(para->getNumprocs() > 1 && para->getUseStreams()){
+    //        InterfaceDebugWriter::writeInterfaceFCC_Send(para.get());
+    //        InterfaceDebugWriter::writeInterfaceCFC_Recv(para.get());
+    //        InterfaceDebugWriter::writeSendNodesStream(para.get());
+    //        InterfaceDebugWriter::writeRecvNodesStream(para.get());
+    //        EdgeNodeDebugWriter::writeEdgeNodesXZ_Send(para);
+    //        EdgeNodeDebugWriter::writeEdgeNodesXZ_Recv(para);
+    //    }
 }
 
 void Simulation::addKineticEnergyAnalyzer(uint tAnalyse)
 {
-    this->kineticEnergyAnalyzer = std::make_shared<KineticEnergyAnalyzer>(this->para, tAnalyse);
+    this->kineticEnergyAnalyzer = std::make_unique<KineticEnergyAnalyzer>(this->para, tAnalyse);
 }
 
 void Simulation::addEnstrophyAnalyzer(uint tAnalyse)
 {
-    this->enstrophyAnalyzer = std::make_shared<EnstrophyAnalyzer>(this->para, tAnalyse);
+    this->enstrophyAnalyzer = std::make_unique<EnstrophyAnalyzer>(this->para, tAnalyse);
 }
 
-
-void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std::shared_ptr<DataWriter> dataWriter, std::shared_ptr<CudaMemoryManager> cudaManager)
+void Simulation::setDataWriter(std::unique_ptr<DataWriter>&& dataWriter)
 {
-   this->dataWriter = dataWriter;
-   this->gridProvider = gridProvider;
-   this->cudaManager = cudaManager;
-   gridProvider->initalGridInformations();
-   this->para = para;
-
-   vf::cuda::verifyAndSetDevice(communicator.mapCudaDevice(para->getMyID(), para->getNumprocs(), para->getDevices(), para->getMaxDev()));
-   
-   para->initLBMSimulationParameter();
-
-   gridProvider->allocAndCopyForcing();
-   gridProvider->allocAndCopyQuadricLimiters();
-   if (para->getKernelNeedsFluidNodeIndicesToRun()) {
-       gridProvider->allocArrays_fluidNodeIndices();
-       gridProvider->allocArrays_fluidNodeIndicesBorder();
-   }
-
-   gridProvider->setDimensions();
-   gridProvider->setBoundingBox();
-
-   para->setRe(para->getVelocity() * (real)1.0 / para->getViscosity());
-   para->setlimitOfNodesForVTK(30000000); //max 30 Million nodes per VTK file
-   if (para->getDoRestart())
-       para->setStartTurn(para->getTimeDoRestart());
-   else
-       para->setStartTurn((unsigned int)0); //100000
-
-   restart_object = std::make_shared<ASCIIRestartObject>();
-   //////////////////////////////////////////////////////////////////////////
-   output.setName(para->getFName() + StringUtil::toString<int>(para->getMyID()) + ".log");
-   if(para->getMyID() == 0) output.setConsoleOut(true);
-   output.clearLogFile();
-   //////////////////////////////////////////////////////////////////////////
-   // CUDA streams
-   if (para->getUseStreams()) {
-       para->getStreamManager()->launchStreams(2u);
-       para->getStreamManager()->createCudaEvents();
-   }
-   //////////////////////////////////////////////////////////////////////////
-   // 
-   //output << para->getNeedInterface().at(0) << "\n";
-   //output << para->getNeedInterface().at(1) << "\n";
-   //output << para->getNeedInterface().at(2) << "\n";
-   //output << para->getNeedInterface().at(3) << "\n";
-   //output << para->getNeedInterface().at(4) << "\n";
-   //output << para->getNeedInterface().at(5) << "\n";
-   //////////////////////////////////////////////////////////////////////////
-   //output << "      \t GridX \t GridY \t GridZ \t DistX \t DistY \t DistZ\n";
-   //for (int testout=0; testout<=para->getMaxLevel();testout++)
-   //{
-   //   output << "Level " << testout << ":  " << para->getGridX().at(testout) << " \t " << para->getGridY().at(testout) << " \t " << para->getGridZ().at(testout) << " \t " << para->getDistX().at(testout) << " \t " << para->getDistY().at(testout) << " \t " << para->getDistZ().at(testout) << " \n";
-   //}
-   //////////////////////////////////////////////////////////////////////////
-   output << "LB_Modell:  D3Q"<< para->getD3Qxx()          << "\n"; 
-   output << "Re:         "   << para->getRe()             << "\n";
-   output << "vis_ratio:  "   << para->getViscosityRatio() << "\n";
-   output << "u0_ratio:   "   << para->getVelocityRatio()  << "\n";
-   output << "delta_rho:  "   << para->getDensityRatio()   << "\n";
-   output << "QuadricLimiters:  "   << para->getQuadricLimitersHost()[0] << "\t"
-   									<< para->getQuadricLimitersHost()[1] << "\t"
-									<< para->getQuadricLimitersHost()[2] << "\n";
-   if(para->getUseAMD())
-		output << "AMD SGS model:  "   << para->getSGSConstant()   << "\n";
-   //////////////////////////////////////////////////////////////////////////
-
-   /////////////////////////////////////////////////////////////////////////
-   cudaManager->setMemsizeGPU(0, true);
-   //////////////////////////////////////////////////////////////////////////
-   allocNeighborsOffsetsScalesAndBoundaries(gridProvider);
-
-	for( SPtr<PreCollisionInteractor> actuator: para->getActuators()){
-		actuator->init(para.get(), gridProvider.get(), cudaManager.get());
-	}
-
-	for( SPtr<PreCollisionInteractor> probe: para->getProbes()){
-		probe->init(para.get(), gridProvider.get(), cudaManager.get());
-	}
-
-   //////////////////////////////////////////////////////////////////////////
-   //Kernel init
-   //////////////////////////////////////////////////////////////////////////
-   output << "make Kernels  " << "\n";
-   kernels = kernelFactory->makeKernels(para);
-   
-   output << "make AD Kernels  " << "\n";
-   if (para->getDiffOn())
-	   adKernels = kernelFactory->makeAdvDifKernels(para);
-
-   //////////////////////////////////////////////////////////////////////////
-   //PreProcessor init
-   //////////////////////////////////////////////////////////////////////////
-   output << "make Preprocessors  " << "\n";
-   std::vector<PreProcessorType> preProTypes = kernels.at(0)->getPreProcessorTypes();
-   preProcessor = preProcessorFactory->makePreProcessor(preProTypes, para);
-
-   //////////////////////////////////////////////////////////////////////////
-   //Particles preprocessing
-   //////////////////////////////////////////////////////////////////////////
-   if (para->getCalcParticle())
-   {
-	   rearrangeGeometry(para.get(), cudaManager.get());
-	   //////////////////////////////////////////////////////////////////////////
-	   allocParticles(para.get(), cudaManager.get());
-	   //////////////////////////////////////////////////////////////////////////
-	   ////CUDA random number generation
-	   //para->cudaAllocRandomValues();
-
-	   ////init
-	   //initRandomDevice(para->getRandomState(), 
-		  // para->getParD(0)->plp.numberOfParticles, 
-		  // para->getParD(0)->numberofthreads);
-
-	   ////generate random values
-	   //generateRandomValuesDevice(  para->getRandomState(), 
-		  // para->getParD(0)->plp.numberOfParticles, 
-		  // para->getParD(0)->plp.randomLocationInit, 
-		  // para->getParD(0)->numberofthreads);
-
-	   //////////////////////////////////////////////////////////////////////////////
-	   initParticles(para.get());
-   }
-   ////////////////////////////////////////////////////////////////////////////
-
-   //////////////////////////////////////////////////////////////////////////
-   //Allocate Memory for Drag Lift Calculation
-   //////////////////////////////////////////////////////////////////////////
-   if (para->getCalcDragLift()) allocDragLift(para.get(), cudaManager.get());
-
-
-   //////////////////////////////////////////////////////////////////////////
-   //Allocate Memory for Plane Conc Calculation
-   //////////////////////////////////////////////////////////////////////////
-   //if (para->getDiffOn()) allocPlaneConc(para.get(), cudaManager.get());
-
-
-   //////////////////////////////////////////////////////////////////////////
-   //Median
-   //////////////////////////////////////////////////////////////////////////
-   if (para->getCalcMedian())
-   {
-       output << "alloc Calculation for Mean Values  " << "\n";
-	   if (para->getDiffOn())	allocMedianAD(para.get(), cudaManager.get());
-	   else						allocMedian(para.get(), cudaManager.get());
-   }
-
-
-   //////////////////////////////////////////////////////////////////////////
-   // Turbulence Intensity
-   //////////////////////////////////////////////////////////////////////////
-   if (para->getCalcTurbulenceIntensity()) {
-       output << "alloc arrays for calculating Turbulence Intensity  " << "\n";
-       allocTurbulenceIntensity(para.get(), cudaManager.get());
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   //allocate memory and initialize 2nd, 3rd and higher order moments
-   //////////////////////////////////////////////////////////////////////////
-   if (para->getCalc2ndOrderMoments()){  alloc2ndMoments(para.get(), cudaManager.get());         init2ndMoments(para.get());         }
-   if (para->getCalc3rdOrderMoments()){  alloc3rdMoments(para.get(), cudaManager.get());         init3rdMoments(para.get());         }
-   if (para->getCalcHighOrderMoments()){ allocHigherOrderMoments(para.get(), cudaManager.get()); initHigherOrderMoments(para.get()); }
-
-
-   //////////////////////////////////////////////////////////////////////////
-   //MeasurePoints
-   //////////////////////////////////////////////////////////////////////////
-   if (para->getUseMeasurePoints())
-   {
-	   output << "read measure points...";
-	   readMeasurePoints(para.get(), cudaManager.get());
-	   output << "done.\n";
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   //Porous Media
-   //////////////////////////////////////////////////////////////////////////
-   if (para->getSimulatePorousMedia())
-   {
-	   output << "define area(s) of porous media...";
-	   porousMedia();
-	   kernelFactory->setPorousMedia(pm);
-	   output << "done.\n";
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   //enSightGold
-   //////////////////////////////////////////////////////////////////////////
-   //excludeGridInterfaceNodesForMirror(para, 7);
-   ////output << "print case file...";
-   //printCaseFile(para);
-   ////output << "done.\n";
-   ////output << "print geo file...";
-   //printGeoFile(para, true);  //true for binary
-   ////output << "done.\n";
-
-   //////////////////////////////////////////////////////////////////////////
-   //Forcing
-   //////////////////////////////////////////////////////////////////////////
-   ////allocVeloForForcing(para);
-   //output << "new object forceCalulator  " << "\n";
-   //forceCalculator = std::make_shared<ForceCalculations>(para.get());
-
-   //////////////////////////////////////////////////////////////////////////
-   //output << "define the Grid..." ;
-   //defineGrid(para, communicator);
-   ////allocateMemory();
-   //output << "done.\n";
-
-   output << "init lattice..." ;
-   initLattice(para, preProcessor, cudaManager);
-   output << "done.\n";
-
-   //output << "set geo for Q...\n" ;
-   //setGeoForQ();
-   //output << "done.\n";
-
-   //if (maxlevel>1)
-   //{
-      //output << "find Qs...\n" ;
-      //findQ27(para);
-      //output << "done.\n";
-   //}
-
-   //if (para->getDiffOn()==true)
-   //{
-   //   output << "define TempBC...\n" ;
-   //   findTempSim(para);
-   //   output << "done.\n";
-
-   //   output << "define TempVelBC...\n" ;
-   //   findTempVelSim(para);
-   //   output << "done.\n";
-
-   //   output << "define TempPressBC...\n" ;
-   //   findTempPressSim(para);
-   //   output << "done.\n";
-   //}
-
-   //output << "find Qs-BC...\n" ;
-   //findBC27(para);
-   //output << "done.\n";
-
-   //output << "find Press-BC...\n" ;
-   //findPressQShip(para);
-   //output << "done.\n";
-
-   //////////////////////////////////////////////////////////////////////////
-   // find indices of corner nodes for multiGPU communication
-   //////////////////////////////////////////////////////////////////////////
-   if (para->getDevices().size() > 2) {
-       output << "Find indices of edge nodes for multiGPU communication ...";
-       vf::gpu::findEdgeNodesCommMultiGPU(para);
-       output << "done.\n";
-   }
-   //////////////////////////////////////////////////////////////////////////
-   //Memory alloc for CheckPoint / Restart
-   //////////////////////////////////////////////////////////////////////////
-   if (para->getDoCheckPoint() || para->getDoRestart())
-   {
-	   output << "Alloc Memory for CheckPoint / Restart...";
-	   for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
-	   {
-		   cudaManager->cudaAllocFsForCheckPointAndRestart(lev);
-	   }
-	   output << "done.\n";
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   //Restart
-   //////////////////////////////////////////////////////////////////////////
-   if (para->getDoRestart())
-   {
-	   output << "Restart...\n...get the Object...\n";
-
-		const auto name = getFileName(para->getFName(), para->getTimeDoRestart(), para->getMyID());
-		restart_object->deserialize(name, para);
-
-	   output << "...copy Memory for Restart...\n";
-	   for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
-	   {
-		   //////////////////////////////////////////////////////////////////////////
-		   cudaManager->cudaCopyFsForRestart(lev);
-		   //////////////////////////////////////////////////////////////////////////
-		   //macroscopic values
-			CalcMacSP27(para->getParD(lev)->vx_SP,       
-						para->getParD(lev)->vy_SP,        
-						para->getParD(lev)->vz_SP,        
-						para->getParD(lev)->rho_SP, 
-						para->getParD(lev)->press_SP, 
-						para->getParD(lev)->geoSP,       
-						para->getParD(lev)->neighborX_SP, 
-						para->getParD(lev)->neighborY_SP, 
-						para->getParD(lev)->neighborZ_SP,
-						para->getParD(lev)->size_Mat_SP, 
-						para->getParD(lev)->numberofthreads,       
-						para->getParD(lev)->d0SP.f[0],    
-						para->getParD(lev)->evenOrOdd);
-			getLastCudaError("Kernel CalcMacSP27 execution failed"); 
-			//////////////////////////////////////////////////////////////////////////
-			//test...should not work...and does not
-			//para->getEvenOrOdd(lev)==false;
-	   }
-	   output << "done.\n";
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   // Init UpdateGrid
-   //////////////////////////////////////////////////////////////////////////
-   this->updateGrid27 = std::make_unique<UpdateGrid27>(para, communicator, cudaManager, pm, kernels);
-
-   //////////////////////////////////////////////////////////////////////////
-   //Print Init
-   //////////////////////////////////////////////////////////////////////////
-   output << "Print files Init...";
-   dataWriter->writeInit(para, cudaManager);
-   if (para->getCalcParticle()) 
-       copyAndPrintParticles(para.get(), cudaManager.get(), 0, true);
-   output << "done.\n";
-
-   //////////////////////////////////////////////////////////////////////////
-   output << "used Device Memory: " << cudaManager->getMemsizeGPU() / 1000000.0 << " MB\n";
-   // std::cout << "Process " << communicator.getPID() <<": used device memory" << cudaManager->getMemsizeGPU() / 1000000.0 << " MB\n" << std::endl;
-   //////////////////////////////////////////////////////////////////////////
-
-   //InterfaceDebugWriter::writeInterfaceLinesDebugCF(para.get());
-   //InterfaceDebugWriter::writeInterfaceLinesDebugFC(para.get());
-
-   // writers for version with communication hiding
-   //    if(para->getNumprocs() > 1 && para->getUseStreams()){
-   //        InterfaceDebugWriter::writeInterfaceFCC_Send(para.get());
-   //        InterfaceDebugWriter::writeInterfaceCFC_Recv(para.get());
-   //        InterfaceDebugWriter::writeSendNodesStream(para.get());
-   //        InterfaceDebugWriter::writeRecvNodesStream(para.get());
-   //        EdgeNodeDebugWriter::writeEdgeNodesXZ_Send(para);
-   //        EdgeNodeDebugWriter::writeEdgeNodesXZ_Recv(para);
-   //    }
+    dataWriter = std::move(dataWriter);
 }
 
-void Simulation::allocNeighborsOffsetsScalesAndBoundaries(SPtr<GridProvider> &gridProvider)
+
+void Simulation::allocNeighborsOffsetsScalesAndBoundaries(GridProvider &gridProvider)
 {
-    gridProvider->allocArrays_CoordNeighborGeo();
-    gridProvider->allocArrays_OffsetScale();
-    gridProvider->allocArrays_BoundaryValues(); // allocArrays_BoundaryValues() has to be called after allocArrays_OffsetScale() because of initCommunicationArraysForCommAfterFinetoCoarse() 
-    gridProvider->allocArrays_BoundaryQs();
+    gridProvider.allocArrays_CoordNeighborGeo();
+    gridProvider.allocArrays_OffsetScale();
+    gridProvider.allocArrays_BoundaryValues(); // allocArrays_BoundaryValues() has to be called after allocArrays_OffsetScale() because of initCommunicationArraysForCommAfterFinetoCoarse()
+    gridProvider.allocArrays_BoundaryQs();
 }
 
-void Simulation::bulk()
-{
-
-}
 
 void Simulation::run()
 {
@@ -448,7 +444,7 @@ void Simulation::run()
    //turning Ship
    real Pi = (real)3.14159265358979323846;
    real delta_x_F = (real)0.1;
-   real delta_t_F = (real)((double)para->getVelocity() * (double)delta_x_F / (double)3.75); 
+   real delta_t_F = (real)((double)para->getVelocity() * (double)delta_x_F / (double)3.75);
    real delta_t_C = (real)(delta_t_F * pow(2.,para->getMaxLevel()));
    real timesteps_C = (real)(12.5 / delta_t_C);
    real AngularVelocity = (real)(12.5 / timesteps_C * Pi / 180.);
@@ -505,36 +501,36 @@ void Simulation::run()
         {
           for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
           {
-        	  //CalcMedSP27(para->getParD(lev)->vx_SP_Med,       
-        			//	  para->getParD(lev)->vy_SP_Med,        
-        			//	  para->getParD(lev)->vz_SP_Med,        
-        			//	  para->getParD(lev)->rho_SP_Med, 
-        			//	  para->getParD(lev)->press_SP_Med, 
-        			//	  para->getParD(lev)->geoSP,       
-        			//	  para->getParD(lev)->neighborX_SP, 
-        			//	  para->getParD(lev)->neighborY_SP, 
+        	  //CalcMedSP27(para->getParD(lev)->vx_SP_Med,
+        			//	  para->getParD(lev)->vy_SP_Med,
+        			//	  para->getParD(lev)->vz_SP_Med,
+        			//	  para->getParD(lev)->rho_SP_Med,
+        			//	  para->getParD(lev)->press_SP_Med,
+        			//	  para->getParD(lev)->geoSP,
+        			//	  para->getParD(lev)->neighborX_SP,
+        			//	  para->getParD(lev)->neighborY_SP,
         			//	  para->getParD(lev)->neighborZ_SP,
-        			//	  para->getParD(lev)->size_Mat_SP, 
-        			//	  para->getParD(lev)->numberofthreads,       
-        			//	  para->getParD(lev)->d0SP.f[0],    
+        			//	  para->getParD(lev)->size_Mat_SP,
+        			//	  para->getParD(lev)->numberofthreads,
+        			//	  para->getParD(lev)->d0SP.f[0],
         			//	  para->getParD(lev)->evenOrOdd);
-        	  //getLastCudaError("CalcMacSP27 execution failed"); 
-        
-        	  CalcMedCompSP27(para->getParD(lev)->vx_SP_Med,       
-        					  para->getParD(lev)->vy_SP_Med,        
-        					  para->getParD(lev)->vz_SP_Med,        
-        					  para->getParD(lev)->rho_SP_Med, 
-        					  para->getParD(lev)->press_SP_Med, 
-        					  para->getParD(lev)->geoSP,       
-        					  para->getParD(lev)->neighborX_SP, 
-        					  para->getParD(lev)->neighborY_SP, 
+        	  //getLastCudaError("CalcMacSP27 execution failed");
+
+        	  CalcMedCompSP27(para->getParD(lev)->vx_SP_Med,
+        					  para->getParD(lev)->vy_SP_Med,
+        					  para->getParD(lev)->vz_SP_Med,
+        					  para->getParD(lev)->rho_SP_Med,
+        					  para->getParD(lev)->press_SP_Med,
+        					  para->getParD(lev)->geoSP,
+        					  para->getParD(lev)->neighborX_SP,
+        					  para->getParD(lev)->neighborY_SP,
         					  para->getParD(lev)->neighborZ_SP,
-        					  para->getParD(lev)->size_Mat_SP, 
-        					  para->getParD(lev)->numberofthreads,       
-        					  para->getParD(lev)->d0SP.f[0],    
+        					  para->getParD(lev)->size_Mat_SP,
+        					  para->getParD(lev)->numberofthreads,
+        					  para->getParD(lev)->d0SP.f[0],
         					  para->getParD(lev)->evenOrOdd);
-        	  getLastCudaError("CalcMacMedCompSP27 execution failed"); 
-        
+        	  getLastCudaError("CalcMacMedCompSP27 execution failed");
+
           }
         }
 
@@ -550,10 +546,10 @@ void Simulation::run()
 				    para->getParD(lev)->vx_mean,
 				    para->getParD(lev)->vy_mean,
 				    para->getParD(lev)->vz_mean,
-				    para->getParD(lev)->d0SP.f[0], 
+				    para->getParD(lev)->d0SP.f[0],
 				    para->getParD(lev)->geoSP,
 				    para->getParD(lev)->neighborX_SP,
-				    para->getParD(lev)->neighborY_SP, 
+				    para->getParD(lev)->neighborY_SP,
 				    para->getParD(lev)->neighborZ_SP,
 				    para->getParD(lev)->size_Mat_SP,
 				    para->getParD(lev)->evenOrOdd,
@@ -573,16 +569,16 @@ void Simulation::run()
         {
 			averageTimer->stopTimer();
             //////////////////////////////////////////////////////////////////////////
-            
+
             if( para->getDoCheckPoint() )
             {
                 output << "Copy data for CheckPoint t=" << t << "...\n";
-                
+
                 for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
                 {
                     cudaManager->cudaCopyFsForCheckPoint(lev);
                 }
-                
+
                 output << "Write data for CheckPoint t=" << t << "...";
 
 				const auto name = getFileName(para->getFName(), t, para->getMyID());
@@ -620,7 +616,7 @@ void Simulation::run()
                 }
                 t_MP++;
             }
-            
+
             //Copy Measure Values
             if ((t % (unsigned int)para->getclockCycleForMP()) == 0)
             {
@@ -646,44 +642,44 @@ void Simulation::run()
         //////////////////////////////////////////////////////////////////////////////////
         ////get concentration at the plane
         //////////////////////////////////////////////////////////////////////////////////
-        if (para->getDiffOn() && para->getCalcPlaneConc()) 
+        if (para->getDiffOn() && para->getCalcPlaneConc())
         {
             PlaneConcThS27( para->getParD(0)->ConcPlaneIn,
             		       para->getParD(0)->cpTopIndex,
             		       para->getParD(0)->numberOfPointsCpTop,
-            		       para->getParD(0)->geoSP,       
-            		       para->getParD(0)->neighborX_SP, 
-            		       para->getParD(0)->neighborY_SP, 
+            		       para->getParD(0)->geoSP,
+            		       para->getParD(0)->neighborX_SP,
+            		       para->getParD(0)->neighborY_SP,
             		       para->getParD(0)->neighborZ_SP,
-            		       para->getParD(0)->size_Mat_SP, 
-            		       para->getParD(0)->numberofthreads,       
-            		       para->getParD(0)->d27.f[0],    
+            		       para->getParD(0)->size_Mat_SP,
+            		       para->getParD(0)->numberofthreads,
+            		       para->getParD(0)->d27.f[0],
             		       para->getParD(0)->evenOrOdd);
-            getLastCudaError("PlaneConcThS27 execution failed"); 
+            getLastCudaError("PlaneConcThS27 execution failed");
             PlaneConcThS27( para->getParD(0)->ConcPlaneOut1,
             		        para->getParD(0)->cpBottomIndex,
             		        para->getParD(0)->numberOfPointsCpBottom,
-            		        para->getParD(0)->geoSP,       
-            		        para->getParD(0)->neighborX_SP, 
-            		        para->getParD(0)->neighborY_SP, 
+            		        para->getParD(0)->geoSP,
+            		        para->getParD(0)->neighborX_SP,
+            		        para->getParD(0)->neighborY_SP,
             		        para->getParD(0)->neighborZ_SP,
-            		        para->getParD(0)->size_Mat_SP, 
-            		        para->getParD(0)->numberofthreads,       
-            		        para->getParD(0)->d27.f[0],    
+            		        para->getParD(0)->size_Mat_SP,
+            		        para->getParD(0)->numberofthreads,
+            		        para->getParD(0)->d27.f[0],
             		        para->getParD(0)->evenOrOdd);
-            getLastCudaError("PlaneConcThS27 execution failed"); 
+            getLastCudaError("PlaneConcThS27 execution failed");
             PlaneConcThS27( para->getParD(0)->ConcPlaneOut2,
             		        para->getParD(0)->QPress.kN,
             		        para->getParD(0)->QPress.kQ,
-            		        para->getParD(0)->geoSP,       
-            		        para->getParD(0)->neighborX_SP, 
-            		        para->getParD(0)->neighborY_SP, 
+            		        para->getParD(0)->geoSP,
+            		        para->getParD(0)->neighborX_SP,
+            		        para->getParD(0)->neighborY_SP,
             		        para->getParD(0)->neighborZ_SP,
-            		        para->getParD(0)->size_Mat_SP, 
-            		        para->getParD(0)->numberofthreads,       
-            		        para->getParD(0)->d27.f[0],    
+            		        para->getParD(0)->size_Mat_SP,
+            		        para->getParD(0)->numberofthreads,
+            		        para->getParD(0)->d27.f[0],
             		        para->getParD(0)->evenOrOdd);
-            getLastCudaError("PlaneConcThS27 execution failed"); 
+            getLastCudaError("PlaneConcThS27 execution failed");
             //////////////////////////////////////////////////////////////////////////////////
             ////Calculation of concentration at the plane
             //////////////////////////////////////////////////////////////////////////////////
@@ -722,8 +718,8 @@ void Simulation::run()
                 //////////////////////////////////////////////////////////////////////////
                //if (para->getD3Qxx()==19)
                //{
-                  //CalcMac(para->getParD(lev)->vx,     para->getParD(lev)->vy,       para->getParD(lev)->vz,      para->getParD(lev)->rho, 
-                  //        para->getParD(lev)->geo,    para->getParD(lev)->size_Mat, para->getParD(lev)->gridNX,  para->getParD(lev)->gridNY, 
+                  //CalcMac(para->getParD(lev)->vx,     para->getParD(lev)->vy,       para->getParD(lev)->vz,      para->getParD(lev)->rho,
+                  //        para->getParD(lev)->geo,    para->getParD(lev)->size_Mat, para->getParD(lev)->gridNX,  para->getParD(lev)->gridNY,
                   //        para->getParD(lev)->gridNZ, para->getParD(lev)->d0.f[0],  para->getParD(lev)->evenOrOdd);
                //}
                //else if (para->getD3Qxx()==27)
@@ -731,93 +727,93 @@ void Simulation::run()
 				   //if (para->getCalcMedian() && ((int)t > para->getTimeCalcMedStart()) && ((int)t <= para->getTimeCalcMedEnd()))
 				   //{
 					  // unsigned int tdiff = t - t_prev;
-					  // CalcMacMedSP27(para->getParD(lev)->vx_SP_Med,       
-				   //					  para->getParD(lev)->vy_SP_Med,        
-				   //					  para->getParD(lev)->vz_SP_Med,        
-				   //					  para->getParD(lev)->rho_SP_Med, 
-				   //					  para->getParD(lev)->press_SP_Med, 
-				   //					  para->getParD(lev)->geoSP,       
-				   //					  para->getParD(lev)->neighborX_SP, 
-				   //					  para->getParD(lev)->neighborY_SP, 
+					  // CalcMacMedSP27(para->getParD(lev)->vx_SP_Med,
+				   //					  para->getParD(lev)->vy_SP_Med,
+				   //					  para->getParD(lev)->vz_SP_Med,
+				   //					  para->getParD(lev)->rho_SP_Med,
+				   //					  para->getParD(lev)->press_SP_Med,
+				   //					  para->getParD(lev)->geoSP,
+				   //					  para->getParD(lev)->neighborX_SP,
+				   //					  para->getParD(lev)->neighborY_SP,
 				   //					  para->getParD(lev)->neighborZ_SP,
 				   //					  tdiff,
-				   //					  para->getParD(lev)->size_Mat_SP, 
-				   //					  para->getParD(lev)->numberofthreads,       
+				   //					  para->getParD(lev)->size_Mat_SP,
+				   //					  para->getParD(lev)->numberofthreads,
 				   //					  para->getParD(lev)->evenOrOdd);
-					  // getLastCudaError("CalcMacMedSP27 execution failed"); 
+					  // getLastCudaError("CalcMacMedSP27 execution failed");
 				   //}
 
-				   //CalcMacSP27(para->getParD(lev)->vx_SP,       
-       //                        para->getParD(lev)->vy_SP,        
-       //                        para->getParD(lev)->vz_SP,        
-       //                        para->getParD(lev)->rho_SP, 
-       //                        para->getParD(lev)->press_SP, 
-       //                        para->getParD(lev)->geoSP,       
-       //                        para->getParD(lev)->neighborX_SP, 
-       //                        para->getParD(lev)->neighborY_SP, 
+				   //CalcMacSP27(para->getParD(lev)->vx_SP,
+       //                        para->getParD(lev)->vy_SP,
+       //                        para->getParD(lev)->vz_SP,
+       //                        para->getParD(lev)->rho_SP,
+       //                        para->getParD(lev)->press_SP,
+       //                        para->getParD(lev)->geoSP,
+       //                        para->getParD(lev)->neighborX_SP,
+       //                        para->getParD(lev)->neighborY_SP,
        //                        para->getParD(lev)->neighborZ_SP,
-       //                        para->getParD(lev)->size_Mat_SP, 
-       //                        para->getParD(lev)->numberofthreads,       
-       //                        para->getParD(lev)->d0SP.f[0],    
+       //                        para->getParD(lev)->size_Mat_SP,
+       //                        para->getParD(lev)->numberofthreads,
+       //                        para->getParD(lev)->d0SP.f[0],
        //                        para->getParD(lev)->evenOrOdd);
-       //            getLastCudaError("CalcMacSP27 execution failed"); 
+       //            getLastCudaError("CalcMacSP27 execution failed");
 
-				   
-				   CalcMacCompSP27(para->getParD(lev)->vx_SP,       
-								   para->getParD(lev)->vy_SP,        
-								   para->getParD(lev)->vz_SP,        
-								   para->getParD(lev)->rho_SP, 
-								   para->getParD(lev)->press_SP, 
-								   para->getParD(lev)->geoSP,       
-								   para->getParD(lev)->neighborX_SP, 
-								   para->getParD(lev)->neighborY_SP, 
+
+				   CalcMacCompSP27(para->getParD(lev)->vx_SP,
+								   para->getParD(lev)->vy_SP,
+								   para->getParD(lev)->vz_SP,
+								   para->getParD(lev)->rho_SP,
+								   para->getParD(lev)->press_SP,
+								   para->getParD(lev)->geoSP,
+								   para->getParD(lev)->neighborX_SP,
+								   para->getParD(lev)->neighborY_SP,
 								   para->getParD(lev)->neighborZ_SP,
-								   para->getParD(lev)->size_Mat_SP, 
-								   para->getParD(lev)->numberofthreads,       
-								   para->getParD(lev)->d0SP.f[0],    
+								   para->getParD(lev)->size_Mat_SP,
+								   para->getParD(lev)->numberofthreads,
+								   para->getParD(lev)->d0SP.f[0],
 								   para->getParD(lev)->evenOrOdd);
-                   getLastCudaError("CalcMacSP27 execution failed"); 
+                   getLastCudaError("CalcMacSP27 execution failed");
 
 				   //�berschreiben mit Wandknoten
 				   //SetOutputWallVelocitySP27(  para->getParD(lev)->numberofthreads,
-							//				   para->getParD(lev)->vx_SP,       
-							//				   para->getParD(lev)->vy_SP,        
+							//				   para->getParD(lev)->vx_SP,
+							//				   para->getParD(lev)->vy_SP,
 							//				   para->getParD(lev)->vz_SP,
-							//				   para->getParD(lev)->QGeom.Vx,      
-							//				   para->getParD(lev)->QGeom.Vy,   
+							//				   para->getParD(lev)->QGeom.Vx,
+							//				   para->getParD(lev)->QGeom.Vy,
 							//				   para->getParD(lev)->QGeom.Vz,
-							//				   para->getParD(lev)->QGeom.kQ,      
+							//				   para->getParD(lev)->QGeom.kQ,
 							//				   para->getParD(lev)->QGeom.k,
-							//				   para->getParD(lev)->rho_SP, 
-							//				   para->getParD(lev)->press_SP, 
-							//				   para->getParD(lev)->geoSP,       
-							//				   para->getParD(lev)->neighborX_SP, 
-							//				   para->getParD(lev)->neighborY_SP, 
+							//				   para->getParD(lev)->rho_SP,
+							//				   para->getParD(lev)->press_SP,
+							//				   para->getParD(lev)->geoSP,
+							//				   para->getParD(lev)->neighborX_SP,
+							//				   para->getParD(lev)->neighborY_SP,
 							//				   para->getParD(lev)->neighborZ_SP,
-							//				   para->getParD(lev)->size_Mat_SP, 
-							//				   para->getParD(lev)->d0SP.f[0],    
+							//				   para->getParD(lev)->size_Mat_SP,
+							//				   para->getParD(lev)->d0SP.f[0],
 							//				   para->getParD(lev)->evenOrOdd);
-       //            getLastCudaError("SetOutputWallVelocitySP27 execution failed"); 
+       //            getLastCudaError("SetOutputWallVelocitySP27 execution failed");
 
    				   //SetOutputWallVelocitySP27(  para->getParD(lev)->numberofthreads,
-										//	   para->getParD(lev)->vx_SP,       
-										//	   para->getParD(lev)->vy_SP,        
+										//	   para->getParD(lev)->vx_SP,
+										//	   para->getParD(lev)->vy_SP,
 										//	   para->getParD(lev)->vz_SP,
-										//	   para->getParD(lev)->Qinflow.Vx,      
-										//	   para->getParD(lev)->Qinflow.Vy,   
+										//	   para->getParD(lev)->Qinflow.Vx,
+										//	   para->getParD(lev)->Qinflow.Vy,
 										//	   para->getParD(lev)->Qinflow.Vz,
-										//	   para->getParD(lev)->kInflowQ,      
+										//	   para->getParD(lev)->kInflowQ,
 										//	   para->getParD(lev)->Qinflow.k,
-										//	   para->getParD(lev)->rho_SP, 
-										//	   para->getParD(lev)->press_SP, 
-										//	   para->getParD(lev)->geoSP,       
-										//	   para->getParD(lev)->neighborX_SP, 
-										//	   para->getParD(lev)->neighborY_SP, 
+										//	   para->getParD(lev)->rho_SP,
+										//	   para->getParD(lev)->press_SP,
+										//	   para->getParD(lev)->geoSP,
+										//	   para->getParD(lev)->neighborX_SP,
+										//	   para->getParD(lev)->neighborY_SP,
 										//	   para->getParD(lev)->neighborZ_SP,
-										//	   para->getParD(lev)->size_Mat_SP, 
-										//	   para->getParD(lev)->d0SP.f[0],    
+										//	   para->getParD(lev)->size_Mat_SP,
+										//	   para->getParD(lev)->d0SP.f[0],
 										//	   para->getParD(lev)->evenOrOdd);
-          //         getLastCudaError("SetOutputWallVelocitySP27 execution failed"); 
+          //         getLastCudaError("SetOutputWallVelocitySP27 execution failed");
 
 				 //}
 
@@ -847,29 +843,29 @@ void Simulation::run()
                {
                   if (para->getDiffMod() == 7)
                   {
-                     CalcMacThS7(   para->getParD(lev)->Conc, 
-                                    para->getParD(lev)->geoSP,       
-                                    para->getParD(lev)->neighborX_SP, 
-                                    para->getParD(lev)->neighborY_SP, 
+                     CalcMacThS7(   para->getParD(lev)->Conc,
+                                    para->getParD(lev)->geoSP,
+                                    para->getParD(lev)->neighborX_SP,
+                                    para->getParD(lev)->neighborY_SP,
                                     para->getParD(lev)->neighborZ_SP,
-                                    para->getParD(lev)->size_Mat_SP, 
-                                    para->getParD(lev)->numberofthreads,       
-                                    para->getParD(lev)->d7.f[0],    
+                                    para->getParD(lev)->size_Mat_SP,
+                                    para->getParD(lev)->numberofthreads,
+                                    para->getParD(lev)->d7.f[0],
                                     para->getParD(lev)->evenOrOdd);
-                     getLastCudaError("CalcMacTh7 execution failed"); 
-                  } 
+                     getLastCudaError("CalcMacTh7 execution failed");
+                  }
                   else if (para->getDiffMod() == 27)
                   {
-                     CalcMacThS27(  para->getParD(lev)->Conc, 
-                                    para->getParD(lev)->geoSP,       
-                                    para->getParD(lev)->neighborX_SP, 
-                                    para->getParD(lev)->neighborY_SP, 
+                     CalcMacThS27(  para->getParD(lev)->Conc,
+                                    para->getParD(lev)->geoSP,
+                                    para->getParD(lev)->neighborX_SP,
+                                    para->getParD(lev)->neighborY_SP,
                                     para->getParD(lev)->neighborZ_SP,
-                                    para->getParD(lev)->size_Mat_SP, 
-                                    para->getParD(lev)->numberofthreads,       
-                                    para->getParD(lev)->d27.f[0],    
+                                    para->getParD(lev)->size_Mat_SP,
+                                    para->getParD(lev)->numberofthreads,
+                                    para->getParD(lev)->d27.f[0],
                                     para->getParD(lev)->evenOrOdd);
-                     getLastCudaError("CalcMacTh27 execution failed"); 
+                     getLastCudaError("CalcMacTh27 execution failed");
                   }
 
 				  cudaManager->cudaCopyConcDH(lev);
@@ -971,7 +967,7 @@ void Simulation::run()
 				resetMedian(para.get());
 				/////////////////////////////////
 			}
-            if (para->getCalcTurbulenceIntensity()) 
+            if (para->getCalcTurbulenceIntensity())
 			{
                 uint t_diff = t - t_turbulenceIntensity;
                 calcTurbulenceIntensity(para.get(), cudaManager.get(), t_diff);
@@ -1037,8 +1033,8 @@ void Simulation::run()
 	//	{
 	//		MeasurePointWriter::writeMeasurePoints(para, lev, j, 0);
 	//	}
-	//}                                                  
- //  //////////////////////////////////////////////////////////////////////////  
+	//}
+ //  //////////////////////////////////////////////////////////////////////////
 }
 
 void Simulation::porousMedia()
@@ -1135,7 +1131,7 @@ void Simulation::porousMedia()
 
 }
 
-void Simulation::definePMarea(std::shared_ptr<PorousMedia> pMedia)
+void Simulation::definePMarea(std::shared_ptr<PorousMedia>& pMedia)
 {
 	unsigned int counter = 0;
 	unsigned int level = pMedia->getLevelPM();
@@ -1163,19 +1159,19 @@ void Simulation::definePMarea(std::shared_ptr<PorousMedia> pMedia)
 	output << "definePMarea....cuda alloc PM \n";
 	cudaManager->cudaAllocPorousMedia(pMedia.get(), level);
 	unsigned int *tpmArrayIDs = pMedia->getHostNodeIDsPM();
-	
+
 	output << "definePMarea....copy vector to array \n";
 	for (unsigned int j = 0; j < pMedia->getSizePM(); j++)
 	{
 		tpmArrayIDs[j] = nodeIDsPorousMedia[j];
 	}
-	
+
 	pMedia->setHostNodeIDsPM(tpmArrayIDs);
 	output << "definePMarea....cuda copy PM \n";
 	cudaManager->cudaCopyPorousMedia(pMedia.get(), level);
 }
 
-void Simulation::free()
+Simulation::~Simulation()
 {
 	// Cuda Streams
     if (para->getUseStreams()) {
@@ -1195,7 +1191,7 @@ void Simulation::free()
 		}
 		//para->cudaFreeVeloBC(lev);
 		//para->cudaFreeWallBC(lev);
-		//para->cudaFreeVeloBC(lev); 
+		//para->cudaFreeVeloBC(lev);
 		//para->cudaFreeInlet(lev);
 		//para->cudaFreeOutlet(lev);
 		//para->cudaFreeGeomBC(lev);
