@@ -65,8 +65,8 @@ std::string getFileName(const std::string& fname, int step, int myID)
     return std::string(fname + "_Restart_" + UbSystem::toString(myID) + "_" +  UbSystem::toString(step));
 }
 
-Simulation::Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> memoryManager, vf::gpu::Communicator &communicator,
-                       std::unique_ptr<KernelFactory> &&kernelFactory_,
+Simulation::Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> memoryManager,
+                       vf::gpu::Communicator &communicator, std::unique_ptr<KernelFactory> &&kernelFactory_,
                        std::unique_ptr<PreProcessorFactory> &&preProcessorFactory_, GridProvider &gridProvider)
     : para(para), cudaManager(memoryManager), communicator(communicator), kernelFactory(std::move(kernelFactory_)),
       preProcessorFactory(std::move(preProcessorFactory_)), dataWriter(std::make_unique<FileWriter>())
@@ -330,7 +330,7 @@ Simulation::Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemo
     //////////////////////////////////////////////////////////////////////////
     if (para->getDevices().size() > 2) {
         output << "Find indices of edge nodes for multiGPU communication ...";
-        vf::gpu::findEdgeNodesCommMultiGPU(para);
+        vf::gpu::findEdgeNodesCommMultiGPU(*para);
         output << "done.\n";
     }
     //////////////////////////////////////////////////////////////////////////
