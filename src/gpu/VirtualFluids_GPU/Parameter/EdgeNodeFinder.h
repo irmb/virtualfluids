@@ -44,7 +44,7 @@ class Parameter;
 namespace vf::gpu
 {
 //! \brief Find nodes which are part of communication in multiple coordinate directions
-void findEdgeNodesCommMultiGPU(SPtr<Parameter> parameter);
+void findEdgeNodesCommMultiGPU(Parameter& parameter);
 } // namespace vf::gpu
 
 #endif
