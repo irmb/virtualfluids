@@ -7,42 +7,42 @@
 namespace vf::gpu
 {
 //! \brief Find nodes that are both received in the x-direction and sent in the y-direction
-void findEdgeNodesXY(const int level, SPtr<Parameter> parameter);
+void findEdgeNodesXY(const int level, LBMSimulationParameter& parameterLB);
 //! \brief Find nodes that are both received in the x-direction and sent in the z-direction
-void findEdgeNodesXZ(const int level, SPtr<Parameter> parameter);
+void findEdgeNodesXZ(const int level, LBMSimulationParameter& parameterLB);
 //! \brief Find nodes that are both received in the y-direction and sent in the z-direction
-void findEdgeNodesYZ(const int level, SPtr<Parameter> parameter);
+void findEdgeNodesYZ(const int level, LBMSimulationParameter& parameterLB);
 void findEdgeNodes(const std::vector<ProcessNeighbor27> &recvProcessNeighbor,
                    const std::vector<ProcessNeighbor27> &sendProcessNeighbor,
                    std::vector<LBMSimulationParameter::EdgeNodePositions> &edgeNodes);
 std::optional<std::pair<int, int>> findIndexInSendNodes(const int nodeIndex,
                                                         const std::vector<ProcessNeighbor27> &sendProcessNeighbor);
 
-void findEdgeNodesCommMultiGPU(SPtr<Parameter> parameter)
+void findEdgeNodesCommMultiGPU(Parameter& parameter)
 {
-    for (int level = 0; level <= parameter->getFine(); level++) {
-        findEdgeNodesXY(level, parameter);
-        findEdgeNodesXZ(level, parameter);
-        findEdgeNodesYZ(level, parameter);
+    for (int level = 0; level <= parameter.getFine(); level++) {
+        findEdgeNodesXY(level, *parameter.getParH(level));
+        findEdgeNodesXZ(level, *parameter.getParH(level));
+        findEdgeNodesYZ(level, *parameter.getParH(level));
     }
 }
 
-void findEdgeNodesXY(const int level, SPtr<Parameter> parameter)
+void findEdgeNodesXY(const int level, LBMSimulationParameter& parameterLB)
 {
-    findEdgeNodes(parameter->getParH(level)->recvProcessNeighborX, parameter->getParH(level)->sendProcessNeighborY,
-                  parameter->getParH(level)->edgeNodesXtoY);
+    findEdgeNodes(parameterLB.recvProcessNeighborX, parameterLB.sendProcessNeighborY,
+                  parameterLB.edgeNodesXtoY);
 }
 
-void findEdgeNodesXZ(const int level, SPtr<Parameter> parameter)
+void findEdgeNodesXZ(const int level, LBMSimulationParameter& parameterLB)
 {
-    findEdgeNodes(parameter->getParH(level)->recvProcessNeighborX, parameter->getParH(level)->sendProcessNeighborZ,
-                  parameter->getParH(level)->edgeNodesXtoZ);
+    findEdgeNodes(parameterLB.recvProcessNeighborX, parameterLB.sendProcessNeighborZ,
+                  parameterLB.edgeNodesXtoZ);
 }
 
-void findEdgeNodesYZ(const int level, SPtr<Parameter> parameter)
+void findEdgeNodesYZ(const int level, LBMSimulationParameter& parameterLB)
 {
-    findEdgeNodes(parameter->getParH(level)->recvProcessNeighborY, parameter->getParH(level)->sendProcessNeighborZ,
-                  parameter->getParH(level)->edgeNodesYtoZ);
+    findEdgeNodes(parameterLB.recvProcessNeighborY, parameterLB.sendProcessNeighborZ,
+                  parameterLB.edgeNodesYtoZ);
 }
 
 void findEdgeNodes(const std::vector<ProcessNeighbor27> &recvProcessNeighbor,

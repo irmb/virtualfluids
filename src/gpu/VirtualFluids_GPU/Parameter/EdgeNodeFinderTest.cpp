@@ -77,7 +77,7 @@ TEST_F(EdgeNodeFinderTest_findEdgeNodes, shouldReturnCorrectVectorForXY)
     int sendNeighbors[sizeSend] = { 20, 1, 21, 22, 6, 23, 5, 24, 25, 26 };
     para->parH[level]->sendProcessNeighborY[numSendNeighbor].index = sendNeighbors;
 
-    vf::gpu::findEdgeNodesCommMultiGPU(para);
+    vf::gpu::findEdgeNodesCommMultiGPU(*para);
 
     const std::vector<std::pair<int, int>> expectedEdgeNodesXtoYRecv = { std::pair(numRecvNeighbor, 0),
                                                                          std::pair(numRecvNeighbor, 4),
@@ -114,7 +114,7 @@ TEST_F(EdgeNodeFinderTest_findEdgeNodes, shouldReturnCorrectVectorForXZ)
     int sendNeighbors[sizeSend] = { 1, 2, 3, 4, 5, 6 };
     para->parH[level]->sendProcessNeighborZ[numSendNeighbor].index = sendNeighbors;
 
-    vf::gpu::findEdgeNodesCommMultiGPU(para);
+    vf::gpu::findEdgeNodesCommMultiGPU(*para);
 
     const std::vector<std::pair<int, int>> expectedEdgeNodesXtoZRecv = { std::pair(numRecvNeighbor, 1),
                                                                          std::pair(numRecvNeighbor, 4),
@@ -152,7 +152,7 @@ TEST_F(EdgeNodeFinderTest_findEdgeNodes, shouldReturnCorrectVectorForYZ)
     para->parH[level]->sendProcessNeighborZ[0].index = sendNeighbors1;
     para->parH[level]->sendProcessNeighborZ[1].index = sendNeighbors2;
 
-    vf::gpu::findEdgeNodesCommMultiGPU(para);
+    vf::gpu::findEdgeNodesCommMultiGPU(*para);
 
     const std::vector<std::pair<int, int>> expectedEdgeNodesYtoZRecv = { std::pair(0, 1), std::pair(0, 2),
                                                                          std::pair(0, 4), std::pair(0, 6),
