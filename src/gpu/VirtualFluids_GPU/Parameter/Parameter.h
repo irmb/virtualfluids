@@ -579,7 +579,6 @@ public:
     void setADKernel(std::string adKernel);
 
     // adder
-
     void addActuator(SPtr<PreCollisionInteractor> actuator);
     void addProbe(SPtr<PreCollisionInteractor> probes);
 
@@ -610,7 +609,9 @@ public:
     bool getCalcParticle();
     bool getWriteVeloASCIIfiles();
     bool getCalcPlaneConc();
+    //! \returns index of finest level
     int getFine();
+    //! \returns index of coarsest level
     int getCoarse();
     int getParticleBasicLevel();
     int getParticleInitLevel();
@@ -933,16 +934,7 @@ public:
     void initProcessNeighborsAfterFtoCY(int level);
     void initProcessNeighborsAfterFtoCZ(int level);
 
-    void findEdgeNodesCommMultiGPU();
     bool useReducedCommunicationAfterFtoC{ true };
-
-private:
-    void findEdgeNodesXY(int level);
-    bool findIndexInSendNodesXY(int level, int index, int &indexOfProcessNeighborSend, int &indexInSendBuffer);
-    void findEdgeNodesXZ(int level);
-    bool findIndexInSendNodesXZ(int level, int index, int &indexOfProcessNeighborSend, int &indexInSendBuffer);
-    void findEdgeNodesYZ(int level);
-    bool findIndexInSendNodesYZ(int level, int index, int &indexOfProcessNeighborSend, int &indexInSendBuffer);
 };
 
 #endif
