@@ -2,8 +2,9 @@
 
 #include <filesystem>
 
-#include "basics/config/ConfigurationFile.h"
 #include "EdgeNodeFinder.h"
+#include "Parameter.h"
+#include "basics/config/ConfigurationFile.h"
 
 static std::shared_ptr<Parameter> initParameterClass()
 {
@@ -65,15 +66,15 @@ TEST_F(EdgeNodeFinderTest_findEdgeNodes, shouldReturnCorrectVectorForXY)
     int numRecvNeighbor = (int)para->parH[level]->recvProcessNeighborX.size() - 1;
     int numSendNeighbor = (int)para->parH[level]->sendProcessNeighborY.size() - 1;
 
-    const int sizeRecv                                                     = 6;
-    const int sizeSend                                                     = 10;
+    const int sizeRecv = 6;
+    const int sizeSend = 10;
     para->parH[level]->recvProcessNeighborX[numRecvNeighbor].numberOfNodes = sizeRecv;
     para->parH[level]->sendProcessNeighborY[numSendNeighbor].numberOfNodes = sizeSend;
 
-    int recvNeighbors[sizeRecv]                                    = { 1, 2, 3, 4, 5, 6 };
+    int recvNeighbors[sizeRecv] = { 1, 2, 3, 4, 5, 6 };
     para->parH[level]->recvProcessNeighborX[numRecvNeighbor].index = recvNeighbors;
 
-    int sendNeighbors[sizeSend]                                    = { 20, 1, 21, 22, 6, 23, 5, 24, 25, 26 };
+    int sendNeighbors[sizeSend] = { 20, 1, 21, 22, 6, 23, 5, 24, 25, 26 };
     para->parH[level]->sendProcessNeighborY[numSendNeighbor].index = sendNeighbors;
 
     vf::gpu::findEdgeNodesCommMultiGPU(para);
@@ -102,15 +103,15 @@ TEST_F(EdgeNodeFinderTest_findEdgeNodes, shouldReturnCorrectVectorForXZ)
     int numRecvNeighbor = (int)para->parH[level]->recvProcessNeighborX.size() - 1;
     int numSendNeighbor = (int)para->parH[level]->sendProcessNeighborZ.size() - 1;
 
-    const int sizeRecv                                                     = 10;
-    const int sizeSend                                                     = 6;
+    const int sizeRecv = 10;
+    const int sizeSend = 6;
     para->parH[level]->recvProcessNeighborX[numRecvNeighbor].numberOfNodes = sizeRecv;
     para->parH[level]->sendProcessNeighborZ[numSendNeighbor].numberOfNodes = sizeSend;
 
-    int recvNeighbors[sizeRecv]                                    = { 20, 1, 21, 22, 6, 23, 5, 24, 25, 26 };
+    int recvNeighbors[sizeRecv] = { 20, 1, 21, 22, 6, 23, 5, 24, 25, 26 };
     para->parH[level]->recvProcessNeighborX[numRecvNeighbor].index = recvNeighbors;
 
-    int sendNeighbors[sizeSend]                                    = { 1, 2, 3, 4, 5, 6 };
+    int sendNeighbors[sizeSend] = { 1, 2, 3, 4, 5, 6 };
     para->parH[level]->sendProcessNeighborZ[numSendNeighbor].index = sendNeighbors;
 
     vf::gpu::findEdgeNodesCommMultiGPU(para);
@@ -135,7 +136,7 @@ TEST_F(EdgeNodeFinderTest_findEdgeNodes, shouldReturnCorrectVectorForYZ)
     para->parH[level]->sendProcessNeighborZ.push_back(ProcessNeighbor27());
     para->parH[level]->sendProcessNeighborZ.push_back(ProcessNeighbor27());
 
-    const int sizeRecv  = 10;
+    const int sizeRecv = 10;
     const int sizeSend1 = 6;
     const int sizeSend2 = 5;
 
@@ -143,11 +144,11 @@ TEST_F(EdgeNodeFinderTest_findEdgeNodes, shouldReturnCorrectVectorForYZ)
     para->parH[level]->sendProcessNeighborZ[0].numberOfNodes = sizeSend1;
     para->parH[level]->sendProcessNeighborZ[1].numberOfNodes = sizeSend2;
 
-    int recvNeighbors[sizeRecv]                      = { 20, 1, 9, 22, 6, 23, 5, 24, 11, 26 };
+    int recvNeighbors[sizeRecv] = { 20, 1, 9, 22, 6, 23, 5, 24, 11, 26 };
     para->parH[level]->recvProcessNeighborY[0].index = recvNeighbors;
 
-    int sendNeighbors1[sizeSend1]                    = { 1, 2, 3, 4, 5, 6 };
-    int sendNeighbors2[sizeSend2]                    = { 7, 8, 9, 10, 11 };
+    int sendNeighbors1[sizeSend1] = { 1, 2, 3, 4, 5, 6 };
+    int sendNeighbors2[sizeSend2] = { 7, 8, 9, 10, 11 };
     para->parH[level]->sendProcessNeighborZ[0].index = sendNeighbors1;
     para->parH[level]->sendProcessNeighborZ[1].index = sendNeighbors2;
 

@@ -37,32 +37,14 @@
 #ifndef GPU_EDGENODES_H
 #define GPU_EDGENODES_H
 
-#include <vector>
-
-#include "Core/DataTypes.h"
 #include "basics/PointerDefinitions.h"
-#include "gpu/VirtualFluids_GPU/LBM/LB.h"
-#include "Parameter.h"
+
+class Parameter;
 
 namespace vf::gpu
 {
 //! \brief Find nodes which are part of communication in multiple coordinate directions
 void findEdgeNodesCommMultiGPU(SPtr<Parameter> parameter);
 } // namespace vf::gpu
-
-// anonymous namespace
-namespace
-{
-//! \brief Find nodes that are both received in the x-direction and sent in the y-direction
-void findEdgeNodesXY(int level, SPtr<Parameter> parameter);
-//! \brief Find nodes that are both received in the x-direction and sent in the z-direction
-void findEdgeNodesXZ(int level, SPtr<Parameter> parameter);
-//! \brief Find nodes that are both received in the y-direction and sent in the z-direction
-void findEdgeNodesYZ(int level, SPtr<Parameter> parameter);
-void findEdgeNodes(const std::vector<ProcessNeighbor27> &recvProcessNeighbor,
-                   const std::vector<ProcessNeighbor27> &sendProcessNeighbor, 
-                   std::vector<LBMSimulationParameter::EdgeNodePositions> &edgeNodes);
-bool findIndexInSendNodes(int nodeIndex, const std::vector<ProcessNeighbor27>& sendProcessNeighbor, int &indexOfProcessNeighborSend, int &indexInSendBuffer);
-} // namespace
 
 #endif

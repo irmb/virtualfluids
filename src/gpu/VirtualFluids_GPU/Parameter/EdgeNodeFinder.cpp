@@ -1,7 +1,22 @@
+#include <vector>
+
 #include "EdgeNodeFinder.h"
+#include "Parameter.h"
 
 namespace vf::gpu
 {
+//! \brief Find nodes that are both received in the x-direction and sent in the y-direction
+void findEdgeNodesXY(int level, SPtr<Parameter> parameter);
+//! \brief Find nodes that are both received in the x-direction and sent in the z-direction
+void findEdgeNodesXZ(int level, SPtr<Parameter> parameter);
+//! \brief Find nodes that are both received in the y-direction and sent in the z-direction
+void findEdgeNodesYZ(int level, SPtr<Parameter> parameter);
+void findEdgeNodes(const std::vector<ProcessNeighbor27> &recvProcessNeighbor,
+                   const std::vector<ProcessNeighbor27> &sendProcessNeighbor,
+                   std::vector<LBMSimulationParameter::EdgeNodePositions> &edgeNodes);
+bool findIndexInSendNodes(int nodeIndex, const std::vector<ProcessNeighbor27> &sendProcessNeighbor,
+                          int &indexOfProcessNeighborSend, int &indexInSendBuffer);
+
 void findEdgeNodesCommMultiGPU(SPtr<Parameter> parameter)
 {
     for (int level = 0; level <= parameter->getFine(); level++) {
@@ -10,10 +25,6 @@ void findEdgeNodesCommMultiGPU(SPtr<Parameter> parameter)
         findEdgeNodesYZ(level, parameter);
     }
 }
-} // namespace vf::gpu
-
-namespace
-{
 
 void findEdgeNodesXY(int level, SPtr<Parameter> parameter)
 {
@@ -66,4 +77,4 @@ bool findIndexInSendNodes(int nodeIndex, const std::vector<ProcessNeighbor27> &s
     return false;
 }
 
-} // namespace
+} // namespace vf::gpu
