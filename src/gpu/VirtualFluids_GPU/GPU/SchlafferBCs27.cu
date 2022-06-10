@@ -1,10 +1,11 @@
 /* Device code */
-#include "LBM/LB.h" 
+#include "LBM/LB.h"
 #include "LBM/D3Q27.h"
 #include <lbm/constants/NumericConstants.h>
 
 using namespace vf::lbm::constant;
 
+// TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void PressSchlaff27(real* rhoBC,
                                           real* DD,
@@ -12,20 +13,20 @@ extern "C" __global__ void PressSchlaff27(real* rhoBC,
                                           real* vy0,
                                           real* vz0,
                                           real* deltaVz0,
-                                          int* k_Q, 
-                                          int* k_N, 
-                                          int kQ, 
-                                          real om1, 
+                                          int* k_Q,
+                                          int* k_N,
+                                          int kQ,
+                                          real om1,
                                           unsigned int* neighborX,
                                           unsigned int* neighborY,
                                           unsigned int* neighborZ,
-                                          unsigned int size_Mat, 
+                                          unsigned int size_Mat,
                                           bool evenOrOdd)
 {
    ////////////////////////////////////////////////////////////////////////////////
-   const unsigned  x = threadIdx.x;  // Globaler x-Index 
-   const unsigned  y = blockIdx.x;   // Globaler y-Index 
-   const unsigned  z = blockIdx.y;   // Globaler z-Index 
+   const unsigned  x = threadIdx.x;  // Globaler x-Index
+   const unsigned  y = blockIdx.x;   // Globaler y-Index
+   const unsigned  z = blockIdx.y;   // Globaler z-Index
 
    const unsigned nx = blockDim.x;
    const unsigned ny = gridDim.x;
@@ -96,7 +97,7 @@ extern "C" __global__ void PressSchlaff27(real* rhoBC,
          D.f[dirBSW ] = &DD[dirBSW *size_Mat];
          D.f[dirBSE ] = &DD[dirBSE *size_Mat];
          D.f[dirBNW ] = &DD[dirBNW *size_Mat];
-      } 
+      }
       else
       {
          D.f[dirW   ] = &DD[dirE   *size_Mat];
@@ -183,7 +184,7 @@ extern "C" __global__ void PressSchlaff27(real* rhoBC,
 
       real vs_z = relFac * (VZ+cs) * ( csp1 - sqrt(csp1Sq + c2o1*VZ - c2o1*temp) );    //old =  relFac * cs * ( csp1 - sqrt(csp1Sq + two*VZ - two*temp) );
 
-      // 3. Compute density of compensated velocity:		
+      // 3. Compute density of compensated velocity:
       real tempDeltaV = deltaVz0[k];
       real rholoc = temp - c1o1 * (VZ + tempDeltaV + vs_z);
 
@@ -228,7 +229,7 @@ extern "C" __global__ void PressSchlaff27(real* rhoBC,
       (D.f[dirBNE ])[kbne ] = f1_BNE ;
       (D.f[dirBSW ])[kbsw ] = f1_BSW ;
       (D.f[dirBSE ])[kbse ] = f1_BSE ;
-      (D.f[dirBNW ])[kbnw ] = f1_BNW ;       
+      (D.f[dirBNW ])[kbnw ] = f1_BNW ;
    }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -270,26 +271,26 @@ extern "C" __global__ void PressSchlaff27(real* rhoBC,
 
 
 
-
+// TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void VelSchlaff27(  int t,
                                           real* DD,
                                           real* vz0,
                                           real* deltaVz0,
-                                          int* k_Q, 
-                                          int* k_N, 
-                                          int kQ, 
-                                          real om1, 
+                                          int* k_Q,
+                                          int* k_N,
+                                          int kQ,
+                                          real om1,
                                           unsigned int* neighborX,
                                           unsigned int* neighborY,
                                           unsigned int* neighborZ,
-                                          unsigned int size_Mat, 
+                                          unsigned int size_Mat,
                                           bool evenOrOdd)
 {
    ////////////////////////////////////////////////////////////////////////////////
-   const unsigned  x = threadIdx.x;  // Globaler x-Index 
-   const unsigned  y = blockIdx.x;   // Globaler y-Index 
-   const unsigned  z = blockIdx.y;   // Globaler z-Index 
+   const unsigned  x = threadIdx.x;  // Globaler x-Index
+   const unsigned  y = blockIdx.x;   // Globaler y-Index
+   const unsigned  z = blockIdx.y;   // Globaler z-Index
 
    const unsigned nx = blockDim.x;
    const unsigned ny = gridDim.x;
@@ -360,7 +361,7 @@ extern "C" __global__ void VelSchlaff27(  int t,
          D.f[dirBSW ] = &DD[dirBSW *size_Mat];
          D.f[dirBSE ] = &DD[dirBSE *size_Mat];
          D.f[dirBNW ] = &DD[dirBNW *size_Mat];
-      } 
+      }
       else
       {
          D.f[dirW   ] = &DD[dirE   *size_Mat];
@@ -462,7 +463,7 @@ extern "C" __global__ void VelSchlaff27(  int t,
       //      6.2e-9  ~  29.9 dB
       //      2.0e-7  ~  60.1 dB   /Vel
       //      2.0e-5  ~ 100.1 dB   /press
-      real uSlimit  = Op0000002; 
+      real uSlimit  = Op0000002;
       //////////////////////////////////////////////////////////////////////////
       real VX = c0o1;
       real VY = c0o1;
@@ -478,9 +479,9 @@ extern "C" __global__ void VelSchlaff27(  int t,
       //}
       //else
       //{
-         vs_z = relFac * (cs-VZ) * ( sqrt(csp1Sq - c2o1*VZ - c2o1*temp) - csp1 );         //old = relFac * cs * ( sqrt(csp1Sq - two*VZ - two*temp) - csp1 ); 
+         vs_z = relFac * (cs-VZ) * ( sqrt(csp1Sq - c2o1*VZ - c2o1*temp) - csp1 );         //old = relFac * cs * ( sqrt(csp1Sq - two*VZ - two*temp) - csp1 );
       //}
-      
+
       // 3. Adapt Speed:
       real tempDeltaV = deltaVz0[k];
       real dv = tempDeltaV + vs_z;
@@ -538,7 +539,7 @@ extern "C" __global__ void VelSchlaff27(  int t,
       //(D.f[dirBNE ])[kbne ] = f1_BNE ;
       //(D.f[dirBSW ])[kbsw ] = f1_BSW ;
       //(D.f[dirBSE ])[kbse ] = f1_BSE ;
-      //(D.f[dirBNW ])[kbnw ] = f1_BNW ;       
+      //(D.f[dirBNW ])[kbnw ] = f1_BNW ;
 
 
       //(D.f[dirT   ])[kt   ] = f1_B  ;
@@ -577,7 +578,7 @@ extern "C" __global__ void VelSchlaff27(  int t,
       //(D.f[dirBNE ])[kbne ] = f1_TSW -c1over216*drho1;
       //(D.f[dirBSW ])[kbsw ] = f1_TNE -c1over216*drho1;
       //(D.f[dirBSE ])[kbse ] = f1_TNW -c1over216*drho1;
-      //(D.f[dirBNW ])[kbnw ] = f1_TSE -c1over216*drho1;       
+      //(D.f[dirBNW ])[kbnw ] = f1_TSE -c1over216*drho1;
    }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

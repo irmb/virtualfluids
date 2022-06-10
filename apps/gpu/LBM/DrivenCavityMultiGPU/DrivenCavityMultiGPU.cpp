@@ -537,7 +537,7 @@ void multipleLevel(const std::string &configPath)
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
+   auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
 
     SPtr<GridProvider> gridGenerator;
     if (useGridGenerator)
@@ -546,14 +546,8 @@ void multipleLevel(const std::string &configPath)
         gridGenerator = GridProvider::makeGridReader(FILEFORMAT::BINARY, para, cudaMemoryManager);
     }
 
-    Simulation sim(communicator);
-    SPtr<FileWriter> fileWriter                      = SPtr<FileWriter>(new FileWriter());
-    SPtr<KernelFactoryImp> kernelFactory             = KernelFactoryImp::getInstance();
-    SPtr<PreProcessorFactoryImp> preProcessorFactory = PreProcessorFactoryImp::getInstance();
-    sim.setFactories(kernelFactory, preProcessorFactory);
-    sim.init(para, gridGenerator, fileWriter, cudaMemoryManager);
+    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator);
     sim.run();
-    sim.free();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }

@@ -45,9 +45,6 @@
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 
-#include "VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
-#include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
-
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -95,7 +92,7 @@ const real dt = (real)1.0e-3; //0.5e-3;
 
 const uint nx = 64;
 
-std::string path("D:/out/DrivenCavity/new");
+std::string path("output/");
 
 std::string simulationName("DrivenCavityChim");
 
@@ -218,35 +215,29 @@ void multipleLevel(const std::string& configPath)
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
+        auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
 
-        SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
+        auto gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
 
-        Simulation sim(communicator);
-        SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
-        SPtr<KernelFactoryImp> kernelFactory = KernelFactoryImp::getInstance();
-        SPtr<PreProcessorFactoryImp> preProcessorFactory = PreProcessorFactoryImp::getInstance();
-        sim.setFactories(kernelFactory, preProcessorFactory);
-        sim.init(para, gridGenerator, fileWriter, cudaMemoryManager);
+        Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator);
         sim.run();
-        sim.free();
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     }
     else
     {
      //   CudaUtility::setCudaDevice(0);
-     //   
+     //
      //   Parameters parameters;
 
      //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	    //const real vx = velocity / sqrt(2.0);
 	    //const real vy = velocity / sqrt(2.0);
-    
+
      //   parameters.K  = 2.0;
      //   parameters.Pr = 1.0;
-     //   
+     //
      //   const real Ma = 0.1;
 
      //   real rho = 1.0;
@@ -292,7 +283,7 @@ void multipleLevel(const std::string& configPath)
 
      //   dataBase->boundaryConditions.push_back( bcLid  );
      //   dataBase->boundaryConditions.push_back( bcWall );
-    
+
      //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
      //   dataBase->setMesh( meshAdapter );
@@ -328,7 +319,7 @@ void multipleLevel(const std::string& configPath)
 
      //           writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) );
      //       }
-     //       
+     //
      //       int crashCellIndex = dataBase->getCrashCellIndex();
      //       if( crashCellIndex >= 0 )
      //       {
@@ -364,11 +355,11 @@ int main( int argc, char* argv[])
         std::cout << "Log initialization failed: " << ex.what() << std::endl;
     }
     catch (const std::bad_alloc& e)
-    { 
+    {
         VF_LOG_CRITICAL("Bad Alloc: {}", e.what());
     }
     catch (const std::exception& e)
-    {   
+    {
         VF_LOG_CRITICAL("exception: {}", e.what());
     }
     catch (...)
