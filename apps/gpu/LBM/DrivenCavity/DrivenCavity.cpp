@@ -45,9 +45,6 @@
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 
-#include "VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
-#include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
-
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -222,10 +219,7 @@ void multipleLevel(const std::string& configPath)
 
         auto gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
 
-        auto kernelFactory = std::make_unique<KernelFactoryImp>();
-        auto preProcessorFactory = std::make_unique<PreProcessorFactoryImp>();
-
-        Simulation sim(para, cudaMemoryManager, communicator, std::move(kernelFactory), std::move(preProcessorFactory), *gridGenerator);
+        Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator);
         sim.run();
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -51,6 +51,8 @@
 #include "Output/DataWriter.h"
 #include "Kernel/Utilities/KernelFactory/KernelFactory.h"
 #include "PreProcessor/PreProcessorFactory/PreProcessorFactory.h"
+#include "Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
+#include "PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
 #include "Kernel/Kernel.h"
 
 #include <cuda/DeviceInfo.h>
@@ -66,10 +68,9 @@ std::string getFileName(const std::string& fname, int step, int myID)
 }
 
 Simulation::Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> memoryManager,
-                       vf::gpu::Communicator &communicator, std::unique_ptr<KernelFactory> &&kernelFactory_,
-                       std::unique_ptr<PreProcessorFactory> &&preProcessorFactory_, GridProvider &gridProvider)
-    : para(para), cudaManager(memoryManager), communicator(communicator), kernelFactory(std::move(kernelFactory_)),
-      preProcessorFactory(std::move(preProcessorFactory_)), dataWriter(std::make_unique<FileWriter>())
+                       vf::gpu::Communicator &communicator, GridProvider &gridProvider)
+    : para(para), cudaManager(memoryManager), communicator(communicator), kernelFactory(std::make_unique<KernelFactoryImp>()),
+      preProcessorFactory(std::make_unique<PreProcessorFactoryImp>()), dataWriter(std::make_unique<FileWriter>())
 {
     gridProvider.initalGridInformations();
 
@@ -419,7 +420,14 @@ void Simulation::addEnstrophyAnalyzer(uint tAnalyse)
 
 void Simulation::setDataWriter(std::unique_ptr<DataWriter>&& dataWriter_)
 {
-    dataWriter = std::move(dataWriter_);
+    this->dataWriter = std::move(dataWriter_);
+}
+
+void Simulation::setFactories(std::unique_ptr<KernelFactory> &&kernelFactory_,
+               std::unique_ptr<PreProcessorFactory> &&preProcessorFactory_)
+{
+    this->kernelFactory = std::move(kernelFactory_);
+    this->preProcessorFactory = std::move(preProcessorFactory_);
 }
 
 

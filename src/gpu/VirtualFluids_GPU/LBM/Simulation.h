@@ -33,11 +33,12 @@ class Simulation
 {
 public:
     Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> memoryManager,
-               vf::gpu::Communicator &communicator, std::unique_ptr<KernelFactory> &&kernelFactory,
-               std::unique_ptr<PreProcessorFactory> &&preProcessorFactory, GridProvider &gridProvider);
+               vf::gpu::Communicator &communicator, GridProvider &gridProvider);
     ~Simulation();
     void run();
 
+    void setFactories(std::unique_ptr<KernelFactory> &&kernelFactory,
+               std::unique_ptr<PreProcessorFactory> &&preProcessorFactory);
     void setDataWriter(std::unique_ptr<DataWriter>&& dataWriter);
     void addKineticEnergyAnalyzer(uint tAnalyse);
     void addEnstrophyAnalyzer(uint tAnalyse);
