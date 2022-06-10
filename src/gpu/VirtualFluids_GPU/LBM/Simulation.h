@@ -82,6 +82,7 @@ private:
 	//PorousMedia* pm1;
 	//PorousMedia* pm2;
 
+    // TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
 	//KQ - Schlaff
 	// unsigned int            kNQ, kSQ, kEQ, kWQ;
 	// QforBoundaryConditions  QnH, QnD;

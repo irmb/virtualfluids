@@ -25,7 +25,8 @@ extern "C" void findQOutflow(Parameter* para);
 
 extern "C" void findKforQOutflow(Parameter* para);
 
-//extern "C" void findQSchlaff( int nx, int ny, unsigned int nnx, unsigned int nny, unsigned int nnz, int* geo_mat, unsigned int* kk, 
+// TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
+//extern "C" void findQSchlaff( int nx, int ny, unsigned int nnx, unsigned int nny, unsigned int nnz, int* geo_mat, unsigned int* kk,
 //                              unsigned int sizeQN, real* vxN, real* vyN, real* vzN, real*deltaVN, real* QQN, QforBoundaryConditions &QNin,
 //                              unsigned int sizeQS, real* vxS, real* vyS, real* vzS, real*deltaVS, real* QQS, QforBoundaryConditions &QSin,
 //                              unsigned int sizeQE, real* vxE, real* vyE, real* vzE, real*deltaVE, real* QQE, QforBoundaryConditions &QEin,
