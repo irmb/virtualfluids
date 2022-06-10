@@ -156,7 +156,7 @@ void WallModelProbe::findPoints(Parameter* para, GridProvider* gridProvider, std
                             std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
                             int level)
 {
-    assert( para->getParD(level)->kStressQ > 0 && para->gethasWallModelMonitor() );
+    assert( para->getParD(level)->kStressQ > 0 && para->getHasWallModelMonitor() );
 
     real dt = para->getTimeRatio();
     uint nt = uint((para->getTEnd()-this->tStartAvg)/this->tAvg);
