@@ -12,15 +12,15 @@ void findQ(Parameter* para, int lev)
    real ON[27];
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    unsigned int i, j, k, m, mm, l;
-   int nx                       = para->getParH(lev)->nx;    
-   int ny                       = para->getParH(lev)->ny; 
+   int nx                       = para->getParH(lev)->nx;
+   int ny                       = para->getParH(lev)->ny;
    unsigned int nnx             = para->getParH(lev)->gridNX;
    unsigned int nny             = para->getParH(lev)->gridNY;
    unsigned int nnz             = para->getParH(lev)->gridNZ;
    int* geo_mat                 = para->getParH(lev)->geo;
    unsigned int* kk             = para->getParH(para->getCoarse())->k;
-   unsigned int sizeQ           = para->getParH(lev)->kQ; 
-   real* QQ                  = para->getParH(lev)->QWall.q27[0]; 
+   unsigned int sizeQ           = para->getParH(lev)->kQ;
+   real* QQ                  = para->getParH(lev)->QWall.q27[0];
    QforBoundaryConditions &QIN  = para->getParH(lev)->QWall;
    QIN.kQ = 0;
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -61,7 +61,7 @@ void findQ(Parameter* para, int lev)
    Q.q27[dirBNW ] = &QQ[dirBNW *sizeQ];
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    for(k=STARTOFFZ + 1 ; k<=nnz+STARTOFFZ-2 ; k++){
-      for(j=STARTOFFY + 1 ; j<=nny+STARTOFFY-2 ; j++){          //j<=nny/2+STARTOFFY     //j<=STARTOFFY+1 
+      for(j=STARTOFFY + 1 ; j<=nny+STARTOFFY-2 ; j++){          //j<=nny/2+STARTOFFY     //j<=STARTOFFY+1
          for(i=STARTOFFX + 1; i<=nnx+STARTOFFX-2 ; i++){
             m = nx*(ny*k + j) + i;
             if(geo_mat[m]==GEO_FLUID){
@@ -73,8 +73,8 @@ void findQ(Parameter* para, int lev)
                   mm = nx*(ny*(k+ez[l]) + (j+ey[l])) + (i+ex[l]);
                   if((geo_mat[mm] == GEO_SOLID) || (geo_mat[mm] == GEO_VOID)){
                      //ON[l] = -(((real)ex[l]*(real)relx + (real)ey[l]*(real)rely + (real)ez[l]*(real)relz +/*+/- Achtung, innen und aussen nicht verwechseln!!*/
-                     //           sqrt(pow((real)ex[l]*(real)relx + (real)ey[l]*(real)rely + (real)ez[l]*(real)relz,2) + 
-                     //               (pow((real)ex[l],2) + pow((real)ey[l],2) + pow((real)ez[l],2))* (pow(radius,2) - 
+                     //           sqrt(pow((real)ex[l]*(real)relx + (real)ey[l]*(real)rely + (real)ez[l]*(real)relz,2) +
+                     //               (pow((real)ex[l],2) + pow((real)ey[l],2) + pow((real)ez[l],2))* (pow(radius,2) -
                      //                pow((real)relx,2) - pow((real)rely,2) - pow((real)relz,2))))
                      //           /(pow((real)ex[l],2) + pow((real)ey[l],2) + pow((real)ez[l],2)));
                      ON[l] = (real)0.5f;//1.0f;
@@ -142,7 +142,7 @@ void findQ(Parameter* para, int lev)
                   //Q.q27[dirBNE ][QIN.kQ] = ON[dirTSW ];
                   //Q.q27[dirBSW ][QIN.kQ] = ON[dirTNE ];
                   //Q.q27[dirBSE ][QIN.kQ] = ON[dirTNW ];
-                  //Q.q27[dirBNW ][QIN.kQ] = ON[dirTSE ];                      
+                  //Q.q27[dirBNW ][QIN.kQ] = ON[dirTSE ];
 
                   Q.q27[dirE   ][QIN.kQ] = ON[dirE   ];
                   Q.q27[dirW   ][QIN.kQ] = ON[dirW   ];
@@ -170,11 +170,11 @@ void findQ(Parameter* para, int lev)
                   Q.q27[dirBNE ][QIN.kQ] = ON[dirBNE ];
                   Q.q27[dirBSW ][QIN.kQ] = ON[dirBSW ];
                   Q.q27[dirBSE ][QIN.kQ] = ON[dirBSE ];
-                  Q.q27[dirBNW ][QIN.kQ] = ON[dirBNW ];                      
-                                         
-                  QIN.kQ++;              
-               }                         
-            }     
+                  Q.q27[dirBNW ][QIN.kQ] = ON[dirBNW ];
+
+                  QIN.kQ++;
+               }
+            }
          }
       }
    }
@@ -192,12 +192,12 @@ void findKforQ(Parameter* para, int lev)
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    unsigned int i, j, k, m, mm, l;
    real test = (real)0.f;
-   int nx                       = para->getParH(lev)->nx;    
-   int ny                       = para->getParH(lev)->ny; 
+   int nx                       = para->getParH(lev)->nx;
+   int ny                       = para->getParH(lev)->ny;
    unsigned int nnx             = para->getParH(lev)->gridNX;
    unsigned int nny             = para->getParH(lev)->gridNY;
    unsigned int nnz             = para->getParH(lev)->gridNZ;
-   int* geo_mat                 = para->getParH(lev)->geo;   
+   int* geo_mat                 = para->getParH(lev)->geo;
    QforBoundaryConditions &QIN  = para->getParH(lev)->QWall;
    QIN.kQ = 0;
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -211,7 +211,7 @@ void findKforQ(Parameter* para, int lev)
                for(l=0;l<=26;l++){
                   mm = nx*(ny*(k+ez[l]) + (j+ey[l])) + (i+ex[l]);
                   if((geo_mat[mm] == GEO_SOLID) || (geo_mat[mm] == GEO_VOID)){
-                     ON[l] =(real) 1.f; 
+                     ON[l] =(real) 1.f;
                   }
                   else{
                      ON[l] = (real)0.f;
@@ -220,9 +220,9 @@ void findKforQ(Parameter* para, int lev)
                }
                if (test>0)
                {
-                  QIN.kQ++;                         
-               }                         
-            }     
+                  QIN.kQ++;
+               }
+            }
          }
       }
    }
@@ -290,10 +290,10 @@ void findQ_MG( int nx, int ny, unsigned int nnx, unsigned int nny, unsigned int 
                for(l=0;l<=26;l++){
                   mm = nx*(ny*(k+ez[l]) + (j+ey[l])) + (i+ex[l]);
                   if(geo_mat[mm] == GEO_FLUID){
-                     ON[l] = -(((real)ex[l]*(real)relx + (real)ey[l]*(real)rely + (real)ez[l]*(real)relz + 
-                        sqrt(pow((real)ex[l]*(real)relx + (real)ey[l]*(real)rely + (real)ez[l]*(real)relz,2) + 
+                     ON[l] = -(((real)ex[l]*(real)relx + (real)ey[l]*(real)rely + (real)ez[l]*(real)relz +
+                        sqrt(pow((real)ex[l]*(real)relx + (real)ey[l]*(real)rely + (real)ez[l]*(real)relz,2) +
                         (pow((real)ex[l],2) + pow((real)ey[l],2) + pow((real)ez[l],2))*
-                        (pow(radius,2) - pow((real)relx,2) - pow((real)rely,2) - 
+                        (pow(radius,2) - pow((real)relx,2) - pow((real)rely,2) -
                         pow((real)relz,2))))/(pow((real)ex[l],2) + pow((real)ey[l],2) + pow((real)ez[l],2)));
 
                      ON[18] = (real)1.f; //ZERO
@@ -332,11 +332,11 @@ void findQ_MG( int nx, int ny, unsigned int nnx, unsigned int nny, unsigned int 
                   Q.q27[dirBNE ][QIN.kQ] = ON[dirBNE ];
                   Q.q27[dirBSW ][QIN.kQ] = ON[dirBSW ];
                   Q.q27[dirBSE ][QIN.kQ] = ON[dirBSE ];
-                  Q.q27[dirBNW ][QIN.kQ] = ON[dirBNW ];                      
+                  Q.q27[dirBNW ][QIN.kQ] = ON[dirBNW ];
 
-                  QIN.kQ++;              
-               }                         
-            }     
+                  QIN.kQ++;
+               }
+            }
          }
       }
    }
@@ -367,7 +367,7 @@ void findKforQ_MG(int nx, int ny, unsigned int nnx, unsigned int nny, unsigned i
                for(l=0;l<=26;l++){
                   mm = nx*(ny*(k+ez[l]) + (j+ey[l])) + (i+ex[l]);
                   if(geo_mat[mm] == GEO_FLUID){
-                     ON[l] = (real)1.f; 
+                     ON[l] = (real)1.f;
                   }
                   else{
                      ON[l] = (real)0.f;
@@ -376,9 +376,9 @@ void findKforQ_MG(int nx, int ny, unsigned int nnx, unsigned int nny, unsigned i
                }
                if (test>0)
                {
-                  QIN.kQ++;              
-               }                         
-            }     
+                  QIN.kQ++;
+               }
+            }
          }
       }
    }
@@ -395,28 +395,28 @@ void findQInflow(Parameter* para)
    //real ON[27];
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    unsigned int i, j, k, m;//, mm, l;
-   //int nx                        = para->getParH(para->getFine())->nx;     
-   //int ny                        = para->getParH(para->getFine())->ny; 
-   //unsigned int nnx              = para->getParH(para->getFine())->gridNX; 
-   //unsigned int nny              = para->getParH(para->getFine())->gridNY; 
-   //unsigned int nnz              = para->getParH(para->getFine())->gridNZ; 
-   //int* geo_mat                  = para->getParH(para->getFine())->geo;   
+   //int nx                        = para->getParH(para->getFine())->nx;
+   //int ny                        = para->getParH(para->getFine())->ny;
+   //unsigned int nnx              = para->getParH(para->getFine())->gridNX;
+   //unsigned int nny              = para->getParH(para->getFine())->gridNY;
+   //unsigned int nnz              = para->getParH(para->getFine())->gridNZ;
+   //int* geo_mat                  = para->getParH(para->getFine())->geo;
    //unsigned int* kk              = para->getParH(para->getFine())->k;
-   int nx                        = para->getParH(para->getCoarse())->nx;     
-   int ny                        = para->getParH(para->getCoarse())->ny; 
-   unsigned int nnx              = para->getParH(para->getCoarse())->gridNX; 
-   unsigned int nny              = para->getParH(para->getCoarse())->gridNY; 
-   unsigned int nnz              = para->getParH(para->getCoarse())->gridNZ; 
-   int* geo_mat                  = para->getParH(para->getCoarse())->geo;   
+   int nx                        = para->getParH(para->getCoarse())->nx;
+   int ny                        = para->getParH(para->getCoarse())->ny;
+   unsigned int nnx              = para->getParH(para->getCoarse())->gridNX;
+   unsigned int nny              = para->getParH(para->getCoarse())->gridNY;
+   unsigned int nnz              = para->getParH(para->getCoarse())->gridNZ;
+   int* geo_mat                  = para->getParH(para->getCoarse())->geo;
    unsigned int* kk              = para->getParH(para->getCoarse())->k;
-   unsigned int sizeQ            = para->getParH(para->getCoarse())->kInflowQ; 
+   unsigned int sizeQ            = para->getParH(para->getCoarse())->kInflowQ;
    //real* rhoBC                = para->getParH(para->getCoarse())->Qinflow.RhoBC;
-   real u0                    = para->getVelocity(); 
-   real* vx                   = para->getParH(para->getCoarse())->Qinflow.Vx;     
-   real* vy                   = para->getParH(para->getCoarse())->Qinflow.Vy;     
-   real* vz                   = para->getParH(para->getCoarse())->Qinflow.Vz;     
+   real u0                    = para->getVelocity();
+   real* vx                   = para->getParH(para->getCoarse())->Qinflow.Vx;
+   real* vy                   = para->getParH(para->getCoarse())->Qinflow.Vy;
+   real* vz                   = para->getParH(para->getCoarse())->Qinflow.Vz;
    real*deltaVz               = para->getParH(para->getCoarse())->Qinflow.deltaVz;
-   real* QQ                   = para->getParH(para->getCoarse())->Qinflow.q27[0]; 
+   real* QQ                   = para->getParH(para->getCoarse())->Qinflow.q27[0];
    QforBoundaryConditions &QIN   = para->getParH(para->getCoarse())->Qinflow;
    //unsigned int nxny = nx*ny;
    QIN.kQ = 0;
@@ -582,11 +582,11 @@ void findQInflow(Parameter* para)
    //               Q.q27[dirBNE ][QIN.kQ] = ON[dirBNE ];
    //               Q.q27[dirBSW ][QIN.kQ] = ON[dirBSW ];
    //               Q.q27[dirBSE ][QIN.kQ] = ON[dirBSE ];
-   //               Q.q27[dirBNW ][QIN.kQ] = ON[dirBNW ];                      
+   //               Q.q27[dirBNW ][QIN.kQ] = ON[dirBNW ];
 
-   //               QIN.kQ++;              
-   //            }                         
-   //         }     
+   //               QIN.kQ++;
+   //            }
+   //         }
    //      }
    //   }
    //}
@@ -641,11 +641,11 @@ void findQInflow(Parameter* para)
    //               Q.q27[dirBNE ][QIN.kQ] = ON[dirBNE ];
    //               Q.q27[dirBSW ][QIN.kQ] = ON[dirBSW ];
    //               Q.q27[dirBSE ][QIN.kQ] = ON[dirBSE ];
-   //               Q.q27[dirBNW ][QIN.kQ] = ON[dirBNW ];                      
+   //               Q.q27[dirBNW ][QIN.kQ] = ON[dirBNW ];
 
-   //               QIN.kQ++;              
-   //            }                         
-   //         }     
+   //               QIN.kQ++;
+   //            }
+   //         }
    //      }
    //   }
    //}
@@ -664,17 +664,17 @@ void findKforQInflow(Parameter* para)
    //unsigned int mm;
    unsigned int i, j, k, m, l;
    real test = 0.f;
-   //int nx                        = para->getParH(para->getFine())->nx;     
-   //int ny                        = para->getParH(para->getFine())->ny; 
-   //unsigned int nnx              = para->getParH(para->getFine())->gridNX; 
-   //unsigned int nny              = para->getParH(para->getFine())->gridNY; 
-   //unsigned int nnz              = para->getParH(para->getFine())->gridNZ; 
-   //int* geo_mat                  = para->getParH(para->getFine())->geo;   
-   int nx                        = para->getParH(para->getCoarse())->nx;     
-   int ny                        = para->getParH(para->getCoarse())->ny; 
-   unsigned int nnx              = para->getParH(para->getCoarse())->gridNX; 
-   unsigned int nny              = para->getParH(para->getCoarse())->gridNY; 
-   unsigned int nnz              = para->getParH(para->getCoarse())->gridNZ; 
+   //int nx                        = para->getParH(para->getFine())->nx;
+   //int ny                        = para->getParH(para->getFine())->ny;
+   //unsigned int nnx              = para->getParH(para->getFine())->gridNX;
+   //unsigned int nny              = para->getParH(para->getFine())->gridNY;
+   //unsigned int nnz              = para->getParH(para->getFine())->gridNZ;
+   //int* geo_mat                  = para->getParH(para->getFine())->geo;
+   int nx                        = para->getParH(para->getCoarse())->nx;
+   int ny                        = para->getParH(para->getCoarse())->ny;
+   unsigned int nnx              = para->getParH(para->getCoarse())->gridNX;
+   unsigned int nny              = para->getParH(para->getCoarse())->gridNY;
+   unsigned int nnz              = para->getParH(para->getCoarse())->gridNZ;
    int* geo_mat                  = para->getParH(para->getCoarse())->geo;
    QforBoundaryConditions &QIN   = para->getParH(para->getCoarse())->Qinflow;
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -691,7 +691,7 @@ void findKforQInflow(Parameter* para)
                for(l=0;l<=26;l++){
                   //mm = nx*(ny*(k+ez[l]) + (j+ey[l])) + (i+ex[l]);
                   if(ez[l]==1/*-1*/){
-                     ON[l] = (real) 1.f; 
+                     ON[l] = (real) 1.f;
                   }
                   else{
                      ON[l] = (real) 0.f;
@@ -701,8 +701,8 @@ void findKforQInflow(Parameter* para)
                if (test>0)
                {
 				   QIN.kQ++;
-               }                         
-            }     
+               }
+            }
          }
       }
    }
@@ -716,7 +716,7 @@ void findKforQInflow(Parameter* para)
    //            for(l=0;l<=26;l++){
    //               mm = nx*(ny*(k+ez[l]) + (j+ey[l])) + (i+ex[l]);
    //               if(geo_mat[mm] == GEO_VELO){
-   //                  ON[l] = 1.f; 
+   //                  ON[l] = 1.f;
    //               }
    //               else{
    //                  ON[l] = 0.f;
@@ -725,9 +725,9 @@ void findKforQInflow(Parameter* para)
    //            }
    //            if (test>0)
    //            {
-   //               QIN.kQ++;              
-   //            }                         
-   //         }     
+   //               QIN.kQ++;
+   //            }
+   //         }
    //      }
    //   }
    //}
@@ -745,28 +745,28 @@ void findQOutflow(Parameter* para)
    //real ON[27];
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    unsigned int i, j, k, m;//, mm, l;
-   //int nx                        = para->getParH(para->getFine())->nx;     
-   //int ny                        = para->getParH(para->getFine())->ny; 
-   //unsigned int nnx              = para->getParH(para->getFine())->gridNX; 
-   //unsigned int nny              = para->getParH(para->getFine())->gridNY; 
-   //unsigned int nnz              = para->getParH(para->getFine())->gridNZ; 
-   //int* geo_mat                  = para->getParH(para->getFine())->geo;   
+   //int nx                        = para->getParH(para->getFine())->nx;
+   //int ny                        = para->getParH(para->getFine())->ny;
+   //unsigned int nnx              = para->getParH(para->getFine())->gridNX;
+   //unsigned int nny              = para->getParH(para->getFine())->gridNY;
+   //unsigned int nnz              = para->getParH(para->getFine())->gridNZ;
+   //int* geo_mat                  = para->getParH(para->getFine())->geo;
    //unsigned int* kk              = para->getParH(para->getFine())->k;
-   int nx                        = para->getParH(para->getCoarse())->nx;     
-   int ny                        = para->getParH(para->getCoarse())->ny; 
-   unsigned int nnx              = para->getParH(para->getCoarse())->gridNX; 
-   unsigned int nny              = para->getParH(para->getCoarse())->gridNY; 
-   unsigned int nnz              = para->getParH(para->getCoarse())->gridNZ; 
-   int* geo_mat                  = para->getParH(para->getCoarse())->geo;   
+   int nx                        = para->getParH(para->getCoarse())->nx;
+   int ny                        = para->getParH(para->getCoarse())->ny;
+   unsigned int nnx              = para->getParH(para->getCoarse())->gridNX;
+   unsigned int nny              = para->getParH(para->getCoarse())->gridNY;
+   unsigned int nnz              = para->getParH(para->getCoarse())->gridNZ;
+   int* geo_mat                  = para->getParH(para->getCoarse())->geo;
    unsigned int* kk              = para->getParH(para->getCoarse())->k;
-   unsigned int sizeQ            = para->getParH(para->getCoarse())->kOutflowQ; 
+   unsigned int sizeQ            = para->getParH(para->getCoarse())->kOutflowQ;
    real* rhoBC                = para->getParH(para->getCoarse())->Qoutflow.RhoBC;
-   real u0                    = para->getVelocity(); 
-   real* vx                   = para->getParH(para->getCoarse())->Qoutflow.Vx;     
-   real* vy                   = para->getParH(para->getCoarse())->Qoutflow.Vy;     
-   real* vz                   = para->getParH(para->getCoarse())->Qoutflow.Vz;     
+   real u0                    = para->getVelocity();
+   real* vx                   = para->getParH(para->getCoarse())->Qoutflow.Vx;
+   real* vy                   = para->getParH(para->getCoarse())->Qoutflow.Vy;
+   real* vz                   = para->getParH(para->getCoarse())->Qoutflow.Vz;
    real*deltaVz               = para->getParH(para->getCoarse())->Qoutflow.deltaVz;
-   real* QQ                   = para->getParH(para->getCoarse())->Qoutflow.q27[0]; 
+   real* QQ                   = para->getParH(para->getCoarse())->Qoutflow.q27[0];
    QforBoundaryConditions &QIN   = para->getParH(para->getCoarse())->Qoutflow;
    unsigned int nxny = nx*ny;
    QIN.kQ = 0;
@@ -874,18 +874,18 @@ void findKforQOutflow(Parameter* para)
    //unsigned int mm;
    unsigned int i, j, k, m, l;
    real test = (real) 0.f;
-   //int nx                        = para->getParH(para->getFine())->nx;     
-   //int ny                        = para->getParH(para->getFine())->ny; 
-   //unsigned int nnx              = para->getParH(para->getFine())->gridNX; 
-   //unsigned int nny              = para->getParH(para->getFine())->gridNY; 
-   //unsigned int nnz              = para->getParH(para->getFine())->gridNZ; 
-   //int* geo_mat                  = para->getParH(para->getFine())->geo;   
-   int nx                        = para->getParH(para->getCoarse())->nx;     
-   int ny                        = para->getParH(para->getCoarse())->ny; 
-   unsigned int nnx              = para->getParH(para->getCoarse())->gridNX; 
-   unsigned int nny              = para->getParH(para->getCoarse())->gridNY; 
-   unsigned int nnz              = para->getParH(para->getCoarse())->gridNZ; 
-   int* geo_mat                  = para->getParH(para->getCoarse())->geo;   
+   //int nx                        = para->getParH(para->getFine())->nx;
+   //int ny                        = para->getParH(para->getFine())->ny;
+   //unsigned int nnx              = para->getParH(para->getFine())->gridNX;
+   //unsigned int nny              = para->getParH(para->getFine())->gridNY;
+   //unsigned int nnz              = para->getParH(para->getFine())->gridNZ;
+   //int* geo_mat                  = para->getParH(para->getFine())->geo;
+   int nx                        = para->getParH(para->getCoarse())->nx;
+   int ny                        = para->getParH(para->getCoarse())->ny;
+   unsigned int nnx              = para->getParH(para->getCoarse())->gridNX;
+   unsigned int nny              = para->getParH(para->getCoarse())->gridNY;
+   unsigned int nnz              = para->getParH(para->getCoarse())->gridNZ;
+   int* geo_mat                  = para->getParH(para->getCoarse())->geo;
    QforBoundaryConditions &QIN   = para->getParH(para->getCoarse())->Qoutflow;
    QIN.kQ = 0;
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -900,7 +900,7 @@ void findKforQOutflow(Parameter* para)
                for(l=0;l<=26;l++){
                   //mm = nx*(ny*(k+ez[l]) + (j+ey[l])) + (i+ex[l]);
                   if(ez[l]==1){
-                     ON[l] = (real) 1.f; 
+                     ON[l] = (real) 1.f;
                   }
                   else{
                      ON[l] = (real) 0.f;
@@ -909,9 +909,9 @@ void findKforQOutflow(Parameter* para)
                }
                if (test>0)
                {
-                  QIN.kQ++;              
-               }                         
-            }     
+                  QIN.kQ++;
+               }
+            }
          }
       }
    }
@@ -920,9 +920,9 @@ void findKforQOutflow(Parameter* para)
    //QIN.kQ++;
 
 }
-
+// TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
 //////////////////////////////////////////////////////////////////////////////////
-//void findQSchlaff( int nx, int ny, unsigned int nnx, unsigned int nny, unsigned int nnz, int* geo_mat, unsigned int* kk, 
+//void findQSchlaff( int nx, int ny, unsigned int nnx, unsigned int nny, unsigned int nnz, int* geo_mat, unsigned int* kk,
 //                   unsigned int sizeQN, real* vxN, real* vyN, real* vzN, real*deltaVN, real* QQN, QforBoundaryConditions &QNin,
 //                   unsigned int sizeQS, real* vxS, real* vyS, real* vzS, real*deltaVS, real* QQS, QforBoundaryConditions &QSin,
 //                   unsigned int sizeQE, real* vxE, real* vyE, real* vzE, real*deltaVE, real* QQE, QforBoundaryConditions &QEin,
@@ -967,7 +967,7 @@ void findKforQOutflow(Parameter* para)
 //}
 //
 //////////////////////////////////////////////////////////////////////////////////
-//void findKforQSchlaff(int nx, int ny, unsigned int nnx, unsigned int nny, unsigned int nnz, int* geo_mat, 
+//void findKforQSchlaff(int nx, int ny, unsigned int nnx, unsigned int nny, unsigned int nnz, int* geo_mat,
 //                      QforBoundaryConditions &QN, QforBoundaryConditions &QS, QforBoundaryConditions &QE, QforBoundaryConditions &QW)
 //{
 //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -994,7 +994,7 @@ void findKforQOutflow(Parameter* para)
 //               for(l=0;l<=26;l++){
 //                  mm = nx*(ny*(k+ez[l]) + (j+ey[l])) + (i+ex[l]);
 //                  if(ez[l]==1){
-//                     ON[l] = (real) 1.f; 
+//                     ON[l] = (real) 1.f;
 //                  }
 //                  else{
 //                     ON[l] = (real) 0.f;
@@ -1003,9 +1003,9 @@ void findKforQOutflow(Parameter* para)
 //               }
 //               if (test>0)
 //               {
-//                  QN.kQ++;              
-//               }                         
-//            }     
+//                  QN.kQ++;
+//               }
+//            }
 //         }
 //      }
 //   }
@@ -1023,22 +1023,22 @@ void findQPressX0(Parameter* para, int lev)
 	//int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	unsigned int i, j, k, m;
-	int nx                        = para->getParH(lev)->nx;     
-	int ny                        = para->getParH(lev)->ny; 
-	unsigned int nnx              = para->getParH(lev)->gridNX; 
-	unsigned int nny              = para->getParH(lev)->gridNY; 
-	unsigned int nnz              = para->getParH(lev)->gridNZ; 
-	int* geo_mat                  = para->getParH(lev)->geo;   
+	int nx                        = para->getParH(lev)->nx;
+	int ny                        = para->getParH(lev)->ny;
+	unsigned int nnx              = para->getParH(lev)->gridNX;
+	unsigned int nny              = para->getParH(lev)->gridNY;
+	unsigned int nnz              = para->getParH(lev)->gridNZ;
+	int* geo_mat                  = para->getParH(lev)->geo;
 	unsigned int* kk              = para->getParH(lev)->k;
-	//unsigned int sizeQ            = para->getParH(lev)->kOutflowQ; 
+	//unsigned int sizeQ            = para->getParH(lev)->kOutflowQ;
 	unsigned int sizeQ            = para->getParH(lev)->QpressX0.kQ;
 	real* rhoBC                = para->getParH(lev)->QpressX0.RhoBC;
-	real u0                    = para->getVelocity(); 
-	real* vx                   = para->getParH(lev)->QpressX0.Vx;     
-	real* vy                   = para->getParH(lev)->QpressX0.Vy;     
-	real* vz                   = para->getParH(lev)->QpressX0.Vz;     
+	real u0                    = para->getVelocity();
+	real* vx                   = para->getParH(lev)->QpressX0.Vx;
+	real* vy                   = para->getParH(lev)->QpressX0.Vy;
+	real* vz                   = para->getParH(lev)->QpressX0.Vz;
 	real*deltaVz               = para->getParH(lev)->QpressX0.deltaVz;
-	real* QQ                   = para->getParH(lev)->QpressX0.q27[0]; 
+	real* QQ                   = para->getParH(lev)->QpressX0.q27[0];
 	QforBoundaryConditions &QIN   = para->getParH(lev)->QpressX0;
 	//unsigned int nxny = nx*ny;
 	QIN.kQ = 0;
@@ -1139,12 +1139,12 @@ void findKforQPressX0(Parameter* para, int lev)
    //unsigned int mm;
 	unsigned int i, j, k, m, l;
 	real test = (real) 0.f;
-	int nx                        = para->getParH(lev)->nx;     
-	int ny                        = para->getParH(lev)->ny; 
-	//unsigned int nnx              = para->getParH(lev)->gridNX; 
-	unsigned int nny              = para->getParH(lev)->gridNY; 
-	unsigned int nnz              = para->getParH(lev)->gridNZ; 
-	int* geo_mat                  = para->getParH(lev)->geo;   
+	int nx                        = para->getParH(lev)->nx;
+	int ny                        = para->getParH(lev)->ny;
+	//unsigned int nnx              = para->getParH(lev)->gridNX;
+	unsigned int nny              = para->getParH(lev)->gridNY;
+	unsigned int nnz              = para->getParH(lev)->gridNZ;
+	int* geo_mat                  = para->getParH(lev)->geo;
 	QforBoundaryConditions &QIN   = para->getParH(lev)->QpressX0;
 	QIN.kQ = 0;
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1161,7 +1161,7 @@ void findKforQPressX0(Parameter* para, int lev)
 					for(l=0;l<=26;l++){
 						//mm = nx*(ny*(k+ez[l]) + (j+ey[l])) + (i+ex[l]);
 						if(ez[l]==1){
-							ON[l] = (real) 1.f; 
+							ON[l] = (real) 1.f;
 						}
 						else{
 							ON[l] = (real) 0.f;
@@ -1170,9 +1170,9 @@ void findKforQPressX0(Parameter* para, int lev)
 					}
 					if (test>0)
 					{
-						QIN.kQ++;              
-					}                         
-				}     
+						QIN.kQ++;
+					}
+				}
 			}
 		}
 	}
@@ -1189,22 +1189,22 @@ void findQPressX1(Parameter* para, int lev)
 	//int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	unsigned int i, j, k, m;
-	int nx                        = para->getParH(lev)->nx;     
-	int ny                        = para->getParH(lev)->ny; 
-	unsigned int nnx              = para->getParH(lev)->gridNX; 
-	unsigned int nny              = para->getParH(lev)->gridNY; 
-	unsigned int nnz              = para->getParH(lev)->gridNZ; 
-	int* geo_mat                  = para->getParH(lev)->geo;   
+	int nx                        = para->getParH(lev)->nx;
+	int ny                        = para->getParH(lev)->ny;
+	unsigned int nnx              = para->getParH(lev)->gridNX;
+	unsigned int nny              = para->getParH(lev)->gridNY;
+	unsigned int nnz              = para->getParH(lev)->gridNZ;
+	int* geo_mat                  = para->getParH(lev)->geo;
 	unsigned int* kk              = para->getParH(lev)->k;
-	//unsigned int sizeQ            = para->getParH(lev)->kOutflowQ; 
+	//unsigned int sizeQ            = para->getParH(lev)->kOutflowQ;
 	unsigned int sizeQ            = para->getParH(lev)->QpressX1.kQ;
 	real* rhoBC                = para->getParH(lev)->QpressX1.RhoBC;
-	real u0                    = para->getVelocity(); 	   
-	real* vx                   = para->getParH(lev)->QpressX1.Vx;     
-	real* vy                   = para->getParH(lev)->QpressX1.Vy;     
-	real* vz                   = para->getParH(lev)->QpressX1.Vz;     
+	real u0                    = para->getVelocity();
+	real* vx                   = para->getParH(lev)->QpressX1.Vx;
+	real* vy                   = para->getParH(lev)->QpressX1.Vy;
+	real* vz                   = para->getParH(lev)->QpressX1.Vz;
 	real*deltaVz               = para->getParH(lev)->QpressX1.deltaVz;
-	real* QQ                   = para->getParH(lev)->QpressX1.q27[0]; 
+	real* QQ                   = para->getParH(lev)->QpressX1.q27[0];
 	QforBoundaryConditions &QIN   = para->getParH(lev)->QpressX1;
 	//unsigned int nxny = nx*ny;
 	QIN.kQ = 0;
@@ -1305,12 +1305,12 @@ void findKforQPressX1(Parameter* para, int lev)
    //unsigned int mm;
 	unsigned int i, j, k, m, l;
 	real test = (real) 0.f;
-	int nx                        = para->getParH(lev)->nx;     
-	int ny                        = para->getParH(lev)->ny; 
-	unsigned int nnx              = para->getParH(lev)->gridNX; 
-	unsigned int nny              = para->getParH(lev)->gridNY; 
-	unsigned int nnz              = para->getParH(lev)->gridNZ; 
-	int* geo_mat                  = para->getParH(lev)->geo;   
+	int nx                        = para->getParH(lev)->nx;
+	int ny                        = para->getParH(lev)->ny;
+	unsigned int nnx              = para->getParH(lev)->gridNX;
+	unsigned int nny              = para->getParH(lev)->gridNY;
+	unsigned int nnz              = para->getParH(lev)->gridNZ;
+	int* geo_mat                  = para->getParH(lev)->geo;
 	QforBoundaryConditions &QIN   = para->getParH(lev)->QpressX1;
 	QIN.kQ = 0;
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1327,7 +1327,7 @@ void findKforQPressX1(Parameter* para, int lev)
 					for(l=0;l<=26;l++){
 						//mm = nx*(ny*(k+ez[l]) + (j+ey[l])) + (i+ex[l]);
 						if(ez[l]==1){
-							ON[l] = (real) 1.f; 
+							ON[l] = (real) 1.f;
 						}
 						else{
 							ON[l] = (real) 0.f;
@@ -1336,9 +1336,9 @@ void findKforQPressX1(Parameter* para, int lev)
 					}
 					if (test>0)
 					{
-						QIN.kQ++;              
-					}                         
-				}     
+						QIN.kQ++;
+					}
+				}
 			}
 		}
 	}

@@ -48,9 +48,9 @@ void UpdateGrid27::updateGrid(int level, unsigned int t)
     {
         (this->*refinementAndExchange)(level);
     }
-        
+
     interactWithActuators(para.get(), cudaManager.get(), level, t);
-    
+
     interactWithProbes(para.get(), cudaManager.get(), level, t);
 }
 
@@ -87,7 +87,7 @@ void UpdateGrid27::refinementAndExchange_streams_onlyExchangeInterface(int level
     coarseToFineWithStream(para.get(), level, para->getParD(level)->intCFBorder.ICellCFC,
                            para->getParD(level)->intCFBorder.ICellCFF, para->getParD(level)->intCFBorder.kCF, para->getParD(level)->offCF,
                            borderStreamIndex);
-    cudaDeviceSynchronize(); 
+    cudaDeviceSynchronize();
 }
 
 void UpdateGrid27::refinementAndExchange_streams_completeExchange(int level)
@@ -121,7 +121,7 @@ void UpdateGrid27::refinementAndExchange_streams_completeExchange(int level)
     coarseToFineWithStream(para.get(), level, para->getParD(level)->intCFBorder.ICellCFC,
                            para->getParD(level)->intCFBorder.ICellCFF, para->getParD(level)->intCFBorder.kCF, para->getParD(level)->offCF,
                            borderStreamIndex);
-    cudaDeviceSynchronize(); 
+    cudaDeviceSynchronize();
 }
 
 void UpdateGrid27::refinementAndExchange_noStreams_onlyExchangeInterface(int level)
@@ -247,45 +247,45 @@ void collisionAdvectionDiffusion(Parameter* para, int level)
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // incompressible
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //KernelADincomp7(para->getParD(level)->numberofthreads,    para->getParD(level)->diffusivity,  para->getParD(level)->geoSP, 
+        //KernelADincomp7(para->getParD(level)->numberofthreads,    para->getParD(level)->diffusivity,  para->getParD(level)->geoSP,
         //                para->getParD(level)->neighborX_SP,       para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
-        //                para->getParD(level)->d0SP.f[0],          para->getParD(level)->d7.f[0],      para->getParD(level)->size_Mat_SP,  
-        //                para->getParD(level)->evenOrOdd); 
+        //                para->getParD(level)->d0SP.f[0],          para->getParD(level)->d7.f[0],      para->getParD(level)->size_Mat_SP,
+        //                para->getParD(level)->evenOrOdd);
         //getLastCudaError("KernelADincomp7 execution failed");
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // compressible
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //KernelThS7( para->getParD(level)->numberofthreads,    para->getParD(level)->diffusivity,  para->getParD(level)->geoSP, 
+        //KernelThS7( para->getParD(level)->numberofthreads,    para->getParD(level)->diffusivity,  para->getParD(level)->geoSP,
         //            para->getParD(level)->neighborX_SP,       para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
-        //            para->getParD(level)->d0SP.f[0],          para->getParD(level)->d7.f[0],      para->getParD(level)->size_Mat_SP,  
-        //            para->getParD(level)->evenOrOdd); 
+        //            para->getParD(level)->d0SP.f[0],          para->getParD(level)->d7.f[0],      para->getParD(level)->size_Mat_SP,
+        //            para->getParD(level)->evenOrOdd);
         //getLastCudaError("KernelThS7 execution failed");
-    } 
+    }
     else if (para->getDiffMod() == 27)
     {
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // incompressible
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //KernelADincomp27( para->getParD(level)->numberofthreads,    para->getParD(level)->diffusivity,  para->getParD(level)->geoSP, 
+        //KernelADincomp27( para->getParD(level)->numberofthreads,    para->getParD(level)->diffusivity,  para->getParD(level)->geoSP,
         //		            para->getParD(level)->neighborX_SP,       para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
-        //		            para->getParD(level)->d0SP.f[0],          para->getParD(level)->d27.f[0],     para->getParD(level)->size_Mat_SP,  
-        //		            para->getParD(level)->evenOrOdd); 
+        //		            para->getParD(level)->d0SP.f[0],          para->getParD(level)->d27.f[0],     para->getParD(level)->size_Mat_SP,
+        //		            para->getParD(level)->evenOrOdd);
         //getLastCudaError("KernelADincomp27 execution failed");
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // compressible
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //KernelThS27(para->getParD(level)->numberofthreads,
-        //            para->getParD(level)->diffusivity, 
-        //            para->getParD(level)->geoSP, 
-        //            para->getParD(level)->neighborX_SP, 
-        //            para->getParD(level)->neighborY_SP, 
+        //            para->getParD(level)->diffusivity,
+        //            para->getParD(level)->geoSP,
+        //            para->getParD(level)->neighborX_SP,
+        //            para->getParD(level)->neighborY_SP,
         //            para->getParD(level)->neighborZ_SP,
-        //            para->getParD(level)->d0SP.f[0],    
-        //            para->getParD(level)->d27.f[0],    
-        //            para->getParD(level)->size_Mat_SP,  
-        //            para->getParD(level)->evenOrOdd); 
+        //            para->getParD(level)->d0SP.f[0],
+        //            para->getParD(level)->d27.f[0],
+        //            para->getParD(level)->size_Mat_SP,
+        //            para->getParD(level)->evenOrOdd);
 		//getLastCudaError("KernelThS27 execution failed");
 	}
 }
@@ -351,7 +351,7 @@ void exchangeMultiGPU_noStreams_withPrepare(Parameter *para, vf::gpu::Communicat
         // Z
         prepareExchangeCollDataZGPU27AfterFtoC(para, level, -1);
         exchangeCollDataZGPU27AfterFtoC(para, comm, cudaManager, level, -1);
-        scatterNodesFromRecvBufferZGPU27AfterFtoC(para, level, -1);  
+        scatterNodesFromRecvBufferZGPU27AfterFtoC(para, level, -1);
     } else {
         // X
         prepareExchangeCollDataXGPU27AllNodes(para, level, -1);
@@ -364,7 +364,7 @@ void exchangeMultiGPU_noStreams_withPrepare(Parameter *para, vf::gpu::Communicat
         // Z
         prepareExchangeCollDataZGPU27AllNodes(para, level, -1);
         exchangeCollDataZGPU27AllNodes(para, comm, cudaManager, level, -1);
-        scatterNodesFromRecvBufferZGPU27AllNodes(para, level, -1);   
+        scatterNodesFromRecvBufferZGPU27AllNodes(para, level, -1);
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -411,15 +411,15 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
     {
         //QVelDev27( para->getParD(level)->numberofthreads, para->getParD(level)->nx,           para->getParD(level)->ny,
         //           para->getParD(level)->Qinflow.Vx,      para->getParD(level)->Qinflow.Vy,   para->getParD(level)->Qinflow.Vz,
-        //           para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qinflow.k,    para->getParD(level)->Qinflow.q27[0], 
+        //           para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qinflow.k,    para->getParD(level)->Qinflow.q27[0],
         //           para->getParD(level)->kInflowQ,        para->getParD(level)->kInflowQ,     para->getParD(level)->omega,
         //           para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
         //           para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
         //getLastCudaError("QVelDev27 execution failed");
-        
+
         // QVelDevComp27( para->getParD(level)->numberofthreads, para->getParD(level)->nx,           para->getParD(level)->ny,
         //                para->getParD(level)->Qinflow.Vx,      para->getParD(level)->Qinflow.Vy,   para->getParD(level)->Qinflow.Vz,
-        //                para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qinflow.k,    para->getParD(level)->Qinflow.q27[0], 
+        //                para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qinflow.k,    para->getParD(level)->Qinflow.q27[0],
         //                para->getParD(level)->kInflowQ,        para->getParD(level)->kInflowQ,     para->getParD(level)->omega,
         //                para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
         //                para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
@@ -439,8 +439,8 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
 
         //QVelDevice1h27( para->getParD(level)->numberofthreads, para->getParD(level)->nx,           para->getParD(level)->ny,
         //                para->getParD(level)->Qinflow.Vx,      para->getParD(level)->Qinflow.Vy,   para->getParD(level)->Qinflow.Vz,
-        //                para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qinflow.k,    para->getParD(level)->Qinflow.q27[0], 
-        //                para->getParD(level)->kInflowQ,        para->getParD(level)->kInflowQ,     para->getParD(level)->omega,          
+        //                para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qinflow.k,    para->getParD(level)->Qinflow.q27[0],
+        //                para->getParD(level)->kInflowQ,        para->getParD(level)->kInflowQ,     para->getParD(level)->omega,
         //                para->getPhi(),                        para->getAngularVelocity(),
         //                para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
         //                para->getParD(level)->coordX_SP,       para->getParD(level)->coordY_SP,    para->getParD(level)->coordZ_SP,
@@ -456,28 +456,28 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
     if (para->getParD(level)->kQ > 0)
     {
         //QDev27( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
-        //	      para->getParD(level)->d0SP.f[0],             para->getParD(level)->QWall.k,      para->getParD(level)->QWall.q27[0], 
+        //	      para->getParD(level)->d0SP.f[0],             para->getParD(level)->QWall.k,      para->getParD(level)->QWall.q27[0],
         //	      para->getParD(level)->kQ,                    para->getParD(level)->kQ,           para->getParD(level)->omega,
         //	      para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
         //	      para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
         //getLastCudaError("QDev27 execution failed");
-        
+
         //BBDev27( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
-        //         para->getParD(level)->d0SP.f[0],             para->getParD(level)->QWall.k,      para->getParD(level)->QWall.q27[0], 
+        //         para->getParD(level)->d0SP.f[0],             para->getParD(level)->QWall.k,      para->getParD(level)->QWall.q27[0],
         //         para->getParD(level)->kQ,                    para->getParD(level)->kQ,           para->getParD(level)->omega,
         //         para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
         //         para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
         //getLastCudaError("BBDev27 (Wall) execution failed");
 
         //QDev27( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
-        //        para->getParD(level)->d0SP.f[0],             para->getParD(level)->QWall.k,      para->getParD(level)->QWall.q27[0], 
+        //        para->getParD(level)->d0SP.f[0],             para->getParD(level)->QWall.k,      para->getParD(level)->QWall.q27[0],
         //        para->getParD(level)->kQ,                    para->getParD(level)->kQ,           para->getParD(level)->omega,
         //        para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
         //        para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
         //getLastCudaError("QDev27 (Wall) execution failed");
 
         QDevComp27(para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
-                   para->getParD(level)->d0SP.f[0],             para->getParD(level)->QWall.k,      para->getParD(level)->QWall.q27[0], 
+                   para->getParD(level)->d0SP.f[0],             para->getParD(level)->QWall.k,      para->getParD(level)->QWall.q27[0],
                    para->getParD(level)->kQ,                    para->getParD(level)->kQ,           para->getParD(level)->omega,
                    para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
                    para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
@@ -508,10 +508,10 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
     //////////////////////////////////////////////////////////////////////////
     if (para->getParD(level)->kStressQ > 0)
     {
-        // QStressDevComp27( para->getParD(level)->numberofthreads, para->getParD(level)->d0SP.f[0], 
-        //                 para->getParD(level)->QStress.k,       para->getParD(level)->QStress.kN, 
-        //                 para->getParD(level)->QStress.q27[0],  para->getParD(level)->kStressQ,          
-        //                 para->getParD(level)->omega,           para->getParD(level)->turbViscosity,  
+        // QStressDevComp27( para->getParD(level)->numberofthreads, para->getParD(level)->d0SP.f[0],
+        //                 para->getParD(level)->QStress.k,       para->getParD(level)->QStress.kN,
+        //                 para->getParD(level)->QStress.q27[0],  para->getParD(level)->kStressQ,
+        //                 para->getParD(level)->omega,           para->getParD(level)->turbViscosity,
         //                 para->getParD(level)->vx_SP,           para->getParD(level)->vy_SP,             para->getParD(level)->vy_SP,
         //                 para->getParD(level)->QStress.normalX, para->getParD(level)->QStress.normalY,   para->getParD(level)->QStress.normalZ,
         //                 para->getParD(level)->QStress.Vx,      para->getParD(level)->QStress.Vy,        para->getParD(level)->QStress.Vz,
@@ -519,13 +519,13 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
         //                 para->getParD(level)->wallModel.samplingOffset, para->getParD(level)->wallModel.z0,
                         // para->getHasWallModelMonitor(),        para->getParD(level)->wallModel.u_star,
                         // para->getParD(level)->wallModel.Fx,    para->getParD(level)->wallModel.Fy,      para->getParD(level)->wallModel.Fz,
-        //                 para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP,      para->getParD(level)->neighborZ_SP, 
+        //                 para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP,      para->getParD(level)->neighborZ_SP,
         //                 para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
         // getLastCudaError("QStressDevComp27 execution failed");
 
-        BBStressDev27( para->getParD(level)->numberofthreads, para->getParD(level)->d0SP.f[0], 
-                        para->getParD(level)->QStress.k,       para->getParD(level)->QStress.kN, 
-                        para->getParD(level)->QStress.q27[0],  para->getParD(level)->kStressQ,          
+        BBStressDev27( para->getParD(level)->numberofthreads, para->getParD(level)->d0SP.f[0],
+                        para->getParD(level)->QStress.k,       para->getParD(level)->QStress.kN,
+                        para->getParD(level)->QStress.q27[0],  para->getParD(level)->kStressQ,
                         para->getParD(level)->vx_SP,           para->getParD(level)->vy_SP,             para->getParD(level)->vy_SP,
                         para->getParD(level)->QStress.normalX, para->getParD(level)->QStress.normalY,   para->getParD(level)->QStress.normalZ,
                         para->getParD(level)->QStress.Vx,      para->getParD(level)->QStress.Vy,        para->getParD(level)->QStress.Vz,
@@ -533,7 +533,7 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
                         para->getParD(level)->wallModel.samplingOffset, para->getParD(level)->wallModel.z0,
                         para->getHasWallModelMonitor(),        para->getParD(level)->wallModel.u_star,
                         para->getParD(level)->wallModel.Fx,    para->getParD(level)->wallModel.Fy,      para->getParD(level)->wallModel.Fz,
-                        para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP,      para->getParD(level)->neighborZ_SP, 
+                        para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP,      para->getParD(level)->neighborZ_SP,
                         para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
         getLastCudaError("BBStressDevice27 execution failed");
     }
@@ -547,31 +547,31 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
 		if (para->getCalcDragLift())
 		{
 			//Drag and Lift Part I
-			DragLiftPostD27(para->getParD(level)->d0SP.f[0], 
-			                para->getParD(level)->QGeom.k, 
+			DragLiftPostD27(para->getParD(level)->d0SP.f[0],
+			                para->getParD(level)->QGeom.k,
 			                para->getParD(level)->QGeom.q27[0],
-			                para->getParD(level)->QGeom.kQ, 
+			                para->getParD(level)->QGeom.kQ,
 			                para->getParD(level)->DragPostX,
 			                para->getParD(level)->DragPostY,
 			                para->getParD(level)->DragPostZ,
 			                para->getParD(level)->neighborX_SP,
 			                para->getParD(level)->neighborY_SP,
 			                para->getParD(level)->neighborZ_SP,
-			                para->getParD(level)->size_Mat_SP, 
+			                para->getParD(level)->size_Mat_SP,
 			                para->getParD(level)->evenOrOdd,
 			                para->getParD(level)->numberofthreads);
-			getLastCudaError("DragLift27 execution failed"); 
+			getLastCudaError("DragLift27 execution failed");
 		}
 
         //BBDev27( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
-        //         para->getParD(level)->d0SP.f[0],             para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0], 
+        //         para->getParD(level)->d0SP.f[0],             para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0],
         //         para->getParD(level)->QGeom.kQ,              para->getParD(level)->QGeom.kQ,     para->getParD(level)->omega,
         //         para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
         //         para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
         //getLastCudaError("BBDev27 (Wall) execution failed");
 
         //QDev27(para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
-        //		 para->getParD(level)->d0SP.f[0],             para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0], 
+        //		 para->getParD(level)->d0SP.f[0],             para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0],
         //		 para->getParD(level)->QGeom.kQ,              para->getParD(level)->QGeom.kQ,     para->getParD(level)->omega,
         //		 para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
         //		 para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
@@ -579,14 +579,14 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
 
         //QVelDev27(para->getParD(level)->numberofthreads, para->getParD(level)->nx,           para->getParD(level)->ny,
         //          para->getParD(level)->QGeom.Vx,        para->getParD(level)->QGeom.Vy,     para->getParD(level)->QGeom.Vz,
-        //          para->getParD(level)->d0SP.f[0],       para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0], 
+        //          para->getParD(level)->d0SP.f[0],       para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0],
         //          para->getParD(level)->QGeom.kQ,        para->getParD(level)->QGeom.kQ,     para->getParD(level)->omega,
         //          para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
         //          para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
         //getLastCudaError("QVelDev27 execution failed");
 
         //QDevComp27(para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
-        //           para->getParD(level)->d0SP.f[0],             para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0], 
+        //           para->getParD(level)->d0SP.f[0],             para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0],
         //           para->getParD(level)->QGeom.kQ,              para->getParD(level)->QGeom.kQ,     para->getParD(level)->omega,
         //           para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
         //           para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
@@ -594,7 +594,7 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
 
         QVelDevComp27(para->getParD(level)->numberofthreads, para->getParD(level)->nx,           para->getParD(level)->ny,
                       para->getParD(level)->QGeom.Vx,        para->getParD(level)->QGeom.Vy,     para->getParD(level)->QGeom.Vz,
-                      para->getParD(level)->d0SP.f[0],       para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0], 
+                      para->getParD(level)->d0SP.f[0],       para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0],
                       para->getParD(level)->QGeom.kQ,        para->getParD(level)->QGeom.kQ,     para->getParD(level)->omega,
                       para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
                       para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
@@ -602,14 +602,14 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
 
         //QVelDevCompZeroPress27(	para->getParD(0)->numberofthreads, para->getParD(0)->nx,           para->getParD(0)->ny,
 		//						para->getParD(0)->QGeom.Vx,        para->getParD(0)->QGeom.Vy,     para->getParD(0)->QGeom.Vz,
-		//						para->getParD(0)->d0SP.f[0],       para->getParD(0)->QGeom.k,      para->getParD(0)->QGeom.q27[0], 
+		//						para->getParD(0)->d0SP.f[0],       para->getParD(0)->QGeom.k,      para->getParD(0)->QGeom.q27[0],
 		//						para->getParD(0)->QGeom.kQ,        para->getParD(0)->QGeom.kQ,     para->getParD(0)->omega,
 		//						para->getParD(0)->neighborX_SP,    para->getParD(0)->neighborY_SP, para->getParD(0)->neighborZ_SP,
 		//						para->getParD(0)->size_Mat_SP,     para->getParD(0)->evenOrOdd);
 		//getLastCudaError("QVelDevCompZeroPress27 execution failed");
 
         //QDev3rdMomentsComp27( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
-        //                      para->getParD(level)->d0SP.f[0],             para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0], 
+        //                      para->getParD(level)->d0SP.f[0],             para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0],
         //                      para->getParD(level)->QGeom.kQ,              para->getParD(level)->QGeom.kQ,     para->getParD(level)->omega,
         //                      para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
         //                      para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
@@ -625,7 +625,7 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
         // D E P R E C A T E D
         //////////////////////////////////////////////////////////////////////////
         // the GridGenerator does currently not provide normals!
-        
+
         //QSlipGeomDevComp27(para->getParD(level)->numberofthreads,     para->getParD(level)->d0SP.f[0],           para->getParD(level)->QGeom.k,
         //                   para->getParD(level)->QGeom.q27[0],        para->getParD(level)->QGeom.kQ,            para->getParD(level)->omega,
         //                   para->getParD(level)->QGeomNormalX.q27[0], para->getParD(level)->QGeomNormalY.q27[0], para->getParD(level)->QGeomNormalZ.q27[0],
@@ -665,7 +665,7 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
     if (para->getParD(level)->kPressQ > 0)
     {
         //QPressDev27_IntBB(  para->getParD(level)->numberofthreads, para->getParD(level)->QPress.RhoBC,
-        //					para->getParD(level)->d0SP.f[0],       para->getParD(level)->QPress.k,       para->getParD(level)->QPress.q27[0], 
+        //					para->getParD(level)->d0SP.f[0],       para->getParD(level)->QPress.k,       para->getParD(level)->QPress.q27[0],
         //					para->getParD(level)->QPress.kQ,       para->getParD(level)->QPress.kQ,      para->getParD(level)->omega,
         //					para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP,   para->getParD(level)->neighborZ_SP,
         //					para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
@@ -683,8 +683,8 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
             if (para->getParD(level)->QGeom.kQ > 0)
             {
                 //QNoSlipADincompDev7( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
-                //                     para->getParD(level)->d0SP.f[0],             para->getParD(level)->d7.f[0],      para->getParD(level)->Temp.temp,  
-                //                     para->getParD(level)->diffusivity,           para->getParD(level)->Temp.k,       para->getParD(level)->QGeom.q27[0], 
+                //                     para->getParD(level)->d0SP.f[0],             para->getParD(level)->d7.f[0],      para->getParD(level)->Temp.temp,
+                //                     para->getParD(level)->diffusivity,           para->getParD(level)->Temp.k,       para->getParD(level)->QGeom.q27[0],
                 //                     para->getParD(level)->Temp.kTemp,            para->getParD(level)->Temp.kTemp,   para->getParD(level)->omega,
                 //                     para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
                 //                     para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
@@ -693,10 +693,10 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
                 //////////////////////////////////////////////////////////////////////////
                 // C O M P R E S S I B L E
                 //////////////////////////////////////////////////////////////////////////
-                
+
                 QADDev7( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
-                         para->getParD(level)->d0SP.f[0],             para->getParD(level)->d7.f[0],      para->getParD(level)->Temp.temp,  
-                         para->getParD(level)->diffusivity,           para->getParD(level)->Temp.k,       para->getParD(level)->QGeom.q27[0], 
+                         para->getParD(level)->d0SP.f[0],             para->getParD(level)->d7.f[0],      para->getParD(level)->Temp.temp,
+                         para->getParD(level)->diffusivity,           para->getParD(level)->Temp.k,       para->getParD(level)->QGeom.q27[0],
                          para->getParD(level)->Temp.kTemp,            para->getParD(level)->Temp.kTemp,   para->getParD(level)->omega,
                          para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
                          para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
@@ -708,10 +708,10 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
             if (para->getParD(level)->TempVel.kTemp > 0)
             {
                 //QADVeloIncompDev7(  para->getParD(level)->numberofthreads,    para->getParD(level)->nx,				para->getParD(level)->ny,
-                //                    para->getParD(level)->d0SP.f[0],          para->getParD(level)->d7.f[0],			para->getParD(level)->TempVel.tempPulse, 
+                //                    para->getParD(level)->d0SP.f[0],          para->getParD(level)->d7.f[0],			para->getParD(level)->TempVel.tempPulse,
                 //                    para->getParD(level)->TempVel.velo,       para->getParD(level)->diffusivity,		para->getParD(level)->TempVel.k,
-                //                    para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->TempVel.kTemp,	para->getParD(level)->TempVel.kTemp,  
-                //                    para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,	    para->getParD(level)->neighborY_SP, 
+                //                    para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->TempVel.kTemp,	para->getParD(level)->TempVel.kTemp,
+                //                    para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,	    para->getParD(level)->neighborY_SP,
                 //                    para->getParD(level)->neighborZ_SP,       para->getParD(level)->size_Mat_SP,		para->getParD(level)->evenOrOdd);
                 //getLastCudaError("QADVeloIncompDev7 execution failed");
 
@@ -722,20 +722,20 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
                 //if (t<15580)//(t>500000 && t<515580)//(t>300000 && t<315580)
                 //{
                 //    QADVeloIncompDev7(para->getParD(level)->numberofthreads,    para->getParD(level)->nx,				para->getParD(level)->ny,
-                //                      para->getParD(level)->d0SP.f[0],          para->getParD(level)->d7.f[0],			para->getParD(level)->TempVel.tempPulse, 
+                //                      para->getParD(level)->d0SP.f[0],          para->getParD(level)->d7.f[0],			para->getParD(level)->TempVel.tempPulse,
                 //                      para->getParD(level)->TempVel.velo,       para->getParD(level)->diffusivity,		para->getParD(level)->TempVel.k,
-                //                      para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->TempVel.kTemp,	para->getParD(level)->TempVel.kTemp,  
-                //                      para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,	para->getParD(level)->neighborY_SP, 
+                //                      para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->TempVel.kTemp,	para->getParD(level)->TempVel.kTemp,
+                //                      para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,	para->getParD(level)->neighborY_SP,
                 //                      para->getParD(level)->neighborZ_SP,       para->getParD(level)->size_Mat_SP,		para->getParD(level)->evenOrOdd);
                 //    getLastCudaError("QADVeloIncompDev7 execution failed");
                 //}
                 //else
                 //{
                 //    QADVeloIncompDev7(para->getParD(level)->numberofthreads,    para->getParD(level)->nx,				para->getParD(level)->ny,
-                //                      para->getParD(level)->d0SP.f[0],          para->getParD(level)->d7.f[0],			para->getParD(level)->TempVel.temp, 
+                //                      para->getParD(level)->d0SP.f[0],          para->getParD(level)->d7.f[0],			para->getParD(level)->TempVel.temp,
                 //                      para->getParD(level)->TempVel.velo,       para->getParD(level)->diffusivity,		para->getParD(level)->TempVel.k,
-                //                      para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->TempVel.kTemp,	para->getParD(level)->TempVel.kTemp,  
-                //                      para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,	para->getParD(level)->neighborY_SP, 
+                //                      para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->TempVel.kTemp,	para->getParD(level)->TempVel.kTemp,
+                //                      para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,	para->getParD(level)->neighborY_SP,
                 //                      para->getParD(level)->neighborZ_SP,       para->getParD(level)->size_Mat_SP,		para->getParD(level)->evenOrOdd);
                 //    getLastCudaError("QADVeloIncompDev7 execution failed");
                 //}
@@ -743,12 +743,12 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
                 //////////////////////////////////////////////////////////////////////////
                 // C O M P R E S S I B L E
                 //////////////////////////////////////////////////////////////////////////
-                
+
                 QADVelDev7( para->getParD(level)->numberofthreads,    para->getParD(level)->nx,				para->getParD(level)->ny,
-                            para->getParD(level)->d0SP.f[0],          para->getParD(level)->d7.f[0],			para->getParD(level)->TempVel.temp, 
+                            para->getParD(level)->d0SP.f[0],          para->getParD(level)->d7.f[0],			para->getParD(level)->TempVel.temp,
                             para->getParD(level)->TempVel.velo,       para->getParD(level)->diffusivity,		para->getParD(level)->TempVel.k,
-                            para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->TempVel.kTemp,     para->getParD(level)->TempVel.kTemp,  
-                            para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,		para->getParD(level)->neighborY_SP, 
+                            para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->TempVel.kTemp,     para->getParD(level)->TempVel.kTemp,
+                            para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,		para->getParD(level)->neighborY_SP,
                             para->getParD(level)->neighborZ_SP,       para->getParD(level)->size_Mat_SP,		para->getParD(level)->evenOrOdd);
                 getLastCudaError("QADVelDev27 execution failed");
             }
@@ -756,10 +756,10 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
             if (para->getParD(level)->TempPress.kTemp > 0)
             {
                 //QADPressIncompDev7( para->getParD(level)->numberofthreads,  para->getParD(level)->nx,				para->getParD(level)->ny,
-                //                    para->getParD(level)->d0SP.f[0],        para->getParD(level)->d7.f[0],			para->getParD(level)->TempPress.temp, 
+                //                    para->getParD(level)->d0SP.f[0],        para->getParD(level)->d7.f[0],			para->getParD(level)->TempPress.temp,
                 //                    para->getParD(level)->TempPress.velo,   para->getParD(level)->diffusivity,		para->getParD(level)->TempPress.k,
-                //                    para->getParD(level)->QPress.q27[0],    para->getParD(level)->TempPress.kTemp, para->getParD(level)->TempPress.kTemp,  
-                //                    para->getParD(level)->omega,            para->getParD(level)->neighborX_SP,	para->getParD(level)->neighborY_SP, 
+                //                    para->getParD(level)->QPress.q27[0],    para->getParD(level)->TempPress.kTemp, para->getParD(level)->TempPress.kTemp,
+                //                    para->getParD(level)->omega,            para->getParD(level)->neighborX_SP,	para->getParD(level)->neighborY_SP,
                 //                    para->getParD(level)->neighborZ_SP,     para->getParD(level)->size_Mat_SP,		para->getParD(level)->evenOrOdd);
                 //getLastCudaError("QADPressIncompDev7 execution failed");
 
@@ -768,21 +768,21 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
                 //////////////////////////////////////////////////////////////////////////
 
                 QADPressDev7( para->getParD(level)->numberofthreads,  para->getParD(level)->nx,				para->getParD(level)->ny,
-                              para->getParD(level)->d0SP.f[0],        para->getParD(level)->d7.f[0],			para->getParD(level)->TempPress.temp, 
+                              para->getParD(level)->d0SP.f[0],        para->getParD(level)->d7.f[0],			para->getParD(level)->TempPress.temp,
                               para->getParD(level)->TempPress.velo,   para->getParD(level)->diffusivity,		para->getParD(level)->TempPress.k,
-                              para->getParD(level)->QPress.q27[0],    para->getParD(level)->TempPress.kTemp,   para->getParD(level)->TempPress.kTemp,  
-                              para->getParD(level)->omega,            para->getParD(level)->neighborX_SP,		para->getParD(level)->neighborY_SP, 
+                              para->getParD(level)->QPress.q27[0],    para->getParD(level)->TempPress.kTemp,   para->getParD(level)->TempPress.kTemp,
+                              para->getParD(level)->omega,            para->getParD(level)->neighborX_SP,		para->getParD(level)->neighborY_SP,
                               para->getParD(level)->neighborZ_SP,     para->getParD(level)->size_Mat_SP,		para->getParD(level)->evenOrOdd);
                 getLastCudaError("QADPressDev27 execution failed");
             }
-        } 
+        }
         else if (para->getDiffMod() == 27)
         {
             if (para->getParD(level)->QGeom.kQ > 0)
             {
                 //QNoSlipADincompDev27(para->getParD(level)->numberofthreads,      para->getParD(level)->nx,           para->getParD(level)->ny,
-                //                     para->getParD(level)->d0SP.f[0],            para->getParD(level)->d27.f[0],     para->getParD(level)->Temp.temp,  
-                //                     para->getParD(level)->diffusivity,          para->getParD(level)->Temp.k,       para->getParD(level)->QGeom.q27[0], 
+                //                     para->getParD(level)->d0SP.f[0],            para->getParD(level)->d27.f[0],     para->getParD(level)->Temp.temp,
+                //                     para->getParD(level)->diffusivity,          para->getParD(level)->Temp.k,       para->getParD(level)->QGeom.q27[0],
                 //                     para->getParD(level)->Temp.kTemp,           para->getParD(level)->Temp.kTemp,   para->getParD(level)->omega,
                 //                     para->getParD(level)->neighborX_SP,         para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
                 //                     para->getParD(level)->size_Mat_SP,          para->getParD(level)->evenOrOdd);
@@ -793,8 +793,8 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
                 //////////////////////////////////////////////////////////////////////////
 
                 QADBBDev27(para->getParD(level)->numberofthreads,      para->getParD(level)->nx,           para->getParD(level)->ny,
-                           para->getParD(level)->d0SP.f[0],            para->getParD(level)->d27.f[0],     para->getParD(level)->Temp.temp,  
-                           para->getParD(level)->diffusivity,          para->getParD(level)->Temp.k,       para->getParD(level)->QGeom.q27[0], 
+                           para->getParD(level)->d0SP.f[0],            para->getParD(level)->d27.f[0],     para->getParD(level)->Temp.temp,
+                           para->getParD(level)->diffusivity,          para->getParD(level)->Temp.k,       para->getParD(level)->QGeom.q27[0],
                            para->getParD(level)->Temp.kTemp,           para->getParD(level)->Temp.kTemp,   para->getParD(level)->omega,
                            para->getParD(level)->neighborX_SP,         para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
                            para->getParD(level)->size_Mat_SP,          para->getParD(level)->evenOrOdd);
@@ -804,34 +804,34 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
             if (para->getParD(level)->TempVel.kTemp > 0)
             {
                 QADVeloIncompDev27( para->getParD(level)->numberofthreads,    para->getParD(level)->nx,				para->getParD(level)->ny,
-            	                    para->getParD(level)->d0SP.f[0],          para->getParD(level)->d27.f[0],		para->getParD(level)->TempVel.temp, 
+            	                    para->getParD(level)->d0SP.f[0],          para->getParD(level)->d27.f[0],		para->getParD(level)->TempVel.temp,
             	                    para->getParD(level)->TempVel.velo,       para->getParD(level)->diffusivity,		para->getParD(level)->TempVel.k,
-            	                    para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->TempVel.kTemp,   para->getParD(level)->TempVel.kTemp,  
-            	                    para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,	para->getParD(level)->neighborY_SP, 
+            	                    para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->TempVel.kTemp,   para->getParD(level)->TempVel.kTemp,
+            	                    para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,	para->getParD(level)->neighborY_SP,
             	                    para->getParD(level)->neighborZ_SP,       para->getParD(level)->size_Mat_SP,		para->getParD(level)->evenOrOdd);
                 getLastCudaError("QADVeloIncompDev27 execution failed");
 
                 //////////////////////////////////////////////////////////////////////////
                 // D E P R E C A T E D
                 //////////////////////////////////////////////////////////////////////////
-                
+
                 //if (t>500000 && t<515580)//(t>300000 && t<315580)
                 //{
                 //    QADVeloIncompDev27(para->getParD(level)->numberofthreads,    para->getParD(level)->nx,				 para->getParD(level)->ny,
-                //                       para->getParD(level)->d0SP.f[0],          para->getParD(level)->d27.f[0],		 para->getParD(level)->TempVel.tempPulse, 
+                //                       para->getParD(level)->d0SP.f[0],          para->getParD(level)->d27.f[0],		 para->getParD(level)->TempVel.tempPulse,
                 //                       para->getParD(level)->TempVel.velo,       para->getParD(level)->diffusivity,	 para->getParD(level)->TempVel.k,
-                //                       para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->TempVel.kTemp,   para->getParD(level)->TempVel.kTemp,  
-                //                       para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,	 para->getParD(level)->neighborY_SP, 
+                //                       para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->TempVel.kTemp,   para->getParD(level)->TempVel.kTemp,
+                //                       para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,	 para->getParD(level)->neighborY_SP,
                 //                       para->getParD(level)->neighborZ_SP,       para->getParD(level)->size_Mat_SP,	 para->getParD(level)->evenOrOdd);
                 //    getLastCudaError("QADVeloIncompDev27 execution failed");
                 //}
                 //else
                 //{
                 //    QADVeloIncompDev27(para->getParD(level)->numberofthreads,    para->getParD(level)->nx,				para->getParD(level)->ny,
-                //                       para->getParD(level)->d0SP.f[0],          para->getParD(level)->d27.f[0],		para->getParD(level)->TempVel.temp, 
+                //                       para->getParD(level)->d0SP.f[0],          para->getParD(level)->d27.f[0],		para->getParD(level)->TempVel.temp,
                 //                       para->getParD(level)->TempVel.velo,       para->getParD(level)->diffusivity,	para->getParD(level)->TempVel.k,
-                //                       para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->TempVel.kTemp,  para->getParD(level)->TempVel.kTemp,  
-                //                       para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,	para->getParD(level)->neighborY_SP, 
+                //                       para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->TempVel.kTemp,  para->getParD(level)->TempVel.kTemp,
+                //                       para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,	para->getParD(level)->neighborY_SP,
                 //                       para->getParD(level)->neighborZ_SP,       para->getParD(level)->size_Mat_SP,	para->getParD(level)->evenOrOdd);
                 //    getLastCudaError("QADVeloIncompDev27 execution failed");
                 //}
@@ -839,12 +839,12 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
                 //////////////////////////////////////////////////////////////////////////
                 // C O M P R E S S I B L E
                 //////////////////////////////////////////////////////////////////////////
-                
+
                 QADVelDev27(para->getParD(level)->numberofthreads,    para->getParD(level)->nx,				para->getParD(level)->ny,
-                 	        para->getParD(level)->d0SP.f[0],          para->getParD(level)->d27.f[0],		    para->getParD(level)->TempVel.tempPulse, 
+                 	        para->getParD(level)->d0SP.f[0],          para->getParD(level)->d27.f[0],		    para->getParD(level)->TempVel.tempPulse,
                  	        para->getParD(level)->TempVel.velo,       para->getParD(level)->diffusivity,		para->getParD(level)->Qinflow.k,
-                 	        para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->kInflowQ,         para->getParD(level)->kInflowQ,  
-                 	        para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,     para->getParD(level)->neighborY_SP, 
+                 	        para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->kInflowQ,         para->getParD(level)->kInflowQ,
+                 	        para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,     para->getParD(level)->neighborY_SP,
                  	        para->getParD(level)->neighborZ_SP,       para->getParD(level)->size_Mat_SP,		para->getParD(level)->evenOrOdd);
                 getLastCudaError("QADVelDev27 execution failed");
 
@@ -855,20 +855,20 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
                 //if (t<1000)//(t>100000 && t<103895)//(t>1600000 && t<1662317)//(t>500000 && t<515580)//(t<1000)//(t<15580)//(t>400000 && t<415580)//
                 //{
                 //    QADVelDev27(para->getParD(level)->numberofthreads,    para->getParD(level)->nx,				para->getParD(level)->ny,
-                // 	              para->getParD(level)->d0SP.f[0],          para->getParD(level)->d27.f[0],		    para->getParD(level)->TempVel.tempPulse, 
+                // 	              para->getParD(level)->d0SP.f[0],          para->getParD(level)->d27.f[0],		    para->getParD(level)->TempVel.tempPulse,
                 // 	              para->getParD(level)->TempVel.velo,       para->getParD(level)->diffusivity,		para->getParD(level)->Qinflow.k,
-                // 	              para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->kInflowQ,         para->getParD(level)->kInflowQ,  
-                // 	              para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,     para->getParD(level)->neighborY_SP, 
+                // 	              para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->kInflowQ,         para->getParD(level)->kInflowQ,
+                // 	              para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,     para->getParD(level)->neighborY_SP,
                 // 	              para->getParD(level)->neighborZ_SP,       para->getParD(level)->size_Mat_SP,		para->getParD(level)->evenOrOdd);
                 //    getLastCudaError("QADVelDev27 execution failed");
                 //}
                 //else
                 //{
                 //    QADVelDev27(para->getParD(level)->numberofthreads,    para->getParD(level)->nx,				para->getParD(level)->ny,
-                //                para->getParD(level)->d0SP.f[0],          para->getParD(level)->d27.f[0],		    para->getParD(level)->TempVel.temp, 
+                //                para->getParD(level)->d0SP.f[0],          para->getParD(level)->d27.f[0],		    para->getParD(level)->TempVel.temp,
                 //                para->getParD(level)->TempVel.velo,       para->getParD(level)->diffusivity,		para->getParD(level)->Qinflow.k,
-                //                para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->kInflowQ,         para->getParD(level)->kInflowQ,  
-                //                para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,	    para->getParD(level)->neighborY_SP, 
+                //                para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->kInflowQ,         para->getParD(level)->kInflowQ,
+                //                para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,	    para->getParD(level)->neighborY_SP,
                 //                para->getParD(level)->neighborZ_SP,       para->getParD(level)->size_Mat_SP,		para->getParD(level)->evenOrOdd);
                 //    getLastCudaError("QADVelDev27 execution failed");
                 //}
@@ -877,25 +877,25 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
             if (para->getParD(level)->TempPress.kTemp > 0)
             {
                 //QADPressIncompDev27( para->getParD(level)->numberofthreads,  para->getParD(level)->nx,				para->getParD(level)->ny,
-                //                     para->getParD(level)->d0SP.f[0],        para->getParD(level)->d27.f[0],			para->getParD(level)->TempPress.temp, 
+                //                     para->getParD(level)->d0SP.f[0],        para->getParD(level)->d27.f[0],			para->getParD(level)->TempPress.temp,
                 //                     para->getParD(level)->TempPress.velo,   para->getParD(level)->diffusivity,		para->getParD(level)->TempPress.k,
-                //                     para->getParD(level)->QPress.q27[0],    para->getParD(level)->TempPress.kTemp,  para->getParD(level)->TempPress.kTemp,  
-                //                     para->getParD(level)->omega,            para->getParD(level)->neighborX_SP,		para->getParD(level)->neighborY_SP, 
+                //                     para->getParD(level)->QPress.q27[0],    para->getParD(level)->TempPress.kTemp,  para->getParD(level)->TempPress.kTemp,
+                //                     para->getParD(level)->omega,            para->getParD(level)->neighborX_SP,		para->getParD(level)->neighborY_SP,
                 //                     para->getParD(level)->neighborZ_SP,     para->getParD(level)->size_Mat_SP,		para->getParD(level)->evenOrOdd);
                 //getLastCudaError("QADPressIncompDev27 execution failed");
 
                 //////////////////////////////////////////////////////////////////////////
                 // C O M P R E S S I B L E
                 //////////////////////////////////////////////////////////////////////////
-                
+
                 QADPressDev27( para->getParD(level)->numberofthreads,  para->getParD(level)->nx,				para->getParD(level)->ny,
-                               para->getParD(level)->d0SP.f[0],        para->getParD(level)->d27.f[0],			para->getParD(level)->TempPress.temp, 
+                               para->getParD(level)->d0SP.f[0],        para->getParD(level)->d27.f[0],			para->getParD(level)->TempPress.temp,
                                para->getParD(level)->TempPress.velo,   para->getParD(level)->diffusivity,		para->getParD(level)->TempPress.k,
-                               para->getParD(level)->QPress.q27[0],    para->getParD(level)->TempPress.kTemp,  para->getParD(level)->TempPress.kTemp,  
-                               para->getParD(level)->omega,            para->getParD(level)->neighborX_SP,		para->getParD(level)->neighborY_SP, 
+                               para->getParD(level)->QPress.q27[0],    para->getParD(level)->TempPress.kTemp,  para->getParD(level)->TempPress.kTemp,
+                               para->getParD(level)->omega,            para->getParD(level)->neighborX_SP,		para->getParD(level)->neighborY_SP,
                                para->getParD(level)->neighborZ_SP,     para->getParD(level)->size_Mat_SP,		para->getParD(level)->evenOrOdd);
                 getLastCudaError("QADPressDev27 execution failed");
-            
+
             }
         }
     }
@@ -909,20 +909,20 @@ void swapBetweenEvenAndOddTimestep(Parameter* para, int level)
 
 void calcMacroscopicQuantities(Parameter* para, int level)
 {
-    CalcMacCompSP27(para->getParD(level)->vx_SP,       
-                    para->getParD(level)->vy_SP,        
-                    para->getParD(level)->vz_SP,        
-                    para->getParD(level)->rho_SP, 
-                    para->getParD(level)->press_SP, 
-                    para->getParD(level)->geoSP,       
-                    para->getParD(level)->neighborX_SP, 
-                    para->getParD(level)->neighborY_SP, 
+    CalcMacCompSP27(para->getParD(level)->vx_SP,
+                    para->getParD(level)->vy_SP,
+                    para->getParD(level)->vz_SP,
+                    para->getParD(level)->rho_SP,
+                    para->getParD(level)->press_SP,
+                    para->getParD(level)->geoSP,
+                    para->getParD(level)->neighborX_SP,
+                    para->getParD(level)->neighborY_SP,
                     para->getParD(level)->neighborZ_SP,
                     para->getParD(level)->size_Mat_SP,
-                    para->getParD(level)->numberofthreads,       
-                    para->getParD(level)->d0SP.f[0],    
+                    para->getParD(level)->numberofthreads,
+                    para->getParD(level)->d0SP.f[0],
                     para->getParD(level)->evenOrOdd);
-    getLastCudaError("CalcMacSP27 execution failed"); 
+    getLastCudaError("CalcMacSP27 execution failed");
 }
 
 void preCollisionBC(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t)
@@ -933,13 +933,14 @@ void preCollisionBC(Parameter* para, CudaMemoryManager* cudaManager, int level, 
 
 	if (para->getParD(level)->kInflowQ > 0)
 	{
+        // TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
 		//if (  myid == 0)
 		//{
 		//    VelSchlaffer27(para->getParD(level)->numberofthreads, t,
-		//                   para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qinflow.Vz, 
-		//                   para->getParD(level)->Qinflow.deltaVz, para->getParD(level)->Qinflow.k,  
-		//                   para->getParD(level)->Qinflow.kN,      para->getParD(level)->kInflowQ, 
-		//                   para->getParD(level)->omega,           para->getParD(level)->neighborX_SP, 
+		//                   para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qinflow.Vz,
+		//                   para->getParD(level)->Qinflow.deltaVz, para->getParD(level)->Qinflow.k,
+		//                   para->getParD(level)->Qinflow.kN,      para->getParD(level)->kInflowQ,
+		//                   para->getParD(level)->omega,           para->getParD(level)->neighborX_SP,
 		//                   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP,
 		//                   para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
 		//    getLastCudaError("VelSchlaffer27 execution failed");
@@ -948,7 +949,7 @@ void preCollisionBC(Parameter* para, CudaMemoryManager* cudaManager, int level, 
 		// high viscosity incompressible
 		//QVelDevIncompHighNu27(para->getParD(level)->numberofthreads, para->getParD(level)->nx,           para->getParD(level)->ny,
 		//                      para->getParD(level)->Qinflow.Vx,      para->getParD(level)->Qinflow.Vy,   para->getParD(level)->Qinflow.Vz,
-		//                      para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qinflow.k,    para->getParD(level)->Qinflow.q27[0], 
+		//                      para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qinflow.k,    para->getParD(level)->Qinflow.q27[0],
 		//                      para->getParD(level)->kInflowQ,        para->getParD(level)->kInflowQ,     para->getParD(level)->omega,
 		//                      para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
 		//                      para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
@@ -957,7 +958,7 @@ void preCollisionBC(Parameter* para, CudaMemoryManager* cudaManager, int level, 
 		// high viscosity compressible
 		//QVelDevCompHighNu27(para->getParD(level)->numberofthreads, para->getParD(level)->nx,           para->getParD(level)->ny,
         //                    para->getParD(level)->Qinflow.Vx,      para->getParD(level)->Qinflow.Vy,   para->getParD(level)->Qinflow.Vz,
-        //                    para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qinflow.k,    para->getParD(level)->Qinflow.q27[0], 
+        //                    para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qinflow.k,    para->getParD(level)->Qinflow.q27[0],
         //                    para->getParD(level)->kInflowQ,        para->getParD(level)->kInflowQ,     para->getParD(level)->omega,
         //                    para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
         //                    para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
@@ -973,20 +974,20 @@ void preCollisionBC(Parameter* para, CudaMemoryManager* cudaManager, int level, 
 		if (para->getCalcDragLift())
 		{
 			//Drag and Lift Part II
-			DragLiftPreD27(para->getParD(level)->d0SP.f[0], 
-			               para->getParD(level)->QGeom.k, 
+			DragLiftPreD27(para->getParD(level)->d0SP.f[0],
+			               para->getParD(level)->QGeom.k,
 			               para->getParD(level)->QGeom.q27[0],
-			               para->getParD(level)->QGeom.kQ, 
+			               para->getParD(level)->QGeom.kQ,
 			               para->getParD(level)->DragPreX,
 			               para->getParD(level)->DragPreY,
 			               para->getParD(level)->DragPreZ,
 			               para->getParD(level)->neighborX_SP,
 			               para->getParD(level)->neighborY_SP,
 			               para->getParD(level)->neighborZ_SP,
-			               para->getParD(level)->size_Mat_SP, 
+			               para->getParD(level)->size_Mat_SP,
 			               para->getParD(level)->evenOrOdd,
 			               para->getParD(level)->numberofthreads);
-			getLastCudaError("DragLift27 execution failed"); 
+			getLastCudaError("DragLift27 execution failed");
 			////////////////////////////////////////////////////////////////////////////////
 			//Calculation of Drag and Lift
 			////////////////////////////////////////////////////////////////////////////////
@@ -1003,36 +1004,36 @@ void preCollisionBC(Parameter* para, CudaMemoryManager* cudaManager, int level, 
 			if(t > para->getTStartOut())
 			{
                 ////////////////////////////////////////////////////////////////////////////////
-                CalcCPtop27(para->getParD(level)->d0SP.f[0], 
-                            para->getParD(level)->cpTopIndex, 
-                            para->getParD(level)->numberOfPointsCpTop, 
+                CalcCPtop27(para->getParD(level)->d0SP.f[0],
+                            para->getParD(level)->cpTopIndex,
+                            para->getParD(level)->numberOfPointsCpTop,
                             para->getParD(level)->cpPressTop,
                             para->getParD(level)->neighborX_SP,
                             para->getParD(level)->neighborY_SP,
                             para->getParD(level)->neighborZ_SP,
-                            para->getParD(level)->size_Mat_SP, 
+                            para->getParD(level)->size_Mat_SP,
                             para->getParD(level)->evenOrOdd,
                             para->getParD(level)->numberofthreads);
                 //////////////////////////////////////////////////////////////////////////////////
                 CalcCPbottom27(para->getParD(level)->d0SP.f[0],
-                               para->getParD(level)->cpBottomIndex, 
-                               para->getParD(level)->numberOfPointsCpBottom, 
+                               para->getParD(level)->cpBottomIndex,
+                               para->getParD(level)->numberOfPointsCpBottom,
                                para->getParD(level)->cpPressBottom,
                                para->getParD(level)->neighborX_SP,
                                para->getParD(level)->neighborY_SP,
                                para->getParD(level)->neighborZ_SP,
-                               para->getParD(level)->size_Mat_SP, 
+                               para->getParD(level)->size_Mat_SP,
                                para->getParD(level)->evenOrOdd,
                                para->getParD(level)->numberofthreads);
                 //////////////////////////////////////////////////////////////////////////////////
                 CalcCPbottom27(para->getParD(level)->d0SP.f[0],
-                               para->getParD(level)->cpBottom2Index, 
-                               para->getParD(level)->numberOfPointsCpBottom2, 
+                               para->getParD(level)->cpBottom2Index,
+                               para->getParD(level)->numberOfPointsCpBottom2,
                                para->getParD(level)->cpPressBottom2,
                                para->getParD(level)->neighborX_SP,
                                para->getParD(level)->neighborY_SP,
                                para->getParD(level)->neighborZ_SP,
-                               para->getParD(level)->size_Mat_SP, 
+                               para->getParD(level)->size_Mat_SP,
                                para->getParD(level)->evenOrOdd,
                                para->getParD(level)->numberofthreads);
                 //////////////////////////////////////////////////////////////////////////////////
@@ -1044,7 +1045,7 @@ void preCollisionBC(Parameter* para, CudaMemoryManager* cudaManager, int level, 
 		////////////////////////////////////////////////////////////////////////////////
 		// high viscosity incompressible
 		//QDevIncompHighNu27( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
-		//                    para->getParD(level)->d0SP.f[0],             para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0], 
+		//                    para->getParD(level)->d0SP.f[0],             para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0],
 		//                    para->getParD(level)->QGeom.kQ,              para->getParD(level)->QGeom.kQ,     para->getParD(level)->omega,
 		//                    para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
 		//                    para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
@@ -1052,7 +1053,7 @@ void preCollisionBC(Parameter* para, CudaMemoryManager* cudaManager, int level, 
 		//////////////////////////////////////////////////////////////////////////////////
 		// high viscosity compressible
 		//QDevCompHighNu27( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
-		//                  para->getParD(level)->d0SP.f[0],             para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0], 
+		//                  para->getParD(level)->d0SP.f[0],             para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0],
 		//                  para->getParD(level)->QGeom.kQ,              para->getParD(level)->QGeom.kQ,     para->getParD(level)->omega,
 		//                  para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
 		//                  para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
@@ -1072,16 +1073,16 @@ void preCollisionBC(Parameter* para, CudaMemoryManager* cudaManager, int level, 
 		                para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
 		getLastCudaError("QPressNoRhoDev27 execution failed");
 
-		//QPressDevEQZ27(para->getParD(level)->numberofthreads, para->getParD(level)->QPress.RhoBC, 
-		//               para->getParD(level)->d0SP.f[0],       para->getParD(level)->QPress.k,  
-		//               para->getParD(level)->QPress.kN,       para->getParD(level)->kDistTestRE.f[0],       
+		//QPressDevEQZ27(para->getParD(level)->numberofthreads, para->getParD(level)->QPress.RhoBC,
+		//               para->getParD(level)->d0SP.f[0],       para->getParD(level)->QPress.k,
+		//               para->getParD(level)->QPress.kN,       para->getParD(level)->kDistTestRE.f[0],
 		//               para->getParD(level)->QPress.kQ,       para->getParD(level)->omega,
 		//               para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(0)->neighborZ_SP,
 		//               para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
 		//getLastCudaError("QPressDevEQZ27 execution failed");
 
-		//QInflowScaleByPressDev27( para->getParD(level)->numberofthreads, para->getParD(level)->QPress.RhoBC, 
-		//                          para->getParD(level)->d0SP.f[0],       para->getParD(level)->QPress.k,  
+		//QInflowScaleByPressDev27( para->getParD(level)->numberofthreads, para->getParD(level)->QPress.RhoBC,
+		//                          para->getParD(level)->d0SP.f[0],       para->getParD(level)->QPress.k,
 		//                          para->getParD(level)->QPress.kN,       para->getParD(level)->QPress.kQ,    para->getParD(0)->omega,
 		//                          para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(0)->neighborZ_SP,
 		//                          para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
@@ -1089,16 +1090,16 @@ void preCollisionBC(Parameter* para, CudaMemoryManager* cudaManager, int level, 
 
 		////////////////////////////////////////////////////////////////////////////////
         //press NEQ incompressible
-        //QPressDevIncompNEQ27(para->getParD(level)->numberofthreads, para->getParD(level)->QPress.RhoBC, 
-        //                     para->getParD(level)->d0SP.f[0],       para->getParD(level)->QPress.k,  
+        //QPressDevIncompNEQ27(para->getParD(level)->numberofthreads, para->getParD(level)->QPress.RhoBC,
+        //                     para->getParD(level)->d0SP.f[0],       para->getParD(level)->QPress.k,
         //                     para->getParD(level)->QPress.kN,       para->getParD(level)->QPress.kQ,    para->getParD(level)->omega,
         //                     para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
         //                     para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
         //getLastCudaError("QPressDevIncompNEQ27 execution failed");
         //////////////////////////////////////////////////////////////////////////////////
         //press NEQ compressible
-        // QPressDevNEQ27( para->getParD(level)->numberofthreads, para->getParD(level)->QPress.RhoBC, 
-        //                 para->getParD(level)->d0SP.f[0],       para->getParD(level)->QPress.k,  
+        // QPressDevNEQ27( para->getParD(level)->numberofthreads, para->getParD(level)->QPress.RhoBC,
+        //                 para->getParD(level)->d0SP.f[0],       para->getParD(level)->QPress.k,
         //                 para->getParD(level)->QPress.kN,       para->getParD(level)->QPress.kQ,    para->getParD(level)->omega,
         //                 para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
         //                 para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
@@ -1112,20 +1113,20 @@ void preCollisionBC(Parameter* para, CudaMemoryManager* cudaManager, int level, 
 
 	if (para->getParD(level)->kOutflowQ > 0)
 	{
-		//QPressNoRhoDev27( para->getParD(level)->numberofthreads, para->getParD(level)->Qoutflow.RhoBC, 
-		//                  para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qoutflow.k,  
+		//QPressNoRhoDev27( para->getParD(level)->numberofthreads, para->getParD(level)->Qoutflow.RhoBC,
+		//                  para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qoutflow.k,
 		//                  para->getParD(level)->Qoutflow.kN,     para->getParD(level)->Qoutflow.kQ,    para->getParD(level)->omega,
 		//                  para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP,   para->getParD(level)->neighborZ_SP,
 		//                  para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
 		//getLastCudaError("QPressNoRhoDev27 execution failed");
 
-		//if (  myid == numprocs - 1)  
+		//if (  myid == numprocs - 1)
 		//PressSchlaffer27( para->getParD(level)->numberofthreads,  para->getParD(level)->Qoutflow.RhoBC,
-		//                  para->getParD(level)->d0SP.f[0],        para->getParD(level)->Qoutflow.Vx, 
-		//                  para->getParD(level)->Qoutflow.Vy,      para->getParD(level)->Qoutflow.Vz, 
-		//                  para->getParD(level)->Qoutflow.deltaVz, para->getParD(level)->Qoutflow.k,  
-		//                  para->getParD(level)->Qoutflow.kN,      para->getParD(level)->kOutflowQ,                      
-		//                  para->getParD(level)->omega,            para->getParD(level)->neighborX_SP,    
+		//                  para->getParD(level)->d0SP.f[0],        para->getParD(level)->Qoutflow.Vx,
+		//                  para->getParD(level)->Qoutflow.Vy,      para->getParD(level)->Qoutflow.Vz,
+		//                  para->getParD(level)->Qoutflow.deltaVz, para->getParD(level)->Qoutflow.k,
+		//                  para->getParD(level)->Qoutflow.kN,      para->getParD(level)->kOutflowQ,
+		//                  para->getParD(level)->omega,            para->getParD(level)->neighborX_SP,
 		//                  para->getParD(level)->neighborY_SP,     para->getParD(level)->neighborZ_SP,
 		//                  para->getParD(level)->size_Mat_SP,      para->getParD(level)->evenOrOdd);
 		//getLastCudaError("PressSchlaffer27 execution failed");
@@ -1146,7 +1147,7 @@ void fineToCoarse(Parameter* para, int level)
     //                     para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP,
     //                     para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP,
     //                     para->getParD(level)->size_Mat_SP,    para->getParD(level+1)->size_Mat_SP,   para->getParD(level)->evenOrOdd,
-    //                     para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF, 
+    //                     para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF,
     //                     para->getParD(level)->K_FC,           para->getParD(level)->omega,           para->getParD(level+1)->omega,
     //                     para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny,
     //                     para->getParD(level+1)->nx,           para->getParD(level+1)->ny,            para->getParD(level)->numberofthreads,
@@ -1157,42 +1158,42 @@ void fineToCoarse(Parameter* para, int level)
 	//                     para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP,
 	//                     para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP,
 	//                     para->getParD(level)->size_Mat_SP,    para->getParD(level+1)->size_Mat_SP,   para->getParD(level)->evenOrOdd,
-	//                     para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF, 
+	//                     para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF,
 	//                     para->getParD(level)->K_FC,           para->getParD(level)->omega,           para->getParD(level+1)->omega,
 	//                     para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny,
 	//                     para->getParD(level+1)->nx,           para->getParD(level+1)->ny,            para->getParD(level)->numberofthreads,
 	//                     para->getParD(level)->offFC);
     //getLastCudaError("ScaleFC_0817_comp_27 execution failed");
 
-	//ScaleFC_RhoSq_3rdMom_comp_27(	para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0], 
-	//	                            para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP, 
-	//	                            para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP, 
+	//ScaleFC_RhoSq_3rdMom_comp_27(	para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],
+	//	                            para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP,
+	//	                            para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP,
 	//	                            para->getParD(level)->size_Mat_SP,    para->getParD(level+1)->size_Mat_SP,   para->getParD(level)->evenOrOdd,
-	//	                            para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF, 
-	//	                            para->getParD(level)->K_FC,           para->getParD(level)->omega,           para->getParD(level+1)->omega, 
-	//	                            para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny, 
+	//	                            para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF,
+	//	                            para->getParD(level)->K_FC,           para->getParD(level)->omega,           para->getParD(level+1)->omega,
+	//	                            para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny,
 	//	                            para->getParD(level+1)->nx,           para->getParD(level+1)->ny,            para->getParD(level)->numberofthreads,
 	//	                            para->getParD(level)->offFC);
     //getLastCudaError("ScaleFC_RhoSq_3rdMom_comp_27 execution failed");
 
-	ScaleFC_RhoSq_comp_27(	para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0], 
-							para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP, 
-							para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP, 
+	ScaleFC_RhoSq_comp_27(	para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],
+							para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP,
+							para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP,
 							para->getParD(level)->size_Mat_SP,    para->getParD(level+1)->size_Mat_SP,   para->getParD(level)->evenOrOdd,
-							para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF, 
-							para->getParD(level)->K_FC,           para->getParD(level)->omega,           para->getParD(level+1)->omega, 
-							para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny, 
+							para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF,
+							para->getParD(level)->K_FC,           para->getParD(level)->omega,           para->getParD(level+1)->omega,
+							para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny,
 							para->getParD(level+1)->nx,           para->getParD(level+1)->ny,            para->getParD(level)->numberofthreads,
 							para->getParD(level)->offFC,          CU_STREAM_LEGACY);
     getLastCudaError("ScaleFC27_RhoSq_comp execution failed");
 
-	//ScaleFC_AA2016_comp_27( para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0], 
-    //                        para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP, 
-    //                        para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP, 
+	//ScaleFC_AA2016_comp_27( para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],
+    //                        para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP,
+    //                        para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP,
     //                        para->getParD(level)->size_Mat_SP,    para->getParD(level+1)->size_Mat_SP,   para->getParD(level)->evenOrOdd,
-    //                        para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF, 
-    //                        para->getParD(level)->K_FC,           para->getParD(level)->omega,           para->getParD(level+1)->omega, 
-    //                        para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny, 
+    //                        para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF,
+    //                        para->getParD(level)->K_FC,           para->getParD(level)->omega,           para->getParD(level+1)->omega,
+    //                        para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny,
     //                        para->getParD(level+1)->nx,           para->getParD(level+1)->ny,            para->getParD(level)->numberofthreads,
     //                        para->getParD(level)->offFC);
     //getLastCudaError("ScaleFC_AA2016_comp_27 execution failed");
@@ -1203,80 +1204,80 @@ void fineToCoarse(Parameter* para, int level)
     // D E P R E C A T E D
     //////////////////////////////////////////////////////////////////////////
 
-    //ScaleFC27(  para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0], 
-    //            para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,   para->getParD(level)->neighborZ_SP, 
-    //            para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP, para->getParD(level+1)->neighborZ_SP, 
+    //ScaleFC27(  para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],
+    //            para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,   para->getParD(level)->neighborZ_SP,
+    //            para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP, para->getParD(level+1)->neighborZ_SP,
     //            para->getParD(level)->size_Mat_SP,    para->getParD(level+1)->size_Mat_SP,  para->getParD(level)->evenOrOdd,
-    //            para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF, 
-    //            para->getParD(level)->K_FC,           para->getParD(level)->omega,          para->getParD(level+1)->omega, 
-    //            para->getParD(level)->vis,            para->getParD(level)->nx,             para->getParD(level)->ny, 
+    //            para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF,
+    //            para->getParD(level)->K_FC,           para->getParD(level)->omega,          para->getParD(level+1)->omega,
+    //            para->getParD(level)->vis,            para->getParD(level)->nx,             para->getParD(level)->ny,
     //            para->getParD(level+1)->nx,           para->getParD(level+1)->ny,           para->getParD(level)->gridNX);
     //getLastCudaError("ScaleFC27 execution failed");
 
-	//ScaleFCEff27(  para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0], 
-	//               para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP, 
-	//               para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP, 
+	//ScaleFCEff27(  para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],
+	//               para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP,
+	//               para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP,
 	//               para->getParD(level)->size_Mat_SP,    para->getParD(level+1)->size_Mat_SP,   para->getParD(level)->evenOrOdd,
-	//               para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF, 
-	//               para->getParD(level)->K_FC,           para->getParD(level)->omega,           para->getParD(level+1)->omega, 
-	//               para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny, 
+	//               para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF,
+	//               para->getParD(level)->K_FC,           para->getParD(level)->omega,           para->getParD(level+1)->omega,
+	//               para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny,
 	//               para->getParD(level+1)->nx,           para->getParD(level+1)->ny,            para->getParD(level)->numberofthreads,
 	//               para->getParD(level)->offFC);
 	//getLastCudaError("ScaleFC27 execution failed");
 
-	//ScaleFCLast27( para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0], 
-	//               para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP, 
-	//               para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP, 
+	//ScaleFCLast27( para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],
+	//               para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP,
+	//               para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP,
 	//               para->getParD(level)->size_Mat_SP,    para->getParD(level+1)->size_Mat_SP,   para->getParD(level)->evenOrOdd,
-	//               para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF, 
-	//               para->getParD(level)->K_FC,           para->getParD(level)->omega,           para->getParD(level+1)->omega, 
-	//               para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny, 
+	//               para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF,
+	//               para->getParD(level)->K_FC,           para->getParD(level)->omega,           para->getParD(level+1)->omega,
+	//               para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny,
 	//               para->getParD(level+1)->nx,           para->getParD(level+1)->ny,            para->getParD(level)->numberofthreads,
 	//               para->getParD(level)->offFC);
 	//getLastCudaError("ScaleFC27 execution failed");
 
-	//ScaleFCpress27(para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0], 
-	//               para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP, 
-	//               para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP, 
+	//ScaleFCpress27(para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],
+	//               para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP,
+	//               para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP,
 	//               para->getParD(level)->size_Mat_SP,    para->getParD(level+1)->size_Mat_SP,   para->getParD(level)->evenOrOdd,
-	//               para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF, 
-	//               para->getParD(level)->K_FC,           para->getParD(level)->omega,           para->getParD(level+1)->omega, 
-	//               para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny, 
+	//               para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF,
+	//               para->getParD(level)->K_FC,           para->getParD(level)->omega,           para->getParD(level+1)->omega,
+	//               para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny,
 	//               para->getParD(level+1)->nx,           para->getParD(level+1)->ny,            para->getParD(level)->numberofthreads,
 	//               para->getParD(level)->offFC);
 	//getLastCudaError("ScaleFC27 execution failed");
 
-	// ScaleFC_Fix_comp_27(	para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0], 
-	//                      para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP, 
-	//                      para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP, 
+	// ScaleFC_Fix_comp_27(	para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],
+	//                      para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP,
+	//                      para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP,
 	//                      para->getParD(level)->size_Mat_SP,    para->getParD(level+1)->size_Mat_SP,   para->getParD(level)->evenOrOdd,
-	//                      para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF, 
-	//                      para->getParD(level)->K_FC,           para->getParD(level)->omega,           para->getParD(level+1)->omega, 
-	//                      para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny, 
+	//                      para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF,
+	//                      para->getParD(level)->K_FC,           para->getParD(level)->omega,           para->getParD(level+1)->omega,
+	//                      para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny,
 	//                      para->getParD(level+1)->nx,           para->getParD(level+1)->ny,            para->getParD(level)->numberofthreads,
 	//                      para->getParD(level)->offFC);
 	// getLastCudaError("ScaleFC27 execution failed");
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// incompressible
-	//ScaleFC_Fix_27(para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0], 
-	//               para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP, 
-	//               para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP, 
+	//ScaleFC_Fix_27(para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],
+	//               para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP,
+	//               para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP,
 	//               para->getParD(level)->size_Mat_SP,    para->getParD(level+1)->size_Mat_SP,   para->getParD(level)->evenOrOdd,
-	//               para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF, 
-	//               para->getParD(level)->K_FC,           para->getParD(level)->omega,           para->getParD(level+1)->omega, 
-	//               para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny, 
+	//               para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF,
+	//               para->getParD(level)->K_FC,           para->getParD(level)->omega,           para->getParD(level+1)->omega,
+	//               para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny,
 	//               para->getParD(level+1)->nx,           para->getParD(level+1)->ny,            para->getParD(level)->numberofthreads,
 	//               para->getParD(level)->offFC);
 	//getLastCudaError("ScaleFC27 execution failed");
 
-	//ScaleFC_NSPress_27(para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0], 
-	//                   para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP, 
-	//                   para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP, 
+	//ScaleFC_NSPress_27(para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],
+	//                   para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP,
+	//                   para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP,
 	//                   para->getParD(level)->size_Mat_SP,    para->getParD(level+1)->size_Mat_SP,   para->getParD(level)->evenOrOdd,
-	//                   para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF, 
-	//                   para->getParD(level)->K_FC,           para->getParD(level)->omega,           para->getParD(level+1)->omega, 
-	//                   para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny, 
+	//                   para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF,
+	//                   para->getParD(level)->K_FC,           para->getParD(level)->omega,           para->getParD(level+1)->omega,
+	//                   para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny,
 	//                   para->getParD(level+1)->nx,           para->getParD(level+1)->ny,            para->getParD(level)->numberofthreads,
 	//                   para->getParD(level)->offFC);
 	//getLastCudaError("ScaleFC27 execution failed");
@@ -1292,39 +1293,39 @@ void fineToCoarse(Parameter* para, int level)
         {
             //ScaleFCThS7(   para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],
             //               para->getParD(level)->d7.f[0],        para->getParD(level+1)->d7.f[0],
-            //               para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP, 
-            //               para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP, 
+            //               para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP,
+            //               para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP,
             //               para->getParD(level)->size_Mat_SP,    para->getParD(level+1)->size_Mat_SP,   para->getParD(level)->evenOrOdd,
-            //               para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF, 
+            //               para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF,
             //               para->getParD(level)->K_FC,
             //               para->getParD(level)->vis,            para->getParD(level)->diffusivity,     para->getParD(level)->numberofthreads);
             //getLastCudaError("ScaleFCTh7 execution failed");
-            
+
             ScaleFCThSMG7( para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],
                            para->getParD(level)->d7.f[0],        para->getParD(level+1)->d7.f[0],
-                           para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP, 
-                           para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP, 
+                           para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP,
+                           para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP,
                            para->getParD(level)->size_Mat_SP,    para->getParD(level+1)->size_Mat_SP,   para->getParD(level)->evenOrOdd,
-                           para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF, 
+                           para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF,
                            para->getParD(level)->K_FC,
                            para->getParD(level)->vis,            para->getParD(level)->diffusivity,     para->getParD(level)->numberofthreads,
                            para->getParD(level)->offFC);
             getLastCudaError("ScaleFCTh7 execution failed");
-        } 
+        }
         else if (para->getDiffMod() == 27)
-        {            
+        {
             ScaleFCThS27( para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],
                           para->getParD(level)->d27.f[0],       para->getParD(level+1)->d27.f[0],
-                          para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP, 
-                          para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP, 
+                          para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP,
+                          para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP,
                           para->getParD(level)->size_Mat_SP,    para->getParD(level+1)->size_Mat_SP,   para->getParD(level)->evenOrOdd,
-                          para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF, 
+                          para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF,
                           para->getParD(level)->K_FC,
                           para->getParD(level)->vis,            para->getParD(level)->diffusivity,     para->getParD(level)->numberofthreads,
                           para->getParD(level)->offFC);
             getLastCudaError("ScaleFCTh27 execution failed");
         }
-    } 
+    }
 
 }
 
@@ -1332,13 +1333,13 @@ void fineToCoarseWithStream(Parameter *para, int level, uint *iCellFCC, uint *iC
 {
     cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
 
-    ScaleFC_RhoSq_comp_27(	para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0], 
-							para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP, 
-							para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP, 
+    ScaleFC_RhoSq_comp_27(	para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],
+							para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP,
+							para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP,
 							para->getParD(level)->size_Mat_SP,    para->getParD(level+1)->size_Mat_SP,   para->getParD(level)->evenOrOdd,
-							iCellFCC,                             iCellFCF, 
-							k_FC,                                 para->getParD(level)->omega,           para->getParD(level + 1)->omega, 
-							para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny, 
+							iCellFCC,                             iCellFCF,
+							k_FC,                                 para->getParD(level)->omega,           para->getParD(level + 1)->omega,
+							para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny,
 							para->getParD(level+1)->nx,           para->getParD(level+1)->ny,            para->getParD(level)->numberofthreads,
 							para->getParD(level)->offFC,          stream);
     getLastCudaError("ScaleFC27_RhoSq_comp execution failed");
@@ -1358,9 +1359,9 @@ void coarseToFine(Parameter* para, int level)
     //                     para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP,
     //                     para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP,
     //                     para->getParD(level)->size_Mat_SP,    para->getParD(level+1)->size_Mat_SP,   para->getParD(level)->evenOrOdd,
-    //                     para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF, 			   
-    //                     para->getParD(level)->K_CF,           para->getParD(level)->omega,           para->getParD(level+1)->omega, 
-    //                     para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny, 
+    //                     para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF,
+    //                     para->getParD(level)->K_CF,           para->getParD(level)->omega,           para->getParD(level+1)->omega,
+    //                     para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny,
     //                     para->getParD(level+1)->nx,           para->getParD(level+1)->ny,            para->getParD(level)->numberofthreads,
     //                     para->getParD(level)->offCF);
     //getLastCudaError("ScaleCF_comp_D3Q27F3 execution failed");
@@ -1376,13 +1377,13 @@ void coarseToFine(Parameter* para, int level)
     //                     para->getParD(level)->offCF);
     //getLastCudaError("ScaleCF_0817_comp_27 execution failed");
 
-	//ScaleCF_RhoSq_3rdMom_comp_27(	para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],                
+	//ScaleCF_RhoSq_3rdMom_comp_27(	para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],
 	//                              para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP,
 	//                              para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP,
 	//                              para->getParD(level)->size_Mat_SP,    para->getParD(level+1)->size_Mat_SP,   para->getParD(level)->evenOrOdd,
-	//                              para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF, 
-	//                              para->getParD(level)->K_CF,           para->getParD(level)->omega,           para->getParD(level+1)->omega, 
-	//                              para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny, 
+	//                              para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF,
+	//                              para->getParD(level)->K_CF,           para->getParD(level)->omega,           para->getParD(level+1)->omega,
+	//                              para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny,
 	//                              para->getParD(level+1)->nx,           para->getParD(level+1)->ny,            para->getParD(level)->numberofthreads,
 	//                              para->getParD(level)->offCF);
 	//getLastCudaError("ScaleCF_RhoSq_3rdMom_comp_27 execution failed");
@@ -1398,13 +1399,13 @@ void coarseToFine(Parameter* para, int level)
                           para->getParD(level)->offCF,            cudaStreamLegacy);
     getLastCudaError("ScaleCF27_RhoSq_comp execution failed");
 
-    //ScaleCF_AA2016_comp_27( para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],                
+    //ScaleCF_AA2016_comp_27( para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],
     //                        para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP,
     //                        para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP,
     //                        para->getParD(level)->size_Mat_SP,    para->getParD(level+1)->size_Mat_SP,   para->getParD(level)->evenOrOdd,
-    //                        para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF, 
-    //                        para->getParD(level)->K_CF,           para->getParD(level)->omega,           para->getParD(level+1)->omega, 
-    //                        para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny, 
+    //                        para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF,
+    //                        para->getParD(level)->K_CF,           para->getParD(level)->omega,           para->getParD(level+1)->omega,
+    //                        para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny,
     //                        para->getParD(level+1)->nx,           para->getParD(level+1)->ny,            para->getParD(level)->numberofthreads,
     //                        para->getParD(level)->offCF);
     //getLastCudaError("ScaleCF_AA2016_comp_27 execution failed");
@@ -1415,80 +1416,80 @@ void coarseToFine(Parameter* para, int level)
 	// D E P R E C A T E D
 	//////////////////////////////////////////////////////////////////////////
 
-    //ScaleCF27(  para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],                
+    //ScaleCF27(  para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],
     //            para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,   para->getParD(level)->neighborZ_SP,
     //            para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP, para->getParD(level+1)->neighborZ_SP,
     //            para->getParD(level)->size_Mat_SP,    para->getParD(level+1)->size_Mat_SP,  para->getParD(level)->evenOrOdd,
-    //            para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF, 
-    //            para->getParD(level)->K_CF,           para->getParD(level)->omega,          para->getParD(level+1)->omega, 
-    //            para->getParD(level)->vis,            para->getParD(level)->nx,             para->getParD(level)->ny, 
+    //            para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF,
+    //            para->getParD(level)->K_CF,           para->getParD(level)->omega,          para->getParD(level+1)->omega,
+    //            para->getParD(level)->vis,            para->getParD(level)->nx,             para->getParD(level)->ny,
     //            para->getParD(level+1)->nx,           para->getParD(level+1)->ny,           para->getParD(level)->gridNX);
     //getLastCudaError("ScaleCF27 execution failed");
 
-    //ScaleCFEff27(  para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],                
+    //ScaleCFEff27(  para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],
     //               para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP,
     //               para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP,
     //               para->getParD(level)->size_Mat_SP,    para->getParD(level+1)->size_Mat_SP,   para->getParD(level)->evenOrOdd,
-    //               para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF, 
-    //               para->getParD(level)->K_CF,           para->getParD(level)->omega,           para->getParD(level+1)->omega, 
-    //               para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny, 
+    //               para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF,
+    //               para->getParD(level)->K_CF,           para->getParD(level)->omega,           para->getParD(level+1)->omega,
+    //               para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny,
     //               para->getParD(level+1)->nx,           para->getParD(level+1)->ny,            para->getParD(level)->numberofthreads,
     //               para->getParD(level)->offCF);
     //getLastCudaError("ScaleCF27 execution failed");
 
-    //ScaleCFLast27( para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],                
+    //ScaleCFLast27( para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],
     //               para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP,
     //               para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP,
     //               para->getParD(level)->size_Mat_SP,    para->getParD(level+1)->size_Mat_SP,   para->getParD(level)->evenOrOdd,
-    //               para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF, 
-    //               para->getParD(level)->K_CF,           para->getParD(level)->omega,           para->getParD(level+1)->omega, 
-    //               para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny, 
+    //               para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF,
+    //               para->getParD(level)->K_CF,           para->getParD(level)->omega,           para->getParD(level+1)->omega,
+    //               para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny,
     //               para->getParD(level+1)->nx,           para->getParD(level+1)->ny,            para->getParD(level)->numberofthreads,
     //               para->getParD(level)->offCF);
     //getLastCudaError("ScaleCF27 execution failed");
-    
-    //ScaleCFpress27(para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],                
+
+    //ScaleCFpress27(para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],
     //               para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP,
     //               para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP,
     //               para->getParD(level)->size_Mat_SP,    para->getParD(level+1)->size_Mat_SP,   para->getParD(level)->evenOrOdd,
-    //               para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF, 
-    //               para->getParD(level)->K_CF,           para->getParD(level)->omega,           para->getParD(level+1)->omega, 
-    //               para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny, 
+    //               para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF,
+    //               para->getParD(level)->K_CF,           para->getParD(level)->omega,           para->getParD(level+1)->omega,
+    //               para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny,
     //               para->getParD(level+1)->nx,           para->getParD(level+1)->ny,            para->getParD(level)->numberofthreads,
     //               para->getParD(level)->offCF);
     //getLastCudaError("ScaleCF27 execution failed");
-    
-    // ScaleCF_Fix_comp_27(	para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],                
+
+    // ScaleCF_Fix_comp_27(	para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],
     //                      para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP,
     //                      para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP,
     //                      para->getParD(level)->size_Mat_SP,    para->getParD(level+1)->size_Mat_SP,   para->getParD(level)->evenOrOdd,
-    //                      para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF, 
-    //                      para->getParD(level)->K_CF,           para->getParD(level)->omega,           para->getParD(level+1)->omega, 
-    //                      para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny, 
+    //                      para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF,
+    //                      para->getParD(level)->K_CF,           para->getParD(level)->omega,           para->getParD(level+1)->omega,
+    //                      para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny,
     //                      para->getParD(level+1)->nx,           para->getParD(level+1)->ny,            para->getParD(level)->numberofthreads,
     //                      para->getParD(level)->offCF);
     // getLastCudaError("ScaleCF27 execution failed");
-    
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// incompressible
-    //ScaleCF_Fix_27(para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],                
+    //ScaleCF_Fix_27(para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],
     //               para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP,
     //               para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP,
     //               para->getParD(level)->size_Mat_SP,    para->getParD(level+1)->size_Mat_SP,   para->getParD(level)->evenOrOdd,
-    //               para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF, 
-    //               para->getParD(level)->K_CF,           para->getParD(level)->omega,           para->getParD(level+1)->omega, 
-    //               para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny, 
+    //               para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF,
+    //               para->getParD(level)->K_CF,           para->getParD(level)->omega,           para->getParD(level+1)->omega,
+    //               para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny,
     //               para->getParD(level+1)->nx,           para->getParD(level+1)->ny,            para->getParD(level)->numberofthreads,
     //               para->getParD(level)->offCF);
     //getLastCudaError("ScaleCF27 execution failed");
-    
-    //ScaleCF_NSPress_27(para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],                
+
+    //ScaleCF_NSPress_27(para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],
     //                   para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP,
     //                   para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP,
     //                   para->getParD(level)->size_Mat_SP,    para->getParD(level+1)->size_Mat_SP,   para->getParD(level)->evenOrOdd,
-    //                   para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF, 
-    //                   para->getParD(level)->K_CF,           para->getParD(level)->omega,           para->getParD(level+1)->omega, 
-    //                   para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny, 
+    //                   para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF,
+    //                   para->getParD(level)->K_CF,           para->getParD(level)->omega,           para->getParD(level+1)->omega,
+    //                   para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny,
     //                   para->getParD(level+1)->nx,           para->getParD(level+1)->ny,            para->getParD(level)->numberofthreads,
     //                   para->getParD(level)->offCF);
     //getLastCudaError("ScaleCF27 execution failed");
@@ -1502,41 +1503,41 @@ void coarseToFine(Parameter* para, int level)
     {
         if (para->getDiffMod() == 7)
         {
-            //ScaleCFThS7(   para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],                
-            //               para->getParD(level)->d7.f[0],        para->getParD(level+1)->d7.f[0],                
+            //ScaleCFThS7(   para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],
+            //               para->getParD(level)->d7.f[0],        para->getParD(level+1)->d7.f[0],
             //               para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP,
             //               para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP,
             //               para->getParD(level)->size_Mat_SP,    para->getParD(level+1)->size_Mat_SP,   para->getParD(level)->evenOrOdd,
-            //               para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF, 
-            //               para->getParD(level)->K_CF,           
+            //               para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF,
+            //               para->getParD(level)->K_CF,
             //               para->getParD(level)->vis,            para->getParD(level+1)->diffusivity,   para->getParD(level)->numberofthreads);
             //getLastCudaError("ScaleCFTh7 execution failed");
-            
-            ScaleCFThSMG7( para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],                
-                           para->getParD(level)->d7.f[0],        para->getParD(level+1)->d7.f[0],                
+
+            ScaleCFThSMG7( para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],
+                           para->getParD(level)->d7.f[0],        para->getParD(level+1)->d7.f[0],
                            para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP,
                            para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP,
                            para->getParD(level)->size_Mat_SP,    para->getParD(level+1)->size_Mat_SP,   para->getParD(level)->evenOrOdd,
-                           para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF, 
-                           para->getParD(level)->K_CF,           
+                           para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF,
+                           para->getParD(level)->K_CF,
                            para->getParD(level)->vis,            para->getParD(level+1)->diffusivity,   para->getParD(level)->numberofthreads,
                            para->getParD(level)->offCF);
-            getLastCudaError("ScaleCFTh7 execution failed");            
-        } 
+            getLastCudaError("ScaleCFTh7 execution failed");
+        }
         else if (para->getDiffMod() == 27)
         {
-            ScaleCFThS27( para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],                
-                          para->getParD(level)->d27.f[0],       para->getParD(level+1)->d27.f[0],                
+            ScaleCFThS27( para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],
+                          para->getParD(level)->d27.f[0],       para->getParD(level+1)->d27.f[0],
                           para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP,
                           para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP,
                           para->getParD(level)->size_Mat_SP,    para->getParD(level+1)->size_Mat_SP,   para->getParD(level)->evenOrOdd,
-                          para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF, 
-                          para->getParD(level)->K_CF,           
+                          para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF,
+                          para->getParD(level)->K_CF,
                           para->getParD(level)->vis,            para->getParD(level+1)->diffusivity,   para->getParD(level)->numberofthreads,
                           para->getParD(level)->offCF);
-            getLastCudaError("ScaleCFTh27 execution failed");            
+            getLastCudaError("ScaleCFTh27 execution failed");
         }
-    } 
+    }
 
 }
 
@@ -1565,7 +1566,7 @@ void coarseToFineWithStream(Parameter *para, int level, uint *iCellCFC, uint *iC
 UpdateGrid27::UpdateGrid27(SPtr<Parameter> para, vf::gpu::Communicator &comm, SPtr<CudaMemoryManager> cudaManager,
                            std::vector<std::shared_ptr<PorousMedia>> &pm, std::vector<SPtr<Kernel>> &kernels)
     : para(para), comm(comm), cudaManager(cudaManager), pm(pm), kernels(kernels)
-{ 
+{
     chooseFunctionForCollisionAndExchange();
     chooseFunctionForRefinementAndExchange();
 }
@@ -1575,7 +1576,7 @@ void UpdateGrid27::chooseFunctionForCollisionAndExchange()
 {
     std::cout << "Function used for collisionAndExchange: ";
     if (para->getUseStreams() && para->getNumprocs() > 1 && para->getKernelNeedsFluidNodeIndicesToRun()) {
-        this->collisionAndExchange = &UpdateGrid27::collisionAndExchange_streams; 
+        this->collisionAndExchange = &UpdateGrid27::collisionAndExchange_streams;
         std::cout << "collisionAndExchange_streams()" << std::endl;
 
     } else if (para->getUseStreams() && !para->getKernelNeedsFluidNodeIndicesToRun()) {
@@ -1607,15 +1608,15 @@ void UpdateGrid27::chooseFunctionForRefinementAndExchange()
     } else if (para->getNumprocs() == 1) {
         this->refinementAndExchange = &UpdateGrid27::refinementAndExchange_noExchange;
         std::cout << "refinementAndExchange_noExchange()" << std::endl;
-    
+
     } else if (para->getNumprocs() > 1 && para->getUseStreams() && para->useReducedCommunicationAfterFtoC) {
         this->refinementAndExchange = &UpdateGrid27::refinementAndExchange_streams_onlyExchangeInterface;
         std::cout << "refinementAndExchange_streams_onlyExchangeInterface()" << std::endl;
-    
+
     } else if(para->getNumprocs() > 1 && para->getUseStreams() && !para->useReducedCommunicationAfterFtoC){
-        this->refinementAndExchange = &UpdateGrid27::refinementAndExchange_streams_completeExchange; 
+        this->refinementAndExchange = &UpdateGrid27::refinementAndExchange_streams_completeExchange;
         std::cout << "refinementAndExchange_streams_completeExchange()" << std::endl;
-    
+
     } else if (para->getNumprocs() > 1 && !para->getUseStreams() && para->useReducedCommunicationAfterFtoC) {
         this->refinementAndExchange = &UpdateGrid27::refinementAndExchange_noStreams_onlyExchangeInterface;
         std::cout << "refinementAndExchange_noStreams_onlyExchangeInterface()" << std::endl;

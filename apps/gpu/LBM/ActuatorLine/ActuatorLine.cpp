@@ -48,9 +48,6 @@
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PointProbe.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlaneProbe.h"
 
-#include "VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
-#include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
-
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -177,10 +174,6 @@ void multipleLevel(const std::string& configPath)
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
-
-    SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
-
     real turbPos[3] = {3*reference_diameter, 3*reference_diameter, 3*reference_diameter};
     real epsilon = 5.f; // width of gaussian smearing
     real density = 1.225f;
@@ -207,16 +200,12 @@ void multipleLevel(const std::string& configPath)
     para->addProbe( planeProbe );
 
 
+    auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
 
+    auto gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
 
-    Simulation sim(communicator);
-    SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
-    SPtr<KernelFactoryImp> kernelFactory = KernelFactoryImp::getInstance();
-    SPtr<PreProcessorFactoryImp> preProcessorFactory = PreProcessorFactoryImp::getInstance();
-    sim.setFactories(kernelFactory, preProcessorFactory);
-    sim.init(para, gridGenerator, fileWriter, cudaMemoryManager);        
+    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator);
     sim.run();
-    sim.free();
 }
 
 int main( int argc, char* argv[])
@@ -236,11 +225,11 @@ int main( int argc, char* argv[])
         }
 
         catch (const std::bad_alloc& e)
-        { 
+        {
             VF_LOG_CRITICAL("Bad Alloc: {}", e.what());
         }
         catch (const std::exception& e)
-        {   
+        {
             VF_LOG_CRITICAL("exception: {}", e.what());
         }
         catch (...)

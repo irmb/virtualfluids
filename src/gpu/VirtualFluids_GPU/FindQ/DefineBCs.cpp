@@ -53,7 +53,7 @@ void findQ27(Parameter* para, CudaMemoryManager* cudaManager)
 
 
 void findBC27(Parameter* para, CudaMemoryManager* cudaManager)
-{                                      
+{
    if ( para->getMyID() == 0)
    {
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -71,7 +71,8 @@ void findBC27(Parameter* para, CudaMemoryManager* cudaManager)
 	  cudaManager->cudaCopyVeloBC(0); //level = 0
    }
 
-   //...!!!...next if gets a block comment for a simple test... 
+    // TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
+   //...!!!...next if gets a block comment for a simple test...
    //if (  para->getMyID() == para->getNumprocs() - 1)
    //{
    //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -95,12 +96,12 @@ void findBC27(Parameter* para, CudaMemoryManager* cudaManager)
    //                      by                            //////////////////////////////////////////////////////////////////////////////////////////////
    //               Maddin Schlaffer                     //////////////////////////////////////////////////////////////////////////////////////////////
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   //findKforQSchlaff( para->getParH(para->getCoarse())->nx,      
-   //                  para->getParH(para->getCoarse())->ny, 
-   //                  para->getParH(para->getCoarse())->gridNX,  
-   //                  para->getParH(para->getCoarse())->gridNY, 
-   //                  para->getParH(para->getCoarse())->gridNZ,  
-   //                  para->getParH(para->getCoarse())->geo,   
+   //findKforQSchlaff( para->getParH(para->getCoarse())->nx,
+   //                  para->getParH(para->getCoarse())->ny,
+   //                  para->getParH(para->getCoarse())->gridNX,
+   //                  para->getParH(para->getCoarse())->gridNY,
+   //                  para->getParH(para->getCoarse())->gridNZ,
+   //                  para->getParH(para->getCoarse())->geo,
    //                  QnH,
    //                  QsH,
    //                  QeH,
@@ -157,13 +158,13 @@ void findBC27(Parameter* para, CudaMemoryManager* cudaManager)
    //cudaHostMemoryAllocate((void**) &deltaVWH,                    mem_size_W_Q_q );
    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    ////find inflow Q's on coarse grid
-   //findQSchlaff(  para->getParH(para->getCoarse())->nx,      
-   //               para->getParH(para->getCoarse())->ny, 
-   //               para->getParH(para->getCoarse())->gridNX,  
-   //               para->getParH(para->getCoarse())->gridNY, 
-   //               para->getParH(para->getCoarse())->gridNZ,  
-   //               para->getParH(para->getCoarse())->geo,   
-   //               para->getParH(para->getCoarse())->k, 
+   //findQSchlaff(  para->getParH(para->getCoarse())->nx,
+   //               para->getParH(para->getCoarse())->ny,
+   //               para->getParH(para->getCoarse())->gridNX,
+   //               para->getParH(para->getCoarse())->gridNY,
+   //               para->getParH(para->getCoarse())->gridNZ,
+   //               para->getParH(para->getCoarse())->geo,
+   //               para->getParH(para->getCoarse())->k,
    //               kNQ, VxNH, VyNH, VzNH, deltaVNH, QnH.q27[0], QnH,
    //               kSQ, VxSH, VySH, VzSH, deltaVSH, QsH.q27[0], QsH,
    //               kEQ, VxEH, VyEH, VzEH, deltaVEH, QeH.q27[0], QeH,
@@ -171,7 +172,7 @@ void findBC27(Parameter* para, CudaMemoryManager* cudaManager)
    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //// Allocate Device Memory
    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   ////North   
+   ////North
    //cudaMemoryAllocate((void**) &QnD.q27[0], para->getD3Qxx()* mem_size_N_Q_q );
    //cudaMemoryAllocate((void**) &QnD.k,                        mem_size_N_Q_k );
    //cudaMemoryAllocate((void**) &VxND,                         mem_size_N_Q_q );
@@ -205,7 +206,7 @@ void findBC27(Parameter* para, CudaMemoryManager* cudaManager)
    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //// Copy Host Memory to Device
    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   ////North   
+   ////North
    //cudaMemoryCopy(QnD.q27[0], QnH.q27[0], para->getD3Qxx()* mem_size_N_Q_q,  cudaMemcpyHostToDevice);
    //cudaMemoryCopy(QnD.k,      QnH.k,                        mem_size_N_Q_k,  cudaMemcpyHostToDevice);
    //cudaMemoryCopy(VxND,       VxNH,                         mem_size_N_Q_q,  cudaMemcpyHostToDevice);
