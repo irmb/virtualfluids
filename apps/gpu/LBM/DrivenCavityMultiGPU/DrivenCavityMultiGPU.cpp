@@ -92,11 +92,12 @@ void multipleLevel(const std::string &configPath)
     logging::Logger::timeStamp(logging::Logger::ENABLE);
     logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
 
+    vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();
+
     auto gridFactory = GridFactory::make();
     gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
 
-    vf::gpu::Communicator &communicator = vf::gpu::Communicator::getInstance();
     vf::basics::ConfigurationFile config;
     std::cout << configPath << std::endl;
     config.load(configPath);
@@ -554,7 +555,6 @@ void multipleLevel(const std::string &configPath)
 
 int main(int argc, char *argv[])
 {
-    MPI_Init(&argc, &argv);
     std::string str, str2, configFile;
 
     if (argv != NULL) {
@@ -594,7 +594,5 @@ int main(int argc, char *argv[])
             *logging::out << logging::Logger::LOGGER_ERROR << "Unknown exception!\n";
         }
     }
-
-    MPI_Finalize();
     return 0;
 }
