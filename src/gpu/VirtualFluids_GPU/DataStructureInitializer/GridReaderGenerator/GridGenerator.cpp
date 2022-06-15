@@ -139,8 +139,8 @@ void GridGenerator::allocArrays_BoundaryValues()
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         para->getParH(level)->QSlip.kQ = numberOfSlipValues;
         para->getParD(level)->QSlip.kQ = numberOfSlipValues;
-        para->getParH(level)->kSlipQ   = numberOfSlipValues;
-        para->getParD(level)->kSlipQ   = numberOfSlipValues;
+        para->getParH(level)->numberOfSlipBCnodes   = numberOfSlipValues;
+        para->getParD(level)->numberOfSlipBCnodes   = numberOfSlipValues;
         para->getParH(level)->kSlipQread = numberOfSlipValues * para->getD3Qxx();
         para->getParD(level)->kSlipQread = numberOfSlipValues * para->getD3Qxx();
         if (numberOfSlipValues > 1)

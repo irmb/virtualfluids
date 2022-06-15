@@ -406,36 +406,18 @@ void UpdateGrid27::postCollisionBC(int level, unsigned int t)
 {
     //////////////////////////////////////////////////////////////////////////
     // V E L O C I T Y (I N F L O W)
-    //////////////////////////////////////////////////////////////////////////
     this->cudaKernelManager->runVelocityBCKernel(level);
 
     //////////////////////////////////////////////////////////////////////////
     // N O - S L I P
-    //////////////////////////////////////////////////////////////////////////
     this->cudaKernelManager->runNoSlipBCKernel(level);
 
     //////////////////////////////////////////////////////////////////////////
     // S L I P
-    //////////////////////////////////////////////////////////////////////////
-    if (para->getParD(level)->kSlipQ > 0)
-    {
-        //QSlipDev27( para->getParD(level)->numberofthreads, para->getParD(level)->d0SP.f[0],    para->getParD(level)->QSlip.k,
-        //            para->getParD(level)->QSlip.q27[0],    para->getParD(level)->kSlipQ,       para->getParD(level)->omega,
-        //            para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
-        //            para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
-        //getLastCudaError("Slip27 execution failed");
-
-        QSlipDevComp27( para->getParD(level)->numberofthreads, para->getParD(level)->d0SP.f[0],    para->getParD(level)->QSlip.k,
-                        para->getParD(level)->QSlip.q27[0],    para->getParD(level)->kSlipQ,       para->getParD(level)->omega,
-                        para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
-                        para->getParD(level)->turbViscosity,   para->getUseTurbulentViscosity(),
-                        para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
-        getLastCudaError("QSlipDev27 execution failed");
-    }
+    this->cudaKernelManager->runSlipBCKernel(level);
 
     //////////////////////////////////////////////////////////////////////////
     // S T R E S S (wall model)
-    //////////////////////////////////////////////////////////////////////////
     if (para->getParD(level)->kStressQ > 0)
     {
         // QStressDevComp27( para->getParD(level)->numberofthreads, para->getParD(level)->d0SP.f[0],
