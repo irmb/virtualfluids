@@ -354,6 +354,47 @@ void CudaKernelManager::runGeoBCKernelPost(int level)
     }
 }
 
+void CudaKernelManager::runOutflowBCKernel(int level){
+    if (para->getParD(level)->numberOfOutflowBCnodes > 0)
+    {
+        //////////////////////////////////////////////////////////////////////////
+        // D E P R E C A T E D
+        //////////////////////////////////////////////////////////////////////////
+        // QPressDevFixBackflow27(
+        //     para->getParD(level)->numberofthreads,
+        //     RhoBCOutflowD,
+        //     para->getParD(level)->d0SP.f[0],
+        //     QoutflowD.k,
+        //     numberOfOutflowBCnodes,
+        //     para->getParD(level)->omega,
+        //     para->getParD(level)->neighborX_SP,
+        //     para->getParD(level)->neighborY_SP,
+        //     para->getParD(level)->neighborZ_SP,
+        //     para->getParD(level)->size_Mat_SP,
+        //     para->getParD(level)->evenOrOdd);
+    }
+}
+
+void CudaKernelManager::runPressureBCKernelPost(int level){
+    if (para->getParD(level)->kPressQ > 0)
+    {
+        QPressDev27_IntBB(
+            para->getParD(level)->numberofthreads, 
+            para->getParD(level)->QPress.RhoBC,
+            para->getParD(level)->d0SP.f[0],
+            para->getParD(level)->QPress.k,
+            para->getParD(level)->QPress.q27[0],
+            para->getParD(level)->QPress.numberOfBCnodes,
+            para->getParD(level)->QPress.numberOfBCnodes,
+            para->getParD(level)->omega,
+            para->getParD(level)->neighborX_SP,
+            para->getParD(level)->neighborY_SP,
+            para->getParD(level)->neighborZ_SP,
+            para->getParD(level)->size_Mat_SP,
+            para->getParD(level)->evenOrOdd);
+    }
+}
+
 void CudaKernelManager::runStressWallModelKernel(int level){
     if (para->getParD(level)->numberOfStressBCnodes > 0)
     {
@@ -489,7 +530,7 @@ void CudaKernelManager::runNoSlipBCKernel(int level){
     }
 }
 
-// void CudaKernelManager::runPressureBCKernel(int level){
+// void CudaKernelManager::runPressureBCKernelPre(int level){
 //     if (para->getParD()->numberOfPressureBCnodes > 0)
 //     {
 //         // ...

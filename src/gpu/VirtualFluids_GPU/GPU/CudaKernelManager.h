@@ -65,7 +65,13 @@ public:
 	void runNoSlipBCKernel(int level);
 
 	//! \brief calls the device function of the pressure boundary condition
-	void runPressureBCKernel(int level);
+	void runPressureBCKernelPre(int level);
+
+	//! \brief calls the device function of the pressure boundary condition
+	void runPressureBCKernelPost(int level);
+
+	//! \brief calls the device function of the no-slip boundary condition
+	void runOutflowBCKernel(int level);
 
 	//! \brief calls the device function of the stress wall model
 	void runStressWallModelKernel(int level);

@@ -200,7 +200,7 @@ struct LBMSimulationParameter {
 
     // BC's////////////////////
     QforBoundaryConditions QWall, Qinflow, Qoutflow, QSlip, QStress;
-    unsigned int numberOfNoSlipBCnodes = 0, numberOfVeloBCnodes = 0, kOutflowQ = 0, numberOfSlipBCnodes = 0, numberOfStressBCnodes = 0;
+    unsigned int numberOfNoSlipBCnodes = 0, numberOfVeloBCnodes = 0, numberOfOutflowBCnodes = 0, numberOfSlipBCnodes = 0, numberOfStressBCnodes = 0;
     unsigned int kQread, numberOfVeloBCnodesRead, kOutflowQread, kSlipQread, kStressQread;
 
     QforBoundaryConditions QpressX0, QpressX1, QpressY0, QpressY1, QpressZ0, QpressZ1;
@@ -555,7 +555,7 @@ public:
     void setRecvProcessNeighborsAfterFtoCY(int numberOfNodes, int level, int arrayIndex);
     void setRecvProcessNeighborsAfterFtoCZ(int numberOfNodes, int level, int arrayIndex);
     // void setNumberOfVeloBCnodes(unsigned int numberOfVeloBCnodes);
-    // void setkOutflowQ(unsigned int kOutflowQ);
+    // void setkOutflowQ(unsigned int numberOfOutflowBCnodes);
     // void setQinflowH(QforBoundaryConditions* QinflowH);
     // void setQinflowD(QforBoundaryConditions* QinflowD);
     // void setQoutflowH(QforBoundaryConditions* QoutflowH);

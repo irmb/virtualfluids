@@ -422,45 +422,18 @@ void UpdateGrid27::postCollisionBC(int level, unsigned int t)
 
     //////////////////////////////////////////////////////////////////////////
     // G E O M E T R Y
-    //////////////////////////////////////////////////////////////////////////
-
     this->cudaKernelManager->runGeoBCKernelPost(level);
 
     //////////////////////////////////////////////////////////////////////////
     // O U T F L O W
-    //////////////////////////////////////////////////////////////////////////
-
-    if (para->getParD(level)->kOutflowQ > 0)
-    {
-        //////////////////////////////////////////////////////////////////////////
-        // D E P R E C A T E D
-        //////////////////////////////////////////////////////////////////////////
-
-        //QPressDevFixBackflow27( para->getParD(level)->numberofthreads,       RhoBCOutflowD,
-        //                        para->getParD(level)->d0SP.f[0],              QoutflowD.k, kOutflowQ,             para->getParD(level)->omega,
-        //                        para->getParD(level)->neighborX_SP, para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
-        //                        para->getParD(level)->size_Mat_SP,  para->getParD(level)->evenOrOdd);
-        //getLastCudaError("QPressDev27 execution failed");
-    }
+    this->cudaKernelManager->runOutflowBCKernel(level);
 
     //////////////////////////////////////////////////////////////////////////
     // P R E S S U R E
-    //////////////////////////////////////////////////////////////////////////
-
-    if (para->getParD(level)->kPressQ > 0)
-    {
-        //QPressDev27_IntBB(  para->getParD(level)->numberofthreads, para->getParD(level)->QPress.RhoBC,
-        //                    para->getParD(level)->d0SP.f[0],       para->getParD(level)->QPress.k,       para->getParD(level)->QPress.q27[0],
-        //                    para->getParD(level)->QPress.numberOfBCnodes,       para->getParD(level)->QPress.numberOfBCnodes,      para->getParD(level)->omega,
-        //                    para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP,   para->getParD(level)->neighborZ_SP,
-        //                    para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
-        //getLastCudaError("QPressDev27_IntBB fine execution failed");
-    }
+    this->cudaKernelManager->runPressureBCKernelPost(level);
 
     //////////////////////////////////////////////////////////////////////////
     // A D V E C T I O N    D I F F U S I O N
-    //////////////////////////////////////////////////////////////////////////
-
     if (para->getDiffOn())
     {
         if (para->getDiffMod() == 7)
@@ -896,7 +869,7 @@ void preCollisionBC(Parameter* para, CudaMemoryManager* cudaManager, int level, 
     // O U T F L O W
     //////////////////////////////////////////////////////////////////////////
 
-    if (para->getParD(level)->kOutflowQ > 0)
+    if (para->getParD(level)->numberOfOutflowBCnodes > 0)
     {
         //QPressNoRhoDev27( para->getParD(level)->numberofthreads, para->getParD(level)->Qoutflow.RhoBC,
         //                  para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qoutflow.k,
@@ -910,7 +883,7 @@ void preCollisionBC(Parameter* para, CudaMemoryManager* cudaManager, int level, 
         //                  para->getParD(level)->d0SP.f[0],        para->getParD(level)->Qoutflow.Vx,
         //                  para->getParD(level)->Qoutflow.Vy,      para->getParD(level)->Qoutflow.Vz,
         //                  para->getParD(level)->Qoutflow.deltaVz, para->getParD(level)->Qoutflow.k,
-        //                  para->getParD(level)->Qoutflow.kN,      para->getParD(level)->kOutflowQ,
+        //                  para->getParD(level)->Qoutflow.kN,      para->getParD(level)->numberOfOutflowBCnodes,
         //                  para->getParD(level)->omega,            para->getParD(level)->neighborX_SP,
         //                  para->getParD(level)->neighborY_SP,     para->getParD(level)->neighborZ_SP,
         //                  para->getParD(level)->size_Mat_SP,      para->getParD(level)->evenOrOdd);
