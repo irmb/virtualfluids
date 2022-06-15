@@ -175,12 +175,74 @@ void CudaKernelManager::runVelocityBCKernel(int level)
 //     }
 // }
 
-// void CudaKernelManager::runNoSlipBCKernel(int level){
-//     if (para->getParD()->numberOfNoSlipBCnodes > 0)
-//     {
-//         // ...
-//     }
-// }
+void CudaKernelManager::runNoSlipBCKernel(int level){
+    if (para->getParD(level)->numberOfNoSlipBCnodes > 0)
+    {
+        QDev27(
+            para->getParD(level)->numberofthreads,
+            para->getParD(level)->nx,
+            para->getParD(level)->ny,
+            para->getParD(level)->d0SP.f[0],
+            para->getParD(level)->QWall.k,
+            para->getParD(level)->QWall.q27[0],
+            para->getParD(level)->numberOfNoSlipBCnodes,
+            para->getParD(level)->numberOfNoSlipBCnodes,
+            para->getParD(level)->omega,
+            para->getParD(level)->neighborX_SP,
+            para->getParD(level)->neighborY_SP,
+            para->getParD(level)->neighborZ_SP,
+            para->getParD(level)->size_Mat_SP,
+            para->getParD(level)->evenOrOdd);
+
+        BBDev27(
+            para->getParD(level)->numberofthreads,
+            para->getParD(level)->nx,
+            para->getParD(level)->ny,
+            para->getParD(level)->d0SP.f[0],
+            para->getParD(level)->QWall.k,
+            para->getParD(level)->QWall.q27[0],
+            para->getParD(level)->numberOfNoSlipBCnodes,
+            para->getParD(level)->numberOfNoSlipBCnodes,
+            para->getParD(level)->omega,
+            para->getParD(level)->neighborX_SP,
+            para->getParD(level)->neighborY_SP,
+            para->getParD(level)->neighborZ_SP,
+            para->getParD(level)->size_Mat_SP,
+            para->getParD(level)->evenOrOdd);
+
+        QDev27(
+            para->getParD(level)->numberofthreads,
+            para->getParD(level)->nx,
+            para->getParD(level)->ny,
+            para->getParD(level)->d0SP.f[0],
+            para->getParD(level)->QWall.k,
+            para->getParD(level)->QWall.q27[0],
+            para->getParD(level)->numberOfNoSlipBCnodes,
+            para->getParD(level)->numberOfNoSlipBCnodes,
+            para->getParD(level)->omega,
+            para->getParD(level)->neighborX_SP,
+            para->getParD(level)->neighborY_SP,
+            para->getParD(level)->neighborZ_SP,
+            para->getParD(level)->size_Mat_SP,
+            para->getParD(level)->evenOrOdd);
+
+        QDevComp27(
+            para->getParD(level)->numberofthreads,
+            para->getParD(level)->nx,
+            para->getParD(level)->ny,
+            para->getParD(level)->d0SP.f[0],
+            para->getParD(level)->QWall.k,
+            para->getParD(level)->QWall.q27[0],
+            para->getParD(level)->numberOfNoSlipBCnodes,
+            para->getParD(level)->numberOfNoSlipBCnodes,
+            para->getParD(level)->omega,
+            para->getParD(level)->neighborX_SP,
+            para->getParD(level)->neighborY_SP,
+            para->getParD(level)->neighborZ_SP,
+            para->getParD(level)->size_Mat_SP,
+            para->getParD(level)->evenOrOdd);
+    }
+}
 
 // void CudaKernelManager::runPressureBCKernel(int level){
 //     if (para->getParD()->numberOfPressureBCnodes > 0)

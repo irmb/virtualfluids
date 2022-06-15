@@ -764,8 +764,8 @@ void GridReader::setSizeNoSlip(std::shared_ptr<BoundaryQs> boundaryQ, unsigned i
 {
 	para->getParH(level)->QWall.kQ = boundaryQ->getSize(level);
 	para->getParD(level)->QWall.kQ = para->getParH(level)->QWall.kQ;
-	para->getParH(level)->kQ = para->getParH(level)->QWall.kQ;
-	para->getParD(level)->kQ = para->getParH(level)->QWall.kQ;
+	para->getParH(level)->numberOfNoSlipBCnodes = para->getParH(level)->QWall.kQ;
+	para->getParD(level)->numberOfNoSlipBCnodes = para->getParH(level)->QWall.kQ;
     cudaMemoryManager->cudaAllocWallBC(level);
 }
 

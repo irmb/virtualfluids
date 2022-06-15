@@ -19,7 +19,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
 													 int* k_Q, 
 													 real* QQ,
 													 unsigned int sizeQ,
-													 int kQ, 
+													 int numberOfNodes, 
 													 real om1, 
 													 unsigned int* neighborX,
 													 unsigned int* neighborY,
@@ -99,7 +99,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfNodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
@@ -135,24 +135,24 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
       q_dirBNW = &QQ[dirBNW *sizeQ];
       ////////////////////////////////////////////////////////////////////////////////
       //index
-      unsigned int KQK  = k_Q[k];
-      unsigned int kzero= KQK;
-      unsigned int ke   = KQK;
-      unsigned int kw   = neighborX[KQK];
-      unsigned int kn   = KQK;
-      unsigned int ks   = neighborY[KQK];
-      unsigned int kt   = KQK;
-      unsigned int kb   = neighborZ[KQK];
+      unsigned int numberOfNodesK  = k_Q[k];
+      unsigned int kzero= numberOfNodesK;
+      unsigned int ke   = numberOfNodesK;
+      unsigned int kw   = neighborX[numberOfNodesK];
+      unsigned int kn   = numberOfNodesK;
+      unsigned int ks   = neighborY[numberOfNodesK];
+      unsigned int kt   = numberOfNodesK;
+      unsigned int kb   = neighborZ[numberOfNodesK];
       unsigned int ksw  = neighborY[kw];
-      unsigned int kne  = KQK;
+      unsigned int kne  = numberOfNodesK;
       unsigned int kse  = ks;
       unsigned int knw  = kw;
       unsigned int kbw  = neighborZ[kw];
-      unsigned int kte  = KQK;
+      unsigned int kte  = numberOfNodesK;
       unsigned int kbe  = kb;
       unsigned int ktw  = kw;
       unsigned int kbs  = neighborZ[ks];
-      unsigned int ktn  = KQK;
+      unsigned int ktn  = numberOfNodesK;
       unsigned int kbn  = kb;
       unsigned int kts  = ks;
       unsigned int ktse = ks;
@@ -161,7 +161,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
       unsigned int kbse = kbs;
       unsigned int ktsw = ksw;
       unsigned int kbne = kb;
-      unsigned int ktne = KQK;
+      unsigned int ktne = numberOfNodesK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
       real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
@@ -565,7 +565,7 @@ extern "C" __global__ void QDeviceIncompHighNu27(int inx,
 												 int* k_Q, 
 												 real* QQ,
 												 unsigned int sizeQ,
-												 int kQ, 
+												 int numberOfNodes, 
 												 real om1, 
 												 unsigned int* neighborX,
 												 unsigned int* neighborY,
@@ -645,7 +645,7 @@ extern "C" __global__ void QDeviceIncompHighNu27(int inx,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfNodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
@@ -681,24 +681,24 @@ extern "C" __global__ void QDeviceIncompHighNu27(int inx,
       q_dirBNW = &QQ[dirBNW *sizeQ];
       ////////////////////////////////////////////////////////////////////////////////
       //index
-      unsigned int KQK  = k_Q[k];
-      unsigned int kzero= KQK;
-      unsigned int ke   = KQK;
-      unsigned int kw   = neighborX[KQK];
-      unsigned int kn   = KQK;
-      unsigned int ks   = neighborY[KQK];
-      unsigned int kt   = KQK;
-      unsigned int kb   = neighborZ[KQK];
+      unsigned int numberOfNodesK  = k_Q[k];
+      unsigned int kzero= numberOfNodesK;
+      unsigned int ke   = numberOfNodesK;
+      unsigned int kw   = neighborX[numberOfNodesK];
+      unsigned int kn   = numberOfNodesK;
+      unsigned int ks   = neighborY[numberOfNodesK];
+      unsigned int kt   = numberOfNodesK;
+      unsigned int kb   = neighborZ[numberOfNodesK];
       unsigned int ksw  = neighborY[kw];
-      unsigned int kne  = KQK;
+      unsigned int kne  = numberOfNodesK;
       unsigned int kse  = ks;
       unsigned int knw  = kw;
       unsigned int kbw  = neighborZ[kw];
-      unsigned int kte  = KQK;
+      unsigned int kte  = numberOfNodesK;
       unsigned int kbe  = kb;
       unsigned int ktw  = kw;
       unsigned int kbs  = neighborZ[ks];
-      unsigned int ktn  = KQK;
+      unsigned int ktn  = numberOfNodesK;
       unsigned int kbn  = kb;
       unsigned int kts  = ks;
       unsigned int ktse = ks;
@@ -707,7 +707,7 @@ extern "C" __global__ void QDeviceIncompHighNu27(int inx,
       unsigned int kbse = kbs;
       unsigned int ktsw = ksw;
       unsigned int kbne = kb;
-      unsigned int ktne = KQK;
+      unsigned int ktne = numberOfNodesK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
       real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
@@ -1063,7 +1063,7 @@ extern "C" __global__ void QDeviceCompHighNu27(  int inx,
 												 int* k_Q, 
 												 real* QQ,
 												 unsigned int sizeQ,
-												 int kQ, 
+												 int numberOfNodes, 
 												 real om1, 
 												 unsigned int* neighborX,
 												 unsigned int* neighborY,
@@ -1143,7 +1143,7 @@ extern "C" __global__ void QDeviceCompHighNu27(  int inx,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfNodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
@@ -1179,24 +1179,24 @@ extern "C" __global__ void QDeviceCompHighNu27(  int inx,
       q_dirBNW = &QQ[dirBNW *sizeQ];
       ////////////////////////////////////////////////////////////////////////////////
       //index
-      unsigned int KQK  = k_Q[k];
-      unsigned int kzero= KQK;
-      unsigned int ke   = KQK;
-      unsigned int kw   = neighborX[KQK];
-      unsigned int kn   = KQK;
-      unsigned int ks   = neighborY[KQK];
-      unsigned int kt   = KQK;
-      unsigned int kb   = neighborZ[KQK];
+      unsigned int numberOfNodesK  = k_Q[k];
+      unsigned int kzero= numberOfNodesK;
+      unsigned int ke   = numberOfNodesK;
+      unsigned int kw   = neighborX[numberOfNodesK];
+      unsigned int kn   = numberOfNodesK;
+      unsigned int ks   = neighborY[numberOfNodesK];
+      unsigned int kt   = numberOfNodesK;
+      unsigned int kb   = neighborZ[numberOfNodesK];
       unsigned int ksw  = neighborY[kw];
-      unsigned int kne  = KQK;
+      unsigned int kne  = numberOfNodesK;
       unsigned int kse  = ks;
       unsigned int knw  = kw;
       unsigned int kbw  = neighborZ[kw];
-      unsigned int kte  = KQK;
+      unsigned int kte  = numberOfNodesK;
       unsigned int kbe  = kb;
       unsigned int ktw  = kw;
       unsigned int kbs  = neighborZ[ks];
-      unsigned int ktn  = KQK;
+      unsigned int ktn  = numberOfNodesK;
       unsigned int kbn  = kb;
       unsigned int kts  = ks;
       unsigned int ktse = ks;
@@ -1205,7 +1205,7 @@ extern "C" __global__ void QDeviceCompHighNu27(  int inx,
       unsigned int kbse = kbs;
       unsigned int ktsw = ksw;
       unsigned int kbne = kb;
-      unsigned int ktne = KQK;
+      unsigned int ktne = numberOfNodesK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
       real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
@@ -1639,7 +1639,7 @@ extern "C" __global__ void QDeviceComp27(int inx,
 										 int* k_Q, 
 										 real* QQ,
 										 unsigned int sizeQ,
-										 int kQ, 
+										 int numberOfNodes, 
 										 real om1, 
 										 unsigned int* neighborX,
 										 unsigned int* neighborY,
@@ -1719,7 +1719,7 @@ extern "C" __global__ void QDeviceComp27(int inx,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfNodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
@@ -1755,24 +1755,24 @@ extern "C" __global__ void QDeviceComp27(int inx,
       q_dirBNW = &QQ[dirBNW *sizeQ];
       ////////////////////////////////////////////////////////////////////////////////
       //index
-      unsigned int KQK  = k_Q[k];
-      unsigned int kzero= KQK;
-      unsigned int ke   = KQK;
-      unsigned int kw   = neighborX[KQK];
-      unsigned int kn   = KQK;
-      unsigned int ks   = neighborY[KQK];
-      unsigned int kt   = KQK;
-      unsigned int kb   = neighborZ[KQK];
+      unsigned int numberOfNodesK  = k_Q[k];
+      unsigned int kzero= numberOfNodesK;
+      unsigned int ke   = numberOfNodesK;
+      unsigned int kw   = neighborX[numberOfNodesK];
+      unsigned int kn   = numberOfNodesK;
+      unsigned int ks   = neighborY[numberOfNodesK];
+      unsigned int kt   = numberOfNodesK;
+      unsigned int kb   = neighborZ[numberOfNodesK];
       unsigned int ksw  = neighborY[kw];
-      unsigned int kne  = KQK;
+      unsigned int kne  = numberOfNodesK;
       unsigned int kse  = ks;
       unsigned int knw  = kw;
       unsigned int kbw  = neighborZ[kw];
-      unsigned int kte  = KQK;
+      unsigned int kte  = numberOfNodesK;
       unsigned int kbe  = kb;
       unsigned int ktw  = kw;
       unsigned int kbs  = neighborZ[ks];
-      unsigned int ktn  = KQK;
+      unsigned int ktn  = numberOfNodesK;
       unsigned int kbn  = kb;
       unsigned int kts  = ks;
       unsigned int ktse = ks;
@@ -1781,7 +1781,7 @@ extern "C" __global__ void QDeviceComp27(int inx,
       unsigned int kbse = kbs;
       unsigned int ktsw = ksw;
       unsigned int kbne = kb;
-      unsigned int ktne = KQK;
+      unsigned int ktne = numberOfNodesK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
       real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
@@ -2159,7 +2159,7 @@ extern "C" __global__ void QDevice27(int inx,
                                      int* k_Q, 
                                      real* QQ,
                                      unsigned int sizeQ,
-                                     int kQ, 
+                                     int numberOfNodes, 
                                      real om1, 
                                      unsigned int* neighborX,
                                      unsigned int* neighborY,
@@ -2239,7 +2239,7 @@ extern "C" __global__ void QDevice27(int inx,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfNodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
@@ -2275,24 +2275,24 @@ extern "C" __global__ void QDevice27(int inx,
       q_dirBNW = &QQ[dirBNW *sizeQ];
       ////////////////////////////////////////////////////////////////////////////////
       //index
-      unsigned int KQK  = k_Q[k];
-      unsigned int kzero= KQK;
-      unsigned int ke   = KQK;
-      unsigned int kw   = neighborX[KQK];
-      unsigned int kn   = KQK;
-      unsigned int ks   = neighborY[KQK];
-      unsigned int kt   = KQK;
-      unsigned int kb   = neighborZ[KQK];
+      unsigned int numberOfNodesK  = k_Q[k];
+      unsigned int kzero= numberOfNodesK;
+      unsigned int ke   = numberOfNodesK;
+      unsigned int kw   = neighborX[numberOfNodesK];
+      unsigned int kn   = numberOfNodesK;
+      unsigned int ks   = neighborY[numberOfNodesK];
+      unsigned int kt   = numberOfNodesK;
+      unsigned int kb   = neighborZ[numberOfNodesK];
       unsigned int ksw  = neighborY[kw];
-      unsigned int kne  = KQK;
+      unsigned int kne  = numberOfNodesK;
       unsigned int kse  = ks;
       unsigned int knw  = kw;
       unsigned int kbw  = neighborZ[kw];
-      unsigned int kte  = KQK;
+      unsigned int kte  = numberOfNodesK;
       unsigned int kbe  = kb;
       unsigned int ktw  = kw;
       unsigned int kbs  = neighborZ[ks];
-      unsigned int ktn  = KQK;
+      unsigned int ktn  = numberOfNodesK;
       unsigned int kbn  = kb;
       unsigned int kts  = ks;
       unsigned int ktse = ks;
@@ -2301,36 +2301,36 @@ extern "C" __global__ void QDevice27(int inx,
       unsigned int kbse = kbs;
       unsigned int ktsw = ksw;
       unsigned int kbne = kb;
-      unsigned int ktne = KQK;
+      unsigned int ktne = numberOfNodesK;
       unsigned int kbsw = neighborZ[ksw];
       //unsigned int nxny = nx*ny;
-      //unsigned int kzero= KQK;
-      //unsigned int ke   = KQK;
-      //unsigned int kw   = KQK + 1;
-      //unsigned int kn   = KQK;
-      //unsigned int ks   = KQK + nx;
-      //unsigned int kt   = KQK;
-      //unsigned int kb   = KQK + nxny;
-      //unsigned int ksw  = KQK + nx + 1;
-      //unsigned int kne  = KQK;
-      //unsigned int kse  = KQK + nx;
-      //unsigned int knw  = KQK + 1;
-      //unsigned int kbw  = KQK + nxny + 1;
-      //unsigned int kte  = KQK;
-      //unsigned int kbe  = KQK + nxny;
-      //unsigned int ktw  = KQK + 1;
-      //unsigned int kbs  = KQK + nxny + nx;
-      //unsigned int ktn  = KQK;
-      //unsigned int kbn  = KQK + nxny;
-      //unsigned int kts  = KQK + nx;
-      //unsigned int ktse = KQK + nx;
-      //unsigned int kbnw = KQK + nxny + 1;
-      //unsigned int ktnw = KQK + 1;
-      //unsigned int kbse = KQK + nxny + nx;
-      //unsigned int ktsw = KQK + nx + 1;
-      //unsigned int kbne = KQK + nxny;
-      //unsigned int ktne = KQK;
-      //unsigned int kbsw = KQK + nxny + nx + 1;
+      //unsigned int kzero= numberOfNodesK;
+      //unsigned int ke   = numberOfNodesK;
+      //unsigned int kw   = numberOfNodesK + 1;
+      //unsigned int kn   = numberOfNodesK;
+      //unsigned int ks   = numberOfNodesK + nx;
+      //unsigned int kt   = numberOfNodesK;
+      //unsigned int kb   = numberOfNodesK + nxny;
+      //unsigned int ksw  = numberOfNodesK + nx + 1;
+      //unsigned int kne  = numberOfNodesK;
+      //unsigned int kse  = numberOfNodesK + nx;
+      //unsigned int knw  = numberOfNodesK + 1;
+      //unsigned int kbw  = numberOfNodesK + nxny + 1;
+      //unsigned int kte  = numberOfNodesK;
+      //unsigned int kbe  = numberOfNodesK + nxny;
+      //unsigned int ktw  = numberOfNodesK + 1;
+      //unsigned int kbs  = numberOfNodesK + nxny + nx;
+      //unsigned int ktn  = numberOfNodesK;
+      //unsigned int kbn  = numberOfNodesK + nxny;
+      //unsigned int kts  = numberOfNodesK + nx;
+      //unsigned int ktse = numberOfNodesK + nx;
+      //unsigned int kbnw = numberOfNodesK + nxny + 1;
+      //unsigned int ktnw = numberOfNodesK + 1;
+      //unsigned int kbse = numberOfNodesK + nxny + nx;
+      //unsigned int ktsw = numberOfNodesK + nx + 1;
+      //unsigned int kbne = numberOfNodesK + nxny;
+      //unsigned int ktne = numberOfNodesK;
+      //unsigned int kbsw = numberOfNodesK + nxny + nx + 1;
       ////////////////////////////////////////////////////////////////////////////////
       //real vx1, vx2, vx3, drho, feq, q;
       //drho    =   (D.f[dirE   ])[ke  ]+ (D.f[dirW   ])[kw  ]+ 
@@ -3095,7 +3095,7 @@ extern "C" __global__ void BBDevice27(int inx,
                                      int* k_Q, 
                                      real* QQ,
                                      unsigned int sizeQ,
-                                     int kQ, 
+                                     int numberOfNodes, 
                                      real om1, 
                                      unsigned int* neighborX,
                                      unsigned int* neighborY,
@@ -3175,7 +3175,7 @@ extern "C" __global__ void BBDevice27(int inx,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfNodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
@@ -3211,24 +3211,24 @@ extern "C" __global__ void BBDevice27(int inx,
       q_dirBNW = &QQ[dirBNW *sizeQ];
       ////////////////////////////////////////////////////////////////////////////////
       //index
-      unsigned int KQK  = k_Q[k];
-      //unsigned int kzero= KQK;
-      unsigned int ke   = KQK;
-      unsigned int kw   = neighborX[KQK];
-      unsigned int kn   = KQK;
-      unsigned int ks   = neighborY[KQK];
-      unsigned int kt   = KQK;
-      unsigned int kb   = neighborZ[KQK];
+      unsigned int numberOfNodesK  = k_Q[k];
+      //unsigned int kzero= numberOfNodesK;
+      unsigned int ke   = numberOfNodesK;
+      unsigned int kw   = neighborX[numberOfNodesK];
+      unsigned int kn   = numberOfNodesK;
+      unsigned int ks   = neighborY[numberOfNodesK];
+      unsigned int kt   = numberOfNodesK;
+      unsigned int kb   = neighborZ[numberOfNodesK];
       unsigned int ksw  = neighborY[kw];
-      unsigned int kne  = KQK;
+      unsigned int kne  = numberOfNodesK;
       unsigned int kse  = ks;
       unsigned int knw  = kw;
       unsigned int kbw  = neighborZ[kw];
-      unsigned int kte  = KQK;
+      unsigned int kte  = numberOfNodesK;
       unsigned int kbe  = kb;
       unsigned int ktw  = kw;
       unsigned int kbs  = neighborZ[ks];
-      unsigned int ktn  = KQK;
+      unsigned int ktn  = numberOfNodesK;
       unsigned int kbn  = kb;
       unsigned int kts  = ks;
       unsigned int ktse = ks;
@@ -3237,36 +3237,36 @@ extern "C" __global__ void BBDevice27(int inx,
       unsigned int kbse = kbs;
       unsigned int ktsw = ksw;
       unsigned int kbne = kb;
-      unsigned int ktne = KQK;
+      unsigned int ktne = numberOfNodesK;
       unsigned int kbsw = neighborZ[ksw];
       //unsigned int nxny = nx*ny;
-      //unsigned int kzero= KQK;
-      //unsigned int ke   = KQK;
-      //unsigned int kw   = KQK + 1;
-      //unsigned int kn   = KQK;
-      //unsigned int ks   = KQK + nx;
-      //unsigned int kt   = KQK;
-      //unsigned int kb   = KQK + nxny;
-      //unsigned int ksw  = KQK + nx + 1;
-      //unsigned int kne  = KQK;
-      //unsigned int kse  = KQK + nx;
-      //unsigned int knw  = KQK + 1;
-      //unsigned int kbw  = KQK + nxny + 1;
-      //unsigned int kte  = KQK;
-      //unsigned int kbe  = KQK + nxny;
-      //unsigned int ktw  = KQK + 1;
-      //unsigned int kbs  = KQK + nxny + nx;
-      //unsigned int ktn  = KQK;
-      //unsigned int kbn  = KQK + nxny;
-      //unsigned int kts  = KQK + nx;
-      //unsigned int ktse = KQK + nx;
-      //unsigned int kbnw = KQK + nxny + 1;
-      //unsigned int ktnw = KQK + 1;
-      //unsigned int kbse = KQK + nxny + nx;
-      //unsigned int ktsw = KQK + nx + 1;
-      //unsigned int kbne = KQK + nxny;
-      //unsigned int ktne = KQK;
-      //unsigned int kbsw = KQK + nxny + nx + 1;
+      //unsigned int kzero= numberOfNodesK;
+      //unsigned int ke   = numberOfNodesK;
+      //unsigned int kw   = numberOfNodesK + 1;
+      //unsigned int kn   = numberOfNodesK;
+      //unsigned int ks   = numberOfNodesK + nx;
+      //unsigned int kt   = numberOfNodesK;
+      //unsigned int kb   = numberOfNodesK + nxny;
+      //unsigned int ksw  = numberOfNodesK + nx + 1;
+      //unsigned int kne  = numberOfNodesK;
+      //unsigned int kse  = numberOfNodesK + nx;
+      //unsigned int knw  = numberOfNodesK + 1;
+      //unsigned int kbw  = numberOfNodesK + nxny + 1;
+      //unsigned int kte  = numberOfNodesK;
+      //unsigned int kbe  = numberOfNodesK + nxny;
+      //unsigned int ktw  = numberOfNodesK + 1;
+      //unsigned int kbs  = numberOfNodesK + nxny + nx;
+      //unsigned int ktn  = numberOfNodesK;
+      //unsigned int kbn  = numberOfNodesK + nxny;
+      //unsigned int kts  = numberOfNodesK + nx;
+      //unsigned int ktse = numberOfNodesK + nx;
+      //unsigned int kbnw = numberOfNodesK + nxny + 1;
+      //unsigned int ktnw = numberOfNodesK + 1;
+      //unsigned int kbse = numberOfNodesK + nxny + nx;
+      //unsigned int ktsw = numberOfNodesK + nx + 1;
+      //unsigned int kbne = numberOfNodesK + nxny;
+      //unsigned int ktne = numberOfNodesK;
+      //unsigned int kbsw = numberOfNodesK + nxny + nx + 1;
       ////////////////////////////////////////////////////////////////////////////////
      
       ////////////////////////////////////////////////////////////////////////////////

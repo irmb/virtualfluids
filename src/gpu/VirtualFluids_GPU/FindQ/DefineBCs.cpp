@@ -31,19 +31,19 @@ void findQ27(Parameter* para, CudaMemoryManager* cudaManager)
    {
       findKforQ(para, lev);
 
-      para->getParH(lev)->kQ       = para->getParH(lev)->QWall.kQ;
-	  para->getParD(lev)->kQ       = para->getParH(lev)->QWall.kQ;
+      para->getParH(lev)->numberOfNoSlipBCnodes       = para->getParH(lev)->QWall.kQ;
+	  para->getParD(lev)->numberOfNoSlipBCnodes       = para->getParH(lev)->QWall.kQ;
 	  para->getParD(lev)->QWall.kQ = para->getParH(lev)->QWall.kQ;
-      printf("kQ= %d\n", para->getParH(lev)->kQ);
+      printf("kQ= %d\n", para->getParH(lev)->numberOfNoSlipBCnodes);
 
 	  cudaManager->cudaAllocWallBC(lev);
 
       findQ(para, lev);
 
-	  para->getParH(lev)->kQ       = para->getParH(lev)->QWall.kQ;
-	  para->getParD(lev)->kQ       = para->getParH(lev)->QWall.kQ;
+	  para->getParH(lev)->numberOfNoSlipBCnodes       = para->getParH(lev)->QWall.kQ;
+	  para->getParD(lev)->numberOfNoSlipBCnodes       = para->getParH(lev)->QWall.kQ;
 	  para->getParD(lev)->QWall.kQ = para->getParH(lev)->QWall.kQ;
-      printf("kQ= %d\n", para->getParH(lev)->kQ);
+      printf("kQ= %d\n", para->getParH(lev)->numberOfNoSlipBCnodes);
 
 	  cudaManager->cudaCopyWallBC(lev);
    }

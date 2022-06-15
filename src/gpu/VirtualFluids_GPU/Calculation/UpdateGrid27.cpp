@@ -405,44 +405,14 @@ void exchangeMultiGPUAfterFtoC(Parameter *para, vf::gpu::Communicator &comm, Cud
 void UpdateGrid27::postCollisionBC(int level, unsigned int t)
 {
     //////////////////////////////////////////////////////////////////////////
-    // velocity boundary condition
+    // V E L O C I T Y (I N F L O W)
     //////////////////////////////////////////////////////////////////////////
     this->cudaKernelManager->runVelocityBCKernel(level);
 
     //////////////////////////////////////////////////////////////////////////
     // N O - S L I P
     //////////////////////////////////////////////////////////////////////////
-
-    if (para->getParD(level)->kQ > 0)
-    {
-        //QDev27( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
-        //	      para->getParD(level)->d0SP.f[0],             para->getParD(level)->QWall.k,      para->getParD(level)->QWall.q27[0],
-        //	      para->getParD(level)->kQ,                    para->getParD(level)->kQ,           para->getParD(level)->omega,
-        //	      para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
-        //	      para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
-        //getLastCudaError("QDev27 execution failed");
-
-        //BBDev27( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
-        //         para->getParD(level)->d0SP.f[0],             para->getParD(level)->QWall.k,      para->getParD(level)->QWall.q27[0],
-        //         para->getParD(level)->kQ,                    para->getParD(level)->kQ,           para->getParD(level)->omega,
-        //         para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
-        //         para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
-        //getLastCudaError("BBDev27 (Wall) execution failed");
-
-        //QDev27( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
-        //        para->getParD(level)->d0SP.f[0],             para->getParD(level)->QWall.k,      para->getParD(level)->QWall.q27[0],
-        //        para->getParD(level)->kQ,                    para->getParD(level)->kQ,           para->getParD(level)->omega,
-        //        para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
-        //        para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
-        //getLastCudaError("QDev27 (Wall) execution failed");
-
-        QDevComp27(para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
-                   para->getParD(level)->d0SP.f[0],             para->getParD(level)->QWall.k,      para->getParD(level)->QWall.q27[0],
-                   para->getParD(level)->kQ,                    para->getParD(level)->kQ,           para->getParD(level)->omega,
-                   para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
-                   para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
-        getLastCudaError("QDevComp27 (Wall) execution failed");
-    }
+    this->cudaKernelManager->runNoSlipBCKernel(level);
 
     //////////////////////////////////////////////////////////////////////////
     // S L I P
