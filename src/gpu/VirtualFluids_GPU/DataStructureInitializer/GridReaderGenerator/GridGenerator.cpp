@@ -158,8 +158,8 @@ void GridGenerator::allocArrays_BoundaryValues()
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         para->getParH(level)->QStress.kQ = numberOfStressValues;
         para->getParD(level)->QStress.kQ = numberOfStressValues;
-        para->getParH(level)->kStressQ   = numberOfStressValues;
-        para->getParD(level)->kStressQ   = numberOfStressValues;
+        para->getParH(level)->numberOfStressBCnodes   = numberOfStressValues;
+        para->getParD(level)->numberOfStressBCnodes   = numberOfStressValues;
         para->getParH(level)->kStressQread = numberOfStressValues * para->getD3Qxx();
         para->getParD(level)->kStressQread = numberOfStressValues * para->getD3Qxx();
 

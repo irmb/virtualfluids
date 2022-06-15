@@ -67,6 +67,10 @@ public:
 	//! \brief calls the device function of the pressure boundary condition
 	void runPressureBCKernel(int level);
 
+	//! \brief calls the device function of the stress wall model
+	void runStressWallModelKernel(int level);
+
+
     //! \brief calls the device function that calculates the macroscopic values
     void calculateMacroscopicValues(int level);
 

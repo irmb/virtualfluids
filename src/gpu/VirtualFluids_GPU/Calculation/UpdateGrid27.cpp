@@ -418,37 +418,7 @@ void UpdateGrid27::postCollisionBC(int level, unsigned int t)
 
     //////////////////////////////////////////////////////////////////////////
     // S T R E S S (wall model)
-    if (para->getParD(level)->kStressQ > 0)
-    {
-        // QStressDevComp27( para->getParD(level)->numberofthreads, para->getParD(level)->d0SP.f[0],
-        //                 para->getParD(level)->QStress.k,       para->getParD(level)->QStress.kN,
-        //                 para->getParD(level)->QStress.q27[0],  para->getParD(level)->kStressQ,
-        //                 para->getParD(level)->omega,           para->getParD(level)->turbViscosity,
-        //                 para->getParD(level)->vx_SP,           para->getParD(level)->vy_SP,             para->getParD(level)->vy_SP,
-        //                 para->getParD(level)->QStress.normalX, para->getParD(level)->QStress.normalY,   para->getParD(level)->QStress.normalZ,
-        //                 para->getParD(level)->QStress.Vx,      para->getParD(level)->QStress.Vy,        para->getParD(level)->QStress.Vz,
-        //                 para->getParD(level)->QStress.Vx1,     para->getParD(level)->QStress.Vy1,       para->getParD(level)->QStress.Vz1,
-        //                 para->getParD(level)->wallModel.samplingOffset, para->getParD(level)->wallModel.z0,
-                        // para->getHasWallModelMonitor(),        para->getParD(level)->wallModel.u_star,
-                        // para->getParD(level)->wallModel.Fx,    para->getParD(level)->wallModel.Fy,      para->getParD(level)->wallModel.Fz,
-        //                 para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP,      para->getParD(level)->neighborZ_SP,
-        //                 para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
-        // getLastCudaError("QStressDevComp27 execution failed");
-
-        BBStressDev27( para->getParD(level)->numberofthreads, para->getParD(level)->d0SP.f[0],
-                        para->getParD(level)->QStress.k,       para->getParD(level)->QStress.kN,
-                        para->getParD(level)->QStress.q27[0],  para->getParD(level)->kStressQ,
-                        para->getParD(level)->vx_SP,           para->getParD(level)->vy_SP,             para->getParD(level)->vy_SP,
-                        para->getParD(level)->QStress.normalX, para->getParD(level)->QStress.normalY,   para->getParD(level)->QStress.normalZ,
-                        para->getParD(level)->QStress.Vx,      para->getParD(level)->QStress.Vy,        para->getParD(level)->QStress.Vz,
-                        para->getParD(level)->QStress.Vx1,     para->getParD(level)->QStress.Vy1,       para->getParD(level)->QStress.Vz1,
-                        para->getParD(level)->wallModel.samplingOffset, para->getParD(level)->wallModel.z0,
-                        para->getHasWallModelMonitor(),        para->getParD(level)->wallModel.u_star,
-                        para->getParD(level)->wallModel.Fx,    para->getParD(level)->wallModel.Fy,      para->getParD(level)->wallModel.Fz,
-                        para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP,      para->getParD(level)->neighborZ_SP,
-                        para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
-        getLastCudaError("BBStressDevice27 execution failed");
-    }
+    this->cudaKernelManager->runStressWallModelKernel(level);
 
     //////////////////////////////////////////////////////////////////////////
     // G E O M E T R Y
