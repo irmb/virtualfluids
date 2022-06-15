@@ -37,126 +37,194 @@
 #include <Parameter/Parameter.h>
 
 
-void CudaKernelManager::runLBMKernel(SPtr<Parameter> para)
+void CudaKernelManager::runLBMKernel(int level)
 {
-    if (para->getIsADcalculationOn()) {
-		CumulantK17LBMDeviceKernelAD(
-			para->getParD()->numberofthreads,
-			para->getParD()->omega,
-			para->getParD()->typeOfGridNode,
-			para->getParD()->neighborX,
-			para->getParD()->neighborY,
-			para->getParD()->neighborZ,
-			para->getParD()->distributions.f[0],
-			para->getParD()->distributionsAD.f[0],
-			para->getParD()->numberOfNodes,
-			para->getParD()->forcing,
-			para->getParD()->isEvenTimestep);
-    } else {
-		CumulantK17LBMDeviceKernel(
-			para->getParD()->numberofthreads,
-			para->getParD()->omega,
-			para->getParD()->typeOfGridNode,
-			para->getParD()->neighborX,
-			para->getParD()->neighborY,
-			para->getParD()->neighborZ,
-			para->getParD()->distributions.f[0],
-			para->getParD()->numberOfNodes,
-			para->getParD()->forcing,
-			para->getParD()->isEvenTimestep);
-	}
+    // if (para->getIsADcalculationOn()) {
+    //       CumulantK17LBMDeviceKernelAD(
+    //            para->getParD()->numberofthreads,
+    //            para->getParD()->omega,
+    //            para->getParD()->typeOfGridNode,
+    //            para->getParD()->neighborX,
+    //            para->getParD()->neighborY,
+    //            para->getParD()->neighborZ,
+    //            para->getParD()->distributions.f[0],
+    //            para->getParD()->distributionsAD.f[0],
+    //            para->getParD()->numberOfNodes,
+    //            para->getParD()->forcing,
+    //            para->getParD()->isEvenTimestep);
+    // } else {
+    //       CumulantK17LBMDeviceKernel(
+    //            para->getParD()->numberofthreads,
+    //            para->getParD()->omega,
+    //            para->getParD()->typeOfGridNode,
+    //            para->getParD()->neighborX,
+    //            para->getParD()->neighborY,
+    //            para->getParD()->neighborZ,
+    //            para->getParD()->distributions.f[0],
+    //            para->getParD()->numberOfNodes,
+    //            para->getParD()->forcing,
+    //            para->getParD()->isEvenTimestep);
+    //  }
 }
 
-void CudaKernelManager::runVelocityBCKernel(SPtr<Parameter> para)
+void CudaKernelManager::runVelocityBCKernel(int level)
 {
-	if (para->getParD()->numberOfVeloBCnodes > 0)
-	{
-		QVelDevicePlainBB27(
-			para->getParD()->numberofthreads,
-			para->getParD()->veloBC.Vx,
-			para->getParD()->veloBC.Vy,
-			para->getParD()->veloBC.Vz,
-			para->getParD()->distributions.f[0],
-			para->getParD()->veloBC.k,
-			para->getParD()->veloBC.q27[0],
-			para->getParD()->numberOfVeloBCnodes,
-			para->getParD()->veloBC.kArray,
-			para->getParD()->neighborX,
-			para->getParD()->neighborY,
-			para->getParD()->neighborZ,
-			para->getParD()->numberOfNodes,
-			para->getParD()->isEvenTimestep);
-	}
+     if (para->getParD(level)->numberOfVeloBCnodes > 0)
+     {
+        //   QVelDevicePlainBB27(
+        //     para->getParD()->numberofthreads,
+        //     para->getParD()->veloBC.Vx,
+        //     para->getParD()->veloBC.Vy,
+        //     para->getParD()->veloBC.Vz,
+        //     para->getParD()->distributions.f[0],
+        //     para->getParD()->veloBC.k,
+        //     para->getParD()->veloBC.q27[0],
+        //     para->getParD()->numberOfVeloBCnodes,
+        //     para->getParD()->veloBC.kArray,
+        //     para->getParD()->neighborX,
+        //     para->getParD()->neighborY,
+        //     para->getParD()->neighborZ,
+        //     para->getParD()->numberOfNodes,
+        //     para->getParD()->isEvenTimestep);
+
+        // QVelDev27(
+        //     para->getParD(level)->numberofthreads,
+        //     para->getParD(level)->nx,
+        //     para->getParD(level)->ny,
+        //     para->getParD(level)->Qinflow.Vx,
+        //     para->getParD(level)->Qinflow.Vy,
+        //     para->getParD(level)->Qinflow.Vz,
+        //     para->getParD(level)->d0SP.f[0],
+        //     para->getParD(level)->Qinflow.k,
+        //     para->getParD(level)->Qinflow.q27[0],
+        //     para->getParD(level)->numberOfVeloBCnodes,
+        //     para->getParD(level)->numberOfVeloBCnodes,
+        //     para->getParD(level)->omega,
+        //     para->getParD(level)->neighborX_SP,
+        //     para->getParD(level)->neighborY_SP,
+        //     para->getParD(level)->neighborZ_SP,
+        //     para->getParD(level)->size_Mat_SP,
+        //     para->getParD(level)->evenOrOdd);
+
+        // QVelDevComp27(
+        //     para->getParD(level)->numberofthreads, para->getParD(level)->nx,
+        //     para->getParD(level)->ny,
+        //     para->getParD(level)->Qinflow.Vx,
+        //     para->getParD(level)->Qinflow.Vy,
+        //     para->getParD(level)->Qinflow.Vz,
+        //     para->getParD(level)->d0SP.f[0],
+        //     para->getParD(level)->Qinflow.k,
+        //     para->getParD(level)->Qinflow.q27[0],
+        //     para->getParD(level)->numberOfVeloBCnodes,
+        //     para->getParD(level)->numberOfVeloBCnodes,
+        //     para->getParD(level)->omega,
+        //     para->getParD(level)->neighborX_SP,
+        //     para->getParD(level)->neighborY_SP,
+        //     para->getParD(level)->neighborZ_SP,
+        //     para->getParD(level)->size_Mat_SP,
+        //     para->getParD(level)->evenOrOdd);
+
+        QVelDevCompZeroPress27(
+            para->getParD(level)->numberofthreads,
+            para->getParD(level)->nx,
+            para->getParD(level)->ny,
+            para->getParD(level)->Qinflow.Vx,
+            para->getParD(level)->Qinflow.Vy,
+            para->getParD(level)->Qinflow.Vz,
+            para->getParD(level)->d0SP.f[0],
+            para->getParD(level)->Qinflow.k,
+            para->getParD(level)->Qinflow.q27[0],
+            para->getParD(level)->numberOfVeloBCnodes,
+            para->getParD(level)->Qinflow.kArray,
+            para->getParD(level)->omega,
+            para->getParD(level)->neighborX_SP,
+            para->getParD(level)->neighborY_SP,
+            para->getParD(level)->neighborZ_SP,
+            para->getParD(level)->size_Mat_SP,
+            para->getParD(level)->evenOrOdd);
+
+        //////////////////////////////////////////////////////////////////////////
+        // D E P R E C A T E D
+        //////////////////////////////////////////////////////////////////////////
+
+        //QVelDevice1h27( para->getParD(level)->numberofthreads, para->getParD(level)->nx,           para->getParD(level)->ny,
+        //                para->getParD(level)->Qinflow.Vx,      para->getParD(level)->Qinflow.Vy,   para->getParD(level)->Qinflow.Vz,
+        //                para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qinflow.k,    para->getParD(level)->Qinflow.q27[0],
+        //                para->getParD(level)->numberOfVeloBCnodes,        para->getParD(level)->numberOfVeloBCnodes,     para->getParD(level)->omega,
+        //                para->getPhi(),                        para->getAngularVelocity(),
+        //                para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+        //                para->getParD(level)->coordX_SP,       para->getParD(level)->coordY_SP,    para->getParD(level)->coordZ_SP,
+        //                para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+        //getLastCudaError("QVelDev27 execution failed");
+     }
 }
 
-void CudaKernelManager::runGeoBCKernel(SPtr<Parameter> para)
-{
-    if (para->getParD()->numberOfGeoBCnodes > 0)
-    {
-        // ...
-    }
-}
+// void CudaKernelManager::runGeoBCKernel(int level)
+// {
+//     if (para->getParD()->numberOfGeoBCnodes > 0)
+//     {
+//         // ...
+//     }
+// }
 
 
-void runSlipBCKernel(SPtr<Parameter> para){
-    if (para->getParD()->numberOfSlipBCnodes > 0)
-    {
-        // ...
-    }
-}
+// void CudaKernelManager::runSlipBCKernel(int level){
+//     if (para->getParD()->numberOfSlipBCnodes > 0)
+//     {
+//         // ...
+//     }
+// }
 
-void runNoSlipBCKernel(SPtr<Parameter> para){
-    if (para->getParD()->numberOfNoSlipBCnodes > 0)
-    {
-        // ...
-    }
-}
+// void CudaKernelManager::runNoSlipBCKernel(int level){
+//     if (para->getParD()->numberOfNoSlipBCnodes > 0)
+//     {
+//         // ...
+//     }
+// }
 
-void runPressureBCKernel(SPtr<Parameter> para){
-    if (para->getParD()->numberOfPressureBCnodes > 0)
-    {
-        // ...
-    }
-}
+// void CudaKernelManager::runPressureBCKernel(int level){
+//     if (para->getParD()->numberOfPressureBCnodes > 0)
+//     {
+//         // ...
+//     }
+// }
 
-void CudaKernelManager::calculateMacroscopicValues(SPtr<Parameter> para)
-{
-    if (para->getIsADcalculationOn()) {
-		CalcMacADCompSP27(
-			para->getParD()->velocityX,
-			para->getParD()->velocityY,
-			para->getParD()->velocityZ,
-			para->getParD()->rho,
-			para->getParD()->pressure,
-			para->getParD()->typeOfGridNode,
-			para->getParD()->neighborX,
-			para->getParD()->neighborY,
-			para->getParD()->neighborZ,
-			para->getParD()->numberOfNodes,
-			para->getParD()->numberofthreads,
-			para->getParD()->distributions.f[0],
-			para->getParD()->distributionsAD.f[0],
-            para->getParD()->forcing,
-			para->getParD()->isEvenTimestep);
-    } else {
-		CalcMacCompSP27(
-			para->getParD()->velocityX,
-			para->getParD()->velocityY,
-			para->getParD()->velocityZ,
-			para->getParD()->rho,
-			para->getParD()->pressure,
-			para->getParD()->typeOfGridNode,
-			para->getParD()->neighborX,
-			para->getParD()->neighborY,
-			para->getParD()->neighborZ,
-			para->getParD()->numberOfNodes,
-			para->getParD()->numberofthreads,
-			para->getParD()->distributions.f[0],
-			para->getParD()->isEvenTimestep);
-	}
-}
-
-
+// void CudaKernelManager::calculateMacroscopicValues(int level)
+// {
+//     if (para->getIsADcalculationOn()) {
+//           CalcMacADCompSP27(
+//                para->getParD()->velocityX,
+//                para->getParD()->velocityY,
+//                para->getParD()->velocityZ,
+//                para->getParD()->rho,
+//                para->getParD()->pressure,
+//                para->getParD()->typeOfGridNode,
+//                para->getParD()->neighborX,
+//                para->getParD()->neighborY,
+//                para->getParD()->neighborZ,
+//                para->getParD()->numberOfNodes,
+//                para->getParD()->numberofthreads,
+//                para->getParD()->distributions.f[0],
+//                para->getParD()->distributionsAD.f[0],
+//             para->getParD()->forcing,
+//                para->getParD()->isEvenTimestep);
+//     } else {
+//           CalcMacCompSP27(
+//                para->getParD()->velocityX,
+//                para->getParD()->velocityY,
+//                para->getParD()->velocityZ,
+//                para->getParD()->rho,
+//                para->getParD()->pressure,
+//                para->getParD()->typeOfGridNode,
+//                para->getParD()->neighborX,
+//                para->getParD()->neighborY,
+//                para->getParD()->neighborZ,
+//                para->getParD()->numberOfNodes,
+//                para->getParD()->numberofthreads,
+//                para->getParD()->distributions.f[0],
+//                para->getParD()->isEvenTimestep);
+//      }
+// }
 
 
 
@@ -173,7 +241,7 @@ SPtr<CudaKernelManager> CudaKernelManager::make(SPtr<Parameter> parameter)
 
 CudaKernelManager::CudaKernelManager(SPtr<Parameter> parameter)
 {
-    this->parameter = parameter;
+    this->para = parameter;
 }
 
 CudaKernelManager::CudaKernelManager(const CudaKernelManager&)

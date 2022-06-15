@@ -810,7 +810,7 @@ void Simulation::run()
 										//	   para->getParD(lev)->Qinflow.Vx,
 										//	   para->getParD(lev)->Qinflow.Vy,
 										//	   para->getParD(lev)->Qinflow.Vz,
-										//	   para->getParD(lev)->kInflowQ,
+										//	   para->getParD(lev)->numberOfVeloBCnodes,
 										//	   para->getParD(lev)->Qinflow.k,
 										//	   para->getParD(lev)->rho_SP,
 										//	   para->getParD(lev)->press_SP,

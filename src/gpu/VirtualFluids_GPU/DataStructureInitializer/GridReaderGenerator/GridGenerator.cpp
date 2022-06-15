@@ -190,10 +190,10 @@ void GridGenerator::allocArrays_BoundaryValues()
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         para->getParH(level)->Qinflow.kQ = numberOfVelocityValues;
         para->getParD(level)->Qinflow.kQ = numberOfVelocityValues;
-        para->getParH(level)->kInflowQ = numberOfVelocityValues;
-        para->getParD(level)->kInflowQ = numberOfVelocityValues;
-        para->getParH(level)->kInflowQread = numberOfVelocityValues * para->getD3Qxx();
-        para->getParD(level)->kInflowQread = numberOfVelocityValues * para->getD3Qxx();
+        para->getParH(level)->numberOfVeloBCnodes = numberOfVelocityValues;
+        para->getParD(level)->numberOfVeloBCnodes = numberOfVelocityValues;
+        para->getParH(level)->numberOfVeloBCnodesRead = numberOfVelocityValues * para->getD3Qxx();
+        para->getParD(level)->numberOfVeloBCnodesRead = numberOfVelocityValues * para->getD3Qxx();
 
         if (numberOfVelocityValues > 1)
         {

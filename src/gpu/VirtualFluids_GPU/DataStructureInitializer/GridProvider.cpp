@@ -117,10 +117,10 @@ void GridProvider::setVelocitySizePerLevel(int level, int sizePerLevel) const
 {
     para->getParH(level)->Qinflow.kQ = sizePerLevel;
     para->getParD(level)->Qinflow.kQ = sizePerLevel;
-    para->getParH(level)->kInflowQ = sizePerLevel;
-    para->getParD(level)->kInflowQ = sizePerLevel;
-    para->getParH(level)->kInflowQread = sizePerLevel * para->getD3Qxx();
-    para->getParD(level)->kInflowQread = sizePerLevel * para->getD3Qxx();
+    para->getParH(level)->numberOfVeloBCnodes = sizePerLevel;
+    para->getParD(level)->numberOfVeloBCnodes = sizePerLevel;
+    para->getParH(level)->numberOfVeloBCnodesRead = sizePerLevel * para->getD3Qxx();
+    para->getParD(level)->numberOfVeloBCnodesRead = sizePerLevel * para->getD3Qxx();
 }
 
 void GridProvider::setOutflowSizePerLevel(int level, int sizePerLevel) const

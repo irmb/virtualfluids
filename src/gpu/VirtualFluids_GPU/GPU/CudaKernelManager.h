@@ -50,25 +50,25 @@ public:
     static SPtr<CudaKernelManager> make(std::shared_ptr<Parameter> parameter);
     
 	//! \brief calls the device function of the lattice Boltzmann kernel
-	void runLBMKernel(SPtr<Parameter> para);
+	void runLBMKernel(int level);
 
 	//! \brief calls the device function of the velocity boundary condition
-    void runVelocityBCKernel(SPtr<Parameter> para);
+    void runVelocityBCKernel(int level);
 
 	//! \brief calls the device function of the geometry boundary condition
-	void runGeoBCKernel(SPtr<Parameter> para);
+	void runGeoBCKernel(int level);
 
 	//! \brief calls the device function of the slip boundary condition
-	void runSlipBCKernel(SPtr<Parameter> para);
+	void runSlipBCKernel(int level);
 
 	//! \brief calls the device function of the no-slip boundary condition
-	void runNoSlipBCKernel(SPtr<Parameter> para);
+	void runNoSlipBCKernel(int level);
 
 	//! \brief calls the device function of the pressure boundary condition
-	void runPressureBCKernel(SPtr<Parameter> para);
+	void runPressureBCKernel(int level);
 
     //! \brief calls the device function that calculates the macroscopic values
-    void calculateMacroscopicValues(SPtr<Parameter> para);
+    void calculateMacroscopicValues(int level);
 
 
 private:
@@ -80,7 +80,7 @@ private:
 	CudaKernelManager(const CudaKernelManager&);
 
 	//! \property para is a shared pointer to an object of Parameter
-	SPtr<Parameter> parameter;
+	SPtr<Parameter> para;
 
 };
 #endif

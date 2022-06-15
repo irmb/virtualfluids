@@ -8,6 +8,7 @@
 #include "Communication/Communicator.h"
 #include "Calculation/PorousMedia.h"
 
+class CudaKernelManager;
 class Kernel;
 
 class UpdateGrid27
@@ -16,6 +17,10 @@ public:
     UpdateGrid27(SPtr<Parameter> para, vf::gpu::Communicator &comm, SPtr<CudaMemoryManager> cudaManager,
                  std::vector<std::shared_ptr<PorousMedia>> &pm, std::vector<SPtr<Kernel>> &kernels);
     void updateGrid(int level, unsigned int t);
+
+
+private:
+    void postCollisionBC(int level, unsigned int t);
 
 private:
     typedef void (UpdateGrid27::*collisionAndExchangeFun)(int level, unsigned int t);
@@ -45,6 +50,8 @@ private:
     SPtr<CudaMemoryManager> cudaManager;
     std::vector<std::shared_ptr<PorousMedia>> pm;
     std::vector<SPtr<Kernel>> kernels;
+    //! \property cudaKernelManager is a shared pointer to an object of CudaKernelManager
+    std::shared_ptr<CudaKernelManager> cudaKernelManager;
 };
 
 
@@ -67,7 +74,7 @@ extern "C" void exchangeMultiGPUAfterFtoC(Parameter *para, vf::gpu::Communicator
 extern "C" void exchangeMultiGPU_noStreams_withPrepare(Parameter *para, vf::gpu::Communicator &comm,
                                                        CudaMemoryManager *cudaManager, int level, bool useReducedComm);
 
-extern "C" void postCollisionBC(Parameter* para, int level, unsigned int t);
+
 
 extern "C" void swapBetweenEvenAndOddTimestep(Parameter* para, int level);
 
