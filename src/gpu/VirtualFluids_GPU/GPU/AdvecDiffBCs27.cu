@@ -17,7 +17,7 @@ extern "C" __global__ void QADPress7(  int inx,
                                        int* k_Q, 
                                        real* QQ,
                                        unsigned int sizeQ,
-                                       int kQ, 
+                                       int numberOfBCnodes, 
                                        real om1, 
                                        unsigned int* neighborX,
                                        unsigned int* neighborY,
@@ -121,7 +121,7 @@ extern "C" __global__ void QADPress7(  int inx,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       //////////////////////////////////////////////////////////////////////////////////
       real  *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB;//, 
@@ -461,7 +461,7 @@ extern "C" __global__ void QADPress27( int inx,
                                        int* k_Q, 
                                        real* QQ,
                                        unsigned int sizeQ,
-                                       int kQ, 
+                                       int numberOfBCnodes, 
                                        real om1, 
                                        unsigned int* neighborX,
                                        unsigned int* neighborY,
@@ -603,7 +603,7 @@ extern "C" __global__ void QADPress27( int inx,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       real  *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
@@ -990,7 +990,7 @@ extern "C" __global__ void QADPressNEQNeighbor27(
 													real* DD27,
 													int* k_Q,
 													int* k_N,
-													int kQ,
+													int numberOfBCnodes,
 													unsigned int* neighborX,
 													unsigned int* neighborY,
 													unsigned int* neighborZ,
@@ -1132,7 +1132,7 @@ extern "C" __global__ void QADPressNEQNeighbor27(
 	const unsigned k = nx*(ny*z + y) + x;
 	//////////////////////////////////////////////////////////////////////////
 
-	if (k < kQ)
+	if (k < numberOfBCnodes)
 	{
 		////////////////////////////////////////////////////////////////////////////////
 		//Fluid - BC Nodes
@@ -1430,7 +1430,7 @@ extern "C" __global__ void QADVel7( int inx,
                                     int* k_Q, 
                                     real* QQ,
                                     unsigned int sizeQ,
-                                    int kQ, 
+                                    int numberOfBCnodes, 
                                     real om1, 
                                     unsigned int* neighborX,
                                     unsigned int* neighborY,
@@ -1534,7 +1534,7 @@ extern "C" __global__ void QADVel7( int inx,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       //////////////////////////////////////////////////////////////////////////////////
       real  *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB;//, 
@@ -1874,7 +1874,7 @@ extern "C" __global__ void QADVel27(int inx,
                                     int* k_Q, 
                                     real* QQ,
                                     unsigned int sizeQ,
-                                    int kQ, 
+                                    int numberOfBCnodes, 
                                     real om1, 
                                     unsigned int* neighborX,
                                     unsigned int* neighborY,
@@ -2016,7 +2016,7 @@ extern "C" __global__ void QADVel27(int inx,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
@@ -2464,7 +2464,7 @@ extern "C" __global__ void QAD7( int inx,
                                  int* k_Q, 
                                  real* QQ,
                                  unsigned int sizeQ,
-                                 int kQ, 
+                                 int numberOfBCnodes, 
                                  real om1, 
                                  unsigned int* neighborX,
                                  unsigned int* neighborY,
@@ -2568,7 +2568,7 @@ extern "C" __global__ void QAD7( int inx,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       //////////////////////////////////////////////////////////////////////////////////
       real  *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB;//, 
@@ -2899,7 +2899,7 @@ extern "C" __global__ void QADDirichlet27(	 int inx,
 											 int* k_Q, 
 											 real* QQ,
 											 unsigned int sizeQ,
-											 int kQ, 
+											 int numberOfBCnodes, 
 											 real om1, 
 											 unsigned int* neighborX,
 											 unsigned int* neighborY,
@@ -3041,7 +3041,7 @@ extern "C" __global__ void QADDirichlet27(	 int inx,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       real  *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
@@ -3427,7 +3427,7 @@ extern "C" __global__ void QADBB27(int inx,
                                    int* k_Q, 
                                    real* QQ,
                                    unsigned int sizeQ,
-                                   int kQ, 
+                                   int numberOfBCnodes, 
                                    real om1, 
                                    unsigned int* neighborX,
                                    unsigned int* neighborY,
@@ -3569,7 +3569,7 @@ extern "C" __global__ void QADBB27(int inx,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       real  *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
@@ -3945,7 +3945,7 @@ extern "C" __global__ void QNoSlipADincomp7( int inx,
 											 int* k_Q, 
 											 real* QQ,
 											 unsigned int sizeQ,
-											 int kQ, 
+											 int numberOfBCnodes, 
 											 real om1, 
 											 unsigned int* neighborX,
 											 unsigned int* neighborY,
@@ -4049,7 +4049,7 @@ extern "C" __global__ void QNoSlipADincomp7( int inx,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       //////////////////////////////////////////////////////////////////////////////////
       real  *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB;
@@ -4371,7 +4371,7 @@ extern "C" __global__ void QNoSlipADincomp27(int inx,
 											 int* k_Q, 
 											 real* QQ,
 											 unsigned int sizeQ,
-											 int kQ, 
+											 int numberOfBCnodes, 
 											 real om1, 
 											 unsigned int* neighborX,
 											 unsigned int* neighborY,
@@ -4513,7 +4513,7 @@ extern "C" __global__ void QNoSlipADincomp27(int inx,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       real  *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
@@ -4855,7 +4855,7 @@ extern "C" __global__ void QADVeloIncomp7(  int inx,
 											int* k_Q, 
 											real* QQ,
 											unsigned int sizeQ,
-											int kQ, 
+											int numberOfBCnodes, 
 											real om1, 
 											unsigned int* neighborX,
 											unsigned int* neighborY,
@@ -4959,7 +4959,7 @@ extern "C" __global__ void QADVeloIncomp7(  int inx,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       //////////////////////////////////////////////////////////////////////////////////
       real  *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB; 
@@ -5335,7 +5335,7 @@ extern "C" __global__ void QADVeloIncomp27( int inx,
 											int* k_Q, 
 											real* QQ,
 											unsigned int sizeQ,
-											int kQ, 
+											int numberOfBCnodes, 
 											real om1, 
 											unsigned int* neighborX,
 											unsigned int* neighborY,
@@ -5477,7 +5477,7 @@ extern "C" __global__ void QADVeloIncomp27( int inx,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       real  *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
@@ -5850,7 +5850,7 @@ extern "C" __global__ void QADPressIncomp7(int inx,
 										   int* k_Q, 
 										   real* QQ,
 										   unsigned int sizeQ,
-										   int kQ, 
+										   int numberOfBCnodes, 
 										   real om1, 
 										   unsigned int* neighborX,
 										   unsigned int* neighborY,
@@ -5954,7 +5954,7 @@ extern "C" __global__ void QADPressIncomp7(int inx,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       //////////////////////////////////////////////////////////////////////////////////
       real  *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB; 
@@ -6291,7 +6291,7 @@ extern "C" __global__ void QADPressIncomp27(   int inx,
 											   int* k_Q, 
 											   real* QQ,
 											   unsigned int sizeQ,
-											   int kQ, 
+											   int numberOfBCnodes, 
 											   real om1, 
 											   unsigned int* neighborX,
 											   unsigned int* neighborY,
@@ -6433,7 +6433,7 @@ extern "C" __global__ void QADPressIncomp27(   int inx,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       real  *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 

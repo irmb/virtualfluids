@@ -120,8 +120,8 @@ void GridGenerator::allocArrays_BoundaryValues()
 
         std::cout << "size pressure level " << level << " : " << numberOfPressureValues << std::endl;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        para->getParH(level)->QPress.kQ = numberOfPressureValues;
-        para->getParD(level)->QPress.kQ = numberOfPressureValues;
+        para->getParH(level)->QPress.numberOfBCnodes = numberOfPressureValues;
+        para->getParD(level)->QPress.numberOfBCnodes = numberOfPressureValues;
         para->getParH(level)->kPressQread = numberOfPressureValues * para->getD3Qxx();
         para->getParD(level)->kPressQread = numberOfPressureValues * para->getD3Qxx();
         if (numberOfPressureValues > 1)
@@ -137,8 +137,8 @@ void GridGenerator::allocArrays_BoundaryValues()
 
         std::cout << "size slip level " << level << " : " << numberOfSlipValues << std::endl;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        para->getParH(level)->QSlip.kQ = numberOfSlipValues;
-        para->getParD(level)->QSlip.kQ = numberOfSlipValues;
+        para->getParH(level)->QSlip.numberOfBCnodes = numberOfSlipValues;
+        para->getParD(level)->QSlip.numberOfBCnodes = numberOfSlipValues;
         para->getParH(level)->numberOfSlipBCnodes   = numberOfSlipValues;
         para->getParD(level)->numberOfSlipBCnodes   = numberOfSlipValues;
         para->getParH(level)->kSlipQread = numberOfSlipValues * para->getD3Qxx();
@@ -156,8 +156,8 @@ void GridGenerator::allocArrays_BoundaryValues()
 
         std::cout << "size stress level " << level << " : " << numberOfStressValues << std::endl;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        para->getParH(level)->QStress.kQ = numberOfStressValues;
-        para->getParD(level)->QStress.kQ = numberOfStressValues;
+        para->getParH(level)->QStress.numberOfBCnodes = numberOfStressValues;
+        para->getParD(level)->QStress.numberOfBCnodes = numberOfStressValues;
         para->getParH(level)->numberOfStressBCnodes   = numberOfStressValues;
         para->getParD(level)->numberOfStressBCnodes   = numberOfStressValues;
         para->getParH(level)->kStressQread = numberOfStressValues * para->getD3Qxx();
@@ -188,8 +188,8 @@ void GridGenerator::allocArrays_BoundaryValues()
         para->getParH(level)->Qinflow.kArray = blocks * para->getParH(level)->numberofthreads;
         para->getParD(level)->Qinflow.kArray = para->getParH(level)->Qinflow.kArray;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        para->getParH(level)->Qinflow.kQ = numberOfVelocityValues;
-        para->getParD(level)->Qinflow.kQ = numberOfVelocityValues;
+        para->getParH(level)->Qinflow.numberOfBCnodes = numberOfVelocityValues;
+        para->getParD(level)->Qinflow.numberOfBCnodes = numberOfVelocityValues;
         para->getParH(level)->numberOfVeloBCnodes = numberOfVelocityValues;
         para->getParD(level)->numberOfVeloBCnodes = numberOfVelocityValues;
         para->getParH(level)->numberOfVeloBCnodesRead = numberOfVelocityValues * para->getD3Qxx();
@@ -244,8 +244,8 @@ void GridGenerator::allocArrays_BoundaryValues()
             int numberOfGeometryValues = builder->getGeometrySize(i);
             std::cout << "size geometry values, Level " << i << " : " << numberOfGeometryValues << std::endl;
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            para->getParH(i)->QGeom.kQ = numberOfGeometryValues;
-            para->getParD(i)->QGeom.kQ = numberOfGeometryValues;
+            para->getParH(i)->QGeom.numberOfBCnodes = numberOfGeometryValues;
+            para->getParD(i)->QGeom.numberOfBCnodes = numberOfGeometryValues;
             if (numberOfGeometryValues > 0)
             {
 
@@ -748,7 +748,7 @@ void GridGenerator::allocArrays_BoundaryQs()
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //preprocessing
             real* QQ = para->getParH(i)->QPress.q27[0];
-            unsigned int sizeQ = para->getParH(i)->QPress.kQ;
+            unsigned int sizeQ = para->getParH(i)->QPress.numberOfBCnodes;
             QforBoundaryConditions Q;
             Q.q27[dirE] = &QQ[dirE   *sizeQ];
             Q.q27[dirW] = &QQ[dirW   *sizeQ];
@@ -821,7 +821,7 @@ void GridGenerator::allocArrays_BoundaryQs()
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //preprocessing
             real* QQ = para->getParH(i)->QSlip.q27[0];
-            unsigned int sizeQ = para->getParH(i)->QSlip.kQ;
+            unsigned int sizeQ = para->getParH(i)->QSlip.numberOfBCnodes;
             QforBoundaryConditions Q;
             Q.q27[dirE] = &QQ[dirE   *sizeQ];
             Q.q27[dirW] = &QQ[dirW   *sizeQ];
@@ -867,7 +867,7 @@ void GridGenerator::allocArrays_BoundaryQs()
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //preprocessing
             real* QQ = para->getParH(i)->QStress.q27[0];
-            unsigned int sizeQ = para->getParH(i)->QStress.kQ;
+            unsigned int sizeQ = para->getParH(i)->QStress.numberOfBCnodes;
             QforBoundaryConditions Q;
             Q.q27[dirE] = &QQ[dirE   *sizeQ];
             Q.q27[dirW] = &QQ[dirW   *sizeQ];
@@ -913,7 +913,7 @@ void GridGenerator::allocArrays_BoundaryQs()
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //preprocessing
             real* QQ = para->getParH(i)->Qinflow.q27[0];
-            unsigned int sizeQ = para->getParH(i)->Qinflow.kQ;
+            unsigned int sizeQ = para->getParH(i)->Qinflow.numberOfBCnodes;
             QforBoundaryConditions Q;
             Q.q27[dirE] = &QQ[dirE   *sizeQ];
             Q.q27[dirW] = &QQ[dirW   *sizeQ];
@@ -978,14 +978,14 @@ void GridGenerator::allocArrays_BoundaryQs()
         const int numberOfGeometryNodes = builder->getGeometrySize(i);
         std::cout << "size of GeomBoundaryQs, Level " << i << " : " << numberOfGeometryNodes << std::endl;
 
-        para->getParH(i)->QGeom.kQ = numberOfGeometryNodes;
-        para->getParD(i)->QGeom.kQ = para->getParH(i)->QGeom.kQ;
+        para->getParH(i)->QGeom.numberOfBCnodes = numberOfGeometryNodes;
+        para->getParD(i)->QGeom.numberOfBCnodes = para->getParH(i)->QGeom.numberOfBCnodes;
         if (numberOfGeometryNodes > 0)
         {
             //cout << "Groesse der Daten GeomBoundaryQs, Level:  " << i << " : " << numberOfGeometryNodes << "MyID: " << para->getMyID() << endl;
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            //para->getParH(i)->QGeom.kQ = temp4;
-            //para->getParD(i)->QGeom.kQ = para->getParH(i)->QGeom.kQ;
+            //para->getParH(i)->QGeom.numberOfBCnodes = temp4;
+            //para->getParD(i)->QGeom.numberOfBCnodes = para->getParH(i)->QGeom.numberOfBCnodes;
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             cudaMemoryManager->cudaAllocGeomBC(i);
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -996,7 +996,7 @@ void GridGenerator::allocArrays_BoundaryQs()
             //////////////////////////////////////////////////////////////////////////
             //preprocessing
             real* QQ = para->getParH(i)->QGeom.q27[0];
-            unsigned int sizeQ = para->getParH(i)->QGeom.kQ;
+            unsigned int sizeQ = para->getParH(i)->QGeom.numberOfBCnodes;
             QforBoundaryConditions Q;
             Q.q27[dirE] = &QQ[dirE   *sizeQ];
             Q.q27[dirW] = &QQ[dirW   *sizeQ];
@@ -1028,7 +1028,7 @@ void GridGenerator::allocArrays_BoundaryQs()
             //////////////////////////////////////////////////////////////////
 
             builder->getGeometryQs(Q.q27, i);
-			//QDebugWriter::writeQValues(Q, para->getParH(i)->QGeom.k, para->getParH(i)->QGeom.kQ, "M:/TestGridGeneration/results/GeomGPU.dat");
+			//QDebugWriter::writeQValues(Q, para->getParH(i)->QGeom.k, para->getParH(i)->QGeom.numberOfBCnodes, "M:/TestGridGeneration/results/GeomGPU.dat");
             //////////////////////////////////////////////////////////////////
             for (int node_i = 0; node_i < numberOfGeometryNodes; node_i++)
             {

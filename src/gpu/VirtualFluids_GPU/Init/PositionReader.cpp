@@ -15,12 +15,12 @@ void PositionReader::readFilePropellerCylinderForAlloc(Parameter* para)
 
 	for (int level = 0; level < maxlevel; level++)
 	{
-		para->getParH(level)->QPropeller.kQ = in.readInteger();
-		para->getParD(level)->QPropeller.kQ = para->getParH(level)->QPropeller.kQ;
+		para->getParH(level)->QPropeller.numberOfBCnodes = in.readInteger();
+		para->getParD(level)->QPropeller.numberOfBCnodes = para->getParH(level)->QPropeller.numberOfBCnodes;
 		in.readLine();
 		if (level == para->getFine())
 		{
-			for(int u=0; u<para->getParH(level)->QPropeller.kQ; u++)
+			for(int u=0; u<para->getParH(level)->QPropeller.numberOfBCnodes; u++)
 			{
 				test = in.readInteger();
 				if (para->getParH(level)->geoSP[test] == GEO_FLUID)
@@ -55,7 +55,7 @@ void PositionReader::readFilePropellerCylinderForAlloc(Parameter* para)
 		}
 		else
 		{
-			for(int u=0; u<para->getParH(level)->QPropeller.kQ; u++)
+			for(int u=0; u<para->getParH(level)->QPropeller.numberOfBCnodes; u++)
 			{
 				in.readInteger();
 				in.readDouble();
@@ -64,8 +64,8 @@ void PositionReader::readFilePropellerCylinderForAlloc(Parameter* para)
 				in.readLine();
 			}
 		}
-		para->getParH(level)->QPropeller.kQ = count;
-		para->getParD(level)->QPropeller.kQ = para->getParH(level)->QPropeller.kQ;
+		para->getParH(level)->QPropeller.numberOfBCnodes = count;
+		para->getParD(level)->QPropeller.numberOfBCnodes = para->getParH(level)->QPropeller.numberOfBCnodes;
 	}
 }
 //////////////////////////////////////////////////////////////////////////
@@ -137,7 +137,7 @@ void PositionReader::definePropellerQs(Parameter* para)
 	//////////////////////////////////////////////////////////////////
 	//preprocessing
 	real* QQ                  = para->getParH(para->getFine())->QPropeller.q27[0]; 
-	unsigned int sizeQ           = para->getParH(para->getFine())->QPropeller.kQ; 
+	unsigned int sizeQ           = para->getParH(para->getFine())->QPropeller.numberOfBCnodes; 
 	QforBoundaryConditions Q;
 	Q.q27[dirE   ] = &QQ[dirE   *sizeQ];
 	Q.q27[dirW   ] = &QQ[dirW   *sizeQ];
@@ -167,7 +167,7 @@ void PositionReader::definePropellerQs(Parameter* para)
 	Q.q27[dirBSE ] = &QQ[dirBSE *sizeQ];
 	Q.q27[dirBNW ] = &QQ[dirBNW *sizeQ];
 	//////////////////////////////////////////////////////////////////
-	for(int u=0; u<para->getParH(para->getFine())->QPropeller.kQ; u++)
+	for(int u=0; u<para->getParH(para->getFine())->QPropeller.numberOfBCnodes; u++)
 	{
 		for (int dir = dirE; dir<=dirBSW; dir++)
 		{

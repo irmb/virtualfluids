@@ -106,8 +106,8 @@ void GridProvider::setInitalNodeValues(const int numberOfNodes, const int level)
 
 void GridProvider::setPressSizePerLevel(int level, int sizePerLevel) const
 {
-    para->getParH(level)->QPress.kQ = sizePerLevel;
-    para->getParD(level)->QPress.kQ = sizePerLevel;
+    para->getParH(level)->QPress.numberOfBCnodes = sizePerLevel;
+    para->getParD(level)->QPress.numberOfBCnodes = sizePerLevel;
     para->getParH(level)->kPressQread = sizePerLevel * para->getD3Qxx();
     para->getParD(level)->kPressQread = sizePerLevel * para->getD3Qxx();
 }
@@ -115,8 +115,8 @@ void GridProvider::setPressSizePerLevel(int level, int sizePerLevel) const
 
 void GridProvider::setVelocitySizePerLevel(int level, int sizePerLevel) const
 {
-    para->getParH(level)->Qinflow.kQ = sizePerLevel;
-    para->getParD(level)->Qinflow.kQ = sizePerLevel;
+    para->getParH(level)->Qinflow.numberOfBCnodes = sizePerLevel;
+    para->getParD(level)->Qinflow.numberOfBCnodes = sizePerLevel;
     para->getParH(level)->numberOfVeloBCnodes = sizePerLevel;
     para->getParD(level)->numberOfVeloBCnodes = sizePerLevel;
     para->getParH(level)->numberOfVeloBCnodesRead = sizePerLevel * para->getD3Qxx();
@@ -125,8 +125,8 @@ void GridProvider::setVelocitySizePerLevel(int level, int sizePerLevel) const
 
 void GridProvider::setOutflowSizePerLevel(int level, int sizePerLevel) const
 {
-    para->getParH(level)->Qoutflow.kQ = sizePerLevel;
-    para->getParD(level)->Qoutflow.kQ = sizePerLevel;
+    para->getParH(level)->Qoutflow.numberOfBCnodes = sizePerLevel;
+    para->getParD(level)->Qoutflow.numberOfBCnodes = sizePerLevel;
     para->getParH(level)->kOutflowQread = sizePerLevel * para->getD3Qxx();
     para->getParD(level)->kOutflowQread = sizePerLevel * para->getD3Qxx();
 }

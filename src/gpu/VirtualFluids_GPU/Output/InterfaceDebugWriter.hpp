@@ -205,12 +205,12 @@ void writeBcPointsDebug(Parameter *para)
 
     for (int level = 0; level <= para->getMaxLevel(); level++) // evtl. Maxlevel + 1
     {
-        nodeNumberVec += (int)para->getParH(level)->QWall.kQ;
+        nodeNumberVec += (int)para->getParH(level)->QWall.numberOfBCnodes;
     }
     nodesVec2.resize(nodeNumberVec * 8);
     int nodeCount2 = 0;
     for (int level = 0; level <= para->getMaxLevel(); level++) {
-        for (int u = 0; u < para->getParH(level)->QWall.kQ; u++) {
+        for (int u = 0; u < para->getParH(level)->QWall.numberOfBCnodes; u++) {
             int pos = para->getParH(level)->QWall.k[u];
 
             double x1 = para->getParH(level)->coordX_SP[pos];
@@ -233,12 +233,12 @@ void writePressPointsDebug(Parameter *para)
 
     for (int level = 0; level <= para->getMaxLevel(); level++) // evtl. Maxlevel + 1
     {
-        nodeNumberVec += (int)para->getParH(level)->QPress.kQ;
+        nodeNumberVec += (int)para->getParH(level)->QPress.numberOfBCnodes;
     }
     nodesVec.resize(nodeNumberVec);
     int nodeCount2 = 0;
     for (int level = 0; level <= para->getMaxLevel(); level++) {
-        for (int u = 0; u < para->getParH(level)->QPress.kQ; u++) {
+        for (int u = 0; u < para->getParH(level)->QPress.numberOfBCnodes; u++) {
             int pos = para->getParH(level)->QPress.k[u];
 
             double x1 = para->getParH(level)->coordX_SP[pos];
@@ -260,12 +260,12 @@ void writePressNeighborPointsDebug(Parameter *para)
     int nodeNumberVec = 0;
 
     for (int level = 0; level <= para->getMaxLevel(); level++) {
-        nodeNumberVec += (int)para->getParH(level)->QPress.kQ;
+        nodeNumberVec += (int)para->getParH(level)->QPress.numberOfBCnodes;
     }
     nodesVec.resize(nodeNumberVec);
     int nodeCount2 = 0;
     for (int level = 0; level <= para->getMaxLevel(); level++) {
-        for (int u = 0; u < para->getParH(level)->QPress.kQ; u++) {
+        for (int u = 0; u < para->getParH(level)->QPress.numberOfBCnodes; u++) {
             int pos = para->getParH(level)->QPress.kN[u];
 
             real x1 = para->getParH(level)->coordX_SP[pos];

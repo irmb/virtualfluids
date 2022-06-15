@@ -15,7 +15,7 @@ extern "C" __global__ void PressSchlaff27(real* rhoBC,
                                           real* deltaVz0,
                                           int* k_Q,
                                           int* k_N,
-                                          int kQ,
+                                          int numberOfBCnodes,
                                           real om1,
                                           unsigned int* neighborX,
                                           unsigned int* neighborY,
@@ -34,7 +34,7 @@ extern "C" __global__ void PressSchlaff27(real* rhoBC,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       //index
@@ -279,7 +279,7 @@ extern "C" __global__ void VelSchlaff27(  int t,
                                           real* deltaVz0,
                                           int* k_Q,
                                           int* k_N,
-                                          int kQ,
+                                          int numberOfBCnodes,
                                           real om1,
                                           unsigned int* neighborX,
                                           unsigned int* neighborY,
@@ -298,7 +298,7 @@ extern "C" __global__ void VelSchlaff27(  int t,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       //index

@@ -169,7 +169,7 @@ void calcPlaneConc(Parameter* para, CudaMemoryManager* cudaManager, int lev)
 	//Version Press neighbor
 	unsigned int NoNin   = para->getParH(lev)->numberOfPointsCpTop;
 	unsigned int NoNout1 = para->getParH(lev)->numberOfPointsCpBottom;
-	unsigned int NoNout2 = para->getParH(lev)->QPress.kQ;
+	unsigned int NoNout2 = para->getParH(lev)->QPress.numberOfBCnodes;
 	////////////////////////////////////////////
 	////Version cp top
 	//unsigned int NoN = para->getParH(lev)->numberOfPointsCpTop;
@@ -245,8 +245,8 @@ void allocPlaneConc(Parameter* para, CudaMemoryManager* cudaManager)
 	//Version Press neighbor
 	cudaManager->cudaAllocPlaneConcIn(lev, para->getParH(lev)->numberOfPointsCpTop);
 	cudaManager->cudaAllocPlaneConcOut1(lev, para->getParH(lev)->numberOfPointsCpBottom);
-	cudaManager->cudaAllocPlaneConcOut2(lev, para->getParH(lev)->QPress.kQ);
-	printf("\n Number of elements plane concentration = %d + %d + %d \n", para->getParH(lev)->numberOfPointsCpTop, para->getParH(lev)->numberOfPointsCpBottom, para->getParH(lev)->QPress.kQ);
+	cudaManager->cudaAllocPlaneConcOut2(lev, para->getParH(lev)->QPress.numberOfBCnodes);
+	printf("\n Number of elements plane concentration = %d + %d + %d \n", para->getParH(lev)->numberOfPointsCpTop, para->getParH(lev)->numberOfPointsCpBottom, para->getParH(lev)->QPress.numberOfBCnodes);
 	////////////////////////////////////////////
 	////Version cp top
 	//para->cudaAllocPlaneConc(lev, para->getParH(lev)->numberOfPointsCpTop);
@@ -353,17 +353,17 @@ void printRE(Parameter* para, CudaMemoryManager* cudaManager, int timestep)
 	//////////////////////////////////////////////////////////////////////////
 	//fill file with data
 	bool doNothing = false;
-	for (int i = 0; i < para->getParH(lev)->QPress.kQ; i++)
+	for (int i = 0; i < para->getParH(lev)->QPress.numberOfBCnodes; i++)
 	{
 		doNothing = false;
 		for (std::size_t j = 0; j < 27; j++)
 		{
-			if (para->getParH(lev)->kDistTestRE.f[0][j*para->getParH(lev)->QPress.kQ + i]==0)
+			if (para->getParH(lev)->kDistTestRE.f[0][j*para->getParH(lev)->QPress.numberOfBCnodes + i]==0)
 			{
 				doNothing = true;
 				continue;
 			}
-			ostr << para->getParH(lev)->kDistTestRE.f[0][j*para->getParH(lev)->QPress.kQ + i]  << "\t";
+			ostr << para->getParH(lev)->kDistTestRE.f[0][j*para->getParH(lev)->QPress.numberOfBCnodes + i]  << "\t";
 		}
 		if (doNothing==true)
 		{

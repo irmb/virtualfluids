@@ -1914,7 +1914,7 @@ extern "C" void QADPressDev7( unsigned int numberOfThreads,
                               int* k_Q,
                               real* QQ,
                               unsigned int sizeQ,
-                              unsigned int kQ,
+                              unsigned int numberOfBCnodes,
                               real om1,
                               unsigned int* neighborX,
                               unsigned int* neighborY,
@@ -1922,7 +1922,7 @@ extern "C" void QADPressDev7( unsigned int numberOfThreads,
                               unsigned int size_Mat,
                               bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -1947,7 +1947,7 @@ extern "C" void QADPressDev7( unsigned int numberOfThreads,
                                        k_Q,
                                        QQ,
                                        sizeQ,
-                                       kQ,
+                                       numberOfBCnodes,
                                        om1,
                                        neighborX,
                                        neighborY,
@@ -1968,7 +1968,7 @@ extern "C" void QADPressDev27(unsigned int numberOfThreads,
                               int* k_Q,
                               real* QQ,
                               unsigned int sizeQ,
-                              unsigned int kQ,
+                              unsigned int numberOfBCnodes,
                               real om1,
                               unsigned int* neighborX,
                               unsigned int* neighborY,
@@ -1976,7 +1976,7 @@ extern "C" void QADPressDev27(unsigned int numberOfThreads,
                               unsigned int size_Mat,
                               bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2001,7 +2001,7 @@ extern "C" void QADPressDev27(unsigned int numberOfThreads,
                                           k_Q,
                                           QQ,
                                           sizeQ,
-                                          kQ,
+                                          numberOfBCnodes,
                                           om1,
                                           neighborX,
                                           neighborY,
@@ -2017,7 +2017,7 @@ extern "C" void QADPressNEQNeighborDev27(
 											real* DD27,
 											int* k_Q,
 											int* k_N,
-											int kQ,
+											int numberOfBCnodes,
 											unsigned int* neighborX,
 											unsigned int* neighborY,
 											unsigned int* neighborZ,
@@ -2026,7 +2026,7 @@ extern "C" void QADPressNEQNeighborDev27(
 										)
 {
 
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2046,7 +2046,7 @@ extern "C" void QADPressNEQNeighborDev27(
 												DD27,
 												k_Q,
 												k_N,
-												kQ,
+												numberOfBCnodes,
 												neighborX,
 												neighborY,
 												neighborZ,
@@ -2067,7 +2067,7 @@ extern "C" void QADVelDev7(unsigned int numberOfThreads,
                            int* k_Q,
                            real* QQ,
                            unsigned int sizeQ,
-                           unsigned int kQ,
+                           unsigned int numberOfBCnodes,
                            real om1,
                            unsigned int* neighborX,
                            unsigned int* neighborY,
@@ -2075,7 +2075,7 @@ extern "C" void QADVelDev7(unsigned int numberOfThreads,
                            unsigned int size_Mat,
                            bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2100,7 +2100,7 @@ extern "C" void QADVelDev7(unsigned int numberOfThreads,
                                        k_Q,
                                        QQ,
                                        sizeQ,
-                                       kQ,
+                                       numberOfBCnodes,
                                        om1,
                                        neighborX,
                                        neighborY,
@@ -2121,7 +2121,7 @@ extern "C" void QADVelDev27(  unsigned int numberOfThreads,
                               int* k_Q,
                               real* QQ,
                               unsigned int sizeQ,
-                              unsigned int kQ,
+                              unsigned int numberOfBCnodes,
                               real om1,
                               unsigned int* neighborX,
                               unsigned int* neighborY,
@@ -2129,7 +2129,7 @@ extern "C" void QADVelDev27(  unsigned int numberOfThreads,
                               unsigned int size_Mat,
                               bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2154,7 +2154,7 @@ extern "C" void QADVelDev27(  unsigned int numberOfThreads,
                                       k_Q,
                                       QQ,
                                       sizeQ,
-                                      kQ,
+                                      numberOfBCnodes,
                                       om1,
                                       neighborX,
                                       neighborY,
@@ -2174,7 +2174,7 @@ extern "C" void QADDev7(unsigned int numberOfThreads,
                         int* k_Q,
                         real* QQ,
                         unsigned int sizeQ,
-                        unsigned int kQ,
+                        unsigned int numberOfBCnodes,
                         real om1,
                         unsigned int* neighborX,
                         unsigned int* neighborY,
@@ -2182,7 +2182,7 @@ extern "C" void QADDev7(unsigned int numberOfThreads,
                         unsigned int size_Mat,
                         bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2206,7 +2206,7 @@ extern "C" void QADDev7(unsigned int numberOfThreads,
                                        k_Q,
                                        QQ,
                                        sizeQ,
-                                       kQ,
+                                       numberOfBCnodes,
                                        om1,
                                        neighborX,
                                        neighborY,
@@ -2226,7 +2226,7 @@ extern "C" void QADDirichletDev27( unsigned int numberOfThreads,
 								   int* k_Q,
 								   real* QQ,
 								   unsigned int sizeQ,
-								   unsigned int kQ,
+								   unsigned int numberOfBCnodes,
 								   real om1,
 								   unsigned int* neighborX,
 								   unsigned int* neighborY,
@@ -2234,7 +2234,7 @@ extern "C" void QADDirichletDev27( unsigned int numberOfThreads,
 								   unsigned int size_Mat,
 								   bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2258,7 +2258,7 @@ extern "C" void QADDirichletDev27( unsigned int numberOfThreads,
 											   k_Q,
 											   QQ,
 											   sizeQ,
-											   kQ,
+											   numberOfBCnodes,
 											   om1,
 											   neighborX,
 											   neighborY,
@@ -2278,7 +2278,7 @@ extern "C" void QADBBDev27(unsigned int numberOfThreads,
                            int* k_Q,
                            real* QQ,
                            unsigned int sizeQ,
-                           unsigned int kQ,
+                           unsigned int numberOfBCnodes,
                            real om1,
                            unsigned int* neighborX,
                            unsigned int* neighborY,
@@ -2286,7 +2286,7 @@ extern "C" void QADBBDev27(unsigned int numberOfThreads,
                            unsigned int size_Mat,
                            bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2310,7 +2310,7 @@ extern "C" void QADBBDev27(unsigned int numberOfThreads,
                                        k_Q,
                                        QQ,
                                        sizeQ,
-                                       kQ,
+                                       numberOfBCnodes,
                                        om1,
                                        neighborX,
                                        neighborY,
@@ -2330,7 +2330,7 @@ extern "C" void QNoSlipADincompDev7(unsigned int numberOfThreads,
 									int* k_Q,
 									real* QQ,
 									unsigned int sizeQ,
-									unsigned int kQ,
+									unsigned int numberOfBCnodes,
 									real om1,
 									unsigned int* neighborX,
 									unsigned int* neighborY,
@@ -2338,7 +2338,7 @@ extern "C" void QNoSlipADincompDev7(unsigned int numberOfThreads,
 									unsigned int size_Mat,
 									bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2362,7 +2362,7 @@ extern "C" void QNoSlipADincompDev7(unsigned int numberOfThreads,
 											   k_Q,
 											   QQ,
 											   sizeQ,
-											   kQ,
+											   numberOfBCnodes,
 											   om1,
 											   neighborX,
 											   neighborY,
@@ -2382,7 +2382,7 @@ extern "C" void QNoSlipADincompDev27(  unsigned int numberOfThreads,
 									   int* k_Q,
 									   real* QQ,
 									   unsigned int sizeQ,
-									   unsigned int kQ,
+									   unsigned int numberOfBCnodes,
 									   real om1,
 									   unsigned int* neighborX,
 									   unsigned int* neighborY,
@@ -2390,7 +2390,7 @@ extern "C" void QNoSlipADincompDev27(  unsigned int numberOfThreads,
 									   unsigned int size_Mat,
 									   bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2414,7 +2414,7 @@ extern "C" void QNoSlipADincompDev27(  unsigned int numberOfThreads,
 											   k_Q,
 											   QQ,
 											   sizeQ,
-											   kQ,
+											   numberOfBCnodes,
 											   om1,
 											   neighborX,
 											   neighborY,
@@ -2435,7 +2435,7 @@ extern "C" void QADVeloIncompDev7( unsigned int numberOfThreads,
 								   int* k_Q,
 								   real* QQ,
 								   unsigned int sizeQ,
-								   unsigned int kQ,
+								   unsigned int numberOfBCnodes,
 								   real om1,
 								   unsigned int* neighborX,
 								   unsigned int* neighborY,
@@ -2443,7 +2443,7 @@ extern "C" void QADVeloIncompDev7( unsigned int numberOfThreads,
 								   unsigned int size_Mat,
 								   bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2468,7 +2468,7 @@ extern "C" void QADVeloIncompDev7( unsigned int numberOfThreads,
 											   k_Q,
 											   QQ,
 											   sizeQ,
-											   kQ,
+											   numberOfBCnodes,
 											   om1,
 											   neighborX,
 											   neighborY,
@@ -2489,7 +2489,7 @@ extern "C" void QADVeloIncompDev27(   unsigned int numberOfThreads,
 									  int* k_Q,
 									  real* QQ,
 									  unsigned int sizeQ,
-									  unsigned int kQ,
+									  unsigned int numberOfBCnodes,
 									  real om1,
 									  unsigned int* neighborX,
 									  unsigned int* neighborY,
@@ -2497,7 +2497,7 @@ extern "C" void QADVeloIncompDev27(   unsigned int numberOfThreads,
 									  unsigned int size_Mat,
 									  bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2522,7 +2522,7 @@ extern "C" void QADVeloIncompDev27(   unsigned int numberOfThreads,
 											  k_Q,
 											  QQ,
 											  sizeQ,
-											  kQ,
+											  numberOfBCnodes,
 											  om1,
 											  neighborX,
 											  neighborY,
@@ -2543,7 +2543,7 @@ extern "C" void QADPressIncompDev7(   unsigned int numberOfThreads,
 									  int* k_Q,
 									  real* QQ,
 									  unsigned int sizeQ,
-									  unsigned int kQ,
+									  unsigned int numberOfBCnodes,
 									  real om1,
 									  unsigned int* neighborX,
 									  unsigned int* neighborY,
@@ -2551,7 +2551,7 @@ extern "C" void QADPressIncompDev7(   unsigned int numberOfThreads,
 									  unsigned int size_Mat,
 									  bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2576,7 +2576,7 @@ extern "C" void QADPressIncompDev7(   unsigned int numberOfThreads,
 											   k_Q,
 											   QQ,
 											   sizeQ,
-											   kQ,
+											   numberOfBCnodes,
 											   om1,
 											   neighborX,
 											   neighborY,
@@ -2597,7 +2597,7 @@ extern "C" void QADPressIncompDev27(  unsigned int numberOfThreads,
 									  int* k_Q,
 									  real* QQ,
 									  unsigned int sizeQ,
-									  unsigned int kQ,
+									  unsigned int numberOfBCnodes,
 									  real om1,
 									  unsigned int* neighborX,
 									  unsigned int* neighborY,
@@ -2605,7 +2605,7 @@ extern "C" void QADPressIncompDev27(  unsigned int numberOfThreads,
 									  unsigned int size_Mat,
 									  bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2630,7 +2630,7 @@ extern "C" void QADPressIncompDev27(  unsigned int numberOfThreads,
 											  k_Q,
 											  QQ,
 											  sizeQ,
-											  kQ,
+											  numberOfBCnodes,
 											  om1,
 											  neighborX,
 											  neighborY,
@@ -2647,7 +2647,7 @@ extern "C" void QDev27( unsigned int numberOfThreads,
                         int* k_Q,
                         real* QQ,
                         unsigned int sizeQ,
-                        unsigned int kQ,
+                        unsigned int numberOfBCnodes,
                         real om1,
                         unsigned int* neighborX,
                         unsigned int* neighborY,
@@ -2655,7 +2655,7 @@ extern "C" void QDev27( unsigned int numberOfThreads,
                         unsigned int size_Mat,
                         bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2676,7 +2676,7 @@ extern "C" void QDev27( unsigned int numberOfThreads,
                                        k_Q,
                                        QQ,
                                        sizeQ,
-                                       kQ,
+                                       numberOfBCnodes,
                                        om1,
                                        neighborX,
                                        neighborY,
@@ -2693,7 +2693,7 @@ extern "C" void QDevComp27( unsigned int numberOfThreads,
 							int* k_Q,
 							real* QQ,
 							unsigned int sizeQ,
-							unsigned int kQ,
+							unsigned int numberOfBCnodes,
 							real om1,
 							unsigned int* neighborX,
 							unsigned int* neighborY,
@@ -2701,7 +2701,7 @@ extern "C" void QDevComp27( unsigned int numberOfThreads,
 							unsigned int size_Mat,
 							bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2722,7 +2722,7 @@ extern "C" void QDevComp27( unsigned int numberOfThreads,
 										   k_Q,
 										   QQ,
 										   sizeQ,
-										   kQ,
+										   numberOfBCnodes,
 										   om1,
 										   neighborX,
 										   neighborY,
@@ -2737,7 +2737,7 @@ extern "C" void QDevCompThinWalls27(unsigned int numberOfThreads,
 									int* k_Q,
 									real* QQ,
 									unsigned int sizeQ,
-									unsigned int kQ,
+									unsigned int numberOfBCnodes,
 									real om1,
 									unsigned int* geom,
 									unsigned int* neighborX,
@@ -2747,7 +2747,7 @@ extern "C" void QDevCompThinWalls27(unsigned int numberOfThreads,
 									unsigned int size_Mat,
 									bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2766,7 +2766,7 @@ extern "C" void QDevCompThinWalls27(unsigned int numberOfThreads,
 														 k_Q,
 														 QQ,
 														 sizeQ,
-														 kQ,
+														 numberOfBCnodes,
 														 om1,
 														 neighborX,
 														 neighborY,
@@ -2779,7 +2779,7 @@ extern "C" void QDevCompThinWalls27(unsigned int numberOfThreads,
 												k_Q,
 												QQ,
 												sizeQ,
-												kQ,
+												numberOfBCnodes,
 												geom,
 												neighborX,
 												neighborY,
@@ -2798,7 +2798,7 @@ extern "C" void QDev3rdMomentsComp27(   unsigned int numberOfThreads,
 										int* k_Q,
 										real* QQ,
 										unsigned int sizeQ,
-										unsigned int kQ,
+										unsigned int numberOfBCnodes,
 										real om1,
 										unsigned int* neighborX,
 										unsigned int* neighborY,
@@ -2806,7 +2806,7 @@ extern "C" void QDev3rdMomentsComp27(   unsigned int numberOfThreads,
 										unsigned int size_Mat,
 										bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2827,7 +2827,7 @@ extern "C" void QDev3rdMomentsComp27(   unsigned int numberOfThreads,
 													   k_Q,
 													   QQ,
 													   sizeQ,
-													   kQ,
+													   numberOfBCnodes,
 													   om1,
 													   neighborX,
 													   neighborY,
@@ -2844,7 +2844,7 @@ extern "C" void QDevIncompHighNu27( unsigned int numberOfThreads,
 									int* k_Q,
 									real* QQ,
 									unsigned int sizeQ,
-									unsigned int kQ,
+									unsigned int numberOfBCnodes,
 									real om1,
 									unsigned int* neighborX,
 									unsigned int* neighborY,
@@ -2852,7 +2852,7 @@ extern "C" void QDevIncompHighNu27( unsigned int numberOfThreads,
 									unsigned int size_Mat,
 									bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2873,7 +2873,7 @@ extern "C" void QDevIncompHighNu27( unsigned int numberOfThreads,
 												   k_Q,
 												   QQ,
 												   sizeQ,
-												   kQ,
+												   numberOfBCnodes,
 												   om1,
 												   neighborX,
 												   neighborY,
@@ -2890,7 +2890,7 @@ extern "C" void QDevCompHighNu27(   unsigned int numberOfThreads,
 									int* k_Q,
 									real* QQ,
 									unsigned int sizeQ,
-									unsigned int kQ,
+									unsigned int numberOfBCnodes,
 									real om1,
 									unsigned int* neighborX,
 									unsigned int* neighborY,
@@ -2898,7 +2898,7 @@ extern "C" void QDevCompHighNu27(   unsigned int numberOfThreads,
 									unsigned int size_Mat,
 									bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2919,7 +2919,7 @@ extern "C" void QDevCompHighNu27(   unsigned int numberOfThreads,
 												   k_Q,
 												   QQ,
 												   sizeQ,
-												   kQ,
+												   numberOfBCnodes,
 												   om1,
 												   neighborX,
 												   neighborY,
@@ -2937,7 +2937,7 @@ extern "C" void QVelDevicePlainBB27(unsigned int numberOfThreads,
 									int* k_Q,
 									real* QQ,
 									unsigned int sizeQ,
-									int kQ,
+									int numberOfBCnodes,
 									real om1,
 									unsigned int* neighborX,
 									unsigned int* neighborY,
@@ -2945,7 +2945,7 @@ extern "C" void QVelDevicePlainBB27(unsigned int numberOfThreads,
 									unsigned int size_Mat,
 									bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2967,7 +2967,7 @@ extern "C" void QVelDevicePlainBB27(unsigned int numberOfThreads,
 												k_Q,
 												QQ,
 												sizeQ,
-												kQ,
+												numberOfBCnodes,
 												om1,
 												neighborX,
 												neighborY,
@@ -2985,7 +2985,7 @@ extern "C" void QVelDeviceCouhette27(unsigned int numberOfThreads,
 									int* k_Q,
 									real* QQ,
 									unsigned int sizeQ,
-									int kQ,
+									int numberOfBCnodes,
 									real om1,
 									unsigned int* neighborX,
 									unsigned int* neighborY,
@@ -2993,7 +2993,7 @@ extern "C" void QVelDeviceCouhette27(unsigned int numberOfThreads,
 									unsigned int size_Mat,
 									bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -3015,7 +3015,7 @@ extern "C" void QVelDeviceCouhette27(unsigned int numberOfThreads,
 												k_Q,
 												QQ,
 												sizeQ,
-												kQ,
+												numberOfBCnodes,
 												om1,
 												neighborX,
 												neighborY,
@@ -3035,7 +3035,7 @@ extern "C" void QVelDevice1h27(   unsigned int numberOfThreads,
 								  int* k_Q,
 								  real* QQ,
 								  unsigned int sizeQ,
-								  unsigned int kQ,
+								  unsigned int numberOfBCnodes,
 								  real om1,
 								  real Phi,
 								  real angularVelocity,
@@ -3048,7 +3048,7 @@ extern "C" void QVelDevice1h27(   unsigned int numberOfThreads,
 								  unsigned int size_Mat,
 								  bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -3072,7 +3072,7 @@ extern "C" void QVelDevice1h27(   unsigned int numberOfThreads,
                                           k_Q,
                                           QQ,
                                           sizeQ,
-                                          kQ,
+                                          numberOfBCnodes,
                                           om1,
 										  Phi,
 										  angularVelocity,
@@ -3097,7 +3097,7 @@ extern "C" void QVelDev27(unsigned int numberOfThreads,
                           int* k_Q,
                           real* QQ,
                           unsigned int sizeQ,
-                          unsigned int kQ,
+                          unsigned int numberOfBCnodes,
                           real om1,
                           unsigned int* neighborX,
                           unsigned int* neighborY,
@@ -3105,7 +3105,7 @@ extern "C" void QVelDev27(unsigned int numberOfThreads,
                           unsigned int size_Mat,
                           bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -3129,7 +3129,7 @@ extern "C" void QVelDev27(unsigned int numberOfThreads,
                                           k_Q,
                                           QQ,
                                           sizeQ,
-                                          kQ,
+                                          numberOfBCnodes,
                                           om1,
                                           neighborX,
                                           neighborY,
@@ -3149,7 +3149,7 @@ extern "C" void QVelDevCompPlusSlip27(unsigned int numberOfThreads,
 									  int* k_Q,
 									  real* QQ,
 									  unsigned int sizeQ,
-									  unsigned int kQ,
+									  unsigned int numberOfBCnodes,
 									  real om1,
 									  unsigned int* neighborX,
 									  unsigned int* neighborY,
@@ -3157,7 +3157,7 @@ extern "C" void QVelDevCompPlusSlip27(unsigned int numberOfThreads,
 									  unsigned int size_Mat,
 									  bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -3181,7 +3181,7 @@ extern "C" void QVelDevCompPlusSlip27(unsigned int numberOfThreads,
 													  k_Q,
 													  QQ,
 													  sizeQ,
-													  kQ,
+													  numberOfBCnodes,
 													  om1,
 													  neighborX,
 													  neighborY,
@@ -3201,7 +3201,7 @@ extern "C" void QVelDevComp27(unsigned int numberOfThreads,
 							  int* k_Q,
 							  real* QQ,
 							  unsigned int sizeQ,
-							  unsigned int kQ,
+							  unsigned int numberOfBCnodes,
 							  real om1,
 							  unsigned int* neighborX,
 							  unsigned int* neighborY,
@@ -3209,7 +3209,7 @@ extern "C" void QVelDevComp27(unsigned int numberOfThreads,
 							  unsigned int size_Mat,
 							  bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -3233,7 +3233,7 @@ extern "C" void QVelDevComp27(unsigned int numberOfThreads,
 											  k_Q,
 											  QQ,
 											  sizeQ,
-											  kQ,
+											  numberOfBCnodes,
 											  om1,
 											  neighborX,
 											  neighborY,
@@ -3251,7 +3251,7 @@ extern "C" void QVelDevCompThinWalls27(unsigned int numberOfThreads,
 							           int* k_Q,
 							           real* QQ,
 							           unsigned int sizeQ,
-							           unsigned int kQ,
+							           unsigned int numberOfBCnodes,
 							           real om1,
 									   unsigned int* geom,
 							           unsigned int* neighborX,
@@ -3261,7 +3261,7 @@ extern "C" void QVelDevCompThinWalls27(unsigned int numberOfThreads,
 							           unsigned int size_Mat,
 							           bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -3283,7 +3283,7 @@ extern "C" void QVelDevCompThinWalls27(unsigned int numberOfThreads,
 											                  k_Q,
 											                  QQ,
 											                  sizeQ,
-											                  kQ,
+											                  numberOfBCnodes,
 											                  om1,
 											                  neighborX,
 											                  neighborY,
@@ -3296,7 +3296,7 @@ extern "C" void QVelDevCompThinWalls27(unsigned int numberOfThreads,
 											      k_Q,
 											      QQ,
 											      sizeQ,
-											      kQ,
+											      numberOfBCnodes,
                                                   geom,
 											      neighborX,
 											      neighborY,
@@ -3351,7 +3351,7 @@ extern "C" void QVelDevCompZeroPress27(   unsigned int numberOfThreads,
 														  k_Q,
 														  QQ,
 														  sizeQ,
-														  //kQ,
+														  //numberOfBCnodes,
 														  om1,
 														  neighborX,
 														  neighborY,
@@ -3371,7 +3371,7 @@ extern "C" void QVelDevIncompHighNu27(unsigned int numberOfThreads,
 									  int* k_Q,
 									  real* QQ,
 									  unsigned int sizeQ,
-									  unsigned int kQ,
+									  unsigned int numberOfBCnodes,
 									  real om1,
 									  unsigned int* neighborX,
 									  unsigned int* neighborY,
@@ -3379,7 +3379,7 @@ extern "C" void QVelDevIncompHighNu27(unsigned int numberOfThreads,
 									  unsigned int size_Mat,
 									  bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -3403,7 +3403,7 @@ extern "C" void QVelDevIncompHighNu27(unsigned int numberOfThreads,
 													  k_Q,
 													  QQ,
 													  sizeQ,
-													  kQ,
+													  numberOfBCnodes,
 													  om1,
 													  neighborX,
 													  neighborY,
@@ -3423,7 +3423,7 @@ extern "C" void QVelDevCompHighNu27(  unsigned int numberOfThreads,
 									  int* k_Q,
 									  real* QQ,
 									  unsigned int sizeQ,
-									  unsigned int kQ,
+									  unsigned int numberOfBCnodes,
 									  real om1,
 									  unsigned int* neighborX,
 									  unsigned int* neighborY,
@@ -3431,7 +3431,7 @@ extern "C" void QVelDevCompHighNu27(  unsigned int numberOfThreads,
 									  unsigned int size_Mat,
 									  bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -3455,7 +3455,7 @@ extern "C" void QVelDevCompHighNu27(  unsigned int numberOfThreads,
 													  k_Q,
 													  QQ,
 													  sizeQ,
-													  kQ,
+													  numberOfBCnodes,
 													  om1,
 													  neighborX,
 													  neighborY,
@@ -3471,7 +3471,7 @@ extern "C" void QVeloDevEQ27(unsigned int numberOfThreads,
 							 real* VeloZ,
 							 real* DD,
 							 int* k_Q,
-							 int kQ,
+							 int numberOfBCnodes,
 							 real om1,
 							 unsigned int* neighborX,
 							 unsigned int* neighborY,
@@ -3479,7 +3479,7 @@ extern "C" void QVeloDevEQ27(unsigned int numberOfThreads,
 							 unsigned int size_Mat,
 							 bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -3499,7 +3499,7 @@ extern "C" void QVeloDevEQ27(unsigned int numberOfThreads,
 											 VeloZ,
 											 DD,
 											 k_Q,
-											 kQ,
+											 numberOfBCnodes,
 											 om1,
 											 neighborX,
 											 neighborY,
@@ -3916,7 +3916,7 @@ extern "C" void QPressDev27(unsigned int numberOfThreads,
                              int* k_Q,
                              real* QQ,
                              unsigned int sizeQ,
-                             unsigned int kQ,
+                             unsigned int numberOfBCnodes,
                              real om1,
                              unsigned int* neighborX,
                              unsigned int* neighborY,
@@ -3924,7 +3924,7 @@ extern "C" void QPressDev27(unsigned int numberOfThreads,
                              unsigned int size_Mat,
                              bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -3946,7 +3946,7 @@ extern "C" void QPressDev27(unsigned int numberOfThreads,
                                              k_Q,
                                              QQ,
                                              sizeQ,
-                                             kQ,
+                                             numberOfBCnodes,
                                              om1,
                                              neighborX,
                                              neighborY,
@@ -3964,7 +3964,7 @@ extern "C" void QPressDevAntiBB27(  unsigned int numberOfThreads,
 									real* DD,
 									int* k_Q,
 									real* QQ,
-									int kQ,
+									int numberOfBCnodes,
 									real om1,
 									unsigned int* neighborX,
 									unsigned int* neighborY,
@@ -3972,7 +3972,7 @@ extern "C" void QPressDevAntiBB27(  unsigned int numberOfThreads,
 									unsigned int size_Mat,
 									bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -3994,7 +3994,7 @@ extern "C" void QPressDevAntiBB27(  unsigned int numberOfThreads,
 												DD,
 												k_Q,
 												QQ,
-												kQ,
+												numberOfBCnodes,
 												om1,
 												neighborX,
 												neighborY,
@@ -4008,7 +4008,7 @@ extern "C" void QPressDevFixBackflow27( unsigned int numberOfThreads,
                                         real* rhoBC,
                                         real* DD,
                                         int* k_Q,
-                                        unsigned int kQ,
+                                        unsigned int numberOfBCnodes,
                                         real om1,
                                         unsigned int* neighborX,
                                         unsigned int* neighborY,
@@ -4016,7 +4016,7 @@ extern "C" void QPressDevFixBackflow27( unsigned int numberOfThreads,
                                         unsigned int size_Mat,
                                         bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -4034,7 +4034,7 @@ extern "C" void QPressDevFixBackflow27( unsigned int numberOfThreads,
       QPressDeviceFixBackflow27<<< gridQ, threads >>> (  rhoBC,
                                                          DD,
                                                          k_Q,
-                                                         kQ,
+                                                         numberOfBCnodes,
                                                          om1,
                                                          neighborX,
                                                          neighborY,
@@ -4048,7 +4048,7 @@ extern "C" void QPressDevDirDepBot27(  unsigned int numberOfThreads,
                                        real* rhoBC,
                                        real* DD,
                                        int* k_Q,
-                                       unsigned int kQ,
+                                       unsigned int numberOfBCnodes,
                                        real om1,
                                        unsigned int* neighborX,
                                        unsigned int* neighborY,
@@ -4056,7 +4056,7 @@ extern "C" void QPressDevDirDepBot27(  unsigned int numberOfThreads,
                                        unsigned int size_Mat,
                                        bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -4074,7 +4074,7 @@ extern "C" void QPressDevDirDepBot27(  unsigned int numberOfThreads,
       QPressDeviceDirDepBot27<<< gridQ, threads >>> ( rhoBC,
                                                       DD,
                                                       k_Q,
-                                                      kQ,
+                                                      numberOfBCnodes,
                                                       om1,
                                                       neighborX,
                                                       neighborY,
@@ -4089,7 +4089,7 @@ extern "C" void QPressNoRhoDev27(unsigned int numberOfThreads,
                                  real* DD,
                                  int* k_Q,
                                  int* k_N,
-                                 unsigned int kQ,
+                                 unsigned int numberOfBCnodes,
                                  real om1,
                                  unsigned int* neighborX,
                                  unsigned int* neighborY,
@@ -4097,7 +4097,7 @@ extern "C" void QPressNoRhoDev27(unsigned int numberOfThreads,
                                  unsigned int size_Mat,
                                  bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -4116,7 +4116,7 @@ extern "C" void QPressNoRhoDev27(unsigned int numberOfThreads,
 													DD,
 													k_Q,
 													k_N,
-													kQ,
+													numberOfBCnodes,
 													om1,
 													neighborX,
 													neighborY,
@@ -4131,7 +4131,7 @@ extern "C" void QInflowScaleByPressDev27(unsigned int numberOfThreads,
 										 real* DD,
 										 int* k_Q,
 										 int* k_N,
-										 unsigned int kQ,
+										 unsigned int numberOfBCnodes,
 										 real om1,
 										 unsigned int* neighborX,
 										 unsigned int* neighborY,
@@ -4139,7 +4139,7 @@ extern "C" void QInflowScaleByPressDev27(unsigned int numberOfThreads,
 										 unsigned int size_Mat,
 										 bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -4158,7 +4158,7 @@ extern "C" void QInflowScaleByPressDev27(unsigned int numberOfThreads,
 														DD,
 														k_Q,
 														k_N,
-														kQ,
+														numberOfBCnodes,
 														om1,
 														neighborX,
 														neighborY,
@@ -4173,7 +4173,7 @@ extern "C" void QPressDevOld27(  unsigned int numberOfThreads,
                                      real* DD,
                                      int* k_Q,
                                      int* k_N,
-                                     unsigned int kQ,
+                                     unsigned int numberOfBCnodes,
                                      real om1,
                                      unsigned int* neighborX,
                                      unsigned int* neighborY,
@@ -4181,7 +4181,7 @@ extern "C" void QPressDevOld27(  unsigned int numberOfThreads,
                                      unsigned int size_Mat,
                                      bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -4200,7 +4200,7 @@ extern "C" void QPressDevOld27(  unsigned int numberOfThreads,
                                                 DD,
                                                 k_Q,
                                                 k_N,
-                                                kQ,
+                                                numberOfBCnodes,
                                                 om1,
                                                 neighborX,
                                                 neighborY,
@@ -4215,7 +4215,7 @@ extern "C" void QPressDevIncompNEQ27(unsigned int numberOfThreads,
                                      real* DD,
                                      int* k_Q,
                                      int* k_N,
-                                     unsigned int kQ,
+                                     unsigned int numberOfBCnodes,
                                      real om1,
                                      unsigned int* neighborX,
                                      unsigned int* neighborY,
@@ -4223,7 +4223,7 @@ extern "C" void QPressDevIncompNEQ27(unsigned int numberOfThreads,
                                      unsigned int size_Mat,
                                      bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -4242,7 +4242,7 @@ extern "C" void QPressDevIncompNEQ27(unsigned int numberOfThreads,
 														DD,
 														k_Q,
 														k_N,
-														kQ,
+														numberOfBCnodes,
 														om1,
 														neighborX,
 														neighborY,
@@ -4257,7 +4257,7 @@ extern "C" void QPressDevNEQ27(  unsigned int numberOfThreads,
                                      real* DD,
                                      int* k_Q,
                                      int* k_N,
-                                     unsigned int kQ,
+                                     unsigned int numberOfBCnodes,
                                      real om1,
                                      unsigned int* neighborX,
                                      unsigned int* neighborY,
@@ -4265,7 +4265,7 @@ extern "C" void QPressDevNEQ27(  unsigned int numberOfThreads,
                                      unsigned int size_Mat,
                                      bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -4284,7 +4284,7 @@ extern "C" void QPressDevNEQ27(  unsigned int numberOfThreads,
                                                 DD,
                                                 k_Q,
                                                 k_N,
-                                                kQ,
+                                                numberOfBCnodes,
                                                 om1,
                                                 neighborX,
                                                 neighborY,
@@ -4300,7 +4300,7 @@ extern "C" void QPressDevEQZ27(  unsigned int numberOfThreads,
                                      int* k_Q,
                                      int* k_N,
                                      real* kTestRE,
-                                     unsigned int kQ,
+                                     unsigned int numberOfBCnodes,
                                      real om1,
                                      unsigned int* neighborX,
                                      unsigned int* neighborY,
@@ -4308,7 +4308,7 @@ extern "C" void QPressDevEQZ27(  unsigned int numberOfThreads,
                                      unsigned int size_Mat,
                                      bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -4328,7 +4328,7 @@ extern "C" void QPressDevEQZ27(  unsigned int numberOfThreads,
                                                 k_Q,
                                                 k_N,
                                                 kTestRE,
-                                                kQ,
+                                                numberOfBCnodes,
                                                 om1,
                                                 neighborX,
                                                 neighborY,
@@ -4341,14 +4341,14 @@ extern "C" void QPressDevEQZ27(  unsigned int numberOfThreads,
 extern "C" void QPressDevZero27(unsigned int numberOfThreads,
                                 real* DD,
                                 int* k_Q,
-                                unsigned int kQ,
+                                unsigned int numberOfBCnodes,
                                 unsigned int* neighborX,
                                 unsigned int* neighborY,
                                 unsigned int* neighborZ,
                                 unsigned int size_Mat,
                                 bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -4365,7 +4365,7 @@ extern "C" void QPressDevZero27(unsigned int numberOfThreads,
 
       QPressDeviceZero27<<< gridQ, threads >>> (DD,
                                                 k_Q,
-                                                kQ,
+                                                numberOfBCnodes,
                                                 neighborX,
                                                 neighborY,
                                                 neighborZ,
@@ -4379,7 +4379,7 @@ extern "C" void QPressDevFake27(     unsigned int numberOfThreads,
                                      real* DD,
                                      int* k_Q,
                                      int* k_N,
-                                     unsigned int kQ,
+                                     unsigned int numberOfBCnodes,
                                      real om1,
                                      unsigned int* neighborX,
                                      unsigned int* neighborY,
@@ -4387,7 +4387,7 @@ extern "C" void QPressDevFake27(     unsigned int numberOfThreads,
                                      unsigned int size_Mat,
                                      bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -4406,7 +4406,7 @@ extern "C" void QPressDevFake27(     unsigned int numberOfThreads,
                                                 DD,
                                                 k_Q,
                                                 k_N,
-                                                kQ,
+                                                numberOfBCnodes,
                                                 om1,
                                                 neighborX,
                                                 neighborY,
@@ -4423,7 +4423,7 @@ extern "C" void BBDev27( unsigned int numberOfThreads,
                        int* k_Q,
                        real* QQ,
                        unsigned int sizeQ,
-                       unsigned int kQ,
+                       unsigned int numberOfBCnodes,
                        real om1,
                        unsigned int* neighborX,
                        unsigned int* neighborY,
@@ -4431,7 +4431,7 @@ extern "C" void BBDev27( unsigned int numberOfThreads,
                        unsigned int size_Mat,
                        bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -4452,7 +4452,7 @@ extern "C" void BBDev27( unsigned int numberOfThreads,
                                           k_Q,
                                           QQ,
                                           sizeQ,
-                                          kQ,
+                                          numberOfBCnodes,
                                           om1,
                                           neighborX,
                                           neighborY,
@@ -4468,7 +4468,7 @@ extern "C" void QPressDev27_IntBB(  unsigned int numberOfThreads,
 									int* k_Q,
 									real* QQ,
 									unsigned int sizeQ,
-									unsigned int kQ,
+									unsigned int numberOfBCnodes,
 									real om1,
 									unsigned int* neighborX,
 									unsigned int* neighborY,
@@ -4476,7 +4476,7 @@ extern "C" void QPressDev27_IntBB(  unsigned int numberOfThreads,
 									unsigned int size_Mat,
 									bool evenOrOdd)
 {
-	int Grid = (kQ / numberOfThreads)+1;
+	int Grid = (numberOfBCnodes / numberOfThreads)+1;
 	int Grid1, Grid2;
 	if (Grid>512)
 	{
@@ -4496,7 +4496,7 @@ extern "C" void QPressDev27_IntBB(  unsigned int numberOfThreads,
 													k_Q,
 													QQ,
 													sizeQ,
-													kQ,
+													numberOfBCnodes,
 													om1,
 													neighborX,
 													neighborY,
@@ -4516,7 +4516,7 @@ extern "C" void PressSchlaffer27(unsigned int numberOfThreads,
                                  real* deltaVz0,
                                  int* k_Q,
                                  int* k_N,
-                                 int kQ,
+                                 int numberOfBCnodes,
                                  real om1,
                                  unsigned int* neighborX,
                                  unsigned int* neighborY,
@@ -4524,7 +4524,7 @@ extern "C" void PressSchlaffer27(unsigned int numberOfThreads,
                                  unsigned int size_Mat,
                                  bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -4547,7 +4547,7 @@ extern "C" void PressSchlaffer27(unsigned int numberOfThreads,
                                              deltaVz0,
                                              k_Q,
                                              k_N,
-                                             kQ,
+                                             numberOfBCnodes,
                                              om1,
                                              neighborX,
                                              neighborY,
@@ -4565,7 +4565,7 @@ extern "C" void VelSchlaffer27(  unsigned int numberOfThreads,
                                  real* deltaVz0,
                                  int* k_Q,
                                  int* k_N,
-                                 int kQ,
+                                 int numberOfBCnodes,
                                  real om1,
                                  unsigned int* neighborX,
                                  unsigned int* neighborY,
@@ -4573,7 +4573,7 @@ extern "C" void VelSchlaffer27(  unsigned int numberOfThreads,
                                  unsigned int size_Mat,
                                  bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -4594,7 +4594,7 @@ extern "C" void VelSchlaffer27(  unsigned int numberOfThreads,
                                           deltaVz0,
                                           k_Q,
                                           k_N,
-                                          kQ,
+                                          numberOfBCnodes,
                                           om1,
                                           neighborX,
                                           neighborY,
@@ -6797,7 +6797,7 @@ extern "C" void ScaleFCThS27( real* DC,
 extern "C" void DragLiftPostD27(real* DD,
 								int* k_Q,
 								real* QQ,
-								int kQ,
+								int numberOfBCnodes,
 								double *DragX,
 								double *DragY,
 								double *DragZ,
@@ -6808,7 +6808,7 @@ extern "C" void DragLiftPostD27(real* DD,
 								bool evenOrOdd,
 								unsigned int numberOfThreads)
 {
-	int Grid = (kQ / numberOfThreads)+1;
+	int Grid = (numberOfBCnodes / numberOfThreads)+1;
 	int Grid1, Grid2;
 	if (Grid>512)
 	{
@@ -6826,7 +6826,7 @@ extern "C" void DragLiftPostD27(real* DD,
 	DragLiftPost27<<< grid, threads >>>(DD,
 										k_Q,
 										QQ,
-										kQ,
+										numberOfBCnodes,
 										DragX,
 										DragY,
 										DragZ,
@@ -6841,7 +6841,7 @@ extern "C" void DragLiftPostD27(real* DD,
 extern "C" void DragLiftPreD27( real* DD,
 								int* k_Q,
 								real* QQ,
-								int kQ,
+								int numberOfBCnodes,
 								double *DragX,
 								double *DragY,
 								double *DragZ,
@@ -6852,7 +6852,7 @@ extern "C" void DragLiftPreD27( real* DD,
 								bool evenOrOdd,
 								unsigned int numberOfThreads)
 {
-	int Grid = (kQ / numberOfThreads)+1;
+	int Grid = (numberOfBCnodes / numberOfThreads)+1;
 	int Grid1, Grid2;
 	if (Grid>512)
 	{
@@ -6870,7 +6870,7 @@ extern "C" void DragLiftPreD27( real* DD,
 	DragLiftPre27<<< grid, threads >>>( DD,
 										k_Q,
 										QQ,
-										kQ,
+										numberOfBCnodes,
 										DragX,
 										DragY,
 										DragZ,
@@ -7204,7 +7204,7 @@ extern "C" void WallFuncDev27(unsigned int numberOfThreads,
 							  int* k_Q,
 							  real* QQ,
 							  unsigned int sizeQ,
-							  unsigned int kQ,
+							  unsigned int numberOfBCnodes,
 							  real om1,
 							  unsigned int* neighborX,
 							  unsigned int* neighborY,
@@ -7212,7 +7212,7 @@ extern "C" void WallFuncDev27(unsigned int numberOfThreads,
 							  unsigned int size_Mat,
 							  bool evenOrOdd)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -7236,7 +7236,7 @@ extern "C" void WallFuncDev27(unsigned int numberOfThreads,
 											  k_Q,
 											  QQ,
 											  sizeQ,
-											  kQ,
+											  numberOfBCnodes,
 											  om1,
 											  neighborX,
 											  neighborY,

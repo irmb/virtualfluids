@@ -424,7 +424,7 @@ void UpdateGrid27::postCollisionBC(int level, unsigned int t)
     // G E O M E T R Y
     //////////////////////////////////////////////////////////////////////////
 
-    if (para->getParD(level)->QGeom.kQ > 0)
+    if (para->getParD(level)->QGeom.numberOfBCnodes > 0)
     {
         if (para->getCalcDragLift())
         {
@@ -432,7 +432,7 @@ void UpdateGrid27::postCollisionBC(int level, unsigned int t)
             DragLiftPostD27(para->getParD(level)->d0SP.f[0],
                             para->getParD(level)->QGeom.k,
                             para->getParD(level)->QGeom.q27[0],
-                            para->getParD(level)->QGeom.kQ,
+                            para->getParD(level)->QGeom.numberOfBCnodes,
                             para->getParD(level)->DragPostX,
                             para->getParD(level)->DragPostY,
                             para->getParD(level)->DragPostZ,
@@ -447,14 +447,14 @@ void UpdateGrid27::postCollisionBC(int level, unsigned int t)
 
         //BBDev27( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
         //         para->getParD(level)->d0SP.f[0],             para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0],
-        //         para->getParD(level)->QGeom.kQ,              para->getParD(level)->QGeom.kQ,     para->getParD(level)->omega,
+        //         para->getParD(level)->QGeom.numberOfBCnodes,              para->getParD(level)->QGeom.numberOfBCnodes,     para->getParD(level)->omega,
         //         para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
         //         para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
         //getLastCudaError("BBDev27 (Wall) execution failed");
 
         //QDev27(para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
         //         para->getParD(level)->d0SP.f[0],             para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0],
-        //         para->getParD(level)->QGeom.kQ,              para->getParD(level)->QGeom.kQ,     para->getParD(level)->omega,
+        //         para->getParD(level)->QGeom.numberOfBCnodes,              para->getParD(level)->QGeom.numberOfBCnodes,     para->getParD(level)->omega,
         //         para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
         //         para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
         //getLastCudaError("QDev27 (Geom) execution failed");
@@ -462,14 +462,14 @@ void UpdateGrid27::postCollisionBC(int level, unsigned int t)
         //QVelDev27(para->getParD(level)->numberofthreads, para->getParD(level)->nx,           para->getParD(level)->ny,
         //          para->getParD(level)->QGeom.Vx,        para->getParD(level)->QGeom.Vy,     para->getParD(level)->QGeom.Vz,
         //          para->getParD(level)->d0SP.f[0],       para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0],
-        //          para->getParD(level)->QGeom.kQ,        para->getParD(level)->QGeom.kQ,     para->getParD(level)->omega,
+        //          para->getParD(level)->QGeom.numberOfBCnodes,        para->getParD(level)->QGeom.numberOfBCnodes,     para->getParD(level)->omega,
         //          para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
         //          para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
         //getLastCudaError("QVelDev27 execution failed");
 
         //QDevComp27(para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
         //           para->getParD(level)->d0SP.f[0],             para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0],
-        //           para->getParD(level)->QGeom.kQ,              para->getParD(level)->QGeom.kQ,     para->getParD(level)->omega,
+        //           para->getParD(level)->QGeom.numberOfBCnodes,              para->getParD(level)->QGeom.numberOfBCnodes,     para->getParD(level)->omega,
         //           para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
         //           para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
         //getLastCudaError("QDevComp27 (Geom) execution failed");
@@ -477,7 +477,7 @@ void UpdateGrid27::postCollisionBC(int level, unsigned int t)
         QVelDevComp27(para->getParD(level)->numberofthreads, para->getParD(level)->nx,           para->getParD(level)->ny,
                       para->getParD(level)->QGeom.Vx,        para->getParD(level)->QGeom.Vy,     para->getParD(level)->QGeom.Vz,
                       para->getParD(level)->d0SP.f[0],       para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0],
-                      para->getParD(level)->QGeom.kQ,        para->getParD(level)->QGeom.kQ,     para->getParD(level)->omega,
+                      para->getParD(level)->QGeom.numberOfBCnodes,        para->getParD(level)->QGeom.numberOfBCnodes,     para->getParD(level)->omega,
                       para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
                       para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
         getLastCudaError("QVelDevComp27 execution failed");
@@ -485,20 +485,20 @@ void UpdateGrid27::postCollisionBC(int level, unsigned int t)
         //QVelDevCompZeroPress27(    para->getParD(0)->numberofthreads, para->getParD(0)->nx,           para->getParD(0)->ny,
         //                        para->getParD(0)->QGeom.Vx,        para->getParD(0)->QGeom.Vy,     para->getParD(0)->QGeom.Vz,
         //                        para->getParD(0)->d0SP.f[0],       para->getParD(0)->QGeom.k,      para->getParD(0)->QGeom.q27[0],
-        //                        para->getParD(0)->QGeom.kQ,        para->getParD(0)->QGeom.kQ,     para->getParD(0)->omega,
+        //                        para->getParD(0)->QGeom.numberOfBCnodes,        para->getParD(0)->QGeom.numberOfBCnodes,     para->getParD(0)->omega,
         //                        para->getParD(0)->neighborX_SP,    para->getParD(0)->neighborY_SP, para->getParD(0)->neighborZ_SP,
         //                        para->getParD(0)->size_Mat_SP,     para->getParD(0)->evenOrOdd);
         //getLastCudaError("QVelDevCompZeroPress27 execution failed");
 
         //QDev3rdMomentsComp27( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
         //                      para->getParD(level)->d0SP.f[0],             para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0],
-        //                      para->getParD(level)->QGeom.kQ,              para->getParD(level)->QGeom.kQ,     para->getParD(level)->omega,
+        //                      para->getParD(level)->QGeom.numberOfBCnodes,              para->getParD(level)->QGeom.numberOfBCnodes,     para->getParD(level)->omega,
         //                      para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
         //                      para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
         //getLastCudaError("QDev3rdMomentsComp27 (Geom) execution failed");
 
         //QSlipDev27( para->getParD(level)->numberofthreads, para->getParD(level)->d0SP.f[0],    para->getParD(level)->QGeom.k,
-        //            para->getParD(level)->QGeom.q27[0],    para->getParD(level)->QGeom.kQ,     para->getParD(level)->omega,
+        //            para->getParD(level)->QGeom.q27[0],    para->getParD(level)->QGeom.numberOfBCnodes,     para->getParD(level)->omega,
         //            para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
         //            para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
         //getLastCudaError("Slip27 execution failed");
@@ -509,14 +509,14 @@ void UpdateGrid27::postCollisionBC(int level, unsigned int t)
         // the GridGenerator does currently not provide normals!
 
         //QSlipGeomDevComp27(para->getParD(level)->numberofthreads,     para->getParD(level)->d0SP.f[0],           para->getParD(level)->QGeom.k,
-        //                   para->getParD(level)->QGeom.q27[0],        para->getParD(level)->QGeom.kQ,            para->getParD(level)->omega,
+        //                   para->getParD(level)->QGeom.q27[0],        para->getParD(level)->QGeom.numberOfBCnodes,            para->getParD(level)->omega,
         //                   para->getParD(level)->QGeomNormalX.q27[0], para->getParD(level)->QGeomNormalY.q27[0], para->getParD(level)->QGeomNormalZ.q27[0],
         //                   para->getParD(level)->neighborX_SP,        para->getParD(level)->neighborY_SP,        para->getParD(level)->neighborZ_SP,
         //                   para->getParD(level)->size_Mat_SP,         para->getParD(level)->evenOrOdd);
         //getLastCudaError("QSlipGeomDev27 execution failed");
 
         //QSlipNormDevComp27(para->getParD(level)->numberofthreads,     para->getParD(level)->d0SP.f[0],           para->getParD(level)->QGeom.k,
-        //                   para->getParD(level)->QGeom.q27[0],        para->getParD(level)->QGeom.kQ,            para->getParD(level)->omega,
+        //                   para->getParD(level)->QGeom.q27[0],        para->getParD(level)->QGeom.numberOfBCnodes,            para->getParD(level)->omega,
         //                   para->getParD(level)->QGeomNormalX.q27[0], para->getParD(level)->QGeomNormalY.q27[0], para->getParD(level)->QGeomNormalZ.q27[0],
         //                   para->getParD(level)->neighborX_SP,        para->getParD(level)->neighborY_SP,        para->getParD(level)->neighborZ_SP,
         //                   para->getParD(level)->size_Mat_SP,         para->getParD(level)->evenOrOdd);
@@ -548,7 +548,7 @@ void UpdateGrid27::postCollisionBC(int level, unsigned int t)
     {
         //QPressDev27_IntBB(  para->getParD(level)->numberofthreads, para->getParD(level)->QPress.RhoBC,
         //                    para->getParD(level)->d0SP.f[0],       para->getParD(level)->QPress.k,       para->getParD(level)->QPress.q27[0],
-        //                    para->getParD(level)->QPress.kQ,       para->getParD(level)->QPress.kQ,      para->getParD(level)->omega,
+        //                    para->getParD(level)->QPress.numberOfBCnodes,       para->getParD(level)->QPress.numberOfBCnodes,      para->getParD(level)->omega,
         //                    para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP,   para->getParD(level)->neighborZ_SP,
         //                    para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
         //getLastCudaError("QPressDev27_IntBB fine execution failed");
@@ -562,7 +562,7 @@ void UpdateGrid27::postCollisionBC(int level, unsigned int t)
     {
         if (para->getDiffMod() == 7)
         {
-            if (para->getParD(level)->QGeom.kQ > 0)
+            if (para->getParD(level)->QGeom.numberOfBCnodes > 0)
             {
                 //QNoSlipADincompDev7( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
                 //                     para->getParD(level)->d0SP.f[0],             para->getParD(level)->d7.f[0],      para->getParD(level)->Temp.temp,
@@ -660,7 +660,7 @@ void UpdateGrid27::postCollisionBC(int level, unsigned int t)
         }
         else if (para->getDiffMod() == 27)
         {
-            if (para->getParD(level)->QGeom.kQ > 0)
+            if (para->getParD(level)->QGeom.numberOfBCnodes > 0)
             {
                 //QNoSlipADincompDev27(para->getParD(level)->numberofthreads,      para->getParD(level)->nx,           para->getParD(level)->ny,
                 //                     para->getParD(level)->d0SP.f[0],            para->getParD(level)->d27.f[0],     para->getParD(level)->Temp.temp,
@@ -851,7 +851,7 @@ void preCollisionBC(Parameter* para, CudaMemoryManager* cudaManager, int level, 
     // G E O M E T R Y
     //////////////////////////////////////////////////////////////////////////
 
-    if (para->getParD(level)->QGeom.kQ > 0)
+    if (para->getParD(level)->QGeom.numberOfBCnodes > 0)
     {
         if (para->getCalcDragLift())
         {
@@ -859,7 +859,7 @@ void preCollisionBC(Parameter* para, CudaMemoryManager* cudaManager, int level, 
             DragLiftPreD27(para->getParD(level)->d0SP.f[0],
                            para->getParD(level)->QGeom.k,
                            para->getParD(level)->QGeom.q27[0],
-                           para->getParD(level)->QGeom.kQ,
+                           para->getParD(level)->QGeom.numberOfBCnodes,
                            para->getParD(level)->DragPreX,
                            para->getParD(level)->DragPreY,
                            para->getParD(level)->DragPreZ,
@@ -928,7 +928,7 @@ void preCollisionBC(Parameter* para, CudaMemoryManager* cudaManager, int level, 
         // high viscosity incompressible
         //QDevIncompHighNu27( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
         //                    para->getParD(level)->d0SP.f[0],             para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0],
-        //                    para->getParD(level)->QGeom.kQ,              para->getParD(level)->QGeom.kQ,     para->getParD(level)->omega,
+        //                    para->getParD(level)->QGeom.numberOfBCnodes,              para->getParD(level)->QGeom.numberOfBCnodes,     para->getParD(level)->omega,
         //                    para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
         //                    para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
         //getLastCudaError("QDevComp27 (Geom) execution failed");
@@ -936,7 +936,7 @@ void preCollisionBC(Parameter* para, CudaMemoryManager* cudaManager, int level, 
         // high viscosity compressible
         //QDevCompHighNu27( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
         //                  para->getParD(level)->d0SP.f[0],             para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0],
-        //                  para->getParD(level)->QGeom.kQ,              para->getParD(level)->QGeom.kQ,     para->getParD(level)->omega,
+        //                  para->getParD(level)->QGeom.numberOfBCnodes,              para->getParD(level)->QGeom.numberOfBCnodes,     para->getParD(level)->omega,
         //                  para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
         //                  para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
         //getLastCudaError("QDevComp27 (Geom) execution failed");
@@ -946,11 +946,11 @@ void preCollisionBC(Parameter* para, CudaMemoryManager* cudaManager, int level, 
     // P R E S S U R E
     //////////////////////////////////////////////////////////////////////////
 
-    if (para->getParD(level)->QPress.kQ > 0)
+    if (para->getParD(level)->QPress.numberOfBCnodes > 0)
     {
         QPressNoRhoDev27(para->getParD(level)->numberofthreads, para->getParD(level)->QPress.RhoBC,
                         para->getParD(level)->d0SP.f[0],       para->getParD(level)->QPress.k,
-                        para->getParD(level)->QPress.kN,       para->getParD(level)->QPress.kQ,     para->getParD(level)->omega,
+                        para->getParD(level)->QPress.kN,       para->getParD(level)->QPress.numberOfBCnodes,     para->getParD(level)->omega,
                         para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP,  para->getParD(level)->neighborZ_SP,
                         para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
         getLastCudaError("QPressNoRhoDev27 execution failed");
@@ -958,14 +958,14 @@ void preCollisionBC(Parameter* para, CudaMemoryManager* cudaManager, int level, 
         //QPressDevEQZ27(para->getParD(level)->numberofthreads, para->getParD(level)->QPress.RhoBC,
         //               para->getParD(level)->d0SP.f[0],       para->getParD(level)->QPress.k,
         //               para->getParD(level)->QPress.kN,       para->getParD(level)->kDistTestRE.f[0],
-        //               para->getParD(level)->QPress.kQ,       para->getParD(level)->omega,
+        //               para->getParD(level)->QPress.numberOfBCnodes,       para->getParD(level)->omega,
         //               para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(0)->neighborZ_SP,
         //               para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
         //getLastCudaError("QPressDevEQZ27 execution failed");
 
         //QInflowScaleByPressDev27( para->getParD(level)->numberofthreads, para->getParD(level)->QPress.RhoBC,
         //                          para->getParD(level)->d0SP.f[0],       para->getParD(level)->QPress.k,
-        //                          para->getParD(level)->QPress.kN,       para->getParD(level)->QPress.kQ,    para->getParD(0)->omega,
+        //                          para->getParD(level)->QPress.kN,       para->getParD(level)->QPress.numberOfBCnodes,    para->getParD(0)->omega,
         //                          para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(0)->neighborZ_SP,
         //                          para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
         //getLastCudaError("QInflowScaleByPressDev27 execution failed");
@@ -974,7 +974,7 @@ void preCollisionBC(Parameter* para, CudaMemoryManager* cudaManager, int level, 
         //press NEQ incompressible
         //QPressDevIncompNEQ27(para->getParD(level)->numberofthreads, para->getParD(level)->QPress.RhoBC,
         //                     para->getParD(level)->d0SP.f[0],       para->getParD(level)->QPress.k,
-        //                     para->getParD(level)->QPress.kN,       para->getParD(level)->QPress.kQ,    para->getParD(level)->omega,
+        //                     para->getParD(level)->QPress.kN,       para->getParD(level)->QPress.numberOfBCnodes,    para->getParD(level)->omega,
         //                     para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
         //                     para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
         //getLastCudaError("QPressDevIncompNEQ27 execution failed");
@@ -982,7 +982,7 @@ void preCollisionBC(Parameter* para, CudaMemoryManager* cudaManager, int level, 
         //press NEQ compressible
         // QPressDevNEQ27( para->getParD(level)->numberofthreads, para->getParD(level)->QPress.RhoBC,
         //                 para->getParD(level)->d0SP.f[0],       para->getParD(level)->QPress.k,
-        //                 para->getParD(level)->QPress.kN,       para->getParD(level)->QPress.kQ,    para->getParD(level)->omega,
+        //                 para->getParD(level)->QPress.kN,       para->getParD(level)->QPress.numberOfBCnodes,    para->getParD(level)->omega,
         //                 para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
         //                 para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
         // getLastCudaError("QPressDevNEQ27 execution failed");
@@ -997,7 +997,7 @@ void preCollisionBC(Parameter* para, CudaMemoryManager* cudaManager, int level, 
     {
         //QPressNoRhoDev27( para->getParD(level)->numberofthreads, para->getParD(level)->Qoutflow.RhoBC,
         //                  para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qoutflow.k,
-        //                  para->getParD(level)->Qoutflow.kN,     para->getParD(level)->Qoutflow.kQ,    para->getParD(level)->omega,
+        //                  para->getParD(level)->Qoutflow.kN,     para->getParD(level)->Qoutflow.numberOfBCnodes,    para->getParD(level)->omega,
         //                  para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP,   para->getParD(level)->neighborZ_SP,
         //                  para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
         //getLastCudaError("QPressNoRhoDev27 execution failed");
@@ -1016,7 +1016,7 @@ void preCollisionBC(Parameter* para, CudaMemoryManager* cudaManager, int level, 
 
     //////////////////////////////////////////////////////////////////////////////////
     ////only for a round off error test
-    //para->cudaCopyTestREtoHost(0,para->getParH(0)->QPress.kQ);
+    //para->cudaCopyTestREtoHost(0,para->getParH(0)->QPress.numberOfBCnodes);
     //printRE(para, t);
     //////////////////////////////////////////////////////////////////////////////////
 

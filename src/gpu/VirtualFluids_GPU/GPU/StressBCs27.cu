@@ -239,7 +239,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<sizeQ/*kQ*/)
+   if(k<sizeQ/*numberOfBCnodes*/)
    {
       ////////////////////////////////////////////////////////////////////////////////
       real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB,

@@ -190,8 +190,8 @@ void CudaMemoryManager::cudaAllocF3SP(int lev)
 //Velo
 void CudaMemoryManager::cudaAllocVeloBC(int lev)
 {
-	unsigned int mem_size_inflow_Q_k = sizeof(int)*parameter->getParH(lev)->Qinflow.kQ;
-	unsigned int mem_size_inflow_Q_q = sizeof(real)*parameter->getParH(lev)->Qinflow.kQ;
+	unsigned int mem_size_inflow_Q_k = sizeof(int)*parameter->getParH(lev)->Qinflow.numberOfBCnodes;
+	unsigned int mem_size_inflow_Q_q = sizeof(real)*parameter->getParH(lev)->Qinflow.numberOfBCnodes;
 
 	//Host
 	checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->Qinflow.q27[0]),  parameter->getD3Qxx()*mem_size_inflow_Q_q ));
@@ -216,8 +216,8 @@ void CudaMemoryManager::cudaAllocVeloBC(int lev)
 }
 void CudaMemoryManager::cudaCopyVeloBC(int lev)
 {
-	unsigned int mem_size_inflow_Q_k = sizeof(int)*parameter->getParH(lev)->Qinflow.kQ;
-	unsigned int mem_size_inflow_Q_q = sizeof(real)*parameter->getParH(lev)->Qinflow.kQ;
+	unsigned int mem_size_inflow_Q_k = sizeof(int)*parameter->getParH(lev)->Qinflow.numberOfBCnodes;
+	unsigned int mem_size_inflow_Q_q = sizeof(real)*parameter->getParH(lev)->Qinflow.numberOfBCnodes;
 
 	checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->Qinflow.q27[0],  parameter->getParH(lev)->Qinflow.q27[0], parameter->getD3Qxx()* mem_size_inflow_Q_q,  cudaMemcpyHostToDevice));
 	checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->Qinflow.k,       parameter->getParH(lev)->Qinflow.k,                  mem_size_inflow_Q_k,  cudaMemcpyHostToDevice));
@@ -239,8 +239,8 @@ void CudaMemoryManager::cudaFreeVeloBC(int lev)
 //Press
 void CudaMemoryManager::cudaAllocOutflowBC(int lev)
 {
-	unsigned int mem_size_outflow_Q_k = sizeof(int)*parameter->getParH(lev)->Qoutflow.kQ;
-	unsigned int mem_size_outflow_Q_q = sizeof(real)*parameter->getParH(lev)->Qoutflow.kQ;
+	unsigned int mem_size_outflow_Q_k = sizeof(int)*parameter->getParH(lev)->Qoutflow.numberOfBCnodes;
+	unsigned int mem_size_outflow_Q_q = sizeof(real)*parameter->getParH(lev)->Qoutflow.numberOfBCnodes;
 
 	//Host
 	checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->Qoutflow.q27[0]), parameter->getD3Qxx()*mem_size_outflow_Q_q ));
@@ -260,8 +260,8 @@ void CudaMemoryManager::cudaAllocOutflowBC(int lev)
 }
 void CudaMemoryManager::cudaCopyOutflowBC(int lev)
 {
-	unsigned int mem_size_outflow_Q_k = sizeof(int)*parameter->getParH(lev)->Qoutflow.kQ;
-	unsigned int mem_size_outflow_Q_q = sizeof(real)*parameter->getParH(lev)->Qoutflow.kQ;
+	unsigned int mem_size_outflow_Q_k = sizeof(int)*parameter->getParH(lev)->Qoutflow.numberOfBCnodes;
+	unsigned int mem_size_outflow_Q_q = sizeof(real)*parameter->getParH(lev)->Qoutflow.numberOfBCnodes;
 
 	checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->Qoutflow.q27[0],  parameter->getParH(lev)->Qoutflow.q27[0], parameter->getD3Qxx()* mem_size_outflow_Q_q,  cudaMemcpyHostToDevice));
 	checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->Qoutflow.k,       parameter->getParH(lev)->Qoutflow.k,                  mem_size_outflow_Q_k,  cudaMemcpyHostToDevice));
@@ -278,9 +278,9 @@ void CudaMemoryManager::cudaFreeOutflowBC(int lev)
 //Wall
 void CudaMemoryManager::cudaAllocWallBC(int lev)
 {
-	unsigned int mem_size_Q_k      = sizeof(int)*parameter->getParH(lev)->QWall.kQ;
-	unsigned int mem_size_Q_q      = sizeof(real)*parameter->getParH(lev)->QWall.kQ;
-	unsigned int mem_size_Q_value  = sizeof(long long)*parameter->getParH(lev)->QWall.kQ; //Geller
+	unsigned int mem_size_Q_k      = sizeof(int)*parameter->getParH(lev)->QWall.numberOfBCnodes;
+	unsigned int mem_size_Q_q      = sizeof(real)*parameter->getParH(lev)->QWall.numberOfBCnodes;
+	unsigned int mem_size_Q_value  = sizeof(long long)*parameter->getParH(lev)->QWall.numberOfBCnodes; //Geller
 	unsigned int mem_size_Q_q_read = sizeof(real)*parameter->getParH(lev)->kQread;     //Geller
 
 	//Host
@@ -299,8 +299,8 @@ void CudaMemoryManager::cudaAllocWallBC(int lev)
 }
 void CudaMemoryManager::cudaCopyWallBC(int lev)
 {
-	unsigned int mem_size_Q_k = sizeof(int)*parameter->getParH(lev)->QWall.kQ;
-	unsigned int mem_size_Q_q = sizeof(real)*parameter->getParH(lev)->QWall.kQ;
+	unsigned int mem_size_Q_k = sizeof(int)*parameter->getParH(lev)->QWall.numberOfBCnodes;
+	unsigned int mem_size_Q_q = sizeof(real)*parameter->getParH(lev)->QWall.numberOfBCnodes;
 
 	checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QWall.q27[0], parameter->getParH(lev)->QWall.q27[0], parameter->getD3Qxx()* mem_size_Q_q,       cudaMemcpyHostToDevice));
 	checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QWall.k,      parameter->getParH(lev)->QWall.k,                  mem_size_Q_k,       cudaMemcpyHostToDevice));
@@ -315,8 +315,8 @@ void CudaMemoryManager::cudaFreeWallBC(int lev)
 //Geometrie
 void CudaMemoryManager::cudaAllocGeomBC(int lev)
 {
-	unsigned int mem_size_Q_k      = sizeof(int)*parameter->getParH(lev)->QGeom.kQ;
-	unsigned int mem_size_Q_q      = sizeof(real)*parameter->getParH(lev)->QGeom.kQ;
+	unsigned int mem_size_Q_k      = sizeof(int)*parameter->getParH(lev)->QGeom.numberOfBCnodes;
+	unsigned int mem_size_Q_q      = sizeof(real)*parameter->getParH(lev)->QGeom.numberOfBCnodes;
 
 	//Host
 	checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->QGeom.q27[0]), parameter->getD3Qxx()*mem_size_Q_q      ));
@@ -332,8 +332,8 @@ void CudaMemoryManager::cudaAllocGeomBC(int lev)
 }
 void CudaMemoryManager::cudaCopyGeomBC(int lev)
 {
-	unsigned int mem_size_Q_k = sizeof(int)*parameter->getParH(lev)->QGeom.kQ;
-	unsigned int mem_size_Q_q = sizeof(real)*parameter->getParH(lev)->QGeom.kQ;
+	unsigned int mem_size_Q_k = sizeof(int)*parameter->getParH(lev)->QGeom.numberOfBCnodes;
+	unsigned int mem_size_Q_q = sizeof(real)*parameter->getParH(lev)->QGeom.numberOfBCnodes;
 
 	checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QGeom.q27[0], parameter->getParH(lev)->QGeom.q27[0], parameter->getD3Qxx()* mem_size_Q_q,       cudaMemcpyHostToDevice));
 	checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QGeom.k,      parameter->getParH(lev)->QGeom.k,                  mem_size_Q_k,       cudaMemcpyHostToDevice));
@@ -346,8 +346,8 @@ void CudaMemoryManager::cudaFreeGeomBC(int lev)
 //Press
 void CudaMemoryManager::cudaAllocPress(int lev)
 {
-	unsigned int mem_size_Q_k      = sizeof(int)*parameter->getParH(lev)->QPress.kQ;
-	unsigned int mem_size_Q_q      = sizeof(real)*parameter->getParH(lev)->QPress.kQ;
+	unsigned int mem_size_Q_k      = sizeof(int)*parameter->getParH(lev)->QPress.numberOfBCnodes;
+	unsigned int mem_size_Q_q      = sizeof(real)*parameter->getParH(lev)->QPress.numberOfBCnodes;
 
 	//Host
 	checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->QPress.q27[0]), parameter->getD3Qxx()*mem_size_Q_q      ));
@@ -367,8 +367,8 @@ void CudaMemoryManager::cudaAllocPress(int lev)
 }
 void CudaMemoryManager::cudaCopyPress(int lev)
 {
-	unsigned int mem_size_Q_k = sizeof(int)*parameter->getParH(lev)->QPress.kQ;
-	unsigned int mem_size_Q_q = sizeof(real)*parameter->getParH(lev)->QPress.kQ;
+	unsigned int mem_size_Q_k = sizeof(int)*parameter->getParH(lev)->QPress.numberOfBCnodes;
+	unsigned int mem_size_Q_q = sizeof(real)*parameter->getParH(lev)->QPress.numberOfBCnodes;
 
 	checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QPress.q27[0], parameter->getParH(lev)->QPress.q27[0], parameter->getD3Qxx()* mem_size_Q_q,       cudaMemcpyHostToDevice));
 	checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QPress.k,      parameter->getParH(lev)->QPress.k,                  mem_size_Q_k,       cudaMemcpyHostToDevice));
@@ -1217,8 +1217,8 @@ void CudaMemoryManager::cudaFreeInterfaceOffFC(int lev)
 //Inlet
 void CudaMemoryManager::cudaAllocInlet(int lev)
 {
-    unsigned int mem_size_inlet_Q_k = sizeof(int)*parameter->getParH(lev)->QInlet.kQ;
-    unsigned int mem_size_inlet_Q_q = sizeof(real)*parameter->getParH(lev)->QInlet.kQ;
+    unsigned int mem_size_inlet_Q_k = sizeof(int)*parameter->getParH(lev)->QInlet.numberOfBCnodes;
+    unsigned int mem_size_inlet_Q_q = sizeof(real)*parameter->getParH(lev)->QInlet.numberOfBCnodes;
 
     //Host
     checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->QInlet.q27[0]), parameter->getD3Qxx()*mem_size_inlet_Q_q ));
@@ -1238,8 +1238,8 @@ void CudaMemoryManager::cudaAllocInlet(int lev)
 }
 void CudaMemoryManager::cudaCopyInlet(int lev)
 {
-    unsigned int mem_size_inlet_Q_k = sizeof(int)*parameter->getParH(lev)->QInlet.kQ;
-    unsigned int mem_size_inlet_Q_q = sizeof(real)*parameter->getParH(lev)->QInlet.kQ;
+    unsigned int mem_size_inlet_Q_k = sizeof(int)*parameter->getParH(lev)->QInlet.numberOfBCnodes;
+    unsigned int mem_size_inlet_Q_q = sizeof(real)*parameter->getParH(lev)->QInlet.numberOfBCnodes;
 
     checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QInlet.q27[0],  parameter->getParH(lev)->QInlet.q27[0], parameter->getD3Qxx()* mem_size_inlet_Q_q,  cudaMemcpyHostToDevice));
     checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QInlet.k,       parameter->getParH(lev)->QInlet.k,                  mem_size_inlet_Q_k,  cudaMemcpyHostToDevice));
@@ -1256,8 +1256,8 @@ void CudaMemoryManager::cudaFreeInlet(int lev)
 //Outlet
 void CudaMemoryManager::cudaAllocOutlet(int lev)
 {
-    unsigned int mem_size_outlet_Q_k = sizeof(int)*parameter->getParH(lev)->QOutlet.kQ;
-    unsigned int mem_size_outlet_Q_q = sizeof(real)*parameter->getParH(lev)->QOutlet.kQ;
+    unsigned int mem_size_outlet_Q_k = sizeof(int)*parameter->getParH(lev)->QOutlet.numberOfBCnodes;
+    unsigned int mem_size_outlet_Q_q = sizeof(real)*parameter->getParH(lev)->QOutlet.numberOfBCnodes;
 
     //Host
     checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->QOutlet.q27[0]), parameter->getD3Qxx()*mem_size_outlet_Q_q ));
@@ -1277,8 +1277,8 @@ void CudaMemoryManager::cudaAllocOutlet(int lev)
 }
 void CudaMemoryManager::cudaCopyOutlet(int lev)
 {
-    unsigned int mem_size_outlet_Q_k = sizeof(int)*parameter->getParH(lev)->QOutlet.kQ;
-    unsigned int mem_size_outlet_Q_q = sizeof(real)*parameter->getParH(lev)->QOutlet.kQ;
+    unsigned int mem_size_outlet_Q_k = sizeof(int)*parameter->getParH(lev)->QOutlet.numberOfBCnodes;
+    unsigned int mem_size_outlet_Q_q = sizeof(real)*parameter->getParH(lev)->QOutlet.numberOfBCnodes;
 
     checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QOutlet.q27[0],  parameter->getParH(lev)->QOutlet.q27[0], parameter->getD3Qxx()* mem_size_outlet_Q_q,  cudaMemcpyHostToDevice));
     checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QOutlet.k,       parameter->getParH(lev)->QOutlet.k,                  mem_size_outlet_Q_k,  cudaMemcpyHostToDevice));
@@ -1298,7 +1298,7 @@ void CudaMemoryManager::cudaFreeOutlet(int lev)
 //Geometrie inkl. Values
 void CudaMemoryManager::cudaAllocGeomValuesBC(int lev)
 {
-    unsigned int mem_size_Q_q      = sizeof(real)*parameter->getParH(lev)->QGeom.kQ;
+    unsigned int mem_size_Q_q      = sizeof(real)*parameter->getParH(lev)->QGeom.numberOfBCnodes;
 
     //Host
     checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->QGeom.Vx),  mem_size_Q_q ));
@@ -1316,7 +1316,7 @@ void CudaMemoryManager::cudaAllocGeomValuesBC(int lev)
 }
 void CudaMemoryManager::cudaCopyGeomValuesBC(int lev)
 {
-    unsigned int mem_size_Q_q = sizeof(real)*parameter->getParH(lev)->QGeom.kQ;
+    unsigned int mem_size_Q_q = sizeof(real)*parameter->getParH(lev)->QGeom.numberOfBCnodes;
 
     checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QGeom.Vx, parameter->getParH(lev)->QGeom.Vx,  mem_size_Q_q,       cudaMemcpyHostToDevice));
     checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QGeom.Vy, parameter->getParH(lev)->QGeom.Vy,  mem_size_Q_q,       cudaMemcpyHostToDevice));
@@ -1331,8 +1331,8 @@ void CudaMemoryManager::cudaFreeGeomValuesBC(int lev)
 //Geometrie inkl. Normale f¸r Slip
 void CudaMemoryManager::cudaAllocGeomNormals(int lev)
 {
-    unsigned int mem_size_Q_k      = sizeof(int)*parameter->getParH(lev)->QGeomNormalX.kQ;
-    unsigned int mem_size_Q_q      = sizeof(real)*parameter->getParH(lev)->QGeomNormalX.kQ;
+    unsigned int mem_size_Q_k      = sizeof(int)*parameter->getParH(lev)->QGeomNormalX.numberOfBCnodes;
+    unsigned int mem_size_Q_q      = sizeof(real)*parameter->getParH(lev)->QGeomNormalX.numberOfBCnodes;
 
     //Host
     checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->QGeomNormalX.q27[0]), parameter->getD3Qxx()*mem_size_Q_q      ));
@@ -1356,8 +1356,8 @@ void CudaMemoryManager::cudaAllocGeomNormals(int lev)
 }
 void CudaMemoryManager::cudaCopyGeomNormals(int lev)
 {
-    unsigned int mem_size_Q_k = sizeof(int)*parameter->getParH(lev)->QGeomNormalX.kQ;
-    unsigned int mem_size_Q_q = sizeof(real)*parameter->getParH(lev)->QGeomNormalX.kQ;
+    unsigned int mem_size_Q_k = sizeof(int)*parameter->getParH(lev)->QGeomNormalX.numberOfBCnodes;
+    unsigned int mem_size_Q_q = sizeof(real)*parameter->getParH(lev)->QGeomNormalX.numberOfBCnodes;
 
     checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QGeomNormalX.q27[0], parameter->getParH(lev)->QGeomNormalX.q27[0], parameter->getD3Qxx()* mem_size_Q_q,       cudaMemcpyHostToDevice));
     checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QGeomNormalX.k,      parameter->getParH(lev)->QGeomNormalX.k,                  mem_size_Q_k,       cudaMemcpyHostToDevice));
@@ -1378,8 +1378,8 @@ void CudaMemoryManager::cudaFreeGeomNormals(int lev)
 //Geometrie inkl. Normale f¸r Inflow
 void CudaMemoryManager::cudaAllocInflowNormals(int lev)
 {
-    unsigned int mem_size_Q_k      = sizeof(int)*parameter->getParH(lev)->QInflowNormalX.kQ;
-    unsigned int mem_size_Q_q      = sizeof(real)*parameter->getParH(lev)->QInflowNormalX.kQ;
+    unsigned int mem_size_Q_k      = sizeof(int)*parameter->getParH(lev)->QInflowNormalX.numberOfBCnodes;
+    unsigned int mem_size_Q_q      = sizeof(real)*parameter->getParH(lev)->QInflowNormalX.numberOfBCnodes;
 
     //Host
     checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->QInflowNormalX.q27[0]), parameter->getD3Qxx()*mem_size_Q_q      ));
@@ -1403,8 +1403,8 @@ void CudaMemoryManager::cudaAllocInflowNormals(int lev)
 }
 void CudaMemoryManager::cudaCopyInflowNormals(int lev)
 {
-    unsigned int mem_size_Q_k = sizeof(int)*parameter->getParH(lev)->QInflowNormalX.kQ;
-    unsigned int mem_size_Q_q = sizeof(real)*parameter->getParH(lev)->QInflowNormalX.kQ;
+    unsigned int mem_size_Q_k = sizeof(int)*parameter->getParH(lev)->QInflowNormalX.numberOfBCnodes;
+    unsigned int mem_size_Q_q = sizeof(real)*parameter->getParH(lev)->QInflowNormalX.numberOfBCnodes;
 
     checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QInflowNormalX.q27[0], parameter->getParH(lev)->QInflowNormalX.q27[0], parameter->getD3Qxx()* mem_size_Q_q,       cudaMemcpyHostToDevice));
     checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QInflowNormalX.k,      parameter->getParH(lev)->QInflowNormalX.k,                  mem_size_Q_k,       cudaMemcpyHostToDevice));
@@ -1425,8 +1425,8 @@ void CudaMemoryManager::cudaFreeInflowNormals(int lev)
 //Geometrie inkl. Normale f¸r Outflow
 void CudaMemoryManager::cudaAllocOutflowNormals(int lev)
 {
-    unsigned int mem_size_Q_k      = sizeof(int)*parameter->getParH(lev)->QOutflowNormalX.kQ;
-    unsigned int mem_size_Q_q      = sizeof(real)*parameter->getParH(lev)->QOutflowNormalX.kQ;
+    unsigned int mem_size_Q_k      = sizeof(int)*parameter->getParH(lev)->QOutflowNormalX.numberOfBCnodes;
+    unsigned int mem_size_Q_q      = sizeof(real)*parameter->getParH(lev)->QOutflowNormalX.numberOfBCnodes;
 
     //Host
     checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->QOutflowNormalX.q27[0]), parameter->getD3Qxx()*mem_size_Q_q      ));
@@ -1450,8 +1450,8 @@ void CudaMemoryManager::cudaAllocOutflowNormals(int lev)
 }
 void CudaMemoryManager::cudaCopyOutflowNormals(int lev)
 {
-    unsigned int mem_size_Q_k = sizeof(int)*parameter->getParH(lev)->QOutflowNormalX.kQ;
-    unsigned int mem_size_Q_q = sizeof(real)*parameter->getParH(lev)->QOutflowNormalX.kQ;
+    unsigned int mem_size_Q_k = sizeof(int)*parameter->getParH(lev)->QOutflowNormalX.numberOfBCnodes;
+    unsigned int mem_size_Q_q = sizeof(real)*parameter->getParH(lev)->QOutflowNormalX.numberOfBCnodes;
 
     checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QOutflowNormalX.q27[0], parameter->getParH(lev)->QOutflowNormalX.q27[0], parameter->getD3Qxx()* mem_size_Q_q,       cudaMemcpyHostToDevice));
     checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QOutflowNormalX.k,      parameter->getParH(lev)->QOutflowNormalX.k,                  mem_size_Q_k,       cudaMemcpyHostToDevice));
@@ -1472,8 +1472,8 @@ void CudaMemoryManager::cudaFreeOutflowNormals(int lev)
 //Slip
 void CudaMemoryManager::cudaAllocSlipBC(int lev)
 {
-    unsigned int mem_size_Q_k      = sizeof(int)*parameter->getParH(lev)->QSlip.kQ;
-    unsigned int mem_size_Q_q      = sizeof(real)*parameter->getParH(lev)->QSlip.kQ;
+    unsigned int mem_size_Q_k      = sizeof(int)*parameter->getParH(lev)->QSlip.numberOfBCnodes;
+    unsigned int mem_size_Q_q      = sizeof(real)*parameter->getParH(lev)->QSlip.numberOfBCnodes;
     //unsigned int mem_size_Q_value  = sizeof(long long)*parameter->getParH(lev)->QSlip.kQ; //Geller
     //unsigned int mem_size_Q_q_read = sizeof(real)*parameter->getParH(lev)->kSlipQread;     //Geller
 
@@ -1497,8 +1497,8 @@ void CudaMemoryManager::cudaAllocSlipBC(int lev)
 }
 void CudaMemoryManager::cudaCopySlipBC(int lev)
 {
-    unsigned int mem_size_Q_k = sizeof(int)*parameter->getParH(lev)->QSlip.kQ;
-    unsigned int mem_size_Q_q = sizeof(real)*parameter->getParH(lev)->QSlip.kQ;
+    unsigned int mem_size_Q_k = sizeof(int)*parameter->getParH(lev)->QSlip.numberOfBCnodes;
+    unsigned int mem_size_Q_q = sizeof(real)*parameter->getParH(lev)->QSlip.numberOfBCnodes;
 
     checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QSlip.q27[0], parameter->getParH(lev)->QSlip.q27[0],  parameter->getD3Qxx()* mem_size_Q_q,       cudaMemcpyHostToDevice));
     checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QSlip.k,      parameter->getParH(lev)->QSlip.k,                              mem_size_Q_k,       cudaMemcpyHostToDevice));
@@ -1517,8 +1517,8 @@ void CudaMemoryManager::cudaFreeSlipBC(int lev)
 //Stress
 void CudaMemoryManager::cudaAllocStressBC(int lev)
 {
-    unsigned int mem_size_Q_k      = sizeof(int)*parameter->getParH(lev)->QStress.kQ;
-    unsigned int mem_size_Q_q      = sizeof(real)*parameter->getParH(lev)->QStress.kQ;
+    unsigned int mem_size_Q_k      = sizeof(int)*parameter->getParH(lev)->QStress.numberOfBCnodes;
+    unsigned int mem_size_Q_q      = sizeof(real)*parameter->getParH(lev)->QStress.numberOfBCnodes;
 
     //Host
     checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->QStress.q27[0]), parameter->getD3Qxx()*mem_size_Q_q      ));
@@ -1554,8 +1554,8 @@ void CudaMemoryManager::cudaAllocStressBC(int lev)
 }
 void CudaMemoryManager::cudaCopyStressBC(int lev)
 {
-    unsigned int mem_size_Q_k = sizeof(int)*parameter->getParH(lev)->QStress.kQ;
-    unsigned int mem_size_Q_q = sizeof(real)*parameter->getParH(lev)->QStress.kQ;
+    unsigned int mem_size_Q_k = sizeof(int)*parameter->getParH(lev)->QStress.numberOfBCnodes;
+    unsigned int mem_size_Q_q = sizeof(real)*parameter->getParH(lev)->QStress.numberOfBCnodes;
 
     checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QStress.q27[0],  parameter->getParH(lev)->QStress.q27[0], parameter->getD3Qxx()* mem_size_Q_q,       cudaMemcpyHostToDevice));
     checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QStress.k,       parameter->getParH(lev)->QStress.k,                             mem_size_Q_k,       cudaMemcpyHostToDevice));
@@ -1589,8 +1589,8 @@ void CudaMemoryManager::cudaFreeStressBC(int lev)
 // Wall model
 void CudaMemoryManager::cudaAllocWallModel(int lev, bool hasWallModelMonitor)
 {
-    unsigned int mem_size_Q_k      = sizeof(int)*parameter->getParH(lev)->QStress.kQ;
-    unsigned int mem_size_Q_q      = sizeof(real)*parameter->getParH(lev)->QStress.kQ;
+    unsigned int mem_size_Q_k      = sizeof(int)*parameter->getParH(lev)->QStress.numberOfBCnodes;
+    unsigned int mem_size_Q_q      = sizeof(real)*parameter->getParH(lev)->QStress.numberOfBCnodes;
 
     //Host
     checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->wallModel.samplingOffset),  mem_size_Q_k      ));
@@ -1620,8 +1620,8 @@ void CudaMemoryManager::cudaAllocWallModel(int lev, bool hasWallModelMonitor)
 }
 void CudaMemoryManager::cudaCopyWallModel(int lev, bool hasWallModelMonitor)
 {
-    unsigned int mem_size_Q_k      = sizeof(int)*parameter->getParH(lev)->QStress.kQ;
-    unsigned int mem_size_Q_q      = sizeof(real)*parameter->getParH(lev)->QStress.kQ;
+    unsigned int mem_size_Q_k      = sizeof(int)*parameter->getParH(lev)->QStress.numberOfBCnodes;
+    unsigned int mem_size_Q_q      = sizeof(real)*parameter->getParH(lev)->QStress.numberOfBCnodes;
 
     checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->wallModel.samplingOffset,  parameter->getParH(lev)->wallModel.samplingOffset,  mem_size_Q_k,       cudaMemcpyHostToDevice));
     checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->wallModel.z0,              parameter->getParH(lev)->wallModel.z0,              mem_size_Q_q,       cudaMemcpyHostToDevice));
@@ -1675,8 +1675,8 @@ void CudaMemoryManager::cudaFreeTestRE(int lev)
 //PressX0 = X-inflow
 void CudaMemoryManager::cudaAllocPressX0(int lev)
 {
-    unsigned int mem_size_Q_k = sizeof(int)*parameter->getParH(lev)->QpressX0.kQ;
-    unsigned int mem_size_Q_q = sizeof(real)*parameter->getParH(lev)->QpressX0.kQ;
+    unsigned int mem_size_Q_k = sizeof(int)*parameter->getParH(lev)->QpressX0.numberOfBCnodes;
+    unsigned int mem_size_Q_q = sizeof(real)*parameter->getParH(lev)->QpressX0.numberOfBCnodes;
 
     //Host
     checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->QpressX0.q27[0]), parameter->getD3Qxx()*mem_size_Q_q ));
@@ -1704,8 +1704,8 @@ void CudaMemoryManager::cudaAllocPressX0(int lev)
 }
 void CudaMemoryManager::cudaCopyPressX0(int lev)
 {
-    unsigned int mem_size_Q_k = sizeof(int)*parameter->getParH(lev)->QpressX0.kQ;
-    unsigned int mem_size_Q_q = sizeof(real)*parameter->getParH(lev)->QpressX0.kQ;
+    unsigned int mem_size_Q_k = sizeof(int)*parameter->getParH(lev)->QpressX0.numberOfBCnodes;
+    unsigned int mem_size_Q_q = sizeof(real)*parameter->getParH(lev)->QpressX0.numberOfBCnodes;
 
     checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QpressX0.q27[0],  parameter->getParH(lev)->QpressX0.q27[0], parameter->getD3Qxx()* mem_size_Q_q,  cudaMemcpyHostToDevice));
     checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QpressX0.k,       parameter->getParH(lev)->QpressX0.k,                  mem_size_Q_k,  cudaMemcpyHostToDevice));
@@ -1730,8 +1730,8 @@ void CudaMemoryManager::cudaFreePressX0(int lev)
 //PressX1 = X-outflow
 void CudaMemoryManager::cudaAllocPressX1(int lev)
 {
-    unsigned int mem_size_Q_k = sizeof(int)*parameter->getParH(lev)->QpressX1.kQ;
-    unsigned int mem_size_Q_q = sizeof(real)*parameter->getParH(lev)->QpressX1.kQ;
+    unsigned int mem_size_Q_k = sizeof(int)*parameter->getParH(lev)->QpressX1.numberOfBCnodes;
+    unsigned int mem_size_Q_q = sizeof(real)*parameter->getParH(lev)->QpressX1.numberOfBCnodes;
 
     //Host
     checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->QpressX1.q27[0]), parameter->getD3Qxx()*mem_size_Q_q ));
@@ -1759,8 +1759,8 @@ void CudaMemoryManager::cudaAllocPressX1(int lev)
 }
 void CudaMemoryManager::cudaCopyPressX1(int lev)
 {
-    unsigned int mem_size_Q_k = sizeof(int)*parameter->getParH(lev)->QpressX1.kQ;
-    unsigned int mem_size_Q_q = sizeof(real)*parameter->getParH(lev)->QpressX1.kQ;
+    unsigned int mem_size_Q_k = sizeof(int)*parameter->getParH(lev)->QpressX1.numberOfBCnodes;
+    unsigned int mem_size_Q_q = sizeof(real)*parameter->getParH(lev)->QpressX1.numberOfBCnodes;
 
     checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QpressX1.q27[0],  parameter->getParH(lev)->QpressX1.q27[0], parameter->getD3Qxx()* mem_size_Q_q,  cudaMemcpyHostToDevice));
     checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QpressX1.k,       parameter->getParH(lev)->QpressX1.k,                  mem_size_Q_k,  cudaMemcpyHostToDevice));
@@ -1785,8 +1785,8 @@ void CudaMemoryManager::cudaFreePressX1(int lev)
 //Propeller Velocity
 void CudaMemoryManager::cudaAllocVeloPropeller(int lev)
 {
-    unsigned int mem_size_Propeller_k = sizeof(int)*parameter->getParH(lev)->QPropeller.kQ;
-    unsigned int mem_size_Propeller_q = sizeof(real)*parameter->getParH(lev)->QPropeller.kQ;
+    unsigned int mem_size_Propeller_k = sizeof(int)*parameter->getParH(lev)->QPropeller.numberOfBCnodes;
+    unsigned int mem_size_Propeller_q = sizeof(real)*parameter->getParH(lev)->QPropeller.numberOfBCnodes;
 
     //Host
     //checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->QPropeller.q27[0]),  parameter->getD3Qxx()*mem_size_Propeller_q ));
@@ -1810,8 +1810,8 @@ void CudaMemoryManager::cudaAllocVeloPropeller(int lev)
 }
 void CudaMemoryManager::cudaCopyVeloPropeller(int lev)
 {
-    unsigned int mem_size_Propeller_k = sizeof(int)*parameter->getParH(lev)->QPropeller.kQ;
-    unsigned int mem_size_Propeller_q = sizeof(real)*parameter->getParH(lev)->QPropeller.kQ;
+    unsigned int mem_size_Propeller_k = sizeof(int)*parameter->getParH(lev)->QPropeller.numberOfBCnodes;
+    unsigned int mem_size_Propeller_q = sizeof(real)*parameter->getParH(lev)->QPropeller.numberOfBCnodes;
 
     //checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QPropeller.q27[0],  parameter->getParH(lev)->QPropeller.q27[0], parameter->getD3Qxx()* mem_size_Propeller_q,  cudaMemcpyHostToDevice));
     checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QPropeller.k,       parameter->getParH(lev)->QPropeller.k,                  mem_size_Propeller_k,  cudaMemcpyHostToDevice));

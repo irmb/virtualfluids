@@ -658,7 +658,7 @@ void GridReader::modifyQElement(std::shared_ptr<BoundaryQs> boundaryQ, unsigned 
 {
 	QforBoundaryConditions Q;
 	real* QQ = para->getParH(level)->QGeom.q27[0];
-	Q.q27[dirZERO] = &QQ[dirZERO * para->getParH(level)->QGeom.kQ];
+	Q.q27[dirZERO] = &QQ[dirZERO * para->getParH(level)->QGeom.numberOfBCnodes];
 	for (unsigned int i = 0; i < boundaryQ->getSize(level); i++)
 		Q.q27[dirZERO][i] = 0.0f;
 }
@@ -677,7 +677,7 @@ void GridReader::copyVectorsToQStruct(std::vector<std::vector<real>> &Qs,
                                       std::vector<int> &index, QforBoundaryConditions &Q) const
 {
     QforBoundaryConditions qTemp;
-    this->setQ27Size(qTemp, Q.q27[0], Q.kQ);
+    this->setQ27Size(qTemp, Q.q27[0], Q.numberOfBCnodes);
 
 	uint sizeOfValues = (uint)index.size();
 
@@ -696,7 +696,7 @@ void GridReader::initalQStruct(QforBoundaryConditions &Q, std::shared_ptr<Bounda
                                unsigned int level) const
 {
 	QforBoundaryConditions qTemp;
-	this->setQ27Size(qTemp, Q.q27[0], Q.kQ);
+	this->setQ27Size(qTemp, Q.q27[0], Q.numberOfBCnodes);
 	boundaryQ->setValues(qTemp.q27, level);
 	boundaryQ->setIndex(Q.k, level);
 }
@@ -762,17 +762,17 @@ void GridReader::setQ27Size(QforBoundaryConditions &Q, real* QQ, unsigned int si
 
 void GridReader::setSizeNoSlip(std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const
 {
-	para->getParH(level)->QWall.kQ = boundaryQ->getSize(level);
-	para->getParD(level)->QWall.kQ = para->getParH(level)->QWall.kQ;
-	para->getParH(level)->numberOfNoSlipBCnodes = para->getParH(level)->QWall.kQ;
-	para->getParD(level)->numberOfNoSlipBCnodes = para->getParH(level)->QWall.kQ;
+	para->getParH(level)->QWall.numberOfBCnodes = boundaryQ->getSize(level);
+	para->getParD(level)->QWall.numberOfBCnodes = para->getParH(level)->QWall.numberOfBCnodes;
+	para->getParH(level)->numberOfNoSlipBCnodes = para->getParH(level)->QWall.numberOfBCnodes;
+	para->getParD(level)->numberOfNoSlipBCnodes = para->getParH(level)->QWall.numberOfBCnodes;
     cudaMemoryManager->cudaAllocWallBC(level);
 }
 
 void GridReader::setSizeGeoQs(std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const
 {
-	para->getParH(level)->QGeom.kQ = boundaryQ->getSize(level);
-	para->getParD(level)->QGeom.kQ = para->getParH(level)->QGeom.kQ;
+	para->getParH(level)->QGeom.numberOfBCnodes = boundaryQ->getSize(level);
+	para->getParD(level)->QGeom.numberOfBCnodes = para->getParH(level)->QGeom.numberOfBCnodes;
 
     cudaMemoryManager->cudaAllocGeomBC(level);
 }

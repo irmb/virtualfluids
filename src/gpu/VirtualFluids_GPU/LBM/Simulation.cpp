@@ -678,7 +678,7 @@ void Simulation::run()
             getLastCudaError("PlaneConcThS27 execution failed");
             PlaneConcThS27( para->getParD(0)->ConcPlaneOut2,
             		        para->getParD(0)->QPress.kN,
-            		        para->getParD(0)->QPress.kQ,
+            		        para->getParD(0)->QPress.numberOfBCnodes,
             		        para->getParD(0)->geoSP,
             		        para->getParD(0)->neighborX_SP,
             		        para->getParD(0)->neighborY_SP,

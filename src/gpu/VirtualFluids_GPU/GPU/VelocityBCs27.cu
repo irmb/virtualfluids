@@ -23,7 +23,7 @@ extern "C" __global__ void QVelDeviceCompPlusSlip27(int inx,
 													int* k_Q, 
 													real* QQ,
 													unsigned int sizeQ,
-													int kQ, 
+													int numberOfBCnodes, 
 													real om1, 
 													unsigned int* neighborX,
 													unsigned int* neighborY,
@@ -103,7 +103,7 @@ extern "C" __global__ void QVelDeviceCompPlusSlip27(int inx,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if (k < kQ)
+   if (k < numberOfBCnodes)
    {
 	   ////////////////////////////////////////////////////////////////////////////////
 	   real VeloX = vx[k];
@@ -558,7 +558,7 @@ extern "C" __global__ void QVeloDeviceEQ27(real* VeloX,
 										   real* VeloZ,
                                            real* DD, 
                                            int* k_Q, 
-                                           int kQ, 
+                                           int numberOfBCnodes, 
                                            real om1, 
                                            unsigned int* neighborX,
                                            unsigned int* neighborY,
@@ -577,7 +577,7 @@ extern "C" __global__ void QVeloDeviceEQ27(real* VeloX,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       //index
@@ -1128,7 +1128,7 @@ extern "C" __global__ void QVelDeviceIncompHighNu27(int inx,
 													int* k_Q, 
 													real* QQ,
 													unsigned int sizeQ,
-													int kQ, 
+													int numberOfBCnodes, 
 													real om1, 
 													unsigned int* neighborX,
 													unsigned int* neighborY,
@@ -1208,7 +1208,7 @@ extern "C" __global__ void QVelDeviceIncompHighNu27(int inx,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       real VeloX = vx[k];
@@ -1628,7 +1628,7 @@ extern "C" __global__ void QVelDeviceCompHighNu27(  int inx,
 													int* k_Q, 
 													real* QQ,
 													unsigned int sizeQ,
-													int kQ, 
+													int numberOfBCnodes, 
 													real om1, 
 													unsigned int* neighborX,
 													unsigned int* neighborY,
@@ -1708,7 +1708,7 @@ extern "C" __global__ void QVelDeviceCompHighNu27(  int inx,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       real VeloX = vx[k];
@@ -2206,7 +2206,7 @@ extern "C" __global__ void QVelDeviceCompZeroPress27(   int inx,
 														int* k_Q, 
 														real* QQ,
 														unsigned int sizeQ,
-														//int kQ, 
+														//int numberOfBCnodes, 
 														real om1, 
 														unsigned int* neighborX,
 														unsigned int* neighborY,
@@ -2286,7 +2286,7 @@ extern "C" __global__ void QVelDeviceCompZeroPress27(   int inx,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<sizeQ/*kQ*/)
+   if(k<sizeQ/*numberOfBCnodes*/)
    {
       ////////////////////////////////////////////////////////////////////////////////
       real VeloX = vx[k];
@@ -2732,7 +2732,7 @@ extern "C" __global__ void QVelDeviceCompZeroPress1h27( int inx,
 														int* k_Q, 
 														real* QQ,
 														unsigned int sizeQ,
-														int kQ, 
+														int numberOfBCnodes, 
 														real om1, 
 														real Phi,
 														real angularVelocity,
@@ -2817,7 +2817,7 @@ extern "C" __global__ void QVelDeviceCompZeroPress1h27( int inx,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       //real VeloX = vx[k];
@@ -3525,7 +3525,7 @@ extern "C" __global__ void QVelDevPlainBB27(real* vx,
 											int* k_Q, 
 											real* QQ,
 											unsigned int sizeQ,
-											int kQ, 
+											int numberOfBCnodes, 
 											real om1, 
 											unsigned int* neighborX,
 											unsigned int* neighborY,
@@ -3605,7 +3605,7 @@ extern "C" __global__ void QVelDevPlainBB27(real* vx,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
 	  ////////////////////////////////////////////////////////////////////////////////
 	  real VeloX = vx[k];
@@ -3844,7 +3844,7 @@ extern "C" __global__ void QVelDevCouhette27(real* vx,
 											int* k_Q, 
 											real* QQ,
 											unsigned int sizeQ,
-											int kQ, 
+											int numberOfBCnodes, 
 											real om1, 
 											unsigned int* neighborX,
 											unsigned int* neighborY,
@@ -3924,7 +3924,7 @@ extern "C" __global__ void QVelDevCouhette27(real* vx,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
 	  ////////////////////////////////////////////////////////////////////////////////
 	  real VeloX = vx[k];
@@ -4207,7 +4207,7 @@ extern "C" __global__ void QVelDev1h27( int inx,
 										int* k_Q, 
 										real* QQ,
 										unsigned int sizeQ,
-										int kQ, 
+										int numberOfBCnodes, 
 										real om1,
 										real Phi,
 										real angularVelocity,
@@ -4292,7 +4292,7 @@ extern "C" __global__ void QVelDev1h27( int inx,
 	const unsigned k = nx*(ny*z + y) + x;
 	//////////////////////////////////////////////////////////////////////////
 
-	if(k<kQ)
+	if(k<numberOfBCnodes)
 	{
 		////////////////////////////////////////////////////////////////////////////////
 		real VeloX = cosf(Phi)*vx[k] - sinf(Phi)*vy[k];
@@ -4991,7 +4991,7 @@ extern "C" __global__ void QVelDeviceComp27(int inx,
 											int* k_Q, 
 											real* QQ,
 											unsigned int sizeQ,
-											int kQ, 
+											int numberOfBCnodes, 
 											real om1, 
 											unsigned int* neighborX,
 											unsigned int* neighborY,
@@ -5071,7 +5071,7 @@ extern "C" __global__ void QVelDeviceComp27(int inx,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       real VeloX = vx[k];
@@ -5517,7 +5517,7 @@ extern "C" __global__ void QVelDevice27(int inx,
                                         int* k_Q, 
                                         real* QQ,
                                         unsigned int sizeQ,
-                                        int kQ, 
+                                        int numberOfBCnodes, 
                                         real om1, 
                                         unsigned int* neighborX,
                                         unsigned int* neighborY,
@@ -5597,7 +5597,7 @@ extern "C" __global__ void QVelDevice27(int inx,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       real VeloX = vx[k];

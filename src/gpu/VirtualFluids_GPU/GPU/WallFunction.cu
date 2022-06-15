@@ -16,7 +16,7 @@ extern "C" __global__ void WallFunction27(int inx,
 										  int* k_Q, 
 										  real* QQ,
 										  unsigned int sizeQ,
-									      int kQ, 
+									      int numberOfBCnodes, 
 										  real om1, 
 										  unsigned int* neighborX,
 										  unsigned int* neighborY,
@@ -96,7 +96,7 @@ extern "C" __global__ void WallFunction27(int inx,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       real VeloX = vx[k];

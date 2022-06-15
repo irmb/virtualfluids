@@ -35,7 +35,7 @@ void allocParticles(Parameter* para, CudaMemoryManager* cudaManager)
 		para->getParH(lev)->plp.memSizereal       = sizeof(real)*(para->getParH(lev)->plp.numberOfParticles);
 		para->getParH(lev)->plp.memSizerealAll	 = sizeof(real)*(para->getParH(lev)->plp.numberOfParticles * para->getParH(lev)->plp.numberOfTimestepsParticles);
 		para->getParH(lev)->plp.memSizeBool          = sizeof(bool)*(para->getParH(lev)->plp.numberOfParticles);
-		para->getParH(lev)->plp.memSizeBoolBC        = sizeof(bool)*(para->getParH(lev)->QGeom.kQ);//depends on Geometry!!!
+		para->getParH(lev)->plp.memSizeBoolBC        = sizeof(bool)*(para->getParH(lev)->QGeom.numberOfBCnodes);//depends on Geometry!!!
 		para->getParD(lev)->plp.memSizeTimestep      = para->getParH(lev)->plp.memSizeTimestep;
 		para->getParD(lev)->plp.memSizeID            = para->getParH(lev)->plp.memSizeID;        
 		para->getParD(lev)->plp.memSizereal       = para->getParH(lev)->plp.memSizereal;
@@ -74,7 +74,7 @@ void initParticles(Parameter* para)
 		}
 		//////////////////////////////////////////////////////////////////////////
 		//set bool "hot wall"
-		for (int h = 0; h < para->getParH(lev)->QGeom.kQ; h++)
+		for (int h = 0; h < para->getParH(lev)->QGeom.numberOfBCnodes; h++)
 		{
 			if (para->getParH(lev)->coordX_SP[para->getParH(lev)->QGeom.k[h]] < para->getStartXHotWall() || 
 				para->getParH(lev)->coordX_SP[para->getParH(lev)->QGeom.k[h]] > para->getEndXHotWall())
@@ -468,7 +468,7 @@ void rearrangeGeometry(Parameter* para, CudaMemoryManager* cudaManager)
 		printf("total number of nodes: %d \n", counter2);
 		//////////////////////////////////////////////////////////////////////////
 		//store the index information of the BC nodes in the geometry array 
-		for (int index = 0; index < para->getParH(lev)->QGeom.kQ; index++)
+		for (int index = 0; index < para->getParH(lev)->QGeom.numberOfBCnodes; index++)
 		{
 			para->getParH(lev)->geoSP[para->getParH(lev)->QGeom.k[index]] = index + OFFSET_BCsInGeo;
 		}

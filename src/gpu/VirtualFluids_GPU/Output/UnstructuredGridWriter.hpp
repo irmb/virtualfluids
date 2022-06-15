@@ -2293,7 +2293,7 @@ namespace UnstructuredGridWriter
 		QforBoundaryConditions Q;
 		double nodeX1, nodeX2, nodeX3, wallX1, wallX2, wallX3, q;
 		//////////////////////////////////////////////////////////////////////////
-		sizeOfNodes = para->getParH(level)->QGeom.kQ;
+		sizeOfNodes = para->getParH(level)->QGeom.numberOfBCnodes;
 		endpos = startpos + sizeOfNodes;
 		//////////////////////////////////////////////////////////////////////////
 		//qs.clear();
@@ -2397,7 +2397,7 @@ namespace UnstructuredGridWriter
 		QforBoundaryConditions Q;
 		double nodeX1, nodeX2, nodeX3, wallX1, wallX2, wallX3, q;
 		//////////////////////////////////////////////////////////////////////////
-		sizeOfNodes = para->getParH(level)->Qinflow.kQ;
+		sizeOfNodes = para->getParH(level)->Qinflow.numberOfBCnodes;
 		endpos = startpos + sizeOfNodes;
 		//////////////////////////////////////////////////////////////////////////
 		//qs.clear();
@@ -2502,7 +2502,7 @@ namespace UnstructuredGridWriter
 		QforBoundaryConditions Q;
 		double nodeX1, nodeX2, nodeX3, wallX1, wallX2, wallX3, q;
 		//////////////////////////////////////////////////////////////////////////
-		sizeOfNodes = para->getParH(level)->QPress.kQ;
+		sizeOfNodes = para->getParH(level)->QPress.numberOfBCnodes;
 		endpos = startpos + sizeOfNodes;
 		//////////////////////////////////////////////////////////////////////////
 		//qs.clear();

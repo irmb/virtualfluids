@@ -9,7 +9,7 @@ using namespace vf::lbm::constant;
 extern "C" __global__ void DragLiftPost27(  real* DD, 
 											int* k_Q, 
 											real* QQ,
-											int kQ, 
+											int numberOfBCnodes, 
 											double *DragX,
 											double *DragY,
 											double *DragZ,
@@ -91,9 +91,9 @@ extern "C" __global__ void DragLiftPost27(  real* DD,
 	const unsigned k = nx*(ny*z + y) + x;
 	//////////////////////////////////////////////////////////////////////////
 
-	if(k<kQ)
+	if(k<numberOfBCnodes)
 	{
-		unsigned int sizeQ = kQ;
+		unsigned int sizeQ = numberOfBCnodes;
 		////////////////////////////////////////////////////////////////////////////////
 		real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
 			*q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
@@ -275,7 +275,7 @@ extern "C" __global__ void DragLiftPost27(  real* DD,
 extern "C" __global__ void DragLiftPre27(   real* DD, 
 											int* k_Q, 
 											real* QQ,
-											int kQ, 
+											int numberOfBCnodes, 
 											double *DragX,
 											double *DragY,
 											double *DragZ,
@@ -357,9 +357,9 @@ extern "C" __global__ void DragLiftPre27(   real* DD,
 	const unsigned k = nx*(ny*z + y) + x;
 	//////////////////////////////////////////////////////////////////////////
 
-	if(k<kQ)
+	if(k<numberOfBCnodes)
 	{
-		unsigned int sizeQ = kQ;
+		unsigned int sizeQ = numberOfBCnodes;
 		////////////////////////////////////////////////////////////////////////////////
 		real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
 			*q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,

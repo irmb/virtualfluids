@@ -22,7 +22,7 @@ extern "C" __global__ void QVelDeviceCompThinWallsPartOne27(
 	int* k_Q, 
 	real* QQ,
 	uint sizeQ,
-	int kQ, 
+	int numberOfBCnodes, 
 	real om1, 
 	uint* neighborX,
 	uint* neighborY,
@@ -102,7 +102,7 @@ extern "C" __global__ void QVelDeviceCompThinWallsPartOne27(
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       real VeloX = vx[k];
@@ -452,7 +452,7 @@ extern "C" __global__ void QDeviceCompThinWallsPartOne27(
 	int* k_Q,
 	real* QQ,
 	unsigned int sizeQ,
-	int kQ,
+	int numberOfBCnodes,
 	real om1,
 	unsigned int* neighborX,
 	unsigned int* neighborY,
@@ -532,7 +532,7 @@ extern "C" __global__ void QDeviceCompThinWallsPartOne27(
 	const unsigned k = nx*(ny*z + y) + x;
 	//////////////////////////////////////////////////////////////////////////
 
-	if (k < kQ)
+	if (k < numberOfBCnodes)
 	{
 		////////////////////////////////////////////////////////////////////////////////
 		real *q_dirE, *q_dirW, *q_dirN, *q_dirS, *q_dirT, *q_dirB,
@@ -878,7 +878,7 @@ extern "C" __global__ void QThinWallsPartTwo27(
 	int* k_Q, 
 	real* QQ,
 	uint sizeQ,
-	int kQ, 
+	int numberOfBCnodes, 
 	uint* geom,
 	uint* neighborX,
 	uint* neighborY,
@@ -898,7 +898,7 @@ extern "C" __global__ void QThinWallsPartTwo27(
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
