@@ -56,7 +56,7 @@ public:
     void runVelocityBCKernel(int level);
 
 	//! \brief calls the device function of the geometry boundary condition
-	void runGeoBCKernel(int level);
+	void runGeoBCKernelPost(int level);
 
 	//! \brief calls the device function of the slip boundary condition
 	void runSlipBCKernel(int level);

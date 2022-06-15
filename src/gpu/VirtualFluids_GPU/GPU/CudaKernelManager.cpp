@@ -159,13 +159,200 @@ void CudaKernelManager::runVelocityBCKernel(int level)
      }
 }
 
-// void CudaKernelManager::runGeoBCKernel(int level)
-// {
-//     if (para->getParD()->numberOfGeoBCnodes > 0)
-//     {
-//         // ...
-//     }
-// }
+void CudaKernelManager::runGeoBCKernelPost(int level)
+{
+    if (para->getParD(level)->QGeom.numberOfBCnodes > 0)
+    {
+        if (para->getCalcDragLift())
+        {
+            //Drag and Lift Part I
+            DragLiftPostD27(para->getParD(level)->d0SP.f[0],
+                            para->getParD(level)->QGeom.k,
+                            para->getParD(level)->QGeom.q27[0],
+                            para->getParD(level)->QGeom.numberOfBCnodes,
+                            para->getParD(level)->DragPostX,
+                            para->getParD(level)->DragPostY,
+                            para->getParD(level)->DragPostZ,
+                            para->getParD(level)->neighborX_SP,
+                            para->getParD(level)->neighborY_SP,
+                            para->getParD(level)->neighborZ_SP,
+                            para->getParD(level)->size_Mat_SP,
+                            para->getParD(level)->evenOrOdd,
+                            para->getParD(level)->numberofthreads);
+            getLastCudaError("DragLift27 execution failed");
+        }
+
+        // BBDev27(
+        //     para->getParD(level)->numberofthreads,
+        //     para->getParD(level)->nx,
+        //     para->getParD(level)->ny,
+        //     para->getParD(level)->d0SP.f[0],
+        //     para->getParD(level)->QGeom.k,
+        //     para->getParD(level)->QGeom.q27[0],
+        //     para->getParD(level)->QGeom.numberOfBCnodes,
+        //     para->getParD(level)->QGeom.numberOfBCnodes,
+        //     para->getParD(level)->omega,
+        //     para->getParD(level)->neighborX_SP,
+        //     para->getParD(level)->neighborY_SP,
+        //     para->getParD(level)->neighborZ_SP,
+        //     para->getParD(level)->size_Mat_SP,
+        //     para->getParD(level)->evenOrOdd);
+
+        // QDev27(
+        //     para->getParD(level)->numberofthreads,
+        //     para->getParD(level)->nx,
+        //     para->getParD(level)->ny,
+        //     para->getParD(level)->d0SP.f[0],
+        //     para->getParD(level)->QGeom.k,
+        //     para->getParD(level)->QGeom.q27[0],
+        //     para->getParD(level)->QGeom.numberOfBCnodes,
+        //     para->getParD(level)->QGeom.numberOfBCnodes,
+        //     para->getParD(level)->omega,
+        //     para->getParD(level)->neighborX_SP,
+        //     para->getParD(level)->neighborY_SP,
+        //     para->getParD(level)->neighborZ_SP,
+        //     para->getParD(level)->size_Mat_SP,
+        //     para->getParD(level)->evenOrOdd);
+
+        // QVelDev27(
+        //     para->getParD(level)->numberofthreads,
+        //     para->getParD(level)->nx,
+        //     para->getParD(level)->ny,
+        //     para->getParD(level)->QGeom.Vx,
+        //     para->getParD(level)->QGeom.Vy,
+        //     para->getParD(level)->QGeom.Vz,
+        //     para->getParD(level)->d0SP.f[0],
+        //     para->getParD(level)->QGeom.k,
+        //     para->getParD(level)->QGeom.q27[0],
+        //     para->getParD(level)->QGeom.numberOfBCnodes,
+        //     para->getParD(level)->QGeom.numberOfBCnodes,
+        //     para->getParD(level)->omega,
+        //     para->getParD(level)->neighborX_SP,
+        //     para->getParD(level)->neighborY_SP,
+        //     para->getParD(level)->neighborZ_SP,
+        //     para->getParD(level)->size_Mat_SP,
+        //     para->getParD(level)->evenOrOdd);
+
+        // QDevComp27(
+        //     para->getParD(level)->numberofthreads,
+        //     para->getParD(level)->nx,
+        //     para->getParD(level)->ny,
+        //     para->getParD(level)->d0SP.f[0],
+        //     para->getParD(level)->QGeom.k,
+        //     para->getParD(level)->QGeom.q27[0],
+        //     para->getParD(level)->QGeom.numberOfBCnodes,
+        //     para->getParD(level)->QGeom.numberOfBCnodes,
+        //     para->getParD(level)->omega,
+        //     para->getParD(level)->neighborX_SP,
+        //     para->getParD(level)->neighborY_SP,
+        //     para->getParD(level)->neighborZ_SP,
+        //     para->getParD(level)->size_Mat_SP,
+        //     para->getParD(level)->evenOrOdd);
+
+        QVelDevComp27(
+            para->getParD(level)->numberofthreads,
+            para->getParD(level)->nx,
+            para->getParD(level)->ny,
+            para->getParD(level)->QGeom.Vx,
+            para->getParD(level)->QGeom.Vy,
+            para->getParD(level)->QGeom.Vz,
+            para->getParD(level)->d0SP.f[0],
+            para->getParD(level)->QGeom.k,
+            para->getParD(level)->QGeom.q27[0],
+            para->getParD(level)->QGeom.numberOfBCnodes,
+            para->getParD(level)->QGeom.numberOfBCnodes,
+            para->getParD(level)->omega,
+            para->getParD(level)->neighborX_SP,
+            para->getParD(level)->neighborY_SP,
+            para->getParD(level)->neighborZ_SP,
+            para->getParD(level)->size_Mat_SP,
+            para->getParD(level)->evenOrOdd);
+
+    //     QVelDevCompZeroPress27(
+    //         para->getParD(0)->numberofthreads, para->getParD(0)->nx,
+    //         para->getParD(0)->ny,
+    //         para->getParD(0)->QGeom.Vx,
+    //         para->getParD(0)->QGeom.Vy,
+    //         para->getParD(0)->QGeom.Vz,
+    //         para->getParD(0)->d0SP.f[0],
+    //         para->getParD(0)->QGeom.k,
+    //         para->getParD(0)->QGeom.q27[0],
+    //         para->getParD(0)->QGeom.numberOfBCnodes,
+    //         para->getParD(0)->QGeom.numberOfBCnodes,
+    //         para->getParD(0)->omega,
+    //         para->getParD(0)->neighborX_SP,
+    //         para->getParD(0)->neighborY_SP,
+    //         para->getParD(0)->neighborZ_SP,
+    //         para->getParD(0)->size_Mat_SP,
+    //         para->getParD(0)->evenOrOdd);
+
+    //     QDev3rdMomentsComp27(
+    //         para->getParD(level)->numberofthreads,
+    //         para->getParD(level)->nx,
+    //         para->getParD(level)->ny,
+    //         para->getParD(level)->d0SP.f[0],
+    //         para->getParD(level)->QGeom.k,
+    //         para->getParD(level)->QGeom.q27[0],
+    //         para->getParD(level)->QGeom.numberOfBCnodes,
+    //         para->getParD(level)->QGeom.numberOfBCnodes,
+    //         para->getParD(level)->omega,
+    //         para->getParD(level)->neighborX_SP,
+    //         para->getParD(level)->neighborY_SP,
+    //         para->getParD(level)->neighborZ_SP,
+    //         para->getParD(level)->size_Mat_SP,
+    //         para->getParD(level)->evenOrOdd);
+
+    //     QSlipDev27(
+    //         para->getParD(level)->numberofthreads,
+    //         para->getParD(level)->d0SP.f[0],
+    //         para->getParD(level)->QGeom.k,
+    //         para->getParD(level)->QGeom.q27[0],
+    //         para->getParD(level)->QGeom.numberOfBCnodes,
+    //         para->getParD(level)->omega,
+    //         para->getParD(level)->neighborX_SP,
+    //         para->getParD(level)->neighborY_SP,
+    //         para->getParD(level)->neighborZ_SP,
+    //         para->getParD(level)->size_Mat_SP,
+    //         para->getParD(level)->evenOrOdd);
+
+    //////////////////////////////////////////////////////////////////////////
+    // D E P R E C A T E D
+    //////////////////////////////////////////////////////////////////////////
+    // the GridGenerator does currently not provide normals!
+
+    //     QSlipGeomDevComp27(
+    //         para->getParD(level)->numberofthreads,
+    //         para->getParD(level)->d0SP.f[0],
+    //         para->getParD(level)->QGeom.k,
+    //         para->getParD(level)->QGeom.q27[0],
+    //         para->getParD(level)->QGeom.numberOfBCnodes,
+    //         para->getParD(level)->omega,
+    //         para->getParD(level)->QGeomNormalX.q27[0],
+    //         para->getParD(level)->QGeomNormalY.q27[0],
+    //         para->getParD(level)->QGeomNormalZ.q27[0],
+    //         para->getParD(level)->neighborX_SP,
+    //         para->getParD(level)->neighborY_SP,
+    //         para->getParD(level)->neighborZ_SP,
+    //         para->getParD(level)->size_Mat_SP,
+    //         para->getParD(level)->evenOrOdd);
+
+    //     QSlipNormDevComp27(
+    //         para->getParD(level)->numberofthreads,
+    //         para->getParD(level)->d0SP.f[0],
+    //         para->getParD(level)->QGeom.k,
+    //         para->getParD(level)->QGeom.q27[0],
+    //         para->getParD(level)->QGeom.numberOfBCnodes,
+    //         para->getParD(level)->omega,
+    //         para->getParD(level)->QGeomNormalX.q27[0],
+    //         para->getParD(level)->QGeomNormalY.q27[0],
+    //         para->getParD(level)->QGeomNormalZ.q27[0],
+    //         para->getParD(level)->neighborX_SP,
+    //         para->getParD(level)->neighborY_SP,
+    //         para->getParD(level)->neighborZ_SP,
+    //         para->getParD(level)->size_Mat_SP,
+    //         para->getParD(level)->evenOrOdd);
+    }
+}
 
 void CudaKernelManager::runStressWallModelKernel(int level){
     if (para->getParD(level)->numberOfStressBCnodes > 0)
