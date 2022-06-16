@@ -2506,7 +2506,7 @@ std::string Parameter::getADKernel()
     return adKernel;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+// initial condition fluid
 void Parameter::setInitialCondition(
     std::function<void(real, real, real, real &, real &, real &, real &)> initialCondition)
 {
@@ -2517,6 +2517,18 @@ std::function<void(real, real, real, real &, real &, real &, real &)> &Parameter
 {
     return this->initialCondition;
 }
+
+// initial condition concentration
+void Parameter::setInitialConditionAD(std::function<void(real, real, real, real&)> initialConditionAD)
+{
+    this->initialConditionAD = initialConditionAD;
+}
+
+std::function<void(real, real, real, real&)>& Parameter::getInitialConditionAD()
+{
+    return this->initialConditionAD;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 real Parameter::TrafoXtoWorld(int CoordX, int level)
 {

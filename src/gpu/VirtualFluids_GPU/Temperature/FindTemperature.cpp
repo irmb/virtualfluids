@@ -18,7 +18,7 @@ void initTemperatur(Parameter* para, CudaMemoryManager* cudaManager, int lev)
 {
     cudaManager->cudaAllocTempFs(lev);
 
-    cudaManager->cudaCopyConcHD(lev);
+    cudaManager->cudaCopyConcentrationHostToDevice(lev);
 
    if (para->getDiffMod() == 7)
    {
@@ -66,20 +66,20 @@ void initTemperatur(Parameter* para, CudaMemoryManager* cudaManager, int lev)
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      CalcConcentration27(  para->getParD(lev)->Conc, 
-                     para->getParD(lev)->typeOfGridNode,       
-                     para->getParD(lev)->neighborX, 
-                     para->getParD(lev)->neighborY, 
+      CalcConcentration27(
+                     para->getParD(lev)->numberofthreads,
+                     para->getParD(lev)->Conc,
+                     para->getParD(lev)->typeOfGridNode,
+                     para->getParD(lev)->neighborX,
+                     para->getParD(lev)->neighborY,
                      para->getParD(lev)->neighborZ,
-                     para->getParD(lev)->numberOfNodes, 
-                     para->getParD(lev)->numberofthreads,       
-                     para->getParD(lev)->distributionsAD27.f[0],    
+                     para->getParD(lev)->numberOfNodes,
+                     para->getParD(lev)->distributionsAD27.f[0],
                      para->getParD(lev)->isEvenTimestep);
-      getLastCudaError("CalcMacSP27 execution failed"); 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    }
 
-   cudaManager->cudaCopyConcDH(lev);
+   cudaManager->cudaCopyConcentrationDeviceToHost(lev);
 }
 
 

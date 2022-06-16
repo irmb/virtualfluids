@@ -61,7 +61,7 @@ void initLattice(SPtr<Parameter> para, SPtr<PreProcessor> preProcessor, SPtr<Cud
         // advection - diffusion
         if (para->getDiffOn()) {
 
-            cudaManager->cudaAllocConc(lev);
+            cudaManager->cudaAllocConcentration(lev);
 
             for (unsigned int i = 0; i < para->getParH(lev)->numberOfNodes; i++) {
                 para->getParH(lev)->Conc[i] = para->getTemperatureInit();

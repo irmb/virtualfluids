@@ -864,19 +864,19 @@ void Simulation::run()
                   }
                   else if (para->getDiffMod() == 27)
                   {
-                     CalcConcentration27(  para->getParD(lev)->Conc,
+                     CalcConcentration27(
+                                    para->getParD(lev)->numberofthreads,
+                                    para->getParD(lev)->Conc,
                                     para->getParD(lev)->typeOfGridNode,
                                     para->getParD(lev)->neighborX,
                                     para->getParD(lev)->neighborY,
                                     para->getParD(lev)->neighborZ,
                                     para->getParD(lev)->numberOfNodes,
-                                    para->getParD(lev)->numberofthreads,
                                     para->getParD(lev)->distributionsAD27.f[0],
                                     para->getParD(lev)->isEvenTimestep);
-                     getLastCudaError("CalcMacTh27 execution failed");
                   }
 
-				  cudaManager->cudaCopyConcDH(lev);
+				  cudaManager->cudaCopyConcentrationDeviceToHost(lev);
                   //cudaMemoryCopy(para->getParH(lev)->Conc, para->getParD(lev)->Conc,  para->getParH(lev)->mem_size_real_SP , cudaMemcpyDeviceToHost);
                }
                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -2388,7 +2388,7 @@ void CudaMemoryManager::cudaFreePorousMedia(PorousMedia* pm, int lev)
 }
 //////////////////////////////////////////////////////////////////////////
 //advection diffusion
-void CudaMemoryManager::cudaAllocConc(int lev)
+void CudaMemoryManager::cudaAllocConcentration(int lev)
 {
     //Host
     checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->Conc), parameter->getParH(lev)->mem_size_real_SP));
@@ -2398,15 +2398,15 @@ void CudaMemoryManager::cudaAllocConc(int lev)
     double tmp = (double)parameter->getParH(lev)->mem_size_real_SP;
     setMemsizeGPU(tmp, false);
 }
-void CudaMemoryManager::cudaCopyConcDH(int lev)
+void CudaMemoryManager::cudaCopyConcentrationDeviceToHost(int lev)
 {
     checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->Conc, parameter->getParD(lev)->Conc,  parameter->getParH(lev)->mem_size_real_SP , cudaMemcpyDeviceToHost));
 }
-void CudaMemoryManager::cudaCopyConcHD(int lev)
+void CudaMemoryManager::cudaCopyConcentrationHostToDevice(int lev)
 {
     checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->Conc, parameter->getParH(lev)->Conc, parameter->getParH(lev)->mem_size_real_SP, cudaMemcpyHostToDevice));
 }
-void CudaMemoryManager::cudaFreeConc(int lev)
+void CudaMemoryManager::cudaFreeConcentration(int lev)
 {
     checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->Conc));
 }

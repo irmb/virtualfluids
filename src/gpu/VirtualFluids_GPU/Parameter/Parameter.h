@@ -59,8 +59,13 @@ class CudaStreamManager;
 //! \brief struct holds and manages the LB-parameter of the simulation
 //! \brief For this purpose it holds structures and pointer for host and device data, respectively.
 struct LBMSimulationParameter {
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief decides if the simulation timestep is even or odd
+    //! \brief this information is important for the esoteric twist
     bool isEvenTimestep;
-    unsigned int numberofthreads;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the number of threads per GPU block
+    uint numberofthreads;
 
     // distributions///////////
     // Distributions19 d0;
@@ -76,8 +81,11 @@ struct LBMSimulationParameter {
     Distributions7 distributionsAD7;
     //! \brief store all distribution functions for the D3Q27 advection diffusion field
     Distributions27 distributionsAD27;
+    //! \brief stores a field of concentration values
     real *Conc, *Conc_Full;
+    //! \brief stores the diffusivity
     real diffusivity;
+    //! \brief stores the value for omega (for the diffusivity)
     real omegaDiffusivity;
     // BC NoSlip
     TempforBoundaryConditions Temp;
@@ -105,10 +113,12 @@ struct LBMSimulationParameter {
     // k///////////////////////
     unsigned int *k; // DEPRECATED: index for full matrix
 
-    // neighbor////////////////
-    unsigned int *neighborX, *neighborY, *neighborZ, *neighborInverse;
+    // neighbor///////////////////////////////////////////////////////////////
+    //! \brief store the neighbors in +X, +Y, +Z, and in diagonal negative direction
+    //! \brief this information is important because we use an indirect addressing scheme
+    uint *neighborX, *neighborY, *neighborZ, *neighborInverse;
 
-    // coordinates////////////
+    // coordinates////////////////////////////////////////////////////////////
     //! \brief store the coordinates for every lattice node 
     real *coordinateX, *coordinateY, *coordinateZ;
 
@@ -132,7 +142,10 @@ struct LBMSimulationParameter {
     //! \brief store the macroscopic values (velocity, density, pressure)
     //! \brief for every lattice node
     real *velocityX, *velocityY, *velocityZ, *rho, *pressure;
-    real vis, omega;
+    //! \brief stores the value for omega
+    real omega;
+    //! \brief stores the value for viscosity (on level 0)
+    real vis;
 
     // derivations for iso test
     real *dxxUx, *dyyUy, *dzzUz;
@@ -169,6 +182,7 @@ struct LBMSimulationParameter {
     bool isSetPress;
 
     // memsizeSP/////////////////
+    //! \brief stores the size of the memory consumption for real/int values of the arrays (e.g. coordinates, velocity)
     unsigned int mem_size_real_SP;
     unsigned int mem_size_int_SP;
 
@@ -206,7 +220,9 @@ struct LBMSimulationParameter {
     unsigned int mem_size_kFC_off;
 
     // BC's////////////////////
+    //! \brief stores the boundary condition data
     QforBoundaryConditions noSlipBC, velocityBC, outflowBC, slipBC, stressBC;
+    //! \brief number of lattice nodes for the boundary conditions
     unsigned int numberOfNoSlipBCnodes = 0, numberOfVeloBCnodes = 0, numberOfOutflowBCnodes = 0, numberOfSlipBCnodes = 0, numberOfStressBCnodes = 0;
     unsigned int numberOfNoSlipBCnodesRead, numberOfVeloBCnodesRead, numberOfOutflowBCnodesRead, numberOfSlipBCnodesRead, numberOfStressBCnodesRead;
     QforBoundaryConditions pressureBC;
@@ -230,6 +246,7 @@ struct LBMSimulationParameter {
     // velocities to fit the force
     real *VxForce, *VyForce, *VzForce;
     //////////////////////////////////////////////////////////////////////////
+    //! \brief sets the forcing uniform on every fluid node in all three space dimensions
     real *forcing;
 
     // Measure Points/////////
@@ -359,6 +376,7 @@ struct LBMSimulationParameter {
     uint numberOffluidNodesBorder;
 };
 
+//! \brief Class for LBM-parameter management
 class VIRTUALFLUIDS_GPU_EXPORT Parameter
 {
 public:
@@ -366,7 +384,9 @@ public:
     ~Parameter();
     void initLBMSimulationParameter();
 
+    //! \brief Pointer to instance of LBMSimulationParameter - stored on Host System
     std::shared_ptr<LBMSimulationParameter> getParH(int level);
+    //! \brief Pointer to instance of LBMSimulationParameter - stored on Device (GPU)
     std::shared_ptr<LBMSimulationParameter> getParD(int level);
 
     void copyMeasurePointsArrayToVector(int lev);
@@ -824,9 +844,15 @@ public:
     double hostQuadricLimiters[3];
 
     ////////////////////////////////////////////////////////////////////////////
-    // initial condition
+    // initial condition fluid
     void setInitialCondition(std::function<void(real, real, real, real &, real &, real &, real &)> initialCondition);
     std::function<void(real, real, real, real &, real &, real &, real &)> &getInitialCondition();
+
+    // initial condition concentration
+    void setInitialConditionAD(std::function<void(real, real, real, real &)> initialConditionAD);
+    std::function<void(real, real, real, real &)> &getInitialConditionAD();
+
+    ////////////////////////////////////////////////////////////////////////////
 
     std::vector<std::shared_ptr<LBMSimulationParameter>> parH = std::vector<std::shared_ptr<LBMSimulationParameter>>(1);
     std::vector<std::shared_ptr<LBMSimulationParameter>> parD = std::vector<std::shared_ptr<LBMSimulationParameter>>(1);
@@ -918,8 +944,10 @@ private:
     bool isNeigborX, isNeigborY, isNeigborZ;
 
     ////////////////////////////////////////////////////////////////////////////
-    // initial condition
+    //! \brief initial condition fluid
     std::function<void(real, real, real, real &, real &, real &, real &)> initialCondition;
+    //! \brief initial condition concentration
+    std::function<void(real, real, real, real &)> initialConditionAD;
 
     ////////////////////////////////////////////////////////////////////////////
     // cuda streams

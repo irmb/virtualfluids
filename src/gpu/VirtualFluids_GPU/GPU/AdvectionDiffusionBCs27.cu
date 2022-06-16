@@ -6757,3 +6757,447 @@ extern "C" __global__ void QADPressIncomp27(   int inx,
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+
+
+
+
+
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+inline __device__ real calcDistributionBC_AD_interpol(real q, real weight, real v, real v_sq, real f, real finf, real omegaDiffusivity, real jTangential, real concentration) {
+    real feq = weight * concentration * (c1o1 + c3o1 * v + c9o2 * v * v * concentration - v_sq * concentration);
+    return (c1o1 - q) / (c1o1 + q) * ((f - feq * omegaDiffusivity) / (c1o1 - omegaDiffusivity)) + (q * (f + finf) - c6o1 * weight * (jTangential)) / (c1o1 + q);
+}
+////////////////////////////////////////////////////////////////////////////////
+inline __device__ real calcDistributionBC_AD(real q, real weight, real v, real v_sq, real f, real finf, real omegaDiffusivity, real jTangential, real concentration) {
+    return f - c6o1 * weight * jTangential;
+}
+
+
+// has to be excecuted before Fluid BCs
+//////////////////////////////////////////////////////////////////////////////
+extern "C" __global__ void AD_SlipVelDeviceComp(
+    real *normalX,
+    real *normalY,
+    real *normalZ,
+    real *distributions,
+    real *distributionsAD,
+    int *QindexArray,
+    real *Qarrays,
+    uint numberOfQs,
+    real omegaDiffusivity,
+    uint* neighborX,
+    uint* neighborY,
+    uint* neighborZ,
+    uint size_Mat,
+    bool isEvenTimestep)
+{
+    Distributions27 D;
+    if (isEvenTimestep)
+    {
+        D.f[dirE   ] = &distributions[dirE    * size_Mat];
+        D.f[dirW   ] = &distributions[dirW    * size_Mat];
+        D.f[dirN   ] = &distributions[dirN    * size_Mat];
+        D.f[dirS   ] = &distributions[dirS    * size_Mat];
+        D.f[dirT   ] = &distributions[dirT    * size_Mat];
+        D.f[dirB   ] = &distributions[dirB    * size_Mat];
+        D.f[dirNE  ] = &distributions[dirNE   * size_Mat];
+        D.f[dirSW  ] = &distributions[dirSW   * size_Mat];
+        D.f[dirSE  ] = &distributions[dirSE   * size_Mat];
+        D.f[dirNW  ] = &distributions[dirNW   * size_Mat];
+        D.f[dirTE  ] = &distributions[dirTE   * size_Mat];
+        D.f[dirBW  ] = &distributions[dirBW   * size_Mat];
+        D.f[dirBE  ] = &distributions[dirBE   * size_Mat];
+        D.f[dirTW  ] = &distributions[dirTW   * size_Mat];
+        D.f[dirTN  ] = &distributions[dirTN   * size_Mat];
+        D.f[dirBS  ] = &distributions[dirBS   * size_Mat];
+        D.f[dirBN  ] = &distributions[dirBN   * size_Mat];
+        D.f[dirTS  ] = &distributions[dirTS   * size_Mat];
+        D.f[dirREST] = &distributions[dirREST * size_Mat];
+        D.f[dirTNE ] = &distributions[dirTNE  * size_Mat];
+        D.f[dirTSW ] = &distributions[dirTSW  * size_Mat];
+        D.f[dirTSE ] = &distributions[dirTSE  * size_Mat];
+        D.f[dirTNW ] = &distributions[dirTNW  * size_Mat];
+        D.f[dirBNE ] = &distributions[dirBNE  * size_Mat];
+        D.f[dirBSW ] = &distributions[dirBSW  * size_Mat];
+        D.f[dirBSE ] = &distributions[dirBSE  * size_Mat];
+        D.f[dirBNW ] = &distributions[dirBNW  * size_Mat];
+    }
+    else
+    {
+        D.f[dirW   ] = &distributions[dirE    * size_Mat];
+        D.f[dirE   ] = &distributions[dirW    * size_Mat];
+        D.f[dirS   ] = &distributions[dirN    * size_Mat];
+        D.f[dirN   ] = &distributions[dirS    * size_Mat];
+        D.f[dirB   ] = &distributions[dirT    * size_Mat];
+        D.f[dirT   ] = &distributions[dirB    * size_Mat];
+        D.f[dirSW  ] = &distributions[dirNE   * size_Mat];
+        D.f[dirNE  ] = &distributions[dirSW   * size_Mat];
+        D.f[dirNW  ] = &distributions[dirSE   * size_Mat];
+        D.f[dirSE  ] = &distributions[dirNW   * size_Mat];
+        D.f[dirBW  ] = &distributions[dirTE   * size_Mat];
+        D.f[dirTE  ] = &distributions[dirBW   * size_Mat];
+        D.f[dirTW  ] = &distributions[dirBE   * size_Mat];
+        D.f[dirBE  ] = &distributions[dirTW   * size_Mat];
+        D.f[dirBS  ] = &distributions[dirTN   * size_Mat];
+        D.f[dirTN  ] = &distributions[dirBS   * size_Mat];
+        D.f[dirTS  ] = &distributions[dirBN   * size_Mat];
+        D.f[dirBN  ] = &distributions[dirTS   * size_Mat];
+        D.f[dirREST] = &distributions[dirREST * size_Mat];
+        D.f[dirTNE ] = &distributions[dirBSW  * size_Mat];
+        D.f[dirTSW ] = &distributions[dirBNE  * size_Mat];
+        D.f[dirTSE ] = &distributions[dirBNW  * size_Mat];
+        D.f[dirTNW ] = &distributions[dirBSE  * size_Mat];
+        D.f[dirBNE ] = &distributions[dirTSW  * size_Mat];
+        D.f[dirBSW ] = &distributions[dirTNE  * size_Mat];
+        D.f[dirBSE ] = &distributions[dirTNW  * size_Mat];
+        D.f[dirBNW ] = &distributions[dirTSE  * size_Mat];
+    }
+    ////////////////////////////////////////////////////////////////////////////////
+    Distributions27 DAD;
+    if (isEvenTimestep)
+    {
+        DAD.f[dirE   ] = &distributionsAD[dirE    * size_Mat];
+        DAD.f[dirW   ] = &distributionsAD[dirW    * size_Mat];
+        DAD.f[dirN   ] = &distributionsAD[dirN    * size_Mat];
+        DAD.f[dirS   ] = &distributionsAD[dirS    * size_Mat];
+        DAD.f[dirT   ] = &distributionsAD[dirT    * size_Mat];
+        DAD.f[dirB   ] = &distributionsAD[dirB    * size_Mat];
+        DAD.f[dirNE  ] = &distributionsAD[dirNE   * size_Mat];
+        DAD.f[dirSW  ] = &distributionsAD[dirSW   * size_Mat];
+        DAD.f[dirSE  ] = &distributionsAD[dirSE   * size_Mat];
+        DAD.f[dirNW  ] = &distributionsAD[dirNW   * size_Mat];
+        DAD.f[dirTE  ] = &distributionsAD[dirTE   * size_Mat];
+        DAD.f[dirBW  ] = &distributionsAD[dirBW   * size_Mat];
+        DAD.f[dirBE  ] = &distributionsAD[dirBE   * size_Mat];
+        DAD.f[dirTW  ] = &distributionsAD[dirTW   * size_Mat];
+        DAD.f[dirTN  ] = &distributionsAD[dirTN   * size_Mat];
+        DAD.f[dirBS  ] = &distributionsAD[dirBS   * size_Mat];
+        DAD.f[dirBN  ] = &distributionsAD[dirBN   * size_Mat];
+        DAD.f[dirTS  ] = &distributionsAD[dirTS   * size_Mat];
+        DAD.f[dirREST] = &distributionsAD[dirREST * size_Mat];
+        DAD.f[dirTNE ] = &distributionsAD[dirTNE  * size_Mat];
+        DAD.f[dirTSW ] = &distributionsAD[dirTSW  * size_Mat];
+        DAD.f[dirTSE ] = &distributionsAD[dirTSE  * size_Mat];
+        DAD.f[dirTNW ] = &distributionsAD[dirTNW  * size_Mat];
+        DAD.f[dirBNE ] = &distributionsAD[dirBNE  * size_Mat];
+        DAD.f[dirBSW ] = &distributionsAD[dirBSW  * size_Mat];
+        DAD.f[dirBSE ] = &distributionsAD[dirBSE  * size_Mat];
+        DAD.f[dirBNW ] = &distributionsAD[dirBNW  * size_Mat];
+    }
+    else
+    {
+        DAD.f[dirW   ] = &distributionsAD[dirE    * size_Mat];
+        DAD.f[dirE   ] = &distributionsAD[dirW    * size_Mat];
+        DAD.f[dirS   ] = &distributionsAD[dirN    * size_Mat];
+        DAD.f[dirN   ] = &distributionsAD[dirS    * size_Mat];
+        DAD.f[dirB   ] = &distributionsAD[dirT    * size_Mat];
+        DAD.f[dirT   ] = &distributionsAD[dirB    * size_Mat];
+        DAD.f[dirSW  ] = &distributionsAD[dirNE   * size_Mat];
+        DAD.f[dirNE  ] = &distributionsAD[dirSW   * size_Mat];
+        DAD.f[dirNW  ] = &distributionsAD[dirSE   * size_Mat];
+        DAD.f[dirSE  ] = &distributionsAD[dirNW   * size_Mat];
+        DAD.f[dirBW  ] = &distributionsAD[dirTE   * size_Mat];
+        DAD.f[dirTE  ] = &distributionsAD[dirBW   * size_Mat];
+        DAD.f[dirTW  ] = &distributionsAD[dirBE   * size_Mat];
+        DAD.f[dirBE  ] = &distributionsAD[dirTW   * size_Mat];
+        DAD.f[dirBS  ] = &distributionsAD[dirTN   * size_Mat];
+        DAD.f[dirTN  ] = &distributionsAD[dirBS   * size_Mat];
+        DAD.f[dirTS  ] = &distributionsAD[dirBN   * size_Mat];
+        DAD.f[dirBN  ] = &distributionsAD[dirTS   * size_Mat];
+        DAD.f[dirREST] = &distributionsAD[dirREST * size_Mat];
+        DAD.f[dirTNE ] = &distributionsAD[dirBSW  * size_Mat];
+        DAD.f[dirTSW ] = &distributionsAD[dirBNE  * size_Mat];
+        DAD.f[dirTSE ] = &distributionsAD[dirBNW  * size_Mat];
+        DAD.f[dirTNW ] = &distributionsAD[dirBSE  * size_Mat];
+        DAD.f[dirBNE ] = &distributionsAD[dirTSW  * size_Mat];
+        DAD.f[dirBSW ] = &distributionsAD[dirTNE  * size_Mat];
+        DAD.f[dirBSE ] = &distributionsAD[dirTNW  * size_Mat];
+        DAD.f[dirBNW ] = &distributionsAD[dirTSE  * size_Mat];
+    }
+    ////////////////////////////////////////////////////////////////////////////////
+    const unsigned  x = threadIdx.x;  // Globaler x-Index
+    const unsigned  y = blockIdx.x;   // Globaler y-Index
+    const unsigned  z = blockIdx.y;   // Globaler z-Index
+
+    const unsigned nx = blockDim.x;
+    const unsigned ny = gridDim.x;
+
+    const unsigned k = nx * (ny * z + y) + x;
+    //////////////////////////////////////////////////////////////////////////
+
+    if (k < numberOfQs)
+    {
+        ////////////////////////////////////////////////////////////////////////////////
+        real NormX = normalX[k];
+        real NormY = normalY[k];
+        real NormZ = normalZ[k];
+        ////////////////////////////////////////////////////////////////////////////////
+        real* q_dirE, * q_dirW, * q_dirN, * q_dirS, * q_dirT, * q_dirB,
+            * q_dirNE, * q_dirSW, * q_dirSE, * q_dirNW, * q_dirTE, * q_dirBW,
+            * q_dirBE, * q_dirTW, * q_dirTN, * q_dirBS, * q_dirBN, * q_dirTS,
+            * q_dirTNE, * q_dirTSW, * q_dirTSE, * q_dirTNW, * q_dirBNE, * q_dirBSW,
+            * q_dirBSE, * q_dirBNW;
+        q_dirE   = &Qarrays[dirE   * numberOfQs];
+        q_dirW   = &Qarrays[dirW   * numberOfQs];
+        q_dirN   = &Qarrays[dirN   * numberOfQs];
+        q_dirS   = &Qarrays[dirS   * numberOfQs];
+        q_dirT   = &Qarrays[dirT   * numberOfQs];
+        q_dirB   = &Qarrays[dirB   * numberOfQs];
+        q_dirNE  = &Qarrays[dirNE  * numberOfQs];
+        q_dirSW  = &Qarrays[dirSW  * numberOfQs];
+        q_dirSE  = &Qarrays[dirSE  * numberOfQs];
+        q_dirNW  = &Qarrays[dirNW  * numberOfQs];
+        q_dirTE  = &Qarrays[dirTE  * numberOfQs];
+        q_dirBW  = &Qarrays[dirBW  * numberOfQs];
+        q_dirBE  = &Qarrays[dirBE  * numberOfQs];
+        q_dirTW  = &Qarrays[dirTW  * numberOfQs];
+        q_dirTN  = &Qarrays[dirTN  * numberOfQs];
+        q_dirBS  = &Qarrays[dirBS  * numberOfQs];
+        q_dirBN  = &Qarrays[dirBN  * numberOfQs];
+        q_dirTS  = &Qarrays[dirTS  * numberOfQs];
+        q_dirTNE = &Qarrays[dirTNE * numberOfQs];
+        q_dirTSW = &Qarrays[dirTSW * numberOfQs];
+        q_dirTSE = &Qarrays[dirTSE * numberOfQs];
+        q_dirTNW = &Qarrays[dirTNW * numberOfQs];
+        q_dirBNE = &Qarrays[dirBNE * numberOfQs];
+        q_dirBSW = &Qarrays[dirBSW * numberOfQs];
+        q_dirBSE = &Qarrays[dirBSE * numberOfQs];
+        q_dirBNW = &Qarrays[dirBNW * numberOfQs];
+        ////////////////////////////////////////////////////////////////////////////////
+        //index
+        unsigned int KQK   = QindexArray[k];
+        unsigned int kzero = KQK;
+        unsigned int ke    = KQK;
+        unsigned int kw    = neighborX[KQK];
+        unsigned int kn    = KQK;
+        unsigned int ks    = neighborY[KQK];
+        unsigned int kt    = KQK;
+        unsigned int kb    = neighborZ[KQK];
+        unsigned int ksw   = neighborY[kw];
+        unsigned int kne   = KQK;
+        unsigned int kse   = ks;
+        unsigned int knw   = kw;
+        unsigned int kbw   = neighborZ[kw];
+        unsigned int kte   = KQK;
+        unsigned int kbe   = kb;
+        unsigned int ktw   = kw;
+        unsigned int kbs   = neighborZ[ks];
+        unsigned int ktn   = KQK;
+        unsigned int kbn   = kb;
+        unsigned int kts   = ks;
+        unsigned int ktse  = ks;
+        unsigned int kbnw  = kbw;
+        unsigned int ktnw  = kw;
+        unsigned int kbse  = kbs;
+        unsigned int ktsw  = ksw;
+        unsigned int kbne  = kb;
+        unsigned int ktne  = KQK;
+        unsigned int kbsw  = neighborZ[ksw];
+        ////////////////////////////////////////////////////////////////////////////////
+        real f_E, f_W, f_N, f_S, f_T, f_B, f_NE, f_SW, f_SE, f_NW, f_TE, f_BW, f_BE,
+            f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
+
+        f_W   = (D.f[dirE])[ke];
+        f_E   = (D.f[dirW])[kw];
+        f_S   = (D.f[dirN])[kn];
+        f_N   = (D.f[dirS])[ks];
+        f_B   = (D.f[dirT])[kt];
+        f_T   = (D.f[dirB])[kb];
+        f_SW  = (D.f[dirNE])[kne];
+        f_NE  = (D.f[dirSW])[ksw];
+        f_NW  = (D.f[dirSE])[kse];
+        f_SE  = (D.f[dirNW])[knw];
+        f_BW  = (D.f[dirTE])[kte];
+        f_TE  = (D.f[dirBW])[kbw];
+        f_TW  = (D.f[dirBE])[kbe];
+        f_BE  = (D.f[dirTW])[ktw];
+        f_BS  = (D.f[dirTN])[ktn];
+        f_TN  = (D.f[dirBS])[kbs];
+        f_TS  = (D.f[dirBN])[kbn];
+        f_BN  = (D.f[dirTS])[kts];
+        f_BSW = (D.f[dirTNE])[ktne];
+        f_BNE = (D.f[dirTSW])[ktsw];
+        f_BNW = (D.f[dirTSE])[ktse];
+        f_BSE = (D.f[dirTNW])[ktnw];
+        f_TSW = (D.f[dirBNE])[kbne];
+        f_TNE = (D.f[dirBSW])[kbsw];
+        f_TNW = (D.f[dirBSE])[kbse];
+        f_TSE = (D.f[dirBNW])[kbnw];
+        ////////////////////////////////////////////////////////////////////////////////
+        real vx1, vx2, vx3, drho, q;
+        drho = f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
+            f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW +
+            f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirREST])[kzero]);
+
+        vx1 = (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
+            ((f_BE - f_TW) + (f_TE - f_BW)) + ((f_SE - f_NW) + (f_NE - f_SW)) +
+            (f_E - f_W)) / (c1o1 + drho);
+
+
+        vx2 = ((-(f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
+            ((f_BN - f_TS) + (f_TN - f_BS)) + (-(f_SE - f_NW) + (f_NE - f_SW)) +
+            (f_N - f_S)) / (c1o1 + drho);
+
+        vx3 = (((f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) + (f_TSW - f_BNE)) +
+            (-(f_BN - f_TS) + (f_TN - f_BS)) + ((f_TE - f_BW) - (f_BE - f_TW)) +
+            (f_T - f_B)) / (c1o1 + drho);
+
+        real cu_sq = c3o2 * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3) * (c1o1 + drho);
+
+        ////////////////////////////////////////////////////////////////////////////////
+        f_W   = (DAD.f[dirE])[ke];
+        f_E   = (DAD.f[dirW])[kw];
+        f_S   = (DAD.f[dirN])[kn];
+        f_N   = (DAD.f[dirS])[ks];
+        f_B   = (DAD.f[dirT])[kt];
+        f_T   = (DAD.f[dirB])[kb];
+        f_SW  = (DAD.f[dirNE])[kne];
+        f_NE  = (DAD.f[dirSW])[ksw];
+        f_NW  = (DAD.f[dirSE])[kse];
+        f_SE  = (DAD.f[dirNW])[knw];
+        f_BW  = (DAD.f[dirTE])[kte];
+        f_TE  = (DAD.f[dirBW])[kbw];
+        f_TW  = (DAD.f[dirBE])[kbe];
+        f_BE  = (DAD.f[dirTW])[ktw];
+        f_BS  = (DAD.f[dirTN])[ktn];
+        f_TN  = (DAD.f[dirBS])[kbs];
+        f_TS  = (DAD.f[dirBN])[kbn];
+        f_BN  = (DAD.f[dirTS])[kts];
+        f_BSW = (DAD.f[dirTNE])[ktne];
+        f_BNE = (DAD.f[dirTSW])[ktsw];
+        f_BNW = (DAD.f[dirTSE])[ktse];
+        f_BSE = (DAD.f[dirTNW])[ktnw];
+        f_TSW = (DAD.f[dirBNE])[kbne];
+        f_TNE = (DAD.f[dirBSW])[kbsw];
+        f_TNW = (DAD.f[dirBSE])[kbse];
+        f_TSE = (DAD.f[dirBNW])[kbnw];
+        //////////////////////////////////////////////////////////////////////////
+        if (!isEvenTimestep)
+        {
+            DAD.f[dirE   ] = &distributionsAD[dirE    * size_Mat];
+            DAD.f[dirW   ] = &distributionsAD[dirW    * size_Mat];
+            DAD.f[dirN   ] = &distributionsAD[dirN    * size_Mat];
+            DAD.f[dirS   ] = &distributionsAD[dirS    * size_Mat];
+            DAD.f[dirT   ] = &distributionsAD[dirT    * size_Mat];
+            DAD.f[dirB   ] = &distributionsAD[dirB    * size_Mat];
+            DAD.f[dirNE  ] = &distributionsAD[dirNE   * size_Mat];
+            DAD.f[dirSW  ] = &distributionsAD[dirSW   * size_Mat];
+            DAD.f[dirSE  ] = &distributionsAD[dirSE   * size_Mat];
+            DAD.f[dirNW  ] = &distributionsAD[dirNW   * size_Mat];
+            DAD.f[dirTE  ] = &distributionsAD[dirTE   * size_Mat];
+            DAD.f[dirBW  ] = &distributionsAD[dirBW   * size_Mat];
+            DAD.f[dirBE  ] = &distributionsAD[dirBE   * size_Mat];
+            DAD.f[dirTW  ] = &distributionsAD[dirTW   * size_Mat];
+            DAD.f[dirTN  ] = &distributionsAD[dirTN   * size_Mat];
+            DAD.f[dirBS  ] = &distributionsAD[dirBS   * size_Mat];
+            DAD.f[dirBN  ] = &distributionsAD[dirBN   * size_Mat];
+            DAD.f[dirTS  ] = &distributionsAD[dirTS   * size_Mat];
+            DAD.f[dirREST] = &distributionsAD[dirREST * size_Mat];
+            DAD.f[dirTNE ] = &distributionsAD[dirTNE  * size_Mat];
+            DAD.f[dirTSW ] = &distributionsAD[dirTSW  * size_Mat];
+            DAD.f[dirTSE ] = &distributionsAD[dirTSE  * size_Mat];
+            DAD.f[dirTNW ] = &distributionsAD[dirTNW  * size_Mat];
+            DAD.f[dirBNE ] = &distributionsAD[dirBNE  * size_Mat];
+            DAD.f[dirBSW ] = &distributionsAD[dirBSW  * size_Mat];
+            DAD.f[dirBSE ] = &distributionsAD[dirBSE  * size_Mat];
+            DAD.f[dirBNW ] = &distributionsAD[dirBNW  * size_Mat];
+        }
+        else
+        {
+            DAD.f[dirW   ] = &distributionsAD[dirE    * size_Mat];
+            DAD.f[dirE   ] = &distributionsAD[dirW    * size_Mat];
+            DAD.f[dirS   ] = &distributionsAD[dirN    * size_Mat];
+            DAD.f[dirN   ] = &distributionsAD[dirS    * size_Mat];
+            DAD.f[dirB   ] = &distributionsAD[dirT    * size_Mat];
+            DAD.f[dirT   ] = &distributionsAD[dirB    * size_Mat];
+            DAD.f[dirSW  ] = &distributionsAD[dirNE   * size_Mat];
+            DAD.f[dirNE  ] = &distributionsAD[dirSW   * size_Mat];
+            DAD.f[dirNW  ] = &distributionsAD[dirSE   * size_Mat];
+            DAD.f[dirSE  ] = &distributionsAD[dirNW   * size_Mat];
+            DAD.f[dirBW  ] = &distributionsAD[dirTE   * size_Mat];
+            DAD.f[dirTE  ] = &distributionsAD[dirBW   * size_Mat];
+            DAD.f[dirTW  ] = &distributionsAD[dirBE   * size_Mat];
+            DAD.f[dirBE  ] = &distributionsAD[dirTW   * size_Mat];
+            DAD.f[dirBS  ] = &distributionsAD[dirTN   * size_Mat];
+            DAD.f[dirTN  ] = &distributionsAD[dirBS   * size_Mat];
+            DAD.f[dirTS  ] = &distributionsAD[dirBN   * size_Mat];
+            DAD.f[dirBN  ] = &distributionsAD[dirTS   * size_Mat];
+            DAD.f[dirREST] = &distributionsAD[dirREST * size_Mat];
+            DAD.f[dirTNE ] = &distributionsAD[dirBSW  * size_Mat];
+            DAD.f[dirTSW ] = &distributionsAD[dirBNE  * size_Mat];
+            DAD.f[dirTSE ] = &distributionsAD[dirBNW  * size_Mat];
+            DAD.f[dirTNW ] = &distributionsAD[dirBSE  * size_Mat];
+            DAD.f[dirBNE ] = &distributionsAD[dirTSW  * size_Mat];
+            DAD.f[dirBSW ] = &distributionsAD[dirTNE  * size_Mat];
+            DAD.f[dirBSE ] = &distributionsAD[dirTNW  * size_Mat];
+            DAD.f[dirBNW ] = &distributionsAD[dirTSE  * size_Mat];
+        }
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        real concentration =
+            f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
+            f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW +
+            f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirREST])[kzero]);
+
+        real jx1 =
+            (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
+            ((f_BE - f_TW) + (f_TE - f_BW)) + ((f_SE - f_NW) + (f_NE - f_SW)) +
+            (f_E - f_W)) - (vx1 * concentration);
+
+        real jx2 =
+            ((-(f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
+            ((f_BN - f_TS) + (f_TN - f_BS)) + (-(f_SE - f_NW) + (f_NE - f_SW)) +
+            (f_N - f_S)) - (vx2 * concentration);
+
+        real jx3 =
+            (((f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) + (f_TSW - f_BNE)) +
+            (-(f_BN - f_TS) + (f_TN - f_BS)) + ((f_TE - f_BW) - (f_BE - f_TW)) +
+            (f_T - f_B)) - (vx3 * concentration);
+
+        //jx1 *= (c2o1 - omegaDiffusivity) / (c2o1 - c2o1 * omegaDiffusivity);
+        //jx2 *= (c2o1 - omegaDiffusivity) / (c2o1 - c2o1 * omegaDiffusivity);
+        //jx3 *= (c2o1 - omegaDiffusivity) / (c2o1 - c2o1 * omegaDiffusivity);
+
+        real NormJ = jx1 * NormX + jx2 * NormY + jx3 * NormZ;
+
+        real jTan1 = jx1 - NormJ * NormX;
+        real jTan2 = jx2 - NormJ * NormY;
+        real jTan3 = jx3 - NormJ * NormZ;
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        q = q_dirE[k];   if (q >= c0o1 && q <= c1o1) { (DAD.f[dirW  ])[kw  ] = calcDistributionBC_AD(q, c2o27,   vx1,         cu_sq, f_E,   f_W,   omegaDiffusivity,        jTan1,       concentration); }
+        q = q_dirW[k];   if (q >= c0o1 && q <= c1o1) { (DAD.f[dirE  ])[ke  ] = calcDistributionBC_AD(q, c2o27,  -vx1,         cu_sq, f_W,   f_E,   omegaDiffusivity,       -jTan1,       concentration); }
+        q = q_dirN[k];   if (q >= c0o1 && q <= c1o1) { (DAD.f[dirS  ])[ks  ] = calcDistributionBC_AD(q, c2o27,   vx2,         cu_sq, f_N,   f_S,   omegaDiffusivity,        jTan2,       concentration); }
+        q = q_dirS[k];   if (q >= c0o1 && q <= c1o1) { (DAD.f[dirN  ])[kn  ] = calcDistributionBC_AD(q, c2o27,  -vx2,         cu_sq, f_S,   f_N,   omegaDiffusivity,       -jTan2,       concentration); }
+        q = q_dirT[k];   if (q >= c0o1 && q <= c1o1) { (DAD.f[dirB  ])[kb  ] = calcDistributionBC_AD(q, c2o27,   vx3,         cu_sq, f_T,   f_B,   omegaDiffusivity,        jTan3,       concentration); }
+        q = q_dirB[k];   if (q >= c0o1 && q <= c1o1) { (DAD.f[dirT  ])[kt  ] = calcDistributionBC_AD(q, c2o27,  -vx3,         cu_sq, f_B,   f_T,   omegaDiffusivity,       -jTan3,       concentration); }
+        q = q_dirNE[k];  if (q >= c0o1 && q <= c1o1) { (DAD.f[dirSW ])[ksw ] = calcDistributionBC_AD(q, c1o54,   vx1+vx2,     cu_sq, f_NE,  f_SW,  omegaDiffusivity,  jTan1+jTan2,       concentration); }
+        q = q_dirSW[k];  if (q >= c0o1 && q <= c1o1) { (DAD.f[dirNE ])[kne ] = calcDistributionBC_AD(q, c1o54,  -vx1-vx2,     cu_sq, f_SW,  f_NE,  omegaDiffusivity, -jTan1-jTan2,       concentration); }
+        q = q_dirSE[k];  if (q >= c0o1 && q <= c1o1) { (DAD.f[dirNW ])[knw ] = calcDistributionBC_AD(q, c1o54,   vx1-vx2,     cu_sq, f_SE,  f_NW,  omegaDiffusivity,  jTan1-jTan2,       concentration); }
+        q = q_dirNW[k];  if (q >= c0o1 && q <= c1o1) { (DAD.f[dirSE ])[kse ] = calcDistributionBC_AD(q, c1o54,  -vx1+vx2,     cu_sq, f_NW,  f_SE,  omegaDiffusivity, -jTan1+jTan2,       concentration); }
+        q = q_dirTE[k];  if (q >= c0o1 && q <= c1o1) { (DAD.f[dirBW ])[kbw ] = calcDistributionBC_AD(q, c1o54,   vx1    +vx3, cu_sq, f_TE,  f_BW,  omegaDiffusivity,  jTan1      +jTan3, concentration); }
+        q = q_dirBW[k];  if (q >= c0o1 && q <= c1o1) { (DAD.f[dirTE ])[kte ] = calcDistributionBC_AD(q, c1o54,  -vx1    -vx3, cu_sq, f_BW,  f_TE,  omegaDiffusivity, -jTan1      -jTan3, concentration); }
+        q = q_dirBE[k];  if (q >= c0o1 && q <= c1o1) { (DAD.f[dirTW ])[ktw ] = calcDistributionBC_AD(q, c1o54,   vx1    -vx3, cu_sq, f_BE,  f_TW,  omegaDiffusivity,  jTan1      -jTan3, concentration); }
+        q = q_dirTW[k];  if (q >= c0o1 && q <= c1o1) { (DAD.f[dirBE ])[kbe ] = calcDistributionBC_AD(q, c1o54,  -vx1    +vx3, cu_sq, f_TW,  f_BE,  omegaDiffusivity, -jTan1      +jTan3, concentration); }
+        q = q_dirTN[k];  if (q >= c0o1 && q <= c1o1) { (DAD.f[dirBS ])[kbs ] = calcDistributionBC_AD(q, c1o54,       vx2+vx3, cu_sq, f_TN,  f_BS,  omegaDiffusivity,        jTan2+jTan3, concentration); }
+        q = q_dirBS[k];  if (q >= c0o1 && q <= c1o1) { (DAD.f[dirTN ])[ktn ] = calcDistributionBC_AD(q, c1o54,      -vx2-vx3, cu_sq, f_BS,  f_TN,  omegaDiffusivity,       -jTan2-jTan3, concentration); }
+        q = q_dirBN[k];  if (q >= c0o1 && q <= c1o1) { (DAD.f[dirTS ])[kts ] = calcDistributionBC_AD(q, c1o54,       vx2-vx3, cu_sq, f_BN,  f_TS,  omegaDiffusivity,        jTan2-jTan3, concentration); }
+        q = q_dirTS[k];  if (q >= c0o1 && q <= c1o1) { (DAD.f[dirBN ])[kbn ] = calcDistributionBC_AD(q, c1o54,      -vx2+vx3, cu_sq, f_TS,  f_BN,  omegaDiffusivity,       -jTan2+jTan3, concentration); }
+        q = q_dirTNE[k]; if (q >= c0o1 && q <= c1o1) { (DAD.f[dirBSW])[kbsw] = calcDistributionBC_AD(q, c1o216,  vx1+vx2+vx3, cu_sq, f_TNE, f_BSW, omegaDiffusivity,  jTan1+jTan2+jTan3, concentration); }
+        q = q_dirBSW[k]; if (q >= c0o1 && q <= c1o1) { (DAD.f[dirTNE])[ktne] = calcDistributionBC_AD(q, c1o216, -vx1-vx2-vx3, cu_sq, f_BSW, f_TNE, omegaDiffusivity, -jTan1-jTan2-jTan3, concentration); }
+        q = q_dirBNE[k]; if (q >= c0o1 && q <= c1o1) { (DAD.f[dirTSW])[ktsw] = calcDistributionBC_AD(q, c1o216,  vx1+vx2-vx3, cu_sq, f_BNE, f_TSW, omegaDiffusivity,  jTan1+jTan2-jTan3, concentration); }
+        q = q_dirTSW[k]; if (q >= c0o1 && q <= c1o1) { (DAD.f[dirBNE])[kbne] = calcDistributionBC_AD(q, c1o216, -vx1-vx2+vx3, cu_sq, f_TSW, f_BNE, omegaDiffusivity, -jTan1-jTan2+jTan3, concentration); }
+        q = q_dirTSE[k]; if (q >= c0o1 && q <= c1o1) { (DAD.f[dirBNW])[kbnw] = calcDistributionBC_AD(q, c1o216,  vx1-vx2+vx3, cu_sq, f_TSE, f_BNW, omegaDiffusivity,  jTan1-jTan2+jTan3, concentration); }
+        q = q_dirBNW[k]; if (q >= c0o1 && q <= c1o1) { (DAD.f[dirTSE])[ktse] = calcDistributionBC_AD(q, c1o216, -vx1+vx2-vx3, cu_sq, f_BNW, f_TSE, omegaDiffusivity, -jTan1+jTan2-jTan3, concentration); }
+        q = q_dirBSE[k]; if (q >= c0o1 && q <= c1o1) { (DAD.f[dirTNW])[ktnw] = calcDistributionBC_AD(q, c1o216,  vx1-vx2-vx3, cu_sq, f_BSE, f_TNW, omegaDiffusivity,  jTan1-jTan2-jTan3, concentration); }
+        q = q_dirTNW[k]; if (q >= c0o1 && q <= c1o1) { (DAD.f[dirBSE])[kbse] = calcDistributionBC_AD(q, c1o216, -vx1+vx2+vx3, cu_sq, f_TNW, f_BSE, omegaDiffusivity, -jTan1+jTan2+jTan3, concentration); }
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    }
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

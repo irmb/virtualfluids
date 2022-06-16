@@ -1302,7 +1302,40 @@ extern "C" void QADDev7(unsigned int numberOfThreads,
                         unsigned int size_Mat, 
                         bool isEvenTimestep);
 
+//////////////////////////////////////////////////////////////////////////
+//! \brief Advection Diffusion kernel
+extern "C" void FactorizedCentralMomentsAdvectionDiffusionDeviceKernel(
+	uint numberOfThreads,
+	real omegaDiffusivity,
+	uint* typeOfGridNode,
+	uint* neighborX,
+	uint* neighborY,
+	uint* neighborZ,
+	real* distributions,
+	real* distributionsAD,
+	int size_Mat,
+	real* forces,
+	bool isEvenTimestep);
 
+//////////////////////////////////////////////////////////////////////////
+//! \brief defines the behavior of a slip-AD boundary condition
+extern "C" void ADSlipVelDevComp(
+	uint numberOfThreads,
+	real * normalX,
+	real * normalY,
+	real * normalZ,
+	real * distributions,
+	real * distributionsAD,
+	int* QindexArray,
+	real * Qarrays,
+	uint numberOfQs,
+	real omegaDiffusivity,
+	uint * neighborX,
+	uint * neighborY,
+	uint * neighborZ,
+	uint size_Mat,
+	bool isEvenTimestep);
+	
 extern "C" void QADDirichletDev27( unsigned int numberOfThreads,
 								   int nx,
 								   int ny,

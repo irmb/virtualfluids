@@ -106,7 +106,7 @@ void AdvectionDiffusion::setInitialNodeValuesAD(int level, SPtr<CudaMemoryManage
         para->getParH(level)->concentration[j] = concentration;
     }
 
-    cudaMemoryManager->cudaCopyConcentrationHostToDevice();
+    cudaMemoryManager->cudaCopyConcentrationHostToDevice(level);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -161,7 +161,7 @@ void AdvectionDiffusion::printAD(int level, SPtr<CudaMemoryManager> cudaMemoryMa
         para->getParD(level)->distributionsAD27.f[0],
         para->getParD(level)->isEvenTimestep);
 
-    cudaMemoryManager->cudaCopyConcentrationDeviceToHost();
+    cudaMemoryManager->cudaCopyConcentrationDeviceToHost(level);
 }
 
 SPtr<AdvectionDiffusion> AdvectionDiffusion::make(SPtr<Parameter> parameter){

@@ -2215,7 +2215,82 @@ extern "C" void QADDev7(unsigned int numberOfThreads,
                                        isEvenTimestep);
       getLastCudaError("QAD7 execution failed");
 }
+
+
 //////////////////////////////////////////////////////////////////////////
+// Other advection diffusion kernels are in kernel factory :(
+extern "C" void FactorizedCentralMomentsAdvectionDiffusionDeviceKernel(
+   uint numberOfThreads,
+   real omegaDiffusivity,
+   uint* typeOfGridNode,
+   uint* neighborX,
+   uint* neighborY,
+   uint* neighborZ,
+   real* distributions,
+   real* distributionsAD,
+   int size_Mat,
+   real* forces,
+   bool isEvenTimestep)
+{
+   int Grid = (size_Mat / numberOfThreads) + 1;
+   dim3 grid(Grid, 1, 1);
+   dim3 threads(numberOfThreads, 1, 1);
+
+   Factorized_Central_Moments_Advection_Diffusion_Device_Kernel <<< grid, threads >>> (
+      omegaDiffusivity,
+      typeOfGridNode,
+      neighborX,
+      neighborY,
+      neighborZ,
+      distributions,
+      distributionsAD,
+      size_Mat,
+      forces,
+      isEvenTimestep);
+   getLastCudaError("Factorized_Central_Moments_Advection_Diffusion_Device_Kernel execution failed");
+}
+
+//////////////////////////////////////////////////////////////////////////
+extern "C" void ADSlipVelDevComp(
+	uint numberOfThreads,
+	real * normalX,
+	real * normalY,
+	real * normalZ,
+	real * distributions,
+	real * distributionsAD,
+	int* QindexArray,
+	real * Qarrays,
+	uint numberOfQs,
+	real omegaDiffusivity,
+	uint * neighborX,
+	uint * neighborY,
+	uint * neighborZ,
+	uint size_Mat,
+	bool isEvenTimestep)
+{
+	int Grid = (numberOfQs / numberOfThreads) + 1;
+	dim3 gridQ(Grid, 1, 1);
+	dim3 threads(numberOfThreads, 1, 1);
+
+	AD_SlipVelDeviceComp << < gridQ, threads >> > (
+		normalX,
+		normalY,
+		normalZ,
+		distributions,
+		distributionsAD,
+		QindexArray,
+		Qarrays,
+		numberOfQs,
+		omegaDiffusivity,
+		neighborX,
+		neighborY,
+		neighborZ,
+		size_Mat,
+		isEvenTimestep);
+	getLastCudaError("AD_SlipVelDeviceComp execution failed");
+}
+//////////////////////////////////////////////////////////////////////////
+
 extern "C" void QADDirichletDev27( unsigned int numberOfThreads,
 								   int nx,
 								   int ny,

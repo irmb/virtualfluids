@@ -1244,6 +1244,38 @@ extern "C" __global__ void QAD7( int inx,
                                  unsigned int size_Mat,
                                  bool isEvenTimestep);
 
+//////////////////////////////////////////////////////////////////////////
+//! \brief \ref Advection_Diffusion_Device_Kernel : Factorized central moments for Advection Diffusion Equation
+extern "C" __global__ void Factorized_Central_Moments_Advection_Diffusion_Device_Kernel(
+	real omegaDiffusivity,
+	uint* typeOfGridNode,
+	uint* neighborX,
+	uint* neighborY,
+	uint* neighborZ,
+	real* distributions,
+	real* distributionsAD,
+	int size_Mat,
+	real* forces,
+	bool isEvenTimestep);
+
+//////////////////////////////////////////////////////////////////////////
+//! \brief \ref AD_SlipVelDeviceComp : device function for the slip-AD boundary condition
+extern "C" __global__ void AD_SlipVelDeviceComp(
+	real * normalX,
+	real * normalY,
+	real * normalZ,
+	real * distributions,
+	real * distributionsAD,
+	int* QindexArray,
+	real * Qarrays,
+	uint numberOfQs,
+	real omegaDiffusivity,
+	uint * neighborX,
+	uint * neighborY,
+	uint * neighborZ,
+	uint size_Mat,
+	bool isEvenTimestep);
+
 extern "C" __global__ void QADDirichlet27(   int inx,
 											 int iny,
 											 real* DD,
