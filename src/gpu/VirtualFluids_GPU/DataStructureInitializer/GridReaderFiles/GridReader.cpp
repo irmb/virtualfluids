@@ -45,11 +45,11 @@ bool GridReader::getBinaer()
 
 void rearrangeGeometry(Parameter* para, int lev)
 {
-    for (uint index = 0; index < para->getParH(lev)->size_Mat_SP; index++)
+    for (uint index = 0; index < para->getParH(lev)->numberOfNodes; index++)
     {
-        if (para->getParH(lev)->geoSP[index] == GEO_FLUID_OLD)
+        if (para->getParH(lev)->typeOfGridNode[index] == GEO_FLUID_OLD)
         {
-            para->getParH(lev)->geoSP[index] = GEO_FLUID;
+            para->getParH(lev)->typeOfGridNode[index] = GEO_FLUID;
         }
     }
 }
@@ -88,14 +88,14 @@ void GridReader::allocArrays_CoordNeighborGeo()
         if (para->getUseWale())
 			cudaMemoryManager->cudaAllocTurbulentViscosity(level);
 
-		coordX.initalCoords(      para->getParH(level)->coordX_SP,      level);
-		coordY.initalCoords(      para->getParH(level)->coordY_SP,      level);
-		coordZ.initalCoords(      para->getParH(level)->coordZ_SP,      level);
-		neighX->initalNeighbors(  para->getParH(level)->neighborX_SP,   level);
-		neighY->initalNeighbors(  para->getParH(level)->neighborY_SP,   level);
-		neighZ->initalNeighbors(  para->getParH(level)->neighborZ_SP,   level);
-        neighWSB->initalNeighbors(para->getParH(level)->neighborWSB_SP, level);
-        geoV.initalNeighbors(     para->getParH(level)->geoSP,          level);
+		coordX.initalCoords(      para->getParH(level)->coordinateX,      level);
+		coordY.initalCoords(      para->getParH(level)->coordinateY,      level);
+		coordZ.initalCoords(      para->getParH(level)->coordinateZ,      level);
+		neighX->initalNeighbors(  para->getParH(level)->neighborX,   level);
+		neighY->initalNeighbors(  para->getParH(level)->neighborY,   level);
+		neighZ->initalNeighbors(  para->getParH(level)->neighborZ,   level);
+        neighWSB->initalNeighbors(para->getParH(level)->neighborInverse, level);
+        geoV.initalNeighbors(     para->getParH(level)->typeOfGridNode,          level);
         rearrangeGeometry(para.get(), level);
 		setInitalNodeValues(numberOfNodesPerLevel, level);
 
@@ -248,9 +248,9 @@ void GridReader::setPressureValues(int channelSide) const
 
 void GridReader::setPressRhoBC(int sizePerLevel, int level, int channelSide) const
 {
-	BC_Values[channelSide]->setPressValues(para->getParH(level)->QPress.RhoBC, para->getParH(level)->QPress.kN, level);
+	BC_Values[channelSide]->setPressValues(para->getParH(level)->pressureBC.RhoBC, para->getParH(level)->pressureBC.kN, level);
 	for (int m = 0; m < sizePerLevel; m++)
-		para->getParH(level)->QPress.RhoBC[m] = (para->getParH(level)->QPress.RhoBC[m] / para->getFactorPressBC());
+		para->getParH(level)->pressureBC.RhoBC[m] = (para->getParH(level)->pressureBC.RhoBC[m] / para->getFactorPressBC());
 }
 
 
@@ -304,9 +304,9 @@ void GridReader::setVelocity(int level, int sizePerLevel) const
 {
 	for (int index = 0; index < sizePerLevel; index++)
 	{
-        para->getParH(level)->Qinflow.Vx[index] = this->velocityX_BCvalues[level][index] / para->getVelocityRatio();
-        para->getParH(level)->Qinflow.Vy[index] = this->velocityY_BCvalues[level][index] / para->getVelocityRatio();
-        para->getParH(level)->Qinflow.Vz[index] = this->velocityZ_BCvalues[level][index] / para->getVelocityRatio();
+        para->getParH(level)->velocityBC.Vx[index] = this->velocityX_BCvalues[level][index] / para->getVelocityRatio();
+        para->getParH(level)->velocityBC.Vy[index] = this->velocityY_BCvalues[level][index] / para->getVelocityRatio();
+        para->getParH(level)->velocityBC.Vz[index] = this->velocityZ_BCvalues[level][index] / para->getVelocityRatio();
 	}
 }
 
@@ -333,9 +333,9 @@ void GridReader::setOutflowValues(int channelSide) const
 
 void GridReader::setOutflow(int level, int sizePerLevel, int channelSide) const
 {
-	BC_Values[channelSide]->setOutflowValues(para->getParH(level)->Qoutflow.RhoBC, para->getParH(level)->Qoutflow.kN, level);
+	BC_Values[channelSide]->setOutflowValues(para->getParH(level)->outflowBC.RhoBC, para->getParH(level)->outflowBC.kN, level);
 	for (int index = 0; index < sizePerLevel; index++)
-		para->getParH(level)->Qoutflow.RhoBC[index] = (para->getParH(level)->Qoutflow.RhoBC[index] / para->getFactorPressBC()) * (real)0.0;
+		para->getParH(level)->outflowBC.RhoBC[index] = (para->getParH(level)->outflowBC.RhoBC[index] / para->getFactorPressBC()) * (real)0.0;
 }
 
 
@@ -569,7 +569,7 @@ void GridReader::allocArrays_BoundaryQs()
 
 	for (int lev = 0; lev < (int)(velocityIndex.size()); lev++) {
         if (velocityIndex[lev].size() > 1) {
-            copyVectorsToQStruct(velocityQs[lev], velocityIndex[lev], para->getParH(lev)->Qinflow);
+            copyVectorsToQStruct(velocityQs[lev], velocityIndex[lev], para->getParH(lev)->velocityBC);
             cudaMemoryManager->cudaCopyVeloBC(lev);
         }
     }
@@ -592,7 +592,7 @@ void GridReader::setPressQs(std::shared_ptr<BoundaryQs> boundaryQ) const
 		if (hasQs(boundaryQ, level))
 		{
 			this->printQSize("pressure", boundaryQ, level);
-			this->initalQStruct(para->getParH(level)->QPress, boundaryQ, level);
+			this->initalQStruct(para->getParH(level)->pressureBC, boundaryQ, level);
             cudaMemoryManager->cudaCopyPress(level);
 		}
 	}
@@ -617,7 +617,7 @@ void GridReader::setOutflowQs(std::shared_ptr<BoundaryQs> boundaryQ) const
 		if (hasQs(boundaryQ, level))
 		{
 			this->printQSize("outflow", boundaryQ, level);
-			this->initalQStruct(para->getParH(level)->Qoutflow, boundaryQ, level);
+			this->initalQStruct(para->getParH(level)->outflowBC, boundaryQ, level);
             cudaMemoryManager->cudaCopyOutflowBC(level);
 		}
 	}
@@ -631,7 +631,7 @@ void GridReader::setNoSlipQs(std::shared_ptr<BoundaryQs> boundaryQ) const
 		{
 			this->printQSize("no slip", boundaryQ, level);
 			this->setSizeNoSlip(boundaryQ, level);
-			this->initalQStruct(para->getParH(level)->QWall, boundaryQ, level);
+			this->initalQStruct(para->getParH(level)->noSlipBC, boundaryQ, level);
             cudaMemoryManager->cudaCopyWallBC(level);
 		}
 	}
@@ -645,7 +645,7 @@ void GridReader::setGeoQs(std::shared_ptr<BoundaryQs> boundaryQ) const
 		{
 			this->printQSize("geo Qs", boundaryQ, level);
 			this->setSizeGeoQs(boundaryQ, level);
-			this->initalQStruct(para->getParH(level)->QGeom, boundaryQ, level);
+			this->initalQStruct(para->getParH(level)->geometryBC, boundaryQ, level);
 
 			modifyQElement(boundaryQ, level);
 
@@ -657,8 +657,8 @@ void GridReader::setGeoQs(std::shared_ptr<BoundaryQs> boundaryQ) const
 void GridReader::modifyQElement(std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const
 {
 	QforBoundaryConditions Q;
-	real* QQ = para->getParH(level)->QGeom.q27[0];
-	Q.q27[dirZERO] = &QQ[dirZERO * para->getParH(level)->QGeom.numberOfBCnodes];
+	real* QQ = para->getParH(level)->geometryBC.q27[0];
+	Q.q27[dirZERO] = &QQ[dirZERO * para->getParH(level)->geometryBC.numberOfBCnodes];
 	for (unsigned int i = 0; i < boundaryQ->getSize(level); i++)
 		Q.q27[dirZERO][i] = 0.0f;
 }
@@ -762,17 +762,17 @@ void GridReader::setQ27Size(QforBoundaryConditions &Q, real* QQ, unsigned int si
 
 void GridReader::setSizeNoSlip(std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const
 {
-	para->getParH(level)->QWall.numberOfBCnodes = boundaryQ->getSize(level);
-	para->getParD(level)->QWall.numberOfBCnodes = para->getParH(level)->QWall.numberOfBCnodes;
-	para->getParH(level)->numberOfNoSlipBCnodes = para->getParH(level)->QWall.numberOfBCnodes;
-	para->getParD(level)->numberOfNoSlipBCnodes = para->getParH(level)->QWall.numberOfBCnodes;
+	para->getParH(level)->noSlipBC.numberOfBCnodes = boundaryQ->getSize(level);
+	para->getParD(level)->noSlipBC.numberOfBCnodes = para->getParH(level)->noSlipBC.numberOfBCnodes;
+	para->getParH(level)->numberOfNoSlipBCnodes = para->getParH(level)->noSlipBC.numberOfBCnodes;
+	para->getParD(level)->numberOfNoSlipBCnodes = para->getParH(level)->noSlipBC.numberOfBCnodes;
     cudaMemoryManager->cudaAllocWallBC(level);
 }
 
 void GridReader::setSizeGeoQs(std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const
 {
-	para->getParH(level)->QGeom.numberOfBCnodes = boundaryQ->getSize(level);
-	para->getParD(level)->QGeom.numberOfBCnodes = para->getParH(level)->QGeom.numberOfBCnodes;
+	para->getParH(level)->geometryBC.numberOfBCnodes = boundaryQ->getSize(level);
+	para->getParD(level)->geometryBC.numberOfBCnodes = para->getParH(level)->geometryBC.numberOfBCnodes;
 
     cudaMemoryManager->cudaAllocGeomBC(level);
 }

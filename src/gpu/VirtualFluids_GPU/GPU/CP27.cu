@@ -14,10 +14,10 @@ extern "C" __global__ void CalcCP27(real* DD,
 									unsigned int* neighborY,
 									unsigned int* neighborZ,
 									unsigned int size_Mat, 
-									bool evenOrOdd)
+									bool isEvenTimestep)
 {
 	Distributions27 D;
-	if (evenOrOdd==true)
+	if (isEvenTimestep==true)
 	{
 		D.f[dirE   ] = &DD[dirE   *size_Mat];
 		D.f[dirW   ] = &DD[dirW   *size_Mat];

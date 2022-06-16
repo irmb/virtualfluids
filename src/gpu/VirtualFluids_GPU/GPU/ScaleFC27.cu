@@ -23,7 +23,7 @@ extern "C" __global__ void scaleFC_0817_comp_27( real* DC,
 												 unsigned int* neighborFZ,
 												 unsigned int size_MatC, 
 												 unsigned int size_MatF, 
-												 bool evenOrOdd,
+												 bool isEvenTimestep,
 												 unsigned int* posC, 
 												 unsigned int* posFSWB, 
 												 unsigned int kFC, 
@@ -75,7 +75,7 @@ extern "C" __global__ void scaleFC_0817_comp_27( real* DC,
 	   *fMP0dest, *fP0Pdest, *fM0Mdest, *fP0Mdest, *fM0Pdest, *f0PPdest, *f0MMdest, *f0PMdest, *f0MPdest,
 	   *f000dest, *fMMMdest, *fMMPdest, *fMPPdest, *fMPMdest, *fPPMdest, *fPPPdest, *fPMPdest, *fPMMdest;
 
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
 	   fP00dest = &DC[dirE   *size_MatC];
 	   fM00dest = &DC[dirW   *size_MatC];
@@ -1219,7 +1219,7 @@ extern "C" __global__ void scaleFC_AA2016_comp_27(real* DC,
 												  unsigned int* neighborFZ,
 												  unsigned int size_MatC, 
 												  unsigned int size_MatF, 
-												  bool evenOrOdd,
+												  bool isEvenTimestep,
 												  unsigned int* posC, 
 												  unsigned int* posFSWB, 
 												  unsigned int kFC, 
@@ -1266,7 +1266,7 @@ extern "C" __global__ void scaleFC_AA2016_comp_27(real* DC,
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       feC    = &DC[dirE   *size_MatC];
       fwC    = &DC[dirW   *size_MatC];
@@ -5408,7 +5408,7 @@ extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(real* DC,
 														unsigned int* neighborFZ,
 														unsigned int size_MatC, 
 														unsigned int size_MatF, 
-														bool evenOrOdd,
+														bool isEvenTimestep,
 														unsigned int* posC, 
 														unsigned int* posFSWB, 
 														unsigned int kFC, 
@@ -5455,7 +5455,7 @@ extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(real* DC,
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       feC    = &DC[dirE   *size_MatC];
       fwC    = &DC[dirW   *size_MatC];
@@ -9589,7 +9589,7 @@ extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(real* DC,
 __device__ void scaleFC_RhoSq_comp_27_Calculation(real *DC, real *DF, unsigned int *neighborCX, unsigned int *neighborCY,
                                                   unsigned int *neighborCZ, unsigned int *neighborFX, unsigned int *neighborFY,
                                                   unsigned int *neighborFZ, unsigned int size_MatC, unsigned int size_MatF,
-                                                  bool evenOrOdd, unsigned int *posC, unsigned int *posFSWB, unsigned int kFC,
+                                                  bool isEvenTimestep, unsigned int *posC, unsigned int *posFSWB, unsigned int kFC,
                                                   real omCoarse, real omFine, real nu, unsigned int nxC, unsigned int nyC,
                                                   unsigned int nxF, unsigned int nyF, OffFC offFC, const unsigned k)
 {
@@ -9627,7 +9627,7 @@ __device__ void scaleFC_RhoSq_comp_27_Calculation(real *DC, real *DF, unsigned i
     real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC,
         *fbnC, *ftsC, *fzeroC, *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
-    if (evenOrOdd == true) {
+    if (isEvenTimestep == true) {
         feC    = &DC[dirE * size_MatC];
         fwC    = &DC[dirW * size_MatC];
         fnC    = &DC[dirN * size_MatC];
@@ -11065,7 +11065,7 @@ extern "C" __global__ void scaleFC_RhoSq_comp_27(real* DC,
 												 unsigned int* neighborFZ,
 												 unsigned int size_MatC, 
 												 unsigned int size_MatF, 
-												 bool evenOrOdd,
+												 bool isEvenTimestep,
 												 unsigned int* posC, 
 												 unsigned int* posFSWB, 
 												 unsigned int kFC, 
@@ -11090,7 +11090,7 @@ extern "C" __global__ void scaleFC_RhoSq_comp_27(real* DC,
    //////////////////////////////////////////////////////////////////////////
 
    scaleFC_RhoSq_comp_27_Calculation(DC, DF, neighborCX, neighborCY, neighborCZ, neighborFX, neighborFY, neighborFZ,
-                                     size_MatC, size_MatF, evenOrOdd, posC, posFSWB, kFC, omCoarse, omFine, nu, nxC,
+                                     size_MatC, size_MatF, isEvenTimestep, posC, posFSWB, kFC, omCoarse, omFine, nu, nxC,
                                      nyC, nxF, nyF, offFC, k);
 }
 
@@ -11158,7 +11158,7 @@ extern "C" __global__ void scaleFC_staggered_time_comp_27(   real* DC,
 															 unsigned int* neighborFZ,
 															 unsigned int size_MatC, 
 															 unsigned int size_MatF, 
-															 bool evenOrOdd,
+															 bool isEvenTimestep,
 															 unsigned int* posC, 
 															 unsigned int* posFSWB, 
 															 unsigned int kFC, 
@@ -11205,7 +11205,7 @@ extern "C" __global__ void scaleFC_staggered_time_comp_27(   real* DC,
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       feC    = &DC[dirE   *size_MatC];
       fwC    = &DC[dirW   *size_MatC];
@@ -11756,7 +11756,7 @@ extern "C" __global__ void scaleFC_staggered_time_comp_27(   real* DC,
 
    //   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  ////pointertausch
-	  // if (evenOrOdd==false)
+	  // if (isEvenTimestep==false)
 	  // {
 		 // feC    = &DC[dirE   *size_MatC];
 		 // fwC    = &DC[dirW   *size_MatC];
@@ -13279,7 +13279,7 @@ extern "C" __global__ void scaleFC_Fix_comp_27(  real* DC,
 												 unsigned int* neighborFZ,
 												 unsigned int size_MatC, 
 												 unsigned int size_MatF, 
-												 bool evenOrOdd,
+												 bool isEvenTimestep,
 												 unsigned int* posC, 
 												 unsigned int* posFSWB, 
 												 unsigned int kFC, 
@@ -13326,7 +13326,7 @@ extern "C" __global__ void scaleFC_Fix_comp_27(  real* DC,
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       feC    = &DC[dirE   *size_MatC];
       fwC    = &DC[dirW   *size_MatC];
@@ -15139,7 +15139,7 @@ extern "C" __global__ void scaleFC_NSPress_27(   real* DC,
 												 unsigned int* neighborFZ,
 												 unsigned int size_MatC, 
 												 unsigned int size_MatF, 
-												 bool evenOrOdd,
+												 bool isEvenTimestep,
 												 unsigned int* posC, 
 												 unsigned int* posFSWB, 
 												 unsigned int kFC, 
@@ -15186,7 +15186,7 @@ extern "C" __global__ void scaleFC_NSPress_27(   real* DC,
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       feC    = &DC[dirE   *size_MatC];
       fwC    = &DC[dirW   *size_MatC];
@@ -16345,7 +16345,7 @@ extern "C" __global__ void scaleFC_Fix_27(   real* DC,
                                              unsigned int* neighborFZ,
                                              unsigned int size_MatC, 
                                              unsigned int size_MatF, 
-                                             bool evenOrOdd,
+                                             bool isEvenTimestep,
                                              unsigned int* posC, 
                                              unsigned int* posFSWB, 
                                              unsigned int kFC, 
@@ -16392,7 +16392,7 @@ extern "C" __global__ void scaleFC_Fix_27(   real* DC,
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       feC    = &DC[dirE   *size_MatC];
       fwC    = &DC[dirW   *size_MatC];
@@ -17705,7 +17705,7 @@ extern "C" __global__ void scaleFCpress27(real* DC,
                                           unsigned int* neighborFZ,
                                           unsigned int size_MatC, 
                                           unsigned int size_MatF, 
-                                          bool evenOrOdd,
+                                          bool isEvenTimestep,
                                           unsigned int* posC, 
                                           unsigned int* posFSWB, 
                                           unsigned int kFC, 
@@ -17752,7 +17752,7 @@ extern "C" __global__ void scaleFCpress27(real* DC,
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       feC    = &DC[dirE   *size_MatC];
       fwC    = &DC[dirW   *size_MatC];
@@ -18630,7 +18630,7 @@ extern "C" __global__ void scaleFCLast27( real* DC,
                                           unsigned int* neighborFZ,
                                           unsigned int size_MatC, 
                                           unsigned int size_MatF, 
-                                          bool evenOrOdd,
+                                          bool isEvenTimestep,
                                           unsigned int* posC, 
                                           unsigned int* posFSWB, 
                                           unsigned int kFC, 
@@ -18677,7 +18677,7 @@ extern "C" __global__ void scaleFCLast27( real* DC,
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       feC    = &DC[dirE   *size_MatC];
       fwC    = &DC[dirW   *size_MatC];
@@ -20028,7 +20028,7 @@ extern "C" __global__ void scaleFCThSMG7(    real* DC,
                                              unsigned int* neighborFZ,
                                              unsigned int size_MatC, 
                                              unsigned int size_MatF, 
-                                             bool evenOrOdd,
+                                             bool isEvenTimestep,
                                              unsigned int* posC, 
                                              unsigned int* posFSWB, 
                                              unsigned int kFC, 
@@ -20070,7 +20070,7 @@ extern "C" __global__ void scaleFCThSMG7(    real* DC,
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, //*fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       feC    = &DC[dirE   *size_MatC];
       fwC    = &DC[dirW   *size_MatC];
@@ -20141,7 +20141,7 @@ extern "C" __global__ void scaleFCThSMG7(    real* DC,
    D7F.f[6] = &DD7F[6*size_MatF];
 
    Distributions7 D7C;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D7C.f[0] = &DD7C[0*size_MatC];
       D7C.f[1] = &DD7C[1*size_MatC];
@@ -20901,7 +20901,7 @@ extern "C" __global__ void scaleFCThS7(   real* DC,
                                           unsigned int* neighborFZ,
                                           unsigned int size_MatC, 
                                           unsigned int size_MatF, 
-                                          bool evenOrOdd,
+                                          bool isEvenTimestep,
                                           unsigned int* posC, 
                                           unsigned int* posFSWB, 
                                           unsigned int kFC, 
@@ -20942,7 +20942,7 @@ extern "C" __global__ void scaleFCThS7(   real* DC,
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, //*fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       feC    = &DC[dirE   *size_MatC];
       fwC    = &DC[dirW   *size_MatC];
@@ -21013,7 +21013,7 @@ extern "C" __global__ void scaleFCThS7(   real* DC,
    D7F.f[6] = &DD7F[6*size_MatF];
 
    Distributions7 D7C;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D7C.f[0] = &DD7C[0*size_MatC];
       D7C.f[1] = &DD7C[1*size_MatC];
@@ -21692,7 +21692,7 @@ extern "C" __global__ void scaleFCThS27(     real* DC,
                                              unsigned int* neighborFZ,
                                              unsigned int size_MatC, 
                                              unsigned int size_MatF, 
-                                             bool evenOrOdd,
+                                             bool isEvenTimestep,
                                              unsigned int* posC, 
                                              unsigned int* posFSWB, 
                                              unsigned int kFC, 
@@ -21734,7 +21734,7 @@ extern "C" __global__ void scaleFCThS27(     real* DC,
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, //*fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       feC    = &DC[dirE   *size_MatC];
       fwC    = &DC[dirW   *size_MatC];
@@ -21825,7 +21825,7 @@ extern "C" __global__ void scaleFCThS27(     real* DC,
    D27F.f[dirBNW ] = &DD27F[dirBNW *size_MatF];
 
    Distributions27 D27C;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D27C.f[dirE   ] = &DD27C[dirE   *size_MatC];
       D27C.f[dirW   ] = &DD27C[dirW   *size_MatC];
@@ -22813,7 +22813,7 @@ extern "C" __global__ void scaleFCEff27(real* DC,
                                         unsigned int* neighborFZ,
                                         unsigned int size_MatC, 
                                         unsigned int size_MatF, 
-                                        bool evenOrOdd,
+                                        bool isEvenTimestep,
                                         unsigned int* posC, 
                                         unsigned int* posFSWB, 
                                         unsigned int kFC, 
@@ -22860,7 +22860,7 @@ extern "C" __global__ void scaleFCEff27(real* DC,
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       feC    = &DC[dirE   *size_MatC];
       fwC    = &DC[dirW   *size_MatC];
@@ -23792,7 +23792,7 @@ extern "C" __global__ void scaleFC27(real* DC,
                                      unsigned int* neighborFZ,
 										       unsigned int size_MatC, 
 										       unsigned int size_MatF, 
-										       bool evenOrOdd,
+										       bool isEvenTimestep,
                                      unsigned int* posC, 
                                      unsigned int* posFSWB, 
                                      unsigned int kFC, 
@@ -23838,7 +23838,7 @@ extern "C" __global__ void scaleFC27(real* DC,
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
          *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       feC    = &DC[dirE   *size_MatC];
       fwC    = &DC[dirW   *size_MatC];

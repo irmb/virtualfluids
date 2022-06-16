@@ -178,6 +178,7 @@ typedef struct  Distri27{
 } Distributions27, DistributionReferences27;
 
 //Q for second order BCs
+//! \struct to manage sub-grid-distances (q) for second order Boundary Conditions (BCs)
 typedef struct QforBC{
    int* k;
    int* kN;

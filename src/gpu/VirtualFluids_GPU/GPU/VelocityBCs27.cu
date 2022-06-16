@@ -29,10 +29,10 @@ extern "C" __global__ void QVelDeviceCompPlusSlip27(int inx,
 													unsigned int* neighborY,
 													unsigned int* neighborZ,
 													unsigned int size_Mat, 
-													bool evenOrOdd)
+													bool isEvenTimestep)
 {
    Distributions27 D;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D.f[dirE   ] = &DD[dirE   *size_Mat];
       D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -223,7 +223,7 @@ extern "C" __global__ void QVelDeviceCompPlusSlip27(int inx,
 	   real cu_sq = c3o2*(vx1*vx1 + vx2*vx2 + vx3*vx3) * (c1o1 + drho);
 
 	   //////////////////////////////////////////////////////////////////////////
-	   if (evenOrOdd == false)
+	   if (isEvenTimestep == false)
 	   {
 		   D.f[dirE] = &DD[dirE   *size_Mat];
 		   D.f[dirW] = &DD[dirW   *size_Mat];
@@ -564,7 +564,7 @@ extern "C" __global__ void QVeloDeviceEQ27(real* VeloX,
                                            unsigned int* neighborY,
                                            unsigned int* neighborZ,
                                            unsigned int size_Mat, 
-                                           bool evenOrOdd)
+                                           bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -611,7 +611,7 @@ extern "C" __global__ void QVeloDeviceEQ27(real* VeloX,
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
       Distributions27 D;
-      if (evenOrOdd==true)
+      if (isEvenTimestep==true)
       {
          D.f[dirE   ] = &DD[dirE   *size_Mat];
          D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -845,7 +845,7 @@ extern "C" __global__ void QVeloStreetDeviceEQ27(
 	uint* neighborY,
 	uint* neighborZ,
 	uint  size_Mat,
-	bool  evenOrOdd)
+	bool  isEvenTimestep)
 {
 	////////////////////////////////////////////////////////////////////////////////
 	const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -892,7 +892,7 @@ extern "C" __global__ void QVeloStreetDeviceEQ27(
 		unsigned int kbsw  = neighborZ[ksw];
 		////////////////////////////////////////////////////////////////////////////////
 		Distributions27 D;
-		if (evenOrOdd == true)
+		if (isEvenTimestep == true)
 		{
 			D.f[dirE   ] = &DD[dirE   *size_Mat];
 			D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -1134,10 +1134,10 @@ extern "C" __global__ void QVelDeviceIncompHighNu27(int inx,
 													unsigned int* neighborY,
 													unsigned int* neighborZ,
 													unsigned int size_Mat, 
-													bool evenOrOdd)
+													bool isEvenTimestep)
 {
    Distributions27 D;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D.f[dirE   ] = &DD[dirE   *size_Mat];
       D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -1328,7 +1328,7 @@ extern "C" __global__ void QVelDeviceIncompHighNu27(int inx,
       real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);// * (one + drho);
 
       //////////////////////////////////////////////////////////////////////////
-      if (evenOrOdd==false)
+      if (isEvenTimestep==false)
       {
          D.f[dirE   ] = &DD[dirE   *size_Mat];
          D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -1634,10 +1634,10 @@ extern "C" __global__ void QVelDeviceCompHighNu27(  int inx,
 													unsigned int* neighborY,
 													unsigned int* neighborZ,
 													unsigned int size_Mat, 
-													bool evenOrOdd)
+													bool isEvenTimestep)
 {
    Distributions27 D;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D.f[dirE   ] = &DD[dirE   *size_Mat];
       D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -1854,7 +1854,7 @@ extern "C" __global__ void QVelDeviceCompHighNu27(  int inx,
       real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (c1o1 + drho);
 
       //////////////////////////////////////////////////////////////////////////
-      if (evenOrOdd==false)
+      if (isEvenTimestep==false)
       {
          D.f[dirE   ] = &DD[dirE   *size_Mat];
          D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -2212,10 +2212,10 @@ extern "C" __global__ void QVelDeviceCompZeroPress27(   int inx,
 														unsigned int* neighborY,
 														unsigned int* neighborZ,
 														unsigned int size_Mat, 
-														bool evenOrOdd)
+														bool isEvenTimestep)
 {
    Distributions27 D;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D.f[dirE   ] = &DD[dirE   *size_Mat];
       D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -2406,7 +2406,7 @@ extern "C" __global__ void QVelDeviceCompZeroPress27(   int inx,
       real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (c1o1 + drho);
 
       //////////////////////////////////////////////////////////////////////////
-      if (evenOrOdd==false)
+      if (isEvenTimestep==false)
       {
          D.f[dirE   ] = &DD[dirE   *size_Mat];
          D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -2743,10 +2743,10 @@ extern "C" __global__ void QVelDeviceCompZeroPress1h27( int inx,
 														real* coordY,
 														real* coordZ,
 														unsigned int size_Mat, 
-														bool evenOrOdd)
+														bool isEvenTimestep)
 {
    Distributions27 D;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D.f[dirE   ] = &DD[dirE   *size_Mat];
       D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -2900,7 +2900,7 @@ extern "C" __global__ void QVelDeviceCompZeroPress1h27( int inx,
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       //////////////////////////////////////////////////////////////////////////
-      if (evenOrOdd==false)
+      if (isEvenTimestep==false)
       {
          D.f[dirE   ] = &DD[dirE   *size_Mat];
          D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -3205,7 +3205,7 @@ extern "C" __global__ void LB_BC_Vel_West_27( int nx,
                                               unsigned int* neighborZ,
                                               real* DD, 
                                               unsigned int size_Mat, 
-                                              bool evenOrOdd, 
+                                              bool isEvenTimestep, 
                                               real u0x, 
                                               unsigned int grid_nx, 
                                               unsigned int grid_ny, 
@@ -3228,7 +3228,7 @@ extern "C" __global__ void LB_BC_Vel_West_27( int nx,
    if( bcMatD[k] == GEO_VELO )
    {
       Distributions27 D;
-      if (evenOrOdd==true)
+      if (isEvenTimestep==true)
       {
          D.f[dirE   ] = &DD[dirE   *size_Mat];
          D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -3531,10 +3531,10 @@ extern "C" __global__ void QVelDevPlainBB27(real* vx,
 											unsigned int* neighborY,
 											unsigned int* neighborZ,
 											unsigned int size_Mat, 
-											bool evenOrOdd)
+											bool isEvenTimestep)
 {
    Distributions27 D;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D.f[dirE   ] = &DD[dirE   *size_Mat];
       D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -3705,7 +3705,7 @@ extern "C" __global__ void QVelDevPlainBB27(real* vx,
 	  ////////////////////////////////////////////////////////////////////////////////
 
 	  ////////////////////////////////////////////////////////////////////////////////
-      if (evenOrOdd==false)
+      if (isEvenTimestep==false)
       {
          D.f[dirE   ] = &DD[dirE   *size_Mat];
          D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -3850,10 +3850,10 @@ extern "C" __global__ void QVelDevCouhette27(real* vx,
 											unsigned int* neighborY,
 											unsigned int* neighborZ,
 											unsigned int size_Mat, 
-											bool evenOrOdd)
+											bool isEvenTimestep)
 {
    Distributions27 D;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D.f[dirE   ] = &DD[dirE   *size_Mat];
       D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -4024,7 +4024,7 @@ extern "C" __global__ void QVelDevCouhette27(real* vx,
 	  ////////////////////////////////////////////////////////////////////////////////
 
 	  ////////////////////////////////////////////////////////////////////////////////
-      if (evenOrOdd==false)
+      if (isEvenTimestep==false)
       {
          D.f[dirE   ] = &DD[dirE   *size_Mat];
          D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -4218,10 +4218,10 @@ extern "C" __global__ void QVelDev1h27( int inx,
 										real* coordY,
 										real* coordZ,
 										unsigned int size_Mat, 
-										bool evenOrOdd)
+										bool isEvenTimestep)
 {
 	Distributions27 D;
-	if (evenOrOdd==true)
+	if (isEvenTimestep==true)
 	{
 		D.f[dirE   ] = &DD[dirE   *size_Mat];
 		D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -4450,7 +4450,7 @@ extern "C" __global__ void QVelDev1h27( int inx,
 		//cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
 		//////////////////////////////////////////////////////////////////////////
-		if (evenOrOdd==false)
+		if (isEvenTimestep==false)
 		{
 			D.f[dirE   ] = &DD[dirE   *size_Mat];
 			D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -4997,10 +4997,10 @@ extern "C" __global__ void QVelDeviceComp27(int inx,
 											unsigned int* neighborY,
 											unsigned int* neighborZ,
 											unsigned int size_Mat, 
-											bool evenOrOdd)
+											bool isEvenTimestep)
 {
    Distributions27 D;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D.f[dirE   ] = &DD[dirE   *size_Mat];
       D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -5191,7 +5191,7 @@ extern "C" __global__ void QVelDeviceComp27(int inx,
       real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (c1o1 + drho);
 
       //////////////////////////////////////////////////////////////////////////
-      if (evenOrOdd==false)
+      if (isEvenTimestep==false)
       {
          D.f[dirE   ] = &DD[dirE   *size_Mat];
          D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -5523,10 +5523,10 @@ extern "C" __global__ void QVelDevice27(int inx,
                                         unsigned int* neighborY,
                                         unsigned int* neighborZ,
                                         unsigned int size_Mat, 
-                                        bool evenOrOdd)
+                                        bool isEvenTimestep)
 {
    Distributions27 D;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D.f[dirE   ] = &DD[dirE   *size_Mat];
       D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -5745,7 +5745,7 @@ extern "C" __global__ void QVelDevice27(int inx,
       real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
       //////////////////////////////////////////////////////////////////////////
-      if (evenOrOdd==false)
+      if (isEvenTimestep==false)
       {
          D.f[dirE   ] = &DD[dirE   *size_Mat];
          D.f[dirW   ] = &DD[dirW   *size_Mat];

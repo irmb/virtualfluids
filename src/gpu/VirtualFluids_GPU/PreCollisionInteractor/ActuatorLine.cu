@@ -215,9 +215,9 @@ void ActuatorLine::interact(Parameter* para, CudaMemoryManager* cudaManager, int
     vf::cuda::CudaGrid bladeGrid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, this->nNodes);
 
     interpolateVelocities<<< bladeGrid.grid, bladeGrid.threads >>>(
-        para->getParD(this->level)->coordX_SP, para->getParD(this->level)->coordY_SP, para->getParD(this->level)->coordZ_SP,        
-        para->getParD(this->level)->neighborX_SP, para->getParD(this->level)->neighborY_SP, para->getParD(this->level)->neighborZ_SP, para->getParD(this->level)->neighborWSB_SP,
-        para->getParD(this->level)->vx_SP, para->getParD(this->level)->vy_SP, para->getParD(this->level)->vz_SP,
+        para->getParD(this->level)->coordinateX, para->getParD(this->level)->coordinateY, para->getParD(this->level)->coordinateZ,        
+        para->getParD(this->level)->neighborX, para->getParD(this->level)->neighborY, para->getParD(this->level)->neighborZ, para->getParD(this->level)->neighborInverse,
+        para->getParD(this->level)->velocityX, para->getParD(this->level)->velocityY, para->getParD(this->level)->velocityZ,
         this->bladeCoordsXD, this->bladeCoordsYD, this->bladeCoordsZD,  
         this->bladeVelocitiesXD, this->bladeVelocitiesYD, this->bladeVelocitiesZD,  
         this->nBlades, this->nBladeNodes,
@@ -234,7 +234,7 @@ void ActuatorLine::interact(Parameter* para, CudaMemoryManager* cudaManager, int
     vf::cuda::CudaGrid sphereGrid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, this->nIndices);
 
     applyBodyForces<<<sphereGrid.grid, sphereGrid.threads>>>(
-        para->getParD(this->level)->coordX_SP, para->getParD(this->level)->coordY_SP, para->getParD(this->level)->coordZ_SP,        
+        para->getParD(this->level)->coordinateX, para->getParD(this->level)->coordinateY, para->getParD(this->level)->coordinateZ,        
         para->getParD(this->level)->forceX_SP, para->getParD(this->level)->forceY_SP, para->getParD(this->level)->forceZ_SP,        
         this->bladeCoordsXD, this->bladeCoordsYD, this->bladeCoordsZD,  
         this->bladeForcesXD, this->bladeForcesYD, this->bladeForcesZD,
@@ -377,11 +377,11 @@ void ActuatorLine::initBoundingSphere(Parameter* para, CudaMemoryManager* cudaMa
     real sphereRadius = c1o2*this->diameter+c4o1*this->epsilon;
     real sphereRadiusSqrd = sphereRadius*sphereRadius;
 
-    for (uint j = 1; j <= para->getParH(this->level)->size_Mat_SP; j++)
+    for (uint j = 1; j <= para->getParH(this->level)->numberOfNodes; j++)
     {
-        const real distX = para->getParH(this->level)->coordX_SP[j]-this->turbinePosX;
-        const real distY = para->getParH(this->level)->coordY_SP[j]-this->turbinePosY;
-        const real distZ = para->getParH(this->level)->coordZ_SP[j]-this->turbinePosZ;
+        const real distX = para->getParH(this->level)->coordinateX[j]-this->turbinePosX;
+        const real distY = para->getParH(this->level)->coordinateY[j]-this->turbinePosY;
+        const real distZ = para->getParH(this->level)->coordinateZ[j]-this->turbinePosZ;
         if(distSqrd(distX,distY,distZ) < sphereRadiusSqrd) nodesInSphere.push_back(j);
     }
 

@@ -45,25 +45,25 @@ void initLattice(SPtr<Parameter> para, SPtr<PreProcessor> preProcessor, SPtr<Cud
         preProcessor->init(para, lev);
 
         CalcMacCompSP27(
-            para->getParD(lev)->vx_SP, para->getParD(lev)->vy_SP, para->getParD(lev)->vz_SP, para->getParD(lev)->rho_SP,
-            para->getParD(lev)->press_SP, para->getParD(lev)->geoSP, para->getParD(lev)->neighborX_SP,
-            para->getParD(lev)->neighborY_SP, para->getParD(lev)->neighborZ_SP, para->getParD(lev)->size_Mat_SP,
-            para->getParD(lev)->numberofthreads, para->getParD(lev)->d0SP.f[0], para->getParD(lev)->evenOrOdd);
+            para->getParD(lev)->velocityX, para->getParD(lev)->velocityY, para->getParD(lev)->velocityZ, para->getParD(lev)->rho,
+            para->getParD(lev)->pressure, para->getParD(lev)->typeOfGridNode, para->getParD(lev)->neighborX,
+            para->getParD(lev)->neighborY, para->getParD(lev)->neighborZ, para->getParD(lev)->numberOfNodes,
+            para->getParD(lev)->numberofthreads, para->getParD(lev)->distributions.f[0], para->getParD(lev)->isEvenTimestep);
 
         if (para->getCalcMedian()) {
             constexpr uint tdiff = 1;
             CalcMacMedSP27(para->getParD(lev)->vx_SP_Med, para->getParD(lev)->vy_SP_Med, para->getParD(lev)->vz_SP_Med,
-                           para->getParD(lev)->rho_SP_Med, para->getParD(lev)->press_SP_Med, para->getParD(lev)->geoSP,
-                           para->getParD(lev)->neighborX_SP, para->getParD(lev)->neighborY_SP,
-                           para->getParD(lev)->neighborZ_SP, tdiff, para->getParD(lev)->size_Mat_SP,
-                           para->getParD(lev)->numberofthreads, para->getParD(lev)->evenOrOdd);
+                           para->getParD(lev)->rho_SP_Med, para->getParD(lev)->press_SP_Med, para->getParD(lev)->typeOfGridNode,
+                           para->getParD(lev)->neighborX, para->getParD(lev)->neighborY,
+                           para->getParD(lev)->neighborZ, tdiff, para->getParD(lev)->numberOfNodes,
+                           para->getParD(lev)->numberofthreads, para->getParD(lev)->isEvenTimestep);
         }
         // advection - diffusion
         if (para->getDiffOn()) {
 
             cudaManager->cudaAllocConc(lev);
 
-            for (unsigned int i = 0; i < para->getParH(lev)->size_Mat_SP; i++) {
+            for (unsigned int i = 0; i < para->getParH(lev)->numberOfNodes; i++) {
                 para->getParH(lev)->Conc[i] = para->getTemperatureInit();
             }
             initTemperatur(para.get(), cudaManager.get(), lev);

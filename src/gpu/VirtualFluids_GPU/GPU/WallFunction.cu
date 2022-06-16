@@ -22,10 +22,10 @@ extern "C" __global__ void WallFunction27(int inx,
 										  unsigned int* neighborY,
 										  unsigned int* neighborZ,
 										  unsigned int size_Mat, 
-										  bool evenOrOdd)
+										  bool isEvenTimestep)
 {
    Distributions27 D;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D.f[dirE   ] = &DD[dirE   *size_Mat];
       D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -233,7 +233,7 @@ extern "C" __global__ void WallFunction27(int inx,
 	  //vz[k] = 0.01;							//Test...muss wieder raus
 
    //   //////////////////////////////////////////////////////////////////////////
-   //   if (evenOrOdd==false)
+   //   if (isEvenTimestep==false)
    //   {
    //      D.f[dirE   ] = &DD[dirE   *size_Mat];
    //      D.f[dirW   ] = &DD[dirW   *size_Mat];

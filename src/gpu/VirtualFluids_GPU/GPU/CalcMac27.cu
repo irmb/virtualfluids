@@ -80,10 +80,10 @@ extern "C" __global__ void LBCalcMacSP27( real* vxD,
                                           unsigned int* neighborZ,
                                           unsigned int size_Mat,
                                           real* DD,
-                                          bool evenOrOdd)
+                                          bool isEvenTimestep)
 {
    Distributions27 D;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D.f[dirE   ] = &DD[dirE   *size_Mat];
       D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -301,10 +301,10 @@ extern "C" __global__ void LBCalcMacThS7( real* Conc,
                                           unsigned int* neighborZ,
                                           unsigned int size_Mat,
                                           real* DD7,
-                                          bool evenOrOdd)
+                                          bool isEvenTimestep)
 {
    Distributions7 D7;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D7.f[0] = &DD7[0*size_Mat];
       D7.f[1] = &DD7[1*size_Mat];
@@ -397,10 +397,10 @@ extern "C" __global__ void GetPlaneConcThS7(real* Conc,
 											unsigned int* neighborZ,
 											unsigned int size_Mat,
 											real* DD7,
-											bool evenOrOdd)
+											bool isEvenTimestep)
 {
    Distributions7 D7;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D7.f[0] = &DD7[0*size_Mat];
       D7.f[1] = &DD7[1*size_Mat];
@@ -500,10 +500,10 @@ extern "C" __global__ void GetPlaneConcThS27(real* Conc,
 											 unsigned int* neighborZ,
 											 unsigned int size_Mat,
 											 real* DD27,
-											 bool evenOrOdd)
+											 bool isEvenTimestep)
 {
    Distributions27 D27;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D27.f[dirE   ] = &DD27[dirE   *size_Mat];
       D27.f[dirW   ] = &DD27[dirW   *size_Mat];
@@ -671,10 +671,10 @@ extern "C" __global__ void LBCalcMacThS27(real* Conc,
                                           unsigned int* neighborZ,
                                           unsigned int size_Mat,
                                           real* DD27,
-                                          bool evenOrOdd)
+                                          bool isEvenTimestep)
 {
    Distributions27 D27;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D27.f[dirE   ] = &DD27[dirE   *size_Mat];
       D27.f[dirW   ] = &DD27[dirW   *size_Mat];
@@ -830,10 +830,10 @@ extern "C" __global__ void LBCalcMedSP27( real* vxD,
                                           unsigned int* neighborZ,
                                           unsigned int size_Mat,
                                           real* DD,
-                                          bool evenOrOdd)
+                                          bool isEvenTimestep)
 {
    Distributions27 D;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D.f[dirE   ] = &DD[dirE   *size_Mat];
       D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -1054,10 +1054,10 @@ extern "C" __global__ void LBCalcMedCompSP27( real* vxD,
 											  unsigned int* neighborZ,
 											  unsigned int size_Mat,
 											  real* DD,
-											  bool evenOrOdd)
+											  bool isEvenTimestep)
 {
    Distributions27 D;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D.f[dirE   ] = &DD[dirE   *size_Mat];
       D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -1334,10 +1334,10 @@ extern "C" __global__ void LBCalcMedCompAD27(
 	unsigned int size_Mat,
 	real* DD,
 	real* DD_AD,
-	bool evenOrOdd)
+	bool isEvenTimestep)
 {
 	Distributions27 D;
-	if (evenOrOdd == true)
+	if (isEvenTimestep == true)
 	{
 		D.f[dirE] = &DD[dirE   *size_Mat];
 		D.f[dirW] = &DD[dirW   *size_Mat];
@@ -1399,7 +1399,7 @@ extern "C" __global__ void LBCalcMedCompAD27(
 	}
 	////////////////////////////////////////////////////////////////////////////////
 	Distributions27 Dad;
-	if (evenOrOdd == true)
+	if (isEvenTimestep == true)
 	{
 		Dad.f[dirE]    = &DD_AD[dirE   *size_Mat];
 		Dad.f[dirW]    = &DD_AD[dirW   *size_Mat];
@@ -1659,7 +1659,7 @@ extern "C" __global__ void LBCalcMacMedSP27( real* vxD,
                                              unsigned int* neighborZ,
                                              unsigned int tdiff,
                                              unsigned int size_Mat,
-                                             bool evenOrOdd)
+                                             bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -1727,7 +1727,7 @@ extern "C" __global__ void LBResetMedianValuesSP27(
 	real* rhoD,
 	real* pressD,
 	unsigned int size_Mat,
-	bool evenOrOdd)
+	bool isEvenTimestep)
 {
 	////////////////////////////////////////////////////////////////////////////////
 	const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -1781,7 +1781,7 @@ extern "C" __global__ void LBResetMedianValuesAD27(
 	real* pressD,
 	real* concD,
 	unsigned int size_Mat,
-	bool evenOrOdd)
+	bool isEvenTimestep)
 {
 	////////////////////////////////////////////////////////////////////////////////
 	const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -1842,10 +1842,10 @@ extern "C" __global__ void LBCalcMeasurePoints( real* vxMP,
 												unsigned int* neighborZ,
 												unsigned int size_Mat,
 												real* DD,
-												bool evenOrOdd)
+												bool isEvenTimestep)
 {
 	Distributions27 D;
-	if (evenOrOdd==true)
+	if (isEvenTimestep==true)
 	{
 		D.f[dirE   ] = &DD[dirE   *size_Mat];
 		D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -2055,7 +2055,7 @@ extern "C" __global__ void LBSetOutputWallVelocitySP27( real* vxD,
 														unsigned int* neighborZ,
 														unsigned int size_Mat,
 														real* DD,
-														bool evenOrOdd)
+														bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 

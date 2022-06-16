@@ -360,12 +360,12 @@ Simulation::Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemo
             cudaManager->cudaCopyFsForRestart(lev);
             //////////////////////////////////////////////////////////////////////////
             // macroscopic values
-            CalcMacSP27(para->getParD(lev)->vx_SP, para->getParD(lev)->vy_SP, para->getParD(lev)->vz_SP,
-                        para->getParD(lev)->rho_SP, para->getParD(lev)->press_SP, para->getParD(lev)->geoSP,
-                        para->getParD(lev)->neighborX_SP, para->getParD(lev)->neighborY_SP,
-                        para->getParD(lev)->neighborZ_SP, para->getParD(lev)->size_Mat_SP,
-                        para->getParD(lev)->numberofthreads, para->getParD(lev)->d0SP.f[0],
-                        para->getParD(lev)->evenOrOdd);
+            CalcMacSP27(para->getParD(lev)->velocityX, para->getParD(lev)->velocityY, para->getParD(lev)->velocityZ,
+                        para->getParD(lev)->rho, para->getParD(lev)->pressure, para->getParD(lev)->typeOfGridNode,
+                        para->getParD(lev)->neighborX, para->getParD(lev)->neighborY,
+                        para->getParD(lev)->neighborZ, para->getParD(lev)->numberOfNodes,
+                        para->getParD(lev)->numberofthreads, para->getParD(lev)->distributions.f[0],
+                        para->getParD(lev)->isEvenTimestep);
             getLastCudaError("Kernel CalcMacSP27 execution failed");
             //////////////////////////////////////////////////////////////////////////
             // test...should not work...and does not
@@ -529,14 +529,14 @@ void Simulation::run()
         					  para->getParD(lev)->vz_SP_Med,
         					  para->getParD(lev)->rho_SP_Med,
         					  para->getParD(lev)->press_SP_Med,
-        					  para->getParD(lev)->geoSP,
-        					  para->getParD(lev)->neighborX_SP,
-        					  para->getParD(lev)->neighborY_SP,
-        					  para->getParD(lev)->neighborZ_SP,
-        					  para->getParD(lev)->size_Mat_SP,
+        					  para->getParD(lev)->typeOfGridNode,
+        					  para->getParD(lev)->neighborX,
+        					  para->getParD(lev)->neighborY,
+        					  para->getParD(lev)->neighborZ,
+        					  para->getParD(lev)->numberOfNodes,
         					  para->getParD(lev)->numberofthreads,
-        					  para->getParD(lev)->d0SP.f[0],
-        					  para->getParD(lev)->evenOrOdd);
+        					  para->getParD(lev)->distributions.f[0],
+        					  para->getParD(lev)->isEvenTimestep);
         	  getLastCudaError("CalcMacMedCompSP27 execution failed");
 
           }
@@ -554,13 +554,13 @@ void Simulation::run()
 				    para->getParD(lev)->vx_mean,
 				    para->getParD(lev)->vy_mean,
 				    para->getParD(lev)->vz_mean,
-				    para->getParD(lev)->d0SP.f[0],
-				    para->getParD(lev)->geoSP,
-				    para->getParD(lev)->neighborX_SP,
-				    para->getParD(lev)->neighborY_SP,
-				    para->getParD(lev)->neighborZ_SP,
-				    para->getParD(lev)->size_Mat_SP,
-				    para->getParD(lev)->evenOrOdd,
+				    para->getParD(lev)->distributions.f[0],
+				    para->getParD(lev)->typeOfGridNode,
+				    para->getParD(lev)->neighborX,
+				    para->getParD(lev)->neighborY,
+				    para->getParD(lev)->neighborZ,
+				    para->getParD(lev)->numberOfNodes,
+				    para->getParD(lev)->isEvenTimestep,
 				    para->getParD(lev)->numberofthreads
 				);
 			}
@@ -617,10 +617,10 @@ void Simulation::run()
                     //output << "start level = " << lev << "\n";
                     LBCalcMeasurePoints27(  para->getParD(lev)->VxMP,			para->getParD(lev)->VyMP,			para->getParD(lev)->VzMP,
                     				        para->getParD(lev)->RhoMP,		    para->getParD(lev)->kMP,			para->getParD(lev)->numberOfPointskMP,
-                    				        valuesPerClockCycle,				t_MP,								para->getParD(lev)->geoSP,
-                    				        para->getParD(lev)->neighborX_SP,   para->getParD(lev)->neighborY_SP,	para->getParD(lev)->neighborZ_SP,
-                    				        para->getParD(lev)->size_Mat_SP,	para->getParD(lev)->d0SP.f[0],		para->getParD(lev)->numberofthreads,
-                    				        para->getParD(lev)->evenOrOdd);
+                    				        valuesPerClockCycle,				t_MP,								para->getParD(lev)->typeOfGridNode,
+                    				        para->getParD(lev)->neighborX,   para->getParD(lev)->neighborY,	para->getParD(lev)->neighborZ,
+                    				        para->getParD(lev)->numberOfNodes,	para->getParD(lev)->distributions.f[0],		para->getParD(lev)->numberofthreads,
+                    				        para->getParD(lev)->isEvenTimestep);
                 }
                 t_MP++;
             }
@@ -655,38 +655,38 @@ void Simulation::run()
             PlaneConcThS27( para->getParD(0)->ConcPlaneIn,
             		       para->getParD(0)->cpTopIndex,
             		       para->getParD(0)->numberOfPointsCpTop,
-            		       para->getParD(0)->geoSP,
-            		       para->getParD(0)->neighborX_SP,
-            		       para->getParD(0)->neighborY_SP,
-            		       para->getParD(0)->neighborZ_SP,
-            		       para->getParD(0)->size_Mat_SP,
+            		       para->getParD(0)->typeOfGridNode,
+            		       para->getParD(0)->neighborX,
+            		       para->getParD(0)->neighborY,
+            		       para->getParD(0)->neighborZ,
+            		       para->getParD(0)->numberOfNodes,
             		       para->getParD(0)->numberofthreads,
-            		       para->getParD(0)->d27.f[0],
-            		       para->getParD(0)->evenOrOdd);
+            		       para->getParD(0)->distributionsAD27.f[0],
+            		       para->getParD(0)->isEvenTimestep);
             getLastCudaError("PlaneConcThS27 execution failed");
             PlaneConcThS27( para->getParD(0)->ConcPlaneOut1,
             		        para->getParD(0)->cpBottomIndex,
             		        para->getParD(0)->numberOfPointsCpBottom,
-            		        para->getParD(0)->geoSP,
-            		        para->getParD(0)->neighborX_SP,
-            		        para->getParD(0)->neighborY_SP,
-            		        para->getParD(0)->neighborZ_SP,
-            		        para->getParD(0)->size_Mat_SP,
+            		        para->getParD(0)->typeOfGridNode,
+            		        para->getParD(0)->neighborX,
+            		        para->getParD(0)->neighborY,
+            		        para->getParD(0)->neighborZ,
+            		        para->getParD(0)->numberOfNodes,
             		        para->getParD(0)->numberofthreads,
-            		        para->getParD(0)->d27.f[0],
-            		        para->getParD(0)->evenOrOdd);
+            		        para->getParD(0)->distributionsAD27.f[0],
+            		        para->getParD(0)->isEvenTimestep);
             getLastCudaError("PlaneConcThS27 execution failed");
             PlaneConcThS27( para->getParD(0)->ConcPlaneOut2,
-            		        para->getParD(0)->QPress.kN,
-            		        para->getParD(0)->QPress.numberOfBCnodes,
-            		        para->getParD(0)->geoSP,
-            		        para->getParD(0)->neighborX_SP,
-            		        para->getParD(0)->neighborY_SP,
-            		        para->getParD(0)->neighborZ_SP,
-            		        para->getParD(0)->size_Mat_SP,
+            		        para->getParD(0)->pressureBC.kN,
+            		        para->getParD(0)->pressureBC.numberOfBCnodes,
+            		        para->getParD(0)->typeOfGridNode,
+            		        para->getParD(0)->neighborX,
+            		        para->getParD(0)->neighborY,
+            		        para->getParD(0)->neighborZ,
+            		        para->getParD(0)->numberOfNodes,
             		        para->getParD(0)->numberofthreads,
-            		        para->getParD(0)->d27.f[0],
-            		        para->getParD(0)->evenOrOdd);
+            		        para->getParD(0)->distributionsAD27.f[0],
+            		        para->getParD(0)->isEvenTimestep);
             getLastCudaError("PlaneConcThS27 execution failed");
             //////////////////////////////////////////////////////////////////////////////////
             ////Calculation of concentration at the plane
@@ -754,8 +754,8 @@ void Simulation::run()
 				   //CalcMacSP27(para->getParD(lev)->vx_SP,
        //                        para->getParD(lev)->vy_SP,
        //                        para->getParD(lev)->vz_SP,
-       //                        para->getParD(lev)->rho_SP,
-       //                        para->getParD(lev)->press_SP,
+       //                        para->getParD(lev)->rho,
+       //                        para->getParD(lev)->pressure,
        //                        para->getParD(lev)->geoSP,
        //                        para->getParD(lev)->neighborX_SP,
        //                        para->getParD(lev)->neighborY_SP,
@@ -767,19 +767,19 @@ void Simulation::run()
        //            getLastCudaError("CalcMacSP27 execution failed");
 
 
-				   CalcMacCompSP27(para->getParD(lev)->vx_SP,
-								   para->getParD(lev)->vy_SP,
-								   para->getParD(lev)->vz_SP,
-								   para->getParD(lev)->rho_SP,
-								   para->getParD(lev)->press_SP,
-								   para->getParD(lev)->geoSP,
-								   para->getParD(lev)->neighborX_SP,
-								   para->getParD(lev)->neighborY_SP,
-								   para->getParD(lev)->neighborZ_SP,
-								   para->getParD(lev)->size_Mat_SP,
+				   CalcMacCompSP27(para->getParD(lev)->velocityX,
+								   para->getParD(lev)->velocityY,
+								   para->getParD(lev)->velocityZ,
+								   para->getParD(lev)->rho,
+								   para->getParD(lev)->pressure,
+								   para->getParD(lev)->typeOfGridNode,
+								   para->getParD(lev)->neighborX,
+								   para->getParD(lev)->neighborY,
+								   para->getParD(lev)->neighborZ,
+								   para->getParD(lev)->numberOfNodes,
 								   para->getParD(lev)->numberofthreads,
-								   para->getParD(lev)->d0SP.f[0],
-								   para->getParD(lev)->evenOrOdd);
+								   para->getParD(lev)->distributions.f[0],
+								   para->getParD(lev)->isEvenTimestep);
                    getLastCudaError("CalcMacSP27 execution failed");
 
 				   //�berschreiben mit Wandknoten
@@ -787,13 +787,13 @@ void Simulation::run()
 							//				   para->getParD(lev)->vx_SP,
 							//				   para->getParD(lev)->vy_SP,
 							//				   para->getParD(lev)->vz_SP,
-							//				   para->getParD(lev)->QGeom.Vx,
-							//				   para->getParD(lev)->QGeom.Vy,
-							//				   para->getParD(lev)->QGeom.Vz,
-							//				   para->getParD(lev)->QGeom.kQ,
-							//				   para->getParD(lev)->QGeom.k,
-							//				   para->getParD(lev)->rho_SP,
-							//				   para->getParD(lev)->press_SP,
+							//				   para->getParD(lev)->geometryBC.Vx,
+							//				   para->getParD(lev)->geometryBC.Vy,
+							//				   para->getParD(lev)->geometryBC.Vz,
+							//				   para->getParD(lev)->geometryBC.kQ,
+							//				   para->getParD(lev)->geometryBC.k,
+							//				   para->getParD(lev)->rho,
+							//				   para->getParD(lev)->pressure,
 							//				   para->getParD(lev)->geoSP,
 							//				   para->getParD(lev)->neighborX_SP,
 							//				   para->getParD(lev)->neighborY_SP,
@@ -807,13 +807,13 @@ void Simulation::run()
 										//	   para->getParD(lev)->vx_SP,
 										//	   para->getParD(lev)->vy_SP,
 										//	   para->getParD(lev)->vz_SP,
-										//	   para->getParD(lev)->Qinflow.Vx,
-										//	   para->getParD(lev)->Qinflow.Vy,
-										//	   para->getParD(lev)->Qinflow.Vz,
+										//	   para->getParD(lev)->velocityBC.Vx,
+										//	   para->getParD(lev)->velocityBC.Vy,
+										//	   para->getParD(lev)->velocityBC.Vz,
 										//	   para->getParD(lev)->numberOfVeloBCnodes,
-										//	   para->getParD(lev)->Qinflow.k,
-										//	   para->getParD(lev)->rho_SP,
-										//	   para->getParD(lev)->press_SP,
+										//	   para->getParD(lev)->velocityBC.k,
+										//	   para->getParD(lev)->rho,
+										//	   para->getParD(lev)->pressure,
 										//	   para->getParD(lev)->geoSP,
 										//	   para->getParD(lev)->neighborX_SP,
 										//	   para->getParD(lev)->neighborY_SP,
@@ -852,27 +852,27 @@ void Simulation::run()
                   if (para->getDiffMod() == 7)
                   {
                      CalcMacThS7(   para->getParD(lev)->Conc,
-                                    para->getParD(lev)->geoSP,
-                                    para->getParD(lev)->neighborX_SP,
-                                    para->getParD(lev)->neighborY_SP,
-                                    para->getParD(lev)->neighborZ_SP,
-                                    para->getParD(lev)->size_Mat_SP,
+                                    para->getParD(lev)->typeOfGridNode,
+                                    para->getParD(lev)->neighborX,
+                                    para->getParD(lev)->neighborY,
+                                    para->getParD(lev)->neighborZ,
+                                    para->getParD(lev)->numberOfNodes,
                                     para->getParD(lev)->numberofthreads,
-                                    para->getParD(lev)->d7.f[0],
-                                    para->getParD(lev)->evenOrOdd);
+                                    para->getParD(lev)->distributionsAD7.f[0],
+                                    para->getParD(lev)->isEvenTimestep);
                      getLastCudaError("CalcMacTh7 execution failed");
                   }
                   else if (para->getDiffMod() == 27)
                   {
                      CalcMacThS27(  para->getParD(lev)->Conc,
-                                    para->getParD(lev)->geoSP,
-                                    para->getParD(lev)->neighborX_SP,
-                                    para->getParD(lev)->neighborY_SP,
-                                    para->getParD(lev)->neighborZ_SP,
-                                    para->getParD(lev)->size_Mat_SP,
+                                    para->getParD(lev)->typeOfGridNode,
+                                    para->getParD(lev)->neighborX,
+                                    para->getParD(lev)->neighborY,
+                                    para->getParD(lev)->neighborZ,
+                                    para->getParD(lev)->numberOfNodes,
                                     para->getParD(lev)->numberofthreads,
-                                    para->getParD(lev)->d27.f[0],
-                                    para->getParD(lev)->evenOrOdd);
+                                    para->getParD(lev)->distributionsAD27.f[0],
+                                    para->getParD(lev)->isEvenTimestep);
                      getLastCudaError("CalcMacTh27 execution failed");
                   }
 
@@ -1146,15 +1146,15 @@ void Simulation::definePMarea(std::shared_ptr<PorousMedia>& pMedia)
 	std::vector< unsigned int > nodeIDsPorousMedia;
 	output << "definePMarea....find nodes \n";
 
-	for (unsigned int i = 0; i < para->getParH(level)->size_Mat_SP; i++)
+	for (unsigned int i = 0; i < para->getParH(level)->numberOfNodes; i++)
 	{
-		if (((para->getParH(level)->coordX_SP[i] >= pMedia->getStartX()) && (para->getParH(level)->coordX_SP[i] <= pMedia->getEndX())) &&
-			((para->getParH(level)->coordY_SP[i] >= pMedia->getStartY()) && (para->getParH(level)->coordY_SP[i] <= pMedia->getEndY())) &&
-			((para->getParH(level)->coordZ_SP[i] >= pMedia->getStartZ()) && (para->getParH(level)->coordZ_SP[i] <= pMedia->getEndZ())) )
+		if (((para->getParH(level)->coordinateX[i] >= pMedia->getStartX()) && (para->getParH(level)->coordinateX[i] <= pMedia->getEndX())) &&
+			((para->getParH(level)->coordinateY[i] >= pMedia->getStartY()) && (para->getParH(level)->coordinateY[i] <= pMedia->getEndY())) &&
+			((para->getParH(level)->coordinateZ[i] >= pMedia->getStartZ()) && (para->getParH(level)->coordinateZ[i] <= pMedia->getEndZ())) )
 		{
-			if (para->getParH(level)->geoSP[i] >= GEO_FLUID)
+			if (para->getParH(level)->typeOfGridNode[i] >= GEO_FLUID)
 			{
-				para->getParH(level)->geoSP[i] = pMedia->getGeoID();
+				para->getParH(level)->typeOfGridNode[i] = pMedia->getGeoID();
 				nodeIDsPorousMedia.push_back(i);
 				counter++;
 			}

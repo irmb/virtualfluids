@@ -24,7 +24,7 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
 													 unsigned int* neighborFZ,
 													 unsigned int size_MatC, 
 													 unsigned int size_MatF, 
-													 bool evenOrOdd,
+													 bool isEvenTimestep,
 													 unsigned int* posC, 
 													 unsigned int* posFSWB, 
 													 unsigned int kFC, 
@@ -76,7 +76,7 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
 	   *fMP0dest, *fP0Pdest, *fM0Mdest, *fP0Mdest, *fM0Pdest, *f0PPdest, *f0MMdest, *f0PMdest, *f0MPdest,
 	   *f000dest, *fMMMdest, *fMMPdest, *fMPPdest, *fMPMdest, *fPPMdest, *fPPPdest, *fPMPdest, *fPMMdest;
 
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
 	   fP00dest = &DC[dirE   *size_MatC];
 	   fM00dest = &DC[dirW   *size_MatC];
@@ -138,7 +138,7 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
    }
 
    Distributions6 G;
-   if (evenOrOdd == true)
+   if (isEvenTimestep == true)
    {
 	   G.g[dirE] = &G6[dirE   *size_MatC];
 	   G.g[dirW] = &G6[dirW   *size_MatC];
@@ -1271,7 +1271,7 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3( real* DC,
 												 unsigned int* neighborFZ,
 												 unsigned int size_MatC, 
 												 unsigned int size_MatF, 
-												 bool evenOrOdd,
+												 bool isEvenTimestep,
 												 unsigned int* posC, 
 												 unsigned int* posFSWB, 
 												 unsigned int kFC, 
@@ -1323,7 +1323,7 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3( real* DC,
 	   *fMP0dest, *fP0Pdest, *fM0Mdest, *fP0Mdest, *fM0Pdest, *f0PPdest, *f0MMdest, *f0PMdest, *f0MPdest,
 	   *f000dest, *fMMMdest, *fMMPdest, *fMPPdest, *fMPMdest, *fPPMdest, *fPPPdest, *fPMPdest, *fPMMdest;
 
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
 	   fP00dest = &DC[dirE   *size_MatC];
 	   fM00dest = &DC[dirW   *size_MatC];
@@ -1385,7 +1385,7 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3( real* DC,
    }
 
    Distributions6 G;
-   if (evenOrOdd == true)
+   if (isEvenTimestep == true)
    {
 	   G.g[dirE] = &G6[dirE   *size_MatC];
 	   G.g[dirW] = &G6[dirW   *size_MatC];

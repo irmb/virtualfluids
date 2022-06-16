@@ -22,7 +22,7 @@ void calcDragLift(Parameter* para, CudaMemoryManager* cudaManager, int lev)
 	//copy to host
 	//finest Grid ... with the geometry nodes
 	//please test -> Copy == Alloc ??
-	cudaManager->cudaCopyDragLift(lev, para->getParH(lev)->QGeom.numberOfBCnodes);
+	cudaManager->cudaCopyDragLift(lev, para->getParH(lev)->geometryBC.numberOfBCnodes);
 	//////////////////////////////////////////////////////////////////////////
 	//calc drag
 	double dragX = 0., dragY = 0., dragZ = 0.;
@@ -55,7 +55,7 @@ void calcDragLift(Parameter* para, CudaMemoryManager* cudaManager, int lev)
 	//double LBtoSI = 1.204 * (pow(delta_x, 4))/(pow(delta_t,2));//rho_SI * delta_x^4 / delta_t^2 = 1.204 kg/m^3 * (0.0045m)^4 / (0.00000757s)^2 ... LB to kg*m/s^2
 	//double LBtoSI = 1000 * (pow(delta_x, 4))/(pow(delta_t,2));//rho_SI * delta_x^4 / delta_t^2 = 1000 kg/m^3 * (0.1m)^4 / (0.00187s)^2 ... LB to kg*m/s^2
 
-	for (int it = 0; it < para->getParH(lev)->QGeom.numberOfBCnodes; it++)
+	for (int it = 0; it < para->getParH(lev)->geometryBC.numberOfBCnodes; it++)
 	{
 		dragX += (double) (para->getParH(lev)->DragPreX[it] - para->getParH(lev)->DragPostX[it]); //Kraft da Impuls pro Zeitschritt merke: andere nennen es FD
 		dragY += (double) (para->getParH(lev)->DragPreY[it] - para->getParH(lev)->DragPostY[it]); //Kraft da Impuls pro Zeitschritt merke: andere nennen es FD
@@ -90,9 +90,9 @@ void allocDragLift(Parameter* para, CudaMemoryManager* cudaManager)
 	//allocation
 	//finest Grid ... with the geometry nodes
 	//please test -> Copy == Alloc ??
-	cudaManager->cudaAllocDragLift(lev, para->getParH(lev)->QGeom.numberOfBCnodes);
+	cudaManager->cudaAllocDragLift(lev, para->getParH(lev)->geometryBC.numberOfBCnodes);
 	//////////////////////////////////////////////////////////////////////////
-	printf("\n Anzahl Elemente fuer Drag Lift = %d \n", para->getParH(lev)->QGeom.numberOfBCnodes);
+	printf("\n Anzahl Elemente fuer Drag Lift = %d \n", para->getParH(lev)->geometryBC.numberOfBCnodes);
 }
 
 

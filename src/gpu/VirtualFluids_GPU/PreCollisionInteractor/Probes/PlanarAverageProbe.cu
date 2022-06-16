@@ -203,7 +203,7 @@ void PlanarAverageProbe::findPoints(Parameter* para, GridProvider* gridProvider,
                             std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
                             int level)
 {
-    real dx = abs(para->getParH(level)->coordX_SP[1]-para->getParH(level)->coordX_SP[para->getParH(level)->neighborX_SP[1]]);
+    real dx = abs(para->getParH(level)->coordinateX[1]-para->getParH(level)->coordinateX[para->getParH(level)->neighborX[1]]);
     
     real /* *pointCoordsInplane1_par, *pointCoordsInplane2_par,*/ *pointCoordsNormal_par;
     std::vector<real> *pointCoordsInplane1, *pointCoordsInplane2, *pointCoordsNormal;
@@ -212,7 +212,7 @@ void PlanarAverageProbe::findPoints(Parameter* para, GridProvider* gridProvider,
                                     pointCoordsNormal       = &pointCoordsX_level; 
                                     pointCoordsInplane1     = &pointCoordsY_level; 
                                     pointCoordsInplane2     = &pointCoordsZ_level;
-                                    pointCoordsNormal_par   = para->getParH(level)->coordX_SP; 
+                                    pointCoordsNormal_par   = para->getParH(level)->coordinateX; 
                                     // pointCoordsInplane1_par = para->getParH(level)->coordY_SP; 
                                     // pointCoordsInplane2_par = para->getParH(level)->coordZ_SP;
                                 }
@@ -220,7 +220,7 @@ void PlanarAverageProbe::findPoints(Parameter* para, GridProvider* gridProvider,
                                     pointCoordsNormal       = &pointCoordsY_level; 
                                     pointCoordsInplane1     = &pointCoordsX_level; 
                                     pointCoordsInplane2     = &pointCoordsZ_level;
-                                    pointCoordsNormal_par   = para->getParH(level)->coordY_SP; 
+                                    pointCoordsNormal_par   = para->getParH(level)->coordinateY; 
                                     // pointCoordsInplane1_par = para->getParH(level)->coordX_SP; 
                                     // pointCoordsInplane2_par = para->getParH(level)->coordZ_SP;
                                 }
@@ -228,15 +228,15 @@ void PlanarAverageProbe::findPoints(Parameter* para, GridProvider* gridProvider,
                                     pointCoordsNormal       = &pointCoordsZ_level; 
                                     pointCoordsInplane1     = &pointCoordsX_level; 
                                     pointCoordsInplane2     = &pointCoordsY_level;
-                                    pointCoordsNormal_par   = para->getParH(level)->coordZ_SP; 
+                                    pointCoordsNormal_par   = para->getParH(level)->coordinateZ; 
                                     // pointCoordsInplane1_par = para->getParH(level)->coordX_SP; 
                                     // pointCoordsInplane2_par = para->getParH(level)->coordY_SP;
                                 }
 
     // Find all points along the normal direction
-    for(uint j=1; j<para->getParH(level)->size_Mat_SP; j++ )
+    for(uint j=1; j<para->getParH(level)->numberOfNodes; j++ )
     {
-        if(para->getParH(level)->geoSP[j] == GEO_FLUID)
+        if(para->getParH(level)->typeOfGridNode[j] == GEO_FLUID)
         {   
             if( std::find(pointCoordsNormal->begin(), pointCoordsNormal->end(), pointCoordsNormal_par[j]) == pointCoordsNormal->end())  
             {
@@ -249,9 +249,9 @@ void PlanarAverageProbe::findPoints(Parameter* para, GridProvider* gridProvider,
     std::sort(pointCoordsNormal->begin(), pointCoordsNormal->end());
     
     // Find all pointCoords in the first plane 
-    for(uint j=1; j<para->getParH(level)->size_Mat_SP; j++ )
+    for(uint j=1; j<para->getParH(level)->numberOfNodes; j++ )
     {
-        if( para->getParH(level)->geoSP[j] == GEO_FLUID && pointCoordsNormal_par[j] == pointCoordsNormal->at(0)) 
+        if( para->getParH(level)->typeOfGridNode[j] == GEO_FLUID && pointCoordsNormal_par[j] == pointCoordsNormal->at(0)) 
         {
             //not needed in current state, might become relevant for two-point correlations
             // pointCoordsNormal->push_back( pointCoordsNormal_par[j] ); 
@@ -271,30 +271,30 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
     uint *neighborNormal, *neighborInplane1, *neighborInplane2;
     if( this->planeNormal == 'x' )
     {
-        neighborNormal   = para->getParD(level)->neighborX_SP;
-        neighborInplane1 = para->getParD(level)->neighborY_SP;
-        neighborInplane2 = para->getParD(level)->neighborZ_SP;
+        neighborNormal   = para->getParD(level)->neighborX;
+        neighborInplane1 = para->getParD(level)->neighborY;
+        neighborInplane2 = para->getParD(level)->neighborZ;
     }
     if( this->planeNormal == 'y' )
     {
-        neighborNormal   = para->getParD(level)->neighborY_SP;
-        neighborInplane1 = para->getParD(level)->neighborX_SP;
-        neighborInplane2 = para->getParD(level)->neighborZ_SP;
+        neighborNormal   = para->getParD(level)->neighborY;
+        neighborInplane1 = para->getParD(level)->neighborX;
+        neighborInplane2 = para->getParD(level)->neighborZ;
     }
     if( this->planeNormal == 'z' )
     {
-        neighborNormal   = para->getParD(level)->neighborZ_SP;
-        neighborInplane1 = para->getParD(level)->neighborX_SP;
-        neighborInplane2 = para->getParD(level)->neighborY_SP;
+        neighborNormal   = para->getParD(level)->neighborZ;
+        neighborInplane1 = para->getParD(level)->neighborX;
+        neighborInplane2 = para->getParD(level)->neighborY;
     }
 
     bool doTmpAveraging = (t>this->getTStartTmpAveraging());
 
     // Pointer casts to use device arrays in thrust reductions
     thrust::device_ptr<uint> indices_thrust = thrust::device_pointer_cast(probeStruct->pointIndicesD);
-    thrust::device_ptr<real> vx_thrust = thrust::device_pointer_cast(para->getParD(level)->vx_SP);
-    thrust::device_ptr<real> vy_thrust = thrust::device_pointer_cast(para->getParD(level)->vy_SP);
-    thrust::device_ptr<real> vz_thrust = thrust::device_pointer_cast(para->getParD(level)->vz_SP);
+    thrust::device_ptr<real> vx_thrust = thrust::device_pointer_cast(para->getParD(level)->velocityX);
+    thrust::device_ptr<real> vy_thrust = thrust::device_pointer_cast(para->getParD(level)->velocityY);
+    thrust::device_ptr<real> vz_thrust = thrust::device_pointer_cast(para->getParD(level)->velocityZ);
 
     real N = (real)probeStruct->nIndices;
     real n = (real)probeStruct->vals;
@@ -446,9 +446,9 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
         {
             vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, probeStruct->nIndices);
             if(this->isEvenTAvg) 
-                moveIndicesInPosNormalDir<<<grid.grid, grid.threads>>>( probeStruct->pointIndicesD, probeStruct->nIndices, neighborNormal, para->getParD(level)->coordX_SP, para->getParD(level)->coordY_SP, para->getParD(level)->coordZ_SP );
+                moveIndicesInPosNormalDir<<<grid.grid, grid.threads>>>( probeStruct->pointIndicesD, probeStruct->nIndices, neighborNormal, para->getParD(level)->coordinateX, para->getParD(level)->coordinateY, para->getParD(level)->coordinateZ );
             else 
-                moveIndicesInNegNormalDir<<<grid.grid, grid.threads>>>( probeStruct->pointIndicesD, probeStruct->nIndices, para->getParD(level)->neighborWSB_SP, neighborInplane1, neighborInplane2, para->getParD(level)->coordX_SP, para->getParD(level)->coordY_SP, para->getParD(level)->coordZ_SP ); 
+                moveIndicesInNegNormalDir<<<grid.grid, grid.threads>>>( probeStruct->pointIndicesD, probeStruct->nIndices, para->getParD(level)->neighborInverse, neighborInplane1, neighborInplane2, para->getParD(level)->coordinateX, para->getParD(level)->coordinateY, para->getParD(level)->coordinateZ ); 
         } 
     }
     this->isEvenTAvg=!this->isEvenTAvg;

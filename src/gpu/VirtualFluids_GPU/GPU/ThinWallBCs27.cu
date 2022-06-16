@@ -28,10 +28,10 @@ extern "C" __global__ void QVelDeviceCompThinWallsPartOne27(
 	uint* neighborY,
 	uint* neighborZ,
 	uint size_Mat, 
-	bool evenOrOdd)
+	bool isEvenTimestep)
 {
    Distributions27 D;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D.f[dirE   ] = &DD[dirE   *size_Mat];
       D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -458,10 +458,10 @@ extern "C" __global__ void QDeviceCompThinWallsPartOne27(
 	unsigned int* neighborY,
 	unsigned int* neighborZ,
 	unsigned int size_Mat,
-	bool evenOrOdd)
+	bool isEvenTimestep)
 {
 	Distributions27 D;
-	if (evenOrOdd == true)
+	if (isEvenTimestep == true)
 	{
 		D.f[dirE] = &DD[dirE   *size_Mat];
 		D.f[dirW] = &DD[dirW   *size_Mat];
@@ -885,7 +885,7 @@ extern "C" __global__ void QThinWallsPartTwo27(
 	uint* neighborZ,
 	uint* neighborWSB,
 	uint size_Mat, 
-	bool evenOrOdd)
+	bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -980,7 +980,7 @@ extern "C" __global__ void QThinWallsPartTwo27(
 	  uint k0mp = neighborZ[k0m0];  //  0 -1  1
 	  ////////////////////////////////////////////////////////////////////////////////
 	  Distributions27 D, DN;
-	  if (evenOrOdd == true)
+	  if (isEvenTimestep == true)
 	  {
 		  D.f[dirE] = &DD[dirE   *size_Mat];
 		  D.f[dirW] = &DD[dirW   *size_Mat];
@@ -1040,7 +1040,7 @@ extern "C" __global__ void QThinWallsPartTwo27(
 		  D.f[dirBSE] = &DD[dirTNW *size_Mat];
 		  D.f[dirBNW] = &DD[dirTSE *size_Mat];
 	  }
-	  if (evenOrOdd==false)
+	  if (isEvenTimestep==false)
       {
          DN.f[dirE   ] = &DD[dirE   *size_Mat];
          DN.f[dirW   ] = &DD[dirW   *size_Mat];

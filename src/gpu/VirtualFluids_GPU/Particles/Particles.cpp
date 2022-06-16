@@ -35,7 +35,7 @@ void allocParticles(Parameter* para, CudaMemoryManager* cudaManager)
 		para->getParH(lev)->plp.memSizereal       = sizeof(real)*(para->getParH(lev)->plp.numberOfParticles);
 		para->getParH(lev)->plp.memSizerealAll	 = sizeof(real)*(para->getParH(lev)->plp.numberOfParticles * para->getParH(lev)->plp.numberOfTimestepsParticles);
 		para->getParH(lev)->plp.memSizeBool          = sizeof(bool)*(para->getParH(lev)->plp.numberOfParticles);
-		para->getParH(lev)->plp.memSizeBoolBC        = sizeof(bool)*(para->getParH(lev)->QGeom.numberOfBCnodes);//depends on Geometry!!!
+		para->getParH(lev)->plp.memSizeBoolBC        = sizeof(bool)*(para->getParH(lev)->geometryBC.numberOfBCnodes);//depends on Geometry!!!
 		para->getParD(lev)->plp.memSizeTimestep      = para->getParH(lev)->plp.memSizeTimestep;
 		para->getParD(lev)->plp.memSizeID            = para->getParH(lev)->plp.memSizeID;        
 		para->getParD(lev)->plp.memSizereal       = para->getParH(lev)->plp.memSizereal;
@@ -74,10 +74,10 @@ void initParticles(Parameter* para)
 		}
 		//////////////////////////////////////////////////////////////////////////
 		//set bool "hot wall"
-		for (int h = 0; h < para->getParH(lev)->QGeom.numberOfBCnodes; h++)
+		for (int h = 0; h < para->getParH(lev)->geometryBC.numberOfBCnodes; h++)
 		{
-			if (para->getParH(lev)->coordX_SP[para->getParH(lev)->QGeom.k[h]] < para->getStartXHotWall() || 
-				para->getParH(lev)->coordX_SP[para->getParH(lev)->QGeom.k[h]] > para->getEndXHotWall())
+			if (para->getParH(lev)->coordinateX[para->getParH(lev)->geometryBC.k[h]] < para->getStartXHotWall() || 
+				para->getParH(lev)->coordinateX[para->getParH(lev)->geometryBC.k[h]] > para->getEndXHotWall())
 			{
 				para->getParH(lev)->plp.hot[h] = false;
 			}
@@ -141,10 +141,10 @@ void initParticles(Parameter* para)
 			para->getParH(lev)->plp.coordZabsolut[i] = (real)zCoordVec[i]; 
 
 			// find IDs
-			for (unsigned int ii = 0; ii < para->getParH(lev)->size_Mat_SP; ii++)
+			for (unsigned int ii = 0; ii < para->getParH(lev)->numberOfNodes; ii++)
 			{
-				if ((para->getParH(lev)->coordX_SP[ii] <= para->getParH(lev)->plp.coordXabsolut[i]) &&
-					((para->getParH(lev)->plp.coordXabsolut[i] - para->getParH(lev)->coordX_SP[ii]) <= dx))
+				if ((para->getParH(lev)->coordinateX[ii] <= para->getParH(lev)->plp.coordXabsolut[i]) &&
+					((para->getParH(lev)->plp.coordXabsolut[i] - para->getParH(lev)->coordinateX[ii]) <= dx))
 				{
 					tempID.push_back(ii);
 				}
@@ -160,15 +160,15 @@ void initParticles(Parameter* para)
 		{
 			for (std::size_t ii = 0; ii < tempID.size(); ii++)
 			{
-				if ((para->getParH(lev)->coordY_SP[tempID[ii]] <= para->getParH(lev)->plp.coordYabsolut[i]) &&
-					((para->getParH(lev)->plp.coordYabsolut[i] - para->getParH(lev)->coordY_SP[tempID[ii]]) <= dx) &&
-					(para->getParH(lev)->coordZ_SP[tempID[ii]] <= para->getParH(lev)->plp.coordZabsolut[i]) &&
-					((para->getParH(lev)->plp.coordZabsolut[i] - para->getParH(lev)->coordZ_SP[tempID[ii]]) <= dx))
+				if ((para->getParH(lev)->coordinateY[tempID[ii]] <= para->getParH(lev)->plp.coordYabsolut[i]) &&
+					((para->getParH(lev)->plp.coordYabsolut[i] - para->getParH(lev)->coordinateY[tempID[ii]]) <= dx) &&
+					(para->getParH(lev)->coordinateZ[tempID[ii]] <= para->getParH(lev)->plp.coordZabsolut[i]) &&
+					((para->getParH(lev)->plp.coordZabsolut[i] - para->getParH(lev)->coordinateZ[tempID[ii]]) <= dx))
 				{
 					para->getParH(lev)->plp.cellBaseID[i] = tempID[ii];
-					para->getParH(lev)->plp.coordXlocal[i] = (para->getParH(lev)->plp.coordXabsolut[i] - para->getParH(lev)->coordX_SP[tempID[ii]]);
-					para->getParH(lev)->plp.coordYlocal[i] = (para->getParH(lev)->plp.coordYabsolut[i] - para->getParH(lev)->coordY_SP[tempID[ii]]);
-					para->getParH(lev)->plp.coordZlocal[i] = (para->getParH(lev)->plp.coordZabsolut[i] - para->getParH(lev)->coordZ_SP[tempID[ii]]);
+					para->getParH(lev)->plp.coordXlocal[i] = (para->getParH(lev)->plp.coordXabsolut[i] - para->getParH(lev)->coordinateX[tempID[ii]]);
+					para->getParH(lev)->plp.coordYlocal[i] = (para->getParH(lev)->plp.coordYabsolut[i] - para->getParH(lev)->coordinateY[tempID[ii]]);
+					para->getParH(lev)->plp.coordZlocal[i] = (para->getParH(lev)->plp.coordZabsolut[i] - para->getParH(lev)->coordinateZ[tempID[ii]]);
 				}
 			}
 			//std::cout << "ID: " << i << ", CellBaseID: " << para->getParH(lev)->plp.cellBaseID[i] 
@@ -308,9 +308,9 @@ void propagateParticles(Parameter* para, unsigned int t)
 		unsigned int tPLP = t - (para->getOutputCount() * para->getParH(lev)->plp.numberOfTimestepsParticles);
 		//////////////////////////////////////////////////////////////////////////
 		//put some particles in the flow domain
-		MoveParticlesDevice(para->getParD(lev)->coordX_SP,
-							para->getParD(lev)->coordY_SP,
-							para->getParD(lev)->coordZ_SP,
+		MoveParticlesDevice(para->getParD(lev)->coordinateX,
+							para->getParD(lev)->coordinateY,
+							para->getParD(lev)->coordinateZ,
 							para->getParD(lev)->plp.coordXlocal,
 							para->getParD(lev)->plp.coordYlocal,
 							para->getParD(lev)->plp.coordZlocal,
@@ -320,22 +320,22 @@ void propagateParticles(Parameter* para, unsigned int t)
 							para->getParD(lev)->plp.veloX,
 							para->getParD(lev)->plp.veloY,
 							para->getParD(lev)->plp.veloZ,
-							para->getParD(lev)->d0SP.f[0],    
+							para->getParD(lev)->distributions.f[0],    
 							para->getParD(lev)->omega, 
 							para->getParD(lev)->plp.ID,
 							para->getParD(lev)->plp.cellBaseID,
-							para->getParD(lev)->geoSP,
-							para->getParD(lev)->neighborX_SP,
-							para->getParD(lev)->neighborY_SP,
-							para->getParD(lev)->neighborZ_SP,
-							para->getParD(lev)->neighborWSB_SP,
+							para->getParD(lev)->typeOfGridNode,
+							para->getParD(lev)->neighborX,
+							para->getParD(lev)->neighborY,
+							para->getParD(lev)->neighborZ,
+							para->getParD(lev)->neighborInverse,
 							lev,
 							tPLP,
 							para->getParD(lev)->plp.numberOfTimestepsParticles,
 							para->getParD(lev)->plp.numberOfParticles,
-							para->getParD(lev)->size_Mat_SP,
+							para->getParD(lev)->numberOfNodes,
 							para->getParD(lev)->numberofthreads,
-							para->getParD(lev)->evenOrOdd);
+							para->getParD(lev)->isEvenTimestep);
 
 	}
 }
@@ -455,11 +455,11 @@ void rearrangeGeometry(Parameter* para, CudaMemoryManager* cudaManager)
 		int counter2 = 0;
 		//////////////////////////////////////////////////////////////////////////
 		//redefine fluid nodes
-		for (uint index = 0; index < para->getParH(lev)->size_Mat_SP; index++)
+		for (uint index = 0; index < para->getParH(lev)->numberOfNodes; index++)
 		{
-			if (para->getParH(lev)->geoSP[index] == GEO_FLUID_OLD)
+			if (para->getParH(lev)->typeOfGridNode[index] == GEO_FLUID_OLD)
 			{
-				para->getParH(lev)->geoSP[index] = GEO_FLUID;
+				para->getParH(lev)->typeOfGridNode[index] = GEO_FLUID;
 				counter1++;
 			}
 			counter2++;
@@ -468,9 +468,9 @@ void rearrangeGeometry(Parameter* para, CudaMemoryManager* cudaManager)
 		printf("total number of nodes: %d \n", counter2);
 		//////////////////////////////////////////////////////////////////////////
 		//store the index information of the BC nodes in the geometry array 
-		for (int index = 0; index < para->getParH(lev)->QGeom.numberOfBCnodes; index++)
+		for (int index = 0; index < para->getParH(lev)->geometryBC.numberOfBCnodes; index++)
 		{
-			para->getParH(lev)->geoSP[para->getParH(lev)->QGeom.k[index]] = index + OFFSET_BCsInGeo;
+			para->getParH(lev)->typeOfGridNode[para->getParH(lev)->geometryBC.k[index]] = index + OFFSET_BCsInGeo;
 		}
 		//////////////////////////////////////////////////////////////////////////
 		//copy geometry nodes to the device

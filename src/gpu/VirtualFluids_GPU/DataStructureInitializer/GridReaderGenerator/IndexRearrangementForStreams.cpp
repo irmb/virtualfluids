@@ -329,9 +329,9 @@ bool IndexRearrangementForStreams::isSparseIndexInICellFCC(uint sizeOfICellFCC, 
 void IndexRearrangementForStreams::aggregateNodesInICellCFC(int level, std::vector<uint> &nodesCFC)
 {
     uint sparseIndex;
-    uint *neighborX = para->getParH(level)->neighborX_SP;
-    uint *neighborY = para->getParH(level)->neighborY_SP;
-    uint *neighborZ = para->getParH(level)->neighborZ_SP;
+    uint *neighborX = para->getParH(level)->neighborX;
+    uint *neighborY = para->getParH(level)->neighborY;
+    uint *neighborZ = para->getParH(level)->neighborZ;
 
     for (uint x = 0; x < para->getParH(level)->intCF.kCF; x++) {
         sparseIndex = para->getParH(level)->intCF.ICellCFC[x];
@@ -542,9 +542,9 @@ void IndexRearrangementForStreams::getGridInterfaceIndicesBorderBulkCF(int level
     // create some local variables for better readability
     uint *iCellCfcAll  = para->getParH(level)->intCF.ICellCFC;
     uint *iCellCffAll  = para->getParH(level)->intCF.ICellCFF;
-    uint *neighborX_SP = this->para->getParH(level)->neighborX_SP;
-    uint *neighborY_SP = this->para->getParH(level)->neighborY_SP;
-    uint *neighborZ_SP = this->para->getParH(level)->neighborZ_SP;
+    uint *neighborX = this->para->getParH(level)->neighborX;
+    uint *neighborY = this->para->getParH(level)->neighborY;
+    uint *neighborZ = this->para->getParH(level)->neighborZ;
     auto grid          = this->builder->getGrid((uint)level);
 
     std::vector<uint> iCellCfcBorderVector;
@@ -564,14 +564,14 @@ void IndexRearrangementForStreams::getGridInterfaceIndicesBorderBulkCF(int level
         sparseIndexOfICellBSW = iCellCfcAll[i];
 
         if (grid->isSparseIndexInFluidNodeIndicesBorder(sparseIndexOfICellBSW) ||
-            grid->isSparseIndexInFluidNodeIndicesBorder(neighborX_SP[sparseIndexOfICellBSW]) ||
-            grid->isSparseIndexInFluidNodeIndicesBorder(neighborY_SP[sparseIndexOfICellBSW]) ||
-            grid->isSparseIndexInFluidNodeIndicesBorder(neighborZ_SP[sparseIndexOfICellBSW]) ||
-            grid->isSparseIndexInFluidNodeIndicesBorder(neighborY_SP[neighborX_SP[sparseIndexOfICellBSW]]) ||
-            grid->isSparseIndexInFluidNodeIndicesBorder(neighborZ_SP[neighborX_SP[sparseIndexOfICellBSW]]) ||
-            grid->isSparseIndexInFluidNodeIndicesBorder(neighborZ_SP[neighborY_SP[sparseIndexOfICellBSW]]) ||
+            grid->isSparseIndexInFluidNodeIndicesBorder(neighborX[sparseIndexOfICellBSW]) ||
+            grid->isSparseIndexInFluidNodeIndicesBorder(neighborY[sparseIndexOfICellBSW]) ||
+            grid->isSparseIndexInFluidNodeIndicesBorder(neighborZ[sparseIndexOfICellBSW]) ||
+            grid->isSparseIndexInFluidNodeIndicesBorder(neighborY[neighborX[sparseIndexOfICellBSW]]) ||
+            grid->isSparseIndexInFluidNodeIndicesBorder(neighborZ[neighborX[sparseIndexOfICellBSW]]) ||
+            grid->isSparseIndexInFluidNodeIndicesBorder(neighborZ[neighborY[sparseIndexOfICellBSW]]) ||
             grid->isSparseIndexInFluidNodeIndicesBorder(
-                neighborZ_SP[neighborY_SP[neighborX_SP[sparseIndexOfICellBSW]]])) {
+                neighborZ[neighborY[neighborX[sparseIndexOfICellBSW]]])) {
 
             iCellCfcBorderVector.push_back(iCellCfcAll[i]);
             iCellCffBorderVector.push_back(iCellCffAll[i]);

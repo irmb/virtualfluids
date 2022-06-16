@@ -10,21 +10,21 @@ std::shared_ptr<TurbulentViscosityCumulantK17CompChim> TurbulentViscosityCumulan
 
 void TurbulentViscosityCumulantK17CompChim::run()
 {
-	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, para->getParH(level)->size_Mat_SP);
+	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, para->getParH(level)->numberOfNodes);
 
 	LB_Kernel_TurbulentViscosityCumulantK17CompChim <<< grid.grid, grid.threads >>>(
 		para->getParD(level)->omega,
-		para->getParD(level)->geoSP,
-		para->getParD(level)->neighborX_SP,
-		para->getParD(level)->neighborY_SP,
-		para->getParD(level)->neighborZ_SP,
-		para->getParD(level)->d0SP.f[0],
-		para->getParD(level)->rho_SP,
-		para->getParD(level)->vx_SP,
-		para->getParD(level)->vy_SP,
-		para->getParD(level)->vz_SP,
+		para->getParD(level)->typeOfGridNode,
+		para->getParD(level)->neighborX,
+		para->getParD(level)->neighborY,
+		para->getParD(level)->neighborZ,
+		para->getParD(level)->distributions.f[0],
+		para->getParD(level)->rho,
+		para->getParD(level)->velocityX,
+		para->getParD(level)->velocityY,
+		para->getParD(level)->velocityZ,
 		para->getParD(level)->turbViscosity,
-		(unsigned long)para->getParD(level)->size_Mat_SP,
+		(unsigned long)para->getParD(level)->numberOfNodes,
 		level,
 		para->getIsBodyForce(),
 		para->getForcesDev(),
@@ -32,7 +32,7 @@ void TurbulentViscosityCumulantK17CompChim::run()
 		para->getParD(level)->forceY_SP,
 		para->getParD(level)->forceZ_SP,
         para->getQuadricLimitersDev(),
-		para->getParD(level)->evenOrOdd);
+		para->getParD(level)->isEvenTimestep);
 	getLastCudaError("LB_Kernel_TurbulentViscosityCumulantK17CompChim execution failed");
 }
 

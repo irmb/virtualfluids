@@ -78,9 +78,9 @@ struct CFBorderBulk {
     std::vector<uint> iCellCFC               = { 1, 11, 3, 13, 5, 15, 7 };
     std::vector<uint> iCellCFF               = { 2, 12, 4, 14, 6, 16, 8 };
     uint sizeOfICellCf                       = (uint)iCellCFC.size();
-    uint neighborX_SP[17]                    = { 0u };
-    uint neighborY_SP[17]                    = { 0u };
-    uint neighborZ_SP[17]                    = { 0u };
+    uint neighborX[17]                    = { 0u };
+    uint neighborY[17]                    = { 0u };
+    uint neighborZ[17]                    = { 0u };
     int level                                = 0;
     std::vector<real> offsetCFx              = { 1, 11, 3, 13, 5, 15, 7 };
     std::vector<real> offsetCFy              = { 101, 111, 103, 113, 105, 115, 107 };
@@ -128,9 +128,9 @@ private:
         para->parD[cf.level]                    = std::make_shared<LBMSimulationParameter>();
         para->getParH(cf.level)->intCF.ICellCFC = &(cf.iCellCFC.front());
         para->getParH(cf.level)->intCF.ICellCFF = &(cf.iCellCFF.front());
-        para->getParH(cf.level)->neighborX_SP   = cf.neighborX_SP;
-        para->getParH(cf.level)->neighborY_SP   = cf.neighborY_SP;
-        para->getParH(cf.level)->neighborZ_SP   = cf.neighborZ_SP;
+        para->getParH(cf.level)->neighborX   = cf.neighborX;
+        para->getParH(cf.level)->neighborY   = cf.neighborY;
+        para->getParH(cf.level)->neighborZ   = cf.neighborZ;
         para->getParH(cf.level)->intCF.kCF      = cf.sizeOfICellCf;
         para->getParH(cf.level)->offCF.xOffCF   = &(cf.offsetCFx.front());
         para->getParH(cf.level)->offCF.yOffCF   = &(cf.offsetCFy.front());
@@ -266,9 +266,9 @@ struct SendIndicesForCommAfterFtoCX {
     std::vector<uint> iCellFCC = { 14, 16, 18 };
     uint kCF                   = (uint)iCellCFC.size();
     uint kFC                   = (uint)iCellFCC.size();
-    uint neighborX_SP[18]      = { 0u };
-    uint neighborY_SP[18]      = { 0u };
-    uint neighborZ_SP[18]      = { 0u };
+    uint neighborX[18]      = { 0u };
+    uint neighborY[18]      = { 0u };
+    uint neighborZ[18]      = { 0u };
 
     // output data
     std::vector<uint> sendIndicesForCommAfterFtoCPositions;
@@ -309,9 +309,9 @@ private:
         para->getParH(si.level)->intFC.ICellFCC = &(si.iCellFCC.front());
         para->getParH(si.level)->intCF.ICellCFC = &(si.iCellCFC.front());
         para->getParH(si.level)->intCF.kCF      = si.kCF;
-        para->getParH(si.level)->neighborX_SP   = si.neighborX_SP;
-        para->getParH(si.level)->neighborY_SP   = si.neighborY_SP;
-        para->getParH(si.level)->neighborZ_SP   = si.neighborZ_SP;
+        para->getParH(si.level)->neighborX   = si.neighborX;
+        para->getParH(si.level)->neighborY   = si.neighborY;
+        para->getParH(si.level)->neighborZ   = si.neighborZ;
 
         para->setNumberOfProcessNeighborsX(si.numberOfProcessNeighbors, si.level, "send");
         para->getParH(si.level)->sendProcessNeighborX[si.indexOfProcessNeighbor].index = si.sendIndices.data();

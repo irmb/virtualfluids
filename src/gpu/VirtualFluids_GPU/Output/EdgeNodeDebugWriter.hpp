@@ -19,9 +19,9 @@ namespace EdgeNodeDebugWriter
 {
 
 void addCoordinatesToNodeVector(SPtr<LBMSimulationParameter> parH, std::vector<UbTupleFloat3> &nodesVec, int indexInNodesVector, int sparseIndexOfNode){
-            double x1           = parH->coordX_SP[sparseIndexOfNode];
-            double x2           = parH->coordY_SP[sparseIndexOfNode];
-            double x3           = parH->coordZ_SP[sparseIndexOfNode];
+            double x1           = parH->coordinateX[sparseIndexOfNode];
+            double x2           = parH->coordinateY[sparseIndexOfNode];
+            double x3           = parH->coordinateZ[sparseIndexOfNode];
             nodesVec[indexInNodesVector] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
 }
 

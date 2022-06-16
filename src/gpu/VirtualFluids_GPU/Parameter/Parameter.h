@@ -59,22 +59,26 @@ class CudaStreamManager;
 //! \brief struct holds and manages the LB-parameter of the simulation
 //! \brief For this purpose it holds structures and pointer for host and device data, respectively.
 struct LBMSimulationParameter {
-    bool evenOrOdd;
+    bool isEvenTimestep;
     unsigned int numberofthreads;
 
     // distributions///////////
     // Distributions19 d0;
-    Distributions27 d0;
-    Distributions27 d0SP;
+    Distributions27 d0;  // DEPRECATED: distribution functions for full matrix (not sparse)
+    //! \brief store all distribution functions for the D3Q27
+    Distributions27 distributions;
 
     // distributions F3////////
     Distributions6 g6;
 
-    // thermo//////////////////
-    Distributions7 d7;
-    Distributions27 d27;
+    // advection diffusion //////////////////
+    //! \brief store all distribution functions for the D3Q7 advection diffusion field
+    Distributions7 distributionsAD7;
+    //! \brief store all distribution functions for the D3Q27 advection diffusion field
+    Distributions27 distributionsAD27;
     real *Conc, *Conc_Full;
     real diffusivity;
+    real omegaDiffusivity;
     // BC NoSlip
     TempforBoundaryConditions Temp;
     // BC Velocity
@@ -93,20 +97,20 @@ struct LBMSimulationParameter {
     real cStartx, cStarty, cStartz;
     real cFx, cFy, cFz;
 
-    // geo/////////////////////
-    int *geo;
-    unsigned int *geoSP;
+    // typeOfGridNode (formerly known as "geo") /////////////////////
+    int *geo; // DEPRECATED: typeOfGridNode for full matrix (not sparse)
+    //! \brief stores the type for every lattice node (f.e. fluid node)
+    unsigned int *typeOfGridNode;
 
     // k///////////////////////
-    unsigned int *k;
+    unsigned int *k; // DEPRECATED: index for full matrix
 
     // neighbor////////////////
-    // unsigned int *neighborX, *neighborY, *neighborZ;
-    unsigned int *neighborX_SP, *neighborY_SP, *neighborZ_SP, *neighborWSB_SP;
+    unsigned int *neighborX, *neighborY, *neighborZ, *neighborInverse;
 
     // coordinates////////////
-    // unsigned int *coordX_SP, *coordY_SP, *coordZ_SP;
-    real *coordX_SP, *coordY_SP, *coordZ_SP;
+    //! \brief store the coordinates for every lattice node 
+    real *coordinateX, *coordinateY, *coordinateZ;
 
     // body forces////////////
     real *forceX_SP, *forceY_SP, *forceZ_SP;
@@ -124,8 +128,10 @@ struct LBMSimulationParameter {
     std::vector<real> turbulenceIntensity;
 
     // macroscopic values//////
-    real *vx, *vy, *vz, *rho;
-    real *vx_SP, *vy_SP, *vz_SP, *rho_SP, *press_SP;
+    real *vx, *vy, *vz, *rho;  // DEPRECATED: macroscopic values for full matrix
+    //! \brief store the macroscopic values (velocity, density, pressure)
+    //! \brief for every lattice node
+    real *velocityX, *velocityY, *velocityZ, *rho, *pressure;
     real vis, omega;
 
     // derivations for iso test
@@ -146,7 +152,8 @@ struct LBMSimulationParameter {
     unsigned int sizePlaneXY, sizePlaneYZ, sizePlaneXZ;
 
     // size of sparse matrix//////////
-    unsigned int size_Mat_SP;
+    //! \brief stores the number of nodes (based on indirect addressing scheme)
+    unsigned int numberOfNodes;
     unsigned int size_Array_SP;
 
     // size of Plane btw. 2 GPUs//////
@@ -199,20 +206,20 @@ struct LBMSimulationParameter {
     unsigned int mem_size_kFC_off;
 
     // BC's////////////////////
-    QforBoundaryConditions QWall, Qinflow, Qoutflow, QSlip, QStress;
+    QforBoundaryConditions noSlipBC, velocityBC, outflowBC, slipBC, stressBC;
     unsigned int numberOfNoSlipBCnodes = 0, numberOfVeloBCnodes = 0, numberOfOutflowBCnodes = 0, numberOfSlipBCnodes = 0, numberOfStressBCnodes = 0;
-    unsigned int kQread, numberOfVeloBCnodesRead, kOutflowQread, kSlipQread, kStressQread;
+    unsigned int numberOfNoSlipBCnodesRead, numberOfVeloBCnodesRead, numberOfOutflowBCnodesRead, numberOfSlipBCnodesRead, numberOfStressBCnodesRead;
+    QforBoundaryConditions pressureBC;
+    unsigned int numberOfPressureBCnodes = 0, numberOfPressureBCnodesRead;
 
-    QforBoundaryConditions QpressX0, QpressX1, QpressY0, QpressY1, QpressZ0, QpressZ1;
-    QforBoundaryConditions QPropeller;
-    QforBoundaryConditions QPress;
-    QforBoundaryConditions QGeom;
-    QforBoundaryConditions QGeomNormalX, QGeomNormalY, QGeomNormalZ;
-    QforBoundaryConditions QInflowNormalX, QInflowNormalY, QInflowNormalZ;
-    QforBoundaryConditions QOutflowNormalX, QOutflowNormalY, QOutflowNormalZ;
-    QforBoundaryConditions QInlet, QOutlet, QPeriodic;
-    unsigned int kInletQread, kOutletQread;
-    unsigned int kPressQ = 0, kPressQread;
+    QforBoundaryConditions QpressX0, QpressX1, QpressY0, QpressY1, QpressZ0, QpressZ1; // DEPRECATED
+    QforBoundaryConditions propellerBC;
+    QforBoundaryConditions geometryBC;
+    QforBoundaryConditions geometryBCnormalX, geometryBCnormalY, geometryBCnormalZ;
+    QforBoundaryConditions inflowBCnormalX, inflowBCnormalY, inflowBCnormalZ;
+    QforBoundaryConditions outflowBCnormalX, outflowBCnormalY, outflowBCnormalZ;
+    QforBoundaryConditions QInlet, QOutlet, QPeriodic; // DEPRECATED
+    unsigned int kInletQread, kOutletQread;  // DEPRECATED
 
     WallModelParameters wallModel;
 

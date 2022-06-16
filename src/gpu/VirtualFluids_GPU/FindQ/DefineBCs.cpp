@@ -31,18 +31,18 @@ void findQ27(Parameter* para, CudaMemoryManager* cudaManager)
    {
       findKforQ(para, lev);
 
-      para->getParH(lev)->numberOfNoSlipBCnodes       = para->getParH(lev)->QWall.numberOfBCnodes;
-	  para->getParD(lev)->numberOfNoSlipBCnodes       = para->getParH(lev)->QWall.numberOfBCnodes;
-	  para->getParD(lev)->QWall.numberOfBCnodes = para->getParH(lev)->QWall.numberOfBCnodes;
+      para->getParH(lev)->numberOfNoSlipBCnodes       = para->getParH(lev)->noSlipBC.numberOfBCnodes;
+	  para->getParD(lev)->numberOfNoSlipBCnodes       = para->getParH(lev)->noSlipBC.numberOfBCnodes;
+	  para->getParD(lev)->noSlipBC.numberOfBCnodes = para->getParH(lev)->noSlipBC.numberOfBCnodes;
       printf("numberOfBCnodes= %d\n", para->getParH(lev)->numberOfNoSlipBCnodes);
 
 	  cudaManager->cudaAllocWallBC(lev);
 
       findQ(para, lev);
 
-	  para->getParH(lev)->numberOfNoSlipBCnodes       = para->getParH(lev)->QWall.numberOfBCnodes;
-	  para->getParD(lev)->numberOfNoSlipBCnodes       = para->getParH(lev)->QWall.numberOfBCnodes;
-	  para->getParD(lev)->QWall.numberOfBCnodes = para->getParH(lev)->QWall.numberOfBCnodes;
+	  para->getParH(lev)->numberOfNoSlipBCnodes       = para->getParH(lev)->noSlipBC.numberOfBCnodes;
+	  para->getParD(lev)->numberOfNoSlipBCnodes       = para->getParH(lev)->noSlipBC.numberOfBCnodes;
+	  para->getParD(lev)->noSlipBC.numberOfBCnodes = para->getParH(lev)->noSlipBC.numberOfBCnodes;
       printf("numberOfBCnodes= %d\n", para->getParH(lev)->numberOfNoSlipBCnodes);
 
 	  cudaManager->cudaCopyWallBC(lev);
@@ -60,8 +60,8 @@ void findBC27(Parameter* para, CudaMemoryManager* cudaManager)
       //Inflow
       findKforQInflow(para);
 
-      para->getParH(para->getCoarse())->numberOfVeloBCnodes = para->getParH(para->getCoarse())->Qinflow.numberOfBCnodes;
-	  para->getParD(para->getCoarse())->numberOfVeloBCnodes = para->getParH(para->getCoarse())->Qinflow.numberOfBCnodes;
+      para->getParH(para->getCoarse())->numberOfVeloBCnodes = para->getParH(para->getCoarse())->velocityBC.numberOfBCnodes;
+	  para->getParD(para->getCoarse())->numberOfVeloBCnodes = para->getParH(para->getCoarse())->velocityBC.numberOfBCnodes;
       printf("numberOfVeloBCnodes= %d\n", para->getParH(para->getCoarse())->numberOfVeloBCnodes);
 
 	  cudaManager->cudaAllocVeloBC(0); //level = 0
@@ -79,8 +79,8 @@ void findBC27(Parameter* para, CudaMemoryManager* cudaManager)
    //   //Outflow
 	  // findKforQOutflow(para);
 
-	  // para->getParH(para->getCoarse())->numberOfOutflowBCnodes = para->getParH(para->getCoarse())->Qoutflow.numberOfBCnodes;
-	  // para->getParD(para->getCoarse())->numberOfOutflowBCnodes = para->getParH(para->getCoarse())->Qoutflow.numberOfBCnodes;
+	  // para->getParH(para->getCoarse())->numberOfOutflowBCnodes = para->getParH(para->getCoarse())->outflowBC.numberOfBCnodes;
+	  // para->getParD(para->getCoarse())->numberOfOutflowBCnodes = para->getParH(para->getCoarse())->outflowBC.numberOfBCnodes;
 	  // printf("numberOfOutflowBCnodes= %d\n", para->getParH(para->getCoarse())->numberOfOutflowBCnodes);
 
 	  // para->cudaAllocPressBC();

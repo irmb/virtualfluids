@@ -20,8 +20,8 @@ void findQ(Parameter* para, int lev)
    int* geo_mat                 = para->getParH(lev)->geo;
    unsigned int* kk             = para->getParH(para->getCoarse())->k;
    unsigned int sizeQ           = para->getParH(lev)->numberOfNoSlipBCnodes;
-   real* QQ                  = para->getParH(lev)->QWall.q27[0];
-   QforBoundaryConditions &QIN  = para->getParH(lev)->QWall;
+   real* QQ                  = para->getParH(lev)->noSlipBC.q27[0];
+   QforBoundaryConditions &QIN  = para->getParH(lev)->noSlipBC;
    QIN.numberOfBCnodes = 0;
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //int relx, rely, relz;
@@ -198,7 +198,7 @@ void findKforQ(Parameter* para, int lev)
    unsigned int nny             = para->getParH(lev)->gridNY;
    unsigned int nnz             = para->getParH(lev)->gridNZ;
    int* geo_mat                 = para->getParH(lev)->geo;
-   QforBoundaryConditions &QIN  = para->getParH(lev)->QWall;
+   QforBoundaryConditions &QIN  = para->getParH(lev)->noSlipBC;
    QIN.numberOfBCnodes = 0;
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -410,14 +410,14 @@ void findQInflow(Parameter* para)
    int* geo_mat                  = para->getParH(para->getCoarse())->geo;
    unsigned int* kk              = para->getParH(para->getCoarse())->k;
    unsigned int sizeQ            = para->getParH(para->getCoarse())->numberOfVeloBCnodes;
-   //real* rhoBC                = para->getParH(para->getCoarse())->Qinflow.RhoBC;
+   //real* rhoBC                = para->getParH(para->getCoarse())->velocityBC.RhoBC;
    real u0                    = para->getVelocity();
-   real* vx                   = para->getParH(para->getCoarse())->Qinflow.Vx;
-   real* vy                   = para->getParH(para->getCoarse())->Qinflow.Vy;
-   real* vz                   = para->getParH(para->getCoarse())->Qinflow.Vz;
-   real*deltaVz               = para->getParH(para->getCoarse())->Qinflow.deltaVz;
-   real* QQ                   = para->getParH(para->getCoarse())->Qinflow.q27[0];
-   QforBoundaryConditions &QIN   = para->getParH(para->getCoarse())->Qinflow;
+   real* vx                   = para->getParH(para->getCoarse())->velocityBC.Vx;
+   real* vy                   = para->getParH(para->getCoarse())->velocityBC.Vy;
+   real* vz                   = para->getParH(para->getCoarse())->velocityBC.Vz;
+   real*deltaVz               = para->getParH(para->getCoarse())->velocityBC.deltaVz;
+   real* QQ                   = para->getParH(para->getCoarse())->velocityBC.q27[0];
+   QforBoundaryConditions &QIN   = para->getParH(para->getCoarse())->velocityBC;
    //unsigned int nxny = nx*ny;
    QIN.numberOfBCnodes = 0;
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -676,7 +676,7 @@ void findKforQInflow(Parameter* para)
    unsigned int nny              = para->getParH(para->getCoarse())->gridNY;
    unsigned int nnz              = para->getParH(para->getCoarse())->gridNZ;
    int* geo_mat                  = para->getParH(para->getCoarse())->geo;
-   QforBoundaryConditions &QIN   = para->getParH(para->getCoarse())->Qinflow;
+   QforBoundaryConditions &QIN   = para->getParH(para->getCoarse())->velocityBC;
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    QIN.numberOfBCnodes = 0;
 
@@ -760,14 +760,14 @@ void findQOutflow(Parameter* para)
    int* geo_mat                  = para->getParH(para->getCoarse())->geo;
    unsigned int* kk              = para->getParH(para->getCoarse())->k;
    unsigned int sizeQ            = para->getParH(para->getCoarse())->numberOfOutflowBCnodes;
-   real* rhoBC                = para->getParH(para->getCoarse())->Qoutflow.RhoBC;
+   real* rhoBC                = para->getParH(para->getCoarse())->outflowBC.RhoBC;
    real u0                    = para->getVelocity();
-   real* vx                   = para->getParH(para->getCoarse())->Qoutflow.Vx;
-   real* vy                   = para->getParH(para->getCoarse())->Qoutflow.Vy;
-   real* vz                   = para->getParH(para->getCoarse())->Qoutflow.Vz;
-   real*deltaVz               = para->getParH(para->getCoarse())->Qoutflow.deltaVz;
-   real* QQ                   = para->getParH(para->getCoarse())->Qoutflow.q27[0];
-   QforBoundaryConditions &QIN   = para->getParH(para->getCoarse())->Qoutflow;
+   real* vx                   = para->getParH(para->getCoarse())->outflowBC.Vx;
+   real* vy                   = para->getParH(para->getCoarse())->outflowBC.Vy;
+   real* vz                   = para->getParH(para->getCoarse())->outflowBC.Vz;
+   real*deltaVz               = para->getParH(para->getCoarse())->outflowBC.deltaVz;
+   real* QQ                   = para->getParH(para->getCoarse())->outflowBC.q27[0];
+   QforBoundaryConditions &QIN   = para->getParH(para->getCoarse())->outflowBC;
    unsigned int nxny = nx*ny;
    QIN.numberOfBCnodes = 0;
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -886,7 +886,7 @@ void findKforQOutflow(Parameter* para)
    unsigned int nny              = para->getParH(para->getCoarse())->gridNY;
    unsigned int nnz              = para->getParH(para->getCoarse())->gridNZ;
    int* geo_mat                  = para->getParH(para->getCoarse())->geo;
-   QforBoundaryConditions &QIN   = para->getParH(para->getCoarse())->Qoutflow;
+   QforBoundaryConditions &QIN   = para->getParH(para->getCoarse())->outflowBC;
    QIN.numberOfBCnodes = 0;
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

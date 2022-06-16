@@ -27,14 +27,14 @@ void writeGridInterfaceLines(Parameter *para, int level, const uint *coarse, con
     int actualNodeNumber = 0;
     for (uint u = 0; u < numberOfNodes; u++) {
         const int posCoarse   = coarse[u];
-        const double x1Coarse = para->getParH(level)->coordX_SP[posCoarse];
-        const double x2Coarse = para->getParH(level)->coordY_SP[posCoarse];
-        const double x3Coarse = para->getParH(level)->coordZ_SP[posCoarse];
+        const double x1Coarse = para->getParH(level)->coordinateX[posCoarse];
+        const double x2Coarse = para->getParH(level)->coordinateY[posCoarse];
+        const double x3Coarse = para->getParH(level)->coordinateZ[posCoarse];
 
         const int posFine   = fine[u];
-        const double x1Fine = para->getParH(level + 1)->coordX_SP[posFine];
-        const double x2Fine = para->getParH(level + 1)->coordY_SP[posFine];
-        const double x3Fine = para->getParH(level + 1)->coordZ_SP[posFine];
+        const double x1Fine = para->getParH(level + 1)->coordinateX[posFine];
+        const double x2Fine = para->getParH(level + 1)->coordinateY[posFine];
+        const double x3Fine = para->getParH(level + 1)->coordinateZ[posFine];
 
         nodes[actualNodeNumber++] = makeUbTuple(float(x1Coarse), float(x2Coarse), float(x3Coarse));
         nodes[actualNodeNumber++] = makeUbTuple(float(x1Fine), float(x2Fine), float(x3Fine));
@@ -72,13 +72,13 @@ void writeGridInterfaceLinesNeighbors(Parameter *para, int level, const uint *in
     int actualNodeNumber = 0;
     for (uint u = 0; u < numberOfNodes; u++) {
         const int pos   = interfaceIndices[u];
-        const double x1 = para->getParH(level)->coordX_SP[pos];
-        const double x2 = para->getParH(level)->coordY_SP[pos];
-        const double x3 = para->getParH(level)->coordZ_SP[pos];
+        const double x1 = para->getParH(level)->coordinateX[pos];
+        const double x2 = para->getParH(level)->coordinateY[pos];
+        const double x3 = para->getParH(level)->coordinateZ[pos];
 
-        const double x1Neighbor = para->getParH(level)->coordX_SP[para->getParH(level)->neighborX_SP[pos]];
-        const double x2Neighbor = para->getParH(level)->coordY_SP[para->getParH(level)->neighborY_SP[pos]];
-        const double x3Neighbor = para->getParH(level)->coordZ_SP[para->getParH(level)->neighborZ_SP[pos]];
+        const double x1Neighbor = para->getParH(level)->coordinateX[para->getParH(level)->neighborX[pos]];
+        const double x2Neighbor = para->getParH(level)->coordinateY[para->getParH(level)->neighborY[pos]];
+        const double x3Neighbor = para->getParH(level)->coordinateZ[para->getParH(level)->neighborZ[pos]];
 
         nodes[actualNodeNumber++] = (makeUbTuple(float(x1), float(x2), float(x3)));
         nodes[actualNodeNumber++] = (makeUbTuple(float(x1Neighbor), float(x2Neighbor), float(x3Neighbor)));
@@ -148,9 +148,9 @@ void writeInterfaceLinesDebugOff(Parameter *para)
 
             int posFine = para->getParH(level)->intCF.ICellCFF[u];
 
-            double x1Fine = para->getParH(level + 1)->coordX_SP[posFine];
-            double x2Fine = para->getParH(level + 1)->coordY_SP[posFine];
-            double x3Fine = para->getParH(level + 1)->coordZ_SP[posFine];
+            double x1Fine = para->getParH(level + 1)->coordinateX[posFine];
+            double x2Fine = para->getParH(level + 1)->coordinateY[posFine];
+            double x3Fine = para->getParH(level + 1)->coordinateZ[posFine];
 
             double x1 = x1Fine + xoff;
             double x2 = x2Fine + yoff;
@@ -185,9 +185,9 @@ void writeInterfacePointsDebugCFC(Parameter *para)
         for (unsigned int u = 0; u < para->getParH(level)->K_CF; u++) {
             int pos = para->getParH(level)->intCF.ICellCFC[u];
 
-            double x1 = para->getParH(level)->coordX_SP[pos];
-            double x2 = para->getParH(level)->coordY_SP[pos];
-            double x3 = para->getParH(level)->coordZ_SP[pos];
+            double x1 = para->getParH(level)->coordinateX[pos];
+            double x2 = para->getParH(level)->coordinateY[pos];
+            double x3 = para->getParH(level)->coordinateZ[pos];
 
             nodesVec2[nodeCount2++] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
         }
@@ -205,17 +205,17 @@ void writeBcPointsDebug(Parameter *para)
 
     for (int level = 0; level <= para->getMaxLevel(); level++) // evtl. Maxlevel + 1
     {
-        nodeNumberVec += (int)para->getParH(level)->QWall.numberOfBCnodes;
+        nodeNumberVec += (int)para->getParH(level)->noSlipBC.numberOfBCnodes;
     }
     nodesVec2.resize(nodeNumberVec * 8);
     int nodeCount2 = 0;
     for (int level = 0; level <= para->getMaxLevel(); level++) {
-        for (int u = 0; u < para->getParH(level)->QWall.numberOfBCnodes; u++) {
-            int pos = para->getParH(level)->QWall.k[u];
+        for (int u = 0; u < para->getParH(level)->noSlipBC.numberOfBCnodes; u++) {
+            int pos = para->getParH(level)->noSlipBC.k[u];
 
-            double x1 = para->getParH(level)->coordX_SP[pos];
-            double x2 = para->getParH(level)->coordY_SP[pos];
-            double x3 = para->getParH(level)->coordZ_SP[pos];
+            double x1 = para->getParH(level)->coordinateX[pos];
+            double x2 = para->getParH(level)->coordinateY[pos];
+            double x3 = para->getParH(level)->coordinateZ[pos];
 
             nodesVec2[nodeCount2++] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
         }
@@ -233,17 +233,17 @@ void writePressPointsDebug(Parameter *para)
 
     for (int level = 0; level <= para->getMaxLevel(); level++) // evtl. Maxlevel + 1
     {
-        nodeNumberVec += (int)para->getParH(level)->QPress.numberOfBCnodes;
+        nodeNumberVec += (int)para->getParH(level)->pressureBC.numberOfBCnodes;
     }
     nodesVec.resize(nodeNumberVec);
     int nodeCount2 = 0;
     for (int level = 0; level <= para->getMaxLevel(); level++) {
-        for (int u = 0; u < para->getParH(level)->QPress.numberOfBCnodes; u++) {
-            int pos = para->getParH(level)->QPress.k[u];
+        for (int u = 0; u < para->getParH(level)->pressureBC.numberOfBCnodes; u++) {
+            int pos = para->getParH(level)->pressureBC.k[u];
 
-            double x1 = para->getParH(level)->coordX_SP[pos];
-            double x2 = para->getParH(level)->coordY_SP[pos];
-            double x3 = para->getParH(level)->coordZ_SP[pos];
+            double x1 = para->getParH(level)->coordinateX[pos];
+            double x2 = para->getParH(level)->coordinateY[pos];
+            double x3 = para->getParH(level)->coordinateZ[pos];
 
             nodesVec[nodeCount2++] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
         }
@@ -260,17 +260,17 @@ void writePressNeighborPointsDebug(Parameter *para)
     int nodeNumberVec = 0;
 
     for (int level = 0; level <= para->getMaxLevel(); level++) {
-        nodeNumberVec += (int)para->getParH(level)->QPress.numberOfBCnodes;
+        nodeNumberVec += (int)para->getParH(level)->pressureBC.numberOfBCnodes;
     }
     nodesVec.resize(nodeNumberVec);
     int nodeCount2 = 0;
     for (int level = 0; level <= para->getMaxLevel(); level++) {
-        for (int u = 0; u < para->getParH(level)->QPress.numberOfBCnodes; u++) {
-            int pos = para->getParH(level)->QPress.kN[u];
+        for (int u = 0; u < para->getParH(level)->pressureBC.numberOfBCnodes; u++) {
+            int pos = para->getParH(level)->pressureBC.kN[u];
 
-            real x1 = para->getParH(level)->coordX_SP[pos];
-            real x2 = para->getParH(level)->coordY_SP[pos];
-            real x3 = para->getParH(level)->coordZ_SP[pos];
+            real x1 = para->getParH(level)->coordinateX[pos];
+            real x2 = para->getParH(level)->coordinateY[pos];
+            real x3 = para->getParH(level)->coordinateZ[pos];
 
             nodesVec[nodeCount2++] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
         }
@@ -287,15 +287,15 @@ void writeNeighborXPointsDebug(Parameter *para)
     int nodeNumberVec = 0;
 
     for (int level = 0; level <= para->getMaxLevel(); level++) {
-        nodeNumberVec += (int)para->getParH(level)->size_Mat_SP;
+        nodeNumberVec += (int)para->getParH(level)->numberOfNodes;
     }
     nodesVec.resize(nodeNumberVec);
     int nodeCount2 = 0;
     for (int level = 0; level <= para->getMaxLevel(); level++) {
-        for (unsigned int u = 0; u < para->getParH(level)->size_Mat_SP; u++) {
-            real x1 = para->getParH(level)->coordX_SP[para->getParH(level)->neighborX_SP[u]];
-            real x2 = para->getParH(level)->coordY_SP[para->getParH(level)->neighborX_SP[u]];
-            real x3 = para->getParH(level)->coordZ_SP[para->getParH(level)->neighborX_SP[u]];
+        for (unsigned int u = 0; u < para->getParH(level)->numberOfNodes; u++) {
+            real x1 = para->getParH(level)->coordinateX[para->getParH(level)->neighborX[u]];
+            real x2 = para->getParH(level)->coordinateY[para->getParH(level)->neighborX[u]];
+            real x3 = para->getParH(level)->coordinateZ[para->getParH(level)->neighborX[u]];
 
             nodesVec[nodeCount2++] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
         }
@@ -314,23 +314,23 @@ void writeNeighborXLinesDebug(Parameter *para)
 
     for (int level = 0; level < para->getMaxLevel(); level++) // evtl. Maxlevel + 1
     {
-        nodeNumberVec += (int)para->getParH(level)->size_Mat_SP;
+        nodeNumberVec += (int)para->getParH(level)->numberOfNodes;
     }
     nodesVec.resize(nodeNumberVec * 2);
     int nodeCount = 0;
     for (int level = 0; level < para->getMaxLevel(); level++) {
-        for (unsigned int u = 0; u < para->getParH(level)->size_Mat_SP; u++) {
-            real x1  = para->getParH(level)->coordX_SP[u];
-            real x2  = para->getParH(level)->coordY_SP[u];
-            real x3  = para->getParH(level)->coordZ_SP[u];
-            real x1N = para->getParH(level)->coordX_SP[para->getParH(level)->neighborX_SP[u]];
-            real x2N = para->getParH(level)->coordY_SP[para->getParH(level)->neighborX_SP[u]];
-            real x3N = para->getParH(level)->coordZ_SP[para->getParH(level)->neighborX_SP[u]];
+        for (unsigned int u = 0; u < para->getParH(level)->numberOfNodes; u++) {
+            real x1  = para->getParH(level)->coordinateX[u];
+            real x2  = para->getParH(level)->coordinateY[u];
+            real x3  = para->getParH(level)->coordinateZ[u];
+            real x1N = para->getParH(level)->coordinateX[para->getParH(level)->neighborX[u]];
+            real x2N = para->getParH(level)->coordinateY[para->getParH(level)->neighborX[u]];
+            real x3N = para->getParH(level)->coordinateZ[para->getParH(level)->neighborX[u]];
 
             nodesVec[nodeCount++] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
             nodesVec[nodeCount++] = (makeUbTuple((float)(x1N), (float)(x2N), (float)(x3N)));
 
-            if (para->getParH(level)->geoSP[u] == GEO_FLUID) {
+            if (para->getParH(level)->typeOfGridNode[u] == GEO_FLUID) {
                 cellsVec.push_back(makeUbTuple(nodeCount - 2, nodeCount - 1));
             }
         }
@@ -347,15 +347,15 @@ void writeNeighborYPointsDebug(Parameter *para)
     int nodeNumberVec = 0;
 
     for (int level = 0; level <= para->getMaxLevel(); level++) {
-        nodeNumberVec += (int)para->getParH(level)->size_Mat_SP;
+        nodeNumberVec += (int)para->getParH(level)->numberOfNodes;
     }
     nodesVec.resize(nodeNumberVec);
     int nodeCount2 = 0;
     for (int level = 0; level <= para->getMaxLevel(); level++) {
-        for (unsigned int u = 0; u < para->getParH(level)->size_Mat_SP; u++) {
-            real x1 = para->getParH(level)->coordX_SP[para->getParH(level)->neighborY_SP[u]];
-            real x2 = para->getParH(level)->coordY_SP[para->getParH(level)->neighborY_SP[u]];
-            real x3 = para->getParH(level)->coordZ_SP[para->getParH(level)->neighborY_SP[u]];
+        for (unsigned int u = 0; u < para->getParH(level)->numberOfNodes; u++) {
+            real x1 = para->getParH(level)->coordinateX[para->getParH(level)->neighborY[u]];
+            real x2 = para->getParH(level)->coordinateY[para->getParH(level)->neighborY[u]];
+            real x3 = para->getParH(level)->coordinateZ[para->getParH(level)->neighborY[u]];
 
             nodesVec[nodeCount2++] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
         }
@@ -374,23 +374,23 @@ void writeNeighborYLinesDebug(Parameter *para)
 
     for (int level = 0; level < para->getMaxLevel(); level++) // evtl. Maxlevel + 1
     {
-        nodeNumberVec += (int)para->getParH(level)->size_Mat_SP;
+        nodeNumberVec += (int)para->getParH(level)->numberOfNodes;
     }
     nodesVec.resize(nodeNumberVec * 2);
     int nodeCount = 0;
     for (int level = 0; level < para->getMaxLevel(); level++) {
-        for (unsigned int u = 0; u < para->getParH(level)->size_Mat_SP; u++) {
-            real x1  = para->getParH(level)->coordX_SP[u];
-            real x2  = para->getParH(level)->coordY_SP[u];
-            real x3  = para->getParH(level)->coordZ_SP[u];
-            real x1N = para->getParH(level)->coordX_SP[para->getParH(level)->neighborY_SP[u]];
-            real x2N = para->getParH(level)->coordY_SP[para->getParH(level)->neighborY_SP[u]];
-            real x3N = para->getParH(level)->coordZ_SP[para->getParH(level)->neighborY_SP[u]];
+        for (unsigned int u = 0; u < para->getParH(level)->numberOfNodes; u++) {
+            real x1  = para->getParH(level)->coordinateX[u];
+            real x2  = para->getParH(level)->coordinateY[u];
+            real x3  = para->getParH(level)->coordinateZ[u];
+            real x1N = para->getParH(level)->coordinateX[para->getParH(level)->neighborY[u]];
+            real x2N = para->getParH(level)->coordinateY[para->getParH(level)->neighborY[u]];
+            real x3N = para->getParH(level)->coordinateZ[para->getParH(level)->neighborY[u]];
 
             nodesVec[nodeCount++] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
             nodesVec[nodeCount++] = (makeUbTuple((float)(x1N), (float)(x2N), (float)(x3N)));
 
-            if (para->getParH(level)->geoSP[u] == GEO_FLUID) {
+            if (para->getParH(level)->typeOfGridNode[u] == GEO_FLUID) {
                 cellsVec.push_back(makeUbTuple(nodeCount - 2, nodeCount - 1));
             }
         }
@@ -407,15 +407,15 @@ void writeNeighborZPointsDebug(Parameter *para)
     int nodeNumberVec = 0;
 
     for (int level = 0; level <= para->getMaxLevel(); level++) {
-        nodeNumberVec += (int)para->getParH(level)->size_Mat_SP;
+        nodeNumberVec += (int)para->getParH(level)->numberOfNodes;
     }
     nodesVec.resize(nodeNumberVec);
     int nodeCount2 = 0;
     for (int level = 0; level <= para->getMaxLevel(); level++) {
-        for (unsigned int u = 0; u < para->getParH(level)->size_Mat_SP; u++) {
-            real x1 = para->getParH(level)->coordX_SP[para->getParH(level)->neighborZ_SP[u]];
-            real x2 = para->getParH(level)->coordY_SP[para->getParH(level)->neighborZ_SP[u]];
-            real x3 = para->getParH(level)->coordZ_SP[para->getParH(level)->neighborZ_SP[u]];
+        for (unsigned int u = 0; u < para->getParH(level)->numberOfNodes; u++) {
+            real x1 = para->getParH(level)->coordinateX[para->getParH(level)->neighborZ[u]];
+            real x2 = para->getParH(level)->coordinateY[para->getParH(level)->neighborZ[u]];
+            real x3 = para->getParH(level)->coordinateZ[para->getParH(level)->neighborZ[u]];
 
             nodesVec[nodeCount2++] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
         }
@@ -434,23 +434,23 @@ void writeNeighborZLinesDebug(Parameter *para)
 
     for (int level = 0; level < para->getMaxLevel(); level++) // evtl. Maxlevel + 1
     {
-        nodeNumberVec += (int)para->getParH(level)->size_Mat_SP;
+        nodeNumberVec += (int)para->getParH(level)->numberOfNodes;
     }
     nodesVec.resize(nodeNumberVec * 2);
     int nodeCount = 0;
     for (int level = 0; level < para->getMaxLevel(); level++) {
-        for (unsigned int u = 0; u < para->getParH(level)->size_Mat_SP; u++) {
-            real x1  = para->getParH(level)->coordX_SP[u];
-            real x2  = para->getParH(level)->coordY_SP[u];
-            real x3  = para->getParH(level)->coordZ_SP[u];
-            real x1N = para->getParH(level)->coordX_SP[para->getParH(level)->neighborZ_SP[u]];
-            real x2N = para->getParH(level)->coordY_SP[para->getParH(level)->neighborZ_SP[u]];
-            real x3N = para->getParH(level)->coordZ_SP[para->getParH(level)->neighborZ_SP[u]];
+        for (unsigned int u = 0; u < para->getParH(level)->numberOfNodes; u++) {
+            real x1  = para->getParH(level)->coordinateX[u];
+            real x2  = para->getParH(level)->coordinateY[u];
+            real x3  = para->getParH(level)->coordinateZ[u];
+            real x1N = para->getParH(level)->coordinateX[para->getParH(level)->neighborZ[u]];
+            real x2N = para->getParH(level)->coordinateY[para->getParH(level)->neighborZ[u]];
+            real x3N = para->getParH(level)->coordinateZ[para->getParH(level)->neighborZ[u]];
 
             nodesVec[nodeCount++] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
             nodesVec[nodeCount++] = (makeUbTuple((float)(x1N), (float)(x2N), (float)(x3N)));
 
-            if (para->getParH(level)->geoSP[u] == GEO_FLUID) {
+            if (para->getParH(level)->typeOfGridNode[u] == GEO_FLUID) {
                 cellsVec.push_back(makeUbTuple(nodeCount - 2, nodeCount - 1));
             }
         }
@@ -477,12 +477,12 @@ void writeInterfaceCellsDebugCFC(Parameter *para)
         for (unsigned int u = 0; u < para->getParH(level)->K_CF; u++) {
             int pos = para->getParH(level)->intCF.ICellCFC[u];
 
-            double x1             = para->getParH(level)->coordX_SP[pos];
-            double x2             = para->getParH(level)->coordY_SP[pos];
-            double x3             = para->getParH(level)->coordZ_SP[pos];
-            double x1P            = para->getParH(level)->coordX_SP[para->getParH(level)->neighborX_SP[pos]];
-            double x2P            = para->getParH(level)->coordY_SP[para->getParH(level)->neighborY_SP[pos]];
-            double x3P            = para->getParH(level)->coordZ_SP[para->getParH(level)->neighborZ_SP[pos]];
+            double x1             = para->getParH(level)->coordinateX[pos];
+            double x2             = para->getParH(level)->coordinateY[pos];
+            double x3             = para->getParH(level)->coordinateZ[pos];
+            double x1P            = para->getParH(level)->coordinateX[para->getParH(level)->neighborX[pos]];
+            double x2P            = para->getParH(level)->coordinateY[para->getParH(level)->neighborY[pos]];
+            double x3P            = para->getParH(level)->coordinateZ[para->getParH(level)->neighborZ[pos]];
             nodesVec[nodeCount++] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
             nodesVec[nodeCount++] = (makeUbTuple((float)(x1P), (float)(x2), (float)(x3)));
             nodesVec[nodeCount++] = (makeUbTuple((float)(x1P), (float)(x2P), (float)(x3)));
@@ -518,12 +518,12 @@ void writeInterfaceCellsDebugCFF(Parameter *para)
         for (unsigned int u = 0; u < para->getParH(level)->K_CF; u++) {
             int pos = para->getParH(level)->intCF.ICellCFF[u];
 
-            double x1             = para->getParH(level + 1)->coordX_SP[pos];
-            double x2             = para->getParH(level + 1)->coordY_SP[pos];
-            double x3             = para->getParH(level + 1)->coordZ_SP[pos];
-            double x1P            = para->getParH(level + 1)->coordX_SP[para->getParH(level + 1)->neighborX_SP[pos]];
-            double x2P            = para->getParH(level + 1)->coordY_SP[para->getParH(level + 1)->neighborY_SP[pos]];
-            double x3P            = para->getParH(level + 1)->coordZ_SP[para->getParH(level + 1)->neighborZ_SP[pos]];
+            double x1             = para->getParH(level + 1)->coordinateX[pos];
+            double x2             = para->getParH(level + 1)->coordinateY[pos];
+            double x3             = para->getParH(level + 1)->coordinateZ[pos];
+            double x1P            = para->getParH(level + 1)->coordinateX[para->getParH(level + 1)->neighborX[pos]];
+            double x2P            = para->getParH(level + 1)->coordinateY[para->getParH(level + 1)->neighborY[pos]];
+            double x3P            = para->getParH(level + 1)->coordinateZ[para->getParH(level + 1)->neighborZ[pos]];
             nodesVec[nodeCount++] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
             nodesVec[nodeCount++] = (makeUbTuple((float)(x1P), (float)(x2), (float)(x3)));
             nodesVec[nodeCount++] = (makeUbTuple((float)(x1P), (float)(x2P), (float)(x3)));
@@ -635,9 +635,9 @@ void writeInterfaceFCC_Send(Parameter *para)
             nodedata[0][nodeCount] = pos;
 
             // coordinate section
-            double x1           = para->getParH(level)->coordX_SP[pos];
-            double x2           = para->getParH(level)->coordY_SP[pos];
-            double x3           = para->getParH(level)->coordZ_SP[pos];
+            double x1           = para->getParH(level)->coordinateX[pos];
+            double x2           = para->getParH(level)->coordinateY[pos];
+            double x3           = para->getParH(level)->coordinateZ[pos];
             nodesVec[nodeCount] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
 
             // nodedata section
@@ -689,9 +689,9 @@ void writeInterfaceCFC_Recv(Parameter *para)
             nodedata[0][nodeCount] = pos;
 
             // coordinate section
-            double x1           = para->getParH(level)->coordX_SP[pos];
-            double x2           = para->getParH(level)->coordY_SP[pos];
-            double x3           = para->getParH(level)->coordZ_SP[pos];
+            double x1           = para->getParH(level)->coordinateX[pos];
+            double x2           = para->getParH(level)->coordinateY[pos];
+            double x3           = para->getParH(level)->coordinateZ[pos];
             nodesVec[nodeCount] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
 
             // nodedata section
@@ -718,9 +718,9 @@ void writeInterfaceCFC_Recv(Parameter *para)
 
 void addToNodesVector(const int level, const int pos, std::vector<UbTupleFloat3> &nodesVec, Parameter *para)
 {
-    double x1 = para->getParH(level)->coordX_SP[pos];
-    double x2 = para->getParH(level)->coordY_SP[pos];
-    double x3 = para->getParH(level)->coordZ_SP[pos];
+    double x1 = para->getParH(level)->coordinateX[pos];
+    double x2 = para->getParH(level)->coordinateY[pos];
+    double x3 = para->getParH(level)->coordinateZ[pos];
     nodesVec.push_back(makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
 }
 

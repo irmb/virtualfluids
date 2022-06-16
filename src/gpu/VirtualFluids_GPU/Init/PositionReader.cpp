@@ -15,15 +15,15 @@ void PositionReader::readFilePropellerCylinderForAlloc(Parameter* para)
 
 	for (int level = 0; level < maxlevel; level++)
 	{
-		para->getParH(level)->QPropeller.numberOfBCnodes = in.readInteger();
-		para->getParD(level)->QPropeller.numberOfBCnodes = para->getParH(level)->QPropeller.numberOfBCnodes;
+		para->getParH(level)->propellerBC.numberOfBCnodes = in.readInteger();
+		para->getParD(level)->propellerBC.numberOfBCnodes = para->getParH(level)->propellerBC.numberOfBCnodes;
 		in.readLine();
 		if (level == para->getFine())
 		{
-			for(int u=0; u<para->getParH(level)->QPropeller.numberOfBCnodes; u++)
+			for(int u=0; u<para->getParH(level)->propellerBC.numberOfBCnodes; u++)
 			{
 				test = in.readInteger();
-				if (para->getParH(level)->geoSP[test] == GEO_FLUID)
+				if (para->getParH(level)->typeOfGridNode[test] == GEO_FLUID)
 				{
 					count++;
 				}
@@ -55,7 +55,7 @@ void PositionReader::readFilePropellerCylinderForAlloc(Parameter* para)
 		}
 		else
 		{
-			for(int u=0; u<para->getParH(level)->QPropeller.numberOfBCnodes; u++)
+			for(int u=0; u<para->getParH(level)->propellerBC.numberOfBCnodes; u++)
 			{
 				in.readInteger();
 				in.readDouble();
@@ -64,8 +64,8 @@ void PositionReader::readFilePropellerCylinderForAlloc(Parameter* para)
 				in.readLine();
 			}
 		}
-		para->getParH(level)->QPropeller.numberOfBCnodes = count;
-		para->getParD(level)->QPropeller.numberOfBCnodes = para->getParH(level)->QPropeller.numberOfBCnodes;
+		para->getParH(level)->propellerBC.numberOfBCnodes = count;
+		para->getParD(level)->propellerBC.numberOfBCnodes = para->getParH(level)->propellerBC.numberOfBCnodes;
 	}
 }
 //////////////////////////////////////////////////////////////////////////
@@ -89,13 +89,13 @@ void PositionReader::readFilePropellerCylinder(Parameter* para)
 			{
 				test = in.readInteger();
 				////////////////////////////////////////////////////////////////////////
-				if (para->getParH(level)->geoSP[test] == GEO_FLUID)
+				if (para->getParH(level)->typeOfGridNode[test] == GEO_FLUID)
 				{
-					para->getParH(level)->QPropeller.k[count] = test; 
-					para->getParH(level)->QPropeller.Vx[count] = (real)in.readDouble();
-					para->getParH(level)->QPropeller.Vy[count] = (real)in.readDouble();
-					para->getParH(level)->QPropeller.Vz[count] = (real)in.readDouble();
-					para->getParH(level)->QPropeller.RhoBC[count] = 0.0f;									
+					para->getParH(level)->propellerBC.k[count] = test; 
+					para->getParH(level)->propellerBC.Vx[count] = (real)in.readDouble();
+					para->getParH(level)->propellerBC.Vy[count] = (real)in.readDouble();
+					para->getParH(level)->propellerBC.Vz[count] = (real)in.readDouble();
+					para->getParH(level)->propellerBC.RhoBC[count] = 0.0f;									
 					count++;
 				}
 				else
@@ -104,13 +104,13 @@ void PositionReader::readFilePropellerCylinder(Parameter* para)
 					in.readDouble();
 					in.readDouble();
 				}
-				//para->getParH(level)->QPropeller.k[count] = test; 
-				//para->getParH(level)->QPropeller.Vx[count] = (real)in.readDouble();
-				//para->getParH(level)->QPropeller.Vy[count] = (real)in.readDouble();
-				//para->getParH(level)->QPropeller.Vz[count] = (real)in.readDouble();
-				//para->getParH(level)->QPropeller.Vx[count]	  = 0.07f;
-				//para->getParH(level)->QPropeller.Vy[count]	  = 0.0f;
-				//para->getParH(level)->QPropeller.Vz[count]	  = 0.0f;
+				//para->getParH(level)->propellerBC.k[count] = test; 
+				//para->getParH(level)->propellerBC.Vx[count] = (real)in.readDouble();
+				//para->getParH(level)->propellerBC.Vy[count] = (real)in.readDouble();
+				//para->getParH(level)->propellerBC.Vz[count] = (real)in.readDouble();
+				//para->getParH(level)->propellerBC.Vx[count]	  = 0.07f;
+				//para->getParH(level)->propellerBC.Vy[count]	  = 0.0f;
+				//para->getParH(level)->propellerBC.Vz[count]	  = 0.0f;
 				in.readLine();
 			}
 		} 
@@ -136,8 +136,8 @@ void PositionReader::definePropellerQs(Parameter* para)
 {
 	//////////////////////////////////////////////////////////////////
 	//preprocessing
-	real* QQ                  = para->getParH(para->getFine())->QPropeller.q27[0]; 
-	unsigned int sizeQ           = para->getParH(para->getFine())->QPropeller.numberOfBCnodes; 
+	real* QQ                  = para->getParH(para->getFine())->propellerBC.q27[0]; 
+	unsigned int sizeQ           = para->getParH(para->getFine())->propellerBC.numberOfBCnodes; 
 	QforBoundaryConditions Q;
 	Q.q27[dirE   ] = &QQ[dirE   *sizeQ];
 	Q.q27[dirW   ] = &QQ[dirW   *sizeQ];
@@ -167,7 +167,7 @@ void PositionReader::definePropellerQs(Parameter* para)
 	Q.q27[dirBSE ] = &QQ[dirBSE *sizeQ];
 	Q.q27[dirBNW ] = &QQ[dirBNW *sizeQ];
 	//////////////////////////////////////////////////////////////////
-	for(int u=0; u<para->getParH(para->getFine())->QPropeller.numberOfBCnodes; u++)
+	for(int u=0; u<para->getParH(para->getFine())->propellerBC.numberOfBCnodes; u++)
 	{
 		for (int dir = dirE; dir<=dirBSW; dir++)
 		{

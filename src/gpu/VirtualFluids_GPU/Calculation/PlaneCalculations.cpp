@@ -61,7 +61,7 @@ void calcPressure(Parameter* para, std::string inorout, int lev)
 
    for (unsigned int i = 0; i < para->getParH(lev)->sizePlanePress; i++)
    {
-      sumrho += para->getParH(lev)->rho_SP[m];
+      sumrho += para->getParH(lev)->rho[m];
       anz++;
       m++;
    }
@@ -101,7 +101,7 @@ void calcFlowRate(Parameter* para, int lev)
    {
       if (para->getParH(lev)->geo[m] == GEO_FLUID)
       {
-         sumvelo += para->getParH(lev)->vz_SP[para->getParH(lev)->k[m]];
+         sumvelo += para->getParH(lev)->velocityZ[para->getParH(lev)->k[m]];
          anz++;
       } 
       m++;
@@ -169,7 +169,7 @@ void calcPlaneConc(Parameter* para, CudaMemoryManager* cudaManager, int lev)
 	//Version Press neighbor
 	unsigned int NoNin   = para->getParH(lev)->numberOfPointsCpTop;
 	unsigned int NoNout1 = para->getParH(lev)->numberOfPointsCpBottom;
-	unsigned int NoNout2 = para->getParH(lev)->QPress.numberOfBCnodes;
+	unsigned int NoNout2 = para->getParH(lev)->pressureBC.numberOfBCnodes;
 	////////////////////////////////////////////
 	////Version cp top
 	//unsigned int NoN = para->getParH(lev)->numberOfPointsCpTop;
@@ -189,7 +189,7 @@ void calcPlaneConc(Parameter* para, CudaMemoryManager* cudaManager, int lev)
 	double counter1 = 0.;
 	for (unsigned int it = 0; it < NoNin; it++)
 	{
-		if (para->getParH(lev)->geoSP[it] == GEO_FLUID)
+		if (para->getParH(lev)->typeOfGridNode[it] == GEO_FLUID)
 		{
 			concPlaneIn   += (double) (para->getParH(lev)->ConcPlaneIn[it]);
 			counter1 += 1.;
@@ -200,7 +200,7 @@ void calcPlaneConc(Parameter* para, CudaMemoryManager* cudaManager, int lev)
 	counter1 = 0.;
 	for (unsigned int it = 0; it < NoNout1; it++)
 	{
-		if (para->getParH(lev)->geoSP[it] == GEO_FLUID)
+		if (para->getParH(lev)->typeOfGridNode[it] == GEO_FLUID)
 		{
 			concPlaneOut1 += (double) (para->getParH(lev)->ConcPlaneOut1[it]);
 			counter1 += 1.;
@@ -211,7 +211,7 @@ void calcPlaneConc(Parameter* para, CudaMemoryManager* cudaManager, int lev)
 	counter1 = 0.;
 	for (unsigned int it = 0; it < NoNout2; it++)
 	{
-		if (para->getParH(lev)->geoSP[it] == GEO_FLUID)
+		if (para->getParH(lev)->typeOfGridNode[it] == GEO_FLUID)
 		{
 			concPlaneOut2 += (double) (para->getParH(lev)->ConcPlaneOut2[it]);
 			counter1 += 1.;
@@ -245,8 +245,8 @@ void allocPlaneConc(Parameter* para, CudaMemoryManager* cudaManager)
 	//Version Press neighbor
 	cudaManager->cudaAllocPlaneConcIn(lev, para->getParH(lev)->numberOfPointsCpTop);
 	cudaManager->cudaAllocPlaneConcOut1(lev, para->getParH(lev)->numberOfPointsCpBottom);
-	cudaManager->cudaAllocPlaneConcOut2(lev, para->getParH(lev)->QPress.numberOfBCnodes);
-	printf("\n Number of elements plane concentration = %d + %d + %d \n", para->getParH(lev)->numberOfPointsCpTop, para->getParH(lev)->numberOfPointsCpBottom, para->getParH(lev)->QPress.numberOfBCnodes);
+	cudaManager->cudaAllocPlaneConcOut2(lev, para->getParH(lev)->pressureBC.numberOfBCnodes);
+	printf("\n Number of elements plane concentration = %d + %d + %d \n", para->getParH(lev)->numberOfPointsCpTop, para->getParH(lev)->numberOfPointsCpBottom, para->getParH(lev)->pressureBC.numberOfBCnodes);
 	////////////////////////////////////////////
 	////Version cp top
 	//para->cudaAllocPlaneConc(lev, para->getParH(lev)->numberOfPointsCpTop);
@@ -353,17 +353,17 @@ void printRE(Parameter* para, CudaMemoryManager* cudaManager, int timestep)
 	//////////////////////////////////////////////////////////////////////////
 	//fill file with data
 	bool doNothing = false;
-	for (int i = 0; i < para->getParH(lev)->QPress.numberOfBCnodes; i++)
+	for (int i = 0; i < para->getParH(lev)->pressureBC.numberOfBCnodes; i++)
 	{
 		doNothing = false;
 		for (std::size_t j = 0; j < 27; j++)
 		{
-			if (para->getParH(lev)->kDistTestRE.f[0][j*para->getParH(lev)->QPress.numberOfBCnodes + i]==0)
+			if (para->getParH(lev)->kDistTestRE.f[0][j*para->getParH(lev)->pressureBC.numberOfBCnodes + i]==0)
 			{
 				doNothing = true;
 				continue;
 			}
-			ostr << para->getParH(lev)->kDistTestRE.f[0][j*para->getParH(lev)->QPress.numberOfBCnodes + i]  << "\t";
+			ostr << para->getParH(lev)->kDistTestRE.f[0][j*para->getParH(lev)->pressureBC.numberOfBCnodes + i]  << "\t";
 		}
 		if (doNothing==true)
 		{

@@ -184,7 +184,7 @@ extern "C" __global__ void MoveParticles( real* coordX,
 										  unsigned int numberOfTimesteps, 
 									      unsigned int numberOfParticles, 
 										  unsigned int size_Mat,
-										  bool evenOrOdd)
+										  bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  ix = threadIdx.x;  // Globaler x-Index 
@@ -246,7 +246,7 @@ extern "C" __global__ void MoveParticles( real* coordX,
 			(BC0yz >= GEO_FLUID) || 
 			(BCxyz >= GEO_FLUID) )
 		{
-		   if (evenOrOdd==true)
+		   if (isEvenTimestep==true)
 		   {
 			  feC    = &DD[dirE   *size_Mat];
 			  fwC    = &DD[dirW   *size_Mat];
@@ -1056,7 +1056,7 @@ extern "C" __global__ void MoveParticlesWithoutBCs(   real* coordX,
 													  unsigned int numberOfTimesteps, 
 													  unsigned int numberOfParticles, 
 													  unsigned int size_Mat,
-													  bool evenOrOdd)
+													  bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  ix = threadIdx.x;  // Globaler x-Index 
@@ -1112,7 +1112,7 @@ extern "C" __global__ void MoveParticlesWithoutBCs(   real* coordX,
    		if( (BC000 == GEO_FLUID) || (BCx00 == GEO_FLUID) || (BC0y0 == GEO_FLUID) || (BC00z == GEO_FLUID) || 
 			(BCxy0 == GEO_FLUID) || (BCx0z == GEO_FLUID) || (BC0yz == GEO_FLUID) || (BCxyz == GEO_FLUID) )
 		{
-		   if (evenOrOdd==true)
+		   if (isEvenTimestep==true)
 		   {
 			  feC    = &DD[dirE   *size_Mat];
 			  fwC    = &DD[dirW   *size_Mat];
@@ -1929,13 +1929,13 @@ extern "C" __global__ void ParticleNoSlipDeviceComp27(real* coordX,
 													  real* NormalY,
 													  real* NormalZ,
 													  unsigned int size_Mat, 
-													  bool evenOrOdd)
+													  bool isEvenTimestep)
 {
 
 	//TODO: What is this function for???
 
    //Distributions27 D;
-   //if (evenOrOdd==true)
+   //if (isEvenTimestep==true)
    //{
    //   D.f[dirE   ] = &DD[dirE   *size_Mat];
    //   D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -2239,7 +2239,7 @@ extern "C" __global__ void ParticleNoSlipDeviceComp27(real* coordX,
    //   //real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (c1o1 + drho);
 
    //   //////////////////////////////////////////////////////////////////////////
-   //   if (evenOrOdd==false)
+   //   if (isEvenTimestep==false)
    //   {
    //      D.f[dirE   ] = &DD[dirE   *size_Mat];
    //      D.f[dirW   ] = &DD[dirW   *size_Mat];

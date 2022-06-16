@@ -16,15 +16,15 @@ void CumulantK17CompChimStream::run()
 {
 	LB_Kernel_CumulantK17CompChimStream <<< cudaGrid.grid, cudaGrid.threads >>>(
 		para->getParD(level)->omega,
-		para->getParD(level)->neighborX_SP,
-		para->getParD(level)->neighborY_SP,
-		para->getParD(level)->neighborZ_SP,
-		para->getParD(level)->d0SP.f[0],
-		para->getParD(level)->size_Mat_SP,
+		para->getParD(level)->neighborX,
+		para->getParD(level)->neighborY,
+		para->getParD(level)->neighborZ,
+		para->getParD(level)->distributions.f[0],
+		para->getParD(level)->numberOfNodes,
 		level,
 		para->getForcesDev(),
         para->getQuadricLimitersDev(),
-		para->getParD(level)->evenOrOdd,
+		para->getParD(level)->isEvenTimestep,
         para->getParD(level)->fluidNodeIndices,
 		para->getParD(level)->numberOfFluidNodes);
 	getLastCudaError("LB_Kernel_CumulantK17CompChim execution failed");
@@ -36,15 +36,15 @@ void CumulantK17CompChimStream::runOnIndices(const unsigned int *indices, unsign
 
     LB_Kernel_CumulantK17CompChimStream<<< cudaGrid.grid, cudaGrid.threads, 0, stream>>>(
         para->getParD(level)->omega, 
-	    para->getParD(level)->neighborX_SP, 
-	    para->getParD(level)->neighborY_SP,
-        para->getParD(level)->neighborZ_SP, 
-	    para->getParD(level)->d0SP.f[0], 
-	    para->getParD(level)->size_Mat_SP, 
+	    para->getParD(level)->neighborX, 
+	    para->getParD(level)->neighborY,
+        para->getParD(level)->neighborZ, 
+	    para->getParD(level)->distributions.f[0], 
+	    para->getParD(level)->numberOfNodes, 
 	    level,
         para->getForcesDev(), 
 	    para->getQuadricLimitersDev(), 
-	    para->getParD(level)->evenOrOdd,
+	    para->getParD(level)->isEvenTimestep,
         indices,
 	    size_indices);
     getLastCudaError("LB_Kernel_CumulantK17CompChim execution failed");
@@ -55,6 +55,6 @@ CumulantK17CompChimStream::CumulantK17CompChimStream(std::shared_ptr<Parameter> 
 {
 	myPreProcessorTypes.push_back(InitCompSP27);
 	myKernelGroup = BasicKernel;
-	this->cudaGrid = vf::cuda::CudaGrid(para->getParD(level)->numberofthreads, para->getParD(level)->size_Mat_SP);
+	this->cudaGrid = vf::cuda::CudaGrid(para->getParD(level)->numberofthreads, para->getParD(level)->numberOfNodes);
 }
 

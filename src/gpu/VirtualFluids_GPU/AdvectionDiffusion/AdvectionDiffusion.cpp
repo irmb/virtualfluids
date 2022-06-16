@@ -40,7 +40,7 @@ void AdvectionDiffusion::initAD(int level)
 {
     //////////////////////////////////////////////////////////////////////////
     // calculation of omega for diffusivity
-    para->getParD(level)->omegaD = (real)2.0 / ((real)6.0 * para->getParD(level)->diffusivity + (real)1.0);
+    para->getParD(level)->omegaDiffusivity = (real)2.0 / ((real)6.0 * para->getParD(level)->diffusivity + (real)1.0);
     //////////////////////////////////////////////////////////////////////////
     para->getParD(level)->isEvenTimestep = true;
     //////////////////////////////////////////////////////////////////////////
@@ -55,7 +55,7 @@ void AdvectionDiffusion::initAD(int level)
         para->getParD(level)->velocityY, 
         para->getParD(level)->velocityZ,
         para->getParD(level)->numberOfNodes, 
-        para->getParD(level)->distributionsAD.f[0],
+        para->getParD(level)->distributionsAD27.f[0],
         para->getParD(level)->isEvenTimestep);
     //////////////////////////////////////////////////////////////////////////
     para->getParD(level)->isEvenTimestep = false;
@@ -71,7 +71,7 @@ void AdvectionDiffusion::initAD(int level)
         para->getParD(level)->velocityY, 
         para->getParD(level)->velocityZ,
         para->getParD(level)->numberOfNodes, 
-        para->getParD(level)->distributionsAD.f[0],
+        para->getParD(level)->distributionsAD27.f[0],
         para->getParD(level)->isEvenTimestep);
     //////////////////////////////////////////////////////////////////////////
     CalcConcentration27(
@@ -82,7 +82,7 @@ void AdvectionDiffusion::initAD(int level)
         para->getParD(level)->neighborY,
         para->getParD(level)->neighborZ,
         para->getParD(level)->numberOfNodes,
-        para->getParD(level)->distributionsAD.f[0],
+        para->getParD(level)->distributionsAD27.f[0],
         para->getParD(level)->isEvenTimestep);
 }
 
@@ -114,13 +114,13 @@ void AdvectionDiffusion::runADcollisionKernel(int level)
 {
     FactorizedCentralMomentsAdvectionDiffusionDeviceKernel(
         para->getParD(level)->numberofthreads,
-        para->getParD(level)->omegaD,
+        para->getParD(level)->omegaDiffusivity,
         para->getParD(level)->typeOfGridNode,
         para->getParD(level)->neighborX,
         para->getParD(level)->neighborY,
         para->getParD(level)->neighborZ,
         para->getParD(level)->distributions.f[0],
-        para->getParD(level)->distributionsAD.f[0],
+        para->getParD(level)->distributionsAD27.f[0],
         para->getParD(level)->numberOfNodes,
         para->getParD(level)->forcing,
         para->getParD(level)->isEvenTimestep);
@@ -130,15 +130,15 @@ void AdvectionDiffusion::runADslipBCKernel(int level){
     if (para->getParD(level)->numberOfSlipBCnodes > 1) {
         ADSlipVelDevComp(
             para->getParD(level)->numberofthreads,
-            para->getParD(level)->slipBC.NormalX,
-            para->getParD(level)->slipBC.NormalY,
-            para->getParD(level)->slipBC.NormalZ,
+            para->getParD(level)->slipBC.normalX,
+            para->getParD(level)->slipBC.normalY,
+            para->getParD(level)->slipBC.normalZ,
             para->getParD(level)->distributions.f[0],
-            para->getParD(level)->distributionsAD.f[0],
+            para->getParD(level)->distributionsAD27.f[0],
             para->getParD(level)->slipBC.k,
             para->getParD(level)->slipBC.q27[0],
             para->getParD(level)->numberOfSlipBCnodes,
-            para->getParD(level)->omegaD,
+            para->getParD(level)->omegaDiffusivity,
             para->getParD(level)->neighborX,
             para->getParD(level)->neighborY,
             para->getParD(level)->neighborZ,
@@ -158,7 +158,7 @@ void AdvectionDiffusion::printAD(int level, SPtr<CudaMemoryManager> cudaMemoryMa
         para->getParD(level)->neighborY,
         para->getParD(level)->neighborZ,
         para->getParD(level)->numberOfNodes,
-        para->getParD(level)->distributionsAD.f[0],
+        para->getParD(level)->distributionsAD27.f[0],
         para->getParD(level)->isEvenTimestep);
 
     cudaMemoryManager->cudaCopyConcentrationDeviceToHost();

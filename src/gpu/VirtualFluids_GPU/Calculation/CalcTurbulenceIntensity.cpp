@@ -13,8 +13,8 @@
 void allocTurbulenceIntensity(Parameter *para, CudaMemoryManager *cudaManager)
 {
     for (int lev=para->getCoarse(); lev <= para->getFine(); lev++) {
-        cudaManager->cudaAllocTurbulenceIntensity(lev, para->getParH(lev)->size_Mat_SP);
-        para->getParH(lev)->turbulenceIntensity.resize(para->getParH(lev)->size_Mat_SP);    
+        cudaManager->cudaAllocTurbulenceIntensity(lev, para->getParH(lev)->numberOfNodes);
+        para->getParH(lev)->turbulenceIntensity.resize(para->getParH(lev)->numberOfNodes);    
     }
         resetVelocityFluctuationsAndMeans(para, cudaManager);
 }
@@ -23,9 +23,9 @@ void allocTurbulenceIntensity(Parameter *para, CudaMemoryManager *cudaManager)
 void calcVelocityAndFluctuations(Parameter *para, CudaMemoryManager *cudaManager, uint tdiff)
 {
     for (int lev = para->getCoarse(); lev <= para->getFine(); lev++) {
-        cudaManager->cudaCopyTurbulenceIntensityDH(lev, para->getParH(lev)->size_Mat_SP);
+        cudaManager->cudaCopyTurbulenceIntensityDH(lev, para->getParH(lev)->numberOfNodes);
 
-        for (uint i = 0; i < para->getParH(lev)->size_Mat_SP; i++) {
+        for (uint i = 0; i < para->getParH(lev)->numberOfNodes; i++) {
             // mean velocity
             para->getParH(lev)->vx_mean[i] = para->getParH(lev)->vx_mean[i] / (real)tdiff;
             para->getParH(lev)->vy_mean[i] = para->getParH(lev)->vy_mean[i] / (real)tdiff;
@@ -65,7 +65,7 @@ void calcTurbulenceIntensity(Parameter *para, CudaMemoryManager *cudaManager, ui
     for (int lev = para->getCoarse(); lev <= para->getFine(); lev++) {
     calcVelocityAndFluctuations(para, cudaManager, tdiff);
 
-        for (uint i = 0; i < para->getParH(lev)->size_Mat_SP; i++) {
+        for (uint i = 0; i < para->getParH(lev)->numberOfNodes; i++) {
             fluc_squared = (real)(
                 1.0 / 3.0 * (para->getParH(lev)->vxx[i] + para->getParH(lev)->vyy[i] + para->getParH(lev)->vzz[i]));
             v_mean_squared = para->getParH(lev)->vx_mean[i] * para->getParH(lev)->vx_mean[i] +
@@ -80,7 +80,7 @@ void calcTurbulenceIntensity(Parameter *para, CudaMemoryManager *cudaManager, ui
 void resetVelocityFluctuationsAndMeans(Parameter *para, CudaMemoryManager *cudaManager)
 {
     for (int lev = para->getCoarse(); lev <= para->getFine(); lev++) {
-        for (unsigned int i = 0; i < para->getParH(lev)->size_Mat_SP; i++) {
+        for (unsigned int i = 0; i < para->getParH(lev)->numberOfNodes; i++) {
             para->getParH(lev)->vxx[i]     = (real)0.0;
             para->getParH(lev)->vyy[i]     = (real)0.0;
             para->getParH(lev)->vzz[i]     = (real)0.0;
@@ -92,7 +92,7 @@ void resetVelocityFluctuationsAndMeans(Parameter *para, CudaMemoryManager *cudaM
             para->getParH(lev)->vz_mean[i] = (real)0.0;
         }
 
-        cudaManager->cudaCopyTurbulenceIntensityHD(lev, para->getParH(lev)->size_Mat_SP);
+        cudaManager->cudaCopyTurbulenceIntensityHD(lev, para->getParH(lev)->numberOfNodes);
     }
 }
 
@@ -108,7 +108,7 @@ void writeTurbulenceIntensityToFile(Parameter *para, uint timestep)
     for (int lev = para->getCoarse(); lev <= para->getFine(); lev++) {
         std::vector<real *> data           = { para->getParH(lev)->turbulenceIntensity.data() };
         std::vector<std::string> datanames = { "ti" };
-        writeTiStuffToFile(para, timestep, para->getParH(lev)->size_Mat_SP, data, datanames);
+        writeTiStuffToFile(para, timestep, para->getParH(lev)->numberOfNodes, data, datanames);
     }
 }
 
@@ -117,7 +117,7 @@ void writeVeloFluctuationToFile(Parameter *para, uint timestep)
     for (int lev = para->getCoarse(); lev <= para->getFine(); lev++) {
         std::vector<real *> data = { para->getParH(lev)->vxx, para->getParH(lev)->vyy, para->getParH(lev)->vzz };
         std::vector<std::string> datanames = { "vxx", "vyy", "vzz" };
-        writeTiStuffToFile(para, timestep, para->getParH(lev)->size_Mat_SP, data, datanames);
+        writeTiStuffToFile(para, timestep, para->getParH(lev)->numberOfNodes, data, datanames);
     }
 }
 
@@ -127,7 +127,7 @@ void writeVeloMeansToFile(Parameter *para, uint timestep) {
                                                para->getParH(lev)->vy_mean,
                                                para->getParH(lev)->vz_mean };
         std::vector<std::string> datanames = { "vx_mean", "vy_mean", "vz_mean" };
-        writeTiStuffToFile(para, timestep, para->getParH(lev)->size_Mat_SP, data, datanames);
+        writeTiStuffToFile(para, timestep, para->getParH(lev)->numberOfNodes, data, datanames);
     }
 }
 
@@ -142,7 +142,7 @@ void writeAllTiDatafToFile(Parameter *para, uint timestep)
                                      para->getParH(lev)->vz_mean,
                                      para->getParH(lev)->turbulenceIntensity.data() };
         std::vector<std::string> datanames = { "vxx", "vyy", "vzz", "vx_mean", "vy_mean", "vz_mean", "ti" };
-        writeTiStuffToFile(para, timestep, para->getParH(lev)->size_Mat_SP, data, datanames);
+        writeTiStuffToFile(para, timestep, para->getParH(lev)->numberOfNodes, data, datanames);
     }
 }
 

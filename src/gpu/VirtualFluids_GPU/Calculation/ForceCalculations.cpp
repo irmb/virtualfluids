@@ -53,22 +53,22 @@ void ForceCalculations::calcPIDControllerForForce(Parameter* para, CudaMemoryMan
 	 {
 		 //////////////////////////////////////////////////////////////////////
 		 //measure the velocity
-		 int numberOfElements = para->getParH(lev)->size_Mat_SP;
+		 int numberOfElements = para->getParH(lev)->numberOfNodes;
 		 if (numberOfElements > 0)
 		 {
-			 CalcMacCompSP27(para->getParD(lev)->vx_SP,
-							 para->getParD(lev)->vy_SP,
-							 para->getParD(lev)->vz_SP,
-							 para->getParD(lev)->rho_SP,
-							 para->getParD(lev)->press_SP,
-							 para->getParD(lev)->geoSP,
-							 para->getParD(lev)->neighborX_SP,
-							 para->getParD(lev)->neighborY_SP,
-							 para->getParD(lev)->neighborZ_SP,
-							 para->getParD(lev)->size_Mat_SP,
+			 CalcMacCompSP27(para->getParD(lev)->velocityX,
+							 para->getParD(lev)->velocityY,
+							 para->getParD(lev)->velocityZ,
+							 para->getParD(lev)->rho,
+							 para->getParD(lev)->pressure,
+							 para->getParD(lev)->typeOfGridNode,
+							 para->getParD(lev)->neighborX,
+							 para->getParD(lev)->neighborY,
+							 para->getParD(lev)->neighborZ,
+							 para->getParD(lev)->numberOfNodes,
 							 para->getParD(lev)->numberofthreads,
-							 para->getParD(lev)->d0SP.f[0],
-							 para->getParD(lev)->evenOrOdd);
+							 para->getParD(lev)->distributions.f[0],
+							 para->getParD(lev)->isEvenTimestep);
 			 getLastCudaError("CalcMacSP27 execution failed");
 			 //////////////////////////////////////////////////////////////////
 			 cudaManager->cudaCopyPrint(lev);
@@ -76,9 +76,9 @@ void ForceCalculations::calcPIDControllerForForce(Parameter* para, CudaMemoryMan
 			 //////////////////////////////////////////////////////////////////
 			 for (int j = 0; j < numberOfElements; j++)
 			 {
-				 tempVeloX += (double)para->getParH(lev)->vx_SP[j];
-				 tempVeloY += (double)para->getParH(lev)->vy_SP[j];
-				 tempVeloZ += (double)para->getParH(lev)->vz_SP[j];
+				 tempVeloX += (double)para->getParH(lev)->velocityX[j];
+				 tempVeloY += (double)para->getParH(lev)->velocityY[j];
+				 tempVeloZ += (double)para->getParH(lev)->velocityZ[j];
 			 }
 			 tempVeloX /= (double)numberOfElements;
 			 tempVeloY /= (double)numberOfElements;

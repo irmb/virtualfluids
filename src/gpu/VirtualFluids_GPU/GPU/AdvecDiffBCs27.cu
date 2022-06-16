@@ -23,10 +23,10 @@ extern "C" __global__ void QADPress7(  int inx,
                                        unsigned int* neighborY,
                                        unsigned int* neighborZ,
                                        unsigned int size_Mat, 
-                                       bool evenOrOdd)
+                                       bool isEvenTimestep)
 {
    Distributions27 D;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D.f[dirE   ] = &DD[dirE   *size_Mat];
       D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -88,7 +88,7 @@ extern "C" __global__ void QADPress7(  int inx,
    }
 
    Distributions7 D7;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D7.f[0] = &DD7[0*size_Mat];
       D7.f[1] = &DD7[1*size_Mat];
@@ -293,7 +293,7 @@ extern "C" __global__ void QADPress7(  int inx,
 
       //////////////////////////////////////////////////////////////////////////
       //pointertausch
-      if (evenOrOdd==false)
+      if (isEvenTimestep==false)
       {
          D7.f[0] = &DD7[0*size_Mat];
          D7.f[1] = &DD7[1*size_Mat];
@@ -467,10 +467,10 @@ extern "C" __global__ void QADPress27( int inx,
                                        unsigned int* neighborY,
                                        unsigned int* neighborZ,
                                        unsigned int size_Mat, 
-                                       bool evenOrOdd)
+                                       bool isEvenTimestep)
 {
    Distributions27 D;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D.f[dirE   ] = &DD[dirE   *size_Mat];
       D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -532,7 +532,7 @@ extern "C" __global__ void QADPress27( int inx,
    }
 
    Distributions27 D27;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D27.f[dirE   ] = &DD27[dirE   *size_Mat];
       D27.f[dirW   ] = &DD27[dirW   *size_Mat];
@@ -852,7 +852,7 @@ extern "C" __global__ void QADPress27( int inx,
 
 
       //////////////////////////////////////////////////////////////////////////
-      if (evenOrOdd==false)
+      if (isEvenTimestep==false)
       {
          D27.f[dirE   ] = &DD27[dirE   *size_Mat];
          D27.f[dirW   ] = &DD27[dirW   *size_Mat];
@@ -995,11 +995,11 @@ extern "C" __global__ void QADPressNEQNeighbor27(
 													unsigned int* neighborY,
 													unsigned int* neighborZ,
 													unsigned int size_Mat,
-													bool evenOrOdd
+													bool isEvenTimestep
 												)
 {
 	Distributions27 D;
-	if (evenOrOdd == true)
+	if (isEvenTimestep == true)
 	{
 		D.f[dirE] = &DD[dirE   *size_Mat];
 		D.f[dirW] = &DD[dirW   *size_Mat];
@@ -1061,7 +1061,7 @@ extern "C" __global__ void QADPressNEQNeighbor27(
 	}
 
 	Distributions27 D27;
-	if (evenOrOdd == true)
+	if (isEvenTimestep == true)
 	{
 		D27.f[dirE] = &DD27[dirE   *size_Mat];
 		D27.f[dirW] = &DD27[dirW   *size_Mat];
@@ -1436,10 +1436,10 @@ extern "C" __global__ void QADVel7( int inx,
                                     unsigned int* neighborY,
                                     unsigned int* neighborZ,
                                     unsigned int size_Mat, 
-                                    bool evenOrOdd)
+                                    bool isEvenTimestep)
 {
    Distributions27 D;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D.f[dirE   ] = &DD[dirE   *size_Mat];
       D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -1501,7 +1501,7 @@ extern "C" __global__ void QADVel7( int inx,
    }
 
    Distributions7 D7;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D7.f[0] = &DD7[0*size_Mat];
       D7.f[1] = &DD7[1*size_Mat];
@@ -1706,7 +1706,7 @@ extern "C" __global__ void QADVel7( int inx,
 
       //////////////////////////////////////////////////////////////////////////
       //pointertausch
-      if (evenOrOdd==false)
+      if (isEvenTimestep==false)
       {
          D7.f[0] = &DD7[0*size_Mat];
          D7.f[1] = &DD7[1*size_Mat];
@@ -1880,10 +1880,10 @@ extern "C" __global__ void QADVel27(int inx,
                                     unsigned int* neighborY,
                                     unsigned int* neighborZ,
                                     unsigned int size_Mat, 
-                                    bool evenOrOdd)
+                                    bool isEvenTimestep)
 {
    Distributions27 D;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D.f[dirE   ] = &DD[dirE   *size_Mat];
       D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -1945,7 +1945,7 @@ extern "C" __global__ void QADVel27(int inx,
    }
 
    Distributions27 D27;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D27.f[dirE   ] = &DD27[dirE   *size_Mat];
       D27.f[dirW   ] = &DD27[dirW   *size_Mat];
@@ -2266,7 +2266,7 @@ extern "C" __global__ void QADVel27(int inx,
 
 
       //////////////////////////////////////////////////////////////////////////
-      if (evenOrOdd==false)
+      if (isEvenTimestep==false)
       {
          D27.f[dirE   ] = &DD27[dirE   *size_Mat];
          D27.f[dirW   ] = &DD27[dirW   *size_Mat];
@@ -2470,10 +2470,10 @@ extern "C" __global__ void QAD7( int inx,
                                  unsigned int* neighborY,
                                  unsigned int* neighborZ,
                                  unsigned int size_Mat, 
-                                 bool evenOrOdd)
+                                 bool isEvenTimestep)
 {
    Distributions27 D;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D.f[dirE   ] = &DD[dirE   *size_Mat];
       D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -2535,7 +2535,7 @@ extern "C" __global__ void QAD7( int inx,
    }
 
    Distributions7 D7;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D7.f[0] = &DD7[0*size_Mat];
       D7.f[1] = &DD7[1*size_Mat];
@@ -2732,7 +2732,7 @@ extern "C" __global__ void QAD7( int inx,
 
       //////////////////////////////////////////////////////////////////////////
       //pointertausch
-      if (evenOrOdd==false)
+      if (isEvenTimestep==false)
       {
          D7.f[0] = &DD7[0*size_Mat];
          D7.f[1] = &DD7[1*size_Mat];
@@ -2905,10 +2905,10 @@ extern "C" __global__ void QADDirichlet27(	 int inx,
 											 unsigned int* neighborY,
 											 unsigned int* neighborZ,
 											 unsigned int size_Mat, 
-											 bool evenOrOdd)
+											 bool isEvenTimestep)
 {
    Distributions27 D;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D.f[dirE   ] = &DD[dirE   *size_Mat];
       D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -2970,7 +2970,7 @@ extern "C" __global__ void QADDirichlet27(	 int inx,
    }
 
    Distributions27 D27;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D27.f[dirE   ] = &DD27[dirE   *size_Mat];
       D27.f[dirW   ] = &DD27[dirW   *size_Mat];
@@ -3258,7 +3258,7 @@ extern "C" __global__ void QADDirichlet27(	 int inx,
 
 
       //////////////////////////////////////////////////////////////////////////
-      if (evenOrOdd==false)
+      if (isEvenTimestep==false)
       {
          D27.f[dirE   ] = &DD27[dirE   *size_Mat];
          D27.f[dirW   ] = &DD27[dirW   *size_Mat];
@@ -3433,10 +3433,10 @@ extern "C" __global__ void QADBB27(int inx,
                                    unsigned int* neighborY,
                                    unsigned int* neighborZ,
                                    unsigned int size_Mat, 
-                                   bool evenOrOdd)
+                                   bool isEvenTimestep)
 {
    //Distributions27 D;
-   //if (evenOrOdd==true)
+   //if (isEvenTimestep==true)
    //{
    //   D.f[dirE   ] = &DD[dirE   *size_Mat];
    //   D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -3498,7 +3498,7 @@ extern "C" __global__ void QADBB27(int inx,
    //}
 
    Distributions27 D27;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D27.f[dirE   ] = &DD27[dirE   *size_Mat];
       D27.f[dirW   ] = &DD27[dirW   *size_Mat];
@@ -3787,7 +3787,7 @@ extern "C" __global__ void QADBB27(int inx,
 
 
       //////////////////////////////////////////////////////////////////////////
-      if (evenOrOdd==false)
+      if (isEvenTimestep==false)
       {
          D27.f[dirE   ] = &DD27[dirE   *size_Mat];
          D27.f[dirW   ] = &DD27[dirW   *size_Mat];
@@ -3951,10 +3951,10 @@ extern "C" __global__ void QNoSlipADincomp7( int inx,
 											 unsigned int* neighborY,
 											 unsigned int* neighborZ,
 											 unsigned int size_Mat, 
-											 bool evenOrOdd)
+											 bool isEvenTimestep)
 {
    //Distributions27 D;
-   //if (evenOrOdd==true)
+   //if (isEvenTimestep==true)
    //{
    //   D.f[dirE   ] = &DD[dirE   *size_Mat];
    //   D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -4016,7 +4016,7 @@ extern "C" __global__ void QNoSlipADincomp7( int inx,
    //}
 
    Distributions7 D7;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D7.f[0] = &DD7[0*size_Mat];
       D7.f[1] = &DD7[1*size_Mat];
@@ -4174,7 +4174,7 @@ extern "C" __global__ void QNoSlipADincomp7( int inx,
       real cs2     = c1o4;
       //////////////////////////////////////////////////////////////////////////
       //pointertausch
-      if (evenOrOdd==false)
+      if (isEvenTimestep==false)
       {
          D7.f[0] = &DD7[0*size_Mat];
          D7.f[1] = &DD7[1*size_Mat];
@@ -4377,10 +4377,10 @@ extern "C" __global__ void QNoSlipADincomp27(int inx,
 											 unsigned int* neighborY,
 											 unsigned int* neighborZ,
 											 unsigned int size_Mat, 
-											 bool evenOrOdd)
+											 bool isEvenTimestep)
 {
    Distributions27 D;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D.f[dirE   ] = &DD[dirE   *size_Mat];
       D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -4442,7 +4442,7 @@ extern "C" __global__ void QNoSlipADincomp27(int inx,
    }
 
    Distributions27 D27;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D27.f[dirE   ] = &DD27[dirE   *size_Mat];
       D27.f[dirW   ] = &DD27[dirW   *size_Mat];
@@ -4710,7 +4710,7 @@ extern "C" __global__ void QNoSlipADincomp27(int inx,
 
 
       //////////////////////////////////////////////////////////////////////////
-      if (evenOrOdd==false)
+      if (isEvenTimestep==false)
       {
          D27.f[dirE   ] = &DD27[dirE   *size_Mat];
          D27.f[dirW   ] = &DD27[dirW   *size_Mat];
@@ -4861,10 +4861,10 @@ extern "C" __global__ void QADVeloIncomp7(  int inx,
 											unsigned int* neighborY,
 											unsigned int* neighborZ,
 											unsigned int size_Mat, 
-											bool evenOrOdd)
+											bool isEvenTimestep)
 {
    //Distributions27 D;
-   //if (evenOrOdd==true)
+   //if (isEvenTimestep==true)
    //{
    //   D.f[dirE   ] = &DD[dirE   *size_Mat];
    //   D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -4926,7 +4926,7 @@ extern "C" __global__ void QADVeloIncomp7(  int inx,
    //}
 
    Distributions7 D7;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D7.f[0] = &DD7[0*size_Mat];
       D7.f[1] = &DD7[1*size_Mat];
@@ -5138,7 +5138,7 @@ extern "C" __global__ void QADVeloIncomp7(  int inx,
 
       //////////////////////////////////////////////////////////////////////////
       //pointertausch
-      if (evenOrOdd==false)
+      if (isEvenTimestep==false)
       {
          D7.f[0] = &DD7[0*size_Mat];
          D7.f[1] = &DD7[1*size_Mat];
@@ -5341,10 +5341,10 @@ extern "C" __global__ void QADVeloIncomp27( int inx,
 											unsigned int* neighborY,
 											unsigned int* neighborZ,
 											unsigned int size_Mat, 
-											bool evenOrOdd)
+											bool isEvenTimestep)
 {
    Distributions27 D;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D.f[dirE   ] = &DD[dirE   *size_Mat];
       D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -5406,7 +5406,7 @@ extern "C" __global__ void QADVeloIncomp27( int inx,
    }
 
    Distributions27 D27;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D27.f[dirE   ] = &DD27[dirE   *size_Mat];
       D27.f[dirW   ] = &DD27[dirW   *size_Mat];
@@ -5679,7 +5679,7 @@ extern "C" __global__ void QADVeloIncomp27( int inx,
 
 
       //////////////////////////////////////////////////////////////////////////
-      if (evenOrOdd==false)
+      if (isEvenTimestep==false)
       {
          D27.f[dirE   ] = &DD27[dirE   *size_Mat];
          D27.f[dirW   ] = &DD27[dirW   *size_Mat];
@@ -5856,10 +5856,10 @@ extern "C" __global__ void QADPressIncomp7(int inx,
 										   unsigned int* neighborY,
 										   unsigned int* neighborZ,
 										   unsigned int size_Mat, 
-										   bool evenOrOdd)
+										   bool isEvenTimestep)
 {
   /* Distributions27 D;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D.f[dirE   ] = &DD[dirE   *size_Mat];
       D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -5921,7 +5921,7 @@ extern "C" __global__ void QADPressIncomp7(int inx,
    }*/
 
    Distributions7 D7;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D7.f[0] = &DD7[0*size_Mat];
       D7.f[1] = &DD7[1*size_Mat];
@@ -6087,7 +6087,7 @@ extern "C" __global__ void QADPressIncomp7(int inx,
 
       //////////////////////////////////////////////////////////////////////////
       //pointertausch
-      if (evenOrOdd==false)
+      if (isEvenTimestep==false)
       {
          D7.f[0] = &DD7[0*size_Mat];
          D7.f[1] = &DD7[1*size_Mat];
@@ -6297,10 +6297,10 @@ extern "C" __global__ void QADPressIncomp27(   int inx,
 											   unsigned int* neighborY,
 											   unsigned int* neighborZ,
 											   unsigned int size_Mat, 
-											   bool evenOrOdd)
+											   bool isEvenTimestep)
 {
    Distributions27 D;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D.f[dirE   ] = &DD[dirE   *size_Mat];
       D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -6362,7 +6362,7 @@ extern "C" __global__ void QADPressIncomp27(   int inx,
    }
 
    Distributions27 D27;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D27.f[dirE   ] = &DD27[dirE   *size_Mat];
       D27.f[dirW   ] = &DD27[dirW   *size_Mat];
@@ -6635,7 +6635,7 @@ extern "C" __global__ void QADPressIncomp27(   int inx,
 
 
       //////////////////////////////////////////////////////////////////////////
-      if (evenOrOdd==false)
+      if (isEvenTimestep==false)
       {
          D27.f[dirE   ] = &DD27[dirE   *size_Mat];
          D27.f[dirW   ] = &DD27[dirW   *size_Mat];
