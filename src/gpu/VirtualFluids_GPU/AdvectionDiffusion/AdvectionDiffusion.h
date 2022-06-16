@@ -26,71 +26,58 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file CudaKernelManager.h
-//! \ingroup GPU
+//! \file AdvectionDiffusion.h
+//! \ingroup AdvectionDiffusion
 //! \author Martin Schoenherr
 //=======================================================================================
-#ifndef CudaKernelManager_H
-#define CudaKernelManager_H
+#ifndef ADVECTION_DIFFUSION_H
+#define ADVECTION_DIFFUSION_H
 
-#include <memory>
 #include "PointerDefinitions.h"
+#include "Core/DataTypes.h"
 #include "VirtualFluids_GPU_export.h"
 
-//! \brief Class forwarding for Parameter
+//! \brief Class forwarding for Parameter, CudaMemoryManager
 class Parameter;
+class CudaMemoryManager;
 
-//! \class CudaKernelManager
-//! \brief manage the cuda kernel calls
-class VIRTUALFLUIDS_GPU_EXPORT CudaKernelManager
-{
+//! \class AdvectionDiffusion
+//! \brief manage the advection diffusion kernel calls
+class VIRTUALFLUIDS_GPU_EXPORT AdvectionDiffusion{
+
 public:
-	//! \brief makes an object of CudaKernelManager
-	//! \param para shared pointer to instance of class Parameter
-    static SPtr<CudaKernelManager> make(std::shared_ptr<Parameter> parameter);
+    //! \brief makes an object of AdvectionDiffusion
+    //! \param para shared pointer to instance of class Parameter
+    SPtr<AdvectionDiffusion> AdvectionDiffusion::make(SPtr<Parameter> parameter);
+
+    //! \brief initialize the advection diffusion distributions
+    void initAD(int level);
     
-	//! \brief calls the device function of the lattice Boltzmann kernel
-	void runLBMKernel(int level);
+    //! \brief set initial concentration values at all nodes
+    //! \param cudaManager instance of class CudaMemoryManager
+    void setInitialNodeValuesAD(int level, SPtr<CudaMemoryManager> cudaMemoryManager);
+    
+    //! \brief calculate the state of the next time step of the advection diffusion distributions
+    void runADcollisionKernel(int level);
 
-	//! \brief calls the device function of the velocity boundary condition
-    void runVelocityBCKernel(int level);
-
-	//! \brief calls the device function of the geometry boundary condition
-	void runGeoBCKernelPost(int level);
-
-	//! \brief calls the device function of the slip boundary condition
-	void runSlipBCKernel(int level);
-
-	//! \brief calls the device function of the no-slip boundary condition
-	void runNoSlipBCKernel(int level);
-
-	//! \brief calls the device function of the pressure boundary condition (pre-collision)
-	void runPressureBCKernelPre(int level);
-
-	//! \brief calls the device function of the pressure boundary condition (post-collision)
-	void runPressureBCKernelPost(int level);
-
-	//! \brief calls the device function of the outflow boundary condition
-	void runOutflowBCKernel(int level);
-
-	//! \brief calls the device function of the stress wall model
-	void runStressWallModelKernel(int level);
-
-
-    //! \brief calls the device function that calculates the macroscopic values
-    void calculateMacroscopicValues(int level);
+    //! \brief calls the device function of the slip boundary condition for advection diffusion
+    void runADslipBCKernel(int level);
+    
+    //! \brief copy the concentration from device to host and writes VTK file with concentration
+    //! \param cudaManager instance of class CudaMemoryManager
+    void printAD(int level, SPtr<CudaMemoryManager> cudaMemoryManager);
 
 
 private:
-	//! Class constructor
-	//! \param parameter shared pointer to instance of class Parameter
-	CudaKernelManager(SPtr<Parameter> parameter);
-	//! Class copy constructor
-	//! \param CudaKernelManager is a reference to CudaKernelManager object
-	CudaKernelManager(const CudaKernelManager&);
+    //! Class constructor
+    //! \param parameter shared pointer to instance of class Parameter
+    AdvectionDiffusion(SPtr<Parameter> parameter);
+    //! Class copy constructor
+    //! \param CudaKernelManager is a reference to CudaKernelManager object
+    AdvectionDiffusion(const AdvectionDiffusion&);
 
-	//! \property para is a shared pointer to an object of Parameter
-	SPtr<Parameter> para;
-
+    //! \property para is a shared pointer to an object of Parameter
+    SPtr<Parameter> para;
 };
+
 #endif
