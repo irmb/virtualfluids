@@ -864,7 +864,7 @@ void Simulation::run()
                   }
                   else if (para->getDiffMod() == 27)
                   {
-                     CalcMacThS27(  para->getParD(lev)->Conc,
+                     CalcConcentration27(  para->getParD(lev)->Conc,
                                     para->getParD(lev)->typeOfGridNode,
                                     para->getParD(lev)->neighborX,
                                     para->getParD(lev)->neighborY,

@@ -860,7 +860,7 @@ extern "C" void InitThS7(     unsigned int numberOfThreads,
    dim3 grid(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      LBInitThS7<<< grid, threads >>>( neighborX,
+      InitAD7<<< grid, threads >>>( neighborX,
                                        neighborY,
                                        neighborZ,
                                        geoD,
@@ -871,10 +871,10 @@ extern "C" void InitThS7(     unsigned int numberOfThreads,
                                        size_Mat,
                                        DD7,
                                        EvenOrOdd);
-      getLastCudaError("LBInitThS7 execution failed");
+      getLastCudaError("InitAD7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void InitThS27( unsigned int numberOfThreads,
+extern "C" void InitADDev27( unsigned int numberOfThreads,
                            unsigned int* neighborX,
                            unsigned int* neighborY,
                            unsigned int* neighborZ,
@@ -902,7 +902,7 @@ extern "C" void InitThS27( unsigned int numberOfThreads,
    dim3 grid(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      LBInitThS27<<< grid, threads >>>(neighborX,
+      InitAD27<<< grid, threads >>>(neighborX,
                                        neighborY,
                                        neighborZ,
                                        geoD,
@@ -913,7 +913,7 @@ extern "C" void InitThS27( unsigned int numberOfThreads,
                                        size_Mat,
                                        DD27,
                                        EvenOrOdd);
-      getLastCudaError("LBInitThS27 execution failed");
+      getLastCudaError("InitAD27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void PostProcessorF3_2018Fehlberg(
@@ -1112,7 +1112,7 @@ extern "C" void CalcMacThS7(  real* Conc,
    dim3 grid(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      LBCalcMacThS7<<< grid, threads >>> (Conc,
+      CalcConc7<<< grid, threads >>> (Conc,
                                           geoD,
                                           neighborX,
                                           neighborY,
@@ -1120,7 +1120,7 @@ extern "C" void CalcMacThS7(  real* Conc,
                                           size_Mat,
                                           DD7,
                                           isEvenTimestep);
-      getLastCudaError("LBCalcMacThS7 execution failed");
+      getLastCudaError("CalcConc7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void PlaneConcThS7(real* Conc,
@@ -1150,7 +1150,7 @@ extern "C" void PlaneConcThS7(real* Conc,
    dim3 grid(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      GetPlaneConcThS7<<< grid, threads >>> (	Conc,
+      GetPlaneConc7<<< grid, threads >>> (	Conc,
 												kPC,
 												numberOfPointskPC,
 												geoD,
@@ -1160,7 +1160,7 @@ extern "C" void PlaneConcThS7(real* Conc,
 												size_Mat,
 												DD7,
 												isEvenTimestep);
-      getLastCudaError("GetPlaneConcThS7 execution failed");
+      getLastCudaError("GetPlaneConc7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void PlaneConcThS27(real* Conc,
@@ -1190,7 +1190,7 @@ extern "C" void PlaneConcThS27(real* Conc,
    dim3 grid(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      GetPlaneConcThS27<<< grid, threads >>> (	Conc,
+      GetPlaneConc27<<< grid, threads >>> (	Conc,
 												kPC,
 												numberOfPointskPC,
 												geoD,
@@ -1200,18 +1200,18 @@ extern "C" void PlaneConcThS27(real* Conc,
 												size_Mat,
 												DD27,
 												isEvenTimestep);
-      getLastCudaError("GetPlaneConcThS27 execution failed");
+      getLastCudaError("GetPlaneConc27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void CalcMacThS27( real* Conc,
-                              unsigned int* geoD,
-                              unsigned int* neighborX,
-                              unsigned int* neighborY,
-                              unsigned int* neighborZ,
-                              unsigned int size_Mat,
-                              unsigned int numberOfThreads,
-                              real* DD27,
-                              bool isEvenTimestep)
+extern "C" void CalcConcentration27( unsigned int numberOfThreads,
+                                     real* Conc,
+                                     unsigned int* geoD,
+                                     unsigned int* neighborX,
+                                     unsigned int* neighborY,
+                                     unsigned int* neighborZ,
+                                     unsigned int size_Mat,
+                                     real* DD27,
+                                     bool isEvenTimestep)
 {
    int Grid = (size_Mat / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -1228,7 +1228,7 @@ extern "C" void CalcMacThS27( real* Conc,
    dim3 grid(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      LBCalcMacThS27<<< grid, threads >>> (  Conc,
+      CalcConc27<<< grid, threads >>> (  Conc,
                                              geoD,
                                              neighborX,
                                              neighborY,
@@ -1236,7 +1236,7 @@ extern "C" void CalcMacThS27( real* Conc,
                                              size_Mat,
                                              DD27,
                                              isEvenTimestep);
-      getLastCudaError("LBCalcMacThS27 execution failed");
+      getLastCudaError("CalcConc27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void CalcMedSP27(  real* vxD,
@@ -2265,7 +2265,7 @@ extern "C" void QADDirichletDev27( unsigned int numberOfThreads,
 											   neighborZ,
 											   size_Mat,
 											   isEvenTimestep);
-      getLastCudaError("QAD27 execution failed");
+      getLastCudaError("QADDirichletDev27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QADBBDev27(unsigned int numberOfThreads,

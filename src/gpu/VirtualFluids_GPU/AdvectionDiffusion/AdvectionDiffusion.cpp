@@ -44,7 +44,7 @@ void AdvectionDiffusion::initAD(int level)
     //////////////////////////////////////////////////////////////////////////
     para->getParD(level)->isEvenTimestep = true;
     //////////////////////////////////////////////////////////////////////////
-    InitADdevice(
+    InitADDev27(
         para->getParD(level)->numberofthreads, 
         para->getParD(level)->neighborX, 
         para->getParD(level)->neighborY,
@@ -60,7 +60,7 @@ void AdvectionDiffusion::initAD(int level)
     //////////////////////////////////////////////////////////////////////////
     para->getParD(level)->isEvenTimestep = false;
     //////////////////////////////////////////////////////////////////////////
-    InitADdevice(
+    InitADDev27(
         para->getParD(level)->numberofthreads, 
         para->getParD(level)->neighborX, 
         para->getParD(level)->neighborY,

@@ -128,7 +128,7 @@ struct LBMSimulationParameter {
     std::vector<real> turbulenceIntensity;
 
     // macroscopic values//////
-    real *vx, *vy, *vz, *rho;  // DEPRECATED: macroscopic values for full matrix
+    // real *vx, *vy, *vz, *rho;  // DEPRECATED: macroscopic values for full matrix
     //! \brief store the macroscopic values (velocity, density, pressure)
     //! \brief for every lattice node
     real *velocityX, *velocityY, *velocityZ, *rho, *pressure;

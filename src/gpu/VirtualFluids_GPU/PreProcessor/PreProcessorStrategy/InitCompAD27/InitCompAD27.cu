@@ -39,7 +39,7 @@ void InitCompAD27::init(int level)
 											para->getParD(level)->numberOfNodes,
 											para->getParD(level)->distributionsAD27.f[0],
 											para->getParD(level)->isEvenTimestep);
-	getLastCudaError("LBInitThS27 execution failed");
+	getLastCudaError("InitAD27 execution failed");
 }
 
 bool InitCompAD27::checkParameter()

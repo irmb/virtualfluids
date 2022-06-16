@@ -48,7 +48,7 @@ class VIRTUALFLUIDS_GPU_EXPORT AdvectionDiffusion{
 public:
     //! \brief makes an object of AdvectionDiffusion
     //! \param para shared pointer to instance of class Parameter
-    SPtr<AdvectionDiffusion> AdvectionDiffusion::make(SPtr<Parameter> parameter);
+    SPtr<AdvectionDiffusion> make(SPtr<Parameter> parameter);
 
     //! \brief initialize the advection diffusion distributions
     void initAD(int level);

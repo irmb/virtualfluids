@@ -303,7 +303,7 @@ extern "C" void InitThS7(  unsigned int numberOfThreads,
                            real* DD7,
                            bool EvenOrOdd);
 
-extern "C" void InitThS27( unsigned int numberOfThreads,
+extern "C" void InitADDev27( unsigned int numberOfThreads,
                            unsigned int* neighborX,
                            unsigned int* neighborY,
                            unsigned int* neighborZ,
@@ -411,15 +411,15 @@ extern "C" void PlaneConcThS27(real* Conc,
 							   real* DD27,
 							   bool isEvenTimestep);
 
-extern "C" void CalcMacThS27( real* Conc,
-                              unsigned int* geoD,
-                              unsigned int* neighborX,
-                              unsigned int* neighborY,
-                              unsigned int* neighborZ,
-                              unsigned int size_Mat,
-                              unsigned int numberOfThreads, 
-                              real* DD27,
-                              bool isEvenTimestep);
+extern "C" void CalcConcentration27( unsigned int numberOfThreads,
+	                                 real* Conc,
+                                     unsigned int* geoD,
+                                     unsigned int* neighborX,
+                                     unsigned int* neighborY,
+                                     unsigned int* neighborZ,
+                                     unsigned int size_Mat,
+                                     real* DD27,
+                                     bool isEvenTimestep);
 
 extern "C" void CalcMedSP27(  real* vxD,
                               real* vyD,

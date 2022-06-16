@@ -269,7 +269,7 @@ extern "C" __global__ void LBInitNonEqPartSP27(unsigned int* neighborX,
                                                real omega,
                                                bool EvenOrOdd);
 
-extern "C" __global__ void LBInitThS7( unsigned int* neighborX,
+extern "C" __global__ void InitAD7( unsigned int* neighborX,
                                        unsigned int* neighborY,
                                        unsigned int* neighborZ,
                                        unsigned int* geoD,
@@ -281,7 +281,7 @@ extern "C" __global__ void LBInitThS7( unsigned int* neighborX,
                                        real* DD7,
                                        bool EvenOrOdd);
 
-extern "C" __global__ void LBInitThS27(unsigned int* neighborX,
+extern "C" __global__ void InitAD27(unsigned int* neighborX,
                                        unsigned int* neighborY,
                                        unsigned int* neighborZ,
                                        unsigned int* geoD,
@@ -348,7 +348,7 @@ extern "C" __global__ void LBCalcMacCompSP27( real* vxD,
 											  real* DD,
 											  bool isEvenTimestep);
 
-extern "C" __global__ void LBCalcMacThS7( real* Conc,
+extern "C" __global__ void CalcConc7( real* Conc,
                                           unsigned int* geoD,
                                           unsigned int* neighborX,
                                           unsigned int* neighborY,
@@ -357,7 +357,7 @@ extern "C" __global__ void LBCalcMacThS7( real* Conc,
                                           real* DD7,
                                           bool isEvenTimestep);
 
-extern "C" __global__ void GetPlaneConcThS7(real* Conc,
+extern "C" __global__ void GetPlaneConc7(real* Conc,
 								            int* kPC,
 								            unsigned int numberOfPointskPC,
 											unsigned int* geoD,
@@ -368,7 +368,7 @@ extern "C" __global__ void GetPlaneConcThS7(real* Conc,
 											real* DD7,
 											bool isEvenTimestep);
 
-extern "C" __global__ void GetPlaneConcThS27(real* Conc,
+extern "C" __global__ void GetPlaneConc27(real* Conc,
 								             int* kPC,
 								             unsigned int numberOfPointskPC,
 											 unsigned int* geoD,
@@ -379,7 +379,7 @@ extern "C" __global__ void GetPlaneConcThS27(real* Conc,
 											 real* DD27,
 											 bool isEvenTimestep);
 
-extern "C" __global__ void LBCalcMacThS27(real* Conc,
+extern "C" __global__ void CalcConc27(real* Conc,
                                           unsigned int* geoD,
                                           unsigned int* neighborX,
                                           unsigned int* neighborY,
