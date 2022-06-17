@@ -448,22 +448,40 @@ void UpdateGrid27::preCollisionBC(int level, unsigned int t)
 void UpdateGrid27::fineToCoarse(int level)
 {
     gridScalingKernelManager->runFineToCoarseKernelLB(level);
-    gridScalingKernelManager->runFineToCoarseKernelAD(level);
+    
+    if (para->getDiffOn())
+        gridScalingKernelManager->runFineToCoarseKernelAD(level);
 }
 
 void UpdateGrid27::fineToCoarseWithStream(int level, uint *iCellFCC, uint *iCellFCF, uint k_FC, int streamIndex)
 {
     cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
 
-    ScaleFC_RhoSq_comp_27(  para->getParD(level)->distributions.f[0],      para->getParD(level+1)->distributions.f[0],
-                            para->getParD(level)->neighborX,   para->getParD(level)->neighborY,    para->getParD(level)->neighborZ,
-                            para->getParD(level+1)->neighborX, para->getParD(level+1)->neighborY,  para->getParD(level+1)->neighborZ,
-                            para->getParD(level)->numberOfNodes,    para->getParD(level+1)->numberOfNodes,   para->getParD(level)->isEvenTimestep,
-                            iCellFCC,                             iCellFCF,
-                            k_FC,                                 para->getParD(level)->omega,           para->getParD(level + 1)->omega,
-                            para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny,
-                            para->getParD(level+1)->nx,           para->getParD(level+1)->ny,            para->getParD(level)->numberofthreads,
-                            para->getParD(level)->offFC,          stream);
+    ScaleFC_RhoSq_comp_27(
+        para->getParD(level)->distributions.f[0],
+        para->getParD(level+1)->distributions.f[0],
+        para->getParD(level)->neighborX,
+        para->getParD(level)->neighborY,
+        para->getParD(level)->neighborZ,
+        para->getParD(level+1)->neighborX,
+        para->getParD(level+1)->neighborY,
+        para->getParD(level+1)->neighborZ,
+        para->getParD(level)->numberOfNodes,
+        para->getParD(level+1)->numberOfNodes,
+        para->getParD(level)->isEvenTimestep,
+        iCellFCC,
+        iCellFCF,
+        k_FC,
+        para->getParD(level)->omega,
+        para->getParD(level + 1)->omega,
+        para->getParD(level)->vis,
+        para->getParD(level)->nx,
+        para->getParD(level)->ny,
+        para->getParD(level+1)->nx,
+        para->getParD(level+1)->ny,
+        para->getParD(level)->numberofthreads,
+        para->getParD(level)->offFC,
+        stream);
     getLastCudaError("ScaleFC27_RhoSq_comp execution failed");
 
     //////////////////////////////////////////////////////////////////////////
@@ -477,190 +495,10 @@ void UpdateGrid27::fineToCoarseWithStream(int level, uint *iCellFCC, uint *iCell
 
 void UpdateGrid27::coarseToFine(int level)
 {
-    //ScaleCF_comp_D3Q27F3(para->getParD(level)->distributions.f[0],      para->getParD(level+1)->distributions.f[0],     para->getParD(level+1)->g6.g[0],
-    //                     para->getParD(level)->neighborX,   para->getParD(level)->neighborY,    para->getParD(level)->neighborZ,
-    //                     para->getParD(level+1)->neighborX, para->getParD(level+1)->neighborY,  para->getParD(level+1)->neighborZ,
-    //                     para->getParD(level)->numberOfNodes,    para->getParD(level+1)->numberOfNodes,   para->getParD(level)->isEvenTimestep,
-    //                     para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF,
-    //                     para->getParD(level)->K_CF,           para->getParD(level)->omega,           para->getParD(level+1)->omega,
-    //                     para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny,
-    //                     para->getParD(level+1)->nx,           para->getParD(level+1)->ny,            para->getParD(level)->numberofthreads,
-    //                     para->getParD(level)->offCF);
-    //getLastCudaError("ScaleCF_comp_D3Q27F3 execution failed");
-
-    //ScaleCF_0817_comp_27(para->getParD(level)->distributions.f[0],      para->getParD(level + 1)->distributions.f[0],
-    //                     para->getParD(level)->neighborX,   para->getParD(level)->neighborY,    para->getParD(level)->neighborZ,
-    //                     para->getParD(level+1)->neighborX, para->getParD(level+1)->neighborY,  para->getParD(level+1)->neighborZ,
-    //                     para->getParD(level)->numberOfNodes,    para->getParD(level+1)->numberOfNodes,   para->getParD(level)->isEvenTimestep,
-    //                     para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF,
-    //                     para->getParD(level)->K_CF,           para->getParD(level)->omega,           para->getParD(level+1)->omega,
-    //                     para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny,
-    //                     para->getParD(level+1)->nx,           para->getParD(level+1)->ny,            para->getParD(level)->numberofthreads,
-    //                     para->getParD(level)->offCF);
-    //getLastCudaError("ScaleCF_0817_comp_27 execution failed");
-
-    //ScaleCF_RhoSq_3rdMom_comp_27(    para->getParD(level)->distributions.f[0],      para->getParD(level+1)->distributions.f[0],
-    //                              para->getParD(level)->neighborX,   para->getParD(level)->neighborY,    para->getParD(level)->neighborZ,
-    //                              para->getParD(level+1)->neighborX, para->getParD(level+1)->neighborY,  para->getParD(level+1)->neighborZ,
-    //                              para->getParD(level)->numberOfNodes,    para->getParD(level+1)->numberOfNodes,   para->getParD(level)->isEvenTimestep,
-    //                              para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF,
-    //                              para->getParD(level)->K_CF,           para->getParD(level)->omega,           para->getParD(level+1)->omega,
-    //                              para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny,
-    //                              para->getParD(level+1)->nx,           para->getParD(level+1)->ny,            para->getParD(level)->numberofthreads,
-    //                              para->getParD(level)->offCF);
-    //getLastCudaError("ScaleCF_RhoSq_3rdMom_comp_27 execution failed");
-
-    ScaleCF_RhoSq_comp_27(para->getParD(level)->distributions.f[0],        para->getParD(level + 1)->distributions.f[0],
-                          para->getParD(level)->neighborX,     para->getParD(level)->neighborY,     para->getParD(level)->neighborZ,
-                          para->getParD(level + 1)->neighborX, para->getParD(level + 1)->neighborY, para->getParD(level + 1)->neighborZ,
-                          para->getParD(level)->numberOfNodes,      para->getParD(level + 1)->numberOfNodes,  para->getParD(level)->isEvenTimestep,
-                          para->getParD(level)->intCF.ICellCFC,   para->getParD(level)->intCF.ICellCFF,
-                          para->getParD(level)->K_CF,             para->getParD(level)->omega,            para->getParD(level + 1)->omega,
-                          para->getParD(level)->vis,              para->getParD(level)->nx,               para->getParD(level)->ny,
-                          para->getParD(level + 1)->nx,           para->getParD(level + 1)->ny,           para->getParD(level)->numberofthreads,
-                          para->getParD(level)->offCF,            cudaStreamLegacy);
-    getLastCudaError("ScaleCF27_RhoSq_comp execution failed");
-
-    //ScaleCF_AA2016_comp_27( para->getParD(level)->distributions.f[0],      para->getParD(level+1)->distributions.f[0],
-    //                        para->getParD(level)->neighborX,   para->getParD(level)->neighborY,    para->getParD(level)->neighborZ,
-    //                        para->getParD(level+1)->neighborX, para->getParD(level+1)->neighborY,  para->getParD(level+1)->neighborZ,
-    //                        para->getParD(level)->numberOfNodes,    para->getParD(level+1)->numberOfNodes,   para->getParD(level)->isEvenTimestep,
-    //                        para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF,
-    //                        para->getParD(level)->K_CF,           para->getParD(level)->omega,           para->getParD(level+1)->omega,
-    //                        para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny,
-    //                        para->getParD(level+1)->nx,           para->getParD(level+1)->ny,            para->getParD(level)->numberofthreads,
-    //                        para->getParD(level)->offCF);
-    //getLastCudaError("ScaleCF_AA2016_comp_27 execution failed");
-
-
-
-    //////////////////////////////////////////////////////////////////////////
-    // D E P R E C A T E D
-    //////////////////////////////////////////////////////////////////////////
-
-    //ScaleCF27(  para->getParD(level)->distributions.f[0],      para->getParD(level+1)->distributions.f[0],
-    //            para->getParD(level)->neighborX,   para->getParD(level)->neighborY,   para->getParD(level)->neighborZ,
-    //            para->getParD(level+1)->neighborX, para->getParD(level+1)->neighborY, para->getParD(level+1)->neighborZ,
-    //            para->getParD(level)->numberOfNodes,    para->getParD(level+1)->numberOfNodes,  para->getParD(level)->isEvenTimestep,
-    //            para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF,
-    //            para->getParD(level)->K_CF,           para->getParD(level)->omega,          para->getParD(level+1)->omega,
-    //            para->getParD(level)->vis,            para->getParD(level)->nx,             para->getParD(level)->ny,
-    //            para->getParD(level+1)->nx,           para->getParD(level+1)->ny,           para->getParD(level)->gridNX);
-    //getLastCudaError("ScaleCF27 execution failed");
-
-    //ScaleCFEff27(  para->getParD(level)->distributions.f[0],      para->getParD(level+1)->distributions.f[0],
-    //               para->getParD(level)->neighborX,   para->getParD(level)->neighborY,    para->getParD(level)->neighborZ,
-    //               para->getParD(level+1)->neighborX, para->getParD(level+1)->neighborY,  para->getParD(level+1)->neighborZ,
-    //               para->getParD(level)->numberOfNodes,    para->getParD(level+1)->numberOfNodes,   para->getParD(level)->isEvenTimestep,
-    //               para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF,
-    //               para->getParD(level)->K_CF,           para->getParD(level)->omega,           para->getParD(level+1)->omega,
-    //               para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny,
-    //               para->getParD(level+1)->nx,           para->getParD(level+1)->ny,            para->getParD(level)->numberofthreads,
-    //               para->getParD(level)->offCF);
-    //getLastCudaError("ScaleCF27 execution failed");
-
-    //ScaleCFLast27( para->getParD(level)->distributions.f[0],      para->getParD(level+1)->distributions.f[0],
-    //               para->getParD(level)->neighborX,   para->getParD(level)->neighborY,    para->getParD(level)->neighborZ,
-    //               para->getParD(level+1)->neighborX, para->getParD(level+1)->neighborY,  para->getParD(level+1)->neighborZ,
-    //               para->getParD(level)->numberOfNodes,    para->getParD(level+1)->numberOfNodes,   para->getParD(level)->isEvenTimestep,
-    //               para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF,
-    //               para->getParD(level)->K_CF,           para->getParD(level)->omega,           para->getParD(level+1)->omega,
-    //               para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny,
-    //               para->getParD(level+1)->nx,           para->getParD(level+1)->ny,            para->getParD(level)->numberofthreads,
-    //               para->getParD(level)->offCF);
-    //getLastCudaError("ScaleCF27 execution failed");
-
-    //ScaleCFpress27(para->getParD(level)->distributions.f[0],      para->getParD(level+1)->distributions.f[0],
-    //               para->getParD(level)->neighborX,   para->getParD(level)->neighborY,    para->getParD(level)->neighborZ,
-    //               para->getParD(level+1)->neighborX, para->getParD(level+1)->neighborY,  para->getParD(level+1)->neighborZ,
-    //               para->getParD(level)->numberOfNodes,    para->getParD(level+1)->numberOfNodes,   para->getParD(level)->isEvenTimestep,
-    //               para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF,
-    //               para->getParD(level)->K_CF,           para->getParD(level)->omega,           para->getParD(level+1)->omega,
-    //               para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny,
-    //               para->getParD(level+1)->nx,           para->getParD(level+1)->ny,            para->getParD(level)->numberofthreads,
-    //               para->getParD(level)->offCF);
-    //getLastCudaError("ScaleCF27 execution failed");
-
-    // ScaleCF_Fix_comp_27(    para->getParD(level)->distributions.f[0],      para->getParD(level+1)->distributions.f[0],
-    //                      para->getParD(level)->neighborX,   para->getParD(level)->neighborY,    para->getParD(level)->neighborZ,
-    //                      para->getParD(level+1)->neighborX, para->getParD(level+1)->neighborY,  para->getParD(level+1)->neighborZ,
-    //                      para->getParD(level)->numberOfNodes,    para->getParD(level+1)->numberOfNodes,   para->getParD(level)->isEvenTimestep,
-    //                      para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF,
-    //                      para->getParD(level)->K_CF,           para->getParD(level)->omega,           para->getParD(level+1)->omega,
-    //                      para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny,
-    //                      para->getParD(level+1)->nx,           para->getParD(level+1)->ny,            para->getParD(level)->numberofthreads,
-    //                      para->getParD(level)->offCF);
-    // getLastCudaError("ScaleCF27 execution failed");
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // incompressible
-    //ScaleCF_Fix_27(para->getParD(level)->distributions.f[0],      para->getParD(level+1)->distributions.f[0],
-    //               para->getParD(level)->neighborX,   para->getParD(level)->neighborY,    para->getParD(level)->neighborZ,
-    //               para->getParD(level+1)->neighborX, para->getParD(level+1)->neighborY,  para->getParD(level+1)->neighborZ,
-    //               para->getParD(level)->numberOfNodes,    para->getParD(level+1)->numberOfNodes,   para->getParD(level)->isEvenTimestep,
-    //               para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF,
-    //               para->getParD(level)->K_CF,           para->getParD(level)->omega,           para->getParD(level+1)->omega,
-    //               para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny,
-    //               para->getParD(level+1)->nx,           para->getParD(level+1)->ny,            para->getParD(level)->numberofthreads,
-    //               para->getParD(level)->offCF);
-    //getLastCudaError("ScaleCF27 execution failed");
-
-    //ScaleCF_NSPress_27(para->getParD(level)->distributions.f[0],      para->getParD(level+1)->distributions.f[0],
-    //                   para->getParD(level)->neighborX,   para->getParD(level)->neighborY,    para->getParD(level)->neighborZ,
-    //                   para->getParD(level+1)->neighborX, para->getParD(level+1)->neighborY,  para->getParD(level+1)->neighborZ,
-    //                   para->getParD(level)->numberOfNodes,    para->getParD(level+1)->numberOfNodes,   para->getParD(level)->isEvenTimestep,
-    //                   para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF,
-    //                   para->getParD(level)->K_CF,           para->getParD(level)->omega,           para->getParD(level+1)->omega,
-    //                   para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny,
-    //                   para->getParD(level+1)->nx,           para->getParD(level+1)->ny,            para->getParD(level)->numberofthreads,
-    //                   para->getParD(level)->offCF);
-    //getLastCudaError("ScaleCF27 execution failed");
-
-
-    //////////////////////////////////////////////////////////////////////////
-    // A D V E C T I O N    D I F F U S I O N
-    //////////////////////////////////////////////////////////////////////////
+    this->gridScalingKernelManager->runCoarseToFineKernelLB(level);
 
     if (para->getDiffOn())
-    {
-        if (para->getDiffMod() == 7)
-        {
-            //ScaleCFThS7(   para->getParD(level)->distributions.f[0],      para->getParD(level+1)->distributions.f[0],
-            //               para->getParD(level)->distributionsAD7.f[0],        para->getParD(level+1)->distributionsAD7.f[0],
-            //               para->getParD(level)->neighborX,   para->getParD(level)->neighborY,    para->getParD(level)->neighborZ,
-            //               para->getParD(level+1)->neighborX, para->getParD(level+1)->neighborY,  para->getParD(level+1)->neighborZ,
-            //               para->getParD(level)->numberOfNodes,    para->getParD(level+1)->numberOfNodes,   para->getParD(level)->isEvenTimestep,
-            //               para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF,
-            //               para->getParD(level)->K_CF,
-            //               para->getParD(level)->vis,            para->getParD(level+1)->diffusivity,   para->getParD(level)->numberofthreads);
-            //getLastCudaError("ScaleCFTh7 execution failed");
-
-            ScaleCFThSMG7( para->getParD(level)->distributions.f[0],      para->getParD(level+1)->distributions.f[0],
-                           para->getParD(level)->distributionsAD7.f[0],        para->getParD(level+1)->distributionsAD7.f[0],
-                           para->getParD(level)->neighborX,   para->getParD(level)->neighborY,    para->getParD(level)->neighborZ,
-                           para->getParD(level+1)->neighborX, para->getParD(level+1)->neighborY,  para->getParD(level+1)->neighborZ,
-                           para->getParD(level)->numberOfNodes,    para->getParD(level+1)->numberOfNodes,   para->getParD(level)->isEvenTimestep,
-                           para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF,
-                           para->getParD(level)->K_CF,
-                           para->getParD(level)->vis,            para->getParD(level+1)->diffusivity,   para->getParD(level)->numberofthreads,
-                           para->getParD(level)->offCF);
-            getLastCudaError("ScaleCFTh7 execution failed");
-        }
-        else if (para->getDiffMod() == 27)
-        {
-            ScaleCFThS27( para->getParD(level)->distributions.f[0],      para->getParD(level+1)->distributions.f[0],
-                          para->getParD(level)->distributionsAD27.f[0],       para->getParD(level+1)->distributionsAD27.f[0],
-                          para->getParD(level)->neighborX,   para->getParD(level)->neighborY,    para->getParD(level)->neighborZ,
-                          para->getParD(level+1)->neighborX, para->getParD(level+1)->neighborY,  para->getParD(level+1)->neighborZ,
-                          para->getParD(level)->numberOfNodes,    para->getParD(level+1)->numberOfNodes,   para->getParD(level)->isEvenTimestep,
-                          para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF,
-                          para->getParD(level)->K_CF,
-                          para->getParD(level)->vis,            para->getParD(level+1)->diffusivity,   para->getParD(level)->numberofthreads,
-                          para->getParD(level)->offCF);
-            getLastCudaError("ScaleCFTh27 execution failed");
-        }
-    }
-
+        this->gridScalingKernelManager->runCoarseToFineKernelAD(level);
 }
 
 void UpdateGrid27::coarseToFineWithStream(int level, uint *iCellCFC, uint *iCellCFF, uint k_CF, OffCF &offCF,
@@ -668,15 +506,31 @@ void UpdateGrid27::coarseToFineWithStream(int level, uint *iCellCFC, uint *iCell
 {
     cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
 
-    ScaleCF_RhoSq_comp_27(para->getParD(level)->distributions.f[0],        para->getParD(level + 1)->distributions.f[0],
-                          para->getParD(level)->neighborX,     para->getParD(level)->neighborY,     para->getParD(level)->neighborZ,
-                          para->getParD(level + 1)->neighborX, para->getParD(level + 1)->neighborY, para->getParD(level + 1)->neighborZ,
-                          para->getParD(level)->numberOfNodes,      para->getParD(level + 1)->numberOfNodes,  para->getParD(level)->isEvenTimestep,
-                          iCellCFC,                               iCellCFF,
-                          k_CF,                                   para->getParD(level)->omega,            para->getParD(level + 1)->omega,
-                          para->getParD(level)->vis,              para->getParD(level)->nx,               para->getParD(level)->ny,
-                          para->getParD(level + 1)->nx,           para->getParD(level + 1)->ny,           para->getParD(level)->numberofthreads,
-                          offCF,                                  stream);
+    ScaleCF_RhoSq_comp_27(
+        para->getParD(level)->distributions.f[0],
+        para->getParD(level + 1)->distributions.f[0],
+        para->getParD(level)->neighborX,
+        para->getParD(level)->neighborY,
+        para->getParD(level)->neighborZ,
+        para->getParD(level + 1)->neighborX,
+        para->getParD(level + 1)->neighborY,
+        para->getParD(level + 1)->neighborZ,
+        para->getParD(level)->numberOfNodes,
+        para->getParD(level + 1)->numberOfNodes,
+        para->getParD(level)->isEvenTimestep,
+        iCellCFC,
+        iCellCFF,
+        k_CF,
+        para->getParD(level)->omega,
+        para->getParD(level + 1)->omega,
+        para->getParD(level)->vis,
+        para->getParD(level)->nx,
+        para->getParD(level)->ny,
+        para->getParD(level + 1)->nx,
+        para->getParD(level + 1)->ny,
+        para->getParD(level)->numberofthreads,
+        offCF,
+        stream);
     getLastCudaError("ScaleCF27_RhoSq_comp execution failed");
 
     if (para->getDiffOn()) {

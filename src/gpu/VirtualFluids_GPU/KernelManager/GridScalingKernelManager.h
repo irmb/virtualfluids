@@ -53,11 +53,14 @@ public:
 	//! \brief calls the device function of the fine to coarse grid interpolation kernel
 	void runFineToCoarseKernelLB(int level);
 
-	//! \brief calls the device function of the fine to coarse grid interpolation kernel advection diffusion
+	//! \brief calls the device function of the fine to coarse grid interpolation kernel (advection diffusion)
     void runFineToCoarseKernelAD(int level);
 
-	// //! \brief calls the device function of the velocity boundary condition (post-collision)
-    // void runVelocityBCKernelPost(int level);
+	//! \brief calls the device function of the coarse to fine grid interpolation kernel
+	void runCoarseToFineKernelLB(int level);
+
+	//! \brief calls the device function of the coarse to fine grid interpolation kernel (advection diffusion)
+    void runCoarseToFineKernelAD(int level);
 
 private:
 	//! Class constructor
