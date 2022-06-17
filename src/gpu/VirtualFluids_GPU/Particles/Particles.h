@@ -8,11 +8,11 @@
 #include "Parameter/Parameter.h"
 
 //extern "C" void calcDragLift(Parameter* para, int lev);
-extern "C" void allocParticles(Parameter* para, CudaMemoryManager* cudaManager);
+extern "C" void allocParticles(Parameter* para, CudaMemoryManager* cudaMemoryManager);
 extern "C" void initParticles(Parameter* para);
 extern "C" void propagateParticles(Parameter* para, unsigned int t);
-extern "C" void copyAndPrintParticles(Parameter* para, CudaMemoryManager* cudaManager, unsigned int t, bool isInit);
+extern "C" void copyAndPrintParticles(Parameter* para, CudaMemoryManager* cudaMemoryManager, unsigned int t, bool isInit);
 
-extern "C" void rearrangeGeometry(Parameter* para, CudaMemoryManager* cudaManager);
+extern "C" void rearrangeGeometry(Parameter* para, CudaMemoryManager* cudaMemoryManager);
 
 #endif

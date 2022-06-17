@@ -21,8 +21,8 @@ class CudaMemoryManager;
 class VIRTUALFLUIDS_GPU_EXPORT GridProvider
 {
 public:
-    static std::shared_ptr<GridProvider> makeGridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager, vf::gpu::Communicator& communicator);
-    static std::shared_ptr<GridProvider> makeGridReader(FILEFORMAT format, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager);
+    static std::shared_ptr<GridProvider> makeGridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::gpu::Communicator& communicator);
+    static std::shared_ptr<GridProvider> makeGridReader(FILEFORMAT format, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager);
 
 	virtual void allocArrays_CoordNeighborGeo() = 0;
 	virtual void allocArrays_BoundaryValues() = 0;

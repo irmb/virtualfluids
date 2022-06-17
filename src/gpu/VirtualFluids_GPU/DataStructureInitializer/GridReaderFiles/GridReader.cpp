@@ -11,10 +11,10 @@
 #include <GPU/CudaMemoryManager.h>
 #include "OffsetScale.h"
 
-GridReader::GridReader(FILEFORMAT format, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager)
+GridReader::GridReader(FILEFORMAT format, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager)
 {
     this->para = para;
-    this->cudaMemoryManager = cudaManager;
+    this->cudaMemoryManager = cudaMemoryManager;
 
 	if (format == FILEFORMAT::ASCII)
 		this->binaer = false;

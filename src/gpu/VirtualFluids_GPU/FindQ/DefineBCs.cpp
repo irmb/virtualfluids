@@ -1,18 +1,18 @@
 #include "FindQ/DefineBCs.h"
 #include "FindQ/FindQ.h"
 
-void findPressQShip(Parameter* para, CudaMemoryManager* cudaManager)
+void findPressQShip(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
 	//x = begin (0)
 	findKforQPressX0(para, para->getCoarse());
-	cudaManager->cudaAllocPressX0(para->getCoarse());
+	cudaMemoryManager->cudaAllocPressX0(para->getCoarse());
 	findQPressX0(para, para->getCoarse());
-	cudaManager->cudaCopyPressX0(para->getCoarse());
+	cudaMemoryManager->cudaCopyPressX0(para->getCoarse());
 	//x = end (1)
 	findKforQPressX1(para, para->getCoarse());
-	cudaManager->cudaAllocPressX1(para->getCoarse());
+	cudaMemoryManager->cudaAllocPressX1(para->getCoarse());
 	findQPressX1(para, para->getCoarse());
-	cudaManager->cudaCopyPressX1(para->getCoarse());
+	cudaMemoryManager->cudaCopyPressX1(para->getCoarse());
 	//for (int lev = para->getFine(); lev >= para->getCoarse(); lev--)
 	//{
 	//	findKforQPressX1(para, lev);
@@ -25,7 +25,7 @@ void findPressQShip(Parameter* para, CudaMemoryManager* cudaManager)
 
 
 
-void findQ27(Parameter* para, CudaMemoryManager* cudaManager)
+void findQ27(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
    for (int lev = para->getFine(); lev >= para->getCoarse(); lev--)
    {
@@ -36,7 +36,7 @@ void findQ27(Parameter* para, CudaMemoryManager* cudaManager)
 	  para->getParD(lev)->noSlipBC.numberOfBCnodes = para->getParH(lev)->noSlipBC.numberOfBCnodes;
       printf("numberOfBCnodes= %d\n", para->getParH(lev)->numberOfNoSlipBCnodes);
 
-	  cudaManager->cudaAllocWallBC(lev);
+	  cudaMemoryManager->cudaAllocWallBC(lev);
 
       findQ(para, lev);
 
@@ -45,14 +45,14 @@ void findQ27(Parameter* para, CudaMemoryManager* cudaManager)
 	  para->getParD(lev)->noSlipBC.numberOfBCnodes = para->getParH(lev)->noSlipBC.numberOfBCnodes;
       printf("numberOfBCnodes= %d\n", para->getParH(lev)->numberOfNoSlipBCnodes);
 
-	  cudaManager->cudaCopyWallBC(lev);
+	  cudaMemoryManager->cudaCopyWallBC(lev);
    }
 }
 
 
 
 
-void findBC27(Parameter* para, CudaMemoryManager* cudaManager)
+void findBC27(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
    if ( para->getMyID() == 0)
    {
@@ -64,11 +64,11 @@ void findBC27(Parameter* para, CudaMemoryManager* cudaManager)
 	  para->getParD(para->getCoarse())->numberOfVeloBCnodes = para->getParH(para->getCoarse())->velocityBC.numberOfBCnodes;
       printf("numberOfVeloBCnodes= %d\n", para->getParH(para->getCoarse())->numberOfVeloBCnodes);
 
-	  cudaManager->cudaAllocVeloBC(0); //level = 0
+	  cudaMemoryManager->cudaAllocVeloBC(0); //level = 0
 
       findQInflow(para);
 
-	  cudaManager->cudaCopyVeloBC(0); //level = 0
+	  cudaMemoryManager->cudaCopyVeloBC(0); //level = 0
    }
 
     // TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29

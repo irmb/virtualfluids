@@ -16,13 +16,13 @@ using namespace std;
 
 
 
-void calcDragLift(Parameter* para, CudaMemoryManager* cudaManager, int lev)
+void calcDragLift(Parameter* para, CudaMemoryManager* cudaMemoryManager, int lev)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//copy to host
 	//finest Grid ... with the geometry nodes
 	//please test -> Copy == Alloc ??
-	cudaManager->cudaCopyDragLift(lev, para->getParH(lev)->geometryBC.numberOfBCnodes);
+	cudaMemoryManager->cudaCopyDragLift(lev, para->getParH(lev)->geometryBC.numberOfBCnodes);
 	//////////////////////////////////////////////////////////////////////////
 	//calc drag
 	double dragX = 0., dragY = 0., dragZ = 0.;
@@ -81,7 +81,7 @@ void calcDragLift(Parameter* para, CudaMemoryManager* cudaManager, int lev)
 
 
 
-void allocDragLift(Parameter* para, CudaMemoryManager* cudaManager)
+void allocDragLift(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//set level
@@ -90,14 +90,14 @@ void allocDragLift(Parameter* para, CudaMemoryManager* cudaManager)
 	//allocation
 	//finest Grid ... with the geometry nodes
 	//please test -> Copy == Alloc ??
-	cudaManager->cudaAllocDragLift(lev, para->getParH(lev)->geometryBC.numberOfBCnodes);
+	cudaMemoryManager->cudaAllocDragLift(lev, para->getParH(lev)->geometryBC.numberOfBCnodes);
 	//////////////////////////////////////////////////////////////////////////
 	printf("\n Anzahl Elemente fuer Drag Lift = %d \n", para->getParH(lev)->geometryBC.numberOfBCnodes);
 }
 
 
 
-void printDragLift(Parameter* para, CudaMemoryManager* cudaManager, int timestep)
+void printDragLift(Parameter* para, CudaMemoryManager* cudaMemoryManager, int timestep)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//set level
@@ -124,7 +124,7 @@ void printDragLift(Parameter* para, CudaMemoryManager* cudaManager, int timestep
 	//////////////////////////////////////////////////////////////////////////
 	if (timestep == (int)para->getTEnd())
 	{
-		cudaManager->cudaFreeDragLift(lev);
+		cudaMemoryManager->cudaFreeDragLift(lev);
 	}
 	//////////////////////////////////////////////////////////////////////////
 }

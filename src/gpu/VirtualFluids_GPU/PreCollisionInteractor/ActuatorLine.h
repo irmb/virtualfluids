@@ -45,9 +45,9 @@ public:
 
     virtual ~ActuatorLine(){};
 
-    void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager) override;
-    void interact(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t) override;
-    void free(Parameter* para, CudaMemoryManager* cudaManager) override;
+    void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaMemoryManager) override;
+    void interact(Parameter* para, CudaMemoryManager* cudaMemoryManager, int level, uint t) override;
+    void free(Parameter* para, CudaMemoryManager* cudaMemoryManager) override;
     void write(uint t);
 
     uint getNBladeNodes(){ return this->nBladeNodes; };
@@ -81,13 +81,13 @@ public:
     virtual void calcBladeForces();
 
 private:
-    void initBoundingSphere(Parameter* para, CudaMemoryManager* cudaManager);
+    void initBoundingSphere(Parameter* para, CudaMemoryManager* cudaMemoryManager);
 
-    void initBladeRadii(CudaMemoryManager* cudaManager);
-    void initBladeCoords(CudaMemoryManager* cudaManager);
-    void initBladeVelocities(CudaMemoryManager* cudaManager);
-    void initBladeForces(CudaMemoryManager* cudaManager);
-    void initBladeIndices(Parameter* para, CudaMemoryManager* cudaManager);
+    void initBladeRadii(CudaMemoryManager* cudaMemoryManager);
+    void initBladeCoords(CudaMemoryManager* cudaMemoryManager);
+    void initBladeVelocities(CudaMemoryManager* cudaMemoryManager);
+    void initBladeForces(CudaMemoryManager* cudaMemoryManager);
+    void initBladeIndices(Parameter* para, CudaMemoryManager* cudaMemoryManager);
 
     void calcForcesEllipticWing();
 

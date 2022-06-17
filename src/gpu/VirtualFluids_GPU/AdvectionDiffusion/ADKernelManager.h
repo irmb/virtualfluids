@@ -54,7 +54,7 @@ public:
     void initAD(int level);
     
     //! \brief set initial concentration values at all nodes
-    //! \param cudaManager instance of class CudaMemoryManager
+    //! \param cudaMemoryManager instance of class CudaMemoryManager
     void setInitialNodeValuesAD(int level, SPtr<CudaMemoryManager> cudaMemoryManager);
     
     //! \brief calculate the state of the next time step of the advection diffusion distributions
@@ -73,7 +73,7 @@ public:
     void runADpressureBCKernel(int level);
     
     //! \brief copy the concentration from device to host and writes VTK file with concentration
-    //! \param cudaManager instance of class CudaMemoryManager
+    //! \param cudaMemoryManager instance of class CudaMemoryManager
     void printAD(int level, SPtr<CudaMemoryManager> cudaMemoryManager);
 
 

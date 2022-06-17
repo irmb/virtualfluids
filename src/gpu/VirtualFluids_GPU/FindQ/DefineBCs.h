@@ -6,10 +6,10 @@
 #include "Parameter/Parameter.h"
 #include "GPU/CudaMemoryManager.h"
 
-extern "C" void findQ27(Parameter* para, CudaMemoryManager* cudaManager);
+extern "C" void findQ27(Parameter* para, CudaMemoryManager* cudaMemoryManager);
 
-extern "C" void findBC27(Parameter* para, CudaMemoryManager* cudaManager);
+extern "C" void findBC27(Parameter* para, CudaMemoryManager* cudaMemoryManager);
 
-extern "C" void findPressQShip(Parameter* para, CudaMemoryManager* cudaManager);
+extern "C" void findPressQShip(Parameter* para, CudaMemoryManager* cudaMemoryManager);
 
 #endif

@@ -32,9 +32,12 @@
 //=======================================================================================
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
+
 #include "LBKernelManager.h"
 #include "GPU_Interface.h"
 #include "Parameter/Parameter.h"
+#include "Calculation/DragLift.h"
+#include "Calculation/Cp.h"
 
 
 void LBKernelManager::runLBMKernel(int level)
@@ -67,7 +70,67 @@ void LBKernelManager::runLBMKernel(int level)
     //  }
 }
 
-void LBKernelManager::runVelocityBCKernel(int level)
+void LBKernelManager::runVelocityBCKernelPre(int level)
+{
+    if (para->getParD(level)->numberOfVeloBCnodes > 0)
+    {
+        // TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
+        // if ( myid == 0)
+        // {
+        //    VelSchlaffer27(para->getParD(level)->numberofthreads, t,
+        //                   para->getParD(level)->distributions.f[0],       para->getParD(level)->velocityBC.Vz,
+        //                   para->getParD(level)->velocityBC.deltaVz, para->getParD(level)->velocityBC.k,
+        //                   para->getParD(level)->velocityBC.kN,      para->getParD(level)->numberOfVeloBCnodes,
+        //                   para->getParD(level)->omega,           para->getParD(level)->neighborX,
+        //                   para->getParD(level)->neighborY,    para->getParD(level)->neighborZ,
+        //                   para->getParD(level)->numberOfNodes,     para->getParD(level)->isEvenTimestep);
+        //    getLastCudaError("VelSchlaffer27 execution failed");
+        // }
+        ////////////////////////////////////////////////////////////////////////////
+        // high viscosity incompressible
+        // QVelDevIncompHighNu27(
+        //     para->getParD(level)->numberofthreads,
+        //     para->getParD(level)->nx,
+        //     para->getParD(level)->ny,
+        //     para->getParD(level)->velocityBC.Vx,
+        //     para->getParD(level)->velocityBC.Vy,
+        //     para->getParD(level)->velocityBC.Vz,
+        //     para->getParD(level)->distributions.f[0],
+        //     para->getParD(level)->velocityBC.k,
+        //     para->getParD(level)->velocityBC.q27[0],
+        //     para->getParD(level)->numberOfVeloBCnodes,
+        //     para->getParD(level)->numberOfVeloBCnodes,
+        //     para->getParD(level)->omega,
+        //     para->getParD(level)->neighborX,
+        //     para->getParD(level)->neighborY,
+        //     para->getParD(level)->neighborZ,
+        //     para->getParD(level)->numberOfNodes,
+        //     para->getParD(level)->isEvenTimestep);
+
+        ////////////////////////////////////////////////////////////////////////////
+        // high viscosity compressible
+        // QVelDevCompHighNu27(
+        //     para->getParD(level)->numberofthreads,
+        //     para->getParD(level)->nx,
+        //     para->getParD(level)->ny,
+        //     para->getParD(level)->velocityBC.Vx,
+        //     para->getParD(level)->velocityBC.Vy,
+        //     para->getParD(level)->velocityBC.Vz,
+        //     para->getParD(level)->distributions.f[0],
+        //     para->getParD(level)->velocityBC.k,
+        //     para->getParD(level)->velocityBC.q27[0],
+        //     para->getParD(level)->numberOfVeloBCnodes,
+        //     para->getParD(level)->numberOfVeloBCnodes,
+        //     para->getParD(level)->omega,
+        //     para->getParD(level)->neighborX,
+        //     para->getParD(level)->neighborY,
+        //     para->getParD(level)->neighborZ,
+        //     para->getParD(level)->numberOfNodes,
+        //     para->getParD(level)->isEvenTimestep);
+    }
+}
+
+void LBKernelManager::runVelocityBCKernelPost(int level)
 {
      if (para->getParD(level)->numberOfVeloBCnodes > 0)
      {
@@ -157,6 +220,120 @@ void LBKernelManager::runVelocityBCKernel(int level)
         //                para->getParD(level)->size_Mat_SP,     para->getParD(level)->isEvenTimestep);
         //getLastCudaError("QVelDev27 execution failed");
      }
+}
+
+void LBKernelManager::runGeoBCKernelPre(int level, unsigned int t, CudaMemoryManager* cudaMemoryManager){
+    if (para->getParD(level)->geometryBC.numberOfBCnodes > 0){
+        if (para->getCalcDragLift())
+        {
+            //Drag and Lift Part II
+            DragLiftPreD27(
+                para->getParD(level)->distributions.f[0],
+                para->getParD(level)->geometryBC.k,
+                para->getParD(level)->geometryBC.q27[0],
+                para->getParD(level)->geometryBC.numberOfBCnodes,
+                para->getParD(level)->DragPreX,
+                para->getParD(level)->DragPreY,
+                para->getParD(level)->DragPreZ,
+                para->getParD(level)->neighborX,
+                para->getParD(level)->neighborY,
+                para->getParD(level)->neighborZ,
+                para->getParD(level)->numberOfNodes,
+                para->getParD(level)->isEvenTimestep,
+                para->getParD(level)->numberofthreads);
+            ////////////////////////////////////////////////////////////////////////////////
+            //Calculation of Drag and Lift
+            ////////////////////////////////////////////////////////////////////////////////
+            calcDragLift(para.get(), cudaMemoryManager, level);
+            ////////////////////////////////////////////////////////////////////////////////
+        }
+
+        if (para->getCalcCp())
+        {
+            ////////////////////////////////////////////////////////////////////////////////
+            //Calculation of cp
+            ////////////////////////////////////////////////////////////////////////////////
+
+            if(t > para->getTStartOut())
+            {
+                ////////////////////////////////////////////////////////////////////////////////
+                CalcCPtop27(
+                    para->getParD(level)->distributions.f[0],
+                    para->getParD(level)->cpTopIndex,
+                    para->getParD(level)->numberOfPointsCpTop,
+                    para->getParD(level)->cpPressTop,
+                    para->getParD(level)->neighborX,
+                    para->getParD(level)->neighborY,
+                    para->getParD(level)->neighborZ,
+                    para->getParD(level)->numberOfNodes,
+                    para->getParD(level)->isEvenTimestep,
+                    para->getParD(level)->numberofthreads);
+                //////////////////////////////////////////////////////////////////////////////////
+                CalcCPbottom27(
+                    para->getParD(level)->distributions.f[0],
+                    para->getParD(level)->cpBottomIndex,
+                    para->getParD(level)->numberOfPointsCpBottom,
+                    para->getParD(level)->cpPressBottom,
+                    para->getParD(level)->neighborX,
+                    para->getParD(level)->neighborY,
+                    para->getParD(level)->neighborZ,
+                    para->getParD(level)->numberOfNodes,
+                    para->getParD(level)->isEvenTimestep,
+                    para->getParD(level)->numberofthreads);
+                //////////////////////////////////////////////////////////////////////////////////
+                CalcCPbottom27(
+                    para->getParD(level)->distributions.f[0],
+                    para->getParD(level)->cpBottom2Index,
+                    para->getParD(level)->numberOfPointsCpBottom2,
+                    para->getParD(level)->cpPressBottom2,
+                    para->getParD(level)->neighborX,
+                    para->getParD(level)->neighborY,
+                    para->getParD(level)->neighborZ,
+                    para->getParD(level)->numberOfNodes,
+                    para->getParD(level)->isEvenTimestep,
+                    para->getParD(level)->numberofthreads);
+                //////////////////////////////////////////////////////////////////////////////////
+                calcCp(para.get(), cudaMemoryManager, level);
+            }            
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////
+        // high viscosity incompressible
+        // QDevIncompHighNu27(
+        //     para->getParD(level)->numberofthreads,
+        //     para->getParD(level)->nx,
+        //     para->getParD(level)->ny,
+        //     para->getParD(level)->distributions.f[0],
+        //     para->getParD(level)->geometryBC.k,
+        //     para->getParD(level)->geometryBC.q27[0],
+        //     para->getParD(level)->geometryBC.numberOfBCnodes,
+        //     para->getParD(level)->geometryBC.numberOfBCnodes,
+        //     para->getParD(level)->omega,
+        //     para->getParD(level)->neighborX,
+        //     para->getParD(level)->neighborY,
+        //     para->getParD(level)->neighborZ,
+        //     para->getParD(level)->numberOfNodes,
+        //     para->getParD(level)->isEvenTimestep);
+
+        //////////////////////////////////////////////////////////////////////////////////
+        // high viscosity compressible
+        // QDevCompHighNu27(
+        //     para->getParD(level)->numberofthreads,
+        //     para->getParD(level)->nx,
+        //     para->getParD(level)->ny,
+        //     para->getParD(level)->distributions.f[0],
+        //     para->getParD(level)->geometryBC.k,
+        //     para->getParD(level)->geometryBC.q27[0],
+        //     para->getParD(level)->geometryBC.numberOfBCnodes,
+        //     para->getParD(level)->geometryBC.numberOfBCnodes,
+        //     para->getParD(level)->omega,
+        //     para->getParD(level)->neighborX,
+        //     para->getParD(level)->neighborY,
+        //     para->getParD(level)->neighborZ,
+        //     para->getParD(level)->numberOfNodes,
+        //     para->getParD(level)->isEvenTimestep);
+
+    }
 }
 
 void LBKernelManager::runGeoBCKernelPost(int level)
@@ -354,23 +531,121 @@ void LBKernelManager::runGeoBCKernelPost(int level)
     }
 }
 
-void LBKernelManager::runOutflowBCKernel(int level){
+void LBKernelManager::runOutflowBCKernelPre(int level){
     if (para->getParD(level)->numberOfOutflowBCnodes > 0)
     {
-        //////////////////////////////////////////////////////////////////////////
-        // D E P R E C A T E D
-        //////////////////////////////////////////////////////////////////////////
-        // QPressDevFixBackflow27(
+        QPressNoRhoDev27(
+            para->getParD(level)->numberofthreads,
+            para->getParD(level)->outflowBC.RhoBC,
+            para->getParD(level)->distributions.f[0],
+            para->getParD(level)->outflowBC.k,
+            para->getParD(level)->outflowBC.kN,
+            para->getParD(level)->outflowBC.numberOfBCnodes,
+            para->getParD(level)->omega,
+            para->getParD(level)->neighborX,
+            para->getParD(level)->neighborY,
+            para->getParD(level)->neighborZ,
+            para->getParD(level)->numberOfNodes,
+            para->getParD(level)->isEvenTimestep);
+
+        // TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
+        // if (  myid == numprocs - 1)
+        // PressSchlaffer27(
         //     para->getParD(level)->numberofthreads,
-        //     RhoBCOutflowD,
+        //     para->getParD(level)->outflowBC.RhoBC,
         //     para->getParD(level)->distributions.f[0],
-        //     QoutflowD.k,
-        //     numberOfOutflowBCnodes,
+        //     para->getParD(level)->outflowBC.Vx,
+        //     para->getParD(level)->outflowBC.Vy,
+        //     para->getParD(level)->outflowBC.Vz,
+        //     para->getParD(level)->outflowBC.deltaVz,
+        //     para->getParD(level)->outflowBC.k,
+        //     para->getParD(level)->outflowBC.kN,
+        //     para->getParD(level)->numberOfOutflowBCnodes,
         //     para->getParD(level)->omega,
         //     para->getParD(level)->neighborX,
         //     para->getParD(level)->neighborY,
         //     para->getParD(level)->neighborZ,
-        //     para->getParD(level)->size_Mat_SP,
+        //     para->getParD(level)->numberOfNodes,
+        //     para->getParD(level)->isEvenTimestep);
+    }
+}
+
+void LBKernelManager::runPressureBCKernelPre(int level){
+    if (para->getParD(level)->pressureBC.numberOfBCnodes > 0)
+    {
+        QPressNoRhoDev27(
+            para->getParD(level)->numberofthreads,
+            para->getParD(level)->pressureBC.RhoBC,
+            para->getParD(level)->distributions.f[0],
+            para->getParD(level)->pressureBC.k,
+            para->getParD(level)->pressureBC.kN,
+            para->getParD(level)->pressureBC.numberOfBCnodes,
+            para->getParD(level)->omega,
+            para->getParD(level)->neighborX,
+            para->getParD(level)->neighborY,
+            para->getParD(level)->neighborZ,
+            para->getParD(level)->numberOfNodes,
+            para->getParD(level)->isEvenTimestep);
+
+        // QPressDevEQZ27(
+        //     para->getParD(level)->numberofthreads,
+        //     para->getParD(level)->pressureBC.RhoBC,
+        //     para->getParD(level)->distributions.f[0],
+        //     para->getParD(level)->pressureBC.k,
+        //     para->getParD(level)->pressureBC.kN,
+        //     para->getParD(level)->kDistTestRE.f[0],
+        //     para->getParD(level)->pressureBC.numberOfBCnodes,
+        //     para->getParD(level)->omega,
+        //     para->getParD(level)->neighborX,
+        //     para->getParD(level)->neighborY,
+        //     para->getParD(0)->neighborZ,
+        //     para->getParD(level)->numberOfNodes,
+        //     para->getParD(level)->isEvenTimestep);
+
+        // QInflowScaleByPressDev27(
+        //     para->getParD(level)->numberofthreads,
+        //     para->getParD(level)->pressureBC.RhoBC,
+        //     para->getParD(level)->distributions.f[0],
+        //     para->getParD(level)->pressureBC.k,
+        //     para->getParD(level)->pressureBC.kN,
+        //     para->getParD(level)->pressureBC.numberOfBCnodes,
+        //     para->getParD(0)->omega,
+        //     para->getParD(level)->neighborX,
+        //     para->getParD(level)->neighborY,
+        //     para->getParD(0)->neighborZ,
+        //     para->getParD(level)->numberOfNodes,
+        //     para->getParD(level)->isEvenTimestep);
+
+        ////////////////////////////////////////////////////////////////////////////////
+        //press NEQ incompressible
+        // QPressDevIncompNEQ27(
+        //     para->getParD(level)->numberofthreads,
+        //     para->getParD(level)->pressureBC.RhoBC,
+        //     para->getParD(level)->distributions.f[0],
+        //     para->getParD(level)->pressureBC.k,
+        //     para->getParD(level)->pressureBC.kN,
+        //     para->getParD(level)->pressureBC.numberOfBCnodes,
+        //     para->getParD(level)->omega,
+        //     para->getParD(level)->neighborX,
+        //     para->getParD(level)->neighborY,
+        //     para->getParD(level)->neighborZ,
+        //     para->getParD(level)->numberOfNodes,
+        //     para->getParD(level)->isEvenTimestep);
+
+        //////////////////////////////////////////////////////////////////////////////////
+        //press NEQ compressible
+        // QPressDevNEQ27(
+        //     para->getParD(level)->numberofthreads,
+        //     para->getParD(level)->pressureBC.RhoBC,
+        //     para->getParD(level)->distributions.f[0],
+        //     para->getParD(level)->pressureBC.k,
+        //     para->getParD(level)->pressureBC.kN,
+        //     para->getParD(level)->pressureBC.numberOfBCnodes,
+        //     para->getParD(level)->omega,
+        //     para->getParD(level)->neighborX,
+        //     para->getParD(level)->neighborY,
+        //     para->getParD(level)->neighborZ,
+        //     para->getParD(level)->numberOfNodes,
         //     para->getParD(level)->isEvenTimestep);
     }
 }

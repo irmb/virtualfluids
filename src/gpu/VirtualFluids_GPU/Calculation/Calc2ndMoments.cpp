@@ -2,13 +2,13 @@
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
 
-void alloc2ndMoments(Parameter* para, CudaMemoryManager* cudaManager)
+void alloc2ndMoments(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
 	for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
 	{
 		//////////////////////////////////////////////////////////////////////////
 		//allocation (device-memory + host-memory)
-		cudaManager->cudaAlloc2ndMoments(lev, para->getParH(lev)->numberOfNodes);
+		cudaMemoryManager->cudaAlloc2ndMoments(lev, para->getParH(lev)->numberOfNodes);
 		//////////////////////////////////////////////////////////////////////////
 	}
 }
@@ -35,7 +35,7 @@ void init2ndMoments(Parameter* para)
 
 
 
-void calc2ndMoments(Parameter* para, CudaMemoryManager* cudaManager)
+void calc2ndMoments(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
 	for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
 	{
@@ -56,7 +56,7 @@ void calc2ndMoments(Parameter* para, CudaMemoryManager* cudaManager)
 								para->getParD(lev)->isEvenTimestep);
 		//////////////////////////////////////////////////////////////////////////
 		//copy results to host
-		cudaManager->cudaCopy2ndMoments(lev, para->getParH(lev)->numberOfNodes);
+		cudaMemoryManager->cudaCopy2ndMoments(lev, para->getParH(lev)->numberOfNodes);
 		//////////////////////////////////////////////////////////////////////////
 	}
 }
@@ -97,13 +97,13 @@ void calc2ndMoments(Parameter* para, CudaMemoryManager* cudaManager)
 
 
 
-void alloc3rdMoments(Parameter* para, CudaMemoryManager* cudaManager)
+void alloc3rdMoments(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
 	for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
 	{
 		//////////////////////////////////////////////////////////////////////////
 		//allocation (device-memory + host-memory)
-		cudaManager->cudaAlloc3rdMoments(lev, para->getParH(lev)->numberOfNodes);
+		cudaMemoryManager->cudaAlloc3rdMoments(lev, para->getParH(lev)->numberOfNodes);
 		//////////////////////////////////////////////////////////////////////////
 	}
 }
@@ -132,7 +132,7 @@ void init3rdMoments(Parameter* para)
 
 
 
-void calc3rdMoments(Parameter* para, CudaMemoryManager* cudaManager)
+void calc3rdMoments(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
 	for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
 	{
@@ -155,7 +155,7 @@ void calc3rdMoments(Parameter* para, CudaMemoryManager* cudaManager)
 								para->getParD(lev)->isEvenTimestep);
 		//////////////////////////////////////////////////////////////////////////
 		//copy results to host
-		cudaManager->cudaCopy3rdMoments(lev, para->getParH(lev)->numberOfNodes);
+		cudaMemoryManager->cudaCopy3rdMoments(lev, para->getParH(lev)->numberOfNodes);
 		//////////////////////////////////////////////////////////////////////////
 	}
 }
@@ -196,13 +196,13 @@ void calc3rdMoments(Parameter* para, CudaMemoryManager* cudaManager)
 
 
 
-void allocHigherOrderMoments(Parameter* para, CudaMemoryManager* cudaManager)
+void allocHigherOrderMoments(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
 	for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
 	{
 		//////////////////////////////////////////////////////////////////////////
 		//allocation (device-memory + host-memory)
-		cudaManager->cudaAllocHigherMoments(lev, para->getParH(lev)->numberOfNodes);
+		cudaMemoryManager->cudaAllocHigherMoments(lev, para->getParH(lev)->numberOfNodes);
 		//////////////////////////////////////////////////////////////////////////
 	}
 }
@@ -234,7 +234,7 @@ void initHigherOrderMoments(Parameter* para)
 
 
 
-void calcHigherOrderMoments(Parameter* para, CudaMemoryManager* cudaManager)
+void calcHigherOrderMoments(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
 	for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
 	{
@@ -260,7 +260,7 @@ void calcHigherOrderMoments(Parameter* para, CudaMemoryManager* cudaManager)
 									para->getParD(lev)->isEvenTimestep);
 		//////////////////////////////////////////////////////////////////////////
 		//copy results to host
-		cudaManager->cudaCopyHigherMoments(lev, para->getParH(lev)->numberOfNodes);
+		cudaMemoryManager->cudaCopyHigherMoments(lev, para->getParH(lev)->numberOfNodes);
 		//////////////////////////////////////////////////////////////////////////
 	}
 }

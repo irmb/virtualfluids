@@ -41,7 +41,7 @@ ForceCalculations::~ForceCalculations()
 
 
 
-void ForceCalculations::calcPIDControllerForForce(Parameter* para, CudaMemoryManager* cudaManager)
+void ForceCalculations::calcPIDControllerForForce(Parameter* para, CudaMemoryManager* cudaMemoryManager)
  {
 	 //////////////////////////////////////////////////////////////////////////
 	 double tempVeloX = 0.0, tempVeloY = 0.0, tempVeloZ = 0.0;
@@ -71,7 +71,7 @@ void ForceCalculations::calcPIDControllerForForce(Parameter* para, CudaMemoryMan
 							 para->getParD(lev)->isEvenTimestep);
 			 getLastCudaError("CalcMacSP27 execution failed");
 			 //////////////////////////////////////////////////////////////////
-			 cudaManager->cudaCopyPrint(lev);
+			 cudaMemoryManager->cudaCopyPrint(lev);
 //			 para->cudaCopyForceVelo(i,numberOfElements);
 			 //////////////////////////////////////////////////////////////////
 			 for (int j = 0; j < numberOfElements; j++)
@@ -116,7 +116,7 @@ void ForceCalculations::calcPIDControllerForForce(Parameter* para, CudaMemoryMan
 	 para->getForcesHost()[1] = (real)(para->getForcesHost()[1] + y) * (real)0.0;
 	 para->getForcesHost()[2] = (real)(para->getForcesHost()[2] + y) * (real)0.0;
 	 //////////////////////////////////////////////////////////////////////////
-	 cudaManager->cudaCopyForcingToDevice();
+	 cudaMemoryManager->cudaCopyForcingToDevice();
 	 //////////////////////////////////////////////////////////////////////////
  }
 

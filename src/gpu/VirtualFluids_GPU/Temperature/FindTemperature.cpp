@@ -14,11 +14,11 @@
 #include "Parameter/Parameter.h"
 #include "Temperature/FindQTemp.h"
 
-void initTemperatur(Parameter* para, CudaMemoryManager* cudaManager, int lev)
+void initTemperatur(Parameter* para, CudaMemoryManager* cudaMemoryManager, int lev)
 {
-    cudaManager->cudaAllocTempFs(lev);
+    cudaMemoryManager->cudaAllocTempFs(lev);
 
-    cudaManager->cudaCopyConcentrationHostToDevice(lev);
+    cudaMemoryManager->cudaCopyConcentrationHostToDevice(lev);
 
    if (para->getDiffMod() == 7)
    {
@@ -79,41 +79,41 @@ void initTemperatur(Parameter* para, CudaMemoryManager* cudaManager, int lev)
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    }
 
-   cudaManager->cudaCopyConcentrationDeviceToHost(lev);
+   cudaMemoryManager->cudaCopyConcentrationDeviceToHost(lev);
 }
 
 
-void findTempSim(Parameter* para, CudaMemoryManager* cudaManager)
+void findTempSim(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
    findKforTemp(para);
 
-   cudaManager->cudaAllocTempNoSlipBC(para->getCoarse());
+   cudaMemoryManager->cudaAllocTempNoSlipBC(para->getCoarse());
 
    findTemp(para);
 
-   cudaManager->cudaCopyTempNoSlipBCHD(para->getCoarse());
+   cudaMemoryManager->cudaCopyTempNoSlipBCHD(para->getCoarse());
 }
 
 
-void findTempVelSim(Parameter* para, CudaMemoryManager* cudaManager)
+void findTempVelSim(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
    findKforTempVel(para);
 
-   cudaManager->cudaAllocTempVeloBC(para->getCoarse());
+   cudaMemoryManager->cudaAllocTempVeloBC(para->getCoarse());
 
    findTempVel(para);
 
-   cudaManager->cudaCopyTempVeloBCHD(para->getCoarse());
+   cudaMemoryManager->cudaCopyTempVeloBCHD(para->getCoarse());
 }
 
 
-void findTempPressSim(Parameter* para, CudaMemoryManager* cudaManager)
+void findTempPressSim(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
    findKforTempPress(para);
 
-   cudaManager->cudaAllocTempPressBC(para->getCoarse());
+   cudaMemoryManager->cudaAllocTempPressBC(para->getCoarse());
 
    findTempPress(para);
 
-   cudaManager->cudaCopyTempPressBCHD(para->getCoarse());
+   cudaMemoryManager->cudaCopyTempPressBCHD(para->getCoarse());
 }

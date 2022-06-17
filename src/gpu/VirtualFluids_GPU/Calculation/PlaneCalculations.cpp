@@ -159,7 +159,7 @@ void calcFlowRate(Parameter* para, int lev)
 //advection + diffusion
 //////////////////////////////////////////////////////////////////////////
 
-void calcPlaneConc(Parameter* para, CudaMemoryManager* cudaManager, int lev)
+void calcPlaneConc(Parameter* para, CudaMemoryManager* cudaMemoryManager, int lev)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//copy to host
@@ -177,9 +177,9 @@ void calcPlaneConc(Parameter* para, CudaMemoryManager* cudaManager, int lev)
 	////Version cp bottom
 	//unsigned int NoN = para->getParH(lev)->numberOfPointsCpBottom;
 
-	cudaManager->cudaCopyPlaneConcIn(lev, NoNin);
-	cudaManager->cudaCopyPlaneConcOut1(lev, NoNout1);
-	cudaManager->cudaCopyPlaneConcOut2(lev, NoNout2);
+	cudaMemoryManager->cudaCopyPlaneConcIn(lev, NoNin);
+	cudaMemoryManager->cudaCopyPlaneConcOut1(lev, NoNout1);
+	cudaMemoryManager->cudaCopyPlaneConcOut2(lev, NoNout2);
 	////////////////////////////////////////////
 	//calculate concentration
 	double concPlaneIn = 0.;
@@ -232,7 +232,7 @@ void calcPlaneConc(Parameter* para, CudaMemoryManager* cudaManager, int lev)
 
 
 
-void allocPlaneConc(Parameter* para, CudaMemoryManager* cudaManager)
+void allocPlaneConc(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//set level   ---> maybe we need a loop
@@ -243,9 +243,9 @@ void allocPlaneConc(Parameter* para, CudaMemoryManager* cudaManager)
 	//please test -> Copy == Alloc ??
 	////////////////////////////////////////////
 	//Version Press neighbor
-	cudaManager->cudaAllocPlaneConcIn(lev, para->getParH(lev)->numberOfPointsCpTop);
-	cudaManager->cudaAllocPlaneConcOut1(lev, para->getParH(lev)->numberOfPointsCpBottom);
-	cudaManager->cudaAllocPlaneConcOut2(lev, para->getParH(lev)->pressureBC.numberOfBCnodes);
+	cudaMemoryManager->cudaAllocPlaneConcIn(lev, para->getParH(lev)->numberOfPointsCpTop);
+	cudaMemoryManager->cudaAllocPlaneConcOut1(lev, para->getParH(lev)->numberOfPointsCpBottom);
+	cudaMemoryManager->cudaAllocPlaneConcOut2(lev, para->getParH(lev)->pressureBC.numberOfBCnodes);
 	printf("\n Number of elements plane concentration = %d + %d + %d \n", para->getParH(lev)->numberOfPointsCpTop, para->getParH(lev)->numberOfPointsCpBottom, para->getParH(lev)->pressureBC.numberOfBCnodes);
 	////////////////////////////////////////////
 	////Version cp top
@@ -260,7 +260,7 @@ void allocPlaneConc(Parameter* para, CudaMemoryManager* cudaManager)
 
 
 
-void printPlaneConc(Parameter* para, CudaMemoryManager* cudaManager)
+void printPlaneConc(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//set level   ---> maybe we need a loop
@@ -325,7 +325,7 @@ void printPlaneConc(Parameter* para, CudaMemoryManager* cudaManager)
 	//close file
 	ostrOut2.close();
 	//////////////////////////////////////////////////////////////////////////
-	cudaManager->cudaFreePlaneConc(lev);
+	cudaMemoryManager->cudaFreePlaneConc(lev);
 	//////////////////////////////////////////////////////////////////////////
 }
 
@@ -335,7 +335,7 @@ void printPlaneConc(Parameter* para, CudaMemoryManager* cudaManager)
 
 //////////////////////////////////////////////////////////////////////////
 //Print Test round of Error
-void printRE(Parameter* para, CudaMemoryManager* cudaManager, int timestep)
+void printRE(Parameter* para, CudaMemoryManager* cudaMemoryManager, int timestep)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//set level
@@ -377,7 +377,7 @@ void printRE(Parameter* para, CudaMemoryManager* cudaManager, int timestep)
 	//////////////////////////////////////////////////////////////////////////
 	if (timestep == (int)para->getTEnd())
 	{
-		cudaManager->cudaFreeTestRE(lev);
+		cudaMemoryManager->cudaFreeTestRE(lev);
 	}
 	//////////////////////////////////////////////////////////////////////////
 }

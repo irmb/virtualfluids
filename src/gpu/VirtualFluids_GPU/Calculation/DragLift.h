@@ -6,8 +6,8 @@
 #include "Parameter/Parameter.h"
 #include "GPU/CudaMemoryManager.h"
 
-extern "C" void calcDragLift(Parameter* para, CudaMemoryManager* cudaManager, int lev);
-extern "C" void allocDragLift(Parameter* para, CudaMemoryManager* cudaManager);
-extern "C" void printDragLift(Parameter* para, CudaMemoryManager* cudaManager, int timestep);
+extern "C" void calcDragLift(Parameter* para, CudaMemoryManager* cudaMemoryManager, int lev);
+extern "C" void allocDragLift(Parameter* para, CudaMemoryManager* cudaMemoryManager);
+extern "C" void printDragLift(Parameter* para, CudaMemoryManager* cudaMemoryManager, int timestep);
 
 #endif

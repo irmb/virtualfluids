@@ -67,7 +67,7 @@ private:
 	vf::gpu::Communicator& communicator;
     SPtr<Parameter> para;
     std::unique_ptr<DataWriter> dataWriter;
-	std::shared_ptr<CudaMemoryManager> cudaManager;
+	std::shared_ptr<CudaMemoryManager> cudaMemoryManager;
 	std::vector < SPtr< Kernel>> kernels;
 	std::vector < SPtr< ADKernel>> adKernels;
 	std::shared_ptr<PreProcessor> preProcessor;

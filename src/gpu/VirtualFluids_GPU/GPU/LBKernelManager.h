@@ -39,6 +39,7 @@
 
 //! \brief Class forwarding for Parameter
 class Parameter;
+class CudaMemoryManager;
 
 //! \class LBKernelManager
 //! \brief manage the cuda kernel calls
@@ -52,11 +53,17 @@ public:
 	//! \brief calls the device function of the lattice Boltzmann kernel
 	void runLBMKernel(int level);
 
-	//! \brief calls the device function of the velocity boundary condition
-    void runVelocityBCKernel(int level);
+	//! \brief calls the device function of the velocity boundary condition (post-collision)
+    void runVelocityBCKernelPost(int level);
 
-	//! \brief calls the device function of the geometry boundary condition
+	//! \brief calls the device function of the velocity boundary condition (pre-collision)
+    void runVelocityBCKernelPre(int level);
+
+	//! \brief calls the device function of the geometry boundary condition (post-collision)
 	void runGeoBCKernelPost(int level);
+
+	//! \brief calls the device function of the geometry boundary condition (pre-collision)
+	void runGeoBCKernelPre(int level, unsigned int t,  CudaMemoryManager* cudaMemoryManager);
 
 	//! \brief calls the device function of the slip boundary condition
 	void runSlipBCKernel(int level);
@@ -71,11 +78,10 @@ public:
 	void runPressureBCKernelPost(int level);
 
 	//! \brief calls the device function of the outflow boundary condition
-	void runOutflowBCKernel(int level);
+	void runOutflowBCKernelPre(int level);
 
 	//! \brief calls the device function of the stress wall model
 	void runStressWallModelKernel(int level);
-
 
     //! \brief calls the device function that calculates the macroscopic values
     void calculateMacroscopicValues(int level);

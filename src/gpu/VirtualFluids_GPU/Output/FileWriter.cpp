@@ -22,11 +22,11 @@
 
 #include <basics/writer/WbWriterVtkXmlBinary.h>
 
-void FileWriter::writeInit(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager)
+void FileWriter::writeInit(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager)
 {
     unsigned int timestep = para->getTInit();
     for (int level = para->getCoarse(); level <= para->getFine(); level++) {
-        cudaManager->cudaCopyPrint(level);
+        cudaMemoryManager->cudaCopyPrint(level);
         writeTimestep(para, timestep, level);
     }
 

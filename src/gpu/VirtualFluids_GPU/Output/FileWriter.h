@@ -16,7 +16,7 @@ struct PN27;
 class FileWriter : public DataWriter
 {
 public:
-	void writeInit(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager) override;
+	void writeInit(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager) override;
 	void writeTimestep(std::shared_ptr<Parameter> para, unsigned int timestep) override;
 
 private:

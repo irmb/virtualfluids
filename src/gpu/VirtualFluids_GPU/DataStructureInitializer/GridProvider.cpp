@@ -9,14 +9,14 @@
 #include <GPU/CudaMemoryManager.h>
 
 
-std::shared_ptr<GridProvider> GridProvider::makeGridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager, vf::gpu::Communicator& communicator)
+std::shared_ptr<GridProvider> GridProvider::makeGridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::gpu::Communicator& communicator)
 {
-    return std::shared_ptr<GridProvider>(new GridGenerator(builder, para, cudaManager, communicator));
+    return std::shared_ptr<GridProvider>(new GridGenerator(builder, para, cudaMemoryManager, communicator));
 }
 
-std::shared_ptr<GridProvider> GridProvider::makeGridReader(FILEFORMAT format, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager)
+std::shared_ptr<GridProvider> GridProvider::makeGridReader(FILEFORMAT format, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager)
 {
-    return std::shared_ptr<GridProvider>(new GridReader(format, para, cudaManager));
+    return std::shared_ptr<GridProvider>(new GridReader(format, para, cudaMemoryManager));
 }
 
 void GridProvider::setNumberOfNodes(const int numberOfNodes, const int level) const

@@ -14,11 +14,11 @@
 #include "utilities/communication.h"
 
 
-GridGenerator::GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager, vf::gpu::Communicator& communicator)
+GridGenerator::GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::gpu::Communicator& communicator)
 {
 	this->builder = builder;
     this->para = para;
-    this->cudaMemoryManager = cudaManager;
+    this->cudaMemoryManager = cudaMemoryManager;
     this->indexRearrangement = std::make_unique<IndexRearrangementForStreams>(para, builder, communicator);
 }
 

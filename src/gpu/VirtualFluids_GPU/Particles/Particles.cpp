@@ -16,7 +16,7 @@
 //using namespace std;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void allocParticles(Parameter* para, CudaMemoryManager* cudaManager)
+void allocParticles(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
 	for (int lev = para->getParticleBasicLevel(); lev <= para->getFine(); lev++)
 	{
@@ -44,7 +44,7 @@ void allocParticles(Parameter* para, CudaMemoryManager* cudaManager)
 		para->getParD(lev)->plp.memSizeBoolBC        = para->getParH(lev)->plp.memSizeBoolBC;
 		//////////////////////////////////////////////////////////////////////////
 		//alloc particles
-		cudaManager->cudaAllocParticles(lev);
+		cudaMemoryManager->cudaAllocParticles(lev);
 		//////////////////////////////////////////////////////////////////////////
 	}
 }
@@ -346,7 +346,7 @@ void propagateParticles(Parameter* para, unsigned int t)
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void copyAndPrintParticles(Parameter* para, CudaMemoryManager* cudaManager, unsigned int t, bool isInit)
+void copyAndPrintParticles(Parameter* para, CudaMemoryManager* cudaMemoryManager, unsigned int t, bool isInit)
 {
 	//cout << endl << " t " << t << endl;
 
@@ -362,7 +362,7 @@ void copyAndPrintParticles(Parameter* para, CudaMemoryManager* cudaManager, unsi
 	{
 		//////////////////////////////////////////////////////////////////////////
 		//copy particles from device to host
-		cudaManager->cudaCopyParticles(lev);
+		cudaMemoryManager->cudaCopyParticles(lev);
 		//////////////////////////////////////////////////////////////////////////
 		////test output
 		//int maximumT = para->getParH(lev)->plp.numberOfParticles * para->getParH(lev)->plp.numberOfTimestepsParticles;
@@ -447,7 +447,7 @@ void copyAndPrintParticles(Parameter* para, CudaMemoryManager* cudaManager, unsi
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void rearrangeGeometry(Parameter* para, CudaMemoryManager* cudaManager)
+void rearrangeGeometry(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
 	for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
 	{
@@ -474,7 +474,7 @@ void rearrangeGeometry(Parameter* para, CudaMemoryManager* cudaManager)
 		}
 		//////////////////////////////////////////////////////////////////////////
 		//copy geometry nodes to the device
-		cudaManager->cudaCopySP(lev);
+		cudaMemoryManager->cudaCopySP(lev);
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

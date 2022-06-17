@@ -9,11 +9,11 @@
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
 
-void allocMedian(Parameter* para, CudaMemoryManager* cudaManager)
+void allocMedian(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
 	for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
 	{
-		cudaManager->cudaAllocMedianOut(lev);
+		cudaMemoryManager->cudaAllocMedianOut(lev);
 		for (unsigned int i = 0; i < para->getParH(lev)->numberOfNodes; i++)
 		{
 			para->getParH(lev)->vx_SP_Med_Out[i]    = (real)0.0;
@@ -70,11 +70,11 @@ void resetMedian(Parameter* para)
 
 
 //Advection-Diffusion
-void allocMedianAD(Parameter* para, CudaMemoryManager* cudaManager)
+void allocMedianAD(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
 	for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
 	{
-        cudaManager->cudaAllocMedianOutAD(lev);
+        cudaMemoryManager->cudaAllocMedianOutAD(lev);
 		for (unsigned int i = 0; i < para->getParH(lev)->numberOfNodes; i++)
 		{
 			para->getParH(lev)->vx_SP_Med_Out[i]    = (real)0.0;

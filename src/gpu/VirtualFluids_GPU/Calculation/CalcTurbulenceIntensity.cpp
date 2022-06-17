@@ -10,20 +10,20 @@
 #include <helper_cuda.h>
 #include <basics/Core/StringUtilities/StringUtil.h>
 
-void allocTurbulenceIntensity(Parameter *para, CudaMemoryManager *cudaManager)
+void allocTurbulenceIntensity(Parameter *para, CudaMemoryManager *cudaMemoryManager)
 {
     for (int lev=para->getCoarse(); lev <= para->getFine(); lev++) {
-        cudaManager->cudaAllocTurbulenceIntensity(lev, para->getParH(lev)->numberOfNodes);
+        cudaMemoryManager->cudaAllocTurbulenceIntensity(lev, para->getParH(lev)->numberOfNodes);
         para->getParH(lev)->turbulenceIntensity.resize(para->getParH(lev)->numberOfNodes);    
     }
-        resetVelocityFluctuationsAndMeans(para, cudaManager);
+        resetVelocityFluctuationsAndMeans(para, cudaMemoryManager);
 }
 
 
-void calcVelocityAndFluctuations(Parameter *para, CudaMemoryManager *cudaManager, uint tdiff)
+void calcVelocityAndFluctuations(Parameter *para, CudaMemoryManager *cudaMemoryManager, uint tdiff)
 {
     for (int lev = para->getCoarse(); lev <= para->getFine(); lev++) {
-        cudaManager->cudaCopyTurbulenceIntensityDH(lev, para->getParH(lev)->numberOfNodes);
+        cudaMemoryManager->cudaCopyTurbulenceIntensityDH(lev, para->getParH(lev)->numberOfNodes);
 
         for (uint i = 0; i < para->getParH(lev)->numberOfNodes; i++) {
             // mean velocity
@@ -56,14 +56,14 @@ void calcVelocityAndFluctuations(Parameter *para, CudaMemoryManager *cudaManager
 }
 
 
-void calcTurbulenceIntensity(Parameter *para, CudaMemoryManager *cudaManager, uint tdiff) {
+void calcTurbulenceIntensity(Parameter *para, CudaMemoryManager *cudaMemoryManager, uint tdiff) {
     
 
     real fluc_squared;
     real v_mean_squared;
 
     for (int lev = para->getCoarse(); lev <= para->getFine(); lev++) {
-    calcVelocityAndFluctuations(para, cudaManager, tdiff);
+    calcVelocityAndFluctuations(para, cudaMemoryManager, tdiff);
 
         for (uint i = 0; i < para->getParH(lev)->numberOfNodes; i++) {
             fluc_squared = (real)(
@@ -77,7 +77,7 @@ void calcTurbulenceIntensity(Parameter *para, CudaMemoryManager *cudaManager, ui
 }
 
 
-void resetVelocityFluctuationsAndMeans(Parameter *para, CudaMemoryManager *cudaManager)
+void resetVelocityFluctuationsAndMeans(Parameter *para, CudaMemoryManager *cudaMemoryManager)
 {
     for (int lev = para->getCoarse(); lev <= para->getFine(); lev++) {
         for (unsigned int i = 0; i < para->getParH(lev)->numberOfNodes; i++) {
@@ -92,14 +92,14 @@ void resetVelocityFluctuationsAndMeans(Parameter *para, CudaMemoryManager *cudaM
             para->getParH(lev)->vz_mean[i] = (real)0.0;
         }
 
-        cudaManager->cudaCopyTurbulenceIntensityHD(lev, para->getParH(lev)->numberOfNodes);
+        cudaMemoryManager->cudaCopyTurbulenceIntensityHD(lev, para->getParH(lev)->numberOfNodes);
     }
 }
 
-void cudaFreeTurbulenceIntensityArrays(Parameter *para, CudaMemoryManager *cudaManager)
+void cudaFreeTurbulenceIntensityArrays(Parameter *para, CudaMemoryManager *cudaMemoryManager)
 {
     for (int lev = para->getCoarse(); lev <= para->getFine(); lev++) {
-        cudaManager->cudaFreeTurbulenceIntensity(lev);
+        cudaMemoryManager->cudaFreeTurbulenceIntensity(lev);
     }
 }
 
