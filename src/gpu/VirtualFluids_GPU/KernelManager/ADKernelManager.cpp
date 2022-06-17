@@ -30,7 +30,7 @@
 //! \ingroup ADKernelManager
 //! \author Martin Schoenherr
 //=======================================================================================
-#include "AdvectionDiffusion/ADKernelManager.h"
+#include "KernelManager/ADKernelManager.h"
 #include "GPU/CudaMemoryManager.h"
 #include "GPU/GPU_Interface.h"
 #include "Parameter/Parameter.h"

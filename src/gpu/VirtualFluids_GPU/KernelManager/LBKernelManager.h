@@ -30,8 +30,8 @@
 //! \ingroup GPU
 //! \author Martin Schoenherr
 //=======================================================================================
-#ifndef CudaKernelManager_H
-#define CudaKernelManager_H
+#ifndef LBKernelManager_H
+#define LBKernelManager_H
 
 #include <memory>
 #include "PointerDefinitions.h"

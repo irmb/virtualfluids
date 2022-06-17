@@ -34,7 +34,7 @@
 #include <helper_cuda.h>
 
 #include "LBKernelManager.h"
-#include "GPU_Interface.h"
+#include "GPU/GPU_Interface.h"
 #include "Parameter/Parameter.h"
 #include "Calculation/DragLift.h"
 #include "Calculation/Cp.h"

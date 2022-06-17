@@ -6,8 +6,8 @@
 #include "Kernel/Kernel.h"
 #include "Parameter/CudaStreamManager.h"
 #include "GPU/TurbulentViscosity.h"
-#include "GPU/LBKernelManager.h"
-#include "AdvectionDiffusion/ADKernelManager.h"
+#include "KernelManager/LBKernelManager.h"
+#include "KernelManager/ADKernelManager.h"
 
 void UpdateGrid27::updateGrid(int level, unsigned int t)
 {
