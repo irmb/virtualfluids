@@ -59,12 +59,11 @@ void UpdateGrid27::refinementAndExchange_noRefinementAndExchange(int level) {}
 void UpdateGrid27::refinementAndExchange_streams_onlyExchangeInterface(int level)
 {
     int borderStreamIndex = para->getStreamManager()->getBorderStreamIndex();
-    int bulkStreamIndex   = para->getStreamManager()->getBulkStreamIndex();
+    int bulkStreamIndex = para->getStreamManager()->getBulkStreamIndex();
 
     // fine to coarse border
-    fineToCoarseWithStream(level, para->getParD(level)->intFCBorder.ICellFCC,
-                           para->getParD(level)->intFCBorder.ICellFCF, para->getParD(level)->intFCBorder.kFC,
-                           borderStreamIndex);
+    fineToCoarse(level, para->getParD(level)->intFCBorder.ICellFCC, para->getParD(level)->intFCBorder.ICellFCF,
+                 para->getParD(level)->intFCBorder.kFC, borderStreamIndex);
 
     // prepare exchange and trigger bulk kernel when finished
     prepareExchangeMultiGPUAfterFtoC(para.get(), level, borderStreamIndex);
@@ -73,32 +72,28 @@ void UpdateGrid27::refinementAndExchange_streams_onlyExchangeInterface(int level
 
     // launch bulk kernels (f to c and c to f)
     para->getStreamManager()->waitOnStartBulkKernelEvent(bulkStreamIndex);
-    fineToCoarseWithStream(level, para->getParD(level)->intFCBulk.ICellFCC,
-                           para->getParD(level)->intFCBulk.ICellFCF, para->getParD(level)->intFCBulk.kFC,
-                           bulkStreamIndex);
-    coarseToFineWithStream(level, para->getParD(level)->intCFBulk.ICellCFC,
-                           para->getParD(level)->intCFBulk.ICellCFF, para->getParD(level)->intCFBulk.kCF, para->getParD(level)->offCFBulk,
-                           bulkStreamIndex);
+    fineToCoarse(level, para->getParD(level)->intFCBulk.ICellFCC, para->getParD(level)->intFCBulk.ICellFCF,
+                 para->getParD(level)->intFCBulk.kFC, bulkStreamIndex);
+    coarseToFine(level, para->getParD(level)->intCFBulk.ICellCFC, para->getParD(level)->intCFBulk.ICellCFF,
+                 para->getParD(level)->intCFBulk.kCF, para->getParD(level)->offCFBulk, bulkStreamIndex);
 
     // exchange
     exchangeMultiGPUAfterFtoC(para.get(), comm, cudaMemoryManager.get(), level, borderStreamIndex);
 
     // coarse to fine border
-    coarseToFineWithStream(level, para->getParD(level)->intCFBorder.ICellCFC,
-                           para->getParD(level)->intCFBorder.ICellCFF, para->getParD(level)->intCFBorder.kCF, para->getParD(level)->offCF,
-                           borderStreamIndex);
+    coarseToFine(level, para->getParD(level)->intCFBorder.ICellCFC, para->getParD(level)->intCFBorder.ICellCFF,
+                 para->getParD(level)->intCFBorder.kCF, para->getParD(level)->offCF, borderStreamIndex);
     cudaDeviceSynchronize();
 }
 
 void UpdateGrid27::refinementAndExchange_streams_completeExchange(int level)
 {
     int borderStreamIndex = para->getStreamManager()->getBorderStreamIndex();
-    int bulkStreamIndex   = para->getStreamManager()->getBulkStreamIndex();
+    int bulkStreamIndex = para->getStreamManager()->getBulkStreamIndex();
 
     // fine to coarse border
-    fineToCoarseWithStream(level, para->getParD(level)->intFCBorder.ICellFCC,
-                           para->getParD(level)->intFCBorder.ICellFCF, para->getParD(level)->intFCBorder.kFC,
-                           borderStreamIndex);
+    fineToCoarse(level, para->getParD(level)->intFCBorder.ICellFCC, para->getParD(level)->intFCBorder.ICellFCF,
+                 para->getParD(level)->intFCBorder.kFC, borderStreamIndex);
 
     // prepare exchange and trigger bulk kernel when finished
     prepareExchangeMultiGPU(para.get(), level, borderStreamIndex);
@@ -107,45 +102,45 @@ void UpdateGrid27::refinementAndExchange_streams_completeExchange(int level)
 
     // launch bulk kernels (f to c and c to f)
     para->getStreamManager()->waitOnStartBulkKernelEvent(bulkStreamIndex);
-    fineToCoarseWithStream(level, para->getParD(level)->intFCBulk.ICellFCC,
-                           para->getParD(level)->intFCBulk.ICellFCF, para->getParD(level)->intFCBulk.kFC,
-                           bulkStreamIndex);
-    coarseToFineWithStream(level, para->getParD(level)->intCFBulk.ICellCFC,
-                           para->getParD(level)->intCFBulk.ICellCFF, para->getParD(level)->intCFBulk.kCF, para->getParD(level)->offCFBulk,
-                           bulkStreamIndex);
+    fineToCoarse(level, para->getParD(level)->intFCBulk.ICellFCC, para->getParD(level)->intFCBulk.ICellFCF,
+                 para->getParD(level)->intFCBulk.kFC, bulkStreamIndex);
+    coarseToFine(level, para->getParD(level)->intCFBulk.ICellCFC, para->getParD(level)->intCFBulk.ICellCFF,
+                 para->getParD(level)->intCFBulk.kCF, para->getParD(level)->offCFBulk, bulkStreamIndex);
 
     // exchange
     exchangeMultiGPU(para.get(), comm, cudaMemoryManager.get(), level, borderStreamIndex);
 
     // coarse to fine border
-    coarseToFineWithStream(level, para->getParD(level)->intCFBorder.ICellCFC,
-                           para->getParD(level)->intCFBorder.ICellCFF, para->getParD(level)->intCFBorder.kCF, para->getParD(level)->offCF,
-                           borderStreamIndex);
+    coarseToFine(level, para->getParD(level)->intCFBorder.ICellCFC, para->getParD(level)->intCFBorder.ICellCFF,
+                 para->getParD(level)->intCFBorder.kCF, para->getParD(level)->offCF, borderStreamIndex);
     cudaDeviceSynchronize();
 }
 
 void UpdateGrid27::refinementAndExchange_noStreams_onlyExchangeInterface(int level)
 {
-    fineToCoarse(level);
+    fineToCoarse(level, para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF, para->getParD(level)->K_FC, -1);
 
     exchangeMultiGPU_noStreams_withPrepare(para.get(), comm, cudaMemoryManager.get(), level, true);
 
-    coarseToFine(level);
+    coarseToFine(level, para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF, para->getParD(level)->K_CF,
+                 para->getParD(level)->offCF, -1);
 }
 
 void UpdateGrid27::refinementAndExchange_noStreams_completeExchange(int level)
 {
-    fineToCoarse(level);
+    fineToCoarse(level, para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF, para->getParD(level)->K_FC, -1);
 
     exchangeMultiGPU_noStreams_withPrepare(para.get(), comm, cudaMemoryManager.get(), level, false);
 
-    coarseToFine(level);
+    coarseToFine(level, para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF, para->getParD(level)->K_CF,
+                 para->getParD(level)->offCF, -1);
 }
 
 void UpdateGrid27::refinementAndExchange_noExchange(int level)
 {
-    fineToCoarse(level);
-    coarseToFine(level);
+    fineToCoarse(level, para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF, para->getParD(level)->K_FC, -1);
+    coarseToFine(level, para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF, para->getParD(level)->K_CF,
+                 para->getParD(level)->offCF, -1);
 }
 
 void UpdateGrid27::collisionAndExchange_noStreams_indexKernel(int level, unsigned int t)
@@ -165,6 +160,7 @@ void UpdateGrid27::collisionAndExchange_streams(int level, unsigned int t)
 {
     int borderStreamIndex = para->getStreamManager()->getBorderStreamIndex();
     int bulkStreamIndex   = para->getStreamManager()->getBulkStreamIndex();
+
     // launch border kernel
     collisionUsingIndex(level, t, para->getParD(level)->fluidNodeIndicesBorder,
                         para->getParD(level)->numberOffluidNodesBorder, borderStreamIndex);
@@ -445,96 +441,31 @@ void UpdateGrid27::preCollisionBC(int level, unsigned int t)
     //////////////////////////////////////////////////////////////////////////////////
 }
 
-void UpdateGrid27::fineToCoarse(int level)
+void UpdateGrid27::fineToCoarse(int level, uint *iCellFCC, uint *iCellFCF, uint k_FC, int streamIndex)
 {
-    gridScalingKernelManager->runFineToCoarseKernelLB(level);
-    
-    if (para->getDiffOn())
-        gridScalingKernelManager->runFineToCoarseKernelAD(level);
-}
-
-void UpdateGrid27::fineToCoarseWithStream(int level, uint *iCellFCC, uint *iCellFCF, uint k_FC, int streamIndex)
-{
-    cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
-
-    ScaleFC_RhoSq_comp_27(
-        para->getParD(level)->distributions.f[0],
-        para->getParD(level+1)->distributions.f[0],
-        para->getParD(level)->neighborX,
-        para->getParD(level)->neighborY,
-        para->getParD(level)->neighborZ,
-        para->getParD(level+1)->neighborX,
-        para->getParD(level+1)->neighborY,
-        para->getParD(level+1)->neighborZ,
-        para->getParD(level)->numberOfNodes,
-        para->getParD(level+1)->numberOfNodes,
-        para->getParD(level)->isEvenTimestep,
-        iCellFCC,
-        iCellFCF,
-        k_FC,
-        para->getParD(level)->omega,
-        para->getParD(level + 1)->omega,
-        para->getParD(level)->vis,
-        para->getParD(level)->nx,
-        para->getParD(level)->ny,
-        para->getParD(level+1)->nx,
-        para->getParD(level+1)->ny,
-        para->getParD(level)->numberofthreads,
-        para->getParD(level)->offFC,
-        stream);
-    getLastCudaError("ScaleFC27_RhoSq_comp execution failed");
-
-    //////////////////////////////////////////////////////////////////////////
-    // A D V E C T I O N    D I F F U S I O N
-    //////////////////////////////////////////////////////////////////////////
+    gridScalingKernelManager->runFineToCoarseKernelLB(level, iCellFCC, iCellFCF, k_FC, streamIndex);
 
     if (para->getDiffOn()) {
-        printf("fineToCoarseWithStream Advection Diffusion not implemented"); // TODO
+        if (streamIndex != -1) {
+            printf("fineToCoarse Advection Diffusion not implemented"); // TODO
+            return;
+        }
+        gridScalingKernelManager->runFineToCoarseKernelAD(level);
     }
 }
 
-void UpdateGrid27::coarseToFine(int level)
+void UpdateGrid27::coarseToFine(int level, uint *iCellCFC, uint *iCellCFF, uint k_CF, OffCF &offCF,
+                                int streamIndex)
 {
-    this->gridScalingKernelManager->runCoarseToFineKernelLB(level);
+    this->gridScalingKernelManager->runCoarseToFineKernelLB(level, iCellCFC, iCellCFF, k_CF, offCF, streamIndex);
 
     if (para->getDiffOn())
+    {
+        if (streamIndex != -1){
+            printf("CoarseToFineWithStream Advection Diffusion not implemented"); // TODO
+            return;
+        }
         this->gridScalingKernelManager->runCoarseToFineKernelAD(level);
-}
-
-void UpdateGrid27::coarseToFineWithStream(int level, uint *iCellCFC, uint *iCellCFF, uint k_CF, OffCF &offCF,
-                            int streamIndex)
-{
-    cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
-
-    ScaleCF_RhoSq_comp_27(
-        para->getParD(level)->distributions.f[0],
-        para->getParD(level + 1)->distributions.f[0],
-        para->getParD(level)->neighborX,
-        para->getParD(level)->neighborY,
-        para->getParD(level)->neighborZ,
-        para->getParD(level + 1)->neighborX,
-        para->getParD(level + 1)->neighborY,
-        para->getParD(level + 1)->neighborZ,
-        para->getParD(level)->numberOfNodes,
-        para->getParD(level + 1)->numberOfNodes,
-        para->getParD(level)->isEvenTimestep,
-        iCellCFC,
-        iCellCFF,
-        k_CF,
-        para->getParD(level)->omega,
-        para->getParD(level + 1)->omega,
-        para->getParD(level)->vis,
-        para->getParD(level)->nx,
-        para->getParD(level)->ny,
-        para->getParD(level + 1)->nx,
-        para->getParD(level + 1)->ny,
-        para->getParD(level)->numberofthreads,
-        offCF,
-        stream);
-    getLastCudaError("ScaleCF27_RhoSq_comp execution failed");
-
-    if (para->getDiffOn()) {
-        printf("CoarseToFineWithStream Advection Diffusion not implemented"); // TODO
     }
 }
 

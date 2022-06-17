@@ -36,6 +36,7 @@
 #include <memory>
 #include "PointerDefinitions.h"
 #include "VirtualFluids_GPU_export.h"
+#include "LBM/LB.h"
 
 //! \brief Class forwarding for Parameter
 class Parameter;
@@ -51,13 +52,13 @@ public:
     static SPtr<GridScalingKernelManager> make(std::shared_ptr<Parameter> parameter);
     
 	//! \brief calls the device function of the fine to coarse grid interpolation kernel
-	void runFineToCoarseKernelLB(int level);
+	void runFineToCoarseKernelLB(int level, uint *iCellFCC, uint *iCellFCF, uint k_FC, int streamIndex);
 
 	//! \brief calls the device function of the fine to coarse grid interpolation kernel (advection diffusion)
     void runFineToCoarseKernelAD(int level);
 
 	//! \brief calls the device function of the coarse to fine grid interpolation kernel
-	void runCoarseToFineKernelLB(int level);
+	void runCoarseToFineKernelLB(int level, uint *iCellCFC, uint *iCellCFF, uint k_CF, OffCF &offCF, int streamIndex);
 
 	//! \brief calls the device function of the coarse to fine grid interpolation kernel (advection diffusion)
     void runCoarseToFineKernelAD(int level);

@@ -1851,7 +1851,8 @@ extern "C" void ScaleCF_0817_comp_27(  real* DC,
 									   unsigned int nxF, 
 									   unsigned int nyF,
 									   unsigned int numberOfThreads,
-									   OffCF offCF);
+									   OffCF offCF,
+									   CUstream_st* stream);
 
 extern "C" void ScaleCF_comp_D3Q27F3_2018(	real* DC,
 											real* DF,
@@ -1901,7 +1902,8 @@ extern "C" void ScaleCF_comp_D3Q27F3(real* DC,
 									 unsigned int nxF, 
 									 unsigned int nyF,
 									 unsigned int numberOfThreads,
-									 OffCF offCF);
+									 OffCF offCF,
+									 CUstream_st *stream);
 
 extern "C" void ScaleCF_staggered_time_comp_27( real* DC, 
 												real* DF, 
@@ -1974,7 +1976,8 @@ extern "C" void ScaleCF_RhoSq_3rdMom_comp_27( real* DC,
 											  unsigned int nxF, 
 											  unsigned int nyF,
 											  unsigned int numberOfThreads,
-											  OffCF offCF);
+											  OffCF offCF,
+											  CUstream_st *stream);
 
 extern "C" void ScaleCF_AA2016_comp_27( real* DC, 
 										real* DF, 
@@ -1998,7 +2001,8 @@ extern "C" void ScaleCF_AA2016_comp_27( real* DC,
 										unsigned int nxF, 
 										unsigned int nyF,
 										unsigned int numberOfThreads,
-										OffCF offCF);
+										OffCF offCF,
+										CUstream_st *stream);
 
 extern "C" void ScaleCF_NSPress_27(real* DC, 
 								  real* DF, 
@@ -2094,7 +2098,8 @@ extern "C" void ScaleFC_0817_comp_27(  real* DC,
 									   unsigned int nxF, 
 									   unsigned int nyF,
 									   unsigned int numberOfThreads,
-									   OffFC offFC);
+									   OffFC offFC,
+									   CUstream_st *stream);
 
 extern "C" void ScaleFC_comp_D3Q27F3_2018(real* DC,
 										  real* DF,
@@ -2144,7 +2149,8 @@ extern "C" void ScaleFC_comp_D3Q27F3( real* DC,
 									  unsigned int nxF, 
 									  unsigned int nyF,
 									  unsigned int numberOfThreads,
-									  OffFC offFC);
+									  OffFC offFC,
+									  CUstream_st *stream);
 
 extern "C" void ScaleFC_staggered_time_comp_27( real* DC, 
 												real* DF, 
@@ -2217,7 +2223,8 @@ extern "C" void ScaleFC_RhoSq_3rdMom_comp_27( real* DC,
 											  unsigned int nxF, 
 											  unsigned int nyF,
 											  unsigned int numberOfThreads,
-											  OffFC offFC);
+											  OffFC offFC,
+											  CUstream_st *stream);
 
 extern "C" void ScaleFC_AA2016_comp_27( real* DC, 
 										real* DF, 
@@ -2241,7 +2248,8 @@ extern "C" void ScaleFC_AA2016_comp_27( real* DC,
 										unsigned int nxF, 
 										unsigned int nyF,
 										unsigned int numberOfThreads,
-										OffFC offFC);
+										OffFC offFC,
+										CUstream_st *stream);
 
 extern "C" void ScaleFC_NSPress_27(  real* DC, 
 									 real* DF, 

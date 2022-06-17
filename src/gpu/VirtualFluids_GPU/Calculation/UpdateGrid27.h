@@ -30,13 +30,8 @@ private:
     void collisionAdvectionDiffusion(int level);
     void collisionPorousMedia(int level);
 
-    void fineToCoarse(int level);
-    void fineToCoarseWithStream(int level, uint *iCellFCC, uint *iCellFCF, uint k_FC, int streamIndex);
-
-    void coarseToFine(int level);
-    void coarseToFineWithStream(int level, uint *iCellCFC, uint *iCellCFF, uint k_CF,
-                                       OffCF &offCF, int streamIndex);
-
+    void fineToCoarse(int level, uint *iCellFCC, uint *iCellFCF, uint k_FC, int streamIndex);
+    void coarseToFine(int level, uint *iCellCFC, uint *iCellCFF, uint k_CF, OffCF &offCF, int streamIndex);
 
 private:
     typedef void (UpdateGrid27::*collisionAndExchangeFun)(int level, unsigned int t);
@@ -93,9 +88,6 @@ extern "C" void exchangeMultiGPU_noStreams_withPrepare(Parameter *para, vf::gpu:
 extern "C" void swapBetweenEvenAndOddTimestep(Parameter* para, int level);
 
 extern "C" void calcMacroscopicQuantities(Parameter* para, int level);
-
-
-
 
 extern "C" void calcTurbulentViscosity(Parameter* para, int level);
 

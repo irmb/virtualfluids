@@ -5129,7 +5129,8 @@ extern "C" void ScaleCF_0817_comp_27(real* DC,
 									 unsigned int nxF,
 									 unsigned int nyF,
 									 unsigned int numberOfThreads,
-									 OffCF offCF)
+									 OffCF offCF,
+                            CUstream_st *stream)
 {
    int Grid = (kCF / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -5146,7 +5147,7 @@ extern "C" void ScaleCF_0817_comp_27(real* DC,
    dim3 gridINT_CF(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      scaleCF_0817_comp_27<<< gridINT_CF, threads >>>(  DC,
+      scaleCF_0817_comp_27<<< gridINT_CF, threads, 0, stream >>>(  DC,
 														DF,
 														neighborCX,
 														neighborCY,
@@ -5260,7 +5261,8 @@ extern "C" void ScaleCF_comp_D3Q27F3(real* DC,
 									 unsigned int nxF,
 									 unsigned int nyF,
 									 unsigned int numberOfThreads,
-									 OffCF offCF)
+									 OffCF offCF,
+                            CUstream_st *stream)
 {
    int Grid = (kCF / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -5277,7 +5279,7 @@ extern "C" void ScaleCF_comp_D3Q27F3(real* DC,
    dim3 gridINT_CF(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      scaleCF_comp_D3Q27F3 <<< gridINT_CF, threads >>>( DC,
+      scaleCF_comp_D3Q27F3 <<< gridINT_CF, threads, 0, stream >>>( DC,
 														DF,
 														G6,
 														neighborCX,
@@ -5390,7 +5392,7 @@ extern "C" void ScaleCF_RhoSq_comp_27(   real* DC,
 										 unsigned int nyF,
 										 unsigned int numberOfThreads,
 										 OffCF offCF,
-                                         CUstream_st *stream)
+                               CUstream_st *stream)
 {
    int Grid = (kCF / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -5454,7 +5456,8 @@ extern "C" void ScaleCF_RhoSq_3rdMom_comp_27(real* DC,
 											 unsigned int nxF,
 											 unsigned int nyF,
 											 unsigned int numberOfThreads,
-											 OffCF offCF)
+											 OffCF offCF,
+                                  CUstream_st *stream)
 {
    int Grid = (kCF / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -5471,7 +5474,7 @@ extern "C" void ScaleCF_RhoSq_3rdMom_comp_27(real* DC,
    dim3 gridINT_CF(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      scaleCF_RhoSq_3rdMom_comp_27<<< gridINT_CF, threads >>>(  DC,
+      scaleCF_RhoSq_3rdMom_comp_27<<< gridINT_CF, threads, 0, stream >>>(  DC,
 																DF,
 																neighborCX,
 																neighborCY,
@@ -5518,7 +5521,8 @@ extern "C" void ScaleCF_AA2016_comp_27(real* DC,
 									   unsigned int nxF,
 									   unsigned int nyF,
 									   unsigned int numberOfThreads,
-									   OffCF offCF)
+									   OffCF offCF,
+                              CUstream_st *stream)
 {
    int Grid = (kCF / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -5535,7 +5539,7 @@ extern "C" void ScaleCF_AA2016_comp_27(real* DC,
    dim3 gridINT_CF(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      scaleCF_AA2016_comp_27<<< gridINT_CF, threads >>>(DC,
+      scaleCF_AA2016_comp_27<<< gridINT_CF, threads, 0, stream >>>(DC,
 														DF,
 														neighborCX,
 														neighborCY,
@@ -6200,7 +6204,8 @@ extern "C" void ScaleFC_0817_comp_27( real* DC,
 									  unsigned int nxF,
 									  unsigned int nyF,
 									  unsigned int numberOfThreads,
-									  OffFC offFC)
+									  OffFC offFC,
+                             CUstream_st *stream)
 {
    int Grid = (kFC / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -6217,7 +6222,7 @@ extern "C" void ScaleFC_0817_comp_27( real* DC,
    dim3 gridINT_FC(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      scaleFC_0817_comp_27<<< gridINT_FC, threads >>> (DC,
+      scaleFC_0817_comp_27<<< gridINT_FC, threads, 0, stream >>> (DC,
 													   DF,
 													   neighborCX,
 													   neighborCY,
@@ -6331,7 +6336,8 @@ extern "C" void ScaleFC_comp_D3Q27F3( real* DC,
 									  unsigned int nxF,
 									  unsigned int nyF,
 									  unsigned int numberOfThreads,
-									  OffFC offFC)
+									  OffFC offFC,
+                             CUstream_st *stream)
 {
    int Grid = (kFC / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -6348,7 +6354,7 @@ extern "C" void ScaleFC_comp_D3Q27F3( real* DC,
    dim3 gridINT_FC(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-     scaleFC_comp_D3Q27F3 <<< gridINT_FC, threads >>> (DC,
+     scaleFC_comp_D3Q27F3 <<< gridINT_FC, threads, 0, stream >>> (DC,
 													   DF,
 													   G6,
 													   neighborCX,
@@ -6527,7 +6533,8 @@ extern "C" void ScaleFC_RhoSq_3rdMom_comp_27( real* DC,
 											  unsigned int nxF,
 											  unsigned int nyF,
 											  unsigned int numberOfThreads,
-											  OffFC offFC)
+											  OffFC offFC,
+                                   CUstream_st *stream)
 {
    int Grid = (kFC / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -6544,7 +6551,7 @@ extern "C" void ScaleFC_RhoSq_3rdMom_comp_27( real* DC,
    dim3 gridINT_FC(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      scaleFC_RhoSq_3rdMom_comp_27<<< gridINT_FC, threads >>>(DC,
+      scaleFC_RhoSq_3rdMom_comp_27<<< gridINT_FC, threads, 0, stream >>>(DC,
 															  DF,
 															  neighborCX,
 															  neighborCY,
@@ -6591,7 +6598,8 @@ extern "C" void ScaleFC_AA2016_comp_27( real* DC,
 										unsigned int nxF,
 										unsigned int nyF,
 										unsigned int numberOfThreads,
-										OffFC offFC)
+										OffFC offFC,
+                              CUstream_st *stream)
 {
    int Grid = (kFC / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -6608,7 +6616,7 @@ extern "C" void ScaleFC_AA2016_comp_27( real* DC,
    dim3 gridINT_FC(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      scaleFC_AA2016_comp_27<<< gridINT_FC, threads >>>(DC,
+      scaleFC_AA2016_comp_27<<< gridINT_FC, threads, 0, stream >>>(DC,
 														DF,
 														neighborCX,
 														neighborCY,
