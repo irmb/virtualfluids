@@ -27,7 +27,7 @@
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
 //! \file ADKernelManager.h
-//! \ingroup ADKernelManager
+//! \ingroup KernelManager
 //! \author Martin Schoenherr
 //=======================================================================================
 #include "KernelManager/ADKernelManager.h"

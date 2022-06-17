@@ -6461,7 +6461,7 @@ extern "C" void ScaleFC_RhoSq_comp_27(real* DC,
 									  unsigned int nyF,
 									  unsigned int numberOfThreads,
 									  OffFC offFC,
-                                      CUstream_st *stream)
+                             CUstream_st *stream)
 {
    int Grid = (kFC / numberOfThreads)+1;
    int Grid1, Grid2;

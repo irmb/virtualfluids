@@ -26,12 +26,12 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file LBKernelManager.h
+//! \file GridScalingKernelManager.h
 //! \ingroup KernelManager
 //! \author Martin Schoenherr
 //=======================================================================================
-#ifndef LBKernelManager_H
-#define LBKernelManager_H
+#ifndef GridScalingKernelManager_H
+#define GridScalingKernelManager_H
 
 #include <memory>
 #include "PointerDefinitions.h"
@@ -41,59 +41,31 @@
 class Parameter;
 class CudaMemoryManager;
 
-//! \class LBKernelManager
+//! \class GridScalingKernelManager
 //! \brief manage the cuda kernel calls
-class VIRTUALFLUIDS_GPU_EXPORT LBKernelManager
+class VIRTUALFLUIDS_GPU_EXPORT GridScalingKernelManager
 {
 public:
-	//! \brief makes an object of LBKernelManager
+	//! \brief makes an object of GridScalingKernelManager
 	//! \param para shared pointer to instance of class Parameter
-    static SPtr<LBKernelManager> make(std::shared_ptr<Parameter> parameter);
+    static SPtr<GridScalingKernelManager> make(std::shared_ptr<Parameter> parameter);
     
-	//! \brief calls the device function of the lattice Boltzmann kernel
-	void runLBMKernel(int level);
+	//! \brief calls the device function of the fine to coarse grid interpolation kernel
+	void runFineToCoarseKernelLB(int level);
 
-	//! \brief calls the device function of the velocity boundary condition (post-collision)
-    void runVelocityBCKernelPost(int level);
+	//! \brief calls the device function of the fine to coarse grid interpolation kernel advection diffusion
+    void runFineToCoarseKernelAD(int level);
 
-	//! \brief calls the device function of the velocity boundary condition (pre-collision)
-    void runVelocityBCKernelPre(int level);
-
-	//! \brief calls the device function of the geometry boundary condition (post-collision)
-	void runGeoBCKernelPost(int level);
-
-	//! \brief calls the device function of the geometry boundary condition (pre-collision)
-	void runGeoBCKernelPre(int level, unsigned int t,  CudaMemoryManager* cudaMemoryManager);
-
-	//! \brief calls the device function of the slip boundary condition
-	void runSlipBCKernel(int level);
-
-	//! \brief calls the device function of the no-slip boundary condition
-	void runNoSlipBCKernel(int level);
-
-	//! \brief calls the device function of the pressure boundary condition (pre-collision)
-	void runPressureBCKernelPre(int level);
-
-	//! \brief calls the device function of the pressure boundary condition (post-collision)
-	void runPressureBCKernelPost(int level);
-
-	//! \brief calls the device function of the outflow boundary condition
-	void runOutflowBCKernelPre(int level);
-
-	//! \brief calls the device function of the stress wall model
-	void runStressWallModelKernel(int level);
-
-    //! \brief calls the device function that calculates the macroscopic values
-    void calculateMacroscopicValues(int level);
-
+	// //! \brief calls the device function of the velocity boundary condition (post-collision)
+    // void runVelocityBCKernelPost(int level);
 
 private:
 	//! Class constructor
 	//! \param parameter shared pointer to instance of class Parameter
-	LBKernelManager(SPtr<Parameter> parameter);
+	GridScalingKernelManager(SPtr<Parameter> parameter);
 	//! Class copy constructor
-	//! \param LBKernelManager is a reference to LBKernelManager object
-	LBKernelManager(const LBKernelManager&);
+	//! \param GridScalingKernelManager is a reference to GridScalingKernelManager object
+	GridScalingKernelManager(const GridScalingKernelManager&);
 
 	//! \property para is a shared pointer to an object of Parameter
 	SPtr<Parameter> para;

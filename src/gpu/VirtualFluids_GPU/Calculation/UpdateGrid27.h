@@ -10,6 +10,7 @@
 
 class LBKernelManager;
 class ADKernelManager;
+class GridScalingKernelManager;
 class Kernel;
 
 class UpdateGrid27
@@ -28,6 +29,14 @@ private:
     void collisionUsingIndex(int level, unsigned int t, uint *fluidNodeIndices = nullptr, uint numberOfFluidNodes = 0, int stream = -1);
     void collisionAdvectionDiffusion(int level);
     void collisionPorousMedia(int level);
+
+    void fineToCoarse(int level);
+    void fineToCoarseWithStream(int level, uint *iCellFCC, uint *iCellFCF, uint k_FC, int streamIndex);
+
+    void coarseToFine(int level);
+    void coarseToFineWithStream(int level, uint *iCellCFC, uint *iCellCFF, uint k_CF,
+                                       OffCF &offCF, int streamIndex);
+
 
 private:
     typedef void (UpdateGrid27::*collisionAndExchangeFun)(int level, unsigned int t);
@@ -61,6 +70,8 @@ private:
     std::shared_ptr<LBKernelManager> lbKernelManager;
     //! \property adKernelManager is a shared pointer to an object of ADKernelManager
     std::shared_ptr<ADKernelManager> adKernelManager;
+    //! \property gridScalingKernelManager is a shared pointer to an object of GridScalingKernelManager
+    std::shared_ptr<GridScalingKernelManager> gridScalingKernelManager;
 };
 
 
@@ -83,12 +94,6 @@ extern "C" void swapBetweenEvenAndOddTimestep(Parameter* para, int level);
 
 extern "C" void calcMacroscopicQuantities(Parameter* para, int level);
 
-extern "C" void fineToCoarse(Parameter* para, int level);
-extern "C" void fineToCoarseWithStream(Parameter *para, int level, uint *iCellFCC, uint *iCellFCF, uint k_FC, int streamIndex);
-
-extern "C" void coarseToFine(Parameter* para, int level);
-extern "C" void coarseToFineWithStream(Parameter *para, int level, uint *iCellCFC, uint *iCellCFF, uint k_CF,
-                                       OffCF &offCF, int streamIndex);
 
 
 

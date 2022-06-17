@@ -27,7 +27,7 @@
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
 //! \file LBKernelManager.cpp
-//! \ingroup GPU
+//! \ingroup KernelManager
 //! \author Martin Schoenherr
 //=======================================================================================
 #include <cuda_runtime.h>
