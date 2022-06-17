@@ -26,18 +26,18 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file CudaKernelManager.cpp
+//! \file LBKernelManager.cpp
 //! \ingroup GPU
 //! \author Martin Schoenherr
 //=======================================================================================
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
-#include "CudaKernelManager.h"
+#include "LBKernelManager.h"
 #include "GPU_Interface.h"
-#include <Parameter/Parameter.h>
+#include "Parameter/Parameter.h"
 
 
-void CudaKernelManager::runLBMKernel(int level)
+void LBKernelManager::runLBMKernel(int level)
 {
     // if (para->getIsADcalculationOn()) {
     //       CumulantK17LBMDeviceKernelAD(
@@ -67,7 +67,7 @@ void CudaKernelManager::runLBMKernel(int level)
     //  }
 }
 
-void CudaKernelManager::runVelocityBCKernel(int level)
+void LBKernelManager::runVelocityBCKernel(int level)
 {
      if (para->getParD(level)->numberOfVeloBCnodes > 0)
      {
@@ -159,7 +159,7 @@ void CudaKernelManager::runVelocityBCKernel(int level)
      }
 }
 
-void CudaKernelManager::runGeoBCKernelPost(int level)
+void LBKernelManager::runGeoBCKernelPost(int level)
 {
     if (para->getParD(level)->geometryBC.numberOfBCnodes > 0)
     {
@@ -354,7 +354,7 @@ void CudaKernelManager::runGeoBCKernelPost(int level)
     }
 }
 
-void CudaKernelManager::runOutflowBCKernel(int level){
+void LBKernelManager::runOutflowBCKernel(int level){
     if (para->getParD(level)->numberOfOutflowBCnodes > 0)
     {
         //////////////////////////////////////////////////////////////////////////
@@ -375,7 +375,7 @@ void CudaKernelManager::runOutflowBCKernel(int level){
     }
 }
 
-void CudaKernelManager::runPressureBCKernelPost(int level){
+void LBKernelManager::runPressureBCKernelPost(int level){
     if (para->getParD(level)->numberOfPressureBCnodes > 0)
     {
         QPressDev27_IntBB(
@@ -395,7 +395,7 @@ void CudaKernelManager::runPressureBCKernelPost(int level){
     }
 }
 
-void CudaKernelManager::runStressWallModelKernel(int level){
+void LBKernelManager::runStressWallModelKernel(int level){
     if (para->getParD(level)->numberOfStressBCnodes > 0)
     {
         // QStressDevComp27(para->getParD(level)->numberofthreads, para->getParD(level)->distributions.f[0],
@@ -428,7 +428,7 @@ void CudaKernelManager::runStressWallModelKernel(int level){
 }
 
 
-void CudaKernelManager::runSlipBCKernel(int level){
+void LBKernelManager::runSlipBCKernel(int level){
     if (para->getParD(level)->numberOfSlipBCnodes > 0)
     {
         // QSlipDev27(
@@ -461,7 +461,7 @@ void CudaKernelManager::runSlipBCKernel(int level){
     }
 }
 
-void CudaKernelManager::runNoSlipBCKernel(int level){
+void LBKernelManager::runNoSlipBCKernel(int level){
     if (para->getParD(level)->numberOfNoSlipBCnodes > 0)
     {
         // QDev27(
@@ -530,14 +530,14 @@ void CudaKernelManager::runNoSlipBCKernel(int level){
     }
 }
 
-// void CudaKernelManager::runPressureBCKernelPre(int level){
+// void LBKernelManager::runPressureBCKernelPre(int level){
 //     if (para->getParD()->numberOfPressureBCnodes > 0)
 //     {
 //         // ...
 //     }
 // }
 
-// void CudaKernelManager::calculateMacroscopicValues(int level)
+// void LBKernelManager::calculateMacroscopicValues(int level)
 // {
 //     if (para->getIsADcalculationOn()) {
 //           CalcMacADCompSP27(
@@ -582,17 +582,17 @@ void CudaKernelManager::runNoSlipBCKernel(int level){
 
 
 
-SPtr<CudaKernelManager> CudaKernelManager::make(SPtr<Parameter> parameter)
+SPtr<LBKernelManager> LBKernelManager::make(SPtr<Parameter> parameter)
 {
-    return SPtr<CudaKernelManager>(new CudaKernelManager(parameter));
+    return SPtr<LBKernelManager>(new LBKernelManager(parameter));
 }
 
-CudaKernelManager::CudaKernelManager(SPtr<Parameter> parameter)
+LBKernelManager::LBKernelManager(SPtr<Parameter> parameter)
 {
     this->para = parameter;
 }
 
-CudaKernelManager::CudaKernelManager(const CudaKernelManager&)
+LBKernelManager::LBKernelManager(const LBKernelManager&)
 {
 
 }

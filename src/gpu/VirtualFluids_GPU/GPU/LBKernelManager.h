@@ -26,7 +26,7 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file CudaKernelManager.h
+//! \file LBKernelManager.h
 //! \ingroup GPU
 //! \author Martin Schoenherr
 //=======================================================================================
@@ -40,14 +40,14 @@
 //! \brief Class forwarding for Parameter
 class Parameter;
 
-//! \class CudaKernelManager
+//! \class LBKernelManager
 //! \brief manage the cuda kernel calls
-class VIRTUALFLUIDS_GPU_EXPORT CudaKernelManager
+class VIRTUALFLUIDS_GPU_EXPORT LBKernelManager
 {
 public:
-	//! \brief makes an object of CudaKernelManager
+	//! \brief makes an object of LBKernelManager
 	//! \param para shared pointer to instance of class Parameter
-    static SPtr<CudaKernelManager> make(std::shared_ptr<Parameter> parameter);
+    static SPtr<LBKernelManager> make(std::shared_ptr<Parameter> parameter);
     
 	//! \brief calls the device function of the lattice Boltzmann kernel
 	void runLBMKernel(int level);
@@ -84,10 +84,10 @@ public:
 private:
 	//! Class constructor
 	//! \param parameter shared pointer to instance of class Parameter
-	CudaKernelManager(SPtr<Parameter> parameter);
+	LBKernelManager(SPtr<Parameter> parameter);
 	//! Class copy constructor
-	//! \param CudaKernelManager is a reference to CudaKernelManager object
-	CudaKernelManager(const CudaKernelManager&);
+	//! \param LBKernelManager is a reference to LBKernelManager object
+	LBKernelManager(const LBKernelManager&);
 
 	//! \property para is a shared pointer to an object of Parameter
 	SPtr<Parameter> para;

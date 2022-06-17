@@ -8,7 +8,8 @@
 #include "Communication/Communicator.h"
 #include "Calculation/PorousMedia.h"
 
-class CudaKernelManager;
+class LBKernelManager;
+class ADKernelManager;
 class Kernel;
 
 class UpdateGrid27
@@ -20,7 +21,12 @@ public:
 
 
 private:
-    void postCollisionBC(int level, unsigned int t);
+    void postCollisionBC(int level);
+    void collisionAdvectionDiffusion(int level);
+
+    void collision(int level, unsigned int t);
+    void collisionUsingIndex(int level, unsigned int t, uint *fluidNodeIndices = nullptr, uint numberOfFluidNodes = 0, int stream = -1);
+    void collisionPorousMedia(int level);
 
 private:
     typedef void (UpdateGrid27::*collisionAndExchangeFun)(int level, unsigned int t);
@@ -44,25 +50,21 @@ private:
     void refinementAndExchange_noRefinementAndExchange(int level);
     void refinementAndExchange_noExchange(int level);
 
-
+private:
     SPtr<Parameter> para;
     vf::gpu::Communicator& comm;
     SPtr<CudaMemoryManager> cudaManager;
     std::vector<std::shared_ptr<PorousMedia>> pm;
     std::vector<SPtr<Kernel>> kernels;
-    //! \property cudaKernelManager is a shared pointer to an object of CudaKernelManager
-    std::shared_ptr<CudaKernelManager> cudaKernelManager;
+    //! \property cudaKernelManager is a shared pointer to an object of LBKernelManager
+    std::shared_ptr<LBKernelManager> cudaKernelManager;
+    //! \property advectionDiffusionManager is a shared pointer to an object of ADKernelManager
+    std::shared_ptr<ADKernelManager> advectionDiffusionManager;
 };
 
 
 
-extern "C" void collision(Parameter *para, std::vector<std::shared_ptr<PorousMedia>> &pm, int level, unsigned int t,  std::vector<SPtr<Kernel>> &kernels);
 
-extern "C" void collisionUsingIndex(Parameter *para, std::vector<std::shared_ptr<PorousMedia>> &pm, int level, unsigned int t,  std::vector<SPtr<Kernel>> &kernels, uint *fluidNodeIndices = nullptr, uint numberOfFluidNodes = 0, int stream = -1);
-
-extern "C" void collisionPorousMedia(Parameter* para, std::vector<std::shared_ptr<PorousMedia>>& pm, int level);
-
-extern "C" void collisionAdvectionDiffusion(Parameter* para, int level);
 
 extern "C" void prepareExchangeMultiGPU(Parameter *para, int level, int streamIndex);
 extern "C" void prepareExchangeMultiGPUAfterFtoC(Parameter *para, int level, int streamIndex);
