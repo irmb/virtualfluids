@@ -15,13 +15,13 @@ extern "C" __global__ void PressSchlaff27(real* rhoBC,
                                           real* deltaVz0,
                                           int* k_Q,
                                           int* k_N,
-                                          int kQ,
+                                          int numberOfBCnodes,
                                           real om1,
                                           unsigned int* neighborX,
                                           unsigned int* neighborY,
                                           unsigned int* neighborZ,
                                           unsigned int size_Mat,
-                                          bool evenOrOdd)
+                                          bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index
@@ -34,7 +34,7 @@ extern "C" __global__ void PressSchlaff27(real* rhoBC,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       //index
@@ -68,7 +68,7 @@ extern "C" __global__ void PressSchlaff27(real* rhoBC,
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
       Distributions27 D;
-      if (evenOrOdd==true)
+      if (isEvenTimestep==true)
       {
          D.f[dirE   ] = &DD[dirE   *size_Mat];
          D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -279,13 +279,13 @@ extern "C" __global__ void VelSchlaff27(  int t,
                                           real* deltaVz0,
                                           int* k_Q,
                                           int* k_N,
-                                          int kQ,
+                                          int numberOfBCnodes,
                                           real om1,
                                           unsigned int* neighborX,
                                           unsigned int* neighborY,
                                           unsigned int* neighborZ,
                                           unsigned int size_Mat,
-                                          bool evenOrOdd)
+                                          bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index
@@ -298,7 +298,7 @@ extern "C" __global__ void VelSchlaff27(  int t,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       //index
@@ -332,7 +332,7 @@ extern "C" __global__ void VelSchlaff27(  int t,
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
       Distributions27 D;
-      if (evenOrOdd==true)
+      if (isEvenTimestep==true)
       {
          D.f[dirE   ] = &DD[dirE   *size_Mat];
          D.f[dirW   ] = &DD[dirW   *size_Mat];

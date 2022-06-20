@@ -475,7 +475,7 @@ void Parameter::initLBMSimulationParameter()
         parH[i]->mem_size_int     = sizeof(unsigned int) * parH[i]->size_Mat;
         parH[i]->mem_size_bool    = sizeof(bool) * parH[i]->size_Mat;
         parH[i]->mem_size_real_yz = sizeof(real) * parH[i]->ny * parH[i]->nz;
-        parH[i]->evenOrOdd        = true;
+        parH[i]->isEvenTimestep        = true;
         parH[i]->startz           = parH[i]->gridNZ * ic.myid;
         parH[i]->endz             = parH[i]->gridNZ * ic.myid + parH[i]->gridNZ;
         parH[i]->Lx               = (real)((1.f * parH[i]->gridNX - 1.f) / (pow(2.f, i)));
@@ -543,7 +543,7 @@ void Parameter::initLBMSimulationParameter()
         parD[i]->mem_size_int     = sizeof(unsigned int) * parD[i]->size_Mat;
         parD[i]->mem_size_bool    = sizeof(bool) * parD[i]->size_Mat;
         parD[i]->mem_size_real_yz = sizeof(real) * parD[i]->ny * parD[i]->nz;
-        parD[i]->evenOrOdd        = parH[i]->evenOrOdd;
+        parD[i]->isEvenTimestep        = parH[i]->isEvenTimestep;
         parD[i]->startz           = parH[i]->startz;
         parD[i]->endz             = parH[i]->endz;
         parD[i]->Lx               = parH[i]->Lx;
@@ -996,13 +996,13 @@ void Parameter::setTempPressD(TempPressforBoundaryConditions *TempPressD)
 {
     this->TempPressD = TempPressD;
 }
-// void Parameter::setkInflowQ(unsigned int kInflowQ)
+// void Parameter::setNumberOfVeloBCnodes(unsigned int numberOfVeloBCnodes)
 //{
-//   this->kInflowQ = kInflowQ;
+//   this->numberOfVeloBCnodes = numberOfVeloBCnodes;
 //}
-// void Parameter::setkOutflowQ(unsigned int kOutflowQ)
+// void Parameter::setkOutflowQ(unsigned int numberOfOutflowBCnodes)
 //{
-//   this->kOutflowQ = kOutflowQ;
+//   this->numberOfOutflowBCnodes = numberOfOutflowBCnodes;
 //}
 // void Parameter::setQinflowH(QforBoundaryConditions* QinflowH)
 //{
@@ -1676,7 +1676,7 @@ int Parameter::getNumberOfParticles()
 }
 bool Parameter::getEvenOrOdd(int level)
 {
-    return parH[level]->evenOrOdd;
+    return parH[level]->isEvenTimestep;
 }
 bool Parameter::getDiffOn()
 {
@@ -1962,13 +1962,13 @@ TempPressforBoundaryConditions *Parameter::getTempPressD()
 {
     return this->TempPressD;
 }
-// unsigned int Parameter::getkInflowQ()
+// unsigned int Parameter::getNumberOfVeloBCnodes()
 //{
-//   return this->kInflowQ;
+//   return this->numberOfVeloBCnodes;
 //}
 // unsigned int Parameter::getkOutflowQ()
 //{
-//   return this->kOutflowQ;
+//   return this->numberOfOutflowBCnodes;
 //}
 // QforBoundaryConditions* Parameter::getQinflowH()
 //{
@@ -2506,7 +2506,7 @@ std::string Parameter::getADKernel()
     return adKernel;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+// initial condition fluid
 void Parameter::setInitialCondition(
     std::function<void(real, real, real, real &, real &, real &, real &)> initialCondition)
 {
@@ -2517,6 +2517,18 @@ std::function<void(real, real, real, real &, real &, real &, real &)> &Parameter
 {
     return this->initialCondition;
 }
+
+// initial condition concentration
+void Parameter::setInitialConditionAD(std::function<void(real, real, real, real&)> initialConditionAD)
+{
+    this->initialConditionAD = initialConditionAD;
+}
+
+std::function<void(real, real, real, real&)>& Parameter::getInitialConditionAD()
+{
+    return this->initialConditionAD;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 real Parameter::TrafoXtoWorld(int CoordX, int level)
 {

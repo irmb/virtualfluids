@@ -860,7 +860,7 @@ extern "C" void InitThS7(     unsigned int numberOfThreads,
    dim3 grid(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      LBInitThS7<<< grid, threads >>>( neighborX,
+      InitAD7<<< grid, threads >>>( neighborX,
                                        neighborY,
                                        neighborZ,
                                        geoD,
@@ -871,10 +871,10 @@ extern "C" void InitThS7(     unsigned int numberOfThreads,
                                        size_Mat,
                                        DD7,
                                        EvenOrOdd);
-      getLastCudaError("LBInitThS7 execution failed");
+      getLastCudaError("InitAD7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void InitThS27( unsigned int numberOfThreads,
+extern "C" void InitADDev27( unsigned int numberOfThreads,
                            unsigned int* neighborX,
                            unsigned int* neighborY,
                            unsigned int* neighborZ,
@@ -902,7 +902,7 @@ extern "C" void InitThS27( unsigned int numberOfThreads,
    dim3 grid(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      LBInitThS27<<< grid, threads >>>(neighborX,
+      InitAD27<<< grid, threads >>>(neighborX,
                                        neighborY,
                                        neighborZ,
                                        geoD,
@@ -913,7 +913,7 @@ extern "C" void InitThS27( unsigned int numberOfThreads,
                                        size_Mat,
                                        DD27,
                                        EvenOrOdd);
-      getLastCudaError("LBInitThS27 execution failed");
+      getLastCudaError("InitAD27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void PostProcessorF3_2018Fehlberg(
@@ -980,7 +980,7 @@ extern "C" void CalcMac27( real* vxD,
                            unsigned int grid_ny,
                            unsigned int grid_nz,
                            real* DD,
-                           bool evenOrOdd)
+                           bool isEvenTimestep)
 {
    dim3 threads       ( grid_nx, 1, 1 );
    dim3 grid          ( grid_ny, grid_nz );
@@ -995,7 +995,7 @@ extern "C" void CalcMac27( real* vxD,
                                           neighborZ,
                                           size_Mat,
                                           DD,
-                                          evenOrOdd);
+                                          isEvenTimestep);
       getLastCudaError("LBCalcMac27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -1011,7 +1011,7 @@ extern "C" void CalcMacSP27( real* vxD,
                              unsigned int size_Mat,
                              unsigned int numberOfThreads,
                              real* DD,
-                             bool evenOrOdd)
+                             bool isEvenTimestep)
 {
    int Grid = (size_Mat / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -1039,7 +1039,7 @@ extern "C" void CalcMacSP27( real* vxD,
                                              neighborZ,
                                              size_Mat,
                                              DD,
-                                             evenOrOdd);
+                                             isEvenTimestep);
       getLastCudaError("LBCalcMacSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -1055,7 +1055,7 @@ extern "C" void CalcMacCompSP27( real* vxD,
 								 unsigned int size_Mat,
 								 unsigned int numberOfThreads,
 								 real* DD,
-								 bool evenOrOdd)
+								 bool isEvenTimestep)
 {
    int Grid = (size_Mat / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -1083,7 +1083,7 @@ extern "C" void CalcMacCompSP27( real* vxD,
 												 neighborZ,
 												 size_Mat,
 												 DD,
-												 evenOrOdd);
+												 isEvenTimestep);
       getLastCudaError("LBCalcMacSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -1095,7 +1095,7 @@ extern "C" void CalcMacThS7(  real* Conc,
                               unsigned int size_Mat,
                               unsigned int numberOfThreads,
                               real* DD7,
-                              bool evenOrOdd)
+                              bool isEvenTimestep)
 {
    int Grid = (size_Mat / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -1112,15 +1112,15 @@ extern "C" void CalcMacThS7(  real* Conc,
    dim3 grid(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      LBCalcMacThS7<<< grid, threads >>> (Conc,
+      CalcConc7<<< grid, threads >>> (Conc,
                                           geoD,
                                           neighborX,
                                           neighborY,
                                           neighborZ,
                                           size_Mat,
                                           DD7,
-                                          evenOrOdd);
-      getLastCudaError("LBCalcMacThS7 execution failed");
+                                          isEvenTimestep);
+      getLastCudaError("CalcConc7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void PlaneConcThS7(real* Conc,
@@ -1133,7 +1133,7 @@ extern "C" void PlaneConcThS7(real* Conc,
 							  unsigned int size_Mat,
                               unsigned int numberOfThreads,
 							  real* DD7,
-							  bool evenOrOdd)
+							  bool isEvenTimestep)
 {
    int Grid = (numberOfPointskPC / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -1150,7 +1150,7 @@ extern "C" void PlaneConcThS7(real* Conc,
    dim3 grid(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      GetPlaneConcThS7<<< grid, threads >>> (	Conc,
+      GetPlaneConc7<<< grid, threads >>> (	Conc,
 												kPC,
 												numberOfPointskPC,
 												geoD,
@@ -1159,8 +1159,8 @@ extern "C" void PlaneConcThS7(real* Conc,
 												neighborZ,
 												size_Mat,
 												DD7,
-												evenOrOdd);
-      getLastCudaError("GetPlaneConcThS7 execution failed");
+												isEvenTimestep);
+      getLastCudaError("GetPlaneConc7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void PlaneConcThS27(real* Conc,
@@ -1173,7 +1173,7 @@ extern "C" void PlaneConcThS27(real* Conc,
 							   unsigned int size_Mat,
                                unsigned int numberOfThreads,
 							   real* DD27,
-							   bool evenOrOdd)
+							   bool isEvenTimestep)
 {
    int Grid = (numberOfPointskPC / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -1190,7 +1190,7 @@ extern "C" void PlaneConcThS27(real* Conc,
    dim3 grid(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      GetPlaneConcThS27<<< grid, threads >>> (	Conc,
+      GetPlaneConc27<<< grid, threads >>> (	Conc,
 												kPC,
 												numberOfPointskPC,
 												geoD,
@@ -1199,19 +1199,19 @@ extern "C" void PlaneConcThS27(real* Conc,
 												neighborZ,
 												size_Mat,
 												DD27,
-												evenOrOdd);
-      getLastCudaError("GetPlaneConcThS27 execution failed");
+												isEvenTimestep);
+      getLastCudaError("GetPlaneConc27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void CalcMacThS27( real* Conc,
-                              unsigned int* geoD,
-                              unsigned int* neighborX,
-                              unsigned int* neighborY,
-                              unsigned int* neighborZ,
-                              unsigned int size_Mat,
-                              unsigned int numberOfThreads,
-                              real* DD27,
-                              bool evenOrOdd)
+extern "C" void CalcConcentration27( unsigned int numberOfThreads,
+                                     real* Conc,
+                                     unsigned int* geoD,
+                                     unsigned int* neighborX,
+                                     unsigned int* neighborY,
+                                     unsigned int* neighborZ,
+                                     unsigned int size_Mat,
+                                     real* DD27,
+                                     bool isEvenTimestep)
 {
    int Grid = (size_Mat / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -1228,15 +1228,15 @@ extern "C" void CalcMacThS27( real* Conc,
    dim3 grid(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      LBCalcMacThS27<<< grid, threads >>> (  Conc,
+      CalcConc27<<< grid, threads >>> (  Conc,
                                              geoD,
                                              neighborX,
                                              neighborY,
                                              neighborZ,
                                              size_Mat,
                                              DD27,
-                                             evenOrOdd);
-      getLastCudaError("LBCalcMacThS27 execution failed");
+                                             isEvenTimestep);
+      getLastCudaError("CalcConc27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void CalcMedSP27(  real* vxD,
@@ -1251,7 +1251,7 @@ extern "C" void CalcMedSP27(  real* vxD,
                               unsigned int size_Mat,
                               unsigned int numberOfThreads,
                               real* DD,
-                              bool evenOrOdd)
+                              bool isEvenTimestep)
 {
    int Grid = (size_Mat / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -1279,7 +1279,7 @@ extern "C" void CalcMedSP27(  real* vxD,
                                              neighborZ,
                                              size_Mat,
                                              DD,
-                                             evenOrOdd);
+                                             isEvenTimestep);
       getLastCudaError("LBCalcMedSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -1295,7 +1295,7 @@ extern "C" void CalcMedCompSP27(  real* vxD,
 								  unsigned int size_Mat,
 								  unsigned int numberOfThreads,
 								  real* DD,
-								  bool evenOrOdd)
+								  bool isEvenTimestep)
 {
    int Grid = (size_Mat / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -1323,7 +1323,7 @@ extern "C" void CalcMedCompSP27(  real* vxD,
 												 neighborZ,
 												 size_Mat,
 												 DD,
-												 evenOrOdd);
+												 isEvenTimestep);
       getLastCudaError("LBCalcMedSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -1342,7 +1342,7 @@ extern "C" void CalcMedCompAD27(
 	unsigned int numberOfThreads,
 	real* DD,
 	real* DD_AD,
-	bool evenOrOdd)
+	bool isEvenTimestep)
 {
 	int Grid = (size_Mat / numberOfThreads) + 1;
 	int Grid1, Grid2;
@@ -1373,7 +1373,7 @@ extern "C" void CalcMedCompAD27(
 		size_Mat,
 		DD,
 		DD_AD,
-		evenOrOdd);
+		isEvenTimestep);
 	getLastCudaError("LBCalcMedAD27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -1389,7 +1389,7 @@ extern "C" void CalcMacMedSP27(  real* vxD,
                                  unsigned int tdiff,
                                  unsigned int size_Mat,
                                  unsigned int numberOfThreads,
-                                 bool evenOrOdd)
+                                 bool isEvenTimestep)
 {
    int Grid = (size_Mat / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -1417,7 +1417,7 @@ extern "C" void CalcMacMedSP27(  real* vxD,
                                                 neighborZ,
                                                 tdiff,
                                                 size_Mat,
-                                                evenOrOdd);
+                                                isEvenTimestep);
       getLastCudaError("LBCalcMacMedSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -1429,7 +1429,7 @@ extern "C" void ResetMedianValuesSP27(
 	real* pressD,
 	unsigned int size_Mat,
 	unsigned int numberOfThreads,
-	bool evenOrOdd)
+	bool isEvenTimestep)
 {
 	int Grid = (size_Mat / numberOfThreads) + 1;
 	int Grid1, Grid2;
@@ -1453,7 +1453,7 @@ extern "C" void ResetMedianValuesSP27(
 		rhoD,
 		pressD,
 		size_Mat,
-		evenOrOdd);
+		isEvenTimestep);
 	getLastCudaError("LBResetMedianValuesSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -1466,7 +1466,7 @@ extern "C" void ResetMedianValuesAD27(
 	real* concD,
 	unsigned int size_Mat,
 	unsigned int numberOfThreads,
-	bool evenOrOdd)
+	bool isEvenTimestep)
 {
 	int Grid = (size_Mat / numberOfThreads) + 1;
 	int Grid1, Grid2;
@@ -1491,7 +1491,7 @@ extern "C" void ResetMedianValuesAD27(
 		pressD,
 		concD,
 		size_Mat,
-		evenOrOdd);
+		isEvenTimestep);
 	getLastCudaError("LBResetMedianValuesAD27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -1507,7 +1507,7 @@ extern "C" void Calc2ndMomentsIncompSP27(real* kxyFromfcNEQ,
 										 unsigned int size_Mat,
 										 unsigned int numberOfThreads,
 										 real* DD,
-										 bool evenOrOdd)
+										 bool isEvenTimestep)
 {
    int Grid = (size_Mat / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -1535,7 +1535,7 @@ extern "C" void Calc2ndMomentsIncompSP27(real* kxyFromfcNEQ,
 														 neighborZ,
 														 size_Mat,
 														 DD,
-														 evenOrOdd);
+														 isEvenTimestep);
       getLastCudaError("LBCalc2ndMomentsIncompSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -1551,7 +1551,7 @@ extern "C" void Calc2ndMomentsCompSP27( real* kxyFromfcNEQ,
 										unsigned int size_Mat,
 										unsigned int numberOfThreads,
 										real* DD,
-										bool evenOrOdd)
+										bool isEvenTimestep)
 {
    int Grid = (size_Mat / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -1579,7 +1579,7 @@ extern "C" void Calc2ndMomentsCompSP27( real* kxyFromfcNEQ,
 													 neighborZ,
 													 size_Mat,
 													 DD,
-													 evenOrOdd);
+													 isEvenTimestep);
       getLastCudaError("LBCalc2ndMomentsCompSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -1597,7 +1597,7 @@ extern "C" void Calc3rdMomentsIncompSP27(real* CUMbbb,
 										 unsigned int size_Mat,
 										 unsigned int numberOfThreads,
 										 real* DD,
-										 bool evenOrOdd)
+										 bool isEvenTimestep)
 {
    int Grid = (size_Mat / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -1627,7 +1627,7 @@ extern "C" void Calc3rdMomentsIncompSP27(real* CUMbbb,
 														 neighborZ,
 														 DD,
 														 size_Mat,
-														 evenOrOdd);
+														 isEvenTimestep);
       getLastCudaError("LBCalc3rdMomentsIncompSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -1645,7 +1645,7 @@ extern "C" void Calc3rdMomentsCompSP27( real* CUMbbb,
 										unsigned int size_Mat,
 										unsigned int numberOfThreads,
 										real* DD,
-										bool evenOrOdd)
+										bool isEvenTimestep)
 {
    int Grid = (size_Mat / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -1675,7 +1675,7 @@ extern "C" void Calc3rdMomentsCompSP27( real* CUMbbb,
 													 neighborZ,
 													 DD,
 													 size_Mat,
-													 evenOrOdd);
+													 isEvenTimestep);
       getLastCudaError("LBCalc3rdMomentsCompSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -1696,7 +1696,7 @@ extern "C" void CalcHigherMomentsIncompSP27(real* CUMcbb,
 											unsigned int size_Mat,
 											unsigned int numberOfThreads,
 											real* DD,
-											bool evenOrOdd)
+											bool isEvenTimestep)
 {
    int Grid = (size_Mat / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -1729,7 +1729,7 @@ extern "C" void CalcHigherMomentsIncompSP27(real* CUMcbb,
 														  neighborZ,
 														  DD,
 														  size_Mat,
-														  evenOrOdd);
+														  isEvenTimestep);
       getLastCudaError("LBCalcHigherMomentsIncompSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -1750,7 +1750,7 @@ extern "C" void CalcHigherMomentsCompSP27(  real* CUMcbb,
 											unsigned int size_Mat,
 											unsigned int numberOfThreads,
 											real* DD,
-											bool evenOrOdd)
+											bool isEvenTimestep)
 {
    int Grid = (size_Mat / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -1783,7 +1783,7 @@ extern "C" void CalcHigherMomentsCompSP27(  real* CUMcbb,
 														  neighborZ,
 														  DD,
 														  size_Mat,
-														  evenOrOdd);
+														  isEvenTimestep);
       getLastCudaError("LBCalcHigherMomentsCompSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -1802,7 +1802,7 @@ extern "C" void LBCalcMeasurePoints27(real* vxMP,
                                       unsigned int size_Mat,
                                       real* DD,
                                       unsigned int numberOfThreads,
-                                      bool evenOrOdd)
+                                      bool isEvenTimestep)
 {
    int Grid = (numberOfPointskMP / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -1833,7 +1833,7 @@ extern "C" void LBCalcMeasurePoints27(real* vxMP,
                                                 neighborZ,
                                                 size_Mat,
                                                 DD,
-                                                evenOrOdd);
+                                                isEvenTimestep);
       getLastCudaError("LBCalcMeasurePoints execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -1848,7 +1848,7 @@ extern "C" void BcPress27( int nx,
                            unsigned int* neighborZ,
                            real* DD,
                            unsigned int size_Mat,
-                           bool evenOrOdd)
+                           bool isEvenTimestep)
 {
    dim3 threads       ( grid_nx, 1, 1 );
    dim3 grid          ( grid_ny, 1 );
@@ -1862,7 +1862,7 @@ extern "C" void BcPress27( int nx,
                                                 neighborZ,
                                                 DD,
                                                 size_Mat,
-                                                evenOrOdd);
+                                                isEvenTimestep);
       getLastCudaError("LB_BC_Press_East27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -1878,7 +1878,7 @@ extern "C" void BcVel27(int nx,
                         unsigned int* neighborZ,
                         real* DD,
                         unsigned int size_Mat,
-                        bool evenOrOdd,
+                        bool isEvenTimestep,
                         real u0x,
                         real om)
 {
@@ -1895,7 +1895,7 @@ extern "C" void BcVel27(int nx,
                                                 neighborZ,
                                                 DD,
                                                 size_Mat,
-                                                evenOrOdd,
+                                                isEvenTimestep,
                                                 u0x,
                                                 grid_nx,
                                                 grid_ny,
@@ -1914,15 +1914,15 @@ extern "C" void QADPressDev7( unsigned int numberOfThreads,
                               int* k_Q,
                               real* QQ,
                               unsigned int sizeQ,
-                              unsigned int kQ,
+                              unsigned int numberOfBCnodes,
                               real om1,
                               unsigned int* neighborX,
                               unsigned int* neighborY,
                               unsigned int* neighborZ,
                               unsigned int size_Mat,
-                              bool evenOrOdd)
+                              bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -1947,13 +1947,13 @@ extern "C" void QADPressDev7( unsigned int numberOfThreads,
                                        k_Q,
                                        QQ,
                                        sizeQ,
-                                       kQ,
+                                       numberOfBCnodes,
                                        om1,
                                        neighborX,
                                        neighborY,
                                        neighborZ,
                                        size_Mat,
-                                       evenOrOdd);
+                                       isEvenTimestep);
       getLastCudaError("QADPress7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -1968,15 +1968,15 @@ extern "C" void QADPressDev27(unsigned int numberOfThreads,
                               int* k_Q,
                               real* QQ,
                               unsigned int sizeQ,
-                              unsigned int kQ,
+                              unsigned int numberOfBCnodes,
                               real om1,
                               unsigned int* neighborX,
                               unsigned int* neighborY,
                               unsigned int* neighborZ,
                               unsigned int size_Mat,
-                              bool evenOrOdd)
+                              bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2001,13 +2001,13 @@ extern "C" void QADPressDev27(unsigned int numberOfThreads,
                                           k_Q,
                                           QQ,
                                           sizeQ,
-                                          kQ,
+                                          numberOfBCnodes,
                                           om1,
                                           neighborX,
                                           neighborY,
                                           neighborZ,
                                           size_Mat,
-                                          evenOrOdd);
+                                          isEvenTimestep);
       getLastCudaError("QADPress27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -2017,16 +2017,16 @@ extern "C" void QADPressNEQNeighborDev27(
 											real* DD27,
 											int* k_Q,
 											int* k_N,
-											int kQ,
+											int numberOfBCnodes,
 											unsigned int* neighborX,
 											unsigned int* neighborY,
 											unsigned int* neighborZ,
 											unsigned int size_Mat,
-											bool evenOrOdd
+											bool isEvenTimestep
 										)
 {
 
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2046,12 +2046,12 @@ extern "C" void QADPressNEQNeighborDev27(
 												DD27,
 												k_Q,
 												k_N,
-												kQ,
+												numberOfBCnodes,
 												neighborX,
 												neighborY,
 												neighborZ,
 												size_Mat,
-												evenOrOdd
+												isEvenTimestep
 											  );
    getLastCudaError("QADPressNEQNeighbor27 execution failed");
 }
@@ -2067,15 +2067,15 @@ extern "C" void QADVelDev7(unsigned int numberOfThreads,
                            int* k_Q,
                            real* QQ,
                            unsigned int sizeQ,
-                           unsigned int kQ,
+                           unsigned int numberOfBCnodes,
                            real om1,
                            unsigned int* neighborX,
                            unsigned int* neighborY,
                            unsigned int* neighborZ,
                            unsigned int size_Mat,
-                           bool evenOrOdd)
+                           bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2100,13 +2100,13 @@ extern "C" void QADVelDev7(unsigned int numberOfThreads,
                                        k_Q,
                                        QQ,
                                        sizeQ,
-                                       kQ,
+                                       numberOfBCnodes,
                                        om1,
                                        neighborX,
                                        neighborY,
                                        neighborZ,
                                        size_Mat,
-                                       evenOrOdd);
+                                       isEvenTimestep);
       getLastCudaError("QADVel7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -2121,15 +2121,15 @@ extern "C" void QADVelDev27(  unsigned int numberOfThreads,
                               int* k_Q,
                               real* QQ,
                               unsigned int sizeQ,
-                              unsigned int kQ,
+                              unsigned int numberOfBCnodes,
                               real om1,
                               unsigned int* neighborX,
                               unsigned int* neighborY,
                               unsigned int* neighborZ,
                               unsigned int size_Mat,
-                              bool evenOrOdd)
+                              bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2154,13 +2154,13 @@ extern "C" void QADVelDev27(  unsigned int numberOfThreads,
                                       k_Q,
                                       QQ,
                                       sizeQ,
-                                      kQ,
+                                      numberOfBCnodes,
                                       om1,
                                       neighborX,
                                       neighborY,
                                       neighborZ,
                                       size_Mat,
-                                      evenOrOdd);
+                                      isEvenTimestep);
       getLastCudaError("QADVel27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -2174,15 +2174,15 @@ extern "C" void QADDev7(unsigned int numberOfThreads,
                         int* k_Q,
                         real* QQ,
                         unsigned int sizeQ,
-                        unsigned int kQ,
+                        unsigned int numberOfBCnodes,
                         real om1,
                         unsigned int* neighborX,
                         unsigned int* neighborY,
                         unsigned int* neighborZ,
                         unsigned int size_Mat,
-                        bool evenOrOdd)
+                        bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2206,16 +2206,91 @@ extern "C" void QADDev7(unsigned int numberOfThreads,
                                        k_Q,
                                        QQ,
                                        sizeQ,
-                                       kQ,
+                                       numberOfBCnodes,
                                        om1,
                                        neighborX,
                                        neighborY,
                                        neighborZ,
                                        size_Mat,
-                                       evenOrOdd);
+                                       isEvenTimestep);
       getLastCudaError("QAD7 execution failed");
 }
+
+
 //////////////////////////////////////////////////////////////////////////
+// Other advection diffusion kernels are in kernel factory :(
+extern "C" void FactorizedCentralMomentsAdvectionDiffusionDeviceKernel(
+   uint numberOfThreads,
+   real omegaDiffusivity,
+   uint* typeOfGridNode,
+   uint* neighborX,
+   uint* neighborY,
+   uint* neighborZ,
+   real* distributions,
+   real* distributionsAD,
+   int size_Mat,
+   real* forces,
+   bool isEvenTimestep)
+{
+   int Grid = (size_Mat / numberOfThreads) + 1;
+   dim3 grid(Grid, 1, 1);
+   dim3 threads(numberOfThreads, 1, 1);
+
+   Factorized_Central_Moments_Advection_Diffusion_Device_Kernel <<< grid, threads >>> (
+      omegaDiffusivity,
+      typeOfGridNode,
+      neighborX,
+      neighborY,
+      neighborZ,
+      distributions,
+      distributionsAD,
+      size_Mat,
+      forces,
+      isEvenTimestep);
+   getLastCudaError("Factorized_Central_Moments_Advection_Diffusion_Device_Kernel execution failed");
+}
+
+//////////////////////////////////////////////////////////////////////////
+extern "C" void ADSlipVelDevComp(
+	uint numberOfThreads,
+	real * normalX,
+	real * normalY,
+	real * normalZ,
+	real * distributions,
+	real * distributionsAD,
+	int* QindexArray,
+	real * Qarrays,
+	uint numberOfQs,
+	real omegaDiffusivity,
+	uint * neighborX,
+	uint * neighborY,
+	uint * neighborZ,
+	uint size_Mat,
+	bool isEvenTimestep)
+{
+	int Grid = (numberOfQs / numberOfThreads) + 1;
+	dim3 gridQ(Grid, 1, 1);
+	dim3 threads(numberOfThreads, 1, 1);
+
+	AD_SlipVelDeviceComp << < gridQ, threads >> > (
+		normalX,
+		normalY,
+		normalZ,
+		distributions,
+		distributionsAD,
+		QindexArray,
+		Qarrays,
+		numberOfQs,
+		omegaDiffusivity,
+		neighborX,
+		neighborY,
+		neighborZ,
+		size_Mat,
+		isEvenTimestep);
+	getLastCudaError("AD_SlipVelDeviceComp execution failed");
+}
+//////////////////////////////////////////////////////////////////////////
+
 extern "C" void QADDirichletDev27( unsigned int numberOfThreads,
 								   int nx,
 								   int ny,
@@ -2226,15 +2301,15 @@ extern "C" void QADDirichletDev27( unsigned int numberOfThreads,
 								   int* k_Q,
 								   real* QQ,
 								   unsigned int sizeQ,
-								   unsigned int kQ,
+								   unsigned int numberOfBCnodes,
 								   real om1,
 								   unsigned int* neighborX,
 								   unsigned int* neighborY,
 								   unsigned int* neighborZ,
 								   unsigned int size_Mat,
-								   bool evenOrOdd)
+								   bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2258,14 +2333,14 @@ extern "C" void QADDirichletDev27( unsigned int numberOfThreads,
 											   k_Q,
 											   QQ,
 											   sizeQ,
-											   kQ,
+											   numberOfBCnodes,
 											   om1,
 											   neighborX,
 											   neighborY,
 											   neighborZ,
 											   size_Mat,
-											   evenOrOdd);
-      getLastCudaError("QAD27 execution failed");
+											   isEvenTimestep);
+      getLastCudaError("QADDirichletDev27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QADBBDev27(unsigned int numberOfThreads,
@@ -2278,15 +2353,15 @@ extern "C" void QADBBDev27(unsigned int numberOfThreads,
                            int* k_Q,
                            real* QQ,
                            unsigned int sizeQ,
-                           unsigned int kQ,
+                           unsigned int numberOfBCnodes,
                            real om1,
                            unsigned int* neighborX,
                            unsigned int* neighborY,
                            unsigned int* neighborZ,
                            unsigned int size_Mat,
-                           bool evenOrOdd)
+                           bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2310,13 +2385,13 @@ extern "C" void QADBBDev27(unsigned int numberOfThreads,
                                        k_Q,
                                        QQ,
                                        sizeQ,
-                                       kQ,
+                                       numberOfBCnodes,
                                        om1,
                                        neighborX,
                                        neighborY,
                                        neighborZ,
                                        size_Mat,
-                                       evenOrOdd);
+                                       isEvenTimestep);
       getLastCudaError("QADBB27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -2330,15 +2405,15 @@ extern "C" void QNoSlipADincompDev7(unsigned int numberOfThreads,
 									int* k_Q,
 									real* QQ,
 									unsigned int sizeQ,
-									unsigned int kQ,
+									unsigned int numberOfBCnodes,
 									real om1,
 									unsigned int* neighborX,
 									unsigned int* neighborY,
 									unsigned int* neighborZ,
 									unsigned int size_Mat,
-									bool evenOrOdd)
+									bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2362,13 +2437,13 @@ extern "C" void QNoSlipADincompDev7(unsigned int numberOfThreads,
 											   k_Q,
 											   QQ,
 											   sizeQ,
-											   kQ,
+											   numberOfBCnodes,
 											   om1,
 											   neighborX,
 											   neighborY,
 											   neighborZ,
 											   size_Mat,
-											   evenOrOdd);
+											   isEvenTimestep);
       getLastCudaError("QNoSlipADincomp7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -2382,15 +2457,15 @@ extern "C" void QNoSlipADincompDev27(  unsigned int numberOfThreads,
 									   int* k_Q,
 									   real* QQ,
 									   unsigned int sizeQ,
-									   unsigned int kQ,
+									   unsigned int numberOfBCnodes,
 									   real om1,
 									   unsigned int* neighborX,
 									   unsigned int* neighborY,
 									   unsigned int* neighborZ,
 									   unsigned int size_Mat,
-									   bool evenOrOdd)
+									   bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2414,13 +2489,13 @@ extern "C" void QNoSlipADincompDev27(  unsigned int numberOfThreads,
 											   k_Q,
 											   QQ,
 											   sizeQ,
-											   kQ,
+											   numberOfBCnodes,
 											   om1,
 											   neighborX,
 											   neighborY,
 											   neighborZ,
 											   size_Mat,
-											   evenOrOdd);
+											   isEvenTimestep);
       getLastCudaError("QNoSlipADincomp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -2435,15 +2510,15 @@ extern "C" void QADVeloIncompDev7( unsigned int numberOfThreads,
 								   int* k_Q,
 								   real* QQ,
 								   unsigned int sizeQ,
-								   unsigned int kQ,
+								   unsigned int numberOfBCnodes,
 								   real om1,
 								   unsigned int* neighborX,
 								   unsigned int* neighborY,
 								   unsigned int* neighborZ,
 								   unsigned int size_Mat,
-								   bool evenOrOdd)
+								   bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2468,13 +2543,13 @@ extern "C" void QADVeloIncompDev7( unsigned int numberOfThreads,
 											   k_Q,
 											   QQ,
 											   sizeQ,
-											   kQ,
+											   numberOfBCnodes,
 											   om1,
 											   neighborX,
 											   neighborY,
 											   neighborZ,
 											   size_Mat,
-											   evenOrOdd);
+											   isEvenTimestep);
       getLastCudaError("QADVeloIncomp7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -2489,15 +2564,15 @@ extern "C" void QADVeloIncompDev27(   unsigned int numberOfThreads,
 									  int* k_Q,
 									  real* QQ,
 									  unsigned int sizeQ,
-									  unsigned int kQ,
+									  unsigned int numberOfBCnodes,
 									  real om1,
 									  unsigned int* neighborX,
 									  unsigned int* neighborY,
 									  unsigned int* neighborZ,
 									  unsigned int size_Mat,
-									  bool evenOrOdd)
+									  bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2522,13 +2597,13 @@ extern "C" void QADVeloIncompDev27(   unsigned int numberOfThreads,
 											  k_Q,
 											  QQ,
 											  sizeQ,
-											  kQ,
+											  numberOfBCnodes,
 											  om1,
 											  neighborX,
 											  neighborY,
 											  neighborZ,
 											  size_Mat,
-											  evenOrOdd);
+											  isEvenTimestep);
       getLastCudaError("QADVeloIncomp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -2543,15 +2618,15 @@ extern "C" void QADPressIncompDev7(   unsigned int numberOfThreads,
 									  int* k_Q,
 									  real* QQ,
 									  unsigned int sizeQ,
-									  unsigned int kQ,
+									  unsigned int numberOfBCnodes,
 									  real om1,
 									  unsigned int* neighborX,
 									  unsigned int* neighborY,
 									  unsigned int* neighborZ,
 									  unsigned int size_Mat,
-									  bool evenOrOdd)
+									  bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2576,13 +2651,13 @@ extern "C" void QADPressIncompDev7(   unsigned int numberOfThreads,
 											   k_Q,
 											   QQ,
 											   sizeQ,
-											   kQ,
+											   numberOfBCnodes,
 											   om1,
 											   neighborX,
 											   neighborY,
 											   neighborZ,
 											   size_Mat,
-											   evenOrOdd);
+											   isEvenTimestep);
       getLastCudaError("QADPressIncomp7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -2597,15 +2672,15 @@ extern "C" void QADPressIncompDev27(  unsigned int numberOfThreads,
 									  int* k_Q,
 									  real* QQ,
 									  unsigned int sizeQ,
-									  unsigned int kQ,
+									  unsigned int numberOfBCnodes,
 									  real om1,
 									  unsigned int* neighborX,
 									  unsigned int* neighborY,
 									  unsigned int* neighborZ,
 									  unsigned int size_Mat,
-									  bool evenOrOdd)
+									  bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2630,13 +2705,13 @@ extern "C" void QADPressIncompDev27(  unsigned int numberOfThreads,
 											  k_Q,
 											  QQ,
 											  sizeQ,
-											  kQ,
+											  numberOfBCnodes,
 											  om1,
 											  neighborX,
 											  neighborY,
 											  neighborZ,
 											  size_Mat,
-											  evenOrOdd);
+											  isEvenTimestep);
       getLastCudaError("QADPressIncomp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -2647,15 +2722,15 @@ extern "C" void QDev27( unsigned int numberOfThreads,
                         int* k_Q,
                         real* QQ,
                         unsigned int sizeQ,
-                        unsigned int kQ,
+                        unsigned int numberOfBCnodes,
                         real om1,
                         unsigned int* neighborX,
                         unsigned int* neighborY,
                         unsigned int* neighborZ,
                         unsigned int size_Mat,
-                        bool evenOrOdd)
+                        bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2676,13 +2751,13 @@ extern "C" void QDev27( unsigned int numberOfThreads,
                                        k_Q,
                                        QQ,
                                        sizeQ,
-                                       kQ,
+                                       numberOfBCnodes,
                                        om1,
                                        neighborX,
                                        neighborY,
                                        neighborZ,
                                        size_Mat,
-                                       evenOrOdd);
+                                       isEvenTimestep);
       getLastCudaError("QDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -2693,15 +2768,15 @@ extern "C" void QDevComp27( unsigned int numberOfThreads,
 							int* k_Q,
 							real* QQ,
 							unsigned int sizeQ,
-							unsigned int kQ,
+							unsigned int numberOfBCnodes,
 							real om1,
 							unsigned int* neighborX,
 							unsigned int* neighborY,
 							unsigned int* neighborZ,
 							unsigned int size_Mat,
-							bool evenOrOdd)
+							bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2722,13 +2797,13 @@ extern "C" void QDevComp27( unsigned int numberOfThreads,
 										   k_Q,
 										   QQ,
 										   sizeQ,
-										   kQ,
+										   numberOfBCnodes,
 										   om1,
 										   neighborX,
 										   neighborY,
 										   neighborZ,
 										   size_Mat,
-										   evenOrOdd);
+										   isEvenTimestep);
       getLastCudaError("QDeviceComp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -2737,7 +2812,7 @@ extern "C" void QDevCompThinWalls27(unsigned int numberOfThreads,
 									int* k_Q,
 									real* QQ,
 									unsigned int sizeQ,
-									unsigned int kQ,
+									unsigned int numberOfBCnodes,
 									real om1,
 									unsigned int* geom,
 									unsigned int* neighborX,
@@ -2745,9 +2820,9 @@ extern "C" void QDevCompThinWalls27(unsigned int numberOfThreads,
 									unsigned int* neighborZ,
 									unsigned int* neighborWSB,
 									unsigned int size_Mat,
-									bool evenOrOdd)
+									bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2766,27 +2841,27 @@ extern "C" void QDevCompThinWalls27(unsigned int numberOfThreads,
 														 k_Q,
 														 QQ,
 														 sizeQ,
-														 kQ,
+														 numberOfBCnodes,
 														 om1,
 														 neighborX,
 														 neighborY,
 														 neighborZ,
 														 size_Mat,
-														 evenOrOdd);
+														 isEvenTimestep);
    getLastCudaError("QDeviceCompThinWallsPartOne27 execution failed");
 
    QThinWallsPartTwo27 <<< gridQ, threads >>> ( DD,
 												k_Q,
 												QQ,
 												sizeQ,
-												kQ,
+												numberOfBCnodes,
 												geom,
 												neighborX,
 												neighborY,
 												neighborZ,
 												neighborWSB,
 												size_Mat,
-												evenOrOdd);
+												isEvenTimestep);
    getLastCudaError("QThinWallsPartTwo27 execution failed");
 
 }
@@ -2798,15 +2873,15 @@ extern "C" void QDev3rdMomentsComp27(   unsigned int numberOfThreads,
 										int* k_Q,
 										real* QQ,
 										unsigned int sizeQ,
-										unsigned int kQ,
+										unsigned int numberOfBCnodes,
 										real om1,
 										unsigned int* neighborX,
 										unsigned int* neighborY,
 										unsigned int* neighborZ,
 										unsigned int size_Mat,
-										bool evenOrOdd)
+										bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2827,13 +2902,13 @@ extern "C" void QDev3rdMomentsComp27(   unsigned int numberOfThreads,
 													   k_Q,
 													   QQ,
 													   sizeQ,
-													   kQ,
+													   numberOfBCnodes,
 													   om1,
 													   neighborX,
 													   neighborY,
 													   neighborZ,
 													   size_Mat,
-													   evenOrOdd);
+													   isEvenTimestep);
       getLastCudaError("QDevice3rdMomentsComp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -2844,15 +2919,15 @@ extern "C" void QDevIncompHighNu27( unsigned int numberOfThreads,
 									int* k_Q,
 									real* QQ,
 									unsigned int sizeQ,
-									unsigned int kQ,
+									unsigned int numberOfBCnodes,
 									real om1,
 									unsigned int* neighborX,
 									unsigned int* neighborY,
 									unsigned int* neighborZ,
 									unsigned int size_Mat,
-									bool evenOrOdd)
+									bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2873,13 +2948,13 @@ extern "C" void QDevIncompHighNu27( unsigned int numberOfThreads,
 												   k_Q,
 												   QQ,
 												   sizeQ,
-												   kQ,
+												   numberOfBCnodes,
 												   om1,
 												   neighborX,
 												   neighborY,
 												   neighborZ,
 												   size_Mat,
-												   evenOrOdd);
+												   isEvenTimestep);
       getLastCudaError("QDeviceIncompHighNu27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -2890,15 +2965,15 @@ extern "C" void QDevCompHighNu27(   unsigned int numberOfThreads,
 									int* k_Q,
 									real* QQ,
 									unsigned int sizeQ,
-									unsigned int kQ,
+									unsigned int numberOfBCnodes,
 									real om1,
 									unsigned int* neighborX,
 									unsigned int* neighborY,
 									unsigned int* neighborZ,
 									unsigned int size_Mat,
-									bool evenOrOdd)
+									bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2919,13 +2994,13 @@ extern "C" void QDevCompHighNu27(   unsigned int numberOfThreads,
 												   k_Q,
 												   QQ,
 												   sizeQ,
-												   kQ,
+												   numberOfBCnodes,
 												   om1,
 												   neighborX,
 												   neighborY,
 												   neighborZ,
 												   size_Mat,
-												   evenOrOdd);
+												   isEvenTimestep);
       getLastCudaError("QDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -2937,15 +3012,15 @@ extern "C" void QVelDevicePlainBB27(unsigned int numberOfThreads,
 									int* k_Q,
 									real* QQ,
 									unsigned int sizeQ,
-									int kQ,
+									int numberOfBCnodes,
 									real om1,
 									unsigned int* neighborX,
 									unsigned int* neighborY,
 									unsigned int* neighborZ,
 									unsigned int size_Mat,
-									bool evenOrOdd)
+									bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -2967,13 +3042,13 @@ extern "C" void QVelDevicePlainBB27(unsigned int numberOfThreads,
 												k_Q,
 												QQ,
 												sizeQ,
-												kQ,
+												numberOfBCnodes,
 												om1,
 												neighborX,
 												neighborY,
 												neighborZ,
 												size_Mat,
-												evenOrOdd);
+												isEvenTimestep);
       getLastCudaError("QVelDevicePlainBB27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -2985,15 +3060,15 @@ extern "C" void QVelDeviceCouhette27(unsigned int numberOfThreads,
 									int* k_Q,
 									real* QQ,
 									unsigned int sizeQ,
-									int kQ,
+									int numberOfBCnodes,
 									real om1,
 									unsigned int* neighborX,
 									unsigned int* neighborY,
 									unsigned int* neighborZ,
 									unsigned int size_Mat,
-									bool evenOrOdd)
+									bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -3015,13 +3090,13 @@ extern "C" void QVelDeviceCouhette27(unsigned int numberOfThreads,
 												k_Q,
 												QQ,
 												sizeQ,
-												kQ,
+												numberOfBCnodes,
 												om1,
 												neighborX,
 												neighborY,
 												neighborZ,
 												size_Mat,
-												evenOrOdd);
+												isEvenTimestep);
       getLastCudaError("QVelDevicePlainBB27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -3035,7 +3110,7 @@ extern "C" void QVelDevice1h27(   unsigned int numberOfThreads,
 								  int* k_Q,
 								  real* QQ,
 								  unsigned int sizeQ,
-								  unsigned int kQ,
+								  unsigned int numberOfBCnodes,
 								  real om1,
 								  real Phi,
 								  real angularVelocity,
@@ -3046,9 +3121,9 @@ extern "C" void QVelDevice1h27(   unsigned int numberOfThreads,
 								  real* coordY,
 								  real* coordZ,
 								  unsigned int size_Mat,
-								  bool evenOrOdd)
+								  bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -3072,7 +3147,7 @@ extern "C" void QVelDevice1h27(   unsigned int numberOfThreads,
                                           k_Q,
                                           QQ,
                                           sizeQ,
-                                          kQ,
+                                          numberOfBCnodes,
                                           om1,
 										  Phi,
 										  angularVelocity,
@@ -3083,7 +3158,7 @@ extern "C" void QVelDevice1h27(   unsigned int numberOfThreads,
 										  coordY,
 										  coordZ,
                                           size_Mat,
-                                          evenOrOdd);
+                                          isEvenTimestep);
       getLastCudaError("QVelDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -3097,15 +3172,15 @@ extern "C" void QVelDev27(unsigned int numberOfThreads,
                           int* k_Q,
                           real* QQ,
                           unsigned int sizeQ,
-                          unsigned int kQ,
+                          unsigned int numberOfBCnodes,
                           real om1,
                           unsigned int* neighborX,
                           unsigned int* neighborY,
                           unsigned int* neighborZ,
                           unsigned int size_Mat,
-                          bool evenOrOdd)
+                          bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -3129,13 +3204,13 @@ extern "C" void QVelDev27(unsigned int numberOfThreads,
                                           k_Q,
                                           QQ,
                                           sizeQ,
-                                          kQ,
+                                          numberOfBCnodes,
                                           om1,
                                           neighborX,
                                           neighborY,
                                           neighborZ,
                                           size_Mat,
-                                          evenOrOdd);
+                                          isEvenTimestep);
       getLastCudaError("QVelDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -3149,15 +3224,15 @@ extern "C" void QVelDevCompPlusSlip27(unsigned int numberOfThreads,
 									  int* k_Q,
 									  real* QQ,
 									  unsigned int sizeQ,
-									  unsigned int kQ,
+									  unsigned int numberOfBCnodes,
 									  real om1,
 									  unsigned int* neighborX,
 									  unsigned int* neighborY,
 									  unsigned int* neighborZ,
 									  unsigned int size_Mat,
-									  bool evenOrOdd)
+									  bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -3181,13 +3256,13 @@ extern "C" void QVelDevCompPlusSlip27(unsigned int numberOfThreads,
 													  k_Q,
 													  QQ,
 													  sizeQ,
-													  kQ,
+													  numberOfBCnodes,
 													  om1,
 													  neighborX,
 													  neighborY,
 													  neighborZ,
 													  size_Mat,
-													  evenOrOdd);
+													  isEvenTimestep);
       getLastCudaError("QVelDeviceCompPlusSlip27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -3201,15 +3276,15 @@ extern "C" void QVelDevComp27(unsigned int numberOfThreads,
 							  int* k_Q,
 							  real* QQ,
 							  unsigned int sizeQ,
-							  unsigned int kQ,
+							  unsigned int numberOfBCnodes,
 							  real om1,
 							  unsigned int* neighborX,
 							  unsigned int* neighborY,
 							  unsigned int* neighborZ,
 							  unsigned int size_Mat,
-							  bool evenOrOdd)
+							  bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -3233,13 +3308,13 @@ extern "C" void QVelDevComp27(unsigned int numberOfThreads,
 											  k_Q,
 											  QQ,
 											  sizeQ,
-											  kQ,
+											  numberOfBCnodes,
 											  om1,
 											  neighborX,
 											  neighborY,
 											  neighborZ,
 											  size_Mat,
-											  evenOrOdd);
+											  isEvenTimestep);
       getLastCudaError("QVelDeviceComp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -3251,7 +3326,7 @@ extern "C" void QVelDevCompThinWalls27(unsigned int numberOfThreads,
 							           int* k_Q,
 							           real* QQ,
 							           unsigned int sizeQ,
-							           unsigned int kQ,
+							           unsigned int numberOfBCnodes,
 							           real om1,
 									   unsigned int* geom,
 							           unsigned int* neighborX,
@@ -3259,9 +3334,9 @@ extern "C" void QVelDevCompThinWalls27(unsigned int numberOfThreads,
 							           unsigned int* neighborZ,
 									   unsigned int* neighborWSB,
 							           unsigned int size_Mat,
-							           bool evenOrOdd)
+							           bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -3283,27 +3358,27 @@ extern "C" void QVelDevCompThinWalls27(unsigned int numberOfThreads,
 											                  k_Q,
 											                  QQ,
 											                  sizeQ,
-											                  kQ,
+											                  numberOfBCnodes,
 											                  om1,
 											                  neighborX,
 											                  neighborY,
 											                  neighborZ,
 											                  size_Mat,
-											                  evenOrOdd);
+											                  isEvenTimestep);
       getLastCudaError("QVelDeviceCompThinWallsPartOne27 execution failed");
 
 	  QThinWallsPartTwo27 <<< gridQ, threads >>> (DD,
 											      k_Q,
 											      QQ,
 											      sizeQ,
-											      kQ,
+											      numberOfBCnodes,
                                                   geom,
 											      neighborX,
 											      neighborY,
 											      neighborZ,
                                                   neighborWSB,
 											      size_Mat,
-											      evenOrOdd);
+											      isEvenTimestep);
       getLastCudaError("QThinWallsPartTwo27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -3323,7 +3398,7 @@ extern "C" void QVelDevCompZeroPress27(   unsigned int numberOfThreads,
 										  unsigned int* neighborY,
 										  unsigned int* neighborZ,
 										  unsigned int size_Mat,
-										  bool evenOrOdd)
+										  bool isEvenTimestep)
 {
    //int Grid = kArray / numberOfThreads;
    int Grid = (sizeQ / numberOfThreads)+1;
@@ -3351,13 +3426,13 @@ extern "C" void QVelDevCompZeroPress27(   unsigned int numberOfThreads,
 														  k_Q,
 														  QQ,
 														  sizeQ,
-														  //kQ,
+														  //numberOfBCnodes,
 														  om1,
 														  neighborX,
 														  neighborY,
 														  neighborZ,
 														  size_Mat,
-														  evenOrOdd);
+														  isEvenTimestep);
       getLastCudaError("QVelDeviceCompZeroPress27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -3371,15 +3446,15 @@ extern "C" void QVelDevIncompHighNu27(unsigned int numberOfThreads,
 									  int* k_Q,
 									  real* QQ,
 									  unsigned int sizeQ,
-									  unsigned int kQ,
+									  unsigned int numberOfBCnodes,
 									  real om1,
 									  unsigned int* neighborX,
 									  unsigned int* neighborY,
 									  unsigned int* neighborZ,
 									  unsigned int size_Mat,
-									  bool evenOrOdd)
+									  bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -3403,13 +3478,13 @@ extern "C" void QVelDevIncompHighNu27(unsigned int numberOfThreads,
 													  k_Q,
 													  QQ,
 													  sizeQ,
-													  kQ,
+													  numberOfBCnodes,
 													  om1,
 													  neighborX,
 													  neighborY,
 													  neighborZ,
 													  size_Mat,
-													  evenOrOdd);
+													  isEvenTimestep);
       getLastCudaError("QVelDeviceIncompHighNu27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -3423,15 +3498,15 @@ extern "C" void QVelDevCompHighNu27(  unsigned int numberOfThreads,
 									  int* k_Q,
 									  real* QQ,
 									  unsigned int sizeQ,
-									  unsigned int kQ,
+									  unsigned int numberOfBCnodes,
 									  real om1,
 									  unsigned int* neighborX,
 									  unsigned int* neighborY,
 									  unsigned int* neighborZ,
 									  unsigned int size_Mat,
-									  bool evenOrOdd)
+									  bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -3455,13 +3530,13 @@ extern "C" void QVelDevCompHighNu27(  unsigned int numberOfThreads,
 													  k_Q,
 													  QQ,
 													  sizeQ,
-													  kQ,
+													  numberOfBCnodes,
 													  om1,
 													  neighborX,
 													  neighborY,
 													  neighborZ,
 													  size_Mat,
-													  evenOrOdd);
+													  isEvenTimestep);
       getLastCudaError("QVelDeviceComp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -3471,15 +3546,15 @@ extern "C" void QVeloDevEQ27(unsigned int numberOfThreads,
 							 real* VeloZ,
 							 real* DD,
 							 int* k_Q,
-							 int kQ,
+							 int numberOfBCnodes,
 							 real om1,
 							 unsigned int* neighborX,
 							 unsigned int* neighborY,
 							 unsigned int* neighborZ,
 							 unsigned int size_Mat,
-							 bool evenOrOdd)
+							 bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -3499,13 +3574,13 @@ extern "C" void QVeloDevEQ27(unsigned int numberOfThreads,
 											 VeloZ,
 											 DD,
 											 k_Q,
-											 kQ,
+											 numberOfBCnodes,
 											 om1,
 											 neighborX,
 											 neighborY,
 											 neighborZ,
 											 size_Mat,
-											 evenOrOdd);
+											 isEvenTimestep);
       getLastCudaError("QVeloDeviceEQ27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -3522,7 +3597,7 @@ extern "C" void QVeloStreetDevEQ27(
 	uint* neighborY,
 	uint* neighborZ,
 	uint  size_Mat,
-	bool  evenOrOdd)
+	bool  isEvenTimestep)
 {
 	int Grid = (numberOfStreetNodes / numberOfThreads) + 1;
 	int Grid1, Grid2;
@@ -3551,7 +3626,7 @@ extern "C" void QVeloStreetDevEQ27(
 		neighborY,
 		neighborZ,
 		size_Mat,
-		evenOrOdd);
+		isEvenTimestep);
 	getLastCudaError("QVeloStreetDeviceEQ27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -3565,7 +3640,7 @@ extern "C" void QSlipDev27(unsigned int numberOfThreads,
                            unsigned int* neighborY,
                            unsigned int* neighborZ,
                            unsigned int size_Mat,
-                           bool evenOrOdd)
+                           bool isEvenTimestep)
 {
    int Grid = (sizeQ / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -3591,7 +3666,7 @@ extern "C" void QSlipDev27(unsigned int numberOfThreads,
                                            neighborY,
                                            neighborZ,
                                            size_Mat,
-                                           evenOrOdd);
+                                           isEvenTimestep);
       getLastCudaError("QSlipDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -3607,7 +3682,7 @@ extern "C" void QSlipDevComp27(unsigned int numberOfThreads,
                         real* turbViscosity,
                         bool useTurbViscosity,
 							   unsigned int size_Mat,
-							   bool evenOrOdd)
+							   bool isEvenTimestep)
 {
    int Grid = (sizeQ / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -3636,7 +3711,7 @@ extern "C" void QSlipDevComp27(unsigned int numberOfThreads,
 											   neighborZ,
                                     turbViscosity,
 											   size_Mat,
-											   evenOrOdd);
+											   isEvenTimestep);
       getLastCudaError("QSlipDeviceComp27TurbViscosity execution failed");
    }
    else
@@ -3650,7 +3725,7 @@ extern "C" void QSlipDevComp27(unsigned int numberOfThreads,
 											   neighborY,
 											   neighborZ,
 											   size_Mat,
-											   evenOrOdd);
+											   isEvenTimestep);
       getLastCudaError("QSlipDeviceComp27 execution failed");
    }
 }
@@ -3668,7 +3743,7 @@ extern "C" void QSlipGeomDevComp27(unsigned int numberOfThreads,
 								   unsigned int* neighborY,
 								   unsigned int* neighborZ,
 								   unsigned int size_Mat,
-								   bool evenOrOdd)
+								   bool isEvenTimestep)
 {
    int Grid = (sizeQ / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -3697,7 +3772,7 @@ extern "C" void QSlipGeomDevComp27(unsigned int numberOfThreads,
 												   neighborY,
 												   neighborZ,
 												   size_Mat,
-												   evenOrOdd);
+												   isEvenTimestep);
       getLastCudaError("QSlipGeomDeviceComp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -3714,7 +3789,7 @@ extern "C" void QSlipNormDevComp27(unsigned int numberOfThreads,
 								   unsigned int* neighborY,
 								   unsigned int* neighborZ,
 								   unsigned int size_Mat,
-								   bool evenOrOdd)
+								   bool isEvenTimestep)
 {
    int Grid = (sizeQ / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -3743,7 +3818,7 @@ extern "C" void QSlipNormDevComp27(unsigned int numberOfThreads,
 												   neighborY,
 												   neighborZ,
 												   size_Mat,
-												   evenOrOdd);
+												   isEvenTimestep);
       getLastCudaError("QSlipGeomDeviceComp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -3778,7 +3853,7 @@ extern "C" void QStressDevComp27(unsigned int numberOfThreads,
 							   unsigned int* neighborY,
 							   unsigned int* neighborZ,
 							   unsigned int size_Mat,
-							   bool evenOrOdd)
+							   bool isEvenTimestep)
 {
    int Grid = (sizeQ / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -3825,7 +3900,7 @@ extern "C" void QStressDevComp27(unsigned int numberOfThreads,
 											   neighborY,
 											   neighborZ,
 											   size_Mat,
-											   evenOrOdd);
+											   isEvenTimestep);
       getLastCudaError("QSlipDeviceComp27 execution failed");
 }
 
@@ -3859,7 +3934,7 @@ extern "C" void BBStressDev27(unsigned int numberOfThreads,
 							   unsigned int* neighborY,
 							   unsigned int* neighborZ,
 							   unsigned int size_Mat,
-							   bool evenOrOdd)
+							   bool isEvenTimestep)
 {
    int Grid = (sizeQ / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -3904,7 +3979,7 @@ extern "C" void BBStressDev27(unsigned int numberOfThreads,
 											   neighborY,
 											   neighborZ,
 											   size_Mat,
-											   evenOrOdd);
+											   isEvenTimestep);
       getLastCudaError("BBStressDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -3916,15 +3991,15 @@ extern "C" void QPressDev27(unsigned int numberOfThreads,
                              int* k_Q,
                              real* QQ,
                              unsigned int sizeQ,
-                             unsigned int kQ,
+                             unsigned int numberOfBCnodes,
                              real om1,
                              unsigned int* neighborX,
                              unsigned int* neighborY,
                              unsigned int* neighborZ,
                              unsigned int size_Mat,
-                             bool evenOrOdd)
+                             bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -3946,13 +4021,13 @@ extern "C" void QPressDev27(unsigned int numberOfThreads,
                                              k_Q,
                                              QQ,
                                              sizeQ,
-                                             kQ,
+                                             numberOfBCnodes,
                                              om1,
                                              neighborX,
                                              neighborY,
                                              neighborZ,
                                              size_Mat,
-                                             evenOrOdd);
+                                             isEvenTimestep);
       getLastCudaError("QPressDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -3964,15 +4039,15 @@ extern "C" void QPressDevAntiBB27(  unsigned int numberOfThreads,
 									real* DD,
 									int* k_Q,
 									real* QQ,
-									int kQ,
+									int numberOfBCnodes,
 									real om1,
 									unsigned int* neighborX,
 									unsigned int* neighborY,
 									unsigned int* neighborZ,
 									unsigned int size_Mat,
-									bool evenOrOdd)
+									bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -3994,13 +4069,13 @@ extern "C" void QPressDevAntiBB27(  unsigned int numberOfThreads,
 												DD,
 												k_Q,
 												QQ,
-												kQ,
+												numberOfBCnodes,
 												om1,
 												neighborX,
 												neighborY,
 												neighborZ,
 												size_Mat,
-												evenOrOdd);
+												isEvenTimestep);
     getLastCudaError("QPressDeviceAntiBB27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -4008,15 +4083,15 @@ extern "C" void QPressDevFixBackflow27( unsigned int numberOfThreads,
                                         real* rhoBC,
                                         real* DD,
                                         int* k_Q,
-                                        unsigned int kQ,
+                                        unsigned int numberOfBCnodes,
                                         real om1,
                                         unsigned int* neighborX,
                                         unsigned int* neighborY,
                                         unsigned int* neighborZ,
                                         unsigned int size_Mat,
-                                        bool evenOrOdd)
+                                        bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -4034,13 +4109,13 @@ extern "C" void QPressDevFixBackflow27( unsigned int numberOfThreads,
       QPressDeviceFixBackflow27<<< gridQ, threads >>> (  rhoBC,
                                                          DD,
                                                          k_Q,
-                                                         kQ,
+                                                         numberOfBCnodes,
                                                          om1,
                                                          neighborX,
                                                          neighborY,
                                                          neighborZ,
                                                          size_Mat,
-                                                         evenOrOdd);
+                                                         isEvenTimestep);
       getLastCudaError("QPressDeviceFixBackflow27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -4048,15 +4123,15 @@ extern "C" void QPressDevDirDepBot27(  unsigned int numberOfThreads,
                                        real* rhoBC,
                                        real* DD,
                                        int* k_Q,
-                                       unsigned int kQ,
+                                       unsigned int numberOfBCnodes,
                                        real om1,
                                        unsigned int* neighborX,
                                        unsigned int* neighborY,
                                        unsigned int* neighborZ,
                                        unsigned int size_Mat,
-                                       bool evenOrOdd)
+                                       bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -4074,13 +4149,13 @@ extern "C" void QPressDevDirDepBot27(  unsigned int numberOfThreads,
       QPressDeviceDirDepBot27<<< gridQ, threads >>> ( rhoBC,
                                                       DD,
                                                       k_Q,
-                                                      kQ,
+                                                      numberOfBCnodes,
                                                       om1,
                                                       neighborX,
                                                       neighborY,
                                                       neighborZ,
                                                       size_Mat,
-                                                      evenOrOdd);
+                                                      isEvenTimestep);
       getLastCudaError("QPressDeviceDirDepBot27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -4089,15 +4164,15 @@ extern "C" void QPressNoRhoDev27(unsigned int numberOfThreads,
                                  real* DD,
                                  int* k_Q,
                                  int* k_N,
-                                 unsigned int kQ,
+                                 unsigned int numberOfBCnodes,
                                  real om1,
                                  unsigned int* neighborX,
                                  unsigned int* neighborY,
                                  unsigned int* neighborZ,
                                  unsigned int size_Mat,
-                                 bool evenOrOdd)
+                                 bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -4116,13 +4191,13 @@ extern "C" void QPressNoRhoDev27(unsigned int numberOfThreads,
 													DD,
 													k_Q,
 													k_N,
-													kQ,
+													numberOfBCnodes,
 													om1,
 													neighborX,
 													neighborY,
 													neighborZ,
 													size_Mat,
-													evenOrOdd);
+													isEvenTimestep);
       getLastCudaError("QPressNoRhoDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -4131,15 +4206,15 @@ extern "C" void QInflowScaleByPressDev27(unsigned int numberOfThreads,
 										 real* DD,
 										 int* k_Q,
 										 int* k_N,
-										 unsigned int kQ,
+										 unsigned int numberOfBCnodes,
 										 real om1,
 										 unsigned int* neighborX,
 										 unsigned int* neighborY,
 										 unsigned int* neighborZ,
 										 unsigned int size_Mat,
-										 bool evenOrOdd)
+										 bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -4158,13 +4233,13 @@ extern "C" void QInflowScaleByPressDev27(unsigned int numberOfThreads,
 														DD,
 														k_Q,
 														k_N,
-														kQ,
+														numberOfBCnodes,
 														om1,
 														neighborX,
 														neighborY,
 														neighborZ,
 														size_Mat,
-														evenOrOdd);
+														isEvenTimestep);
    getLastCudaError("QInflowScaleByPressDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -4173,15 +4248,15 @@ extern "C" void QPressDevOld27(  unsigned int numberOfThreads,
                                      real* DD,
                                      int* k_Q,
                                      int* k_N,
-                                     unsigned int kQ,
+                                     unsigned int numberOfBCnodes,
                                      real om1,
                                      unsigned int* neighborX,
                                      unsigned int* neighborY,
                                      unsigned int* neighborZ,
                                      unsigned int size_Mat,
-                                     bool evenOrOdd)
+                                     bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -4200,13 +4275,13 @@ extern "C" void QPressDevOld27(  unsigned int numberOfThreads,
                                                 DD,
                                                 k_Q,
                                                 k_N,
-                                                kQ,
+                                                numberOfBCnodes,
                                                 om1,
                                                 neighborX,
                                                 neighborY,
                                                 neighborZ,
                                                 size_Mat,
-                                                evenOrOdd);
+                                                isEvenTimestep);
       getLastCudaError("QPressDeviceOld27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -4215,15 +4290,15 @@ extern "C" void QPressDevIncompNEQ27(unsigned int numberOfThreads,
                                      real* DD,
                                      int* k_Q,
                                      int* k_N,
-                                     unsigned int kQ,
+                                     unsigned int numberOfBCnodes,
                                      real om1,
                                      unsigned int* neighborX,
                                      unsigned int* neighborY,
                                      unsigned int* neighborZ,
                                      unsigned int size_Mat,
-                                     bool evenOrOdd)
+                                     bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -4242,13 +4317,13 @@ extern "C" void QPressDevIncompNEQ27(unsigned int numberOfThreads,
 														DD,
 														k_Q,
 														k_N,
-														kQ,
+														numberOfBCnodes,
 														om1,
 														neighborX,
 														neighborY,
 														neighborZ,
 														size_Mat,
-														evenOrOdd);
+														isEvenTimestep);
       getLastCudaError("QPressDeviceIncompNEQ27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -4257,15 +4332,15 @@ extern "C" void QPressDevNEQ27(  unsigned int numberOfThreads,
                                      real* DD,
                                      int* k_Q,
                                      int* k_N,
-                                     unsigned int kQ,
+                                     unsigned int numberOfBCnodes,
                                      real om1,
                                      unsigned int* neighborX,
                                      unsigned int* neighborY,
                                      unsigned int* neighborZ,
                                      unsigned int size_Mat,
-                                     bool evenOrOdd)
+                                     bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -4284,13 +4359,13 @@ extern "C" void QPressDevNEQ27(  unsigned int numberOfThreads,
                                                 DD,
                                                 k_Q,
                                                 k_N,
-                                                kQ,
+                                                numberOfBCnodes,
                                                 om1,
                                                 neighborX,
                                                 neighborY,
                                                 neighborZ,
                                                 size_Mat,
-                                                evenOrOdd);
+                                                isEvenTimestep);
       getLastCudaError("QPressDeviceOld27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -4300,15 +4375,15 @@ extern "C" void QPressDevEQZ27(  unsigned int numberOfThreads,
                                      int* k_Q,
                                      int* k_N,
                                      real* kTestRE,
-                                     unsigned int kQ,
+                                     unsigned int numberOfBCnodes,
                                      real om1,
                                      unsigned int* neighborX,
                                      unsigned int* neighborY,
                                      unsigned int* neighborZ,
                                      unsigned int size_Mat,
-                                     bool evenOrOdd)
+                                     bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -4328,27 +4403,27 @@ extern "C" void QPressDevEQZ27(  unsigned int numberOfThreads,
                                                 k_Q,
                                                 k_N,
                                                 kTestRE,
-                                                kQ,
+                                                numberOfBCnodes,
                                                 om1,
                                                 neighborX,
                                                 neighborY,
                                                 neighborZ,
                                                 size_Mat,
-                                                evenOrOdd);
+                                                isEvenTimestep);
       getLastCudaError("QPressDeviceEQZ27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QPressDevZero27(unsigned int numberOfThreads,
                                 real* DD,
                                 int* k_Q,
-                                unsigned int kQ,
+                                unsigned int numberOfBCnodes,
                                 unsigned int* neighborX,
                                 unsigned int* neighborY,
                                 unsigned int* neighborZ,
                                 unsigned int size_Mat,
-                                bool evenOrOdd)
+                                bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -4365,12 +4440,12 @@ extern "C" void QPressDevZero27(unsigned int numberOfThreads,
 
       QPressDeviceZero27<<< gridQ, threads >>> (DD,
                                                 k_Q,
-                                                kQ,
+                                                numberOfBCnodes,
                                                 neighborX,
                                                 neighborY,
                                                 neighborZ,
                                                 size_Mat,
-                                                evenOrOdd);
+                                                isEvenTimestep);
       getLastCudaError("QPressDeviceOld27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -4379,15 +4454,15 @@ extern "C" void QPressDevFake27(     unsigned int numberOfThreads,
                                      real* DD,
                                      int* k_Q,
                                      int* k_N,
-                                     unsigned int kQ,
+                                     unsigned int numberOfBCnodes,
                                      real om1,
                                      unsigned int* neighborX,
                                      unsigned int* neighborY,
                                      unsigned int* neighborZ,
                                      unsigned int size_Mat,
-                                     bool evenOrOdd)
+                                     bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -4406,13 +4481,13 @@ extern "C" void QPressDevFake27(     unsigned int numberOfThreads,
                                                 DD,
                                                 k_Q,
                                                 k_N,
-                                                kQ,
+                                                numberOfBCnodes,
                                                 om1,
                                                 neighborX,
                                                 neighborY,
                                                 neighborZ,
                                                 size_Mat,
-                                                evenOrOdd);
+                                                isEvenTimestep);
       getLastCudaError("QPressDeviceFake27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -4423,15 +4498,15 @@ extern "C" void BBDev27( unsigned int numberOfThreads,
                        int* k_Q,
                        real* QQ,
                        unsigned int sizeQ,
-                       unsigned int kQ,
+                       unsigned int numberOfBCnodes,
                        real om1,
                        unsigned int* neighborX,
                        unsigned int* neighborY,
                        unsigned int* neighborZ,
                        unsigned int size_Mat,
-                       bool evenOrOdd)
+                       bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -4452,13 +4527,13 @@ extern "C" void BBDev27( unsigned int numberOfThreads,
                                           k_Q,
                                           QQ,
                                           sizeQ,
-                                          kQ,
+                                          numberOfBCnodes,
                                           om1,
                                           neighborX,
                                           neighborY,
                                           neighborZ,
                                           size_Mat,
-                                          evenOrOdd);
+                                          isEvenTimestep);
       getLastCudaError("BBDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -4468,15 +4543,15 @@ extern "C" void QPressDev27_IntBB(  unsigned int numberOfThreads,
 									int* k_Q,
 									real* QQ,
 									unsigned int sizeQ,
-									unsigned int kQ,
+									unsigned int numberOfBCnodes,
 									real om1,
 									unsigned int* neighborX,
 									unsigned int* neighborY,
 									unsigned int* neighborZ,
 									unsigned int size_Mat,
-									bool evenOrOdd)
+									bool isEvenTimestep)
 {
-	int Grid = (kQ / numberOfThreads)+1;
+	int Grid = (numberOfBCnodes / numberOfThreads)+1;
 	int Grid1, Grid2;
 	if (Grid>512)
 	{
@@ -4496,13 +4571,13 @@ extern "C" void QPressDev27_IntBB(  unsigned int numberOfThreads,
 													k_Q,
 													QQ,
 													sizeQ,
-													kQ,
+													numberOfBCnodes,
 													om1,
 													neighborX,
 													neighborY,
 													neighborZ,
 													size_Mat,
-													evenOrOdd);
+													isEvenTimestep);
 		getLastCudaError("QPressDevice27_IntBB execution failed");
 }
 // TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
@@ -4516,15 +4591,15 @@ extern "C" void PressSchlaffer27(unsigned int numberOfThreads,
                                  real* deltaVz0,
                                  int* k_Q,
                                  int* k_N,
-                                 int kQ,
+                                 int numberOfBCnodes,
                                  real om1,
                                  unsigned int* neighborX,
                                  unsigned int* neighborY,
                                  unsigned int* neighborZ,
                                  unsigned int size_Mat,
-                                 bool evenOrOdd)
+                                 bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -4547,13 +4622,13 @@ extern "C" void PressSchlaffer27(unsigned int numberOfThreads,
                                              deltaVz0,
                                              k_Q,
                                              k_N,
-                                             kQ,
+                                             numberOfBCnodes,
                                              om1,
                                              neighborX,
                                              neighborY,
                                              neighborZ,
                                              size_Mat,
-                                             evenOrOdd);
+                                             isEvenTimestep);
       getLastCudaError("PressSchlaff27 execution failed");
 }
 // TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
@@ -4565,15 +4640,15 @@ extern "C" void VelSchlaffer27(  unsigned int numberOfThreads,
                                  real* deltaVz0,
                                  int* k_Q,
                                  int* k_N,
-                                 int kQ,
+                                 int numberOfBCnodes,
                                  real om1,
                                  unsigned int* neighborX,
                                  unsigned int* neighborY,
                                  unsigned int* neighborZ,
                                  unsigned int size_Mat,
-                                 bool evenOrOdd)
+                                 bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -4594,13 +4669,13 @@ extern "C" void VelSchlaffer27(  unsigned int numberOfThreads,
                                           deltaVz0,
                                           k_Q,
                                           k_N,
-                                          kQ,
+                                          numberOfBCnodes,
                                           om1,
                                           neighborX,
                                           neighborY,
                                           neighborZ,
                                           size_Mat,
-                                          evenOrOdd);
+                                          isEvenTimestep);
       getLastCudaError("VelSchlaff27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -4660,7 +4735,7 @@ extern "C" void ScaleCF27( real* DC,
                         unsigned int* neighborFZ,
                         unsigned int size_MatC,
                         unsigned int size_MatF,
-                        bool evenOrOdd,
+                        bool isEvenTimestep,
                         unsigned int* posCSWB,
                         unsigned int* posFSWB,
                         unsigned int kCF,
@@ -4698,7 +4773,7 @@ extern "C" void ScaleCF27( real* DC,
                                              neighborFZ,
                                              size_MatC,
                                              size_MatF,
-                                             evenOrOdd,
+                                             isEvenTimestep,
                                              posCSWB,
                                              posFSWB,
                                              kCF,
@@ -4722,7 +4797,7 @@ extern "C" void ScaleCFEff27(real* DC,
                              unsigned int* neighborFZ,
                              unsigned int size_MatC,
                              unsigned int size_MatF,
-                             bool evenOrOdd,
+                             bool isEvenTimestep,
                              unsigned int* posCSWB,
                              unsigned int* posFSWB,
                              unsigned int kCF,
@@ -4761,7 +4836,7 @@ extern "C" void ScaleCFEff27(real* DC,
                                                 neighborFZ,
                                                 size_MatC,
                                                 size_MatF,
-                                                evenOrOdd,
+                                                isEvenTimestep,
                                                 posCSWB,
                                                 posFSWB,
                                                 kCF,
@@ -4786,7 +4861,7 @@ extern "C" void ScaleCFLast27(real* DC,
                               unsigned int* neighborFZ,
                               unsigned int size_MatC,
                               unsigned int size_MatF,
-                              bool evenOrOdd,
+                              bool isEvenTimestep,
                               unsigned int* posCSWB,
                               unsigned int* posFSWB,
                               unsigned int kCF,
@@ -4825,7 +4900,7 @@ extern "C" void ScaleCFLast27(real* DC,
                                                 neighborFZ,
                                                 size_MatC,
                                                 size_MatF,
-                                                evenOrOdd,
+                                                isEvenTimestep,
                                                 posCSWB,
                                                 posFSWB,
                                                 kCF,
@@ -4850,7 +4925,7 @@ extern "C" void ScaleCFpress27(  real* DC,
                                  unsigned int* neighborFZ,
                                  unsigned int size_MatC,
                                  unsigned int size_MatF,
-                                 bool evenOrOdd,
+                                 bool isEvenTimestep,
                                  unsigned int* posCSWB,
                                  unsigned int* posFSWB,
                                  unsigned int kCF,
@@ -4889,7 +4964,7 @@ extern "C" void ScaleCFpress27(  real* DC,
                                                 neighborFZ,
                                                 size_MatC,
                                                 size_MatF,
-                                                evenOrOdd,
+                                                isEvenTimestep,
                                                 posCSWB,
                                                 posFSWB,
                                                 kCF,
@@ -4914,7 +4989,7 @@ extern "C" void ScaleCF_Fix_27(  real* DC,
                                  unsigned int* neighborFZ,
                                  unsigned int size_MatC,
                                  unsigned int size_MatF,
-                                 bool evenOrOdd,
+                                 bool isEvenTimestep,
                                  unsigned int* posCSWB,
                                  unsigned int* posFSWB,
                                  unsigned int kCF,
@@ -4953,7 +5028,7 @@ extern "C" void ScaleCF_Fix_27(  real* DC,
                                                 neighborFZ,
                                                 size_MatC,
                                                 size_MatF,
-                                                evenOrOdd,
+                                                isEvenTimestep,
                                                 posCSWB,
                                                 posFSWB,
                                                 kCF,
@@ -4978,7 +5053,7 @@ extern "C" void ScaleCF_Fix_comp_27( real* DC,
 									 unsigned int* neighborFZ,
 									 unsigned int size_MatC,
 									 unsigned int size_MatF,
-									 bool evenOrOdd,
+									 bool isEvenTimestep,
 									 unsigned int* posCSWB,
 									 unsigned int* posFSWB,
 									 unsigned int kCF,
@@ -5017,7 +5092,7 @@ extern "C" void ScaleCF_Fix_comp_27( real* DC,
 														neighborFZ,
 														size_MatC,
 														size_MatF,
-														evenOrOdd,
+														isEvenTimestep,
 														posCSWB,
 														posFSWB,
 														kCF,
@@ -5042,7 +5117,7 @@ extern "C" void ScaleCF_0817_comp_27(real* DC,
 									 unsigned int* neighborFZ,
 									 unsigned int size_MatC,
 									 unsigned int size_MatF,
-									 bool evenOrOdd,
+									 bool isEvenTimestep,
 									 unsigned int* posCSWB,
 									 unsigned int* posFSWB,
 									 unsigned int kCF,
@@ -5054,7 +5129,8 @@ extern "C" void ScaleCF_0817_comp_27(real* DC,
 									 unsigned int nxF,
 									 unsigned int nyF,
 									 unsigned int numberOfThreads,
-									 OffCF offCF)
+									 OffCF offCF,
+                            CUstream_st *stream)
 {
    int Grid = (kCF / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -5071,7 +5147,7 @@ extern "C" void ScaleCF_0817_comp_27(real* DC,
    dim3 gridINT_CF(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      scaleCF_0817_comp_27<<< gridINT_CF, threads >>>(  DC,
+      scaleCF_0817_comp_27<<< gridINT_CF, threads, 0, stream >>>(  DC,
 														DF,
 														neighborCX,
 														neighborCY,
@@ -5081,7 +5157,7 @@ extern "C" void ScaleCF_0817_comp_27(real* DC,
 														neighborFZ,
 														size_MatC,
 														size_MatF,
-														evenOrOdd,
+														isEvenTimestep,
 														posCSWB,
 														posFSWB,
 														kCF,
@@ -5107,7 +5183,7 @@ extern "C" void ScaleCF_comp_D3Q27F3_2018(real* DC,
 										  unsigned int* neighborFZ,
 										  unsigned int size_MatC,
 										  unsigned int size_MatF,
-										  bool evenOrOdd,
+										  bool isEvenTimestep,
 										  unsigned int* posCSWB,
 										  unsigned int* posFSWB,
 										  unsigned int kCF,
@@ -5147,7 +5223,7 @@ extern "C" void ScaleCF_comp_D3Q27F3_2018(real* DC,
 															neighborFZ,
 															size_MatC,
 															size_MatF,
-															evenOrOdd,
+															isEvenTimestep,
 															posCSWB,
 															posFSWB,
 															kCF,
@@ -5173,7 +5249,7 @@ extern "C" void ScaleCF_comp_D3Q27F3(real* DC,
 									 unsigned int* neighborFZ,
 									 unsigned int size_MatC,
 									 unsigned int size_MatF,
-									 bool evenOrOdd,
+									 bool isEvenTimestep,
 									 unsigned int* posCSWB,
 									 unsigned int* posFSWB,
 									 unsigned int kCF,
@@ -5185,7 +5261,8 @@ extern "C" void ScaleCF_comp_D3Q27F3(real* DC,
 									 unsigned int nxF,
 									 unsigned int nyF,
 									 unsigned int numberOfThreads,
-									 OffCF offCF)
+									 OffCF offCF,
+                            CUstream_st *stream)
 {
    int Grid = (kCF / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -5202,7 +5279,7 @@ extern "C" void ScaleCF_comp_D3Q27F3(real* DC,
    dim3 gridINT_CF(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      scaleCF_comp_D3Q27F3 <<< gridINT_CF, threads >>>( DC,
+      scaleCF_comp_D3Q27F3 <<< gridINT_CF, threads, 0, stream >>>( DC,
 														DF,
 														G6,
 														neighborCX,
@@ -5213,7 +5290,7 @@ extern "C" void ScaleCF_comp_D3Q27F3(real* DC,
 														neighborFZ,
 														size_MatC,
 														size_MatF,
-														evenOrOdd,
+														isEvenTimestep,
 														posCSWB,
 														posFSWB,
 														kCF,
@@ -5238,7 +5315,7 @@ extern "C" void ScaleCF_staggered_time_comp_27(  real* DC,
 												 unsigned int* neighborFZ,
 												 unsigned int size_MatC,
 												 unsigned int size_MatF,
-												 bool evenOrOdd,
+												 bool isEvenTimestep,
 												 unsigned int* posCSWB,
 												 unsigned int* posFSWB,
 												 unsigned int kCF,
@@ -5277,7 +5354,7 @@ extern "C" void ScaleCF_staggered_time_comp_27(  real* DC,
 																	neighborFZ,
 																	size_MatC,
 																	size_MatF,
-																	evenOrOdd,
+																	isEvenTimestep,
 																	posCSWB,
 																	posFSWB,
 																	kCF,
@@ -5302,7 +5379,7 @@ extern "C" void ScaleCF_RhoSq_comp_27(   real* DC,
 										 unsigned int* neighborFZ,
 										 unsigned int size_MatC,
 										 unsigned int size_MatF,
-										 bool evenOrOdd,
+										 bool isEvenTimestep,
 										 unsigned int* posCSWB,
 										 unsigned int* posFSWB,
 										 unsigned int kCF,
@@ -5315,7 +5392,7 @@ extern "C" void ScaleCF_RhoSq_comp_27(   real* DC,
 										 unsigned int nyF,
 										 unsigned int numberOfThreads,
 										 OffCF offCF,
-                                         CUstream_st *stream)
+                               CUstream_st *stream)
 {
    int Grid = (kCF / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -5342,7 +5419,7 @@ extern "C" void ScaleCF_RhoSq_comp_27(   real* DC,
 														neighborFZ,
 														size_MatC,
 														size_MatF,
-														evenOrOdd,
+														isEvenTimestep,
 														posCSWB,
 														posFSWB,
 														kCF,
@@ -5367,7 +5444,7 @@ extern "C" void ScaleCF_RhoSq_3rdMom_comp_27(real* DC,
 											 unsigned int* neighborFZ,
 											 unsigned int size_MatC,
 											 unsigned int size_MatF,
-											 bool evenOrOdd,
+											 bool isEvenTimestep,
 											 unsigned int* posCSWB,
 											 unsigned int* posFSWB,
 											 unsigned int kCF,
@@ -5379,7 +5456,8 @@ extern "C" void ScaleCF_RhoSq_3rdMom_comp_27(real* DC,
 											 unsigned int nxF,
 											 unsigned int nyF,
 											 unsigned int numberOfThreads,
-											 OffCF offCF)
+											 OffCF offCF,
+                                  CUstream_st *stream)
 {
    int Grid = (kCF / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -5396,7 +5474,7 @@ extern "C" void ScaleCF_RhoSq_3rdMom_comp_27(real* DC,
    dim3 gridINT_CF(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      scaleCF_RhoSq_3rdMom_comp_27<<< gridINT_CF, threads >>>(  DC,
+      scaleCF_RhoSq_3rdMom_comp_27<<< gridINT_CF, threads, 0, stream >>>(  DC,
 																DF,
 																neighborCX,
 																neighborCY,
@@ -5406,7 +5484,7 @@ extern "C" void ScaleCF_RhoSq_3rdMom_comp_27(real* DC,
 																neighborFZ,
 																size_MatC,
 																size_MatF,
-																evenOrOdd,
+																isEvenTimestep,
 																posCSWB,
 																posFSWB,
 																kCF,
@@ -5431,7 +5509,7 @@ extern "C" void ScaleCF_AA2016_comp_27(real* DC,
 									   unsigned int* neighborFZ,
 									   unsigned int size_MatC,
 									   unsigned int size_MatF,
-									   bool evenOrOdd,
+									   bool isEvenTimestep,
 									   unsigned int* posCSWB,
 									   unsigned int* posFSWB,
 									   unsigned int kCF,
@@ -5443,7 +5521,8 @@ extern "C" void ScaleCF_AA2016_comp_27(real* DC,
 									   unsigned int nxF,
 									   unsigned int nyF,
 									   unsigned int numberOfThreads,
-									   OffCF offCF)
+									   OffCF offCF,
+                              CUstream_st *stream)
 {
    int Grid = (kCF / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -5460,7 +5539,7 @@ extern "C" void ScaleCF_AA2016_comp_27(real* DC,
    dim3 gridINT_CF(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      scaleCF_AA2016_comp_27<<< gridINT_CF, threads >>>(DC,
+      scaleCF_AA2016_comp_27<<< gridINT_CF, threads, 0, stream >>>(DC,
 														DF,
 														neighborCX,
 														neighborCY,
@@ -5470,7 +5549,7 @@ extern "C" void ScaleCF_AA2016_comp_27(real* DC,
 														neighborFZ,
 														size_MatC,
 														size_MatF,
-														evenOrOdd,
+														isEvenTimestep,
 														posCSWB,
 														posFSWB,
 														kCF,
@@ -5495,7 +5574,7 @@ extern "C" void ScaleCF_NSPress_27(  real* DC,
 									 unsigned int* neighborFZ,
 									 unsigned int size_MatC,
 									 unsigned int size_MatF,
-									 bool evenOrOdd,
+									 bool isEvenTimestep,
 									 unsigned int* posCSWB,
 									 unsigned int* posFSWB,
 									 unsigned int kCF,
@@ -5534,7 +5613,7 @@ extern "C" void ScaleCF_NSPress_27(  real* DC,
 													neighborFZ,
 													size_MatC,
 													size_MatF,
-													evenOrOdd,
+													isEvenTimestep,
 													posCSWB,
 													posFSWB,
 													kCF,
@@ -5561,7 +5640,7 @@ extern "C" void ScaleCFThSMG7(   real* DC,
                                  unsigned int* neighborFZ,
                                  unsigned int size_MatC,
                                  unsigned int size_MatF,
-                                 bool evenOrOdd,
+                                 bool isEvenTimestep,
                                  unsigned int* posCSWB,
                                  unsigned int* posFSWB,
                                  unsigned int kCF,
@@ -5597,7 +5676,7 @@ extern "C" void ScaleCFThSMG7(   real* DC,
                                                 neighborFZ,
                                                 size_MatC,
                                                 size_MatF,
-                                                evenOrOdd,
+                                                isEvenTimestep,
                                                 posCSWB,
                                                 posFSWB,
                                                 kCF,
@@ -5619,7 +5698,7 @@ extern "C" void ScaleCFThS7(  real* DC,
                               unsigned int* neighborFZ,
                               unsigned int size_MatC,
                               unsigned int size_MatF,
-                              bool evenOrOdd,
+                              bool isEvenTimestep,
                               unsigned int* posCSWB,
                               unsigned int* posFSWB,
                               unsigned int kCF,
@@ -5654,7 +5733,7 @@ extern "C" void ScaleCFThS7(  real* DC,
                                                 neighborFZ,
                                                 size_MatC,
                                                 size_MatF,
-                                                evenOrOdd,
+                                                isEvenTimestep,
                                                 posCSWB,
                                                 posFSWB,
                                                 kCF,
@@ -5675,7 +5754,7 @@ extern "C" void ScaleCFThS27( real* DC,
                               unsigned int* neighborFZ,
                               unsigned int size_MatC,
                               unsigned int size_MatF,
-                              bool evenOrOdd,
+                              bool isEvenTimestep,
                               unsigned int* posCSWB,
                               unsigned int* posFSWB,
                               unsigned int kCF,
@@ -5711,7 +5790,7 @@ extern "C" void ScaleCFThS27( real* DC,
                                                 neighborFZ,
                                                 size_MatC,
                                                 size_MatF,
-                                                evenOrOdd,
+                                                isEvenTimestep,
                                                 posCSWB,
                                                 posFSWB,
                                                 kCF,
@@ -5731,7 +5810,7 @@ extern "C" void ScaleFC27( real* DC,
                            unsigned int* neighborFZ,
                            unsigned int size_MatC,
                            unsigned int size_MatF,
-                           bool evenOrOdd,
+                           bool isEvenTimestep,
                            unsigned int* posC,
                            unsigned int* posFSWB,
                            unsigned int kFC,
@@ -5769,7 +5848,7 @@ extern "C" void ScaleFC27( real* DC,
                                              neighborFZ,
                                              size_MatC,
                                              size_MatF,
-                                             evenOrOdd,
+                                             isEvenTimestep,
                                              posC,
                                              posFSWB,
                                              kFC,
@@ -5793,7 +5872,7 @@ extern "C" void ScaleFCEff27(real* DC,
                              unsigned int* neighborFZ,
                              unsigned int size_MatC,
                              unsigned int size_MatF,
-                             bool evenOrOdd,
+                             bool isEvenTimestep,
                              unsigned int* posC,
                              unsigned int* posFSWB,
                              unsigned int kFC,
@@ -5832,7 +5911,7 @@ extern "C" void ScaleFCEff27(real* DC,
                                                 neighborFZ,
                                                 size_MatC,
                                                 size_MatF,
-                                                evenOrOdd,
+                                                isEvenTimestep,
                                                 posC,
                                                 posFSWB,
                                                 kFC,
@@ -5857,7 +5936,7 @@ extern "C" void ScaleFCLast27(real* DC,
                               unsigned int* neighborFZ,
                               unsigned int size_MatC,
                               unsigned int size_MatF,
-                              bool evenOrOdd,
+                              bool isEvenTimestep,
                               unsigned int* posC,
                               unsigned int* posFSWB,
                               unsigned int kFC,
@@ -5896,7 +5975,7 @@ extern "C" void ScaleFCLast27(real* DC,
                                                 neighborFZ,
                                                 size_MatC,
                                                 size_MatF,
-                                                evenOrOdd,
+                                                isEvenTimestep,
                                                 posC,
                                                 posFSWB,
                                                 kFC,
@@ -5921,7 +6000,7 @@ extern "C" void ScaleFCpress27(real* DC,
                               unsigned int* neighborFZ,
                               unsigned int size_MatC,
                               unsigned int size_MatF,
-                              bool evenOrOdd,
+                              bool isEvenTimestep,
                               unsigned int* posC,
                               unsigned int* posFSWB,
                               unsigned int kFC,
@@ -5960,7 +6039,7 @@ extern "C" void ScaleFCpress27(real* DC,
                                                    neighborFZ,
                                                    size_MatC,
                                                    size_MatF,
-                                                   evenOrOdd,
+                                                   isEvenTimestep,
                                                    posC,
                                                    posFSWB,
                                                    kFC,
@@ -5985,7 +6064,7 @@ extern "C" void ScaleFC_Fix_27(real* DC,
                               unsigned int* neighborFZ,
                               unsigned int size_MatC,
                               unsigned int size_MatF,
-                              bool evenOrOdd,
+                              bool isEvenTimestep,
                               unsigned int* posC,
                               unsigned int* posFSWB,
                               unsigned int kFC,
@@ -6024,7 +6103,7 @@ extern "C" void ScaleFC_Fix_27(real* DC,
                                                    neighborFZ,
                                                    size_MatC,
                                                    size_MatF,
-                                                   evenOrOdd,
+                                                   isEvenTimestep,
                                                    posC,
                                                    posFSWB,
                                                    kFC,
@@ -6049,7 +6128,7 @@ extern "C" void ScaleFC_Fix_comp_27(  real* DC,
 									  unsigned int* neighborFZ,
 									  unsigned int size_MatC,
 									  unsigned int size_MatF,
-									  bool evenOrOdd,
+									  bool isEvenTimestep,
 									  unsigned int* posC,
 									  unsigned int* posFSWB,
 									  unsigned int kFC,
@@ -6088,7 +6167,7 @@ extern "C" void ScaleFC_Fix_comp_27(  real* DC,
 													   neighborFZ,
 													   size_MatC,
 													   size_MatF,
-													   evenOrOdd,
+													   isEvenTimestep,
 													   posC,
 													   posFSWB,
 													   kFC,
@@ -6113,7 +6192,7 @@ extern "C" void ScaleFC_0817_comp_27( real* DC,
 									  unsigned int* neighborFZ,
 									  unsigned int size_MatC,
 									  unsigned int size_MatF,
-									  bool evenOrOdd,
+									  bool isEvenTimestep,
 									  unsigned int* posC,
 									  unsigned int* posFSWB,
 									  unsigned int kFC,
@@ -6125,7 +6204,8 @@ extern "C" void ScaleFC_0817_comp_27( real* DC,
 									  unsigned int nxF,
 									  unsigned int nyF,
 									  unsigned int numberOfThreads,
-									  OffFC offFC)
+									  OffFC offFC,
+                             CUstream_st *stream)
 {
    int Grid = (kFC / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -6142,7 +6222,7 @@ extern "C" void ScaleFC_0817_comp_27( real* DC,
    dim3 gridINT_FC(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      scaleFC_0817_comp_27<<< gridINT_FC, threads >>> (DC,
+      scaleFC_0817_comp_27<<< gridINT_FC, threads, 0, stream >>> (DC,
 													   DF,
 													   neighborCX,
 													   neighborCY,
@@ -6152,7 +6232,7 @@ extern "C" void ScaleFC_0817_comp_27( real* DC,
 													   neighborFZ,
 													   size_MatC,
 													   size_MatF,
-													   evenOrOdd,
+													   isEvenTimestep,
 													   posC,
 													   posFSWB,
 													   kFC,
@@ -6178,7 +6258,7 @@ extern "C" void ScaleFC_comp_D3Q27F3_2018( real* DC,
 										   unsigned int* neighborFZ,
 										   unsigned int size_MatC,
 										   unsigned int size_MatF,
-										   bool evenOrOdd,
+										   bool isEvenTimestep,
 										   unsigned int* posC,
 										   unsigned int* posFSWB,
 										   unsigned int kFC,
@@ -6218,7 +6298,7 @@ extern "C" void ScaleFC_comp_D3Q27F3_2018( real* DC,
 															neighborFZ,
 															size_MatC,
 															size_MatF,
-															evenOrOdd,
+															isEvenTimestep,
 															posC,
 															posFSWB,
 															kFC,
@@ -6244,7 +6324,7 @@ extern "C" void ScaleFC_comp_D3Q27F3( real* DC,
 									  unsigned int* neighborFZ,
 									  unsigned int size_MatC,
 									  unsigned int size_MatF,
-									  bool evenOrOdd,
+									  bool isEvenTimestep,
 									  unsigned int* posC,
 									  unsigned int* posFSWB,
 									  unsigned int kFC,
@@ -6256,7 +6336,8 @@ extern "C" void ScaleFC_comp_D3Q27F3( real* DC,
 									  unsigned int nxF,
 									  unsigned int nyF,
 									  unsigned int numberOfThreads,
-									  OffFC offFC)
+									  OffFC offFC,
+                             CUstream_st *stream)
 {
    int Grid = (kFC / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -6273,7 +6354,7 @@ extern "C" void ScaleFC_comp_D3Q27F3( real* DC,
    dim3 gridINT_FC(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-     scaleFC_comp_D3Q27F3 <<< gridINT_FC, threads >>> (DC,
+     scaleFC_comp_D3Q27F3 <<< gridINT_FC, threads, 0, stream >>> (DC,
 													   DF,
 													   G6,
 													   neighborCX,
@@ -6284,7 +6365,7 @@ extern "C" void ScaleFC_comp_D3Q27F3( real* DC,
 													   neighborFZ,
 													   size_MatC,
 													   size_MatF,
-													   evenOrOdd,
+													   isEvenTimestep,
 													   posC,
 													   posFSWB,
 													   kFC,
@@ -6309,7 +6390,7 @@ extern "C" void ScaleFC_staggered_time_comp_27(   real* DC,
 												  unsigned int* neighborFZ,
 												  unsigned int size_MatC,
 												  unsigned int size_MatF,
-												  bool evenOrOdd,
+												  bool isEvenTimestep,
 												  unsigned int* posC,
 												  unsigned int* posFSWB,
 												  unsigned int kFC,
@@ -6348,7 +6429,7 @@ extern "C" void ScaleFC_staggered_time_comp_27(   real* DC,
 																   neighborFZ,
 																   size_MatC,
 																   size_MatF,
-																   evenOrOdd,
+																   isEvenTimestep,
 																   posC,
 																   posFSWB,
 																   kFC,
@@ -6373,7 +6454,7 @@ extern "C" void ScaleFC_RhoSq_comp_27(real* DC,
 									  unsigned int* neighborFZ,
 									  unsigned int size_MatC,
 									  unsigned int size_MatF,
-									  bool evenOrOdd,
+									  bool isEvenTimestep,
 									  unsigned int* posC,
 									  unsigned int* posFSWB,
 									  unsigned int kFC,
@@ -6386,7 +6467,7 @@ extern "C" void ScaleFC_RhoSq_comp_27(real* DC,
 									  unsigned int nyF,
 									  unsigned int numberOfThreads,
 									  OffFC offFC,
-                                      CUstream_st *stream)
+                             CUstream_st *stream)
 {
    int Grid = (kFC / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -6414,7 +6495,7 @@ extern "C" void ScaleFC_RhoSq_comp_27(real* DC,
 													   neighborFZ,
 													   size_MatC,
 													   size_MatF,
-													   evenOrOdd,
+													   isEvenTimestep,
 													   posC,
 													   posFSWB,
 													   kFC,
@@ -6440,7 +6521,7 @@ extern "C" void ScaleFC_RhoSq_3rdMom_comp_27( real* DC,
 											  unsigned int* neighborFZ,
 											  unsigned int size_MatC,
 											  unsigned int size_MatF,
-											  bool evenOrOdd,
+											  bool isEvenTimestep,
 											  unsigned int* posC,
 											  unsigned int* posFSWB,
 											  unsigned int kFC,
@@ -6452,7 +6533,8 @@ extern "C" void ScaleFC_RhoSq_3rdMom_comp_27( real* DC,
 											  unsigned int nxF,
 											  unsigned int nyF,
 											  unsigned int numberOfThreads,
-											  OffFC offFC)
+											  OffFC offFC,
+                                   CUstream_st *stream)
 {
    int Grid = (kFC / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -6469,7 +6551,7 @@ extern "C" void ScaleFC_RhoSq_3rdMom_comp_27( real* DC,
    dim3 gridINT_FC(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      scaleFC_RhoSq_3rdMom_comp_27<<< gridINT_FC, threads >>>(DC,
+      scaleFC_RhoSq_3rdMom_comp_27<<< gridINT_FC, threads, 0, stream >>>(DC,
 															  DF,
 															  neighborCX,
 															  neighborCY,
@@ -6479,7 +6561,7 @@ extern "C" void ScaleFC_RhoSq_3rdMom_comp_27( real* DC,
 															  neighborFZ,
 															  size_MatC,
 															  size_MatF,
-															  evenOrOdd,
+															  isEvenTimestep,
 															  posC,
 															  posFSWB,
 															  kFC,
@@ -6504,7 +6586,7 @@ extern "C" void ScaleFC_AA2016_comp_27( real* DC,
 										unsigned int* neighborFZ,
 										unsigned int size_MatC,
 										unsigned int size_MatF,
-										bool evenOrOdd,
+										bool isEvenTimestep,
 										unsigned int* posC,
 										unsigned int* posFSWB,
 										unsigned int kFC,
@@ -6516,7 +6598,8 @@ extern "C" void ScaleFC_AA2016_comp_27( real* DC,
 										unsigned int nxF,
 										unsigned int nyF,
 										unsigned int numberOfThreads,
-										OffFC offFC)
+										OffFC offFC,
+                              CUstream_st *stream)
 {
    int Grid = (kFC / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -6533,7 +6616,7 @@ extern "C" void ScaleFC_AA2016_comp_27( real* DC,
    dim3 gridINT_FC(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      scaleFC_AA2016_comp_27<<< gridINT_FC, threads >>>(DC,
+      scaleFC_AA2016_comp_27<<< gridINT_FC, threads, 0, stream >>>(DC,
 														DF,
 														neighborCX,
 														neighborCY,
@@ -6543,7 +6626,7 @@ extern "C" void ScaleFC_AA2016_comp_27( real* DC,
 														neighborFZ,
 														size_MatC,
 														size_MatF,
-														evenOrOdd,
+														isEvenTimestep,
 														posC,
 														posFSWB,
 														kFC,
@@ -6568,7 +6651,7 @@ extern "C" void ScaleFC_NSPress_27(real* DC,
 								  unsigned int* neighborFZ,
 								  unsigned int size_MatC,
 								  unsigned int size_MatF,
-								  bool evenOrOdd,
+								  bool isEvenTimestep,
 								  unsigned int* posC,
 								  unsigned int* posFSWB,
 								  unsigned int kFC,
@@ -6607,7 +6690,7 @@ extern "C" void ScaleFC_NSPress_27(real* DC,
 													   neighborFZ,
 													   size_MatC,
 													   size_MatF,
-													   evenOrOdd,
+													   isEvenTimestep,
 													   posC,
 													   posFSWB,
 													   kFC,
@@ -6634,7 +6717,7 @@ extern "C" void ScaleFCThSMG7(real* DC,
                               unsigned int* neighborFZ,
                               unsigned int size_MatC,
                               unsigned int size_MatF,
-                              bool evenOrOdd,
+                              bool isEvenTimestep,
                               unsigned int* posC,
                               unsigned int* posFSWB,
                               unsigned int kFC,
@@ -6670,7 +6753,7 @@ extern "C" void ScaleFCThSMG7(real* DC,
                                                 neighborFZ,
                                                 size_MatC,
                                                 size_MatF,
-                                                evenOrOdd,
+                                                isEvenTimestep,
                                                 posC,
                                                 posFSWB,
                                                 kFC,
@@ -6692,7 +6775,7 @@ extern "C" void ScaleFCThS7(  real* DC,
                               unsigned int* neighborFZ,
                               unsigned int size_MatC,
                               unsigned int size_MatF,
-                              bool evenOrOdd,
+                              bool isEvenTimestep,
                               unsigned int* posC,
                               unsigned int* posFSWB,
                               unsigned int kFC,
@@ -6727,7 +6810,7 @@ extern "C" void ScaleFCThS7(  real* DC,
                                              neighborFZ,
                                              size_MatC,
                                              size_MatF,
-                                             evenOrOdd,
+                                             isEvenTimestep,
                                              posC,
                                              posFSWB,
                                              kFC,
@@ -6748,7 +6831,7 @@ extern "C" void ScaleFCThS27( real* DC,
                               unsigned int* neighborFZ,
                               unsigned int size_MatC,
                               unsigned int size_MatF,
-                              bool evenOrOdd,
+                              bool isEvenTimestep,
                               unsigned int* posC,
                               unsigned int* posFSWB,
                               unsigned int kFC,
@@ -6784,7 +6867,7 @@ extern "C" void ScaleFCThS27( real* DC,
                                                 neighborFZ,
                                                 size_MatC,
                                                 size_MatF,
-                                                evenOrOdd,
+                                                isEvenTimestep,
                                                 posC,
                                                 posFSWB,
                                                 kFC,
@@ -6797,7 +6880,7 @@ extern "C" void ScaleFCThS27( real* DC,
 extern "C" void DragLiftPostD27(real* DD,
 								int* k_Q,
 								real* QQ,
-								int kQ,
+								int numberOfBCnodes,
 								double *DragX,
 								double *DragY,
 								double *DragZ,
@@ -6805,10 +6888,10 @@ extern "C" void DragLiftPostD27(real* DD,
 								unsigned int* neighborY,
 								unsigned int* neighborZ,
 								unsigned int size_Mat,
-								bool evenOrOdd,
+								bool isEvenTimestep,
 								unsigned int numberOfThreads)
 {
-	int Grid = (kQ / numberOfThreads)+1;
+	int Grid = (numberOfBCnodes / numberOfThreads)+1;
 	int Grid1, Grid2;
 	if (Grid>512)
 	{
@@ -6826,7 +6909,7 @@ extern "C" void DragLiftPostD27(real* DD,
 	DragLiftPost27<<< grid, threads >>>(DD,
 										k_Q,
 										QQ,
-										kQ,
+										numberOfBCnodes,
 										DragX,
 										DragY,
 										DragZ,
@@ -6834,14 +6917,14 @@ extern "C" void DragLiftPostD27(real* DD,
 										neighborY,
 										neighborZ,
 										size_Mat,
-										evenOrOdd);
+										isEvenTimestep);
 	getLastCudaError("DragLift27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void DragLiftPreD27( real* DD,
 								int* k_Q,
 								real* QQ,
-								int kQ,
+								int numberOfBCnodes,
 								double *DragX,
 								double *DragY,
 								double *DragZ,
@@ -6849,10 +6932,10 @@ extern "C" void DragLiftPreD27( real* DD,
 								unsigned int* neighborY,
 								unsigned int* neighborZ,
 								unsigned int size_Mat,
-								bool evenOrOdd,
+								bool isEvenTimestep,
 								unsigned int numberOfThreads)
 {
-	int Grid = (kQ / numberOfThreads)+1;
+	int Grid = (numberOfBCnodes / numberOfThreads)+1;
 	int Grid1, Grid2;
 	if (Grid>512)
 	{
@@ -6870,7 +6953,7 @@ extern "C" void DragLiftPreD27( real* DD,
 	DragLiftPre27<<< grid, threads >>>( DD,
 										k_Q,
 										QQ,
-										kQ,
+										numberOfBCnodes,
 										DragX,
 										DragY,
 										DragZ,
@@ -6878,7 +6961,7 @@ extern "C" void DragLiftPreD27( real* DD,
 										neighborY,
 										neighborZ,
 										size_Mat,
-										evenOrOdd);
+										isEvenTimestep);
 	getLastCudaError("DragLift27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -6890,7 +6973,7 @@ extern "C" void CalcCPtop27(real* DD,
 							unsigned int* neighborY,
 							unsigned int* neighborZ,
 							unsigned int size_Mat,
-							bool evenOrOdd,
+							bool isEvenTimestep,
 							unsigned int numberOfThreads)
 {
 	int Grid = (nonCp / numberOfThreads)+1;
@@ -6916,7 +6999,7 @@ extern "C" void CalcCPtop27(real* DD,
 								  neighborY,
 								  neighborZ,
 								  size_Mat,
-								  evenOrOdd);
+								  isEvenTimestep);
 	getLastCudaError("CalcCP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -6928,7 +7011,7 @@ extern "C" void CalcCPbottom27( real* DD,
 								unsigned int* neighborY,
 								unsigned int* neighborZ,
 								unsigned int size_Mat,
-								bool evenOrOdd,
+								bool isEvenTimestep,
 								unsigned int numberOfThreads)
 {
 	int Grid = (nonCp / numberOfThreads)+1;
@@ -6954,7 +7037,7 @@ extern "C" void CalcCPbottom27( real* DD,
 								  neighborY,
 								  neighborZ,
 								  size_Mat,
-								  evenOrOdd);
+								  isEvenTimestep);
 	getLastCudaError("CalcCP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -6966,7 +7049,7 @@ extern "C" void GetSendFsPreDev27(real* DD,
 								  unsigned int* neighborY,
 								  unsigned int* neighborZ,
 								  unsigned int size_Mat,
-								  bool evenOrOdd,
+								  bool isEvenTimestep,
 								  unsigned int numberOfThreads,
 								  cudaStream_t stream)
 {
@@ -6993,7 +7076,7 @@ extern "C" void GetSendFsPreDev27(real* DD,
 										neighborY,
 										neighborZ,
 										size_Mat,
-										evenOrOdd);
+										isEvenTimestep);
 	getLastCudaError("getSendFsPre27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -7005,7 +7088,7 @@ extern "C" void GetSendFsPostDev27(real* DD,
 								   unsigned int* neighborY,
 								   unsigned int* neighborZ,
 								   unsigned int size_Mat,
-								   bool evenOrOdd,
+								   bool isEvenTimestep,
 								   unsigned int numberOfThreads,
 								   cudaStream_t stream)
 {
@@ -7032,7 +7115,7 @@ extern "C" void GetSendFsPostDev27(real* DD,
 										 neighborY,
 										 neighborZ,
 										 size_Mat,
-										 evenOrOdd);
+										 isEvenTimestep);
 	getLastCudaError("getSendFsPost27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -7044,7 +7127,7 @@ extern "C" void SetRecvFsPreDev27(real* DD,
 								  unsigned int* neighborY,
 								  unsigned int* neighborZ,
 								  unsigned int size_Mat,
-								  bool evenOrOdd,
+								  bool isEvenTimestep,
 								  unsigned int numberOfThreads,
 	                              cudaStream_t stream)
 {
@@ -7071,7 +7154,7 @@ extern "C" void SetRecvFsPreDev27(real* DD,
 										neighborY,
 										neighborZ,
 										size_Mat,
-										evenOrOdd);
+										isEvenTimestep);
 	getLastCudaError("setRecvFsPre27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -7083,7 +7166,7 @@ extern "C" void SetRecvFsPostDev27(real* DD,
 								   unsigned int* neighborY,
 								   unsigned int* neighborZ,
 								   unsigned int size_Mat,
-								   bool evenOrOdd,
+								   bool isEvenTimestep,
 	                               unsigned int numberOfThreads,
 	                               cudaStream_t stream)
 {
@@ -7110,7 +7193,7 @@ extern "C" void SetRecvFsPostDev27(real* DD,
 										 neighborY,
 										 neighborZ,
 										 size_Mat,
-										 evenOrOdd);
+										 isEvenTimestep);
 	getLastCudaError("setRecvFsPost27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -7123,7 +7206,7 @@ extern "C" void getSendGsDevF3(
 	unsigned int* neighborY,
 	unsigned int* neighborZ,
 	unsigned int size_Mat,
-	bool evenOrOdd,
+	bool isEvenTimestep,
 	unsigned int numberOfThreads)
 {
 	int Grid = (buffmax / numberOfThreads) + 1;
@@ -7150,7 +7233,7 @@ extern "C" void getSendGsDevF3(
 		neighborY,
 		neighborZ,
 		size_Mat,
-		evenOrOdd);
+		isEvenTimestep);
 	getLastCudaError("getSendGsF3 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -7163,7 +7246,7 @@ extern "C" void setRecvGsDevF3(
 	unsigned int* neighborY,
 	unsigned int* neighborZ,
 	unsigned int size_Mat,
-	bool evenOrOdd,
+	bool isEvenTimestep,
 	unsigned int numberOfThreads)
 {
 	int Grid = (buffmax / numberOfThreads) + 1;
@@ -7190,7 +7273,7 @@ extern "C" void setRecvGsDevF3(
 		neighborY,
 		neighborZ,
 		size_Mat,
-		evenOrOdd);
+		isEvenTimestep);
 	getLastCudaError("setRecvGsF3 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -7204,15 +7287,15 @@ extern "C" void WallFuncDev27(unsigned int numberOfThreads,
 							  int* k_Q,
 							  real* QQ,
 							  unsigned int sizeQ,
-							  unsigned int kQ,
+							  unsigned int numberOfBCnodes,
 							  real om1,
 							  unsigned int* neighborX,
 							  unsigned int* neighborY,
 							  unsigned int* neighborZ,
 							  unsigned int size_Mat,
-							  bool evenOrOdd)
+							  bool isEvenTimestep)
 {
-   int Grid = (kQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -7236,13 +7319,13 @@ extern "C" void WallFuncDev27(unsigned int numberOfThreads,
 											  k_Q,
 											  QQ,
 											  sizeQ,
-											  kQ,
+											  numberOfBCnodes,
 											  om1,
 											  neighborX,
 											  neighborY,
 											  neighborZ,
 											  size_Mat,
-											  evenOrOdd);
+											  isEvenTimestep);
       getLastCudaError("WallFunction27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -7263,7 +7346,7 @@ extern "C" void SetOutputWallVelocitySP27(unsigned int numberOfThreads,
 										  unsigned int* neighborZ,
 										  unsigned int size_Mat,
 										  real* DD,
-										  bool evenOrOdd)
+										  bool isEvenTimestep)
 {
    int Grid = (numberOfWallNodes / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -7296,7 +7379,7 @@ extern "C" void SetOutputWallVelocitySP27(unsigned int numberOfThreads,
 															neighborZ,
 															size_Mat,
 															DD,
-															evenOrOdd);
+															isEvenTimestep);
       getLastCudaError("LBSetOutputWallVelocitySP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -7311,7 +7394,7 @@ extern "C" void GetVelotoForce27(unsigned int numberOfThreads,
 								 unsigned int* neighborY,
 								 unsigned int* neighborZ,
 								 unsigned int size_Mat,
-								 bool evenOrOdd)
+								 bool isEvenTimestep)
 {
    int Grid = (nonAtBC / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -7338,7 +7421,7 @@ extern "C" void GetVelotoForce27(unsigned int numberOfThreads,
 												neighborY,
 												neighborZ,
 												size_Mat,
-												evenOrOdd);
+												isEvenTimestep);
       getLastCudaError("GetVeloforForcing27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -7435,7 +7518,7 @@ extern "C" void MoveParticlesDevice(real* coordX,
 									unsigned int numberOfParticles,
 									unsigned int size_Mat,
 									unsigned int numberOfThreads,
-									bool evenOrOdd)
+									bool isEvenTimestep)
 {
    int Grid = (numberOfParticles / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -7478,7 +7561,7 @@ extern "C" void MoveParticlesDevice(real* coordX,
 										numberOfTimesteps,
 										numberOfParticles,
 										size_Mat,
-										evenOrOdd);
+										isEvenTimestep);
       getLastCudaError("MoveParticles execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -7545,7 +7628,7 @@ extern "C" void CalcTurbulenceIntensityDevice(
    unsigned int* neighborY,
    unsigned int* neighborZ,
    unsigned int size_Mat,
-   bool evenOrOdd,
+   bool isEvenTimestep,
    uint numberOfThreads)
 {
    int Grid = (size_Mat / numberOfThreads)+1;
@@ -7579,7 +7662,7 @@ extern "C" void CalcTurbulenceIntensityDevice(
      neighborY,
      neighborZ,
      size_Mat,
-     evenOrOdd);
+     isEvenTimestep);
 
    getLastCudaError("CalcTurbulenceIntensity execution failed");
 }

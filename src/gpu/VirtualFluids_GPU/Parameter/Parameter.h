@@ -59,22 +59,34 @@ class CudaStreamManager;
 //! \brief struct holds and manages the LB-parameter of the simulation
 //! \brief For this purpose it holds structures and pointer for host and device data, respectively.
 struct LBMSimulationParameter {
-    bool evenOrOdd;
-    unsigned int numberofthreads;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief decides if the simulation timestep is even or odd
+    //! \brief this information is important for the esoteric twist
+    bool isEvenTimestep;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the number of threads per GPU block
+    uint numberofthreads;
 
     // distributions///////////
     // Distributions19 d0;
-    Distributions27 d0;
-    Distributions27 d0SP;
+    Distributions27 d0;  // DEPRECATED: distribution functions for full matrix (not sparse)
+    //! \brief store all distribution functions for the D3Q27
+    Distributions27 distributions;
 
     // distributions F3////////
     Distributions6 g6;
 
-    // thermo//////////////////
-    Distributions7 d7;
-    Distributions27 d27;
+    // advection diffusion //////////////////
+    //! \brief store all distribution functions for the D3Q7 advection diffusion field
+    Distributions7 distributionsAD7;
+    //! \brief store all distribution functions for the D3Q27 advection diffusion field
+    Distributions27 distributionsAD27;
+    //! \brief stores a field of concentration values
     real *Conc, *Conc_Full;
+    //! \brief stores the diffusivity
     real diffusivity;
+    //! \brief stores the value for omega (for the diffusivity)
+    real omegaDiffusivity;
     // BC NoSlip
     TempforBoundaryConditions Temp;
     // BC Velocity
@@ -93,20 +105,22 @@ struct LBMSimulationParameter {
     real cStartx, cStarty, cStartz;
     real cFx, cFy, cFz;
 
-    // geo/////////////////////
-    int *geo;
-    unsigned int *geoSP;
+    // typeOfGridNode (formerly known as "geo") /////////////////////
+    int *geo; // DEPRECATED: typeOfGridNode for full matrix (not sparse)
+    //! \brief stores the type for every lattice node (f.e. fluid node)
+    unsigned int *typeOfGridNode;
 
     // k///////////////////////
-    unsigned int *k;
+    unsigned int *k; // DEPRECATED: index for full matrix
 
-    // neighbor////////////////
-    // unsigned int *neighborX, *neighborY, *neighborZ;
-    unsigned int *neighborX_SP, *neighborY_SP, *neighborZ_SP, *neighborWSB_SP;
+    // neighbor///////////////////////////////////////////////////////////////
+    //! \brief store the neighbors in +X, +Y, +Z, and in diagonal negative direction
+    //! \brief this information is important because we use an indirect addressing scheme
+    uint *neighborX, *neighborY, *neighborZ, *neighborInverse;
 
-    // coordinates////////////
-    // unsigned int *coordX_SP, *coordY_SP, *coordZ_SP;
-    real *coordX_SP, *coordY_SP, *coordZ_SP;
+    // coordinates////////////////////////////////////////////////////////////
+    //! \brief store the coordinates for every lattice node 
+    real *coordinateX, *coordinateY, *coordinateZ;
 
     // body forces////////////
     real *forceX_SP, *forceY_SP, *forceZ_SP;
@@ -124,9 +138,14 @@ struct LBMSimulationParameter {
     std::vector<real> turbulenceIntensity;
 
     // macroscopic values//////
-    real *vx, *vy, *vz, *rho;
-    real *vx_SP, *vy_SP, *vz_SP, *rho_SP, *press_SP;
-    real vis, omega;
+    // real *vx, *vy, *vz, *rho;  // DEPRECATED: macroscopic values for full matrix
+    //! \brief store the macroscopic values (velocity, density, pressure)
+    //! \brief for every lattice node
+    real *velocityX, *velocityY, *velocityZ, *rho, *pressure;
+    //! \brief stores the value for omega
+    real omega;
+    //! \brief stores the value for viscosity (on level 0)
+    real vis;
 
     // derivations for iso test
     real *dxxUx, *dyyUy, *dzzUz;
@@ -146,7 +165,8 @@ struct LBMSimulationParameter {
     unsigned int sizePlaneXY, sizePlaneYZ, sizePlaneXZ;
 
     // size of sparse matrix//////////
-    unsigned int size_Mat_SP;
+    //! \brief stores the number of nodes (based on indirect addressing scheme)
+    unsigned int numberOfNodes;
     unsigned int size_Array_SP;
 
     // size of Plane btw. 2 GPUs//////
@@ -162,6 +182,7 @@ struct LBMSimulationParameter {
     bool isSetPress;
 
     // memsizeSP/////////////////
+    //! \brief stores the size of the memory consumption for real/int values of the arrays (e.g. coordinates, velocity)
     unsigned int mem_size_real_SP;
     unsigned int mem_size_int_SP;
 
@@ -199,20 +220,22 @@ struct LBMSimulationParameter {
     unsigned int mem_size_kFC_off;
 
     // BC's////////////////////
-    QforBoundaryConditions QWall, Qinflow, Qoutflow, QSlip, QStress;
-    unsigned int kQ = 0, kInflowQ = 0, kOutflowQ = 0, kSlipQ = 0, kStressQ = 0;
-    unsigned int kQread, kInflowQread, kOutflowQread, kSlipQread, kStressQread;
+    //! \brief stores the boundary condition data
+    QforBoundaryConditions noSlipBC, velocityBC, outflowBC, slipBC, stressBC;
+    //! \brief number of lattice nodes for the boundary conditions
+    unsigned int numberOfNoSlipBCnodes = 0, numberOfVeloBCnodes = 0, numberOfOutflowBCnodes = 0, numberOfSlipBCnodes = 0, numberOfStressBCnodes = 0;
+    unsigned int numberOfNoSlipBCnodesRead, numberOfVeloBCnodesRead, numberOfOutflowBCnodesRead, numberOfSlipBCnodesRead, numberOfStressBCnodesRead;
+    QforBoundaryConditions pressureBC;
+    unsigned int numberOfPressureBCnodes = 0, numberOfPressureBCnodesRead;
 
-    QforBoundaryConditions QpressX0, QpressX1, QpressY0, QpressY1, QpressZ0, QpressZ1;
-    QforBoundaryConditions QPropeller;
-    QforBoundaryConditions QPress;
-    QforBoundaryConditions QGeom;
-    QforBoundaryConditions QGeomNormalX, QGeomNormalY, QGeomNormalZ;
-    QforBoundaryConditions QInflowNormalX, QInflowNormalY, QInflowNormalZ;
-    QforBoundaryConditions QOutflowNormalX, QOutflowNormalY, QOutflowNormalZ;
-    QforBoundaryConditions QInlet, QOutlet, QPeriodic;
-    unsigned int kInletQread, kOutletQread;
-    unsigned int kPressQ = 0, kPressQread;
+    QforBoundaryConditions QpressX0, QpressX1, QpressY0, QpressY1, QpressZ0, QpressZ1; // DEPRECATED
+    QforBoundaryConditions propellerBC;
+    QforBoundaryConditions geometryBC;
+    QforBoundaryConditions geometryBCnormalX, geometryBCnormalY, geometryBCnormalZ;
+    QforBoundaryConditions inflowBCnormalX, inflowBCnormalY, inflowBCnormalZ;
+    QforBoundaryConditions outflowBCnormalX, outflowBCnormalY, outflowBCnormalZ;
+    QforBoundaryConditions QInlet, QOutlet, QPeriodic; // DEPRECATED
+    unsigned int kInletQread, kOutletQread;  // DEPRECATED
 
     WallModelParameters wallModel;
 
@@ -223,6 +246,7 @@ struct LBMSimulationParameter {
     // velocities to fit the force
     real *VxForce, *VyForce, *VzForce;
     //////////////////////////////////////////////////////////////////////////
+    //! \brief sets the forcing uniform on every fluid node in all three space dimensions
     real *forcing;
 
     // Measure Points/////////
@@ -352,6 +376,7 @@ struct LBMSimulationParameter {
     uint numberOffluidNodesBorder;
 };
 
+//! \brief Class for LBM-parameter management
 class VIRTUALFLUIDS_GPU_EXPORT Parameter
 {
 public:
@@ -359,7 +384,9 @@ public:
     ~Parameter();
     void initLBMSimulationParameter();
 
+    //! \brief Pointer to instance of LBMSimulationParameter - stored on Host System
     std::shared_ptr<LBMSimulationParameter> getParH(int level);
+    //! \brief Pointer to instance of LBMSimulationParameter - stored on Device (GPU)
     std::shared_ptr<LBMSimulationParameter> getParD(int level);
 
     void copyMeasurePointsArrayToVector(int lev);
@@ -554,8 +581,8 @@ public:
     void setRecvProcessNeighborsAfterFtoCX(int numberOfNodes, int level, int arrayIndex);
     void setRecvProcessNeighborsAfterFtoCY(int numberOfNodes, int level, int arrayIndex);
     void setRecvProcessNeighborsAfterFtoCZ(int numberOfNodes, int level, int arrayIndex);
-    // void setkInflowQ(unsigned int kInflowQ);
-    // void setkOutflowQ(unsigned int kOutflowQ);
+    // void setNumberOfVeloBCnodes(unsigned int numberOfVeloBCnodes);
+    // void setkOutflowQ(unsigned int numberOfOutflowBCnodes);
     // void setQinflowH(QforBoundaryConditions* QinflowH);
     // void setQinflowD(QforBoundaryConditions* QinflowD);
     // void setQoutflowH(QforBoundaryConditions* QoutflowH);
@@ -817,9 +844,15 @@ public:
     double hostQuadricLimiters[3];
 
     ////////////////////////////////////////////////////////////////////////////
-    // initial condition
+    // initial condition fluid
     void setInitialCondition(std::function<void(real, real, real, real &, real &, real &, real &)> initialCondition);
     std::function<void(real, real, real, real &, real &, real &, real &)> &getInitialCondition();
+
+    // initial condition concentration
+    void setInitialConditionAD(std::function<void(real, real, real, real &)> initialConditionAD);
+    std::function<void(real, real, real, real &)> &getInitialConditionAD();
+
+    ////////////////////////////////////////////////////////////////////////////
 
     std::vector<std::shared_ptr<LBMSimulationParameter>> parH = std::vector<std::shared_ptr<LBMSimulationParameter>>(1);
     std::vector<std::shared_ptr<LBMSimulationParameter>> parD = std::vector<std::shared_ptr<LBMSimulationParameter>>(1);
@@ -911,8 +944,10 @@ private:
     bool isNeigborX, isNeigborY, isNeigborZ;
 
     ////////////////////////////////////////////////////////////////////////////
-    // initial condition
+    //! \brief initial condition fluid
     std::function<void(real, real, real, real &, real &, real &, real &)> initialCondition;
+    //! \brief initial condition concentration
+    std::function<void(real, real, real, real &)> initialConditionAD;
 
     ////////////////////////////////////////////////////////////////////////////
     // cuda streams

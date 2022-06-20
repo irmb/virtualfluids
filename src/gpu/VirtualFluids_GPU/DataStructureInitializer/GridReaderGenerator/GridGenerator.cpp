@@ -14,11 +14,11 @@
 #include "utilities/communication.h"
 
 
-GridGenerator::GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager, vf::gpu::Communicator& communicator)
+GridGenerator::GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::gpu::Communicator& communicator)
 {
 	this->builder = builder;
     this->para = para;
-    this->cudaMemoryManager = cudaManager;
+    this->cudaMemoryManager = cudaMemoryManager;
     this->indexRearrangement = std::make_unique<IndexRearrangementForStreams>(para, builder, communicator);
 }
 
@@ -69,14 +69,14 @@ void GridGenerator::allocArrays_CoordNeighborGeo()
             cudaMemoryManager->cudaAllocBodyForce(level);
 
 		builder->getNodeValues(
-			para->getParH(level)->coordX_SP,
-			para->getParH(level)->coordY_SP,
-			para->getParH(level)->coordZ_SP,
-			para->getParH(level)->neighborX_SP,
-			para->getParH(level)->neighborY_SP,
-			para->getParH(level)->neighborZ_SP,
-			para->getParH(level)->neighborWSB_SP,
-			para->getParH(level)->geoSP,
+			para->getParH(level)->coordinateX,
+			para->getParH(level)->coordinateY,
+			para->getParH(level)->coordinateZ,
+			para->getParH(level)->neighborX,
+			para->getParH(level)->neighborY,
+			para->getParH(level)->neighborZ,
+			para->getParH(level)->neighborInverse,
+			para->getParH(level)->typeOfGridNode,
 			level);
 
 		setInitalNodeValues(numberOfNodesPerLevel, level);
@@ -120,14 +120,14 @@ void GridGenerator::allocArrays_BoundaryValues()
 
         std::cout << "size pressure level " << level << " : " << numberOfPressureValues << std::endl;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        para->getParH(level)->QPress.kQ = numberOfPressureValues;
-        para->getParD(level)->QPress.kQ = numberOfPressureValues;
-        para->getParH(level)->kPressQread = numberOfPressureValues * para->getD3Qxx();
-        para->getParD(level)->kPressQread = numberOfPressureValues * para->getD3Qxx();
+        para->getParH(level)->pressureBC.numberOfBCnodes = numberOfPressureValues;
+        para->getParD(level)->pressureBC.numberOfBCnodes = numberOfPressureValues;
+        para->getParH(level)->numberOfPressureBCnodesRead = numberOfPressureValues * para->getD3Qxx();
+        para->getParD(level)->numberOfPressureBCnodesRead = numberOfPressureValues * para->getD3Qxx();
         if (numberOfPressureValues > 1)
         {
             cudaMemoryManager->cudaAllocPress(level);
-            builder->getPressureValues(para->getParH(level)->QPress.RhoBC, para->getParH(level)->QPress.k, para->getParH(level)->QPress.kN, level);
+            builder->getPressureValues(para->getParH(level)->pressureBC.RhoBC, para->getParH(level)->pressureBC.k, para->getParH(level)->pressureBC.kN, level);
             cudaMemoryManager->cudaCopyPress(level);
         }
     }
@@ -137,16 +137,16 @@ void GridGenerator::allocArrays_BoundaryValues()
 
         std::cout << "size slip level " << level << " : " << numberOfSlipValues << std::endl;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        para->getParH(level)->QSlip.kQ = numberOfSlipValues;
-        para->getParD(level)->QSlip.kQ = numberOfSlipValues;
-        para->getParH(level)->kSlipQ   = numberOfSlipValues;
-        para->getParD(level)->kSlipQ   = numberOfSlipValues;
-        para->getParH(level)->kSlipQread = numberOfSlipValues * para->getD3Qxx();
-        para->getParD(level)->kSlipQread = numberOfSlipValues * para->getD3Qxx();
+        para->getParH(level)->slipBC.numberOfBCnodes = numberOfSlipValues;
+        para->getParD(level)->slipBC.numberOfBCnodes = numberOfSlipValues;
+        para->getParH(level)->numberOfSlipBCnodes   = numberOfSlipValues;
+        para->getParD(level)->numberOfSlipBCnodes   = numberOfSlipValues;
+        para->getParH(level)->numberOfSlipBCnodesRead = numberOfSlipValues * para->getD3Qxx();
+        para->getParD(level)->numberOfSlipBCnodesRead = numberOfSlipValues * para->getD3Qxx();
         if (numberOfSlipValues > 1)
         {
             cudaMemoryManager->cudaAllocSlipBC(level);
-            builder->getSlipValues(para->getParH(level)->QSlip.normalX, para->getParH(level)->QSlip.normalY, para->getParH(level)->QSlip.normalZ, para->getParH(level)->QSlip.k, level);
+            builder->getSlipValues(para->getParH(level)->slipBC.normalX, para->getParH(level)->slipBC.normalY, para->getParH(level)->slipBC.normalZ, para->getParH(level)->slipBC.k, level);
             cudaMemoryManager->cudaCopySlipBC(level);
         }
     }
@@ -156,21 +156,21 @@ void GridGenerator::allocArrays_BoundaryValues()
 
         std::cout << "size stress level " << level << " : " << numberOfStressValues << std::endl;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        para->getParH(level)->QStress.kQ = numberOfStressValues;
-        para->getParD(level)->QStress.kQ = numberOfStressValues;
-        para->getParH(level)->kStressQ   = numberOfStressValues;
-        para->getParD(level)->kStressQ   = numberOfStressValues;
-        para->getParH(level)->kStressQread = numberOfStressValues * para->getD3Qxx();
-        para->getParD(level)->kStressQread = numberOfStressValues * para->getD3Qxx();
+        para->getParH(level)->stressBC.numberOfBCnodes = numberOfStressValues;
+        para->getParD(level)->stressBC.numberOfBCnodes = numberOfStressValues;
+        para->getParH(level)->numberOfStressBCnodes   = numberOfStressValues;
+        para->getParD(level)->numberOfStressBCnodes   = numberOfStressValues;
+        para->getParH(level)->numberOfStressBCnodesRead = numberOfStressValues * para->getD3Qxx();
+        para->getParD(level)->numberOfStressBCnodesRead = numberOfStressValues * para->getD3Qxx();
 
         if (numberOfStressValues > 1)
         {
             cudaMemoryManager->cudaAllocStressBC(level);
             cudaMemoryManager->cudaAllocWallModel(level, para->getHasWallModelMonitor());
-            builder->getStressValues(   para->getParH(level)->QStress.normalX,  para->getParH(level)->QStress.normalY,  para->getParH(level)->QStress.normalZ, 
-                                        para->getParH(level)->QStress.Vx,       para->getParH(level)->QStress.Vy,       para->getParH(level)->QStress.Vz,
-                                        para->getParH(level)->QStress.Vx1,      para->getParH(level)->QStress.Vy1,      para->getParH(level)->QStress.Vz1,
-                                        para->getParH(level)->QStress.k,        para->getParH(level)->QStress.kN,       
+            builder->getStressValues(   para->getParH(level)->stressBC.normalX,  para->getParH(level)->stressBC.normalY,  para->getParH(level)->stressBC.normalZ, 
+                                        para->getParH(level)->stressBC.Vx,       para->getParH(level)->stressBC.Vy,       para->getParH(level)->stressBC.Vz,
+                                        para->getParH(level)->stressBC.Vx1,      para->getParH(level)->stressBC.Vy1,      para->getParH(level)->stressBC.Vz1,
+                                        para->getParH(level)->stressBC.k,        para->getParH(level)->stressBC.kN,       
                                         para->getParH(level)->wallModel.samplingOffset, para->getParH(level)->wallModel.z0, 
                                         level);
 
@@ -185,15 +185,15 @@ void GridGenerator::allocArrays_BoundaryValues()
         std::cout << "size velocity level " << level << " : " << numberOfVelocityValues << std::endl;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         int blocks = (numberOfVelocityValues / para->getParH(level)->numberofthreads) + 1;
-        para->getParH(level)->Qinflow.kArray = blocks * para->getParH(level)->numberofthreads;
-        para->getParD(level)->Qinflow.kArray = para->getParH(level)->Qinflow.kArray;
+        para->getParH(level)->velocityBC.kArray = blocks * para->getParH(level)->numberofthreads;
+        para->getParD(level)->velocityBC.kArray = para->getParH(level)->velocityBC.kArray;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        para->getParH(level)->Qinflow.kQ = numberOfVelocityValues;
-        para->getParD(level)->Qinflow.kQ = numberOfVelocityValues;
-        para->getParH(level)->kInflowQ = numberOfVelocityValues;
-        para->getParD(level)->kInflowQ = numberOfVelocityValues;
-        para->getParH(level)->kInflowQread = numberOfVelocityValues * para->getD3Qxx();
-        para->getParD(level)->kInflowQread = numberOfVelocityValues * para->getD3Qxx();
+        para->getParH(level)->velocityBC.numberOfBCnodes = numberOfVelocityValues;
+        para->getParD(level)->velocityBC.numberOfBCnodes = numberOfVelocityValues;
+        para->getParH(level)->numberOfVeloBCnodes = numberOfVelocityValues;
+        para->getParD(level)->numberOfVeloBCnodes = numberOfVelocityValues;
+        para->getParH(level)->numberOfVeloBCnodesRead = numberOfVelocityValues * para->getD3Qxx();
+        para->getParD(level)->numberOfVeloBCnodesRead = numberOfVelocityValues * para->getD3Qxx();
 
         if (numberOfVelocityValues > 1)
         {
@@ -201,7 +201,7 @@ void GridGenerator::allocArrays_BoundaryValues()
             cudaMemoryManager->cudaAllocVeloBC(level);
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-            builder->getVelocityValues(para->getParH(level)->Qinflow.Vx, para->getParH(level)->Qinflow.Vy, para->getParH(level)->Qinflow.Vz, para->getParH(level)->Qinflow.k, level);
+            builder->getVelocityValues(para->getParH(level)->velocityBC.Vx, para->getParH(level)->velocityBC.Vy, para->getParH(level)->velocityBC.Vz, para->getParH(level)->velocityBC.k, level);
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -224,7 +224,7 @@ void GridGenerator::allocArrays_BoundaryValues()
             		para->getParH(level)->TempVel.temp[m]      = para->getTemperatureInit();
             		para->getParH(level)->TempVel.tempPulse[m] = para->getTemperatureBC();
             		para->getParH(level)->TempVel.velo[m]      = para->getVelocity();
-            		para->getParH(level)->TempVel.k[m]         = para->getParH(level)->Qinflow.k[m];
+            		para->getParH(level)->TempVel.k[m]         = para->getParH(level)->velocityBC.k[m];
             	}
             	//////////////////////////////////////////////////////////////////////////
             	//cout << "vor copy " << endl;
@@ -244,8 +244,8 @@ void GridGenerator::allocArrays_BoundaryValues()
             int numberOfGeometryValues = builder->getGeometrySize(i);
             std::cout << "size geometry values, Level " << i << " : " << numberOfGeometryValues << std::endl;
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            para->getParH(i)->QGeom.kQ = numberOfGeometryValues;
-            para->getParD(i)->QGeom.kQ = numberOfGeometryValues;
+            para->getParH(i)->geometryBC.numberOfBCnodes = numberOfGeometryValues;
+            para->getParD(i)->geometryBC.numberOfBCnodes = numberOfGeometryValues;
             if (numberOfGeometryValues > 0)
             {
 
@@ -254,28 +254,28 @@ void GridGenerator::allocArrays_BoundaryValues()
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 //Indexarray
 
-                builder->getGeometryValues(para->getParH(i)->QGeom.Vx, para->getParH(i)->QGeom.Vy, para->getParH(i)->QGeom.Vz, i);
+                builder->getGeometryValues(para->getParH(i)->geometryBC.Vx, para->getParH(i)->geometryBC.Vy, para->getParH(i)->geometryBC.Vz, i);
 
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 for (int m = 0; m < numberOfGeometryValues; m++)
                 {
-                    para->getParH(i)->QGeom.Vx[m] = para->getParH(i)->QGeom.Vx[m] / para->getVelocityRatio();
-                    para->getParH(i)->QGeom.Vy[m] = para->getParH(i)->QGeom.Vy[m] / para->getVelocityRatio();
-                    para->getParH(i)->QGeom.Vz[m] = para->getParH(i)->QGeom.Vz[m] / para->getVelocityRatio();
-                    //para->getParH(i)->QGeom.Vx[m] = para->getParH(i)->QGeom.Vx[m] / 100.0f;
-                    //para->getParH(i)->QGeom.Vy[m] = para->getParH(i)->QGeom.Vy[m] / 100.0f;
-                    //para->getParH(i)->QGeom.Vz[m] = para->getParH(i)->QGeom.Vz[m] / 100.0f;
-                    //para->getParH(i)->QGeom.Vx[m] = 0.0f;
-                    //para->getParH(i)->QGeom.Vy[m] = 0.0f;
-                    //para->getParH(i)->QGeom.Vz[m] = 0.0f;
+                    para->getParH(i)->geometryBC.Vx[m] = para->getParH(i)->geometryBC.Vx[m] / para->getVelocityRatio();
+                    para->getParH(i)->geometryBC.Vy[m] = para->getParH(i)->geometryBC.Vy[m] / para->getVelocityRatio();
+                    para->getParH(i)->geometryBC.Vz[m] = para->getParH(i)->geometryBC.Vz[m] / para->getVelocityRatio();
+                    //para->getParH(i)->geometryBC.Vx[m] = para->getParH(i)->geometryBC.Vx[m] / 100.0f;
+                    //para->getParH(i)->geometryBC.Vy[m] = para->getParH(i)->geometryBC.Vy[m] / 100.0f;
+                    //para->getParH(i)->geometryBC.Vz[m] = para->getParH(i)->geometryBC.Vz[m] / 100.0f;
+                    //para->getParH(i)->geometryBC.Vx[m] = 0.0f;
+                    //para->getParH(i)->geometryBC.Vy[m] = 0.0f;
+                    //para->getParH(i)->geometryBC.Vz[m] = 0.0f;
                 }
                 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 ////T�st
                 //for (int m = 0; m < temp4; m++)
                 //{
-                //	para->getParH(i)->QGeom.Vx[m] = para->getVelocity();//0.035f;
-                //	para->getParH(i)->QGeom.Vy[m] = 0.0f;//para->getVelocity();//0.0f;
-                //	para->getParH(i)->QGeom.Vz[m] = 0.0f;
+                //	para->getParH(i)->geometryBC.Vx[m] = para->getVelocity();//0.035f;
+                //	para->getParH(i)->geometryBC.Vy[m] = 0.0f;//para->getVelocity();//0.0f;
+                //	para->getParH(i)->geometryBC.Vz[m] = 0.0f;
                 //}
                 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 cudaMemoryManager->cudaCopyGeomValuesBC(i);
@@ -291,7 +291,7 @@ void GridGenerator::allocArrays_BoundaryValues()
                 //	for (int m = 0; m < temp4; m++)
                 //	{
                 //		para->getParH(i)->Temp.temp[m] = para->getTemperatureInit();
-                //		para->getParH(i)->Temp.k[m]    = para->getParH(i)->QGeom.k[m];
+                //		para->getParH(i)->Temp.k[m]    = para->getParH(i)->geometryBC.k[m];
                 //	}
                 //	//////////////////////////////////////////////////////////////////////////
                 //	para->cudaCopyTempNoSlipBCHD(i);
@@ -747,8 +747,8 @@ void GridGenerator::allocArrays_BoundaryQs()
             //cout << "Groesse Pressure:  " << i << " : " << temp1 << "MyID: " << para->getMyID() << endl;
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //preprocessing
-            real* QQ = para->getParH(i)->QPress.q27[0];
-            unsigned int sizeQ = para->getParH(i)->QPress.kQ;
+            real* QQ = para->getParH(i)->pressureBC.q27[0];
+            unsigned int sizeQ = para->getParH(i)->pressureBC.numberOfBCnodes;
             QforBoundaryConditions Q;
             Q.q27[dirE] = &QQ[dirE   *sizeQ];
             Q.q27[dirW] = &QQ[dirW   *sizeQ];
@@ -798,7 +798,7 @@ void GridGenerator::allocArrays_BoundaryQs()
                 {
                     para->getParH(i)->TempPress.temp[m] = para->getTemperatureInit();
                     para->getParH(i)->TempPress.velo[m] = (real)0.0;
-                    para->getParH(i)->TempPress.k[m] = para->getParH(i)->QPress.k[m];
+                    para->getParH(i)->TempPress.k[m] = para->getParH(i)->pressureBC.k[m];
                 }
                 //////////////////////////////////////////////////////////////////////////
                 //cout << "vor copy" << endl;
@@ -820,8 +820,8 @@ void GridGenerator::allocArrays_BoundaryQs()
             //cout << "Groesse Pressure:  " << i << " : " << temp1 << "MyID: " << para->getMyID() << endl;
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //preprocessing
-            real* QQ = para->getParH(i)->QSlip.q27[0];
-            unsigned int sizeQ = para->getParH(i)->QSlip.kQ;
+            real* QQ = para->getParH(i)->slipBC.q27[0];
+            unsigned int sizeQ = para->getParH(i)->slipBC.numberOfBCnodes;
             QforBoundaryConditions Q;
             Q.q27[dirE] = &QQ[dirE   *sizeQ];
             Q.q27[dirW] = &QQ[dirW   *sizeQ];
@@ -866,8 +866,8 @@ void GridGenerator::allocArrays_BoundaryQs()
             //cout << "Groesse Pressure:  " << i << " : " << temp1 << "MyID: " << para->getMyID() << endl;
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //preprocessing
-            real* QQ = para->getParH(i)->QStress.q27[0];
-            unsigned int sizeQ = para->getParH(i)->QStress.kQ;
+            real* QQ = para->getParH(i)->stressBC.q27[0];
+            unsigned int sizeQ = para->getParH(i)->stressBC.numberOfBCnodes;
             QforBoundaryConditions Q;
             Q.q27[dirE] = &QQ[dirE   *sizeQ];
             Q.q27[dirW] = &QQ[dirW   *sizeQ];
@@ -912,8 +912,8 @@ void GridGenerator::allocArrays_BoundaryQs()
             //cout << "Groesse velocity level:  " << i << " : " << temp3 << "MyID: " << para->getMyID() << std::endl;
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //preprocessing
-            real* QQ = para->getParH(i)->Qinflow.q27[0];
-            unsigned int sizeQ = para->getParH(i)->Qinflow.kQ;
+            real* QQ = para->getParH(i)->velocityBC.q27[0];
+            unsigned int sizeQ = para->getParH(i)->velocityBC.numberOfBCnodes;
             QforBoundaryConditions Q;
             Q.q27[dirE] = &QQ[dirE   *sizeQ];
             Q.q27[dirW] = &QQ[dirW   *sizeQ];
@@ -961,7 +961,7 @@ void GridGenerator::allocArrays_BoundaryQs()
                     para->getParH(i)->TempVel.temp[m] = para->getTemperatureInit();
                     para->getParH(i)->TempVel.tempPulse[m] = para->getTemperatureBC();
                     para->getParH(i)->TempVel.velo[m] = para->getVelocity();
-                    para->getParH(i)->TempVel.k[m] = para->getParH(i)->Qinflow.k[m];
+                    para->getParH(i)->TempVel.k[m] = para->getParH(i)->velocityBC.k[m];
                 }
                 //////////////////////////////////////////////////////////////////////////
                 //cout << "vor copy " << std::endl;
@@ -978,25 +978,25 @@ void GridGenerator::allocArrays_BoundaryQs()
         const int numberOfGeometryNodes = builder->getGeometrySize(i);
         std::cout << "size of GeomBoundaryQs, Level " << i << " : " << numberOfGeometryNodes << std::endl;
 
-        para->getParH(i)->QGeom.kQ = numberOfGeometryNodes;
-        para->getParD(i)->QGeom.kQ = para->getParH(i)->QGeom.kQ;
+        para->getParH(i)->geometryBC.numberOfBCnodes = numberOfGeometryNodes;
+        para->getParD(i)->geometryBC.numberOfBCnodes = para->getParH(i)->geometryBC.numberOfBCnodes;
         if (numberOfGeometryNodes > 0)
         {
             //cout << "Groesse der Daten GeomBoundaryQs, Level:  " << i << " : " << numberOfGeometryNodes << "MyID: " << para->getMyID() << endl;
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            //para->getParH(i)->QGeom.kQ = temp4;
-            //para->getParD(i)->QGeom.kQ = para->getParH(i)->QGeom.kQ;
+            //para->getParH(i)->geometryBC.numberOfBCnodes = temp4;
+            //para->getParD(i)->geometryBC.numberOfBCnodes = para->getParH(i)->geometryBC.numberOfBCnodes;
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             cudaMemoryManager->cudaAllocGeomBC(i);
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             //////////////////////////////////////////////////////////////////////////
             //Indexarray
-            builder->getGeometryIndices(para->getParH(i)->QGeom.k, i);
+            builder->getGeometryIndices(para->getParH(i)->geometryBC.k, i);
             //////////////////////////////////////////////////////////////////////////
             //preprocessing
-            real* QQ = para->getParH(i)->QGeom.q27[0];
-            unsigned int sizeQ = para->getParH(i)->QGeom.kQ;
+            real* QQ = para->getParH(i)->geometryBC.q27[0];
+            unsigned int sizeQ = para->getParH(i)->geometryBC.numberOfBCnodes;
             QforBoundaryConditions Q;
             Q.q27[dirE] = &QQ[dirE   *sizeQ];
             Q.q27[dirW] = &QQ[dirW   *sizeQ];
@@ -1028,7 +1028,7 @@ void GridGenerator::allocArrays_BoundaryQs()
             //////////////////////////////////////////////////////////////////
 
             builder->getGeometryQs(Q.q27, i);
-			//QDebugWriter::writeQValues(Q, para->getParH(i)->QGeom.k, para->getParH(i)->QGeom.kQ, "M:/TestGridGeneration/results/GeomGPU.dat");
+			//QDebugWriter::writeQValues(Q, para->getParH(i)->geometryBC.k, para->getParH(i)->geometryBC.numberOfBCnodes, "M:/TestGridGeneration/results/GeomGPU.dat");
             //////////////////////////////////////////////////////////////////
             for (int node_i = 0; node_i < numberOfGeometryNodes; node_i++)
             {
@@ -1055,7 +1055,7 @@ void GridGenerator::allocArrays_BoundaryQs()
                     for (int m = 0; m < numberOfGeometryNodes; m++)
                     {
                         para->getParH(i)->Temp.temp[m] = para->getTemperatureInit();
-                        para->getParH(i)->Temp.k[m] = para->getParH(i)->QGeom.k[m];
+                        para->getParH(i)->Temp.k[m] = para->getParH(i)->geometryBC.k[m];
                     }
                     //////////////////////////////////////////////////////////////////////////
                     cudaMemoryManager->cudaCopyTempNoSlipBCHD(i);
@@ -1185,7 +1185,7 @@ std::string GridGenerator::verifyNeighborIndices(int level) const
     int wrongNeighbors = 0;
     int stopperNodes = 0;
 
-    for (uint index = 0; index < para->getParH(level)->size_Mat_SP; index++)
+    for (uint index = 0; index < para->getParH(level)->numberOfNodes; index++)
         oss << verifyNeighborIndex(level, index, invalidNodes, stopperNodes, wrongNeighbors);
 
 
@@ -1200,38 +1200,38 @@ std::string GridGenerator::verifyNeighborIndex(int level, int index , int &inval
 {
     std::ostringstream oss;
 
-    const int geo = para->getParH(level)->geoSP[index];
+    const int geo = para->getParH(level)->typeOfGridNode[index];
     if (geo == 16)
     {
         stopperNodes++;
         return "";
     }
 
-    real x = para->getParH(level)->coordX_SP[index];
-    real y = para->getParH(level)->coordY_SP[index];
-    real z = para->getParH(level)->coordZ_SP[index];
+    real x = para->getParH(level)->coordinateX[index];
+    real y = para->getParH(level)->coordinateY[index];
+    real z = para->getParH(level)->coordinateZ[index];
 
-    real delta = para->getParH(level)->coordX_SP[2] - para->getParH(level)->coordX_SP[1];
+    real delta = para->getParH(level)->coordinateX[2] - para->getParH(level)->coordinateX[1];
 
-    //std::cout << para->getParH(level)->coordX_SP[1] << ", " << para->getParH(level)->coordY_SP[1] << ", " << para->getParH(level)->coordZ_SP[1] << std::endl;
-    //std::cout << para->getParH(level)->coordX_SP[para->getParH(level)->size_Mat_SP - 1] << ", " << para->getParH(level)->coordY_SP[para->getParH(level)->size_Mat_SP - 1] << ", " << para->getParH(level)->coordZ_SP[para->getParH(level)->size_Mat_SP - 1] << std::endl;
+    //std::cout << para->getParH(level)->coordinateX[1] << ", " << para->getParH(level)->coordinateY[1] << ", " << para->getParH(level)->coordinateZ[1] << std::endl;
+    //std::cout << para->getParH(level)->coordinateX[para->getParH(level)->numberOfNodes - 1] << ", " << para->getParH(level)->coordinateY[para->getParH(level)->numberOfNodes - 1] << ", " << para->getParH(level)->coordinateZ[para->getParH(level)->numberOfNodes - 1] << std::endl;
     
-    real maxX = para->getParH(level)->coordX_SP[para->getParH(level)->size_Mat_SP - 1] - delta;
-    real maxY = para->getParH(level)->coordY_SP[para->getParH(level)->size_Mat_SP - 1] - delta;
-    real maxZ = para->getParH(level)->coordZ_SP[para->getParH(level)->size_Mat_SP - 1] - delta;
-    real realNeighborX = vf::Math::lessEqual(x + delta, maxX) ? x + delta : para->getParH(level)->coordX_SP[1];
-    real realNeighborY = vf::Math::lessEqual(y + delta, maxY) ? y + delta : para->getParH(level)->coordY_SP[1];
-    real realNeighborZ = vf::Math::lessEqual(z + delta, maxZ) ? z + delta : para->getParH(level)->coordZ_SP[1];
+    real maxX = para->getParH(level)->coordinateX[para->getParH(level)->numberOfNodes - 1] - delta;
+    real maxY = para->getParH(level)->coordinateY[para->getParH(level)->numberOfNodes - 1] - delta;
+    real maxZ = para->getParH(level)->coordinateZ[para->getParH(level)->numberOfNodes - 1] - delta;
+    real realNeighborX = vf::Math::lessEqual(x + delta, maxX) ? x + delta : para->getParH(level)->coordinateX[1];
+    real realNeighborY = vf::Math::lessEqual(y + delta, maxY) ? y + delta : para->getParH(level)->coordinateY[1];
+    real realNeighborZ = vf::Math::lessEqual(z + delta, maxZ) ? z + delta : para->getParH(level)->coordinateZ[1];
 
-    oss << checkNeighbor(level, x, y, z, index, wrongNeighbors, this->para->getParH(level)->neighborX_SP[index], realNeighborX, y, z, "X");
-    oss << checkNeighbor(level, x, y, z, index, wrongNeighbors, this->para->getParH(level)->neighborY_SP[index], x, realNeighborY, z, "Y");
-    oss << checkNeighbor(level, x, y, z, index, wrongNeighbors, this->para->getParH(level)->neighborZ_SP[index], x, y, realNeighborZ, "Z");
+    oss << checkNeighbor(level, x, y, z, index, wrongNeighbors, this->para->getParH(level)->neighborX[index], realNeighborX, y, z, "X");
+    oss << checkNeighbor(level, x, y, z, index, wrongNeighbors, this->para->getParH(level)->neighborY[index], x, realNeighborY, z, "Y");
+    oss << checkNeighbor(level, x, y, z, index, wrongNeighbors, this->para->getParH(level)->neighborZ[index], x, y, realNeighborZ, "Z");
 
-    oss << checkNeighbor(level, x, y, z, index, wrongNeighbors, this->para->getParH(level)->neighborY_SP[this->para->getParH(level)->neighborX_SP[index]], realNeighborX, realNeighborY, z, "XY");
-    oss << checkNeighbor(level, x, y, z, index, wrongNeighbors, this->para->getParH(level)->neighborZ_SP[this->para->getParH(level)->neighborX_SP[index]], realNeighborX, y, realNeighborZ, "XZ");
-    oss << checkNeighbor(level, x, y, z, index, wrongNeighbors, this->para->getParH(level)->neighborZ_SP[this->para->getParH(level)->neighborY_SP[index]], x, realNeighborY, realNeighborZ, "YZ");
+    oss << checkNeighbor(level, x, y, z, index, wrongNeighbors, this->para->getParH(level)->neighborY[this->para->getParH(level)->neighborX[index]], realNeighborX, realNeighborY, z, "XY");
+    oss << checkNeighbor(level, x, y, z, index, wrongNeighbors, this->para->getParH(level)->neighborZ[this->para->getParH(level)->neighborX[index]], realNeighborX, y, realNeighborZ, "XZ");
+    oss << checkNeighbor(level, x, y, z, index, wrongNeighbors, this->para->getParH(level)->neighborZ[this->para->getParH(level)->neighborY[index]], x, realNeighborY, realNeighborZ, "YZ");
 
-    oss << checkNeighbor(level, x, y, z, index, wrongNeighbors, this->para->getParH(level)->neighborZ_SP[this->para->getParH(level)->neighborY_SP[this->para->getParH(level)->neighborX_SP[index]]], realNeighborX, realNeighborY, realNeighborZ, "XYZ");
+    oss << checkNeighbor(level, x, y, z, index, wrongNeighbors, this->para->getParH(level)->neighborZ[this->para->getParH(level)->neighborY[this->para->getParH(level)->neighborX[index]]], realNeighborX, realNeighborY, realNeighborZ, "XYZ");
 
     return oss.str();
 }
@@ -1248,9 +1248,9 @@ std::string GridGenerator::checkNeighbor(int level, real x, real y, real z, int 
     //    return oss.str();
     //}
 
-    real neighborCoordX = para->getParH(level)->coordX_SP[neighborIndex];
-    real neighborCoordY = para->getParH(level)->coordY_SP[neighborIndex];
-    real neighborCoordZ = para->getParH(level)->coordZ_SP[neighborIndex];
+    real neighborCoordX = para->getParH(level)->coordinateX[neighborIndex];
+    real neighborCoordY = para->getParH(level)->coordinateY[neighborIndex];
+    real neighborCoordZ = para->getParH(level)->coordinateZ[neighborIndex];
 
     const bool neighborValid = vf::Math::equal(neighborX, neighborCoordX) && vf::Math::equal(neighborY, neighborCoordY) && vf::Math::equal(neighborZ, neighborCoordZ);
 

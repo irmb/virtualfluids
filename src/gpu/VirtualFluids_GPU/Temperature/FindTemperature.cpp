@@ -14,23 +14,23 @@
 #include "Parameter/Parameter.h"
 #include "Temperature/FindQTemp.h"
 
-void initTemperatur(Parameter* para, CudaMemoryManager* cudaManager, int lev)
+void initTemperatur(Parameter* para, CudaMemoryManager* cudaMemoryManager, int lev)
 {
-    cudaManager->cudaAllocTempFs(lev);
+    cudaMemoryManager->cudaAllocTempFs(lev);
 
-    cudaManager->cudaCopyConcHD(lev);
+    cudaMemoryManager->cudaCopyConcentrationHostToDevice(lev);
 
    if (para->getDiffMod() == 7)
    {
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      para->getParD(lev)->evenOrOdd = false;
+      para->getParD(lev)->isEvenTimestep = false;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //InitThS7(); 
       getLastCudaError("Kernel execution failed"); 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      para->getParD(lev)->evenOrOdd = true;
+      para->getParD(lev)->isEvenTimestep = true;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //InitThS7(); 
       getLastCudaError("Kernel execution failed"); 
@@ -38,82 +38,82 @@ void initTemperatur(Parameter* para, CudaMemoryManager* cudaManager, int lev)
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       CalcMacThS7(para->getParD(lev)->Conc, 
-                  para->getParD(lev)->geoSP,       
-                  para->getParD(lev)->neighborX_SP, 
-                  para->getParD(lev)->neighborY_SP, 
-                  para->getParD(lev)->neighborZ_SP,
-                  para->getParD(lev)->size_Mat_SP, 
+                  para->getParD(lev)->typeOfGridNode,       
+                  para->getParD(lev)->neighborX, 
+                  para->getParD(lev)->neighborY, 
+                  para->getParD(lev)->neighborZ,
+                  para->getParD(lev)->numberOfNodes, 
                   para->getParD(lev)->numberofthreads,       
-                  para->getParD(lev)->d7.f[0],    
-                  para->getParD(lev)->evenOrOdd);
+                  para->getParD(lev)->distributionsAD7.f[0],    
+                  para->getParD(lev)->isEvenTimestep);
       getLastCudaError("CalcMacSP27 execution failed"); 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    } 
    else if (para->getDiffMod() == 27)
    {
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      para->getParD(lev)->evenOrOdd = false;
+      para->getParD(lev)->isEvenTimestep = false;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      //InitThS27( ); 
+      //InitADDev27( ); 
       getLastCudaError("Kernel execution failed"); 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      para->getParD(lev)->evenOrOdd = true;
+      para->getParD(lev)->isEvenTimestep = true;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      //InitThS27(  ); 
+      //InitADDev27(  ); 
       getLastCudaError("Kernel execution failed"); 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      CalcMacThS27(  para->getParD(lev)->Conc, 
-                     para->getParD(lev)->geoSP,       
-                     para->getParD(lev)->neighborX_SP, 
-                     para->getParD(lev)->neighborY_SP, 
-                     para->getParD(lev)->neighborZ_SP,
-                     para->getParD(lev)->size_Mat_SP, 
-                     para->getParD(lev)->numberofthreads,       
-                     para->getParD(lev)->d27.f[0],    
-                     para->getParD(lev)->evenOrOdd);
-      getLastCudaError("CalcMacSP27 execution failed"); 
+      CalcConcentration27(
+                     para->getParD(lev)->numberofthreads,
+                     para->getParD(lev)->Conc,
+                     para->getParD(lev)->typeOfGridNode,
+                     para->getParD(lev)->neighborX,
+                     para->getParD(lev)->neighborY,
+                     para->getParD(lev)->neighborZ,
+                     para->getParD(lev)->numberOfNodes,
+                     para->getParD(lev)->distributionsAD27.f[0],
+                     para->getParD(lev)->isEvenTimestep);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    }
 
-   cudaManager->cudaCopyConcDH(lev);
+   cudaMemoryManager->cudaCopyConcentrationDeviceToHost(lev);
 }
 
 
-void findTempSim(Parameter* para, CudaMemoryManager* cudaManager)
+void findTempSim(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
    findKforTemp(para);
 
-   cudaManager->cudaAllocTempNoSlipBC(para->getCoarse());
+   cudaMemoryManager->cudaAllocTempNoSlipBC(para->getCoarse());
 
    findTemp(para);
 
-   cudaManager->cudaCopyTempNoSlipBCHD(para->getCoarse());
+   cudaMemoryManager->cudaCopyTempNoSlipBCHD(para->getCoarse());
 }
 
 
-void findTempVelSim(Parameter* para, CudaMemoryManager* cudaManager)
+void findTempVelSim(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
    findKforTempVel(para);
 
-   cudaManager->cudaAllocTempVeloBC(para->getCoarse());
+   cudaMemoryManager->cudaAllocTempVeloBC(para->getCoarse());
 
    findTempVel(para);
 
-   cudaManager->cudaCopyTempVeloBCHD(para->getCoarse());
+   cudaMemoryManager->cudaCopyTempVeloBCHD(para->getCoarse());
 }
 
 
-void findTempPressSim(Parameter* para, CudaMemoryManager* cudaManager)
+void findTempPressSim(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
    findKforTempPress(para);
 
-   cudaManager->cudaAllocTempPressBC(para->getCoarse());
+   cudaMemoryManager->cudaAllocTempPressBC(para->getCoarse());
 
    findTempPress(para);
 
-   cudaManager->cudaCopyTempPressBCHD(para->getCoarse());
+   cudaMemoryManager->cudaCopyTempPressBCHD(para->getCoarse());
 }

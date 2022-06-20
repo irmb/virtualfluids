@@ -12,7 +12,7 @@ std::shared_ptr<CumulantK15Comp> CumulantK15Comp::getNewInstance(std::shared_ptr
 void CumulantK15Comp::run()
 {
 	int numberOfThreads = para->getParD(level)->numberofthreads;
-	int size_Mat = para->getParD(level)->size_Mat_SP;
+	int size_Mat = para->getParD(level)->numberOfNodes;
 
 	int Grid = (size_Mat / numberOfThreads) + 1;
 	int Grid1, Grid2;
@@ -30,15 +30,15 @@ void CumulantK15Comp::run()
 	dim3 threads(numberOfThreads, 1, 1);
 
 	LB_Kernel_CumulantK15Comp <<< grid, threads >>>(para->getParD(level)->omega,
-													para->getParD(level)->geoSP,
-													para->getParD(level)->neighborX_SP,
-													para->getParD(level)->neighborY_SP,
-													para->getParD(level)->neighborZ_SP,
-													para->getParD(level)->d0SP.f[0],
+													para->getParD(level)->typeOfGridNode,
+													para->getParD(level)->neighborX,
+													para->getParD(level)->neighborY,
+													para->getParD(level)->neighborZ,
+													para->getParD(level)->distributions.f[0],
 													size_Mat,
 													level,
 													para->getForcesDev(),
-													para->getParD(level)->evenOrOdd);
+													para->getParD(level)->isEvenTimestep);
 	getLastCudaError("LB_Kernel_CumulantK15Comp execution failed");
 }
 

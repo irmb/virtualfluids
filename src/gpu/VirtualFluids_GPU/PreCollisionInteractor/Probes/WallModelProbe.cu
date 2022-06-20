@@ -156,7 +156,7 @@ void WallModelProbe::findPoints(Parameter* para, GridProvider* gridProvider, std
                             std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
                             int level)
 {
-    assert( para->getParD(level)->kStressQ > 0 && para->getHasWallModelMonitor() );
+    assert( para->getParD(level)->numberOfStressBCnodes > 0 && para->getHasWallModelMonitor() );
 
     real dt = para->getTimeRatio();
     uint nt = uint((para->getTEnd()-this->tStartAvg)/this->tAvg);
@@ -172,9 +172,9 @@ void WallModelProbe::findPoints(Parameter* para, GridProvider* gridProvider, std
     {
         assert(para->getIsBodyForce());
         // Find all fluid nodes
-        for(uint j=1; j<para->getParH(level)->size_Mat_SP; j++ )
+        for(uint j=1; j<para->getParH(level)->numberOfNodes; j++ )
         {
-            if( para->getParH(level)->geoSP[j] == GEO_FLUID) 
+            if( para->getParH(level)->typeOfGridNode[j] == GEO_FLUID) 
             {
                 probeIndices_level.push_back(j);
             }
@@ -189,12 +189,12 @@ void WallModelProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Paramete
     bool doTmpAveraging = (t>this->getTStartTmpAveraging());
 
     // Pointer casts to use device arrays in thrust reductions
-    thrust::device_ptr<real> u_el_thrust    = thrust::device_pointer_cast(para->getParD(level)->QStress.Vx);
-    thrust::device_ptr<real> v_el_thrust    = thrust::device_pointer_cast(para->getParD(level)->QStress.Vy);
-    thrust::device_ptr<real> w_el_thrust    = thrust::device_pointer_cast(para->getParD(level)->QStress.Vz);
-    thrust::device_ptr<real> u1_thrust      = thrust::device_pointer_cast(para->getParD(level)->QStress.Vx1);
-    thrust::device_ptr<real> v1_thrust      = thrust::device_pointer_cast(para->getParD(level)->QStress.Vy1);
-    thrust::device_ptr<real> w1_thrust      = thrust::device_pointer_cast(para->getParD(level)->QStress.Vz1);
+    thrust::device_ptr<real> u_el_thrust    = thrust::device_pointer_cast(para->getParD(level)->stressBC.Vx);
+    thrust::device_ptr<real> v_el_thrust    = thrust::device_pointer_cast(para->getParD(level)->stressBC.Vy);
+    thrust::device_ptr<real> w_el_thrust    = thrust::device_pointer_cast(para->getParD(level)->stressBC.Vz);
+    thrust::device_ptr<real> u1_thrust      = thrust::device_pointer_cast(para->getParD(level)->stressBC.Vx1);
+    thrust::device_ptr<real> v1_thrust      = thrust::device_pointer_cast(para->getParD(level)->stressBC.Vy1);
+    thrust::device_ptr<real> w1_thrust      = thrust::device_pointer_cast(para->getParD(level)->stressBC.Vz1);
     thrust::device_ptr<real> u_star_thrust  = thrust::device_pointer_cast(para->getParD(level)->wallModel.u_star);
     thrust::device_ptr<real> Fx_thrust      = thrust::device_pointer_cast(para->getParD(level)->wallModel.Fx);
     thrust::device_ptr<real> Fy_thrust      = thrust::device_pointer_cast(para->getParD(level)->wallModel.Fy);
@@ -213,7 +213,7 @@ void WallModelProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Paramete
     thrust::permutation_iterator<valIterator, indIterator> dpdz_iter_begin(dpdz_thrust, indices_thrust);
     thrust::permutation_iterator<valIterator, indIterator> dpdz_iter_end  (dpdz_thrust, indices_thrust+probeStruct->nIndices);
 
-    real N = para->getParD(level)->kStressQ;
+    real N = para->getParD(level)->numberOfStressBCnodes;
     real n = (real)probeStruct->vals;
     int nPoints = probeStruct->nPoints;
 

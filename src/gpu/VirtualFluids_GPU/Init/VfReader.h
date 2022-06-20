@@ -6,8 +6,8 @@ class CudaMemoryManager;
 class Parameter;
 
 
-void readPropellerCylinder(Parameter* para, CudaMemoryManager* cudaManager);
+void readPropellerCylinder(Parameter* para, CudaMemoryManager* cudaMemoryManager);
 
-void readMeasurePoints(Parameter* para, CudaMemoryManager* cudaManager);
+void readMeasurePoints(Parameter* para, CudaMemoryManager* cudaMemoryManager);
 
 #endif

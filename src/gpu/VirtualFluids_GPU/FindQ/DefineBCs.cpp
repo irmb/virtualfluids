@@ -1,18 +1,18 @@
 #include "FindQ/DefineBCs.h"
 #include "FindQ/FindQ.h"
 
-void findPressQShip(Parameter* para, CudaMemoryManager* cudaManager)
+void findPressQShip(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
 	//x = begin (0)
 	findKforQPressX0(para, para->getCoarse());
-	cudaManager->cudaAllocPressX0(para->getCoarse());
+	cudaMemoryManager->cudaAllocPressX0(para->getCoarse());
 	findQPressX0(para, para->getCoarse());
-	cudaManager->cudaCopyPressX0(para->getCoarse());
+	cudaMemoryManager->cudaCopyPressX0(para->getCoarse());
 	//x = end (1)
 	findKforQPressX1(para, para->getCoarse());
-	cudaManager->cudaAllocPressX1(para->getCoarse());
+	cudaMemoryManager->cudaAllocPressX1(para->getCoarse());
 	findQPressX1(para, para->getCoarse());
-	cudaManager->cudaCopyPressX1(para->getCoarse());
+	cudaMemoryManager->cudaCopyPressX1(para->getCoarse());
 	//for (int lev = para->getFine(); lev >= para->getCoarse(); lev--)
 	//{
 	//	findKforQPressX1(para, lev);
@@ -25,34 +25,34 @@ void findPressQShip(Parameter* para, CudaMemoryManager* cudaManager)
 
 
 
-void findQ27(Parameter* para, CudaMemoryManager* cudaManager)
+void findQ27(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
    for (int lev = para->getFine(); lev >= para->getCoarse(); lev--)
    {
       findKforQ(para, lev);
 
-      para->getParH(lev)->kQ       = para->getParH(lev)->QWall.kQ;
-	  para->getParD(lev)->kQ       = para->getParH(lev)->QWall.kQ;
-	  para->getParD(lev)->QWall.kQ = para->getParH(lev)->QWall.kQ;
-      printf("kQ= %d\n", para->getParH(lev)->kQ);
+      para->getParH(lev)->numberOfNoSlipBCnodes       = para->getParH(lev)->noSlipBC.numberOfBCnodes;
+	  para->getParD(lev)->numberOfNoSlipBCnodes       = para->getParH(lev)->noSlipBC.numberOfBCnodes;
+	  para->getParD(lev)->noSlipBC.numberOfBCnodes = para->getParH(lev)->noSlipBC.numberOfBCnodes;
+      printf("numberOfBCnodes= %d\n", para->getParH(lev)->numberOfNoSlipBCnodes);
 
-	  cudaManager->cudaAllocWallBC(lev);
+	  cudaMemoryManager->cudaAllocWallBC(lev);
 
       findQ(para, lev);
 
-	  para->getParH(lev)->kQ       = para->getParH(lev)->QWall.kQ;
-	  para->getParD(lev)->kQ       = para->getParH(lev)->QWall.kQ;
-	  para->getParD(lev)->QWall.kQ = para->getParH(lev)->QWall.kQ;
-      printf("kQ= %d\n", para->getParH(lev)->kQ);
+	  para->getParH(lev)->numberOfNoSlipBCnodes       = para->getParH(lev)->noSlipBC.numberOfBCnodes;
+	  para->getParD(lev)->numberOfNoSlipBCnodes       = para->getParH(lev)->noSlipBC.numberOfBCnodes;
+	  para->getParD(lev)->noSlipBC.numberOfBCnodes = para->getParH(lev)->noSlipBC.numberOfBCnodes;
+      printf("numberOfBCnodes= %d\n", para->getParH(lev)->numberOfNoSlipBCnodes);
 
-	  cudaManager->cudaCopyWallBC(lev);
+	  cudaMemoryManager->cudaCopyWallBC(lev);
    }
 }
 
 
 
 
-void findBC27(Parameter* para, CudaMemoryManager* cudaManager)
+void findBC27(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
    if ( para->getMyID() == 0)
    {
@@ -60,15 +60,15 @@ void findBC27(Parameter* para, CudaMemoryManager* cudaManager)
       //Inflow
       findKforQInflow(para);
 
-      para->getParH(para->getCoarse())->kInflowQ = para->getParH(para->getCoarse())->Qinflow.kQ;
-	  para->getParD(para->getCoarse())->kInflowQ = para->getParH(para->getCoarse())->Qinflow.kQ;
-      printf("kInflowQ= %d\n", para->getParH(para->getCoarse())->kInflowQ);
+      para->getParH(para->getCoarse())->numberOfVeloBCnodes = para->getParH(para->getCoarse())->velocityBC.numberOfBCnodes;
+	  para->getParD(para->getCoarse())->numberOfVeloBCnodes = para->getParH(para->getCoarse())->velocityBC.numberOfBCnodes;
+      printf("numberOfVeloBCnodes= %d\n", para->getParH(para->getCoarse())->numberOfVeloBCnodes);
 
-	  cudaManager->cudaAllocVeloBC(0); //level = 0
+	  cudaMemoryManager->cudaAllocVeloBC(0); //level = 0
 
       findQInflow(para);
 
-	  cudaManager->cudaCopyVeloBC(0); //level = 0
+	  cudaMemoryManager->cudaCopyVeloBC(0); //level = 0
    }
 
     // TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
@@ -79,9 +79,9 @@ void findBC27(Parameter* para, CudaMemoryManager* cudaManager)
    //   //Outflow
 	  // findKforQOutflow(para);
 
-	  // para->getParH(para->getCoarse())->kOutflowQ = para->getParH(para->getCoarse())->Qoutflow.kQ;
-	  // para->getParD(para->getCoarse())->kOutflowQ = para->getParH(para->getCoarse())->Qoutflow.kQ;
-	  // printf("kOutflowQ= %d\n", para->getParH(para->getCoarse())->kOutflowQ);
+	  // para->getParH(para->getCoarse())->numberOfOutflowBCnodes = para->getParH(para->getCoarse())->outflowBC.numberOfBCnodes;
+	  // para->getParD(para->getCoarse())->numberOfOutflowBCnodes = para->getParH(para->getCoarse())->outflowBC.numberOfBCnodes;
+	  // printf("numberOfOutflowBCnodes= %d\n", para->getParH(para->getCoarse())->numberOfOutflowBCnodes);
 
 	  // para->cudaAllocPressBC();
 
@@ -110,9 +110,9 @@ void findBC27(Parameter* para, CudaMemoryManager* cudaManager)
    //// Allocate Host Memory
    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    ////North
-   //unsigned int mem_size_N_Q_k = sizeof(int)*QnH.kQ;
-   //unsigned int mem_size_N_Q_q = sizeof(real)*QnH.kQ;
-   //kNQ = QnH.kQ;
+   //unsigned int mem_size_N_Q_k = sizeof(int)*QnH.numberOfBCnodes;
+   //unsigned int mem_size_N_Q_q = sizeof(real)*QnH.numberOfBCnodes;
+   //kNQ = QnH.numberOfBCnodes;
    //printf("kNQ= %d\n",kNQ);
    //cudaHostMemoryAllocate((void**) &QnH.q27[0], para->getD3Qxx()*mem_size_N_Q_q );
    //cudaHostMemoryAllocate((void**) &QnH.k,                       mem_size_N_Q_k );
@@ -122,9 +122,9 @@ void findBC27(Parameter* para, CudaMemoryManager* cudaManager)
    //cudaHostMemoryAllocate((void**) &deltaVNH,                    mem_size_N_Q_q );
    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    ////South
-   //unsigned int mem_size_S_Q_k = sizeof(int)*QsH.kQ;
-   //unsigned int mem_size_S_Q_q = sizeof(real)*QsH.kQ;
-   //kSQ = QsH.kQ;
+   //unsigned int mem_size_S_Q_k = sizeof(int)*QsH.numberOfBCnodes;
+   //unsigned int mem_size_S_Q_q = sizeof(real)*QsH.numberOfBCnodes;
+   //kSQ = QsH.numberOfBCnodes;
    //printf("kSQ= %d\n",kSQ);
    //cudaHostMemoryAllocate((void**) &QsH.q27[0], para->getD3Qxx()*mem_size_S_Q_q );
    //cudaHostMemoryAllocate((void**) &QsH.k,                       mem_size_S_Q_k );
@@ -134,9 +134,9 @@ void findBC27(Parameter* para, CudaMemoryManager* cudaManager)
    //cudaHostMemoryAllocate((void**) &deltaVSH,                    mem_size_S_Q_q );
    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    ////East
-   //unsigned int mem_size_E_Q_k = sizeof(int)*QeH.kQ;
-   //unsigned int mem_size_E_Q_q = sizeof(real)*QeH.kQ;
-   //kEQ = QeH.kQ;
+   //unsigned int mem_size_E_Q_k = sizeof(int)*QeH.numberOfBCnodes;
+   //unsigned int mem_size_E_Q_q = sizeof(real)*QeH.numberOfBCnodes;
+   //kEQ = QeH.numberOfBCnodes;
    //printf("kEQ= %d\n",kEQ);
    //cudaHostMemoryAllocate((void**) &QeH.q27[0], para->getD3Qxx()*mem_size_E_Q_q );
    //cudaHostMemoryAllocate((void**) &QeH.k,                       mem_size_E_Q_k );
@@ -146,9 +146,9 @@ void findBC27(Parameter* para, CudaMemoryManager* cudaManager)
    //cudaHostMemoryAllocate((void**) &deltaVEH,                    mem_size_E_Q_q );
    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    ////West
-   //unsigned int mem_size_W_Q_k = sizeof(int)*QwH.kQ;
-   //unsigned int mem_size_W_Q_q = sizeof(real)*QwH.kQ;
-   //kWQ = QwH.kQ;
+   //unsigned int mem_size_W_Q_k = sizeof(int)*QwH.numberOfBCnodes;
+   //unsigned int mem_size_W_Q_q = sizeof(real)*QwH.numberOfBCnodes;
+   //kWQ = QwH.numberOfBCnodes;
    //printf("kWQ= %d\n",kWQ);
    //cudaHostMemoryAllocate((void**) &QwH.q27[0], para->getD3Qxx()*mem_size_W_Q_q );
    //cudaHostMemoryAllocate((void**) &QwH.k,                       mem_size_W_Q_k );

@@ -19,10 +19,10 @@ void findQ(Parameter* para, int lev)
    unsigned int nnz             = para->getParH(lev)->gridNZ;
    int* geo_mat                 = para->getParH(lev)->geo;
    unsigned int* kk             = para->getParH(para->getCoarse())->k;
-   unsigned int sizeQ           = para->getParH(lev)->kQ;
-   real* QQ                  = para->getParH(lev)->QWall.q27[0];
-   QforBoundaryConditions &QIN  = para->getParH(lev)->QWall;
-   QIN.kQ = 0;
+   unsigned int sizeQ           = para->getParH(lev)->numberOfNoSlipBCnodes;
+   real* QQ                  = para->getParH(lev)->noSlipBC.q27[0];
+   QforBoundaryConditions &QIN  = para->getParH(lev)->noSlipBC;
+   QIN.numberOfBCnodes = 0;
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //int relx, rely, relz;
 
@@ -86,93 +86,93 @@ void findQ(Parameter* para, int lev)
                }
                if (ON[18]==(real)1.f)
                {
-                  QIN.k[QIN.kQ]          = kk[m];
+                  QIN.k[QIN.numberOfBCnodes]          = kk[m];
 
-                  //Q.q27[dirE   ][QIN.kQ] = -1.f;
-                  //Q.q27[dirW   ][QIN.kQ] = -1.f;
-                  //Q.q27[dirN   ][QIN.kQ] = 0.f;
-                  //Q.q27[dirS   ][QIN.kQ] = -1.f;
-                  //Q.q27[dirT   ][QIN.kQ] = -1.f;
-                  //Q.q27[dirB   ][QIN.kQ] = -1.f;
-                  //Q.q27[dirNE  ][QIN.kQ] = 0.f;
-                  //Q.q27[dirSW  ][QIN.kQ] = -1.f;
-                  //Q.q27[dirSE  ][QIN.kQ] = -1.f;
-                  //Q.q27[dirNW  ][QIN.kQ] = 0.f;
-                  //Q.q27[dirTE  ][QIN.kQ] = -1.f;
-                  //Q.q27[dirBW  ][QIN.kQ] = -1.f;
-                  //Q.q27[dirBE  ][QIN.kQ] = -1.f;
-                  //Q.q27[dirTW  ][QIN.kQ] = -1.f;
-                  //Q.q27[dirTN  ][QIN.kQ] = 0.f;
-                  //Q.q27[dirBS  ][QIN.kQ] = -1.f;
-                  //Q.q27[dirBN  ][QIN.kQ] = 0.f;
-                  //Q.q27[dirTS  ][QIN.kQ] = -1.f;
-                  //Q.q27[dirZERO][QIN.kQ] = -1.f;
-                  //Q.q27[dirTNE ][QIN.kQ] = 0.f;
-                  //Q.q27[dirTSW ][QIN.kQ] = -1.f;
-                  //Q.q27[dirTSE ][QIN.kQ] = -1.f;
-                  //Q.q27[dirTNW ][QIN.kQ] = 0.f;
-                  //Q.q27[dirBNE ][QIN.kQ] = 0.f;
-                  //Q.q27[dirBSW ][QIN.kQ] = -1.f;
-                  //Q.q27[dirBSE ][QIN.kQ] = -1.f;
-                  //Q.q27[dirBNW ][QIN.kQ] = 0.f;
+                  //Q.q27[dirE   ][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[dirW   ][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[dirN   ][QIN.numberOfBCnodes] = 0.f;
+                  //Q.q27[dirS   ][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[dirT   ][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[dirB   ][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[dirNE  ][QIN.numberOfBCnodes] = 0.f;
+                  //Q.q27[dirSW  ][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[dirSE  ][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[dirNW  ][QIN.numberOfBCnodes] = 0.f;
+                  //Q.q27[dirTE  ][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[dirBW  ][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[dirBE  ][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[dirTW  ][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[dirTN  ][QIN.numberOfBCnodes] = 0.f;
+                  //Q.q27[dirBS  ][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[dirBN  ][QIN.numberOfBCnodes] = 0.f;
+                  //Q.q27[dirTS  ][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[dirZERO][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[dirTNE ][QIN.numberOfBCnodes] = 0.f;
+                  //Q.q27[dirTSW ][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[dirTSE ][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[dirTNW ][QIN.numberOfBCnodes] = 0.f;
+                  //Q.q27[dirBNE ][QIN.numberOfBCnodes] = 0.f;
+                  //Q.q27[dirBSW ][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[dirBSE ][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[dirBNW ][QIN.numberOfBCnodes] = 0.f;
 
-                  //Q.q27[dirE   ][QIN.kQ] = ON[dirW   ];
-                  //Q.q27[dirW   ][QIN.kQ] = ON[dirE   ];
-                  //Q.q27[dirN   ][QIN.kQ] = ON[dirS   ];
-                  //Q.q27[dirS   ][QIN.kQ] = ON[dirN   ];
-                  //Q.q27[dirT   ][QIN.kQ] = ON[dirB   ];
-                  //Q.q27[dirB   ][QIN.kQ] = ON[dirT   ];
-                  //Q.q27[dirNE  ][QIN.kQ] = ON[dirSW  ];
-                  //Q.q27[dirSW  ][QIN.kQ] = ON[dirNE  ];
-                  //Q.q27[dirSE  ][QIN.kQ] = ON[dirNW  ];
-                  //Q.q27[dirNW  ][QIN.kQ] = ON[dirSE  ];
-                  //Q.q27[dirTE  ][QIN.kQ] = ON[dirBW  ];
-                  //Q.q27[dirBW  ][QIN.kQ] = ON[dirTE  ];
-                  //Q.q27[dirBE  ][QIN.kQ] = ON[dirTW  ];
-                  //Q.q27[dirTW  ][QIN.kQ] = ON[dirBE  ];
-                  //Q.q27[dirTN  ][QIN.kQ] = ON[dirBS  ];
-                  //Q.q27[dirBS  ][QIN.kQ] = ON[dirTN  ];
-                  //Q.q27[dirBN  ][QIN.kQ] = ON[dirTS  ];
-                  //Q.q27[dirTS  ][QIN.kQ] = ON[dirBN  ];
-                  //Q.q27[dirZERO][QIN.kQ] = ON[dirZERO];
-                  //Q.q27[dirTNE ][QIN.kQ] = ON[dirBSW ];
-                  //Q.q27[dirTSW ][QIN.kQ] = ON[dirBNE ];
-                  //Q.q27[dirTSE ][QIN.kQ] = ON[dirBNW ];
-                  //Q.q27[dirTNW ][QIN.kQ] = ON[dirBSE ];
-                  //Q.q27[dirBNE ][QIN.kQ] = ON[dirTSW ];
-                  //Q.q27[dirBSW ][QIN.kQ] = ON[dirTNE ];
-                  //Q.q27[dirBSE ][QIN.kQ] = ON[dirTNW ];
-                  //Q.q27[dirBNW ][QIN.kQ] = ON[dirTSE ];
+                  //Q.q27[dirE   ][QIN.numberOfBCnodes] = ON[dirW   ];
+                  //Q.q27[dirW   ][QIN.numberOfBCnodes] = ON[dirE   ];
+                  //Q.q27[dirN   ][QIN.numberOfBCnodes] = ON[dirS   ];
+                  //Q.q27[dirS   ][QIN.numberOfBCnodes] = ON[dirN   ];
+                  //Q.q27[dirT   ][QIN.numberOfBCnodes] = ON[dirB   ];
+                  //Q.q27[dirB   ][QIN.numberOfBCnodes] = ON[dirT   ];
+                  //Q.q27[dirNE  ][QIN.numberOfBCnodes] = ON[dirSW  ];
+                  //Q.q27[dirSW  ][QIN.numberOfBCnodes] = ON[dirNE  ];
+                  //Q.q27[dirSE  ][QIN.numberOfBCnodes] = ON[dirNW  ];
+                  //Q.q27[dirNW  ][QIN.numberOfBCnodes] = ON[dirSE  ];
+                  //Q.q27[dirTE  ][QIN.numberOfBCnodes] = ON[dirBW  ];
+                  //Q.q27[dirBW  ][QIN.numberOfBCnodes] = ON[dirTE  ];
+                  //Q.q27[dirBE  ][QIN.numberOfBCnodes] = ON[dirTW  ];
+                  //Q.q27[dirTW  ][QIN.numberOfBCnodes] = ON[dirBE  ];
+                  //Q.q27[dirTN  ][QIN.numberOfBCnodes] = ON[dirBS  ];
+                  //Q.q27[dirBS  ][QIN.numberOfBCnodes] = ON[dirTN  ];
+                  //Q.q27[dirBN  ][QIN.numberOfBCnodes] = ON[dirTS  ];
+                  //Q.q27[dirTS  ][QIN.numberOfBCnodes] = ON[dirBN  ];
+                  //Q.q27[dirZERO][QIN.numberOfBCnodes] = ON[dirZERO];
+                  //Q.q27[dirTNE ][QIN.numberOfBCnodes] = ON[dirBSW ];
+                  //Q.q27[dirTSW ][QIN.numberOfBCnodes] = ON[dirBNE ];
+                  //Q.q27[dirTSE ][QIN.numberOfBCnodes] = ON[dirBNW ];
+                  //Q.q27[dirTNW ][QIN.numberOfBCnodes] = ON[dirBSE ];
+                  //Q.q27[dirBNE ][QIN.numberOfBCnodes] = ON[dirTSW ];
+                  //Q.q27[dirBSW ][QIN.numberOfBCnodes] = ON[dirTNE ];
+                  //Q.q27[dirBSE ][QIN.numberOfBCnodes] = ON[dirTNW ];
+                  //Q.q27[dirBNW ][QIN.numberOfBCnodes] = ON[dirTSE ];
 
-                  Q.q27[dirE   ][QIN.kQ] = ON[dirE   ];
-                  Q.q27[dirW   ][QIN.kQ] = ON[dirW   ];
-                  Q.q27[dirN   ][QIN.kQ] = ON[dirN   ];
-                  Q.q27[dirS   ][QIN.kQ] = ON[dirS   ];
-                  Q.q27[dirT   ][QIN.kQ] = ON[dirT   ];
-                  Q.q27[dirB   ][QIN.kQ] = ON[dirB   ];
-                  Q.q27[dirNE  ][QIN.kQ] = ON[dirNE  ];
-                  Q.q27[dirSW  ][QIN.kQ] = ON[dirSW  ];
-                  Q.q27[dirSE  ][QIN.kQ] = ON[dirSE  ];
-                  Q.q27[dirNW  ][QIN.kQ] = ON[dirNW  ];
-                  Q.q27[dirTE  ][QIN.kQ] = ON[dirTE  ];
-                  Q.q27[dirBW  ][QIN.kQ] = ON[dirBW  ];
-                  Q.q27[dirBE  ][QIN.kQ] = ON[dirBE  ];
-                  Q.q27[dirTW  ][QIN.kQ] = ON[dirTW  ];
-                  Q.q27[dirTN  ][QIN.kQ] = ON[dirTN  ];
-                  Q.q27[dirBS  ][QIN.kQ] = ON[dirBS  ];
-                  Q.q27[dirBN  ][QIN.kQ] = ON[dirBN  ];
-                  Q.q27[dirTS  ][QIN.kQ] = ON[dirTS  ];
-                  Q.q27[dirZERO][QIN.kQ] = ON[dirZERO];
-                  Q.q27[dirTNE ][QIN.kQ] = ON[dirTNE ];
-                  Q.q27[dirTSW ][QIN.kQ] = ON[dirTSW ];
-                  Q.q27[dirTSE ][QIN.kQ] = ON[dirTSE ];
-                  Q.q27[dirTNW ][QIN.kQ] = ON[dirTNW ];
-                  Q.q27[dirBNE ][QIN.kQ] = ON[dirBNE ];
-                  Q.q27[dirBSW ][QIN.kQ] = ON[dirBSW ];
-                  Q.q27[dirBSE ][QIN.kQ] = ON[dirBSE ];
-                  Q.q27[dirBNW ][QIN.kQ] = ON[dirBNW ];
+                  Q.q27[dirE   ][QIN.numberOfBCnodes] = ON[dirE   ];
+                  Q.q27[dirW   ][QIN.numberOfBCnodes] = ON[dirW   ];
+                  Q.q27[dirN   ][QIN.numberOfBCnodes] = ON[dirN   ];
+                  Q.q27[dirS   ][QIN.numberOfBCnodes] = ON[dirS   ];
+                  Q.q27[dirT   ][QIN.numberOfBCnodes] = ON[dirT   ];
+                  Q.q27[dirB   ][QIN.numberOfBCnodes] = ON[dirB   ];
+                  Q.q27[dirNE  ][QIN.numberOfBCnodes] = ON[dirNE  ];
+                  Q.q27[dirSW  ][QIN.numberOfBCnodes] = ON[dirSW  ];
+                  Q.q27[dirSE  ][QIN.numberOfBCnodes] = ON[dirSE  ];
+                  Q.q27[dirNW  ][QIN.numberOfBCnodes] = ON[dirNW  ];
+                  Q.q27[dirTE  ][QIN.numberOfBCnodes] = ON[dirTE  ];
+                  Q.q27[dirBW  ][QIN.numberOfBCnodes] = ON[dirBW  ];
+                  Q.q27[dirBE  ][QIN.numberOfBCnodes] = ON[dirBE  ];
+                  Q.q27[dirTW  ][QIN.numberOfBCnodes] = ON[dirTW  ];
+                  Q.q27[dirTN  ][QIN.numberOfBCnodes] = ON[dirTN  ];
+                  Q.q27[dirBS  ][QIN.numberOfBCnodes] = ON[dirBS  ];
+                  Q.q27[dirBN  ][QIN.numberOfBCnodes] = ON[dirBN  ];
+                  Q.q27[dirTS  ][QIN.numberOfBCnodes] = ON[dirTS  ];
+                  Q.q27[dirZERO][QIN.numberOfBCnodes] = ON[dirZERO];
+                  Q.q27[dirTNE ][QIN.numberOfBCnodes] = ON[dirTNE ];
+                  Q.q27[dirTSW ][QIN.numberOfBCnodes] = ON[dirTSW ];
+                  Q.q27[dirTSE ][QIN.numberOfBCnodes] = ON[dirTSE ];
+                  Q.q27[dirTNW ][QIN.numberOfBCnodes] = ON[dirTNW ];
+                  Q.q27[dirBNE ][QIN.numberOfBCnodes] = ON[dirBNE ];
+                  Q.q27[dirBSW ][QIN.numberOfBCnodes] = ON[dirBSW ];
+                  Q.q27[dirBSE ][QIN.numberOfBCnodes] = ON[dirBSE ];
+                  Q.q27[dirBNW ][QIN.numberOfBCnodes] = ON[dirBNW ];
 
-                  QIN.kQ++;
+                  QIN.numberOfBCnodes++;
                }
             }
          }
@@ -198,8 +198,8 @@ void findKforQ(Parameter* para, int lev)
    unsigned int nny             = para->getParH(lev)->gridNY;
    unsigned int nnz             = para->getParH(lev)->gridNZ;
    int* geo_mat                 = para->getParH(lev)->geo;
-   QforBoundaryConditions &QIN  = para->getParH(lev)->QWall;
-   QIN.kQ = 0;
+   QforBoundaryConditions &QIN  = para->getParH(lev)->noSlipBC;
+   QIN.numberOfBCnodes = 0;
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
    for(k=STARTOFFZ + 1 ; k<=nnz+STARTOFFZ-2 ; k++){
@@ -220,7 +220,7 @@ void findKforQ(Parameter* para, int lev)
                }
                if (test>0)
                {
-                  QIN.kQ++;
+                  QIN.numberOfBCnodes++;
                }
             }
          }
@@ -276,7 +276,7 @@ void findQ_MG( int nx, int ny, unsigned int nnx, unsigned int nny, unsigned int 
    unsigned int centerZ = nnz / 2;
    real      radius  = nny / 2.56f;
 
-   QIN.kQ = 0;
+   QIN.numberOfBCnodes = 0;
 
    for(k=STARTOFFZ+2 ; k<=nnz+STARTOFFZ-3 ; k++){
       for(j=STARTOFFY+2 ; j<=nny+STARTOFFY-3 ; j++){
@@ -304,37 +304,37 @@ void findQ_MG( int nx, int ny, unsigned int nnx, unsigned int nny, unsigned int 
                }
                if (ON[18]==1.f)
                {
-                  QIN.k[QIN.kQ]          = kk[m];
+                  QIN.k[QIN.numberOfBCnodes]          = kk[m];
 
-                  Q.q27[dirE   ][QIN.kQ] = ON[dirE   ];
-                  Q.q27[dirW   ][QIN.kQ] = ON[dirW   ];
-                  Q.q27[dirN   ][QIN.kQ] = ON[dirN   ];
-                  Q.q27[dirS   ][QIN.kQ] = ON[dirS   ];
-                  Q.q27[dirT   ][QIN.kQ] = ON[dirT   ];
-                  Q.q27[dirB   ][QIN.kQ] = ON[dirB   ];
-                  Q.q27[dirNE  ][QIN.kQ] = ON[dirNE  ];
-                  Q.q27[dirSW  ][QIN.kQ] = ON[dirSW  ];
-                  Q.q27[dirSE  ][QIN.kQ] = ON[dirSE  ];
-                  Q.q27[dirNW  ][QIN.kQ] = ON[dirNW  ];
-                  Q.q27[dirTE  ][QIN.kQ] = ON[dirTE  ];
-                  Q.q27[dirBW  ][QIN.kQ] = ON[dirBW  ];
-                  Q.q27[dirBE  ][QIN.kQ] = ON[dirBE  ];
-                  Q.q27[dirTW  ][QIN.kQ] = ON[dirTW  ];
-                  Q.q27[dirTN  ][QIN.kQ] = ON[dirTN  ];
-                  Q.q27[dirBS  ][QIN.kQ] = ON[dirBS  ];
-                  Q.q27[dirBN  ][QIN.kQ] = ON[dirBN  ];
-                  Q.q27[dirTS  ][QIN.kQ] = ON[dirTS  ];
-                  Q.q27[dirZERO][QIN.kQ] = ON[dirZERO];
-                  Q.q27[dirTNE ][QIN.kQ] = ON[dirTNE ];
-                  Q.q27[dirTSW ][QIN.kQ] = ON[dirTSW ];
-                  Q.q27[dirTSE ][QIN.kQ] = ON[dirTSE ];
-                  Q.q27[dirTNW ][QIN.kQ] = ON[dirTNW ];
-                  Q.q27[dirBNE ][QIN.kQ] = ON[dirBNE ];
-                  Q.q27[dirBSW ][QIN.kQ] = ON[dirBSW ];
-                  Q.q27[dirBSE ][QIN.kQ] = ON[dirBSE ];
-                  Q.q27[dirBNW ][QIN.kQ] = ON[dirBNW ];
+                  Q.q27[dirE   ][QIN.numberOfBCnodes] = ON[dirE   ];
+                  Q.q27[dirW   ][QIN.numberOfBCnodes] = ON[dirW   ];
+                  Q.q27[dirN   ][QIN.numberOfBCnodes] = ON[dirN   ];
+                  Q.q27[dirS   ][QIN.numberOfBCnodes] = ON[dirS   ];
+                  Q.q27[dirT   ][QIN.numberOfBCnodes] = ON[dirT   ];
+                  Q.q27[dirB   ][QIN.numberOfBCnodes] = ON[dirB   ];
+                  Q.q27[dirNE  ][QIN.numberOfBCnodes] = ON[dirNE  ];
+                  Q.q27[dirSW  ][QIN.numberOfBCnodes] = ON[dirSW  ];
+                  Q.q27[dirSE  ][QIN.numberOfBCnodes] = ON[dirSE  ];
+                  Q.q27[dirNW  ][QIN.numberOfBCnodes] = ON[dirNW  ];
+                  Q.q27[dirTE  ][QIN.numberOfBCnodes] = ON[dirTE  ];
+                  Q.q27[dirBW  ][QIN.numberOfBCnodes] = ON[dirBW  ];
+                  Q.q27[dirBE  ][QIN.numberOfBCnodes] = ON[dirBE  ];
+                  Q.q27[dirTW  ][QIN.numberOfBCnodes] = ON[dirTW  ];
+                  Q.q27[dirTN  ][QIN.numberOfBCnodes] = ON[dirTN  ];
+                  Q.q27[dirBS  ][QIN.numberOfBCnodes] = ON[dirBS  ];
+                  Q.q27[dirBN  ][QIN.numberOfBCnodes] = ON[dirBN  ];
+                  Q.q27[dirTS  ][QIN.numberOfBCnodes] = ON[dirTS  ];
+                  Q.q27[dirZERO][QIN.numberOfBCnodes] = ON[dirZERO];
+                  Q.q27[dirTNE ][QIN.numberOfBCnodes] = ON[dirTNE ];
+                  Q.q27[dirTSW ][QIN.numberOfBCnodes] = ON[dirTSW ];
+                  Q.q27[dirTSE ][QIN.numberOfBCnodes] = ON[dirTSE ];
+                  Q.q27[dirTNW ][QIN.numberOfBCnodes] = ON[dirTNW ];
+                  Q.q27[dirBNE ][QIN.numberOfBCnodes] = ON[dirBNE ];
+                  Q.q27[dirBSW ][QIN.numberOfBCnodes] = ON[dirBSW ];
+                  Q.q27[dirBSE ][QIN.numberOfBCnodes] = ON[dirBSE ];
+                  Q.q27[dirBNW ][QIN.numberOfBCnodes] = ON[dirBNW ];
 
-                  QIN.kQ++;
+                  QIN.numberOfBCnodes++;
                }
             }
          }
@@ -356,7 +356,7 @@ void findKforQ_MG(int nx, int ny, unsigned int nnx, unsigned int nny, unsigned i
    unsigned int i, j, k, m, mm, l;
    real test = (real)0.f;
 
-   QIN.kQ = 0;
+   QIN.numberOfBCnodes = 0;
 
    for(k=STARTOFFZ+2 ; k<=nnz+STARTOFFZ-3 ; k++){
       for(j=STARTOFFY+2 ; j<=nny+STARTOFFY-3 ; j++){
@@ -376,7 +376,7 @@ void findKforQ_MG(int nx, int ny, unsigned int nnx, unsigned int nny, unsigned i
                }
                if (test>0)
                {
-                  QIN.kQ++;
+                  QIN.numberOfBCnodes++;
                }
             }
          }
@@ -409,17 +409,17 @@ void findQInflow(Parameter* para)
    unsigned int nnz              = para->getParH(para->getCoarse())->gridNZ;
    int* geo_mat                  = para->getParH(para->getCoarse())->geo;
    unsigned int* kk              = para->getParH(para->getCoarse())->k;
-   unsigned int sizeQ            = para->getParH(para->getCoarse())->kInflowQ;
-   //real* rhoBC                = para->getParH(para->getCoarse())->Qinflow.RhoBC;
+   unsigned int sizeQ            = para->getParH(para->getCoarse())->numberOfVeloBCnodes;
+   //real* rhoBC                = para->getParH(para->getCoarse())->velocityBC.RhoBC;
    real u0                    = para->getVelocity();
-   real* vx                   = para->getParH(para->getCoarse())->Qinflow.Vx;
-   real* vy                   = para->getParH(para->getCoarse())->Qinflow.Vy;
-   real* vz                   = para->getParH(para->getCoarse())->Qinflow.Vz;
-   real*deltaVz               = para->getParH(para->getCoarse())->Qinflow.deltaVz;
-   real* QQ                   = para->getParH(para->getCoarse())->Qinflow.q27[0];
-   QforBoundaryConditions &QIN   = para->getParH(para->getCoarse())->Qinflow;
+   real* vx                   = para->getParH(para->getCoarse())->velocityBC.Vx;
+   real* vy                   = para->getParH(para->getCoarse())->velocityBC.Vy;
+   real* vz                   = para->getParH(para->getCoarse())->velocityBC.Vz;
+   real*deltaVz               = para->getParH(para->getCoarse())->velocityBC.deltaVz;
+   real* QQ                   = para->getParH(para->getCoarse())->velocityBC.q27[0];
+   QforBoundaryConditions &QIN   = para->getParH(para->getCoarse())->velocityBC;
    //unsigned int nxny = nx*ny;
-   QIN.kQ = 0;
+   QIN.numberOfBCnodes = 0;
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    QforBoundaryConditions Q;
    Q.q27[dirE   ] = &QQ[dirE   *sizeQ];
@@ -460,74 +460,74 @@ void findQInflow(Parameter* para)
        for(i=STARTOFFX/*+1*/; i<=nnx+STARTOFFX/*-2*/ ; i++){
          m = nx*(ny*k + j) + i;
             if(geo_mat[m]==GEO_FLUID){
-               QIN.k[QIN.kQ]          = kk[m];
-               //vx[QIN.kQ]             = (real)0.f;
-			   vx[QIN.kQ]             = u0;
-               vy[QIN.kQ]             = (real)0.f;
-               vz[QIN.kQ]             = (real)0.f;
-               //vz[QIN.kQ]             = u0;
-               //vz[QIN.kQ]             = (real)(u0*2.f)*((-4.f*i*i + nnx*(-2.f - 4.f*STARTOFFX) - 4.f*(-1.5f + STARTOFFX)*(0.5f + STARTOFFX) + i*(-4.f + 4.f*nnx + 8.f*STARTOFFX))*(-4.f*j*j + nny*(-2.f - 4.f*STARTOFFY) - 4.f*(-1.5f + STARTOFFY)*(0.5f + STARTOFFY) + j*(-4.f + 4.f*nny + 8.f*STARTOFFY)))/((2.f - nnx)*(2.f - nnx)*(2.f - nny)*(2.f - nny));
-               //vz[QIN.kQ]             = (real)(16.f*(u0*2.f)*(i-(STARTOFFX+1)-0.5f)*(li-1.5f-(i-(STARTOFFX+1)))*(j-(STARTOFFY+1)-0.5f)*(lj-1.5f-(j-(STARTOFFY+1))))/(li*lj*li*lj);
-               //vz[QIN.kQ]             = (real)(16.f*(u0*2.f)*i*j*(nx-i)*(ny-j))/(nx*nx*ny*ny);
-               deltaVz[QIN.kQ]        = (real)0.f;
+               QIN.k[QIN.numberOfBCnodes]          = kk[m];
+               //vx[QIN.numberOfBCnodes]             = (real)0.f;
+			   vx[QIN.numberOfBCnodes]             = u0;
+               vy[QIN.numberOfBCnodes]             = (real)0.f;
+               vz[QIN.numberOfBCnodes]             = (real)0.f;
+               //vz[QIN.numberOfBCnodes]             = u0;
+               //vz[QIN.numberOfBCnodes]             = (real)(u0*2.f)*((-4.f*i*i + nnx*(-2.f - 4.f*STARTOFFX) - 4.f*(-1.5f + STARTOFFX)*(0.5f + STARTOFFX) + i*(-4.f + 4.f*nnx + 8.f*STARTOFFX))*(-4.f*j*j + nny*(-2.f - 4.f*STARTOFFY) - 4.f*(-1.5f + STARTOFFY)*(0.5f + STARTOFFY) + j*(-4.f + 4.f*nny + 8.f*STARTOFFY)))/((2.f - nnx)*(2.f - nnx)*(2.f - nny)*(2.f - nny));
+               //vz[QIN.numberOfBCnodes]             = (real)(16.f*(u0*2.f)*(i-(STARTOFFX+1)-0.5f)*(li-1.5f-(i-(STARTOFFX+1)))*(j-(STARTOFFY+1)-0.5f)*(lj-1.5f-(j-(STARTOFFY+1))))/(li*lj*li*lj);
+               //vz[QIN.numberOfBCnodes]             = (real)(16.f*(u0*2.f)*i*j*(nx-i)*(ny-j))/(nx*nx*ny*ny);
+               deltaVz[QIN.numberOfBCnodes]        = (real)0.f;
 			   //////////////////////////////////////////////////////////////////////////
-               //Q.q27[dirE   ][QIN.kQ] = (real)-1.f;
-               //Q.q27[dirW   ][QIN.kQ] = (real)-1.f;
-               //Q.q27[dirN   ][QIN.kQ] = (real)-1.f;
-               //Q.q27[dirS   ][QIN.kQ] = (real)-1.f;
-               //Q.q27[dirT   ][QIN.kQ] = (real)-1.f;
-               //Q.q27[dirB   ][QIN.kQ] = (real)1.f;
-               //Q.q27[dirNE  ][QIN.kQ] = (real)-1.f;
-               //Q.q27[dirSW  ][QIN.kQ] = (real)-1.f;
-               //Q.q27[dirSE  ][QIN.kQ] = (real)-1.f;
-               //Q.q27[dirNW  ][QIN.kQ] = (real)-1.f;
-               //Q.q27[dirTE  ][QIN.kQ] = (real)-1.f;
-               //Q.q27[dirBW  ][QIN.kQ] = (real)1.f;
-               //Q.q27[dirBE  ][QIN.kQ] = (real)1.f;
-               //Q.q27[dirTW  ][QIN.kQ] = (real)-1.f;
-               //Q.q27[dirTN  ][QIN.kQ] = (real)-1.f;
-               //Q.q27[dirBS  ][QIN.kQ] = (real)1.f;
-               //Q.q27[dirBN  ][QIN.kQ] = (real)1.f;
-               //Q.q27[dirTS  ][QIN.kQ] = (real)-1.f;
-               //Q.q27[dirZERO][QIN.kQ] = (real)-1.f;
-               //Q.q27[dirTNE ][QIN.kQ] = (real)-1.f;
-               //Q.q27[dirTSW ][QIN.kQ] = (real)-1.f;
-               //Q.q27[dirTSE ][QIN.kQ] = (real)-1.f;
-               //Q.q27[dirTNW ][QIN.kQ] = (real)-1.f;
-               //Q.q27[dirBNE ][QIN.kQ] = (real)1.f;
-               //Q.q27[dirBSW ][QIN.kQ] = (real)1.f;
-               //Q.q27[dirBSE ][QIN.kQ] = (real)1.f;
-               //Q.q27[dirBNW ][QIN.kQ] = (real)1.f;
+               //Q.q27[dirE   ][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[dirW   ][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[dirN   ][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[dirS   ][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[dirT   ][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[dirB   ][QIN.numberOfBCnodes] = (real)1.f;
+               //Q.q27[dirNE  ][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[dirSW  ][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[dirSE  ][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[dirNW  ][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[dirTE  ][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[dirBW  ][QIN.numberOfBCnodes] = (real)1.f;
+               //Q.q27[dirBE  ][QIN.numberOfBCnodes] = (real)1.f;
+               //Q.q27[dirTW  ][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[dirTN  ][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[dirBS  ][QIN.numberOfBCnodes] = (real)1.f;
+               //Q.q27[dirBN  ][QIN.numberOfBCnodes] = (real)1.f;
+               //Q.q27[dirTS  ][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[dirZERO][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[dirTNE ][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[dirTSW ][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[dirTSE ][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[dirTNW ][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[dirBNE ][QIN.numberOfBCnodes] = (real)1.f;
+               //Q.q27[dirBSW ][QIN.numberOfBCnodes] = (real)1.f;
+               //Q.q27[dirBSE ][QIN.numberOfBCnodes] = (real)1.f;
+               //Q.q27[dirBNW ][QIN.numberOfBCnodes] = (real)1.f;
 			   //////////////////////////////////////////////////////////////////////////
-			   Q.q27[dirE   ][QIN.kQ] = (real)-1.f;
-			   Q.q27[dirW   ][QIN.kQ] = (real)-1.f;
-			   Q.q27[dirN   ][QIN.kQ] = (real)-1.f;
-			   Q.q27[dirS   ][QIN.kQ] = (real)-1.f;
-			   Q.q27[dirT   ][QIN.kQ] = (real)1.f;
-			   Q.q27[dirB   ][QIN.kQ] = (real)-1.f;
-			   Q.q27[dirNE  ][QIN.kQ] = (real)-1.f;
-			   Q.q27[dirSW  ][QIN.kQ] = (real)-1.f;
-			   Q.q27[dirSE  ][QIN.kQ] = (real)-1.f;
-			   Q.q27[dirNW  ][QIN.kQ] = (real)-1.f;
-			   Q.q27[dirTE  ][QIN.kQ] = (real)1.f;
-			   Q.q27[dirBW  ][QIN.kQ] = (real)-1.f;
-			   Q.q27[dirBE  ][QIN.kQ] = (real)-1.f;
-			   Q.q27[dirTW  ][QIN.kQ] = (real)1.f;
-			   Q.q27[dirTN  ][QIN.kQ] = (real)1.f;
-			   Q.q27[dirBS  ][QIN.kQ] = (real)-1.f;
-			   Q.q27[dirBN  ][QIN.kQ] = (real)-1.f;
-			   Q.q27[dirTS  ][QIN.kQ] = (real)1.f;
-			   Q.q27[dirZERO][QIN.kQ] = (real)-1.f;
-			   Q.q27[dirTNE ][QIN.kQ] = (real)1.f;
-			   Q.q27[dirTSW ][QIN.kQ] = (real)1.f;
-			   Q.q27[dirTSE ][QIN.kQ] = (real)1.f;
-			   Q.q27[dirTNW ][QIN.kQ] = (real)1.f;
-			   Q.q27[dirBNE ][QIN.kQ] = (real)-1.f;
-			   Q.q27[dirBSW ][QIN.kQ] = (real)-1.f;
-			   Q.q27[dirBSE ][QIN.kQ] = (real)-1.f;
-			   Q.q27[dirBNW ][QIN.kQ] = (real)-1.f;
+			   Q.q27[dirE   ][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[dirW   ][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[dirN   ][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[dirS   ][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[dirT   ][QIN.numberOfBCnodes] = (real)1.f;
+			   Q.q27[dirB   ][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[dirNE  ][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[dirSW  ][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[dirSE  ][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[dirNW  ][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[dirTE  ][QIN.numberOfBCnodes] = (real)1.f;
+			   Q.q27[dirBW  ][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[dirBE  ][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[dirTW  ][QIN.numberOfBCnodes] = (real)1.f;
+			   Q.q27[dirTN  ][QIN.numberOfBCnodes] = (real)1.f;
+			   Q.q27[dirBS  ][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[dirBN  ][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[dirTS  ][QIN.numberOfBCnodes] = (real)1.f;
+			   Q.q27[dirZERO][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[dirTNE ][QIN.numberOfBCnodes] = (real)1.f;
+			   Q.q27[dirTSW ][QIN.numberOfBCnodes] = (real)1.f;
+			   Q.q27[dirTSE ][QIN.numberOfBCnodes] = (real)1.f;
+			   Q.q27[dirTNW ][QIN.numberOfBCnodes] = (real)1.f;
+			   Q.q27[dirBNE ][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[dirBSW ][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[dirBSE ][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[dirBNW ][QIN.numberOfBCnodes] = (real)-1.f;
 			   //////////////////////////////////////////////////////////////////////////
-			   QIN.kQ++;
+			   QIN.numberOfBCnodes++;
             }
        }
    }
@@ -551,40 +551,40 @@ void findQInflow(Parameter* para)
    //            }
    //            if (ON[18]==1.f)
    //            {
-   //               QIN.k[QIN.kQ]          = m;
-   //               vx[QIN.kQ]             = 0.f;
-   //               vy[QIN.kQ]             = 0.f;
-   //               vz[QIN.kQ]             = u0;
+   //               QIN.k[QIN.numberOfBCnodes]          = m;
+   //               vx[QIN.numberOfBCnodes]             = 0.f;
+   //               vy[QIN.numberOfBCnodes]             = 0.f;
+   //               vz[QIN.numberOfBCnodes]             = u0;
 
-   //               Q.q27[dirE   ][QIN.kQ] = ON[dirE   ];
-   //               Q.q27[dirW   ][QIN.kQ] = ON[dirW   ];
-   //               Q.q27[dirN   ][QIN.kQ] = ON[dirN   ];
-   //               Q.q27[dirS   ][QIN.kQ] = ON[dirS   ];
-   //               Q.q27[dirT   ][QIN.kQ] = ON[dirT   ];
-   //               Q.q27[dirB   ][QIN.kQ] = ON[dirB   ];
-   //               Q.q27[dirNE  ][QIN.kQ] = ON[dirNE  ];
-   //               Q.q27[dirSW  ][QIN.kQ] = ON[dirSW  ];
-   //               Q.q27[dirSE  ][QIN.kQ] = ON[dirSE  ];
-   //               Q.q27[dirNW  ][QIN.kQ] = ON[dirNW  ];
-   //               Q.q27[dirTE  ][QIN.kQ] = ON[dirTE  ];
-   //               Q.q27[dirBW  ][QIN.kQ] = ON[dirBW  ];
-   //               Q.q27[dirBE  ][QIN.kQ] = ON[dirBE  ];
-   //               Q.q27[dirTW  ][QIN.kQ] = ON[dirTW  ];
-   //               Q.q27[dirTN  ][QIN.kQ] = ON[dirTN  ];
-   //               Q.q27[dirBS  ][QIN.kQ] = ON[dirBS  ];
-   //               Q.q27[dirBN  ][QIN.kQ] = ON[dirBN  ];
-   //               Q.q27[dirTS  ][QIN.kQ] = ON[dirTS  ];
-   //               Q.q27[dirZERO][QIN.kQ] = ON[dirZERO];
-   //               Q.q27[dirTNE ][QIN.kQ] = ON[dirTNE ];
-   //               Q.q27[dirTSW ][QIN.kQ] = ON[dirTSW ];
-   //               Q.q27[dirTSE ][QIN.kQ] = ON[dirTSE ];
-   //               Q.q27[dirTNW ][QIN.kQ] = ON[dirTNW ];
-   //               Q.q27[dirBNE ][QIN.kQ] = ON[dirBNE ];
-   //               Q.q27[dirBSW ][QIN.kQ] = ON[dirBSW ];
-   //               Q.q27[dirBSE ][QIN.kQ] = ON[dirBSE ];
-   //               Q.q27[dirBNW ][QIN.kQ] = ON[dirBNW ];
+   //               Q.q27[dirE   ][QIN.numberOfBCnodes] = ON[dirE   ];
+   //               Q.q27[dirW   ][QIN.numberOfBCnodes] = ON[dirW   ];
+   //               Q.q27[dirN   ][QIN.numberOfBCnodes] = ON[dirN   ];
+   //               Q.q27[dirS   ][QIN.numberOfBCnodes] = ON[dirS   ];
+   //               Q.q27[dirT   ][QIN.numberOfBCnodes] = ON[dirT   ];
+   //               Q.q27[dirB   ][QIN.numberOfBCnodes] = ON[dirB   ];
+   //               Q.q27[dirNE  ][QIN.numberOfBCnodes] = ON[dirNE  ];
+   //               Q.q27[dirSW  ][QIN.numberOfBCnodes] = ON[dirSW  ];
+   //               Q.q27[dirSE  ][QIN.numberOfBCnodes] = ON[dirSE  ];
+   //               Q.q27[dirNW  ][QIN.numberOfBCnodes] = ON[dirNW  ];
+   //               Q.q27[dirTE  ][QIN.numberOfBCnodes] = ON[dirTE  ];
+   //               Q.q27[dirBW  ][QIN.numberOfBCnodes] = ON[dirBW  ];
+   //               Q.q27[dirBE  ][QIN.numberOfBCnodes] = ON[dirBE  ];
+   //               Q.q27[dirTW  ][QIN.numberOfBCnodes] = ON[dirTW  ];
+   //               Q.q27[dirTN  ][QIN.numberOfBCnodes] = ON[dirTN  ];
+   //               Q.q27[dirBS  ][QIN.numberOfBCnodes] = ON[dirBS  ];
+   //               Q.q27[dirBN  ][QIN.numberOfBCnodes] = ON[dirBN  ];
+   //               Q.q27[dirTS  ][QIN.numberOfBCnodes] = ON[dirTS  ];
+   //               Q.q27[dirZERO][QIN.numberOfBCnodes] = ON[dirZERO];
+   //               Q.q27[dirTNE ][QIN.numberOfBCnodes] = ON[dirTNE ];
+   //               Q.q27[dirTSW ][QIN.numberOfBCnodes] = ON[dirTSW ];
+   //               Q.q27[dirTSE ][QIN.numberOfBCnodes] = ON[dirTSE ];
+   //               Q.q27[dirTNW ][QIN.numberOfBCnodes] = ON[dirTNW ];
+   //               Q.q27[dirBNE ][QIN.numberOfBCnodes] = ON[dirBNE ];
+   //               Q.q27[dirBSW ][QIN.numberOfBCnodes] = ON[dirBSW ];
+   //               Q.q27[dirBSE ][QIN.numberOfBCnodes] = ON[dirBSE ];
+   //               Q.q27[dirBNW ][QIN.numberOfBCnodes] = ON[dirBNW ];
 
-   //               QIN.kQ++;
+   //               QIN.numberOfBCnodes++;
    //            }
    //         }
    //      }
@@ -610,40 +610,40 @@ void findQInflow(Parameter* para)
    //            }
    //            if (ON[18]==1.f)
    //            {
-   //               QIN.k[QIN.kQ]          = m;
-   //               vx[QIN.kQ]             = u0;//0.f;
-   //               vy[QIN.kQ]             = 0.f;
-   //               vz[QIN.kQ]             = 0.f;//u0;
+   //               QIN.k[QIN.numberOfBCnodes]          = m;
+   //               vx[QIN.numberOfBCnodes]             = u0;//0.f;
+   //               vy[QIN.numberOfBCnodes]             = 0.f;
+   //               vz[QIN.numberOfBCnodes]             = 0.f;//u0;
 
-   //               Q.q27[dirE   ][QIN.kQ] = ON[dirE   ];
-   //               Q.q27[dirW   ][QIN.kQ] = ON[dirW   ];
-   //               Q.q27[dirN   ][QIN.kQ] = ON[dirN   ];
-   //               Q.q27[dirS   ][QIN.kQ] = ON[dirS   ];
-   //               Q.q27[dirT   ][QIN.kQ] = ON[dirT   ];
-   //               Q.q27[dirB   ][QIN.kQ] = ON[dirB   ];
-   //               Q.q27[dirNE  ][QIN.kQ] = ON[dirNE  ];
-   //               Q.q27[dirSW  ][QIN.kQ] = ON[dirSW  ];
-   //               Q.q27[dirSE  ][QIN.kQ] = ON[dirSE  ];
-   //               Q.q27[dirNW  ][QIN.kQ] = ON[dirNW  ];
-   //               Q.q27[dirTE  ][QIN.kQ] = ON[dirTE  ];
-   //               Q.q27[dirBW  ][QIN.kQ] = ON[dirBW  ];
-   //               Q.q27[dirBE  ][QIN.kQ] = ON[dirBE  ];
-   //               Q.q27[dirTW  ][QIN.kQ] = ON[dirTW  ];
-   //               Q.q27[dirTN  ][QIN.kQ] = ON[dirTN  ];
-   //               Q.q27[dirBS  ][QIN.kQ] = ON[dirBS  ];
-   //               Q.q27[dirBN  ][QIN.kQ] = ON[dirBN  ];
-   //               Q.q27[dirTS  ][QIN.kQ] = ON[dirTS  ];
-   //               Q.q27[dirZERO][QIN.kQ] = ON[dirZERO];
-   //               Q.q27[dirTNE ][QIN.kQ] = ON[dirTNE ];
-   //               Q.q27[dirTSW ][QIN.kQ] = ON[dirTSW ];
-   //               Q.q27[dirTSE ][QIN.kQ] = ON[dirTSE ];
-   //               Q.q27[dirTNW ][QIN.kQ] = ON[dirTNW ];
-   //               Q.q27[dirBNE ][QIN.kQ] = ON[dirBNE ];
-   //               Q.q27[dirBSW ][QIN.kQ] = ON[dirBSW ];
-   //               Q.q27[dirBSE ][QIN.kQ] = ON[dirBSE ];
-   //               Q.q27[dirBNW ][QIN.kQ] = ON[dirBNW ];
+   //               Q.q27[dirE   ][QIN.numberOfBCnodes] = ON[dirE   ];
+   //               Q.q27[dirW   ][QIN.numberOfBCnodes] = ON[dirW   ];
+   //               Q.q27[dirN   ][QIN.numberOfBCnodes] = ON[dirN   ];
+   //               Q.q27[dirS   ][QIN.numberOfBCnodes] = ON[dirS   ];
+   //               Q.q27[dirT   ][QIN.numberOfBCnodes] = ON[dirT   ];
+   //               Q.q27[dirB   ][QIN.numberOfBCnodes] = ON[dirB   ];
+   //               Q.q27[dirNE  ][QIN.numberOfBCnodes] = ON[dirNE  ];
+   //               Q.q27[dirSW  ][QIN.numberOfBCnodes] = ON[dirSW  ];
+   //               Q.q27[dirSE  ][QIN.numberOfBCnodes] = ON[dirSE  ];
+   //               Q.q27[dirNW  ][QIN.numberOfBCnodes] = ON[dirNW  ];
+   //               Q.q27[dirTE  ][QIN.numberOfBCnodes] = ON[dirTE  ];
+   //               Q.q27[dirBW  ][QIN.numberOfBCnodes] = ON[dirBW  ];
+   //               Q.q27[dirBE  ][QIN.numberOfBCnodes] = ON[dirBE  ];
+   //               Q.q27[dirTW  ][QIN.numberOfBCnodes] = ON[dirTW  ];
+   //               Q.q27[dirTN  ][QIN.numberOfBCnodes] = ON[dirTN  ];
+   //               Q.q27[dirBS  ][QIN.numberOfBCnodes] = ON[dirBS  ];
+   //               Q.q27[dirBN  ][QIN.numberOfBCnodes] = ON[dirBN  ];
+   //               Q.q27[dirTS  ][QIN.numberOfBCnodes] = ON[dirTS  ];
+   //               Q.q27[dirZERO][QIN.numberOfBCnodes] = ON[dirZERO];
+   //               Q.q27[dirTNE ][QIN.numberOfBCnodes] = ON[dirTNE ];
+   //               Q.q27[dirTSW ][QIN.numberOfBCnodes] = ON[dirTSW ];
+   //               Q.q27[dirTSE ][QIN.numberOfBCnodes] = ON[dirTSE ];
+   //               Q.q27[dirTNW ][QIN.numberOfBCnodes] = ON[dirTNW ];
+   //               Q.q27[dirBNE ][QIN.numberOfBCnodes] = ON[dirBNE ];
+   //               Q.q27[dirBSW ][QIN.numberOfBCnodes] = ON[dirBSW ];
+   //               Q.q27[dirBSE ][QIN.numberOfBCnodes] = ON[dirBSE ];
+   //               Q.q27[dirBNW ][QIN.numberOfBCnodes] = ON[dirBNW ];
 
-   //               QIN.kQ++;
+   //               QIN.numberOfBCnodes++;
    //            }
    //         }
    //      }
@@ -676,9 +676,9 @@ void findKforQInflow(Parameter* para)
    unsigned int nny              = para->getParH(para->getCoarse())->gridNY;
    unsigned int nnz              = para->getParH(para->getCoarse())->gridNZ;
    int* geo_mat                  = para->getParH(para->getCoarse())->geo;
-   QforBoundaryConditions &QIN   = para->getParH(para->getCoarse())->Qinflow;
+   QforBoundaryConditions &QIN   = para->getParH(para->getCoarse())->velocityBC;
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   QIN.kQ = 0;
+   QIN.numberOfBCnodes = 0;
 
    k=nnz+STARTOFFZ-1/*3*/;
    //k=STARTOFFZ+1;
@@ -700,7 +700,7 @@ void findKforQInflow(Parameter* para)
                }
                if (test>0)
                {
-				   QIN.kQ++;
+				   QIN.numberOfBCnodes++;
                }
             }
          }
@@ -725,7 +725,7 @@ void findKforQInflow(Parameter* para)
    //            }
    //            if (test>0)
    //            {
-   //               QIN.kQ++;
+   //               QIN.numberOfBCnodes++;
    //            }
    //         }
    //      }
@@ -759,17 +759,17 @@ void findQOutflow(Parameter* para)
    unsigned int nnz              = para->getParH(para->getCoarse())->gridNZ;
    int* geo_mat                  = para->getParH(para->getCoarse())->geo;
    unsigned int* kk              = para->getParH(para->getCoarse())->k;
-   unsigned int sizeQ            = para->getParH(para->getCoarse())->kOutflowQ;
-   real* rhoBC                = para->getParH(para->getCoarse())->Qoutflow.RhoBC;
+   unsigned int sizeQ            = para->getParH(para->getCoarse())->numberOfOutflowBCnodes;
+   real* rhoBC                = para->getParH(para->getCoarse())->outflowBC.RhoBC;
    real u0                    = para->getVelocity();
-   real* vx                   = para->getParH(para->getCoarse())->Qoutflow.Vx;
-   real* vy                   = para->getParH(para->getCoarse())->Qoutflow.Vy;
-   real* vz                   = para->getParH(para->getCoarse())->Qoutflow.Vz;
-   real*deltaVz               = para->getParH(para->getCoarse())->Qoutflow.deltaVz;
-   real* QQ                   = para->getParH(para->getCoarse())->Qoutflow.q27[0];
-   QforBoundaryConditions &QIN   = para->getParH(para->getCoarse())->Qoutflow;
+   real* vx                   = para->getParH(para->getCoarse())->outflowBC.Vx;
+   real* vy                   = para->getParH(para->getCoarse())->outflowBC.Vy;
+   real* vz                   = para->getParH(para->getCoarse())->outflowBC.Vz;
+   real*deltaVz               = para->getParH(para->getCoarse())->outflowBC.deltaVz;
+   real* QQ                   = para->getParH(para->getCoarse())->outflowBC.q27[0];
+   QforBoundaryConditions &QIN   = para->getParH(para->getCoarse())->outflowBC;
    unsigned int nxny = nx*ny;
-   QIN.kQ = 0;
+   QIN.numberOfBCnodes = 0;
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    QforBoundaryConditions Q;
    Q.q27[dirE   ] = &QQ[dirE   *sizeQ];
@@ -810,44 +810,44 @@ void findQOutflow(Parameter* para)
        for(i=STARTOFFX+1; i<=nnx+STARTOFFX-2 ; i++){
          m = nx*(ny*k + j) + i;
             if(geo_mat[m]==GEO_FLUID){
-               QIN.k[QIN.kQ]          = kk[m];
-               QIN.kN[QIN.kQ]         = kk[m-nxny];
-               rhoBC[QIN.kQ]          = (real)0.f;
-               vx[QIN.kQ]             = (real)0.f;
-               vy[QIN.kQ]             = (real)0.f;
-			   //vz[QIN.kQ]             = u0;
-               vz[QIN.kQ]             = (real)(u0*2.f)*((-4.f*i*i + nnx*(-2.f - 4.f*STARTOFFX) - 4.f*(-1.5f + STARTOFFX)*(0.5f + STARTOFFX) + i*(-4.f + 4.f*nnx + 8.f*STARTOFFX))*(-4.f*j*j + nny*(-2.f - 4.f*STARTOFFY) - 4.f*(-1.5f + STARTOFFY)*(0.5f + STARTOFFY) + j*(-4.f + 4.f*nny + 8.f*STARTOFFY)))/((2.f - nnx)*(2.f - nnx)*(2.f - nny)*(2.f - nny));
-               //vz[QIN.kQ]             =  (real)(16.f*(u0*2.f)*(i-(STARTOFFX+1)-0.5f)*(li-1.5f-(i-(STARTOFFX+1)))*(j-(STARTOFFY+1)-0.5f)*(lj-1.5f-(j-(STARTOFFY+1))))/(li*lj*li*lj);
-               //vz[QIN.kQ]             = (real)(16.f*(u0*2.f)*i*j*(nx-i)*(ny-j))/(nx*nx*ny*ny);
-               deltaVz[QIN.kQ]        = (real)0.f;
-               Q.q27[dirE   ][QIN.kQ] = (real)-1.f;
-               Q.q27[dirW   ][QIN.kQ] = (real)-1.f;
-               Q.q27[dirN   ][QIN.kQ] = (real)-1.f;
-               Q.q27[dirS   ][QIN.kQ] = (real)-1.f;
-               Q.q27[dirT   ][QIN.kQ] = (real)1.f;
-               Q.q27[dirB   ][QIN.kQ] = (real)-1.f;
-               Q.q27[dirNE  ][QIN.kQ] = (real)-1.f;
-               Q.q27[dirSW  ][QIN.kQ] = (real)-1.f;
-               Q.q27[dirSE  ][QIN.kQ] = (real)-1.f;
-               Q.q27[dirNW  ][QIN.kQ] = (real)-1.f;
-               Q.q27[dirTE  ][QIN.kQ] = (real)1.f;
-               Q.q27[dirBW  ][QIN.kQ] = (real)-1.f;
-               Q.q27[dirBE  ][QIN.kQ] = (real)-1.f;
-               Q.q27[dirTW  ][QIN.kQ] = (real)1.f;
-               Q.q27[dirTN  ][QIN.kQ] = (real)1.f;
-               Q.q27[dirBS  ][QIN.kQ] = (real)-1.f;
-               Q.q27[dirBN  ][QIN.kQ] = (real)-1.f;
-               Q.q27[dirTS  ][QIN.kQ] = (real)1.f;
-               Q.q27[dirZERO][QIN.kQ] = (real)-1.f;
-               Q.q27[dirTNE ][QIN.kQ] = (real)1.f;
-               Q.q27[dirTSW ][QIN.kQ] = (real)1.f;
-               Q.q27[dirTSE ][QIN.kQ] = (real)1.f;
-               Q.q27[dirTNW ][QIN.kQ] = (real)1.f;
-               Q.q27[dirBNE ][QIN.kQ] = (real)-1.f;
-               Q.q27[dirBSW ][QIN.kQ] = (real)-1.f;
-               Q.q27[dirBSE ][QIN.kQ] = (real)-1.f;
-               Q.q27[dirBNW ][QIN.kQ] = (real)-1.f;
-               QIN.kQ++;
+               QIN.k[QIN.numberOfBCnodes]          = kk[m];
+               QIN.kN[QIN.numberOfBCnodes]         = kk[m-nxny];
+               rhoBC[QIN.numberOfBCnodes]          = (real)0.f;
+               vx[QIN.numberOfBCnodes]             = (real)0.f;
+               vy[QIN.numberOfBCnodes]             = (real)0.f;
+			   //vz[QIN.numberOfBCnodes]             = u0;
+               vz[QIN.numberOfBCnodes]             = (real)(u0*2.f)*((-4.f*i*i + nnx*(-2.f - 4.f*STARTOFFX) - 4.f*(-1.5f + STARTOFFX)*(0.5f + STARTOFFX) + i*(-4.f + 4.f*nnx + 8.f*STARTOFFX))*(-4.f*j*j + nny*(-2.f - 4.f*STARTOFFY) - 4.f*(-1.5f + STARTOFFY)*(0.5f + STARTOFFY) + j*(-4.f + 4.f*nny + 8.f*STARTOFFY)))/((2.f - nnx)*(2.f - nnx)*(2.f - nny)*(2.f - nny));
+               //vz[QIN.numberOfBCnodes]             =  (real)(16.f*(u0*2.f)*(i-(STARTOFFX+1)-0.5f)*(li-1.5f-(i-(STARTOFFX+1)))*(j-(STARTOFFY+1)-0.5f)*(lj-1.5f-(j-(STARTOFFY+1))))/(li*lj*li*lj);
+               //vz[QIN.numberOfBCnodes]             = (real)(16.f*(u0*2.f)*i*j*(nx-i)*(ny-j))/(nx*nx*ny*ny);
+               deltaVz[QIN.numberOfBCnodes]        = (real)0.f;
+               Q.q27[dirE   ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[dirW   ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[dirN   ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[dirS   ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[dirT   ][QIN.numberOfBCnodes] = (real)1.f;
+               Q.q27[dirB   ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[dirNE  ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[dirSW  ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[dirSE  ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[dirNW  ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[dirTE  ][QIN.numberOfBCnodes] = (real)1.f;
+               Q.q27[dirBW  ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[dirBE  ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[dirTW  ][QIN.numberOfBCnodes] = (real)1.f;
+               Q.q27[dirTN  ][QIN.numberOfBCnodes] = (real)1.f;
+               Q.q27[dirBS  ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[dirBN  ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[dirTS  ][QIN.numberOfBCnodes] = (real)1.f;
+               Q.q27[dirZERO][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[dirTNE ][QIN.numberOfBCnodes] = (real)1.f;
+               Q.q27[dirTSW ][QIN.numberOfBCnodes] = (real)1.f;
+               Q.q27[dirTSE ][QIN.numberOfBCnodes] = (real)1.f;
+               Q.q27[dirTNW ][QIN.numberOfBCnodes] = (real)1.f;
+               Q.q27[dirBNE ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[dirBSW ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[dirBSE ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[dirBNW ][QIN.numberOfBCnodes] = (real)-1.f;
+               QIN.numberOfBCnodes++;
             }
        }
    }
@@ -855,9 +855,9 @@ void findQOutflow(Parameter* para)
    //i = nnx / 2 + STARTOFFX;
    //j = nny / 2 + STARTOFFY;
    //k = nnz / 2 + STARTOFFZ;
-   //QIN.kQ = 0;
-   //rhoBC[QIN.kQ]        = 0.1f;
-   //QIN.kQ++;
+   //QIN.numberOfBCnodes = 0;
+   //rhoBC[QIN.numberOfBCnodes]        = 0.1f;
+   //QIN.numberOfBCnodes++;
 
 }
 
@@ -886,8 +886,8 @@ void findKforQOutflow(Parameter* para)
    unsigned int nny              = para->getParH(para->getCoarse())->gridNY;
    unsigned int nnz              = para->getParH(para->getCoarse())->gridNZ;
    int* geo_mat                  = para->getParH(para->getCoarse())->geo;
-   QforBoundaryConditions &QIN   = para->getParH(para->getCoarse())->Qoutflow;
-   QIN.kQ = 0;
+   QforBoundaryConditions &QIN   = para->getParH(para->getCoarse())->outflowBC;
+   QIN.numberOfBCnodes = 0;
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
    k=nnz+STARTOFFZ-3;
@@ -909,15 +909,15 @@ void findKforQOutflow(Parameter* para)
                }
                if (test>0)
                {
-                  QIN.kQ++;
+                  QIN.numberOfBCnodes++;
                }
             }
          }
       }
    }
 
-   //QIN.kQ = 0;
-   //QIN.kQ++;
+   //QIN.numberOfBCnodes = 0;
+   //QIN.numberOfBCnodes++;
 
 }
 // TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
@@ -980,10 +980,10 @@ void findKforQOutflow(Parameter* para)
 //   unsigned int i, j, k, m, mm, l;
 //   real test = (real) 0.f;
 //
-//   QN.kQ = 0;
-//   QS.kQ = 0;
-//   QE.kQ = 0;
-//   QW.kQ = 0;
+//   QN.numberOfBCnodes = 0;
+//   QS.numberOfBCnodes = 0;
+//   QE.numberOfBCnodes = 0;
+//   QW.numberOfBCnodes = 0;
 //
 //   for(k=STARTOFFZ+1 ; k<=nnz+STARTOFFZ-2 ; k++){
 //      for(j=STARTOFFY+1 ; j<=nny+STARTOFFY-2 ; j++){
@@ -1003,7 +1003,7 @@ void findKforQOutflow(Parameter* para)
 //               }
 //               if (test>0)
 //               {
-//                  QN.kQ++;
+//                  QN.numberOfBCnodes++;
 //               }
 //            }
 //         }
@@ -1030,8 +1030,8 @@ void findQPressX0(Parameter* para, int lev)
 	unsigned int nnz              = para->getParH(lev)->gridNZ;
 	int* geo_mat                  = para->getParH(lev)->geo;
 	unsigned int* kk              = para->getParH(lev)->k;
-	//unsigned int sizeQ            = para->getParH(lev)->kOutflowQ;
-	unsigned int sizeQ            = para->getParH(lev)->QpressX0.kQ;
+	//unsigned int sizeQ            = para->getParH(lev)->numberOfOutflowBCnodes;
+	unsigned int sizeQ            = para->getParH(lev)->QpressX0.numberOfBCnodes;
 	real* rhoBC                = para->getParH(lev)->QpressX0.RhoBC;
 	real u0                    = para->getVelocity();
 	real* vx                   = para->getParH(lev)->QpressX0.Vx;
@@ -1041,7 +1041,7 @@ void findQPressX0(Parameter* para, int lev)
 	real* QQ                   = para->getParH(lev)->QpressX0.q27[0];
 	QforBoundaryConditions &QIN   = para->getParH(lev)->QpressX0;
 	//unsigned int nxny = nx*ny;
-	QIN.kQ = 0;
+	QIN.numberOfBCnodes = 0;
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	QforBoundaryConditions Q;
 	Q.q27[dirE   ] = &QQ[dirE   *sizeQ];
@@ -1083,44 +1083,44 @@ void findQPressX0(Parameter* para, int lev)
 			//for(i=STARTOFFX+1; i<=nnx+STARTOFFX-2 ; i++){
 			m = nx*(ny*k + j) + i;
 			if(geo_mat[m]==GEO_FLUID){
-				QIN.k[QIN.kQ]          = kk[m];
-				QIN.kN[QIN.kQ]         = kk[m+1];
-				rhoBC[QIN.kQ]          = (real)0.f;
-				vx[QIN.kQ]             = (real)0.f;
-				vy[QIN.kQ]             = (real)0.f;
-				//vz[QIN.kQ]             = u0;
-				vz[QIN.kQ]             = (real)(u0*2.f)*((-4.f*i*i + nnx*(-2.f - 4.f*STARTOFFX) - 4.f*(-1.5f + STARTOFFX)*(0.5f + STARTOFFX) + i*(-4.f + 4.f*nnx + 8.f*STARTOFFX))*(-4.f*j*j + nny*(-2.f - 4.f*STARTOFFY) - 4.f*(-1.5f + STARTOFFY)*(0.5f + STARTOFFY) + j*(-4.f + 4.f*nny + 8.f*STARTOFFY)))/((2.f - nnx)*(2.f - nnx)*(2.f - nny)*(2.f - nny));
-				//vz[QIN.kQ]             =  (real)(16.f*(u0*2.f)*(i-(STARTOFFX+1)-0.5f)*(li-1.5f-(i-(STARTOFFX+1)))*(j-(STARTOFFY+1)-0.5f)*(lj-1.5f-(j-(STARTOFFY+1))))/(li*lj*li*lj);
-				//vz[QIN.kQ]             = (real)(16.f*(u0*2.f)*i*j*(nx-i)*(ny-j))/(nx*nx*ny*ny);
-				deltaVz[QIN.kQ]        = (real)0.f;
-				Q.q27[dirE   ][QIN.kQ] = (real)-1.f;
-				Q.q27[dirW   ][QIN.kQ] = (real)1.f;
-				Q.q27[dirN   ][QIN.kQ] = (real)-1.f;
-				Q.q27[dirS   ][QIN.kQ] = (real)-1.f;
-				Q.q27[dirT   ][QIN.kQ] = (real)-1.f;
-				Q.q27[dirB   ][QIN.kQ] = (real)-1.f;
-				Q.q27[dirNE  ][QIN.kQ] = (real)-1.f;
-				Q.q27[dirSW  ][QIN.kQ] = (real)1.f;
-				Q.q27[dirSE  ][QIN.kQ] = (real)-1.f;
-				Q.q27[dirNW  ][QIN.kQ] = (real)1.f;
-				Q.q27[dirTE  ][QIN.kQ] = (real)-1.f;
-				Q.q27[dirBW  ][QIN.kQ] = (real)1.f;
-				Q.q27[dirBE  ][QIN.kQ] = (real)-1.f;
-				Q.q27[dirTW  ][QIN.kQ] = (real)1.f;
-				Q.q27[dirTN  ][QIN.kQ] = (real)-1.f;
-				Q.q27[dirBS  ][QIN.kQ] = (real)-1.f;
-				Q.q27[dirBN  ][QIN.kQ] = (real)-1.f;
-				Q.q27[dirTS  ][QIN.kQ] = (real)-1.f;
-				Q.q27[dirZERO][QIN.kQ] = (real)-1.f;
-				Q.q27[dirTNE ][QIN.kQ] = (real)-1.f;
-				Q.q27[dirTSW ][QIN.kQ] = (real)1.f;
-				Q.q27[dirTSE ][QIN.kQ] = (real)-1.f;
-				Q.q27[dirTNW ][QIN.kQ] = (real)1.f;
-				Q.q27[dirBNE ][QIN.kQ] = (real)-1.f;
-				Q.q27[dirBSW ][QIN.kQ] = (real)1.f;
-				Q.q27[dirBSE ][QIN.kQ] = (real)-1.f;
-				Q.q27[dirBNW ][QIN.kQ] = (real)1.f;
-				QIN.kQ++;
+				QIN.k[QIN.numberOfBCnodes]          = kk[m];
+				QIN.kN[QIN.numberOfBCnodes]         = kk[m+1];
+				rhoBC[QIN.numberOfBCnodes]          = (real)0.f;
+				vx[QIN.numberOfBCnodes]             = (real)0.f;
+				vy[QIN.numberOfBCnodes]             = (real)0.f;
+				//vz[QIN.numberOfBCnodes]             = u0;
+				vz[QIN.numberOfBCnodes]             = (real)(u0*2.f)*((-4.f*i*i + nnx*(-2.f - 4.f*STARTOFFX) - 4.f*(-1.5f + STARTOFFX)*(0.5f + STARTOFFX) + i*(-4.f + 4.f*nnx + 8.f*STARTOFFX))*(-4.f*j*j + nny*(-2.f - 4.f*STARTOFFY) - 4.f*(-1.5f + STARTOFFY)*(0.5f + STARTOFFY) + j*(-4.f + 4.f*nny + 8.f*STARTOFFY)))/((2.f - nnx)*(2.f - nnx)*(2.f - nny)*(2.f - nny));
+				//vz[QIN.numberOfBCnodes]             =  (real)(16.f*(u0*2.f)*(i-(STARTOFFX+1)-0.5f)*(li-1.5f-(i-(STARTOFFX+1)))*(j-(STARTOFFY+1)-0.5f)*(lj-1.5f-(j-(STARTOFFY+1))))/(li*lj*li*lj);
+				//vz[QIN.numberOfBCnodes]             = (real)(16.f*(u0*2.f)*i*j*(nx-i)*(ny-j))/(nx*nx*ny*ny);
+				deltaVz[QIN.numberOfBCnodes]        = (real)0.f;
+				Q.q27[dirE   ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirW   ][QIN.numberOfBCnodes] = (real)1.f;
+				Q.q27[dirN   ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirS   ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirT   ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirB   ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirNE  ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirSW  ][QIN.numberOfBCnodes] = (real)1.f;
+				Q.q27[dirSE  ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirNW  ][QIN.numberOfBCnodes] = (real)1.f;
+				Q.q27[dirTE  ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirBW  ][QIN.numberOfBCnodes] = (real)1.f;
+				Q.q27[dirBE  ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirTW  ][QIN.numberOfBCnodes] = (real)1.f;
+				Q.q27[dirTN  ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirBS  ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirBN  ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirTS  ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirZERO][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirTNE ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirTSW ][QIN.numberOfBCnodes] = (real)1.f;
+				Q.q27[dirTSE ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirTNW ][QIN.numberOfBCnodes] = (real)1.f;
+				Q.q27[dirBNE ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirBSW ][QIN.numberOfBCnodes] = (real)1.f;
+				Q.q27[dirBSE ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirBNW ][QIN.numberOfBCnodes] = (real)1.f;
+				QIN.numberOfBCnodes++;
 			}
 		}
 	}
@@ -1146,7 +1146,7 @@ void findKforQPressX0(Parameter* para, int lev)
 	unsigned int nnz              = para->getParH(lev)->gridNZ;
 	int* geo_mat                  = para->getParH(lev)->geo;
 	QforBoundaryConditions &QIN   = para->getParH(lev)->QpressX0;
-	QIN.kQ = 0;
+	QIN.numberOfBCnodes = 0;
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	i=STARTOFFX+1;
@@ -1170,7 +1170,7 @@ void findKforQPressX0(Parameter* para, int lev)
 					}
 					if (test>0)
 					{
-						QIN.kQ++;
+						QIN.numberOfBCnodes++;
 					}
 				}
 			}
@@ -1196,8 +1196,8 @@ void findQPressX1(Parameter* para, int lev)
 	unsigned int nnz              = para->getParH(lev)->gridNZ;
 	int* geo_mat                  = para->getParH(lev)->geo;
 	unsigned int* kk              = para->getParH(lev)->k;
-	//unsigned int sizeQ            = para->getParH(lev)->kOutflowQ;
-	unsigned int sizeQ            = para->getParH(lev)->QpressX1.kQ;
+	//unsigned int sizeQ            = para->getParH(lev)->numberOfOutflowBCnodes;
+	unsigned int sizeQ            = para->getParH(lev)->QpressX1.numberOfBCnodes;
 	real* rhoBC                = para->getParH(lev)->QpressX1.RhoBC;
 	real u0                    = para->getVelocity();
 	real* vx                   = para->getParH(lev)->QpressX1.Vx;
@@ -1207,7 +1207,7 @@ void findQPressX1(Parameter* para, int lev)
 	real* QQ                   = para->getParH(lev)->QpressX1.q27[0];
 	QforBoundaryConditions &QIN   = para->getParH(lev)->QpressX1;
 	//unsigned int nxny = nx*ny;
-	QIN.kQ = 0;
+	QIN.numberOfBCnodes = 0;
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	QforBoundaryConditions Q;
 	Q.q27[dirE   ] = &QQ[dirE   *sizeQ];
@@ -1249,44 +1249,44 @@ void findQPressX1(Parameter* para, int lev)
 			//for(i=STARTOFFX+1; i<=nnx+STARTOFFX-2 ; i++){
 			m = nx*(ny*k + j) + i;
 			if(geo_mat[m]==GEO_FLUID){
-				QIN.k[QIN.kQ]          = kk[m];
-				QIN.kN[QIN.kQ]         = kk[m-1];
-				rhoBC[QIN.kQ]          = (real)0.f;
-				vx[QIN.kQ]             = (real)0.f;
-				vy[QIN.kQ]             = (real)0.f;
-				//vz[QIN.kQ]             = u0;
-				vz[QIN.kQ]             = (real)(u0*2.f)*((-4.f*i*i + nnx*(-2.f - 4.f*STARTOFFX) - 4.f*(-1.5f + STARTOFFX)*(0.5f + STARTOFFX) + i*(-4.f + 4.f*nnx + 8.f*STARTOFFX))*(-4.f*j*j + nny*(-2.f - 4.f*STARTOFFY) - 4.f*(-1.5f + STARTOFFY)*(0.5f + STARTOFFY) + j*(-4.f + 4.f*nny + 8.f*STARTOFFY)))/((2.f - nnx)*(2.f - nnx)*(2.f - nny)*(2.f - nny));
-				//vz[QIN.kQ]             =  (real)(16.f*(u0*2.f)*(i-(STARTOFFX+1)-0.5f)*(li-1.5f-(i-(STARTOFFX+1)))*(j-(STARTOFFY+1)-0.5f)*(lj-1.5f-(j-(STARTOFFY+1))))/(li*lj*li*lj);
-				//vz[QIN.kQ]             = (real)(16.f*(u0*2.f)*i*j*(nx-i)*(ny-j))/(nx*nx*ny*ny);
-				deltaVz[QIN.kQ]        = (real)0.f;
-				Q.q27[dirE   ][QIN.kQ] = (real)1.f;
-				Q.q27[dirW   ][QIN.kQ] = (real)-1.f;
-				Q.q27[dirN   ][QIN.kQ] = (real)-1.f;
-				Q.q27[dirS   ][QIN.kQ] = (real)-1.f;
-				Q.q27[dirT   ][QIN.kQ] = (real)-1.f;
-				Q.q27[dirB   ][QIN.kQ] = (real)-1.f;
-				Q.q27[dirNE  ][QIN.kQ] = (real)1.f;
-				Q.q27[dirSW  ][QIN.kQ] = (real)-1.f;
-				Q.q27[dirSE  ][QIN.kQ] = (real)1.f;
-				Q.q27[dirNW  ][QIN.kQ] = (real)-1.f;
-				Q.q27[dirTE  ][QIN.kQ] = (real)1.f;
-				Q.q27[dirBW  ][QIN.kQ] = (real)-1.f;
-				Q.q27[dirBE  ][QIN.kQ] = (real)1.f;
-				Q.q27[dirTW  ][QIN.kQ] = (real)-1.f;
-				Q.q27[dirTN  ][QIN.kQ] = (real)-1.f;
-				Q.q27[dirBS  ][QIN.kQ] = (real)-1.f;
-				Q.q27[dirBN  ][QIN.kQ] = (real)-1.f;
-				Q.q27[dirTS  ][QIN.kQ] = (real)-1.f;
-				Q.q27[dirZERO][QIN.kQ] = (real)-1.f;
-				Q.q27[dirTNE ][QIN.kQ] = (real)1.f;
-				Q.q27[dirTSW ][QIN.kQ] = (real)-1.f;
-				Q.q27[dirTSE ][QIN.kQ] = (real)1.f;
-				Q.q27[dirTNW ][QIN.kQ] = (real)-1.f;
-				Q.q27[dirBNE ][QIN.kQ] = (real)1.f;
-				Q.q27[dirBSW ][QIN.kQ] = (real)-1.f;
-				Q.q27[dirBSE ][QIN.kQ] = (real)1.f;
-				Q.q27[dirBNW ][QIN.kQ] = (real)-1.f;
-				QIN.kQ++;
+				QIN.k[QIN.numberOfBCnodes]          = kk[m];
+				QIN.kN[QIN.numberOfBCnodes]         = kk[m-1];
+				rhoBC[QIN.numberOfBCnodes]          = (real)0.f;
+				vx[QIN.numberOfBCnodes]             = (real)0.f;
+				vy[QIN.numberOfBCnodes]             = (real)0.f;
+				//vz[QIN.numberOfBCnodes]             = u0;
+				vz[QIN.numberOfBCnodes]             = (real)(u0*2.f)*((-4.f*i*i + nnx*(-2.f - 4.f*STARTOFFX) - 4.f*(-1.5f + STARTOFFX)*(0.5f + STARTOFFX) + i*(-4.f + 4.f*nnx + 8.f*STARTOFFX))*(-4.f*j*j + nny*(-2.f - 4.f*STARTOFFY) - 4.f*(-1.5f + STARTOFFY)*(0.5f + STARTOFFY) + j*(-4.f + 4.f*nny + 8.f*STARTOFFY)))/((2.f - nnx)*(2.f - nnx)*(2.f - nny)*(2.f - nny));
+				//vz[QIN.numberOfBCnodes]             =  (real)(16.f*(u0*2.f)*(i-(STARTOFFX+1)-0.5f)*(li-1.5f-(i-(STARTOFFX+1)))*(j-(STARTOFFY+1)-0.5f)*(lj-1.5f-(j-(STARTOFFY+1))))/(li*lj*li*lj);
+				//vz[QIN.numberOfBCnodes]             = (real)(16.f*(u0*2.f)*i*j*(nx-i)*(ny-j))/(nx*nx*ny*ny);
+				deltaVz[QIN.numberOfBCnodes]        = (real)0.f;
+				Q.q27[dirE   ][QIN.numberOfBCnodes] = (real)1.f;
+				Q.q27[dirW   ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirN   ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirS   ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirT   ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirB   ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirNE  ][QIN.numberOfBCnodes] = (real)1.f;
+				Q.q27[dirSW  ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirSE  ][QIN.numberOfBCnodes] = (real)1.f;
+				Q.q27[dirNW  ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirTE  ][QIN.numberOfBCnodes] = (real)1.f;
+				Q.q27[dirBW  ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirBE  ][QIN.numberOfBCnodes] = (real)1.f;
+				Q.q27[dirTW  ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirTN  ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirBS  ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirBN  ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirTS  ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirZERO][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirTNE ][QIN.numberOfBCnodes] = (real)1.f;
+				Q.q27[dirTSW ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirTSE ][QIN.numberOfBCnodes] = (real)1.f;
+				Q.q27[dirTNW ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirBNE ][QIN.numberOfBCnodes] = (real)1.f;
+				Q.q27[dirBSW ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirBSE ][QIN.numberOfBCnodes] = (real)1.f;
+				Q.q27[dirBNW ][QIN.numberOfBCnodes] = (real)-1.f;
+				QIN.numberOfBCnodes++;
 			}
 		}
 	}
@@ -1312,7 +1312,7 @@ void findKforQPressX1(Parameter* para, int lev)
 	unsigned int nnz              = para->getParH(lev)->gridNZ;
 	int* geo_mat                  = para->getParH(lev)->geo;
 	QforBoundaryConditions &QIN   = para->getParH(lev)->QpressX1;
-	QIN.kQ = 0;
+	QIN.numberOfBCnodes = 0;
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	i=nnx+STARTOFFX-3;
@@ -1336,7 +1336,7 @@ void findKforQPressX1(Parameter* para, int lev)
 					}
 					if (test>0)
 					{
-						QIN.kQ++;
+						QIN.numberOfBCnodes++;
 					}
 				}
 			}

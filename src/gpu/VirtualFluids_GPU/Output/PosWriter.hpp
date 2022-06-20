@@ -31,11 +31,11 @@ public:
 		{
 			for (int level = 0; level <= para->getMaxLevel(); level++)
 			{
-				out.writeInteger(para->getParH(level)->size_Mat_SP);
+				out.writeInteger(para->getParH(level)->numberOfNodes);
 				out.writeLine();
-				for(unsigned int u=0; u<para->getParH(level)->size_Mat_SP; u++)
+				for(unsigned int u=0; u<para->getParH(level)->numberOfNodes; u++)
 				{
-					out.writeInteger(para->getParH(level)->geoSP[u]);
+					out.writeInteger(para->getParH(level)->typeOfGridNode[u]);
 				}
 				out.writeLine();
 			} //end levelloop
@@ -44,11 +44,11 @@ public:
 		{
 			for (int level = 0; level <= para->getMaxLevel(); level++)
 			{
-				out.writeInteger(para->getParH(level)->size_Mat_SP);
+				out.writeInteger(para->getParH(level)->numberOfNodes);
 				out.writeLine();
-				for(unsigned int u=0; u<para->getParH(level)->size_Mat_SP; u++)
+				for(unsigned int u=0; u<para->getParH(level)->numberOfNodes; u++)
 				{
-					out.writeInteger(para->getParH(level)->neighborX_SP[u]);
+					out.writeInteger(para->getParH(level)->neighborX[u]);
 				}
 				out.writeLine();
 			} //end levelloop
@@ -57,11 +57,11 @@ public:
 		{
 			for (int level = 0; level <= para->getMaxLevel(); level++)
 			{
-				out.writeInteger(para->getParH(level)->size_Mat_SP);
+				out.writeInteger(para->getParH(level)->numberOfNodes);
 				out.writeLine();
-				for(unsigned int u=0; u<para->getParH(level)->size_Mat_SP; u++)
+				for(unsigned int u=0; u<para->getParH(level)->numberOfNodes; u++)
 				{
-					out.writeInteger(para->getParH(level)->neighborY_SP[u]);
+					out.writeInteger(para->getParH(level)->neighborY[u]);
 				}
 				out.writeLine();
 			} //end levelloop
@@ -70,11 +70,11 @@ public:
 		{
 			for (int level = 0; level <= para->getMaxLevel(); level++)
 			{
-				out.writeInteger(para->getParH(level)->size_Mat_SP);
+				out.writeInteger(para->getParH(level)->numberOfNodes);
 				out.writeLine();
-				for(unsigned int u=0; u<para->getParH(level)->size_Mat_SP; u++)
+				for(unsigned int u=0; u<para->getParH(level)->numberOfNodes; u++)
 				{
-					out.writeInteger(para->getParH(level)->neighborZ_SP[u]);
+					out.writeInteger(para->getParH(level)->neighborZ[u]);
 				}
 				out.writeLine();
 			} //end levelloop

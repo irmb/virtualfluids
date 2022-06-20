@@ -34,7 +34,7 @@ private:
     std::vector<std::vector<real>> outflowBCvalues;
 
 public:
-	GridReader(FILEFORMAT format, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager);
+	GridReader(FILEFORMAT format, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager);
     ~GridReader();
 	void allocArrays_CoordNeighborGeo() override;
 	void allocArrays_BoundaryValues() override;

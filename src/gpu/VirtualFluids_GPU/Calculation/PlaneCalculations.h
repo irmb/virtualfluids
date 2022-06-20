@@ -13,10 +13,10 @@ extern "C" void calcPressure(Parameter* para, std::string inorout, int lev);
 extern "C" void calcFlowRate(Parameter* para, int lev);
 
 //advection + diffusion
-extern "C" void calcPlaneConc(Parameter* para, CudaMemoryManager* cudaManager, int lev);
-extern "C" void allocPlaneConc(Parameter* para, CudaMemoryManager* cudaManager);
-extern "C" void printPlaneConc(Parameter* para, CudaMemoryManager* cudaManager);
+extern "C" void calcPlaneConc(Parameter* para, CudaMemoryManager* cudaMemoryManager, int lev);
+extern "C" void allocPlaneConc(Parameter* para, CudaMemoryManager* cudaMemoryManager);
+extern "C" void printPlaneConc(Parameter* para, CudaMemoryManager* cudaMemoryManager);
 
-extern "C" void printRE(Parameter* para, CudaMemoryManager* cudaManager, int timestep);
+extern "C" void printRE(Parameter* para, CudaMemoryManager* cudaMemoryManager, int timestep);
 
 #endif

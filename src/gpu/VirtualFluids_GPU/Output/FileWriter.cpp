@@ -22,11 +22,11 @@
 
 #include <basics/writer/WbWriterVtkXmlBinary.h>
 
-void FileWriter::writeInit(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager)
+void FileWriter::writeInit(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager)
 {
     unsigned int timestep = para->getTInit();
     for (int level = para->getCoarse(); level <= para->getFine(); level++) {
-        cudaManager->cudaCopyPrint(level);
+        cudaMemoryManager->cudaCopyPrint(level);
         writeTimestep(para, timestep, level);
     }
 
@@ -49,7 +49,7 @@ void FileWriter::writeTimestep(std::shared_ptr<Parameter> para, unsigned int tim
 
 void FileWriter::writeTimestep(std::shared_ptr<Parameter> para, unsigned int timestep, int level)
 {
-    const unsigned int numberOfParts = para->getParH(level)->size_Mat_SP / para->getlimitOfNodesForVTK() + 1;
+    const unsigned int numberOfParts = para->getParH(level)->numberOfNodes / para->getlimitOfNodesForVTK() + 1;
     std::vector<std::string> fname;
     std::vector<std::string> fnameMed;
     for (unsigned int i = 1; i <= numberOfParts; i++)
@@ -77,9 +77,9 @@ void FileWriter::writeTimestep(std::shared_ptr<Parameter> para, unsigned int tim
 
 bool FileWriter::isPeriodicCell(std::shared_ptr<Parameter> para, int level, unsigned int number2, unsigned int number1, unsigned int number3, unsigned int number5)
 {
-    return (para->getParH(level)->coordX_SP[number2] < para->getParH(level)->coordX_SP[number1]) ||
-           (para->getParH(level)->coordY_SP[number3] < para->getParH(level)->coordY_SP[number1]) ||
-           (para->getParH(level)->coordZ_SP[number5] < para->getParH(level)->coordZ_SP[number1]);
+    return (para->getParH(level)->coordinateX[number2] < para->getParH(level)->coordinateX[number1]) ||
+           (para->getParH(level)->coordinateY[number3] < para->getParH(level)->coordinateY[number1]) ||
+           (para->getParH(level)->coordinateZ[number5] < para->getParH(level)->coordinateZ[number1]);
 }
 
 void VIRTUALFLUIDS_GPU_EXPORT FileWriter::writeCollectionFile(std::shared_ptr<Parameter> para, unsigned int timestep)
@@ -201,8 +201,8 @@ void FileWriter::writeUnstrucuredGridLT(std::shared_ptr<Parameter> para, int lev
 
     for (unsigned int part = 0; part < fname.size(); part++)
     {
-        if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->size_Mat_SP)
-            sizeOfNodes = para->getParH(level)->size_Mat_SP - (part * para->getlimitOfNodesForVTK());
+        if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->numberOfNodes)
+            sizeOfNodes = para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
         else
             sizeOfNodes = para->getlimitOfNodesForVTK();
 
@@ -218,24 +218,24 @@ void FileWriter::writeUnstrucuredGridLT(std::shared_ptr<Parameter> para, int lev
         //////////////////////////////////////////////////////////////////////////
         for (unsigned int pos = startpos; pos < endpos; pos++)
         {
-            if (para->getParH(level)->geoSP[pos] == GEO_FLUID)
+            if (para->getParH(level)->typeOfGridNode[pos] == GEO_FLUID)
             {
                 //////////////////////////////////////////////////////////////////////////
-                double x1 = para->getParH(level)->coordX_SP[pos];
-                double x2 = para->getParH(level)->coordY_SP[pos];
-                double x3 = para->getParH(level)->coordZ_SP[pos];
+                double x1 = para->getParH(level)->coordinateX[pos];
+                double x2 = para->getParH(level)->coordinateY[pos];
+                double x3 = para->getParH(level)->coordinateZ[pos];
                 //////////////////////////////////////////////////////////////////////////
                 number1 = pos;
                 dn1 = pos - startpos;
                 neighborsAreFluid = true;
                 //////////////////////////////////////////////////////////////////////////
                 nodes[dn1] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
-                nodedata[0][dn1] = (double)para->getParH(level)->press_SP[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
-                nodedata[1][dn1] = (double)para->getParH(level)->rho_SP[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
-                nodedata[2][dn1] = (double)para->getParH(level)->vx_SP[pos] * (double)para->getVelocityRatio();
-                nodedata[3][dn1] = (double)para->getParH(level)->vy_SP[pos] * (double)para->getVelocityRatio();
-                nodedata[4][dn1] = (double)para->getParH(level)->vz_SP[pos] * (double)para->getVelocityRatio();
-                nodedata[5][dn1] = (double)para->getParH(level)->geoSP[pos];
+                nodedata[0][dn1] = (double)para->getParH(level)->pressure[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
+                nodedata[1][dn1] = (double)para->getParH(level)->rho[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
+                nodedata[2][dn1] = (double)para->getParH(level)->velocityX[pos] * (double)para->getVelocityRatio();
+                nodedata[3][dn1] = (double)para->getParH(level)->velocityY[pos] * (double)para->getVelocityRatio();
+                nodedata[4][dn1] = (double)para->getParH(level)->velocityZ[pos] * (double)para->getVelocityRatio();
+                nodedata[5][dn1] = (double)para->getParH(level)->typeOfGridNode[pos];
 
                 if (para->getCalcTurbulenceIntensity()) {
                     nodedata[firstTurbNode    ][dn1] = (double)para->getParH(level)->vxx[pos];
@@ -247,21 +247,21 @@ void FileWriter::writeUnstrucuredGridLT(std::shared_ptr<Parameter> para, int lev
                 }
 
                 //////////////////////////////////////////////////////////////////////////
-                number2 = para->getParH(level)->neighborX_SP[number1];
-                number3 = para->getParH(level)->neighborY_SP[number2];
-                number4 = para->getParH(level)->neighborY_SP[number1];
-                number5 = para->getParH(level)->neighborZ_SP[number1];
-                number6 = para->getParH(level)->neighborZ_SP[number2];
-                number7 = para->getParH(level)->neighborZ_SP[number3];
-                number8 = para->getParH(level)->neighborZ_SP[number4];
+                number2 = para->getParH(level)->neighborX[number1];
+                number3 = para->getParH(level)->neighborY[number2];
+                number4 = para->getParH(level)->neighborY[number1];
+                number5 = para->getParH(level)->neighborZ[number1];
+                number6 = para->getParH(level)->neighborZ[number2];
+                number7 = para->getParH(level)->neighborZ[number3];
+                number8 = para->getParH(level)->neighborZ[number4];
                 //////////////////////////////////////////////////////////////////////////
-                if (para->getParH(level)->geoSP[number2] != GEO_FLUID ||
-                    para->getParH(level)->geoSP[number3] != GEO_FLUID ||
-                    para->getParH(level)->geoSP[number4] != GEO_FLUID ||
-                    para->getParH(level)->geoSP[number5] != GEO_FLUID ||
-                    para->getParH(level)->geoSP[number6] != GEO_FLUID ||
-                    para->getParH(level)->geoSP[number7] != GEO_FLUID ||
-                    para->getParH(level)->geoSP[number8] != GEO_FLUID)  neighborsAreFluid = false;
+                if (para->getParH(level)->typeOfGridNode[number2] != GEO_FLUID ||
+                    para->getParH(level)->typeOfGridNode[number3] != GEO_FLUID ||
+                    para->getParH(level)->typeOfGridNode[number4] != GEO_FLUID ||
+                    para->getParH(level)->typeOfGridNode[number5] != GEO_FLUID ||
+                    para->getParH(level)->typeOfGridNode[number6] != GEO_FLUID ||
+                    para->getParH(level)->typeOfGridNode[number7] != GEO_FLUID ||
+                    para->getParH(level)->typeOfGridNode[number8] != GEO_FLUID)  neighborsAreFluid = false;
                 //////////////////////////////////////////////////////////////////////////
                 if (number2 > endpos ||
                     number3 > endpos ||
@@ -312,8 +312,8 @@ void FileWriter::writeUnstrucuredGridLTConc(std::shared_ptr<Parameter> para, int
 
     for (unsigned int part = 0; part < fname.size(); part++)
     {
-        if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->size_Mat_SP)
-            sizeOfNodes = para->getParH(level)->size_Mat_SP - (part * para->getlimitOfNodesForVTK());
+        if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->numberOfNodes)
+            sizeOfNodes = para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
         else
             sizeOfNodes = para->getlimitOfNodesForVTK();
 
@@ -333,41 +333,41 @@ void FileWriter::writeUnstrucuredGridLTConc(std::shared_ptr<Parameter> para, int
         //////////////////////////////////////////////////////////////////////////
         for (unsigned int pos = startpos; pos < endpos; pos++)
         {
-            if (para->getParH(level)->geoSP[pos] == GEO_FLUID)
+            if (para->getParH(level)->typeOfGridNode[pos] == GEO_FLUID)
             {
                 //////////////////////////////////////////////////////////////////////////
-                double x1 = para->getParH(level)->coordX_SP[pos];
-                double x2 = para->getParH(level)->coordY_SP[pos];
-                double x3 = para->getParH(level)->coordZ_SP[pos];
+                double x1 = para->getParH(level)->coordinateX[pos];
+                double x2 = para->getParH(level)->coordinateY[pos];
+                double x3 = para->getParH(level)->coordinateZ[pos];
                 //////////////////////////////////////////////////////////////////////////
                 number1 = pos;
                 dn1 = pos - startpos;
                 neighborsAreFluid = true;
                 //////////////////////////////////////////////////////////////////////////
                 nodes[dn1] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
-                nodedata[0][dn1] = (double)para->getParH(level)->press_SP[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
-                nodedata[1][dn1] = (double)para->getParH(level)->rho_SP[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
-                nodedata[2][dn1] = (double)para->getParH(level)->vx_SP[pos] * (double)para->getVelocityRatio();
-                nodedata[3][dn1] = (double)para->getParH(level)->vy_SP[pos] * (double)para->getVelocityRatio();
-                nodedata[4][dn1] = (double)para->getParH(level)->vz_SP[pos] * (double)para->getVelocityRatio();
-                nodedata[5][dn1] = (double)para->getParH(level)->geoSP[pos];
+                nodedata[0][dn1] = (double)para->getParH(level)->pressure[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
+                nodedata[1][dn1] = (double)para->getParH(level)->rho[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
+                nodedata[2][dn1] = (double)para->getParH(level)->velocityX[pos] * (double)para->getVelocityRatio();
+                nodedata[3][dn1] = (double)para->getParH(level)->velocityY[pos] * (double)para->getVelocityRatio();
+                nodedata[4][dn1] = (double)para->getParH(level)->velocityZ[pos] * (double)para->getVelocityRatio();
+                nodedata[5][dn1] = (double)para->getParH(level)->typeOfGridNode[pos];
                 nodedata[6][dn1] = (double)para->getParH(level)->Conc[pos];
                 //////////////////////////////////////////////////////////////////////////
-                number2 = para->getParH(level)->neighborX_SP[number1];
-                number3 = para->getParH(level)->neighborY_SP[number2];
-                number4 = para->getParH(level)->neighborY_SP[number1];
-                number5 = para->getParH(level)->neighborZ_SP[number1];
-                number6 = para->getParH(level)->neighborZ_SP[number2];
-                number7 = para->getParH(level)->neighborZ_SP[number3];
-                number8 = para->getParH(level)->neighborZ_SP[number4];
+                number2 = para->getParH(level)->neighborX[number1];
+                number3 = para->getParH(level)->neighborY[number2];
+                number4 = para->getParH(level)->neighborY[number1];
+                number5 = para->getParH(level)->neighborZ[number1];
+                number6 = para->getParH(level)->neighborZ[number2];
+                number7 = para->getParH(level)->neighborZ[number3];
+                number8 = para->getParH(level)->neighborZ[number4];
                 //////////////////////////////////////////////////////////////////////////
-                if (para->getParH(level)->geoSP[number2] != GEO_FLUID ||
-                    para->getParH(level)->geoSP[number3] != GEO_FLUID ||
-                    para->getParH(level)->geoSP[number4] != GEO_FLUID ||
-                    para->getParH(level)->geoSP[number5] != GEO_FLUID ||
-                    para->getParH(level)->geoSP[number6] != GEO_FLUID ||
-                    para->getParH(level)->geoSP[number7] != GEO_FLUID ||
-                    para->getParH(level)->geoSP[number8] != GEO_FLUID)  neighborsAreFluid = false;
+                if (para->getParH(level)->typeOfGridNode[number2] != GEO_FLUID ||
+                    para->getParH(level)->typeOfGridNode[number3] != GEO_FLUID ||
+                    para->getParH(level)->typeOfGridNode[number4] != GEO_FLUID ||
+                    para->getParH(level)->typeOfGridNode[number5] != GEO_FLUID ||
+                    para->getParH(level)->typeOfGridNode[number6] != GEO_FLUID ||
+                    para->getParH(level)->typeOfGridNode[number7] != GEO_FLUID ||
+                    para->getParH(level)->typeOfGridNode[number8] != GEO_FLUID)  neighborsAreFluid = false;
                 //////////////////////////////////////////////////////////////////////////
                 if (number2 > endpos ||
                     number3 > endpos ||
@@ -421,9 +421,9 @@ void FileWriter::writeUnstrucuredGridMedianLT(std::shared_ptr<Parameter> para, i
     {
         //printf("\n test in if I... \n");
         //////////////////////////////////////////////////////////////////////////
-        if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->size_Mat_SP)
+        if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->numberOfNodes)
         {
-            sizeOfNodes = para->getParH(level)->size_Mat_SP - (part * para->getlimitOfNodesForVTK());
+            sizeOfNodes = para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
         }
         else
         {
@@ -445,12 +445,12 @@ void FileWriter::writeUnstrucuredGridMedianLT(std::shared_ptr<Parameter> para, i
         //printf("\n test in if II... \n");
         for (unsigned int pos = startpos; pos < endpos; pos++)
         {
-            if (para->getParH(level)->geoSP[pos] == GEO_FLUID)
+            if (para->getParH(level)->typeOfGridNode[pos] == GEO_FLUID)
             {
                 //////////////////////////////////////////////////////////////////////////
-                double x1 = para->getParH(level)->coordX_SP[pos];
-                double x2 = para->getParH(level)->coordY_SP[pos];
-                double x3 = para->getParH(level)->coordZ_SP[pos];
+                double x1 = para->getParH(level)->coordinateX[pos];
+                double x2 = para->getParH(level)->coordinateY[pos];
+                double x3 = para->getParH(level)->coordinateZ[pos];
                 //////////////////////////////////////////////////////////////////////////
                 number1 = pos;
                 dn1 = pos - startpos;
@@ -462,23 +462,23 @@ void FileWriter::writeUnstrucuredGridMedianLT(std::shared_ptr<Parameter> para, i
                 nodedata[2][dn1] = para->getParH(level)->vx_SP_Med_Out[pos] * para->getVelocityRatio();
                 nodedata[3][dn1] = para->getParH(level)->vy_SP_Med_Out[pos] * para->getVelocityRatio();
                 nodedata[4][dn1] = para->getParH(level)->vz_SP_Med_Out[pos] * para->getVelocityRatio();
-                nodedata[5][dn1] = (double)para->getParH(level)->geoSP[pos];
+                nodedata[5][dn1] = (double)para->getParH(level)->typeOfGridNode[pos];
                 //////////////////////////////////////////////////////////////////////////
-                number2 = para->getParH(level)->neighborX_SP[number1];
-                number3 = para->getParH(level)->neighborY_SP[number2];
-                number4 = para->getParH(level)->neighborY_SP[number1];
-                number5 = para->getParH(level)->neighborZ_SP[number1];
-                number6 = para->getParH(level)->neighborZ_SP[number2];
-                number7 = para->getParH(level)->neighborZ_SP[number3];
-                number8 = para->getParH(level)->neighborZ_SP[number4];
+                number2 = para->getParH(level)->neighborX[number1];
+                number3 = para->getParH(level)->neighborY[number2];
+                number4 = para->getParH(level)->neighborY[number1];
+                number5 = para->getParH(level)->neighborZ[number1];
+                number6 = para->getParH(level)->neighborZ[number2];
+                number7 = para->getParH(level)->neighborZ[number3];
+                number8 = para->getParH(level)->neighborZ[number4];
                 //////////////////////////////////////////////////////////////////////////
-                if (para->getParH(level)->geoSP[number2] != GEO_FLUID ||
-                    para->getParH(level)->geoSP[number3] != GEO_FLUID ||
-                    para->getParH(level)->geoSP[number4] != GEO_FLUID ||
-                    para->getParH(level)->geoSP[number5] != GEO_FLUID ||
-                    para->getParH(level)->geoSP[number6] != GEO_FLUID ||
-                    para->getParH(level)->geoSP[number7] != GEO_FLUID ||
-                    para->getParH(level)->geoSP[number8] != GEO_FLUID)  neighborsFluid = false;
+                if (para->getParH(level)->typeOfGridNode[number2] != GEO_FLUID ||
+                    para->getParH(level)->typeOfGridNode[number3] != GEO_FLUID ||
+                    para->getParH(level)->typeOfGridNode[number4] != GEO_FLUID ||
+                    para->getParH(level)->typeOfGridNode[number5] != GEO_FLUID ||
+                    para->getParH(level)->typeOfGridNode[number6] != GEO_FLUID ||
+                    para->getParH(level)->typeOfGridNode[number7] != GEO_FLUID ||
+                    para->getParH(level)->typeOfGridNode[number8] != GEO_FLUID)  neighborsFluid = false;
                 //////////////////////////////////////////////////////////////////////////
                 if (number2 > endpos ||
                     number3 > endpos ||
@@ -530,8 +530,8 @@ void FileWriter::writeUnstrucuredGridMedianLTConc(std::shared_ptr<Parameter> par
 
     for (unsigned int part = 0; part < fname.size(); part++)
     {
-        if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->size_Mat_SP)
-            sizeOfNodes = para->getParH(level)->size_Mat_SP - (part * para->getlimitOfNodesForVTK());
+        if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->numberOfNodes)
+            sizeOfNodes = para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
         else
             sizeOfNodes = para->getlimitOfNodesForVTK();
         //////////////////////////////////////////////////////////////////////////
@@ -550,12 +550,12 @@ void FileWriter::writeUnstrucuredGridMedianLTConc(std::shared_ptr<Parameter> par
         //////////////////////////////////////////////////////////////////////////
         for (unsigned int pos = startpos; pos < endpos; pos++)
         {
-            if (para->getParH(level)->geoSP[pos] == GEO_FLUID)
+            if (para->getParH(level)->typeOfGridNode[pos] == GEO_FLUID)
             {
                 //////////////////////////////////////////////////////////////////////////
-                double x1 = para->getParH(level)->coordX_SP[pos];
-                double x2 = para->getParH(level)->coordY_SP[pos];
-                double x3 = para->getParH(level)->coordZ_SP[pos];
+                double x1 = para->getParH(level)->coordinateX[pos];
+                double x2 = para->getParH(level)->coordinateY[pos];
+                double x3 = para->getParH(level)->coordinateZ[pos];
                 //////////////////////////////////////////////////////////////////////////
                 number1 = pos;
                 dn1 = pos - startpos;
@@ -568,23 +568,23 @@ void FileWriter::writeUnstrucuredGridMedianLTConc(std::shared_ptr<Parameter> par
                 nodedata[3][dn1] = (double)para->getParH(level)->vx_SP_Med_Out[pos] * para->getVelocityRatio();
                 nodedata[4][dn1] = (double)para->getParH(level)->vy_SP_Med_Out[pos] * para->getVelocityRatio();
                 nodedata[5][dn1] = (double)para->getParH(level)->vz_SP_Med_Out[pos] * para->getVelocityRatio();
-                nodedata[6][dn1] = (double)para->getParH(level)->geoSP[pos];
+                nodedata[6][dn1] = (double)para->getParH(level)->typeOfGridNode[pos];
                 //////////////////////////////////////////////////////////////////////////
-                number2 = para->getParH(level)->neighborX_SP[number1];
-                number3 = para->getParH(level)->neighborY_SP[number2];
-                number4 = para->getParH(level)->neighborY_SP[number1];
-                number5 = para->getParH(level)->neighborZ_SP[number1];
-                number6 = para->getParH(level)->neighborZ_SP[number2];
-                number7 = para->getParH(level)->neighborZ_SP[number3];
-                number8 = para->getParH(level)->neighborZ_SP[number4];
+                number2 = para->getParH(level)->neighborX[number1];
+                number3 = para->getParH(level)->neighborY[number2];
+                number4 = para->getParH(level)->neighborY[number1];
+                number5 = para->getParH(level)->neighborZ[number1];
+                number6 = para->getParH(level)->neighborZ[number2];
+                number7 = para->getParH(level)->neighborZ[number3];
+                number8 = para->getParH(level)->neighborZ[number4];
                 //////////////////////////////////////////////////////////////////////////
-                if (para->getParH(level)->geoSP[number2] != GEO_FLUID ||
-                    para->getParH(level)->geoSP[number3] != GEO_FLUID ||
-                    para->getParH(level)->geoSP[number4] != GEO_FLUID ||
-                    para->getParH(level)->geoSP[number5] != GEO_FLUID ||
-                    para->getParH(level)->geoSP[number6] != GEO_FLUID ||
-                    para->getParH(level)->geoSP[number7] != GEO_FLUID ||
-                    para->getParH(level)->geoSP[number8] != GEO_FLUID)  neighborsFluid = false;
+                if (para->getParH(level)->typeOfGridNode[number2] != GEO_FLUID ||
+                    para->getParH(level)->typeOfGridNode[number3] != GEO_FLUID ||
+                    para->getParH(level)->typeOfGridNode[number4] != GEO_FLUID ||
+                    para->getParH(level)->typeOfGridNode[number5] != GEO_FLUID ||
+                    para->getParH(level)->typeOfGridNode[number6] != GEO_FLUID ||
+                    para->getParH(level)->typeOfGridNode[number7] != GEO_FLUID ||
+                    para->getParH(level)->typeOfGridNode[number8] != GEO_FLUID)  neighborsFluid = false;
                 //////////////////////////////////////////////////////////////////////////
                 if (number2 > endpos ||
                     number3 > endpos ||

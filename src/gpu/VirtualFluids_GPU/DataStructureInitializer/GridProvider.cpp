@@ -9,24 +9,24 @@
 #include <GPU/CudaMemoryManager.h>
 
 
-std::shared_ptr<GridProvider> GridProvider::makeGridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager, vf::gpu::Communicator& communicator)
+std::shared_ptr<GridProvider> GridProvider::makeGridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::gpu::Communicator& communicator)
 {
-    return std::shared_ptr<GridProvider>(new GridGenerator(builder, para, cudaManager, communicator));
+    return std::shared_ptr<GridProvider>(new GridGenerator(builder, para, cudaMemoryManager, communicator));
 }
 
-std::shared_ptr<GridProvider> GridProvider::makeGridReader(FILEFORMAT format, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager)
+std::shared_ptr<GridProvider> GridProvider::makeGridReader(FILEFORMAT format, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager)
 {
-    return std::shared_ptr<GridProvider>(new GridReader(format, para, cudaManager));
+    return std::shared_ptr<GridProvider>(new GridReader(format, para, cudaMemoryManager));
 }
 
 void GridProvider::setNumberOfNodes(const int numberOfNodes, const int level) const
 {
-    para->getParH(level)->size_Mat_SP = numberOfNodes;
-    para->getParD(level)->size_Mat_SP = numberOfNodes;
-    para->getParH(level)->mem_size_real_SP = sizeof(real) * para->getParH(level)->size_Mat_SP;
-    para->getParH(level)->mem_size_int_SP = sizeof(uint) * para->getParH(level)->size_Mat_SP;
-    para->getParD(level)->mem_size_real_SP = sizeof(real) * para->getParD(level)->size_Mat_SP;
-    para->getParD(level)->mem_size_int_SP = sizeof(uint) * para->getParD(level)->size_Mat_SP;
+    para->getParH(level)->numberOfNodes = numberOfNodes;
+    para->getParD(level)->numberOfNodes = numberOfNodes;
+    para->getParH(level)->mem_size_real_SP = sizeof(real) * para->getParH(level)->numberOfNodes;
+    para->getParH(level)->mem_size_int_SP = sizeof(uint) * para->getParH(level)->numberOfNodes;
+    para->getParD(level)->mem_size_real_SP = sizeof(real) * para->getParD(level)->numberOfNodes;
+    para->getParD(level)->mem_size_int_SP = sizeof(uint) * para->getParD(level)->numberOfNodes;
 }
 
 void GridProvider::setNumberOfFluidNodes(const int numberOfNodes, const int level) const
@@ -44,9 +44,9 @@ void GridProvider::setInitalNodeValues(const int numberOfNodes, const int level)
 {
     for (int j = 1; j <= numberOfNodes; j++)
     {
-        const real coordX = para->getParH(level)->coordX_SP[j];
-        const real coordY = para->getParH(level)->coordY_SP[j];
-        const real coordZ = para->getParH(level)->coordZ_SP[j];
+        const real coordX = para->getParH(level)->coordinateX[j];
+        const real coordY = para->getParH(level)->coordinateY[j];
+        const real coordZ = para->getParH(level)->coordinateZ[j];
 
         real rho, vx, vy, vz;
 
@@ -63,10 +63,10 @@ void GridProvider::setInitalNodeValues(const int numberOfNodes, const int level)
             vz  = real(0.0);
         }
 
-        para->getParH(level)->rho_SP[j] = rho; 
-        para->getParH(level)->vx_SP[j]  = vx; 
-        para->getParH(level)->vy_SP[j]  = vy;
-        para->getParH(level)->vz_SP[j]  = vz; 
+        para->getParH(level)->rho[j] = rho; 
+        para->getParH(level)->velocityX[j]  = vx; 
+        para->getParH(level)->velocityY[j]  = vy;
+        para->getParH(level)->velocityZ[j]  = vz; 
 
         //////////////////////////////////////////////////////////////////////////
 
@@ -106,29 +106,29 @@ void GridProvider::setInitalNodeValues(const int numberOfNodes, const int level)
 
 void GridProvider::setPressSizePerLevel(int level, int sizePerLevel) const
 {
-    para->getParH(level)->QPress.kQ = sizePerLevel;
-    para->getParD(level)->QPress.kQ = sizePerLevel;
-    para->getParH(level)->kPressQread = sizePerLevel * para->getD3Qxx();
-    para->getParD(level)->kPressQread = sizePerLevel * para->getD3Qxx();
+    para->getParH(level)->pressureBC.numberOfBCnodes = sizePerLevel;
+    para->getParD(level)->pressureBC.numberOfBCnodes = sizePerLevel;
+    para->getParH(level)->numberOfPressureBCnodesRead = sizePerLevel * para->getD3Qxx();
+    para->getParD(level)->numberOfPressureBCnodesRead = sizePerLevel * para->getD3Qxx();
 }
 
 
 void GridProvider::setVelocitySizePerLevel(int level, int sizePerLevel) const
 {
-    para->getParH(level)->Qinflow.kQ = sizePerLevel;
-    para->getParD(level)->Qinflow.kQ = sizePerLevel;
-    para->getParH(level)->kInflowQ = sizePerLevel;
-    para->getParD(level)->kInflowQ = sizePerLevel;
-    para->getParH(level)->kInflowQread = sizePerLevel * para->getD3Qxx();
-    para->getParD(level)->kInflowQread = sizePerLevel * para->getD3Qxx();
+    para->getParH(level)->velocityBC.numberOfBCnodes = sizePerLevel;
+    para->getParD(level)->velocityBC.numberOfBCnodes = sizePerLevel;
+    para->getParH(level)->numberOfVeloBCnodes = sizePerLevel;
+    para->getParD(level)->numberOfVeloBCnodes = sizePerLevel;
+    para->getParH(level)->numberOfVeloBCnodesRead = sizePerLevel * para->getD3Qxx();
+    para->getParD(level)->numberOfVeloBCnodesRead = sizePerLevel * para->getD3Qxx();
 }
 
 void GridProvider::setOutflowSizePerLevel(int level, int sizePerLevel) const
 {
-    para->getParH(level)->Qoutflow.kQ = sizePerLevel;
-    para->getParD(level)->Qoutflow.kQ = sizePerLevel;
-    para->getParH(level)->kOutflowQread = sizePerLevel * para->getD3Qxx();
-    para->getParD(level)->kOutflowQread = sizePerLevel * para->getD3Qxx();
+    para->getParH(level)->outflowBC.numberOfBCnodes = sizePerLevel;
+    para->getParD(level)->outflowBC.numberOfBCnodes = sizePerLevel;
+    para->getParH(level)->numberOfOutflowBCnodesRead = sizePerLevel * para->getD3Qxx();
+    para->getParD(level)->numberOfOutflowBCnodesRead = sizePerLevel * para->getD3Qxx();
 }
 
 void GridProvider::allocAndCopyForcing()

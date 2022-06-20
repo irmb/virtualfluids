@@ -295,10 +295,10 @@ public:
     void cudaCopyPorousMedia(PorousMedia* pm, int lev);
     void cudaFreePorousMedia(PorousMedia* pm, int lev);
 
-    void cudaAllocConc(int lev);
-    void cudaCopyConcDH(int lev);
-    void cudaCopyConcHD(int lev);
-    void cudaFreeConc(int lev);
+    void cudaAllocConcentration(int lev);
+    void cudaCopyConcentrationDeviceToHost(int lev);
+    void cudaCopyConcentrationHostToDevice(int lev);
+    void cudaFreeConcentration(int lev);
 
     void cudaAllocTempFs(int lev);
 

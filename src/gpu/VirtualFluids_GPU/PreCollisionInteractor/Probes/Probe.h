@@ -152,9 +152,9 @@ public:
         assert("Output starts before averaging!" && tStartOut>=tStartAvg);
     }
     
-    void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager) override;
-    void interact(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t) override;
-    void free(Parameter* para, CudaMemoryManager* cudaManager) override;
+    void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaMemoryManager) override;
+    void interact(Parameter* para, CudaMemoryManager* cudaMemoryManager, int level, uint t) override;
+    void free(Parameter* para, CudaMemoryManager* cudaMemoryManager) override;
 
     SPtr<ProbeStruct> getProbeStruct(int level){ return this->probeParams[level]; }
 
@@ -176,7 +176,7 @@ private:
                        std::vector<real>& distX_level, std::vector<real>& distY_level, std::vector<real>& distZ_level,      
                        std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
                        int level) = 0;
-    void addProbeStruct(CudaMemoryManager* cudaManager, std::vector<int>& probeIndices,
+    void addProbeStruct(CudaMemoryManager* cudaMemoryManager, std::vector<int>& probeIndices,
                         std::vector<real>& distX, std::vector<real>& distY, std::vector<real>& distZ,   
                         std::vector<real>& pointCoordsX, std::vector<real>& pointCoordsY, std::vector<real>& pointCoordsZ,
                         int level);
