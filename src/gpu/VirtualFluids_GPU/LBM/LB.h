@@ -177,6 +177,11 @@ typedef struct  Distri27{
    real* f[27];
 } Distributions27, DistributionReferences27;
 
+// Subgrid distances q 27
+typedef struct SubgridDist27{
+   real* q[27];
+} SubgridDistances27;
+
 //Q for second order BCs
 //! \struct to manage sub-grid-distances (q) for second order Boundary Conditions (BCs)
 typedef struct QforBC{

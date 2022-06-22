@@ -18,6 +18,7 @@ struct CudaGrid
     void print() const;
 };
 
+dim3 getCudaGrid(const unsigned int numberOfThreads, const unsigned int numberOfEntities);
 
 }
 

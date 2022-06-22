@@ -11,6 +11,7 @@
 #include <helper_cuda.h>
 
 #include "LBM/LB.h"
+#include "cuda/CudaGrid.h"
 
 // includes, kernels
 #include "GPU/GPU_Kernels.cuh"
@@ -3267,54 +3268,39 @@ extern "C" void QVelDevCompPlusSlip27(unsigned int numberOfThreads,
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QVelDevComp27(unsigned int numberOfThreads,
-							  int nx,
-							  int ny,
-							  real* vx,
-							  real* vy,
-							  real* vz,
-							  real* DD,
-							  int* k_Q,
-							  real* QQ,
-							  unsigned int sizeQ,
-							  unsigned int numberOfBCnodes,
-							  real om1,
-							  unsigned int* neighborX,
-							  unsigned int* neighborY,
-							  unsigned int* neighborZ,
-							  unsigned int size_Mat,
-							  bool isEvenTimestep)
+                              real* velocityX,
+                              real* velocityY,
+                              real* velocityZ,
+                              real* distribution,
+                              int* subgridDistanceIndices,
+                              real* subgridDistances,
+                              unsigned int numberOfSubgridIndices,
+                              int numberOfBCnodes,
+                              real omega,
+                              unsigned int* neighborX,
+                              unsigned int* neighborY,
+                              unsigned int* neighborZ,
+                              unsigned int numberOfLBnodes,
+                              bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
+   dim3 grid = vf::cuda::getCudaGrid(numberOfThreads, numberOfBCnodes);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      QVelDeviceComp27<<< gridQ, threads >>> (nx,
-											  ny,
-											  vx,
-											  vy,
-											  vz,
-											  DD,
-											  k_Q,
-											  QQ,
-											  sizeQ,
-											  numberOfBCnodes,
-											  om1,
-											  neighborX,
-											  neighborY,
-											  neighborZ,
-											  size_Mat,
-											  isEvenTimestep);
+      QVelDeviceComp27<<< grid, threads >>> (
+                               velocityX,
+                               velocityY,
+                               velocityZ,
+                               distribution,
+                               subgridDistanceIndices,
+                               subgridDistances,
+                               numberOfSubgridIndices,
+                               numberOfBCnodes,
+                               omega,
+                               neighborX,
+                               neighborY,
+                               neighborZ,
+                               numberOfLBnodes,
+                               isEvenTimestep);
       getLastCudaError("QVelDeviceComp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////

@@ -428,8 +428,6 @@ void LBKernelManager::runGeoBCKernelPost(int level)
 
         QVelDevComp27(
             para->getParD(level)->numberofthreads,
-            para->getParD(level)->nx,
-            para->getParD(level)->ny,
             para->getParD(level)->geometryBC.Vx,
             para->getParD(level)->geometryBC.Vy,
             para->getParD(level)->geometryBC.Vz,
