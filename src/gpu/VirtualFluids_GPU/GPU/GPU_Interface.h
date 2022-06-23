@@ -1281,6 +1281,17 @@ extern "C" void VelSchlaffer27(  unsigned int numberOfThreads,
                                  unsigned int size_Mat, 
                                  bool evenOrOdd);
 
+extern "C" void QPrecursorDevCompZeroPress(  uint numberOfThreads, real tRatio,
+                                             real* DD, real* QQ,
+                                             int* k_Q, uint kQ, uint kArray, uint nVelPoints, 
+											 real omega, real velocityRatio,
+                                             uint* neighborX, uint* neighborY, uint* neighborZ,
+											 uint* neighborsNT, uint* neighborsNB, uint* neighborsST, uint* neighborsSB,
+                                             real* weightsNT, real* weightsNB, real* weightsST, real* weightsSB,
+                                             real* vxLast, real* vyLast, real* vzLast,
+                                             real* vxCurrent, real* vyCurrent, real* vzCurrent,
+                                             unsigned long long size_Mat, bool evenOrOdd);
+
 extern "C" void QADDev7(unsigned int numberOfThreads,
                         int nx,
                         int ny,

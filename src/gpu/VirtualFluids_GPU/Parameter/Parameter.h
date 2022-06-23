@@ -55,6 +55,8 @@ class ConfigurationFile;
 }
 }
 
+class VelocityReader;
+
 //! \struct LBMSimulationParameter
 //! \brief struct holds and manages the LB-parameter of the simulation
 //! \brief For this purpose it holds structures and pointer for host and device data, respectively.
@@ -196,6 +198,7 @@ struct LBMSimulationParameter
     QforBoundaryConditions QpressX0, QpressX1, QpressY0, QpressY1, QpressZ0, QpressZ1;
     QforBoundaryConditions QPropeller;
     QforBoundaryConditions QPress;
+    QForPrecursorBoundaryCondition QPrecursor;
     QforBoundaryConditions QGeom;
     QforBoundaryConditions QGeomNormalX, QGeomNormalY, QGeomNormalZ;
     QforBoundaryConditions QInflowNormalX, QInflowNormalY, QInflowNormalZ;
@@ -205,6 +208,7 @@ struct LBMSimulationParameter
     unsigned int kPressQ = 0, kPressQread;
 
     WallModelParameters wallModel;
+    std::vector<SPtr<VelocityReader>> velocityReader;
     
     // testRoundoffError
     Distributions27 kDistTestRE;

@@ -69,7 +69,7 @@ __global__ void interpolateVelocities(  uint nVelPoints,
         vyNextInterpd = vyNext[kNT];
         vzNextInterpd = vzNext[kNT];
     }
-    if(node==100)
+    // if(node==100)
         // printf("last u %f v %f next u %f v %f\n", vxLastInterpd, vyLastInterpd, vxNextInterpd, vyNextInterpd);
     vx[node] = ((1.f-tRatio)*vxLastInterpd + tRatio*vxNextInterpd)/velocityRatio;
     vy[node] = ((1.f-tRatio)*vyLastInterpd + tRatio*vyNextInterpd)/velocityRatio; 
@@ -96,10 +96,10 @@ std::string readAttribute(std::string line, std::string attributeName)
     return line.substr(attributeStart, attributeLen);
 }
 
-VelocityFileCollection* VelocityFileCollection::createFileCollection(std::string prefix, std::string suffix)
+SPtr<VelocityFileCollection> VelocityFileCollection::createFileCollection(std::string prefix, std::string suffix)
 {
     if(strcmp(suffix.c_str(), VTKFileCollection::suffix.c_str())==0)
-        return new VTKFileCollection(prefix);
+        return std::make_shared<VTKFileCollection>(prefix);
     else return nullptr;
 }
 
@@ -205,7 +205,7 @@ void VTKFile::unloadFile()
     this->loaded = false;
 }
 
-void VTKFile::getVelocities(real* vx, real* vy, real* vz, std::vector<uint> readIndeces, std::vector<uint> writeIndices, uint offsetRead)
+void VTKFile::getVelocities(real* vx, real* vy, real* vz, std::vector<uint> readIndeces, std::vector<uint> writeIndices, uint offsetRead, uint offsetWrite)
 {
     if(!this->loaded) loadFile();
 
@@ -213,9 +213,9 @@ void VTKFile::getVelocities(real* vx, real* vy, real* vz, std::vector<uint> read
 
     for(int i=0; i<nPoints; i++)
     {   
-        vx[writeIndices[i]] = this->vxFile[readIndeces[i]];
-        vy[writeIndices[i]] = this->vyFile[readIndeces[i]];
-        vz[writeIndices[i]] = this->vzFile[readIndeces[i]];
+        vx[offsetWrite+writeIndices[i]] = this->vxFile[readIndeces[i]+offsetRead];
+        vy[offsetWrite+writeIndices[i]] = this->vyFile[readIndeces[i]+offsetRead];
+        vz[offsetWrite+writeIndices[i]] = this->vzFile[readIndeces[i]+offsetRead];
     }
 }
 
@@ -260,9 +260,9 @@ void VTKFileCollection::findFiles()
 }
 
 
-VelocityReader* VTKFileCollection::createReaderForCollection()
+SPtr<VelocityReader> VTKFileCollection::createReaderForCollection()
 {
-    return new VTKReader(this); 
+    return std::make_shared<VTKReader>(getSelf()); 
 }
 
 
@@ -284,27 +284,20 @@ void VelocityReader::switchLastAndNext()
     vzNextD = tmp;
 }
 
-void VelocityReader::copyIndexAndWeightToArrays()
+void VelocityReader::getNeighbors(uint* neighborNT, uint* neighborNB, uint* neighborST, uint* neighborSB)
 {
-    std::copy(planeNeighborNT.begin(), planeNeighborNT.end(), planeNeighborNTH);
-    std::copy(planeNeighborNB.begin(), planeNeighborNB.end(), planeNeighborNBH);
-    std::copy(planeNeighborST.begin(), planeNeighborST.end(), planeNeighborSTH);
-    std::copy(planeNeighborSB.begin(), planeNeighborSB.end(), planeNeighborSBH);
+    std::copy(planeNeighborNT.begin(), planeNeighborNT.end(), &neighborNT[writingOffset]);
+    std::copy(planeNeighborNB.begin(), planeNeighborNB.end(), &neighborNB[writingOffset]);
+    std::copy(planeNeighborST.begin(), planeNeighborST.end(), &neighborST[writingOffset]);
+    std::copy(planeNeighborSB.begin(), planeNeighborSB.end(), &neighborSB[writingOffset]);
+}
 
-    planeNeighborNT.clear();
-    planeNeighborNB.clear();
-    planeNeighborST.clear();
-    planeNeighborSB.clear();
-
-    std::copy(weightsNT.begin(), weightsNT.end(), weightsNTH);
-    std::copy(weightsNB.begin(), weightsNB.end(), weightsNBH);
-    std::copy(weightsST.begin(), weightsST.end(), weightsSTH);
-    std::copy(weightsSB.begin(), weightsSB.end(), weightsSBH);
-
-    weightsNT.clear();
-    weightsNB.clear();
-    weightsST.clear();
-    weightsSB.clear();
+void VelocityReader::getWeights(real* _weightsNT, real* _weightsNB, real* _weightsST, real* _weightsSB)
+{
+    std::copy(weightsNT.begin(), weightsNT.end(), &_weightsNT[writingOffset]);
+    std::copy(weightsNB.begin(), weightsNB.end(), &_weightsNB[writingOffset]);
+    std::copy(weightsST.begin(), weightsST.end(), &_weightsST[writingOffset]);
+    std::copy(weightsSB.begin(), weightsSB.end(), &_weightsSB[writingOffset]);
 }
 
 void VTKReader::initializeIndexVectors()
@@ -467,7 +460,7 @@ void VTKReader::getNextVelocities(real* vx, real* vy, real* vz, real t)
             auto file = &this->fileCollection->files[level][id][nF];
 
             int off = file->getIdxBZ(t)*file->getNumberOfPointsInXYPlane();
-            file->getVelocities(vx, vy, vz, this->readIndices[level][id], this->writeIndices[level][id], off);
+            file->getVelocities(vx, vy, vz, this->readIndices[level][id], this->writeIndices[level][id], off, this->writingOffset);
             this->nFile[level][id] = nF;
         }
     }
@@ -477,77 +470,77 @@ void VTKReader::getNextVelocities(real* vx, real* vy, real* vz, real t)
 
 void VelocitySetter::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager)
 {
-    nReads = std::vector<uint>(para->getMaxLevel()+1, 0);
-    streams.resize(para->getMaxLevel()+1);
+    // nReads = std::vector<uint>(para->getMaxLevel()+1, 0);
+    // streams.resize(para->getMaxLevel()+1);
 
-    for(int level=0; level<para->getMaxLevel()+1; level++)
-    {
-        cudaStreamCreate(&streams[level]);
-        auto reader = getVelocityReader(level);
-        cudaManager->cudaAllocVelocityReaderArrays(this, level);
-        reader->copyIndexAndWeightToArrays();
-        cudaManager->cudaCopyVelocityReaderIndexAndWeightArraysHtoD(this, level);
-        assert("Reader does not have any points, was setBCArrays called?" && reader->getNPoints()>0 );
+    // for(int level=0; level<para->getMaxLevel()+1; level++)
+    // {
+    //     cudaStreamCreate(&streams[level]);
+    //     auto reader = getVelocityReader(level);
+    //     cudaManager->cudaAllocVelocityReaderArrays(this, level);
+    //     reader->copyIndexAndWeightToArrays();
+    //     cudaManager->cudaCopyVelocityReaderIndexAndWeightArraysHtoD(this, level);
+    //     assert("Reader does not have any points, was setBCArrays called?" && reader->getNPoints()>0 );
 
-        reader->getNextVelocities(reader->vxNextH, reader->vyNextH, reader->vzNextH, 0.f);
-        cudaManager->cudaCopyVelocityReaderNextVelocitiesHtoD(this, level);
-        reader->switchLastAndNext();
+    //     reader->getNextVelocities(reader->vxNextH, reader->vyNextH, reader->vzNextH, 0.f);
+    //     cudaManager->cudaCopyVelocityReaderNextVelocitiesHtoD(this, level);
+    //     reader->switchLastAndNext();
 
-        real time = pow(2,-level)*para->getTimeRatio();
+    //     real time = pow(2,-level)*para->getTimeRatio();
 
-        reader->getNextVelocities(reader->vxNextH, reader->vyNextH, reader->vzNextH, time);
-        cudaManager->cudaCopyVelocityReaderNextVelocitiesHtoD(this, level);  
+    //     reader->getNextVelocities(reader->vxNextH, reader->vyNextH, reader->vzNextH, time);
+    //     cudaManager->cudaCopyVelocityReaderNextVelocitiesHtoD(this, level);  
 
-        reader->switchLastAndNext();
-        reader->getNextVelocities(reader->vxNextH, reader->vyNextH, reader->vzNextH, 2*time);
-        cudaManager->cudaCopyVelocityReaderNextVelocitiesHtoD(this, level);  
-    }
+    //     reader->switchLastAndNext();
+    //     reader->getNextVelocities(reader->vxNextH, reader->vyNextH, reader->vzNextH, 2*time);
+    //     cudaManager->cudaCopyVelocityReaderNextVelocitiesHtoD(this, level);  
+    // }
 }
 
 void VelocitySetter::interact(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t)
 {
 
-    auto reader = getVelocityReader(level);
+    // auto reader = getVelocityReader(level);
 
-    int tLastRead = nReads[level]*nTRead;
+    // int tLastRead = nReads[level]*nTRead;
 
-    if(t>tLastRead+nTRead)
-    {
-        real nextTime = (t+1)*pow(2,-level)*para->getTimeRatio();
-        reader->switchLastAndNext();
-        reader->getNextVelocities(reader->vxNextH, reader->vyNextH, reader->vzNextH, nextTime);
+    // if(t>tLastRead+nTRead)
+    // {
+    //     real nextTime = (t+1)*pow(2,-level)*para->getTimeRatio();
+    //     reader->switchLastAndNext();
+    //     reader->getNextVelocities(reader->vxNextH, reader->vyNextH, reader->vzNextH, nextTime);
 
-        nReads[level]++;
-        cudaManager->cudaCopyVelocityReaderNextVelocitiesHtoD(this, level);  
-        tLastRead += nTRead;  
-    }
+    //     nReads[level]++;
+    //     cudaManager->cudaCopyVelocityReaderNextVelocitiesHtoD(this, level);  
+    //     tLastRead += nTRead;  
+    // }
 
-    real tRatio = real(t-tLastRead)/nTRead;
+    // real tRatio = real(t-tLastRead)/nTRead;
 
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, reader->getNPoints());
-    interpolateVelocities<<<grid.grid, grid.threads>>>( reader->getNPoints(), 
-                                                        reader->vxLastD, reader->vyLastD, reader->vzLastD, 
-                                                        reader->vxCurrentD,reader->vyCurrentD,reader->vzCurrentD,
-                                                        para->getParD(level)->Qinflow.Vx, para->getParD(level)->Qinflow.Vy, para->getParD(level)->Qinflow.Vz,
-                                                        reader->planeNeighborNTD, reader->planeNeighborNBD, reader->planeNeighborSTD, reader->planeNeighborSBD, 
-                                                        reader->weightsNTD, reader->weightsNBD, reader->weightsSTD, reader->weightsSBD,
-                                                        tRatio, para->getVelocityRatio());
+    // vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, reader->getNPoints());
+    // interpolateVelocities<<<grid.grid, grid.threads>>>( reader->getNPoints(), 
+    //                                                     reader->vxLastD, reader->vyLastD, reader->vzLastD, 
+    //                                                     reader->vxCurrentD,reader->vyCurrentD,reader->vzCurrentD,
+    //                                                     para->getParD(level)->Qinflow.Vx, para->getParD(level)->Qinflow.Vy, para->getParD(level)->Qinflow.Vz,
+    //                                                     reader->planeNeighborNTD, reader->planeNeighborNBD, reader->planeNeighborSTD, reader->planeNeighborSBD, 
+    //                                                     reader->weightsNTD, reader->weightsNBD, reader->weightsSTD, reader->weightsSBD,
+    //                                                     tRatio, para->getVelocityRatio());
     
 }
 
 
 void VelocitySetter::free(Parameter* para, CudaMemoryManager* cudaManager)
 {
-    for(int level=0; level<para->getMaxLevel()+1; level++)
-    {
-        cudaManager->cudaFreeVelocityReaderArrays(this, level);
-    }
+    // for(int level=0; level<para->getMaxLevel()+1; level++)
+    // {
+    //     cudaManager->cudaFreeVelocityReaderArrays(this, level);
+    // }
 }
 
 void VelocitySetter::setBCArrays(SPtr<Grid> grid, SPtr<gg::BoundaryCondition> velocityBC)
 {
-     velocityReaders.emplace_back(fileCollection->createReaderForCollection());
-     std::vector<real> x, y, z;
-     velocityBC->getCoords(grid, x, y, z);
-     velocityReaders.back()->fillArrays(y, z);
+    //  velocityReaders.emplace_back(fileCollection->createReaderForCollection());
+    //  std::vector<real> x, y, z;
+    //  velocityBC->getCoords(grid, x, y, z);
+    //  velocityReaders.back()->fillArrays(y, z);
 }

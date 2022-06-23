@@ -45,6 +45,8 @@ class Grid;
 class Side;
 enum class SideType;
 
+class VelocityReader;
+
 namespace gg
 {
 class BoundaryCondition
@@ -287,14 +289,27 @@ public:
                                                   real v, real r );
 };
 
-class PrecursorBoundaryCondition : public VelocityBoundaryCondition
+class PrecursorBoundaryCondition : public gg::BoundaryCondition
 {
 public:
-    static SPtr<PrecursorBoundaryCondition> make(real vx, real vy, real vz)
+    static SPtr<PrecursorBoundaryCondition> make(real vx, real vy, real vz, SPtr<VelocityReader> reader, int nTRead)
     {
-        return SPtr<PrecursorBoundaryCondition>(new PrecursorBoundaryCondition(vx, vy, vz));
+        return SPtr<PrecursorBoundaryCondition>(new PrecursorBoundaryCondition(vx, vy, vz, reader, nTRead));
     }
+
+    SPtr<VelocityReader> getReader(){ return reader; }
+
 private:
-    PrecursorBoundaryCondition(real vx, real vy, real vz) : VelocityBoundaryCondition( vx, vy, vz) { };
+    PrecursorBoundaryCondition(real _vx, real _vy, real _vz, SPtr<VelocityReader> _reader, uint _nTRead) : reader(_reader), vx(_vx), vy(_vy), vz(_vz), nTRead(_nTRead) { };
+    virtual char getType() const override
+    {
+        return vf::gpu::BC_VELOCITY;
+    }
+public:
+    uint nTRead;
+
+private:
+    real vx, vy, vz;
+    SPtr<VelocityReader> reader;
 };
 #endif

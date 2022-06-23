@@ -114,7 +114,7 @@ void PrecursorWriter::init(Parameter* para, GridProvider* gridProvider, CudaMemo
         precursorStructs[level]->filesWritten = 0;
         precursorStructs[level]->timestepsBuffered = 0;
 
-        printf("points %d points on plane %d \n",  indicesOnGrid.size(),  indicesOnPlane.size());
+        printf("points %lu points on plane %lu \n",  indicesOnGrid.size(),  indicesOnPlane.size());
 
         cudaManager->cudaAllocPrecursorWriter(this, level);
     

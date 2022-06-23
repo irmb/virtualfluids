@@ -11,6 +11,7 @@
 #include <helper_cuda.h>
 
 #include "LBM/LB.h"
+#include "CudaGrid.h"
 
 // includes, kernels
 #include "GPU/GPU_Kernels.cuh"
@@ -4602,6 +4603,30 @@ extern "C" void VelSchlaffer27(  unsigned int numberOfThreads,
       getLastCudaError("VelSchlaff27 execution failed"); 
 }
 //////////////////////////////////////////////////////////////////////////
+extern "C" void QPrecursorDevCompZeroPress(  uint numberOfThreads, real tRatio,
+                                             real* DD, real* QQ,
+                                             int* k_Q, uint kQ, uint kArray, uint nVelPoints,
+                                             real omega, real velocityRatio,
+                                             uint* neighborX, uint* neighborY, uint* neighborZ,
+                                             uint* neighborsNT, uint* neighborsNB, uint* neighborsST, uint* neighborsSB,
+                                             real* weightsNT, real* weightsNB, real* weightsST, real* weightsSB,
+                                             real* vxLast, real* vyLast, real* vzLast,
+                                             real* vxCurrent, real* vyCurrent, real* vzCurrent, 
+                                             unsigned long long size_Mat, bool evenOrOdd)
+{
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kArray);
+
+   QPrecursorDeviceCompZeroPress<<<grid.grid, grid.threads>>>(k_Q, kQ, kArray, omega, DD, QQ,
+                                                               neighborX, neighborY, neighborZ,
+                                                               neighborsNT, neighborsNB, neighborsST, neighborsSB,
+                                                               weightsNT, weightsNB, weightsST, weightsSB,
+                                                               vxLast, vyLast, vzLast,
+                                                               vxCurrent, vyCurrent, vzCurrent, tRatio, velocityRatio, size_Mat, evenOrOdd);
+   getLastCudaError("QPrecursorDeviceCompZeroPress execution failed"); 
+
+
+}
+//////////////////////////////////////////////////////////////////////////
 extern "C" void PropVelo(   unsigned int numberOfThreads,
                             unsigned int* neighborX,
                             unsigned int* neighborY,
@@ -4611,7 +4636,7 @@ extern "C" void PropVelo(   unsigned int numberOfThreads,
                             real* uy,
                             real* uz,
                             int* k_Q, 
-							unsigned int size_Prop,
+                     unsigned int size_Prop,
                             unsigned int size_Mat,
                             unsigned int* bcMatD,
                             real* DD,
@@ -4710,7 +4735,7 @@ extern "C" void ScaleCF27( real* DC,
       getLastCudaError("scaleCF27 execution failed"); 
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ScaleCFEff27(real* DC, 
+extern "C" void  ScaleCFEff27(real* DC, 
                              real* DF, 
                              unsigned int* neighborCX,
                              unsigned int* neighborCY,
@@ -4729,7 +4754,7 @@ extern "C" void ScaleCFEff27(real* DC,
                              real nu, 
                              unsigned int nxC, 
                              unsigned int nyC, 
-                             unsigned int nxF, 
+                                unsigned int nxF, 
                              unsigned int nyF,
                              unsigned int numberOfThreads,
                              OffCF offCF)

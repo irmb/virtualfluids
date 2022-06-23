@@ -9,6 +9,7 @@
 #include "utilities/math/Math.h"
 #include "LBM/LB.h"
 #include "Output/QDebugWriter.hpp"
+#include "PreCollisionInteractor/VelocitySetter.h"
 
 #include "utilities/communication.h"
 
@@ -210,6 +211,127 @@ void GridGenerator::allocArrays_BoundaryValues()
             	//////////////////////////////////////////////////////////////////////////
             	//cout << "vor copy " << endl;
                 cudaMemoryManager->cudaCopyTempVeloBCHD(level);
+            	//cout << "nach copy " << endl;
+            	//////////////////////////////////////////////////////////////////////////
+            }
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        }
+    }
+
+    for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
+        const auto numberOfPrecursorValues = int(builder->getPrecursorSize(level));
+        std::cout << "size precursor level " << level << " : " << numberOfPrecursorValues << std::endl;
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        int blocks = (numberOfPrecursorValues / para->getParH(level)->numberofthreads) + 1;
+        para->getParH(level)->QPrecursor.kArray = blocks * para->getParH(level)->numberofthreads;
+        para->getParD(level)->QPrecursor.kArray = para->getParH(level)->QPrecursor.kArray;
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        para->getParH(level)->QPrecursor.kQ = numberOfPrecursorValues;
+        para->getParD(level)->QPrecursor.kQ = numberOfPrecursorValues;
+        para->getParH(level)->kPrecursorQ = numberOfPrecursorValues;
+        para->getParD(level)->kPrecursorQ = numberOfPrecursorValues;
+        para->getParH(level)->kPrecursorQread = numberOfPrecursorValues * para->getD3Qxx();
+        para->getParD(level)->kPrecursorQread = numberOfPrecursorValues * para->getD3Qxx();
+
+        if (numberOfPrecursorValues > 1)
+        {
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            cudaMemoryManager->cudaAllocPrecursorBC(level);
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+            builder->getPrecursorValues(
+                    para->getParH(level)->QPrecursor.planeNeighborNT, para->getParH(level)->QPrecursor.planeNeighborNB, 
+                    para->getParH(level)->QPrecursor.planeNeighborST, para->getParH(level)->QPrecursor.planeNeighborSB, 
+                    para->getParH(level)->QPrecursor.weightsNT, para->getParH(level)->QPrecursor.weightsNB, 
+                    para->getParH(level)->QPrecursor.weightsST, para->getParH(level)->QPrecursor.weightsSB, 
+                    para->getParH(level)->QPrecursor.k, para->getParH(level)->velocityReader, para->getParH(level)->QPrecursor.nVelocityPoints, 
+                    para->getParH(level)->QPrecursor.nTRead, level);
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+            cudaMemoryManager->cudaCopyPrecursorBC(level);
+            cudaMemoryManager->cudaAllocPrecursorVelocities(level);
+
+
+            // read first timestep of precursor into next and copy to next on device
+            for(auto reader : para->getParH(level)->velocityReader)
+            {   
+                reader->getNextVelocities(para->getParH(level)->QPrecursor.vxNext, para->getParH(level)->QPrecursor.vyNext, para->getParH(level)->QPrecursor.vzNext, 0);
+            }
+            // cudaManager->cudaCopyPrecursorVelocities(level);  will fix this with new develop version
+            // probably have to put a synchonization barrier here
+
+
+            //switch next with last pointers
+            real* tmp = para->getParD(level)->QPrecursor.vxLast;
+            para->getParD(level)->QPrecursor.vxLast = para->getParD(level)->QPrecursor.vxNext;
+            para->getParD(level)->QPrecursor.vxNext = tmp;
+
+            tmp = para->getParD(level)->QPrecursor.vyLast;
+            para->getParD(level)->QPrecursor.vyLast = para->getParD(level)->QPrecursor.vyNext;
+            para->getParD(level)->QPrecursor.vyNext = tmp;
+            
+            tmp = para->getParD(level)->QPrecursor.vzLast;
+            para->getParD(level)->QPrecursor.vzLast = para->getParD(level)->QPrecursor.vzNext;
+            para->getParD(level)->QPrecursor.vzNext = tmp;
+
+
+            //read second timestep of precursor into next and copy next to device
+            real nextTime = para->getParD(level)->QPrecursor.nTRead*pow(2,-level)*para->getTimeRatio();
+            for(auto reader : para->getParH(level)->velocityReader)
+            {   
+                reader->getNextVelocities(para->getParH(level)->QPrecursor.vxNext, para->getParH(level)->QPrecursor.vyNext, para->getParH(level)->QPrecursor.vzNext, nextTime);
+            }
+            // cudaManager->cudaCopyPrecursorVelocities(level);  will fix this with new develop version
+            // probably have to put a synchonization barrier here
+            //switch next with current pointers
+            tmp = para->getParD(level)->QPrecursor.vxCurrent;
+            para->getParD(level)->QPrecursor.vxCurrent = para->getParD(level)->QPrecursor.vxNext;
+            para->getParD(level)->QPrecursor.vxNext = tmp;
+
+            tmp = para->getParD(level)->QPrecursor.vyCurrent;
+            para->getParD(level)->QPrecursor.vyCurrent = para->getParD(level)->QPrecursor.vyNext;
+            para->getParD(level)->QPrecursor.vyNext = tmp;
+            
+            tmp = para->getParD(level)->QPrecursor.vzCurrent;
+            para->getParD(level)->QPrecursor.vzCurrent = para->getParD(level)->QPrecursor.vzNext;
+            para->getParD(level)->QPrecursor.vzNext = tmp;
+
+            //start usual cycle of loading, i.e. read velocities of timestep after current and copy asynchronously to device
+
+            nextTime = 2*para->getParD(level)->QPrecursor.nTRead*pow(2,-level)*para->getTimeRatio();
+
+            for(auto reader : para->getParH(level)->velocityReader)
+            {   
+                reader->getNextVelocities(para->getParH(level)->QPrecursor.vxNext, para->getParH(level)->QPrecursor.vyNext, para->getParH(level)->QPrecursor.vzNext, nextTime);
+            }
+
+            // cudaManager->cudaCopyPrecursorVelocities(level);  will fix this with new develop version
+
+            para->getParD(level)->QPrecursor.nReads = 2;
+
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            // advection - diffusion stuff
+            if (para->getDiffOn()==true){
+                throw std::runtime_error(" Advection Diffusion not implemented for Precursor!");
+            	//////////////////////////////////////////////////////////////////////////
+            	// para->getParH(level)->TempVel.kTemp = numberOfPrecursorValues;
+            	// //cout << "Groesse kTemp = " << para->getParH(i)->TempPress.kTemp << endl;
+            	// std::cout << "getTemperatureInit = " << para->getTemperatureInit() << std::endl;
+            	// std::cout << "getTemperatureBC = " << para->getTemperatureBC() << std::endl;
+            	// //////////////////////////////////////////////////////////////////////////
+                // cudaMemoryManager->cudaAllocTempVeloBC(level);
+            	// //cout << "nach alloc " << endl;
+            	// //////////////////////////////////////////////////////////////////////////
+            	// for (int m = 0; m < numberOfPrecursorValues; m++)
+            	// {
+            	// 	para->getParH(level)->TempVel.temp[m]      = para->getTemperatureInit();
+            	// 	para->getParH(level)->TempVel.tempPulse[m] = para->getTemperatureBC();
+            	// 	para->getParH(level)->TempVel.velo[m]      = para->getVelocity();
+            	// 	para->getParH(level)->TempVel.k[m]         = para->getParH(level)->Qinflow.k[m];
+            	// }
+            	// //////////////////////////////////////////////////////////////////////////
+            	// //cout << "vor copy " << endl;
+                // cudaMemoryManager->cudaCopyTempVeloBCHD(level);
             	//cout << "nach copy " << endl;
             	//////////////////////////////////////////////////////////////////////////
             }
@@ -892,6 +1014,77 @@ void GridGenerator::allocArrays_BoundaryQs()
             cudaMemoryManager->cudaCopyVeloBC(i);
         }
     }
+
+    for (uint i = 0; i < builder->getNumberOfGridLevels(); i++) {
+        const auto numberOfPrecursorNodes = int(builder->getPrecursorSize(i));
+        if (numberOfPrecursorNodes > 0)
+        {
+            std::cout << "size velocity level " << i << " : " << numberOfPrecursorNodes << std::endl;
+            //cout << "Groesse velocity level:  " << i << " : " << temp3 << "MyID: " << para->getMyID() << std::endl;
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //preprocessing
+            real* QQ = para->getParH(i)->QPrecursor.q27[0];
+            unsigned int sizeQ = para->getParH(i)->QPrecursor.kQ;
+            QforBoundaryConditions Q;
+            Q.q27[dirE] = &QQ[dirE   *sizeQ];
+            Q.q27[dirW] = &QQ[dirW   *sizeQ];
+            Q.q27[dirN] = &QQ[dirN   *sizeQ];
+            Q.q27[dirS] = &QQ[dirS   *sizeQ];
+            Q.q27[dirT] = &QQ[dirT   *sizeQ];
+            Q.q27[dirB] = &QQ[dirB   *sizeQ];
+            Q.q27[dirNE] = &QQ[dirNE  *sizeQ];
+            Q.q27[dirSW] = &QQ[dirSW  *sizeQ];
+            Q.q27[dirSE] = &QQ[dirSE  *sizeQ];
+            Q.q27[dirNW] = &QQ[dirNW  *sizeQ];
+            Q.q27[dirTE] = &QQ[dirTE  *sizeQ];
+            Q.q27[dirBW] = &QQ[dirBW  *sizeQ];
+            Q.q27[dirBE] = &QQ[dirBE  *sizeQ];
+            Q.q27[dirTW] = &QQ[dirTW  *sizeQ];
+            Q.q27[dirTN] = &QQ[dirTN  *sizeQ];
+            Q.q27[dirBS] = &QQ[dirBS  *sizeQ];
+            Q.q27[dirBN] = &QQ[dirBN  *sizeQ];
+            Q.q27[dirTS] = &QQ[dirTS  *sizeQ];
+            Q.q27[dirZERO] = &QQ[dirZERO*sizeQ];
+            Q.q27[dirTNE] = &QQ[dirTNE *sizeQ];
+            Q.q27[dirTSW] = &QQ[dirTSW *sizeQ];
+            Q.q27[dirTSE] = &QQ[dirTSE *sizeQ];
+            Q.q27[dirTNW] = &QQ[dirTNW *sizeQ];
+            Q.q27[dirBNE] = &QQ[dirBNE *sizeQ];
+            Q.q27[dirBSW] = &QQ[dirBSW *sizeQ];
+            Q.q27[dirBSE] = &QQ[dirBSE *sizeQ];
+            Q.q27[dirBNW] = &QQ[dirBNW *sizeQ];
+
+            builder->getPrecursorQs(Q.q27, i);
+
+            if (para->getDiffOn()) {
+                throw std::runtime_error("Advection diffusion not implemented for Precursor!");
+                //////////////////////////////////////////////////////////////////////////
+                // para->getParH(i)->TempVel.kTemp = numberOfVelocityNodes;
+                // para->getParD(i)->TempVel.kTemp = numberOfVelocityNodes;
+                // std::cout << "Groesse TempVel.kTemp = " << para->getParH(i)->TempPress.kTemp << std::endl;
+                // std::cout << "getTemperatureInit = " << para->getTemperatureInit() << std::endl;
+                // std::cout << "getTemperatureBC = " << para->getTemperatureBC() << std::endl;
+                // //////////////////////////////////////////////////////////////////////////
+                // cudaMemoryManager->cudaAllocTempVeloBC(i);
+                // //cout << "nach alloc " << std::endl;
+                // //////////////////////////////////////////////////////////////////////////
+                // for (int m = 0; m < numberOfVelocityNodes; m++)
+                // {
+                //     para->getParH(i)->TempVel.temp[m] = para->getTemperatureInit();
+                //     para->getParH(i)->TempVel.tempPulse[m] = para->getTemperatureBC();
+                //     para->getParH(i)->TempVel.velo[m] = para->getVelocity();
+                //     para->getParH(i)->TempVel.k[m] = para->getParH(i)->Qinflow.k[m];
+                // }
+                // //////////////////////////////////////////////////////////////////////////
+                // //cout << "vor copy " << std::endl;
+                // cudaMemoryManager->cudaCopyTempVeloBCHD(i);
+                // //cout << "nach copy " << std::endl;
+                //////////////////////////////////////////////////////////////////////////
+            }
+            cudaMemoryManager->cudaCopyPrecursorBC(i);
+        }
+    }
+
 
 
     for (uint i = 0; i < builder->getNumberOfGridLevels(); i++) {

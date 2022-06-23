@@ -36,23 +36,11 @@
 
 #include "grid/BoundaryConditions/Side.h"
 #include "grid/Grid.h"
+#include "VirtualFluids_GPU/PreCollisionInteractor/VelocitySetter.h"
 
 bool gg::BoundaryCondition::isSide( SideType side ) const
 {
     return this->side->whoAmI() == side;
-}
-
-void gg::BoundaryCondition::getCoords(SPtr<Grid> grid, std::vector<real>& x, std::vector<real>& y, std::vector<real>& z)
-{
-    for (int index : this->indices)
-    {
-        real xTmp, yTmp, zTmp;
-
-        grid->transIndexToCoords(index, xTmp, yTmp, zTmp);
-        x.push_back(xTmp);
-        y.push_back(yTmp);
-        z.push_back(zTmp);
-    }
 }
 //////////////////////////////////////////////////////////////////////////
 
@@ -137,4 +125,3 @@ void StressBoundaryCondition::fillSamplingIndices(std::vector<SPtr<Grid> > grid,
     }
     
 }
-

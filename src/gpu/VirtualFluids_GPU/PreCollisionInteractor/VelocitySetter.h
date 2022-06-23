@@ -3,6 +3,7 @@
 
 #include "PreCollisionInteractor.h"
 #include "PrecursorWriter.h"
+#include <cuda_runtime.h>
 
 #include <string>
 #include <vector>
@@ -25,7 +26,7 @@ public:
         // printFileInfo();
     };
 
-    void getVelocities(real* vx, real* vy, real* vz, std::vector<uint> readIndeces, std::vector<uint> writeIndices, uint offsetRead);
+    void getVelocities(real* vx, real* vy, real* vz, std::vector<uint> readIndeces, std::vector<uint> writeIndices, uint offsetRead, uint offsetWrite);
     bool markNANs(std::vector<uint> readIndices);
     bool inBoundingBox(real posX, real posY, real posZ){return  inXBounds(posX) && inYBounds(posY) && inZBounds(posZ); };
     bool inXBounds(real posX){ return posX<=maxX && posX>=minX; };
@@ -74,16 +75,17 @@ private:
 };
 
 
-class VelocityFileCollection
+class VelocityFileCollection : public std::enable_shared_from_this<VelocityFileCollection>
 {
 public:
-    VelocityFileCollection(std::string _prefix): 
-    prefix(_prefix){};
 
-    static VelocityFileCollection* createFileCollection(std::string prefix, std::string suffix);
-    virtual VelocityReader* createReaderForCollection()=0;
+    static SPtr<VelocityFileCollection> createFileCollection(std::string prefix, std::string suffix);
+    virtual SPtr<VelocityReader> createReaderForCollection()=0;
+    SPtr<VelocityFileCollection> getSelf(){ return shared_from_this(); }
 
 protected:
+    VelocityFileCollection(std::string _prefix): 
+    prefix(_prefix){};
     std::string prefix;
 };
 
@@ -97,7 +99,9 @@ public:
         findFiles();
     };
 
-    VelocityReader* createReaderForCollection() override;
+    SPtr<VelocityReader> createReaderForCollection() override;
+    SPtr<VTKFileCollection> getSelf(){ return std::dynamic_pointer_cast<VTKFileCollection>(shared_from_this()); }
+    
 
 private:
     void findFiles();
@@ -112,19 +116,23 @@ public:
 class VelocityReader
 {
 public:
-    VelocityReader(VelocityFileCollection* _fileCollection):
+    VelocityReader(SPtr<VelocityFileCollection> _fileCollection):
     fileCollection(_fileCollection)
     { 
         this->nPoints = 0; 
         this->nPointsRead = 0;
+        this->writingOffset = 0;
         
     };
-
     virtual void getNextVelocities(real* vx, real* vy, real* vz, real t)=0;
     virtual void fillArrays(std::vector<real>& coordsY, std::vector<real>& coordsZ)=0;
     uint getNPoints(){return nPoints; };
+    uint getNPointsRead(){return nPointsRead; };
+    void setWritingOffset(uint offset){ this->writingOffset = offset; }
     void switchLastAndNext();
     void copyIndexAndWeightToArrays();
+    void getNeighbors(uint* neighborNT, uint* neighborNB, uint* neighborST, uint* neighborSN);
+    void getWeights(real* _weightsNT, real* _weightsNB, real* _weightsST, real* _weightsSB);
 
 public:
     std::vector<uint> planeNeighborNT,  planeNeighborNB, planeNeighborST, planeNeighborSB;
@@ -142,18 +150,18 @@ public:
 
 protected:
     SPtr<VelocityFileCollection> fileCollection;
-    uint nPoints, nPointsRead;
+    uint nPoints, nPointsRead, writingOffset;
+    uint nReads=0;
 };
 
 
 class VTKReader : public VelocityReader
 {
 public:
-    VTKReader(VTKFileCollection* _fileCollection):
+    VTKReader(SPtr<VTKFileCollection> _fileCollection):
     fileCollection(_fileCollection),
     VelocityReader(_fileCollection)
     {};
-
     void getNextVelocities(real* vx, real* vy, real* vz, real t) override;
     void fillArrays(std::vector<real>& coordsY, std::vector<real>& coordsZ) override;
 private:  
@@ -183,13 +191,13 @@ public:
     void free(Parameter* para, CudaMemoryManager* cudaManager) override;
     void setBCArrays(SPtr<Grid> grid, SPtr<gg::BoundaryCondition> boundary);
 
-    VelocityReader* getVelocityReader(int level){ return velocityReaders[level]; };
+    SPtr<VelocityReader> getVelocityReader(int level){ return velocityReaders[level]; };
 
 public:
     std::vector<cudaStream_t> streams;
 private:
     SPtr<VelocityFileCollection> fileCollection;
-    std::vector<VelocityReader*> velocityReaders;
+    std::vector<SPtr<VelocityReader>> velocityReaders;
     std::vector<uint> nReads;
     uint nTRead;
 };

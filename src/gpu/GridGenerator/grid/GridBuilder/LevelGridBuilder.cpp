@@ -50,6 +50,7 @@
 #include "io/GridVTKWriter/GridVTKWriter.h"
 #include "io/QLineWriter.h"
 #include "io/SimulationFileWriter/SimulationFileWriter.h"
+#include "VirtualFluids_GPU/PreCollisionInteractor/VelocitySetter.h"
 
 #include "utilities/communication.h"
 #include "utilities/transformator/ArrowTransformator.h"
@@ -190,6 +191,24 @@ void LevelGridBuilder::setNoSlipBoundaryCondition(SideType sideType)
         noSlipBoundaryCondition->fillVelocityLists();
 
         boundaryConditions[level]->velocityBoundaryConditions.push_back(noSlipBoundaryCondition); //now effectively just a wrapper for velocityBC with zero velocity. No distinction in Gridgenerator.
+    }
+}
+
+void LevelGridBuilder::setPrecursorBoundaryCondition(SideType sideType, real vx, real vy, real vz, SPtr<VelocityFileCollection> fileCollection, int nTRead)
+{
+    for (uint level = 0; level < getNumberOfGridLevels(); level++)
+    {
+        auto reader = fileCollection->createReaderForCollection();
+        SPtr<PrecursorBoundaryCondition> precursorBoundaryCondition = PrecursorBoundaryCondition::make(vx, vy, vz, reader, nTRead);
+
+        auto side = SideFactory::make(sideType);
+
+        precursorBoundaryCondition->side = side;
+        precursorBoundaryCondition->side->addIndices(grids, level, precursorBoundaryCondition);
+
+        boundaryConditions[level]->precursorBoundaryConditions.push_back(precursorBoundaryCondition);
+
+        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Set Precursor BC on level " << level << " with " << (int)precursorBoundaryCondition->indices.size() << "\n";
     }
 }
 
@@ -513,6 +532,72 @@ void LevelGridBuilder::getPressureQs(real* qs[27], int level) const
 {
     int allIndicesCounter = 0;
     for (auto boundaryCondition : boundaryConditions[level]->pressureBoundaryConditions)
+    {
+        for ( uint index = 0; index < boundaryCondition->indices.size(); index++ )
+        {
+            for (int dir = 0; dir <= grids[level]->getEndDirection(); dir++)
+            {
+                qs[dir][allIndicesCounter] = boundaryCondition->qs[index][dir];
+            }
+            allIndicesCounter++;
+        }
+    }
+}
+
+uint LevelGridBuilder::getPrecursorSize(int level) const
+{
+    uint size = 0;
+    for (auto boundaryCondition : boundaryConditions[level]->precursorBoundaryConditions)
+    {
+        size += uint(boundaryCondition->indices.size());
+    }
+    return size;
+}
+
+void LevelGridBuilder::getPrecursorValues(uint* neighborNT, uint* neighborNB, uint* neighborST, uint* neighborSB, real* weightsNT, real* weightsNB, real* weightsST, real* weightsSB, int* indices, std::vector<SPtr<VelocityReader>>& reader, int& nVelocityPoints, uint& nTRead, int level) const
+{
+    int allIndicesCounter = 0;
+    int allVelocitiesCounter = 0;
+    uint tmpNTRead = 0;
+
+    for (auto boundaryCondition : boundaryConditions[level]->precursorBoundaryConditions)
+    {
+        if( tmpNTRead == 0 )
+            tmpNTRead = boundaryCondition->nTRead;
+        if( tmpNTRead != boundaryCondition->nTRead )
+            throw std::runtime_error("All precursor boundary conditions must have the same NTRead value");
+
+        auto BCreader = boundaryCondition->getReader();
+        BCreader->setWritingOffset(allIndicesCounter);
+        reader.push_back(BCreader);
+
+        std::vector<real> y, z;
+        real xTmp, yTmp, zTmp;
+        for(uint i = 0; i<boundaryCondition->indices.size(); i++)
+        {
+            indices[allIndicesCounter] = grids[level]->getSparseIndex(boundaryCondition->indices[i]) + 1;
+            grids[level]->transIndexToCoords(boundaryCondition->indices[i], xTmp, yTmp, zTmp);
+            y.push_back(yTmp);
+            z.push_back(zTmp);
+            allIndicesCounter++;
+        }
+        BCreader->fillArrays(y, z);
+        BCreader->getNeighbors(neighborNT, neighborNB, neighborST, neighborSB);
+        BCreader->getWeights(weightsNT, weightsNB, weightsST, weightsSB);
+        allVelocitiesCounter += BCreader->getNPointsRead();
+    }
+    nVelocityPoints = allVelocitiesCounter;
+
+    if (tmpNTRead == 0)
+        throw std::runtime_error("NTRead of precursor needs to be larger than 0.");
+
+    nTRead = tmpNTRead;
+}
+
+void LevelGridBuilder::getPrecursorQs(real* qs[27], int level) const
+{
+    int allIndicesCounter = 0;
+    for (auto boundaryCondition : boundaryConditions[level]->precursorBoundaryConditions)
     {
         for ( uint index = 0; index < boundaryCondition->indices.size(); index++ )
         {

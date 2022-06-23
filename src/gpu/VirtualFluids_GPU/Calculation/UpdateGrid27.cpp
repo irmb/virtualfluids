@@ -8,6 +8,7 @@
 #include "Communication/ExchangeData27.h"
 #include "Kernel/Kernel.h"
 #include "GPU/TurbulentViscosity.h"
+#include "PreCollisionInteractor/VelocitySetter.h"
 
 void updateGrid27(Parameter* para, 
                   vf::gpu::Communicator& comm, 
@@ -324,6 +325,59 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
                         para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP,      para->getParD(level)->neighborZ_SP, 
                         para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
         getLastCudaError("BBStressDevice27 execution failed");
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    // P R E C U R S O R
+    //////////////////////////////////////////////////////////////////////////
+    if(para->getParH(level)->kPrecursorQ > 0)
+    {
+        auto precursorStruct = para->getParD(level)->QPrecursor;
+
+        int tLastRead = precursorStruct.nReads*precursorStruct.nTRead;
+
+        if(t>tLastRead+precursorStruct.nTRead)
+        {
+            real nextTime = (t+1)*pow(2,-level)*para->getTimeRatio();
+            // TODO add synch barrier here
+            //cycle pointers
+            real* tmp = precursorStruct.vxLast;
+            precursorStruct.vxLast = precursorStruct.vxCurrent;
+            precursorStruct.vxCurrent = precursorStruct.vxNext;
+            precursorStruct.vxNext = tmp;            para->getParH(level)->QPrecursor.nReads = 2;
+
+
+            tmp = precursorStruct.vyLast;
+            precursorStruct.vyLast = precursorStruct.vyCurrent;
+            precursorStruct.vyCurrent = precursorStruct.vyNext;
+            precursorStruct.vyNext = tmp;
+            
+            tmp = precursorStruct.vzLast;
+            precursorStruct.vzLast = precursorStruct.vzCurrent;
+            precursorStruct.vzCurrent = precursorStruct.vzNext;
+            precursorStruct.vzNext = tmp;
+
+            for(auto reader : para->getParH(level)->velocityReader)
+            {   
+                reader->getNextVelocities(precursorStruct.vxNext, precursorStruct.vyNext, precursorStruct.vzNext, nextTime);
+            }
+
+            // cudaManager->cudaCopyPrecursorVelocities(level);  will fix this with new develop version
+            precursorStruct.nReads++;
+            tLastRead += precursorStruct.nTRead;  
+        }
+
+        real tRatio = real(t-tLastRead)/precursorStruct.nTRead;
+        QPrecursorDevCompZeroPress( para->getParD(level)->numberofthreads, tRatio, para->getParD(level)->d0SP.f[0], para->getParD(level)->QPrecursor.q27[0],
+                                    para->getParD(level)->QPrecursor.k, para->getParD(level)->QPrecursor.kQ, para->getParD(level)->QPrecursor.kArray, 
+                                    para->getParD(level)->QPrecursor.nVelocityPoints, para->getParH(level)->omega, para->getVelocityRatio(),
+                                    para->getParD(level)->neighborX_SP, para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+                                    para->getParD(level)->QPrecursor.planeNeighborNT, para->getParD(level)->QPrecursor.planeNeighborNB, para->getParD(level)->QPrecursor.planeNeighborST, para->getParD(level)->QPrecursor.planeNeighborSB, 
+                                    para->getParD(level)->QPrecursor.weightsNT, para->getParD(level)->QPrecursor.weightsNB, para->getParD(level)->QPrecursor.weightsST, para->getParD(level)->QPrecursor.weightsSB, 
+                                    para->getParD(level)->QPrecursor.vxLast, para->getParD(level)->QPrecursor.vyLast, para->getParD(level)->QPrecursor.vzLast, 
+                                    para->getParD(level)->QPrecursor.vxCurrent, para->getParD(level)->QPrecursor.vyCurrent, para->getParD(level)->QPrecursor.vzCurrent, 
+                                    para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+        getLastCudaError("QPrecursorDevCompZeroPress execution failed");
     }
 
     //////////////////////////////////////////////////////////////////////////
