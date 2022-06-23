@@ -68,17 +68,17 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//  Tesla 03
-//  std::string outPath("E:/temp/SphereScalingResults/");
-//  std::string gridPathParent = "E:/temp/GridSphereScaling/";
-//  std::string simulationName("SphereScaling");
-// std::string stlPath("C:/Users/Master/Documents/MasterAnna/STL/Sphere/");
-
 // Phoenix
-std::string outPath("/work/y0078217/Results/SphereScalingResults/");
-std::string gridPathParent = "/work/y0078217/Grids/GridSphereScaling/";
+// std::string outPath("/work/y0078217/Results/SphereScalingResults/");
+// std::string gridPathParent = "/work/y0078217/Grids/GridSphereScaling/";
+// std::string simulationName("SphereScaling");
+// std::string stlPath("/home/y0078217/STL/Sphere/");
+
+// Relative Paths
+std::string outPath("./output/SphereScalingResults/");
+std::string gridPathParent = "./output/grids/SphereScalingResults/";
 std::string simulationName("SphereScaling");
-std::string stlPath("/home/y0078217/STL/Sphere/");
+std::string stlPath("./stl/SphereScaling/");
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -125,10 +125,9 @@ void multipleLevel(const std::string &configPath)
     if (scalingType != "weak" && scalingType != "strong")
         std::cerr << "unknown scaling type" << std::endl;
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    std::string gridPath(
-        gridPathParent); // only for GridGenerator, for GridReader the gridPath needs to be set in the config file
+    std::string gridPath(gridPathParent); // only for GridGenerator, for GridReader the gridPath needs to be set in the config file
 
-    real dxGrid      = (real)0.2;
+    real dxGrid      = (real)0.4;
     real vxLB        = (real)0.0005; // LB units
     real viscosityLB = 0.001;        //(vxLB * dxGrid) / Re;
 
@@ -173,16 +172,6 @@ void multipleLevel(const std::string &configPath)
     // para->setMainKernel("CumulantK17CompChim");
     para->setMainKernel("CumulantK17CompChimStream");
     *logging::out << logging::Logger::INFO_HIGH << "Kernel: " << para->getMainKernel() << "\n";
-
-    // if (para->getNumprocs() == 4) {
-    //     para->setDevices(std::vector<uint>{ 0u, 1u, 2u, 3u });
-    //     para->setMaxDev(4);
-    // } else if (para->getNumprocs() == 2) {
-    //     para->setDevices(std::vector<uint>{ 2u, 3u });
-    //     para->setMaxDev(2);
-    // } else
-    //     para->setDevices(std::vector<uint>{ 0u });
-    //     para->setMaxDev(1);
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -671,7 +660,7 @@ void multipleLevel(const std::string &configPath)
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
+    auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
 
     SPtr<GridProvider> gridGenerator;
     if (useGridGenerator)
@@ -680,15 +669,8 @@ void multipleLevel(const std::string &configPath)
         gridGenerator = GridProvider::makeGridReader(FILEFORMAT::BINARY, para, cudaMemoryManager);
     }
 
-    Simulation sim(communicator);
-    SPtr<FileWriter> fileWriter                      = SPtr<FileWriter>(new FileWriter());
-    SPtr<KernelFactoryImp> kernelFactory             = KernelFactoryImp::getInstance();
-    SPtr<PreProcessorFactoryImp> preProcessorFactory = PreProcessorFactoryImp::getInstance();
-    sim.setFactories(kernelFactory, preProcessorFactory);
-    sim.init(para, gridGenerator, fileWriter, cudaMemoryManager);
+    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator);
     sim.run();
-    sim.free();
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 
