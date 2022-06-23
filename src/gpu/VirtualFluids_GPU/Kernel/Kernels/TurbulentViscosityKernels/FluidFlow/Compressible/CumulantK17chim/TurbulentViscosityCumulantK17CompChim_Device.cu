@@ -42,6 +42,7 @@
 #include "LBM/LB.h" 
 #include "LBM/D3Q27.h"
 #include <lbm/constants/NumericConstants.h>
+#include "Kernel/Utilities/DistributionHelper.cuh"
 
 using namespace vf::lbm::constant;
 #include "Kernel/ChimeraTransformation.h"
@@ -99,64 +100,8 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
         //! href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017),
         //! DOI:10.3390/computation5020019 ]</b></a>
         //!
-        Distributions27 dist;
-        if (isEvenTimestep) {
-            dist.f[dirE]    = &distributions[dirE * size_Mat];
-            dist.f[dirW]    = &distributions[dirW * size_Mat];
-            dist.f[dirN]    = &distributions[dirN * size_Mat];
-            dist.f[dirS]    = &distributions[dirS * size_Mat];
-            dist.f[dirT]    = &distributions[dirT * size_Mat];
-            dist.f[dirB]    = &distributions[dirB * size_Mat];
-            dist.f[dirNE]   = &distributions[dirNE * size_Mat];
-            dist.f[dirSW]   = &distributions[dirSW * size_Mat];
-            dist.f[dirSE]   = &distributions[dirSE * size_Mat];
-            dist.f[dirNW]   = &distributions[dirNW * size_Mat];
-            dist.f[dirTE]   = &distributions[dirTE * size_Mat];
-            dist.f[dirBW]   = &distributions[dirBW * size_Mat];
-            dist.f[dirBE]   = &distributions[dirBE * size_Mat];
-            dist.f[dirTW]   = &distributions[dirTW * size_Mat];
-            dist.f[dirTN]   = &distributions[dirTN * size_Mat];
-            dist.f[dirBS]   = &distributions[dirBS * size_Mat];
-            dist.f[dirBN]   = &distributions[dirBN * size_Mat];
-            dist.f[dirTS]   = &distributions[dirTS * size_Mat];
-            dist.f[dirZERO] = &distributions[dirZERO * size_Mat];
-            dist.f[dirTNE]  = &distributions[dirTNE * size_Mat];
-            dist.f[dirTSW]  = &distributions[dirTSW * size_Mat];
-            dist.f[dirTSE]  = &distributions[dirTSE * size_Mat];
-            dist.f[dirTNW]  = &distributions[dirTNW * size_Mat];
-            dist.f[dirBNE]  = &distributions[dirBNE * size_Mat];
-            dist.f[dirBSW]  = &distributions[dirBSW * size_Mat];
-            dist.f[dirBSE]  = &distributions[dirBSE * size_Mat];
-            dist.f[dirBNW]  = &distributions[dirBNW * size_Mat];
-        } else {
-            dist.f[dirW]    = &distributions[dirE * size_Mat];
-            dist.f[dirE]    = &distributions[dirW * size_Mat];
-            dist.f[dirS]    = &distributions[dirN * size_Mat];
-            dist.f[dirN]    = &distributions[dirS * size_Mat];
-            dist.f[dirB]    = &distributions[dirT * size_Mat];
-            dist.f[dirT]    = &distributions[dirB * size_Mat];
-            dist.f[dirSW]   = &distributions[dirNE * size_Mat];
-            dist.f[dirNE]   = &distributions[dirSW * size_Mat];
-            dist.f[dirNW]   = &distributions[dirSE * size_Mat];
-            dist.f[dirSE]   = &distributions[dirNW * size_Mat];
-            dist.f[dirBW]   = &distributions[dirTE * size_Mat];
-            dist.f[dirTE]   = &distributions[dirBW * size_Mat];
-            dist.f[dirTW]   = &distributions[dirBE * size_Mat];
-            dist.f[dirBE]   = &distributions[dirTW * size_Mat];
-            dist.f[dirBS]   = &distributions[dirTN * size_Mat];
-            dist.f[dirTN]   = &distributions[dirBS * size_Mat];
-            dist.f[dirTS]   = &distributions[dirBN * size_Mat];
-            dist.f[dirBN]   = &distributions[dirTS * size_Mat];
-            dist.f[dirZERO] = &distributions[dirZERO * size_Mat];
-            dist.f[dirBSW]  = &distributions[dirTNE * size_Mat];
-            dist.f[dirBNE]  = &distributions[dirTSW * size_Mat];
-            dist.f[dirBNW]  = &distributions[dirTSE * size_Mat];
-            dist.f[dirBSE]  = &distributions[dirTNW * size_Mat];
-            dist.f[dirTSW]  = &distributions[dirBNE * size_Mat];
-            dist.f[dirTNE]  = &distributions[dirBSW * size_Mat];
-            dist.f[dirTNW]  = &distributions[dirBSE * size_Mat];
-            dist.f[dirTSE]  = &distributions[dirBNW * size_Mat];
-        }
+        Distributions27 dist = vf::gpu::getDistributionReferences27(distributions, size_Mat, isEvenTimestep);
+
         ////////////////////////////////////////////////////////////////////////////////
         //! - Set neighbor indices (necessary for indirect addressing)
         uint kw   = neighborX[k];
@@ -226,9 +171,8 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
         //! DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
         //!
         real factor = c1o1;
-        for (size_t i = 1; i <= level; i++) {
+        for (size_t i = 1; i <= level; i++) 
             factor *= c2o1;
-        }
         
         real fx = forces[0];
         real fy = forces[1];

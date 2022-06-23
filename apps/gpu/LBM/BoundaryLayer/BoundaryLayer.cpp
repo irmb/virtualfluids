@@ -29,6 +29,8 @@
 #include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
 #include "GridGenerator/grid/BoundaryConditions/Side.h"
+#include "GridGenerator/grid/BoundaryConditions/BoundaryCondition.h"
+
 #include "GridGenerator/grid/GridFactory.h"
 
 #include "GridGenerator/io/SimulationFileWriter/SimulationFileWriter.h"
@@ -113,7 +115,7 @@ void multipleLevel(const std::string& configPath)
 
     const real viscosity = 1.56e-5;
 
-    const real velocity  = 0.5*u_star/kappa*log(L_z/z0); //0.5 times max mean velocity at the top in m/s
+    const real velocity  = 0.5*u_star/kappa*log(L_z/z0+1.f); //0.5 times max mean velocity at the top in m/s
 
     const real mach = config.contains("Ma")? config.getValue<real>("Ma"): 0.1;
 
@@ -187,10 +189,7 @@ void multipleLevel(const std::string& configPath)
 
     para->setTStartOut(uint(tStartOut/dt) );
     para->setTOut( uint(tOut/dt) );
-    para->setTEnd( uint(tEnd/dt) );
-
-    // para->setTOut( 100 );
-    // para->setTEnd( 100000 );
+    para->setTEnd( uint(tEnd/dt) );;
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -203,12 +202,12 @@ void multipleLevel(const std::string& configPath)
 
 	gridBuilder->buildGrids(lbmOrGks, false); // buildGrids() has to be called before setting the BCs!!!!
 
-    uint samplingOffset = 2;
-    // gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
-    gridBuilder->setStressBoundaryCondition(SideType::MZ, 
-                                            0.0, 0.0, 1.0,              // wall normals
-                                            samplingOffset, z0/dx);     // wall model settinng
-    para->setHasWallModelMonitor(true);
+    gridBuilder->setNoSlipBoundaryCondition(SideType::MZ);
+    // uint samplingOffset = 2;
+    // gridBuilder->setStressBoundaryCondition(SideType::MZ, 
+    //                                         0.0, 0.0, 1.0,              // wall normals
+    //                                         samplingOffset, z0/dx);     // wall model settinng
+    // para->setHasWallModelMonitor(true);
 
 
     // gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
@@ -216,24 +215,14 @@ void multipleLevel(const std::string& configPath)
 
     if(readPrecursor)
     {
-        gridBuilder->setVelocityBoundaryCondition(SideType::MX, velocityLB, 0.0, 0.0);
-
         auto precursor = SPtr<VTKFileCollection>( new VTKFileCollection("precursor/Precursor") );
-        auto velocitySetter = SPtr<VelocitySetter>( new VelocitySetter(precursor, nTReadPrecursor) );
-
-        for(int level=0; level<para->getMaxLevel()+1; level++)
-        {
-            auto velBC = gridBuilder->getBoundaryCondition(SideType::MX, level);
-    
-            velocitySetter->setBCArrays(gridBuilder->getGrid(level), velBC);
-        }
-        para->addActuator(velocitySetter);
+        gridBuilder->setPrecursorBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0, precursor, nTReadPrecursor);
         gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.f);
     }
 
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)0.0;
-        vx  = (u_star/c4o10 * log(coordZ/z0) + c2o1*sin(cPi*c16o1*coordX/L_x)*sin(cPi*c8o1*coordZ/L_z)/(pow(coordZ/L_z,c2o1)+c1o1))  * dt / dx; 
+        vx  = (u_star/kappa * log(coordZ/z0) + c2o1*sin(cPi*c16o1*coordX/L_x)*sin(cPi*c8o1*coordZ/L_z)/(pow(coordZ/L_z,c2o1)+c1o1))  * dt / dx; 
         vy  = c2o1*sin(cPi*c16o1*coordX/L_x)*sin(cPi*c8o1*coordZ/L_z)/(pow(coordZ/L_z,c2o1)+c1o1)  * dt / dx; 
         vz  = c8o1*u_star/c4o10*(sin(cPi*c8o1*coordY/L_z)*sin(cPi*c8o1*coordZ/L_z)+sin(cPi*c8o1*coordX/L_x))/(pow(L_z*c1o2-coordZ, c2o1)+c1o1) * dt / dx;
     });

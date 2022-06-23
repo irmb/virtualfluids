@@ -1,4 +1,5 @@
 #include "TurbulentViscosity.h"
+#include "Core/DataTypes.h"
 #include "lbm/constants/NumericConstants.h"
 #include "Parameter/Parameter.h"
 #include "cuda/CudaGrid.h"
@@ -8,7 +9,13 @@
 
 using namespace vf::lbm::constant;
 
-extern "C" __host__ __device__ __forceinline__ void calcDerivatives(const uint& k, uint& kM, uint& kP, uint* typeOfGridNode, real* vx, real* vy, real* vz, real& dvx, real& dvy, real& dvz)
+__host__ __device__ __forceinline__ real calcDamping(real kappa, real xPos, real x0, real x1)
+{
+    real x = max((xPos-x0)/(x1-x0), 0.f);
+    return kappa*x*x*(3-2*x); // polynomial with f(0)=0, f'(0) = 0, f(1) = 1, f'(1)=0
+}
+
+__host__ __device__ __forceinline__ void calcDerivatives(const uint& k, uint& kM, uint& kP, uint* typeOfGridNode, real* vx, real* vy, real* vz, real& dvx, real& dvy, real& dvz)
 {
     bool fluidP = (typeOfGridNode[kP] == GEO_FLUID);
     bool fluidM = (typeOfGridNode[kM] == GEO_FLUID);
@@ -19,7 +26,7 @@ extern "C" __host__ __device__ __forceinline__ void calcDerivatives(const uint& 
     dvz = ((fluidP ? vz[kP] : vz[k])-(fluidM ? vz[kM] : vz[k]))*div;
 }
 
-extern "C" __global__ void calcAMD(real* vx,
+__global__ void calcAMD(real* vx,
                         real* vy,
                         real* vz,
                         real* turbulentViscosity,
@@ -27,6 +34,8 @@ extern "C" __global__ void calcAMD(real* vx,
                         uint* neighborY,
                         uint* neighborZ,
                         uint* neighborWSB,
+                        real* coordX,
+                        real viscosity,
                         uint* typeOfGridNode,
                         uint size_Mat,
                         real SGSConstant)
@@ -69,10 +78,20 @@ extern "C" __global__ void calcAMD(real* vx,
                         (dvxdx*dvzdx + dvxdy*dvzdy + dvxdz*dvzdz) * (dvxdz+dvzdx) + 
                         (dvydx*dvzdx + dvydy*dvzdy + dvydz*dvzdz) * (dvydz+dvzdy);
 
-    turbulentViscosity[k] = max(c0o1,-SGSConstant*enumerator)/denominator;
+    const real kappa = 10000.f; // multiplier of the viscosity 
+    const real x0 = 5500.f; // start of damping layer
+    const real x1 = 6000.f; // total length of domain
+    real nuSGS = max(c0o1,-SGSConstant*enumerator)/denominator;
+    real xPos = coordX[k];
+    real nuDamping = calcDamping(kappa, xPos, x0, x1)*viscosity;
+
+    real nu = nuSGS + nuDamping;
+    // if(k >= 800600 && k <= 800637) printf("k %d x %f nu %f nu SGS %f nu damping %f \n ", k, xPos, nu, nuSGS, nuDamping);
+    turbulentViscosity[k] = nu;
 }
 
-extern "C" void calcTurbulentViscosityAMD(Parameter* para, int level)
+
+void calcTurbulentViscosityAMD(Parameter* para, int level)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, para->getParH(level)->size_Mat_SP);
     calcAMD<<<grid.grid, grid.threads>>>(
@@ -84,6 +103,8 @@ extern "C" void calcTurbulentViscosityAMD(Parameter* para, int level)
         para->getParD(level)->neighborY_SP,
         para->getParD(level)->neighborZ_SP,
         para->getParD(level)->neighborWSB_SP,
+        para->getParD(level)->coordX_SP,
+        para->getViscosity(),
         para->getParD(level)->geoSP,
         para->getParD(level)->size_Mat_SP,
         para->getSGSConstant()

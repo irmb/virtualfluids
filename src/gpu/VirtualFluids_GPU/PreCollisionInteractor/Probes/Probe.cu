@@ -378,7 +378,7 @@ void Probe::writeGridFile(Parameter* para, int level, int t, uint part)
 
     SPtr<ProbeStruct> probeStruct = this->getProbeStruct(level);
 
-    uint startpos = part * para->getlimitOfNodesForVTK();
+    uint startpos = (part-1) * para->getlimitOfNodesForVTK();
     uint sizeOfNodes = min(para->getlimitOfNodesForVTK(), probeStruct->nPoints - startpos);
     uint endpos = startpos + sizeOfNodes;
 
