@@ -74,7 +74,7 @@ struct InitCondition
    uint PressOutID {0};
    uint PressInZ {1};
    uint PressOutZ {2};
-   std::vector<uint> devices {1, 0}; // one device with ID = 0
+   std::vector<uint> devices {0, 1}; // one device with ID = 0
    std::vector<int> GridX, GridY, GridZ, DistX, DistY, DistZ;
    std::vector<real> scaleLBMtoSI, translateLBMtoSI;
    std::vector<real> minCoordX, minCoordY, minCoordZ, maxCoordX, maxCoordY, maxCoordZ;
