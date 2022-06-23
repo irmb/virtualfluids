@@ -69,16 +69,16 @@
 // std::string simulationName("MusselOyster");
 
 // Aragorn
-// std::string outPath("/workspaces/VirtualFluids_dev/output/MusselOysterResults/");
-// std::string gridPathParent = "/workspaces/VirtualFluids_dev/output/MusselOysterResults/grid/";
-// std::string stlPath("/workspaces/VirtualFluids_dev/stl/MusselOyster/");
-// std::string simulationName("MusselOyster");
+std::string outPath("./output/MusselOysterResults/");
+std::string gridPathParent = "./output/MusselOysterResults/grid/";
+std::string stlPath("./stl/MusselOyster/");
+std::string simulationName("MusselOyster");
 
 // Phoenix
-std::string outPath("/work/y0078217/Results/MusselOysterResults/");
-std::string gridPathParent = "/work/y0078217/Grids/GridMusselOyster/";
-std::string stlPath("/home/y0078217/STL/MusselOyster/");
-std::string simulationName("MusselOyster");
+// std::string outPath("/work/y0078217/Results/MusselOysterResults/");
+// std::string gridPathParent = "/work/y0078217/Grids/GridMusselOyster/";
+// std::string stlPath("/home/y0078217/STL/MusselOyster/");
+// std::string simulationName("MusselOyster");
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -130,8 +130,8 @@ void multipleLevel(const std::string &configPath)
         gridPathParent +
         bivalveType); // only for GridGenerator, for GridReader the gridPath needs to be set in the config file
 
-    // real dxGrid = (real)2.0; // 2.0
-    real dxGrid = (real)1.0; // 1.0
+    real dxGrid = (real)2.0; // 2.0
+    // real dxGrid = (real)1.0; // 1.0
     if (para->getNumprocs() == 8)
         dxGrid = 0.5;
     real vxLB            = (real)0.051; // LB units
