@@ -15,11 +15,18 @@ namespace simulation
 
     void makeModule(py::module_ &parentModule)
     {
+        // missing setFactories and setDataWriter, not possible to wrap these functions as long as they take unique ptr arguments
         py::class_<Simulation>(parentModule, "Simulation")
-        .def(py::init<vf::gpu::Communicator&>(), "communicator")
-        .def("set_factories", &Simulation::setFactories)
-        .def("init", &Simulation::init)
+        .def(py::init<  std::shared_ptr<Parameter>,
+                        std::shared_ptr<CudaMemoryManager>,
+                        vf::gpu::Communicator &,
+                        GridProvider &>(), 
+                        "parameter",
+                        "memoryManager",
+                        "communicator",
+                        "gridProvider")
         .def("run", &Simulation::run)
-        .def("free", &Simulation::free);
+        .def("addKineticEnergyAnalyzer", &Simulation::addKineticEnergyAnalyzer)
+        .def("addEnstrophyAnalyzer", &Simulation::addEnstrophyAnalyzer);
     }
 }
