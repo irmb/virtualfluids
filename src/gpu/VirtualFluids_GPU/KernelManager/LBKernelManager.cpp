@@ -514,7 +514,7 @@ void LBKernelManager::runGeoBCKernelPost(int level)
 }
 
 void LBKernelManager::runOutflowBCKernelPre(int level){
-    if (para->getParD(level)->numberOfOutflowBCnodes > 0)
+    if (para->getParD(level)->outflowBC.numberOfBCnodes > 0)
     {
         QPressNoRhoDev27(
             para->getParD(level)->numberofthreads,
@@ -542,7 +542,7 @@ void LBKernelManager::runOutflowBCKernelPre(int level){
         //     para->getParD(level)->outflowBC.deltaVz,
         //     para->getParD(level)->outflowBC.k,
         //     para->getParD(level)->outflowBC.kN,
-        //     para->getParD(level)->numberOfOutflowBCnodes,
+        //     para->getParD(level)->outflowBC.numberOfBCnodes,
         //     para->getParD(level)->omega,
         //     para->getParD(level)->neighborX,
         //     para->getParD(level)->neighborY,

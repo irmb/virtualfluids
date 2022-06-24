@@ -71,9 +71,7 @@ void findBC27(Parameter* para, CudaMemoryManager* cudaMemoryManager)
    //   //Outflow
 	  // findKforQOutflow(para);
 
-	  // para->getParH(para->getCoarse())->numberOfOutflowBCnodes = para->getParH(para->getCoarse())->outflowBC.numberOfBCnodes;
-	  // para->getParD(para->getCoarse())->numberOfOutflowBCnodes = para->getParH(para->getCoarse())->outflowBC.numberOfBCnodes;
-	  // printf("numberOfOutflowBCnodes= %d\n", para->getParH(para->getCoarse())->numberOfOutflowBCnodes);
+	  // printf("numberOfOutflowBCnodes= %d\n", para->getParH(para->getCoarse())->outflowBC.numberOfBCnodes);
 
 	  // para->cudaAllocPressBC();
 

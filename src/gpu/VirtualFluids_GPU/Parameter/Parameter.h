@@ -223,7 +223,7 @@ struct LBMSimulationParameter {
     //! \brief stores the boundary condition data
     QforBoundaryConditions noSlipBC, velocityBC, outflowBC, slipBC, stressBC;
     //! \brief number of lattice nodes for the boundary conditions
-    unsigned int numberOfOutflowBCnodes = 0, numberOfSlipBCnodes = 0, numberOfStressBCnodes = 0;
+    unsigned int numberOfSlipBCnodes = 0, numberOfStressBCnodes = 0;
     unsigned int numberOfNoSlipBCnodesRead, numberOfVeloBCnodesRead, numberOfOutflowBCnodesRead, numberOfSlipBCnodesRead, numberOfStressBCnodesRead;
     QforBoundaryConditions pressureBC;
     unsigned int numberOfPressureBCnodes = 0, numberOfPressureBCnodesRead;
@@ -581,7 +581,6 @@ public:
     void setRecvProcessNeighborsAfterFtoCX(int numberOfNodes, int level, int arrayIndex);
     void setRecvProcessNeighborsAfterFtoCY(int numberOfNodes, int level, int arrayIndex);
     void setRecvProcessNeighborsAfterFtoCZ(int numberOfNodes, int level, int arrayIndex);
-    // void setkOutflowQ(unsigned int numberOfOutflowBCnodes);
     // void setQinflowH(QforBoundaryConditions* QinflowH);
     // void setQinflowD(QforBoundaryConditions* QinflowD);
     // void setQoutflowH(QforBoundaryConditions* QoutflowH);
