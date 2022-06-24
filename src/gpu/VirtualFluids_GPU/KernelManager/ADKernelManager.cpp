@@ -468,8 +468,7 @@ void ADKernelManager::runADveloBCKernel(int level){
                 para->getParD(level)->diffusivity,
                 para->getParD(level)->velocityBC.k,
                 para->getParD(level)->velocityBC.q27[0],
-                para->getParD(level)->numberOfVeloBCnodes,
-                para->getParD(level)->numberOfVeloBCnodes,
+                para->getParD(level)->velocityBC.numberOfBCnodes,
                 para->getParD(level)->omega,
                 para->getParD(level)->neighborX,
                 para->getParD(level)->neighborY,
@@ -482,47 +481,45 @@ void ADKernelManager::runADveloBCKernel(int level){
             //////////////////////////////////////////////////////////////////////////
             // if (t<1000)//(t>100000 && t<103895)//(t>1600000 && t<1662317)//(t>500000 && t<515580)//(t<1000)//(t<15580)//(t>400000 && t<415580)//
             // {
-            //   QADVelDev27(
-            //     para->getParD(level)->numberofthreads,
-            //     para->getParD(level)->nx,
-            //     para->getParD(level)->ny,
-            //     para->getParD(level)->distributions.f[0],
-            //     para->getParD(level)->distributionsAD27.f[0],
-            //     para->getParD(level)->TempVel.tempPulse,
-            //     para->getParD(level)->TempVel.velo,
-            //     para->getParD(level)->diffusivity,
-            //     para->getParD(level)->velocityBC.k,
-            //     para->getParD(level)->velocityBC.q27[0],
-            //     para->getParD(level)->numberOfVeloBCnodes,
-            //     para->getParD(level)->numberOfVeloBCnodes,
-            //     para->getParD(level)->omega,
-            //     para->getParD(level)->neighborX,
-            //     para->getParD(level)->neighborY,
-            //     para->getParD(level)->neighborZ,
-            //     para->getParD(level)->numberOfNodes,
-            //     para->getParD(level)->isEvenTimestep);
+              QADVelDev27(
+                para->getParD(level)->numberofthreads,
+                para->getParD(level)->nx,
+                para->getParD(level)->ny,
+                para->getParD(level)->distributions.f[0],
+                para->getParD(level)->distributionsAD27.f[0],
+                para->getParD(level)->TempVel.tempPulse,
+                para->getParD(level)->TempVel.velo,
+                para->getParD(level)->diffusivity,
+                para->getParD(level)->velocityBC.k,
+                para->getParD(level)->velocityBC.q27[0],
+                para->getParD(level)->velocityBC.numberOfBCnodes,
+                para->getParD(level)->omega,
+                para->getParD(level)->neighborX,
+                para->getParD(level)->neighborY,
+                para->getParD(level)->neighborZ,
+                para->getParD(level)->numberOfNodes,
+                para->getParD(level)->isEvenTimestep);
             // }
             // else
             // {
-            //   QADVelDev27(
-            //     para->getParD(level)->numberofthreads,
-            //     para->getParD(level)->nx,
-            //     para->getParD(level)->ny,
-            //     para->getParD(level)->distributions.f[0],
-            //     para->getParD(level)->distributionsAD27.f[0],
-            //     para->getParD(level)->TempVel.temp,
-            //     para->getParD(level)->TempVel.velo,
-            //     para->getParD(level)->diffusivity,
-            //     para->getParD(level)->velocityBC.k,
-            //     para->getParD(level)->velocityBC.q27[0],
-            //     para->getParD(level)->numberOfVeloBCnodes,
-            //     para->getParD(level)->numberOfVeloBCnodes,
-            //     para->getParD(level)->omega,
-            //     para->getParD(level)->neighborX,
-            //     para->getParD(level)->neighborY,
-            //     para->getParD(level)->neighborZ,
-            //     para->getParD(level)->numberOfNodes,
-            //     para->getParD(level)->isEvenTimestep);
+              QADVelDev27(
+                para->getParD(level)->numberofthreads,
+                para->getParD(level)->nx,
+                para->getParD(level)->ny,
+                para->getParD(level)->distributions.f[0],
+                para->getParD(level)->distributionsAD27.f[0],
+                para->getParD(level)->TempVel.temp,
+                para->getParD(level)->TempVel.velo,
+                para->getParD(level)->diffusivity,
+                para->getParD(level)->velocityBC.k,
+                para->getParD(level)->velocityBC.q27[0],
+                para->getParD(level)->velocityBC.numberOfBCnodes,
+                para->getParD(level)->omega,
+                para->getParD(level)->neighborX,
+                para->getParD(level)->neighborY,
+                para->getParD(level)->neighborZ,
+                para->getParD(level)->numberOfNodes,
+                para->getParD(level)->isEvenTimestep);
             // }
         }
     }

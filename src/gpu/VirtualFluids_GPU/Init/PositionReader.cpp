@@ -20,7 +20,7 @@ void PositionReader::readFilePropellerCylinderForAlloc(Parameter* para)
 		in.readLine();
 		if (level == para->getFine())
 		{
-			for(int u=0; u<para->getParH(level)->propellerBC.numberOfBCnodes; u++)
+			for(uint u=0; u<para->getParH(level)->propellerBC.numberOfBCnodes; u++)
 			{
 				test = in.readInteger();
 				if (para->getParH(level)->typeOfGridNode[test] == GEO_FLUID)
@@ -55,7 +55,7 @@ void PositionReader::readFilePropellerCylinderForAlloc(Parameter* para)
 		}
 		else
 		{
-			for(int u=0; u<para->getParH(level)->propellerBC.numberOfBCnodes; u++)
+			for(uint u=0; u<para->getParH(level)->propellerBC.numberOfBCnodes; u++)
 			{
 				in.readInteger();
 				in.readDouble();
@@ -167,7 +167,7 @@ void PositionReader::definePropellerQs(Parameter* para)
 	Q.q27[dirBSE ] = &QQ[dirBSE *sizeQ];
 	Q.q27[dirBNW ] = &QQ[dirBNW *sizeQ];
 	//////////////////////////////////////////////////////////////////
-	for(int u=0; u<para->getParH(para->getFine())->propellerBC.numberOfBCnodes; u++)
+	for(uint u=0; u<para->getParH(para->getFine())->propellerBC.numberOfBCnodes; u++)
 	{
 		for (int dir = dirE; dir<=dirBSW; dir++)
 		{

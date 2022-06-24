@@ -1128,8 +1128,7 @@ extern "C" __global__ void QVelDeviceIncompHighNu27(int inx,
 													real* DD, 
 													int* k_Q, 
 													real* QQ,
-													unsigned int sizeQ,
-													int numberOfBCnodes, 
+													unsigned int numberOfBCnodes, 
 													real om1, 
 													unsigned int* neighborX,
 													unsigned int* neighborY,
@@ -1221,32 +1220,32 @@ extern "C" __global__ void QVelDeviceIncompHighNu27(int inx,
             *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
             *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
             *q_dirBSE, *q_dirBNW; 
-      q_dirE   = &QQ[dirE   *sizeQ];
-      q_dirW   = &QQ[dirW   *sizeQ];
-      q_dirN   = &QQ[dirN   *sizeQ];
-      q_dirS   = &QQ[dirS   *sizeQ];
-      q_dirT   = &QQ[dirT   *sizeQ];
-      q_dirB   = &QQ[dirB   *sizeQ];
-      q_dirNE  = &QQ[dirNE  *sizeQ];
-      q_dirSW  = &QQ[dirSW  *sizeQ];
-      q_dirSE  = &QQ[dirSE  *sizeQ];
-      q_dirNW  = &QQ[dirNW  *sizeQ];
-      q_dirTE  = &QQ[dirTE  *sizeQ];
-      q_dirBW  = &QQ[dirBW  *sizeQ];
-      q_dirBE  = &QQ[dirBE  *sizeQ];
-      q_dirTW  = &QQ[dirTW  *sizeQ];
-      q_dirTN  = &QQ[dirTN  *sizeQ];
-      q_dirBS  = &QQ[dirBS  *sizeQ];
-      q_dirBN  = &QQ[dirBN  *sizeQ];
-      q_dirTS  = &QQ[dirTS  *sizeQ];
-      q_dirTNE = &QQ[dirTNE *sizeQ];
-      q_dirTSW = &QQ[dirTSW *sizeQ];
-      q_dirTSE = &QQ[dirTSE *sizeQ];
-      q_dirTNW = &QQ[dirTNW *sizeQ];
-      q_dirBNE = &QQ[dirBNE *sizeQ];
-      q_dirBSW = &QQ[dirBSW *sizeQ];
-      q_dirBSE = &QQ[dirBSE *sizeQ];
-      q_dirBNW = &QQ[dirBNW *sizeQ];
+      q_dirE   = &QQ[dirE   * numberOfBCnodes];
+      q_dirW   = &QQ[dirW   * numberOfBCnodes];
+      q_dirN   = &QQ[dirN   * numberOfBCnodes];
+      q_dirS   = &QQ[dirS   * numberOfBCnodes];
+      q_dirT   = &QQ[dirT   * numberOfBCnodes];
+      q_dirB   = &QQ[dirB   * numberOfBCnodes];
+      q_dirNE  = &QQ[dirNE  * numberOfBCnodes];
+      q_dirSW  = &QQ[dirSW  * numberOfBCnodes];
+      q_dirSE  = &QQ[dirSE  * numberOfBCnodes];
+      q_dirNW  = &QQ[dirNW  * numberOfBCnodes];
+      q_dirTE  = &QQ[dirTE  * numberOfBCnodes];
+      q_dirBW  = &QQ[dirBW  * numberOfBCnodes];
+      q_dirBE  = &QQ[dirBE  * numberOfBCnodes];
+      q_dirTW  = &QQ[dirTW  * numberOfBCnodes];
+      q_dirTN  = &QQ[dirTN  * numberOfBCnodes];
+      q_dirBS  = &QQ[dirBS  * numberOfBCnodes];
+      q_dirBN  = &QQ[dirBN  * numberOfBCnodes];
+      q_dirTS  = &QQ[dirTS  * numberOfBCnodes];
+      q_dirTNE = &QQ[dirTNE * numberOfBCnodes];
+      q_dirTSW = &QQ[dirTSW * numberOfBCnodes];
+      q_dirTSE = &QQ[dirTSE * numberOfBCnodes];
+      q_dirTNW = &QQ[dirTNW * numberOfBCnodes];
+      q_dirBNE = &QQ[dirBNE * numberOfBCnodes];
+      q_dirBSW = &QQ[dirBSW * numberOfBCnodes];
+      q_dirBSE = &QQ[dirBSE * numberOfBCnodes];
+      q_dirBNW = &QQ[dirBNW * numberOfBCnodes];
       ////////////////////////////////////////////////////////////////////////////////
       //index
       unsigned int KQK  = k_Q[k];
@@ -1625,11 +1624,10 @@ extern "C" __global__ void QVelDeviceCompHighNu27(  int inx,
 													real* vx,
 													real* vy,
 													real* vz,
-													real* DD, 
+													real* DD,
 													int* k_Q, 
 													real* QQ,
-													unsigned int sizeQ,
-													int numberOfBCnodes, 
+													unsigned int numberOfBCnodes, 
 													real om1, 
 													unsigned int* neighborX,
 													unsigned int* neighborY,
@@ -1721,32 +1719,32 @@ extern "C" __global__ void QVelDeviceCompHighNu27(  int inx,
             *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
             *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
             *q_dirBSE, *q_dirBNW; 
-      q_dirE   = &QQ[dirE   *sizeQ];
-      q_dirW   = &QQ[dirW   *sizeQ];
-      q_dirN   = &QQ[dirN   *sizeQ];
-      q_dirS   = &QQ[dirS   *sizeQ];
-      q_dirT   = &QQ[dirT   *sizeQ];
-      q_dirB   = &QQ[dirB   *sizeQ];
-      q_dirNE  = &QQ[dirNE  *sizeQ];
-      q_dirSW  = &QQ[dirSW  *sizeQ];
-      q_dirSE  = &QQ[dirSE  *sizeQ];
-      q_dirNW  = &QQ[dirNW  *sizeQ];
-      q_dirTE  = &QQ[dirTE  *sizeQ];
-      q_dirBW  = &QQ[dirBW  *sizeQ];
-      q_dirBE  = &QQ[dirBE  *sizeQ];
-      q_dirTW  = &QQ[dirTW  *sizeQ];
-      q_dirTN  = &QQ[dirTN  *sizeQ];
-      q_dirBS  = &QQ[dirBS  *sizeQ];
-      q_dirBN  = &QQ[dirBN  *sizeQ];
-      q_dirTS  = &QQ[dirTS  *sizeQ];
-      q_dirTNE = &QQ[dirTNE *sizeQ];
-      q_dirTSW = &QQ[dirTSW *sizeQ];
-      q_dirTSE = &QQ[dirTSE *sizeQ];
-      q_dirTNW = &QQ[dirTNW *sizeQ];
-      q_dirBNE = &QQ[dirBNE *sizeQ];
-      q_dirBSW = &QQ[dirBSW *sizeQ];
-      q_dirBSE = &QQ[dirBSE *sizeQ];
-      q_dirBNW = &QQ[dirBNW *sizeQ];
+      q_dirE   = &QQ[dirE   * numberOfBCnodes];
+      q_dirW   = &QQ[dirW   * numberOfBCnodes];
+      q_dirN   = &QQ[dirN   * numberOfBCnodes];
+      q_dirS   = &QQ[dirS   * numberOfBCnodes];
+      q_dirT   = &QQ[dirT   * numberOfBCnodes];
+      q_dirB   = &QQ[dirB   * numberOfBCnodes];
+      q_dirNE  = &QQ[dirNE  * numberOfBCnodes];
+      q_dirSW  = &QQ[dirSW  * numberOfBCnodes];
+      q_dirSE  = &QQ[dirSE  * numberOfBCnodes];
+      q_dirNW  = &QQ[dirNW  * numberOfBCnodes];
+      q_dirTE  = &QQ[dirTE  * numberOfBCnodes];
+      q_dirBW  = &QQ[dirBW  * numberOfBCnodes];
+      q_dirBE  = &QQ[dirBE  * numberOfBCnodes];
+      q_dirTW  = &QQ[dirTW  * numberOfBCnodes];
+      q_dirTN  = &QQ[dirTN  * numberOfBCnodes];
+      q_dirBS  = &QQ[dirBS  * numberOfBCnodes];
+      q_dirBN  = &QQ[dirBN  * numberOfBCnodes];
+      q_dirTS  = &QQ[dirTS  * numberOfBCnodes];
+      q_dirTNE = &QQ[dirTNE * numberOfBCnodes];
+      q_dirTSW = &QQ[dirTSW * numberOfBCnodes];
+      q_dirTSE = &QQ[dirTSE * numberOfBCnodes];
+      q_dirTNW = &QQ[dirTNW * numberOfBCnodes];
+      q_dirBNE = &QQ[dirBNE * numberOfBCnodes];
+      q_dirBSW = &QQ[dirBSW * numberOfBCnodes];
+      q_dirBSE = &QQ[dirBSE * numberOfBCnodes];
+      q_dirBNW = &QQ[dirBNW * numberOfBCnodes];
       ////////////////////////////////////////////////////////////////////////////////
       //index
       unsigned int KQK  = k_Q[k];
@@ -2205,8 +2203,7 @@ extern "C" __global__ void QVelDeviceCompZeroPress27(
 														real* distribution, 
 														int* subgridDistanceIndices, 
 														real* subgridDistances,
-														unsigned int numberOfSubgridIndices,
-														int numberOfBCnodes, 
+														unsigned int numberOfBCnodes, 
 														real omega, 
 														unsigned int* neighborX,
 														unsigned int* neighborY,
@@ -2254,7 +2251,7 @@ extern "C" __global__ void QVelDeviceCompZeroPress27(
       //! - Set local subgrid distances (q's)
       //!
       SubgridDistances27 subgridD;
-      getPointersToSubgridDistances(subgridD, subgridDistances, numberOfSubgridIndices);
+      getPointersToSubgridDistances(subgridD, subgridDistances, numberOfBCnodes);
      
       ////////////////////////////////////////////////////////////////////////////////
       //! - Set neighbor indices (necessary for indirect addressing)
@@ -3426,8 +3423,7 @@ extern "C" __global__ void QVelDevPlainBB27(real* vx,
 											real* DD,
 											int* k_Q, 
 											real* QQ,
-											unsigned int sizeQ,
-											int numberOfBCnodes, 
+											unsigned int numberOfBCnodes, 
 											real om1, 
 											unsigned int* neighborX,
 											unsigned int* neighborY,
@@ -3519,32 +3515,32 @@ extern "C" __global__ void QVelDevPlainBB27(real* vx,
 			 *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
 			 *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
 			 *q_dirBSE, *q_dirBNW; 
-      q_dirE   = &QQ[dirE   *sizeQ];
-      q_dirW   = &QQ[dirW   *sizeQ];
-      q_dirN   = &QQ[dirN   *sizeQ];
-      q_dirS   = &QQ[dirS   *sizeQ];
-      q_dirT   = &QQ[dirT   *sizeQ];
-      q_dirB   = &QQ[dirB   *sizeQ];
-      q_dirNE  = &QQ[dirNE  *sizeQ];
-      q_dirSW  = &QQ[dirSW  *sizeQ];
-      q_dirSE  = &QQ[dirSE  *sizeQ];
-      q_dirNW  = &QQ[dirNW  *sizeQ];
-      q_dirTE  = &QQ[dirTE  *sizeQ];
-      q_dirBW  = &QQ[dirBW  *sizeQ];
-      q_dirBE  = &QQ[dirBE  *sizeQ];
-      q_dirTW  = &QQ[dirTW  *sizeQ];
-      q_dirTN  = &QQ[dirTN  *sizeQ];
-      q_dirBS  = &QQ[dirBS  *sizeQ];
-      q_dirBN  = &QQ[dirBN  *sizeQ];
-      q_dirTS  = &QQ[dirTS  *sizeQ];
-      q_dirTNE = &QQ[dirTNE *sizeQ];
-      q_dirTSW = &QQ[dirTSW *sizeQ];
-      q_dirTSE = &QQ[dirTSE *sizeQ];
-      q_dirTNW = &QQ[dirTNW *sizeQ];
-      q_dirBNE = &QQ[dirBNE *sizeQ];
-      q_dirBSW = &QQ[dirBSW *sizeQ];
-      q_dirBSE = &QQ[dirBSE *sizeQ];
-      q_dirBNW = &QQ[dirBNW *sizeQ];
+      q_dirE   = &QQ[dirE   * numberOfBCnodes];
+      q_dirW   = &QQ[dirW   * numberOfBCnodes];
+      q_dirN   = &QQ[dirN   * numberOfBCnodes];
+      q_dirS   = &QQ[dirS   * numberOfBCnodes];
+      q_dirT   = &QQ[dirT   * numberOfBCnodes];
+      q_dirB   = &QQ[dirB   * numberOfBCnodes];
+      q_dirNE  = &QQ[dirNE  * numberOfBCnodes];
+      q_dirSW  = &QQ[dirSW  * numberOfBCnodes];
+      q_dirSE  = &QQ[dirSE  * numberOfBCnodes];
+      q_dirNW  = &QQ[dirNW  * numberOfBCnodes];
+      q_dirTE  = &QQ[dirTE  * numberOfBCnodes];
+      q_dirBW  = &QQ[dirBW  * numberOfBCnodes];
+      q_dirBE  = &QQ[dirBE  * numberOfBCnodes];
+      q_dirTW  = &QQ[dirTW  * numberOfBCnodes];
+      q_dirTN  = &QQ[dirTN  * numberOfBCnodes];
+      q_dirBS  = &QQ[dirBS  * numberOfBCnodes];
+      q_dirBN  = &QQ[dirBN  * numberOfBCnodes];
+      q_dirTS  = &QQ[dirTS  * numberOfBCnodes];
+      q_dirTNE = &QQ[dirTNE * numberOfBCnodes];
+      q_dirTSW = &QQ[dirTSW * numberOfBCnodes];
+      q_dirTSE = &QQ[dirTSE * numberOfBCnodes];
+      q_dirTNW = &QQ[dirTNW * numberOfBCnodes];
+      q_dirBNE = &QQ[dirBNE * numberOfBCnodes];
+      q_dirBSW = &QQ[dirBSW * numberOfBCnodes];
+      q_dirBSE = &QQ[dirBSE * numberOfBCnodes];
+      q_dirBNW = &QQ[dirBNW * numberOfBCnodes];
       ////////////////////////////////////////////////////////////////////////////////
       //index
       unsigned int KQK  = k_Q[k];
@@ -4108,8 +4104,7 @@ extern "C" __global__ void QVelDev1h27( int inx,
 										real* DD, 
 										int* k_Q, 
 										real* QQ,
-										unsigned int sizeQ,
-										int numberOfBCnodes, 
+										unsigned int numberOfBCnodes, 
 										real om1,
 										real Phi,
 										real angularVelocity,
@@ -4216,32 +4211,32 @@ extern "C" __global__ void QVelDev1h27( int inx,
 			*q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
 			*q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
 			*q_dirBSE, *q_dirBNW; 
-		q_dirE   = &QQ[dirE   *sizeQ];
-		q_dirW   = &QQ[dirW   *sizeQ];
-		q_dirN   = &QQ[dirN   *sizeQ];
-		q_dirS   = &QQ[dirS   *sizeQ];
-		q_dirT   = &QQ[dirT   *sizeQ];
-		q_dirB   = &QQ[dirB   *sizeQ];
-		q_dirNE  = &QQ[dirNE  *sizeQ];
-		q_dirSW  = &QQ[dirSW  *sizeQ];
-		q_dirSE  = &QQ[dirSE  *sizeQ];
-		q_dirNW  = &QQ[dirNW  *sizeQ];
-		q_dirTE  = &QQ[dirTE  *sizeQ];
-		q_dirBW  = &QQ[dirBW  *sizeQ];
-		q_dirBE  = &QQ[dirBE  *sizeQ];
-		q_dirTW  = &QQ[dirTW  *sizeQ];
-		q_dirTN  = &QQ[dirTN  *sizeQ];
-		q_dirBS  = &QQ[dirBS  *sizeQ];
-		q_dirBN  = &QQ[dirBN  *sizeQ];
-		q_dirTS  = &QQ[dirTS  *sizeQ];
-		q_dirTNE = &QQ[dirTNE *sizeQ];
-		q_dirTSW = &QQ[dirTSW *sizeQ];
-		q_dirTSE = &QQ[dirTSE *sizeQ];
-		q_dirTNW = &QQ[dirTNW *sizeQ];
-		q_dirBNE = &QQ[dirBNE *sizeQ];
-		q_dirBSW = &QQ[dirBSW *sizeQ];
-		q_dirBSE = &QQ[dirBSE *sizeQ];
-		q_dirBNW = &QQ[dirBNW *sizeQ];
+		q_dirE   = &QQ[dirE   * numberOfBCnodes];
+		q_dirW   = &QQ[dirW   * numberOfBCnodes];
+		q_dirN   = &QQ[dirN   * numberOfBCnodes];
+		q_dirS   = &QQ[dirS   * numberOfBCnodes];
+		q_dirT   = &QQ[dirT   * numberOfBCnodes];
+		q_dirB   = &QQ[dirB   * numberOfBCnodes];
+		q_dirNE  = &QQ[dirNE  * numberOfBCnodes];
+		q_dirSW  = &QQ[dirSW  * numberOfBCnodes];
+		q_dirSE  = &QQ[dirSE  * numberOfBCnodes];
+		q_dirNW  = &QQ[dirNW  * numberOfBCnodes];
+		q_dirTE  = &QQ[dirTE  * numberOfBCnodes];
+		q_dirBW  = &QQ[dirBW  * numberOfBCnodes];
+		q_dirBE  = &QQ[dirBE  * numberOfBCnodes];
+		q_dirTW  = &QQ[dirTW  * numberOfBCnodes];
+		q_dirTN  = &QQ[dirTN  * numberOfBCnodes];
+		q_dirBS  = &QQ[dirBS  * numberOfBCnodes];
+		q_dirBN  = &QQ[dirBN  * numberOfBCnodes];
+		q_dirTS  = &QQ[dirTS  * numberOfBCnodes];
+		q_dirTNE = &QQ[dirTNE * numberOfBCnodes];
+		q_dirTSW = &QQ[dirTSW * numberOfBCnodes];
+		q_dirTSE = &QQ[dirTSE * numberOfBCnodes];
+		q_dirTNW = &QQ[dirTNW * numberOfBCnodes];
+		q_dirBNE = &QQ[dirBNE * numberOfBCnodes];
+		q_dirBSW = &QQ[dirBSW * numberOfBCnodes];
+		q_dirBSE = &QQ[dirBSE * numberOfBCnodes];
+		q_dirBNW = &QQ[dirBNW * numberOfBCnodes];
 		////////////////////////////////////////////////////////////////////////////////
 		//index
 		unsigned int KQK  = k_Q[k];
@@ -4891,8 +4886,7 @@ extern "C" __global__ void QVelDeviceComp27(
 											real* distribution,
 											int* subgridDistanceIndices,
 											real* subgridDistances,
-											unsigned int numberOfSubgridIndices,
-											int numberOfBCnodes,
+											unsigned int numberOfBCnodes,
 											real omega,
 											unsigned int* neighborX,
 											unsigned int* neighborY,
@@ -4938,7 +4932,7 @@ extern "C" __global__ void QVelDeviceComp27(
       //! - Set local subgrid distances (q's)
       //!
       SubgridDistances27 subgridD;
-      getPointersToSubgridDistances(subgridD, subgridDistances, numberOfSubgridIndices);
+      getPointersToSubgridDistances(subgridD, subgridDistances, numberOfBCnodes);
       
       ////////////////////////////////////////////////////////////////////////////////
       //! - Set neighbor indices (necessary for indirect addressing)

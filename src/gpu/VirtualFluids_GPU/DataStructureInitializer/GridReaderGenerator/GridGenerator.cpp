@@ -190,8 +190,6 @@ void GridGenerator::allocArrays_BoundaryValues()
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         para->getParH(level)->velocityBC.numberOfBCnodes = numberOfVelocityValues;
         para->getParD(level)->velocityBC.numberOfBCnodes = numberOfVelocityValues;
-        para->getParH(level)->numberOfVeloBCnodes = numberOfVelocityValues;
-        para->getParD(level)->numberOfVeloBCnodes = numberOfVelocityValues;
         para->getParH(level)->numberOfVeloBCnodesRead = numberOfVelocityValues * para->getD3Qxx();
         para->getParD(level)->numberOfVeloBCnodesRead = numberOfVelocityValues * para->getD3Qxx();
 

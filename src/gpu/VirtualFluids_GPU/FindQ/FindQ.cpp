@@ -409,7 +409,7 @@ void findQInflow(Parameter* para)
    unsigned int nnz              = para->getParH(para->getCoarse())->gridNZ;
    int* geo_mat                  = para->getParH(para->getCoarse())->geo;
    unsigned int* kk              = para->getParH(para->getCoarse())->k;
-   unsigned int sizeQ            = para->getParH(para->getCoarse())->numberOfVeloBCnodes;
+   unsigned int sizeQ            = para->getParH(para->getCoarse())->velocityBC.numberOfBCnodes;
    //real* rhoBC                = para->getParH(para->getCoarse())->velocityBC.RhoBC;
    real u0                    = para->getVelocity();
    real* vx                   = para->getParH(para->getCoarse())->velocityBC.Vx;

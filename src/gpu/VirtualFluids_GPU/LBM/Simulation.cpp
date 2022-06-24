@@ -782,46 +782,46 @@ void Simulation::run()
 								   para->getParD(lev)->isEvenTimestep);
                    getLastCudaError("CalcMacSP27 execution failed");
 
-				   //�berschreiben mit Wandknoten
-				   //SetOutputWallVelocitySP27(  para->getParD(lev)->numberofthreads,
-							//				   para->getParD(lev)->vx_SP,
-							//				   para->getParD(lev)->vy_SP,
-							//				   para->getParD(lev)->vz_SP,
-							//				   para->getParD(lev)->geometryBC.Vx,
-							//				   para->getParD(lev)->geometryBC.Vy,
-							//				   para->getParD(lev)->geometryBC.Vz,
-							//				   para->getParD(lev)->geometryBC.kQ,
-							//				   para->getParD(lev)->geometryBC.k,
-							//				   para->getParD(lev)->rho,
-							//				   para->getParD(lev)->pressure,
-							//				   para->getParD(lev)->geoSP,
-							//				   para->getParD(lev)->neighborX_SP,
-							//				   para->getParD(lev)->neighborY_SP,
-							//				   para->getParD(lev)->neighborZ_SP,
-							//				   para->getParD(lev)->size_Mat_SP,
-							//				   para->getParD(lev)->d0SP.f[0],
-							//				   para->getParD(lev)->evenOrOdd);
-       //            getLastCudaError("SetOutputWallVelocitySP27 execution failed");
+				// // overwrite with wall nodes
+				//    SetOutputWallVelocitySP27(  para->getParD(lev)->numberofthreads,
+				// 							   para->getParD(lev)->velocityX,
+				// 							   para->getParD(lev)->velocityY,
+				// 							   para->getParD(lev)->velocityZ,
+				// 							   para->getParD(lev)->geometryBC.Vx,
+				// 							   para->getParD(lev)->geometryBC.Vy,
+				// 							   para->getParD(lev)->geometryBC.Vz,
+				// 							   para->getParD(lev)->geometryBC.numberOfBCnodes,
+				// 							   para->getParD(lev)->geometryBC.k,
+				// 							   para->getParD(lev)->rho,
+				// 							   para->getParD(lev)->pressure,
+				// 							   para->getParD(lev)->typeOfGridNode,
+				// 							   para->getParD(lev)->neighborX,
+				// 							   para->getParD(lev)->neighborY,
+				// 							   para->getParD(lev)->neighborZ,
+				// 							   para->getParD(lev)->size_Mat,
+				// 							   para->getParD(lev)->distributions.f[0],
+				// 							   para->getParD(lev)->isEvenTimestep);
+                //   getLastCudaError("SetOutputWallVelocitySP27 execution failed");
 
-   				   //SetOutputWallVelocitySP27(  para->getParD(lev)->numberofthreads,
-										//	   para->getParD(lev)->vx_SP,
-										//	   para->getParD(lev)->vy_SP,
-										//	   para->getParD(lev)->vz_SP,
-										//	   para->getParD(lev)->velocityBC.Vx,
-										//	   para->getParD(lev)->velocityBC.Vy,
-										//	   para->getParD(lev)->velocityBC.Vz,
-										//	   para->getParD(lev)->numberOfVeloBCnodes,
-										//	   para->getParD(lev)->velocityBC.k,
-										//	   para->getParD(lev)->rho,
-										//	   para->getParD(lev)->pressure,
-										//	   para->getParD(lev)->geoSP,
-										//	   para->getParD(lev)->neighborX_SP,
-										//	   para->getParD(lev)->neighborY_SP,
-										//	   para->getParD(lev)->neighborZ_SP,
-										//	   para->getParD(lev)->size_Mat_SP,
-										//	   para->getParD(lev)->d0SP.f[0],
-										//	   para->getParD(lev)->evenOrOdd);
-          //         getLastCudaError("SetOutputWallVelocitySP27 execution failed");
+   				//    SetOutputWallVelocitySP27(  para->getParD(lev)->numberofthreads,
+				// 							   para->getParD(lev)->velocityX,
+				// 							   para->getParD(lev)->velocityY,
+				// 							   para->getParD(lev)->velocityZ,
+				// 							   para->getParD(lev)->velocityBC.Vx,
+				// 							   para->getParD(lev)->velocityBC.Vy,
+				// 							   para->getParD(lev)->velocityBC.Vz,
+				// 							   para->getParD(lev)->velocityBC.numberOfBCnodes,
+				// 							   para->getParD(lev)->velocityBC.k,
+				// 							   para->getParD(lev)->rho,
+				// 							   para->getParD(lev)->pressure,
+				// 							   para->getParD(lev)->typeOfGridNode,
+				// 							   para->getParD(lev)->neighborX,
+				// 							   para->getParD(lev)->neighborY,
+				// 							   para->getParD(lev)->neighborZ,
+				// 							   para->getParD(lev)->size_Mat,
+				// 							   para->getParD(lev)->distributions.f[0],
+				// 							   para->getParD(lev)->isEvenTimestep);
+                //   getLastCudaError("SetOutputWallVelocitySP27 execution failed");
 
 				 //}
 

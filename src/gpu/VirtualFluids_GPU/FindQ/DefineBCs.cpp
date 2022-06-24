@@ -54,9 +54,7 @@ void findBC27(Parameter* para, CudaMemoryManager* cudaMemoryManager)
       //Inflow
       findKforQInflow(para);
 
-      para->getParH(para->getCoarse())->numberOfVeloBCnodes = para->getParH(para->getCoarse())->velocityBC.numberOfBCnodes;
-	  para->getParD(para->getCoarse())->numberOfVeloBCnodes = para->getParH(para->getCoarse())->velocityBC.numberOfBCnodes;
-      printf("numberOfVeloBCnodes= %d\n", para->getParH(para->getCoarse())->numberOfVeloBCnodes);
+      printf("numberOfVeloBCnodes= %d\n", para->getParH(para->getCoarse())->velocityBC.numberOfBCnodes);
 
 	  cudaMemoryManager->cudaAllocVeloBC(0); //level = 0
 
