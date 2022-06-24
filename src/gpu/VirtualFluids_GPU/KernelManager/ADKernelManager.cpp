@@ -180,7 +180,7 @@ void ADKernelManager::runADcollisionKernel(int level)
 }
 
 void ADKernelManager::runADslipBCKernel(int level){
-    if (para->getParD(level)->numberOfSlipBCnodes > 1) {
+    if (para->getParD(level)->slipBC.numberOfBCnodes > 1) {
         ADSlipVelDevComp(
             para->getParD(level)->numberofthreads,
             para->getParD(level)->slipBC.normalX,
@@ -190,7 +190,7 @@ void ADKernelManager::runADslipBCKernel(int level){
             para->getParD(level)->distributionsAD27.f[0],
             para->getParD(level)->slipBC.k,
             para->getParD(level)->slipBC.q27[0],
-            para->getParD(level)->numberOfSlipBCnodes,
+            para->getParD(level)->slipBC.numberOfBCnodes,
             para->getParD(level)->omegaDiffusivity,
             para->getParD(level)->neighborX,
             para->getParD(level)->neighborY,

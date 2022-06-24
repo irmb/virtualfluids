@@ -3580,7 +3580,7 @@ extern "C" void QSlipDev27(unsigned int numberOfThreads,
                            real* DD,
                            int* k_Q,
                            real* QQ,
-                           unsigned int sizeQ,
+                           unsigned int numberOfBCnodes,
                            real om1,
                            unsigned int* neighborX,
                            unsigned int* neighborY,
@@ -3588,7 +3588,7 @@ extern "C" void QSlipDev27(unsigned int numberOfThreads,
                            unsigned int size_Mat,
                            bool isEvenTimestep)
 {
-   int Grid = (sizeQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -3606,7 +3606,7 @@ extern "C" void QSlipDev27(unsigned int numberOfThreads,
       QSlipDevice27<<< gridQ, threads >>> (DD,
                                            k_Q,
                                            QQ,
-                                           sizeQ,
+                                           numberOfBCnodes,
                                            om1,
                                            neighborX,
                                            neighborY,
@@ -3620,7 +3620,7 @@ extern "C" void QSlipDevComp27(unsigned int numberOfThreads,
 							   real* DD,
 							   int* k_Q,
 							   real* QQ,
-							   unsigned int sizeQ,
+							   unsigned int numberOfBCnodes,
 							   real om1,
 							   unsigned int* neighborX,
 							   unsigned int* neighborY,
@@ -3630,7 +3630,7 @@ extern "C" void QSlipDevComp27(unsigned int numberOfThreads,
 							   unsigned int size_Mat,
 							   bool isEvenTimestep)
 {
-   int Grid = (sizeQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -3650,7 +3650,7 @@ extern "C" void QSlipDevComp27(unsigned int numberOfThreads,
       QSlipDeviceComp27TurbViscosity<<< gridQ, threads >>> (DD,
 											   k_Q,
 											   QQ,
-											   sizeQ,
+											   numberOfBCnodes,
 											   om1,
 											   neighborX,
 											   neighborY,
@@ -3665,7 +3665,7 @@ extern "C" void QSlipDevComp27(unsigned int numberOfThreads,
       QSlipDeviceComp27<<< gridQ, threads >>> (DD,
 											   k_Q,
 											   QQ,
-											   sizeQ,
+											   numberOfBCnodes,
 											   om1,
 											   neighborX,
 											   neighborY,

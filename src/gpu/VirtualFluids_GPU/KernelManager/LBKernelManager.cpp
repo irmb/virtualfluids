@@ -686,19 +686,19 @@ void LBKernelManager::runStressWallModelKernel(int level){
 
 
 void LBKernelManager::runSlipBCKernel(int level){
-    if (para->getParD(level)->numberOfSlipBCnodes > 0)
+    if (para->getParD(level)->slipBC.numberOfBCnodes > 0)
     {
         // QSlipDev27(
         //     para->getParD(level)->numberofthreads,
         //     para->getParD(level)->distributions.f[0],
         //     para->getParD(level)->slipBC.k,
         //     para->getParD(level)->slipBC.q27[0],
-        //     para->getParD(level)->numberOfSlipBCnodes,
+        //     para->getParD(level)->slipBC.numberOfBCnodes,
         //     para->getParD(level)->omega,
         //     para->getParD(level)->neighborX,
         //     para->getParD(level)->neighborY,
         //     para->getParD(level)->neighborZ,
-        //     para->getParD(level)->size_Mat_SP,
+        //     para->getParD(level)->size_Mat,
         //     para->getParD(level)->isEvenTimestep);
 
         QSlipDevComp27(
@@ -706,7 +706,7 @@ void LBKernelManager::runSlipBCKernel(int level){
             para->getParD(level)->distributions.f[0],
             para->getParD(level)->slipBC.k,
             para->getParD(level)->slipBC.q27[0],
-            para->getParD(level)->numberOfSlipBCnodes,
+            para->getParD(level)->slipBC.numberOfBCnodes,
             para->getParD(level)->omega,
             para->getParD(level)->neighborX,
             para->getParD(level)->neighborY,
