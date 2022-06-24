@@ -3773,7 +3773,7 @@ extern "C" void QStressDevComp27(unsigned int numberOfThreads,
 							   int* k_Q,
                         int* k_N,
 							   real* QQ,
-							   unsigned int sizeQ,
+							   unsigned int numberOfBCnodes,
 							   real om1,
                         real* turbViscosity,
                         real* vx,
@@ -3801,7 +3801,7 @@ extern "C" void QStressDevComp27(unsigned int numberOfThreads,
 							   unsigned int size_Mat,
 							   bool isEvenTimestep)
 {
-   int Grid = (sizeQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -3820,7 +3820,7 @@ extern "C" void QStressDevComp27(unsigned int numberOfThreads,
 											   k_Q,
                                     k_N,
 											   QQ,
-											   sizeQ,
+											   numberOfBCnodes,
 											   om1,
                                     turbViscosity,
                                     vx,
@@ -3856,7 +3856,7 @@ extern "C" void BBStressDev27(unsigned int numberOfThreads,
 							   int* k_Q,
                         int* k_N,
 							   real* QQ,
-							   unsigned int sizeQ,
+							   unsigned int numberOfBCnodes,
                         real* vx,
                         real* vy,
                         real* vz,
@@ -3882,7 +3882,7 @@ extern "C" void BBStressDev27(unsigned int numberOfThreads,
 							   unsigned int size_Mat,
 							   bool isEvenTimestep)
 {
-   int Grid = (sizeQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -3901,7 +3901,7 @@ extern "C" void BBStressDev27(unsigned int numberOfThreads,
 											   k_Q,
                                     k_N,
 											   QQ,
-											   sizeQ,
+											   numberOfBCnodes,
                                     vx,
                                     vy,
                                     vz,
