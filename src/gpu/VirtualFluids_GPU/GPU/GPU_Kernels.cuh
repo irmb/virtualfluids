@@ -812,22 +812,21 @@ extern "C" __global__ void QThinWallsPartTwo27(
 	uint size_Mat,
 	bool isEvenTimestep);
 
-extern "C" __global__ void QVelDeviceCompZeroPress27(   int inx,
-														int iny,
-														real* vx,
-														real* vy,
-														real* vz,
-														real* DD,
-														int* k_Q,
-														real* QQ,
-														unsigned int sizeQ,
-														//int numberOfBCnodes,
-														real om1,
-														unsigned int* neighborX,
-														unsigned int* neighborY,
-														unsigned int* neighborZ,
-														unsigned int size_Mat,
-														bool isEvenTimestep);
+extern "C" __global__ void QVelDeviceCompZeroPress27(
+	real* velocityX,
+	real* velocityY,
+	real* velocityZ,
+	real* distribution,
+	int* subgridDistanceIndices,
+	real* subgridDistances,
+	unsigned int numberOfSubgridIndices,
+	int numberOfBCnodes,
+	real omega,
+	unsigned int* neighborX,
+	unsigned int* neighborY,
+	unsigned int* neighborZ,
+	unsigned int numberOfLBnodes,
+	bool isEvenTimestep);
 
 extern "C" __global__ void QVelDeviceIncompHighNu27(int inx,
 													int iny,

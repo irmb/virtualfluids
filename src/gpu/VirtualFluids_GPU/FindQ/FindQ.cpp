@@ -20,7 +20,7 @@ void findQ(Parameter* para, int lev)
    int* geo_mat                 = para->getParH(lev)->geo;
    unsigned int* kk             = para->getParH(para->getCoarse())->k;
    unsigned int sizeQ           = para->getParH(lev)->numberOfNoSlipBCnodes;
-   real* QQ                  = para->getParH(lev)->noSlipBC.q27[0];
+   real* QQ                     = para->getParH(lev)->noSlipBC.q27[0];
    QforBoundaryConditions &QIN  = para->getParH(lev)->noSlipBC;
    QIN.numberOfBCnodes = 0;
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -3367,59 +3367,43 @@ extern "C" void QVelDevCompThinWalls27(unsigned int numberOfThreads,
 											      isEvenTimestep);
       getLastCudaError("QThinWallsPartTwo27 execution failed");
 }
-//////////////////////////////////////////////////////////////////////////
-extern "C" void QVelDevCompZeroPress27(   unsigned int numberOfThreads,
-										  int nx,
-										  int ny,
-										  real* vx,
-										  real* vy,
-										  real* vz,
-										  real* DD,
-										  int* k_Q,
-										  real* QQ,
-										  unsigned int sizeQ,
-										  int kArray,
-										  real om1,
-										  unsigned int* neighborX,
-										  unsigned int* neighborY,
-										  unsigned int* neighborZ,
-										  unsigned int size_Mat,
-										  bool isEvenTimestep)
+
+extern "C" void QVelDevCompZeroPress27(
+   unsigned int numberOfThreads,
+   real* velocityX,
+   real* velocityY,
+   real* velocityZ,
+   real* distribution,
+   int* subgridDistanceIndices,
+   real* subgridDistances,
+   unsigned int numberOfSubgridIndices,
+   int numberOfBCnodes,
+   real omega,
+   unsigned int* neighborX,
+   unsigned int* neighborY,
+   unsigned int* neighborZ,
+   unsigned int numberOfLBnodes,
+   bool isEvenTimestep)
 {
-   //int Grid = kArray / numberOfThreads;
-   int Grid = (sizeQ / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   //dim3 gridQ(Grid, 1, 1);
+   dim3 grid = vf::cuda::getCudaGrid(numberOfThreads, numberOfBCnodes);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      QVelDeviceCompZeroPress27<<< gridQ, threads >>> (   nx,
-														  ny,
-														  vx,
-														  vy,
-														  vz,
-														  DD,
-														  k_Q,
-														  QQ,
-														  sizeQ,
-														  //numberOfBCnodes,
-														  om1,
-														  neighborX,
-														  neighborY,
-														  neighborZ,
-														  size_Mat,
-														  isEvenTimestep);
-      getLastCudaError("QVelDeviceCompZeroPress27 execution failed");
+   QVelDeviceCompZeroPress27<<< grid, threads >>> (
+      velocityX,
+      velocityY,
+      velocityZ,
+      distribution,
+      subgridDistanceIndices,
+      subgridDistances,
+      numberOfSubgridIndices,
+      numberOfBCnodes,
+      omega,
+      neighborX,
+      neighborY,
+      neighborZ,
+      numberOfLBnodes,
+      isEvenTimestep);
+   getLastCudaError("QVelDeviceCompZeroPress27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QVelDevIncompHighNu27(unsigned int numberOfThreads,

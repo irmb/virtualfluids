@@ -189,16 +189,14 @@ void LBKernelManager::runVelocityBCKernelPost(int level)
 
         QVelDevCompZeroPress27(
             para->getParD(level)->numberofthreads,
-            para->getParD(level)->nx,
-            para->getParD(level)->ny,
             para->getParD(level)->velocityBC.Vx,
             para->getParD(level)->velocityBC.Vy,
             para->getParD(level)->velocityBC.Vz,
             para->getParD(level)->distributions.f[0],
             para->getParD(level)->velocityBC.k,
             para->getParD(level)->velocityBC.q27[0],
+            para->getParD(level)->velocityBC.numberOfBCnodes,
             para->getParD(level)->numberOfVeloBCnodes,
-            para->getParD(level)->velocityBC.kArray,
             para->getParD(level)->omega,
             para->getParD(level)->neighborX,
             para->getParD(level)->neighborY,
