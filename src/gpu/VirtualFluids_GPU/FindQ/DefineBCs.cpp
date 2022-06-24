@@ -30,20 +30,14 @@ void findQ27(Parameter* para, CudaMemoryManager* cudaMemoryManager)
    for (int lev = para->getFine(); lev >= para->getCoarse(); lev--)
    {
       findKforQ(para, lev);
-
-      para->getParH(lev)->numberOfNoSlipBCnodes       = para->getParH(lev)->noSlipBC.numberOfBCnodes;
-	  para->getParD(lev)->numberOfNoSlipBCnodes       = para->getParH(lev)->noSlipBC.numberOfBCnodes;
-	  para->getParD(lev)->noSlipBC.numberOfBCnodes = para->getParH(lev)->noSlipBC.numberOfBCnodes;
-      printf("numberOfBCnodes= %d\n", para->getParH(lev)->numberOfNoSlipBCnodes);
+	   para->getParD(lev)->noSlipBC.numberOfBCnodes = para->getParH(lev)->noSlipBC.numberOfBCnodes;
+      printf("numberOfBCnodes= %d\n", para->getParH(lev)->noSlipBC.numberOfBCnodes);
 
 	  cudaMemoryManager->cudaAllocWallBC(lev);
 
       findQ(para, lev);
-
-	  para->getParH(lev)->numberOfNoSlipBCnodes       = para->getParH(lev)->noSlipBC.numberOfBCnodes;
-	  para->getParD(lev)->numberOfNoSlipBCnodes       = para->getParH(lev)->noSlipBC.numberOfBCnodes;
-	  para->getParD(lev)->noSlipBC.numberOfBCnodes = para->getParH(lev)->noSlipBC.numberOfBCnodes;
-      printf("numberOfBCnodes= %d\n", para->getParH(lev)->numberOfNoSlipBCnodes);
+ 	  para->getParD(lev)->noSlipBC.numberOfBCnodes = para->getParH(lev)->noSlipBC.numberOfBCnodes;
+      printf("numberOfBCnodes= %d\n", para->getParH(lev)->noSlipBC.numberOfBCnodes);
 
 	  cudaMemoryManager->cudaCopyWallBC(lev);
    }

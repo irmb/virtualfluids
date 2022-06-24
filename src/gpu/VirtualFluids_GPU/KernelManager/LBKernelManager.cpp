@@ -733,7 +733,7 @@ void LBKernelManager::runSlipBCKernel(int level){
 }
 
 void LBKernelManager::runNoSlipBCKernel(int level){
-    if (para->getParD(level)->numberOfNoSlipBCnodes > 0)
+    if (para->getParD(level)->noSlipBC.numberOfBCnodes > 0)
     {
         // QDev27(
         //     para->getParD(level)->numberofthreads,
@@ -742,13 +742,12 @@ void LBKernelManager::runNoSlipBCKernel(int level){
         //     para->getParD(level)->distributions.f[0],
         //     para->getParD(level)->noSlipBC.k,
         //     para->getParD(level)->noSlipBC.q27[0],
-        //     para->getParD(level)->numberOfNoSlipBCnodes,
-        //     para->getParD(level)->numberOfNoSlipBCnodes,
+        //     para->getParD(level)->noSlipBC.numberOfBCnodes,
         //     para->getParD(level)->omega,
         //     para->getParD(level)->neighborX,
         //     para->getParD(level)->neighborY,
         //     para->getParD(level)->neighborZ,
-        //     para->getParD(level)->size_Mat_SP,
+        //     para->getParD(level)->size_Mat,
         //     para->getParD(level)->isEvenTimestep);
 
         // BBDev27(
@@ -758,29 +757,12 @@ void LBKernelManager::runNoSlipBCKernel(int level){
         //     para->getParD(level)->distributions.f[0],
         //     para->getParD(level)->noSlipBC.k,
         //     para->getParD(level)->noSlipBC.q27[0],
-        //     para->getParD(level)->numberOfNoSlipBCnodes,
-        //     para->getParD(level)->numberOfNoSlipBCnodes,
+        //     para->getParD(level)->noSlipBC.numberOfBCnodes,
         //     para->getParD(level)->omega,
         //     para->getParD(level)->neighborX,
         //     para->getParD(level)->neighborY,
         //     para->getParD(level)->neighborZ,
-        //     para->getParD(level)->size_Mat_SP,
-        //     para->getParD(level)->isEvenTimestep);
-
-        // QDev27(
-        //     para->getParD(level)->numberofthreads,
-        //     para->getParD(level)->nx,
-        //     para->getParD(level)->ny,
-        //     para->getParD(level)->distributions.f[0],
-        //     para->getParD(level)->noSlipBC.k,
-        //     para->getParD(level)->noSlipBC.q27[0],
-        //     para->getParD(level)->numberOfNoSlipBCnodes,
-        //     para->getParD(level)->numberOfNoSlipBCnodes,
-        //     para->getParD(level)->omega,
-        //     para->getParD(level)->neighborX,
-        //     para->getParD(level)->neighborY,
-        //     para->getParD(level)->neighborZ,
-        //     para->getParD(level)->size_Mat_SP,
+        //     para->getParD(level)->size_Mat,
         //     para->getParD(level)->isEvenTimestep);
 
         QDevComp27(
@@ -790,8 +772,7 @@ void LBKernelManager::runNoSlipBCKernel(int level){
             para->getParD(level)->distributions.f[0],
             para->getParD(level)->noSlipBC.k,
             para->getParD(level)->noSlipBC.q27[0],
-            para->getParD(level)->numberOfNoSlipBCnodes,
-            para->getParD(level)->numberOfNoSlipBCnodes,
+            para->getParD(level)->noSlipBC.numberOfBCnodes,
             para->getParD(level)->omega,
             para->getParD(level)->neighborX,
             para->getParD(level)->neighborY,
@@ -800,13 +781,6 @@ void LBKernelManager::runNoSlipBCKernel(int level){
             para->getParD(level)->isEvenTimestep);
     }
 }
-
-// void LBKernelManager::runPressureBCKernelPre(int level){
-//     if (para->getParD()->numberOfPressureBCnodes > 0)
-//     {
-//         // ...
-//     }
-// }
 
 // void LBKernelManager::calculateMacroscopicValues(int level)
 // {

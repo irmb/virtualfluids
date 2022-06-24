@@ -74,7 +74,7 @@ void initParticles(Parameter* para)
 		}
 		//////////////////////////////////////////////////////////////////////////
 		//set bool "hot wall"
-		for (int h = 0; h < para->getParH(lev)->geometryBC.numberOfBCnodes; h++)
+		for (uint h = 0; h < para->getParH(lev)->geometryBC.numberOfBCnodes; h++)
 		{
 			if (para->getParH(lev)->coordinateX[para->getParH(lev)->geometryBC.k[h]] < para->getStartXHotWall() || 
 				para->getParH(lev)->coordinateX[para->getParH(lev)->geometryBC.k[h]] > para->getEndXHotWall())
@@ -468,7 +468,7 @@ void rearrangeGeometry(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 		printf("total number of nodes: %d \n", counter2);
 		//////////////////////////////////////////////////////////////////////////
 		//store the index information of the BC nodes in the geometry array 
-		for (int index = 0; index < para->getParH(lev)->geometryBC.numberOfBCnodes; index++)
+		for (uint index = 0; index < para->getParH(lev)->geometryBC.numberOfBCnodes; index++)
 		{
 			para->getParH(lev)->typeOfGridNode[para->getParH(lev)->geometryBC.k[index]] = index + OFFSET_BCsInGeo;
 		}
