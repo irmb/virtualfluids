@@ -224,9 +224,8 @@ struct LBMSimulationParameter {
     QforBoundaryConditions noSlipBC, velocityBC, outflowBC, slipBC, stressBC;
     //! \brief number of lattice nodes for the boundary conditions
     unsigned int numberOfStressBCnodes = 0;
-    unsigned int numberOfNoSlipBCnodesRead, numberOfVeloBCnodesRead, numberOfOutflowBCnodesRead, numberOfSlipBCnodesRead, numberOfStressBCnodesRead;
+    unsigned int numberOfNoSlipBCnodesRead, numberOfVeloBCnodesRead, numberOfOutflowBCnodesRead, numberOfSlipBCnodesRead, numberOfStressBCnodesRead, numberOfPressureBCnodesRead;
     QforBoundaryConditions pressureBC;
-    unsigned int numberOfPressureBCnodes = 0, numberOfPressureBCnodesRead;
 
     QforBoundaryConditions QpressX0, QpressX1, QpressY0, QpressY1, QpressZ0, QpressZ1; // DEPRECATED
     QforBoundaryConditions propellerBC;

@@ -598,8 +598,8 @@ void LBKernelManager::runPressureBCKernelPre(int level){
         //     para->getParD(level)->numberOfNodes,
         //     para->getParD(level)->isEvenTimestep);
 
-        ////////////////////////////////////////////////////////////////////////////////
-        //press NEQ incompressible
+        // //////////////////////////////////////////////////////////////////////////////
+        // // press NEQ incompressible
         // QPressDevIncompNEQ27(
         //     para->getParD(level)->numberofthreads,
         //     para->getParD(level)->pressureBC.RhoBC,
@@ -614,8 +614,8 @@ void LBKernelManager::runPressureBCKernelPre(int level){
         //     para->getParD(level)->numberOfNodes,
         //     para->getParD(level)->isEvenTimestep);
 
-        //////////////////////////////////////////////////////////////////////////////////
-        //press NEQ compressible
+        // ////////////////////////////////////////////////////////////////////////////////
+        // // press NEQ compressible
         // QPressDevNEQ27(
         //     para->getParD(level)->numberofthreads,
         //     para->getParD(level)->pressureBC.RhoBC,
@@ -633,22 +633,21 @@ void LBKernelManager::runPressureBCKernelPre(int level){
 }
 
 void LBKernelManager::runPressureBCKernelPost(int level){
-    if (para->getParD(level)->numberOfPressureBCnodes > 0)
+    if (para->getParD(level)->pressureBC.numberOfBCnodes > 0)
     {
-        QPressDev27_IntBB(
-            para->getParD(level)->numberofthreads, 
-            para->getParD(level)->pressureBC.RhoBC,
-            para->getParD(level)->distributions.f[0],
-            para->getParD(level)->pressureBC.k,
-            para->getParD(level)->pressureBC.q27[0],
-            para->getParD(level)->pressureBC.numberOfBCnodes,
-            para->getParD(level)->pressureBC.numberOfBCnodes,
-            para->getParD(level)->omega,
-            para->getParD(level)->neighborX,
-            para->getParD(level)->neighborY,
-            para->getParD(level)->neighborZ,
-            para->getParD(level)->numberOfNodes,
-            para->getParD(level)->isEvenTimestep);
+        // QPressDev27_IntBB(
+        //     para->getParD(level)->numberofthreads, 
+        //     para->getParD(level)->pressureBC.RhoBC,
+        //     para->getParD(level)->distributions.f[0],
+        //     para->getParD(level)->pressureBC.k,
+        //     para->getParD(level)->pressureBC.q27[0],
+        //     para->getParD(level)->pressureBC.numberOfBCnodes,
+        //     para->getParD(level)->omega,
+        //     para->getParD(level)->neighborX,
+        //     para->getParD(level)->neighborY,
+        //     para->getParD(level)->neighborZ,
+        //     para->getParD(level)->numberOfNodes,
+        //     para->getParD(level)->isEvenTimestep);
     }
 }
 
