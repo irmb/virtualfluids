@@ -27,4 +27,22 @@ void CudaGrid::print() const
 }
 
 
+dim3 getCudaGrid(const unsigned int numberOfThreads, const unsigned int numberOfEntities){
+   int Grid = (numberOfEntities / numberOfThreads) + 1;
+   int Grid1, Grid2;
+   if (Grid > 512)
+   {
+      Grid1 = 512;
+      Grid2 = (Grid/Grid1)+1;
+   }
+   else
+   {
+      Grid1 = 1;
+      Grid2 = Grid;
+   }
+   dim3 cudaGrid(Grid1, Grid2);
+   return cudaGrid;
+}
+
+
 }

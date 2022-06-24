@@ -767,23 +767,20 @@ extern "C" __global__ void QVelDeviceCompPlusSlip27(int inx,
 													unsigned int size_Mat,
 													bool isEvenTimestep);
 
-extern "C" __global__ void QVelDeviceComp27(int inx,
-											int iny,
-											real* vx,
-											real* vy,
-											real* vz,
-											real* DD,
-											int* k_Q,
-											real* QQ,
-											unsigned int sizeQ,
+extern "C" __global__ void QVelDeviceComp27(real* velocityX,
+											real* velocityY,
+											real* velocityZ,
+											real* distribution,
+											int* subgridDistanceIndices,
+											real* subgridDistances,
+											unsigned int numberOfSubgridIndices,
 											int numberOfBCnodes,
-											real om1,
+											real omega,
 											unsigned int* neighborX,
 											unsigned int* neighborY,
 											unsigned int* neighborZ,
-											unsigned int size_Mat,
+											unsigned int numberOfLBnodes,
 											bool isEvenTimestep);
-
 
 extern "C" __global__ void QVelDeviceCompThinWallsPartOne27(
 	real* vx,
