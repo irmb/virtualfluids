@@ -360,18 +360,17 @@ void Parameter::initGridPaths(){
     std::string gridPath = this->getGridPath();
 
     // add missing slash to gridPath
-    if (gridPath.back() != '/')
-    {
+    if (gridPath.back() != '/') {
         gridPath += "/";
-        this->setGridPath(gridPath);
+        ic.gridPath = gridPath;
     }
 
-    // for multi-gpu add process id
-    if (this->getNumprocs() > 1){
+    // for multi-gpu add process id (if not already there)
+    if (this->getNumprocs() > 1) {
         gridPath += StringUtil::toString(this->getMyID()) + "/";
-        this->setGridPath(gridPath);
+        ic.gridPath = gridPath;
     }
-    
+
     //////////////////////////////////////////////////////////////////////////
         
     this->setgeoVec(gridPath + "geoVec.dat");
@@ -758,6 +757,7 @@ void Parameter::setFName(std::string fname)
 void Parameter::setGridPath(std::string gridPath)
 {
     ic.gridPath = gridPath;
+    this->initGridPaths();
 }
 void Parameter::setPrintFiles(bool printfiles)
 {
