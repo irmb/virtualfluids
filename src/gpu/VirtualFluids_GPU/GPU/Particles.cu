@@ -1924,7 +1924,7 @@ extern "C" __global__ void ParticleNoSlipDeviceComp27(real* coordX,
 													  unsigned int numberOfParticles, 
 													  int* k_Q, 
 													  real* QQ,
-													  unsigned int sizeQ,
+													  unsigned int  numberOfBCnodes,
 													  real* NormalX,
 													  real* NormalY,
 													  real* NormalZ,
@@ -2006,7 +2006,7 @@ extern "C" __global__ void ParticleNoSlipDeviceComp27(real* coordX,
    //const unsigned k = nx*(ny*z + y) + x;
    ////////////////////////////////////////////////////////////////////////////
 
-   //if(k < sizeQ)
+   //if(k <  numberOfBCnodes)
    //{
    //   ////////////////////////////////////////////////////////////////////////////////
    //   real *q_dirW, *q_dirS, *q_dirB;
@@ -2015,128 +2015,128 @@ extern "C" __global__ void ParticleNoSlipDeviceComp27(real* coordX,
    // //         *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
    // //         *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
    // //         *q_dirBSE, *q_dirBNW; 
-   // //   q_dirE   = &QQ[dirE   *sizeQ];
-   //    q_dirW   = &QQ[dirW   *sizeQ];
-   // //   q_dirN   = &QQ[dirN   *sizeQ];
-   //    q_dirS   = &QQ[dirS   *sizeQ];
-   // //   q_dirT   = &QQ[dirT   *sizeQ];
-   //    q_dirB   = &QQ[dirB   *sizeQ];
-   // //   q_dirNE  = &QQ[dirNE  *sizeQ];
-   // //   q_dirSW  = &QQ[dirSW  *sizeQ];
-   // //   q_dirSE  = &QQ[dirSE  *sizeQ];
-   // //   q_dirNW  = &QQ[dirNW  *sizeQ];
-   // //   q_dirTE  = &QQ[dirTE  *sizeQ];
-   // //   q_dirBW  = &QQ[dirBW  *sizeQ];
-   // //   q_dirBE  = &QQ[dirBE  *sizeQ];
-   // //   q_dirTW  = &QQ[dirTW  *sizeQ];
-   // //   q_dirTN  = &QQ[dirTN  *sizeQ];
-   // //   q_dirBS  = &QQ[dirBS  *sizeQ];
-   // //   q_dirBN  = &QQ[dirBN  *sizeQ];
-   // //   q_dirTS  = &QQ[dirTS  *sizeQ];
-   // //   q_dirTNE = &QQ[dirTNE *sizeQ];
-   // //   q_dirTSW = &QQ[dirTSW *sizeQ];
-   // //   q_dirTSE = &QQ[dirTSE *sizeQ];
-   // //   q_dirTNW = &QQ[dirTNW *sizeQ];
-   // //   q_dirBNE = &QQ[dirBNE *sizeQ];
-   // //   q_dirBSW = &QQ[dirBSW *sizeQ];
-   // //   q_dirBSE = &QQ[dirBSE *sizeQ];
-   // //   q_dirBNW = &QQ[dirBNW *sizeQ];
+   // //   q_dirE   = &QQ[dirE   * numberOfBCnodes];
+   //    q_dirW   = &QQ[dirW   * numberOfBCnodes];
+   // //   q_dirN   = &QQ[dirN   * numberOfBCnodes];
+   //    q_dirS   = &QQ[dirS   * numberOfBCnodes];
+   // //   q_dirT   = &QQ[dirT   * numberOfBCnodes];
+   //    q_dirB   = &QQ[dirB   * numberOfBCnodes];
+   // //   q_dirNE  = &QQ[dirNE  * numberOfBCnodes];
+   // //   q_dirSW  = &QQ[dirSW  * numberOfBCnodes];
+   // //   q_dirSE  = &QQ[dirSE  * numberOfBCnodes];
+   // //   q_dirNW  = &QQ[dirNW  * numberOfBCnodes];
+   // //   q_dirTE  = &QQ[dirTE  * numberOfBCnodes];
+   // //   q_dirBW  = &QQ[dirBW  * numberOfBCnodes];
+   // //   q_dirBE  = &QQ[dirBE  * numberOfBCnodes];
+   // //   q_dirTW  = &QQ[dirTW  * numberOfBCnodes];
+   // //   q_dirTN  = &QQ[dirTN  * numberOfBCnodes];
+   // //   q_dirBS  = &QQ[dirBS  * numberOfBCnodes];
+   // //   q_dirBN  = &QQ[dirBN  * numberOfBCnodes];
+   // //   q_dirTS  = &QQ[dirTS  * numberOfBCnodes];
+   // //   q_dirTNE = &QQ[dirTNE * numberOfBCnodes];
+   // //   q_dirTSW = &QQ[dirTSW * numberOfBCnodes];
+   // //   q_dirTSE = &QQ[dirTSE * numberOfBCnodes];
+   // //   q_dirTNW = &QQ[dirTNW * numberOfBCnodes];
+   // //   q_dirBNE = &QQ[dirBNE * numberOfBCnodes];
+   // //   q_dirBSW = &QQ[dirBSW * numberOfBCnodes];
+   // //   q_dirBSE = &QQ[dirBSE * numberOfBCnodes];
+   // //   q_dirBNW = &QQ[dirBNW * numberOfBCnodes];
    //   ////////////////////////////////////////////////////////////////////////////////
    // //   real *nx_dirE,   *nx_dirW,   *nx_dirN,   *nx_dirS,   *nx_dirT,   *nx_dirB, 
    // //           *nx_dirNE,  *nx_dirSW,  *nx_dirSE,  *nx_dirNW,  *nx_dirTE,  *nx_dirBW,
    // //           *nx_dirBE,  *nx_dirTW,  *nx_dirTN,  *nx_dirBS,  *nx_dirBN,  *nx_dirTS,
    // //           *nx_dirTNE, *nx_dirTSW, *nx_dirTSE, *nx_dirTNW, *nx_dirBNE, *nx_dirBSW,
    // //           *nx_dirBSE, *nx_dirBNW; 
-   // //   nx_dirE   = &NormalX[dirE   *sizeQ];
-   // //   nx_dirW   = &NormalX[dirW   *sizeQ];
-   // //   nx_dirN   = &NormalX[dirN   *sizeQ];
-   // //   nx_dirS   = &NormalX[dirS   *sizeQ];
-   // //   nx_dirT   = &NormalX[dirT   *sizeQ];
-   // //   nx_dirB   = &NormalX[dirB   *sizeQ];
-   // //   nx_dirNE  = &NormalX[dirNE  *sizeQ];
-   // //   nx_dirSW  = &NormalX[dirSW  *sizeQ];
-   // //   nx_dirSE  = &NormalX[dirSE  *sizeQ];
-   // //   nx_dirNW  = &NormalX[dirNW  *sizeQ];
-   // //   nx_dirTE  = &NormalX[dirTE  *sizeQ];
-   // //   nx_dirBW  = &NormalX[dirBW  *sizeQ];
-   // //   nx_dirBE  = &NormalX[dirBE  *sizeQ];
-   // //   nx_dirTW  = &NormalX[dirTW  *sizeQ];
-   // //   nx_dirTN  = &NormalX[dirTN  *sizeQ];
-   // //   nx_dirBS  = &NormalX[dirBS  *sizeQ];
-   // //   nx_dirBN  = &NormalX[dirBN  *sizeQ];
-   // //   nx_dirTS  = &NormalX[dirTS  *sizeQ];
-   // //   nx_dirTNE = &NormalX[dirTNE *sizeQ];
-   // //   nx_dirTSW = &NormalX[dirTSW *sizeQ];
-   // //   nx_dirTSE = &NormalX[dirTSE *sizeQ];
-   // //   nx_dirTNW = &NormalX[dirTNW *sizeQ];
-   // //   nx_dirBNE = &NormalX[dirBNE *sizeQ];
-   // //   nx_dirBSW = &NormalX[dirBSW *sizeQ];
-   // //   nx_dirBSE = &NormalX[dirBSE *sizeQ];
-   // //   nx_dirBNW = &NormalX[dirBNW *sizeQ];
+   // //   nx_dirE   = &NormalX[dirE   * numberOfBCnodes];
+   // //   nx_dirW   = &NormalX[dirW   * numberOfBCnodes];
+   // //   nx_dirN   = &NormalX[dirN   * numberOfBCnodes];
+   // //   nx_dirS   = &NormalX[dirS   * numberOfBCnodes];
+   // //   nx_dirT   = &NormalX[dirT   * numberOfBCnodes];
+   // //   nx_dirB   = &NormalX[dirB   * numberOfBCnodes];
+   // //   nx_dirNE  = &NormalX[dirNE  * numberOfBCnodes];
+   // //   nx_dirSW  = &NormalX[dirSW  * numberOfBCnodes];
+   // //   nx_dirSE  = &NormalX[dirSE  * numberOfBCnodes];
+   // //   nx_dirNW  = &NormalX[dirNW  * numberOfBCnodes];
+   // //   nx_dirTE  = &NormalX[dirTE  * numberOfBCnodes];
+   // //   nx_dirBW  = &NormalX[dirBW  * numberOfBCnodes];
+   // //   nx_dirBE  = &NormalX[dirBE  * numberOfBCnodes];
+   // //   nx_dirTW  = &NormalX[dirTW  * numberOfBCnodes];
+   // //   nx_dirTN  = &NormalX[dirTN  * numberOfBCnodes];
+   // //   nx_dirBS  = &NormalX[dirBS  * numberOfBCnodes];
+   // //   nx_dirBN  = &NormalX[dirBN  * numberOfBCnodes];
+   // //   nx_dirTS  = &NormalX[dirTS  * numberOfBCnodes];
+   // //   nx_dirTNE = &NormalX[dirTNE * numberOfBCnodes];
+   // //   nx_dirTSW = &NormalX[dirTSW * numberOfBCnodes];
+   // //   nx_dirTSE = &NormalX[dirTSE * numberOfBCnodes];
+   // //   nx_dirTNW = &NormalX[dirTNW * numberOfBCnodes];
+   // //   nx_dirBNE = &NormalX[dirBNE * numberOfBCnodes];
+   // //   nx_dirBSW = &NormalX[dirBSW * numberOfBCnodes];
+   // //   nx_dirBSE = &NormalX[dirBSE * numberOfBCnodes];
+   // //   nx_dirBNW = &NormalX[dirBNW * numberOfBCnodes];
    //   ////////////////////////////////////////////////////////////////////////////////
    // //   real *ny_dirE,   *ny_dirW,   *ny_dirN,   *ny_dirS,   *ny_dirT,   *ny_dirB, 
    // //           *ny_dirNE,  *ny_dirSW,  *ny_dirSE,  *ny_dirNW,  *ny_dirTE,  *ny_dirBW,
    // //           *ny_dirBE,  *ny_dirTW,  *ny_dirTN,  *ny_dirBS,  *ny_dirBN,  *ny_dirTS,
    // //           *ny_dirTNE, *ny_dirTSW, *ny_dirTSE, *ny_dirTNW, *ny_dirBNE, *ny_dirBSW,
    // //           *ny_dirBSE, *ny_dirBNW; 
-   // //   ny_dirE   = &NormalY[dirE   *sizeQ];
-   // //   ny_dirW   = &NormalY[dirW   *sizeQ];
-   // //   ny_dirN   = &NormalY[dirN   *sizeQ];
-   // //   ny_dirS   = &NormalY[dirS   *sizeQ];
-   // //   ny_dirT   = &NormalY[dirT   *sizeQ];
-   // //   ny_dirB   = &NormalY[dirB   *sizeQ];
-   // //   ny_dirNE  = &NormalY[dirNE  *sizeQ];
-   // //   ny_dirSW  = &NormalY[dirSW  *sizeQ];
-   // //   ny_dirSE  = &NormalY[dirSE  *sizeQ];
-   // //   ny_dirNW  = &NormalY[dirNW  *sizeQ];
-   // //   ny_dirTE  = &NormalY[dirTE  *sizeQ];
-   // //   ny_dirBW  = &NormalY[dirBW  *sizeQ];
-   // //   ny_dirBE  = &NormalY[dirBE  *sizeQ];
-   // //   ny_dirTW  = &NormalY[dirTW  *sizeQ];
-   // //   ny_dirTN  = &NormalY[dirTN  *sizeQ];
-   // //   ny_dirBS  = &NormalY[dirBS  *sizeQ];
-   // //   ny_dirBN  = &NormalY[dirBN  *sizeQ];
-   // //   ny_dirTS  = &NormalY[dirTS  *sizeQ];
-   // //   ny_dirTNE = &NormalY[dirTNE *sizeQ];
-   // //   ny_dirTSW = &NormalY[dirTSW *sizeQ];
-   // //   ny_dirTSE = &NormalY[dirTSE *sizeQ];
-   // //   ny_dirTNW = &NormalY[dirTNW *sizeQ];
-   // //   ny_dirBNE = &NormalY[dirBNE *sizeQ];
-   // //   ny_dirBSW = &NormalY[dirBSW *sizeQ];
-   // //   ny_dirBSE = &NormalY[dirBSE *sizeQ];
-   // //   ny_dirBNW = &NormalY[dirBNW *sizeQ];
+   // //   ny_dirE   = &NormalY[dirE   * numberOfBCnodes];
+   // //   ny_dirW   = &NormalY[dirW   * numberOfBCnodes];
+   // //   ny_dirN   = &NormalY[dirN   * numberOfBCnodes];
+   // //   ny_dirS   = &NormalY[dirS   * numberOfBCnodes];
+   // //   ny_dirT   = &NormalY[dirT   * numberOfBCnodes];
+   // //   ny_dirB   = &NormalY[dirB   * numberOfBCnodes];
+   // //   ny_dirNE  = &NormalY[dirNE  * numberOfBCnodes];
+   // //   ny_dirSW  = &NormalY[dirSW  * numberOfBCnodes];
+   // //   ny_dirSE  = &NormalY[dirSE  * numberOfBCnodes];
+   // //   ny_dirNW  = &NormalY[dirNW  * numberOfBCnodes];
+   // //   ny_dirTE  = &NormalY[dirTE  * numberOfBCnodes];
+   // //   ny_dirBW  = &NormalY[dirBW  * numberOfBCnodes];
+   // //   ny_dirBE  = &NormalY[dirBE  * numberOfBCnodes];
+   // //   ny_dirTW  = &NormalY[dirTW  * numberOfBCnodes];
+   // //   ny_dirTN  = &NormalY[dirTN  * numberOfBCnodes];
+   // //   ny_dirBS  = &NormalY[dirBS  * numberOfBCnodes];
+   // //   ny_dirBN  = &NormalY[dirBN  * numberOfBCnodes];
+   // //   ny_dirTS  = &NormalY[dirTS  * numberOfBCnodes];
+   // //   ny_dirTNE = &NormalY[dirTNE * numberOfBCnodes];
+   // //   ny_dirTSW = &NormalY[dirTSW * numberOfBCnodes];
+   // //   ny_dirTSE = &NormalY[dirTSE * numberOfBCnodes];
+   // //   ny_dirTNW = &NormalY[dirTNW * numberOfBCnodes];
+   // //   ny_dirBNE = &NormalY[dirBNE * numberOfBCnodes];
+   // //   ny_dirBSW = &NormalY[dirBSW * numberOfBCnodes];
+   // //   ny_dirBSE = &NormalY[dirBSE * numberOfBCnodes];
+   // //   ny_dirBNW = &NormalY[dirBNW * numberOfBCnodes];
    //   ////////////////////////////////////////////////////////////////////////////////
    // //   real *nz_dirE,   *nz_dirW,   *nz_dirN,   *nz_dirS,   *nz_dirT,   *nz_dirB, 
    // //           *nz_dirNE,  *nz_dirSW,  *nz_dirSE,  *nz_dirNW,  *nz_dirTE,  *nz_dirBW,
    // //           *nz_dirBE,  *nz_dirTW,  *nz_dirTN,  *nz_dirBS,  *nz_dirBN,  *nz_dirTS,
    // //           *nz_dirTNE, *nz_dirTSW, *nz_dirTSE, *nz_dirTNW, *nz_dirBNE, *nz_dirBSW,
    // //           *nz_dirBSE, *nz_dirBNW; 
-   // //   nz_dirE   = &NormalZ[dirE   *sizeQ];
-   // //   nz_dirW   = &NormalZ[dirW   *sizeQ];
-   // //   nz_dirN   = &NormalZ[dirN   *sizeQ];
-   // //   nz_dirS   = &NormalZ[dirS   *sizeQ];
-   // //   nz_dirT   = &NormalZ[dirT   *sizeQ];
-   // //   nz_dirB   = &NormalZ[dirB   *sizeQ];
-   // //   nz_dirNE  = &NormalZ[dirNE  *sizeQ];
-   // //   nz_dirSW  = &NormalZ[dirSW  *sizeQ];
-   // //   nz_dirSE  = &NormalZ[dirSE  *sizeQ];
-   // //   nz_dirNW  = &NormalZ[dirNW  *sizeQ];
-   // //   nz_dirTE  = &NormalZ[dirTE  *sizeQ];
-   // //   nz_dirBW  = &NormalZ[dirBW  *sizeQ];
-   // //   nz_dirBE  = &NormalZ[dirBE  *sizeQ];
-   // //   nz_dirTW  = &NormalZ[dirTW  *sizeQ];
-   // //   nz_dirTN  = &NormalZ[dirTN  *sizeQ];
-   // //   nz_dirBS  = &NormalZ[dirBS  *sizeQ];
-   // //   nz_dirBN  = &NormalZ[dirBN  *sizeQ];
-   // //   nz_dirTS  = &NormalZ[dirTS  *sizeQ];
-   // //   nz_dirTNE = &NormalZ[dirTNE *sizeQ];
-   // //   nz_dirTSW = &NormalZ[dirTSW *sizeQ];
-   // //   nz_dirTSE = &NormalZ[dirTSE *sizeQ];
-   // //   nz_dirTNW = &NormalZ[dirTNW *sizeQ];
-   // //   nz_dirBNE = &NormalZ[dirBNE *sizeQ];
-   // //   nz_dirBSW = &NormalZ[dirBSW *sizeQ];
-   // //   nz_dirBSE = &NormalZ[dirBSE *sizeQ];
-   // //   nz_dirBNW = &NormalZ[dirBNW *sizeQ];
+   // //   nz_dirE   = &NormalZ[dirE   * numberOfBCnodes];
+   // //   nz_dirW   = &NormalZ[dirW   * numberOfBCnodes];
+   // //   nz_dirN   = &NormalZ[dirN   * numberOfBCnodes];
+   // //   nz_dirS   = &NormalZ[dirS   * numberOfBCnodes];
+   // //   nz_dirT   = &NormalZ[dirT   * numberOfBCnodes];
+   // //   nz_dirB   = &NormalZ[dirB   * numberOfBCnodes];
+   // //   nz_dirNE  = &NormalZ[dirNE  * numberOfBCnodes];
+   // //   nz_dirSW  = &NormalZ[dirSW  * numberOfBCnodes];
+   // //   nz_dirSE  = &NormalZ[dirSE  * numberOfBCnodes];
+   // //   nz_dirNW  = &NormalZ[dirNW  * numberOfBCnodes];
+   // //   nz_dirTE  = &NormalZ[dirTE  * numberOfBCnodes];
+   // //   nz_dirBW  = &NormalZ[dirBW  * numberOfBCnodes];
+   // //   nz_dirBE  = &NormalZ[dirBE  * numberOfBCnodes];
+   // //   nz_dirTW  = &NormalZ[dirTW  * numberOfBCnodes];
+   // //   nz_dirTN  = &NormalZ[dirTN  * numberOfBCnodes];
+   // //   nz_dirBS  = &NormalZ[dirBS  * numberOfBCnodes];
+   // //   nz_dirBN  = &NormalZ[dirBN  * numberOfBCnodes];
+   // //   nz_dirTS  = &NormalZ[dirTS  * numberOfBCnodes];
+   // //   nz_dirTNE = &NormalZ[dirTNE * numberOfBCnodes];
+   // //   nz_dirTSW = &NormalZ[dirTSW * numberOfBCnodes];
+   // //   nz_dirTSE = &NormalZ[dirTSE * numberOfBCnodes];
+   // //   nz_dirTNW = &NormalZ[dirTNW * numberOfBCnodes];
+   // //   nz_dirBNE = &NormalZ[dirBNE * numberOfBCnodes];
+   // //   nz_dirBSW = &NormalZ[dirBSW * numberOfBCnodes];
+   // //   nz_dirBSE = &NormalZ[dirBSE * numberOfBCnodes];
+   // //   nz_dirBNW = &NormalZ[dirBNW * numberOfBCnodes];
    //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //bool changeCell = false;
    //   unsigned int KQK  = k_Q[k];

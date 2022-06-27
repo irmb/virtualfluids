@@ -1962,7 +1962,6 @@ extern "C" void QADPressDev27(unsigned int numberOfThreads,
                               real diffusivity,
                               int* k_Q,
                               real* QQ,
-                              unsigned int sizeQ,
                               unsigned int numberOfBCnodes,
                               real om1,
                               unsigned int* neighborX,
@@ -2741,7 +2740,6 @@ extern "C" void QDevCompThinWalls27(unsigned int numberOfThreads,
 									real* DD,
 									int* k_Q,
 									real* QQ,
-									unsigned int sizeQ,
 									unsigned int numberOfBCnodes,
 									real om1,
 									unsigned int* geom,
@@ -2770,7 +2768,6 @@ extern "C" void QDevCompThinWalls27(unsigned int numberOfThreads,
    QDeviceCompThinWallsPartOne27 <<< gridQ, threads >>> (DD,
 														 k_Q,
 														 QQ,
-														 sizeQ,
 														 numberOfBCnodes,
 														 om1,
 														 neighborX,
@@ -2783,7 +2780,6 @@ extern "C" void QDevCompThinWalls27(unsigned int numberOfThreads,
    QThinWallsPartTwo27 <<< gridQ, threads >>> ( DD,
 												k_Q,
 												QQ,
-												sizeQ,
 												numberOfBCnodes,
 												geom,
 												neighborX,
@@ -2841,8 +2837,6 @@ extern "C" void QDev3rdMomentsComp27(   unsigned int numberOfThreads,
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QDevIncompHighNu27( unsigned int numberOfThreads,
-									int nx,
-									int ny,
 									real* DD,
 									int* k_Q,
 									real* QQ,
@@ -2869,8 +2863,7 @@ extern "C" void QDevIncompHighNu27( unsigned int numberOfThreads,
    dim3 gridQ(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      QDeviceIncompHighNu27<<< gridQ, threads >>> (nx,
-												   ny,
+      QDeviceIncompHighNu27<<< gridQ, threads >>> (
 												   DD,
 												   k_Q,
 												   QQ,
@@ -2885,12 +2878,9 @@ extern "C" void QDevIncompHighNu27( unsigned int numberOfThreads,
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QDevCompHighNu27(   unsigned int numberOfThreads,
-									int nx,
-									int ny,
 									real* DD,
 									int* k_Q,
 									real* QQ,
-									unsigned int sizeQ,
 									unsigned int numberOfBCnodes,
 									real om1,
 									unsigned int* neighborX,
@@ -2914,12 +2904,10 @@ extern "C" void QDevCompHighNu27(   unsigned int numberOfThreads,
    dim3 gridQ(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      QDeviceCompHighNu27<<< gridQ, threads >>> (  nx,
-												   ny,
+      QDeviceCompHighNu27<<< gridQ, threads >>> (
 												   DD,
 												   k_Q,
 												   QQ,
-												   sizeQ,
 												   numberOfBCnodes,
 												   om1,
 												   neighborX,
@@ -2976,15 +2964,14 @@ extern "C" void QVelDevicePlainBB27(unsigned int numberOfThreads,
       getLastCudaError("QVelDevicePlainBB27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QVelDeviceCouhette27(unsigned int numberOfThreads,
+extern "C" void QVelDeviceCouette27(unsigned int numberOfThreads,
 									real* vx,
 									real* vy,
 									real* vz,
 									real* DD,
 									int* k_Q,
 									real* QQ,
-									unsigned int sizeQ,
-									int numberOfBCnodes,
+									unsigned int numberOfBCnodes,
 									real om1,
 									unsigned int* neighborX,
 									unsigned int* neighborY,
@@ -3007,13 +2994,12 @@ extern "C" void QVelDeviceCouhette27(unsigned int numberOfThreads,
    dim3 gridQ(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      QVelDevCouhette27<<< gridQ, threads >>> ( vx,
+      QVelDevCouette27<<< gridQ, threads >>> ( vx,
 												vy,
 												vz,
 												DD,
 												k_Q,
 												QQ,
-												sizeQ,
 												numberOfBCnodes,
 												om1,
 												neighborX,
@@ -3135,15 +3121,12 @@ extern "C" void QVelDev27(unsigned int numberOfThreads,
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QVelDevCompPlusSlip27(unsigned int numberOfThreads,
-									  int nx,
-									  int ny,
 									  real* vx,
 									  real* vy,
 									  real* vz,
 									  real* DD,
 									  int* k_Q,
 									  real* QQ,
-									  unsigned int sizeQ,
 									  unsigned int numberOfBCnodes,
 									  real om1,
 									  unsigned int* neighborX,
@@ -3167,15 +3150,13 @@ extern "C" void QVelDevCompPlusSlip27(unsigned int numberOfThreads,
    dim3 gridQ(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      QVelDeviceCompPlusSlip27<<< gridQ, threads >>> (nx,
-													  ny,
+      QVelDeviceCompPlusSlip27<<< gridQ, threads >>> (
 													  vx,
 													  vy,
 													  vz,
 													  DD,
 													  k_Q,
 													  QQ,
-													  sizeQ,
 													  numberOfBCnodes,
 													  om1,
 													  neighborX,
@@ -3228,14 +3209,13 @@ extern "C" void QVelDevCompThinWalls27(unsigned int numberOfThreads,
 							           real* DD,
 							           int* k_Q,
 							           real* QQ,
-							           unsigned int sizeQ,
 							           unsigned int numberOfBCnodes,
 							           real om1,
-									   unsigned int* geom,
+									     unsigned int* geom,
 							           unsigned int* neighborX,
 							           unsigned int* neighborY,
 							           unsigned int* neighborZ,
-									   unsigned int* neighborWSB,
+									     unsigned int* neighborWSB,
 							           unsigned int size_Mat,
 							           bool isEvenTimestep)
 {
@@ -3254,13 +3234,12 @@ extern "C" void QVelDevCompThinWalls27(unsigned int numberOfThreads,
    dim3 gridQ(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      QVelDeviceCompThinWallsPartOne27<<< gridQ, threads >>> (vx,
+   QVelDeviceCompThinWallsPartOne27<<< gridQ, threads >>> (vx,
 											                  vy,
 											                  vz,
 											                  DD,
 											                  k_Q,
 											                  QQ,
-											                  sizeQ,
 											                  numberOfBCnodes,
 											                  om1,
 											                  neighborX,
@@ -3268,21 +3247,21 @@ extern "C" void QVelDevCompThinWalls27(unsigned int numberOfThreads,
 											                  neighborZ,
 											                  size_Mat,
 											                  isEvenTimestep);
-      getLastCudaError("QVelDeviceCompThinWallsPartOne27 execution failed");
+   getLastCudaError("QVelDeviceCompThinWallsPartOne27 execution failed");
 
-	  QThinWallsPartTwo27 <<< gridQ, threads >>> (DD,
-											      k_Q,
-											      QQ,
-											      sizeQ,
-											      numberOfBCnodes,
-                                                  geom,
-											      neighborX,
-											      neighborY,
-											      neighborZ,
-                                                  neighborWSB,
-											      size_Mat,
-											      isEvenTimestep);
-      getLastCudaError("QThinWallsPartTwo27 execution failed");
+	QThinWallsPartTwo27 <<< gridQ, threads >>> (
+       DD,
+       k_Q,
+       QQ,
+       numberOfBCnodes,
+       geom,
+       neighborX,
+       neighborY,
+       neighborZ,
+       neighborWSB,
+       size_Mat,
+       isEvenTimestep);
+   getLastCudaError("QThinWallsPartTwo27 execution failed");
 }
 
 extern "C" void QVelDevCompZeroPress27(
@@ -3322,8 +3301,6 @@ extern "C" void QVelDevCompZeroPress27(
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QVelDevIncompHighNu27(unsigned int numberOfThreads,
-									  int nx,
-									  int ny,
 									  real* vx,
 									  real* vy,
 									  real* vz,
@@ -3353,8 +3330,7 @@ extern "C" void QVelDevIncompHighNu27(unsigned int numberOfThreads,
    dim3 gridQ(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      QVelDeviceIncompHighNu27<<< gridQ, threads >>> (nx,
-													  ny,
+      QVelDeviceIncompHighNu27<<< gridQ, threads >>> (
 													  vx,
 													  vy,
 													  vz,
@@ -3372,8 +3348,6 @@ extern "C" void QVelDevIncompHighNu27(unsigned int numberOfThreads,
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QVelDevCompHighNu27(  unsigned int numberOfThreads,
-									  int nx,
-									  int ny,
 									  real* vx,
 									  real* vy,
 									  real* vz,
@@ -3403,8 +3377,7 @@ extern "C" void QVelDevCompHighNu27(  unsigned int numberOfThreads,
    dim3 gridQ(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      QVelDeviceCompHighNu27<<< gridQ, threads >>> (  nx,
-													  ny,
+      QVelDeviceCompHighNu27<<< gridQ, threads >>> (
 													  vx,
 													  vy,
 													  vz,
@@ -3615,7 +3588,7 @@ extern "C" void QSlipGeomDevComp27(unsigned int numberOfThreads,
 								   real* DD,
 								   int* k_Q,
 								   real* QQ,
-								   unsigned int sizeQ,
+								   unsigned int numberOfBCnodes,
 								   real om1,
 								   real* NormalX,
 								   real* NormalY,
@@ -3626,7 +3599,7 @@ extern "C" void QSlipGeomDevComp27(unsigned int numberOfThreads,
 								   unsigned int size_Mat,
 								   bool isEvenTimestep)
 {
-   int Grid = (sizeQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -3644,7 +3617,7 @@ extern "C" void QSlipGeomDevComp27(unsigned int numberOfThreads,
       QSlipGeomDeviceComp27<<< gridQ, threads >>> (DD,
 												   k_Q,
 												   QQ,
-												   sizeQ,
+												   numberOfBCnodes,
 												   om1,
 												   NormalX,
 												   NormalY,
@@ -3661,7 +3634,7 @@ extern "C" void QSlipNormDevComp27(unsigned int numberOfThreads,
 								   real* DD,
 								   int* k_Q,
 								   real* QQ,
-								   unsigned int sizeQ,
+								   unsigned int numberOfBCnodes,
 								   real om1,
 								   real* NormalX,
 								   real* NormalY,
@@ -3672,7 +3645,7 @@ extern "C" void QSlipNormDevComp27(unsigned int numberOfThreads,
 								   unsigned int size_Mat,
 								   bool isEvenTimestep)
 {
-   int Grid = (sizeQ / numberOfThreads)+1;
+   int Grid = (numberOfBCnodes / numberOfThreads)+1;
    int Grid1, Grid2;
    if (Grid>512)
    {
@@ -3690,7 +3663,7 @@ extern "C" void QSlipNormDevComp27(unsigned int numberOfThreads,
       QSlipNormDeviceComp27<<< gridQ, threads >>> (DD,
 												   k_Q,
 												   QQ,
-												   sizeQ,
+												   numberOfBCnodes,
 												   om1,
 												   NormalX,
 												   NormalY,
@@ -3865,13 +3838,10 @@ extern "C" void BBStressDev27(unsigned int numberOfThreads,
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QPressDev27(unsigned int numberOfThreads,
-                             int nx,
-                             int ny,
                              real* rhoBC,
                              real* DD,
                              int* k_Q,
                              real* QQ,
-                             unsigned int sizeQ,
                              unsigned int numberOfBCnodes,
                              real om1,
                              unsigned int* neighborX,
@@ -3895,13 +3865,10 @@ extern "C" void QPressDev27(unsigned int numberOfThreads,
    dim3 gridQ(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      QPressDevice27<<< gridQ, threads >>> (nx,
-                                             ny,
-                                             rhoBC,
+      QPressDevice27<<< gridQ, threads >>> ( rhoBC,
                                              DD,
                                              k_Q,
                                              QQ,
-                                             sizeQ,
                                              numberOfBCnodes,
                                              om1,
                                              neighborX,
@@ -7155,15 +7122,12 @@ extern "C" void setRecvGsDevF3(
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void WallFuncDev27(unsigned int numberOfThreads,
-							  int nx,
-							  int ny,
 							  real* vx,
 							  real* vy,
 							  real* vz,
 							  real* DD,
 							  int* k_Q,
 							  real* QQ,
-							  unsigned int sizeQ,
 							  unsigned int numberOfBCnodes,
 							  real om1,
 							  unsigned int* neighborX,
@@ -7187,15 +7151,13 @@ extern "C" void WallFuncDev27(unsigned int numberOfThreads,
    dim3 gridQ(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      WallFunction27<<< gridQ, threads >>> (  nx,
-											  ny,
+      WallFunction27<<< gridQ, threads >>> (
 											  vx,
 											  vy,
 											  vz,
 											  DD,
 											  k_Q,
 											  QQ,
-											  sizeQ,
 											  numberOfBCnodes,
 											  om1,
 											  neighborX,

@@ -90,8 +90,6 @@ void LBKernelManager::runVelocityBCKernelPre(int level)
         // high viscosity incompressible
         // QVelDevIncompHighNu27(
         //     para->getParD(level)->numberofthreads,
-        //     para->getParD(level)->nx,
-        //     para->getParD(level)->ny,
         //     para->getParD(level)->velocityBC.Vx,
         //     para->getParD(level)->velocityBC.Vy,
         //     para->getParD(level)->velocityBC.Vz,
@@ -110,8 +108,6 @@ void LBKernelManager::runVelocityBCKernelPre(int level)
         // high viscosity compressible
         // QVelDevCompHighNu27(
         //     para->getParD(level)->numberofthreads,
-        //     para->getParD(level)->nx,
-        //     para->getParD(level)->ny,
         //     para->getParD(level)->velocityBC.Vx,
         //     para->getParD(level)->velocityBC.Vy,
         //     para->getParD(level)->velocityBC.Vz,
@@ -293,12 +289,9 @@ void LBKernelManager::runGeoBCKernelPre(int level, unsigned int t, CudaMemoryMan
         // high viscosity incompressible
         // QDevIncompHighNu27(
         //     para->getParD(level)->numberofthreads,
-        //     para->getParD(level)->nx,
-        //     para->getParD(level)->ny,
         //     para->getParD(level)->distributions.f[0],
         //     para->getParD(level)->geometryBC.k,
         //     para->getParD(level)->geometryBC.q27[0],
-        //     para->getParD(level)->geometryBC.numberOfBCnodes,
         //     para->getParD(level)->geometryBC.numberOfBCnodes,
         //     para->getParD(level)->omega,
         //     para->getParD(level)->neighborX,
@@ -311,12 +304,9 @@ void LBKernelManager::runGeoBCKernelPre(int level, unsigned int t, CudaMemoryMan
         // high viscosity compressible
         // QDevCompHighNu27(
         //     para->getParD(level)->numberofthreads,
-        //     para->getParD(level)->nx,
-        //     para->getParD(level)->ny,
         //     para->getParD(level)->distributions.f[0],
         //     para->getParD(level)->geometryBC.k,
         //     para->getParD(level)->geometryBC.q27[0],
-        //     para->getParD(level)->geometryBC.numberOfBCnodes,
         //     para->getParD(level)->geometryBC.numberOfBCnodes,
         //     para->getParD(level)->omega,
         //     para->getParD(level)->neighborX,
