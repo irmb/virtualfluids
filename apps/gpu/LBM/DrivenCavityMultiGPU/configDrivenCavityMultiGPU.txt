@@ -31,6 +31,6 @@ GridPath=/workspaces/VirtualFluids_dev/output/DrivenCavity_Results/grid/  # Arag
 ##################################################
 #simulation parameter
 ##################################################
-TimeEnd=1000
-TimeOut=100
+TimeEnd=100000
+TimeOut=10000
 #TimeStartOut=0
