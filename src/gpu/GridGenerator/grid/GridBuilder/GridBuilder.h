@@ -37,7 +37,7 @@
 #include <string>
 #include <memory>
 
-#include "global.h"
+#include "gpu/GridGenerator/global.h"
 
 #define GEOMQS 6
 #define INLETQS 0
@@ -130,6 +130,11 @@ public:
 
     virtual uint getCommunicationProcess(int direction) = 0;
 
+    virtual uint getNumberOfFluidNodes(unsigned int level) const = 0;
+    virtual void getFluidNodeIndices(uint *fluidNodeIndices, const int level) const = 0;
+    virtual uint getNumberOfFluidNodesBorder(unsigned int level) const = 0;
+    virtual void getFluidNodeIndicesBorder(uint *fluidNodeIndices, const int level) const = 0;
+
     virtual uint getNumberOfSendIndices(int direction, uint level)             = 0;
     virtual uint getNumberOfReceiveIndices(int direction, uint level)          = 0;
     virtual void getSendIndices(int *sendIndices, int direction, int level)    = 0;
@@ -137,4 +142,3 @@ public:
 };
 
 #endif
-

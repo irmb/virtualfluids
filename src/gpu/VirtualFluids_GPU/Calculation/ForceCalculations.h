@@ -14,7 +14,7 @@ class ForceCalculations
 public:
 	ForceCalculations(Parameter* para);
 	~ForceCalculations();
-	void calcPIDControllerForForce(Parameter* para, CudaMemoryManager* cudaManager);
+	void calcPIDControllerForForce(Parameter* para, CudaMemoryManager* cudaMemoryManager);
 	void printForcing(Parameter* para);
 
 private:

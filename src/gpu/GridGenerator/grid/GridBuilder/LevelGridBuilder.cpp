@@ -34,6 +34,7 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <algorithm>
 
 #include "geometries/Arrow/ArrowImp.h"
 #include "geometries/BoundingBox/BoundingBox.h"
@@ -334,7 +335,6 @@ uint LevelGridBuilder::getNumberOfNodes(unsigned int level) const
     return grids[level]->getSparseSize();
 }
 
-
 std::shared_ptr<Grid> LevelGridBuilder::getGrid(int level, int box)
 {
     return this->grids[level];
@@ -363,6 +363,26 @@ void LevelGridBuilder::getNodeValues(real *xCoords, real *yCoords, real *zCoords
     grids[level]->getNodeValues(xCoords, yCoords, zCoords, neighborX, neighborY, neighborZ, neighborNegative, geo);
 }
 
+
+GRIDGENERATOR_EXPORT void LevelGridBuilder::getFluidNodeIndices(uint *fluidNodeIndices, const int level) const 
+{ 
+    grids[level]->getFluidNodeIndices(fluidNodeIndices);
+}
+
+GRIDGENERATOR_EXPORT void LevelGridBuilder::getFluidNodeIndicesBorder(uint *fluidNodeIndices, const int level) const
+{
+    grids[level]->getFluidNodeIndicesBorder(fluidNodeIndices);
+}
+
+uint LevelGridBuilder::getNumberOfFluidNodes(unsigned int level) const 
+{
+    return grids[level]->getNumberOfFluidNodes(); 
+}
+
+GRIDGENERATOR_EXPORT uint LevelGridBuilder::getNumberOfFluidNodesBorder(unsigned int level) const
+{
+    return grids[level]->getNumberOfFluidNodesBorder();
+}
 
 uint LevelGridBuilder::getSlipSize(int level) const
 {

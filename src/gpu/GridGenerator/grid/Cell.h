@@ -33,7 +33,7 @@
 #ifndef CELL_H
 #define CELL_H
 
-#include "global.h"
+#include "gpu/GridGenerator/global.h"
 
 struct Point
 {

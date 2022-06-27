@@ -11,7 +11,7 @@ std::shared_ptr<PMCumulantOneCompSP27> PMCumulantOneCompSP27::getNewInstance(std
 
 void PMCumulantOneCompSP27::run()
 {
-	int size_Mat = para->getParD(level)->size_Mat_SP;
+	int size_Mat = para->getParD(level)->numberOfNodes;
 	int numberOfThreads = para->getParD(level)->numberofthreads;
 
 	int Grid = (size_Mat / numberOfThreads) + 1;
@@ -31,11 +31,11 @@ void PMCumulantOneCompSP27::run()
 
 	for (int i = 0; i < pm.size(); i++) {
 		LB_Kernel_PM_Cum_One_Comp_SP_27 << < grid, threads >> >(para->getParD(level)->omega,
-			para->getParD(level)->neighborX_SP,
-			para->getParD(level)->neighborY_SP,
-			para->getParD(level)->neighborZ_SP,
-			para->getParD(level)->d0SP.f[0],
-			para->getParD(level)->size_Mat_SP,
+			para->getParD(level)->neighborX,
+			para->getParD(level)->neighborY,
+			para->getParD(level)->neighborZ,
+			para->getParD(level)->distributions.f[0],
+			para->getParD(level)->numberOfNodes,
 			level,
 			para->getForcesDev(),
 			pm[i]->getPorosity(),
@@ -43,7 +43,7 @@ void PMCumulantOneCompSP27::run()
 			pm[i]->getForchheimerLBM(),
 			pm[i]->getSizePM(),
 			pm[i]->getHostNodeIDsPM(),
-			para->getParD(level)->evenOrOdd);
+			para->getParD(level)->isEvenTimestep);
 		getLastCudaError("LB_Kernel_PM_Cum_One_Comp_SP_27 execution failed");
 	}
 }

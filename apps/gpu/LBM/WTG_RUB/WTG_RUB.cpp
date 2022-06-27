@@ -48,10 +48,6 @@
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
-
-#include "VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
-#include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
-
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 
 #include <logger/Logger.h>
@@ -86,8 +82,11 @@ std::string simulationName("");
 // 4: setup 3 of MSch (small/test)  (3 level, 4.0 cm -> 1.0  cm)
 int setupDomain = 4;
 
-std::string path("D:/out/WTG_RUB"); //Mollok
-std::string inputPath("D:/out/WTG_RUB/input/");
+// std::string path("D:/out/WTG_RUB"); // Mollok
+// std::string inputPath("D:/out/WTG_RUB/input/");
+
+std::string path("/workspaces/VirtualFluids_dev/output/WTG_RUB_Results/"); // Aragorn
+std::string inputPath("/workspaces/VirtualFluids_dev/stl/WTG_RUB/");
 
 // const uint timeStepStartOut = 0;
 const uint timeStepOut = 10000;
@@ -110,6 +109,8 @@ void multipleLevel(const std::string& configPath)
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
     logging::Logger::timeStamp(logging::Logger::ENABLE);
     logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
+
+    vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();
 
     auto gridFactory = GridFactory::make();
     gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
@@ -194,8 +195,6 @@ void multipleLevel(const std::string& configPath)
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();
 
     vf::basics::ConfigurationFile config;
     config.load(configPath);
@@ -327,19 +326,12 @@ void multipleLevel(const std::string& configPath)
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
+    auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
 
-    SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
+    auto gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
 
-    Simulation sim (communicator);
-    SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
-    SPtr<KernelFactoryImp> kernelFactory = KernelFactoryImp::getInstance();
-    SPtr<PreProcessorFactoryImp> preProcessorFactory = PreProcessorFactoryImp::getInstance();
-    sim.setFactories(kernelFactory, preProcessorFactory);
-    sim.init(para, gridGenerator, fileWriter, cudaMemoryManager);
+    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator);
     sim.run();
-    sim.free();
-
 }
 
 void readVelocityProfile()

@@ -18,10 +18,10 @@ extern "C" __global__ void LBCalc2ndMomentsIncompSP27(  real* kxyFromfcNEQ,
 														unsigned int* neighborZ,
 														unsigned int size_Mat,
 														real* DD,
-														bool evenOrOdd)
+														bool isEvenTimestep)
 {
    Distributions27 D;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D.f[dirE   ] = &DD[dirE   *size_Mat];
       D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -217,10 +217,10 @@ extern "C" __global__ void LBCalc2ndMomentsCompSP27(real* kxyFromfcNEQ,
 													unsigned int* neighborZ,
 													unsigned int size_Mat,
 													real* DD,
-													bool evenOrOdd)
+													bool isEvenTimestep)
 {
    Distributions27 D;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D.f[dirE   ] = &DD[dirE   *size_Mat];
       D.f[dirW   ] = &DD[dirW   *size_Mat];

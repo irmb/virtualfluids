@@ -25,21 +25,21 @@ BGKUnified::BGKUnified(std::shared_ptr<Parameter> para, int level)
 
     myKernelGroup = BasicKernel;
 
-    this->cudaGrid = cuda::CudaGrid(para->getParD(level)->numberofthreads, para->getParD(level)->size_Mat_SP);
+    this->cudaGrid = cuda::CudaGrid(para->getParD(level)->numberofthreads, para->getParD(level)->numberOfNodes);
 }
 
 
 void BGKUnified::run()
 {
     GPUKernelParameter kernelParameter{ para->getParD(level)->omega,
-                                                 para->getParD(level)->geoSP,
-                                                 para->getParD(level)->neighborX_SP,
-                                                 para->getParD(level)->neighborY_SP,
-                                                 para->getParD(level)->neighborZ_SP,
-                                                 para->getParD(level)->d0SP.f[0],
-                                                 (int)para->getParD(level)->size_Mat_SP,
+                                                 para->getParD(level)->typeOfGridNode,
+                                                 para->getParD(level)->neighborX,
+                                                 para->getParD(level)->neighborY,
+                                                 para->getParD(level)->neighborZ,
+                                                 para->getParD(level)->distributions.f[0],
+                                                 (int)para->getParD(level)->numberOfNodes,
                                                  nullptr, /* forces not used in bgk kernel */
-                                                 para->getParD(level)->evenOrOdd };
+                                                 para->getParD(level)->isEvenTimestep };
 
     auto lambda = [] __device__(lbm::KernelParameter parameter) {
         return lbm::bgk(parameter);

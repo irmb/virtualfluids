@@ -15,10 +15,10 @@ extern "C" __global__ void QSlipDevice27(real* DD,
                                          unsigned int* neighborY,
                                          unsigned int* neighborZ,
                                          unsigned int size_Mat, 
-                                         bool evenOrOdd)
+                                         bool isEvenTimestep)
 {
    Distributions27 D;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D.f[dirE   ] = &DD[dirE   *size_Mat];
       D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -202,7 +202,7 @@ extern "C" __global__ void QSlipDevice27(real* DD,
       real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
       //////////////////////////////////////////////////////////////////////////
-      if (evenOrOdd==false)
+      if (isEvenTimestep==false)
       {
          D.f[dirE   ] = &DD[dirE   *size_Mat];
          D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -665,10 +665,10 @@ extern "C" __global__ void QSlipDeviceComp27(real* DD,
 											 unsigned int* neighborY,
 											 unsigned int* neighborZ,
 											 unsigned int size_Mat, 
-											 bool evenOrOdd)
+											 bool isEvenTimestep)
 {
    Distributions27 D;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D.f[dirE   ] = &DD[dirE   *size_Mat];
       D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -853,7 +853,7 @@ extern "C" __global__ void QSlipDeviceComp27(real* DD,
       real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (c1o1 + drho);
 
       //////////////////////////////////////////////////////////////////////////
-      if (evenOrOdd==false)
+      if (isEvenTimestep==false)
       {
          D.f[dirE   ] = &DD[dirE   *size_Mat];
          D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -1331,10 +1331,10 @@ extern "C" __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
 											 unsigned int* neighborZ,
                                   real* turbViscosity,
 											 unsigned int size_Mat, 
-											 bool evenOrOdd)
+											 bool isEvenTimestep)
 {
    Distributions27 D;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D.f[dirE   ] = &DD[dirE   *size_Mat];
       D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -1519,7 +1519,7 @@ extern "C" __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
       real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (c1o1 + drho);
 
       //////////////////////////////////////////////////////////////////////////
-      if (evenOrOdd==false)
+      if (isEvenTimestep==false)
       {
          D.f[dirE   ] = &DD[dirE   *size_Mat];
          D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -2038,10 +2038,10 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
 												 unsigned int* neighborY,
 												 unsigned int* neighborZ,
 												 unsigned int size_Mat, 
-												 bool evenOrOdd)
+												 bool isEvenTimestep)
 {
    Distributions27 D;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D.f[dirE   ] = &DD[dirE   *size_Mat];
       D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -2321,7 +2321,7 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
       real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (c1o1 + drho);
 
       //////////////////////////////////////////////////////////////////////////
-      if (evenOrOdd==false)
+      if (isEvenTimestep==false)
       {
          D.f[dirE   ] = &DD[dirE   *size_Mat];
          D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -2924,10 +2924,10 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
 												 unsigned int* neighborY,
 												 unsigned int* neighborZ,
 												 unsigned int size_Mat, 
-												 bool evenOrOdd)
+												 bool isEvenTimestep)
 {
    Distributions27 D;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D.f[dirE   ] = &DD[dirE   *size_Mat];
       D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -3207,7 +3207,7 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
       real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (c1o1 + drho);
 
       //////////////////////////////////////////////////////////////////////////
-      if (evenOrOdd==false)
+      if (isEvenTimestep==false)
       {
          D.f[dirE   ] = &DD[dirE   *size_Mat];
          D.f[dirW   ] = &DD[dirW   *size_Mat];

@@ -67,6 +67,11 @@ namespace parameter
         .def("get_viscosity_ratio", &Parameter::getViscosityRatio)
         .def("get_density_ratio", &Parameter::getDensityRatio)
         .def("get_force_ratio", &Parameter::getForceRatio)
+        .def("get_use_AMD", &Parameter::getUseAMD)
+        .def("get_use_Wale", &Parameter::getUseWale)
+        .def("get_SGS_constant", &Parameter::getSGSConstant)
+        .def("get_is_body_force", &Parameter::getIsBodyForce)
+        .def("set_has_wall_model_monitor", &Parameter::setHasWallModelMonitor)
         ;
     }
 }

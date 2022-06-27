@@ -54,26 +54,26 @@ void PrecursorWriter::init(Parameter* para, GridProvider* gridProvider, CudaMemo
     for(int level=0; level<=para->getMaxLevel(); level++)
     {
 
-        real dx = abs(para->getParH(level)->coordX_SP[1]-para->getParH(level)->coordX_SP[para->getParH(level)->neighborX_SP[1]]);
+        real dx = abs(para->getParH(level)->coordinateX[1]-para->getParH(level)->coordinateX[para->getParH(level)->neighborX[1]]);
         int maxPoints = (int((yMax-yMin)/dx)+1)* (int((zMax-zMin)/dx)+1);
 
         real lowestY, lowestZ, highestY, highestZ;
 
-        lowestY = para->getParH(level)->coordY_SP[para->getParH(level)->size_Mat_SP-1];
-        highestY = para->getParH(level)->coordY_SP[1];        
+        lowestY = para->getParH(level)->coordinateY[para->getParH(level)->numberOfNodes-1];
+        highestY = para->getParH(level)->coordinateY[1];        
         
-        lowestZ = para->getParH(level)->coordZ_SP[para->getParH(level)->size_Mat_SP-1];
-        highestZ = para->getParH(level)->coordZ_SP[1];
+        lowestZ = para->getParH(level)->coordinateZ[para->getParH(level)->numberOfNodes-1];
+        highestZ = para->getParH(level)->coordinateZ[1];
 
         std::vector<uint> indicesOnGrid;
         std::vector<int> indicesOnPlane;
         std::vector<real> coordY, coordZ;
 
-        for(uint j=1; j<para->getParH(level)->size_Mat_SP; j++ )
+        for(uint j=1; j<para->getParH(level)->numberOfNodes; j++ )
         {
-            real pointCoordX = para->getParH(level)->coordX_SP[j];
-            real pointCoordY = para->getParH(level)->coordY_SP[j];
-            real pointCoordZ = para->getParH(level)->coordZ_SP[j];
+            real pointCoordX = para->getParH(level)->coordinateX[j];
+            real pointCoordY = para->getParH(level)->coordinateY[j];
+            real pointCoordZ = para->getParH(level)->coordinateZ[j];
             if( pointCoordX < (dx+xPos) && pointCoordX >= xPos &&
                 pointCoordY<=yMax && pointCoordY>=yMin && 
                 pointCoordZ<=zMax && pointCoordZ>=zMin)
@@ -135,7 +135,7 @@ void PrecursorWriter::interact(Parameter* para, CudaMemoryManager* cudaManager, 
 
         fillArray<<<grid.grid, grid.threads>>>(precursorStruct->nPoints, precursorStruct->indicesD, 
                                                 precursorStruct->vxD, precursorStruct->vyD, precursorStruct->vzD, 
-                                                para->getParD(level)->vx_SP, para->getParD(level)->vy_SP, para->getParD(level)->vz_SP,
+                                                para->getParD(level)->velocityX, para->getParD(level)->velocityY, para->getParD(level)->velocityZ,
                                                 para->getVelocityRatio());
 
         cudaManager->cudaCopyPrecursorWriterVelocitiesDtoH(this, level);

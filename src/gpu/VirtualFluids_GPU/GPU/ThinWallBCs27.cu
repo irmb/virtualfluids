@@ -22,16 +22,16 @@ extern "C" __global__ void QVelDeviceCompThinWallsPartOne27(
 	int* k_Q, 
 	real* QQ,
 	uint sizeQ,
-	int kQ, 
+	int numberOfBCnodes, 
 	real om1, 
 	uint* neighborX,
 	uint* neighborY,
 	uint* neighborZ,
 	uint size_Mat, 
-	bool evenOrOdd)
+	bool isEvenTimestep)
 {
    Distributions27 D;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D.f[dirE   ] = &DD[dirE   *size_Mat];
       D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -102,7 +102,7 @@ extern "C" __global__ void QVelDeviceCompThinWallsPartOne27(
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       real VeloX = vx[k];
@@ -452,16 +452,16 @@ extern "C" __global__ void QDeviceCompThinWallsPartOne27(
 	int* k_Q,
 	real* QQ,
 	unsigned int sizeQ,
-	int kQ,
+	int numberOfBCnodes,
 	real om1,
 	unsigned int* neighborX,
 	unsigned int* neighborY,
 	unsigned int* neighborZ,
 	unsigned int size_Mat,
-	bool evenOrOdd)
+	bool isEvenTimestep)
 {
 	Distributions27 D;
-	if (evenOrOdd == true)
+	if (isEvenTimestep == true)
 	{
 		D.f[dirE] = &DD[dirE   *size_Mat];
 		D.f[dirW] = &DD[dirW   *size_Mat];
@@ -532,7 +532,7 @@ extern "C" __global__ void QDeviceCompThinWallsPartOne27(
 	const unsigned k = nx*(ny*z + y) + x;
 	//////////////////////////////////////////////////////////////////////////
 
-	if (k < kQ)
+	if (k < numberOfBCnodes)
 	{
 		////////////////////////////////////////////////////////////////////////////////
 		real *q_dirE, *q_dirW, *q_dirN, *q_dirS, *q_dirT, *q_dirB,
@@ -878,14 +878,14 @@ extern "C" __global__ void QThinWallsPartTwo27(
 	int* k_Q, 
 	real* QQ,
 	uint sizeQ,
-	int kQ, 
+	int numberOfBCnodes, 
 	uint* geom,
 	uint* neighborX,
 	uint* neighborY,
 	uint* neighborZ,
 	uint* neighborWSB,
 	uint size_Mat, 
-	bool evenOrOdd)
+	bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -898,7 +898,7 @@ extern "C" __global__ void QThinWallsPartTwo27(
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
@@ -980,7 +980,7 @@ extern "C" __global__ void QThinWallsPartTwo27(
 	  uint k0mp = neighborZ[k0m0];  //  0 -1  1
 	  ////////////////////////////////////////////////////////////////////////////////
 	  Distributions27 D, DN;
-	  if (evenOrOdd == true)
+	  if (isEvenTimestep == true)
 	  {
 		  D.f[dirE] = &DD[dirE   *size_Mat];
 		  D.f[dirW] = &DD[dirW   *size_Mat];
@@ -1040,7 +1040,7 @@ extern "C" __global__ void QThinWallsPartTwo27(
 		  D.f[dirBSE] = &DD[dirTNW *size_Mat];
 		  D.f[dirBNW] = &DD[dirTSE *size_Mat];
 	  }
-	  if (evenOrOdd==false)
+	  if (isEvenTimestep==false)
       {
          DN.f[dirE   ] = &DD[dirE   *size_Mat];
          DN.f[dirW   ] = &DD[dirW   *size_Mat];

@@ -52,9 +52,6 @@
 #include "VirtualFluids_GPU/PreCollisionInteractor/PrecursorWriter.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/VelocitySetter.h"
 
-#include "VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
-#include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
-
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -78,7 +75,7 @@ void multipleLevel(const std::string& configPath)
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
     logging::Logger::timeStamp(logging::Logger::ENABLE);
     logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
-    
+
     auto gridFactory = GridFactory::make();
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
 
@@ -111,7 +108,7 @@ void multipleLevel(const std::string& configPath)
 
     const real z0  = 0.1; // roughness length in m
     const real u_star = 0.4; //friction velocity in m/s
-    const real kappa = 0.4; // von Karman constant 
+    const real kappa = 0.4; // von Karman constant
 
     const real viscosity = 1.56e-5;
 
@@ -143,7 +140,7 @@ void multipleLevel(const std::string& configPath)
     const float tStartTmpAveraging  =  config.getValue<real>("tStartTmpAveraging");
     const float tAveraging          =  config.getValue<real>("tAveraging");
     const float tStartOutProbe      =  config.getValue<real>("tStartOutProbe");
-    const float tOutProbe           =  config.getValue<real>("tOutProbe"); 
+    const float tOutProbe           =  config.getValue<real>("tOutProbe");
 
 
     const real dx = L_z/real(nodes_per_H);
@@ -182,9 +179,9 @@ void multipleLevel(const std::string& configPath)
 
     if(para->getUseAMD())
         para->setMainKernel("TurbulentViscosityCumulantK17CompChim");
-    else 
+    else
         para->setMainKernel("CumulantK17CompChim");
-    
+
     para->setIsBodyForce( config.getValue<bool>("bodyForce") );
 
     para->setTStartOut(uint(tStartOut/dt) );
@@ -202,12 +199,12 @@ void multipleLevel(const std::string& configPath)
 
 	gridBuilder->buildGrids(lbmOrGks, false); // buildGrids() has to be called before setting the BCs!!!!
 
-    gridBuilder->setNoSlipBoundaryCondition(SideType::MZ);
-    // uint samplingOffset = 2;
-    // gridBuilder->setStressBoundaryCondition(SideType::MZ, 
-    //                                         0.0, 0.0, 1.0,              // wall normals
-    //                                         samplingOffset, z0/dx);     // wall model settinng
-    // para->setHasWallModelMonitor(true);
+    uint samplingOffset = 2;
+    // gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
+    gridBuilder->setStressBoundaryCondition(SideType::MZ,
+                                            0.0, 0.0, 1.0,              // wall normals
+                                            samplingOffset, z0/dx);     // wall model settinng
+    para->setHasWallModelMonitor(true);
 
 
     // gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
@@ -230,10 +227,6 @@ void multipleLevel(const std::string& configPath)
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
-
-    SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
-
     SPtr<PlanarAverageProbe> planarAverageProbe = SPtr<PlanarAverageProbe>( new PlanarAverageProbe("planeProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt , tStartOutProbe/dt, tOutProbe/dt, 'z') );
     planarAverageProbe->addAllAvailableStatistics();
     planarAverageProbe->setFileNameToNOut();
@@ -248,21 +241,11 @@ void multipleLevel(const std::string& configPath)
         wallModelProbe->setEvaluatePressureGradient(true);
     para->addProbe( wallModelProbe );
 
-    if(writePrecursor)
-    {
-        auto precursor_writer = SPtr<PrecursorWriter>( new PrecursorWriter("Precursor", "precursor", posXPrecursor, 0, L_y, 0, L_z, uint(tStartPrecursor/dt), nTWritePrecursor, 10000) );
-        para->addProbe( precursor_writer );
-    }
+    auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
+    auto gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
 
-
-    Simulation sim(communicator);
-    SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
-    SPtr<KernelFactoryImp> kernelFactory = KernelFactoryImp::getInstance();
-    SPtr<PreProcessorFactoryImp> preProcessorFactory = PreProcessorFactoryImp::getInstance();
-    sim.setFactories(kernelFactory, preProcessorFactory);
-    sim.init(para, gridGenerator, fileWriter, cudaMemoryManager);        
+    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator);
     sim.run();
-    sim.free();
 }
 
 int main( int argc, char* argv[])
@@ -282,11 +265,11 @@ int main( int argc, char* argv[])
         }
 
         catch (const std::bad_alloc& e)
-        { 
+        {
             VF_LOG_CRITICAL("Bad Alloc: {}", e.what());
         }
         catch (const std::exception& e)
-        {   
+        {
             VF_LOG_CRITICAL("exception: {}", e.what());
         }
         catch (...)

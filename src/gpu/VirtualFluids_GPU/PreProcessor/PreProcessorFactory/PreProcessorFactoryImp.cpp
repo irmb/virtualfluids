@@ -10,13 +10,6 @@
 #include "PreProcessor/PreProcessorStrategy/InitIncompAD7/InitIncompAD7.h"
 #include "PreProcessor/PreProcessorStrategy/InitSP27/InitSP27.h"
 
-std::shared_ptr<PreProcessorFactoryImp> PreProcessorFactoryImp::getInstance()
-{
-	static std::shared_ptr<PreProcessorFactoryImp> uniqueInstance;
-	if (!uniqueInstance)
-		uniqueInstance = std::shared_ptr<PreProcessorFactoryImp>(new PreProcessorFactoryImp());
-	return uniqueInstance;
-}
 
 std::shared_ptr<PreProcessor> PreProcessorFactoryImp::makePreProcessor(std::vector<PreProcessorType> preProcessorTypes, std::shared_ptr<Parameter> para)
 {
@@ -26,11 +19,6 @@ std::shared_ptr<PreProcessor> PreProcessorFactoryImp::makePreProcessor(std::vect
 		prePro->addStrategy(makePreProcessorStrategy(preProcessorTypes.at(i), para));
 
 	return prePro;
-}
-
-PreProcessorFactoryImp::PreProcessorFactoryImp()
-{
-
 }
 
 std::shared_ptr<PreProcessorStrategy> PreProcessorFactoryImp::makePreProcessorStrategy(PreProcessorType preProcessorType, std::shared_ptr<Parameter> para)

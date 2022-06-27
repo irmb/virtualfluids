@@ -8,7 +8,7 @@ VirtualFluids is mainly supported on these two platforms:
  - Windows
 
 VirtualFluids can also be build and used in a Docker image. An ubuntu development environment is located in the [container registry](https://git.rz.tu-bs.de/irmb/virtualfluids/container_registry).
-An extensive guide about the usage and development in VirtualFluids with docker can be found [here](https://git.rz.tu-bs.de/irmb/virtualfluids/-/wikis/Getting-Start-with-the-development-of-VirtualFluids).
+An extensive guide about the usage and development in VirtualFluids with docker can be found [here](https://git.rz.tu-bs.de/irmb/virtualfluids/-/wikis/Getting-Started-with-the-Development-of-VirtualFluids).
 
 
 The following is a brief explanation of how to use it without Docker:

@@ -30,12 +30,12 @@ __global__ void calcAMD(real* vx,
                         real* vy,
                         real* vz,
                         real* turbulentViscosity,
+                        real viscosity,
                         uint* neighborX,
                         uint* neighborY,
                         uint* neighborZ,
                         uint* neighborWSB,
                         real* coordX,
-                        real viscosity,
                         uint* typeOfGridNode,
                         uint size_Mat,
                         real SGSConstant)
@@ -93,20 +93,20 @@ __global__ void calcAMD(real* vx,
 
 void calcTurbulentViscosityAMD(Parameter* para, int level)
 {
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, para->getParH(level)->size_Mat_SP);
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, para->getParH(level)->numberOfNodes);
     calcAMD<<<grid.grid, grid.threads>>>(
-        para->getParD(level)->vx_SP,
-        para->getParD(level)->vy_SP,
-        para->getParD(level)->vz_SP,
+        para->getParD(level)->velocityX,
+        para->getParD(level)->velocityY,
+        para->getParD(level)->velocityZ,
         para->getParD(level)->turbViscosity,
-        para->getParD(level)->neighborX_SP,
-        para->getParD(level)->neighborY_SP,
-        para->getParD(level)->neighborZ_SP,
-        para->getParD(level)->neighborWSB_SP,
-        para->getParD(level)->coordX_SP,
         para->getViscosity(),
-        para->getParD(level)->geoSP,
-        para->getParD(level)->size_Mat_SP,
+        para->getParD(level)->neighborX,
+        para->getParD(level)->neighborY,
+        para->getParD(level)->neighborZ,
+        para->getParD(level)->neighborInverse,
+        para->getParD(level)->coordinateX,
+        para->getParD(level)->typeOfGridNode,
+        para->getParD(level)->numberOfNodes,
         para->getSGSConstant()
     );
     getLastCudaError("calcAMD execution failed");

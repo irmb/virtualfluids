@@ -42,7 +42,7 @@
 
 #include "Core/NonCreatable.h"
 
-#include "global.h"
+#include "gpu/GridGenerator/global.h"
 
 class UnstructuredGridBuilder;
 class GridBuilder;

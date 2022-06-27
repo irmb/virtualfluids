@@ -3,7 +3,6 @@
 
 #include "PointerDefinitions.h"
 #include "Core/DataTypes.h"
-#include "VirtualFluids_GPU_export.h"
 
 #include <memory>
 #include <vector>
@@ -16,10 +15,9 @@ class CudaMemoryManager;
 class DataWriter
 {
 public:
-	DataWriter() = default;
     virtual ~DataWriter() = default;
 
-    virtual void writeInit(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager) = 0;
+    virtual void writeInit(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager) = 0;
     virtual void writeTimestep(std::shared_ptr<Parameter> para, unsigned int timestep) = 0;
 	virtual void writeTimestep(std::shared_ptr<Parameter> para, unsigned int timestep, int level) = 0;
 };

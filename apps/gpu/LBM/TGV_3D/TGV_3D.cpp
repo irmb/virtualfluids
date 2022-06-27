@@ -253,7 +253,7 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
     SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
-    SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
+    SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
     //SPtr<GridProvider> gridGenerator = GridProvider::makeGridReader(FILEFORMAT::BINARY, para, cudaMemoryManager);
 
     Simulation sim;

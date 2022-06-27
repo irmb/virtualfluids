@@ -14,7 +14,7 @@ extern "C" __global__ void getSendFsPost27(real* DD,
                                            unsigned int* neighborY,
                                            unsigned int* neighborZ,
                                            unsigned int size_Mat, 
-                                           bool evenOrOdd)
+                                           bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -62,7 +62,7 @@ extern "C" __global__ void getSendFsPost27(real* DD,
       ////////////////////////////////////////////////////////////////////////////////
 	  //set Pointer for Fs
       Distributions27 D;
-      if (evenOrOdd==true)
+      if (isEvenTimestep==true)
       {
          D.f[dirE   ] = &DD[dirE   *size_Mat];
          D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -250,7 +250,7 @@ extern "C" __global__ void setRecvFsPost27(real* DD,
                                            unsigned int* neighborY,
                                            unsigned int* neighborZ,
                                            unsigned int size_Mat, 
-                                           bool evenOrOdd)
+                                           bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -298,7 +298,7 @@ extern "C" __global__ void setRecvFsPost27(real* DD,
       ////////////////////////////////////////////////////////////////////////////////
 	  //set Pointer for Fs
       Distributions27 D;
-      if (evenOrOdd==true)
+      if (isEvenTimestep==true)
       {
          D.f[dirE   ] = &DD[dirE   *size_Mat];
          D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -485,7 +485,7 @@ extern "C" __global__ void getSendFsPre27(real* DD,
                                           unsigned int* neighborY,
                                           unsigned int* neighborZ,
                                           unsigned int size_Mat, 
-                                          bool evenOrOdd)
+                                          bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -533,7 +533,7 @@ extern "C" __global__ void getSendFsPre27(real* DD,
       ////////////////////////////////////////////////////////////////////////////////
 	  //set Pointer for Fs
       Distributions27 D;
-      if (evenOrOdd==true)
+      if (isEvenTimestep==true)
       {
          D.f[dirE   ] = &DD[dirE   *size_Mat];
          D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -694,7 +694,7 @@ extern "C" __global__ void setRecvFsPre27(real* DD,
                                           unsigned int* neighborY,
                                           unsigned int* neighborZ,
                                           unsigned int size_Mat, 
-                                          bool evenOrOdd)
+                                          bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -742,7 +742,7 @@ extern "C" __global__ void setRecvFsPre27(real* DD,
       ////////////////////////////////////////////////////////////////////////////////
 	  //set Pointer for Fs
       Distributions27 D;
-      if (evenOrOdd==true)
+      if (isEvenTimestep==true)
       {
          D.f[dirE   ] = &DD[dirE   *size_Mat];
          D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -903,7 +903,7 @@ extern "C" __global__ void getSendGsF3(
 	unsigned int* neighborY,
 	unsigned int* neighborZ,
 	unsigned int size_Mat,
-	bool evenOrOdd)
+	bool isEvenTimestep)
 {
 	////////////////////////////////////////////////////////////////////////////////
 	const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -928,7 +928,7 @@ extern "C" __global__ void getSendGsF3(
 		////////////////////////////////////////////////////////////////////////////////
 		//set Pointer for Gs
 		Distributions6 G;
-		if (evenOrOdd)
+		if (isEvenTimestep)
 		{
 			G.g[dirE] = &G6[dirE   *size_Mat];
 			G.g[dirW] = &G6[dirW   *size_Mat];
@@ -1006,7 +1006,7 @@ extern "C" __global__ void setRecvGsF3(
 	unsigned int* neighborY,
 	unsigned int* neighborZ,
 	unsigned int size_Mat,
-	bool evenOrOdd)
+	bool isEvenTimestep)
 {
 	////////////////////////////////////////////////////////////////////////////////
 	const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -1031,7 +1031,7 @@ extern "C" __global__ void setRecvGsF3(
 		////////////////////////////////////////////////////////////////////////////////
 		//set Pointer for Gs
 		Distributions6 G;
-		if (evenOrOdd)
+		if (isEvenTimestep)
 		{
 			G.g[dirE] = &G6[dirE   *size_Mat];
 			G.g[dirW] = &G6[dirW   *size_Mat];

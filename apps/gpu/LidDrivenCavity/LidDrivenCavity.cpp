@@ -199,7 +199,7 @@ int main( int argc, char* argv[])
 
 		    SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
 
-            SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
+            SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
     
             //////////////////////////////////////////////////////////////////////////
             // run simulation

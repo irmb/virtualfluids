@@ -10,13 +10,13 @@ extern "C" __global__ void QInflowScaleByPressDevice27(  real* rhoBC,
 														 real* DD, 
 														 int* k_Q, 
 														 int* k_N, 
-														 int kQ, 
+														 int numberOfBCnodes, 
 														 real om1, 
 														 unsigned int* neighborX,
 														 unsigned int* neighborY,
 														 unsigned int* neighborZ,
 														 unsigned int size_Mat, 
-														 bool evenOrOdd)
+														 bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -29,7 +29,7 @@ extern "C" __global__ void QInflowScaleByPressDevice27(  real* rhoBC,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       //index
@@ -93,7 +93,7 @@ extern "C" __global__ void QInflowScaleByPressDevice27(  real* rhoBC,
       unsigned int k1bsw = neighborZ[k1sw];
       ////////////////////////////////////////////////////////////////////////////////
       Distributions27 D;
-      if (evenOrOdd==true)
+      if (isEvenTimestep==true)
       {
          D.f[dirE   ] = &DD[dirE   *size_Mat];
          D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -317,7 +317,7 @@ extern "C" __global__ void QInflowScaleByPressDevice27(  real* rhoBC,
 	  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	  //////////////////////////////////////////////////////////////////////////
-      if (evenOrOdd==false)
+      if (isEvenTimestep==false)
       {
          D.f[dirE   ] = &DD[dirE   *size_Mat];
          D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -467,13 +467,13 @@ extern "C" __global__ void QPressDeviceIncompNEQ27( real* rhoBC,
 													real* DD, 
 													int* k_Q, 
 													int* k_N, 
-													int kQ, 
+													int numberOfBCnodes, 
 													real om1, 
 													unsigned int* neighborX,
 													unsigned int* neighborY,
 													unsigned int* neighborZ,
 													unsigned int size_Mat, 
-													bool evenOrOdd)
+													bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -486,7 +486,7 @@ extern "C" __global__ void QPressDeviceIncompNEQ27( real* rhoBC,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       //index
@@ -550,7 +550,7 @@ extern "C" __global__ void QPressDeviceIncompNEQ27( real* rhoBC,
       unsigned int k1bsw = neighborZ[k1sw];
       ////////////////////////////////////////////////////////////////////////////////
       Distributions27 D;
-      if (evenOrOdd==true) //// ACHTUNG PREColl !!!!!!!!!!!!!!
+      if (isEvenTimestep==true) //// ACHTUNG PREColl !!!!!!!!!!!!!!
       {
          D.f[dirE   ] = &DD[dirE   *size_Mat];
          D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -806,13 +806,13 @@ extern "C" __global__ void QPressDeviceNEQ27(real* rhoBC,
                                              real* DD, 
                                              int* k_Q, 
                                              int* k_N, 
-                                             int kQ, 
+                                             int numberOfBCnodes, 
                                              real om1, 
                                              unsigned int* neighborX,
                                              unsigned int* neighborY,
                                              unsigned int* neighborZ,
                                              unsigned int size_Mat, 
-                                             bool evenOrOdd)
+                                             bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -825,7 +825,7 @@ extern "C" __global__ void QPressDeviceNEQ27(real* rhoBC,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       //index
@@ -889,7 +889,7 @@ extern "C" __global__ void QPressDeviceNEQ27(real* rhoBC,
       unsigned int k1bsw = neighborZ[k1sw];
       ////////////////////////////////////////////////////////////////////////////////
       Distributions27 D;
-      if (evenOrOdd==true) //// ACHTUNG PREColl !!!!!!!!!!!!!!
+      if (isEvenTimestep==true) //// ACHTUNG PREColl !!!!!!!!!!!!!!
       {
          D.f[dirE   ] = &DD[dirE   *size_Mat];
          D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -1147,7 +1147,7 @@ extern "C" __global__ void LB_BC_Press_East27( int nx,
                                                unsigned int* neighborZ,
                                                real* DD, 
                                                unsigned int size_Mat, 
-                                               bool evenOrOdd) 
+                                               bool isEvenTimestep) 
 {
    //thread-index
    int ty = blockIdx.x;
@@ -1166,7 +1166,7 @@ extern "C" __global__ void LB_BC_Press_East27( int nx,
    if( bcMatD[k] == GEO_PRESS && bcMatD[k1] == GEO_FLUID)
    {
       Distributions27 D;
-      if (evenOrOdd==true)
+      if (isEvenTimestep==true)
       {
          D.f[dirE   ] = &DD[dirE   *size_Mat];
          D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -1454,16 +1454,16 @@ extern "C" __global__ void QPressDevice27(int inx,
                                            int* k_Q, 
                                            real* QQ,
                                            unsigned int sizeQ,
-                                           int kQ, 
+                                           int numberOfBCnodes, 
                                            real om1, 
                                            unsigned int* neighborX,
                                            unsigned int* neighborY,
                                            unsigned int* neighborZ,
                                            unsigned int size_Mat, 
-                                           bool evenOrOdd)
+                                           bool isEvenTimestep)
 {
    Distributions27 D;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D.f[dirE   ] = &DD[dirE   *size_Mat];
       D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -1534,7 +1534,7 @@ extern "C" __global__ void QPressDevice27(int inx,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
          *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
@@ -1648,7 +1648,7 @@ extern "C" __global__ void QPressDevice27(int inx,
       drho = rhoBC[k];
       //deltaRho = (rhoBC[k] + one) / (deltaRho + one);
       ////////////////////////////////////////////////////////////////////////////////
-      if (evenOrOdd==false)
+      if (isEvenTimestep==false)
       {
          D.f[dirE   ] = &DD[dirE   *size_Mat];
          D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -1940,16 +1940,16 @@ extern "C" __global__ void QPressDeviceAntiBB27(   real* rhoBC,
 												   real* DD, 
 												   int* k_Q, 
 												   real* QQ,
-												   int kQ, 
+												   int numberOfBCnodes, 
 												   real om1, 
 												   unsigned int* neighborX,
 												   unsigned int* neighborY,
 												   unsigned int* neighborZ,
 												   unsigned int size_Mat, 
-												   bool evenOrOdd)
+												   bool isEvenTimestep)
 {
    Distributions27 D;
-   if (evenOrOdd==true)
+   if (isEvenTimestep==true)
    {
       D.f[dirE   ] = &DD[dirE   *size_Mat];
       D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -2020,39 +2020,39 @@ extern "C" __global__ void QPressDeviceAntiBB27(   real* rhoBC,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
          *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
          *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
          *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
          *q_dirBSE, *q_dirBNW; 
-      q_dirE   = &QQ[dirE   *kQ];
-      q_dirW   = &QQ[dirW   *kQ];
-      q_dirN   = &QQ[dirN   *kQ];
-      q_dirS   = &QQ[dirS   *kQ];
-      q_dirT   = &QQ[dirT   *kQ];
-      q_dirB   = &QQ[dirB   *kQ];
-      q_dirNE  = &QQ[dirNE  *kQ];
-      q_dirSW  = &QQ[dirSW  *kQ];
-      q_dirSE  = &QQ[dirSE  *kQ];
-      q_dirNW  = &QQ[dirNW  *kQ];
-      q_dirTE  = &QQ[dirTE  *kQ];
-      q_dirBW  = &QQ[dirBW  *kQ];
-      q_dirBE  = &QQ[dirBE  *kQ];
-      q_dirTW  = &QQ[dirTW  *kQ];
-      q_dirTN  = &QQ[dirTN  *kQ];
-      q_dirBS  = &QQ[dirBS  *kQ];
-      q_dirBN  = &QQ[dirBN  *kQ];
-      q_dirTS  = &QQ[dirTS  *kQ];
-      q_dirTNE = &QQ[dirTNE *kQ];
-      q_dirTSW = &QQ[dirTSW *kQ];
-      q_dirTSE = &QQ[dirTSE *kQ];
-      q_dirTNW = &QQ[dirTNW *kQ];
-      q_dirBNE = &QQ[dirBNE *kQ];
-      q_dirBSW = &QQ[dirBSW *kQ];
-      q_dirBSE = &QQ[dirBSE *kQ];
-      q_dirBNW = &QQ[dirBNW *kQ];
+      q_dirE   = &QQ[dirE   *numberOfBCnodes];
+      q_dirW   = &QQ[dirW   *numberOfBCnodes];
+      q_dirN   = &QQ[dirN   *numberOfBCnodes];
+      q_dirS   = &QQ[dirS   *numberOfBCnodes];
+      q_dirT   = &QQ[dirT   *numberOfBCnodes];
+      q_dirB   = &QQ[dirB   *numberOfBCnodes];
+      q_dirNE  = &QQ[dirNE  *numberOfBCnodes];
+      q_dirSW  = &QQ[dirSW  *numberOfBCnodes];
+      q_dirSE  = &QQ[dirSE  *numberOfBCnodes];
+      q_dirNW  = &QQ[dirNW  *numberOfBCnodes];
+      q_dirTE  = &QQ[dirTE  *numberOfBCnodes];
+      q_dirBW  = &QQ[dirBW  *numberOfBCnodes];
+      q_dirBE  = &QQ[dirBE  *numberOfBCnodes];
+      q_dirTW  = &QQ[dirTW  *numberOfBCnodes];
+      q_dirTN  = &QQ[dirTN  *numberOfBCnodes];
+      q_dirBS  = &QQ[dirBS  *numberOfBCnodes];
+      q_dirBN  = &QQ[dirBN  *numberOfBCnodes];
+      q_dirTS  = &QQ[dirTS  *numberOfBCnodes];
+      q_dirTNE = &QQ[dirTNE *numberOfBCnodes];
+      q_dirTSW = &QQ[dirTSW *numberOfBCnodes];
+      q_dirTSE = &QQ[dirTSE *numberOfBCnodes];
+      q_dirTNW = &QQ[dirTNW *numberOfBCnodes];
+      q_dirBNE = &QQ[dirBNE *numberOfBCnodes];
+      q_dirBSW = &QQ[dirBSW *numberOfBCnodes];
+      q_dirBSE = &QQ[dirBSE *numberOfBCnodes];
+      q_dirBNW = &QQ[dirBNW *numberOfBCnodes];
       ////////////////////////////////////////////////////////////////////////////////
       //index
       unsigned int KQK  = k_Q[k];
@@ -2139,7 +2139,7 @@ extern "C" __global__ void QPressDeviceAntiBB27(   real* rhoBC,
 	  real q;
       //deltaRho = (rhoBC[k] + one) / (deltaRho + one);
       ////////////////////////////////////////////////////////////////////////////////
-      if (evenOrOdd==false)
+      if (isEvenTimestep==false)
       {
          D.f[dirE   ] = &DD[dirE   *size_Mat];
          D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -2401,13 +2401,13 @@ extern "C" __global__ void QPressDeviceAntiBB27(   real* rhoBC,
 extern "C" __global__ void QPressDeviceFixBackflow27( real* rhoBC,
                                                       real* DD, 
                                                       int* k_Q, 
-                                                      int kQ, 
+                                                      int numberOfBCnodes, 
                                                       real om1, 
                                                       unsigned int* neighborX,
                                                       unsigned int* neighborY,
                                                       unsigned int* neighborZ,
                                                       unsigned int size_Mat, 
-                                                      bool evenOrOdd)
+                                                      bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -2420,7 +2420,7 @@ extern "C" __global__ void QPressDeviceFixBackflow27( real* rhoBC,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       //index
@@ -2458,7 +2458,7 @@ extern "C" __global__ void QPressDeviceFixBackflow27( real* rhoBC,
       deltaRho = rhoBC[k];
       ////////////////////////////////////////////////////////////////////////////////
       Distributions27 D;
-      if (evenOrOdd==false)
+      if (isEvenTimestep==false)
       {
          D.f[dirE   ] = &DD[dirE   *size_Mat];
          D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -2592,13 +2592,13 @@ extern "C" __global__ void QPressDeviceFixBackflow27( real* rhoBC,
 extern "C" __global__ void QPressDeviceDirDepBot27(  real* rhoBC,
                                                      real* DD, 
                                                      int* k_Q, 
-                                                     int kQ, 
+                                                     int numberOfBCnodes, 
                                                      real om1, 
                                                      unsigned int* neighborX,
                                                      unsigned int* neighborY,
                                                      unsigned int* neighborZ,
                                                      unsigned int size_Mat, 
-                                                     bool evenOrOdd)
+                                                     bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -2611,7 +2611,7 @@ extern "C" __global__ void QPressDeviceDirDepBot27(  real* rhoBC,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       //index
@@ -2649,7 +2649,7 @@ extern "C" __global__ void QPressDeviceDirDepBot27(  real* rhoBC,
       rho = rhoBC[k];
       ////////////////////////////////////////////////////////////////////////////////
       Distributions27 D;
-      if (evenOrOdd==false)
+      if (isEvenTimestep==false)
       {
          D.f[dirE   ] = &DD[dirE   *size_Mat];
          D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -2835,13 +2835,13 @@ extern "C" __global__ void QPressNoRhoDevice27(  real* rhoBC,
 												 real* DD, 
 												 int* k_Q, 
 												 int* k_N, 
-												 int kQ, 
+												 int numberOfBCnodes, 
 												 real om1, 
 												 unsigned int* neighborX,
 												 unsigned int* neighborY,
 												 unsigned int* neighborZ,
 												 unsigned int size_Mat, 
-												 bool evenOrOdd)
+												 bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -2854,7 +2854,7 @@ extern "C" __global__ void QPressNoRhoDevice27(  real* rhoBC,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       //index
@@ -2918,7 +2918,7 @@ extern "C" __global__ void QPressNoRhoDevice27(  real* rhoBC,
       unsigned int k1bsw = neighborZ[k1sw];
       ////////////////////////////////////////////////////////////////////////////////
       Distributions27 D;
-      if (evenOrOdd==true)
+      if (isEvenTimestep==true)
       {
          D.f[dirE   ] = &DD[dirE   *size_Mat];
          D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -3202,7 +3202,7 @@ extern "C" __global__ void QPressNoRhoDevice27(  real* rhoBC,
 	  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	  //////////////////////////////////////////////////////////////////////////
-      if (evenOrOdd==false)
+      if (isEvenTimestep==false)
       {
          D.f[dirE   ] = &DD[dirE   *size_Mat];
          D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -3352,13 +3352,13 @@ extern "C" __global__ void QPressDeviceOld27(real* rhoBC,
                                              real* DD, 
                                              int* k_Q, 
                                              int* k_N, 
-                                             int kQ, 
+                                             int numberOfBCnodes, 
                                              real om1, 
                                              unsigned int* neighborX,
                                              unsigned int* neighborY,
                                              unsigned int* neighborZ,
                                              unsigned int size_Mat, 
-                                             bool evenOrOdd)
+                                             bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -3371,7 +3371,7 @@ extern "C" __global__ void QPressDeviceOld27(real* rhoBC,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       //index
@@ -3435,7 +3435,7 @@ extern "C" __global__ void QPressDeviceOld27(real* rhoBC,
       unsigned int k1bsw = neighborZ[k1sw];
       ////////////////////////////////////////////////////////////////////////////////
       Distributions27 D;
-      if (evenOrOdd==false)
+      if (isEvenTimestep==false)
       {
          D.f[dirE   ] = &DD[dirE   *size_Mat];
          D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -3612,13 +3612,13 @@ extern "C" __global__ void QPressDeviceEQZ27(real* rhoBC,
                                              int* k_Q, 
                                              int* k_N,
 											 real* kTestRE,
-                                             int kQ, 
+                                             int numberOfBCnodes, 
                                              real om1, 
                                              unsigned int* neighborX,
                                              unsigned int* neighborY,
                                              unsigned int* neighborZ,
                                              unsigned int size_Mat, 
-                                             bool evenOrOdd)
+                                             bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -3631,7 +3631,7 @@ extern "C" __global__ void QPressDeviceEQZ27(real* rhoBC,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       //index
@@ -3695,7 +3695,7 @@ extern "C" __global__ void QPressDeviceEQZ27(real* rhoBC,
       unsigned int k1bsw = neighborZ[k1sw];
       ////////////////////////////////////////////////////////////////////////////////
       Distributions27 D;
-      if (evenOrOdd==true)
+      if (isEvenTimestep==true)
       {
          D.f[dirE   ] = &DD[dirE   *size_Mat];
          D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -3757,33 +3757,33 @@ extern "C" __global__ void QPressDeviceEQZ27(real* rhoBC,
       }
       ////////////////////////////////////////////////////////////////////////////////
     //   Distributions27 kDistTest;
-    //      kDistTest.f[dirE   ] = &kTestRE[dirE   *kQ];
-    //      kDistTest.f[dirW   ] = &kTestRE[dirW   *kQ];
-    //      kDistTest.f[dirN   ] = &kTestRE[dirN   *kQ];
-    //      kDistTest.f[dirS   ] = &kTestRE[dirS   *kQ];
-    //      kDistTest.f[dirT   ] = &kTestRE[dirT   *kQ];
-    //      kDistTest.f[dirB   ] = &kTestRE[dirB   *kQ];
-    //      kDistTest.f[dirNE  ] = &kTestRE[dirNE  *kQ];
-    //      kDistTest.f[dirSW  ] = &kTestRE[dirSW  *kQ];
-    //      kDistTest.f[dirSE  ] = &kTestRE[dirSE  *kQ];
-    //      kDistTest.f[dirNW  ] = &kTestRE[dirNW  *kQ];
-    //      kDistTest.f[dirTE  ] = &kTestRE[dirTE  *kQ];
-    //      kDistTest.f[dirBW  ] = &kTestRE[dirBW  *kQ];
-    //      kDistTest.f[dirBE  ] = &kTestRE[dirBE  *kQ];
-    //      kDistTest.f[dirTW  ] = &kTestRE[dirTW  *kQ];
-    //      kDistTest.f[dirTN  ] = &kTestRE[dirTN  *kQ];
-    //      kDistTest.f[dirBS  ] = &kTestRE[dirBS  *kQ];
-    //      kDistTest.f[dirBN  ] = &kTestRE[dirBN  *kQ];
-    //      kDistTest.f[dirTS  ] = &kTestRE[dirTS  *kQ];
-    //      kDistTest.f[dirZERO] = &kTestRE[dirZERO*kQ];
-    //      kDistTest.f[dirTNE ] = &kTestRE[dirTNE *kQ];
-    //      kDistTest.f[dirTSW ] = &kTestRE[dirTSW *kQ];
-    //      kDistTest.f[dirTSE ] = &kTestRE[dirTSE *kQ];
-    //      kDistTest.f[dirTNW ] = &kTestRE[dirTNW *kQ];
-    //      kDistTest.f[dirBNE ] = &kTestRE[dirBNE *kQ];
-    //      kDistTest.f[dirBSW ] = &kTestRE[dirBSW *kQ];
-    //      kDistTest.f[dirBSE ] = &kTestRE[dirBSE *kQ];
-    //      kDistTest.f[dirBNW ] = &kTestRE[dirBNW *kQ];
+    //      kDistTest.f[dirE   ] = &kTestRE[dirE   *numberOfBCnodes];
+    //      kDistTest.f[dirW   ] = &kTestRE[dirW   *numberOfBCnodes];
+    //      kDistTest.f[dirN   ] = &kTestRE[dirN   *numberOfBCnodes];
+    //      kDistTest.f[dirS   ] = &kTestRE[dirS   *numberOfBCnodes];
+    //      kDistTest.f[dirT   ] = &kTestRE[dirT   *numberOfBCnodes];
+    //      kDistTest.f[dirB   ] = &kTestRE[dirB   *numberOfBCnodes];
+    //      kDistTest.f[dirNE  ] = &kTestRE[dirNE  *numberOfBCnodes];
+    //      kDistTest.f[dirSW  ] = &kTestRE[dirSW  *numberOfBCnodes];
+    //      kDistTest.f[dirSE  ] = &kTestRE[dirSE  *numberOfBCnodes];
+    //      kDistTest.f[dirNW  ] = &kTestRE[dirNW  *numberOfBCnodes];
+    //      kDistTest.f[dirTE  ] = &kTestRE[dirTE  *numberOfBCnodes];
+    //      kDistTest.f[dirBW  ] = &kTestRE[dirBW  *numberOfBCnodes];
+    //      kDistTest.f[dirBE  ] = &kTestRE[dirBE  *numberOfBCnodes];
+    //      kDistTest.f[dirTW  ] = &kTestRE[dirTW  *numberOfBCnodes];
+    //      kDistTest.f[dirTN  ] = &kTestRE[dirTN  *numberOfBCnodes];
+    //      kDistTest.f[dirBS  ] = &kTestRE[dirBS  *numberOfBCnodes];
+    //      kDistTest.f[dirBN  ] = &kTestRE[dirBN  *numberOfBCnodes];
+    //      kDistTest.f[dirTS  ] = &kTestRE[dirTS  *numberOfBCnodes];
+    //      kDistTest.f[dirZERO] = &kTestRE[dirZERO*numberOfBCnodes];
+    //      kDistTest.f[dirTNE ] = &kTestRE[dirTNE *numberOfBCnodes];
+    //      kDistTest.f[dirTSW ] = &kTestRE[dirTSW *numberOfBCnodes];
+    //      kDistTest.f[dirTSE ] = &kTestRE[dirTSE *numberOfBCnodes];
+    //      kDistTest.f[dirTNW ] = &kTestRE[dirTNW *numberOfBCnodes];
+    //      kDistTest.f[dirBNE ] = &kTestRE[dirBNE *numberOfBCnodes];
+    //      kDistTest.f[dirBSW ] = &kTestRE[dirBSW *numberOfBCnodes];
+    //      kDistTest.f[dirBSE ] = &kTestRE[dirBSE *numberOfBCnodes];
+    //      kDistTest.f[dirBNW ] = &kTestRE[dirBNW *numberOfBCnodes];
    //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //   //real f1_E,f1_W,f1_N,f1_S,f1_T,f1_B,f1_NE,f1_SW,f1_SE,f1_NW,f1_TE,f1_BW,f1_BE,f1_TW,f1_TN,f1_BS,f1_BN,f1_TS,f1_ZERO,f1_TNE,f1_TSW,f1_TSE,f1_TNW,f1_BNE,f1_BSW,f1_BSE,f1_BNW;
    //   //f1_W    = (D.f[dirE   ])[k1e   ];
@@ -4200,7 +4200,7 @@ extern "C" __global__ void QPressDeviceEQZ27(real* rhoBC,
 			//mfaca = OnoOver216Rho + OneOver216RhoPlusOne*three*(-(one*vvz) + vx2 - three*vvz*vx2 + vy2 - three*vvz*vy2 + three*vx2*vy2 - nine*vvz*vx2*vy2 + vz2 + three*vx2*vz2 + three*vy2*vz2 + nine*vx2*vy2*vz2 - one*vvy*(one + three*vx2)*(-one + three*vvz - three*vz2) + vvx*(one + three*vvy + three*vy2)*(-one + three*vvz - three*vz2));
 
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      //if (evenOrOdd==true)
+      //if (isEvenTimestep==true)
       //{
       //   D.f[dirE   ] = &DD[dirE   *size_Mat];
       //   D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -4390,12 +4390,12 @@ extern "C" __global__ void QPressDeviceEQZ27(real* rhoBC,
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QPressDeviceZero27(	 real* DD, 
 												 int* k_Q, 
-												 int kQ, 
+												 int numberOfBCnodes, 
 												 unsigned int* neighborX,
 												 unsigned int* neighborY,
 												 unsigned int* neighborZ,
 												 unsigned int size_Mat, 
-												 bool evenOrOdd)
+												 bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -4408,7 +4408,7 @@ extern "C" __global__ void QPressDeviceZero27(	 real* DD,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       //index
@@ -4442,7 +4442,7 @@ extern "C" __global__ void QPressDeviceZero27(	 real* DD,
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
       Distributions27 D;
-      if (evenOrOdd==false)
+      if (isEvenTimestep==false)
       {
          D.f[dirE   ] = &DD[dirE   *size_Mat];
          D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -4579,13 +4579,13 @@ extern "C" __global__ void QPressDeviceFake27(	 real* rhoBC,
 												 real* DD, 
 												 int* k_Q, 
 												 int* k_N, 
-												 int kQ, 
+												 int numberOfBCnodes, 
 												 real om1, 
 												 unsigned int* neighborX,
 												 unsigned int* neighborY,
 												 unsigned int* neighborZ,
 												 unsigned int size_Mat, 
-												 bool evenOrOdd)
+												 bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -4598,7 +4598,7 @@ extern "C" __global__ void QPressDeviceFake27(	 real* rhoBC,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<kQ)
+   if(k<numberOfBCnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       //index
@@ -4662,7 +4662,7 @@ extern "C" __global__ void QPressDeviceFake27(	 real* rhoBC,
       unsigned int k1bsw = neighborZ[k1sw];
       ////////////////////////////////////////////////////////////////////////////////
       Distributions27 D;
-      if (evenOrOdd==false)
+      if (isEvenTimestep==false)
       {
          D.f[dirE   ] = &DD[dirE   *size_Mat];
          D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -4854,16 +4854,16 @@ extern "C" __global__ void QPressDevice27_IntBB(real* rho,
 												int* k_Q, 
 												real* QQ,
 												unsigned int sizeQ,
-												int kQ, 
+												int numberOfBCnodes, 
 												real om1, 
 												unsigned int* neighborX,
 												unsigned int* neighborY,
 												unsigned int* neighborZ,
 												unsigned int size_Mat, 
-												bool evenOrOdd)
+												bool isEvenTimestep)
 {
 	Distributions27 D;
-	if (evenOrOdd==true)
+	if (isEvenTimestep==true)
 	{
 		D.f[dirE   ] = &DD[dirE   *size_Mat];
 		D.f[dirW   ] = &DD[dirW   *size_Mat];
@@ -4934,7 +4934,7 @@ extern "C" __global__ void QPressDevice27_IntBB(real* rho,
 	const unsigned k = nx*(ny*z + y) + x;
 	//////////////////////////////////////////////////////////////////////////
 
-	if(k<kQ)
+	if(k<numberOfBCnodes)
 	{
 		////////////////////////////////////////////////////////////////////////////////
 		//real VeloX = vx[k];
@@ -5054,7 +5054,7 @@ extern "C" __global__ void QPressDevice27_IntBB(real* rho,
 		real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
 		//////////////////////////////////////////////////////////////////////////
-		if (evenOrOdd==false)
+		if (isEvenTimestep==false)
 		{
 			D.f[dirE   ] = &DD[dirE   *size_Mat];
 			D.f[dirW   ] = &DD[dirW   *size_Mat];

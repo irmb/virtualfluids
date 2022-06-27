@@ -24,7 +24,7 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3_2018(real* DC,
 													 unsigned int* neighborFZ,
 													 unsigned int size_MatC, 
 													 unsigned int size_MatF, 
-													 bool evenOrOdd,
+													 bool isEvenTimestep,
 													 unsigned int* posCSWB, 
 													 unsigned int* posFSWB, 
 													 unsigned int kCF, 
@@ -76,7 +76,7 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3_2018(real* DC,
 		*fMP0source, *fP0Psource, *fM0Msource, *fP0Msource, *fM0Psource, *f0PPsource, *f0MMsource, *f0PMsource, *f0MPsource,
 		*f000source, *fMMMsource, *fMMPsource, *fMPPsource, *fMPMsource, *fPPMsource, *fPPPsource, *fPMPsource, *fPMMsource;
 
-	if (evenOrOdd == true)
+	if (isEvenTimestep == true)
 	{
 		fP00source = &DC[dirE   *size_MatC];
 		fM00source = &DC[dirW   *size_MatC];
@@ -4371,7 +4371,7 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3( real* DC,
 												 unsigned int* neighborFZ,
 												 unsigned int size_MatC, 
 												 unsigned int size_MatF, 
-												 bool evenOrOdd,
+												 bool isEvenTimestep,
 												 unsigned int* posCSWB, 
 												 unsigned int* posFSWB, 
 												 unsigned int kCF, 
@@ -4423,7 +4423,7 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3( real* DC,
 		*fMP0source, *fP0Psource, *fM0Msource, *fP0Msource, *fM0Psource, *f0PPsource, *f0MMsource, *f0PMsource, *f0MPsource,
 		*f000source, *fMMMsource, *fMMPsource, *fMPPsource, *fMPMsource, *fPPMsource, *fPPPsource, *fPMPsource, *fPMMsource;
 
-	if (evenOrOdd == true)
+	if (isEvenTimestep == true)
 	{
 		fP00source = &DC[dirE   *size_MatC];
 		fM00source = &DC[dirW   *size_MatC];

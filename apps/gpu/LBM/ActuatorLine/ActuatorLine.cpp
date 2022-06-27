@@ -48,9 +48,6 @@
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PointProbe.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlaneProbe.h"
 
-#include "VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
-#include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
-
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/VelocitySetter.h"
 
@@ -98,6 +95,8 @@ void multipleLevel(const std::string& configPath)
     logging::Logger::timeStamp(logging::Logger::ENABLE);
     logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
 
+    vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();
+
     auto gridFactory = GridFactory::make();
     gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
@@ -116,8 +115,6 @@ void multipleLevel(const std::string& configPath)
 	gridBuilder->buildGrids(lbmOrGks, false); // buildGrids() has to be called before setting the BCs!!!!
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();
 
     vf::basics::ConfigurationFile config;
     config.load(configPath);
@@ -178,10 +175,6 @@ void multipleLevel(const std::string& configPath)
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
-
-    SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
-
     real turbPos[3] = {3*reference_diameter, 3*reference_diameter, 3*reference_diameter};
     real epsilon = 5.f; // width of gaussian smearing
     real density = 1.225f;
@@ -198,26 +191,23 @@ void multipleLevel(const std::string& configPath)
     std::vector<real> probeCoordsZ = {3*reference_diameter,3*reference_diameter,3*reference_diameter};
     pointProbe->addProbePointsFromList(probeCoordsX, probeCoordsY, probeCoordsZ);
     // pointProbe->addProbePointsFromXNormalPlane(2*D, 0.0, 0.0, L_y, L_z, (uint)L_y/dx, (uint)L_z/dx);
-    pointProbe->addPostProcessingVariable(PostProcessingVariable::Means);
-    pointProbe->addPostProcessingVariable(PostProcessingVariable::Variances);
+    
+    pointProbe->addStatistic(Statistic::Means);
+    pointProbe->addStatistic(Statistic::Variances);
     para->addProbe( pointProbe );
 
-    SPtr<PlaneProbe> planeProbe = SPtr<PlaneProbe>( new PlaneProbe("planeProbe", para->getOutputPath(), 100, 500, 100) );
+    SPtr<PlaneProbe> planeProbe = SPtr<PlaneProbe>( new PlaneProbe("planeProbe", para->getOutputPath(), 100, 500, 100, 100) );
     planeProbe->setProbePlane(5*reference_diameter, 0, 0, dx, L_y, L_z);
-    planeProbe->addPostProcessingVariable(PostProcessingVariable::Means);
+    planeProbe->addStatistic(Statistic::Means);
     para->addProbe( planeProbe );
 
 
+    auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
 
+    auto gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
 
-    Simulation sim(communicator);
-    SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
-    SPtr<KernelFactoryImp> kernelFactory = KernelFactoryImp::getInstance();
-    SPtr<PreProcessorFactoryImp> preProcessorFactory = PreProcessorFactoryImp::getInstance();
-    sim.setFactories(kernelFactory, preProcessorFactory);
-    sim.init(para, gridGenerator, fileWriter, cudaMemoryManager);        
+    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator);
     sim.run();
-    sim.free();
 }
 
 int main( int argc, char* argv[])
@@ -237,11 +227,11 @@ int main( int argc, char* argv[])
         }
 
         catch (const std::bad_alloc& e)
-        { 
+        {
             VF_LOG_CRITICAL("Bad Alloc: {}", e.what());
         }
         catch (const std::exception& e)
-        {   
+        {
             VF_LOG_CRITICAL("exception: {}", e.what());
         }
         catch (...)
