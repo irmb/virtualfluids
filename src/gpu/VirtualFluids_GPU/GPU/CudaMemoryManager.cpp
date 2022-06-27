@@ -9,7 +9,6 @@
 #include "Parameter/CudaStreamManager.h"
 #include "PreCollisionInteractor/ActuatorLine.h"
 #include "PreCollisionInteractor/Probes/Probe.h"
-#include <PreCollisionInteractor/VelocitySetter.h>
 #include <PreCollisionInteractor/PrecursorWriter.h>
 
 #include "Calculation/PorousMedia.h"
@@ -1652,9 +1651,9 @@ void CudaMemoryManager::cudaFreeWallModel(int lev, bool hasWallModelMonitor)
 //Precursor BC
 void CudaMemoryManager::cudaAllocPrecursorBC(int lev)
 {   
-    uint memSizeQInt = parameter->getParH(lev)->precursorBC.kQ*sizeof(int);
-    uint memSizeQUint = parameter->getParH(lev)->precursorBC.kQ*sizeof(uint);
-    uint memSizeQReal = parameter->getParH(lev)->precursorBC.kQ*sizeof(real);
+    uint memSizeQInt = parameter->getParH(lev)->precursorBC.numberOfBCnodes*sizeof(int);
+    uint memSizeQUint = parameter->getParH(lev)->precursorBC.numberOfBCnodes*sizeof(uint);
+    uint memSizeQReal = parameter->getParH(lev)->precursorBC.numberOfBCnodes*sizeof(real);
 
     checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->precursorBC.k, memSizeQInt));
     checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->precursorBC.q27[0], parameter->getD3Qxx()*memSizeQReal));
@@ -1705,9 +1704,9 @@ void CudaMemoryManager::cudaAllocPrecursorVelocities(int lev)
 }
 void CudaMemoryManager::cudaCopyPrecursorBC(int lev)
 {
-    uint memSizeQInt = parameter->getParH(lev)->precursorBC.kQ*sizeof(int);
-    uint memSizeQUint = parameter->getParH(lev)->precursorBC.kQ*sizeof(uint);
-    uint memSizeQReal = parameter->getParH(lev)->precursorBC.kQ*sizeof(real);
+    uint memSizeQInt = parameter->getParH(lev)->precursorBC.numberOfBCnodes*sizeof(int);
+    uint memSizeQUint = parameter->getParH(lev)->precursorBC.numberOfBCnodes*sizeof(uint);
+    uint memSizeQReal = parameter->getParH(lev)->precursorBC.numberOfBCnodes*sizeof(real);
 
     checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->precursorBC.k, parameter->getParH(lev)->precursorBC.k, memSizeQInt, cudaMemcpyHostToDevice));
 
@@ -3400,128 +3399,6 @@ void CudaMemoryManager::cudaFreeProbeQuantitiesAndOffsets(Probe* probe, int leve
     checkCudaErrors( cudaFreeHost(probe->getProbeStruct(level)->arrayOffsetsH) );
     checkCudaErrors( cudaFree    (probe->getProbeStruct(level)->quantitiesD) );
     checkCudaErrors( cudaFree    (probe->getProbeStruct(level)->arrayOffsetsD) );
-}
-
-void CudaMemoryManager::cudaAllocVelocityReaderArrays(VelocitySetter* setter, int level)
-{
-    auto reader = setter->getVelocityReader(level);
-    size_t sizeReal = reader->getNPoints()*sizeof(real);
-    size_t sizeUInt = reader->getNPoints()*sizeof(uint);
-
-    checkCudaErrors( cudaMallocHost((void**) &reader->vxLastH, sizeReal));
-    checkCudaErrors( cudaMallocHost((void**) &reader->vyLastH, sizeReal));
-    checkCudaErrors( cudaMallocHost((void**) &reader->vzLastH, sizeReal));    
-    checkCudaErrors( cudaMallocHost((void**) &reader->vxCurrentH, sizeReal));
-    checkCudaErrors( cudaMallocHost((void**) &reader->vyCurrentH, sizeReal));
-    checkCudaErrors( cudaMallocHost((void**) &reader->vzCurrentH, sizeReal));
-    checkCudaErrors( cudaMallocHost((void**) &reader->vxNextH, sizeReal));
-    checkCudaErrors( cudaMallocHost((void**) &reader->vyNextH, sizeReal));
-    checkCudaErrors( cudaMallocHost((void**) &reader->vzNextH, sizeReal));
-
-    checkCudaErrors( cudaMallocHost((void**) &reader->weightsNTH, sizeReal));
-    checkCudaErrors( cudaMallocHost((void**) &reader->weightsNBH, sizeReal));
-    checkCudaErrors( cudaMallocHost((void**) &reader->weightsSTH, sizeReal));
-    checkCudaErrors( cudaMallocHost((void**) &reader->weightsSBH, sizeReal));
-
-    checkCudaErrors( cudaMallocHost((void**) &reader->planeNeighborNTH, sizeUInt));
-    checkCudaErrors( cudaMallocHost((void**) &reader->planeNeighborNBH, sizeUInt));
-    checkCudaErrors( cudaMallocHost((void**) &reader->planeNeighborSTH, sizeUInt));
-    checkCudaErrors( cudaMallocHost((void**) &reader->planeNeighborSBH, sizeUInt));
-
-    checkCudaErrors( cudaMalloc((void**) &reader->vxLastD, sizeReal));
-    checkCudaErrors( cudaMalloc((void**) &reader->vyLastD, sizeReal));
-    checkCudaErrors( cudaMalloc((void**) &reader->vzLastD, sizeReal));    
-    checkCudaErrors( cudaMalloc((void**) &reader->vxCurrentD, sizeReal));
-    checkCudaErrors( cudaMalloc((void**) &reader->vyCurrentD, sizeReal));
-    checkCudaErrors( cudaMalloc((void**) &reader->vzCurrentD, sizeReal));
-    checkCudaErrors( cudaMalloc((void**) &reader->vxNextD, sizeReal));
-    checkCudaErrors( cudaMalloc((void**) &reader->vyNextD, sizeReal));
-    checkCudaErrors( cudaMalloc((void**) &reader->vzNextD, sizeReal));
-
-    checkCudaErrors( cudaMalloc((void**) &reader->weightsNTD, sizeReal));
-    checkCudaErrors( cudaMalloc((void**) &reader->weightsNBD, sizeReal));
-    checkCudaErrors( cudaMalloc((void**) &reader->weightsSTD, sizeReal));
-    checkCudaErrors( cudaMalloc((void**) &reader->weightsSBD, sizeReal));
-
-    checkCudaErrors( cudaMalloc((void**) &reader->planeNeighborNTD, sizeUInt));
-    checkCudaErrors( cudaMalloc((void**) &reader->planeNeighborNBD, sizeUInt));
-    checkCudaErrors( cudaMalloc((void**) &reader->planeNeighborSTD, sizeUInt));
-    checkCudaErrors( cudaMalloc((void**) &reader->planeNeighborSBD, sizeUInt));
-
-    setMemsizeGPU(sizeReal*13+sizeUInt*4, false);
-}
-
-void CudaMemoryManager::cudaCopyVelocityReaderIndexAndWeightArraysHtoD(VelocitySetter* setter, int level)
-{
-    auto reader = setter->getVelocityReader(level);
-    size_t sizeReal = reader->getNPoints()*sizeof(real);
-    size_t sizeUInt = reader->getNPoints()*sizeof(uint);
-
-    checkCudaErrors( cudaMemcpy(reader->planeNeighborNTD, reader->planeNeighborNTH, sizeUInt, cudaMemcpyHostToDevice) );
-    checkCudaErrors( cudaMemcpy(reader->planeNeighborNBD, reader->planeNeighborNBH, sizeUInt, cudaMemcpyHostToDevice) );
-    checkCudaErrors( cudaMemcpy(reader->planeNeighborSTD, reader->planeNeighborSTH, sizeUInt, cudaMemcpyHostToDevice) );
-    checkCudaErrors( cudaMemcpy(reader->planeNeighborSBD, reader->planeNeighborSBH, sizeUInt, cudaMemcpyHostToDevice) );
-
-    checkCudaErrors( cudaMemcpy(reader->weightsNTD, reader->weightsNTH, sizeReal, cudaMemcpyHostToDevice) );
-    checkCudaErrors( cudaMemcpy(reader->weightsNBD, reader->weightsNBH, sizeReal, cudaMemcpyHostToDevice) );
-    checkCudaErrors( cudaMemcpy(reader->weightsSTD, reader->weightsSTH, sizeReal, cudaMemcpyHostToDevice) );
-    checkCudaErrors( cudaMemcpy(reader->weightsSBD, reader->weightsSBH, sizeReal, cudaMemcpyHostToDevice) );
-}
-
-void CudaMemoryManager::cudaCopyVelocityReaderNextVelocitiesHtoD(VelocitySetter* setter, int level)
-{
-    auto reader = setter->getVelocityReader(level);
-    size_t size = reader->getNPoints()*sizeof(real);
-    cudaStreamSynchronize(setter->streams[level]);
-    checkCudaErrors( cudaMemcpyAsync(reader->vxNextD, reader->vxNextH, size, cudaMemcpyHostToDevice, setter->streams[level]) );
-    checkCudaErrors( cudaMemcpyAsync(reader->vyNextD, reader->vyNextH, size, cudaMemcpyHostToDevice, setter->streams[level]) );
-    checkCudaErrors( cudaMemcpyAsync(reader->vzNextD, reader->vzNextH, size, cudaMemcpyHostToDevice, setter->streams[level]) );
-}
-
-void CudaMemoryManager::cudaFreeVelocityReaderArrays(VelocitySetter* setter, int level)
-{
-    auto reader = setter->getVelocityReader(level);
-
-    checkCudaErrors( cudaFreeHost(reader->vxLastH));
-    checkCudaErrors( cudaFreeHost(reader->vzLastH));
-    checkCudaErrors( cudaFreeHost(reader->vyLastH));
-    checkCudaErrors( cudaFreeHost(reader->vxCurrentH));
-    checkCudaErrors( cudaFreeHost(reader->vyCurrentH));
-    checkCudaErrors( cudaFreeHost(reader->vzCurrentH));    
-    checkCudaErrors( cudaFreeHost(reader->vxNextH));
-    checkCudaErrors( cudaFreeHost(reader->vyNextH));
-    checkCudaErrors( cudaFreeHost(reader->vzNextH));
-    
-    checkCudaErrors( cudaFreeHost(reader->planeNeighborNTH));
-    checkCudaErrors( cudaFreeHost(reader->planeNeighborNBH));
-    checkCudaErrors( cudaFreeHost(reader->planeNeighborSTH));
-    checkCudaErrors( cudaFreeHost(reader->planeNeighborSBH));
-
-    checkCudaErrors( cudaFreeHost(reader->weightsNTH));
-    checkCudaErrors( cudaFreeHost(reader->weightsNBH));
-    checkCudaErrors( cudaFreeHost(reader->weightsSTH));
-    checkCudaErrors( cudaFreeHost(reader->weightsSBH));
-
-
-    checkCudaErrors( cudaFree(reader->vxLastD));
-    checkCudaErrors( cudaFree(reader->vyLastD));
-    checkCudaErrors( cudaFree(reader->vzLastD));
-    checkCudaErrors( cudaFree(reader->vxCurrentD));
-    checkCudaErrors( cudaFree(reader->vyCurrentD));    
-    checkCudaErrors( cudaFree(reader->vzCurrentD));
-    checkCudaErrors( cudaFree(reader->vxNextD));
-    checkCudaErrors( cudaFree(reader->vyNextD));
-    checkCudaErrors( cudaFree(reader->vzNextD));
-
-    checkCudaErrors( cudaFree(reader->planeNeighborNTD));
-    checkCudaErrors( cudaFree(reader->planeNeighborNBD));
-    checkCudaErrors( cudaFree(reader->planeNeighborSTD));
-    checkCudaErrors( cudaFree(reader->planeNeighborSBD));
-
-    checkCudaErrors( cudaFree(reader->weightsNTD));
-    checkCudaErrors( cudaFree(reader->weightsNBD));
-    checkCudaErrors( cudaFree(reader->weightsSTD));
-    checkCudaErrors( cudaFree(reader->weightsSBD));
 }
 
 void CudaMemoryManager::cudaAllocPrecursorWriter(PrecursorWriter* writer, int level)

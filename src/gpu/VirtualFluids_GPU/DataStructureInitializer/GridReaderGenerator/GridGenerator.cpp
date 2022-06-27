@@ -245,8 +245,8 @@ void GridGenerator::allocArrays_BoundaryValues()
         para->getParH(level)->precursorBC.kArray = blocks * para->getParH(level)->numberofthreads;
         para->getParD(level)->precursorBC.kArray = para->getParH(level)->precursorBC.kArray;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        para->getParH(level)->precursorBC.kQ = numberOfPrecursorValues;
-        para->getParD(level)->precursorBC.kQ = numberOfPrecursorValues;
+        para->getParH(level)->precursorBC.numberOfBCnodes = numberOfPrecursorValues;
+        para->getParD(level)->precursorBC.numberOfBCnodes = numberOfPrecursorValues;
         para->getParH(level)->numberOfPrecursorBCnodes = numberOfPrecursorValues;
         para->getParD(level)->numberOfPrecursorBCnodes = numberOfPrecursorValues;
         para->getParH(level)->numberOfPrecursorBCnodesRead = numberOfPrecursorValues * para->getD3Qxx();
@@ -276,9 +276,8 @@ void GridGenerator::allocArrays_BoundaryValues()
             {   
                 reader->getNextVelocities(para->getParH(level)->precursorBC.vxNext, para->getParH(level)->precursorBC.vyNext, para->getParH(level)->precursorBC.vzNext, 0);
             }
-            // cudaManager->cudaCopyPrecursorVelocities(level);  will fix this with new develop version
-            // probably have to put a synchonization barrier here
-
+            cudaMemoryManager->cudaCopyPrecursorVelocities(level);
+            checkCudaErrors(cudaDeviceSynchronize());
 
             //switch next with last pointers
             real* tmp = para->getParD(level)->precursorBC.vxLast;
@@ -300,8 +299,10 @@ void GridGenerator::allocArrays_BoundaryValues()
             {   
                 reader->getNextVelocities(para->getParH(level)->precursorBC.vxNext, para->getParH(level)->precursorBC.vyNext, para->getParH(level)->precursorBC.vzNext, nextTime);
             }
-            // cudaManager->cudaCopyPrecursorVelocities(level);  will fix this with new develop version
-            // probably have to put a synchonization barrier here
+
+            cudaMemoryManager->cudaCopyPrecursorVelocities(level);
+            checkCudaErrors(cudaDeviceSynchronize());
+
             //switch next with current pointers
             tmp = para->getParD(level)->precursorBC.vxCurrent;
             para->getParD(level)->precursorBC.vxCurrent = para->getParD(level)->precursorBC.vxNext;
@@ -324,35 +325,14 @@ void GridGenerator::allocArrays_BoundaryValues()
                 reader->getNextVelocities(para->getParH(level)->precursorBC.vxNext, para->getParH(level)->precursorBC.vyNext, para->getParH(level)->precursorBC.vzNext, nextTime);
             }
 
-            // cudaManager->cudaCopyPrecursorVelocities(level);  will fix this with new develop version
+            cudaMemoryManager->cudaCopyPrecursorVelocities(level);
 
-            para->getParD(level)->precursorBC.nReads = 2;
+            para->getParD(level)->precursorBC.nPrecursorReads = 2;
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // advection - diffusion stuff
             if (para->getDiffOn()==true){
                 throw std::runtime_error(" Advection Diffusion not implemented for Precursor!");
-            	//////////////////////////////////////////////////////////////////////////
-            	// para->getParH(level)->TempVel.kTemp = numberOfPrecursorValues;
-            	// //cout << "Groesse kTemp = " << para->getParH(i)->TempPress.kTemp << endl;
-            	// std::cout << "getTemperatureInit = " << para->getTemperatureInit() << std::endl;
-            	// std::cout << "getTemperatureBC = " << para->getTemperatureBC() << std::endl;
-            	// //////////////////////////////////////////////////////////////////////////
-                // cudaMemoryManager->cudaAllocTempVeloBC(level);
-            	// //cout << "nach alloc " << endl;
-            	// //////////////////////////////////////////////////////////////////////////
-            	// for (int m = 0; m < numberOfPrecursorValues; m++)
-            	// {
-            	// 	para->getParH(level)->TempVel.temp[m]      = para->getTemperatureInit();
-            	// 	para->getParH(level)->TempVel.tempPulse[m] = para->getTemperatureBC();
-            	// 	para->getParH(level)->TempVel.velo[m]      = para->getVelocity();
-            	// 	para->getParH(level)->TempVel.k[m]         = para->getParH(level)->Qinflow.k[m];
-            	// }
-            	// //////////////////////////////////////////////////////////////////////////
-            	// //cout << "vor copy " << endl;
-                // cudaMemoryManager->cudaCopyTempVeloBCHD(level);
-            	//cout << "nach copy " << endl;
-            	//////////////////////////////////////////////////////////////////////////
             }
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         }
@@ -1104,7 +1084,7 @@ void GridGenerator::allocArrays_BoundaryQs()
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //preprocessing
             real* QQ = para->getParH(i)->precursorBC.q27[0];
-            unsigned int sizeQ = para->getParH(i)->precursorBC.kQ;
+            unsigned int sizeQ = para->getParH(i)->precursorBC.numberOfBCnodes;
             QforBoundaryConditions Q;
             Q.q27[dirE] = &QQ[dirE   *sizeQ];
             Q.q27[dirW] = &QQ[dirW   *sizeQ];

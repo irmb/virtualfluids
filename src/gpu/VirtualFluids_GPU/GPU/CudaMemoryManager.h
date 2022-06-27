@@ -390,6 +390,7 @@ public:
     void cudaCopySphereIndicesHtoD(ActuatorLine* actuatorLine);
     void cudaFreeSphereIndices(ActuatorLine* actuatorLine);
 
+    //Probe
     void cudaAllocProbeDistances(Probe* probe, int level);
     void cudaCopyProbeDistancesHtoD(Probe* probe, int level);
     void cudaCopyProbeDistancesDtoH(Probe* probe, int level);
@@ -410,12 +411,7 @@ public:
     void cudaCopyProbeQuantitiesAndOffsetsDtoH(Probe* probe, int level);
     void cudaFreeProbeQuantitiesAndOffsets(Probe* probe, int level);
 
-    void cudaAllocVelocityReaderArrays(VelocitySetter* setter, int level);
-    void cudaCopyVelocityReaderIndexAndWeightArraysHtoD(VelocitySetter* setter, int level);
-    void cudaCopyVelocityReaderNextVelocitiesHtoD(VelocitySetter* setter, int level);
-    void cudaFreeVelocityReaderArrays(VelocitySetter* setter, int level);
-
-
+    //Precursor Writer
     void cudaAllocPrecursorWriter(PrecursorWriter* writer, int level);
     void cudaCopyPrecursorWriterIndicesHtoD(PrecursorWriter* writer, int level);
     void cudaCopyPrecursorWriterVelocitiesDtoH(PrecursorWriter* writer, int level);

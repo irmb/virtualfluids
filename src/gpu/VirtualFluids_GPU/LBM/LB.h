@@ -196,10 +196,10 @@ typedef struct QforBC{
 
 typedef struct QforPrecursorBC{
    int* k;
-   int kQ=0;
+   int numberOfBCnodes=0;
    int kArray;
    int nVelocityPoints;
-   uint nReads=0;
+   uint nPrecursorReads=0;
    uint nTRead;
    real* q27[27];
    uint* planeNeighborNT, *planeNeighborNB, *planeNeighborST, *planeNeighborSB;

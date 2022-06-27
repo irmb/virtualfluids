@@ -710,7 +710,7 @@ void LBKernelManager::runPrecursorBCKernelPost(int level, uint t, CudaMemoryMana
     {
         auto precursorStruct = para->getParD(level)->precursorBC;
 
-        int tLastRead = precursorStruct.nReads*precursorStruct.nTRead;
+        int tLastRead = precursorStruct.nPrecursorReads*precursorStruct.nTRead;
 
         if(t>tLastRead+precursorStruct.nTRead)
         {
@@ -739,13 +739,13 @@ void LBKernelManager::runPrecursorBCKernelPost(int level, uint t, CudaMemoryMana
             }
 
             cudaMemoryManager->cudaCopyPrecursorVelocities(level);
-            precursorStruct.nReads++;
+            precursorStruct.nPrecursorReads++;
             tLastRead += precursorStruct.nTRead;  
         }
 
         real tRatio = real(t-tLastRead)/precursorStruct.nTRead;
         QPrecursorDevCompZeroPress( para->getParD(level)->numberofthreads, tRatio, para->getParD(level)->distributions.f[0], para->getParD(level)->precursorBC.q27[0],
-                                    para->getParD(level)->precursorBC.k, para->getParD(level)->precursorBC.kQ, para->getParD(level)->precursorBC.kArray, 
+                                    para->getParD(level)->precursorBC.k, para->getParD(level)->precursorBC.numberOfBCnodes, para->getParD(level)->precursorBC.kArray, 
                                     para->getParD(level)->precursorBC.nVelocityPoints, para->getParH(level)->omega, para->getVelocityRatio(),
                                     para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ,
                                     para->getParD(level)->precursorBC.planeNeighborNT, para->getParD(level)->precursorBC.planeNeighborNB, para->getParD(level)->precursorBC.planeNeighborST, para->getParD(level)->precursorBC.planeNeighborSB, 
