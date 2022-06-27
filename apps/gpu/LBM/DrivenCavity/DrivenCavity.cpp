@@ -173,7 +173,7 @@ void multipleLevel(const std::string& configPath)
 
 		para->setDevices(std::vector<uint>{(uint)0});
 
-        para->setOutputPath( path );
+        para->setOutputPath( path ); // optional, default is output/
 
         para->setOutputPrefix( simulationName );
 
