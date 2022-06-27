@@ -48,18 +48,23 @@ Parameter::Parameter(int numberOfProcesses, int myId)
 {
     ic.numprocs = numberOfProcesses;
     ic.myid = myId;
+
     initGridPaths();
     initGridDist();
     initMultiKernel();
+    this->setFName(this->getOutputPath() + "/" + this->getOutputPrefix());
+
     // initLBMSimulationParameter();
 }
 
 Parameter::Parameter(const vf::basics::ConfigurationFile &configData, int numberOfProcesses, int myId): Parameter(numberOfProcesses, myId)
 {
     readConfigData(configData);
+
     initGridPaths();
     initGridDist();
     initMultiKernel();
+    this->setFName(this->getOutputPath() + "/" + this->getOutputPrefix());
 }
 
 Parameter::~Parameter() = default;
@@ -366,8 +371,6 @@ void Parameter::initGridPaths(){
         gridPath += StringUtil::toString(this->getMyID()) + "/";
         this->setGridPath(gridPath);
     }
-        
-    this->setFName(this->getOutputPath() + "/" + this->getOutputPrefix());
     
     //////////////////////////////////////////////////////////////////////////
         
@@ -450,14 +453,21 @@ void Parameter::initGridPaths(){
     }
 }
 
-void Parameter::initGridDist(){
-    this->setGridX(std::vector<int>(this->getMaxLevel() + 1, 32));
-    this->setGridY(std::vector<int>(this->getMaxLevel() + 1, 32));
-    this->setGridZ(std::vector<int>(this->getMaxLevel() + 1, 32));
+void Parameter::initGridDist()
+{
+    if (this->getGridX().empty())
+        this->setGridX(std::vector<int>(this->getMaxLevel() + 1, 32));
+    if (this->getGridY().empty())
+        this->setGridY(std::vector<int>(this->getMaxLevel() + 1, 32));
+    if (this->getGridZ().empty())
+        this->setGridZ(std::vector<int>(this->getMaxLevel() + 1, 32));
 
-    this->setDistX(std::vector<int>(this->getMaxLevel() + 1, 32));
-    this->setDistY(std::vector<int>(this->getMaxLevel() + 1, 32));
-    this->setDistZ(std::vector<int>(this->getMaxLevel() + 1, 32));
+    if (this->getDistX().empty())
+        this->setDistX(std::vector<int>(this->getMaxLevel() + 1, 32));
+    if (this->getDistY().empty())
+        this->setDistY(std::vector<int>(this->getMaxLevel() + 1, 32));
+    if (this->getDistZ().empty())
+        this->setDistZ(std::vector<int>(this->getMaxLevel() + 1, 32));
 }
 
 void Parameter::initMultiKernel(){

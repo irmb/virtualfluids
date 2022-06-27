@@ -15,7 +15,7 @@ auto RealEq = [](auto value) {
 #endif
 };
 
-TEST(ParameterTest, passingEmptyFileWithoutPath_ShouldThrow)
+TEST(ParameterTest, passingEmptyFileWithoutPath_ShouldNotThrow)
 {
     // assuming that the config files is stored parallel to this file.
     std::filesystem::path filePath = __FILE__;
@@ -24,7 +24,7 @@ TEST(ParameterTest, passingEmptyFileWithoutPath_ShouldThrow)
     vf::basics::ConfigurationFile config;
     config.load(filePath.string());
 
-    EXPECT_THROW(Parameter para(config, 1, 0), std::runtime_error);
+    EXPECT_NO_THROW(Parameter para(config, 1, 0));
 }
 
 // TODO: test setPossNeighborFilesX

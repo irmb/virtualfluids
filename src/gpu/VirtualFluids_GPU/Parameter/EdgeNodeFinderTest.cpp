@@ -6,15 +6,6 @@
 #include "Parameter.h"
 #include "basics/config/ConfigurationFile.h"
 
-static std::shared_ptr<Parameter> initParameterClass()
-{
-    std::filesystem::path filePath = __FILE__; //  assuming that the config file is stored parallel to this file.
-    filePath.replace_filename("parameterTest.cfg");
-    vf::basics::ConfigurationFile config;
-    config.load(filePath.string());
-    return std::make_shared<Parameter>(config, 1, 0);
-}
-
 bool compareEdgeNodesRecv(const std::vector<LBMSimulationParameter::EdgeNodePositions> &actual,
                           const std::vector<std::pair<int, int>> &expected)
 {
@@ -52,7 +43,7 @@ protected:
 private:
     void SetUp() override
     {
-        para = initParameterClass();
+        para = std::make_shared<Parameter>(1, 0);
         para->initLBMSimulationParameter();
     }
 };
