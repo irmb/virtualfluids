@@ -68,16 +68,12 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
 {
     if (configData.contains("NumberOfDevices"))
         this->setMaxDev(configData.getValue<int>("NumberOfDevices"));
-
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("Devices"))
         this->setDevices(configData.getVector<uint>("Devices"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("Path"))
         this->setOutputPath(configData.getValue<std::string>("Path"));
-    else
-        throw std::runtime_error("<Path> need to be defined in config file!");
-
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("Prefix"))
         this->setOutputPrefix(configData.getValue<std::string>("Prefix"));
