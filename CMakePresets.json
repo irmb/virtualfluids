@@ -12,28 +12,26 @@
             "binaryDir": "${sourceDir}/build/"
         },
         {
+            "name": "msvc",
+            "hidden": true,
+            "generator": "Visual Studio 16 2019",
+            "architecture": "x64"
+        },
+        {
+            "name": "make",
+            "hidden": true,
+            "generator": "Unix Makefiles"
+        },
+        {
             "name": "unit_tests",
-            "inherits": "default",
             "hidden": true,
             "cacheVariables": {
                 "BUILD_VF_UNIT_TESTS": "ON"
             }
         },
         {
-            "name": "default_make",
+            "name": "cpu",
             "inherits": "default",
-            "hidden": true,
-            "generator": "Unix Makefiles"
-        },
-        {
-            "name": "default_msvc",
-            "inherits": "default",
-            "hidden": true,
-            "generator": "Visual Studio 16 2019",
-            "architecture": "x64"
-        },
-        {
-            "name": "default_cpu",
             "hidden": true,
             "description": "CPU build of VirtualFluids",
             "cacheVariables": {
@@ -42,103 +40,14 @@
             }
         },
         {
-            "name": "default_gpu",
+            "name": "gpu",
+            "inherits": "default",
             "hidden": true,
             "description": "GPU build of VirtualFluids",
             "cacheVariables": {
                 "BUILD_VF_GPU": "ON",
                 "BUILD_VF_DOUBLE_ACCURACY": "OFF"
             }
-        },
-        {
-            "name": "default_gpu_numerical_tests",
-            "inherits": [
-                "default_gpu",
-                "unit_tests"
-            ],
-            "hidden": true,
-            "description": "GPU numerical tests of VirtualFluids",
-            "cacheVariables": {
-                "BUILD_VF_DOUBLE_ACCURACY": "ON",
-                "BUILD_NUMERIC_TESTS": "ON"
-            }
-        },
-        {
-            "name": "default_all",
-            "hidden": true,
-            "description": "All build of VirtualFluids",
-            "inherits": [
-                "default_cpu",
-                "default_gpu",
-                "unit_tests"
-            ],
-            "cacheVariables": {
-                "BUILD_VF_DOUBLE_ACCURACY": "ON"
-            }
-        },
-        {
-            "name": "cpu_make",
-            "inherits": [
-                "default_make",
-                "default_cpu"
-            ],
-            "displayName": "cpu make configuration"
-        },
-        {
-            "name": "cpu_msvc",
-            "inherits": [
-                "default_msvc",
-                "default_cpu"
-            ],
-            "displayName": "cpu msvc configuration"
-        },
-        {
-            "name": "gpu_make",
-            "inherits": [
-                "default_make",
-                "default_gpu"
-            ],
-            "displayName": "gpu make configuration"
-        },
-        {
-            "name": "gpu_msvc",
-            "inherits": [
-                "default_msvc",
-                "default_gpu"
-            ],
-            "displayName": "gpu msvc configuration"
-        },
-        {
-            "name": "all_make",
-            "inherits": [
-                "default_make",
-                "default_all"
-            ],
-            "displayName": "all make configuration"
-        },
-        {
-            "name": "all_msvc",
-            "inherits": [
-                "default_msvc",
-                "default_all"
-            ],
-            "displayName": "all msvc configuration"
-        },
-        {
-            "name": "gpu_numerical_tests_make",
-            "inherits": [
-                "default_make",
-                "default_gpu_numerical_tests"
-            ],
-            "displayName": "gpu numerical tests make configuration"
-        },
-        {
-            "name": "gpu_numerical_tests_msvc",
-            "inherits": [
-                "default_msvc",
-                "default_gpu_numerical_tests"
-            ],
-            "displayName": "gpu numerical tests msvc configuration"
         },
         {
             "name": "debug",
@@ -169,34 +78,123 @@
             }
         },
         {
-            "name": "debug_make_gpu",
-            "displayName": "Debug GPU",
+            "name": "gpu_numerical_tests",
             "inherits": [
-                "gpu_make",
+                "gpu",
+                "unit_tests"
+            ],
+            "hidden": true,
+            "description": "GPU numerical tests of VirtualFluids",
+            "cacheVariables": {
+                "BUILD_VF_DOUBLE_ACCURACY": "ON",
+                "BUILD_NUMERIC_TESTS": "ON"
+            }
+        },
+        {
+            "name": "all_make",
+            "inherits": [
+                "cpu",
+                "gpu",
+                "unit_tests",
+                "make"
+            ],
+            "displayName": "all make configuration"
+        },
+        {
+            "name": "all_msvc",
+            "inherits": [
+                "cpu",
+                "gpu",
+                "unit_tests",
+                "msvc"
+            ],
+            "displayName": "all msvc configuration"
+        },
+        {
+            "name": "gpu_numerical_tests_make",
+            "inherits": [
+                "gpu_numerical_tests",
+                "make"
+            ],
+            "displayName": "gpu numerical tests make configuration"
+        },
+        {
+            "name": "gpu_numerical_tests_msvc",
+            "inherits": [
+                "msvc",
+                "gpu_numerical_tests"
+            ],
+            "displayName": "gpu numerical tests msvc configuration"
+        },
+        {
+            "name": "debug_make_gpu",
+            "displayName": "Debug GPU Make",
+            "inherits": [
+                "gpu",
+                "make",
                 "debug"
             ]
         },
         {
             "name": "release_make_gpu",
-            "displayName": "Release GPU",
+            "displayName": "Release GPU Make",
             "inherits": [
-                "gpu_make",
+                "gpu",
+                "make",
                 "release"
             ]
         },
         {
             "name": "min_size_rel_make_gpu",
-            "displayName": "MinSizeRel GPU",
+            "displayName": "MinSizeRel GPU Make",
             "inherits": [
-                "gpu_make",
+                "gpu",
+                "make",
                 "min_size_rel"
             ]
         },
         {
             "name": "rel_with_deb_info_make_gpu",
-            "displayName": "RelWithDebInfo GPU",
+            "displayName": "RelWithDebInfo GPU Make",
             "inherits": [
-                "gpu_make",
+                "gpu",
+                "make",
+                "rel_with_deb_info"
+            ]
+        },
+        {
+            "name": "debug_msvc_gpu",
+            "displayName": "Debug GPU MSVC",
+            "inherits": [
+                "gpu",
+                "msvc",
+                "debug"
+            ]
+        },
+        {
+            "name": "release_msvc_gpu",
+            "displayName": "Release GPU MSVC",
+            "inherits": [
+                "gpu",
+                "msvc",
+                "release"
+            ]
+        },
+        {
+            "name": "min_size_rel_msvc_gpu",
+            "displayName": "MinSizeRel GPU MSVC",
+            "inherits": [
+                "gpu",
+                "msvc",
+                "min_size_rel"
+            ]
+        },
+        {
+            "name": "rel_with_deb_info_msvc_gpu",
+            "displayName": "RelWithDebInfo GPU MSVC",
+            "inherits": [
+                "gpu",
+                "msvc",
                 "rel_with_deb_info"
             ]
         }
@@ -204,24 +202,30 @@
     "buildPresets": [
         {
             "name": "Default",
-            "jobs": 4,
-            "configurePreset": "default"
+            "hidden": true,
+            "configurePreset": "default",
+            "jobs": 4
         },
         {
             "name": "GPU",
-            "configurePreset": "gpu_make",
             "hidden": true,
+            "configurePreset": "gpu",
             "targets": [
                 "ActuatorLine",
                 "DrivenCavity",
                 "BoundaryLayer"
             ],
             "inherits": [
-                "default"
+                "Default"
             ]
         },
         {
-            "name": "Debug_GPU",
+            "name": "Release",
+            "hidden": true,
+            "configurePreset": "release"
+        },
+        {
+            "name": "Debug_Make_GPU",
             "displayName": "Debug",
             "description": "Compile GPU version with debug information",
             "configurePreset": "debug_make_gpu",
@@ -230,7 +234,7 @@
             ]
         },
         {
-            "name": "MinSizeRel_GPU",
+            "name": "MinSizeRel_Make_GPU",
             "displayName": "MinSizeRel",
             "configurePreset": "min_size_rel_make_gpu",
             "inherits": [
@@ -250,7 +254,9 @@
             "description": "Build release version of GPU",
             "displayName": "Release GPU",
             "configurePreset": "release_make_gpu",
-            "inherits":["GPU"]
+            "inherits": [
+                "GPU"
+            ]
         }
     ]
 }
