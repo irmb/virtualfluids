@@ -174,32 +174,4 @@ private:
     std::vector<std::vector<uint>> nFile;
     SPtr<VTKFileCollection> fileCollection;
 };
-
-
-class VelocitySetter : public PreCollisionInteractor
-{
-public:
-    VelocitySetter(
-        SPtr<VelocityFileCollection> _fileCollection,
-        uint _NTRead):
-    nTRead(_NTRead),
-    fileCollection(_fileCollection)
-    {    };
-
-    void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager) override;
-    void interact(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t) override;
-    void free(Parameter* para, CudaMemoryManager* cudaManager) override;
-    void setBCArrays(SPtr<Grid> grid, SPtr<gg::BoundaryCondition> boundary);
-
-    SPtr<VelocityReader> getVelocityReader(int level){ return velocityReaders[level]; };
-
-public:
-    std::vector<cudaStream_t> streams;
-private:
-    SPtr<VelocityFileCollection> fileCollection;
-    std::vector<SPtr<VelocityReader>> velocityReaders;
-    std::vector<uint> nReads;
-    uint nTRead;
-};
-
 #endif //VELOCITY_SETTER_H_
