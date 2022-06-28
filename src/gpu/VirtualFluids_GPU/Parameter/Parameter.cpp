@@ -46,9 +46,9 @@
 
 Parameter::Parameter(int numberOfProcesses, int myId)
 {
-    ic.numprocs = numberOfProcesses;
-    ic.myid = myId;
-
+    this->ic.numprocs = numberOfProcesses; 
+    this->ic.myid = myId;
+    
     initGridPaths();
     initGridDist();
     initMultiKernel();
@@ -57,14 +57,19 @@ Parameter::Parameter(int numberOfProcesses, int myId)
     // initLBMSimulationParameter();
 }
 
-Parameter::Parameter(const vf::basics::ConfigurationFile &configData, int numberOfProcesses, int myId): Parameter(numberOfProcesses, myId)
+Parameter::Parameter(const vf::basics::ConfigurationFile &configData, int numberOfProcesses, int myId)
 {
+    this->ic.numprocs = numberOfProcesses; 
+    this->ic.myid = myId;
+
     readConfigData(configData);
 
     initGridPaths();
     initGridDist();
     initMultiKernel();
     this->setFName(this->getOutputPath() + "/" + this->getOutputPrefix());
+
+    // initLBMSimulationParameter();
 }
 
 Parameter::~Parameter() = default;
