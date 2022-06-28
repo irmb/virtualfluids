@@ -812,7 +812,7 @@ extern "C" __global__ void QPressDeviceNEQ27(real* rhoBC,
                                              unsigned int* neighborX,
                                              unsigned int* neighborY,
                                              unsigned int* neighborZ,
-                                             unsigned int size_Mat, 
+                                             unsigned int numberOfLBnodes, 
                                              bool isEvenTimestep)
 {
    //////////////////////////////////////////////////////////////////////////
@@ -840,7 +840,7 @@ extern "C" __global__ void QPressDeviceNEQ27(real* rhoBC,
       //! <a href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017), DOI:10.3390/computation5020019 ]</b></a>
       //!
       Distributions27 dist;
-      getPointersToDistributions(dist, distribution, numberOfBCnodes, isEvenTimestep);
+      getPointersToDistributions(dist, distribution, numberOfLBnodes, isEvenTimestep);
 
       ////////////////////////////////////////////////////////////////////////////////
       //! - Set local pressure
