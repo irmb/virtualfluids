@@ -263,8 +263,9 @@ void GridGenerator::allocArrays_BoundaryValues()
                     para->getParH(level)->precursorBC.planeNeighborST, para->getParH(level)->precursorBC.planeNeighborSB, 
                     para->getParH(level)->precursorBC.weightsNT, para->getParH(level)->precursorBC.weightsNB, 
                     para->getParH(level)->precursorBC.weightsST, para->getParH(level)->precursorBC.weightsSB, 
-                    para->getParH(level)->precursorBC.k, para->getParH(level)->velocityReader, para->getParH(level)->precursorBC.nVelocityPoints, 
-                    para->getParH(level)->precursorBC.nTRead, level);
+                    para->getParH(level)->precursorBC.k, para->getParH(level)->velocityReader, para->getParH(level)->precursorBC.nVelocityPoints, para->getParH(level)->precursorBC.nTRead, 
+                    para->getParH(level)->precursorBC.velocityX, para->getParH(level)->precursorBC.velocityY, para->getParH(level)->precursorBC.velocityZ,
+                    level);
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             cudaMemoryManager->cudaCopyPrecursorBC(level);
@@ -1080,7 +1081,6 @@ void GridGenerator::allocArrays_BoundaryQs()
         if (numberOfPrecursorNodes > 0)
         {
             std::cout << "size velocity level " << i << " : " << numberOfPrecursorNodes << std::endl;
-            //cout << "Groesse velocity level:  " << i << " : " << temp3 << "MyID: " << para->getMyID() << std::endl;
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //preprocessing
             real* QQ = para->getParH(i)->precursorBC.q27[0];

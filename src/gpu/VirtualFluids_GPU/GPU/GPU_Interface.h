@@ -1293,6 +1293,7 @@ extern "C" void QPrecursorDevCompZeroPress(  uint numberOfThreads, real tRatio,
                                              real* weightsNT, real* weightsNB, real* weightsST, real* weightsSB,
                                              real* vxLast, real* vyLast, real* vzLast,
                                              real* vxCurrent, real* vyCurrent, real* vzCurrent,
+											real velocityX, real velocityY, real velocityZ,
                                              unsigned long long size_Mat, bool evenOrOdd);
 
 extern "C" void QADDev7(unsigned int numberOfThreads,

@@ -574,7 +574,11 @@ uint LevelGridBuilder::getPrecursorSize(int level) const
     return size;
 }
 
-void LevelGridBuilder::getPrecursorValues(uint* neighborNT, uint* neighborNB, uint* neighborST, uint* neighborSB, real* weightsNT, real* weightsNB, real* weightsST, real* weightsSB, int* indices, std::vector<SPtr<VelocityReader>>& reader, int& nVelocityPoints, uint& nTRead, int level) const
+void LevelGridBuilder::getPrecursorValues(  uint* neighborNT, uint* neighborNB, uint* neighborST, uint* neighborSB, 
+                                            real* weightsNT, real* weightsNB, real* weightsST, real* weightsSB, 
+                                            int* indices, std::vector<SPtr<VelocityReader>>& reader, 
+                                            int& nVelocityPoints, uint& nTRead, 
+                                            real& velocityX, real& velocityY, real& velocityZ, int level) const
 {
     int allIndicesCounter = 0;
     int allVelocitiesCounter = 0;
@@ -605,6 +609,9 @@ void LevelGridBuilder::getPrecursorValues(uint* neighborNT, uint* neighborNB, ui
         BCreader->getNeighbors(neighborNT, neighborNB, neighborST, neighborSB);
         BCreader->getWeights(weightsNT, weightsNB, weightsST, weightsSB);
         allVelocitiesCounter += BCreader->getNPointsRead();
+        velocityX = boundaryCondition->getVelocityX();
+        velocityY = boundaryCondition->getVelocityY();
+        velocityZ = boundaryCondition->getVelocityZ();
     }
     nVelocityPoints = allVelocitiesCounter;
 

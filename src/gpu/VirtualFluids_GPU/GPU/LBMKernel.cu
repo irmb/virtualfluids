@@ -4688,7 +4688,8 @@ extern "C" void QPrecursorDevCompZeroPress(  uint numberOfThreads, real tRatio,
                                              uint* neighborsNT, uint* neighborsNB, uint* neighborsST, uint* neighborsSB,
                                              real* weightsNT, real* weightsNB, real* weightsST, real* weightsSB,
                                              real* vxLast, real* vyLast, real* vzLast,
-                                             real* vxCurrent, real* vyCurrent, real* vzCurrent, 
+                                             real* vxCurrent, real* vyCurrent, real* vzCurrent,
+                                             real velocityX, real velocityY, real velocityZ, 
                                              unsigned long long size_Mat, bool evenOrOdd)
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kArray);
@@ -4698,7 +4699,9 @@ extern "C" void QPrecursorDevCompZeroPress(  uint numberOfThreads, real tRatio,
                                                                neighborsNT, neighborsNB, neighborsST, neighborsSB,
                                                                weightsNT, weightsNB, weightsST, weightsSB,
                                                                vxLast, vyLast, vzLast,
-                                                               vxCurrent, vyCurrent, vzCurrent, tRatio, velocityRatio, size_Mat, evenOrOdd);
+                                                               vxCurrent, vyCurrent, vzCurrent, 
+                                                               velocityX, velocityY, velocityZ, 
+                                                               tRatio, velocityRatio, size_Mat, evenOrOdd);
    getLastCudaError("QPrecursorDeviceCompZeroPress execution failed"); 
 
 

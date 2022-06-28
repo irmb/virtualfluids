@@ -30,6 +30,9 @@ extern "C" __global__ void QPrecursorDeviceCompZeroPress( 	int* k_Q,
 															real* vzCurrent,
 															real tRatio,
                                                             real velocityRatio,
+                                                            real velocityX,
+                                                            real velocityY,
+                                                            real velocityZ,
 															unsigned long long size_Mat,
 															bool evenOrOdd)
 {
@@ -85,9 +88,9 @@ extern "C" __global__ void QPrecursorDeviceCompZeroPress( 	int* k_Q,
     }
     // if(k==100)
         // printf("last u %f v %f next u %f v %f\n", vxLastInterpd, vyLastInterpd, vxNextInterpd, vyNextInterpd);
-    real VeloX = ((1.f-tRatio)*vxLastInterpd + tRatio*vxNextInterpd)/velocityRatio;
-    real VeloY = ((1.f-tRatio)*vyLastInterpd + tRatio*vyNextInterpd)/velocityRatio; 
-    real VeloZ = ((1.f-tRatio)*vzLastInterpd + tRatio*vzNextInterpd)/velocityRatio;
+    real VeloX = (velocityX + (1.f-tRatio)*vxLastInterpd + tRatio*vxNextInterpd)/velocityRatio;
+    real VeloY = (velocityY + (1.f-tRatio)*vyLastInterpd + tRatio*vyNextInterpd)/velocityRatio; 
+    real VeloZ = (velocityZ + (1.f-tRatio)*vzLastInterpd + tRatio*vzNextInterpd)/velocityRatio;
     // From here on just a copy of the velocity boundary condition
     ////////////////////////////////////////////////////////////////////////////////
     real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
