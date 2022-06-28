@@ -660,17 +660,15 @@ extern "C" void QDev27( unsigned int numberOfThreads,
                         bool isEvenTimestep);
 
 extern "C" void QDevComp27(unsigned int numberOfThreads,
-						   int nx,
-						   int ny,
-						   real* DD, 
-						   int* k_Q, 
-						   real* QQ,
+						   real* distribution, 
+						   int* subgridDistanceIndices, 
+						   real* subgridDistances,
 						   unsigned int numberOfBCnodes, 
-						   real om1, 
+						   real omega, 
 						   unsigned int* neighborX,
 						   unsigned int* neighborY,
 						   unsigned int* neighborZ,
-						   unsigned int size_Mat, 
+						   unsigned int numberOfLBnodes, 
 						   bool isEvenTimestep);
 
 extern "C" void QDevCompThinWalls27(unsigned int numberOfThreads,

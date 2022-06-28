@@ -4890,11 +4890,11 @@ extern "C" __global__ void QVelDeviceComp27(
 											bool isEvenTimestep)
 {
    //////////////////////////////////////////////////////////////////////////
-	//! The velocity boundary condition is executed in the following steps
-	//!
-	////////////////////////////////////////////////////////////////////////////////
-	//! - Get node index coordinates from thredIdx, blockIdx, blockDim and gridDim.
-	//!
+   //! The velocity boundary condition is executed in the following steps
+   //!
+   ////////////////////////////////////////////////////////////////////////////////
+   //! - Get node index coordinates from thredIdx, blockIdx, blockDim and gridDim.
+   //!
    const unsigned  x = threadIdx.x;  // global x-index 
    const unsigned  y = blockIdx.x;   // global y-index 
    const unsigned  z = blockIdx.y;   // global z-index 
@@ -4932,24 +4932,24 @@ extern "C" __global__ void QVelDeviceComp27(
       ////////////////////////////////////////////////////////////////////////////////
       //! - Set neighbor indices (necessary for indirect addressing)
       //!
-      unsigned int KQK  = subgridDistanceIndices[k];
-      unsigned int kzero= KQK;
-      unsigned int ke   = KQK;
-      unsigned int kw   = neighborX[KQK];
-      unsigned int kn   = KQK;
-      unsigned int ks   = neighborY[KQK];
-      unsigned int kt   = KQK;
-      unsigned int kb   = neighborZ[KQK];
+      unsigned int indexOfBCnode  = subgridDistanceIndices[k];
+      unsigned int kzero= indexOfBCnode;
+      unsigned int ke   = indexOfBCnode;
+      unsigned int kw   = neighborX[indexOfBCnode];
+      unsigned int kn   = indexOfBCnode;
+      unsigned int ks   = neighborY[indexOfBCnode];
+      unsigned int kt   = indexOfBCnode;
+      unsigned int kb   = neighborZ[indexOfBCnode];
       unsigned int ksw  = neighborY[kw];
-      unsigned int kne  = KQK;
+      unsigned int kne  = indexOfBCnode;
       unsigned int kse  = ks;
       unsigned int knw  = kw;
       unsigned int kbw  = neighborZ[kw];
-      unsigned int kte  = KQK;
+      unsigned int kte  = indexOfBCnode;
       unsigned int kbe  = kb;
       unsigned int ktw  = kw;
       unsigned int kbs  = neighborZ[ks];
-      unsigned int ktn  = KQK;
+      unsigned int ktn  = indexOfBCnode;
       unsigned int kbn  = kb;
       unsigned int kts  = ks;
       unsigned int ktse = ks;
@@ -4958,7 +4958,7 @@ extern "C" __global__ void QVelDeviceComp27(
       unsigned int kbse = kbs;
       unsigned int ktsw = ksw;
       unsigned int kbne = kb;
-      unsigned int ktne = KQK;
+      unsigned int ktne = indexOfBCnode;
       unsigned int kbsw = neighborZ[ksw];
 
       ////////////////////////////////////////////////////////////////////////////////

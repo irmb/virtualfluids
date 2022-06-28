@@ -611,17 +611,16 @@ extern "C" __global__ void QDevice27(int inx,
                                      unsigned int size_Mat,
                                      bool isEvenTimestep);
 
-extern "C" __global__ void QDeviceComp27(int inx,
-										 int iny,
-										 real* DD,
-										 int* k_Q,
-										 real* QQ,
+extern "C" __global__ void QDeviceComp27(
+										 real* distribution,
+										 int* subgridDistanceIndices,
+										 real* subgridDistances,
 										 unsigned int numberOfBCnodes,
-										 real minusomega,
+										 real omega,
 										 unsigned int* neighborX,
 										 unsigned int* neighborY,
 										 unsigned int* neighborZ,
-										 unsigned int size_Mat,
+										 unsigned int numberOfLBnodes,
 										 bool isEvenTimestep);
 
 extern "C" __global__ void QDeviceCompThinWallsPartOne27(real* DD,

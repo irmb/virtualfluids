@@ -2693,17 +2693,15 @@ extern "C" void QDev27( unsigned int numberOfThreads,
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QDevComp27( unsigned int numberOfThreads,
-							int nx,
-							int ny,
-							real* DD,
-							int* k_Q,
-							real* QQ,
+							real* distribution,
+							int* subgridDistanceIndices,
+							real* subgridDistances,
 							unsigned int numberOfBCnodes,
-							real om1,
+							real omega,
 							unsigned int* neighborX,
 							unsigned int* neighborY,
 							unsigned int* neighborZ,
-							unsigned int size_Mat,
+							unsigned int numberOfLBnodes,
 							bool isEvenTimestep)
 {
    int Grid = (numberOfBCnodes / numberOfThreads)+1;
@@ -2721,17 +2719,16 @@ extern "C" void QDevComp27( unsigned int numberOfThreads,
    dim3 gridQ(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      QDeviceComp27<<< gridQ, threads >>> (nx,
-										   ny,
-										   DD,
-										   k_Q,
-										   QQ,
+      QDeviceComp27<<< gridQ, threads >>> (
+										   distribution,
+										   subgridDistanceIndices,
+										   subgridDistances,
 										   numberOfBCnodes,
-										   om1,
+										   omega,
 										   neighborX,
 										   neighborY,
 										   neighborZ,
-										   size_Mat,
+										   numberOfLBnodes,
 										   isEvenTimestep);
       getLastCudaError("QDeviceComp27 execution failed");
 }

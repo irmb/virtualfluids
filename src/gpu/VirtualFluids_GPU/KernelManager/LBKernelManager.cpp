@@ -742,8 +742,6 @@ void LBKernelManager::runNoSlipBCKernel(int level){
 
         QDevComp27(
             para->getParD(level)->numberofthreads,
-            para->getParD(level)->nx,
-            para->getParD(level)->ny,
             para->getParD(level)->distributions.f[0],
             para->getParD(level)->noSlipBC.k,
             para->getParD(level)->noSlipBC.q27[0],
