@@ -271,7 +271,7 @@ void WbWriterVtkXmlImageBinary::writeData(const string &vtkfilename,
             throw UbException(UB_EXARGS, "couldn't open file " + vtkfilename);
     }
 
-    int nPoints = pointDataNames.size()>0 ? nodedata[0].size() : celldata[0].size();
+    size_t nPoints = pointDataNames.size()>0 ? nodedata[0].size() : celldata[0].size();
 
     int bytesPerByteVal      = 4; //==sizeof(int)
 
