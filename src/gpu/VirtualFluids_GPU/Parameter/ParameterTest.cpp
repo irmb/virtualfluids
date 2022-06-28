@@ -42,7 +42,7 @@ TEST(ParameterTest, check_all_Parameter_CanBePassedToConstructor)
     Parameter para(config, 1, 0);
 
     // test optional parameter
-    EXPECT_THAT(para.getOutputPath(), testing::Eq("/output/path"));
+    EXPECT_THAT(para.getOutputPath(), testing::Eq("/output/path/"));
     EXPECT_THAT(para.getGridPath(), testing::Eq("/path/to/grid/")); // ... all grid files (e.g. multi-gpu/ multi-level) could be tested as well
     EXPECT_THAT(para.getgeoVec(), testing::Eq("/path/to/grid/geoVec.dat"));
     EXPECT_THAT(para.getMaxDev(), testing::Eq(2));
