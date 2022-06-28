@@ -100,25 +100,25 @@ void multipleLevel(const std::string& configPath)
 
     LbmOrGks lbmOrGks = LBM;
 
-    const real H = 1000.0; // boundary layer height in m
+    const real H = config.getValue("boundaryLayerHeight", 1000.0); // boundary layer height in m
 
     const real L_x = 6*H;
     const real L_y = 4*H;
     const real L_z = 1*H;
 
-    const real z0  = 0.1; // roughness length in m
-    const real u_star = 0.4; //friction velocity in m/s
-    const real kappa = 0.4; // von Karman constant
+    const real z0  = config.getValue("z0", 0.1f); // roughness length in m
+    const real u_star = config.getValue("u_star", 0.4f); //friction velocity in m/s
+    const real kappa = config.getValue("vonKarmanConstant", 0.4f); // von Karman constant
 
-    const real viscosity = 1.56e-5;
+    const real viscosity = config.getValue("viscosity",1.56e-5f);
 
     const real velocity  = 0.5*u_star/kappa*log(L_z/z0+1.f); //0.5 times max mean velocity at the top in m/s
 
-    const real mach = config.contains("Ma")? config.getValue<real>("Ma"): 0.1;
+    const real mach = config.getValue<real>("Ma", 0.1);
 
-    const uint nodes_per_H = config.contains("nz")? config.getValue<uint>("nz"): 64;
+    const uint nodes_per_H = config.getValue<uint>("nz", 64);
 
-    const bool writePrecursor       = config.contains("writePrecursor") ? config.getValue<bool>("writePrecursor") : false;
+    const bool writePrecursor = config.getValue<bool>("writePrecursor", false);
     int nTWritePrecursor; real tStartPrecursor, posXPrecursor;
     if(writePrecursor)
     {
@@ -127,10 +127,14 @@ void multipleLevel(const std::string& configPath)
         posXPrecursor        = config.getValue<real>("posXPrecursor");
     }
 
-    const bool readPrecursor = config.contains("readPrecursor") ? config.getValue<bool>("readPrecursor") : false;
+    const bool readPrecursor = config.getValue("readPrecursor", false);
     int nTReadPrecursor;
+    std::string precursorFile;
     if(readPrecursor)
+    {
         nTReadPrecursor = config.getValue<int>("nTimestepsReadPrecursor");
+        precursorFile = config.getValue<std::string>("precursorFile");
+    }
     // all in s
     const float tStartOut   = config.getValue<real>("tStartOut");
     const float tOut        = config.getValue<real>("tOut");
@@ -212,7 +216,7 @@ void multipleLevel(const std::string& configPath)
 
     if(readPrecursor)
     {
-        auto precursor = SPtr<VTKFileCollection>( new VTKFileCollection("precursor/Precursor") );
+        auto precursor = SPtr<VTKFileCollection>( new VTKFileCollection(precursorFile) );
         gridBuilder->setPrecursorBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0, precursor, nTReadPrecursor);
         gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.f);
     }
