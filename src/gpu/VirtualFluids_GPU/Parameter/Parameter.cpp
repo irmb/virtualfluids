@@ -50,8 +50,8 @@ Parameter::Parameter(int numberOfProcesses, int myId)
     this->ic.myid = myId;
     
     initGridPaths();
-    initGridDist();
-    initMultiKernel();
+    initGridBasePoints();
+    initDefaultLBMkernelAllLevels();
     this->setFName(this->getOutputPath() + this->getOutputPrefix());
 
     // initLBMSimulationParameter();
@@ -65,8 +65,8 @@ Parameter::Parameter(const vf::basics::ConfigurationFile &configData, int number
     readConfigData(configData);
 
     initGridPaths();
-    initGridDist();
-    initMultiKernel();
+    initGridBasePoints();
+    initDefaultLBMkernelAllLevels();
     this->setFName(this->getOutputPath() + this->getOutputPrefix());
 
     // initLBMSimulationParameter();
@@ -457,7 +457,7 @@ void Parameter::initGridPaths(){
     }
 }
 
-void Parameter::initGridDist()
+void Parameter::initGridBasePoints()
 {
     if (this->getGridX().empty())
         this->setGridX(std::vector<int>(this->getMaxLevel() + 1, 32));
@@ -474,7 +474,7 @@ void Parameter::initGridDist()
         this->setDistZ(std::vector<int>(this->getMaxLevel() + 1, 32));
 }
 
-void Parameter::initMultiKernel(){
+void Parameter::initDefaultLBMkernelAllLevels(){
     if (this->getMultiKernelOn() && this->getMultiKernelLevel().empty()) {
         std::vector<int> tmp;
         for (int i = 0; i < this->getMaxLevel() + 1; i++) {

@@ -865,8 +865,8 @@ public:
 private:
     void readConfigData(const vf::basics::ConfigurationFile &configData);
     void initGridPaths();
-    void initGridDist();
-    void initMultiKernel();
+    void initGridBasePoints();
+    void initDefaultLBMkernelAllLevels();
 
 private:
     bool compOn{ false };
