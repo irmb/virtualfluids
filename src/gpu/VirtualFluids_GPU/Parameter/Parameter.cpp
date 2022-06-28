@@ -52,7 +52,7 @@ Parameter::Parameter(int numberOfProcesses, int myId)
     initGridPaths();
     initGridDist();
     initMultiKernel();
-    this->setFName(this->getOutputPath() + "/" + this->getOutputPrefix());
+    this->setFName(this->getOutputPath() + this->getOutputPrefix());
 
     // initLBMSimulationParameter();
 }
@@ -67,7 +67,7 @@ Parameter::Parameter(const vf::basics::ConfigurationFile &configData, int number
     initGridPaths();
     initGridDist();
     initMultiKernel();
-    this->setFName(this->getOutputPath() + "/" + this->getOutputPrefix());
+    this->setFName(this->getOutputPath() + this->getOutputPrefix());
 
     // initLBMSimulationParameter();
 }
@@ -749,6 +749,10 @@ void Parameter::setTimeCalcMedEnd(int CalcMedEnd)
 }
 void Parameter::setOutputPath(std::string oPath)
 {
+    // add missing slash to outputPath
+    if (oPath.back() != '/')
+        oPath += "/";
+
     ic.oPath = oPath;
 }
 void Parameter::setOutputPrefix(std::string oPrefix)
