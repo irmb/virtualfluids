@@ -203,25 +203,6 @@ SPtr<VelocityReader> VTKFileCollection::createReaderForCollection()
     return std::make_shared<VTKReader>(getSelf()); 
 }
 
-
-void VelocityReader::switchLastAndNext()
-{
-    real *tmp = vxLastD;
-    vxLastD = vxCurrentD;
-    vxCurrentD = vxNextD;
-    vxNextD = tmp;
-
-    tmp = vyLastD;
-    vyLastD = vyCurrentD;
-    vyCurrentD = vyNextD;
-    vyNextD = tmp;
-
-    tmp = vzLastD;
-    vzLastD = vzCurrentD;
-    vzCurrentD = vzNextD;
-    vzNextD = tmp;
-}
-
 void VelocityReader::getNeighbors(uint* neighborNT, uint* neighborNB, uint* neighborST, uint* neighborSB)
 {
     std::copy(planeNeighborNT.begin(), planeNeighborNT.end(), &neighborNT[writingOffset]);

@@ -141,16 +141,6 @@ public:
 public:
     std::vector<uint> planeNeighborNT,  planeNeighborNB, planeNeighborST, planeNeighborSB;
     std::vector<real> weightsNT, weightsNB, weightsST,  weightsSB;
-    uint* planeNeighborNTH, *planeNeighborNBH, *planeNeighborSTH, *planeNeighborSBH;
-    uint* planeNeighborNTD, *planeNeighborNBD, *planeNeighborSTD, *planeNeighborSBD;
-    real* weightsNTH, *weightsNBH, *weightsSTH,  *weightsSBH;
-    real* weightsNTD, *weightsNBD, *weightsSTD,  *weightsSBD;
-    real* vxLastD, *vyLastD, *vzLastD;
-    real* vxCurrentD, *vyCurrentD, *vzCurrentD;
-    real* vxNextD, *vyNextD, *vzNextD;
-    real* vxLastH, *vyLastH, *vzLastH;
-    real* vxCurrentH, *vyCurrentH, *vzCurrentH;
-    real* vxNextH, *vyNextH, *vzNextH;
 
 protected:
     SPtr<VelocityFileCollection> fileCollection;
