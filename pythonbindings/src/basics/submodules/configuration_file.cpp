@@ -9,6 +9,7 @@ namespace configuration
     {
         py::class_<vf::basics::ConfigurationFile>(parentModule, "ConfigurationFile")
         .def(py::init<>())
-        .def("load", &vf::basics::ConfigurationFile::load);
+        .def("load", &vf::basics::ConfigurationFile::load)
+        .def("getValue", &vf::basics::ConfigurationFile::getValue);
     }
 }
