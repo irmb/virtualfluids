@@ -275,7 +275,7 @@ void WbWriterVtkXmlImageBinary::writeData(const string &vtkfilename,
 
     int bytesPerByteVal      = 4; //==sizeof(int)
 
-    int bytesScalarData      = 1 /*scalar         */ * nPoints * sizeof(double);
+    int bytesScalarData      = 1 /*scalar         */ * (int)nPoints * sizeof(double);
 
     int offset = 0;
 
