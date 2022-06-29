@@ -52,22 +52,9 @@ extern "C" void KernelCasSP27( unsigned int numberOfThreads,
                                int size_Mat,
                                bool EvenOrOdd)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LB_Kernel_Casc_SP_27<<< grid, threads >>>(s9,
+      LB_Kernel_Casc_SP_27<<< grid.grid, grid.threads >>>(s9,
                                                 bcMatD,
                                                 neighborX,
                                                 neighborY,
@@ -88,22 +75,9 @@ extern "C" void KernelCasSPMS27( unsigned int numberOfThreads,
                                  int size_Mat,
                                  bool EvenOrOdd)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LB_Kernel_Casc_SP_MS_27<<< grid, threads >>>(s9,
+      LB_Kernel_Casc_SP_MS_27<<< grid.grid, grid.threads >>>(s9,
                                                    bcMatD,
                                                    neighborX,
                                                    neighborY,
@@ -124,22 +98,9 @@ extern "C" void KernelCasSPMSOHM27( unsigned int numberOfThreads,
                                     int size_Mat,
                                     bool EvenOrOdd)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LB_Kernel_Casc_SP_MS_OHM_27<<< grid, threads >>>(  s9,
+      LB_Kernel_Casc_SP_MS_OHM_27<<< grid.grid, grid.threads >>>(  s9,
                                                          bcMatD,
                                                          neighborX,
                                                          neighborY,
@@ -163,22 +124,9 @@ extern "C" void KernelKumCompSRTSP27(
 	real* forces,
 	bool EvenOrOdd)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-   LB_Kernel_Kum_New_Comp_SRT_SP_27 <<< grid, threads >>>(
+   LB_Kernel_Kum_New_Comp_SRT_SP_27 <<< grid.grid, grid.threads >>>(
 	   omega,
 	   bcMatD,
 	   neighborX,
@@ -207,22 +155,9 @@ extern "C" void KernelKum1hSP27(    unsigned int numberOfThreads,
 									int size_Mat,
 									bool EvenOrOdd)
 {
-	int Grid = (size_Mat / numberOfThreads)+1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid/Grid1)+1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-		LB_Kernel_Kum_1h_SP_27<<< grid, threads >>>(omega,
+		LB_Kernel_Kum_1h_SP_27<<< grid.grid, grid.threads >>>(omega,
 													deltaPhi,
 													angularVelocity,
 													bcMatD,
@@ -248,22 +183,9 @@ extern "C" void KernelCascadeSP27(  unsigned int numberOfThreads,
 									int size_Mat,
 									bool EvenOrOdd)
 {
-	int Grid = (size_Mat / numberOfThreads)+1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid/Grid1)+1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-		LB_Kernel_Cascade_SP_27<<< grid, threads >>>(s9,
+		LB_Kernel_Cascade_SP_27<<< grid.grid, grid.threads >>>(s9,
 													bcMatD,
 													neighborX,
 													neighborY,
@@ -284,22 +206,10 @@ extern "C" void KernelKumNewSP27(   unsigned int numberOfThreads,
 									int size_Mat,
 									bool EvenOrOdd)
 {
-	int Grid = (size_Mat / numberOfThreads)+1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid/Grid1)+1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-		LB_Kernel_Kum_New_SP_27<<< grid, threads >>>(s9,
+
+		LB_Kernel_Kum_New_SP_27<<< grid.grid, grid.threads >>>(s9,
 													bcMatD,
 													neighborX,
 													neighborY,
@@ -327,22 +237,9 @@ extern "C" void KernelKumNewCompSP27(unsigned int numberOfThreads,
 	//dim3 grid(Grid, 1, 1);
 	//dim3 threads(numberOfThreads, 1, 1 );
 
-	int Grid = (size_Mat / numberOfThreads) + 1;
-	int Grid1, Grid2;
-	if (Grid > 512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid / Grid1) + 1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2, 1);
-	dim3 threads(numberOfThreads, 1, 1);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-		//LB_Kernel_Kum_New_Comp_SP_27<<< grid, threads >>>(	s9,
+		//LB_Kernel_Kum_New_Comp_SP_27<<< grid.grid, grid.threads >>>(	s9,
 		//													bcMatD,
 		//													neighborX,
 		//													neighborY,
@@ -373,22 +270,10 @@ extern "C" void CumulantOnePreconditionedErrorDiffusionChimCompSP27(unsigned int
 	//dim3 grid(Grid, 1, 1);
 	//dim3 threads(numberOfThreads, 1, 1 );
 
-	int Grid = (size_Mat / numberOfThreads) + 1;
-	int Grid1, Grid2;
-	if (Grid > 512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid / Grid1) + 1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2, 1);
-	dim3 threads(numberOfThreads, 1, 1);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-	Cumulant_One_preconditioned_errorDiffusion_chim_Comp_SP_27 <<< grid, threads >>>(	s9,
+
+	Cumulant_One_preconditioned_errorDiffusion_chim_Comp_SP_27 <<< grid.grid, grid.threads >>>(	s9,
 																						bcMatD,
 																						neighborX,
 																						neighborY,
@@ -418,22 +303,10 @@ extern "C" void CumulantOnePreconditionedChimCompSP27(  unsigned int numberOfThr
 	//dim3 grid(Grid, 1, 1);
 	//dim3 threads(numberOfThreads, 1, 1 );
 
-	int Grid = (size_Mat / numberOfThreads) + 1;
-	int Grid1, Grid2;
-	if (Grid > 512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid / Grid1) + 1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2, 1);
-	dim3 threads(numberOfThreads, 1, 1);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-	Cumulant_One_preconditioned_chim_Comp_SP_27 <<< grid, threads >>>(	s9,
+
+	Cumulant_One_preconditioned_chim_Comp_SP_27 <<< grid.grid, grid.threads >>>(	s9,
 																		bcMatD,
 																		neighborX,
 																		neighborY,
@@ -463,22 +336,10 @@ extern "C" void CumulantOneChimCompSP27(unsigned int numberOfThreads,
 	//dim3 grid(Grid, 1, 1);
 	//dim3 threads(numberOfThreads, 1, 1 );
 
-	int Grid = (size_Mat / numberOfThreads) + 1;
-	int Grid1, Grid2;
-	if (Grid > 512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid / Grid1) + 1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2, 1);
-	dim3 threads(numberOfThreads, 1, 1);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-	Cumulant_One_chim_Comp_SP_27 <<< grid, threads >>>(	s9,
+
+	Cumulant_One_chim_Comp_SP_27 <<< grid.grid, grid.threads >>>(	s9,
 														bcMatD,
 														neighborX,
 														neighborY,
@@ -504,22 +365,10 @@ extern "C" void KernelKumIsoTestSP27(unsigned int numberOfThreads,
 									 int size_Mat,
 									 bool EvenOrOdd)
 {
-	int Grid = (size_Mat / numberOfThreads)+1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid/Grid1)+1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-	LB_Kernel_Kum_IsoTest_SP_27<<< grid, threads >>>(s9,
+
+	LB_Kernel_Kum_IsoTest_SP_27<<< grid.grid, grid.threads >>>(s9,
 													bcMatD,
 													neighborX,
 													neighborY,
@@ -543,22 +392,10 @@ extern "C" void KernelKumCompSP27(  unsigned int numberOfThreads,
 									int size_Mat,
 									bool EvenOrOdd)
 {
-	int Grid = (size_Mat / numberOfThreads)+1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid/Grid1)+1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-		LB_Kernel_Kum_Comp_SP_27<<< grid, threads >>>(s9,
+
+		LB_Kernel_Kum_Comp_SP_27<<< grid.grid, grid.threads >>>(s9,
 													bcMatD,
 													neighborX,
 													neighborY,
@@ -585,22 +422,10 @@ extern "C" void KernelPMCumOneCompSP27(unsigned int numberOfThreads,
 									   unsigned int* nodeIdsPorousMedia,
 									   bool EvenOrOdd)
 {
-	int Grid = (size_Mat / numberOfThreads) + 1;
-	int Grid1, Grid2;
-	if (Grid > 512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid / Grid1) + 1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2, 1);
-	dim3 threads(numberOfThreads, 1, 1);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-	LB_Kernel_PM_Cum_One_Comp_SP_27 <<< grid, threads >>>(omega,
+
+	LB_Kernel_PM_Cum_One_Comp_SP_27 <<< grid.grid, grid.threads >>>(omega,
 														  neighborX,
 														  neighborY,
 														  neighborZ,
@@ -640,22 +465,10 @@ extern "C" void KernelWaleBySoniMalavCumAA2016CompSP27(
 	//dim3 grid(Grid, 1, 1);
 	//dim3 threads(numberOfThreads, 1, 1 );
 
-	int Grid = (size_Mat / numberOfThreads) + 1;
-	int Grid1, Grid2;
-	if (Grid > 512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid / Grid1) + 1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2, 1);
-	dim3 threads(numberOfThreads, 1, 1);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-	LB_Kernel_WaleBySoniMalav_Cum_AA2016_Comp_SP_27 << < grid, threads >> >(
+
+	LB_Kernel_WaleBySoniMalav_Cum_AA2016_Comp_SP_27 << < grid.grid, grid.threads >> >(
 		s9,
 		bcMatD,
 		neighborX,
@@ -685,22 +498,9 @@ extern "C" void KernelADincomp7(   unsigned int numberOfThreads,
 								   int size_Mat,
 								   bool EvenOrOdd)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LB_Kernel_AD_Incomp_7<<< grid, threads >>>( diffusivity,
+      LB_Kernel_AD_Incomp_7<<< grid.grid, grid.threads >>>( diffusivity,
 												  bcMatD,
 												  neighborX,
 												  neighborY,
@@ -723,22 +523,9 @@ extern "C" void KernelADincomp27( unsigned int numberOfThreads,
 								  int size_Mat,
 								  bool EvenOrOdd)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LB_Kernel_AD_Incomp_27<<< grid, threads >>>( diffusivity,
+      LB_Kernel_AD_Incomp_27<<< grid.grid, grid.threads >>>( diffusivity,
 													bcMatD,
 													neighborX,
 													neighborY,
@@ -802,22 +589,9 @@ extern "C" void InitNonEqPartSP27( unsigned int numberOfThreads,
                                    real omega,
                                    bool EvenOrOdd)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LBInitNonEqPartSP27<<< grid, threads >>>( neighborX,
+      LBInitNonEqPartSP27<<< grid.grid, grid.threads >>>( neighborX,
                                                 neighborY,
                                                 neighborZ,
                                                 neighborWSB,
@@ -846,22 +620,9 @@ extern "C" void InitThS7(     unsigned int numberOfThreads,
                               real* DD7,
                               bool EvenOrOdd)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      InitAD7<<< grid, threads >>>( neighborX,
+      InitAD7<<< grid.grid, grid.threads >>>( neighborX,
                                        neighborY,
                                        neighborZ,
                                        geoD,
@@ -888,22 +649,9 @@ extern "C" void InitADDev27( unsigned int numberOfThreads,
                            real* DD27,
                            bool EvenOrOdd)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      InitAD27<<< grid, threads >>>(neighborX,
+      InitAD27<<< grid.grid, grid.threads >>>(neighborX,
                                        neighborY,
                                        neighborZ,
                                        geoD,
@@ -935,22 +683,10 @@ extern "C" void PostProcessorF3_2018Fehlberg(
 	real* forces,
 	bool EvenOrOdd)
 {
-	int Grid = (size_Mat / numberOfThreads) + 1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid / Grid1) + 1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-	  LB_PostProcessor_F3_2018_Fehlberg <<< grid, threads >>> (   omega,
+
+	  LB_PostProcessor_F3_2018_Fehlberg <<< grid.grid, grid.threads >>> (   omega,
 																  bcMatD,
 																  neighborX,
 																  neighborY,
@@ -1014,22 +750,9 @@ extern "C" void CalcMacSP27( real* vxD,
                              real* DD,
                              bool isEvenTimestep)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LBCalcMacSP27<<< grid, threads >>> (   vxD,
+      LBCalcMacSP27<<< grid.grid, grid.threads >>> (   vxD,
                                              vyD,
                                              vzD,
                                              rhoD,
@@ -1058,22 +781,9 @@ extern "C" void CalcMacCompSP27( real* vxD,
 								 real* DD,
 								 bool isEvenTimestep)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LBCalcMacCompSP27<<< grid, threads >>> (   vxD,
+      LBCalcMacCompSP27<<< grid.grid, grid.threads >>> (   vxD,
 												 vyD,
 												 vzD,
 												 rhoD,
@@ -1098,22 +808,9 @@ extern "C" void CalcMacThS7(  real* Conc,
                               real* DD7,
                               bool isEvenTimestep)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      CalcConc7<<< grid, threads >>> (Conc,
+      CalcConc7<<< grid.grid, grid.threads >>> (Conc,
                                           geoD,
                                           neighborX,
                                           neighborY,
@@ -1136,22 +833,9 @@ extern "C" void PlaneConcThS7(real* Conc,
 							  real* DD7,
 							  bool isEvenTimestep)
 {
-   int Grid = (numberOfPointskPC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfPointskPC);
 
-      GetPlaneConc7<<< grid, threads >>> (	Conc,
+      GetPlaneConc7<<< grid.grid, grid.threads >>> (	Conc,
 												kPC,
 												numberOfPointskPC,
 												geoD,
@@ -1176,22 +860,9 @@ extern "C" void PlaneConcThS27(real* Conc,
 							   real* DD27,
 							   bool isEvenTimestep)
 {
-   int Grid = (numberOfPointskPC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfPointskPC);
 
-      GetPlaneConc27<<< grid, threads >>> (	Conc,
+      GetPlaneConc27<<< grid.grid, grid.threads >>> (	Conc,
 												kPC,
 												numberOfPointskPC,
 												geoD,
@@ -1214,22 +885,9 @@ extern "C" void CalcConcentration27( unsigned int numberOfThreads,
                                      real* DD27,
                                      bool isEvenTimestep)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      CalcConc27<<< grid, threads >>> (  Conc,
+      CalcConc27<<< grid.grid, grid.threads >>> (  Conc,
                                              geoD,
                                              neighborX,
                                              neighborY,
@@ -1254,22 +912,9 @@ extern "C" void CalcMedSP27(  real* vxD,
                               real* DD,
                               bool isEvenTimestep)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LBCalcMedSP27<<< grid, threads >>> (   vxD,
+      LBCalcMedSP27<<< grid.grid, grid.threads >>> (   vxD,
                                              vyD,
                                              vzD,
                                              rhoD,
@@ -1298,22 +943,9 @@ extern "C" void CalcMedCompSP27(  real* vxD,
 								  real* DD,
 								  bool isEvenTimestep)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LBCalcMedCompSP27<<< grid, threads >>> (   vxD,
+      LBCalcMedCompSP27<<< grid.grid, grid.threads >>> (   vxD,
 												 vyD,
 												 vzD,
 												 rhoD,
@@ -1345,22 +977,9 @@ extern "C" void CalcMedCompAD27(
 	real* DD_AD,
 	bool isEvenTimestep)
 {
-	int Grid = (size_Mat / numberOfThreads) + 1;
-	int Grid1, Grid2;
-	if (Grid > 512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid / Grid1) + 1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-	LBCalcMedCompAD27 <<< grid, threads >>> (
+	LBCalcMedCompAD27 <<< grid.grid, grid.threads >>> (
 		vxD,
 		vyD,
 		vzD,
@@ -1392,22 +1011,9 @@ extern "C" void CalcMacMedSP27(  real* vxD,
                                  unsigned int numberOfThreads,
                                  bool isEvenTimestep)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LBCalcMacMedSP27<<< grid, threads >>> (   vxD,
+      LBCalcMacMedSP27<<< grid.grid, grid.threads >>> (   vxD,
                                                 vyD,
                                                 vzD,
                                                 rhoD,
@@ -1432,22 +1038,10 @@ extern "C" void ResetMedianValuesSP27(
 	unsigned int numberOfThreads,
 	bool isEvenTimestep)
 {
-	int Grid = (size_Mat / numberOfThreads) + 1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid / Grid1) + 1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-	LBResetMedianValuesSP27 << < grid, threads >> > (
+
+	LBResetMedianValuesSP27 << < grid.grid, grid.threads >> > (
 		vxD,
 		vyD,
 		vzD,
@@ -1469,22 +1063,9 @@ extern "C" void ResetMedianValuesAD27(
 	unsigned int numberOfThreads,
 	bool isEvenTimestep)
 {
-	int Grid = (size_Mat / numberOfThreads) + 1;
-	int Grid1, Grid2;
-	if (Grid > 512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid / Grid1) + 1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1);
+	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-	LBResetMedianValuesAD27 << < grid, threads >> > (
+	LBResetMedianValuesAD27 << < grid.grid, grid.threads >> > (
 		vxD,
 		vyD,
 		vzD,
@@ -1510,22 +1091,9 @@ extern "C" void Calc2ndMomentsIncompSP27(real* kxyFromfcNEQ,
 										 real* DD,
 										 bool isEvenTimestep)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LBCalc2ndMomentsIncompSP27<<< grid, threads >>> (  kxyFromfcNEQ,
+      LBCalc2ndMomentsIncompSP27<<< grid.grid, grid.threads >>> (  kxyFromfcNEQ,
 														 kyzFromfcNEQ,
 														 kxzFromfcNEQ,
 														 kxxMyyFromfcNEQ,
@@ -1554,22 +1122,9 @@ extern "C" void Calc2ndMomentsCompSP27( real* kxyFromfcNEQ,
 										real* DD,
 										bool isEvenTimestep)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LBCalc2ndMomentsCompSP27<<< grid, threads >>> (kxyFromfcNEQ,
+      LBCalc2ndMomentsCompSP27<<< grid.grid, grid.threads >>> (kxyFromfcNEQ,
 													 kyzFromfcNEQ,
 													 kxzFromfcNEQ,
 													 kxxMyyFromfcNEQ,
@@ -1600,22 +1155,9 @@ extern "C" void Calc3rdMomentsIncompSP27(real* CUMbbb,
 										 real* DD,
 										 bool isEvenTimestep)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LBCalc3rdMomentsIncompSP27<<< grid, threads >>> (  CUMbbb,
+      LBCalc3rdMomentsIncompSP27<<< grid.grid, grid.threads >>> (  CUMbbb,
 														 CUMabc,
 														 CUMbac,
 														 CUMbca,
@@ -1648,22 +1190,9 @@ extern "C" void Calc3rdMomentsCompSP27( real* CUMbbb,
 										real* DD,
 										bool isEvenTimestep)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LBCalc3rdMomentsCompSP27<<< grid, threads >>> (CUMbbb,
+      LBCalc3rdMomentsCompSP27<<< grid.grid, grid.threads >>> (CUMbbb,
 													 CUMabc,
 													 CUMbac,
 													 CUMbca,
@@ -1699,22 +1228,9 @@ extern "C" void CalcHigherMomentsIncompSP27(real* CUMcbb,
 											real* DD,
 											bool isEvenTimestep)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LBCalcHigherMomentsIncompSP27<<< grid, threads >>> (CUMcbb,
+      LBCalcHigherMomentsIncompSP27<<< grid.grid, grid.threads >>> (CUMcbb,
 														  CUMbcb,
 														  CUMbbc,
 														  CUMcca,
@@ -1753,22 +1269,9 @@ extern "C" void CalcHigherMomentsCompSP27(  real* CUMcbb,
 											real* DD,
 											bool isEvenTimestep)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LBCalcHigherMomentsCompSP27<<< grid, threads >>> (  CUMcbb,
+      LBCalcHigherMomentsCompSP27<<< grid.grid, grid.threads >>> (  CUMcbb,
 														  CUMbcb,
 														  CUMbbc,
 														  CUMcca,
@@ -1805,22 +1308,9 @@ extern "C" void LBCalcMeasurePoints27(real* vxMP,
                                       unsigned int numberOfThreads,
                                       bool isEvenTimestep)
 {
-   int Grid = (numberOfPointskMP / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfPointskMP);
 
-      LBCalcMeasurePoints<<< grid, threads >>> (vxMP,
+      LBCalcMeasurePoints<<< grid.grid, grid.threads >>> (vxMP,
                                                 vyMP,
                                                 vzMP,
                                                 rhoMP,
@@ -1923,22 +1413,10 @@ extern "C" void QADPressDev7( unsigned int numberOfThreads,
                               unsigned int size_Mat,
                               bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QADPress7<<< gridQ, threads >>>( nx,
+
+      QADPress7<<< grid.grid, grid.threads >>>( nx,
                                        ny,
                                        DD,
                                        DD7,
@@ -1977,22 +1455,10 @@ extern "C" void QADPressDev27(unsigned int numberOfThreads,
                               unsigned int size_Mat,
                               bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QADPress27<<< gridQ, threads >>>(   nx,
+
+      QADPress27<<< grid.grid, grid.threads >>>(   nx,
                                           ny,
                                           DD,
                                           DD27,
@@ -2027,22 +1493,10 @@ extern "C" void QADPressNEQNeighborDev27(
 										)
 {
 
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-   QADPressNEQNeighbor27<<< gridQ, threads >>>(
+
+   QADPressNEQNeighbor27<<< grid.grid, grid.threads >>>(
 												DD,
 												DD27,
 												k_Q,
@@ -2076,22 +1530,10 @@ extern "C" void QADVelDev7(unsigned int numberOfThreads,
                            unsigned int size_Mat,
                            bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QADVel7<<< gridQ, threads >>> (  nx,
+
+      QADVel7<<< grid.grid, grid.threads >>> (  nx,
                                        ny,
                                        DD,
                                        DD7,
@@ -2130,22 +1572,10 @@ extern "C" void QADVelDev27(  unsigned int numberOfThreads,
                               unsigned int size_Mat,
                               bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QADVel27<<< gridQ, threads >>> (nx,
+
+      QADVel27<<< grid.grid, grid.threads >>> (nx,
                                       ny,
                                       DD,
                                       DD27,
@@ -2183,22 +1613,10 @@ extern "C" void QADDev7(unsigned int numberOfThreads,
                         unsigned int size_Mat,
                         bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QAD7<<< gridQ, threads >>> (     nx,
+
+      QAD7<<< grid.grid, grid.threads >>> (     nx,
                                        ny,
                                        DD,
                                        DD7,
@@ -2269,11 +1687,9 @@ extern "C" void ADSlipVelDevComp(
 	uint size_Mat,
 	bool isEvenTimestep)
 {
-	int Grid = (numberOfQs / numberOfThreads) + 1;
-	dim3 gridQ(Grid, 1, 1);
-	dim3 threads(numberOfThreads, 1, 1);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfQs);
 
-	AD_SlipVelDeviceComp << < gridQ, threads >> > (
+	AD_SlipVelDeviceComp << < grid.grid, grid.threads >> > (
 		normalX,
 		normalY,
 		normalZ,
@@ -2310,22 +1726,9 @@ extern "C" void QADDirichletDev27( unsigned int numberOfThreads,
 								   unsigned int size_Mat,
 								   bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QADDirichlet27<<< gridQ, threads >>> (   nx,
+   QADDirichlet27<<< grid.grid, grid.threads >>> (   nx,
 											   ny,
 											   DD,
 											   DD27,
@@ -2362,22 +1765,9 @@ extern "C" void QADBBDev27(unsigned int numberOfThreads,
                            unsigned int size_Mat,
                            bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QADBB27<<< gridQ, threads >>> (  nx,
+   QADBB27<<< grid.grid, grid.threads >>> (  nx,
                                        ny,
                                        DD,
                                        DD27,
@@ -2414,22 +1804,9 @@ extern "C" void QNoSlipADincompDev7(unsigned int numberOfThreads,
 									unsigned int size_Mat,
 									bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QNoSlipADincomp7<<< gridQ, threads >>> ( nx,
+   QNoSlipADincomp7<<< grid.grid, grid.threads >>> ( nx,
 											   ny,
 											   DD,
 											   DD7,
@@ -2466,22 +1843,9 @@ extern "C" void QNoSlipADincompDev27(  unsigned int numberOfThreads,
 									   unsigned int size_Mat,
 									   bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QNoSlipADincomp27<<< gridQ, threads >>> (nx,
+   QNoSlipADincomp27<<< grid.grid, grid.threads >>> (nx,
 											   ny,
 											   DD,
 											   DD27,
@@ -2519,22 +1883,9 @@ extern "C" void QADVeloIncompDev7( unsigned int numberOfThreads,
 								   unsigned int size_Mat,
 								   bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QADVeloIncomp7<<< gridQ, threads >>> (   nx,
+   QADVeloIncomp7<<< grid.grid, grid.threads >>> (   nx,
 											   ny,
 											   DD,
 											   DD7,
@@ -2573,22 +1924,9 @@ extern "C" void QADVeloIncompDev27(   unsigned int numberOfThreads,
 									  unsigned int size_Mat,
 									  bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QADVeloIncomp27<<< gridQ, threads >>> ( nx,
+   QADVeloIncomp27<<< grid.grid, grid.threads >>> ( nx,
 											  ny,
 											  DD,
 											  DD27,
@@ -2627,22 +1965,9 @@ extern "C" void QADPressIncompDev7(   unsigned int numberOfThreads,
 									  unsigned int size_Mat,
 									  bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QADPressIncomp7<<< gridQ, threads >>>(   nx,
+   QADPressIncomp7<<< grid.grid, grid.threads >>>(   nx,
 											   ny,
 											   DD,
 											   DD7,
@@ -2681,22 +2006,9 @@ extern "C" void QADPressIncompDev27(  unsigned int numberOfThreads,
 									  unsigned int size_Mat,
 									  bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QADPressIncomp27<<< gridQ, threads >>>( nx,
+   QADPressIncomp27<<< grid.grid, grid.threads >>>( nx,
 											  ny,
 											  DD,
 											  DD27,
@@ -2731,22 +2043,9 @@ extern "C" void QDev27( unsigned int numberOfThreads,
                         unsigned int size_Mat,
                         bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QDevice27<<< gridQ, threads >>> (nx,
+   QDevice27<<< grid.grid, grid.threads >>> (nx,
                                        ny,
                                        DD,
                                        k_Q,
@@ -2777,22 +2076,9 @@ extern "C" void QDevComp27( unsigned int numberOfThreads,
 							unsigned int size_Mat,
 							bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QDeviceComp27<<< gridQ, threads >>> (nx,
+   QDeviceComp27<<< grid.grid, grid.threads >>> (nx,
 										   ny,
 										   DD,
 										   k_Q,
@@ -2823,22 +2109,9 @@ extern "C" void QDevCompThinWalls27(unsigned int numberOfThreads,
 									unsigned int size_Mat,
 									bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-   QDeviceCompThinWallsPartOne27 <<< gridQ, threads >>> (DD,
+   QDeviceCompThinWallsPartOne27 <<< grid.grid, grid.threads >>> (DD,
 														 k_Q,
 														 QQ,
 														 sizeQ,
@@ -2851,7 +2124,7 @@ extern "C" void QDevCompThinWalls27(unsigned int numberOfThreads,
 														 isEvenTimestep);
    getLastCudaError("QDeviceCompThinWallsPartOne27 execution failed");
 
-   QThinWallsPartTwo27 <<< gridQ, threads >>> ( DD,
+   QThinWallsPartTwo27 <<< grid.grid, grid.threads >>> ( DD,
 												k_Q,
 												QQ,
 												sizeQ,
@@ -2882,22 +2155,9 @@ extern "C" void QDev3rdMomentsComp27(   unsigned int numberOfThreads,
 										unsigned int size_Mat,
 										bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QDevice3rdMomentsComp27<<< gridQ, threads >>> (  nx,
+   QDevice3rdMomentsComp27<<< grid.grid, grid.threads >>> (  nx,
 													   ny,
 													   DD,
 													   k_Q,
@@ -2928,22 +2188,9 @@ extern "C" void QDevIncompHighNu27( unsigned int numberOfThreads,
 									unsigned int size_Mat,
 									bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QDeviceIncompHighNu27<<< gridQ, threads >>> (nx,
+   QDeviceIncompHighNu27<<< grid.grid, grid.threads >>> (nx,
 												   ny,
 												   DD,
 												   k_Q,
@@ -2974,22 +2221,9 @@ extern "C" void QDevCompHighNu27(   unsigned int numberOfThreads,
 									unsigned int size_Mat,
 									bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QDeviceCompHighNu27<<< gridQ, threads >>> (  nx,
+   QDeviceCompHighNu27<<< grid.grid, grid.threads >>> (  nx,
 												   ny,
 												   DD,
 												   k_Q,
@@ -3021,22 +2255,9 @@ extern "C" void QVelDevicePlainBB27(unsigned int numberOfThreads,
 									unsigned int size_Mat,
 									bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QVelDevPlainBB27<<< gridQ, threads >>> (  vx,
+   QVelDevPlainBB27<<< grid.grid, grid.threads >>> (  vx,
 												vy,
 												vz,
 												DD,
@@ -3069,22 +2290,9 @@ extern "C" void QVelDeviceCouhette27(unsigned int numberOfThreads,
 									unsigned int size_Mat,
 									bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QVelDevCouhette27<<< gridQ, threads >>> ( vx,
+   QVelDevCouhette27<<< grid.grid, grid.threads >>> ( vx,
 												vy,
 												vz,
 												DD,
@@ -3124,22 +2332,9 @@ extern "C" void QVelDevice1h27(   unsigned int numberOfThreads,
 								  unsigned int size_Mat,
 								  bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QVelDev1h27<<< gridQ, threads >>> (nx,
+   QVelDev1h27<<< grid.grid, grid.threads >>> (nx,
                                           ny,
                                           vx,
                                           vy,
@@ -3181,22 +2376,9 @@ extern "C" void QVelDev27(unsigned int numberOfThreads,
                           unsigned int size_Mat,
                           bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QVelDevice27<<< gridQ, threads >>> (nx,
+   QVelDevice27<<< grid.grid, grid.threads >>> (nx,
                                           ny,
                                           vx,
                                           vy,
@@ -3233,22 +2415,9 @@ extern "C" void QVelDevCompPlusSlip27(unsigned int numberOfThreads,
 									  unsigned int size_Mat,
 									  bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QVelDeviceCompPlusSlip27<<< gridQ, threads >>> (nx,
+   QVelDeviceCompPlusSlip27<<< grid.grid, grid.threads >>> (nx,
 													  ny,
 													  vx,
 													  vy,
@@ -3285,22 +2454,9 @@ extern "C" void QVelDevComp27(unsigned int numberOfThreads,
 							  unsigned int size_Mat,
 							  bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QVelDeviceComp27<<< gridQ, threads >>> (nx,
+   QVelDeviceComp27<<< grid.grid, grid.threads >>> (nx,
 											  ny,
 											  vx,
 											  vy,
@@ -3337,22 +2493,9 @@ extern "C" void QVelDevCompThinWalls27(unsigned int numberOfThreads,
 							           unsigned int size_Mat,
 							           bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QVelDeviceCompThinWallsPartOne27<<< gridQ, threads >>> (vx,
+   QVelDeviceCompThinWallsPartOne27<<< grid.grid, grid.threads >>> (vx,
 											                  vy,
 											                  vz,
 											                  DD,
@@ -3366,9 +2509,9 @@ extern "C" void QVelDevCompThinWalls27(unsigned int numberOfThreads,
 											                  neighborZ,
 											                  size_Mat,
 											                  isEvenTimestep);
-      getLastCudaError("QVelDeviceCompThinWallsPartOne27 execution failed");
+   getLastCudaError("QVelDeviceCompThinWallsPartOne27 execution failed");
 
-	  QThinWallsPartTwo27 <<< gridQ, threads >>> (DD,
+	QThinWallsPartTwo27 <<< grid.grid, grid.threads >>> (DD,
 											      k_Q,
 											      QQ,
 											      sizeQ,
@@ -3380,7 +2523,7 @@ extern "C" void QVelDevCompThinWalls27(unsigned int numberOfThreads,
                                                   neighborWSB,
 											      size_Mat,
 											      isEvenTimestep);
-      getLastCudaError("QThinWallsPartTwo27 execution failed");
+   getLastCudaError("QThinWallsPartTwo27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QVelDevCompZeroPress27(   unsigned int numberOfThreads,
@@ -3401,24 +2544,9 @@ extern "C" void QVelDevCompZeroPress27(   unsigned int numberOfThreads,
 										  unsigned int size_Mat,
 										  bool isEvenTimestep)
 {
-   //int Grid = kArray / numberOfThreads;
-   int Grid = (sizeQ / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   //dim3 gridQ(Grid, 1, 1);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, sizeQ);
 
-      QVelDeviceCompZeroPress27<<< gridQ, threads >>> (   nx,
+   QVelDeviceCompZeroPress27<<< grid.grid, grid.threads >>> (   nx,
 														  ny,
 														  vx,
 														  vy,
@@ -3434,7 +2562,7 @@ extern "C" void QVelDevCompZeroPress27(   unsigned int numberOfThreads,
 														  neighborZ,
 														  size_Mat,
 														  isEvenTimestep);
-      getLastCudaError("QVelDeviceCompZeroPress27 execution failed");
+   getLastCudaError("QVelDeviceCompZeroPress27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QVelDevIncompHighNu27(unsigned int numberOfThreads,
@@ -3455,22 +2583,9 @@ extern "C" void QVelDevIncompHighNu27(unsigned int numberOfThreads,
 									  unsigned int size_Mat,
 									  bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QVelDeviceIncompHighNu27<<< gridQ, threads >>> (nx,
+   QVelDeviceIncompHighNu27<<< grid.grid, grid.threads >>> (nx,
 													  ny,
 													  vx,
 													  vy,
@@ -3507,22 +2622,9 @@ extern "C" void QVelDevCompHighNu27(  unsigned int numberOfThreads,
 									  unsigned int size_Mat,
 									  bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QVelDeviceCompHighNu27<<< gridQ, threads >>> (  nx,
+   QVelDeviceCompHighNu27<<< grid.grid, grid.threads >>> (  nx,
 													  ny,
 													  vx,
 													  vy,
@@ -3555,22 +2657,9 @@ extern "C" void QVeloDevEQ27(unsigned int numberOfThreads,
 							 unsigned int size_Mat,
 							 bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QVeloDeviceEQ27<<< gridQ, threads >>> (VeloX,
+   QVeloDeviceEQ27<<< grid.grid, grid.threads >>> (VeloX,
 											 VeloY,
 											 VeloZ,
 											 DD,
@@ -3600,22 +2689,9 @@ extern "C" void QVeloStreetDevEQ27(
 	uint  size_Mat,
 	bool  isEvenTimestep)
 {
-	int Grid = (numberOfStreetNodes / numberOfThreads) + 1;
-	int Grid1, Grid2;
-	if (Grid > 512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid / Grid1) + 1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 gridQ(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfStreetNodes);
 
-	QVeloStreetDeviceEQ27 << < gridQ, threads >> > (
+	QVeloStreetDeviceEQ27 << < grid.grid, grid.threads >> > (
 		veloXfraction,
 		veloYfraction,
 		naschVelo,
@@ -3643,22 +2719,9 @@ extern "C" void QSlipDev27(unsigned int numberOfThreads,
                            unsigned int size_Mat,
                            bool isEvenTimestep)
 {
-   int Grid = (sizeQ / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, sizeQ);
 
-      QSlipDevice27<<< gridQ, threads >>> (DD,
+   QSlipDevice27<<< grid.grid, grid.threads >>> (DD,
                                            k_Q,
                                            QQ,
                                            sizeQ,
@@ -3668,7 +2731,7 @@ extern "C" void QSlipDev27(unsigned int numberOfThreads,
                                            neighborZ,
                                            size_Mat,
                                            isEvenTimestep);
-      getLastCudaError("QSlipDevice27 execution failed");
+   getLastCudaError("QSlipDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QSlipDevComp27(unsigned int numberOfThreads,
@@ -3685,24 +2748,11 @@ extern "C" void QSlipDevComp27(unsigned int numberOfThreads,
 							   unsigned int size_Mat,
 							   bool isEvenTimestep)
 {
-   int Grid = (sizeQ / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, sizeQ);
 
    if(useTurbViscosity)
    {
-      QSlipDeviceComp27TurbViscosity<<< gridQ, threads >>> (DD,
+      QSlipDeviceComp27TurbViscosity<<< grid.grid, grid.threads >>> (DD,
 											   k_Q,
 											   QQ,
 											   sizeQ,
@@ -3717,7 +2767,7 @@ extern "C" void QSlipDevComp27(unsigned int numberOfThreads,
    }
    else
    {
-      QSlipDeviceComp27<<< gridQ, threads >>> (DD,
+      QSlipDeviceComp27<<< grid.grid, grid.threads >>> (DD,
 											   k_Q,
 											   QQ,
 											   sizeQ,
@@ -3746,22 +2796,9 @@ extern "C" void QSlipGeomDevComp27(unsigned int numberOfThreads,
 								   unsigned int size_Mat,
 								   bool isEvenTimestep)
 {
-   int Grid = (sizeQ / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, sizeQ);
 
-      QSlipGeomDeviceComp27<<< gridQ, threads >>> (DD,
+   QSlipGeomDeviceComp27<<< grid.grid, grid.threads >>> (DD,
 												   k_Q,
 												   QQ,
 												   sizeQ,
@@ -3774,7 +2811,7 @@ extern "C" void QSlipGeomDevComp27(unsigned int numberOfThreads,
 												   neighborZ,
 												   size_Mat,
 												   isEvenTimestep);
-      getLastCudaError("QSlipGeomDeviceComp27 execution failed");
+   getLastCudaError("QSlipGeomDeviceComp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QSlipNormDevComp27(unsigned int numberOfThreads,
@@ -3792,22 +2829,9 @@ extern "C" void QSlipNormDevComp27(unsigned int numberOfThreads,
 								   unsigned int size_Mat,
 								   bool isEvenTimestep)
 {
-   int Grid = (sizeQ / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, sizeQ);
 
-      QSlipNormDeviceComp27<<< gridQ, threads >>> (DD,
+   QSlipNormDeviceComp27<<< grid.grid, grid.threads >>> (DD,
 												   k_Q,
 												   QQ,
 												   sizeQ,
@@ -3856,22 +2880,9 @@ extern "C" void QStressDevComp27(unsigned int numberOfThreads,
 							   unsigned int size_Mat,
 							   bool isEvenTimestep)
 {
-   int Grid = (sizeQ / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, sizeQ);
 
-      QStressDeviceComp27<<< gridQ, threads >>> (DD,
+   QStressDeviceComp27<<< grid.grid, grid.threads >>> (DD,
 											   k_Q,
                                     k_N,
 											   QQ,
@@ -3902,7 +2913,7 @@ extern "C" void QStressDevComp27(unsigned int numberOfThreads,
 											   neighborZ,
 											   size_Mat,
 											   isEvenTimestep);
-      getLastCudaError("QSlipDeviceComp27 execution failed");
+   getLastCudaError("QSlipDeviceComp27 execution failed");
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -3937,22 +2948,9 @@ extern "C" void BBStressDev27(unsigned int numberOfThreads,
 							   unsigned int size_Mat,
 							   bool isEvenTimestep)
 {
-   int Grid = (sizeQ / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, sizeQ);
 
-   BBStressDevice27<<< gridQ, threads >>> (DD,
+   BBStressDevice27<<< grid.grid, grid.threads >>> (DD,
 											   k_Q,
                                     k_N,
 											   QQ,
@@ -3981,7 +2979,7 @@ extern "C" void BBStressDev27(unsigned int numberOfThreads,
 											   neighborZ,
 											   size_Mat,
 											   isEvenTimestep);
-      getLastCudaError("BBStressDevice27 execution failed");
+   getLastCudaError("BBStressDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QPressDev27(unsigned int numberOfThreads,
@@ -4000,22 +2998,9 @@ extern "C" void QPressDev27(unsigned int numberOfThreads,
                              unsigned int size_Mat,
                              bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QPressDevice27<<< gridQ, threads >>> (nx,
+   QPressDevice27<<< grid.grid, grid.threads >>> (nx,
                                              ny,
                                              rhoBC,
                                              DD,
@@ -4029,7 +3014,7 @@ extern "C" void QPressDev27(unsigned int numberOfThreads,
                                              neighborZ,
                                              size_Mat,
                                              isEvenTimestep);
-      getLastCudaError("QPressDevice27 execution failed");
+   getLastCudaError("QPressDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QPressDevAntiBB27(  unsigned int numberOfThreads,
@@ -4048,22 +3033,9 @@ extern "C" void QPressDevAntiBB27(  unsigned int numberOfThreads,
 									unsigned int size_Mat,
 									bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-    QPressDeviceAntiBB27<<< gridQ, threads >>>( rhoBC,
+   QPressDeviceAntiBB27<<< grid.grid, grid.threads >>>( rhoBC,
 												vx,
 												vy,
 												vz,
@@ -4077,7 +3049,7 @@ extern "C" void QPressDevAntiBB27(  unsigned int numberOfThreads,
 												neighborZ,
 												size_Mat,
 												isEvenTimestep);
-    getLastCudaError("QPressDeviceAntiBB27 execution failed");
+   getLastCudaError("QPressDeviceAntiBB27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QPressDevFixBackflow27( unsigned int numberOfThreads,
@@ -4092,22 +3064,9 @@ extern "C" void QPressDevFixBackflow27( unsigned int numberOfThreads,
                                         unsigned int size_Mat,
                                         bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QPressDeviceFixBackflow27<<< gridQ, threads >>> (  rhoBC,
+   QPressDeviceFixBackflow27<<< grid.grid, grid.threads >>> (  rhoBC,
                                                          DD,
                                                          k_Q,
                                                          numberOfBCnodes,
@@ -4117,7 +3076,7 @@ extern "C" void QPressDevFixBackflow27( unsigned int numberOfThreads,
                                                          neighborZ,
                                                          size_Mat,
                                                          isEvenTimestep);
-      getLastCudaError("QPressDeviceFixBackflow27 execution failed");
+   getLastCudaError("QPressDeviceFixBackflow27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QPressDevDirDepBot27(  unsigned int numberOfThreads,
@@ -4132,22 +3091,9 @@ extern "C" void QPressDevDirDepBot27(  unsigned int numberOfThreads,
                                        unsigned int size_Mat,
                                        bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QPressDeviceDirDepBot27<<< gridQ, threads >>> ( rhoBC,
+   QPressDeviceDirDepBot27<<< grid.grid, grid.threads >>> ( rhoBC,
                                                       DD,
                                                       k_Q,
                                                       numberOfBCnodes,
@@ -4157,7 +3103,7 @@ extern "C" void QPressDevDirDepBot27(  unsigned int numberOfThreads,
                                                       neighborZ,
                                                       size_Mat,
                                                       isEvenTimestep);
-      getLastCudaError("QPressDeviceDirDepBot27 execution failed");
+   getLastCudaError("QPressDeviceDirDepBot27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QPressNoRhoDev27(unsigned int numberOfThreads,
@@ -4173,22 +3119,9 @@ extern "C" void QPressNoRhoDev27(unsigned int numberOfThreads,
                                  unsigned int size_Mat,
                                  bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QPressNoRhoDevice27<<< gridQ, threads >>> (   rhoBC,
+   QPressNoRhoDevice27<<< grid.grid, grid.threads >>> (   rhoBC,
 													DD,
 													k_Q,
 													k_N,
@@ -4199,7 +3132,7 @@ extern "C" void QPressNoRhoDev27(unsigned int numberOfThreads,
 													neighborZ,
 													size_Mat,
 													isEvenTimestep);
-      getLastCudaError("QPressNoRhoDevice27 execution failed");
+   getLastCudaError("QPressNoRhoDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QInflowScaleByPressDev27(unsigned int numberOfThreads,
@@ -4215,22 +3148,9 @@ extern "C" void QInflowScaleByPressDev27(unsigned int numberOfThreads,
 										 unsigned int size_Mat,
 										 bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-   QInflowScaleByPressDevice27<<< gridQ, threads >>> (  rhoBC,
+   QInflowScaleByPressDevice27<<< grid.grid, grid.threads >>> (  rhoBC,
 														DD,
 														k_Q,
 														k_N,
@@ -4257,22 +3177,9 @@ extern "C" void QPressDevOld27(  unsigned int numberOfThreads,
                                      unsigned int size_Mat,
                                      bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QPressDeviceOld27<<< gridQ, threads >>> ( rhoBC,
+   QPressDeviceOld27<<< grid.grid, grid.threads >>> ( rhoBC,
                                                 DD,
                                                 k_Q,
                                                 k_N,
@@ -4283,7 +3190,7 @@ extern "C" void QPressDevOld27(  unsigned int numberOfThreads,
                                                 neighborZ,
                                                 size_Mat,
                                                 isEvenTimestep);
-      getLastCudaError("QPressDeviceOld27 execution failed");
+   getLastCudaError("QPressDeviceOld27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QPressDevIncompNEQ27(unsigned int numberOfThreads,
@@ -4299,22 +3206,9 @@ extern "C" void QPressDevIncompNEQ27(unsigned int numberOfThreads,
                                      unsigned int size_Mat,
                                      bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QPressDeviceIncompNEQ27<<< gridQ, threads >>> (   rhoBC,
+   QPressDeviceIncompNEQ27<<< grid.grid, grid.threads >>> (   rhoBC,
 														DD,
 														k_Q,
 														k_N,
@@ -4325,7 +3219,7 @@ extern "C" void QPressDevIncompNEQ27(unsigned int numberOfThreads,
 														neighborZ,
 														size_Mat,
 														isEvenTimestep);
-      getLastCudaError("QPressDeviceIncompNEQ27 execution failed");
+   getLastCudaError("QPressDeviceIncompNEQ27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QPressDevNEQ27(  unsigned int numberOfThreads,
@@ -4341,22 +3235,9 @@ extern "C" void QPressDevNEQ27(  unsigned int numberOfThreads,
                                      unsigned int size_Mat,
                                      bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QPressDeviceNEQ27<<< gridQ, threads >>> ( rhoBC,
+   QPressDeviceNEQ27<<< grid.grid, grid.threads >>> ( rhoBC,
                                                 DD,
                                                 k_Q,
                                                 k_N,
@@ -4367,7 +3248,7 @@ extern "C" void QPressDevNEQ27(  unsigned int numberOfThreads,
                                                 neighborZ,
                                                 size_Mat,
                                                 isEvenTimestep);
-      getLastCudaError("QPressDeviceOld27 execution failed");
+   getLastCudaError("QPressDeviceOld27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QPressDevEQZ27(  unsigned int numberOfThreads,
@@ -4384,22 +3265,9 @@ extern "C" void QPressDevEQZ27(  unsigned int numberOfThreads,
                                      unsigned int size_Mat,
                                      bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QPressDeviceEQZ27<<< gridQ, threads >>> ( rhoBC,
+   QPressDeviceEQZ27<<< grid.grid, grid.threads >>> ( rhoBC,
                                                 DD,
                                                 k_Q,
                                                 k_N,
@@ -4411,7 +3279,7 @@ extern "C" void QPressDevEQZ27(  unsigned int numberOfThreads,
                                                 neighborZ,
                                                 size_Mat,
                                                 isEvenTimestep);
-      getLastCudaError("QPressDeviceEQZ27 execution failed");
+   getLastCudaError("QPressDeviceEQZ27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QPressDevZero27(unsigned int numberOfThreads,
@@ -4424,22 +3292,9 @@ extern "C" void QPressDevZero27(unsigned int numberOfThreads,
                                 unsigned int size_Mat,
                                 bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QPressDeviceZero27<<< gridQ, threads >>> (DD,
+   QPressDeviceZero27<<< grid.grid, grid.threads >>> (DD,
                                                 k_Q,
                                                 numberOfBCnodes,
                                                 neighborX,
@@ -4447,7 +3302,7 @@ extern "C" void QPressDevZero27(unsigned int numberOfThreads,
                                                 neighborZ,
                                                 size_Mat,
                                                 isEvenTimestep);
-      getLastCudaError("QPressDeviceOld27 execution failed");
+   getLastCudaError("QPressDeviceOld27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QPressDevFake27(     unsigned int numberOfThreads,
@@ -4463,22 +3318,10 @@ extern "C" void QPressDevFake27(     unsigned int numberOfThreads,
                                      unsigned int size_Mat,
                                      bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QPressDeviceFake27<<< gridQ, threads >>> (rhoBC,
+
+      QPressDeviceFake27<<< grid.grid, grid.threads >>> (rhoBC,
                                                 DD,
                                                 k_Q,
                                                 k_N,
@@ -4507,22 +3350,10 @@ extern "C" void BBDev27( unsigned int numberOfThreads,
                        unsigned int size_Mat,
                        bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      BBDevice27<<< gridQ, threads >>> (  nx,
+
+      BBDevice27<<< grid.grid, grid.threads >>> (  nx,
                                           ny,
                                           DD,
                                           k_Q,
@@ -4552,22 +3383,9 @@ extern "C" void QPressDev27_IntBB(  unsigned int numberOfThreads,
 									unsigned int size_Mat,
 									bool isEvenTimestep)
 {
-	int Grid = (numberOfBCnodes / numberOfThreads)+1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid/Grid1)+1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 gridQ(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-		QPressDevice27_IntBB<<< gridQ, threads >>> (rho,
+	QPressDevice27_IntBB<<< grid.grid, grid.threads >>> (rho,
 													DD,
 													k_Q,
 													QQ,
@@ -4579,7 +3397,7 @@ extern "C" void QPressDev27_IntBB(  unsigned int numberOfThreads,
 													neighborZ,
 													size_Mat,
 													isEvenTimestep);
-		getLastCudaError("QPressDevice27_IntBB execution failed");
+	getLastCudaError("QPressDevice27_IntBB execution failed");
 }
 // TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
 //////////////////////////////////////////////////////////////////////////
@@ -4600,22 +3418,9 @@ extern "C" void PressSchlaffer27(unsigned int numberOfThreads,
                                  unsigned int size_Mat,
                                  bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      PressSchlaff27<<< gridQ, threads >>>(  rhoBC,
+   PressSchlaff27<<< grid.grid, grid.threads >>>(  rhoBC,
                                              DD,
                                              vx0,
                                              vy0,
@@ -4630,7 +3435,7 @@ extern "C" void PressSchlaffer27(unsigned int numberOfThreads,
                                              neighborZ,
                                              size_Mat,
                                              isEvenTimestep);
-      getLastCudaError("PressSchlaff27 execution failed");
+   getLastCudaError("PressSchlaff27 execution failed");
 }
 // TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
 //////////////////////////////////////////////////////////////////////////
@@ -4649,22 +3454,9 @@ extern "C" void VelSchlaffer27(  unsigned int numberOfThreads,
                                  unsigned int size_Mat,
                                  bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      VelSchlaff27<<< gridQ, threads >>>( t,
+   VelSchlaff27<<< grid.grid, grid.threads >>>( t,
                                           DD,
                                           vz0,
                                           deltaVz0,
@@ -4682,7 +3474,7 @@ extern "C" void VelSchlaffer27(  unsigned int numberOfThreads,
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QPrecursorDevCompZeroPress(  uint numberOfThreads, real tRatio,
                                              real* DD, real* QQ, int* k_Q, 
-                                             uint sizeQ, uint numberOfBCNodes,
+                                             uint sizeQ, uint numberOfBCnodes,
                                              real omega, real velocityRatio,
                                              uint* neighborX, uint* neighborY, uint* neighborZ,
                                              uint* neighborsNT, uint* neighborsNB, uint* neighborsST, uint* neighborsSB,
@@ -4693,9 +3485,9 @@ extern "C" void QPrecursorDevCompZeroPress(  uint numberOfThreads, real tRatio,
                                              unsigned long long size_Mat, bool evenOrOdd)
 {
 
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCNodes);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-   QPrecursorDeviceCompZeroPress<<<grid.grid, grid.threads>>>(k_Q, numberOfBCNodes, sizeQ, omega, DD, QQ,
+   QPrecursorDeviceCompZeroPress<<< grid.grid, grid.threads >>>(k_Q, numberOfBCnodes, sizeQ, omega, DD, QQ,
                                                                neighborX, neighborY, neighborZ,
                                                                neighborsNT, neighborsNB, neighborsST, neighborsSB,
                                                                weightsNT, weightsNB, weightsST, weightsSB,
@@ -4723,22 +3515,9 @@ extern "C" void PropVelo(   unsigned int numberOfThreads,
                             real* DD,
                             bool EvenOrOdd)
 {
-   int Grid = (size_Prop / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Prop);
 
-      PropellerBC<<< grid, threads >>>(neighborX,
+      PropellerBC<<< grid.grid, grid.threads >>>(neighborX,
                                        neighborY,
                                        neighborZ,
                                        rho,
@@ -4777,22 +3556,9 @@ extern "C" void ScaleCF27( real* DC,
                         unsigned int nyF,
                         unsigned int numberOfThreads)
 {
-   int Grid = (kCF / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_CF(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
-
-      scaleCF27<<< gridINT_CF, threads >>> ( DC,
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
+   
+      scaleCF27<<< grid.grid, grid.threads >>> ( DC,
                                              DF,
                                              neighborCX,
                                              neighborCY,
@@ -4840,22 +3606,9 @@ extern "C" void ScaleCFEff27(real* DC,
                              unsigned int numberOfThreads,
                              OffCF offCF)
 {
-   int Grid = (kCF / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_CF(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
-      scaleCFEff27<<< gridINT_CF, threads >>> ( DC,
+      scaleCFEff27<<< grid.grid, grid.threads >>> ( DC,
                                                 DF,
                                                 neighborCX,
                                                 neighborCY,
@@ -4904,22 +3657,9 @@ extern "C" void ScaleCFLast27(real* DC,
                               unsigned int numberOfThreads,
                               OffCF offCF)
 {
-   int Grid = (kCF / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_CF(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
-      scaleCFLast27<<< gridINT_CF, threads >>> (DC,
+      scaleCFLast27<<< grid.grid, grid.threads >>> (DC,
                                                 DF,
                                                 neighborCX,
                                                 neighborCY,
@@ -4968,22 +3708,9 @@ extern "C" void ScaleCFpress27(  real* DC,
                                  unsigned int numberOfThreads,
                                  OffCF offCF)
 {
-   int Grid = (kCF / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_CF(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
-      scaleCFpress27<<< gridINT_CF, threads >>>(DC,
+      scaleCFpress27<<< grid.grid, grid.threads >>>(DC,
                                                 DF,
                                                 neighborCX,
                                                 neighborCY,
@@ -5032,22 +3759,9 @@ extern "C" void ScaleCF_Fix_27(  real* DC,
                                  unsigned int numberOfThreads,
                                  OffCF offCF)
 {
-   int Grid = (kCF / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_CF(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
-      scaleCF_Fix_27<<< gridINT_CF, threads >>>(DC,
+      scaleCF_Fix_27<<< grid.grid, grid.threads >>>(DC,
                                                 DF,
                                                 neighborCX,
                                                 neighborCY,
@@ -5096,22 +3810,9 @@ extern "C" void ScaleCF_Fix_comp_27( real* DC,
 									 unsigned int numberOfThreads,
 									 OffCF offCF)
 {
-   int Grid = (kCF / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_CF(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
-      scaleCF_Fix_comp_27<<< gridINT_CF, threads >>>(   DC,
+      scaleCF_Fix_comp_27<<< grid.grid, grid.threads >>>(   DC,
 														DF,
 														neighborCX,
 														neighborCY,
@@ -5161,22 +3862,9 @@ extern "C" void ScaleCF_0817_comp_27(real* DC,
 									 OffCF offCF,
                             CUstream_st *stream)
 {
-   int Grid = (kCF / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_CF(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
-      scaleCF_0817_comp_27<<< gridINT_CF, threads, 0, stream >>>(  DC,
+      scaleCF_0817_comp_27<<< grid.grid, grid.threads, 0, stream >>>(  DC,
 														DF,
 														neighborCX,
 														neighborCY,
@@ -5226,22 +3914,9 @@ extern "C" void ScaleCF_comp_D3Q27F3_2018(real* DC,
 										  unsigned int numberOfThreads,
 										  OffCF offCF)
 {
-   int Grid = (kCF / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_CF(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
-      scaleCF_comp_D3Q27F3_2018 <<< gridINT_CF, threads >>>(DC,
+      scaleCF_comp_D3Q27F3_2018 <<< grid.grid, grid.threads >>>(DC,
 															DF,
 															G6,
 															neighborCX,
@@ -5293,22 +3968,9 @@ extern "C" void ScaleCF_comp_D3Q27F3(real* DC,
 									 OffCF offCF,
                             CUstream_st *stream)
 {
-   int Grid = (kCF / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_CF(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
-      scaleCF_comp_D3Q27F3 <<< gridINT_CF, threads, 0, stream >>>( DC,
+      scaleCF_comp_D3Q27F3 <<< grid.grid, grid.threads, 0, stream >>>( DC,
 														DF,
 														G6,
 														neighborCX,
@@ -5358,22 +4020,9 @@ extern "C" void ScaleCF_staggered_time_comp_27(  real* DC,
 												 unsigned int numberOfThreads,
 												 OffCF offCF)
 {
-   int Grid = (kCF / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_CF(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
-      scaleCF_staggered_time_comp_27<<< gridINT_CF, threads >>>(    DC,
+      scaleCF_staggered_time_comp_27<<< grid.grid, grid.threads >>>(    DC,
 																	DF,
 																	neighborCX,
 																	neighborCY,
@@ -5423,22 +4072,9 @@ extern "C" void ScaleCF_RhoSq_comp_27(   real* DC,
 										 OffCF offCF,
                                CUstream_st *stream)
 {
-   int Grid = (kCF / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_CF(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
-      scaleCF_RhoSq_comp_27<<< gridINT_CF, threads, 0, stream >>>( DC,
+      scaleCF_RhoSq_comp_27<<< grid.grid, grid.threads, 0, stream >>>( DC,
 														DF,
 														neighborCX,
 														neighborCY,
@@ -5488,22 +4124,9 @@ extern "C" void ScaleCF_RhoSq_3rdMom_comp_27(real* DC,
 											 OffCF offCF,
                                   CUstream_st *stream)
 {
-   int Grid = (kCF / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_CF(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
-      scaleCF_RhoSq_3rdMom_comp_27<<< gridINT_CF, threads, 0, stream >>>(  DC,
+      scaleCF_RhoSq_3rdMom_comp_27<<< grid.grid, grid.threads, 0, stream >>>(  DC,
 																DF,
 																neighborCX,
 																neighborCY,
@@ -5553,22 +4176,9 @@ extern "C" void ScaleCF_AA2016_comp_27(real* DC,
 									   OffCF offCF,
                               CUstream_st *stream)
 {
-   int Grid = (kCF / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_CF(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
-      scaleCF_AA2016_comp_27<<< gridINT_CF, threads, 0, stream >>>(DC,
+      scaleCF_AA2016_comp_27<<< grid.grid, grid.threads, 0, stream >>>(DC,
 														DF,
 														neighborCX,
 														neighborCY,
@@ -5617,22 +4227,9 @@ extern "C" void ScaleCF_NSPress_27(  real* DC,
 									 unsigned int numberOfThreads,
 									 OffCF offCF)
 {
-   int Grid = (kCF / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_CF(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
-      scaleCF_NSPress_27<<< gridINT_CF, threads >>>(DC,
+      scaleCF_NSPress_27<<< grid.grid, grid.threads >>>(DC,
 													DF,
 													neighborCX,
 													neighborCY,
@@ -5678,22 +4275,9 @@ extern "C" void ScaleCFThSMG7(   real* DC,
                                  unsigned int numberOfThreads,
                                  OffCF offCF)
 {
-   int Grid = (kCF / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_CF(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
-      scaleCFThSMG7<<< gridINT_CF, threads >>> (DC,
+      scaleCFThSMG7<<< grid.grid, grid.threads >>> (DC,
                                                 DF,
                                                 DD7C,
                                                 DD7F,
@@ -5735,22 +4319,9 @@ extern "C" void ScaleCFThS7(  real* DC,
                               real diffusivity_fine,
                               unsigned int numberOfThreads)
 {
-   int Grid = (kCF / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_CF(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
-      scaleCFThS7<<< gridINT_CF, threads >>> (  DC,
+      scaleCFThS7<<< grid.grid, grid.threads >>> (  DC,
                                                 DF,
                                                 DD7C,
                                                 DD7F,
@@ -5792,22 +4363,9 @@ extern "C" void ScaleCFThS27( real* DC,
                               unsigned int numberOfThreads,
 							  OffCF offCF)
 {
-   int Grid = (kCF / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_CF(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
-      scaleCFThS27<<< gridINT_CF, threads >>> ( DC,
+      scaleCFThS27<<< grid.grid, grid.threads >>> ( DC,
                                                 DF,
                                                 DD27C,
                                                 DD27F,
@@ -5852,22 +4410,10 @@ extern "C" void ScaleFC27( real* DC,
                            unsigned int nyF,
                            unsigned int numberOfThreads)
 {
-   int Grid = (kFC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_FC(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
-      scaleFC27<<< gridINT_FC, threads >>> ( DC,
+      scaleFC27<<< grid.grid, grid.threads >>> ( DC,
                                              DF,
                                              neighborCX,
                                              neighborCY,
@@ -5915,22 +4461,9 @@ extern "C" void ScaleFCEff27(real* DC,
                              unsigned int numberOfThreads,
                              OffFC offFC)
 {
-   int Grid = (kFC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_FC(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
-      scaleFCEff27<<< gridINT_FC, threads >>> ( DC,
+      scaleFCEff27<<< grid.grid, grid.threads >>> ( DC,
                                                 DF,
                                                 neighborCX,
                                                 neighborCY,
@@ -5979,22 +4512,9 @@ extern "C" void ScaleFCLast27(real* DC,
                               unsigned int numberOfThreads,
                               OffFC offFC)
 {
-   int Grid = (kFC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_FC(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
-      scaleFCLast27<<< gridINT_FC, threads >>> (DC,
+      scaleFCLast27<<< grid.grid, grid.threads >>> (DC,
                                                 DF,
                                                 neighborCX,
                                                 neighborCY,
@@ -6043,22 +4563,9 @@ extern "C" void ScaleFCpress27(real* DC,
                               unsigned int numberOfThreads,
                               OffFC offFC)
 {
-   int Grid = (kFC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_FC(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
-      scaleFCpress27<<< gridINT_FC, threads >>> (  DC,
+      scaleFCpress27<<< grid.grid, grid.threads >>> (  DC,
                                                    DF,
                                                    neighborCX,
                                                    neighborCY,
@@ -6107,22 +4614,9 @@ extern "C" void ScaleFC_Fix_27(real* DC,
                               unsigned int numberOfThreads,
                               OffFC offFC)
 {
-   int Grid = (kFC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_FC(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
-      scaleFC_Fix_27<<< gridINT_FC, threads >>> (  DC,
+      scaleFC_Fix_27<<< grid.grid, grid.threads >>> (  DC,
                                                    DF,
                                                    neighborCX,
                                                    neighborCY,
@@ -6171,22 +4665,9 @@ extern "C" void ScaleFC_Fix_comp_27(  real* DC,
 									  unsigned int numberOfThreads,
 									  OffFC offFC)
 {
-   int Grid = (kFC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_FC(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
-      scaleFC_Fix_comp_27<<< gridINT_FC, threads >>> ( DC,
+      scaleFC_Fix_comp_27<<< grid.grid, grid.threads >>> ( DC,
 													   DF,
 													   neighborCX,
 													   neighborCY,
@@ -6236,22 +4717,9 @@ extern "C" void ScaleFC_0817_comp_27( real* DC,
 									  OffFC offFC,
                              CUstream_st *stream)
 {
-   int Grid = (kFC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_FC(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
-      scaleFC_0817_comp_27<<< gridINT_FC, threads, 0, stream >>> (DC,
+      scaleFC_0817_comp_27<<< grid.grid, grid.threads, 0, stream >>> (DC,
 													   DF,
 													   neighborCX,
 													   neighborCY,
@@ -6301,22 +4769,9 @@ extern "C" void ScaleFC_comp_D3Q27F3_2018( real* DC,
 										   unsigned int numberOfThreads,
 										   OffFC offFC)
 {
-   int Grid = (kFC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_FC(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
-     scaleFC_comp_D3Q27F3_2018 <<< gridINT_FC, threads >>> (DC,
+     scaleFC_comp_D3Q27F3_2018 <<< grid.grid, grid.threads >>> (DC,
 															DF,
 															G6,
 															neighborCX,
@@ -6368,22 +4823,9 @@ extern "C" void ScaleFC_comp_D3Q27F3( real* DC,
 									  OffFC offFC,
                              CUstream_st *stream)
 {
-   int Grid = (kFC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_FC(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
-     scaleFC_comp_D3Q27F3 <<< gridINT_FC, threads, 0, stream >>> (DC,
+     scaleFC_comp_D3Q27F3 <<< grid.grid, grid.threads, 0, stream >>> (DC,
 													   DF,
 													   G6,
 													   neighborCX,
@@ -6433,22 +4875,9 @@ extern "C" void ScaleFC_staggered_time_comp_27(   real* DC,
 												  unsigned int numberOfThreads,
 												  OffFC offFC)
 {
-   int Grid = (kFC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_FC(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
-      scaleFC_staggered_time_comp_27<<< gridINT_FC, threads >>> (  DC,
+      scaleFC_staggered_time_comp_27<<< grid.grid, grid.threads >>> (  DC,
 																   DF,
 																   neighborCX,
 																   neighborCY,
@@ -6498,22 +4927,9 @@ extern "C" void ScaleFC_RhoSq_comp_27(real* DC,
 									  OffFC offFC,
                              CUstream_st *stream)
 {
-   int Grid = (kFC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_FC(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
-      scaleFC_RhoSq_comp_27<<<gridINT_FC, threads, 0, stream>>>(
+      scaleFC_RhoSq_comp_27<<<grid.grid, grid.threads, 0, stream>>>(
 													   DC,
 													   DF,
 													   neighborCX,
@@ -6565,22 +4981,9 @@ extern "C" void ScaleFC_RhoSq_3rdMom_comp_27( real* DC,
 											  OffFC offFC,
                                    CUstream_st *stream)
 {
-   int Grid = (kFC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_FC(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
-      scaleFC_RhoSq_3rdMom_comp_27<<< gridINT_FC, threads, 0, stream >>>(DC,
+      scaleFC_RhoSq_3rdMom_comp_27<<< grid.grid, grid.threads, 0, stream >>>(DC,
 															  DF,
 															  neighborCX,
 															  neighborCY,
@@ -6630,22 +5033,9 @@ extern "C" void ScaleFC_AA2016_comp_27( real* DC,
 										OffFC offFC,
                               CUstream_st *stream)
 {
-   int Grid = (kFC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_FC(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
-      scaleFC_AA2016_comp_27<<< gridINT_FC, threads, 0, stream >>>(DC,
+      scaleFC_AA2016_comp_27<<< grid.grid, grid.threads, 0, stream >>>(DC,
 														DF,
 														neighborCX,
 														neighborCY,
@@ -6694,22 +5084,9 @@ extern "C" void ScaleFC_NSPress_27(real* DC,
 								  unsigned int numberOfThreads,
 								  OffFC offFC)
 {
-   int Grid = (kFC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_FC(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
-      scaleFC_NSPress_27<<< gridINT_FC, threads >>> (  DC,
+      scaleFC_NSPress_27<<< grid.grid, grid.threads >>> (  DC,
 													   DF,
 													   neighborCX,
 													   neighborCY,
@@ -6755,22 +5132,9 @@ extern "C" void ScaleFCThSMG7(real* DC,
                               unsigned int numberOfThreads,
                               OffFC offFC)
 {
-   int Grid = (kFC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_FC(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
-      scaleFCThSMG7<<< gridINT_FC, threads >>>( DC,
+      scaleFCThSMG7<<< grid.grid, grid.threads >>>( DC,
                                                 DF,
                                                 DD7C,
                                                 DD7F,
@@ -6812,22 +5176,9 @@ extern "C" void ScaleFCThS7(  real* DC,
                               real diffusivity_coarse,
                               unsigned int numberOfThreads)
 {
-   int Grid = (kFC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_FC(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
-      scaleFCThS7<<< gridINT_FC, threads >>>(DC,
+      scaleFCThS7<<< grid.grid, grid.threads >>>(DC,
                                              DF,
                                              DD7C,
                                              DD7F,
@@ -6869,22 +5220,9 @@ extern "C" void ScaleFCThS27( real* DC,
                               unsigned int numberOfThreads,
 							  OffFC offFC)
 {
-   int Grid = (kFC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_FC(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
-      scaleFCThS27<<< gridINT_FC, threads >>>(  DC,
+      scaleFCThS27<<< grid.grid, grid.threads >>>(  DC,
                                                 DF,
                                                 DD27C,
                                                 DD27F,
@@ -6920,22 +5258,9 @@ extern "C" void DragLiftPostD27(real* DD,
 								bool isEvenTimestep,
 								unsigned int numberOfThreads)
 {
-	int Grid = (numberOfBCnodes / numberOfThreads)+1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid/Grid1)+1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-	DragLiftPost27<<< grid, threads >>>(DD,
+	DragLiftPost27<<< grid.grid, grid.threads >>>(DD,
 										k_Q,
 										QQ,
 										numberOfBCnodes,
@@ -6964,22 +5289,9 @@ extern "C" void DragLiftPreD27( real* DD,
 								bool isEvenTimestep,
 								unsigned int numberOfThreads)
 {
-	int Grid = (numberOfBCnodes / numberOfThreads)+1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid/Grid1)+1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1 );
+	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-	DragLiftPre27<<< grid, threads >>>( DD,
+	DragLiftPre27<<< grid.grid, grid.threads >>>( DD,
 										k_Q,
 										QQ,
 										numberOfBCnodes,
@@ -7005,22 +5317,9 @@ extern "C" void CalcCPtop27(real* DD,
 							bool isEvenTimestep,
 							unsigned int numberOfThreads)
 {
-	int Grid = (nonCp / numberOfThreads)+1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid/Grid1)+1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1 );
+	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, nonCp);
 
-	CalcCP27<<< grid, threads >>>(DD,
+	CalcCP27<<< grid.grid, grid.threads >>>(DD,
 								  cpIndex,
 								  nonCp,
 								  cpPress,
@@ -7043,22 +5342,9 @@ extern "C" void CalcCPbottom27( real* DD,
 								bool isEvenTimestep,
 								unsigned int numberOfThreads)
 {
-	int Grid = (nonCp / numberOfThreads)+1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid/Grid1)+1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1 );
+	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, nonCp);
 
-	CalcCP27<<< grid, threads >>>(DD,
+	CalcCP27<<< grid.grid, grid.threads >>>(DD,
 								  cpIndex,
 								  nonCp,
 								  cpPress,
@@ -7082,22 +5368,9 @@ extern "C" void GetSendFsPreDev27(real* DD,
 								  unsigned int numberOfThreads,
 								  cudaStream_t stream)
 {
-	int Grid = (buffmax / numberOfThreads)+1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid/Grid1)+1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1 );
+	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, buffmax);
 
-	getSendFsPre27<<< grid, threads, 0, stream >>>(DD,
+	getSendFsPre27<<< grid.grid, grid.threads, 0, stream >>>(DD,
 										bufferFs,
 										sendIndex,
 										buffmax,
@@ -7121,22 +5394,9 @@ extern "C" void GetSendFsPostDev27(real* DD,
 								   unsigned int numberOfThreads,
 								   cudaStream_t stream)
 {
-	int Grid = (buffmax / numberOfThreads)+1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid/Grid1)+1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1 );
+	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, buffmax);
 
-	getSendFsPost27<<< grid, threads, 0, stream >>>(DD,
+	getSendFsPost27<<< grid.grid, grid.threads, 0, stream >>>(DD,
 										 bufferFs,
 										 sendIndex,
 										 buffmax,
@@ -7160,22 +5420,9 @@ extern "C" void SetRecvFsPreDev27(real* DD,
 								  unsigned int numberOfThreads,
 	                              cudaStream_t stream)
 {
-	int Grid = (buffmax / numberOfThreads)+1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid/Grid1)+1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1 );
+	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, buffmax);
 
-	setRecvFsPre27<<< grid, threads, 0, stream >>>(DD,
+	setRecvFsPre27<<< grid.grid, grid.threads, 0, stream >>>(DD,
 										bufferFs,
 										recvIndex,
 										buffmax,
@@ -7199,22 +5446,9 @@ extern "C" void SetRecvFsPostDev27(real* DD,
 	                               unsigned int numberOfThreads,
 	                               cudaStream_t stream)
 {
-	int Grid = (buffmax / numberOfThreads)+1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid/Grid1)+1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1 );
+	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, buffmax);
 
-	setRecvFsPost27<<< grid, threads, 0, stream >>>(DD,
+	setRecvFsPost27<<< grid.grid, grid.threads, 0, stream >>>(DD,
 										 bufferFs,
 										 recvIndex,
 										 buffmax,
@@ -7238,22 +5472,9 @@ extern "C" void getSendGsDevF3(
 	bool isEvenTimestep,
 	unsigned int numberOfThreads)
 {
-	int Grid = (buffmax / numberOfThreads) + 1;
-	int Grid1, Grid2;
-	if (Grid > 512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid / Grid1) + 1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1);
+	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, buffmax);
 
-	getSendGsF3 <<< grid, threads >>> (
+	getSendGsF3 <<< grid.grid, grid.threads >>> (
 		G6,
 		bufferGs,
 		sendIndex,
@@ -7278,22 +5499,9 @@ extern "C" void setRecvGsDevF3(
 	bool isEvenTimestep,
 	unsigned int numberOfThreads)
 {
-	int Grid = (buffmax / numberOfThreads) + 1;
-	int Grid1, Grid2;
-	if (Grid > 512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid / Grid1) + 1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1);
+	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, buffmax);
 
-	setRecvGsF3 <<< grid, threads >>> (
+	setRecvGsF3 <<< grid.grid, grid.threads >>> (
 		G6,
 		bufferGs,
 		recvIndex,
@@ -7324,22 +5532,10 @@ extern "C" void WallFuncDev27(unsigned int numberOfThreads,
 							  unsigned int size_Mat,
 							  bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      WallFunction27<<< gridQ, threads >>> (  nx,
+
+      WallFunction27<<< grid.grid, grid.threads >>> (  nx,
 											  ny,
 											  vx,
 											  vy,
@@ -7377,22 +5573,9 @@ extern "C" void SetOutputWallVelocitySP27(unsigned int numberOfThreads,
 										  real* DD,
 										  bool isEvenTimestep)
 {
-   int Grid = (numberOfWallNodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfWallNodes);
 
-      LBSetOutputWallVelocitySP27<<< gridQ, threads >>> (	vxD,
+      LBSetOutputWallVelocitySP27<<< grid.grid, grid.threads >>> (	vxD,
 															vyD,
 															vzD,
 															vxWall,
@@ -7425,22 +5608,9 @@ extern "C" void GetVelotoForce27(unsigned int numberOfThreads,
 								 unsigned int size_Mat,
 								 bool isEvenTimestep)
 {
-   int Grid = (nonAtBC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, nonAtBC);
 
-      GetVeloforForcing27<<< gridQ, threads >>> (DD,
+      GetVeloforForcing27<<< grid.grid, grid.threads >>> (DD,
 												bcIndex,
 												nonAtBC,
 												Vx,
@@ -7479,22 +5649,9 @@ extern "C" void InitParticlesDevice(real* coordX,
 									unsigned int size_Mat,
 									unsigned int numberOfThreads)
 {
-   int Grid = (numberOfParticles / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfParticles);
 
-   InitParticles<<< gridQ, threads >>> (coordX,
+   InitParticles<<< grid.grid, grid.threads >>> (coordX,
 										coordY,
 										coordZ,
 										coordParticleXlocal,
@@ -7549,22 +5706,9 @@ extern "C" void MoveParticlesDevice(real* coordX,
 									unsigned int numberOfThreads,
 									bool isEvenTimestep)
 {
-   int Grid = (numberOfParticles / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfParticles);
 
-   MoveParticles<<< gridQ, threads >>> (coordX,
+   MoveParticles<<< grid.grid, grid.threads >>> (coordX,
 										coordY,
 										coordZ,
 										coordParticleXlocal,
@@ -7598,22 +5742,8 @@ extern "C" void initRandomDevice(curandState* state,
 								 unsigned int size_Mat,
 								 unsigned int numberOfThreads)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
-
-   initRandom<<< gridQ, threads >>> (state);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   initRandom<<< grid.grid, grid.threads >>> (state);
    getLastCudaError("initRandom execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -7622,22 +5752,8 @@ extern "C" void generateRandomValuesDevice( curandState* state,
 											real* randArray,
 											unsigned int numberOfThreads)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
-
-   generateRandomValues<<< gridQ, threads >>> (state,randArray);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   generateRandomValues<<< grid.grid, grid.threads >>> (state,randArray);
    getLastCudaError("generateRandomValues execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -7660,22 +5776,8 @@ extern "C" void CalcTurbulenceIntensityDevice(
    bool isEvenTimestep,
    uint numberOfThreads)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
-
-   CalcTurbulenceIntensity<<<gridQ, threads>>>(
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   CalcTurbulenceIntensity<<<grid.grid, grid.threads>>>(
      vxx,
      vyy,
      vzz,
