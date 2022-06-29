@@ -242,8 +242,8 @@ void GridGenerator::allocArrays_BoundaryValues()
         std::cout << "size precursor level " << level << " : " << numberOfPrecursorValues << std::endl;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         int blocks = (numberOfPrecursorValues / para->getParH(level)->numberofthreads) + 1;
-        para->getParH(level)->precursorBC.kArray = blocks * para->getParH(level)->numberofthreads;
-        para->getParD(level)->precursorBC.kArray = para->getParH(level)->precursorBC.kArray;
+        para->getParH(level)->precursorBC.sizeQ = blocks * para->getParH(level)->numberofthreads;
+        para->getParD(level)->precursorBC.sizeQ = para->getParH(level)->precursorBC.sizeQ;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         para->getParH(level)->precursorBC.numberOfBCnodes = numberOfPrecursorValues;
         para->getParD(level)->precursorBC.numberOfBCnodes = numberOfPrecursorValues;
@@ -267,6 +267,11 @@ void GridGenerator::allocArrays_BoundaryValues()
                     para->getParH(level)->precursorBC.velocityX, para->getParH(level)->precursorBC.velocityY, para->getParH(level)->precursorBC.velocityZ,
                     level);
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            para->getParD(level)->precursorBC.nVelocityPoints = para->getParH(level)->precursorBC.nVelocityPoints;
+            para->getParD(level)->precursorBC.nTRead = para->getParH(level)->precursorBC.nTRead;
+            para->getParD(level)->precursorBC.velocityX = para->getParH(level)->precursorBC.velocityX;
+            para->getParD(level)->precursorBC.velocityY = para->getParH(level)->precursorBC.velocityY;
+            para->getParD(level)->precursorBC.velocityZ = para->getParH(level)->precursorBC.velocityZ;
 
             cudaMemoryManager->cudaCopyPrecursorBC(level);
             cudaMemoryManager->cudaAllocPrecursorVelocities(level);

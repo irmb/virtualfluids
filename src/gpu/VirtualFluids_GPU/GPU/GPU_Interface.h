@@ -1285,8 +1285,8 @@ extern "C" void VelSchlaffer27(  unsigned int numberOfThreads,
                                  bool isEvenTimestep);
 
 extern "C" void QPrecursorDevCompZeroPress(  uint numberOfThreads, real tRatio,
-                                             real* DD, real* QQ,
-                                             int* k_Q, uint kQ, uint kArray, uint nVelPoints, 
+                                             real* DD, real* QQ, int* k_Q, 
+											 uint sizeQ, uint numberOfBCNodes,
 											 real omega, real velocityRatio,
                                              uint* neighborX, uint* neighborY, uint* neighborZ,
 											 uint* neighborsNT, uint* neighborsNB, uint* neighborsST, uint* neighborsSB,

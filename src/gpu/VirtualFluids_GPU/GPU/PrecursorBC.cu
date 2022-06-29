@@ -6,7 +6,7 @@
 using namespace vf::lbm::constant;
 
 extern "C" __global__ void QPrecursorDeviceCompZeroPress( 	int* k_Q,
-															int kQ,
+															int numberOfBCNodes,
                                                             int sizeQ,
                                                             real om1,
 															real* DD,
@@ -28,11 +28,11 @@ extern "C" __global__ void QPrecursorDeviceCompZeroPress( 	int* k_Q,
 															real* vxCurrent,
 															real* vyCurrent,
 															real* vzCurrent,
-															real tRatio,
-                                                            real velocityRatio,
                                                             real velocityX,
                                                             real velocityY,
                                                             real velocityZ,
+															real tRatio,
+                                                            real velocityRatio,
 															unsigned long long size_Mat,
 															bool evenOrOdd)
 {
@@ -45,7 +45,7 @@ extern "C" __global__ void QPrecursorDeviceCompZeroPress( 	int* k_Q,
 
     const unsigned k = nx*(ny*z + y) + x;
 
-    if(k>kQ) return;
+    if(k>=numberOfBCNodes) return;
 
     DistributionReferences27 D = vf::gpu::getDistributionReferences27(DD, size_Mat, evenOrOdd);
     
@@ -86,8 +86,6 @@ extern "C" __global__ void QPrecursorDeviceCompZeroPress( 	int* k_Q,
         vyNextInterpd = vyCurrent[kNT];
         vzNextInterpd = vzCurrent[kNT];
     }
-    // if(k==100)
-        // printf("last u %f v %f next u %f v %f\n", vxLastInterpd, vyLastInterpd, vxNextInterpd, vyNextInterpd);
     real VeloX = (velocityX + (1.f-tRatio)*vxLastInterpd + tRatio*vxNextInterpd)/velocityRatio;
     real VeloY = (velocityY + (1.f-tRatio)*vyLastInterpd + tRatio*vyNextInterpd)/velocityRatio; 
     real VeloZ = (velocityZ + (1.f-tRatio)*vzLastInterpd + tRatio*vzNextInterpd)/velocityRatio;

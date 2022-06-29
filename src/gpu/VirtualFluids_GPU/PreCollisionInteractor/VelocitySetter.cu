@@ -13,68 +13,6 @@
 #include <fstream>
 #include <iostream>
 #include <algorithm>
-//TODO test if larger memcopy is faster
-__global__ void interpolateVelocities(  uint nVelPoints,
-                                        real* vxLast, real* vyLast, real* vzLast,
-                                        real* vxNext, real* vyNext, real* vzNext,
-                                        real* vx, real* vy, real* vz,
-                                        uint* planeNeighborNT, uint* planeNeighborNB,
-                                        uint* planeNeighborST, uint* planeNeighborSB,
-                                        real* weightsNT, real* weightsNB,
-                                        real* weightsST, real* weightsSB,
-                                        real tRatio, real velocityRatio)
-{
-    const uint x = threadIdx.x; 
-    const uint y = blockIdx.x;
-    const uint z = blockIdx.y;
-
-    const uint nx = blockDim.x;
-    const uint ny = gridDim.x;
-
-    const uint node = nx*(ny*z + y) + x;
-    if (node>nVelPoints) return;
-
-    real vxLastInterpd, vyLastInterpd, vzLastInterpd; 
-    real vxNextInterpd, vyNextInterpd, vzNextInterpd; 
-
-    uint kNT = planeNeighborNT[node];
-    real dNT = weightsNT[node];
-    if(dNT < 1e6)
-    {
-        uint kNB = planeNeighborNB[node];
-        uint kST = planeNeighborST[node];
-        uint kSB = planeNeighborSB[node];
-
-        real dNB = weightsNB[node];
-        real dST = weightsST[node];
-        real dSB = weightsSB[node];
-
-        real invWeightSum = 1/(dNT+dNB+dST+dSB);
-
-        vxLastInterpd = (vxLast[kNT]*dNT + vxLast[kNB]*dNB + vxLast[kST]*dST + vxLast[kSB]*dSB)*invWeightSum;
-        vyLastInterpd = (vyLast[kNT]*dNT + vyLast[kNB]*dNB + vyLast[kST]*dST + vyLast[kSB]*dSB)*invWeightSum;
-        vzLastInterpd = (vzLast[kNT]*dNT + vzLast[kNB]*dNB + vzLast[kST]*dST + vzLast[kSB]*dSB)*invWeightSum;
-
-        vxNextInterpd = (vxNext[kNT]*dNT + vxNext[kNB]*dNB + vxNext[kST]*dST + vxNext[kSB]*dSB)*invWeightSum;
-        vyNextInterpd = (vyNext[kNT]*dNT + vyNext[kNB]*dNB + vyNext[kST]*dST + vyNext[kSB]*dSB)*invWeightSum;
-        vzNextInterpd = (vzNext[kNT]*dNT + vzNext[kNB]*dNB + vzNext[kST]*dST + vzNext[kSB]*dSB)*invWeightSum;
-    }
-    else
-    {
-        vxLastInterpd = vxLast[kNT];
-        vyLastInterpd = vyLast[kNT];
-        vzLastInterpd = vzLast[kNT];
-
-        vxNextInterpd = vxNext[kNT];
-        vyNextInterpd = vyNext[kNT];
-        vzNextInterpd = vzNext[kNT];
-    }
-    // if(node==100)
-        // printf("last u %f v %f next u %f v %f\n", vxLastInterpd, vyLastInterpd, vxNextInterpd, vyNextInterpd);
-    vx[node] = ((1.f-tRatio)*vxLastInterpd + tRatio*vxNextInterpd)/velocityRatio;
-    vy[node] = ((1.f-tRatio)*vyLastInterpd + tRatio*vyNextInterpd)/velocityRatio; 
-    vz[node] = ((1.f-tRatio)*vzLastInterpd + tRatio*vzNextInterpd)/velocityRatio;
-}
 
 template<typename T>
 std::vector<T> readStringToVector(std::string s)
@@ -91,7 +29,7 @@ std::vector<T> readStringToVector(std::string s)
 
 std::string readAttribute(std::string line, std::string attributeName)
 {
-    int attributeStart = line.find(attributeName)+attributeName.size()+2; // add to for '="'
+    int attributeStart = line.find(attributeName)+attributeName.size()+2; // add 2 for '="'
     int attributeLen = line.find("\"", attributeStart)-attributeStart;
     return line.substr(attributeStart, attributeLen);
 }
@@ -180,15 +118,15 @@ bool VTKFile::markNANs(std::vector<uint> readIndices)
 void VTKFile::loadFile()
 {
     std::ifstream buf(this->fileName.c_str(), std::ios::in | std::ios::binary);
-    this->vxFile.reserve(getNumberOfPoints()); 
+    this->vxFile.resize(getNumberOfPoints()); 
     buf.seekg(this->offsetVx);
     buf.read(reinterpret_cast<char*>(this->vxFile.data()), this->getNumberOfPoints()*sizeof(double));
 
-    this->vyFile.reserve(getNumberOfPoints()); 
+    this->vyFile.resize(getNumberOfPoints()); 
     buf.seekg(this->offsetVy);
     buf.read((char*) this->vyFile.data(), this->getNumberOfPoints()*sizeof(double));
 
-    this->vzFile.reserve(this->getNumberOfPoints());
+    this->vzFile.resize(this->getNumberOfPoints());
     buf.seekg(this->offsetVz);
     buf.read((char*) this->vzFile.data(), this->getNumberOfPoints()*sizeof(double));
 
@@ -318,17 +256,24 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
     this->nPoints = coordsY.size();
     this->initializeIndexVectors();
     real max_diff = 1e-4; // maximum distance between point on grid and precursor plane to count as exact match
+    real eps = 1e-7; // small number to avoid division by zero
     bool perfect_match = true;
 
-    //TODO reserve vectors;
+    this->weightsNT.reserve(this->nPoints);
+    this->weightsNB.reserve(this->nPoints);
+    this->weightsST.reserve(this->nPoints);
+    this->weightsSB.reserve(this->nPoints);
+
+    this->planeNeighborNT.reserve(this->nPoints);
+    this->planeNeighborNB.reserve(this->nPoints);
+    this->planeNeighborST.reserve(this->nPoints);
+    this->planeNeighborSB.reserve(this->nPoints);
 
     for(uint i=0; i<nPoints; i++)
     {
 
         real posY = coordsY[i];
         real posZ = coordsZ[i];
-
-        // printf("y %f z %f i %d npoints %u\n", posY, posZ, i, nPoints);
         bool foundNT = false, foundNB = false, foundST = false, foundSB = false, foundAll = false;
 
         for(int level=this->fileCollection->files.size()-1; level>=0; level--) // go backwards to find finest nodes first
@@ -341,7 +286,7 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
                 int idx = file.findNeighborESB(posY, posZ, 0.f);
                 if(idx!=-1)
                 {
-                    if(abs(posY<file.getX(idx))<max_diff && abs(posZ<file.getY(idx))< max_diff)
+                    if(abs(posY<file.getX(idx))<max_diff && abs(posZ<file.getY(idx))< max_diff) // y in simulation is x in precursor/file, z in simulation is y in precursor/file
                     {
                         this->weightsNT.emplace_back(1e6f);
                         this->weightsNB.emplace_back(0.f);
@@ -366,7 +311,7 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
                         foundNT = true;
                         real dy = file.getX(idx)-posY;
                         real dz = file.getY(idx)-posZ;
-                        this->weightsNT.emplace_back(1.f/(dy*dy+dz*dz+1e-7));
+                        this->weightsNT.emplace_back(1.f/(dy*dy+dz*dz+eps));
                         this->planeNeighborNT.emplace_back(getWriteIndex(level, id, idx));
                     }
 
@@ -379,7 +324,7 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
                         foundNB = true;
                         real dy = file.getX(idx)-posY;
                         real dz = file.getY(idx)-posZ;
-                        this->weightsNB.emplace_back(1.f/(dy*dy+dz*dz+1e-7));
+                        this->weightsNB.emplace_back(1.f/(dy*dy+dz*dz+eps));
                         this->planeNeighborNT.emplace_back(getWriteIndex(level, id, idx));
                     }
                 }
@@ -391,7 +336,7 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
                         foundST = true;
                         real dy = file.getX(idx)-posY;
                         real dz = file.getY(idx)-posZ;
-                        this->weightsST.emplace_back(1.f/(dy*dy+dz*dz+1e-7));
+                        this->weightsST.emplace_back(1.f/(dy*dy+dz*dz+eps));
                         this->planeNeighborST.emplace_back(getWriteIndex(level, id, idx));
                     }
                 }
@@ -403,7 +348,7 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
                         foundSB = true;
                         real dy = file.getX(idx)-posY;
                         real dz = file.getY(idx)-posZ;
-                        this->weightsSB.emplace_back(1.f/(dy*dy+dz*dz+1e-7));
+                        this->weightsSB.emplace_back(1.f/(dy*dy+dz*dz+eps));
                         this->planeNeighborSB.emplace_back(getWriteIndex(level, id, idx));
                     }
                 }
@@ -419,7 +364,8 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
     }
 
     if(perfect_match)
-        printf("was a perfect match \n");
+        printf("Precursor was a perfect match \n");
+
 
     for(int level=0; level<this->fileCollection->files.size(); level++){
         for(int id=0; id<this->fileCollection->files[level].size(); id++){
@@ -452,6 +398,7 @@ void VTKReader::getNextVelocities(real* vx, real* vy, real* vz, real t)
             {
                 this->fileCollection->files[level][id][nF].unloadFile();
                 nF++;
+                printf("switching to file %d\n", nF);
             }
         
             if(nF == this->fileCollection->files[level][id].size())
@@ -459,7 +406,7 @@ void VTKReader::getNextVelocities(real* vx, real* vy, real* vz, real t)
 
             auto file = &this->fileCollection->files[level][id][nF];
 
-            int off = file->getIdxBZ(t)*file->getNumberOfPointsInXYPlane();
+            int off = (file->getClosestIdxZ(t))*file->getNumberOfPointsInXYPlane();
             file->getVelocities(vx, vy, vz, this->readIndices[level][id], this->writeIndices[level][id], off, this->writingOffset);
             this->nFile[level][id] = nF;
         }

@@ -60,7 +60,7 @@
 
 std::string path(".");
 
-std::string simulationName("BoundayLayer");
+std::string simulationName("BoundaryLayer");
 
 using namespace vf::lbm::constant;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -118,7 +118,7 @@ void multipleLevel(const std::string& configPath)
 
     const uint nodes_per_H = config.getValue<uint>("nz", 64);
 
-    const bool writePrecursor = config.getValue<bool>("writePrecursor", false);
+    const bool writePrecursor = config.getValue("writePrecursor", false);
     int nTWritePrecursor; real tStartPrecursor, posXPrecursor;
     if(writePrecursor)
     {
@@ -196,23 +196,10 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->addCoarseGrid(0.0, 0.0, 0.0,
                                 L_x,  L_y,  L_z, dx);
-    // gridBuilder->setNumberOfLayers(0,0);
-    // gridBuilder->addGrid( new Cuboid( 300., 300., 300., 1000. , 1000., 600.), 1 );
 
     gridBuilder->setPeriodicBoundaryCondition(!readPrecursor, true, false);
 
 	gridBuilder->buildGrids(lbmOrGks, false); // buildGrids() has to be called before setting the BCs!!!!
-
-    uint samplingOffset = 2;
-    // gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
-    gridBuilder->setStressBoundaryCondition(SideType::MZ,
-                                            0.0, 0.0, 1.0,              // wall normals
-                                            samplingOffset, z0/dx);     // wall model settinng
-    para->setHasWallModelMonitor(true);
-
-
-    // gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
-    gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0,  0.0, 0.0);
 
     if(readPrecursor)
     {
@@ -220,6 +207,18 @@ void multipleLevel(const std::string& configPath)
         gridBuilder->setPrecursorBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0, precursor, nTReadPrecursor);
         gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.f);
     }
+
+    // gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
+    // gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
+
+    uint samplingOffset = 2;
+    gridBuilder->setStressBoundaryCondition(SideType::MZ,
+                                            0.0, 0.0, 1.0,              // wall normals
+                                            samplingOffset, z0/dx);     // wall model settinng
+    para->setHasWallModelMonitor(true);
+
+
+    gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0,  0.0, 0.0);
 
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)0.0;
@@ -244,6 +243,12 @@ void multipleLevel(const std::string& configPath)
     if(para->getIsBodyForce())
         wallModelProbe->setEvaluatePressureGradient(true);
     para->addProbe( wallModelProbe );
+
+    if(writePrecursor)
+    {
+        SPtr<PrecursorWriter> precursorWriter = SPtr<PrecursorWriter>( new PrecursorWriter("precursorWriter", para->getOutputPath()+"/precursor", posXPrecursor, 0, L_y, 0, L_z, tStartPrecursor, nTWritePrecursor) );
+        para->addProbe(precursorWriter);
+    }
 
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
     auto gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);

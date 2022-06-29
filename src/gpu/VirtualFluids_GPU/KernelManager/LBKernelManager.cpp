@@ -710,12 +710,19 @@ void LBKernelManager::runPrecursorBCKernelPost(int level, uint t, CudaMemoryMana
     {
         auto precursorStruct = para->getParD(level)->precursorBC;
 
-        int tLastRead = precursorStruct.nPrecursorReads*precursorStruct.nTRead;
+        uint lastTime = (precursorStruct.nPrecursorReads-2)*precursorStruct.nTRead; // timestep currently loaded into last arrays
+        uint currentTime = (precursorStruct.nPrecursorReads-1)*precursorStruct.nTRead; // timestep currently loaded into current arrays
+        uint nextTime = precursorStruct.nPrecursorReads*precursorStruct.nTRead; // timestep currently loaded into next arrays
 
-        if(t>tLastRead+precursorStruct.nTRead)
+        if(t>=currentTime)
         {
-            real nextTime = (t+1)*pow(2,-level)*para->getTimeRatio();
-            // TODO add sync barrier here
+            //cycle time
+            lastTime = currentTime;
+            currentTime = nextTime;
+            nextTime += precursorStruct.nTRead;
+
+            //TODO switch to streams and synch stream here
+            checkCudaErrors(cudaDeviceSynchronize());
             //cycle pointers
             real* tmp = precursorStruct.vxLast;
             precursorStruct.vxLast = precursorStruct.vxCurrent;
@@ -733,27 +740,28 @@ void LBKernelManager::runPrecursorBCKernelPost(int level, uint t, CudaMemoryMana
             precursorStruct.vzCurrent = precursorStruct.vzNext;
             precursorStruct.vzNext = tmp;
 
+            real loadTime = nextTime*pow(2,-level)*para->getTimeRatio();
             for(auto reader : para->getParH(level)->velocityReader)
             {   
-                reader->getNextVelocities(precursorStruct.vxNext, precursorStruct.vyNext, precursorStruct.vzNext, nextTime);
+                reader->getNextVelocities(para->getParH(level)->precursorBC.vxNext, para->getParH(level)->precursorBC.vyNext, para->getParH(level)->precursorBC.vzNext, loadTime);
             }
 
             cudaMemoryManager->cudaCopyPrecursorVelocities(level);
-            precursorStruct.nPrecursorReads++;
-            tLastRead += precursorStruct.nTRead;  
+            para->getParD(level)->precursorBC.nPrecursorReads++;
+            para->getParH(level)->precursorBC.nPrecursorReads++;  
         }
-
-        real tRatio = real(t-tLastRead)/precursorStruct.nTRead;
+        
+        real tRatio = real(t-lastTime)/precursorStruct.nTRead;
         QPrecursorDevCompZeroPress( para->getParD(level)->numberofthreads, tRatio, para->getParD(level)->distributions.f[0], para->getParD(level)->precursorBC.q27[0],
-                                    para->getParD(level)->precursorBC.k, para->getParD(level)->precursorBC.numberOfBCnodes, para->getParD(level)->precursorBC.kArray, 
-                                    para->getParD(level)->precursorBC.nVelocityPoints, para->getParD(level)->omega, para->getVelocityRatio(),
+                                    para->getParD(level)->precursorBC.k, para->getParD(level)->precursorBC.sizeQ, para->getParD(level)->precursorBC.numberOfBCnodes, 
+                                    para->getParD(level)->omega, para->getVelocityRatio(),
                                     para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ,
                                     para->getParD(level)->precursorBC.planeNeighborNT, para->getParD(level)->precursorBC.planeNeighborNB, para->getParD(level)->precursorBC.planeNeighborST, para->getParD(level)->precursorBC.planeNeighborSB, 
                                     para->getParD(level)->precursorBC.weightsNT, para->getParD(level)->precursorBC.weightsNB, para->getParD(level)->precursorBC.weightsST, para->getParD(level)->precursorBC.weightsSB, 
                                     para->getParD(level)->precursorBC.vxLast, para->getParD(level)->precursorBC.vyLast, para->getParD(level)->precursorBC.vzLast, 
                                     para->getParD(level)->precursorBC.vxCurrent, para->getParD(level)->precursorBC.vyCurrent, para->getParD(level)->precursorBC.vzCurrent, 
                                     para->getParD(level)->precursorBC.velocityX, para->getParD(level)->precursorBC.velocityY, para->getParD(level)->precursorBC.velocityZ,
-                                    para->getParD(level)->numberOfNodes,     para->getParD(level)->isEvenTimestep);
+                                    para->getParD(level)->numberOfNodes, para->getParD(level)->isEvenTimestep);
         getLastCudaError("QPrecursorDevCompZeroPress execution failed");
     }
 }

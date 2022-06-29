@@ -88,7 +88,7 @@ void PrecursorWriter::init(Parameter* para, GridProvider* gridProvider, CudaMemo
                 coordZ.push_back(pointCoordZ);            
             }
         }
-        assert("PrecursorWriter did not find any points on the grid"&& indicesOnGrid.size()=0);
+        assert("PrecursorWriter did not find any points on the grid"&& indicesOnGrid.size()==0);
         int ny = int((highestY-lowestY)/dx)+1;
         int nz = int((highestZ-lowestZ)/dx)+1;
         printf("ny %d nz %d \n", ny, nz);

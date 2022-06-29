@@ -197,7 +197,7 @@ typedef struct QforBC{
 typedef struct QforPrecursorBC{
    int* k;
    int numberOfBCnodes=0;
-   int kArray;
+   int sizeQ;
    int nVelocityPoints;
    uint nPrecursorReads=0;
    uint nTRead;

@@ -1227,7 +1227,7 @@ extern "C" __global__ void VelSchlaff27(  int t,
                                           bool isEvenTimestep);
 
 extern "C" __global__ void QPrecursorDeviceCompZeroPress( 	int* k_Q,
-															int kQ,
+															int numberOfBCNodes,
 															int sizeQ,
 															real om1,
 															real* DD,

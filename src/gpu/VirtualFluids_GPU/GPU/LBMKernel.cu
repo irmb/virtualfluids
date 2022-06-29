@@ -4681,8 +4681,8 @@ extern "C" void VelSchlaffer27(  unsigned int numberOfThreads,
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QPrecursorDevCompZeroPress(  uint numberOfThreads, real tRatio,
-                                             real* DD, real* QQ,
-                                             int* k_Q, uint kQ, uint kArray, uint nVelPoints,
+                                             real* DD, real* QQ, int* k_Q, 
+                                             uint sizeQ, uint numberOfBCNodes,
                                              real omega, real velocityRatio,
                                              uint* neighborX, uint* neighborY, uint* neighborZ,
                                              uint* neighborsNT, uint* neighborsNB, uint* neighborsST, uint* neighborsSB,
@@ -4692,9 +4692,10 @@ extern "C" void QPrecursorDevCompZeroPress(  uint numberOfThreads, real tRatio,
                                              real velocityX, real velocityY, real velocityZ, 
                                              unsigned long long size_Mat, bool evenOrOdd)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kArray);
 
-   QPrecursorDeviceCompZeroPress<<<grid.grid, grid.threads>>>(k_Q, kQ, kArray, omega, DD, QQ,
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCNodes);
+
+   QPrecursorDeviceCompZeroPress<<<grid.grid, grid.threads>>>(k_Q, numberOfBCNodes, sizeQ, omega, DD, QQ,
                                                                neighborX, neighborY, neighborZ,
                                                                neighborsNT, neighborsNB, neighborsST, neighborsSB,
                                                                weightsNT, weightsNB, weightsST, weightsSB,

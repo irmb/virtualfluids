@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+#include <math.h>
 
 class Grid;
 namespace gg
@@ -49,6 +50,9 @@ public:
     int getIdxEX(real posX){ return (posX-minX)/deltaX; };
     int getIdxSY(real posY){ return (posY-minY)/deltaY; };
     int getIdxBZ(real posZ){ return (posZ-minZ)/deltaZ; };
+    int getClosestIdxX(real posX){ return round((posX-minX)/deltaX); };
+    int getClosestIdxY(real posY){ return round((posY-minY)/deltaY); };
+    int getClosestIdxZ(real posZ){ return round((posZ-minZ)/deltaZ); };
     int getLinearIndex(int idxX, int idxY, int idxZ){ return idxX + nx*(idxY+ny*idxZ);};
     int getNumberOfPointsInXYPlane(){ return nx*ny; }
     int getNumberOfPointsInYZPlane(){ return ny*nz; }
@@ -70,7 +74,7 @@ private:
     real minX, maxX, minY, maxY, minZ, maxZ;
     real deltaX, deltaY, deltaZ;
     int nx, ny, nz;
-    std::vector<double>vxFile, vyFile, vzFile;
+    std::vector<double> vxFile, vyFile, vzFile;
     bool loaded;
 };
 
