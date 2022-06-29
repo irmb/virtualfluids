@@ -708,37 +708,35 @@ void LBKernelManager::runPrecursorBCKernelPost(int level, uint t, CudaMemoryMana
 {
     if(para->getParH(level)->numberOfPrecursorBCnodes > 0)
     {
-        auto precursorStruct = para->getParD(level)->precursorBC;
-
-        uint lastTime = (precursorStruct.nPrecursorReads-2)*precursorStruct.nTRead; // timestep currently loaded into last arrays
-        uint currentTime = (precursorStruct.nPrecursorReads-1)*precursorStruct.nTRead; // timestep currently loaded into current arrays
-        uint nextTime = precursorStruct.nPrecursorReads*precursorStruct.nTRead; // timestep currently loaded into next arrays
+        uint lastTime = (para->getParD(level)->precursorBC.nPrecursorReads-2)*para->getParD(level)->precursorBC.nTRead; // timestep currently loaded into last arrays
+        uint currentTime = (para->getParD(level)->precursorBC.nPrecursorReads-1)*para->getParD(level)->precursorBC.nTRead; // timestep currently loaded into current arrays
+        uint nextTime = para->getParD(level)->precursorBC.nPrecursorReads*para->getParD(level)->precursorBC.nTRead; // timestep currently loaded into next arrays
 
         if(t>=currentTime)
         {
             //cycle time
             lastTime = currentTime;
             currentTime = nextTime;
-            nextTime += precursorStruct.nTRead;
+            nextTime += para->getParD(level)->precursorBC.nTRead;
 
             //TODO switch to streams and synch stream here
             checkCudaErrors(cudaDeviceSynchronize());
             //cycle pointers
-            real* tmp = precursorStruct.vxLast;
-            precursorStruct.vxLast = precursorStruct.vxCurrent;
-            precursorStruct.vxCurrent = precursorStruct.vxNext;
-            precursorStruct.vxNext = tmp;
+            real* tmp = para->getParD(level)->precursorBC.vxLast;
+            para->getParD(level)->precursorBC.vxLast = para->getParD(level)->precursorBC.vxCurrent;
+            para->getParD(level)->precursorBC.vxCurrent = para->getParD(level)->precursorBC.vxNext;
+            para->getParD(level)->precursorBC.vxNext = tmp;
 
 
-            tmp = precursorStruct.vyLast;
-            precursorStruct.vyLast = precursorStruct.vyCurrent;
-            precursorStruct.vyCurrent = precursorStruct.vyNext;
-            precursorStruct.vyNext = tmp;
+            tmp = para->getParD(level)->precursorBC.vyLast;
+            para->getParD(level)->precursorBC.vyLast = para->getParD(level)->precursorBC.vyCurrent;
+            para->getParD(level)->precursorBC.vyCurrent = para->getParD(level)->precursorBC.vyNext;
+            para->getParD(level)->precursorBC.vyNext = tmp;
             
-            tmp = precursorStruct.vzLast;
-            precursorStruct.vzLast = precursorStruct.vzCurrent;
-            precursorStruct.vzCurrent = precursorStruct.vzNext;
-            precursorStruct.vzNext = tmp;
+            tmp = para->getParD(level)->precursorBC.vzLast;
+            para->getParD(level)->precursorBC.vzLast = para->getParD(level)->precursorBC.vzCurrent;
+            para->getParD(level)->precursorBC.vzCurrent = para->getParD(level)->precursorBC.vzNext;
+            para->getParD(level)->precursorBC.vzNext = tmp;
 
             real loadTime = nextTime*pow(2,-level)*para->getTimeRatio();
             for(auto reader : para->getParH(level)->velocityReader)
@@ -751,7 +749,7 @@ void LBKernelManager::runPrecursorBCKernelPost(int level, uint t, CudaMemoryMana
             para->getParH(level)->precursorBC.nPrecursorReads++;  
         }
         
-        real tRatio = real(t-lastTime)/precursorStruct.nTRead;
+        real tRatio = real(t-lastTime)/para->getParD(level)->precursorBC.nTRead;
         QPrecursorDevCompZeroPress( para->getParD(level)->numberofthreads, tRatio, para->getParD(level)->distributions.f[0], para->getParD(level)->precursorBC.q27[0],
                                     para->getParD(level)->precursorBC.k, para->getParD(level)->precursorBC.sizeQ, para->getParD(level)->precursorBC.numberOfBCnodes, 
                                     para->getParD(level)->omega, para->getVelocityRatio(),
