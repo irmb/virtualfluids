@@ -29,8 +29,8 @@ std::vector<T> readStringToVector(std::string s)
 
 std::string readAttribute(std::string line, std::string attributeName)
 {
-    int attributeStart = line.find(attributeName)+attributeName.size()+2; // add 2 for '="'
-    int attributeLen = line.find("\"", attributeStart)-attributeStart;
+    size_t attributeStart = line.find(attributeName)+attributeName.size() + 2; // add 2 for '="'
+    size_t attributeLen = line.find("\"", attributeStart)-attributeStart;
     return line.substr(attributeStart, attributeLen);
 }
 
@@ -105,7 +105,7 @@ bool VTKFile::markNANs(std::vector<uint> readIndices)
 {
     std::ifstream buf(fileName.c_str(), std::ios::in | std::ios::binary);
 
-    int arraySize = sizeof(double)*readIndices.size();
+    size_t arraySize = sizeof(double)*readIndices.size();
     std::vector<double> tmp;
     tmp.reserve(readIndices.size());
     buf.seekg(this->offsetVx);
@@ -147,9 +147,9 @@ void VTKFile::getVelocities(real* vx, real* vy, real* vz, std::vector<uint> read
 {
     if(!this->loaded) loadFile();
 
-    uint nPoints = writeIndices.size();
+    size_t nPoints = writeIndices.size();
 
-    for(int i=0; i<nPoints; i++)
+    for(size_t i=0; i<nPoints; i++)
     {   
         vx[offsetWrite+writeIndices[i]] = this->vxFile[readIndeces[i]+offsetRead];
         vy[offsetWrite+writeIndices[i]] = this->vyFile[readIndeces[i]+offsetRead];
@@ -179,7 +179,7 @@ void VTKFileCollection::findFiles()
             std::vector<VTKFile> filesWithThisId;
             while (!foundLastPart)
             {
-                std::string fname = makeFileName(files.size(), filesOnThisLevel.size(), filesWithThisId.size());
+                std::string fname = makeFileName((int)files.size(), (int)filesOnThisLevel.size(), (int)filesWithThisId.size());
                 std::ifstream f(fname);
                 if(f.good())
                     filesWithThisId.emplace_back(fname);
@@ -234,7 +234,7 @@ void VTKReader::initializeIndexVectors()
 
 void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coordsZ)
 {
-    this->nPoints = coordsY.size();
+    this->nPoints = (uint)coordsY.size();
     this->initializeIndexVectors();
     real max_diff = 1e-4; // maximum distance between point on grid and precursor plane to count as exact match
     real eps = 1e-7; // small number to avoid division by zero
@@ -355,10 +355,10 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
     }}
 }
 
-int VTKReader::getWriteIndex(int level, int id, int linearIndex)
+uint VTKReader::getWriteIndex(int level, int id, int linearIndex)
 {
     auto it = std::find(this->writeIndices[level][id].begin(), this->writeIndices[level][id].end(), linearIndex);
-    int idx = it-this->writeIndices[level][id].begin();
+    uint idx = it-this->writeIndices[level][id].begin();
     if(it==this->writeIndices[level][id].end())
     {
         this->writeIndices[level][id].push_back(this->nPointsRead);

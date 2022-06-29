@@ -157,8 +157,7 @@ public:
     void getNextVelocities(real* vx, real* vy, real* vz, real t) override;
     void fillArrays(std::vector<real>& coordsY, std::vector<real>& coordsZ) override;
 private:  
-    int getReadIndex(int level, int id, int linearIdx);
-    int getWriteIndex(int level, int id, int linearIdx);
+    uint getWriteIndex(int level, int id, int linearIdx);
     void initializeIndexVectors();
 
 private:

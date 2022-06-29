@@ -101,10 +101,9 @@ void PrecursorWriter::init(Parameter* para, GridProvider* gridProvider, CudaMemo
                 indicesOnPlane.push_back(idx);
                 // printf("idx %d, idy %d, idz %d, ny %d, nz %d\n", idx, idxY, idxZ, ny, nz);
         }
-        int npoints = indicesOnGrid.size();
 
         precursorStructs[level] = SPtr<PrecursorStruct>(new PrecursorStruct);
-        precursorStructs[level]->nPoints = indicesOnGrid.size();
+        precursorStructs[level]->nPoints = (uint)indicesOnGrid.size();
         precursorStructs[level]->indicesOnPlane = (int*) malloc(precursorStructs[level]->nPoints*sizeof(int));
         precursorStructs[level]->spacing = makeUbTuple(dx, dx, tSave*para->getTimeRatio());
         precursorStructs[level]->origin = makeUbTuple(lowestY, lowestZ);
@@ -114,7 +113,7 @@ void PrecursorWriter::init(Parameter* para, GridProvider* gridProvider, CudaMemo
         precursorStructs[level]->filesWritten = 0;
         precursorStructs[level]->timestepsBuffered = 0;
 
-        printf("points %lu points on plane %lu \n",  indicesOnGrid.size(),  indicesOnPlane.size());
+        printf("points %zu points on plane %zu \n",  indicesOnGrid.size(),  indicesOnPlane.size());
 
         cudaManager->cudaAllocPrecursorWriter(this, level);
     
