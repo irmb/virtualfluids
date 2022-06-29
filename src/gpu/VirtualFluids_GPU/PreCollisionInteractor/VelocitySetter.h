@@ -133,8 +133,6 @@ public:
     uint getNPoints(){return nPoints; };
     uint getNPointsRead(){return nPointsRead; };
     void setWritingOffset(uint offset){ this->writingOffset = offset; }
-    void switchLastAndNext();
-    void copyIndexAndWeightToArrays();
     void getNeighbors(uint* neighborNT, uint* neighborNB, uint* neighborST, uint* neighborSN);
     void getWeights(real* _weightsNT, real* _weightsNB, real* _weightsST, real* _weightsSB);
 
