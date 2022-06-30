@@ -23,6 +23,9 @@ __pycache__/
 output/
 logs/
 
+# grid
+grid/
+
 # scripts
 scripts/
 
