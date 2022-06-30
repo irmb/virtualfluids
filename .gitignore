@@ -16,6 +16,8 @@ __pycache__/
 .vscode-server/
 .sync/
 .idea/
+.ccache/
+.cache/
 
 # simulation results
 output/
@@ -29,3 +31,6 @@ stl/
 
 # MacOS
 .DS_Store
+
+# Settings
+.gitconfig

@@ -191,7 +191,7 @@ typedef struct QforBC{
    real* qread;
    real* q27[27];
    real* q19[19];
-   int numberOfBCnodes=0;
+   unsigned int numberOfBCnodes=0;
    int kArray;
    real *Vx,      *Vy,      *Vz;
    real *Vx1,     *Vy1,     *Vz1;

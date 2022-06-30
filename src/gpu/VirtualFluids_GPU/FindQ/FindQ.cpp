@@ -19,8 +19,8 @@ void findQ(Parameter* para, int lev)
    unsigned int nnz             = para->getParH(lev)->gridNZ;
    int* geo_mat                 = para->getParH(lev)->geo;
    unsigned int* kk             = para->getParH(para->getCoarse())->k;
-   unsigned int sizeQ           = para->getParH(lev)->numberOfNoSlipBCnodes;
-   real* QQ                  = para->getParH(lev)->noSlipBC.q27[0];
+   unsigned int sizeQ           = para->getParH(lev)->noSlipBC.numberOfBCnodes;
+   real* QQ                     = para->getParH(lev)->noSlipBC.q27[0];
    QforBoundaryConditions &QIN  = para->getParH(lev)->noSlipBC;
    QIN.numberOfBCnodes = 0;
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -409,7 +409,7 @@ void findQInflow(Parameter* para)
    unsigned int nnz              = para->getParH(para->getCoarse())->gridNZ;
    int* geo_mat                  = para->getParH(para->getCoarse())->geo;
    unsigned int* kk              = para->getParH(para->getCoarse())->k;
-   unsigned int sizeQ            = para->getParH(para->getCoarse())->numberOfVeloBCnodes;
+   unsigned int sizeQ            = para->getParH(para->getCoarse())->velocityBC.numberOfBCnodes;
    //real* rhoBC                = para->getParH(para->getCoarse())->velocityBC.RhoBC;
    real u0                    = para->getVelocity();
    real* vx                   = para->getParH(para->getCoarse())->velocityBC.Vx;
@@ -759,7 +759,7 @@ void findQOutflow(Parameter* para)
    unsigned int nnz              = para->getParH(para->getCoarse())->gridNZ;
    int* geo_mat                  = para->getParH(para->getCoarse())->geo;
    unsigned int* kk              = para->getParH(para->getCoarse())->k;
-   unsigned int sizeQ            = para->getParH(para->getCoarse())->numberOfOutflowBCnodes;
+   unsigned int sizeQ            = para->getParH(para->getCoarse())->outflowBC.numberOfBCnodes;
    real* rhoBC                = para->getParH(para->getCoarse())->outflowBC.RhoBC;
    real u0                    = para->getVelocity();
    real* vx                   = para->getParH(para->getCoarse())->outflowBC.Vx;
@@ -1030,7 +1030,7 @@ void findQPressX0(Parameter* para, int lev)
 	unsigned int nnz              = para->getParH(lev)->gridNZ;
 	int* geo_mat                  = para->getParH(lev)->geo;
 	unsigned int* kk              = para->getParH(lev)->k;
-	//unsigned int sizeQ            = para->getParH(lev)->numberOfOutflowBCnodes;
+	//unsigned int sizeQ            = para->getParH(lev)->outflowBC.numberOfBCnodes;
 	unsigned int sizeQ            = para->getParH(lev)->QpressX0.numberOfBCnodes;
 	real* rhoBC                = para->getParH(lev)->QpressX0.RhoBC;
 	real u0                    = para->getVelocity();
@@ -1196,7 +1196,7 @@ void findQPressX1(Parameter* para, int lev)
 	unsigned int nnz              = para->getParH(lev)->gridNZ;
 	int* geo_mat                  = para->getParH(lev)->geo;
 	unsigned int* kk              = para->getParH(lev)->k;
-	//unsigned int sizeQ            = para->getParH(lev)->numberOfOutflowBCnodes;
+	//unsigned int sizeQ            = para->getParH(lev)->outflowBC.numberOfBCnodes;
 	unsigned int sizeQ            = para->getParH(lev)->QpressX1.numberOfBCnodes;
 	real* rhoBC                = para->getParH(lev)->QpressX1.RhoBC;
 	real u0                    = para->getVelocity();

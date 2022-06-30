@@ -996,14 +996,6 @@ void Parameter::setTempPressD(TempPressforBoundaryConditions *TempPressD)
 {
     this->TempPressD = TempPressD;
 }
-// void Parameter::setNumberOfVeloBCnodes(unsigned int numberOfVeloBCnodes)
-//{
-//   this->numberOfVeloBCnodes = numberOfVeloBCnodes;
-//}
-// void Parameter::setkOutflowQ(unsigned int numberOfOutflowBCnodes)
-//{
-//   this->numberOfOutflowBCnodes = numberOfOutflowBCnodes;
-//}
 // void Parameter::setQinflowH(QforBoundaryConditions* QinflowH)
 //{
 //   this->QinflowH = QinflowH;
@@ -1962,14 +1954,6 @@ TempPressforBoundaryConditions *Parameter::getTempPressD()
 {
     return this->TempPressD;
 }
-// unsigned int Parameter::getNumberOfVeloBCnodes()
-//{
-//   return this->numberOfVeloBCnodes;
-//}
-// unsigned int Parameter::getkOutflowQ()
-//{
-//   return this->numberOfOutflowBCnodes;
-//}
 // QforBoundaryConditions* Parameter::getQinflowH()
 //{
 //   return this->QinflowH;

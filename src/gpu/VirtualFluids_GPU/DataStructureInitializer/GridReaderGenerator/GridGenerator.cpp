@@ -139,8 +139,6 @@ void GridGenerator::allocArrays_BoundaryValues()
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         para->getParH(level)->slipBC.numberOfBCnodes = numberOfSlipValues;
         para->getParD(level)->slipBC.numberOfBCnodes = numberOfSlipValues;
-        para->getParH(level)->numberOfSlipBCnodes   = numberOfSlipValues;
-        para->getParD(level)->numberOfSlipBCnodes   = numberOfSlipValues;
         para->getParH(level)->numberOfSlipBCnodesRead = numberOfSlipValues * para->getD3Qxx();
         para->getParD(level)->numberOfSlipBCnodesRead = numberOfSlipValues * para->getD3Qxx();
         if (numberOfSlipValues > 1)
@@ -158,8 +156,6 @@ void GridGenerator::allocArrays_BoundaryValues()
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         para->getParH(level)->stressBC.numberOfBCnodes = numberOfStressValues;
         para->getParD(level)->stressBC.numberOfBCnodes = numberOfStressValues;
-        para->getParH(level)->numberOfStressBCnodes   = numberOfStressValues;
-        para->getParD(level)->numberOfStressBCnodes   = numberOfStressValues;
         para->getParH(level)->numberOfStressBCnodesRead = numberOfStressValues * para->getD3Qxx();
         para->getParD(level)->numberOfStressBCnodesRead = numberOfStressValues * para->getD3Qxx();
 
@@ -190,8 +186,6 @@ void GridGenerator::allocArrays_BoundaryValues()
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         para->getParH(level)->velocityBC.numberOfBCnodes = numberOfVelocityValues;
         para->getParD(level)->velocityBC.numberOfBCnodes = numberOfVelocityValues;
-        para->getParH(level)->numberOfVeloBCnodes = numberOfVelocityValues;
-        para->getParD(level)->numberOfVeloBCnodes = numberOfVelocityValues;
         para->getParH(level)->numberOfVeloBCnodesRead = numberOfVelocityValues * para->getD3Qxx();
         para->getParD(level)->numberOfVeloBCnodesRead = numberOfVelocityValues * para->getD3Qxx();
 

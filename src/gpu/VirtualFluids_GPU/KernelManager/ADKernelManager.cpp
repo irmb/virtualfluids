@@ -180,7 +180,7 @@ void ADKernelManager::runADcollisionKernel(int level)
 }
 
 void ADKernelManager::runADslipBCKernel(int level){
-    if (para->getParD(level)->numberOfSlipBCnodes > 1) {
+    if (para->getParD(level)->slipBC.numberOfBCnodes > 1) {
         ADSlipVelDevComp(
             para->getParD(level)->numberofthreads,
             para->getParD(level)->slipBC.normalX,
@@ -190,7 +190,7 @@ void ADKernelManager::runADslipBCKernel(int level){
             para->getParD(level)->distributionsAD27.f[0],
             para->getParD(level)->slipBC.k,
             para->getParD(level)->slipBC.q27[0],
-            para->getParD(level)->numberOfSlipBCnodes,
+            para->getParD(level)->slipBC.numberOfBCnodes,
             para->getParD(level)->omegaDiffusivity,
             para->getParD(level)->neighborX,
             para->getParD(level)->neighborY,
@@ -205,8 +205,6 @@ void ADKernelManager::runADpressureBCKernel(int level){
         if (para->getDiffMod() == 7) {
             // QADPressIncompDev7( 
             //     para->getParD(level)->numberofthreads,
-            //     para->getParD(level)->nx,
-            //     para->getParD(level)->ny,
             //     para->getParD(level)->distributions.f[0],
             //     para->getParD(level)->distributionsAD7.f[0],
             //     para->getParD(level)->TempPress.temp,
@@ -214,7 +212,6 @@ void ADKernelManager::runADpressureBCKernel(int level){
             //     para->getParD(level)->diffusivity,
             //     para->getParD(level)->TempPress.k,
             //     para->getParD(level)->pressureBC.q27[0],
-            //     para->getParD(level)->TempPress.kTemp,
             //     para->getParD(level)->TempPress.kTemp,
             //     para->getParD(level)->omega,
             //     para->getParD(level)->neighborX,
@@ -228,8 +225,6 @@ void ADKernelManager::runADpressureBCKernel(int level){
              //////////////////////////////////////////////////////////////////////////
             QADPressDev7(
                 para->getParD(level)->numberofthreads,
-                para->getParD(level)->nx,
-                para->getParD(level)->ny,
                 para->getParD(level)->distributions.f[0],
                 para->getParD(level)->distributionsAD7.f[0],
                 para->getParD(level)->TempPress.temp,
@@ -237,7 +232,6 @@ void ADKernelManager::runADpressureBCKernel(int level){
                 para->getParD(level)->diffusivity,
                 para->getParD(level)->TempPress.k,
                 para->getParD(level)->pressureBC.q27[0],
-                para->getParD(level)->TempPress.kTemp,
                 para->getParD(level)->TempPress.kTemp,
                 para->getParD(level)->omega,
                 para->getParD(level)->neighborX,
@@ -249,8 +243,6 @@ void ADKernelManager::runADpressureBCKernel(int level){
         } else if (para->getDiffMod() == 27) {
             // QADPressIncompDev27(
             //     para->getParD(level)->numberofthreads,
-            //     para->getParD(level)->nx,
-            //     para->getParD(level)->ny,
             //     para->getParD(level)->distributions.f[0],
             //     para->getParD(level)->distributionsAD27.f[0],
             //     para->getParD(level)->TempPress.temp,
@@ -258,7 +250,6 @@ void ADKernelManager::runADpressureBCKernel(int level){
             //     para->getParD(level)->diffusivity,
             //     para->getParD(level)->TempPress.k,
             //     para->getParD(level)->pressureBC.q27[0],
-            //     para->getParD(level)->TempPress.kTemp,
             //     para->getParD(level)->TempPress.kTemp,
             //     para->getParD(level)->omega,
             //     para->getParD(level)->neighborX,
@@ -272,8 +263,6 @@ void ADKernelManager::runADpressureBCKernel(int level){
             //////////////////////////////////////////////////////////////////////////
             QADPressDev27(
                 para->getParD(level)->numberofthreads,
-                para->getParD(level)->nx,
-                para->getParD(level)->ny,
                 para->getParD(level)->distributions.f[0],
                 para->getParD(level)->distributionsAD27.f[0],
                 para->getParD(level)->TempPress.temp,
@@ -281,7 +270,6 @@ void ADKernelManager::runADpressureBCKernel(int level){
                 para->getParD(level)->diffusivity,
                 para->getParD(level)->TempPress.k,
                 para->getParD(level)->pressureBC.q27[0],
-                para->getParD(level)->TempPress.kTemp,
                 para->getParD(level)->TempPress.kTemp,
                 para->getParD(level)->omega,
                 para->getParD(level)->neighborX,
@@ -299,15 +287,12 @@ void ADKernelManager::runADgeometryBCKernel(int level)
         if (para->getDiffMod() == 7) {
             // QNoSlipADincompDev7(
             //     para->getParD(level)->numberofthreads,
-            //     para->getParD(level)->nx,
-            //     para->getParD(level)->ny,
             //     para->getParD(level)->distributions.f[0],
             //     para->getParD(level)->distributionsAD7.f[0],
             //     para->getParD(level)->Temp.temp,
             //     para->getParD(level)->diffusivity,
             //     para->getParD(level)->Temp.k,
             //     para->getParD(level)->geometryBC.q27[0],
-            //     para->getParD(level)->Temp.kTemp,
             //     para->getParD(level)->Temp.kTemp,
             //     para->getParD(level)->omega,
             //     para->getParD(level)->neighborX,
@@ -322,15 +307,12 @@ void ADKernelManager::runADgeometryBCKernel(int level)
 
             QADDev7(
                 para->getParD(level)->numberofthreads,
-                para->getParD(level)->nx,
-                para->getParD(level)->ny,
                 para->getParD(level)->distributions.f[0],
                 para->getParD(level)->distributionsAD7.f[0],
                 para->getParD(level)->Temp.temp,
                 para->getParD(level)->diffusivity,
                 para->getParD(level)->Temp.k,
                 para->getParD(level)->geometryBC.q27[0],
-                para->getParD(level)->Temp.kTemp,
                 para->getParD(level)->Temp.kTemp,
                 para->getParD(level)->omega,
                 para->getParD(level)->neighborX,
@@ -342,15 +324,12 @@ void ADKernelManager::runADgeometryBCKernel(int level)
         } else if (para->getDiffMod() == 27) {
             // QNoSlipADincompDev27(
             //     para->getParD(level)->numberofthreads,
-            //     para->getParD(level)->nx,
-            //     para->getParD(level)->ny,
             //     para->getParD(level)->distributions.f[0],
             //     para->getParD(level)->distributionsAD27.f[0],
             //     para->getParD(level)->Temp.temp,
             //     para->getParD(level)->diffusivity,
             //     para->getParD(level)->Temp.k,
             //     para->getParD(level)->geometryBC.q27[0],
-            //     para->getParD(level)->Temp.kTemp,
             //     para->getParD(level)->Temp.kTemp,
             //     para->getParD(level)->omega,
             //     para->getParD(level)->neighborX,
@@ -365,15 +344,12 @@ void ADKernelManager::runADgeometryBCKernel(int level)
 
             QADBBDev27(
                 para->getParD(level)->numberofthreads,
-                para->getParD(level)->nx,
-                para->getParD(level)->ny,
                 para->getParD(level)->distributions.f[0],
                 para->getParD(level)->distributionsAD27.f[0],
                 para->getParD(level)->Temp.temp,
                 para->getParD(level)->diffusivity,
                 para->getParD(level)->Temp.k,
                 para->getParD(level)->geometryBC.q27[0],
-                para->getParD(level)->Temp.kTemp,
                 para->getParD(level)->Temp.kTemp,
                 para->getParD(level)->omega,
                 para->getParD(level)->neighborX,
@@ -391,8 +367,6 @@ void ADKernelManager::runADveloBCKernel(int level){
         {
             // QADVeloIncompDev7(
             //     para->getParD(level)->numberofthreads,
-            //     para->getParD(level)->nx,
-            //     para->getParD(level)->ny,
             //     para->getParD(level)->distributions.f[0],
             //     para->getParD(level)->distributionsAD7.f[0],
             //     para->getParD(level)->TempVel.tempPulse,
@@ -400,7 +374,6 @@ void ADKernelManager::runADveloBCKernel(int level){
             //     para->getParD(level)->diffusivity,
             //     para->getParD(level)->TempVel.k,
             //     para->getParD(level)->velocityBC.q27[0],
-            //     para->getParD(level)->TempVel.kTemp,
             //     para->getParD(level)->TempVel.kTemp,
             //     para->getParD(level)->omega,
             //     para->getParD(level)->neighborX,
@@ -415,8 +388,6 @@ void ADKernelManager::runADveloBCKernel(int level){
 
             QADVelDev7(
                 para->getParD(level)->numberofthreads,
-                para->getParD(level)->nx,
-                para->getParD(level)->ny,
                 para->getParD(level)->distributions.f[0],
                 para->getParD(level)->distributionsAD7.f[0],
                 para->getParD(level)->TempVel.temp,
@@ -424,7 +395,6 @@ void ADKernelManager::runADveloBCKernel(int level){
                 para->getParD(level)->diffusivity,
                 para->getParD(level)->TempVel.k,
                 para->getParD(level)->velocityBC.q27[0],
-                para->getParD(level)->TempVel.kTemp,
                 para->getParD(level)->TempVel.kTemp,
                 para->getParD(level)->omega,
                 para->getParD(level)->neighborX,
@@ -436,8 +406,6 @@ void ADKernelManager::runADveloBCKernel(int level){
         } else if (para->getDiffMod() == 27) {
             // QADVeloIncompDev27(
             //     para->getParD(level)->numberofthreads,
-            //     para->getParD(level)->nx,
-            //     para->getParD(level)->ny,
             //     para->getParD(level)->distributions.f[0],
             //     para->getParD(level)->distributionsAD27.f[0],
             //     para->getParD(level)->TempVel.temp,
@@ -445,7 +413,6 @@ void ADKernelManager::runADveloBCKernel(int level){
             //     para->getParD(level)->diffusivity,
             //     para->getParD(level)->TempVel.k,
             //     para->getParD(level)->velocityBC.q27[0],
-            //     para->getParD(level)->TempVel.kTemp,
             //     para->getParD(level)->TempVel.kTemp,
             //     para->getParD(level)->omega,
             //     para->getParD(level)->neighborX,
@@ -459,8 +426,6 @@ void ADKernelManager::runADveloBCKernel(int level){
             //////////////////////////////////////////////////////////////////////////
             QADVelDev27(
                 para->getParD(level)->numberofthreads,
-                para->getParD(level)->nx,
-                para->getParD(level)->ny,
                 para->getParD(level)->distributions.f[0],
                 para->getParD(level)->distributionsAD27.f[0],
                 para->getParD(level)->TempVel.tempPulse,
@@ -468,8 +433,7 @@ void ADKernelManager::runADveloBCKernel(int level){
                 para->getParD(level)->diffusivity,
                 para->getParD(level)->velocityBC.k,
                 para->getParD(level)->velocityBC.q27[0],
-                para->getParD(level)->numberOfVeloBCnodes,
-                para->getParD(level)->numberOfVeloBCnodes,
+                para->getParD(level)->velocityBC.numberOfBCnodes,
                 para->getParD(level)->omega,
                 para->getParD(level)->neighborX,
                 para->getParD(level)->neighborY,
@@ -484,8 +448,6 @@ void ADKernelManager::runADveloBCKernel(int level){
             // {
             //   QADVelDev27(
             //     para->getParD(level)->numberofthreads,
-            //     para->getParD(level)->nx,
-            //     para->getParD(level)->ny,
             //     para->getParD(level)->distributions.f[0],
             //     para->getParD(level)->distributionsAD27.f[0],
             //     para->getParD(level)->TempVel.tempPulse,
@@ -493,8 +455,7 @@ void ADKernelManager::runADveloBCKernel(int level){
             //     para->getParD(level)->diffusivity,
             //     para->getParD(level)->velocityBC.k,
             //     para->getParD(level)->velocityBC.q27[0],
-            //     para->getParD(level)->numberOfVeloBCnodes,
-            //     para->getParD(level)->numberOfVeloBCnodes,
+            //     para->getParD(level)->velocityBC.numberOfBCnodes,
             //     para->getParD(level)->omega,
             //     para->getParD(level)->neighborX,
             //     para->getParD(level)->neighborY,
@@ -506,8 +467,6 @@ void ADKernelManager::runADveloBCKernel(int level){
             // {
             //   QADVelDev27(
             //     para->getParD(level)->numberofthreads,
-            //     para->getParD(level)->nx,
-            //     para->getParD(level)->ny,
             //     para->getParD(level)->distributions.f[0],
             //     para->getParD(level)->distributionsAD27.f[0],
             //     para->getParD(level)->TempVel.temp,
@@ -515,8 +474,7 @@ void ADKernelManager::runADveloBCKernel(int level){
             //     para->getParD(level)->diffusivity,
             //     para->getParD(level)->velocityBC.k,
             //     para->getParD(level)->velocityBC.q27[0],
-            //     para->getParD(level)->numberOfVeloBCnodes,
-            //     para->getParD(level)->numberOfVeloBCnodes,
+            //     para->getParD(level)->velocityBC.numberOfBCnodes,
             //     para->getParD(level)->omega,
             //     para->getParD(level)->neighborX,
             //     para->getParD(level)->neighborY,

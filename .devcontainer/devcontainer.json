@@ -11,5 +11,10 @@
         "streetsidesoftware.code-spell-checker"
     ],
     "runArgs": ["--gpus","all"],
-    "image": "git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu20_04:1.3"
+    "image": "git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu20_04:1.3",
+    "containerEnv": {"HOME": "/workspaces/"},
+    "mounts": [
+        "source=/mnt/d/output,target=/${containerWorkspaceFolder}/output,type=bind", 
+        "source=${localEnv:HOME}/STLs,target=${containerWorkspaceFolder}/stl,type=bind"    
+    ]
 }

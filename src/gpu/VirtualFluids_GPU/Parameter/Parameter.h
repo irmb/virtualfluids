@@ -221,12 +221,9 @@ struct LBMSimulationParameter {
 
     // BC's////////////////////
     //! \brief stores the boundary condition data
-    QforBoundaryConditions noSlipBC, velocityBC, outflowBC, slipBC, stressBC;
+    QforBoundaryConditions noSlipBC, velocityBC, outflowBC, slipBC, stressBC, pressureBC;
     //! \brief number of lattice nodes for the boundary conditions
-    unsigned int numberOfNoSlipBCnodes = 0, numberOfVeloBCnodes = 0, numberOfOutflowBCnodes = 0, numberOfSlipBCnodes = 0, numberOfStressBCnodes = 0;
-    unsigned int numberOfNoSlipBCnodesRead, numberOfVeloBCnodesRead, numberOfOutflowBCnodesRead, numberOfSlipBCnodesRead, numberOfStressBCnodesRead;
-    QforBoundaryConditions pressureBC;
-    unsigned int numberOfPressureBCnodes = 0, numberOfPressureBCnodesRead;
+    unsigned int numberOfNoSlipBCnodesRead, numberOfVeloBCnodesRead, numberOfOutflowBCnodesRead, numberOfSlipBCnodesRead, numberOfStressBCnodesRead, numberOfPressureBCnodesRead;
 
     QforBoundaryConditions QpressX0, QpressX1, QpressY0, QpressY1, QpressZ0, QpressZ1; // DEPRECATED
     QforBoundaryConditions propellerBC;
@@ -581,8 +578,6 @@ public:
     void setRecvProcessNeighborsAfterFtoCX(int numberOfNodes, int level, int arrayIndex);
     void setRecvProcessNeighborsAfterFtoCY(int numberOfNodes, int level, int arrayIndex);
     void setRecvProcessNeighborsAfterFtoCZ(int numberOfNodes, int level, int arrayIndex);
-    // void setNumberOfVeloBCnodes(unsigned int numberOfVeloBCnodes);
-    // void setkOutflowQ(unsigned int numberOfOutflowBCnodes);
     // void setQinflowH(QforBoundaryConditions* QinflowH);
     // void setQinflowD(QforBoundaryConditions* QinflowD);
     // void setQoutflowH(QforBoundaryConditions* QoutflowH);

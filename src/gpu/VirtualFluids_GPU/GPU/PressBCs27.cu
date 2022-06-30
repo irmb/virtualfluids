@@ -1,7 +1,8 @@
 /* Device code */
 #include "LBM/LB.h" 
 #include "LBM/D3Q27.h"
-#include <lbm/constants/NumericConstants.h>
+#include "lbm/constants/NumericConstants.h"
+#include "KernelUtilities.h"
 
 using namespace vf::lbm::constant;
 
@@ -803,33 +804,53 @@ extern "C" __global__ void QPressDeviceIncompNEQ27( real* rhoBC,
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QPressDeviceNEQ27(real* rhoBC,
-                                             real* DD, 
-                                             int* k_Q, 
-                                             int* k_N, 
-                                             int numberOfBCnodes, 
-                                             real om1, 
+                                             real* distribution, 
+                                             int* bcNodeIndices,
+                                             int* bcNeighborIndices,
+                                             int numberOfBCnodes,
+                                             real omega1, 
                                              unsigned int* neighborX,
                                              unsigned int* neighborY,
                                              unsigned int* neighborZ,
-                                             unsigned int size_Mat, 
+                                             unsigned int numberOfLBnodes, 
                                              bool isEvenTimestep)
 {
-   ////////////////////////////////////////////////////////////////////////////////
-   const unsigned  x = threadIdx.x;  // Globaler x-Index 
-   const unsigned  y = blockIdx.x;   // Globaler y-Index 
-   const unsigned  z = blockIdx.y;   // Globaler z-Index 
+   //////////////////////////////////////////////////////////////////////////
+	//! The pressure boundary condition is executed in the following steps
+	//!
+	////////////////////////////////////////////////////////////////////////////////
+	//! - Get node index coordinates from thredIdx, blockIdx, blockDim and gridDim.
+	//!
+   const unsigned x = threadIdx.x;    // global x-index 
+   const unsigned y = blockIdx.x;     // global y-index 
+   const unsigned z = blockIdx.y;     // global z-index 
 
    const unsigned nx = blockDim.x;
    const unsigned ny = gridDim.x;
 
    const unsigned k = nx*(ny*z + y) + x;
-   //////////////////////////////////////////////////////////////////////////
 
-   if(k<numberOfBCnodes)
+   //////////////////////////////////////////////////////////////////////////
+   //! - Run for all indices in size of boundary condition (numberOfBCnodes)
+   //!
+   if(k < numberOfBCnodes)
    {
+      //////////////////////////////////////////////////////////////////////////
+      //! - Read distributions: style of reading and writing the distributions from/to stored arrays dependent on timestep is based on the esoteric twist algorithm \ref
+      //! <a href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017), DOI:10.3390/computation5020019 ]</b></a>
+      //!
+      Distributions27 dist;
+      getPointersToDistributions(dist, distribution, numberOfLBnodes, isEvenTimestep);
+
       ////////////////////////////////////////////////////////////////////////////////
-      //index
-      unsigned int KQK  = k_Q[k];
+      //! - Set local pressure
+      //!
+      real rhoBClocal = rhoBC[k];
+
+      ////////////////////////////////////////////////////////////////////////////////
+      //! - Set neighbor indices (necessary for indirect addressing)
+      //!
+      unsigned int KQK  = bcNodeIndices[k];
       unsigned int kzero= KQK;
       unsigned int ke   = KQK;
       unsigned int kw   = neighborX[KQK];
@@ -858,8 +879,9 @@ extern "C" __global__ void QPressDeviceNEQ27(real* rhoBC,
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-      //index1
-      unsigned int K1QK  = k_N[k];
+      //! - Set neighbor indices (necessary for indirect addressing) for neighboring node
+      //!
+      unsigned int K1QK  = bcNeighborIndices[k];
       unsigned int k1zero= K1QK;
       unsigned int k1e   = K1QK;
       unsigned int k1w   = neighborX[K1QK];
@@ -887,123 +909,62 @@ extern "C" __global__ void QPressDeviceNEQ27(real* rhoBC,
       unsigned int k1bne = k1b;
       unsigned int k1tne = K1QK;
       unsigned int k1bsw = neighborZ[k1sw];
+
       ////////////////////////////////////////////////////////////////////////////////
-      Distributions27 D;
-      if (isEvenTimestep==true) //// ACHTUNG PREColl !!!!!!!!!!!!!!
-      {
-         D.f[dirE   ] = &DD[dirE   *size_Mat];
-         D.f[dirW   ] = &DD[dirW   *size_Mat];
-         D.f[dirN   ] = &DD[dirN   *size_Mat];
-         D.f[dirS   ] = &DD[dirS   *size_Mat];
-         D.f[dirT   ] = &DD[dirT   *size_Mat];
-         D.f[dirB   ] = &DD[dirB   *size_Mat];
-         D.f[dirNE  ] = &DD[dirNE  *size_Mat];
-         D.f[dirSW  ] = &DD[dirSW  *size_Mat];
-         D.f[dirSE  ] = &DD[dirSE  *size_Mat];
-         D.f[dirNW  ] = &DD[dirNW  *size_Mat];
-         D.f[dirTE  ] = &DD[dirTE  *size_Mat];
-         D.f[dirBW  ] = &DD[dirBW  *size_Mat];
-         D.f[dirBE  ] = &DD[dirBE  *size_Mat];
-         D.f[dirTW  ] = &DD[dirTW  *size_Mat];
-         D.f[dirTN  ] = &DD[dirTN  *size_Mat];
-         D.f[dirBS  ] = &DD[dirBS  *size_Mat];
-         D.f[dirBN  ] = &DD[dirBN  *size_Mat];
-         D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
-         D.f[dirTNE ] = &DD[dirTNE *size_Mat];
-         D.f[dirTSW ] = &DD[dirTSW *size_Mat];
-         D.f[dirTSE ] = &DD[dirTSE *size_Mat];
-         D.f[dirTNW ] = &DD[dirTNW *size_Mat];
-         D.f[dirBNE ] = &DD[dirBNE *size_Mat];
-         D.f[dirBSW ] = &DD[dirBSW *size_Mat];
-         D.f[dirBSE ] = &DD[dirBSE *size_Mat];
-         D.f[dirBNW ] = &DD[dirBNW *size_Mat];
-      } 
-      else
-      {
-         D.f[dirW   ] = &DD[dirE   *size_Mat];
-         D.f[dirE   ] = &DD[dirW   *size_Mat];
-         D.f[dirS   ] = &DD[dirN   *size_Mat];
-         D.f[dirN   ] = &DD[dirS   *size_Mat];
-         D.f[dirB   ] = &DD[dirT   *size_Mat];
-         D.f[dirT   ] = &DD[dirB   *size_Mat];
-         D.f[dirSW  ] = &DD[dirNE  *size_Mat];
-         D.f[dirNE  ] = &DD[dirSW  *size_Mat];
-         D.f[dirNW  ] = &DD[dirSE  *size_Mat];
-         D.f[dirSE  ] = &DD[dirNW  *size_Mat];
-         D.f[dirBW  ] = &DD[dirTE  *size_Mat];
-         D.f[dirTE  ] = &DD[dirBW  *size_Mat];
-         D.f[dirTW  ] = &DD[dirBE  *size_Mat];
-         D.f[dirBE  ] = &DD[dirTW  *size_Mat];
-         D.f[dirBS  ] = &DD[dirTN  *size_Mat];
-         D.f[dirTN  ] = &DD[dirBS  *size_Mat];
-         D.f[dirTS  ] = &DD[dirBN  *size_Mat];
-         D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
-         D.f[dirTNE ] = &DD[dirBSW *size_Mat];
-         D.f[dirTSW ] = &DD[dirBNE *size_Mat];
-         D.f[dirTSE ] = &DD[dirBNW *size_Mat];
-         D.f[dirTNW ] = &DD[dirBSE *size_Mat];
-         D.f[dirBNE ] = &DD[dirTSW *size_Mat];
-         D.f[dirBSW ] = &DD[dirTNE *size_Mat];
-         D.f[dirBSE ] = &DD[dirTNW *size_Mat];
-         D.f[dirBNW ] = &DD[dirTSE *size_Mat];
-      }
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      real        f1_E,f1_W,f1_N,f1_S,f1_T,f1_B,f1_NE,f1_SW,f1_SE,f1_NW,f1_TE,f1_BW,f1_BE,f1_TW,f1_TN,f1_BS,f1_BN,f1_TS,f1_ZERO,
-                     f1_TNE,f1_TSW,f1_TSE,f1_TNW,f1_BNE,f1_BSW,f1_BSE,f1_BNW;
+      //! - Set local distributions for neighboring node
+      //!
+      real f1_W    = (dist.f[dirE   ])[k1e   ];
+      real f1_E    = (dist.f[dirW   ])[k1w   ];
+      real f1_S    = (dist.f[dirN   ])[k1n   ];
+      real f1_N    = (dist.f[dirS   ])[k1s   ];
+      real f1_B    = (dist.f[dirT   ])[k1t   ];
+      real f1_T    = (dist.f[dirB   ])[k1b   ];
+      real f1_SW   = (dist.f[dirNE  ])[k1ne  ];
+      real f1_NE   = (dist.f[dirSW  ])[k1sw  ];
+      real f1_NW   = (dist.f[dirSE  ])[k1se  ];
+      real f1_SE   = (dist.f[dirNW  ])[k1nw  ];
+      real f1_BW   = (dist.f[dirTE  ])[k1te  ];
+      real f1_TE   = (dist.f[dirBW  ])[k1bw  ];
+      real f1_TW   = (dist.f[dirBE  ])[k1be  ];
+      real f1_BE   = (dist.f[dirTW  ])[k1tw  ];
+      real f1_BS   = (dist.f[dirTN  ])[k1tn  ];
+      real f1_TN   = (dist.f[dirBS  ])[k1bs  ];
+      real f1_TS   = (dist.f[dirBN  ])[k1bn  ];
+      real f1_BN   = (dist.f[dirTS  ])[k1ts  ];
+      real f1_ZERO = (dist.f[dirZERO])[k1zero];
+      real f1_BSW  = (dist.f[dirTNE ])[k1tne ];
+      real f1_BNE  = (dist.f[dirTSW ])[k1tsw ];
+      real f1_BNW  = (dist.f[dirTSE ])[k1tse ];
+      real f1_BSE  = (dist.f[dirTNW ])[k1tnw ];
+      real f1_TSW  = (dist.f[dirBNE ])[k1bne ];
+      real f1_TNE  = (dist.f[dirBSW ])[k1bsw ];
+      real f1_TNW  = (dist.f[dirBSE ])[k1bse ];
+      real f1_TSE  = (dist.f[dirBNW ])[k1bnw ];
 
-      f1_W    = (D.f[dirE   ])[k1e   ];
-      f1_E    = (D.f[dirW   ])[k1w   ];
-      f1_S    = (D.f[dirN   ])[k1n   ];
-      f1_N    = (D.f[dirS   ])[k1s   ];
-      f1_B    = (D.f[dirT   ])[k1t   ];
-      f1_T    = (D.f[dirB   ])[k1b   ];
-      f1_SW   = (D.f[dirNE  ])[k1ne  ];
-      f1_NE   = (D.f[dirSW  ])[k1sw  ];
-      f1_NW   = (D.f[dirSE  ])[k1se  ];
-      f1_SE   = (D.f[dirNW  ])[k1nw  ];
-      f1_BW   = (D.f[dirTE  ])[k1te  ];
-      f1_TE   = (D.f[dirBW  ])[k1bw  ];
-      f1_TW   = (D.f[dirBE  ])[k1be  ];
-      f1_BE   = (D.f[dirTW  ])[k1tw  ];
-      f1_BS   = (D.f[dirTN  ])[k1tn  ];
-      f1_TN   = (D.f[dirBS  ])[k1bs  ];
-      f1_TS   = (D.f[dirBN  ])[k1bn  ];
-      f1_BN   = (D.f[dirTS  ])[k1ts  ];
-      f1_ZERO = (D.f[dirZERO])[k1zero];
-      f1_BSW  = (D.f[dirTNE ])[k1tne ];
-      f1_BNE  = (D.f[dirTSW ])[k1tsw ];
-      f1_BNW  = (D.f[dirTSE ])[k1tse ];
-      f1_BSE  = (D.f[dirTNW ])[k1tnw ];
-      f1_TSW  = (D.f[dirBNE ])[k1bne ];
-      f1_TNE  = (D.f[dirBSW ])[k1bsw ];
-      f1_TNW  = (D.f[dirBSE ])[k1bse ];
-      f1_TSE  = (D.f[dirBNW ])[k1bnw ];
+      ////////////////////////////////////////////////////////////////////////////////
+      //! - Calculate macroscopic quantities (for neighboring node)
+      //!
+      real drho1 = f1_TSE + f1_TNW + f1_TNE + f1_TSW + f1_BSE + f1_BNW + f1_BNE + f1_BSW +
+                   f1_BN + f1_TS + f1_TN + f1_BS + f1_BE + f1_TW + f1_TE + f1_BW + f1_SE + f1_NW + f1_NE + f1_SW + 
+                   f1_T + f1_B + f1_N + f1_S + f1_E + f1_W + ((dist.f[dirZERO])[kzero]); 
 
-      //////////////////////////////////////////////////////////////////////////
-      real drho1    =  f1_ZERO+f1_E+f1_W+f1_N+f1_S+f1_T+f1_B+f1_NE+f1_SW+f1_SE+f1_NW+f1_TE+f1_BW+f1_BE+f1_TW+f1_TN+f1_BS+f1_BN+f1_TS+
-                          f1_TNE+f1_TSW+f1_TSE+f1_TNW+f1_BNE+f1_BSW+f1_BSE+f1_BNW;
+      real vx1  = (((f1_TSE - f1_BNW) - (f1_TNW - f1_BSE)) + ((f1_TNE - f1_BSW) - (f1_TSW - f1_BNE)) +
+                   ((f1_BE - f1_TW)   + (f1_TE - f1_BW))   + ((f1_SE - f1_NW)   + (f1_NE - f1_SW)) +
+                   (f1_E - f1_W)) / (c1o1 + drho1);          
 
-      real vx1      =  ((f1_TSE - f1_BNW) - (f1_TNW - f1_BSE)) + ((f1_TNE - f1_BSW) - (f1_TSW - f1_BNE)) +
-						  ((f1_BE - f1_TW)   + (f1_TE - f1_BW))   + ((f1_SE - f1_NW)   + (f1_NE - f1_SW)) +
-						  (f1_E - f1_W); 
+      real vx2  = ((-(f1_TSE - f1_BNW) + (f1_TNW - f1_BSE)) + ((f1_TNE - f1_BSW) - (f1_TSW - f1_BNE)) +
+                   ((f1_BN - f1_TS)   + (f1_TN - f1_BS))    + (-(f1_SE - f1_NW)  + (f1_NE - f1_SW)) +
+                   (f1_N - f1_S)) / (c1o1 + drho1); 
 
+      real vx3  = (((f1_TSE - f1_BNW) + (f1_TNW - f1_BSE)) + ((f1_TNE - f1_BSW) + (f1_TSW - f1_BNE)) +
+                   (-(f1_BN - f1_TS)  + (f1_TN - f1_BS))   + ((f1_TE - f1_BW)   - (f1_BE - f1_TW)) +
+                   (f1_T - f1_B)) / (c1o1 + drho1); 
 
-      real vx2    =   (-(f1_TSE - f1_BNW) + (f1_TNW - f1_BSE)) + ((f1_TNE - f1_BSW) - (f1_TSW - f1_BNE)) +
-						 ((f1_BN - f1_TS)   + (f1_TN - f1_BS))    + (-(f1_SE - f1_NW)  + (f1_NE - f1_SW)) +
-						 (f1_N - f1_S); 
+      real cusq = c3o2 * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3);
 
-      real vx3    =   ((f1_TSE - f1_BNW) + (f1_TNW - f1_BSE)) + ((f1_TNE - f1_BSW) + (f1_TSW - f1_BNE)) +
-						 (-(f1_BN - f1_TS)  + (f1_TN - f1_BS))   + ((f1_TE - f1_BW)   - (f1_BE - f1_TW)) +
-						 (f1_T - f1_B); 
-
-	  vx1 /= (drho1+c1o1);
-	  vx2 /= (drho1+c1o1);
-	  vx3 /= (drho1+c1o1);
-
-      real cusq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
-
+      ////////////////////////////////////////////////////////////////////////////////
+      //! subtract the equilibrium (eq) to obtain the non-equilibrium (neq) (for neighboring node)
+      //!
       f1_ZERO  -= c8o27*  (drho1-(drho1+c1o1)*cusq);
       f1_E     -= c2o27*  (drho1+(drho1+c1o1)*(c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cusq));
       f1_W     -= c2o27*  (drho1+(drho1+c1o1)*(c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cusq));
@@ -1031,9 +992,15 @@ extern "C" __global__ void QPressDeviceNEQ27(real* rhoBC,
       f1_BNW   -=  c1o216*(drho1+(drho1+c1o1)*(c3o1*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cusq));
       f1_BSE   -=  c1o216*(drho1+(drho1+c1o1)*(c3o1*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cusq));
       f1_TNW   -=  c1o216*(drho1+(drho1+c1o1)*(c3o1*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cusq));
-	   
-	  drho1 = rhoBC[k];
 
+      ////////////////////////////////////////////////////////////////////////////////
+      //! redefine drho1 with rhoBClocal
+      //!
+      drho1 = rhoBClocal;
+
+      ////////////////////////////////////////////////////////////////////////////////
+      //! add the equilibrium (eq), which is calculated with rhoBClocal (for neighboring node)
+      //!
       f1_ZERO  += c8o27*  (drho1-(drho1+c1o1)*cusq);
       f1_E     += c2o27*  (drho1+(drho1+c1o1)*(c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cusq));
       f1_W     += c2o27*  (drho1+(drho1+c1o1)*(c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cusq));
@@ -1062,39 +1029,40 @@ extern "C" __global__ void QPressDeviceNEQ27(real* rhoBC,
       f1_BSE   +=  c1o216*(drho1+(drho1+c1o1)*(c3o1*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cusq));
       f1_TNW   +=  c1o216*(drho1+(drho1+c1o1)*(c3o1*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cusq));
 
-	  //drho1 = (drho1 + rhoBC[k])/2.f;
-	  //drho1 = drho1 - rhoBC[k];
       //////////////////////////////////////////////////////////////////////////
 
       __syncthreads();
 
-      (D.f[dirE   ])[ke   ] = f1_W   ;  
-      (D.f[dirW   ])[kw   ] = f1_E   ;	
-      (D.f[dirN   ])[kn   ] = f1_S   ;	
-      (D.f[dirS   ])[ks   ] = f1_N   ;	
-      (D.f[dirT   ])[kt   ] = f1_B   ;	
-      (D.f[dirB   ])[kb   ] = f1_T   ;	
-      (D.f[dirNE  ])[kne  ] = f1_SW  ;	
-      (D.f[dirSW  ])[ksw  ] = f1_NE  ;	
-      (D.f[dirSE  ])[kse  ] = f1_NW  ;	
-      (D.f[dirNW  ])[knw  ] = f1_SE  ;	
-      (D.f[dirTE  ])[kte  ] = f1_BW  ;	
-      (D.f[dirBW  ])[kbw  ] = f1_TE  ;	
-      (D.f[dirBE  ])[kbe  ] = f1_TW  ;	
-      (D.f[dirTW  ])[ktw  ] = f1_BE  ;	
-      (D.f[dirTN  ])[ktn  ] = f1_BS  ;	
-      (D.f[dirBS  ])[kbs  ] = f1_TN  ;	
-      (D.f[dirBN  ])[kbn  ] = f1_TS  ;	
-      (D.f[dirTS  ])[kts  ] = f1_BN  ;	
-      (D.f[dirZERO])[kzero] = f1_ZERO;	
-      (D.f[dirTNE ])[ktne ] = f1_BSW ;	
-      (D.f[dirTSW ])[ktsw ] = f1_BNE ;	
-      (D.f[dirTSE ])[ktse ] = f1_BNW ;	
-      (D.f[dirTNW ])[ktnw ] = f1_BSE ;	
-      (D.f[dirBNE ])[kbne ] = f1_TSW ;	
-      (D.f[dirBSW ])[kbsw ] = f1_TNE ;	
-      (D.f[dirBSE ])[kbse ] = f1_TNW ;	
-      (D.f[dirBNW ])[kbnw ] = f1_TSE ;       
+      ////////////////////////////////////////////////////////////////////////////////
+      //! write the new distributions to the bc nodes
+      //!
+      (dist.f[dirE   ])[ke   ] = f1_W   ;
+      (dist.f[dirW   ])[kw   ] = f1_E   ;
+      (dist.f[dirN   ])[kn   ] = f1_S   ;
+      (dist.f[dirS   ])[ks   ] = f1_N   ;
+      (dist.f[dirT   ])[kt   ] = f1_B   ;
+      (dist.f[dirB   ])[kb   ] = f1_T   ;
+      (dist.f[dirNE  ])[kne  ] = f1_SW  ;
+      (dist.f[dirSW  ])[ksw  ] = f1_NE  ;
+      (dist.f[dirSE  ])[kse  ] = f1_NW  ;
+      (dist.f[dirNW  ])[knw  ] = f1_SE  ;
+      (dist.f[dirTE  ])[kte  ] = f1_BW  ;
+      (dist.f[dirBW  ])[kbw  ] = f1_TE  ;
+      (dist.f[dirBE  ])[kbe  ] = f1_TW  ;
+      (dist.f[dirTW  ])[ktw  ] = f1_BE  ;
+      (dist.f[dirTN  ])[ktn  ] = f1_BS  ;
+      (dist.f[dirBS  ])[kbs  ] = f1_TN  ;
+      (dist.f[dirBN  ])[kbn  ] = f1_TS  ;
+      (dist.f[dirTS  ])[kts  ] = f1_BN  ;
+      (dist.f[dirZERO])[kzero] = f1_ZERO;
+      (dist.f[dirTNE ])[ktne ] = f1_BSW ;
+      (dist.f[dirTSW ])[ktsw ] = f1_BNE ;
+      (dist.f[dirTSE ])[ktse ] = f1_BNW ;
+      (dist.f[dirTNW ])[ktnw ] = f1_BSE ;
+      (dist.f[dirBNE ])[kbne ] = f1_TSW ;
+      (dist.f[dirBSW ])[kbsw ] = f1_TNE ;
+      (dist.f[dirBSE ])[kbse ] = f1_TNW ;
+      (dist.f[dirBNW ])[kbnw ] = f1_TSE ;
    }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1447,14 +1415,11 @@ extern "C" __global__ void LB_BC_Press_East27( int nx,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QPressDevice27(int inx,
-                                           int iny,
-                                           real* rhoBC,
+extern "C" __global__ void QPressDevice27(real* rhoBC,
                                            real* DD, 
                                            int* k_Q, 
                                            real* QQ,
-                                           unsigned int sizeQ,
-                                           int numberOfBCnodes, 
+                                           unsigned int numberOfBCnodes, 
                                            real om1, 
                                            unsigned int* neighborX,
                                            unsigned int* neighborY,
@@ -1541,32 +1506,32 @@ extern "C" __global__ void QPressDevice27(int inx,
          *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
          *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
          *q_dirBSE, *q_dirBNW; 
-      q_dirE   = &QQ[dirE   *sizeQ];
-      q_dirW   = &QQ[dirW   *sizeQ];
-      q_dirN   = &QQ[dirN   *sizeQ];
-      q_dirS   = &QQ[dirS   *sizeQ];
-      q_dirT   = &QQ[dirT   *sizeQ];
-      q_dirB   = &QQ[dirB   *sizeQ];
-      q_dirNE  = &QQ[dirNE  *sizeQ];
-      q_dirSW  = &QQ[dirSW  *sizeQ];
-      q_dirSE  = &QQ[dirSE  *sizeQ];
-      q_dirNW  = &QQ[dirNW  *sizeQ];
-      q_dirTE  = &QQ[dirTE  *sizeQ];
-      q_dirBW  = &QQ[dirBW  *sizeQ];
-      q_dirBE  = &QQ[dirBE  *sizeQ];
-      q_dirTW  = &QQ[dirTW  *sizeQ];
-      q_dirTN  = &QQ[dirTN  *sizeQ];
-      q_dirBS  = &QQ[dirBS  *sizeQ];
-      q_dirBN  = &QQ[dirBN  *sizeQ];
-      q_dirTS  = &QQ[dirTS  *sizeQ];
-      q_dirTNE = &QQ[dirTNE *sizeQ];
-      q_dirTSW = &QQ[dirTSW *sizeQ];
-      q_dirTSE = &QQ[dirTSE *sizeQ];
-      q_dirTNW = &QQ[dirTNW *sizeQ];
-      q_dirBNE = &QQ[dirBNE *sizeQ];
-      q_dirBSW = &QQ[dirBSW *sizeQ];
-      q_dirBSE = &QQ[dirBSE *sizeQ];
-      q_dirBNW = &QQ[dirBNW *sizeQ];
+      q_dirE   = &QQ[dirE   * numberOfBCnodes];
+      q_dirW   = &QQ[dirW   * numberOfBCnodes];
+      q_dirN   = &QQ[dirN   * numberOfBCnodes];
+      q_dirS   = &QQ[dirS   * numberOfBCnodes];
+      q_dirT   = &QQ[dirT   * numberOfBCnodes];
+      q_dirB   = &QQ[dirB   * numberOfBCnodes];
+      q_dirNE  = &QQ[dirNE  * numberOfBCnodes];
+      q_dirSW  = &QQ[dirSW  * numberOfBCnodes];
+      q_dirSE  = &QQ[dirSE  * numberOfBCnodes];
+      q_dirNW  = &QQ[dirNW  * numberOfBCnodes];
+      q_dirTE  = &QQ[dirTE  * numberOfBCnodes];
+      q_dirBW  = &QQ[dirBW  * numberOfBCnodes];
+      q_dirBE  = &QQ[dirBE  * numberOfBCnodes];
+      q_dirTW  = &QQ[dirTW  * numberOfBCnodes];
+      q_dirTN  = &QQ[dirTN  * numberOfBCnodes];
+      q_dirBS  = &QQ[dirBS  * numberOfBCnodes];
+      q_dirBN  = &QQ[dirBN  * numberOfBCnodes];
+      q_dirTS  = &QQ[dirTS  * numberOfBCnodes];
+      q_dirTNE = &QQ[dirTNE * numberOfBCnodes];
+      q_dirTSW = &QQ[dirTSW * numberOfBCnodes];
+      q_dirTSE = &QQ[dirTSE * numberOfBCnodes];
+      q_dirTNW = &QQ[dirTNW * numberOfBCnodes];
+      q_dirBNE = &QQ[dirBNE * numberOfBCnodes];
+      q_dirBSW = &QQ[dirBSW * numberOfBCnodes];
+      q_dirBSE = &QQ[dirBSE * numberOfBCnodes];
+      q_dirBNW = &QQ[dirBNW * numberOfBCnodes];
       ////////////////////////////////////////////////////////////////////////////////
       //index
       unsigned int KQK  = k_Q[k];
@@ -4853,8 +4818,7 @@ extern "C" __global__ void QPressDevice27_IntBB(real* rho,
 												real* DD, 
 												int* k_Q, 
 												real* QQ,
-												unsigned int sizeQ,
-												int numberOfBCnodes, 
+												unsigned int numberOfBCnodes, 
 												real om1, 
 												unsigned int* neighborX,
 												unsigned int* neighborY,
@@ -4934,7 +4898,7 @@ extern "C" __global__ void QPressDevice27_IntBB(real* rho,
 	const unsigned k = nx*(ny*z + y) + x;
 	//////////////////////////////////////////////////////////////////////////
 
-	if(k<numberOfBCnodes)
+	if(k < numberOfBCnodes)
 	{
 		////////////////////////////////////////////////////////////////////////////////
 		//real VeloX = vx[k];
@@ -4946,32 +4910,32 @@ extern "C" __global__ void QPressDevice27_IntBB(real* rho,
 			*q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
 			*q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
 			*q_dirBSE, *q_dirBNW; 
-		q_dirE   = &QQ[dirE   *sizeQ];
-		q_dirW   = &QQ[dirW   *sizeQ];
-		q_dirN   = &QQ[dirN   *sizeQ];
-		q_dirS   = &QQ[dirS   *sizeQ];
-		q_dirT   = &QQ[dirT   *sizeQ];
-		q_dirB   = &QQ[dirB   *sizeQ];
-		q_dirNE  = &QQ[dirNE  *sizeQ];
-		q_dirSW  = &QQ[dirSW  *sizeQ];
-		q_dirSE  = &QQ[dirSE  *sizeQ];
-		q_dirNW  = &QQ[dirNW  *sizeQ];
-		q_dirTE  = &QQ[dirTE  *sizeQ];
-		q_dirBW  = &QQ[dirBW  *sizeQ];
-		q_dirBE  = &QQ[dirBE  *sizeQ];
-		q_dirTW  = &QQ[dirTW  *sizeQ];
-		q_dirTN  = &QQ[dirTN  *sizeQ];
-		q_dirBS  = &QQ[dirBS  *sizeQ];
-		q_dirBN  = &QQ[dirBN  *sizeQ];
-		q_dirTS  = &QQ[dirTS  *sizeQ];
-		q_dirTNE = &QQ[dirTNE *sizeQ];
-		q_dirTSW = &QQ[dirTSW *sizeQ];
-		q_dirTSE = &QQ[dirTSE *sizeQ];
-		q_dirTNW = &QQ[dirTNW *sizeQ];
-		q_dirBNE = &QQ[dirBNE *sizeQ];
-		q_dirBSW = &QQ[dirBSW *sizeQ];
-		q_dirBSE = &QQ[dirBSE *sizeQ];
-		q_dirBNW = &QQ[dirBNW *sizeQ];
+		q_dirE   = &QQ[dirE   * numberOfBCnodes];
+		q_dirW   = &QQ[dirW   * numberOfBCnodes];
+		q_dirN   = &QQ[dirN   * numberOfBCnodes];
+		q_dirS   = &QQ[dirS   * numberOfBCnodes];
+		q_dirT   = &QQ[dirT   * numberOfBCnodes];
+		q_dirB   = &QQ[dirB   * numberOfBCnodes];
+		q_dirNE  = &QQ[dirNE  * numberOfBCnodes];
+		q_dirSW  = &QQ[dirSW  * numberOfBCnodes];
+		q_dirSE  = &QQ[dirSE  * numberOfBCnodes];
+		q_dirNW  = &QQ[dirNW  * numberOfBCnodes];
+		q_dirTE  = &QQ[dirTE  * numberOfBCnodes];
+		q_dirBW  = &QQ[dirBW  * numberOfBCnodes];
+		q_dirBE  = &QQ[dirBE  * numberOfBCnodes];
+		q_dirTW  = &QQ[dirTW  * numberOfBCnodes];
+		q_dirTN  = &QQ[dirTN  * numberOfBCnodes];
+		q_dirBS  = &QQ[dirBS  * numberOfBCnodes];
+		q_dirBN  = &QQ[dirBN  * numberOfBCnodes];
+		q_dirTS  = &QQ[dirTS  * numberOfBCnodes];
+		q_dirTNE = &QQ[dirTNE * numberOfBCnodes];
+		q_dirTSW = &QQ[dirTSW * numberOfBCnodes];
+		q_dirTSE = &QQ[dirTSE * numberOfBCnodes];
+		q_dirTNW = &QQ[dirTNW * numberOfBCnodes];
+		q_dirBNE = &QQ[dirBNE * numberOfBCnodes];
+		q_dirBSW = &QQ[dirBSW * numberOfBCnodes];
+		q_dirBSE = &QQ[dirBSE * numberOfBCnodes];
+		q_dirBNW = &QQ[dirBNW * numberOfBCnodes];
 		////////////////////////////////////////////////////////////////////////////////
 		//index
 		unsigned int KQK  = k_Q[k];
