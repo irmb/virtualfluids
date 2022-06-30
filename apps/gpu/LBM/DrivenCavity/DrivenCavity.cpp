@@ -122,11 +122,11 @@ void multipleLevel(const std::string& configPath)
 
 	real dx = L / real(nx);
 
-	//gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L,
-	//							0.5 * L,  0.5 * L,  0.5 * L, dx);
+	gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L,
+								0.5 * L,  0.5 * L,  0.5 * L, dx);
 
-	gridBuilder->addCoarseGrid(-2.0 * dx, -0.5 * L, -0.5 * L,
-								2.0 * dx,  0.5 * L,  0.5 * L, dx);
+	// gridBuilder->addCoarseGrid(-2.0 * dx, -0.5 * L, -0.5 * L,
+	// 							2.0 * dx,  0.5 * L,  0.5 * L, dx);
 
     auto refBox = new Cuboid(-0.1 * L, -0.1 * L, -0.1 * L,
                               0.1 * L,  0.1 * L,  0.1 * L);
