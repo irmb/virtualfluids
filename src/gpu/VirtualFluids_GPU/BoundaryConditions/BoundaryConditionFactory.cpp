@@ -9,22 +9,18 @@ void BoundaryConditionFactory::setVelocityBoundaryCondition(VelocityBC boundaryC
 
 boundaryCondition BoundaryConditionFactory::getVelocityBoundaryConditionPost() const
 {
+    // for descriptions of the boundary conditions refer to the header ( VelocityBC)
     switch (this->velocityBoundaryCondition) {
         case VelocityBC::VelocitySimpleBounceBackCompressible:
-            // VelocitySimpleBounceBackCompressible = plain bounce back velocity boundary condition
             return QVelDevicePlainBB27;
             break;
         case VelocityBC::VelocityIncompressible:
-            // VelocityIncompressible = interpolated velocity boundary condition, based on subgrid distances
             return QVelDev27;
             break;
-        case VelocityBC::VelocityCompressible:
-            // VelocityCompressible = interpolated velocity boundary condition, based on subgrid distances
+        case VelocityBC::VelocityCompressible:            
             return QVelDevComp27;
             break;
         case VelocityBC::VelocityAndPressureCompressible:
-            // VelocityAndPressureCompressible = interpolated velocity boundary condition, based on subgrid distances.
-            // Also sets the pressure to the bulk pressure.
             return QVelDevCompZeroPress27;
             break;
         default:
