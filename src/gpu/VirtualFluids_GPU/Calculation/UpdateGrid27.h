@@ -12,14 +12,14 @@ class LBKernelManager;
 class ADKernelManager;
 class GridScalingKernelManager;
 class Kernel;
+class BoundaryConditionFactory;
 
 class UpdateGrid27
 {
 public:
     UpdateGrid27(SPtr<Parameter> para, vf::gpu::Communicator &comm, SPtr<CudaMemoryManager> cudaManager,
-                 std::vector<std::shared_ptr<PorousMedia>> &pm, std::vector<SPtr<Kernel>> &kernels);
+                 std::vector<std::shared_ptr<PorousMedia>> &pm, std::vector<SPtr<Kernel>> &kernels, BoundaryConditionFactory* bcFactory);
     void updateGrid(int level, unsigned int t);
-
 
 private:
     void postCollisionBC(int level);

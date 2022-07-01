@@ -5,16 +5,17 @@
 // |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/   \____/_/    \_____/
 //
 //////////////////////////////////////////////////////////////////////////
-//random numbers
-#include <curand.h>
+#ifndef GPU_INTERFACE_H
+#define GPU_INTERFACE_H
+
+#include <curand.h> //random numbers
 #include <curand_kernel.h>
 #include <cuda_runtime.h>
 
 #include <DataTypes.h>
 #include "LBM/LB.h"
 
-#ifndef GPU_INTERFACE_H
-#define GPU_INTERFACE_H
+class LBMSimulationParameter;
 
 //////////////////////////////////////////////////////////////////////////
 //Kernel
@@ -723,20 +724,7 @@ extern "C" void QDevCompHighNu27(unsigned int numberOfThreads,
 								 unsigned int size_Mat, 
 								 bool isEvenTimestep);
 
-extern "C" void QVelDevicePlainBB27(unsigned int numberOfThreads,
-									real* vx,
-									real* vy,
-									real* vz,
-									real* DD,
-									int* k_Q, 
-									real* QQ,
-									unsigned int numberOfBCnodes, 
-									real om1, 
-									unsigned int* neighborX,
-									unsigned int* neighborY,
-									unsigned int* neighborZ,
-									unsigned int size_Mat, 
-									bool isEvenTimestep);
+extern "C" void QVelDevicePlainBB27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 	
 extern "C" void QVelDeviceCouette27(unsigned int numberOfThreads,
 									real* vx,
@@ -775,22 +763,7 @@ extern "C" void QVelDevice1h27( unsigned int numberOfThreads,
 								unsigned int size_Mat, 
 								bool isEvenTimestep);
 
-extern "C" void QVelDev27(unsigned int numberOfThreads,
-                          int nx,
-                          int ny,
-                          real* vx,
-                          real* vy,
-                          real* vz,
-                          real* DD, 
-                          int* k_Q, 
-                          real* QQ,
-                          unsigned int numberOfBCnodes, 
-                          real om1, 
-                          unsigned int* neighborX,
-                          unsigned int* neighborY,
-                          unsigned int* neighborZ,
-                          unsigned int size_Mat, 
-                          bool isEvenTimestep);
+extern "C" void QVelDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
 extern "C" void QVelDevCompPlusSlip27(unsigned int numberOfThreads,
 									  real* vx,
@@ -807,20 +780,7 @@ extern "C" void QVelDevCompPlusSlip27(unsigned int numberOfThreads,
 									  unsigned int size_Mat, 
 									  bool isEvenTimestep);
 
-extern "C" void QVelDevComp27(unsigned int numberOfThreads,
-							  real* velocityX,
-							  real* velocityY,
-							  real* velocityZ,
-							  real* distribution,
-							  int* subgridDistanceIndices,
-							  real* subgridDistances,
-							  unsigned int numberOfBCnodes,
-							  real omega,
-							  unsigned int* neighborX,
-							  unsigned int* neighborY,
-							  unsigned int* neighborZ,
-							  unsigned int numberOfLBnodes,
-							  bool isEvenTimestep);
+extern "C" void QVelDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
 extern "C" void QVelDevCompThinWalls27(unsigned int numberOfThreads,
 							           real* vx,
@@ -839,21 +799,7 @@ extern "C" void QVelDevCompThinWalls27(unsigned int numberOfThreads,
 							           unsigned int size_Mat, 
 							           bool isEvenTimestep);
 
-extern "C" void QVelDevCompZeroPress27(
-    unsigned int numberOfThreads,
-    real* velocityX,
-    real* velocityY,
-    real* velocityZ,
-    real* distribution,
-    int* subgridDistanceIndices,
-    real* subgridDistances,
-    unsigned int numberOfBCnodes,
-    real omega,
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    unsigned int numberOfLBnodes,
-    bool isEvenTimestep);
+extern "C" void QVelDevCompZeroPress27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
 extern "C" void QVelDevIncompHighNu27(  unsigned int numberOfThreads,
 										real* vx,

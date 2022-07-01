@@ -493,16 +493,15 @@ void calcTurbulentViscosity(Parameter* para, int level)
 
 
 UpdateGrid27::UpdateGrid27(SPtr<Parameter> para, vf::gpu::Communicator &comm, SPtr<CudaMemoryManager> cudaManager,
-                           std::vector<std::shared_ptr<PorousMedia>> &pm, std::vector<SPtr<Kernel>> &kernels)
+                           std::vector<std::shared_ptr<PorousMedia>> &pm, std::vector<SPtr<Kernel>> &kernels , BoundaryConditionFactory* bcFactory)
     : para(para), comm(comm), cudaMemoryManager(cudaManager), pm(pm), kernels(kernels)
 {
     chooseFunctionForCollisionAndExchange();
     chooseFunctionForRefinementAndExchange();
-    this->lbKernelManager = LBKernelManager::make(para);
+    this->lbKernelManager = std::make_shared<LBKernelManager>(para, bcFactory);
     this->adKernelManager = std::make_shared<ADKernelManager>(para);
     this->gridScalingKernelManager =  std::make_shared<GridScalingKernelManager>(para);
 }
-
 
 void UpdateGrid27::chooseFunctionForCollisionAndExchange()
 {

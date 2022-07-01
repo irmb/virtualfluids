@@ -15,6 +15,8 @@
 
 // includes, kernels
 #include "GPU/GPU_Kernels.cuh"
+
+#include "Parameter/Parameter.h"
 //////////////////////////////////////////////////////////////////////////
 extern "C" void KernelCas27( unsigned int grid_nx,
                              unsigned int grid_ny,
@@ -2915,50 +2917,25 @@ extern "C" void QDevCompHighNu27(   unsigned int numberOfThreads,
       getLastCudaError("QDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QVelDevicePlainBB27(unsigned int numberOfThreads,
-									real* vx,
-									real* vy,
-									real* vz,
-									real* DD,
-									int* k_Q,
-									real* QQ,
-									unsigned int numberOfBCnodes,
-									real om1,
-									unsigned int* neighborX,
-									unsigned int* neighborY,
-									unsigned int* neighborZ,
-									unsigned int size_Mat,
-									bool isEvenTimestep)
+extern "C" void QVelDevicePlainBB27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
 
-      QVelDevPlainBB27<<< gridQ, threads >>> (  vx,
-												vy,
-												vz,
-												DD,
-												k_Q,
-												QQ,
-												numberOfBCnodes,
-												om1,
-												neighborX,
-												neighborY,
-												neighborZ,
-												size_Mat,
-												isEvenTimestep);
-      getLastCudaError("QVelDevicePlainBB27 execution failed");
+   QVelDevPlainBB27<<< grid, threads >>> (
+         boundaryCondition->Vx,
+         boundaryCondition->Vy,
+         boundaryCondition->Vz,
+         parameterDevice->distributions.f[0],
+         boundaryCondition->k,
+         boundaryCondition->q27[0],
+         boundaryCondition->numberOfBCnodes,
+         parameterDevice->neighborX,
+         parameterDevice->neighborY,
+         parameterDevice->neighborZ,
+         parameterDevice->numberOfNodes,
+         parameterDevice->isEvenTimestep);
+   getLastCudaError("QVelDevicePlainBB27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QVelDeviceCouette27(unsigned int numberOfThreads,
@@ -3067,53 +3044,27 @@ extern "C" void QVelDevice1h27(   unsigned int numberOfThreads,
       getLastCudaError("QVelDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QVelDev27(unsigned int numberOfThreads,
-                          int nx,
-                          int ny,
-                          real* vx,
-                          real* vy,
-                          real* vz,
-                          real* DD,
-                          int* k_Q,
-                          real* QQ,
-                          unsigned int numberOfBCnodes,
-                          real om1,
-                          unsigned int* neighborX,
-                          unsigned int* neighborY,
-                          unsigned int* neighborZ,
-                          unsigned int size_Mat,
-                          bool isEvenTimestep)
+extern "C" void QVelDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
 
-      QVelDevice27<<< gridQ, threads >>> (nx,
-                                          ny,
-                                          vx,
-                                          vy,
-                                          vz,
-                                          DD,
-                                          k_Q,
-                                          QQ,
-                                          numberOfBCnodes,
-                                          om1,
-                                          neighborX,
-                                          neighborY,
-                                          neighborZ,
-                                          size_Mat,
-                                          isEvenTimestep);
+      QVelDevice27<<< grid, threads >>> (
+            parameterDevice->nx,
+            parameterDevice->ny,
+            boundaryCondition->Vx,
+            boundaryCondition->Vy,
+            boundaryCondition->Vz,
+            parameterDevice->distributions.f[0],
+            boundaryCondition->k,
+            boundaryCondition->q27[0],
+            boundaryCondition->numberOfBCnodes,
+            parameterDevice->omega,
+            parameterDevice->neighborX,
+            parameterDevice->neighborY,
+            parameterDevice->neighborZ,
+            parameterDevice->numberOfNodes,
+            parameterDevice->isEvenTimestep);
       getLastCudaError("QVelDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -3164,39 +3115,26 @@ extern "C" void QVelDevCompPlusSlip27(unsigned int numberOfThreads,
       getLastCudaError("QVelDeviceCompPlusSlip27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QVelDevComp27(unsigned int numberOfThreads,
-                              real* velocityX,
-                              real* velocityY,
-                              real* velocityZ,
-                              real* distribution,
-                              int* subgridDistanceIndices,
-                              real* subgridDistances,
-                              unsigned int numberOfBCnodes,
-                              real omega,
-                              unsigned int* neighborX,
-                              unsigned int* neighborY,
-                              unsigned int* neighborZ,
-                              unsigned int numberOfLBnodes,
-                              bool isEvenTimestep)
+extern "C" void QVelDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
-   dim3 grid = vf::cuda::getCudaGrid(numberOfThreads, numberOfBCnodes);
-   dim3 threads(numberOfThreads, 1, 1 );
+   dim3 grid = vf::cuda::getCudaGrid(parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
 
-      QVelDeviceComp27<<< grid, threads >>> (
-                               velocityX,
-                               velocityY,
-                               velocityZ,
-                               distribution,
-                               subgridDistanceIndices,
-                               subgridDistances,
-                               numberOfBCnodes,
-                               omega,
-                               neighborX,
-                               neighborY,
-                               neighborZ,
-                               numberOfLBnodes,
-                               isEvenTimestep);
-      getLastCudaError("QVelDeviceComp27 execution failed");
+   QVelDeviceComp27<<< grid, threads >>> (
+            boundaryCondition->Vx,
+            boundaryCondition->Vy,
+            boundaryCondition->Vz,
+            parameterDevice->distributions.f[0],
+            boundaryCondition->k,        
+            boundaryCondition->q27[0],
+            boundaryCondition->numberOfBCnodes,
+            parameterDevice->omega,
+            parameterDevice->neighborX,
+            parameterDevice->neighborY,
+            parameterDevice->neighborZ,
+            parameterDevice->numberOfNodes,
+            parameterDevice->isEvenTimestep);
+   getLastCudaError("QVelDeviceComp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QVelDevCompThinWalls27(unsigned int numberOfThreads,
@@ -3261,39 +3199,25 @@ extern "C" void QVelDevCompThinWalls27(unsigned int numberOfThreads,
    getLastCudaError("QThinWallsPartTwo27 execution failed");
 }
 
-extern "C" void QVelDevCompZeroPress27(
-   unsigned int numberOfThreads,
-   real* velocityX,
-   real* velocityY,
-   real* velocityZ,
-   real* distribution,
-   int* subgridDistanceIndices,
-   real* subgridDistances,
-   unsigned int numberOfBCnodes,
-   real omega,
-   unsigned int* neighborX,
-   unsigned int* neighborY,
-   unsigned int* neighborZ,
-   unsigned int numberOfLBnodes,
-   bool isEvenTimestep)
+extern "C" void QVelDevCompZeroPress27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
-   dim3 grid = vf::cuda::getCudaGrid(numberOfThreads, numberOfBCnodes);
-   dim3 threads(numberOfThreads, 1, 1 );
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
 
    QVelDeviceCompZeroPress27<<< grid, threads >>> (
-      velocityX,
-      velocityY,
-      velocityZ,
-      distribution,
-      subgridDistanceIndices,
-      subgridDistances,
-      numberOfBCnodes,
-      omega,
-      neighborX,
-      neighborY,
-      neighborZ,
-      numberOfLBnodes,
-      isEvenTimestep);
+            boundaryCondition->Vx,
+            boundaryCondition->Vy,
+            boundaryCondition->Vz,
+            parameterDevice->distributions.f[0],
+            boundaryCondition->k,
+            boundaryCondition->q27[0],
+            boundaryCondition->numberOfBCnodes,
+            parameterDevice->omega,
+            parameterDevice->neighborX,
+            parameterDevice->neighborY,
+            parameterDevice->neighborZ,
+            parameterDevice->numberOfNodes,
+            parameterDevice->isEvenTimestep);
    getLastCudaError("QVelDeviceCompZeroPress27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
