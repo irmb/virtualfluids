@@ -670,19 +670,19 @@ extern "C" __global__ void QDeviceCompHighNu27(	 real* DD,
 												 bool isEvenTimestep);
 
 //Velocity BCs
-extern "C" __global__ void QVelDevPlainBB27(real* vx,
-											real* vy,
-											real* vz,
-											real* DD,
-											int* k_Q,
-											real* QQ,
-											unsigned int numberOfBCnodes,
-											real om1,
-											unsigned int* neighborX,
-											unsigned int* neighborY,
-											unsigned int* neighborZ,
-											unsigned int size_Mat,
-											bool isEvenTimestep);
+extern "C" __global__ void QVelDevPlainBB27(
+    real* velocityX,
+    real* velocityY,
+    real* velocityZ,
+    real* distributions,
+    int* subgridDistanceIndices,
+    real* subgridDistances,
+    uint numberOfBCnodes,
+    uint* neighborX,
+    uint* neighborY,
+    uint* neighborZ,
+    uint numberOfLBnodes,
+    bool isEvenTimestep);
 
 extern "C" __global__ void QVelDevCouette27(real* vx,
 											real* vy,
