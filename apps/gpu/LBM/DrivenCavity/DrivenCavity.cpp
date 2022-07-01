@@ -84,11 +84,11 @@ LbmOrGks lbmOrGks = LBM;
 
 const real L  = 1.0;
 
-const real Re = 500.0;// 1000.0;
+const real Re = 1000.0;
 
 const real velocity  = 1.0;
 
-const real dt = (real)1.0e-3; //0.5e-3;
+const real dt = (real)0.5e-3;
 
 const uint nx = 64;
 
@@ -122,11 +122,11 @@ void multipleLevel(const std::string& configPath)
 
 	real dx = L / real(nx);
 
-	//gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L,
-	//							0.5 * L,  0.5 * L,  0.5 * L, dx);
+	gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L,
+								0.5 * L,  0.5 * L,  0.5 * L, dx);
 
-	gridBuilder->addCoarseGrid(-2.0 * dx, -0.5 * L, -0.5 * L,
-								2.0 * dx,  0.5 * L,  0.5 * L, dx);
+	// gridBuilder->addCoarseGrid(-2.0 * dx, -0.5 * L, -0.5 * L,
+	// 							2.0 * dx,  0.5 * L,  0.5 * L, dx);
 
     auto refBox = new Cuboid(-0.1 * L, -0.1 * L, -0.1 * L,
                               0.1 * L,  0.1 * L,  0.1 * L);
@@ -186,7 +186,7 @@ void multipleLevel(const std::string& configPath)
         para->setVelocity(velocityLB);
         para->setViscosity(viscosityLB);
 
-        para->setVelocityRatio(velocity/ velocityLB);
+        para->setVelocityRatio(velocity / velocityLB);
 
 		//para->setMainKernel("CumulantK17CompChim");
 
@@ -202,12 +202,12 @@ void multipleLevel(const std::string& configPath)
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-		//gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
-		//gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
-		//gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
-	    //gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
-	    gridBuilder->setVelocityBoundaryCondition(SideType::PZ,  vx,  vx, 0.0);
-	    //gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
+		gridBuilder->setNoSlipBoundaryCondition(SideType::PX);
+		gridBuilder->setNoSlipBoundaryCondition(SideType::MX);
+		gridBuilder->setNoSlipBoundaryCondition(SideType::PY);
+	    gridBuilder->setNoSlipBoundaryCondition(SideType::MY);
+	    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vx, vx, 0.0);
+	    gridBuilder->setNoSlipBoundaryCondition(SideType::MZ);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
