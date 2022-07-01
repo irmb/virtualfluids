@@ -3359,104 +3359,62 @@ extern "C" void QVeloStreetDevEQ27(
 	getLastCudaError("QVeloStreetDeviceEQ27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QSlipDev27(unsigned int numberOfThreads,
-                           real* DD,
-                           int* k_Q,
-                           real* QQ,
-                           unsigned int numberOfBCnodes,
-                           real om1,
-                           unsigned int* neighborX,
-                           unsigned int* neighborY,
-                           unsigned int* neighborZ,
-                           unsigned int size_Mat,
-                           bool isEvenTimestep)
+extern "C" void QSlipDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
 
-      QSlipDevice27<<< gridQ, threads >>> (DD,
-                                           k_Q,
-                                           QQ,
-                                           numberOfBCnodes,
-                                           om1,
-                                           neighborX,
-                                           neighborY,
-                                           neighborZ,
-                                           size_Mat,
-                                           isEvenTimestep);
-      getLastCudaError("QSlipDevice27 execution failed");
+   QSlipDevice27<<< grid, threads >>> (
+         parameterDevice->distributions.f[0],
+         boundaryCondition->k,
+         boundaryCondition->q27[0],
+         boundaryCondition->numberOfBCnodes,
+         parameterDevice->omega,
+         parameterDevice->neighborX,
+         parameterDevice->neighborY,
+         parameterDevice->neighborZ,
+         parameterDevice->numberOfNodes,
+         parameterDevice->isEvenTimestep);
+   getLastCudaError("QSlipDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QSlipDevComp27(unsigned int numberOfThreads,
-							   real* DD,
-							   int* k_Q,
-							   real* QQ,
-							   unsigned int numberOfBCnodes,
-							   real om1,
-							   unsigned int* neighborX,
-							   unsigned int* neighborY,
-							   unsigned int* neighborZ,
-                        real* turbViscosity,
-                        bool useTurbViscosity,
-							   unsigned int size_Mat,
-							   bool isEvenTimestep)
+extern "C" void QSlipDevCompTurbulentViscosity27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
 
-   if(useTurbViscosity)
-   {
-      QSlipDeviceComp27TurbViscosity<<< gridQ, threads >>> (DD,
-											   k_Q,
-											   QQ,
-											   numberOfBCnodes,
-											   om1,
-											   neighborX,
-											   neighborY,
-											   neighborZ,
-                                    turbViscosity,
-											   size_Mat,
-											   isEvenTimestep);
-      getLastCudaError("QSlipDeviceComp27TurbViscosity execution failed");
-   }
-   else
-   {
-      QSlipDeviceComp27<<< gridQ, threads >>> (DD,
-											   k_Q,
-											   QQ,
-											   numberOfBCnodes,
-											   om1,
-											   neighborX,
-											   neighborY,
-											   neighborZ,
-											   size_Mat,
-											   isEvenTimestep);
-      getLastCudaError("QSlipDeviceComp27 execution failed");
-   }
+   QSlipDeviceComp27TurbViscosity<<< grid, threads >>> (
+         parameterDevice->distributions.f[0],
+         boundaryCondition->k,
+         boundaryCondition->q27[0],
+         boundaryCondition->numberOfBCnodes,
+         parameterDevice->omega,
+         parameterDevice->neighborX,
+         parameterDevice->neighborY,
+         parameterDevice->neighborZ,
+         parameterDevice->turbViscosity,
+         parameterDevice->numberOfNodes,
+         parameterDevice->isEvenTimestep);
+   getLastCudaError("QSlipDeviceComp27TurbViscosity execution failed");
+}
+
+extern "C" void QSlipDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
+{
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
+
+   QSlipDeviceComp27<<< grid, threads >>> (
+         parameterDevice->distributions.f[0],
+         boundaryCondition->k,
+         boundaryCondition->q27[0],
+         boundaryCondition->numberOfBCnodes,
+         parameterDevice->omega,
+         parameterDevice->neighborX,
+         parameterDevice->neighborY,
+         parameterDevice->neighborZ,
+         parameterDevice->numberOfNodes,
+         parameterDevice->isEvenTimestep);
+   getLastCudaError("QSlipDeviceComp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QSlipGeomDevComp27(unsigned int numberOfThreads,

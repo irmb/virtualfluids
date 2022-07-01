@@ -43,7 +43,8 @@
 LBKernelManager::LBKernelManager(SPtr<Parameter> parameter, BoundaryConditionFactory* bcFactory): para(parameter)
 {
     this->velocityBoundaryConditionPost = bcFactory->getVelocityBoundaryConditionPost();
-    this->noSlipBoundaryConditionPost = bcFactory->getNoSlipBoundaryConditionPost();
+    this->noSlipBoundaryConditionPost   = bcFactory->getNoSlipBoundaryConditionPost();
+    this->slipBoundaryConditionPost     = bcFactory->getSlipBoundaryConditionPost();
 }
 
 void LBKernelManager::runLBMKernel(const int level) const
@@ -583,7 +584,7 @@ void LBKernelManager::runPressureBCKernelPost(const int level) const{
     }
 }
 
-void LBKernelManager::runStressWallModelKernel(const int level) const{
+void LBKernelManager::runStressWallModelKernelPost(const int level) const{
     if (para->getParD(level)->stressBC.numberOfBCnodes > 0)
     {
         // QStressDevComp27(para->getParD(level)->numberofthreads, para->getParD(level)->distributions.f[0],
@@ -616,40 +617,14 @@ void LBKernelManager::runStressWallModelKernel(const int level) const{
 }
 
 
-void LBKernelManager::runSlipBCKernel(const int level) const{
+void LBKernelManager::runSlipBCKernelPost(const int level) const{
     if (para->getParD(level)->slipBC.numberOfBCnodes > 0)
     {
-        // QSlipDev27(
-        //     para->getParD(level)->numberofthreads,
-        //     para->getParD(level)->distributions.f[0],
-        //     para->getParD(level)->slipBC.k,
-        //     para->getParD(level)->slipBC.q27[0],
-        //     para->getParD(level)->slipBC.numberOfBCnodes,
-        //     para->getParD(level)->omega,
-        //     para->getParD(level)->neighborX,
-        //     para->getParD(level)->neighborY,
-        //     para->getParD(level)->neighborZ,
-        //     para->getParD(level)->numberOfNodes,
-        //     para->getParD(level)->isEvenTimestep);
-
-        QSlipDevComp27(
-            para->getParD(level)->numberofthreads,
-            para->getParD(level)->distributions.f[0],
-            para->getParD(level)->slipBC.k,
-            para->getParD(level)->slipBC.q27[0],
-            para->getParD(level)->slipBC.numberOfBCnodes,
-            para->getParD(level)->omega,
-            para->getParD(level)->neighborX,
-            para->getParD(level)->neighborY,
-            para->getParD(level)->neighborZ,
-            para->getParD(level)->turbViscosity,
-            para->getUseTurbulentViscosity(),
-            para->getParD(level)->numberOfNodes,
-            para->getParD(level)->isEvenTimestep);
+        slipBoundaryConditionPost(para->getParD(level).get(), &(para->getParD(level)->slipBC));
     }
 }
 
-void LBKernelManager::runNoSlipBCKernel(const int level) const{
+void LBKernelManager::runNoSlipBCKernelPost(const int level) const{
     if (para->getParD(level)->noSlipBC.numberOfBCnodes > 0)
     {
         noSlipBoundaryConditionPost(para->getParD(level).get(), &(para->getParD(level)->noSlipBC));

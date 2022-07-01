@@ -1,6 +1,7 @@
 #include "BoundaryConditionFactory.h"
 #include "GPU/GPU_Interface.h"
 #include "Parameter/Parameter.h"
+#include "grid/BoundaryConditions/BoundaryCondition.h"
 
 void BoundaryConditionFactory::setVelocityBoundaryCondition(VelocityBC boundaryConditionType)
 {
@@ -10,6 +11,11 @@ void BoundaryConditionFactory::setVelocityBoundaryCondition(VelocityBC boundaryC
 void BoundaryConditionFactory::setNoSlipBoundaryCondition(const NoSlipBC boundaryConditionType)
 {
     this->noSlipBoundaryCondition = boundaryConditionType;
+}
+
+void BoundaryConditionFactory::setSlipBoundaryCondition(const SlipBC boundaryConditionType)
+{
+    this->slipBoundaryCondition = boundaryConditionType;
 }
 
 boundaryCondition BoundaryConditionFactory::getVelocityBoundaryConditionPost() const
@@ -45,6 +51,24 @@ boundaryCondition BoundaryConditionFactory::getNoSlipBoundaryConditionPost() con
             break;
         case NoSlipBC::NoSlipCompressible:
             return QDevComp27;
+            break;
+        default:
+            return nullptr;
+    }
+}
+
+boundaryCondition BoundaryConditionFactory::getSlipBoundaryConditionPost() const
+{
+    // for descriptions of the boundary conditions refer to the header
+    switch (this->slipBoundaryCondition) {
+        case SlipBC::SlipIncompressible:
+            return QSlipDev27;
+            break;
+        case SlipBC::SlipCompressible:
+            return QSlipDevComp27;
+            break;
+        case SlipBC::SlipCompressibleTurbulentViscosity:
+            return QSlipDevCompTurbulentViscosity27;
             break;
         default:
             return nullptr;

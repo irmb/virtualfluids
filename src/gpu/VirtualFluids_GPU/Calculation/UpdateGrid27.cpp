@@ -359,15 +359,15 @@ void UpdateGrid27::postCollisionBC(int level)
 
     //////////////////////////////////////////////////////////////////////////
     // N O - S L I P
-    this->lbKernelManager->runNoSlipBCKernel(level);
+    this->lbKernelManager->runNoSlipBCKernelPost(level);
 
     //////////////////////////////////////////////////////////////////////////
     // S L I P
-    this->lbKernelManager->runSlipBCKernel(level);
+    this->lbKernelManager->runSlipBCKernelPost(level);
 
     //////////////////////////////////////////////////////////////////////////
     // S T R E S S (wall model)
-    this->lbKernelManager->runStressWallModelKernel(level);
+    this->lbKernelManager->runStressWallModelKernelPost(level);
 
     //////////////////////////////////////////////////////////////////////////
     // G E O M E T R Y

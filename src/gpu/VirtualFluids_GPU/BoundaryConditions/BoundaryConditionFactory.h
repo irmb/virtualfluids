@@ -37,11 +37,23 @@ public:
         NoSlipCompressible
     };
 
+    //! \brief An enumeration for selecting a slip boundary condition
+    enum class SlipBC {
+        //! - SlipIncompressible = interpolated slip boundary condition, based on subgrid distances
+        SlipIncompressible,
+        //! - SlipCompressible = interpolated slip boundary condition, based on subgrid distances
+        SlipCompressible,
+        //! - SlipCompressible = interpolated slip boundary condition, based on subgrid distances.
+        //! With turbulent viscosity
+        SlipCompressibleTurbulentViscosity
+    };
+
     // enum class OutflowBoundaryCondition {};  // TODO:
     // https://git.rz.tu-bs.de/m.schoenherr/VirtualFluids_dev/-/issues/16
 
     void setVelocityBoundaryCondition(const VelocityBC boundaryConditionType);
     void setNoSlipBoundaryCondition(const NoSlipBC boundaryConditionType);
+    void setSlipBoundaryCondition(const SlipBC boundaryConditionType);
     // void setGeometryBoundaryCondition(const std::variant<VelocityBC, NoSlipBC, SlipBC> boundaryConditionType);
 
     // void setOutflowBoundaryCondition(...); // TODO:
@@ -49,10 +61,12 @@ public:
 
     boundaryCondition getVelocityBoundaryConditionPost() const;
     boundaryCondition getNoSlipBoundaryConditionPost() const;
+    boundaryCondition getSlipBoundaryConditionPost() const;
 
 private:
     VelocityBC velocityBoundaryCondition;
     NoSlipBC noSlipBoundaryCondition;
+    SlipBC slipBoundaryCondition;
 
     // OutflowBoundaryConditon outflowBC // TODO: https://git.rz.tu-bs.de/m.schoenherr/VirtualFluids_dev/-/issues/16
 };

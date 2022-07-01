@@ -74,10 +74,10 @@ public:
     void runGeoBCKernelPre(const int level, unsigned int t, CudaMemoryManager *cudaMemoryManager) const;
 
     //! \brief calls the device function of the slip boundary condition
-    void runSlipBCKernel(const int level) const;
+    void runSlipBCKernelPost(const int level) const;
 
     //! \brief calls the device function of the no-slip boundary condition
-    void runNoSlipBCKernel(const int level) const;
+    void runNoSlipBCKernelPost(const int level) const;
 
     //! \brief calls the device function of the pressure boundary condition (pre-collision)
     void runPressureBCKernelPre(const int level) const;
@@ -89,7 +89,7 @@ public:
     void runOutflowBCKernelPre(const int level) const;
 
     //! \brief calls the device function of the stress wall model
-    void runStressWallModelKernel(const int level) const;
+    void runStressWallModelKernelPost(const int level) const;
 
     //! \brief calls the device function that calculates the macroscopic values
     void calculateMacroscopicValues(const int level) const;
@@ -99,5 +99,6 @@ private:
 
     boundaryCondition velocityBoundaryConditionPost;
     boundaryCondition noSlipBoundaryConditionPost;
+    boundaryCondition slipBoundaryConditionPost;
 };
 #endif

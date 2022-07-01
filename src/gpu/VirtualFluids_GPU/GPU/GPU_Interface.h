@@ -838,31 +838,11 @@ extern "C" void QVeloStreetDevEQ27(
 	uint  size_Mat,
 	bool  isEvenTimestep);
 
-extern "C" void QSlipDev27( unsigned int numberOfThreads,
-							real* DD, 
-							int* k_Q, 
-							real* QQ,
-							unsigned int numberOfBCnodes,
-							real om1, 
-							unsigned int* neighborX,
-							unsigned int* neighborY,
-							unsigned int* neighborZ,
-							unsigned int size_Mat, 
-							bool isEvenTimestep);
+extern "C" void QSlipDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
-extern "C" void QSlipDevComp27(unsigned int numberOfThreads,
-							   real* DD, 
-							   int* k_Q, 
-							   real* QQ,
-							   unsigned int numberOfBCnodes,
-							   real om1, 
-							   unsigned int* neighborX,
-							   unsigned int* neighborY,
-							   unsigned int* neighborZ,
-							   real* turbViscosity,
-                        	   bool useTurbViscosity,
-							   unsigned int size_Mat, 
-							   bool isEvenTimestep);
+extern "C" void QSlipDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
+
+extern "C" void QSlipDevCompTurbulentViscosity27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
 extern "C" void QSlipGeomDevComp27( unsigned int numberOfThreads,
 									real* DD, 
