@@ -1,6 +1,8 @@
 #include "LBM/LB.h" 
 #include "LBM/D3Q27.h"
 #include <lbm/constants/NumericConstants.h>
+#include <lbm/MacroscopicQuantities.h>
+
 #include "VirtualFluids_GPU/Kernel/Utilities/DistributionHelper.cuh"
 
 using namespace vf::lbm::constant;
@@ -34,21 +36,12 @@ extern "C" __global__ void QPrecursorDeviceCompZeroPress( 	int* k_Q,
 															real tRatio,
                                                             real velocityRatio,
 															unsigned long long size_Mat,
-															bool evenOrOdd)
+															bool isEvenTimestep)
 {
-    const unsigned  x = threadIdx.x;  // Globaler x-Index 
-    const unsigned  y = blockIdx.x;   // Globaler y-Index 
-    const unsigned  z = blockIdx.y;   // Globaler z-Index 
-
-    const unsigned nx = blockDim.x;
-    const unsigned ny = gridDim.x;
-
-    const unsigned k = nx*(ny*z + y) + x;
+    const unsigned k = vf::gpu::getNodeIndex();
 
     if(k>=numberOfBCNodes) return;
 
-    DistributionReferences27 D = vf::gpu::getDistributionReferences27(DD, size_Mat, evenOrOdd);
-    
     ////////////////////////////////////////////////////////////////////////////////
     // interpolation of velocity
     real vxLastInterpd, vyLastInterpd, vzLastInterpd; 
@@ -86,332 +79,243 @@ extern "C" __global__ void QPrecursorDeviceCompZeroPress( 	int* k_Q,
         vyNextInterpd = vyCurrent[kNT];
         vzNextInterpd = vzCurrent[kNT];
     }
+
+    // if(k==16300) printf("%f %f %f\n", vxLastInterpd, vyLastInterpd, vzLastInterpd);
     real VeloX = (velocityX + (1.f-tRatio)*vxLastInterpd + tRatio*vxNextInterpd)/velocityRatio;
     real VeloY = (velocityY + (1.f-tRatio)*vyLastInterpd + tRatio*vyNextInterpd)/velocityRatio; 
     real VeloZ = (velocityZ + (1.f-tRatio)*vzLastInterpd + tRatio*vzNextInterpd)/velocityRatio;
-    // From here on just a copy of the velocity boundary condition
+    // From here on just a copy of QVelDeviceCompZeroPress
     ////////////////////////////////////////////////////////////////////////////////
-    real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
-        *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
-        *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
-        *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
-        *q_dirBSE, *q_dirBNW; 
-    q_dirE   = &QQ[dirE   *sizeQ];
-    q_dirW   = &QQ[dirW   *sizeQ];
-    q_dirN   = &QQ[dirN   *sizeQ];
-    q_dirS   = &QQ[dirS   *sizeQ];
-    q_dirT   = &QQ[dirT   *sizeQ];
-    q_dirB   = &QQ[dirB   *sizeQ];
-    q_dirNE  = &QQ[dirNE  *sizeQ];
-    q_dirSW  = &QQ[dirSW  *sizeQ];
-    q_dirSE  = &QQ[dirSE  *sizeQ];
-    q_dirNW  = &QQ[dirNW  *sizeQ];
-    q_dirTE  = &QQ[dirTE  *sizeQ];
-    q_dirBW  = &QQ[dirBW  *sizeQ];
-    q_dirBE  = &QQ[dirBE  *sizeQ];
-    q_dirTW  = &QQ[dirTW  *sizeQ];
-    q_dirTN  = &QQ[dirTN  *sizeQ];
-    q_dirBS  = &QQ[dirBS  *sizeQ];
-    q_dirBN  = &QQ[dirBN  *sizeQ];
-    q_dirTS  = &QQ[dirTS  *sizeQ];
-    q_dirTNE = &QQ[dirTNE *sizeQ];
-    q_dirTSW = &QQ[dirTSW *sizeQ];
-    q_dirTSE = &QQ[dirTSE *sizeQ];
-    q_dirTNW = &QQ[dirTNW *sizeQ];
-    q_dirBNE = &QQ[dirBNE *sizeQ];
-    q_dirBSW = &QQ[dirBSW *sizeQ];
-    q_dirBSE = &QQ[dirBSE *sizeQ];
-    q_dirBNW = &QQ[dirBNW *sizeQ];
+    DistributionReferences27 Q = vf::gpu::getDistributionReferences27(QQ, sizeQ, true);
+    
+    vf::gpu::DistributionWrapper distWrapper = vf::gpu::DistributionWrapper(DD, size_Mat, !isEvenTimestep, k_Q[k], neighborX, neighborY, neighborZ);
+    real (&f)[27] = distWrapper.distribution.f;
+
     ////////////////////////////////////////////////////////////////////////////////
-    //index
-    unsigned int KQK  = k_Q[k];
-    unsigned int kzero= KQK;
-    unsigned int ke   = KQK;
-    unsigned int kw   = neighborX[KQK];
-    unsigned int kn   = KQK;
-    unsigned int ks   = neighborY[KQK];
-    unsigned int kt   = KQK;
-    unsigned int kb   = neighborZ[KQK];
-    unsigned int ksw  = neighborY[kw];
-    unsigned int kne  = KQK;
-    unsigned int kse  = ks;
-    unsigned int knw  = kw;
-    unsigned int kbw  = neighborZ[kw];
-    unsigned int kte  = KQK;
-    unsigned int kbe  = kb;
-    unsigned int ktw  = kw;
-    unsigned int kbs  = neighborZ[ks];
-    unsigned int ktn  = KQK;
-    unsigned int kbn  = kb;
-    unsigned int kts  = ks;
-    unsigned int ktse = ks;
-    unsigned int kbnw = kbw;
-    unsigned int ktnw = kw;
-    unsigned int kbse = kbs;
-    unsigned int ktsw = ksw;
-    unsigned int kbne = kb;
-    unsigned int ktne = KQK;
-    unsigned int kbsw = neighborZ[ksw];
-    ////////////////////////////////////////////////////////////////////////////////
+    real drho = vf::lbm::getDensity(f);
+    real vx1 = vf::lbm::getCompressibleVelocityX1(f, drho);
+    real vx2 = vf::lbm::getCompressibleVelocityX2(f, drho);
+    real vx3 = vf::lbm::getCompressibleVelocityX3(f, drho);
+
+    if(k==16383 || k==0) printf("k %d kQ %d drho = %f u %f v %f w %f\n",k, k_Q[k], drho, vx1, vx2, vx3);
+    real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (c1o1 + drho);
+
+    // have to make a copy of the distributions so we can write to them later
     real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
         f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
-    f_W    = (D.f[dirE   ])[ke   ];
-    f_E    = (D.f[dirW   ])[kw   ];
-    f_S    = (D.f[dirN   ])[kn   ];
-    f_N    = (D.f[dirS   ])[ks   ];
-    f_B    = (D.f[dirT   ])[kt   ];
-    f_T    = (D.f[dirB   ])[kb   ];
-    f_SW   = (D.f[dirNE  ])[kne  ];
-    f_NE   = (D.f[dirSW  ])[ksw  ];
-    f_NW   = (D.f[dirSE  ])[kse  ];
-    f_SE   = (D.f[dirNW  ])[knw  ];
-    f_BW   = (D.f[dirTE  ])[kte  ];
-    f_TE   = (D.f[dirBW  ])[kbw  ];
-    f_TW   = (D.f[dirBE  ])[kbe  ];
-    f_BE   = (D.f[dirTW  ])[ktw  ];
-    f_BS   = (D.f[dirTN  ])[ktn  ];
-    f_TN   = (D.f[dirBS  ])[kbs  ];
-    f_TS   = (D.f[dirBN  ])[kbn  ];
-    f_BN   = (D.f[dirTS  ])[kts  ];
-    f_BSW  = (D.f[dirTNE ])[ktne ];
-    f_BNE  = (D.f[dirTSW ])[ktsw ];
-    f_BNW  = (D.f[dirTSE ])[ktse ];
-    f_BSE  = (D.f[dirTNW ])[ktnw ];
-    f_TSW  = (D.f[dirBNE ])[kbne ];
-    f_TNE  = (D.f[dirBSW ])[kbsw ];
-    f_TNW  = (D.f[dirBSE ])[kbse ];
-    f_TSE  = (D.f[dirBNW ])[kbnw ];
+    f_W    = f[vf::lbm::dir::W   ];
+    f_E    = f[vf::lbm::dir::E   ];
+    f_S    = f[vf::lbm::dir::S   ];
+    f_N    = f[vf::lbm::dir::N   ];
+    f_B    = f[vf::lbm::dir::B   ];
+    f_T    = f[vf::lbm::dir::T   ];
+    f_SW   = f[vf::lbm::dir::SW  ];
+    f_NE   = f[vf::lbm::dir::NE  ];
+    f_NW   = f[vf::lbm::dir::NW  ];
+    f_SE   = f[vf::lbm::dir::SE  ];
+    f_BW   = f[vf::lbm::dir::BW  ];
+    f_TE   = f[vf::lbm::dir::TE  ];
+    f_TW   = f[vf::lbm::dir::TW  ];
+    f_BE   = f[vf::lbm::dir::BE  ];
+    f_BS   = f[vf::lbm::dir::BS  ];
+    f_TN   = f[vf::lbm::dir::TN  ];
+    f_TS   = f[vf::lbm::dir::TS  ];
+    f_BN   = f[vf::lbm::dir::BN  ];
+    f_BSW  = f[vf::lbm::dir::BSW ];
+    f_BNE  = f[vf::lbm::dir::BNE ];
+    f_BNW  = f[vf::lbm::dir::BNW ];
+    f_BSE  = f[vf::lbm::dir::BSE ];
+    f_TSW  = f[vf::lbm::dir::TSW ];
+    f_TNE  = f[vf::lbm::dir::TNE ];
+    f_TNW  = f[vf::lbm::dir::TNW ];
+    f_TSE  = f[vf::lbm::dir::TSE ];
     ////////////////////////////////////////////////////////////////////////////////
-    real vx1, vx2, vx3, drho, feq, q;
-    drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
-            f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-            f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
-
-    vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
-            ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
-            (f_E - f_W)) / (c1o1 + drho); 
-        
-
-    vx2    =   ((-(f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
-                ((f_BN - f_TS)   + (f_TN - f_BS))    + (-(f_SE - f_NW)  + (f_NE - f_SW)) +
-                (f_N - f_S)) / (c1o1 + drho); 
-
-    vx3    =   (((f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) + (f_TSW - f_BNE)) +
-                (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
-                (f_T - f_B)) / (c1o1 + drho); 
-
-    real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (c1o1 + drho);
+    real feq, q;
 
     //////////////////////////////////////////////////////////////////////////
-    D = vf::gpu::getDistributionReferences27(DD, size_Mat, !evenOrOdd);
-
-    q = q_dirE[k];
+    q = Q.f[dirE][k];
     if (q>=c0o1 && q<=c1o1)
     {
         feq=c2o27* (drho/*+three*( vx1        )*/+c9o2*( vx1        )*( vx1        ) * (c1o1 + drho)-cu_sq); 
-        (D.f[dirW])[kw]=(c1o1-q)/(c1o1+q)*(f_E-f_W+(f_E+f_W-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_E+f_W)-c6o1*c2o27*( VeloX     ))/(c1o1+q) - c2o27 * drho;
-        //(D.f[dirW])[kw]=zero;
+        f[vf::lbm::dir::W]=(c1o1-q)/(c1o1+q)*(f_E-f_W+(f_E+f_W-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_E+f_W)-c6o1*c2o27*( VeloX     ))/(c1o1+q) - c2o27 * drho;
     }
 
-    q = q_dirW[k];
+    q = Q.f[dirW][k];
     if (q>=c0o1 && q<=c1o1)
     {
         feq=c2o27* (drho/*+three*(-vx1        )*/+c9o2*(-vx1        )*(-vx1        ) * (c1o1 + drho)-cu_sq); 
-        (D.f[dirE])[ke]=(c1o1-q)/(c1o1+q)*(f_W-f_E+(f_W+f_E-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_W+f_E)-c6o1*c2o27*(-VeloX     ))/(c1o1+q) - c2o27 * drho;
-        //(D.f[dirE])[ke]=zero;
+        f[vf::lbm::dir::E]=(c1o1-q)/(c1o1+q)*(f_W-f_E+(f_W+f_E-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_W+f_E)-c6o1*c2o27*(-VeloX     ))/(c1o1+q) - c2o27 * drho;
     }
 
-    q = q_dirN[k];
+    q = Q.f[dirN][k];
     if (q>=c0o1 && q<=c1o1)
     {
         feq=c2o27* (drho/*+three*(    vx2     )*/+c9o2*(     vx2    )*(     vx2    ) * (c1o1 + drho)-cu_sq); 
-        (D.f[dirS])[ks]=(c1o1-q)/(c1o1+q)*(f_N-f_S+(f_N+f_S-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_N+f_S)-c6o1*c2o27*( VeloY     ))/(c1o1+q) - c2o27 * drho;
-        //(D.f[dirS])[ks]=zero;
+        f[vf::lbm::dir::S]=(c1o1-q)/(c1o1+q)*(f_N-f_S+(f_N+f_S-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_N+f_S)-c6o1*c2o27*( VeloY     ))/(c1o1+q) - c2o27 * drho;
     }
 
-    q = q_dirS[k];
+    q = Q.f[dirS][k];
     if (q>=c0o1 && q<=c1o1)
     {
         feq=c2o27* (drho/*+three*(   -vx2     )*/+c9o2*(    -vx2    )*(    -vx2    ) * (c1o1 + drho)-cu_sq); 
-        (D.f[dirN])[kn]=(c1o1-q)/(c1o1+q)*(f_S-f_N+(f_S+f_N-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_S+f_N)-c6o1*c2o27*(-VeloY     ))/(c1o1+q) - c2o27 * drho;
-        //(D.f[dirN])[kn]=zero;
+        f[vf::lbm::dir::N]=(c1o1-q)/(c1o1+q)*(f_S-f_N+(f_S+f_N-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_S+f_N)-c6o1*c2o27*(-VeloY     ))/(c1o1+q) - c2o27 * drho;
     }
 
-    q = q_dirT[k];
+    q = Q.f[dirT][k];
     if (q>=c0o1 && q<=c1o1)
     {
         feq=c2o27* (drho/*+three*(         vx3)*/+c9o2*(         vx3)*(         vx3) * (c1o1 + drho)-cu_sq); 
-        (D.f[dirB])[kb]=(c1o1-q)/(c1o1+q)*(f_T-f_B+(f_T+f_B-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_T+f_B)-c6o1*c2o27*( VeloZ     ))/(c1o1+q) - c2o27 * drho;
-        //(D.f[dirB])[kb]=one;
+        f[vf::lbm::dir::B]=(c1o1-q)/(c1o1+q)*(f_T-f_B+(f_T+f_B-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_T+f_B)-c6o1*c2o27*( VeloZ     ))/(c1o1+q) - c2o27 * drho;
     }
 
-    q = q_dirB[k];
+    q = Q.f[dirB][k];
     if (q>=c0o1 && q<=c1o1)
     {
         feq=c2o27* (drho/*+three*(        -vx3)*/+c9o2*(        -vx3)*(        -vx3) * (c1o1 + drho)-cu_sq); 
-        (D.f[dirT])[kt]=(c1o1-q)/(c1o1+q)*(f_B-f_T+(f_B+f_T-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_B+f_T)-c6o1*c2o27*(-VeloZ     ))/(c1o1+q) - c2o27 * drho;
-        //(D.f[dirT])[kt]=zero;
+        f[vf::lbm::dir::T]=(c1o1-q)/(c1o1+q)*(f_B-f_T+(f_B+f_T-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_B+f_T)-c6o1*c2o27*(-VeloZ     ))/(c1o1+q) - c2o27 * drho;
     }
 
-    q = q_dirNE[k];
+    q = Q.f[dirNE][k];
     if (q>=c0o1 && q<=c1o1)
     {
         feq=c1o54* (drho/*+three*( vx1+vx2    )*/+c9o2*( vx1+vx2    )*( vx1+vx2    ) * (c1o1 + drho)-cu_sq); 
-        (D.f[dirSW])[ksw]=(c1o1-q)/(c1o1+q)*(f_NE-f_SW+(f_NE+f_SW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_NE+f_SW)-c6o1*c1o54*(VeloX+VeloY))/(c1o1+q) - c1o54 * drho;
-        //(D.f[dirSW])[ksw]=zero;
+        f[vf::lbm::dir::SW]=(c1o1-q)/(c1o1+q)*(f_NE-f_SW+(f_NE+f_SW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_NE+f_SW)-c6o1*c1o54*(VeloX+VeloY))/(c1o1+q) - c1o54 * drho;
     }
 
-    q = q_dirSW[k];
+    q = Q.f[dirSW][k];
     if (q>=c0o1 && q<=c1o1)
     {
         feq=c1o54* (drho/*+three*(-vx1-vx2    )*/+c9o2*(-vx1-vx2    )*(-vx1-vx2    ) * (c1o1 + drho)-cu_sq); 
-        (D.f[dirNE])[kne]=(c1o1-q)/(c1o1+q)*(f_SW-f_NE+(f_SW+f_NE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_SW+f_NE)-c6o1*c1o54*(-VeloX-VeloY))/(c1o1+q) - c1o54 * drho;
-        //(D.f[dirNE])[kne]=zero;
+        f[vf::lbm::dir::NE]=(c1o1-q)/(c1o1+q)*(f_SW-f_NE+(f_SW+f_NE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_SW+f_NE)-c6o1*c1o54*(-VeloX-VeloY))/(c1o1+q) - c1o54 * drho;
     }
 
-    q = q_dirSE[k];
+    q = Q.f[dirSE][k];
     if (q>=c0o1 && q<=c1o1)
     {
         feq=c1o54* (drho/*+three*( vx1-vx2    )*/+c9o2*( vx1-vx2    )*( vx1-vx2    ) * (c1o1 + drho)-cu_sq); 
-        (D.f[dirNW])[knw]=(c1o1-q)/(c1o1+q)*(f_SE-f_NW+(f_SE+f_NW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_SE+f_NW)-c6o1*c1o54*( VeloX-VeloY))/(c1o1+q) - c1o54 * drho;
-        //(D.f[dirNW])[knw]=zero;
+        f[vf::lbm::dir::NW]=(c1o1-q)/(c1o1+q)*(f_SE-f_NW+(f_SE+f_NW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_SE+f_NW)-c6o1*c1o54*( VeloX-VeloY))/(c1o1+q) - c1o54 * drho;
     }
 
-    q = q_dirNW[k];
+    q = Q.f[dirNW][k];
     if (q>=c0o1 && q<=c1o1)
     {
         feq=c1o54* (drho/*+three*(-vx1+vx2    )*/+c9o2*(-vx1+vx2    )*(-vx1+vx2    ) * (c1o1 + drho)-cu_sq); 
-        (D.f[dirSE])[kse]=(c1o1-q)/(c1o1+q)*(f_NW-f_SE+(f_NW+f_SE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_NW+f_SE)-c6o1*c1o54*(-VeloX+VeloY))/(c1o1+q) - c1o54 * drho;
-        //(D.f[dirSE])[kse]=zero;
+        f[vf::lbm::dir::SE]=(c1o1-q)/(c1o1+q)*(f_NW-f_SE+(f_NW+f_SE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_NW+f_SE)-c6o1*c1o54*(-VeloX+VeloY))/(c1o1+q) - c1o54 * drho;
     }
 
-    q = q_dirTE[k];
+    q = Q.f[dirTE][k];
     if (q>=c0o1 && q<=c1o1)
     {
         feq=c1o54* (drho/*+three*( vx1    +vx3)*/+c9o2*( vx1    +vx3)*( vx1    +vx3) * (c1o1 + drho)-cu_sq); 
-        (D.f[dirBW])[kbw]=(c1o1-q)/(c1o1+q)*(f_TE-f_BW+(f_TE+f_BW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TE+f_BW)-c6o1*c1o54*( VeloX+VeloZ))/(c1o1+q) - c1o54 * drho;
-        //(D.f[dirBW])[kbw]=zero;
+        f[vf::lbm::dir::BW]=(c1o1-q)/(c1o1+q)*(f_TE-f_BW+(f_TE+f_BW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TE+f_BW)-c6o1*c1o54*( VeloX+VeloZ))/(c1o1+q) - c1o54 * drho;
     }
 
-    q = q_dirBW[k];
+    q = Q.f[dirBW][k];
     if (q>=c0o1 && q<=c1o1)
     {
         feq=c1o54* (drho/*+three*(-vx1    -vx3)*/+c9o2*(-vx1    -vx3)*(-vx1    -vx3) * (c1o1 + drho)-cu_sq); 
-        (D.f[dirTE])[kte]=(c1o1-q)/(c1o1+q)*(f_BW-f_TE+(f_BW+f_TE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BW+f_TE)-c6o1*c1o54*(-VeloX-VeloZ))/(c1o1+q) - c1o54 * drho;
-        //(D.f[dirTE])[kte]=zero;
+        f[vf::lbm::dir::TE]=(c1o1-q)/(c1o1+q)*(f_BW-f_TE+(f_BW+f_TE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BW+f_TE)-c6o1*c1o54*(-VeloX-VeloZ))/(c1o1+q) - c1o54 * drho;
     }
 
-    q = q_dirBE[k];
+    q = Q.f[dirBE][k];
     if (q>=c0o1 && q<=c1o1)
     {
         feq=c1o54* (drho/*+three*( vx1    -vx3)*/+c9o2*( vx1    -vx3)*( vx1    -vx3) * (c1o1 + drho)-cu_sq); 
-        (D.f[dirTW])[ktw]=(c1o1-q)/(c1o1+q)*(f_BE-f_TW+(f_BE+f_TW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BE+f_TW)-c6o1*c1o54*( VeloX-VeloZ))/(c1o1+q) - c1o54 * drho;
-        //(D.f[dirTW])[ktw]=zero;
+        f[vf::lbm::dir::TW]=(c1o1-q)/(c1o1+q)*(f_BE-f_TW+(f_BE+f_TW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BE+f_TW)-c6o1*c1o54*( VeloX-VeloZ))/(c1o1+q) - c1o54 * drho;
     }
 
-    q = q_dirTW[k];
+    q = Q.f[dirTW][k];
     if (q>=c0o1 && q<=c1o1)
     {
         feq=c1o54* (drho/*+three*(-vx1    +vx3)*/+c9o2*(-vx1    +vx3)*(-vx1    +vx3) * (c1o1 + drho)-cu_sq); 
-        (D.f[dirBE])[kbe]=(c1o1-q)/(c1o1+q)*(f_TW-f_BE+(f_TW+f_BE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TW+f_BE)-c6o1*c1o54*(-VeloX+VeloZ))/(c1o1+q) - c1o54 * drho;
-        //(D.f[dirBE])[kbe]=zero;
+        f[vf::lbm::dir::BE]=(c1o1-q)/(c1o1+q)*(f_TW-f_BE+(f_TW+f_BE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TW+f_BE)-c6o1*c1o54*(-VeloX+VeloZ))/(c1o1+q) - c1o54 * drho;
     }
 
-    q = q_dirTN[k];
+    q = Q.f[dirTN][k];
     if (q>=c0o1 && q<=c1o1)
     {
         feq=c1o54* (drho/*+three*(     vx2+vx3)*/+c9o2*(     vx2+vx3)*(     vx2+vx3) * (c1o1 + drho)-cu_sq); 
-        (D.f[dirBS])[kbs]=(c1o1-q)/(c1o1+q)*(f_TN-f_BS+(f_TN+f_BS-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TN+f_BS)-c6o1*c1o54*( VeloY+VeloZ))/(c1o1+q) - c1o54 * drho;
-        //(D.f[dirBS])[kbs]=zero;
+        f[vf::lbm::dir::BS]=(c1o1-q)/(c1o1+q)*(f_TN-f_BS+(f_TN+f_BS-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TN+f_BS)-c6o1*c1o54*( VeloY+VeloZ))/(c1o1+q) - c1o54 * drho;
     }
 
-    q = q_dirBS[k];
+    q = Q.f[dirBS][k];
     if (q>=c0o1 && q<=c1o1)
     {
         feq=c1o54* (drho/*+three*(    -vx2-vx3)*/+c9o2*(    -vx2-vx3)*(    -vx2-vx3) * (c1o1 + drho)-cu_sq); 
-        (D.f[dirTN])[ktn]=(c1o1-q)/(c1o1+q)*(f_BS-f_TN+(f_BS+f_TN-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BS+f_TN)-c6o1*c1o54*( -VeloY-VeloZ))/(c1o1+q) - c1o54 * drho;
-        //(D.f[dirTN])[ktn]=zero;
+        f[vf::lbm::dir::TN]=(c1o1-q)/(c1o1+q)*(f_BS-f_TN+(f_BS+f_TN-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BS+f_TN)-c6o1*c1o54*( -VeloY-VeloZ))/(c1o1+q) - c1o54 * drho;
     }
 
-    q = q_dirBN[k];
+    q = Q.f[dirBN][k];
     if (q>=c0o1 && q<=c1o1)
     {
         feq=c1o54* (drho/*+three*(     vx2-vx3)*/+c9o2*(     vx2-vx3)*(     vx2-vx3) * (c1o1 + drho)-cu_sq); 
-        (D.f[dirTS])[kts]=(c1o1-q)/(c1o1+q)*(f_BN-f_TS+(f_BN+f_TS-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BN+f_TS)-c6o1*c1o54*( VeloY-VeloZ))/(c1o1+q) - c1o54 * drho;
-        //(D.f[dirTS])[kts]=zero;
+        f[vf::lbm::dir::TS]=(c1o1-q)/(c1o1+q)*(f_BN-f_TS+(f_BN+f_TS-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BN+f_TS)-c6o1*c1o54*( VeloY-VeloZ))/(c1o1+q) - c1o54 * drho;
     }
 
-    q = q_dirTS[k];
+    q = Q.f[dirTS][k];
     if (q>=c0o1 && q<=c1o1)
     {
         feq=c1o54* (drho/*+three*(    -vx2+vx3)*/+c9o2*(    -vx2+vx3)*(    -vx2+vx3) * (c1o1 + drho)-cu_sq); 
-        (D.f[dirBN])[kbn]=(c1o1-q)/(c1o1+q)*(f_TS-f_BN+(f_TS+f_BN-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TS+f_BN)-c6o1*c1o54*( -VeloY+VeloZ))/(c1o1+q) - c1o54 * drho;
-        //(D.f[dirBN])[kbn]=zero;
+        f[vf::lbm::dir::BN]=(c1o1-q)/(c1o1+q)*(f_TS-f_BN+(f_TS+f_BN-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TS+f_BN)-c6o1*c1o54*( -VeloY+VeloZ))/(c1o1+q) - c1o54 * drho;
     }
 
-    q = q_dirTNE[k];
+    q = Q.f[dirTNE][k];
     if (q>=c0o1 && q<=c1o1)
     {
         feq=c1o216*(drho/*+three*( vx1+vx2+vx3)*/+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3) * (c1o1 + drho)-cu_sq); 
-        (D.f[dirBSW])[kbsw]=(c1o1-q)/(c1o1+q)*(f_TNE-f_BSW+(f_TNE+f_BSW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TNE+f_BSW)-c6o1*c1o216*( VeloX+VeloY+VeloZ))/(c1o1+q) - c1o216 * drho;
-        //(D.f[dirBSW])[kbsw]=zero;
+        f[vf::lbm::dir::BSW]=(c1o1-q)/(c1o1+q)*(f_TNE-f_BSW+(f_TNE+f_BSW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TNE+f_BSW)-c6o1*c1o216*( VeloX+VeloY+VeloZ))/(c1o1+q) - c1o216 * drho;
     }
 
-    q = q_dirBSW[k];
+    q = Q.f[dirBSW][k];
     if (q>=c0o1 && q<=c1o1)
     {
         feq=c1o216*(drho/*+three*(-vx1-vx2-vx3)*/+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3) * (c1o1 + drho)-cu_sq); 
-        (D.f[dirTNE])[ktne]=(c1o1-q)/(c1o1+q)*(f_BSW-f_TNE+(f_BSW+f_TNE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BSW+f_TNE)-c6o1*c1o216*(-VeloX-VeloY-VeloZ))/(c1o1+q) - c1o216 * drho;
-        //(D.f[dirTNE])[ktne]=zero;
+        f[vf::lbm::dir::TNE]=(c1o1-q)/(c1o1+q)*(f_BSW-f_TNE+(f_BSW+f_TNE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BSW+f_TNE)-c6o1*c1o216*(-VeloX-VeloY-VeloZ))/(c1o1+q) - c1o216 * drho;
     }
 
-    q = q_dirBNE[k];
+    q = Q.f[dirBNE][k];
     if (q>=c0o1 && q<=c1o1)
     {
         feq=c1o216*(drho/*+three*( vx1+vx2-vx3)*/+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3) * (c1o1 + drho)-cu_sq); 
-        (D.f[dirTSW])[ktsw]=(c1o1-q)/(c1o1+q)*(f_BNE-f_TSW+(f_BNE+f_TSW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BNE+f_TSW)-c6o1*c1o216*( VeloX+VeloY-VeloZ))/(c1o1+q) - c1o216 * drho;
-        //(D.f[dirTSW])[ktsw]=zero;
+        f[vf::lbm::dir::TSW]=(c1o1-q)/(c1o1+q)*(f_BNE-f_TSW+(f_BNE+f_TSW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BNE+f_TSW)-c6o1*c1o216*( VeloX+VeloY-VeloZ))/(c1o1+q) - c1o216 * drho;
     }
 
-    q = q_dirTSW[k];
+    q = Q.f[dirTSW][k];
     if (q>=c0o1 && q<=c1o1)
     {
         feq=c1o216*(drho/*+three*(-vx1-vx2+vx3)*/+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3) * (c1o1 + drho)-cu_sq); 
-        (D.f[dirBNE])[kbne]=(c1o1-q)/(c1o1+q)*(f_TSW-f_BNE+(f_TSW+f_BNE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TSW+f_BNE)-c6o1*c1o216*(-VeloX-VeloY+VeloZ))/(c1o1+q) - c1o216 * drho;
-        //(D.f[dirBNE])[kbne]=zero;
+        f[vf::lbm::dir::BNE]=(c1o1-q)/(c1o1+q)*(f_TSW-f_BNE+(f_TSW+f_BNE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TSW+f_BNE)-c6o1*c1o216*(-VeloX-VeloY+VeloZ))/(c1o1+q) - c1o216 * drho;
     }
 
-    q = q_dirTSE[k];
+    q = Q.f[dirTSE][k];
     if (q>=c0o1 && q<=c1o1)
     {
         feq=c1o216*(drho/*+three*( vx1-vx2+vx3)*/+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3) * (c1o1 + drho)-cu_sq); 
-        (D.f[dirBNW])[kbnw]=(c1o1-q)/(c1o1+q)*(f_TSE-f_BNW+(f_TSE+f_BNW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TSE+f_BNW)-c6o1*c1o216*( VeloX-VeloY+VeloZ))/(c1o1+q) - c1o216 * drho;
-        //(D.f[dirBNW])[kbnw]=zero;
+        f[vf::lbm::dir::BNW]=(c1o1-q)/(c1o1+q)*(f_TSE-f_BNW+(f_TSE+f_BNW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TSE+f_BNW)-c6o1*c1o216*( VeloX-VeloY+VeloZ))/(c1o1+q) - c1o216 * drho;
     }
 
-    q = q_dirBNW[k];
+    q = Q.f[dirBNW][k];
     if (q>=c0o1 && q<=c1o1)
     {
         feq=c1o216*(drho/*+three*(-vx1+vx2-vx3)*/+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3) * (c1o1 + drho)-cu_sq); 
-        (D.f[dirTSE])[ktse]=(c1o1-q)/(c1o1+q)*(f_BNW-f_TSE+(f_BNW+f_TSE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BNW+f_TSE)-c6o1*c1o216*(-VeloX+VeloY-VeloZ))/(c1o1+q) - c1o216 * drho;
-        //(D.f[dirTSE])[ktse]=zero;
+        f[vf::lbm::dir::TSE]=(c1o1-q)/(c1o1+q)*(f_BNW-f_TSE+(f_BNW+f_TSE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BNW+f_TSE)-c6o1*c1o216*(-VeloX+VeloY-VeloZ))/(c1o1+q) - c1o216 * drho;
     }
 
-    q = q_dirBSE[k];
+    q = Q.f[dirBSE][k];
     if (q>=c0o1 && q<=c1o1)
     {
         feq=c1o216*(drho/*+three*( vx1-vx2-vx3)*/+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3) * (c1o1 + drho)-cu_sq); 
-        (D.f[dirTNW])[ktnw]=(c1o1-q)/(c1o1+q)*(f_BSE-f_TNW+(f_BSE+f_TNW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BSE+f_TNW)-c6o1*c1o216*( VeloX-VeloY-VeloZ))/(c1o1+q) - c1o216 * drho;
-        //(D.f[dirTNW])[ktnw]=zero;
+        f[vf::lbm::dir::TNW]=(c1o1-q)/(c1o1+q)*(f_BSE-f_TNW+(f_BSE+f_TNW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BSE+f_TNW)-c6o1*c1o216*( VeloX-VeloY-VeloZ))/(c1o1+q) - c1o216 * drho;
     }
 
-    q = q_dirTNW[k];
+    q = Q.f[dirTNW][k];
     if (q>=c0o1 && q<=c1o1)
     {
         feq=c1o216*(drho/*+three*(-vx1+vx2+vx3)*/+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3) * (c1o1 + drho)-cu_sq); 
-        (D.f[dirBSE])[kbse]=(c1o1-q)/(c1o1+q)*(f_TNW-f_BSE+(f_TNW+f_BSE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TNW+f_BSE)-c6o1*c1o216*(-VeloX+VeloY+VeloZ))/(c1o1+q) - c1o216 * drho;
-        //(D.f[dirBSE])[kbse]=zero;
+        f[vf::lbm::dir::BSE]=(c1o1-q)/(c1o1+q)*(f_TNW-f_BSE+(f_TNW+f_BSE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TNW+f_BSE)-c6o1*c1o216*(-VeloX+VeloY+VeloZ))/(c1o1+q) - c1o216 * drho;
     }
+    //////////////////////////////////////////////////////////////////////////
+    distWrapper.write();
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
