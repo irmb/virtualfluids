@@ -1131,17 +1131,14 @@ extern "C" __global__ void QPressDeviceFake27(real* rhoBC,
                                              unsigned int size_Mat,
                                              bool isEvenTimestep);
 
-extern "C" __global__ void BBDevice27(int inx,
-                                     int iny,
-                                     real* DD,
-                                     int* k_Q,
-                                     real* QQ,
+extern "C" __global__ void BBDevice27(real* distributions,
+                                     int* subgridDistanceIndices,
+                                     real* subgridDistances,
                                      unsigned int numberOfBCnodes,
-                                     real om1,
                                      unsigned int* neighborX,
                                      unsigned int* neighborY,
                                      unsigned int* neighborZ,
-                                     unsigned int size_Mat,
+                                     unsigned int numberOfLBnodes,
                                      bool isEvenTimestep);
 
 extern "C" __global__ void QPressDevice27_IntBB(real* rho,

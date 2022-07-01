@@ -4226,7 +4226,6 @@ extern "C" void BBDev27(LBMSimulationParameter* parameterDevice, QforBoundaryCon
             boundaryCondition->k,
             boundaryCondition->q27[0],
             boundaryCondition->numberOfBCnodes,
-            parameterDevice->omega,
             parameterDevice->neighborX,
             parameterDevice->neighborY,
             parameterDevice->neighborZ,
