@@ -43,7 +43,7 @@
 class CudaMemoryManager;
 class BoundaryConditionFactory;
 class Parameter;
-class LBMSimulationParameter;
+struct LBMSimulationParameter;
 
 using boundaryCondition = std::function<void(LBMSimulationParameter *, QforBoundaryConditions *)>;
 

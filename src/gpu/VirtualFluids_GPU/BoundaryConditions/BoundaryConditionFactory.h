@@ -7,7 +7,7 @@
 
 #include "LBM/LB.h"
 
-class LBMSimulationParameter;
+struct LBMSimulationParameter;
 
 using boundaryCondition = std::function<void(LBMSimulationParameter *, QforBoundaryConditions *)>;
 
