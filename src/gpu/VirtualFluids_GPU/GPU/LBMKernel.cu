@@ -2656,8 +2656,6 @@ extern "C" void QDev27(LBMSimulationParameter* parameterDevice, QforBoundaryCond
    dim3 threads(parameterDevice->numberofthreads, 1, 1 );
 
       QDevice27<<< grid, threads >>> (
-            parameterDevice->nx,
-            parameterDevice->ny,
             parameterDevice->distributions.f[0],
             boundaryCondition->k,
             boundaryCondition->q27[0],

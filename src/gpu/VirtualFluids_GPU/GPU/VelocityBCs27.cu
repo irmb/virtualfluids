@@ -4892,6 +4892,7 @@ extern "C" __global__ void QVelDeviceComp27(
 
       ////////////////////////////////////////////////////////////////////////////////
       //! - Update distributions with subgrid distance (q) between zero and one
+      //!
       real feq, q, velocityLB, velocityBC;
       q = (subgridD.q[dirE])[k];
       if (q>=c0o1 && q<=c1o1) // only update distribution for q between zero and one

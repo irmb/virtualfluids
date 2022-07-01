@@ -598,21 +598,19 @@ extern "C" __global__ void LB_BC_Vel_West_27( int nx,
                                               real om);
 
 //no Slip BCs
-extern "C" __global__ void QDevice27(int inx,
-                                     int iny,
-                                     real* DD,
-                                     int* k_Q,
-                                     real* QQ,
+extern "C" __global__ void QDevice27(real* distributions,
+                                     int* subgridDistanceIndices,
+                                     real* subgridDistances,
                                      unsigned int numberOfBCnodes,
-                                     real minusomega,
+                                     real omega,
                                      unsigned int* neighborX,
                                      unsigned int* neighborY,
                                      unsigned int* neighborZ,
-                                     unsigned int size_Mat,
+                                     unsigned int numberOfLBnodes,
                                      bool isEvenTimestep);
 
 extern "C" __global__ void QDeviceComp27(
-										 real* distribution,
+										 real* distributions,
 										 int* subgridDistanceIndices,
 										 real* subgridDistances,
 										 unsigned int numberOfBCnodes,
