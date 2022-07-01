@@ -65,7 +65,7 @@ extern "C" __global__ void LB_Kernel_CumulantK17CompChim(
     //! The cumulant kernel is executed in the following steps
     //!
     ////////////////////////////////////////////////////////////////////////////////
-    //! - Get node index coordinates from thredIdx, blockIdx, blockDim and gridDim.
+    //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
     //!
     const unsigned x = threadIdx.x;
     const unsigned y = blockIdx.x;

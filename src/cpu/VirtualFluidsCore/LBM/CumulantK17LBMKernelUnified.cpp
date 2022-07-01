@@ -89,7 +89,7 @@ void CumulantK17LBMKernelUnified::calculate(int step)
     //! The cumulant kernel is executed in the following steps
     //!
     ////////////////////////////////////////////////////////////////////////////////
-    //! - Get node index coordinates from thredIdx, blockIdx, blockDim and gridDim.
+    //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
     //!
 
     using namespace std;
