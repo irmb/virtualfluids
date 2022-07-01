@@ -98,5 +98,6 @@ private:
     SPtr<Parameter> para;
 
     boundaryCondition velocityBoundaryConditionPost;
+    boundaryCondition noSlipBoundaryConditionPost;
 };
 #endif

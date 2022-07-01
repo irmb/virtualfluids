@@ -210,6 +210,7 @@ void multipleLevel(const std::string& configPath)
 	    gridBuilder->setNoSlipBoundaryCondition(SideType::MY);
 	    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vx, vx, 0.0);
 	    gridBuilder->setNoSlipBoundaryCondition(SideType::MZ);
+        bcFactory.setNoSlipBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipIncompressible);
         bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocitySimpleBounceBackCompressible);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

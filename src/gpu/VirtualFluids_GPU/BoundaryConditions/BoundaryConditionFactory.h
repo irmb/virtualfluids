@@ -27,18 +27,32 @@ public:
         VelocityAndPressureCompressible
     };
 
+    //! \brief An enumeration for selecting a no-slip boundary condition
+    enum class NoSlipBC {
+        //! - NoSlipBounceBack = bounce back no-slip boundary condition
+        NoSlipBounceBack,
+        //! - NoSlipIncompressible = interpolated no-slip boundary condition, based on subgrid distances
+        NoSlipIncompressible,
+        //! - NoSlipCompressible = interpolated no-slip boundary condition, based on subgrid distances
+        NoSlipCompressible
+    };
+
     // enum class OutflowBoundaryCondition {};  // TODO:
     // https://git.rz.tu-bs.de/m.schoenherr/VirtualFluids_dev/-/issues/16
 
     void setVelocityBoundaryCondition(const VelocityBC boundaryConditionType);
+    void setNoSlipBoundaryCondition(const NoSlipBC boundaryConditionType);
+    // void setGeometryBoundaryCondition(const std::variant<VelocityBC, NoSlipBC, SlipBC> boundaryConditionType);
 
     // void setOutflowBoundaryCondition(...); // TODO:
     // https://git.rz.tu-bs.de/m.schoenherr/VirtualFluids_dev/-/issues/16
 
     boundaryCondition getVelocityBoundaryConditionPost() const;
+    boundaryCondition getNoSlipBoundaryConditionPost() const;
 
 private:
     VelocityBC velocityBoundaryCondition;
+    NoSlipBC noSlipBoundaryCondition;
 
     // OutflowBoundaryConditon outflowBC // TODO: https://git.rz.tu-bs.de/m.schoenherr/VirtualFluids_dev/-/issues/16
 };

@@ -43,6 +43,7 @@
 LBKernelManager::LBKernelManager(SPtr<Parameter> parameter, BoundaryConditionFactory* bcFactory): para(parameter)
 {
     this->velocityBoundaryConditionPost = bcFactory->getVelocityBoundaryConditionPost();
+    this->noSlipBoundaryConditionPost = bcFactory->getNoSlipBoundaryConditionPost();
 }
 
 void LBKernelManager::runLBMKernel(const int level) const
@@ -134,8 +135,6 @@ void LBKernelManager::runVelocityBCKernelPost(const int level) const
      if (para->getParD(level)->velocityBC.numberOfBCnodes > 0)
      {
         velocityBoundaryConditionPost(para->getParD(level).get(), &(para->getParD(level)->velocityBC));
-
-        //QVelDevicePlainBB27(para->getParD(level).get(), &(para->getParD(level)->velocityBC));
 
         //////////////////////////////////////////////////////////////////////////
         // D E P R E C A T E D
@@ -653,48 +652,7 @@ void LBKernelManager::runSlipBCKernel(const int level) const{
 void LBKernelManager::runNoSlipBCKernel(const int level) const{
     if (para->getParD(level)->noSlipBC.numberOfBCnodes > 0)
     {
-        // QDev27(
-        //     para->getParD(level)->numberofthreads,
-        //     para->getParD(level)->nx,
-        //     para->getParD(level)->ny,
-        //     para->getParD(level)->distributions.f[0],
-        //     para->getParD(level)->noSlipBC.k,
-        //     para->getParD(level)->noSlipBC.q27[0],
-        //     para->getParD(level)->noSlipBC.numberOfBCnodes,
-        //     para->getParD(level)->omega,
-        //     para->getParD(level)->neighborX,
-        //     para->getParD(level)->neighborY,
-        //     para->getParD(level)->neighborZ,
-        //     para->getParD(level)->numberOfNodes,
-        //     para->getParD(level)->isEvenTimestep);
-
-        // BBDev27(
-        //     para->getParD(level)->numberofthreads,
-        //     para->getParD(level)->nx,
-        //     para->getParD(level)->ny,
-        //     para->getParD(level)->distributions.f[0],
-        //     para->getParD(level)->noSlipBC.k,
-        //     para->getParD(level)->noSlipBC.q27[0],
-        //     para->getParD(level)->noSlipBC.numberOfBCnodes,
-        //     para->getParD(level)->omega,
-        //     para->getParD(level)->neighborX,
-        //     para->getParD(level)->neighborY,
-        //     para->getParD(level)->neighborZ,
-        //     para->getParD(level)->numberOfNodes,
-        //     para->getParD(level)->isEvenTimestep);
-
-        QDevComp27(
-            para->getParD(level)->numberofthreads,
-            para->getParD(level)->distributions.f[0],
-            para->getParD(level)->noSlipBC.k,
-            para->getParD(level)->noSlipBC.q27[0],
-            para->getParD(level)->noSlipBC.numberOfBCnodes,
-            para->getParD(level)->omega,
-            para->getParD(level)->neighborX,
-            para->getParD(level)->neighborY,
-            para->getParD(level)->neighborZ,
-            para->getParD(level)->numberOfNodes,
-            para->getParD(level)->isEvenTimestep);
+        noSlipBoundaryConditionPost(para->getParD(level).get(), &(para->getParD(level)->noSlipBC));
     }
 }
 
