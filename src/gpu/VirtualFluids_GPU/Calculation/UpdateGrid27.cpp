@@ -499,8 +499,8 @@ UpdateGrid27::UpdateGrid27(SPtr<Parameter> para, vf::gpu::Communicator &comm, SP
     chooseFunctionForCollisionAndExchange();
     chooseFunctionForRefinementAndExchange();
     this->lbKernelManager = LBKernelManager::make(para);
-    this->adKernelManager = ADKernelManager::make(para);
-    this->gridScalingKernelManager = GridScalingKernelManager::make(para);
+    this->adKernelManager = std::make_shared<ADKernelManager>(para);
+    this->gridScalingKernelManager =  std::make_shared<GridScalingKernelManager>(para);
 }
 
 
