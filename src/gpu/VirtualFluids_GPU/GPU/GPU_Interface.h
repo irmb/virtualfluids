@@ -15,7 +15,7 @@
 #include <DataTypes.h>
 #include "LBM/LB.h"
 
-class LBMSimulationParameter;
+struct LBMSimulationParameter;
 
 //////////////////////////////////////////////////////////////////////////
 //Kernel
