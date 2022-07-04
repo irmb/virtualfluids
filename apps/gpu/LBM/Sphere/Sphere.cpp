@@ -60,12 +60,11 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// LbmOrGks lbmOrGks = GKS;
-LbmOrGks lbmOrGks = LBM;
-
 const real L = 1.0;
 
-const real Re = 1000.0;
+const real dSphere = 0.2;
+
+const real Re = 1000.0; // related to the sphere's diameter
 
 const real velocity = 1.0;
 
@@ -102,12 +101,12 @@ void multipleLevel(const std::string &configPath)
     gridBuilder->addCoarseGrid(-1.0 * L, -0.5 * L, -0.5 * L, 
                                 6.0 * L,  0.5 * L,  0.5 * L, dx);
 
-    Object *sphere = new Sphere(0.0, 0.0, 0.0, 0.1);
+    Object *sphere = new Sphere(0.0, 0.0, 0.0, dSphere / 2.0);
     gridBuilder->addGeometry(sphere);
 
     gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
-    gridBuilder->buildGrids(lbmOrGks, false); // buildGrids() has to be called before setting the BCs!!!!
+    gridBuilder->buildGrids(LBM, false); // buildGrids() has to be called before setting the BCs!!!!
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -130,7 +129,7 @@ void multipleLevel(const std::string &configPath)
 
     const real velocityLB = velocity * dt / dx; // LB units
 
-    const real viscosityLB = nx * velocityLB / Re; // LB units
+    const real viscosityLB = (dSphere / dx) * velocityLB / Re; // LB units
 
     VF_LOG_INFO("velocity  [dx/dt] = {}", velocityLB);
     VF_LOG_INFO("viscosity [dx^2/dt] = {}", viscosityLB);
@@ -149,6 +148,7 @@ void multipleLevel(const std::string &configPath)
     para->setViscosity(viscosityLB);
 
     para->setVelocityRatio(velocity / velocityLB);
+    para->setDensityRatio((real)1.0);
 
     // para->setMainKernel("CumulantK17CompChim");
 
@@ -164,8 +164,6 @@ void multipleLevel(const std::string &configPath)
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SideType::PX, velocityLB, 0.0, 0.0);
     gridBuilder->setVelocityBoundaryCondition(SideType::MX, velocityLB, 0.0, 0.0);
     gridBuilder->setSlipBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
     gridBuilder->setSlipBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
