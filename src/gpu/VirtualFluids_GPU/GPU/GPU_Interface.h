@@ -938,18 +938,7 @@ extern "C" void BBStressDev27(  unsigned int numberOfThreads,
 								unsigned int size_Mat, 
 								bool isEvenTimestep);
 
-extern "C" void QPressDev27(unsigned int numberOfThreads,
-                          real* rhoBC,
-                          real* DD, 
-                          int* k_Q, 
-                          real* QQ,
-                          unsigned int numberOfBCnodes, 
-                          real om1, 
-                          unsigned int* neighborX,
-                          unsigned int* neighborY,
-                          unsigned int* neighborZ,
-                          unsigned int size_Mat, 
-                          bool isEvenTimestep);
+extern "C" void QPressDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
 extern "C" void QPressDevFixBackflow27(unsigned int numberOfThreads,
                                        real* rhoBC,
@@ -975,31 +964,9 @@ extern "C" void QPressDevDirDepBot27(unsigned int numberOfThreads,
                                      unsigned int size_Mat, 
                                      bool isEvenTimestep);
 
-extern "C" void QPressNoRhoDev27(  unsigned int numberOfThreads,
-								   real* rhoBC,
-								   real* DD, 
-								   int* k_Q, 
-								   int* k_N, 
-								   unsigned int numberOfBCnodes, 
-								   real om1, 
-								   unsigned int* neighborX,
-								   unsigned int* neighborY,
-								   unsigned int* neighborZ,
-								   unsigned int size_Mat, 
-								   bool isEvenTimestep);
+extern "C" void QPressNoRhoDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
-extern "C" void QInflowScaleByPressDev27(unsigned int numberOfThreads,
-										 real* rhoBC,
-										 real* DD, 
-										 int* k_Q, 
-										 int* k_N, 
-										 unsigned int numberOfBCnodes, 
-										 real om1, 
-										 unsigned int* neighborX,
-										 unsigned int* neighborY,
-										 unsigned int* neighborZ,
-										 unsigned int size_Mat, 
-										 bool isEvenTimestep);
+extern "C" void QInflowScaleByPressDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
 extern "C" void QPressDevOld27(unsigned int numberOfThreads,
                                real* rhoBC,
@@ -1014,45 +981,11 @@ extern "C" void QPressDevOld27(unsigned int numberOfThreads,
                                unsigned int size_Mat, 
                                bool isEvenTimestep);
 
-extern "C" void QPressDevIncompNEQ27(unsigned int numberOfThreads,
-									 real* rhoBC,
-									 real* DD, 
-									 int* k_Q, 
-									 int* k_N, 
-									 unsigned int numberOfBCnodes, 
-									 real om1, 
-									 unsigned int* neighborX,
-									 unsigned int* neighborY,
-									 unsigned int* neighborZ,
-									 unsigned int size_Mat, 
-									 bool isEvenTimestep);
+extern "C" void QPressDevIncompNEQ27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
-extern "C" void QPressDevNEQ27(unsigned int numberOfThreads,
-							   real* rhoBC,
-							   real* distribution, 
-							   int* bcNodeIndices, 
-							   int* bcNeighborIndices, 
-							   unsigned int numberOfBCnodes, 
-							   real omega1, 
-							   unsigned int* neighborX,
-							   unsigned int* neighborY,
-							   unsigned int* neighborZ,
-							   unsigned int size_Mat, 
-							   bool isEvenTimestep);
+extern "C" void QPressDevNEQ27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
-extern "C" void QPressDevEQZ27(unsigned int numberOfThreads,
-							   real* rhoBC,
-							   real* DD, 
-							   int* k_Q, 
-							   int* k_N, 
-							   real* kTestRE, 
-							   unsigned int numberOfBCnodes, 
-							   real om1, 
-							   unsigned int* neighborX,
-							   unsigned int* neighborY,
-							   unsigned int* neighborZ,
-							   unsigned int size_Mat, 
-							   bool isEvenTimestep);
+extern "C" void QPressDevEQZ27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
 extern "C" void QPressDevZero27(unsigned int numberOfThreads,
                                 real* DD, 

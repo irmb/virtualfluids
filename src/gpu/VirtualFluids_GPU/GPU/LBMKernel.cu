@@ -3670,46 +3670,24 @@ extern "C" void BBStressDev27(unsigned int numberOfThreads,
       getLastCudaError("BBStressDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QPressDev27(unsigned int numberOfThreads,
-                             real* rhoBC,
-                             real* DD,
-                             int* k_Q,
-                             real* QQ,
-                             unsigned int numberOfBCnodes,
-                             real om1,
-                             unsigned int* neighborX,
-                             unsigned int* neighborY,
-                             unsigned int* neighborZ,
-                             unsigned int size_Mat,
-                             bool isEvenTimestep)
+extern "C" void QPressDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
 
-      QPressDevice27<<< gridQ, threads >>> ( rhoBC,
-                                             DD,
-                                             k_Q,
-                                             QQ,
-                                             numberOfBCnodes,
-                                             om1,
-                                             neighborX,
-                                             neighborY,
-                                             neighborZ,
-                                             size_Mat,
-                                             isEvenTimestep);
-      getLastCudaError("QPressDevice27 execution failed");
+   QPressDevice27<<< grid, threads >>> (
+      boundaryCondition->RhoBC,
+      parameterDevice->distributions.f[0],
+      boundaryCondition->k,
+      boundaryCondition->q27[0],
+      boundaryCondition->numberOfBCnodes,
+      parameterDevice->omega,
+      parameterDevice->neighborX,
+      parameterDevice->neighborY,
+      parameterDevice->neighborZ,
+      parameterDevice->numberOfNodes,
+      parameterDevice->isEvenTimestep);
+   getLastCudaError("QPressDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QPressDevAntiBB27(  unsigned int numberOfThreads,
@@ -3840,87 +3818,43 @@ extern "C" void QPressDevDirDepBot27(  unsigned int numberOfThreads,
       getLastCudaError("QPressDeviceDirDepBot27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QPressNoRhoDev27(unsigned int numberOfThreads,
-                                 real* rhoBC,
-                                 real* DD,
-                                 int* k_Q,
-                                 int* k_N,
-                                 unsigned int numberOfBCnodes,
-                                 real om1,
-                                 unsigned int* neighborX,
-                                 unsigned int* neighborY,
-                                 unsigned int* neighborZ,
-                                 unsigned int size_Mat,
-                                 bool isEvenTimestep)
+extern "C" void QPressNoRhoDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
 
-      QPressNoRhoDevice27<<< gridQ, threads >>> (   rhoBC,
-													DD,
-													k_Q,
-													k_N,
-													numberOfBCnodes,
-													om1,
-													neighborX,
-													neighborY,
-													neighborZ,
-													size_Mat,
-													isEvenTimestep);
-      getLastCudaError("QPressNoRhoDevice27 execution failed");
+   QPressNoRhoDevice27<<< grid, threads >>> (
+         boundaryCondition->RhoBC,
+         parameterDevice->distributions.f[0],
+         boundaryCondition->k,
+         boundaryCondition->kN,
+         boundaryCondition->numberOfBCnodes,
+         parameterDevice->omega,
+         parameterDevice->neighborX,
+         parameterDevice->neighborY,
+         parameterDevice->neighborZ,
+         parameterDevice->numberOfNodes,
+         parameterDevice->isEvenTimestep);
+   getLastCudaError("QPressNoRhoDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QInflowScaleByPressDev27(unsigned int numberOfThreads,
-										 real* rhoBC,
-										 real* DD,
-										 int* k_Q,
-										 int* k_N,
-										 unsigned int numberOfBCnodes,
-										 real om1,
-										 unsigned int* neighborX,
-										 unsigned int* neighborY,
-										 unsigned int* neighborZ,
-										 unsigned int size_Mat,
-										 bool isEvenTimestep)
+extern "C" void QInflowScaleByPressDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
 
-   QInflowScaleByPressDevice27<<< gridQ, threads >>> (  rhoBC,
-														DD,
-														k_Q,
-														k_N,
-														numberOfBCnodes,
-														om1,
-														neighborX,
-														neighborY,
-														neighborZ,
-														size_Mat,
-														isEvenTimestep);
+   QInflowScaleByPressDevice27<<< grid, threads >>> (
+           boundaryCondition->RhoBC,
+           parameterDevice->distributions.f[0],
+           boundaryCondition->k,
+           boundaryCondition->kN,
+           boundaryCondition->numberOfBCnodes,
+           parameterDevice->omega,
+           parameterDevice->neighborX,
+           parameterDevice->neighborY,
+           parameterDevice->neighborZ,
+           parameterDevice->numberOfNodes,
+           parameterDevice->isEvenTimestep);
    getLastCudaError("QInflowScaleByPressDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -3966,131 +3900,64 @@ extern "C" void QPressDevOld27(  unsigned int numberOfThreads,
       getLastCudaError("QPressDeviceOld27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QPressDevIncompNEQ27(unsigned int numberOfThreads,
-                                     real* rhoBC,
-                                     real* DD,
-                                     int* k_Q,
-                                     int* k_N,
-                                     unsigned int numberOfBCnodes,
-                                     real om1,
-                                     unsigned int* neighborX,
-                                     unsigned int* neighborY,
-                                     unsigned int* neighborZ,
-                                     unsigned int size_Mat,
-                                     bool isEvenTimestep)
+extern "C" void QPressDevIncompNEQ27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
 
-      QPressDeviceIncompNEQ27<<< gridQ, threads >>> (   rhoBC,
-														DD,
-														k_Q,
-														k_N,
-														numberOfBCnodes,
-														om1,
-														neighborX,
-														neighborY,
-														neighborZ,
-														size_Mat,
-														isEvenTimestep);
-      getLastCudaError("QPressDeviceIncompNEQ27 execution failed");
+   QPressDeviceIncompNEQ27<<< grid, threads >>> (
+         boundaryCondition->RhoBC,
+         parameterDevice->distributions.f[0],
+         boundaryCondition->k,
+         boundaryCondition->kN,
+         boundaryCondition->numberOfBCnodes,
+         parameterDevice->omega,
+         parameterDevice->neighborX,
+         parameterDevice->neighborY,
+         parameterDevice->neighborZ,
+         parameterDevice->numberOfNodes,
+         parameterDevice->isEvenTimestep);
+   getLastCudaError("QPressDeviceIncompNEQ27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QPressDevNEQ27(  unsigned int numberOfThreads,
-                                     real* rhoBC,
-                                     real* distribution,
-                                     int* bcNodeIndices,
-                                     int* bcNeighborIndices,
-                                     unsigned int numberOfBCnodes,
-                                     real omega1,
-                                     unsigned int* neighborX,
-                                     unsigned int* neighborY,
-                                     unsigned int* neighborZ,
-                                     unsigned int size_Mat,
-                                     bool isEvenTimestep)
+extern "C" void QPressDevNEQ27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
 
-      QPressDeviceNEQ27<<< gridQ, threads >>> ( rhoBC,
-                                                distribution,
-                                                bcNodeIndices,
-                                                bcNeighborIndices,
-                                                numberOfBCnodes,
-                                                omega1,
-                                                neighborX,
-                                                neighborY,
-                                                neighborZ,
-                                                size_Mat,
-                                                isEvenTimestep);
-      getLastCudaError("QPressDeviceOld27 execution failed");
+   QPressDeviceNEQ27<<< grid, threads >>> (
+        boundaryCondition->RhoBC,
+        parameterDevice->distributions.f[0],
+        boundaryCondition->k,
+        boundaryCondition->kN,
+        boundaryCondition->numberOfBCnodes,
+        parameterDevice->omega,
+        parameterDevice->neighborX,
+        parameterDevice->neighborY,
+        parameterDevice->neighborZ,
+        parameterDevice->numberOfNodes,
+        parameterDevice->isEvenTimestep);
+   getLastCudaError("QPressDevNEQ27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QPressDevEQZ27(  unsigned int numberOfThreads,
-                                     real* rhoBC,
-                                     real* DD,
-                                     int* k_Q,
-                                     int* k_N,
-                                     real* kTestRE,
-                                     unsigned int numberOfBCnodes,
-                                     real om1,
-                                     unsigned int* neighborX,
-                                     unsigned int* neighborY,
-                                     unsigned int* neighborZ,
-                                     unsigned int size_Mat,
-                                     bool isEvenTimestep)
+extern "C" void QPressDevEQZ27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
 
-      QPressDeviceEQZ27<<< gridQ, threads >>> ( rhoBC,
-                                                DD,
-                                                k_Q,
-                                                k_N,
-                                                kTestRE,
-                                                numberOfBCnodes,
-                                                om1,
-                                                neighborX,
-                                                neighborY,
-                                                neighborZ,
-                                                size_Mat,
-                                                isEvenTimestep);
+      QPressDeviceEQZ27<<< grid, threads >>> (
+            boundaryCondition->RhoBC,
+            parameterDevice->distributions.f[0],
+            boundaryCondition->k,
+            boundaryCondition->kN,
+            parameterDevice->kDistTestRE.f[0],
+            boundaryCondition->numberOfBCnodes,
+            parameterDevice->omega,
+            parameterDevice->neighborX,
+            parameterDevice->neighborY,
+            parameterDevice->neighborZ,
+            parameterDevice->numberOfNodes,
+            parameterDevice->isEvenTimestep);
       getLastCudaError("QPressDeviceEQZ27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -4177,17 +4044,17 @@ extern "C" void BBDev27(LBMSimulationParameter* parameterDevice, QforBoundaryCon
    dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
    dim3 threads(parameterDevice->numberofthreads, 1, 1 );
 
-      BBDevice27<<< grid, threads >>> (
-            parameterDevice->distributions.f[0],
-            boundaryCondition->k,
-            boundaryCondition->q27[0],
-            boundaryCondition->numberOfBCnodes,
-            parameterDevice->neighborX,
-            parameterDevice->neighborY,
-            parameterDevice->neighborZ,
-            parameterDevice->numberOfNodes,
-            parameterDevice->isEvenTimestep);
-      getLastCudaError("BBDevice27 execution failed");
+   BBDevice27<<< grid, threads >>> (
+         parameterDevice->distributions.f[0],
+         boundaryCondition->k,
+         boundaryCondition->q27[0],
+         boundaryCondition->numberOfBCnodes,
+         parameterDevice->neighborX,
+         parameterDevice->neighborY,
+         parameterDevice->neighborZ,
+         parameterDevice->numberOfNodes,
+         parameterDevice->isEvenTimestep);
+   getLastCudaError("BBDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QPressDev27_IntBB(  unsigned int numberOfThreads,

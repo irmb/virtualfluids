@@ -100,5 +100,6 @@ private:
     boundaryCondition velocityBoundaryConditionPost;
     boundaryCondition noSlipBoundaryConditionPost;
     boundaryCondition slipBoundaryConditionPost;
+    boundaryCondition pressureBoundaryConditionPre;
 };
 #endif

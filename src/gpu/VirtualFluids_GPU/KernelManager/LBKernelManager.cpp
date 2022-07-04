@@ -45,6 +45,7 @@ LBKernelManager::LBKernelManager(SPtr<Parameter> parameter, BoundaryConditionFac
     this->velocityBoundaryConditionPost = bcFactory->getVelocityBoundaryConditionPost();
     this->noSlipBoundaryConditionPost   = bcFactory->getNoSlipBoundaryConditionPost();
     this->slipBoundaryConditionPost     = bcFactory->getSlipBoundaryConditionPost();
+    this->pressureBoundaryConditionPre  = bcFactory->getPressureBoundaryConditionPre();
 }
 
 void LBKernelManager::runLBMKernel(const int level) const
@@ -449,19 +450,7 @@ void LBKernelManager::runGeoBCKernelPost(const int level) const
 void LBKernelManager::runOutflowBCKernelPre(const int level) const{
     if (para->getParD(level)->outflowBC.numberOfBCnodes > 0)
     {
-        QPressNoRhoDev27(
-            para->getParD(level)->numberofthreads,
-            para->getParD(level)->outflowBC.RhoBC,
-            para->getParD(level)->distributions.f[0],
-            para->getParD(level)->outflowBC.k,
-            para->getParD(level)->outflowBC.kN,
-            para->getParD(level)->outflowBC.numberOfBCnodes,
-            para->getParD(level)->omega,
-            para->getParD(level)->neighborX,
-            para->getParD(level)->neighborY,
-            para->getParD(level)->neighborZ,
-            para->getParD(level)->numberOfNodes,
-            para->getParD(level)->isEvenTimestep);
+        QPressNoRhoDev27(para->getParD(level).get(), &(para->getParD(level)->outflowBC));
 
         // TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
         // if (  myid == numprocs - 1)
@@ -488,80 +477,7 @@ void LBKernelManager::runOutflowBCKernelPre(const int level) const{
 void LBKernelManager::runPressureBCKernelPre(const int level) const{
     if (para->getParD(level)->pressureBC.numberOfBCnodes > 0)
     {
-        QPressNoRhoDev27(
-            para->getParD(level)->numberofthreads,
-            para->getParD(level)->pressureBC.RhoBC,
-            para->getParD(level)->distributions.f[0],
-            para->getParD(level)->pressureBC.k,
-            para->getParD(level)->pressureBC.kN,
-            para->getParD(level)->pressureBC.numberOfBCnodes,
-            para->getParD(level)->omega,
-            para->getParD(level)->neighborX,
-            para->getParD(level)->neighborY,
-            para->getParD(level)->neighborZ,
-            para->getParD(level)->numberOfNodes,
-            para->getParD(level)->isEvenTimestep);
-
-        // QPressDevEQZ27(
-        //     para->getParD(level)->numberofthreads,
-        //     para->getParD(level)->pressureBC.RhoBC,
-        //     para->getParD(level)->distributions.f[0],
-        //     para->getParD(level)->pressureBC.k,
-        //     para->getParD(level)->pressureBC.kN,
-        //     para->getParD(level)->kDistTestRE.f[0],
-        //     para->getParD(level)->pressureBC.numberOfBCnodes,
-        //     para->getParD(level)->omega,
-        //     para->getParD(level)->neighborX,
-        //     para->getParD(level)->neighborY,
-        //     para->getParD(0)->neighborZ,
-        //     para->getParD(level)->numberOfNodes,
-        //     para->getParD(level)->isEvenTimestep);
-
-        // QInflowScaleByPressDev27(
-        //     para->getParD(level)->numberofthreads,
-        //     para->getParD(level)->pressureBC.RhoBC,
-        //     para->getParD(level)->distributions.f[0],
-        //     para->getParD(level)->pressureBC.k,
-        //     para->getParD(level)->pressureBC.kN,
-        //     para->getParD(level)->pressureBC.numberOfBCnodes,
-        //     para->getParD(0)->omega,
-        //     para->getParD(level)->neighborX,
-        //     para->getParD(level)->neighborY,
-        //     para->getParD(0)->neighborZ,
-        //     para->getParD(level)->numberOfNodes,
-        //     para->getParD(level)->isEvenTimestep);
-
-        // //////////////////////////////////////////////////////////////////////////////
-        // // press NEQ incompressible
-        // QPressDevIncompNEQ27(
-        //     para->getParD(level)->numberofthreads,
-        //     para->getParD(level)->pressureBC.RhoBC,
-        //     para->getParD(level)->distributions.f[0],
-        //     para->getParD(level)->pressureBC.k,
-        //     para->getParD(level)->pressureBC.kN,
-        //     para->getParD(level)->pressureBC.numberOfBCnodes,
-        //     para->getParD(level)->omega,
-        //     para->getParD(level)->neighborX,
-        //     para->getParD(level)->neighborY,
-        //     para->getParD(level)->neighborZ,
-        //     para->getParD(level)->numberOfNodes,
-        //     para->getParD(level)->isEvenTimestep);
-
-        // ////////////////////////////////////////////////////////////////////////////////
-        // // press NEQ compressible
-        // QPressDevNEQ27(
-        //     para->getParD(level)->numberofthreads,
-        //     para->getParD(level)->pressureBC.RhoBC,
-        //     para->getParD(level)->distributions.f[0],
-        //     para->getParD(level)->pressureBC.k,
-        //     para->getParD(level)->pressureBC.kN,
-        //     para->getParD(level)->pressureBC.numberOfBCnodes,
-        //     para->getParD(level)->omega,
-        //     para->getParD(level)->neighborX,
-        //     para->getParD(level)->neighborY,
-        //     para->getParD(level)->neighborZ,
-        //     para->getParD(level)->numberOfNodes,
-        //     para->getParD(level)->isEvenTimestep);
+        this->pressureBoundaryConditionPre(para->getParD(level).get(), &(para->getParD(level)->pressureBC));
     }
 }
 
@@ -666,4 +582,4 @@ void LBKernelManager::runNoSlipBCKernelPost(const int level) const{
 //                para->getParD()->distributions.f[0],
 //                para->getParD()->isEvenTimestep);
 //      }
-// }#
+// }

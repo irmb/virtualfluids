@@ -18,6 +18,11 @@ void BoundaryConditionFactory::setSlipBoundaryCondition(const SlipBC boundaryCon
     this->slipBoundaryCondition = boundaryConditionType;
 }
 
+void BoundaryConditionFactory::setPressureBoundaryCondition(const PressureBC boundaryConditionType)
+{
+    this->pressureBoundaryCondition = boundaryConditionType;
+}
+
 boundaryCondition BoundaryConditionFactory::getVelocityBoundaryConditionPost() const
 {
     // for descriptions of the boundary conditions refer to the header
@@ -69,6 +74,30 @@ boundaryCondition BoundaryConditionFactory::getSlipBoundaryConditionPost() const
             break;
         case SlipBC::SlipCompressibleTurbulentViscosity:
             return QSlipDevCompTurbulentViscosity27;
+            break;
+        default:
+            return nullptr;
+    }
+}
+
+boundaryCondition BoundaryConditionFactory::getPressureBoundaryConditionPre() const
+{
+    // for descriptions of the boundary conditions refer to the header
+    switch (this->pressureBoundaryCondition) {
+        case PressureBC::PressureEquilibrium:
+            return QPressDev27;
+            break;
+        case PressureBC::PressureEquilibrium2:
+            return QPressDevEQZ27;
+            break;
+        case PressureBC::PressureNonEquilibriumIncompressible:
+            return QPressDevIncompNEQ27;
+            break;
+        case PressureBC::PressureNonEquilibriumCompressible:
+            return QPressDevNEQ27;
+            break;
+        case PressureBC::OutflowNonReflective:
+            return QPressNoRhoDev27;
             break;
         default:
             return nullptr;
