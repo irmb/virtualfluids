@@ -5,7 +5,7 @@
 #include "Communication/ExchangeData27.h"
 #include "Parameter/CudaStreamManager.h"
 #include "GPU/TurbulentViscosity.h"
-#include "KernelManager/LBKernelManager.h"
+#include "KernelManager/BCKernelManager.h"
 #include "KernelManager/ADKernelManager.h"
 #include "KernelManager/GridScalingKernelManager.h"
 #include "Kernel/Kernel.h"
@@ -355,31 +355,31 @@ void UpdateGrid27::postCollisionBC(int level)
 {
     //////////////////////////////////////////////////////////////////////////
     // V E L O C I T Y (I N F L O W)
-    this->lbKernelManager->runVelocityBCKernelPost(level);
+    this->bcKernelManager->runVelocityBCKernelPost(level);
 
     //////////////////////////////////////////////////////////////////////////
     // N O - S L I P
-    this->lbKernelManager->runNoSlipBCKernelPost(level);
+    this->bcKernelManager->runNoSlipBCKernelPost(level);
 
     //////////////////////////////////////////////////////////////////////////
     // S L I P
-    this->lbKernelManager->runSlipBCKernelPost(level);
+    this->bcKernelManager->runSlipBCKernelPost(level);
 
     //////////////////////////////////////////////////////////////////////////
     // S T R E S S (wall model)
-    this->lbKernelManager->runStressWallModelKernelPost(level);
+    this->bcKernelManager->runStressWallModelKernelPost(level);
 
     //////////////////////////////////////////////////////////////////////////
     // G E O M E T R Y
-    this->lbKernelManager->runGeoBCKernelPost(level);
+    this->bcKernelManager->runGeoBCKernelPost(level);
 
     //////////////////////////////////////////////////////////////////////////
     // O U T F L O W
-    this->lbKernelManager->runOutflowBCKernelPre(level);
+    this->bcKernelManager->runOutflowBCKernelPre(level);
 
     //////////////////////////////////////////////////////////////////////////
     // P R E S S U R E
-    this->lbKernelManager->runPressureBCKernelPost(level);
+    this->bcKernelManager->runPressureBCKernelPost(level);
 
     //////////////////////////////////////////////////////////////////////////
     // A D V E C T I O N    D I F F U S I O N
@@ -420,19 +420,19 @@ void UpdateGrid27::preCollisionBC(int level, unsigned int t)
 {
     //////////////////////////////////////////////////////////////////////////
     // V E L O C I T Y (I N F L O W)
-    this->lbKernelManager->runVelocityBCKernelPre(level);
+    this->bcKernelManager->runVelocityBCKernelPre(level);
 
     //////////////////////////////////////////////////////////////////////////
     // G E O M E T R Y
-    this->lbKernelManager->runGeoBCKernelPre(level, t, cudaMemoryManager.get());
+    this->bcKernelManager->runGeoBCKernelPre(level, t, cudaMemoryManager.get());
 
     //////////////////////////////////////////////////////////////////////////
     // P R E S S U R E
-    this->lbKernelManager->runPressureBCKernelPre(level);
+    this->bcKernelManager->runPressureBCKernelPre(level);
 
     //////////////////////////////////////////////////////////////////////////
     // O U T F L O W
-    this->lbKernelManager->runOutflowBCKernelPre(level);
+    this->bcKernelManager->runOutflowBCKernelPre(level);
 
     //////////////////////////////////////////////////////////////////////////////////
     ////only for a round off error test
@@ -498,7 +498,7 @@ UpdateGrid27::UpdateGrid27(SPtr<Parameter> para, vf::gpu::Communicator &comm, SP
 {
     chooseFunctionForCollisionAndExchange();
     chooseFunctionForRefinementAndExchange();
-    this->lbKernelManager = std::make_shared<LBKernelManager>(para, bcFactory);
+    this->bcKernelManager = std::make_shared<BCKernelManager>(para, bcFactory);
     this->adKernelManager = std::make_shared<ADKernelManager>(para);
     this->gridScalingKernelManager =  std::make_shared<GridScalingKernelManager>(para);
 }

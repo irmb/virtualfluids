@@ -49,12 +49,12 @@ using boundaryCondition = std::function<void(LBMSimulationParameter *, QforBound
 
 //! \class LBKernelManager
 //! \brief manage the cuda kernel calls
-class VIRTUALFLUIDS_GPU_EXPORT LBKernelManager
+class VIRTUALFLUIDS_GPU_EXPORT BCKernelManager
 {
 public:
     //! Class constructor
     //! \param parameter shared pointer to instance of class Parameter
-    LBKernelManager(SPtr<Parameter> parameter, BoundaryConditionFactory *bcFactory);
+    BCKernelManager(SPtr<Parameter> parameter, BoundaryConditionFactory *bcFactory);
 
     void setBoundaryConditionKernels();
 
