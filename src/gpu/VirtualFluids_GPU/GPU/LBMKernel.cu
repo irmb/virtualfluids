@@ -2745,48 +2745,23 @@ extern "C" void QDevCompThinWalls27(unsigned int numberOfThreads,
 
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QDev3rdMomentsComp27(   unsigned int numberOfThreads,
-										int nx,
-										int ny,
-										real* DD,
-										int* k_Q,
-										real* QQ,
-										unsigned int numberOfBCnodes,
-										real om1,
-										unsigned int* neighborX,
-										unsigned int* neighborY,
-										unsigned int* neighborZ,
-										unsigned int size_Mat,
-										bool isEvenTimestep)
+extern "C" void QDev3rdMomentsComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1);
 
-      QDevice3rdMomentsComp27<<< gridQ, threads >>> (  nx,
-													   ny,
-													   DD,
-													   k_Q,
-													   QQ,
-													   numberOfBCnodes,
-													   om1,
-													   neighborX,
-													   neighborY,
-													   neighborZ,
-													   size_Mat,
-													   isEvenTimestep);
-      getLastCudaError("QDevice3rdMomentsComp27 execution failed");
+   QDevice3rdMomentsComp27<<< grid, threads >>> (
+         parameterDevice->distributions.f[0],
+         boundaryCondition->k,
+         boundaryCondition->q27[0],
+         boundaryCondition->numberOfBCnodes,
+         parameterDevice->omega,
+         parameterDevice->neighborX,
+         parameterDevice->neighborY,
+         parameterDevice->neighborZ,
+         parameterDevice->numberOfNodes,
+         parameterDevice->isEvenTimestep);
+   getLastCudaError("QDevice3rdMomentsComp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QDevIncompHighNu27( unsigned int numberOfThreads,

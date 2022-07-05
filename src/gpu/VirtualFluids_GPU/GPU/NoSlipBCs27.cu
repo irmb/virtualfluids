@@ -14,79 +14,78 @@
 using namespace vf::lbm::constant;
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
-													 int iny,
-													 real* DD, 
-													 int* k_Q, 
-													 real* QQ,
+extern "C" __global__ void QDevice3rdMomentsComp27(
+													 real* distributions, 
+													 int* subgridDistanceIndices, 
+													 real* subgridDistances,
 													 unsigned int numberOfBCnodes, 
-													 real om1, 
+													 real omega, 
 													 unsigned int* neighborX,
 													 unsigned int* neighborY,
 													 unsigned int* neighborZ,
-													 unsigned int size_Mat, 
+													 unsigned int numberOfLBnodes, 
 													 bool isEvenTimestep)
 {
    Distributions27 D;
    if (isEvenTimestep==true)
    {
-      D.f[dirE   ] = &DD[dirE   *size_Mat];
-      D.f[dirW   ] = &DD[dirW   *size_Mat];
-      D.f[dirN   ] = &DD[dirN   *size_Mat];
-      D.f[dirS   ] = &DD[dirS   *size_Mat];
-      D.f[dirT   ] = &DD[dirT   *size_Mat];
-      D.f[dirB   ] = &DD[dirB   *size_Mat];
-      D.f[dirNE  ] = &DD[dirNE  *size_Mat];
-      D.f[dirSW  ] = &DD[dirSW  *size_Mat];
-      D.f[dirSE  ] = &DD[dirSE  *size_Mat];
-      D.f[dirNW  ] = &DD[dirNW  *size_Mat];
-      D.f[dirTE  ] = &DD[dirTE  *size_Mat];
-      D.f[dirBW  ] = &DD[dirBW  *size_Mat];
-      D.f[dirBE  ] = &DD[dirBE  *size_Mat];
-      D.f[dirTW  ] = &DD[dirTW  *size_Mat];
-      D.f[dirTN  ] = &DD[dirTN  *size_Mat];
-      D.f[dirBS  ] = &DD[dirBS  *size_Mat];
-      D.f[dirBN  ] = &DD[dirBN  *size_Mat];
-      D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
-      D.f[dirTNE ] = &DD[dirTNE *size_Mat];
-      D.f[dirTSW ] = &DD[dirTSW *size_Mat];
-      D.f[dirTSE ] = &DD[dirTSE *size_Mat];
-      D.f[dirTNW ] = &DD[dirTNW *size_Mat];
-      D.f[dirBNE ] = &DD[dirBNE *size_Mat];
-      D.f[dirBSW ] = &DD[dirBSW *size_Mat];
-      D.f[dirBSE ] = &DD[dirBSE *size_Mat];
-      D.f[dirBNW ] = &DD[dirBNW *size_Mat];
+      D.f[dirE   ] = &distributions[dirE   *numberOfLBnodes];
+      D.f[dirW   ] = &distributions[dirW   *numberOfLBnodes];
+      D.f[dirN   ] = &distributions[dirN   *numberOfLBnodes];
+      D.f[dirS   ] = &distributions[dirS   *numberOfLBnodes];
+      D.f[dirT   ] = &distributions[dirT   *numberOfLBnodes];
+      D.f[dirB   ] = &distributions[dirB   *numberOfLBnodes];
+      D.f[dirNE  ] = &distributions[dirNE  *numberOfLBnodes];
+      D.f[dirSW  ] = &distributions[dirSW  *numberOfLBnodes];
+      D.f[dirSE  ] = &distributions[dirSE  *numberOfLBnodes];
+      D.f[dirNW  ] = &distributions[dirNW  *numberOfLBnodes];
+      D.f[dirTE  ] = &distributions[dirTE  *numberOfLBnodes];
+      D.f[dirBW  ] = &distributions[dirBW  *numberOfLBnodes];
+      D.f[dirBE  ] = &distributions[dirBE  *numberOfLBnodes];
+      D.f[dirTW  ] = &distributions[dirTW  *numberOfLBnodes];
+      D.f[dirTN  ] = &distributions[dirTN  *numberOfLBnodes];
+      D.f[dirBS  ] = &distributions[dirBS  *numberOfLBnodes];
+      D.f[dirBN  ] = &distributions[dirBN  *numberOfLBnodes];
+      D.f[dirTS  ] = &distributions[dirTS  *numberOfLBnodes];
+      D.f[dirZERO] = &distributions[dirZERO*numberOfLBnodes];
+      D.f[dirTNE ] = &distributions[dirTNE *numberOfLBnodes];
+      D.f[dirTSW ] = &distributions[dirTSW *numberOfLBnodes];
+      D.f[dirTSE ] = &distributions[dirTSE *numberOfLBnodes];
+      D.f[dirTNW ] = &distributions[dirTNW *numberOfLBnodes];
+      D.f[dirBNE ] = &distributions[dirBNE *numberOfLBnodes];
+      D.f[dirBSW ] = &distributions[dirBSW *numberOfLBnodes];
+      D.f[dirBSE ] = &distributions[dirBSE *numberOfLBnodes];
+      D.f[dirBNW ] = &distributions[dirBNW *numberOfLBnodes];
    } 
    else
    {
-      D.f[dirW   ] = &DD[dirE   *size_Mat];
-      D.f[dirE   ] = &DD[dirW   *size_Mat];
-      D.f[dirS   ] = &DD[dirN   *size_Mat];
-      D.f[dirN   ] = &DD[dirS   *size_Mat];
-      D.f[dirB   ] = &DD[dirT   *size_Mat];
-      D.f[dirT   ] = &DD[dirB   *size_Mat];
-      D.f[dirSW  ] = &DD[dirNE  *size_Mat];
-      D.f[dirNE  ] = &DD[dirSW  *size_Mat];
-      D.f[dirNW  ] = &DD[dirSE  *size_Mat];
-      D.f[dirSE  ] = &DD[dirNW  *size_Mat];
-      D.f[dirBW  ] = &DD[dirTE  *size_Mat];
-      D.f[dirTE  ] = &DD[dirBW  *size_Mat];
-      D.f[dirTW  ] = &DD[dirBE  *size_Mat];
-      D.f[dirBE  ] = &DD[dirTW  *size_Mat];
-      D.f[dirBS  ] = &DD[dirTN  *size_Mat];
-      D.f[dirTN  ] = &DD[dirBS  *size_Mat];
-      D.f[dirTS  ] = &DD[dirBN  *size_Mat];
-      D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
-      D.f[dirTNE ] = &DD[dirBSW *size_Mat];
-      D.f[dirTSW ] = &DD[dirBNE *size_Mat];
-      D.f[dirTSE ] = &DD[dirBNW *size_Mat];
-      D.f[dirTNW ] = &DD[dirBSE *size_Mat];
-      D.f[dirBNE ] = &DD[dirTSW *size_Mat];
-      D.f[dirBSW ] = &DD[dirTNE *size_Mat];
-      D.f[dirBSE ] = &DD[dirTNW *size_Mat];
-      D.f[dirBNW ] = &DD[dirTSE *size_Mat];
+      D.f[dirW   ] = &distributions[dirE   *numberOfLBnodes];
+      D.f[dirE   ] = &distributions[dirW   *numberOfLBnodes];
+      D.f[dirS   ] = &distributions[dirN   *numberOfLBnodes];
+      D.f[dirN   ] = &distributions[dirS   *numberOfLBnodes];
+      D.f[dirB   ] = &distributions[dirT   *numberOfLBnodes];
+      D.f[dirT   ] = &distributions[dirB   *numberOfLBnodes];
+      D.f[dirSW  ] = &distributions[dirNE  *numberOfLBnodes];
+      D.f[dirNE  ] = &distributions[dirSW  *numberOfLBnodes];
+      D.f[dirNW  ] = &distributions[dirSE  *numberOfLBnodes];
+      D.f[dirSE  ] = &distributions[dirNW  *numberOfLBnodes];
+      D.f[dirBW  ] = &distributions[dirTE  *numberOfLBnodes];
+      D.f[dirTE  ] = &distributions[dirBW  *numberOfLBnodes];
+      D.f[dirTW  ] = &distributions[dirBE  *numberOfLBnodes];
+      D.f[dirBE  ] = &distributions[dirTW  *numberOfLBnodes];
+      D.f[dirBS  ] = &distributions[dirTN  *numberOfLBnodes];
+      D.f[dirTN  ] = &distributions[dirBS  *numberOfLBnodes];
+      D.f[dirTS  ] = &distributions[dirBN  *numberOfLBnodes];
+      D.f[dirBN  ] = &distributions[dirTS  *numberOfLBnodes];
+      D.f[dirZERO] = &distributions[dirZERO*numberOfLBnodes];
+      D.f[dirTNE ] = &distributions[dirBSW *numberOfLBnodes];
+      D.f[dirTSW ] = &distributions[dirBNE *numberOfLBnodes];
+      D.f[dirTSE ] = &distributions[dirBNW *numberOfLBnodes];
+      D.f[dirTNW ] = &distributions[dirBSE *numberOfLBnodes];
+      D.f[dirBNE ] = &distributions[dirTSW *numberOfLBnodes];
+      D.f[dirBSW ] = &distributions[dirTNE *numberOfLBnodes];
+      D.f[dirBSE ] = &distributions[dirTNW *numberOfLBnodes];
+      D.f[dirBNW ] = &distributions[dirTSE *numberOfLBnodes];
    }
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -107,35 +106,35 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
             *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
             *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
             *q_dirBSE, *q_dirBNW; 
-      q_dirE   = &QQ[dirE   * numberOfBCnodes];
-      q_dirW   = &QQ[dirW   * numberOfBCnodes];
-      q_dirN   = &QQ[dirN   * numberOfBCnodes];
-      q_dirS   = &QQ[dirS   * numberOfBCnodes];
-      q_dirT   = &QQ[dirT   * numberOfBCnodes];
-      q_dirB   = &QQ[dirB   * numberOfBCnodes];
-      q_dirNE  = &QQ[dirNE  * numberOfBCnodes];
-      q_dirSW  = &QQ[dirSW  * numberOfBCnodes];
-      q_dirSE  = &QQ[dirSE  * numberOfBCnodes];
-      q_dirNW  = &QQ[dirNW  * numberOfBCnodes];
-      q_dirTE  = &QQ[dirTE  * numberOfBCnodes];
-      q_dirBW  = &QQ[dirBW  * numberOfBCnodes];
-      q_dirBE  = &QQ[dirBE  * numberOfBCnodes];
-      q_dirTW  = &QQ[dirTW  * numberOfBCnodes];
-      q_dirTN  = &QQ[dirTN  * numberOfBCnodes];
-      q_dirBS  = &QQ[dirBS  * numberOfBCnodes];
-      q_dirBN  = &QQ[dirBN  * numberOfBCnodes];
-      q_dirTS  = &QQ[dirTS  * numberOfBCnodes];
-      q_dirTNE = &QQ[dirTNE * numberOfBCnodes];
-      q_dirTSW = &QQ[dirTSW * numberOfBCnodes];
-      q_dirTSE = &QQ[dirTSE * numberOfBCnodes];
-      q_dirTNW = &QQ[dirTNW * numberOfBCnodes];
-      q_dirBNE = &QQ[dirBNE * numberOfBCnodes];
-      q_dirBSW = &QQ[dirBSW * numberOfBCnodes];
-      q_dirBSE = &QQ[dirBSE * numberOfBCnodes];
-      q_dirBNW = &QQ[dirBNW * numberOfBCnodes];
+      q_dirE   = &subgridDistances[dirE   * numberOfBCnodes];
+      q_dirW   = &subgridDistances[dirW   * numberOfBCnodes];
+      q_dirN   = &subgridDistances[dirN   * numberOfBCnodes];
+      q_dirS   = &subgridDistances[dirS   * numberOfBCnodes];
+      q_dirT   = &subgridDistances[dirT   * numberOfBCnodes];
+      q_dirB   = &subgridDistances[dirB   * numberOfBCnodes];
+      q_dirNE  = &subgridDistances[dirNE  * numberOfBCnodes];
+      q_dirSW  = &subgridDistances[dirSW  * numberOfBCnodes];
+      q_dirSE  = &subgridDistances[dirSE  * numberOfBCnodes];
+      q_dirNW  = &subgridDistances[dirNW  * numberOfBCnodes];
+      q_dirTE  = &subgridDistances[dirTE  * numberOfBCnodes];
+      q_dirBW  = &subgridDistances[dirBW  * numberOfBCnodes];
+      q_dirBE  = &subgridDistances[dirBE  * numberOfBCnodes];
+      q_dirTW  = &subgridDistances[dirTW  * numberOfBCnodes];
+      q_dirTN  = &subgridDistances[dirTN  * numberOfBCnodes];
+      q_dirBS  = &subgridDistances[dirBS  * numberOfBCnodes];
+      q_dirBN  = &subgridDistances[dirBN  * numberOfBCnodes];
+      q_dirTS  = &subgridDistances[dirTS  * numberOfBCnodes];
+      q_dirTNE = &subgridDistances[dirTNE * numberOfBCnodes];
+      q_dirTSW = &subgridDistances[dirTSW * numberOfBCnodes];
+      q_dirTSE = &subgridDistances[dirTSE * numberOfBCnodes];
+      q_dirTNW = &subgridDistances[dirTNW * numberOfBCnodes];
+      q_dirBNE = &subgridDistances[dirBNE * numberOfBCnodes];
+      q_dirBSW = &subgridDistances[dirBSW * numberOfBCnodes];
+      q_dirBSE = &subgridDistances[dirBSE * numberOfBCnodes];
+      q_dirBNW = &subgridDistances[dirBNW * numberOfBCnodes];
       ////////////////////////////////////////////////////////////////////////////////
       //index
-      unsigned int numberOfNodesK  = k_Q[k];
+      unsigned int numberOfNodesK  = subgridDistanceIndices[k];
       unsigned int kzero= numberOfNodesK;
       unsigned int ke   = numberOfNodesK;
       unsigned int kw   = neighborX[numberOfNodesK];
@@ -217,63 +216,63 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
       //////////////////////////////////////////////////////////////////////////
       if (isEvenTimestep==false)
       {
-         D.f[dirE   ] = &DD[dirE   *size_Mat];
-         D.f[dirW   ] = &DD[dirW   *size_Mat];
-         D.f[dirN   ] = &DD[dirN   *size_Mat];
-         D.f[dirS   ] = &DD[dirS   *size_Mat];
-         D.f[dirT   ] = &DD[dirT   *size_Mat];
-         D.f[dirB   ] = &DD[dirB   *size_Mat];
-         D.f[dirNE  ] = &DD[dirNE  *size_Mat];
-         D.f[dirSW  ] = &DD[dirSW  *size_Mat];
-         D.f[dirSE  ] = &DD[dirSE  *size_Mat];
-         D.f[dirNW  ] = &DD[dirNW  *size_Mat];
-         D.f[dirTE  ] = &DD[dirTE  *size_Mat];
-         D.f[dirBW  ] = &DD[dirBW  *size_Mat];
-         D.f[dirBE  ] = &DD[dirBE  *size_Mat];
-         D.f[dirTW  ] = &DD[dirTW  *size_Mat];
-         D.f[dirTN  ] = &DD[dirTN  *size_Mat];
-         D.f[dirBS  ] = &DD[dirBS  *size_Mat];
-         D.f[dirBN  ] = &DD[dirBN  *size_Mat];
-         D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
-         D.f[dirTNE ] = &DD[dirTNE *size_Mat];
-         D.f[dirTSW ] = &DD[dirTSW *size_Mat];
-         D.f[dirTSE ] = &DD[dirTSE *size_Mat];
-         D.f[dirTNW ] = &DD[dirTNW *size_Mat];
-         D.f[dirBNE ] = &DD[dirBNE *size_Mat];
-         D.f[dirBSW ] = &DD[dirBSW *size_Mat];
-         D.f[dirBSE ] = &DD[dirBSE *size_Mat];
-         D.f[dirBNW ] = &DD[dirBNW *size_Mat];
+         D.f[dirE   ] = &distributions[dirE   *numberOfLBnodes];
+         D.f[dirW   ] = &distributions[dirW   *numberOfLBnodes];
+         D.f[dirN   ] = &distributions[dirN   *numberOfLBnodes];
+         D.f[dirS   ] = &distributions[dirS   *numberOfLBnodes];
+         D.f[dirT   ] = &distributions[dirT   *numberOfLBnodes];
+         D.f[dirB   ] = &distributions[dirB   *numberOfLBnodes];
+         D.f[dirNE  ] = &distributions[dirNE  *numberOfLBnodes];
+         D.f[dirSW  ] = &distributions[dirSW  *numberOfLBnodes];
+         D.f[dirSE  ] = &distributions[dirSE  *numberOfLBnodes];
+         D.f[dirNW  ] = &distributions[dirNW  *numberOfLBnodes];
+         D.f[dirTE  ] = &distributions[dirTE  *numberOfLBnodes];
+         D.f[dirBW  ] = &distributions[dirBW  *numberOfLBnodes];
+         D.f[dirBE  ] = &distributions[dirBE  *numberOfLBnodes];
+         D.f[dirTW  ] = &distributions[dirTW  *numberOfLBnodes];
+         D.f[dirTN  ] = &distributions[dirTN  *numberOfLBnodes];
+         D.f[dirBS  ] = &distributions[dirBS  *numberOfLBnodes];
+         D.f[dirBN  ] = &distributions[dirBN  *numberOfLBnodes];
+         D.f[dirTS  ] = &distributions[dirTS  *numberOfLBnodes];
+         D.f[dirZERO] = &distributions[dirZERO*numberOfLBnodes];
+         D.f[dirTNE ] = &distributions[dirTNE *numberOfLBnodes];
+         D.f[dirTSW ] = &distributions[dirTSW *numberOfLBnodes];
+         D.f[dirTSE ] = &distributions[dirTSE *numberOfLBnodes];
+         D.f[dirTNW ] = &distributions[dirTNW *numberOfLBnodes];
+         D.f[dirBNE ] = &distributions[dirBNE *numberOfLBnodes];
+         D.f[dirBSW ] = &distributions[dirBSW *numberOfLBnodes];
+         D.f[dirBSE ] = &distributions[dirBSE *numberOfLBnodes];
+         D.f[dirBNW ] = &distributions[dirBNW *numberOfLBnodes];
       } 
       else
       {
-         D.f[dirW   ] = &DD[dirE   *size_Mat];
-         D.f[dirE   ] = &DD[dirW   *size_Mat];
-         D.f[dirS   ] = &DD[dirN   *size_Mat];
-         D.f[dirN   ] = &DD[dirS   *size_Mat];
-         D.f[dirB   ] = &DD[dirT   *size_Mat];
-         D.f[dirT   ] = &DD[dirB   *size_Mat];
-         D.f[dirSW  ] = &DD[dirNE  *size_Mat];
-         D.f[dirNE  ] = &DD[dirSW  *size_Mat];
-         D.f[dirNW  ] = &DD[dirSE  *size_Mat];
-         D.f[dirSE  ] = &DD[dirNW  *size_Mat];
-         D.f[dirBW  ] = &DD[dirTE  *size_Mat];
-         D.f[dirTE  ] = &DD[dirBW  *size_Mat];
-         D.f[dirTW  ] = &DD[dirBE  *size_Mat];
-         D.f[dirBE  ] = &DD[dirTW  *size_Mat];
-         D.f[dirBS  ] = &DD[dirTN  *size_Mat];
-         D.f[dirTN  ] = &DD[dirBS  *size_Mat];
-         D.f[dirTS  ] = &DD[dirBN  *size_Mat];
-         D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
-         D.f[dirTNE ] = &DD[dirBSW *size_Mat];
-         D.f[dirTSW ] = &DD[dirBNE *size_Mat];
-         D.f[dirTSE ] = &DD[dirBNW *size_Mat];
-         D.f[dirTNW ] = &DD[dirBSE *size_Mat];
-         D.f[dirBNE ] = &DD[dirTSW *size_Mat];
-         D.f[dirBSW ] = &DD[dirTNE *size_Mat];
-         D.f[dirBSE ] = &DD[dirTNW *size_Mat];
-         D.f[dirBNW ] = &DD[dirTSE *size_Mat];
+         D.f[dirW   ] = &distributions[dirE   *numberOfLBnodes];
+         D.f[dirE   ] = &distributions[dirW   *numberOfLBnodes];
+         D.f[dirS   ] = &distributions[dirN   *numberOfLBnodes];
+         D.f[dirN   ] = &distributions[dirS   *numberOfLBnodes];
+         D.f[dirB   ] = &distributions[dirT   *numberOfLBnodes];
+         D.f[dirT   ] = &distributions[dirB   *numberOfLBnodes];
+         D.f[dirSW  ] = &distributions[dirNE  *numberOfLBnodes];
+         D.f[dirNE  ] = &distributions[dirSW  *numberOfLBnodes];
+         D.f[dirNW  ] = &distributions[dirSE  *numberOfLBnodes];
+         D.f[dirSE  ] = &distributions[dirNW  *numberOfLBnodes];
+         D.f[dirBW  ] = &distributions[dirTE  *numberOfLBnodes];
+         D.f[dirTE  ] = &distributions[dirBW  *numberOfLBnodes];
+         D.f[dirTW  ] = &distributions[dirBE  *numberOfLBnodes];
+         D.f[dirBE  ] = &distributions[dirTW  *numberOfLBnodes];
+         D.f[dirBS  ] = &distributions[dirTN  *numberOfLBnodes];
+         D.f[dirTN  ] = &distributions[dirBS  *numberOfLBnodes];
+         D.f[dirTS  ] = &distributions[dirBN  *numberOfLBnodes];
+         D.f[dirBN  ] = &distributions[dirTS  *numberOfLBnodes];
+         D.f[dirZERO] = &distributions[dirZERO*numberOfLBnodes];
+         D.f[dirTNE ] = &distributions[dirBSW *numberOfLBnodes];
+         D.f[dirTSW ] = &distributions[dirBNE *numberOfLBnodes];
+         D.f[dirTSE ] = &distributions[dirBNW *numberOfLBnodes];
+         D.f[dirTNW ] = &distributions[dirBSE *numberOfLBnodes];
+         D.f[dirBNE ] = &distributions[dirTSW *numberOfLBnodes];
+         D.f[dirBSW ] = &distributions[dirTNE *numberOfLBnodes];
+         D.f[dirBSE ] = &distributions[dirTNW *numberOfLBnodes];
+         D.f[dirBNW ] = &distributions[dirTSE *numberOfLBnodes];
       }
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //Test
@@ -288,7 +287,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
       {
 		 m3 = f_E - f_W - c2o1 * drho * c2o27 * (c3o1*( vx1        ));
          feq=c2o27* (drho/*+three*( vx1        )*/+c9o2*( vx1        )*( vx1        ) * (c1o1 + drho)-cu_sq); 
-         (D.f[dirW])[kw]=(c1o1-q)/(c1o1+q)*(f_E-f_W-m3+(f_E+f_W-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_E+f_W))/(c1o1+q)+(m3*c1o2);
+         (D.f[dirW])[kw]=(c1o1-q)/(c1o1+q)*(f_E-f_W-m3+(f_E+f_W-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_E+f_W))/(c1o1+q)+(m3*c1o2);
          //(D.f[dirW])[kw]=zero;
       }
 
@@ -297,7 +296,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
       {
 		 m3 = f_W - f_E - c2o1 * drho * c2o27 * (c3o1*(-vx1        ));
          feq=c2o27* (drho/*+three*(-vx1        )*/+c9o2*(-vx1        )*(-vx1        ) * (c1o1 + drho)-cu_sq); 
-         (D.f[dirE])[ke]=(c1o1-q)/(c1o1+q)*(f_W-f_E-m3+(f_W+f_E-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_W+f_E))/(c1o1+q)+(m3*c1o2);
+         (D.f[dirE])[ke]=(c1o1-q)/(c1o1+q)*(f_W-f_E-m3+(f_W+f_E-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_W+f_E))/(c1o1+q)+(m3*c1o2);
          //(D.f[dirE])[ke]=zero;
       }
 
@@ -306,7 +305,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
       {
 		 m3 = f_N - f_S - c2o1 * drho * c2o27 * (c3o1*( vx2        ));
          feq=c2o27* (drho/*+three*(    vx2     )*/+c9o2*(     vx2    )*(     vx2    ) * (c1o1 + drho)-cu_sq); 
-         (D.f[dirS])[ks]=(c1o1-q)/(c1o1+q)*(f_N-f_S-m3+(f_N+f_S-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_N+f_S))/(c1o1+q)+(m3*c1o2);
+         (D.f[dirS])[ks]=(c1o1-q)/(c1o1+q)*(f_N-f_S-m3+(f_N+f_S-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_N+f_S))/(c1o1+q)+(m3*c1o2);
          //(D.f[dirS])[ks]=zero;
       }
 
@@ -315,7 +314,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
       {
 		 m3 = f_S - f_N - c2o1 * drho * c2o27 * (c3o1*(   -vx2     ));
          feq=c2o27* (drho/*+three*(   -vx2     )*/+c9o2*(    -vx2    )*(    -vx2    ) * (c1o1 + drho)-cu_sq); 
-         (D.f[dirN])[kn]=(c1o1-q)/(c1o1+q)*(f_S-f_N-m3+(f_S+f_N-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_S+f_N))/(c1o1+q)+(m3*c1o2);
+         (D.f[dirN])[kn]=(c1o1-q)/(c1o1+q)*(f_S-f_N-m3+(f_S+f_N-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_S+f_N))/(c1o1+q)+(m3*c1o2);
          //(D.f[dirN])[kn]=zero;
       }
 
@@ -324,7 +323,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
       {
 		 m3 = f_T - f_B - c2o1 * drho * c2o27 * (c3o1*(         vx3));
          feq=c2o27* (drho/*+three*(         vx3)*/+c9o2*(         vx3)*(         vx3) * (c1o1 + drho)-cu_sq); 
-         (D.f[dirB])[kb]=(c1o1-q)/(c1o1+q)*(f_T-f_B-m3+(f_T+f_B-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_T+f_B))/(c1o1+q)+(m3*c1o2);
+         (D.f[dirB])[kb]=(c1o1-q)/(c1o1+q)*(f_T-f_B-m3+(f_T+f_B-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_T+f_B))/(c1o1+q)+(m3*c1o2);
          //(D.f[dirB])[kb]=one;
       }
 
@@ -333,7 +332,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
       {
 		 m3 = f_B - f_T - c2o1 * drho * c2o27 * (c3o1*(        -vx3));
          feq=c2o27* (drho/*+three*(        -vx3)*/+c9o2*(        -vx3)*(        -vx3) * (c1o1 + drho)-cu_sq); 
-         (D.f[dirT])[kt]=(c1o1-q)/(c1o1+q)*(f_B-f_T-m3+(f_B+f_T-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_B+f_T))/(c1o1+q)+(m3*c1o2);
+         (D.f[dirT])[kt]=(c1o1-q)/(c1o1+q)*(f_B-f_T-m3+(f_B+f_T-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_B+f_T))/(c1o1+q)+(m3*c1o2);
          //(D.f[dirT])[kt]=zero;
       }
 
@@ -342,7 +341,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
       {
 		 m3 = f_NE - f_SW - c2o1 * drho * c1o54 * (c3o1*( vx1+vx2    ));
          feq=c1o54* (drho/*+three*( vx1+vx2    )*/+c9o2*( vx1+vx2    )*( vx1+vx2    ) * (c1o1 + drho)-cu_sq); 
-         (D.f[dirSW])[ksw]=(c1o1-q)/(c1o1+q)*(f_NE-f_SW-m3+(f_NE+f_SW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_NE+f_SW))/(c1o1+q)+(m3*c1o2);
+         (D.f[dirSW])[ksw]=(c1o1-q)/(c1o1+q)*(f_NE-f_SW-m3+(f_NE+f_SW-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_NE+f_SW))/(c1o1+q)+(m3*c1o2);
          //(D.f[dirSW])[ksw]=zero;
       }
 
@@ -351,7 +350,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
       {
 		 m3 = f_SW - f_NE - c2o1 * drho * c1o54 * (c3o1*(-vx1-vx2    ));
          feq=c1o54* (drho/*+three*(-vx1-vx2    )*/+c9o2*(-vx1-vx2    )*(-vx1-vx2    ) * (c1o1 + drho)-cu_sq); 
-         (D.f[dirNE])[kne]=(c1o1-q)/(c1o1+q)*(f_SW-f_NE-m3+(f_SW+f_NE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_SW+f_NE))/(c1o1+q)+(m3*c1o2);
+         (D.f[dirNE])[kne]=(c1o1-q)/(c1o1+q)*(f_SW-f_NE-m3+(f_SW+f_NE-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_SW+f_NE))/(c1o1+q)+(m3*c1o2);
          //(D.f[dirNE])[kne]=zero;
       }
 
@@ -360,7 +359,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
       {
 		 m3 = f_SE - f_NW - c2o1 * drho * c1o54 * (c3o1*( vx1-vx2    ));
          feq=c1o54* (drho/*+three*( vx1-vx2    )*/+c9o2*( vx1-vx2    )*( vx1-vx2    ) * (c1o1 + drho)-cu_sq); 
-         (D.f[dirNW])[knw]=(c1o1-q)/(c1o1+q)*(f_SE-f_NW-m3+(f_SE+f_NW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_SE+f_NW))/(c1o1+q)+(m3*c1o2);
+         (D.f[dirNW])[knw]=(c1o1-q)/(c1o1+q)*(f_SE-f_NW-m3+(f_SE+f_NW-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_SE+f_NW))/(c1o1+q)+(m3*c1o2);
          //(D.f[dirNW])[knw]=zero;
       }
 
@@ -369,7 +368,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
       {
 		 m3 = f_NW - f_SE - c2o1 * drho * c1o54 * (c3o1*(-vx1+vx2    ));
          feq=c1o54* (drho/*+three*(-vx1+vx2    )*/+c9o2*(-vx1+vx2    )*(-vx1+vx2    ) * (c1o1 + drho)-cu_sq); 
-         (D.f[dirSE])[kse]=(c1o1-q)/(c1o1+q)*(f_NW-f_SE-m3+(f_NW+f_SE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_NW+f_SE))/(c1o1+q)+(m3*c1o2);
+         (D.f[dirSE])[kse]=(c1o1-q)/(c1o1+q)*(f_NW-f_SE-m3+(f_NW+f_SE-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_NW+f_SE))/(c1o1+q)+(m3*c1o2);
          //(D.f[dirSE])[kse]=zero;
       }
 
@@ -378,7 +377,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
       {
 		 m3 = f_TE - f_BW - c2o1 * drho * c1o54 * (c3o1*( vx1    +vx3));
          feq=c1o54* (drho/*+three*( vx1    +vx3)*/+c9o2*( vx1    +vx3)*( vx1    +vx3) * (c1o1 + drho)-cu_sq); 
-         (D.f[dirBW])[kbw]=(c1o1-q)/(c1o1+q)*(f_TE-f_BW-m3+(f_TE+f_BW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TE+f_BW))/(c1o1+q)+(m3*c1o2);
+         (D.f[dirBW])[kbw]=(c1o1-q)/(c1o1+q)*(f_TE-f_BW-m3+(f_TE+f_BW-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_TE+f_BW))/(c1o1+q)+(m3*c1o2);
          //(D.f[dirBW])[kbw]=zero;
       }
 
@@ -387,7 +386,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
       {
 		 m3 = f_BW - f_TE - c2o1 * drho * c1o54 * (c3o1*(-vx1    -vx3));
          feq=c1o54* (drho/*+three*(-vx1    -vx3)*/+c9o2*(-vx1    -vx3)*(-vx1    -vx3) * (c1o1 + drho)-cu_sq); 
-         (D.f[dirTE])[kte]=(c1o1-q)/(c1o1+q)*(f_BW-f_TE-m3+(f_BW+f_TE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BW+f_TE))/(c1o1+q)+(m3*c1o2);
+         (D.f[dirTE])[kte]=(c1o1-q)/(c1o1+q)*(f_BW-f_TE-m3+(f_BW+f_TE-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_BW+f_TE))/(c1o1+q)+(m3*c1o2);
          //(D.f[dirTE])[kte]=zero;
       }
 
@@ -396,7 +395,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
       {
 		 m3 = f_BE - f_TW - c2o1 * drho * c1o54 * (c3o1*( vx1    -vx3));
          feq=c1o54* (drho/*+three*( vx1    -vx3)*/+c9o2*( vx1    -vx3)*( vx1    -vx3) * (c1o1 + drho)-cu_sq); 
-         (D.f[dirTW])[ktw]=(c1o1-q)/(c1o1+q)*(f_BE-f_TW-m3+(f_BE+f_TW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BE+f_TW))/(c1o1+q)+(m3*c1o2);
+         (D.f[dirTW])[ktw]=(c1o1-q)/(c1o1+q)*(f_BE-f_TW-m3+(f_BE+f_TW-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_BE+f_TW))/(c1o1+q)+(m3*c1o2);
          //(D.f[dirTW])[ktw]=zero;
       }
 
@@ -405,7 +404,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
       {
 		 m3 = f_TW - f_BE - c2o1 * drho * c1o54 * (c3o1*(-vx1    +vx3));
          feq=c1o54* (drho/*+three*(-vx1    +vx3)*/+c9o2*(-vx1    +vx3)*(-vx1    +vx3) * (c1o1 + drho)-cu_sq); 
-         (D.f[dirBE])[kbe]=(c1o1-q)/(c1o1+q)*(f_TW-f_BE-m3+(f_TW+f_BE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TW+f_BE))/(c1o1+q)+(m3*c1o2);
+         (D.f[dirBE])[kbe]=(c1o1-q)/(c1o1+q)*(f_TW-f_BE-m3+(f_TW+f_BE-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_TW+f_BE))/(c1o1+q)+(m3*c1o2);
          //(D.f[dirBE])[kbe]=zero;
       }
 
@@ -414,7 +413,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
       {
 		 m3 = f_TN - f_BS - c2o1 * drho * c1o54 * (c3o1*(     vx2+vx3));
          feq=c1o54* (drho/*+three*(     vx2+vx3)*/+c9o2*(     vx2+vx3)*(     vx2+vx3) * (c1o1 + drho)-cu_sq); 
-         (D.f[dirBS])[kbs]=(c1o1-q)/(c1o1+q)*(f_TN-f_BS-m3+(f_TN+f_BS-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TN+f_BS))/(c1o1+q)+(m3*c1o2);
+         (D.f[dirBS])[kbs]=(c1o1-q)/(c1o1+q)*(f_TN-f_BS-m3+(f_TN+f_BS-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_TN+f_BS))/(c1o1+q)+(m3*c1o2);
          //(D.f[dirBS])[kbs]=zero;
       }
 
@@ -423,7 +422,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
       {
 		 m3 = f_BS - f_TN - c2o1 * drho * c1o54 * (c3o1*(    -vx2-vx3));
          feq=c1o54* (drho/*+three*(    -vx2-vx3)*/+c9o2*(    -vx2-vx3)*(    -vx2-vx3) * (c1o1 + drho)-cu_sq); 
-         (D.f[dirTN])[ktn]=(c1o1-q)/(c1o1+q)*(f_BS-f_TN-m3+(f_BS+f_TN-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BS+f_TN))/(c1o1+q)+(m3*c1o2);
+         (D.f[dirTN])[ktn]=(c1o1-q)/(c1o1+q)*(f_BS-f_TN-m3+(f_BS+f_TN-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_BS+f_TN))/(c1o1+q)+(m3*c1o2);
          //(D.f[dirTN])[ktn]=zero;
       }
 
@@ -432,7 +431,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
       {
 		 m3 = f_BN - f_TS - c2o1 * drho * c1o54 * (c3o1*(     vx2-vx3));
          feq=c1o54* (drho/*+three*(     vx2-vx3)*/+c9o2*(     vx2-vx3)*(     vx2-vx3) * (c1o1 + drho)-cu_sq); 
-         (D.f[dirTS])[kts]=(c1o1-q)/(c1o1+q)*(f_BN-f_TS-m3+(f_BN+f_TS-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BN+f_TS))/(c1o1+q)+(m3*c1o2);
+         (D.f[dirTS])[kts]=(c1o1-q)/(c1o1+q)*(f_BN-f_TS-m3+(f_BN+f_TS-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_BN+f_TS))/(c1o1+q)+(m3*c1o2);
          //(D.f[dirTS])[kts]=zero;
       }
 
@@ -441,7 +440,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
       {
 		 m3 = f_TS - f_BN - c2o1 * drho * c1o54 * (c3o1*(    -vx2+vx3));
          feq=c1o54* (drho/*+three*(    -vx2+vx3)*/+c9o2*(    -vx2+vx3)*(    -vx2+vx3) * (c1o1 + drho)-cu_sq); 
-         (D.f[dirBN])[kbn]=(c1o1-q)/(c1o1+q)*(f_TS-f_BN-m3+(f_TS+f_BN-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TS+f_BN))/(c1o1+q)+(m3*c1o2);
+         (D.f[dirBN])[kbn]=(c1o1-q)/(c1o1+q)*(f_TS-f_BN-m3+(f_TS+f_BN-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_TS+f_BN))/(c1o1+q)+(m3*c1o2);
          //(D.f[dirBN])[kbn]=zero;
       }
 
@@ -450,7 +449,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
       {
 		 m3 = f_TNE - f_BSW - c2o1 * drho * c1o216 * (c3o1*( vx1+vx2+vx3));
          feq=c1o216*(drho/*+three*( vx1+vx2+vx3)*/+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3) * (c1o1 + drho)-cu_sq); 
-         (D.f[dirBSW])[kbsw]=(c1o1-q)/(c1o1+q)*(f_TNE-f_BSW-m3+(f_TNE+f_BSW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TNE+f_BSW))/(c1o1+q)+(m3*c1o2);
+         (D.f[dirBSW])[kbsw]=(c1o1-q)/(c1o1+q)*(f_TNE-f_BSW-m3+(f_TNE+f_BSW-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_TNE+f_BSW))/(c1o1+q)+(m3*c1o2);
          //(D.f[dirBSW])[kbsw]=zero;
       }
 
@@ -459,7 +458,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
       {
 		 m3 = f_BSW - f_TNE - c2o1 * drho * c1o216 * (c3o1*(-vx1-vx2-vx3));
          feq=c1o216*(drho/*+three*(-vx1-vx2-vx3)*/+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3) * (c1o1 + drho)-cu_sq); 
-         (D.f[dirTNE])[ktne]=(c1o1-q)/(c1o1+q)*(f_BSW-f_TNE-m3+(f_BSW+f_TNE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BSW+f_TNE))/(c1o1+q)+(m3*c1o2);
+         (D.f[dirTNE])[ktne]=(c1o1-q)/(c1o1+q)*(f_BSW-f_TNE-m3+(f_BSW+f_TNE-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_BSW+f_TNE))/(c1o1+q)+(m3*c1o2);
          //(D.f[dirTNE])[ktne]=zero;
       }
 
@@ -468,7 +467,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
       {
 		 m3 = f_BNE - f_TSW - c2o1 * drho * c1o216 * (c3o1*( vx1+vx2-vx3));
          feq=c1o216*(drho/*+three*( vx1+vx2-vx3)*/+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3) * (c1o1 + drho)-cu_sq); 
-         (D.f[dirTSW])[ktsw]=(c1o1-q)/(c1o1+q)*(f_BNE-f_TSW-m3+(f_BNE+f_TSW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BNE+f_TSW))/(c1o1+q)+(m3*c1o2);
+         (D.f[dirTSW])[ktsw]=(c1o1-q)/(c1o1+q)*(f_BNE-f_TSW-m3+(f_BNE+f_TSW-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_BNE+f_TSW))/(c1o1+q)+(m3*c1o2);
          //(D.f[dirTSW])[ktsw]=zero;
       }
 
@@ -477,7 +476,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
       {
 		 m3 = f_TSW - f_BNE - c2o1 * drho * c1o216 * (c3o1*(-vx1-vx2+vx3));
          feq=c1o216*(drho/*+three*(-vx1-vx2+vx3)*/+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3) * (c1o1 + drho)-cu_sq); 
-         (D.f[dirBNE])[kbne]=(c1o1-q)/(c1o1+q)*(f_TSW-f_BNE-m3+(f_TSW+f_BNE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TSW+f_BNE))/(c1o1+q)+(m3*c1o2);
+         (D.f[dirBNE])[kbne]=(c1o1-q)/(c1o1+q)*(f_TSW-f_BNE-m3+(f_TSW+f_BNE-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_TSW+f_BNE))/(c1o1+q)+(m3*c1o2);
          //(D.f[dirBNE])[kbne]=zero;
       }
 
@@ -486,7 +485,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
       {
 		 m3 = f_TSE - f_BNW - c2o1 * drho * c1o216 * (c3o1*( vx1-vx2+vx3));
          feq=c1o216*(drho/*+three*( vx1-vx2+vx3)*/+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3) * (c1o1 + drho)-cu_sq); 
-         (D.f[dirBNW])[kbnw]=(c1o1-q)/(c1o1+q)*(f_TSE-f_BNW-m3+(f_TSE+f_BNW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TSE+f_BNW))/(c1o1+q)+(m3*c1o2);
+         (D.f[dirBNW])[kbnw]=(c1o1-q)/(c1o1+q)*(f_TSE-f_BNW-m3+(f_TSE+f_BNW-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_TSE+f_BNW))/(c1o1+q)+(m3*c1o2);
          //(D.f[dirBNW])[kbnw]=zero;
       }
 
@@ -495,7 +494,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
       {
 		 m3 = f_BNW - f_TSE - c2o1 * drho * c1o216 * (c3o1*(-vx1+vx2-vx3));
          feq=c1o216*(drho/*+three*(-vx1+vx2-vx3)*/+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3) * (c1o1 + drho)-cu_sq); 
-         (D.f[dirTSE])[ktse]=(c1o1-q)/(c1o1+q)*(f_BNW-f_TSE-m3+(f_BNW+f_TSE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BNW+f_TSE))/(c1o1+q)+(m3*c1o2);
+         (D.f[dirTSE])[ktse]=(c1o1-q)/(c1o1+q)*(f_BNW-f_TSE-m3+(f_BNW+f_TSE-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_BNW+f_TSE))/(c1o1+q)+(m3*c1o2);
          //(D.f[dirTSE])[ktse]=zero;
       }
 
@@ -504,7 +503,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
       {
 		 m3 = f_BSE - f_TNW - c2o1 * drho * c1o216 * (c3o1*( vx1-vx2-vx3));
          feq=c1o216*(drho/*+three*( vx1-vx2-vx3)*/+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3) * (c1o1 + drho)-cu_sq); 
-         (D.f[dirTNW])[ktnw]=(c1o1-q)/(c1o1+q)*(f_BSE-f_TNW-m3+(f_BSE+f_TNW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BSE+f_TNW))/(c1o1+q)+(m3*c1o2);
+         (D.f[dirTNW])[ktnw]=(c1o1-q)/(c1o1+q)*(f_BSE-f_TNW-m3+(f_BSE+f_TNW-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_BSE+f_TNW))/(c1o1+q)+(m3*c1o2);
          //(D.f[dirTNW])[ktnw]=zero;
       }
 
@@ -513,7 +512,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
       {
 		 m3 = f_TNW - f_BSE - c2o1 * drho * c1o216 * (c3o1*(-vx1+vx2+vx3));
          feq=c1o216*(drho/*+three*(-vx1+vx2+vx3)*/+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3) * (c1o1 + drho)-cu_sq); 
-         (D.f[dirBSE])[kbse]=(c1o1-q)/(c1o1+q)*(f_TNW-f_BSE-m3+(f_TNW+f_BSE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TNW+f_BSE))/(c1o1+q)+(m3*c1o2);
+         (D.f[dirBSE])[kbse]=(c1o1-q)/(c1o1+q)*(f_TNW-f_BSE-m3+(f_TNW+f_BSE-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_TNW+f_BSE))/(c1o1+q)+(m3*c1o2);
          //(D.f[dirBSE])[kbse]=zero;
       }
    }
@@ -1632,7 +1631,7 @@ extern "C" __global__ void QDeviceCompHighNu27(
 
 //////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QDeviceComp27(
-										 real* distribution, 
+										 real* distributions, 
 										 int* subgridDistanceIndices, 
 										 real* subgridDistances,
 										 unsigned int numberOfBCnodes, 
@@ -1665,7 +1664,7 @@ extern "C" __global__ void QDeviceComp27(
       //! <a href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017), DOI:10.3390/computation5020019 ]</b></a>
       //!
       Distributions27 dist;
-      getPointersToDistributions(dist, distribution, numberOfLBnodes, isEvenTimestep);
+      getPointersToDistributions(dist, distributions, numberOfLBnodes, isEvenTimestep);
 
       ////////////////////////////////////////////////////////////////////////////////
       //! - Set local subgrid distances (q's)
@@ -1759,7 +1758,7 @@ extern "C" __global__ void QDeviceComp27(
       ////////////////////////////////////////////////////////////////////////////////
       //! - change the pointer to write the results in the correct array
       //!
-      getPointersToDistributions(dist, distribution, numberOfLBnodes, !isEvenTimestep);
+      getPointersToDistributions(dist, distributions, numberOfLBnodes, !isEvenTimestep);
 
        ////////////////////////////////////////////////////////////////////////////////
       //! - Update distributions with subgrid distance (q) between zero and one

@@ -46,36 +46,7 @@ LBKernelManager::LBKernelManager(SPtr<Parameter> parameter, BoundaryConditionFac
     this->noSlipBoundaryConditionPost   = bcFactory->getNoSlipBoundaryConditionPost();
     this->slipBoundaryConditionPost     = bcFactory->getSlipBoundaryConditionPost();
     this->pressureBoundaryConditionPre  = bcFactory->getPressureBoundaryConditionPre();
-}
-
-void LBKernelManager::runLBMKernel(const int level) const
-{
-    // if (para->getIsADcalculationOn()) {
-    //       CumulantK17LBMDeviceKernelAD(
-    //            para->getParD()->numberofthreads,
-    //            para->getParD()->omega,
-    //            para->getParD()->typeOfGridNode,
-    //            para->getParD()->neighborX,
-    //            para->getParD()->neighborY,
-    //            para->getParD()->neighborZ,
-    //            para->getParD()->distributions.f[0],
-    //            para->getParD()->distributionsAD.f[0],
-    //            para->getParD()->numberOfNodes,
-    //            para->getParD()->forcing,
-    //            para->getParD()->isEvenTimestep);
-    // } else {
-    //       CumulantK17LBMDeviceKernel(
-    //            para->getParD()->numberofthreads,
-    //            para->getParD()->omega,
-    //            para->getParD()->typeOfGridNode,
-    //            para->getParD()->neighborX,
-    //            para->getParD()->neighborY,
-    //            para->getParD()->neighborZ,
-    //            para->getParD()->distributions.f[0],
-    //            para->getParD()->numberOfNodes,
-    //            para->getParD()->forcing,
-    //            para->getParD()->isEvenTimestep);
-    //  }
+    this->geometryBoundaryConditionPost = bcFactory->getGeometryBoundaryConditionPost();
 }
 
 void LBKernelManager::runVelocityBCKernelPre(const int level) const
@@ -285,165 +256,44 @@ void LBKernelManager::runGeoBCKernelPost(const int level) const
             getLastCudaError("DragLift27 execution failed");
         }
 
-        // BBDev27(
-        //     para->getParD(level)->numberofthreads,
-        //     para->getParD(level)->nx,
-        //     para->getParD(level)->ny,
-        //     para->getParD(level)->distributions.f[0],
-        //     para->getParD(level)->geometryBC.k,
-        //     para->getParD(level)->geometryBC.q27[0],
-        //     para->getParD(level)->geometryBC.numberOfBCnodes,
-        //     para->getParD(level)->omega,
-        //     para->getParD(level)->neighborX,
-        //     para->getParD(level)->neighborY,
-        //     para->getParD(level)->neighborZ,
-        //     para->getParD(level)->numberOfNodes,
-        //     para->getParD(level)->isEvenTimestep);
+        geometryBoundaryConditionPost(para->getParD(level).get(), &(para->getParD(level)->geometryBC));
 
-        // QDev27(
-        //     para->getParD(level)->numberofthreads,
-        //     para->getParD(level)->nx,
-        //     para->getParD(level)->ny,
-        //     para->getParD(level)->distributions.f[0],
-        //     para->getParD(level)->geometryBC.k,
-        //     para->getParD(level)->geometryBC.q27[0],
-        //     para->getParD(level)->geometryBC.numberOfBCnodes,
-        //     para->getParD(level)->omega,
-        //     para->getParD(level)->neighborX,
-        //     para->getParD(level)->neighborY,
-        //     para->getParD(level)->neighborZ,
-        //     para->getParD(level)->numberOfNodes,
-        //     para->getParD(level)->isEvenTimestep);
+        //////////////////////////////////////////////////////////////////////////
+        // D E P R E C A T E D
+        //////////////////////////////////////////////////////////////////////////
+        // the GridGenerator does currently not provide normals!
 
-        // QVelDev27(
-        //     para->getParD(level)->numberofthreads,
-        //     para->getParD(level)->nx,
-        //     para->getParD(level)->ny,
-        //     para->getParD(level)->geometryBC.Vx,
-        //     para->getParD(level)->geometryBC.Vy,
-        //     para->getParD(level)->geometryBC.Vz,
-        //     para->getParD(level)->distributions.f[0],
-        //     para->getParD(level)->geometryBC.k,
-        //     para->getParD(level)->geometryBC.q27[0],
-        //     para->getParD(level)->geometryBC.numberOfBCnodes,
-        //     para->getParD(level)->omega,
-        //     para->getParD(level)->neighborX,
-        //     para->getParD(level)->neighborY,
-        //     para->getParD(level)->neighborZ,
-        //     para->getParD(level)->numberOfNodes,
-        //     para->getParD(level)->isEvenTimestep);
+        //     QSlipGeomDevComp27(
+        //         para->getParD(level)->numberofthreads,
+        //         para->getParD(level)->distributions.f[0],
+        //         para->getParD(level)->geometryBC.k,
+        //         para->getParD(level)->geometryBC.q27[0],
+        //         para->getParD(level)->geometryBC.numberOfBCnodes,
+        //         para->getParD(level)->omega,
+        //         para->getParD(level)->geometryBCnormalX.q27[0],
+        //         para->getParD(level)->geometryBCnormalY.q27[0],
+        //         para->getParD(level)->geometryBCnormalZ.q27[0],
+        //         para->getParD(level)->neighborX,
+        //         para->getParD(level)->neighborY,
+        //         para->getParD(level)->neighborZ,
+        //         para->getParD(level)->numberOfNodes,
+        //         para->getParD(level)->isEvenTimestep);
 
-        // QDevComp27(
-        //     para->getParD(level)->numberofthreads,
-        //     para->getParD(level)->nx,
-        //     para->getParD(level)->ny,
-        //     para->getParD(level)->distributions.f[0],
-        //     para->getParD(level)->geometryBC.k,
-        //     para->getParD(level)->geometryBC.q27[0],
-        //     para->getParD(level)->geometryBC.numberOfBCnodes,
-        //     para->getParD(level)->omega,
-        //     para->getParD(level)->neighborX,
-        //     para->getParD(level)->neighborY,
-        //     para->getParD(level)->neighborZ,
-        //     para->getParD(level)->numberOfNodes,
-        //     para->getParD(level)->isEvenTimestep);
-
-        // QVelDevComp27(
-        //     para->getParD(level)->numberofthreads,
-        //     para->getParD(level)->geometryBC.Vx,
-        //     para->getParD(level)->geometryBC.Vy,
-        //     para->getParD(level)->geometryBC.Vz,
-        //     para->getParD(level)->distributions.f[0],
-        //     para->getParD(level)->geometryBC.k,
-        //     para->getParD(level)->geometryBC.q27[0],
-        //     para->getParD(level)->geometryBC.numberOfBCnodes,
-        //     para->getParD(level)->omega,
-        //     para->getParD(level)->neighborX,
-        //     para->getParD(level)->neighborY,
-        //     para->getParD(level)->neighborZ,
-        //     para->getParD(level)->numberOfNodes,
-        //     para->getParD(level)->isEvenTimestep);
-
-        // QVelDevCompZeroPress27(
-        //     para->getParD(0)->numberofthreads,
-        //     para->getParD(0)->geometryBC.Vx,
-        //     para->getParD(0)->geometryBC.Vy,
-        //     para->getParD(0)->geometryBC.Vz,
-        //     para->getParD(0)->distributions.f[0],
-        //     para->getParD(0)->geometryBC.k,
-        //     para->getParD(0)->geometryBC.q27[0],
-        //     para->getParD(0)->geometryBC.numberOfBCnodes,
-        //     para->getParD(0)->omega,
-        //     para->getParD(0)->neighborX,
-        //     para->getParD(0)->neighborY,
-        //     para->getParD(0)->neighborZ,
-        //     para->getParD(0)->numberOfNodes,
-        //     para->getParD(0)->isEvenTimestep);
-
-        // QDev3rdMomentsComp27(
-        //     para->getParD(level)->numberofthreads,
-        //     para->getParD(level)->nx,
-        //     para->getParD(level)->ny,
-        //     para->getParD(level)->distributions.f[0],
-        //     para->getParD(level)->geometryBC.k,
-        //     para->getParD(level)->geometryBC.q27[0],
-        //     para->getParD(level)->geometryBC.numberOfBCnodes,
-        //     para->getParD(level)->omega,
-        //     para->getParD(level)->neighborX,
-        //     para->getParD(level)->neighborY,
-        //     para->getParD(level)->neighborZ,
-        //     para->getParD(level)->numberOfNodes,
-        //     para->getParD(level)->isEvenTimestep);
-
-        // QSlipDev27(
-        //     para->getParD(level)->numberofthreads,
-        //     para->getParD(level)->distributions.f[0],
-        //     para->getParD(level)->geometryBC.k,
-        //     para->getParD(level)->geometryBC.q27[0],
-        //     para->getParD(level)->geometryBC.numberOfBCnodes,
-        //     para->getParD(level)->omega,
-        //     para->getParD(level)->neighborX,
-        //     para->getParD(level)->neighborY,
-        //     para->getParD(level)->neighborZ,
-        //     para->getParD(level)->numberOfNodes,
-        //     para->getParD(level)->isEvenTimestep);
-
-    //////////////////////////////////////////////////////////////////////////
-    // D E P R E C A T E D
-    //////////////////////////////////////////////////////////////////////////
-    // the GridGenerator does currently not provide normals!
-
-    //     QSlipGeomDevComp27(
-    //         para->getParD(level)->numberofthreads,
-    //         para->getParD(level)->distributions.f[0],
-    //         para->getParD(level)->geometryBC.k,
-    //         para->getParD(level)->geometryBC.q27[0],
-    //         para->getParD(level)->geometryBC.numberOfBCnodes,
-    //         para->getParD(level)->omega,
-    //         para->getParD(level)->geometryBCnormalX.q27[0],
-    //         para->getParD(level)->geometryBCnormalY.q27[0],
-    //         para->getParD(level)->geometryBCnormalZ.q27[0],
-    //         para->getParD(level)->neighborX,
-    //         para->getParD(level)->neighborY,
-    //         para->getParD(level)->neighborZ,
-    //         para->getParD(level)->numberOfNodes,
-    //         para->getParD(level)->isEvenTimestep);
-
-    //     QSlipNormDevComp27(
-    //         para->getParD(level)->numberofthreads,
-    //         para->getParD(level)->distributions.f[0],
-    //         para->getParD(level)->geometryBC.k,
-    //         para->getParD(level)->geometryBC.q27[0],
-    //         para->getParD(level)->geometryBC.numberOfBCnodes,
-    //         para->getParD(level)->omega,
-    //         para->getParD(level)->geometryBCnormalX.q27[0],
-    //         para->getParD(level)->geometryBCnormalY.q27[0],
-    //         para->getParD(level)->geometryBCnormalZ.q27[0],
-    //         para->getParD(level)->neighborX,
-    //         para->getParD(level)->neighborY,
-    //         para->getParD(level)->neighborZ,
-    //         para->getParD(level)->numberOfNodes,
-    //         para->getParD(level)->isEvenTimestep);
+        //     QSlipNormDevComp27(
+        //         para->getParD(level)->numberofthreads,
+        //         para->getParD(level)->distributions.f[0],
+        //         para->getParD(level)->geometryBC.k,
+        //         para->getParD(level)->geometryBC.q27[0],
+        //         para->getParD(level)->geometryBC.numberOfBCnodes,
+        //         para->getParD(level)->omega,
+        //         para->getParD(level)->geometryBCnormalX.q27[0],
+        //         para->getParD(level)->geometryBCnormalY.q27[0],
+        //         para->getParD(level)->geometryBCnormalZ.q27[0],
+        //         para->getParD(level)->neighborX,
+        //         para->getParD(level)->neighborY,
+        //         para->getParD(level)->neighborZ,
+        //         para->getParD(level)->numberOfNodes,
+        //         para->getParD(level)->isEvenTimestep);
     }
 }
 

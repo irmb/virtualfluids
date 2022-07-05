@@ -664,19 +664,7 @@ extern "C" void QDevCompThinWalls27(unsigned int numberOfThreads,
 									unsigned int size_Mat, 
 									bool isEvenTimestep);
 
-extern "C" void QDev3rdMomentsComp27(  unsigned int numberOfThreads,
-									   int nx,
-									   int ny,
-									   real* DD, 
-									   int* k_Q, 
-									   real* QQ,
-									   unsigned int numberOfBCnodes, 
-									   real om1, 
-									   unsigned int* neighborX,
-									   unsigned int* neighborY,
-									   unsigned int* neighborZ,
-									   unsigned int size_Mat, 
-									   bool isEvenTimestep);
+extern "C" void QDev3rdMomentsComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
 extern "C" void QDevIncompHighNu27(  unsigned int numberOfThreads,
 									 real* DD, 

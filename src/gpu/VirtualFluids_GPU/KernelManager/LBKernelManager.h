@@ -58,9 +58,6 @@ public:
 
     void setBoundaryConditionKernels();
 
-    //! \brief calls the device function of the lattice Boltzmann kernel
-    void runLBMKernel(const int level) const;
-
     //! \brief calls the device function of the velocity boundary condition (post-collision)
     void runVelocityBCKernelPost(const int level) const;
 
@@ -101,5 +98,6 @@ private:
     boundaryCondition noSlipBoundaryConditionPost;
     boundaryCondition slipBoundaryConditionPost;
     boundaryCondition pressureBoundaryConditionPre;
+    boundaryCondition geometryBoundaryConditionPost;
 };
 #endif

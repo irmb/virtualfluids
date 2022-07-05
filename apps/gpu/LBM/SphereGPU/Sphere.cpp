@@ -72,8 +72,8 @@ const real dt = (real)0.5e-3;
 
 const uint nx = 64;
 
-const uint timeStepOut = 100;
-const uint timeStepEnd = 1000;
+const uint timeStepOut = 10000;
+const uint timeStepEnd = 100000;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -169,13 +169,16 @@ void multipleLevel(const std::string &configPath)
     gridBuilder->setSlipBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
     gridBuilder->setSlipBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
     gridBuilder->setSlipBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
+    // gridBuilder->setNoSlipBoundaryCondition(SideType::GEOMETRY); // not working yet, use veloBC
+    gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, velocityLB * 2.0, 0.0);
     gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0); // set pressure boundary condition last
 
     bcFactory.setNoSlipBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipCompressible);
     bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
     bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipCompressible);
     bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::PressureNonEquilibriumCompressible);
+    bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlip3rdMomentsCompressible);
+    // bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

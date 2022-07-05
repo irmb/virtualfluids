@@ -2,6 +2,7 @@
 #include "GPU/GPU_Interface.h"
 #include "Parameter/Parameter.h"
 #include "grid/BoundaryConditions/BoundaryCondition.h"
+#include <variant>
 
 void BoundaryConditionFactory::setVelocityBoundaryCondition(VelocityBC boundaryConditionType)
 {
@@ -23,10 +24,19 @@ void BoundaryConditionFactory::setPressureBoundaryCondition(const PressureBC bou
     this->pressureBoundaryCondition = boundaryConditionType;
 }
 
-boundaryCondition BoundaryConditionFactory::getVelocityBoundaryConditionPost() const
+
+void BoundaryConditionFactory::setGeometryBoundaryCondition(const std::variant<VelocityBC, NoSlipBC, SlipBC> boundaryConditionType){
+    this->geometryBoundaryCondition = boundaryConditionType;
+}
+
+
+boundaryCondition BoundaryConditionFactory::getVelocityBoundaryConditionPost(bool isGeometryBC) const
 {
+    const VelocityBC &boundaryCondition =
+        isGeometryBC ? std::get<VelocityBC>(this->geometryBoundaryCondition) : this->velocityBoundaryCondition;
+
     // for descriptions of the boundary conditions refer to the header
-    switch (this->velocityBoundaryCondition) {
+    switch (boundaryCondition) {
         case VelocityBC::VelocitySimpleBounceBackCompressible:
             return QVelDevicePlainBB27;
             break;
@@ -44,10 +54,13 @@ boundaryCondition BoundaryConditionFactory::getVelocityBoundaryConditionPost() c
     }
 }
 
-boundaryCondition BoundaryConditionFactory::getNoSlipBoundaryConditionPost() const
+boundaryCondition BoundaryConditionFactory::getNoSlipBoundaryConditionPost(bool isGeometryBC) const
 {
+    const NoSlipBC &boundaryCondition =
+        isGeometryBC ? std::get<NoSlipBC>(this->geometryBoundaryCondition) : this->noSlipBoundaryCondition;
+
     // for descriptions of the boundary conditions refer to the header
-    switch (this->noSlipBoundaryCondition) {
+    switch (boundaryCondition) {
         case NoSlipBC::NoSlipBounceBack:
             return BBDev27;
             break;
@@ -57,15 +70,21 @@ boundaryCondition BoundaryConditionFactory::getNoSlipBoundaryConditionPost() con
         case NoSlipBC::NoSlipCompressible:
             return QDevComp27;
             break;
+        case NoSlipBC::NoSlip3rdMomentsCompressible:
+            return QDev3rdMomentsComp27;
+            break;
         default:
             return nullptr;
     }
 }
 
-boundaryCondition BoundaryConditionFactory::getSlipBoundaryConditionPost() const
+boundaryCondition BoundaryConditionFactory::getSlipBoundaryConditionPost(bool isGeometryBC) const
 {
+    const SlipBC &boundaryCondition =
+        isGeometryBC ? std::get<SlipBC>(this->geometryBoundaryCondition) : this->slipBoundaryCondition;
+
     // for descriptions of the boundary conditions refer to the header
-    switch (this->slipBoundaryCondition) {
+    switch (boundaryCondition) {
         case SlipBC::SlipIncompressible:
             return QSlipDev27;
             break;
@@ -104,6 +123,12 @@ boundaryCondition BoundaryConditionFactory::getPressureBoundaryConditionPre() co
     }
 }
 
-// boundaryCondition BoundaryConditionFactory::getGeometryBoundaryConditionPost() const{
-//     this->getNoSlipBoundaryConditionPost();
-// }
+boundaryCondition BoundaryConditionFactory::getGeometryBoundaryConditionPost() const{
+    if(std::holds_alternative<VelocityBC>(this->geometryBoundaryCondition))
+        return this->getVelocityBoundaryConditionPost(true);
+    else if(std::holds_alternative<NoSlipBC>(this->geometryBoundaryCondition))
+        return this->getNoSlipBoundaryConditionPost(true);
+    else if(std::holds_alternative<SlipBC>(this->geometryBoundaryCondition))
+        return this->getSlipBoundaryConditionPost(true);
+    return nullptr;
+}
