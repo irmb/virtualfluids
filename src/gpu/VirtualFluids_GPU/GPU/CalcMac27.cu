@@ -103,7 +103,7 @@ extern "C" __global__ void LBCalcMacSP27( real* vxD,
       D.f[dirBS  ] = &DD[dirBS  *size_Mat];
       D.f[dirBN  ] = &DD[dirBN  *size_Mat];
       D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirTNE *size_Mat];
       D.f[dirTSW ] = &DD[dirTSW *size_Mat];
       D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -133,7 +133,7 @@ extern "C" __global__ void LBCalcMacSP27( real* vxD,
       D.f[dirTN  ] = &DD[dirBS  *size_Mat];
       D.f[dirTS  ] = &DD[dirBN  *size_Mat];
       D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirBSW *size_Mat];
       D.f[dirTSW ] = &DD[dirBNE *size_Mat];
       D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -203,7 +203,7 @@ extern "C" __global__ void LBCalcMacSP27( real* vxD,
                         (D.f[dirBE  ])[kbe ]+ (D.f[dirTW  ])[ktw ]+
                         (D.f[dirTN  ])[ktn ]+ (D.f[dirBS  ])[kbs ]+
                         (D.f[dirBN  ])[kbn ]+ (D.f[dirTS  ])[kts ]+
-                        (D.f[dirZERO])[kzero]+ 
+                        (D.f[dirREST])[kzero]+ 
                         (D.f[dirTNE ])[ktne]+ (D.f[dirTSW ])[ktsw]+ 
                         (D.f[dirTSE ])[ktse]+ (D.f[dirTNW ])[ktnw]+ 
                         (D.f[dirBNE ])[kbne]+ (D.f[dirBSW ])[kbsw]+ 
@@ -363,7 +363,7 @@ extern "C" __global__ void LBCalcMedSP27( real* vxD,
       D.f[dirBS  ] = &DD[dirBS  *size_Mat];
       D.f[dirBN  ] = &DD[dirBN  *size_Mat];
       D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirTNE *size_Mat];
       D.f[dirTSW ] = &DD[dirTSW *size_Mat];
       D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -393,7 +393,7 @@ extern "C" __global__ void LBCalcMedSP27( real* vxD,
       D.f[dirTN  ] = &DD[dirBS  *size_Mat];
       D.f[dirTS  ] = &DD[dirBN  *size_Mat];
       D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirBSW *size_Mat];
       D.f[dirTSW ] = &DD[dirBNE *size_Mat];
       D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -469,7 +469,7 @@ extern "C" __global__ void LBCalcMedSP27( real* vxD,
                         (D.f[dirBE  ])[kbe ]+ (D.f[dirTW  ])[ktw ]+
                         (D.f[dirTN  ])[ktn ]+ (D.f[dirBS  ])[kbs ]+
                         (D.f[dirBN  ])[kbn ]+ (D.f[dirTS  ])[kts ]+
-                        (D.f[dirZERO])[kzero]+ 
+                        (D.f[dirREST])[kzero]+ 
                         (D.f[dirTNE ])[ktne]+ (D.f[dirTSW ])[ktsw]+ 
                         (D.f[dirTSE ])[ktse]+ (D.f[dirTNW ])[ktnw]+ 
                         (D.f[dirBNE ])[kbne]+ (D.f[dirBSW ])[kbsw]+ 
@@ -587,7 +587,7 @@ extern "C" __global__ void LBCalcMedCompSP27( real* vxD,
       D.f[dirBS  ] = &DD[dirBS  *size_Mat];
       D.f[dirBN  ] = &DD[dirBN  *size_Mat];
       D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirTNE *size_Mat];
       D.f[dirTSW ] = &DD[dirTSW *size_Mat];
       D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -617,7 +617,7 @@ extern "C" __global__ void LBCalcMedCompSP27( real* vxD,
       D.f[dirTN  ] = &DD[dirBS  *size_Mat];
       D.f[dirTS  ] = &DD[dirBN  *size_Mat];
       D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirBSW *size_Mat];
       D.f[dirTSW ] = &DD[dirBNE *size_Mat];
       D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -702,7 +702,7 @@ extern "C" __global__ void LBCalcMedCompSP27( real* vxD,
 		  real mfbaa = (D.f[dirBS])[kbs];//[kbs  ];
 		  real mfbca = (D.f[dirBN])[kb];//[kbn  ]; 
 		  real mfbac = (D.f[dirTS])[ks];//[kts  ]; 
-		  real mfbbb = (D.f[dirZERO])[k];//[kzero];
+		  real mfbbb = (D.f[dirREST])[k];//[kzero];
 		  real mfccc = (D.f[dirTNE])[k];//[ktne ]; 
 		  real mfaac = (D.f[dirTSW])[ksw];//[ktsw ]; 
 		  real mfcac = (D.f[dirTSE])[ks];//[ktse ];
@@ -744,7 +744,7 @@ extern "C" __global__ void LBCalcMedCompSP27( real* vxD,
 			 // (D.f[dirBE])[kbe] + (D.f[dirTW])[ktw] +
 			 // (D.f[dirTN])[ktn] + (D.f[dirBS])[kbs] +
 			 // (D.f[dirBN])[kbn] + (D.f[dirTS])[kts] +
-			 // (D.f[dirZERO])[kzero] +
+			 // (D.f[dirREST])[kzero] +
 			 // (D.f[dirTNE])[ktne] + (D.f[dirTSW])[ktsw] +
 			 // (D.f[dirTSE])[ktse] + (D.f[dirTNW])[ktnw] +
 			 // (D.f[dirBNE])[kbne] + (D.f[dirBSW])[kbsw] +
@@ -867,7 +867,7 @@ extern "C" __global__ void LBCalcMedCompAD27(
 		D.f[dirBS] = &DD[dirBS  *size_Mat];
 		D.f[dirBN] = &DD[dirBN  *size_Mat];
 		D.f[dirTS] = &DD[dirTS  *size_Mat];
-		D.f[dirZERO] = &DD[dirZERO*size_Mat];
+		D.f[dirREST] = &DD[dirREST*size_Mat];
 		D.f[dirTNE] = &DD[dirTNE *size_Mat];
 		D.f[dirTSW] = &DD[dirTSW *size_Mat];
 		D.f[dirTSE] = &DD[dirTSE *size_Mat];
@@ -897,7 +897,7 @@ extern "C" __global__ void LBCalcMedCompAD27(
 		D.f[dirTN] = &DD[dirBS  *size_Mat];
 		D.f[dirTS] = &DD[dirBN  *size_Mat];
 		D.f[dirBN] = &DD[dirTS  *size_Mat];
-		D.f[dirZERO] = &DD[dirZERO*size_Mat];
+		D.f[dirREST] = &DD[dirREST*size_Mat];
 		D.f[dirTNE] = &DD[dirBSW *size_Mat];
 		D.f[dirTSW] = &DD[dirBNE *size_Mat];
 		D.f[dirTSE] = &DD[dirBNW *size_Mat];
@@ -929,7 +929,7 @@ extern "C" __global__ void LBCalcMedCompAD27(
 		Dad.f[dirBS]   = &DD_AD[dirBS  *size_Mat];
 		Dad.f[dirBN]   = &DD_AD[dirBN  *size_Mat];
 		Dad.f[dirTS]   = &DD_AD[dirTS  *size_Mat];
-		Dad.f[dirZERO] = &DD_AD[dirZERO*size_Mat];
+		Dad.f[dirREST] = &DD_AD[dirREST*size_Mat];
 		Dad.f[dirTNE]  = &DD_AD[dirTNE *size_Mat];
 		Dad.f[dirTSW]  = &DD_AD[dirTSW *size_Mat];
 		Dad.f[dirTSE]  = &DD_AD[dirTSE *size_Mat];
@@ -959,7 +959,7 @@ extern "C" __global__ void LBCalcMedCompAD27(
 		Dad.f[dirTN]   = &DD_AD[dirBS  *size_Mat];
 		Dad.f[dirTS]   = &DD_AD[dirBN  *size_Mat];
 		Dad.f[dirBN]   = &DD_AD[dirTS  *size_Mat];
-		Dad.f[dirZERO] = &DD_AD[dirZERO*size_Mat];
+		Dad.f[dirREST] = &DD_AD[dirREST*size_Mat];
 		Dad.f[dirTNE]  = &DD_AD[dirBSW *size_Mat];
 		Dad.f[dirTSW]  = &DD_AD[dirBNE *size_Mat];
 		Dad.f[dirTSE]  = &DD_AD[dirBNW *size_Mat];
@@ -1046,7 +1046,7 @@ extern "C" __global__ void LBCalcMedCompAD27(
 			real mfbaa = (D.f[dirBS])[kbs];//[kbs  ];
 			real mfbca = (D.f[dirBN])[kb];//[kbn  ]; 
 			real mfbac = (D.f[dirTS])[ks];//[kts  ]; 
-			real mfbbb = (D.f[dirZERO])[k];//[kzero];
+			real mfbbb = (D.f[dirREST])[k];//[kzero];
 			real mfccc = (D.f[dirTNE])[k];//[ktne ]; 
 			real mfaac = (D.f[dirTSW])[ksw];//[ktsw ]; 
 			real mfcac = (D.f[dirTSE])[ks];//[ktse ];
@@ -1118,7 +1118,7 @@ extern "C" __global__ void LBCalcMedCompAD27(
 			mfbaa = (Dad.f[dirBS  ])[kbs ];
 			mfbca = (Dad.f[dirBN  ])[kb  ];
 			mfbac = (Dad.f[dirTS  ])[ks  ];
-			mfbbb = (Dad.f[dirZERO])[k   ];
+			mfbbb = (Dad.f[dirREST])[k   ];
 			mfccc = (Dad.f[dirTNE ])[k   ];
 			mfaac = (Dad.f[dirTSW ])[ksw ];
 			mfcac = (Dad.f[dirTSE ])[ks  ];
@@ -1375,7 +1375,7 @@ extern "C" __global__ void LBCalcMeasurePoints( real* vxMP,
 		D.f[dirBS  ] = &DD[dirBS  *size_Mat];
 		D.f[dirBN  ] = &DD[dirBN  *size_Mat];
 		D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-		D.f[dirZERO] = &DD[dirZERO*size_Mat];
+		D.f[dirREST] = &DD[dirREST*size_Mat];
 		D.f[dirTNE ] = &DD[dirTNE *size_Mat];
 		D.f[dirTSW ] = &DD[dirTSW *size_Mat];
 		D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -1405,7 +1405,7 @@ extern "C" __global__ void LBCalcMeasurePoints( real* vxMP,
 		D.f[dirTN  ] = &DD[dirBS  *size_Mat];
 		D.f[dirTS  ] = &DD[dirBN  *size_Mat];
 		D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-		D.f[dirZERO] = &DD[dirZERO*size_Mat];
+		D.f[dirREST] = &DD[dirREST*size_Mat];
 		D.f[dirTNE ] = &DD[dirBSW *size_Mat];
 		D.f[dirTSW ] = &DD[dirBNE *size_Mat];
 		D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -1472,7 +1472,7 @@ extern "C" __global__ void LBCalcMeasurePoints( real* vxMP,
                         (D.f[dirBE  ])[kbe ]+ (D.f[dirTW  ])[ktw ]+
                         (D.f[dirTN  ])[ktn ]+ (D.f[dirBS  ])[kbs ]+
                         (D.f[dirBN  ])[kbn ]+ (D.f[dirTS  ])[kts ]+
-                        (D.f[dirZERO])[kzero]+ 
+                        (D.f[dirREST])[kzero]+ 
                         (D.f[dirTNE ])[ktne]+ (D.f[dirTSW ])[ktsw]+ 
                         (D.f[dirTSE ])[ktse]+ (D.f[dirTNW ])[ktnw]+ 
                         (D.f[dirBNE ])[kbne]+ (D.f[dirBSW ])[kbsw]+ 

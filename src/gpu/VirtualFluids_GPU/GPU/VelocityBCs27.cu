@@ -51,7 +51,7 @@ extern "C" __global__ void QVelDeviceCompPlusSlip27(
       D.f[dirBS  ] = &DD[dirBS  *size_Mat];
       D.f[dirBN  ] = &DD[dirBN  *size_Mat];
       D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirTNE *size_Mat];
       D.f[dirTSW ] = &DD[dirTSW *size_Mat];
       D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -81,7 +81,7 @@ extern "C" __global__ void QVelDeviceCompPlusSlip27(
       D.f[dirTN  ] = &DD[dirBS  *size_Mat];
       D.f[dirTS  ] = &DD[dirBN  *size_Mat];
       D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirBSW *size_Mat];
       D.f[dirTSW ] = &DD[dirBNE *size_Mat];
       D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -204,7 +204,7 @@ extern "C" __global__ void QVelDeviceCompPlusSlip27(
 	   real vx1, vx2, vx3, drho, feq, q;
 	   drho = f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
 		   f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW +
-		   f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]);
+		   f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirREST])[kzero]);
 
 	   vx1 = (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
 		   ((f_BE - f_TW) + (f_TE - f_BW)) + ((f_SE - f_NW) + (f_NE - f_SW)) +
@@ -242,7 +242,7 @@ extern "C" __global__ void QVelDeviceCompPlusSlip27(
 		   D.f[dirBS] = &DD[dirBS  *size_Mat];
 		   D.f[dirBN] = &DD[dirBN  *size_Mat];
 		   D.f[dirTS] = &DD[dirTS  *size_Mat];
-		   D.f[dirZERO] = &DD[dirZERO*size_Mat];
+		   D.f[dirREST] = &DD[dirREST*size_Mat];
 		   D.f[dirTNE] = &DD[dirTNE *size_Mat];
 		   D.f[dirTSW] = &DD[dirTSW *size_Mat];
 		   D.f[dirTSE] = &DD[dirTSE *size_Mat];
@@ -272,7 +272,7 @@ extern "C" __global__ void QVelDeviceCompPlusSlip27(
 		   D.f[dirTN] = &DD[dirBS  *size_Mat];
 		   D.f[dirTS] = &DD[dirBN  *size_Mat];
 		   D.f[dirBN] = &DD[dirTS  *size_Mat];
-		   D.f[dirZERO] = &DD[dirZERO*size_Mat];
+		   D.f[dirREST] = &DD[dirREST*size_Mat];
 		   D.f[dirTNE] = &DD[dirBSW *size_Mat];
 		   D.f[dirTSW] = &DD[dirBNE *size_Mat];
 		   D.f[dirTSE] = &DD[dirBNW *size_Mat];
@@ -284,7 +284,7 @@ extern "C" __global__ void QVelDeviceCompPlusSlip27(
 	   }
 	   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	   //Test
-	   //(D.f[dirZERO])[k]=c1o10;
+	   //(D.f[dirREST])[k]=c1o10;
 	   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	   //ToDo anders Klammern
@@ -630,7 +630,7 @@ extern "C" __global__ void QVeloDeviceEQ27(real* VeloX,
          D.f[dirBS  ] = &DD[dirBS  *size_Mat];
          D.f[dirBN  ] = &DD[dirBN  *size_Mat];
          D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
+         D.f[dirREST] = &DD[dirREST*size_Mat];
          D.f[dirTNE ] = &DD[dirTNE *size_Mat];
          D.f[dirTSW ] = &DD[dirTSW *size_Mat];
          D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -660,7 +660,7 @@ extern "C" __global__ void QVeloDeviceEQ27(real* VeloX,
          D.f[dirTN  ] = &DD[dirBS  *size_Mat];
          D.f[dirTS  ] = &DD[dirBN  *size_Mat];
          D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
+         D.f[dirREST] = &DD[dirREST*size_Mat];
          D.f[dirTNE ] = &DD[dirBSW *size_Mat];
          D.f[dirTSW ] = &DD[dirBNE *size_Mat];
          D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -692,7 +692,7 @@ extern "C" __global__ void QVeloDeviceEQ27(real* VeloX,
 			real mfbaa = (D.f[dirBS  ])[kbs  ];
 			real mfbca = (D.f[dirBN  ])[kbn  ];
 			real mfbac = (D.f[dirTS  ])[kts  ];
-			real mfbbb = (D.f[dirZERO])[kzero];
+			real mfbbb = (D.f[dirREST])[kzero];
 			real mfccc = (D.f[dirTNE ])[ktne ];
 			real mfaac = (D.f[dirTSW ])[ktsw ];
 			real mfcac = (D.f[dirTSE ])[ktse ];
@@ -780,7 +780,7 @@ extern "C" __global__ void QVeloDeviceEQ27(real* VeloX,
 			(D.f[dirBS  ])[kbs  ] = mfbcc;//mfbaa;
 			(D.f[dirBN  ])[kbn  ] = mfbac;//mfbca;
 			(D.f[dirTS  ])[kts  ] = mfbca;//mfbac;
-			(D.f[dirZERO])[kzero] = mfbbb;//mfbbb;
+			(D.f[dirREST])[kzero] = mfbbb;//mfbbb;
 			(D.f[dirTNE ])[ktne ] = mfaaa;//mfccc;
 			(D.f[dirTSW ])[ktsw ] = mfcca;//mfaac;
 			(D.f[dirTSE ])[ktse ] = mfaca;//mfcac;
@@ -911,7 +911,7 @@ extern "C" __global__ void QVeloStreetDeviceEQ27(
 			D.f[dirBS  ] = &DD[dirBS  *size_Mat];
 			D.f[dirBN  ] = &DD[dirBN  *size_Mat];
 			D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-			D.f[dirZERO] = &DD[dirZERO*size_Mat];
+			D.f[dirREST] = &DD[dirREST*size_Mat];
 			D.f[dirTNE ] = &DD[dirTNE *size_Mat];
 			D.f[dirTSW ] = &DD[dirTSW *size_Mat];
 			D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -941,7 +941,7 @@ extern "C" __global__ void QVeloStreetDeviceEQ27(
 			D.f[dirTN  ] = &DD[dirBS  *size_Mat];
 			D.f[dirTS  ] = &DD[dirBN  *size_Mat];
 			D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-			D.f[dirZERO] = &DD[dirZERO*size_Mat];
+			D.f[dirREST] = &DD[dirREST*size_Mat];
 			D.f[dirTNE ] = &DD[dirBSW *size_Mat];
 			D.f[dirTSW ] = &DD[dirBNE *size_Mat];
 			D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -973,7 +973,7 @@ extern "C" __global__ void QVeloStreetDeviceEQ27(
 		real mfbaa = (D.f[dirBS  ])[kbs  ];
 		real mfbca = (D.f[dirBN  ])[kbn  ];
 		real mfbac = (D.f[dirTS  ])[kts  ];
-		real mfbbb = (D.f[dirZERO])[kzero];
+		real mfbbb = (D.f[dirREST])[kzero];
 		real mfccc = (D.f[dirTNE ])[ktne ];
 		real mfaac = (D.f[dirTSW ])[ktsw ];
 		real mfcac = (D.f[dirTSE ])[ktse ];
@@ -1066,7 +1066,7 @@ extern "C" __global__ void QVeloStreetDeviceEQ27(
 		(D.f[dirBS  ])[kbs  ] = mfbcc;//mfbaa;
 		(D.f[dirBN  ])[kbn  ] = mfbac;//mfbca;
 		(D.f[dirTS  ])[kts  ] = mfbca;//mfbac;
-		(D.f[dirZERO])[kzero] = mfbbb;//mfbbb;
+		(D.f[dirREST])[kzero] = mfbbb;//mfbbb;
 		(D.f[dirTNE ])[ktne ] = mfaaa;//mfccc;
 		(D.f[dirTSW ])[ktsw ] = mfcca;//mfaac;
 		(D.f[dirTSE ])[ktse ] = mfaca;//mfcac;
@@ -1155,7 +1155,7 @@ extern "C" __global__ void QVelDeviceIncompHighNu27(int inx,
       D.f[dirBS  ] = &DD[dirBS  *size_Mat];
       D.f[dirBN  ] = &DD[dirBN  *size_Mat];
       D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirTNE *size_Mat];
       D.f[dirTSW ] = &DD[dirTSW *size_Mat];
       D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -1185,7 +1185,7 @@ extern "C" __global__ void QVelDeviceIncompHighNu27(int inx,
       D.f[dirTN  ] = &DD[dirBS  *size_Mat];
       D.f[dirTS  ] = &DD[dirBN  *size_Mat];
       D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirBSW *size_Mat];
       D.f[dirTSW ] = &DD[dirBNE *size_Mat];
       D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -1308,7 +1308,7 @@ extern "C" __global__ void QVelDeviceIncompHighNu27(int inx,
       real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
+                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirREST])[kzero]); 
 
       vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                 ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -1346,7 +1346,7 @@ extern "C" __global__ void QVelDeviceIncompHighNu27(int inx,
          D.f[dirBS  ] = &DD[dirBS  *size_Mat];
          D.f[dirBN  ] = &DD[dirBN  *size_Mat];
          D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
+         D.f[dirREST] = &DD[dirREST*size_Mat];
          D.f[dirTNE ] = &DD[dirTNE *size_Mat];
          D.f[dirTSW ] = &DD[dirTSW *size_Mat];
          D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -1376,7 +1376,7 @@ extern "C" __global__ void QVelDeviceIncompHighNu27(int inx,
          D.f[dirTN  ] = &DD[dirBS  *size_Mat];
          D.f[dirTS  ] = &DD[dirBN  *size_Mat];
          D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
+         D.f[dirREST] = &DD[dirREST*size_Mat];
          D.f[dirTNE ] = &DD[dirBSW *size_Mat];
          D.f[dirTSW ] = &DD[dirBNE *size_Mat];
          D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -1388,7 +1388,7 @@ extern "C" __global__ void QVelDeviceIncompHighNu27(int inx,
       }
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //Test
-      //(D.f[dirZERO])[k]=c1o10;
+      //(D.f[dirREST])[k]=c1o10;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	  //ToDo anders Klammern
@@ -1653,7 +1653,7 @@ extern "C" __global__ void QVelDeviceCompHighNu27(
       D.f[dirBS  ] = &DD[dirBS  *size_Mat];
       D.f[dirBN  ] = &DD[dirBN  *size_Mat];
       D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirTNE *size_Mat];
       D.f[dirTSW ] = &DD[dirTSW *size_Mat];
       D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -1683,7 +1683,7 @@ extern "C" __global__ void QVelDeviceCompHighNu27(
       D.f[dirTN  ] = &DD[dirBS  *size_Mat];
       D.f[dirTS  ] = &DD[dirBN  *size_Mat];
       D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirBSW *size_Mat];
       D.f[dirTSW ] = &DD[dirBNE *size_Mat];
       D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -1832,7 +1832,7 @@ extern "C" __global__ void QVelDeviceCompHighNu27(
       real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
+                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirREST])[kzero]); 
 
       vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                 ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -1870,7 +1870,7 @@ extern "C" __global__ void QVelDeviceCompHighNu27(
          D.f[dirBS  ] = &DD[dirBS  *size_Mat];
          D.f[dirBN  ] = &DD[dirBN  *size_Mat];
          D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
+         D.f[dirREST] = &DD[dirREST*size_Mat];
          D.f[dirTNE ] = &DD[dirTNE *size_Mat];
          D.f[dirTSW ] = &DD[dirTSW *size_Mat];
          D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -1900,7 +1900,7 @@ extern "C" __global__ void QVelDeviceCompHighNu27(
          D.f[dirTN  ] = &DD[dirBS  *size_Mat];
          D.f[dirTS  ] = &DD[dirBN  *size_Mat];
          D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
+         D.f[dirREST] = &DD[dirREST*size_Mat];
          D.f[dirTNE ] = &DD[dirBSW *size_Mat];
          D.f[dirTSW ] = &DD[dirBNE *size_Mat];
          D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -1912,7 +1912,7 @@ extern "C" __global__ void QVelDeviceCompHighNu27(
       }
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //Test
-      //(D.f[dirZERO])[k]=c1o10;
+      //(D.f[dirREST])[k]=c1o10;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	  //ToDo anders Klammern
@@ -2317,7 +2317,7 @@ extern "C" __global__ void QVelDeviceCompZeroPress27(
       //!
       real drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                      f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-                     f_T + f_B + f_N + f_S + f_E + f_W + ((dist.f[dirZERO])[kzero]); 
+                     f_T + f_B + f_N + f_S + f_E + f_W + ((dist.f[dirREST])[kzero]); 
 
       real vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                       ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -2661,7 +2661,7 @@ extern "C" __global__ void QVelDeviceCompZeroPress1h27( int inx,
       D.f[dirBS  ] = &DD[dirBS  *size_Mat];
       D.f[dirBN  ] = &DD[dirBN  *size_Mat];
       D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirTNE *size_Mat];
       D.f[dirTSW ] = &DD[dirTSW *size_Mat];
       D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -2691,7 +2691,7 @@ extern "C" __global__ void QVelDeviceCompZeroPress1h27( int inx,
       D.f[dirTN  ] = &DD[dirBS  *size_Mat];
       D.f[dirTS  ] = &DD[dirBN  *size_Mat];
       D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirBSW *size_Mat];
       D.f[dirTSW ] = &DD[dirBNE *size_Mat];
       D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -2815,7 +2815,7 @@ extern "C" __global__ void QVelDeviceCompZeroPress1h27( int inx,
          D.f[dirBS  ] = &DD[dirBS  *size_Mat];
          D.f[dirBN  ] = &DD[dirBN  *size_Mat];
          D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
+         D.f[dirREST] = &DD[dirREST*size_Mat];
          D.f[dirTNE ] = &DD[dirTNE *size_Mat];
          D.f[dirTSW ] = &DD[dirTSW *size_Mat];
          D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -2845,7 +2845,7 @@ extern "C" __global__ void QVelDeviceCompZeroPress1h27( int inx,
          D.f[dirTN  ] = &DD[dirBS  *size_Mat];
          D.f[dirTS  ] = &DD[dirBN  *size_Mat];
          D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
+         D.f[dirREST] = &DD[dirREST*size_Mat];
          D.f[dirTNE ] = &DD[dirBSW *size_Mat];
          D.f[dirTSW ] = &DD[dirBNE *size_Mat];
          D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -3143,7 +3143,7 @@ extern "C" __global__ void LB_BC_Vel_West_27( int nx,
          D.f[dirBS  ] = &DD[dirBS  *size_Mat];
          D.f[dirBN  ] = &DD[dirBN  *size_Mat];
          D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
+         D.f[dirREST] = &DD[dirREST*size_Mat];
          D.f[dirTNE ] = &DD[dirTNE *size_Mat];
          D.f[dirTSW ] = &DD[dirTSW *size_Mat];
          D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -3173,7 +3173,7 @@ extern "C" __global__ void LB_BC_Vel_West_27( int nx,
          D.f[dirTN  ] = &DD[dirBS  *size_Mat];
          D.f[dirTS  ] = &DD[dirBN  *size_Mat];
          D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
+         D.f[dirREST] = &DD[dirREST*size_Mat];
          D.f[dirTNE ] = &DD[dirBSW *size_Mat];
          D.f[dirTSW ] = &DD[dirBNE *size_Mat];
          D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -3318,7 +3318,7 @@ extern "C" __global__ void LB_BC_Vel_West_27( int nx,
       f1_TN   = (D.f[dirBS  ])[k1bs  ];
       f1_TS   = (D.f[dirBN  ])[k1bn  ];
       f1_BN   = (D.f[dirTS  ])[k1ts  ];
-      f1_ZERO = (D.f[dirZERO])[k1zero];
+      f1_ZERO = (D.f[dirREST])[k1zero];
       f1_BSW  = (D.f[dirTNE ])[k1tne ];
       f1_BNE  = (D.f[dirTSW ])[k1tsw ];
       f1_BNW  = (D.f[dirTSE ])[k1tse ];
@@ -3342,7 +3342,7 @@ extern "C" __global__ void LB_BC_Vel_West_27( int nx,
 
       real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
-      (D.f[dirZERO])[kzero] =   c8o27* (drho-cu_sq);
+      (D.f[dirREST])[kzero] =   c8o27* (drho-cu_sq);
       (D.f[dirE   ])[ke   ] =   c2o27* (drho+c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq);
       (D.f[dirW   ])[kw   ] =   c2o27* (drho+c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq);
       (D.f[dirN   ])[kn   ] =   c2o27* (drho+c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cu_sq);
@@ -3639,7 +3639,7 @@ extern "C" __global__ void QVelDevCouette27(real* vx,
       D.f[dirBS  ] = &DD[dirBS  *size_Mat];
       D.f[dirBN  ] = &DD[dirBN  *size_Mat];
       D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirTNE *size_Mat];
       D.f[dirTSW ] = &DD[dirTSW *size_Mat];
       D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -3669,7 +3669,7 @@ extern "C" __global__ void QVelDevCouette27(real* vx,
       D.f[dirTN  ] = &DD[dirBS  *size_Mat];
       D.f[dirTS  ] = &DD[dirBN  *size_Mat];
       D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirBSW *size_Mat];
       D.f[dirTSW ] = &DD[dirBNE *size_Mat];
       D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -3810,7 +3810,7 @@ extern "C" __global__ void QVelDevCouette27(real* vx,
          D.f[dirBS  ] = &DD[dirBS  *size_Mat];
          D.f[dirBN  ] = &DD[dirBN  *size_Mat];
          D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
+         D.f[dirREST] = &DD[dirREST*size_Mat];
          D.f[dirTNE ] = &DD[dirTNE *size_Mat];
          D.f[dirTSW ] = &DD[dirTSW *size_Mat];
          D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -3840,7 +3840,7 @@ extern "C" __global__ void QVelDevCouette27(real* vx,
          D.f[dirTN  ] = &DD[dirBS  *size_Mat];
          D.f[dirTS  ] = &DD[dirBN  *size_Mat];
          D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
+         D.f[dirREST] = &DD[dirREST*size_Mat];
          D.f[dirTNE ] = &DD[dirBSW *size_Mat];
          D.f[dirTSW ] = &DD[dirBNE *size_Mat];
          D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -4006,7 +4006,7 @@ extern "C" __global__ void QVelDev1h27( int inx,
 		D.f[dirBS  ] = &DD[dirBS  *size_Mat];
 		D.f[dirBN  ] = &DD[dirBN  *size_Mat];
 		D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-		D.f[dirZERO] = &DD[dirZERO*size_Mat];
+		D.f[dirREST] = &DD[dirREST*size_Mat];
 		D.f[dirTNE ] = &DD[dirTNE *size_Mat];
 		D.f[dirTSW ] = &DD[dirTSW *size_Mat];
 		D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -4036,7 +4036,7 @@ extern "C" __global__ void QVelDev1h27( int inx,
 		D.f[dirTN  ] = &DD[dirBS  *size_Mat];
 		D.f[dirTS  ] = &DD[dirBN  *size_Mat];
 		D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-		D.f[dirZERO] = &DD[dirZERO*size_Mat];
+		D.f[dirREST] = &DD[dirREST*size_Mat];
 		D.f[dirTNE ] = &DD[dirBSW *size_Mat];
 		D.f[dirTSW ] = &DD[dirBNE *size_Mat];
 		D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -4197,7 +4197,7 @@ extern "C" __global__ void QVelDev1h27( int inx,
 		real /*vx1, vx2,*/ vx3, drho, feq, q, cu_sq;
 		//drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
 		//	f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-		//	f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
+		//	f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirREST])[kzero]); 
 
 		//vx1    =  ((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
 		//	((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -4235,7 +4235,7 @@ extern "C" __global__ void QVelDev1h27( int inx,
 			D.f[dirBS  ] = &DD[dirBS  *size_Mat];
 			D.f[dirBN  ] = &DD[dirBN  *size_Mat];
 			D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-			D.f[dirZERO] = &DD[dirZERO*size_Mat];
+			D.f[dirREST] = &DD[dirREST*size_Mat];
 			D.f[dirTNE ] = &DD[dirTNE *size_Mat];
 			D.f[dirTSW ] = &DD[dirTSW *size_Mat];
 			D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -4265,7 +4265,7 @@ extern "C" __global__ void QVelDev1h27( int inx,
 			D.f[dirTN  ] = &DD[dirBS  *size_Mat];
 			D.f[dirTS  ] = &DD[dirBN  *size_Mat];
 			D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-			D.f[dirZERO] = &DD[dirZERO*size_Mat];
+			D.f[dirREST] = &DD[dirREST*size_Mat];
 			D.f[dirTNE ] = &DD[dirBSW *size_Mat];
 			D.f[dirTSW ] = &DD[dirBNE *size_Mat];
 			D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -4277,7 +4277,7 @@ extern "C" __global__ void QVelDev1h27( int inx,
 		}
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		//Test
-		//(D.f[dirZERO])[k]=c1o10;
+		//(D.f[dirREST])[k]=c1o10;
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		//ToDo anders Klammern
@@ -4869,7 +4869,7 @@ extern "C" __global__ void QVelDeviceComp27(
       //!
       real drho = f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                   f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-                  f_T + f_B + f_N + f_S + f_E + f_W + ((dist.f[dirZERO])[kzero]); 
+                  f_T + f_B + f_N + f_S + f_E + f_W + ((dist.f[dirREST])[kzero]); 
 
       real vx1  = (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                    ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -5207,7 +5207,7 @@ extern "C" __global__ void QVelDevice27(int inx,
       D.f[dirBS  ] = &DD[dirBS  *size_Mat];
       D.f[dirBN  ] = &DD[dirBN  *size_Mat];
       D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirTNE *size_Mat];
       D.f[dirTSW ] = &DD[dirTSW *size_Mat];
       D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -5237,7 +5237,7 @@ extern "C" __global__ void QVelDevice27(int inx,
       D.f[dirTN  ] = &DD[dirBS  *size_Mat];
       D.f[dirTS  ] = &DD[dirBN  *size_Mat];
       D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirBSW *size_Mat];
       D.f[dirTSW ] = &DD[dirBNE *size_Mat];
       D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -5388,7 +5388,7 @@ extern "C" __global__ void QVelDevice27(int inx,
       real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
+                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirREST])[kzero]); 
 
       vx1    =  ((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                 ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -5426,7 +5426,7 @@ extern "C" __global__ void QVelDevice27(int inx,
          D.f[dirBS  ] = &DD[dirBS  *size_Mat];
          D.f[dirBN  ] = &DD[dirBN  *size_Mat];
          D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
+         D.f[dirREST] = &DD[dirREST*size_Mat];
          D.f[dirTNE ] = &DD[dirTNE *size_Mat];
          D.f[dirTSW ] = &DD[dirTSW *size_Mat];
          D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -5456,7 +5456,7 @@ extern "C" __global__ void QVelDevice27(int inx,
          D.f[dirTN  ] = &DD[dirBS  *size_Mat];
          D.f[dirTS  ] = &DD[dirBN  *size_Mat];
          D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
+         D.f[dirREST] = &DD[dirREST*size_Mat];
          D.f[dirTNE ] = &DD[dirBSW *size_Mat];
          D.f[dirTSW ] = &DD[dirBNE *size_Mat];
          D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -5468,7 +5468,7 @@ extern "C" __global__ void QVelDevice27(int inx,
       }
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //Test
-      //(D.f[dirZERO])[k]=c1o10;
+      //(D.f[dirREST])[k]=c1o10;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	  //ToDo anders Klammern
@@ -5772,7 +5772,7 @@ extern "C" __global__ void PropellerBC(unsigned int* neighborX,
 			D.f[dirBS  ] = &DD[dirBS  *size_Mat];
 			D.f[dirBN  ] = &DD[dirBN  *size_Mat];
 			D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-			D.f[dirZERO] = &DD[dirZERO*size_Mat];
+			D.f[dirREST] = &DD[dirREST*size_Mat];
 			D.f[dirTNE ] = &DD[dirTNE *size_Mat];
 			D.f[dirTSW ] = &DD[dirTSW *size_Mat];
 			D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -5802,7 +5802,7 @@ extern "C" __global__ void PropellerBC(unsigned int* neighborX,
 			D.f[dirTN  ] = &DD[dirBS  *size_Mat];
 			D.f[dirTS  ] = &DD[dirBN  *size_Mat];
 			D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-			D.f[dirZERO] = &DD[dirZERO*size_Mat];
+			D.f[dirREST] = &DD[dirREST*size_Mat];
 			D.f[dirBSW ] = &DD[dirTNE *size_Mat];
 			D.f[dirBNE ] = &DD[dirTSW *size_Mat];
 			D.f[dirBNW ] = &DD[dirTSE *size_Mat];
@@ -5858,7 +5858,7 @@ extern "C" __global__ void PropellerBC(unsigned int* neighborX,
 		real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
 		f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW, f_ZERO;
 
-		f_ZERO= (D.f[dirZERO])[kzero];
+		f_ZERO= (D.f[dirREST])[kzero];
 		f_E   = (D.f[dirE   ])[ke   ];
 		f_W   = (D.f[dirW   ])[kw   ];
 		f_N   = (D.f[dirN   ])[kn   ];
@@ -5991,7 +5991,7 @@ extern "C" __global__ void PropellerBC(unsigned int* neighborX,
          f_BSE  = f_BSE  + ((c1o1+drho) * (-  c1o216*(c3o1*( vxo1-vxo2-vxo3)+c9o2*( vxo1-vxo2-vxo3)*( vxo1-vxo2-vxo3)-cusq) +   c1o216*(c3o1*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cusq2)));
          f_TNW  = f_TNW  + ((c1o1+drho) * (-  c1o216*(c3o1*(-vxo1+vxo2+vxo3)+c9o2*(-vxo1+vxo2+vxo3)*(-vxo1+vxo2+vxo3)-cusq) +   c1o216*(c3o1*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cusq2)));
 
-		(D.f[dirZERO])[kzero] =  f_ZERO;
+		(D.f[dirREST])[kzero] =  f_ZERO;
         (D.f[dirE   ])[ke   ] =  f_E   ;	// f_W   ;//    	
         (D.f[dirW   ])[kw   ] =  f_W   ;	// f_E   ;//    	
         (D.f[dirN   ])[kn   ] =  f_N   ;	// f_S   ;//    	
@@ -6020,7 +6020,7 @@ extern "C" __global__ void PropellerBC(unsigned int* neighborX,
         (D.f[dirTNW ])[ktnw ] =  f_TNW ;	// f_TSE ;//    	
 
 		//////////////////////////////////////////////////////////////////////////
-        ////(D.f[dirZERO])[kzero] =   c8over27* (drho-cu_sq);
+        ////(D.f[dirREST])[kzero] =   c8over27* (drho-cu_sq);
         //(D.f[dirE   ])[ke   ] =   three*c2over27* ( vx1        );		//six
         //(D.f[dirW   ])[kw   ] =   three*c2over27* (-vx1        );		//six
         //(D.f[dirN   ])[kn   ] =   three*c2over27* (     vx2    );		//six
@@ -6047,7 +6047,7 @@ extern "C" __global__ void PropellerBC(unsigned int* neighborX,
         //(D.f[dirBNW ])[kbnw ] =   three*c1over216*(-vx1+vx2-vx3);		//six
         //(D.f[dirBSE ])[kbse ] =   three*c1over216*( vx1-vx2-vx3);		//six
         //(D.f[dirTNW ])[ktnw ] =   three*c1over216*(-vx1+vx2+vx3);		//six
-        //(D.f[dirZERO])[kzero] =   c8over27* (drho-cu_sq);
+        //(D.f[dirREST])[kzero] =   c8over27* (drho-cu_sq);
         //(D.f[dirE   ])[ke   ] =   c2over27* (drho+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
         //(D.f[dirW   ])[kw   ] =   c2over27* (drho+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
         //(D.f[dirN   ])[kn   ] =   c2over27* (drho+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);

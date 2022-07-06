@@ -105,7 +105,7 @@ extern "C" __global__ void LB_Kernel_CumulantK17CompChim(
             dist.f[dirBS]   = &distributions[dirBS * size_Mat];
             dist.f[dirBN]   = &distributions[dirBN * size_Mat];
             dist.f[dirTS]   = &distributions[dirTS * size_Mat];
-            dist.f[dirZERO] = &distributions[dirZERO * size_Mat];
+            dist.f[dirREST] = &distributions[dirREST * size_Mat];
             dist.f[dirTNE]  = &distributions[dirTNE * size_Mat];
             dist.f[dirTSW]  = &distributions[dirTSW * size_Mat];
             dist.f[dirTSE]  = &distributions[dirTSE * size_Mat];
@@ -133,7 +133,7 @@ extern "C" __global__ void LB_Kernel_CumulantK17CompChim(
             dist.f[dirTN]   = &distributions[dirBS * size_Mat];
             dist.f[dirTS]   = &distributions[dirBN * size_Mat];
             dist.f[dirBN]   = &distributions[dirTS * size_Mat];
-            dist.f[dirZERO] = &distributions[dirZERO * size_Mat];
+            dist.f[dirREST] = &distributions[dirREST * size_Mat];
             dist.f[dirBSW]  = &distributions[dirTNE * size_Mat];
             dist.f[dirBNE]  = &distributions[dirTSW * size_Mat];
             dist.f[dirBNW]  = &distributions[dirTSE * size_Mat];
@@ -173,7 +173,7 @@ extern "C" __global__ void LB_Kernel_CumulantK17CompChim(
         real mfbaa = (dist.f[dirBS])[kbs];
         real mfbca = (dist.f[dirBN])[kb];
         real mfbac = (dist.f[dirTS])[ks];
-        real mfbbb = (dist.f[dirZERO])[k];
+        real mfbbb = (dist.f[dirREST])[k];
         real mfccc = (dist.f[dirTNE])[k];
         real mfaac = (dist.f[dirTSW])[ksw];
         real mfcac = (dist.f[dirTSE])[ks];
@@ -640,7 +640,7 @@ extern "C" __global__ void LB_Kernel_CumulantK17CompChim(
         (dist.f[dirBS])[kbs]   = mfbcc;
         (dist.f[dirBN])[kb]    = mfbac;
         (dist.f[dirTS])[ks]    = mfbca;
-        (dist.f[dirZERO])[k]   = mfbbb;
+        (dist.f[dirREST])[k]   = mfbbb;
         (dist.f[dirTNE])[k]    = mfaaa;
         (dist.f[dirTSE])[ks]   = mfaca;
         (dist.f[dirBNE])[kb]   = mfaac;

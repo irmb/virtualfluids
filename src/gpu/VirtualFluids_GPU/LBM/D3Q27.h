@@ -34,7 +34,7 @@
 #define dirBSE  24
 #define dirBSW  25
 
-#define dirZERO 26
+// #define dirZERO 26
 #define dirREST 26
 
 #endif

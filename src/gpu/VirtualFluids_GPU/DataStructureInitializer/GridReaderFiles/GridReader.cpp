@@ -658,9 +658,9 @@ void GridReader::modifyQElement(std::shared_ptr<BoundaryQs> boundaryQ, unsigned 
 {
 	QforBoundaryConditions Q;
 	real* QQ = para->getParH(level)->geometryBC.q27[0];
-	Q.q27[dirZERO] = &QQ[dirZERO * para->getParH(level)->geometryBC.numberOfBCnodes];
+	Q.q27[dirREST] = &QQ[dirREST * para->getParH(level)->geometryBC.numberOfBCnodes];
 	for (unsigned int i = 0; i < boundaryQ->getSize(level); i++)
-		Q.q27[dirZERO][i] = 0.0f;
+		Q.q27[dirREST][i] = 0.0f;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -749,7 +749,7 @@ void GridReader::setQ27Size(QforBoundaryConditions &Q, real* QQ, unsigned int si
 	Q.q27[dirBS] = &QQ[dirBS  *sizeQ];
 	Q.q27[dirBN] = &QQ[dirBN  *sizeQ];
 	Q.q27[dirTS] = &QQ[dirTS  *sizeQ];
-	Q.q27[dirZERO] = &QQ[dirZERO*sizeQ];
+	Q.q27[dirREST] = &QQ[dirREST*sizeQ];
 	Q.q27[dirTNE] = &QQ[dirTNE *sizeQ];
 	Q.q27[dirTSW] = &QQ[dirTSW *sizeQ];
 	Q.q27[dirTSE] = &QQ[dirTSE *sizeQ];

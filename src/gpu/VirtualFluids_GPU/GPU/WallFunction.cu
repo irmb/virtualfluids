@@ -43,7 +43,7 @@ extern "C" __global__ void WallFunction27(
       D.f[dirBS  ] = &DD[dirBS  *size_Mat];
       D.f[dirBN  ] = &DD[dirBN  *size_Mat];
       D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirTNE *size_Mat];
       D.f[dirTSW ] = &DD[dirTSW *size_Mat];
       D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -73,7 +73,7 @@ extern "C" __global__ void WallFunction27(
       D.f[dirTN  ] = &DD[dirBS  *size_Mat];
       D.f[dirTS  ] = &DD[dirBN  *size_Mat];
       D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirBSW *size_Mat];
       D.f[dirTSW ] = &DD[dirBNE *size_Mat];
       D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -197,7 +197,7 @@ extern "C" __global__ void WallFunction27(
       real vx1, drho;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
+                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirREST])[kzero]); 
 
        vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                  ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -251,7 +251,7 @@ extern "C" __global__ void WallFunction27(
    //      D.f[dirBS  ] = &DD[dirBS  *size_Mat];
    //      D.f[dirBN  ] = &DD[dirBN  *size_Mat];
    //      D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-   //      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+   //      D.f[dirREST] = &DD[dirREST*size_Mat];
    //      D.f[dirTNE ] = &DD[dirTNE *size_Mat];
    //      D.f[dirTSW ] = &DD[dirTSW *size_Mat];
    //      D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -281,7 +281,7 @@ extern "C" __global__ void WallFunction27(
    //      D.f[dirTN  ] = &DD[dirBS  *size_Mat];
    //      D.f[dirTS  ] = &DD[dirBN  *size_Mat];
    //      D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-   //      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+   //      D.f[dirREST] = &DD[dirREST*size_Mat];
    //      D.f[dirTNE ] = &DD[dirBSW *size_Mat];
    //      D.f[dirTSW ] = &DD[dirBNE *size_Mat];
    //      D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -293,7 +293,7 @@ extern "C" __global__ void WallFunction27(
    //   }
    //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //   //Test
-   //   //(D.f[dirZERO])[k]=c1o10;
+   //   //(D.f[dirREST])[k]=c1o10;
    //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	  ////ToDo anders Klammern

@@ -55,7 +55,7 @@ extern "C" __global__ void LB_Kernel_AD_Incomp_27(real diffusivity,
 				D.f[dirBS] = &DDStart[dirBS  *size_Mat];
 				D.f[dirBN] = &DDStart[dirBN  *size_Mat];
 				D.f[dirTS] = &DDStart[dirTS  *size_Mat];
-				D.f[dirZERO] = &DDStart[dirZERO*size_Mat];
+				D.f[dirREST] = &DDStart[dirREST*size_Mat];
 				D.f[dirTNE] = &DDStart[dirTNE *size_Mat];
 				D.f[dirTSW] = &DDStart[dirTSW *size_Mat];
 				D.f[dirTSE] = &DDStart[dirTSE *size_Mat];
@@ -85,7 +85,7 @@ extern "C" __global__ void LB_Kernel_AD_Incomp_27(real diffusivity,
 				D.f[dirTN] = &DDStart[dirBS  *size_Mat];
 				D.f[dirTS] = &DDStart[dirBN  *size_Mat];
 				D.f[dirBN] = &DDStart[dirTS  *size_Mat];
-				D.f[dirZERO] = &DDStart[dirZERO*size_Mat];
+				D.f[dirREST] = &DDStart[dirREST*size_Mat];
 				D.f[dirBSW] = &DDStart[dirTNE *size_Mat];
 				D.f[dirBNE] = &DDStart[dirTSW *size_Mat];
 				D.f[dirBNW] = &DDStart[dirTSE *size_Mat];
@@ -117,7 +117,7 @@ extern "C" __global__ void LB_Kernel_AD_Incomp_27(real diffusivity,
 				D27.f[dirBS] = &DD27[dirBS  *size_Mat];
 				D27.f[dirBN] = &DD27[dirBN  *size_Mat];
 				D27.f[dirTS] = &DD27[dirTS  *size_Mat];
-				D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+				D27.f[dirREST] = &DD27[dirREST*size_Mat];
 				D27.f[dirTNE] = &DD27[dirTNE *size_Mat];
 				D27.f[dirTSW] = &DD27[dirTSW *size_Mat];
 				D27.f[dirTSE] = &DD27[dirTSE *size_Mat];
@@ -147,7 +147,7 @@ extern "C" __global__ void LB_Kernel_AD_Incomp_27(real diffusivity,
 				D27.f[dirTN] = &DD27[dirBS  *size_Mat];
 				D27.f[dirTS] = &DD27[dirBN  *size_Mat];
 				D27.f[dirBN] = &DD27[dirTS  *size_Mat];
-				D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+				D27.f[dirREST] = &DD27[dirREST*size_Mat];
 				D27.f[dirBSW] = &DD27[dirTNE *size_Mat];
 				D27.f[dirBNE] = &DD27[dirTSW *size_Mat];
 				D27.f[dirBNW] = &DD27[dirTSE *size_Mat];
@@ -186,7 +186,7 @@ extern "C" __global__ void LB_Kernel_AD_Incomp_27(real diffusivity,
 			real fTN = (D.f[dirBS])[kbs];
 			real fTS = (D.f[dirBN])[kb];//kbn
 			real fBN = (D.f[dirTS])[ks];//kts
-			//real fZERO = (D.f[dirZERO])[k];//kzero
+			//real fZERO = (D.f[dirREST])[k];//kzero
 			real fBSW = (D.f[dirTNE])[k];//ktne
 			real fBNE = (D.f[dirTSW])[ksw];//ktsw
 			real fBNW = (D.f[dirTSE])[ks];//ktse
@@ -214,7 +214,7 @@ extern "C" __global__ void LB_Kernel_AD_Incomp_27(real diffusivity,
 										   //real f27BS   =  (D27.f[dirBS  ])[kbs];
 										   //real f27BN   =  (D27.f[dirBN  ])[kb ];//kbn
 										   //real f27TS   =  (D27.f[dirTS  ])[ks ];//kts
-										   //real f27ZERO =  (D27.f[dirZERO])[k  ];//kzero
+										   //real f27ZERO =  (D27.f[dirREST])[k  ];//kzero
 										   //real f27TNE  =  (D27.f[dirTNE ])[k  ];//ktne
 										   //real f27TSW  =  (D27.f[dirTSW ])[ksw];//ktsw
 										   //real f27TSE  =  (D27.f[dirTSE ])[ks ];//ktse
@@ -248,7 +248,7 @@ extern "C" __global__ void LB_Kernel_AD_Incomp_27(real diffusivity,
 			real mfbaa = (D27.f[dirBS])[kbs];
 			real mfbca = (D27.f[dirBN])[kb];
 			real mfbac = (D27.f[dirTS])[ks];
-			real mfbbb = (D27.f[dirZERO])[k];
+			real mfbbb = (D27.f[dirREST])[k];
 			real mfccc = (D27.f[dirTNE])[k];
 			real mfaac = (D27.f[dirTSW])[ksw];
 			real mfcac = (D27.f[dirTSE])[ks];
@@ -318,7 +318,7 @@ extern "C" __global__ void LB_Kernel_AD_Incomp_27(real diffusivity,
 			//(D27.f[ dirBS  ])[kbs ] = f27TN   *(one-omegaD)+omegaD* c1over54* ConcD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cusq);
 			//(D27.f[ dirBN  ])[kb  ] = f27TS   *(one-omegaD)+omegaD* c1over54* ConcD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cusq);
 			//(D27.f[ dirTS  ])[ks  ] = f27BN   *(one-omegaD)+omegaD* c1over54* ConcD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cusq);
-			//(D27.f[ dirZERO])[k   ] = f27ZERO *(one-omegaD)+omegaD* c8over27* ConcD*(one-cusq);
+			//(D27.f[ dirREST])[k   ] = f27ZERO *(one-omegaD)+omegaD* c8over27* ConcD*(one-cusq);
 			//(D27.f[ dirTNE ])[k   ] = f27BSW  *(one-omegaD)+omegaD* c1over216*ConcD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cusq);
 			//(D27.f[ dirTSE ])[ks  ] = f27BNW  *(one-omegaD)+omegaD* c1over216*ConcD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cusq);
 			//(D27.f[ dirBNE ])[kb  ] = f27TSW  *(one-omegaD)+omegaD* c1over216*ConcD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cusq);
@@ -878,7 +878,7 @@ extern "C" __global__ void LB_Kernel_AD_Incomp_27(real diffusivity,
 			(D27.f[dirBS])[kbs] = mfbcc;
 			(D27.f[dirBN])[kb] = mfbac;
 			(D27.f[dirTS])[ks] = mfbca;
-			(D27.f[dirZERO])[k] = mfbbb;
+			(D27.f[dirREST])[k] = mfbbb;
 			(D27.f[dirTNE])[k] = mfaaa;
 			(D27.f[dirTSE])[ks] = mfaca;
 			(D27.f[dirBNE])[kb] = mfaac;

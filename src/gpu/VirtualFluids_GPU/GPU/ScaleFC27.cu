@@ -60,7 +60,7 @@ extern "C" __global__ void scaleFC_0817_comp_27( real* DC,
    f0MMsource = &DF[dirBS  *size_MatF];
    f0PMsource = &DF[dirBN  *size_MatF];
    f0MPsource = &DF[dirTS  *size_MatF];
-   f000source = &DF[dirZERO*size_MatF];
+   f000source = &DF[dirREST*size_MatF];
    fMMMsource = &DF[dirBSW *size_MatF];
    fMMPsource = &DF[dirTSW *size_MatF];
    fMPPsource = &DF[dirTNW *size_MatF];
@@ -95,7 +95,7 @@ extern "C" __global__ void scaleFC_0817_comp_27( real* DC,
 	   f0MMdest = &DC[dirBS  *size_MatC];
 	   f0PMdest = &DC[dirBN  *size_MatC];
 	   f0MPdest = &DC[dirTS  *size_MatC];
-	   f000dest = &DC[dirZERO*size_MatC];
+	   f000dest = &DC[dirREST*size_MatC];
 	   fMMMdest = &DC[dirBSW *size_MatC];
 	   fMMPdest = &DC[dirTSW *size_MatC];
 	   fMPPdest = &DC[dirTNW *size_MatC];
@@ -125,7 +125,7 @@ extern "C" __global__ void scaleFC_0817_comp_27( real* DC,
 	   f0MMdest = &DC[dirTN  *size_MatC];
 	   f0PMdest = &DC[dirTS  *size_MatC];
 	   f0MPdest = &DC[dirBN  *size_MatC];
-	   f000dest = &DC[dirZERO*size_MatC];
+	   f000dest = &DC[dirREST*size_MatC];
 	   fMMMdest = &DC[dirTNE *size_MatC];
 	   fMMPdest = &DC[dirBNE *size_MatC];
 	   fMPPdest = &DC[dirBSE *size_MatC];
@@ -1253,7 +1253,7 @@ extern "C" __global__ void scaleFC_AA2016_comp_27(real* DC,
    fbsF   = &DF[dirBS  *size_MatF];
    fbnF   = &DF[dirBN  *size_MatF];
    ftsF   = &DF[dirTS  *size_MatF];
-   fzeroF = &DF[dirZERO*size_MatF];
+   fzeroF = &DF[dirREST*size_MatF];
    ftneF  = &DF[dirTNE *size_MatF];
    ftswF  = &DF[dirTSW *size_MatF];
    ftseF  = &DF[dirTSE *size_MatF];
@@ -1286,7 +1286,7 @@ extern "C" __global__ void scaleFC_AA2016_comp_27(real* DC,
       fbsC   = &DC[dirBS  *size_MatC];
       fbnC   = &DC[dirBN  *size_MatC];
       ftsC   = &DC[dirTS  *size_MatC];
-      fzeroC = &DC[dirZERO*size_MatC];
+      fzeroC = &DC[dirREST*size_MatC];
       ftneC  = &DC[dirTNE *size_MatC];
       ftswC  = &DC[dirTSW *size_MatC];
       ftseC  = &DC[dirTSE *size_MatC];
@@ -1316,7 +1316,7 @@ extern "C" __global__ void scaleFC_AA2016_comp_27(real* DC,
       ftnC   = &DC[dirBS  *size_MatC];
       ftsC   = &DC[dirBN  *size_MatC];
       fbnC   = &DC[dirTS  *size_MatC];
-      fzeroC = &DC[dirZERO*size_MatC];
+      fzeroC = &DC[dirREST*size_MatC];
       fbswC  = &DC[dirTNE *size_MatC];
       fbneC  = &DC[dirTSW *size_MatC];
       fbnwC  = &DC[dirTSE *size_MatC];
@@ -5442,7 +5442,7 @@ extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(real* DC,
    fbsF   = &DF[dirBS  *size_MatF];
    fbnF   = &DF[dirBN  *size_MatF];
    ftsF   = &DF[dirTS  *size_MatF];
-   fzeroF = &DF[dirZERO*size_MatF];
+   fzeroF = &DF[dirREST*size_MatF];
    ftneF  = &DF[dirTNE *size_MatF];
    ftswF  = &DF[dirTSW *size_MatF];
    ftseF  = &DF[dirTSE *size_MatF];
@@ -5475,7 +5475,7 @@ extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(real* DC,
       fbsC   = &DC[dirBS  *size_MatC];
       fbnC   = &DC[dirBN  *size_MatC];
       ftsC   = &DC[dirTS  *size_MatC];
-      fzeroC = &DC[dirZERO*size_MatC];
+      fzeroC = &DC[dirREST*size_MatC];
       ftneC  = &DC[dirTNE *size_MatC];
       ftswC  = &DC[dirTSW *size_MatC];
       ftseC  = &DC[dirTSE *size_MatC];
@@ -5505,7 +5505,7 @@ extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(real* DC,
       ftnC   = &DC[dirBS  *size_MatC];
       ftsC   = &DC[dirBN  *size_MatC];
       fbnC   = &DC[dirTS  *size_MatC];
-      fzeroC = &DC[dirZERO*size_MatC];
+      fzeroC = &DC[dirREST*size_MatC];
       fbswC  = &DC[dirTNE *size_MatC];
       fbneC  = &DC[dirTSW *size_MatC];
       fbnwC  = &DC[dirTSE *size_MatC];
@@ -9614,7 +9614,7 @@ __device__ void scaleFC_RhoSq_comp_27_Calculation(real *DC, real *DF, unsigned i
     fbsF   = &DF[dirBS * size_MatF];
     fbnF   = &DF[dirBN * size_MatF];
     ftsF   = &DF[dirTS * size_MatF];
-    fzeroF = &DF[dirZERO * size_MatF];
+    fzeroF = &DF[dirREST * size_MatF];
     ftneF  = &DF[dirTNE * size_MatF];
     ftswF  = &DF[dirTSW * size_MatF];
     ftseF  = &DF[dirTSE * size_MatF];
@@ -9646,7 +9646,7 @@ __device__ void scaleFC_RhoSq_comp_27_Calculation(real *DC, real *DF, unsigned i
         fbsC   = &DC[dirBS * size_MatC];
         fbnC   = &DC[dirBN * size_MatC];
         ftsC   = &DC[dirTS * size_MatC];
-        fzeroC = &DC[dirZERO * size_MatC];
+        fzeroC = &DC[dirREST * size_MatC];
         ftneC  = &DC[dirTNE * size_MatC];
         ftswC  = &DC[dirTSW * size_MatC];
         ftseC  = &DC[dirTSE * size_MatC];
@@ -9674,7 +9674,7 @@ __device__ void scaleFC_RhoSq_comp_27_Calculation(real *DC, real *DF, unsigned i
         ftnC   = &DC[dirBS * size_MatC];
         ftsC   = &DC[dirBN * size_MatC];
         fbnC   = &DC[dirTS * size_MatC];
-        fzeroC = &DC[dirZERO * size_MatC];
+        fzeroC = &DC[dirREST * size_MatC];
         fbswC  = &DC[dirTNE * size_MatC];
         fbneC  = &DC[dirTSW * size_MatC];
         fbnwC  = &DC[dirTSE * size_MatC];
@@ -11192,7 +11192,7 @@ extern "C" __global__ void scaleFC_staggered_time_comp_27(   real* DC,
    fbsF   = &DF[dirBS  *size_MatF];
    fbnF   = &DF[dirBN  *size_MatF];
    ftsF   = &DF[dirTS  *size_MatF];
-   fzeroF = &DF[dirZERO*size_MatF];
+   fzeroF = &DF[dirREST*size_MatF];
    ftneF  = &DF[dirTNE *size_MatF];
    ftswF  = &DF[dirTSW *size_MatF];
    ftseF  = &DF[dirTSE *size_MatF];
@@ -11225,7 +11225,7 @@ extern "C" __global__ void scaleFC_staggered_time_comp_27(   real* DC,
       fbsC   = &DC[dirBS  *size_MatC];
       fbnC   = &DC[dirBN  *size_MatC];
       ftsC   = &DC[dirTS  *size_MatC];
-      fzeroC = &DC[dirZERO*size_MatC];
+      fzeroC = &DC[dirREST*size_MatC];
       ftneC  = &DC[dirTNE *size_MatC];
       ftswC  = &DC[dirTSW *size_MatC];
       ftseC  = &DC[dirTSE *size_MatC];
@@ -11255,7 +11255,7 @@ extern "C" __global__ void scaleFC_staggered_time_comp_27(   real* DC,
       ftnC   = &DC[dirBS  *size_MatC];
       ftsC   = &DC[dirBN  *size_MatC];
       fbnC   = &DC[dirTS  *size_MatC];
-      fzeroC = &DC[dirZERO*size_MatC];
+      fzeroC = &DC[dirREST*size_MatC];
       fbswC  = &DC[dirTNE *size_MatC];
       fbneC  = &DC[dirTSW *size_MatC];
       fbnwC  = &DC[dirTSE *size_MatC];
@@ -11776,7 +11776,7 @@ extern "C" __global__ void scaleFC_staggered_time_comp_27(   real* DC,
 		 // fbsC   = &DC[dirBS  *size_MatC];
 		 // fbnC   = &DC[dirBN  *size_MatC];
 		 // ftsC   = &DC[dirTS  *size_MatC];
-		 // fzeroC = &DC[dirZERO*size_MatC];
+		 // fzeroC = &DC[dirREST*size_MatC];
 		 // ftneC  = &DC[dirTNE *size_MatC];
 		 // ftswC  = &DC[dirTSW *size_MatC];
 		 // ftseC  = &DC[dirTSE *size_MatC];
@@ -11806,7 +11806,7 @@ extern "C" __global__ void scaleFC_staggered_time_comp_27(   real* DC,
 		 // ftnC   = &DC[dirBS  *size_MatC];
 		 // ftsC   = &DC[dirBN  *size_MatC];
 		 // fbnC   = &DC[dirTS  *size_MatC];
-		 // fzeroC = &DC[dirZERO*size_MatC];
+		 // fzeroC = &DC[dirREST*size_MatC];
 		 // fbswC  = &DC[dirTNE *size_MatC];
 		 // fbneC  = &DC[dirTSW *size_MatC];
 		 // fbnwC  = &DC[dirTSE *size_MatC];
@@ -13313,7 +13313,7 @@ extern "C" __global__ void scaleFC_Fix_comp_27(  real* DC,
    fbsF   = &DF[dirBS  *size_MatF];
    fbnF   = &DF[dirBN  *size_MatF];
    ftsF   = &DF[dirTS  *size_MatF];
-   fzeroF = &DF[dirZERO*size_MatF];
+   fzeroF = &DF[dirREST*size_MatF];
    ftneF  = &DF[dirTNE *size_MatF];
    ftswF  = &DF[dirTSW *size_MatF];
    ftseF  = &DF[dirTSE *size_MatF];
@@ -13346,7 +13346,7 @@ extern "C" __global__ void scaleFC_Fix_comp_27(  real* DC,
       fbsC   = &DC[dirBS  *size_MatC];
       fbnC   = &DC[dirBN  *size_MatC];
       ftsC   = &DC[dirTS  *size_MatC];
-      fzeroC = &DC[dirZERO*size_MatC];
+      fzeroC = &DC[dirREST*size_MatC];
       ftneC  = &DC[dirTNE *size_MatC];
       ftswC  = &DC[dirTSW *size_MatC];
       ftseC  = &DC[dirTSE *size_MatC];
@@ -13376,7 +13376,7 @@ extern "C" __global__ void scaleFC_Fix_comp_27(  real* DC,
       ftnC   = &DC[dirBS  *size_MatC];
       ftsC   = &DC[dirBN  *size_MatC];
       fbnC   = &DC[dirTS  *size_MatC];
-      fzeroC = &DC[dirZERO*size_MatC];
+      fzeroC = &DC[dirREST*size_MatC];
       fbswC  = &DC[dirTNE *size_MatC];
       fbneC  = &DC[dirTSW *size_MatC];
       fbnwC  = &DC[dirTSE *size_MatC];
@@ -15173,7 +15173,7 @@ extern "C" __global__ void scaleFC_NSPress_27(   real* DC,
    fbsF   = &DF[dirBS  *size_MatF];
    fbnF   = &DF[dirBN  *size_MatF];
    ftsF   = &DF[dirTS  *size_MatF];
-   fzeroF = &DF[dirZERO*size_MatF];
+   fzeroF = &DF[dirREST*size_MatF];
    ftneF  = &DF[dirTNE *size_MatF];
    ftswF  = &DF[dirTSW *size_MatF];
    ftseF  = &DF[dirTSE *size_MatF];
@@ -15206,7 +15206,7 @@ extern "C" __global__ void scaleFC_NSPress_27(   real* DC,
       fbsC   = &DC[dirBS  *size_MatC];
       fbnC   = &DC[dirBN  *size_MatC];
       ftsC   = &DC[dirTS  *size_MatC];
-      fzeroC = &DC[dirZERO*size_MatC];
+      fzeroC = &DC[dirREST*size_MatC];
       ftneC  = &DC[dirTNE *size_MatC];
       ftswC  = &DC[dirTSW *size_MatC];
       ftseC  = &DC[dirTSE *size_MatC];
@@ -15236,7 +15236,7 @@ extern "C" __global__ void scaleFC_NSPress_27(   real* DC,
       ftnC   = &DC[dirBS  *size_MatC];
       ftsC   = &DC[dirBN  *size_MatC];
       fbnC   = &DC[dirTS  *size_MatC];
-      fzeroC = &DC[dirZERO*size_MatC];
+      fzeroC = &DC[dirREST*size_MatC];
       fbswC  = &DC[dirTNE *size_MatC];
       fbneC  = &DC[dirTSW *size_MatC];
       fbnwC  = &DC[dirTSE *size_MatC];
@@ -16379,7 +16379,7 @@ extern "C" __global__ void scaleFC_Fix_27(   real* DC,
    fbsF   = &DF[dirBS  *size_MatF];
    fbnF   = &DF[dirBN  *size_MatF];
    ftsF   = &DF[dirTS  *size_MatF];
-   fzeroF = &DF[dirZERO*size_MatF];
+   fzeroF = &DF[dirREST*size_MatF];
    ftneF  = &DF[dirTNE *size_MatF];
    ftswF  = &DF[dirTSW *size_MatF];
    ftseF  = &DF[dirTSE *size_MatF];
@@ -16412,7 +16412,7 @@ extern "C" __global__ void scaleFC_Fix_27(   real* DC,
       fbsC   = &DC[dirBS  *size_MatC];
       fbnC   = &DC[dirBN  *size_MatC];
       ftsC   = &DC[dirTS  *size_MatC];
-      fzeroC = &DC[dirZERO*size_MatC];
+      fzeroC = &DC[dirREST*size_MatC];
       ftneC  = &DC[dirTNE *size_MatC];
       ftswC  = &DC[dirTSW *size_MatC];
       ftseC  = &DC[dirTSE *size_MatC];
@@ -16442,7 +16442,7 @@ extern "C" __global__ void scaleFC_Fix_27(   real* DC,
       ftnC   = &DC[dirBS  *size_MatC];
       ftsC   = &DC[dirBN  *size_MatC];
       fbnC   = &DC[dirTS  *size_MatC];
-      fzeroC = &DC[dirZERO*size_MatC];
+      fzeroC = &DC[dirREST*size_MatC];
       fbswC  = &DC[dirTNE *size_MatC];
       fbneC  = &DC[dirTSW *size_MatC];
       fbnwC  = &DC[dirTSE *size_MatC];
@@ -17739,7 +17739,7 @@ extern "C" __global__ void scaleFCpress27(real* DC,
    fbsF   = &DF[dirBS  *size_MatF];
    fbnF   = &DF[dirBN  *size_MatF];
    ftsF   = &DF[dirTS  *size_MatF];
-   fzeroF = &DF[dirZERO*size_MatF];
+   fzeroF = &DF[dirREST*size_MatF];
    ftneF  = &DF[dirTNE *size_MatF];
    ftswF  = &DF[dirTSW *size_MatF];
    ftseF  = &DF[dirTSE *size_MatF];
@@ -17772,7 +17772,7 @@ extern "C" __global__ void scaleFCpress27(real* DC,
       fbsC   = &DC[dirBS  *size_MatC];
       fbnC   = &DC[dirBN  *size_MatC];
       ftsC   = &DC[dirTS  *size_MatC];
-      fzeroC = &DC[dirZERO*size_MatC];
+      fzeroC = &DC[dirREST*size_MatC];
       ftneC  = &DC[dirTNE *size_MatC];
       ftswC  = &DC[dirTSW *size_MatC];
       ftseC  = &DC[dirTSE *size_MatC];
@@ -17802,7 +17802,7 @@ extern "C" __global__ void scaleFCpress27(real* DC,
       ftnC   = &DC[dirBS  *size_MatC];
       ftsC   = &DC[dirBN  *size_MatC];
       fbnC   = &DC[dirTS  *size_MatC];
-      fzeroC = &DC[dirZERO*size_MatC];
+      fzeroC = &DC[dirREST*size_MatC];
       fbswC  = &DC[dirTNE *size_MatC];
       fbneC  = &DC[dirTSW *size_MatC];
       fbnwC  = &DC[dirTSE *size_MatC];
@@ -18664,7 +18664,7 @@ extern "C" __global__ void scaleFCLast27( real* DC,
    fbsF   = &DF[dirBS  *size_MatF];
    fbnF   = &DF[dirBN  *size_MatF];
    ftsF   = &DF[dirTS  *size_MatF];
-   fzeroF = &DF[dirZERO*size_MatF];
+   fzeroF = &DF[dirREST*size_MatF];
    ftneF  = &DF[dirTNE *size_MatF];
    ftswF  = &DF[dirTSW *size_MatF];
    ftseF  = &DF[dirTSE *size_MatF];
@@ -18697,7 +18697,7 @@ extern "C" __global__ void scaleFCLast27( real* DC,
       fbsC   = &DC[dirBS  *size_MatC];
       fbnC   = &DC[dirBN  *size_MatC];
       ftsC   = &DC[dirTS  *size_MatC];
-      fzeroC = &DC[dirZERO*size_MatC];
+      fzeroC = &DC[dirREST*size_MatC];
       ftneC  = &DC[dirTNE *size_MatC];
       ftswC  = &DC[dirTSW *size_MatC];
       ftseC  = &DC[dirTSE *size_MatC];
@@ -18727,7 +18727,7 @@ extern "C" __global__ void scaleFCLast27( real* DC,
       ftnC   = &DC[dirBS  *size_MatC];
       ftsC   = &DC[dirBN  *size_MatC];
       fbnC   = &DC[dirTS  *size_MatC];
-      fzeroC = &DC[dirZERO*size_MatC];
+      fzeroC = &DC[dirREST*size_MatC];
       fbswC  = &DC[dirTNE *size_MatC];
       fbneC  = &DC[dirTSW *size_MatC];
       fbnwC  = &DC[dirTSE *size_MatC];
@@ -20057,7 +20057,7 @@ extern "C" __global__ void scaleFCThSMG7(    real* DC,
    fbsF   = &DF[dirBS  *size_MatF];
    fbnF   = &DF[dirBN  *size_MatF];
    ftsF   = &DF[dirTS  *size_MatF];
-   //fzeroF = &DF[dirZERO*size_MatF];
+   //fzeroF = &DF[dirREST*size_MatF];
    ftneF  = &DF[dirTNE *size_MatF];
    ftswF  = &DF[dirTSW *size_MatF];
    ftseF  = &DF[dirTSE *size_MatF];
@@ -20090,7 +20090,7 @@ extern "C" __global__ void scaleFCThSMG7(    real* DC,
       fbsC   = &DC[dirBS  *size_MatC];
       fbnC   = &DC[dirBN  *size_MatC];
       ftsC   = &DC[dirTS  *size_MatC];
-      //fzeroC = &DC[dirZERO*size_MatC];
+      //fzeroC = &DC[dirREST*size_MatC];
       ftneC  = &DC[dirTNE *size_MatC];
       ftswC  = &DC[dirTSW *size_MatC];
       ftseC  = &DC[dirTSE *size_MatC];
@@ -20120,7 +20120,7 @@ extern "C" __global__ void scaleFCThSMG7(    real* DC,
       ftnC   = &DC[dirBS  *size_MatC];
       ftsC   = &DC[dirBN  *size_MatC];
       fbnC   = &DC[dirTS  *size_MatC];
-      //fzeroC = &DC[dirZERO*size_MatC];
+      //fzeroC = &DC[dirREST*size_MatC];
       fbswC  = &DC[dirTNE *size_MatC];
       fbneC  = &DC[dirTSW *size_MatC];
       fbnwC  = &DC[dirTSE *size_MatC];
@@ -20929,7 +20929,7 @@ extern "C" __global__ void scaleFCThS7(   real* DC,
    fbsF   = &DF[dirBS  *size_MatF];
    fbnF   = &DF[dirBN  *size_MatF];
    ftsF   = &DF[dirTS  *size_MatF];
-   //fzeroF = &DF[dirZERO*size_MatF];
+   //fzeroF = &DF[dirREST*size_MatF];
    ftneF  = &DF[dirTNE *size_MatF];
    ftswF  = &DF[dirTSW *size_MatF];
    ftseF  = &DF[dirTSE *size_MatF];
@@ -20962,7 +20962,7 @@ extern "C" __global__ void scaleFCThS7(   real* DC,
       fbsC   = &DC[dirBS  *size_MatC];
       fbnC   = &DC[dirBN  *size_MatC];
       ftsC   = &DC[dirTS  *size_MatC];
-      //fzeroC = &DC[dirZERO*size_MatC];
+      //fzeroC = &DC[dirREST*size_MatC];
       ftneC  = &DC[dirTNE *size_MatC];
       ftswC  = &DC[dirTSW *size_MatC];
       ftseC  = &DC[dirTSE *size_MatC];
@@ -20992,7 +20992,7 @@ extern "C" __global__ void scaleFCThS7(   real* DC,
       ftnC   = &DC[dirBS  *size_MatC];
       ftsC   = &DC[dirBN  *size_MatC];
       fbnC   = &DC[dirTS  *size_MatC];
-      //fzeroC = &DC[dirZERO*size_MatC];
+      //fzeroC = &DC[dirREST*size_MatC];
       fbswC  = &DC[dirTNE *size_MatC];
       fbneC  = &DC[dirTSW *size_MatC];
       fbnwC  = &DC[dirTSE *size_MatC];
@@ -21721,7 +21721,7 @@ extern "C" __global__ void scaleFCThS27(     real* DC,
    fbsF   = &DF[dirBS  *size_MatF];
    fbnF   = &DF[dirBN  *size_MatF];
    ftsF   = &DF[dirTS  *size_MatF];
-   //fzeroF = &DF[dirZERO*size_MatF];
+   //fzeroF = &DF[dirREST*size_MatF];
    ftneF  = &DF[dirTNE *size_MatF];
    ftswF  = &DF[dirTSW *size_MatF];
    ftseF  = &DF[dirTSE *size_MatF];
@@ -21754,7 +21754,7 @@ extern "C" __global__ void scaleFCThS27(     real* DC,
       fbsC   = &DC[dirBS  *size_MatC];
       fbnC   = &DC[dirBN  *size_MatC];
       ftsC   = &DC[dirTS  *size_MatC];
-      //fzeroC = &DC[dirZERO*size_MatC];
+      //fzeroC = &DC[dirREST*size_MatC];
       ftneC  = &DC[dirTNE *size_MatC];
       ftswC  = &DC[dirTSW *size_MatC];
       ftseC  = &DC[dirTSE *size_MatC];
@@ -21784,7 +21784,7 @@ extern "C" __global__ void scaleFCThS27(     real* DC,
       ftnC   = &DC[dirBS  *size_MatC];
       ftsC   = &DC[dirBN  *size_MatC];
       fbnC   = &DC[dirTS  *size_MatC];
-      //fzeroC = &DC[dirZERO*size_MatC];
+      //fzeroC = &DC[dirREST*size_MatC];
       fbswC  = &DC[dirTNE *size_MatC];
       fbneC  = &DC[dirTSW *size_MatC];
       fbnwC  = &DC[dirTSE *size_MatC];
@@ -21814,7 +21814,7 @@ extern "C" __global__ void scaleFCThS27(     real* DC,
    D27F.f[dirBS  ] = &DD27F[dirBS  *size_MatF];
    D27F.f[dirBN  ] = &DD27F[dirBN  *size_MatF];
    D27F.f[dirTS  ] = &DD27F[dirTS  *size_MatF];
-   D27F.f[dirZERO] = &DD27F[dirZERO*size_MatF];
+   D27F.f[dirREST] = &DD27F[dirREST*size_MatF];
    D27F.f[dirTNE ] = &DD27F[dirTNE *size_MatF];
    D27F.f[dirTSW ] = &DD27F[dirTSW *size_MatF];
    D27F.f[dirTSE ] = &DD27F[dirTSE *size_MatF];
@@ -21845,7 +21845,7 @@ extern "C" __global__ void scaleFCThS27(     real* DC,
       D27C.f[dirBS  ] = &DD27C[dirBS  *size_MatC];
       D27C.f[dirBN  ] = &DD27C[dirBN  *size_MatC];
       D27C.f[dirTS  ] = &DD27C[dirTS  *size_MatC];
-      D27C.f[dirZERO] = &DD27C[dirZERO*size_MatC];
+      D27C.f[dirREST] = &DD27C[dirREST*size_MatC];
       D27C.f[dirTNE ] = &DD27C[dirTNE *size_MatC];
       D27C.f[dirTSW ] = &DD27C[dirTSW *size_MatC];
       D27C.f[dirTSE ] = &DD27C[dirTSE *size_MatC];
@@ -21875,7 +21875,7 @@ extern "C" __global__ void scaleFCThS27(     real* DC,
       D27C.f[dirTN  ] = &DD27C[dirBS  *size_MatC];
       D27C.f[dirTS  ] = &DD27C[dirBN  *size_MatC];
       D27C.f[dirBN  ] = &DD27C[dirTS  *size_MatC];
-      D27C.f[dirZERO] = &DD27C[dirZERO*size_MatC];
+      D27C.f[dirREST] = &DD27C[dirREST*size_MatC];
       D27C.f[dirBSW ] = &DD27C[dirTNE *size_MatC];
       D27C.f[dirBNE ] = &DD27C[dirTSW *size_MatC];
       D27C.f[dirBNW ] = &DD27C[dirTSE *size_MatC];
@@ -21997,7 +21997,7 @@ extern "C" __global__ void scaleFCThS27(     real* DC,
       f27BS   =  (D27F.f[dirBS  ])[kbs  ];
       f27BN   =  (D27F.f[dirBN  ])[kb   ];//kbn
       f27TS   =  (D27F.f[dirTS  ])[ks   ];//kts
-      f27ZERO =  (D27F.f[dirZERO])[kzero];//kzero
+      f27ZERO =  (D27F.f[dirREST])[kzero];//kzero
       f27TNE   = (D27F.f[dirTNE ])[kzero];//ktne
       f27TSW   = (D27F.f[dirTSW ])[ksw  ];//ktsw
       f27TSE   = (D27F.f[dirTSE ])[ks   ];//ktse
@@ -22084,7 +22084,7 @@ extern "C" __global__ void scaleFCThS27(     real* DC,
       f27BS   =  (D27F.f[dirBS  ])[kbs  ];
       f27BN   =  (D27F.f[dirBN  ])[kb   ];//kbn
       f27TS   =  (D27F.f[dirTS  ])[ks   ];//kts
-      f27ZERO =  (D27F.f[dirZERO])[kzero];//kzero
+      f27ZERO =  (D27F.f[dirREST])[kzero];//kzero
       f27TNE   = (D27F.f[dirTNE ])[kzero];//ktne
       f27TSW   = (D27F.f[dirTSW ])[ksw  ];//ktsw
       f27TSE   = (D27F.f[dirTSE ])[ks   ];//ktse
@@ -22171,7 +22171,7 @@ extern "C" __global__ void scaleFCThS27(     real* DC,
       f27BS   =  (D27F.f[dirBS  ])[kbs  ];
       f27BN   =  (D27F.f[dirBN  ])[kb   ];//kbn
       f27TS   =  (D27F.f[dirTS  ])[ks   ];//kts
-      f27ZERO =  (D27F.f[dirZERO])[kzero];//kzero
+      f27ZERO =  (D27F.f[dirREST])[kzero];//kzero
       f27TNE   = (D27F.f[dirTNE ])[kzero];//ktne
       f27TSW   = (D27F.f[dirTSW ])[ksw  ];//ktsw
       f27TSE   = (D27F.f[dirTSE ])[ks   ];//ktse
@@ -22258,7 +22258,7 @@ extern "C" __global__ void scaleFCThS27(     real* DC,
       f27BS   =  (D27F.f[dirBS  ])[kbs  ];
       f27BN   =  (D27F.f[dirBN  ])[kb   ];//kbn
       f27TS   =  (D27F.f[dirTS  ])[ks   ];//kts
-      f27ZERO =  (D27F.f[dirZERO])[kzero];//kzero
+      f27ZERO =  (D27F.f[dirREST])[kzero];//kzero
       f27TNE   = (D27F.f[dirTNE ])[kzero];//ktne
       f27TSW   = (D27F.f[dirTSW ])[ksw  ];//ktsw
       f27TSE   = (D27F.f[dirTSE ])[ks   ];//ktse
@@ -22355,7 +22355,7 @@ extern "C" __global__ void scaleFCThS27(     real* DC,
       f27BS   =  (D27F.f[dirBS  ])[kbs  ];
       f27BN   =  (D27F.f[dirBN  ])[kb   ];//kbn
       f27TS   =  (D27F.f[dirTS  ])[ks   ];//kts
-      f27ZERO =  (D27F.f[dirZERO])[kzero];//kzero
+      f27ZERO =  (D27F.f[dirREST])[kzero];//kzero
       f27TNE   = (D27F.f[dirTNE ])[kzero];//ktne
       f27TSW   = (D27F.f[dirTSW ])[ksw  ];//ktsw
       f27TSE   = (D27F.f[dirTSE ])[ks   ];//ktse
@@ -22442,7 +22442,7 @@ extern "C" __global__ void scaleFCThS27(     real* DC,
       f27BS   =  (D27F.f[dirBS  ])[kbs  ];
       f27BN   =  (D27F.f[dirBN  ])[kb   ];//kbn
       f27TS   =  (D27F.f[dirTS  ])[ks   ];//kts
-      f27ZERO =  (D27F.f[dirZERO])[kzero];//kzero
+      f27ZERO =  (D27F.f[dirREST])[kzero];//kzero
       f27TNE   = (D27F.f[dirTNE ])[kzero];//ktne
       f27TSW   = (D27F.f[dirTSW ])[ksw  ];//ktsw
       f27TSE   = (D27F.f[dirTSE ])[ks   ];//ktse
@@ -22529,7 +22529,7 @@ extern "C" __global__ void scaleFCThS27(     real* DC,
       f27BS   =  (D27F.f[dirBS  ])[kbs  ];
       f27BN   =  (D27F.f[dirBN  ])[kb   ];//kbn
       f27TS   =  (D27F.f[dirTS  ])[ks   ];//kts
-      f27ZERO =  (D27F.f[dirZERO])[kzero];//kzero
+      f27ZERO =  (D27F.f[dirREST])[kzero];//kzero
       f27TNE   = (D27F.f[dirTNE ])[kzero];//ktne
       f27TSW   = (D27F.f[dirTSW ])[ksw  ];//ktsw
       f27TSE   = (D27F.f[dirTSE ])[ks   ];//ktse
@@ -22616,7 +22616,7 @@ extern "C" __global__ void scaleFCThS27(     real* DC,
       f27BS   =  (D27F.f[dirBS  ])[kbs  ];
       f27BN   =  (D27F.f[dirBN  ])[kb   ];//kbn
       f27TS   =  (D27F.f[dirTS  ])[ks   ];//kts
-      f27ZERO =  (D27F.f[dirZERO])[kzero];//kzero
+      f27ZERO =  (D27F.f[dirREST])[kzero];//kzero
       f27TNE   = (D27F.f[dirTNE ])[kzero];//ktne
       f27TSW   = (D27F.f[dirTSW ])[ksw  ];//ktsw
       f27TSE   = (D27F.f[dirTSE ])[ks   ];//ktse
@@ -22737,7 +22737,7 @@ extern "C" __global__ void scaleFCThS27(     real* DC,
 
       cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
-      (D27C.f[dirZERO])[kzero] =   c8o27* Conc_C*(c1o1-cu_sq);
+      (D27C.f[dirREST])[kzero] =   c8o27* Conc_C*(c1o1-cu_sq);
       (D27C.f[dirE   ])[kzero] =   c2o27* (c3o1*( Mx        )+Conc_C*(c1o1+c9o2*( vx1        )*( vx1        )-cu_sq));
       (D27C.f[dirW   ])[kw   ] =   c2o27* (c3o1*(-Mx        )+Conc_C*(c1o1+c9o2*(-vx1        )*(-vx1        )-cu_sq));
       (D27C.f[dirN   ])[kzero] =   c2o27* (c3o1*(     My    )+Conc_C*(c1o1+c9o2*(     vx2    )*(     vx2    )-cu_sq));
@@ -22847,7 +22847,7 @@ extern "C" __global__ void scaleFCEff27(real* DC,
    fbsF   = &DF[dirBS  *size_MatF];
    fbnF   = &DF[dirBN  *size_MatF];
    ftsF   = &DF[dirTS  *size_MatF];
-   fzeroF = &DF[dirZERO*size_MatF];
+   fzeroF = &DF[dirREST*size_MatF];
    ftneF  = &DF[dirTNE *size_MatF];
    ftswF  = &DF[dirTSW *size_MatF];
    ftseF  = &DF[dirTSE *size_MatF];
@@ -22880,7 +22880,7 @@ extern "C" __global__ void scaleFCEff27(real* DC,
       fbsC   = &DC[dirBS  *size_MatC];
       fbnC   = &DC[dirBN  *size_MatC];
       ftsC   = &DC[dirTS  *size_MatC];
-      fzeroC = &DC[dirZERO*size_MatC];
+      fzeroC = &DC[dirREST*size_MatC];
       ftneC  = &DC[dirTNE *size_MatC];
       ftswC  = &DC[dirTSW *size_MatC];
       ftseC  = &DC[dirTSE *size_MatC];
@@ -22910,7 +22910,7 @@ extern "C" __global__ void scaleFCEff27(real* DC,
       ftnC   = &DC[dirBS  *size_MatC];
       ftsC   = &DC[dirBN  *size_MatC];
       fbnC   = &DC[dirTS  *size_MatC];
-      fzeroC = &DC[dirZERO*size_MatC];
+      fzeroC = &DC[dirREST*size_MatC];
       fbswC  = &DC[dirTNE *size_MatC];
       fbneC  = &DC[dirTSW *size_MatC];
       fbnwC  = &DC[dirTSE *size_MatC];
@@ -23825,7 +23825,7 @@ extern "C" __global__ void scaleFC27(real* DC,
    fbsF   = &DF[dirBS  *size_MatF];
    fbnF   = &DF[dirBN  *size_MatF];
    ftsF   = &DF[dirTS  *size_MatF];
-   fzeroF = &DF[dirZERO*size_MatF];
+   fzeroF = &DF[dirREST*size_MatF];
    ftneF  = &DF[dirTNE *size_MatF];
    ftswF  = &DF[dirTSW *size_MatF];
    ftseF  = &DF[dirTSE *size_MatF];
@@ -23858,7 +23858,7 @@ extern "C" __global__ void scaleFC27(real* DC,
       fbsC   = &DC[dirBS  *size_MatC];
       fbnC   = &DC[dirBN  *size_MatC];
       ftsC   = &DC[dirTS  *size_MatC];
-      fzeroC = &DC[dirZERO*size_MatC];
+      fzeroC = &DC[dirREST*size_MatC];
       ftneC  = &DC[dirTNE *size_MatC];
       ftswC  = &DC[dirTSW *size_MatC];
       ftseC  = &DC[dirTSE *size_MatC];
@@ -23888,7 +23888,7 @@ extern "C" __global__ void scaleFC27(real* DC,
       ftnC   = &DC[dirBS  *size_MatC];
       ftsC   = &DC[dirBN  *size_MatC];
       fbnC   = &DC[dirTS  *size_MatC];
-      fzeroC = &DC[dirZERO*size_MatC];
+      fzeroC = &DC[dirREST*size_MatC];
       fbswC  = &DC[dirTNE *size_MatC];
       fbneC  = &DC[dirTSW *size_MatC];
       fbnwC  = &DC[dirTSE *size_MatC];

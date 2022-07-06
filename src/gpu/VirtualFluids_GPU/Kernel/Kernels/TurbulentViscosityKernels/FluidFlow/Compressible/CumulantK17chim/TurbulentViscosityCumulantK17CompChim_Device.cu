@@ -119,7 +119,7 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
             dist.f[dirBS]   = &distributions[dirBS * size_Mat];
             dist.f[dirBN]   = &distributions[dirBN * size_Mat];
             dist.f[dirTS]   = &distributions[dirTS * size_Mat];
-            dist.f[dirZERO] = &distributions[dirZERO * size_Mat];
+            dist.f[dirREST] = &distributions[dirREST * size_Mat];
             dist.f[dirTNE]  = &distributions[dirTNE * size_Mat];
             dist.f[dirTSW]  = &distributions[dirTSW * size_Mat];
             dist.f[dirTSE]  = &distributions[dirTSE * size_Mat];
@@ -147,7 +147,7 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
             dist.f[dirTN]   = &distributions[dirBS * size_Mat];
             dist.f[dirTS]   = &distributions[dirBN * size_Mat];
             dist.f[dirBN]   = &distributions[dirTS * size_Mat];
-            dist.f[dirZERO] = &distributions[dirZERO * size_Mat];
+            dist.f[dirREST] = &distributions[dirREST * size_Mat];
             dist.f[dirBSW]  = &distributions[dirTNE * size_Mat];
             dist.f[dirBNE]  = &distributions[dirTSW * size_Mat];
             dist.f[dirBNW]  = &distributions[dirTSE * size_Mat];
@@ -187,7 +187,7 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
         real mfbaa = (dist.f[dirBS])[kbs];
         real mfbca = (dist.f[dirBN])[kb];
         real mfbac = (dist.f[dirTS])[ks];
-        real mfbbb = (dist.f[dirZERO])[k];
+        real mfbbb = (dist.f[dirREST])[k];
         real mfccc = (dist.f[dirTNE])[k];
         real mfaac = (dist.f[dirTSW])[ksw];
         real mfcac = (dist.f[dirTSE])[ks];
@@ -711,7 +711,7 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
         (dist.f[dirBS])[kbs]   = mfbcc;
         (dist.f[dirBN])[kb]    = mfbac;
         (dist.f[dirTS])[ks]    = mfbca;
-        (dist.f[dirZERO])[k]   = mfbbb;
+        (dist.f[dirREST])[k]   = mfbbb;
         (dist.f[dirTNE])[k]    = mfaaa;
         (dist.f[dirTSE])[ks]   = mfaca;
         (dist.f[dirBNE])[kb]   = mfaac;
@@ -861,7 +861,7 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
 //             dist.f[dirBS]   = &distributions[dirBS * size_Mat];
 //             dist.f[dirBN]   = &distributions[dirBN * size_Mat];
 //             dist.f[dirTS]   = &distributions[dirTS * size_Mat];
-//             dist.f[dirZERO] = &distributions[dirZERO * size_Mat];
+//             dist.f[dirREST] = &distributions[dirREST * size_Mat];
 //             dist.f[dirTNE]  = &distributions[dirTNE * size_Mat];
 //             dist.f[dirTSW]  = &distributions[dirTSW * size_Mat];
 //             dist.f[dirTSE]  = &distributions[dirTSE * size_Mat];
@@ -889,7 +889,7 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
 //             dist.f[dirTN]   = &distributions[dirBS * size_Mat];
 //             dist.f[dirTS]   = &distributions[dirBN * size_Mat];
 //             dist.f[dirBN]   = &distributions[dirTS * size_Mat];
-//             dist.f[dirZERO] = &distributions[dirZERO * size_Mat];
+//             dist.f[dirREST] = &distributions[dirREST * size_Mat];
 //             dist.f[dirBSW]  = &distributions[dirTNE * size_Mat];
 //             dist.f[dirBNE]  = &distributions[dirTSW * size_Mat];
 //             dist.f[dirBNW]  = &distributions[dirTSE * size_Mat];
@@ -930,7 +930,7 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
 //         // real mfbaa = distr_wrapper.distribution.f[dirBS];
 //         // real mfbca = distr_wrapper.distribution.f[dirBN];
 //         // real mfbac = distr_wrapper.distribution.f[dirTS];
-//         // real mfbbb = distr_wrapper.distribution.f[dirZERO];
+//         // real mfbbb = distr_wrapper.distribution.f[dirREST];
 //         // real mfccc = distr_wrapper.distribution.f[dirTNE];
 //         // real mfaac = distr_wrapper.distribution.f[dirTSW];
 //         // real mfcac = distr_wrapper.distribution.f[dirTSE];
@@ -959,7 +959,7 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
 //         real mfbaa = (dist.f[dirBS])[kbs];
 //         real mfbca = (dist.f[dirBN])[kb];
 //         real mfbac = (dist.f[dirTS])[ks];
-//         real mfbbb = (dist.f[dirZERO])[k];
+//         real mfbbb = (dist.f[dirREST])[k];
 //         real mfccc = (dist.f[dirTNE])[k];
 //         real mfaac = (dist.f[dirTSW])[ksw];
 //         real mfcac = (dist.f[dirTSE])[ks];
@@ -1491,7 +1491,7 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
 //         distr_wrapper.distribution.f[dirBS]     = mfbcc;
 //         distr_wrapper.distribution.f[dirBN]     = mfbac;
 //         distr_wrapper.distribution.f[dirTS]     = mfbca;
-//         distr_wrapper.distribution.f[dirZERO]   = mfbbb;
+//         distr_wrapper.distribution.f[dirREST]   = mfbbb;
 //         distr_wrapper.distribution.f[dirTNE]    = mfaaa;
 //         distr_wrapper.distribution.f[dirTSW]    = mfaca;
 //         distr_wrapper.distribution.f[dirTSE]    = mfaac;
@@ -1523,7 +1523,7 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
 //                                                 (dist.f[dirBS])[kbs]  ,
 //                                                 (dist.f[dirBN])[kb]   ,
 //                                                 (dist.f[dirTS])[ks]   ,
-//                                                 (dist.f[dirZERO])[k]  ,
+//                                                 (dist.f[dirREST])[k]  ,
 //                                                 (dist.f[dirTNE])[k]   ,
 //                                                 (dist.f[dirTSE])[ks]  ,
 //                                                 (dist.f[dirBNE])[kb]  ,
@@ -1552,7 +1552,7 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
 //         (dist.f[dirBS])[kbs]   = mfbcc;
 //         (dist.f[dirBN])[kb]    = mfbac;
 //         (dist.f[dirTS])[ks]    = mfbca;
-//         (dist.f[dirZERO])[k]   = mfbbb;
+//         (dist.f[dirREST])[k]   = mfbbb;
 //         (dist.f[dirTNE])[k]    = mfaaa;
 //         (dist.f[dirTSE])[ks]   = mfaca;
 //         (dist.f[dirBNE])[kb]   = mfaac;
@@ -1583,7 +1583,7 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
 //                                                 (dist.f[dirBS])[kbs]  ,
 //                                                 (dist.f[dirBN])[kb]   ,
 //                                                 (dist.f[dirTS])[ks]   ,
-//                                                 (dist.f[dirZERO])[k]  ,
+//                                                 (dist.f[dirREST])[k]  ,
 //                                                 (dist.f[dirTNE])[k]   ,
 //                                                 (dist.f[dirTSE])[ks]  ,
 //                                                 (dist.f[dirBNE])[kb]  ,

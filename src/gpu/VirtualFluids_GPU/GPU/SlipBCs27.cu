@@ -38,7 +38,7 @@ extern "C" __global__ void QSlipDevice27(real* DD,
       D.f[dirBS  ] = &DD[dirBS  *size_Mat];
       D.f[dirBN  ] = &DD[dirBN  *size_Mat];
       D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirTNE *size_Mat];
       D.f[dirTSW ] = &DD[dirTSW *size_Mat];
       D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -68,7 +68,7 @@ extern "C" __global__ void QSlipDevice27(real* DD,
       D.f[dirTN  ] = &DD[dirBS  *size_Mat];
       D.f[dirTS  ] = &DD[dirBN  *size_Mat];
       D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirBSW *size_Mat];
       D.f[dirTSW ] = &DD[dirBNE *size_Mat];
       D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -184,7 +184,7 @@ extern "C" __global__ void QSlipDevice27(real* DD,
       real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
+                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirREST])[kzero]); 
 
       vx1    =  ((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                 ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -222,7 +222,7 @@ extern "C" __global__ void QSlipDevice27(real* DD,
          D.f[dirBS  ] = &DD[dirBS  *size_Mat];
          D.f[dirBN  ] = &DD[dirBN  *size_Mat];
          D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
+         D.f[dirREST] = &DD[dirREST*size_Mat];
          D.f[dirTNE ] = &DD[dirTNE *size_Mat];
          D.f[dirTSW ] = &DD[dirTSW *size_Mat];
          D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -252,7 +252,7 @@ extern "C" __global__ void QSlipDevice27(real* DD,
          D.f[dirTN  ] = &DD[dirBS  *size_Mat];
          D.f[dirTS  ] = &DD[dirBN  *size_Mat];
          D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
+         D.f[dirREST] = &DD[dirREST*size_Mat];
          D.f[dirTNE ] = &DD[dirBSW *size_Mat];
          D.f[dirTSW ] = &DD[dirBNE *size_Mat];
          D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -264,7 +264,7 @@ extern "C" __global__ void QSlipDevice27(real* DD,
       }
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //Test
-      //(D.f[dirZERO])[k]=c1o10;
+      //(D.f[dirREST])[k]=c1o10;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  real fac = c1o1;//c99o100;
 	  real VeloX = fac*vx1;
@@ -688,7 +688,7 @@ extern "C" __global__ void QSlipDeviceComp27(real* DD,
       D.f[dirBS  ] = &DD[dirBS  *size_Mat];
       D.f[dirBN  ] = &DD[dirBN  *size_Mat];
       D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirTNE *size_Mat];
       D.f[dirTSW ] = &DD[dirTSW *size_Mat];
       D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -718,7 +718,7 @@ extern "C" __global__ void QSlipDeviceComp27(real* DD,
       D.f[dirTN  ] = &DD[dirBS  *size_Mat];
       D.f[dirTS  ] = &DD[dirBN  *size_Mat];
       D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirBSW *size_Mat];
       D.f[dirTSW ] = &DD[dirBNE *size_Mat];
       D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -835,7 +835,7 @@ extern "C" __global__ void QSlipDeviceComp27(real* DD,
       real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
+                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirREST])[kzero]); 
 
       vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                 ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -873,7 +873,7 @@ extern "C" __global__ void QSlipDeviceComp27(real* DD,
          D.f[dirBS  ] = &DD[dirBS  *size_Mat];
          D.f[dirBN  ] = &DD[dirBN  *size_Mat];
          D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
+         D.f[dirREST] = &DD[dirREST*size_Mat];
          D.f[dirTNE ] = &DD[dirTNE *size_Mat];
          D.f[dirTSW ] = &DD[dirTSW *size_Mat];
          D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -903,7 +903,7 @@ extern "C" __global__ void QSlipDeviceComp27(real* DD,
          D.f[dirTN  ] = &DD[dirBS  *size_Mat];
          D.f[dirTS  ] = &DD[dirBN  *size_Mat];
          D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
+         D.f[dirREST] = &DD[dirREST*size_Mat];
          D.f[dirTNE ] = &DD[dirBSW *size_Mat];
          D.f[dirTSW ] = &DD[dirBNE *size_Mat];
          D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -915,7 +915,7 @@ extern "C" __global__ void QSlipDeviceComp27(real* DD,
       }
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //Test
-      //(D.f[dirZERO])[k]=c1o10;
+      //(D.f[dirREST])[k]=c1o10;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  real fac = c1o1;//c99o100;
 	  real VeloX = fac*vx1;
@@ -1354,7 +1354,7 @@ extern "C" __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
       D.f[dirBS  ] = &DD[dirBS  *size_Mat];
       D.f[dirBN  ] = &DD[dirBN  *size_Mat];
       D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirTNE *size_Mat];
       D.f[dirTSW ] = &DD[dirTSW *size_Mat];
       D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -1384,7 +1384,7 @@ extern "C" __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
       D.f[dirTN  ] = &DD[dirBS  *size_Mat];
       D.f[dirTS  ] = &DD[dirBN  *size_Mat];
       D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirBSW *size_Mat];
       D.f[dirTSW ] = &DD[dirBNE *size_Mat];
       D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -1501,7 +1501,7 @@ extern "C" __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
       real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
+                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirREST])[kzero]); 
 
       vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                 ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -1539,7 +1539,7 @@ extern "C" __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
          D.f[dirBS  ] = &DD[dirBS  *size_Mat];
          D.f[dirBN  ] = &DD[dirBN  *size_Mat];
          D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
+         D.f[dirREST] = &DD[dirREST*size_Mat];
          D.f[dirTNE ] = &DD[dirTNE *size_Mat];
          D.f[dirTSW ] = &DD[dirTSW *size_Mat];
          D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -1569,7 +1569,7 @@ extern "C" __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
          D.f[dirTN  ] = &DD[dirBS  *size_Mat];
          D.f[dirTS  ] = &DD[dirBN  *size_Mat];
          D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
+         D.f[dirREST] = &DD[dirREST*size_Mat];
          D.f[dirTNE ] = &DD[dirBSW *size_Mat];
          D.f[dirTSW ] = &DD[dirBNE *size_Mat];
          D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -1581,7 +1581,7 @@ extern "C" __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
       }
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //Test
-      //(D.f[dirZERO])[k]=c1o10;
+      //(D.f[dirREST])[k]=c1o10;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  real om_turb = om1 / (c1o1 + c3o1*om1*max(c0o1, turbViscosity[k_Q[k]]));
      
@@ -2061,7 +2061,7 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
       D.f[dirBS  ] = &DD[dirBS  *size_Mat];
       D.f[dirBN  ] = &DD[dirBN  *size_Mat];
       D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirTNE *size_Mat];
       D.f[dirTSW ] = &DD[dirTSW *size_Mat];
       D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -2091,7 +2091,7 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
       D.f[dirTN  ] = &DD[dirBS  *size_Mat];
       D.f[dirTS  ] = &DD[dirBN  *size_Mat];
       D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirBSW *size_Mat];
       D.f[dirTSW ] = &DD[dirBNE *size_Mat];
       D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -2303,7 +2303,7 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
       real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
+                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirREST])[kzero]); 
 
       vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                 ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -2341,7 +2341,7 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
          D.f[dirBS  ] = &DD[dirBS  *size_Mat];
          D.f[dirBN  ] = &DD[dirBN  *size_Mat];
          D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
+         D.f[dirREST] = &DD[dirREST*size_Mat];
          D.f[dirTNE ] = &DD[dirTNE *size_Mat];
          D.f[dirTSW ] = &DD[dirTSW *size_Mat];
          D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -2371,7 +2371,7 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
          D.f[dirTN  ] = &DD[dirBS  *size_Mat];
          D.f[dirTS  ] = &DD[dirBN  *size_Mat];
          D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
+         D.f[dirREST] = &DD[dirREST*size_Mat];
          D.f[dirTNE ] = &DD[dirBSW *size_Mat];
          D.f[dirTSW ] = &DD[dirBNE *size_Mat];
          D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -2401,11 +2401,11 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
 
 	  //fac = fac * magS / (c1o3 * (one / om1 - c1o2));
    //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  //real *facAst = &QQ[dirZERO * numberOfBCnodes];
+	  //real *facAst = &QQ[dirREST * numberOfBCnodes];
 
 	  //fac = fac * alpha + facAst[k] * (one - alpha);
 	  //facAst[k] = fac;
-	  //(&QQ[dirZERO * numberOfBCnodes])[KQK] = fac;
+	  //(&QQ[dirREST * numberOfBCnodes])[KQK] = fac;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  ////real uk = sqrtf(vx1*vx1 + vx2*vx2 + vx3*vx3);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2947,7 +2947,7 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
       D.f[dirBS  ] = &DD[dirBS  *size_Mat];
       D.f[dirBN  ] = &DD[dirBN  *size_Mat];
       D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirTNE *size_Mat];
       D.f[dirTSW ] = &DD[dirTSW *size_Mat];
       D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -2977,7 +2977,7 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
       D.f[dirTN  ] = &DD[dirBS  *size_Mat];
       D.f[dirTS  ] = &DD[dirBN  *size_Mat];
       D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirBSW *size_Mat];
       D.f[dirTSW ] = &DD[dirBNE *size_Mat];
       D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -3189,7 +3189,7 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
       real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
+                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirREST])[kzero]); 
 
       vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                 ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -3227,7 +3227,7 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
          D.f[dirBS  ] = &DD[dirBS  *size_Mat];
          D.f[dirBN  ] = &DD[dirBN  *size_Mat];
          D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
+         D.f[dirREST] = &DD[dirREST*size_Mat];
          D.f[dirTNE ] = &DD[dirTNE *size_Mat];
          D.f[dirTSW ] = &DD[dirTSW *size_Mat];
          D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -3257,7 +3257,7 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
          D.f[dirTN  ] = &DD[dirBS  *size_Mat];
          D.f[dirTS  ] = &DD[dirBN  *size_Mat];
          D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
+         D.f[dirREST] = &DD[dirREST*size_Mat];
          D.f[dirTNE ] = &DD[dirBSW *size_Mat];
          D.f[dirTSW ] = &DD[dirBNE *size_Mat];
          D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -3287,11 +3287,11 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
 
 	  fac = fac * magS / (c1o3 * (c1o1 / om1 - c1o2));
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  real *facAst = &QQ[dirZERO * numberOfBCnodes];
+	  real *facAst = &QQ[dirREST * numberOfBCnodes];
 
 	  fac = fac * alpha + facAst[k] * (c1o1 - alpha);
 	  facAst[k] = fac;
-	  //(&QQ[dirZERO * numberOfBCnodes])[KQK] = fac;
+	  //(&QQ[dirREST * numberOfBCnodes])[KQK] = fac;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  ////real uk = sqrtf(vx1*vx1 + vx2*vx2 + vx3*vx3);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
