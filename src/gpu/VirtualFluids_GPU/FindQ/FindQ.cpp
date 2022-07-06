@@ -1,5 +1,5 @@
 #include "FindQ/FindQ.h"
-#include <stdexcept>
+#include "logger/Logger.h"
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -9,7 +9,7 @@ void findQ(Parameter* para, int lev)
    // As the order of the distributions was changed in July 2022, this does not work anymore.
    // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/14
 
-   throw std::runtime_error("findQ() is deprecated! - see comment above for more information");
+   VF_LOG_CRITICAL("findQ() is deprecated! - see comment above for more information");
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
@@ -194,7 +194,7 @@ void findKforQ(Parameter* para, int lev)
    // As the order of the distributions was changed in July 2022, this does not work anymore.
    // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/14
 
-   throw std::runtime_error("findKforQ() is deprecated! - see comment above for more information");
+   VF_LOG_CRITICAL("findKforQ() is deprecated! - see comment above for more information");
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
@@ -277,7 +277,7 @@ void findQ_MG( int nx, int ny, unsigned int nnx, unsigned int nny, unsigned int 
    // As the order of the distributions was changed in July 2022, this does not work anymore.
    // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/14
 
-   throw std::runtime_error("findQ_MG() is deprecated! - see comment above for more information");
+    VF_LOG_CRITICAL("findQ_MG() is deprecated! - see comment above for more information");
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
@@ -368,7 +368,7 @@ void findKforQ_MG(int nx, int ny, unsigned int nnx, unsigned int nny, unsigned i
    // As the order of the distributions was changed in July 2022, this does not work anymore.
    // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/14
 
-   throw std::runtime_error("findKforQ_MG() is deprecated! - see comment above for more information");
+    VF_LOG_CRITICAL("findKforQ_MG() is deprecated! - see comment above for more information");
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
@@ -415,7 +415,7 @@ void findQInflow(Parameter* para)
    // ! CAUTION ! Do not use this function!
    // As the order of the distributions was changed in July 2022, this does not work anymore.
    // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/14
-   throw std::runtime_error("findQInflow() is deprecated! - see comment above for more information");
+    VF_LOG_CRITICAL("findQInflow() is deprecated! - see comment above for more information");
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    unsigned int i, j, k, m;//, mm, l;
@@ -687,7 +687,7 @@ void findKforQInflow(Parameter* para)
    // ! CAUTION ! Do not use this function!
    // As the order of the distributions was changed in July 2022, this does not work anymore.
    // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/14
-   throw std::runtime_error("findKforQInflow() is deprecated! - see comment above for more information");
+    VF_LOG_CRITICAL("findKforQInflow() is deprecated! - see comment above for more information");
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
@@ -775,7 +775,7 @@ void findQOutflow(Parameter* para)
    // ! CAUTION ! Do not use this function!
    // As the order of the distributions was changed in July 2022, this does not work anymore.
    // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/14
-   throw std::runtime_error("findQOutflow() is deprecated! - see comment above for more information");
+    VF_LOG_CRITICAL("findQOutflow() is deprecated! - see comment above for more information");
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
@@ -907,7 +907,7 @@ void findKforQOutflow(Parameter* para)
    // ! CAUTION ! Do not use this function!
    // As the order of the distributions was changed in July 2022, this does not work anymore.
    // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/14
-   throw std::runtime_error("findKforQOutflow() is deprecated! - see comment above for more information");
+    VF_LOG_CRITICAL("findKforQOutflow() is deprecated! - see comment above for more information");
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
@@ -1064,7 +1064,7 @@ void findQPressX0(Parameter* para, int lev)
    // ! CAUTION ! Do not use this function!
    // As the order of the distributions was changed in July 2022, this does not work anymore.
    // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/14
-   throw std::runtime_error("findKforQPressX0() is deprecated! - see comment above for more information");
+    VF_LOG_CRITICAL("findKforQPressX0() is deprecated! - see comment above for more information");
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
@@ -1182,7 +1182,7 @@ void findKforQPressX0(Parameter* para, int lev)
    // ! CAUTION ! Do not use this function!
    // As the order of the distributions was changed in July 2022, this does not work anymore.
    // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/14
-   throw std::runtime_error("findKforQPressX0() is deprecated! - see comment above for more information");
+    VF_LOG_CRITICAL("findKforQPressX0() is deprecated! - see comment above for more information");
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
@@ -1240,7 +1240,7 @@ void findQPressX1(Parameter* para, int lev)
    // ! CAUTION ! Do not use this function!
    // As the order of the distributions was changed in July 2022, this does not work anymore.
    // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/14
-   throw std::runtime_error("findQPressX1() is deprecated! - see comment above for more information");
+    VF_LOG_CRITICAL("findQPressX1() is deprecated! - see comment above for more information");
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
@@ -1358,7 +1358,7 @@ void findKforQPressX1(Parameter* para, int lev)
    // ! CAUTION ! Do not use this function!
    // As the order of the distributions was changed in July 2022, this does not work anymore.
    // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/14
-   throw std::runtime_error("findKforQPressX1() is deprecated! - see comment above for more information");
+    VF_LOG_CRITICAL("findKforQPressX1() is deprecated! - see comment above for more information");
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
