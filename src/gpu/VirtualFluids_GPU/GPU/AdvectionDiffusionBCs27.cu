@@ -43,7 +43,7 @@ extern "C" __global__ void QADPress7(  real* DD,
       D.f[dirBS  ] = &DD[dirBS  *size_Mat];
       D.f[dirBN  ] = &DD[dirBN  *size_Mat];
       D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirTNE *size_Mat];
       D.f[dirTSW ] = &DD[dirTSW *size_Mat];
       D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -73,7 +73,7 @@ extern "C" __global__ void QADPress7(  real* DD,
       D.f[dirTN  ] = &DD[dirBS  *size_Mat];
       D.f[dirTS  ] = &DD[dirBN  *size_Mat];
       D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirBSW *size_Mat];
       D.f[dirTSW ] = &DD[dirBNE *size_Mat];
       D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -225,7 +225,7 @@ extern "C" __global__ void QADPress7(  real* DD,
 
       //drho   =    f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
       //            f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-      //            f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
+      //            f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirREST])[kzero]); 
 
       //real vx1 =  ((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
       //               ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -239,7 +239,7 @@ extern "C" __global__ void QADPress7(  real* DD,
       //               (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
       //               (f_T - f_B); 
 
-      real rho0   =  (f_TNE+f_BSW)+(f_TSW+f_BNE)+(f_TSE+f_BNW)+(f_TNW+f_BSE)+(f_NE+f_SW)+(f_NW+f_SE)+(f_TE+f_BW)+(f_BE+f_TW)+(f_TN+f_BS)+(f_BN+f_TS)+(f_E+f_W)+(f_N+f_S)+(f_T+f_B)+ ((D.f[dirZERO])[kzero]);
+      real rho0   =  (f_TNE+f_BSW)+(f_TSW+f_BNE)+(f_TSE+f_BNW)+(f_TNW+f_BSE)+(f_NE+f_SW)+(f_NW+f_SE)+(f_TE+f_BW)+(f_BE+f_TW)+(f_TN+f_BS)+(f_BN+f_TS)+(f_E+f_W)+(f_N+f_S)+(f_T+f_B)+ ((D.f[dirREST])[kzero]);
       real rho    =  rho0 + c1o1;
       real OORho  =  c1o1/rho;
       real vx1    =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
@@ -313,7 +313,7 @@ extern "C" __global__ void QADPress7(  real* DD,
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //Test
-      //(D.f[dirZERO])[k]=0.1f;
+      //(D.f[dirREST])[k]=0.1f;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //(D7.f[1])[ke   ] = f7_E - feq7_E + feqW7_W; //E
       //(D7.f[2])[kw   ] = f7_W - feq7_W + feqW7_E; //W
@@ -484,7 +484,7 @@ extern "C" __global__ void QADPress27( real* DD,
       D.f[dirBS  ] = &DD[dirBS  *size_Mat];
       D.f[dirBN  ] = &DD[dirBN  *size_Mat];
       D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirTNE *size_Mat];
       D.f[dirTSW ] = &DD[dirTSW *size_Mat];
       D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -514,7 +514,7 @@ extern "C" __global__ void QADPress27( real* DD,
       D.f[dirTN  ] = &DD[dirBS  *size_Mat];
       D.f[dirTS  ] = &DD[dirBN  *size_Mat];
       D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirBSW *size_Mat];
       D.f[dirTSW ] = &DD[dirBNE *size_Mat];
       D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -546,7 +546,7 @@ extern "C" __global__ void QADPress27( real* DD,
       D27.f[dirBS  ] = &DD27[dirBS  *size_Mat];
       D27.f[dirBN  ] = &DD27[dirBN  *size_Mat];
       D27.f[dirTS  ] = &DD27[dirTS  *size_Mat];
-      D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+      D27.f[dirREST] = &DD27[dirREST*size_Mat];
       D27.f[dirTNE ] = &DD27[dirTNE *size_Mat];
       D27.f[dirTSW ] = &DD27[dirTSW *size_Mat];
       D27.f[dirTSE ] = &DD27[dirTSE *size_Mat];
@@ -576,7 +576,7 @@ extern "C" __global__ void QADPress27( real* DD,
       D27.f[dirTN  ] = &DD27[dirBS  *size_Mat];
       D27.f[dirTS  ] = &DD27[dirBN  *size_Mat];
       D27.f[dirBN  ] = &DD27[dirTS  *size_Mat];
-      D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+      D27.f[dirREST] = &DD27[dirREST*size_Mat];
       D27.f[dirTNE ] = &DD27[dirBSW *size_Mat];
       D27.f[dirTSW ] = &DD27[dirBNE *size_Mat];
       D27.f[dirTSE ] = &DD27[dirBNW *size_Mat];
@@ -680,7 +680,7 @@ extern "C" __global__ void QADPress27( real* DD,
       real f_TN   = (D.f[dirBS  ])[kbs  ];
       real f_TS   = (D.f[dirBN  ])[kbn  ];
       real f_BN   = (D.f[dirTS  ])[kts  ];
-      real f_ZERO = (D.f[dirZERO])[kzero];
+      real f_ZERO = (D.f[dirREST])[kzero];
       real f_BSW  = (D.f[dirTNE ])[ktne ];
       real f_BNE  = (D.f[dirTSW ])[ktsw ];
       real f_BNW  = (D.f[dirTSE ])[ktse ];
@@ -732,7 +732,7 @@ extern "C" __global__ void QADPress27( real* DD,
       real f27_TN   = (D27.f[dirBS  ])[kbs  ];
       real f27_TS   = (D27.f[dirBN  ])[kbn  ];
       real f27_BN   = (D27.f[dirTS  ])[kts  ];
-      real f27_ZERO = (D27.f[dirZERO])[kzero];
+      real f27_ZERO = (D27.f[dirREST])[kzero];
       real f27_BSW  = (D27.f[dirTNE ])[ktne ];
       real f27_BNE  = (D27.f[dirTSW ])[ktsw ];
       real f27_BNW  = (D27.f[dirTSE ])[ktse ];
@@ -866,7 +866,7 @@ extern "C" __global__ void QADPress27( real* DD,
          D27.f[dirBS  ] = &DD27[dirBS  *size_Mat];
          D27.f[dirBN  ] = &DD27[dirBN  *size_Mat];
          D27.f[dirTS  ] = &DD27[dirTS  *size_Mat];
-         D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+         D27.f[dirREST] = &DD27[dirREST*size_Mat];
          D27.f[dirTNE ] = &DD27[dirTNE *size_Mat];
          D27.f[dirTSW ] = &DD27[dirTSW *size_Mat];
          D27.f[dirTSE ] = &DD27[dirTSE *size_Mat];
@@ -896,7 +896,7 @@ extern "C" __global__ void QADPress27( real* DD,
          D27.f[dirTN  ] = &DD27[dirBS  *size_Mat];
          D27.f[dirTS  ] = &DD27[dirBN  *size_Mat];
          D27.f[dirBN  ] = &DD27[dirTS  *size_Mat];
-         D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+         D27.f[dirREST] = &DD27[dirREST*size_Mat];
          D27.f[dirTNE ] = &DD27[dirBSW *size_Mat];
          D27.f[dirTSW ] = &DD27[dirBNE *size_Mat];
          D27.f[dirTSE ] = &DD27[dirBNW *size_Mat];
@@ -908,7 +908,7 @@ extern "C" __global__ void QADPress27( real* DD,
       }
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //Test
-      //(D.f[dirZERO])[k]=c1o10;
+      //(D.f[dirREST])[k]=c1o10;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       q = q_dirE[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirW  ])[kw  ]=(c2o1*feqW27_W  -(f27_E  *(q*omegaD-c1o1)-omegaD*feq27_E  *(q-c1o1))/(omegaD-c1o1)+f27_W  *q)/(q+c1o1);
       q = q_dirW[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirE  ])[ke  ]=(c2o1*feqW27_E  -(f27_W  *(q*omegaD-c1o1)-omegaD*feq27_W  *(q-c1o1))/(omegaD-c1o1)+f27_E  *q)/(q+c1o1);
@@ -1013,7 +1013,7 @@ extern "C" __global__ void QADPressNEQNeighbor27(
 		D.f[dirBS] = &DD[dirBS  *size_Mat];
 		D.f[dirBN] = &DD[dirBN  *size_Mat];
 		D.f[dirTS] = &DD[dirTS  *size_Mat];
-		D.f[dirZERO] = &DD[dirZERO*size_Mat];
+		D.f[dirREST] = &DD[dirREST*size_Mat];
 		D.f[dirTNE] = &DD[dirTNE *size_Mat];
 		D.f[dirTSW] = &DD[dirTSW *size_Mat];
 		D.f[dirTSE] = &DD[dirTSE *size_Mat];
@@ -1043,7 +1043,7 @@ extern "C" __global__ void QADPressNEQNeighbor27(
 		D.f[dirTN] = &DD[dirBS  *size_Mat];
 		D.f[dirTS] = &DD[dirBN  *size_Mat];
 		D.f[dirBN] = &DD[dirTS  *size_Mat];
-		D.f[dirZERO] = &DD[dirZERO*size_Mat];
+		D.f[dirREST] = &DD[dirREST*size_Mat];
 		D.f[dirTNE] = &DD[dirBSW *size_Mat];
 		D.f[dirTSW] = &DD[dirBNE *size_Mat];
 		D.f[dirTSE] = &DD[dirBNW *size_Mat];
@@ -1075,7 +1075,7 @@ extern "C" __global__ void QADPressNEQNeighbor27(
 		D27.f[dirBS] = &DD27[dirBS  *size_Mat];
 		D27.f[dirBN] = &DD27[dirBN  *size_Mat];
 		D27.f[dirTS] = &DD27[dirTS  *size_Mat];
-		D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+		D27.f[dirREST] = &DD27[dirREST*size_Mat];
 		D27.f[dirTNE] = &DD27[dirTNE *size_Mat];
 		D27.f[dirTSW] = &DD27[dirTSW *size_Mat];
 		D27.f[dirTSE] = &DD27[dirTSE *size_Mat];
@@ -1105,7 +1105,7 @@ extern "C" __global__ void QADPressNEQNeighbor27(
 		D27.f[dirTN] = &DD27[dirBS  *size_Mat];
 		D27.f[dirTS] = &DD27[dirBN  *size_Mat];
 		D27.f[dirBN] = &DD27[dirTS  *size_Mat];
-		D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+		D27.f[dirREST] = &DD27[dirREST*size_Mat];
 		D27.f[dirTNE] = &DD27[dirBSW *size_Mat];
 		D27.f[dirTSW] = &DD27[dirBNE *size_Mat];
 		D27.f[dirTSE] = &DD27[dirBNW *size_Mat];
@@ -1180,7 +1180,7 @@ extern "C" __global__ void QADPressNEQNeighbor27(
 		real f_TN =   (D.f[dirBS])[kbs];
 		real f_TS =   (D.f[dirBN])[kbn];
 		real f_BN =   (D.f[dirTS])[kts];
-		real f_ZERO = (D.f[dirZERO])[kzero];
+		real f_ZERO = (D.f[dirREST])[kzero];
 		real f_BSW =  (D.f[dirTNE])[ktne];
 		real f_BNE =  (D.f[dirTSW])[ktsw];
 		real f_BNW =  (D.f[dirTSE])[ktse];
@@ -1230,7 +1230,7 @@ extern "C" __global__ void QADPressNEQNeighbor27(
 		real f27_TN =   (D27.f[dirBS])[kbs];
 		real f27_TS =   (D27.f[dirBN])[kbn];
 		real f27_BN =   (D27.f[dirTS])[kts];
-		real f27_ZERO = (D27.f[dirZERO])[kzero];
+		real f27_ZERO = (D27.f[dirREST])[kzero];
 		real f27_BSW =  (D27.f[dirTNE])[ktne];
 		real f27_BNE =  (D27.f[dirTSW])[ktsw];
 		real f27_BNW =  (D27.f[dirTSE])[ktse];
@@ -1362,7 +1362,7 @@ extern "C" __global__ void QADPressNEQNeighbor27(
         (D27.f[dirBS  ])[kNbs  ] = f27_TN  ;	
         (D27.f[dirBN  ])[kNbn  ] = f27_TS  ;	
         (D27.f[dirTS  ])[kNts  ] = f27_BN  ;	
-        (D27.f[dirZERO])[kNzero] = f27_ZERO;	
+        (D27.f[dirREST])[kNzero] = f27_ZERO;	
         (D27.f[dirTNE ])[kNtne ] = f27_BSW ;	
         (D27.f[dirTSW ])[kNtsw ] = f27_BNE ;	
         (D27.f[dirTSE ])[kNtse ] = f27_BNW ;	
@@ -1450,7 +1450,7 @@ extern "C" __global__ void QADVel7( real* DD,
       D.f[dirBS  ] = &DD[dirBS  *size_Mat];
       D.f[dirBN  ] = &DD[dirBN  *size_Mat];
       D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirTNE *size_Mat];
       D.f[dirTSW ] = &DD[dirTSW *size_Mat];
       D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -1480,7 +1480,7 @@ extern "C" __global__ void QADVel7( real* DD,
       D.f[dirTN  ] = &DD[dirBS  *size_Mat];
       D.f[dirTS  ] = &DD[dirBN  *size_Mat];
       D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirBSW *size_Mat];
       D.f[dirTSW ] = &DD[dirBNE *size_Mat];
       D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -1608,7 +1608,7 @@ extern "C" __global__ void QADVel7( real* DD,
 
       ////drho   =    f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
       ////            f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-      ////            f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
+      ////            f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirREST])[kzero]); 
 
       //real vx1 =  ((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
       //               ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -1622,7 +1622,7 @@ extern "C" __global__ void QADVel7( real* DD,
       //               (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
       //               (f_T - f_B); 
 
-      real rho0   =  (f_TNE+f_BSW)+(f_TSW+f_BNE)+(f_TSE+f_BNW)+(f_TNW+f_BSE)+(f_NE+f_SW)+(f_NW+f_SE)+(f_TE+f_BW)+(f_BE+f_TW)+(f_TN+f_BS)+(f_BN+f_TS)+(f_E+f_W)+(f_N+f_S)+(f_T+f_B)+ ((D.f[dirZERO])[kzero]);
+      real rho0   =  (f_TNE+f_BSW)+(f_TSW+f_BNE)+(f_TSE+f_BNW)+(f_TNW+f_BSE)+(f_NE+f_SW)+(f_NW+f_SE)+(f_TE+f_BW)+(f_BE+f_TW)+(f_TN+f_BS)+(f_BN+f_TS)+(f_E+f_W)+(f_N+f_S)+(f_T+f_B)+ ((D.f[dirREST])[kzero]);
       real rho    =  rho0 + c1o1;
       real OORho  =  c1o1/rho;
       real vx1    =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
@@ -1696,7 +1696,7 @@ extern "C" __global__ void QADVel7( real* DD,
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //Test
-      //(D.f[dirZERO])[k]=c1o10;
+      //(D.f[dirREST])[k]=c1o10;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //(D7.f[1])[ke   ] = f7_E - feq7_E + feqW7_W; //E
       //(D7.f[2])[kw   ] = f7_W - feq7_W + feqW7_E; //W
@@ -1867,7 +1867,7 @@ extern "C" __global__ void QADVel27(real* DD,
       D.f[dirBS  ] = &DD[dirBS  *size_Mat];
       D.f[dirBN  ] = &DD[dirBN  *size_Mat];
       D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirTNE *size_Mat];
       D.f[dirTSW ] = &DD[dirTSW *size_Mat];
       D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -1897,7 +1897,7 @@ extern "C" __global__ void QADVel27(real* DD,
       D.f[dirTN  ] = &DD[dirBS  *size_Mat];
       D.f[dirTS  ] = &DD[dirBN  *size_Mat];
       D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirBSW *size_Mat];
       D.f[dirTSW ] = &DD[dirBNE *size_Mat];
       D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -1929,7 +1929,7 @@ extern "C" __global__ void QADVel27(real* DD,
       D27.f[dirBS  ] = &DD27[dirBS  *size_Mat];
       D27.f[dirBN  ] = &DD27[dirBN  *size_Mat];
       D27.f[dirTS  ] = &DD27[dirTS  *size_Mat];
-      D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+      D27.f[dirREST] = &DD27[dirREST*size_Mat];
       D27.f[dirTNE ] = &DD27[dirTNE *size_Mat];
       D27.f[dirTSW ] = &DD27[dirTSW *size_Mat];
       D27.f[dirTSE ] = &DD27[dirTSE *size_Mat];
@@ -1959,7 +1959,7 @@ extern "C" __global__ void QADVel27(real* DD,
       D27.f[dirTN  ] = &DD27[dirBS  *size_Mat];
       D27.f[dirTS  ] = &DD27[dirBN  *size_Mat];
       D27.f[dirBN  ] = &DD27[dirTS  *size_Mat];
-      D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+      D27.f[dirREST] = &DD27[dirREST*size_Mat];
       D27.f[dirTNE ] = &DD27[dirBSW *size_Mat];
       D27.f[dirTSW ] = &DD27[dirBNE *size_Mat];
       D27.f[dirTSE ] = &DD27[dirBNW *size_Mat];
@@ -2063,7 +2063,7 @@ extern "C" __global__ void QADVel27(real* DD,
       real f_TN   = (D.f[dirBS  ])[kbs  ];
       real f_TS   = (D.f[dirBN  ])[kbn  ];
       real f_BN   = (D.f[dirTS  ])[kts  ];
-      real f_ZERO = (D.f[dirZERO])[kzero];
+      real f_ZERO = (D.f[dirREST])[kzero];
       real f_BSW  = (D.f[dirTNE ])[ktne ];
       real f_BNE  = (D.f[dirTSW ])[ktsw ];
       real f_BNW  = (D.f[dirTSE ])[ktse ];
@@ -2115,7 +2115,7 @@ extern "C" __global__ void QADVel27(real* DD,
       //real f27_TN   = (D27.f[dirBS  ])[kbs  ];
       //real f27_TS   = (D27.f[dirBN  ])[kbn  ];
       //real f27_BN   = (D27.f[dirTS  ])[kts  ];
-      //real f27_ZERO = (D27.f[dirZERO])[kzero];
+      //real f27_ZERO = (D27.f[dirREST])[kzero];
       //real f27_BSW  = (D27.f[dirTNE ])[ktne ];
       //real f27_BNE  = (D27.f[dirTSW ])[ktsw ];
       //real f27_BNW  = (D27.f[dirTSE ])[ktse ];
@@ -2250,7 +2250,7 @@ extern "C" __global__ void QADVel27(real* DD,
          D27.f[dirBS  ] = &DD27[dirBS  *size_Mat];
          D27.f[dirBN  ] = &DD27[dirBN  *size_Mat];
          D27.f[dirTS  ] = &DD27[dirTS  *size_Mat];
-         D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+         D27.f[dirREST] = &DD27[dirREST*size_Mat];
          D27.f[dirTNE ] = &DD27[dirTNE *size_Mat];
          D27.f[dirTSW ] = &DD27[dirTSW *size_Mat];
          D27.f[dirTSE ] = &DD27[dirTSE *size_Mat];
@@ -2280,7 +2280,7 @@ extern "C" __global__ void QADVel27(real* DD,
          D27.f[dirTN  ] = &DD27[dirBS  *size_Mat];
          D27.f[dirTS  ] = &DD27[dirBN  *size_Mat];
          D27.f[dirBN  ] = &DD27[dirTS  *size_Mat];
-         D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+         D27.f[dirREST] = &DD27[dirREST*size_Mat];
          D27.f[dirTNE ] = &DD27[dirBSW *size_Mat];
          D27.f[dirTSW ] = &DD27[dirBNE *size_Mat];
          D27.f[dirTSE ] = &DD27[dirBNW *size_Mat];
@@ -2292,11 +2292,11 @@ extern "C" __global__ void QADVel27(real* DD,
       }
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //Test
-      //(D.f[dirZERO])[k]=c1o10;
+      //(D.f[dirREST])[k]=c1o10;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //Test
-      //(D.f[dirZERO])[k]=c1o10;
+      //(D.f[dirREST])[k]=c1o10;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //(D27.f[dirW  ])[kw  ]= four;
       //(D27.f[dirE  ])[ke  ]= four;
@@ -2454,7 +2454,7 @@ extern "C" __global__ void QAD7( real* DD,
       D.f[dirBS  ] = &DD[dirBS  *size_Mat];
       D.f[dirBN  ] = &DD[dirBN  *size_Mat];
       D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirTNE *size_Mat];
       D.f[dirTSW ] = &DD[dirTSW *size_Mat];
       D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -2484,7 +2484,7 @@ extern "C" __global__ void QAD7( real* DD,
       D.f[dirTN  ] = &DD[dirBS  *size_Mat];
       D.f[dirTS  ] = &DD[dirBN  *size_Mat];
       D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirBSW *size_Mat];
       D.f[dirTSW ] = &DD[dirBNE *size_Mat];
       D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -2628,7 +2628,7 @@ extern "C" __global__ void QAD7( real* DD,
       real vx1, vx2, vx3/*, drho*/;
       //drho   =    f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
       //            f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-      //            f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
+      //            f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirREST])[kzero]); 
 
       //vx1    = ((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
       //         ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -2642,7 +2642,7 @@ extern "C" __global__ void QAD7( real* DD,
       //vx3    = ((f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) + (f_TSW - f_BNE)) +
       //         (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
       //         (f_T - f_B); 
-      real rho0   =  (f_TNE+f_BSW)+(f_TSW+f_BNE)+(f_TSE+f_BNW)+(f_TNW+f_BSE)+(f_NE+f_SW)+(f_NW+f_SE)+(f_TE+f_BW)+(f_BE+f_TW)+(f_TN+f_BS)+(f_BN+f_TS)+(f_E+f_W)+(f_N+f_S)+(f_T+f_B)+ ((D.f[dirZERO])[kzero]);
+      real rho0   =  (f_TNE+f_BSW)+(f_TSW+f_BNE)+(f_TSE+f_BNW)+(f_TNW+f_BSE)+(f_NE+f_SW)+(f_NW+f_SE)+(f_TE+f_BW)+(f_BE+f_TW)+(f_TN+f_BS)+(f_BN+f_TS)+(f_E+f_W)+(f_N+f_S)+(f_T+f_B)+ ((D.f[dirREST])[kzero]);
       real rho    =  rho0 + c1o1;
       real OORho  =  c1o1/rho;
       vx1     =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
@@ -2716,7 +2716,7 @@ extern "C" __global__ void QAD7( real* DD,
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //Test
-      //(D.f[dirZERO])[k]=c1o10;
+      //(D.f[dirREST])[k]=c1o10;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //(D7.f[1])[ke   ] = f7_E - feq7_E + feqW7_W; //E
       //(D7.f[2])[kw   ] = f7_W - feq7_W + feqW7_E; //W
@@ -2887,7 +2887,7 @@ extern "C" __global__ void QADDirichlet27(
       D.f[dirBS  ] = &DD[dirBS  *size_Mat];
       D.f[dirBN  ] = &DD[dirBN  *size_Mat];
       D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirTNE *size_Mat];
       D.f[dirTSW ] = &DD[dirTSW *size_Mat];
       D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -2917,7 +2917,7 @@ extern "C" __global__ void QADDirichlet27(
       D.f[dirTN  ] = &DD[dirBS  *size_Mat];
       D.f[dirTS  ] = &DD[dirBN  *size_Mat];
       D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirBSW *size_Mat];
       D.f[dirTSW ] = &DD[dirBNE *size_Mat];
       D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -2949,7 +2949,7 @@ extern "C" __global__ void QADDirichlet27(
       D27.f[dirBS  ] = &DD27[dirBS  *size_Mat];
       D27.f[dirBN  ] = &DD27[dirBN  *size_Mat];
       D27.f[dirTS  ] = &DD27[dirTS  *size_Mat];
-      D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+      D27.f[dirREST] = &DD27[dirREST*size_Mat];
       D27.f[dirTNE ] = &DD27[dirTNE *size_Mat];
       D27.f[dirTSW ] = &DD27[dirTSW *size_Mat];
       D27.f[dirTSE ] = &DD27[dirTSE *size_Mat];
@@ -2979,7 +2979,7 @@ extern "C" __global__ void QADDirichlet27(
       D27.f[dirTN  ] = &DD27[dirBS  *size_Mat];
       D27.f[dirTS  ] = &DD27[dirBN  *size_Mat];
       D27.f[dirBN  ] = &DD27[dirTS  *size_Mat];
-      D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+      D27.f[dirREST] = &DD27[dirREST*size_Mat];
       D27.f[dirTNE ] = &DD27[dirBSW *size_Mat];
       D27.f[dirTSW ] = &DD27[dirBNE *size_Mat];
       D27.f[dirTSE ] = &DD27[dirBNW *size_Mat];
@@ -3083,7 +3083,7 @@ extern "C" __global__ void QADDirichlet27(
       real f_TN   = (D.f[dirBS  ])[kbs  ];
       real f_TS   = (D.f[dirBN  ])[kbn  ];
       real f_BN   = (D.f[dirTS  ])[kts  ];
-      real f_ZERO = (D.f[dirZERO])[kzero];
+      real f_ZERO = (D.f[dirREST])[kzero];
       real f_BSW  = (D.f[dirTNE ])[ktne ];
       real f_BNE  = (D.f[dirTSW ])[ktsw ];
       real f_BNW  = (D.f[dirTSE ])[ktse ];
@@ -3135,7 +3135,7 @@ extern "C" __global__ void QADDirichlet27(
       real f27_TN   = (D27.f[dirBS  ])[kbs  ];
       real f27_TS   = (D27.f[dirBN  ])[kbn  ];
       real f27_BN   = (D27.f[dirTS  ])[kts  ];
-      real f27_ZERO = (D27.f[dirZERO])[kzero];
+      real f27_ZERO = (D27.f[dirREST])[kzero];
       real f27_BSW  = (D27.f[dirTNE ])[ktne ];
       real f27_BNE  = (D27.f[dirTSW ])[ktsw ];
       real f27_BNW  = (D27.f[dirTSE ])[ktse ];
@@ -3237,7 +3237,7 @@ extern "C" __global__ void QADDirichlet27(
          D27.f[dirBS  ] = &DD27[dirBS  *size_Mat];
          D27.f[dirBN  ] = &DD27[dirBN  *size_Mat];
          D27.f[dirTS  ] = &DD27[dirTS  *size_Mat];
-         D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+         D27.f[dirREST] = &DD27[dirREST*size_Mat];
          D27.f[dirTNE ] = &DD27[dirTNE *size_Mat];
          D27.f[dirTSW ] = &DD27[dirTSW *size_Mat];
          D27.f[dirTSE ] = &DD27[dirTSE *size_Mat];
@@ -3267,7 +3267,7 @@ extern "C" __global__ void QADDirichlet27(
          D27.f[dirTN  ] = &DD27[dirBS  *size_Mat];
          D27.f[dirTS  ] = &DD27[dirBN  *size_Mat];
          D27.f[dirBN  ] = &DD27[dirTS  *size_Mat];
-         D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+         D27.f[dirREST] = &DD27[dirREST*size_Mat];
          D27.f[dirTNE ] = &DD27[dirBSW *size_Mat];
          D27.f[dirTSW ] = &DD27[dirBNE *size_Mat];
          D27.f[dirTSE ] = &DD27[dirBNW *size_Mat];
@@ -3279,7 +3279,7 @@ extern "C" __global__ void QADDirichlet27(
       }
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //Test
-      //(D.f[dirZERO])[k]=0.1f;
+      //(D.f[dirREST])[k]=0.1f;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       q = q_dirE[  ke   ]; if (q>=c0o1 && q<=c1o1) (D27.f[dirW  ])[kw  ]=(c2o1*feqW27_W  -(f27_E  *(q*omegaD-c1o1)-omegaD*feq27_E  *(q-c1o1))/(omegaD-c1o1)+f27_W  *q)/(q+c1o1);
       q = q_dirW[  kw   ]; if (q>=c0o1 && q<=c1o1) (D27.f[dirE  ])[ke  ]=(c2o1*feqW27_E  -(f27_W  *(q*omegaD-c1o1)-omegaD*feq27_W  *(q-c1o1))/(omegaD-c1o1)+f27_E  *q)/(q+c1o1);
@@ -3412,7 +3412,7 @@ extern "C" __global__ void QADBB27( real* DD,
    //   D.f[dirBS  ] = &DD[dirBS  *size_Mat];
    //   D.f[dirBN  ] = &DD[dirBN  *size_Mat];
    //   D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-   //   D.f[dirZERO] = &DD[dirZERO*size_Mat];
+   //   D.f[dirREST] = &DD[dirREST*size_Mat];
    //   D.f[dirTNE ] = &DD[dirTNE *size_Mat];
    //   D.f[dirTSW ] = &DD[dirTSW *size_Mat];
    //   D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -3442,7 +3442,7 @@ extern "C" __global__ void QADBB27( real* DD,
    //   D.f[dirTN  ] = &DD[dirBS  *size_Mat];
    //   D.f[dirTS  ] = &DD[dirBN  *size_Mat];
    //   D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-   //   D.f[dirZERO] = &DD[dirZERO*size_Mat];
+   //   D.f[dirREST] = &DD[dirREST*size_Mat];
    //   D.f[dirTNE ] = &DD[dirBSW *size_Mat];
    //   D.f[dirTSW ] = &DD[dirBNE *size_Mat];
    //   D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -3474,7 +3474,7 @@ extern "C" __global__ void QADBB27( real* DD,
       D27.f[dirBS  ] = &DD27[dirBS  *size_Mat];
       D27.f[dirBN  ] = &DD27[dirBN  *size_Mat];
       D27.f[dirTS  ] = &DD27[dirTS  *size_Mat];
-      D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+      D27.f[dirREST] = &DD27[dirREST*size_Mat];
       D27.f[dirTNE ] = &DD27[dirTNE *size_Mat];
       D27.f[dirTSW ] = &DD27[dirTSW *size_Mat];
       D27.f[dirTSE ] = &DD27[dirTSE *size_Mat];
@@ -3504,7 +3504,7 @@ extern "C" __global__ void QADBB27( real* DD,
       D27.f[dirTN  ] = &DD27[dirBS  *size_Mat];
       D27.f[dirTS  ] = &DD27[dirBN  *size_Mat];
       D27.f[dirBN  ] = &DD27[dirTS  *size_Mat];
-      D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+      D27.f[dirREST] = &DD27[dirREST*size_Mat];
       D27.f[dirTNE ] = &DD27[dirBSW *size_Mat];
       D27.f[dirTSW ] = &DD27[dirBNE *size_Mat];
       D27.f[dirTSE ] = &DD27[dirBNW *size_Mat];
@@ -3608,7 +3608,7 @@ extern "C" __global__ void QADBB27( real* DD,
       //real f_TN   = (D.f[dirBS  ])[kbs  ];
       //real f_TS   = (D.f[dirBN  ])[kbn  ];
       //real f_BN   = (D.f[dirTS  ])[kts  ];
-      //real f_ZERO = (D.f[dirZERO])[kzero];
+      //real f_ZERO = (D.f[dirREST])[kzero];
       //real f_BSW  = (D.f[dirTNE ])[ktne ];
       //real f_BNE  = (D.f[dirTSW ])[ktsw ];
       //real f_BNW  = (D.f[dirTSE ])[ktse ];
@@ -3661,7 +3661,7 @@ extern "C" __global__ void QADBB27( real* DD,
       real f27_TN   = (D27.f[dirBS  ])[kbs  ];
       real f27_TS   = (D27.f[dirBN  ])[kbn  ];
       real f27_BN   = (D27.f[dirTS  ])[kts  ];
-      //real f27_ZERO = (D27.f[dirZERO])[kzero];
+      //real f27_ZERO = (D27.f[dirREST])[kzero];
       real f27_BSW  = (D27.f[dirTNE ])[ktne ];
       real f27_BNE  = (D27.f[dirTSW ])[ktsw ];
       real f27_BNW  = (D27.f[dirTSE ])[ktse ];
@@ -3763,7 +3763,7 @@ extern "C" __global__ void QADBB27( real* DD,
          D27.f[dirBS  ] = &DD27[dirBS  *size_Mat];
          D27.f[dirBN  ] = &DD27[dirBN  *size_Mat];
          D27.f[dirTS  ] = &DD27[dirTS  *size_Mat];
-         D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+         D27.f[dirREST] = &DD27[dirREST*size_Mat];
          D27.f[dirTNE ] = &DD27[dirTNE *size_Mat];
          D27.f[dirTSW ] = &DD27[dirTSW *size_Mat];
          D27.f[dirTSE ] = &DD27[dirTSE *size_Mat];
@@ -3793,7 +3793,7 @@ extern "C" __global__ void QADBB27( real* DD,
          D27.f[dirTN  ] = &DD27[dirBS  *size_Mat];
          D27.f[dirTS  ] = &DD27[dirBN  *size_Mat];
          D27.f[dirBN  ] = &DD27[dirTS  *size_Mat];
-         D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+         D27.f[dirREST] = &DD27[dirREST*size_Mat];
          D27.f[dirTNE ] = &DD27[dirBSW *size_Mat];
          D27.f[dirTSW ] = &DD27[dirBNE *size_Mat];
          D27.f[dirTSE ] = &DD27[dirBNW *size_Mat];
@@ -3805,7 +3805,7 @@ extern "C" __global__ void QADBB27( real* DD,
       }
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //Test
-      //(D.f[dirZERO])[k]=0.1f;
+      //(D.f[dirREST])[k]=0.1f;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       q = q_dirE[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirW  ])[kw  ]=f27_E  ;
       q = q_dirW[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirE  ])[ke  ]=f27_W  ;
@@ -3928,7 +3928,7 @@ extern "C" __global__ void QNoSlipADincomp7(
    //   D.f[dirBS  ] = &DD[dirBS  *size_Mat];
    //   D.f[dirBN  ] = &DD[dirBN  *size_Mat];
    //   D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-   //   D.f[dirZERO] = &DD[dirZERO*size_Mat];
+   //   D.f[dirREST] = &DD[dirREST*size_Mat];
    //   D.f[dirTNE ] = &DD[dirTNE *size_Mat];
    //   D.f[dirTSW ] = &DD[dirTSW *size_Mat];
    //   D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -3958,7 +3958,7 @@ extern "C" __global__ void QNoSlipADincomp7(
    //   D.f[dirTN  ] = &DD[dirBS  *size_Mat];
    //   D.f[dirTS  ] = &DD[dirBN  *size_Mat];
    //   D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-   //   D.f[dirZERO] = &DD[dirZERO*size_Mat];
+   //   D.f[dirREST] = &DD[dirREST*size_Mat];
    //   D.f[dirTNE ] = &DD[dirBSW *size_Mat];
    //   D.f[dirTSW ] = &DD[dirBNE *size_Mat];
    //   D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -4352,7 +4352,7 @@ extern "C" __global__ void QNoSlipADincomp27(
       D.f[dirBS  ] = &DD[dirBS  *size_Mat];
       D.f[dirBN  ] = &DD[dirBN  *size_Mat];
       D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirTNE *size_Mat];
       D.f[dirTSW ] = &DD[dirTSW *size_Mat];
       D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -4382,7 +4382,7 @@ extern "C" __global__ void QNoSlipADincomp27(
       D.f[dirTN  ] = &DD[dirBS  *size_Mat];
       D.f[dirTS  ] = &DD[dirBN  *size_Mat];
       D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirBSW *size_Mat];
       D.f[dirTSW ] = &DD[dirBNE *size_Mat];
       D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -4414,7 +4414,7 @@ extern "C" __global__ void QNoSlipADincomp27(
       D27.f[dirBS  ] = &DD27[dirBS  *size_Mat];
       D27.f[dirBN  ] = &DD27[dirBN  *size_Mat];
       D27.f[dirTS  ] = &DD27[dirTS  *size_Mat];
-      D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+      D27.f[dirREST] = &DD27[dirREST*size_Mat];
       D27.f[dirTNE ] = &DD27[dirTNE *size_Mat];
       D27.f[dirTSW ] = &DD27[dirTSW *size_Mat];
       D27.f[dirTSE ] = &DD27[dirTSE *size_Mat];
@@ -4444,7 +4444,7 @@ extern "C" __global__ void QNoSlipADincomp27(
       D27.f[dirTN  ] = &DD27[dirBS  *size_Mat];
       D27.f[dirTS  ] = &DD27[dirBN  *size_Mat];
       D27.f[dirBN  ] = &DD27[dirTS  *size_Mat];
-      D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+      D27.f[dirREST] = &DD27[dirREST*size_Mat];
       D27.f[dirTNE ] = &DD27[dirBSW *size_Mat];
       D27.f[dirTSW ] = &DD27[dirBNE *size_Mat];
       D27.f[dirTSE ] = &DD27[dirBNW *size_Mat];
@@ -4548,7 +4548,7 @@ extern "C" __global__ void QNoSlipADincomp27(
       real f_TN   = (D.f[dirBS  ])[kbs  ];
       real f_TS   = (D.f[dirBN  ])[kbn  ];
       real f_BN   = (D.f[dirTS  ])[kts  ];
-      //real f_ZERO = (D.f[dirZERO])[kzero];
+      //real f_ZERO = (D.f[dirREST])[kzero];
       real f_BSW  = (D.f[dirTNE ])[ktne ];
       real f_BNE  = (D.f[dirTSW ])[ktsw ];
       real f_BNW  = (D.f[dirTSE ])[ktse ];
@@ -4580,7 +4580,7 @@ extern "C" __global__ void QNoSlipADincomp27(
       real f27_TN   = (D27.f[dirBS  ])[kbs  ];
       real f27_TS   = (D27.f[dirBN  ])[kbn  ];
       real f27_BN   = (D27.f[dirTS  ])[kts  ];
-      real f27_ZERO = (D27.f[dirZERO])[kzero];
+      real f27_ZERO = (D27.f[dirREST])[kzero];
       real f27_BSW  = (D27.f[dirTNE ])[ktne ];
       real f27_BNE  = (D27.f[dirTSW ])[ktsw ];
       real f27_BNW  = (D27.f[dirTSE ])[ktse ];
@@ -4682,7 +4682,7 @@ extern "C" __global__ void QNoSlipADincomp27(
          D27.f[dirBS  ] = &DD27[dirBS  *size_Mat];
          D27.f[dirBN  ] = &DD27[dirBN  *size_Mat];
          D27.f[dirTS  ] = &DD27[dirTS  *size_Mat];
-         D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+         D27.f[dirREST] = &DD27[dirREST*size_Mat];
          D27.f[dirTNE ] = &DD27[dirTNE *size_Mat];
          D27.f[dirTSW ] = &DD27[dirTSW *size_Mat];
          D27.f[dirTSE ] = &DD27[dirTSE *size_Mat];
@@ -4712,7 +4712,7 @@ extern "C" __global__ void QNoSlipADincomp27(
          D27.f[dirTN  ] = &DD27[dirBS  *size_Mat];
          D27.f[dirTS  ] = &DD27[dirBN  *size_Mat];
          D27.f[dirBN  ] = &DD27[dirTS  *size_Mat];
-         D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+         D27.f[dirREST] = &DD27[dirREST*size_Mat];
          D27.f[dirTNE ] = &DD27[dirBSW *size_Mat];
          D27.f[dirTSW ] = &DD27[dirBNE *size_Mat];
          D27.f[dirTSE ] = &DD27[dirBNW *size_Mat];
@@ -4724,7 +4724,7 @@ extern "C" __global__ void QNoSlipADincomp27(
       }
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //Test
-      //(D.f[dirZERO])[k]=0.1f;
+      //(D.f[dirREST])[k]=0.1f;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  real q;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4834,7 +4834,7 @@ extern "C" __global__ void QADVeloIncomp7(
    //   D.f[dirBS  ] = &DD[dirBS  *size_Mat];
    //   D.f[dirBN  ] = &DD[dirBN  *size_Mat];
    //   D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-   //   D.f[dirZERO] = &DD[dirZERO*size_Mat];
+   //   D.f[dirREST] = &DD[dirREST*size_Mat];
    //   D.f[dirTNE ] = &DD[dirTNE *size_Mat];
    //   D.f[dirTSW ] = &DD[dirTSW *size_Mat];
    //   D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -4864,7 +4864,7 @@ extern "C" __global__ void QADVeloIncomp7(
    //   D.f[dirTN  ] = &DD[dirBS  *size_Mat];
    //   D.f[dirTS  ] = &DD[dirBN  *size_Mat];
    //   D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-   //   D.f[dirZERO] = &DD[dirZERO*size_Mat];
+   //   D.f[dirREST] = &DD[dirREST*size_Mat];
    //   D.f[dirTNE ] = &DD[dirBSW *size_Mat];
    //   D.f[dirTSW ] = &DD[dirBNE *size_Mat];
    //   D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -5312,7 +5312,7 @@ extern "C" __global__ void QADVeloIncomp27(
       D.f[dirBS  ] = &DD[dirBS  *size_Mat];
       D.f[dirBN  ] = &DD[dirBN  *size_Mat];
       D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirTNE *size_Mat];
       D.f[dirTSW ] = &DD[dirTSW *size_Mat];
       D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -5342,7 +5342,7 @@ extern "C" __global__ void QADVeloIncomp27(
       D.f[dirTN  ] = &DD[dirBS  *size_Mat];
       D.f[dirTS  ] = &DD[dirBN  *size_Mat];
       D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirBSW *size_Mat];
       D.f[dirTSW ] = &DD[dirBNE *size_Mat];
       D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -5374,7 +5374,7 @@ extern "C" __global__ void QADVeloIncomp27(
       D27.f[dirBS  ] = &DD27[dirBS  *size_Mat];
       D27.f[dirBN  ] = &DD27[dirBN  *size_Mat];
       D27.f[dirTS  ] = &DD27[dirTS  *size_Mat];
-      D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+      D27.f[dirREST] = &DD27[dirREST*size_Mat];
       D27.f[dirTNE ] = &DD27[dirTNE *size_Mat];
       D27.f[dirTSW ] = &DD27[dirTSW *size_Mat];
       D27.f[dirTSE ] = &DD27[dirTSE *size_Mat];
@@ -5404,7 +5404,7 @@ extern "C" __global__ void QADVeloIncomp27(
       D27.f[dirTN  ] = &DD27[dirBS  *size_Mat];
       D27.f[dirTS  ] = &DD27[dirBN  *size_Mat];
       D27.f[dirBN  ] = &DD27[dirTS  *size_Mat];
-      D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+      D27.f[dirREST] = &DD27[dirREST*size_Mat];
       D27.f[dirTNE ] = &DD27[dirBSW *size_Mat];
       D27.f[dirTSW ] = &DD27[dirBNE *size_Mat];
       D27.f[dirTSE ] = &DD27[dirBNW *size_Mat];
@@ -5508,7 +5508,7 @@ extern "C" __global__ void QADVeloIncomp27(
       real f_TN   = (D.f[dirBS  ])[kbs  ];
       real f_TS   = (D.f[dirBN  ])[kbn  ];
       real f_BN   = (D.f[dirTS  ])[kts  ];
-      //real f_ZERO = (D.f[dirZERO])[kzero];
+      //real f_ZERO = (D.f[dirREST])[kzero];
       real f_BSW  = (D.f[dirTNE ])[ktne ];
       real f_BNE  = (D.f[dirTSW ])[ktsw ];
       real f_BNW  = (D.f[dirTSE ])[ktse ];
@@ -5540,7 +5540,7 @@ extern "C" __global__ void QADVeloIncomp27(
       //real f27_TN   = (D27.f[dirBS  ])[kbs  ];
       //real f27_TS   = (D27.f[dirBN  ])[kbn  ];
       //real f27_BN   = (D27.f[dirTS  ])[kts  ];
-      //real f27_ZERO = (D27.f[dirZERO])[kzero];
+      //real f27_ZERO = (D27.f[dirREST])[kzero];
       //real f27_BSW  = (D27.f[dirTNE ])[ktne ];
       //real f27_BNE  = (D27.f[dirTSW ])[ktsw ];
       //real f27_BNW  = (D27.f[dirTSE ])[ktse ];
@@ -5647,7 +5647,7 @@ extern "C" __global__ void QADVeloIncomp27(
          D27.f[dirBS  ] = &DD27[dirBS  *size_Mat];
          D27.f[dirBN  ] = &DD27[dirBN  *size_Mat];
          D27.f[dirTS  ] = &DD27[dirTS  *size_Mat];
-         D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+         D27.f[dirREST] = &DD27[dirREST*size_Mat];
          D27.f[dirTNE ] = &DD27[dirTNE *size_Mat];
          D27.f[dirTSW ] = &DD27[dirTSW *size_Mat];
          D27.f[dirTSE ] = &DD27[dirTSE *size_Mat];
@@ -5677,7 +5677,7 @@ extern "C" __global__ void QADVeloIncomp27(
          D27.f[dirTN  ] = &DD27[dirBS  *size_Mat];
          D27.f[dirTS  ] = &DD27[dirBN  *size_Mat];
          D27.f[dirBN  ] = &DD27[dirTS  *size_Mat];
-         D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+         D27.f[dirREST] = &DD27[dirREST*size_Mat];
          D27.f[dirTNE ] = &DD27[dirBSW *size_Mat];
          D27.f[dirTSW ] = &DD27[dirBNE *size_Mat];
          D27.f[dirTSE ] = &DD27[dirBNW *size_Mat];
@@ -5689,7 +5689,7 @@ extern "C" __global__ void QADVeloIncomp27(
       }
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //Test
-      //(D.f[dirZERO])[k]=c1o10;
+      //(D.f[dirREST])[k]=c1o10;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       real q;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5826,7 +5826,7 @@ extern "C" __global__ void QADPressIncomp7(int inx,
       D.f[dirBS  ] = &DD[dirBS  *size_Mat];
       D.f[dirBN  ] = &DD[dirBN  *size_Mat];
       D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirTNE *size_Mat];
       D.f[dirTSW ] = &DD[dirTSW *size_Mat];
       D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -5856,7 +5856,7 @@ extern "C" __global__ void QADPressIncomp7(int inx,
       D.f[dirTN  ] = &DD[dirBS  *size_Mat];
       D.f[dirTS  ] = &DD[dirBN  *size_Mat];
       D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirBSW *size_Mat];
       D.f[dirTSW ] = &DD[dirBNE *size_Mat];
       D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -6265,7 +6265,7 @@ extern "C" __global__ void QADPressIncomp27(
       D.f[dirBS  ] = &DD[dirBS  *size_Mat];
       D.f[dirBN  ] = &DD[dirBN  *size_Mat];
       D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirTNE *size_Mat];
       D.f[dirTSW ] = &DD[dirTSW *size_Mat];
       D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -6295,7 +6295,7 @@ extern "C" __global__ void QADPressIncomp27(
       D.f[dirTN  ] = &DD[dirBS  *size_Mat];
       D.f[dirTS  ] = &DD[dirBN  *size_Mat];
       D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirBSW *size_Mat];
       D.f[dirTSW ] = &DD[dirBNE *size_Mat];
       D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -6327,7 +6327,7 @@ extern "C" __global__ void QADPressIncomp27(
       D27.f[dirBS  ] = &DD27[dirBS  *size_Mat];
       D27.f[dirBN  ] = &DD27[dirBN  *size_Mat];
       D27.f[dirTS  ] = &DD27[dirTS  *size_Mat];
-      D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+      D27.f[dirREST] = &DD27[dirREST*size_Mat];
       D27.f[dirTNE ] = &DD27[dirTNE *size_Mat];
       D27.f[dirTSW ] = &DD27[dirTSW *size_Mat];
       D27.f[dirTSE ] = &DD27[dirTSE *size_Mat];
@@ -6357,7 +6357,7 @@ extern "C" __global__ void QADPressIncomp27(
       D27.f[dirTN  ] = &DD27[dirBS  *size_Mat];
       D27.f[dirTS  ] = &DD27[dirBN  *size_Mat];
       D27.f[dirBN  ] = &DD27[dirTS  *size_Mat];
-      D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+      D27.f[dirREST] = &DD27[dirREST*size_Mat];
       D27.f[dirTNE ] = &DD27[dirBSW *size_Mat];
       D27.f[dirTSW ] = &DD27[dirBNE *size_Mat];
       D27.f[dirTSE ] = &DD27[dirBNW *size_Mat];
@@ -6461,7 +6461,7 @@ extern "C" __global__ void QADPressIncomp27(
       real f_TN   = (D.f[dirBS  ])[kbs  ];
       real f_TS   = (D.f[dirBN  ])[kbn  ];
       real f_BN   = (D.f[dirTS  ])[kts  ];
-      //real f_ZERO = (D.f[dirZERO])[kzero];
+      //real f_ZERO = (D.f[dirREST])[kzero];
       real f_BSW  = (D.f[dirTNE ])[ktne ];
       real f_BNE  = (D.f[dirTSW ])[ktsw ];
       real f_BNW  = (D.f[dirTSE ])[ktse ];
@@ -6493,7 +6493,7 @@ extern "C" __global__ void QADPressIncomp27(
       //real f27_TN   = (D27.f[dirBS  ])[kbs  ];
       //real f27_TS   = (D27.f[dirBN  ])[kbn  ];
       //real f27_BN   = (D27.f[dirTS  ])[kts  ];
-      //real f27_ZERO = (D27.f[dirZERO])[kzero];
+      //real f27_ZERO = (D27.f[dirREST])[kzero];
       //real f27_BSW  = (D27.f[dirTNE ])[ktne ];
       //real f27_BNE  = (D27.f[dirTSW ])[ktsw ];
       //real f27_BNW  = (D27.f[dirTSE ])[ktse ];
@@ -6600,7 +6600,7 @@ extern "C" __global__ void QADPressIncomp27(
          D27.f[dirBS  ] = &DD27[dirBS  *size_Mat];
          D27.f[dirBN  ] = &DD27[dirBN  *size_Mat];
          D27.f[dirTS  ] = &DD27[dirTS  *size_Mat];
-         D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+         D27.f[dirREST] = &DD27[dirREST*size_Mat];
          D27.f[dirTNE ] = &DD27[dirTNE *size_Mat];
          D27.f[dirTSW ] = &DD27[dirTSW *size_Mat];
          D27.f[dirTSE ] = &DD27[dirTSE *size_Mat];
@@ -6630,7 +6630,7 @@ extern "C" __global__ void QADPressIncomp27(
          D27.f[dirTN  ] = &DD27[dirBS  *size_Mat];
          D27.f[dirTS  ] = &DD27[dirBN  *size_Mat];
          D27.f[dirBN  ] = &DD27[dirTS  *size_Mat];
-         D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+         D27.f[dirREST] = &DD27[dirREST*size_Mat];
          D27.f[dirTNE ] = &DD27[dirBSW *size_Mat];
          D27.f[dirTSW ] = &DD27[dirBNE *size_Mat];
          D27.f[dirTSE ] = &DD27[dirBNW *size_Mat];
@@ -6642,7 +6642,7 @@ extern "C" __global__ void QADPressIncomp27(
       }
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //Test
-      //(D.f[dirZERO])[k]=c1o10;
+      //(D.f[dirREST])[k]=c1o10;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       real q;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

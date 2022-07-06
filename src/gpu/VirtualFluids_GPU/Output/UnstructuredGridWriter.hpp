@@ -2353,7 +2353,7 @@ namespace UnstructuredGridWriter
 					case dirBNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
 					case dirBSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
 					case dirTNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirZERO:wallX1 = nodeX1;        wallX2 = nodeX2;		 wallX3 = nodeX3;        break;
+					case dirREST:wallX1 = nodeX1;        wallX2 = nodeX2;		 wallX3 = nodeX3;        break;
 					default: throw UbException(UB_EXARGS, "unknown direction");
 				}
 				//////////////////////////////////////////////////////////////////////////
@@ -2458,7 +2458,7 @@ namespace UnstructuredGridWriter
 					case dirBNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
 					case dirBSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
 					case dirTNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirZERO:wallX1 = nodeX1;        wallX2 = nodeX2;		 wallX3 = nodeX3;        break;
+					case dirREST:wallX1 = nodeX1;        wallX2 = nodeX2;		 wallX3 = nodeX3;        break;
 					default: throw UbException(UB_EXARGS, "unknown direction");
 				}
 				//////////////////////////////////////////////////////////////////////////
@@ -2563,7 +2563,7 @@ namespace UnstructuredGridWriter
 					case dirBNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
 					case dirBSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
 					case dirTNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirZERO:wallX1 = nodeX1;        wallX2 = nodeX2;		 wallX3 = nodeX3;        break;
+					case dirREST:wallX1 = nodeX1;        wallX2 = nodeX2;		 wallX3 = nodeX3;        break;
 					default: throw UbException(UB_EXARGS, "unknown direction");
 				}
 				//////////////////////////////////////////////////////////////////////////

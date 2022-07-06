@@ -54,7 +54,7 @@ extern "C" __global__ void LB_Kernel_Cascade_Comp_SP_27(real omega,
 				D.f[dirBS  ] = &DDStart[dirBS  *size_Mat];
 				D.f[dirBN  ] = &DDStart[dirBN  *size_Mat];
 				D.f[dirTS  ] = &DDStart[dirTS  *size_Mat];
-				D.f[dirZERO] = &DDStart[dirZERO*size_Mat];
+				D.f[dirREST] = &DDStart[dirREST*size_Mat];
 				D.f[dirTNE ] = &DDStart[dirTNE *size_Mat];
 				D.f[dirTSW ] = &DDStart[dirTSW *size_Mat];
 				D.f[dirTSE ] = &DDStart[dirTSE *size_Mat];
@@ -84,7 +84,7 @@ extern "C" __global__ void LB_Kernel_Cascade_Comp_SP_27(real omega,
 				D.f[dirTN  ] = &DDStart[dirBS  *size_Mat];
 				D.f[dirTS  ] = &DDStart[dirBN  *size_Mat];
 				D.f[dirBN  ] = &DDStart[dirTS  *size_Mat];
-				D.f[dirZERO] = &DDStart[dirZERO*size_Mat];
+				D.f[dirREST] = &DDStart[dirREST*size_Mat];
 				D.f[dirBSW ] = &DDStart[dirTNE *size_Mat];
 				D.f[dirBNE ] = &DDStart[dirTSW *size_Mat];
 				D.f[dirBNW ] = &DDStart[dirTSE *size_Mat];
@@ -143,7 +143,7 @@ extern "C" __global__ void LB_Kernel_Cascade_Comp_SP_27(real omega,
 			real mfbaa = (D.f[dirBS  ])[kbs];//[kbs  ];
 			real mfbca = (D.f[dirBN  ])[kb ];//[kbn  ];
 			real mfbac = (D.f[dirTS  ])[ks ];//[kts  ];
-			real mfbbb = (D.f[dirZERO])[k  ];//[kzero];
+			real mfbbb = (D.f[dirREST])[k  ];//[kzero];
 			real mfccc = (D.f[dirTNE ])[k  ];//[ktne ];
 			real mfaac = (D.f[dirTSW ])[ksw];//[ktsw ];
 			real mfcac = (D.f[dirTSE ])[ks ];//[ktse ];
@@ -750,7 +750,7 @@ extern "C" __global__ void LB_Kernel_Cascade_Comp_SP_27(real omega,
 			(D.f[ dirBS  ])[kbs ] = mfbcc;
 			(D.f[ dirBN  ])[kb  ] = mfbac;
 			(D.f[ dirTS  ])[ks  ] = mfbca;
-			(D.f[ dirZERO])[k   ] = mfbbb;
+			(D.f[ dirREST])[k   ] = mfbbb;
 			(D.f[ dirTNE ])[k   ] = mfaaa;
 			(D.f[ dirTSE ])[ks  ] = mfaca;
 			(D.f[ dirBNE ])[kb  ] = mfaac;

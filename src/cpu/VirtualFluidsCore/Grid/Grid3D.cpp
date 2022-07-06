@@ -1259,7 +1259,7 @@ void Grid3D::getSubBlocksZero(int ix1, int ix2, int ix3, int level, vector<SPtr<
         this->getSubBlocksEast(x1W, x2N, x3T, l, blockVector, levelDepth);
 }
 //////////////////////////////////////////////////////////////////////////
-void Grid3D::getNeighborBlocksForDirectionWithDirZero(int dir, int ix1, int ix2, int ix3, int level, int levelDepth,
+void Grid3D::getNeighborBlocksForDirectionWithdirREST(int dir, int ix1, int ix2, int ix3, int level, int levelDepth,
                                                       std::vector<SPtr<Block3D>> &blocks)
 {
     switch (dir) {

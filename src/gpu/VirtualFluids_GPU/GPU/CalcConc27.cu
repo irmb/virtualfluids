@@ -344,7 +344,7 @@ extern "C" __global__ void CalcConc7( real* Conc,
 //       D27.f[dirBS  ] = &DD27[dirBS  *size_Mat];
 //       D27.f[dirBN  ] = &DD27[dirBN  *size_Mat];
 //       D27.f[dirTS  ] = &DD27[dirTS  *size_Mat];
-//       D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+//       D27.f[dirREST] = &DD27[dirREST*size_Mat];
 //       D27.f[dirTNE ] = &DD27[dirTNE *size_Mat];
 //       D27.f[dirTSW ] = &DD27[dirTSW *size_Mat];
 //       D27.f[dirTSE ] = &DD27[dirTSE *size_Mat];
@@ -374,7 +374,7 @@ extern "C" __global__ void CalcConc7( real* Conc,
 //       D27.f[dirTN  ] = &DD27[dirBS  *size_Mat];
 //       D27.f[dirTS  ] = &DD27[dirBN  *size_Mat];
 //       D27.f[dirBN  ] = &DD27[dirTS  *size_Mat];
-//       D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+//       D27.f[dirREST] = &DD27[dirREST*size_Mat];
 //       D27.f[dirBSW ] = &DD27[dirTNE *size_Mat];
 //       D27.f[dirBNE ] = &DD27[dirTSW *size_Mat];
 //       D27.f[dirBNW ] = &DD27[dirTSE *size_Mat];
@@ -440,7 +440,7 @@ extern "C" __global__ void CalcConc7( real* Conc,
 //                         (D27.f[dirBE  ])[kbe ]+ (D27.f[dirTW  ])[ktw ]+
 //                         (D27.f[dirTN  ])[ktn ]+ (D27.f[dirBS  ])[kbs ]+
 //                         (D27.f[dirBN  ])[kbn ]+ (D27.f[dirTS  ])[kts ]+
-//                         (D27.f[dirZERO])[kzero]+ 
+//                         (D27.f[dirREST])[kzero]+ 
 //                         (D27.f[dirTNE ])[ktne]+ (D27.f[dirTSW ])[ktsw]+
 //                         (D27.f[dirTSE ])[ktse]+ (D27.f[dirTNW ])[ktnw]+
 //                         (D27.f[dirBNE ])[kbne]+ (D27.f[dirBSW ])[kbsw]+
@@ -605,7 +605,7 @@ extern "C" __global__ void GetPlaneConc27(real* Conc,
       D27.f[dirBS  ] = &DD27[dirBS  *size_Mat];
       D27.f[dirBN  ] = &DD27[dirBN  *size_Mat];
       D27.f[dirTS  ] = &DD27[dirTS  *size_Mat];
-      D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+      D27.f[dirREST] = &DD27[dirREST*size_Mat];
       D27.f[dirTNE ] = &DD27[dirTNE *size_Mat];
       D27.f[dirTSW ] = &DD27[dirTSW *size_Mat];
       D27.f[dirTSE ] = &DD27[dirTSE *size_Mat];
@@ -635,7 +635,7 @@ extern "C" __global__ void GetPlaneConc27(real* Conc,
       D27.f[dirTN  ] = &DD27[dirBS  *size_Mat];
       D27.f[dirTS  ] = &DD27[dirBN  *size_Mat];
       D27.f[dirBN  ] = &DD27[dirTS  *size_Mat];
-      D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+      D27.f[dirREST] = &DD27[dirREST*size_Mat];
       D27.f[dirBSW ] = &DD27[dirTNE *size_Mat];
       D27.f[dirBNE ] = &DD27[dirTSW *size_Mat];
       D27.f[dirBNW ] = &DD27[dirTSE *size_Mat];
@@ -701,7 +701,7 @@ extern "C" __global__ void GetPlaneConc27(real* Conc,
                         (D27.f[dirBE  ])[kbe ]+ (D27.f[dirTW  ])[ktw ]+
                         (D27.f[dirTN  ])[ktn ]+ (D27.f[dirBS  ])[kbs ]+
                         (D27.f[dirBN  ])[kbn ]+ (D27.f[dirTS  ])[kts ]+
-                        (D27.f[dirZERO])[kzero]+ 
+                        (D27.f[dirREST])[kzero]+ 
                         (D27.f[dirTNE ])[ktne]+ (D27.f[dirTSW ])[ktsw]+
                         (D27.f[dirTSE ])[ktse]+ (D27.f[dirTNW ])[ktnw]+
                         (D27.f[dirBNE ])[kbne]+ (D27.f[dirBSW ])[kbsw]+

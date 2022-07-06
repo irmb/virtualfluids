@@ -61,7 +61,7 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
    f0MMsource = &DF[dirBS  *size_MatF];
    f0PMsource = &DF[dirBN  *size_MatF];
    f0MPsource = &DF[dirTS  *size_MatF];
-   f000source = &DF[dirZERO*size_MatF];
+   f000source = &DF[dirREST*size_MatF];
    fMMMsource = &DF[dirBSW *size_MatF];
    fMMPsource = &DF[dirTSW *size_MatF];
    fMPPsource = &DF[dirTNW *size_MatF];
@@ -96,7 +96,7 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
 	   f0MMdest = &DC[dirBS  *size_MatC];
 	   f0PMdest = &DC[dirBN  *size_MatC];
 	   f0MPdest = &DC[dirTS  *size_MatC];
-	   f000dest = &DC[dirZERO*size_MatC];
+	   f000dest = &DC[dirREST*size_MatC];
 	   fMMMdest = &DC[dirBSW *size_MatC];
 	   fMMPdest = &DC[dirTSW *size_MatC];
 	   fMPPdest = &DC[dirTNW *size_MatC];
@@ -126,7 +126,7 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
 	   f0MMdest = &DC[dirTN  *size_MatC];
 	   f0PMdest = &DC[dirTS  *size_MatC];
 	   f0MPdest = &DC[dirBN  *size_MatC];
-	   f000dest = &DC[dirZERO*size_MatC];
+	   f000dest = &DC[dirREST*size_MatC];
 	   fMMMdest = &DC[dirTNE *size_MatC];
 	   fMMPdest = &DC[dirBNE *size_MatC];
 	   fMPPdest = &DC[dirBSE *size_MatC];
@@ -1308,7 +1308,7 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3( real* DC,
    f0MMsource = &DF[dirBS  *size_MatF];
    f0PMsource = &DF[dirBN  *size_MatF];
    f0MPsource = &DF[dirTS  *size_MatF];
-   f000source = &DF[dirZERO*size_MatF];
+   f000source = &DF[dirREST*size_MatF];
    fMMMsource = &DF[dirBSW *size_MatF];
    fMMPsource = &DF[dirTSW *size_MatF];
    fMPPsource = &DF[dirTNW *size_MatF];
@@ -1343,7 +1343,7 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3( real* DC,
 	   f0MMdest = &DC[dirBS  *size_MatC];
 	   f0PMdest = &DC[dirBN  *size_MatC];
 	   f0MPdest = &DC[dirTS  *size_MatC];
-	   f000dest = &DC[dirZERO*size_MatC];
+	   f000dest = &DC[dirREST*size_MatC];
 	   fMMMdest = &DC[dirBSW *size_MatC];
 	   fMMPdest = &DC[dirTSW *size_MatC];
 	   fMPPdest = &DC[dirTNW *size_MatC];
@@ -1373,7 +1373,7 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3( real* DC,
 	   f0MMdest = &DC[dirTN  *size_MatC];
 	   f0PMdest = &DC[dirTS  *size_MatC];
 	   f0MPdest = &DC[dirBN  *size_MatC];
-	   f000dest = &DC[dirZERO*size_MatC];
+	   f000dest = &DC[dirREST*size_MatC];
 	   fMMMdest = &DC[dirTNE *size_MatC];
 	   fMMPdest = &DC[dirBNE *size_MatC];
 	   fMPPdest = &DC[dirBSE *size_MatC];

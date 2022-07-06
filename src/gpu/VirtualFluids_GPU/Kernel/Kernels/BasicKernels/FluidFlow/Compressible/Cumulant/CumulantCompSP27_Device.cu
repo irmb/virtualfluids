@@ -54,7 +54,7 @@ extern "C" __global__ void LB_Kernel_Cum_Comp_SP_27(real omega,
 				D.f[dirBS] = &DDStart[dirBS  *size_Mat];
 				D.f[dirBN] = &DDStart[dirBN  *size_Mat];
 				D.f[dirTS] = &DDStart[dirTS  *size_Mat];
-				D.f[dirZERO] = &DDStart[dirZERO*size_Mat];
+				D.f[dirREST] = &DDStart[dirREST*size_Mat];
 				D.f[dirTNE] = &DDStart[dirTNE *size_Mat];
 				D.f[dirTSW] = &DDStart[dirTSW *size_Mat];
 				D.f[dirTSE] = &DDStart[dirTSE *size_Mat];
@@ -84,7 +84,7 @@ extern "C" __global__ void LB_Kernel_Cum_Comp_SP_27(real omega,
 				D.f[dirTN] = &DDStart[dirBS  *size_Mat];
 				D.f[dirTS] = &DDStart[dirBN  *size_Mat];
 				D.f[dirBN] = &DDStart[dirTS  *size_Mat];
-				D.f[dirZERO] = &DDStart[dirZERO*size_Mat];
+				D.f[dirREST] = &DDStart[dirREST*size_Mat];
 				D.f[dirBSW] = &DDStart[dirTNE *size_Mat];
 				D.f[dirBNE] = &DDStart[dirTSW *size_Mat];
 				D.f[dirBNW] = &DDStart[dirTSE *size_Mat];
@@ -143,7 +143,7 @@ extern "C" __global__ void LB_Kernel_Cum_Comp_SP_27(real omega,
 			real Sb = (D.f[dirBS])[kbs];// +  c1over54 ;
 			real Nb = (D.f[dirBN])[kbn];// +  c1over54 ;
 			real Sf = (D.f[dirTS])[kts];// +  c1over54 ;
-			real R = (D.f[dirZERO])[kzero];// +  c8over27 ;
+			real R = (D.f[dirREST])[kzero];// +  c8over27 ;
 			real Nef = (D.f[dirTNE])[ktne];// +  c1over216;
 			real Swf = (D.f[dirTSW])[ktsw];// +  c1over216;
 			real Sef = (D.f[dirTSE])[ktse];// +  c1over216;
@@ -891,7 +891,7 @@ extern "C" __global__ void LB_Kernel_Cum_Comp_SP_27(real omega,
 			(D.f[dirBS])[kbs] = mfbcc;// -  c1over54 ;
 			(D.f[dirBN])[kbn] = mfbac;// -  c1over54 ;
 			(D.f[dirTS])[kts] = mfbca;// -  c1over54 ;
-			(D.f[dirZERO])[kzero] = mfbbb;// -  c8over27 ;
+			(D.f[dirREST])[kzero] = mfbbb;// -  c8over27 ;
 			(D.f[dirTNE])[ktne] = mfaaa;// -  c1over216;
 			(D.f[dirTSE])[ktse] = mfaca;// -  c1over216;
 			(D.f[dirBNE])[kbne] = mfaac;// -  c1over216;

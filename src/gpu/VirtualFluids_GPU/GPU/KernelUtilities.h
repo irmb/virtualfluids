@@ -61,7 +61,7 @@ __inline__ __device__ void getPointersToDistributions(Distributions27 &dist, rea
         dist.f[dirBS  ] = &distributionArray[dirBS  *numberOfLBnodes];
         dist.f[dirBN  ] = &distributionArray[dirBN  *numberOfLBnodes];
         dist.f[dirTS  ] = &distributionArray[dirTS  *numberOfLBnodes];
-        dist.f[dirZERO] = &distributionArray[dirZERO*numberOfLBnodes];
+        dist.f[dirREST] = &distributionArray[dirREST*numberOfLBnodes];
         dist.f[dirTNE ] = &distributionArray[dirTNE *numberOfLBnodes];
         dist.f[dirTSW ] = &distributionArray[dirTSW *numberOfLBnodes];
         dist.f[dirTSE ] = &distributionArray[dirTSE *numberOfLBnodes];
@@ -91,7 +91,7 @@ __inline__ __device__ void getPointersToDistributions(Distributions27 &dist, rea
          dist.f[dirTN  ] = &distributionArray[dirBS  *numberOfLBnodes];
          dist.f[dirTS  ] = &distributionArray[dirBN  *numberOfLBnodes];
          dist.f[dirBN  ] = &distributionArray[dirTS  *numberOfLBnodes];
-         dist.f[dirZERO] = &distributionArray[dirZERO*numberOfLBnodes];
+         dist.f[dirREST] = &distributionArray[dirREST*numberOfLBnodes];
          dist.f[dirTNE ] = &distributionArray[dirBSW *numberOfLBnodes];
          dist.f[dirTSW ] = &distributionArray[dirBNE *numberOfLBnodes];
          dist.f[dirTSE ] = &distributionArray[dirBNW *numberOfLBnodes];
@@ -123,7 +123,7 @@ __inline__ __device__ void getPointersToSubgridDistances(SubgridDistances27& sub
     subgridD.q[dirBS  ] = &subgridDistances[dirBS   *numberOfSubgridIndices];
     subgridD.q[dirBN  ] = &subgridDistances[dirBN   *numberOfSubgridIndices];
     subgridD.q[dirTS  ] = &subgridDistances[dirTS   *numberOfSubgridIndices];
-    subgridD.q[dirZERO] = &subgridDistances[dirZERO *numberOfSubgridIndices];
+    subgridD.q[dirREST] = &subgridDistances[dirREST *numberOfSubgridIndices];
     subgridD.q[dirTNE ] = &subgridDistances[dirTNE  *numberOfSubgridIndices];
     subgridD.q[dirTSW ] = &subgridDistances[dirTSW  *numberOfSubgridIndices];
     subgridD.q[dirTSE ] = &subgridDistances[dirTSE  *numberOfSubgridIndices];

@@ -762,7 +762,7 @@ void GridGenerator::allocArrays_BoundaryQs()
             Q.q27[dirBS] = &QQ[dirBS  *sizeQ];
             Q.q27[dirBN] = &QQ[dirBN  *sizeQ];
             Q.q27[dirTS] = &QQ[dirTS  *sizeQ];
-            Q.q27[dirZERO] = &QQ[dirZERO*sizeQ];
+            Q.q27[dirREST] = &QQ[dirREST*sizeQ];
             Q.q27[dirTNE] = &QQ[dirTNE *sizeQ];
             Q.q27[dirTSW] = &QQ[dirTSW *sizeQ];
             Q.q27[dirTSE] = &QQ[dirTSE *sizeQ];
@@ -835,7 +835,7 @@ void GridGenerator::allocArrays_BoundaryQs()
             Q.q27[dirBS] = &QQ[dirBS  *sizeQ];
             Q.q27[dirBN] = &QQ[dirBN  *sizeQ];
             Q.q27[dirTS] = &QQ[dirTS  *sizeQ];
-            Q.q27[dirZERO] = &QQ[dirZERO*sizeQ];
+            Q.q27[dirREST] = &QQ[dirREST*sizeQ];
             Q.q27[dirTNE] = &QQ[dirTNE *sizeQ];
             Q.q27[dirTSW] = &QQ[dirTSW *sizeQ];
             Q.q27[dirTSE] = &QQ[dirTSE *sizeQ];
@@ -881,7 +881,7 @@ void GridGenerator::allocArrays_BoundaryQs()
             Q.q27[dirBS] = &QQ[dirBS  *sizeQ];
             Q.q27[dirBN] = &QQ[dirBN  *sizeQ];
             Q.q27[dirTS] = &QQ[dirTS  *sizeQ];
-            Q.q27[dirZERO] = &QQ[dirZERO*sizeQ];
+            Q.q27[dirREST] = &QQ[dirREST*sizeQ];
             Q.q27[dirTNE] = &QQ[dirTNE *sizeQ];
             Q.q27[dirTSW] = &QQ[dirTSW *sizeQ];
             Q.q27[dirTSE] = &QQ[dirTSE *sizeQ];
@@ -927,7 +927,7 @@ void GridGenerator::allocArrays_BoundaryQs()
             Q.q27[dirBS] = &QQ[dirBS  *sizeQ];
             Q.q27[dirBN] = &QQ[dirBN  *sizeQ];
             Q.q27[dirTS] = &QQ[dirTS  *sizeQ];
-            Q.q27[dirZERO] = &QQ[dirZERO*sizeQ];
+            Q.q27[dirREST] = &QQ[dirREST*sizeQ];
             Q.q27[dirTNE] = &QQ[dirTNE *sizeQ];
             Q.q27[dirTSW] = &QQ[dirTSW *sizeQ];
             Q.q27[dirTSE] = &QQ[dirTSE *sizeQ];
@@ -1010,7 +1010,7 @@ void GridGenerator::allocArrays_BoundaryQs()
             Q.q27[dirBS] = &QQ[dirBS  *sizeQ];
             Q.q27[dirBN] = &QQ[dirBN  *sizeQ];
             Q.q27[dirTS] = &QQ[dirTS  *sizeQ];
-            Q.q27[dirZERO] = &QQ[dirZERO*sizeQ];
+            Q.q27[dirREST] = &QQ[dirREST*sizeQ];
             Q.q27[dirTNE] = &QQ[dirTNE *sizeQ];
             Q.q27[dirTSW] = &QQ[dirTSW *sizeQ];
             Q.q27[dirTSE] = &QQ[dirTSE *sizeQ];
@@ -1026,7 +1026,7 @@ void GridGenerator::allocArrays_BoundaryQs()
             //////////////////////////////////////////////////////////////////
             for (int node_i = 0; node_i < numberOfGeometryNodes; node_i++)
             {
-                Q.q27[dirZERO][node_i] = 0.0f;
+                Q.q27[dirREST][node_i] = 0.0f;
             }
             //for(int test = 0; test < 3; test++)
             //{

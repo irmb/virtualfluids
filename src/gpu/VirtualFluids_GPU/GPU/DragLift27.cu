@@ -40,7 +40,7 @@ extern "C" __global__ void DragLiftPost27(  real* DD,
 		D.f[dirBS  ] = &DD[dirBS  *size_Mat];
 		D.f[dirBN  ] = &DD[dirBN  *size_Mat];
 		D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-		D.f[dirZERO] = &DD[dirZERO*size_Mat];
+		D.f[dirREST] = &DD[dirREST*size_Mat];
 		D.f[dirTNE ] = &DD[dirTNE *size_Mat];
 		D.f[dirTSW ] = &DD[dirTSW *size_Mat];
 		D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -70,7 +70,7 @@ extern "C" __global__ void DragLiftPost27(  real* DD,
 		D.f[dirTN  ] = &DD[dirBS  *size_Mat];
 		D.f[dirTS  ] = &DD[dirBN  *size_Mat];
 		D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-		D.f[dirZERO] = &DD[dirZERO*size_Mat];
+		D.f[dirREST] = &DD[dirREST*size_Mat];
 		D.f[dirTNE ] = &DD[dirBSW *size_Mat];
 		D.f[dirTSW ] = &DD[dirBNE *size_Mat];
 		D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -305,7 +305,7 @@ extern "C" __global__ void DragLiftPre27(   real* DD,
 		D.f[dirBS  ] = &DD[dirBS  *size_Mat];
 		D.f[dirBN  ] = &DD[dirBN  *size_Mat];
 		D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-		D.f[dirZERO] = &DD[dirZERO*size_Mat];
+		D.f[dirREST] = &DD[dirREST*size_Mat];
 		D.f[dirTNE ] = &DD[dirTNE *size_Mat];
 		D.f[dirTSW ] = &DD[dirTSW *size_Mat];
 		D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -335,7 +335,7 @@ extern "C" __global__ void DragLiftPre27(   real* DD,
 		D.f[dirTN  ] = &DD[dirBS  *size_Mat];
 		D.f[dirTS  ] = &DD[dirBN  *size_Mat];
 		D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-		D.f[dirZERO] = &DD[dirZERO*size_Mat];
+		D.f[dirREST] = &DD[dirREST*size_Mat];
 		D.f[dirTNE ] = &DD[dirBSW *size_Mat];
 		D.f[dirTSW ] = &DD[dirBNE *size_Mat];
 		D.f[dirTSE ] = &DD[dirBNW *size_Mat];

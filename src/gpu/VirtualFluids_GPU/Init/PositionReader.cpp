@@ -157,7 +157,7 @@ void PositionReader::definePropellerQs(Parameter* para)
 	Q.q27[dirBS  ] = &QQ[dirBS  *sizeQ];
 	Q.q27[dirBN  ] = &QQ[dirBN  *sizeQ];
 	Q.q27[dirTS  ] = &QQ[dirTS  *sizeQ];
-	Q.q27[dirZERO] = &QQ[dirZERO*sizeQ];
+	Q.q27[dirREST] = &QQ[dirREST*sizeQ];
 	Q.q27[dirTNE ] = &QQ[dirTNE *sizeQ];
 	Q.q27[dirTSW ] = &QQ[dirTSW *sizeQ];
 	Q.q27[dirTSE ] = &QQ[dirTSE *sizeQ];

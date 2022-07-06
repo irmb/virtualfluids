@@ -50,7 +50,7 @@ extern "C" __global__ void QVelDeviceCompThinWallsPartOne27(
       D.f[dirBS  ] = &DD[dirBS  *size_Mat];
       D.f[dirBN  ] = &DD[dirBN  *size_Mat];
       D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirTNE *size_Mat];
       D.f[dirTSW ] = &DD[dirTSW *size_Mat];
       D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -80,7 +80,7 @@ extern "C" __global__ void QVelDeviceCompThinWallsPartOne27(
       D.f[dirTN  ] = &DD[dirBS  *size_Mat];
       D.f[dirTS  ] = &DD[dirBN  *size_Mat];
       D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+      D.f[dirREST] = &DD[dirREST*size_Mat];
       D.f[dirTNE ] = &DD[dirBSW *size_Mat];
       D.f[dirTSW ] = &DD[dirBNE *size_Mat];
       D.f[dirTSE ] = &DD[dirBNW *size_Mat];
@@ -203,7 +203,7 @@ extern "C" __global__ void QVelDeviceCompThinWallsPartOne27(
       real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
+                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirREST])[kzero]); 
 
       vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                 ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -479,7 +479,7 @@ extern "C" __global__ void QDeviceCompThinWallsPartOne27(
 		D.f[dirBS] = &DD[dirBS  *size_Mat];
 		D.f[dirBN] = &DD[dirBN  *size_Mat];
 		D.f[dirTS] = &DD[dirTS  *size_Mat];
-		D.f[dirZERO] = &DD[dirZERO*size_Mat];
+		D.f[dirREST] = &DD[dirREST*size_Mat];
 		D.f[dirTNE] = &DD[dirTNE *size_Mat];
 		D.f[dirTSW] = &DD[dirTSW *size_Mat];
 		D.f[dirTSE] = &DD[dirTSE *size_Mat];
@@ -509,7 +509,7 @@ extern "C" __global__ void QDeviceCompThinWallsPartOne27(
 		D.f[dirTN] = &DD[dirBS  *size_Mat];
 		D.f[dirTS] = &DD[dirBN  *size_Mat];
 		D.f[dirBN] = &DD[dirTS  *size_Mat];
-		D.f[dirZERO] = &DD[dirZERO*size_Mat];
+		D.f[dirREST] = &DD[dirREST*size_Mat];
 		D.f[dirTNE] = &DD[dirBSW *size_Mat];
 		D.f[dirTSW] = &DD[dirBNE *size_Mat];
 		D.f[dirTSE] = &DD[dirBNW *size_Mat];
@@ -628,7 +628,7 @@ extern "C" __global__ void QDeviceCompThinWallsPartOne27(
 		real vx1, vx2, vx3, drho, feq, q;
 		drho = f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
 			f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW +
-			f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]);
+			f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirREST])[kzero]);
 
 		vx1 = (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
 			((f_BE - f_TW) + (f_TE - f_BW)) + ((f_SE - f_NW) + (f_NE - f_SW)) +
@@ -997,7 +997,7 @@ extern "C" __global__ void QThinWallsPartTwo27(
 		  D.f[dirBS] = &DD[dirBS  *size_Mat];
 		  D.f[dirBN] = &DD[dirBN  *size_Mat];
 		  D.f[dirTS] = &DD[dirTS  *size_Mat];
-		  D.f[dirZERO] = &DD[dirZERO*size_Mat];
+		  D.f[dirREST] = &DD[dirREST*size_Mat];
 		  D.f[dirTNE] = &DD[dirTNE *size_Mat];
 		  D.f[dirTSW] = &DD[dirTSW *size_Mat];
 		  D.f[dirTSE] = &DD[dirTSE *size_Mat];
@@ -1027,7 +1027,7 @@ extern "C" __global__ void QThinWallsPartTwo27(
 		  D.f[dirTN] = &DD[dirBS  *size_Mat];
 		  D.f[dirTS] = &DD[dirBN  *size_Mat];
 		  D.f[dirBN] = &DD[dirTS  *size_Mat];
-		  D.f[dirZERO] = &DD[dirZERO*size_Mat];
+		  D.f[dirREST] = &DD[dirREST*size_Mat];
 		  D.f[dirTNE] = &DD[dirBSW *size_Mat];
 		  D.f[dirTSW] = &DD[dirBNE *size_Mat];
 		  D.f[dirTSE] = &DD[dirBNW *size_Mat];
@@ -1057,7 +1057,7 @@ extern "C" __global__ void QThinWallsPartTwo27(
          DN.f[dirBS  ] = &DD[dirBS  *size_Mat];
          DN.f[dirBN  ] = &DD[dirBN  *size_Mat];
          DN.f[dirTS  ] = &DD[dirTS  *size_Mat];
-         DN.f[dirZERO] = &DD[dirZERO*size_Mat];
+         DN.f[dirREST] = &DD[dirREST*size_Mat];
          DN.f[dirTNE ] = &DD[dirTNE *size_Mat];
          DN.f[dirTSW ] = &DD[dirTSW *size_Mat];
          DN.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -1087,7 +1087,7 @@ extern "C" __global__ void QThinWallsPartTwo27(
          DN.f[dirTN  ] = &DD[dirBS  *size_Mat];
          DN.f[dirTS  ] = &DD[dirBN  *size_Mat];
          DN.f[dirBN  ] = &DD[dirTS  *size_Mat];
-         DN.f[dirZERO] = &DD[dirZERO*size_Mat];
+         DN.f[dirREST] = &DD[dirREST*size_Mat];
          DN.f[dirTNE ] = &DD[dirBSW *size_Mat];
          DN.f[dirTSW ] = &DD[dirBNE *size_Mat];
          DN.f[dirTSE ] = &DD[dirBNW *size_Mat];

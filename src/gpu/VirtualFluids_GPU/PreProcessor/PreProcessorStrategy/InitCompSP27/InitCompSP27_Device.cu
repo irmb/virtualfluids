@@ -59,7 +59,7 @@ extern "C" __global__ void LB_Init_Comp_SP_27(unsigned int* neighborX,
             D.f[dirBS  ] = &DD[dirBS  *size_Mat];
             D.f[dirBN  ] = &DD[dirBN  *size_Mat];
             D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-            D.f[dirZERO] = &DD[dirZERO*size_Mat];
+            D.f[dirREST] = &DD[dirREST*size_Mat];
             D.f[dirTNE ] = &DD[dirTNE *size_Mat];
             D.f[dirTSW ] = &DD[dirTSW *size_Mat];
             D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -89,7 +89,7 @@ extern "C" __global__ void LB_Init_Comp_SP_27(unsigned int* neighborX,
             D.f[dirTN  ] = &DD[dirBS  *size_Mat];
             D.f[dirTS  ] = &DD[dirBN  *size_Mat];
             D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-            D.f[dirZERO] = &DD[dirZERO*size_Mat];
+            D.f[dirREST] = &DD[dirREST*size_Mat];
             D.f[dirBSW ] = &DD[dirTNE *size_Mat];
             D.f[dirBNE ] = &DD[dirTSW *size_Mat];
             D.f[dirBNW ] = &DD[dirTSE *size_Mat];
@@ -137,7 +137,7 @@ extern "C" __global__ void LB_Init_Comp_SP_27(unsigned int* neighborX,
          //////////////////////////////////////////////////////////////////////////
          real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
-         (D.f[dirZERO])[kzero] =   c8o27* (drho-cu_sq*(c1o1+drho));
+         (D.f[dirREST])[kzero] =   c8o27* (drho-cu_sq*(c1o1+drho));
          (D.f[dirE   ])[ke   ] =   c2o27* (drho+ (c1o1+drho) * (c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq));
          (D.f[dirW   ])[kw   ] =   c2o27* (drho+ (c1o1+drho) * (c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq));
          (D.f[dirN   ])[kn   ] =   c2o27* (drho+ (c1o1+drho) * (c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cu_sq));
@@ -232,7 +232,7 @@ extern "C" __global__ void LB_Init_Comp_Neq_SP_27( unsigned int* neighborX,
                 D.f[dirBS  ] = &DD[dirBS  *size_Mat];
                 D.f[dirBN  ] = &DD[dirBN  *size_Mat];
                 D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-                D.f[dirZERO] = &DD[dirZERO*size_Mat];
+                D.f[dirREST] = &DD[dirREST*size_Mat];
                 D.f[dirTNE ] = &DD[dirTNE *size_Mat];
                 D.f[dirTSW ] = &DD[dirTSW *size_Mat];
                 D.f[dirTSE ] = &DD[dirTSE *size_Mat];
@@ -262,7 +262,7 @@ extern "C" __global__ void LB_Init_Comp_Neq_SP_27( unsigned int* neighborX,
                 D.f[dirTN  ] = &DD[dirBS  *size_Mat];
                 D.f[dirTS  ] = &DD[dirBN  *size_Mat];
                 D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-                D.f[dirZERO] = &DD[dirZERO*size_Mat];
+                D.f[dirREST] = &DD[dirREST*size_Mat];
                 D.f[dirBSW ] = &DD[dirTNE *size_Mat];
                 D.f[dirBNE ] = &DD[dirTSW *size_Mat];
                 D.f[dirBNW ] = &DD[dirTSE *size_Mat];
@@ -392,7 +392,7 @@ extern "C" __global__ void LB_Init_Comp_Neq_SP_27( unsigned int* neighborX,
             //////////////////////////////////////////////////////////////////////////
             real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
-            (D.f[dirZERO])[kzero] =   c8o27* (drho-cu_sq*(c1o1+drho));
+            (D.f[dirREST])[kzero] =   c8o27* (drho-cu_sq*(c1o1+drho));
             (D.f[dirE   ])[ke   ] =   c2o27* (drho+ (c1o1+drho) * (c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq));
             (D.f[dirW   ])[kw   ] =   c2o27* (drho+ (c1o1+drho) * (c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq));
             (D.f[dirN   ])[kn   ] =   c2o27* (drho+ (c1o1+drho) * (c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cu_sq));
@@ -422,7 +422,7 @@ extern "C" __global__ void LB_Init_Comp_Neq_SP_27( unsigned int* neighborX,
 
             //////////////////////////////////////////////////////////////////////////
 
-            (D.f[dirZERO])[kzero] += (c1o1+drho) * f_ZERO;
+            (D.f[dirREST])[kzero] += (c1o1+drho) * f_ZERO;
             (D.f[dirE   ])[ke   ] += (c1o1+drho) * f_E   ;
             (D.f[dirW   ])[kw   ] += (c1o1+drho) * f_E   ;
             (D.f[dirN   ])[kn   ] += (c1o1+drho) * f_N   ;
@@ -456,9 +456,9 @@ extern "C" __global__ void LB_Init_Comp_Neq_SP_27( unsigned int* neighborX,
 	    {
 		    //////////////////////////////////////////////////////////////////////////
 		    Distributions27 D;
-		    D.f[dirZERO] = &DD[dirZERO*size_Mat];
+		    D.f[dirREST] = &DD[dirREST*size_Mat];
 		    //////////////////////////////////////////////////////////////////////////
-		    (D.f[dirZERO])[k] = c96o1;
+		    (D.f[dirREST])[k] = c96o1;
 		    //////////////////////////////////////////////////////////////////////////
 	    }
    }

@@ -57,7 +57,7 @@ void findQ(Parameter* para, int lev)
    Q.q27[dirBS  ] = &QQ[dirBS  *sizeQ];
    Q.q27[dirBN  ] = &QQ[dirBN  *sizeQ];
    Q.q27[dirTS  ] = &QQ[dirTS  *sizeQ];
-   Q.q27[dirZERO] = &QQ[dirZERO*sizeQ];
+   Q.q27[dirREST] = &QQ[dirREST*sizeQ];
    Q.q27[dirTNE ] = &QQ[dirTNE *sizeQ];
    Q.q27[dirTSW ] = &QQ[dirTSW *sizeQ];
    Q.q27[dirTSE ] = &QQ[dirTSE *sizeQ];
@@ -113,7 +113,7 @@ void findQ(Parameter* para, int lev)
                   //Q.q27[dirBS  ][QIN.numberOfBCnodes] = -1.f;
                   //Q.q27[dirBN  ][QIN.numberOfBCnodes] = 0.f;
                   //Q.q27[dirTS  ][QIN.numberOfBCnodes] = -1.f;
-                  //Q.q27[dirZERO][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[dirREST][QIN.numberOfBCnodes] = -1.f;
                   //Q.q27[dirTNE ][QIN.numberOfBCnodes] = 0.f;
                   //Q.q27[dirTSW ][QIN.numberOfBCnodes] = -1.f;
                   //Q.q27[dirTSE ][QIN.numberOfBCnodes] = -1.f;
@@ -141,7 +141,7 @@ void findQ(Parameter* para, int lev)
                   //Q.q27[dirBS  ][QIN.numberOfBCnodes] = ON[dirTN  ];
                   //Q.q27[dirBN  ][QIN.numberOfBCnodes] = ON[dirTS  ];
                   //Q.q27[dirTS  ][QIN.numberOfBCnodes] = ON[dirBN  ];
-                  //Q.q27[dirZERO][QIN.numberOfBCnodes] = ON[dirZERO];
+                  //Q.q27[dirREST][QIN.numberOfBCnodes] = ON[dirREST];
                   //Q.q27[dirTNE ][QIN.numberOfBCnodes] = ON[dirBSW ];
                   //Q.q27[dirTSW ][QIN.numberOfBCnodes] = ON[dirBNE ];
                   //Q.q27[dirTSE ][QIN.numberOfBCnodes] = ON[dirBNW ];
@@ -169,7 +169,7 @@ void findQ(Parameter* para, int lev)
                   Q.q27[dirBS  ][QIN.numberOfBCnodes] = ON[dirBS  ];
                   Q.q27[dirBN  ][QIN.numberOfBCnodes] = ON[dirBN  ];
                   Q.q27[dirTS  ][QIN.numberOfBCnodes] = ON[dirTS  ];
-                  Q.q27[dirZERO][QIN.numberOfBCnodes] = ON[dirZERO];
+                  Q.q27[dirREST][QIN.numberOfBCnodes] = ON[dirREST];
                   Q.q27[dirTNE ][QIN.numberOfBCnodes] = ON[dirTNE ];
                   Q.q27[dirTSW ][QIN.numberOfBCnodes] = ON[dirTSW ];
                   Q.q27[dirTSE ][QIN.numberOfBCnodes] = ON[dirTSE ];
@@ -263,7 +263,7 @@ void findQ_MG( int nx, int ny, unsigned int nnx, unsigned int nny, unsigned int 
    Q.q27[dirBS  ] = &QQ[dirBS  *sizeQ];
    Q.q27[dirBN  ] = &QQ[dirBN  *sizeQ];
    Q.q27[dirTS  ] = &QQ[dirTS  *sizeQ];
-   Q.q27[dirZERO] = &QQ[dirZERO*sizeQ];
+   Q.q27[dirREST] = &QQ[dirREST*sizeQ];
    Q.q27[dirTNE ] = &QQ[dirTNE *sizeQ];
    Q.q27[dirTSW ] = &QQ[dirTSW *sizeQ];
    Q.q27[dirTSE ] = &QQ[dirTSE *sizeQ];
@@ -343,7 +343,7 @@ void findQ_MG( int nx, int ny, unsigned int nnx, unsigned int nny, unsigned int 
                   Q.q27[dirBS  ][QIN.numberOfBCnodes] = ON[dirBS  ];
                   Q.q27[dirBN  ][QIN.numberOfBCnodes] = ON[dirBN  ];
                   Q.q27[dirTS  ][QIN.numberOfBCnodes] = ON[dirTS  ];
-                  Q.q27[dirZERO][QIN.numberOfBCnodes] = ON[dirZERO];
+                  Q.q27[dirREST][QIN.numberOfBCnodes] = ON[dirREST];
                   Q.q27[dirTNE ][QIN.numberOfBCnodes] = ON[dirTNE ];
                   Q.q27[dirTSW ][QIN.numberOfBCnodes] = ON[dirTSW ];
                   Q.q27[dirTSE ][QIN.numberOfBCnodes] = ON[dirTSE ];
@@ -464,7 +464,7 @@ void findQInflow(Parameter* para)
    Q.q27[dirBS  ] = &QQ[dirBS  *sizeQ];
    Q.q27[dirBN  ] = &QQ[dirBN  *sizeQ];
    Q.q27[dirTS  ] = &QQ[dirTS  *sizeQ];
-   Q.q27[dirZERO] = &QQ[dirZERO*sizeQ];
+   Q.q27[dirREST] = &QQ[dirREST*sizeQ];
    Q.q27[dirTNE ] = &QQ[dirTNE *sizeQ];
    Q.q27[dirTSW ] = &QQ[dirTSW *sizeQ];
    Q.q27[dirTSE ] = &QQ[dirTSE *sizeQ];
@@ -513,7 +513,7 @@ void findQInflow(Parameter* para)
                //Q.q27[dirBS  ][QIN.numberOfBCnodes] = (real)1.f;
                //Q.q27[dirBN  ][QIN.numberOfBCnodes] = (real)1.f;
                //Q.q27[dirTS  ][QIN.numberOfBCnodes] = (real)-1.f;
-               //Q.q27[dirZERO][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[dirREST][QIN.numberOfBCnodes] = (real)-1.f;
                //Q.q27[dirTNE ][QIN.numberOfBCnodes] = (real)-1.f;
                //Q.q27[dirTSW ][QIN.numberOfBCnodes] = (real)-1.f;
                //Q.q27[dirTSE ][QIN.numberOfBCnodes] = (real)-1.f;
@@ -547,7 +547,7 @@ void findQInflow(Parameter* para)
 			   Q.q27[dirBS  ][QIN.numberOfBCnodes] = (real)-1.f;
 			   Q.q27[dirBN  ][QIN.numberOfBCnodes] = (real)-1.f;
 			   Q.q27[dirTS  ][QIN.numberOfBCnodes] = (real)1.f;
-			   Q.q27[dirZERO][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[dirREST][QIN.numberOfBCnodes] = (real)-1.f;
 			   Q.q27[dirTNE ][QIN.numberOfBCnodes] = (real)1.f;
 			   Q.q27[dirTSW ][QIN.numberOfBCnodes] = (real)1.f;
 			   Q.q27[dirTSE ][QIN.numberOfBCnodes] = (real)1.f;
@@ -604,7 +604,7 @@ void findQInflow(Parameter* para)
    //               Q.q27[dirBS  ][QIN.numberOfBCnodes] = ON[dirBS  ];
    //               Q.q27[dirBN  ][QIN.numberOfBCnodes] = ON[dirBN  ];
    //               Q.q27[dirTS  ][QIN.numberOfBCnodes] = ON[dirTS  ];
-   //               Q.q27[dirZERO][QIN.numberOfBCnodes] = ON[dirZERO];
+   //               Q.q27[dirREST][QIN.numberOfBCnodes] = ON[dirREST];
    //               Q.q27[dirTNE ][QIN.numberOfBCnodes] = ON[dirTNE ];
    //               Q.q27[dirTSW ][QIN.numberOfBCnodes] = ON[dirTSW ];
    //               Q.q27[dirTSE ][QIN.numberOfBCnodes] = ON[dirTSE ];
@@ -663,7 +663,7 @@ void findQInflow(Parameter* para)
    //               Q.q27[dirBS  ][QIN.numberOfBCnodes] = ON[dirBS  ];
    //               Q.q27[dirBN  ][QIN.numberOfBCnodes] = ON[dirBN  ];
    //               Q.q27[dirTS  ][QIN.numberOfBCnodes] = ON[dirTS  ];
-   //               Q.q27[dirZERO][QIN.numberOfBCnodes] = ON[dirZERO];
+   //               Q.q27[dirREST][QIN.numberOfBCnodes] = ON[dirREST];
    //               Q.q27[dirTNE ][QIN.numberOfBCnodes] = ON[dirTNE ];
    //               Q.q27[dirTSW ][QIN.numberOfBCnodes] = ON[dirTSW ];
    //               Q.q27[dirTSE ][QIN.numberOfBCnodes] = ON[dirTSE ];
@@ -830,7 +830,7 @@ void findQOutflow(Parameter* para)
    Q.q27[dirBS  ] = &QQ[dirBS  *sizeQ];
    Q.q27[dirBN  ] = &QQ[dirBN  *sizeQ];
    Q.q27[dirTS  ] = &QQ[dirTS  *sizeQ];
-   Q.q27[dirZERO] = &QQ[dirZERO*sizeQ];
+   Q.q27[dirREST] = &QQ[dirREST*sizeQ];
    Q.q27[dirTNE ] = &QQ[dirTNE *sizeQ];
    Q.q27[dirTSW ] = &QQ[dirTSW *sizeQ];
    Q.q27[dirTSE ] = &QQ[dirTSE *sizeQ];
@@ -878,7 +878,7 @@ void findQOutflow(Parameter* para)
                Q.q27[dirBS  ][QIN.numberOfBCnodes] = (real)-1.f;
                Q.q27[dirBN  ][QIN.numberOfBCnodes] = (real)-1.f;
                Q.q27[dirTS  ][QIN.numberOfBCnodes] = (real)1.f;
-               Q.q27[dirZERO][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[dirREST][QIN.numberOfBCnodes] = (real)-1.f;
                Q.q27[dirTNE ][QIN.numberOfBCnodes] = (real)1.f;
                Q.q27[dirTSW ][QIN.numberOfBCnodes] = (real)1.f;
                Q.q27[dirTSE ][QIN.numberOfBCnodes] = (real)1.f;
@@ -992,7 +992,7 @@ void findKforQOutflow(Parameter* para)
 //   QN.q27[dirBS  ] = &QQN[dirBS  *sizeQN];
 //   QN.q27[dirBN  ] = &QQN[dirBN  *sizeQN];
 //   QN.q27[dirTS  ] = &QQN[dirTS  *sizeQN];
-//   QN.q27[dirZERO] = &QQN[dirZERO*sizeQN];
+//   QN.q27[dirREST] = &QQN[dirREST*sizeQN];
 //   QN.q27[dirTNE ] = &QQN[dirTNE *sizeQN];
 //   QN.q27[dirTSW ] = &QQN[dirTSW *sizeQN];
 //   QN.q27[dirTSE ] = &QQN[dirTSE *sizeQN];
@@ -1112,7 +1112,7 @@ void findQPressX0(Parameter* para, int lev)
 	Q.q27[dirBS  ] = &QQ[dirBS  *sizeQ];
 	Q.q27[dirBN  ] = &QQ[dirBN  *sizeQ];
 	Q.q27[dirTS  ] = &QQ[dirTS  *sizeQ];
-	Q.q27[dirZERO] = &QQ[dirZERO*sizeQ];
+	Q.q27[dirREST] = &QQ[dirREST*sizeQ];
 	Q.q27[dirTNE ] = &QQ[dirTNE *sizeQ];
 	Q.q27[dirTSW ] = &QQ[dirTSW *sizeQ];
 	Q.q27[dirTSE ] = &QQ[dirTSE *sizeQ];
@@ -1161,7 +1161,7 @@ void findQPressX0(Parameter* para, int lev)
 				Q.q27[dirBS  ][QIN.numberOfBCnodes] = (real)-1.f;
 				Q.q27[dirBN  ][QIN.numberOfBCnodes] = (real)-1.f;
 				Q.q27[dirTS  ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[dirZERO][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirREST][QIN.numberOfBCnodes] = (real)-1.f;
 				Q.q27[dirTNE ][QIN.numberOfBCnodes] = (real)-1.f;
 				Q.q27[dirTSW ][QIN.numberOfBCnodes] = (real)1.f;
 				Q.q27[dirTSE ][QIN.numberOfBCnodes] = (real)-1.f;
@@ -1288,7 +1288,7 @@ void findQPressX1(Parameter* para, int lev)
 	Q.q27[dirBS  ] = &QQ[dirBS  *sizeQ];
 	Q.q27[dirBN  ] = &QQ[dirBN  *sizeQ];
 	Q.q27[dirTS  ] = &QQ[dirTS  *sizeQ];
-	Q.q27[dirZERO] = &QQ[dirZERO*sizeQ];
+	Q.q27[dirREST] = &QQ[dirREST*sizeQ];
 	Q.q27[dirTNE ] = &QQ[dirTNE *sizeQ];
 	Q.q27[dirTSW ] = &QQ[dirTSW *sizeQ];
 	Q.q27[dirTSE ] = &QQ[dirTSE *sizeQ];
@@ -1337,7 +1337,7 @@ void findQPressX1(Parameter* para, int lev)
 				Q.q27[dirBS  ][QIN.numberOfBCnodes] = (real)-1.f;
 				Q.q27[dirBN  ][QIN.numberOfBCnodes] = (real)-1.f;
 				Q.q27[dirTS  ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[dirZERO][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[dirREST][QIN.numberOfBCnodes] = (real)-1.f;
 				Q.q27[dirTNE ][QIN.numberOfBCnodes] = (real)1.f;
 				Q.q27[dirTSW ][QIN.numberOfBCnodes] = (real)-1.f;
 				Q.q27[dirTSE ][QIN.numberOfBCnodes] = (real)1.f;
