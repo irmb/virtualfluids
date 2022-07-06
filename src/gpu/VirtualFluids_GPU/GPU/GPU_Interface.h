@@ -5,16 +5,17 @@
 // |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/   \____/_/    \_____/
 //
 //////////////////////////////////////////////////////////////////////////
-//random numbers
-#include <curand.h>
+#ifndef GPU_INTERFACE_H
+#define GPU_INTERFACE_H
+
+#include <curand.h> //random numbers
 #include <curand_kernel.h>
 #include <cuda_runtime.h>
 
 #include <DataTypes.h>
 #include "LBM/LB.h"
 
-#ifndef GPU_INTERFACE_H
-#define GPU_INTERFACE_H
+struct LBMSimulationParameter;
 
 //////////////////////////////////////////////////////////////////////////
 //Kernel
@@ -645,31 +646,9 @@ extern "C" void BcVel27(int nx,
                         real u0x, 
                         real om);
 
-extern "C" void QDev27( unsigned int numberOfThreads,
-                        int nx,
-                        int ny,
-                        real* DD, 
-                        int* k_Q, 
-                        real* QQ,
-                        unsigned int numberOfBCnodes, 
-                        real om1, 
-                        unsigned int* neighborX,
-                        unsigned int* neighborY,
-                        unsigned int* neighborZ,
-                        unsigned int size_Mat, 
-                        bool isEvenTimestep);
+extern "C" void QDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
-extern "C" void QDevComp27(unsigned int numberOfThreads,
-						   real* distribution, 
-						   int* subgridDistanceIndices, 
-						   real* subgridDistances,
-						   unsigned int numberOfBCnodes, 
-						   real omega, 
-						   unsigned int* neighborX,
-						   unsigned int* neighborY,
-						   unsigned int* neighborZ,
-						   unsigned int numberOfLBnodes, 
-						   bool isEvenTimestep);
+extern "C" void QDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
 extern "C" void QDevCompThinWalls27(unsigned int numberOfThreads,
 									real* DD, 
@@ -685,19 +664,7 @@ extern "C" void QDevCompThinWalls27(unsigned int numberOfThreads,
 									unsigned int size_Mat, 
 									bool isEvenTimestep);
 
-extern "C" void QDev3rdMomentsComp27(  unsigned int numberOfThreads,
-									   int nx,
-									   int ny,
-									   real* DD, 
-									   int* k_Q, 
-									   real* QQ,
-									   unsigned int numberOfBCnodes, 
-									   real om1, 
-									   unsigned int* neighborX,
-									   unsigned int* neighborY,
-									   unsigned int* neighborZ,
-									   unsigned int size_Mat, 
-									   bool isEvenTimestep);
+extern "C" void QDev3rdMomentsComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
 extern "C" void QDevIncompHighNu27(  unsigned int numberOfThreads,
 									 real* DD, 
@@ -723,20 +690,7 @@ extern "C" void QDevCompHighNu27(unsigned int numberOfThreads,
 								 unsigned int size_Mat, 
 								 bool isEvenTimestep);
 
-extern "C" void QVelDevicePlainBB27(unsigned int numberOfThreads,
-									real* vx,
-									real* vy,
-									real* vz,
-									real* DD,
-									int* k_Q, 
-									real* QQ,
-									unsigned int numberOfBCnodes, 
-									real om1, 
-									unsigned int* neighborX,
-									unsigned int* neighborY,
-									unsigned int* neighborZ,
-									unsigned int size_Mat, 
-									bool isEvenTimestep);
+extern "C" void QVelDevicePlainBB27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 	
 extern "C" void QVelDeviceCouette27(unsigned int numberOfThreads,
 									real* vx,
@@ -775,22 +729,7 @@ extern "C" void QVelDevice1h27( unsigned int numberOfThreads,
 								unsigned int size_Mat, 
 								bool isEvenTimestep);
 
-extern "C" void QVelDev27(unsigned int numberOfThreads,
-                          int nx,
-                          int ny,
-                          real* vx,
-                          real* vy,
-                          real* vz,
-                          real* DD, 
-                          int* k_Q, 
-                          real* QQ,
-                          unsigned int numberOfBCnodes, 
-                          real om1, 
-                          unsigned int* neighborX,
-                          unsigned int* neighborY,
-                          unsigned int* neighborZ,
-                          unsigned int size_Mat, 
-                          bool isEvenTimestep);
+extern "C" void QVelDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
 extern "C" void QVelDevCompPlusSlip27(unsigned int numberOfThreads,
 									  real* vx,
@@ -807,20 +746,7 @@ extern "C" void QVelDevCompPlusSlip27(unsigned int numberOfThreads,
 									  unsigned int size_Mat, 
 									  bool isEvenTimestep);
 
-extern "C" void QVelDevComp27(unsigned int numberOfThreads,
-							  real* velocityX,
-							  real* velocityY,
-							  real* velocityZ,
-							  real* distribution,
-							  int* subgridDistanceIndices,
-							  real* subgridDistances,
-							  unsigned int numberOfBCnodes,
-							  real omega,
-							  unsigned int* neighborX,
-							  unsigned int* neighborY,
-							  unsigned int* neighborZ,
-							  unsigned int numberOfLBnodes,
-							  bool isEvenTimestep);
+extern "C" void QVelDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
 extern "C" void QVelDevCompThinWalls27(unsigned int numberOfThreads,
 							           real* vx,
@@ -839,21 +765,7 @@ extern "C" void QVelDevCompThinWalls27(unsigned int numberOfThreads,
 							           unsigned int size_Mat, 
 							           bool isEvenTimestep);
 
-extern "C" void QVelDevCompZeroPress27(
-    unsigned int numberOfThreads,
-    real* velocityX,
-    real* velocityY,
-    real* velocityZ,
-    real* distribution,
-    int* subgridDistanceIndices,
-    real* subgridDistances,
-    unsigned int numberOfBCnodes,
-    real omega,
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    unsigned int numberOfLBnodes,
-    bool isEvenTimestep);
+extern "C" void QVelDevCompZeroPress27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
 extern "C" void QVelDevIncompHighNu27(  unsigned int numberOfThreads,
 										real* vx,
@@ -914,31 +826,11 @@ extern "C" void QVeloStreetDevEQ27(
 	uint  size_Mat,
 	bool  isEvenTimestep);
 
-extern "C" void QSlipDev27( unsigned int numberOfThreads,
-							real* DD, 
-							int* k_Q, 
-							real* QQ,
-							unsigned int numberOfBCnodes,
-							real om1, 
-							unsigned int* neighborX,
-							unsigned int* neighborY,
-							unsigned int* neighborZ,
-							unsigned int size_Mat, 
-							bool isEvenTimestep);
+extern "C" void QSlipDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
-extern "C" void QSlipDevComp27(unsigned int numberOfThreads,
-							   real* DD, 
-							   int* k_Q, 
-							   real* QQ,
-							   unsigned int numberOfBCnodes,
-							   real om1, 
-							   unsigned int* neighborX,
-							   unsigned int* neighborY,
-							   unsigned int* neighborZ,
-							   real* turbViscosity,
-                        	   bool useTurbViscosity,
-							   unsigned int size_Mat, 
-							   bool isEvenTimestep);
+extern "C" void QSlipDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
+
+extern "C" void QSlipDevCompTurbulentViscosity27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
 extern "C" void QSlipGeomDevComp27( unsigned int numberOfThreads,
 									real* DD, 
@@ -1034,18 +926,7 @@ extern "C" void BBStressDev27(  unsigned int numberOfThreads,
 								unsigned int size_Mat, 
 								bool isEvenTimestep);
 
-extern "C" void QPressDev27(unsigned int numberOfThreads,
-                          real* rhoBC,
-                          real* DD, 
-                          int* k_Q, 
-                          real* QQ,
-                          unsigned int numberOfBCnodes, 
-                          real om1, 
-                          unsigned int* neighborX,
-                          unsigned int* neighborY,
-                          unsigned int* neighborZ,
-                          unsigned int size_Mat, 
-                          bool isEvenTimestep);
+extern "C" void QPressDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
 extern "C" void QPressDevFixBackflow27(unsigned int numberOfThreads,
                                        real* rhoBC,
@@ -1071,31 +952,9 @@ extern "C" void QPressDevDirDepBot27(unsigned int numberOfThreads,
                                      unsigned int size_Mat, 
                                      bool isEvenTimestep);
 
-extern "C" void QPressNoRhoDev27(  unsigned int numberOfThreads,
-								   real* rhoBC,
-								   real* DD, 
-								   int* k_Q, 
-								   int* k_N, 
-								   unsigned int numberOfBCnodes, 
-								   real om1, 
-								   unsigned int* neighborX,
-								   unsigned int* neighborY,
-								   unsigned int* neighborZ,
-								   unsigned int size_Mat, 
-								   bool isEvenTimestep);
+extern "C" void QPressNoRhoDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
-extern "C" void QInflowScaleByPressDev27(unsigned int numberOfThreads,
-										 real* rhoBC,
-										 real* DD, 
-										 int* k_Q, 
-										 int* k_N, 
-										 unsigned int numberOfBCnodes, 
-										 real om1, 
-										 unsigned int* neighborX,
-										 unsigned int* neighborY,
-										 unsigned int* neighborZ,
-										 unsigned int size_Mat, 
-										 bool isEvenTimestep);
+extern "C" void QInflowScaleByPressDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
 extern "C" void QPressDevOld27(unsigned int numberOfThreads,
                                real* rhoBC,
@@ -1110,45 +969,11 @@ extern "C" void QPressDevOld27(unsigned int numberOfThreads,
                                unsigned int size_Mat, 
                                bool isEvenTimestep);
 
-extern "C" void QPressDevIncompNEQ27(unsigned int numberOfThreads,
-									 real* rhoBC,
-									 real* DD, 
-									 int* k_Q, 
-									 int* k_N, 
-									 unsigned int numberOfBCnodes, 
-									 real om1, 
-									 unsigned int* neighborX,
-									 unsigned int* neighborY,
-									 unsigned int* neighborZ,
-									 unsigned int size_Mat, 
-									 bool isEvenTimestep);
+extern "C" void QPressDevIncompNEQ27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
-extern "C" void QPressDevNEQ27(unsigned int numberOfThreads,
-							   real* rhoBC,
-							   real* distribution, 
-							   int* bcNodeIndices, 
-							   int* bcNeighborIndices, 
-							   unsigned int numberOfBCnodes, 
-							   real omega1, 
-							   unsigned int* neighborX,
-							   unsigned int* neighborY,
-							   unsigned int* neighborZ,
-							   unsigned int size_Mat, 
-							   bool isEvenTimestep);
+extern "C" void QPressDevNEQ27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
-extern "C" void QPressDevEQZ27(unsigned int numberOfThreads,
-							   real* rhoBC,
-							   real* DD, 
-							   int* k_Q, 
-							   int* k_N, 
-							   real* kTestRE, 
-							   unsigned int numberOfBCnodes, 
-							   real om1, 
-							   unsigned int* neighborX,
-							   unsigned int* neighborY,
-							   unsigned int* neighborZ,
-							   unsigned int size_Mat, 
-							   bool isEvenTimestep);
+extern "C" void QPressDevEQZ27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
 extern "C" void QPressDevZero27(unsigned int numberOfThreads,
                                 real* DD, 
@@ -1173,19 +998,7 @@ extern "C" void QPressDevFake27(   unsigned int numberOfThreads,
 								   unsigned int size_Mat, 
 								   bool isEvenTimestep);
 
-extern "C" void BBDev27( unsigned int numberOfThreads,
-                        int nx,
-                        int ny,
-                        real* DD, 
-                        int* k_Q, 
-                        real* QQ,
-                        unsigned int numberOfBCnodes, 
-                        real om1, 
-                        unsigned int* neighborX,
-                        unsigned int* neighborY,
-                        unsigned int* neighborZ,
-                        unsigned int size_Mat, 
-                        bool isEvenTimestep);
+extern "C" void BBDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
 extern "C" void QPressDev27_IntBB(  unsigned int numberOfThreads,
 									real* rho,

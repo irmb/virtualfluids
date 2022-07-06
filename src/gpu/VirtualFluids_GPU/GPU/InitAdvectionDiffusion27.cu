@@ -55,7 +55,7 @@ extern "C" __global__ void InitAD27(
 	//! The initialization is executed in the following steps
 	//!
 	////////////////////////////////////////////////////////////////////////////////
-	//! - Get node index coordinates from thredIdx, blockIdx, blockDim and gridDim.
+	//! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
 	//!
 	const unsigned  x = threadIdx.x;  // Globaler x-Index
 	const unsigned  y = blockIdx.x;   // Globaler y-Index

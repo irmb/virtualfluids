@@ -87,7 +87,7 @@ extern "C" __global__ void Factorized_Central_Moments_Advection_Diffusion_Device
 	//! The cumulant kernel is executed in the following steps
 	//!
 	////////////////////////////////////////////////////////////////////////////////
-	//! - Get node index coordinates from thredIdx, blockIdx, blockDim and gridDim.
+	//! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
 	//!
 	const unsigned  x = threadIdx.x;
 	const unsigned  y = blockIdx.x;

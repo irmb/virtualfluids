@@ -598,21 +598,19 @@ extern "C" __global__ void LB_BC_Vel_West_27( int nx,
                                               real om);
 
 //no Slip BCs
-extern "C" __global__ void QDevice27(int inx,
-                                     int iny,
-                                     real* DD,
-                                     int* k_Q,
-                                     real* QQ,
+extern "C" __global__ void QDevice27(real* distributions,
+                                     int* subgridDistanceIndices,
+                                     real* subgridDistances,
                                      unsigned int numberOfBCnodes,
-                                     real minusomega,
+                                     real omega,
                                      unsigned int* neighborX,
                                      unsigned int* neighborY,
                                      unsigned int* neighborZ,
-                                     unsigned int size_Mat,
+                                     unsigned int numberOfLBnodes,
                                      bool isEvenTimestep);
 
 extern "C" __global__ void QDeviceComp27(
-										 real* distribution,
+										 real* distributions,
 										 int* subgridDistanceIndices,
 										 real* subgridDistances,
 										 unsigned int numberOfBCnodes,
@@ -634,17 +632,15 @@ extern "C" __global__ void QDeviceCompThinWallsPartOne27(real* DD,
 														 unsigned int size_Mat,
 														 bool isEvenTimestep);
 
-extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
-													 int iny,
-													 real* DD,
-													 int* k_Q,
-													 real* QQ,
-													 unsigned int numberOfBCnodes,
-													 real minusomega,
+extern "C" __global__ void QDevice3rdMomentsComp27(	 real* distributions, 
+													 int* subgridDistanceIndices, 
+													 real* subgridDistances,
+													 unsigned int numberOfBCnodes, 
+													 real omega, 
 													 unsigned int* neighborX,
 													 unsigned int* neighborY,
 													 unsigned int* neighborZ,
-													 unsigned int size_Mat,
+													 unsigned int numberOfLBnodes, 
 													 bool isEvenTimestep);
 
 extern "C" __global__ void QDeviceIncompHighNu27(real* DD,
@@ -670,19 +666,19 @@ extern "C" __global__ void QDeviceCompHighNu27(	 real* DD,
 												 bool isEvenTimestep);
 
 //Velocity BCs
-extern "C" __global__ void QVelDevPlainBB27(real* vx,
-											real* vy,
-											real* vz,
-											real* DD,
-											int* k_Q,
-											real* QQ,
-											unsigned int numberOfBCnodes,
-											real om1,
-											unsigned int* neighborX,
-											unsigned int* neighborY,
-											unsigned int* neighborZ,
-											unsigned int size_Mat,
-											bool isEvenTimestep);
+extern "C" __global__ void QVelDevPlainBB27(
+    real* velocityX,
+    real* velocityY,
+    real* velocityZ,
+    real* distributions,
+    int* subgridDistanceIndices,
+    real* subgridDistances,
+    uint numberOfBCnodes,
+    uint* neighborX,
+    uint* neighborY,
+    uint* neighborZ,
+    uint numberOfLBnodes,
+    bool isEvenTimestep);
 
 extern "C" __global__ void QVelDevCouette27(real* vx,
 											real* vy,
@@ -1131,17 +1127,14 @@ extern "C" __global__ void QPressDeviceFake27(real* rhoBC,
                                              unsigned int size_Mat,
                                              bool isEvenTimestep);
 
-extern "C" __global__ void BBDevice27(int inx,
-                                     int iny,
-                                     real* DD,
-                                     int* k_Q,
-                                     real* QQ,
+extern "C" __global__ void BBDevice27(real* distributions,
+                                     int* subgridDistanceIndices,
+                                     real* subgridDistances,
                                      unsigned int numberOfBCnodes,
-                                     real om1,
                                      unsigned int* neighborX,
                                      unsigned int* neighborY,
                                      unsigned int* neighborZ,
-                                     unsigned int size_Mat,
+                                     unsigned int numberOfLBnodes,
                                      bool isEvenTimestep);
 
 extern "C" __global__ void QPressDevice27_IntBB(real* rho,

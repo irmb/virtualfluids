@@ -35,8 +35,9 @@
 #include "GPU/GPU_Interface.h"
 #include "Parameter/Parameter.h"
 
-////////////////////////////////////////////////////////////////////////////////
-void ADKernelManager::initAD(int level)
+ADKernelManager::ADKernelManager(SPtr<Parameter> parameter): para(parameter){}
+
+void ADKernelManager::initAD(const int level) const
 {
     //////////////////////////////////////////////////////////////////////////
     // calculation of omega for diffusivity
@@ -87,7 +88,7 @@ void ADKernelManager::initAD(int level)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void ADKernelManager::setInitialNodeValuesAD(int level, SPtr<CudaMemoryManager> cudaMemoryManager)
+void ADKernelManager::setInitialNodeValuesAD(const int level, SPtr<CudaMemoryManager> cudaMemoryManager) const
 {
     for (uint j = 1; j <= para->getParH(level)->numberOfNodes; j++) {
         const real coordX = para->getParH(level)->coordinateX[j];
@@ -110,7 +111,7 @@ void ADKernelManager::setInitialNodeValuesAD(int level, SPtr<CudaMemoryManager> 
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void ADKernelManager::runADcollisionKernel(int level)
+void ADKernelManager::runADcollisionKernel(const int level)const
 {
     if (para->getDiffMod() == 7)
     {
@@ -179,7 +180,7 @@ void ADKernelManager::runADcollisionKernel(int level)
     }
 }
 
-void ADKernelManager::runADslipBCKernel(int level){
+void ADKernelManager::runADslipBCKernel(const int level) const{
     if (para->getParD(level)->slipBC.numberOfBCnodes > 1) {
         ADSlipVelDevComp(
             para->getParD(level)->numberofthreads,
@@ -200,7 +201,7 @@ void ADKernelManager::runADslipBCKernel(int level){
     }
 }
 
-void ADKernelManager::runADpressureBCKernel(int level){
+void ADKernelManager::runADpressureBCKernel(const int level) const{
     if (para->getParD(level)->TempPress.kTemp > 0){
         if (para->getDiffMod() == 7) {
             // QADPressIncompDev7( 
@@ -281,7 +282,7 @@ void ADKernelManager::runADpressureBCKernel(int level){
     }
 }
 
-void ADKernelManager::runADgeometryBCKernel(int level)
+void ADKernelManager::runADgeometryBCKernel(const int level) const
 {
     if (para->getParD(level)->geometryBC.numberOfBCnodes > 0) {
         if (para->getDiffMod() == 7) {
@@ -361,7 +362,7 @@ void ADKernelManager::runADgeometryBCKernel(int level)
     }
 }
 
-void ADKernelManager::runADveloBCKernel(int level){
+void ADKernelManager::runADveloBCKernel(const int level) const{
     if (para->getParD(level)->TempVel.kTemp > 0){
         if (para->getDiffMod() == 7)
         {
@@ -487,7 +488,7 @@ void ADKernelManager::runADveloBCKernel(int level){
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void ADKernelManager::printAD(int level, SPtr<CudaMemoryManager> cudaMemoryManager)
+void ADKernelManager::printAD(const int level, SPtr<CudaMemoryManager> cudaMemoryManager) const
 {
     CalcConcentration27(
         para->getParD(level)->numberofthreads,
@@ -502,16 +503,3 @@ void ADKernelManager::printAD(int level, SPtr<CudaMemoryManager> cudaMemoryManag
 
     cudaMemoryManager->cudaCopyConcentrationDeviceToHost(level);
 }
-
-SPtr<ADKernelManager> ADKernelManager::make(SPtr<Parameter> parameter){
-    return SPtr<ADKernelManager>(new ADKernelManager(parameter));
-}
-
-ADKernelManager::ADKernelManager(SPtr<Parameter> parameter): para(parameter){}
-
-ADKernelManager::ADKernelManager(const ADKernelManager&)
-{
-
-}
-
-

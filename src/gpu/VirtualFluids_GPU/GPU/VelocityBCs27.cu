@@ -2212,7 +2212,7 @@ extern "C" __global__ void QVelDeviceCompZeroPress27(
 	//! The velocity boundary condition is executed in the following steps
 	//!
 	////////////////////////////////////////////////////////////////////////////////
-	//! - Get node index coordinates from thredIdx, blockIdx, blockDim and gridDim.
+	//! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
 	//!
    const unsigned  x = threadIdx.x;  // global x-index 
    const unsigned  y = blockIdx.x;   // global y-index 
@@ -3413,281 +3413,154 @@ extern "C" __global__ void LB_BC_Vel_West_27( int nx,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QVelDevPlainBB27(real* vx,
-											real* vy,
-	 										real* vz,
-											real* DD,
-											int* k_Q, 
-											real* QQ,
-											unsigned int numberOfBCnodes, 
-											real om1, 
-											unsigned int* neighborX,
-											unsigned int* neighborY,
-											unsigned int* neighborZ,
-											unsigned int size_Mat, 
-											bool isEvenTimestep)
+extern "C" __global__ void QVelDevPlainBB27(
+   real* velocityX,
+   real* velocityY,
+   real* velocityZ,
+   real* distributions,
+   int* subgridDistanceIndices,
+   real* subgridDistances,
+   uint numberOfBCnodes,
+   uint* neighborX,
+   uint* neighborY,
+   uint* neighborZ,
+   uint numberOfLBnodes,
+   bool isEvenTimestep)
 {
-   Distributions27 D;
-   if (isEvenTimestep==true)
-   {
-      D.f[dirE   ] = &DD[dirE   *size_Mat];
-      D.f[dirW   ] = &DD[dirW   *size_Mat];
-      D.f[dirN   ] = &DD[dirN   *size_Mat];
-      D.f[dirS   ] = &DD[dirS   *size_Mat];
-      D.f[dirT   ] = &DD[dirT   *size_Mat];
-      D.f[dirB   ] = &DD[dirB   *size_Mat];
-      D.f[dirNE  ] = &DD[dirNE  *size_Mat];
-      D.f[dirSW  ] = &DD[dirSW  *size_Mat];
-      D.f[dirSE  ] = &DD[dirSE  *size_Mat];
-      D.f[dirNW  ] = &DD[dirNW  *size_Mat];
-      D.f[dirTE  ] = &DD[dirTE  *size_Mat];
-      D.f[dirBW  ] = &DD[dirBW  *size_Mat];
-      D.f[dirBE  ] = &DD[dirBE  *size_Mat];
-      D.f[dirTW  ] = &DD[dirTW  *size_Mat];
-      D.f[dirTN  ] = &DD[dirTN  *size_Mat];
-      D.f[dirBS  ] = &DD[dirBS  *size_Mat];
-      D.f[dirBN  ] = &DD[dirBN  *size_Mat];
-      D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
-      D.f[dirTNE ] = &DD[dirTNE *size_Mat];
-      D.f[dirTSW ] = &DD[dirTSW *size_Mat];
-      D.f[dirTSE ] = &DD[dirTSE *size_Mat];
-      D.f[dirTNW ] = &DD[dirTNW *size_Mat];
-      D.f[dirBNE ] = &DD[dirBNE *size_Mat];
-      D.f[dirBSW ] = &DD[dirBSW *size_Mat];
-      D.f[dirBSE ] = &DD[dirBSE *size_Mat];
-      D.f[dirBNW ] = &DD[dirBNW *size_Mat];
-   } 
-   else
-   {
-      D.f[dirW   ] = &DD[dirE   *size_Mat];
-      D.f[dirE   ] = &DD[dirW   *size_Mat];
-      D.f[dirS   ] = &DD[dirN   *size_Mat];
-      D.f[dirN   ] = &DD[dirS   *size_Mat];
-      D.f[dirB   ] = &DD[dirT   *size_Mat];
-      D.f[dirT   ] = &DD[dirB   *size_Mat];
-      D.f[dirSW  ] = &DD[dirNE  *size_Mat];
-      D.f[dirNE  ] = &DD[dirSW  *size_Mat];
-      D.f[dirNW  ] = &DD[dirSE  *size_Mat];
-      D.f[dirSE  ] = &DD[dirNW  *size_Mat];
-      D.f[dirBW  ] = &DD[dirTE  *size_Mat];
-      D.f[dirTE  ] = &DD[dirBW  *size_Mat];
-      D.f[dirTW  ] = &DD[dirBE  *size_Mat];
-      D.f[dirBE  ] = &DD[dirTW  *size_Mat];
-      D.f[dirBS  ] = &DD[dirTN  *size_Mat];
-      D.f[dirTN  ] = &DD[dirBS  *size_Mat];
-      D.f[dirTS  ] = &DD[dirBN  *size_Mat];
-      D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
-      D.f[dirTNE ] = &DD[dirBSW *size_Mat];
-      D.f[dirTSW ] = &DD[dirBNE *size_Mat];
-      D.f[dirTSE ] = &DD[dirBNW *size_Mat];
-      D.f[dirTNW ] = &DD[dirBSE *size_Mat];
-      D.f[dirBNE ] = &DD[dirTSW *size_Mat];
-      D.f[dirBSW ] = &DD[dirTNE *size_Mat];
-      D.f[dirBSE ] = &DD[dirTNW *size_Mat];
-      D.f[dirBNW ] = &DD[dirTSE *size_Mat];
-   }
+   //////////////////////////////////////////////////////////////////////////
+   //! The velocity boundary condition is executed in the following steps
+   //!
    ////////////////////////////////////////////////////////////////////////////////
-   const unsigned  x = threadIdx.x;  // Globaler x-Index 
-   const unsigned  y = blockIdx.x;   // Globaler y-Index 
-   const unsigned  z = blockIdx.y;   // Globaler z-Index 
+   //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
+   //!
+   const unsigned  x = threadIdx.x;   // global x-index
+   const unsigned  y = blockIdx.x;    // global y-index
+   const unsigned  z = blockIdx.y;    // global z-index
 
    const unsigned nx = blockDim.x;
    const unsigned ny = gridDim.x;
 
    const unsigned k = nx*(ny*z + y) + x;
+
    //////////////////////////////////////////////////////////////////////////
-
-   if(k<numberOfBCnodes)
+   // run for all indices in size of boundary condition (numberOfBCnodes)
+   if(k < numberOfBCnodes)
    {
-	  ////////////////////////////////////////////////////////////////////////////////
-	  real VeloX = vx[k];
-	  real VeloY = vy[k];
-	  real VeloZ = vz[k];
-      ////////////////////////////////////////////////////////////////////////////////
-      real*q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
-			 *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
-			 *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
-			 *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
-			 *q_dirBSE, *q_dirBNW; 
-      q_dirE   = &QQ[dirE   * numberOfBCnodes];
-      q_dirW   = &QQ[dirW   * numberOfBCnodes];
-      q_dirN   = &QQ[dirN   * numberOfBCnodes];
-      q_dirS   = &QQ[dirS   * numberOfBCnodes];
-      q_dirT   = &QQ[dirT   * numberOfBCnodes];
-      q_dirB   = &QQ[dirB   * numberOfBCnodes];
-      q_dirNE  = &QQ[dirNE  * numberOfBCnodes];
-      q_dirSW  = &QQ[dirSW  * numberOfBCnodes];
-      q_dirSE  = &QQ[dirSE  * numberOfBCnodes];
-      q_dirNW  = &QQ[dirNW  * numberOfBCnodes];
-      q_dirTE  = &QQ[dirTE  * numberOfBCnodes];
-      q_dirBW  = &QQ[dirBW  * numberOfBCnodes];
-      q_dirBE  = &QQ[dirBE  * numberOfBCnodes];
-      q_dirTW  = &QQ[dirTW  * numberOfBCnodes];
-      q_dirTN  = &QQ[dirTN  * numberOfBCnodes];
-      q_dirBS  = &QQ[dirBS  * numberOfBCnodes];
-      q_dirBN  = &QQ[dirBN  * numberOfBCnodes];
-      q_dirTS  = &QQ[dirTS  * numberOfBCnodes];
-      q_dirTNE = &QQ[dirTNE * numberOfBCnodes];
-      q_dirTSW = &QQ[dirTSW * numberOfBCnodes];
-      q_dirTSE = &QQ[dirTSE * numberOfBCnodes];
-      q_dirTNW = &QQ[dirTNW * numberOfBCnodes];
-      q_dirBNE = &QQ[dirBNE * numberOfBCnodes];
-      q_dirBSW = &QQ[dirBSW * numberOfBCnodes];
-      q_dirBSE = &QQ[dirBSE * numberOfBCnodes];
-      q_dirBNW = &QQ[dirBNW * numberOfBCnodes];
-      ////////////////////////////////////////////////////////////////////////////////
-      //index
-      unsigned int KQK  = k_Q[k];
-      //unsigned int kzero= KQK;
-      unsigned int ke   = KQK;
-      unsigned int kw   = neighborX[KQK];
-      unsigned int kn   = KQK;
-      unsigned int ks   = neighborY[KQK];
-      unsigned int kt   = KQK;
-      unsigned int kb   = neighborZ[KQK];
-      unsigned int ksw  = neighborY[kw];
-      unsigned int kne  = KQK;
-      unsigned int kse  = ks;
-      unsigned int knw  = kw;
-      unsigned int kbw  = neighborZ[kw];
-      unsigned int kte  = KQK;
-      unsigned int kbe  = kb;
-      unsigned int ktw  = kw;
-      unsigned int kbs  = neighborZ[ks];
-      unsigned int ktn  = KQK;
-      unsigned int kbn  = kb;
-      unsigned int kts  = ks;
-      unsigned int ktse = ks;
-      unsigned int kbnw = kbw;
-      unsigned int ktnw = kw;
-      unsigned int kbse = kbs;
-      unsigned int ktsw = ksw;
-      unsigned int kbne = kb;
-      unsigned int ktne = KQK;
-      unsigned int kbsw = neighborZ[ksw];
-      ////////////////////////////////////////////////////////////////////////////////
-     
-      ////////////////////////////////////////////////////////////////////////////////
-      real f_W    = (D.f[dirE   ])[ke   ];
-      real f_E    = (D.f[dirW   ])[kw   ];
-      real f_S    = (D.f[dirN   ])[kn   ];
-      real f_N    = (D.f[dirS   ])[ks   ];
-      real f_B    = (D.f[dirT   ])[kt   ];
-      real f_T    = (D.f[dirB   ])[kb   ];
-      real f_SW   = (D.f[dirNE  ])[kne  ];
-      real f_NE   = (D.f[dirSW  ])[ksw  ];
-      real f_NW   = (D.f[dirSE  ])[kse  ];
-      real f_SE   = (D.f[dirNW  ])[knw  ];
-      real f_BW   = (D.f[dirTE  ])[kte  ];
-      real f_TE   = (D.f[dirBW  ])[kbw  ];
-      real f_TW   = (D.f[dirBE  ])[kbe  ];
-      real f_BE   = (D.f[dirTW  ])[ktw  ];
-      real f_BS   = (D.f[dirTN  ])[ktn  ];
-      real f_TN   = (D.f[dirBS  ])[kbs  ];
-      real f_TS   = (D.f[dirBN  ])[kbn  ];
-      real f_BN   = (D.f[dirTS  ])[kts  ];
-      real f_BSW  = (D.f[dirTNE ])[ktne ];
-      real f_BNE  = (D.f[dirTSW ])[ktsw ];
-      real f_BNW  = (D.f[dirTSE ])[ktse ];
-      real f_BSE  = (D.f[dirTNW ])[ktnw ];
-      real f_TSW  = (D.f[dirBNE ])[kbne ];
-      real f_TNE  = (D.f[dirBSW ])[kbsw ];
-      real f_TNW  = (D.f[dirBSE ])[kbse ];
-      real f_TSE  = (D.f[dirBNW ])[kbnw ];
-	  ////////////////////////////////////////////////////////////////////////////////
+       //////////////////////////////////////////////////////////////////////////
+       //! - Read distributions: style of reading and writing the distributions from/to stored arrays dependent on timestep is based on the esoteric twist algorithm \ref
+       //! <a href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017), DOI:10.3390/computation5020019 ]</b></a>
+       //!
+      Distributions27 dist;
+      getPointersToDistributions(dist, distributions, numberOfLBnodes, isEvenTimestep);
 
-	  ////////////////////////////////////////////////////////////////////////////////
-      if (isEvenTimestep==false)
-      {
-         D.f[dirE   ] = &DD[dirE   *size_Mat];
-         D.f[dirW   ] = &DD[dirW   *size_Mat];
-         D.f[dirN   ] = &DD[dirN   *size_Mat];
-         D.f[dirS   ] = &DD[dirS   *size_Mat];
-         D.f[dirT   ] = &DD[dirT   *size_Mat];
-         D.f[dirB   ] = &DD[dirB   *size_Mat];
-         D.f[dirNE  ] = &DD[dirNE  *size_Mat];
-         D.f[dirSW  ] = &DD[dirSW  *size_Mat];
-         D.f[dirSE  ] = &DD[dirSE  *size_Mat];
-         D.f[dirNW  ] = &DD[dirNW  *size_Mat];
-         D.f[dirTE  ] = &DD[dirTE  *size_Mat];
-         D.f[dirBW  ] = &DD[dirBW  *size_Mat];
-         D.f[dirBE  ] = &DD[dirBE  *size_Mat];
-         D.f[dirTW  ] = &DD[dirTW  *size_Mat];
-         D.f[dirTN  ] = &DD[dirTN  *size_Mat];
-         D.f[dirBS  ] = &DD[dirBS  *size_Mat];
-         D.f[dirBN  ] = &DD[dirBN  *size_Mat];
-         D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
-         D.f[dirTNE ] = &DD[dirTNE *size_Mat];
-         D.f[dirTSW ] = &DD[dirTSW *size_Mat];
-         D.f[dirTSE ] = &DD[dirTSE *size_Mat];
-         D.f[dirTNW ] = &DD[dirTNW *size_Mat];
-         D.f[dirBNE ] = &DD[dirBNE *size_Mat];
-         D.f[dirBSW ] = &DD[dirBSW *size_Mat];
-         D.f[dirBSE ] = &DD[dirBSE *size_Mat];
-         D.f[dirBNW ] = &DD[dirBNW *size_Mat];
-      } 
-      else
-      {
-         D.f[dirW   ] = &DD[dirE   *size_Mat];
-         D.f[dirE   ] = &DD[dirW   *size_Mat];
-         D.f[dirS   ] = &DD[dirN   *size_Mat];
-         D.f[dirN   ] = &DD[dirS   *size_Mat];
-         D.f[dirB   ] = &DD[dirT   *size_Mat];
-         D.f[dirT   ] = &DD[dirB   *size_Mat];
-         D.f[dirSW  ] = &DD[dirNE  *size_Mat];
-         D.f[dirNE  ] = &DD[dirSW  *size_Mat];
-         D.f[dirNW  ] = &DD[dirSE  *size_Mat];
-         D.f[dirSE  ] = &DD[dirNW  *size_Mat];
-         D.f[dirBW  ] = &DD[dirTE  *size_Mat];
-         D.f[dirTE  ] = &DD[dirBW  *size_Mat];
-         D.f[dirTW  ] = &DD[dirBE  *size_Mat];
-         D.f[dirBE  ] = &DD[dirTW  *size_Mat];
-         D.f[dirBS  ] = &DD[dirTN  *size_Mat];
-         D.f[dirTN  ] = &DD[dirBS  *size_Mat];
-         D.f[dirTS  ] = &DD[dirBN  *size_Mat];
-         D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
-         D.f[dirTNE ] = &DD[dirBSW *size_Mat];
-         D.f[dirTSW ] = &DD[dirBNE *size_Mat];
-         D.f[dirTSE ] = &DD[dirBNW *size_Mat];
-         D.f[dirTNW ] = &DD[dirBSE *size_Mat];
-         D.f[dirBNE ] = &DD[dirTSW *size_Mat];
-         D.f[dirBSW ] = &DD[dirTNE *size_Mat];
-         D.f[dirBSE ] = &DD[dirTNW *size_Mat];
-         D.f[dirBNW ] = &DD[dirTSE *size_Mat];
-      }
-	  ////////////////////////////////////////////////////////////////////////////////
-	  real q;
-      q = q_dirE[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirW  ])[kw  ]=f_E   - c6o1 * c2o27  * VeloX;	
-      q = q_dirW[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirE  ])[ke  ]=f_W   + c6o1 * c2o27  * VeloX;	
-      q = q_dirN[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirS  ])[ks  ]=f_N   - c6o1 * c2o27  * VeloY;	
-      q = q_dirS[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirN  ])[kn  ]=f_S   + c6o1 * c2o27  * VeloY;	
-      q = q_dirT[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirB  ])[kb  ]=f_T   - c6o1 * c2o27  * VeloZ;
-      q = q_dirB[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirT  ])[kt  ]=f_B   + c6o1 * c2o27  * VeloZ;
-      q = q_dirNE[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirSW ])[ksw ]=f_NE  - c6o1 * c1o54  * VeloX - c1o54  * VeloY;
-	  q = q_dirSW[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirNE ])[kne ]=f_SW  + c6o1 * c1o54  * VeloX + c1o54  * VeloY;
-	  q = q_dirSE[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirNW ])[knw ]=f_SE  - c6o1 * c1o54  * VeloX + c1o54  * VeloY;
-	  q = q_dirNW[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirSE ])[kse ]=f_NW  + c6o1 * c1o54  * VeloX - c1o54  * VeloY;
-	  q = q_dirTE[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirBW ])[kbw ]=f_TE  - c6o1 * c1o54  * VeloX - c1o54  * VeloZ;
-	  q = q_dirBW[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirTE ])[kte ]=f_BW  + c6o1 * c1o54  * VeloX + c1o54  * VeloZ;
-	  q = q_dirBE[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirTW ])[ktw ]=f_BE  - c6o1 * c1o54  * VeloX + c1o54  * VeloZ;
-	  q = q_dirTW[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirBE ])[kbe ]=f_TW  + c6o1 * c1o54  * VeloX - c1o54  * VeloZ;
-	  q = q_dirTN[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirBS ])[kbs ]=f_TN  - c6o1 * c1o54  * VeloY - c1o54  * VeloZ;
-	  q = q_dirBS[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirTN ])[ktn ]=f_BS  + c6o1 * c1o54  * VeloY + c1o54  * VeloZ;
-	  q = q_dirBN[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirTS ])[kts ]=f_BN  - c6o1 * c1o54  * VeloY + c1o54  * VeloZ;
-	  q = q_dirTS[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirBN ])[kbn ]=f_TS  + c6o1 * c1o54  * VeloY - c1o54  * VeloZ;
-      q = q_dirTNE[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirBSW])[kbsw]=f_TNE - c6o1 * c1o216 * VeloX - c1o216 * VeloY - c1o216 * VeloZ;
-      q = q_dirBSW[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirTNE])[ktne]=f_BSW + c6o1 * c1o216 * VeloX + c1o216 * VeloY + c1o216 * VeloZ;
-      q = q_dirBNE[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirTSW])[ktsw]=f_BNE - c6o1 * c1o216 * VeloX - c1o216 * VeloY + c1o216 * VeloZ;
-      q = q_dirTSW[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirBNE])[kbne]=f_TSW + c6o1 * c1o216 * VeloX + c1o216 * VeloY - c1o216 * VeloZ;
-      q = q_dirTSE[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirBNW])[kbnw]=f_TSE - c6o1 * c1o216 * VeloX + c1o216 * VeloY - c1o216 * VeloZ;
-      q = q_dirBNW[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirTSE])[ktse]=f_BNW + c6o1 * c1o216 * VeloX - c1o216 * VeloY + c1o216 * VeloZ;
-      q = q_dirBSE[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirTNW])[ktnw]=f_BSE - c6o1 * c1o216 * VeloX + c1o216 * VeloY + c1o216 * VeloZ;
-      q = q_dirTNW[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirBSE])[kbse]=f_TNW + c6o1 * c1o216 * VeloX - c1o216 * VeloY - c1o216 * VeloZ;
-	  ////////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////////
+      //! - Set local velocities
+      //!
+      real VeloX = velocityX[k];
+      real VeloY = velocityY[k];
+      real VeloZ = velocityZ[k];
+
+      ////////////////////////////////////////////////////////////////////////////////
+      //! - Set local subgrid distances (q's)
+      //!
+      SubgridDistances27 subgridD;
+      getPointersToSubgridDistances(subgridD, subgridDistances, numberOfBCnodes);
+
+      ////////////////////////////////////////////////////////////////////////////////
+      //! - Set neighbor indices (necessary for indirect addressing)
+      //!
+      uint indexOfBCnode = subgridDistanceIndices[k];
+      uint ke   = indexOfBCnode;
+      uint kw   = neighborX[indexOfBCnode];
+      uint kn   = indexOfBCnode;
+      uint ks   = neighborY[indexOfBCnode];
+      uint kt   = indexOfBCnode;
+      uint kb   = neighborZ[indexOfBCnode];
+      uint ksw  = neighborY[kw];
+      uint kne  = indexOfBCnode;
+      uint kse  = ks;
+      uint knw  = kw;
+      uint kbw  = neighborZ[kw];
+      uint kte  = indexOfBCnode;
+      uint kbe  = kb;
+      uint ktw  = kw;
+      uint kbs  = neighborZ[ks];
+      uint ktn  = indexOfBCnode;
+      uint kbn  = kb;
+      uint kts  = ks;
+      uint ktse = ks;
+      uint kbnw = kbw;
+      uint ktnw = kw;
+      uint kbse = kbs;
+      uint ktsw = ksw;
+      uint kbne = kb;
+      uint ktne = indexOfBCnode;
+      uint kbsw = neighborZ[ksw];
+
+      ////////////////////////////////////////////////////////////////////////////////
+      //! - Set local distributions
+      //!
+      real f_W    = (dist.f[dirE   ])[ke   ];
+      real f_E    = (dist.f[dirW   ])[kw   ];
+      real f_S    = (dist.f[dirN   ])[kn   ];
+      real f_N    = (dist.f[dirS   ])[ks   ];
+      real f_B    = (dist.f[dirT   ])[kt   ];
+      real f_T    = (dist.f[dirB   ])[kb   ];
+      real f_SW   = (dist.f[dirNE  ])[kne  ];
+      real f_NE   = (dist.f[dirSW  ])[ksw  ];
+      real f_NW   = (dist.f[dirSE  ])[kse  ];
+      real f_SE   = (dist.f[dirNW  ])[knw  ];
+      real f_BW   = (dist.f[dirTE  ])[kte  ];
+      real f_TE   = (dist.f[dirBW  ])[kbw  ];
+      real f_TW   = (dist.f[dirBE  ])[kbe  ];
+      real f_BE   = (dist.f[dirTW  ])[ktw  ];
+      real f_BS   = (dist.f[dirTN  ])[ktn  ];
+      real f_TN   = (dist.f[dirBS  ])[kbs  ];
+      real f_TS   = (dist.f[dirBN  ])[kbn  ];
+      real f_BN   = (dist.f[dirTS  ])[kts  ];
+      real f_BSW  = (dist.f[dirTNE ])[ktne ];
+      real f_BNE  = (dist.f[dirTSW ])[ktsw ];
+      real f_BNW  = (dist.f[dirTSE ])[ktse ];
+      real f_BSE  = (dist.f[dirTNW ])[ktnw ];
+      real f_TSW  = (dist.f[dirBNE ])[kbne ];
+      real f_TNE  = (dist.f[dirBSW ])[kbsw ];
+      real f_TNW  = (dist.f[dirBSE ])[kbse ];
+      real f_TSE  = (dist.f[dirBNW ])[kbnw ];
+
+      ////////////////////////////////////////////////////////////////////////////////
+      //! - change the pointer to write the results in the correct array
+      //!
+      getPointersToDistributions(dist, distributions, numberOfLBnodes, !isEvenTimestep);
+
+      ////////////////////////////////////////////////////////////////////////////////
+      //! - rewrite distributions if there is a sub-grid distance (q) in same direction
+      real q;
+      q = (subgridD.q[dirE  ])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[dirW  ])[kw  ]=f_E   + c4o9  * (-VeloX);
+      q = (subgridD.q[dirW  ])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[dirE  ])[ke  ]=f_W   + c4o9  * ( VeloX);
+      q = (subgridD.q[dirN  ])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[dirS  ])[ks  ]=f_N   + c4o9  * (-VeloY);
+      q = (subgridD.q[dirS  ])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[dirN  ])[kn  ]=f_S   + c4o9  * ( VeloY);
+      q = (subgridD.q[dirT  ])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[dirB  ])[kb  ]=f_T   + c4o9  * (-VeloZ);
+      q = (subgridD.q[dirB  ])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[dirT  ])[kt  ]=f_B   + c4o9  * ( VeloZ);
+      q = (subgridD.q[dirNE ])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[dirSW ])[ksw ]=f_NE  + c1o9  * (-VeloX - VeloY);
+      q = (subgridD.q[dirSW ])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[dirNE ])[kne ]=f_SW  + c1o9  * ( VeloX + VeloY);
+      q = (subgridD.q[dirSE ])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[dirNW ])[knw ]=f_SE  + c1o9  * (-VeloX + VeloY);
+      q = (subgridD.q[dirNW ])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[dirSE ])[kse ]=f_NW  + c1o9  * ( VeloX - VeloY);
+      q = (subgridD.q[dirTE ])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[dirBW ])[kbw ]=f_TE  + c1o9  * (-VeloX - VeloZ);
+      q = (subgridD.q[dirBW ])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[dirTE ])[kte ]=f_BW  + c1o9  * ( VeloX + VeloZ);
+      q = (subgridD.q[dirBE ])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[dirTW ])[ktw ]=f_BE  + c1o9  * (-VeloX + VeloZ);
+      q = (subgridD.q[dirTW ])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[dirBE ])[kbe ]=f_TW  + c1o9  * ( VeloX - VeloZ);
+      q = (subgridD.q[dirTN ])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[dirBS ])[kbs ]=f_TN  + c1o9  * (-VeloY - VeloZ);
+      q = (subgridD.q[dirBS ])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[dirTN ])[ktn ]=f_BS  + c1o9  * ( VeloY + VeloZ);
+      q = (subgridD.q[dirBN ])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[dirTS ])[kts ]=f_BN  + c1o9  * (-VeloY + VeloZ);
+      q = (subgridD.q[dirTS ])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[dirBN ])[kbn ]=f_TS  + c1o9  * ( VeloY - VeloZ);
+      q = (subgridD.q[dirTNE])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[dirBSW])[kbsw]=f_TNE + c1o36 * (-VeloX - VeloY - VeloZ);
+      q = (subgridD.q[dirBSW])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[dirTNE])[ktne]=f_BSW + c1o36 * ( VeloX + VeloY + VeloZ);
+      q = (subgridD.q[dirBNE])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[dirTSW])[ktsw]=f_BNE + c1o36 * (-VeloX - VeloY + VeloZ);
+      q = (subgridD.q[dirTSW])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[dirBNE])[kbne]=f_TSW + c1o36 * ( VeloX + VeloY - VeloZ);
+      q = (subgridD.q[dirTSE])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[dirBNW])[kbnw]=f_TSE + c1o36 * (-VeloX + VeloY - VeloZ);
+      q = (subgridD.q[dirBNW])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[dirTSE])[ktse]=f_BNW + c1o36 * ( VeloX - VeloY + VeloZ);
+      q = (subgridD.q[dirBSE])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[dirTNW])[ktnw]=f_BSE + c1o36 * (-VeloX + VeloY + VeloZ);
+      q = (subgridD.q[dirTNW])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[dirBSE])[kbse]=f_TNW + c1o36 * ( VeloX - VeloY - VeloZ);
    }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4878,7 +4751,7 @@ extern "C" __global__ void QVelDeviceComp27(
 											real* velocityX,
 											real* velocityY,
 											real* velocityZ,
-											real* distribution,
+											real* distributions,
 											int* subgridDistanceIndices,
 											real* subgridDistances,
 											unsigned int numberOfBCnodes,
@@ -4893,7 +4766,7 @@ extern "C" __global__ void QVelDeviceComp27(
    //! The velocity boundary condition is executed in the following steps
    //!
    ////////////////////////////////////////////////////////////////////////////////
-   //! - Get node index coordinates from thredIdx, blockIdx, blockDim and gridDim.
+   //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
    //!
    const unsigned  x = threadIdx.x;  // global x-index 
    const unsigned  y = blockIdx.x;   // global y-index 
@@ -4914,7 +4787,7 @@ extern "C" __global__ void QVelDeviceComp27(
       //! <a href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017), DOI:10.3390/computation5020019 ]</b></a>
       //!
       Distributions27 dist;
-      getPointersToDistributions(dist, distribution, numberOfLBnodes, isEvenTimestep);
+      getPointersToDistributions(dist, distributions, numberOfLBnodes, isEvenTimestep);
 
       ////////////////////////////////////////////////////////////////////////////////
       //! - Set local velocities
@@ -5015,10 +4888,11 @@ extern "C" __global__ void QVelDeviceComp27(
       ////////////////////////////////////////////////////////////////////////////////
       //! - change the pointer to write the results in the correct array
       //!
-      getPointersToDistributions(dist, distribution, numberOfLBnodes, !isEvenTimestep);
+      getPointersToDistributions(dist, distributions, numberOfLBnodes, !isEvenTimestep);
 
       ////////////////////////////////////////////////////////////////////////////////
       //! - Update distributions with subgrid distance (q) between zero and one
+      //!
       real feq, q, velocityLB, velocityBC;
       q = (subgridD.q[dirE])[k];
       if (q>=c0o1 && q<=c1o1) // only update distribution for q between zero and one
