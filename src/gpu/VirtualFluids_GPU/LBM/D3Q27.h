@@ -5,36 +5,37 @@
 #define dirSTART  0
 #define dirEND   26
 
-#define dirE    /*f1 */  0
-#define dirW    /*f2 */  1
-#define dirN    /*f3 */  2
-#define dirS    /*f4 */  3
-#define dirT    /*f5 */  4
-#define dirB    /*f6 */  5
-#define dirNE   /*f7 */  6
-#define dirSW   /*f8 */  7
-#define dirSE   /*f9 */  8
-#define dirNW   /*f10*/  9
-#define dirTE   /*f11*/  10
-#define dirBW   /*f12*/  11
-#define dirBE   /*f13*/  12
-#define dirTW   /*f14*/  13
-#define dirTN   /*f15*/  14
-#define dirBS   /*f16*/  15
-#define dirBN   /*f17*/  16
-#define dirTS   /*f18*/  17
+#define dirE    0
+#define dirW    1
+#define dirN    2
+#define dirS    3
+#define dirT    4
+#define dirB    5
 
-#define dirTNE    /*f */  18
-#define dirTNW    /*f */  19
-#define dirTSE    /*f */  20
-#define dirTSW    /*f */  21
-#define dirBNE    /*f */  22
-#define dirBNW    /*f */  23
-#define dirBSE    /*f */  24
-#define dirBSW    /*f */  25
+#define dirNE   6
+#define dirSW   7
+#define dirSE   8
+#define dirNW   9
+#define dirTE   10
+#define dirBW   11
+#define dirBE   12
+#define dirTW   13
+#define dirTN   14
+#define dirBS   15
+#define dirBN   16
+#define dirTS   17
 
-#define dirZERO /*f0 */  26
-#define dirREST /*f0 */  26
+#define dirTNE  18
+#define dirTNW  19
+#define dirTSE  20
+#define dirTSW  21
+#define dirBNE  22
+#define dirBNW  23
+#define dirBSE  24
+#define dirBSW  25
+
+#define dirZERO 26
+#define dirREST 26
 
 #endif
 
