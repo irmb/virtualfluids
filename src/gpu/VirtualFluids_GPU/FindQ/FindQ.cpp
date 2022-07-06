@@ -1,9 +1,16 @@
 #include "FindQ/FindQ.h"
+#include <stdexcept>
 
 
 ////////////////////////////////////////////////////////////////////////////////
 void findQ(Parameter* para, int lev)
 {
+   // ! CAUTION ! Do not use this function!
+   // As the order of the distributions was changed in July 2022, this does not work anymore.
+   // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/14
+
+   throw std::runtime_error("findQ() is deprecated! - see comment above for more information");
+
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
    int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
@@ -183,6 +190,12 @@ void findQ(Parameter* para, int lev)
 ////////////////////////////////////////////////////////////////////////////////
 void findKforQ(Parameter* para, int lev)
 {
+   // ! CAUTION ! Do not use this function!
+   // As the order of the distributions was changed in July 2022, this does not work anymore.
+   // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/14
+
+   throw std::runtime_error("findKforQ() is deprecated! - see comment above for more information");
+
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
    int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
@@ -259,6 +272,12 @@ void findQ_MG( int nx, int ny, unsigned int nnx, unsigned int nny, unsigned int 
    Q.q27[dirBSW ] = &QQ[dirBSW *sizeQ];
    Q.q27[dirBSE ] = &QQ[dirBSE *sizeQ];
    Q.q27[dirBNW ] = &QQ[dirBNW *sizeQ];
+
+   // ! CAUTION ! Do not use this function!
+   // As the order of the distributions was changed in July 2022, this does not work anymore.
+   // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/14
+
+   throw std::runtime_error("findQ_MG() is deprecated! - see comment above for more information");
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
@@ -345,6 +364,12 @@ void findQ_MG( int nx, int ny, unsigned int nnx, unsigned int nny, unsigned int 
 ////////////////////////////////////////////////////////////////////////////////
 void findKforQ_MG(int nx, int ny, unsigned int nnx, unsigned int nny, unsigned int nnz, int* geo_mat, QforBoundaryConditions &QIN)
 {
+   // ! CAUTION ! Do not use this function!
+   // As the order of the distributions was changed in July 2022, this does not work anymore.
+   // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/14
+
+   throw std::runtime_error("findKforQ_MG() is deprecated! - see comment above for more information");
+
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
    int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
@@ -387,12 +412,11 @@ void findKforQ_MG(int nx, int ny, unsigned int nnx, unsigned int nny, unsigned i
 ////////////////////////////////////////////////////////////////////////////////
 void findQInflow(Parameter* para)
 {
-   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   //////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
-   //int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
-   //int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
-   //int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
-   //real ON[27];
+   // ! CAUTION ! Do not use this function!
+   // As the order of the distributions was changed in July 2022, this does not work anymore.
+   // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/14
+   throw std::runtime_error("findQInflow() is deprecated! - see comment above for more information");
+
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    unsigned int i, j, k, m;//, mm, l;
    //int nx                        = para->getParH(para->getFine())->nx;
@@ -499,6 +523,12 @@ void findQInflow(Parameter* para)
                //Q.q27[dirBSE ][QIN.numberOfBCnodes] = (real)1.f;
                //Q.q27[dirBNW ][QIN.numberOfBCnodes] = (real)1.f;
 			   //////////////////////////////////////////////////////////////////////////
+
+
+               // ! CAUTION ! Do not use this function!
+   // As the order of the distributions was changed in July 2022, this does not work anymore.
+   // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/14
+
 			   Q.q27[dirE   ][QIN.numberOfBCnodes] = (real)-1.f;
 			   Q.q27[dirW   ][QIN.numberOfBCnodes] = (real)-1.f;
 			   Q.q27[dirN   ][QIN.numberOfBCnodes] = (real)-1.f;
@@ -654,6 +684,11 @@ void findQInflow(Parameter* para)
 ////////////////////////////////////////////////////////////////////////////////
 void findKforQInflow(Parameter* para)
 {
+   // ! CAUTION ! Do not use this function!
+   // As the order of the distributions was changed in July 2022, this does not work anymore.
+   // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/14
+   throw std::runtime_error("findKforQInflow() is deprecated! - see comment above for more information");
+
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
    //int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
@@ -737,6 +772,11 @@ void findKforQInflow(Parameter* para)
 ////////////////////////////////////////////////////////////////////////////////
 void findQOutflow(Parameter* para)
 {
+   // ! CAUTION ! Do not use this function!
+   // As the order of the distributions was changed in July 2022, this does not work anymore.
+   // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/14
+   throw std::runtime_error("findQOutflow() is deprecated! - see comment above for more information");
+
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
    //int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
@@ -864,6 +904,11 @@ void findQOutflow(Parameter* para)
 ////////////////////////////////////////////////////////////////////////////////
 void findKforQOutflow(Parameter* para)
 {
+   // ! CAUTION ! Do not use this function!
+   // As the order of the distributions was changed in July 2022, this does not work anymore.
+   // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/14
+   throw std::runtime_error("findKforQOutflow() is deprecated! - see comment above for more information");
+
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
    //int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
@@ -1016,6 +1061,11 @@ void findKforQOutflow(Parameter* para)
 ////////////////////////////////////////////////////////////////////////////////
 void findQPressX0(Parameter* para, int lev)
 {
+   // ! CAUTION ! Do not use this function!
+   // As the order of the distributions was changed in July 2022, this does not work anymore.
+   // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/14
+   throw std::runtime_error("findKforQPressX0() is deprecated! - see comment above for more information");
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
 	//int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
@@ -1129,6 +1179,11 @@ void findQPressX0(Parameter* para, int lev)
 ////////////////////////////////////////////////////////////////////////////////
 void findKforQPressX0(Parameter* para, int lev)
 {
+   // ! CAUTION ! Do not use this function!
+   // As the order of the distributions was changed in July 2022, this does not work anymore.
+   // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/14
+   throw std::runtime_error("findKforQPressX0() is deprecated! - see comment above for more information");
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
 	//int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
@@ -1182,6 +1237,11 @@ void findKforQPressX0(Parameter* para, int lev)
 ////////////////////////////////////////////////////////////////////////////////
 void findQPressX1(Parameter* para, int lev)
 {
+   // ! CAUTION ! Do not use this function!
+   // As the order of the distributions was changed in July 2022, this does not work anymore.
+   // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/14
+   throw std::runtime_error("findQPressX1() is deprecated! - see comment above for more information");
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
 	//int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
@@ -1295,6 +1355,11 @@ void findQPressX1(Parameter* para, int lev)
 ////////////////////////////////////////////////////////////////////////////////
 void findKforQPressX1(Parameter* para, int lev)
 {
+   // ! CAUTION ! Do not use this function!
+   // As the order of the distributions was changed in July 2022, this does not work anymore.
+   // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/14
+   throw std::runtime_error("findKforQPressX1() is deprecated! - see comment above for more information");
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
 	//int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};

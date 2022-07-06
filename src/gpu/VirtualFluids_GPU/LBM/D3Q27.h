@@ -2,6 +2,9 @@
 #define _LB_D3Q27_H_
 #include <math.h>
 
+#define dirSTART  0
+#define dirEND   26
+
 #define dirE    /*f1 */  0
 #define dirW    /*f2 */  1
 #define dirN    /*f3 */  2
@@ -20,21 +23,18 @@
 #define dirBS   /*f16*/  15
 #define dirBN   /*f17*/  16
 #define dirTS   /*f18*/  17
-#define dirZERO /*f0 */  18
-#define dirREST /*f0 */  18
 
-#define dirTNE    /*f */  19
-#define dirBNE    /*f */  20
-#define dirTSE    /*f */  21
-#define dirBSE    /*f */  22
+#define dirTNE    /*f */  18
+#define dirTNW    /*f */  19
+#define dirTSE    /*f */  20
+#define dirTSW    /*f */  21
+#define dirBNE    /*f */  22
+#define dirBNW    /*f */  23
+#define dirBSE    /*f */  24
+#define dirBSW    /*f */  25
 
-#define dirTNW    /*f */  23
-#define dirBNW    /*f */  24
-#define dirTSW    /*f */  25
-#define dirBSW    /*f */  26
-
-#define dirSTART  0
-#define dirEND   26
+#define dirZERO /*f0 */  26
+#define dirREST /*f0 */  26
 
 #endif
 
