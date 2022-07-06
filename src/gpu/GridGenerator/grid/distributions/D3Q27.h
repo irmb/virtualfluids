@@ -65,7 +65,7 @@
 #define DIR_27_BSE   24
 #define DIR_27_BSW   25
 
-#define DIR_27_ZERO  26
+#define DIR_27_REST  26
 
 
 
@@ -177,8 +177,8 @@
 #define DIR_27_BSW_Y  -1
 #define DIR_27_BSW_Z  -1
 
-#define DIR_27_ZERO_X  0
-#define DIR_27_ZERO_Y  0
-#define DIR_27_ZERO_Z  0
+#define DIR_27_REST_X  0
+#define DIR_27_REST_Y  0
+#define DIR_27_REST_Z  0
 
 #endif

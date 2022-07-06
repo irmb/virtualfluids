@@ -186,7 +186,7 @@ void GksMeshAdapter::findCellToCellConnectivity()
 
         for( uint idx = 0; idx < 27; idx++ )
         {
-            if( idx == DIR_27_ZERO ) continue;
+            if( idx == DIR_27_REST ) continue;
 
             int xSign = dirs.directions[idx][0];
             int ySign = dirs.directions[idx][1];
