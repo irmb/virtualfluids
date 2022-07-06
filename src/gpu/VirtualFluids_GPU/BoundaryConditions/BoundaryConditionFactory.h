@@ -31,6 +31,8 @@ public:
 
     //! \brief An enumeration for selecting a no-slip boundary condition
     enum class NoSlipBC {
+        //! - NoSlipImplicitBounceBack = implicit bounce back by Esoteric Twist
+        NoSlipImplicitBounceBack,
         //! - NoSlipBounceBack = bounce back no-slip boundary condition
         NoSlipBounceBack,
         //! - NoSlipIncompressible = interpolated no-slip boundary condition, based on subgrid distances

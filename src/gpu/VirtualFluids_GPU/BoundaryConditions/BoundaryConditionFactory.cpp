@@ -61,6 +61,9 @@ boundaryCondition BoundaryConditionFactory::getNoSlipBoundaryConditionPost(bool 
 
     // for descriptions of the boundary conditions refer to the header
     switch (boundaryCondition) {
+        case NoSlipBC::NoSlipImplicitBounceBack:
+            return [] (LBMSimulationParameter *, QforBoundaryConditions *) {};
+            break;
         case NoSlipBC::NoSlipBounceBack:
             return BBDev27;
             break;
