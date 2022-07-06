@@ -61,15 +61,10 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 const real L = 1.0;
-
 const real dSphere = 0.2;
-
 const real Re = 1000.0; // related to the sphere's diameter
-
 const real velocity = 1.0;
-
 const real dt = (real)0.5e-3;
-
 const uint nx = 64;
 
 const uint timeStepOut = 10000;
