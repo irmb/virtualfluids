@@ -94,6 +94,7 @@ const real dt = (real)0.5e-3;
 const uint nx = 64;
 
 std::string path("output/");
+std::string gridPath("grid/");
 
 std::string simulationName("DrivenCavityChim");
 
@@ -175,11 +176,10 @@ void multipleLevel(const std::string& configPath)
 
 		para->setDevices(std::vector<uint>{(uint)0});
 
-        para->setOutputPath( path );
+        para->setOutputPath( path ); // optional, default is output/
+        para ->setGridPath( gridPath );  // optional, default is grid/
 
         para->setOutputPrefix( simulationName );
-
-        para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
 
         para->setPrintFiles(true);
 
@@ -215,7 +215,7 @@ void multipleLevel(const std::string& configPath)
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        gridBuilder->writeGridsToVtk(path + "/grid/");
+        gridBuilder->writeGridsToVtk(para->getGridPath());
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
