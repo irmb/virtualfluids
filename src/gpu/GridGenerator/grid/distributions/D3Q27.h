@@ -52,20 +52,21 @@
 #define DIR_27_BS   15
 #define DIR_27_BN   16
 #define DIR_27_TS   17
-#define DIR_27_ZERO 18
 
-#define DIR_27_TNE  19
-#define DIR_27_BNE  20
-#define DIR_27_TSE  21
-#define DIR_27_BSE  22
+#define DIR_27_TNE   18
+#define DIR_27_TNW   19
+#define DIR_27_TSE   20
+#define DIR_27_TSW   21
+#define DIR_27_BNE   22
+#define DIR_27_BNW   23
+#define DIR_27_BSE   24
+#define DIR_27_BSW   25
 
-#define DIR_27_TNW  23
-#define DIR_27_BNW  24
-#define DIR_27_TSW  25
-#define DIR_27_BSW  26
+#define DIR_27_ZERO  26
 
 #define DIR_27_START  0
 #define DIR_27_END   26
+
 
 
 #define DIR_27_E_X  1
@@ -159,7 +160,6 @@
 #define DIR_27_BSE_Y  -1
 #define DIR_27_BSE_Z  -1
 
-
 #define DIR_27_TNW_X  -1
 #define DIR_27_TNW_Y  1
 #define DIR_27_TNW_Z  1
@@ -175,5 +175,9 @@
 #define DIR_27_BSW_X  -1
 #define DIR_27_BSW_Y  -1
 #define DIR_27_BSW_Z  -1
+
+#define DIR_27_ZERO_X  0
+#define DIR_27_ZERO_Y  0
+#define DIR_27_ZERO_Z  0
 
 #endif
