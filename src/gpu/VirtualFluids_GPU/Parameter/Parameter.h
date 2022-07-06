@@ -378,6 +378,7 @@ class VIRTUALFLUIDS_GPU_EXPORT Parameter
 {
 public:
     Parameter(const vf::basics::ConfigurationFile &configData, int numberOfProcesses, int myId);
+    Parameter(int numberOfProcesses, int myId);
     ~Parameter();
     void initLBMSimulationParameter();
 
@@ -433,6 +434,7 @@ public:
     void setOutputPath(std::string oPath);
     void setOutputPrefix(std::string oPrefix);
     void setFName(std::string fname);
+    void setGridPath(std::string gridPath);
     void setGeometryFileC(std::string GeometryFileC);
     void setGeometryFileM(std::string GeometryFileM);
     void setGeometryFileF(std::string GeometryFileF);
@@ -650,6 +652,7 @@ public:
     std::string getOutputPath();
     std::string getOutputPrefix();
     std::string getFName();
+    std::string getGridPath();
     std::string getGeometryFileC();
     std::string getGeometryFileM();
     std::string getGeometryFileF();
@@ -856,7 +859,11 @@ public:
 
 private:
     void readConfigData(const vf::basics::ConfigurationFile &configData);
+    void initGridPaths();
+    void initGridBasePoints();
+    void initDefaultLBMkernelAllLevels();
 
+private:
     bool compOn{ false };
     bool diffOn{ false };
     bool isF3{ false };

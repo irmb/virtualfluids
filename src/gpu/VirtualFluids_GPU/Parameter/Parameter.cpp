@@ -44,12 +44,31 @@
 
 #include "Parameter/CudaStreamManager.h"
 
+Parameter::Parameter(int numberOfProcesses, int myId)
+{
+    this->ic.numprocs = numberOfProcesses; 
+    this->ic.myid = myId;
+    
+    initGridPaths();
+    initGridBasePoints();
+    initDefaultLBMkernelAllLevels();
+    this->setFName(this->getOutputPath() + this->getOutputPrefix());
+
+    // initLBMSimulationParameter();
+}
+
 Parameter::Parameter(const vf::basics::ConfigurationFile &configData, int numberOfProcesses, int myId)
 {
-    ic.numprocs = numberOfProcesses;
-    ic.myid = myId;
+    this->ic.numprocs = numberOfProcesses; 
+    this->ic.myid = myId;
 
     readConfigData(configData);
+
+    initGridPaths();
+    initGridBasePoints();
+    initDefaultLBMkernelAllLevels();
+    this->setFName(this->getOutputPath() + this->getOutputPrefix());
+
     // initLBMSimulationParameter();
 }
 
@@ -59,16 +78,12 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
 {
     if (configData.contains("NumberOfDevices"))
         this->setMaxDev(configData.getValue<int>("NumberOfDevices"));
-
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("Devices"))
         this->setDevices(configData.getVector<uint>("Devices"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("Path"))
         this->setOutputPath(configData.getValue<std::string>("Path"));
-    else
-        throw std::runtime_error("<Path> need to be defined in config file!");
-
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("Prefix"))
         this->setOutputPrefix(configData.getValue<std::string>("Prefix"));
@@ -246,72 +261,10 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
 
     //////////////////////////////////////////////////////////////////////////
 
-    std::string gridPath{ "" };
     if (configData.contains("GridPath"))
-        gridPath = configData.getValue<std::string>("GridPath");
-    else
-        throw std::runtime_error("GridPath has to be defined in config file!");
+        this->setGridPath(configData.getValue<std::string>("GridPath"));
 
-    if (this->getNumprocs() == 1)
-        gridPath += "/";
-    else
-        gridPath += "/" + StringUtil::toString(this->getMyID()) + "/";
-
-    // //////////////////////////////////////////////////////////////////////////
-    this->setFName(this->getOutputPath() + "/" + this->getOutputPrefix());
-    //////////////////////////////////////////////////////////////////////////
-    this->setgeoVec(gridPath + "geoVec.dat");
-    this->setcoordX(gridPath + "coordX.dat");
-    this->setcoordY(gridPath + "coordY.dat");
-    this->setcoordZ(gridPath + "coordZ.dat");
-    this->setneighborX(gridPath + "neighborX.dat");
-    this->setneighborY(gridPath + "neighborY.dat");
-    this->setneighborZ(gridPath + "neighborZ.dat");
-    this->setneighborWSB(gridPath + "neighborWSB.dat");
-    this->setscaleCFC(gridPath + "scaleCFC.dat");
-    this->setscaleCFF(gridPath + "scaleCFF.dat");
-    this->setscaleFCC(gridPath + "scaleFCC.dat");
-    this->setscaleFCF(gridPath + "scaleFCF.dat");
-    this->setscaleOffsetCF(gridPath + "offsetVecCF.dat");
-    this->setscaleOffsetFC(gridPath + "offsetVecFC.dat");
-    this->setgeomBoundaryBcQs(gridPath + "geomBoundaryQs.dat");
-    this->setgeomBoundaryBcValues(gridPath + "geomBoundaryValues.dat");
-    this->setinletBcQs(gridPath + "inletBoundaryQs.dat");
-    this->setinletBcValues(gridPath + "inletBoundaryValues.dat");
-    this->setoutletBcQs(gridPath + "outletBoundaryQs.dat");
-    this->setoutletBcValues(gridPath + "outletBoundaryValues.dat");
-    this->settopBcQs(gridPath + "topBoundaryQs.dat");
-    this->settopBcValues(gridPath + "topBoundaryValues.dat");
-    this->setbottomBcQs(gridPath + "bottomBoundaryQs.dat");
-    this->setbottomBcValues(gridPath + "bottomBoundaryValues.dat");
-    this->setfrontBcQs(gridPath + "frontBoundaryQs.dat");
-    this->setfrontBcValues(gridPath + "frontBoundaryValues.dat");
-    this->setbackBcQs(gridPath + "backBoundaryQs.dat");
-    this->setbackBcValues(gridPath + "backBoundaryValues.dat");
-    this->setnumberNodes(gridPath + "numberNodes.dat");
-    this->setLBMvsSI(gridPath + "LBMvsSI.dat");
-    this->setmeasurePoints(gridPath + "measurePoints.dat");
-    this->setpropellerValues(gridPath + "propellerValues.dat");
-    this->setcpTop(gridPath + "cpTop.dat");
-    this->setcpBottom(gridPath + "cpBottom.dat");
-    this->setcpBottom2(gridPath + "cpBottom2.dat");
-    this->setConcentration(gridPath + "conc.dat");
-    this->setStreetVelocity(gridPath + "streetVector.dat");
-    //////////////////////////////////////////////////////////////////////////
-    // Normals - Geometry
-    this->setgeomBoundaryNormalX(gridPath + "geomBoundaryNormalX.dat");
-    this->setgeomBoundaryNormalY(gridPath + "geomBoundaryNormalY.dat");
-    this->setgeomBoundaryNormalZ(gridPath + "geomBoundaryNormalZ.dat");
-    // Normals - Inlet
-    this->setInflowBoundaryNormalX(gridPath + "inletBoundaryNormalX.dat");
-    this->setInflowBoundaryNormalY(gridPath + "inletBoundaryNormalY.dat");
-    this->setInflowBoundaryNormalZ(gridPath + "inletBoundaryNormalZ.dat");
-    // Normals - Outlet
-    this->setOutflowBoundaryNormalX(gridPath + "outletBoundaryNormalX.dat");
-    this->setOutflowBoundaryNormalY(gridPath + "outletBoundaryNormalY.dat");
-    this->setOutflowBoundaryNormalZ(gridPath + "outletBoundaryNormalZ.dat");
-    //////////////////////////////////////////////////////////////////////////
-    // //Forcing
+    // Forcing
     real forcingX = 0.0;
     real forcingY = 0.0;
     real forcingZ = 0.0;
@@ -357,28 +310,6 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
 
     if (configData.contains("endXHotWall"))
         this->setEndXHotWall(configData.getValue<real>("endXHotWall"));
-    //////////////////////////////////////////////////////////////////////////
-    // for Multi GPU
-    if (this->getNumprocs() > 1) {
-        //////////////////////////////////////////////////////////////////////////
-        // 3D domain decomposition
-        std::vector<std::string> sendProcNeighborsX, sendProcNeighborsY, sendProcNeighborsZ;
-        std::vector<std::string> recvProcNeighborsX, recvProcNeighborsY, recvProcNeighborsZ;
-        for (int i = 0; i < this->getNumprocs(); i++) {
-            sendProcNeighborsX.push_back(gridPath + StringUtil::toString(i) + "Xs.dat");
-            sendProcNeighborsY.push_back(gridPath + StringUtil::toString(i) + "Ys.dat");
-            sendProcNeighborsZ.push_back(gridPath + StringUtil::toString(i) + "Zs.dat");
-            recvProcNeighborsX.push_back(gridPath + StringUtil::toString(i) + "Xr.dat");
-            recvProcNeighborsY.push_back(gridPath + StringUtil::toString(i) + "Yr.dat");
-            recvProcNeighborsZ.push_back(gridPath + StringUtil::toString(i) + "Zr.dat");
-        }
-        this->setPossNeighborFilesX(sendProcNeighborsX, "send");
-        this->setPossNeighborFilesY(sendProcNeighborsY, "send");
-        this->setPossNeighborFilesZ(sendProcNeighborsZ, "send");
-        this->setPossNeighborFilesX(recvProcNeighborsX, "recv");
-        this->setPossNeighborFilesY(recvProcNeighborsY, "recv");
-        this->setPossNeighborFilesZ(recvProcNeighborsZ, "recv");
-    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Restart
@@ -396,14 +327,6 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     if (configData.contains("NOGL"))
         setMaxLevel(configData.getValue<int>("NOGL"));
-
-    this->setGridX(std::vector<int>(this->getMaxLevel() + 1, 32));
-    this->setGridY(std::vector<int>(this->getMaxLevel() + 1, 32));
-    this->setGridZ(std::vector<int>(this->getMaxLevel() + 1, 32));
-
-    this->setDistX(std::vector<int>(this->getMaxLevel() + 1, 32));
-    this->setDistY(std::vector<int>(this->getMaxLevel() + 1, 32));
-    this->setDistZ(std::vector<int>(this->getMaxLevel() + 1, 32));
 
     if (configData.contains("GridX"))
         this->setGridX(configData.getVector<int>("GridX"));
@@ -433,17 +356,134 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
 
     if (configData.contains("MultiKernelLevel"))
         this->setMultiKernelLevel(configData.getVector<int>("MultiKernelLevel"));
-    else if (this->getMultiKernelOn()) {
+
+    if (configData.contains("MultiKernelName"))
+        this->setMultiKernel(configData.getVector<std::string>("MultiKernelName"));
+}
+
+void Parameter::initGridPaths(){
+    std::string gridPath = this->getGridPath();
+
+    // add missing slash to gridPath
+    if (gridPath.back() != '/') {
+        gridPath += "/";
+        ic.gridPath = gridPath;
+    }
+
+    // for multi-gpu add process id (if not already there)
+    if (this->getNumprocs() > 1) {
+        gridPath += StringUtil::toString(this->getMyID()) + "/";
+        ic.gridPath = gridPath;
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+        
+    this->setgeoVec(gridPath + "geoVec.dat");
+    this->setcoordX(gridPath + "coordX.dat");
+    this->setcoordY(gridPath + "coordY.dat");
+    this->setcoordZ(gridPath + "coordZ.dat");
+    this->setneighborX(gridPath + "neighborX.dat");
+    this->setneighborY(gridPath + "neighborY.dat");
+    this->setneighborZ(gridPath + "neighborZ.dat");
+    this->setneighborWSB(gridPath + "neighborWSB.dat");
+    this->setscaleCFC(gridPath + "scaleCFC.dat");
+    this->setscaleCFF(gridPath + "scaleCFF.dat");
+    this->setscaleFCC(gridPath + "scaleFCC.dat");
+    this->setscaleFCF(gridPath + "scaleFCF.dat");
+    this->setscaleOffsetCF(gridPath + "offsetVecCF.dat");
+    this->setscaleOffsetFC(gridPath + "offsetVecFC.dat");
+    this->setgeomBoundaryBcQs(gridPath + "geomBoundaryQs.dat");
+    this->setgeomBoundaryBcValues(gridPath + "geomBoundaryValues.dat");
+    this->setinletBcQs(gridPath + "inletBoundaryQs.dat");
+    this->setinletBcValues(gridPath + "inletBoundaryValues.dat");
+    this->setoutletBcQs(gridPath + "outletBoundaryQs.dat");
+    this->setoutletBcValues(gridPath + "outletBoundaryValues.dat");
+    this->settopBcQs(gridPath + "topBoundaryQs.dat");
+    this->settopBcValues(gridPath + "topBoundaryValues.dat");
+    this->setbottomBcQs(gridPath + "bottomBoundaryQs.dat");
+    this->setbottomBcValues(gridPath + "bottomBoundaryValues.dat");
+    this->setfrontBcQs(gridPath + "frontBoundaryQs.dat");
+    this->setfrontBcValues(gridPath + "frontBoundaryValues.dat");
+    this->setbackBcQs(gridPath + "backBoundaryQs.dat");
+    this->setbackBcValues(gridPath + "backBoundaryValues.dat");
+    this->setnumberNodes(gridPath + "numberNodes.dat");
+    this->setLBMvsSI(gridPath + "LBMvsSI.dat");
+    this->setmeasurePoints(gridPath + "measurePoints.dat");
+    this->setpropellerValues(gridPath + "propellerValues.dat");
+    this->setcpTop(gridPath + "cpTop.dat");
+    this->setcpBottom(gridPath + "cpBottom.dat");
+    this->setcpBottom2(gridPath + "cpBottom2.dat");
+    this->setConcentration(gridPath + "conc.dat");
+    this->setStreetVelocity(gridPath + "streetVector.dat");
+    
+    //////////////////////////////////////////////////////////////////////////
+    // Normals - Geometry
+    this->setgeomBoundaryNormalX(gridPath + "geomBoundaryNormalX.dat");
+    this->setgeomBoundaryNormalY(gridPath + "geomBoundaryNormalY.dat");
+    this->setgeomBoundaryNormalZ(gridPath + "geomBoundaryNormalZ.dat");
+    // Normals - Inlet
+    this->setInflowBoundaryNormalX(gridPath + "inletBoundaryNormalX.dat");
+    this->setInflowBoundaryNormalY(gridPath + "inletBoundaryNormalY.dat");
+    this->setInflowBoundaryNormalZ(gridPath + "inletBoundaryNormalZ.dat");
+    // Normals - Outlet
+    this->setOutflowBoundaryNormalX(gridPath + "outletBoundaryNormalX.dat");
+    this->setOutflowBoundaryNormalY(gridPath + "outletBoundaryNormalY.dat");
+    this->setOutflowBoundaryNormalZ(gridPath + "outletBoundaryNormalZ.dat");
+    //////////////////////////////////////////////////////////////////////////
+    
+    //////////////////////////////////////////////////////////////////////////
+    // for Multi GPU
+    if (this->getNumprocs() > 1) {
+        
+        // 3D domain decomposition
+        std::vector<std::string> sendProcNeighborsX, sendProcNeighborsY, sendProcNeighborsZ;
+        std::vector<std::string> recvProcNeighborsX, recvProcNeighborsY, recvProcNeighborsZ;
+        for (int i = 0; i < this->getNumprocs(); i++) {
+            sendProcNeighborsX.push_back(gridPath + StringUtil::toString(i) + "Xs.dat");
+            sendProcNeighborsY.push_back(gridPath + StringUtil::toString(i) + "Ys.dat");
+            sendProcNeighborsZ.push_back(gridPath + StringUtil::toString(i) + "Zs.dat");
+            recvProcNeighborsX.push_back(gridPath + StringUtil::toString(i) + "Xr.dat");
+            recvProcNeighborsY.push_back(gridPath + StringUtil::toString(i) + "Yr.dat");
+            recvProcNeighborsZ.push_back(gridPath + StringUtil::toString(i) + "Zr.dat");
+        }
+        this->setPossNeighborFilesX(sendProcNeighborsX, "send");
+        this->setPossNeighborFilesY(sendProcNeighborsY, "send");
+        this->setPossNeighborFilesZ(sendProcNeighborsZ, "send");
+        this->setPossNeighborFilesX(recvProcNeighborsX, "recv");
+        this->setPossNeighborFilesY(recvProcNeighborsY, "recv");
+        this->setPossNeighborFilesZ(recvProcNeighborsZ, "recv");
+    
+    //////////////////////////////////////////////////////////////////////////
+    }
+}
+
+void Parameter::initGridBasePoints()
+{
+    if (this->getGridX().empty())
+        this->setGridX(std::vector<int>(this->getMaxLevel() + 1, 32));
+    if (this->getGridY().empty())
+        this->setGridY(std::vector<int>(this->getMaxLevel() + 1, 32));
+    if (this->getGridZ().empty())
+        this->setGridZ(std::vector<int>(this->getMaxLevel() + 1, 32));
+
+    if (this->getDistX().empty())
+        this->setDistX(std::vector<int>(this->getMaxLevel() + 1, 32));
+    if (this->getDistY().empty())
+        this->setDistY(std::vector<int>(this->getMaxLevel() + 1, 32));
+    if (this->getDistZ().empty())
+        this->setDistZ(std::vector<int>(this->getMaxLevel() + 1, 32));
+}
+
+void Parameter::initDefaultLBMkernelAllLevels(){
+    if (this->getMultiKernelOn() && this->getMultiKernelLevel().empty()) {
         std::vector<int> tmp;
         for (int i = 0; i < this->getMaxLevel() + 1; i++) {
             tmp.push_back(i);
         }
         this->setMultiKernelLevel(tmp);
     }
-
-    if (configData.contains("MultiKernelName"))
-        this->setMultiKernel(configData.getVector<std::string>("MultiKernelName"));
-    else if (this->getMultiKernelOn()) {
+    
+    if (this->getMultiKernelOn() && this->getMultiKernel().empty()) {
         std::vector<std::string> tmp;
         for (int i = 0; i < this->getMaxLevel() + 1; i++) {
             tmp.push_back("CumulantK17Comp");
@@ -709,17 +749,24 @@ void Parameter::setTimeCalcMedEnd(int CalcMedEnd)
 }
 void Parameter::setOutputPath(std::string oPath)
 {
+    // add missing slash to outputPath
+    if (oPath.back() != '/')
+        oPath += "/";
+
     ic.oPath = oPath;
 }
 void Parameter::setOutputPrefix(std::string oPrefix)
 {
-    // std::string test = fname;
     ic.oPrefix = oPrefix;
 }
 void Parameter::setFName(std::string fname)
 {
-    // std::string test = fname;
     ic.fname = fname;
+}
+void Parameter::setGridPath(std::string gridPath)
+{
+    ic.gridPath = gridPath;
+    this->initGridPaths();
 }
 void Parameter::setPrintFiles(bool printfiles)
 {
@@ -1765,6 +1812,10 @@ std::string Parameter::getOutputPrefix()
 std::string Parameter::getFName()
 {
     return ic.fname;
+}
+std::string Parameter::getGridPath()
+{
+    return ic.gridPath;
 }
 bool Parameter::getPrintFiles()
 {

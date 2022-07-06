@@ -99,15 +99,6 @@ struct CFBorderBulk {
     std::vector<real> offsetCFz_Bulk_expected   = { 1001, 1003, 1005, 1007 };
 };
 
-static SPtr<Parameter> initParameterClass()
-{
-    std::filesystem::path filePath = __FILE__; //  assuming that the config file is stored parallel to this file.
-    filePath.replace_filename("IndexRearrangementForStreamsTest.cfg");
-    vf::basics::ConfigurationFile config;
-    config.load(filePath.string());
-    return std::make_shared<Parameter>(config, 1, 0);
-}
-
 class IndexRearrangementForStreamsTest_IndicesCFBorderBulkTest : public testing::Test
 {
 protected:
@@ -141,7 +132,7 @@ private:
 
     void SetUp() override
     {
-        para        = initParameterClass();
+        para = std::make_shared<Parameter>(1, 0);
         testSubject = createTestSubjectCFBorderBulk();
     }
 };
@@ -223,7 +214,7 @@ private:
 
     void SetUp() override
     {
-        para        = initParameterClass();
+        para        = std::make_shared<Parameter>(1, 0);
         testSubject = createTestSubjectFCBorderBulk();
     }
 };
@@ -322,7 +313,7 @@ private:
 
     void SetUp() override
     {
-        para        = initParameterClass();
+        para        = std::make_shared<Parameter>(1, 0);
         testSubject = createTestSubjectReorderSendIndices();
     };
 };

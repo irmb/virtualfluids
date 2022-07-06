@@ -1775,6 +1775,7 @@ extern "C" __global__ void QDeviceComp27(
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = -vx1;
+         
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
          (dist.f[dirE])[ke] = getInterpolatedDistributionForNoSlipBC(q, f_W, f_E, feq, omega);
       }

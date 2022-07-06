@@ -7,14 +7,13 @@
 ##################################################
 #informations for Writing
 ##################################################
-Path=output/DrivenCavity/
-#Prefix=DrivenCavity
+#Path = "output/"
+#Prefix="DrivenCavity" 
 #WriteGrid=true
 ##################################################
 #informations for reading
 ##################################################
-#GridPath="E:/DrivenCavity/dummy"
-GridPath="C:"
+#GridPath="grid/"
 
 ##################################################
 #number of grid levels
