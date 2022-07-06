@@ -2,40 +2,37 @@
 #define _LB_D3Q27_H_
 #include <math.h>
 
-#define dirSTART  0
-#define dirEND   26
+static constexpr int dirSTART = 0;
+static constexpr int dirEND   = 26;
 
-#define dirE    0
-#define dirW    1
-#define dirN    2
-#define dirS    3
-#define dirT    4
-#define dirB    5
+static constexpr int dirE    = 0;
+static constexpr int dirW    = 1;
+static constexpr int dirN    = 2;
+static constexpr int dirS    = 3;
+static constexpr int dirT    = 4;
+static constexpr int dirB    = 5;
+static constexpr int dirNE   = 6;
+static constexpr int dirSW   = 7;
+static constexpr int dirSE   = 8;
+static constexpr int dirNW   = 9;
+static constexpr int dirTE   = 10;
+static constexpr int dirBW   = 11;
+static constexpr int dirBE   = 12;
+static constexpr int dirTW   = 13;
+static constexpr int dirTN   = 14;
+static constexpr int dirBS   = 15;
+static constexpr int dirBN   = 16;
+static constexpr int dirTS   = 17;
+static constexpr int dirTNE  = 18;
+static constexpr int dirTNW  = 19;
+static constexpr int dirTSE  = 20;
+static constexpr int dirTSW  = 21;
+static constexpr int dirBNE  = 22;
+static constexpr int dirBNW  = 23;
+static constexpr int dirBSE  = 24;
+static constexpr int dirBSW  = 25;
 
-#define dirNE   6
-#define dirSW   7
-#define dirSE   8
-#define dirNW   9
-#define dirTE   10
-#define dirBW   11
-#define dirBE   12
-#define dirTW   13
-#define dirTN   14
-#define dirBS   15
-#define dirBN   16
-#define dirTS   17
-
-#define dirTNE  18
-#define dirTNW  19
-#define dirTSE  20
-#define dirTSW  21
-#define dirBNE  22
-#define dirBNW  23
-#define dirBSE  24
-#define dirBSW  25
-
-// #define dirZERO 26
-#define dirREST 26
+static constexpr int dirREST = 26;
 
 #endif
 
