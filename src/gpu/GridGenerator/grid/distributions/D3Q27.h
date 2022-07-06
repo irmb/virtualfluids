@@ -33,6 +33,9 @@
 #ifndef D3Q27_H_
 #define D3Q27_H_
 
+#define DIR_27_START  0
+#define DIR_27_END   26
+
 #define DIR_27_E    0
 #define DIR_27_W    1
 #define DIR_27_N    2
@@ -64,8 +67,6 @@
 
 #define DIR_27_ZERO  26
 
-#define DIR_27_START  0
-#define DIR_27_END   26
 
 
 
