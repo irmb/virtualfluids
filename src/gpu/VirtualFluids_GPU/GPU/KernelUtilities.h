@@ -61,7 +61,7 @@ __inline__ __device__ void getPointersToDistributions(Distributions27 &dist, rea
         dist.f[BS  ] = &distributionArray[BS  *numberOfLBnodes];
         dist.f[BN  ] = &distributionArray[BN  *numberOfLBnodes];
         dist.f[TS  ] = &distributionArray[TS  *numberOfLBnodes];
-        dist.f[dirREST] = &distributionArray[dirREST*numberOfLBnodes];
+        dist.f[REST] = &distributionArray[REST*numberOfLBnodes];
         dist.f[TNE ] = &distributionArray[TNE *numberOfLBnodes];
         dist.f[TSW ] = &distributionArray[TSW *numberOfLBnodes];
         dist.f[TSE ] = &distributionArray[TSE *numberOfLBnodes];
@@ -91,7 +91,7 @@ __inline__ __device__ void getPointersToDistributions(Distributions27 &dist, rea
          dist.f[TN  ] = &distributionArray[BS  *numberOfLBnodes];
          dist.f[TS  ] = &distributionArray[BN  *numberOfLBnodes];
          dist.f[BN  ] = &distributionArray[TS  *numberOfLBnodes];
-         dist.f[dirREST] = &distributionArray[dirREST*numberOfLBnodes];
+         dist.f[REST] = &distributionArray[REST*numberOfLBnodes];
          dist.f[TNE ] = &distributionArray[BSW *numberOfLBnodes];
          dist.f[TSW ] = &distributionArray[BNE *numberOfLBnodes];
          dist.f[TSE ] = &distributionArray[BNW *numberOfLBnodes];
@@ -123,7 +123,7 @@ __inline__ __device__ void getPointersToSubgridDistances(SubgridDistances27& sub
     subgridD.q[BS  ] = &subgridDistances[BS   *numberOfSubgridIndices];
     subgridD.q[BN  ] = &subgridDistances[BN   *numberOfSubgridIndices];
     subgridD.q[TS  ] = &subgridDistances[TS   *numberOfSubgridIndices];
-    subgridD.q[dirREST] = &subgridDistances[dirREST *numberOfSubgridIndices];
+    subgridD.q[REST] = &subgridDistances[REST *numberOfSubgridIndices];
     subgridD.q[TNE ] = &subgridDistances[TNE  *numberOfSubgridIndices];
     subgridD.q[TSW ] = &subgridDistances[TSW  *numberOfSubgridIndices];
     subgridD.q[TSE ] = &subgridDistances[TSE  *numberOfSubgridIndices];

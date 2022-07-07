@@ -105,7 +105,7 @@ extern "C" __global__ void LB_Kernel_CumulantK17CompChim(
             dist.f[BS]   = &distributions[BS * size_Mat];
             dist.f[BN]   = &distributions[BN * size_Mat];
             dist.f[TS]   = &distributions[TS * size_Mat];
-            dist.f[dirREST] = &distributions[dirREST * size_Mat];
+            dist.f[REST] = &distributions[REST * size_Mat];
             dist.f[TNE]  = &distributions[TNE * size_Mat];
             dist.f[TSW]  = &distributions[TSW * size_Mat];
             dist.f[TSE]  = &distributions[TSE * size_Mat];
@@ -133,7 +133,7 @@ extern "C" __global__ void LB_Kernel_CumulantK17CompChim(
             dist.f[TN]   = &distributions[BS * size_Mat];
             dist.f[TS]   = &distributions[BN * size_Mat];
             dist.f[BN]   = &distributions[TS * size_Mat];
-            dist.f[dirREST] = &distributions[dirREST * size_Mat];
+            dist.f[REST] = &distributions[REST * size_Mat];
             dist.f[BSW]  = &distributions[TNE * size_Mat];
             dist.f[BNE]  = &distributions[TSW * size_Mat];
             dist.f[BNW]  = &distributions[TSE * size_Mat];
@@ -173,7 +173,7 @@ extern "C" __global__ void LB_Kernel_CumulantK17CompChim(
         real mfbaa = (dist.f[BS])[kbs];
         real mfbca = (dist.f[BN])[kb];
         real mfbac = (dist.f[TS])[ks];
-        real mfbbb = (dist.f[dirREST])[k];
+        real mfbbb = (dist.f[REST])[k];
         real mfccc = (dist.f[TNE])[k];
         real mfaac = (dist.f[TSW])[ksw];
         real mfcac = (dist.f[TSE])[ks];
@@ -329,13 +329,13 @@ extern "C" __global__ void LB_Kernel_CumulantK17CompChim(
         real O6 = c1o1;
 
         ////////////////////////////////////////////////////////////////////////////////////
-        //! - A and B: parameters for fourth order convergence of the diffusion term according to Eq. (114) and (115)
+        //! - A and B: parameters for fourth order convergence of the diffusion term according to Eq. (115) and (116)
         //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017),
         //! DOI:10.1016/j.jcp.2017.05.040 ]</b></a> with simplifications assuming \f$ \omega_2 = 1.0 \f$ (modify for
         //! different bulk viscosity).
         //!
-        real A = (c4o1 + c2o1 * omega - c3o1 * omega * omega) / (c2o1 - c7o1 * omega + c5o1 * omega * omega);
-        real B = (c4o1 + c28o1 * omega - c14o1 * omega * omega) / (c6o1 - c21o1 * omega + c15o1 * omega * omega);
+        real factorA = (c4o1 + c2o1 * omega - c3o1 * omega * omega) / (c2o1 - c7o1 * omega + c5o1 * omega * omega);
+        real factorB = (c4o1 + c28o1 * omega - c14o1 * omega * omega) / (c6o1 - c21o1 * omega + c15o1 * omega * omega);
 
         ////////////////////////////////////////////////////////////////////////////////////
         //! - Compute cumulants from central moments according to Eq. (20)-(23) in
@@ -492,12 +492,12 @@ extern "C" __global__ void LB_Kernel_CumulantK17CompChim(
         //! to Eq. (43)-(48) <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017),
         //! DOI:10.1016/j.jcp.2017.05.040 ]</b></a>
         //!
-        CUMacc = -O4 * (c1o1 / omega - c1o2) * (dyuy + dzuz) * c2o3 * A + (c1o1 - O4) * (CUMacc);
-        CUMcac = -O4 * (c1o1 / omega - c1o2) * (dxux + dzuz) * c2o3 * A + (c1o1 - O4) * (CUMcac);
-        CUMcca = -O4 * (c1o1 / omega - c1o2) * (dyuy + dxux) * c2o3 * A + (c1o1 - O4) * (CUMcca);
-        CUMbbc = -O4 * (c1o1 / omega - c1o2) * Dxy * c1o3 * B + (c1o1 - O4) * (CUMbbc);
-        CUMbcb = -O4 * (c1o1 / omega - c1o2) * Dxz * c1o3 * B + (c1o1 - O4) * (CUMbcb);
-        CUMcbb = -O4 * (c1o1 / omega - c1o2) * Dyz * c1o3 * B + (c1o1 - O4) * (CUMcbb);
+        CUMacc = -O4 * (c1o1 / omega - c1o2) * (dyuy + dzuz) * c2o3 * factorA + (c1o1 - O4) * (CUMacc);
+        CUMcac = -O4 * (c1o1 / omega - c1o2) * (dxux + dzuz) * c2o3 * factorA + (c1o1 - O4) * (CUMcac);
+        CUMcca = -O4 * (c1o1 / omega - c1o2) * (dyuy + dxux) * c2o3 * factorA + (c1o1 - O4) * (CUMcca);
+        CUMbbc = -O4 * (c1o1 / omega - c1o2) * Dxy * c1o3 * factorB + (c1o1 - O4) * (CUMbbc);
+        CUMbcb = -O4 * (c1o1 / omega - c1o2) * Dxz * c1o3 * factorB + (c1o1 - O4) * (CUMbcb);
+        CUMcbb = -O4 * (c1o1 / omega - c1o2) * Dyz * c1o3 * factorB + (c1o1 - O4) * (CUMcbb);
 
         //////////////////////////////////////////////////////////////////////////
         // 5.
@@ -640,7 +640,7 @@ extern "C" __global__ void LB_Kernel_CumulantK17CompChim(
         (dist.f[BS])[kbs]   = mfbcc;
         (dist.f[BN])[kb]    = mfbac;
         (dist.f[TS])[ks]    = mfbca;
-        (dist.f[dirREST])[k]   = mfbbb;
+        (dist.f[REST])[k]   = mfbbb;
         (dist.f[TNE])[k]    = mfaaa;
         (dist.f[TSE])[ks]   = mfaca;
         (dist.f[BNE])[kb]   = mfaac;

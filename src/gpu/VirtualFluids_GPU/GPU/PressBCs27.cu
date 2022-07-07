@@ -114,7 +114,7 @@ extern "C" __global__ void QInflowScaleByPressDevice27(  real* rhoBC,
          D.f[BS  ] = &DD[BS  *size_Mat];
          D.f[BN  ] = &DD[BN  *size_Mat];
          D.f[TS  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[TNE *size_Mat];
          D.f[TSW ] = &DD[TSW *size_Mat];
          D.f[TSE ] = &DD[TSE *size_Mat];
@@ -144,7 +144,7 @@ extern "C" __global__ void QInflowScaleByPressDevice27(  real* rhoBC,
          D.f[TN  ] = &DD[BS  *size_Mat];
          D.f[TS  ] = &DD[BN  *size_Mat];
          D.f[BN  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[BSW *size_Mat];
          D.f[TSW ] = &DD[BNE *size_Mat];
          D.f[TSE ] = &DD[BNW *size_Mat];
@@ -173,7 +173,7 @@ extern "C" __global__ void QInflowScaleByPressDevice27(  real* rhoBC,
       real f1_BS   = (D.f[BS  ])[k1bs  ];
       real f1_BN   = (D.f[BN  ])[k1bn  ];
       real f1_TS   = (D.f[TS  ])[k1ts  ];
-      //real f1_ZERO = (D.f[dirREST])[k1zero];
+      //real f1_ZERO = (D.f[REST])[k1zero];
       real f1_TNE  = (D.f[TNE ])[k1tne ];
       real f1_TSW  = (D.f[TSW ])[k1tsw ];
       real f1_TSE  = (D.f[TSE ])[k1tse ];
@@ -201,7 +201,7 @@ extern "C" __global__ void QInflowScaleByPressDevice27(  real* rhoBC,
       real f_BS   = (D.f[BS  ])[kbs  ];
       real f_BN   = (D.f[BN  ])[kbn  ];
       real f_TS   = (D.f[TS  ])[kts  ];
-      //real f_ZERO = (D.f[dirREST])[kzero];
+      //real f_ZERO = (D.f[REST])[kzero];
       real f_TNE  = (D.f[TNE ])[ktne ];
       real f_TSW  = (D.f[TSW ])[ktsw ];
       real f_TSE  = (D.f[TSE ])[ktse ];
@@ -217,10 +217,10 @@ extern "C" __global__ void QInflowScaleByPressDevice27(  real* rhoBC,
 	  //Dichte
       drho1  =  f1_TSE + f1_TNW + f1_TNE + f1_TSW + f1_BSE + f1_BNW + f1_BNE + f1_BSW +
                 f1_BN + f1_TS + f1_TN + f1_BS + f1_BE + f1_TW + f1_TE + f1_BW + f1_SE + f1_NW + f1_NE + f1_SW + 
-                f1_T + f1_B + f1_N + f1_S + f1_E + f1_W + ((D.f[dirREST])[k1zero]); 
+                f1_T + f1_B + f1_N + f1_S + f1_E + f1_W + ((D.f[REST])[k1zero]); 
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirREST])[kzero]); 
+                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[REST])[kzero]); 
       //////////////////////////////////////////////////////////////////////////
 	  //Schallgeschwindigkeit
 	  real cs = c1o1 / sqrtf(c3o1);
@@ -338,7 +338,7 @@ extern "C" __global__ void QInflowScaleByPressDevice27(  real* rhoBC,
          D.f[BS  ] = &DD[BS  *size_Mat];
          D.f[BN  ] = &DD[BN  *size_Mat];
          D.f[TS  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[TNE *size_Mat];
          D.f[TSW ] = &DD[TSW *size_Mat];
          D.f[TSE ] = &DD[TSE *size_Mat];
@@ -368,7 +368,7 @@ extern "C" __global__ void QInflowScaleByPressDevice27(  real* rhoBC,
          D.f[TN  ] = &DD[BS  *size_Mat];
          D.f[TS  ] = &DD[BN  *size_Mat];
          D.f[BN  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[BSW *size_Mat];
          D.f[TSW ] = &DD[BNE *size_Mat];
          D.f[TSE ] = &DD[BNW *size_Mat];
@@ -571,7 +571,7 @@ extern "C" __global__ void QPressDeviceIncompNEQ27( real* rhoBC,
          D.f[BS  ] = &DD[BS  *size_Mat];
          D.f[BN  ] = &DD[BN  *size_Mat];
          D.f[TS  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[TNE *size_Mat];
          D.f[TSW ] = &DD[TSW *size_Mat];
          D.f[TSE ] = &DD[TSE *size_Mat];
@@ -601,7 +601,7 @@ extern "C" __global__ void QPressDeviceIncompNEQ27( real* rhoBC,
          D.f[TN  ] = &DD[BS  *size_Mat];
          D.f[TS  ] = &DD[BN  *size_Mat];
          D.f[BN  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[BSW *size_Mat];
          D.f[TSW ] = &DD[BNE *size_Mat];
          D.f[TSE ] = &DD[BNW *size_Mat];
@@ -633,7 +633,7 @@ extern "C" __global__ void QPressDeviceIncompNEQ27( real* rhoBC,
       f1_TN   = (D.f[BS  ])[k1bs  ];
       f1_TS   = (D.f[BN  ])[k1bn  ];
       f1_BN   = (D.f[TS  ])[k1ts  ];
-      f1_ZERO = (D.f[dirREST])[k1zero];
+      f1_ZERO = (D.f[REST])[k1zero];
       f1_BSW  = (D.f[TNE ])[k1tne ];
       f1_BNE  = (D.f[TSW ])[k1tsw ];
       f1_BNW  = (D.f[TSE ])[k1tse ];
@@ -751,7 +751,7 @@ extern "C" __global__ void QPressDeviceIncompNEQ27( real* rhoBC,
       (D.f[BS  ])[kbs  ] = f1_TN  ;	
       (D.f[BN  ])[kbn  ] = f1_TS  ;	
       (D.f[TS  ])[kts  ] = f1_BN  ;	
-      (D.f[dirREST])[kzero] = f1_ZERO;	
+      (D.f[REST])[kzero] = f1_ZERO;	
       (D.f[TNE ])[ktne ] = f1_BSW ;	
       (D.f[TSW ])[ktsw ] = f1_BNE ;	
       (D.f[TSE ])[ktse ] = f1_BNW ;	
@@ -931,7 +931,7 @@ extern "C" __global__ void QPressDeviceNEQ27(real* rhoBC,
       real f1_TN   = (dist.f[BS  ])[k1bs  ];
       real f1_TS   = (dist.f[BN  ])[k1bn  ];
       real f1_BN   = (dist.f[TS  ])[k1ts  ];
-      real f1_ZERO = (dist.f[dirREST])[k1zero];
+      real f1_ZERO = (dist.f[REST])[k1zero];
       real f1_BSW  = (dist.f[TNE ])[k1tne ];
       real f1_BNE  = (dist.f[TSW ])[k1tsw ];
       real f1_BNW  = (dist.f[TSE ])[k1tse ];
@@ -946,7 +946,7 @@ extern "C" __global__ void QPressDeviceNEQ27(real* rhoBC,
       //!
       real drho1 = f1_TSE + f1_TNW + f1_TNE + f1_TSW + f1_BSE + f1_BNW + f1_BNE + f1_BSW +
                    f1_BN + f1_TS + f1_TN + f1_BS + f1_BE + f1_TW + f1_TE + f1_BW + f1_SE + f1_NW + f1_NE + f1_SW + 
-                   f1_T + f1_B + f1_N + f1_S + f1_E + f1_W + ((dist.f[dirREST])[kzero]); 
+                   f1_T + f1_B + f1_N + f1_S + f1_E + f1_W + ((dist.f[REST])[kzero]); 
 
       real vx1  = (((f1_TSE - f1_BNW) - (f1_TNW - f1_BSE)) + ((f1_TNE - f1_BSW) - (f1_TSW - f1_BNE)) +
                    ((f1_BE - f1_TW)   + (f1_TE - f1_BW))   + ((f1_SE - f1_NW)   + (f1_NE - f1_SW)) +
@@ -1054,7 +1054,7 @@ extern "C" __global__ void QPressDeviceNEQ27(real* rhoBC,
       (dist.f[BS  ])[kbs  ] = f1_TN  ;
       (dist.f[BN  ])[kbn  ] = f1_TS  ;
       (dist.f[TS  ])[kts  ] = f1_BN  ;
-      (dist.f[dirREST])[kzero] = f1_ZERO;
+      (dist.f[REST])[kzero] = f1_ZERO;
       (dist.f[TNE ])[ktne ] = f1_BSW ;
       (dist.f[TSW ])[ktsw ] = f1_BNE ;
       (dist.f[TSE ])[ktse ] = f1_BNW ;
@@ -1154,7 +1154,7 @@ extern "C" __global__ void LB_BC_Press_East27( int nx,
          D.f[BS  ] = &DD[BS  *size_Mat];
          D.f[BN  ] = &DD[BN  *size_Mat];
          D.f[TS  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[TNE *size_Mat];
          D.f[TSW ] = &DD[TSW *size_Mat];
          D.f[TSE ] = &DD[TSE *size_Mat];
@@ -1184,7 +1184,7 @@ extern "C" __global__ void LB_BC_Press_East27( int nx,
          D.f[TN  ] = &DD[BS  *size_Mat];
          D.f[TS  ] = &DD[BN  *size_Mat];
          D.f[BN  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[BSW *size_Mat];
          D.f[TSW ] = &DD[BNE *size_Mat];
          D.f[TSE ] = &DD[BNW *size_Mat];
@@ -1329,7 +1329,7 @@ extern "C" __global__ void LB_BC_Press_East27( int nx,
       f1_TN   = (D.f[BS  ])[k1bs  ];
       f1_TS   = (D.f[BN  ])[k1bn  ];
       f1_BN   = (D.f[TS  ])[k1ts  ];
-      f1_ZERO = (D.f[dirREST])[k1zero];
+      f1_ZERO = (D.f[REST])[k1zero];
       f1_BSW  = (D.f[TNE ])[k1tne ];
       f1_BNE  = (D.f[TSW ])[k1tsw ];
       f1_BNW  = (D.f[TSE ])[k1tse ];
@@ -1362,7 +1362,7 @@ extern "C" __global__ void LB_BC_Press_East27( int nx,
       (D.f[BS  ])[kbs  ] = f1_TN  -c1o54*drho1;
       (D.f[BN  ])[kbn  ] = f1_TS  -c1o54*drho1;
       (D.f[TS  ])[kts  ] = f1_BN  -c1o54*drho1;
-      (D.f[dirREST])[kzero] = f1_ZERO-c8o27*drho1;
+      (D.f[REST])[kzero] = f1_ZERO-c8o27*drho1;
       (D.f[TNE ])[ktne ] = f1_BSW -c1o216*drho1;
       (D.f[TSW ])[ktsw ] = f1_BNE -c1o216*drho1;
       (D.f[TSE ])[ktse ] = f1_BNW -c1o216*drho1;
@@ -1448,7 +1448,7 @@ extern "C" __global__ void QPressDevice27(real* rhoBC,
       D.f[BS  ] = &DD[BS  *size_Mat];
       D.f[BN  ] = &DD[BN  *size_Mat];
       D.f[TS  ] = &DD[TS  *size_Mat];
-      D.f[dirREST] = &DD[dirREST*size_Mat];
+      D.f[REST] = &DD[REST*size_Mat];
       D.f[TNE ] = &DD[TNE *size_Mat];
       D.f[TSW ] = &DD[TSW *size_Mat];
       D.f[TSE ] = &DD[TSE *size_Mat];
@@ -1478,7 +1478,7 @@ extern "C" __global__ void QPressDevice27(real* rhoBC,
       D.f[TN  ] = &DD[BS  *size_Mat];
       D.f[TS  ] = &DD[BN  *size_Mat];
       D.f[BN  ] = &DD[TS  *size_Mat];
-      D.f[dirREST] = &DD[dirREST*size_Mat];
+      D.f[REST] = &DD[REST*size_Mat];
       D.f[TNE ] = &DD[BSW *size_Mat];
       D.f[TSW ] = &DD[BNE *size_Mat];
       D.f[TSE ] = &DD[BNW *size_Mat];
@@ -1633,7 +1633,7 @@ extern "C" __global__ void QPressDevice27(real* rhoBC,
          D.f[BS  ] = &DD[BS  *size_Mat];
          D.f[BN  ] = &DD[BN  *size_Mat];
          D.f[TS  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[TNE *size_Mat];
          D.f[TSW ] = &DD[TSW *size_Mat];
          D.f[TSE ] = &DD[TSE *size_Mat];
@@ -1663,7 +1663,7 @@ extern "C" __global__ void QPressDevice27(real* rhoBC,
          D.f[TN  ] = &DD[BS  *size_Mat];
          D.f[TS  ] = &DD[BN  *size_Mat];
          D.f[BN  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[BSW *size_Mat];
          D.f[TSW ] = &DD[BNE *size_Mat];
          D.f[TSE ] = &DD[BNW *size_Mat];
@@ -1934,7 +1934,7 @@ extern "C" __global__ void QPressDeviceAntiBB27(   real* rhoBC,
       D.f[BS  ] = &DD[BS  *size_Mat];
       D.f[BN  ] = &DD[BN  *size_Mat];
       D.f[TS  ] = &DD[TS  *size_Mat];
-      D.f[dirREST] = &DD[dirREST*size_Mat];
+      D.f[REST] = &DD[REST*size_Mat];
       D.f[TNE ] = &DD[TNE *size_Mat];
       D.f[TSW ] = &DD[TSW *size_Mat];
       D.f[TSE ] = &DD[TSE *size_Mat];
@@ -1964,7 +1964,7 @@ extern "C" __global__ void QPressDeviceAntiBB27(   real* rhoBC,
       D.f[TN  ] = &DD[BS  *size_Mat];
       D.f[TS  ] = &DD[BN  *size_Mat];
       D.f[BN  ] = &DD[TS  *size_Mat];
-      D.f[dirREST] = &DD[dirREST*size_Mat];
+      D.f[REST] = &DD[REST*size_Mat];
       D.f[TNE ] = &DD[BSW *size_Mat];
       D.f[TSW ] = &DD[BNE *size_Mat];
       D.f[TSE ] = &DD[BNW *size_Mat];
@@ -2078,7 +2078,7 @@ extern "C" __global__ void QPressDeviceAntiBB27(   real* rhoBC,
       f_TNE  = (D.f[BSW ])[kbsw ];
       f_TNW  = (D.f[BSE ])[kbse ];
       f_TSE  = (D.f[BNW ])[kbnw ];
-      f_ZERO = (D.f[dirREST])[kzero];
+      f_ZERO = (D.f[REST])[kzero];
       ////////////////////////////////////////////////////////////////////////////////
       //real vx1, vx2, vx3, drho;
       //vx1    =  ((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
@@ -2124,7 +2124,7 @@ extern "C" __global__ void QPressDeviceAntiBB27(   real* rhoBC,
          D.f[BS  ] = &DD[BS  *size_Mat];
          D.f[BN  ] = &DD[BN  *size_Mat];
          D.f[TS  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[TNE *size_Mat];
          D.f[TSW ] = &DD[TSW *size_Mat];
          D.f[TSE ] = &DD[TSE *size_Mat];
@@ -2154,7 +2154,7 @@ extern "C" __global__ void QPressDeviceAntiBB27(   real* rhoBC,
          D.f[TN  ] = &DD[BS  *size_Mat];
          D.f[TS  ] = &DD[BN  *size_Mat];
          D.f[BN  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[BSW *size_Mat];
          D.f[TSW ] = &DD[BNE *size_Mat];
          D.f[TSE ] = &DD[BNW *size_Mat];
@@ -2443,7 +2443,7 @@ extern "C" __global__ void QPressDeviceFixBackflow27( real* rhoBC,
          D.f[BS  ] = &DD[BS  *size_Mat];
          D.f[BN  ] = &DD[BN  *size_Mat];
          D.f[TS  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[TNE *size_Mat];
          D.f[TSW ] = &DD[TSW *size_Mat];
          D.f[TSE ] = &DD[TSE *size_Mat];
@@ -2473,7 +2473,7 @@ extern "C" __global__ void QPressDeviceFixBackflow27( real* rhoBC,
          D.f[TN  ] = &DD[BS  *size_Mat];
          D.f[TS  ] = &DD[BN  *size_Mat];
          D.f[BN  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[BSW *size_Mat];
          D.f[TSW ] = &DD[BNE *size_Mat];
          D.f[TSE ] = &DD[BNW *size_Mat];
@@ -2510,7 +2510,7 @@ extern "C" __global__ void QPressDeviceFixBackflow27( real* rhoBC,
          (D.f[TSE])[ktse]   = c1o216 * deltaRho;
          (D.f[TNW])[ktnw]   = c1o216 * deltaRho;
          (D.f[BSE])[kbse]   = c1o216 * deltaRho;
-         (D.f[dirREST])[kzero] = c8o27  * deltaRho;
+         (D.f[REST])[kzero] = c8o27  * deltaRho;
    }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2634,7 +2634,7 @@ extern "C" __global__ void QPressDeviceDirDepBot27(  real* rhoBC,
          D.f[BS  ] = &DD[BS  *size_Mat];
          D.f[BN  ] = &DD[BN  *size_Mat];
          D.f[TS  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[TNE *size_Mat];
          D.f[TSW ] = &DD[TSW *size_Mat];
          D.f[TSE ] = &DD[TSE *size_Mat];
@@ -2664,7 +2664,7 @@ extern "C" __global__ void QPressDeviceDirDepBot27(  real* rhoBC,
          D.f[TN  ] = &DD[BS  *size_Mat];
          D.f[TS  ] = &DD[BN  *size_Mat];
          D.f[BN  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[BSW *size_Mat];
          D.f[TSW ] = &DD[BNE *size_Mat];
          D.f[TSE ] = &DD[BNW *size_Mat];
@@ -2691,7 +2691,7 @@ extern "C" __global__ void QPressDeviceDirDepBot27(  real* rhoBC,
       f_TW   = (D.f[TW  ])[ktw  ];
       f_TN   = (D.f[TN  ])[ktn  ];
       f_TS   = (D.f[TS  ])[kts  ];
-      f_ZERO = (D.f[dirREST])[kzero];
+      f_ZERO = (D.f[REST])[kzero];
       f_TNE  = (D.f[TNE ])[ktne ];
       f_TSW  = (D.f[TSW ])[ktsw ];
       f_TSE  = (D.f[TSE ])[ktse ];
@@ -2715,7 +2715,7 @@ extern "C" __global__ void QPressDeviceDirDepBot27(  real* rhoBC,
 
       //real cusq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
-      //(D.f[dirREST])[kzero] = c8over27*  (drho-cusq);
+      //(D.f[REST])[kzero] = c8over27*  (drho-cusq);
       //(D.f[E])[ke]    = c2over27*  (drho+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cusq);
       //(D.f[W])[kw]    = c2over27*  (drho+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cusq);
       //(D.f[N])[kn]     = c2over27*  (drho+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cusq);
@@ -2903,7 +2903,7 @@ extern "C" __global__ void QPressNoRhoDevice27(  real* rhoBC,
          D.f[BS  ] = &DD[BS  *size_Mat];
          D.f[BN  ] = &DD[BN  *size_Mat];
          D.f[TS  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[TNE *size_Mat];
          D.f[TSW ] = &DD[TSW *size_Mat];
          D.f[TSE ] = &DD[TSE *size_Mat];
@@ -2933,7 +2933,7 @@ extern "C" __global__ void QPressNoRhoDevice27(  real* rhoBC,
          D.f[TN  ] = &DD[BS  *size_Mat];
          D.f[TS  ] = &DD[BN  *size_Mat];
          D.f[BN  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[BSW *size_Mat];
          D.f[TSW ] = &DD[BNE *size_Mat];
          D.f[TSE ] = &DD[BNW *size_Mat];
@@ -2962,7 +2962,7 @@ extern "C" __global__ void QPressNoRhoDevice27(  real* rhoBC,
       real f1_BS   = (D.f[BS  ])[k1bs  ];
       real f1_BN   = (D.f[BN  ])[k1bn  ];
       real f1_TS   = (D.f[TS  ])[k1ts  ];
-      //real f1_ZERO = (D.f[dirREST])[k1zero];
+      //real f1_ZERO = (D.f[REST])[k1zero];
       real f1_TNE  = (D.f[TNE ])[k1tne ];
       real f1_TSW  = (D.f[TSW ])[k1tsw ];
       real f1_TSE  = (D.f[TSE ])[k1tse ];
@@ -2990,7 +2990,7 @@ extern "C" __global__ void QPressNoRhoDevice27(  real* rhoBC,
       real f_BS   = (D.f[BS  ])[kbs  ];
       real f_BN   = (D.f[BN  ])[kbn  ];
       real f_TS   = (D.f[TS  ])[kts  ];
-      //real f_ZERO = (D.f[dirREST])[kzero];
+      //real f_ZERO = (D.f[REST])[kzero];
       real f_TNE  = (D.f[TNE ])[ktne ];
       real f_TSW  = (D.f[TSW ])[ktsw ];
       real f_TSE  = (D.f[TSE ])[ktse ];
@@ -3007,10 +3007,10 @@ extern "C" __global__ void QPressNoRhoDevice27(  real* rhoBC,
 	  //Dichte
     //   drho1  =  f1_TSE + f1_TNW + f1_TNE + f1_TSW + f1_BSE + f1_BNW + f1_BNE + f1_BSW +
     //             f1_BN + f1_TS + f1_TN + f1_BS + f1_BE + f1_TW + f1_TE + f1_BW + f1_SE + f1_NW + f1_NE + f1_SW + 
-    //             f1_T + f1_B + f1_N + f1_S + f1_E + f1_W + ((D.f[dirREST])[k1zero]); 
+    //             f1_T + f1_B + f1_N + f1_S + f1_E + f1_W + ((D.f[REST])[k1zero]); 
     //   drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
     //             f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-    //             f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirREST])[kzero]); 
+    //             f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[REST])[kzero]); 
       
       //////////////////////////////////////////////////////////////////////////
 	  //Ux
@@ -3187,7 +3187,7 @@ extern "C" __global__ void QPressNoRhoDevice27(  real* rhoBC,
          D.f[BS  ] = &DD[BS  *size_Mat];
          D.f[BN  ] = &DD[BN  *size_Mat];
          D.f[TS  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[TNE *size_Mat];
          D.f[TSW ] = &DD[TSW *size_Mat];
          D.f[TSE ] = &DD[TSE *size_Mat];
@@ -3217,7 +3217,7 @@ extern "C" __global__ void QPressNoRhoDevice27(  real* rhoBC,
          D.f[TN  ] = &DD[BS  *size_Mat];
          D.f[TS  ] = &DD[BN  *size_Mat];
          D.f[BN  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[BSW *size_Mat];
          D.f[TSW ] = &DD[BNE *size_Mat];
          D.f[TSE ] = &DD[BNW *size_Mat];
@@ -3420,7 +3420,7 @@ extern "C" __global__ void QPressDeviceOld27(real* rhoBC,
          D.f[BS  ] = &DD[BS  *size_Mat];
          D.f[BN  ] = &DD[BN  *size_Mat];
          D.f[TS  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[TNE *size_Mat];
          D.f[TSW ] = &DD[TSW *size_Mat];
          D.f[TSE ] = &DD[TSE *size_Mat];
@@ -3450,7 +3450,7 @@ extern "C" __global__ void QPressDeviceOld27(real* rhoBC,
          D.f[TN  ] = &DD[BS  *size_Mat];
          D.f[TS  ] = &DD[BN  *size_Mat];
          D.f[BN  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[BSW *size_Mat];
          D.f[TSW ] = &DD[BNE *size_Mat];
          D.f[TSE ] = &DD[BNW *size_Mat];
@@ -3482,7 +3482,7 @@ extern "C" __global__ void QPressDeviceOld27(real* rhoBC,
       f1_TN   = (D.f[BS  ])[k1bs  ];
       f1_TS   = (D.f[BN  ])[k1bn  ];
       f1_BN   = (D.f[TS  ])[k1ts  ];
-      f1_ZERO = (D.f[dirREST])[k1zero];
+      f1_ZERO = (D.f[REST])[k1zero];
       f1_BSW  = (D.f[TNE ])[k1tne ];
       f1_BNE  = (D.f[TSW ])[k1tsw ];
       f1_BNW  = (D.f[TSE ])[k1tse ];
@@ -3520,7 +3520,7 @@ extern "C" __global__ void QPressDeviceOld27(real* rhoBC,
       (D.f[BS  ])[kbs  ] = f1_TN  -c1o54*drho1;	//  c1o100;  // zero;  //
       (D.f[BN  ])[kbn  ] = f1_TS  -c1o54*drho1;	//  c1o100;  // zero;  //
       (D.f[TS  ])[kts  ] = f1_BN  -c1o54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirREST])[kzero] = f1_ZERO-c8o27*drho1;	//  c1o100;  // zero;  //
+      (D.f[REST])[kzero] = f1_ZERO-c8o27*drho1;	//  c1o100;  // zero;  //
       (D.f[TNE ])[ktne ] = f1_BSW -c1o216*drho1;	//  c1o100;  // zero;  //
       (D.f[TSW ])[ktsw ] = f1_BNE -c1o216*drho1;	//  c1o100;  // zero;  //
       (D.f[TSE ])[ktse ] = f1_BNW -c1o216*drho1;	//  c1o100;  // zero;  //
@@ -3680,7 +3680,7 @@ extern "C" __global__ void QPressDeviceEQZ27(real* rhoBC,
          D.f[BS  ] = &DD[BS  *size_Mat];
          D.f[BN  ] = &DD[BN  *size_Mat];
          D.f[TS  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[TNE *size_Mat];
          D.f[TSW ] = &DD[TSW *size_Mat];
          D.f[TSE ] = &DD[TSE *size_Mat];
@@ -3710,7 +3710,7 @@ extern "C" __global__ void QPressDeviceEQZ27(real* rhoBC,
          D.f[TN  ] = &DD[BS  *size_Mat];
          D.f[TS  ] = &DD[BN  *size_Mat];
          D.f[BN  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[BSW *size_Mat];
          D.f[TSW ] = &DD[BNE *size_Mat];
          D.f[TSE ] = &DD[BNW *size_Mat];
@@ -3740,7 +3740,7 @@ extern "C" __global__ void QPressDeviceEQZ27(real* rhoBC,
     //      kDistTest.f[BS  ] = &kTestRE[BS  *numberOfBCnodes];
     //      kDistTest.f[BN  ] = &kTestRE[BN  *numberOfBCnodes];
     //      kDistTest.f[TS  ] = &kTestRE[TS  *numberOfBCnodes];
-    //      kDistTest.f[dirREST] = &kTestRE[dirREST*numberOfBCnodes];
+    //      kDistTest.f[REST] = &kTestRE[REST*numberOfBCnodes];
     //      kDistTest.f[TNE ] = &kTestRE[TNE *numberOfBCnodes];
     //      kDistTest.f[TSW ] = &kTestRE[TSW *numberOfBCnodes];
     //      kDistTest.f[TSE ] = &kTestRE[TSE *numberOfBCnodes];
@@ -3769,7 +3769,7 @@ extern "C" __global__ void QPressDeviceEQZ27(real* rhoBC,
    //   //f1_TN   = (D.f[BS  ])[k1bs  ];
    //   //f1_TS   = (D.f[BN  ])[k1bn  ];
    //   //f1_BN   = (D.f[TS  ])[k1ts  ];
-   //   //f1_ZERO = (D.f[dirREST])[k1zero];
+   //   //f1_ZERO = (D.f[REST])[k1zero];
    //   //f1_BSW  = (D.f[TNE ])[k1tne ];
    //   //f1_BNE  = (D.f[TSW ])[k1tsw ];
    //   //f1_BNW  = (D.f[TSE ])[k1tse ];
@@ -3800,7 +3800,7 @@ extern "C" __global__ void QPressDeviceEQZ27(real* rhoBC,
    //   f1_BS   = (D.f[BS  ])[k1bs  ];
    //   f1_BN   = (D.f[BN  ])[k1bn  ];
    //   f1_TS   = (D.f[TS  ])[k1ts  ];
-   //   f1_ZERO = (D.f[dirREST])[k1zero];
+   //   f1_ZERO = (D.f[REST])[k1zero];
    //   f1_TNE  = (D.f[TNE ])[k1tne ];
    //   f1_TSW  = (D.f[TSW ])[k1tsw ];
    //   f1_TSE  = (D.f[TSE ])[k1tse ];
@@ -3931,7 +3931,7 @@ extern "C" __global__ void QPressDeviceEQZ27(real* rhoBC,
 			//double mfbcc = (D.f[BS  ])[k1bs  ];
 			//double mfbac = (D.f[BN  ])[k1bn  ];
 			//double mfbca = (D.f[TS  ])[k1ts  ];
-			//double mfbbb = (D.f[dirREST])[k1zero];
+			//double mfbbb = (D.f[REST])[k1zero];
 			//double mfaaa = (D.f[TNE ])[k1tne ];
 			//double mfcca = (D.f[TSW ])[k1tsw ];
 			//double mfaca = (D.f[TSE ])[k1tse ];
@@ -3958,7 +3958,7 @@ extern "C" __global__ void QPressDeviceEQZ27(real* rhoBC,
 			real mfbcc = (D.f[BS  ])[k1bs  ];
 			real mfbac = (D.f[BN  ])[k1bn  ];
 			real mfbca = (D.f[TS  ])[k1ts  ];
-			real mfbbb = (D.f[dirREST])[k1zero];
+			real mfbbb = (D.f[REST])[k1zero];
 			real mfaaa = (D.f[TNE ])[k1tne ];
 			real mfcca = (D.f[TSW ])[k1tsw ];
 			real mfaca = (D.f[TSE ])[k1tse ];
@@ -3986,7 +3986,7 @@ extern "C" __global__ void QPressDeviceEQZ27(real* rhoBC,
 			//real mfbaa = (D.f[BS  ])[kbs  ];
 			//real mfbca = (D.f[BN  ])[kbn  ];
 			//real mfbac = (D.f[TS  ])[kts  ];
-			//real mfbbb = (D.f[dirREST])[kzero];
+			//real mfbbb = (D.f[REST])[kzero];
 			//real mfccc = (D.f[TNE ])[ktne ];
 			//real mfaac = (D.f[TSW ])[ktsw ];
 			//real mfcac = (D.f[TSE ])[ktse ];
@@ -4039,7 +4039,7 @@ extern "C" __global__ void QPressDeviceEQZ27(real* rhoBC,
 			//	(kDistTest.f[BS  ])[k] = mfbcc;
 			//	(kDistTest.f[BN  ])[k] = mfbac;
 			//	(kDistTest.f[TS  ])[k] = mfbca;
-			//	(kDistTest.f[dirREST])[k] = KQK;
+			//	(kDistTest.f[REST])[k] = KQK;
 			//	(kDistTest.f[TNE ])[k] = mfaaa;
 			//	(kDistTest.f[TSW ])[k] = mfcca;
 			//	(kDistTest.f[TSE ])[k] = mfaca;
@@ -4067,7 +4067,7 @@ extern "C" __global__ void QPressDeviceEQZ27(real* rhoBC,
 			//	(kDistTest.f[BS  ])[k] = zero;
 			//	(kDistTest.f[BN  ])[k] = zero;
 			//	(kDistTest.f[TS  ])[k] = zero;
-			//	(kDistTest.f[dirREST])[k] = zero;
+			//	(kDistTest.f[REST])[k] = zero;
 			//	(kDistTest.f[TNE ])[k] = zero;
 			//	(kDistTest.f[TSW ])[k] = zero;
 			//	(kDistTest.f[TSE ])[k] = zero;
@@ -4185,7 +4185,7 @@ extern "C" __global__ void QPressDeviceEQZ27(real* rhoBC,
       //   D.f[BS  ] = &DD[BS  *size_Mat];
       //   D.f[BN  ] = &DD[BN  *size_Mat];
       //   D.f[TS  ] = &DD[TS  *size_Mat];
-      //   D.f[dirREST] = &DD[dirREST*size_Mat];
+      //   D.f[REST] = &DD[REST*size_Mat];
       //   D.f[TNE ] = &DD[TNE *size_Mat];
       //   D.f[TSW ] = &DD[TSW *size_Mat];
       //   D.f[TSE ] = &DD[TSE *size_Mat];
@@ -4215,7 +4215,7 @@ extern "C" __global__ void QPressDeviceEQZ27(real* rhoBC,
       //   D.f[TN  ] = &DD[BS  *size_Mat];
       //   D.f[TS  ] = &DD[BN  *size_Mat];
       //   D.f[BN  ] = &DD[TS  *size_Mat];
-      //   D.f[dirREST] = &DD[dirREST*size_Mat];
+      //   D.f[REST] = &DD[REST*size_Mat];
       //   D.f[TNE ] = &DD[BSW *size_Mat];
       //   D.f[TSW ] = &DD[BNE *size_Mat];
       //   D.f[TSE ] = &DD[BNW *size_Mat];
@@ -4246,7 +4246,7 @@ extern "C" __global__ void QPressDeviceEQZ27(real* rhoBC,
 			(D.f[BS  ])[kbs  ] = mfbcc;//mfbaa;
 			(D.f[BN  ])[kbn  ] = mfbac;//mfbca;
 			(D.f[TS  ])[kts  ] = mfbca;//mfbac;
-			(D.f[dirREST])[kzero] = mfbbb;//mfbbb;
+			(D.f[REST])[kzero] = mfbbb;//mfbbb;
 			(D.f[TNE ])[ktne ] = mfaaa;//mfccc;
 			(D.f[TSW ])[ktsw ] = mfcca;//mfaac;
 			(D.f[TSE ])[ktse ] = mfaca;//mfcac;
@@ -4273,7 +4273,7 @@ extern "C" __global__ void QPressDeviceEQZ27(real* rhoBC,
 			//(D.f[BS  ])[kbs  ] = mfbaa;
 			//(D.f[BN  ])[kbn  ] = mfbca;
 			//(D.f[TS  ])[kts  ] = mfbac;
-			//(D.f[dirREST])[kzero] = mfbbb;
+			//(D.f[REST])[kzero] = mfbbb;
 			//(D.f[TNE ])[ktne ] = mfccc;
 			//(D.f[TSW ])[ktsw ] = mfaac;
 			//(D.f[TSE ])[ktse ] = mfcac;
@@ -4301,7 +4301,7 @@ extern "C" __global__ void QPressDeviceEQZ27(real* rhoBC,
       //(D.f[BS  ])[kbs  ] = fBS;  //f1_BS;   //fTN;   //fBS;  
       //(D.f[BN  ])[kbn  ] = fBN;  //f1_BN;   //fTS;   //fBN;  
       //(D.f[TS  ])[kts  ] = fTS;  //f1_TS;   //fBN;   //fTS;  
-      //(D.f[dirREST])[kzero] = fZERO;//f1_ZERO; //fZERO; //fZERO;
+      //(D.f[REST])[kzero] = fZERO;//f1_ZERO; //fZERO; //fZERO;
       //(D.f[TNE ])[ktne ] = fTNE; //f1_TNE;  //fBSW;  //fTNE; 
       //(D.f[BSW ])[kbsw ] = fBSW; //f1_BSW;  //fTNE;  //fBSW; 
       //(D.f[BNE ])[kbne ] = fBNE; //f1_BNE;  //fTSW;  //fBNE; 
@@ -4427,7 +4427,7 @@ extern "C" __global__ void QPressDeviceZero27(	 real* DD,
          D.f[BS  ] = &DD[BS  *size_Mat];
          D.f[BN  ] = &DD[BN  *size_Mat];
          D.f[TS  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[TNE *size_Mat];
          D.f[TSW ] = &DD[TSW *size_Mat];
          D.f[TSE ] = &DD[TSE *size_Mat];
@@ -4457,7 +4457,7 @@ extern "C" __global__ void QPressDeviceZero27(	 real* DD,
          D.f[TN  ] = &DD[BS  *size_Mat];
          D.f[TS  ] = &DD[BN  *size_Mat];
          D.f[BN  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[BSW *size_Mat];
          D.f[TSW ] = &DD[BNE *size_Mat];
          D.f[TSE ] = &DD[BNW *size_Mat];
@@ -4488,7 +4488,7 @@ extern "C" __global__ void QPressDeviceZero27(	 real* DD,
       (D.f[BS  ])[kbs  ] =c0o1;
       (D.f[BN  ])[kbn  ] =c0o1;
       (D.f[TS  ])[kts  ] =c0o1;
-      (D.f[dirREST])[kzero] =c0o1;
+      (D.f[REST])[kzero] =c0o1;
       (D.f[TNE ])[ktne ] =c0o1;
       (D.f[TSW ])[ktsw ] =c0o1;
       (D.f[TSE ])[ktse ] =c0o1;
@@ -4647,7 +4647,7 @@ extern "C" __global__ void QPressDeviceFake27(	 real* rhoBC,
          D.f[BS  ] = &DD[BS  *size_Mat];
          D.f[BN  ] = &DD[BN  *size_Mat];
          D.f[TS  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[TNE *size_Mat];
          D.f[TSW ] = &DD[TSW *size_Mat];
          D.f[TSE ] = &DD[TSE *size_Mat];
@@ -4677,7 +4677,7 @@ extern "C" __global__ void QPressDeviceFake27(	 real* rhoBC,
          D.f[TN  ] = &DD[BS  *size_Mat];
          D.f[TS  ] = &DD[BN  *size_Mat];
          D.f[BN  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[BSW *size_Mat];
          D.f[TSW ] = &DD[BNE *size_Mat];
          D.f[TSE ] = &DD[BNW *size_Mat];
@@ -4709,7 +4709,7 @@ extern "C" __global__ void QPressDeviceFake27(	 real* rhoBC,
       f1_TN   = (D.f[BS  ])[k1bs  ];
       f1_TS   = (D.f[BN  ])[k1bn  ];
       f1_BN   = (D.f[TS  ])[k1ts  ];
-      f1_ZERO = (D.f[dirREST])[k1zero];
+      f1_ZERO = (D.f[REST])[k1zero];
       f1_BSW  = (D.f[TNE ])[k1tne ];
       f1_BNE  = (D.f[TSW ])[k1tsw ];
       f1_BNW  = (D.f[TSE ])[k1tse ];
@@ -4762,7 +4762,7 @@ extern "C" __global__ void QPressDeviceFake27(	 real* rhoBC,
       (D.f[BS  ])[kbs  ] = f1_TN  -c1o54*drho1;	//  c1o100;  // zero;  //
       (D.f[BN  ])[kbn  ] = f1_TS  -c1o54*drho1;	//  c1o100;  // zero;  //
       (D.f[TS  ])[kts  ] = f1_BN  -c1o54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirREST])[kzero] = f1_ZERO-c8o27*drho1;	//  c1o100;  // zero;  //
+      (D.f[REST])[kzero] = f1_ZERO-c8o27*drho1;	//  c1o100;  // zero;  //
       (D.f[TNE ])[ktne ] = f1_BSW -c1o216*drho1;	//  c1o100;  // zero;  //
       (D.f[TSW ])[ktsw ] = f1_BNE -c1o216*drho1;	//  c1o100;  // zero;  //
       (D.f[TSE ])[ktse ] = f1_BNW -c1o216*drho1;	//  c1o100;  // zero;  //
@@ -4847,7 +4847,7 @@ extern "C" __global__ void QPressDevice27_IntBB(real* rho,
 		D.f[BS  ] = &DD[BS  *size_Mat];
 		D.f[BN  ] = &DD[BN  *size_Mat];
 		D.f[TS  ] = &DD[TS  *size_Mat];
-		D.f[dirREST] = &DD[dirREST*size_Mat];
+		D.f[REST] = &DD[REST*size_Mat];
 		D.f[TNE ] = &DD[TNE *size_Mat];
 		D.f[TSW ] = &DD[TSW *size_Mat];
 		D.f[TSE ] = &DD[TSE *size_Mat];
@@ -4877,7 +4877,7 @@ extern "C" __global__ void QPressDevice27_IntBB(real* rho,
 		D.f[TN  ] = &DD[BS  *size_Mat];
 		D.f[TS  ] = &DD[BN  *size_Mat];
 		D.f[BN  ] = &DD[TS  *size_Mat];
-		D.f[dirREST] = &DD[dirREST*size_Mat];
+		D.f[REST] = &DD[REST*size_Mat];
 		D.f[TNE ] = &DD[BSW *size_Mat];
 		D.f[TSW ] = &DD[BNE *size_Mat];
 		D.f[TSE ] = &DD[BNW *size_Mat];
@@ -5000,7 +5000,7 @@ extern "C" __global__ void QPressDevice27_IntBB(real* rho,
 		real vx1, vx2, vx3, drho, feq, q;
 		drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
 			f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-			f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirREST])[kzero]); 
+			f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[REST])[kzero]); 
 
 		vx1    = (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
 			((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -5038,7 +5038,7 @@ extern "C" __global__ void QPressDevice27_IntBB(real* rho,
 			D.f[BS  ] = &DD[BS  *size_Mat];
 			D.f[BN  ] = &DD[BN  *size_Mat];
 			D.f[TS  ] = &DD[TS  *size_Mat];
-			D.f[dirREST] = &DD[dirREST*size_Mat];
+			D.f[REST] = &DD[REST*size_Mat];
 			D.f[TNE ] = &DD[TNE *size_Mat];
 			D.f[TSW ] = &DD[TSW *size_Mat];
 			D.f[TSE ] = &DD[TSE *size_Mat];
@@ -5068,7 +5068,7 @@ extern "C" __global__ void QPressDevice27_IntBB(real* rho,
 			D.f[TN  ] = &DD[BS  *size_Mat];
 			D.f[TS  ] = &DD[BN  *size_Mat];
 			D.f[BN  ] = &DD[TS  *size_Mat];
-			D.f[dirREST] = &DD[dirREST*size_Mat];
+			D.f[REST] = &DD[REST*size_Mat];
 			D.f[TNE ] = &DD[BSW *size_Mat];
 			D.f[TSW ] = &DD[BNE *size_Mat];
 			D.f[TSE ] = &DD[BNW *size_Mat];
@@ -5080,7 +5080,7 @@ extern "C" __global__ void QPressDevice27_IntBB(real* rho,
 		}
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		//Test
-		//(D.f[dirREST])[k]=c1o10;
+		//(D.f[REST])[k]=c1o10;
 		real rhoDiff = drho - rho[k];
 		real VeloX = vx1;
 		real VeloY = vx2;

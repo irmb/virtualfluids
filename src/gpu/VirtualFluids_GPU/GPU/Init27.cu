@@ -41,7 +41,7 @@ extern "C" __global__ void LBInit27( int myid,
    D.f[BS  ] = &DD[BS  *size_Mat];
    D.f[BN  ] = &DD[BN  *size_Mat];
    D.f[TS  ] = &DD[TS  *size_Mat];
-   D.f[dirREST] = &DD[dirREST*size_Mat];
+   D.f[REST] = &DD[REST*size_Mat];
    D.f[TNE ] = &DD[TNE *size_Mat];
    D.f[TSW ] = &DD[TSW *size_Mat];
    D.f[TSE ] = &DD[TSE *size_Mat];
@@ -140,7 +140,7 @@ extern "C" __global__ void LBInit27( int myid,
 
    real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
-   (D.f[dirREST])[kzero] =   c8o27* (drho-cu_sq);
+   (D.f[REST])[kzero] =   c8o27* (drho-cu_sq);
    (D.f[E   ])[ke   ] =   c2o27* (drho+c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq);
    (D.f[W   ])[kw   ] =   c2o27* (drho+c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq);
    (D.f[N   ])[kn   ] =   c2o27* (drho+c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cu_sq);
@@ -235,7 +235,7 @@ extern "C" __global__ void LBInitNonEqPartSP27( unsigned int* neighborX,
                 D.f[BS  ] = &DD[BS  *size_Mat];
                 D.f[BN  ] = &DD[BN  *size_Mat];
                 D.f[TS  ] = &DD[TS  *size_Mat];
-                D.f[dirREST] = &DD[dirREST*size_Mat];
+                D.f[REST] = &DD[REST*size_Mat];
                 D.f[TNE ] = &DD[TNE *size_Mat];
                 D.f[TSW ] = &DD[TSW *size_Mat];
                 D.f[TSE ] = &DD[TSE *size_Mat];
@@ -265,7 +265,7 @@ extern "C" __global__ void LBInitNonEqPartSP27( unsigned int* neighborX,
                 D.f[TN  ] = &DD[BS  *size_Mat];
                 D.f[TS  ] = &DD[BN  *size_Mat];
                 D.f[BN  ] = &DD[TS  *size_Mat];
-                D.f[dirREST] = &DD[dirREST*size_Mat];
+                D.f[REST] = &DD[REST*size_Mat];
                 D.f[BSW ] = &DD[TNE *size_Mat];
                 D.f[BNE ] = &DD[TSW *size_Mat];
                 D.f[BNW ] = &DD[TSE *size_Mat];
@@ -395,7 +395,7 @@ extern "C" __global__ void LBInitNonEqPartSP27( unsigned int* neighborX,
             //////////////////////////////////////////////////////////////////////////
             real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
             
-            (D.f[dirREST])[kzero] =   c8o27* (drho-cu_sq);
+            (D.f[REST])[kzero] =   c8o27* (drho-cu_sq);
             (D.f[E   ])[ke   ] =   c2o27* (drho+c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq);
             (D.f[W   ])[kw   ] =   c2o27* (drho+c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq);
             (D.f[N   ])[kn   ] =   c2o27* (drho+c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cu_sq);
@@ -425,7 +425,7 @@ extern "C" __global__ void LBInitNonEqPartSP27( unsigned int* neighborX,
 
             //////////////////////////////////////////////////////////////////////////
 
-            (D.f[dirREST])[kzero] += f_ZERO;
+            (D.f[REST])[kzero] += f_ZERO;
             (D.f[E   ])[ke   ] += f_E   ;
             (D.f[W   ])[kw   ] += f_E   ;
             (D.f[N   ])[kn   ] += f_N   ;
@@ -459,9 +459,9 @@ extern "C" __global__ void LBInitNonEqPartSP27( unsigned int* neighborX,
 	    {
 		    //////////////////////////////////////////////////////////////////////////
 		    Distributions27 D;
-		    D.f[dirREST] = &DD[dirREST*size_Mat];
+		    D.f[REST] = &DD[REST*size_Mat];
 		    //////////////////////////////////////////////////////////////////////////
-		    (D.f[dirREST])[k] = c96o1;
+		    (D.f[REST])[k] = c96o1;
 		    //////////////////////////////////////////////////////////////////////////
 	    }
    }

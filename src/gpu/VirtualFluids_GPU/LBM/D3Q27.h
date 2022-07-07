@@ -32,7 +32,7 @@ static constexpr int BNW  = 23;
 static constexpr int BSE  = 24;
 static constexpr int BSW  = 25;
 
-static constexpr int dirREST = 26;
+static constexpr int REST = 26;
 
 #endif
 

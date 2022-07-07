@@ -82,7 +82,7 @@ extern "C" __global__ void getSendFsPost27(real* DD,
          D.f[BS  ] = &DD[BS  *size_Mat];
          D.f[BN  ] = &DD[BN  *size_Mat];
          D.f[TS  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[TNE *size_Mat];
          D.f[TSW ] = &DD[TSW *size_Mat];
          D.f[TSE ] = &DD[TSE *size_Mat];
@@ -112,7 +112,7 @@ extern "C" __global__ void getSendFsPost27(real* DD,
          D.f[TN  ] = &DD[BS  *size_Mat];
          D.f[TS  ] = &DD[BN  *size_Mat];
          D.f[BN  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[BSW *size_Mat];
          D.f[TSW ] = &DD[BNE *size_Mat];
          D.f[TSE ] = &DD[BNW *size_Mat];
@@ -143,7 +143,7 @@ extern "C" __global__ void getSendFsPost27(real* DD,
       Dbuff.f[BS  ] = &bufferFs[BS  *buffmax];
       Dbuff.f[BN  ] = &bufferFs[BN  *buffmax];
       Dbuff.f[TS  ] = &bufferFs[TS  *buffmax];
-      Dbuff.f[dirREST] = &bufferFs[dirREST*buffmax];
+      Dbuff.f[REST] = &bufferFs[REST*buffmax];
       Dbuff.f[TNE ] = &bufferFs[TNE *buffmax];
       Dbuff.f[TSW ] = &bufferFs[TSW *buffmax];
       Dbuff.f[TSE ] = &bufferFs[TSE *buffmax];
@@ -172,7 +172,7 @@ extern "C" __global__ void getSendFsPost27(real* DD,
       //(Dbuff.f[BS  ])[k] = (D.f[BS  ])[kbs  ];
       //(Dbuff.f[BN  ])[k] = (D.f[BN  ])[kbn  ];
       //(Dbuff.f[TS  ])[k] = (D.f[TS  ])[kts  ];
-      //(Dbuff.f[dirREST])[k] = (D.f[dirREST])[kzero];
+      //(Dbuff.f[REST])[k] = (D.f[REST])[kzero];
       //(Dbuff.f[TNE ])[k] = (D.f[TNE ])[ktne ];
       //(Dbuff.f[TSW ])[k] = (D.f[TSW ])[ktsw ];
       //(Dbuff.f[TSE ])[k] = (D.f[TSE ])[ktse ];
@@ -199,7 +199,7 @@ extern "C" __global__ void getSendFsPost27(real* DD,
       (Dbuff.f[BS  ])[k] = (D.f[TN  ])[ktn  ];
       (Dbuff.f[BN  ])[k] = (D.f[TS  ])[kts  ];
       (Dbuff.f[TS  ])[k] = (D.f[BN  ])[kbn  ];
-      (Dbuff.f[dirREST])[k] = (D.f[dirREST])[kzero];
+      (Dbuff.f[REST])[k] = (D.f[REST])[kzero];
       (Dbuff.f[TNE ])[k] = (D.f[BSW ])[kbsw ];
       (Dbuff.f[TSW ])[k] = (D.f[BNE ])[kbne ];
       (Dbuff.f[TSE ])[k] = (D.f[BNW ])[kbnw ];
@@ -318,7 +318,7 @@ extern "C" __global__ void setRecvFsPost27(real* DD,
          D.f[BS  ] = &DD[BS  *size_Mat];
          D.f[BN  ] = &DD[BN  *size_Mat];
          D.f[TS  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[TNE *size_Mat];
          D.f[TSW ] = &DD[TSW *size_Mat];
          D.f[TSE ] = &DD[TSE *size_Mat];
@@ -348,7 +348,7 @@ extern "C" __global__ void setRecvFsPost27(real* DD,
          D.f[TN  ] = &DD[BS  *size_Mat];
          D.f[TS  ] = &DD[BN  *size_Mat];
          D.f[BN  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[BSW *size_Mat];
          D.f[TSW ] = &DD[BNE *size_Mat];
          D.f[TSE ] = &DD[BNW *size_Mat];
@@ -379,7 +379,7 @@ extern "C" __global__ void setRecvFsPost27(real* DD,
       Dbuff.f[BS  ] = &bufferFs[BS  *buffmax];
       Dbuff.f[BN  ] = &bufferFs[BN  *buffmax];
       Dbuff.f[TS  ] = &bufferFs[TS  *buffmax];
-      Dbuff.f[dirREST] = &bufferFs[dirREST*buffmax];
+      Dbuff.f[REST] = &bufferFs[REST*buffmax];
       Dbuff.f[TNE ] = &bufferFs[TNE *buffmax];
       Dbuff.f[TSW ] = &bufferFs[TSW *buffmax];
       Dbuff.f[TSE ] = &bufferFs[TSE *buffmax];
@@ -408,7 +408,7 @@ extern "C" __global__ void setRecvFsPost27(real* DD,
       //(D.f[BS  ])[kbs  ] = (Dbuff.f[BS  ])[k];
       //(D.f[BN  ])[kbn  ] = (Dbuff.f[BN  ])[k];
       //(D.f[TS  ])[kts  ] = (Dbuff.f[TS  ])[k];
-      //(D.f[dirREST])[kzero] = (Dbuff.f[dirREST])[k];
+      //(D.f[REST])[kzero] = (Dbuff.f[REST])[k];
       //(D.f[TNE ])[ktne ] = (Dbuff.f[TNE ])[k];
       //(D.f[TSW ])[ktsw ] = (Dbuff.f[TSW ])[k];
       //(D.f[TSE ])[ktse ] = (Dbuff.f[TSE ])[k];
@@ -435,7 +435,7 @@ extern "C" __global__ void setRecvFsPost27(real* DD,
       (D.f[TN  ])[ktn  ] = (Dbuff.f[BS  ])[k];
       (D.f[TS  ])[kts  ] = (Dbuff.f[BN  ])[k];
       (D.f[BN  ])[kbn  ] = (Dbuff.f[TS  ])[k];
-      (D.f[dirREST])[kzero] = (Dbuff.f[dirREST])[k];
+      (D.f[REST])[kzero] = (Dbuff.f[REST])[k];
       (D.f[BSW ])[kbsw ] = (Dbuff.f[TNE ])[k];
       (D.f[BNE ])[kbne ] = (Dbuff.f[TSW ])[k];
       (D.f[BNW ])[kbnw ] = (Dbuff.f[TSE ])[k];
@@ -553,7 +553,7 @@ extern "C" __global__ void getSendFsPre27(real* DD,
          D.f[BS  ] = &DD[BS  *size_Mat];
          D.f[BN  ] = &DD[BN  *size_Mat];
          D.f[TS  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[TNE *size_Mat];
          D.f[TSW ] = &DD[TSW *size_Mat];
          D.f[TSE ] = &DD[TSE *size_Mat];
@@ -583,7 +583,7 @@ extern "C" __global__ void getSendFsPre27(real* DD,
          D.f[TN  ] = &DD[BS  *size_Mat];
          D.f[TS  ] = &DD[BN  *size_Mat];
          D.f[BN  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[BSW *size_Mat];
          D.f[TSW ] = &DD[BNE *size_Mat];
          D.f[TSE ] = &DD[BNW *size_Mat];
@@ -614,7 +614,7 @@ extern "C" __global__ void getSendFsPre27(real* DD,
       Dbuff.f[BS  ] = &bufferFs[BS  *buffmax];
       Dbuff.f[BN  ] = &bufferFs[BN  *buffmax];
       Dbuff.f[TS  ] = &bufferFs[TS  *buffmax];
-      Dbuff.f[dirREST] = &bufferFs[dirREST*buffmax];
+      Dbuff.f[REST] = &bufferFs[REST*buffmax];
       Dbuff.f[TNE ] = &bufferFs[TNE *buffmax];
       Dbuff.f[TSW ] = &bufferFs[TSW *buffmax];
       Dbuff.f[TSE ] = &bufferFs[TSE *buffmax];
@@ -643,7 +643,7 @@ extern "C" __global__ void getSendFsPre27(real* DD,
       (Dbuff.f[BS  ])[k] = (D.f[BS  ])[kbs  ];
       (Dbuff.f[BN  ])[k] = (D.f[BN  ])[kbn  ];
       (Dbuff.f[TS  ])[k] = (D.f[TS  ])[kts  ];
-      (Dbuff.f[dirREST])[k] = (D.f[dirREST])[kzero];
+      (Dbuff.f[REST])[k] = (D.f[REST])[kzero];
       (Dbuff.f[TNE ])[k] = (D.f[TNE ])[ktne ];
       (Dbuff.f[TSW ])[k] = (D.f[TSW ])[ktsw ];
       (Dbuff.f[TSE ])[k] = (D.f[TSE ])[ktse ];
@@ -762,7 +762,7 @@ extern "C" __global__ void setRecvFsPre27(real* DD,
          D.f[BS  ] = &DD[BS  *size_Mat];
          D.f[BN  ] = &DD[BN  *size_Mat];
          D.f[TS  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[TNE *size_Mat];
          D.f[TSW ] = &DD[TSW *size_Mat];
          D.f[TSE ] = &DD[TSE *size_Mat];
@@ -792,7 +792,7 @@ extern "C" __global__ void setRecvFsPre27(real* DD,
          D.f[TN  ] = &DD[BS  *size_Mat];
          D.f[TS  ] = &DD[BN  *size_Mat];
          D.f[BN  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[BSW *size_Mat];
          D.f[TSW ] = &DD[BNE *size_Mat];
          D.f[TSE ] = &DD[BNW *size_Mat];
@@ -823,7 +823,7 @@ extern "C" __global__ void setRecvFsPre27(real* DD,
       Dbuff.f[BS  ] = &bufferFs[BS  *buffmax];
       Dbuff.f[BN  ] = &bufferFs[BN  *buffmax];
       Dbuff.f[TS  ] = &bufferFs[TS  *buffmax];
-      Dbuff.f[dirREST] = &bufferFs[dirREST*buffmax];
+      Dbuff.f[REST] = &bufferFs[REST*buffmax];
       Dbuff.f[TNE ] = &bufferFs[TNE *buffmax];
       Dbuff.f[TSW ] = &bufferFs[TSW *buffmax];
       Dbuff.f[TSE ] = &bufferFs[TSE *buffmax];
@@ -852,7 +852,7 @@ extern "C" __global__ void setRecvFsPre27(real* DD,
       (D.f[BS  ])[kbs  ] = (Dbuff.f[BS  ])[k];
       (D.f[BN  ])[kbn  ] = (Dbuff.f[BN  ])[k];
       (D.f[TS  ])[kts  ] = (Dbuff.f[TS  ])[k];
-      (D.f[dirREST])[kzero] = (Dbuff.f[dirREST])[k];
+      (D.f[REST])[kzero] = (Dbuff.f[REST])[k];
       (D.f[TNE ])[ktne ] = (Dbuff.f[TNE ])[k];
       (D.f[TSW ])[ktsw ] = (Dbuff.f[TSW ])[k];
       (D.f[TSE ])[ktse ] = (Dbuff.f[TSE ])[k];

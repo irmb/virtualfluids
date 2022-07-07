@@ -61,7 +61,7 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
    f0MMsource = &DF[BS  *size_MatF];
    f0PMsource = &DF[BN  *size_MatF];
    f0MPsource = &DF[TS  *size_MatF];
-   f000source = &DF[dirREST*size_MatF];
+   f000source = &DF[REST*size_MatF];
    fMMMsource = &DF[BSW *size_MatF];
    fMMPsource = &DF[TSW *size_MatF];
    fMPPsource = &DF[TNW *size_MatF];
@@ -96,7 +96,7 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
 	   f0MMdest = &DC[BS  *size_MatC];
 	   f0PMdest = &DC[BN  *size_MatC];
 	   f0MPdest = &DC[TS  *size_MatC];
-	   f000dest = &DC[dirREST*size_MatC];
+	   f000dest = &DC[REST*size_MatC];
 	   fMMMdest = &DC[BSW *size_MatC];
 	   fMMPdest = &DC[TSW *size_MatC];
 	   fMPPdest = &DC[TNW *size_MatC];
@@ -126,7 +126,7 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
 	   f0MMdest = &DC[TN  *size_MatC];
 	   f0PMdest = &DC[TS  *size_MatC];
 	   f0MPdest = &DC[BN  *size_MatC];
-	   f000dest = &DC[dirREST*size_MatC];
+	   f000dest = &DC[REST*size_MatC];
 	   fMMMdest = &DC[TNE *size_MatC];
 	   fMMPdest = &DC[BNE *size_MatC];
 	   fMPPdest = &DC[BSE *size_MatC];
@@ -1308,7 +1308,7 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3( real* DC,
    f0MMsource = &DF[BS  *size_MatF];
    f0PMsource = &DF[BN  *size_MatF];
    f0MPsource = &DF[TS  *size_MatF];
-   f000source = &DF[dirREST*size_MatF];
+   f000source = &DF[REST*size_MatF];
    fMMMsource = &DF[BSW *size_MatF];
    fMMPsource = &DF[TSW *size_MatF];
    fMPPsource = &DF[TNW *size_MatF];
@@ -1343,7 +1343,7 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3( real* DC,
 	   f0MMdest = &DC[BS  *size_MatC];
 	   f0PMdest = &DC[BN  *size_MatC];
 	   f0MPdest = &DC[TS  *size_MatC];
-	   f000dest = &DC[dirREST*size_MatC];
+	   f000dest = &DC[REST*size_MatC];
 	   fMMMdest = &DC[BSW *size_MatC];
 	   fMMPdest = &DC[TSW *size_MatC];
 	   fMPPdest = &DC[TNW *size_MatC];
@@ -1373,7 +1373,7 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3( real* DC,
 	   f0MMdest = &DC[TN  *size_MatC];
 	   f0PMdest = &DC[TS  *size_MatC];
 	   f0MPdest = &DC[BN  *size_MatC];
-	   f000dest = &DC[dirREST*size_MatC];
+	   f000dest = &DC[REST*size_MatC];
 	   fMMMdest = &DC[TNE *size_MatC];
 	   fMMPdest = &DC[BNE *size_MatC];
 	   fMPPdest = &DC[BSE *size_MatC];

@@ -64,7 +64,7 @@ extern "C" __global__ void LB_Kernel_WaleCumulantK17Comp(
 				D.f[BS  ] = &DDStart[BS  *size_Mat];
 				D.f[BN  ] = &DDStart[BN  *size_Mat];
 				D.f[TS  ] = &DDStart[TS  *size_Mat];
-				D.f[dirREST] = &DDStart[dirREST*size_Mat];
+				D.f[REST] = &DDStart[REST*size_Mat];
 				D.f[TNE ] = &DDStart[TNE *size_Mat];
 				D.f[TSW ] = &DDStart[TSW *size_Mat];
 				D.f[TSE ] = &DDStart[TSE *size_Mat];
@@ -94,7 +94,7 @@ extern "C" __global__ void LB_Kernel_WaleCumulantK17Comp(
 				D.f[TN  ] = &DDStart[BS  *size_Mat];
 				D.f[TS  ] = &DDStart[BN  *size_Mat];
 				D.f[BN  ] = &DDStart[TS  *size_Mat];
-				D.f[dirREST] = &DDStart[dirREST*size_Mat];
+				D.f[REST] = &DDStart[REST*size_Mat];
 				D.f[BSW ] = &DDStart[TNE *size_Mat];
 				D.f[BNE ] = &DDStart[TSW *size_Mat];
 				D.f[BNW ] = &DDStart[TSE *size_Mat];
@@ -154,7 +154,7 @@ extern "C" __global__ void LB_Kernel_WaleCumulantK17Comp(
 			real mfbaa = (D.f[BS  ])[kbs];
 			real mfbca = (D.f[BN  ])[kb ];
 			real mfbac = (D.f[TS  ])[ks ];
-			real mfbbb = (D.f[dirREST])[k  ];
+			real mfbbb = (D.f[REST])[k  ];
 			real mfccc = (D.f[TNE ])[k  ];
 			real mfaac = (D.f[TSW ])[ksw];
 			real mfcac = (D.f[TSE ])[ks ];
@@ -862,8 +862,8 @@ extern "C" __global__ void LB_Kernel_WaleCumulantK17Comp(
  		//	wadjust    = O4+(one-O4)*abs(CUMcbb)/(abs(CUMcbb)+qudricLimit);
 			//CUMcbb    += wadjust * (-CUMcbb); 
 			//////////////////////////////////////////////////////////////////////////
-			real A = (c4o1 + c2o1*omega - c3o1*omega*omega) / (c2o1 - c7o1*omega + c5o1*omega*omega);
-			real B = (c4o1 + c28o1*omega - c14o1*omega*omega) / (c6o1 - c21o1*omega + c15o1*omega*omega);
+			real factorA = (c4o1 + c2o1*omega - c3o1*omega*omega) / (c2o1 - c7o1*omega + c5o1*omega*omega);
+			real factorB = (c4o1 + c28o1*omega - c14o1*omega*omega) / (c6o1 - c21o1*omega + c15o1*omega*omega);
 			//////////////////////////////////////////////////////////////////////////
 			//ohne limiter
 			//CUMacc += O4 * (-CUMacc); 
@@ -872,12 +872,12 @@ extern "C" __global__ void LB_Kernel_WaleCumulantK17Comp(
 			//CUMbbc += O4 * (-CUMbbc); 
 			//CUMbcb += O4 * (-CUMbcb); 
 			//CUMcbb += O4 * (-CUMcbb); 
-			CUMacc = -O4*(c1o1 / omega - c1o2) * (dyuy + dzuz) * c2o3 * A + (c1o1 - O4) * (CUMacc);
-			CUMcac = -O4*(c1o1 / omega - c1o2) * (dxux + dzuz) * c2o3 * A + (c1o1 - O4) * (CUMcac);
-			CUMcca = -O4*(c1o1 / omega - c1o2) * (dyuy + dxux) * c2o3 * A + (c1o1 - O4) * (CUMcca);
-			CUMbbc = -O4*(c1o1 / omega - c1o2) * Dxy           * c1o3 * B + (c1o1 - O4) * (CUMbbc);
-			CUMbcb = -O4*(c1o1 / omega - c1o2) * Dxz           * c1o3 * B + (c1o1 - O4) * (CUMbcb);
-			CUMcbb = -O4*(c1o1 / omega - c1o2) * Dyz           * c1o3 * B + (c1o1 - O4) * (CUMcbb);
+			CUMacc = -O4*(c1o1 / omega - c1o2) * (dyuy + dzuz) * c2o3 * factorA + (c1o1 - O4) * (CUMacc);
+			CUMcac = -O4*(c1o1 / omega - c1o2) * (dxux + dzuz) * c2o3 * factorA + (c1o1 - O4) * (CUMcac);
+			CUMcca = -O4*(c1o1 / omega - c1o2) * (dyuy + dxux) * c2o3 * factorA + (c1o1 - O4) * (CUMcca);
+			CUMbbc = -O4*(c1o1 / omega - c1o2) * Dxy           * c1o3 * factorB + (c1o1 - O4) * (CUMbbc);
+			CUMbcb = -O4*(c1o1 / omega - c1o2) * Dxz           * c1o3 * factorB + (c1o1 - O4) * (CUMbcb);
+			CUMcbb = -O4*(c1o1 / omega - c1o2) * Dyz           * c1o3 * factorB + (c1o1 - O4) * (CUMcbb);
 			//////////////////////////////////////////////////////////////////////////
 			
 					
@@ -1159,7 +1159,7 @@ extern "C" __global__ void LB_Kernel_WaleCumulantK17Comp(
 			(D.f[ BS  ])[kbs ] = mfbcc;
 			(D.f[ BN  ])[kb  ] = mfbac;
 			(D.f[ TS  ])[ks  ] = mfbca;
-			(D.f[ dirREST])[k   ] = mfbbb;
+			(D.f[ REST])[k   ] = mfbbb;
 			(D.f[ TNE ])[k   ] = mfaaa;
 			(D.f[ TSE ])[ks  ] = mfaca;
 			(D.f[ BNE ])[kb  ] = mfaac;

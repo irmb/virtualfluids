@@ -2353,7 +2353,7 @@ namespace UnstructuredGridWriter
 					case BNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
 					case BSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
 					case TNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirREST:wallX1 = nodeX1;        wallX2 = nodeX2;		 wallX3 = nodeX3;        break;
+					case REST:wallX1 = nodeX1;        wallX2 = nodeX2;		 wallX3 = nodeX3;        break;
 					default: throw UbException(UB_EXARGS, "unknown direction");
 				}
 				//////////////////////////////////////////////////////////////////////////
@@ -2458,7 +2458,7 @@ namespace UnstructuredGridWriter
 					case BNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
 					case BSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
 					case TNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirREST:wallX1 = nodeX1;        wallX2 = nodeX2;		 wallX3 = nodeX3;        break;
+					case REST:wallX1 = nodeX1;        wallX2 = nodeX2;		 wallX3 = nodeX3;        break;
 					default: throw UbException(UB_EXARGS, "unknown direction");
 				}
 				//////////////////////////////////////////////////////////////////////////
@@ -2563,7 +2563,7 @@ namespace UnstructuredGridWriter
 					case BNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
 					case BSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
 					case TNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirREST:wallX1 = nodeX1;        wallX2 = nodeX2;		 wallX3 = nodeX3;        break;
+					case REST:wallX1 = nodeX1;        wallX2 = nodeX2;		 wallX3 = nodeX3;        break;
 					default: throw UbException(UB_EXARGS, "unknown direction");
 				}
 				//////////////////////////////////////////////////////////////////////////

@@ -127,7 +127,7 @@ extern "C" __global__ void Factorized_Central_Moments_Advection_Diffusion_Device
 			dist.f[BS  ] = &distributions[BS  *size_Mat];
 			dist.f[BN  ] = &distributions[BN  *size_Mat];
 			dist.f[TS  ] = &distributions[TS  *size_Mat];
-			dist.f[dirREST] = &distributions[dirREST*size_Mat];
+			dist.f[REST] = &distributions[REST*size_Mat];
 			dist.f[TNE ] = &distributions[TNE *size_Mat];
 			dist.f[TSW ] = &distributions[TSW *size_Mat];
 			dist.f[TSE ] = &distributions[TSE *size_Mat];
@@ -157,7 +157,7 @@ extern "C" __global__ void Factorized_Central_Moments_Advection_Diffusion_Device
 			dist.f[TN  ] = &distributions[BS  *size_Mat];
 			dist.f[TS  ] = &distributions[BN  *size_Mat];
 			dist.f[BN  ] = &distributions[TS  *size_Mat];
-			dist.f[dirREST] = &distributions[dirREST*size_Mat];
+			dist.f[REST] = &distributions[REST*size_Mat];
 			dist.f[BSW ] = &distributions[TNE *size_Mat];
 			dist.f[BNE ] = &distributions[TSW *size_Mat];
 			dist.f[BNW ] = &distributions[TSE *size_Mat];
@@ -189,7 +189,7 @@ extern "C" __global__ void Factorized_Central_Moments_Advection_Diffusion_Device
 			distAD.f[BS  ] = &distributionsAD[BS  *size_Mat];
 			distAD.f[BN  ] = &distributionsAD[BN  *size_Mat];
 			distAD.f[TS  ] = &distributionsAD[TS  *size_Mat];
-			distAD.f[dirREST] = &distributionsAD[dirREST*size_Mat];
+			distAD.f[REST] = &distributionsAD[REST*size_Mat];
 			distAD.f[TNE ] = &distributionsAD[TNE *size_Mat];
 			distAD.f[TSW ] = &distributionsAD[TSW *size_Mat];
 			distAD.f[TSE ] = &distributionsAD[TSE *size_Mat];
@@ -219,7 +219,7 @@ extern "C" __global__ void Factorized_Central_Moments_Advection_Diffusion_Device
 			distAD.f[TN  ] = &distributionsAD[BS  *size_Mat];
 			distAD.f[TS  ] = &distributionsAD[BN  *size_Mat];
 			distAD.f[BN  ] = &distributionsAD[TS  *size_Mat];
-			distAD.f[dirREST] = &distributionsAD[dirREST*size_Mat];
+			distAD.f[REST] = &distributionsAD[REST*size_Mat];
 			distAD.f[BSW ] = &distributionsAD[TNE *size_Mat];
 			distAD.f[BNE ] = &distributionsAD[TSW *size_Mat];
 			distAD.f[BNW ] = &distributionsAD[TSE *size_Mat];
@@ -259,7 +259,7 @@ extern "C" __global__ void Factorized_Central_Moments_Advection_Diffusion_Device
 		real fbaa = (dist.f[BS  ])[kbs];
 		real fbca = (dist.f[BN  ])[kb];
 		real fbac = (dist.f[TS  ])[ks];
-		real fbbb = (dist.f[dirREST])[k];
+		real fbbb = (dist.f[REST])[k];
 		real fccc = (dist.f[TNE ])[k];
 		real faac = (dist.f[TSW ])[ksw];
 		real fcac = (dist.f[TSE ])[ks];
@@ -289,7 +289,7 @@ extern "C" __global__ void Factorized_Central_Moments_Advection_Diffusion_Device
 		real mfbaa = (distAD.f[BS  ])[kbs];
 		real mfbca = (distAD.f[BN  ])[kb];
 		real mfbac = (distAD.f[TS  ])[ks];
-		real mfbbb = (distAD.f[dirREST])[k];
+		real mfbbb = (distAD.f[REST])[k];
 		real mfccc = (distAD.f[TNE ])[k];
 		real mfaac = (distAD.f[TSW ])[ksw];
 		real mfcac = (distAD.f[TSE ])[ks];
@@ -521,7 +521,7 @@ extern "C" __global__ void Factorized_Central_Moments_Advection_Diffusion_Device
 		(distAD.f[BS  ])[kbs ] = mfbcc;
 		(distAD.f[BN  ])[kb  ] = mfbac;
 		(distAD.f[TS  ])[ks  ] = mfbca;
-		(distAD.f[dirREST])[k   ] = mfbbb;
+		(distAD.f[REST])[k   ] = mfbbb;
 		(distAD.f[TNE ])[k   ] = mfaaa;
 		(distAD.f[TSE ])[ks  ] = mfaca;
 		(distAD.f[BNE ])[kb  ] = mfaac;
