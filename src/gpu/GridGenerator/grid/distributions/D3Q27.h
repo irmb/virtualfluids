@@ -33,39 +33,39 @@
 #ifndef D3Q27_H_
 #define D3Q27_H_
 
-#define DIR_27_START  0
-#define DIR_27_END   26
+static constexpr int STARTDIR = 0;
+static constexpr int ENDDIR = 26;
 
-#define DIR_27_E    0
-#define DIR_27_W    1
-#define DIR_27_N    2
-#define DIR_27_S    3
-#define DIR_27_T    4
-#define DIR_27_B    5
+static constexpr int E = 0;
+static constexpr int W = 1;
+static constexpr int N = 2;
+static constexpr int S = 3;
+static constexpr int T = 4;
+static constexpr int B = 5;
+								  
+static constexpr int NE = 6;
+static constexpr int SW = 7;
+static constexpr int SE = 8;
+static constexpr int NW = 9;
+static constexpr int TE = 10;
+static constexpr int BW = 11;
+static constexpr int BE = 12;
+static constexpr int TW = 13;
+static constexpr int TN = 14;
+static constexpr int BS = 15;
+static constexpr int BN = 16;
+static constexpr int TS = 17;
 
-#define DIR_27_NE   6
-#define DIR_27_SW   7
-#define DIR_27_SE   8
-#define DIR_27_NW   9
-#define DIR_27_TE   10
-#define DIR_27_BW   11
-#define DIR_27_BE   12
-#define DIR_27_TW   13
-#define DIR_27_TN   14
-#define DIR_27_BS   15
-#define DIR_27_BN   16
-#define DIR_27_TS   17
-
-#define DIR_27_TNE   18
-#define DIR_27_TNW   19
-#define DIR_27_TSE   20
-#define DIR_27_TSW   21
-#define DIR_27_BNE   22
-#define DIR_27_BNW   23
-#define DIR_27_BSE   24
-#define DIR_27_BSW   25
-
-#define DIR_27_REST  26
+static constexpr int  TNE  = 18;
+static constexpr int  TNW  = 19;
+static constexpr int  TSE  = 20;
+static constexpr int  TSW  = 21;
+static constexpr int  BNE  = 22;
+static constexpr int  BNW  = 23;
+static constexpr int  BSE  = 24;
+static constexpr int  BSW  = 25;
+								  
+static constexpr int REST = 26;
 
 
 
