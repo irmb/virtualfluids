@@ -49,6 +49,7 @@
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlaneProbe.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlanarAverageProbe.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/WallModelProbe.h"
+#include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 
@@ -84,6 +85,7 @@ void multipleLevel(const std::string& configPath)
     config.load(configPath);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////^
     SPtr<Parameter> para = std::make_shared<Parameter>(config, communicator.getNummberOfProcess(), communicator.getPID());
+    BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -196,6 +198,7 @@ void multipleLevel(const std::string& configPath)
 
     // gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
     gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0,  0.0, 0.0);
+    bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipCompressible);
 
     real cPi = 3.1415926535897932384626433832795;
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
@@ -223,7 +226,7 @@ void multipleLevel(const std::string& configPath)
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
     auto gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
 
-    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator);
+    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory);
     sim.run();
 }
 

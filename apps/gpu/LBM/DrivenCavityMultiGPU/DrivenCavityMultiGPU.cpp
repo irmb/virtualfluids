@@ -2,7 +2,6 @@
 #include <exception>
 #include <fstream>
 #include <iostream>
-#include <math.h>
 #include <memory>
 #include <sstream>
 #include <stdexcept>
@@ -48,6 +47,7 @@
 
 #include "VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
 #include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
+#include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 
@@ -66,19 +66,19 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //  Tesla 03
-// std::string outPath("E:/temp/DrivenCavityMultiGPUResults/");
-// std::string gridPath = "D:/STLs/DrivenCavity";
-// std::string simulationName("DrivenCavityMultiGPU");
+// const std::string outPath("E:/temp/DrivenCavityMultiGPUResults/");
+// const std::string gridPath = "D:/STLs/DrivenCavity";
+// const std::string simulationName("DrivenCavityMultiGPU");
 
 // Phoenix
-// std::string outPath("/work/y0078217/Results/DrivenCavityMultiGPUResults/");
-// std::string gridPath = "/work/y0078217/Grids/GridDrivenCavityMultiGPU/";
-// std::string simulationName("DrivenCavityMultiGPU");
+// const std::string outPath("/work/y0078217/Results/DrivenCavityMultiGPUResults/");
+// const std::string gridPath = "/work/y0078217/Grids/GridDrivenCavityMultiGPU/";
+// const std::string simulationName("DrivenCavityMultiGPU");
 
 //  Aragorn
-std::string outPath("/workspaces/VirtualFluids_dev/output/DrivenCavity_Results/");
-std::string gridPath = "/workspaces/VirtualFluids_dev/output/DrivenCavity_Results/grid/";
-std::string simulationName("DrivenCavity");
+const std::string outPath("output/DrivenCavity_Results/");
+const std::string gridPath = "output/DrivenCavity_Results/grid/";
+const std::string simulationName("DrivenCavity");
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -101,6 +101,8 @@ void multipleLevel(const std::string &configPath)
     std::cout << configPath << std::endl;
     config.load(configPath);
     SPtr<Parameter> para = std::make_shared<Parameter>(config, communicator.getNummberOfProcess(), communicator.getPID());
+    BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
+
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -534,6 +536,7 @@ void multipleLevel(const std::string &configPath)
 
             SimulationFileWriter::write(gridPath, gridBuilder, FILEFORMAT::BINARY);
         }
+        bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -546,7 +549,7 @@ void multipleLevel(const std::string &configPath)
         gridGenerator = GridProvider::makeGridReader(FILEFORMAT::BINARY, para, cudaMemoryManager);
     }
 
-    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator);
+    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory);
     sim.run();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
