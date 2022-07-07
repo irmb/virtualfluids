@@ -43,33 +43,33 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3_2018(real* DC,
 		*f000dest, *fMMMdest, *fMMPdest, *fMPPdest, *fMPMdest, *fPPMdest, *fPPPdest, *fPMPdest, *fPMMdest;
 
 
-	fP00dest = &DF[dirE   *size_MatF];
-	fM00dest = &DF[dirW   *size_MatF];
-	f0P0dest = &DF[dirN   *size_MatF];
-	f0M0dest = &DF[dirS   *size_MatF];
-	f00Pdest = &DF[dirT   *size_MatF];
-	f00Mdest = &DF[dirB   *size_MatF];
-	fPP0dest = &DF[dirNE  *size_MatF];
-	fMM0dest = &DF[dirSW  *size_MatF];
-	fPM0dest = &DF[dirSE  *size_MatF];
-	fMP0dest = &DF[dirNW  *size_MatF];
-	fP0Pdest = &DF[dirTE  *size_MatF];
-	fM0Mdest = &DF[dirBW  *size_MatF];
-	fP0Mdest = &DF[dirBE  *size_MatF];
-	fM0Pdest = &DF[dirTW  *size_MatF];
-	f0PPdest = &DF[dirTN  *size_MatF];
-	f0MMdest = &DF[dirBS  *size_MatF];
-	f0PMdest = &DF[dirBN  *size_MatF];
-	f0MPdest = &DF[dirTS  *size_MatF];
+	fP00dest = &DF[E   *size_MatF];
+	fM00dest = &DF[W   *size_MatF];
+	f0P0dest = &DF[N   *size_MatF];
+	f0M0dest = &DF[S   *size_MatF];
+	f00Pdest = &DF[T   *size_MatF];
+	f00Mdest = &DF[B   *size_MatF];
+	fPP0dest = &DF[NE  *size_MatF];
+	fMM0dest = &DF[SW  *size_MatF];
+	fPM0dest = &DF[SE  *size_MatF];
+	fMP0dest = &DF[NW  *size_MatF];
+	fP0Pdest = &DF[TE  *size_MatF];
+	fM0Mdest = &DF[BW  *size_MatF];
+	fP0Mdest = &DF[BE  *size_MatF];
+	fM0Pdest = &DF[TW  *size_MatF];
+	f0PPdest = &DF[TN  *size_MatF];
+	f0MMdest = &DF[BS  *size_MatF];
+	f0PMdest = &DF[BN  *size_MatF];
+	f0MPdest = &DF[TS  *size_MatF];
 	f000dest = &DF[dirREST*size_MatF];
-	fMMMdest = &DF[dirBSW *size_MatF];
-	fMMPdest = &DF[dirTSW *size_MatF];
-	fMPPdest = &DF[dirTNW *size_MatF];
-	fMPMdest = &DF[dirBNW *size_MatF];
-	fPPMdest = &DF[dirBNE *size_MatF];
-	fPPPdest = &DF[dirTNE *size_MatF];
-	fPMPdest = &DF[dirTSE *size_MatF];
-	fPMMdest = &DF[dirBSE *size_MatF];
+	fMMMdest = &DF[BSW *size_MatF];
+	fMMPdest = &DF[TSW *size_MatF];
+	fMPPdest = &DF[TNW *size_MatF];
+	fMPMdest = &DF[BNW *size_MatF];
+	fPPMdest = &DF[BNE *size_MatF];
+	fPPPdest = &DF[TNE *size_MatF];
+	fPMPdest = &DF[TSE *size_MatF];
+	fPMMdest = &DF[BSE *size_MatF];
 
 	real
 		*fP00source, *fM00source, *f0P0source, *f0M0source, *f00Psource, *f00Msource, *fPP0source, *fMM0source, *fPM0source,
@@ -78,72 +78,72 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3_2018(real* DC,
 
 	if (isEvenTimestep == true)
 	{
-		fP00source = &DC[dirE   *size_MatC];
-		fM00source = &DC[dirW   *size_MatC];
-		f0P0source = &DC[dirN   *size_MatC];
-		f0M0source = &DC[dirS   *size_MatC];
-		f00Psource = &DC[dirT   *size_MatC];
-		f00Msource = &DC[dirB   *size_MatC];
-		fPP0source = &DC[dirNE  *size_MatC];
-		fMM0source = &DC[dirSW  *size_MatC];
-		fPM0source = &DC[dirSE  *size_MatC];
-		fMP0source = &DC[dirNW  *size_MatC];
-		fP0Psource = &DC[dirTE  *size_MatC];
-		fM0Msource = &DC[dirBW  *size_MatC];
-		fP0Msource = &DC[dirBE  *size_MatC];
-		fM0Psource = &DC[dirTW  *size_MatC];
-		f0PPsource = &DC[dirTN  *size_MatC];
-		f0MMsource = &DC[dirBS  *size_MatC];
-		f0PMsource = &DC[dirBN  *size_MatC];
-		f0MPsource = &DC[dirTS  *size_MatC];
+		fP00source = &DC[E   *size_MatC];
+		fM00source = &DC[W   *size_MatC];
+		f0P0source = &DC[N   *size_MatC];
+		f0M0source = &DC[S   *size_MatC];
+		f00Psource = &DC[T   *size_MatC];
+		f00Msource = &DC[B   *size_MatC];
+		fPP0source = &DC[NE  *size_MatC];
+		fMM0source = &DC[SW  *size_MatC];
+		fPM0source = &DC[SE  *size_MatC];
+		fMP0source = &DC[NW  *size_MatC];
+		fP0Psource = &DC[TE  *size_MatC];
+		fM0Msource = &DC[BW  *size_MatC];
+		fP0Msource = &DC[BE  *size_MatC];
+		fM0Psource = &DC[TW  *size_MatC];
+		f0PPsource = &DC[TN  *size_MatC];
+		f0MMsource = &DC[BS  *size_MatC];
+		f0PMsource = &DC[BN  *size_MatC];
+		f0MPsource = &DC[TS  *size_MatC];
 		f000source = &DC[dirREST*size_MatC];
-		fMMMsource = &DC[dirBSW *size_MatC];
-		fMMPsource = &DC[dirTSW *size_MatC];
-		fMPPsource = &DC[dirTNW *size_MatC];
-		fMPMsource = &DC[dirBNW *size_MatC];
-		fPPMsource = &DC[dirBNE *size_MatC];
-		fPPPsource = &DC[dirTNE *size_MatC];
-		fPMPsource = &DC[dirTSE *size_MatC];
-		fPMMsource = &DC[dirBSE *size_MatC];
+		fMMMsource = &DC[BSW *size_MatC];
+		fMMPsource = &DC[TSW *size_MatC];
+		fMPPsource = &DC[TNW *size_MatC];
+		fMPMsource = &DC[BNW *size_MatC];
+		fPPMsource = &DC[BNE *size_MatC];
+		fPPPsource = &DC[TNE *size_MatC];
+		fPMPsource = &DC[TSE *size_MatC];
+		fPMMsource = &DC[BSE *size_MatC];
 	}
 	else
 	{
-		fP00source = &DC[dirW   *size_MatC];
-		fM00source = &DC[dirE   *size_MatC];
-		f0P0source = &DC[dirS   *size_MatC];
-		f0M0source = &DC[dirN   *size_MatC];
-		f00Psource = &DC[dirB   *size_MatC];
-		f00Msource = &DC[dirT   *size_MatC];
-		fPP0source = &DC[dirSW  *size_MatC];
-		fMM0source = &DC[dirNE  *size_MatC];
-		fPM0source = &DC[dirNW  *size_MatC];
-		fMP0source = &DC[dirSE  *size_MatC];
-		fP0Psource = &DC[dirBW  *size_MatC];
-		fM0Msource = &DC[dirTE  *size_MatC];
-		fP0Msource = &DC[dirTW  *size_MatC];
-		fM0Psource = &DC[dirBE  *size_MatC];
-		f0PPsource = &DC[dirBS  *size_MatC];
-		f0MMsource = &DC[dirTN  *size_MatC];
-		f0PMsource = &DC[dirTS  *size_MatC];
-		f0MPsource = &DC[dirBN  *size_MatC];
+		fP00source = &DC[W   *size_MatC];
+		fM00source = &DC[E   *size_MatC];
+		f0P0source = &DC[S   *size_MatC];
+		f0M0source = &DC[N   *size_MatC];
+		f00Psource = &DC[B   *size_MatC];
+		f00Msource = &DC[T   *size_MatC];
+		fPP0source = &DC[SW  *size_MatC];
+		fMM0source = &DC[NE  *size_MatC];
+		fPM0source = &DC[NW  *size_MatC];
+		fMP0source = &DC[SE  *size_MatC];
+		fP0Psource = &DC[BW  *size_MatC];
+		fM0Msource = &DC[TE  *size_MatC];
+		fP0Msource = &DC[TW  *size_MatC];
+		fM0Psource = &DC[BE  *size_MatC];
+		f0PPsource = &DC[BS  *size_MatC];
+		f0MMsource = &DC[TN  *size_MatC];
+		f0PMsource = &DC[TS  *size_MatC];
+		f0MPsource = &DC[BN  *size_MatC];
 		f000source = &DC[dirREST*size_MatC];
-		fMMMsource = &DC[dirTNE *size_MatC];
-		fMMPsource = &DC[dirBNE *size_MatC];
-		fMPPsource = &DC[dirBSE *size_MatC];
-		fMPMsource = &DC[dirTSE *size_MatC];
-		fPPMsource = &DC[dirTSW *size_MatC];
-		fPPPsource = &DC[dirBSW *size_MatC];
-		fPMPsource = &DC[dirBNW *size_MatC];
-		fPMMsource = &DC[dirTNW *size_MatC];
+		fMMMsource = &DC[TNE *size_MatC];
+		fMMPsource = &DC[BNE *size_MatC];
+		fMPPsource = &DC[BSE *size_MatC];
+		fMPMsource = &DC[TSE *size_MatC];
+		fPPMsource = &DC[TSW *size_MatC];
+		fPPPsource = &DC[BSW *size_MatC];
+		fPMPsource = &DC[BNW *size_MatC];
+		fPMMsource = &DC[TNW *size_MatC];
 	}
 
 	Distributions6 G;
-	G.g[dirE] = &G6[dirE   *size_MatF];
-	G.g[dirW] = &G6[dirW   *size_MatF];
-	G.g[dirN] = &G6[dirN   *size_MatF];
-	G.g[dirS] = &G6[dirS   *size_MatF];
-	G.g[dirT] = &G6[dirT   *size_MatF];
-	G.g[dirB] = &G6[dirB   *size_MatF];
+	G.g[E] = &G6[E   *size_MatF];
+	G.g[W] = &G6[W   *size_MatF];
+	G.g[N] = &G6[N   *size_MatF];
+	G.g[S] = &G6[S   *size_MatF];
+	G.g[T] = &G6[T   *size_MatF];
+	G.g[B] = &G6[B   *size_MatF];
 
 	////////////////////////////////////////////////////////////////////////////////
    const unsigned  ix = threadIdx.x;  // Globaler x-Index 
@@ -1186,12 +1186,12 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3_2018(real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////
 
 	  ////////////////////////////////////////////////////////////////////////////////////
-	  (G.g[dirE])[k000] = mgcbb;
-	  (G.g[dirW])[kM00] = mgabb;
-	  (G.g[dirN])[k000] = mgbcb;
-	  (G.g[dirS])[k0M0] = mgbab;
-	  (G.g[dirT])[k000] = mgbbc;
-	  (G.g[dirB])[k00M] = mgbba;
+	  (G.g[E])[k000] = mgcbb;
+	  (G.g[W])[kM00] = mgabb;
+	  (G.g[N])[k000] = mgbcb;
+	  (G.g[S])[k0M0] = mgbab;
+	  (G.g[T])[k000] = mgbbc;
+	  (G.g[B])[k00M] = mgbba;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  fP00dest[k000] = mfcbb;
 	  fM00dest[kM00] = mfabb;
@@ -1622,12 +1622,12 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3_2018(real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////
 
 	  ////////////////////////////////////////////////////////////////////////////////////
-	  (G.g[dirE])[k000] = mgcbb;
-	  (G.g[dirW])[kM00] = mgabb;
-	  (G.g[dirN])[k000] = mgbcb;
-	  (G.g[dirS])[k0M0] = mgbab;
-	  (G.g[dirT])[k000] = mgbbc;
-	  (G.g[dirB])[k00M] = mgbba;
+	  (G.g[E])[k000] = mgcbb;
+	  (G.g[W])[kM00] = mgabb;
+	  (G.g[N])[k000] = mgbcb;
+	  (G.g[S])[k0M0] = mgbab;
+	  (G.g[T])[k000] = mgbbc;
+	  (G.g[B])[k00M] = mgbba;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  fP00dest[k000] = mfcbb;
 	  fM00dest[kM00] = mfabb;
@@ -2061,12 +2061,12 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3_2018(real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////
 
 	  ////////////////////////////////////////////////////////////////////////////////////
-	  (G.g[dirE])[k000] = mgcbb;
-	  (G.g[dirW])[kM00] = mgabb;
-	  (G.g[dirN])[k000] = mgbcb;
-	  (G.g[dirS])[k0M0] = mgbab;
-	  (G.g[dirT])[k000] = mgbbc;
-	  (G.g[dirB])[k00M] = mgbba;
+	  (G.g[E])[k000] = mgcbb;
+	  (G.g[W])[kM00] = mgabb;
+	  (G.g[N])[k000] = mgbcb;
+	  (G.g[S])[k0M0] = mgbab;
+	  (G.g[T])[k000] = mgbbc;
+	  (G.g[B])[k00M] = mgbba;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  fP00dest[k000] = mfcbb;
 	  fM00dest[kM00] = mfabb;
@@ -2500,12 +2500,12 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3_2018(real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////
 
 	  ////////////////////////////////////////////////////////////////////////////////////
-	  (G.g[dirE])[k000] = mgcbb;
-	  (G.g[dirW])[kM00] = mgabb;
-	  (G.g[dirN])[k000] = mgbcb;
-	  (G.g[dirS])[k0M0] = mgbab;
-	  (G.g[dirT])[k000] = mgbbc;
-	  (G.g[dirB])[k00M] = mgbba;
+	  (G.g[E])[k000] = mgcbb;
+	  (G.g[W])[kM00] = mgabb;
+	  (G.g[N])[k000] = mgbcb;
+	  (G.g[S])[k0M0] = mgbab;
+	  (G.g[T])[k000] = mgbbc;
+	  (G.g[B])[k00M] = mgbba;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  fP00dest[k000] = mfcbb;
 	  fM00dest[kM00] = mfabb;
@@ -2949,12 +2949,12 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3_2018(real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////
 
 	  ////////////////////////////////////////////////////////////////////////////////////
-	  (G.g[dirE])[k000] = mgcbb;
-	  (G.g[dirW])[kM00] = mgabb;
-	  (G.g[dirN])[k000] = mgbcb;
-	  (G.g[dirS])[k0M0] = mgbab;
-	  (G.g[dirT])[k000] = mgbbc;
-	  (G.g[dirB])[k00M] = mgbba;
+	  (G.g[E])[k000] = mgcbb;
+	  (G.g[W])[kM00] = mgabb;
+	  (G.g[N])[k000] = mgbcb;
+	  (G.g[S])[k0M0] = mgbab;
+	  (G.g[T])[k000] = mgbbc;
+	  (G.g[B])[k00M] = mgbba;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  fP00dest[k000] = mfcbb;
 	  fM00dest[kM00] = mfabb;
@@ -3388,12 +3388,12 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3_2018(real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////
 
 	  ////////////////////////////////////////////////////////////////////////////////////
-	  (G.g[dirE])[k000] = mgcbb;
-	  (G.g[dirW])[kM00] = mgabb;
-	  (G.g[dirN])[k000] = mgbcb;
-	  (G.g[dirS])[k0M0] = mgbab;
-	  (G.g[dirT])[k000] = mgbbc;
-	  (G.g[dirB])[k00M] = mgbba;
+	  (G.g[E])[k000] = mgcbb;
+	  (G.g[W])[kM00] = mgabb;
+	  (G.g[N])[k000] = mgbcb;
+	  (G.g[S])[k0M0] = mgbab;
+	  (G.g[T])[k000] = mgbbc;
+	  (G.g[B])[k00M] = mgbba;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  fP00dest[k000] = mfcbb;
 	  fM00dest[kM00] = mfabb;
@@ -3827,12 +3827,12 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3_2018(real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////
 
 	  ////////////////////////////////////////////////////////////////////////////////////
-	  (G.g[dirE])[k000] = mgcbb;
-	  (G.g[dirW])[kM00] = mgabb;
-	  (G.g[dirN])[k000] = mgbcb;
-	  (G.g[dirS])[k0M0] = mgbab;
-	  (G.g[dirT])[k000] = mgbbc;
-	  (G.g[dirB])[k00M] = mgbba;
+	  (G.g[E])[k000] = mgcbb;
+	  (G.g[W])[kM00] = mgabb;
+	  (G.g[N])[k000] = mgbcb;
+	  (G.g[S])[k0M0] = mgbab;
+	  (G.g[T])[k000] = mgbbc;
+	  (G.g[B])[k00M] = mgbba;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  fP00dest[k000] = mfcbb;
 	  fM00dest[kM00] = mfabb;
@@ -4266,12 +4266,12 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3_2018(real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////
 
 	  ////////////////////////////////////////////////////////////////////////////////////
-	  (G.g[dirE])[k000] = mgcbb;
-	  (G.g[dirW])[kM00] = mgabb;
-	  (G.g[dirN])[k000] = mgbcb;
-	  (G.g[dirS])[k0M0] = mgbab;
-	  (G.g[dirT])[k000] = mgbbc;
-	  (G.g[dirB])[k00M] = mgbba;
+	  (G.g[E])[k000] = mgcbb;
+	  (G.g[W])[kM00] = mgabb;
+	  (G.g[N])[k000] = mgbcb;
+	  (G.g[S])[k0M0] = mgbab;
+	  (G.g[T])[k000] = mgbbc;
+	  (G.g[B])[k00M] = mgbba;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  fP00dest[k000] = mfcbb;
 	  fM00dest[kM00] = mfabb;
@@ -4390,33 +4390,33 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3( real* DC,
 		*f000dest, *fMMMdest, *fMMPdest, *fMPPdest, *fMPMdest, *fPPMdest, *fPPPdest, *fPMPdest, *fPMMdest;
 
 
-	fP00dest = &DF[dirE   *size_MatF];
-	fM00dest = &DF[dirW   *size_MatF];
-	f0P0dest = &DF[dirN   *size_MatF];
-	f0M0dest = &DF[dirS   *size_MatF];
-	f00Pdest = &DF[dirT   *size_MatF];
-	f00Mdest = &DF[dirB   *size_MatF];
-	fPP0dest = &DF[dirNE  *size_MatF];
-	fMM0dest = &DF[dirSW  *size_MatF];
-	fPM0dest = &DF[dirSE  *size_MatF];
-	fMP0dest = &DF[dirNW  *size_MatF];
-	fP0Pdest = &DF[dirTE  *size_MatF];
-	fM0Mdest = &DF[dirBW  *size_MatF];
-	fP0Mdest = &DF[dirBE  *size_MatF];
-	fM0Pdest = &DF[dirTW  *size_MatF];
-	f0PPdest = &DF[dirTN  *size_MatF];
-	f0MMdest = &DF[dirBS  *size_MatF];
-	f0PMdest = &DF[dirBN  *size_MatF];
-	f0MPdest = &DF[dirTS  *size_MatF];
+	fP00dest = &DF[E   *size_MatF];
+	fM00dest = &DF[W   *size_MatF];
+	f0P0dest = &DF[N   *size_MatF];
+	f0M0dest = &DF[S   *size_MatF];
+	f00Pdest = &DF[T   *size_MatF];
+	f00Mdest = &DF[B   *size_MatF];
+	fPP0dest = &DF[NE  *size_MatF];
+	fMM0dest = &DF[SW  *size_MatF];
+	fPM0dest = &DF[SE  *size_MatF];
+	fMP0dest = &DF[NW  *size_MatF];
+	fP0Pdest = &DF[TE  *size_MatF];
+	fM0Mdest = &DF[BW  *size_MatF];
+	fP0Mdest = &DF[BE  *size_MatF];
+	fM0Pdest = &DF[TW  *size_MatF];
+	f0PPdest = &DF[TN  *size_MatF];
+	f0MMdest = &DF[BS  *size_MatF];
+	f0PMdest = &DF[BN  *size_MatF];
+	f0MPdest = &DF[TS  *size_MatF];
 	f000dest = &DF[dirREST*size_MatF];
-	fMMMdest = &DF[dirBSW *size_MatF];
-	fMMPdest = &DF[dirTSW *size_MatF];
-	fMPPdest = &DF[dirTNW *size_MatF];
-	fMPMdest = &DF[dirBNW *size_MatF];
-	fPPMdest = &DF[dirBNE *size_MatF];
-	fPPPdest = &DF[dirTNE *size_MatF];
-	fPMPdest = &DF[dirTSE *size_MatF];
-	fPMMdest = &DF[dirBSE *size_MatF];
+	fMMMdest = &DF[BSW *size_MatF];
+	fMMPdest = &DF[TSW *size_MatF];
+	fMPPdest = &DF[TNW *size_MatF];
+	fMPMdest = &DF[BNW *size_MatF];
+	fPPMdest = &DF[BNE *size_MatF];
+	fPPPdest = &DF[TNE *size_MatF];
+	fPMPdest = &DF[TSE *size_MatF];
+	fPMMdest = &DF[BSE *size_MatF];
 
 	real
 		*fP00source, *fM00source, *f0P0source, *f0M0source, *f00Psource, *f00Msource, *fPP0source, *fMM0source, *fPM0source,
@@ -4425,72 +4425,72 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3( real* DC,
 
 	if (isEvenTimestep == true)
 	{
-		fP00source = &DC[dirE   *size_MatC];
-		fM00source = &DC[dirW   *size_MatC];
-		f0P0source = &DC[dirN   *size_MatC];
-		f0M0source = &DC[dirS   *size_MatC];
-		f00Psource = &DC[dirT   *size_MatC];
-		f00Msource = &DC[dirB   *size_MatC];
-		fPP0source = &DC[dirNE  *size_MatC];
-		fMM0source = &DC[dirSW  *size_MatC];
-		fPM0source = &DC[dirSE  *size_MatC];
-		fMP0source = &DC[dirNW  *size_MatC];
-		fP0Psource = &DC[dirTE  *size_MatC];
-		fM0Msource = &DC[dirBW  *size_MatC];
-		fP0Msource = &DC[dirBE  *size_MatC];
-		fM0Psource = &DC[dirTW  *size_MatC];
-		f0PPsource = &DC[dirTN  *size_MatC];
-		f0MMsource = &DC[dirBS  *size_MatC];
-		f0PMsource = &DC[dirBN  *size_MatC];
-		f0MPsource = &DC[dirTS  *size_MatC];
+		fP00source = &DC[E   *size_MatC];
+		fM00source = &DC[W   *size_MatC];
+		f0P0source = &DC[N   *size_MatC];
+		f0M0source = &DC[S   *size_MatC];
+		f00Psource = &DC[T   *size_MatC];
+		f00Msource = &DC[B   *size_MatC];
+		fPP0source = &DC[NE  *size_MatC];
+		fMM0source = &DC[SW  *size_MatC];
+		fPM0source = &DC[SE  *size_MatC];
+		fMP0source = &DC[NW  *size_MatC];
+		fP0Psource = &DC[TE  *size_MatC];
+		fM0Msource = &DC[BW  *size_MatC];
+		fP0Msource = &DC[BE  *size_MatC];
+		fM0Psource = &DC[TW  *size_MatC];
+		f0PPsource = &DC[TN  *size_MatC];
+		f0MMsource = &DC[BS  *size_MatC];
+		f0PMsource = &DC[BN  *size_MatC];
+		f0MPsource = &DC[TS  *size_MatC];
 		f000source = &DC[dirREST*size_MatC];
-		fMMMsource = &DC[dirBSW *size_MatC];
-		fMMPsource = &DC[dirTSW *size_MatC];
-		fMPPsource = &DC[dirTNW *size_MatC];
-		fMPMsource = &DC[dirBNW *size_MatC];
-		fPPMsource = &DC[dirBNE *size_MatC];
-		fPPPsource = &DC[dirTNE *size_MatC];
-		fPMPsource = &DC[dirTSE *size_MatC];
-		fPMMsource = &DC[dirBSE *size_MatC];
+		fMMMsource = &DC[BSW *size_MatC];
+		fMMPsource = &DC[TSW *size_MatC];
+		fMPPsource = &DC[TNW *size_MatC];
+		fMPMsource = &DC[BNW *size_MatC];
+		fPPMsource = &DC[BNE *size_MatC];
+		fPPPsource = &DC[TNE *size_MatC];
+		fPMPsource = &DC[TSE *size_MatC];
+		fPMMsource = &DC[BSE *size_MatC];
 	}
 	else
 	{
-		fP00source = &DC[dirW   *size_MatC];
-		fM00source = &DC[dirE   *size_MatC];
-		f0P0source = &DC[dirS   *size_MatC];
-		f0M0source = &DC[dirN   *size_MatC];
-		f00Psource = &DC[dirB   *size_MatC];
-		f00Msource = &DC[dirT   *size_MatC];
-		fPP0source = &DC[dirSW  *size_MatC];
-		fMM0source = &DC[dirNE  *size_MatC];
-		fPM0source = &DC[dirNW  *size_MatC];
-		fMP0source = &DC[dirSE  *size_MatC];
-		fP0Psource = &DC[dirBW  *size_MatC];
-		fM0Msource = &DC[dirTE  *size_MatC];
-		fP0Msource = &DC[dirTW  *size_MatC];
-		fM0Psource = &DC[dirBE  *size_MatC];
-		f0PPsource = &DC[dirBS  *size_MatC];
-		f0MMsource = &DC[dirTN  *size_MatC];
-		f0PMsource = &DC[dirTS  *size_MatC];
-		f0MPsource = &DC[dirBN  *size_MatC];
+		fP00source = &DC[W   *size_MatC];
+		fM00source = &DC[E   *size_MatC];
+		f0P0source = &DC[S   *size_MatC];
+		f0M0source = &DC[N   *size_MatC];
+		f00Psource = &DC[B   *size_MatC];
+		f00Msource = &DC[T   *size_MatC];
+		fPP0source = &DC[SW  *size_MatC];
+		fMM0source = &DC[NE  *size_MatC];
+		fPM0source = &DC[NW  *size_MatC];
+		fMP0source = &DC[SE  *size_MatC];
+		fP0Psource = &DC[BW  *size_MatC];
+		fM0Msource = &DC[TE  *size_MatC];
+		fP0Msource = &DC[TW  *size_MatC];
+		fM0Psource = &DC[BE  *size_MatC];
+		f0PPsource = &DC[BS  *size_MatC];
+		f0MMsource = &DC[TN  *size_MatC];
+		f0PMsource = &DC[TS  *size_MatC];
+		f0MPsource = &DC[BN  *size_MatC];
 		f000source = &DC[dirREST*size_MatC];
-		fMMMsource = &DC[dirTNE *size_MatC];
-		fMMPsource = &DC[dirBNE *size_MatC];
-		fMPPsource = &DC[dirBSE *size_MatC];
-		fMPMsource = &DC[dirTSE *size_MatC];
-		fPPMsource = &DC[dirTSW *size_MatC];
-		fPPPsource = &DC[dirBSW *size_MatC];
-		fPMPsource = &DC[dirBNW *size_MatC];
-		fPMMsource = &DC[dirTNW *size_MatC];
+		fMMMsource = &DC[TNE *size_MatC];
+		fMMPsource = &DC[BNE *size_MatC];
+		fMPPsource = &DC[BSE *size_MatC];
+		fMPMsource = &DC[TSE *size_MatC];
+		fPPMsource = &DC[TSW *size_MatC];
+		fPPPsource = &DC[BSW *size_MatC];
+		fPMPsource = &DC[BNW *size_MatC];
+		fPMMsource = &DC[TNW *size_MatC];
 	}
 
 	Distributions6 G;
-	G.g[dirE] = &G6[dirE   *size_MatF];
-	G.g[dirW] = &G6[dirW   *size_MatF];
-	G.g[dirN] = &G6[dirN   *size_MatF];
-	G.g[dirS] = &G6[dirS   *size_MatF];
-	G.g[dirT] = &G6[dirT   *size_MatF];
-	G.g[dirB] = &G6[dirB   *size_MatF];
+	G.g[E] = &G6[E   *size_MatF];
+	G.g[W] = &G6[W   *size_MatF];
+	G.g[N] = &G6[N   *size_MatF];
+	G.g[S] = &G6[S   *size_MatF];
+	G.g[T] = &G6[T   *size_MatF];
+	G.g[B] = &G6[B   *size_MatF];
 
 	////////////////////////////////////////////////////////////////////////////////
    const unsigned  ix = threadIdx.x;  // Globaler x-Index 
@@ -5521,12 +5521,12 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3( real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////
 
 	  ////////////////////////////////////////////////////////////////////////////////////
-	  (G.g[dirE])[k000] = mgcbb;
-	  (G.g[dirW])[kM00] = mgabb;
-	  (G.g[dirN])[k000] = mgbcb;
-	  (G.g[dirS])[k0M0] = mgbab;
-	  (G.g[dirT])[k000] = mgbbc;
-	  (G.g[dirB])[k00M] = mgbba;
+	  (G.g[E])[k000] = mgcbb;
+	  (G.g[W])[kM00] = mgabb;
+	  (G.g[N])[k000] = mgbcb;
+	  (G.g[S])[k0M0] = mgbab;
+	  (G.g[T])[k000] = mgbbc;
+	  (G.g[B])[k00M] = mgbba;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  fP00dest[k000] = mfcbb;
 	  fM00dest[kM00] = mfabb;
@@ -5948,12 +5948,12 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3( real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////
 
 	  ////////////////////////////////////////////////////////////////////////////////////
-	  (G.g[dirE])[k000] = mgcbb;
-	  (G.g[dirW])[kM00] = mgabb;
-	  (G.g[dirN])[k000] = mgbcb;
-	  (G.g[dirS])[k0M0] = mgbab;
-	  (G.g[dirT])[k000] = mgbbc;
-	  (G.g[dirB])[k00M] = mgbba;
+	  (G.g[E])[k000] = mgcbb;
+	  (G.g[W])[kM00] = mgabb;
+	  (G.g[N])[k000] = mgbcb;
+	  (G.g[S])[k0M0] = mgbab;
+	  (G.g[T])[k000] = mgbbc;
+	  (G.g[B])[k00M] = mgbba;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  fP00dest[k000] = mfcbb;
 	  fM00dest[kM00] = mfabb;
@@ -6378,12 +6378,12 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3( real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////
 
 	  ////////////////////////////////////////////////////////////////////////////////////
-	  (G.g[dirE])[k000] = mgcbb;
-	  (G.g[dirW])[kM00] = mgabb;
-	  (G.g[dirN])[k000] = mgbcb;
-	  (G.g[dirS])[k0M0] = mgbab;
-	  (G.g[dirT])[k000] = mgbbc;
-	  (G.g[dirB])[k00M] = mgbba;
+	  (G.g[E])[k000] = mgcbb;
+	  (G.g[W])[kM00] = mgabb;
+	  (G.g[N])[k000] = mgbcb;
+	  (G.g[S])[k0M0] = mgbab;
+	  (G.g[T])[k000] = mgbbc;
+	  (G.g[B])[k00M] = mgbba;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  fP00dest[k000] = mfcbb;
 	  fM00dest[kM00] = mfabb;
@@ -6808,12 +6808,12 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3( real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////
 
 	  ////////////////////////////////////////////////////////////////////////////////////
-	  (G.g[dirE])[k000] = mgcbb;
-	  (G.g[dirW])[kM00] = mgabb;
-	  (G.g[dirN])[k000] = mgbcb;
-	  (G.g[dirS])[k0M0] = mgbab;
-	  (G.g[dirT])[k000] = mgbbc;
-	  (G.g[dirB])[k00M] = mgbba;
+	  (G.g[E])[k000] = mgcbb;
+	  (G.g[W])[kM00] = mgabb;
+	  (G.g[N])[k000] = mgbcb;
+	  (G.g[S])[k0M0] = mgbab;
+	  (G.g[T])[k000] = mgbbc;
+	  (G.g[B])[k00M] = mgbba;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  fP00dest[k000] = mfcbb;
 	  fM00dest[kM00] = mfabb;
@@ -7248,12 +7248,12 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3( real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////
 
 	  ////////////////////////////////////////////////////////////////////////////////////
-	  (G.g[dirE])[k000] = mgcbb;
-	  (G.g[dirW])[kM00] = mgabb;
-	  (G.g[dirN])[k000] = mgbcb;
-	  (G.g[dirS])[k0M0] = mgbab;
-	  (G.g[dirT])[k000] = mgbbc;
-	  (G.g[dirB])[k00M] = mgbba;
+	  (G.g[E])[k000] = mgcbb;
+	  (G.g[W])[kM00] = mgabb;
+	  (G.g[N])[k000] = mgbcb;
+	  (G.g[S])[k0M0] = mgbab;
+	  (G.g[T])[k000] = mgbbc;
+	  (G.g[B])[k00M] = mgbba;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  fP00dest[k000] = mfcbb;
 	  fM00dest[kM00] = mfabb;
@@ -7678,12 +7678,12 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3( real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////
 
 	  ////////////////////////////////////////////////////////////////////////////////////
-	  (G.g[dirE])[k000] = mgcbb;
-	  (G.g[dirW])[kM00] = mgabb;
-	  (G.g[dirN])[k000] = mgbcb;
-	  (G.g[dirS])[k0M0] = mgbab;
-	  (G.g[dirT])[k000] = mgbbc;
-	  (G.g[dirB])[k00M] = mgbba;
+	  (G.g[E])[k000] = mgcbb;
+	  (G.g[W])[kM00] = mgabb;
+	  (G.g[N])[k000] = mgbcb;
+	  (G.g[S])[k0M0] = mgbab;
+	  (G.g[T])[k000] = mgbbc;
+	  (G.g[B])[k00M] = mgbba;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  fP00dest[k000] = mfcbb;
 	  fM00dest[kM00] = mfabb;
@@ -8108,12 +8108,12 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3( real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////
 
 	  ////////////////////////////////////////////////////////////////////////////////////
-	  (G.g[dirE])[k000] = mgcbb;
-	  (G.g[dirW])[kM00] = mgabb;
-	  (G.g[dirN])[k000] = mgbcb;
-	  (G.g[dirS])[k0M0] = mgbab;
-	  (G.g[dirT])[k000] = mgbbc;
-	  (G.g[dirB])[k00M] = mgbba;
+	  (G.g[E])[k000] = mgcbb;
+	  (G.g[W])[kM00] = mgabb;
+	  (G.g[N])[k000] = mgbcb;
+	  (G.g[S])[k0M0] = mgbab;
+	  (G.g[T])[k000] = mgbbc;
+	  (G.g[B])[k00M] = mgbba;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  fP00dest[k000] = mfcbb;
 	  fM00dest[kM00] = mfabb;
@@ -8538,12 +8538,12 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3( real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////
 
 	  ////////////////////////////////////////////////////////////////////////////////////
-	  (G.g[dirE])[k000] = mgcbb;
-	  (G.g[dirW])[kM00] = mgabb;
-	  (G.g[dirN])[k000] = mgbcb;
-	  (G.g[dirS])[k0M0] = mgbab;
-	  (G.g[dirT])[k000] = mgbbc;
-	  (G.g[dirB])[k00M] = mgbba;
+	  (G.g[E])[k000] = mgcbb;
+	  (G.g[W])[kM00] = mgabb;
+	  (G.g[N])[k000] = mgbcb;
+	  (G.g[S])[k0M0] = mgbab;
+	  (G.g[T])[k000] = mgbbc;
+	  (G.g[B])[k00M] = mgbba;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  fP00dest[k000] = mfcbb;
 	  fM00dest[kM00] = mfabb;

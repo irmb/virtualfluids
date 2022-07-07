@@ -90,7 +90,7 @@ void copyEdgeNodes(std::vector<LBMSimulationParameter::EdgeNodePositions> &edgeN
         }
 
         // copy fs for all directions
-        for (int direction = 0; direction <= (int)dirEND; direction++) {
+        for (int direction = 0; direction <= (int)ENDDIR; direction++) {
             (sendProcessNeighborHost[indexInSubdomainSend].f[0] +
              (direction * numNodesInBufferSend))[edgeNodes[i].indexInSendBuffer] =
                 (recvProcessNeighborHost[indexInSubdomainRecv].f[0] +

@@ -2319,7 +2319,7 @@ namespace UnstructuredGridWriter
 			wallX3 = 0.0;
 			q      = 0.0;
 			//////////////////////////////////////////////////////////////////////////
-			for (unsigned int typeOfQ = dirSTART; typeOfQ <= dirEND; typeOfQ++)
+			for (unsigned int typeOfQ = STARTDIR; typeOfQ <= ENDDIR; typeOfQ++)
 			{
 				QQ = para->getParH(level)->geometryBC.q27[0];
 				Q.q27[typeOfQ] = &QQ[typeOfQ*sizeOfNodes];
@@ -2327,32 +2327,32 @@ namespace UnstructuredGridWriter
 				//////////////////////////////////////////////////////////////////////////
 				switch (typeOfQ)
 				{
-					case dirE:   wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
-					case dirN:   wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
-					case dirW:   wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
-					case dirS:   wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
-					case dirNE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
-					case dirNW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
-					case dirSW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
-					case dirSE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
-					case dirT:   wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
-					case dirTE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
-					case dirTN:  wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirTW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
-					case dirTS:  wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirB:   wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
-					case dirBE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
-					case dirBN:  wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
-					case dirBW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
-					case dirBS:  wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
-					case dirTNE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirBSW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
-					case dirBNE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
-					case dirTSW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirTSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirBNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
-					case dirBSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
-					case dirTNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
+					case E:   wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
+					case N:   wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
+					case W:   wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
+					case S:   wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
+					case NE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
+					case NW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
+					case SW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
+					case SE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
+					case T:   wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
+					case TE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
+					case TN:  wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
+					case TW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
+					case TS:  wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
+					case B:   wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
+					case BE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
+					case BN:  wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
+					case BW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
+					case BS:  wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
+					case TNE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
+					case BSW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
+					case BNE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
+					case TSW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
+					case TSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
+					case BNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
+					case BSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
+					case TNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
 					case dirREST:wallX1 = nodeX1;        wallX2 = nodeX2;		 wallX3 = nodeX3;        break;
 					default: throw UbException(UB_EXARGS, "unknown direction");
 				}
@@ -2423,7 +2423,7 @@ namespace UnstructuredGridWriter
 			wallX3 = 0.0;
 			q      = 0.0;
 			//////////////////////////////////////////////////////////////////////////
-			for (unsigned int typeOfQ = dirSTART; typeOfQ <= dirEND; typeOfQ++)
+			for (unsigned int typeOfQ = STARTDIR; typeOfQ <= ENDDIR; typeOfQ++)
 			{
 				QQ = para->getParH(level)->velocityBC.q27[0];
 				Q.q27[typeOfQ] = &QQ[typeOfQ*sizeOfNodes];
@@ -2432,32 +2432,32 @@ namespace UnstructuredGridWriter
 				//////////////////////////////////////////////////////////////////////////
 				switch (typeOfQ)
 				{
-					case dirE:   wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
-					case dirN:   wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
-					case dirW:   wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
-					case dirS:   wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
-					case dirNE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
-					case dirNW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
-					case dirSW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
-					case dirSE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
-					case dirT:   wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
-					case dirTE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
-					case dirTN:  wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirTW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
-					case dirTS:  wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirB:   wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
-					case dirBE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
-					case dirBN:  wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
-					case dirBW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
-					case dirBS:  wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
-					case dirTNE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirBSW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
-					case dirBNE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
-					case dirTSW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirTSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirBNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
-					case dirBSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
-					case dirTNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
+					case E:   wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
+					case N:   wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
+					case W:   wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
+					case S:   wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
+					case NE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
+					case NW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
+					case SW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
+					case SE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
+					case T:   wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
+					case TE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
+					case TN:  wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
+					case TW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
+					case TS:  wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
+					case B:   wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
+					case BE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
+					case BN:  wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
+					case BW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
+					case BS:  wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
+					case TNE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
+					case BSW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
+					case BNE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
+					case TSW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
+					case TSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
+					case BNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
+					case BSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
+					case TNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
 					case dirREST:wallX1 = nodeX1;        wallX2 = nodeX2;		 wallX3 = nodeX3;        break;
 					default: throw UbException(UB_EXARGS, "unknown direction");
 				}
@@ -2528,7 +2528,7 @@ namespace UnstructuredGridWriter
 			wallX3 = 0.0;
 			q      = 0.0;
 			//////////////////////////////////////////////////////////////////////////
-			for (unsigned int typeOfQ = dirSTART; typeOfQ <= dirEND; typeOfQ++)
+			for (unsigned int typeOfQ = STARTDIR; typeOfQ <= ENDDIR; typeOfQ++)
 			{
 				QQ = para->getParH(level)->pressureBC.q27[0];
 				Q.q27[typeOfQ] = &QQ[typeOfQ*sizeOfNodes];
@@ -2537,32 +2537,32 @@ namespace UnstructuredGridWriter
 				//////////////////////////////////////////////////////////////////////////
 				switch (typeOfQ)
 				{
-					case dirE:   wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
-					case dirN:   wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
-					case dirW:   wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
-					case dirS:   wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
-					case dirNE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
-					case dirNW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
-					case dirSW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
-					case dirSE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
-					case dirT:   wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
-					case dirTE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
-					case dirTN:  wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirTW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
-					case dirTS:  wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirB:   wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
-					case dirBE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
-					case dirBN:  wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
-					case dirBW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
-					case dirBS:  wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
-					case dirTNE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirBSW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
-					case dirBNE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
-					case dirTSW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirTSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirBNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
-					case dirBSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
-					case dirTNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
+					case E:   wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
+					case N:   wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
+					case W:   wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
+					case S:   wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
+					case NE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
+					case NW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
+					case SW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
+					case SE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
+					case T:   wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
+					case TE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
+					case TN:  wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
+					case TW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
+					case TS:  wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
+					case B:   wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
+					case BE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
+					case BN:  wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
+					case BW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
+					case BS:  wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
+					case TNE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
+					case BSW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
+					case BNE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
+					case TSW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
+					case TSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
+					case BNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
+					case BSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
+					case TNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
 					case dirREST:wallX1 = nodeX1;        wallX2 = nodeX2;		 wallX3 = nodeX3;        break;
 					default: throw UbException(UB_EXARGS, "unknown direction");
 				}
