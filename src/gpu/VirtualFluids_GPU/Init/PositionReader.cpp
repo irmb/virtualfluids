@@ -139,41 +139,41 @@ void PositionReader::definePropellerQs(Parameter* para)
 	real* QQ                  = para->getParH(para->getFine())->propellerBC.q27[0]; 
 	unsigned int sizeQ           = para->getParH(para->getFine())->propellerBC.numberOfBCnodes; 
 	QforBoundaryConditions Q;
-	Q.q27[dirE   ] = &QQ[dirE   *sizeQ];
-	Q.q27[dirW   ] = &QQ[dirW   *sizeQ];
-	Q.q27[dirN   ] = &QQ[dirN   *sizeQ];
-	Q.q27[dirS   ] = &QQ[dirS   *sizeQ];
-	Q.q27[dirT   ] = &QQ[dirT   *sizeQ];
-	Q.q27[dirB   ] = &QQ[dirB   *sizeQ];
-	Q.q27[dirNE  ] = &QQ[dirNE  *sizeQ];
-	Q.q27[dirSW  ] = &QQ[dirSW  *sizeQ];
-	Q.q27[dirSE  ] = &QQ[dirSE  *sizeQ];
-	Q.q27[dirNW  ] = &QQ[dirNW  *sizeQ];
-	Q.q27[dirTE  ] = &QQ[dirTE  *sizeQ];
-	Q.q27[dirBW  ] = &QQ[dirBW  *sizeQ];
-	Q.q27[dirBE  ] = &QQ[dirBE  *sizeQ];
-	Q.q27[dirTW  ] = &QQ[dirTW  *sizeQ];
-	Q.q27[dirTN  ] = &QQ[dirTN  *sizeQ];
-	Q.q27[dirBS  ] = &QQ[dirBS  *sizeQ];
-	Q.q27[dirBN  ] = &QQ[dirBN  *sizeQ];
-	Q.q27[dirTS  ] = &QQ[dirTS  *sizeQ];
+	Q.q27[E   ] = &QQ[E   *sizeQ];
+	Q.q27[W   ] = &QQ[W   *sizeQ];
+	Q.q27[N   ] = &QQ[N   *sizeQ];
+	Q.q27[S   ] = &QQ[S   *sizeQ];
+	Q.q27[T   ] = &QQ[T   *sizeQ];
+	Q.q27[B   ] = &QQ[B   *sizeQ];
+	Q.q27[NE  ] = &QQ[NE  *sizeQ];
+	Q.q27[SW  ] = &QQ[SW  *sizeQ];
+	Q.q27[SE  ] = &QQ[SE  *sizeQ];
+	Q.q27[NW  ] = &QQ[NW  *sizeQ];
+	Q.q27[TE  ] = &QQ[TE  *sizeQ];
+	Q.q27[BW  ] = &QQ[BW  *sizeQ];
+	Q.q27[BE  ] = &QQ[BE  *sizeQ];
+	Q.q27[TW  ] = &QQ[TW  *sizeQ];
+	Q.q27[TN  ] = &QQ[TN  *sizeQ];
+	Q.q27[BS  ] = &QQ[BS  *sizeQ];
+	Q.q27[BN  ] = &QQ[BN  *sizeQ];
+	Q.q27[TS  ] = &QQ[TS  *sizeQ];
 	Q.q27[dirREST] = &QQ[dirREST*sizeQ];
-	Q.q27[dirTNE ] = &QQ[dirTNE *sizeQ];
-	Q.q27[dirTSW ] = &QQ[dirTSW *sizeQ];
-	Q.q27[dirTSE ] = &QQ[dirTSE *sizeQ];
-	Q.q27[dirTNW ] = &QQ[dirTNW *sizeQ];
-	Q.q27[dirBNE ] = &QQ[dirBNE *sizeQ];
-	Q.q27[dirBSW ] = &QQ[dirBSW *sizeQ];
-	Q.q27[dirBSE ] = &QQ[dirBSE *sizeQ];
-	Q.q27[dirBNW ] = &QQ[dirBNW *sizeQ];
+	Q.q27[TNE ] = &QQ[TNE *sizeQ];
+	Q.q27[TSW ] = &QQ[TSW *sizeQ];
+	Q.q27[TSE ] = &QQ[TSE *sizeQ];
+	Q.q27[TNW ] = &QQ[TNW *sizeQ];
+	Q.q27[BNE ] = &QQ[BNE *sizeQ];
+	Q.q27[BSW ] = &QQ[BSW *sizeQ];
+	Q.q27[BSE ] = &QQ[BSE *sizeQ];
+	Q.q27[BNW ] = &QQ[BNW *sizeQ];
 	//////////////////////////////////////////////////////////////////
 	for(uint u=0; u<para->getParH(para->getFine())->propellerBC.numberOfBCnodes; u++)
 	{
-		for (int dir = dirE; dir<=dirBSW; dir++)
+		for (int dir = E; dir<=BSW; dir++)
 		{
-			if ((dir==dirE)  || 
-				(dir==dirNE) || (dir==dirSE) || (dir==dirTE) || (dir==dirBE) ||
-				(dir==dirTNE)|| (dir==dirBNE)|| (dir==dirTSE)|| (dir==dirBSE))
+			if ((dir==E)  || 
+				(dir==NE) || (dir==SE) || (dir==TE) || (dir==BE) ||
+				(dir==TNE)|| (dir==BNE)|| (dir==TSE)|| (dir==BSE))
 			{
 				Q.q27[dir][u] = 1.0f;
 			} 

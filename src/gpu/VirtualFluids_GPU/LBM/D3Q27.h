@@ -2,35 +2,35 @@
 #define _LB_D3Q27_H_
 #include <math.h>
 
-static constexpr int dirSTART = 0;
-static constexpr int dirEND   = 26;
+static constexpr int STARTDIR = 0;
+static constexpr int ENDDIR   = 26;
 
-static constexpr int dirE    = 0;
-static constexpr int dirW    = 1;
-static constexpr int dirN    = 2;
-static constexpr int dirS    = 3;
-static constexpr int dirT    = 4;
-static constexpr int dirB    = 5;
-static constexpr int dirNE   = 6;
-static constexpr int dirSW   = 7;
-static constexpr int dirSE   = 8;
-static constexpr int dirNW   = 9;
-static constexpr int dirTE   = 10;
-static constexpr int dirBW   = 11;
-static constexpr int dirBE   = 12;
-static constexpr int dirTW   = 13;
-static constexpr int dirTN   = 14;
-static constexpr int dirBS   = 15;
-static constexpr int dirBN   = 16;
-static constexpr int dirTS   = 17;
-static constexpr int dirTNE  = 18;
-static constexpr int dirTNW  = 19;
-static constexpr int dirTSE  = 20;
-static constexpr int dirTSW  = 21;
-static constexpr int dirBNE  = 22;
-static constexpr int dirBNW  = 23;
-static constexpr int dirBSE  = 24;
-static constexpr int dirBSW  = 25;
+static constexpr int E    = 0;
+static constexpr int W    = 1;
+static constexpr int N    = 2;
+static constexpr int S    = 3;
+static constexpr int T    = 4;
+static constexpr int B    = 5;
+static constexpr int NE   = 6;
+static constexpr int SW   = 7;
+static constexpr int SE   = 8;
+static constexpr int NW   = 9;
+static constexpr int TE   = 10;
+static constexpr int BW   = 11;
+static constexpr int BE   = 12;
+static constexpr int TW   = 13;
+static constexpr int TN   = 14;
+static constexpr int BS   = 15;
+static constexpr int BN   = 16;
+static constexpr int TS   = 17;
+static constexpr int TNE  = 18;
+static constexpr int TNW  = 19;
+static constexpr int TSE  = 20;
+static constexpr int TSW  = 21;
+static constexpr int BNE  = 22;
+static constexpr int BNW  = 23;
+static constexpr int BSE  = 24;
+static constexpr int BSW  = 25;
 
 static constexpr int dirREST = 26;
 
