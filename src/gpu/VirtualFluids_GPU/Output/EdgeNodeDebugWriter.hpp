@@ -6,7 +6,7 @@
 #include <stdio.h>
 // #include <math.h>
 #include "Core/StringUtilities/StringUtil.h"
-#include "LBM/D3Q27.h"
+#include "lbm/constants/D3Q27.h"
 #include "LBM/LB.h"
 #include "Parameter/Parameter.h"
 #include "basics/utilities/UbSystem.h"

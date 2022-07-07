@@ -1,12 +1,18 @@
 #include "gmock/gmock.h"
 
-#include <GridGenerator/geometries/Triangle/Triangle.h>
-#include <GridGenerator/geometries/BoundingBox/BoundingBox.h>
-#include <GridGenerator/geometries/Vertex/Vertex.h>
+#include "geometries/Triangle/Triangle.h"
+#include "geometries/BoundingBox/BoundingBox.h"
+#include "geometries/Vertex/Vertex.h"
 
+auto RealEq = [](auto value) { 
+#ifdef VF_DOUBLE_ACCURACY
+    return testing::DoubleEq(value); 
+#else 
+    return testing::FloatEq(value);
+#endif
+};
 
 using namespace testing;
-
 
 TEST(BoundingBoxExactTest, findMinMaxFromTriangle)
 {
@@ -19,7 +25,11 @@ TEST(BoundingBoxExactTest, findMinMaxFromTriangle)
     real maxX = 110.0f;
     real maxY = 50.0f;
     real maxZ = 12122.23f;
-    Triangle t = Triangle(Vertex(maxX, maxY - 10, minZ + 2), Vertex(minX, maxY, maxZ), Vertex(minX + 3, minY, minZ), Vertex(0.0f, 0.0f, 0.0f));
+    Vertex v1 = Vertex(maxX, maxY - 10, minZ + 2);
+    Vertex v2 =  Vertex(minX, maxY, maxZ);
+    Vertex v3 = Vertex(minX + 3, minY, minZ);
+    Vertex normal = Vertex(0.0f, 0.0f, 0.0f);
+    Triangle t = Triangle(v1, v2, v3, normal);
 
 	box.setMinMax(t);
 
@@ -44,7 +54,11 @@ TEST(BoundingBoxTest, isInside_true)
     box.maxY = 10.0f;
     box.maxZ = 10.0f;
 
-    Triangle t = Triangle(Vertex(1,1,1), Vertex(2,2,2), Vertex(3,3,3), Vertex(0.0f, 0.0f, 0.0f));
+    Vertex v1 = Vertex(1,1,1);
+    Vertex v2 =  Vertex(2,2,2);
+    Vertex v3 = Vertex(3,3,3);
+    Vertex normal = Vertex(0.0f, 0.0f, 0.0f);
+    Triangle t = Triangle(v1, v2, v3, normal);
 
     EXPECT_TRUE(box.isInside(t));
 }
@@ -61,7 +75,11 @@ TEST(BoundingBoxTest, isInside_false)
     box.maxY = 10.0f;
     box.maxZ = 10.0f;
 
-    Triangle t = Triangle(Vertex(1, 1, 1), Vertex(2, 2, 2), Vertex(3, 3, 11), Vertex(0.0f, 0.0f, 0.0f));
+    Vertex v1 = Vertex(1,1,1);
+    Vertex v2 =  Vertex(2,2,2);
+    Vertex v3 = Vertex(3,3,11);
+    Vertex normal = Vertex(0.0f, 0.0f, 0.0f);
+    Triangle t = Triangle(v1, v2, v3, normal);
 
     EXPECT_FALSE(box.isInside(t));
 }
