@@ -7,11 +7,14 @@
 #include <variant>
 
 #include "LBM/LB.h"
+#include "Parameter/Parameter.h"
 #include "grid/BoundaryConditions/Side.h"
 
 struct LBMSimulationParameter;
+class Parameter;
 
 using boundaryCondition = std::function<void(LBMSimulationParameter *, QforBoundaryConditions *)>;
+using boundaryConditionPara = std::function<void(Parameter *, QforBoundaryConditions *, const int level)>;
 
 class BoundaryConditionFactory
 {
@@ -69,6 +72,14 @@ public:
         OutflowNonReflective
     };
 
+    //! \brief An enumeration for selecting a stress boundary condition
+    enum class StressBC {
+        //! - StressCompressible
+        StressCompressible,
+        //! - StressBounceBack
+        StressBounceBack
+    };
+
     // enum class OutflowBoundaryCondition {};  // TODO:
     // https://git.rz.tu-bs.de/m.schoenherr/VirtualFluids_dev/-/issues/16
 
@@ -76,6 +87,7 @@ public:
     void setNoSlipBoundaryCondition(const BoundaryConditionFactory::NoSlipBC boundaryConditionType);
     void setSlipBoundaryCondition(const BoundaryConditionFactory::SlipBC boundaryConditionType);
     void setPressureBoundaryCondition(const BoundaryConditionFactory::PressureBC boundaryConditionType);
+    void setStressBoundaryCondition(const BoundaryConditionFactory::StressBC boundaryConditionType);
     //!param boundaryConditionType: a velocity, no-slip or slip boundary condition
     //! \details suggestions for boundaryConditionType:
     //!
@@ -95,12 +107,16 @@ public:
     boundaryCondition getPressureBoundaryConditionPre() const;
     boundaryCondition getGeometryBoundaryConditionPost() const;
 
+    boundaryConditionPara getStressBoundaryConditionPost() const;
+
 private:
     VelocityBC velocityBoundaryCondition;
     NoSlipBC noSlipBoundaryCondition = NoSlipBC::NoSlipImplicitBounceBack;
     SlipBC slipBoundaryCondition;
     PressureBC pressureBoundaryCondition;
     std::variant<VelocityBC, NoSlipBC, SlipBC> geometryBoundaryCondition  = NoSlipBC::NoSlipImplicitBounceBack;
+    StressBC stressBoundaryCondition;
+
 
     // OutflowBoundaryConditon outflowBC // TODO: https://git.rz.tu-bs.de/m.schoenherr/VirtualFluids_dev/-/issues/16
 };

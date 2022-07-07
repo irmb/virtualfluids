@@ -47,6 +47,7 @@ BCKernelManager::BCKernelManager(SPtr<Parameter> parameter, BoundaryConditionFac
     this->slipBoundaryConditionPost     = bcFactory->getSlipBoundaryConditionPost();
     this->pressureBoundaryConditionPre  = bcFactory->getPressureBoundaryConditionPre();
     this->geometryBoundaryConditionPost = bcFactory->getGeometryBoundaryConditionPost();
+    this->stressBoundaryConditionPost       = bcFactory->getStressBoundaryConditionPost();
 }
 
 void BCKernelManager::runVelocityBCKernelPre(const int level) const
@@ -353,32 +354,7 @@ void BCKernelManager::runPressureBCKernelPost(const int level) const{
 void BCKernelManager::runStressWallModelKernelPost(const int level) const{
     if (para->getParD(level)->stressBC.numberOfBCnodes > 0)
     {
-        // QStressDevComp27(para->getParD(level)->numberofthreads, para->getParD(level)->distributions.f[0],
-        //                 para->getParD(level)->stressBC.k,       para->getParD(level)->stressBC.kN,
-        //                 para->getParD(level)->stressBC.q27[0],  para->getParD(level)->stressBC.numberOfBCnodes,
-        //                 para->getParD(level)->omega,            para->getParD(level)->turbViscosity,
-        //                 para->getParD(level)->velocityX,        para->getParD(level)->velocityY,          para->getParD(level)->velocityY,
-        //                 para->getParD(level)->stressBC.normalX, para->getParD(level)->stressBC.normalY,   para->getParD(level)->stressBC.normalZ,
-        //                 para->getParD(level)->stressBC.Vx,      para->getParD(level)->stressBC.Vy,        para->getParD(level)->stressBC.Vz,
-        //                 para->getParD(level)->stressBC.Vx1,     para->getParD(level)->stressBC.Vy1,       para->getParD(level)->stressBC.Vz1,
-        //                 para->getParD(level)->wallModel.samplingOffset, para->getParD(level)->wallModel.z0,
-        //                 para->getHasWallModelMonitor(),        para->getParD(level)->wallModel.u_star,
-        //                 para->getParD(level)->wallModel.Fx,    para->getParD(level)->wallModel.Fy,        para->getParD(level)->wallModel.Fz,
-        //                 para->getParD(level)->neighborX,       para->getParD(level)->neighborY,           para->getParD(level)->neighborZ,
-        //                 para->getParD(level)->numberOfNodes,        para->getParD(level)->isEvenTimestep);
-
-        BBStressDev27( para->getParD(level)->numberofthreads,   para->getParD(level)->distributions.f[0],
-                        para->getParD(level)->stressBC.k,       para->getParD(level)->stressBC.kN,
-                        para->getParD(level)->stressBC.q27[0],  para->getParD(level)->stressBC.numberOfBCnodes,
-                        para->getParD(level)->velocityX,        para->getParD(level)->velocityY,          para->getParD(level)->velocityY,
-                        para->getParD(level)->stressBC.normalX, para->getParD(level)->stressBC.normalY,   para->getParD(level)->stressBC.normalZ,
-                        para->getParD(level)->stressBC.Vx,      para->getParD(level)->stressBC.Vy,        para->getParD(level)->stressBC.Vz,
-                        para->getParD(level)->stressBC.Vx1,     para->getParD(level)->stressBC.Vy1,       para->getParD(level)->stressBC.Vz1,
-                        para->getParD(level)->wallModel.samplingOffset, para->getParD(level)->wallModel.z0,
-                        para->getHasWallModelMonitor(),         para->getParD(level)->wallModel.u_star,
-                        para->getParD(level)->wallModel.Fx,     para->getParD(level)->wallModel.Fy,      para->getParD(level)->wallModel.Fz,
-                        para->getParD(level)->neighborX,        para->getParD(level)->neighborY,         para->getParD(level)->neighborZ,
-                        para->getParD(level)->numberOfNodes,    para->getParD(level)->isEvenTimestep);
+        stressBoundaryConditionPost(para.get(), &(para->getParD(level)->stressBC), level);
     }
 }
 

@@ -46,6 +46,7 @@ class Parameter;
 struct LBMSimulationParameter;
 
 using boundaryCondition = std::function<void(LBMSimulationParameter *, QforBoundaryConditions *)>;
+using boundaryConditionPara = std::function<void(Parameter *, QforBoundaryConditions *, const int level)>;
 
 //! \class LBKernelManager
 //! \brief manage the cuda kernel calls
@@ -99,5 +100,6 @@ private:
     boundaryCondition slipBoundaryConditionPost;
     boundaryCondition pressureBoundaryConditionPre;
     boundaryCondition geometryBoundaryConditionPost;
+    boundaryConditionPara stressBoundaryConditionPost;
 };
 #endif

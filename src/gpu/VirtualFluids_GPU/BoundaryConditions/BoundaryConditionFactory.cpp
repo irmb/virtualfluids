@@ -24,11 +24,16 @@ void BoundaryConditionFactory::setPressureBoundaryCondition(const PressureBC bou
     this->pressureBoundaryCondition = boundaryConditionType;
 }
 
-
-void BoundaryConditionFactory::setGeometryBoundaryCondition(const std::variant<VelocityBC, NoSlipBC, SlipBC> boundaryConditionType){
+void BoundaryConditionFactory::setGeometryBoundaryCondition(
+    const std::variant<VelocityBC, NoSlipBC, SlipBC> boundaryConditionType)
+{
     this->geometryBoundaryCondition = boundaryConditionType;
 }
 
+void BoundaryConditionFactory::setStressBoundaryCondition(const StressBC boundaryConditionType)
+{
+    this->stressBoundaryCondition = boundaryConditionType;
+}
 
 boundaryCondition BoundaryConditionFactory::getVelocityBoundaryConditionPost(bool isGeometryBC) const
 {
@@ -62,7 +67,7 @@ boundaryCondition BoundaryConditionFactory::getNoSlipBoundaryConditionPost(bool 
     // for descriptions of the boundary conditions refer to the header
     switch (boundaryCondition) {
         case NoSlipBC::NoSlipImplicitBounceBack:
-            return [] (LBMSimulationParameter *, QforBoundaryConditions *) {};
+            return [](LBMSimulationParameter *, QforBoundaryConditions *) {};
             break;
         case NoSlipBC::NoSlipBounceBack:
             return BBDev27;
@@ -126,12 +131,27 @@ boundaryCondition BoundaryConditionFactory::getPressureBoundaryConditionPre() co
     }
 }
 
-boundaryCondition BoundaryConditionFactory::getGeometryBoundaryConditionPost() const{
-    if(std::holds_alternative<VelocityBC>(this->geometryBoundaryCondition))
+boundaryConditionPara BoundaryConditionFactory::getStressBoundaryConditionPost() const
+{
+    switch (this->stressBoundaryCondition) {
+        case StressBC::StressBounceBack:
+            return BBStressDev27;
+            break;
+        case StressBC::StressCompressible:
+            return QStressDevComp27;
+            break;
+        default:
+            return nullptr;
+    }
+}
+
+boundaryCondition BoundaryConditionFactory::getGeometryBoundaryConditionPost() const
+{
+    if (std::holds_alternative<VelocityBC>(this->geometryBoundaryCondition))
         return this->getVelocityBoundaryConditionPost(true);
-    else if(std::holds_alternative<NoSlipBC>(this->geometryBoundaryCondition))
+    else if (std::holds_alternative<NoSlipBC>(this->geometryBoundaryCondition))
         return this->getNoSlipBoundaryConditionPost(true);
-    else if(std::holds_alternative<SlipBC>(this->geometryBoundaryCondition))
+    else if (std::holds_alternative<SlipBC>(this->geometryBoundaryCondition))
         return this->getSlipBoundaryConditionPost(true);
     return nullptr;
 }
