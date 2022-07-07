@@ -16,6 +16,7 @@
 #include "LBM/LB.h"
 
 struct LBMSimulationParameter;
+class Parameter;
 
 //////////////////////////////////////////////////////////////////////////
 //Kernel
@@ -862,69 +863,9 @@ extern "C" void QSlipNormDevComp27(unsigned int numberOfThreads,
 								   unsigned int size_Mat, 
 								   bool isEvenTimestep);
 
-extern "C" void QStressDevComp27(unsigned int numberOfThreads,
-								real* DD, 
-								int* k_Q, 
-								int* k_N,
-								real* QQ,
-								unsigned int numberOfBCnodes,
-								real om1, 
-								real* turbViscosity,
-								real* vx,
-								real* vy,
-								real* vz,
-								real* normalX,
-								real* normalY,
-								real* normalZ,
-								real* vx_el,
-								real* vy_el,
-								real* vz_el,
-								real* vx_w_mean,
-								real* vy_w_mean,
-								real* vz_w_mean,
-								int* samplingOffset,
-								real* z0,
-								bool  hasWallModelMonitor,
-								real* u_star,
-								real* Fx,
-								real* Fy,
-								real* Fz,
-								unsigned int* neighborX,
-								unsigned int* neighborY,
-								unsigned int* neighborZ,
-								unsigned int size_Mat, 
-								bool isEvenTimestep);
+extern "C" void QStressDevComp27(Parameter *para,  QforBoundaryConditions* boundaryCondition, const int level);
 
-extern "C" void BBStressDev27(  unsigned int numberOfThreads,
-								real* DD, 
-								int* k_Q, 
-								int* k_N, 
-								real* QQ,
-								unsigned int numberOfBCnodes,
-								real* vx,
-								real* vy,
-								real* vz,
-								real* normalX,
-								real* normalY,
-								real* normalZ,
-								real* vx_el,
-								real* vy_el,
-								real* vz_el,
-								real* vx_w_mean,
-								real* vy_w_mean,
-								real* vz_w_mean,
-								int* samplingOffset,
-								real* z0,
-								bool  hasWallModelMonitor,
-								real* u_star,
-								real* Fx,
-								real* Fy,
-								real* Fz,
-								unsigned int* neighborX,
-								unsigned int* neighborY,
-								unsigned int* neighborZ,
-								unsigned int size_Mat, 
-								bool isEvenTimestep);
+extern "C" void BBStressDev27(Parameter *para,  QforBoundaryConditions* boundaryCondition, const int level);
 
 extern "C" void QPressDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 

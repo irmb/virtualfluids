@@ -29,6 +29,7 @@
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
+#include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
 
 #include "global.h"
 
@@ -82,6 +83,7 @@ void multipleLevel(const std::string& configPath)
 	Communicator* comm = Communicator::getInstanz();
 
 	SPtr<Parameter> para = Parameter::make(configData, comm);
+	BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
 	SPtr<CudaMemoryManager> cudaMemManager = CudaMemoryManager::make(para);
 	SPtr<GridProvider> gridGenerator;
 
@@ -141,11 +143,13 @@ void multipleLevel(const std::string& configPath)
 		gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
 
 		//no forcing
-		gridBuilder->setPressureBoundaryCondition(SideType::PY, 0.0);
-		gridBuilder->setPressureBoundaryCondition(SideType::MY, 0.0);
+		// gridBuilder->setPressureBoundaryCondition(SideType::PY, 0.0);
+		// gridBuilder->setPressureBoundaryCondition(SideType::MY, 0.0);
 
-		gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
-		gridBuilder->setPressureBoundaryCondition(SideType::MX, 0.0);
+		// gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
+		// gridBuilder->setPressureBoundaryCondition(SideType::MX, 0.0);
+
+		bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
 
 		//////////////////////////////////////////////////////////////////////////
 		//Merged for Wind in X Direction
