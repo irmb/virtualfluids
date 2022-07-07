@@ -72,10 +72,10 @@ public:
     // enum class OutflowBoundaryCondition {};  // TODO:
     // https://git.rz.tu-bs.de/m.schoenherr/VirtualFluids_dev/-/issues/16
 
-    void setVelocityBoundaryCondition(const VelocityBC boundaryConditionType);
-    void setNoSlipBoundaryCondition(const NoSlipBC boundaryConditionType);
-    void setSlipBoundaryCondition(const SlipBC boundaryConditionType);
-    void setPressureBoundaryCondition(const PressureBC boundaryConditionType);
+    void setVelocityBoundaryCondition(const BoundaryConditionFactory::VelocityBC boundaryConditionType);
+    void setNoSlipBoundaryCondition(const BoundaryConditionFactory::NoSlipBC boundaryConditionType);
+    void setSlipBoundaryCondition(const BoundaryConditionFactory::SlipBC boundaryConditionType);
+    void setPressureBoundaryCondition(const BoundaryConditionFactory::PressureBC boundaryConditionType);
     //!param boundaryConditionType: a velocity, no-slip or slip boundary condition
     //! \details suggestions for boundaryConditionType:
     //!
@@ -100,7 +100,7 @@ private:
     NoSlipBC noSlipBoundaryCondition = NoSlipBC::NoSlipImplicitBounceBack;
     SlipBC slipBoundaryCondition;
     PressureBC pressureBoundaryCondition;
-    std::variant<VelocityBC, NoSlipBC, SlipBC> geometryBoundaryCondition;
+    std::variant<VelocityBC, NoSlipBC, SlipBC> geometryBoundaryCondition  = NoSlipBC::NoSlipImplicitBounceBack;
 
     // OutflowBoundaryConditon outflowBC // TODO: https://git.rz.tu-bs.de/m.schoenherr/VirtualFluids_dev/-/issues/16
 };
