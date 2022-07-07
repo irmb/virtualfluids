@@ -4,6 +4,9 @@
 namespace vf::lbm::dir
 {
 
+static constexpr int STARTDIR = 0;
+static constexpr int ENDDIR   = 26;
+
 static constexpr int E    = 0;
 static constexpr int W    = 1;
 static constexpr int N    = 2;

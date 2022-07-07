@@ -1,7 +1,10 @@
+#include <helper_cuda.h>
+#include <cuda_runtime.h>
+
 #include "Communication/ExchangeData27.h"
 #include "Parameter/CudaStreamManager.h"
-#include <cuda_runtime.h>
-#include <helper_cuda.h>
+
+using namespace vf::lbm::dir;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 3D domain decomposition

@@ -3,7 +3,7 @@
 #include "Parameter/Parameter.h"
 
 #include <basics/utilities/UbFileInputASCII.h>
-
+using namespace vf::lbm::dir;
 
 //////////////////////////////////////////////////////////////////////////
 void PositionReader::readFilePropellerCylinderForAlloc(Parameter* para)

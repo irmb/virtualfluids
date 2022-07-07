@@ -7,7 +7,7 @@
 // #include <math.h>
 #include <cmath>
 #include "LBM/LB.h"
-#include "LBM/D3Q27.h"
+#include "lbm/constants/D3Q27.h"
 #include "Parameter/Parameter.h"
 #include "basics/utilities/UbSystem.h"
 #include <basics/writer/WbWriterVtkXmlBinary.h>

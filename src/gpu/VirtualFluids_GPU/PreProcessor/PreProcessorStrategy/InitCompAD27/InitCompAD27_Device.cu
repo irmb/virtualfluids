@@ -1,9 +1,10 @@
 #include "LBM/LB.h" 
-#include "LBM/D3Q27.h"
+#include "lbm/constants/D3Q27.h"
 #include <lbm/constants/NumericConstants.h>
 
 using namespace vf::lbm::constant;
-#include "math.h"
+using namespace vf::lbm::dir;
+
 
 extern "C" __global__ void LB_Init_Comp_AD_27(unsigned int* neighborX,
 	unsigned int* neighborY,

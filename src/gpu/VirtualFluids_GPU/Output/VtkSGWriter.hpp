@@ -7,7 +7,7 @@
 // #include <math.h>
 #include <cmath>
 #include "LBM/LB.h"
-#include "LBM/D3Q27.h"
+#include "lbm/constants/D3Q27.h"
 #include "basics/utilities/UbSystem.h"
 
 //using namespace std;

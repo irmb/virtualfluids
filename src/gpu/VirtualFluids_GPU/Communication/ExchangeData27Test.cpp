@@ -9,7 +9,7 @@
 
 void setUpFsByCopyingF0(std::vector<real> &distributionVector, int numberOfNodes)
 {
-    for (uint direction = 0; direction < ENDDIR; direction++) {
+    for (uint direction = 0; direction < vf::lbm::dir::ENDDIR; direction++) {
         distributionVector.insert(distributionVector.end(), distributionVector.begin(),
                                   distributionVector.begin() + numberOfNodes);
     }

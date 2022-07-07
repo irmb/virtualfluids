@@ -40,10 +40,11 @@
 //=======================================================================================
 /* Device code */
 #include "LBM/LB.h" 
-#include "LBM/D3Q27.h"
+#include "lbm/constants/D3Q27.h"
 #include <lbm/constants/NumericConstants.h>
 
 using namespace vf::lbm::constant;
+using namespace vf::lbm::dir;
 #include "Kernel/ChimeraTransformation.h"
 
 
@@ -772,7 +773,7 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
 // //=======================================================================================
 // /* Device code */
 // #include "LBM/LB.h" 
-// #include "LBM/D3Q27.h"
+// #include "lbm/constants/D3Q27.h"
 // #include <lbm/constants/NumericConstants.h>
 
 // using namespace vf::lbm::constant;
