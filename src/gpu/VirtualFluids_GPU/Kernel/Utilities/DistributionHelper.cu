@@ -2,14 +2,13 @@
 
 #include <cuda_runtime.h>
 
-#include "LBM/D3Q27.h"
 
 #include <lbm/constants/NumericConstants.h>
 #include <lbm/constants/D3Q27.h>
+#include "lbm/constants/D3Q27.h"
+using namespace vf::lbm::dir;
 
-namespace vf
-{
-namespace gpu
+namespace vf::gpu
 {
 
 __device__ __host__ DistributionReferences27 getDistributionReferences27(real *distributions, unsigned int size_Mat, bool isEvenTimestep)
@@ -164,5 +163,4 @@ __device__ bool isValidFluidNode(uint nodeType)
 }
 
 
-} // namespace gpu
-} // namespace vf
+}

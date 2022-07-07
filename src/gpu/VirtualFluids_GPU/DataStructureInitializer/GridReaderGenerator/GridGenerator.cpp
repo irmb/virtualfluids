@@ -1,8 +1,8 @@
 #include "GridGenerator.h"
 
 #include "Parameter/Parameter.h"
-#include <GridGenerator/grid/GridBuilder/GridBuilder.h>
-#include <GPU/CudaMemoryManager.h>
+#include "GridGenerator/grid/GridBuilder/GridBuilder.h"
+#include "GPU/CudaMemoryManager.h"
 #include "IndexRearrangementForStreams.h"
 
 #include <sstream>
@@ -13,6 +13,7 @@
 
 #include "utilities/communication.h"
 
+using namespace vf::lbm::dir;
 
 GridGenerator::GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::gpu::Communicator& communicator)
 {

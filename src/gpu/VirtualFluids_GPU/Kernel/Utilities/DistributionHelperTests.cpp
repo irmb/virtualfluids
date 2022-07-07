@@ -2,8 +2,8 @@
 
 #include "DistributionHelper.cuh"
 
-#include "LBM/D3Q27.h"
-
+#include "lbm/constants/D3Q27.h"
+using namespace vf::lbm::dir;
 
 auto RealEq = [](auto value) { 
 #ifdef VF_DOUBLE_ACCURACY

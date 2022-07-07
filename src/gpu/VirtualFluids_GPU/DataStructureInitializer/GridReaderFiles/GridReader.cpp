@@ -11,6 +11,8 @@
 #include <GPU/CudaMemoryManager.h>
 #include "OffsetScale.h"
 
+using namespace vf::lbm::dir;
+
 GridReader::GridReader(FILEFORMAT format, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager)
 {
     this->para = para;
@@ -658,9 +660,9 @@ void GridReader::modifyQElement(std::shared_ptr<BoundaryQs> boundaryQ, unsigned 
 {
 	QforBoundaryConditions Q;
 	real* QQ = para->getParH(level)->geometryBC.q27[0];
-	Q.q27[REST] = &QQ[REST * para->getParH(level)->geometryBC.numberOfBCnodes];
+	Q.q27[vf::lbm::dir::REST] = &QQ[vf::lbm::dir::REST * para->getParH(level)->geometryBC.numberOfBCnodes];
 	for (unsigned int i = 0; i < boundaryQ->getSize(level); i++)
-		Q.q27[REST][i] = 0.0f;
+		Q.q27[vf::lbm::dir::REST][i] = 0.0f;
 }
 
 /*------------------------------------------------------------------------------------------------*/

@@ -34,10 +34,11 @@
 #define KERNELUTILS_H
 
 #include "LBM/LB.h"
-#include "LBM/D3Q27.h"
+#include "lbm/constants/D3Q27.h"
 #include "lbm/constants/NumericConstants.h"
 
 using namespace vf::lbm::constant;
+using namespace vf::lbm::dir;
 
 __inline__ __device__ void getPointersToDistributions(Distributions27 &dist, real *distributionArray, const uint numberOfLBnodes, const bool isEvenTimestep)
 {

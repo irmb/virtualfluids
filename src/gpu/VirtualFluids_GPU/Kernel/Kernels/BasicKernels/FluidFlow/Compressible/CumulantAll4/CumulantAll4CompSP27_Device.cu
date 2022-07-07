@@ -1,10 +1,11 @@
 #include "CumulantAll4CompSP27_Device.cuh"
 
 #include "LBM/LB.h" 
-#include "LBM/D3Q27.h"
+#include "lbm/constants/D3Q27.h"
 #include <lbm/constants/NumericConstants.h>
 
 using namespace vf::lbm::constant;
+using namespace vf::lbm::dir;
 #include "math.h"
 
 extern "C" __global__ void LB_Kernel_Cumulant_D3Q27All4(	real omega,

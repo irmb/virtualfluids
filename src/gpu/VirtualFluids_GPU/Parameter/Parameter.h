@@ -38,7 +38,7 @@
 #include <string>
 #include <vector>
 
-#include "LBM/D3Q27.h"
+#include "lbm/constants/D3Q27.h"
 #include "LBM/LB.h"
 #include "PreCollisionInteractor/PreCollisionInteractor.h"
 
