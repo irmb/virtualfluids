@@ -25,7 +25,7 @@ public:
         //! - VelocityCompressible = interpolated velocity boundary condition, based on subgrid distances
         VelocityCompressible,
         //! - VelocityAndPressureCompressible = interpolated velocity boundary condition, based on subgrid distances.
-        //! Also sets the pressure to the bulk pressure.
+        //! Also sets the pressure to the bulk pressure. Can be combined with OutflowNonReflective
         VelocityAndPressureCompressible
     };
 
@@ -65,7 +65,7 @@ public:
         PressureNonEquilibriumIncompressible,
         //! - PressureNonEquilibriumCompressible = pressure boundary condition based on non-equilibrium
         PressureNonEquilibriumCompressible,
-        //! - OutflowNonReflective = outflow boundary condition
+        //! - OutflowNonReflective = outflow boundary condition, should be combined with VelocityAndPressureCompressible
         OutflowNonReflective
     };
 
@@ -97,7 +97,7 @@ public:
 
 private:
     VelocityBC velocityBoundaryCondition;
-    NoSlipBC noSlipBoundaryCondition;
+    NoSlipBC noSlipBoundaryCondition = NoSlipBC::NoSlipImplicitBounceBack;
     SlipBC slipBoundaryCondition;
     PressureBC pressureBoundaryCondition;
     std::variant<VelocityBC, NoSlipBC, SlipBC> geometryBoundaryCondition;

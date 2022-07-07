@@ -34,7 +34,7 @@
 #include <helper_cuda.h>
 
 #include "BCKernelManager.h"
-#include "Parameter/Parameter.h"	
+#include "Parameter/Parameter.h"
 #include "GPU/GPU_Interface.h"
 #include "Calculation/DragLift.h"
 #include "Calculation/Cp.h"
@@ -381,7 +381,6 @@ void BCKernelManager::runStressWallModelKernelPost(const int level) const{
                         para->getParD(level)->numberOfNodes,    para->getParD(level)->isEvenTimestep);
     }
 }
-
 
 void BCKernelManager::runSlipBCKernelPost(const int level) const{
     if (para->getParD(level)->slipBC.numberOfBCnodes > 0)
