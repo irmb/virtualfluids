@@ -35,8 +35,9 @@
 #include <stdio.h>
 
 #include "grid/distributions/D3Q27.h"
-
+#include "lbm/constants/D3Q27.h"
 #include "grid/Grid.h"
+using namespace vf::lbm::dir;
 
 Distribution DistributionHelper::getDistribution27() 
 {

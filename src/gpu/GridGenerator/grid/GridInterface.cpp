@@ -40,6 +40,9 @@
 #include "grid/Field.h"
 #include "grid/NodeValues.h"
 
+#include "lbm/constants/D3Q27.h"
+
+using namespace vf::lbm;
 using namespace vf::gpu;
 
 GridInterface::GridInterface()
@@ -373,7 +376,7 @@ uint GridInterface::findOffsetCF(const uint& indexOnCoarseGrid, GridImp* coarseG
     Cell cell(x, y, z, coarseGrid->getDelta());
 
     if( coarseGrid->cellContainsOnly( cell, FLUID, FLUID_CFC ) ){
-        this->cf.offset[ interfaceIndex ] = REST;
+        this->cf.offset[ interfaceIndex ] = dir::REST;
         return indexOnCoarseGrid;
     }
 
@@ -408,7 +411,7 @@ uint GridInterface::findOffsetFC(const uint& indexOnFineGrid, GridImp* fineGrid,
     Cell cell(x, y, z, fineGrid->getDelta());
 
     if( fineGrid->cellContainsOnly( cell, FLUID, FLUID_FCF ) ){
-        this->fc.offset[ interfaceIndex ] = REST;
+        this->fc.offset[ interfaceIndex ] = dir::REST;
         return indexOnFineGrid;
     }
 
