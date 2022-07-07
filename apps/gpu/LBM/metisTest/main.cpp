@@ -332,9 +332,12 @@ void multipleLevel(const std::string& configPath)
         gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
 
         gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
-        
-        //////////////////////////////////////////////////////////////////////////
 
+        bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
+        bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipCompressible);
+        bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::PressureNonEquilibriumCompressible);
+
+        //////////////////////////////////////////////////////////////////////////
         gridBuilder->writeGridsToVtk("F:/Work/Computations/gridGenerator/grid/Test_");
         //gridBuilder->writeArrows    ("F:/Work/Computations/gridGenerator/grid/Test_Arrow");
 

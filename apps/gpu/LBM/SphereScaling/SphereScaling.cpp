@@ -51,6 +51,7 @@
 
 #include "VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
 #include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
+#include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 
@@ -69,16 +70,16 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Phoenix
-// std::string outPath("/work/y0078217/Results/SphereScalingResults/");
-// std::string gridPathParent = "/work/y0078217/Grids/GridSphereScaling/";
-// std::string simulationName("SphereScaling");
-// std::string stlPath("/home/y0078217/STL/Sphere/");
+// const std::string outPath("/work/y0078217/Results/SphereScalingResults/");
+// const std::string gridPathParent = "/work/y0078217/Grids/GridSphereScaling/";
+// const std::string simulationName("SphereScaling");
+// const std::string stlPath("/home/y0078217/STL/Sphere/");
 
 // Relative Paths
-std::string outPath("./output/SphereScalingResults/");
-std::string gridPathParent = "./output/grids/SphereScalingResults/";
-std::string simulationName("SphereScaling");
-std::string stlPath("./stl/SphereScaling/");
+const std::string outPath("./output/SphereScalingResults/");
+const std::string gridPathParent = "./output/grids/SphereScalingResults/";
+const std::string simulationName("SphereScaling");
+const std::string stlPath("./stl/SphereScaling/");
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -101,6 +102,7 @@ void multipleLevel(const std::string &configPath)
     std::cout << configPath << std::endl;
     config.load(configPath);
     SPtr<Parameter> para = std::make_shared<Parameter>(config, communicator.getNummberOfProcess(), communicator.getPID());
+    BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -657,6 +659,10 @@ void multipleLevel(const std::string &configPath)
 
             SimulationFileWriter::write(gridPath, gridBuilder, FILEFORMAT::BINARY);
         }
+
+        bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
+        bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::PressureNonEquilibriumCompressible);
+
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -669,7 +675,7 @@ void multipleLevel(const std::string &configPath)
         gridGenerator = GridProvider::makeGridReader(FILEFORMAT::BINARY, para, cudaMemoryManager);
     }
 
-    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator);
+    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory);
     sim.run();
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }

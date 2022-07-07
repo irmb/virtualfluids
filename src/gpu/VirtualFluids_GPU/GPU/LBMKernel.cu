@@ -3484,164 +3484,82 @@ extern "C" void QSlipNormDevComp27(unsigned int numberOfThreads,
       getLastCudaError("QSlipGeomDeviceComp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QStressDevComp27(unsigned int numberOfThreads,
-							   real* DD,
-							   int* k_Q,
-                        int* k_N,
-							   real* QQ,
-							   unsigned int numberOfBCnodes,
-							   real om1,
-                        real* turbViscosity,
-                        real* vx,
-                        real* vy,
-                        real* vz,
-                        real* normalX,
-                        real* normalY,
-                        real* normalZ,
-                        real* vx_bc,
-                        real* vy_bc,
-                        real* vz_bc,
-                        real* vx1,
-                        real* vy1,
-                        real* vz1,
-                        int* samplingOffset,
-                        real* z0,
-                        bool  hasWallModelMonitor,
-                        real* u_star,
-                        real* Fx,
-                        real* Fy,
-                        real* Fz,
-							   unsigned int* neighborX,
-							   unsigned int* neighborY,
-							   unsigned int* neighborZ,
-							   unsigned int size_Mat,
-							   bool isEvenTimestep)
+extern "C" void QStressDevComp27(Parameter *para,  QforBoundaryConditions* boundaryCondition, const int level)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   dim3 grid = vf::cuda::getCudaGrid(  para->getParD(level)->numberofthreads, boundaryCondition->numberOfBCnodes);
+   dim3 threads(para->getParD(level)->numberofthreads, 1, 1 );
 
-      QStressDeviceComp27<<< gridQ, threads >>> (DD,
-											   k_Q,
-                                    k_N,
-											   QQ,
-											   numberOfBCnodes,
-											   om1,
-                                    turbViscosity,
-                                    vx,
-                                    vy,
-                                    vz,
-                                    normalX,
-                                    normalY,
-                                    normalZ,
-                                    vx_bc,
-                                    vy_bc,
-                                    vz_bc,
-                                    vx1,
-                                    vy1,
-                                    vz1,
-                                    samplingOffset,
-                                    z0,
-                                    hasWallModelMonitor,
-                                    u_star,
-                                    Fx,
-                                    Fy,
-                                    Fz,
-											   neighborX,
-											   neighborY,
-											   neighborZ,
-											   size_Mat,
-											   isEvenTimestep);
+      QStressDeviceComp27<<< grid, threads >>> (
+         para->getParD(level)->distributions.f[0],
+         boundaryCondition->k,
+         boundaryCondition->kN,
+         boundaryCondition->q27[0],
+         boundaryCondition->numberOfBCnodes,
+         para->getParD(level)->omega,
+         para->getParD(level)->turbViscosity,
+         para->getParD(level)->velocityX,
+         para->getParD(level)->velocityY,
+         para->getParD(level)->velocityY,
+         boundaryCondition->normalX,
+         boundaryCondition->normalY,
+         boundaryCondition->normalZ,
+         boundaryCondition->Vx,
+         boundaryCondition->Vy,
+         boundaryCondition->Vz,
+         boundaryCondition->Vx1,
+         boundaryCondition->Vy1,
+         boundaryCondition->Vz1,
+         para->getParD(level)->wallModel.samplingOffset,
+         para->getParD(level)->wallModel.z0,
+         para->getHasWallModelMonitor(),
+         para->getParD(level)->wallModel.u_star,
+         para->getParD(level)->wallModel.Fx,
+         para->getParD(level)->wallModel.Fy,
+         para->getParD(level)->wallModel.Fz,
+         para->getParD(level)->neighborX,
+         para->getParD(level)->neighborY,
+         para->getParD(level)->neighborZ,
+         para->getParD(level)->numberOfNodes,
+         para->getParD(level)->isEvenTimestep);
       getLastCudaError("QSlipDeviceComp27 execution failed");
 }
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" void BBStressDev27(unsigned int numberOfThreads,
-							   real* DD,
-							   int* k_Q,
-                        int* k_N,
-							   real* QQ,
-							   unsigned int numberOfBCnodes,
-                        real* vx,
-                        real* vy,
-                        real* vz,
-                        real* normalX,
-                        real* normalY,
-                        real* normalZ,
-                        real* vx_bc,
-                        real* vy_bc,
-                        real* vz_bc,
-                        real* vx1,
-                        real* vy1,
-                        real* vz1,
-                        int* samplingOffset,
-                        real* z0,
-                        bool  hasWallModelMonitor,
-                        real* u_star,
-                        real* Fx,
-                        real* Fy,
-                        real* Fz,
-							   unsigned int* neighborX,
-							   unsigned int* neighborY,
-							   unsigned int* neighborZ,
-							   unsigned int size_Mat,
-							   bool isEvenTimestep)
+extern "C" void BBStressDev27(Parameter *para,  QforBoundaryConditions* boundaryCondition, const int level)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   dim3 grid = vf::cuda::getCudaGrid( para->getParD(level)->numberofthreads, boundaryCondition->numberOfBCnodes);
+   dim3 threads(para->getParD(level)->numberofthreads, 1, 1 );
 
-   BBStressDevice27<<< gridQ, threads >>> (DD,
-											   k_Q,
-                                    k_N,
-											   QQ,
-											   numberOfBCnodes,
-                                    vx,
-                                    vy,
-                                    vz,
-                                    normalX,
-                                    normalY,
-                                    normalZ,
-                                    vx_bc,
-                                    vy_bc,
-                                    vz_bc,
-                                    vx1,
-                                    vy1,
-                                    vz1,
-                                    samplingOffset,
-                                    z0,
-                                    hasWallModelMonitor,
-                                    u_star,
-                                    Fx,
-                                    Fy,
-                                    Fz,
-											   neighborX,
-											   neighborY,
-											   neighborZ,
-											   size_Mat,
-											   isEvenTimestep);
+   BBStressDevice27<<< grid, threads >>> (
+      para->getParD(level)->distributions.f[0],
+      boundaryCondition->k,
+      boundaryCondition->kN,
+      boundaryCondition->q27[0],
+      boundaryCondition->numberOfBCnodes,
+      para->getParD(level)->velocityX,
+      para->getParD(level)->velocityY,
+      para->getParD(level)->velocityY,
+      boundaryCondition->normalX,
+      boundaryCondition->normalY,
+      boundaryCondition->normalZ,
+      boundaryCondition->Vx,
+      boundaryCondition->Vy,
+      boundaryCondition->Vz,
+      boundaryCondition->Vx1,
+      boundaryCondition->Vy1,
+      boundaryCondition->Vz1,
+      para->getParD(level)->wallModel.samplingOffset,
+      para->getParD(level)->wallModel.z0,
+      para->getHasWallModelMonitor(),
+      para->getParD(level)->wallModel.u_star,
+      para->getParD(level)->wallModel.Fx,
+      para->getParD(level)->wallModel.Fy,
+      para->getParD(level)->wallModel.Fz,
+      para->getParD(level)->neighborX,
+      para->getParD(level)->neighborY,
+      para->getParD(level)->neighborZ,
+      para->getParD(level)->numberOfNodes,
+      para->getParD(level)->isEvenTimestep);
       getLastCudaError("BBStressDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
