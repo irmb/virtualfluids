@@ -57,7 +57,7 @@ void findQ(Parameter* para, int lev)
    Q.q27[BS  ] = &QQ[BS  *sizeQ];
    Q.q27[BN  ] = &QQ[BN  *sizeQ];
    Q.q27[TS  ] = &QQ[TS  *sizeQ];
-   Q.q27[dirREST] = &QQ[dirREST*sizeQ];
+   Q.q27[REST] = &QQ[REST*sizeQ];
    Q.q27[TNE ] = &QQ[TNE *sizeQ];
    Q.q27[TSW ] = &QQ[TSW *sizeQ];
    Q.q27[TSE ] = &QQ[TSE *sizeQ];
@@ -113,7 +113,7 @@ void findQ(Parameter* para, int lev)
                   //Q.q27[BS  ][QIN.numberOfBCnodes] = -1.f;
                   //Q.q27[BN  ][QIN.numberOfBCnodes] = 0.f;
                   //Q.q27[TS  ][QIN.numberOfBCnodes] = -1.f;
-                  //Q.q27[dirREST][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[REST][QIN.numberOfBCnodes] = -1.f;
                   //Q.q27[TNE ][QIN.numberOfBCnodes] = 0.f;
                   //Q.q27[TSW ][QIN.numberOfBCnodes] = -1.f;
                   //Q.q27[TSE ][QIN.numberOfBCnodes] = -1.f;
@@ -141,7 +141,7 @@ void findQ(Parameter* para, int lev)
                   //Q.q27[BS  ][QIN.numberOfBCnodes] = ON[TN  ];
                   //Q.q27[BN  ][QIN.numberOfBCnodes] = ON[TS  ];
                   //Q.q27[TS  ][QIN.numberOfBCnodes] = ON[BN  ];
-                  //Q.q27[dirREST][QIN.numberOfBCnodes] = ON[dirREST];
+                  //Q.q27[REST][QIN.numberOfBCnodes] = ON[REST];
                   //Q.q27[TNE ][QIN.numberOfBCnodes] = ON[BSW ];
                   //Q.q27[TSW ][QIN.numberOfBCnodes] = ON[BNE ];
                   //Q.q27[TSE ][QIN.numberOfBCnodes] = ON[BNW ];
@@ -169,7 +169,7 @@ void findQ(Parameter* para, int lev)
                   Q.q27[BS  ][QIN.numberOfBCnodes] = ON[BS  ];
                   Q.q27[BN  ][QIN.numberOfBCnodes] = ON[BN  ];
                   Q.q27[TS  ][QIN.numberOfBCnodes] = ON[TS  ];
-                  Q.q27[dirREST][QIN.numberOfBCnodes] = ON[dirREST];
+                  Q.q27[REST][QIN.numberOfBCnodes] = ON[REST];
                   Q.q27[TNE ][QIN.numberOfBCnodes] = ON[TNE ];
                   Q.q27[TSW ][QIN.numberOfBCnodes] = ON[TSW ];
                   Q.q27[TSE ][QIN.numberOfBCnodes] = ON[TSE ];
@@ -263,7 +263,7 @@ void findQ_MG( int nx, int ny, unsigned int nnx, unsigned int nny, unsigned int 
    Q.q27[BS  ] = &QQ[BS  *sizeQ];
    Q.q27[BN  ] = &QQ[BN  *sizeQ];
    Q.q27[TS  ] = &QQ[TS  *sizeQ];
-   Q.q27[dirREST] = &QQ[dirREST*sizeQ];
+   Q.q27[REST] = &QQ[REST*sizeQ];
    Q.q27[TNE ] = &QQ[TNE *sizeQ];
    Q.q27[TSW ] = &QQ[TSW *sizeQ];
    Q.q27[TSE ] = &QQ[TSE *sizeQ];
@@ -343,7 +343,7 @@ void findQ_MG( int nx, int ny, unsigned int nnx, unsigned int nny, unsigned int 
                   Q.q27[BS  ][QIN.numberOfBCnodes] = ON[BS  ];
                   Q.q27[BN  ][QIN.numberOfBCnodes] = ON[BN  ];
                   Q.q27[TS  ][QIN.numberOfBCnodes] = ON[TS  ];
-                  Q.q27[dirREST][QIN.numberOfBCnodes] = ON[dirREST];
+                  Q.q27[REST][QIN.numberOfBCnodes] = ON[REST];
                   Q.q27[TNE ][QIN.numberOfBCnodes] = ON[TNE ];
                   Q.q27[TSW ][QIN.numberOfBCnodes] = ON[TSW ];
                   Q.q27[TSE ][QIN.numberOfBCnodes] = ON[TSE ];
@@ -464,7 +464,7 @@ void findQInflow(Parameter* para)
    Q.q27[BS  ] = &QQ[BS  *sizeQ];
    Q.q27[BN  ] = &QQ[BN  *sizeQ];
    Q.q27[TS  ] = &QQ[TS  *sizeQ];
-   Q.q27[dirREST] = &QQ[dirREST*sizeQ];
+   Q.q27[REST] = &QQ[REST*sizeQ];
    Q.q27[TNE ] = &QQ[TNE *sizeQ];
    Q.q27[TSW ] = &QQ[TSW *sizeQ];
    Q.q27[TSE ] = &QQ[TSE *sizeQ];
@@ -513,7 +513,7 @@ void findQInflow(Parameter* para)
                //Q.q27[BS  ][QIN.numberOfBCnodes] = (real)1.f;
                //Q.q27[BN  ][QIN.numberOfBCnodes] = (real)1.f;
                //Q.q27[TS  ][QIN.numberOfBCnodes] = (real)-1.f;
-               //Q.q27[dirREST][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[REST][QIN.numberOfBCnodes] = (real)-1.f;
                //Q.q27[TNE ][QIN.numberOfBCnodes] = (real)-1.f;
                //Q.q27[TSW ][QIN.numberOfBCnodes] = (real)-1.f;
                //Q.q27[TSE ][QIN.numberOfBCnodes] = (real)-1.f;
@@ -547,7 +547,7 @@ void findQInflow(Parameter* para)
 			   Q.q27[BS  ][QIN.numberOfBCnodes] = (real)-1.f;
 			   Q.q27[BN  ][QIN.numberOfBCnodes] = (real)-1.f;
 			   Q.q27[TS  ][QIN.numberOfBCnodes] = (real)1.f;
-			   Q.q27[dirREST][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[REST][QIN.numberOfBCnodes] = (real)-1.f;
 			   Q.q27[TNE ][QIN.numberOfBCnodes] = (real)1.f;
 			   Q.q27[TSW ][QIN.numberOfBCnodes] = (real)1.f;
 			   Q.q27[TSE ][QIN.numberOfBCnodes] = (real)1.f;
@@ -604,7 +604,7 @@ void findQInflow(Parameter* para)
    //               Q.q27[BS  ][QIN.numberOfBCnodes] = ON[BS  ];
    //               Q.q27[BN  ][QIN.numberOfBCnodes] = ON[BN  ];
    //               Q.q27[TS  ][QIN.numberOfBCnodes] = ON[TS  ];
-   //               Q.q27[dirREST][QIN.numberOfBCnodes] = ON[dirREST];
+   //               Q.q27[REST][QIN.numberOfBCnodes] = ON[REST];
    //               Q.q27[TNE ][QIN.numberOfBCnodes] = ON[TNE ];
    //               Q.q27[TSW ][QIN.numberOfBCnodes] = ON[TSW ];
    //               Q.q27[TSE ][QIN.numberOfBCnodes] = ON[TSE ];
@@ -663,7 +663,7 @@ void findQInflow(Parameter* para)
    //               Q.q27[BS  ][QIN.numberOfBCnodes] = ON[BS  ];
    //               Q.q27[BN  ][QIN.numberOfBCnodes] = ON[BN  ];
    //               Q.q27[TS  ][QIN.numberOfBCnodes] = ON[TS  ];
-   //               Q.q27[dirREST][QIN.numberOfBCnodes] = ON[dirREST];
+   //               Q.q27[REST][QIN.numberOfBCnodes] = ON[REST];
    //               Q.q27[TNE ][QIN.numberOfBCnodes] = ON[TNE ];
    //               Q.q27[TSW ][QIN.numberOfBCnodes] = ON[TSW ];
    //               Q.q27[TSE ][QIN.numberOfBCnodes] = ON[TSE ];
@@ -830,7 +830,7 @@ void findQOutflow(Parameter* para)
    Q.q27[BS  ] = &QQ[BS  *sizeQ];
    Q.q27[BN  ] = &QQ[BN  *sizeQ];
    Q.q27[TS  ] = &QQ[TS  *sizeQ];
-   Q.q27[dirREST] = &QQ[dirREST*sizeQ];
+   Q.q27[REST] = &QQ[REST*sizeQ];
    Q.q27[TNE ] = &QQ[TNE *sizeQ];
    Q.q27[TSW ] = &QQ[TSW *sizeQ];
    Q.q27[TSE ] = &QQ[TSE *sizeQ];
@@ -878,7 +878,7 @@ void findQOutflow(Parameter* para)
                Q.q27[BS  ][QIN.numberOfBCnodes] = (real)-1.f;
                Q.q27[BN  ][QIN.numberOfBCnodes] = (real)-1.f;
                Q.q27[TS  ][QIN.numberOfBCnodes] = (real)1.f;
-               Q.q27[dirREST][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[REST][QIN.numberOfBCnodes] = (real)-1.f;
                Q.q27[TNE ][QIN.numberOfBCnodes] = (real)1.f;
                Q.q27[TSW ][QIN.numberOfBCnodes] = (real)1.f;
                Q.q27[TSE ][QIN.numberOfBCnodes] = (real)1.f;
@@ -992,7 +992,7 @@ void findKforQOutflow(Parameter* para)
 //   QN.q27[BS  ] = &QQN[BS  *sizeQN];
 //   QN.q27[BN  ] = &QQN[BN  *sizeQN];
 //   QN.q27[TS  ] = &QQN[TS  *sizeQN];
-//   QN.q27[dirREST] = &QQN[dirREST*sizeQN];
+//   QN.q27[REST] = &QQN[REST*sizeQN];
 //   QN.q27[TNE ] = &QQN[TNE *sizeQN];
 //   QN.q27[TSW ] = &QQN[TSW *sizeQN];
 //   QN.q27[TSE ] = &QQN[TSE *sizeQN];
@@ -1112,7 +1112,7 @@ void findQPressX0(Parameter* para, int lev)
 	Q.q27[BS  ] = &QQ[BS  *sizeQ];
 	Q.q27[BN  ] = &QQ[BN  *sizeQ];
 	Q.q27[TS  ] = &QQ[TS  *sizeQ];
-	Q.q27[dirREST] = &QQ[dirREST*sizeQ];
+	Q.q27[REST] = &QQ[REST*sizeQ];
 	Q.q27[TNE ] = &QQ[TNE *sizeQ];
 	Q.q27[TSW ] = &QQ[TSW *sizeQ];
 	Q.q27[TSE ] = &QQ[TSE *sizeQ];
@@ -1161,7 +1161,7 @@ void findQPressX0(Parameter* para, int lev)
 				Q.q27[BS  ][QIN.numberOfBCnodes] = (real)-1.f;
 				Q.q27[BN  ][QIN.numberOfBCnodes] = (real)-1.f;
 				Q.q27[TS  ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[dirREST][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[REST][QIN.numberOfBCnodes] = (real)-1.f;
 				Q.q27[TNE ][QIN.numberOfBCnodes] = (real)-1.f;
 				Q.q27[TSW ][QIN.numberOfBCnodes] = (real)1.f;
 				Q.q27[TSE ][QIN.numberOfBCnodes] = (real)-1.f;
@@ -1288,7 +1288,7 @@ void findQPressX1(Parameter* para, int lev)
 	Q.q27[BS  ] = &QQ[BS  *sizeQ];
 	Q.q27[BN  ] = &QQ[BN  *sizeQ];
 	Q.q27[TS  ] = &QQ[TS  *sizeQ];
-	Q.q27[dirREST] = &QQ[dirREST*sizeQ];
+	Q.q27[REST] = &QQ[REST*sizeQ];
 	Q.q27[TNE ] = &QQ[TNE *sizeQ];
 	Q.q27[TSW ] = &QQ[TSW *sizeQ];
 	Q.q27[TSE ] = &QQ[TSE *sizeQ];
@@ -1337,7 +1337,7 @@ void findQPressX1(Parameter* para, int lev)
 				Q.q27[BS  ][QIN.numberOfBCnodes] = (real)-1.f;
 				Q.q27[BN  ][QIN.numberOfBCnodes] = (real)-1.f;
 				Q.q27[TS  ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[dirREST][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[REST][QIN.numberOfBCnodes] = (real)-1.f;
 				Q.q27[TNE ][QIN.numberOfBCnodes] = (real)1.f;
 				Q.q27[TSW ][QIN.numberOfBCnodes] = (real)-1.f;
 				Q.q27[TSE ][QIN.numberOfBCnodes] = (real)1.f;

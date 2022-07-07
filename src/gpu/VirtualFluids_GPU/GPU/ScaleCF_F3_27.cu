@@ -61,7 +61,7 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3_2018(real* DC,
 	f0MMdest = &DF[BS  *size_MatF];
 	f0PMdest = &DF[BN  *size_MatF];
 	f0MPdest = &DF[TS  *size_MatF];
-	f000dest = &DF[dirREST*size_MatF];
+	f000dest = &DF[REST*size_MatF];
 	fMMMdest = &DF[BSW *size_MatF];
 	fMMPdest = &DF[TSW *size_MatF];
 	fMPPdest = &DF[TNW *size_MatF];
@@ -96,7 +96,7 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3_2018(real* DC,
 		f0MMsource = &DC[BS  *size_MatC];
 		f0PMsource = &DC[BN  *size_MatC];
 		f0MPsource = &DC[TS  *size_MatC];
-		f000source = &DC[dirREST*size_MatC];
+		f000source = &DC[REST*size_MatC];
 		fMMMsource = &DC[BSW *size_MatC];
 		fMMPsource = &DC[TSW *size_MatC];
 		fMPPsource = &DC[TNW *size_MatC];
@@ -126,7 +126,7 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3_2018(real* DC,
 		f0MMsource = &DC[TN  *size_MatC];
 		f0PMsource = &DC[TS  *size_MatC];
 		f0MPsource = &DC[BN  *size_MatC];
-		f000source = &DC[dirREST*size_MatC];
+		f000source = &DC[REST*size_MatC];
 		fMMMsource = &DC[TNE *size_MatC];
 		fMMPsource = &DC[BNE *size_MatC];
 		fMPPsource = &DC[BSE *size_MatC];
@@ -4408,7 +4408,7 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3( real* DC,
 	f0MMdest = &DF[BS  *size_MatF];
 	f0PMdest = &DF[BN  *size_MatF];
 	f0MPdest = &DF[TS  *size_MatF];
-	f000dest = &DF[dirREST*size_MatF];
+	f000dest = &DF[REST*size_MatF];
 	fMMMdest = &DF[BSW *size_MatF];
 	fMMPdest = &DF[TSW *size_MatF];
 	fMPPdest = &DF[TNW *size_MatF];
@@ -4443,7 +4443,7 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3( real* DC,
 		f0MMsource = &DC[BS  *size_MatC];
 		f0PMsource = &DC[BN  *size_MatC];
 		f0MPsource = &DC[TS  *size_MatC];
-		f000source = &DC[dirREST*size_MatC];
+		f000source = &DC[REST*size_MatC];
 		fMMMsource = &DC[BSW *size_MatC];
 		fMMPsource = &DC[TSW *size_MatC];
 		fMPPsource = &DC[TNW *size_MatC];
@@ -4473,7 +4473,7 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3( real* DC,
 		f0MMsource = &DC[TN  *size_MatC];
 		f0PMsource = &DC[TS  *size_MatC];
 		f0MPsource = &DC[BN  *size_MatC];
-		f000source = &DC[dirREST*size_MatC];
+		f000source = &DC[REST*size_MatC];
 		fMMMsource = &DC[TNE *size_MatC];
 		fMMPsource = &DC[BNE *size_MatC];
 		fMPPsource = &DC[BSE *size_MatC];

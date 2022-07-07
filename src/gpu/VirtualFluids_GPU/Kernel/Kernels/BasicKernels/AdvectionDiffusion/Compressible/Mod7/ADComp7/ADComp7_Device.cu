@@ -55,7 +55,7 @@ extern "C" __global__ void LB_Kernel_AD_Comp_7(real diffusivity,
 				D.f[BS] = &DDStart[BS  *size_Mat];
 				D.f[BN] = &DDStart[BN  *size_Mat];
 				D.f[TS] = &DDStart[TS  *size_Mat];
-				D.f[dirREST] = &DDStart[dirREST*size_Mat];
+				D.f[REST] = &DDStart[REST*size_Mat];
 				D.f[TNE] = &DDStart[TNE *size_Mat];
 				D.f[TSW] = &DDStart[TSW *size_Mat];
 				D.f[TSE] = &DDStart[TSE *size_Mat];
@@ -85,7 +85,7 @@ extern "C" __global__ void LB_Kernel_AD_Comp_7(real diffusivity,
 				D.f[TN] = &DDStart[BS  *size_Mat];
 				D.f[TS] = &DDStart[BN  *size_Mat];
 				D.f[BN] = &DDStart[TS  *size_Mat];
-				D.f[dirREST] = &DDStart[dirREST*size_Mat];
+				D.f[REST] = &DDStart[REST*size_Mat];
 				D.f[BSW] = &DDStart[TNE *size_Mat];
 				D.f[BNE] = &DDStart[TSW *size_Mat];
 				D.f[BNW] = &DDStart[TSE *size_Mat];
@@ -146,7 +146,7 @@ extern "C" __global__ void LB_Kernel_AD_Comp_7(real diffusivity,
 			real fTN = (D.f[BS])[kbs];
 			real fTS = (D.f[BN])[kb];//kbn
 			real fBN = (D.f[TS])[ks];//kts
-			real fZERO = (D.f[dirREST])[k];//kzero
+			real fZERO = (D.f[REST])[k];//kzero
 			real fBSW = (D.f[TNE])[k];//ktne
 			real fBNE = (D.f[TSW])[ksw];//ktsw
 			real fBNW = (D.f[TSE])[ks];//ktse
@@ -173,7 +173,7 @@ extern "C" __global__ void LB_Kernel_AD_Comp_7(real diffusivity,
 										   //real fBS   =  (D.f[BS  ])[kbs];
 										   //real fBN   =  (D.f[BN  ])[kb ];//kbn
 										   //real fTS   =  (D.f[TS  ])[ks ];//kts
-										   //real fZERO =  (D.f[dirREST])[k  ];//kzero
+										   //real fZERO =  (D.f[REST])[k  ];//kzero
 										   //real fTNE   = (D.f[TNE ])[k  ];//ktne
 										   //real fTSW   = (D.f[TSW ])[ksw];//ktsw
 										   //real fTSE   = (D.f[TSE ])[ks ];//ktse

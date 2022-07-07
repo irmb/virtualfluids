@@ -266,7 +266,7 @@ extern "C" __global__ void MoveParticles( real* coordX,
 			  fbsC   = &DD[BS  *size_Mat];
 			  fbnC   = &DD[BN  *size_Mat];
 			  ftsC   = &DD[TS  *size_Mat];
-			  fzeroC = &DD[dirREST*size_Mat];
+			  fzeroC = &DD[REST*size_Mat];
 			  ftneC  = &DD[TNE *size_Mat];
 			  ftswC  = &DD[TSW *size_Mat];
 			  ftseC  = &DD[TSE *size_Mat];
@@ -296,7 +296,7 @@ extern "C" __global__ void MoveParticles( real* coordX,
 			  ftnC   = &DD[BS  *size_Mat];
 			  ftsC   = &DD[BN  *size_Mat];
 			  fbnC   = &DD[TS  *size_Mat];
-			  fzeroC = &DD[dirREST*size_Mat];
+			  fzeroC = &DD[REST*size_Mat];
 			  fbswC  = &DD[TNE *size_Mat];
 			  fbneC  = &DD[TSW *size_Mat];
 			  fbnwC  = &DD[TSE *size_Mat];
@@ -1132,7 +1132,7 @@ extern "C" __global__ void MoveParticlesWithoutBCs(   real* coordX,
 			  fbsC   = &DD[BS  *size_Mat];
 			  fbnC   = &DD[BN  *size_Mat];
 			  ftsC   = &DD[TS  *size_Mat];
-			  fzeroC = &DD[dirREST*size_Mat];
+			  fzeroC = &DD[REST*size_Mat];
 			  ftneC  = &DD[TNE *size_Mat];
 			  ftswC  = &DD[TSW *size_Mat];
 			  ftseC  = &DD[TSE *size_Mat];
@@ -1162,7 +1162,7 @@ extern "C" __global__ void MoveParticlesWithoutBCs(   real* coordX,
 			  ftnC   = &DD[BS  *size_Mat];
 			  ftsC   = &DD[BN  *size_Mat];
 			  fbnC   = &DD[TS  *size_Mat];
-			  fzeroC = &DD[dirREST*size_Mat];
+			  fzeroC = &DD[REST*size_Mat];
 			  fbswC  = &DD[TNE *size_Mat];
 			  fbneC  = &DD[TSW *size_Mat];
 			  fbnwC  = &DD[TSE *size_Mat];
@@ -1955,7 +1955,7 @@ extern "C" __global__ void ParticleNoSlipDeviceComp27(real* coordX,
    //   D.f[BS  ] = &DD[BS  *size_Mat];
    //   D.f[BN  ] = &DD[BN  *size_Mat];
    //   D.f[TS  ] = &DD[TS  *size_Mat];
-   //   D.f[dirREST] = &DD[dirREST*size_Mat];
+   //   D.f[REST] = &DD[REST*size_Mat];
    //   D.f[TNE ] = &DD[TNE *size_Mat];
    //   D.f[TSW ] = &DD[TSW *size_Mat];
    //   D.f[TSE ] = &DD[TSE *size_Mat];
@@ -1985,7 +1985,7 @@ extern "C" __global__ void ParticleNoSlipDeviceComp27(real* coordX,
    //   D.f[TN  ] = &DD[BS  *size_Mat];
    //   D.f[TS  ] = &DD[BN  *size_Mat];
    //   D.f[BN  ] = &DD[TS  *size_Mat];
-   //   D.f[dirREST] = &DD[dirREST*size_Mat];
+   //   D.f[REST] = &DD[REST*size_Mat];
    //   D.f[TNE ] = &DD[BSW *size_Mat];
    //   D.f[TSW ] = &DD[BNE *size_Mat];
    //   D.f[TSE ] = &DD[BNW *size_Mat];
@@ -2221,7 +2221,7 @@ extern "C" __global__ void ParticleNoSlipDeviceComp27(real* coordX,
    //   real vx1, vx2, vx3, drho;
    //   drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
    //             f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-   //             f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirREST])[kzero]); 
+   //             f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[REST])[kzero]); 
 
    //   vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
    //             ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -2259,7 +2259,7 @@ extern "C" __global__ void ParticleNoSlipDeviceComp27(real* coordX,
    //      D.f[BS  ] = &DD[BS  *size_Mat];
    //      D.f[BN  ] = &DD[BN  *size_Mat];
    //      D.f[TS  ] = &DD[TS  *size_Mat];
-   //      D.f[dirREST] = &DD[dirREST*size_Mat];
+   //      D.f[REST] = &DD[REST*size_Mat];
    //      D.f[TNE ] = &DD[TNE *size_Mat];
    //      D.f[TSW ] = &DD[TSW *size_Mat];
    //      D.f[TSE ] = &DD[TSE *size_Mat];
@@ -2289,7 +2289,7 @@ extern "C" __global__ void ParticleNoSlipDeviceComp27(real* coordX,
    //      D.f[TN  ] = &DD[BS  *size_Mat];
    //      D.f[TS  ] = &DD[BN  *size_Mat];
    //      D.f[BN  ] = &DD[TS  *size_Mat];
-   //      D.f[dirREST] = &DD[dirREST*size_Mat];
+   //      D.f[REST] = &DD[REST*size_Mat];
    //      D.f[TNE ] = &DD[BSW *size_Mat];
    //      D.f[TSW ] = &DD[BNE *size_Mat];
    //      D.f[TSE ] = &DD[BNW *size_Mat];

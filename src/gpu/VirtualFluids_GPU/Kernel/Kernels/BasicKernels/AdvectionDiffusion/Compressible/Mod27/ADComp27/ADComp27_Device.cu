@@ -55,7 +55,7 @@ extern "C" __global__ void LB_KERNEL_AD_COMP_27(real diffusivity,
 				D.f[BS] = &DDStart[BS  *size_Mat];
 				D.f[BN] = &DDStart[BN  *size_Mat];
 				D.f[TS] = &DDStart[TS  *size_Mat];
-				D.f[dirREST] = &DDStart[dirREST*size_Mat];
+				D.f[REST] = &DDStart[REST*size_Mat];
 				D.f[TNE] = &DDStart[TNE *size_Mat];
 				D.f[TSW] = &DDStart[TSW *size_Mat];
 				D.f[TSE] = &DDStart[TSE *size_Mat];
@@ -85,7 +85,7 @@ extern "C" __global__ void LB_KERNEL_AD_COMP_27(real diffusivity,
 				D.f[TN] = &DDStart[BS  *size_Mat];
 				D.f[TS] = &DDStart[BN  *size_Mat];
 				D.f[BN] = &DDStart[TS  *size_Mat];
-				D.f[dirREST] = &DDStart[dirREST*size_Mat];
+				D.f[REST] = &DDStart[REST*size_Mat];
 				D.f[BSW] = &DDStart[TNE *size_Mat];
 				D.f[BNE] = &DDStart[TSW *size_Mat];
 				D.f[BNW] = &DDStart[TSE *size_Mat];
@@ -117,7 +117,7 @@ extern "C" __global__ void LB_KERNEL_AD_COMP_27(real diffusivity,
 				D27.f[BS] = &DD27[BS  *size_Mat];
 				D27.f[BN] = &DD27[BN  *size_Mat];
 				D27.f[TS] = &DD27[TS  *size_Mat];
-				D27.f[dirREST] = &DD27[dirREST*size_Mat];
+				D27.f[REST] = &DD27[REST*size_Mat];
 				D27.f[TNE] = &DD27[TNE *size_Mat];
 				D27.f[TSW] = &DD27[TSW *size_Mat];
 				D27.f[TSE] = &DD27[TSE *size_Mat];
@@ -147,7 +147,7 @@ extern "C" __global__ void LB_KERNEL_AD_COMP_27(real diffusivity,
 				D27.f[TN] = &DD27[BS  *size_Mat];
 				D27.f[TS] = &DD27[BN  *size_Mat];
 				D27.f[BN] = &DD27[TS  *size_Mat];
-				D27.f[dirREST] = &DD27[dirREST*size_Mat];
+				D27.f[REST] = &DD27[REST*size_Mat];
 				D27.f[BSW] = &DD27[TNE *size_Mat];
 				D27.f[BNE] = &DD27[TSW *size_Mat];
 				D27.f[BNW] = &DD27[TSE *size_Mat];
@@ -186,7 +186,7 @@ extern "C" __global__ void LB_KERNEL_AD_COMP_27(real diffusivity,
 			real fTN = (D.f[BS])[kbs];
 			real fTS = (D.f[BN])[kb];//kbn
 			real fBN = (D.f[TS])[ks];//kts
-			real fZERO = (D.f[dirREST])[k];//kzero
+			real fZERO = (D.f[REST])[k];//kzero
 			real fBSW = (D.f[TNE])[k];//ktne
 			real fBNE = (D.f[TSW])[ksw];//ktsw
 			real fBNW = (D.f[TSE])[ks];//ktse
@@ -214,7 +214,7 @@ extern "C" __global__ void LB_KERNEL_AD_COMP_27(real diffusivity,
 			real mfbaa = (D27.f[BS])[kbs];
 			real mfbca = (D27.f[BN])[kb];
 			real mfbac = (D27.f[TS])[ks];
-			real mfbbb = (D27.f[dirREST])[k];
+			real mfbbb = (D27.f[REST])[k];
 			real mfccc = (D27.f[TNE])[k];
 			real mfaac = (D27.f[TSW])[ksw];
 			real mfcac = (D27.f[TSE])[ks];
@@ -790,7 +790,7 @@ extern "C" __global__ void LB_KERNEL_AD_COMP_27(real diffusivity,
 			(D27.f[BS])[kbs] = mfbcc;
 			(D27.f[BN])[kb] = mfbac;
 			(D27.f[TS])[ks] = mfbca;
-			(D27.f[dirREST])[k] = mfbbb;
+			(D27.f[REST])[k] = mfbbb;
 			(D27.f[TNE])[k] = mfaaa;
 			(D27.f[TSE])[ks] = mfaca;
 			(D27.f[BNE])[kb] = mfaac;

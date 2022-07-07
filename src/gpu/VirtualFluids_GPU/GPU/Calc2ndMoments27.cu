@@ -41,7 +41,7 @@ extern "C" __global__ void LBCalc2ndMomentsIncompSP27(  real* kxyFromfcNEQ,
       D.f[BS  ] = &DD[BS  *size_Mat];
       D.f[BN  ] = &DD[BN  *size_Mat];
       D.f[TS  ] = &DD[TS  *size_Mat];
-      D.f[dirREST] = &DD[dirREST*size_Mat];
+      D.f[REST] = &DD[REST*size_Mat];
       D.f[TNE ] = &DD[TNE *size_Mat];
       D.f[TSW ] = &DD[TSW *size_Mat];
       D.f[TSE ] = &DD[TSE *size_Mat];
@@ -71,7 +71,7 @@ extern "C" __global__ void LBCalc2ndMomentsIncompSP27(  real* kxyFromfcNEQ,
       D.f[TN  ] = &DD[BS  *size_Mat];
       D.f[TS  ] = &DD[BN  *size_Mat];
       D.f[BN  ] = &DD[TS  *size_Mat];
-      D.f[dirREST] = &DD[dirREST*size_Mat];
+      D.f[REST] = &DD[REST*size_Mat];
       D.f[TNE ] = &DD[BSW *size_Mat];
       D.f[TSW ] = &DD[BNE *size_Mat];
       D.f[TSE ] = &DD[BNW *size_Mat];
@@ -143,7 +143,7 @@ extern "C" __global__ void LBCalc2ndMomentsIncompSP27(  real* kxyFromfcNEQ,
 	  f_BS   = (D.f[BS  ])[kbs  ];
 	  f_BN   = (D.f[BN  ])[kbn  ];
 	  f_TS   = (D.f[TS  ])[kts  ];
-	  //f_ZERO = (D.f[dirREST])[kzero];
+	  //f_ZERO = (D.f[REST])[kzero];
 	  f_TNE  = (D.f[TNE ])[ktne ];
 	  f_TSW  = (D.f[TSW ])[ktsw ];
 	  f_TSE  = (D.f[TSE ])[ktse ];
@@ -240,7 +240,7 @@ extern "C" __global__ void LBCalc2ndMomentsCompSP27(real* kxyFromfcNEQ,
       D.f[BS  ] = &DD[BS  *size_Mat];
       D.f[BN  ] = &DD[BN  *size_Mat];
       D.f[TS  ] = &DD[TS  *size_Mat];
-      D.f[dirREST] = &DD[dirREST*size_Mat];
+      D.f[REST] = &DD[REST*size_Mat];
       D.f[TNE ] = &DD[TNE *size_Mat];
       D.f[TSW ] = &DD[TSW *size_Mat];
       D.f[TSE ] = &DD[TSE *size_Mat];
@@ -270,7 +270,7 @@ extern "C" __global__ void LBCalc2ndMomentsCompSP27(real* kxyFromfcNEQ,
       D.f[TN  ] = &DD[BS  *size_Mat];
       D.f[TS  ] = &DD[BN  *size_Mat];
       D.f[BN  ] = &DD[TS  *size_Mat];
-      D.f[dirREST] = &DD[dirREST*size_Mat];
+      D.f[REST] = &DD[REST*size_Mat];
       D.f[TNE ] = &DD[BSW *size_Mat];
       D.f[TSW ] = &DD[BNE *size_Mat];
       D.f[TSE ] = &DD[BNW *size_Mat];
@@ -343,7 +343,7 @@ extern "C" __global__ void LBCalc2ndMomentsCompSP27(real* kxyFromfcNEQ,
 	  f_BS   = (D.f[BS  ])[kbs  ];
 	  f_BN   = (D.f[BN  ])[kbn  ];
 	  f_TS   = (D.f[TS  ])[kts  ];
-	  f_ZERO = (D.f[dirREST])[kzero];
+	  f_ZERO = (D.f[REST])[kzero];
 	  f_TNE  = (D.f[TNE ])[ktne ];
 	  f_TSW  = (D.f[TSW ])[ktsw ];
 	  f_TSE  = (D.f[TSE ])[ktse ];
@@ -466,7 +466,7 @@ extern "C" __global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
 				D.f[BS  ] = &DDStart[BS  *size_Mat];
 				D.f[BN  ] = &DDStart[BN  *size_Mat];
 				D.f[TS  ] = &DDStart[TS  *size_Mat];
-				D.f[dirREST] = &DDStart[dirREST*size_Mat];
+				D.f[REST] = &DDStart[REST*size_Mat];
 				D.f[TNE ] = &DDStart[TNE *size_Mat];
 				D.f[TSW ] = &DDStart[TSW *size_Mat];
 				D.f[TSE ] = &DDStart[TSE *size_Mat];
@@ -496,7 +496,7 @@ extern "C" __global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
 				D.f[TN  ] = &DDStart[BS  *size_Mat];
 				D.f[TS  ] = &DDStart[BN  *size_Mat];
 				D.f[BN  ] = &DDStart[TS  *size_Mat];
-				D.f[dirREST] = &DDStart[dirREST*size_Mat];
+				D.f[REST] = &DDStart[REST*size_Mat];
 				D.f[BSW ] = &DDStart[TNE *size_Mat];
 				D.f[BNE ] = &DDStart[TSW *size_Mat];
 				D.f[BNW ] = &DDStart[TSE *size_Mat];
@@ -535,7 +535,7 @@ extern "C" __global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
 			real mfbaa = (D.f[BS  ])[kbs];
 			real mfbca = (D.f[BN  ])[kb ];
 			real mfbac = (D.f[TS  ])[ks ];
-			real mfbbb = (D.f[dirREST])[k  ];
+			real mfbbb = (D.f[REST])[k  ];
 			real mfccc = (D.f[TNE ])[k  ];
 			real mfaac = (D.f[TSW ])[ksw];
 			real mfcac = (D.f[TSE ])[ks ];
@@ -900,7 +900,7 @@ extern "C" __global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
 				D.f[BS  ] = &DDStart[BS  *size_Mat];
 				D.f[BN  ] = &DDStart[BN  *size_Mat];
 				D.f[TS  ] = &DDStart[TS  *size_Mat];
-				D.f[dirREST] = &DDStart[dirREST*size_Mat];
+				D.f[REST] = &DDStart[REST*size_Mat];
 				D.f[TNE ] = &DDStart[TNE *size_Mat];
 				D.f[TSW ] = &DDStart[TSW *size_Mat];
 				D.f[TSE ] = &DDStart[TSE *size_Mat];
@@ -930,7 +930,7 @@ extern "C" __global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
 				D.f[TN  ] = &DDStart[BS  *size_Mat];
 				D.f[TS  ] = &DDStart[BN  *size_Mat];
 				D.f[BN  ] = &DDStart[TS  *size_Mat];
-				D.f[dirREST] = &DDStart[dirREST*size_Mat];
+				D.f[REST] = &DDStart[REST*size_Mat];
 				D.f[BSW ] = &DDStart[TNE *size_Mat];
 				D.f[BNE ] = &DDStart[TSW *size_Mat];
 				D.f[BNW ] = &DDStart[TSE *size_Mat];
@@ -969,7 +969,7 @@ extern "C" __global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
 			real mfbaa = (D.f[BS  ])[kbs];
 			real mfbca = (D.f[BN  ])[kb ];
 			real mfbac = (D.f[TS  ])[ks ];
-			real mfbbb = (D.f[dirREST])[k  ];
+			real mfbbb = (D.f[REST])[k  ];
 			real mfccc = (D.f[TNE ])[k  ];
 			real mfaac = (D.f[TSW ])[ksw];
 			real mfcac = (D.f[TSE ])[ks ];
@@ -1341,7 +1341,7 @@ extern "C" __global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
 				D.f[BS  ] = &DDStart[BS  *size_Mat];
 				D.f[BN  ] = &DDStart[BN  *size_Mat];
 				D.f[TS  ] = &DDStart[TS  *size_Mat];
-				D.f[dirREST] = &DDStart[dirREST*size_Mat];
+				D.f[REST] = &DDStart[REST*size_Mat];
 				D.f[TNE ] = &DDStart[TNE *size_Mat];
 				D.f[TSW ] = &DDStart[TSW *size_Mat];
 				D.f[TSE ] = &DDStart[TSE *size_Mat];
@@ -1371,7 +1371,7 @@ extern "C" __global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
 				D.f[TN  ] = &DDStart[BS  *size_Mat];
 				D.f[TS  ] = &DDStart[BN  *size_Mat];
 				D.f[BN  ] = &DDStart[TS  *size_Mat];
-				D.f[dirREST] = &DDStart[dirREST*size_Mat];
+				D.f[REST] = &DDStart[REST*size_Mat];
 				D.f[BSW ] = &DDStart[TNE *size_Mat];
 				D.f[BNE ] = &DDStart[TSW *size_Mat];
 				D.f[BNW ] = &DDStart[TSE *size_Mat];
@@ -1410,7 +1410,7 @@ extern "C" __global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
 			real mfbaa = (D.f[BS  ])[kbs];
 			real mfbca = (D.f[BN  ])[kb ];
 			real mfbac = (D.f[TS  ])[ks ];
-			real mfbbb = (D.f[dirREST])[k  ];
+			real mfbbb = (D.f[REST])[k  ];
 			real mfccc = (D.f[TNE ])[k  ];
 			real mfaac = (D.f[TSW ])[ksw];
 			real mfcac = (D.f[TSE ])[ks ];
@@ -1795,7 +1795,7 @@ extern "C" __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
 				D.f[BS  ] = &DDStart[BS  *size_Mat];
 				D.f[BN  ] = &DDStart[BN  *size_Mat];
 				D.f[TS  ] = &DDStart[TS  *size_Mat];
-				D.f[dirREST] = &DDStart[dirREST*size_Mat];
+				D.f[REST] = &DDStart[REST*size_Mat];
 				D.f[TNE ] = &DDStart[TNE *size_Mat];
 				D.f[TSW ] = &DDStart[TSW *size_Mat];
 				D.f[TSE ] = &DDStart[TSE *size_Mat];
@@ -1825,7 +1825,7 @@ extern "C" __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
 				D.f[TN  ] = &DDStart[BS  *size_Mat];
 				D.f[TS  ] = &DDStart[BN  *size_Mat];
 				D.f[BN  ] = &DDStart[TS  *size_Mat];
-				D.f[dirREST] = &DDStart[dirREST*size_Mat];
+				D.f[REST] = &DDStart[REST*size_Mat];
 				D.f[BSW ] = &DDStart[TNE *size_Mat];
 				D.f[BNE ] = &DDStart[TSW *size_Mat];
 				D.f[BNW ] = &DDStart[TSE *size_Mat];
@@ -1864,7 +1864,7 @@ extern "C" __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
 			real mfbaa = (D.f[BS  ])[kbs];
 			real mfbca = (D.f[BN  ])[kb ];
 			real mfbac = (D.f[TS  ])[ks ];
-			real mfbbb = (D.f[dirREST])[k  ];
+			real mfbbb = (D.f[REST])[k  ];
 			real mfccc = (D.f[TNE ])[k  ];
 			real mfaac = (D.f[TSW ])[ksw];
 			real mfcac = (D.f[TSE ])[ks ];

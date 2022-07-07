@@ -93,7 +93,7 @@ extern "C" __global__ void CalcConc27(
          distAD.f[BS  ] = &distributionsAD[BS  *size_Mat];
          distAD.f[BN  ] = &distributionsAD[BN  *size_Mat];
          distAD.f[TS  ] = &distributionsAD[TS  *size_Mat];
-         distAD.f[dirREST] = &distributionsAD[dirREST*size_Mat];
+         distAD.f[REST] = &distributionsAD[REST*size_Mat];
          distAD.f[TNE ] = &distributionsAD[TNE *size_Mat];
          distAD.f[TSW ] = &distributionsAD[TSW *size_Mat];
          distAD.f[TSE ] = &distributionsAD[TSE *size_Mat];
@@ -123,7 +123,7 @@ extern "C" __global__ void CalcConc27(
          distAD.f[TN  ] = &distributionsAD[BS  *size_Mat];
          distAD.f[TS  ] = &distributionsAD[BN  *size_Mat];
          distAD.f[BN  ] = &distributionsAD[TS  *size_Mat];
-         distAD.f[dirREST] = &distributionsAD[dirREST*size_Mat];
+         distAD.f[REST] = &distributionsAD[REST*size_Mat];
          distAD.f[TNE ] = &distributionsAD[BSW *size_Mat];
          distAD.f[TSW ] = &distributionsAD[BNE *size_Mat];
          distAD.f[TSE ] = &distributionsAD[BNW *size_Mat];
@@ -183,7 +183,7 @@ extern "C" __global__ void CalcConc27(
 	  real mfbaa = (distAD.f[BS  ])[kbs ];
 	  real mfbca = (distAD.f[BN  ])[kbn ];
 	  real mfbac = (distAD.f[TS  ])[kts ];
-	  real mfbbb = (distAD.f[dirREST])[k   ];
+	  real mfbbb = (distAD.f[REST])[k   ];
 	  real mfccc = (distAD.f[TNE ])[ktne];
 	  real mfaac = (distAD.f[TSW ])[ktsw];
 	  real mfcac = (distAD.f[TSE ])[ktse];
@@ -344,7 +344,7 @@ extern "C" __global__ void CalcConc7( real* Conc,
 //       D27.f[BS  ] = &DD27[BS  *size_Mat];
 //       D27.f[BN  ] = &DD27[BN  *size_Mat];
 //       D27.f[TS  ] = &DD27[TS  *size_Mat];
-//       D27.f[dirREST] = &DD27[dirREST*size_Mat];
+//       D27.f[REST] = &DD27[REST*size_Mat];
 //       D27.f[TNE ] = &DD27[TNE *size_Mat];
 //       D27.f[TSW ] = &DD27[TSW *size_Mat];
 //       D27.f[TSE ] = &DD27[TSE *size_Mat];
@@ -374,7 +374,7 @@ extern "C" __global__ void CalcConc7( real* Conc,
 //       D27.f[TN  ] = &DD27[BS  *size_Mat];
 //       D27.f[TS  ] = &DD27[BN  *size_Mat];
 //       D27.f[BN  ] = &DD27[TS  *size_Mat];
-//       D27.f[dirREST] = &DD27[dirREST*size_Mat];
+//       D27.f[REST] = &DD27[REST*size_Mat];
 //       D27.f[BSW ] = &DD27[TNE *size_Mat];
 //       D27.f[BNE ] = &DD27[TSW *size_Mat];
 //       D27.f[BNW ] = &DD27[TSE *size_Mat];
@@ -440,7 +440,7 @@ extern "C" __global__ void CalcConc7( real* Conc,
 //                         (D27.f[BE  ])[kbe ]+ (D27.f[TW  ])[ktw ]+
 //                         (D27.f[TN  ])[ktn ]+ (D27.f[BS  ])[kbs ]+
 //                         (D27.f[BN  ])[kbn ]+ (D27.f[TS  ])[kts ]+
-//                         (D27.f[dirREST])[kzero]+ 
+//                         (D27.f[REST])[kzero]+ 
 //                         (D27.f[TNE ])[ktne]+ (D27.f[TSW ])[ktsw]+
 //                         (D27.f[TSE ])[ktse]+ (D27.f[TNW ])[ktnw]+
 //                         (D27.f[BNE ])[kbne]+ (D27.f[BSW ])[kbsw]+
@@ -605,7 +605,7 @@ extern "C" __global__ void GetPlaneConc27(real* Conc,
       D27.f[BS  ] = &DD27[BS  *size_Mat];
       D27.f[BN  ] = &DD27[BN  *size_Mat];
       D27.f[TS  ] = &DD27[TS  *size_Mat];
-      D27.f[dirREST] = &DD27[dirREST*size_Mat];
+      D27.f[REST] = &DD27[REST*size_Mat];
       D27.f[TNE ] = &DD27[TNE *size_Mat];
       D27.f[TSW ] = &DD27[TSW *size_Mat];
       D27.f[TSE ] = &DD27[TSE *size_Mat];
@@ -635,7 +635,7 @@ extern "C" __global__ void GetPlaneConc27(real* Conc,
       D27.f[TN  ] = &DD27[BS  *size_Mat];
       D27.f[TS  ] = &DD27[BN  *size_Mat];
       D27.f[BN  ] = &DD27[TS  *size_Mat];
-      D27.f[dirREST] = &DD27[dirREST*size_Mat];
+      D27.f[REST] = &DD27[REST*size_Mat];
       D27.f[BSW ] = &DD27[TNE *size_Mat];
       D27.f[BNE ] = &DD27[TSW *size_Mat];
       D27.f[BNW ] = &DD27[TSE *size_Mat];
@@ -701,7 +701,7 @@ extern "C" __global__ void GetPlaneConc27(real* Conc,
                         (D27.f[BE  ])[kbe ]+ (D27.f[TW  ])[ktw ]+
                         (D27.f[TN  ])[ktn ]+ (D27.f[BS  ])[kbs ]+
                         (D27.f[BN  ])[kbn ]+ (D27.f[TS  ])[kts ]+
-                        (D27.f[dirREST])[kzero]+ 
+                        (D27.f[REST])[kzero]+ 
                         (D27.f[TNE ])[ktne]+ (D27.f[TSW ])[ktsw]+
                         (D27.f[TSE ])[ktse]+ (D27.f[TNW ])[ktnw]+
                         (D27.f[BNE ])[kbne]+ (D27.f[BSW ])[kbsw]+

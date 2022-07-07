@@ -35,7 +35,7 @@ __device__ __host__ DistributionReferences27 getDistributionReferences27(real *d
         distribution_references.f[BS]   = &distributions[BS * size_Mat];
         distribution_references.f[BN]   = &distributions[BN * size_Mat];
         distribution_references.f[TS]   = &distributions[TS * size_Mat];
-        distribution_references.f[dirREST] = &distributions[dirREST * size_Mat];
+        distribution_references.f[REST] = &distributions[REST * size_Mat];
         distribution_references.f[TNE]  = &distributions[TNE * size_Mat];
         distribution_references.f[TSW]  = &distributions[TSW * size_Mat];
         distribution_references.f[TSE]  = &distributions[TSE * size_Mat];
@@ -63,7 +63,7 @@ __device__ __host__ DistributionReferences27 getDistributionReferences27(real *d
         distribution_references.f[TN]   = &distributions[BS * size_Mat];
         distribution_references.f[TS]   = &distributions[BN * size_Mat];
         distribution_references.f[BN]   = &distributions[TS * size_Mat];
-        distribution_references.f[dirREST] = &distributions[dirREST * size_Mat];
+        distribution_references.f[REST] = &distributions[REST * size_Mat];
         distribution_references.f[BSW]  = &distributions[TNE * size_Mat];
         distribution_references.f[BNE]  = &distributions[TSW * size_Mat];
         distribution_references.f[BNW]  = &distributions[TSE * size_Mat];
@@ -112,7 +112,7 @@ __device__ void DistributionWrapper::read()
     distribution.f[vf::lbm::dir::MPM] = (distribution_references.f[BNW])[kbw];
     distribution.f[vf::lbm::dir::PMM] = (distribution_references.f[BSE])[kbs];
     distribution.f[vf::lbm::dir::MMM] = (distribution_references.f[BSW])[kbsw];
-    distribution.f[vf::lbm::dir::ZZZ] = (distribution_references.f[dirREST])[k];
+    distribution.f[vf::lbm::dir::ZZZ] = (distribution_references.f[REST])[k];
 }
 
 __device__ void DistributionWrapper::write()
@@ -143,7 +143,7 @@ __device__ void DistributionWrapper::write()
     (distribution_references.f[BNW])[kbw]  = distribution.f[vf::lbm::dir::MPM];
     (distribution_references.f[BSE])[kbs]  = distribution.f[vf::lbm::dir::PMM];
     (distribution_references.f[BSW])[kbsw] = distribution.f[vf::lbm::dir::MMM];
-    (distribution_references.f[dirREST])[k]   = distribution.f[vf::lbm::dir::ZZZ];
+    (distribution_references.f[REST])[k]   = distribution.f[vf::lbm::dir::ZZZ];
 }
 
 __device__ unsigned int getNodeIndex()

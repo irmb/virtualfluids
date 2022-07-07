@@ -95,7 +95,7 @@ extern "C" __global__ void InitAD27(
 			distAD.f[BS  ] = &distributionsAD[BS  *size_Mat];
 			distAD.f[BN  ] = &distributionsAD[BN  *size_Mat];
 			distAD.f[TS  ] = &distributionsAD[TS  *size_Mat];
-			distAD.f[dirREST] = &distributionsAD[dirREST*size_Mat];
+			distAD.f[REST] = &distributionsAD[REST*size_Mat];
 			distAD.f[TNE ] = &distributionsAD[TNE *size_Mat];
 			distAD.f[TSW ] = &distributionsAD[TSW *size_Mat];
 			distAD.f[TSE ] = &distributionsAD[TSE *size_Mat];
@@ -125,7 +125,7 @@ extern "C" __global__ void InitAD27(
 			distAD.f[TN  ] = &distributionsAD[BS  *size_Mat];
 			distAD.f[TS  ] = &distributionsAD[BN  *size_Mat];
 			distAD.f[BN  ] = &distributionsAD[TS  *size_Mat];
-			distAD.f[dirREST] = &distributionsAD[dirREST*size_Mat];
+			distAD.f[REST] = &distributionsAD[REST*size_Mat];
 			distAD.f[BSW ] = &distributionsAD[TNE *size_Mat];
 			distAD.f[BNE ] = &distributionsAD[TSW *size_Mat];
 			distAD.f[BNW ] = &distributionsAD[TSE *size_Mat];
@@ -177,7 +177,7 @@ extern "C" __global__ void InitAD27(
 		//!
 		real cu_sq = c3o2*(vx1*vx1 + vx2*vx2 + vx3*vx3);
 
-		(distAD.f[dirREST])[kzero] = c8o27  * conc * (c1o1 - cu_sq);
+		(distAD.f[REST])[kzero] = c8o27  * conc * (c1o1 - cu_sq);
 		(distAD.f[E   ])[ke   ] = c2o27  * conc * (c1o1 + c3o1 * ( vx1            ) + c9o2 * ( vx1            ) * ( vx1            ) - cu_sq);
 		(distAD.f[W   ])[kw   ] = c2o27  * conc * (c1o1 + c3o1 * (-vx1            ) + c9o2 * (-vx1            ) * (-vx1            ) - cu_sq);
 		(distAD.f[N   ])[kn   ] = c2o27  * conc * (c1o1 + c3o1 * (       vx2      ) + c9o2 * (       vx2      ) * (       vx2      ) - cu_sq);
@@ -281,7 +281,7 @@ extern "C" __global__ void InitAD27(
 //             D27.f[BS  ] = &DD27[BS  *size_Mat];
 //             D27.f[BN  ] = &DD27[BN  *size_Mat];
 //             D27.f[TS  ] = &DD27[TS  *size_Mat];
-//             D27.f[dirREST] = &DD27[dirREST*size_Mat];
+//             D27.f[REST] = &DD27[REST*size_Mat];
 //             D27.f[TNE ] = &DD27[TNE *size_Mat];
 //             D27.f[TSW ] = &DD27[TSW *size_Mat];
 //             D27.f[TSE ] = &DD27[TSE *size_Mat];
@@ -311,7 +311,7 @@ extern "C" __global__ void InitAD27(
 //             D27.f[TN  ] = &DD27[BS  *size_Mat];
 //             D27.f[TS  ] = &DD27[BN  *size_Mat];
 //             D27.f[BN  ] = &DD27[TS  *size_Mat];
-//             D27.f[dirREST] = &DD27[dirREST*size_Mat];
+//             D27.f[REST] = &DD27[REST*size_Mat];
 //             D27.f[BSW ] = &DD27[TNE *size_Mat];
 //             D27.f[BNE ] = &DD27[TSW *size_Mat];
 //             D27.f[BNW ] = &DD27[TSE *size_Mat];
@@ -390,7 +390,7 @@ extern "C" __global__ void InitAD27(
 //          ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //          real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
-//          (D27.f[dirREST])[kzero] =   c8o27* ConcD*(c1o1-cu_sq);
+//          (D27.f[REST])[kzero] =   c8o27* ConcD*(c1o1-cu_sq);
 //          (D27.f[E   ])[ke   ] =   c2o27* ConcD*(c1o1+c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq);
 //          (D27.f[W   ])[kw   ] =   c2o27* ConcD*(c1o1+c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq);
 //          (D27.f[N   ])[kn   ] =   c2o27* ConcD*(c1o1+c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cu_sq);

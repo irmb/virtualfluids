@@ -1,11 +1,7 @@
 #ifndef LBM_D3Q27_H
 #define LBM_D3Q27_H
 
-namespace vf
-{
-namespace lbm
-{
-namespace dir
+namespace vf::lbm::dir
 {
 
 static constexpr int E    = 0;
@@ -65,7 +61,4 @@ static constexpr int MMM = 25;
 static constexpr int ZZZ = 26;
 
 }
-}
-}
-
 #endif

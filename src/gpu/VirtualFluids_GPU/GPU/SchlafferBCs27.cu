@@ -88,7 +88,7 @@ extern "C" __global__ void PressSchlaff27(real* rhoBC,
          D.f[BS  ] = &DD[BS  *size_Mat];
          D.f[BN  ] = &DD[BN  *size_Mat];
          D.f[TS  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[TNE *size_Mat];
          D.f[TSW ] = &DD[TSW *size_Mat];
          D.f[TSE ] = &DD[TSE *size_Mat];
@@ -118,7 +118,7 @@ extern "C" __global__ void PressSchlaff27(real* rhoBC,
          D.f[TN  ] = &DD[BS  *size_Mat];
          D.f[TS  ] = &DD[BN  *size_Mat];
          D.f[BN  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[BSW *size_Mat];
          D.f[TSW ] = &DD[BNE *size_Mat];
          D.f[TSE ] = &DD[BNW *size_Mat];
@@ -149,7 +149,7 @@ extern "C" __global__ void PressSchlaff27(real* rhoBC,
       f1_BS   = (D.f[BS  ])[kbs  ];
       f1_BN   = (D.f[BN  ])[kbn  ];
       f1_TS   = (D.f[TS  ])[kts  ];
-      f1_ZERO = (D.f[dirREST])[kzero];
+      f1_ZERO = (D.f[REST])[kzero];
       f1_TNE  = (D.f[TNE ])[ktne ];
       f1_TSW  = (D.f[TSW ])[ktsw ];
       f1_TSE  = (D.f[TSE ])[ktse ];
@@ -352,7 +352,7 @@ extern "C" __global__ void VelSchlaff27(  int t,
          D.f[BS  ] = &DD[BS  *size_Mat];
          D.f[BN  ] = &DD[BN  *size_Mat];
          D.f[TS  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[TNE *size_Mat];
          D.f[TSW ] = &DD[TSW *size_Mat];
          D.f[TSE ] = &DD[TSE *size_Mat];
@@ -382,7 +382,7 @@ extern "C" __global__ void VelSchlaff27(  int t,
          D.f[TN  ] = &DD[BS  *size_Mat];
          D.f[TS  ] = &DD[BN  *size_Mat];
          D.f[BN  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[BSW *size_Mat];
          D.f[TSW ] = &DD[BNE *size_Mat];
          D.f[TSE ] = &DD[BNW *size_Mat];
@@ -414,7 +414,7 @@ extern "C" __global__ void VelSchlaff27(  int t,
       f1_BS   = (D.f[BS  ])[kbs  ];
       f1_BN   = (D.f[BN  ])[kbn  ];
       f1_TS   = (D.f[TS  ])[kts  ];
-      f1_ZERO = (D.f[dirREST])[kzero];
+      f1_ZERO = (D.f[REST])[kzero];
       f1_TNE  = (D.f[TNE ])[ktne ];
       f1_TSW  = (D.f[TSW ])[ktsw ];
       f1_TSE  = (D.f[TSE ])[ktse ];
@@ -441,7 +441,7 @@ extern "C" __global__ void VelSchlaff27(  int t,
       //f1_TN   = (D.f[BS  ])[kbs  ];
       //f1_TS   = (D.f[BN  ])[kbn  ];
       //f1_BN   = (D.f[TS  ])[kts  ];
-      //f1_ZERO = (D.f[dirREST])[kzero];
+      //f1_ZERO = (D.f[REST])[kzero];
       //f1_BSW  = (D.f[TNE ])[ktne ];
       //f1_BNE  = (D.f[TSW ])[ktsw ];
       //f1_BNW  = (D.f[TSE ])[ktse ];
@@ -570,7 +570,7 @@ extern "C" __global__ void VelSchlaff27(  int t,
       //(D.f[BS  ])[kbs  ] = f1_TN  -c1over54*drho1;
       //(D.f[BN  ])[kbn  ] = f1_TS  -c1over54*drho1;
       //(D.f[TS  ])[kts  ] = f1_BN  -c1over54*drho1;
-      //(D.f[dirREST])[kzero] = f1_ZERO-c8over27*drho1;
+      //(D.f[REST])[kzero] = f1_ZERO-c8over27*drho1;
       //(D.f[TNE ])[ktne ] = f1_BSW -c1over216*drho1;
       //(D.f[TSW ])[ktsw ] = f1_BNE -c1over216*drho1;
       //(D.f[TSE ])[ktse ] = f1_BNW -c1over216*drho1;

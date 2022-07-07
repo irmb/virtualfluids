@@ -58,7 +58,7 @@ extern "C" __global__ void LB_Kernel_CumulantK17Comp(real omega,
 				D.f[BS] = &DDStart[BS  *size_Mat];
 				D.f[BN] = &DDStart[BN  *size_Mat];
 				D.f[TS] = &DDStart[TS  *size_Mat];
-				D.f[dirREST] = &DDStart[dirREST*size_Mat];
+				D.f[REST] = &DDStart[REST*size_Mat];
 				D.f[TNE] = &DDStart[TNE *size_Mat];
 				D.f[TSW] = &DDStart[TSW *size_Mat];
 				D.f[TSE] = &DDStart[TSE *size_Mat];
@@ -88,7 +88,7 @@ extern "C" __global__ void LB_Kernel_CumulantK17Comp(real omega,
 				D.f[TN] = &DDStart[BS  *size_Mat];
 				D.f[TS] = &DDStart[BN  *size_Mat];
 				D.f[BN] = &DDStart[TS  *size_Mat];
-				D.f[dirREST] = &DDStart[dirREST*size_Mat];
+				D.f[REST] = &DDStart[REST*size_Mat];
 				D.f[BSW] = &DDStart[TNE *size_Mat];
 				D.f[BNE] = &DDStart[TSW *size_Mat];
 				D.f[BNW] = &DDStart[TSE *size_Mat];
@@ -175,7 +175,7 @@ extern "C" __global__ void LB_Kernel_CumulantK17Comp(real omega,
 			real mfbaa = (D.f[BS])[kbs];//[kbs  ];// +  c1over54 ;(D.f[BS  ])[kbs];
 			real mfbca = (D.f[BN])[kb];//[kbn  ];// +  c1over54 ;(D.f[BN  ])[kb ];//kbn
 			real mfbac = (D.f[TS])[ks];//[kts  ];// +  c1over54 ;(D.f[TS  ])[ks ];//kts
-			real mfbbb = (D.f[dirREST])[k];//[kzero];// +  c8over27 ;(D.f[dirREST])[k  ];//kzero
+			real mfbbb = (D.f[REST])[k];//[kzero];// +  c8over27 ;(D.f[REST])[k  ];//kzero
 			real mfccc = (D.f[TNE])[k];//[ktne ];// +  c1over216;(D.f[TNE ])[k  ];//ktne
 			real mfaac = (D.f[TSW])[ksw];//[ktsw ];// +  c1over216;(D.f[TSW ])[ksw];//ktsw
 			real mfcac = (D.f[TSE])[ks];//[ktse ];// +  c1over216;(D.f[TSE ])[ks ];//ktse
@@ -727,8 +727,8 @@ extern "C" __global__ void LB_Kernel_CumulantK17Comp(real omega,
 			//	wadjust    = O4+(one-O4)*abs(CUMcbb)/(abs(CUMcbb)+qudricLimit);
 			//CUMcbb    += wadjust * (-CUMcbb); 
 			//////////////////////////////////////////////////////////////////////////
-			real A = (c4o1 + c2o1*omega - c3o1*omega*omega) / (c2o1 - c7o1*omega + c5o1*omega*omega);
-			real B = (c4o1 + c28o1*omega - c14o1*omega*omega) / (c6o1 - c21o1*omega + c15o1*omega*omega);
+			real factorA = (c4o1 + c2o1*omega - c3o1*omega*omega) / (c2o1 - c7o1*omega + c5o1*omega*omega);
+			real factorB = (c4o1 + c28o1*omega - c14o1*omega*omega) / (c6o1 - c21o1*omega + c15o1*omega*omega);
 			//////////////////////////////////////////////////////////////////////////
 			//ohne limiter
 			//CUMacc += O4 * (-CUMacc); 
@@ -737,12 +737,12 @@ extern "C" __global__ void LB_Kernel_CumulantK17Comp(real omega,
 			//CUMbbc += O4 * (-CUMbbc); 
 			//CUMbcb += O4 * (-CUMbcb); 
 			//CUMcbb += O4 * (-CUMcbb); 
-			CUMacc = -O4*(c1o1 / omega - c1o2) * (dyuy + dzuz) * c2o3 * A + (c1o1 - O4) * (CUMacc);
-			CUMcac = -O4*(c1o1 / omega - c1o2) * (dxux + dzuz) * c2o3 * A + (c1o1 - O4) * (CUMcac);
-			CUMcca = -O4*(c1o1 / omega - c1o2) * (dyuy + dxux) * c2o3 * A + (c1o1 - O4) * (CUMcca);
-			CUMbbc = -O4*(c1o1 / omega - c1o2) * Dxy           * c1o3 * B + (c1o1 - O4) * (CUMbbc);
-			CUMbcb = -O4*(c1o1 / omega - c1o2) * Dxz           * c1o3 * B + (c1o1 - O4) * (CUMbcb);
-			CUMcbb = -O4*(c1o1 / omega - c1o2) * Dyz           * c1o3 * B + (c1o1 - O4) * (CUMcbb);
+			CUMacc = -O4*(c1o1 / omega - c1o2) * (dyuy + dzuz) * c2o3 * factorA + (c1o1 - O4) * (CUMacc);
+			CUMcac = -O4*(c1o1 / omega - c1o2) * (dxux + dzuz) * c2o3 * factorA + (c1o1 - O4) * (CUMcac);
+			CUMcca = -O4*(c1o1 / omega - c1o2) * (dyuy + dxux) * c2o3 * factorA + (c1o1 - O4) * (CUMcca);
+			CUMbbc = -O4*(c1o1 / omega - c1o2) * Dxy           * c1o3 * factorB + (c1o1 - O4) * (CUMbbc);
+			CUMbcb = -O4*(c1o1 / omega - c1o2) * Dxz           * c1o3 * factorB + (c1o1 - O4) * (CUMbcb);
+			CUMcbb = -O4*(c1o1 / omega - c1o2) * Dyz           * c1o3 * factorB + (c1o1 - O4) * (CUMcbb);
 			//////////////////////////////////////////////////////////////////////////
 
 
@@ -1024,7 +1024,7 @@ extern "C" __global__ void LB_Kernel_CumulantK17Comp(real omega,
 			(D.f[BS])[kbs] = mfbcc;//(D.f[ BS  ])[kbs  ] = mfbcc;// -  c1over54 ;	 (D.f[ BS  ])[kbs ]
 			(D.f[BN])[kb] = mfbac;//(D.f[ BN  ])[kbn  ] = mfbac;// -  c1over54 ;	 (D.f[ BN  ])[kb  ]
 			(D.f[TS])[ks] = mfbca;//(D.f[ TS  ])[kts  ] = mfbca;// -  c1over54 ;	 (D.f[ TS  ])[ks  ]
-			(D.f[dirREST])[k] = mfbbb;//(D.f[ dirREST])[kzero] = mfbbb;// -  c8over27 ;	 (D.f[ dirREST])[k   ]
+			(D.f[REST])[k] = mfbbb;//(D.f[ REST])[kzero] = mfbbb;// -  c8over27 ;	 (D.f[ REST])[k   ]
 			(D.f[TNE])[k] = mfaaa;//(D.f[ TNE ])[ktne ] = mfaaa;// -  c1over216;	 (D.f[ TNE ])[k   ]
 			(D.f[TSE])[ks] = mfaca;//(D.f[ TSE ])[ktse ] = mfaca;// -  c1over216;	 (D.f[ TSE ])[ks  ]
 			(D.f[BNE])[kb] = mfaac;//(D.f[ BNE ])[kbne ] = mfaac;// -  c1over216;	 (D.f[ BNE ])[kb  ]

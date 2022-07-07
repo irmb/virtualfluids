@@ -47,7 +47,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(
       D.f[BS  ] = &distributions[BS  *numberOfLBnodes];
       D.f[BN  ] = &distributions[BN  *numberOfLBnodes];
       D.f[TS  ] = &distributions[TS  *numberOfLBnodes];
-      D.f[dirREST] = &distributions[dirREST*numberOfLBnodes];
+      D.f[REST] = &distributions[REST*numberOfLBnodes];
       D.f[TNE ] = &distributions[TNE *numberOfLBnodes];
       D.f[TSW ] = &distributions[TSW *numberOfLBnodes];
       D.f[TSE ] = &distributions[TSE *numberOfLBnodes];
@@ -77,7 +77,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(
       D.f[TN  ] = &distributions[BS  *numberOfLBnodes];
       D.f[TS  ] = &distributions[BN  *numberOfLBnodes];
       D.f[BN  ] = &distributions[TS  *numberOfLBnodes];
-      D.f[dirREST] = &distributions[dirREST*numberOfLBnodes];
+      D.f[REST] = &distributions[REST*numberOfLBnodes];
       D.f[TNE ] = &distributions[BSW *numberOfLBnodes];
       D.f[TSW ] = &distributions[BNE *numberOfLBnodes];
       D.f[TSE ] = &distributions[BNW *numberOfLBnodes];
@@ -196,7 +196,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(
       real vx1, vx2, vx3, drho, feq, q, m3;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
 				f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-				f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirREST])[kzero]); 
+				f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[REST])[kzero]); 
 
       vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                 ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -234,7 +234,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(
          D.f[BS  ] = &distributions[BS  *numberOfLBnodes];
          D.f[BN  ] = &distributions[BN  *numberOfLBnodes];
          D.f[TS  ] = &distributions[TS  *numberOfLBnodes];
-         D.f[dirREST] = &distributions[dirREST*numberOfLBnodes];
+         D.f[REST] = &distributions[REST*numberOfLBnodes];
          D.f[TNE ] = &distributions[TNE *numberOfLBnodes];
          D.f[TSW ] = &distributions[TSW *numberOfLBnodes];
          D.f[TSE ] = &distributions[TSE *numberOfLBnodes];
@@ -264,7 +264,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(
          D.f[TN  ] = &distributions[BS  *numberOfLBnodes];
          D.f[TS  ] = &distributions[BN  *numberOfLBnodes];
          D.f[BN  ] = &distributions[TS  *numberOfLBnodes];
-         D.f[dirREST] = &distributions[dirREST*numberOfLBnodes];
+         D.f[REST] = &distributions[REST*numberOfLBnodes];
          D.f[TNE ] = &distributions[BSW *numberOfLBnodes];
          D.f[TSW ] = &distributions[BNE *numberOfLBnodes];
          D.f[TSE ] = &distributions[BNW *numberOfLBnodes];
@@ -276,7 +276,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(
       }
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //Test
-         //(D.f[dirREST])[k]=c1o10;
+         //(D.f[REST])[k]=c1o10;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  
 	  
@@ -593,7 +593,7 @@ extern "C" __global__ void QDeviceIncompHighNu27(int inx,
       D.f[BS  ] = &DD[BS  *size_Mat];
       D.f[BN  ] = &DD[BN  *size_Mat];
       D.f[TS  ] = &DD[TS  *size_Mat];
-      D.f[dirREST] = &DD[dirREST*size_Mat];
+      D.f[REST] = &DD[REST*size_Mat];
       D.f[TNE ] = &DD[TNE *size_Mat];
       D.f[TSW ] = &DD[TSW *size_Mat];
       D.f[TSE ] = &DD[TSE *size_Mat];
@@ -623,7 +623,7 @@ extern "C" __global__ void QDeviceIncompHighNu27(int inx,
       D.f[TN  ] = &DD[BS  *size_Mat];
       D.f[TS  ] = &DD[BN  *size_Mat];
       D.f[BN  ] = &DD[TS  *size_Mat];
-      D.f[dirREST] = &DD[dirREST*size_Mat];
+      D.f[REST] = &DD[REST*size_Mat];
       D.f[TNE ] = &DD[BSW *size_Mat];
       D.f[TSW ] = &DD[BNE *size_Mat];
       D.f[TSE ] = &DD[BNW *size_Mat];
@@ -742,7 +742,7 @@ extern "C" __global__ void QDeviceIncompHighNu27(int inx,
       real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
 				f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-				f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirREST])[kzero]); 
+				f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[REST])[kzero]); 
 
       vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                 ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -780,7 +780,7 @@ extern "C" __global__ void QDeviceIncompHighNu27(int inx,
          D.f[BS  ] = &DD[BS  *size_Mat];
          D.f[BN  ] = &DD[BN  *size_Mat];
          D.f[TS  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[TNE *size_Mat];
          D.f[TSW ] = &DD[TSW *size_Mat];
          D.f[TSE ] = &DD[TSE *size_Mat];
@@ -810,7 +810,7 @@ extern "C" __global__ void QDeviceIncompHighNu27(int inx,
          D.f[TN  ] = &DD[BS  *size_Mat];
          D.f[TS  ] = &DD[BN  *size_Mat];
          D.f[BN  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[BSW *size_Mat];
          D.f[TSW ] = &DD[BNE *size_Mat];
          D.f[TSE ] = &DD[BNW *size_Mat];
@@ -822,7 +822,7 @@ extern "C" __global__ void QDeviceIncompHighNu27(int inx,
       }
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //Test
-         //(D.f[dirREST])[k]=c1o10;
+         //(D.f[REST])[k]=c1o10;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       real VeloX = c0o1;
       real VeloY = c0o1;
@@ -1089,7 +1089,7 @@ extern "C" __global__ void QDeviceCompHighNu27(
       D.f[BS  ] = &DD[BS  *size_Mat];
       D.f[BN  ] = &DD[BN  *size_Mat];
       D.f[TS  ] = &DD[TS  *size_Mat];
-      D.f[dirREST] = &DD[dirREST*size_Mat];
+      D.f[REST] = &DD[REST*size_Mat];
       D.f[TNE ] = &DD[TNE *size_Mat];
       D.f[TSW ] = &DD[TSW *size_Mat];
       D.f[TSE ] = &DD[TSE *size_Mat];
@@ -1119,7 +1119,7 @@ extern "C" __global__ void QDeviceCompHighNu27(
       D.f[TN  ] = &DD[BS  *size_Mat];
       D.f[TS  ] = &DD[BN  *size_Mat];
       D.f[BN  ] = &DD[TS  *size_Mat];
-      D.f[dirREST] = &DD[dirREST*size_Mat];
+      D.f[REST] = &DD[REST*size_Mat];
       D.f[TNE ] = &DD[BSW *size_Mat];
       D.f[TSW ] = &DD[BNE *size_Mat];
       D.f[TSE ] = &DD[BNW *size_Mat];
@@ -1264,7 +1264,7 @@ extern "C" __global__ void QDeviceCompHighNu27(
       real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
 				f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-				f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirREST])[kzero]); 
+				f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[REST])[kzero]); 
 
       vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                 ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -1302,7 +1302,7 @@ extern "C" __global__ void QDeviceCompHighNu27(
          D.f[BS  ] = &DD[BS  *size_Mat];
          D.f[BN  ] = &DD[BN  *size_Mat];
          D.f[TS  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[TNE *size_Mat];
          D.f[TSW ] = &DD[TSW *size_Mat];
          D.f[TSE ] = &DD[TSE *size_Mat];
@@ -1332,7 +1332,7 @@ extern "C" __global__ void QDeviceCompHighNu27(
          D.f[TN  ] = &DD[BS  *size_Mat];
          D.f[TS  ] = &DD[BN  *size_Mat];
          D.f[BN  ] = &DD[TS  *size_Mat];
-         D.f[dirREST] = &DD[dirREST*size_Mat];
+         D.f[REST] = &DD[REST*size_Mat];
          D.f[TNE ] = &DD[BSW *size_Mat];
          D.f[TSW ] = &DD[BNE *size_Mat];
          D.f[TSE ] = &DD[BNW *size_Mat];
@@ -1344,7 +1344,7 @@ extern "C" __global__ void QDeviceCompHighNu27(
       }
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //Test
-         //(D.f[dirREST])[k]=c1o10;
+         //(D.f[REST])[k]=c1o10;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       real VeloX = c0o1;
       real VeloY = c0o1;
@@ -1739,7 +1739,7 @@ extern "C" __global__ void QDeviceComp27(
       //!
       real drho = f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                   f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-                  f_T + f_B + f_N + f_S + f_E + f_W + ((dist.f[dirREST])[kzero]); 
+                  f_T + f_B + f_N + f_S + f_E + f_W + ((dist.f[REST])[kzero]); 
 
       real vx1  = (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                    ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -2126,7 +2126,7 @@ extern "C" __global__ void QDevice27(real* distributions,
       //!
       real drho = f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                   f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-                  f_T + f_B + f_N + f_S + f_E + f_W + ((dist.f[dirREST])[kzero]); 
+                  f_T + f_B + f_N + f_S + f_E + f_W + ((dist.f[REST])[kzero]); 
 
       real vx1  = (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                    ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +

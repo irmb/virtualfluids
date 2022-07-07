@@ -62,7 +62,7 @@ extern "C" __global__ void LB_Kernel_WaleBySoniMalavCumulantK15Comp(
 				D.f[BS  ] = &DDStart[BS  *size_Mat];
 				D.f[BN  ] = &DDStart[BN  *size_Mat];
 				D.f[TS  ] = &DDStart[TS  *size_Mat];
-				D.f[dirREST] = &DDStart[dirREST*size_Mat];
+				D.f[REST] = &DDStart[REST*size_Mat];
 				D.f[TNE ] = &DDStart[TNE *size_Mat];
 				D.f[TSW ] = &DDStart[TSW *size_Mat];
 				D.f[TSE ] = &DDStart[TSE *size_Mat];
@@ -92,7 +92,7 @@ extern "C" __global__ void LB_Kernel_WaleBySoniMalavCumulantK15Comp(
 				D.f[TN  ] = &DDStart[BS  *size_Mat];
 				D.f[TS  ] = &DDStart[BN  *size_Mat];
 				D.f[BN  ] = &DDStart[TS  *size_Mat];
-				D.f[dirREST] = &DDStart[dirREST*size_Mat];
+				D.f[REST] = &DDStart[REST*size_Mat];
 				D.f[BSW ] = &DDStart[TNE *size_Mat];
 				D.f[BNE ] = &DDStart[TSW *size_Mat];
 				D.f[BNW ] = &DDStart[TSE *size_Mat];
@@ -132,7 +132,7 @@ extern "C" __global__ void LB_Kernel_WaleBySoniMalavCumulantK15Comp(
 			real mfbaa = (D.f[BS  ])[kbs];
 			real mfbca = (D.f[BN  ])[kb ];
 			real mfbac = (D.f[TS  ])[ks ];
-			real mfbbb = (D.f[dirREST])[k  ];
+			real mfbbb = (D.f[REST])[k  ];
 			real mfccc = (D.f[TNE ])[k  ];
 			real mfaac = (D.f[TSW ])[ksw];
 			real mfcac = (D.f[TSE ])[ks ];
@@ -1021,7 +1021,7 @@ extern "C" __global__ void LB_Kernel_WaleBySoniMalavCumulantK15Comp(
 			(D.f[ BS  ])[kbs ] = mfbcc;
 			(D.f[ BN  ])[kb  ] = mfbac;
 			(D.f[ TS  ])[ks  ] = mfbca;
-			(D.f[ dirREST])[k   ] = mfbbb;
+			(D.f[ REST])[k   ] = mfbbb;
 			(D.f[ TNE ])[k   ] = mfaaa;
 			(D.f[ TSE ])[ks  ] = mfaca;
 			(D.f[ BNE ])[kb  ] = mfaac;

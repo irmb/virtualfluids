@@ -103,7 +103,7 @@ extern "C" __global__ void LBCalcMacSP27( real* vxD,
       D.f[BS  ] = &DD[BS  *size_Mat];
       D.f[BN  ] = &DD[BN  *size_Mat];
       D.f[TS  ] = &DD[TS  *size_Mat];
-      D.f[dirREST] = &DD[dirREST*size_Mat];
+      D.f[REST] = &DD[REST*size_Mat];
       D.f[TNE ] = &DD[TNE *size_Mat];
       D.f[TSW ] = &DD[TSW *size_Mat];
       D.f[TSE ] = &DD[TSE *size_Mat];
@@ -133,7 +133,7 @@ extern "C" __global__ void LBCalcMacSP27( real* vxD,
       D.f[TN  ] = &DD[BS  *size_Mat];
       D.f[TS  ] = &DD[BN  *size_Mat];
       D.f[BN  ] = &DD[TS  *size_Mat];
-      D.f[dirREST] = &DD[dirREST*size_Mat];
+      D.f[REST] = &DD[REST*size_Mat];
       D.f[TNE ] = &DD[BSW *size_Mat];
       D.f[TSW ] = &DD[BNE *size_Mat];
       D.f[TSE ] = &DD[BNW *size_Mat];
@@ -203,7 +203,7 @@ extern "C" __global__ void LBCalcMacSP27( real* vxD,
                         (D.f[BE  ])[kbe ]+ (D.f[TW  ])[ktw ]+
                         (D.f[TN  ])[ktn ]+ (D.f[BS  ])[kbs ]+
                         (D.f[BN  ])[kbn ]+ (D.f[TS  ])[kts ]+
-                        (D.f[dirREST])[kzero]+ 
+                        (D.f[REST])[kzero]+ 
                         (D.f[TNE ])[ktne]+ (D.f[TSW ])[ktsw]+ 
                         (D.f[TSE ])[ktse]+ (D.f[TNW ])[ktnw]+ 
                         (D.f[BNE ])[kbne]+ (D.f[BSW ])[kbsw]+ 
@@ -363,7 +363,7 @@ extern "C" __global__ void LBCalcMedSP27( real* vxD,
       D.f[BS  ] = &DD[BS  *size_Mat];
       D.f[BN  ] = &DD[BN  *size_Mat];
       D.f[TS  ] = &DD[TS  *size_Mat];
-      D.f[dirREST] = &DD[dirREST*size_Mat];
+      D.f[REST] = &DD[REST*size_Mat];
       D.f[TNE ] = &DD[TNE *size_Mat];
       D.f[TSW ] = &DD[TSW *size_Mat];
       D.f[TSE ] = &DD[TSE *size_Mat];
@@ -393,7 +393,7 @@ extern "C" __global__ void LBCalcMedSP27( real* vxD,
       D.f[TN  ] = &DD[BS  *size_Mat];
       D.f[TS  ] = &DD[BN  *size_Mat];
       D.f[BN  ] = &DD[TS  *size_Mat];
-      D.f[dirREST] = &DD[dirREST*size_Mat];
+      D.f[REST] = &DD[REST*size_Mat];
       D.f[TNE ] = &DD[BSW *size_Mat];
       D.f[TSW ] = &DD[BNE *size_Mat];
       D.f[TSE ] = &DD[BNW *size_Mat];
@@ -469,7 +469,7 @@ extern "C" __global__ void LBCalcMedSP27( real* vxD,
                         (D.f[BE  ])[kbe ]+ (D.f[TW  ])[ktw ]+
                         (D.f[TN  ])[ktn ]+ (D.f[BS  ])[kbs ]+
                         (D.f[BN  ])[kbn ]+ (D.f[TS  ])[kts ]+
-                        (D.f[dirREST])[kzero]+ 
+                        (D.f[REST])[kzero]+ 
                         (D.f[TNE ])[ktne]+ (D.f[TSW ])[ktsw]+ 
                         (D.f[TSE ])[ktse]+ (D.f[TNW ])[ktnw]+ 
                         (D.f[BNE ])[kbne]+ (D.f[BSW ])[kbsw]+ 
@@ -587,7 +587,7 @@ extern "C" __global__ void LBCalcMedCompSP27( real* vxD,
       D.f[BS  ] = &DD[BS  *size_Mat];
       D.f[BN  ] = &DD[BN  *size_Mat];
       D.f[TS  ] = &DD[TS  *size_Mat];
-      D.f[dirREST] = &DD[dirREST*size_Mat];
+      D.f[REST] = &DD[REST*size_Mat];
       D.f[TNE ] = &DD[TNE *size_Mat];
       D.f[TSW ] = &DD[TSW *size_Mat];
       D.f[TSE ] = &DD[TSE *size_Mat];
@@ -617,7 +617,7 @@ extern "C" __global__ void LBCalcMedCompSP27( real* vxD,
       D.f[TN  ] = &DD[BS  *size_Mat];
       D.f[TS  ] = &DD[BN  *size_Mat];
       D.f[BN  ] = &DD[TS  *size_Mat];
-      D.f[dirREST] = &DD[dirREST*size_Mat];
+      D.f[REST] = &DD[REST*size_Mat];
       D.f[TNE ] = &DD[BSW *size_Mat];
       D.f[TSW ] = &DD[BNE *size_Mat];
       D.f[TSE ] = &DD[BNW *size_Mat];
@@ -702,7 +702,7 @@ extern "C" __global__ void LBCalcMedCompSP27( real* vxD,
 		  real mfbaa = (D.f[BS])[kbs];//[kbs  ];
 		  real mfbca = (D.f[BN])[kb];//[kbn  ]; 
 		  real mfbac = (D.f[TS])[ks];//[kts  ]; 
-		  real mfbbb = (D.f[dirREST])[k];//[kzero];
+		  real mfbbb = (D.f[REST])[k];//[kzero];
 		  real mfccc = (D.f[TNE])[k];//[ktne ]; 
 		  real mfaac = (D.f[TSW])[ksw];//[ktsw ]; 
 		  real mfcac = (D.f[TSE])[ks];//[ktse ];
@@ -744,7 +744,7 @@ extern "C" __global__ void LBCalcMedCompSP27( real* vxD,
 			 // (D.f[BE])[kbe] + (D.f[TW])[ktw] +
 			 // (D.f[TN])[ktn] + (D.f[BS])[kbs] +
 			 // (D.f[BN])[kbn] + (D.f[TS])[kts] +
-			 // (D.f[dirREST])[kzero] +
+			 // (D.f[REST])[kzero] +
 			 // (D.f[TNE])[ktne] + (D.f[TSW])[ktsw] +
 			 // (D.f[TSE])[ktse] + (D.f[TNW])[ktnw] +
 			 // (D.f[BNE])[kbne] + (D.f[BSW])[kbsw] +
@@ -867,7 +867,7 @@ extern "C" __global__ void LBCalcMedCompAD27(
 		D.f[BS] = &DD[BS  *size_Mat];
 		D.f[BN] = &DD[BN  *size_Mat];
 		D.f[TS] = &DD[TS  *size_Mat];
-		D.f[dirREST] = &DD[dirREST*size_Mat];
+		D.f[REST] = &DD[REST*size_Mat];
 		D.f[TNE] = &DD[TNE *size_Mat];
 		D.f[TSW] = &DD[TSW *size_Mat];
 		D.f[TSE] = &DD[TSE *size_Mat];
@@ -897,7 +897,7 @@ extern "C" __global__ void LBCalcMedCompAD27(
 		D.f[TN] = &DD[BS  *size_Mat];
 		D.f[TS] = &DD[BN  *size_Mat];
 		D.f[BN] = &DD[TS  *size_Mat];
-		D.f[dirREST] = &DD[dirREST*size_Mat];
+		D.f[REST] = &DD[REST*size_Mat];
 		D.f[TNE] = &DD[BSW *size_Mat];
 		D.f[TSW] = &DD[BNE *size_Mat];
 		D.f[TSE] = &DD[BNW *size_Mat];
@@ -929,7 +929,7 @@ extern "C" __global__ void LBCalcMedCompAD27(
 		Dad.f[BS]   = &DD_AD[BS  *size_Mat];
 		Dad.f[BN]   = &DD_AD[BN  *size_Mat];
 		Dad.f[TS]   = &DD_AD[TS  *size_Mat];
-		Dad.f[dirREST] = &DD_AD[dirREST*size_Mat];
+		Dad.f[REST] = &DD_AD[REST*size_Mat];
 		Dad.f[TNE]  = &DD_AD[TNE *size_Mat];
 		Dad.f[TSW]  = &DD_AD[TSW *size_Mat];
 		Dad.f[TSE]  = &DD_AD[TSE *size_Mat];
@@ -959,7 +959,7 @@ extern "C" __global__ void LBCalcMedCompAD27(
 		Dad.f[TN]   = &DD_AD[BS  *size_Mat];
 		Dad.f[TS]   = &DD_AD[BN  *size_Mat];
 		Dad.f[BN]   = &DD_AD[TS  *size_Mat];
-		Dad.f[dirREST] = &DD_AD[dirREST*size_Mat];
+		Dad.f[REST] = &DD_AD[REST*size_Mat];
 		Dad.f[TNE]  = &DD_AD[BSW *size_Mat];
 		Dad.f[TSW]  = &DD_AD[BNE *size_Mat];
 		Dad.f[TSE]  = &DD_AD[BNW *size_Mat];
@@ -1046,7 +1046,7 @@ extern "C" __global__ void LBCalcMedCompAD27(
 			real mfbaa = (D.f[BS])[kbs];//[kbs  ];
 			real mfbca = (D.f[BN])[kb];//[kbn  ]; 
 			real mfbac = (D.f[TS])[ks];//[kts  ]; 
-			real mfbbb = (D.f[dirREST])[k];//[kzero];
+			real mfbbb = (D.f[REST])[k];//[kzero];
 			real mfccc = (D.f[TNE])[k];//[ktne ]; 
 			real mfaac = (D.f[TSW])[ksw];//[ktsw ]; 
 			real mfcac = (D.f[TSE])[ks];//[ktse ];
@@ -1118,7 +1118,7 @@ extern "C" __global__ void LBCalcMedCompAD27(
 			mfbaa = (Dad.f[BS  ])[kbs ];
 			mfbca = (Dad.f[BN  ])[kb  ];
 			mfbac = (Dad.f[TS  ])[ks  ];
-			mfbbb = (Dad.f[dirREST])[k   ];
+			mfbbb = (Dad.f[REST])[k   ];
 			mfccc = (Dad.f[TNE ])[k   ];
 			mfaac = (Dad.f[TSW ])[ksw ];
 			mfcac = (Dad.f[TSE ])[ks  ];
@@ -1375,7 +1375,7 @@ extern "C" __global__ void LBCalcMeasurePoints( real* vxMP,
 		D.f[BS  ] = &DD[BS  *size_Mat];
 		D.f[BN  ] = &DD[BN  *size_Mat];
 		D.f[TS  ] = &DD[TS  *size_Mat];
-		D.f[dirREST] = &DD[dirREST*size_Mat];
+		D.f[REST] = &DD[REST*size_Mat];
 		D.f[TNE ] = &DD[TNE *size_Mat];
 		D.f[TSW ] = &DD[TSW *size_Mat];
 		D.f[TSE ] = &DD[TSE *size_Mat];
@@ -1405,7 +1405,7 @@ extern "C" __global__ void LBCalcMeasurePoints( real* vxMP,
 		D.f[TN  ] = &DD[BS  *size_Mat];
 		D.f[TS  ] = &DD[BN  *size_Mat];
 		D.f[BN  ] = &DD[TS  *size_Mat];
-		D.f[dirREST] = &DD[dirREST*size_Mat];
+		D.f[REST] = &DD[REST*size_Mat];
 		D.f[TNE ] = &DD[BSW *size_Mat];
 		D.f[TSW ] = &DD[BNE *size_Mat];
 		D.f[TSE ] = &DD[BNW *size_Mat];
@@ -1472,7 +1472,7 @@ extern "C" __global__ void LBCalcMeasurePoints( real* vxMP,
                         (D.f[BE  ])[kbe ]+ (D.f[TW  ])[ktw ]+
                         (D.f[TN  ])[ktn ]+ (D.f[BS  ])[kbs ]+
                         (D.f[BN  ])[kbn ]+ (D.f[TS  ])[kts ]+
-                        (D.f[dirREST])[kzero]+ 
+                        (D.f[REST])[kzero]+ 
                         (D.f[TNE ])[ktne]+ (D.f[TSW ])[ktsw]+ 
                         (D.f[TSE ])[ktse]+ (D.f[TNW ])[ktnw]+ 
                         (D.f[BNE ])[kbne]+ (D.f[BSW ])[kbsw]+ 
