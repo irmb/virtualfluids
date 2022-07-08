@@ -1715,7 +1715,7 @@ int Parameter::getNumberOfParticles()
 }
 bool Parameter::getEvenOrOdd(int level)
 {
-	return parD[level]->evenOrOdd;
+	return parD[level]->isEvenTimestep;
 }
 bool Parameter::getDiffOn()
 {

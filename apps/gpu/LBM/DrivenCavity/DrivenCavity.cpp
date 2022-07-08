@@ -1,6 +1,5 @@
 
 #define _USE_MATH_DEFINES
-#include <math.h>
 #include <string>
 #include <sstream>
 #include <iostream>
@@ -19,9 +18,9 @@
 
 #include "Core/VectorTypes.h"
 
-#include <basics/config/ConfigurationFile.h>
+#include "basics/config/ConfigurationFile.h"
 
-#include <logger/Logger.h>
+#include "logger/Logger.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -44,9 +43,7 @@
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
-
-#include "VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
-#include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
+#include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 
@@ -83,21 +80,22 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //LbmOrGks lbmOrGks = GKS;
-LbmOrGks lbmOrGks = LBM;
+const LbmOrGks lbmOrGks = LBM;
 
 const real L  = 1.0;
 
-const real Re = 500.0;// 1000.0;
+const real Re = 1000.0;
 
 const real velocity  = 1.0;
 
-const real dt = (real)1.0e-3; //0.5e-3;
+const real dt = (real)0.5e-3;
 
-const uint nx = 32;
+const uint nx = 64;
 
-std::string path(".");
+const std::string path("output/");
+const std::string gridPath("grid/");
 
-std::string simulationName("DrivenCavityChim");
+const std::string simulationName("DrivenCavityChim");
 
 const uint timeStepOut = 10000;
 const uint timeStepEnd = 250000;
@@ -113,6 +111,8 @@ void multipleLevel(const std::string& configPath)
     logging::Logger::timeStamp(logging::Logger::ENABLE);
     logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
 
+    vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();
+
     auto gridFactory = GridFactory::make();
     gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
@@ -121,46 +121,50 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	real dx = L / real(nx);
+    real dx = L / real(nx);
 
-	gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L,
-								0.5 * L,  0.5 * L,  0.5 * L, dx);
+    gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L,
+                                0.5 * L,  0.5 * L,  0.5 * L, dx);
 
-    gridBuilder->setNumberOfLayers(12, 8);
+    // gridBuilder->addCoarseGrid(-2.0 * dx, -0.5 * L, -0.5 * L,
+    //                             2.0 * dx,  0.5 * L,  0.5 * L, dx);
 
-    gridBuilder->addGrid( new Cuboid( -0.1 * L, -0.1 * L, -0.1 * L,
-                                       0.1 * L , 0.1 * L,  0.1 * L), 1);
+    auto refBox = new Cuboid(-0.1 * L, -0.1 * L, -0.1 * L,
+                              0.1 * L,  0.1 * L,  0.1 * L);
 
-	gridBuilder->setPeriodicBoundaryCondition(false, false, false);
+    gridBuilder->addGrid(refBox, 1);
 
-	gridBuilder->buildGrids(lbmOrGks, false); // buildGrids() has to be called before setting the BCs!!!!
+    gridBuilder->setNumberOfLayers(0, 0);
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    gridBuilder->setPeriodicBoundaryCondition(false, false, false);
+
+    gridBuilder->buildGrids(lbmOrGks, false); // buildGrids() has to be called before setting the BCs!!!!
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     if( lbmOrGks == LBM )
     {
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();
-
         vf::basics::ConfigurationFile config;
         config.load(configPath);
 
         SPtr<Parameter> para = std::make_shared<Parameter>(config, communicator.getNummberOfProcess(), communicator.getPID());
+        BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         const real velocityLB = velocity * dt / dx; // LB units
 
-	    const real vx = velocityLB / (real)sqrt(2.0); // LB units
-	    const real vy = velocityLB / (real)sqrt(2.0); // LB units
+        const real vx = velocityLB / (real)sqrt(2.0); // LB units
+        const real vy = velocityLB / (real)sqrt(2.0); // LB units
 
         const real viscosityLB = nx * velocityLB / Re; // LB units
 
@@ -169,11 +173,12 @@ void multipleLevel(const std::string& configPath)
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-		para->setDevices(std::vector<uint>{(uint)0});
+        para->setDevices(std::vector<uint>{(uint)0});
+
+        para->setOutputPath( path ); // optional, default is output/
+        para ->setGridPath( gridPath );  // optional, default is grid/
 
         para->setOutputPrefix( simulationName );
-
-        para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
 
         para->setPrintFiles(true);
 
@@ -182,11 +187,11 @@ void multipleLevel(const std::string& configPath)
         para->setVelocity(velocityLB);
         para->setViscosity(viscosityLB);
 
-        para->setVelocityRatio(velocity/ velocityLB);
+        para->setVelocityRatio(velocity / velocityLB);
 
-		//para->setMainKernel("CumulantK17CompChim");
+        //para->setMainKernel("CumulantK17CompChim");
 
-		para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
+        para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
             rho = (real)0.0;
             vx  = (real)0.0; //(6 * velocityLB * coordZ * (L - coordZ) / (L * L));
             vy  = (real)0.0;
@@ -198,44 +203,45 @@ void multipleLevel(const std::string& configPath)
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-		//gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
-		//gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
-		//gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
-	    //gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
-	    gridBuilder->setVelocityBoundaryCondition(SideType::PZ,  vx,  vx, 0.0);
-	    //gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
+        gridBuilder->setNoSlipBoundaryCondition(SideType::PX);
+        gridBuilder->setNoSlipBoundaryCondition(SideType::MX);
+        gridBuilder->setNoSlipBoundaryCondition(SideType::PY);
+        gridBuilder->setNoSlipBoundaryCondition(SideType::MY);
+        gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vx, vx, 0.0);
+        gridBuilder->setNoSlipBoundaryCondition(SideType::MZ);
+
+        bcFactory.setNoSlipBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipBounceBack);
+        bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocitySimpleBounceBackCompressible);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
+        gridBuilder->writeGridsToVtk(para->getGridPath());
 
-        SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        Simulation sim(communicator);
-        SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
-        SPtr<KernelFactoryImp> kernelFactory = KernelFactoryImp::getInstance();
-        SPtr<PreProcessorFactoryImp> preProcessorFactory = PreProcessorFactoryImp::getInstance();
-        sim.setFactories(kernelFactory, preProcessorFactory);
-        sim.init(para, gridGenerator, fileWriter, cudaMemoryManager);
+        auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
+
+        auto gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
+
+        Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory);
         sim.run();
-        sim.free();
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     }
     else
     {
      //   CudaUtility::setCudaDevice(0);
-     //   
+     //
      //   Parameters parameters;
 
      //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	    //const real vx = velocity / sqrt(2.0);
-	    //const real vy = velocity / sqrt(2.0);
-    
+        //const real vx = velocity / sqrt(2.0);
+        //const real vy = velocity / sqrt(2.0);
+
      //   parameters.K  = 2.0;
      //   parameters.Pr = 1.0;
-     //   
+     //
      //   const real Ma = 0.1;
 
      //   real rho = 1.0;
@@ -281,7 +287,7 @@ void multipleLevel(const std::string& configPath)
 
      //   dataBase->boundaryConditions.push_back( bcLid  );
      //   dataBase->boundaryConditions.push_back( bcWall );
-    
+
      //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
      //   dataBase->setMesh( meshAdapter );
@@ -317,7 +323,7 @@ void multipleLevel(const std::string& configPath)
 
      //           writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) );
      //       }
-     //       
+     //
      //       int crashCellIndex = dataBase->getCrashCellIndex();
      //       if( crashCellIndex >= 0 )
      //       {
@@ -353,11 +359,11 @@ int main( int argc, char* argv[])
         std::cout << "Log initialization failed: " << ex.what() << std::endl;
     }
     catch (const std::bad_alloc& e)
-    { 
+    {
         VF_LOG_CRITICAL("Bad Alloc: {}", e.what());
     }
     catch (const std::exception& e)
-    {   
+    {
         VF_LOG_CRITICAL("exception: {}", e.what());
     }
     catch (...)
