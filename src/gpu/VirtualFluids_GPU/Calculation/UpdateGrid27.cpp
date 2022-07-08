@@ -24,7 +24,7 @@ void updateGrid27(Parameter* para,
         updateGrid27(para, comm, cudaManager, pm, level+1, t, kernels);
         updateGrid27(para, comm, cudaManager, pm, level+1, t, kernels);
     }
-
+    std::cout << "UpdateGrid--> lvl: " << level <<"\t t " << t <<"\t evenOrOdd " <<  para->getEvenOrOdd(level)  << std::endl;
     //////////////////////////////////////////////////////////////////////////
     
     collision(para, pm, level, t, kernels);

@@ -183,7 +183,7 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
     this->densityRatio       = para->getDensityRatio();
     this->forceRatio         = para->getForceRatio();
     this->stressRatio        = para->getDensityRatio()*pow(para->getVelocityRatio(), 2.0);
-    this->accelerationRatio = para->getVelocityRatio()/para->getTimeRatio();
+    this->accelerationRatio  = para->getVelocityRatio()/para->getTimeRatio();
 
     probeParams.resize(para->getMaxLevel()+1);
 
@@ -196,7 +196,7 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
         std::vector<real> pointCoordsX_level;
         std::vector<real> pointCoordsY_level;
         std::vector<real> pointCoordsZ_level;
-
+        
         this->findPoints(para, gridProvider, probeIndices_level, distX_level, distY_level, distZ_level,      
                        pointCoordsX_level, pointCoordsY_level, pointCoordsZ_level,
                        level);
@@ -274,6 +274,11 @@ void Probe::addProbeStruct(CudaMemoryManager* cudaManager, std::vector<int>& pro
 
 void Probe::interact(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t)
 {
+    int isOdd = para->getEvenOrOdd(level);
+    std::cout << "Probe--> lvl: " << level << "\t t: " << t << "\t evenOrOdd " << isOdd  << std::endl;
+    uint t_test = para->getTimeStep(level, t);
+    std::cout << "t_test: " << t_test << std::endl<< std::endl;
+    
     if(max(int(t) - int(this->tStartAvg), -1) % this->tAvg==0)
     {
         SPtr<ProbeStruct> probeStruct = this->getProbeStruct(level);
