@@ -35,168 +35,162 @@
 #include <stdio.h>
 
 #include "grid/distributions/D3Q27.h"
-
+#include "lbm/constants/D3Q27.h"
 #include "grid/Grid.h"
+using namespace vf::lbm::dir;
 
 Distribution DistributionHelper::getDistribution27() 
 {
     Distribution d27;
     d27.name = "D3Q27";
-    d27.dir_start = DIR_27_START;
-    d27.dir_end = DIR_27_END;
+    d27.dir_start = STARTDIR;
+    d27.dir_end = ENDDIR;
 
-    d27.dirs = new int[(DIR_27_END + 1) * DIMENSION];
+    d27.dirs = new int[(ENDDIR + 1) * DIMENSION];
 
-    d27.directions = new Direction[DIR_27_END + 1];
-    d27.directions[0] = Direction(DIR_27_E_X, DIR_27_E_Y, DIR_27_E_Z);
-    d27.directions[1] = Direction(DIR_27_W_X, DIR_27_W_Y, DIR_27_W_Z);
-    d27.directions[2] = Direction(DIR_27_N_X, DIR_27_N_Y, DIR_27_N_Z);
-    d27.directions[3] = Direction(DIR_27_S_X, DIR_27_S_Y, DIR_27_S_Z);
+    d27.directions = new Direction[ENDDIR + 1];
+    d27.directions[E] = Direction(DIR_27_E_X, DIR_27_E_Y, DIR_27_E_Z);
+    d27.directions[W] = Direction(DIR_27_W_X, DIR_27_W_Y, DIR_27_W_Z);
+    d27.directions[N] = Direction(DIR_27_N_X, DIR_27_N_Y, DIR_27_N_Z);
+    d27.directions[S] = Direction(DIR_27_S_X, DIR_27_S_Y, DIR_27_S_Z);
+    d27.directions[T] = Direction(DIR_27_T_X, DIR_27_T_Y, DIR_27_T_Z);
+    d27.directions[B] = Direction(DIR_27_B_X, DIR_27_B_Y, DIR_27_B_Z);
 
-    d27.directions[4] = Direction(DIR_27_T_X, DIR_27_T_Y, DIR_27_T_Z);
-    d27.directions[5] = Direction(DIR_27_B_X, DIR_27_B_Y, DIR_27_B_Z);
+    d27.directions[NE] = Direction(DIR_27_NE_X, DIR_27_NE_Y, DIR_27_NE_Z);
+    d27.directions[SW] = Direction(DIR_27_SW_X, DIR_27_SW_Y, DIR_27_SW_Z);
+    d27.directions[SE] = Direction(DIR_27_SE_X, DIR_27_SE_Y, DIR_27_SE_Z);
+    d27.directions[NW] = Direction(DIR_27_NW_X, DIR_27_NW_Y, DIR_27_NW_Z);
 
-    d27.directions[6] = Direction(DIR_27_NE_X, DIR_27_NE_Y, DIR_27_NE_Z);
-    d27.directions[7] = Direction(DIR_27_SW_X, DIR_27_SW_Y, DIR_27_SW_Z);
-    d27.directions[8] = Direction(DIR_27_SE_X, DIR_27_SE_Y, DIR_27_SE_Z);
-    d27.directions[9] = Direction(DIR_27_NW_X, DIR_27_NW_Y, DIR_27_NW_Z);
+    d27.directions[TE] = Direction(DIR_27_TE_X, DIR_27_TE_Y, DIR_27_TE_Z);
+    d27.directions[BW] = Direction(DIR_27_BW_X, DIR_27_BW_Y, DIR_27_BW_Z);
+    d27.directions[BE] = Direction(DIR_27_BE_X, DIR_27_BE_Y, DIR_27_BE_Z);
+    d27.directions[TW] = Direction(DIR_27_TW_X, DIR_27_TW_Y, DIR_27_TW_Z);
 
-    d27.directions[10] = Direction(DIR_27_TE_X, DIR_27_TE_Y, DIR_27_TE_Z);
-    d27.directions[11] = Direction(DIR_27_BW_X, DIR_27_BW_Y, DIR_27_BW_Z);
-    d27.directions[12] = Direction(DIR_27_BE_X, DIR_27_BE_Y, DIR_27_BE_Z);
-    d27.directions[13] = Direction(DIR_27_TW_X, DIR_27_TW_Y, DIR_27_TW_Z);
+    d27.directions[TN] = Direction(DIR_27_TN_X, DIR_27_TN_Y, DIR_27_TN_Z);
+    d27.directions[BS] = Direction(DIR_27_BS_X, DIR_27_BS_Y, DIR_27_BS_Z);
+    d27.directions[BN] = Direction(DIR_27_BN_X, DIR_27_BN_Y, DIR_27_BN_Z);
+    d27.directions[TS] = Direction(DIR_27_TS_X, DIR_27_TS_Y, DIR_27_TS_Z);
 
-    d27.directions[14] = Direction(DIR_27_TN_X, DIR_27_TN_Y, DIR_27_TN_Z);
-    d27.directions[15] = Direction(DIR_27_BS_X, DIR_27_BS_Y, DIR_27_BS_Z);
-    d27.directions[16] = Direction(DIR_27_BN_X, DIR_27_BN_Y, DIR_27_BN_Z);
-    d27.directions[17] = Direction(DIR_27_TS_X, DIR_27_TS_Y, DIR_27_TS_Z);
+    d27.directions[REST] = Direction(DIR_27_REST_X, DIR_27_REST_Y, DIR_27_REST_Z);
 
-    d27.directions[18] = Direction(0, 0, 0);
+    d27.directions[TNE] = Direction(DIR_27_TNE_X, DIR_27_TNE_Y, DIR_27_TNE_Z);
+    d27.directions[TNW] = Direction(DIR_27_TNW_X, DIR_27_TNW_Y, DIR_27_TNW_Z);
+    d27.directions[TSE] = Direction(DIR_27_TSE_X, DIR_27_TSE_Y, DIR_27_TSE_Z);
+    d27.directions[TSW] = Direction(DIR_27_TSW_X, DIR_27_TSW_Y, DIR_27_TSW_Z);
 
-    d27.directions[19] = Direction(DIR_27_TNE_X, DIR_27_TNE_Y, DIR_27_TNE_Z);
-    d27.directions[20] = Direction(DIR_27_BNE_X, DIR_27_BNE_Y, DIR_27_BNE_Z);
-
-    d27.directions[21] = Direction(DIR_27_TSE_X, DIR_27_TSE_Y, DIR_27_TSE_Z);
-    d27.directions[22] = Direction(DIR_27_BSE_X, DIR_27_BSE_Y, DIR_27_BSE_Z);
-
-    d27.directions[23] = Direction(DIR_27_TNW_X, DIR_27_TNW_Y, DIR_27_TNW_Z);
-    d27.directions[24] = Direction(DIR_27_BNW_X, DIR_27_BNW_Y, DIR_27_BNW_Z);
-
-    d27.directions[25] = Direction(DIR_27_TSW_X, DIR_27_TSW_Y, DIR_27_TSW_Z);
-    d27.directions[26] = Direction(DIR_27_BSW_X, DIR_27_BSW_Y, DIR_27_BSW_Z);
+    d27.directions[BNE] = Direction(DIR_27_BNE_X, DIR_27_BNE_Y, DIR_27_BNE_Z);
+    d27.directions[BNW] = Direction(DIR_27_BNW_X, DIR_27_BNW_Y, DIR_27_BNW_Z);
+    d27.directions[BSE] = Direction(DIR_27_BSE_X, DIR_27_BSE_Y, DIR_27_BSE_Z);
+    d27.directions[BSW] = Direction(DIR_27_BSW_X, DIR_27_BSW_Y, DIR_27_BSW_Z);
 
 
-    int dir_num = 0;
-    d27.dirs[dir_num++] = DIR_27_E_X;
-    d27.dirs[dir_num++] = DIR_27_E_Y;
-    d27.dirs[dir_num++] = DIR_27_E_Z;
+    d27.dirs[E * 3    ] = DIR_27_E_X;
+    d27.dirs[E * 3 + 1] = DIR_27_E_Y;
+    d27.dirs[E * 3 + 2] = DIR_27_E_Z;
 
-    d27.dirs[dir_num++] = DIR_27_W_X;
-    d27.dirs[dir_num++] = DIR_27_W_Y;
-    d27.dirs[dir_num++] = DIR_27_W_Z;
+    d27.dirs[W * 3    ] = DIR_27_W_X;
+    d27.dirs[W * 3 + 1] = DIR_27_W_Y;
+    d27.dirs[W * 3 + 2] = DIR_27_W_Z;
     
-    d27.dirs[dir_num++] = DIR_27_N_X;
-    d27.dirs[dir_num++] = DIR_27_N_Y;
-    d27.dirs[dir_num++] = DIR_27_N_Z;
+    d27.dirs[N * 3    ] = DIR_27_N_X;
+    d27.dirs[N * 3 + 1] = DIR_27_N_Y;
+    d27.dirs[N * 3 + 2] = DIR_27_N_Z;
+
+    d27.dirs[S * 3    ] = DIR_27_S_X;
+    d27.dirs[S * 3 + 1] = DIR_27_S_Y;
+    d27.dirs[S * 3 + 2] = DIR_27_S_Z;
     
-    d27.dirs[dir_num++] = DIR_27_S_X;
-    d27.dirs[dir_num++] = DIR_27_S_Y;
-    d27.dirs[dir_num++] = DIR_27_S_Z;
+    d27.dirs[T * 3    ] = DIR_27_T_X;
+    d27.dirs[T * 3 + 1] = DIR_27_T_Y;
+    d27.dirs[T * 3 + 2] = DIR_27_T_Z;
     
-    d27.dirs[dir_num++] = DIR_27_T_X;
-    d27.dirs[dir_num++] = DIR_27_T_Y;
-    d27.dirs[dir_num++] = DIR_27_T_Z;
+    d27.dirs[B * 3    ] = DIR_27_B_X;
+    d27.dirs[B * 3 + 1] = DIR_27_B_Y;
+    d27.dirs[B * 3 + 2] = DIR_27_B_Z;
+
+    d27.dirs[NE * 3    ] = DIR_27_NE_X;
+    d27.dirs[NE * 3 + 1] = DIR_27_NE_Y;
+    d27.dirs[NE * 3 + 2] = DIR_27_NE_Z;
     
-    d27.dirs[dir_num++] = DIR_27_B_X;
-    d27.dirs[dir_num++] = DIR_27_B_Y;
-    d27.dirs[dir_num++] = DIR_27_B_Z;
-    
-    d27.dirs[dir_num++] = DIR_27_NE_X;
-    d27.dirs[dir_num++] = DIR_27_NE_Y;
-    d27.dirs[dir_num++] = DIR_27_NE_Z;
-    
-    d27.dirs[dir_num++] = DIR_27_SW_X;
-    d27.dirs[dir_num++] = DIR_27_SW_Y;
-    d27.dirs[dir_num++] = DIR_27_SW_Z;
+    d27.dirs[SW * 3    ] = DIR_27_SW_X;
+    d27.dirs[SW * 3 + 1] = DIR_27_SW_Y;
+    d27.dirs[SW * 3 + 2] = DIR_27_SW_Z;
 
-    d27.dirs[dir_num++] = DIR_27_SE_X;
-    d27.dirs[dir_num++] = DIR_27_SE_Y;
-    d27.dirs[dir_num++] = DIR_27_SE_Z;
+    d27.dirs[SE * 3    ] = DIR_27_SE_X;
+    d27.dirs[SE * 3 + 1] = DIR_27_SE_Y;
+    d27.dirs[SE * 3 + 2] = DIR_27_SE_Z;
+
+    d27.dirs[NW * 3    ] = DIR_27_NW_X;
+    d27.dirs[NW * 3 + 1] = DIR_27_NW_Y;
+    d27.dirs[NW * 3 + 2] = DIR_27_NW_Z;
+
+    d27.dirs[TE * 3    ] = DIR_27_TE_X;
+    d27.dirs[TE * 3 + 1] = DIR_27_TE_Y;
+    d27.dirs[TE * 3 + 2] = DIR_27_TE_Z;
+
+    d27.dirs[BW * 3    ] = DIR_27_BW_X;
+    d27.dirs[BW * 3 + 1] = DIR_27_BW_Y;
+    d27.dirs[BW * 3 + 2] = DIR_27_BW_Z;
                               
-    d27.dirs[dir_num++] = DIR_27_NW_X;
-    d27.dirs[dir_num++] = DIR_27_NW_Y;
-    d27.dirs[dir_num++] = DIR_27_NW_Z;
+    d27.dirs[BE * 3    ] = DIR_27_BE_X;
+    d27.dirs[BE * 3 + 1] = DIR_27_BE_Y;
+    d27.dirs[BE * 3 + 2] = DIR_27_BE_Z;
                               
-    d27.dirs[dir_num++] = DIR_27_TE_X;
-    d27.dirs[dir_num++] = DIR_27_TE_Y;
-    d27.dirs[dir_num++] = DIR_27_TE_Z;
+    d27.dirs[TW * 3    ] = DIR_27_TW_X;
+    d27.dirs[TW * 3 + 1] = DIR_27_TW_Y;
+    d27.dirs[TW * 3 + 2] = DIR_27_TW_Z;
                               
-    d27.dirs[dir_num++] = DIR_27_BW_X;
-    d27.dirs[dir_num++] = DIR_27_BW_Y;
-    d27.dirs[dir_num++] = DIR_27_BW_Z;
+    d27.dirs[TN * 3    ] = DIR_27_TN_X;
+    d27.dirs[TN * 3 + 1] = DIR_27_TN_Y;
+    d27.dirs[TN * 3 + 2] = DIR_27_TN_Z;
                               
-    d27.dirs[dir_num++] = DIR_27_BE_X;
-    d27.dirs[dir_num++] = DIR_27_BE_Y;
-    d27.dirs[dir_num++] = DIR_27_BE_Z;
+    d27.dirs[BS * 3    ] = DIR_27_BS_X;
+    d27.dirs[BS * 3 + 1] = DIR_27_BS_Y;
+    d27.dirs[BS * 3 + 2] = DIR_27_BS_Z;
                               
-    d27.dirs[dir_num++] = DIR_27_TW_X;
-    d27.dirs[dir_num++] = DIR_27_TW_Y;
-    d27.dirs[dir_num++] = DIR_27_TW_Z;
-                              
-    d27.dirs[dir_num++] = DIR_27_TN_X;
-    d27.dirs[dir_num++] = DIR_27_TN_Y;
-    d27.dirs[dir_num++] = DIR_27_TN_Z;
-                              
-    d27.dirs[dir_num++] = DIR_27_BS_X;
-    d27.dirs[dir_num++] = DIR_27_BS_Y;
-    d27.dirs[dir_num++] = DIR_27_BS_Z;
-                              
-    d27.dirs[dir_num++] = DIR_27_BN_X;
-    d27.dirs[dir_num++] = DIR_27_BN_Y;
-    d27.dirs[dir_num++] = DIR_27_BN_Z;
+    d27.dirs[BN * 3    ] = DIR_27_BN_X;
+    d27.dirs[BN * 3 + 1] = DIR_27_BN_Y;
+    d27.dirs[BN * 3 + 2] = DIR_27_BN_Z;
 
-    d27.dirs[dir_num++] = DIR_27_TS_X;
-    d27.dirs[dir_num++] = DIR_27_TS_Y;
-    d27.dirs[dir_num++] = DIR_27_TS_Z;
+    d27.dirs[TS * 3    ] = DIR_27_TS_X;
+    d27.dirs[TS * 3 + 1] = DIR_27_TS_Y;
+    d27.dirs[TS * 3 + 2] = DIR_27_TS_Z;
 
+    d27.dirs[REST * 3    ] = DIR_27_REST_X;   //
+    d27.dirs[REST * 3 + 1] = DIR_27_REST_Y;   //  ZERO ELEMENT
+    d27.dirs[REST * 3 + 2] = DIR_27_REST_Z;   //
 
-    d27.dirs[dir_num++] = 0;   //
-    d27.dirs[dir_num++] = 0;   //  ZERO ELEMENT
-    d27.dirs[dir_num++] = 0;   //
+    d27.dirs[TNE * 3    ] = DIR_27_TNE_X;
+    d27.dirs[TNE * 3 + 1] = DIR_27_TNE_Y;
+    d27.dirs[TNE * 3 + 2] = DIR_27_TNE_Z;
 
+    d27.dirs[BNE * 3    ] = DIR_27_BNE_X;
+    d27.dirs[BNE * 3 + 1] = DIR_27_BNE_Y;
+    d27.dirs[BNE * 3 + 2] = DIR_27_BNE_Z;
 
-    d27.dirs[dir_num++] = DIR_27_TNE_X;
-    d27.dirs[dir_num++] = DIR_27_TNE_Y;
-    d27.dirs[dir_num++] = DIR_27_TNE_Z;
+    d27.dirs[TSE * 3    ] = DIR_27_TSE_X;
+    d27.dirs[TSE * 3 + 1] = DIR_27_TSE_Y;
+    d27.dirs[TSE * 3 + 2] = DIR_27_TSE_Z;
 
-    d27.dirs[dir_num++] = DIR_27_BNE_X;
-    d27.dirs[dir_num++] = DIR_27_BNE_Y;
-    d27.dirs[dir_num++] = DIR_27_BNE_Z;
+    d27.dirs[BSE * 3    ] = DIR_27_BSE_X;
+    d27.dirs[BSE * 3 + 1] = DIR_27_BSE_Y;
+    d27.dirs[BSE * 3 + 2] = DIR_27_BSE_Z;
 
-    d27.dirs[dir_num++] = DIR_27_TSE_X;
-    d27.dirs[dir_num++] = DIR_27_TSE_Y;
-    d27.dirs[dir_num++] = DIR_27_TSE_Z;
+    d27.dirs[TNW * 3    ] = DIR_27_TNW_X;
+    d27.dirs[TNW * 3 + 1] = DIR_27_TNW_Y;
+    d27.dirs[TNW * 3 + 2] = DIR_27_TNW_Z;
 
-    d27.dirs[dir_num++] = DIR_27_BSE_X;
-    d27.dirs[dir_num++] = DIR_27_BSE_Y;
-    d27.dirs[dir_num++] = DIR_27_BSE_Z;
+    d27.dirs[BNW * 3    ] = DIR_27_BNW_X;
+    d27.dirs[BNW * 3 + 1] = DIR_27_BNW_Y;
+    d27.dirs[BNW * 3 + 2] = DIR_27_BNW_Z;
 
+    d27.dirs[TSW * 3    ] = DIR_27_TSW_X;
+    d27.dirs[TSW * 3 + 1] = DIR_27_TSW_Y;
+    d27.dirs[TSW * 3 + 2] = DIR_27_TSW_Z;
 
-    d27.dirs[dir_num++] = DIR_27_TNW_X;
-    d27.dirs[dir_num++] = DIR_27_TNW_Y;
-    d27.dirs[dir_num++] = DIR_27_TNW_Z;
-
-    d27.dirs[dir_num++] = DIR_27_BNW_X;
-    d27.dirs[dir_num++] = DIR_27_BNW_Y;
-    d27.dirs[dir_num++] = DIR_27_BNW_Z;
-
-    d27.dirs[dir_num++] = DIR_27_TSW_X;
-    d27.dirs[dir_num++] = DIR_27_TSW_Y;
-    d27.dirs[dir_num++] = DIR_27_TSW_Z;
-
-    d27.dirs[dir_num++] = DIR_27_BSW_X;
-    d27.dirs[dir_num++] = DIR_27_BSW_Y;
-    d27.dirs[dir_num++] = DIR_27_BSW_Z;
+    d27.dirs[BSW * 3    ] = DIR_27_BSW_X;
+    d27.dirs[BSW * 3 + 1] = DIR_27_BSW_Y;
+    d27.dirs[BSW * 3 + 2] = DIR_27_BSW_Z;
 
     return d27;
 }

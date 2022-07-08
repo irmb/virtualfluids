@@ -16,13 +16,13 @@ using namespace std;
 
 
 
-void calcDragLift(Parameter* para, CudaMemoryManager* cudaManager, int lev)
+void calcDragLift(Parameter* para, CudaMemoryManager* cudaMemoryManager, int lev)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//copy to host
 	//finest Grid ... with the geometry nodes
 	//please test -> Copy == Alloc ??
-	cudaManager->cudaCopyDragLift(lev, para->getParH(lev)->QGeom.kQ);
+	cudaMemoryManager->cudaCopyDragLift(lev, para->getParH(lev)->geometryBC.numberOfBCnodes);
 	//////////////////////////////////////////////////////////////////////////
 	//calc drag
 	double dragX = 0., dragY = 0., dragZ = 0.;
@@ -55,7 +55,7 @@ void calcDragLift(Parameter* para, CudaMemoryManager* cudaManager, int lev)
 	//double LBtoSI = 1.204 * (pow(delta_x, 4))/(pow(delta_t,2));//rho_SI * delta_x^4 / delta_t^2 = 1.204 kg/m^3 * (0.0045m)^4 / (0.00000757s)^2 ... LB to kg*m/s^2
 	//double LBtoSI = 1000 * (pow(delta_x, 4))/(pow(delta_t,2));//rho_SI * delta_x^4 / delta_t^2 = 1000 kg/m^3 * (0.1m)^4 / (0.00187s)^2 ... LB to kg*m/s^2
 
-	for (int it = 0; it < para->getParH(lev)->QGeom.kQ; it++)
+	for (unsigned int it = 0; it < para->getParH(lev)->geometryBC.numberOfBCnodes; it++)
 	{
 		dragX += (double) (para->getParH(lev)->DragPreX[it] - para->getParH(lev)->DragPostX[it]); //Kraft da Impuls pro Zeitschritt merke: andere nennen es FD
 		dragY += (double) (para->getParH(lev)->DragPreY[it] - para->getParH(lev)->DragPostY[it]); //Kraft da Impuls pro Zeitschritt merke: andere nennen es FD
@@ -81,7 +81,7 @@ void calcDragLift(Parameter* para, CudaMemoryManager* cudaManager, int lev)
 
 
 
-void allocDragLift(Parameter* para, CudaMemoryManager* cudaManager)
+void allocDragLift(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//set level
@@ -90,14 +90,14 @@ void allocDragLift(Parameter* para, CudaMemoryManager* cudaManager)
 	//allocation
 	//finest Grid ... with the geometry nodes
 	//please test -> Copy == Alloc ??
-	cudaManager->cudaAllocDragLift(lev, para->getParH(lev)->QGeom.kQ);
+	cudaMemoryManager->cudaAllocDragLift(lev, para->getParH(lev)->geometryBC.numberOfBCnodes);
 	//////////////////////////////////////////////////////////////////////////
-	printf("\n Anzahl Elemente fuer Drag Lift = %d \n", para->getParH(lev)->QGeom.kQ);
+	printf("\n Anzahl Elemente fuer Drag Lift = %d \n", para->getParH(lev)->geometryBC.numberOfBCnodes);
 }
 
 
 
-void printDragLift(Parameter* para, CudaMemoryManager* cudaManager, int timestep)
+void printDragLift(Parameter* para, CudaMemoryManager* cudaMemoryManager, int timestep)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//set level
@@ -124,7 +124,7 @@ void printDragLift(Parameter* para, CudaMemoryManager* cudaManager, int timestep
 	//////////////////////////////////////////////////////////////////////////
 	if (timestep == (int)para->getTEnd())
 	{
-		cudaManager->cudaFreeDragLift(lev);
+		cudaMemoryManager->cudaFreeDragLift(lev);
 	}
 	//////////////////////////////////////////////////////////////////////////
 }

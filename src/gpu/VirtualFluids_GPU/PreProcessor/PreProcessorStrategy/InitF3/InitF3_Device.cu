@@ -1,8 +1,9 @@
 #include "LBM/LB.h" 
-#include "LBM/D3Q27.h"
+#include "lbm/constants/D3Q27.h"
 #include <lbm/constants/NumericConstants.h>
 
 using namespace vf::lbm::constant;
+using namespace vf::lbm::dir;
 #include "math.h"
 
 
@@ -40,21 +41,21 @@ extern "C" __global__ void LB_Init_F3(unsigned int* neighborX,
 			Distributions6 D;
 			if (EvenOrOdd == true)
 			{
-				D.g[dirE] = &G6[dirE   *size_Mat];
-				D.g[dirW] = &G6[dirW   *size_Mat];
-				D.g[dirN] = &G6[dirN   *size_Mat];
-				D.g[dirS] = &G6[dirS   *size_Mat];
-				D.g[dirT] = &G6[dirT   *size_Mat];
-				D.g[dirB] = &G6[dirB   *size_Mat];
+				D.g[E] = &G6[E   *size_Mat];
+				D.g[W] = &G6[W   *size_Mat];
+				D.g[N] = &G6[N   *size_Mat];
+				D.g[S] = &G6[S   *size_Mat];
+				D.g[T] = &G6[T   *size_Mat];
+				D.g[B] = &G6[B   *size_Mat];
 			}
 			else
 			{
-				D.g[dirW] = &G6[dirE   *size_Mat];
-				D.g[dirE] = &G6[dirW   *size_Mat];
-				D.g[dirS] = &G6[dirN   *size_Mat];
-				D.g[dirN] = &G6[dirS   *size_Mat];
-				D.g[dirB] = &G6[dirT   *size_Mat];
-				D.g[dirT] = &G6[dirB   *size_Mat];
+				D.g[W] = &G6[E   *size_Mat];
+				D.g[E] = &G6[W   *size_Mat];
+				D.g[S] = &G6[N   *size_Mat];
+				D.g[N] = &G6[S   *size_Mat];
+				D.g[B] = &G6[T   *size_Mat];
+				D.g[T] = &G6[B   *size_Mat];
 			}
 			//////////////////////////////////////////////////////////////////////////
 			//index
@@ -68,12 +69,12 @@ extern "C" __global__ void LB_Init_F3(unsigned int* neighborX,
 			unsigned int kb = neighborZ[k];
 			//////////////////////////////////////////////////////////////////////////
 
-			(D.g[dirE])[ke] = 0.0f;
-			(D.g[dirW])[kw] = 0.0f;
-			(D.g[dirN])[kn] = 0.0f;
-			(D.g[dirS])[ks] = 0.0f;
-			(D.g[dirT])[kt] = 0.0f;
-			(D.g[dirB])[kb] = 0.0f;
+			(D.g[E])[ke] = 0.0f;
+			(D.g[W])[kw] = 0.0f;
+			(D.g[N])[kn] = 0.0f;
+			(D.g[S])[ks] = 0.0f;
+			(D.g[T])[kt] = 0.0f;
+			(D.g[B])[kb] = 0.0f;
 		}
 	}
 }

@@ -15,9 +15,8 @@
 #include <math.h>
 
 #include "Core/LbmOrGks.h"
-#include "Core/Input/Input.h"
 #include "Core/StringUtilities/StringUtil.h"
-#include "Core/Input/ConfigFileReader/ConfigFileReader.h"
+#include "basics/config/ConfigurationFile.h"
 
 #include "VirtualFluids_GPU/LBM/Simulation.h"
 #include "VirtualFluids_GPU/Communication/Communicator.h"
@@ -29,9 +28,9 @@
 
 #include "VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
 #include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
+#include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
-#include "VirtualFluids_GPU/Kernel/Utilities/Mapper/KernelMapper/KernelMapper.h"
 
 #include "global.h"
 
@@ -72,20 +71,17 @@ void multipleLevel(const std::string& configPath)
     //UbLog::reportingLevel() = UbLog::logLevelFromString("DEBUG5");
 
     auto gridFactory = GridFactory::make();
-    gridFactory->setGridStrategy(Device::CPU);
     //gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::RAYCASTING);
     gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
     //gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_UNDER_TRIANGLE);
 
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
     
-	Communicator* comm = Communicator::getInstanz();
-	SPtr<ConfigFileReader> configReader = ConfigFileReader::getNewInstance();
-	SPtr<ConfigData> configData = configReader->readConfigFile(configPath);
-
-    std::shared_ptr<KernelMapper> kernelMapper = KernelMapper::getInstance();
-
-    SPtr<Parameter> para = Parameter::make(configData, comm);
+    vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();
+    vf::basics::ConfigurationFile config;
+    config.load(configPath);
+    SPtr<Parameter> para = std::make_shared<Parameter>(config, communicator.getNummberOfProcess(), communicator.getPID());
+    BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -114,7 +110,7 @@ void multipleLevel(const std::string& configPath)
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		{
 			real dx = 1.0;
-			real vx = 0.049;
+			// real vx = 0.049;
 			//////////////////////////////////////////////////////////////////////////
 			//32
 			gridBuilder->addCoarseGrid(-24, -2, -16,
@@ -144,7 +140,7 @@ void multipleLevel(const std::string& configPath)
 			//real dx = 2.0 * PI / 64.0; // 64^3 nodes
 			//real dx = 2.0 * PI / 128.0; // 128^3 nodes
 			//real dx = 2.0 * PI / 256.0; // 128^3 nodes
-			real vx = 0.049;
+			// real vx = 0.049;
 
 			gridBuilder->addCoarseGrid(-PI, -PI, -PI,
 										PI,  PI,  PI, dx);
@@ -152,16 +148,6 @@ void multipleLevel(const std::string& configPath)
 			gridBuilder->setPeriodicBoundaryCondition(true, true, true);
 
 			gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
-			////////////////////////////////////////////////////////////////////////////
-			//gridBuilder->setVelocityBoundaryCondition(SideType::PY, vx, 0.0, 0.0);
-			//gridBuilder->setVelocityBoundaryCondition(SideType::MY, vx, 0.0, 0.0);
-			//gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vx, 0.0, 0.0);
-			//gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vx, 0.0, 0.0);
-
-			//gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
-			//gridBuilder->setVelocityBoundaryCondition(SideType::MX, vx, 0.0, 0.0);
-
-			//gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
 
 			//////////////////////////////////////////////////////////////////////////
 			SPtr<Grid> grid = gridBuilder->getGrid(gridBuilder->getNumberOfLevels() - 1);
@@ -208,15 +194,15 @@ void multipleLevel(const std::string& configPath)
 
             para->setUseWale(false);
 
-            para->setMainKernel(kernelMapper->getEnum("CumulantK15Comp"));
+            para->setMainKernel("CumulantK15Comp");
 
             //////////////////////////////////////////////////////////////////////////
 
-            TriangularMesh* sphereSTL = TriangularMesh::make("F:/Work/Computations/gridGenerator/stl/Sphere/SphereNotOptimal.stl");
+            // TriangularMesh* sphereSTL = TriangularMesh::make("F:/Work/Computations/gridGenerator/stl/Sphere/SphereNotOptimal.stl");
 
             TriangularMesh* sphereRef_1_STL = TriangularMesh::make("F:/Work/Computations/gridGenerator/stl/Sphere/SphereRef_1.stl");
 
-            TriangularMesh* sphereRef_2_STL = TriangularMesh::make("F:/Work/Computations/gridGenerator/stl/Sphere/SphereRef_2.stl");
+            // TriangularMesh* sphereRef_2_STL = TriangularMesh::make("F:/Work/Computations/gridGenerator/stl/Sphere/SphereRef_2.stl");
 
             Object* sphere = new Sphere( 0, 0, 0, 0.5*D );
 
@@ -252,6 +238,10 @@ void multipleLevel(const std::string& configPath)
 
             gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
             
+            bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
+            bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipCompressible);
+            bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::PressureNonEquilibriumCompressible);
+
             //////////////////////////////////////////////////////////////////////////
             SPtr<Grid> grid = gridBuilder->getGrid(gridBuilder->getNumberOfLevels() - 1);
             //////////////////////////////////////////////////////////////////////////
@@ -291,7 +281,7 @@ void multipleLevel(const std::string& configPath)
 
             para->setUseWale(false);
 
-            para->setMainKernel(kernelMapper->getEnum("CumulantK20Comp"));
+            para->setMainKernel("CumulantK20Comp");
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -340,7 +330,11 @@ void multipleLevel(const std::string& configPath)
             gridBuilder->setVelocityBoundaryCondition(SideType::MX, vx, 0.0, 0.0);
 
             gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
-            
+
+            bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityAndPressureCompressible);
+            bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
+            bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflective);
+
             //////////////////////////////////////////////////////////////////////////
 
             SPtr<Grid> grid = gridBuilder->getGrid(gridBuilder->getNumberOfLevels() - 1);
@@ -361,7 +355,7 @@ void multipleLevel(const std::string& configPath)
             //SimulationFileWriter::write("grid/", gridBuilder, FILEFORMAT::ASCII);
 
             //return;
-            //gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
+            //gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -392,7 +386,7 @@ void multipleLevel(const std::string& configPath)
 
             para->setUseWale(false);
 
-            para->setMainKernel(kernelMapper->getEnum("CumulantAA2016CompSP27"));
+            para->setMainKernel("CumulantAA2016CompSP27");
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -426,6 +420,10 @@ void multipleLevel(const std::string& configPath)
 
             gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
 
+            bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityAndPressureCompressible);
+            bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
+            bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflective);
+
             //////////////////////////////////////////////////////////////////////////
 
             gridBuilder->writeGridsToVtk("F:/Work/Computations/out/PaperPlane/PaperPlane_Grid_");
@@ -437,7 +435,7 @@ void multipleLevel(const std::string& configPath)
             //SimulationFileWriter::write("grid/", gridBuilder, FILEFORMAT::ASCII);
 
             //return;
-            //gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
+            //gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -468,7 +466,7 @@ void multipleLevel(const std::string& configPath)
 
             para->setUseWale(false);
 
-            para->setMainKernel(kernelMapper->getEnum("CumulantAA2016CompSP27"));
+            para->setMainKernel("CumulantAA2016CompSP27");
             //para->setMainKernel(kernelMapper->getEnum("CumulantOneCompSP27"));
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -495,6 +493,10 @@ void multipleLevel(const std::string& configPath)
             gridBuilder->setVelocityBoundaryCondition(SideType::MX, vx, 0.0, 0.0);
 
             gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
+
+            bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
+            bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipCompressible);
+            bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::PressureNonEquilibriumCompressible);
 
             //////////////////////////////////////////////////////////////////////////
 
@@ -582,7 +584,11 @@ void multipleLevel(const std::string& configPath)
             gridBuilder->setVelocityBoundaryCondition(SideType::MX, vx, 0.0, 0.0);
 
             gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
-            
+
+            bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityAndPressureCompressible);
+            bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipCompressible);
+            bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflective);
+ 
             //////////////////////////////////////////////////////////////////////////
 
             SPtr<Grid> grid = gridBuilder->getGrid(gridBuilder->getNumberOfLevels() - 1);
@@ -626,7 +632,7 @@ void multipleLevel(const std::string& configPath)
             //SimulationFileWriter::write("C:/Users/lenz/Desktop/Work/gridGenerator/grid/", gridBuilder, FILEFORMAT::ASCII);
             SimulationFileWriter::write("grid/", gridBuilder, FILEFORMAT::ASCII);
             
-            //gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
+            //gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -659,13 +665,13 @@ void multipleLevel(const std::string& configPath)
 
             para->setUseWale(false);
 
-            para->setMainKernel(kernelMapper->getEnum("CumulantK15Comp"));
+            para->setMainKernel("CumulantK15Comp");
 
             para->setDevices( { 0, 1 } );
             para->setMaxDev(2);
 
             //const uint generatePart = 1;
-            const uint generatePart = Communicator::getInstanz()->getPID();
+            const uint generatePart = communicator.getPID();
             
             std::ofstream logFile2;
             
@@ -741,7 +747,11 @@ void multipleLevel(const std::string& configPath)
             }
 
             gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
-        
+
+            bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
+            bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipCompressible);
+            bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::PressureNonEquilibriumCompressible);
+
             //////////////////////////////////////////////////////////////////////////
 
             if (generatePart == 0) {
@@ -762,13 +772,13 @@ void multipleLevel(const std::string& configPath)
 
             //return;
             
-            //gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
+            //gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
         }
 
     }
     else
     {
-        //gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
+        //gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
         //gridGenerator = GridProvider::makeGridReader(FILEFORMAT::BINARY, para, cudaMemoryManager);
     }
 
@@ -780,27 +790,15 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
+    auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
 
     SPtr<GridProvider> gridGenerator;
-    if( useGridGenerator ) gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
+    if( useGridGenerator ) gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
     else                   gridGenerator = GridProvider::makeGridReader(FILEFORMAT::BINARY, para, cudaMemoryManager);
 
-    Simulation sim;
-
     SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
-
-    SPtr<KernelFactoryImp> kernelFactory = KernelFactoryImp::getInstance();
-
-    SPtr<PreProcessorFactoryImp> preProcessorFactory = PreProcessorFactoryImp::getInstance();
-
-    sim.setFactories(kernelFactory, preProcessorFactory);
-
-    sim.init(para, gridGenerator, fileWriter, cudaMemoryManager);
-    
-
+    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory);
     sim.run();
-    sim.free();
 }
 
 int main( int argc, char* argv[])
@@ -831,15 +829,15 @@ int main( int argc, char* argv[])
 
             //////////////////////////////////////////////////////////////////////////
 		}
+        catch (const std::bad_alloc& e)
+        {
+                
+            *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
+        }
         catch (const std::exception& e)
         {
                 
             *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
-        }
-        catch (const std::bad_alloc e)
-        {
-                
-            *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
         }
         catch (...)
         {

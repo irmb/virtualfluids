@@ -33,7 +33,7 @@ bool EnstrophyAnalyzer::run(uint iter)
     if( iter % this->analyzeIter != 0 ) return false;
 
 	int lev = 0;
-	int size_Mat = this->para->getParD(lev)->size_Mat_SP;
+	int size_Mat = this->para->getParD(lev)->numberOfNodes;
 	
 	thrust::device_vector<real> enstrophy( size_Mat, c0o1 );
     thrust::device_vector<uint> isFluid  ( size_Mat, 0);
@@ -54,30 +54,30 @@ bool EnstrophyAnalyzer::run(uint iter)
     dim3 grid(Grid1, Grid2);
     dim3 threads(numberOfThreads, 1, 1 );
 
-    LBCalcMacCompSP27<<< grid, threads >>> (para->getParD(lev)->vx_SP,
-										    para->getParD(lev)->vy_SP,
-										    para->getParD(lev)->vz_SP,
-										    para->getParD(lev)->rho_SP,
-										    para->getParD(lev)->press_SP,
-										    para->getParD(lev)->geoSP,
-										    para->getParD(lev)->neighborX_SP,
-										    para->getParD(lev)->neighborY_SP,
-										    para->getParD(lev)->neighborZ_SP,
-										    para->getParD(lev)->size_Mat_SP,
-										    para->getParD(lev)->d0SP.f[0],
-										    para->getParD(lev)->evenOrOdd); 
+    LBCalcMacCompSP27<<< grid, threads >>> (para->getParD(lev)->velocityX,
+										    para->getParD(lev)->velocityY,
+										    para->getParD(lev)->velocityZ,
+										    para->getParD(lev)->rho,
+										    para->getParD(lev)->pressure,
+										    para->getParD(lev)->typeOfGridNode,
+										    para->getParD(lev)->neighborX,
+										    para->getParD(lev)->neighborY,
+										    para->getParD(lev)->neighborZ,
+										    para->getParD(lev)->numberOfNodes,
+										    para->getParD(lev)->distributions.f[0],
+										    para->getParD(lev)->isEvenTimestep); 
 	//cudaDeviceSynchronize();
 	getLastCudaError("LBCalcMacSP27 execution failed"); 
 
-	enstrophyKernel <<< grid, threads >>> ( para->getParD(lev)->vx_SP,
-											para->getParD(lev)->vy_SP, 
-											para->getParD(lev)->vz_SP, 
-											para->getParD(lev)->rho_SP, 
-											para->getParD(lev)->neighborX_SP,
-											para->getParD(lev)->neighborY_SP,
-											para->getParD(lev)->neighborZ_SP,
-											para->getParD(lev)->neighborWSB_SP,
-											para->getParD(lev)->geoSP,
+	enstrophyKernel <<< grid, threads >>> ( para->getParD(lev)->velocityX,
+											para->getParD(lev)->velocityY, 
+											para->getParD(lev)->velocityZ, 
+											para->getParD(lev)->rho, 
+											para->getParD(lev)->neighborX,
+											para->getParD(lev)->neighborY,
+											para->getParD(lev)->neighborZ,
+											para->getParD(lev)->neighborInverse,
+											para->getParD(lev)->typeOfGridNode,
 											enstrophy.data().get(), 
                                             isFluid.data().get(),
 											size_Mat);

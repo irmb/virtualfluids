@@ -33,7 +33,7 @@
 #ifndef GRID_INTERFACE_H
 #define GRID_INTERFACE_H
 
-#include "global.h"
+#include "gpu/GridGenerator/global.h"
 
 class GridImp;
 

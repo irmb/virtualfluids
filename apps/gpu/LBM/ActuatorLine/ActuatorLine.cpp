@@ -47,9 +47,7 @@
 #include "VirtualFluids_GPU/PreCollisionInteractor/ActuatorLine.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PointProbe.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlaneProbe.h"
-
-#include "VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
-#include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
+#include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 
@@ -97,6 +95,8 @@ void multipleLevel(const std::string& configPath)
     logging::Logger::timeStamp(logging::Logger::ENABLE);
     logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
 
+    vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();
+
     auto gridFactory = GridFactory::make();
     gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
@@ -116,13 +116,11 @@ void multipleLevel(const std::string& configPath)
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();
-
     vf::basics::ConfigurationFile config;
     config.load(configPath);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////^
     SPtr<Parameter> para = std::make_shared<Parameter>(config, communicator.getNummberOfProcess(), communicator.getPID());
-
+    BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     const real dt = dx * mach / (sqrt(3) * velocity);
@@ -174,12 +172,11 @@ void multipleLevel(const std::string& configPath)
     gridBuilder->setVelocityBoundaryCondition(SideType::MZ,  velocityLB,  0.0, 0.0);
     gridBuilder->setVelocityBoundaryCondition(SideType::PZ,  velocityLB,  0.0, 0.0);
     gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
+    
+    bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityAndPressureCompressible);
+    bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::PressureNonEquilibriumCompressible);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
-
-    SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
 
     real turbPos[3] = {3*reference_diameter, 3*reference_diameter, 3*reference_diameter};
     real epsilon = 5.f; // width of gaussian smearing
@@ -207,16 +204,12 @@ void multipleLevel(const std::string& configPath)
     para->addProbe( planeProbe );
 
 
+    auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
 
+    auto gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
 
-    Simulation sim(communicator);
-    SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
-    SPtr<KernelFactoryImp> kernelFactory = KernelFactoryImp::getInstance();
-    SPtr<PreProcessorFactoryImp> preProcessorFactory = PreProcessorFactoryImp::getInstance();
-    sim.setFactories(kernelFactory, preProcessorFactory);
-    sim.init(para, gridGenerator, fileWriter, cudaMemoryManager);        
+    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory);
     sim.run();
-    sim.free();
 }
 
 int main( int argc, char* argv[])
@@ -236,11 +229,11 @@ int main( int argc, char* argv[])
         }
 
         catch (const std::bad_alloc& e)
-        { 
+        {
             VF_LOG_CRITICAL("Bad Alloc: {}", e.what());
         }
         catch (const std::exception& e)
-        {   
+        {
             VF_LOG_CRITICAL("exception: {}", e.what());
         }
         catch (...)

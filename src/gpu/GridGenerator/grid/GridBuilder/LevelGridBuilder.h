@@ -38,11 +38,12 @@
 #include <memory>
 #include <array>
 
-#include "global.h"
+#include "gpu/GridGenerator/global.h"
 
-#include "grid/GridBuilder/GridBuilder.h"
-#include "grid/Grid.h"
-#include "grid/NodeValues.h"
+#include "gpu/GridGenerator/grid/GridBuilder/GridBuilder.h"
+#include "gpu/GridGenerator/grid/Grid.h"
+#include "gpu/GridGenerator/grid/GridInterface.h"
+#include "gpu/GridGenerator/grid/NodeValues.h"
 
 struct Vertex;
 class  Grid;
@@ -90,6 +91,10 @@ public:
 
     GRIDGENERATOR_EXPORT virtual unsigned int getNumberOfNodes(unsigned int level) const override;
 
+    GRIDGENERATOR_EXPORT virtual uint getNumberOfFluidNodes(unsigned int level) const override;
+    GRIDGENERATOR_EXPORT virtual void getFluidNodeIndices(uint* fluidNodeIndices, const int level) const override;
+    GRIDGENERATOR_EXPORT virtual uint getNumberOfFluidNodesBorder(unsigned int level) const override;
+    GRIDGENERATOR_EXPORT virtual void getFluidNodeIndicesBorder(uint *fluidNodeIndices, const int level) const override;
 
     GRIDGENERATOR_EXPORT virtual void getNodeValues(real *xCoords, real *yCoords, real *zCoords,
                                          uint *neighborX, uint *neighborY, uint *neighborZ, uint *neighborNegative, 
@@ -157,6 +162,8 @@ protected:
 
 protected:
     void setVelocityGeometryBoundaryCondition(real vx, real vy, real vz);
+    void setNoSlipGeometryBoundaryCondition();
+    void setSlipGeometryBoundaryCondition(real normalX, real normalY, real normalZ);
 
     void createBCVectors();
     void addShortQsToVector(int index);

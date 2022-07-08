@@ -1,23 +1,21 @@
 #include <gmock/gmock.h>
 
+#include <filesystem>
 #include <iostream>
 #include <string>
-#include <filesystem>
 
 #include "Parameter.h"
-#include <basics/config/ConfigurationFile.h>
+#include "basics/config/ConfigurationFile.h"
 
-
-auto RealEq = [](auto value) { 
+auto RealEq = [](auto value) {
 #ifdef VF_DOUBLE_ACCURACY
-    return testing::DoubleEq(value); 
-#else 
+    return testing::DoubleEq(value);
+#else
     return testing::FloatEq(value);
 #endif
 };
 
-
-TEST(ParameterTest, passingEmptyFileWithoutPath_ShouldThrow)
+TEST(ParameterTest, passingEmptyFileWithoutPath_ShouldNotThrow)
 {
     // assuming that the config files is stored parallel to this file.
     std::filesystem::path filePath = __FILE__;
@@ -26,7 +24,7 @@ TEST(ParameterTest, passingEmptyFileWithoutPath_ShouldThrow)
     vf::basics::ConfigurationFile config;
     config.load(filePath.string());
 
-    EXPECT_THROW(Parameter para(config, 1, 0), std::runtime_error);
+    EXPECT_NO_THROW(Parameter para(config, 1, 0));
 }
 
 // TODO: test setPossNeighborFilesX
@@ -43,14 +41,12 @@ TEST(ParameterTest, check_all_Parameter_CanBePassedToConstructor)
 
     Parameter para(config, 1, 0);
 
-    // this two parameters need to be defined in each config file
-    EXPECT_THAT(para.getOutputPath(), testing::Eq("/output/path"));
-    EXPECT_THAT(para.getgeoVec(), testing::Eq("/path/to/grid/geoVec.dat"));
-    // ... all grid files could be tested as well
-
     // test optional parameter
+    EXPECT_THAT(para.getOutputPath(), testing::Eq("/output/path/"));
+    EXPECT_THAT(para.getGridPath(), testing::Eq("/path/to/grid/")); // ... all grid files (e.g. multi-gpu/ multi-level) could be tested as well
+    EXPECT_THAT(para.getgeoVec(), testing::Eq("/path/to/grid/geoVec.dat"));
     EXPECT_THAT(para.getMaxDev(), testing::Eq(2));
-    EXPECT_THAT(para.getDevices(), testing::ElementsAreArray({2,3}));
+    EXPECT_THAT(para.getDevices(), testing::ElementsAreArray({ 2, 3 }));
     EXPECT_THAT(para.getOutputPrefix(), testing::Eq("MyPrefix"));
     EXPECT_THAT(para.getPrintFiles(), testing::Eq(true));
     EXPECT_THAT(para.getIsGeometryValues(), testing::Eq(true));
@@ -105,16 +101,16 @@ TEST(ParameterTest, check_all_Parameter_CanBePassedToConstructor)
     EXPECT_THAT(para.getclockCycleForMP(), RealEq(0.4));
     EXPECT_THAT(para.getTimestepForMP(), testing::Eq(4));
 
-    std::vector<real> forces {2.0,2.1,2.2};
-    double* forces_actual = para.getForcesDouble();
+    std::vector<real> forces{ 2.0, 2.1, 2.2 };
+    double *forces_actual = para.getForcesDouble();
     for (size_t i = 0; i < forces.size(); ++i) {
-         EXPECT_THAT((real)forces_actual[i], RealEq(forces[i]));
+        EXPECT_THAT((real)forces_actual[i], RealEq(forces[i]));
     }
 
-    std::vector<real> limiters {3.0,3.1,3.2};
-    double* limiters_actual = para.getQuadricLimitersDouble();
+    std::vector<real> limiters{ 3.0, 3.1, 3.2 };
+    double *limiters_actual = para.getQuadricLimitersDouble();
     for (size_t i = 0; i < limiters.size(); ++i) {
-         EXPECT_THAT((real)limiters_actual[i], RealEq(limiters[i]));
+        EXPECT_THAT((real)limiters_actual[i], RealEq(limiters[i]));
     }
 
     EXPECT_THAT(para.getCalcParticle(), testing::Eq(true));
@@ -130,29 +126,83 @@ TEST(ParameterTest, check_all_Parameter_CanBePassedToConstructor)
     EXPECT_THAT(para.getDoRestart(), testing::Eq(true));
     EXPECT_THAT(para.getMaxLevel(), testing::Eq(1)); // NOGL - 1
 
-    EXPECT_THAT(para.getGridX(), testing::ElementsAreArray({100, 101}));
-    EXPECT_THAT(para.getGridY(), testing::ElementsAreArray({200, 201}));
-    EXPECT_THAT(para.getGridZ(), testing::ElementsAreArray({300, 301}));
-    EXPECT_THAT(para.getDistX(), testing::ElementsAreArray({400, 401}));
-    EXPECT_THAT(para.getDistY(), testing::ElementsAreArray({500, 501}));
-    EXPECT_THAT(para.getDistZ(), testing::ElementsAreArray({600, 601}));
+    EXPECT_THAT(para.getGridX(), testing::ElementsAreArray({ 100, 101 }));
+    EXPECT_THAT(para.getGridY(), testing::ElementsAreArray({ 200, 201 }));
+    EXPECT_THAT(para.getGridZ(), testing::ElementsAreArray({ 300, 301 }));
+    EXPECT_THAT(para.getDistX(), testing::ElementsAreArray({ 400, 401 }));
+    EXPECT_THAT(para.getDistY(), testing::ElementsAreArray({ 500, 501 }));
+    EXPECT_THAT(para.getDistZ(), testing::ElementsAreArray({ 600, 601 }));
 
     EXPECT_THAT(para.getMainKernel(), testing::Eq("KernelName"));
     EXPECT_THAT(para.getMultiKernelOn(), testing::Eq(true));
-    EXPECT_THAT(para.getMultiKernelLevel(), testing::ElementsAreArray({3, 2, 1}));
+    EXPECT_THAT(para.getMultiKernelLevel(), testing::ElementsAreArray({ 3, 2, 1 }));
 
-    std::vector<std::string> kernel {"Kernel1", "Kernel2", "Kernel3"};
+    std::vector<std::string> kernel{ "Kernel1", "Kernel2", "Kernel3" };
     auto kernel_actual = para.getMultiKernel();
     for (size_t i = 0; i < kernel.size(); ++i) {
         EXPECT_THAT(kernel_actual[i], testing::Eq(kernel[i]));
     }
 
-
     EXPECT_THAT(para.getCoarse(), testing::Eq(0));
-    EXPECT_THAT(para.getFine(), testing::Eq(1));  // NOGL - 1
+    EXPECT_THAT(para.getFine(), testing::Eq(1)); // NOGL - 1
     EXPECT_THAT(para.parH.size(), testing::Eq(2));
     EXPECT_THAT(para.parD.size(), testing::Eq(2));
 }
 
+TEST(ParameterTest, defaultGridPath)
+{
+    Parameter para(1, 0);
+    EXPECT_THAT(para.getGridPath(), testing::Eq("grid/"));
+    EXPECT_THAT(para.getConcentration(), testing::Eq("grid/conc.dat"));
+}
 
+TEST(ParameterTest, defaultGridPathMultiGPU)
+{
+    Parameter para(2, 1);
 
+    EXPECT_THAT(para.getGridPath(), testing::Eq("grid/1/"));
+    EXPECT_THAT(para.getConcentration(), testing::Eq("grid/1/conc.dat"));
+}
+
+TEST(ParameterTest, setGridPathOverridesDefaultGridPath)
+{
+    Parameter para(2, 1);
+    para.setGridPath("gridPathTest");
+
+    EXPECT_THAT( para.getGridPath(), testing::Eq("gridPathTest/1/"));
+    EXPECT_THAT(para.getConcentration(), testing::Eq("gridPathTest/1/conc.dat"));
+}
+
+TEST(ParameterTest, setGridPathOverridesConfigFile)
+{
+    // assuming that the config files is stored parallel to this file.
+    std::filesystem::path filePath = __FILE__;
+    filePath.replace_filename("parameterTest.cfg");
+    vf::basics::ConfigurationFile config;
+    config.load(filePath.string());
+    auto para = Parameter(config, 2, 0);
+    para.setGridPath("gridPathTest");
+
+    EXPECT_THAT( para.getGridPath(), testing::Eq("gridPathTest/0/"));
+    EXPECT_THAT(para.getConcentration(), testing::Eq("gridPathTest/0/conc.dat"));
+
+}
+
+TEST(ParameterTest, userMissedSlash)
+{
+    Parameter para(1, 0);
+    para.setGridPath("gridPathTest");
+
+    EXPECT_THAT(para.getGridPath(), testing::Eq("gridPathTest/"));
+    EXPECT_THAT(para.getConcentration(), testing::Eq("gridPathTest/conc.dat"));
+
+}
+
+TEST(ParameterTest, userMissedSlashMultiGPU)
+{
+    Parameter para(2, 0);
+    para.setGridPath("gridPathTest");
+
+    EXPECT_THAT(para.getGridPath(), testing::Eq("gridPathTest/0/"));
+    EXPECT_THAT(para.getConcentration(), testing::Eq("gridPathTest/0/conc.dat"));
+}

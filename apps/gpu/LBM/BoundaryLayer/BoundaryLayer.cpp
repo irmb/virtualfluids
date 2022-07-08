@@ -49,9 +49,7 @@
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlaneProbe.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlanarAverageProbe.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/WallModelProbe.h"
-
-#include "VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
-#include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
+#include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 
@@ -75,7 +73,7 @@ void multipleLevel(const std::string& configPath)
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
     logging::Logger::timeStamp(logging::Logger::ENABLE);
     logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
-    
+
     auto gridFactory = GridFactory::make();
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
 
@@ -87,6 +85,7 @@ void multipleLevel(const std::string& configPath)
     config.load(configPath);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////^
     SPtr<Parameter> para = std::make_shared<Parameter>(config, communicator.getNummberOfProcess(), communicator.getPID());
+    BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -108,7 +107,7 @@ void multipleLevel(const std::string& configPath)
 
     const real z0  = 0.1; // roughness length in m
     const real u_star = 0.4; //friction velocity in m/s
-    const real kappa = 0.4; // von Karman constant 
+    const real kappa = 0.4; // von Karman constant
 
     const real viscosity = 1.56e-5;
 
@@ -127,7 +126,7 @@ void multipleLevel(const std::string& configPath)
     const float tStartTmpAveraging  =  config.getValue<real>("tStartTmpAveraging");
     const float tAveraging          =  config.getValue<real>("tAveraging");
     const float tStartOutProbe      =  config.getValue<real>("tStartOutProbe");
-    const float tOutProbe           =  config.getValue<real>("tOutProbe"); 
+    const float tOutProbe           =  config.getValue<real>("tOutProbe");
 
 
     const real dx = L_z/real(nodes_per_H);
@@ -166,9 +165,9 @@ void multipleLevel(const std::string& configPath)
 
     if(para->getUseAMD())
         para->setMainKernel("TurbulentViscosityCumulantK17CompChim");
-    else 
+    else
         para->setMainKernel("CumulantK17CompChim");
-    
+
     para->setIsBodyForce( config.getValue<bool>("bodyForce") );
 
     para->setTStartOut(uint(tStartOut/dt) );
@@ -191,27 +190,25 @@ void multipleLevel(const std::string& configPath)
 
     uint samplingOffset = 2;
     // gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
-    gridBuilder->setStressBoundaryCondition(SideType::MZ, 
+    gridBuilder->setStressBoundaryCondition(SideType::MZ,
                                             0.0, 0.0, 1.0,              // wall normals
                                             samplingOffset, z0/dx);     // wall model settinng
     para->setHasWallModelMonitor(true);
+    bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressBounceBack);
 
 
     // gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
     gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0,  0.0, 0.0);
+    bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipCompressible);
 
     real cPi = 3.1415926535897932384626433832795;
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)0.0;
-        vx  = (u_star/0.4 * log(coordZ/z0) + 2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1))  * dt / dx; 
-        vy  =  2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1)  * dt / dx; 
+        vx  = (u_star/0.4 * log(coordZ/z0) + 2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1))  * dt / dx;
+        vy  =  2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1)  * dt / dx;
         vz  = 8.0*u_star/0.4*(sin(cPi*8.0*coordY/H)*sin(cPi*8.0*coordZ/H)+sin(cPi*8.0*coordX/L_x))/(pow(L_z/2.0-coordZ, c2o1)+c1o1) * dt / dx;
     });
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
-
-    SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
 
     SPtr<PlanarAverageProbe> planarAverageProbe = SPtr<PlanarAverageProbe>( new PlanarAverageProbe("planeProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt , tStartOutProbe/dt, tOutProbe/dt, 'z') );
     planarAverageProbe->addAllAvailableStatistics();
@@ -227,14 +224,11 @@ void multipleLevel(const std::string& configPath)
         wallModelProbe->setEvaluatePressureGradient(true);
     para->addProbe( wallModelProbe );
 
-    Simulation sim(communicator);
-    SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
-    SPtr<KernelFactoryImp> kernelFactory = KernelFactoryImp::getInstance();
-    SPtr<PreProcessorFactoryImp> preProcessorFactory = PreProcessorFactoryImp::getInstance();
-    sim.setFactories(kernelFactory, preProcessorFactory);
-    sim.init(para, gridGenerator, fileWriter, cudaMemoryManager);        
+    auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
+    auto gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
+
+    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory);
     sim.run();
-    sim.free();
 }
 
 int main( int argc, char* argv[])
@@ -254,11 +248,11 @@ int main( int argc, char* argv[])
         }
 
         catch (const std::bad_alloc& e)
-        { 
+        {
             VF_LOG_CRITICAL("Bad Alloc: {}", e.what());
         }
         catch (const std::exception& e)
-        {   
+        {
             VF_LOG_CRITICAL("exception: {}", e.what());
         }
         catch (...)

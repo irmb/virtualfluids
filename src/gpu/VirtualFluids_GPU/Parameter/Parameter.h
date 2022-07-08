@@ -1,28 +1,28 @@
 //=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
 //           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
 //
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
 //  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
+//  License as published by the Free Software Foundation, either version 3 of
 //  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 //  for more details.
-//  
+//
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
@@ -33,17 +33,16 @@
 #ifndef GPU_PARAMETER_H
 #define GPU_PARAMETER_H
 
-#include <vector>
-#include <string>
-#include <memory>
 #include <functional>
+#include <memory>
+#include <string>
+#include <vector>
 
-#include "LBM/D3Q27.h"
+#include "lbm/constants/D3Q27.h"
 #include "LBM/LB.h"
 #include "PreCollisionInteractor/PreCollisionInteractor.h"
 
 #include "VirtualFluids_GPU_export.h"
-
 
 struct curandStateXORWOW;
 typedef struct curandStateXORWOW curandState;
@@ -53,29 +52,41 @@ namespace basics
 {
 class ConfigurationFile;
 }
-}
+} // namespace vf
+class CudaStreamManager;
 
 //! \struct LBMSimulationParameter
 //! \brief struct holds and manages the LB-parameter of the simulation
 //! \brief For this purpose it holds structures and pointer for host and device data, respectively.
-struct LBMSimulationParameter
-{
-    bool evenOrOdd;
-    unsigned int numberofthreads;
+struct LBMSimulationParameter {
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief decides if the simulation timestep is even or odd
+    //! \brief this information is important for the esoteric twist
+    bool isEvenTimestep;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the number of threads per GPU block
+    uint numberofthreads;
 
     // distributions///////////
     // Distributions19 d0;
-    Distributions27 d0;
-    Distributions27 d0SP;
+    Distributions27 d0;  // DEPRECATED: distribution functions for full matrix (not sparse)
+    //! \brief store all distribution functions for the D3Q27
+    Distributions27 distributions;
 
     // distributions F3////////
     Distributions6 g6;
 
-    // thermo//////////////////
-    Distributions7 d7;
-    Distributions27 d27;
+    // advection diffusion //////////////////
+    //! \brief store all distribution functions for the D3Q7 advection diffusion field
+    Distributions7 distributionsAD7;
+    //! \brief store all distribution functions for the D3Q27 advection diffusion field
+    Distributions27 distributionsAD27;
+    //! \brief stores a field of concentration values
     real *Conc, *Conc_Full;
+    //! \brief stores the diffusivity
     real diffusivity;
+    //! \brief stores the value for omega (for the diffusivity)
+    real omegaDiffusivity;
     // BC NoSlip
     TempforBoundaryConditions Temp;
     // BC Velocity
@@ -94,20 +105,22 @@ struct LBMSimulationParameter
     real cStartx, cStarty, cStartz;
     real cFx, cFy, cFz;
 
-    // geo/////////////////////
-    int *geo;
-    unsigned int *geoSP;
+    // typeOfGridNode (formerly known as "geo") /////////////////////
+    int *geo; // DEPRECATED: typeOfGridNode for full matrix (not sparse)
+    //! \brief stores the type for every lattice node (f.e. fluid node)
+    unsigned int *typeOfGridNode;
 
     // k///////////////////////
-    unsigned int *k;
+    unsigned int *k; // DEPRECATED: index for full matrix
 
-    // neighbor////////////////
-    // unsigned int *neighborX, *neighborY, *neighborZ;
-    unsigned int *neighborX_SP, *neighborY_SP, *neighborZ_SP, *neighborWSB_SP;
+    // neighbor///////////////////////////////////////////////////////////////
+    //! \brief store the neighbors in +X, +Y, +Z, and in diagonal negative direction
+    //! \brief this information is important because we use an indirect addressing scheme
+    uint *neighborX, *neighborY, *neighborZ, *neighborInverse;
 
-    // coordinates////////////
-    // unsigned int *coordX_SP, *coordY_SP, *coordZ_SP;
-    real *coordX_SP, *coordY_SP, *coordZ_SP;
+    // coordinates////////////////////////////////////////////////////////////
+    //! \brief store the coordinates for every lattice node 
+    real *coordinateX, *coordinateY, *coordinateZ;
 
     // body forces////////////
     real *forceX_SP, *forceY_SP, *forceZ_SP;
@@ -119,10 +132,20 @@ struct LBMSimulationParameter
     real *turbViscosity;
     real *gSij, *gSDij, *gDxvx, *gDyvx, *gDzvx, *gDxvy, *gDyvy, *gDzvy, *gDxvz, *gDyvz, *gDzvz; // DebugInformation
 
+    // turbulence intensity //
+    real *vx_mean, *vy_mean, *vz_mean;       // means
+    real *vxx, *vyy, *vzz, *vxy, *vxz, *vyz; // fluctuations
+    std::vector<real> turbulenceIntensity;
+
     // macroscopic values//////
-    real *vx, *vy, *vz, *rho;
-    real *vx_SP, *vy_SP, *vz_SP, *rho_SP, *press_SP;
-    real vis, omega;
+    // real *vx, *vy, *vz, *rho;  // DEPRECATED: macroscopic values for full matrix
+    //! \brief store the macroscopic values (velocity, density, pressure)
+    //! \brief for every lattice node
+    real *velocityX, *velocityY, *velocityZ, *rho, *pressure;
+    //! \brief stores the value for omega
+    real omega;
+    //! \brief stores the value for viscosity (on level 0)
+    real vis;
 
     // derivations for iso test
     real *dxxUx, *dyyUy, *dzzUz;
@@ -142,7 +165,8 @@ struct LBMSimulationParameter
     unsigned int sizePlaneXY, sizePlaneYZ, sizePlaneXZ;
 
     // size of sparse matrix//////////
-    unsigned int size_Mat_SP;
+    //! \brief stores the number of nodes (based on indirect addressing scheme)
+    unsigned int numberOfNodes;
     unsigned int size_Array_SP;
 
     // size of Plane btw. 2 GPUs//////
@@ -158,6 +182,7 @@ struct LBMSimulationParameter
     bool isSetPress;
 
     // memsizeSP/////////////////
+    //! \brief stores the size of the memory consumption for real/int values of the arrays (e.g. coordinates, velocity)
     unsigned int mem_size_real_SP;
     unsigned int mem_size_int_SP;
 
@@ -182,30 +207,35 @@ struct LBMSimulationParameter
     unsigned int mem_size_kCF;
     unsigned int mem_size_kFC;
 
+    InterpolationCellFC intFCBorder;
+    InterpolationCellFC intFCBulk;
+    InterpolationCellCF intCFBorder;
+    InterpolationCellCF intCFBulk;
+
     // offset//////////////////
     OffsetCF offCF;
+    OffsetCF offCFBulk;
     OffsetFC offFC;
     unsigned int mem_size_kCF_off;
     unsigned int mem_size_kFC_off;
 
     // BC's////////////////////
-    QforBoundaryConditions QWall, Qinflow, Qoutflow, QSlip, QStress;
-    unsigned int kQ = 0, kInflowQ = 0, kOutflowQ = 0, kSlipQ = 0, kStressQ = 0;
-    unsigned int kQread, kInflowQread, kOutflowQread, kSlipQread, kStressQread;
+    //! \brief stores the boundary condition data
+    QforBoundaryConditions noSlipBC, velocityBC, outflowBC, slipBC, stressBC, pressureBC;
+    //! \brief number of lattice nodes for the boundary conditions
+    unsigned int numberOfNoSlipBCnodesRead, numberOfVeloBCnodesRead, numberOfOutflowBCnodesRead, numberOfSlipBCnodesRead, numberOfStressBCnodesRead, numberOfPressureBCnodesRead;
 
-    QforBoundaryConditions QpressX0, QpressX1, QpressY0, QpressY1, QpressZ0, QpressZ1;
-    QforBoundaryConditions QPropeller;
-    QforBoundaryConditions QPress;
-    QforBoundaryConditions QGeom;
-    QforBoundaryConditions QGeomNormalX, QGeomNormalY, QGeomNormalZ;
-    QforBoundaryConditions QInflowNormalX, QInflowNormalY, QInflowNormalZ;
-    QforBoundaryConditions QOutflowNormalX, QOutflowNormalY, QOutflowNormalZ;
-    QforBoundaryConditions QInlet, QOutlet, QPeriodic;
-    unsigned int kInletQread, kOutletQread;
-    unsigned int kPressQ = 0, kPressQread;
+    QforBoundaryConditions QpressX0, QpressX1, QpressY0, QpressY1, QpressZ0, QpressZ1; // DEPRECATED
+    QforBoundaryConditions propellerBC;
+    QforBoundaryConditions geometryBC;
+    QforBoundaryConditions geometryBCnormalX, geometryBCnormalY, geometryBCnormalZ;
+    QforBoundaryConditions inflowBCnormalX, inflowBCnormalY, inflowBCnormalZ;
+    QforBoundaryConditions outflowBCnormalX, outflowBCnormalY, outflowBCnormalZ;
+    QforBoundaryConditions QInlet, QOutlet, QPeriodic; // DEPRECATED
+    unsigned int kInletQread, kOutletQread;  // DEPRECATED
 
     WallModelParameters wallModel;
-    
+
     // testRoundoffError
     Distributions27 kDistTestRE;
 
@@ -213,6 +243,7 @@ struct LBMSimulationParameter
     // velocities to fit the force
     real *VxForce, *VyForce, *VzForce;
     //////////////////////////////////////////////////////////////////////////
+    //! \brief sets the forcing uniform on every fluid node in all three space dimensions
     real *forcing;
 
     // Measure Points/////////
@@ -294,6 +325,13 @@ struct LBMSimulationParameter
     std::vector<ProcessNeighbor27> recvProcessNeighborX;
     std::vector<ProcessNeighbor27> recvProcessNeighborY;
     std::vector<ProcessNeighbor27> recvProcessNeighborZ;
+
+    std::vector<ProcessNeighbor27> sendProcessNeighborsAfterFtoCX;
+    std::vector<ProcessNeighbor27> sendProcessNeighborsAfterFtoCY;
+    std::vector<ProcessNeighbor27> sendProcessNeighborsAfterFtoCZ;
+    std::vector<ProcessNeighbor27> recvProcessNeighborsAfterFtoCX;
+    std::vector<ProcessNeighbor27> recvProcessNeighborsAfterFtoCY;
+    std::vector<ProcessNeighbor27> recvProcessNeighborsAfterFtoCZ;
     ///////////////////////////////////////////////////////
     // 3D domain decomposition convection diffusion
     std::vector<ProcessNeighbor27> sendProcessNeighborADX;
@@ -311,17 +349,44 @@ struct LBMSimulationParameter
     std::vector<ProcessNeighborF3> recvProcessNeighborF3Y;
     std::vector<ProcessNeighborF3> recvProcessNeighborF3Z;
     ////////////////////////////////////////////////////////////////////////////
+    // 3D domain decomposition: position (index in array) of corner nodes in ProcessNeighbor27
+    struct EdgeNodePositions {
+        int indexOfProcessNeighborRecv;
+        int indexInRecvBuffer;
+        int indexOfProcessNeighborSend;
+        int indexInSendBuffer;
+        EdgeNodePositions(int indexOfProcessNeighborRecv, int indexInRecvBuffer, int indexOfProcessNeighborSend,
+                          int indexInSendBuffer)
+            : indexOfProcessNeighborRecv(indexOfProcessNeighborRecv), indexInRecvBuffer(indexInRecvBuffer),
+              indexOfProcessNeighborSend(indexOfProcessNeighborSend), indexInSendBuffer(indexInSendBuffer)
+        {
+        }
+    };
+    std::vector<EdgeNodePositions> edgeNodesXtoY;
+    std::vector<EdgeNodePositions> edgeNodesXtoZ;
+    std::vector<EdgeNodePositions> edgeNodesYtoZ;
+
+    ///////////////////////////////////////////////////////
+    uint *fluidNodeIndices;
+    uint numberOfFluidNodes;
+    uint *fluidNodeIndicesBorder;
+    uint numberOffluidNodesBorder;
 };
 
+//! \brief Class for LBM-parameter management
 class VIRTUALFLUIDS_GPU_EXPORT Parameter
 {
 public:
     Parameter(const vf::basics::ConfigurationFile &configData, int numberOfProcesses, int myId);
+    Parameter(int numberOfProcesses, int myId);
+    ~Parameter();
     void initLBMSimulationParameter();
 
+    //! \brief Pointer to instance of LBMSimulationParameter - stored on Host System
     std::shared_ptr<LBMSimulationParameter> getParH(int level);
+    //! \brief Pointer to instance of LBMSimulationParameter - stored on Device (GPU)
     std::shared_ptr<LBMSimulationParameter> getParD(int level);
-    
+
     void copyMeasurePointsArrayToVector(int lev);
 
     //////////////////////////////////////////////////////////////////////////
@@ -350,6 +415,7 @@ public:
     void setTOut(unsigned int tout);
     void setTStartOut(unsigned int tStartOut);
     void setTimestepOfCoarseLevel(unsigned int timestep);
+    void setCalcTurbulenceIntensity(bool calcVelocityAndFluctuations);
     void setCalcMedian(bool calcMedian);
     void setCalcDragLift(bool calcDragLift);
     void setCalcCp(bool calcCp);
@@ -368,6 +434,7 @@ public:
     void setOutputPath(std::string oPath);
     void setOutputPrefix(std::string oPrefix);
     void setFName(std::string fname);
+    void setGridPath(std::string gridPath);
     void setGeometryFileC(std::string GeometryFileC);
     void setGeometryFileM(std::string GeometryFileM);
     void setGeometryFileF(std::string GeometryFileF);
@@ -454,8 +521,8 @@ public:
     void setUseMeasurePoints(bool useMeasurePoints);
     void setUseWale(bool useWale);
     void setUseTurbulentViscosity(bool useTurbulentViscosity);
-    void setUseAMD( bool useAMD);
-    void setSGSConstant( real SGSConstant);
+    void setUseAMD(bool useAMD);
+    void setSGSConstant(real SGSConstant);
     void setHasWallModelMonitor(bool hasWallModelMonitor);
     void setUseInitNeq(bool useInitNeq);
     void setSimulatePorousMedia(bool simulatePorousMedia);
@@ -507,8 +574,12 @@ public:
     void setIsNeighborX(bool isNeighbor);
     void setIsNeighborY(bool isNeighbor);
     void setIsNeighborZ(bool isNeighbor);
-    // void setkInflowQ(unsigned int kInflowQ);
-    // void setkOutflowQ(unsigned int kOutflowQ);
+    void setSendProcessNeighborsAfterFtoCX(int numberOfNodes, int level, int arrayIndex);
+    void setSendProcessNeighborsAfterFtoCY(int numberOfNodes, int level, int arrayIndex);
+    void setSendProcessNeighborsAfterFtoCZ(int numberOfNodes, int level, int arrayIndex);
+    void setRecvProcessNeighborsAfterFtoCX(int numberOfNodes, int level, int arrayIndex);
+    void setRecvProcessNeighborsAfterFtoCY(int numberOfNodes, int level, int arrayIndex);
+    void setRecvProcessNeighborsAfterFtoCZ(int numberOfNodes, int level, int arrayIndex);
     // void setQinflowH(QforBoundaryConditions* QinflowH);
     // void setQinflowD(QforBoundaryConditions* QinflowD);
     // void setQoutflowH(QforBoundaryConditions* QoutflowH);
@@ -531,10 +602,9 @@ public:
 
     void setADKernel(std::string adKernel);
 
-    //adder
-
-	void addActuator(SPtr<PreCollisionInteractor> actuator);
-	void addProbe(SPtr<PreCollisionInteractor> probes);
+    // adder
+    void addActuator(SPtr<PreCollisionInteractor> actuator);
+    void addProbe(SPtr<PreCollisionInteractor> probes);
 
     // getter
     double *getForcesDouble();
@@ -556,13 +626,16 @@ public:
     bool getCompOn();
     bool getPrintFiles();
     bool getReadGeo();
+    bool getCalcTurbulenceIntensity();
     bool getCalcMedian();
     bool getCalcDragLift();
     bool getCalcCp();
     bool getCalcParticle();
     bool getWriteVeloASCIIfiles();
     bool getCalcPlaneConc();
+    //! \returns index of finest level
     int getFine();
+    //! \returns index of coarsest level
     int getCoarse();
     int getParticleBasicLevel();
     int getParticleInitLevel();
@@ -579,6 +652,7 @@ public:
     std::string getOutputPath();
     std::string getOutputPrefix();
     std::string getFName();
+    std::string getGridPath();
     std::string getGeometryFileC();
     std::string getGeometryFileM();
     std::string getGeometryFileF();
@@ -664,10 +738,10 @@ public:
     real getViscosityRatio();
     real getVelocityRatio();
     real getDensityRatio();
-    real getPressRatio();    
+    real getPressRatio();
     real getTimeRatio();
     real getLengthRatio();
-    real getForceRatio();    
+    real getForceRatio();
     real getRealX();
     real getRealY();
     real getRe();
@@ -768,29 +842,43 @@ public:
     double hostQuadricLimiters[3];
 
     ////////////////////////////////////////////////////////////////////////////
-    // initial condition
+    // initial condition fluid
     void setInitialCondition(std::function<void(real, real, real, real &, real &, real &, real &)> initialCondition);
     std::function<void(real, real, real, real &, real &, real &, real &)> &getInitialCondition();
 
+    // initial condition concentration
+    void setInitialConditionAD(std::function<void(real, real, real, real &)> initialConditionAD);
+    std::function<void(real, real, real, real &)> &getInitialConditionAD();
+
+    ////////////////////////////////////////////////////////////////////////////
+
     std::vector<std::shared_ptr<LBMSimulationParameter>> parH = std::vector<std::shared_ptr<LBMSimulationParameter>>(1);
     std::vector<std::shared_ptr<LBMSimulationParameter>> parD = std::vector<std::shared_ptr<LBMSimulationParameter>>(1);
+
+    ////////////////////////////////////////////////////////////////////////////
+
 private:
     void readConfigData(const vf::basics::ConfigurationFile &configData);
+    void initGridPaths();
+    void initGridBasePoints();
+    void initDefaultLBMkernelAllLevels();
 
-    bool compOn { false };
-    bool diffOn { false };
-    bool isF3 { false };
-    bool calcDragLift { false };
-    bool calcCp { false };
-    bool writeVeloASCII { false };
-    bool calcPlaneConc { false };
-    bool isBodyForce { false };
-    int diffMod {27};
-    int maxlevel {0};
-    int coarse {0};
-    int fine {0};
-    int factor_gridNZ {2};
-    int D3Qxx {27};
+private:
+    bool compOn{ false };
+    bool diffOn{ false };
+    bool isF3{ false };
+    bool calcDragLift{ false };
+    bool calcCp{ false };
+    bool writeVeloASCII{ false };
+    bool calcPlaneConc{ false };
+    bool calcVelocityAndFluctuations{ false };
+    bool isBodyForce{ false };
+    int diffMod{ 27 };
+    int maxlevel{ 0 };
+    int coarse{ 0 };
+    int fine{ 0 };
+    int factor_gridNZ{ 2 };
+    int D3Qxx{ 27 };
     InitCondition ic;
     double memsizeGPU;
     unsigned int limitOfNodesForVTK;
@@ -798,21 +886,21 @@ private:
     unsigned int timestep;
 
     // Kernel
-    std::string mainKernel { "CumulantK17Comp" };
-    bool multiKernelOn { false };
+    std::string mainKernel{ "CumulantK17Comp" };
+    bool multiKernelOn{ false };
     std::vector<int> multiKernelLevel;
     std::vector<std::string> multiKernel;
-
+    bool kernelNeedsFluidNodeIndicesToRun = false;
     std::string adKernel;
 
     //////////////////////////////////////////////////////////////////////////
     // particles
-    int particleBasicLevel {0};
-    int particleInitLevel {0};
-    int numberOfParticles {0};
-    bool calcParticles {false};
-    real startXHotWall {(real)0.0};
-    real endXHotWall {(real)0.0};
+    int particleBasicLevel{ 0 };
+    int particleInitLevel{ 0 };
+    int numberOfParticles{ 0 };
+    bool calcParticles{ false };
+    real startXHotWall{ (real)0.0 };
+    real endXHotWall{ (real)0.0 };
     //////////////////////////////////////////////////////////////////////////
     // CUDA random number generation
     curandState *devState;
@@ -826,13 +914,13 @@ private:
     TempPressforBoundaryConditions *TempPressH, *TempPressD;
 
     // Drehung///////////////
-    real Phi {0.0};
-	real angularVelocity;
+    real Phi{ 0.0 };
+    real angularVelocity;
     unsigned int startTurn;
 
     // PreCollisionInteractors //////////////
     std::vector<SPtr<PreCollisionInteractor>> actuators;
-	std::vector<SPtr<PreCollisionInteractor>> probes;
+    std::vector<SPtr<PreCollisionInteractor>> probes;
 
     // Step of Ensight writing//
     unsigned int stepEnsight;
@@ -858,8 +946,32 @@ private:
     bool isNeigborX, isNeigborY, isNeigborZ;
 
     ////////////////////////////////////////////////////////////////////////////
-    // initial condition
+    //! \brief initial condition fluid
     std::function<void(real, real, real, real &, real &, real &, real &)> initialCondition;
+    //! \brief initial condition concentration
+    std::function<void(real, real, real, real &)> initialConditionAD;
+
+    ////////////////////////////////////////////////////////////////////////////
+    // cuda streams
+
+    //! determines whether streams and thus communication hiding should be used
+    bool useStreams{ false };
+    std::unique_ptr<CudaStreamManager> cudaStreamManager;
+
+public:
+    //! \brief sets whether streams and thus communication hiding should be used
+    //! \details This function is only useful for simulations on multiple GPUs. If there is only one MPI process, the
+    //! passed value is automatically overwritten with false.
+    void setUseStreams(bool useStreams);
+    bool getUseStreams();
+    std::unique_ptr<CudaStreamManager> &getStreamManager();
+    bool getKernelNeedsFluidNodeIndicesToRun();
+
+    void initProcessNeighborsAfterFtoCX(int level);
+    void initProcessNeighborsAfterFtoCY(int level);
+    void initProcessNeighborsAfterFtoCZ(int level);
+
+    bool useReducedCommunicationAfterFtoC{ true };
 };
 
 #endif

@@ -76,12 +76,12 @@ void PlaneProbe::findPoints(Parameter* para, GridProvider* gridProvider, std::ve
                             std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
                             int level)
 {
-    real dx = abs(para->getParH(level)->coordX_SP[1]-para->getParH(level)->coordX_SP[para->getParH(level)->neighborX_SP[1]]);
-    for(uint j=1; j<para->getParH(level)->size_Mat_SP; j++ )
+    real dx = abs(para->getParH(level)->coordinateX[1]-para->getParH(level)->coordinateX[para->getParH(level)->neighborX[1]]);
+    for(uint j=1; j<para->getParH(level)->numberOfNodes; j++ )
     {
-        real pointCoordX = para->getParH(level)->coordX_SP[j];
-        real pointCoordY = para->getParH(level)->coordY_SP[j];
-        real pointCoordZ = para->getParH(level)->coordZ_SP[j];
+        real pointCoordX = para->getParH(level)->coordinateX[j];
+        real pointCoordY = para->getParH(level)->coordinateY[j];
+        real pointCoordZ = para->getParH(level)->coordinateZ[j];
         real distX = pointCoordX - this->posX;
         real distY = pointCoordY - this->posY;
         real distZ = pointCoordZ - this->posZ;
@@ -104,7 +104,7 @@ void PlaneProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* p
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, probeStruct->nPoints);
     calcQuantitiesKernel<<<grid.grid, grid.threads>>>(  probeStruct->pointIndicesD, probeStruct->nPoints, probeStruct->vals,
-    para->getParD(level)->vx_SP, para->getParD(level)->vy_SP, para->getParD(level)->vz_SP, para->getParD(level)->rho_SP, 
-    para->getParD(level)->neighborX_SP, para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP, 
+    para->getParD(level)->velocityX, para->getParD(level)->velocityY, para->getParD(level)->velocityZ, para->getParD(level)->rho, 
+    para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ, 
     probeStruct->quantitiesD, probeStruct->arrayOffsetsD, probeStruct->quantitiesArrayD);
 }

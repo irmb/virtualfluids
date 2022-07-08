@@ -34,6 +34,7 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <algorithm>
 
 #include "geometries/Arrow/ArrowImp.h"
 #include "geometries/BoundingBox/BoundingBox.h"
@@ -74,19 +75,43 @@ std::shared_ptr<LevelGridBuilder> LevelGridBuilder::makeShared()
     return SPtr<LevelGridBuilder>(new LevelGridBuilder());
 }
 
-void LevelGridBuilder::setSlipBoundaryCondition(SideType sideType, real nomalX, real normalY, real normalZ)
+void LevelGridBuilder::setSlipBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ)
 {
-    SPtr<SlipBoundaryCondition> slipBoundaryCondition = SlipBoundaryCondition::make(nomalX, normalY, normalZ);
+    if(sideType == SideType::GEOMETRY){
+        setSlipGeometryBoundaryCondition(normalX, normalY, normalZ);
+    }else{
+        SPtr<SlipBoundaryCondition> slipBoundaryCondition = SlipBoundaryCondition::make(normalX, normalY, normalZ);
 
-    auto side = SideFactory::make(sideType);
+        auto side = SideFactory::make(sideType);
 
-    slipBoundaryCondition->side = side;
-    slipBoundaryCondition->side->addIndices(grids, 0, slipBoundaryCondition);
+        slipBoundaryCondition->side = side;
+        slipBoundaryCondition->side->addIndices(grids, 0, slipBoundaryCondition);
 
-    slipBoundaryCondition->fillSlipNormalLists();
-    boundaryConditions[0]->slipBoundaryConditions.push_back(slipBoundaryCondition);
+        slipBoundaryCondition->fillSlipNormalLists();
+        boundaryConditions[0]->slipBoundaryConditions.push_back(slipBoundaryCondition);
 
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Set Slip BC on level " << 0 << " with " << (int)slipBoundaryCondition->indices.size() << "\n";
+        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Set Slip BC on level " << 0 << " with " << (int)slipBoundaryCondition->indices.size() << "\n";
+    }
+}
+
+void LevelGridBuilder::setSlipGeometryBoundaryCondition(real normalX, real normalY, real normalZ)
+{
+    geometryHasValues = true;
+
+    for (uint level = 0; level < getNumberOfGridLevels(); level++)
+    {
+		if (boundaryConditions[level]->geometryBoundaryCondition != nullptr)
+		{
+			boundaryConditions[level]->geometryBoundaryCondition->normalX = normalX;
+			boundaryConditions[level]->geometryBoundaryCondition->normalY = normalY;
+			boundaryConditions[level]->geometryBoundaryCondition->normalZ = normalZ;
+			boundaryConditions[level]->geometryBoundaryCondition->side->addIndices(grids, level, boundaryConditions[level]->geometryBoundaryCondition);
+
+            boundaryConditions[level]->geometryBoundaryCondition->fillSlipNormalLists();
+
+            *logging::out << logging::Logger::INFO_INTERMEDIATE << "Set Geometry Slip BC on level " << level << " with " << (int)boundaryConditions[level]->geometryBoundaryCondition->indices.size() <<"\n";
+		}
+    }
 }
 
 void LevelGridBuilder::setStressBoundaryCondition(  SideType sideType, 
@@ -178,18 +203,37 @@ void LevelGridBuilder::setPeriodicBoundaryCondition(bool periodic_X, bool period
 
 void LevelGridBuilder::setNoSlipBoundaryCondition(SideType sideType)
 {
+    if (sideType == SideType::GEOMETRY)
+        setNoSlipGeometryBoundaryCondition();
+    else {
+        for (uint level = 0; level < getNumberOfGridLevels(); level++) {
+            SPtr<VelocityBoundaryCondition> noSlipBoundaryCondition = VelocityBoundaryCondition::make(0.0, 0.0, 0.0);
+
+            auto side = SideFactory::make(sideType);
+
+            noSlipBoundaryCondition->side = side;
+            noSlipBoundaryCondition->side->addIndices(grids, level, noSlipBoundaryCondition);
+
+            noSlipBoundaryCondition->fillVelocityLists();
+
+            // now effectively just a wrapper for velocityBC with zero velocity. No distinction in Gridgenerator.
+            boundaryConditions[level]->velocityBoundaryConditions.push_back(noSlipBoundaryCondition); 
+        }
+    }
+}
+
+void LevelGridBuilder::setNoSlipGeometryBoundaryCondition()
+{
+    geometryHasValues = true;
+
     for (uint level = 0; level < getNumberOfGridLevels(); level++)
     {
-        SPtr<VelocityBoundaryCondition> noSlipBoundaryCondition = VelocityBoundaryCondition::make(0.0, 0.0, 0.0);
+		if (boundaryConditions[level]->geometryBoundaryCondition != nullptr)
+		{
+			boundaryConditions[level]->geometryBoundaryCondition->side->addIndices(grids, level, boundaryConditions[level]->geometryBoundaryCondition);
 
-        auto side = SideFactory::make(sideType);
-
-        noSlipBoundaryCondition->side = side;
-        noSlipBoundaryCondition->side->addIndices(grids, level, noSlipBoundaryCondition);
-
-        noSlipBoundaryCondition->fillVelocityLists();
-
-        boundaryConditions[level]->velocityBoundaryConditions.push_back(noSlipBoundaryCondition); //now effectively just a wrapper for velocityBC with zero velocity. No distinction in Gridgenerator.
+            *logging::out << logging::Logger::INFO_INTERMEDIATE << "Set Geometry No-Slip BC on level " << level << " with " << (int)boundaryConditions[level]->geometryBoundaryCondition->indices.size() <<"\n";
+		}
     }
 }
 
@@ -315,7 +359,6 @@ uint LevelGridBuilder::getNumberOfNodes(unsigned int level) const
     return grids[level]->getSparseSize();
 }
 
-
 std::shared_ptr<Grid> LevelGridBuilder::getGrid(int level, int box)
 {
     return this->grids[level];
@@ -344,6 +387,26 @@ void LevelGridBuilder::getNodeValues(real *xCoords, real *yCoords, real *zCoords
     grids[level]->getNodeValues(xCoords, yCoords, zCoords, neighborX, neighborY, neighborZ, neighborNegative, geo);
 }
 
+
+GRIDGENERATOR_EXPORT void LevelGridBuilder::getFluidNodeIndices(uint *fluidNodeIndices, const int level) const 
+{ 
+    grids[level]->getFluidNodeIndices(fluidNodeIndices);
+}
+
+GRIDGENERATOR_EXPORT void LevelGridBuilder::getFluidNodeIndicesBorder(uint *fluidNodeIndices, const int level) const
+{
+    grids[level]->getFluidNodeIndicesBorder(fluidNodeIndices);
+}
+
+uint LevelGridBuilder::getNumberOfFluidNodes(unsigned int level) const 
+{
+    return grids[level]->getNumberOfFluidNodes(); 
+}
+
+GRIDGENERATOR_EXPORT uint LevelGridBuilder::getNumberOfFluidNodesBorder(unsigned int level) const
+{
+    return grids[level]->getNumberOfFluidNodesBorder();
+}
 
 uint LevelGridBuilder::getSlipSize(int level) const
 {

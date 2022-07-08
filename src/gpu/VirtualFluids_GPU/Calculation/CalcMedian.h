@@ -6,8 +6,8 @@
 #include "Parameter/Parameter.h"
 #include "GPU/CudaMemoryManager.h"
 
-extern "C" void allocMedian(Parameter* para, CudaMemoryManager* cudaManager);
-extern "C" void allocMedianAD(Parameter* para, CudaMemoryManager* cudaManager);
+extern "C" void allocMedian(Parameter* para, CudaMemoryManager* cudaMemoryManager);
+extern "C" void allocMedianAD(Parameter* para, CudaMemoryManager* cudaMemoryManager);
 extern "C" void calcMedian(Parameter* para, unsigned int tdiff);
 extern "C" void resetMedian(Parameter* para);
 

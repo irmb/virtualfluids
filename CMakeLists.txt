@@ -170,9 +170,7 @@ endif()
 
 if(BUILD_USE_MPI)
     find_package(MPI REQUIRED)
-    if(BUILD_VF_CPU)
-        list(APPEND VF_COMPILER_DEFINITION VF_MPI)
-    endif()
+    list(APPEND VF_COMPILER_DEFINITION VF_MPI)
 endif()
 
 # boost

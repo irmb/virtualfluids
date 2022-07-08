@@ -194,30 +194,30 @@ __global__ void applyBodyForces(real* gridCoordsX, real* gridCoordsY, real* grid
 }
 
 
-void ActuatorLine::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager)
+void ActuatorLine::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaMemoryManager)
 {
     if(!para->getIsBodyForce()) throw std::runtime_error("try to allocate ActuatorLine but BodyForce is not set in Parameter.");
-    this->initBladeRadii(cudaManager);
-    this->initBladeCoords(cudaManager);    
-    this->initBladeIndices(para, cudaManager);
-    this->initBladeVelocities(cudaManager);
-    this->initBladeForces(cudaManager);    
-    this->initBoundingSphere(para, cudaManager);
+    this->initBladeRadii(cudaMemoryManager);
+    this->initBladeCoords(cudaMemoryManager);    
+    this->initBladeIndices(para, cudaMemoryManager);
+    this->initBladeVelocities(cudaMemoryManager);
+    this->initBladeForces(cudaMemoryManager);    
+    this->initBoundingSphere(para, cudaMemoryManager);
 }
 
 
-void ActuatorLine::interact(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t)
+void ActuatorLine::interact(Parameter* para, CudaMemoryManager* cudaMemoryManager, int level, unsigned int t)
 {
     if (level != this->level) return;
 
-    cudaManager->cudaCopyBladeCoordsHtoD(this);
+    cudaMemoryManager->cudaCopyBladeCoordsHtoD(this);
 
     vf::cuda::CudaGrid bladeGrid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, this->nNodes);
 
     interpolateVelocities<<< bladeGrid.grid, bladeGrid.threads >>>(
-        para->getParD(this->level)->coordX_SP, para->getParD(this->level)->coordY_SP, para->getParD(this->level)->coordZ_SP,        
-        para->getParD(this->level)->neighborX_SP, para->getParD(this->level)->neighborY_SP, para->getParD(this->level)->neighborZ_SP, para->getParD(this->level)->neighborWSB_SP,
-        para->getParD(this->level)->vx_SP, para->getParD(this->level)->vy_SP, para->getParD(this->level)->vz_SP,
+        para->getParD(this->level)->coordinateX, para->getParD(this->level)->coordinateY, para->getParD(this->level)->coordinateZ,        
+        para->getParD(this->level)->neighborX, para->getParD(this->level)->neighborY, para->getParD(this->level)->neighborZ, para->getParD(this->level)->neighborInverse,
+        para->getParD(this->level)->velocityX, para->getParD(this->level)->velocityY, para->getParD(this->level)->velocityZ,
         this->bladeCoordsXD, this->bladeCoordsYD, this->bladeCoordsZD,  
         this->bladeVelocitiesXD, this->bladeVelocitiesYD, this->bladeVelocitiesZD,  
         this->nBlades, this->nBladeNodes,
@@ -225,16 +225,16 @@ void ActuatorLine::interact(Parameter* para, CudaMemoryManager* cudaManager, int
         this->turbinePosX, this->turbinePosY, this->turbinePosZ,
         this->bladeIndicesD, para->getVelocityRatio(), this->invDeltaX);
 
-    cudaManager->cudaCopyBladeVelocitiesDtoH(this);
+    cudaMemoryManager->cudaCopyBladeVelocitiesDtoH(this);
 
     this->calcBladeForces();
 
-    cudaManager->cudaCopyBladeForcesHtoD(this);
+    cudaMemoryManager->cudaCopyBladeForcesHtoD(this);
 
     vf::cuda::CudaGrid sphereGrid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, this->nIndices);
 
     applyBodyForces<<<sphereGrid.grid, sphereGrid.threads>>>(
-        para->getParD(this->level)->coordX_SP, para->getParD(this->level)->coordY_SP, para->getParD(this->level)->coordZ_SP,        
+        para->getParD(this->level)->coordinateX, para->getParD(this->level)->coordinateY, para->getParD(this->level)->coordinateZ,        
         para->getParD(this->level)->forceX_SP, para->getParD(this->level)->forceY_SP, para->getParD(this->level)->forceZ_SP,        
         this->bladeCoordsXD, this->bladeCoordsYD, this->bladeCoordsZD,  
         this->bladeForcesXD, this->bladeForcesYD, this->bladeForcesZD,
@@ -248,14 +248,14 @@ void ActuatorLine::interact(Parameter* para, CudaMemoryManager* cudaManager, int
 }
 
 
-void ActuatorLine::free(Parameter* para, CudaMemoryManager* cudaManager)
+void ActuatorLine::free(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
-    cudaManager->cudaFreeBladeRadii(this);
-    cudaManager->cudaFreeBladeCoords(this);
-    cudaManager->cudaFreeBladeVelocities(this);
-    cudaManager->cudaFreeBladeForces(this);
-    cudaManager->cudaFreeBladeIndices(this);
-    cudaManager->cudaFreeSphereIndices(this);
+    cudaMemoryManager->cudaFreeBladeRadii(this);
+    cudaMemoryManager->cudaFreeBladeCoords(this);
+    cudaMemoryManager->cudaFreeBladeVelocities(this);
+    cudaMemoryManager->cudaFreeBladeForces(this);
+    cudaMemoryManager->cudaFreeBladeIndices(this);
+    cudaMemoryManager->cudaFreeSphereIndices(this);
 }
 
 
@@ -298,9 +298,9 @@ void ActuatorLine::calcBladeForces()
     this->calcForcesEllipticWing();
 }
 
-void ActuatorLine::initBladeRadii(CudaMemoryManager* cudaManager)
+void ActuatorLine::initBladeRadii(CudaMemoryManager* cudaMemoryManager)
 {   
-    cudaManager->cudaAllocBladeRadii(this);
+    cudaMemoryManager->cudaAllocBladeRadii(this);
 
     real dr = c1o2*this->diameter/this->nBladeNodes;  
 
@@ -308,15 +308,15 @@ void ActuatorLine::initBladeRadii(CudaMemoryManager* cudaManager)
     {
         this->bladeRadiiH[node] = dr*(node+1);
     }
-    cudaManager->cudaCopyBladeRadiiHtoD(this);
+    cudaMemoryManager->cudaCopyBladeRadiiHtoD(this);
 
     real dxOPiSqrtEps = pow(this->deltaX/(this->epsilon*sqrt(cPi)),c3o1);
     this->factorGaussian = dr*dxOPiSqrtEps/this->forceRatio;
 }
 
-void ActuatorLine::initBladeCoords(CudaMemoryManager* cudaManager)
+void ActuatorLine::initBladeCoords(CudaMemoryManager* cudaMemoryManager)
 {   
-    cudaManager->cudaAllocBladeCoords(this);
+    cudaMemoryManager->cudaAllocBladeCoords(this);
 
     for(uint blade=0; blade<this->nBlades; blade++)
     {
@@ -329,12 +329,12 @@ void ActuatorLine::initBladeCoords(CudaMemoryManager* cudaManager)
             this->bladeCoordsZH[node] = this->bladeRadiiH[bladeNode];
         }
     }
-    cudaManager->cudaCopyBladeCoordsHtoD(this);
+    cudaMemoryManager->cudaCopyBladeCoordsHtoD(this);
 }
 
-void ActuatorLine::initBladeVelocities(CudaMemoryManager* cudaManager)
+void ActuatorLine::initBladeVelocities(CudaMemoryManager* cudaMemoryManager)
 {   
-    cudaManager->cudaAllocBladeVelocities(this);
+    cudaMemoryManager->cudaAllocBladeVelocities(this);
 
     for(uint node=0; node<this->nNodes; node++)
     {
@@ -342,12 +342,12 @@ void ActuatorLine::initBladeVelocities(CudaMemoryManager* cudaManager)
         this->bladeVelocitiesYH[node] = c0o1;
         this->bladeVelocitiesZH[node] = c0o1;
     }
-    cudaManager->cudaCopyBladeVelocitiesHtoD(this);
+    cudaMemoryManager->cudaCopyBladeVelocitiesHtoD(this);
 }
 
-void ActuatorLine::initBladeForces(CudaMemoryManager* cudaManager)
+void ActuatorLine::initBladeForces(CudaMemoryManager* cudaMemoryManager)
 {   
-    cudaManager->cudaAllocBladeForces(this);
+    cudaMemoryManager->cudaAllocBladeForces(this);
 
     for(uint node=0; node<this->nNodes; node++)
     {
@@ -355,40 +355,40 @@ void ActuatorLine::initBladeForces(CudaMemoryManager* cudaManager)
         this->bladeForcesYH[node] = c0o1;
         this->bladeForcesZH[node] = c0o1;
     }
-    cudaManager->cudaCopyBladeForcesHtoD(this);
+    cudaMemoryManager->cudaCopyBladeForcesHtoD(this);
 }
 
-void ActuatorLine::initBladeIndices(Parameter* para, CudaMemoryManager* cudaManager)
+void ActuatorLine::initBladeIndices(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {   
-    cudaManager->cudaAllocBladeIndices(this);
+    cudaMemoryManager->cudaAllocBladeIndices(this);
 
     for(uint node=0; node<this->nNodes; node++)
 
     {
         this->bladeIndicesH[node] = 1;
     }
-    cudaManager->cudaCopyBladeIndicesHtoD(this);
+    cudaMemoryManager->cudaCopyBladeIndicesHtoD(this);
 }
 
-void ActuatorLine::initBoundingSphere(Parameter* para, CudaMemoryManager* cudaManager)
+void ActuatorLine::initBoundingSphere(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
     // Actuator line exists only on 1 level
     std::vector<int> nodesInSphere;
     real sphereRadius = c1o2*this->diameter+c4o1*this->epsilon;
     real sphereRadiusSqrd = sphereRadius*sphereRadius;
 
-    for (uint j = 1; j <= para->getParH(this->level)->size_Mat_SP; j++)
+    for (uint j = 1; j <= para->getParH(this->level)->numberOfNodes; j++)
     {
-        const real distX = para->getParH(this->level)->coordX_SP[j]-this->turbinePosX;
-        const real distY = para->getParH(this->level)->coordY_SP[j]-this->turbinePosY;
-        const real distZ = para->getParH(this->level)->coordZ_SP[j]-this->turbinePosZ;
+        const real distX = para->getParH(this->level)->coordinateX[j]-this->turbinePosX;
+        const real distY = para->getParH(this->level)->coordinateY[j]-this->turbinePosY;
+        const real distZ = para->getParH(this->level)->coordinateZ[j]-this->turbinePosZ;
         if(distSqrd(distX,distY,distZ) < sphereRadiusSqrd) nodesInSphere.push_back(j);
     }
 
     this->nIndices = uint(nodesInSphere.size());
-    cudaManager->cudaAllocSphereIndices(this);
+    cudaMemoryManager->cudaAllocSphereIndices(this);
     std::copy(nodesInSphere.begin(), nodesInSphere.end(), this->boundingSphereIndicesH);
-    cudaManager->cudaCopySphereIndicesHtoD(this);
+    cudaMemoryManager->cudaCopySphereIndicesHtoD(this);
 }
 
 void ActuatorLine::setBladeCoords(real* _bladeCoordsX, real* _bladeCoordsY, real* _bladeCoordsZ)

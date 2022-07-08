@@ -17,10 +17,9 @@
 
 //#include "metis.h"
 
-#include "Core/LbmOrGks.h"
-#include "Core/Input/Input.h"
-#include "Core/StringUtilities/StringUtil.h"
-#include "Core/Input/ConfigFileReader/ConfigFileReader.h"
+#include "basics/Core/LbmOrGks.h"
+#include "basics/Core/StringUtilities/StringUtil.h"
+#include <basics/config/ConfigurationFile.h>
 
 #include "VirtualFluids_GPU/LBM/Simulation.h"
 #include "VirtualFluids_GPU/Communication/Communicator.h"
@@ -32,9 +31,9 @@
 
 #include "VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
 #include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
+#include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
-#include "VirtualFluids_GPU/Kernel/Utilities/Mapper/KernelMapper/KernelMapper.h"
 
 #include "global.h"
 
@@ -112,22 +111,21 @@ void multipleLevel(const std::string& configPath)
     logging::Logger::timeStamp(logging::Logger::ENABLE);
     logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
 
+    vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();
+
     //UbLog::reportingLevel() = UbLog::logLevelFromString("DEBUG5");
 
     auto gridFactory = GridFactory::make();
-    gridFactory->setGridStrategy(Device::CPU);
     //gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::RAYCASTING);
     gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
     //gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_UNDER_TRIANGLE);
 
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
     
-	SPtr<ConfigFileReader> configReader = ConfigFileReader::getNewInstance();
-	SPtr<ConfigData> configData = configReader->readConfigFile(configPath);
-	Communicator* comm = Communicator::getInstanz();
-    SPtr<Parameter> para = Parameter::make(configData, comm);
-
-    std::shared_ptr<KernelMapper> kernelMapper = KernelMapper::getInstance();
+    vf::basics::ConfigurationFile config;
+    config.load(configPath);
+    SPtr<Parameter> para = std::make_shared<Parameter>(config, communicator.getNummberOfProcess(), communicator.getPID());
+    BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -238,7 +236,7 @@ void multipleLevel(const std::string& configPath)
 
     } );
 
-    para->setMainKernel(kernelMapper->getEnum( kernel ));
+    para->setMainKernel( kernel );
 
     if( !useLimiter )
         para->setQuadricLimiters( 1000000.0, 1000000.0, 1000000.0 );
@@ -252,22 +250,18 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
-    SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
+    auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
+    SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
     //SPtr<GridProvider> gridGenerator = GridProvider::makeGridReader(FILEFORMAT::BINARY, para, cudaMemoryManager);
 
-    Simulation sim;
     SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
-    SPtr<KernelFactoryImp> kernelFactory = KernelFactoryImp::getInstance();
-    SPtr<PreProcessorFactoryImp> preProcessorFactory = PreProcessorFactoryImp::getInstance();
-    sim.setFactories(kernelFactory, preProcessorFactory);
-    sim.init(para, gridGenerator, fileWriter, cudaMemoryManager);
+    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory);
+    sim.run();
     
     sim.addKineticEnergyAnalyzer( 10 );
     sim.addEnstrophyAnalyzer( 10 );
 
     sim.run();
-    sim.free();
 }
 
 
@@ -317,17 +311,17 @@ int main( int argc, char* argv[])
 
             //////////////////////////////////////////////////////////////////////////
 		}
+        catch (const std::bad_alloc& e)
+        {
+                
+            *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
+            //std::cout << e.what() << std::flush;
+            //MPI_Abort(MPI_COMM_WORLD, -1);
+        }
         catch (const std::exception& e)
         {
                 
             *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
-            //std::cout << e.what() << std::flush;
-            //MPI_Abort(MPI_COMM_WORLD, -1);
-        }
-        catch (const std::bad_alloc e)
-        {
-                
-            *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
             //std::cout << e.what() << std::flush;
             //MPI_Abort(MPI_COMM_WORLD, -1);
         }

@@ -10,7 +10,7 @@ std::shared_ptr<Cumulant1hIncompSP27> Cumulant1hIncompSP27::getNewInstance(std::
 
 void Cumulant1hIncompSP27::run()
 {
-	int size_Mat = para->getParD(level)->size_Mat_SP;
+	int size_Mat = para->getParD(level)->numberOfNodes;
 	int numberOfThreads = para->getParD(level)->numberofthreads;
 
 	int Grid = (size_Mat / numberOfThreads) + 1;
@@ -31,16 +31,16 @@ void Cumulant1hIncompSP27::run()
 	LB_Kernel_Cum_1h_Incomp_SP_27 << < grid, threads >> >(	para->getParD(level)->omega,
 													para->getParD(level)->deltaPhi,
 													para->getAngularVelocity(),
-													para->getParD(level)->geoSP,
-													para->getParD(level)->neighborX_SP,
-													para->getParD(level)->neighborY_SP,
-													para->getParD(level)->neighborZ_SP,
-													para->getParD(level)->coordX_SP,
-													para->getParD(level)->coordY_SP,
-													para->getParD(level)->coordZ_SP,
-													para->getParD(level)->d0SP.f[0],
-													para->getParD(level)->size_Mat_SP,
-													para->getParD(level)->evenOrOdd);
+													para->getParD(level)->typeOfGridNode,
+													para->getParD(level)->neighborX,
+													para->getParD(level)->neighborY,
+													para->getParD(level)->neighborZ,
+													para->getParD(level)->coordinateX,
+													para->getParD(level)->coordinateY,
+													para->getParD(level)->coordinateZ,
+													para->getParD(level)->distributions.f[0],
+													para->getParD(level)->numberOfNodes,
+													para->getParD(level)->isEvenTimestep);
 	getLastCudaError("LB_Kernel_Cum_1h_SP_27 execution failed");
 }
 

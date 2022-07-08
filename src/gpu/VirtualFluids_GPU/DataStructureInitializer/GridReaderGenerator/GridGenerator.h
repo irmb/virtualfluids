@@ -11,6 +11,7 @@
 
 class Parameter;
 class GridBuilder;
+class IndexRearrangementForStreams;
 
 class GridGenerator
 	: public GridProvider
@@ -20,15 +21,19 @@ private:
 	std::vector<std::string> channelBoundaryConditions;
 
 	std::shared_ptr<GridBuilder> builder;
+    std::unique_ptr<IndexRearrangementForStreams> indexRearrangement;
 
 public:
-    VIRTUALFLUIDS_GPU_EXPORT GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager);
+    VIRTUALFLUIDS_GPU_EXPORT GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::gpu::Communicator& communicator);
 	VIRTUALFLUIDS_GPU_EXPORT virtual ~GridGenerator();
 
 	void allocArrays_CoordNeighborGeo() override;
-	void allocArrays_BoundaryValues() override;
+    void allocArrays_BoundaryValues() override;
+
 	void allocArrays_BoundaryQs() override;
     void allocArrays_OffsetScale() override;
+    void allocArrays_fluidNodeIndices() override;
+    void allocArrays_fluidNodeIndicesBorder() override;
 
 	virtual void setDimensions() override;
 	virtual void setBoundingBox() override;
@@ -58,7 +63,8 @@ private:
 	void setSizeGeoQs(unsigned int level) const;
 	void setQ27Size(QforBoundaryConditions &Q, real* QQ, unsigned int sizeQ) const;
 	bool hasQs(int channelSide, unsigned int level) const;
-
+    
+    void initalValuesDomainDecompostion();
 public:
     void initalGridInformations() override;
 

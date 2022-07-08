@@ -335,7 +335,7 @@ void multipleLevel(const std::string& configPath)
     //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_2", 2);
 
     SPtr<Parameter> para = Parameter::make();
-    SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para);
+    SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, communicator);
     //SPtr<GridProvider> gridGenerator = GridProvider::makeGridReader(false, para);
 
     std::ifstream stream;

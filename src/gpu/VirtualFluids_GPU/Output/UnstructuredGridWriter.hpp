@@ -7,7 +7,7 @@
 // #include <math.h>
 #include <cmath>
 #include "LBM/LB.h"
-#include "LBM/D3Q27.h"
+#include "lbm/constants/D3Q27.h"
 #include "Parameter/Parameter.h"
 #include "basics/utilities/UbSystem.h"
 #include <basics/writer/WbWriterVtkXmlBinary.h>
@@ -33,7 +33,7 @@ namespace UnstructuredGridWriter
 
 		bool neighborsFluid;
 
-		unsigned int allnodes = para->getParH(level)->size_Mat_SP * 8;
+		unsigned int allnodes = para->getParH(level)->numberOfNodes * 8;
 
 		nodes.resize(allnodes);
 		nodedata[0].resize(allnodes);
@@ -45,17 +45,17 @@ namespace UnstructuredGridWriter
 		unsigned int nodeCount = 0;
 		double nodeDeltaLevel = para->getParH(level)->dx;
 
-		for (unsigned int pos=0;pos<para->getParH(level)->size_Mat_SP;pos++)
+		for (unsigned int pos=0;pos<para->getParH(level)->numberOfNodes;pos++)
 		{
-			if (para->getParH(level)->geoSP[pos] == GEO_FLUID /*!= GEO_VOID*/)
+			if (para->getParH(level)->typeOfGridNode[pos] == GEO_FLUID /*!= GEO_VOID*/)
 			{
 				//////////////////////////////////////////////////////////////////////////
-				double ix1  = para->getParH(level)->coordX_SP[pos];//-STARTOFFX;
-				double ix2  = para->getParH(level)->coordY_SP[pos];//-STARTOFFY;
-				double ix3  = para->getParH(level)->coordZ_SP[pos];//-STARTOFFZ;
-				double ix1P = para->getParH(level)->coordX_SP[para->getParH(level)->neighborX_SP[pos]];//-STARTOFFX;
-				double ix2P = para->getParH(level)->coordY_SP[para->getParH(level)->neighborY_SP[pos]];//-STARTOFFY;
-				double ix3P = para->getParH(level)->coordZ_SP[para->getParH(level)->neighborZ_SP[pos]];//-STARTOFFZ;
+				double ix1  = para->getParH(level)->coordinateX[pos];//-STARTOFFX;
+				double ix2  = para->getParH(level)->coordinateY[pos];//-STARTOFFY;
+				double ix3  = para->getParH(level)->coordinateZ[pos];//-STARTOFFZ;
+				double ix1P = para->getParH(level)->coordinateX[para->getParH(level)->neighborX[pos]];//-STARTOFFX;
+				double ix2P = para->getParH(level)->coordinateY[para->getParH(level)->neighborY[pos]];//-STARTOFFY;
+				double ix3P = para->getParH(level)->coordinateZ[para->getParH(level)->neighborZ[pos]];//-STARTOFFZ;
 				//////////////////////////////////////////////////////////////////////////
 				double x1  = ix1;  // para->getParH(level)->distX + ix1 *nodeDeltaLevel;// + tmpDist;
 				double x2  = ix2;  // para->getParH(level)->distY + ix2 *nodeDeltaLevel;// + tmpDist;
@@ -68,83 +68,83 @@ namespace UnstructuredGridWriter
 				//////////////////////////////////////////////////////////////////////////
 				//1
 				nodes[nodeCount]=( makeUbTuple( (float)(x1 ),(float)(x2 ),(float)(x3 ) ) );
-				nodedata[0][nodeCount] = para->getParH(level)->rho_SP[pos] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
-				nodedata[1][nodeCount] = para->getParH(level)->vx_SP[pos] * para->getVelocityRatio();
-				nodedata[2][nodeCount] = para->getParH(level)->vy_SP[pos] * para->getVelocityRatio();
-				nodedata[3][nodeCount] = para->getParH(level)->vz_SP[pos] * para->getVelocityRatio();
-				nodedata[4][nodeCount] = para->getParH(level)->geoSP[pos];
-				//if(para->getParH(level)->geoSP[pos]==GEO_VOID) neighborsFluid = false;
+				nodedata[0][nodeCount] = para->getParH(level)->rho[pos] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
+				nodedata[1][nodeCount] = para->getParH(level)->velocityX[pos] * para->getVelocityRatio();
+				nodedata[2][nodeCount] = para->getParH(level)->velocityY[pos] * para->getVelocityRatio();
+				nodedata[3][nodeCount] = para->getParH(level)->velocityZ[pos] * para->getVelocityRatio();
+				nodedata[4][nodeCount] = para->getParH(level)->typeOfGridNode[pos];
+				//if(para->getParH(level)->typeOfGridNode[pos]==GEO_VOID) neighborsFluid = false;
 				nodeCount++;
 				//////////////////////////////////////////////////////////////////////////
 				//2
 				nodes[nodeCount]=( makeUbTuple( (float)(x1P),(float)(x2 ),(float)(x3 ) ) );
-				nodedata[0][nodeCount] = para->getParH(level)->rho_SP[para->getParH(level)->neighborX_SP[pos]] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
-				nodedata[1][nodeCount] = para->getParH(level)->vx_SP[para->getParH(level)->neighborX_SP[pos]] * para->getVelocityRatio();
-				nodedata[2][nodeCount] = para->getParH(level)->vy_SP[para->getParH(level)->neighborX_SP[pos]] * para->getVelocityRatio();
-				nodedata[3][nodeCount] = para->getParH(level)->vz_SP[para->getParH(level)->neighborX_SP[pos]] * para->getVelocityRatio();
-				nodedata[4][nodeCount] = para->getParH(level)->geoSP[para->getParH(level)->neighborX_SP[pos]];
-				//if(para->getParH(level)->geoSP[para->getParH(level)->neighborX_SP[pos]]==GEO_VOID) neighborsFluid = false;
+				nodedata[0][nodeCount] = para->getParH(level)->rho[para->getParH(level)->neighborX[pos]] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
+				nodedata[1][nodeCount] = para->getParH(level)->velocityX[para->getParH(level)->neighborX[pos]] * para->getVelocityRatio();
+				nodedata[2][nodeCount] = para->getParH(level)->velocityY[para->getParH(level)->neighborX[pos]] * para->getVelocityRatio();
+				nodedata[3][nodeCount] = para->getParH(level)->velocityZ[para->getParH(level)->neighborX[pos]] * para->getVelocityRatio();
+				nodedata[4][nodeCount] = para->getParH(level)->typeOfGridNode[para->getParH(level)->neighborX[pos]];
+				//if(para->getParH(level)->typeOfGridNode[para->getParH(level)->neighborX[pos]]==GEO_VOID) neighborsFluid = false;
 				nodeCount++;
 				//////////////////////////////////////////////////////////////////////////
 				//3
 				nodes[nodeCount]=( makeUbTuple( (float)(x1P),(float)(x2P),(float)(x3 ) ) );
-				nodedata[0][nodeCount] = para->getParH(level)->rho_SP[para->getParH(level)->neighborY_SP[para->getParH(level)->neighborX_SP[pos]]] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
-				nodedata[1][nodeCount] = para->getParH(level)->vx_SP[para->getParH(level)->neighborY_SP[para->getParH(level)->neighborX_SP[pos]]] * para->getVelocityRatio();
-				nodedata[2][nodeCount] = para->getParH(level)->vy_SP[para->getParH(level)->neighborY_SP[para->getParH(level)->neighborX_SP[pos]]] * para->getVelocityRatio();
-				nodedata[3][nodeCount] = para->getParH(level)->vz_SP[para->getParH(level)->neighborY_SP[para->getParH(level)->neighborX_SP[pos]]] * para->getVelocityRatio();
-				nodedata[4][nodeCount] = para->getParH(level)->geoSP[para->getParH(level)->neighborY_SP[para->getParH(level)->neighborX_SP[pos]]];
-				//if(para->getParH(level)->geoSP[para->getParH(level)->neighborY_SP[para->getParH(level)->neighborX_SP[pos]]]==GEO_VOID) neighborsFluid = false;
+				nodedata[0][nodeCount] = para->getParH(level)->rho[para->getParH(level)->neighborY[para->getParH(level)->neighborX[pos]]] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
+				nodedata[1][nodeCount] = para->getParH(level)->velocityX[para->getParH(level)->neighborY[para->getParH(level)->neighborX[pos]]] * para->getVelocityRatio();
+				nodedata[2][nodeCount] = para->getParH(level)->velocityY[para->getParH(level)->neighborY[para->getParH(level)->neighborX[pos]]] * para->getVelocityRatio();
+				nodedata[3][nodeCount] = para->getParH(level)->velocityZ[para->getParH(level)->neighborY[para->getParH(level)->neighborX[pos]]] * para->getVelocityRatio();
+				nodedata[4][nodeCount] = para->getParH(level)->typeOfGridNode[para->getParH(level)->neighborY[para->getParH(level)->neighborX[pos]]];
+				//if(para->getParH(level)->typeOfGridNode[para->getParH(level)->neighborY[para->getParH(level)->neighborX[pos]]]==GEO_VOID) neighborsFluid = false;
 				nodeCount++;
 				//////////////////////////////////////////////////////////////////////////
 				//4
 				nodes[nodeCount]=( makeUbTuple( (float)(x1 ),(float)(x2P),(float)(x3 ) ) );
-				nodedata[0][nodeCount] = para->getParH(level)->rho_SP[para->getParH(level)->neighborY_SP[pos]] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
-				nodedata[1][nodeCount] = para->getParH(level)->vx_SP[para->getParH(level)->neighborY_SP[pos]] * para->getVelocityRatio();
-				nodedata[2][nodeCount] = para->getParH(level)->vy_SP[para->getParH(level)->neighborY_SP[pos]] * para->getVelocityRatio();
-				nodedata[3][nodeCount] = para->getParH(level)->vz_SP[para->getParH(level)->neighborY_SP[pos]] * para->getVelocityRatio();
-				nodedata[4][nodeCount] = para->getParH(level)->geoSP[para->getParH(level)->neighborY_SP[pos]];
-				//if(para->getParH(level)->geoSP[para->getParH(level)->neighborY_SP[pos]]==GEO_VOID) neighborsFluid = false;
-				//if((para->getParH(level)->neighborY_SP[pos]<=pos) && ((para->getParH(level)->coordY_SP[pos]) > (para->getParH(level)->gridNY-2))) neighborsFluid = false;
+				nodedata[0][nodeCount] = para->getParH(level)->rho[para->getParH(level)->neighborY[pos]] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
+				nodedata[1][nodeCount] = para->getParH(level)->velocityX[para->getParH(level)->neighborY[pos]] * para->getVelocityRatio();
+				nodedata[2][nodeCount] = para->getParH(level)->velocityY[para->getParH(level)->neighborY[pos]] * para->getVelocityRatio();
+				nodedata[3][nodeCount] = para->getParH(level)->velocityZ[para->getParH(level)->neighborY[pos]] * para->getVelocityRatio();
+				nodedata[4][nodeCount] = para->getParH(level)->typeOfGridNode[para->getParH(level)->neighborY[pos]];
+				//if(para->getParH(level)->typeOfGridNode[para->getParH(level)->neighborY[pos]]==GEO_VOID) neighborsFluid = false;
+				//if((para->getParH(level)->neighborY[pos]<=pos) && ((para->getParH(level)->coordinateY[pos]) > (para->getParH(level)->gridNY-2))) neighborsFluid = false;
 				nodeCount++;
 				//////////////////////////////////////////////////////////////////////////
 				//5
 				nodes[nodeCount]=( makeUbTuple( (float)(x1 ),(float)(x2 ),(float)(x3P) ) );
-				nodedata[0][nodeCount] = para->getParH(level)->rho_SP[para->getParH(level)->neighborZ_SP[pos]] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
-				nodedata[1][nodeCount] = para->getParH(level)->vx_SP[para->getParH(level)->neighborZ_SP[pos]] * para->getVelocityRatio();
-				nodedata[2][nodeCount] = para->getParH(level)->vy_SP[para->getParH(level)->neighborZ_SP[pos]] * para->getVelocityRatio();
-				nodedata[3][nodeCount] = para->getParH(level)->vz_SP[para->getParH(level)->neighborZ_SP[pos]] * para->getVelocityRatio();
-				nodedata[4][nodeCount] = para->getParH(level)->geoSP[para->getParH(level)->neighborZ_SP[pos]];
-				//if(para->getParH(level)->geoSP[para->getParH(level)->neighborZ_SP[pos]]==GEO_VOID) neighborsFluid = false;
+				nodedata[0][nodeCount] = para->getParH(level)->rho[para->getParH(level)->neighborZ[pos]] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
+				nodedata[1][nodeCount] = para->getParH(level)->velocityX[para->getParH(level)->neighborZ[pos]] * para->getVelocityRatio();
+				nodedata[2][nodeCount] = para->getParH(level)->velocityY[para->getParH(level)->neighborZ[pos]] * para->getVelocityRatio();
+				nodedata[3][nodeCount] = para->getParH(level)->velocityZ[para->getParH(level)->neighborZ[pos]] * para->getVelocityRatio();
+				nodedata[4][nodeCount] = para->getParH(level)->typeOfGridNode[para->getParH(level)->neighborZ[pos]];
+				//if(para->getParH(level)->typeOfGridNode[para->getParH(level)->neighborZ[pos]]==GEO_VOID) neighborsFluid = false;
 				nodeCount++;
 				//////////////////////////////////////////////////////////////////////////
 				//6
 				nodes[nodeCount]=( makeUbTuple( (float)(x1P),(float)(x2 ),(float)(x3P) ) );
-				nodedata[0][nodeCount] = para->getParH(level)->rho_SP[para->getParH(level)->neighborZ_SP[para->getParH(level)->neighborX_SP[pos]]] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
-				nodedata[1][nodeCount] = para->getParH(level)->vx_SP[para->getParH(level)->neighborZ_SP[para->getParH(level)->neighborX_SP[pos]]] * para->getVelocityRatio();
-				nodedata[2][nodeCount] = para->getParH(level)->vy_SP[para->getParH(level)->neighborZ_SP[para->getParH(level)->neighborX_SP[pos]]] * para->getVelocityRatio();
-				nodedata[3][nodeCount] = para->getParH(level)->vz_SP[para->getParH(level)->neighborZ_SP[para->getParH(level)->neighborX_SP[pos]]] * para->getVelocityRatio();
-				nodedata[4][nodeCount] = para->getParH(level)->geoSP[para->getParH(level)->neighborZ_SP[para->getParH(level)->neighborX_SP[pos]]];
-				//if(para->getParH(level)->geoSP[para->getParH(level)->neighborZ_SP[para->getParH(level)->neighborX_SP[pos]]]==GEO_VOID) neighborsFluid = false;
+				nodedata[0][nodeCount] = para->getParH(level)->rho[para->getParH(level)->neighborZ[para->getParH(level)->neighborX[pos]]] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
+				nodedata[1][nodeCount] = para->getParH(level)->velocityX[para->getParH(level)->neighborZ[para->getParH(level)->neighborX[pos]]] * para->getVelocityRatio();
+				nodedata[2][nodeCount] = para->getParH(level)->velocityY[para->getParH(level)->neighborZ[para->getParH(level)->neighborX[pos]]] * para->getVelocityRatio();
+				nodedata[3][nodeCount] = para->getParH(level)->velocityZ[para->getParH(level)->neighborZ[para->getParH(level)->neighborX[pos]]] * para->getVelocityRatio();
+				nodedata[4][nodeCount] = para->getParH(level)->typeOfGridNode[para->getParH(level)->neighborZ[para->getParH(level)->neighborX[pos]]];
+				//if(para->getParH(level)->typeOfGridNode[para->getParH(level)->neighborZ[para->getParH(level)->neighborX[pos]]]==GEO_VOID) neighborsFluid = false;
 				nodeCount++;
 				//////////////////////////////////////////////////////////////////////////
 				//7
 				nodes[nodeCount]=( makeUbTuple( (float)(x1P),(float)(x2P),(float)(x3P) ) );
-				nodedata[0][nodeCount] = para->getParH(level)->rho_SP[para->getParH(level)->neighborZ_SP[para->getParH(level)->neighborY_SP[para->getParH(level)->neighborX_SP[pos]]]] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
-				nodedata[1][nodeCount] = para->getParH(level)->vx_SP[para->getParH(level)->neighborZ_SP[para->getParH(level)->neighborY_SP[para->getParH(level)->neighborX_SP[pos]]]] * para->getVelocityRatio();
-				nodedata[2][nodeCount] = para->getParH(level)->vy_SP[para->getParH(level)->neighborZ_SP[para->getParH(level)->neighborY_SP[para->getParH(level)->neighborX_SP[pos]]]] * para->getVelocityRatio();
-				nodedata[3][nodeCount] = para->getParH(level)->vz_SP[para->getParH(level)->neighborZ_SP[para->getParH(level)->neighborY_SP[para->getParH(level)->neighborX_SP[pos]]]] * para->getVelocityRatio();
-				nodedata[4][nodeCount] = para->getParH(level)->geoSP[para->getParH(level)->neighborZ_SP[para->getParH(level)->neighborY_SP[para->getParH(level)->neighborX_SP[pos]]]];
-				//if(para->getParH(level)->geoSP[para->getParH(level)->neighborZ_SP[para->getParH(level)->neighborY_SP[para->getParH(level)->neighborX_SP[pos]]]]==GEO_VOID) neighborsFluid = false;
+				nodedata[0][nodeCount] = para->getParH(level)->rho[para->getParH(level)->neighborZ[para->getParH(level)->neighborY[para->getParH(level)->neighborX[pos]]]] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
+				nodedata[1][nodeCount] = para->getParH(level)->velocityX[para->getParH(level)->neighborZ[para->getParH(level)->neighborY[para->getParH(level)->neighborX[pos]]]] * para->getVelocityRatio();
+				nodedata[2][nodeCount] = para->getParH(level)->velocityY[para->getParH(level)->neighborZ[para->getParH(level)->neighborY[para->getParH(level)->neighborX[pos]]]] * para->getVelocityRatio();
+				nodedata[3][nodeCount] = para->getParH(level)->velocityZ[para->getParH(level)->neighborZ[para->getParH(level)->neighborY[para->getParH(level)->neighborX[pos]]]] * para->getVelocityRatio();
+				nodedata[4][nodeCount] = para->getParH(level)->typeOfGridNode[para->getParH(level)->neighborZ[para->getParH(level)->neighborY[para->getParH(level)->neighborX[pos]]]];
+				//if(para->getParH(level)->typeOfGridNode[para->getParH(level)->neighborZ[para->getParH(level)->neighborY[para->getParH(level)->neighborX[pos]]]]==GEO_VOID) neighborsFluid = false;
 				nodeCount++;
 				//////////////////////////////////////////////////////////////////////////
 				//8
 				nodes[nodeCount]=( makeUbTuple( (float)(x1 ),(float)(x2P),(float)(x3P) ) );
-				nodedata[0][nodeCount] = para->getParH(level)->rho_SP[para->getParH(level)->neighborZ_SP[para->getParH(level)->neighborY_SP[pos]]] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
-				nodedata[1][nodeCount] = para->getParH(level)->vx_SP[para->getParH(level)->neighborZ_SP[para->getParH(level)->neighborY_SP[pos]]] * para->getVelocityRatio();
-				nodedata[2][nodeCount] = para->getParH(level)->vy_SP[para->getParH(level)->neighborZ_SP[para->getParH(level)->neighborY_SP[pos]]] * para->getVelocityRatio();
-				nodedata[3][nodeCount] = para->getParH(level)->vz_SP[para->getParH(level)->neighborZ_SP[para->getParH(level)->neighborY_SP[pos]]] * para->getVelocityRatio();
-				nodedata[4][nodeCount] = para->getParH(level)->geoSP[para->getParH(level)->neighborZ_SP[para->getParH(level)->neighborY_SP[pos]]];
-				//if(para->getParH(level)->geoSP[para->getParH(level)->neighborZ_SP[para->getParH(level)->neighborY_SP[pos]]]==GEO_VOID) neighborsFluid = false;
+				nodedata[0][nodeCount] = para->getParH(level)->rho[para->getParH(level)->neighborZ[para->getParH(level)->neighborY[pos]]] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
+				nodedata[1][nodeCount] = para->getParH(level)->velocityX[para->getParH(level)->neighborZ[para->getParH(level)->neighborY[pos]]] * para->getVelocityRatio();
+				nodedata[2][nodeCount] = para->getParH(level)->velocityY[para->getParH(level)->neighborZ[para->getParH(level)->neighborY[pos]]] * para->getVelocityRatio();
+				nodedata[3][nodeCount] = para->getParH(level)->velocityZ[para->getParH(level)->neighborZ[para->getParH(level)->neighborY[pos]]] * para->getVelocityRatio();
+				nodedata[4][nodeCount] = para->getParH(level)->typeOfGridNode[para->getParH(level)->neighborZ[para->getParH(level)->neighborY[pos]]];
+				//if(para->getParH(level)->typeOfGridNode[para->getParH(level)->neighborZ[para->getParH(level)->neighborY[pos]]]==GEO_VOID) neighborsFluid = false;
 				nodeCount++;
 
 				if(neighborsFluid)
@@ -162,9 +162,9 @@ namespace UnstructuredGridWriter
 
 	bool isPeriodicCell(Parameter* para, int level, unsigned int number2, unsigned int number1, unsigned int number3, unsigned int number5)
 	{
-		return (para->getParH(level)->coordX_SP[number2] < para->getParH(level)->coordX_SP[number1]) ||
-			(para->getParH(level)->coordY_SP[number3] < para->getParH(level)->coordY_SP[number1]) ||
-			(para->getParH(level)->coordZ_SP[number5] < para->getParH(level)->coordZ_SP[number1]);
+		return (para->getParH(level)->coordinateX[number2] < para->getParH(level)->coordinateX[number1]) ||
+			(para->getParH(level)->coordinateY[number3] < para->getParH(level)->coordinateY[number1]) ||
+			(para->getParH(level)->coordinateZ[number5] < para->getParH(level)->coordinateZ[number1]);
 	}
 
 
@@ -197,9 +197,9 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-			if ( ((part+1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->size_Mat_SP)
+			if ( ((part+1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->numberOfNodes)
 			{
-				sizeOfNodes = para->getParH(level)->size_Mat_SP - (part * para->getlimitOfNodesForVTK());
+				sizeOfNodes = para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
 			}
 			else
 			{
@@ -224,12 +224,12 @@ namespace UnstructuredGridWriter
 
 			for (unsigned int pos=startpos;pos<endpos;pos++)
 			{
-				if (/*para->getParH(level)->geoSP[pos] >= GEO_FLUID*/true)
+				if (/*para->getParH(level)->typeOfGridNode[pos] >= GEO_FLUID*/true)
 				{
 					//////////////////////////////////////////////////////////////////////////
-					double x1  = para->getParH(level)->coordX_SP[pos];
-					double x2  = para->getParH(level)->coordY_SP[pos];
-					double x3  = para->getParH(level)->coordZ_SP[pos];
+					double x1  = para->getParH(level)->coordinateX[pos];
+					double x2  = para->getParH(level)->coordinateY[pos];
+					double x3  = para->getParH(level)->coordinateZ[pos];
 					//////////////////////////////////////////////////////////////////////////
 					number1 = pos;
 					dn1 = pos - startpos;
@@ -237,30 +237,30 @@ namespace UnstructuredGridWriter
 					//////////////////////////////////////////////////////////////////////////
 					//printf("\n test vor node data... \n");
 					nodes[dn1]=( makeUbTuple( (float)(x1 ),(float)(x2 ),(float)(x3 ) ) );
-					nodedata[0][dn1] = (double)para->getParH(level)->press_SP[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
-					nodedata[1][dn1] = (double)para->getParH(level)->rho_SP[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
-					nodedata[2][dn1] = (double)para->getParH(level)->vx_SP[pos] * (double)para->getVelocityRatio();
-					nodedata[3][dn1] = (double)para->getParH(level)->vy_SP[pos] * (double)para->getVelocityRatio();
-					nodedata[4][dn1] = (double)para->getParH(level)->vz_SP[pos] * (double)para->getVelocityRatio();
-					nodedata[5][dn1] = (double)para->getParH(level)->geoSP[pos];
+					nodedata[0][dn1] = (double)para->getParH(level)->pressure[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
+					nodedata[1][dn1] = (double)para->getParH(level)->rho[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
+					nodedata[2][dn1] = (double)para->getParH(level)->velocityX[pos] * (double)para->getVelocityRatio();
+					nodedata[3][dn1] = (double)para->getParH(level)->velocityY[pos] * (double)para->getVelocityRatio();
+					nodedata[4][dn1] = (double)para->getParH(level)->velocityZ[pos] * (double)para->getVelocityRatio();
+					nodedata[5][dn1] = (double)para->getParH(level)->typeOfGridNode[pos];
 					//////////////////////////////////////////////////////////////////////////
 					//printf("\n test vor numbers... \n");
-					number2 = para->getParH(level)->neighborX_SP[number1];
-					number3 = para->getParH(level)->neighborY_SP[number2];
-					number4 = para->getParH(level)->neighborY_SP[number1];
-					number5 = para->getParH(level)->neighborZ_SP[number1];
-					number6 = para->getParH(level)->neighborZ_SP[number2];
-					number7 = para->getParH(level)->neighborZ_SP[number3];
-					number8 = para->getParH(level)->neighborZ_SP[number4];
+					number2 = para->getParH(level)->neighborX[number1];
+					number3 = para->getParH(level)->neighborY[number2];
+					number4 = para->getParH(level)->neighborY[number1];
+					number5 = para->getParH(level)->neighborZ[number1];
+					number6 = para->getParH(level)->neighborZ[number2];
+					number7 = para->getParH(level)->neighborZ[number3];
+					number8 = para->getParH(level)->neighborZ[number4];
 					//////////////////////////////////////////////////////////////////////////
 					//printf("\n test vor neighborsFluid... \n");
-					if (para->getParH(level)->geoSP[number2] < GEO_FLUID ||
-						para->getParH(level)->geoSP[number3] < GEO_FLUID ||
-						para->getParH(level)->geoSP[number4] < GEO_FLUID ||
-						para->getParH(level)->geoSP[number5] < GEO_FLUID ||
-						para->getParH(level)->geoSP[number6] < GEO_FLUID ||
-						para->getParH(level)->geoSP[number7] < GEO_FLUID ||
-						para->getParH(level)->geoSP[number8] < GEO_FLUID )  neighborsFluid=false;
+					if (para->getParH(level)->typeOfGridNode[number2] < GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number3] < GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number4] < GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number5] < GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number6] < GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number7] < GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number8] < GEO_FLUID )  neighborsFluid=false;
 					//////////////////////////////////////////////////////////////////////////
 					//if(neighborsFluid==false) counter++;
 					//////////////////////////////////////////////////////////////////////////
@@ -340,9 +340,9 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-			if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->size_Mat_SP)
+			if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->numberOfNodes)
 			{
-				sizeOfNodes = para->getParH(level)->size_Mat_SP - (part * para->getlimitOfNodesForVTK());
+				sizeOfNodes = para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
 			}
 			else
 			{
@@ -368,41 +368,41 @@ namespace UnstructuredGridWriter
 
 			for (unsigned int pos = startpos; pos < endpos; pos++)
 			{
-				if (/*para->getParH(level)->geoSP[pos] >= GEO_FLUID*/true)
+				if (/*para->getParH(level)->typeOfGridNode[pos] >= GEO_FLUID*/true)
 				{
 					//////////////////////////////////////////////////////////////////////////
-					double x1 = para->getParH(level)->coordX_SP[pos];
-					double x2 = para->getParH(level)->coordY_SP[pos];
-					double x3 = para->getParH(level)->coordZ_SP[pos];
+					double x1 = para->getParH(level)->coordinateX[pos];
+					double x2 = para->getParH(level)->coordinateY[pos];
+					double x3 = para->getParH(level)->coordinateZ[pos];
 					//////////////////////////////////////////////////////////////////////////
 					number1 = pos;
 					dn1 = pos - startpos;
 					neighborsFluid = true;
 					//////////////////////////////////////////////////////////////////////////
 					nodes[dn1] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
-					nodedata[0][dn1] = (double)para->getParH(level)->press_SP[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
-					nodedata[1][dn1] = (double)para->getParH(level)->rho_SP[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
-					nodedata[2][dn1] = (double)para->getParH(level)->vx_SP[pos] * (double)para->getVelocityRatio();
-					nodedata[3][dn1] = (double)para->getParH(level)->vy_SP[pos] * (double)para->getVelocityRatio();
-					nodedata[4][dn1] = (double)para->getParH(level)->vz_SP[pos] * (double)para->getVelocityRatio();
-					nodedata[5][dn1] = (double)para->getParH(level)->geoSP[pos];
+					nodedata[0][dn1] = (double)para->getParH(level)->pressure[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
+					nodedata[1][dn1] = (double)para->getParH(level)->rho[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
+					nodedata[2][dn1] = (double)para->getParH(level)->velocityX[pos] * (double)para->getVelocityRatio();
+					nodedata[3][dn1] = (double)para->getParH(level)->velocityY[pos] * (double)para->getVelocityRatio();
+					nodedata[4][dn1] = (double)para->getParH(level)->velocityZ[pos] * (double)para->getVelocityRatio();
+					nodedata[5][dn1] = (double)para->getParH(level)->typeOfGridNode[pos];
 					nodedata[6][dn1] = (double)para->getParH(level)->turbViscosity[pos];
 					//////////////////////////////////////////////////////////////////////////
-					number2 = para->getParH(level)->neighborX_SP[number1];
-					number3 = para->getParH(level)->neighborY_SP[number2];
-					number4 = para->getParH(level)->neighborY_SP[number1];
-					number5 = para->getParH(level)->neighborZ_SP[number1];
-					number6 = para->getParH(level)->neighborZ_SP[number2];
-					number7 = para->getParH(level)->neighborZ_SP[number3];
-					number8 = para->getParH(level)->neighborZ_SP[number4];
+					number2 = para->getParH(level)->neighborX[number1];
+					number3 = para->getParH(level)->neighborY[number2];
+					number4 = para->getParH(level)->neighborY[number1];
+					number5 = para->getParH(level)->neighborZ[number1];
+					number6 = para->getParH(level)->neighborZ[number2];
+					number7 = para->getParH(level)->neighborZ[number3];
+					number8 = para->getParH(level)->neighborZ[number4];
 					//////////////////////////////////////////////////////////////////////////
-					if (para->getParH(level)->geoSP[number2] < GEO_FLUID ||
-						para->getParH(level)->geoSP[number3] < GEO_FLUID ||
-						para->getParH(level)->geoSP[number4] < GEO_FLUID ||
-						para->getParH(level)->geoSP[number5] < GEO_FLUID ||
-						para->getParH(level)->geoSP[number6] < GEO_FLUID ||
-						para->getParH(level)->geoSP[number7] < GEO_FLUID ||
-						para->getParH(level)->geoSP[number8] < GEO_FLUID)  neighborsFluid = false;
+					if (para->getParH(level)->typeOfGridNode[number2] < GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number3] < GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number4] < GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number5] < GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number6] < GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number7] < GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number8] < GEO_FLUID)  neighborsFluid = false;
 					//////////////////////////////////////////////////////////////////////////
 					if (number2 > endpos ||
 						number3 > endpos ||
@@ -479,9 +479,9 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-			if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->size_Mat_SP)
+			if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->numberOfNodes)
 			{
-				sizeOfNodes = para->getParH(level)->size_Mat_SP - (part * para->getlimitOfNodesForVTK());
+				sizeOfNodes = para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
 			}
 			else
 			{
@@ -518,24 +518,24 @@ namespace UnstructuredGridWriter
 
 			for (unsigned int pos = startpos; pos < endpos; pos++)
 			{
-				if (/*para->getParH(level)->geoSP[pos] >= GEO_FLUID*/true)
+				if (/*para->getParH(level)->typeOfGridNode[pos] >= GEO_FLUID*/true)
 				{
 					//////////////////////////////////////////////////////////////////////////
-					double x1 = para->getParH(level)->coordX_SP[pos];
-					double x2 = para->getParH(level)->coordY_SP[pos];
-					double x3 = para->getParH(level)->coordZ_SP[pos];
+					double x1 = para->getParH(level)->coordinateX[pos];
+					double x2 = para->getParH(level)->coordinateY[pos];
+					double x3 = para->getParH(level)->coordinateZ[pos];
 					//////////////////////////////////////////////////////////////////////////
 					number1 = pos;
 					dn1 = pos - startpos;
 					neighborsFluid = true;
 					//////////////////////////////////////////////////////////////////////////
 					nodes[dn1] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
-					nodedata[0][dn1] = (double)para->getParH(level)->press_SP[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
-					nodedata[1][dn1] = (double)para->getParH(level)->rho_SP[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
-					nodedata[2][dn1] = (double)para->getParH(level)->vx_SP[pos] * (double)para->getVelocityRatio();
-					nodedata[3][dn1] = (double)para->getParH(level)->vy_SP[pos] * (double)para->getVelocityRatio();
-					nodedata[4][dn1] = (double)para->getParH(level)->vz_SP[pos] * (double)para->getVelocityRatio();
-					nodedata[5][dn1] = (double)para->getParH(level)->geoSP[pos];
+					nodedata[0][dn1] = (double)para->getParH(level)->pressure[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
+					nodedata[1][dn1] = (double)para->getParH(level)->rho[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
+					nodedata[2][dn1] = (double)para->getParH(level)->velocityX[pos] * (double)para->getVelocityRatio();
+					nodedata[3][dn1] = (double)para->getParH(level)->velocityY[pos] * (double)para->getVelocityRatio();
+					nodedata[4][dn1] = (double)para->getParH(level)->velocityZ[pos] * (double)para->getVelocityRatio();
+					nodedata[5][dn1] = (double)para->getParH(level)->typeOfGridNode[pos];
 					nodedata[6][dn1] = (double)para->getParH(level)->turbViscosity[pos] * (double)para->getViscosityRatio();
 					nodedata[7][dn1] = (double)para->getParH(level)->gSij[pos] * (double)para->getVelocityRatio();
 					nodedata[8][dn1] = (double)para->getParH(level)->gSDij[pos] * (double)para->getVelocityRatio();
@@ -549,21 +549,21 @@ namespace UnstructuredGridWriter
 					nodedata[16][dn1] = (double)para->getParH(level)->gDyvz[pos] * (double)para->getVelocityRatio();
 					nodedata[17][dn1] = (double)para->getParH(level)->gDzvz[pos] * (double)para->getVelocityRatio();
 					//////////////////////////////////////////////////////////////////////////
-					number2 = para->getParH(level)->neighborX_SP[number1];
-					number3 = para->getParH(level)->neighborY_SP[number2];
-					number4 = para->getParH(level)->neighborY_SP[number1];
-					number5 = para->getParH(level)->neighborZ_SP[number1];
-					number6 = para->getParH(level)->neighborZ_SP[number2];
-					number7 = para->getParH(level)->neighborZ_SP[number3];
-					number8 = para->getParH(level)->neighborZ_SP[number4];
+					number2 = para->getParH(level)->neighborX[number1];
+					number3 = para->getParH(level)->neighborY[number2];
+					number4 = para->getParH(level)->neighborY[number1];
+					number5 = para->getParH(level)->neighborZ[number1];
+					number6 = para->getParH(level)->neighborZ[number2];
+					number7 = para->getParH(level)->neighborZ[number3];
+					number8 = para->getParH(level)->neighborZ[number4];
 					//////////////////////////////////////////////////////////////////////////
-					if (para->getParH(level)->geoSP[number2] < GEO_FLUID ||
-						para->getParH(level)->geoSP[number3] < GEO_FLUID ||
-						para->getParH(level)->geoSP[number4] < GEO_FLUID ||
-						para->getParH(level)->geoSP[number5] < GEO_FLUID ||
-						para->getParH(level)->geoSP[number6] < GEO_FLUID ||
-						para->getParH(level)->geoSP[number7] < GEO_FLUID ||
-						para->getParH(level)->geoSP[number8] < GEO_FLUID)  neighborsFluid = false;
+					if (para->getParH(level)->typeOfGridNode[number2] < GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number3] < GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number4] < GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number5] < GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number6] < GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number7] < GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number8] < GEO_FLUID)  neighborsFluid = false;
 					//////////////////////////////////////////////////////////////////////////
 					if (number2 > endpos ||
 						number3 > endpos ||
@@ -628,9 +628,9 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-			if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->size_Mat_SP)
+			if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->numberOfNodes)
 			{
-				sizeOfNodes = para->getParH(level)->size_Mat_SP - (part * para->getlimitOfNodesForVTK());
+				sizeOfNodes = para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
 			}
 			else
 			{
@@ -655,12 +655,12 @@ namespace UnstructuredGridWriter
 
 			for (unsigned int pos = startpos; pos < endpos; pos++)
 			{
-				if ((para->getParH(level)->geoSP[pos] >= GEO_FLUID) || ((para->getParH(level)->geoSP[pos] >= GEO_PM_0) && (para->getParH(level)->geoSP[pos] <= GEO_PM_2)))
+				if ((para->getParH(level)->typeOfGridNode[pos] >= GEO_FLUID) || ((para->getParH(level)->typeOfGridNode[pos] >= GEO_PM_0) && (para->getParH(level)->typeOfGridNode[pos] <= GEO_PM_2)))
 				{
 					//////////////////////////////////////////////////////////////////////////
-					double x1 = para->getParH(level)->coordX_SP[pos];
-					double x2 = para->getParH(level)->coordY_SP[pos];
-					double x3 = para->getParH(level)->coordZ_SP[pos];
+					double x1 = para->getParH(level)->coordinateX[pos];
+					double x2 = para->getParH(level)->coordinateY[pos];
+					double x3 = para->getParH(level)->coordinateZ[pos];
 					//////////////////////////////////////////////////////////////////////////
 					number1 = pos;
 					dn1 = pos - startpos;
@@ -668,30 +668,30 @@ namespace UnstructuredGridWriter
 					//////////////////////////////////////////////////////////////////////////
 					//printf("\n test vor node data... \n");
 					nodes[dn1] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
-					nodedata[0][dn1] = (double)para->getParH(level)->press_SP[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
-					nodedata[1][dn1] = (double)para->getParH(level)->rho_SP[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
-					nodedata[2][dn1] = (double)para->getParH(level)->vx_SP[pos] * (double)para->getVelocityRatio();
-					nodedata[3][dn1] = (double)para->getParH(level)->vy_SP[pos] * (double)para->getVelocityRatio();
-					nodedata[4][dn1] = (double)para->getParH(level)->vz_SP[pos] * (double)para->getVelocityRatio();
-					nodedata[5][dn1] = (double)para->getParH(level)->geoSP[pos];
+					nodedata[0][dn1] = (double)para->getParH(level)->pressure[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
+					nodedata[1][dn1] = (double)para->getParH(level)->rho[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
+					nodedata[2][dn1] = (double)para->getParH(level)->velocityX[pos] * (double)para->getVelocityRatio();
+					nodedata[3][dn1] = (double)para->getParH(level)->velocityY[pos] * (double)para->getVelocityRatio();
+					nodedata[4][dn1] = (double)para->getParH(level)->velocityZ[pos] * (double)para->getVelocityRatio();
+					nodedata[5][dn1] = (double)para->getParH(level)->typeOfGridNode[pos];
 					//////////////////////////////////////////////////////////////////////////
 					//printf("\n test vor numbers... \n");
-					number2 = para->getParH(level)->neighborX_SP[number1];
-					number3 = para->getParH(level)->neighborY_SP[number2];
-					number4 = para->getParH(level)->neighborY_SP[number1];
-					number5 = para->getParH(level)->neighborZ_SP[number1];
-					number6 = para->getParH(level)->neighborZ_SP[number2];
-					number7 = para->getParH(level)->neighborZ_SP[number3];
-					number8 = para->getParH(level)->neighborZ_SP[number4];
+					number2 = para->getParH(level)->neighborX[number1];
+					number3 = para->getParH(level)->neighborY[number2];
+					number4 = para->getParH(level)->neighborY[number1];
+					number5 = para->getParH(level)->neighborZ[number1];
+					number6 = para->getParH(level)->neighborZ[number2];
+					number7 = para->getParH(level)->neighborZ[number3];
+					number8 = para->getParH(level)->neighborZ[number4];
 					//////////////////////////////////////////////////////////////////////////
 					//printf("\n test vor neighborsFluid... \n");
-					if (((para->getParH(level)->geoSP[number2] != GEO_FLUID) && (para->getParH(level)->geoSP[number2] < GEO_PM_0) && (para->getParH(level)->geoSP[number2] > GEO_PM_2)) ||
-						((para->getParH(level)->geoSP[number3] != GEO_FLUID) && (para->getParH(level)->geoSP[number3] < GEO_PM_0) && (para->getParH(level)->geoSP[number3] > GEO_PM_2)) ||
-						((para->getParH(level)->geoSP[number4] != GEO_FLUID) && (para->getParH(level)->geoSP[number4] < GEO_PM_0) && (para->getParH(level)->geoSP[number4] > GEO_PM_2)) ||
-						((para->getParH(level)->geoSP[number5] != GEO_FLUID) && (para->getParH(level)->geoSP[number5] < GEO_PM_0) && (para->getParH(level)->geoSP[number5] > GEO_PM_2)) ||
-						((para->getParH(level)->geoSP[number6] != GEO_FLUID) && (para->getParH(level)->geoSP[number6] < GEO_PM_0) && (para->getParH(level)->geoSP[number6] > GEO_PM_2)) ||
-						((para->getParH(level)->geoSP[number7] != GEO_FLUID) && (para->getParH(level)->geoSP[number7] < GEO_PM_0) && (para->getParH(level)->geoSP[number7] > GEO_PM_2)) ||
-						((para->getParH(level)->geoSP[number8] != GEO_FLUID) && (para->getParH(level)->geoSP[number8] < GEO_PM_0) && (para->getParH(level)->geoSP[number8] > GEO_PM_2)))  neighborsFluid = false;
+					if (((para->getParH(level)->typeOfGridNode[number2] != GEO_FLUID) && (para->getParH(level)->typeOfGridNode[number2] < GEO_PM_0) && (para->getParH(level)->typeOfGridNode[number2] > GEO_PM_2)) ||
+						((para->getParH(level)->typeOfGridNode[number3] != GEO_FLUID) && (para->getParH(level)->typeOfGridNode[number3] < GEO_PM_0) && (para->getParH(level)->typeOfGridNode[number3] > GEO_PM_2)) ||
+						((para->getParH(level)->typeOfGridNode[number4] != GEO_FLUID) && (para->getParH(level)->typeOfGridNode[number4] < GEO_PM_0) && (para->getParH(level)->typeOfGridNode[number4] > GEO_PM_2)) ||
+						((para->getParH(level)->typeOfGridNode[number5] != GEO_FLUID) && (para->getParH(level)->typeOfGridNode[number5] < GEO_PM_0) && (para->getParH(level)->typeOfGridNode[number5] > GEO_PM_2)) ||
+						((para->getParH(level)->typeOfGridNode[number6] != GEO_FLUID) && (para->getParH(level)->typeOfGridNode[number6] < GEO_PM_0) && (para->getParH(level)->typeOfGridNode[number6] > GEO_PM_2)) ||
+						((para->getParH(level)->typeOfGridNode[number7] != GEO_FLUID) && (para->getParH(level)->typeOfGridNode[number7] < GEO_PM_0) && (para->getParH(level)->typeOfGridNode[number7] > GEO_PM_2)) ||
+						((para->getParH(level)->typeOfGridNode[number8] != GEO_FLUID) && (para->getParH(level)->typeOfGridNode[number8] < GEO_PM_0) && (para->getParH(level)->typeOfGridNode[number8] > GEO_PM_2)))  neighborsFluid = false;
 					//////////////////////////////////////////////////////////////////////////
 					//if(neighborsFluid==false) counter++;
 					//////////////////////////////////////////////////////////////////////////
@@ -771,9 +771,9 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-			if ( ((part+1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->size_Mat_SP)
+			if ( ((part+1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->numberOfNodes)
 			{
-				sizeOfNodes = para->getParH(level)->size_Mat_SP - (part * para->getlimitOfNodesForVTK());
+				sizeOfNodes = para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
 			}
 			else
 			{
@@ -796,41 +796,41 @@ namespace UnstructuredGridWriter
 			//printf("\n test in if II... \n");
 			for (unsigned int pos=startpos;pos<endpos;pos++)
 			{
-				if (para->getParH(level)->geoSP[pos] == GEO_FLUID)
+				if (para->getParH(level)->typeOfGridNode[pos] == GEO_FLUID)
 				{
 					//////////////////////////////////////////////////////////////////////////
-					double x1  = para->getParH(level)->coordX_SP[pos];
-					double x2  = para->getParH(level)->coordY_SP[pos];
-					double x3  = para->getParH(level)->coordZ_SP[pos];
+					double x1  = para->getParH(level)->coordinateX[pos];
+					double x2  = para->getParH(level)->coordinateY[pos];
+					double x3  = para->getParH(level)->coordinateZ[pos];
 					//////////////////////////////////////////////////////////////////////////
 					number1 = pos;
 					dn1 = pos - startpos;
 					neighborsFluid = true;
 					//////////////////////////////////////////////////////////////////////////
 					nodes[dn1]=( makeUbTuple( (float)(x1 ),(float)(x2 ),(float)(x3 ) ) );
-					nodedata[0][dn1] = (double)para->getParH(level)->press_SP[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
-					nodedata[1][dn1] = (double)para->getParH(level)->rho_SP[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
-					nodedata[2][dn1] = (double)para->getParH(level)->vx_SP[pos] * (double)para->getVelocityRatio();
-					nodedata[3][dn1] = (double)para->getParH(level)->vy_SP[pos] * (double)para->getVelocityRatio();
-					nodedata[4][dn1] = (double)para->getParH(level)->vz_SP[pos] * (double)para->getVelocityRatio();
-					nodedata[5][dn1] = (double)para->getParH(level)->geoSP[pos];
+					nodedata[0][dn1] = (double)para->getParH(level)->pressure[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
+					nodedata[1][dn1] = (double)para->getParH(level)->rho[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
+					nodedata[2][dn1] = (double)para->getParH(level)->velocityX[pos] * (double)para->getVelocityRatio();
+					nodedata[3][dn1] = (double)para->getParH(level)->velocityY[pos] * (double)para->getVelocityRatio();
+					nodedata[4][dn1] = (double)para->getParH(level)->velocityZ[pos] * (double)para->getVelocityRatio();
+					nodedata[5][dn1] = (double)para->getParH(level)->typeOfGridNode[pos];
 					nodedata[6][dn1] = (double)para->getParH(level)->Conc[pos];
 					//////////////////////////////////////////////////////////////////////////
-					number2 = para->getParH(level)->neighborX_SP[number1];
-					number3 = para->getParH(level)->neighborY_SP[number2];
-					number4 = para->getParH(level)->neighborY_SP[number1];
-					number5 = para->getParH(level)->neighborZ_SP[number1];
-					number6 = para->getParH(level)->neighborZ_SP[number2];
-					number7 = para->getParH(level)->neighborZ_SP[number3];
-					number8 = para->getParH(level)->neighborZ_SP[number4];
+					number2 = para->getParH(level)->neighborX[number1];
+					number3 = para->getParH(level)->neighborY[number2];
+					number4 = para->getParH(level)->neighborY[number1];
+					number5 = para->getParH(level)->neighborZ[number1];
+					number6 = para->getParH(level)->neighborZ[number2];
+					number7 = para->getParH(level)->neighborZ[number3];
+					number8 = para->getParH(level)->neighborZ[number4];
 					//////////////////////////////////////////////////////////////////////////
-					if (para->getParH(level)->geoSP[number2] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number3] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number4] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number5] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number6] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number7] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number8] != GEO_FLUID )  neighborsFluid=false;
+					if (para->getParH(level)->typeOfGridNode[number2] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number3] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number4] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number5] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number6] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number7] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number8] != GEO_FLUID )  neighborsFluid=false;
 					//////////////////////////////////////////////////////////////////////////
 					if (number2 > endpos ||
 						number3 > endpos ||
@@ -896,10 +896,10 @@ namespace UnstructuredGridWriter
 		vector< vector< double > > nodedata(nodedatanames.size());
 
 		//printf("\n test for if... \n");
-		if (para->getParH(level)->size_Mat_SP > limitOfNodes)
+		if (para->getParH(level)->numberOfNodes > limitOfNodes)
 		{
 			//printf("\n test in if I... \n");
-			unsigned int restOfNodes = para->getParH(level)->size_Mat_SP - limitOfNodes;
+			unsigned int restOfNodes = para->getParH(level)->numberOfNodes - limitOfNodes;
 			//////////////////////////////////////////////////////////////////////////
 			//PART I
 			nodes.resize(limitOfNodes);
@@ -913,39 +913,39 @@ namespace UnstructuredGridWriter
 			//printf("\n test in if II... \n");
 			for (unsigned int pos=0;pos<limitOfNodes;pos++)
 			{
-				if (para->getParH(level)->geoSP[pos] == GEO_FLUID)
+				if (para->getParH(level)->typeOfGridNode[pos] == GEO_FLUID)
 				{
 					//////////////////////////////////////////////////////////////////////////
-					double x1  = para->getParH(level)->coordX_SP[pos];
-					double x2  = para->getParH(level)->coordY_SP[pos];
-					double x3  = para->getParH(level)->coordZ_SP[pos];
+					double x1  = para->getParH(level)->coordinateX[pos];
+					double x2  = para->getParH(level)->coordinateY[pos];
+					double x3  = para->getParH(level)->coordinateZ[pos];
 					//////////////////////////////////////////////////////////////////////////
 					number1 = pos;
 					neighborsFluid = true;
 					//////////////////////////////////////////////////////////////////////////
 					nodes[number1]=( makeUbTuple( (float)(x1 ),(float)(x2 ),(float)(x3 ) ) );
-					nodedata[0][number1] = (double)para->getParH(level)->press_SP[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
-					nodedata[1][number1] = (double)para->getParH(level)->rho_SP[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
-					nodedata[2][number1] = (double)para->getParH(level)->vx_SP[pos] * (double)para->getVelocityRatio();
-					nodedata[3][number1] = (double)para->getParH(level)->vy_SP[pos] * (double)para->getVelocityRatio();
-					nodedata[4][number1] = (double)para->getParH(level)->vz_SP[pos] * (double)para->getVelocityRatio();
-					nodedata[5][number1] = (double)para->getParH(level)->geoSP[pos];
+					nodedata[0][number1] = (double)para->getParH(level)->pressure[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
+					nodedata[1][number1] = (double)para->getParH(level)->rho[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
+					nodedata[2][number1] = (double)para->getParH(level)->velocityX[pos] * (double)para->getVelocityRatio();
+					nodedata[3][number1] = (double)para->getParH(level)->velocityY[pos] * (double)para->getVelocityRatio();
+					nodedata[4][number1] = (double)para->getParH(level)->velocityZ[pos] * (double)para->getVelocityRatio();
+					nodedata[5][number1] = (double)para->getParH(level)->typeOfGridNode[pos];
 					//////////////////////////////////////////////////////////////////////////
-					number2 = para->getParH(level)->neighborX_SP[number1];
-					number3 = para->getParH(level)->neighborY_SP[number2];
-					number4 = para->getParH(level)->neighborY_SP[number1];
-					number5 = para->getParH(level)->neighborZ_SP[number1];
-					number6 = para->getParH(level)->neighborZ_SP[number2];
-					number7 = para->getParH(level)->neighborZ_SP[number3];
-					number8 = para->getParH(level)->neighborZ_SP[number4];
+					number2 = para->getParH(level)->neighborX[number1];
+					number3 = para->getParH(level)->neighborY[number2];
+					number4 = para->getParH(level)->neighborY[number1];
+					number5 = para->getParH(level)->neighborZ[number1];
+					number6 = para->getParH(level)->neighborZ[number2];
+					number7 = para->getParH(level)->neighborZ[number3];
+					number8 = para->getParH(level)->neighborZ[number4];
 					//////////////////////////////////////////////////////////////////////////
-					if (para->getParH(level)->geoSP[number2] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number3] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number4] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number5] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number6] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number7] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number8] != GEO_FLUID )  neighborsFluid=false;
+					if (para->getParH(level)->typeOfGridNode[number2] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number3] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number4] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number5] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number6] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number7] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number8] != GEO_FLUID )  neighborsFluid=false;
 					//////////////////////////////////////////////////////////////////////////
 					if (number2 > limitOfNodes ||
 						number3 > limitOfNodes ||
@@ -984,42 +984,42 @@ namespace UnstructuredGridWriter
 			nodedata[5].resize(restOfNodes);
 			//printf("\n test in if IV... \n");
 
-			for (unsigned int pos=limitOfNodes;pos<para->getParH(level)->size_Mat_SP;pos++)
+			for (unsigned int pos=limitOfNodes;pos<para->getParH(level)->numberOfNodes;pos++)
 			{
-				if (para->getParH(level)->geoSP[pos] == GEO_FLUID)
+				if (para->getParH(level)->typeOfGridNode[pos] == GEO_FLUID)
 				{
 					//////////////////////////////////////////////////////////////////////////
-					double x1  = para->getParH(level)->coordX_SP[pos];
-					double x2  = para->getParH(level)->coordY_SP[pos];
-					double x3  = para->getParH(level)->coordZ_SP[pos];
+					double x1  = para->getParH(level)->coordinateX[pos];
+					double x2  = para->getParH(level)->coordinateY[pos];
+					double x3  = para->getParH(level)->coordinateZ[pos];
 					//////////////////////////////////////////////////////////////////////////
 					number1 = pos;
 					dn1 = pos - limitOfNodes;
 					neighborsFluid = true;
 					//////////////////////////////////////////////////////////////////////////
 					nodes[dn1]=( makeUbTuple( (float)(x1 ),(float)(x2 ),(float)(x3 ) ) );
-					nodedata[0][dn1] = (double)para->getParH(level)->press_SP[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
-					nodedata[1][dn1] = (double)para->getParH(level)->rho_SP[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
-					nodedata[2][dn1] = (double)para->getParH(level)->vx_SP[pos] * (double)para->getVelocityRatio();
-					nodedata[3][dn1] = (double)para->getParH(level)->vy_SP[pos] * (double)para->getVelocityRatio();
-					nodedata[4][dn1] = (double)para->getParH(level)->vz_SP[pos] * (double)para->getVelocityRatio();
-					nodedata[5][dn1] = (double)para->getParH(level)->geoSP[pos];
+					nodedata[0][dn1] = (double)para->getParH(level)->pressure[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
+					nodedata[1][dn1] = (double)para->getParH(level)->rho[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
+					nodedata[2][dn1] = (double)para->getParH(level)->velocityX[pos] * (double)para->getVelocityRatio();
+					nodedata[3][dn1] = (double)para->getParH(level)->velocityY[pos] * (double)para->getVelocityRatio();
+					nodedata[4][dn1] = (double)para->getParH(level)->velocityZ[pos] * (double)para->getVelocityRatio();
+					nodedata[5][dn1] = (double)para->getParH(level)->typeOfGridNode[pos];
 					//////////////////////////////////////////////////////////////////////////
-					number2 = para->getParH(level)->neighborX_SP[number1];
-					number3 = para->getParH(level)->neighborY_SP[number2];
-					number4 = para->getParH(level)->neighborY_SP[number1];
-					number5 = para->getParH(level)->neighborZ_SP[number1];
-					number6 = para->getParH(level)->neighborZ_SP[number2];
-					number7 = para->getParH(level)->neighborZ_SP[number3];
-					number8 = para->getParH(level)->neighborZ_SP[number4];
+					number2 = para->getParH(level)->neighborX[number1];
+					number3 = para->getParH(level)->neighborY[number2];
+					number4 = para->getParH(level)->neighborY[number1];
+					number5 = para->getParH(level)->neighborZ[number1];
+					number6 = para->getParH(level)->neighborZ[number2];
+					number7 = para->getParH(level)->neighborZ[number3];
+					number8 = para->getParH(level)->neighborZ[number4];
 					//////////////////////////////////////////////////////////////////////////
-					if (para->getParH(level)->geoSP[number2] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number3] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number4] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number5] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number6] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number7] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number8] != GEO_FLUID )  neighborsFluid=false;
+					if (para->getParH(level)->typeOfGridNode[number2] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number3] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number4] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number5] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number6] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number7] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number8] != GEO_FLUID )  neighborsFluid=false;
 					//////////////////////////////////////////////////////////////////////////
 					dn2 = number2 - limitOfNodes;
 					dn3 = number3 - limitOfNodes;
@@ -1046,54 +1046,54 @@ namespace UnstructuredGridWriter
 		else
 		{
 			//printf("\n test in else I... \n");
-			nodes.resize(para->getParH(level)->size_Mat_SP);
-			nodedata[0].resize(para->getParH(level)->size_Mat_SP);
-			nodedata[1].resize(para->getParH(level)->size_Mat_SP);
-			nodedata[2].resize(para->getParH(level)->size_Mat_SP);
-			nodedata[3].resize(para->getParH(level)->size_Mat_SP);
-			nodedata[4].resize(para->getParH(level)->size_Mat_SP);
-			nodedata[5].resize(para->getParH(level)->size_Mat_SP);
+			nodes.resize(para->getParH(level)->numberOfNodes);
+			nodedata[0].resize(para->getParH(level)->numberOfNodes);
+			nodedata[1].resize(para->getParH(level)->numberOfNodes);
+			nodedata[2].resize(para->getParH(level)->numberOfNodes);
+			nodedata[3].resize(para->getParH(level)->numberOfNodes);
+			nodedata[4].resize(para->getParH(level)->numberOfNodes);
+			nodedata[5].resize(para->getParH(level)->numberOfNodes);
 
 			//printf("\n test in else II... \n");
-			for (unsigned int pos=0;pos<para->getParH(level)->size_Mat_SP;pos++)
+			for (unsigned int pos=0;pos<para->getParH(level)->numberOfNodes;pos++)
 			{
-				if (para->getParH(level)->geoSP[pos] == GEO_FLUID)
+				if (para->getParH(level)->typeOfGridNode[pos] == GEO_FLUID)
 				{
 					//printf("\n test in else-for I pos = %d \n", pos);
 					//////////////////////////////////////////////////////////////////////////
-					double x1  = para->getParH(level)->coordX_SP[pos];
-					double x2  = para->getParH(level)->coordY_SP[pos];
-					double x3  = para->getParH(level)->coordZ_SP[pos];
+					double x1  = para->getParH(level)->coordinateX[pos];
+					double x2  = para->getParH(level)->coordinateY[pos];
+					double x3  = para->getParH(level)->coordinateZ[pos];
 					//////////////////////////////////////////////////////////////////////////
 					number1 = pos;
 					neighborsFluid = true;
 					//////////////////////////////////////////////////////////////////////////
 					//printf("\n test in else-for II pos = %d \n", pos);
 					nodes[number1]=( makeUbTuple( (float)(x1 ),(float)(x2 ),(float)(x3 ) ) );
-					nodedata[0][number1] = (double)para->getParH(level)->press_SP[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
-					nodedata[1][number1] = (double)para->getParH(level)->rho_SP[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
-					nodedata[2][number1] = (double)para->getParH(level)->vx_SP[pos] * (double)para->getVelocityRatio();
-					nodedata[3][number1] = (double)para->getParH(level)->vy_SP[pos] * (double)para->getVelocityRatio();
-					nodedata[4][number1] = (double)para->getParH(level)->vz_SP[pos] * (double)para->getVelocityRatio();
-					nodedata[5][number1] = (double)para->getParH(level)->geoSP[pos];
+					nodedata[0][number1] = (double)para->getParH(level)->pressure[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
+					nodedata[1][number1] = (double)para->getParH(level)->rho[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
+					nodedata[2][number1] = (double)para->getParH(level)->velocityX[pos] * (double)para->getVelocityRatio();
+					nodedata[3][number1] = (double)para->getParH(level)->velocityY[pos] * (double)para->getVelocityRatio();
+					nodedata[4][number1] = (double)para->getParH(level)->velocityZ[pos] * (double)para->getVelocityRatio();
+					nodedata[5][number1] = (double)para->getParH(level)->typeOfGridNode[pos];
 					//////////////////////////////////////////////////////////////////////////
 					//printf("\n test in else-for III pos = %d \n", pos);
-					number2 = para->getParH(level)->neighborX_SP[number1];
-					number3 = para->getParH(level)->neighborY_SP[number2];
-					number4 = para->getParH(level)->neighborY_SP[number1];
-					number5 = para->getParH(level)->neighborZ_SP[number1];
-					number6 = para->getParH(level)->neighborZ_SP[number2];
-					number7 = para->getParH(level)->neighborZ_SP[number3];
-					number8 = para->getParH(level)->neighborZ_SP[number4];
+					number2 = para->getParH(level)->neighborX[number1];
+					number3 = para->getParH(level)->neighborY[number2];
+					number4 = para->getParH(level)->neighborY[number1];
+					number5 = para->getParH(level)->neighborZ[number1];
+					number6 = para->getParH(level)->neighborZ[number2];
+					number7 = para->getParH(level)->neighborZ[number3];
+					number8 = para->getParH(level)->neighborZ[number4];
 					//////////////////////////////////////////////////////////////////////////
 					//printf("\n test in else-for VI pos = %d \n", pos);
-					if (para->getParH(level)->geoSP[number2] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number3] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number4] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number5] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number6] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number7] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number8] != GEO_FLUID )  neighborsFluid=false;
+					if (para->getParH(level)->typeOfGridNode[number2] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number3] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number4] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number5] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number6] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number7] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number8] != GEO_FLUID )  neighborsFluid=false;
 					//////////////////////////////////////////////////////////////////////////
 					//if (level == 0 &&
 					//	(number2 <= number1 ||
@@ -1150,53 +1150,53 @@ namespace UnstructuredGridWriter
 		double vxmax = 0;
 		vector< vector< double > > nodedata(nodedatanames.size());
 
-		nodes.resize(para->getParH(level)->size_Mat_SP);
-		nodedata[0].resize(para->getParH(level)->size_Mat_SP);
-		nodedata[1].resize(para->getParH(level)->size_Mat_SP);
-		nodedata[2].resize(para->getParH(level)->size_Mat_SP);
-		nodedata[3].resize(para->getParH(level)->size_Mat_SP);
-		nodedata[4].resize(para->getParH(level)->size_Mat_SP);
-		nodedata[5].resize(para->getParH(level)->size_Mat_SP);
+		nodes.resize(para->getParH(level)->numberOfNodes);
+		nodedata[0].resize(para->getParH(level)->numberOfNodes);
+		nodedata[1].resize(para->getParH(level)->numberOfNodes);
+		nodedata[2].resize(para->getParH(level)->numberOfNodes);
+		nodedata[3].resize(para->getParH(level)->numberOfNodes);
+		nodedata[4].resize(para->getParH(level)->numberOfNodes);
+		nodedata[5].resize(para->getParH(level)->numberOfNodes);
 
-		for (unsigned int pos=0;pos<para->getParH(level)->size_Mat_SP;pos++)
+		for (unsigned int pos=0;pos<para->getParH(level)->numberOfNodes;pos++)
 		{
-			if (para->getParH(level)->geoSP[pos] == GEO_FLUID)
+			if (para->getParH(level)->typeOfGridNode[pos] == GEO_FLUID)
 			{
 				//////////////////////////////////////////////////////////////////////////
-				double x1  = para->getParH(level)->coordX_SP[pos];
-				double x2  = para->getParH(level)->coordY_SP[pos];
-				double x3  = para->getParH(level)->coordZ_SP[pos];
-				double x1P = para->getParH(level)->coordX_SP[para->getParH(level)->neighborX_SP[pos]];
-				double x2P = para->getParH(level)->coordY_SP[para->getParH(level)->neighborY_SP[pos]];
-				double x3P = para->getParH(level)->coordZ_SP[para->getParH(level)->neighborZ_SP[pos]];
+				double x1  = para->getParH(level)->coordinateX[pos];
+				double x2  = para->getParH(level)->coordinateY[pos];
+				double x3  = para->getParH(level)->coordinateZ[pos];
+				double x1P = para->getParH(level)->coordinateX[para->getParH(level)->neighborX[pos]];
+				double x2P = para->getParH(level)->coordinateY[para->getParH(level)->neighborY[pos]];
+				double x3P = para->getParH(level)->coordinateZ[para->getParH(level)->neighborZ[pos]];
 				//////////////////////////////////////////////////////////////////////////
 				number1 = pos;
 				neighborsFluid = true;
 				//////////////////////////////////////////////////////////////////////////
 				nodes[number1]=( makeUbTuple( (float)(x1 ),(float)(x2 ),(float)(x3 ) ) );
 				nodedata[0][number1] = (double)pos;
-				//nodedata[0][number1] = (double)para->getParH(level)->press_SP[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
-				nodedata[1][number1] = (double)para->getParH(level)->rho_SP[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
-				nodedata[2][number1] = (double)para->getParH(level)->vx_SP[pos] * (double)para->getVelocityRatio();
-				nodedata[3][number1] = (double)para->getParH(level)->vy_SP[pos] * (double)para->getVelocityRatio();
-				nodedata[4][number1] = (double)para->getParH(level)->vz_SP[pos] * (double)para->getVelocityRatio();
-				nodedata[5][number1] = (double)para->getParH(level)->geoSP[pos];
+				//nodedata[0][number1] = (double)para->getParH(level)->pressure[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
+				nodedata[1][number1] = (double)para->getParH(level)->rho[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
+				nodedata[2][number1] = (double)para->getParH(level)->velocityX[pos] * (double)para->getVelocityRatio();
+				nodedata[3][number1] = (double)para->getParH(level)->velocityY[pos] * (double)para->getVelocityRatio();
+				nodedata[4][number1] = (double)para->getParH(level)->velocityZ[pos] * (double)para->getVelocityRatio();
+				nodedata[5][number1] = (double)para->getParH(level)->typeOfGridNode[pos];
 				//////////////////////////////////////////////////////////////////////////
-				number2 = para->getParH(level)->neighborX_SP[number1];
-				number3 = para->getParH(level)->neighborY_SP[number2];
-				number4 = para->getParH(level)->neighborY_SP[number1];
-				number5 = para->getParH(level)->neighborZ_SP[number1];
-				number6 = para->getParH(level)->neighborZ_SP[number2];
-				number7 = para->getParH(level)->neighborZ_SP[number3];
-				number8 = para->getParH(level)->neighborZ_SP[number4];
+				number2 = para->getParH(level)->neighborX[number1];
+				number3 = para->getParH(level)->neighborY[number2];
+				number4 = para->getParH(level)->neighborY[number1];
+				number5 = para->getParH(level)->neighborZ[number1];
+				number6 = para->getParH(level)->neighborZ[number2];
+				number7 = para->getParH(level)->neighborZ[number3];
+				number8 = para->getParH(level)->neighborZ[number4];
 				//////////////////////////////////////////////////////////////////////////
-				if (para->getParH(level)->geoSP[number2] != GEO_FLUID ||
-					para->getParH(level)->geoSP[number3] != GEO_FLUID ||
-					para->getParH(level)->geoSP[number4] != GEO_FLUID ||
-					para->getParH(level)->geoSP[number5] != GEO_FLUID ||
-					para->getParH(level)->geoSP[number6] != GEO_FLUID ||
-					para->getParH(level)->geoSP[number7] != GEO_FLUID ||
-					para->getParH(level)->geoSP[number8] != GEO_FLUID )  neighborsFluid=false;
+				if (para->getParH(level)->typeOfGridNode[number2] != GEO_FLUID ||
+					para->getParH(level)->typeOfGridNode[number3] != GEO_FLUID ||
+					para->getParH(level)->typeOfGridNode[number4] != GEO_FLUID ||
+					para->getParH(level)->typeOfGridNode[number5] != GEO_FLUID ||
+					para->getParH(level)->typeOfGridNode[number6] != GEO_FLUID ||
+					para->getParH(level)->typeOfGridNode[number7] != GEO_FLUID ||
+					para->getParH(level)->typeOfGridNode[number8] != GEO_FLUID )  neighborsFluid=false;
 				//////////////////////////////////////////////////////////////////////////
 				//if (level == 0 &&
 				//	(number2 <= number1 ||
@@ -1236,53 +1236,53 @@ namespace UnstructuredGridWriter
 		double posmax = 0;
 		vector< vector< double > > nodedata(nodedatanames.size());
 
-		nodes.resize(para->getParH(level)->size_Mat_SP);
-		nodedata[0].resize(para->getParH(level)->size_Mat_SP);
-		nodedata[1].resize(para->getParH(level)->size_Mat_SP);
-		nodedata[2].resize(para->getParH(level)->size_Mat_SP);
-		nodedata[3].resize(para->getParH(level)->size_Mat_SP);
-		nodedata[4].resize(para->getParH(level)->size_Mat_SP);
-		nodedata[5].resize(para->getParH(level)->size_Mat_SP);
+		nodes.resize(para->getParH(level)->numberOfNodes);
+		nodedata[0].resize(para->getParH(level)->numberOfNodes);
+		nodedata[1].resize(para->getParH(level)->numberOfNodes);
+		nodedata[2].resize(para->getParH(level)->numberOfNodes);
+		nodedata[3].resize(para->getParH(level)->numberOfNodes);
+		nodedata[4].resize(para->getParH(level)->numberOfNodes);
+		nodedata[5].resize(para->getParH(level)->numberOfNodes);
 
-		for (unsigned int pos=0;pos<para->getParH(level)->size_Mat_SP;pos++)
+		for (unsigned int pos=0;pos<para->getParH(level)->numberOfNodes;pos++)
 		{
-			if (para->getParH(level)->geoSP[pos] == GEO_FLUID)
+			if (para->getParH(level)->typeOfGridNode[pos] == GEO_FLUID)
 			{
 				//////////////////////////////////////////////////////////////////////////
-				double x1  = para->getParH(level)->coordX_SP[pos];
-				double x2  = para->getParH(level)->coordY_SP[pos];
-				double x3  = para->getParH(level)->coordZ_SP[pos];
-				double x1P = para->getParH(level)->coordX_SP[para->getParH(level)->neighborX_SP[pos]];
-				double x2P = para->getParH(level)->coordY_SP[para->getParH(level)->neighborY_SP[pos]];
-				double x3P = para->getParH(level)->coordZ_SP[para->getParH(level)->neighborZ_SP[pos]];
+				double x1  = para->getParH(level)->coordinateX[pos];
+				double x2  = para->getParH(level)->coordinateY[pos];
+				double x3  = para->getParH(level)->coordinateZ[pos];
+				double x1P = para->getParH(level)->coordinateX[para->getParH(level)->neighborX[pos]];
+				double x2P = para->getParH(level)->coordinateY[para->getParH(level)->neighborY[pos]];
+				double x3P = para->getParH(level)->coordinateZ[para->getParH(level)->neighborZ[pos]];
 				//////////////////////////////////////////////////////////////////////////
 				number1 = pos;
 				neighborsFluid = true;
 				//////////////////////////////////////////////////////////////////////////
 				nodes[number1]=( makeUbTuple( (float)(x1 ),(float)(x2 ),(float)(x3 ) ) );
 				nodedata[0][number1] = (double)pos;
-				//nodedata[0][number1] = (double)para->getParH(level)->press_SP[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
-				nodedata[1][number1] = (double)para->getParH(level)->rho_SP[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
-				nodedata[2][number1] = (double)para->getParH(level)->vx_SP[pos] * (double)para->getVelocityRatio();
-				nodedata[3][number1] = (double)para->getParH(level)->vy_SP[pos] * (double)para->getVelocityRatio();
-				nodedata[4][number1] = (double)para->getParH(level)->vz_SP[pos] * (double)para->getVelocityRatio();
-				nodedata[5][number1] = (double)para->getParH(level)->geoSP[pos];
+				//nodedata[0][number1] = (double)para->getParH(level)->pressure[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
+				nodedata[1][number1] = (double)para->getParH(level)->rho[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
+				nodedata[2][number1] = (double)para->getParH(level)->velocityX[pos] * (double)para->getVelocityRatio();
+				nodedata[3][number1] = (double)para->getParH(level)->velocityY[pos] * (double)para->getVelocityRatio();
+				nodedata[4][number1] = (double)para->getParH(level)->velocityZ[pos] * (double)para->getVelocityRatio();
+				nodedata[5][number1] = (double)para->getParH(level)->typeOfGridNode[pos];
 				//////////////////////////////////////////////////////////////////////////
-				number2 = para->getParH(level)->neighborX_SP[number1];
-				number3 = para->getParH(level)->neighborY_SP[number2];
-				number4 = para->getParH(level)->neighborY_SP[number1];
-				number5 = para->getParH(level)->neighborZ_SP[number1];
-				number6 = para->getParH(level)->neighborZ_SP[number2];
-				number7 = para->getParH(level)->neighborZ_SP[number3];
-				number8 = para->getParH(level)->neighborZ_SP[number4];
+				number2 = para->getParH(level)->neighborX[number1];
+				number3 = para->getParH(level)->neighborY[number2];
+				number4 = para->getParH(level)->neighborY[number1];
+				number5 = para->getParH(level)->neighborZ[number1];
+				number6 = para->getParH(level)->neighborZ[number2];
+				number7 = para->getParH(level)->neighborZ[number3];
+				number8 = para->getParH(level)->neighborZ[number4];
 				//////////////////////////////////////////////////////////////////////////
-				if (para->getParH(level)->geoSP[number2] != GEO_FLUID ||
-					para->getParH(level)->geoSP[number3] != GEO_FLUID ||
-					para->getParH(level)->geoSP[number4] != GEO_FLUID ||
-					para->getParH(level)->geoSP[number5] != GEO_FLUID ||
-					para->getParH(level)->geoSP[number6] != GEO_FLUID ||
-					para->getParH(level)->geoSP[number7] != GEO_FLUID ||
-					para->getParH(level)->geoSP[number8] != GEO_FLUID )  neighborsFluid=false;
+				if (para->getParH(level)->typeOfGridNode[number2] != GEO_FLUID ||
+					para->getParH(level)->typeOfGridNode[number3] != GEO_FLUID ||
+					para->getParH(level)->typeOfGridNode[number4] != GEO_FLUID ||
+					para->getParH(level)->typeOfGridNode[number5] != GEO_FLUID ||
+					para->getParH(level)->typeOfGridNode[number6] != GEO_FLUID ||
+					para->getParH(level)->typeOfGridNode[number7] != GEO_FLUID ||
+					para->getParH(level)->typeOfGridNode[number8] != GEO_FLUID )  neighborsFluid=false;
 				//////////////////////////////////////////////////////////////////////////
 				//if (level == 0 &&
 				//	(number2 <= number1 ||
@@ -1342,9 +1342,9 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-			if ( ((part+1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->size_Mat_SP)
+			if ( ((part+1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->numberOfNodes)
 			{
-				sizeOfNodes = para->getParH(level)->size_Mat_SP - (part * para->getlimitOfNodesForVTK());
+				sizeOfNodes = para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
 			}
 			else
 			{
@@ -1366,12 +1366,12 @@ namespace UnstructuredGridWriter
 			//printf("\n test in if II... \n");
 			for (unsigned int pos=startpos;pos<endpos;pos++)
 			{
-				if (para->getParH(level)->geoSP[pos] == GEO_FLUID)
+				if (para->getParH(level)->typeOfGridNode[pos] == GEO_FLUID)
 				{
 					//////////////////////////////////////////////////////////////////////////
-					double x1  = para->getParH(level)->coordX_SP[pos];
-					double x2  = para->getParH(level)->coordY_SP[pos];
-					double x3  = para->getParH(level)->coordZ_SP[pos];
+					double x1  = para->getParH(level)->coordinateX[pos];
+					double x2  = para->getParH(level)->coordinateY[pos];
+					double x3  = para->getParH(level)->coordinateZ[pos];
 					//////////////////////////////////////////////////////////////////////////
 					number1 = pos;
 					dn1 = pos - startpos;
@@ -1383,23 +1383,23 @@ namespace UnstructuredGridWriter
 					nodedata[2][dn1] = para->getParH(level)->vx_SP_Med_Out[pos] * para->getVelocityRatio();
 					nodedata[3][dn1] = para->getParH(level)->vy_SP_Med_Out[pos] * para->getVelocityRatio();
 					nodedata[4][dn1] = para->getParH(level)->vz_SP_Med_Out[pos] * para->getVelocityRatio();
-					nodedata[5][dn1] = (double)para->getParH(level)->geoSP[pos];
+					nodedata[5][dn1] = (double)para->getParH(level)->typeOfGridNode[pos];
 					//////////////////////////////////////////////////////////////////////////
-					number2 = para->getParH(level)->neighborX_SP[number1];
-					number3 = para->getParH(level)->neighborY_SP[number2];
-					number4 = para->getParH(level)->neighborY_SP[number1];
-					number5 = para->getParH(level)->neighborZ_SP[number1];
-					number6 = para->getParH(level)->neighborZ_SP[number2];
-					number7 = para->getParH(level)->neighborZ_SP[number3];
-					number8 = para->getParH(level)->neighborZ_SP[number4];
+					number2 = para->getParH(level)->neighborX[number1];
+					number3 = para->getParH(level)->neighborY[number2];
+					number4 = para->getParH(level)->neighborY[number1];
+					number5 = para->getParH(level)->neighborZ[number1];
+					number6 = para->getParH(level)->neighborZ[number2];
+					number7 = para->getParH(level)->neighborZ[number3];
+					number8 = para->getParH(level)->neighborZ[number4];
 					//////////////////////////////////////////////////////////////////////////
-					if (para->getParH(level)->geoSP[number2] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number3] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number4] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number5] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number6] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number7] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number8] != GEO_FLUID )  neighborsFluid=false;
+					if (para->getParH(level)->typeOfGridNode[number2] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number3] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number4] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number5] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number6] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number7] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number8] != GEO_FLUID )  neighborsFluid=false;
 					//////////////////////////////////////////////////////////////////////////
 					if (number2 > endpos ||
 						number3 > endpos ||
@@ -1465,9 +1465,9 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-			if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->size_Mat_SP)
+			if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->numberOfNodes)
 			{
-				sizeOfNodes = para->getParH(level)->size_Mat_SP - (part * para->getlimitOfNodesForVTK());
+				sizeOfNodes = para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
 			}
 			else
 			{
@@ -1489,12 +1489,12 @@ namespace UnstructuredGridWriter
 			//printf("\n test in if II... \n");
 			for (unsigned int pos = startpos; pos < endpos; pos++)
 			{
-				if (para->getParH(level)->geoSP[pos] == GEO_FLUID)
+				if (para->getParH(level)->typeOfGridNode[pos] == GEO_FLUID)
 				{
 					//////////////////////////////////////////////////////////////////////////
-					double x1 = para->getParH(level)->coordX_SP[pos];
-					double x2 = para->getParH(level)->coordY_SP[pos];
-					double x3 = para->getParH(level)->coordZ_SP[pos];
+					double x1 = para->getParH(level)->coordinateX[pos];
+					double x2 = para->getParH(level)->coordinateY[pos];
+					double x3 = para->getParH(level)->coordinateZ[pos];
 					//////////////////////////////////////////////////////////////////////////
 					number1 = pos;
 					dn1 = pos - startpos;
@@ -1507,23 +1507,23 @@ namespace UnstructuredGridWriter
 					nodedata[3][dn1] = para->getParH(level)->vx_SP_Med_Out[pos] * para->getVelocityRatio();
 					nodedata[4][dn1] = para->getParH(level)->vy_SP_Med_Out[pos] * para->getVelocityRatio();
 					nodedata[5][dn1] = para->getParH(level)->vz_SP_Med_Out[pos] * para->getVelocityRatio();
-					nodedata[6][dn1] = (double)para->getParH(level)->geoSP[pos];
+					nodedata[6][dn1] = (double)para->getParH(level)->typeOfGridNode[pos];
 					//////////////////////////////////////////////////////////////////////////
-					number2 = para->getParH(level)->neighborX_SP[number1];
-					number3 = para->getParH(level)->neighborY_SP[number2];
-					number4 = para->getParH(level)->neighborY_SP[number1];
-					number5 = para->getParH(level)->neighborZ_SP[number1];
-					number6 = para->getParH(level)->neighborZ_SP[number2];
-					number7 = para->getParH(level)->neighborZ_SP[number3];
-					number8 = para->getParH(level)->neighborZ_SP[number4];
+					number2 = para->getParH(level)->neighborX[number1];
+					number3 = para->getParH(level)->neighborY[number2];
+					number4 = para->getParH(level)->neighborY[number1];
+					number5 = para->getParH(level)->neighborZ[number1];
+					number6 = para->getParH(level)->neighborZ[number2];
+					number7 = para->getParH(level)->neighborZ[number3];
+					number8 = para->getParH(level)->neighborZ[number4];
 					//////////////////////////////////////////////////////////////////////////
-					if (para->getParH(level)->geoSP[number2] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number3] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number4] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number5] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number6] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number7] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number8] != GEO_FLUID)  neighborsFluid = false;
+					if (para->getParH(level)->typeOfGridNode[number2] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number3] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number4] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number5] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number6] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number7] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number8] != GEO_FLUID)  neighborsFluid = false;
 					//////////////////////////////////////////////////////////////////////////
 					if (number2 > endpos ||
 						number3 > endpos ||
@@ -1595,9 +1595,9 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-			if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->size_Mat_SP)
+			if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->numberOfNodes)
 			{
-				sizeOfNodes = para->getParH(level)->size_Mat_SP - (part * para->getlimitOfNodesForVTK());
+				sizeOfNodes = para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
 			}
 			else
 			{
@@ -1626,12 +1626,12 @@ namespace UnstructuredGridWriter
 			//printf("\n test in if II... \n");
 			for (unsigned int pos = startpos; pos < endpos; pos++)
 			{
-				if (para->getParH(level)->geoSP[pos] == GEO_FLUID)
+				if (para->getParH(level)->typeOfGridNode[pos] == GEO_FLUID)
 				{
 					//////////////////////////////////////////////////////////////////////////
-					double x1 = para->getParH(level)->coordX_SP[pos];
-					double x2 = para->getParH(level)->coordY_SP[pos];
-					double x3 = para->getParH(level)->coordZ_SP[pos];
+					double x1 = para->getParH(level)->coordinateX[pos];
+					double x2 = para->getParH(level)->coordinateY[pos];
+					double x3 = para->getParH(level)->coordinateZ[pos];
 					//////////////////////////////////////////////////////////////////////////
 					number1 = pos;
 					dn1 = pos - startpos;
@@ -1643,41 +1643,41 @@ namespace UnstructuredGridWriter
 					nodedata[2][dn1]  = para->getParH(level)->vx_SP_Med_Out[pos] * para->getVelocityRatio();
 					nodedata[3][dn1]  = para->getParH(level)->vy_SP_Med_Out[pos] * para->getVelocityRatio();
 					nodedata[4][dn1]  = para->getParH(level)->vz_SP_Med_Out[pos] * para->getVelocityRatio();
-					nodedata[5][dn1]  = (((double)para->getParH(level)->vx_SP[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->vx_SP_Med_Out[pos] * para->getVelocityRatio()));
-					nodedata[6][dn1]  = (((double)para->getParH(level)->vy_SP[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->vy_SP_Med_Out[pos] * para->getVelocityRatio()));
-					nodedata[7][dn1]  = (((double)para->getParH(level)->vz_SP[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->vz_SP_Med_Out[pos] * para->getVelocityRatio()));
+					nodedata[5][dn1]  = (((double)para->getParH(level)->velocityX[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->vx_SP_Med_Out[pos] * para->getVelocityRatio()));
+					nodedata[6][dn1]  = (((double)para->getParH(level)->velocityY[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->vy_SP_Med_Out[pos] * para->getVelocityRatio()));
+					nodedata[7][dn1]  = (((double)para->getParH(level)->velocityZ[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->vz_SP_Med_Out[pos] * para->getVelocityRatio()));
 					nodedata[8][dn1]  = 
-						(((double)para->getParH(level)->vx_SP[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->vx_SP_Med_Out[pos] * para->getVelocityRatio())) * 
-						(((double)para->getParH(level)->vx_SP[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->vx_SP_Med_Out[pos] * para->getVelocityRatio()));
+						(((double)para->getParH(level)->velocityX[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->vx_SP_Med_Out[pos] * para->getVelocityRatio())) * 
+						(((double)para->getParH(level)->velocityX[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->vx_SP_Med_Out[pos] * para->getVelocityRatio()));
 					nodedata[9][dn1]  = 
-						(((double)para->getParH(level)->vy_SP[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->vy_SP_Med_Out[pos] * para->getVelocityRatio())) * 
-						(((double)para->getParH(level)->vy_SP[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->vy_SP_Med_Out[pos] * para->getVelocityRatio()));
+						(((double)para->getParH(level)->velocityY[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->vy_SP_Med_Out[pos] * para->getVelocityRatio())) * 
+						(((double)para->getParH(level)->velocityY[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->vy_SP_Med_Out[pos] * para->getVelocityRatio()));
 					nodedata[10][dn1] = 
-						(((double)para->getParH(level)->vz_SP[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->vz_SP_Med_Out[pos] * para->getVelocityRatio())) * 
-						(((double)para->getParH(level)->vz_SP[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->vz_SP_Med_Out[pos] * para->getVelocityRatio()));
+						(((double)para->getParH(level)->velocityZ[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->vz_SP_Med_Out[pos] * para->getVelocityRatio())) * 
+						(((double)para->getParH(level)->velocityZ[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->vz_SP_Med_Out[pos] * para->getVelocityRatio()));
 					nodedata[11][dn1] =
-						(((double)para->getParH(level)->vx_SP[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->vx_SP_Med_Out[pos] * para->getVelocityRatio())) *
-						(((double)para->getParH(level)->vy_SP[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->vy_SP_Med_Out[pos] * para->getVelocityRatio()));
-					//nodedata[8][dn1]  = (((double)para->getParH(level)->vx_SP[pos] * (double)para->getVelocityRatio()) * ((double)para->getParH(level)->vx_SP[pos] * (double)para->getVelocityRatio()));
-					//nodedata[9][dn1]  = (((double)para->getParH(level)->vy_SP[pos] * (double)para->getVelocityRatio()) * ((double)para->getParH(level)->vy_SP[pos] * (double)para->getVelocityRatio()));
-					//nodedata[10][dn1] = (((double)para->getParH(level)->vz_SP[pos] * (double)para->getVelocityRatio()) * ((double)para->getParH(level)->vz_SP[pos] * (double)para->getVelocityRatio()));
-					nodedata[12][dn1] = (double)para->getParH(level)->geoSP[pos];
+						(((double)para->getParH(level)->velocityX[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->vx_SP_Med_Out[pos] * para->getVelocityRatio())) *
+						(((double)para->getParH(level)->velocityY[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->vy_SP_Med_Out[pos] * para->getVelocityRatio()));
+					//nodedata[8][dn1]  = (((double)para->getParH(level)->velocityX[pos] * (double)para->getVelocityRatio()) * ((double)para->getParH(level)->velocityX[pos] * (double)para->getVelocityRatio()));
+					//nodedata[9][dn1]  = (((double)para->getParH(level)->velocityY[pos] * (double)para->getVelocityRatio()) * ((double)para->getParH(level)->velocityY[pos] * (double)para->getVelocityRatio()));
+					//nodedata[10][dn1] = (((double)para->getParH(level)->velocityZ[pos] * (double)para->getVelocityRatio()) * ((double)para->getParH(level)->velocityZ[pos] * (double)para->getVelocityRatio()));
+					nodedata[12][dn1] = (double)para->getParH(level)->typeOfGridNode[pos];
 					//////////////////////////////////////////////////////////////////////////
-					number2 = para->getParH(level)->neighborX_SP[number1];
-					number3 = para->getParH(level)->neighborY_SP[number2];
-					number4 = para->getParH(level)->neighborY_SP[number1];
-					number5 = para->getParH(level)->neighborZ_SP[number1];
-					number6 = para->getParH(level)->neighborZ_SP[number2];
-					number7 = para->getParH(level)->neighborZ_SP[number3];
-					number8 = para->getParH(level)->neighborZ_SP[number4];
+					number2 = para->getParH(level)->neighborX[number1];
+					number3 = para->getParH(level)->neighborY[number2];
+					number4 = para->getParH(level)->neighborY[number1];
+					number5 = para->getParH(level)->neighborZ[number1];
+					number6 = para->getParH(level)->neighborZ[number2];
+					number7 = para->getParH(level)->neighborZ[number3];
+					number8 = para->getParH(level)->neighborZ[number4];
 					//////////////////////////////////////////////////////////////////////////
-					if (para->getParH(level)->geoSP[number2] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number3] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number4] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number5] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number6] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number7] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number8] != GEO_FLUID)  neighborsFluid = false;
+					if (para->getParH(level)->typeOfGridNode[number2] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number3] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number4] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number5] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number6] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number7] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number8] != GEO_FLUID)  neighborsFluid = false;
 					//////////////////////////////////////////////////////////////////////////
 					if (number2 > endpos ||
 						number3 > endpos ||
@@ -1730,25 +1730,25 @@ namespace UnstructuredGridWriter
 		bool neighborsFluid;
 		vector< vector< double > > nodedata(nodedatanames.size());
 
-		nodes.resize(para->getParH(level)->size_Mat_SP);
-		nodedata[0].resize(para->getParH(level)->size_Mat_SP);
-		nodedata[1].resize(para->getParH(level)->size_Mat_SP);
-		nodedata[2].resize(para->getParH(level)->size_Mat_SP);
-		nodedata[3].resize(para->getParH(level)->size_Mat_SP);
-		nodedata[4].resize(para->getParH(level)->size_Mat_SP);
-		nodedata[5].resize(para->getParH(level)->size_Mat_SP);
+		nodes.resize(para->getParH(level)->numberOfNodes);
+		nodedata[0].resize(para->getParH(level)->numberOfNodes);
+		nodedata[1].resize(para->getParH(level)->numberOfNodes);
+		nodedata[2].resize(para->getParH(level)->numberOfNodes);
+		nodedata[3].resize(para->getParH(level)->numberOfNodes);
+		nodedata[4].resize(para->getParH(level)->numberOfNodes);
+		nodedata[5].resize(para->getParH(level)->numberOfNodes);
 
-		for (unsigned int pos=0;pos<para->getParH(level)->size_Mat_SP;pos++)
+		for (unsigned int pos=0;pos<para->getParH(level)->numberOfNodes;pos++)
 		{
-			if (para->getParH(level)->geoSP[pos] == GEO_FLUID)
+			if (para->getParH(level)->typeOfGridNode[pos] == GEO_FLUID)
 			{
 				//////////////////////////////////////////////////////////////////////////
-				double x1  = para->getParH(level)->coordX_SP[pos];
-				double x2  = para->getParH(level)->coordY_SP[pos];
-				double x3  = para->getParH(level)->coordZ_SP[pos];
-				double x1P = para->getParH(level)->coordX_SP[para->getParH(level)->neighborX_SP[pos]];
-				double x2P = para->getParH(level)->coordY_SP[para->getParH(level)->neighborY_SP[pos]];
-				double x3P = para->getParH(level)->coordZ_SP[para->getParH(level)->neighborZ_SP[pos]];
+				double x1  = para->getParH(level)->coordinateX[pos];
+				double x2  = para->getParH(level)->coordinateY[pos];
+				double x3  = para->getParH(level)->coordinateZ[pos];
+				double x1P = para->getParH(level)->coordinateX[para->getParH(level)->neighborX[pos]];
+				double x2P = para->getParH(level)->coordinateY[para->getParH(level)->neighborY[pos]];
+				double x3P = para->getParH(level)->coordinateZ[para->getParH(level)->neighborZ[pos]];
 				//////////////////////////////////////////////////////////////////////////
 				number1 = pos;
 				neighborsFluid = true;
@@ -1759,23 +1759,23 @@ namespace UnstructuredGridWriter
 				nodedata[2][number1] = para->getParH(level)->vx_SP_Med_Out[pos] * para->getVelocityRatio();
 				nodedata[3][number1] = para->getParH(level)->vy_SP_Med_Out[pos] * para->getVelocityRatio();
 				nodedata[4][number1] = para->getParH(level)->vz_SP_Med_Out[pos] * para->getVelocityRatio();
-				nodedata[5][number1] = para->getParH(level)->geoSP[pos];
+				nodedata[5][number1] = para->getParH(level)->typeOfGridNode[pos];
 				//////////////////////////////////////////////////////////////////////////
-				number2 = para->getParH(level)->neighborX_SP[number1];
-				number3 = para->getParH(level)->neighborY_SP[number2];
-				number4 = para->getParH(level)->neighborY_SP[number1];
-				number5 = para->getParH(level)->neighborZ_SP[number1];
-				number6 = para->getParH(level)->neighborZ_SP[number2];
-				number7 = para->getParH(level)->neighborZ_SP[number3];
-				number8 = para->getParH(level)->neighborZ_SP[number4];
+				number2 = para->getParH(level)->neighborX[number1];
+				number3 = para->getParH(level)->neighborY[number2];
+				number4 = para->getParH(level)->neighborY[number1];
+				number5 = para->getParH(level)->neighborZ[number1];
+				number6 = para->getParH(level)->neighborZ[number2];
+				number7 = para->getParH(level)->neighborZ[number3];
+				number8 = para->getParH(level)->neighborZ[number4];
 				//////////////////////////////////////////////////////////////////////////
-				if (para->getParH(level)->geoSP[number2] != GEO_FLUID ||
-					para->getParH(level)->geoSP[number3] != GEO_FLUID ||
-					para->getParH(level)->geoSP[number4] != GEO_FLUID ||
-					para->getParH(level)->geoSP[number5] != GEO_FLUID ||
-					para->getParH(level)->geoSP[number6] != GEO_FLUID ||
-					para->getParH(level)->geoSP[number7] != GEO_FLUID ||
-					para->getParH(level)->geoSP[number8] != GEO_FLUID )  neighborsFluid=false;
+				if (para->getParH(level)->typeOfGridNode[number2] != GEO_FLUID ||
+					para->getParH(level)->typeOfGridNode[number3] != GEO_FLUID ||
+					para->getParH(level)->typeOfGridNode[number4] != GEO_FLUID ||
+					para->getParH(level)->typeOfGridNode[number5] != GEO_FLUID ||
+					para->getParH(level)->typeOfGridNode[number6] != GEO_FLUID ||
+					para->getParH(level)->typeOfGridNode[number7] != GEO_FLUID ||
+					para->getParH(level)->typeOfGridNode[number8] != GEO_FLUID )  neighborsFluid=false;
 				//////////////////////////////////////////////////////////////////////////
 				//if (level == 0 &&
 				//	(number2 <= number1 ||
@@ -1817,25 +1817,25 @@ namespace UnstructuredGridWriter
 		bool neighborsFluid;
 		vector< vector< double > > nodedata(nodedatanames.size());
 
-		nodes.resize(para->getParH(level)->size_Mat_SP);
-		nodedata[0].resize(para->getParH(level)->size_Mat_SP);
-		nodedata[1].resize(para->getParH(level)->size_Mat_SP);
-		nodedata[2].resize(para->getParH(level)->size_Mat_SP);
-		nodedata[3].resize(para->getParH(level)->size_Mat_SP);
-		nodedata[4].resize(para->getParH(level)->size_Mat_SP);
-		nodedata[5].resize(para->getParH(level)->size_Mat_SP);
+		nodes.resize(para->getParH(level)->numberOfNodes);
+		nodedata[0].resize(para->getParH(level)->numberOfNodes);
+		nodedata[1].resize(para->getParH(level)->numberOfNodes);
+		nodedata[2].resize(para->getParH(level)->numberOfNodes);
+		nodedata[3].resize(para->getParH(level)->numberOfNodes);
+		nodedata[4].resize(para->getParH(level)->numberOfNodes);
+		nodedata[5].resize(para->getParH(level)->numberOfNodes);
 
-		for (unsigned int pos=0;pos<para->getParH(level)->size_Mat_SP;pos++)
+		for (unsigned int pos=0;pos<para->getParH(level)->numberOfNodes;pos++)
 		{
-			if (para->getParH(level)->geoSP[pos] == GEO_FLUID)
+			if (para->getParH(level)->typeOfGridNode[pos] == GEO_FLUID)
 			{
 				//////////////////////////////////////////////////////////////////////////
-				double x1  = para->getParH(level)->coordX_SP[pos];
-				double x2  = para->getParH(level)->coordY_SP[pos];
-				double x3  = para->getParH(level)->coordZ_SP[pos];
-				double x1P = para->getParH(level)->coordX_SP[para->getParH(level)->neighborX_SP[pos]];
-				double x2P = para->getParH(level)->coordY_SP[para->getParH(level)->neighborY_SP[pos]];
-				double x3P = para->getParH(level)->coordZ_SP[para->getParH(level)->neighborZ_SP[pos]];
+				double x1  = para->getParH(level)->coordinateX[pos];
+				double x2  = para->getParH(level)->coordinateY[pos];
+				double x3  = para->getParH(level)->coordinateZ[pos];
+				double x1P = para->getParH(level)->coordinateX[para->getParH(level)->neighborX[pos]];
+				double x2P = para->getParH(level)->coordinateY[para->getParH(level)->neighborY[pos]];
+				double x3P = para->getParH(level)->coordinateZ[para->getParH(level)->neighborZ[pos]];
 				//////////////////////////////////////////////////////////////////////////
 				number1 = pos;
 				neighborsFluid = true;
@@ -1846,23 +1846,23 @@ namespace UnstructuredGridWriter
 				nodedata[2][number1] = para->getParH(level)->kxzFromfcNEQ[pos];
 				nodedata[3][number1] = para->getParH(level)->kxxMyyFromfcNEQ[pos];
 				nodedata[4][number1] = para->getParH(level)->kxxMzzFromfcNEQ[pos];
-				nodedata[5][number1] = para->getParH(level)->geoSP[pos];
+				nodedata[5][number1] = para->getParH(level)->typeOfGridNode[pos];
 				//////////////////////////////////////////////////////////////////////////
-				number2 = para->getParH(level)->neighborX_SP[number1];
-				number3 = para->getParH(level)->neighborY_SP[number2];
-				number4 = para->getParH(level)->neighborY_SP[number1];
-				number5 = para->getParH(level)->neighborZ_SP[number1];
-				number6 = para->getParH(level)->neighborZ_SP[number2];
-				number7 = para->getParH(level)->neighborZ_SP[number3];
-				number8 = para->getParH(level)->neighborZ_SP[number4];
+				number2 = para->getParH(level)->neighborX[number1];
+				number3 = para->getParH(level)->neighborY[number2];
+				number4 = para->getParH(level)->neighborY[number1];
+				number5 = para->getParH(level)->neighborZ[number1];
+				number6 = para->getParH(level)->neighborZ[number2];
+				number7 = para->getParH(level)->neighborZ[number3];
+				number8 = para->getParH(level)->neighborZ[number4];
 				//////////////////////////////////////////////////////////////////////////
-				if (para->getParH(level)->geoSP[number2] != GEO_FLUID ||
-					para->getParH(level)->geoSP[number3] != GEO_FLUID ||
-					para->getParH(level)->geoSP[number4] != GEO_FLUID ||
-					para->getParH(level)->geoSP[number5] != GEO_FLUID ||
-					para->getParH(level)->geoSP[number6] != GEO_FLUID ||
-					para->getParH(level)->geoSP[number7] != GEO_FLUID ||
-					para->getParH(level)->geoSP[number8] != GEO_FLUID )  neighborsFluid=false;
+				if (para->getParH(level)->typeOfGridNode[number2] != GEO_FLUID ||
+					para->getParH(level)->typeOfGridNode[number3] != GEO_FLUID ||
+					para->getParH(level)->typeOfGridNode[number4] != GEO_FLUID ||
+					para->getParH(level)->typeOfGridNode[number5] != GEO_FLUID ||
+					para->getParH(level)->typeOfGridNode[number6] != GEO_FLUID ||
+					para->getParH(level)->typeOfGridNode[number7] != GEO_FLUID ||
+					para->getParH(level)->typeOfGridNode[number8] != GEO_FLUID )  neighborsFluid=false;
 				//////////////////////////////////////////////////////////////////////////
 				if (neighborsFluid==true) cells.push_back( makeUbTuple(number1,number2,number3,number4,number5,number6,number7,number8) );		
 				//////////////////////////////////////////////////////////////////////////
@@ -1975,9 +1975,9 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-			if ( ((part+1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->size_Mat_SP)
+			if ( ((part+1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->numberOfNodes)
 			{
-				sizeOfNodes = para->getParH(level)->size_Mat_SP - (part * para->getlimitOfNodesForVTK());
+				sizeOfNodes = para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
 			}
 			else
 			{
@@ -1999,15 +1999,15 @@ namespace UnstructuredGridWriter
 			//printf("\n test in if II... \n");
 			for (unsigned int pos=startpos;pos<endpos;pos++)
 			{
-				if (para->getParH(level)->geoSP[pos] == GEO_FLUID)
+				if (para->getParH(level)->typeOfGridNode[pos] == GEO_FLUID)
 				{
 					//////////////////////////////////////////////////////////////////////////
-					double x1  = para->getParH(level)->coordX_SP[pos];
-					double x2  = para->getParH(level)->coordY_SP[pos];
-					double x3  = para->getParH(level)->coordZ_SP[pos];
-					double x1P = para->getParH(level)->coordX_SP[para->getParH(level)->neighborX_SP[pos]];
-					double x2P = para->getParH(level)->coordY_SP[para->getParH(level)->neighborY_SP[pos]];
-					double x3P = para->getParH(level)->coordZ_SP[para->getParH(level)->neighborZ_SP[pos]];
+					double x1  = para->getParH(level)->coordinateX[pos];
+					double x2  = para->getParH(level)->coordinateY[pos];
+					double x3  = para->getParH(level)->coordinateZ[pos];
+					double x1P = para->getParH(level)->coordinateX[para->getParH(level)->neighborX[pos]];
+					double x2P = para->getParH(level)->coordinateY[para->getParH(level)->neighborY[pos]];
+					double x3P = para->getParH(level)->coordinateZ[para->getParH(level)->neighborZ[pos]];
 					//////////////////////////////////////////////////////////////////////////
 					number1 = pos;
 					neighborsFluid = true;
@@ -2018,23 +2018,23 @@ namespace UnstructuredGridWriter
 					nodedata[2][number1] = para->getParH(level)->kxzFromfcNEQ[pos];
 					nodedata[3][number1] = para->getParH(level)->kxxMyyFromfcNEQ[pos];
 					nodedata[4][number1] = para->getParH(level)->kxxMzzFromfcNEQ[pos];
-					nodedata[5][number1] = para->getParH(level)->geoSP[pos];
+					nodedata[5][number1] = para->getParH(level)->typeOfGridNode[pos];
 					//////////////////////////////////////////////////////////////////////////
-					number2 = para->getParH(level)->neighborX_SP[number1];
-					number3 = para->getParH(level)->neighborY_SP[number2];
-					number4 = para->getParH(level)->neighborY_SP[number1];
-					number5 = para->getParH(level)->neighborZ_SP[number1];
-					number6 = para->getParH(level)->neighborZ_SP[number2];
-					number7 = para->getParH(level)->neighborZ_SP[number3];
-					number8 = para->getParH(level)->neighborZ_SP[number4];
+					number2 = para->getParH(level)->neighborX[number1];
+					number3 = para->getParH(level)->neighborY[number2];
+					number4 = para->getParH(level)->neighborY[number1];
+					number5 = para->getParH(level)->neighborZ[number1];
+					number6 = para->getParH(level)->neighborZ[number2];
+					number7 = para->getParH(level)->neighborZ[number3];
+					number8 = para->getParH(level)->neighborZ[number4];
 					//////////////////////////////////////////////////////////////////////////
-					if (para->getParH(level)->geoSP[number2] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number3] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number4] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number5] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number6] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number7] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number8] != GEO_FLUID )  neighborsFluid=false;
+					if (para->getParH(level)->typeOfGridNode[number2] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number3] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number4] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number5] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number6] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number7] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number8] != GEO_FLUID )  neighborsFluid=false;
 					//////////////////////////////////////////////////////////////////////////
 					if (neighborsFluid==true) cells.push_back( makeUbTuple(number1,number2,number3,number4,number5,number6,number7,number8) );		
 					//////////////////////////////////////////////////////////////////////////
@@ -2080,9 +2080,9 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-			if ( ((part+1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->size_Mat_SP)
+			if ( ((part+1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->numberOfNodes)
 			{
-				sizeOfNodes = para->getParH(level)->size_Mat_SP - (part * para->getlimitOfNodesForVTK());
+				sizeOfNodes = para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
 			}
 			else
 			{
@@ -2106,15 +2106,15 @@ namespace UnstructuredGridWriter
 			//printf("\n test in if II... \n");
 			for (unsigned int pos=startpos;pos<endpos;pos++)
 			{
-				if (para->getParH(level)->geoSP[pos] == GEO_FLUID)
+				if (para->getParH(level)->typeOfGridNode[pos] == GEO_FLUID)
 				{
 					//////////////////////////////////////////////////////////////////////////
-					double x1  = para->getParH(level)->coordX_SP[pos];
-					double x2  = para->getParH(level)->coordY_SP[pos];
-					double x3  = para->getParH(level)->coordZ_SP[pos];
-					double x1P = para->getParH(level)->coordX_SP[para->getParH(level)->neighborX_SP[pos]];
-					double x2P = para->getParH(level)->coordY_SP[para->getParH(level)->neighborY_SP[pos]];
-					double x3P = para->getParH(level)->coordZ_SP[para->getParH(level)->neighborZ_SP[pos]];
+					double x1  = para->getParH(level)->coordinateX[pos];
+					double x2  = para->getParH(level)->coordinateY[pos];
+					double x3  = para->getParH(level)->coordinateZ[pos];
+					double x1P = para->getParH(level)->coordinateX[para->getParH(level)->neighborX[pos]];
+					double x2P = para->getParH(level)->coordinateY[para->getParH(level)->neighborY[pos]];
+					double x3P = para->getParH(level)->coordinateZ[para->getParH(level)->neighborZ[pos]];
 					//////////////////////////////////////////////////////////////////////////
 					number1 = pos;
 					neighborsFluid = true;
@@ -2127,23 +2127,23 @@ namespace UnstructuredGridWriter
 					nodedata[4][number1] = para->getParH(level)->CUMcba[pos];
 					nodedata[5][number1] = para->getParH(level)->CUMacb[pos];
 					nodedata[6][number1] = para->getParH(level)->CUMcab[pos];
-					nodedata[7][number1] = para->getParH(level)->geoSP[pos];
+					nodedata[7][number1] = para->getParH(level)->typeOfGridNode[pos];
 					//////////////////////////////////////////////////////////////////////////
-					number2 = para->getParH(level)->neighborX_SP[number1];
-					number3 = para->getParH(level)->neighborY_SP[number2];
-					number4 = para->getParH(level)->neighborY_SP[number1];
-					number5 = para->getParH(level)->neighborZ_SP[number1];
-					number6 = para->getParH(level)->neighborZ_SP[number2];
-					number7 = para->getParH(level)->neighborZ_SP[number3];
-					number8 = para->getParH(level)->neighborZ_SP[number4];
+					number2 = para->getParH(level)->neighborX[number1];
+					number3 = para->getParH(level)->neighborY[number2];
+					number4 = para->getParH(level)->neighborY[number1];
+					number5 = para->getParH(level)->neighborZ[number1];
+					number6 = para->getParH(level)->neighborZ[number2];
+					number7 = para->getParH(level)->neighborZ[number3];
+					number8 = para->getParH(level)->neighborZ[number4];
 					//////////////////////////////////////////////////////////////////////////
-					if (para->getParH(level)->geoSP[number2] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number3] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number4] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number5] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number6] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number7] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number8] != GEO_FLUID )  neighborsFluid=false;
+					if (para->getParH(level)->typeOfGridNode[number2] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number3] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number4] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number5] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number6] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number7] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number8] != GEO_FLUID )  neighborsFluid=false;
 					//////////////////////////////////////////////////////////////////////////
 					if (neighborsFluid==true) cells.push_back( makeUbTuple(number1,number2,number3,number4,number5,number6,number7,number8) );		
 					//////////////////////////////////////////////////////////////////////////
@@ -2192,9 +2192,9 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-			if ( ((part+1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->size_Mat_SP)
+			if ( ((part+1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->numberOfNodes)
 			{
-				sizeOfNodes = para->getParH(level)->size_Mat_SP - (part * para->getlimitOfNodesForVTK());
+				sizeOfNodes = para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
 			}
 			else
 			{
@@ -2221,15 +2221,15 @@ namespace UnstructuredGridWriter
 			//printf("\n test in if II... \n");
 			for (unsigned int pos=startpos;pos<endpos;pos++)
 			{
-				if (para->getParH(level)->geoSP[pos] == GEO_FLUID)
+				if (para->getParH(level)->typeOfGridNode[pos] == GEO_FLUID)
 				{
 					//////////////////////////////////////////////////////////////////////////
-					double x1  = para->getParH(level)->coordX_SP[pos];
-					double x2  = para->getParH(level)->coordY_SP[pos];
-					double x3  = para->getParH(level)->coordZ_SP[pos];
-					double x1P = para->getParH(level)->coordX_SP[para->getParH(level)->neighborX_SP[pos]];
-					double x2P = para->getParH(level)->coordY_SP[para->getParH(level)->neighborY_SP[pos]];
-					double x3P = para->getParH(level)->coordZ_SP[para->getParH(level)->neighborZ_SP[pos]];
+					double x1  = para->getParH(level)->coordinateX[pos];
+					double x2  = para->getParH(level)->coordinateY[pos];
+					double x3  = para->getParH(level)->coordinateZ[pos];
+					double x1P = para->getParH(level)->coordinateX[para->getParH(level)->neighborX[pos]];
+					double x2P = para->getParH(level)->coordinateY[para->getParH(level)->neighborY[pos]];
+					double x3P = para->getParH(level)->coordinateZ[para->getParH(level)->neighborZ[pos]];
 					//////////////////////////////////////////////////////////////////////////
 					number1 = pos;
 					neighborsFluid = true;
@@ -2245,23 +2245,23 @@ namespace UnstructuredGridWriter
 					nodedata[7][number1] = para->getParH(level)->CUMcbc[pos];
 					nodedata[8][number1] = para->getParH(level)->CUMccb[pos];
 					nodedata[9][number1] = para->getParH(level)->CUMccc[pos];
-					nodedata[10][number1] = para->getParH(level)->geoSP[pos];
+					nodedata[10][number1] = para->getParH(level)->typeOfGridNode[pos];
 					//////////////////////////////////////////////////////////////////////////
-					number2 = para->getParH(level)->neighborX_SP[number1];
-					number3 = para->getParH(level)->neighborY_SP[number2];
-					number4 = para->getParH(level)->neighborY_SP[number1];
-					number5 = para->getParH(level)->neighborZ_SP[number1];
-					number6 = para->getParH(level)->neighborZ_SP[number2];
-					number7 = para->getParH(level)->neighborZ_SP[number3];
-					number8 = para->getParH(level)->neighborZ_SP[number4];
+					number2 = para->getParH(level)->neighborX[number1];
+					number3 = para->getParH(level)->neighborY[number2];
+					number4 = para->getParH(level)->neighborY[number1];
+					number5 = para->getParH(level)->neighborZ[number1];
+					number6 = para->getParH(level)->neighborZ[number2];
+					number7 = para->getParH(level)->neighborZ[number3];
+					number8 = para->getParH(level)->neighborZ[number4];
 					//////////////////////////////////////////////////////////////////////////
-					if (para->getParH(level)->geoSP[number2] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number3] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number4] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number5] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number6] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number7] != GEO_FLUID ||
-						para->getParH(level)->geoSP[number8] != GEO_FLUID )  neighborsFluid=false;
+					if (para->getParH(level)->typeOfGridNode[number2] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number3] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number4] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number5] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number6] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number7] != GEO_FLUID ||
+						para->getParH(level)->typeOfGridNode[number8] != GEO_FLUID )  neighborsFluid=false;
 					//////////////////////////////////////////////////////////////////////////
 					if (neighborsFluid==true) cells.push_back( makeUbTuple(number1,number2,number3,number4,number5,number6,number7,number8) );		
 					//////////////////////////////////////////////////////////////////////////
@@ -2293,7 +2293,7 @@ namespace UnstructuredGridWriter
 		QforBoundaryConditions Q;
 		double nodeX1, nodeX2, nodeX3, wallX1, wallX2, wallX3, q;
 		//////////////////////////////////////////////////////////////////////////
-		sizeOfNodes = para->getParH(level)->QGeom.kQ;
+		sizeOfNodes = para->getParH(level)->geometryBC.numberOfBCnodes;
 		endpos = startpos + sizeOfNodes;
 		//////////////////////////////////////////////////////////////////////////
 		//qs.clear();
@@ -2311,49 +2311,49 @@ namespace UnstructuredGridWriter
 		for (unsigned int pos = startpos; pos < endpos; pos++)
 		{
 			//////////////////////////////////////////////////////////////////////////
-			nodeX1 = para->getParH(level)->coordX_SP[para->getParH(level)->QGeom.k[pos]];
-			nodeX2 = para->getParH(level)->coordY_SP[para->getParH(level)->QGeom.k[pos]];
-			nodeX3 = para->getParH(level)->coordZ_SP[para->getParH(level)->QGeom.k[pos]];
+			nodeX1 = para->getParH(level)->coordinateX[para->getParH(level)->geometryBC.k[pos]];
+			nodeX2 = para->getParH(level)->coordinateY[para->getParH(level)->geometryBC.k[pos]];
+			nodeX3 = para->getParH(level)->coordinateZ[para->getParH(level)->geometryBC.k[pos]];
 			wallX1 = 0.0;
 			wallX2 = 0.0;
 			wallX3 = 0.0;
 			q      = 0.0;
 			//////////////////////////////////////////////////////////////////////////
-			for (unsigned int typeOfQ = dirSTART; typeOfQ <= dirEND; typeOfQ++)
+			for (unsigned int typeOfQ = STARTDIR; typeOfQ <= ENDDIR; typeOfQ++)
 			{
-				QQ = para->getParH(level)->QGeom.q27[0];
+				QQ = para->getParH(level)->geometryBC.q27[0];
 				Q.q27[typeOfQ] = &QQ[typeOfQ*sizeOfNodes];
 				q = (double)(Q.q27[typeOfQ][pos]);
 				//////////////////////////////////////////////////////////////////////////
 				switch (typeOfQ)
 				{
-					case dirE:   wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
-					case dirN:   wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
-					case dirW:   wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
-					case dirS:   wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
-					case dirNE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
-					case dirNW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
-					case dirSW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
-					case dirSE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
-					case dirT:   wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
-					case dirTE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
-					case dirTN:  wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirTW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
-					case dirTS:  wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirB:   wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
-					case dirBE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
-					case dirBN:  wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
-					case dirBW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
-					case dirBS:  wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
-					case dirTNE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirBSW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
-					case dirBNE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
-					case dirTSW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirTSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirBNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
-					case dirBSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
-					case dirTNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirZERO:wallX1 = nodeX1;        wallX2 = nodeX2;		 wallX3 = nodeX3;        break;
+					case E:   wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
+					case N:   wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
+					case W:   wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
+					case S:   wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
+					case NE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
+					case NW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
+					case SW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
+					case SE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
+					case T:   wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
+					case TE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
+					case TN:  wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
+					case TW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
+					case TS:  wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
+					case B:   wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
+					case BE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
+					case BN:  wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
+					case BW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
+					case BS:  wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
+					case TNE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
+					case BSW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
+					case BNE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
+					case TSW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
+					case TSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
+					case BNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
+					case BSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
+					case TNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
+					case REST:wallX1 = nodeX1;        wallX2 = nodeX2;		 wallX3 = nodeX3;        break;
 					default: throw UbException(UB_EXARGS, "unknown direction");
 				}
 				//////////////////////////////////////////////////////////////////////////
@@ -2397,7 +2397,7 @@ namespace UnstructuredGridWriter
 		QforBoundaryConditions Q;
 		double nodeX1, nodeX2, nodeX3, wallX1, wallX2, wallX3, q;
 		//////////////////////////////////////////////////////////////////////////
-		sizeOfNodes = para->getParH(level)->Qinflow.kQ;
+		sizeOfNodes = para->getParH(level)->velocityBC.numberOfBCnodes;
 		endpos = startpos + sizeOfNodes;
 		//////////////////////////////////////////////////////////////////////////
 		//qs.clear();
@@ -2415,50 +2415,50 @@ namespace UnstructuredGridWriter
 		for (unsigned int pos = startpos; pos < endpos; pos++)
 		{
 			//////////////////////////////////////////////////////////////////////////
-			nodeX1 = para->getParH(level)->coordX_SP[para->getParH(level)->Qinflow.k[pos]];
-			nodeX2 = para->getParH(level)->coordY_SP[para->getParH(level)->Qinflow.k[pos]];
-			nodeX3 = para->getParH(level)->coordZ_SP[para->getParH(level)->Qinflow.k[pos]];
+			nodeX1 = para->getParH(level)->coordinateX[para->getParH(level)->velocityBC.k[pos]];
+			nodeX2 = para->getParH(level)->coordinateY[para->getParH(level)->velocityBC.k[pos]];
+			nodeX3 = para->getParH(level)->coordinateZ[para->getParH(level)->velocityBC.k[pos]];
 			wallX1 = 0.0;
 			wallX2 = 0.0;
 			wallX3 = 0.0;
 			q      = 0.0;
 			//////////////////////////////////////////////////////////////////////////
-			for (unsigned int typeOfQ = dirSTART; typeOfQ <= dirEND; typeOfQ++)
+			for (unsigned int typeOfQ = STARTDIR; typeOfQ <= ENDDIR; typeOfQ++)
 			{
-				QQ = para->getParH(level)->Qinflow.q27[0];
+				QQ = para->getParH(level)->velocityBC.q27[0];
 				Q.q27[typeOfQ] = &QQ[typeOfQ*sizeOfNodes];
 				q = (double)(Q.q27[typeOfQ][pos]);
                 if( q < 0.0 ) q = 0.0;
 				//////////////////////////////////////////////////////////////////////////
 				switch (typeOfQ)
 				{
-					case dirE:   wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
-					case dirN:   wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
-					case dirW:   wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
-					case dirS:   wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
-					case dirNE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
-					case dirNW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
-					case dirSW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
-					case dirSE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
-					case dirT:   wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
-					case dirTE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
-					case dirTN:  wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirTW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
-					case dirTS:  wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirB:   wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
-					case dirBE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
-					case dirBN:  wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
-					case dirBW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
-					case dirBS:  wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
-					case dirTNE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirBSW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
-					case dirBNE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
-					case dirTSW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirTSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirBNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
-					case dirBSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
-					case dirTNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirZERO:wallX1 = nodeX1;        wallX2 = nodeX2;		 wallX3 = nodeX3;        break;
+					case E:   wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
+					case N:   wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
+					case W:   wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
+					case S:   wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
+					case NE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
+					case NW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
+					case SW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
+					case SE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
+					case T:   wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
+					case TE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
+					case TN:  wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
+					case TW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
+					case TS:  wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
+					case B:   wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
+					case BE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
+					case BN:  wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
+					case BW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
+					case BS:  wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
+					case TNE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
+					case BSW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
+					case BNE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
+					case TSW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
+					case TSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
+					case BNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
+					case BSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
+					case TNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
+					case REST:wallX1 = nodeX1;        wallX2 = nodeX2;		 wallX3 = nodeX3;        break;
 					default: throw UbException(UB_EXARGS, "unknown direction");
 				}
 				//////////////////////////////////////////////////////////////////////////
@@ -2502,7 +2502,7 @@ namespace UnstructuredGridWriter
 		QforBoundaryConditions Q;
 		double nodeX1, nodeX2, nodeX3, wallX1, wallX2, wallX3, q;
 		//////////////////////////////////////////////////////////////////////////
-		sizeOfNodes = para->getParH(level)->QPress.kQ;
+		sizeOfNodes = para->getParH(level)->pressureBC.numberOfBCnodes;
 		endpos = startpos + sizeOfNodes;
 		//////////////////////////////////////////////////////////////////////////
 		//qs.clear();
@@ -2520,50 +2520,50 @@ namespace UnstructuredGridWriter
 		for (unsigned int pos = startpos; pos < endpos; pos++)
 		{
 			//////////////////////////////////////////////////////////////////////////
-			nodeX1 = para->getParH(level)->coordX_SP[para->getParH(level)->QPress.k[pos]];
-			nodeX2 = para->getParH(level)->coordY_SP[para->getParH(level)->QPress.k[pos]];
-			nodeX3 = para->getParH(level)->coordZ_SP[para->getParH(level)->QPress.k[pos]];
+			nodeX1 = para->getParH(level)->coordinateX[para->getParH(level)->pressureBC.k[pos]];
+			nodeX2 = para->getParH(level)->coordinateY[para->getParH(level)->pressureBC.k[pos]];
+			nodeX3 = para->getParH(level)->coordinateZ[para->getParH(level)->pressureBC.k[pos]];
 			wallX1 = 0.0;
 			wallX2 = 0.0;
 			wallX3 = 0.0;
 			q      = 0.0;
 			//////////////////////////////////////////////////////////////////////////
-			for (unsigned int typeOfQ = dirSTART; typeOfQ <= dirEND; typeOfQ++)
+			for (unsigned int typeOfQ = STARTDIR; typeOfQ <= ENDDIR; typeOfQ++)
 			{
-				QQ = para->getParH(level)->QPress.q27[0];
+				QQ = para->getParH(level)->pressureBC.q27[0];
 				Q.q27[typeOfQ] = &QQ[typeOfQ*sizeOfNodes];
 				q = (double)(Q.q27[typeOfQ][pos]);
                 if( q < 0.0 ) q = 0.0;
 				//////////////////////////////////////////////////////////////////////////
 				switch (typeOfQ)
 				{
-					case dirE:   wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
-					case dirN:   wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
-					case dirW:   wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
-					case dirS:   wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
-					case dirNE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
-					case dirNW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
-					case dirSW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
-					case dirSE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
-					case dirT:   wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
-					case dirTE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
-					case dirTN:  wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirTW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
-					case dirTS:  wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirB:   wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
-					case dirBE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
-					case dirBN:  wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
-					case dirBW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
-					case dirBS:  wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
-					case dirTNE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirBSW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
-					case dirBNE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
-					case dirTSW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirTSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirBNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
-					case dirBSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
-					case dirTNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
-					case dirZERO:wallX1 = nodeX1;        wallX2 = nodeX2;		 wallX3 = nodeX3;        break;
+					case E:   wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
+					case N:   wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
+					case W:   wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
+					case S:   wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
+					case NE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
+					case NW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
+					case SW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
+					case SE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
+					case T:   wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
+					case TE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
+					case TN:  wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
+					case TW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
+					case TS:  wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
+					case B:   wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
+					case BE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
+					case BN:  wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
+					case BW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
+					case BS:  wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
+					case TNE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
+					case BSW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
+					case BNE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
+					case TSW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
+					case TSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
+					case BNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
+					case BSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
+					case TNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
+					case REST:wallX1 = nodeX1;        wallX2 = nodeX2;		 wallX3 = nodeX3;        break;
 					default: throw UbException(UB_EXARGS, "unknown direction");
 				}
 				//////////////////////////////////////////////////////////////////////////
