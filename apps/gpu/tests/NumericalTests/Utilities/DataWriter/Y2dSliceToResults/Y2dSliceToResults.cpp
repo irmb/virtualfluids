@@ -41,14 +41,14 @@ void Y2dSliceToResults::writeTimestep(std::shared_ptr<Parameter> para, unsigned 
 			int posResults = CoordResults2DTo1D(posX, posZ);
 			int posPara = CoordPara3DTo1D(posX, ySliceForCalculation, posZ);
 
-			x.at(posResults) = (double)para->getParH(level)->coordX_SP[posPara] - (double)1.0;
-			y.at(posResults) = (double)para->getParH(level)->coordY_SP[posPara] - (double)1.0;
-			z.at(posResults) = (double)para->getParH(level)->coordZ_SP[posPara] - (double)1.0;
-			vx.at(posResults) = (double)para->getParH(level)->vx_SP[posPara] * (double)para->getVelocityRatio();
-			vy.at(posResults) = (double)para->getParH(level)->vy_SP[posPara] * (double)para->getVelocityRatio();
-			vz.at(posResults) = (double)para->getParH(level)->vz_SP[posPara] * (double)para->getVelocityRatio();
-			press.at(posResults) = (double)para->getParH(level)->press_SP[posPara] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
-			rho.at(posResults) = (double)para->getParH(level)->rho_SP[posPara] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
+			x.at(posResults) = (double)para->getParH(level)->coordinateX[posPara] - (double)1.0;
+			y.at(posResults) = (double)para->getParH(level)->coordinateY[posPara] - (double)1.0;
+			z.at(posResults) = (double)para->getParH(level)->coordinateZ[posPara] - (double)1.0;
+			vx.at(posResults) = (double)para->getParH(level)->velocityX[posPara] * (double)para->getVelocityRatio();
+			vy.at(posResults) = (double)para->getParH(level)->velocityY[posPara] * (double)para->getVelocityRatio();
+			vz.at(posResults) = (double)para->getParH(level)->velocityZ[posPara] * (double)para->getVelocityRatio();
+			press.at(posResults) = (double)para->getParH(level)->pressure[posPara] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
+			rho.at(posResults) = (double)para->getParH(level)->rho[posPara] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
 			levels.at(posResults) = level;
 		}
 	}

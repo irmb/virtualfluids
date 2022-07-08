@@ -16,15 +16,18 @@ void InitialConditionImp::init(const int level)
 
 real InitialConditionImp::getXCoord(int i, int level)
 {
-	return (real)(para->getParH(level)->coordX_SP[i] - 1.0);
+	return para->getParH(level)->coordinateX[i] - 1.0;
+	// return (real)(para->getParH(level)->coordX_SP[i] - 1.0);
 }
 
 real InitialConditionImp::getYCoord(int i, int level)
 {
-	return (real)(para->getParH(level)->coordY_SP[i] - 1.0);
+	return para->getParH(level)->coordinateY[i] - 1.0;
+	// return (real)(para->getParH(level)->coordY_SP[i] - 1.0);
 }
 
 real InitialConditionImp::getZCoord(int i, int level)
 {
-	return (real)(para->getParH(level)->coordZ_SP[i] - 1.0);
+	return para->getParH(level)->coordinateZ[i] - 1.0;
+	// return (real)(para->getParH(level)->coordZ_SP[i] - 1.0);
 }

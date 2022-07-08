@@ -4,23 +4,26 @@
 #include "Utilities/Time/TimeTracking.h"
 
 #include "VirtualFluids_GPU/LBM/Simulation.h"
+#include "VirtualFluids_GPU/Communication/Communicator.h"
+#include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
+#include "VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactory.h"
 
 #include <sstream>
 
 void VirtualFluidSimulationImp::run()
 {
 	numericalTestSuite->makeSimulationHeadOutput();
-	Simulation sim;
-	sim.setFactories(kernelFactory, preProcessorFactory);
-	sim.init(para, grid, dataWriter, cudaManager);
+	auto sim = Simulation(para, cudaManager, vf::gpu::Communicator::getInstance(), *grid.get(), new BoundaryConditionFactory());
+
+ 	// These are created by the Simulation itself
+	// sim.setFactories(kernelFactory, preProcessorFactory);
+	// sim.init(para, grid, dataWriter, cudaManager);
 
 	timeTracking->setSimulationStartTime();
 	sim.run();
 	timeTracking->setSimulationEndTime();
 
 	numericalTestSuite->startPostProcessing();
-
-	sim.free();
 }
 
 void VirtualFluidSimulationImp::setParameter(std::shared_ptr<Parameter> para)

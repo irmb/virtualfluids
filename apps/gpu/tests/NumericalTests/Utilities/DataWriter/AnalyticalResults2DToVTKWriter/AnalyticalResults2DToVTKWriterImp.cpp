@@ -38,7 +38,7 @@ void AnalyticalResults2DToVTKWriterImp::writeAnalyticalResult(std::shared_ptr<Pa
 		for (int level = para->getCoarse(); level <= para->getFine(); level++) {
 #pragma omp parallel for
 			for (int timeStep = 0; timeStep < analyticalResult->getNumberOfTimeSteps(); timeStep++) {
-				const unsigned int numberOfParts = para->getParH(level)->size_Mat_SP / para->getlimitOfNodesForVTK() + 1;
+				const unsigned int numberOfParts = para->getParH(level)->size_Mat / para->getlimitOfNodesForVTK() + 1;
 				std::vector<std::string> fname;
 				unsigned int time = analyticalResult->getTimeSteps().at(timeStep)*analyticalResult->getTimeStepLength();
 				for (int j = 1; j <= numberOfParts; j++) {
@@ -86,8 +86,8 @@ void AnalyticalResults2DToVTKWriterImp::writeTimeStep(std::shared_ptr<Parameter>
 	std::vector<double> vz = analyticalResult->getVz()[timeStep];
 
     for (unsigned int part = 0; part < fname.size(); part++){
-        if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->size_Mat_SP)
-            sizeOfNodes = para->getParH(level)->size_Mat_SP - (part * para->getlimitOfNodesForVTK());
+        if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->size_Mat)
+            sizeOfNodes = para->getParH(level)->size_Mat - (part * para->getlimitOfNodesForVTK());
         else
             sizeOfNodes = para->getlimitOfNodesForVTK();
 
@@ -106,12 +106,12 @@ void AnalyticalResults2DToVTKWriterImp::writeTimeStep(std::shared_ptr<Parameter>
         //////////////////////////////////////////////////////////////////////////
         for (unsigned int pos = startpos; pos < endpos; pos++)
         {
-            if (para->getParH(level)->geoSP[pos] == GEO_FLUID)
+            if (para->getParH(level)->geo[pos] == GEO_FLUID)
             {
                 //////////////////////////////////////////////////////////////////////////
-                double x1 = para->getParH(level)->coordX_SP[pos];
-                double x2 = para->getParH(level)->coordY_SP[pos];
-                double x3 = para->getParH(level)->coordZ_SP[pos];
+                double x1 = para->getParH(level)->coordinateX[pos];
+                double x2 = para->getParH(level)->coordinateY[pos];
+                double x3 = para->getParH(level)->coordinateZ[pos];
                 //////////////////////////////////////////////////////////////////////////
                 number1 = pos;
                 dn1 = pos - startpos;
@@ -125,23 +125,23 @@ void AnalyticalResults2DToVTKWriterImp::writeTimeStep(std::shared_ptr<Parameter>
                 nodedata[2][dn1] = vx[numberInResults];
                 nodedata[3][dn1] = vy[numberInResults];
                 nodedata[4][dn1] = vz[numberInResults];
-                nodedata[5][dn1] = (double)para->getParH(level)->geoSP[pos];
+                nodedata[5][dn1] = (double)para->getParH(level)->geo[pos];
                 //////////////////////////////////////////////////////////////////////////
-                number2 = para->getParH(level)->neighborX_SP[number1];
-                number3 = para->getParH(level)->neighborY_SP[number2];
-                number4 = para->getParH(level)->neighborY_SP[number1];
-                number5 = para->getParH(level)->neighborZ_SP[number1];
-                number6 = para->getParH(level)->neighborZ_SP[number2];
-                number7 = para->getParH(level)->neighborZ_SP[number3];
-                number8 = para->getParH(level)->neighborZ_SP[number4];
+                number2 = para->getParH(level)->neighborX[number1];
+                number3 = para->getParH(level)->neighborY[number2];
+                number4 = para->getParH(level)->neighborY[number1];
+                number5 = para->getParH(level)->neighborZ[number1];
+                number6 = para->getParH(level)->neighborZ[number2];
+                number7 = para->getParH(level)->neighborZ[number3];
+                number8 = para->getParH(level)->neighborZ[number4];
                 //////////////////////////////////////////////////////////////////////////
-                if (para->getParH(level)->geoSP[number2] != GEO_FLUID ||
-                    para->getParH(level)->geoSP[number3] != GEO_FLUID ||
-                    para->getParH(level)->geoSP[number4] != GEO_FLUID ||
-                    para->getParH(level)->geoSP[number5] != GEO_FLUID ||
-                    para->getParH(level)->geoSP[number6] != GEO_FLUID ||
-                    para->getParH(level)->geoSP[number7] != GEO_FLUID ||
-                    para->getParH(level)->geoSP[number8] != GEO_FLUID)  neighborsAreFluid = false;
+                if (para->getParH(level)->geo[number2] != GEO_FLUID ||
+                    para->getParH(level)->geo[number3] != GEO_FLUID ||
+                    para->getParH(level)->geo[number4] != GEO_FLUID ||
+                    para->getParH(level)->geo[number5] != GEO_FLUID ||
+                    para->getParH(level)->geo[number6] != GEO_FLUID ||
+                    para->getParH(level)->geo[number7] != GEO_FLUID ||
+                    para->getParH(level)->geo[number8] != GEO_FLUID)  neighborsAreFluid = false;
                 //////////////////////////////////////////////////////////////////////////
                 if (number2 > endpos ||
                     number3 > endpos ||

@@ -1,8 +1,10 @@
 #include "ConfigFileReaderNT.h"
 
-#include "Core/Input/Input.h"
+// #include "Core/Input/Input.h"
+#include <basics/config/ConfigurationFile.h>
 #include "Core/StringUtilities/StringUtil.h"
 
+#include <memory>
 #include <fstream>
 #include <string>
 
@@ -29,34 +31,31 @@ ConfigFileReader::ConfigFileReader(const std::string aFilePath) : myFilePath(aFi
 void ConfigFileReader::readConfigFile()
 {
     configData           = std::shared_ptr<ConfigDataStruct>(new ConfigDataStruct);
-    std::ifstream stream = openConfigFile(myFilePath);
 
-    std::shared_ptr<input::Input> input = input::Input::makeInput(stream, "config");
+    auto input = std::make_shared<vf::basics::ConfigurationFile>();
+    input->load(myFilePath);
 
     if (!checkConfigFile(input))
         exit(1);
 
-    configData->viscosity            = StringUtil::toDoubleVector(input->getValue("Viscosity"));
+    configData->viscosity            = StringUtil::toDoubleVector(input->getValue<std::string>("Viscosity"));
     configData->kernelsToTest        = readKernelList(input);
-    configData->writeAnalyticalToVTK = StringUtil::toBool(input->getValue("WriteAnalyResultsToVTK"));
-    configData->ySliceForCalculation = StringUtil::toInt(input->getValue("ySliceForCalculation"));
-    ;
-    configData->logFilePath         = pathNumericalTests + input->getValue("FolderLogFile");
+    configData->writeAnalyticalToVTK = StringUtil::toBool(input->getValue<std::string>("WriteAnalyResultsToVTK"));
+    configData->ySliceForCalculation = StringUtil::toInt(input->getValue<std::string>("ySliceForCalculation"));
+
+    configData->logFilePath         = pathNumericalTests + input->getValue<std::string>("FolderLogFile");
     configData->numberOfSimulations = calcNumberOfSimulations(input);
 
     std::shared_ptr<BasicSimulationParameterStruct> basicSimPara = makeBasicSimulationParameter(input);
 
     configData->taylorGreenVortexUxParameter       = makeTaylorGreenVortexUxParameter(input, basicSimPara);
     configData->taylorGreenVortexUxGridInformation = makeGridInformation(input, "TaylorGreenVortexUx");
-    ;
 
     configData->taylorGreenVortexUzParameter       = makeTaylorGreenVortexUzParameter(input, basicSimPara);
     configData->taylorGreenVortexUzGridInformation = makeGridInformation(input, "TaylorGreenVortexUz");
-    ;
 
     configData->shearWaveParameter       = makeShearWaveParameter(input, basicSimPara);
     configData->shearWaveGridInformation = makeGridInformation(input, "ShearWave");
-    ;
 
     configData->phiTestParameter                  = makePhiTestParameter(input);
     configData->nyTestParameter                   = makeNyTestParameter(input);
@@ -66,8 +65,6 @@ void ConfigFileReader::readConfigFile()
     configData->vectorWriterInfo = makeVectorWriterInformationStruct(input);
 
     configData->logFilePara = makeLogFilePara(input);
-
-    stream.close();
 }
 
 std::ifstream ConfigFileReader::openConfigFile(const std::string aFilePath)
@@ -82,19 +79,19 @@ std::ifstream ConfigFileReader::openConfigFile(const std::string aFilePath)
 
 std::shared_ptr<ConfigDataStruct> ConfigFileReader::getConfigData() { return configData; }
 
-bool ConfigFileReader::checkConfigFile(std::shared_ptr<input::Input> input)
+bool ConfigFileReader::checkConfigFile(std::shared_ptr<vf::basics::ConfigurationFile> input)
 {
-    std::vector<double> u0TGVux               = StringUtil::toDoubleVector(input->getValue("ux_TGV_Ux"));
-    std::vector<double> amplitudeTGVux        = StringUtil::toDoubleVector(input->getValue("Amplitude_TGV_Ux"));
-    std::vector<int> basisTimeStepLengthTGVux = StringUtil::toIntVector(input->getValue("BasisTimeStepLength_TGV_Ux"));
+    std::vector<double> u0TGVux               = StringUtil::toDoubleVector(input->getValue<std::string>("ux_TGV_Ux"));
+    std::vector<double> amplitudeTGVux        = StringUtil::toDoubleVector(input->getValue<std::string>("Amplitude_TGV_Ux"));
+    std::vector<int> basisTimeStepLengthTGVux = StringUtil::toIntVector(input->getValue<std::string>("BasisTimeStepLength_TGV_Ux"));
 
-    std::vector<double> v0TGVuz               = StringUtil::toDoubleVector(input->getValue("uz_TGV_Uz"));
-    std::vector<double> amplitudeTGVuz        = StringUtil::toDoubleVector(input->getValue("Amplitude_TGV_Uz"));
-    std::vector<int> basisTimeStepLengthTGVuz = StringUtil::toIntVector(input->getValue("BasisTimeStepLength_TGV_Uz"));
+    std::vector<double> v0TGVuz               = StringUtil::toDoubleVector(input->getValue<std::string>("uz_TGV_Uz"));
+    std::vector<double> amplitudeTGVuz        = StringUtil::toDoubleVector(input->getValue<std::string>("Amplitude_TGV_Uz"));
+    std::vector<int> basisTimeStepLengthTGVuz = StringUtil::toIntVector(input->getValue<std::string>("BasisTimeStepLength_TGV_Uz"));
 
-    std::vector<double> v0SW               = StringUtil::toDoubleVector(input->getValue("v0_SW"));
-    std::vector<double> u0SW               = StringUtil::toDoubleVector(input->getValue("u0_SW"));
-    std::vector<int> basisTimeStepLengthSW = StringUtil::toIntVector(input->getValue("BasisTimeStepLength_SW"));
+    std::vector<double> v0SW               = StringUtil::toDoubleVector(input->getValue<std::string>("v0_SW"));
+    std::vector<double> u0SW               = StringUtil::toDoubleVector(input->getValue<std::string>("u0_SW"));
+    std::vector<int> basisTimeStepLengthSW = StringUtil::toIntVector(input->getValue<std::string>("BasisTimeStepLength_SW"));
 
     if (u0TGVux.size() != amplitudeTGVux.size() || u0TGVux.size() != basisTimeStepLengthTGVux.size()) {
         std::cout << "Length u0_TGV_U0 is unequal to Lenght Amplitude_TGV_U0 or BasisTimeStepLength_TGV_U0!"
@@ -115,24 +112,24 @@ bool ConfigFileReader::checkConfigFile(std::shared_ptr<input::Input> input)
 }
 
 std::shared_ptr<BasicSimulationParameterStruct>
-ConfigFileReader::makeBasicSimulationParameter(std::shared_ptr<input::Input> input)
+ConfigFileReader::makeBasicSimulationParameter(std::shared_ptr<vf::basics::ConfigurationFile> input)
 {
     std::shared_ptr<BasicSimulationParameterStruct> basicSimPara =
         std::shared_ptr<BasicSimulationParameterStruct>(new BasicSimulationParameterStruct);
 
-    basicSimPara->numberOfTimeSteps = StringUtil::toInt(input->getValue("NumberOfTimeSteps"));
-    basicSimPara->devices           = StringUtil::toUintVector(input->getValue("Devices"));
+    basicSimPara->numberOfTimeSteps = StringUtil::toInt(input->getValue<std::string>("NumberOfTimeSteps"));
+    basicSimPara->devices           = StringUtil::toUintVector(input->getValue<std::string>("Devices"));
     return basicSimPara;
 }
 
 std::vector<std::shared_ptr<TaylorGreenVortexUxParameterStruct>>
-ConfigFileReader::makeTaylorGreenVortexUxParameter(std::shared_ptr<input::Input> input,
+ConfigFileReader::makeTaylorGreenVortexUxParameter(std::shared_ptr<vf::basics::ConfigurationFile> input,
                                                    std::shared_ptr<BasicSimulationParameterStruct> basicSimParameter)
 {
-    std::vector<int> basisTimeStepLength = StringUtil::toIntVector(input->getValue("BasisTimeStepLength_TGV_Ux"));
-    std::vector<double> amplitude        = StringUtil::toDoubleVector(input->getValue("Amplitude_TGV_Ux"));
-    std::vector<double> u0               = StringUtil::toDoubleVector(input->getValue("ux_TGV_Ux"));
-    int l0                               = StringUtil::toInt(input->getValue("l0_TGV_Ux"));
+    std::vector<int> basisTimeStepLength = StringUtil::toIntVector(input->getValue<std::string>("BasisTimeStepLength_TGV_Ux"));
+    std::vector<double> amplitude        = StringUtil::toDoubleVector(input->getValue<std::string>("Amplitude_TGV_Ux"));
+    std::vector<double> u0               = StringUtil::toDoubleVector(input->getValue<std::string>("ux_TGV_Ux"));
+    int l0                               = StringUtil::toInt(input->getValue<std::string>("l0_TGV_Ux"));
     basicSimParameter->l0                = l0;
 
     std::vector<std::shared_ptr<TaylorGreenVortexUxParameterStruct>> parameter;
@@ -145,22 +142,22 @@ ConfigFileReader::makeTaylorGreenVortexUxParameter(std::shared_ptr<input::Input>
         aParameter->amplitude           = amplitude.at(i);
         aParameter->basicTimeStepLength = basisTimeStepLength.at(i);
         aParameter->l0                  = l0;
-        aParameter->rho0                = StringUtil::toDouble(input->getValue("Rho0"));
-        aParameter->vtkFilePath         = pathNumericalTests + input->getValue("FolderForVTKFileWriting");
-        aParameter->dataToCalcTests     = StringUtil::toStringVector(input->getValue("DataToCalcTests_TGV_Ux"));
+        aParameter->rho0                = StringUtil::toDouble(input->getValue<std::string>("Rho0"));
+        aParameter->vtkFilePath         = pathNumericalTests + input->getValue<std::string>("FolderForVTKFileWriting");
+        aParameter->dataToCalcTests     = StringUtil::toStringVector(input->getValue<std::string>("DataToCalcTests_TGV_Ux"));
         parameter.push_back(aParameter);
     }
     return parameter;
 }
 
 std::vector<std::shared_ptr<TaylorGreenVortexUzParameterStruct>>
-ConfigFileReader::makeTaylorGreenVortexUzParameter(std::shared_ptr<input::Input> input,
+ConfigFileReader::makeTaylorGreenVortexUzParameter(std::shared_ptr<vf::basics::ConfigurationFile> input,
                                                    std::shared_ptr<BasicSimulationParameterStruct> basicSimParameter)
 {
-    std::vector<int> basisTimeStepLength = StringUtil::toIntVector(input->getValue("BasisTimeStepLength_TGV_Uz"));
-    std::vector<double> amplitude        = StringUtil::toDoubleVector(input->getValue("Amplitude_TGV_Uz"));
-    std::vector<double> uz               = StringUtil::toDoubleVector(input->getValue("uz_TGV_Uz"));
-    int l0                               = StringUtil::toInt(input->getValue("l0_TGV_Uz"));
+    std::vector<int> basisTimeStepLength = StringUtil::toIntVector(input->getValue<std::string>("BasisTimeStepLength_TGV_Uz"));
+    std::vector<double> amplitude        = StringUtil::toDoubleVector(input->getValue<std::string>("Amplitude_TGV_Uz"));
+    std::vector<double> uz               = StringUtil::toDoubleVector(input->getValue<std::string>("uz_TGV_Uz"));
+    int l0                               = StringUtil::toInt(input->getValue<std::string>("l0_TGV_Uz"));
     basicSimParameter->l0                = l0;
 
     std::vector<std::shared_ptr<TaylorGreenVortexUzParameterStruct>> parameter;
@@ -172,21 +169,21 @@ ConfigFileReader::makeTaylorGreenVortexUzParameter(std::shared_ptr<input::Input>
         aParameter->amplitude                = amplitude.at(i);
         aParameter->basicTimeStepLength      = basisTimeStepLength.at(i);
         aParameter->l0                       = l0;
-        aParameter->rho0                     = StringUtil::toDouble(input->getValue("Rho0"));
-        aParameter->vtkFilePath              = pathNumericalTests + input->getValue("FolderForVTKFileWriting");
-        aParameter->dataToCalcTests          = StringUtil::toStringVector(input->getValue("DataToCalcTests_TGV_Uz"));
+        aParameter->rho0                     = StringUtil::toDouble(input->getValue<std::string>("Rho0"));
+        aParameter->vtkFilePath              = pathNumericalTests + input->getValue<std::string>("FolderForVTKFileWriting");
+        aParameter->dataToCalcTests          = StringUtil::toStringVector(input->getValue<std::string>("DataToCalcTests_TGV_Uz"));
         parameter.push_back(aParameter);
     }
     return parameter;
 }
 std::vector<std::shared_ptr<ShearWaveParameterStruct>>
-ConfigFileReader::makeShearWaveParameter(std::shared_ptr<input::Input> input,
+ConfigFileReader::makeShearWaveParameter(std::shared_ptr<vf::basics::ConfigurationFile> input,
                                          std::shared_ptr<BasicSimulationParameterStruct> basicSimParameter)
 {
-    std::vector<int> basisTimeStepLength = StringUtil::toIntVector(input->getValue("BasisTimeStepLength_SW"));
-    std::vector<double> uz               = StringUtil::toDoubleVector(input->getValue("v0_SW"));
-    std::vector<double> ux               = StringUtil::toDoubleVector(input->getValue("u0_SW"));
-    int l0                               = StringUtil::toInt(input->getValue("l0_SW"));
+    std::vector<int> basisTimeStepLength = StringUtil::toIntVector(input->getValue<std::string>("BasisTimeStepLength_SW"));
+    std::vector<double> uz               = StringUtil::toDoubleVector(input->getValue<std::string>("v0_SW"));
+    std::vector<double> ux               = StringUtil::toDoubleVector(input->getValue<std::string>("u0_SW"));
+    int l0                               = StringUtil::toInt(input->getValue<std::string>("l0_SW"));
     basicSimParameter->l0                = l0;
 
     std::vector<std::shared_ptr<ShearWaveParameterStruct>> parameter;
@@ -198,82 +195,82 @@ ConfigFileReader::makeShearWaveParameter(std::shared_ptr<input::Input> input,
         aParameter->ux                       = ux.at(i);
         aParameter->basicTimeStepLength      = basisTimeStepLength.at(i);
         aParameter->l0                       = l0;
-        aParameter->rho0                     = StringUtil::toDouble(input->getValue("Rho0"));
-        aParameter->vtkFilePath              = pathNumericalTests + input->getValue("FolderForVTKFileWriting");
-        aParameter->dataToCalcTests          = StringUtil::toStringVector(input->getValue("DataToCalcTests_SW"));
+        aParameter->rho0                     = StringUtil::toDouble(input->getValue<std::string>("Rho0"));
+        aParameter->vtkFilePath              = pathNumericalTests + input->getValue<std::string>("FolderForVTKFileWriting");
+        aParameter->dataToCalcTests          = StringUtil::toStringVector(input->getValue<std::string>("DataToCalcTests_SW"));
         parameter.push_back(aParameter);
     }
     return parameter;
 }
 
-std::shared_ptr<NyTestParameterStruct> ConfigFileReader::makeNyTestParameter(std::shared_ptr<input::Input> input)
+std::shared_ptr<NyTestParameterStruct> ConfigFileReader::makeNyTestParameter(std::shared_ptr<vf::basics::ConfigurationFile> input)
 {
     std::shared_ptr<BasicTestParameterStruct> basicTestParameter =
         std::shared_ptr<BasicTestParameterStruct>(new BasicTestParameterStruct);
-    basicTestParameter->runTest              = StringUtil::toBool(input->getValue("NyTest"));
-    basicTestParameter->ySliceForCalculation = StringUtil::toInt(input->getValue("ySliceForCalculation"));
+    basicTestParameter->runTest              = StringUtil::toBool(input->getValue<std::string>("NyTest"));
+    basicTestParameter->ySliceForCalculation = StringUtil::toInt(input->getValue<std::string>("ySliceForCalculation"));
 
     std::shared_ptr<NyTestParameterStruct> testParameter =
         std::shared_ptr<NyTestParameterStruct>(new NyTestParameterStruct);
     testParameter->basicTestParameter       = basicTestParameter;
-    testParameter->endTimeStepCalculation   = StringUtil::toInt(input->getValue("EndTimeStepCalculation_Ny"));
-    testParameter->minOrderOfAccuracy       = StringUtil::toDouble(input->getValue("MinOrderOfAccuracy_Ny"));
-    testParameter->startTimeStepCalculation = StringUtil::toInt(input->getValue("StartTimeStepCalculation_Ny"));
+    testParameter->endTimeStepCalculation   = StringUtil::toInt(input->getValue<std::string>("EndTimeStepCalculation_Ny"));
+    testParameter->minOrderOfAccuracy       = StringUtil::toDouble(input->getValue<std::string>("MinOrderOfAccuracy_Ny"));
+    testParameter->startTimeStepCalculation = StringUtil::toInt(input->getValue<std::string>("StartTimeStepCalculation_Ny"));
 
     return testParameter;
 }
 
-std::shared_ptr<PhiTestParameterStruct> ConfigFileReader::makePhiTestParameter(std::shared_ptr<input::Input> input)
+std::shared_ptr<PhiTestParameterStruct> ConfigFileReader::makePhiTestParameter(std::shared_ptr<vf::basics::ConfigurationFile> input)
 {
     std::shared_ptr<BasicTestParameterStruct> basicTestParameter =
         std::shared_ptr<BasicTestParameterStruct>(new BasicTestParameterStruct);
-    basicTestParameter->runTest              = StringUtil::toBool(input->getValue("PhiTest"));
-    basicTestParameter->ySliceForCalculation = StringUtil::toInt(input->getValue("ySliceForCalculation"));
+    basicTestParameter->runTest              = StringUtil::toBool(input->getValue<std::string>("PhiTest"));
+    basicTestParameter->ySliceForCalculation = StringUtil::toInt(input->getValue<std::string>("ySliceForCalculation"));
 
     std::shared_ptr<PhiTestParameterStruct> testParameter =
         std::shared_ptr<PhiTestParameterStruct>(new PhiTestParameterStruct);
     testParameter->basicTestParameter       = basicTestParameter;
-    testParameter->endTimeStepCalculation   = StringUtil::toInt(input->getValue("EndTimeStepCalculation_Phi"));
-    testParameter->minOrderOfAccuracy       = StringUtil::toDouble(input->getValue("MinOrderOfAccuracy_Phi"));
-    testParameter->startTimeStepCalculation = StringUtil::toInt(input->getValue("StartTimeStepCalculation_Phi"));
+    testParameter->endTimeStepCalculation   = StringUtil::toInt(input->getValue<std::string>("EndTimeStepCalculation_Phi"));
+    testParameter->minOrderOfAccuracy       = StringUtil::toDouble(input->getValue<std::string>("MinOrderOfAccuracy_Phi"));
+    testParameter->startTimeStepCalculation = StringUtil::toInt(input->getValue<std::string>("StartTimeStepCalculation_Phi"));
 
     return testParameter;
 }
 
 std::shared_ptr<L2NormTestParameterStruct>
-ConfigFileReader::makeL2NormTestParameter(std::shared_ptr<input::Input> input)
+ConfigFileReader::makeL2NormTestParameter(std::shared_ptr<vf::basics::ConfigurationFile> input)
 {
     std::shared_ptr<BasicTestParameterStruct> basicTestParameter =
         std::shared_ptr<BasicTestParameterStruct>(new BasicTestParameterStruct);
-    basicTestParameter->runTest              = StringUtil::toBool(input->getValue("L2NormTest"));
-    basicTestParameter->ySliceForCalculation = StringUtil::toInt(input->getValue("ySliceForCalculation"));
+    basicTestParameter->runTest              = StringUtil::toBool(input->getValue<std::string>("L2NormTest"));
+    basicTestParameter->ySliceForCalculation = StringUtil::toInt(input->getValue<std::string>("ySliceForCalculation"));
 
     std::shared_ptr<L2NormTestParameterStruct> testParameter =
         std::shared_ptr<L2NormTestParameterStruct>(new L2NormTestParameterStruct);
     testParameter->basicTestParameter = basicTestParameter;
-    testParameter->basicTimeStep      = StringUtil::toInt(input->getValue("BasicTimeStep_L2"));
-    testParameter->divergentTimeStep  = StringUtil::toInt(input->getValue("DivergentTimeStep_L2"));
-    testParameter->normalizeData      = StringUtil::toStringVector(input->getValue("NormalizeData_L2Norm"));
-    testParameter->maxDiff            = StringUtil::toDoubleVector(input->getValue("MaxL2NormDiff"));
+    testParameter->basicTimeStep      = StringUtil::toInt(input->getValue<std::string>("BasicTimeStep_L2"));
+    testParameter->divergentTimeStep  = StringUtil::toInt(input->getValue<std::string>("DivergentTimeStep_L2"));
+    testParameter->normalizeData      = StringUtil::toStringVector(input->getValue<std::string>("NormalizeData_L2Norm"));
+    testParameter->maxDiff            = StringUtil::toDoubleVector(input->getValue<std::string>("MaxL2NormDiff"));
 
     return testParameter;
 }
 
 std::shared_ptr<L2NormTestBetweenKernelsParameterStruct>
-ConfigFileReader::makeL2NormTestBetweenKernelsParameter(std::shared_ptr<input::Input> input)
+ConfigFileReader::makeL2NormTestBetweenKernelsParameter(std::shared_ptr<vf::basics::ConfigurationFile> input)
 {
     std::shared_ptr<BasicTestParameterStruct> basicTestParameter =
         std::shared_ptr<BasicTestParameterStruct>(new BasicTestParameterStruct);
-    basicTestParameter->runTest              = StringUtil::toBool(input->getValue("L2NormBetweenKernelsTest"));
-    basicTestParameter->ySliceForCalculation = StringUtil::toInt(input->getValue("ySliceForCalculation"));
+    basicTestParameter->runTest              = StringUtil::toBool(input->getValue<std::string>("L2NormBetweenKernelsTest"));
+    basicTestParameter->ySliceForCalculation = StringUtil::toInt(input->getValue<std::string>("ySliceForCalculation"));
 
     std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testParameter =
         std::shared_ptr<L2NormTestBetweenKernelsParameterStruct>(new L2NormTestBetweenKernelsParameterStruct);
     testParameter->basicTestParameter = basicTestParameter;
-    testParameter->basicKernel        = input->getValue("BasicKernel_L2NormBetweenKernels");
+    testParameter->basicKernel        = input->getValue<std::string>("BasicKernel_L2NormBetweenKernels");
     testParameter->kernelsToTest      = readKernelList(input);
-    testParameter->timeSteps          = StringUtil::toIntVector(input->getValue("Timesteps_L2NormBetweenKernels"));
-    testParameter->normalizeData      = StringUtil::toStringVector(input->getValue("NormalizeData_L2Norm"));
+    testParameter->timeSteps          = StringUtil::toIntVector(input->getValue<std::string>("Timesteps_L2NormBetweenKernels"));
+    testParameter->normalizeData      = StringUtil::toStringVector(input->getValue<std::string>("NormalizeData_L2Norm"));
 
     bool correct = false;
     for (int i = 0; i < testParameter->normalizeData.size(); i++)
@@ -292,7 +289,7 @@ ConfigFileReader::makeL2NormTestBetweenKernelsParameter(std::shared_ptr<input::I
 }
 
 std::vector<std::shared_ptr<GridInformationStruct>>
-ConfigFileReader::makeGridInformation(std::shared_ptr<input::Input> input, std::string simName)
+ConfigFileReader::makeGridInformation(std::shared_ptr<vf::basics::ConfigurationFile> input, std::string simName)
 {
     int number = 32;
     std::vector<std::string> valueNames;
@@ -314,10 +311,10 @@ ConfigFileReader::makeGridInformation(std::shared_ptr<input::Input> input, std::
     double nextNumber = 32.0;
 
     for (int i = 0; i < valueNames.size(); i++) {
-        if (StringUtil::toBool(input->getValue(valueNames.at(i)))) {
+        if (StringUtil::toBool(input->getValue<std::string>(valueNames.at(i)))) {
             lx.push_back(nextNumber);
             lz.push_back(nextNumber * 3.0 / 2.0);
-            gridPath.push_back(pathNumericalTests + input->getValue(gridPaths.at(i)));
+            gridPath.push_back(pathNumericalTests + input->getValue<std::string>(gridPaths.at(i)));
             nextNumber *= 2;
         }
     }
@@ -326,7 +323,7 @@ ConfigFileReader::makeGridInformation(std::shared_ptr<input::Input> input, std::
     for (int i = 0; i < lx.size(); i++) {
         std::shared_ptr<GridInformationStruct> aGridInformation =
             std::shared_ptr<GridInformationStruct>(new GridInformationStruct);
-        aGridInformation->numberOfGridLevels = StringUtil::toInt(input->getValue("NumberOfGridLevels"));
+        aGridInformation->numberOfGridLevels = StringUtil::toInt(input->getValue<std::string>("NumberOfGridLevels"));
         aGridInformation->maxLevel           = aGridInformation->numberOfGridLevels - 1;
         aGridInformation->gridPath           = gridPath.at(i);
         aGridInformation->lx                 = lx.at(i);
@@ -337,44 +334,44 @@ ConfigFileReader::makeGridInformation(std::shared_ptr<input::Input> input, std::
 }
 
 std::shared_ptr<VectorWriterInformationStruct>
-ConfigFileReader::makeVectorWriterInformationStruct(std::shared_ptr<input::Input> input)
+ConfigFileReader::makeVectorWriterInformationStruct(std::shared_ptr<vf::basics::ConfigurationFile> input)
 {
     std::shared_ptr<VectorWriterInformationStruct> vectorWriter =
         std::shared_ptr<VectorWriterInformationStruct>(new VectorWriterInformationStruct);
     vectorWriter->startTimeVectorWriter  = calcStartStepForToVectorWriter(input);
-    vectorWriter->startTimeVTKDataWriter = StringUtil::toInt(input->getValue("StartStepFileWriter"));
-    vectorWriter->writeVTKFiles          = StringUtil::toBool(input->getValue("WriteVTKFiles"));
+    vectorWriter->startTimeVTKDataWriter = StringUtil::toInt(input->getValue<std::string>("StartStepFileWriter"));
+    vectorWriter->writeVTKFiles          = StringUtil::toBool(input->getValue<std::string>("WriteVTKFiles"));
 
     return vectorWriter;
 }
 
-std::shared_ptr<LogFileParameterStruct> ConfigFileReader::makeLogFilePara(std::shared_ptr<input::Input> input)
+std::shared_ptr<LogFileParameterStruct> ConfigFileReader::makeLogFilePara(std::shared_ptr<vf::basics::ConfigurationFile> input)
 {
     std::shared_ptr<LogFileParameterStruct> logFilePara =
         std::shared_ptr<LogFileParameterStruct>(new LogFileParameterStruct);
-    logFilePara->devices              = StringUtil::toIntVector(input->getValue("Devices"));
-    logFilePara->numberOfTimeSteps    = StringUtil::toInt(input->getValue("NumberOfTimeSteps"));
-    logFilePara->writeAnalyticalToVTK = StringUtil::toBool(input->getValue("WriteAnalyResultsToVTK"));
+    logFilePara->devices              = StringUtil::toIntVector(input->getValue<std::string>("Devices"));
+    logFilePara->numberOfTimeSteps    = StringUtil::toInt(input->getValue<std::string>("NumberOfTimeSteps"));
+    logFilePara->writeAnalyticalToVTK = StringUtil::toBool(input->getValue<std::string>("WriteAnalyResultsToVTK"));
 
     return logFilePara;
 }
 
-std::vector<std::string> ConfigFileReader::readKernelList(std::shared_ptr<input::Input> input)
+std::vector<std::string> ConfigFileReader::readKernelList(std::shared_ptr<vf::basics::ConfigurationFile> input)
 {
-    if (StringUtil::toBool(input->getValue("L2NormBetweenKernelsTest"))) {
-        std::vector<std::string> kernelList = StringUtil::toStringVector(input->getValue("KernelsToTest"));
-        std::string beginnKernel            = input->getValue("BasicKernel_L2NormBetweenKernels");
+    if (StringUtil::toBool(input->getValue<std::string>("L2NormBetweenKernelsTest"))) {
+        std::vector<std::string> kernelList = StringUtil::toStringVector(input->getValue<std::string>("KernelsToTest"));
+        std::string beginKernel             = input->getValue<std::string>("BasicKernel_L2NormBetweenKernels");
         bool basicKernelInKernelList        = false;
         for (int i = 0; i < kernelList.size(); i++) {
-            if (kernelList.at(i) == beginnKernel)
+            if (kernelList.at(i) == beginKernel)
                 basicKernelInKernelList = true;
         }
         if (!basicKernelInKernelList)
-            kernelList.push_back(beginnKernel);
+            kernelList.push_back(beginKernel);
 
         std::vector<std::string> kernelNames = kernelList;
 
-        while (kernelNames.at(0) != beginnKernel) {
+        while (kernelNames.at(0) != beginKernel) {
             kernelNames.push_back(kernelNames.at(0));
             std::vector<std::string>::iterator it = kernelNames.begin();
             kernelNames.erase(it);
@@ -384,7 +381,7 @@ std::vector<std::string> ConfigFileReader::readKernelList(std::shared_ptr<input:
             kernels.push_back(kernelNames.at(i));
         return kernels;
     } else {
-        std::vector<std::string> kernelList = StringUtil::toStringVector(input->getValue("KernelsToTest"));
+        std::vector<std::string> kernelList = StringUtil::toStringVector(input->getValue<std::string>("KernelsToTest"));
         std::vector<std::string> kernels;
         for (int i = 0; i < kernelList.size(); i++)
             kernels.push_back(kernelList.at(i));
@@ -393,42 +390,42 @@ std::vector<std::string> ConfigFileReader::readKernelList(std::shared_ptr<input:
     }
 }
 
-unsigned int ConfigFileReader::calcStartStepForToVectorWriter(std::shared_ptr<input::Input> input)
+unsigned int ConfigFileReader::calcStartStepForToVectorWriter(std::shared_ptr<vf::basics::ConfigurationFile> input)
 {
     std::vector<unsigned int> startStepsTests;
-    startStepsTests.push_back(StringUtil::toInt(input->getValue("BasicTimeStep_L2")));
-    startStepsTests.push_back(StringUtil::toInt(input->getValue("StartTimeStepCalculation_Ny")));
-    startStepsTests.push_back(StringUtil::toInt(input->getValue("StartTimeStepCalculation_Phi")));
+    startStepsTests.push_back(StringUtil::toInt(input->getValue<std::string>("BasicTimeStep_L2")));
+    startStepsTests.push_back(StringUtil::toInt(input->getValue<std::string>("StartTimeStepCalculation_Ny")));
+    startStepsTests.push_back(StringUtil::toInt(input->getValue<std::string>("StartTimeStepCalculation_Phi")));
     std::sort(startStepsTests.begin(), startStepsTests.end());
 
     return startStepsTests.at(0);
 }
 
-int ConfigFileReader::calcNumberOfSimulations(std::shared_ptr<input::Input> input)
+int ConfigFileReader::calcNumberOfSimulations(std::shared_ptr<vf::basics::ConfigurationFile> input)
 {
     int counter = 0;
 
     int tgvCounterU0 = calcNumberOfSimulationGroup(input, "TaylorGreenVortexUx");
-    tgvCounterU0 *= int(StringUtil::toDoubleVector(input->getValue("ux_TGV_Ux")).size());
+    tgvCounterU0 *= int(StringUtil::toDoubleVector(input->getValue<std::string>("ux_TGV_Ux")).size());
     counter += tgvCounterU0;
 
     int tgvCounterV0 = calcNumberOfSimulationGroup(input, "TaylorGreenVortexUz");
     ;
-    tgvCounterV0 *= int(StringUtil::toDoubleVector(input->getValue("uz_TGV_Uz")).size());
+    tgvCounterV0 *= int(StringUtil::toDoubleVector(input->getValue<std::string>("uz_TGV_Uz")).size());
     counter += tgvCounterV0;
 
     int swCounter = calcNumberOfSimulationGroup(input, "ShearWave");
     ;
-    swCounter *= int(StringUtil::toDoubleVector(input->getValue("u0_SW")).size());
+    swCounter *= int(StringUtil::toDoubleVector(input->getValue<std::string>("u0_SW")).size());
     counter += swCounter;
 
-    counter *= int(StringUtil::toDoubleVector(input->getValue("Viscosity")).size());
+    counter *= int(StringUtil::toDoubleVector(input->getValue<std::string>("Viscosity")).size());
     counter *= int(configData->kernelsToTest.size());
 
     return counter;
 }
 
-int ConfigFileReader::calcNumberOfSimulationGroup(std::shared_ptr<input::Input> input, std::string simName)
+int ConfigFileReader::calcNumberOfSimulationGroup(std::shared_ptr<vf::basics::ConfigurationFile> input, std::string simName)
 {
     int counter = 0;
     int number  = 32;
@@ -440,7 +437,7 @@ int ConfigFileReader::calcNumberOfSimulationGroup(std::shared_ptr<input::Input> 
         number *= 2;
     }
     for (int i = 0; i < valueNames.size(); i++) {
-        if (StringUtil::toBool(input->getValue(valueNames.at(i))))
+        if (StringUtil::toBool(input->getValue<std::string>(valueNames.at(i))))
             counter++;
     }
     return counter;

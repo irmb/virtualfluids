@@ -11,7 +11,8 @@
 
 #include "Utilities/LogFileData/LogFileDataImp.h"
 
-#include "Core/Input/Input.h"
+// #include "Core/Input/Input.h"
+#include <basics/config/ConfigurationFile.h>
 #include "Core/StringUtilities/StringUtil.h"
 
 #include "Utilities/AlmostEquals.h"
@@ -33,33 +34,35 @@ std::shared_ptr<LogFileData> LogFileReader::readLogFileToLogFileData(std::string
 {
 	std::shared_ptr<LogFileDataImp> logFileData = LogFileDataImp::getNewInstance();
 
-	std::ifstream stream;
-	stream.open(filePath.c_str(), std::ios::in);
-	if (stream.fail()) {
-		std::cout << "can not open log file!\n";
-		exit(1);
-	}
+	// std::ifstream stream;
+	// stream.open(filePath.c_str(), std::ios::in);
+	// if (stream.fail()) {
+	// 	std::cout << "can not open log file!\n";
+	// 	exit(1);
+	// }
 
-	std::unique_ptr<input::Input> input = input::Input::makeInput(stream, "config");
+	// std::unique_ptr<input::Input> input = input::Input::makeInput(stream, "config");
+	auto input = std::make_shared<vf::basics::ConfigurationFile>();
+	input->load(filePath);
 
 	logFileData->setFilePath(filePath);
-	logFileData->setDate(input->getValue("Date"));
-	logFileData->setTime(input->getValue("Time"));
-	logFileData->setGpuDevices(StringUtil::toStringVector(input->getValue("GPU_Devices")));
+	logFileData->setDate(input->getValue<std::string>("Date"));
+	logFileData->setTime(input->getValue<std::string>("Time"));
+	logFileData->setGpuDevices(StringUtil::toStringVector(input->getValue<std::string>("GPU_Devices")));
 
-	logFileData->setKernel(input->getValue("Kernel"));
-	logFileData->setNumberOfTimeSteps(StringUtil::toInt(input->getValue("NumberOfTimeSteps")));
-	logFileData->setViscosity(StringUtil::toDouble(input->getValue("Viscosity")));
-	logFileData->setBasisTimeStepLength(StringUtil::toInt(input->getValue("BasisTimeStepLength")));
+	logFileData->setKernel(input->getValue<std::string>("Kernel"));
+	logFileData->setNumberOfTimeSteps(StringUtil::toInt(input->getValue<std::string>("NumberOfTimeSteps")));
+	logFileData->setViscosity(StringUtil::toDouble(input->getValue<std::string>("Viscosity")));
+	logFileData->setBasisTimeStepLength(StringUtil::toInt(input->getValue<std::string>("BasisTimeStepLength")));
 
-	logFileData->setSimName(input->getValue("SimulationName"));
+	logFileData->setSimName(input->getValue<std::string>("SimulationName"));
 
 
 
 
 	std::ostringstream simSigniture;
 	if (logFileData->getSimName() == "ShearWave") {
-		std::vector<double> shearWaveLx = StringUtil::toDoubleVector(input->getValue("Lx"));
+		std::vector<double> shearWaveLx = StringUtil::toDoubleVector(input->getValue<std::string>("Lx"));
 		logFileData->setBasicGridLengths(shearWaveLx);
 		std::vector<int> shearWaveL0;
 		std::vector<double> shearWaveUx;
@@ -69,9 +72,9 @@ std::shared_ptr<LogFileData> LogFileReader::readLogFileToLogFileData(std::string
 			l0 << "l0_" << shearWaveLx.at(i);
 			ux << "ux_" << shearWaveLx.at(i);
 			uz << "uz_" << shearWaveLx.at(i);
-			shearWaveL0.push_back(StringUtil::toInt(input->getValue(l0.str())));
-			shearWaveUx.push_back(StringUtil::toDouble(input->getValue(ux.str())));
-			shearWaveUz.push_back(StringUtil::toDouble(input->getValue(uz.str())));
+			shearWaveL0.push_back(StringUtil::toInt(input->getValue<std::string>(l0.str())));
+			shearWaveUx.push_back(StringUtil::toDouble(input->getValue<std::string>(ux.str())));
+			shearWaveUz.push_back(StringUtil::toDouble(input->getValue<std::string>(uz.str())));
 		}
 		std::shared_ptr<ShearWaveLogFileDataImp> swLogFileData = ShearWaveLogFileDataImp::getNewInstance();
 		swLogFileData->setL0(shearWaveL0);
@@ -82,7 +85,7 @@ std::shared_ptr<LogFileData> LogFileReader::readLogFileToLogFileData(std::string
 		logFileData->setBasicSimulation(ShearWave);
 	}
 	if (logFileData->getSimName() == "TaylorGreenVortexUx") {
-		std::vector<double> tgvUxLx = StringUtil::toDoubleVector(input->getValue("Lx"));
+		std::vector<double> tgvUxLx = StringUtil::toDoubleVector(input->getValue<std::string>("Lx"));
 		logFileData->setBasicGridLengths(tgvUxLx);
 		std::vector<int> tgvUxL0;
 		std::vector<double> tgvUxUx;
@@ -92,9 +95,9 @@ std::shared_ptr<LogFileData> LogFileReader::readLogFileToLogFileData(std::string
 			l0 << "l0_" << tgvUxLx.at(i);
 			ux << "ux_" << tgvUxLx.at(i);
 			amplitude << "Amplitude_" << tgvUxLx.at(i);
-			tgvUxL0.push_back(StringUtil::toInt(input->getValue(l0.str())));
-			tgvUxUx.push_back(StringUtil::toDouble(input->getValue(ux.str())));
-			tgvUxAmp.push_back(StringUtil::toDouble(input->getValue(amplitude.str())));
+			tgvUxL0.push_back(StringUtil::toInt(input->getValue<std::string>(l0.str())));
+			tgvUxUx.push_back(StringUtil::toDouble(input->getValue<std::string>(ux.str())));
+			tgvUxAmp.push_back(StringUtil::toDouble(input->getValue<std::string>(amplitude.str())));
 		}
 		std::shared_ptr<TaylorGreenVortexUxLogFileDataImp> tgvUxLogFileData = TaylorGreenVortexUxLogFileDataImp::getNewInstance();
 		tgvUxLogFileData->setL0(tgvUxL0);
@@ -105,7 +108,7 @@ std::shared_ptr<LogFileData> LogFileReader::readLogFileToLogFileData(std::string
 		logFileData->setBasicSimulation(TaylorGreenVortexUx);
 	}
 	if (logFileData->getSimName() == "TaylorGreenVortexUz") {
-		std::vector<double> tgvUzLz = StringUtil::toDoubleVector(input->getValue("Lx"));
+		std::vector<double> tgvUzLz = StringUtil::toDoubleVector(input->getValue<std::string>("Lx"));
 		logFileData->setBasicGridLengths(tgvUzLz);
 		std::vector<int> tgvUzL0;
 		std::vector<double> tgvUzUz;
@@ -115,9 +118,9 @@ std::shared_ptr<LogFileData> LogFileReader::readLogFileToLogFileData(std::string
 			l0 << "l0_" << tgvUzLz.at(i);
 			uz << "uz_" << tgvUzLz.at(i);
 			amplitude << "Amplitude_" << tgvUzLz.at(i);
-			tgvUzL0.push_back(StringUtil::toInt(input->getValue(l0.str())));
-			tgvUzUz.push_back(StringUtil::toDouble(input->getValue(uz.str())));
-			tgvUzAmp.push_back(StringUtil::toDouble(input->getValue(amplitude.str())));
+			tgvUzL0.push_back(StringUtil::toInt(input->getValue<std::string>(l0.str())));
+			tgvUzUz.push_back(StringUtil::toDouble(input->getValue<std::string>(uz.str())));
+			tgvUzAmp.push_back(StringUtil::toDouble(input->getValue<std::string>(amplitude.str())));
 		}
 		std::shared_ptr<TaylorGreenVortexUzLogFileDataImp> tgvUzLogFileData = TaylorGreenVortexUzLogFileDataImp::getNewInstance();
 		tgvUzLogFileData->setL0(tgvUzL0);
@@ -140,10 +143,10 @@ std::shared_ptr<LogFileData> LogFileReader::readLogFileToLogFileData(std::string
 		resultsCheckTimeOStringStream << "ResultsCheckTime_" << logFileData->getBasicGridLengths().at(i);
 		testTimeOStringStream << "TestTime_" << logFileData->getBasicGridLengths().at(i);
 		analyticalVTKWritingTimeOStringStream << "AnalyticalVTKFileWritingTime_" << logFileData->getBasicGridLengths().at(i);
-		std::string simTimeString = input->getValue(simTimeOStringStream.str());
-		std::string resultCheckTimeString = input->getValue(resultsCheckTimeOStringStream.str());
-		std::string testTimeString = input->getValue(testTimeOStringStream.str());
-		std::string analyticalVTKWritingTimeString = input->getValue(analyticalVTKWritingTimeOStringStream.str());
+		std::string simTimeString = input->getValue<std::string>(simTimeOStringStream.str());
+		std::string resultCheckTimeString = input->getValue<std::string>(resultsCheckTimeOStringStream.str());
+		std::string testTimeString = input->getValue<std::string>(testTimeOStringStream.str());
+		std::string analyticalVTKWritingTimeString = input->getValue<std::string>(analyticalVTKWritingTimeOStringStream.str());
 		simTimeString.erase(simTimeString.end() - 3, simTimeString.end());
 		resultCheckTimeString.erase(resultCheckTimeString.end() - 3, resultCheckTimeString.end());
 		testTimeString.erase(testTimeString.end() - 3, testTimeString.end());
@@ -154,29 +157,29 @@ std::shared_ptr<LogFileData> LogFileReader::readLogFileToLogFileData(std::string
 		analyticalVTKWritingTime.push_back(StringUtil::toInt(analyticalVTKWritingTimeString));
 	}
 
-	logFileData->setVTKFileWriting(StringUtil::toBool(input->getValue("VTKFileWriting")));
+	logFileData->setVTKFileWriting(StringUtil::toBool(input->getValue<std::string>("VTKFileWriting")));
 	logFileData->setSimTime(simTime);
 	logFileData->setResultCheckTime(resultsCheckTime);
 	logFileData->setTestTime(testTime);
 	logFileData->setAnalyticalVTKWritingTime(analyticalVTKWritingTime);
 	
-	logFileData->setPhiTestRun(StringUtil::toBool(input->getValue("PhiTest")));
-	logFileData->setNyTestRun(StringUtil::toBool(input->getValue("NyTest")));
-	logFileData->setL2NormTestRun(StringUtil::toBool(input->getValue("L2NormTest")));
-	logFileData->setL2NormTestBetweenKernelRun(StringUtil::toBool(input->getValue("L2NormTestBetweenKernel")));
+	logFileData->setPhiTestRun(StringUtil::toBool(input->getValue<std::string>("PhiTest")));
+	logFileData->setNyTestRun(StringUtil::toBool(input->getValue<std::string>("NyTest")));
+	logFileData->setL2NormTestRun(StringUtil::toBool(input->getValue<std::string>("L2NormTest")));
+	logFileData->setL2NormTestBetweenKernelRun(StringUtil::toBool(input->getValue<std::string>("L2NormTestBetweenKernel")));
 
 	if (logFileData->getPhiTestRun()) {
-		std::vector<std::string> failPhi = StringUtil::toStringVector(input->getValue("FailTests_Phi_PhiTest"));
-		std::vector<std::string> failOOA = StringUtil::toStringVector(input->getValue("FailTests_OOA_PhiTest"));
+		std::vector<std::string> failPhi = StringUtil::toStringVector(input->getValue<std::string>("FailTests_Phi_PhiTest"));
+		std::vector<std::string> failOOA = StringUtil::toStringVector(input->getValue<std::string>("FailTests_OOA_PhiTest"));
 
-		std::vector<std::string> dataToCalc = StringUtil::toStringVector(input->getValue("DataToCalc_PhiTest"));
+		std::vector<std::string> dataToCalc = StringUtil::toStringVector(input->getValue<std::string>("DataToCalc_PhiTest"));
 		std::vector<std::shared_ptr<PhiLogFileData> > aPhiLogGroup;
 		for (int i = 0; i < dataToCalc.size(); i++) {
 			std::shared_ptr<PhiLogFileDataImp> phiLog = PhiLogFileDataImp::getNewInstance();
 			phiLog->setBasicGridLengths(logFileData->getBasicGridLengths());
 			phiLog->setDataToCalc(dataToCalc.at(i));
-			phiLog->setStartTimeStepCalculation(StringUtil::toInt(input->getValue("StartTimeStepCalculation_PhiTest")));
-			phiLog->setEndTimeStepCalculation(StringUtil::toInt(input->getValue("EndTimeStepCalculation_PhiTest")));
+			phiLog->setStartTimeStepCalculation(StringUtil::toInt(input->getValue<std::string>("StartTimeStepCalculation_PhiTest")));
+			phiLog->setEndTimeStepCalculation(StringUtil::toInt(input->getValue<std::string>("EndTimeStepCalculation_PhiTest")));
 
 			std::vector<double> phiDiff;
 			std::vector<std::vector<double> > orderOfAccuracy;
@@ -190,7 +193,7 @@ std::shared_ptr<LogFileData> LogFileReader::readLogFileToLogFileData(std::string
 				}
 				if (!failData) {
 					phiDiffString << "PhiDiff_" << logFileData->getBasicGridLengths().at(j) << "_" << dataToCalc.at(i);
-					phiDiff.push_back(StringUtil::toDouble(input->getValue(phiDiffString.str())));
+					phiDiff.push_back(StringUtil::toDouble(input->getValue<std::string>(phiDiffString.str())));
 				}
 
 				for (int k = j + 1; k < logFileData->getBasicGridLengths().size(); k++) {
@@ -206,7 +209,7 @@ std::shared_ptr<LogFileData> LogFileReader::readLogFileToLogFileData(std::string
 						phiDiffOOA << "OrderOfAccuracy_PhiDiff_" << phiDiffBasicOOA.str();
 						aOrderOfAccuracyGroup.push_back(logFileData->getBasicGridLengths().at(j));
 						aOrderOfAccuracyGroup.push_back(logFileData->getBasicGridLengths().at(k));
-						aOrderOfAccuracyGroup.push_back(StringUtil::toDouble(input->getValue(phiDiffOOA.str())));
+						aOrderOfAccuracyGroup.push_back(StringUtil::toDouble(input->getValue<std::string>(phiDiffOOA.str())));
 					}
 					if (aOrderOfAccuracyGroup.size() > 0)
 						orderOfAccuracy.push_back(aOrderOfAccuracyGroup);
@@ -231,17 +234,17 @@ std::shared_ptr<LogFileData> LogFileReader::readLogFileToLogFileData(std::string
 
 
 	if (logFileData->getNyTestRun()) {
-		std::vector<std::string> failNy = StringUtil::toStringVector(input->getValue("FailTests_Ny_NyTest"));
-		std::vector<std::string> failOOA = StringUtil::toStringVector(input->getValue("FailTests_OOA_NyTest"));
+		std::vector<std::string> failNy = StringUtil::toStringVector(input->getValue<std::string>("FailTests_Ny_NyTest"));
+		std::vector<std::string> failOOA = StringUtil::toStringVector(input->getValue<std::string>("FailTests_OOA_NyTest"));
 
-		std::vector<std::string> dataToCalc = StringUtil::toStringVector(input->getValue("DataToCalc_NyTest"));
+		std::vector<std::string> dataToCalc = StringUtil::toStringVector(input->getValue<std::string>("DataToCalc_NyTest"));
 		std::vector<std::shared_ptr<NyLogFileData> > aNyLogGroup;
 		for (int i = 0; i < dataToCalc.size(); i++) {
 			std::shared_ptr<NyLogFileDataImp> nyLog = NyLogFileDataImp::getNewInstance();
 			nyLog->setBasicGridLengths(logFileData->getBasicGridLengths());
 			nyLog->setDataToCalc(dataToCalc.at(i));
-			nyLog->setStartTimeStepCalculation(StringUtil::toInt(input->getValue("StartTimeStepCalculation_NyTest")));
-			nyLog->setEndTimeStepCalculation(StringUtil::toInt(input->getValue("EndTimeStepCalculation_NyTest")));
+			nyLog->setStartTimeStepCalculation(StringUtil::toInt(input->getValue<std::string>("StartTimeStepCalculation_NyTest")));
+			nyLog->setEndTimeStepCalculation(StringUtil::toInt(input->getValue<std::string>("EndTimeStepCalculation_NyTest")));
 
 			std::vector<double> ny, nyDiff;
 			std::vector<std::vector<double> > orderOfAccuracy;
@@ -255,9 +258,9 @@ std::shared_ptr<LogFileData> LogFileReader::readLogFileToLogFileData(std::string
 				}
 				if (!failData) {
 					nyString << "Ny_" << nyBasicString.str();
-					ny.push_back(StringUtil::toDouble(input->getValue(nyString.str())));
+					ny.push_back(StringUtil::toDouble(input->getValue<std::string>(nyString.str())));
 					nyDiffString << "NyDiff_" << logFileData->getBasicGridLengths().at(j) << "_" << dataToCalc.at(i);
-					nyDiff.push_back(StringUtil::toDouble(input->getValue(nyDiffString.str())));
+					nyDiff.push_back(StringUtil::toDouble(input->getValue<std::string>(nyDiffString.str())));
 				}			
 
 				
@@ -274,7 +277,7 @@ std::shared_ptr<LogFileData> LogFileReader::readLogFileToLogFileData(std::string
 						nyDiffOOA << "OrderOfAccuracy_NyDiff_" << nyDiffBasicOOA.str();
 						aOrderOfAccuracyGroup.push_back(logFileData->getBasicGridLengths().at(j));
 						aOrderOfAccuracyGroup.push_back(logFileData->getBasicGridLengths().at(k));
-						aOrderOfAccuracyGroup.push_back(StringUtil::toDouble(input->getValue(nyDiffOOA.str())));
+						aOrderOfAccuracyGroup.push_back(StringUtil::toDouble(input->getValue<std::string>(nyDiffOOA.str())));
 					}
 					if (aOrderOfAccuracyGroup.size() > 0)
 						orderOfAccuracy.push_back(aOrderOfAccuracyGroup);
@@ -300,17 +303,17 @@ std::shared_ptr<LogFileData> LogFileReader::readLogFileToLogFileData(std::string
 
 	if (logFileData->getL2NormTestRun()) {
 		std::vector<std::shared_ptr<L2NormLogFileData> > l2NormGroup;
-		std::vector<std::string> dataToCalcL2Norm = StringUtil::toStringVector(input->getValue("DataToCalc_L2Norm"));
-		std::vector<std::string> normData = StringUtil::toStringVector(input->getValue("NormalizeData_L2Norm"));
-		std::vector<std::string> failL2Norm = StringUtil::toStringVector(input->getValue("FailTests_L2Norm"));
+		std::vector<std::string> dataToCalcL2Norm = StringUtil::toStringVector(input->getValue<std::string>("DataToCalc_L2Norm"));
+		std::vector<std::string> normData = StringUtil::toStringVector(input->getValue<std::string>("NormalizeData_L2Norm"));
+		std::vector<std::string> failL2Norm = StringUtil::toStringVector(input->getValue<std::string>("FailTests_L2Norm"));
 		for (int i = 0; i < dataToCalcL2Norm.size(); i++) {
 			for (int k = 0; k < normData.size(); k++) {
 				std::shared_ptr<L2NormLogFileDataImp> aL2Norm = L2NormLogFileDataImp::getNewInstance();
 				aL2Norm->setDataToCalc(dataToCalcL2Norm.at(i));
 				aL2Norm->setNormalizeData(normData.at(k));
 				aL2Norm->setBasicGridLengths(logFileData->getBasicGridLengths());
-				aL2Norm->setBasicTimeStep(StringUtil::toInt(input->getValue("BasicTimeStep_L2Norm")));
-				aL2Norm->setDivergentTimeStep(StringUtil::toInt(input->getValue("DivergentTimeStep_L2Norm")));
+				aL2Norm->setBasicTimeStep(StringUtil::toInt(input->getValue<std::string>("BasicTimeStep_L2Norm")));
+				aL2Norm->setDivergentTimeStep(StringUtil::toInt(input->getValue<std::string>("DivergentTimeStep_L2Norm")));
 
 				std::vector<double>  l2NormBasicTimeStep;
 				std::vector<double>  l2NormDivergentTimeStep;
@@ -327,9 +330,9 @@ std::shared_ptr<LogFileData> LogFileReader::readLogFileToLogFileData(std::string
 						basicTimeStep << "L2Norm_BasicTimeStep_" << basicString.str();
 						divergentTimeStep << "L2Norm_DivergentTimeStep_" << basicString.str();
 						diff << "L2Norm_Diff_" << basicString.str();
-						l2NormBasicTimeStep.push_back(StringUtil::toDouble(input->getValue(basicTimeStep.str())));
-						l2NormDivergentTimeStep.push_back(StringUtil::toDouble(input->getValue(divergentTimeStep.str())));
-						l2NormDiff.push_back(StringUtil::toDouble(input->getValue(diff.str())));
+						l2NormBasicTimeStep.push_back(StringUtil::toDouble(input->getValue<std::string>(basicTimeStep.str())));
+						l2NormDivergentTimeStep.push_back(StringUtil::toDouble(input->getValue<std::string>(divergentTimeStep.str())));
+						l2NormDiff.push_back(StringUtil::toDouble(input->getValue<std::string>(diff.str())));
 					}
 				}
 				if (l2NormBasicTimeStep.size() > 0) {
@@ -380,10 +383,10 @@ std::shared_ptr<LogFileData> LogFileReader::readLogFileToLogFileData(std::string
 
 	if (logFileData->getL2NormTestBetweenKernelRun()) {
 		std::vector<std::shared_ptr<L2NormBetweenKernelsLogFileData> > l2NormBetweenKernelsData;
-		std::vector<std::string> dataToCalc = StringUtil::toStringVector(input->getValue("DataToCalculate_L2Norm_BK"));
-		std::vector<int> timeSteps = StringUtil::toIntVector(input->getValue("TimeSteps_L2Norm_BK"));
-		std::vector<std::string> normalizeData = StringUtil::toStringVector(input->getValue("NormalizeWith_L2Norm_BK"));
-		std::vector<std::string> failL2Norm = StringUtil::toStringVector(input->getValue("FailTests_L2Norm_BK"));
+		std::vector<std::string> dataToCalc = StringUtil::toStringVector(input->getValue<std::string>("DataToCalculate_L2Norm_BK"));
+		std::vector<int> timeSteps = StringUtil::toIntVector(input->getValue<std::string>("TimeSteps_L2Norm_BK"));
+		std::vector<std::string> normalizeData = StringUtil::toStringVector(input->getValue<std::string>("NormalizeWith_L2Norm_BK"));
+		std::vector<std::string> failL2Norm = StringUtil::toStringVector(input->getValue<std::string>("FailTests_L2Norm_BK"));
 
 
 		for (int i = 0; i < dataToCalc.size(); i++) {
@@ -393,7 +396,7 @@ std::shared_ptr<LogFileData> LogFileReader::readLogFileToLogFileData(std::string
 					std::vector<double> l2NormDivergentKernel;
 					std::vector<double> l2NormBetweenKernels;
 					std::shared_ptr<L2NormBetweenKernelsLogFileDataImp> aL2NormLogFileData = L2NormBetweenKernelsLogFileDataImp::getNewInstance();
-					aL2NormLogFileData->setBasicKernel(input->getValue("BasicKernel_L2Norm_BK"));
+					aL2NormLogFileData->setBasicKernel(input->getValue<std::string>("BasicKernel_L2Norm_BK"));
 					aL2NormLogFileData->setDivergentKernel(logFileData->getKernel());
 					aL2NormLogFileData->setDataToCalculate(dataToCalc.at(i));
 					aL2NormLogFileData->setTimeStep(timeSteps.at(j));
@@ -415,9 +418,9 @@ std::shared_ptr<LogFileData> LogFileReader::readLogFileToLogFileData(std::string
 							basicKernel << "L2Norm_BasicKernel_" << basicString.str();
 							divergentKernel << "L2Norm_DivergentKernel_" << basicString.str();
 							diff << "L2Norm_Between_Kernels_" << basicString.str();
-							l2NormBasicKernel.push_back(StringUtil::toDouble(input->getValue(basicKernel.str())));
-							l2NormDivergentKernel.push_back(StringUtil::toDouble(input->getValue(divergentKernel.str())));
-							l2NormBetweenKernels.push_back(StringUtil::toDouble(input->getValue(diff.str())));
+							l2NormBasicKernel.push_back(StringUtil::toDouble(input->getValue<std::string>(basicKernel.str())));
+							l2NormDivergentKernel.push_back(StringUtil::toDouble(input->getValue<std::string>(divergentKernel.str())));
+							l2NormBetweenKernels.push_back(StringUtil::toDouble(input->getValue<std::string>(diff.str())));
 						}						
 					}
 					if (l2NormBasicKernel.size() > 0) {

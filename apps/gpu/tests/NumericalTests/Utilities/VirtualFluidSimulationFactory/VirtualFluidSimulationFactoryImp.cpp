@@ -24,11 +24,10 @@ VirtualFluidSimulationFactoryImp::VirtualFluidSimulationFactoryImp()
 
 std::shared_ptr<Parameter> VirtualFluidSimulationFactoryImp::makeParameter(std::shared_ptr<SimulationParameter> simPara)
 {
-	std::shared_ptr<Parameter> para = Parameter::make();
+	auto para = std::make_shared<Parameter>(1, 0);
 
 	para->setMaxDev(simPara->getDevices().size());
 	para->setDevices(simPara->getDevices());
-	para->setNumprocs(1);
 
 	std::string _prefix = "cells";
 	std::string gridPath = simPara->getGridPath() + "/";
@@ -102,7 +101,8 @@ std::shared_ptr<Parameter> VirtualFluidSimulationFactoryImp::makeParameter(std::
 	para->setDistY(dist);
 	para->setDistZ(dist);
 
-	para->setNeedInterface(std::vector<bool>{true, true, true, true, true, true});
+	// TODO: Find out if we still need this
+	// para->setNeedInterface(std::vector<bool>{true, true, true, true, true, true});
 
 	para->setMainKernel(simPara->getKernelConfiguration()->getMainKernel());
 	para->setMultiKernelOn(simPara->getKernelConfiguration()->getMultiKernelOn());
@@ -114,14 +114,12 @@ std::shared_ptr<Parameter> VirtualFluidSimulationFactoryImp::makeParameter(std::
 
 std::shared_ptr<NumericalTestGridReader> VirtualFluidSimulationFactoryImp::makeGridReader(std::shared_ptr<InitialCondition> initialCondition, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager)
 {
-	std::shared_ptr<NumericalTestGridReader> grid = NumericalTestGridReader::getNewInstance(para, initialCondition, cudaManager);
-	return grid;
+	return NumericalTestGridReader::getNewInstance(para, initialCondition, cudaManager);
 }
 
 std::shared_ptr<CudaMemoryManager> VirtualFluidSimulationFactoryImp::makeCudaMemoryManager(std::shared_ptr<Parameter> para)
 {
-	std::shared_ptr<CudaMemoryManager> cudaManager = CudaMemoryManager::make(para);
-	return cudaManager;
+	return std::make_shared<CudaMemoryManager>(para);
 }
 
 void VirtualFluidSimulationFactoryImp::initInitialConditions(std::shared_ptr<InitialCondition> initialCondition, std::shared_ptr<Parameter> para)
@@ -133,10 +131,10 @@ std::vector<std::shared_ptr<VirtualFluidSimulation> > VirtualFluidSimulationFact
 {
 	std::vector<std::shared_ptr<VirtualFluidSimulation> > vfSimulations;
 
-	std::shared_ptr<KernelFactoryImp> kernelFactory = KernelFactoryImp::getInstance();
-	std::shared_ptr<PreProcessorFactoryImp> preProcessorFactory = PreProcessorFactoryImp::getInstance();
+	auto kernelFactory = std::make_shared<KernelFactoryImp>();
+	auto preProcessorFactory = std::make_shared<PreProcessorFactoryImp>();
 
-	for (int i = 0; i < testSim.size(); i++) {
+	for (size_t i = 0; i < testSim.size(); i++) {
 		std::shared_ptr<VirtualFluidSimulationImp> vfSim = VirtualFluidSimulationImp::getNewInstance();
 		
 		std::shared_ptr<Parameter> para = makeParameter(testSim.at(i)->getSimulationParameter());
