@@ -1,8 +1,9 @@
 #include "LBM/LB.h" 
-#include "LBM/D3Q27.h"
+#include "lbm/constants/D3Q27.h"
 #include <lbm/constants/NumericConstants.h>
 
 using namespace vf::lbm::constant;
+using namespace vf::lbm::dir;
 #include "math.h"
 
 #include <stdio.h>
@@ -41,63 +42,63 @@ extern "C" __global__ void LB_Init_Comp_SP_27(unsigned int* neighborX,
          Distributions27 D;
          if (EvenOrOdd==true)
          {
-            D.f[dirE   ] = &DD[dirE   *size_Mat];
-            D.f[dirW   ] = &DD[dirW   *size_Mat];
-            D.f[dirN   ] = &DD[dirN   *size_Mat];
-            D.f[dirS   ] = &DD[dirS   *size_Mat];
-            D.f[dirT   ] = &DD[dirT   *size_Mat];
-            D.f[dirB   ] = &DD[dirB   *size_Mat];
-            D.f[dirNE  ] = &DD[dirNE  *size_Mat];
-            D.f[dirSW  ] = &DD[dirSW  *size_Mat];
-            D.f[dirSE  ] = &DD[dirSE  *size_Mat];
-            D.f[dirNW  ] = &DD[dirNW  *size_Mat];
-            D.f[dirTE  ] = &DD[dirTE  *size_Mat];
-            D.f[dirBW  ] = &DD[dirBW  *size_Mat];
-            D.f[dirBE  ] = &DD[dirBE  *size_Mat];
-            D.f[dirTW  ] = &DD[dirTW  *size_Mat];
-            D.f[dirTN  ] = &DD[dirTN  *size_Mat];
-            D.f[dirBS  ] = &DD[dirBS  *size_Mat];
-            D.f[dirBN  ] = &DD[dirBN  *size_Mat];
-            D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-            D.f[dirZERO] = &DD[dirZERO*size_Mat];
-            D.f[dirTNE ] = &DD[dirTNE *size_Mat];
-            D.f[dirTSW ] = &DD[dirTSW *size_Mat];
-            D.f[dirTSE ] = &DD[dirTSE *size_Mat];
-            D.f[dirTNW ] = &DD[dirTNW *size_Mat];
-            D.f[dirBNE ] = &DD[dirBNE *size_Mat];
-            D.f[dirBSW ] = &DD[dirBSW *size_Mat];
-            D.f[dirBSE ] = &DD[dirBSE *size_Mat];
-            D.f[dirBNW ] = &DD[dirBNW *size_Mat];
+            D.f[E   ] = &DD[E   *size_Mat];
+            D.f[W   ] = &DD[W   *size_Mat];
+            D.f[N   ] = &DD[N   *size_Mat];
+            D.f[S   ] = &DD[S   *size_Mat];
+            D.f[T   ] = &DD[T   *size_Mat];
+            D.f[B   ] = &DD[B   *size_Mat];
+            D.f[NE  ] = &DD[NE  *size_Mat];
+            D.f[SW  ] = &DD[SW  *size_Mat];
+            D.f[SE  ] = &DD[SE  *size_Mat];
+            D.f[NW  ] = &DD[NW  *size_Mat];
+            D.f[TE  ] = &DD[TE  *size_Mat];
+            D.f[BW  ] = &DD[BW  *size_Mat];
+            D.f[BE  ] = &DD[BE  *size_Mat];
+            D.f[TW  ] = &DD[TW  *size_Mat];
+            D.f[TN  ] = &DD[TN  *size_Mat];
+            D.f[BS  ] = &DD[BS  *size_Mat];
+            D.f[BN  ] = &DD[BN  *size_Mat];
+            D.f[TS  ] = &DD[TS  *size_Mat];
+            D.f[REST] = &DD[REST*size_Mat];
+            D.f[TNE ] = &DD[TNE *size_Mat];
+            D.f[TSW ] = &DD[TSW *size_Mat];
+            D.f[TSE ] = &DD[TSE *size_Mat];
+            D.f[TNW ] = &DD[TNW *size_Mat];
+            D.f[BNE ] = &DD[BNE *size_Mat];
+            D.f[BSW ] = &DD[BSW *size_Mat];
+            D.f[BSE ] = &DD[BSE *size_Mat];
+            D.f[BNW ] = &DD[BNW *size_Mat];
          }
          else
          {
-            D.f[dirW   ] = &DD[dirE   *size_Mat];
-            D.f[dirE   ] = &DD[dirW   *size_Mat];
-            D.f[dirS   ] = &DD[dirN   *size_Mat];
-            D.f[dirN   ] = &DD[dirS   *size_Mat];
-            D.f[dirB   ] = &DD[dirT   *size_Mat];
-            D.f[dirT   ] = &DD[dirB   *size_Mat];
-            D.f[dirSW  ] = &DD[dirNE  *size_Mat];
-            D.f[dirNE  ] = &DD[dirSW  *size_Mat];
-            D.f[dirNW  ] = &DD[dirSE  *size_Mat];
-            D.f[dirSE  ] = &DD[dirNW  *size_Mat];
-            D.f[dirBW  ] = &DD[dirTE  *size_Mat];
-            D.f[dirTE  ] = &DD[dirBW  *size_Mat];
-            D.f[dirTW  ] = &DD[dirBE  *size_Mat];
-            D.f[dirBE  ] = &DD[dirTW  *size_Mat];
-            D.f[dirBS  ] = &DD[dirTN  *size_Mat];
-            D.f[dirTN  ] = &DD[dirBS  *size_Mat];
-            D.f[dirTS  ] = &DD[dirBN  *size_Mat];
-            D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-            D.f[dirZERO] = &DD[dirZERO*size_Mat];
-            D.f[dirBSW ] = &DD[dirTNE *size_Mat];
-            D.f[dirBNE ] = &DD[dirTSW *size_Mat];
-            D.f[dirBNW ] = &DD[dirTSE *size_Mat];
-            D.f[dirBSE ] = &DD[dirTNW *size_Mat];
-            D.f[dirTSW ] = &DD[dirBNE *size_Mat];
-            D.f[dirTNE ] = &DD[dirBSW *size_Mat];
-            D.f[dirTNW ] = &DD[dirBSE *size_Mat];
-            D.f[dirTSE ] = &DD[dirBNW *size_Mat];
+            D.f[W   ] = &DD[E   *size_Mat];
+            D.f[E   ] = &DD[W   *size_Mat];
+            D.f[S   ] = &DD[N   *size_Mat];
+            D.f[N   ] = &DD[S   *size_Mat];
+            D.f[B   ] = &DD[T   *size_Mat];
+            D.f[T   ] = &DD[B   *size_Mat];
+            D.f[SW  ] = &DD[NE  *size_Mat];
+            D.f[NE  ] = &DD[SW  *size_Mat];
+            D.f[NW  ] = &DD[SE  *size_Mat];
+            D.f[SE  ] = &DD[NW  *size_Mat];
+            D.f[BW  ] = &DD[TE  *size_Mat];
+            D.f[TE  ] = &DD[BW  *size_Mat];
+            D.f[TW  ] = &DD[BE  *size_Mat];
+            D.f[BE  ] = &DD[TW  *size_Mat];
+            D.f[BS  ] = &DD[TN  *size_Mat];
+            D.f[TN  ] = &DD[BS  *size_Mat];
+            D.f[TS  ] = &DD[BN  *size_Mat];
+            D.f[BN  ] = &DD[TS  *size_Mat];
+            D.f[REST] = &DD[REST*size_Mat];
+            D.f[BSW ] = &DD[TNE *size_Mat];
+            D.f[BNE ] = &DD[TSW *size_Mat];
+            D.f[BNW ] = &DD[TSE *size_Mat];
+            D.f[BSE ] = &DD[TNW *size_Mat];
+            D.f[TSW ] = &DD[BNE *size_Mat];
+            D.f[TNE ] = &DD[BSW *size_Mat];
+            D.f[TNW ] = &DD[BSE *size_Mat];
+            D.f[TSE ] = &DD[BNW *size_Mat];
          }
          //////////////////////////////////////////////////////////////////////////
          real drho = rho[k];//0.0f;//
@@ -137,33 +138,33 @@ extern "C" __global__ void LB_Init_Comp_SP_27(unsigned int* neighborX,
          //////////////////////////////////////////////////////////////////////////
          real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
-         (D.f[dirZERO])[kzero] =   c8o27* (drho-cu_sq*(c1o1+drho));
-         (D.f[dirE   ])[ke   ] =   c2o27* (drho+ (c1o1+drho) * (c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq));
-         (D.f[dirW   ])[kw   ] =   c2o27* (drho+ (c1o1+drho) * (c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq));
-         (D.f[dirN   ])[kn   ] =   c2o27* (drho+ (c1o1+drho) * (c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cu_sq));
-         (D.f[dirS   ])[ks   ] =   c2o27* (drho+ (c1o1+drho) * (c3o1*(   -vx2     )+c9o2*(    -vx2    )*(    -vx2    )-cu_sq));
-         (D.f[dirT   ])[kt   ] =   c2o27* (drho+ (c1o1+drho) * (c3o1*(         vx3)+c9o2*(         vx3)*(         vx3)-cu_sq));
-         (D.f[dirB   ])[kb   ] =   c2o27* (drho+ (c1o1+drho) * (c3o1*(        -vx3)+c9o2*(        -vx3)*(        -vx3)-cu_sq));
-         (D.f[dirNE  ])[kne  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*( vx1+vx2    )+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq));
-         (D.f[dirSW  ])[ksw  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*(-vx1-vx2    )+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq));
-         (D.f[dirSE  ])[kse  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*( vx1-vx2    )+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq));
-         (D.f[dirNW  ])[knw  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*(-vx1+vx2    )+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq));
-         (D.f[dirTE  ])[kte  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*( vx1    +vx3)+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq));
-         (D.f[dirBW  ])[kbw  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*(-vx1    -vx3)+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq));
-         (D.f[dirBE  ])[kbe  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*( vx1    -vx3)+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq));
-         (D.f[dirTW  ])[ktw  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*(-vx1    +vx3)+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq));
-         (D.f[dirTN  ])[ktn  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*(     vx2+vx3)+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq));
-         (D.f[dirBS  ])[kbs  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*(    -vx2-vx3)+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq));
-         (D.f[dirBN  ])[kbn  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*(     vx2-vx3)+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq));
-         (D.f[dirTS  ])[kts  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*(    -vx2+vx3)+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq));
-         (D.f[dirTNE ])[ktne ] =   c1o216*(drho+ (c1o1+drho) * (c3o1*( vx1+vx2+vx3)+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq));
-         (D.f[dirBSW ])[kbsw ] =   c1o216*(drho+ (c1o1+drho) * (c3o1*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq));
-         (D.f[dirBNE ])[kbne ] =   c1o216*(drho+ (c1o1+drho) * (c3o1*( vx1+vx2-vx3)+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq));
-         (D.f[dirTSW ])[ktsw ] =   c1o216*(drho+ (c1o1+drho) * (c3o1*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq));
-         (D.f[dirTSE ])[ktse ] =   c1o216*(drho+ (c1o1+drho) * (c3o1*( vx1-vx2+vx3)+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq));
-         (D.f[dirBNW ])[kbnw ] =   c1o216*(drho+ (c1o1+drho) * (c3o1*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq));
-         (D.f[dirBSE ])[kbse ] =   c1o216*(drho+ (c1o1+drho) * (c3o1*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq));
-         (D.f[dirTNW ])[ktnw ] =   c1o216*(drho+ (c1o1+drho) * (c3o1*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq));
+         (D.f[REST])[kzero] =   c8o27* (drho-cu_sq*(c1o1+drho));
+         (D.f[E   ])[ke   ] =   c2o27* (drho+ (c1o1+drho) * (c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq));
+         (D.f[W   ])[kw   ] =   c2o27* (drho+ (c1o1+drho) * (c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq));
+         (D.f[N   ])[kn   ] =   c2o27* (drho+ (c1o1+drho) * (c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cu_sq));
+         (D.f[S   ])[ks   ] =   c2o27* (drho+ (c1o1+drho) * (c3o1*(   -vx2     )+c9o2*(    -vx2    )*(    -vx2    )-cu_sq));
+         (D.f[T   ])[kt   ] =   c2o27* (drho+ (c1o1+drho) * (c3o1*(         vx3)+c9o2*(         vx3)*(         vx3)-cu_sq));
+         (D.f[B   ])[kb   ] =   c2o27* (drho+ (c1o1+drho) * (c3o1*(        -vx3)+c9o2*(        -vx3)*(        -vx3)-cu_sq));
+         (D.f[NE  ])[kne  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*( vx1+vx2    )+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq));
+         (D.f[SW  ])[ksw  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*(-vx1-vx2    )+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq));
+         (D.f[SE  ])[kse  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*( vx1-vx2    )+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq));
+         (D.f[NW  ])[knw  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*(-vx1+vx2    )+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq));
+         (D.f[TE  ])[kte  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*( vx1    +vx3)+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq));
+         (D.f[BW  ])[kbw  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*(-vx1    -vx3)+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq));
+         (D.f[BE  ])[kbe  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*( vx1    -vx3)+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq));
+         (D.f[TW  ])[ktw  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*(-vx1    +vx3)+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq));
+         (D.f[TN  ])[ktn  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*(     vx2+vx3)+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq));
+         (D.f[BS  ])[kbs  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*(    -vx2-vx3)+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq));
+         (D.f[BN  ])[kbn  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*(     vx2-vx3)+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq));
+         (D.f[TS  ])[kts  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*(    -vx2+vx3)+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq));
+         (D.f[TNE ])[ktne ] =   c1o216*(drho+ (c1o1+drho) * (c3o1*( vx1+vx2+vx3)+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq));
+         (D.f[BSW ])[kbsw ] =   c1o216*(drho+ (c1o1+drho) * (c3o1*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq));
+         (D.f[BNE ])[kbne ] =   c1o216*(drho+ (c1o1+drho) * (c3o1*( vx1+vx2-vx3)+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq));
+         (D.f[TSW ])[ktsw ] =   c1o216*(drho+ (c1o1+drho) * (c3o1*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq));
+         (D.f[TSE ])[ktse ] =   c1o216*(drho+ (c1o1+drho) * (c3o1*( vx1-vx2+vx3)+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq));
+         (D.f[BNW ])[kbnw ] =   c1o216*(drho+ (c1o1+drho) * (c3o1*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq));
+         (D.f[BSE ])[kbse ] =   c1o216*(drho+ (c1o1+drho) * (c3o1*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq));
+         (D.f[TNW ])[ktnw ] =   c1o216*(drho+ (c1o1+drho) * (c3o1*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq));
       }
    }
 }
@@ -214,63 +215,63 @@ extern "C" __global__ void LB_Init_Comp_Neq_SP_27( unsigned int* neighborX,
             Distributions27 D;
             if (EvenOrOdd==true)
             {
-                D.f[dirE   ] = &DD[dirE   *size_Mat];
-                D.f[dirW   ] = &DD[dirW   *size_Mat];
-                D.f[dirN   ] = &DD[dirN   *size_Mat];
-                D.f[dirS   ] = &DD[dirS   *size_Mat];
-                D.f[dirT   ] = &DD[dirT   *size_Mat];
-                D.f[dirB   ] = &DD[dirB   *size_Mat];
-                D.f[dirNE  ] = &DD[dirNE  *size_Mat];
-                D.f[dirSW  ] = &DD[dirSW  *size_Mat];
-                D.f[dirSE  ] = &DD[dirSE  *size_Mat];
-                D.f[dirNW  ] = &DD[dirNW  *size_Mat];
-                D.f[dirTE  ] = &DD[dirTE  *size_Mat];
-                D.f[dirBW  ] = &DD[dirBW  *size_Mat];
-                D.f[dirBE  ] = &DD[dirBE  *size_Mat];
-                D.f[dirTW  ] = &DD[dirTW  *size_Mat];
-                D.f[dirTN  ] = &DD[dirTN  *size_Mat];
-                D.f[dirBS  ] = &DD[dirBS  *size_Mat];
-                D.f[dirBN  ] = &DD[dirBN  *size_Mat];
-                D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-                D.f[dirZERO] = &DD[dirZERO*size_Mat];
-                D.f[dirTNE ] = &DD[dirTNE *size_Mat];
-                D.f[dirTSW ] = &DD[dirTSW *size_Mat];
-                D.f[dirTSE ] = &DD[dirTSE *size_Mat];
-                D.f[dirTNW ] = &DD[dirTNW *size_Mat];
-                D.f[dirBNE ] = &DD[dirBNE *size_Mat];
-                D.f[dirBSW ] = &DD[dirBSW *size_Mat];
-                D.f[dirBSE ] = &DD[dirBSE *size_Mat];
-                D.f[dirBNW ] = &DD[dirBNW *size_Mat];
+                D.f[E   ] = &DD[E   *size_Mat];
+                D.f[W   ] = &DD[W   *size_Mat];
+                D.f[N   ] = &DD[N   *size_Mat];
+                D.f[S   ] = &DD[S   *size_Mat];
+                D.f[T   ] = &DD[T   *size_Mat];
+                D.f[B   ] = &DD[B   *size_Mat];
+                D.f[NE  ] = &DD[NE  *size_Mat];
+                D.f[SW  ] = &DD[SW  *size_Mat];
+                D.f[SE  ] = &DD[SE  *size_Mat];
+                D.f[NW  ] = &DD[NW  *size_Mat];
+                D.f[TE  ] = &DD[TE  *size_Mat];
+                D.f[BW  ] = &DD[BW  *size_Mat];
+                D.f[BE  ] = &DD[BE  *size_Mat];
+                D.f[TW  ] = &DD[TW  *size_Mat];
+                D.f[TN  ] = &DD[TN  *size_Mat];
+                D.f[BS  ] = &DD[BS  *size_Mat];
+                D.f[BN  ] = &DD[BN  *size_Mat];
+                D.f[TS  ] = &DD[TS  *size_Mat];
+                D.f[REST] = &DD[REST*size_Mat];
+                D.f[TNE ] = &DD[TNE *size_Mat];
+                D.f[TSW ] = &DD[TSW *size_Mat];
+                D.f[TSE ] = &DD[TSE *size_Mat];
+                D.f[TNW ] = &DD[TNW *size_Mat];
+                D.f[BNE ] = &DD[BNE *size_Mat];
+                D.f[BSW ] = &DD[BSW *size_Mat];
+                D.f[BSE ] = &DD[BSE *size_Mat];
+                D.f[BNW ] = &DD[BNW *size_Mat];
             }
             else
             {
-                D.f[dirW   ] = &DD[dirE   *size_Mat];
-                D.f[dirE   ] = &DD[dirW   *size_Mat];
-                D.f[dirS   ] = &DD[dirN   *size_Mat];
-                D.f[dirN   ] = &DD[dirS   *size_Mat];
-                D.f[dirB   ] = &DD[dirT   *size_Mat];
-                D.f[dirT   ] = &DD[dirB   *size_Mat];
-                D.f[dirSW  ] = &DD[dirNE  *size_Mat];
-                D.f[dirNE  ] = &DD[dirSW  *size_Mat];
-                D.f[dirNW  ] = &DD[dirSE  *size_Mat];
-                D.f[dirSE  ] = &DD[dirNW  *size_Mat];
-                D.f[dirBW  ] = &DD[dirTE  *size_Mat];
-                D.f[dirTE  ] = &DD[dirBW  *size_Mat];
-                D.f[dirTW  ] = &DD[dirBE  *size_Mat];
-                D.f[dirBE  ] = &DD[dirTW  *size_Mat];
-                D.f[dirBS  ] = &DD[dirTN  *size_Mat];
-                D.f[dirTN  ] = &DD[dirBS  *size_Mat];
-                D.f[dirTS  ] = &DD[dirBN  *size_Mat];
-                D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-                D.f[dirZERO] = &DD[dirZERO*size_Mat];
-                D.f[dirBSW ] = &DD[dirTNE *size_Mat];
-                D.f[dirBNE ] = &DD[dirTSW *size_Mat];
-                D.f[dirBNW ] = &DD[dirTSE *size_Mat];
-                D.f[dirBSE ] = &DD[dirTNW *size_Mat];
-                D.f[dirTSW ] = &DD[dirBNE *size_Mat];
-                D.f[dirTNE ] = &DD[dirBSW *size_Mat];
-                D.f[dirTNW ] = &DD[dirBSE *size_Mat];
-                D.f[dirTSE ] = &DD[dirBNW *size_Mat];
+                D.f[W   ] = &DD[E   *size_Mat];
+                D.f[E   ] = &DD[W   *size_Mat];
+                D.f[S   ] = &DD[N   *size_Mat];
+                D.f[N   ] = &DD[S   *size_Mat];
+                D.f[B   ] = &DD[T   *size_Mat];
+                D.f[T   ] = &DD[B   *size_Mat];
+                D.f[SW  ] = &DD[NE  *size_Mat];
+                D.f[NE  ] = &DD[SW  *size_Mat];
+                D.f[NW  ] = &DD[SE  *size_Mat];
+                D.f[SE  ] = &DD[NW  *size_Mat];
+                D.f[BW  ] = &DD[TE  *size_Mat];
+                D.f[TE  ] = &DD[BW  *size_Mat];
+                D.f[TW  ] = &DD[BE  *size_Mat];
+                D.f[BE  ] = &DD[TW  *size_Mat];
+                D.f[BS  ] = &DD[TN  *size_Mat];
+                D.f[TN  ] = &DD[BS  *size_Mat];
+                D.f[TS  ] = &DD[BN  *size_Mat];
+                D.f[BN  ] = &DD[TS  *size_Mat];
+                D.f[REST] = &DD[REST*size_Mat];
+                D.f[BSW ] = &DD[TNE *size_Mat];
+                D.f[BNE ] = &DD[TSW *size_Mat];
+                D.f[BNW ] = &DD[TSE *size_Mat];
+                D.f[BSE ] = &DD[TNW *size_Mat];
+                D.f[TSW ] = &DD[BNE *size_Mat];
+                D.f[TNE ] = &DD[BSW *size_Mat];
+                D.f[TNW ] = &DD[BSE *size_Mat];
+                D.f[TSE ] = &DD[BNW *size_Mat];
             }
             //////////////////////////////////////////////////////////////////////////
             real drho = rho[k];//0.0f;//
@@ -392,63 +393,63 @@ extern "C" __global__ void LB_Init_Comp_Neq_SP_27( unsigned int* neighborX,
             //////////////////////////////////////////////////////////////////////////
             real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
-            (D.f[dirZERO])[kzero] =   c8o27* (drho-cu_sq*(c1o1+drho));
-            (D.f[dirE   ])[ke   ] =   c2o27* (drho+ (c1o1+drho) * (c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq));
-            (D.f[dirW   ])[kw   ] =   c2o27* (drho+ (c1o1+drho) * (c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq));
-            (D.f[dirN   ])[kn   ] =   c2o27* (drho+ (c1o1+drho) * (c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cu_sq));
-            (D.f[dirS   ])[ks   ] =   c2o27* (drho+ (c1o1+drho) * (c3o1*(   -vx2     )+c9o2*(    -vx2    )*(    -vx2    )-cu_sq));
-            (D.f[dirT   ])[kt   ] =   c2o27* (drho+ (c1o1+drho) * (c3o1*(         vx3)+c9o2*(         vx3)*(         vx3)-cu_sq));
-            (D.f[dirB   ])[kb   ] =   c2o27* (drho+ (c1o1+drho) * (c3o1*(        -vx3)+c9o2*(        -vx3)*(        -vx3)-cu_sq));
-            (D.f[dirNE  ])[kne  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*( vx1+vx2    )+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq));
-            (D.f[dirSW  ])[ksw  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*(-vx1-vx2    )+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq));
-            (D.f[dirSE  ])[kse  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*( vx1-vx2    )+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq));
-            (D.f[dirNW  ])[knw  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*(-vx1+vx2    )+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq));
-            (D.f[dirTE  ])[kte  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*( vx1    +vx3)+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq));
-            (D.f[dirBW  ])[kbw  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*(-vx1    -vx3)+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq));
-            (D.f[dirBE  ])[kbe  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*( vx1    -vx3)+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq));
-            (D.f[dirTW  ])[ktw  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*(-vx1    +vx3)+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq));
-            (D.f[dirTN  ])[ktn  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*(     vx2+vx3)+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq));
-            (D.f[dirBS  ])[kbs  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*(    -vx2-vx3)+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq));
-            (D.f[dirBN  ])[kbn  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*(     vx2-vx3)+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq));
-            (D.f[dirTS  ])[kts  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*(    -vx2+vx3)+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq));
-            (D.f[dirTNE ])[ktne ] =   c1o216*(drho+ (c1o1+drho) * (c3o1*( vx1+vx2+vx3)+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq));
-            (D.f[dirBSW ])[kbsw ] =   c1o216*(drho+ (c1o1+drho) * (c3o1*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq));
-            (D.f[dirBNE ])[kbne ] =   c1o216*(drho+ (c1o1+drho) * (c3o1*( vx1+vx2-vx3)+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq));
-            (D.f[dirTSW ])[ktsw ] =   c1o216*(drho+ (c1o1+drho) * (c3o1*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq));
-            (D.f[dirTSE ])[ktse ] =   c1o216*(drho+ (c1o1+drho) * (c3o1*( vx1-vx2+vx3)+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq));
-            (D.f[dirBNW ])[kbnw ] =   c1o216*(drho+ (c1o1+drho) * (c3o1*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq));
-            (D.f[dirBSE ])[kbse ] =   c1o216*(drho+ (c1o1+drho) * (c3o1*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq));
-            (D.f[dirTNW ])[ktnw ] =   c1o216*(drho+ (c1o1+drho) * (c3o1*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq));
+            (D.f[REST])[kzero] =   c8o27* (drho-cu_sq*(c1o1+drho));
+            (D.f[E   ])[ke   ] =   c2o27* (drho+ (c1o1+drho) * (c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq));
+            (D.f[W   ])[kw   ] =   c2o27* (drho+ (c1o1+drho) * (c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq));
+            (D.f[N   ])[kn   ] =   c2o27* (drho+ (c1o1+drho) * (c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cu_sq));
+            (D.f[S   ])[ks   ] =   c2o27* (drho+ (c1o1+drho) * (c3o1*(   -vx2     )+c9o2*(    -vx2    )*(    -vx2    )-cu_sq));
+            (D.f[T   ])[kt   ] =   c2o27* (drho+ (c1o1+drho) * (c3o1*(         vx3)+c9o2*(         vx3)*(         vx3)-cu_sq));
+            (D.f[B   ])[kb   ] =   c2o27* (drho+ (c1o1+drho) * (c3o1*(        -vx3)+c9o2*(        -vx3)*(        -vx3)-cu_sq));
+            (D.f[NE  ])[kne  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*( vx1+vx2    )+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq));
+            (D.f[SW  ])[ksw  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*(-vx1-vx2    )+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq));
+            (D.f[SE  ])[kse  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*( vx1-vx2    )+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq));
+            (D.f[NW  ])[knw  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*(-vx1+vx2    )+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq));
+            (D.f[TE  ])[kte  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*( vx1    +vx3)+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq));
+            (D.f[BW  ])[kbw  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*(-vx1    -vx3)+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq));
+            (D.f[BE  ])[kbe  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*( vx1    -vx3)+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq));
+            (D.f[TW  ])[ktw  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*(-vx1    +vx3)+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq));
+            (D.f[TN  ])[ktn  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*(     vx2+vx3)+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq));
+            (D.f[BS  ])[kbs  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*(    -vx2-vx3)+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq));
+            (D.f[BN  ])[kbn  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*(     vx2-vx3)+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq));
+            (D.f[TS  ])[kts  ] =   c1o54* (drho+ (c1o1+drho) * (c3o1*(    -vx2+vx3)+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq));
+            (D.f[TNE ])[ktne ] =   c1o216*(drho+ (c1o1+drho) * (c3o1*( vx1+vx2+vx3)+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq));
+            (D.f[BSW ])[kbsw ] =   c1o216*(drho+ (c1o1+drho) * (c3o1*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq));
+            (D.f[BNE ])[kbne ] =   c1o216*(drho+ (c1o1+drho) * (c3o1*( vx1+vx2-vx3)+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq));
+            (D.f[TSW ])[ktsw ] =   c1o216*(drho+ (c1o1+drho) * (c3o1*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq));
+            (D.f[TSE ])[ktse ] =   c1o216*(drho+ (c1o1+drho) * (c3o1*( vx1-vx2+vx3)+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq));
+            (D.f[BNW ])[kbnw ] =   c1o216*(drho+ (c1o1+drho) * (c3o1*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq));
+            (D.f[BSE ])[kbse ] =   c1o216*(drho+ (c1o1+drho) * (c3o1*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq));
+            (D.f[TNW ])[ktnw ] =   c1o216*(drho+ (c1o1+drho) * (c3o1*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq));
 
             //////////////////////////////////////////////////////////////////////////
 
-            (D.f[dirZERO])[kzero] += (c1o1+drho) * f_ZERO;
-            (D.f[dirE   ])[ke   ] += (c1o1+drho) * f_E   ;
-            (D.f[dirW   ])[kw   ] += (c1o1+drho) * f_E   ;
-            (D.f[dirN   ])[kn   ] += (c1o1+drho) * f_N   ;
-            (D.f[dirS   ])[ks   ] += (c1o1+drho) * f_N   ;
-            (D.f[dirT   ])[kt   ] += (c1o1+drho) * f_T   ;
-            (D.f[dirB   ])[kb   ] += (c1o1+drho) * f_T   ;
-            (D.f[dirNE  ])[kne  ] += (c1o1+drho) * f_NE  ;
-            (D.f[dirSW  ])[ksw  ] += (c1o1+drho) * f_NE  ;
-            (D.f[dirSE  ])[kse  ] += (c1o1+drho) * f_SE  ;
-            (D.f[dirNW  ])[knw  ] += (c1o1+drho) * f_SE  ;
-            (D.f[dirTE  ])[kte  ] += (c1o1+drho) * f_TE  ;
-            (D.f[dirBW  ])[kbw  ] += (c1o1+drho) * f_TE  ;
-            (D.f[dirBE  ])[kbe  ] += (c1o1+drho) * f_BE  ;
-            (D.f[dirTW  ])[ktw  ] += (c1o1+drho) * f_BE  ;
-            (D.f[dirTN  ])[ktn  ] += (c1o1+drho) * f_TN  ;
-            (D.f[dirBS  ])[kbs  ] += (c1o1+drho) * f_TN  ;
-            (D.f[dirBN  ])[kbn  ] += (c1o1+drho) * f_BN  ;
-            (D.f[dirTS  ])[kts  ] += (c1o1+drho) * f_BN  ;
-            (D.f[dirTNE ])[ktne ] += (c1o1+drho) * f_TNE ;
-            (D.f[dirBSW ])[kbsw ] += (c1o1+drho) * f_TNE ;
-            (D.f[dirBNE ])[kbne ] += (c1o1+drho) * f_TSW ;
-            (D.f[dirTSW ])[ktsw ] += (c1o1+drho) * f_TSW ;
-            (D.f[dirTSE ])[ktse ] += (c1o1+drho) * f_TSE ;
-            (D.f[dirBNW ])[kbnw ] += (c1o1+drho) * f_TSE ;
-            (D.f[dirBSE ])[kbse ] += (c1o1+drho) * f_TNW ;
-            (D.f[dirTNW ])[ktnw ] += (c1o1+drho) * f_TNW ;
+            (D.f[REST])[kzero] += (c1o1+drho) * f_ZERO;
+            (D.f[E   ])[ke   ] += (c1o1+drho) * f_E   ;
+            (D.f[W   ])[kw   ] += (c1o1+drho) * f_E   ;
+            (D.f[N   ])[kn   ] += (c1o1+drho) * f_N   ;
+            (D.f[S   ])[ks   ] += (c1o1+drho) * f_N   ;
+            (D.f[T   ])[kt   ] += (c1o1+drho) * f_T   ;
+            (D.f[B   ])[kb   ] += (c1o1+drho) * f_T   ;
+            (D.f[NE  ])[kne  ] += (c1o1+drho) * f_NE  ;
+            (D.f[SW  ])[ksw  ] += (c1o1+drho) * f_NE  ;
+            (D.f[SE  ])[kse  ] += (c1o1+drho) * f_SE  ;
+            (D.f[NW  ])[knw  ] += (c1o1+drho) * f_SE  ;
+            (D.f[TE  ])[kte  ] += (c1o1+drho) * f_TE  ;
+            (D.f[BW  ])[kbw  ] += (c1o1+drho) * f_TE  ;
+            (D.f[BE  ])[kbe  ] += (c1o1+drho) * f_BE  ;
+            (D.f[TW  ])[ktw  ] += (c1o1+drho) * f_BE  ;
+            (D.f[TN  ])[ktn  ] += (c1o1+drho) * f_TN  ;
+            (D.f[BS  ])[kbs  ] += (c1o1+drho) * f_TN  ;
+            (D.f[BN  ])[kbn  ] += (c1o1+drho) * f_BN  ;
+            (D.f[TS  ])[kts  ] += (c1o1+drho) * f_BN  ;
+            (D.f[TNE ])[ktne ] += (c1o1+drho) * f_TNE ;
+            (D.f[BSW ])[kbsw ] += (c1o1+drho) * f_TNE ;
+            (D.f[BNE ])[kbne ] += (c1o1+drho) * f_TSW ;
+            (D.f[TSW ])[ktsw ] += (c1o1+drho) * f_TSW ;
+            (D.f[TSE ])[ktse ] += (c1o1+drho) * f_TSE ;
+            (D.f[BNW ])[kbnw ] += (c1o1+drho) * f_TSE ;
+            (D.f[BSE ])[kbse ] += (c1o1+drho) * f_TNW ;
+            (D.f[TNW ])[ktnw ] += (c1o1+drho) * f_TNW ;
 
             //////////////////////////////////////////////////////////////////////////
         }
@@ -456,9 +457,9 @@ extern "C" __global__ void LB_Init_Comp_Neq_SP_27( unsigned int* neighborX,
 	    {
 		    //////////////////////////////////////////////////////////////////////////
 		    Distributions27 D;
-		    D.f[dirZERO] = &DD[dirZERO*size_Mat];
+		    D.f[REST] = &DD[REST*size_Mat];
 		    //////////////////////////////////////////////////////////////////////////
-		    (D.f[dirZERO])[k] = c96o1;
+		    (D.f[REST])[k] = c96o1;
 		    //////////////////////////////////////////////////////////////////////////
 	    }
    }

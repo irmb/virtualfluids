@@ -11,6 +11,7 @@
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK17/CumulantK17Comp.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK17Unified/CumulantK17Unified.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK17chim/CumulantK17CompChim.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK17chimStream/CumulantK17CompChimStream.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK17Bulk/CumulantK17BulkComp.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantAll4/CumulantAll4CompSP27.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK18/CumulantK18Comp.h"
@@ -60,14 +61,6 @@
 #include "Kernel/Kernels/PorousMediaKernels/FluidFlow/Compressible/PMFluidFlowCompStrategy.h"
 #include "Kernel/Kernels/WaleKernels/FluidFlow/Compressible/WaleFluidFlowCompStrategy.h"
 #include "Kernel/Kernels/TurbulentViscosityKernels/FluidFlow/Compressible/TurbulentViscosityFluidFlowCompStrategy.h"
-
-std::shared_ptr<KernelFactoryImp> KernelFactoryImp::getInstance()
-{
-	static std::shared_ptr<KernelFactoryImp> uniqueInstance;
-	if (!uniqueInstance)
-		uniqueInstance = std::shared_ptr<KernelFactoryImp>(new KernelFactoryImp());
-	return uniqueInstance;
-}
 
 std::vector<std::shared_ptr<Kernel>> KernelFactoryImp::makeKernels(std::shared_ptr<Parameter> para)
 {
@@ -139,6 +132,9 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
     } else if (kernel == "CumulantK17CompChim") {
         newKernel     = CumulantK17CompChim::getNewInstance(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
+    } else if (kernel == "CumulantK17CompChimStream") {
+        newKernel     = CumulantK17CompChimStream::getNewInstance(para, level);
+        checkStrategy = FluidFlowCompStrategy::getInstance();
     } else if (kernel == "CumulantAll4CompSP27") {
         newKernel     = CumulantAll4CompSP27::getNewInstance(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
@@ -179,7 +175,7 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
     } else if (kernel == "CumulantK15Incomp") {									//     /\      //
         newKernel     = CumulantK15Incomp::getNewInstance(para, level);			//	   ||
         checkStrategy = FluidFlowIncompStrategy::getInstance();                 // incompressible
-    }																			//=============== 
+    }																			//===============
 	else if (kernel == "PMCumulantOneCompSP27") {								// porous media
         newKernel     = PMCumulantOneCompSP27::getNewInstance(para, pm, level);	//	   ||
         checkStrategy = PMFluidFlowCompStrategy::getInstance();                 // porous media
@@ -207,7 +203,7 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
 
 	newKernel->setCheckParameterStrategy(checkStrategy);
 	return newKernel;
-	
+
 }
 
 std::shared_ptr<ADKernel> KernelFactoryImp::makeAdvDifKernel(std::shared_ptr<Parameter> para, std::string kernel, int level)
@@ -237,9 +233,4 @@ std::shared_ptr<ADKernel> KernelFactoryImp::makeAdvDifKernel(std::shared_ptr<Par
 	}
 	else
 		throw  std::runtime_error("KernelFactory does not know the KernelType.");
-}
-
-KernelFactoryImp::KernelFactoryImp()
-{
-
 }

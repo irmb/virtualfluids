@@ -28,7 +28,7 @@
 //
 //! \file GridImp.h
 //! \ingroup grid
-//! \author Soeren Peters, Stephan Lenz, Martin Sch�nherr
+//! \author Soeren Peters, Stephan Lenz, Martin Schoenherr
 //=======================================================================================
 #ifndef GRID_IMP_H
 #define GRID_IMP_H
@@ -37,12 +37,12 @@
 
 #include "Core/LbmOrGks.h"
 
-#include "global.h"
+#include "gpu/GridGenerator/global.h"
 
-#include "grid/distributions/Distribution.h"
-#include "grid/Grid.h"
-#include "grid/Cell.h"
-#include "grid/Field.h" 
+#include "gpu/GridGenerator/grid/distributions/Distribution.h"
+#include "gpu/GridGenerator/grid/Grid.h"
+#include "gpu/GridGenerator/grid/Cell.h"
+#include "gpu/GridGenerator/grid/Field.h" 
 
 class TriangularMesh;
 struct Vertex;
@@ -70,7 +70,7 @@ extern int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
 class GRIDGENERATOR_EXPORT GridImp : public enableSharedFromThis<GridImp>, public Grid
 {
-private:
+protected:
     GridImp() = default;
     GridImp(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, Distribution d, uint level);
 
@@ -115,6 +115,9 @@ private:
 
     int *neighborIndexX, *neighborIndexY, *neighborIndexZ, *neighborIndexNegative;
     int *sparseIndices;
+
+    std::vector<uint> fluidNodeIndices;
+    std::vector<uint> fluidNodeIndicesBorder;
 
 	uint *qIndices;     //maps from matrix index to qIndex
 	real *qValues;
@@ -197,7 +200,6 @@ public:
     void fixRefinementIntoWall(uint xIndex, uint yIndex, uint zIndex, int dir);
     void findStopperNode(uint index);
     void findEndOfGridStopperNode(uint index);
-    void findEndOfGridStopperPeriodicNode(uint index);
     void findSolidStopperNode(uint index);
     void findBoundarySolidNode(uint index);
 
@@ -249,6 +251,8 @@ public:
     void getGridInterfaceIndices(uint *iCellCfc, uint *iCellCff, uint *iCellFcc, uint *iCellFcf) const override;
 
     static void getGridInterface(uint *gridInterfaceList, const uint *oldGridInterfaceList, uint size);
+
+    bool isSparseIndexInFluidNodeIndicesBorder(uint &sparseIndex) const override;
 
     int *getNeighborsX() const override;
     int* getNeighborsY() const override;
@@ -342,7 +346,20 @@ public:
     uint getSendIndex(int direction, uint index) override;
     uint getReceiveIndex(int direction, uint index) override;
 
-    void repairCommunicationInices(int direction) override;
+    bool isSendNode(int index) const override;
+    bool isReceiveNode(int index) const override;
+
+    void repairCommunicationIndices(int direction) override;
+
+    void findFluidNodeIndices(bool splitDomain) override;
+    void findFluidNodeIndicesBorder() override;
+
+    uint getNumberOfFluidNodes() const override;
+    void getFluidNodeIndices(uint *fluidNodeIndices) const override;
+
+    uint getNumberOfFluidNodesBorder() const override;
+    void getFluidNodeIndicesBorder(uint *fluidNodeIndicesBorder) const override;
+
 
 public:
     struct CommunicationIndices {

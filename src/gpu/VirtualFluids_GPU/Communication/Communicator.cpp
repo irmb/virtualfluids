@@ -28,6 +28,10 @@ Communicator::Communicator()
     MPI_Comm_rank(MPI_COMM_WORLD, &PID);
     MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
 
+    commGPU = MPI_COMM_WORLD;
+    requestGPU.resize(0);
+    rcount = 0;
+
     // Get a new communicator for a decomposition of the domain
     int isperiodic[1] = { 0 };
     MPI_Cart_create(MPI_COMM_WORLD, 1, &numprocs, isperiodic, 1, &comm1d);
@@ -215,4 +219,39 @@ int Communicator::mapCudaDevice(const int &rank, const int &size, const std::vec
     return device;
 }
 
+std::vector<double> Communicator::gatherNUPS(double processNups)
+{ 
+    double *buffer_send = &processNups;
+    double *buffer_recv = (double *)malloc(sizeof(double) * this->numprocs);
+
+    MPI_Gather(buffer_send, 1, MPI_DOUBLE, buffer_recv, 1, MPI_DOUBLE, 0, commGPU);
+
+    if (this->PID == 0)
+        return std::vector<double>(buffer_recv, buffer_recv + this->numprocs);
+    return std::vector<double>(); 
 }
+
+double Communicator::sumNups(double processNups)
+{ 
+    double *buffer_send = &processNups;
+    double *buffer_recv = (double *)malloc(sizeof(double));
+
+    MPI_Reduce(buffer_send, buffer_recv, 1, MPI_DOUBLE, MPI_SUM, 0, commGPU);
+
+    return *buffer_recv;
+}
+
+void vf::gpu::Communicator::exchangeIndices(uint *rbuf, int count_r, int nb_rank_r, uint *sbuf, int count_s,
+                                            int nb_rank_s)
+{
+    MPI_Request recv_request;
+    MPI_Irecv(rbuf, count_r, MPI_UNSIGNED, nb_rank_r, 0, commGPU, &recv_request);
+    //printf("exchangeIndices PID: %i,   nbRev: nb_rank_recv: %i", this->getPID(), nb_rank_r);
+    //fflush(stdout);
+    MPI_Send(sbuf, count_s, MPI_UNSIGNED, nb_rank_s, 0, commGPU);
+    //printf("exchangeIndices PID: %i,   sendUintGPU: nb_rank_send: %i", this->getPID(), nb_rank_s);
+    //fflush(stdout);
+    MPI_Wait(&recv_request, MPI_STATUSES_IGNORE);
+}
+
+} // namespace vf::gpu

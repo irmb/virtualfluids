@@ -23,10 +23,10 @@ public:
 			{
 				int m = para->getParH(0)->nx*(para->getParH(0)->ny*k + j) + i;
 				//gerade
-				out.writeDouble((double)para->getParH(0)->vy_SP[para->getParH(0)->k[m]]);
-				//schräg x
+				out.writeDouble((double)para->getParH(0)->velocityY[para->getParH(0)->k[m]]);
+				//schrï¿½g x
 // 				out.writeDouble((double)para->getParH(0)->vz_SP[para->getParH(0)->k[m]]);
-				//schräg z
+				//schrï¿½g z
 				//out.writeDouble((double)para->getParH(0)->vx_SP[para->getParH(0)->k[m]]);
 			}
 			out.writeLine();
@@ -49,7 +49,7 @@ public:
 		//	}
 		//	out.writeLine();
 		//}
-		int numberNodes = (int)para->getParH(0)->size_Mat_SP;
+		int numberNodes = (int)para->getParH(0)->numberOfNodes;
 
 		real deltaX = 1.0f;
 		real halfDx = deltaX / 2.0f;
@@ -57,11 +57,11 @@ public:
 
 		for (int u = 0; u < numberNodes; u++)
 		{
-			if ((para->getParH(0)->geoSP[u] == GEO_FLUID) &&
-				((middleOfTheGrid - halfDx) <= para->getParH(0)->coordY_SP[u]) &&
-				((middleOfTheGrid + halfDx) >= para->getParH(0)->coordY_SP[u]))
+			if ((para->getParH(0)->typeOfGridNode[u] == GEO_FLUID) &&
+				((middleOfTheGrid - halfDx) <= para->getParH(0)->coordinateY[u]) &&
+				((middleOfTheGrid + halfDx) >= para->getParH(0)->coordinateY[u]))
 			{
-				out.writeDouble((float)(para->getParH(0)->vx_SP[u]));
+				out.writeDouble((float)(para->getParH(0)->velocityX[u]));
 				out.writeLine();
 			}
 		}
@@ -79,7 +79,7 @@ public:
 			{
 				int m = para->getParH(0)->nx*(para->getParH(0)->ny*k + j) + i;
 				//Taylor Green Vortex - Z
-				out.writeDouble((double)para->getParH(0)->vz_SP[para->getParH(0)->k[m]]);
+				out.writeDouble((double)para->getParH(0)->velocityZ[para->getParH(0)->k[m]]);
 			}
 			out.writeLine();
 		}
@@ -90,7 +90,7 @@ public:
 		UbFileOutputASCII out(para->getFName() + "_AD_X_" + StringUtil::toString<int>(t) + ".dat");
 
 		real level = 0; //uniform
-		int numberNodes = (int)para->getParH(level)->size_Mat_SP;
+		int numberNodes = (int)para->getParH(level)->numberOfNodes;
 
 		real deltaX = 1.0f / pow(2, level);
 		real halfDx = deltaX / 2.0f;
@@ -98,11 +98,11 @@ public:
 
 		for (int u = 0; u < numberNodes; u++)
 		{
-			if ((para->getParH(level)->geoSP[u] == GEO_FLUID) &&
-				((middleOfTheGrid - halfDx) <= para->getParH(level)->coordY_SP[u]) &&
-				((middleOfTheGrid + halfDx) >= para->getParH(level)->coordY_SP[u]))
+			if ((para->getParH(level)->typeOfGridNode[u] == GEO_FLUID) &&
+				((middleOfTheGrid - halfDx) <= para->getParH(level)->coordinateY[u]) &&
+				((middleOfTheGrid + halfDx) >= para->getParH(level)->coordinateY[u]))
 			{
-				out.writeDouble((double)(para->getParH(level)->vx_SP[u]));
+				out.writeDouble((double)(para->getParH(level)->velocityX[u]));
 			}
 		}
 	}
@@ -112,7 +112,7 @@ public:
 		UbFileOutputASCII out(para->getFName() + "_AD_Y_" + StringUtil::toString<int>(t) + ".dat");
 
 		real level = 0; //uniform
-		int numberNodes = (int)para->getParH(level)->size_Mat_SP;
+		int numberNodes = (int)para->getParH(level)->numberOfNodes;
 
 		real deltaX = 1.0f / pow(2, level);
 		real halfDx = deltaX / 2.0f;
@@ -120,11 +120,11 @@ public:
 
 		for (int u = 0; u < numberNodes; u++)
 		{
-			if ((para->getParH(level)->geoSP[u] == GEO_FLUID) &&
-				((middleOfTheGrid - halfDx) <= para->getParH(level)->coordY_SP[u]) &&
-				((middleOfTheGrid + halfDx) >= para->getParH(level)->coordY_SP[u]))
+			if ((para->getParH(level)->typeOfGridNode[u] == GEO_FLUID) &&
+				((middleOfTheGrid - halfDx) <= para->getParH(level)->coordinateY[u]) &&
+				((middleOfTheGrid + halfDx) >= para->getParH(level)->coordinateY[u]))
 			{
-				out.writeDouble((double)(para->getParH(level)->vy_SP[u]));
+				out.writeDouble((double)(para->getParH(level)->velocityY[u]));
 			}
 		}
 	}
@@ -134,7 +134,7 @@ public:
 		UbFileOutputASCII out(para->getFName() + "_AD_Z_" + StringUtil::toString<int>(t) + ".dat");
 
 		real level = 0; //uniform
-		int numberNodes = (int)para->getParH(level)->size_Mat_SP;
+		int numberNodes = (int)para->getParH(level)->numberOfNodes;
 
 		real deltaX = 1.0f / pow(2, level);
 		real halfDx = deltaX / 2.0f;
@@ -142,11 +142,11 @@ public:
 
 		for (int u = 0; u < numberNodes; u++)
 		{
-			if ((para->getParH(level)->geoSP[u] == GEO_FLUID) &&
-				((middleOfTheGrid - halfDx) <= para->getParH(level)->coordY_SP[u]) &&
-				((middleOfTheGrid + halfDx) >= para->getParH(level)->coordY_SP[u]))
+			if ((para->getParH(level)->typeOfGridNode[u] == GEO_FLUID) &&
+				((middleOfTheGrid - halfDx) <= para->getParH(level)->coordinateY[u]) &&
+				((middleOfTheGrid + halfDx) >= para->getParH(level)->coordinateY[u]))
 			{
-				out.writeDouble((double)(para->getParH(level)->vz_SP[u]));
+				out.writeDouble((double)(para->getParH(level)->velocityZ[u]));
 			}
 		}
 	}

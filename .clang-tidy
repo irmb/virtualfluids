@@ -18,6 +18,7 @@ modernize-*,
 -modernize-use-auto,
 -modernize-use-nullptr,
 -modernize-pass-by-value,
+-modernize-use-nodiscard,
 
 mpi-*,
 

@@ -13,8 +13,8 @@ void RestartObject::deserialize(const std::string &filename, std::shared_ptr<Par
         std::vector<real> vec;
         fs.push_back(vec);
 
-        for (unsigned int i = 0; i < (para->getD3Qxx() * para->getParH(j)->size_Mat_SP); i++) {
-            para->getParH(j)->d0SP.f[0][i] = fs[j][i];
+        for (unsigned int i = 0; i < (para->getD3Qxx() * para->getParH(j)->numberOfNodes); i++) {
+            para->getParH(j)->distributions.f[0][i] = fs[j][i];
         }
     }
 }
@@ -28,11 +28,11 @@ void RestartObject::serialize(const std::string &filename, const std::shared_ptr
         std::vector<real> vec;
         fs.push_back(vec);
 
-        for (unsigned int i = 0; i < (para->getD3Qxx() * para->getParH(j)->size_Mat_SP); i++) {
-            if (UbMath::isNaN(para->getParH(j)->d0SP.f[0][i])) {
+        for (unsigned int i = 0; i < (para->getD3Qxx() * para->getParH(j)->numberOfNodes); i++) {
+            if (UbMath::isNaN(para->getParH(j)->distributions.f[0][i])) {
                 fs[j].push_back((real)0.0);
             } else {
-                fs[j].push_back(para->getParH(j)->d0SP.f[0][i]);
+                fs[j].push_back(para->getParH(j)->distributions.f[0][i]);
             }
         }
     }

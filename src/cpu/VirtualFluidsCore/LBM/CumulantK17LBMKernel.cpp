@@ -84,7 +84,7 @@ void CumulantK17LBMKernel::calculate(int step)
     //! The cumulant kernel is executed in the following steps
     //!
     ////////////////////////////////////////////////////////////////////////////////
-    //! - Get node index coordinates from thredIdx, blockIdx, blockDim and gridDim.
+    //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
     //!
 
     using namespace std;
@@ -321,7 +321,7 @@ void CumulantK17LBMKernel::calculate(int step)
                     LBMReal O6 = c1;
 
                     ////////////////////////////////////////////////////////////////////////////////////
-                    //! - A and B: parameters for fourth order convergence of the diffusion term according to Eq. (114) and (115)
+                    //! - A and B: parameters for fourth order convergence of the diffusion term according to Eq. (115) and (116)
                     //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05.040 ]</b></a>
                     //! with simplifications assuming \f$\omega_2 = 1.0\f$ (modify for different bulk viscosity).
                     //!

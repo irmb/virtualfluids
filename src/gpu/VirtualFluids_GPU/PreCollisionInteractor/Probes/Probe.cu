@@ -177,7 +177,7 @@ __global__ void interpAndCalcQuantitiesKernel(   uint* pointIndices,
 
 bool Probe::getHasDeviceQuantityArray(){ return this->hasDeviceQuantityArray; }
 
-void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager)
+void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaMemoryManager)
 {
     this->velocityRatio      = para->getVelocityRatio();
     this->densityRatio       = para->getDensityRatio();
@@ -201,14 +201,14 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
                        pointCoordsX_level, pointCoordsY_level, pointCoordsZ_level,
                        level);
         
-        this->addProbeStruct(cudaManager, probeIndices_level, 
+        this->addProbeStruct(cudaMemoryManager, probeIndices_level, 
                             distX_level, distY_level, distZ_level, 
                             pointCoordsX_level, pointCoordsY_level, pointCoordsZ_level, 
                             level);
     }
 }
 
-void Probe::addProbeStruct(CudaMemoryManager* cudaManager, std::vector<int>& probeIndices,
+void Probe::addProbeStruct(CudaMemoryManager* cudaMemoryManager, std::vector<int>& probeIndices,
                                       std::vector<real>& distX, std::vector<real>& distY, std::vector<real>& distZ,   
                                       std::vector<real>& pointCoordsX, std::vector<real>& pointCoordsY, std::vector<real>& pointCoordsZ,
                                       int level)
@@ -230,20 +230,20 @@ void Probe::addProbeStruct(CudaMemoryManager* cudaManager, std::vector<int>& pro
     if( distX.size()>0 && distY.size()>0 && distZ.size()>0 )
     {
         probeParams[level]->hasDistances=true;
-        cudaManager->cudaAllocProbeDistances(this, level);
+        cudaMemoryManager->cudaAllocProbeDistances(this, level);
         std::copy(distX.begin(), distX.end(), probeParams[level]->distXH);
         std::copy(distY.begin(), distY.end(), probeParams[level]->distYH);
         std::copy(distZ.begin(), distZ.end(), probeParams[level]->distZH);
-        cudaManager->cudaCopyProbeDistancesHtoD(this, level);
+        cudaMemoryManager->cudaCopyProbeDistancesHtoD(this, level);
     }  
     
-    cudaManager->cudaAllocProbeIndices(this, level);
+    cudaMemoryManager->cudaAllocProbeIndices(this, level);
     std::copy(probeIndices.begin(), probeIndices.end(), probeParams[level]->pointIndicesH);
-    cudaManager->cudaCopyProbeIndicesHtoD(this, level);
+    cudaMemoryManager->cudaCopyProbeIndicesHtoD(this, level);
 
     uint arrOffset = 0;
 
-    cudaManager->cudaAllocProbeQuantitiesAndOffsets(this, level);
+    cudaMemoryManager->cudaAllocProbeQuantitiesAndOffsets(this, level);
 
     for( int var=0; var<int(Statistic::LAST); var++)
     {
@@ -255,11 +255,11 @@ void Probe::addProbeStruct(CudaMemoryManager* cudaManager, std::vector<int>& pro
         }
     }
     
-    cudaManager->cudaCopyProbeQuantitiesAndOffsetsHtoD(this, level);
+    cudaMemoryManager->cudaCopyProbeQuantitiesAndOffsetsHtoD(this, level);
 
     probeParams[level]->nArrays = arrOffset;
 
-    cudaManager->cudaAllocProbeQuantityArray(this, level);
+    cudaMemoryManager->cudaAllocProbeQuantityArray(this, level);
 
     for(uint arr=0; arr<probeParams[level]->nArrays; arr++)
     {
@@ -269,10 +269,10 @@ void Probe::addProbeStruct(CudaMemoryManager* cudaManager, std::vector<int>& pro
         }
     }
     if(this->hasDeviceQuantityArray)
-        cudaManager->cudaCopyProbeQuantityArrayHtoD(this, level);
+        cudaMemoryManager->cudaCopyProbeQuantityArrayHtoD(this, level);
 }
 
-void Probe::interact(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t)
+void Probe::interact(Parameter* para, CudaMemoryManager* cudaMemoryManager, int level, uint t)
 {
     int isOdd = para->getEvenOrOdd(level);
     std::cout << "Probe--> lvl: " << level << "\t t: " << t << "\t evenOrOdd " << isOdd  << std::endl;
@@ -290,20 +290,20 @@ void Probe::interact(Parameter* para, CudaMemoryManager* cudaManager, int level,
     if(max(int(t) - int(this->tStartOut), -1) % this->tOut == 0)
     {
         if(this->hasDeviceQuantityArray)
-            cudaManager->cudaCopyProbeQuantityArrayDtoH(this, level);
+            cudaMemoryManager->cudaCopyProbeQuantityArrayDtoH(this, level);
         this->write(para, level, t);
     }
 }
 
-void Probe::free(Parameter* para, CudaMemoryManager* cudaManager)
+void Probe::free(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
     for(int level=0; level<=para->getMaxLevel(); level++)
     {   
         if(this->probeParams[level]->hasDistances)
-            cudaManager->cudaFreeProbeDistances(this, level);
-        cudaManager->cudaFreeProbeIndices(this, level);
-        cudaManager->cudaFreeProbeQuantityArray(this, level);
-        cudaManager->cudaFreeProbeQuantitiesAndOffsets(this, level);
+            cudaMemoryManager->cudaFreeProbeDistances(this, level);
+        cudaMemoryManager->cudaFreeProbeIndices(this, level);
+        cudaMemoryManager->cudaFreeProbeQuantityArray(this, level);
+        cudaMemoryManager->cudaFreeProbeQuantitiesAndOffsets(this, level);
     }
 }
 

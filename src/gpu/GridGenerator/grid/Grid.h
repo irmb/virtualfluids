@@ -28,18 +28,18 @@
 //
 //! \file Grid.h
 //! \ingroup grid
-//! \author Soeren Peters, Stephan Lenz, Martin Schönherr
+//! \author Soeren Peters, Stephan Lenz, Martin Schï¿½nherr
 //=======================================================================================
 #ifndef GRID_H
 #define GRID_H
 
 #include "Core/LbmOrGks.h"
 
-#include "global.h"
+#include "gpu/GridGenerator/global.h"
 
-#include "geometries/Vertex/Vertex.h"
+#include "gpu/GridGenerator/geometries/Vertex/Vertex.h"
 
-#include "grid/Cell.h"
+#include "gpu/GridGenerator/grid/Cell.h"
 
 class TriangularMesh;
 struct Vertex;
@@ -82,6 +82,7 @@ public:
     virtual void setFieldEntry(uint matrixIndex, char type) = 0;
 
     virtual void getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf) const = 0;
+    virtual bool isSparseIndexInFluidNodeIndicesBorder(uint &sparseIndex) const = 0;
 
     virtual int *getNeighborsX() const = 0;
     virtual int *getNeighborsY() const = 0;
@@ -162,11 +163,21 @@ public:
     virtual uint getNumberOfSendNodes(int direction)    = 0;
     virtual uint getNumberOfReceiveNodes(int direction) = 0;
 
+    virtual bool isSendNode(int index) const                = 0;
+    virtual bool isReceiveNode(int index) const             = 0;
     virtual uint getSendIndex(int direction, uint index)    = 0;
     virtual uint getReceiveIndex(int direction, uint index) = 0;
 
-    virtual void repairCommunicationInices(int direction) = 0;
+    virtual void repairCommunicationIndices(int direction) = 0;
 
+    // needed for CUDA Streams 
+    virtual void findFluidNodeIndices(bool onlyBulk) = 0;
+    virtual uint getNumberOfFluidNodes() const = 0;
+    virtual void getFluidNodeIndices(uint *fluidNodeIndices) const = 0;
+
+    virtual void findFluidNodeIndicesBorder() = 0;
+    virtual uint getNumberOfFluidNodesBorder() const = 0;
+    virtual void getFluidNodeIndicesBorder(uint *fluidNodeIndicesBorder) const = 0;
 };
 
 #endif

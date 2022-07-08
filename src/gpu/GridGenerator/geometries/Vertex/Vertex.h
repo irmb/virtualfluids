@@ -37,7 +37,7 @@
 #include <memory>
 #include <ostream>
 
-#include "global.h"
+#include "gpu/GridGenerator/global.h"
 
 struct GRIDGENERATOR_EXPORT Vertex
 {

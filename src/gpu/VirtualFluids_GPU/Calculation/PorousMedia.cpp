@@ -91,15 +91,15 @@ void PorousMedia::setResistanceLBM()
 //void PorousMedia::definePMarea(Parameter* para, unsigned int level)
 //{
 //	unsigned int counter = 0;
-//	for (unsigned int i = 0; i < para->getParH(level)->size_Mat_SP; i++)
+//	for (unsigned int i = 0; i < para->getParH(level)->numberOfNodes; i++)
 //	{
-//		if (((para->getParH(level)->coordX_SP[i] >= this->startCoordX) && (para->getParH(level)->coordX_SP[i] <= this->endCoordX)) &&
-//			((para->getParH(level)->coordY_SP[i] >= this->startCoordY) && (para->getParH(level)->coordY_SP[i] <= this->endCoordY)) && 
-//			((para->getParH(level)->coordZ_SP[i] >= this->startCoordZ) && (para->getParH(level)->coordZ_SP[i] <= this->endCoordZ)) )
+//		if (((para->getParH(level)->coordinateX[i] >= this->startCoordX) && (para->getParH(level)->coordinateX[i] <= this->endCoordX)) &&
+//			((para->getParH(level)->coordinateY[i] >= this->startCoordY) && (para->getParH(level)->coordinateY[i] <= this->endCoordY)) && 
+//			((para->getParH(level)->coordinateZ[i] >= this->startCoordZ) && (para->getParH(level)->coordinateZ[i] <= this->endCoordZ)) )
 //		{
-//			if (para->getParH(level)->geoSP[i] >= GEO_FLUID)
+//			if (para->getParH(level)->typeOfGridNode[i] >= GEO_FLUID)
 //			{
-//				para->getParH(level)->geoSP[i] = this->geoID;
+//				para->getParH(level)->typeOfGridNode[i] = this->geoID;
 //				nodeIDsPorousMedia.push_back(i);
 //				counter++;
 //			}

@@ -15,7 +15,7 @@
 
 FROM nvidia/cuda:11.3.1-devel-ubuntu20.04
 
-ENV DEBIAN_FRONTEND=noninteractive
+ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update &&   \
     apt-get install -y  \
     wget unzip git      \

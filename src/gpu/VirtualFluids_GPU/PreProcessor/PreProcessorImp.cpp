@@ -16,11 +16,11 @@ void PreProcessorImp::addStrategy(std::shared_ptr<PreProcessorStrategy> strategy
 
 void PreProcessorImp::init(std::shared_ptr<Parameter> para, int level)
 {
-	para->getParD(level)->evenOrOdd = false;
+	para->getParD(level)->isEvenTimestep = false;
 	for (std::size_t i = 0; i < strategies.size(); i++)
 		strategies.at(i)->init(level);
 
-	para->getParD(level)->evenOrOdd = true;
+	para->getParD(level)->isEvenTimestep = true;
 	for (std::size_t i = 0; i < strategies.size(); i++)
 		strategies.at(i)->init(level);
 }

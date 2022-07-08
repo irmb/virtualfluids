@@ -93,7 +93,7 @@ const real velocity  = 1.0;
 
 const real dt = (real)1.0e-3; //0.5e-3;
 
-const uint nx = 64;
+const uint nx = 32;
 
 std::string path(".");
 

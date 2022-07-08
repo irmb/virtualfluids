@@ -18,16 +18,16 @@ void CumulantK17BulkComp::run()
 	dim3 threads(numberOfThreads, 1, 1);
 
 	LB_Kernel_CumulantK17BulkComp << < grid, threads >> >(	para->getParD(level)->omega,
-																	para->getParD(level)->geoSP,
-																	para->getParD(level)->neighborX_SP,
-																	para->getParD(level)->neighborY_SP,
-																	para->getParD(level)->neighborZ_SP,
-																	para->getParD(level)->d0SP.f[0],
-																	para->getParD(level)->size_Mat_SP,
+																	para->getParD(level)->typeOfGridNode,
+																	para->getParD(level)->neighborX,
+																	para->getParD(level)->neighborY,
+																	para->getParD(level)->neighborZ,
+																	para->getParD(level)->distributions.f[0],
+																	para->getParD(level)->numberOfNodes,
 																	level,
 																	para->getForcesDev(),
                                                                     para->getQuadricLimitersDev(),
-																	para->getParD(level)->evenOrOdd);
+																	para->getParD(level)->isEvenTimestep);
 	getLastCudaError("LB_Kernel_CumulantK17BulkComp execution failed");
 }
 

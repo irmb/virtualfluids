@@ -63,6 +63,7 @@
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
+#include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -132,14 +133,14 @@ int main( int argc, char* argv[])
         // create grid
         //////////////////////////////////////////////////////////////////////////
 
-	    real dx = L / real(nx);
+        real dx = L / real(nx);
 
-	    gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L,
-								    0.5 * L,  0.5 * L,  0.5 * L, dx);
+        gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L,
+                                    0.5 * L,  0.5 * L,  0.5 * L, dx);
 
-	    gridBuilder->setPeriodicBoundaryCondition(false, false, false);
+        gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
-	    gridBuilder->buildGrids(lbmOrGks, false);
+        gridBuilder->buildGrids(lbmOrGks, false);
     
         //////////////////////////////////////////////////////////////////////////
         // branch between LBM and GKS
@@ -147,16 +148,17 @@ int main( int argc, char* argv[])
 
         if( lbmOrGks == LBM )
         {
-		    SPtr<Parameter> para = Parameter::make();
-    
+            SPtr<Parameter> para = Parameter::make();
+            BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
+
             //////////////////////////////////////////////////////////////////////////
             // compute parameters in lattice units
             //////////////////////////////////////////////////////////////////////////
 
             const real velocityLB = velocity * dt / dx; // LB units
 
-	        const real vx = velocityLB / sqrt(2.0); // LB units
-	        const real vy = velocityLB / sqrt(2.0); // LB units
+            const real vx = velocityLB / sqrt(2.0); // LB units
+            const real vy = velocityLB / sqrt(2.0); // LB units
 
             const real viscosityLB = nx * velocityLB / Re; // LB units
 
@@ -186,20 +188,23 @@ int main( int argc, char* argv[])
             // set boundary conditions
             //////////////////////////////////////////////////////////////////////////
 
-		    gridBuilder->setNoSlipBoundaryCondition  (SideType::PX);
-		    gridBuilder->setNoSlipBoundaryCondition  (SideType::MX);
-		    gridBuilder->setNoSlipBoundaryCondition  (SideType::PY);
-		    gridBuilder->setNoSlipBoundaryCondition  (SideType::MY);
-	        gridBuilder->setVelocityBoundaryCondition(SideType::PZ,  vx,  vy, 0.0);
-		    gridBuilder->setNoSlipBoundaryCondition  (SideType::MZ);
-    
+            gridBuilder->setNoSlipBoundaryCondition  (SideType::PX);
+            gridBuilder->setNoSlipBoundaryCondition  (SideType::MX);
+            gridBuilder->setNoSlipBoundaryCondition  (SideType::PY);
+            gridBuilder->setNoSlipBoundaryCondition  (SideType::MY);
+            gridBuilder->setVelocityBoundaryCondition(SideType::PZ,  vx,  vy, 0.0);
+            gridBuilder->setNoSlipBoundaryCondition  (SideType::MZ);
+
+            bcFactory.setNoSlipBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipBounceBack);
+            bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocitySimpleBounceBackCompressible);
+
             //////////////////////////////////////////////////////////////////////////
             // set copy mesh to simulation
             //////////////////////////////////////////////////////////////////////////
 
-		    SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
+            SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
 
-            SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
+            SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
     
             //////////////////////////////////////////////////////////////////////////
             // run simulation
@@ -221,8 +226,8 @@ int main( int argc, char* argv[])
             // compute remaining parameters
             //////////////////////////////////////////////////////////////////////////
 
-	        const real vx = velocity / sqrt(2.0);
-	        const real vy = velocity / sqrt(2.0);
+            const real vx = velocity / sqrt(2.0);
+            const real vy = velocity / sqrt(2.0);
     
             parameters.K  = 2.0;
             parameters.Pr = 1.0;
@@ -342,7 +347,7 @@ int main( int argc, char* argv[])
                 convergenceAnalyzer.run( iter );
             }
         }
-	}
+    }
     catch (const std::bad_alloc e)
     {
                 

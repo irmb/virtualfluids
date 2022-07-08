@@ -2,8 +2,8 @@
 
 #include "DistributionHelper.cuh"
 
-#include "LBM/D3Q27.h"
-
+#include "lbm/constants/D3Q27.h"
+using namespace vf::lbm::dir;
 
 auto RealEq = [](auto value) { 
 #ifdef VF_DOUBLE_ACCURACY
@@ -24,33 +24,33 @@ TEST(DistributionHelperTests, getPointerToDistribution_WhenEvenTimeStep_ShouldBe
 
     Distributions27 distribution_out = vf::gpu::getDistributionReferences27(distributions_in, size_Mat, isEvenTimeStep);
 
-    EXPECT_THAT(*distribution_out.f[dirE], RealEq(distributions_in[dirE]));
-    EXPECT_THAT(*distribution_out.f[dirW], RealEq(distributions_in[dirW]));
-    EXPECT_THAT(*distribution_out.f[dirN], RealEq(distributions_in[dirN]));
-    EXPECT_THAT(*distribution_out.f[dirS], RealEq(distributions_in[dirS]));
-    EXPECT_THAT(*distribution_out.f[dirT], RealEq(distributions_in[dirT]));
-    EXPECT_THAT(*distribution_out.f[dirB], RealEq(distributions_in[dirB]));
-    EXPECT_THAT(*distribution_out.f[dirNE], RealEq(distributions_in[dirNE]));
-    EXPECT_THAT(*distribution_out.f[dirSW], RealEq(distributions_in[dirSW]));
-    EXPECT_THAT(*distribution_out.f[dirSE], RealEq(distributions_in[dirSE]));
-    EXPECT_THAT(*distribution_out.f[dirNW], RealEq(distributions_in[dirNW]));
-    EXPECT_THAT(*distribution_out.f[dirTE], RealEq(distributions_in[dirTE]));
-    EXPECT_THAT(*distribution_out.f[dirBW], RealEq(distributions_in[dirBW]));
-    EXPECT_THAT(*distribution_out.f[dirBE], RealEq(distributions_in[dirBE]));
-    EXPECT_THAT(*distribution_out.f[dirTW], RealEq(distributions_in[dirTW]));
-    EXPECT_THAT(*distribution_out.f[dirTN], RealEq(distributions_in[dirTN]));
-    EXPECT_THAT(*distribution_out.f[dirBS], RealEq(distributions_in[dirBS]));
-    EXPECT_THAT(*distribution_out.f[dirBN], RealEq(distributions_in[dirBN]));
-    EXPECT_THAT(*distribution_out.f[dirTS], RealEq(distributions_in[dirTS]));
-    EXPECT_THAT(*distribution_out.f[dirREST], RealEq(distributions_in[dirREST]));
-    EXPECT_THAT(*distribution_out.f[dirTNE], RealEq(distributions_in[dirTNE]));
-    EXPECT_THAT(*distribution_out.f[dirTSW], RealEq(distributions_in[dirTSW]));
-    EXPECT_THAT(*distribution_out.f[dirTSE], RealEq(distributions_in[dirTSE]));
-    EXPECT_THAT(*distribution_out.f[dirTNW], RealEq(distributions_in[dirTNW]));
-    EXPECT_THAT(*distribution_out.f[dirBNE], RealEq(distributions_in[dirBNE]));
-    EXPECT_THAT(*distribution_out.f[dirBSW], RealEq(distributions_in[dirBSW]));
-    EXPECT_THAT(*distribution_out.f[dirBSE], RealEq(distributions_in[dirBSE]));
-    EXPECT_THAT(*distribution_out.f[dirBNW], RealEq(distributions_in[dirBNW]));
+    EXPECT_THAT(*distribution_out.f[E], RealEq(distributions_in[E]));
+    EXPECT_THAT(*distribution_out.f[W], RealEq(distributions_in[W]));
+    EXPECT_THAT(*distribution_out.f[N], RealEq(distributions_in[N]));
+    EXPECT_THAT(*distribution_out.f[S], RealEq(distributions_in[S]));
+    EXPECT_THAT(*distribution_out.f[T], RealEq(distributions_in[T]));
+    EXPECT_THAT(*distribution_out.f[B], RealEq(distributions_in[B]));
+    EXPECT_THAT(*distribution_out.f[NE], RealEq(distributions_in[NE]));
+    EXPECT_THAT(*distribution_out.f[SW], RealEq(distributions_in[SW]));
+    EXPECT_THAT(*distribution_out.f[SE], RealEq(distributions_in[SE]));
+    EXPECT_THAT(*distribution_out.f[NW], RealEq(distributions_in[NW]));
+    EXPECT_THAT(*distribution_out.f[TE], RealEq(distributions_in[TE]));
+    EXPECT_THAT(*distribution_out.f[BW], RealEq(distributions_in[BW]));
+    EXPECT_THAT(*distribution_out.f[BE], RealEq(distributions_in[BE]));
+    EXPECT_THAT(*distribution_out.f[TW], RealEq(distributions_in[TW]));
+    EXPECT_THAT(*distribution_out.f[TN], RealEq(distributions_in[TN]));
+    EXPECT_THAT(*distribution_out.f[BS], RealEq(distributions_in[BS]));
+    EXPECT_THAT(*distribution_out.f[BN], RealEq(distributions_in[BN]));
+    EXPECT_THAT(*distribution_out.f[TS], RealEq(distributions_in[TS]));
+    EXPECT_THAT(*distribution_out.f[REST], RealEq(distributions_in[REST]));
+    EXPECT_THAT(*distribution_out.f[TNE], RealEq(distributions_in[TNE]));
+    EXPECT_THAT(*distribution_out.f[TSW], RealEq(distributions_in[TSW]));
+    EXPECT_THAT(*distribution_out.f[TSE], RealEq(distributions_in[TSE]));
+    EXPECT_THAT(*distribution_out.f[TNW], RealEq(distributions_in[TNW]));
+    EXPECT_THAT(*distribution_out.f[BNE], RealEq(distributions_in[BNE]));
+    EXPECT_THAT(*distribution_out.f[BSW], RealEq(distributions_in[BSW]));
+    EXPECT_THAT(*distribution_out.f[BSE], RealEq(distributions_in[BSE]));
+    EXPECT_THAT(*distribution_out.f[BNW], RealEq(distributions_in[BNW]));
 }
 
 TEST(DistributionHelperTests, getPointerToDistribution_WhenOddTimeStep_ShouldBeSwapped)
@@ -63,31 +63,31 @@ TEST(DistributionHelperTests, getPointerToDistribution_WhenOddTimeStep_ShouldBeS
 
     Distributions27 distribution_out = vf::gpu::getDistributionReferences27(distributions_in, size_Mat, isEvenTimeStep);
 
-    EXPECT_THAT(*distribution_out.f[dirW], RealEq(distributions_in[dirE]));
-    EXPECT_THAT(*distribution_out.f[dirE], RealEq(distributions_in[dirW]));
-    EXPECT_THAT(*distribution_out.f[dirS], RealEq(distributions_in[dirN]));
-    EXPECT_THAT(*distribution_out.f[dirN], RealEq(distributions_in[dirS]));
-    EXPECT_THAT(*distribution_out.f[dirB], RealEq(distributions_in[dirT]));
-    EXPECT_THAT(*distribution_out.f[dirT], RealEq(distributions_in[dirB]));
-    EXPECT_THAT(*distribution_out.f[dirSW], RealEq(distributions_in[dirNE]));
-    EXPECT_THAT(*distribution_out.f[dirNE], RealEq(distributions_in[dirSW]));
-    EXPECT_THAT(*distribution_out.f[dirNW], RealEq(distributions_in[dirSE]));
-    EXPECT_THAT(*distribution_out.f[dirSE], RealEq(distributions_in[dirNW]));
-    EXPECT_THAT(*distribution_out.f[dirBW], RealEq(distributions_in[dirTE]));
-    EXPECT_THAT(*distribution_out.f[dirTE], RealEq(distributions_in[dirBW]));
-    EXPECT_THAT(*distribution_out.f[dirTW], RealEq(distributions_in[dirBE]));
-    EXPECT_THAT(*distribution_out.f[dirBE], RealEq(distributions_in[dirTW]));
-    EXPECT_THAT(*distribution_out.f[dirBS], RealEq(distributions_in[dirTN]));
-    EXPECT_THAT(*distribution_out.f[dirTN], RealEq(distributions_in[dirBS]));
-    EXPECT_THAT(*distribution_out.f[dirTS], RealEq(distributions_in[dirBN]));
-    EXPECT_THAT(*distribution_out.f[dirBN], RealEq(distributions_in[dirTS]));
-    EXPECT_THAT(*distribution_out.f[dirREST], RealEq(distributions_in[dirREST]));
-    EXPECT_THAT(*distribution_out.f[dirBSW], RealEq(distributions_in[dirTNE]));
-    EXPECT_THAT(*distribution_out.f[dirBNE], RealEq(distributions_in[dirTSW]));
-    EXPECT_THAT(*distribution_out.f[dirBNW], RealEq(distributions_in[dirTSE]));
-    EXPECT_THAT(*distribution_out.f[dirBSE], RealEq(distributions_in[dirTNW]));
-    EXPECT_THAT(*distribution_out.f[dirTSW], RealEq(distributions_in[dirBNE]));
-    EXPECT_THAT(*distribution_out.f[dirTNE], RealEq(distributions_in[dirBSW]));
-    EXPECT_THAT(*distribution_out.f[dirTNW], RealEq(distributions_in[dirBSE]));
-    EXPECT_THAT(*distribution_out.f[dirTSE], RealEq(distributions_in[dirBNW]));
+    EXPECT_THAT(*distribution_out.f[W], RealEq(distributions_in[E]));
+    EXPECT_THAT(*distribution_out.f[E], RealEq(distributions_in[W]));
+    EXPECT_THAT(*distribution_out.f[S], RealEq(distributions_in[N]));
+    EXPECT_THAT(*distribution_out.f[N], RealEq(distributions_in[S]));
+    EXPECT_THAT(*distribution_out.f[B], RealEq(distributions_in[T]));
+    EXPECT_THAT(*distribution_out.f[T], RealEq(distributions_in[B]));
+    EXPECT_THAT(*distribution_out.f[SW], RealEq(distributions_in[NE]));
+    EXPECT_THAT(*distribution_out.f[NE], RealEq(distributions_in[SW]));
+    EXPECT_THAT(*distribution_out.f[NW], RealEq(distributions_in[SE]));
+    EXPECT_THAT(*distribution_out.f[SE], RealEq(distributions_in[NW]));
+    EXPECT_THAT(*distribution_out.f[BW], RealEq(distributions_in[TE]));
+    EXPECT_THAT(*distribution_out.f[TE], RealEq(distributions_in[BW]));
+    EXPECT_THAT(*distribution_out.f[TW], RealEq(distributions_in[BE]));
+    EXPECT_THAT(*distribution_out.f[BE], RealEq(distributions_in[TW]));
+    EXPECT_THAT(*distribution_out.f[BS], RealEq(distributions_in[TN]));
+    EXPECT_THAT(*distribution_out.f[TN], RealEq(distributions_in[BS]));
+    EXPECT_THAT(*distribution_out.f[TS], RealEq(distributions_in[BN]));
+    EXPECT_THAT(*distribution_out.f[BN], RealEq(distributions_in[TS]));
+    EXPECT_THAT(*distribution_out.f[REST], RealEq(distributions_in[REST]));
+    EXPECT_THAT(*distribution_out.f[BSW], RealEq(distributions_in[TNE]));
+    EXPECT_THAT(*distribution_out.f[BNE], RealEq(distributions_in[TSW]));
+    EXPECT_THAT(*distribution_out.f[BNW], RealEq(distributions_in[TSE]));
+    EXPECT_THAT(*distribution_out.f[BSE], RealEq(distributions_in[TNW]));
+    EXPECT_THAT(*distribution_out.f[TSW], RealEq(distributions_in[BNE]));
+    EXPECT_THAT(*distribution_out.f[TNE], RealEq(distributions_in[BSW]));
+    EXPECT_THAT(*distribution_out.f[TNW], RealEq(distributions_in[BSE]));
+    EXPECT_THAT(*distribution_out.f[TSE], RealEq(distributions_in[BNW]));
 }

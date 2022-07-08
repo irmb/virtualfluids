@@ -30,9 +30,9 @@ public:
     {
     }
 
-    virtual void init(Parameter *para, GridProvider *gridProvider, CudaMemoryManager *cudaManager) = 0;
-    virtual void interact(Parameter *para, CudaMemoryManager *cudaManager, int level, uint t) = 0;
-    virtual void free(Parameter *para, CudaMemoryManager *cudaManager) = 0;
+    virtual void init(Parameter *para, GridProvider *gridProvider, CudaMemoryManager *cudaMemoryManager) = 0;
+    virtual void interact(Parameter *para, CudaMemoryManager *cudaMemoryManager, int level, uint t) = 0;
+    virtual void free(Parameter *para, CudaMemoryManager *cudaMemoryManager) = 0;
 
 protected:
     uint updateInterval;

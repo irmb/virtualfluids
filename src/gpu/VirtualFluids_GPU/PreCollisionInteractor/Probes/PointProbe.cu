@@ -75,17 +75,17 @@ void PointProbe::findPoints(Parameter* para, GridProvider* gridProvider, std::ve
                        int level)
 {
 
-    real dx = abs(para->getParH(level)->coordX_SP[1]-para->getParH(level)->coordX_SP[para->getParH(level)->neighborX_SP[1]]);
-    for(uint j=1; j<para->getParH(level)->size_Mat_SP; j++ )
+    real dx = abs(para->getParH(level)->coordinateX[1]-para->getParH(level)->coordinateX[para->getParH(level)->neighborX[1]]);
+    for(uint j=1; j<para->getParH(level)->numberOfNodes; j++ )
     {    
         for(uint point=0; point<this->pointCoordsX.size(); point++)
         {
             real pointCoordX = this->pointCoordsX[point];
             real pointCoordY = this->pointCoordsY[point];
             real pointCoordZ = this->pointCoordsZ[point];
-            real distX = pointCoordX-para->getParH(level)->coordX_SP[j];
-            real distY = pointCoordY-para->getParH(level)->coordY_SP[j];
-            real distZ = pointCoordZ-para->getParH(level)->coordZ_SP[j];
+            real distX = pointCoordX-para->getParH(level)->coordinateX[j];
+            real distY = pointCoordY-para->getParH(level)->coordinateY[j];
+            real distZ = pointCoordZ-para->getParH(level)->coordinateZ[j];
             if( distX <=dx && distY <=dx && distZ <=dx &&
                 distX >0.f && distY >0.f && distZ >0.f)
             {
@@ -106,8 +106,8 @@ void PointProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* p
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, probeStruct->nPoints);
     interpAndCalcQuantitiesKernel<<<grid.grid, grid.threads>>>(  probeStruct->pointIndicesD, probeStruct->nPoints, probeStruct->vals,
                                                 probeStruct->distXD, probeStruct->distYD, probeStruct->distZD,
-                                                para->getParD(level)->vx_SP, para->getParD(level)->vy_SP, para->getParD(level)->vz_SP, para->getParD(level)->rho_SP, 
-                                                para->getParD(level)->neighborX_SP, para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP, 
+                                                para->getParD(level)->velocityX, para->getParD(level)->velocityY, para->getParD(level)->velocityZ, para->getParD(level)->rho, 
+                                                para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ, 
                                                 probeStruct->quantitiesD, probeStruct->arrayOffsetsD, probeStruct->quantitiesArrayD);
 }
 
