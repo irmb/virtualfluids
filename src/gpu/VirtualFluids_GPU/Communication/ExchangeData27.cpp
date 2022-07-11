@@ -1,7 +1,10 @@
+#include <helper_cuda.h>
+#include <cuda_runtime.h>
+
 #include "Communication/ExchangeData27.h"
 #include "Parameter/CudaStreamManager.h"
-#include <cuda_runtime.h>
-#include <helper_cuda.h>
+
+using namespace vf::lbm::dir;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 3D domain decomposition
@@ -90,7 +93,7 @@ void copyEdgeNodes(std::vector<LBMSimulationParameter::EdgeNodePositions> &edgeN
         }
 
         // copy fs for all directions
-        for (int direction = 0; direction <= (int)dirEND; direction++) {
+        for (int direction = 0; direction <= (int)ENDDIR; direction++) {
             (sendProcessNeighborHost[indexInSubdomainSend].f[0] +
              (direction * numNodesInBufferSend))[edgeNodes[i].indexInSendBuffer] =
                 (recvProcessNeighborHost[indexInSubdomainRecv].f[0] +

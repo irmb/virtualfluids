@@ -27,6 +27,7 @@
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
+#include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
 
 #include "global.h"
 
@@ -282,6 +283,7 @@ void multipleLevel(const std::string& configPath)
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
     
     SPtr<Parameter> para = Parameter::make();
+    BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
     SPtr<GridProvider> gridGenerator;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -347,17 +349,6 @@ void multipleLevel(const std::string& configPath)
 			gridBuilder->setPeriodicBoundaryCondition(true, true, true);
 
 			gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
-			////////////////////////////////////////////////////////////////////////////
-			//gridBuilder->setVelocityBoundaryCondition(SideType::PY, vx, 0.0, 0.0);
-			//gridBuilder->setVelocityBoundaryCondition(SideType::MY, vx, 0.0, 0.0);
-			//gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vx, 0.0, 0.0);
-			//gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vx, 0.0, 0.0);
-
-			//gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
-			//gridBuilder->setVelocityBoundaryCondition(SideType::MX, vx, 0.0, 0.0);
-
-			//gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
-
 			//////////////////////////////////////////////////////////////////////////
 			SPtr<Grid> grid = gridBuilder->getGrid(gridBuilder->getNumberOfLevels() - 1);
 			//////////////////////////////////////////////////////////////////////////
@@ -405,7 +396,10 @@ void multipleLevel(const std::string& configPath)
             gridBuilder->setVelocityBoundaryCondition(SideType::MX, vx, 0.0, 0.0);
 
             gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
-            
+
+            bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
+            bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipCompressible);
+            bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::PressureNonEquilibriumCompressible);
             //////////////////////////////////////////////////////////////////////////
             SPtr<Grid> grid = gridBuilder->getGrid(gridBuilder->getNumberOfLevels() - 1);
             //////////////////////////////////////////////////////////////////////////
@@ -472,7 +466,11 @@ void multipleLevel(const std::string& configPath)
             gridBuilder->setVelocityBoundaryCondition(SideType::MX, vx, 0.0, 0.0);
 
             gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
-            
+
+            bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityAndPressureCompressible);
+            bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
+            bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflective);
+
             //////////////////////////////////////////////////////////////////////////
 
             SPtr<Grid> grid = gridBuilder->getGrid(gridBuilder->getNumberOfLevels() - 1);
@@ -567,7 +565,11 @@ void multipleLevel(const std::string& configPath)
             gridBuilder->setVelocityBoundaryCondition(SideType::MX, vx, 0.0, 0.0);
 
             gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
-            
+
+            bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityAndPressureCompressible);
+            bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipCompressible);
+            bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflective);
+
             //////////////////////////////////////////////////////////////////////////
 
             SPtr<Grid> grid = gridBuilder->getGrid(gridBuilder->getNumberOfLevels() - 1);
@@ -698,7 +700,10 @@ void multipleLevel(const std::string& configPath)
             }
 
             gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
-        
+
+            bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
+            bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipCompressible);
+            bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::PressureNonEquilibriumCompressible);
             //////////////////////////////////////////////////////////////////////////
 
             if (generatePart == 0) {

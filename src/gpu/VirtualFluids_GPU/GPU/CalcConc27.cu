@@ -32,10 +32,11 @@
 //=======================================================================================
 /* Device code */
 #include "LBM/LB.h"
-#include "LBM/D3Q27.h"
+#include "lbm/constants/D3Q27.h"
 #include <lbm/constants/NumericConstants.h>
 
 using namespace vf::lbm::constant;
+using namespace vf::lbm::dir;
 
 ////////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void CalcConc27(
@@ -52,7 +53,7 @@ extern "C" __global__ void CalcConc27(
    //! The velocity boundary condition is executed in the following steps
    //!
    ////////////////////////////////////////////////////////////////////////////////
-   //! - Get node index coordinates from thredIdx, blockIdx, blockDim and gridDim.
+   //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
    //!
    const unsigned  x = threadIdx.x;  // global x-index
    const unsigned  y = blockIdx.x;   // global y-index
@@ -75,63 +76,63 @@ extern "C" __global__ void CalcConc27(
       Distributions27 distAD;
       if (isEvenTimestep)
       {
-         distAD.f[dirE   ] = &distributionsAD[dirE   *size_Mat];
-         distAD.f[dirW   ] = &distributionsAD[dirW   *size_Mat];
-         distAD.f[dirN   ] = &distributionsAD[dirN   *size_Mat];
-         distAD.f[dirS   ] = &distributionsAD[dirS   *size_Mat];
-         distAD.f[dirT   ] = &distributionsAD[dirT   *size_Mat];
-         distAD.f[dirB   ] = &distributionsAD[dirB   *size_Mat];
-         distAD.f[dirNE  ] = &distributionsAD[dirNE  *size_Mat];
-         distAD.f[dirSW  ] = &distributionsAD[dirSW  *size_Mat];
-         distAD.f[dirSE  ] = &distributionsAD[dirSE  *size_Mat];
-         distAD.f[dirNW  ] = &distributionsAD[dirNW  *size_Mat];
-         distAD.f[dirTE  ] = &distributionsAD[dirTE  *size_Mat];
-         distAD.f[dirBW  ] = &distributionsAD[dirBW  *size_Mat];
-         distAD.f[dirBE  ] = &distributionsAD[dirBE  *size_Mat];
-         distAD.f[dirTW  ] = &distributionsAD[dirTW  *size_Mat];
-         distAD.f[dirTN  ] = &distributionsAD[dirTN  *size_Mat];
-         distAD.f[dirBS  ] = &distributionsAD[dirBS  *size_Mat];
-         distAD.f[dirBN  ] = &distributionsAD[dirBN  *size_Mat];
-         distAD.f[dirTS  ] = &distributionsAD[dirTS  *size_Mat];
-         distAD.f[dirREST] = &distributionsAD[dirREST*size_Mat];
-         distAD.f[dirTNE ] = &distributionsAD[dirTNE *size_Mat];
-         distAD.f[dirTSW ] = &distributionsAD[dirTSW *size_Mat];
-         distAD.f[dirTSE ] = &distributionsAD[dirTSE *size_Mat];
-         distAD.f[dirTNW ] = &distributionsAD[dirTNW *size_Mat];
-         distAD.f[dirBNE ] = &distributionsAD[dirBNE *size_Mat];
-         distAD.f[dirBSW ] = &distributionsAD[dirBSW *size_Mat];
-         distAD.f[dirBSE ] = &distributionsAD[dirBSE *size_Mat];
-         distAD.f[dirBNW ] = &distributionsAD[dirBNW *size_Mat];
+         distAD.f[E   ] = &distributionsAD[E   *size_Mat];
+         distAD.f[W   ] = &distributionsAD[W   *size_Mat];
+         distAD.f[N   ] = &distributionsAD[N   *size_Mat];
+         distAD.f[S   ] = &distributionsAD[S   *size_Mat];
+         distAD.f[T   ] = &distributionsAD[T   *size_Mat];
+         distAD.f[B   ] = &distributionsAD[B   *size_Mat];
+         distAD.f[NE  ] = &distributionsAD[NE  *size_Mat];
+         distAD.f[SW  ] = &distributionsAD[SW  *size_Mat];
+         distAD.f[SE  ] = &distributionsAD[SE  *size_Mat];
+         distAD.f[NW  ] = &distributionsAD[NW  *size_Mat];
+         distAD.f[TE  ] = &distributionsAD[TE  *size_Mat];
+         distAD.f[BW  ] = &distributionsAD[BW  *size_Mat];
+         distAD.f[BE  ] = &distributionsAD[BE  *size_Mat];
+         distAD.f[TW  ] = &distributionsAD[TW  *size_Mat];
+         distAD.f[TN  ] = &distributionsAD[TN  *size_Mat];
+         distAD.f[BS  ] = &distributionsAD[BS  *size_Mat];
+         distAD.f[BN  ] = &distributionsAD[BN  *size_Mat];
+         distAD.f[TS  ] = &distributionsAD[TS  *size_Mat];
+         distAD.f[REST] = &distributionsAD[REST*size_Mat];
+         distAD.f[TNE ] = &distributionsAD[TNE *size_Mat];
+         distAD.f[TSW ] = &distributionsAD[TSW *size_Mat];
+         distAD.f[TSE ] = &distributionsAD[TSE *size_Mat];
+         distAD.f[TNW ] = &distributionsAD[TNW *size_Mat];
+         distAD.f[BNE ] = &distributionsAD[BNE *size_Mat];
+         distAD.f[BSW ] = &distributionsAD[BSW *size_Mat];
+         distAD.f[BSE ] = &distributionsAD[BSE *size_Mat];
+         distAD.f[BNW ] = &distributionsAD[BNW *size_Mat];
       }
       else
       {
-         distAD.f[dirW   ] = &distributionsAD[dirE   *size_Mat];
-         distAD.f[dirE   ] = &distributionsAD[dirW   *size_Mat];
-         distAD.f[dirS   ] = &distributionsAD[dirN   *size_Mat];
-         distAD.f[dirN   ] = &distributionsAD[dirS   *size_Mat];
-         distAD.f[dirB   ] = &distributionsAD[dirT   *size_Mat];
-         distAD.f[dirT   ] = &distributionsAD[dirB   *size_Mat];
-         distAD.f[dirSW  ] = &distributionsAD[dirNE  *size_Mat];
-         distAD.f[dirNE  ] = &distributionsAD[dirSW  *size_Mat];
-         distAD.f[dirNW  ] = &distributionsAD[dirSE  *size_Mat];
-         distAD.f[dirSE  ] = &distributionsAD[dirNW  *size_Mat];
-         distAD.f[dirBW  ] = &distributionsAD[dirTE  *size_Mat];
-         distAD.f[dirTE  ] = &distributionsAD[dirBW  *size_Mat];
-         distAD.f[dirTW  ] = &distributionsAD[dirBE  *size_Mat];
-         distAD.f[dirBE  ] = &distributionsAD[dirTW  *size_Mat];
-         distAD.f[dirBS  ] = &distributionsAD[dirTN  *size_Mat];
-         distAD.f[dirTN  ] = &distributionsAD[dirBS  *size_Mat];
-         distAD.f[dirTS  ] = &distributionsAD[dirBN  *size_Mat];
-         distAD.f[dirBN  ] = &distributionsAD[dirTS  *size_Mat];
-         distAD.f[dirREST] = &distributionsAD[dirREST*size_Mat];
-         distAD.f[dirTNE ] = &distributionsAD[dirBSW *size_Mat];
-         distAD.f[dirTSW ] = &distributionsAD[dirBNE *size_Mat];
-         distAD.f[dirTSE ] = &distributionsAD[dirBNW *size_Mat];
-         distAD.f[dirTNW ] = &distributionsAD[dirBSE *size_Mat];
-         distAD.f[dirBNE ] = &distributionsAD[dirTSW *size_Mat];
-         distAD.f[dirBSW ] = &distributionsAD[dirTNE *size_Mat];
-         distAD.f[dirBSE ] = &distributionsAD[dirTNW *size_Mat];
-         distAD.f[dirBNW ] = &distributionsAD[dirTSE *size_Mat];
+         distAD.f[W   ] = &distributionsAD[E   *size_Mat];
+         distAD.f[E   ] = &distributionsAD[W   *size_Mat];
+         distAD.f[S   ] = &distributionsAD[N   *size_Mat];
+         distAD.f[N   ] = &distributionsAD[S   *size_Mat];
+         distAD.f[B   ] = &distributionsAD[T   *size_Mat];
+         distAD.f[T   ] = &distributionsAD[B   *size_Mat];
+         distAD.f[SW  ] = &distributionsAD[NE  *size_Mat];
+         distAD.f[NE  ] = &distributionsAD[SW  *size_Mat];
+         distAD.f[NW  ] = &distributionsAD[SE  *size_Mat];
+         distAD.f[SE  ] = &distributionsAD[NW  *size_Mat];
+         distAD.f[BW  ] = &distributionsAD[TE  *size_Mat];
+         distAD.f[TE  ] = &distributionsAD[BW  *size_Mat];
+         distAD.f[TW  ] = &distributionsAD[BE  *size_Mat];
+         distAD.f[BE  ] = &distributionsAD[TW  *size_Mat];
+         distAD.f[BS  ] = &distributionsAD[TN  *size_Mat];
+         distAD.f[TN  ] = &distributionsAD[BS  *size_Mat];
+         distAD.f[TS  ] = &distributionsAD[BN  *size_Mat];
+         distAD.f[BN  ] = &distributionsAD[TS  *size_Mat];
+         distAD.f[REST] = &distributionsAD[REST*size_Mat];
+         distAD.f[TNE ] = &distributionsAD[BSW *size_Mat];
+         distAD.f[TSW ] = &distributionsAD[BNE *size_Mat];
+         distAD.f[TSE ] = &distributionsAD[BNW *size_Mat];
+         distAD.f[TNW ] = &distributionsAD[BSE *size_Mat];
+         distAD.f[BNE ] = &distributionsAD[TSW *size_Mat];
+         distAD.f[BSW ] = &distributionsAD[TNE *size_Mat];
+         distAD.f[BSE ] = &distributionsAD[TNW *size_Mat];
+         distAD.f[BNW ] = &distributionsAD[TSE *size_Mat];
       }
 	  ////////////////////////////////////////////////////////////////////////////////
 	  //! - Set neighbor indices (necessary for indirect addressing)
@@ -165,33 +166,33 @@ extern "C" __global__ void CalcConc27(
 	  ////////////////////////////////////////////////////////////////////////////////
 	  //! - Set local distributions
 	  //!
-	  real mfcbb = (distAD.f[dirE   ])[ke  ];
-	  real mfabb = (distAD.f[dirW   ])[kw  ];
-	  real mfbcb = (distAD.f[dirN   ])[kn  ];
-	  real mfbab = (distAD.f[dirS   ])[ks  ];
-	  real mfbbc = (distAD.f[dirT   ])[kt  ];
-	  real mfbba = (distAD.f[dirB   ])[kb  ];
-	  real mfccb = (distAD.f[dirNE  ])[kne ];
-	  real mfaab = (distAD.f[dirSW  ])[ksw ];
-	  real mfcab = (distAD.f[dirSE  ])[kse ];
-	  real mfacb = (distAD.f[dirNW  ])[knw ];
-	  real mfcbc = (distAD.f[dirTE  ])[kte ];
-	  real mfaba = (distAD.f[dirBW  ])[kbw ];
-	  real mfcba = (distAD.f[dirBE  ])[kbe ];
-	  real mfabc = (distAD.f[dirTW  ])[ktw ];
-	  real mfbcc = (distAD.f[dirTN  ])[ktn ];
-	  real mfbaa = (distAD.f[dirBS  ])[kbs ];
-	  real mfbca = (distAD.f[dirBN  ])[kbn ];
-	  real mfbac = (distAD.f[dirTS  ])[kts ];
-	  real mfbbb = (distAD.f[dirREST])[k   ];
-	  real mfccc = (distAD.f[dirTNE ])[ktne];
-	  real mfaac = (distAD.f[dirTSW ])[ktsw];
-	  real mfcac = (distAD.f[dirTSE ])[ktse];
-	  real mfacc = (distAD.f[dirTNW ])[ktnw];
-	  real mfcca = (distAD.f[dirBNE ])[kbne];
-	  real mfaaa = (distAD.f[dirBSW ])[kbsw];
-	  real mfcaa = (distAD.f[dirBSE ])[kbse];
-	  real mfaca = (distAD.f[dirBNW ])[kbnw];
+	  real mfcbb = (distAD.f[E   ])[ke  ];
+	  real mfabb = (distAD.f[W   ])[kw  ];
+	  real mfbcb = (distAD.f[N   ])[kn  ];
+	  real mfbab = (distAD.f[S   ])[ks  ];
+	  real mfbbc = (distAD.f[T   ])[kt  ];
+	  real mfbba = (distAD.f[B   ])[kb  ];
+	  real mfccb = (distAD.f[NE  ])[kne ];
+	  real mfaab = (distAD.f[SW  ])[ksw ];
+	  real mfcab = (distAD.f[SE  ])[kse ];
+	  real mfacb = (distAD.f[NW  ])[knw ];
+	  real mfcbc = (distAD.f[TE  ])[kte ];
+	  real mfaba = (distAD.f[BW  ])[kbw ];
+	  real mfcba = (distAD.f[BE  ])[kbe ];
+	  real mfabc = (distAD.f[TW  ])[ktw ];
+	  real mfbcc = (distAD.f[TN  ])[ktn ];
+	  real mfbaa = (distAD.f[BS  ])[kbs ];
+	  real mfbca = (distAD.f[BN  ])[kbn ];
+	  real mfbac = (distAD.f[TS  ])[kts ];
+	  real mfbbb = (distAD.f[REST])[k   ];
+	  real mfccc = (distAD.f[TNE ])[ktne];
+	  real mfaac = (distAD.f[TSW ])[ktsw];
+	  real mfcac = (distAD.f[TSE ])[ktse];
+	  real mfacc = (distAD.f[TNW ])[ktnw];
+	  real mfcca = (distAD.f[BNE ])[kbne];
+	  real mfaaa = (distAD.f[BSW ])[kbsw];
+	  real mfcaa = (distAD.f[BSE ])[kbse];
+	  real mfaca = (distAD.f[BNW ])[kbnw];
       //////////////////////////////////////////////////////////////////////////
 	  //! - Calculate concentration using pyramid summation for low round-off errors as in Eq. (J1)-(J3) \ref
 	  //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015), DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
@@ -326,63 +327,63 @@ extern "C" __global__ void CalcConc7( real* Conc,
 //    Distributions27 D27;
 //    if (isEvenTimestep==true)
 //    {
-//       D27.f[dirE   ] = &DD27[dirE   *size_Mat];
-//       D27.f[dirW   ] = &DD27[dirW   *size_Mat];
-//       D27.f[dirN   ] = &DD27[dirN   *size_Mat];
-//       D27.f[dirS   ] = &DD27[dirS   *size_Mat];
-//       D27.f[dirT   ] = &DD27[dirT   *size_Mat];
-//       D27.f[dirB   ] = &DD27[dirB   *size_Mat];
-//       D27.f[dirNE  ] = &DD27[dirNE  *size_Mat];
-//       D27.f[dirSW  ] = &DD27[dirSW  *size_Mat];
-//       D27.f[dirSE  ] = &DD27[dirSE  *size_Mat];
-//       D27.f[dirNW  ] = &DD27[dirNW  *size_Mat];
-//       D27.f[dirTE  ] = &DD27[dirTE  *size_Mat];
-//       D27.f[dirBW  ] = &DD27[dirBW  *size_Mat];
-//       D27.f[dirBE  ] = &DD27[dirBE  *size_Mat];
-//       D27.f[dirTW  ] = &DD27[dirTW  *size_Mat];
-//       D27.f[dirTN  ] = &DD27[dirTN  *size_Mat];
-//       D27.f[dirBS  ] = &DD27[dirBS  *size_Mat];
-//       D27.f[dirBN  ] = &DD27[dirBN  *size_Mat];
-//       D27.f[dirTS  ] = &DD27[dirTS  *size_Mat];
-//       D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
-//       D27.f[dirTNE ] = &DD27[dirTNE *size_Mat];
-//       D27.f[dirTSW ] = &DD27[dirTSW *size_Mat];
-//       D27.f[dirTSE ] = &DD27[dirTSE *size_Mat];
-//       D27.f[dirTNW ] = &DD27[dirTNW *size_Mat];
-//       D27.f[dirBNE ] = &DD27[dirBNE *size_Mat];
-//       D27.f[dirBSW ] = &DD27[dirBSW *size_Mat];
-//       D27.f[dirBSE ] = &DD27[dirBSE *size_Mat];
-//       D27.f[dirBNW ] = &DD27[dirBNW *size_Mat];
+//       D27.f[E   ] = &DD27[E   *size_Mat];
+//       D27.f[W   ] = &DD27[W   *size_Mat];
+//       D27.f[N   ] = &DD27[N   *size_Mat];
+//       D27.f[S   ] = &DD27[S   *size_Mat];
+//       D27.f[T   ] = &DD27[T   *size_Mat];
+//       D27.f[B   ] = &DD27[B   *size_Mat];
+//       D27.f[NE  ] = &DD27[NE  *size_Mat];
+//       D27.f[SW  ] = &DD27[SW  *size_Mat];
+//       D27.f[SE  ] = &DD27[SE  *size_Mat];
+//       D27.f[NW  ] = &DD27[NW  *size_Mat];
+//       D27.f[TE  ] = &DD27[TE  *size_Mat];
+//       D27.f[BW  ] = &DD27[BW  *size_Mat];
+//       D27.f[BE  ] = &DD27[BE  *size_Mat];
+//       D27.f[TW  ] = &DD27[TW  *size_Mat];
+//       D27.f[TN  ] = &DD27[TN  *size_Mat];
+//       D27.f[BS  ] = &DD27[BS  *size_Mat];
+//       D27.f[BN  ] = &DD27[BN  *size_Mat];
+//       D27.f[TS  ] = &DD27[TS  *size_Mat];
+//       D27.f[REST] = &DD27[REST*size_Mat];
+//       D27.f[TNE ] = &DD27[TNE *size_Mat];
+//       D27.f[TSW ] = &DD27[TSW *size_Mat];
+//       D27.f[TSE ] = &DD27[TSE *size_Mat];
+//       D27.f[TNW ] = &DD27[TNW *size_Mat];
+//       D27.f[BNE ] = &DD27[BNE *size_Mat];
+//       D27.f[BSW ] = &DD27[BSW *size_Mat];
+//       D27.f[BSE ] = &DD27[BSE *size_Mat];
+//       D27.f[BNW ] = &DD27[BNW *size_Mat];
 //    }
 //    else
 //    {
-//       D27.f[dirW   ] = &DD27[dirE   *size_Mat];
-//       D27.f[dirE   ] = &DD27[dirW   *size_Mat];
-//       D27.f[dirS   ] = &DD27[dirN   *size_Mat];
-//       D27.f[dirN   ] = &DD27[dirS   *size_Mat];
-//       D27.f[dirB   ] = &DD27[dirT   *size_Mat];
-//       D27.f[dirT   ] = &DD27[dirB   *size_Mat];
-//       D27.f[dirSW  ] = &DD27[dirNE  *size_Mat];
-//       D27.f[dirNE  ] = &DD27[dirSW  *size_Mat];
-//       D27.f[dirNW  ] = &DD27[dirSE  *size_Mat];
-//       D27.f[dirSE  ] = &DD27[dirNW  *size_Mat];
-//       D27.f[dirBW  ] = &DD27[dirTE  *size_Mat];
-//       D27.f[dirTE  ] = &DD27[dirBW  *size_Mat];
-//       D27.f[dirTW  ] = &DD27[dirBE  *size_Mat];
-//       D27.f[dirBE  ] = &DD27[dirTW  *size_Mat];
-//       D27.f[dirBS  ] = &DD27[dirTN  *size_Mat];
-//       D27.f[dirTN  ] = &DD27[dirBS  *size_Mat];
-//       D27.f[dirTS  ] = &DD27[dirBN  *size_Mat];
-//       D27.f[dirBN  ] = &DD27[dirTS  *size_Mat];
-//       D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
-//       D27.f[dirBSW ] = &DD27[dirTNE *size_Mat];
-//       D27.f[dirBNE ] = &DD27[dirTSW *size_Mat];
-//       D27.f[dirBNW ] = &DD27[dirTSE *size_Mat];
-//       D27.f[dirBSE ] = &DD27[dirTNW *size_Mat];
-//       D27.f[dirTSW ] = &DD27[dirBNE *size_Mat];
-//       D27.f[dirTNE ] = &DD27[dirBSW *size_Mat];
-//       D27.f[dirTNW ] = &DD27[dirBSE *size_Mat];
-//       D27.f[dirTSE ] = &DD27[dirBNW *size_Mat];
+//       D27.f[W   ] = &DD27[E   *size_Mat];
+//       D27.f[E   ] = &DD27[W   *size_Mat];
+//       D27.f[S   ] = &DD27[N   *size_Mat];
+//       D27.f[N   ] = &DD27[S   *size_Mat];
+//       D27.f[B   ] = &DD27[T   *size_Mat];
+//       D27.f[T   ] = &DD27[B   *size_Mat];
+//       D27.f[SW  ] = &DD27[NE  *size_Mat];
+//       D27.f[NE  ] = &DD27[SW  *size_Mat];
+//       D27.f[NW  ] = &DD27[SE  *size_Mat];
+//       D27.f[SE  ] = &DD27[NW  *size_Mat];
+//       D27.f[BW  ] = &DD27[TE  *size_Mat];
+//       D27.f[TE  ] = &DD27[BW  *size_Mat];
+//       D27.f[TW  ] = &DD27[BE  *size_Mat];
+//       D27.f[BE  ] = &DD27[TW  *size_Mat];
+//       D27.f[BS  ] = &DD27[TN  *size_Mat];
+//       D27.f[TN  ] = &DD27[BS  *size_Mat];
+//       D27.f[TS  ] = &DD27[BN  *size_Mat];
+//       D27.f[BN  ] = &DD27[TS  *size_Mat];
+//       D27.f[REST] = &DD27[REST*size_Mat];
+//       D27.f[BSW ] = &DD27[TNE *size_Mat];
+//       D27.f[BNE ] = &DD27[TSW *size_Mat];
+//       D27.f[BNW ] = &DD27[TSE *size_Mat];
+//       D27.f[BSE ] = &DD27[TNW *size_Mat];
+//       D27.f[TSW ] = &DD27[BNE *size_Mat];
+//       D27.f[TNE ] = &DD27[BSW *size_Mat];
+//       D27.f[TNW ] = &DD27[BSE *size_Mat];
+//       D27.f[TSE ] = &DD27[BNW *size_Mat];
 //    }
 //    ////////////////////////////////////////////////////////////////////////////////
 //    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -431,20 +432,20 @@ extern "C" __global__ void CalcConc7( real* Conc,
 
 //       if(geoD[k] == GEO_FLUID)
 //       {
-//          Conc[k]    =   (D27.f[dirE   ])[ke  ]+ (D27.f[dirW   ])[kw  ]+ 
-//                         (D27.f[dirN   ])[kn  ]+ (D27.f[dirS   ])[ks  ]+
-//                         (D27.f[dirT   ])[kt  ]+ (D27.f[dirB   ])[kb  ]+
-//                         (D27.f[dirNE  ])[kne ]+ (D27.f[dirSW  ])[ksw ]+
-//                         (D27.f[dirSE  ])[kse ]+ (D27.f[dirNW  ])[knw ]+
-//                         (D27.f[dirTE  ])[kte ]+ (D27.f[dirBW  ])[kbw ]+
-//                         (D27.f[dirBE  ])[kbe ]+ (D27.f[dirTW  ])[ktw ]+
-//                         (D27.f[dirTN  ])[ktn ]+ (D27.f[dirBS  ])[kbs ]+
-//                         (D27.f[dirBN  ])[kbn ]+ (D27.f[dirTS  ])[kts ]+
-//                         (D27.f[dirZERO])[kzero]+ 
-//                         (D27.f[dirTNE ])[ktne]+ (D27.f[dirTSW ])[ktsw]+
-//                         (D27.f[dirTSE ])[ktse]+ (D27.f[dirTNW ])[ktnw]+
-//                         (D27.f[dirBNE ])[kbne]+ (D27.f[dirBSW ])[kbsw]+
-//                         (D27.f[dirBSE ])[kbse]+ (D27.f[dirBNW ])[kbnw];
+//          Conc[k]    =   (D27.f[E   ])[ke  ]+ (D27.f[W   ])[kw  ]+ 
+//                         (D27.f[N   ])[kn  ]+ (D27.f[S   ])[ks  ]+
+//                         (D27.f[T   ])[kt  ]+ (D27.f[B   ])[kb  ]+
+//                         (D27.f[NE  ])[kne ]+ (D27.f[SW  ])[ksw ]+
+//                         (D27.f[SE  ])[kse ]+ (D27.f[NW  ])[knw ]+
+//                         (D27.f[TE  ])[kte ]+ (D27.f[BW  ])[kbw ]+
+//                         (D27.f[BE  ])[kbe ]+ (D27.f[TW  ])[ktw ]+
+//                         (D27.f[TN  ])[ktn ]+ (D27.f[BS  ])[kbs ]+
+//                         (D27.f[BN  ])[kbn ]+ (D27.f[TS  ])[kts ]+
+//                         (D27.f[REST])[kzero]+ 
+//                         (D27.f[TNE ])[ktne]+ (D27.f[TSW ])[ktsw]+
+//                         (D27.f[TSE ])[ktse]+ (D27.f[TNW ])[ktnw]+
+//                         (D27.f[BNE ])[kbne]+ (D27.f[BSW ])[kbsw]+
+//                         (D27.f[BSE ])[kbse]+ (D27.f[BNW ])[kbnw];
 //       }
 //    }   
 // }
@@ -587,63 +588,63 @@ extern "C" __global__ void GetPlaneConc27(real* Conc,
    Distributions27 D27;
    if (isEvenTimestep==true)
    {
-      D27.f[dirE   ] = &DD27[dirE   *size_Mat];
-      D27.f[dirW   ] = &DD27[dirW   *size_Mat];
-      D27.f[dirN   ] = &DD27[dirN   *size_Mat];
-      D27.f[dirS   ] = &DD27[dirS   *size_Mat];
-      D27.f[dirT   ] = &DD27[dirT   *size_Mat];
-      D27.f[dirB   ] = &DD27[dirB   *size_Mat];
-      D27.f[dirNE  ] = &DD27[dirNE  *size_Mat];
-      D27.f[dirSW  ] = &DD27[dirSW  *size_Mat];
-      D27.f[dirSE  ] = &DD27[dirSE  *size_Mat];
-      D27.f[dirNW  ] = &DD27[dirNW  *size_Mat];
-      D27.f[dirTE  ] = &DD27[dirTE  *size_Mat];
-      D27.f[dirBW  ] = &DD27[dirBW  *size_Mat];
-      D27.f[dirBE  ] = &DD27[dirBE  *size_Mat];
-      D27.f[dirTW  ] = &DD27[dirTW  *size_Mat];
-      D27.f[dirTN  ] = &DD27[dirTN  *size_Mat];
-      D27.f[dirBS  ] = &DD27[dirBS  *size_Mat];
-      D27.f[dirBN  ] = &DD27[dirBN  *size_Mat];
-      D27.f[dirTS  ] = &DD27[dirTS  *size_Mat];
-      D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
-      D27.f[dirTNE ] = &DD27[dirTNE *size_Mat];
-      D27.f[dirTSW ] = &DD27[dirTSW *size_Mat];
-      D27.f[dirTSE ] = &DD27[dirTSE *size_Mat];
-      D27.f[dirTNW ] = &DD27[dirTNW *size_Mat];
-      D27.f[dirBNE ] = &DD27[dirBNE *size_Mat];
-      D27.f[dirBSW ] = &DD27[dirBSW *size_Mat];
-      D27.f[dirBSE ] = &DD27[dirBSE *size_Mat];
-      D27.f[dirBNW ] = &DD27[dirBNW *size_Mat];
+      D27.f[E   ] = &DD27[E   *size_Mat];
+      D27.f[W   ] = &DD27[W   *size_Mat];
+      D27.f[N   ] = &DD27[N   *size_Mat];
+      D27.f[S   ] = &DD27[S   *size_Mat];
+      D27.f[T   ] = &DD27[T   *size_Mat];
+      D27.f[B   ] = &DD27[B   *size_Mat];
+      D27.f[NE  ] = &DD27[NE  *size_Mat];
+      D27.f[SW  ] = &DD27[SW  *size_Mat];
+      D27.f[SE  ] = &DD27[SE  *size_Mat];
+      D27.f[NW  ] = &DD27[NW  *size_Mat];
+      D27.f[TE  ] = &DD27[TE  *size_Mat];
+      D27.f[BW  ] = &DD27[BW  *size_Mat];
+      D27.f[BE  ] = &DD27[BE  *size_Mat];
+      D27.f[TW  ] = &DD27[TW  *size_Mat];
+      D27.f[TN  ] = &DD27[TN  *size_Mat];
+      D27.f[BS  ] = &DD27[BS  *size_Mat];
+      D27.f[BN  ] = &DD27[BN  *size_Mat];
+      D27.f[TS  ] = &DD27[TS  *size_Mat];
+      D27.f[REST] = &DD27[REST*size_Mat];
+      D27.f[TNE ] = &DD27[TNE *size_Mat];
+      D27.f[TSW ] = &DD27[TSW *size_Mat];
+      D27.f[TSE ] = &DD27[TSE *size_Mat];
+      D27.f[TNW ] = &DD27[TNW *size_Mat];
+      D27.f[BNE ] = &DD27[BNE *size_Mat];
+      D27.f[BSW ] = &DD27[BSW *size_Mat];
+      D27.f[BSE ] = &DD27[BSE *size_Mat];
+      D27.f[BNW ] = &DD27[BNW *size_Mat];
    }
    else
    {
-      D27.f[dirW   ] = &DD27[dirE   *size_Mat];
-      D27.f[dirE   ] = &DD27[dirW   *size_Mat];
-      D27.f[dirS   ] = &DD27[dirN   *size_Mat];
-      D27.f[dirN   ] = &DD27[dirS   *size_Mat];
-      D27.f[dirB   ] = &DD27[dirT   *size_Mat];
-      D27.f[dirT   ] = &DD27[dirB   *size_Mat];
-      D27.f[dirSW  ] = &DD27[dirNE  *size_Mat];
-      D27.f[dirNE  ] = &DD27[dirSW  *size_Mat];
-      D27.f[dirNW  ] = &DD27[dirSE  *size_Mat];
-      D27.f[dirSE  ] = &DD27[dirNW  *size_Mat];
-      D27.f[dirBW  ] = &DD27[dirTE  *size_Mat];
-      D27.f[dirTE  ] = &DD27[dirBW  *size_Mat];
-      D27.f[dirTW  ] = &DD27[dirBE  *size_Mat];
-      D27.f[dirBE  ] = &DD27[dirTW  *size_Mat];
-      D27.f[dirBS  ] = &DD27[dirTN  *size_Mat];
-      D27.f[dirTN  ] = &DD27[dirBS  *size_Mat];
-      D27.f[dirTS  ] = &DD27[dirBN  *size_Mat];
-      D27.f[dirBN  ] = &DD27[dirTS  *size_Mat];
-      D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
-      D27.f[dirBSW ] = &DD27[dirTNE *size_Mat];
-      D27.f[dirBNE ] = &DD27[dirTSW *size_Mat];
-      D27.f[dirBNW ] = &DD27[dirTSE *size_Mat];
-      D27.f[dirBSE ] = &DD27[dirTNW *size_Mat];
-      D27.f[dirTSW ] = &DD27[dirBNE *size_Mat];
-      D27.f[dirTNE ] = &DD27[dirBSW *size_Mat];
-      D27.f[dirTNW ] = &DD27[dirBSE *size_Mat];
-      D27.f[dirTSE ] = &DD27[dirBNW *size_Mat];
+      D27.f[W   ] = &DD27[E   *size_Mat];
+      D27.f[E   ] = &DD27[W   *size_Mat];
+      D27.f[S   ] = &DD27[N   *size_Mat];
+      D27.f[N   ] = &DD27[S   *size_Mat];
+      D27.f[B   ] = &DD27[T   *size_Mat];
+      D27.f[T   ] = &DD27[B   *size_Mat];
+      D27.f[SW  ] = &DD27[NE  *size_Mat];
+      D27.f[NE  ] = &DD27[SW  *size_Mat];
+      D27.f[NW  ] = &DD27[SE  *size_Mat];
+      D27.f[SE  ] = &DD27[NW  *size_Mat];
+      D27.f[BW  ] = &DD27[TE  *size_Mat];
+      D27.f[TE  ] = &DD27[BW  *size_Mat];
+      D27.f[TW  ] = &DD27[BE  *size_Mat];
+      D27.f[BE  ] = &DD27[TW  *size_Mat];
+      D27.f[BS  ] = &DD27[TN  *size_Mat];
+      D27.f[TN  ] = &DD27[BS  *size_Mat];
+      D27.f[TS  ] = &DD27[BN  *size_Mat];
+      D27.f[BN  ] = &DD27[TS  *size_Mat];
+      D27.f[REST] = &DD27[REST*size_Mat];
+      D27.f[BSW ] = &DD27[TNE *size_Mat];
+      D27.f[BNE ] = &DD27[TSW *size_Mat];
+      D27.f[BNW ] = &DD27[TSE *size_Mat];
+      D27.f[BSE ] = &DD27[TNW *size_Mat];
+      D27.f[TSW ] = &DD27[BNE *size_Mat];
+      D27.f[TNE ] = &DD27[BSW *size_Mat];
+      D27.f[TNW ] = &DD27[BSE *size_Mat];
+      D27.f[TSE ] = &DD27[BNW *size_Mat];
    }
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -692,20 +693,20 @@ extern "C" __global__ void GetPlaneConc27(real* Conc,
 
       if(geoD[k] == GEO_FLUID)
       {
-         Conc[k]    =   (D27.f[dirE   ])[ke  ]+ (D27.f[dirW   ])[kw  ]+ 
-                        (D27.f[dirN   ])[kn  ]+ (D27.f[dirS   ])[ks  ]+
-                        (D27.f[dirT   ])[kt  ]+ (D27.f[dirB   ])[kb  ]+
-                        (D27.f[dirNE  ])[kne ]+ (D27.f[dirSW  ])[ksw ]+
-                        (D27.f[dirSE  ])[kse ]+ (D27.f[dirNW  ])[knw ]+
-                        (D27.f[dirTE  ])[kte ]+ (D27.f[dirBW  ])[kbw ]+
-                        (D27.f[dirBE  ])[kbe ]+ (D27.f[dirTW  ])[ktw ]+
-                        (D27.f[dirTN  ])[ktn ]+ (D27.f[dirBS  ])[kbs ]+
-                        (D27.f[dirBN  ])[kbn ]+ (D27.f[dirTS  ])[kts ]+
-                        (D27.f[dirZERO])[kzero]+ 
-                        (D27.f[dirTNE ])[ktne]+ (D27.f[dirTSW ])[ktsw]+
-                        (D27.f[dirTSE ])[ktse]+ (D27.f[dirTNW ])[ktnw]+
-                        (D27.f[dirBNE ])[kbne]+ (D27.f[dirBSW ])[kbsw]+
-                        (D27.f[dirBSE ])[kbse]+ (D27.f[dirBNW ])[kbnw];
+         Conc[k]    =   (D27.f[E   ])[ke  ]+ (D27.f[W   ])[kw  ]+ 
+                        (D27.f[N   ])[kn  ]+ (D27.f[S   ])[ks  ]+
+                        (D27.f[T   ])[kt  ]+ (D27.f[B   ])[kb  ]+
+                        (D27.f[NE  ])[kne ]+ (D27.f[SW  ])[ksw ]+
+                        (D27.f[SE  ])[kse ]+ (D27.f[NW  ])[knw ]+
+                        (D27.f[TE  ])[kte ]+ (D27.f[BW  ])[kbw ]+
+                        (D27.f[BE  ])[kbe ]+ (D27.f[TW  ])[ktw ]+
+                        (D27.f[TN  ])[ktn ]+ (D27.f[BS  ])[kbs ]+
+                        (D27.f[BN  ])[kbn ]+ (D27.f[TS  ])[kts ]+
+                        (D27.f[REST])[kzero]+ 
+                        (D27.f[TNE ])[ktne]+ (D27.f[TSW ])[ktsw]+
+                        (D27.f[TSE ])[ktse]+ (D27.f[TNW ])[ktnw]+
+                        (D27.f[BNE ])[kbne]+ (D27.f[BSW ])[kbsw]+
+                        (D27.f[BSE ])[kbse]+ (D27.f[BNW ])[kbnw];
       }
    }   
 }

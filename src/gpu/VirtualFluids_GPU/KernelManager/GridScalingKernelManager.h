@@ -33,12 +33,11 @@
 #ifndef GridScalingKernelManager_H
 #define GridScalingKernelManager_H
 
-#include <memory>
+#include "LBM/LB.h"
 #include "PointerDefinitions.h"
 #include "VirtualFluids_GPU_export.h"
-#include "LBM/LB.h"
+#include <memory>
 
-//! \brief Class forwarding for Parameter
 class Parameter;
 class CudaMemoryManager;
 
@@ -47,32 +46,22 @@ class CudaMemoryManager;
 class VIRTUALFLUIDS_GPU_EXPORT GridScalingKernelManager
 {
 public:
-	//! \brief makes an object of GridScalingKernelManager
-	//! \param para shared pointer to instance of class Parameter
-    static SPtr<GridScalingKernelManager> make(std::shared_ptr<Parameter> parameter);
-    
-	//! \brief calls the device function of the fine to coarse grid interpolation kernel
-	void runFineToCoarseKernelLB(int level, uint *iCellFCC, uint *iCellFCF, uint k_FC, int streamIndex);
+    GridScalingKernelManager(SPtr<Parameter> parameter);
 
-	//! \brief calls the device function of the fine to coarse grid interpolation kernel (advection diffusion)
-    void runFineToCoarseKernelAD(int level);
+    //! \brief calls the device function of the fine to coarse grid interpolation kernel
+    void runFineToCoarseKernelLB(const int level, uint *iCellFCC, uint *iCellFCF, uint k_FC, int streamIndex) const;
 
-	//! \brief calls the device function of the coarse to fine grid interpolation kernel
-	void runCoarseToFineKernelLB(int level, uint *iCellCFC, uint *iCellCFF, uint k_CF, OffCF &offCF, int streamIndex);
+    //! \brief calls the device function of the fine to coarse grid interpolation kernel (advection diffusion)
+    void runFineToCoarseKernelAD(const int level) const;
 
-	//! \brief calls the device function of the coarse to fine grid interpolation kernel (advection diffusion)
-    void runCoarseToFineKernelAD(int level);
+    //! \brief calls the device function of the coarse to fine grid interpolation kernel
+    void runCoarseToFineKernelLB(const int level, uint *iCellCFC, uint *iCellCFF, uint k_CF, OffCF &offCF,
+                                 int streamIndex) const;
+
+    //! \brief calls the device function of the coarse to fine grid interpolation kernel (advection diffusion)
+    void runCoarseToFineKernelAD(const int level) const;
 
 private:
-	//! Class constructor
-	//! \param parameter shared pointer to instance of class Parameter
-	GridScalingKernelManager(SPtr<Parameter> parameter);
-	//! Class copy constructor
-	//! \param GridScalingKernelManager is a reference to GridScalingKernelManager object
-	GridScalingKernelManager(const GridScalingKernelManager&);
-
-	//! \property para is a shared pointer to an object of Parameter
-	SPtr<Parameter> para;
-
+    SPtr<Parameter> para;
 };
 #endif

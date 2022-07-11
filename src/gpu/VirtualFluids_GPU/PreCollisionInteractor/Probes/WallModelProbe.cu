@@ -156,7 +156,7 @@ void WallModelProbe::findPoints(Parameter* para, GridProvider* gridProvider, std
                             std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
                             int level)
 {
-    assert( para->getParD(level)->numberOfStressBCnodes > 0 && para->getHasWallModelMonitor() );
+    assert( para->getParD(level)->stressBC.numberOfBCnodes > 0 && para->getHasWallModelMonitor() );
 
     real dt = para->getTimeRatio();
     uint nt = uint((para->getTEnd()-this->tStartAvg)/this->tAvg);
@@ -213,7 +213,7 @@ void WallModelProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Paramete
     thrust::permutation_iterator<valIterator, indIterator> dpdz_iter_begin(dpdz_thrust, indices_thrust);
     thrust::permutation_iterator<valIterator, indIterator> dpdz_iter_end  (dpdz_thrust, indices_thrust+probeStruct->nIndices);
 
-    real N = para->getParD(level)->numberOfStressBCnodes;
+    real N = para->getParD(level)->stressBC.numberOfBCnodes;
     real n = (real)probeStruct->vals;
     int nPoints = probeStruct->nPoints;
 

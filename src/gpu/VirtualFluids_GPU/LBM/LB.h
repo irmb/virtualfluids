@@ -74,11 +74,13 @@ struct InitCondition
    uint PressOutID {0};
    uint PressInZ {1};
    uint PressOutZ {2};
-   std::vector<uint> devices {1, 0}; // one device with ID = 0
+   std::vector<uint> devices {0, 1}; // one device with ID = 0
    std::vector<int> GridX, GridY, GridZ, DistX, DistY, DistZ;
    std::vector<real> scaleLBMtoSI, translateLBMtoSI;
    std::vector<real> minCoordX, minCoordY, minCoordZ, maxCoordX, maxCoordY, maxCoordZ;
-   std::string fname, oPath;
+   std::string fname;
+   std::string oPath {"output/"};
+   std::string gridPath {"grid/"};
    std::string oPrefix {"MyFile"};
    std::string geometryFileC, geometryFileM, geometryFileF;
    std::string kFull, geoFull, geoVec, coordX, coordY, coordZ, neighborX, neighborY, neighborZ, neighborWSB, scaleCFC, scaleCFF, scaleFCC, scaleFCF, scaleOffsetCF, scaleOffsetFC;
@@ -177,6 +179,11 @@ typedef struct  Distri27{
    real* f[27];
 } Distributions27, DistributionReferences27;
 
+// Subgrid distances q 27
+typedef struct SubgridDist27{
+   real* q[27];
+} SubgridDistances27;
+
 //Q for second order BCs
 //! \struct to manage sub-grid-distances (q) for second order Boundary Conditions (BCs)
 typedef struct QforBC{
@@ -186,7 +193,7 @@ typedef struct QforBC{
    real* qread;
    real* q27[27];
    real* q19[19];
-   int numberOfBCnodes=0;
+   unsigned int numberOfBCnodes=0;
    int kArray;
    real *Vx,      *Vy,      *Vz;
    real *Vx1,     *Vy1,     *Vz1;

@@ -45,8 +45,8 @@
 #include "VirtualFluids_GPU/LBM/Simulation.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
-
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
+#include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -63,22 +63,22 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Tesla 03
-// std::string outPath("E:/temp/MusselOysterResults/");
-// std::string gridPathParent = "E:/temp/GridMussel/";
-// std::string stlPath("C:/Users/Master/Documents/MasterAnna/STL/");
-// std::string simulationName("MusselOyster");
+// const std::string outPath("E:/temp/MusselOysterResults/");
+// const std::string gridPathParent = "E:/temp/GridMussel/";
+// const std::string stlPath("C:/Users/Master/Documents/MasterAnna/STL/");
+// const std::string simulationName("MusselOyster");
 
 // Aragorn
-// std::string outPath("/workspaces/VirtualFluids_dev/output/MusselOysterResults/");
-// std::string gridPathParent = "/workspaces/VirtualFluids_dev/output/MusselOysterResults/grid/";
-// std::string stlPath("/workspaces/VirtualFluids_dev/stl/MusselOyster/");
-// std::string simulationName("MusselOyster");
+const std::string outPath("./output/MusselOysterResults/");
+const std::string gridPathParent = "./output/MusselOysterResults/grid/";
+const std::string stlPath("./stl/MusselOyster/");
+const std::string simulationName("MusselOyster");
 
 // Phoenix
-std::string outPath("/work/y0078217/Results/MusselOysterResults/");
-std::string gridPathParent = "/work/y0078217/Grids/GridMusselOyster/";
-std::string stlPath("/home/y0078217/STL/MusselOyster/");
-std::string simulationName("MusselOyster");
+// const std::string outPath("/work/y0078217/Results/MusselOysterResults/");
+// const std::string gridPathParent = "/work/y0078217/Grids/GridMusselOyster/";
+// const std::string stlPath("/home/y0078217/STL/MusselOyster/");
+// const std::string simulationName("MusselOyster");
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -101,6 +101,7 @@ void multipleLevel(const std::string &configPath)
     std::cout << configPath << std::endl;
     config.load(configPath);
     SPtr<Parameter> para = std::make_shared<Parameter>(config, communicator.getNummberOfProcess(), communicator.getPID());
+    BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -130,8 +131,8 @@ void multipleLevel(const std::string &configPath)
         gridPathParent +
         bivalveType); // only for GridGenerator, for GridReader the gridPath needs to be set in the config file
 
-    // real dxGrid = (real)2.0; // 2.0
-    real dxGrid = (real)1.0; // 1.0
+    real dxGrid = (real)2.0; // 2.0
+    // real dxGrid = (real)1.0; // 1.0
     if (para->getNumprocs() == 8)
         dxGrid = 0.5;
     real vxLB            = (real)0.051; // LB units
@@ -565,6 +566,11 @@ void multipleLevel(const std::string &configPath)
 
             SimulationFileWriter::write(gridPath, gridBuilder, FILEFORMAT::BINARY);
         }
+
+        bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityAndPressureCompressible);
+        bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflective);
+        bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipCompressible);
+
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -577,7 +583,7 @@ void multipleLevel(const std::string &configPath)
         gridGenerator = GridProvider::makeGridReader(FILEFORMAT::BINARY, para, cudaMemoryManager);
     }
 
-    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator);
+    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory);
     sim.run();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

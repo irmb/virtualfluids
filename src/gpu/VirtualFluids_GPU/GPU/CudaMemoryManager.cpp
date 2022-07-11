@@ -1474,9 +1474,6 @@ void CudaMemoryManager::cudaAllocSlipBC(int lev)
 {
     unsigned int mem_size_Q_k      = sizeof(int)*parameter->getParH(lev)->slipBC.numberOfBCnodes;
     unsigned int mem_size_Q_q      = sizeof(real)*parameter->getParH(lev)->slipBC.numberOfBCnodes;
-    //unsigned int mem_size_Q_value  = sizeof(long long)*parameter->getParH(lev)->slipBC.kQ; //Geller
-    //unsigned int mem_size_Q_q_read = sizeof(real)*parameter->getParH(lev)->numberOfSlipBCnodesRead;     //Geller
-
     //Host
     checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->slipBC.q27[0]), parameter->getD3Qxx()*mem_size_Q_q      ));
     checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->slipBC.k),                            mem_size_Q_k      ));

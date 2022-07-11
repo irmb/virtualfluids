@@ -35,16 +35,11 @@
 #include "GPU/GPU_Interface.h"
 #include "Parameter/Parameter.h"
 #include "Parameter/CudaStreamManager.h"
-
-SPtr<GridScalingKernelManager> GridScalingKernelManager::make(SPtr<Parameter> parameter){
-    return SPtr<GridScalingKernelManager>(new GridScalingKernelManager(parameter));
-}
+#include "PreCollisionInteractor/PreCollisionInteractor.h"
 
 GridScalingKernelManager::GridScalingKernelManager(SPtr<Parameter> parameter): para(parameter){}
 
-GridScalingKernelManager::GridScalingKernelManager(const GridScalingKernelManager&){}
-
-void GridScalingKernelManager::runFineToCoarseKernelLB(int level, uint *iCellFCC, uint *iCellFCF, uint k_FC, int streamIndex){
+void GridScalingKernelManager::runFineToCoarseKernelLB(const int level, uint *iCellFCC, uint *iCellFCF, uint k_FC, int streamIndex) const{
 
     cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
 
@@ -263,7 +258,7 @@ void GridScalingKernelManager::runFineToCoarseKernelLB(int level, uint *iCellFCC
     //getLastCudaError("ScaleFC27 execution failed");
 }
 
-void GridScalingKernelManager::runFineToCoarseKernelAD(int level)
+void GridScalingKernelManager::runFineToCoarseKernelAD(const int level) const
 {
     //A D V E C T I O N    D I F F U S I O N
 
@@ -337,7 +332,7 @@ void GridScalingKernelManager::runFineToCoarseKernelAD(int level)
     }
 }
 
-void GridScalingKernelManager::runCoarseToFineKernelLB(int level, uint *iCellCFC, uint *iCellCFF, uint k_CF, OffCF &offCF, int streamIndex)
+void GridScalingKernelManager::runCoarseToFineKernelLB(const int level, uint *iCellCFC, uint *iCellCFF, uint k_CF, OffCF &offCF, int streamIndex) const
 {
     cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
 
@@ -556,7 +551,7 @@ void GridScalingKernelManager::runCoarseToFineKernelLB(int level, uint *iCellCFC
     //getLastCudaError("ScaleCF27 execution failed");
 }
 
-void GridScalingKernelManager::runCoarseToFineKernelAD(int level)
+void GridScalingKernelManager::runCoarseToFineKernelAD(const int level) const
 {
     // A D V E C T I O N    D I F F U S I O N
 

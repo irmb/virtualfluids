@@ -6,7 +6,7 @@
 #include <stdio.h>
 // #include <math.h>
 #include "Core/StringUtilities/StringUtil.h"
-#include "LBM/D3Q27.h"
+#include "lbm/constants/D3Q27.h"
 #include "LBM/LB.h"
 #include "Parameter/Parameter.h"
 #include "basics/utilities/UbSystem.h"
@@ -210,7 +210,7 @@ void writeBcPointsDebug(Parameter *para)
     nodesVec2.resize(nodeNumberVec * 8);
     int nodeCount2 = 0;
     for (int level = 0; level <= para->getMaxLevel(); level++) {
-        for (int u = 0; u < para->getParH(level)->noSlipBC.numberOfBCnodes; u++) {
+        for (uint u = 0; u < para->getParH(level)->noSlipBC.numberOfBCnodes; u++) {
             int pos = para->getParH(level)->noSlipBC.k[u];
 
             double x1 = para->getParH(level)->coordinateX[pos];
@@ -238,7 +238,7 @@ void writePressPointsDebug(Parameter *para)
     nodesVec.resize(nodeNumberVec);
     int nodeCount2 = 0;
     for (int level = 0; level <= para->getMaxLevel(); level++) {
-        for (int u = 0; u < para->getParH(level)->pressureBC.numberOfBCnodes; u++) {
+        for (uint u = 0; u < para->getParH(level)->pressureBC.numberOfBCnodes; u++) {
             int pos = para->getParH(level)->pressureBC.k[u];
 
             double x1 = para->getParH(level)->coordinateX[pos];
@@ -265,7 +265,7 @@ void writePressNeighborPointsDebug(Parameter *para)
     nodesVec.resize(nodeNumberVec);
     int nodeCount2 = 0;
     for (int level = 0; level <= para->getMaxLevel(); level++) {
-        for (int u = 0; u < para->getParH(level)->pressureBC.numberOfBCnodes; u++) {
+        for (uint u = 0; u < para->getParH(level)->pressureBC.numberOfBCnodes; u++) {
             int pos = para->getParH(level)->pressureBC.kN[u];
 
             real x1 = para->getParH(level)->coordinateX[pos];

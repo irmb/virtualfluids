@@ -353,7 +353,7 @@ void printRE(Parameter* para, CudaMemoryManager* cudaMemoryManager, int timestep
 	//////////////////////////////////////////////////////////////////////////
 	//fill file with data
 	bool doNothing = false;
-	for (int i = 0; i < para->getParH(lev)->pressureBC.numberOfBCnodes; i++)
+	for (unsigned int i = 0; i < para->getParH(lev)->pressureBC.numberOfBCnodes; i++)
 	{
 		doNothing = false;
 		for (std::size_t j = 0; j < 27; j++)

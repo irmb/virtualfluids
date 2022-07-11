@@ -117,8 +117,6 @@ void GridProvider::setVelocitySizePerLevel(int level, int sizePerLevel) const
 {
     para->getParH(level)->velocityBC.numberOfBCnodes = sizePerLevel;
     para->getParD(level)->velocityBC.numberOfBCnodes = sizePerLevel;
-    para->getParH(level)->numberOfVeloBCnodes = sizePerLevel;
-    para->getParD(level)->numberOfVeloBCnodes = sizePerLevel;
     para->getParH(level)->numberOfVeloBCnodesRead = sizePerLevel * para->getD3Qxx();
     para->getParD(level)->numberOfVeloBCnodesRead = sizePerLevel * para->getD3Qxx();
 }
