@@ -26,7 +26,7 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file LBKernelManager.h
+//! \file BCKernelManager.h
 //! \ingroup KernelManager
 //! \author Martin Schoenherr
 //=======================================================================================
@@ -48,8 +48,8 @@ struct LBMSimulationParameter;
 using boundaryCondition = std::function<void(LBMSimulationParameter *, QforBoundaryConditions *)>;
 using boundaryConditionPara = std::function<void(Parameter *, QforBoundaryConditions *, const int level)>;
 
-//! \class LBKernelManager
-//! \brief manage the cuda kernel calls
+//! \class BCKernelManager
+//! \brief manage the cuda kernel calls to boundary conditions
 class VIRTUALFLUIDS_GPU_EXPORT BCKernelManager
 {
 public:
@@ -69,10 +69,10 @@ public:
     //! \brief calls the device function of the geometry boundary condition (pre-collision)
     void runGeoBCKernelPre(const int level, unsigned int t, CudaMemoryManager *cudaMemoryManager) const;
 
-    //! \brief calls the device function of the slip boundary condition
+    //! \brief calls the device function of the slip boundary condition (post-collision)
     void runSlipBCKernelPost(const int level) const;
 
-    //! \brief calls the device function of the no-slip boundary condition
+    //! \brief calls the device function of the no-slip boundary condition (post-collision)
     void runNoSlipBCKernelPost(const int level) const;
 
     //! \brief calls the device function of the pressure boundary condition (pre-collision)
@@ -81,14 +81,11 @@ public:
     //! \brief calls the device function of the pressure boundary condition (post-collision)
     void runPressureBCKernelPost(const int level) const;
 
-    //! \brief calls the device function of the outflow boundary condition
+    //! \brief calls the device function of the outflow boundary condition (pre-collision)
     void runOutflowBCKernelPre(const int level) const;
 
-    //! \brief calls the device function of the stress wall model
+    //! \brief calls the device function of the stress wall model (post-collision)
     void runStressWallModelKernelPost(const int level) const;
-
-    //! \brief calls the device function that calculates the macroscopic values
-    void calculateMacroscopicValues(const int level) const;
 
 private:
     SPtr<Parameter> para;
