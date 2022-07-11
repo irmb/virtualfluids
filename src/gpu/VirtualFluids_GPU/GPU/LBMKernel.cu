@@ -523,9 +523,9 @@ extern "C" void KernelADincomp27( unsigned int numberOfThreads,
 								  int size_Mat,
 								  bool EvenOrOdd)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LB_Kernel_AD_Incomp_27<<< grid.grid, grid.threads >>>( diffusivity,
+	LB_Kernel_AD_Incomp_27<<< grid.grid, grid.threads >>>( diffusivity,
 													bcMatD,
 													neighborX,
 													neighborY,
@@ -534,7 +534,7 @@ extern "C" void KernelADincomp27( unsigned int numberOfThreads,
 													DD27,
 													size_Mat,
 													EvenOrOdd);
-      getLastCudaError("LB_Kernel_AD_Incomp_27 execution failed");
+	getLastCudaError("LB_Kernel_AD_Incomp_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void Init27( int myid,
@@ -556,7 +556,7 @@ extern "C" void Init27( int myid,
    dim3 threads       ( grid_nx, 1, 1 );
    dim3 grid          ( grid_ny, grid_nz );   // Gitter fuer Kollision und Propagation
 
-      LBInit27<<< grid, threads >>> (  myid,
+	LBInit27<<< grid, threads >>> (  myid,
                                        numprocs,
                                        u0,
                                        geoD,
@@ -571,7 +571,7 @@ extern "C" void Init27( int myid,
                                        DD,
                                        level,
                                        maxlevel);
-      getLastCudaError("LBInit27 execution failed");
+	getLastCudaError("LBInit27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void InitNonEqPartSP27( unsigned int numberOfThreads,
@@ -589,9 +589,9 @@ extern "C" void InitNonEqPartSP27( unsigned int numberOfThreads,
                                    real omega,
                                    bool EvenOrOdd)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LBInitNonEqPartSP27<<< grid.grid, grid.threads >>>( neighborX,
+	LBInitNonEqPartSP27<<< grid.grid, grid.threads >>>( neighborX,
                                                 neighborY,
                                                 neighborZ,
                                                 neighborWSB,
@@ -604,7 +604,7 @@ extern "C" void InitNonEqPartSP27( unsigned int numberOfThreads,
                                                 DD,
                                                 omega,
                                                 EvenOrOdd);
-      getLastCudaError("LBInitNonEqPartSP27 execution failed");
+	getLastCudaError("LBInitNonEqPartSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void InitThS7(     unsigned int numberOfThreads,
@@ -620,9 +620,9 @@ extern "C" void InitThS7(     unsigned int numberOfThreads,
                               real* DD7,
                               bool EvenOrOdd)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      InitAD7<<< grid.grid, grid.threads >>>( neighborX,
+	InitAD7<<< grid.grid, grid.threads >>>( neighborX,
                                        neighborY,
                                        neighborZ,
                                        geoD,
@@ -633,7 +633,7 @@ extern "C" void InitThS7(     unsigned int numberOfThreads,
                                        size_Mat,
                                        DD7,
                                        EvenOrOdd);
-      getLastCudaError("InitAD7 execution failed");
+	getLastCudaError("InitAD7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void InitADDev27( unsigned int numberOfThreads,
@@ -649,9 +649,9 @@ extern "C" void InitADDev27( unsigned int numberOfThreads,
                            real* DD27,
                            bool EvenOrOdd)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      InitAD27<<< grid.grid, grid.threads >>>(neighborX,
+	InitAD27<<< grid.grid, grid.threads >>>(neighborX,
                                        neighborY,
                                        neighborZ,
                                        geoD,
@@ -662,7 +662,7 @@ extern "C" void InitADDev27( unsigned int numberOfThreads,
                                        size_Mat,
                                        DD27,
                                        EvenOrOdd);
-      getLastCudaError("InitAD27 execution failed");
+	getLastCudaError("InitAD27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void PostProcessorF3_2018Fehlberg(
@@ -683,10 +683,9 @@ extern "C" void PostProcessorF3_2018Fehlberg(
 	real* forces,
 	bool EvenOrOdd)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-
-	  LB_PostProcessor_F3_2018_Fehlberg <<< grid.grid, grid.threads >>> (   omega,
+	LB_PostProcessor_F3_2018_Fehlberg <<< grid.grid, grid.threads >>> (   omega,
 																  bcMatD,
 																  neighborX,
 																  neighborY,
@@ -701,7 +700,7 @@ extern "C" void PostProcessorF3_2018Fehlberg(
 																  level,
 																  forces,
 																  EvenOrOdd);
-      getLastCudaError("LB_PostProcessor_F3_2018_Fehlberg execution failed");
+	getLastCudaError("LB_PostProcessor_F3_2018_Fehlberg execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void CalcMac27( real* vxD,
@@ -722,7 +721,7 @@ extern "C" void CalcMac27( real* vxD,
    dim3 threads       ( grid_nx, 1, 1 );
    dim3 grid          ( grid_ny, grid_nz );
 
-      LBCalcMac27<<< grid, threads >>> (  vxD,
+	LBCalcMac27<<< grid, threads >>> (  vxD,
                                           vyD,
                                           vzD,
                                           rhoD,
@@ -733,7 +732,7 @@ extern "C" void CalcMac27( real* vxD,
                                           size_Mat,
                                           DD,
                                           isEvenTimestep);
-      getLastCudaError("LBCalcMac27 execution failed");
+	getLastCudaError("LBCalcMac27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void CalcMacSP27( real* vxD,
@@ -750,9 +749,9 @@ extern "C" void CalcMacSP27( real* vxD,
                              real* DD,
                              bool isEvenTimestep)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LBCalcMacSP27<<< grid.grid, grid.threads >>> (   vxD,
+	LBCalcMacSP27<<< grid.grid, grid.threads >>> (   vxD,
                                              vyD,
                                              vzD,
                                              rhoD,
@@ -764,7 +763,7 @@ extern "C" void CalcMacSP27( real* vxD,
                                              size_Mat,
                                              DD,
                                              isEvenTimestep);
-      getLastCudaError("LBCalcMacSP27 execution failed");
+	getLastCudaError("LBCalcMacSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void CalcMacCompSP27( real* vxD,
@@ -781,9 +780,9 @@ extern "C" void CalcMacCompSP27( real* vxD,
 								 real* DD,
 								 bool isEvenTimestep)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LBCalcMacCompSP27<<< grid.grid, grid.threads >>> (   vxD,
+	LBCalcMacCompSP27<<< grid.grid, grid.threads >>> (   vxD,
 												 vyD,
 												 vzD,
 												 rhoD,
@@ -795,7 +794,7 @@ extern "C" void CalcMacCompSP27( real* vxD,
 												 size_Mat,
 												 DD,
 												 isEvenTimestep);
-      getLastCudaError("LBCalcMacSP27 execution failed");
+	getLastCudaError("LBCalcMacSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void CalcMacThS7(  real* Conc,
@@ -808,9 +807,9 @@ extern "C" void CalcMacThS7(  real* Conc,
                               real* DD7,
                               bool isEvenTimestep)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      CalcConc7<<< grid.grid, grid.threads >>> (Conc,
+	CalcConc7<<< grid.grid, grid.threads >>> (Conc,
                                           geoD,
                                           neighborX,
                                           neighborY,
@@ -818,7 +817,7 @@ extern "C" void CalcMacThS7(  real* Conc,
                                           size_Mat,
                                           DD7,
                                           isEvenTimestep);
-      getLastCudaError("CalcConc7 execution failed");
+	getLastCudaError("CalcConc7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void PlaneConcThS7(real* Conc,
@@ -833,9 +832,9 @@ extern "C" void PlaneConcThS7(real* Conc,
 							  real* DD7,
 							  bool isEvenTimestep)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfPointskPC);
+   	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfPointskPC);
 
-      GetPlaneConc7<<< grid.grid, grid.threads >>> (	Conc,
+	GetPlaneConc7<<< grid.grid, grid.threads >>> (	Conc,
 												kPC,
 												numberOfPointskPC,
 												geoD,
@@ -845,7 +844,7 @@ extern "C" void PlaneConcThS7(real* Conc,
 												size_Mat,
 												DD7,
 												isEvenTimestep);
-      getLastCudaError("GetPlaneConc7 execution failed");
+	getLastCudaError("GetPlaneConc7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void PlaneConcThS27(real* Conc,
@@ -860,9 +859,9 @@ extern "C" void PlaneConcThS27(real* Conc,
 							   real* DD27,
 							   bool isEvenTimestep)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfPointskPC);
+   	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfPointskPC);
 
-      GetPlaneConc27<<< grid.grid, grid.threads >>> (	Conc,
+	GetPlaneConc27<<< grid.grid, grid.threads >>> (	Conc,
 												kPC,
 												numberOfPointskPC,
 												geoD,
@@ -872,7 +871,7 @@ extern "C" void PlaneConcThS27(real* Conc,
 												size_Mat,
 												DD27,
 												isEvenTimestep);
-      getLastCudaError("GetPlaneConc27 execution failed");
+	getLastCudaError("GetPlaneConc27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void CalcConcentration27( unsigned int numberOfThreads,
@@ -885,9 +884,9 @@ extern "C" void CalcConcentration27( unsigned int numberOfThreads,
                                      real* DD27,
                                      bool isEvenTimestep)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      CalcConc27<<< grid.grid, grid.threads >>> (  Conc,
+	CalcConc27<<< grid.grid, grid.threads >>> (  Conc,
                                              geoD,
                                              neighborX,
                                              neighborY,
@@ -895,7 +894,7 @@ extern "C" void CalcConcentration27( unsigned int numberOfThreads,
                                              size_Mat,
                                              DD27,
                                              isEvenTimestep);
-      getLastCudaError("CalcConc27 execution failed");
+	getLastCudaError("CalcConc27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void CalcMedSP27(  real* vxD,
@@ -912,9 +911,9 @@ extern "C" void CalcMedSP27(  real* vxD,
                               real* DD,
                               bool isEvenTimestep)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LBCalcMedSP27<<< grid.grid, grid.threads >>> (   vxD,
+	LBCalcMedSP27<<< grid.grid, grid.threads >>> (   vxD,
                                              vyD,
                                              vzD,
                                              rhoD,
@@ -926,7 +925,7 @@ extern "C" void CalcMedSP27(  real* vxD,
                                              size_Mat,
                                              DD,
                                              isEvenTimestep);
-      getLastCudaError("LBCalcMedSP27 execution failed");
+	getLastCudaError("LBCalcMedSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void CalcMedCompSP27(  real* vxD,
@@ -943,9 +942,9 @@ extern "C" void CalcMedCompSP27(  real* vxD,
 								  real* DD,
 								  bool isEvenTimestep)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LBCalcMedCompSP27<<< grid.grid, grid.threads >>> (   vxD,
+	LBCalcMedCompSP27<<< grid.grid, grid.threads >>> (   vxD,
 												 vyD,
 												 vzD,
 												 rhoD,
@@ -957,7 +956,7 @@ extern "C" void CalcMedCompSP27(  real* vxD,
 												 size_Mat,
 												 DD,
 												 isEvenTimestep);
-      getLastCudaError("LBCalcMedSP27 execution failed");
+	getLastCudaError("LBCalcMedSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void CalcMedCompAD27(
@@ -977,7 +976,7 @@ extern "C" void CalcMedCompAD27(
 	real* DD_AD,
 	bool isEvenTimestep)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
 	LBCalcMedCompAD27 <<< grid.grid, grid.threads >>> (
 		vxD,
@@ -1011,9 +1010,9 @@ extern "C" void CalcMacMedSP27(  real* vxD,
                                  unsigned int numberOfThreads,
                                  bool isEvenTimestep)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LBCalcMacMedSP27<<< grid.grid, grid.threads >>> (   vxD,
+	LBCalcMacMedSP27<<< grid.grid, grid.threads >>> (   vxD,
                                                 vyD,
                                                 vzD,
                                                 rhoD,
@@ -1025,7 +1024,7 @@ extern "C" void CalcMacMedSP27(  real* vxD,
                                                 tdiff,
                                                 size_Mat,
                                                 isEvenTimestep);
-      getLastCudaError("LBCalcMacMedSP27 execution failed");
+	getLastCudaError("LBCalcMacMedSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void ResetMedianValuesSP27(
@@ -1091,9 +1090,9 @@ extern "C" void Calc2ndMomentsIncompSP27(real* kxyFromfcNEQ,
 										 real* DD,
 										 bool isEvenTimestep)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LBCalc2ndMomentsIncompSP27<<< grid.grid, grid.threads >>> (  kxyFromfcNEQ,
+	LBCalc2ndMomentsIncompSP27<<< grid.grid, grid.threads >>> (  kxyFromfcNEQ,
 														 kyzFromfcNEQ,
 														 kxzFromfcNEQ,
 														 kxxMyyFromfcNEQ,
@@ -1105,7 +1104,7 @@ extern "C" void Calc2ndMomentsIncompSP27(real* kxyFromfcNEQ,
 														 size_Mat,
 														 DD,
 														 isEvenTimestep);
-      getLastCudaError("LBCalc2ndMomentsIncompSP27 execution failed");
+	getLastCudaError("LBCalc2ndMomentsIncompSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void Calc2ndMomentsCompSP27( real* kxyFromfcNEQ,
@@ -1122,9 +1121,9 @@ extern "C" void Calc2ndMomentsCompSP27( real* kxyFromfcNEQ,
 										real* DD,
 										bool isEvenTimestep)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LBCalc2ndMomentsCompSP27<<< grid.grid, grid.threads >>> (kxyFromfcNEQ,
+	LBCalc2ndMomentsCompSP27<<< grid.grid, grid.threads >>> (kxyFromfcNEQ,
 													 kyzFromfcNEQ,
 													 kxzFromfcNEQ,
 													 kxxMyyFromfcNEQ,
@@ -1136,7 +1135,7 @@ extern "C" void Calc2ndMomentsCompSP27( real* kxyFromfcNEQ,
 													 size_Mat,
 													 DD,
 													 isEvenTimestep);
-      getLastCudaError("LBCalc2ndMomentsCompSP27 execution failed");
+	getLastCudaError("LBCalc2ndMomentsCompSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void Calc3rdMomentsIncompSP27(real* CUMbbb,
@@ -1155,9 +1154,9 @@ extern "C" void Calc3rdMomentsIncompSP27(real* CUMbbb,
 										 real* DD,
 										 bool isEvenTimestep)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LBCalc3rdMomentsIncompSP27<<< grid.grid, grid.threads >>> (  CUMbbb,
+	LBCalc3rdMomentsIncompSP27<<< grid.grid, grid.threads >>> (  CUMbbb,
 														 CUMabc,
 														 CUMbac,
 														 CUMbca,
@@ -1171,7 +1170,7 @@ extern "C" void Calc3rdMomentsIncompSP27(real* CUMbbb,
 														 DD,
 														 size_Mat,
 														 isEvenTimestep);
-      getLastCudaError("LBCalc3rdMomentsIncompSP27 execution failed");
+	getLastCudaError("LBCalc3rdMomentsIncompSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void Calc3rdMomentsCompSP27( real* CUMbbb,
@@ -1190,9 +1189,9 @@ extern "C" void Calc3rdMomentsCompSP27( real* CUMbbb,
 										real* DD,
 										bool isEvenTimestep)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LBCalc3rdMomentsCompSP27<<< grid.grid, grid.threads >>> (CUMbbb,
+	LBCalc3rdMomentsCompSP27<<< grid.grid, grid.threads >>> (CUMbbb,
 													 CUMabc,
 													 CUMbac,
 													 CUMbca,
@@ -1206,7 +1205,7 @@ extern "C" void Calc3rdMomentsCompSP27( real* CUMbbb,
 													 DD,
 													 size_Mat,
 													 isEvenTimestep);
-      getLastCudaError("LBCalc3rdMomentsCompSP27 execution failed");
+	getLastCudaError("LBCalc3rdMomentsCompSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void CalcHigherMomentsIncompSP27(real* CUMcbb,
@@ -1228,9 +1227,9 @@ extern "C" void CalcHigherMomentsIncompSP27(real* CUMcbb,
 											real* DD,
 											bool isEvenTimestep)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LBCalcHigherMomentsIncompSP27<<< grid.grid, grid.threads >>> (CUMcbb,
+	LBCalcHigherMomentsIncompSP27<<< grid.grid, grid.threads >>> (CUMcbb,
 														  CUMbcb,
 														  CUMbbc,
 														  CUMcca,
@@ -1247,7 +1246,7 @@ extern "C" void CalcHigherMomentsIncompSP27(real* CUMcbb,
 														  DD,
 														  size_Mat,
 														  isEvenTimestep);
-      getLastCudaError("LBCalcHigherMomentsIncompSP27 execution failed");
+	getLastCudaError("LBCalcHigherMomentsIncompSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void CalcHigherMomentsCompSP27(  real* CUMcbb,
@@ -1269,9 +1268,9 @@ extern "C" void CalcHigherMomentsCompSP27(  real* CUMcbb,
 											real* DD,
 											bool isEvenTimestep)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LBCalcHigherMomentsCompSP27<<< grid.grid, grid.threads >>> (  CUMcbb,
+	LBCalcHigherMomentsCompSP27<<< grid.grid, grid.threads >>> (  CUMcbb,
 														  CUMbcb,
 														  CUMbbc,
 														  CUMcca,
@@ -1288,7 +1287,7 @@ extern "C" void CalcHigherMomentsCompSP27(  real* CUMcbb,
 														  DD,
 														  size_Mat,
 														  isEvenTimestep);
-      getLastCudaError("LBCalcHigherMomentsCompSP27 execution failed");
+	getLastCudaError("LBCalcHigherMomentsCompSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void LBCalcMeasurePoints27(real* vxMP,
@@ -1308,9 +1307,9 @@ extern "C" void LBCalcMeasurePoints27(real* vxMP,
                                       unsigned int numberOfThreads,
                                       bool isEvenTimestep)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfPointskMP);
+   	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfPointskMP);
 
-      LBCalcMeasurePoints<<< grid.grid, grid.threads >>> (vxMP,
+	LBCalcMeasurePoints<<< grid.grid, grid.threads >>> (vxMP,
                                                 vyMP,
                                                 vzMP,
                                                 rhoMP,
@@ -1325,7 +1324,7 @@ extern "C" void LBCalcMeasurePoints27(real* vxMP,
                                                 size_Mat,
                                                 DD,
                                                 isEvenTimestep);
-      getLastCudaError("LBCalcMeasurePoints execution failed");
+	getLastCudaError("LBCalcMeasurePoints execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void BcPress27( int nx,
@@ -1341,10 +1340,10 @@ extern "C" void BcPress27( int nx,
                            unsigned int size_Mat,
                            bool isEvenTimestep)
 {
-   dim3 threads       ( grid_nx, 1, 1 );
-   dim3 grid          ( grid_ny, 1 );
+	dim3 threads       ( grid_nx, 1, 1 );
+	dim3 grid          ( grid_ny, 1 );
 
-      LB_BC_Press_East27<<< grid, threads >>> ( nx,
+	LB_BC_Press_East27<<< grid, threads >>> ( nx,
                                                 ny,
                                                 tz,
                                                 bcMatD,
@@ -1354,7 +1353,7 @@ extern "C" void BcPress27( int nx,
                                                 DD,
                                                 size_Mat,
                                                 isEvenTimestep);
-      getLastCudaError("LB_BC_Press_East27 execution failed");
+	getLastCudaError("LB_BC_Press_East27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void BcVel27(int nx,
@@ -1373,10 +1372,10 @@ extern "C" void BcVel27(int nx,
                         real u0x,
                         real om)
 {
-   dim3 threads       ( grid_nx, 1, 1 );
-   dim3 grid          ( grid_ny, 1 );
+	dim3 threads       ( grid_nx, 1, 1 );
+	dim3 grid          ( grid_ny, 1 );
 
-      LB_BC_Vel_West_27<<< grid, threads >>> (  nx,
+	LB_BC_Vel_West_27<<< grid, threads >>> (  nx,
                                                 ny,
                                                 nz,
                                                 itz,
@@ -1391,7 +1390,7 @@ extern "C" void BcVel27(int nx,
                                                 grid_nx,
                                                 grid_ny,
                                                 om);
-      getLastCudaError("LB_BC_Vel_West_27 execution failed");
+	getLastCudaError("LB_BC_Vel_West_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QADPressDev7( unsigned int numberOfThreads,
@@ -1413,10 +1412,9 @@ extern "C" void QADPressDev7( unsigned int numberOfThreads,
                               unsigned int size_Mat,
                               bool isEvenTimestep)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
+   	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-
-      QADPress7<<< grid.grid, grid.threads >>>( nx,
+	QADPress7<<< grid.grid, grid.threads >>>( nx,
                                        ny,
                                        DD,
                                        DD7,
@@ -1433,7 +1431,7 @@ extern "C" void QADPressDev7( unsigned int numberOfThreads,
                                        neighborZ,
                                        size_Mat,
                                        isEvenTimestep);
-      getLastCudaError("QADPress7 execution failed");
+	getLastCudaError("QADPress7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QADPressDev27(unsigned int numberOfThreads,
@@ -1455,10 +1453,9 @@ extern "C" void QADPressDev27(unsigned int numberOfThreads,
                               unsigned int size_Mat,
                               bool isEvenTimestep)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
+   	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-
-      QADPress27<<< grid.grid, grid.threads >>>(   nx,
+	QADPress27<<< grid.grid, grid.threads >>>(   nx,
                                           ny,
                                           DD,
                                           DD27,
@@ -1475,7 +1472,7 @@ extern "C" void QADPressDev27(unsigned int numberOfThreads,
                                           neighborZ,
                                           size_Mat,
                                           isEvenTimestep);
-      getLastCudaError("QADPress27 execution failed");
+	getLastCudaError("QADPress27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QADPressNEQNeighborDev27(
@@ -1493,10 +1490,9 @@ extern "C" void QADPressNEQNeighborDev27(
 										)
 {
 
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
+	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-
-   QADPressNEQNeighbor27<<< grid.grid, grid.threads >>>(
+	QADPressNEQNeighbor27<<< grid.grid, grid.threads >>>(
 												DD,
 												DD27,
 												k_Q,
@@ -1508,7 +1504,7 @@ extern "C" void QADPressNEQNeighborDev27(
 												size_Mat,
 												isEvenTimestep
 											  );
-   getLastCudaError("QADPressNEQNeighbor27 execution failed");
+   	getLastCudaError("QADPressNEQNeighbor27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QADVelDev7(unsigned int numberOfThreads,
@@ -1530,10 +1526,10 @@ extern "C" void QADVelDev7(unsigned int numberOfThreads,
                            unsigned int size_Mat,
                            bool isEvenTimestep)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
+	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
 
-      QADVel7<<< grid.grid, grid.threads >>> (  nx,
+	QADVel7<<< grid.grid, grid.threads >>> (  nx,
                                        ny,
                                        DD,
                                        DD7,
@@ -1550,7 +1546,7 @@ extern "C" void QADVelDev7(unsigned int numberOfThreads,
                                        neighborZ,
                                        size_Mat,
                                        isEvenTimestep);
-      getLastCudaError("QADVel7 execution failed");
+	getLastCudaError("QADVel7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QADVelDev27(  unsigned int numberOfThreads,
@@ -1572,27 +1568,27 @@ extern "C" void QADVelDev27(  unsigned int numberOfThreads,
                               unsigned int size_Mat,
                               bool isEvenTimestep)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
+	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
 
-      QADVel27<<< grid.grid, grid.threads >>> (nx,
-                                      ny,
-                                      DD,
-                                      DD27,
-                                      temp,
-                                      velo,
-                                      diffusivity,
-                                      k_Q,
-                                      QQ,
-                                      sizeQ,
-                                      numberOfBCnodes,
-                                      om1,
-                                      neighborX,
-                                      neighborY,
-                                      neighborZ,
-                                      size_Mat,
-                                      isEvenTimestep);
-      getLastCudaError("QADVel27 execution failed");
+		QADVel27<<< grid.grid, grid.threads >>>(nx,
+												ny,
+												DD,
+												DD27,
+												temp,
+												velo,
+												diffusivity,
+												k_Q,
+												QQ,
+												sizeQ,
+												numberOfBCnodes,
+												om1,
+												neighborX,
+												neighborY,
+												neighborZ,
+												size_Mat,
+												isEvenTimestep);
+		getLastCudaError("QADVel27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QADDev7(unsigned int numberOfThreads,
@@ -1613,25 +1609,24 @@ extern "C" void QADDev7(unsigned int numberOfThreads,
                         unsigned int size_Mat,
                         bool isEvenTimestep)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
+	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-
-      QAD7<<< grid.grid, grid.threads >>> (     nx,
-                                       ny,
-                                       DD,
-                                       DD7,
-                                       temp,
-                                       diffusivity,
-                                       k_Q,
-                                       QQ,
-                                       sizeQ,
-                                       numberOfBCnodes,
-                                       om1,
-                                       neighborX,
-                                       neighborY,
-                                       neighborZ,
-                                       size_Mat,
-                                       isEvenTimestep);
+	QAD7<<< grid.grid, grid.threads >>>(nx,
+										ny,
+										DD,
+										DD7,
+										temp,
+										diffusivity,
+										k_Q,
+										QQ,
+										sizeQ,
+										numberOfBCnodes,
+										om1,
+										neighborX,
+										neighborY,
+										neighborZ,
+										size_Mat,
+										isEvenTimestep);
       getLastCudaError("QAD7 execution failed");
 }
 
@@ -1687,7 +1682,7 @@ extern "C" void ADSlipVelDevComp(
 	uint size_Mat,
 	bool isEvenTimestep)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfQs);
+   	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfQs);
 
 	AD_SlipVelDeviceComp << < grid.grid, grid.threads >> > (
 		normalX,
@@ -1726,9 +1721,9 @@ extern "C" void QADDirichletDev27( unsigned int numberOfThreads,
 								   unsigned int size_Mat,
 								   bool isEvenTimestep)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
+   	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-   QADDirichlet27<<< grid.grid, grid.threads >>> (   nx,
+   	QADDirichlet27<<< grid.grid, grid.threads >>> (   nx,
 											   ny,
 											   DD,
 											   DD27,
@@ -2748,11 +2743,11 @@ extern "C" void QSlipDevComp27(unsigned int numberOfThreads,
 							   unsigned int size_Mat,
 							   bool isEvenTimestep)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, sizeQ);
+   	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, sizeQ);
 
-   if(useTurbViscosity)
-   {
-      QSlipDeviceComp27TurbViscosity<<< grid.grid, grid.threads >>> (DD,
+	if(useTurbViscosity)
+	{
+		QSlipDeviceComp27TurbViscosity<<< grid.grid, grid.threads >>> (DD,
 											   k_Q,
 											   QQ,
 											   sizeQ,
@@ -2763,11 +2758,11 @@ extern "C" void QSlipDevComp27(unsigned int numberOfThreads,
                                     turbViscosity,
 											   size_Mat,
 											   isEvenTimestep);
-      getLastCudaError("QSlipDeviceComp27TurbViscosity execution failed");
-   }
-   else
-   {
-      QSlipDeviceComp27<<< grid.grid, grid.threads >>> (DD,
+		getLastCudaError("QSlipDeviceComp27TurbViscosity execution failed");
+	}
+	else
+	{
+		QSlipDeviceComp27<<< grid.grid, grid.threads >>> (DD,
 											   k_Q,
 											   QQ,
 											   sizeQ,
@@ -2777,7 +2772,7 @@ extern "C" void QSlipDevComp27(unsigned int numberOfThreads,
 											   neighborZ,
 											   size_Mat,
 											   isEvenTimestep);
-      getLastCudaError("QSlipDeviceComp27 execution failed");
+      	getLastCudaError("QSlipDeviceComp27 execution failed");
    }
 }
 //////////////////////////////////////////////////////////////////////////

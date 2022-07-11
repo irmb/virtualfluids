@@ -78,12 +78,12 @@ __global__ void calcAMD(real* vx,
                         (dvxdx*dvzdx + dvxdy*dvzdy + dvxdz*dvzdz) * (dvxdz+dvzdx) + 
                         (dvydx*dvzdx + dvydy*dvzdy + dvydz*dvzdz) * (dvydz+dvzdy);
 
-    const real kappa = 10000.f; // multiplier of the viscosity 
-    const real x0 = 5500.f; // start of damping layer
-    const real x1 = 6000.f; // total length of domain
+    // const real kappa = 10000.f; // multiplier of the viscosity 
+    // const real x0 = 5500.f; // start of damping layer
+    // const real x1 = 6000.f; // total length of domain
+    // real xPos = coordX[k];
+    real nuDamping = 0.0f; //calcDamping(kappa, xPos, x0, x1)*viscosity;
     real nuSGS = max(c0o1,-SGSConstant*enumerator)/denominator;
-    real xPos = coordX[k];
-    real nuDamping = calcDamping(kappa, xPos, x0, x1)*viscosity;
 
     real nu = nuSGS + nuDamping;
     // if(k >= 800600 && k <= 800637) printf("k %d x %f nu %f nu SGS %f nu damping %f \n ", k, xPos, nu, nuSGS, nuDamping);

@@ -33,27 +33,27 @@ public:
     bool inXBounds(real posX){ return posX<=maxX && posX>=minX; };
     bool inYBounds(real posY){ return posY<=maxY && posY>=minY; };
     bool inZBounds(real posZ){ return posZ<=maxZ && posZ>=minZ; };
-    int findNeighborESB(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxEX(posX)  , getIdxSY(posY)  , getIdxBZ(posZ)  ); return idx>=0 && idx<nx*ny*nz ? idx : -1; };
-    int findNeighborEST(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxEX(posX)  , getIdxSY(posY)  , getIdxBZ(posZ)+1); return idx>=0 && idx<nx*ny*nz ? idx : -1; };
-    int findNeighborENB(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxEX(posX)  , getIdxSY(posY)+1, getIdxBZ(posZ)  ); return idx>=0 && idx<nx*ny*nz ? idx : -1; };
-    int findNeighborENT(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxEX(posX)  , getIdxSY(posY)+1, getIdxBZ(posZ)+1); return idx>=0 && idx<nx*ny*nz ? idx : -1;};
-    int findNeighborWSB(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxEX(posX)+1, getIdxSY(posY)  , getIdxBZ(posZ)  ); return idx>=0 && idx<nx*ny*nz ? idx : -1; };
-    int findNeighborWST(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxEX(posX)+1, getIdxSY(posY)  , getIdxBZ(posZ)+1); return idx>=0 && idx<nx*ny*nz ? idx : -1; };
-    int findNeighborWNB(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxEX(posX)+1, getIdxSY(posY)+1, getIdxBZ(posZ)  ); return idx>=0 && idx<nx*ny*nz ? idx : -1; };
-    int findNeighborWNT(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxEX(posX)+1, getIdxSY(posY)+1, getIdxBZ(posZ)+1); return idx>=0 && idx<nx*ny*nz ? idx : -1; };
-    int getIdxX(int linearIdx){ return linearIdx-nx*(getIdxY(linearIdx)+ny*getIdxZ(linearIdx));};
-    int getIdxY(int linearIdx){ return linearIdx/nx-getIdxZ(linearIdx)*ny;};
-    int getIdxZ(int linearIdx){ return linearIdx/getNumberOfPointsInXYPlane(); };
+    int findNeighborWSB(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxWX(posX)  , getIdxSY(posY)  , getIdxBZ(posZ)  ); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
+    int findNeighborWST(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxWX(posX)  , getIdxSY(posY)  , getIdxBZ(posZ)+1); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
+    int findNeighborWNB(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxWX(posX)  , getIdxSY(posY)+1, getIdxBZ(posZ)  ); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
+    int findNeighborWNT(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxWX(posX)  , getIdxSY(posY)+1, getIdxBZ(posZ)+1); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
+    int findNeighborESB(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxWX(posX)+1, getIdxSY(posY)  , getIdxBZ(posZ)  ); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
+    int findNeighborEST(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxWX(posX)+1, getIdxSY(posY)  , getIdxBZ(posZ)+1); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
+    int findNeighborENB(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxWX(posX)+1, getIdxSY(posY)+1, getIdxBZ(posZ)  ); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
+    int findNeighborENT(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxWX(posX)+1, getIdxSY(posY)+1, getIdxBZ(posZ)+1); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
+    int getIdxX(int linearIdx){ return linearIdx%nx;};
+    int getIdxY(int linearIdx){ return (linearIdx/nx)%ny;};
+    int getIdxZ(int linearIdx){ return linearIdx/(nx*ny); };
     real getX(int linearIdx){ return getIdxX(linearIdx)*deltaX+minX; };
     real getY(int linearIdx){ return getIdxY(linearIdx)*deltaY+minY; };
     real getZ(int linearIdx){ return getIdxZ(linearIdx)*deltaZ+minZ; };
-    int getIdxEX(real posX){ return (posX-minX)/deltaX; };
+    int getIdxWX(real posX){ return (posX-minX)/deltaX; };
     int getIdxSY(real posY){ return (posY-minY)/deltaY; };
     int getIdxBZ(real posZ){ return (posZ-minZ)/deltaZ; };
     int getClosestIdxX(real posX){ return round((posX-minX)/deltaX); };
     int getClosestIdxY(real posY){ return round((posY-minY)/deltaY); };
     int getClosestIdxZ(real posZ){ return round((posZ-minZ)/deltaZ); };
-    int getLinearIndex(int idxX, int idxY, int idxZ){ return idxX + nx*(idxY+ny*idxZ);};
+    int getLinearIndex(int idxX, int idxY, int idxZ){ return idxX + nx*(idxY+ny*idxZ); };
     int getNumberOfPointsInXYPlane(){ return nx*ny; }
     int getNumberOfPointsInYZPlane(){ return ny*nz; }
     int getNumberOfPointsInXZPlane(){ return nx*nz; }

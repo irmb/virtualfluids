@@ -29,7 +29,7 @@
 //! \file TurbulentViscosityCumulantK17CompChim_Device.cu
 //! \author Henry Korb, Henrik Asmuth
 //! \date 16/05/2022
-//! \brief CumulantK17CompChim kernel by Martin Schönherr that inlcudes turbulent viscosity and other small mods.
+//! \brief CumulantK17CompChim kernel by Martin Schönherr that includes turbulent viscosity and other small mods.
 //!
 //! Additions to CumulantK17CompChim:
 //!     - can incorporate local body force 
@@ -82,14 +82,7 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
     ////////////////////////////////////////////////////////////////////////////////
     //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
     //!
-    const unsigned x = threadIdx.x;
-    const unsigned y = blockIdx.x;
-    const unsigned z = blockIdx.y;
-
-    const unsigned nx = blockDim.x;
-    const unsigned ny = gridDim.x;
-
-    const unsigned k = nx * (ny * z + y) + x;
+    const uint k = vf::gpu::getNodeIndex();
 
     //////////////////////////////////////////////////////////////////////////
     // run for all indices in size_Mat and fluid nodes

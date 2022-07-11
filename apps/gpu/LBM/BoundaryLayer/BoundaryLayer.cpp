@@ -104,15 +104,15 @@ void multipleLevel(const std::string& configPath)
 
     const real L_x = 6*H;
     const real L_y = 4*H;
-    const real L_z = 1*H;
+    const real L_z = 0.8*H;
 
     const real z0  = config.getValue("z0", 0.1f); // roughness length in m
     const real u_star = config.getValue("u_star", 0.4f); //friction velocity in m/s
     const real kappa = config.getValue("vonKarmanConstant", 0.4f); // von Karman constant
 
-    const real viscosity = config.getValue("viscosity",1.56e-5f);
+    const real viscosity = config.getValue("viscosity", 1.56e-5f);
 
-    const real velocity  = 0.5*u_star/kappa*log(L_z/z0+1.f); //0.5 times max mean velocity at the top in m/s
+    const real velocity  = 0.5f*u_star/kappa*log(H/z0+1.f); //0.5 times max mean velocity at the top in m/s
 
     const real mach = config.getValue<real>("Ma", 0.1);
 
@@ -147,7 +147,7 @@ void multipleLevel(const std::string& configPath)
     const float tOutProbe           =  config.getValue<real>("tOutProbe");
 
 
-    const real dx = L_z/real(nodes_per_H);
+    const real dx = H/real(nodes_per_H);
 
     const real dt = dx * mach / (sqrt(3) * velocity);
 
@@ -201,48 +201,59 @@ void multipleLevel(const std::string& configPath)
 
 	gridBuilder->buildGrids(lbmOrGks, false); // buildGrids() has to be called before setting the BCs!!!!
 
+    
     if(readPrecursor)
     {
         auto precursor = SPtr<VTKFileCollection>( new VTKFileCollection(precursorFile) );
-        gridBuilder->setPrecursorBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0, precursor, nTReadPrecursor);
-        gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.f);
-    }
+        gridBuilder->setPrecursorBoundaryCondition(SideType::MX, 0.0f, 0.0f, 0.0f, precursor, nTReadPrecursor);
+        gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0f,  0.0f, -1.0f);
+        // gridBuilder->setVelocityBoundaryCondition(SideType::MX, velocityLB, 0.f,0.f);
 
-    // gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
-    // gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
+        gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.f);
+        // gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 2*velocityLB, 0.f,0.f);
+    } 
+    else
+    {
+        gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0,  0.0, -1.0);
+    }
 
     uint samplingOffset = 2;
     gridBuilder->setStressBoundaryCondition(SideType::MZ,
                                             0.0, 0.0, 1.0,              // wall normals
                                             samplingOffset, z0/dx);     // wall model settinng
-    para->setHasWallModelMonitor(true);
+    // gridBuilder->setSlipBoundaryCondition(SideType::MZ,  0.0,  0.0, 0.0);
+
+    // para->setHasWallModelMonitor(true);
+
+    
+    // gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
+    // gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
 
 
-    gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0,  0.0, 0.0);
+
 
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)0.0;
         vx  = (u_star/kappa * log(coordZ/z0) + c2o1*sin(cPi*c16o1*coordX/L_x)*sin(cPi*c8o1*coordZ/L_z)/(pow(coordZ/L_z,c2o1)+c1o1))  * dt / dx; 
         vy  = c2o1*sin(cPi*c16o1*coordX/L_x)*sin(cPi*c8o1*coordZ/L_z)/(pow(coordZ/L_z,c2o1)+c1o1)  * dt / dx; 
-        vz  = c8o1*u_star/c4o10*(sin(cPi*c8o1*coordY/L_z)*sin(cPi*c8o1*coordZ/L_z)+sin(cPi*c8o1*coordX/L_x))/(pow(L_z*c1o2-coordZ, c2o1)+c1o1) * dt / dx;
+        vz  = c8o1*u_star/c4o10*(sin(cPi*c8o1*coordY/L_y)*sin(cPi*c8o1*coordZ/L_z)+sin(cPi*c8o1*coordX/L_x))/(pow(L_z*c1o2-coordZ, c2o1)+c1o1) * dt / dx;
     });
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    SPtr<PlanarAverageProbe> planarAverageProbe = SPtr<PlanarAverageProbe>( new PlanarAverageProbe("planeProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt , tStartOutProbe/dt, tOutProbe/dt, 'z') );
-    planarAverageProbe->addAllAvailableStatistics();
-    planarAverageProbe->setFileNameToNOut();
-    para->addProbe( planarAverageProbe );
+    // SPtr<PlanarAverageProbe> planarAverageProbe = SPtr<PlanarAverageProbe>( new PlanarAverageProbe("planeProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt , tStartOutProbe/dt, tOutProbe/dt, 'z') );
+    // planarAverageProbe->addAllAvailableStatistics();
+    // planarAverageProbe->setFileNameToNOut();
+    // para->addProbe( planarAverageProbe );
 
-    para->setHasWallModelMonitor(true);
-    SPtr<WallModelProbe> wallModelProbe = SPtr<WallModelProbe>( new WallModelProbe("wallModelProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt/4.0 , tStartOutProbe/dt, tOutProbe/dt) );
-    wallModelProbe->addAllAvailableStatistics();
-    wallModelProbe->setFileNameToNOut();
-    wallModelProbe->setForceOutputToStress(true);
-    if(para->getIsBodyForce())
-        wallModelProbe->setEvaluatePressureGradient(true);
-    para->addProbe( wallModelProbe );
+    // SPtr<WallModelProbe> wallModelProbe = SPtr<WallModelProbe>( new WallModelProbe("wallModelProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt/4.0 , tStartOutProbe/dt, tOutProbe/dt) );
+    // wallModelProbe->addAllAvailableStatistics();
+    // wallModelProbe->setFileNameToNOut();
+    // wallModelProbe->setForceOutputToStress(true);
+    // if(para->getIsBodyForce())
+    //     wallModelProbe->setEvaluatePressureGradient(true);
+    // para->addProbe( wallModelProbe );
 
     if(writePrecursor)
     {
