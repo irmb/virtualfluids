@@ -268,9 +268,9 @@ void multipleLevel(const std::string& configPath)
     para->setTEnd( 1000 );	
 	//para->setTOut(    1 );
 
-    para->setVelocity( velocity );
+    para->setVelocityLB( velocity );
 
-    para->setViscosity( viscosity );
+    para->setViscosityLB( viscosity );
 
     para->setVelocityRatio( 1.0 / velocity );
 

@@ -225,8 +225,8 @@ void multipleLevel(const std::string& configPath)
 
     para->setMaxLevel(maxLevel);
 
-    para->setVelocity(velocityLB);
-    para->setViscosity(viscosityLB);
+    para->setVelocityLB(velocityLB);
+    para->setViscosityLB(viscosityLB);
 
     para->setVelocityRatio(velocity/ velocityLB);
 

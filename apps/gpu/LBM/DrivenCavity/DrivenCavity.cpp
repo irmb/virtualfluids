@@ -184,8 +184,8 @@ void multipleLevel(const std::string& configPath)
 
         para->setMaxLevel(2);
 
-        para->setVelocity(velocityLB);
-        para->setViscosity(viscosityLB);
+        para->setVelocityLB(velocityLB);
+        para->setViscosityLB(viscosityLB);
 
         para->setVelocityRatio(velocity / velocityLB);
 
@@ -198,8 +198,8 @@ void multipleLevel(const std::string& configPath)
             vz  = (real)0.0;
         });
 
-        para->setTOut( timeStepOut );
-        para->setTEnd( timeStepEnd );
+        para->setTimestepOut( timeStepOut );
+        para->setTimestepEnd( timeStepEnd );
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

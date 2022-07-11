@@ -182,8 +182,8 @@ void multipleLevel(const std::string& configPath)
 
             para->setPrintFiles(true);
     
-            para->setVelocity( vx );
-            para->setViscosity( ( vx * D / dx ) / Re );
+            para->setVelocityLB( vx );
+            para->setViscosityLB( ( vx * D / dx ) / Re );
 
             para->setVelocityRatio(1.0);
 
@@ -270,8 +270,8 @@ void multipleLevel(const std::string& configPath)
 
             para->setPrintFiles(true);
     
-            para->setVelocity( vx );
-            para->setViscosity( ( vx * L / dx ) / Re );
+            para->setVelocityLB( vx );
+            para->setViscosityLB( ( vx * L / dx ) / Re );
 
             //para->setVelocityRatio(1.0 / velocityLB);
             para->setVelocityRatio(1.0);
@@ -376,8 +376,8 @@ void multipleLevel(const std::string& configPath)
 
             para->setPrintFiles(true);
     
-            para->setVelocity( vx );
-            para->setViscosity( ( vx * L / dx ) / Re );
+            para->setVelocityLB( vx );
+            para->setViscosityLB( ( vx * L / dx ) / Re );
 
             para->setVelocityRatio(1.0);
 
@@ -456,8 +456,8 @@ void multipleLevel(const std::string& configPath)
 
             para->setPrintFiles(true);
     
-            para->setVelocity( vx );
-            para->setViscosity( ( vx * L / dx ) / Re );
+            para->setVelocityLB( vx );
+            para->setViscosityLB( ( vx * L / dx ) / Re );
 
             para->setVelocityRatio(1.0);
 
@@ -653,8 +653,8 @@ void multipleLevel(const std::string& configPath)
 
             para->setPrintFiles(true);
     
-            para->setVelocity( vx );
-            para->setViscosity( ( vx * D / dx ) / Re );
+            para->setVelocityLB( vx );
+            para->setViscosityLB( ( vx * D / dx ) / Re );
 
             para->setVelocityRatio(1.0);
 

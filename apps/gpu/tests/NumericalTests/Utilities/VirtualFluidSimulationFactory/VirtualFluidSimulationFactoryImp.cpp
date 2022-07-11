@@ -42,8 +42,8 @@ std::shared_ptr<Parameter> VirtualFluidSimulationFactoryImp::makeParameter(std::
 	para->setTOut(simPara->getTimeStepLength());
 	para->setTStartOut(1);
 
-	para->setViscosity(simPara->getViscosity());
-	para->setVelocity(simPara->getMaxVelocity());
+	para->setViscosityLB(simPara->getViscosity());
+	para->setVelocityLB(simPara->getMaxVelocity());
 	para->setViscosityRatio(1.0);
 	para->setVelocityRatio(1.0);
 	para->setDensityRatio(1.0);

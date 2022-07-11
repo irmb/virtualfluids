@@ -411,8 +411,8 @@ public:
     void setCalcParticles(bool calcParticles);
     void setStartXHotWall(real startXHotWall);
     void setEndXHotWall(real endXHotWall);
-    void setTEnd(unsigned int tend);
-    void setTOut(unsigned int tout);
+    void setTimestepEnd(unsigned int tend);
+    void setTimestepOut(unsigned int tout);
     void setTStartOut(unsigned int tStartOut);
     void setTimestepOfCoarseLevel(unsigned int timestep);
     void setCalcTurbulenceIntensity(bool calcVelocityAndFluctuations);
@@ -500,8 +500,8 @@ public:
     void setReadGeo(bool readGeo);
     void setTemperatureInit(real Temp);
     void setTemperatureBC(real TempBC);
-    void setViscosity(real Viscosity);
-    void setVelocity(real Velocity);
+    void setViscosityLB(real Viscosity);
+    void setVelocityLB(real Velocity);
     void setViscosityRatio(real ViscosityRatio);
     void setVelocityRatio(real VelocityRatio);
     void setDensityRatio(real DensityRatio);
