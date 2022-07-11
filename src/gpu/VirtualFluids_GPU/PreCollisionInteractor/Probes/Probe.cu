@@ -276,7 +276,7 @@ void Probe::interact(Parameter* para, CudaMemoryManager* cudaMemoryManager, int 
 {
     int isOdd = para->getEvenOrOdd(level);
     std::cout << "Probe--> lvl: " << level << "\t t: " << t << "\t evenOrOdd " << isOdd  << std::endl;
-    uint t_test = para->getTimeStep(level, t);
+    uint t_test = para->getTimeStep(level, t, false);
     std::cout << "t_test: " << t_test << std::endl<< std::endl;
     
     if(max(int(t) - int(this->tStartAvg), -1) % this->tAvg==0)

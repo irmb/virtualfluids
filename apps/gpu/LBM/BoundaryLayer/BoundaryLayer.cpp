@@ -183,9 +183,9 @@ void multipleLevel(const std::string& configPath)
                                 L_x,  L_y,  L_z, dx);
     // gridBuilder->setNumberOfLayers(12, 8);
 
-    // gridBuilder->addGrid( new Cuboid( 0.0, 0.0, 0.0, L_x,  L_y,  0.2*L_z) , 1 );
-    // gridBuilder->addGrid( new Cuboid( 0.0, 0.0, 0.0, L_x,  L_y,  0.1*L_z) , 2 );
-    // para->setMaxLevel(3);
+    gridBuilder->addGrid( new Cuboid( 0.0, 0.0, 0.0, L_x,  L_y,  0.2*L_z) , 1 );
+    gridBuilder->addGrid( new Cuboid( 0.0, 0.0, 0.0, L_x,  L_y,  0.1*L_z) , 2 );
+    para->setMaxLevel(3);
 
     gridBuilder->setPeriodicBoundaryCondition(true, true, false);
 

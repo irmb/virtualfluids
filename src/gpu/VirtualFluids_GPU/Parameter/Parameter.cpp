@@ -2265,19 +2265,26 @@ unsigned int Parameter::getTimeDoRestart()
 {
     return ic.tDoRestart;
 }
-unsigned int Parameter::getTimeStep(int level, unsigned int t)
+
+//=======================================================================================
+//! \brief Get current (sub)time step of a given level.
+//! \param level 
+//! \param t current time step (of level 0)
+//! \param isPostCollision whether getTimeStep is called post- (before swap) or pre- (after swap) collision
+//!
+unsigned int Parameter::getTimeStep(int level, unsigned int t, bool isPostCollision)
 {
 	assert(level<=this->getMaxLevel());
-	unsigned int tLevel = t;
-	for(int i=1; i<level; i++)
-	{		
-		tLevel = 2*(tLevel-1) + (this->getEvenOrOdd(i));
-		std::cout << "para -> lvl: " << i << "\t t: " << tLevel << "\t evenOrOdd " << this->getEvenOrOdd(i)  << std::endl;
-	}
-	tLevel = 2*(tLevel-1) + (!this->getEvenOrOdd(level));
-
+	unsigned int tLevel = t;                                                                  
+    if(level>0)
+    {
+        for(int i=1; i<level; i++){ tLevel = 1 + 2*(tLevel-1) + !this->getEvenOrOdd(i); }     
+        bool addOne = isPostCollision? !this->getEvenOrOdd(level): this->getEvenOrOdd(level); 
+        tLevel = 1 + 2*(tLevel-1) + addOne;
+    }
 	return tLevel;
 }
+
 bool Parameter::getDoCheckPoint()
 {
     return ic.doCheckPoint;

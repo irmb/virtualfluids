@@ -18,7 +18,7 @@ void UpdateGrid27::updateGrid(int level, unsigned int t)
         updateGrid(level + 1, t);
         updateGrid(level + 1, t);
     }
-    std::cout << "UpdateGrid--> lvl: " << level <<"\t t " << t <<"\t evenOrOdd " <<  para->getEvenOrOdd(level)  << std::endl;
+
     //////////////////////////////////////////////////////////////////////////
 
     (this->*collisionAndExchange)(level, t);

@@ -772,7 +772,7 @@ public:
     std::vector<SPtr<PreCollisionInteractor>> getProbes();
     unsigned int getTimeDoCheckPoint();
     unsigned int getTimeDoRestart();
-    unsigned int getTimeStep(int level, unsigned int t);
+    unsigned int getTimeStep(int level, unsigned int t, bool isPostCollision);
     bool getDoCheckPoint();
     bool getDoRestart();
     bool overWritingRestart(unsigned int t);
