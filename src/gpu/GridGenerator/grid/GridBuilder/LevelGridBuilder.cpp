@@ -77,20 +77,23 @@ std::shared_ptr<LevelGridBuilder> LevelGridBuilder::makeShared()
 
 void LevelGridBuilder::setSlipBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ)
 {
-    if(sideType == SideType::GEOMETRY){
-        setSlipGeometryBoundaryCondition(normalX, normalY, normalZ);
-    }else{
-        SPtr<SlipBoundaryCondition> slipBoundaryCondition = SlipBoundaryCondition::make(normalX, normalY, normalZ);
+    for (uint level = 0; level < getNumberOfGridLevels(); level++)
+    {
+        if(sideType == SideType::GEOMETRY){
+            setSlipGeometryBoundaryCondition(normalX, normalY, normalZ);
+        }else{
+            SPtr<SlipBoundaryCondition> slipBoundaryCondition = SlipBoundaryCondition::make(normalX, normalY, normalZ);
 
-        auto side = SideFactory::make(sideType);
+            auto side = SideFactory::make(sideType);
 
-        slipBoundaryCondition->side = side;
-        slipBoundaryCondition->side->addIndices(grids, 0, slipBoundaryCondition);
+            slipBoundaryCondition->side = side;
+            slipBoundaryCondition->side->addIndices(grids, level, slipBoundaryCondition);
 
-        slipBoundaryCondition->fillSlipNormalLists();
-        boundaryConditions[0]->slipBoundaryConditions.push_back(slipBoundaryCondition);
+            slipBoundaryCondition->fillSlipNormalLists();
+            boundaryConditions[level]->slipBoundaryConditions.push_back(slipBoundaryCondition);
 
-        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Set Slip BC on level " << 0 << " with " << (int)slipBoundaryCondition->indices.size() << "\n";
+            *logging::out << logging::Logger::INFO_INTERMEDIATE << "Set Slip BC on level " << level << " with " << (int)slipBoundaryCondition->indices.size() << "\n";
+        }
     }
 }
 
