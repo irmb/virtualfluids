@@ -99,6 +99,8 @@ void VTKFile::readHeader()
 
     file.close();
 
+    printFileInfo();
+
 }
 
 bool VTKFile::markNANs(std::vector<uint> readIndices)
@@ -151,6 +153,7 @@ void VTKFile::getVelocities(real* vx, real* vy, real* vz, std::vector<uint> read
 
     for(size_t i=0; i<nPoints; i++)
     {   
+        // if(i<10)printf("point read %d point write %d idx read %d idx write %d\n", readIndeces[i], writeIndices[i], readIndeces[i]+offsetRead, offsetWrite+writeIndices[i]);
         vx[offsetWrite+writeIndices[i]] = this->vxFile[readIndeces[i]+offsetRead];
         vy[offsetWrite+writeIndices[i]] = this->vyFile[readIndeces[i]+offsetRead];
         vz[offsetWrite+writeIndices[i]] = this->vzFile[readIndeces[i]+offsetRead];
@@ -259,78 +262,82 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
 
         for(int level=this->fileCollection->files.size()-1; level>=0; level--) // go backwards to find finest nodes first
         {
-            for(int id=0; id<this->fileCollection->files[level].size(); id++)
+            for(int fileId=0; fileId<this->fileCollection->files[level].size(); fileId++)
             {
-                VTKFile file = this->fileCollection->files[level][id][0];
-
-                // Filter for exact matches
-                int idx = file.findNeighborESB(posY, posZ, 0.f);
+                VTKFile file = this->fileCollection->files[level][fileId][0];
+                if(!file.inBoundingBox(posY, posZ, 0.0f)) continue;
+                // y in simulation is x in precursor/file, z in simulation is y in precursor/file 
+                // simulation -> file: N -> E, S -> W, T -> N, B -> S
+                int idx = file.findNeighborWSB(posY, posZ, 0.f);
                 if(idx!=-1)
                 {
-                    if(abs(posY<file.getX(idx))<max_diff && abs(posZ<file.getY(idx))< max_diff) // y in simulation is x in precursor/file, z in simulation is y in precursor/file
+                    // Filter for exact matches
+                    if(abs(posY-file.getX(idx)) < max_diff && abs(posZ-file.getY(idx)) < max_diff) 
                     {
                         this->weightsNT.emplace_back(1e6f);
                         this->weightsNB.emplace_back(0.f);
                         this->weightsST.emplace_back(0.f);
                         this->weightsSB.emplace_back(0.f);
-                        uint writeIdx = this->getWriteIndex(level, id, idx);
+                        uint writeIdx = this->getWriteIndex(level, fileId, idx);
                         this->planeNeighborNT.push_back(writeIdx);
                         this->planeNeighborNB.push_back(writeIdx);
                         this->planeNeighborST.push_back(writeIdx);
                         this->planeNeighborSB.push_back(writeIdx);
                         foundNT = true; foundNB = true; foundSB = true; foundST = true;
+                        // printf("idx %d read idx %d write idx %d ,posY %f posZ %f idx X %d idx Y %d idx Z %d\n", idx, readIndices[level][fileId].back(), writeIdx, posY, posZ, file.getIdxX(idx), file.getIdxY(idx), file.getIdxZ(idx));
+                    } 
+                    else
+                    {
+                        perfect_match = false;
                     }
-                } else perfect_match = false;
 
+                    if(!foundSB)
+                    {
+                        foundSB = true;
+                        real dy = file.getX(idx)-posY;
+                        real dz = file.getY(idx)-posZ;
+                        this->weightsSB.emplace_back(1.f/(dy*dy+dz*dz+eps));
+                        this->planeNeighborSB.emplace_back(getWriteIndex(level, fileId, idx));
+                    }
+                    
+                } 
 
-
-                if(!foundNT)
+                if(!foundNT) //NT in simulation is EN in precursor
                 {
-                    int idx = file.findNeighborENT(posY, posZ, 0.f); // VTKFile is x,y,z but VTKCollection is y,z,t
+                    int idx = file.findNeighborENB(posY, posZ, 0.f);
                     if(idx!=-1)
                     {
                         foundNT = true;
                         real dy = file.getX(idx)-posY;
                         real dz = file.getY(idx)-posZ;
                         this->weightsNT.emplace_back(1.f/(dy*dy+dz*dz+eps));
-                        this->planeNeighborNT.emplace_back(getWriteIndex(level, id, idx));
+                        this->planeNeighborNT.emplace_back(getWriteIndex(level, fileId, idx));
                     }
-
                 }
-                if(!foundNB)
+
+                if(!foundNB) //NB in simulation is ES in precursor
                 {
-                    int idx = file.findNeighborEST(posY, posZ, 0.f);
+                    int idx = file.findNeighborESB(posY, posZ, 0.f);
                     if(idx!=-1)
                     {
                         foundNB = true;
                         real dy = file.getX(idx)-posY;
                         real dz = file.getY(idx)-posZ;
                         this->weightsNB.emplace_back(1.f/(dy*dy+dz*dz+eps));
-                        this->planeNeighborNT.emplace_back(getWriteIndex(level, id, idx));
+                        this->planeNeighborNT.emplace_back(getWriteIndex(level, fileId, idx));
                     }
                 }
-                if(!foundST)
+
+                if(!foundST) //ST in simulation is WN in precursor
                 {
-                    int idx = file.findNeighborWNT(posY, posZ, 0.f);
+                    int idx = file.findNeighborWNB(posY, posZ, 0.f);
                     if(idx!=-1)
                     {
                         foundST = true;
                         real dy = file.getX(idx)-posY;
                         real dz = file.getY(idx)-posZ;
                         this->weightsST.emplace_back(1.f/(dy*dy+dz*dz+eps));
-                        this->planeNeighborST.emplace_back(getWriteIndex(level, id, idx));
-                    }
-                }
-                if(!foundSB)
-                {
-                    int idx = file.findNeighborWST(posY, posZ, 0.f);
-                    if(idx!=-1)
-                    {
-                        foundSB = true;
-                        real dy = file.getX(idx)-posY;
-                        real dz = file.getY(idx)-posZ;
-                        this->weightsSB.emplace_back(1.f/(dy*dy+dz*dz+eps));
-                        this->planeNeighborSB.emplace_back(getWriteIndex(level, id, idx));
+                        this->planeNeighborST.emplace_back(getWriteIndex(level, fileId, idx));
                     }
                 }
 
@@ -340,6 +347,7 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
             }
             if(foundAll) break;
         }
+
         if(!foundAll)
             throw std::runtime_error("Did not find neighbors in the VelocityFileCollection for all points");
     }
@@ -385,7 +393,7 @@ void VTKReader::getNextVelocities(real* vx, real* vy, real* vz, real t)
             if(nF == this->fileCollection->files[level][id].size())
                 throw std::runtime_error("Not enough Precursor Files to read");
 
-            auto file = &this->fileCollection->files[level][id][nF];
+            VTKFile* file = &this->fileCollection->files[level][id][nF];
 
             int off = (file->getClosestIdxZ(t))*file->getNumberOfPointsInXYPlane();
             file->getVelocities(vx, vy, vz, this->readIndices[level][id], this->writeIndices[level][id], off, this->writingOffset);
