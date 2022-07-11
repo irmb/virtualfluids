@@ -45,14 +45,11 @@
 #include "VirtualFluids_GPU_export.h"
 
 struct curandStateXORWOW;
-typedef struct curandStateXORWOW curandState;
-namespace vf
-{
-namespace basics
+using curandState = struct curandStateXORWOW;
+namespace vf:: basics
 {
 class ConfigurationFile;
 }
-} // namespace vf
 class CudaStreamManager;
 
 //! \struct LBMSimulationParameter
@@ -377,8 +374,8 @@ struct LBMSimulationParameter {
 class VIRTUALFLUIDS_GPU_EXPORT Parameter
 {
 public:
-    Parameter(const vf::basics::ConfigurationFile &configData, int numberOfProcesses, int myId);
-    Parameter(int numberOfProcesses, int myId);
+    Parameter(const vf::basics::ConfigurationFile &configData, const int numberOfProcesses = 1, const int myId = 0);
+    Parameter(const int numberOfProcesses = 1, const int myId = 0);
     ~Parameter();
     void initLBMSimulationParameter();
 

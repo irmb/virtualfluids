@@ -28,7 +28,7 @@ protected:
 
     void SetUp() override
     {
-        para = std::make_shared<Parameter>(1, 0);
+        para = std::make_shared<Parameter>();
         para->setMaxLevel(level + 1);       // setMaxLevel resizes parH
         para->initLBMSimulationParameter(); // init parH
 
