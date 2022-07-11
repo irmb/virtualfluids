@@ -30,8 +30,8 @@
 //! \ingroup KernelManager
 //! \author Martin Schoenherr
 //=======================================================================================
-#ifndef LBKernelManager_H
-#define LBKernelManager_H
+#ifndef BCKernelManager_H
+#define BCKernelManager_H
 
 #include <functional>
 #include <memory>
@@ -56,8 +56,6 @@ public:
     //! Class constructor
     //! \param parameter shared pointer to instance of class Parameter
     BCKernelManager(SPtr<Parameter> parameter, BoundaryConditionFactory *bcFactory);
-
-    void setBoundaryConditionKernels();
 
     //! \brief calls the device function of the velocity boundary condition (post-collision)
     void runVelocityBCKernelPost(const int level) const;
