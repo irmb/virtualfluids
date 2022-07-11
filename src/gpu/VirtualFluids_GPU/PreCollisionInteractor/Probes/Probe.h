@@ -105,6 +105,7 @@ struct ProbeStruct{
     real *quantitiesArrayH, *quantitiesArrayD;
     bool *quantitiesH, *quantitiesD;
     uint *arrayOffsetsH, *arrayOffsetsD;
+    bool isEvenTAvg = true;
 };
 
 __global__ void calcQuantitiesKernel(   uint* pointIndices,

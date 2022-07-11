@@ -288,7 +288,7 @@ void Probe::interact(Parameter* para, CudaMemoryManager* cudaMemoryManager, int 
         SPtr<ProbeStruct> probeStruct = this->getProbeStruct(level);
         std::cout << "averaging at " << t_level <<" on lvl " << level << std::endl<< std::endl;
         this->calculateQuantities(probeStruct, para, t_level, level);
-        if(t>=this->tStartTmpAveraging) probeStruct->vals++;
+        if(t_level>=(this->tStartTmpAveraging*pow(2,level))) probeStruct->vals++;
     }
 
     //! output only in synchronous timesteps

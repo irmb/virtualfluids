@@ -91,7 +91,6 @@ private:
     real posX, posY, posZ;
     real deltaX, deltaY, deltaZ;
     char planeNormal;
-    bool isEvenTAvg = true;
 };
 
 #endif

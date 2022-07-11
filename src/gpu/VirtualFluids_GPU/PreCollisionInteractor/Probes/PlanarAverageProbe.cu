@@ -265,7 +265,7 @@ void PlanarAverageProbe::findPoints(Parameter* para, GridProvider* gridProvider,
 
 ///////////////////////////////////////////////////////////////////////////////////
 
-void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, uint t, int level)
+void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, uint t_level, int level)
 {   
     // Definition of normal and inplane directions for moveIndices kernels
     uint *neighborNormal, *neighborInplane1, *neighborInplane2;
@@ -288,7 +288,7 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
         neighborInplane2 = para->getParD(level)->neighborY;
     }
 
-    bool doTmpAveraging = (t>this->getTStartTmpAveraging());
+    bool doTmpAveraging = t_level>=(this->getTStartTmpAveraging()*pow(2,level));
 
     // Pointer casts to use device arrays in thrust reductions
     thrust::device_ptr<uint> indices_thrust = thrust::device_pointer_cast(probeStruct->pointIndicesD);
@@ -311,7 +311,7 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
 
     for( uint i=0; i<nPoints; i++ )
     {
-        uint node = this->isEvenTAvg? i : nPoints-1-i; // Note, loop moves in positive normal dir at even calls and in negative normal dir in odd calls
+        uint node = probeStruct->isEvenTAvg? i : nPoints-1-i; // Note, loop moves in positive normal dir at even calls and in negative normal dir in odd calls
 
         if(probeStruct->quantitiesH[int(Statistic::SpatialMeans)])
         {
@@ -445,13 +445,13 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
         if(i<probeStruct->nPoints-1)
         {
             vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, probeStruct->nIndices);
-            if(this->isEvenTAvg) 
+            if(probeStruct->isEvenTAvg) 
                 moveIndicesInPosNormalDir<<<grid.grid, grid.threads>>>( probeStruct->pointIndicesD, probeStruct->nIndices, neighborNormal, para->getParD(level)->coordinateX, para->getParD(level)->coordinateY, para->getParD(level)->coordinateZ );
             else 
                 moveIndicesInNegNormalDir<<<grid.grid, grid.threads>>>( probeStruct->pointIndicesD, probeStruct->nIndices, para->getParD(level)->neighborInverse, neighborInplane1, neighborInplane2, para->getParD(level)->coordinateX, para->getParD(level)->coordinateY, para->getParD(level)->coordinateZ ); 
         } 
     }
-    this->isEvenTAvg=!this->isEvenTAvg;
+    probeStruct->isEvenTAvg=!(probeStruct->isEvenTAvg);
 
     getLastCudaError("PlanarAverageProbe::calculateQuantities execution failed");
 }
