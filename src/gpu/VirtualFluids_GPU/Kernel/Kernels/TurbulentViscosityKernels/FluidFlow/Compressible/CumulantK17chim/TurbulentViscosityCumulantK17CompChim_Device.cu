@@ -40,11 +40,12 @@
 //=======================================================================================
 /* Device code */
 #include "LBM/LB.h" 
-#include "LBM/D3Q27.h"
+#include "lbm/constants/D3Q27.h"
 #include <lbm/constants/NumericConstants.h>
 #include "Kernel/Utilities/DistributionHelper.cuh"
 
 using namespace vf::lbm::constant;
+using namespace vf::lbm::dir;
 #include "Kernel/ChimeraTransformation.h"
 
 
@@ -107,33 +108,33 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
         ////////////////////////////////////////////////////////////////////////////////////
         //! - Set local distributions
         //!
-        real mfcbb = (dist.f[dirE])[k];
-        real mfabb = (dist.f[dirW])[kw];
-        real mfbcb = (dist.f[dirN])[k];
-        real mfbab = (dist.f[dirS])[ks];
-        real mfbbc = (dist.f[dirT])[k];
-        real mfbba = (dist.f[dirB])[kb];
-        real mfccb = (dist.f[dirNE])[k];
-        real mfaab = (dist.f[dirSW])[ksw];
-        real mfcab = (dist.f[dirSE])[ks];
-        real mfacb = (dist.f[dirNW])[kw];
-        real mfcbc = (dist.f[dirTE])[k];
-        real mfaba = (dist.f[dirBW])[kbw];
-        real mfcba = (dist.f[dirBE])[kb];
-        real mfabc = (dist.f[dirTW])[kw];
-        real mfbcc = (dist.f[dirTN])[k];
-        real mfbaa = (dist.f[dirBS])[kbs];
-        real mfbca = (dist.f[dirBN])[kb];
-        real mfbac = (dist.f[dirTS])[ks];
-        real mfbbb = (dist.f[dirZERO])[k];
-        real mfccc = (dist.f[dirTNE])[k];
-        real mfaac = (dist.f[dirTSW])[ksw];
-        real mfcac = (dist.f[dirTSE])[ks];
-        real mfacc = (dist.f[dirTNW])[kw];
-        real mfcca = (dist.f[dirBNE])[kb];
-        real mfaaa = (dist.f[dirBSW])[kbsw];
-        real mfcaa = (dist.f[dirBSE])[kbs];
-        real mfaca = (dist.f[dirBNW])[kbw];
+        real mfcbb = (dist.f[E])[k];
+        real mfabb = (dist.f[W])[kw];
+        real mfbcb = (dist.f[N])[k];
+        real mfbab = (dist.f[S])[ks];
+        real mfbbc = (dist.f[T])[k];
+        real mfbba = (dist.f[B])[kb];
+        real mfccb = (dist.f[NE])[k];
+        real mfaab = (dist.f[SW])[ksw];
+        real mfcab = (dist.f[SE])[ks];
+        real mfacb = (dist.f[NW])[kw];
+        real mfcbc = (dist.f[TE])[k];
+        real mfaba = (dist.f[BW])[kbw];
+        real mfcba = (dist.f[BE])[kb];
+        real mfabc = (dist.f[TW])[kw];
+        real mfbcc = (dist.f[TN])[k];
+        real mfbaa = (dist.f[BS])[kbs];
+        real mfbca = (dist.f[BN])[kb];
+        real mfbac = (dist.f[TS])[ks];
+        real mfbbb = (dist.f[REST])[k];
+        real mfccc = (dist.f[TNE])[k];
+        real mfaac = (dist.f[TSW])[ksw];
+        real mfcac = (dist.f[TSE])[ks];
+        real mfacc = (dist.f[TNW])[kw];
+        real mfcca = (dist.f[BNE])[kb];
+        real mfaaa = (dist.f[BSW])[kbsw];
+        real mfcaa = (dist.f[BSE])[kbs];
+        real mfaca = (dist.f[BNW])[kbw];
         //////////////////////////////////////////////////////(unsigned long)//////////////////////////////
         //! - Calculate density and velocity using pyramid summation for low round-off errors as in Eq. (J1)-(J3) \ref
         //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015),
@@ -312,13 +313,13 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
         real O6 = c1o1;
 
         ////////////////////////////////////////////////////////////////////////////////////
-        //! - A and B: parameters for fourth order convergence of the diffusion term according to Eq. (114) and (115)
+        //! - A and B: parameters for fourth order convergence of the diffusion term according to Eq. (115) and (116)
         //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017),
         //! DOI:10.1016/j.jcp.2017.05.040 ]</b></a> with simplifications assuming \f$ \omega_2 = 1.0 \f$ (modify for
         //! different bulk viscosity).
         //!
-        real A = (c4o1 + c2o1 * omega - c3o1 * omega * omega) / (c2o1 - c7o1 * omega + c5o1 * omega * omega);
-        real B = (c4o1 + c28o1 * omega - c14o1 * omega * omega) / (c6o1 - c21o1 * omega + c15o1 * omega * omega);
+        real factorA = (c4o1 + c2o1 * omega - c3o1 * omega * omega) / (c2o1 - c7o1 * omega + c5o1 * omega * omega);
+        real factorB = (c4o1 + c28o1 * omega - c14o1 * omega * omega) / (c6o1 - c21o1 * omega + c15o1 * omega * omega);
 
         ////////////////////////////////////////////////////////////////////////////////////
         //! - Compute cumulants from central moments according to Eq. (20)-(23) in
@@ -493,12 +494,12 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
         //! to Eq. (43)-(48) <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017),
         //! DOI:10.1016/j.jcp.2017.05.040 ]</b></a>
         //!
-        CUMacc = -O4 * (c1o1 / omega - c1o2) * (dyuy + dzuz) * c2o3 * A + (c1o1 - O4) * (CUMacc);
-        CUMcac = -O4 * (c1o1 / omega - c1o2) * (dxux + dzuz) * c2o3 * A + (c1o1 - O4) * (CUMcac);
-        CUMcca = -O4 * (c1o1 / omega - c1o2) * (dyuy + dxux) * c2o3 * A + (c1o1 - O4) * (CUMcca);
-        CUMbbc = -O4 * (c1o1 / omega - c1o2) * Dxy * c1o3 * B + (c1o1 - O4) * (CUMbbc);
-        CUMbcb = -O4 * (c1o1 / omega - c1o2) * Dxz * c1o3 * B + (c1o1 - O4) * (CUMbcb);
-        CUMcbb = -O4 * (c1o1 / omega - c1o2) * Dyz * c1o3 * B + (c1o1 - O4) * (CUMcbb);
+        CUMacc = -O4 * (c1o1 / omega - c1o2) * (dyuy + dzuz) * c2o3 * factorA + (c1o1 - O4) * (CUMacc);
+        CUMcac = -O4 * (c1o1 / omega - c1o2) * (dxux + dzuz) * c2o3 * factorA + (c1o1 - O4) * (CUMcac);
+        CUMcca = -O4 * (c1o1 / omega - c1o2) * (dyuy + dxux) * c2o3 * factorA + (c1o1 - O4) * (CUMcca);
+        CUMbbc = -O4 * (c1o1 / omega - c1o2) * Dxy * c1o3 * factorB + (c1o1 - O4) * (CUMbbc);
+        CUMbcb = -O4 * (c1o1 / omega - c1o2) * Dxz * c1o3 * factorB + (c1o1 - O4) * (CUMbcb);
+        CUMcbb = -O4 * (c1o1 / omega - c1o2) * Dyz * c1o3 * factorB + (c1o1 - O4) * (CUMcbb);
 
         //////////////////////////////////////////////////////////////////////////
         // 5.
@@ -630,33 +631,33 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
         //! <a href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017),
         //! DOI:10.3390/computation5020019 ]</b></a>
         //!
-        (dist.f[dirE])[k]      = mfabb;
-        (dist.f[dirW])[kw]     = mfcbb;
-        (dist.f[dirN])[k]      = mfbab;
-        (dist.f[dirS])[ks]     = mfbcb;
-        (dist.f[dirT])[k]      = mfbba;
-        (dist.f[dirB])[kb]     = mfbbc;
-        (dist.f[dirNE])[k]     = mfaab;
-        (dist.f[dirSW])[ksw]   = mfccb;
-        (dist.f[dirSE])[ks]    = mfacb;
-        (dist.f[dirNW])[kw]    = mfcab;
-        (dist.f[dirTE])[k]     = mfaba;
-        (dist.f[dirBW])[kbw]   = mfcbc;
-        (dist.f[dirBE])[kb]    = mfabc;
-        (dist.f[dirTW])[kw]    = mfcba;
-        (dist.f[dirTN])[k]     = mfbaa;
-        (dist.f[dirBS])[kbs]   = mfbcc;
-        (dist.f[dirBN])[kb]    = mfbac;
-        (dist.f[dirTS])[ks]    = mfbca;
-        (dist.f[dirZERO])[k]   = mfbbb;
-        (dist.f[dirTNE])[k]    = mfaaa;
-        (dist.f[dirTSE])[ks]   = mfaca;
-        (dist.f[dirBNE])[kb]   = mfaac;
-        (dist.f[dirBSE])[kbs]  = mfacc;
-        (dist.f[dirTNW])[kw]   = mfcaa;
-        (dist.f[dirTSW])[ksw]  = mfcca;
-        (dist.f[dirBNW])[kbw]  = mfcac;
-        (dist.f[dirBSW])[kbsw] = mfccc;
+        (dist.f[E])[k]      = mfabb;
+        (dist.f[W])[kw]     = mfcbb;
+        (dist.f[N])[k]      = mfbab;
+        (dist.f[S])[ks]     = mfbcb;
+        (dist.f[T])[k]      = mfbba;
+        (dist.f[B])[kb]     = mfbbc;
+        (dist.f[NE])[k]     = mfaab;
+        (dist.f[SW])[ksw]   = mfccb;
+        (dist.f[SE])[ks]    = mfacb;
+        (dist.f[NW])[kw]    = mfcab;
+        (dist.f[TE])[k]     = mfaba;
+        (dist.f[BW])[kbw]   = mfcbc;
+        (dist.f[BE])[kb]    = mfabc;
+        (dist.f[TW])[kw]    = mfcba;
+        (dist.f[TN])[k]     = mfbaa;
+        (dist.f[BS])[kbs]   = mfbcc;
+        (dist.f[BN])[kb]    = mfbac;
+        (dist.f[TS])[ks]    = mfbca;
+        (dist.f[REST])[k]   = mfbbb;
+        (dist.f[TNE])[k]    = mfaaa;
+        (dist.f[TSE])[ks]   = mfaca;
+        (dist.f[BNE])[kb]   = mfaac;
+        (dist.f[BSE])[kbs]  = mfacc;
+        (dist.f[TNW])[kw]   = mfcaa;
+        (dist.f[TSW])[ksw]  = mfcca;
+        (dist.f[BNW])[kbw]  = mfcac;
+        (dist.f[BSW])[kbsw] = mfccc;
 
 
     }
@@ -709,7 +710,7 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
 // //=======================================================================================
 // /* Device code */
 // #include "LBM/LB.h" 
-// #include "LBM/D3Q27.h"
+// #include "lbm/constants/D3Q27.h"
 // #include <lbm/constants/NumericConstants.h>
 
 // using namespace vf::lbm::constant;
@@ -780,61 +781,61 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
 
 //         Distributions27 dist;
 //         if (isEvenTimestep) {
-//             dist.f[dirE]    = &distributions[dirE * size_Mat];
-//             dist.f[dirW]    = &distributions[dirW * size_Mat];
-//             dist.f[dirN]    = &distributions[dirN * size_Mat];
-//             dist.f[dirS]    = &distributions[dirS * size_Mat];
-//             dist.f[dirT]    = &distributions[dirT * size_Mat];
-//             dist.f[dirB]    = &distributions[dirB * size_Mat];
-//             dist.f[dirNE]   = &distributions[dirNE * size_Mat];
-//             dist.f[dirSW]   = &distributions[dirSW * size_Mat];
-//             dist.f[dirSE]   = &distributions[dirSE * size_Mat];
-//             dist.f[dirNW]   = &distributions[dirNW * size_Mat];
-//             dist.f[dirTE]   = &distributions[dirTE * size_Mat];
-//             dist.f[dirBW]   = &distributions[dirBW * size_Mat];
-//             dist.f[dirBE]   = &distributions[dirBE * size_Mat];
-//             dist.f[dirTW]   = &distributions[dirTW * size_Mat];
-//             dist.f[dirTN]   = &distributions[dirTN * size_Mat];
-//             dist.f[dirBS]   = &distributions[dirBS * size_Mat];
-//             dist.f[dirBN]   = &distributions[dirBN * size_Mat];
-//             dist.f[dirTS]   = &distributions[dirTS * size_Mat];
-//             dist.f[dirZERO] = &distributions[dirZERO * size_Mat];
-//             dist.f[dirTNE]  = &distributions[dirTNE * size_Mat];
-//             dist.f[dirTSW]  = &distributions[dirTSW * size_Mat];
-//             dist.f[dirTSE]  = &distributions[dirTSE * size_Mat];
-//             dist.f[dirTNW]  = &distributions[dirTNW * size_Mat];
-//             dist.f[dirBNE]  = &distributions[dirBNE * size_Mat];
-//             dist.f[dirBSW]  = &distributions[dirBSW * size_Mat];
-//             dist.f[dirBSE]  = &distributions[dirBSE * size_Mat];
-//             dist.f[dirBNW]  = &distributions[dirBNW * size_Mat];
+//             dist.f[E]    = &distributions[E * size_Mat];
+//             dist.f[W]    = &distributions[W * size_Mat];
+//             dist.f[N]    = &distributions[N * size_Mat];
+//             dist.f[S]    = &distributions[S * size_Mat];
+//             dist.f[T]    = &distributions[T * size_Mat];
+//             dist.f[B]    = &distributions[B * size_Mat];
+//             dist.f[NE]   = &distributions[NE * size_Mat];
+//             dist.f[SW]   = &distributions[SW * size_Mat];
+//             dist.f[SE]   = &distributions[SE * size_Mat];
+//             dist.f[NW]   = &distributions[NW * size_Mat];
+//             dist.f[TE]   = &distributions[TE * size_Mat];
+//             dist.f[BW]   = &distributions[BW * size_Mat];
+//             dist.f[BE]   = &distributions[BE * size_Mat];
+//             dist.f[TW]   = &distributions[TW * size_Mat];
+//             dist.f[TN]   = &distributions[TN * size_Mat];
+//             dist.f[BS]   = &distributions[BS * size_Mat];
+//             dist.f[BN]   = &distributions[BN * size_Mat];
+//             dist.f[TS]   = &distributions[TS * size_Mat];
+//             dist.f[REST] = &distributions[REST * size_Mat];
+//             dist.f[TNE]  = &distributions[TNE * size_Mat];
+//             dist.f[TSW]  = &distributions[TSW * size_Mat];
+//             dist.f[TSE]  = &distributions[TSE * size_Mat];
+//             dist.f[TNW]  = &distributions[TNW * size_Mat];
+//             dist.f[BNE]  = &distributions[BNE * size_Mat];
+//             dist.f[BSW]  = &distributions[BSW * size_Mat];
+//             dist.f[BSE]  = &distributions[BSE * size_Mat];
+//             dist.f[BNW]  = &distributions[BNW * size_Mat];
 //         } else {
-//             dist.f[dirW]    = &distributions[dirE * size_Mat];
-//             dist.f[dirE]    = &distributions[dirW * size_Mat];
-//             dist.f[dirS]    = &distributions[dirN * size_Mat];
-//             dist.f[dirN]    = &distributions[dirS * size_Mat];
-//             dist.f[dirB]    = &distributions[dirT * size_Mat];
-//             dist.f[dirT]    = &distributions[dirB * size_Mat];
-//             dist.f[dirSW]   = &distributions[dirNE * size_Mat];
-//             dist.f[dirNE]   = &distributions[dirSW * size_Mat];
-//             dist.f[dirNW]   = &distributions[dirSE * size_Mat];
-//             dist.f[dirSE]   = &distributions[dirNW * size_Mat];
-//             dist.f[dirBW]   = &distributions[dirTE * size_Mat];
-//             dist.f[dirTE]   = &distributions[dirBW * size_Mat];
-//             dist.f[dirTW]   = &distributions[dirBE * size_Mat];
-//             dist.f[dirBE]   = &distributions[dirTW * size_Mat];
-//             dist.f[dirBS]   = &distributions[dirTN * size_Mat];
-//             dist.f[dirTN]   = &distributions[dirBS * size_Mat];
-//             dist.f[dirTS]   = &distributions[dirBN * size_Mat];
-//             dist.f[dirBN]   = &distributions[dirTS * size_Mat];
-//             dist.f[dirZERO] = &distributions[dirZERO * size_Mat];
-//             dist.f[dirBSW]  = &distributions[dirTNE * size_Mat];
-//             dist.f[dirBNE]  = &distributions[dirTSW * size_Mat];
-//             dist.f[dirBNW]  = &distributions[dirTSE * size_Mat];
-//             dist.f[dirBSE]  = &distributions[dirTNW * size_Mat];
-//             dist.f[dirTSW]  = &distributions[dirBNE * size_Mat];
-//             dist.f[dirTNE]  = &distributions[dirBSW * size_Mat];
-//             dist.f[dirTNW]  = &distributions[dirBSE * size_Mat];
-//             dist.f[dirTSE]  = &distributions[dirBNW * size_Mat];
+//             dist.f[W]    = &distributions[E * size_Mat];
+//             dist.f[E]    = &distributions[W * size_Mat];
+//             dist.f[S]    = &distributions[N * size_Mat];
+//             dist.f[N]    = &distributions[S * size_Mat];
+//             dist.f[B]    = &distributions[T * size_Mat];
+//             dist.f[T]    = &distributions[B * size_Mat];
+//             dist.f[SW]   = &distributions[NE * size_Mat];
+//             dist.f[NE]   = &distributions[SW * size_Mat];
+//             dist.f[NW]   = &distributions[SE * size_Mat];
+//             dist.f[SE]   = &distributions[NW * size_Mat];
+//             dist.f[BW]   = &distributions[TE * size_Mat];
+//             dist.f[TE]   = &distributions[BW * size_Mat];
+//             dist.f[TW]   = &distributions[BE * size_Mat];
+//             dist.f[BE]   = &distributions[TW * size_Mat];
+//             dist.f[BS]   = &distributions[TN * size_Mat];
+//             dist.f[TN]   = &distributions[BS * size_Mat];
+//             dist.f[TS]   = &distributions[BN * size_Mat];
+//             dist.f[BN]   = &distributions[TS * size_Mat];
+//             dist.f[REST] = &distributions[REST * size_Mat];
+//             dist.f[BSW]  = &distributions[TNE * size_Mat];
+//             dist.f[BNE]  = &distributions[TSW * size_Mat];
+//             dist.f[BNW]  = &distributions[TSE * size_Mat];
+//             dist.f[BSE]  = &distributions[TNW * size_Mat];
+//             dist.f[TSW]  = &distributions[BNE * size_Mat];
+//             dist.f[TNE]  = &distributions[BSW * size_Mat];
+//             dist.f[TNW]  = &distributions[BSE * size_Mat];
+//             dist.f[TSE]  = &distributions[BNW * size_Mat];
 //         }
 //         ////////////////////////////////////////////////////////////////////////////////
 //         //! - Set neighbor indices (necessary for indirect addressing)
@@ -849,62 +850,62 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
 //         //! - Set local distributions
 //         //!
 
-//         // real mfcbb = distr_wrapper.distribution.f[dirE];
-//         // real mfabb = distr_wrapper.distribution.f[dirW];
-//         // real mfbcb = distr_wrapper.distribution.f[dirN];
-//         // real mfbab = distr_wrapper.distribution.f[dirS];
-//         // real mfbbc = distr_wrapper.distribution.f[dirT];
-//         // real mfbba = distr_wrapper.distribution.f[dirB];
-//         // real mfccb = distr_wrapper.distribution.f[dirNE];
-//         // real mfaab = distr_wrapper.distribution.f[dirSW];
-//         // real mfcab = distr_wrapper.distribution.f[dirSE];
-//         // real mfacb = distr_wrapper.distribution.f[dirNW];
-//         // real mfcbc = distr_wrapper.distribution.f[dirTE];
-//         // real mfaba = distr_wrapper.distribution.f[dirBW];
-//         // real mfcba = distr_wrapper.distribution.f[dirBE];
-//         // real mfabc = distr_wrapper.distribution.f[dirTW];
-//         // real mfbcc = distr_wrapper.distribution.f[dirTN];
-//         // real mfbaa = distr_wrapper.distribution.f[dirBS];
-//         // real mfbca = distr_wrapper.distribution.f[dirBN];
-//         // real mfbac = distr_wrapper.distribution.f[dirTS];
-//         // real mfbbb = distr_wrapper.distribution.f[dirZERO];
-//         // real mfccc = distr_wrapper.distribution.f[dirTNE];
-//         // real mfaac = distr_wrapper.distribution.f[dirTSW];
-//         // real mfcac = distr_wrapper.distribution.f[dirTSE];
-//         // real mfacc = distr_wrapper.distribution.f[dirTNW];
-//         // real mfcca = distr_wrapper.distribution.f[dirBNE];
-//         // real mfaaa = distr_wrapper.distribution.f[dirBSW];
-//         // real mfcaa = distr_wrapper.distribution.f[dirBSE];
-//         // real mfaca = distr_wrapper.distribution.f[dirBNW];
+//         // real mfcbb = distr_wrapper.distribution.f[E];
+//         // real mfabb = distr_wrapper.distribution.f[W];
+//         // real mfbcb = distr_wrapper.distribution.f[N];
+//         // real mfbab = distr_wrapper.distribution.f[S];
+//         // real mfbbc = distr_wrapper.distribution.f[T];
+//         // real mfbba = distr_wrapper.distribution.f[B];
+//         // real mfccb = distr_wrapper.distribution.f[NE];
+//         // real mfaab = distr_wrapper.distribution.f[SW];
+//         // real mfcab = distr_wrapper.distribution.f[SE];
+//         // real mfacb = distr_wrapper.distribution.f[NW];
+//         // real mfcbc = distr_wrapper.distribution.f[TE];
+//         // real mfaba = distr_wrapper.distribution.f[BW];
+//         // real mfcba = distr_wrapper.distribution.f[BE];
+//         // real mfabc = distr_wrapper.distribution.f[TW];
+//         // real mfbcc = distr_wrapper.distribution.f[TN];
+//         // real mfbaa = distr_wrapper.distribution.f[BS];
+//         // real mfbca = distr_wrapper.distribution.f[BN];
+//         // real mfbac = distr_wrapper.distribution.f[TS];
+//         // real mfbbb = distr_wrapper.distribution.f[REST];
+//         // real mfccc = distr_wrapper.distribution.f[TNE];
+//         // real mfaac = distr_wrapper.distribution.f[TSW];
+//         // real mfcac = distr_wrapper.distribution.f[TSE];
+//         // real mfacc = distr_wrapper.distribution.f[TNW];
+//         // real mfcca = distr_wrapper.distribution.f[BNE];
+//         // real mfaaa = distr_wrapper.distribution.f[BSW];
+//         // real mfcaa = distr_wrapper.distribution.f[BSE];
+//         // real mfaca = distr_wrapper.distribution.f[BNW];
 
         
-//         real mfcbb = (dist.f[dirE])[k];
-//         real mfabb = (dist.f[dirW])[kw];
-//         real mfbcb = (dist.f[dirN])[k];
-//         real mfbab = (dist.f[dirS])[ks];
-//         real mfbbc = (dist.f[dirT])[k];
-//         real mfbba = (dist.f[dirB])[kb];
-//         real mfccb = (dist.f[dirNE])[k];
-//         real mfaab = (dist.f[dirSW])[ksw];
-//         real mfcab = (dist.f[dirSE])[ks];
-//         real mfacb = (dist.f[dirNW])[kw];
-//         real mfcbc = (dist.f[dirTE])[k];
-//         real mfaba = (dist.f[dirBW])[kbw];
-//         real mfcba = (dist.f[dirBE])[kb];
-//         real mfabc = (dist.f[dirTW])[kw];
-//         real mfbcc = (dist.f[dirTN])[k];
-//         real mfbaa = (dist.f[dirBS])[kbs];
-//         real mfbca = (dist.f[dirBN])[kb];
-//         real mfbac = (dist.f[dirTS])[ks];
-//         real mfbbb = (dist.f[dirZERO])[k];
-//         real mfccc = (dist.f[dirTNE])[k];
-//         real mfaac = (dist.f[dirTSW])[ksw];
-//         real mfcac = (dist.f[dirTSE])[ks];
-//         real mfacc = (dist.f[dirTNW])[kw];
-//         real mfcca = (dist.f[dirBNE])[kb];
-//         real mfaaa = (dist.f[dirBSW])[kbsw];
-//         real mfcaa = (dist.f[dirBSE])[kbs];
-//         real mfaca = (dist.f[dirBNW])[kbw];
+//         real mfcbb = (dist.f[E])[k];
+//         real mfabb = (dist.f[W])[kw];
+//         real mfbcb = (dist.f[N])[k];
+//         real mfbab = (dist.f[S])[ks];
+//         real mfbbc = (dist.f[T])[k];
+//         real mfbba = (dist.f[B])[kb];
+//         real mfccb = (dist.f[NE])[k];
+//         real mfaab = (dist.f[SW])[ksw];
+//         real mfcab = (dist.f[SE])[ks];
+//         real mfacb = (dist.f[NW])[kw];
+//         real mfcbc = (dist.f[TE])[k];
+//         real mfaba = (dist.f[BW])[kbw];
+//         real mfcba = (dist.f[BE])[kb];
+//         real mfabc = (dist.f[TW])[kw];
+//         real mfbcc = (dist.f[TN])[k];
+//         real mfbaa = (dist.f[BS])[kbs];
+//         real mfbca = (dist.f[BN])[kb];
+//         real mfbac = (dist.f[TS])[ks];
+//         real mfbbb = (dist.f[REST])[k];
+//         real mfccc = (dist.f[TNE])[k];
+//         real mfaac = (dist.f[TSW])[ksw];
+//         real mfcac = (dist.f[TSE])[ks];
+//         real mfacc = (dist.f[TNW])[kw];
+//         real mfcca = (dist.f[BNE])[kb];
+//         real mfaaa = (dist.f[BSW])[kbsw];
+//         real mfcaa = (dist.f[BSE])[kbs];
+//         real mfaca = (dist.f[BNW])[kbw];
         
 //         //////////////////////////////////////////////////////(unsigned long)//////////////////////////////
 //         //! - Calculate density and velocity using pyramid summation for low round-off errors as in Eq. (J1)-(J3) \ref
@@ -1090,7 +1091,7 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
 //         real O6 = c1o1;
 
 //         ////////////////////////////////////////////////////////////////////////////////////
-//         //! - A and B: parameters for fourth order convergence of the diffusion term according to Eq. (114) and (115)
+//         //! - A and B: parameters for fourth order convergence of the diffusion term according to Eq. (115) and (116)
 //         //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017),
 //         //! DOI:10.1016/j.jcp.2017.05.040 ]</b></a> with simplifications assuming \f$ \omega_2 = 1.0 \f$ (modify for
 //         //! different bulk viscosity).
@@ -1410,125 +1411,125 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
 //         //!
 
 
-//         distr_wrapper.distribution.f[dirE]      = mfabb;
-//         distr_wrapper.distribution.f[dirW]      = mfcbb;
-//         distr_wrapper.distribution.f[dirN]      = mfbab;
-//         distr_wrapper.distribution.f[dirS]      = mfbcb;
-//         distr_wrapper.distribution.f[dirT]      = mfbba;
-//         distr_wrapper.distribution.f[dirB]      = mfbbc;
-//         distr_wrapper.distribution.f[dirNE]     = mfaab;
-//         distr_wrapper.distribution.f[dirSW]     = mfccb;
-//         distr_wrapper.distribution.f[dirSE]     = mfacb;
-//         distr_wrapper.distribution.f[dirNW]     = mfcab;
-//         distr_wrapper.distribution.f[dirTE]     = mfaba;
-//         distr_wrapper.distribution.f[dirBW]     = mfcbc;
-//         distr_wrapper.distribution.f[dirBE]     = mfabc;
-//         distr_wrapper.distribution.f[dirTW]     = mfcba;
-//         distr_wrapper.distribution.f[dirTN]     = mfbaa;
-//         distr_wrapper.distribution.f[dirBS]     = mfbcc;
-//         distr_wrapper.distribution.f[dirBN]     = mfbac;
-//         distr_wrapper.distribution.f[dirTS]     = mfbca;
-//         distr_wrapper.distribution.f[dirZERO]   = mfbbb;
-//         distr_wrapper.distribution.f[dirTNE]    = mfaaa;
-//         distr_wrapper.distribution.f[dirTSW]    = mfaca;
-//         distr_wrapper.distribution.f[dirTSE]    = mfaac;
-//         distr_wrapper.distribution.f[dirTNW]    = mfacc;
-//         distr_wrapper.distribution.f[dirBNE]    = mfcaa;
-//         distr_wrapper.distribution.f[dirBSW]    = mfcca;
-//         distr_wrapper.distribution.f[dirBSE]    = mfcac;
-//         distr_wrapper.distribution.f[dirBNW]    = mfccc;
+//         distr_wrapper.distribution.f[E]      = mfabb;
+//         distr_wrapper.distribution.f[W]      = mfcbb;
+//         distr_wrapper.distribution.f[N]      = mfbab;
+//         distr_wrapper.distribution.f[S]      = mfbcb;
+//         distr_wrapper.distribution.f[T]      = mfbba;
+//         distr_wrapper.distribution.f[B]      = mfbbc;
+//         distr_wrapper.distribution.f[NE]     = mfaab;
+//         distr_wrapper.distribution.f[SW]     = mfccb;
+//         distr_wrapper.distribution.f[SE]     = mfacb;
+//         distr_wrapper.distribution.f[NW]     = mfcab;
+//         distr_wrapper.distribution.f[TE]     = mfaba;
+//         distr_wrapper.distribution.f[BW]     = mfcbc;
+//         distr_wrapper.distribution.f[BE]     = mfabc;
+//         distr_wrapper.distribution.f[TW]     = mfcba;
+//         distr_wrapper.distribution.f[TN]     = mfbaa;
+//         distr_wrapper.distribution.f[BS]     = mfbcc;
+//         distr_wrapper.distribution.f[BN]     = mfbac;
+//         distr_wrapper.distribution.f[TS]     = mfbca;
+//         distr_wrapper.distribution.f[REST]   = mfbbb;
+//         distr_wrapper.distribution.f[TNE]    = mfaaa;
+//         distr_wrapper.distribution.f[TSW]    = mfaca;
+//         distr_wrapper.distribution.f[TSE]    = mfaac;
+//         distr_wrapper.distribution.f[TNW]    = mfacc;
+//         distr_wrapper.distribution.f[BNE]    = mfcaa;
+//         distr_wrapper.distribution.f[BSW]    = mfcca;
+//         distr_wrapper.distribution.f[BSE]    = mfcac;
+//         distr_wrapper.distribution.f[BNW]    = mfccc;
 
 //         distr_wrapper.write();
 //         if(k==100000)
 //         {
 //             printf("mfcbb \t %f \t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f \n\n", 
-//                                                 (dist.f[dirE])[k]                  ,        
-//                                                 (dist.f[dirN])[k]       ,
-//                                                 (dist.f[dirS])[ks]      ,
-//                                                 (dist.f[dirT])[k]       ,
-//                                                 (dist.f[dirB])[kb]      ,
-//                                                 (dist.f[dirNE])[k]      ,
-//                                                 (dist.f[dirSW])[ksw]    ,
-//                                                 (dist.f[dirSE])[ks]     ,
-//                                                 (dist.f[dirNW])[kw]   ,
-//                                                 (dist.f[dirW])[kw]    ,
-//                                                 (dist.f[dirTE])[k]    ,
-//                                                 (dist.f[dirBW])[kbw]  ,
-//                                                 (dist.f[dirBE])[kb]   ,
-//                                                 (dist.f[dirTW])[kw]   ,
-//                                                 (dist.f[dirTN])[k]    ,
-//                                                 (dist.f[dirBS])[kbs]  ,
-//                                                 (dist.f[dirBN])[kb]   ,
-//                                                 (dist.f[dirTS])[ks]   ,
-//                                                 (dist.f[dirZERO])[k]  ,
-//                                                 (dist.f[dirTNE])[k]   ,
-//                                                 (dist.f[dirTSE])[ks]  ,
-//                                                 (dist.f[dirBNE])[kb]  ,
-//                                                 (dist.f[dirBSE])[kbs] ,
-//                                                 (dist.f[dirTNW])[kw]  ,
-//                                                 (dist.f[dirTSW])[ksw] ,
-//                                                 (dist.f[dirBNW])[kbw] ,
-//                                                 (dist.f[dirBSW])[kbsw]);
+//                                                 (dist.f[E])[k]                  ,        
+//                                                 (dist.f[N])[k]       ,
+//                                                 (dist.f[S])[ks]      ,
+//                                                 (dist.f[T])[k]       ,
+//                                                 (dist.f[B])[kb]      ,
+//                                                 (dist.f[NE])[k]      ,
+//                                                 (dist.f[SW])[ksw]    ,
+//                                                 (dist.f[SE])[ks]     ,
+//                                                 (dist.f[NW])[kw]   ,
+//                                                 (dist.f[W])[kw]    ,
+//                                                 (dist.f[TE])[k]    ,
+//                                                 (dist.f[BW])[kbw]  ,
+//                                                 (dist.f[BE])[kb]   ,
+//                                                 (dist.f[TW])[kw]   ,
+//                                                 (dist.f[TN])[k]    ,
+//                                                 (dist.f[BS])[kbs]  ,
+//                                                 (dist.f[BN])[kb]   ,
+//                                                 (dist.f[TS])[ks]   ,
+//                                                 (dist.f[REST])[k]  ,
+//                                                 (dist.f[TNE])[k]   ,
+//                                                 (dist.f[TSE])[ks]  ,
+//                                                 (dist.f[BNE])[kb]  ,
+//                                                 (dist.f[BSE])[kbs] ,
+//                                                 (dist.f[TNW])[kw]  ,
+//                                                 (dist.f[TSW])[ksw] ,
+//                                                 (dist.f[BNW])[kbw] ,
+//                                                 (dist.f[BSW])[kbsw]);
 //         }
 
-//         (dist.f[dirE])[k]      = mfabb;
-//         (dist.f[dirW])[kw]     = mfcbb;
-//         (dist.f[dirN])[k]      = mfbab;
-//         (dist.f[dirS])[ks]     = mfbcb;
-//         (dist.f[dirT])[k]      = mfbba;
-//         (dist.f[dirB])[kb]     = mfbbc;
-//         (dist.f[dirNE])[k]     = mfaab;
-//         (dist.f[dirSW])[ksw]   = mfccb;
-//         (dist.f[dirSE])[ks]    = mfacb;
-//         (dist.f[dirNW])[kw]    = mfcab;
-//         (dist.f[dirTE])[k]     = mfaba;
-//         (dist.f[dirBW])[kbw]   = mfcbc;
-//         (dist.f[dirBE])[kb]    = mfabc;
-//         (dist.f[dirTW])[kw]    = mfcba;
-//         (dist.f[dirTN])[k]     = mfbaa;
-//         (dist.f[dirBS])[kbs]   = mfbcc;
-//         (dist.f[dirBN])[kb]    = mfbac;
-//         (dist.f[dirTS])[ks]    = mfbca;
-//         (dist.f[dirZERO])[k]   = mfbbb;
-//         (dist.f[dirTNE])[k]    = mfaaa;
-//         (dist.f[dirTSE])[ks]   = mfaca;
-//         (dist.f[dirBNE])[kb]   = mfaac;
-//         (dist.f[dirBSE])[kbs]  = mfacc;
-//         (dist.f[dirTNW])[kw]   = mfcaa;
-//         (dist.f[dirTSW])[ksw]  = mfcca;
-//         (dist.f[dirBNW])[kbw]  = mfcac;
-//         (dist.f[dirBSW])[kbsw] = mfccc;
+//         (dist.f[E])[k]      = mfabb;
+//         (dist.f[W])[kw]     = mfcbb;
+//         (dist.f[N])[k]      = mfbab;
+//         (dist.f[S])[ks]     = mfbcb;
+//         (dist.f[T])[k]      = mfbba;
+//         (dist.f[B])[kb]     = mfbbc;
+//         (dist.f[NE])[k]     = mfaab;
+//         (dist.f[SW])[ksw]   = mfccb;
+//         (dist.f[SE])[ks]    = mfacb;
+//         (dist.f[NW])[kw]    = mfcab;
+//         (dist.f[TE])[k]     = mfaba;
+//         (dist.f[BW])[kbw]   = mfcbc;
+//         (dist.f[BE])[kb]    = mfabc;
+//         (dist.f[TW])[kw]    = mfcba;
+//         (dist.f[TN])[k]     = mfbaa;
+//         (dist.f[BS])[kbs]   = mfbcc;
+//         (dist.f[BN])[kb]    = mfbac;
+//         (dist.f[TS])[ks]    = mfbca;
+//         (dist.f[REST])[k]   = mfbbb;
+//         (dist.f[TNE])[k]    = mfaaa;
+//         (dist.f[TSE])[ks]   = mfaca;
+//         (dist.f[BNE])[kb]   = mfaac;
+//         (dist.f[BSE])[kbs]  = mfacc;
+//         (dist.f[TNW])[kw]   = mfcaa;
+//         (dist.f[TSW])[ksw]  = mfcca;
+//         (dist.f[BNW])[kbw]  = mfcac;
+//         (dist.f[BSW])[kbsw] = mfccc;
         
 //         if(k==100000)
 //         {
 //             printf("mfcbb \t %f \t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f \n\n\n", 
-//                                                 (dist.f[dirE])[k]                  ,        
-//                                                 (dist.f[dirN])[k]       ,
-//                                                 (dist.f[dirS])[ks]      ,
-//                                                 (dist.f[dirT])[k]       ,
-//                                                 (dist.f[dirB])[kb]      ,
-//                                                 (dist.f[dirNE])[k]      ,
-//                                                 (dist.f[dirSW])[ksw]    ,
-//                                                 (dist.f[dirSE])[ks]     ,
-//                                                 (dist.f[dirNW])[kw]   ,
-//                                                 (dist.f[dirW])[kw]   ,
-//                                                 (dist.f[dirTE])[k]    ,
-//                                                 (dist.f[dirBW])[kbw]  ,
-//                                                 (dist.f[dirBE])[kb]   ,
-//                                                 (dist.f[dirTW])[kw]   ,
-//                                                 (dist.f[dirTN])[k]    ,
-//                                                 (dist.f[dirBS])[kbs]  ,
-//                                                 (dist.f[dirBN])[kb]   ,
-//                                                 (dist.f[dirTS])[ks]   ,
-//                                                 (dist.f[dirZERO])[k]  ,
-//                                                 (dist.f[dirTNE])[k]   ,
-//                                                 (dist.f[dirTSE])[ks]  ,
-//                                                 (dist.f[dirBNE])[kb]  ,
-//                                                 (dist.f[dirBSE])[kbs] ,
-//                                                 (dist.f[dirTNW])[kw]  ,
-//                                                 (dist.f[dirTSW])[ksw] ,
-//                                                 (dist.f[dirBNW])[kbw] ,
-//                                                 (dist.f[dirBSW])[kbsw]);
+//                                                 (dist.f[E])[k]                  ,        
+//                                                 (dist.f[N])[k]       ,
+//                                                 (dist.f[S])[ks]      ,
+//                                                 (dist.f[T])[k]       ,
+//                                                 (dist.f[B])[kb]      ,
+//                                                 (dist.f[NE])[k]      ,
+//                                                 (dist.f[SW])[ksw]    ,
+//                                                 (dist.f[SE])[ks]     ,
+//                                                 (dist.f[NW])[kw]   ,
+//                                                 (dist.f[W])[kw]   ,
+//                                                 (dist.f[TE])[k]    ,
+//                                                 (dist.f[BW])[kbw]  ,
+//                                                 (dist.f[BE])[kb]   ,
+//                                                 (dist.f[TW])[kw]   ,
+//                                                 (dist.f[TN])[k]    ,
+//                                                 (dist.f[BS])[kbs]  ,
+//                                                 (dist.f[BN])[kb]   ,
+//                                                 (dist.f[TS])[ks]   ,
+//                                                 (dist.f[REST])[k]  ,
+//                                                 (dist.f[TNE])[k]   ,
+//                                                 (dist.f[TSE])[ks]  ,
+//                                                 (dist.f[BNE])[kb]  ,
+//                                                 (dist.f[BSE])[kbs] ,
+//                                                 (dist.f[TNW])[kw]  ,
+//                                                 (dist.f[TSW])[ksw] ,
+//                                                 (dist.f[BNW])[kbw] ,
+//                                                 (dist.f[BSW])[kbsw]);
 //         }
 //     }
 // }

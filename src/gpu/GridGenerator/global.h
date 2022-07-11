@@ -43,9 +43,9 @@
 
 #include "GridGenerator_export.h"
 
-#include "PointerDefinitions.h"
-#include "Core/DataTypes.h"
+#include "basics/PointerDefinitions.h"
+#include "basics/Core/DataTypes.h"
 
-#include "Core/Logger/Logger.h"
+#include "basics/Core/Logger/Logger.h"
 
 #endif 

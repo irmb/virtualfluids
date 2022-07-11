@@ -21,14 +21,14 @@ NumberOfDevices=2
 #informations for Writing
 ##################################################
 #Path=/work/y0078217/Results/MusselOysterResults/
-Path=/workspaces/VirtualFluids_dev/output/MusselOysterResults/
+Path=./output/MusselOysterResults/
 #Prefix="MusselOyster" 
 #WriteGrid=true
 ##################################################
 #informations for reading
 ##################################################
 #GridPath=E:/work/y0078217/Grids/GridMusselOyster/
-GridPath=/workspaces/VirtualFluids_dev/output/MusselOysterResults/grid/
+GridPath=./output/MusselOysterResults/grid/
 #GridPath="C:"
 
 ##################################################
@@ -45,6 +45,6 @@ GridPath=/workspaces/VirtualFluids_dev/output/MusselOysterResults/grid/
 ##################################################
 #simulation parameter
 ##################################################
-TimeEnd=10000
+TimeEnd=200000
 TimeOut=10000 
 #TimeStartOut=0

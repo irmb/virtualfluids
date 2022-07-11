@@ -8,7 +8,7 @@
 #include "VirtualFluids_GPU_export.h"
 
 #include "LBM/LB.h"
-#include "LBM/D3Q27.h"
+#include "lbm/constants/D3Q27.h"
 
 #include <cuda_runtime.h>
 #include <helper_cuda.h>

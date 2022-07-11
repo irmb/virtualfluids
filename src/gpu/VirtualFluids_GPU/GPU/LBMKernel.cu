@@ -11,10 +11,12 @@
 #include <helper_cuda.h>
 
 #include "LBM/LB.h"
-#include "CudaGrid.h"
+#include "cuda/CudaGrid.h"
 
 // includes, kernels
 #include "GPU/GPU_Kernels.cuh"
+
+#include "Parameter/Parameter.h"
 //////////////////////////////////////////////////////////////////////////
 extern "C" void KernelCas27( unsigned int grid_nx,
                              unsigned int grid_ny,
@@ -1403,7 +1405,6 @@ extern "C" void QADPressDev7( unsigned int numberOfThreads,
                               real diffusivity,
                               int* k_Q,
                               real* QQ,
-                              unsigned int sizeQ,
                               unsigned int numberOfBCnodes,
                               real om1,
                               unsigned int* neighborX,
@@ -1414,16 +1415,13 @@ extern "C" void QADPressDev7( unsigned int numberOfThreads,
 {
    	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-	QADPress7<<< grid.grid, grid.threads >>>( nx,
-                                       ny,
-                                       DD,
+      QADPress7<<< grid.grid, grid.threads >>>( DD,
                                        DD7,
                                        temp,
                                        velo,
                                        diffusivity,
                                        k_Q,
                                        QQ,
-                                       sizeQ,
                                        numberOfBCnodes,
                                        om1,
                                        neighborX,
@@ -1435,8 +1433,6 @@ extern "C" void QADPressDev7( unsigned int numberOfThreads,
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QADPressDev27(unsigned int numberOfThreads,
-                              int nx,
-                              int ny,
                               real* DD,
                               real* DD27,
                               real* temp,
@@ -1444,7 +1440,6 @@ extern "C" void QADPressDev27(unsigned int numberOfThreads,
                               real diffusivity,
                               int* k_Q,
                               real* QQ,
-                              unsigned int sizeQ,
                               unsigned int numberOfBCnodes,
                               real om1,
                               unsigned int* neighborX,
@@ -1455,16 +1450,13 @@ extern "C" void QADPressDev27(unsigned int numberOfThreads,
 {
    	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-	QADPress27<<< grid.grid, grid.threads >>>(   nx,
-                                          ny,
-                                          DD,
+      QADPress27<<< grid.grid, grid.threads >>>(   DD,
                                           DD27,
                                           temp,
                                           velo,
                                           diffusivity,
                                           k_Q,
                                           QQ,
-                                          sizeQ,
                                           numberOfBCnodes,
                                           om1,
                                           neighborX,
@@ -1508,8 +1500,6 @@ extern "C" void QADPressNEQNeighborDev27(
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QADVelDev7(unsigned int numberOfThreads,
-                           int nx,
-                           int ny,
                            real* DD,
                            real* DD7,
                            real* temp,
@@ -1517,7 +1507,6 @@ extern "C" void QADVelDev7(unsigned int numberOfThreads,
                            real diffusivity,
                            int* k_Q,
                            real* QQ,
-                           unsigned int sizeQ,
                            unsigned int numberOfBCnodes,
                            real om1,
                            unsigned int* neighborX,
@@ -1528,9 +1517,7 @@ extern "C" void QADVelDev7(unsigned int numberOfThreads,
 {
 	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-
-	QADVel7<<< grid.grid, grid.threads >>> (  nx,
-                                       ny,
+      QADVel7<<< grid.grid, grid.threads >>> (  
                                        DD,
                                        DD7,
                                        temp,
@@ -1538,7 +1525,6 @@ extern "C" void QADVelDev7(unsigned int numberOfThreads,
                                        diffusivity,
                                        k_Q,
                                        QQ,
-                                       sizeQ,
                                        numberOfBCnodes,
                                        om1,
                                        neighborX,
@@ -1550,8 +1536,6 @@ extern "C" void QADVelDev7(unsigned int numberOfThreads,
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QADVelDev27(  unsigned int numberOfThreads,
-                              int nx,
-                              int ny,
                               real* DD,
                               real* DD27,
                               real* temp,
@@ -1559,7 +1543,6 @@ extern "C" void QADVelDev27(  unsigned int numberOfThreads,
                               real diffusivity,
                               int* k_Q,
                               real* QQ,
-                              unsigned int sizeQ,
                               unsigned int numberOfBCnodes,
                               real om1,
                               unsigned int* neighborX,
@@ -1568,39 +1551,32 @@ extern "C" void QADVelDev27(  unsigned int numberOfThreads,
                               unsigned int size_Mat,
                               bool isEvenTimestep)
 {
-	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-
-		QADVel27<<< grid.grid, grid.threads >>>(nx,
-												ny,
-												DD,
-												DD27,
-												temp,
-												velo,
-												diffusivity,
-												k_Q,
-												QQ,
-												sizeQ,
-												numberOfBCnodes,
-												om1,
-												neighborX,
-												neighborY,
-												neighborZ,
-												size_Mat,
-												isEvenTimestep);
-		getLastCudaError("QADVel27 execution failed");
+      QADVel27<<< grid.grid, grid.threads >>> ( DD,
+                                      DD27,
+                                      temp,
+                                      velo,
+                                      diffusivity,
+                                      k_Q,
+                                      QQ,
+                                      numberOfBCnodes,
+                                      om1,
+                                      neighborX,
+                                      neighborY,
+                                      neighborZ,
+                                      size_Mat,
+                                      isEvenTimestep);
+      getLastCudaError("QADVel27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QADDev7(unsigned int numberOfThreads,
-                        int nx,
-                        int ny,
                         real* DD,
                         real* DD7,
                         real* temp,
                         real diffusivity,
                         int* k_Q,
                         real* QQ,
-                        unsigned int sizeQ,
                         unsigned int numberOfBCnodes,
                         real om1,
                         unsigned int* neighborX,
@@ -1611,22 +1587,19 @@ extern "C" void QADDev7(unsigned int numberOfThreads,
 {
 	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-	QAD7<<< grid.grid, grid.threads >>>(nx,
-										ny,
-										DD,
-										DD7,
-										temp,
-										diffusivity,
-										k_Q,
-										QQ,
-										sizeQ,
-										numberOfBCnodes,
-										om1,
-										neighborX,
-										neighborY,
-										neighborZ,
-										size_Mat,
-										isEvenTimestep);
+      QAD7<<< grid.grid, grid.threads >>> (     DD,
+                                       DD7,
+                                       temp,
+                                       diffusivity,
+                                       k_Q,
+                                       QQ,
+                                       numberOfBCnodes,
+                                       om1,
+                                       neighborX,
+                                       neighborY,
+                                       neighborZ,
+                                       size_Mat,
+                                       isEvenTimestep);
       getLastCudaError("QAD7 execution failed");
 }
 
@@ -1674,7 +1647,7 @@ extern "C" void ADSlipVelDevComp(
 	real * distributionsAD,
 	int* QindexArray,
 	real * Qarrays,
-	uint numberOfQs,
+	uint numberOfBCnodes,
 	real omegaDiffusivity,
 	uint * neighborX,
 	uint * neighborY,
@@ -1682,7 +1655,7 @@ extern "C" void ADSlipVelDevComp(
 	uint size_Mat,
 	bool isEvenTimestep)
 {
-   	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfQs);
+   	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
 	AD_SlipVelDeviceComp << < grid.grid, grid.threads >> > (
 		normalX,
@@ -1692,7 +1665,7 @@ extern "C" void ADSlipVelDevComp(
 		distributionsAD,
 		QindexArray,
 		Qarrays,
-		numberOfQs,
+		numberOfBCnodes,
 		omegaDiffusivity,
 		neighborX,
 		neighborY,
@@ -1704,15 +1677,12 @@ extern "C" void ADSlipVelDevComp(
 //////////////////////////////////////////////////////////////////////////
 
 extern "C" void QADDirichletDev27( unsigned int numberOfThreads,
-								   int nx,
-								   int ny,
 								   real* DD,
 								   real* DD27,
 								   real* temp,
 								   real diffusivity,
 								   int* k_Q,
 								   real* QQ,
-								   unsigned int sizeQ,
 								   unsigned int numberOfBCnodes,
 								   real om1,
 								   unsigned int* neighborX,
@@ -1723,15 +1693,13 @@ extern "C" void QADDirichletDev27( unsigned int numberOfThreads,
 {
    	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-   	QADDirichlet27<<< grid.grid, grid.threads >>> (   nx,
-											   ny,
+      QADDirichlet27<<< grid.grid, grid.threads >>> (
 											   DD,
 											   DD27,
 											   temp,
 											   diffusivity,
 											   k_Q,
 											   QQ,
-											   sizeQ,
 											   numberOfBCnodes,
 											   om1,
 											   neighborX,
@@ -1743,15 +1711,12 @@ extern "C" void QADDirichletDev27( unsigned int numberOfThreads,
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QADBBDev27(unsigned int numberOfThreads,
-                           int nx,
-                           int ny,
                            real* DD,
                            real* DD27,
                            real* temp,
                            real diffusivity,
                            int* k_Q,
                            real* QQ,
-                           unsigned int sizeQ,
                            unsigned int numberOfBCnodes,
                            real om1,
                            unsigned int* neighborX,
@@ -1762,15 +1727,12 @@ extern "C" void QADBBDev27(unsigned int numberOfThreads,
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-   QADBB27<<< grid.grid, grid.threads >>> (  nx,
-                                       ny,
-                                       DD,
+      QADBB27<<< grid.grid, grid.threads >>> (  DD,
                                        DD27,
                                        temp,
                                        diffusivity,
                                        k_Q,
                                        QQ,
-                                       sizeQ,
                                        numberOfBCnodes,
                                        om1,
                                        neighborX,
@@ -1782,15 +1744,12 @@ extern "C" void QADBBDev27(unsigned int numberOfThreads,
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QNoSlipADincompDev7(unsigned int numberOfThreads,
-									int nx,
-									int ny,
 									real* DD,
 									real* DD7,
 									real* temp,
 									real diffusivity,
 									int* k_Q,
 									real* QQ,
-									unsigned int sizeQ,
 									unsigned int numberOfBCnodes,
 									real om1,
 									unsigned int* neighborX,
@@ -1801,15 +1760,13 @@ extern "C" void QNoSlipADincompDev7(unsigned int numberOfThreads,
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-   QNoSlipADincomp7<<< grid.grid, grid.threads >>> ( nx,
-											   ny,
+      QNoSlipADincomp7<<< grid.grid, grid.threads >>> (
 											   DD,
 											   DD7,
 											   temp,
 											   diffusivity,
 											   k_Q,
 											   QQ,
-											   sizeQ,
 											   numberOfBCnodes,
 											   om1,
 											   neighborX,
@@ -1821,15 +1778,12 @@ extern "C" void QNoSlipADincompDev7(unsigned int numberOfThreads,
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QNoSlipADincompDev27(  unsigned int numberOfThreads,
-									   int nx,
-									   int ny,
 									   real* DD,
 									   real* DD27,
 									   real* temp,
 									   real diffusivity,
 									   int* k_Q,
 									   real* QQ,
-									   unsigned int sizeQ,
 									   unsigned int numberOfBCnodes,
 									   real om1,
 									   unsigned int* neighborX,
@@ -1840,15 +1794,13 @@ extern "C" void QNoSlipADincompDev27(  unsigned int numberOfThreads,
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-   QNoSlipADincomp27<<< grid.grid, grid.threads >>> (nx,
-											   ny,
+      QNoSlipADincomp27<<< grid.grid, grid.threads >>> (
 											   DD,
 											   DD27,
 											   temp,
 											   diffusivity,
 											   k_Q,
 											   QQ,
-											   sizeQ,
 											   numberOfBCnodes,
 											   om1,
 											   neighborX,
@@ -1860,8 +1812,6 @@ extern "C" void QNoSlipADincompDev27(  unsigned int numberOfThreads,
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QADVeloIncompDev7( unsigned int numberOfThreads,
-								   int nx,
-								   int ny,
 								   real* DD,
 								   real* DD7,
 								   real* temp,
@@ -1869,7 +1819,6 @@ extern "C" void QADVeloIncompDev7( unsigned int numberOfThreads,
 								   real diffusivity,
 								   int* k_Q,
 								   real* QQ,
-								   unsigned int sizeQ,
 								   unsigned int numberOfBCnodes,
 								   real om1,
 								   unsigned int* neighborX,
@@ -1880,16 +1829,13 @@ extern "C" void QADVeloIncompDev7( unsigned int numberOfThreads,
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-   QADVeloIncomp7<<< grid.grid, grid.threads >>> (   nx,
-											   ny,
-											   DD,
-											   DD7,
+      QADVeloIncomp7<<< grid.grid, grid.threads >>> ( DD,
+	  										   DD7,
 											   temp,
 											   velo,
 											   diffusivity,
 											   k_Q,
 											   QQ,
-											   sizeQ,
 											   numberOfBCnodes,
 											   om1,
 											   neighborX,
@@ -1901,8 +1847,6 @@ extern "C" void QADVeloIncompDev7( unsigned int numberOfThreads,
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QADVeloIncompDev27(   unsigned int numberOfThreads,
-									  int nx,
-									  int ny,
 									  real* DD,
 									  real* DD27,
 									  real* temp,
@@ -1910,7 +1854,6 @@ extern "C" void QADVeloIncompDev27(   unsigned int numberOfThreads,
 									  real diffusivity,
 									  int* k_Q,
 									  real* QQ,
-									  unsigned int sizeQ,
 									  unsigned int numberOfBCnodes,
 									  real om1,
 									  unsigned int* neighborX,
@@ -1921,8 +1864,7 @@ extern "C" void QADVeloIncompDev27(   unsigned int numberOfThreads,
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-   QADVeloIncomp27<<< grid.grid, grid.threads >>> ( nx,
-											  ny,
+      QADVeloIncomp27<<< grid.grid, grid.threads >>> (
 											  DD,
 											  DD27,
 											  temp,
@@ -1930,7 +1872,6 @@ extern "C" void QADVeloIncompDev27(   unsigned int numberOfThreads,
 											  diffusivity,
 											  k_Q,
 											  QQ,
-											  sizeQ,
 											  numberOfBCnodes,
 											  om1,
 											  neighborX,
@@ -1941,9 +1882,7 @@ extern "C" void QADVeloIncompDev27(   unsigned int numberOfThreads,
       getLastCudaError("QADVeloIncomp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QADPressIncompDev7(   unsigned int numberOfThreads,
-									  int nx,
-									  int ny,
+extern "C" void QADPressIncompDev7( unsigned int numberOfThreads,
 									  real* DD,
 									  real* DD7,
 									  real* temp,
@@ -1951,7 +1890,6 @@ extern "C" void QADPressIncompDev7(   unsigned int numberOfThreads,
 									  real diffusivity,
 									  int* k_Q,
 									  real* QQ,
-									  unsigned int sizeQ,
 									  unsigned int numberOfBCnodes,
 									  real om1,
 									  unsigned int* neighborX,
@@ -1962,8 +1900,7 @@ extern "C" void QADPressIncompDev7(   unsigned int numberOfThreads,
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-   QADPressIncomp7<<< grid.grid, grid.threads >>>(   nx,
-											   ny,
+      QADPressIncomp7<<< grid.grid, grid.threads >>>(
 											   DD,
 											   DD7,
 											   temp,
@@ -1971,7 +1908,6 @@ extern "C" void QADPressIncompDev7(   unsigned int numberOfThreads,
 											   diffusivity,
 											   k_Q,
 											   QQ,
-											   sizeQ,
 											   numberOfBCnodes,
 											   om1,
 											   neighborX,
@@ -1983,8 +1919,6 @@ extern "C" void QADPressIncompDev7(   unsigned int numberOfThreads,
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QADPressIncompDev27(  unsigned int numberOfThreads,
-									  int nx,
-									  int ny,
 									  real* DD,
 									  real* DD27,
 									  real* temp,
@@ -1992,7 +1926,6 @@ extern "C" void QADPressIncompDev27(  unsigned int numberOfThreads,
 									  real diffusivity,
 									  int* k_Q,
 									  real* QQ,
-									  unsigned int sizeQ,
 									  unsigned int numberOfBCnodes,
 									  real om1,
 									  unsigned int* neighborX,
@@ -2003,16 +1936,13 @@ extern "C" void QADPressIncompDev27(  unsigned int numberOfThreads,
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-   QADPressIncomp27<<< grid.grid, grid.threads >>>( nx,
-											  ny,
-											  DD,
-											  DD27,
+      QADPressIncomp27<<< grid.grid, grid.threads >>>(DD, 
+	  										  DD27, 
 											  temp,
 											  velo,
 											  diffusivity,
 											  k_Q,
 											  QQ,
-											  sizeQ,
 											  numberOfBCnodes,
 											  om1,
 											  neighborX,
@@ -2023,69 +1953,42 @@ extern "C" void QADPressIncompDev27(  unsigned int numberOfThreads,
       getLastCudaError("QADPressIncomp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QDev27( unsigned int numberOfThreads,
-                        int nx,
-                        int ny,
-                        real* DD,
-                        int* k_Q,
-                        real* QQ,
-                        unsigned int sizeQ,
-                        unsigned int numberOfBCnodes,
-                        real om1,
-                        unsigned int* neighborX,
-                        unsigned int* neighborY,
-                        unsigned int* neighborZ,
-                        unsigned int size_Mat,
-                        bool isEvenTimestep)
+extern "C" void QDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
 
-   QDevice27<<< grid.grid, grid.threads >>> (nx,
-                                       ny,
-                                       DD,
-                                       k_Q,
-                                       QQ,
-                                       sizeQ,
-                                       numberOfBCnodes,
-                                       om1,
-                                       neighborX,
-                                       neighborY,
-                                       neighborZ,
-                                       size_Mat,
-                                       isEvenTimestep);
+      QDevice27<<< grid, threads >>> (
+            parameterDevice->distributions.f[0],
+            boundaryCondition->k,
+            boundaryCondition->q27[0],
+            boundaryCondition->numberOfBCnodes,
+            parameterDevice->omega,
+            parameterDevice->neighborX,
+            parameterDevice->neighborY,
+            parameterDevice->neighborZ,
+            parameterDevice->numberOfNodes,
+            parameterDevice->isEvenTimestep);
+
       getLastCudaError("QDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QDevComp27( unsigned int numberOfThreads,
-							int nx,
-							int ny,
-							real* DD,
-							int* k_Q,
-							real* QQ,
-							unsigned int sizeQ,
-							unsigned int numberOfBCnodes,
-							real om1,
-							unsigned int* neighborX,
-							unsigned int* neighborY,
-							unsigned int* neighborZ,
-							unsigned int size_Mat,
-							bool isEvenTimestep)
+extern "C" void QDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
 
-   QDeviceComp27<<< grid.grid, grid.threads >>> (nx,
-										   ny,
-										   DD,
-										   k_Q,
-										   QQ,
-										   sizeQ,
-										   numberOfBCnodes,
-										   om1,
-										   neighborX,
-										   neighborY,
-										   neighborZ,
-										   size_Mat,
-										   isEvenTimestep);
+      QDeviceComp27<<< grid, threads >>> (
+           parameterDevice->distributions.f[0],
+           boundaryCondition->k,
+           boundaryCondition->q27[0],
+           boundaryCondition->numberOfBCnodes,
+           parameterDevice->omega,
+           parameterDevice->neighborX,
+           parameterDevice->neighborY,
+           parameterDevice->neighborZ,
+           parameterDevice->numberOfNodes,
+           parameterDevice->isEvenTimestep);
       getLastCudaError("QDeviceComp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -2093,7 +1996,6 @@ extern "C" void QDevCompThinWalls27(unsigned int numberOfThreads,
 									real* DD,
 									int* k_Q,
 									real* QQ,
-									unsigned int sizeQ,
 									unsigned int numberOfBCnodes,
 									real om1,
 									unsigned int* geom,
@@ -2109,7 +2011,6 @@ extern "C" void QDevCompThinWalls27(unsigned int numberOfThreads,
    QDeviceCompThinWallsPartOne27 <<< grid.grid, grid.threads >>> (DD,
 														 k_Q,
 														 QQ,
-														 sizeQ,
 														 numberOfBCnodes,
 														 om1,
 														 neighborX,
@@ -2122,7 +2023,6 @@ extern "C" void QDevCompThinWalls27(unsigned int numberOfThreads,
    QThinWallsPartTwo27 <<< grid.grid, grid.threads >>> ( DD,
 												k_Q,
 												QQ,
-												sizeQ,
 												numberOfBCnodes,
 												geom,
 												neighborX,
@@ -2135,46 +2035,29 @@ extern "C" void QDevCompThinWalls27(unsigned int numberOfThreads,
 
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QDev3rdMomentsComp27(   unsigned int numberOfThreads,
-										int nx,
-										int ny,
-										real* DD,
-										int* k_Q,
-										real* QQ,
-										unsigned int sizeQ,
-										unsigned int numberOfBCnodes,
-										real om1,
-										unsigned int* neighborX,
-										unsigned int* neighborY,
-										unsigned int* neighborZ,
-										unsigned int size_Mat,
-										bool isEvenTimestep)
+extern "C" void QDev3rdMomentsComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1);
 
-   QDevice3rdMomentsComp27<<< grid.grid, grid.threads >>> (  nx,
-													   ny,
-													   DD,
-													   k_Q,
-													   QQ,
-													   sizeQ,
-													   numberOfBCnodes,
-													   om1,
-													   neighborX,
-													   neighborY,
-													   neighborZ,
-													   size_Mat,
-													   isEvenTimestep);
-      getLastCudaError("QDevice3rdMomentsComp27 execution failed");
+   QDevice3rdMomentsComp27<<< grid, threads >>> (
+         parameterDevice->distributions.f[0],
+         boundaryCondition->k,
+         boundaryCondition->q27[0],
+         boundaryCondition->numberOfBCnodes,
+         parameterDevice->omega,
+         parameterDevice->neighborX,
+         parameterDevice->neighborY,
+         parameterDevice->neighborZ,
+         parameterDevice->numberOfNodes,
+         parameterDevice->isEvenTimestep);
+   getLastCudaError("QDevice3rdMomentsComp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QDevIncompHighNu27( unsigned int numberOfThreads,
-									int nx,
-									int ny,
 									real* DD,
 									int* k_Q,
 									real* QQ,
-									unsigned int sizeQ,
 									unsigned int numberOfBCnodes,
 									real om1,
 									unsigned int* neighborX,
@@ -2185,12 +2068,10 @@ extern "C" void QDevIncompHighNu27( unsigned int numberOfThreads,
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-   QDeviceIncompHighNu27<<< grid.grid, grid.threads >>> (nx,
-												   ny,
+      QDeviceIncompHighNu27<<< grid.grid, grid.threads >>> (
 												   DD,
 												   k_Q,
 												   QQ,
-												   sizeQ,
 												   numberOfBCnodes,
 												   om1,
 												   neighborX,
@@ -2202,12 +2083,9 @@ extern "C" void QDevIncompHighNu27( unsigned int numberOfThreads,
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QDevCompHighNu27(   unsigned int numberOfThreads,
-									int nx,
-									int ny,
 									real* DD,
 									int* k_Q,
 									real* QQ,
-									unsigned int sizeQ,
 									unsigned int numberOfBCnodes,
 									real om1,
 									unsigned int* neighborX,
@@ -2218,12 +2096,10 @@ extern "C" void QDevCompHighNu27(   unsigned int numberOfThreads,
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-   QDeviceCompHighNu27<<< grid.grid, grid.threads >>> (  nx,
-												   ny,
+      QDeviceCompHighNu27<<< grid.grid, grid.threads >>> (
 												   DD,
 												   k_Q,
 												   QQ,
-												   sizeQ,
 												   numberOfBCnodes,
 												   om1,
 												   neighborX,
@@ -2234,50 +2110,35 @@ extern "C" void QDevCompHighNu27(   unsigned int numberOfThreads,
       getLastCudaError("QDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QVelDevicePlainBB27(unsigned int numberOfThreads,
-									real* vx,
-									real* vy,
-									real* vz,
-									real* DD,
-									int* k_Q,
-									real* QQ,
-									unsigned int sizeQ,
-									int numberOfBCnodes,
-									real om1,
-									unsigned int* neighborX,
-									unsigned int* neighborY,
-									unsigned int* neighborZ,
-									unsigned int size_Mat,
-									bool isEvenTimestep)
+extern "C" void QVelDevicePlainBB27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
 
-   QVelDevPlainBB27<<< grid.grid, grid.threads >>> (  vx,
-												vy,
-												vz,
-												DD,
-												k_Q,
-												QQ,
-												sizeQ,
-												numberOfBCnodes,
-												om1,
-												neighborX,
-												neighborY,
-												neighborZ,
-												size_Mat,
-												isEvenTimestep);
-      getLastCudaError("QVelDevicePlainBB27 execution failed");
+   QVelDevPlainBB27<<< grid, threads >>> (
+         boundaryCondition->Vx,
+         boundaryCondition->Vy,
+         boundaryCondition->Vz,
+         parameterDevice->distributions.f[0],
+         boundaryCondition->k,
+         boundaryCondition->q27[0],
+         boundaryCondition->numberOfBCnodes,
+         parameterDevice->neighborX,
+         parameterDevice->neighborY,
+         parameterDevice->neighborZ,
+         parameterDevice->numberOfNodes,
+         parameterDevice->isEvenTimestep);
+   getLastCudaError("QVelDevicePlainBB27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QVelDeviceCouhette27(unsigned int numberOfThreads,
+extern "C" void QVelDeviceCouette27(unsigned int numberOfThreads,
 									real* vx,
 									real* vy,
 									real* vz,
 									real* DD,
 									int* k_Q,
 									real* QQ,
-									unsigned int sizeQ,
-									int numberOfBCnodes,
+									unsigned int numberOfBCnodes,
 									real om1,
 									unsigned int* neighborX,
 									unsigned int* neighborY,
@@ -2287,13 +2148,12 @@ extern "C" void QVelDeviceCouhette27(unsigned int numberOfThreads,
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-   QVelDevCouhette27<<< grid.grid, grid.threads >>> ( vx,
+      QVelDevCouette27<<< grid.grid, grid.threads >>> ( vx,
 												vy,
 												vz,
 												DD,
 												k_Q,
 												QQ,
-												sizeQ,
 												numberOfBCnodes,
 												om1,
 												neighborX,
@@ -2313,7 +2173,6 @@ extern "C" void QVelDevice1h27(   unsigned int numberOfThreads,
 								  real* DD,
 								  int* k_Q,
 								  real* QQ,
-								  unsigned int sizeQ,
 								  unsigned int numberOfBCnodes,
 								  real om1,
 								  real Phi,
@@ -2337,7 +2196,6 @@ extern "C" void QVelDevice1h27(   unsigned int numberOfThreads,
                                           DD,
                                           k_Q,
                                           QQ,
-                                          sizeQ,
                                           numberOfBCnodes,
                                           om1,
 										  Phi,
@@ -2353,55 +2211,37 @@ extern "C" void QVelDevice1h27(   unsigned int numberOfThreads,
       getLastCudaError("QVelDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QVelDev27(unsigned int numberOfThreads,
-                          int nx,
-                          int ny,
-                          real* vx,
-                          real* vy,
-                          real* vz,
-                          real* DD,
-                          int* k_Q,
-                          real* QQ,
-                          unsigned int sizeQ,
-                          unsigned int numberOfBCnodes,
-                          real om1,
-                          unsigned int* neighborX,
-                          unsigned int* neighborY,
-                          unsigned int* neighborZ,
-                          unsigned int size_Mat,
-                          bool isEvenTimestep)
+extern "C" void QVelDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
 
-   QVelDevice27<<< grid.grid, grid.threads >>> (nx,
-                                          ny,
-                                          vx,
-                                          vy,
-                                          vz,
-                                          DD,
-                                          k_Q,
-                                          QQ,
-                                          sizeQ,
-                                          numberOfBCnodes,
-                                          om1,
-                                          neighborX,
-                                          neighborY,
-                                          neighborZ,
-                                          size_Mat,
-                                          isEvenTimestep);
+      QVelDevice27<<< grid, threads >>> (
+            parameterDevice->nx,
+            parameterDevice->ny,
+            boundaryCondition->Vx,
+            boundaryCondition->Vy,
+            boundaryCondition->Vz,
+            parameterDevice->distributions.f[0],
+            boundaryCondition->k,
+            boundaryCondition->q27[0],
+            boundaryCondition->numberOfBCnodes,
+            parameterDevice->omega,
+            parameterDevice->neighborX,
+            parameterDevice->neighborY,
+            parameterDevice->neighborZ,
+            parameterDevice->numberOfNodes,
+            parameterDevice->isEvenTimestep);
       getLastCudaError("QVelDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QVelDevCompPlusSlip27(unsigned int numberOfThreads,
-									  int nx,
-									  int ny,
 									  real* vx,
 									  real* vy,
 									  real* vz,
 									  real* DD,
 									  int* k_Q,
 									  real* QQ,
-									  unsigned int sizeQ,
 									  unsigned int numberOfBCnodes,
 									  real om1,
 									  unsigned int* neighborX,
@@ -2412,15 +2252,13 @@ extern "C" void QVelDevCompPlusSlip27(unsigned int numberOfThreads,
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-   QVelDeviceCompPlusSlip27<<< grid.grid, grid.threads >>> (nx,
-													  ny,
+      QVelDeviceCompPlusSlip27<<< grid.grid, grid.threads >>> (
 													  vx,
 													  vy,
 													  vz,
 													  DD,
 													  k_Q,
 													  QQ,
-													  sizeQ,
 													  numberOfBCnodes,
 													  om1,
 													  neighborX,
@@ -2431,43 +2269,26 @@ extern "C" void QVelDevCompPlusSlip27(unsigned int numberOfThreads,
       getLastCudaError("QVelDeviceCompPlusSlip27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QVelDevComp27(unsigned int numberOfThreads,
-							  int nx,
-							  int ny,
-							  real* vx,
-							  real* vy,
-							  real* vz,
-							  real* DD,
-							  int* k_Q,
-							  real* QQ,
-							  unsigned int sizeQ,
-							  unsigned int numberOfBCnodes,
-							  real om1,
-							  unsigned int* neighborX,
-							  unsigned int* neighborY,
-							  unsigned int* neighborZ,
-							  unsigned int size_Mat,
-							  bool isEvenTimestep)
+extern "C" void QVelDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
+   dim3 grid = vf::cuda::getCudaGrid(parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
 
-   QVelDeviceComp27<<< grid.grid, grid.threads >>> (nx,
-											  ny,
-											  vx,
-											  vy,
-											  vz,
-											  DD,
-											  k_Q,
-											  QQ,
-											  sizeQ,
-											  numberOfBCnodes,
-											  om1,
-											  neighborX,
-											  neighborY,
-											  neighborZ,
-											  size_Mat,
-											  isEvenTimestep);
-      getLastCudaError("QVelDeviceComp27 execution failed");
+   QVelDeviceComp27<<< grid, threads >>> (
+            boundaryCondition->Vx,
+            boundaryCondition->Vy,
+            boundaryCondition->Vz,
+            parameterDevice->distributions.f[0],
+            boundaryCondition->k,        
+            boundaryCondition->q27[0],
+            boundaryCondition->numberOfBCnodes,
+            parameterDevice->omega,
+            parameterDevice->neighborX,
+            parameterDevice->neighborY,
+            parameterDevice->neighborZ,
+            parameterDevice->numberOfNodes,
+            parameterDevice->isEvenTimestep);
+   getLastCudaError("QVelDeviceComp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QVelDevCompThinWalls27(unsigned int numberOfThreads,
@@ -2477,14 +2298,13 @@ extern "C" void QVelDevCompThinWalls27(unsigned int numberOfThreads,
 							           real* DD,
 							           int* k_Q,
 							           real* QQ,
-							           unsigned int sizeQ,
 							           unsigned int numberOfBCnodes,
 							           real om1,
-									   unsigned int* geom,
+									     unsigned int* geom,
 							           unsigned int* neighborX,
 							           unsigned int* neighborY,
 							           unsigned int* neighborZ,
-									   unsigned int* neighborWSB,
+									     unsigned int* neighborWSB,
 							           unsigned int size_Mat,
 							           bool isEvenTimestep)
 {
@@ -2496,7 +2316,6 @@ extern "C" void QVelDevCompThinWalls27(unsigned int numberOfThreads,
 											                  DD,
 											                  k_Q,
 											                  QQ,
-											                  sizeQ,
 											                  numberOfBCnodes,
 											                  om1,
 											                  neighborX,
@@ -2506,70 +2325,50 @@ extern "C" void QVelDevCompThinWalls27(unsigned int numberOfThreads,
 											                  isEvenTimestep);
    getLastCudaError("QVelDeviceCompThinWallsPartOne27 execution failed");
 
-	QThinWallsPartTwo27 <<< grid.grid, grid.threads >>> (DD,
-											      k_Q,
-											      QQ,
-											      sizeQ,
-											      numberOfBCnodes,
-                                                  geom,
-											      neighborX,
-											      neighborY,
-											      neighborZ,
-                                                  neighborWSB,
-											      size_Mat,
-											      isEvenTimestep);
+	QThinWallsPartTwo27 <<< grid.grid, grid.threads >>> (
+       DD,
+       k_Q,
+       QQ,
+       numberOfBCnodes,
+       geom,
+       neighborX,
+       neighborY,
+       neighborZ,
+       neighborWSB,
+       size_Mat,
+       isEvenTimestep);
    getLastCudaError("QThinWallsPartTwo27 execution failed");
 }
-//////////////////////////////////////////////////////////////////////////
-extern "C" void QVelDevCompZeroPress27(   unsigned int numberOfThreads,
-										  int nx,
-										  int ny,
-										  real* vx,
-										  real* vy,
-										  real* vz,
-										  real* DD,
-										  int* k_Q,
-										  real* QQ,
-										  unsigned int sizeQ,
-										  int kArray,
-										  real om1,
-										  unsigned int* neighborX,
-										  unsigned int* neighborY,
-										  unsigned int* neighborZ,
-										  unsigned int size_Mat,
-										  bool isEvenTimestep)
-{
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, sizeQ);
 
-   QVelDeviceCompZeroPress27<<< grid.grid, grid.threads >>> (   nx,
-														  ny,
-														  vx,
-														  vy,
-														  vz,
-														  DD,
-														  k_Q,
-														  QQ,
-														  sizeQ,
-														  //numberOfBCnodes,
-														  om1,
-														  neighborX,
-														  neighborY,
-														  neighborZ,
-														  size_Mat,
-														  isEvenTimestep);
+extern "C" void QVelDevCompZeroPress27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
+{
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
+
+   QVelDeviceCompZeroPress27<<< grid, threads >>> (
+            boundaryCondition->Vx,
+            boundaryCondition->Vy,
+            boundaryCondition->Vz,
+            parameterDevice->distributions.f[0],
+            boundaryCondition->k,
+            boundaryCondition->q27[0],
+            boundaryCondition->numberOfBCnodes,
+            parameterDevice->omega,
+            parameterDevice->neighborX,
+            parameterDevice->neighborY,
+            parameterDevice->neighborZ,
+            parameterDevice->numberOfNodes,
+            parameterDevice->isEvenTimestep);
    getLastCudaError("QVelDeviceCompZeroPress27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QVelDevIncompHighNu27(unsigned int numberOfThreads,
-									  int nx,
-									  int ny,
 									  real* vx,
 									  real* vy,
 									  real* vz,
 									  real* DD,
 									  int* k_Q,
 									  real* QQ,
-									  unsigned int sizeQ,
 									  unsigned int numberOfBCnodes,
 									  real om1,
 									  unsigned int* neighborX,
@@ -2580,15 +2379,13 @@ extern "C" void QVelDevIncompHighNu27(unsigned int numberOfThreads,
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-   QVelDeviceIncompHighNu27<<< grid.grid, grid.threads >>> (nx,
-													  ny,
+      QVelDeviceIncompHighNu27<<< grid.grid, grid.threads >>> (
 													  vx,
 													  vy,
 													  vz,
 													  DD,
 													  k_Q,
 													  QQ,
-													  sizeQ,
 													  numberOfBCnodes,
 													  om1,
 													  neighborX,
@@ -2600,15 +2397,12 @@ extern "C" void QVelDevIncompHighNu27(unsigned int numberOfThreads,
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QVelDevCompHighNu27(  unsigned int numberOfThreads,
-									  int nx,
-									  int ny,
 									  real* vx,
 									  real* vy,
 									  real* vz,
 									  real* DD,
 									  int* k_Q,
 									  real* QQ,
-									  unsigned int sizeQ,
 									  unsigned int numberOfBCnodes,
 									  real om1,
 									  unsigned int* neighborX,
@@ -2619,15 +2413,13 @@ extern "C" void QVelDevCompHighNu27(  unsigned int numberOfThreads,
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-   QVelDeviceCompHighNu27<<< grid.grid, grid.threads >>> (  nx,
-													  ny,
+      QVelDeviceCompHighNu27<<< grid.grid, grid.threads >>> (
 													  vx,
 													  vy,
 													  vz,
 													  DD,
 													  k_Q,
 													  QQ,
-													  sizeQ,
 													  numberOfBCnodes,
 													  om1,
 													  neighborX,
@@ -2702,85 +2494,69 @@ extern "C" void QVeloStreetDevEQ27(
 	getLastCudaError("QVeloStreetDeviceEQ27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QSlipDev27(unsigned int numberOfThreads,
-                           real* DD,
-                           int* k_Q,
-                           real* QQ,
-                           unsigned int sizeQ,
-                           real om1,
-                           unsigned int* neighborX,
-                           unsigned int* neighborY,
-                           unsigned int* neighborZ,
-                           unsigned int size_Mat,
-                           bool isEvenTimestep)
+extern "C" void QSlipDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, sizeQ);
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
 
-   QSlipDevice27<<< grid.grid, grid.threads >>> (DD,
-                                           k_Q,
-                                           QQ,
-                                           sizeQ,
-                                           om1,
-                                           neighborX,
-                                           neighborY,
-                                           neighborZ,
-                                           size_Mat,
-                                           isEvenTimestep);
+   QSlipDevice27<<< grid, threads >>> (
+         parameterDevice->distributions.f[0],
+         boundaryCondition->k,
+         boundaryCondition->q27[0],
+         boundaryCondition->numberOfBCnodes,
+         parameterDevice->omega,
+         parameterDevice->neighborX,
+         parameterDevice->neighborY,
+         parameterDevice->neighborZ,
+         parameterDevice->numberOfNodes,
+         parameterDevice->isEvenTimestep);
    getLastCudaError("QSlipDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QSlipDevComp27(unsigned int numberOfThreads,
-							   real* DD,
-							   int* k_Q,
-							   real* QQ,
-							   unsigned int sizeQ,
-							   real om1,
-							   unsigned int* neighborX,
-							   unsigned int* neighborY,
-							   unsigned int* neighborZ,
-                        real* turbViscosity,
-                        bool useTurbViscosity,
-							   unsigned int size_Mat,
-							   bool isEvenTimestep)
+extern "C" void QSlipDevCompTurbulentViscosity27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
-   	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, sizeQ);
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
 
-	if(useTurbViscosity)
-	{
-		QSlipDeviceComp27TurbViscosity<<< grid.grid, grid.threads >>> (DD,
-											   k_Q,
-											   QQ,
-											   sizeQ,
-											   om1,
-											   neighborX,
-											   neighborY,
-											   neighborZ,
-                                    turbViscosity,
-											   size_Mat,
-											   isEvenTimestep);
-		getLastCudaError("QSlipDeviceComp27TurbViscosity execution failed");
-	}
-	else
-	{
-		QSlipDeviceComp27<<< grid.grid, grid.threads >>> (DD,
-											   k_Q,
-											   QQ,
-											   sizeQ,
-											   om1,
-											   neighborX,
-											   neighborY,
-											   neighborZ,
-											   size_Mat,
-											   isEvenTimestep);
-      	getLastCudaError("QSlipDeviceComp27 execution failed");
-   }
+   QSlipDeviceComp27TurbViscosity<<< grid, threads >>> (
+         parameterDevice->distributions.f[0],
+         boundaryCondition->k,
+         boundaryCondition->q27[0],
+         boundaryCondition->numberOfBCnodes,
+         parameterDevice->omega,
+         parameterDevice->neighborX,
+         parameterDevice->neighborY,
+         parameterDevice->neighborZ,
+         parameterDevice->turbViscosity,
+         parameterDevice->numberOfNodes,
+         parameterDevice->isEvenTimestep);
+   getLastCudaError("QSlipDeviceComp27TurbViscosity execution failed");
+}
+
+extern "C" void QSlipDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
+{
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
+
+   QSlipDeviceComp27<<< grid, threads >>> (
+         parameterDevice->distributions.f[0],
+         boundaryCondition->k,
+         boundaryCondition->q27[0],
+         boundaryCondition->numberOfBCnodes,
+         parameterDevice->omega,
+         parameterDevice->neighborX,
+         parameterDevice->neighborY,
+         parameterDevice->neighborZ,
+         parameterDevice->numberOfNodes,
+         parameterDevice->isEvenTimestep);
+   getLastCudaError("QSlipDeviceComp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QSlipGeomDevComp27(unsigned int numberOfThreads,
 								   real* DD,
 								   int* k_Q,
 								   real* QQ,
-								   unsigned int sizeQ,
+								   unsigned int numberOfBCnodes,
 								   real om1,
 								   real* NormalX,
 								   real* NormalY,
@@ -2791,12 +2567,12 @@ extern "C" void QSlipGeomDevComp27(unsigned int numberOfThreads,
 								   unsigned int size_Mat,
 								   bool isEvenTimestep)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, sizeQ);
+	vf::cuda::CudaGrid grid(numberOfThreads, numberOfBCnodes);
 
    QSlipGeomDeviceComp27<<< grid.grid, grid.threads >>> (DD,
 												   k_Q,
 												   QQ,
-												   sizeQ,
+												   numberOfBCnodes,
 												   om1,
 												   NormalX,
 												   NormalY,
@@ -2813,7 +2589,7 @@ extern "C" void QSlipNormDevComp27(unsigned int numberOfThreads,
 								   real* DD,
 								   int* k_Q,
 								   real* QQ,
-								   unsigned int sizeQ,
+								   unsigned int numberOfBCnodes,
 								   real om1,
 								   real* NormalX,
 								   real* NormalY,
@@ -2824,12 +2600,12 @@ extern "C" void QSlipNormDevComp27(unsigned int numberOfThreads,
 								   unsigned int size_Mat,
 								   bool isEvenTimestep)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, sizeQ);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
    QSlipNormDeviceComp27<<< grid.grid, grid.threads >>> (DD,
 												   k_Q,
 												   QQ,
-												   sizeQ,
+												   numberOfBCnodes,
 												   om1,
 												   NormalX,
 												   NormalY,
@@ -2842,173 +2618,102 @@ extern "C" void QSlipNormDevComp27(unsigned int numberOfThreads,
       getLastCudaError("QSlipGeomDeviceComp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QStressDevComp27(unsigned int numberOfThreads,
-							   real* DD,
-							   int* k_Q,
-                        int* k_N,
-							   real* QQ,
-							   unsigned int sizeQ,
-							   real om1,
-                        real* turbViscosity,
-                        real* vx,
-                        real* vy,
-                        real* vz,
-                        real* normalX,
-                        real* normalY,
-                        real* normalZ,
-                        real* vx_bc,
-                        real* vy_bc,
-                        real* vz_bc,
-                        real* vx1,
-                        real* vy1,
-                        real* vz1,
-                        int* samplingOffset,
-                        real* z0,
-                        bool  hasWallModelMonitor,
-                        real* u_star,
-                        real* Fx,
-                        real* Fy,
-                        real* Fz,
-							   unsigned int* neighborX,
-							   unsigned int* neighborY,
-							   unsigned int* neighborZ,
-							   unsigned int size_Mat,
-							   bool isEvenTimestep)
+extern "C" void QStressDevComp27(Parameter *para,  QforBoundaryConditions* boundaryCondition, const int level)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, sizeQ);
+   dim3 grid = vf::cuda::getCudaGrid(  para->getParD(level)->numberofthreads, boundaryCondition->numberOfBCnodes);
+   dim3 threads(para->getParD(level)->numberofthreads, 1, 1 );
 
-   QStressDeviceComp27<<< grid.grid, grid.threads >>> (DD,
-											   k_Q,
-                                    k_N,
-											   QQ,
-											   sizeQ,
-											   om1,
-                                    turbViscosity,
-                                    vx,
-                                    vy,
-                                    vz,
-                                    normalX,
-                                    normalY,
-                                    normalZ,
-                                    vx_bc,
-                                    vy_bc,
-                                    vz_bc,
-                                    vx1,
-                                    vy1,
-                                    vz1,
-                                    samplingOffset,
-                                    z0,
-                                    hasWallModelMonitor,
-                                    u_star,
-                                    Fx,
-                                    Fy,
-                                    Fz,
-											   neighborX,
-											   neighborY,
-											   neighborZ,
-											   size_Mat,
-											   isEvenTimestep);
-   getLastCudaError("QSlipDeviceComp27 execution failed");
+      QStressDeviceComp27<<< grid, threads >>> (
+         para->getParD(level)->distributions.f[0],
+         boundaryCondition->k,
+         boundaryCondition->kN,
+         boundaryCondition->q27[0],
+         boundaryCondition->numberOfBCnodes,
+         para->getParD(level)->omega,
+         para->getParD(level)->turbViscosity,
+         para->getParD(level)->velocityX,
+         para->getParD(level)->velocityY,
+         para->getParD(level)->velocityY,
+         boundaryCondition->normalX,
+         boundaryCondition->normalY,
+         boundaryCondition->normalZ,
+         boundaryCondition->Vx,
+         boundaryCondition->Vy,
+         boundaryCondition->Vz,
+         boundaryCondition->Vx1,
+         boundaryCondition->Vy1,
+         boundaryCondition->Vz1,
+         para->getParD(level)->wallModel.samplingOffset,
+         para->getParD(level)->wallModel.z0,
+         para->getHasWallModelMonitor(),
+         para->getParD(level)->wallModel.u_star,
+         para->getParD(level)->wallModel.Fx,
+         para->getParD(level)->wallModel.Fy,
+         para->getParD(level)->wallModel.Fz,
+         para->getParD(level)->neighborX,
+         para->getParD(level)->neighborY,
+         para->getParD(level)->neighborZ,
+         para->getParD(level)->numberOfNodes,
+         para->getParD(level)->isEvenTimestep);
+      getLastCudaError("QSlipDeviceComp27 execution failed");
 }
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" void BBStressDev27(unsigned int numberOfThreads,
-							   real* DD,
-							   int* k_Q,
-                        int* k_N,
-							   real* QQ,
-							   unsigned int sizeQ,
-                        real* vx,
-                        real* vy,
-                        real* vz,
-                        real* normalX,
-                        real* normalY,
-                        real* normalZ,
-                        real* vx_bc,
-                        real* vy_bc,
-                        real* vz_bc,
-                        real* vx1,
-                        real* vy1,
-                        real* vz1,
-                        int* samplingOffset,
-                        real* z0,
-                        bool  hasWallModelMonitor,
-                        real* u_star,
-                        real* Fx,
-                        real* Fy,
-                        real* Fz,
-							   unsigned int* neighborX,
-							   unsigned int* neighborY,
-							   unsigned int* neighborZ,
-							   unsigned int size_Mat,
-							   bool isEvenTimestep)
+extern "C" void BBStressDev27(Parameter *para,  QforBoundaryConditions* boundaryCondition, const int level)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, sizeQ);
+   dim3 grid = vf::cuda::getCudaGrid( para->getParD(level)->numberofthreads, boundaryCondition->numberOfBCnodes);
+   dim3 threads(para->getParD(level)->numberofthreads, 1, 1 );
 
-   BBStressDevice27<<< grid.grid, grid.threads >>> (DD,
-											   k_Q,
-                                    k_N,
-											   QQ,
-											   sizeQ,
-                                    vx,
-                                    vy,
-                                    vz,
-                                    normalX,
-                                    normalY,
-                                    normalZ,
-                                    vx_bc,
-                                    vy_bc,
-                                    vz_bc,
-                                    vx1,
-                                    vy1,
-                                    vz1,
-                                    samplingOffset,
-                                    z0,
-                                    hasWallModelMonitor,
-                                    u_star,
-                                    Fx,
-                                    Fy,
-                                    Fz,
-											   neighborX,
-											   neighborY,
-											   neighborZ,
-											   size_Mat,
-											   isEvenTimestep);
-   getLastCudaError("BBStressDevice27 execution failed");
+   BBStressDevice27<<< grid, threads >>> (
+      para->getParD(level)->distributions.f[0],
+      boundaryCondition->k,
+      boundaryCondition->kN,
+      boundaryCondition->q27[0],
+      boundaryCondition->numberOfBCnodes,
+      para->getParD(level)->velocityX,
+      para->getParD(level)->velocityY,
+      para->getParD(level)->velocityY,
+      boundaryCondition->normalX,
+      boundaryCondition->normalY,
+      boundaryCondition->normalZ,
+      boundaryCondition->Vx,
+      boundaryCondition->Vy,
+      boundaryCondition->Vz,
+      boundaryCondition->Vx1,
+      boundaryCondition->Vy1,
+      boundaryCondition->Vz1,
+      para->getParD(level)->wallModel.samplingOffset,
+      para->getParD(level)->wallModel.z0,
+      para->getHasWallModelMonitor(),
+      para->getParD(level)->wallModel.u_star,
+      para->getParD(level)->wallModel.Fx,
+      para->getParD(level)->wallModel.Fy,
+      para->getParD(level)->wallModel.Fz,
+      para->getParD(level)->neighborX,
+      para->getParD(level)->neighborY,
+      para->getParD(level)->neighborZ,
+      para->getParD(level)->numberOfNodes,
+      para->getParD(level)->isEvenTimestep);
+      getLastCudaError("BBStressDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QPressDev27(unsigned int numberOfThreads,
-                             int nx,
-                             int ny,
-                             real* rhoBC,
-                             real* DD,
-                             int* k_Q,
-                             real* QQ,
-                             unsigned int sizeQ,
-                             unsigned int numberOfBCnodes,
-                             real om1,
-                             unsigned int* neighborX,
-                             unsigned int* neighborY,
-                             unsigned int* neighborZ,
-                             unsigned int size_Mat,
-                             bool isEvenTimestep)
+extern "C" void QPressDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
 
-   QPressDevice27<<< grid.grid, grid.threads >>> (nx,
-                                             ny,
-                                             rhoBC,
-                                             DD,
-                                             k_Q,
-                                             QQ,
-                                             sizeQ,
-                                             numberOfBCnodes,
-                                             om1,
-                                             neighborX,
-                                             neighborY,
-                                             neighborZ,
-                                             size_Mat,
-                                             isEvenTimestep);
+   QPressDevice27<<< grid, threads >>> (
+      boundaryCondition->RhoBC,
+      parameterDevice->distributions.f[0],
+      boundaryCondition->k,
+      boundaryCondition->q27[0],
+      boundaryCondition->numberOfBCnodes,
+      parameterDevice->omega,
+      parameterDevice->neighborX,
+      parameterDevice->neighborY,
+      parameterDevice->neighborZ,
+      parameterDevice->numberOfNodes,
+      parameterDevice->isEvenTimestep);
    getLastCudaError("QPressDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -3101,61 +2806,43 @@ extern "C" void QPressDevDirDepBot27(  unsigned int numberOfThreads,
    getLastCudaError("QPressDeviceDirDepBot27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QPressNoRhoDev27(unsigned int numberOfThreads,
-                                 real* rhoBC,
-                                 real* DD,
-                                 int* k_Q,
-                                 int* k_N,
-                                 unsigned int numberOfBCnodes,
-                                 real om1,
-                                 unsigned int* neighborX,
-                                 unsigned int* neighborY,
-                                 unsigned int* neighborZ,
-                                 unsigned int size_Mat,
-                                 bool isEvenTimestep)
+extern "C" void QPressNoRhoDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
 
-   QPressNoRhoDevice27<<< grid.grid, grid.threads >>> (   rhoBC,
-													DD,
-													k_Q,
-													k_N,
-													numberOfBCnodes,
-													om1,
-													neighborX,
-													neighborY,
-													neighborZ,
-													size_Mat,
-													isEvenTimestep);
+   QPressNoRhoDevice27<<< grid, threads >>> (
+         boundaryCondition->RhoBC,
+         parameterDevice->distributions.f[0],
+         boundaryCondition->k,
+         boundaryCondition->kN,
+         boundaryCondition->numberOfBCnodes,
+         parameterDevice->omega,
+         parameterDevice->neighborX,
+         parameterDevice->neighborY,
+         parameterDevice->neighborZ,
+         parameterDevice->numberOfNodes,
+         parameterDevice->isEvenTimestep);
    getLastCudaError("QPressNoRhoDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QInflowScaleByPressDev27(unsigned int numberOfThreads,
-										 real* rhoBC,
-										 real* DD,
-										 int* k_Q,
-										 int* k_N,
-										 unsigned int numberOfBCnodes,
-										 real om1,
-										 unsigned int* neighborX,
-										 unsigned int* neighborY,
-										 unsigned int* neighborZ,
-										 unsigned int size_Mat,
-										 bool isEvenTimestep)
+extern "C" void QInflowScaleByPressDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
 
-   QInflowScaleByPressDevice27<<< grid.grid, grid.threads >>> (  rhoBC,
-														DD,
-														k_Q,
-														k_N,
-														numberOfBCnodes,
-														om1,
-														neighborX,
-														neighborY,
-														neighborZ,
-														size_Mat,
-														isEvenTimestep);
+   QInflowScaleByPressDevice27<<< grid, threads >>> (
+           boundaryCondition->RhoBC,
+           parameterDevice->distributions.f[0],
+           boundaryCondition->k,
+           boundaryCondition->kN,
+           boundaryCondition->numberOfBCnodes,
+           parameterDevice->omega,
+           parameterDevice->neighborX,
+           parameterDevice->neighborY,
+           parameterDevice->neighborZ,
+           parameterDevice->numberOfNodes,
+           parameterDevice->isEvenTimestep);
    getLastCudaError("QInflowScaleByPressDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -3188,93 +2875,65 @@ extern "C" void QPressDevOld27(  unsigned int numberOfThreads,
    getLastCudaError("QPressDeviceOld27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QPressDevIncompNEQ27(unsigned int numberOfThreads,
-                                     real* rhoBC,
-                                     real* DD,
-                                     int* k_Q,
-                                     int* k_N,
-                                     unsigned int numberOfBCnodes,
-                                     real om1,
-                                     unsigned int* neighborX,
-                                     unsigned int* neighborY,
-                                     unsigned int* neighborZ,
-                                     unsigned int size_Mat,
-                                     bool isEvenTimestep)
+extern "C" void QPressDevIncompNEQ27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
 
-   QPressDeviceIncompNEQ27<<< grid.grid, grid.threads >>> (   rhoBC,
-														DD,
-														k_Q,
-														k_N,
-														numberOfBCnodes,
-														om1,
-														neighborX,
-														neighborY,
-														neighborZ,
-														size_Mat,
-														isEvenTimestep);
+   QPressDeviceIncompNEQ27<<< grid, threads >>> (
+         boundaryCondition->RhoBC,
+         parameterDevice->distributions.f[0],
+         boundaryCondition->k,
+         boundaryCondition->kN,
+         boundaryCondition->numberOfBCnodes,
+         parameterDevice->omega,
+         parameterDevice->neighborX,
+         parameterDevice->neighborY,
+         parameterDevice->neighborZ,
+         parameterDevice->numberOfNodes,
+         parameterDevice->isEvenTimestep);
    getLastCudaError("QPressDeviceIncompNEQ27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QPressDevNEQ27(  unsigned int numberOfThreads,
-                                     real* rhoBC,
-                                     real* DD,
-                                     int* k_Q,
-                                     int* k_N,
-                                     unsigned int numberOfBCnodes,
-                                     real om1,
-                                     unsigned int* neighborX,
-                                     unsigned int* neighborY,
-                                     unsigned int* neighborZ,
-                                     unsigned int size_Mat,
-                                     bool isEvenTimestep)
+extern "C" void QPressDevNEQ27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
 
-   QPressDeviceNEQ27<<< grid.grid, grid.threads >>> ( rhoBC,
-                                                DD,
-                                                k_Q,
-                                                k_N,
-                                                numberOfBCnodes,
-                                                om1,
-                                                neighborX,
-                                                neighborY,
-                                                neighborZ,
-                                                size_Mat,
-                                                isEvenTimestep);
-   getLastCudaError("QPressDeviceOld27 execution failed");
+   QPressDeviceNEQ27<<< grid, threads >>> (
+        boundaryCondition->RhoBC,
+        parameterDevice->distributions.f[0],
+        boundaryCondition->k,
+        boundaryCondition->kN,
+        boundaryCondition->numberOfBCnodes,
+        parameterDevice->omega,
+        parameterDevice->neighborX,
+        parameterDevice->neighborY,
+        parameterDevice->neighborZ,
+        parameterDevice->numberOfNodes,
+        parameterDevice->isEvenTimestep);
+   getLastCudaError("QPressDevNEQ27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QPressDevEQZ27(  unsigned int numberOfThreads,
-                                     real* rhoBC,
-                                     real* DD,
-                                     int* k_Q,
-                                     int* k_N,
-                                     real* kTestRE,
-                                     unsigned int numberOfBCnodes,
-                                     real om1,
-                                     unsigned int* neighborX,
-                                     unsigned int* neighborY,
-                                     unsigned int* neighborZ,
-                                     unsigned int size_Mat,
-                                     bool isEvenTimestep)
+extern "C" void QPressDevEQZ27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
 
-   QPressDeviceEQZ27<<< grid.grid, grid.threads >>> ( rhoBC,
-                                                DD,
-                                                k_Q,
-                                                k_N,
-                                                kTestRE,
-                                                numberOfBCnodes,
-                                                om1,
-                                                neighborX,
-                                                neighborY,
-                                                neighborZ,
-                                                size_Mat,
-                                                isEvenTimestep);
-   getLastCudaError("QPressDeviceEQZ27 execution failed");
+      QPressDeviceEQZ27<<< grid, threads >>> (
+            boundaryCondition->RhoBC,
+            parameterDevice->distributions.f[0],
+            boundaryCondition->k,
+            boundaryCondition->kN,
+            parameterDevice->kDistTestRE.f[0],
+            boundaryCondition->numberOfBCnodes,
+            parameterDevice->omega,
+            parameterDevice->neighborX,
+            parameterDevice->neighborY,
+            parameterDevice->neighborZ,
+            parameterDevice->numberOfNodes,
+            parameterDevice->isEvenTimestep);
+      getLastCudaError("QPressDeviceEQZ27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QPressDevZero27(unsigned int numberOfThreads,
@@ -3330,38 +2989,22 @@ extern "C" void QPressDevFake27(     unsigned int numberOfThreads,
       getLastCudaError("QPressDeviceFake27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void BBDev27( unsigned int numberOfThreads,
-                       int nx,
-                       int ny,
-                       real* DD,
-                       int* k_Q,
-                       real* QQ,
-                       unsigned int sizeQ,
-                       unsigned int numberOfBCnodes,
-                       real om1,
-                       unsigned int* neighborX,
-                       unsigned int* neighborY,
-                       unsigned int* neighborZ,
-                       unsigned int size_Mat,
-                       bool isEvenTimestep)
+extern "C" void BBDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
 
-
-      BBDevice27<<< grid.grid, grid.threads >>> (  nx,
-                                          ny,
-                                          DD,
-                                          k_Q,
-                                          QQ,
-                                          sizeQ,
-                                          numberOfBCnodes,
-                                          om1,
-                                          neighborX,
-                                          neighborY,
-                                          neighborZ,
-                                          size_Mat,
-                                          isEvenTimestep);
-      getLastCudaError("BBDevice27 execution failed");
+   BBDevice27<<< grid, threads >>> (
+         parameterDevice->distributions.f[0],
+         boundaryCondition->k,
+         boundaryCondition->q27[0],
+         boundaryCondition->numberOfBCnodes,
+         parameterDevice->neighborX,
+         parameterDevice->neighborY,
+         parameterDevice->neighborZ,
+         parameterDevice->numberOfNodes,
+         parameterDevice->isEvenTimestep);
+   getLastCudaError("BBDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QPressDev27_IntBB(  unsigned int numberOfThreads,
@@ -3369,7 +3012,6 @@ extern "C" void QPressDev27_IntBB(  unsigned int numberOfThreads,
 									real* DD,
 									int* k_Q,
 									real* QQ,
-									unsigned int sizeQ,
 									unsigned int numberOfBCnodes,
 									real om1,
 									unsigned int* neighborX,
@@ -3384,7 +3026,6 @@ extern "C" void QPressDev27_IntBB(  unsigned int numberOfThreads,
 													DD,
 													k_Q,
 													QQ,
-													sizeQ,
 													numberOfBCnodes,
 													om1,
 													neighborX,
@@ -5510,15 +5151,12 @@ extern "C" void setRecvGsDevF3(
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void WallFuncDev27(unsigned int numberOfThreads,
-							  int nx,
-							  int ny,
 							  real* vx,
 							  real* vy,
 							  real* vz,
 							  real* DD,
 							  int* k_Q,
 							  real* QQ,
-							  unsigned int sizeQ,
 							  unsigned int numberOfBCnodes,
 							  real om1,
 							  unsigned int* neighborX,
@@ -5529,16 +5167,13 @@ extern "C" void WallFuncDev27(unsigned int numberOfThreads,
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-
-      WallFunction27<<< grid.grid, grid.threads >>> (  nx,
-											  ny,
+      WallFunction27<<< grid.grid, grid.threads >>> (
 											  vx,
 											  vy,
 											  vz,
 											  DD,
 											  k_Q,
 											  QQ,
-											  sizeQ,
 											  numberOfBCnodes,
 											  om1,
 											  neighborX,
@@ -5639,7 +5274,7 @@ extern "C" void InitParticlesDevice(real* coordX,
 									unsigned int* neighborY,
 									unsigned int* neighborZ,
 									unsigned int* neighborWSB,
-							        int level,
+									int level,
 									unsigned int numberOfParticles,
 									unsigned int size_Mat,
 									unsigned int numberOfThreads)

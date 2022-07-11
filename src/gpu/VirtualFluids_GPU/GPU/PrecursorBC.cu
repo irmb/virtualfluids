@@ -1,18 +1,20 @@
 #include "LBM/LB.h" 
-#include "LBM/D3Q27.h"
 #include <lbm/constants/NumericConstants.h>
+#include <lbm/constants/D3Q27.h>
 #include <lbm/MacroscopicQuantities.h>
 
 #include "VirtualFluids_GPU/Kernel/Utilities/DistributionHelper.cuh"
+#include "VirtualFluids_GPU/GPU/KernelUtilities.h"
 
 using namespace vf::lbm::constant;
+using namespace vf::lbm::dir;
 
-extern "C" __global__ void QPrecursorDeviceCompZeroPress( 	int* k_Q,
-															int numberOfBCNodes,
+extern "C" __global__ void QPrecursorDeviceCompZeroPress( 	int* subgridDistanceIndices,
+															int numberOfBCnodes,
                                                             int sizeQ,
-                                                            real om1,
-															real* DD,
-                                                            real* QQ,
+                                                            real omega,
+															real* distributions,
+                                                            real* subgridDistances,
                                                             uint* neighborX, 
                                                             uint* neighborY, 
                                                             uint* neighborZ,
@@ -35,12 +37,12 @@ extern "C" __global__ void QPrecursorDeviceCompZeroPress( 	int* k_Q,
                                                             real velocityZ,
 															real tRatio,
                                                             real velocityRatio,
-															unsigned long long size_Mat,
+															unsigned long long numberOfLBnodes,
 															bool isEvenTimestep)
 {
     const unsigned k = vf::gpu::getNodeIndex();
 
-    if(k>=numberOfBCNodes) return;
+    if(k>=numberOfBCnodes) return;
 
     ////////////////////////////////////////////////////////////////////////////////
     // interpolation of velocity
@@ -49,6 +51,7 @@ extern "C" __global__ void QPrecursorDeviceCompZeroPress( 	int* k_Q,
 
     uint kNT = neighborsNT[k];
     real dNT = weightsNT[k];
+
     if(dNT < 1e6)
     {
         uint kNB = neighborsNB[k];
@@ -86,236 +89,330 @@ extern "C" __global__ void QPrecursorDeviceCompZeroPress( 	int* k_Q,
     real VeloZ = (velocityZ + (1.f-tRatio)*vzLastInterpd + tRatio*vzNextInterpd)/velocityRatio;
     // From here on just a copy of QVelDeviceCompZeroPress
     ////////////////////////////////////////////////////////////////////////////////
-    DistributionReferences27 Q = vf::gpu::getDistributionReferences27(QQ, sizeQ, true);
+
+    Distributions27 dist;
+    getPointersToDistributions(dist, distributions, numberOfLBnodes, isEvenTimestep);
+
+    unsigned int KQK  = subgridDistanceIndices[k];
+    unsigned int kzero= KQK;
+    unsigned int ke   = KQK;
+    unsigned int kw   = neighborX[KQK];
+    unsigned int kn   = KQK;
+    unsigned int ks   = neighborY[KQK];
+    unsigned int kt   = KQK;
+    unsigned int kb   = neighborZ[KQK];
+    unsigned int ksw  = neighborY[kw];
+    unsigned int kne  = KQK;
+    unsigned int kse  = ks;
+    unsigned int knw  = kw;
+    unsigned int kbw  = neighborZ[kw];
+    unsigned int kte  = KQK;
+    unsigned int kbe  = kb;
+    unsigned int ktw  = kw;
+    unsigned int kbs  = neighborZ[ks];
+    unsigned int ktn  = KQK;
+    unsigned int kbn  = kb;
+    unsigned int kts  = ks;
+    unsigned int ktse = ks;
+    unsigned int kbnw = kbw;
+    unsigned int ktnw = kw;
+    unsigned int kbse = kbs;
+    unsigned int ktsw = ksw;
+    unsigned int kbne = kb;
+    unsigned int ktne = KQK;
+    unsigned int kbsw = neighborZ[ksw];
+
+    ////////////////////////////////////////////////////////////////////////////////
+    //! - Set local distributions
+    //!
+    real f_W    = (dist.f[E   ])[ke   ];
+    real f_E    = (dist.f[W   ])[kw   ];
+    real f_S    = (dist.f[N   ])[kn   ];
+    real f_N    = (dist.f[S   ])[ks   ];
+    real f_B    = (dist.f[T   ])[kt   ];
+    real f_T    = (dist.f[B   ])[kb   ];
+    real f_SW   = (dist.f[NE  ])[kne  ];
+    real f_NE   = (dist.f[SW  ])[ksw  ];
+    real f_NW   = (dist.f[SE  ])[kse  ];
+    real f_SE   = (dist.f[NW  ])[knw  ];
+    real f_BW   = (dist.f[TE  ])[kte  ];
+    real f_TE   = (dist.f[BW  ])[kbw  ];
+    real f_TW   = (dist.f[BE  ])[kbe  ];
+    real f_BE   = (dist.f[TW  ])[ktw  ];
+    real f_BS   = (dist.f[TN  ])[ktn  ];
+    real f_TN   = (dist.f[BS  ])[kbs  ];
+    real f_TS   = (dist.f[BN  ])[kbn  ];
+    real f_BN   = (dist.f[TS  ])[kts  ];
+    real f_BSW  = (dist.f[TNE ])[ktne ];
+    real f_BNE  = (dist.f[TSW ])[ktsw ];
+    real f_BNW  = (dist.f[TSE ])[ktse ];
+    real f_BSE  = (dist.f[TNW ])[ktnw ];
+    real f_TSW  = (dist.f[BNE ])[kbne ];
+    real f_TNE  = (dist.f[BSW ])[kbsw ];
+    real f_TNW  = (dist.f[BSE ])[kbse ];
+    real f_TSE  = (dist.f[BNW ])[kbnw ];
     
-    vf::gpu::DistributionWrapper distWrapper = vf::gpu::DistributionWrapper(DD, size_Mat, !isEvenTimestep, k_Q[k], neighborX, neighborY, neighborZ);
-    real (&f)[27] = distWrapper.distribution.f;
-
+    SubgridDistances27 subgridD;
+    getPointersToSubgridDistances(subgridD, subgridDistances, numberOfBCnodes);
+    
     ////////////////////////////////////////////////////////////////////////////////
-    real drho = vf::lbm::getDensity(f);
-    real vx1 = vf::lbm::getCompressibleVelocityX1(f, drho);
-    real vx2 = vf::lbm::getCompressibleVelocityX2(f, drho);
-    real vx3 = vf::lbm::getCompressibleVelocityX3(f, drho);
+      real drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
+                     f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
+                     f_T + f_B + f_N + f_S + f_E + f_W + ((dist.f[REST])[kzero]); 
 
-    if(k==16383 || k==0) printf("k %d kQ %d drho = %f u %f v %f w %f\n",k, k_Q[k], drho, vx1, vx2, vx3);
-    real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (c1o1 + drho);
+      real vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
+                      ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
+                      (f_E - f_W)) / (c1o1 + drho); 
+         
 
-    // have to make a copy of the distributions so we can write to them later
-    real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
-        f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
+      real vx2    =   ((-(f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
+                       ((f_BN - f_TS)   + (f_TN - f_BS))    + (-(f_SE - f_NW)  + (f_NE - f_SW)) +
+                       (f_N - f_S)) / (c1o1 + drho); 
 
-    f_W    = f[vf::lbm::dir::W   ];
-    f_E    = f[vf::lbm::dir::E   ];
-    f_S    = f[vf::lbm::dir::S   ];
-    f_N    = f[vf::lbm::dir::N   ];
-    f_B    = f[vf::lbm::dir::B   ];
-    f_T    = f[vf::lbm::dir::T   ];
-    f_SW   = f[vf::lbm::dir::SW  ];
-    f_NE   = f[vf::lbm::dir::NE  ];
-    f_NW   = f[vf::lbm::dir::NW  ];
-    f_SE   = f[vf::lbm::dir::SE  ];
-    f_BW   = f[vf::lbm::dir::BW  ];
-    f_TE   = f[vf::lbm::dir::TE  ];
-    f_TW   = f[vf::lbm::dir::TW  ];
-    f_BE   = f[vf::lbm::dir::BE  ];
-    f_BS   = f[vf::lbm::dir::BS  ];
-    f_TN   = f[vf::lbm::dir::TN  ];
-    f_TS   = f[vf::lbm::dir::TS  ];
-    f_BN   = f[vf::lbm::dir::BN  ];
-    f_BSW  = f[vf::lbm::dir::BSW ];
-    f_BNE  = f[vf::lbm::dir::BNE ];
-    f_BNW  = f[vf::lbm::dir::BNW ];
-    f_BSE  = f[vf::lbm::dir::BSE ];
-    f_TSW  = f[vf::lbm::dir::TSW ];
-    f_TNE  = f[vf::lbm::dir::TNE ];
-    f_TNW  = f[vf::lbm::dir::TNW ];
-    f_TSE  = f[vf::lbm::dir::TSE ];
-    ////////////////////////////////////////////////////////////////////////////////
-    real feq, q;
+      real vx3    =   (((f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) + (f_TSW - f_BNE)) +
+                       (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
+                       (f_T - f_B)) / (c1o1 + drho); 
 
+    
+    if(k==16383 || k==0) printf("k %d kQ %d drho = %f u %f v %f w %f\n",k, KQK, drho, vx1, vx2, vx3);
+      real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (c1o1 + drho);
     //////////////////////////////////////////////////////////////////////////
-    q = Q.f[dirE][k];
-    if (q>=c0o1 && q<=c1o1)
+
+      ////////////////////////////////////////////////////////////////////////////////
+      //! - Update distributions with subgrid distance (q) between zero and one
+    real feq, q, velocityLB, velocityBC;
+    q = (subgridD.q[E])[k];
+    if (q>=c0o1 && q<=c1o1) // only update distribution for q between zero and one
     {
-        feq=c2o27* (drho/*+three*( vx1        )*/+c9o2*( vx1        )*( vx1        ) * (c1o1 + drho)-cu_sq); 
-        f[vf::lbm::dir::W]=(c1o1-q)/(c1o1+q)*(f_E-f_W+(f_E+f_W-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_E+f_W)-c6o1*c2o27*( VeloX     ))/(c1o1+q) - c2o27 * drho;
+        velocityLB = vx1;
+        feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
+        velocityBC = VeloX;
+        (dist.f[W])[kw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_E, f_W, feq, omega, drho, velocityBC, c2o27);
     }
 
-    q = Q.f[dirW][k];
+    q = (subgridD.q[W])[k];
     if (q>=c0o1 && q<=c1o1)
     {
-        feq=c2o27* (drho/*+three*(-vx1        )*/+c9o2*(-vx1        )*(-vx1        ) * (c1o1 + drho)-cu_sq); 
-        f[vf::lbm::dir::E]=(c1o1-q)/(c1o1+q)*(f_W-f_E+(f_W+f_E-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_W+f_E)-c6o1*c2o27*(-VeloX     ))/(c1o1+q) - c2o27 * drho;
+        velocityLB = -vx1;
+        feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
+        velocityBC = -VeloX;
+        (dist.f[E])[ke] = getInterpolatedDistributionForVeloWithPressureBC(q, f_W, f_E, feq, omega, drho, velocityBC, c2o27);
     }
 
-    q = Q.f[dirN][k];
+    q = (subgridD.q[N])[k];
     if (q>=c0o1 && q<=c1o1)
     {
-        feq=c2o27* (drho/*+three*(    vx2     )*/+c9o2*(     vx2    )*(     vx2    ) * (c1o1 + drho)-cu_sq); 
-        f[vf::lbm::dir::S]=(c1o1-q)/(c1o1+q)*(f_N-f_S+(f_N+f_S-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_N+f_S)-c6o1*c2o27*( VeloY     ))/(c1o1+q) - c2o27 * drho;
+        velocityLB = vx2;
+        feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
+        velocityBC = VeloY;
+        (dist.f[S])[ks] = getInterpolatedDistributionForVeloWithPressureBC(q, f_N, f_S, feq, omega, drho, velocityBC, c2o27);
     }
 
-    q = Q.f[dirS][k];
+    q = (subgridD.q[S])[k];
     if (q>=c0o1 && q<=c1o1)
     {
-        feq=c2o27* (drho/*+three*(   -vx2     )*/+c9o2*(    -vx2    )*(    -vx2    ) * (c1o1 + drho)-cu_sq); 
-        f[vf::lbm::dir::N]=(c1o1-q)/(c1o1+q)*(f_S-f_N+(f_S+f_N-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_S+f_N)-c6o1*c2o27*(-VeloY     ))/(c1o1+q) - c2o27 * drho;
+        velocityLB = -vx2;
+        feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
+        velocityBC = -VeloY;
+        (dist.f[N])[kn] = getInterpolatedDistributionForVeloWithPressureBC(q, f_S, f_N, feq, omega, drho, velocityBC, c2o27);
     }
 
-    q = Q.f[dirT][k];
+    q = (subgridD.q[T])[k];
     if (q>=c0o1 && q<=c1o1)
     {
-        feq=c2o27* (drho/*+three*(         vx3)*/+c9o2*(         vx3)*(         vx3) * (c1o1 + drho)-cu_sq); 
-        f[vf::lbm::dir::B]=(c1o1-q)/(c1o1+q)*(f_T-f_B+(f_T+f_B-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_T+f_B)-c6o1*c2o27*( VeloZ     ))/(c1o1+q) - c2o27 * drho;
+        velocityLB = vx3;
+        feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
+        velocityBC = VeloZ;
+        (dist.f[B])[kb] = getInterpolatedDistributionForVeloWithPressureBC(q, f_T, f_B, feq, omega, drho, velocityBC, c2o27);
     }
 
-    q = Q.f[dirB][k];
+    q = (subgridD.q[B])[k];
     if (q>=c0o1 && q<=c1o1)
     {
-        feq=c2o27* (drho/*+three*(        -vx3)*/+c9o2*(        -vx3)*(        -vx3) * (c1o1 + drho)-cu_sq); 
-        f[vf::lbm::dir::T]=(c1o1-q)/(c1o1+q)*(f_B-f_T+(f_B+f_T-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_B+f_T)-c6o1*c2o27*(-VeloZ     ))/(c1o1+q) - c2o27 * drho;
+        velocityLB = -vx3;
+        feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
+        velocityBC = -VeloZ;
+        (dist.f[T])[kt] = getInterpolatedDistributionForVeloWithPressureBC(q, f_B, f_T, feq, omega, drho, velocityBC, c2o27);
     }
 
-    q = Q.f[dirNE][k];
+    q = (subgridD.q[NE])[k];
     if (q>=c0o1 && q<=c1o1)
     {
-        feq=c1o54* (drho/*+three*( vx1+vx2    )*/+c9o2*( vx1+vx2    )*( vx1+vx2    ) * (c1o1 + drho)-cu_sq); 
-        f[vf::lbm::dir::SW]=(c1o1-q)/(c1o1+q)*(f_NE-f_SW+(f_NE+f_SW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_NE+f_SW)-c6o1*c1o54*(VeloX+VeloY))/(c1o1+q) - c1o54 * drho;
+        velocityLB = vx1 + vx2;
+        feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
+        velocityBC = VeloX + VeloY;
+        (dist.f[SW])[ksw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_NE, f_SW, feq, omega, drho, velocityBC, c1o54);
     }
 
-    q = Q.f[dirSW][k];
+    q = (subgridD.q[SW])[k];
     if (q>=c0o1 && q<=c1o1)
     {
-        feq=c1o54* (drho/*+three*(-vx1-vx2    )*/+c9o2*(-vx1-vx2    )*(-vx1-vx2    ) * (c1o1 + drho)-cu_sq); 
-        f[vf::lbm::dir::NE]=(c1o1-q)/(c1o1+q)*(f_SW-f_NE+(f_SW+f_NE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_SW+f_NE)-c6o1*c1o54*(-VeloX-VeloY))/(c1o1+q) - c1o54 * drho;
+        velocityLB = -vx1 - vx2;
+        feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
+        velocityBC = -VeloX - VeloY;
+        (dist.f[NE])[kne] = getInterpolatedDistributionForVeloWithPressureBC(q, f_SW, f_NE, feq, omega, drho, velocityBC, c1o54);
     }
 
-    q = Q.f[dirSE][k];
+    q = (subgridD.q[SE])[k];
     if (q>=c0o1 && q<=c1o1)
     {
-        feq=c1o54* (drho/*+three*( vx1-vx2    )*/+c9o2*( vx1-vx2    )*( vx1-vx2    ) * (c1o1 + drho)-cu_sq); 
-        f[vf::lbm::dir::NW]=(c1o1-q)/(c1o1+q)*(f_SE-f_NW+(f_SE+f_NW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_SE+f_NW)-c6o1*c1o54*( VeloX-VeloY))/(c1o1+q) - c1o54 * drho;
+        velocityLB = vx1 - vx2;
+        feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
+        velocityBC = VeloX - VeloY;
+        (dist.f[NW])[knw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_SE, f_NW, feq, omega, drho, velocityBC, c1o54);
     }
 
-    q = Q.f[dirNW][k];
+    q = (subgridD.q[NW])[k];
     if (q>=c0o1 && q<=c1o1)
     {
-        feq=c1o54* (drho/*+three*(-vx1+vx2    )*/+c9o2*(-vx1+vx2    )*(-vx1+vx2    ) * (c1o1 + drho)-cu_sq); 
-        f[vf::lbm::dir::SE]=(c1o1-q)/(c1o1+q)*(f_NW-f_SE+(f_NW+f_SE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_NW+f_SE)-c6o1*c1o54*(-VeloX+VeloY))/(c1o1+q) - c1o54 * drho;
+        velocityLB = -vx1 + vx2;
+        feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
+        velocityBC = -VeloX + VeloY;
+        (dist.f[SE])[kse] = getInterpolatedDistributionForVeloWithPressureBC(q, f_NW, f_SE, feq, omega, drho, velocityBC, c1o54);
     }
 
-    q = Q.f[dirTE][k];
+    q = (subgridD.q[TE])[k];
     if (q>=c0o1 && q<=c1o1)
     {
-        feq=c1o54* (drho/*+three*( vx1    +vx3)*/+c9o2*( vx1    +vx3)*( vx1    +vx3) * (c1o1 + drho)-cu_sq); 
-        f[vf::lbm::dir::BW]=(c1o1-q)/(c1o1+q)*(f_TE-f_BW+(f_TE+f_BW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TE+f_BW)-c6o1*c1o54*( VeloX+VeloZ))/(c1o1+q) - c1o54 * drho;
+        velocityLB = vx1 + vx3;
+        feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
+        velocityBC = VeloX + VeloZ;
+        (dist.f[BW])[kbw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_TE, f_BW, feq, omega, drho, velocityBC, c1o54);
     }
 
-    q = Q.f[dirBW][k];
+    q = (subgridD.q[BW])[k];
     if (q>=c0o1 && q<=c1o1)
     {
-        feq=c1o54* (drho/*+three*(-vx1    -vx3)*/+c9o2*(-vx1    -vx3)*(-vx1    -vx3) * (c1o1 + drho)-cu_sq); 
-        f[vf::lbm::dir::TE]=(c1o1-q)/(c1o1+q)*(f_BW-f_TE+(f_BW+f_TE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BW+f_TE)-c6o1*c1o54*(-VeloX-VeloZ))/(c1o1+q) - c1o54 * drho;
+        velocityLB = -vx1 - vx3;
+        feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
+        velocityBC = -VeloX - VeloZ;
+        (dist.f[TE])[kte] = getInterpolatedDistributionForVeloWithPressureBC(q, f_BW, f_TE, feq, omega, drho, velocityBC, c1o54);
     }
 
-    q = Q.f[dirBE][k];
+    q = (subgridD.q[BE])[k];
     if (q>=c0o1 && q<=c1o1)
     {
-        feq=c1o54* (drho/*+three*( vx1    -vx3)*/+c9o2*( vx1    -vx3)*( vx1    -vx3) * (c1o1 + drho)-cu_sq); 
-        f[vf::lbm::dir::TW]=(c1o1-q)/(c1o1+q)*(f_BE-f_TW+(f_BE+f_TW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BE+f_TW)-c6o1*c1o54*( VeloX-VeloZ))/(c1o1+q) - c1o54 * drho;
+        velocityLB = vx1 - vx3;
+        feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
+        velocityBC = VeloX - VeloZ;
+        (dist.f[TW])[ktw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_BE, f_TW, feq, omega, drho, velocityBC, c1o54);
     }
 
-    q = Q.f[dirTW][k];
+    q = (subgridD.q[TW])[k];
     if (q>=c0o1 && q<=c1o1)
     {
-        feq=c1o54* (drho/*+three*(-vx1    +vx3)*/+c9o2*(-vx1    +vx3)*(-vx1    +vx3) * (c1o1 + drho)-cu_sq); 
-        f[vf::lbm::dir::BE]=(c1o1-q)/(c1o1+q)*(f_TW-f_BE+(f_TW+f_BE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TW+f_BE)-c6o1*c1o54*(-VeloX+VeloZ))/(c1o1+q) - c1o54 * drho;
+        velocityLB = -vx1 + vx3;
+        feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
+        velocityBC = -VeloX + VeloZ;
+        (dist.f[BE])[kbe] = getInterpolatedDistributionForVeloWithPressureBC(q, f_TW, f_BE, feq, omega, drho, velocityBC, c1o54);
     }
 
-    q = Q.f[dirTN][k];
+    q = (subgridD.q[TN])[k];
     if (q>=c0o1 && q<=c1o1)
     {
-        feq=c1o54* (drho/*+three*(     vx2+vx3)*/+c9o2*(     vx2+vx3)*(     vx2+vx3) * (c1o1 + drho)-cu_sq); 
-        f[vf::lbm::dir::BS]=(c1o1-q)/(c1o1+q)*(f_TN-f_BS+(f_TN+f_BS-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TN+f_BS)-c6o1*c1o54*( VeloY+VeloZ))/(c1o1+q) - c1o54 * drho;
+        velocityLB = vx2 + vx3;
+        feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
+        velocityBC = VeloY + VeloZ;
+        (dist.f[BS])[kbs] = getInterpolatedDistributionForVeloWithPressureBC(q, f_TN, f_BS, feq, omega, drho, velocityBC, c1o54);
     }
 
-    q = Q.f[dirBS][k];
+    q = (subgridD.q[BS])[k];
     if (q>=c0o1 && q<=c1o1)
     {
-        feq=c1o54* (drho/*+three*(    -vx2-vx3)*/+c9o2*(    -vx2-vx3)*(    -vx2-vx3) * (c1o1 + drho)-cu_sq); 
-        f[vf::lbm::dir::TN]=(c1o1-q)/(c1o1+q)*(f_BS-f_TN+(f_BS+f_TN-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BS+f_TN)-c6o1*c1o54*( -VeloY-VeloZ))/(c1o1+q) - c1o54 * drho;
+        velocityLB = -vx2 - vx3;
+        feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
+        velocityBC = -VeloY - VeloZ;
+        (dist.f[TN])[ktn] = getInterpolatedDistributionForVeloWithPressureBC(q, f_BS, f_TN, feq, omega, drho, velocityBC, c1o54);
     }
 
-    q = Q.f[dirBN][k];
+    q = (subgridD.q[BN])[k];
     if (q>=c0o1 && q<=c1o1)
     {
-        feq=c1o54* (drho/*+three*(     vx2-vx3)*/+c9o2*(     vx2-vx3)*(     vx2-vx3) * (c1o1 + drho)-cu_sq); 
-        f[vf::lbm::dir::TS]=(c1o1-q)/(c1o1+q)*(f_BN-f_TS+(f_BN+f_TS-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BN+f_TS)-c6o1*c1o54*( VeloY-VeloZ))/(c1o1+q) - c1o54 * drho;
+        velocityLB = vx2 - vx3;
+        feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
+        velocityBC = VeloY - VeloZ;
+        (dist.f[TS])[kts] = getInterpolatedDistributionForVeloWithPressureBC(q, f_BN, f_TS, feq, omega, drho, velocityBC, c1o54);
     }
 
-    q = Q.f[dirTS][k];
+    q = (subgridD.q[TS])[k];
     if (q>=c0o1 && q<=c1o1)
     {
-        feq=c1o54* (drho/*+three*(    -vx2+vx3)*/+c9o2*(    -vx2+vx3)*(    -vx2+vx3) * (c1o1 + drho)-cu_sq); 
-        f[vf::lbm::dir::BN]=(c1o1-q)/(c1o1+q)*(f_TS-f_BN+(f_TS+f_BN-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TS+f_BN)-c6o1*c1o54*( -VeloY+VeloZ))/(c1o1+q) - c1o54 * drho;
+        velocityLB = -vx2 + vx3;
+        feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
+        velocityBC = -VeloY + VeloZ;
+        (dist.f[BN])[kbn] = getInterpolatedDistributionForVeloWithPressureBC(q, f_TS, f_BN, feq, omega, drho, velocityBC, c1o54);
     }
 
-    q = Q.f[dirTNE][k];
+    q = (subgridD.q[TNE])[k];
     if (q>=c0o1 && q<=c1o1)
     {
-        feq=c1o216*(drho/*+three*( vx1+vx2+vx3)*/+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3) * (c1o1 + drho)-cu_sq); 
-        f[vf::lbm::dir::BSW]=(c1o1-q)/(c1o1+q)*(f_TNE-f_BSW+(f_TNE+f_BSW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TNE+f_BSW)-c6o1*c1o216*( VeloX+VeloY+VeloZ))/(c1o1+q) - c1o216 * drho;
+        velocityLB = vx1 + vx2 + vx3;
+        feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
+        velocityBC = VeloX + VeloY + VeloZ;
+        (dist.f[BSW])[kbsw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_TNE, f_BSW, feq, omega, drho, velocityBC, c1o216);
     }
 
-    q = Q.f[dirBSW][k];
+    q = (subgridD.q[BSW])[k];
     if (q>=c0o1 && q<=c1o1)
     {
-        feq=c1o216*(drho/*+three*(-vx1-vx2-vx3)*/+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3) * (c1o1 + drho)-cu_sq); 
-        f[vf::lbm::dir::TNE]=(c1o1-q)/(c1o1+q)*(f_BSW-f_TNE+(f_BSW+f_TNE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BSW+f_TNE)-c6o1*c1o216*(-VeloX-VeloY-VeloZ))/(c1o1+q) - c1o216 * drho;
+        velocityLB = -vx1 - vx2 - vx3;
+        feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
+        velocityBC = -VeloX - VeloY - VeloZ;
+        (dist.f[TNE])[ktne] = getInterpolatedDistributionForVeloWithPressureBC(q, f_BSW, f_TNE, feq, omega, drho, velocityBC, c1o216);
     }
 
-    q = Q.f[dirBNE][k];
+    q = (subgridD.q[BNE])[k];
     if (q>=c0o1 && q<=c1o1)
     {
-        feq=c1o216*(drho/*+three*( vx1+vx2-vx3)*/+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3) * (c1o1 + drho)-cu_sq); 
-        f[vf::lbm::dir::TSW]=(c1o1-q)/(c1o1+q)*(f_BNE-f_TSW+(f_BNE+f_TSW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BNE+f_TSW)-c6o1*c1o216*( VeloX+VeloY-VeloZ))/(c1o1+q) - c1o216 * drho;
+        velocityLB = vx1 + vx2 - vx3;
+        feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
+        velocityBC = VeloX + VeloY - VeloZ;
+        (dist.f[TSW])[ktsw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_BNE, f_TSW, feq, omega, drho, velocityBC, c1o216);
     }
 
-    q = Q.f[dirTSW][k];
+    q = (subgridD.q[TSW])[k];
     if (q>=c0o1 && q<=c1o1)
     {
-        feq=c1o216*(drho/*+three*(-vx1-vx2+vx3)*/+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3) * (c1o1 + drho)-cu_sq); 
-        f[vf::lbm::dir::BNE]=(c1o1-q)/(c1o1+q)*(f_TSW-f_BNE+(f_TSW+f_BNE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TSW+f_BNE)-c6o1*c1o216*(-VeloX-VeloY+VeloZ))/(c1o1+q) - c1o216 * drho;
+        velocityLB = -vx1 - vx2 + vx3;
+        feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
+        velocityBC = -VeloX - VeloY + VeloZ;
+        (dist.f[BNE])[kbne] = getInterpolatedDistributionForVeloWithPressureBC(q, f_TSW, f_BNE, feq, omega, drho, velocityBC, c1o216);
     }
 
-    q = Q.f[dirTSE][k];
+    q = (subgridD.q[TSE])[k];
     if (q>=c0o1 && q<=c1o1)
     {
-        feq=c1o216*(drho/*+three*( vx1-vx2+vx3)*/+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3) * (c1o1 + drho)-cu_sq); 
-        f[vf::lbm::dir::BNW]=(c1o1-q)/(c1o1+q)*(f_TSE-f_BNW+(f_TSE+f_BNW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TSE+f_BNW)-c6o1*c1o216*( VeloX-VeloY+VeloZ))/(c1o1+q) - c1o216 * drho;
+        velocityLB = vx1 - vx2 + vx3;
+        feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
+        velocityBC = VeloX - VeloY + VeloZ;
+        (dist.f[BNW])[kbnw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_TSE, f_BNW, feq, omega, drho, velocityBC, c1o216);
     }
 
-    q = Q.f[dirBNW][k];
+    q = (subgridD.q[BNW])[k];
     if (q>=c0o1 && q<=c1o1)
     {
-        feq=c1o216*(drho/*+three*(-vx1+vx2-vx3)*/+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3) * (c1o1 + drho)-cu_sq); 
-        f[vf::lbm::dir::TSE]=(c1o1-q)/(c1o1+q)*(f_BNW-f_TSE+(f_BNW+f_TSE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BNW+f_TSE)-c6o1*c1o216*(-VeloX+VeloY-VeloZ))/(c1o1+q) - c1o216 * drho;
+        velocityLB = -vx1 + vx2 - vx3;
+        feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
+        velocityBC = -VeloX + VeloY - VeloZ;
+        (dist.f[TSE])[ktse] = getInterpolatedDistributionForVeloWithPressureBC(q, f_BNW, f_TSE, feq, omega, drho, velocityBC, c1o216);
     }
 
-    q = Q.f[dirBSE][k];
+    q = (subgridD.q[BSE])[k];
     if (q>=c0o1 && q<=c1o1)
     {
-        feq=c1o216*(drho/*+three*( vx1-vx2-vx3)*/+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3) * (c1o1 + drho)-cu_sq); 
-        f[vf::lbm::dir::TNW]=(c1o1-q)/(c1o1+q)*(f_BSE-f_TNW+(f_BSE+f_TNW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BSE+f_TNW)-c6o1*c1o216*( VeloX-VeloY-VeloZ))/(c1o1+q) - c1o216 * drho;
+        velocityLB = vx1 - vx2 - vx3;
+        feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
+        velocityBC = VeloX - VeloY - VeloZ;
+        (dist.f[TNW])[ktnw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_BSE, f_TNW, feq, omega, drho, velocityBC, c1o216);
     }
 
-    q = Q.f[dirTNW][k];
+    q = (subgridD.q[TNW])[k];
     if (q>=c0o1 && q<=c1o1)
     {
-        feq=c1o216*(drho/*+three*(-vx1+vx2+vx3)*/+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3) * (c1o1 + drho)-cu_sq); 
-        f[vf::lbm::dir::BSE]=(c1o1-q)/(c1o1+q)*(f_TNW-f_BSE+(f_TNW+f_BSE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TNW+f_BSE)-c6o1*c1o216*(-VeloX+VeloY+VeloZ))/(c1o1+q) - c1o216 * drho;
+        velocityLB = -vx1 + vx2 + vx3;
+        feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
+        velocityBC = -VeloX + VeloY + VeloZ;
+        (dist.f[BSE])[kbse] = getInterpolatedDistributionForVeloWithPressureBC(q, f_TNW, f_BSE, feq, omega, drho, velocityBC, c1o216);
     }
-    //////////////////////////////////////////////////////////////////////////
-    distWrapper.write();
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

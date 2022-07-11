@@ -8,18 +8,18 @@
 #include "Communication/Communicator.h"
 #include "Calculation/PorousMedia.h"
 
-class LBKernelManager;
+class BCKernelManager;
 class ADKernelManager;
 class GridScalingKernelManager;
 class Kernel;
+class BoundaryConditionFactory;
 
 class UpdateGrid27
 {
 public:
     UpdateGrid27(SPtr<Parameter> para, vf::gpu::Communicator &comm, SPtr<CudaMemoryManager> cudaManager,
-                 std::vector<std::shared_ptr<PorousMedia>> &pm, std::vector<SPtr<Kernel>> &kernels);
+                 std::vector<std::shared_ptr<PorousMedia>> &pm, std::vector<SPtr<Kernel>> &kernels, BoundaryConditionFactory* bcFactory);
     void updateGrid(int level, unsigned int t);
-
 
 private:
     void postCollisionBC(int level, unsigned int t);
@@ -62,7 +62,7 @@ private:
     std::vector<std::shared_ptr<PorousMedia>> pm;
     std::vector<SPtr<Kernel>> kernels;
     //! \property lbKernelManager is a shared pointer to an object of LBKernelManager
-    std::shared_ptr<LBKernelManager> lbKernelManager;
+    std::shared_ptr<BCKernelManager> bcKernelManager;
     //! \property adKernelManager is a shared pointer to an object of ADKernelManager
     std::shared_ptr<ADKernelManager> adKernelManager;
     //! \property gridScalingKernelManager is a shared pointer to an object of GridScalingKernelManager

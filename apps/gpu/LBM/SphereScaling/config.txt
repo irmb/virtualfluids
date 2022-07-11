@@ -17,15 +17,13 @@
 ##################################################
 #informations for Writing
 ##################################################
-#Path="E:/temp/SphereScalingResults/"
-Path=/work/y0078217/Results/SphereScalingResults/
+Path=./output/SphereScalingResults/
 #Prefix="SphereScaling" 
 #WriteGrid=true
 ##################################################
 #informations for reading
 ##################################################
-GridPath=/work/y0078217/Grids/GridSphereScaling/
-#GridPath=E:/temp/GridSphereScaling/
+GridPath=/output/grids/SphereScalingResults/
 
 ##################################################
 #number of grid levels
@@ -41,6 +39,12 @@ GridPath=/work/y0078217/Grids/GridSphereScaling/
 ##################################################
 #simulation parameter
 ##################################################
-#TimeEnd=10
-#TimeOut=10 
-#TimeStartOut=0
+TimeEnd=100000
+TimeOut=10000
+TimeStartOut=0
+
+##################################################
+# CUDA Streams and optimized communication (only used for multiple GPUs)
+##################################################
+useStreams = false
+useReducedCommunicationInInterpolation = false

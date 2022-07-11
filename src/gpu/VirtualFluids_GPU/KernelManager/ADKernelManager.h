@@ -33,8 +33,8 @@
 #ifndef ADVECTION_DIFFUSION_H
 #define ADVECTION_DIFFUSION_H
 
-#include "PointerDefinitions.h"
 #include "Core/DataTypes.h"
+#include "PointerDefinitions.h"
 #include "VirtualFluids_GPU_export.h"
 
 //! \brief Class forwarding for Parameter, CudaMemoryManager
@@ -43,49 +43,41 @@ class CudaMemoryManager;
 
 //! \class ADKernelManager
 //! \brief manage the advection diffusion kernel calls
-class VIRTUALFLUIDS_GPU_EXPORT ADKernelManager{
+class VIRTUALFLUIDS_GPU_EXPORT ADKernelManager
+{
 
 public:
-    //! \brief makes an object of ADKernelManager
-    //! \param para shared pointer to instance of class Parameter
-    static SPtr<ADKernelManager> make(SPtr<Parameter> parameter);
-
-    //! \brief initialize the advection diffusion distributions
-    void initAD(int level);
-    
-    //! \brief set initial concentration values at all nodes
-    //! \param cudaMemoryManager instance of class CudaMemoryManager
-    void setInitialNodeValuesAD(int level, SPtr<CudaMemoryManager> cudaMemoryManager);
-    
-    //! \brief calculate the state of the next time step of the advection diffusion distributions
-    void runADcollisionKernel(int level);
-
-    //! \brief calls the device function of the geometry boundary condition for advection diffusion
-    void runADgeometryBCKernel(int level);
-
-    //! \brief calls the device function of the velocity boundary condition for advection diffusion
-    void runADveloBCKernel(int level);
-
-    //! \brief calls the device function of the slip boundary condition for advection diffusion
-    void runADslipBCKernel(int level);
-
-    //! \brief calls the device function of the pressure boundary condition for advection diffusion
-    void runADpressureBCKernel(int level);
-    
-    //! \brief copy the concentration from device to host and writes VTK file with concentration
-    //! \param cudaMemoryManager instance of class CudaMemoryManager
-    void printAD(int level, SPtr<CudaMemoryManager> cudaMemoryManager);
-
-
-private:
     //! Class constructor
     //! \param parameter shared pointer to instance of class Parameter
     ADKernelManager(SPtr<Parameter> parameter);
-    //! Class copy constructor
-    //! \param ADKernelManager is a reference to ADKernelManager object
-    ADKernelManager(const ADKernelManager&);
 
-    //! \property para is a shared pointer to an object of Parameter
+    //! \brief initialize the advection diffusion distributions
+    void initAD(const int level) const;
+
+    //! \brief set initial concentration values at all nodes
+    //! \param cudaMemoryManager instance of class CudaMemoryManager
+    void setInitialNodeValuesAD(const int level, SPtr<CudaMemoryManager> cudaMemoryManager) const;
+
+    //! \brief calculate the state of the next time step of the advection diffusion distributions
+    void runADcollisionKernel(const int level) const;
+
+    //! \brief calls the device function of the geometry boundary condition for advection diffusion
+    void runADgeometryBCKernel(const int level) const;
+
+    //! \brief calls the device function of the velocity boundary condition for advection diffusion
+    void runADveloBCKernel(const int level) const;
+
+    //! \brief calls the device function of the slip boundary condition for advection diffusion
+    void runADslipBCKernel(const int level) const;
+
+    //! \brief calls the device function of the pressure boundary condition for advection diffusion
+    void runADpressureBCKernel(const int level) const;
+
+    //! \brief copy the concentration from device to host and writes VTK file with concentration
+    //! \param cudaMemoryManager instance of class CudaMemoryManager
+    void printAD(const int level, SPtr<CudaMemoryManager> cudaMemoryManager) const;
+
+private:
     SPtr<Parameter> para;
 };
 

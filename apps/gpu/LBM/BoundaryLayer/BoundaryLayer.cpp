@@ -51,6 +51,7 @@
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/WallModelProbe.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/PrecursorWriter.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/VelocitySetter.h"
+#include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 
@@ -87,6 +88,7 @@ void multipleLevel(const std::string& configPath)
     config.load(configPath);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////^
     SPtr<Parameter> para = std::make_shared<Parameter>(config, communicator.getNummberOfProcess(), communicator.getPID());
+    BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -221,13 +223,16 @@ void multipleLevel(const std::string& configPath)
     gridBuilder->setStressBoundaryCondition(SideType::MZ,
                                             0.0, 0.0, 1.0,              // wall normals
                                             samplingOffset, z0/dx);     // wall model settinng
-    // gridBuilder->setSlipBoundaryCondition(SideType::MZ,  0.0,  0.0, 0.0);
+    para->setHasWallModelMonitor(true);
+    bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressBounceBack);
 
     // para->setHasWallModelMonitor(true);
 
     
     // gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
     // gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
+    gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0,  0.0, 0.0);
+    bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipCompressible);
 
 
 
@@ -264,7 +269,7 @@ void multipleLevel(const std::string& configPath)
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
     auto gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
 
-    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator);
+    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory);
     sim.run();
 }
 

@@ -176,6 +176,8 @@ protected:
 
 protected:
     void setVelocityGeometryBoundaryCondition(real vx, real vy, real vz);
+    void setNoSlipGeometryBoundaryCondition();
+    void setSlipGeometryBoundaryCondition(real normalX, real normalY, real normalZ);
 
     void createBCVectors();
     void addShortQsToVector(int index);

@@ -16,10 +16,15 @@ __pycache__/
 .vscode-server/
 .sync/
 .idea/
+.ccache/
+.cache/
 
 # simulation results
 output/
 logs/
+
+# grid
+grid/
 
 # scripts
 scripts/
@@ -29,3 +34,6 @@ stl/
 
 # MacOS
 .DS_Store
+
+# Settings
+.gitconfig

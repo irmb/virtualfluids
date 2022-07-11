@@ -109,7 +109,7 @@ public:
     void getAllNeighbors(SPtr<Block3D> block, int level, int levelDepth, std::vector<SPtr<Block3D>> &blocks);
     void getNeighborBlocksForDirection(int dir, int ix1, int ix2, int ix3, int level, int levelDepth,
                                        std::vector<SPtr<Block3D>> &blocks);
-    void getNeighborBlocksForDirectionWithDirZero(int dir, int ix1, int ix2, int ix3, int level, int levelDepth,
+    void getNeighborBlocksForDirectionWithREST(int dir, int ix1, int ix2, int ix3, int level, int levelDepth,
                                                   std::vector<SPtr<Block3D>> &blocks);
 
     void getNeighborsZero(int ix1, int ix2, int ix3, int level, int levelDepth, std::vector<SPtr<Block3D>> &blocks);

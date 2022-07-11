@@ -33,73 +33,76 @@
 #ifndef LBKernelManager_H
 #define LBKernelManager_H
 
+#include <functional>
 #include <memory>
+
 #include "PointerDefinitions.h"
 #include "VirtualFluids_GPU_export.h"
+#include "LBM/LB.h"
 
-//! \brief Class forwarding for Parameter
-class Parameter;
 class CudaMemoryManager;
+class BoundaryConditionFactory;
+class Parameter;
+struct LBMSimulationParameter;
+
+using boundaryCondition = std::function<void(LBMSimulationParameter *, QforBoundaryConditions *)>;
+using boundaryConditionPara = std::function<void(Parameter *, QforBoundaryConditions *, const int level)>;
 
 //! \class LBKernelManager
 //! \brief manage the cuda kernel calls
-class VIRTUALFLUIDS_GPU_EXPORT LBKernelManager
+class VIRTUALFLUIDS_GPU_EXPORT BCKernelManager
 {
 public:
-	//! \brief makes an object of LBKernelManager
-	//! \param para shared pointer to instance of class Parameter
-    static SPtr<LBKernelManager> make(std::shared_ptr<Parameter> parameter);
-    
-	//! \brief calls the device function of the lattice Boltzmann kernel
-	void runLBMKernel(int level);
+    //! Class constructor
+    //! \param parameter shared pointer to instance of class Parameter
+    BCKernelManager(SPtr<Parameter> parameter, BoundaryConditionFactory *bcFactory);
 
-	//! \brief calls the device function of the velocity boundary condition (post-collision)
-    void runVelocityBCKernelPost(int level);
+    void setBoundaryConditionKernels();
 
-	//! \brief calls the device function of the velocity boundary condition (pre-collision)
-    void runVelocityBCKernelPre(int level);
+    //! \brief calls the device function of the velocity boundary condition (post-collision)
+    void runVelocityBCKernelPost(const int level) const;
 
-	//! \brief calls the device function of the geometry boundary condition (post-collision)
-	void runGeoBCKernelPost(int level);
+    //! \brief calls the device function of the velocity boundary condition (pre-collision)
+    void runVelocityBCKernelPre(const int level) const;
 
-	//! \brief calls the device function of the geometry boundary condition (pre-collision)
-	void runGeoBCKernelPre(int level, unsigned int t,  CudaMemoryManager* cudaMemoryManager);
+    //! \brief calls the device function of the geometry boundary condition (post-collision)
+    void runGeoBCKernelPost(const int level) const;
 
-	//! \brief calls the device function of the slip boundary condition
-	void runSlipBCKernel(int level);
+    //! \brief calls the device function of the geometry boundary condition (pre-collision)
+    void runGeoBCKernelPre(const int level, unsigned int t, CudaMemoryManager *cudaMemoryManager) const;
 
-	//! \brief calls the device function of the no-slip boundary condition
-	void runNoSlipBCKernel(int level);
+    //! \brief calls the device function of the slip boundary condition
+    void runSlipBCKernelPost(const int level) const;
 
-	//! \brief calls the device function of the pressure boundary condition (pre-collision)
-	void runPressureBCKernelPre(int level);
+    //! \brief calls the device function of the no-slip boundary condition
+    void runNoSlipBCKernelPost(const int level) const;
 
-	//! \brief calls the device function of the pressure boundary condition (post-collision)
-	void runPressureBCKernelPost(int level);
+    //! \brief calls the device function of the pressure boundary condition (pre-collision)
+    void runPressureBCKernelPre(const int level) const;
 
-	//! \brief calls the device function of the outflow boundary condition
-	void runOutflowBCKernelPre(int level);
+    //! \brief calls the device function of the pressure boundary condition (post-collision)
+    void runPressureBCKernelPost(const int level) const;
 
 	//! \brief calls the device function of the precursor boundary condition
 	void runPrecursorBCKernelPost(int level, uint t, CudaMemoryManager* cudaMemoryManager);
 
-	//! \brief calls the device function of the stress wall model
-	void runStressWallModelKernel(int level);
+    //! \brief calls the device function of the outflow boundary condition
+    void runOutflowBCKernelPre(const int level) const;
+
+    //! \brief calls the device function of the stress wall model
+    void runStressWallModelKernelPost(const int level) const;
 
     //! \brief calls the device function that calculates the macroscopic values
-    void calculateMacroscopicValues(int level);
-
+    void calculateMacroscopicValues(const int level) const;
 
 private:
-	//! Class constructor
-	//! \param parameter shared pointer to instance of class Parameter
-	LBKernelManager(SPtr<Parameter> parameter);
-	//! Class copy constructor
-	//! \param LBKernelManager is a reference to LBKernelManager object
-	LBKernelManager(const LBKernelManager&);
+    SPtr<Parameter> para;
 
-	//! \property para is a shared pointer to an object of Parameter
-	SPtr<Parameter> para;
-
+    boundaryCondition velocityBoundaryConditionPost;
+    boundaryCondition noSlipBoundaryConditionPost;
+    boundaryCondition slipBoundaryConditionPost;
+    boundaryCondition pressureBoundaryConditionPre;
+    boundaryCondition geometryBoundaryConditionPost;
+    boundaryConditionPara stressBoundaryConditionPost;
 };
 #endif

@@ -1,8 +1,10 @@
 #include "LBM/LB.h" 
-#include "LBM/D3Q27.h"
+#include "lbm/constants/D3Q27.h"
 #include <lbm/constants/NumericConstants.h>
 
 using namespace vf::lbm::constant;
+using namespace vf::lbm::dir;
+
 #include "math.h"
 
 extern "C" __global__ void LB_Kernel_AD_Comp_7(real diffusivity,
@@ -37,63 +39,63 @@ extern "C" __global__ void LB_Kernel_AD_Comp_7(real diffusivity,
 			Distributions27 D;
 			if (EvenOrOdd == true)
 			{
-				D.f[dirE] = &DDStart[dirE   *size_Mat];
-				D.f[dirW] = &DDStart[dirW   *size_Mat];
-				D.f[dirN] = &DDStart[dirN   *size_Mat];
-				D.f[dirS] = &DDStart[dirS   *size_Mat];
-				D.f[dirT] = &DDStart[dirT   *size_Mat];
-				D.f[dirB] = &DDStart[dirB   *size_Mat];
-				D.f[dirNE] = &DDStart[dirNE  *size_Mat];
-				D.f[dirSW] = &DDStart[dirSW  *size_Mat];
-				D.f[dirSE] = &DDStart[dirSE  *size_Mat];
-				D.f[dirNW] = &DDStart[dirNW  *size_Mat];
-				D.f[dirTE] = &DDStart[dirTE  *size_Mat];
-				D.f[dirBW] = &DDStart[dirBW  *size_Mat];
-				D.f[dirBE] = &DDStart[dirBE  *size_Mat];
-				D.f[dirTW] = &DDStart[dirTW  *size_Mat];
-				D.f[dirTN] = &DDStart[dirTN  *size_Mat];
-				D.f[dirBS] = &DDStart[dirBS  *size_Mat];
-				D.f[dirBN] = &DDStart[dirBN  *size_Mat];
-				D.f[dirTS] = &DDStart[dirTS  *size_Mat];
-				D.f[dirZERO] = &DDStart[dirZERO*size_Mat];
-				D.f[dirTNE] = &DDStart[dirTNE *size_Mat];
-				D.f[dirTSW] = &DDStart[dirTSW *size_Mat];
-				D.f[dirTSE] = &DDStart[dirTSE *size_Mat];
-				D.f[dirTNW] = &DDStart[dirTNW *size_Mat];
-				D.f[dirBNE] = &DDStart[dirBNE *size_Mat];
-				D.f[dirBSW] = &DDStart[dirBSW *size_Mat];
-				D.f[dirBSE] = &DDStart[dirBSE *size_Mat];
-				D.f[dirBNW] = &DDStart[dirBNW *size_Mat];
+				D.f[E] = &DDStart[E   *size_Mat];
+				D.f[W] = &DDStart[W   *size_Mat];
+				D.f[N] = &DDStart[N   *size_Mat];
+				D.f[S] = &DDStart[S   *size_Mat];
+				D.f[T] = &DDStart[T   *size_Mat];
+				D.f[B] = &DDStart[B   *size_Mat];
+				D.f[NE] = &DDStart[NE  *size_Mat];
+				D.f[SW] = &DDStart[SW  *size_Mat];
+				D.f[SE] = &DDStart[SE  *size_Mat];
+				D.f[NW] = &DDStart[NW  *size_Mat];
+				D.f[TE] = &DDStart[TE  *size_Mat];
+				D.f[BW] = &DDStart[BW  *size_Mat];
+				D.f[BE] = &DDStart[BE  *size_Mat];
+				D.f[TW] = &DDStart[TW  *size_Mat];
+				D.f[TN] = &DDStart[TN  *size_Mat];
+				D.f[BS] = &DDStart[BS  *size_Mat];
+				D.f[BN] = &DDStart[BN  *size_Mat];
+				D.f[TS] = &DDStart[TS  *size_Mat];
+				D.f[REST] = &DDStart[REST*size_Mat];
+				D.f[TNE] = &DDStart[TNE *size_Mat];
+				D.f[TSW] = &DDStart[TSW *size_Mat];
+				D.f[TSE] = &DDStart[TSE *size_Mat];
+				D.f[TNW] = &DDStart[TNW *size_Mat];
+				D.f[BNE] = &DDStart[BNE *size_Mat];
+				D.f[BSW] = &DDStart[BSW *size_Mat];
+				D.f[BSE] = &DDStart[BSE *size_Mat];
+				D.f[BNW] = &DDStart[BNW *size_Mat];
 			}
 			else
 			{
-				D.f[dirW] = &DDStart[dirE   *size_Mat];
-				D.f[dirE] = &DDStart[dirW   *size_Mat];
-				D.f[dirS] = &DDStart[dirN   *size_Mat];
-				D.f[dirN] = &DDStart[dirS   *size_Mat];
-				D.f[dirB] = &DDStart[dirT   *size_Mat];
-				D.f[dirT] = &DDStart[dirB   *size_Mat];
-				D.f[dirSW] = &DDStart[dirNE  *size_Mat];
-				D.f[dirNE] = &DDStart[dirSW  *size_Mat];
-				D.f[dirNW] = &DDStart[dirSE  *size_Mat];
-				D.f[dirSE] = &DDStart[dirNW  *size_Mat];
-				D.f[dirBW] = &DDStart[dirTE  *size_Mat];
-				D.f[dirTE] = &DDStart[dirBW  *size_Mat];
-				D.f[dirTW] = &DDStart[dirBE  *size_Mat];
-				D.f[dirBE] = &DDStart[dirTW  *size_Mat];
-				D.f[dirBS] = &DDStart[dirTN  *size_Mat];
-				D.f[dirTN] = &DDStart[dirBS  *size_Mat];
-				D.f[dirTS] = &DDStart[dirBN  *size_Mat];
-				D.f[dirBN] = &DDStart[dirTS  *size_Mat];
-				D.f[dirZERO] = &DDStart[dirZERO*size_Mat];
-				D.f[dirBSW] = &DDStart[dirTNE *size_Mat];
-				D.f[dirBNE] = &DDStart[dirTSW *size_Mat];
-				D.f[dirBNW] = &DDStart[dirTSE *size_Mat];
-				D.f[dirBSE] = &DDStart[dirTNW *size_Mat];
-				D.f[dirTSW] = &DDStart[dirBNE *size_Mat];
-				D.f[dirTNE] = &DDStart[dirBSW *size_Mat];
-				D.f[dirTNW] = &DDStart[dirBSE *size_Mat];
-				D.f[dirTSE] = &DDStart[dirBNW *size_Mat];
+				D.f[W] = &DDStart[E   *size_Mat];
+				D.f[E] = &DDStart[W   *size_Mat];
+				D.f[S] = &DDStart[N   *size_Mat];
+				D.f[N] = &DDStart[S   *size_Mat];
+				D.f[B] = &DDStart[T   *size_Mat];
+				D.f[T] = &DDStart[B   *size_Mat];
+				D.f[SW] = &DDStart[NE  *size_Mat];
+				D.f[NE] = &DDStart[SW  *size_Mat];
+				D.f[NW] = &DDStart[SE  *size_Mat];
+				D.f[SE] = &DDStart[NW  *size_Mat];
+				D.f[BW] = &DDStart[TE  *size_Mat];
+				D.f[TE] = &DDStart[BW  *size_Mat];
+				D.f[TW] = &DDStart[BE  *size_Mat];
+				D.f[BE] = &DDStart[TW  *size_Mat];
+				D.f[BS] = &DDStart[TN  *size_Mat];
+				D.f[TN] = &DDStart[BS  *size_Mat];
+				D.f[TS] = &DDStart[BN  *size_Mat];
+				D.f[BN] = &DDStart[TS  *size_Mat];
+				D.f[REST] = &DDStart[REST*size_Mat];
+				D.f[BSW] = &DDStart[TNE *size_Mat];
+				D.f[BNE] = &DDStart[TSW *size_Mat];
+				D.f[BNW] = &DDStart[TSE *size_Mat];
+				D.f[BSE] = &DDStart[TNW *size_Mat];
+				D.f[TSW] = &DDStart[BNE *size_Mat];
+				D.f[TNE] = &DDStart[BSW *size_Mat];
+				D.f[TNW] = &DDStart[BSE *size_Mat];
+				D.f[TSE] = &DDStart[BNW *size_Mat];
 			}
 
 			Distributions7 D7;
@@ -128,60 +130,60 @@ extern "C" __global__ void LB_Kernel_AD_Comp_7(real diffusivity,
 			unsigned int kbs = neighborZ[ks];
 			unsigned int kbsw = neighborZ[ksw];
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			real fW = (D.f[dirE])[k];//ke
-			real fE = (D.f[dirW])[kw];
-			real fS = (D.f[dirN])[k];//kn
-			real fN = (D.f[dirS])[ks];
-			real fB = (D.f[dirT])[k];//kt
-			real fT = (D.f[dirB])[kb];
-			real fSW = (D.f[dirNE])[k];//kne
-			real fNE = (D.f[dirSW])[ksw];
-			real fNW = (D.f[dirSE])[ks];//kse
-			real fSE = (D.f[dirNW])[kw];//knw
-			real fBW = (D.f[dirTE])[k];//kte
-			real fTE = (D.f[dirBW])[kbw];
-			real fTW = (D.f[dirBE])[kb];//kbe
-			real fBE = (D.f[dirTW])[kw];//ktw
-			real fBS = (D.f[dirTN])[k];//ktn
-			real fTN = (D.f[dirBS])[kbs];
-			real fTS = (D.f[dirBN])[kb];//kbn
-			real fBN = (D.f[dirTS])[ks];//kts
-			real fZERO = (D.f[dirZERO])[k];//kzero
-			real fBSW = (D.f[dirTNE])[k];//ktne
-			real fBNE = (D.f[dirTSW])[ksw];//ktsw
-			real fBNW = (D.f[dirTSE])[ks];//ktse
-			real fBSE = (D.f[dirTNW])[kw];//ktnw
-			real fTSW = (D.f[dirBNE])[kb];//kbne
-			real fTNE = (D.f[dirBSW])[kbsw];
-			real fTNW = (D.f[dirBSE])[kbs];//kbse
-			real fTSE = (D.f[dirBNW])[kbw];//kbnw
-										   //real fE    =  (D.f[dirE   ])[k  ];//ke
-										   //real fW    =  (D.f[dirW   ])[kw ];
-										   //real fN    =  (D.f[dirN   ])[k  ];//kn
-										   //real fS    =  (D.f[dirS   ])[ks ];
-										   //real fT    =  (D.f[dirT   ])[k  ];//kt
-										   //real fB    =  (D.f[dirB   ])[kb ];
-										   //real fNE   =  (D.f[dirNE  ])[k  ];//kne
-										   //real fSW   =  (D.f[dirSW  ])[ksw];
-										   //real fSE   =  (D.f[dirSE  ])[ks ];//kse
-										   //real fNW   =  (D.f[dirNW  ])[kw ];//knw
-										   //real fTE   =  (D.f[dirTE  ])[k  ];//kte
-										   //real fBW   =  (D.f[dirBW  ])[kbw];
-										   //real fBE   =  (D.f[dirBE  ])[kb ];//kbe
-										   //real fTW   =  (D.f[dirTW  ])[kw ];//ktw
-										   //real fTN   =  (D.f[dirTN  ])[k  ];//ktn
-										   //real fBS   =  (D.f[dirBS  ])[kbs];
-										   //real fBN   =  (D.f[dirBN  ])[kb ];//kbn
-										   //real fTS   =  (D.f[dirTS  ])[ks ];//kts
-										   //real fZERO =  (D.f[dirZERO])[k  ];//kzero
-										   //real fTNE   = (D.f[dirTNE ])[k  ];//ktne
-										   //real fTSW   = (D.f[dirTSW ])[ksw];//ktsw
-										   //real fTSE   = (D.f[dirTSE ])[ks ];//ktse
-										   //real fTNW   = (D.f[dirTNW ])[kw ];//ktnw
-										   //real fBNE   = (D.f[dirBNE ])[kb ];//kbne
-										   //real fBSW   = (D.f[dirBSW ])[kbsw];
-										   //real fBSE   = (D.f[dirBSE ])[kbs];//kbse
-										   //real fBNW   = (D.f[dirBNW ])[kbw];//kbnw
+			real fW = (D.f[E])[k];//ke
+			real fE = (D.f[W])[kw];
+			real fS = (D.f[N])[k];//kn
+			real fN = (D.f[S])[ks];
+			real fB = (D.f[T])[k];//kt
+			real fT = (D.f[B])[kb];
+			real fSW = (D.f[NE])[k];//kne
+			real fNE = (D.f[SW])[ksw];
+			real fNW = (D.f[SE])[ks];//kse
+			real fSE = (D.f[NW])[kw];//knw
+			real fBW = (D.f[TE])[k];//kte
+			real fTE = (D.f[BW])[kbw];
+			real fTW = (D.f[BE])[kb];//kbe
+			real fBE = (D.f[TW])[kw];//ktw
+			real fBS = (D.f[TN])[k];//ktn
+			real fTN = (D.f[BS])[kbs];
+			real fTS = (D.f[BN])[kb];//kbn
+			real fBN = (D.f[TS])[ks];//kts
+			real fZERO = (D.f[REST])[k];//kzero
+			real fBSW = (D.f[TNE])[k];//ktne
+			real fBNE = (D.f[TSW])[ksw];//ktsw
+			real fBNW = (D.f[TSE])[ks];//ktse
+			real fBSE = (D.f[TNW])[kw];//ktnw
+			real fTSW = (D.f[BNE])[kb];//kbne
+			real fTNE = (D.f[BSW])[kbsw];
+			real fTNW = (D.f[BSE])[kbs];//kbse
+			real fTSE = (D.f[BNW])[kbw];//kbnw
+										   //real fE    =  (D.f[E   ])[k  ];//ke
+										   //real fW    =  (D.f[W   ])[kw ];
+										   //real fN    =  (D.f[N   ])[k  ];//kn
+										   //real fS    =  (D.f[S   ])[ks ];
+										   //real fT    =  (D.f[T   ])[k  ];//kt
+										   //real fB    =  (D.f[B   ])[kb ];
+										   //real fNE   =  (D.f[NE  ])[k  ];//kne
+										   //real fSW   =  (D.f[SW  ])[ksw];
+										   //real fSE   =  (D.f[SE  ])[ks ];//kse
+										   //real fNW   =  (D.f[NW  ])[kw ];//knw
+										   //real fTE   =  (D.f[TE  ])[k  ];//kte
+										   //real fBW   =  (D.f[BW  ])[kbw];
+										   //real fBE   =  (D.f[BE  ])[kb ];//kbe
+										   //real fTW   =  (D.f[TW  ])[kw ];//ktw
+										   //real fTN   =  (D.f[TN  ])[k  ];//ktn
+										   //real fBS   =  (D.f[BS  ])[kbs];
+										   //real fBN   =  (D.f[BN  ])[kb ];//kbn
+										   //real fTS   =  (D.f[TS  ])[ks ];//kts
+										   //real fZERO =  (D.f[REST])[k  ];//kzero
+										   //real fTNE   = (D.f[TNE ])[k  ];//ktne
+										   //real fTSW   = (D.f[TSW ])[ksw];//ktsw
+										   //real fTSE   = (D.f[TSE ])[ks ];//ktse
+										   //real fTNW   = (D.f[TNW ])[kw ];//ktnw
+										   //real fBNE   = (D.f[BNE ])[kb ];//kbne
+										   //real fBSW   = (D.f[BSW ])[kbsw];
+										   //real fBSE   = (D.f[BSE ])[kbs];//kbse
+										   //real fBNW   = (D.f[BNW ])[kbw];//kbnw
 										   ////////////////////////////////////////////////////////////////////////////////
 			real f7ZERO = (D7.f[0])[k];
 			real f7E = (D7.f[1])[k];

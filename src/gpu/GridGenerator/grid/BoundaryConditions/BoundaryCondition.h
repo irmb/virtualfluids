@@ -256,7 +256,8 @@ public:
 
 //////////////////////////////////////////////////////////////////////////
 
-class GeometryBoundaryCondition : public VelocityBoundaryCondition
+
+class GeometryBoundaryCondition : public gg::BoundaryCondition
 {
 public:
     static SPtr<GeometryBoundaryCondition> make()
@@ -264,8 +265,15 @@ public:
         return SPtr<GeometryBoundaryCondition>(new GeometryBoundaryCondition());
     }
 
+    real normalX, normalY, normalZ;
+    std::vector<real> normalXList, normalYList, normalZList;
+
+    real vx, vy, vz;
+    std::vector<real> vxList, vyList, vzList;
+
 private:
-    GeometryBoundaryCondition() : VelocityBoundaryCondition(0.0, 0.0, 0.0) { }
+    GeometryBoundaryCondition(real vx = 0.0, real vy = 0.0, real vz = 0.0, real normalX = 0.0, real normalY = 0.0, real normalZ = 0.0) :
+        vx(vx), vy(vy), vz(vz), normalX(normalX), normalY(normalY), normalZ(normalZ) { }
 
 public:
     char getType() const override
@@ -287,6 +295,43 @@ public:
                                                   real p1x, real p1y, real p1z, 
                                                   real p2x, real p2y, real p2z, 
                                                   real v, real r );
+
+    void fillVelocityLists()
+    {
+        for( uint index : this->indices ) {
+            (void) index;
+            this->vxList.push_back(vx);
+            this->vyList.push_back(vy);
+            this->vzList.push_back(vz);
+        }
+    }
+
+    real getVx() { return this->vx; }
+    real getVy() { return this->vy; }
+    real getVz() { return this->vz; }
+
+    real getVx(uint index) { return this->vxList[index]; }
+    real getVy(uint index) { return this->vyList[index]; }
+    real getVz(uint index) { return this->vzList[index]; }
+
+
+    void fillSlipNormalLists()
+    {   
+        for (uint index : this->indices) {
+            (void)index;
+            this->normalXList.push_back(normalX);
+            this->normalYList.push_back(normalY);
+            this->normalZList.push_back(normalZ);
+        }
+    }
+
+    real getNormalx() { return this->normalX; }
+    real getNormaly() { return this->normalY; }
+    real getNormalz() { return this->normalZ; }
+
+    real getNormalx(uint index) { return this->normalXList[index]; }
+    real getNormaly(uint index) { return this->normalYList[index]; }
+    real getNormalz(uint index) { return this->normalZList[index]; }
 };
 
 class PrecursorBoundaryCondition : public gg::BoundaryCondition
