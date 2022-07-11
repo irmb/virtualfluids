@@ -203,7 +203,7 @@ private:
 protected:
     uint tStartAvg;
     uint tStartTmpAveraging; //!> only non-zero in PlanarAverageProbe and WallModelProbe to switch on Spatio-temporal averaging (while only doing spatial averaging for t<tStartTmpAveraging) 
-    uint tAvg;
+    uint tAvg;  //! for tAvg==1 the probe will be evaluated in every sub-timestep of each respective level, else, the probe will only be evaluated in each synchronous time step 
     uint tStartOut;
     uint tOut;
 
