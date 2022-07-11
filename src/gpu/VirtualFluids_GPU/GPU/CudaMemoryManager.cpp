@@ -275,8 +275,8 @@ void CudaMemoryManager::cudaFreeOutflowBC(int lev)
 	checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->outflowBC.kN     ));
 	checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->outflowBC.RhoBC  ));
 }
-//Wall
-void CudaMemoryManager::cudaAllocWallBC(int lev)
+//No-Slip
+void CudaMemoryManager::cudaAllocNoSlipBC(int lev)
 {
 	unsigned int mem_size_Q_k      = sizeof(int)*parameter->getParH(lev)->noSlipBC.numberOfBCnodes;
 	unsigned int mem_size_Q_q      = sizeof(real)*parameter->getParH(lev)->noSlipBC.numberOfBCnodes;
@@ -297,7 +297,7 @@ void CudaMemoryManager::cudaAllocWallBC(int lev)
 	double tmp = (double)mem_size_Q_k + (double)parameter->getD3Qxx()*(double)mem_size_Q_q;
 	setMemsizeGPU(tmp, false);
 }
-void CudaMemoryManager::cudaCopyWallBC(int lev)
+void CudaMemoryManager::cudaCopyNoSlipBC(int lev)
 {
 	unsigned int mem_size_Q_k = sizeof(int)*parameter->getParH(lev)->noSlipBC.numberOfBCnodes;
 	unsigned int mem_size_Q_q = sizeof(real)*parameter->getParH(lev)->noSlipBC.numberOfBCnodes;
@@ -305,7 +305,7 @@ void CudaMemoryManager::cudaCopyWallBC(int lev)
 	checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->noSlipBC.q27[0], parameter->getParH(lev)->noSlipBC.q27[0], parameter->getD3Qxx()* mem_size_Q_q,       cudaMemcpyHostToDevice));
 	checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->noSlipBC.k,      parameter->getParH(lev)->noSlipBC.k,                  mem_size_Q_k,       cudaMemcpyHostToDevice));
 }
-void CudaMemoryManager::cudaFreeWallBC(int lev)
+void CudaMemoryManager::cudaFreeNoSlipBC(int lev)
 {
 	checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->noSlipBC.q27[0]));
 	checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->noSlipBC.k));

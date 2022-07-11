@@ -63,9 +63,9 @@ public:
 	void cudaCopyOutflowBC(int lev);
 	void cudaFreeOutflowBC(int lev);
 
-	void cudaAllocWallBC(int lev);
-	void cudaCopyWallBC(int lev);
-	void cudaFreeWallBC(int lev);
+	void cudaAllocNoSlipBC(int lev);
+	void cudaCopyNoSlipBC(int lev);
+	void cudaFreeNoSlipBC(int lev);
 
 	void cudaAllocGeomBC(int lev);
 	void cudaCopyGeomBC(int lev);
