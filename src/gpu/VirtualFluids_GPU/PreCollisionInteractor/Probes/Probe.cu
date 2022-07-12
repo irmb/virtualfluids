@@ -283,10 +283,7 @@ void Probe::interact(Parameter* para, CudaMemoryManager* cudaMemoryManager, int 
 
     if(max(int(t_level) - int(this->tStartAvg*pow(2,level)), -1) % tAvg_level==0)
     {
-        std::cout << "t " << t << " t_level " << t_level << std::endl;
-        std::cout << "tAvg " << this->tAvg << " tAvgLvl " << tAvg_level << std::endl;
         SPtr<ProbeStruct> probeStruct = this->getProbeStruct(level);
-        std::cout << "averaging at " << t_level <<" on lvl " << level << std::endl<< std::endl;
         this->calculateQuantities(probeStruct, para, t_level, level);
         if(t_level>=(this->tStartTmpAveraging*pow(2,level))) probeStruct->vals++;
     }
@@ -294,9 +291,6 @@ void Probe::interact(Parameter* para, CudaMemoryManager* cudaMemoryManager, int 
     //! output only in synchronous timesteps
     if(max(int(t_level) - int(this->tStartOut*pow(2,level)), -1) % int(this->tOut*pow(2,level)) == 0)
     {   
-        std::cout << "t " << t << " t_level " << t_level << std::endl;
-        std::cout << "tout " << max(int(t_level) - int(this->tStartOut*pow(2,level)), -1) << " tOutLvl " << this->tOut*pow(2,level) << std::endl;
-        std::cout << "outputing at " << t_level <<" on lvl " << level << std::endl << std::endl;
         if(this->hasDeviceQuantityArray)
             cudaMemoryManager->cudaCopyProbeQuantityArrayDtoH(this, level);
         this->write(para, level, t);
