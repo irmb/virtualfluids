@@ -17,9 +17,10 @@ class BoundaryConditionFactory;
 class UpdateGrid27
 {
 public:
-    UpdateGrid27(SPtr<Parameter> para, vf::gpu::Communicator &comm, SPtr<CudaMemoryManager> cudaManager,
+    UpdateGrid27(SPtr<Parameter> para, vf::gpu::Communicator &comm, SPtr<CudaMemoryManager> cudaMemoryManager,
                  std::vector<std::shared_ptr<PorousMedia>> &pm, std::vector<SPtr<Kernel>> &kernels, BoundaryConditionFactory* bcFactory);
     void updateGrid(int level, unsigned int t);
+    void exchangeData(int level);
 
 private:
     void postCollisionBC(int level);
@@ -32,6 +33,20 @@ private:
 
     void fineToCoarse(int level, uint *iCellFCC, uint *iCellFCF, uint k_FC, int streamIndex);
     void coarseToFine(int level, uint *iCellCFC, uint *iCellCFF, uint k_CF, OffCF &offCF, int streamIndex);
+
+    void prepareExchangeMultiGPU(int level, int streamIndex);
+    void prepareExchangeMultiGPUAfterFtoC(int level, int streamIndex);
+
+    void exchangeMultiGPU(int level, int streamIndex);
+    void exchangeMultiGPUAfterFtoC(int level, int streamIndex);
+    void exchangeMultiGPU_noStreams_withPrepare(int level, bool useReducedComm);
+
+    void swapBetweenEvenAndOddTimestep(int level);
+
+    void calcMacroscopicQuantities(int level);
+    void calcTurbulentViscosity(int level);
+    void interactWithActuators(int level, unsigned int t);
+    void interactWithProbes(int level, unsigned int t);
 
 private:
     typedef void (UpdateGrid27::*collisionAndExchangeFun)(int level, unsigned int t);
@@ -68,31 +83,5 @@ private:
     //! \property gridScalingKernelManager is a shared pointer to an object of GridScalingKernelManager
     std::shared_ptr<GridScalingKernelManager> gridScalingKernelManager;
 };
-
-
-
-
-
-extern "C" void prepareExchangeMultiGPU(Parameter *para, int level, int streamIndex);
-extern "C" void prepareExchangeMultiGPUAfterFtoC(Parameter *para, int level, int streamIndex);
-
-extern "C" void exchangeMultiGPU(Parameter *para, vf::gpu::Communicator &comm, CudaMemoryManager *cudaManager,
-                                 int level, int streamIndex);
-extern "C" void exchangeMultiGPUAfterFtoC(Parameter *para, vf::gpu::Communicator &comm, CudaMemoryManager *cudaManager,
-                                 int level, int streamIndex);
-extern "C" void exchangeMultiGPU_noStreams_withPrepare(Parameter *para, vf::gpu::Communicator &comm,
-                                                       CudaMemoryManager *cudaManager, int level, bool useReducedComm);
-
-
-
-extern "C" void swapBetweenEvenAndOddTimestep(Parameter* para, int level);
-
-extern "C" void calcMacroscopicQuantities(Parameter* para, int level);
-
-extern "C" void calcTurbulentViscosity(Parameter* para, int level);
-
-extern "C" void interactWithActuators(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t);
-
-extern "C" void interactWithProbes(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t);
 
 #endif

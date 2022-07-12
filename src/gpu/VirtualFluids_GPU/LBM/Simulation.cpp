@@ -491,8 +491,7 @@ void Simulation::run()
         // these analyzers only work on level 0
 	    ////////////////////////////////////////////////////////////////////////////////
         if (this->kineticEnergyAnalyzer || this->enstrophyAnalyzer) {
-            prepareExchangeMultiGPU(para.get(), 0, -1);
-            exchangeMultiGPU(para.get(), communicator, cudaMemoryManager.get(), 0, -1);
+            updateGrid27->exchangeData(0);
         }
 
 	    if( this->kineticEnergyAnalyzer ) this->kineticEnergyAnalyzer->run(t);
@@ -721,8 +720,7 @@ void Simulation::run()
             {
 		        //////////////////////////////////////////////////////////////////////////
 		        //exchange data for valid post process
-                prepareExchangeMultiGPU(para.get(), lev, -1);
-		        exchangeMultiGPU(para.get(), communicator, cudaMemoryManager.get(), lev, -1);
+                updateGrid27->exchangeData(lev);
                 //////////////////////////////////////////////////////////////////////////
                //if (para->getD3Qxx()==19)
                //{
