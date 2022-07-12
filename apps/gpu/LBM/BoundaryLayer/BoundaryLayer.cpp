@@ -181,8 +181,11 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->addCoarseGrid(0.0, 0.0, 0.0,
                                 L_x,  L_y,  L_z, dx);
-    // gridBuilder->setNumberOfLayers(0,0);
-    // gridBuilder->addGrid( new Cuboid( 300., 300., 300., 1000. , 1000., 600.), 1 );
+    // gridBuilder->setNumberOfLayers(12, 8);
+
+    gridBuilder->addGrid( new Cuboid( 0.0, 0.0, 0.0, L_x,  L_y,  0.2*L_z) , 1 );
+    gridBuilder->addGrid( new Cuboid( 0.0, 0.0, 0.0, L_x,  L_y,  0.1*L_z) , 2 );
+    para->setMaxLevel(3);
 
     gridBuilder->setPeriodicBoundaryCondition(true, true, false);
 
@@ -204,8 +207,8 @@ void multipleLevel(const std::string& configPath)
     real cPi = 3.1415926535897932384626433832795;
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)0.0;
-        vx  = (u_star/0.4 * log(coordZ/z0) + 2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1))  * dt / dx;
-        vy  =  2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1)  * dt / dx;
+        vx  = (u_star/0.4 * log(coordZ/z0) + 2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1))  * dt / dx; 
+        vy  = 2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1)  * dt / dx; 
         vz  = 8.0*u_star/0.4*(sin(cPi*8.0*coordY/H)*sin(cPi*8.0*coordZ/H)+sin(cPi*8.0*coordX/L_x))/(pow(L_z/2.0-coordZ, c2o1)+c1o1) * dt / dx;
     });
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -215,14 +218,14 @@ void multipleLevel(const std::string& configPath)
     planarAverageProbe->setFileNameToNOut();
     para->addProbe( planarAverageProbe );
 
-    para->setHasWallModelMonitor(true);
-    SPtr<WallModelProbe> wallModelProbe = SPtr<WallModelProbe>( new WallModelProbe("wallModelProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt/4.0 , tStartOutProbe/dt, tOutProbe/dt) );
-    wallModelProbe->addAllAvailableStatistics();
-    wallModelProbe->setFileNameToNOut();
-    wallModelProbe->setForceOutputToStress(true);
-    if(para->getIsBodyForce())
-        wallModelProbe->setEvaluatePressureGradient(true);
-    para->addProbe( wallModelProbe );
+    // para->setHasWallModelMonitor(true);
+    // SPtr<WallModelProbe> wallModelProbe = SPtr<WallModelProbe>( new WallModelProbe("wallModelProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt/4.0 , tStartOutProbe/dt, tOutProbe/dt) );
+    // wallModelProbe->addAllAvailableStatistics();
+    // wallModelProbe->setFileNameToNOut();
+    // wallModelProbe->setForceOutputToStress(true);
+    // if(para->getIsBodyForce())
+    //     wallModelProbe->setEvaluatePressureGradient(true);
+    // para->addProbe( wallModelProbe );
 
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
     auto gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);

@@ -105,6 +105,7 @@ struct ProbeStruct{
     real *quantitiesArrayH, *quantitiesArrayD;
     bool *quantitiesH, *quantitiesD;
     uint *arrayOffsetsH, *arrayOffsetsD;
+    bool isEvenTAvg = true;
 };
 
 __global__ void calcQuantitiesKernel(   uint* pointIndices,
@@ -203,7 +204,7 @@ private:
 protected:
     uint tStartAvg;
     uint tStartTmpAveraging; //!> only non-zero in PlanarAverageProbe and WallModelProbe to switch on Spatio-temporal averaging (while only doing spatial averaging for t<tStartTmpAveraging) 
-    uint tAvg;
+    uint tAvg;  //! for tAvg==1 the probe will be evaluated in every sub-timestep of each respective level, else, the probe will only be evaluated in each synchronous time step 
     uint tStartOut;
     uint tOut;
 

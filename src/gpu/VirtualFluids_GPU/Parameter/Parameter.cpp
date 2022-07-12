@@ -1715,7 +1715,7 @@ int Parameter::getNumberOfParticles()
 }
 bool Parameter::getEvenOrOdd(int level)
 {
-    return parH[level]->isEvenTimestep;
+	return parD[level]->isEvenTimestep;
 }
 bool Parameter::getDiffOn()
 {
@@ -2265,6 +2265,26 @@ unsigned int Parameter::getTimeDoRestart()
 {
     return ic.tDoRestart;
 }
+
+//=======================================================================================
+//! \brief Get current (sub)time step of a given level.
+//! \param level 
+//! \param t current time step (of level 0)
+//! \param isPostCollision whether getTimeStep is called post- (before swap) or pre- (after swap) collision
+//!
+unsigned int Parameter::getTimeStep(int level, unsigned int t, bool isPostCollision)
+{
+	assert(level<=this->getMaxLevel());
+	unsigned int tLevel = t;                                                                  
+    if(level>0)
+    {
+        for(int i=1; i<level; i++){ tLevel = 1 + 2*(tLevel-1) + !this->getEvenOrOdd(i); }     
+        bool addOne = isPostCollision? !this->getEvenOrOdd(level): this->getEvenOrOdd(level); 
+        tLevel = 1 + 2*(tLevel-1) + addOne;
+    }
+	return tLevel;
+}
+
 bool Parameter::getDoCheckPoint()
 {
     return ic.doCheckPoint;

@@ -183,7 +183,7 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
     this->densityRatio       = para->getDensityRatio();
     this->forceRatio         = para->getForceRatio();
     this->stressRatio        = para->getDensityRatio()*pow(para->getVelocityRatio(), 2.0);
-    this->accelerationRatio = para->getVelocityRatio()/para->getTimeRatio();
+    this->accelerationRatio  = para->getVelocityRatio()/para->getTimeRatio();
 
     probeParams.resize(para->getMaxLevel()+1);
 
@@ -196,7 +196,7 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
         std::vector<real> pointCoordsX_level;
         std::vector<real> pointCoordsY_level;
         std::vector<real> pointCoordsZ_level;
-
+        
         this->findPoints(para, gridProvider, probeIndices_level, distX_level, distY_level, distZ_level,      
                        pointCoordsX_level, pointCoordsY_level, pointCoordsZ_level,
                        level);
@@ -274,16 +274,29 @@ void Probe::addProbeStruct(CudaMemoryManager* cudaMemoryManager, std::vector<int
 
 void Probe::interact(Parameter* para, CudaMemoryManager* cudaMemoryManager, int level, uint t)
 {
-    if(max(int(t) - int(this->tStartAvg), -1) % this->tAvg==0)
-    {
-        SPtr<ProbeStruct> probeStruct = this->getProbeStruct(level);
+    uint t_level = para->getTimeStep(level, t, false);
 
-        this->calculateQuantities(probeStruct, para, t, level);
-        if(t>=this->tStartTmpAveraging) probeStruct->vals++;
+    //! if tAvg==1 the probe will be evaluated in every sub-timestep of each respective level
+    //! else, the probe will only be evaluated in each synchronous time step tAvg
+
+    uint tAvg_level = this->tAvg==1? this->tAvg: this->tAvg*pow(2,level);          
+
+    if(max(int(t_level) - int(this->tStartAvg*pow(2,level)), -1) % tAvg_level==0)
+    {
+        std::cout << "t " << t << " t_level " << t_level << std::endl;
+        std::cout << "tAvg " << this->tAvg << " tAvgLvl " << tAvg_level << std::endl;
+        SPtr<ProbeStruct> probeStruct = this->getProbeStruct(level);
+        std::cout << "averaging at " << t_level <<" on lvl " << level << std::endl<< std::endl;
+        this->calculateQuantities(probeStruct, para, t_level, level);
+        if(t_level>=(this->tStartTmpAveraging*pow(2,level))) probeStruct->vals++;
     }
 
-    if(max(int(t) - int(this->tStartOut), -1) % this->tOut == 0)
-    {
+    //! output only in synchronous timesteps
+    if(max(int(t_level) - int(this->tStartOut*pow(2,level)), -1) % int(this->tOut*pow(2,level)) == 0)
+    {   
+        std::cout << "t " << t << " t_level " << t_level << std::endl;
+        std::cout << "tout " << max(int(t_level) - int(this->tStartOut*pow(2,level)), -1) << " tOutLvl " << this->tOut*pow(2,level) << std::endl;
+        std::cout << "outputing at " << t_level <<" on lvl " << level << std::endl << std::endl;
         if(this->hasDeviceQuantityArray)
             cudaMemoryManager->cudaCopyProbeQuantityArrayDtoH(this, level);
         this->write(para, level, t);
