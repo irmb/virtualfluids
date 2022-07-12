@@ -11,7 +11,7 @@ void pf1()
    int myid = comm->getProcessID();
 
    //parameters
-   string          pathOut = "/gfs1/work/niikonst/pflow_pipe_forcing";
+   string          pathOut = "d:/temp/test_dir_naming";  //"/gfs1/work/niikonst/pflow_pipe_forcing";
    int             numOfThreads = 1;
    int             blocknx[3] ={ 10,10,10 };
    double          endTime = 10;
@@ -27,12 +27,12 @@ void pf1()
 
    //simulation bounding box
    double g_minX1 = 0.0;
-   double g_minX2 = -50.0;
-   double g_minX3 = -50.0;
+   double g_minX2 = -10.0;
+   double g_minX3 = -10.0;
 
-   double g_maxX1 = 2000;
-   double g_maxX2 = 50;
-   double g_maxX3 = 50;
+   double g_maxX1 = 50;
+   double g_maxX2 = 10;
+   double g_maxX3 = 10;
 
    //Sleep(15000);
 
@@ -169,11 +169,11 @@ void pf1()
 
    //grid=SPtr<Grid3D>(new Grid3D(comm));
    //restartCoProcessor->restart(200);
-   SPtr<MPIIOMigrationBECoProcessor> migCoProcessor(new MPIIOMigrationBECoProcessor(grid, mSch, metisVisitor, pathOut + "/mig", comm));
-   migCoProcessor->setLBMKernel(kernel);
-   migCoProcessor->setBCProcessor(bcProc);
-   migCoProcessor->setNu(nuLB);
-   migCoProcessor->restart(10);
+   //SPtr<MPIIOMigrationBECoProcessor> migCoProcessor(new MPIIOMigrationBECoProcessor(grid, mSch, metisVisitor, pathOut + "/mig", comm));
+   //migCoProcessor->setLBMKernel(kernel);
+   //migCoProcessor->setBCProcessor(bcProc);
+   //migCoProcessor->setNu(nuLB);
+   //migCoProcessor->restart(10);
 
    ppblocks->process(1);
 
@@ -192,7 +192,7 @@ void pf1()
    SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
    calculator->addCoProcessor(npr);
    calculator->addCoProcessor(writeMQCoProcessor);
-   calculator->addCoProcessor(migCoProcessor);
+   //calculator->addCoProcessor(migCoProcessor);
    //calculator->addCoProcessor(restartCoProcessor);
 
    if (myid == 0) UBLOG(logINFO, "Simulation-start");

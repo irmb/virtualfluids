@@ -114,7 +114,7 @@ void SetConnectorsBlockVisitor<T1, T2>::setSameLevelConnectors(SPtr<Grid3D> grid
         int ix3   = block->getX3();
         int level = block->getLevel();
 
-        for (int dir = 0; dir < D3Q27System::ENDDIR; dir++) {
+        for (int dir = D3Q27System::STARTDIR; dir < D3Q27System::ENDDIR; dir++) {
             SPtr<Block3D> neighBlock = grid->getNeighborBlock(dir, ix1, ix2, ix3, level);
 
             if (neighBlock) {

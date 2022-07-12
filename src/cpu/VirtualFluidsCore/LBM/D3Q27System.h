@@ -48,14 +48,14 @@ namespace D3Q27System
 {
 //////////////////////////////////////////////////////////////////////////
 // DIRECTION STUFF
-static const int FSTARTDIR = 0;
-static const int FENDDIR   = 25; // D3Q27
+static const int FSTARTDIR = 1;
+static const int FENDDIR   = 26; // D3Q27
 
 static const int STARTF = 0;
 static const int ENDF   = 26; // D3Q27
 
-static const int STARTDIR = 0;
-static const int ENDDIR   = 26; // all geometric directions
+static const int STARTDIR = 1; //0
+static const int ENDDIR   = 27;//26 // all geometric directions
 
 extern const int DX1[ENDDIR + 1];
 extern const int DX2[ENDDIR + 1];
@@ -64,33 +64,61 @@ extern const double WEIGTH[ENDDIR + 1];
 
 extern const double cNorm[3][ENDDIR];
 
-static const int E    = 0;
-static const int W    = 1;
-static const int N    = 2;
-static const int S    = 3;
-static const int T    = 4;
-static const int B    = 5;
-static const int NE   = 6;
-static const int SW   = 7;
-static const int SE   = 8;
-static const int NW   = 9;
-static const int TE   = 10;
-static const int BW   = 11;
-static const int BE   = 12;
-static const int TW   = 13;
-static const int TN   = 14;
-static const int BS   = 15;
-static const int BN   = 16;
-static const int TS   = 17;
-static const int TNE  = 18;
-static const int TNW  = 19;
-static const int TSE  = 20;
-static const int TSW  = 21;
-static const int BNE  = 22;
-static const int BNW  = 23;
-static const int BSE  = 24;
-static const int BSW  = 25;
-static const int REST = 26;
+//static const int E    = 0;
+//static const int W    = 1;
+//static const int N    = 2;
+//static const int S    = 3;
+//static const int T    = 4;
+//static const int B    = 5;
+//static const int NE   = 6;
+//static const int SW   = 7;
+//static const int SE   = 8;
+//static const int NW   = 9;
+//static const int TE   = 10;
+//static const int BW   = 11;
+//static const int BE   = 12;
+//static const int TW   = 13;
+//static const int TN   = 14;
+//static const int BS   = 15;
+//static const int BN   = 16;
+//static const int TS   = 17;
+//static const int TNE  = 18;
+//static const int TNW  = 19;
+//static const int TSE  = 20;
+//static const int TSW  = 21;
+//static const int BNE  = 22;
+//static const int BNW  = 23;
+//static const int BSE  = 24;
+//static const int BSW  = 25;
+//static const int REST = 26;
+
+static constexpr int REST = 0;
+static constexpr int E = 1;
+static constexpr int W = 2;
+static constexpr int N = 3;
+static constexpr int S = 4;
+static constexpr int T = 5;
+static constexpr int B = 6;
+static constexpr int NE = 7;
+static constexpr int SW = 8;
+static constexpr int SE = 9;
+static constexpr int NW = 10;
+static constexpr int TE = 11;
+static constexpr int BW = 12;
+static constexpr int BE = 13;
+static constexpr int TW = 14;
+static constexpr int TN = 15;
+static constexpr int BS = 16;
+static constexpr int BN = 17;
+static constexpr int TS = 18;
+static constexpr int TNE = 19;
+static constexpr int TNW = 20;
+static constexpr int TSE = 21;
+static constexpr int TSW = 22;
+static constexpr int BNE = 23;
+static constexpr int BNW = 24;
+static constexpr int BSE = 25;
+static constexpr int BSW = 26;
 
 static const int INV_E   = W;
 static const int INV_W   = E;
