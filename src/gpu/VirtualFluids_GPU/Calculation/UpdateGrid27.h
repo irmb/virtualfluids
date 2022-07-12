@@ -14,6 +14,9 @@ class GridScalingKernelManager;
 class Kernel;
 class BoundaryConditionFactory;
 
+class UpdateGrid27;
+using CollisionStrategy = std::function<void (UpdateGrid27* updateGrid, Parameter* para, int level, unsigned int t)>;
+
 class UpdateGrid27
 {
 public:
@@ -23,12 +26,12 @@ public:
     void exchangeData(int level);
 
 private:
-    void postCollisionBC(int level);
-    void preCollisionBC(int level, unsigned int t);
-
-    void collision(int level, unsigned int t);
+    void collisionAllNodes(int level, unsigned int t);
     void collisionUsingIndex(int level, unsigned int t, uint *fluidNodeIndices = nullptr, uint numberOfFluidNodes = 0, int stream = -1);
     void collisionAdvectionDiffusion(int level);
+
+    void postCollisionBC(int level);
+    void preCollisionBC(int level, unsigned int t);
     void collisionPorousMedia(int level);
 
     void fineToCoarse(int level, uint *iCellFCC, uint *iCellFCF, uint k_FC, int streamIndex);
@@ -49,18 +52,15 @@ private:
     void interactWithProbes(int level, unsigned int t);
 
 private:
-    typedef void (UpdateGrid27::*collisionAndExchangeFun)(int level, unsigned int t);
+    CollisionStrategy collision;
+    friend class CollisionAndExchange_noStreams_indexKernel;
+    friend class CollisionAndExchange_noStreams_oldKernel;
+    friend class CollisionAndExchange_streams;
+
+
     typedef void (UpdateGrid27::*refinementAndExchangeFun)(int level);
-    collisionAndExchangeFun collisionAndExchange   = nullptr;
     refinementAndExchangeFun refinementAndExchange  = nullptr;
-
-    void chooseFunctionForCollisionAndExchange();
     void chooseFunctionForRefinementAndExchange();
-
-    // functions for collision and exchange
-    void collisionAndExchange_noStreams_indexKernel(int level, unsigned int t);
-    void collisionAndExchange_noStreams_oldKernel(int level, unsigned int t);
-    void collisionAndExchange_streams(int level, unsigned int t);
 
     // functions for refinement and exchange
     void refinementAndExchange_streams_onlyExchangeInterface(int level);

@@ -10,6 +10,8 @@
 #include "KernelManager/GridScalingKernelManager.h"
 #include "Kernel/Kernel.h"
 
+#include "CollisionStrategy.h"
+
 void UpdateGrid27::updateGrid(int level, unsigned int t)
 {
     //////////////////////////////////////////////////////////////////////////
@@ -21,11 +23,11 @@ void UpdateGrid27::updateGrid(int level, unsigned int t)
 
     //////////////////////////////////////////////////////////////////////////
 
-    (this->*collisionAndExchange)(level, t);
+    collision(this, para.get(), level, t);
 
     //////////////////////////////////////////////////////////////////////////
 
-    this->postCollisionBC(level);
+    postCollisionBC(level);
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -143,42 +145,7 @@ void UpdateGrid27::refinementAndExchange_noExchange(int level)
                  para->getParD(level)->offCF, -1);
 }
 
-void UpdateGrid27::collisionAndExchange_noStreams_indexKernel(int level, unsigned int t)
-{
-    collisionUsingIndex(level, t, para->getParD(level)->fluidNodeIndices,
-                            para->getParD(level)->numberOfFluidNodes, -1);
-    exchangeMultiGPU_noStreams_withPrepare(level, false);
-}
-
-void UpdateGrid27::collisionAndExchange_noStreams_oldKernel(int level, unsigned int t)
-{
-    collision(level, t);
-    exchangeMultiGPU_noStreams_withPrepare(level, false);
-}
-
-void UpdateGrid27::collisionAndExchange_streams(int level, unsigned int t)
-{
-    int borderStreamIndex = para->getStreamManager()->getBorderStreamIndex();
-    int bulkStreamIndex   = para->getStreamManager()->getBulkStreamIndex();
-
-    // launch border kernel
-    collisionUsingIndex(level, t, para->getParD(level)->fluidNodeIndicesBorder,
-                        para->getParD(level)->numberOffluidNodesBorder, borderStreamIndex);
-
-    // prepare exchange and trigger bulk kernel when finished
-    prepareExchangeMultiGPU(level, borderStreamIndex);
-    if (para->getUseStreams())
-        para->getStreamManager()->triggerStartBulkKernel(borderStreamIndex);
-
-    // launch bulk kernel
-    para->getStreamManager()->waitOnStartBulkKernelEvent(bulkStreamIndex);
-    collisionUsingIndex(level, t, para->getParD(level)->fluidNodeIndices,
-                        para->getParD(level)->numberOfFluidNodes, bulkStreamIndex);
-
-    exchangeMultiGPU(level, borderStreamIndex);
-}
-
-void UpdateGrid27::collision(int level, unsigned int t)
+void UpdateGrid27::collisionAllNodes(int level, unsigned int t)
 {
     kernels.at(level)->run();
 
@@ -494,37 +461,11 @@ UpdateGrid27::UpdateGrid27(SPtr<Parameter> para, vf::gpu::Communicator &comm, SP
                            std::vector<std::shared_ptr<PorousMedia>> &pm, std::vector<SPtr<Kernel>> &kernels , BoundaryConditionFactory* bcFactory)
     : para(para), comm(comm), cudaMemoryManager(cudaMemoryManager), pm(pm), kernels(kernels)
 {
-    chooseFunctionForCollisionAndExchange();
+    this->collision = getFunctionForCollisionAndExchange(para->getUseStreams(), para->getNumprocs(), para->getKernelNeedsFluidNodeIndicesToRun());
     chooseFunctionForRefinementAndExchange();
     this->bcKernelManager = std::make_shared<BCKernelManager>(para, bcFactory);
     this->adKernelManager = std::make_shared<ADKernelManager>(para);
     this->gridScalingKernelManager =  std::make_shared<GridScalingKernelManager>(para);
-}
-
-void UpdateGrid27::chooseFunctionForCollisionAndExchange()
-{
-    std::cout << "Function used for collisionAndExchange: ";
-    if (para->getUseStreams() && para->getNumprocs() > 1 && para->getKernelNeedsFluidNodeIndicesToRun()) {
-        this->collisionAndExchange = &UpdateGrid27::collisionAndExchange_streams;
-        std::cout << "collisionAndExchange_streams()" << std::endl;
-
-    } else if (para->getUseStreams() && !para->getKernelNeedsFluidNodeIndicesToRun()) {
-        std::cout << "Cuda Streams can only be used with kernels which run using fluidNodesIndices." << std::endl;
-
-    } else if (para->getUseStreams() && para->getNumprocs() <= 1) {
-        std::cout << "Cuda Streams can only be used with multiple MPI processes." << std::endl;
-
-    } else if (!para->getUseStreams() && para->getKernelNeedsFluidNodeIndicesToRun()) {
-        this->collisionAndExchange = &UpdateGrid27::collisionAndExchange_noStreams_indexKernel;
-        std::cout << "collisionAndExchange_noStreams_indexKernel()" << std::endl;
-
-    } else if (!para->getUseStreams() && !para->getKernelNeedsFluidNodeIndicesToRun()) {
-        this->collisionAndExchange = &UpdateGrid27::collisionAndExchange_noStreams_oldKernel;
-        std::cout << "collisionAndExchange_noStreams_oldKernel()" << std::endl;
-
-    } else {
-        std::cout << "Invalid Configuration for collision and exchange" << std::endl;
-    }
 }
 
 void UpdateGrid27::chooseFunctionForRefinementAndExchange()
