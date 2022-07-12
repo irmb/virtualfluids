@@ -146,19 +146,19 @@ int main(int argc, char *argv[])
         //////////////////////////////////////////////////////////////////////////
 
         real dx = L / real(nx);
-        gridBuilder->addCoarseGrid(-1.0 * L, -0.5 * L, -0.5 * L,
-                                      6.0 * L,    0.5 * L,    0.5 * L, dx);
+        gridBuilder->addCoarseGrid(-1.0 * L, -0.8 * L, -0.8 * L,
+                                    6.0 * L,  0.8 * L,  0.8 * L, dx);
 
         // use primitive
-        // Object *sphere = new Sphere(0.0, 0.0, 0.0, dSphere / 2.0);
+        Object *sphere = new Sphere(0.0, 0.0, 0.0, dSphere / 2.0);
 
         // use stl
-        std::string stlPath = "stl/sphere02.stl";
-        if (useConfigFile && config.contains("STLPath")) {
-            stlPath = config.getValue<std::string>("STLPath");
-        }
-        std::cout << "Reading stl from " << stlPath << "." << std::endl;
-        Object *sphere = TriangularMesh::make(stlPath);
+        // std::string stlPath = "stl/sphere02.stl";
+        // if (useConfigFile && config.contains("STLPath")) {
+        //     stlPath = config.getValue<std::string>("STLPath");
+        // }
+        // std::cout << "Reading stl from " << stlPath << "." << std::endl;
+        // Object *sphere = TriangularMesh::make(stlPath);
 
         gridBuilder->addGeometry(sphere);
         gridBuilder->setPeriodicBoundaryCondition(false, false, false);
