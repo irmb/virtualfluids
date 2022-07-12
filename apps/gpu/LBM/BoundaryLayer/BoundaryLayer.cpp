@@ -183,9 +183,9 @@ void multipleLevel(const std::string& configPath)
                                 L_x,  L_y,  L_z, dx);
     // gridBuilder->setNumberOfLayers(12, 8);
 
-    gridBuilder->addGrid( new Cuboid( 0.0, 0.0, 0.0, L_x,  L_y,  0.2*L_z) , 1 );
-    gridBuilder->addGrid( new Cuboid( 0.0, 0.0, 0.0, L_x,  L_y,  0.1*L_z) , 2 );
-    para->setMaxLevel(3);
+    // gridBuilder->addGrid( new Cuboid( 0.0, 0.0, 0.0, L_x,  L_y,  0.2*L_z) , 1 );
+    // gridBuilder->addGrid( new Cuboid( 0.0, 0.0, 0.0, L_x,  L_y,  0.1*L_z) , 2 );
+    // para->setMaxLevel(3);
 
     gridBuilder->setPeriodicBoundaryCondition(true, true, false);
 
@@ -218,14 +218,14 @@ void multipleLevel(const std::string& configPath)
     planarAverageProbe->setFileNameToNOut();
     para->addProbe( planarAverageProbe );
 
-    // para->setHasWallModelMonitor(true);
-    // SPtr<WallModelProbe> wallModelProbe = SPtr<WallModelProbe>( new WallModelProbe("wallModelProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt/4.0 , tStartOutProbe/dt, tOutProbe/dt) );
-    // wallModelProbe->addAllAvailableStatistics();
-    // wallModelProbe->setFileNameToNOut();
-    // wallModelProbe->setForceOutputToStress(true);
-    // if(para->getIsBodyForce())
-    //     wallModelProbe->setEvaluatePressureGradient(true);
-    // para->addProbe( wallModelProbe );
+    para->setHasWallModelMonitor(true);
+    SPtr<WallModelProbe> wallModelProbe = SPtr<WallModelProbe>( new WallModelProbe("wallModelProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt/4.0 , tStartOutProbe/dt, tOutProbe/dt) );
+    wallModelProbe->addAllAvailableStatistics();
+    wallModelProbe->setFileNameToNOut();
+    wallModelProbe->setForceOutputToStress(true);
+    if(para->getIsBodyForce())
+        wallModelProbe->setEvaluatePressureGradient(true);
+    para->addProbe( wallModelProbe );
 
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
     auto gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
