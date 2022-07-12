@@ -101,11 +101,11 @@ public:
     // void setOutflowBoundaryCondition(...); // TODO:
     // https://git.rz.tu-bs.de/m.schoenherr/VirtualFluids_dev/-/issues/16
 
-    boundaryCondition getVelocityBoundaryConditionPost(bool isGeometryBC = false) const;
-    boundaryCondition getNoSlipBoundaryConditionPost(bool isGeometryBC = false) const;
-    boundaryCondition getSlipBoundaryConditionPost(bool isGeometryBC = false) const;
-    boundaryCondition getPressureBoundaryConditionPre() const;
-    boundaryCondition getGeometryBoundaryConditionPost() const;
+    [[nodiscard]] boundaryCondition getVelocityBoundaryConditionPost(bool isGeometryBC = false) const;
+    [[nodiscard]] boundaryCondition getNoSlipBoundaryConditionPost(bool isGeometryBC = false) const;
+    [[nodiscard]] boundaryCondition getSlipBoundaryConditionPost(bool isGeometryBC = false) const;
+    [[nodiscard]] boundaryCondition getPressureBoundaryConditionPre() const;
+    [[nodiscard]] boundaryCondition getGeometryBoundaryConditionPost() const;
 
     boundaryConditionPara getStressBoundaryConditionPost() const;
 

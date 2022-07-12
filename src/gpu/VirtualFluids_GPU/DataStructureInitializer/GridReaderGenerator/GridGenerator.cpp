@@ -23,10 +23,7 @@ GridGenerator::GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_p
     this->indexRearrangement = std::make_unique<IndexRearrangementForStreams>(para, builder, communicator);
 }
 
-GridGenerator::~GridGenerator()
-{
-
-}
+GridGenerator::~GridGenerator() = default;
 
 void GridGenerator::initalGridInformations()
 {

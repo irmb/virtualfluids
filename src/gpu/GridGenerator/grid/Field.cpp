@@ -115,7 +115,7 @@ bool Field::isStopperCoarseUnderFine(uint index) const
 
 bool Field::isStopperSolid(uint index) const
 {
-	return field[index] == STOPPER_SOLID;
+    return field[index] == STOPPER_SOLID;
 }
 
 bool Field::isStopper(uint index) const
