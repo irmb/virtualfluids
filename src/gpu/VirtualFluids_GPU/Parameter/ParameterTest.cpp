@@ -39,7 +39,7 @@ TEST(ParameterTest, check_all_Parameter_CanBePassedToConstructor)
     vf::basics::ConfigurationFile config;
     config.load(filePath.string());
 
-    Parameter para(config, 1, 0);
+    Parameter para(config);
 
     // test optional parameter
     EXPECT_THAT(para.getOutputPath(), testing::Eq("/output/path/"));
@@ -151,7 +151,7 @@ TEST(ParameterTest, check_all_Parameter_CanBePassedToConstructor)
 
 TEST(ParameterTest, defaultGridPath)
 {
-    Parameter para(1, 0);
+    Parameter para;
     EXPECT_THAT(para.getGridPath(), testing::Eq("grid/"));
     EXPECT_THAT(para.getConcentration(), testing::Eq("grid/conc.dat"));
 }
@@ -190,7 +190,7 @@ TEST(ParameterTest, setGridPathOverridesConfigFile)
 
 TEST(ParameterTest, userMissedSlash)
 {
-    Parameter para(1, 0);
+    Parameter para;
     para.setGridPath("gridPathTest");
 
     EXPECT_THAT(para.getGridPath(), testing::Eq("gridPathTest/"));
