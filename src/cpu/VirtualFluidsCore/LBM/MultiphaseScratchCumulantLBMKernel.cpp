@@ -431,13 +431,13 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 
 						///!test
 
-						collFactorM = collFactorL + (collFactorL - collFactorG) * (phi[REST] - phiH) / (phiH - phiL);
+						collFactorM = collFactorL + (collFactorL - collFactorG) * (phi[DIR_000] - phiH) / (phiH - phiL);
 						//collFactorM = phi[REST] - phiL < (phiH - phiL) * 0.05 ? collFactorG : collFactorL;
 
-                        LBMReal mu = 2 * beta * phi[REST] * (phi[REST] - 1) * (2 * phi[REST] - 1) - kappa * nabla2_phi();
+                        LBMReal mu = 2 * beta * phi[DIR_000] * (phi[DIR_000] - 1) * (2 * phi[DIR_000] - 1) - kappa * nabla2_phi();
 
                         //----------- Calculating Macroscopic Values -------------
-                        LBMReal rho = rhoH + rhoToPhi * (phi[REST] - phiH);
+                        LBMReal rho = rhoH + rhoToPhi * (phi[DIR_000] - phiH);
 
 						if (withForcing) {
 							// muX1 = static_cast<double>(x1-1+ix1*maxX1);
@@ -588,9 +588,9 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 				  // vvxF = vvxF;
 			   //}
 			   LBMReal weightGrad =  1.0-denom*denom/(denom*denom+0.0001*0.001);
-			   LBMReal dX1_phiF = dX1_phi * weightGrad + (1.0 - weightGrad) * (1.0 - phi[REST]) * (phi[REST]) * normX1;
-			   LBMReal dX2_phiF = dX2_phi * weightGrad + (1.0 - weightGrad) * (1.0 - phi[REST]) * (phi[REST]) * normX2;
-			   LBMReal dX3_phiF = dX3_phi * weightGrad + (1.0 - weightGrad) * (1.0 - phi[REST]) * (phi[REST]) * normX3;
+			   LBMReal dX1_phiF = dX1_phi * weightGrad + (1.0 - weightGrad) * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * normX1;
+			   LBMReal dX2_phiF = dX2_phi * weightGrad + (1.0 - weightGrad) * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * normX2;
+			   LBMReal dX3_phiF = dX3_phi * weightGrad + (1.0 - weightGrad) * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * normX3;
 
 			   //dX1_phiF *= 1.2;
 			   //dX2_phiF *= 1.2;
@@ -646,9 +646,9 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 
 			   }
 
-			   LBMReal gamma = WEIGTH[REST] * (1.0 - 1.5 * (ux2 + uy2 + uz2));
-			   LBMReal fac1 = (gamma - WEIGTH[REST]) * c1o3 * rhoToPhi;
-			   forcingTerm[REST] = (-vvxF) * (fac1 * dX1_phiF ) +
+			   LBMReal gamma = WEIGTH[DIR_000] * (1.0 - 1.5 * (ux2 + uy2 + uz2));
+			   LBMReal fac1 = (gamma - WEIGTH[DIR_000]) * c1o3 * rhoToPhi;
+			   forcingTerm[DIR_000] = (-vvxF) * (fac1 * dX1_phiF ) +
 				   (-vvyF) * (fac1 * dX2_phiF ) +
 				   (-vvzF) * (fac1 * dX3_phiF );
 
@@ -774,7 +774,7 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 			   mfcaa +=3.0 * ( 0.5 * forcingTerm[BSE]) / rho;  //-(3.0*p1 - rho)*WEIGTH[BSE];
 			   mfaca +=3.0 * ( 0.5 * forcingTerm[BNW]) / rho;  //-(3.0*p1 - rho)*WEIGTH[BNW];
 			   mfcca +=3.0 * ( 0.5 * forcingTerm[BNE]) / rho;  //-(3.0*p1 - rho)*WEIGTH[BNE];
-			   mfbbb +=3.0 * ( 0.5 * forcingTerm[REST]) / rho; //- (3.0*p1 - rho)*WEIGTH[REST]
+			   mfbbb +=3.0 * ( 0.5 * forcingTerm[DIR_000]) / rho; //- (3.0*p1 - rho)*WEIGTH[REST]
 
 			   //--------------------------------------------------------
 
@@ -1162,7 +1162,7 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 
 			   ////relax unfiltered
 			   //! divergenceFilter 10.05.2021
-			   LBMReal divMag= (1.0 - phi[REST]) * (phi[REST])*10*5*sqrt(fabs((OxxPyyPzz * (/*mfaaa*/ -mxxPyyPzz) - 3. * (1. - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz))));
+			   LBMReal divMag= (1.0 - phi[DIR_000]) * (phi[DIR_000])*10*5*sqrt(fabs((OxxPyyPzz * (/*mfaaa*/ -mxxPyyPzz) - 3. * (1. - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz))));
 			  // LBMReal divMag = 500 *500* 50*(fabs((OxxPyyPzz * (/*mfaaa*/ -mxxPyyPzz) - 3. * (1. - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz))))* (fabs((OxxPyyPzz * (/*mfaaa*/ -mxxPyyPzz) - 3. * (1. - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz))));
 			   //LBMReal divMag = (dX1_phi * dxux) > 0 ? (dX1_phi * dxux) : 0;
 			   //divMag += (dX2_phi * dyuy) > 0 ? (dX2_phi * dyuy) : 0;
@@ -1645,7 +1645,7 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 			   mfcaa += 3.0 * (0.5 * forcingTerm[BSE]) / rho;  //-(3.0*p1 - rho)*WEIGTH[BSE];
 			   mfaca += 3.0 * (0.5 * forcingTerm[BNW]) / rho;  //-(3.0*p1 - rho)*WEIGTH[BNW];
 			   mfcca += 3.0 * (0.5 * forcingTerm[BNE]) / rho;  //-(3.0*p1 - rho)*WEIGTH[BNE];
-			   mfbbb += 3.0 * (0.5 * forcingTerm[REST]) / rho; //- (3.0*p1 - rho)*WEIGTH[REST]
+			   mfbbb += 3.0 * (0.5 * forcingTerm[DIR_000]) / rho; //- (3.0*p1 - rho)*WEIGTH[REST]
 
 
 
@@ -2671,9 +2671,9 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 			   LBMReal Mccb = mfccb - mfaab * c1o9;
 
 			   // collision of 1st order moments
-			   cx = cx * (c1 - omegaD) + omegaD * vvx * concentration + normX1 * (c1 - 0.5 * omegaD) * (1.0 - phi[REST]) * (phi[REST]) * c1o3 * oneOverInterfaceScale;
-			   cy = cy * (c1 - omegaD) + omegaD * vvy * concentration + normX2 * (c1 - 0.5 * omegaD) * (1.0 - phi[REST]) * (phi[REST]) * c1o3 * oneOverInterfaceScale;
-			   cz = cz * (c1 - omegaD) + omegaD * vvz * concentration + normX3 * (c1 - 0.5 * omegaD) * (1.0 - phi[REST]) * (phi[REST]) * c1o3 * oneOverInterfaceScale;
+			   cx = cx * (c1 - omegaD) + omegaD * vvx * concentration + normX1 * (c1 - 0.5 * omegaD) * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * c1o3 * oneOverInterfaceScale;
+			   cy = cy * (c1 - omegaD) + omegaD * vvy * concentration + normX2 * (c1 - 0.5 * omegaD) * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * c1o3 * oneOverInterfaceScale;
+			   cz = cz * (c1 - omegaD) + omegaD * vvz * concentration + normX3 * (c1 - 0.5 * omegaD) * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * c1o3 * oneOverInterfaceScale;
 
 			   //mhx = (ux * phi[REST] + normX1 * (tauH - 0.5) * (1.0 - phi[REST]) * (phi[REST])) / tauH + (1.0 - 1.0 / tauH) * mhx;
 			   //mhy = (uy * phi[REST] + normX2 * (tauH - 0.5) * (1.0 - phi[REST]) * (phi[REST])) / tauH + (1.0 - 1.0 / tauH) * mhy;
@@ -2961,17 +2961,17 @@ LBMReal MultiphaseScratchCumulantLBMKernel::nabla2_phi()
 {
     using namespace D3Q27System;
     LBMReal sum = 0.0;
-	sum += WEIGTH[TNE] * ((((phi[TNE] - phi[REST]) + (phi[BSW] - phi[REST])) + ((phi[TSW] - phi[REST]) + (phi[BNE] - phi[REST])))
-		+ (((phi[TNW] - phi[REST]) + (phi[BSE] - phi[REST])) + ((phi[TSE] - phi[REST]) + (phi[BNW] - phi[REST]))));
+	sum += WEIGTH[TNE] * ((((phi[TNE] - phi[DIR_000]) + (phi[BSW] - phi[DIR_000])) + ((phi[TSW] - phi[DIR_000]) + (phi[BNE] - phi[DIR_000])))
+		+ (((phi[TNW] - phi[DIR_000]) + (phi[BSE] - phi[DIR_000])) + ((phi[TSE] - phi[DIR_000]) + (phi[BNW] - phi[DIR_000]))));
 	sum += WEIGTH[TN] * (
-			(((phi[TN] - phi[REST]) + (phi[BS] - phi[REST])) + ((phi[TS] - phi[REST]) + (phi[BN] - phi[REST])))
-		+	(((phi[TE] - phi[REST]) + (phi[BW] - phi[REST])) + ((phi[TW] - phi[REST]) + (phi[BE] - phi[REST])))
-		+	(((phi[NE] - phi[REST]) + (phi[SW] - phi[REST])) + ((phi[NW] - phi[REST]) + (phi[SE] - phi[REST])))
+			(((phi[TN] - phi[DIR_000]) + (phi[BS] - phi[DIR_000])) + ((phi[TS] - phi[DIR_000]) + (phi[BN] - phi[DIR_000])))
+		+	(((phi[TE] - phi[DIR_000]) + (phi[BW] - phi[DIR_000])) + ((phi[TW] - phi[DIR_000]) + (phi[BE] - phi[DIR_000])))
+		+	(((phi[NE] - phi[DIR_000]) + (phi[SW] - phi[DIR_000])) + ((phi[NW] - phi[DIR_000]) + (phi[SE] - phi[DIR_000])))
 		);
 	sum += WEIGTH[T] * (
-			((phi[T] - phi[REST]) + (phi[B] - phi[REST]))
-		+	((phi[N] - phi[REST]) + (phi[S] - phi[REST]))
-		+	((phi[E] - phi[REST]) + (phi[W] - phi[REST]))
+			((phi[T] - phi[DIR_000]) + (phi[B] - phi[DIR_000]))
+		+	((phi[N] - phi[DIR_000]) + (phi[S] - phi[DIR_000]))
+		+	((phi[E] - phi[DIR_000]) + (phi[W] - phi[DIR_000]))
 		);
     //for (int k = FSTARTDIR; k <= FENDDIR; k++) {
     //    sum += WEIGTH[k] * (phi[k] - phi[REST]);
@@ -3029,7 +3029,7 @@ void MultiphaseScratchCumulantLBMKernel::computePhasefield()
                     h[BNW] = (*this->nonLocalDistributionsH)(D3Q27System::ET_BNW, x1p, x2, x3p);
                     h[BNE] = (*this->nonLocalDistributionsH)(D3Q27System::ET_BNE, x1, x2, x3p);
 
-                    h[REST] = (*this->zeroDistributionsH)(x1, x2, x3);
+                    h[DIR_000] = (*this->zeroDistributionsH)(x1, x2, x3);
                 }
             }
         }
@@ -3043,7 +3043,7 @@ void MultiphaseScratchCumulantLBMKernel::findNeighbors(CbArray3D<LBMReal, Indexe
 
     SPtr<BCArray3D> bcArray = this->getBCProcessor()->getBCArray();
 
-    phi[REST] = (*ph)(x1, x2, x3);
+    phi[DIR_000] = (*ph)(x1, x2, x3);
 
     for (int k = FSTARTDIR; k <= FENDDIR; k++) {
 

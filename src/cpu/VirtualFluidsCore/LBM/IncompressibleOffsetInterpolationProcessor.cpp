@@ -569,7 +569,7 @@ void IncompressibleOffsetInterpolationProcessor::calcInterpolatedNode(LBMReal* f
    f[BSW]  = f_TNE  + xs*x_TNE  + ys*y_TNE  + zs*z_TNE  + xs*ys*xy_TNE  + xs*zs*xz_TNE  + ys*zs*yz_TNE  + feq[BSW];
    f[BSE]  = f_TNW  + xs*x_TNW  + ys*y_TNW  + zs*z_TNW  + xs*ys*xy_TNW  + xs*zs*xz_TNW  + ys*zs*yz_TNW  + feq[BSE];
    f[BNW]  = f_TSE  + xs*x_TSE  + ys*y_TSE  + zs*z_TSE  + xs*ys*xy_TSE  + xs*zs*xz_TSE  + ys*zs*yz_TSE  + feq[BNW];
-   f[REST] = f_ZERO + xs*x_ZERO + ys*y_ZERO + zs*z_ZERO                                                 + feq[REST];
+   f[DIR_000] = f_ZERO + xs*x_ZERO + ys*y_ZERO + zs*z_ZERO                                                 + feq[DIR_000];
 }
 //////////////////////////////////////////////////////////////////////////
 //Position SWB -0.25, -0.25, -0.25
@@ -763,7 +763,7 @@ void IncompressibleOffsetInterpolationProcessor::calcInterpolatedNodeFC(LBMReal*
    f[BNW]  = f_TSE  + feq[BNW];
    f[BSE]  = f_TNW  + feq[BSE];
    f[BSW]  = f_TNE  + feq[BSW];
-   f[REST] = f_ZERO + feq[REST];
+   f[DIR_000] = f_ZERO + feq[DIR_000];
 }
 //////////////////////////////////////////////////////////////////////////
 void IncompressibleOffsetInterpolationProcessor::calcInterpolatedVelocity(LBMReal x, LBMReal y, LBMReal z, LBMReal& vx1, LBMReal& vx2, LBMReal& vx3)

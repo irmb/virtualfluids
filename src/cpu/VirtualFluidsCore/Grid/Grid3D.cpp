@@ -39,21 +39,21 @@
 #include <geometry3d/CoordinateTransformation3D.h>
 
 #include "Block3DVisitor.h"
-#include "Grid3DSystem.h"
+#include "D3Q27System.h"
 #include "Grid3DVisitor.h"
 #include "Interactor3D.h"
-#include "LBMSystem.h"
+#include "D3Q27System.h"
 #include <Block3D.h>
 #include <Communicator.h>
 
 using namespace std;
 
-Grid3D::Grid3D() { levelSet.resize(Grid3DSystem::MAXLEVEL + 1); }
+Grid3D::Grid3D() { levelSet.resize(D3Q27System::MAXLEVEL + 1); }
 //////////////////////////////////////////////////////////////////////////
 Grid3D::Grid3D(std::shared_ptr<vf::mpi::Communicator> comm)
 
 {
-    levelSet.resize(Grid3DSystem::MAXLEVEL + 1);
+    levelSet.resize(D3Q27System::MAXLEVEL + 1);
     bundle = comm->getBundleID();
     rank = comm->getProcessID();
 }
@@ -63,7 +63,7 @@ Grid3D::Grid3D(std::shared_ptr<vf::mpi::Communicator> comm, int blockNx1, int bl
 
       blockNx1(blockNx1), blockNx2(blockNx2), blockNx3(blockNx2), nx1(gridNx1), nx2(gridNx2), nx3(gridNx3)
 {
-    levelSet.resize(Grid3DSystem::MAXLEVEL + 1);
+    levelSet.resize(D3Q27System::MAXLEVEL + 1);
     bundle = comm->getBundleID();
     rank  = comm->getProcessID();
     trafo = std::make_shared<CoordinateTransformation3D>(0.0, 0.0, 0.0, (double)blockNx1, (double)blockNx2,
@@ -88,7 +88,7 @@ void Grid3D::accept(Block3DVisitor &blockVisitor)
     int startLevel = blockVisitor.getStartLevel();
     int stopLevel  = blockVisitor.getStopLevel();
 
-    if (startLevel < 0 || stopLevel < 0 || startLevel > Grid3DSystem::MAXLEVEL || stopLevel > Grid3DSystem::MAXLEVEL)
+    if (startLevel < 0 || stopLevel < 0 || startLevel > D3Q27System::MAXLEVEL || stopLevel > D3Q27System::MAXLEVEL)
         throw UbException(UB_EXARGS, "not valid level!");
 
     bool dir = startLevel < stopLevel;
@@ -158,8 +158,8 @@ bool Grid3D::deleteBlock(int ix1, int ix2, int ix3, int level)
 void Grid3D::deleteBlocks()
 {
     std::vector<std::vector<SPtr<Block3D>>> blocksVector(25);
-    int minInitLevel = Grid3DSystem::MINLEVEL;
-    int maxInitLevel = Grid3DSystem::MAXLEVEL;
+    int minInitLevel = D3Q27System::MINLEVEL;
+    int maxInitLevel = D3Q27System::MAXLEVEL;
     for (int level = minInitLevel; level < maxInitLevel; level++) {
         getBlocks(level, blocksVector[level]);
         for (SPtr<Block3D> block : blocksVector[level]) //	blocks of the current level
@@ -265,7 +265,7 @@ void Grid3D::getSubBlocks(int ix1, int ix2, int ix3, int level, int levelDepth, 
         return;
     if (level > 0 && !this->getSuperBlock(ix1, ix2, ix3, level))
         return;
-    if (level >= Grid3DSystem::MAXLEVEL)
+    if (level >= D3Q27System::MAXLEVEL)
         throw UbException(UB_EXARGS, "Level bigger then MAXLEVEL");
 
     int x1[] = { ix1 << 1, (ix1 << 1) + 1 };
@@ -300,7 +300,7 @@ bool Grid3D::expandBlock(int ix1, int ix2, int ix3, int level)
     ix3 = block->getX3();
 
     int l = level + 1;
-    if (l > Grid3DSystem::MAXLEVEL)
+    if (l > D3Q27System::MAXLEVEL)
         throw UbException(UB_EXARGS, "level > Grid3D::MAXLEVEL");
 
     int west   = ix1 << 1;
@@ -584,7 +584,7 @@ void Grid3D::checkLevel(int level)
     if (level < 0) {
         throw UbException(UB_EXARGS, "l(" + UbSystem::toString(level) + (string) ")<0");
     }
-    if (level > Grid3DSystem::MAXLEVEL) {
+    if (level > D3Q27System::MAXLEVEL) {
         throw UbException(UB_EXARGS, "l(" + UbSystem::toString(level) + (string) ")>MAXLEVEL");
     }
     if (this->levelSet[level].size() == 0) {
@@ -596,7 +596,7 @@ bool Grid3D::hasLevel(int level) const
 {
     if (level < 0)
         return false;
-    if (level > Grid3DSystem::MAXLEVEL)
+    if (level > D3Q27System::MAXLEVEL)
         return false;
     if (this->levelSet[level].size() == 0)
         return false;
@@ -616,7 +616,7 @@ UbTupleInt3 Grid3D::getBlockNX() const { return makeUbTuple(blockNx1, blockNx2, 
 
 SPtr<Block3D> Grid3D::getNeighborBlock(int dir, int ix1, int ix2, int ix3, int level) const
 {
-    return this->getBlock(ix1 + Grid3DSystem::EX1[dir], ix2 + Grid3DSystem::EX2[dir], ix3 + Grid3DSystem::EX3[dir],
+    return this->getBlock(ix1 + D3Q27System::DX1[dir], ix2 + D3Q27System::DX2[dir], ix3 + D3Q27System::DX3[dir],
                           level);
 }
 //////////////////////////////////////////////////////////////////////////
@@ -631,8 +631,8 @@ SPtr<Block3D> Grid3D::getNeighborBlock(int dir, SPtr<Block3D> block) const
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getAllNeighbors(int ix1, int ix2, int ix3, int level, int levelDepth, std::vector<SPtr<Block3D>> &blocks)
 {
-    for (int dir = Grid3DSystem::STARTDIR; dir <= Grid3DSystem::ENDDIR; dir++)
-    // for (int dir = Grid3DSystem::STARTDIR; dir<=Grid3DSystem::TS; dir++)
+    for (int dir = D3Q27System::STARTDIR; dir <= D3Q27System::ENDDIR; dir++)
+    // for (int dir = D3Q27System::STARTDIR; dir<=D3Q27System::TS; dir++)
     {
         this->getNeighborBlocksForDirection(dir, ix1, ix2, ix3, level, levelDepth, blocks);
     }
@@ -1100,82 +1100,82 @@ void Grid3D::getNeighborBlocksForDirection(int dir, int ix1, int ix2, int ix3, i
                                            std::vector<SPtr<Block3D>> &blocks)
 {
     switch (dir) {
-        case Grid3DSystem::E:
+        case D3Q27System::E:
             this->getNeighborsEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::W:
+        case D3Q27System::W:
             this->getNeighborsWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::N:
+        case D3Q27System::N:
             this->getNeighborsNorth(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::S:
+        case D3Q27System::S:
             this->getNeighborsSouth(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::T:
+        case D3Q27System::T:
             this->getNeighborsTop(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::B:
+        case D3Q27System::B:
             this->getNeighborsBottom(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::NE:
+        case D3Q27System::NE:
             this->getNeighborsNorthEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::SW:
+        case D3Q27System::SW:
             this->getNeighborsSouthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::SE:
+        case D3Q27System::SE:
             this->getNeighborsSouthEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::NW:
+        case D3Q27System::NW:
             this->getNeighborsNorthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::TE:
+        case D3Q27System::TE:
             this->getNeighborsTopEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::BW:
+        case D3Q27System::BW:
             this->getNeighborsBottomWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::BE:
+        case D3Q27System::BE:
             this->getNeighborsBottomEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::TW:
+        case D3Q27System::TW:
             this->getNeighborsTopWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::TN:
+        case D3Q27System::TN:
             this->getNeighborsTopNorth(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::BS:
+        case D3Q27System::BS:
             this->getNeighborsBottomSouth(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::BN:
+        case D3Q27System::BN:
             this->getNeighborsBottomNorth(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::TS:
+        case D3Q27System::TS:
             this->getNeighborsTopSouth(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::TNE:
+        case D3Q27System::TNE:
             this->getNeighborsTopNorthEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::TNW:
+        case D3Q27System::TNW:
             this->getNeighborsTopNorthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::TSE:
+        case D3Q27System::TSE:
             this->getNeighborsTopSouthEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::TSW:
+        case D3Q27System::TSW:
             this->getNeighborsTopSouthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::BNE:
+        case D3Q27System::BNE:
             this->getNeighborsBottomNorthEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::BNW:
+        case D3Q27System::BNW:
             this->getNeighborsBottomNorthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::BSE:
+        case D3Q27System::BSE:
             this->getNeighborsBottomSouthEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::BSW:
+        case D3Q27System::BSW:
             this->getNeighborsBottomSouthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
         default:
@@ -1263,85 +1263,85 @@ void Grid3D::getNeighborBlocksForDirectionWithDirZero(int dir, int ix1, int ix2,
                                                       std::vector<SPtr<Block3D>> &blocks)
 {
     switch (dir) {
-        case Grid3DSystem::E:
+        case D3Q27System::E:
             this->getNeighborsEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::W:
+        case D3Q27System::W:
             this->getNeighborsWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::N:
+        case D3Q27System::N:
             this->getNeighborsNorth(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::S:
+        case D3Q27System::S:
             this->getNeighborsSouth(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::T:
+        case D3Q27System::T:
             this->getNeighborsTop(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::B:
+        case D3Q27System::B:
             this->getNeighborsBottom(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::NE:
+        case D3Q27System::NE:
             this->getNeighborsNorthEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::SW:
+        case D3Q27System::SW:
             this->getNeighborsSouthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::SE:
+        case D3Q27System::SE:
             this->getNeighborsSouthEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::NW:
+        case D3Q27System::NW:
             this->getNeighborsNorthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::TE:
+        case D3Q27System::TE:
             this->getNeighborsTopEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::BW:
+        case D3Q27System::BW:
             this->getNeighborsBottomWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::BE:
+        case D3Q27System::BE:
             this->getNeighborsBottomEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::TW:
+        case D3Q27System::TW:
             this->getNeighborsTopWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::TN:
+        case D3Q27System::TN:
             this->getNeighborsTopNorth(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::BS:
+        case D3Q27System::BS:
             this->getNeighborsBottomSouth(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::BN:
+        case D3Q27System::BN:
             this->getNeighborsBottomNorth(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::TS:
+        case D3Q27System::TS:
             this->getNeighborsTopSouth(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::TNE:
+        case D3Q27System::TNE:
             this->getNeighborsTopNorthEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::TNW:
+        case D3Q27System::TNW:
             this->getNeighborsTopNorthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::TSE:
+        case D3Q27System::TSE:
             this->getNeighborsTopSouthEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::TSW:
+        case D3Q27System::TSW:
             this->getNeighborsTopSouthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::BNE:
+        case D3Q27System::BNE:
             this->getNeighborsBottomNorthEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::BNW:
+        case D3Q27System::BNW:
             this->getNeighborsBottomNorthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::BSE:
+        case D3Q27System::BSE:
             this->getNeighborsBottomSouthEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::BSW:
+        case D3Q27System::BSW:
             this->getNeighborsBottomSouthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::REST:
+        case D3Q27System::DIR_000:
             this->getNeighborsZero(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
         default:
@@ -1980,7 +1980,7 @@ void Grid3D::getBlocks(int level, int rank, bool active, std::vector<SPtr<Block3
 //////////////////////////////////////////////////////////////////////////
 int Grid3D::getFinestInitializedLevel()
 {
-    for (int i = Grid3DSystem::MAXLEVEL; i >= 0; i--)
+    for (int i = D3Q27System::MAXLEVEL; i >= 0; i--)
         if (this->levelSet[i].size() > 0)
             return (i);
     return (-1);
@@ -1988,7 +1988,7 @@ int Grid3D::getFinestInitializedLevel()
 //////////////////////////////////////////////////////////////////////////
 int Grid3D::getCoarsestInitializedLevel()
 {
-    for (int i = 0; i <= Grid3DSystem::MAXLEVEL; i++)
+    for (int i = 0; i <= D3Q27System::MAXLEVEL; i++)
         if (this->levelSet[i].size() > 0)
             return (i);
     return (-1);
@@ -2343,7 +2343,7 @@ void Grid3D::updateDistributedBlocks(std::shared_ptr<vf::mpi::Communicator> comm
             levelSet[l].clear();
         }
         this->levelSet.clear();
-        levelSet.resize(Grid3DSystem::MAXLEVEL + 1);
+        levelSet.resize(D3Q27System::MAXLEVEL + 1);
 
         int rsize = (int)blocks.size();
         for (int i = 0; i < rsize; i += 5) {

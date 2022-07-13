@@ -38,10 +38,10 @@
 #include "DataSet3D.h"
 #include "EsoTwist3D.h"
 #include "Grid3D.h"
-#include "Grid3DSystem.h"
+#include "D3Q27System.h"
 #include "LBMKernel.h"
 
-InitDistributionsBlockVisitor::InitDistributionsBlockVisitor() : Block3DVisitor(0, Grid3DSystem::MAXLEVEL)
+InitDistributionsBlockVisitor::InitDistributionsBlockVisitor() : Block3DVisitor(0, D3Q27System::MAXLEVEL)
 {
     this->setVx1(0.0);
     this->setVx2(0.0);
@@ -273,7 +273,7 @@ void InitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D>
                f[BNW]  = f_TSE  + feq[BNW];
                f[BSE]  = f_TNW  + feq[BSE];
                f[BSW]  = f_TNE  + feq[BSW];
-               f[REST] = f_ZERO + feq[REST];
+               f[DIR_000] = f_ZERO + feq[DIR_000];
 
                //calcFeqsFct(f,rho,vx1,vx2,vx3);
                distributions->setDistribution(f, ix1, ix2, ix3);

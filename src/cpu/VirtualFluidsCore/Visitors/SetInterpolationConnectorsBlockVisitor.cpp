@@ -36,14 +36,14 @@
 #include "FineToCoarseVectorConnector.h"
 #include "TwoDistributionsFullDirectConnector.h"
 #include "TwoDistributionsFullVectorConnector.h"
-#include "Grid3DSystem.h"
+#include "D3Q27System.h"
 #include <basics/transmitter/TbTransmitterLocal.h>
 
 #include <mpi/Communicator.h>
 #include "InterpolationProcessor.h"
 
 SetInterpolationConnectorsBlockVisitor::SetInterpolationConnectorsBlockVisitor(std::shared_ptr<vf::mpi::Communicator> comm, LBMReal nue, SPtr<InterpolationProcessor> iProcessor) :
-Block3DVisitor(0, Grid3DSystem::MAXLEVEL), 
+Block3DVisitor(0, D3Q27System::MAXLEVEL), 
 	comm(comm),
 	nue(nue),
 	iProcessor(iProcessor)

@@ -1,11 +1,11 @@
 #include "SetInterpolationDirsBlockVisitor.h"
 #include "Block3D.h"
 #include "Grid3D.h"
-#include "Grid3DSystem.h"
+#include "D3Q27System.h"
 #include <D3Q27System.h>
 
 SetInterpolationDirsBlockVisitor::SetInterpolationDirsBlockVisitor(std::vector<int> &dirs)
-    : Block3DVisitor(0, Grid3DSystem::MAXLEVEL), dirs(dirs)
+    : Block3DVisitor(0, D3Q27System::MAXLEVEL), dirs(dirs)
 {
 }
 //////////////////////////////////////////////////////////////////////////

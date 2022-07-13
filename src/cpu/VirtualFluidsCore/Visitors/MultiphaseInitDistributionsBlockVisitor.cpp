@@ -38,11 +38,11 @@
 #include "DataSet3D.h"
 #include "EsoTwist3D.h"
 #include "Grid3D.h"
-#include "Grid3DSystem.h"
+#include "D3Q27System.h"
 #include "LBMKernel.h"
 
 MultiphaseInitDistributionsBlockVisitor::MultiphaseInitDistributionsBlockVisitor() 
-	: Block3DVisitor(0, Grid3DSystem::MAXLEVEL)
+	: Block3DVisitor(0, D3Q27System::MAXLEVEL)
 {
 	this->setVx1(0.0);
 	this->setVx2(0.0);
@@ -51,7 +51,7 @@ MultiphaseInitDistributionsBlockVisitor::MultiphaseInitDistributionsBlockVisitor
 }
 //////////////////////////////////////////////////////////////////////////
 MultiphaseInitDistributionsBlockVisitor::MultiphaseInitDistributionsBlockVisitor( LBMReal densityRatio, LBMReal vx1, LBMReal vx2, LBMReal vx3, LBMReal rho)
-	: Block3DVisitor(0, Grid3DSystem::MAXLEVEL), densityRatio(densityRatio) 
+	: Block3DVisitor(0, D3Q27System::MAXLEVEL), densityRatio(densityRatio) 
 {
 	this->setVx1(vx1);
 	this->setVx2(vx2);
@@ -253,7 +253,7 @@ void MultiphaseInitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPt
 					f[BNW]  =  geq[BNW]  ;
 					f[BSE]  =  geq[BSE]  ;
 					f[BSW]  =  geq[BSW]  ;
-					f[REST] =  geq[REST] ;
+					f[DIR_000] =  geq[DIR_000] ;
 
 					distributionsF->setDistribution(f, ix1, ix2, ix3);
 					distributionsF->setDistributionInv(f, ix1, ix2, ix3);
@@ -284,7 +284,7 @@ void MultiphaseInitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPt
 					f[BNW]  =  phi * feq[BNW]  / rho;
 					f[BSE]  =  phi * feq[BSE]  / rho;
 					f[BSW]  =  phi * feq[BSW]  / rho;
-					f[REST] =  phi * feq[REST] / rho;
+					f[DIR_000] =  phi * feq[DIR_000] / rho;
 
 					distributionsH->setDistribution(f, ix1, ix2, ix3);
 					distributionsH->setDistributionInv(f, ix1, ix2, ix3);
@@ -317,7 +317,7 @@ void MultiphaseInitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPt
 						f[BNW]  = (1.-phi) * feq[BNW] / rho;
 						f[BSE]  = (1.-phi) * feq[BSE] / rho;
 						f[BSW]  = (1.-phi) * feq[BSW] / rho;
-						f[REST] = (1.-phi) * feq[REST] / rho;
+						f[DIR_000] = (1.-phi) * feq[DIR_000] / rho;
 
                         distributionsH2->setDistribution(f, ix1, ix2, ix3);
                         distributionsH2->setDistributionInv(f, ix1, ix2, ix3);                    

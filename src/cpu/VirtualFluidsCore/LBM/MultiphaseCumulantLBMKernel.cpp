@@ -235,13 +235,13 @@ void MultiphaseCumulantLBMKernel::calculate(int step)
                         LBMReal dX3_phi = gradX3_phi();
 
                         LBMReal denom = sqrt(dX1_phi * dX1_phi + dX2_phi * dX2_phi + dX3_phi * dX3_phi) + 1e-9;
-                        collFactorM = collFactorL + (collFactorL - collFactorG) * (phi[REST] - phiH) / (phiH - phiL);
+                        collFactorM = collFactorL + (collFactorL - collFactorG) * (phi[DIR_000] - phiH) / (phiH - phiL);
 
 
-                        LBMReal mu = 2 * beta * phi[REST] * (phi[REST] - 1) * (2 * phi[REST] - 1) - kappa * nabla2_phi();
+                        LBMReal mu = 2 * beta * phi[DIR_000] * (phi[DIR_000] - 1) * (2 * phi[DIR_000] - 1) - kappa * nabla2_phi();
 
                         //----------- Calculating Macroscopic Values -------------
-                        LBMReal rho = rhoH + rhoToPhi * (phi[REST] - phiH);
+                        LBMReal rho = rhoH + rhoToPhi * (phi[DIR_000] - phiH);
 
                         if (withForcing) {
                             // muX1 = static_cast<double>(x1-1+ix1*maxX1);
@@ -308,9 +308,9 @@ void MultiphaseCumulantLBMKernel::calculate(int step)
                                                (DX3[dir]) * (fac1 * dX3_phi + gamma * (mu * dX3_phi + forcingX3));
                         }
 
-                        LBMReal gamma = WEIGTH[REST] * (1.0 - 1.5 * (ux2 + uy2 + uz2));
-                        LBMReal fac1      = (gamma - WEIGTH[REST]) * c1o3 * rhoToPhi;
-                        forcingTerm[REST] = (-ux) * (fac1 * dX1_phi + gamma * (mu * dX1_phi + forcingX1)) +
+                        LBMReal gamma = WEIGTH[DIR_000] * (1.0 - 1.5 * (ux2 + uy2 + uz2));
+                        LBMReal fac1      = (gamma - WEIGTH[DIR_000]) * c1o3 * rhoToPhi;
+                        forcingTerm[DIR_000] = (-ux) * (fac1 * dX1_phi + gamma * (mu * dX1_phi + forcingX1)) +
                                             (-uy) * (fac1 * dX2_phi + gamma * (mu * dX2_phi + forcingX2)) +
                                             (-uz) * (fac1 * dX3_phi + gamma * (mu * dX3_phi + forcingX3));
 
@@ -342,7 +342,7 @@ void MultiphaseCumulantLBMKernel::calculate(int step)
                         mfcaa = 3.0 * (mfcaa + 0.5 * forcingTerm[BSE]) / rho;  //-(3.0*p1 - rho)*WEIGTH[BSE];
                         mfaca = 3.0 * (mfaca + 0.5 * forcingTerm[BNW]) / rho;  //-(3.0*p1 - rho)*WEIGTH[BNW];
                         mfcca = 3.0 * (mfcca + 0.5 * forcingTerm[BNE]) / rho;  //-(3.0*p1 - rho)*WEIGTH[BNE];
-                        mfbbb = 3.0 * (mfbbb + 0.5 * forcingTerm[REST]) / rho; //- (3.0*p1 - rho)*WEIGTH[REST];
+                        mfbbb = 3.0 * (mfbbb + 0.5 * forcingTerm[DIR_000]) / rho; //- (3.0*p1 - rho)*WEIGTH[REST];
 
                         LBMReal rho1 = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca) +
                                        (mfaab + mfacb + mfcab + mfccb) + (mfaba + mfabc + mfcba + mfcbc) +
@@ -1050,7 +1050,7 @@ void MultiphaseCumulantLBMKernel::calculate(int step)
                         mfcaa = rho * c1o3 * (mfcaa) + 0.5 * forcingTerm[BSE];
                         mfaca = rho * c1o3 * (mfaca) + 0.5 * forcingTerm[BNW];
                         mfcca = rho * c1o3 * (mfcca) + 0.5 * forcingTerm[BNE];
-                        mfbbb = rho * c1o3 * (mfbbb) + 0.5 * forcingTerm[REST];
+                        mfbbb = rho * c1o3 * (mfbbb) + 0.5 * forcingTerm[DIR_000];
 
                         //////////////////////////////////////////////////////////////////////////
                         // write distribution for F
@@ -1119,24 +1119,24 @@ void MultiphaseCumulantLBMKernel::calculate(int step)
                         h[BNW] = (*this->nonLocalDistributionsH)(D3Q27System::ET_BNW, x1p, x2, x3p);
                         h[BNE] = (*this->nonLocalDistributionsH)(D3Q27System::ET_BNE, x1, x2, x3p);
 
-                        h[REST] = (*this->zeroDistributionsH)(x1, x2, x3);
+                        h[DIR_000] = (*this->zeroDistributionsH)(x1, x2, x3);
 
                         for (int dir = STARTF; dir < (ENDF + 1); dir++) {
                             LBMReal velProd = DX1[dir] * ux + DX2[dir] * uy + DX3[dir] * uz;
                             LBMReal velSq1  = velProd * velProd;
                             LBMReal hEq; //, gEq;
 
-                            if (dir != REST) {
+                            if (dir != DIR_000) {
                                 LBMReal dirGrad_phi = (phi[dir] - phi[INVDIR[dir]]) / 2.0;
-                                LBMReal hSource     = (tauH - 0.5) * (1.0 - phi[REST]) * (phi[REST]) * (dirGrad_phi) / denom; 
-                                hEq = phi[REST] * WEIGTH[dir] * (1.0 + 3.0 * velProd + 4.5 * velSq1 - 1.5 * (ux2 + uy2 + uz2)) +                                 hSource * WEIGTH[dir];
+                                LBMReal hSource     = (tauH - 0.5) * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * (dirGrad_phi) / denom; 
+                                hEq = phi[DIR_000] * WEIGTH[dir] * (1.0 + 3.0 * velProd + 4.5 * velSq1 - 1.5 * (ux2 + uy2 + uz2)) +                                 hSource * WEIGTH[dir];
 
                                 // This corresponds with the collision factor of 1.0 which equals (tauH + 0.5).
                                 h[dir] = h[dir] - (h[dir] - hEq) / (tauH); 
 
                             } else {
-                                hEq = phi[REST] * WEIGTH[REST] * (1.0 - 1.5 * (ux2 + uy2 + uz2));
-                                h[REST] = h[REST] - (h[REST] - hEq) / (tauH); 
+                                hEq = phi[DIR_000] * WEIGTH[DIR_000] * (1.0 - 1.5 * (ux2 + uy2 + uz2));
+                                h[DIR_000] = h[DIR_000] - (h[DIR_000] - hEq) / (tauH); 
                             }
                         }
 
@@ -1168,7 +1168,7 @@ void MultiphaseCumulantLBMKernel::calculate(int step)
                         (*this->nonLocalDistributionsH)(D3Q27System::ET_BNW, x1p, x2, x3p)  = h[D3Q27System::INV_BNW];
                         (*this->nonLocalDistributionsH)(D3Q27System::ET_BNE, x1, x2, x3p)   = h[D3Q27System::INV_BNE];
 
-                        (*this->zeroDistributionsH)(x1, x2, x3) = h[D3Q27System::REST];
+                        (*this->zeroDistributionsH)(x1, x2, x3) = h[D3Q27System::DIR_000];
 
                         /////////////////////   END OF OLD BGK SOLVER ///////////////////////////////
                     }
@@ -1215,7 +1215,7 @@ LBMReal MultiphaseCumulantLBMKernel::nabla2_phi()
     using namespace D3Q27System;
     LBMReal sum = 0.0;
     for (int k = FSTARTDIR; k <= FENDDIR; k++) {
-        sum += WEIGTH[k] * (phi[k] - phi[REST]);
+        sum += WEIGTH[k] * (phi[k] - phi[DIR_000]);
     }
     return 6.0 * sum;
 }
@@ -1270,7 +1270,7 @@ void MultiphaseCumulantLBMKernel::computePhasefield()
                     h[BNW] = (*this->nonLocalDistributionsH)(D3Q27System::ET_BNW, x1p, x2, x3p);
                     h[BNE] = (*this->nonLocalDistributionsH)(D3Q27System::ET_BNE, x1, x2, x3p);
 
-                    h[REST] = (*this->zeroDistributionsH)(x1, x2, x3);
+                    h[DIR_000] = (*this->zeroDistributionsH)(x1, x2, x3);
                 }
             }
         }
@@ -1284,7 +1284,7 @@ void MultiphaseCumulantLBMKernel::findNeighbors(CbArray3D<LBMReal, IndexerX3X2X1
 
     SPtr<BCArray3D> bcArray = this->getBCProcessor()->getBCArray();
 
-    phi[REST] = (*ph)(x1, x2, x3);
+    phi[DIR_000] = (*ph)(x1, x2, x3);
 
     for (int k = FSTARTDIR; k <= FENDDIR; k++) {
 

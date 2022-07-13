@@ -60,7 +60,7 @@ void ThreeDistributionsDoubleGhostLayerFullVectorConnector::init()
    int anz = 3*27+1;
    switch (sendDir)
    {
-   case D3Q27System::REST: UB_THROW(UbException(UB_EXARGS, "ZERO not allowed")); break;
+   case D3Q27System::DIR_000: UB_THROW(UbException(UB_EXARGS, "ZERO not allowed")); break;
    case D3Q27System::E:
    case D3Q27System::W: sender->getData().resize(maxX2*maxX3*anz*2, 0.0);   break;
    case D3Q27System::N:

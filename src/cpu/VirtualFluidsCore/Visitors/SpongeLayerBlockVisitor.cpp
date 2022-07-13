@@ -1,5 +1,5 @@
 #include "SpongeLayerBlockVisitor.h"
-#include "Grid3DSystem.h"
+#include "D3Q27System.h"
 #include "LBMSystem.h"
 
 #include "BCArray3D.h"
@@ -15,7 +15,7 @@ using namespace std;
 
 SpongeLayerBlockVisitor::SpongeLayerBlockVisitor(SPtr<GbCuboid3D> boundingBox, SPtr<LBMKernel> kernel, double nue,
                                                  int dir)
-    : Block3DVisitor(0, Grid3DSystem::MAXLEVEL), boundingBox(boundingBox), kernel(kernel), nue(nue), dir(dir)
+    : Block3DVisitor(0, D3Q27System::MAXLEVEL), boundingBox(boundingBox), kernel(kernel), nue(nue), dir(dir)
 {
 }
 //////////////////////////////////////////////////////////////////////////

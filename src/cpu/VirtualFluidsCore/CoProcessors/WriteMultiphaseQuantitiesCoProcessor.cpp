@@ -228,14 +228,14 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
                         ((f[TNE] + f[BSW]) + (f[TSE] + f[BNW])) + ((f[BSE] + f[TNW]) + (f[TSW] + f[BNE])) +
                         (((f[NE] + f[SW]) + (f[SE] + f[NW])) + ((f[TE] + f[BW]) + (f[BE] + f[TW])) +
                         ((f[BN] + f[TS]) + (f[TN] + f[BS]))) +
-                            ((f[E] + f[W]) + (f[N] + f[S]) + (f[T] + f[B])) + f[REST];
+                            ((f[E] + f[W]) + (f[N] + f[S]) + (f[T] + f[B])) + f[DIR_000];
                     if (distributionsH2) {
                     distributionsH2->getDistribution(f, ix1, ix2, ix3);
                     (*phaseField2)(ix1, ix2, ix3) =
                         ((f[TNE] + f[BSW]) + (f[TSE] + f[BNW])) + ((f[BSE] + f[TNW]) + (f[TSW] + f[BNE])) +
                         (((f[NE] + f[SW]) + (f[SE] + f[NW])) + ((f[TE] + f[BW]) + (f[BE] + f[TW])) +
                         ((f[BN] + f[TS]) + (f[TN] + f[BS]))) +
-                            ((f[E] + f[W]) + (f[N] + f[S]) + (f[T] + f[B])) + f[REST];
+                            ((f[E] + f[W]) + (f[N] + f[S]) + (f[T] + f[B])) + f[DIR_000];
                 }
                     else { (*phaseField2)(ix1, ix2, ix3) = 999.0; }
                     
@@ -273,8 +273,8 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
                     nodes.push_back(UbTupleFloat3(float(worldCoordinates[0]), float(worldCoordinates[1]),
                                                   float(worldCoordinates[2])));
 
-                    phi[REST] = (*phaseField)(ix1, ix2, ix3);
-                    phi2[REST] = (*phaseField2)(ix1, ix2, ix3);
+                    phi[DIR_000] = (*phaseField)(ix1, ix2, ix3);
+                    phi2[DIR_000] = (*phaseField2)(ix1, ix2, ix3);
 
                     if ((ix1 == 0) || (ix2 == 0) || (ix3 == 0)) {
                         dX1_phi = 0.0;
@@ -314,7 +314,7 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
                         dX1_phi  = 0.0 * gradX1_phi(phi);
                         dX2_phi  = 0.0 * gradX2_phi(phi);
                         dX3_phi  = 0.0 * gradX3_phi(phi);
-                        mu = 2 * beta * phi[REST] * (phi[REST] - 1) * (2 * phi[REST] - 1) - kappa * nabla2_phi(phi);
+                        mu = 2 * beta * phi[DIR_000] * (phi[DIR_000] - 1) * (2 * phi[DIR_000] - 1) - kappa * nabla2_phi(phi);
 
                         //phi2[E] = (*phaseField2)(ix1 + DX1[E], ix2 + DX2[E], ix3 + DX3[E]);
                         //phi2[N] = (*phaseField2)(ix1 + DX1[N], ix2 + DX2[N], ix3 + DX3[N]);
@@ -358,7 +358,7 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
                     LBMReal rhoToPhi = (rhoH - rhoL) / (phiH - phiL);
 
                     // rho = phi[ZERO] + (1.0 - phi[ZERO])*1.0/densityRatio;
-                    rho = rhoH + rhoToPhi * (phi[REST] - phiH);
+                    rho = rhoH + rhoToPhi * (phi[DIR_000] - phiH);
 
                     if (pressure) {
                         vx1 =
@@ -398,7 +398,7 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
                     p1 = (((f[TNE] + f[BSW]) + (f[TSE] + f[BNW])) + ((f[BSE] + f[TNW]) + (f[TSW] + f[BNE])) +
                           (((f[NE] + f[SW]) + (f[SE] + f[NW])) + ((f[TE] + f[BW]) + (f[BE] + f[TW])) +
                            ((f[BN] + f[TS]) + (f[TN] + f[BS]))) +
-                          ((f[E] + f[W]) + (f[N] + f[S]) + (f[T] + f[B])) + f[REST]) +
+                          ((f[E] + f[W]) + (f[N] + f[S]) + (f[T] + f[B])) + f[DIR_000]) +
                          (vx1 * rhoToPhi * dX1_phi * c1o3 + vx2 * rhoToPhi * dX2_phi * c1o3 +
                           vx3 * rhoToPhi * dX3_phi * c1o3) /
                              2.0;
@@ -426,7 +426,7 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
                                            block->toString() + ", node=" + UbSystem::toString(ix1) + "," +
                                            UbSystem::toString(ix2) + "," + UbSystem::toString(ix3)));
 
-                    if (UbMath::isNaN(phi[REST]) || UbMath::isInfinity(phi[REST]))
+                    if (UbMath::isNaN(phi[DIR_000]) || UbMath::isInfinity(phi[DIR_000]))
                         UB_THROW(UbException(
                             UB_EXARGS, "phi is not a number (nan or -1.#IND) or infinity number -1.#INF in block=" +
                                            block->toString() + ", node=" + UbSystem::toString(ix1) + "," +
@@ -436,12 +436,12 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
                         UB_THROW( UbException(UB_EXARGS,"p1 is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+
                         ", node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
 
-                    data[index++].push_back(phi[REST]);
+                    data[index++].push_back(phi[DIR_000]);
                     data[index++].push_back(vx1);
                     data[index++].push_back(vx2);
                     data[index++].push_back(vx3);
                     data[index++].push_back(p1);
-                    data[index++].push_back(phi2[REST]);
+                    data[index++].push_back(phi2[DIR_000]);
                     if (pressure) data[index++].push_back((*pressure)(ix1, ix2, ix3));
                 }
             }
@@ -502,7 +502,7 @@ LBMReal WriteMultiphaseQuantitiesCoProcessor::nabla2_phi(const LBMReal *const &h
     using namespace D3Q27System;
     LBMReal sum = 0.0;
     for (int k = FSTARTDIR; k <= FENDDIR; k++) {
-        sum += WEIGTH[k] * (h[k] - h[REST]);
+        sum += WEIGTH[k] * (h[k] - h[DIR_000]);
     }
     return 6.0 * sum;
 }

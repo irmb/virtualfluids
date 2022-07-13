@@ -47,7 +47,7 @@ struct EsoTwistD3Q27System {
     const static int STARTDIR = D3Q27System::STARTDIR;
     const static int ENDDIR   = D3Q27System::ENDDIR;
 
-    static const int REST = D3Q27System::REST; /*f0 */
+    static const int REST = D3Q27System::DIR_000; /*f0 */
     static const int E    = D3Q27System::E;    /*f1 */
     static const int W    = D3Q27System::W;    /*f2 */
     static const int N    = D3Q27System::N;    /*f3 */

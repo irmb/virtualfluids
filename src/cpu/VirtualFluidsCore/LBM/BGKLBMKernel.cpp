@@ -91,7 +91,7 @@ void BGKLBMKernel::calculate(int step)
                     //////////////////////////////////////////////////////////////////////////
                     // read distribution
                     ////////////////////////////////////////////////////////////////////////////
-                    f[REST] = (*this->zeroDistributions)(x1, x2, x3);
+                    f[DIR_000] = (*this->zeroDistributions)(x1, x2, x3);
 
                     f[E]   = (*this->localDistributions)(D3Q27System::ET_E, x1, x2, x3);
                     f[N]   = (*this->localDistributions)(D3Q27System::ET_N, x1, x2, x3);
@@ -122,7 +122,7 @@ void BGKLBMKernel::calculate(int step)
                     f[BNE] = (*this->nonLocalDistributions)(D3Q27System::ET_BNE, x1, x2, x3p);
                     //////////////////////////////////////////////////////////////////////////
 
-                    drho = f[REST] + f[E] + f[W] + f[N] + f[S] + f[T] + f[B] + f[NE] + f[SW] + f[SE] + f[NW] + f[TE] +
+                    drho = f[DIR_000] + f[E] + f[W] + f[N] + f[S] + f[T] + f[B] + f[NE] + f[SW] + f[SE] + f[NW] + f[TE] +
                            f[BW] + f[BE] + f[TW] + f[TN] + f[BS] + f[BN] + f[TS] + f[TNE] + f[TSW] + f[TSE] + f[TNW] +
                            f[BNE] + f[BSW] + f[BSE] + f[BNW];
 
@@ -137,7 +137,7 @@ void BGKLBMKernel::calculate(int step)
 
                     LBMReal cu_sq = 1.5 * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3);
 
-                    feq[REST] = c8o27 * (drho - cu_sq);
+                    feq[DIR_000] = c8o27 * (drho - cu_sq);
                     feq[E]    = c2o27 * (drho + 3.0 * (vx1) + c9o2 * (vx1) * (vx1)-cu_sq);
                     feq[W]    = c2o27 * (drho + 3.0 * (-vx1) + c9o2 * (-vx1) * (-vx1) - cu_sq);
                     feq[N]    = c2o27 * (drho + 3.0 * (vx2) + c9o2 * (vx2) * (vx2)-cu_sq);
@@ -174,7 +174,7 @@ void BGKLBMKernel::calculate(int step)
                                          c9o2 * (-vx1 + vx2 + vx3) * (-vx1 + vx2 + vx3) - cu_sq);
 
                     // Relaxation
-                    f[REST] += (feq[REST] - f[REST]) * collFactor;
+                    f[DIR_000] += (feq[DIR_000] - f[DIR_000]) * collFactor;
                     f[E] += (feq[E] - f[E]) * collFactor;
                     f[W] += (feq[W] - f[W]) * collFactor;
                     f[N] += (feq[N] - f[N]) * collFactor;
@@ -214,7 +214,7 @@ void BGKLBMKernel::calculate(int step)
                         forcingX2 = muForcingX2.Eval();
                         forcingX3 = muForcingX3.Eval();
 
-                        f[REST] += 0.0;
+                        f[DIR_000] += 0.0;
                         f[E] += 3.0 * c2o27 * (forcingX1);
                         f[W] += 3.0 * c2o27 * (-forcingX1);
                         f[N] += 3.0 * c2o27 * (forcingX2);
@@ -244,7 +244,7 @@ void BGKLBMKernel::calculate(int step)
                     }
                     //////////////////////////////////////////////////////////////////////////
 #ifdef PROOF_CORRECTNESS
-                    LBMReal rho_post = f[REST] + f[E] + f[W] + f[N] + f[S] + f[T] + f[B] + f[NE] + f[SW] + f[SE] +
+                    LBMReal rho_post = f[DIR_000] + f[E] + f[W] + f[N] + f[S] + f[T] + f[B] + f[NE] + f[SW] + f[SE] +
                                        f[NW] + f[TE] + f[BW] + f[BE] + f[TW] + f[TN] + f[BS] + f[BN] + f[TS] + f[TNE] +
                                        f[TSW] + f[TSE] + f[TNW] + f[BNE] + f[BSW] + f[BSE] + f[BNW];
                     LBMReal dif = drho - rho_post;
@@ -291,7 +291,7 @@ void BGKLBMKernel::calculate(int step)
                     (*this->nonLocalDistributions)(D3Q27System::ET_BNW, x1p, x2, x3p)  = f[D3Q27System::INV_BNW];
                     (*this->nonLocalDistributions)(D3Q27System::ET_BNE, x1, x2, x3p)   = f[D3Q27System::INV_BNE];
 
-                    (*this->zeroDistributions)(x1, x2, x3) = f[D3Q27System::REST];
+                    (*this->zeroDistributions)(x1, x2, x3) = f[D3Q27System::DIR_000];
                     //////////////////////////////////////////////////////////////////////////
                 }
             }

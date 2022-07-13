@@ -18,7 +18,7 @@ void OneDistributionFullVectorConnector::init()
 
     int anz = 27;
     switch (sendDir) {
-        case D3Q27System::REST:
+        case D3Q27System::DIR_000:
             UB_THROW(UbException(UB_EXARGS, "ZERO not allowed"));
             break;
         case D3Q27System::E:

@@ -119,7 +119,7 @@ void D3Q27EsoTwist3DSoA::getDistribution(LBMReal *const f, size_t x1, size_t x2,
     f[D3Q27System::BNW] = (*d.BNW)(x1p, x2, x3p);
     f[D3Q27System::BNE] = (*d.BNE)(x1, x2, x3p);
 
-    f[D3Q27System::REST] = (*d.REST)(x1, x2, x3);
+    f[D3Q27System::DIR_000] = (*d.REST)(x1, x2, x3);
 }
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSoA::setDistribution(const LBMReal *const f, size_t x1, size_t x2, size_t x3)
@@ -156,7 +156,7 @@ void D3Q27EsoTwist3DSoA::setDistribution(const LBMReal *const f, size_t x1, size
     (*d.BNW)(x1p, x2, x3p)  = f[D3Q27System::INV_BNW];
     (*d.BNE)(x1, x2, x3p)   = f[D3Q27System::INV_BNE];
 
-    (*d.REST)(x1, x2, x3) = f[D3Q27System::REST];
+    (*d.REST)(x1, x2, x3) = f[D3Q27System::DIR_000];
 }
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSoA::getDistributionInv(LBMReal *const f, size_t x1, size_t x2, size_t x3)
@@ -189,7 +189,7 @@ void D3Q27EsoTwist3DSoA::getDistributionInv(LBMReal *const f, size_t x1, size_t 
     f[D3Q27System::INV_BNW] = (*d.BNW)(x1 + 1, x2, x3 + 1);
     f[D3Q27System::INV_BNE] = (*d.BNE)(x1, x2, x3 + 1);
 
-    f[D3Q27System::REST] = (*d.REST)(x1, x2, x3);
+    f[D3Q27System::DIR_000] = (*d.REST)(x1, x2, x3);
 }
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSoA::setDistributionInv(const LBMReal *const f, size_t x1, size_t x2, size_t x3)

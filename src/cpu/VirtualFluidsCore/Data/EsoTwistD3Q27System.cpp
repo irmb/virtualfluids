@@ -49,7 +49,7 @@ const int EsoTwistD3Q27System::etINVDIR[EsoTwistD3Q27System::ENDF + 1] = {
     D3Q27System::INV_TE,  D3Q27System::INV_BW,  D3Q27System::INV_BE,  D3Q27System::INV_TW,  D3Q27System::INV_TN,
     D3Q27System::INV_BS,  D3Q27System::INV_BN,  D3Q27System::INV_TS,  D3Q27System::INV_TNE, D3Q27System::INV_TNW,
     D3Q27System::INV_TSE, D3Q27System::INV_TSW, D3Q27System::INV_BNE, D3Q27System::INV_BNW, D3Q27System::INV_BSE,
-    D3Q27System::INV_BSW, D3Q27System::REST
+    D3Q27System::INV_BSW, D3Q27System::DIR_000
 };
 
 const unsigned long int EsoTwistD3Q27System::etDIR[EsoTwistD3Q27System::ENDF + 1] = {

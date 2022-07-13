@@ -64,6 +64,13 @@ extern const double WEIGTH[ENDDIR + 1];
 
 extern const double cNorm[3][ENDDIR];
 
+static const int MINLEVEL = 0;
+static const int MAXLEVEL = 25;
+
+extern const int EX1[ENDDIR + 1];
+extern const int EX2[ENDDIR + 1];
+extern const int EX3[ENDDIR + 1];
+
 //static const int E    = 0;
 //static const int W    = 1;
 //static const int N    = 2;
@@ -92,7 +99,35 @@ extern const double cNorm[3][ENDDIR];
 //static const int BSW  = 25;
 //static const int REST = 26;
 
-static constexpr int REST = 0;
+//static constexpr int REST = 0;
+//static constexpr int E = 1;
+//static constexpr int W = 2;
+//static constexpr int N = 3;
+//static constexpr int S = 4;
+//static constexpr int T = 5;
+//static constexpr int B = 6;
+//static constexpr int NE = 7;
+//static constexpr int SW = 8;
+//static constexpr int SE = 9;
+//static constexpr int NW = 10;
+//static constexpr int TE = 11;
+//static constexpr int BW = 12;
+//static constexpr int BE = 13;
+//static constexpr int TW = 14;
+//static constexpr int TN = 15;
+//static constexpr int BS = 16;
+//static constexpr int BN = 17;
+//static constexpr int TS = 18;
+//static constexpr int TNE = 19;
+//static constexpr int TNW = 20;
+//static constexpr int TSE = 21;
+//static constexpr int TSW = 22;
+//static constexpr int BNE = 23;
+//static constexpr int BNW = 24;
+//static constexpr int BSE = 25;
+//static constexpr int BSW = 26;
+
+static constexpr int DIR_000 = 0;
 static constexpr int E = 1;
 static constexpr int W = 2;
 static constexpr int N = 3;
@@ -176,6 +211,180 @@ static const int ET_BNW = 11;
 static const int ET_TSW = 12;
 static const int ET_BNE = 12;
 
+//////////////////////////////////////////////////////////////////////////
+inline std::string getDirectionString(int direction)
+{
+    switch (direction) {
+        case E:
+            return "E";
+        case W:
+            return "W";
+        case N:
+            return "N";
+        case S:
+            return "S";
+        case T:
+            return "T";
+        case B:
+            return "B";
+        case NE:
+            return "NE";
+        case NW:
+            return "NW";
+        case SE:
+            return "SE";
+        case SW:
+            return "SW";
+        case TE:
+            return "TE";
+        case TW:
+            return "TW";
+        case BE:
+            return "BE";
+        case BW:
+            return "BW";
+        case TN:
+            return "TN";
+        case TS:
+            return "TS";
+        case BN:
+            return "BN";
+        case BS:
+            return "BS";
+        case TNE:
+            return "TNE";
+        case TNW:
+            return "TNW";
+        case TSE:
+            return "TSE";
+        case TSW:
+            return "TSW";
+        case BNE:
+            return "BNE";
+        case BNW:
+            return "BNW";
+        case BSE:
+            return "BSE";
+        case BSW:
+            return "BSW";
+        default:
+            return "Cell3DSystem::getDrectionString(...) - unknown dir";
+    }
+}
+//////////////////////////////////////////////////////////////////////////
+static inline void setNeighborCoordinatesForDirection(int &x1, int &x2, int &x3, const int &direction)
+{
+    switch (direction) {
+        case D3Q27System::E:
+            x1++;
+            break;
+        case D3Q27System::N:
+            x2++;
+            break;
+        case D3Q27System::T:
+            x3++;
+            break;
+        case D3Q27System::W:
+            x1--;
+            break;
+        case D3Q27System::S:
+            x2--;
+            break;
+        case D3Q27System::B:
+            x3--;
+            break;
+        case D3Q27System::NE:
+            x1++;
+            x2++;
+            break;
+        case D3Q27System::NW:
+            x1--;
+            x2++;
+            break;
+        case D3Q27System::SW:
+            x1--;
+            x2--;
+            break;
+        case D3Q27System::SE:
+            x1++;
+            x2--;
+            break;
+        case D3Q27System::TE:
+            x1++;
+            x3++;
+            break;
+        case D3Q27System::BW:
+            x1--;
+            x3--;
+            break;
+        case D3Q27System::BE:
+            x1++;
+            x3--;
+            break;
+        case D3Q27System::TW:
+            x1--;
+            x3++;
+            break;
+        case D3Q27System::TN:
+            x2++;
+            x3++;
+            break;
+        case D3Q27System::BS:
+            x2--;
+            x3--;
+            break;
+        case D3Q27System::BN:
+            x2++;
+            x3--;
+            break;
+        case D3Q27System::TS:
+            x2--;
+            x3++;
+            break;
+        case D3Q27System::TNE:
+            x1++;
+            x2++;
+            x3++;
+            break;
+        case D3Q27System::TNW:
+            x1--;
+            x2++;
+            x3++;
+            break;
+        case D3Q27System::TSE:
+            x1++;
+            x2--;
+            x3++;
+            break;
+        case D3Q27System::TSW:
+            x1--;
+            x2--;
+            x3++;
+            break;
+        case D3Q27System::BNE:
+            x1++;
+            x2++;
+            x3--;
+            break;
+        case D3Q27System::BNW:
+            x1--;
+            x2++;
+            x3--;
+            break;
+        case D3Q27System::BSE:
+            x1++;
+            x2--;
+            x3--;
+            break;
+        case D3Q27System::BSW:
+            x1--;
+            x2--;
+            x3--;
+            break;
+        default:
+            throw UbException(UB_EXARGS, "no direction ...");
+    }
+}
 
 //////////////////////////////////////////////////////////////////////////
 // MACROSCOPIC VALUES
@@ -197,7 +406,7 @@ static void calcDensity(const LBMReal *const &f /*[27]*/, LBMReal &rho)
     rho = ((f[TNE] + f[BSW]) + (f[TSE] + f[BNW])) + ((f[BSE] + f[TNW]) + (f[TSW] + f[BNE])) +
           (((f[NE] + f[SW]) + (f[SE] + f[NW])) + ((f[TE] + f[BW]) + (f[BE] + f[TW])) +
            ((f[BN] + f[TS]) + (f[TN] + f[BS]))) +
-          ((f[E] + f[W]) + (f[N] + f[S]) + (f[T] + f[B])) + f[REST];
+          ((f[E] + f[W]) + (f[N] + f[S]) + (f[T] + f[B])) + f[DIR_000];
 }
 /*=====================================================================*/
 static void calcIncompVelocityX1(const LBMReal *const &f /*[27]*/, LBMReal &vx1)
@@ -289,7 +498,7 @@ static LBMReal getCompFeqForDirection(const int &direction, const LBMReal &drho,
     LBMReal cu_sq = 1.5 * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3);
     LBMReal rho   = drho + UbMath::one;
     switch (direction) {
-        case REST:
+        case DIR_000:
             return REAL_CAST(UbMath::c8o27 * (drho + rho * (-cu_sq)));
         case E:
             return REAL_CAST(UbMath::c2o27 * (drho + rho * (3.0 * (vx1) + UbMath::c9o2 * (vx1) * (vx1)-cu_sq)));
@@ -382,7 +591,7 @@ static void calcCompFeq(LBMReal *const &feq /*[27]*/, const LBMReal &drho, const
     LBMReal cu_sq = 1.5 * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3);
     LBMReal rho   = drho + UbMath::one;
 
-    feq[REST] = UbMath::c8o27 * (drho + rho * (-cu_sq));
+    feq[DIR_000] = UbMath::c8o27 * (drho + rho * (-cu_sq));
     feq[E]    = UbMath::c2o27 * (drho + rho * (3.0 * (vx1) + UbMath::c9o2 * (vx1) * (vx1)-cu_sq));
     feq[W]    = UbMath::c2o27 * (drho + rho * (3.0 * (-vx1) + UbMath::c9o2 * (-vx1) * (-vx1) - cu_sq));
     feq[N]    = UbMath::c2o27 * (drho + rho * (3.0 * (vx2) + UbMath::c9o2 * (vx2) * (vx2)-cu_sq));
@@ -429,7 +638,7 @@ static LBMReal getIncompFeqForDirection(const int &direction, const LBMReal &drh
     LBMReal cu_sq = 1.5f * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3);
 
     switch (direction) {
-        case REST:
+        case DIR_000:
             return REAL_CAST(UbMath::c8o27 * (drho - cu_sq));
         case E:
             return REAL_CAST(UbMath::c2o27 * (drho + 3.0 * (vx1) + UbMath::c9o2 * (vx1) * (vx1)-cu_sq));
@@ -513,7 +722,7 @@ static void calcIncompFeq(LBMReal *const &feq /*[27]*/, const LBMReal &drho, con
 {
     LBMReal cu_sq = 1.5 * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3);
 
-    feq[REST] = UbMath::c8o27 * (drho - cu_sq);
+    feq[DIR_000] = UbMath::c8o27 * (drho - cu_sq);
     feq[E]    = UbMath::c2o27 * (drho + 3.0 * (vx1) + UbMath::c9o2 * (vx1) * (vx1)-cu_sq);
     feq[W]    = UbMath::c2o27 * (drho + 3.0 * (-vx1) + UbMath::c9o2 * (-vx1) * (-vx1) - cu_sq);
     feq[N]    = UbMath::c2o27 * (drho + 3.0 * (vx2) + UbMath::c9o2 * (vx2) * (vx2)-cu_sq);
@@ -839,7 +1048,7 @@ static inline LBMReal getShearRate(const LBMReal *const f, LBMReal collFactorF)
     LBMReal mfaca = f[BNW];
     LBMReal mfcca = f[BNE];
 
-    LBMReal mfbbb = f[REST];
+    LBMReal mfbbb = f[DIR_000];
 
     LBMReal m0, m1, m2;
 
@@ -1143,7 +1352,7 @@ static void calcMultiphaseFeq(LBMReal *const &feq /*[27]*/, const LBMReal &rho, 
     using namespace UbMath;
     LBMReal cu_sq = 1.5 * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3);
 
-    feq[REST] = c8o27 * (p1 + rho * c1o3 * (-cu_sq));
+    feq[DIR_000] = c8o27 * (p1 + rho * c1o3 * (-cu_sq));
     feq[E]    = c2o27 * (p1 + rho * c1o3 * (3.0 * (vx1) + c9o2 * (vx1) * (vx1)-cu_sq));
     feq[W]    = c2o27 * (p1 + rho * c1o3 * (3.0 * (-vx1) + c9o2 * (-vx1) * (-vx1) - cu_sq));
     feq[N]    = c2o27 * (p1 + rho * c1o3 * (3.0 * (vx2) + c9o2 * (vx2) * (vx2)-cu_sq));
@@ -1186,7 +1395,7 @@ static void calcMultiphaseFeqVB(LBMReal *const &feq /*[27]*/, const LBMReal &p1,
     using namespace UbMath;
     LBMReal cu_sq = 1.5 * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3);
 
-    feq[REST] = p1 + c8o27 * (-cu_sq);
+    feq[DIR_000] = p1 + c8o27 * (-cu_sq);
     feq[E]    = c2o27 * ((3.0 * (vx1) + c9o2 * (vx1) * (vx1)-cu_sq));
     feq[W]    = c2o27 * ((3.0 * (-vx1) + c9o2 * (-vx1) * (-vx1) - cu_sq));
     feq[N]    = c2o27 * ((3.0 * (vx2) + c9o2 * (vx2) * (vx2)-cu_sq));
@@ -1221,7 +1430,7 @@ static void calcMultiphaseHeq(LBMReal *const &heq /*[27]*/, const LBMReal &phi, 
     using namespace UbMath;
     LBMReal cu_sq = 1.5 * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3);
 
-    heq[REST] = c8o27 * phi * (1.0 - cu_sq);
+    heq[DIR_000] = c8o27 * phi * (1.0 - cu_sq);
     heq[E]    = c2o27 * phi * (1.0 + 3.0 * (vx1) + c9o2 * (vx1) * (vx1)-cu_sq);
     heq[W]    = c2o27 * phi * (1.0 + 3.0 * (-vx1) + c9o2 * (-vx1) * (-vx1) - cu_sq);
     heq[N]    = c2o27 * phi * (1.0 + 3.0 * (vx2) + c9o2 * (vx2) * (vx2)-cu_sq);
@@ -1249,7 +1458,6 @@ static void calcMultiphaseHeq(LBMReal *const &heq /*[27]*/, const LBMReal &phi, 
     heq[BSE] = c1o216 * phi * (1.0 + 3.0 * (vx1 - vx2 - vx3) + c9o2 * (vx1 - vx2 - vx3) * (vx1 - vx2 - vx3) - cu_sq);
     heq[TNW] = c1o216 * phi * (1.0 + 3.0 * (-vx1 + vx2 + vx3) + c9o2 * (-vx1 + vx2 + vx3) * (-vx1 + vx2 + vx3) - cu_sq);
 }
-//////////////////////////////////////////////////////////////////////////
 
 } // namespace D3Q27System
 #endif

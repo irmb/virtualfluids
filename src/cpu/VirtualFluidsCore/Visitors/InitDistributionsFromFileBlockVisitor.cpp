@@ -5,14 +5,14 @@
 #include "DataSet3D.h"
 #include "EsoTwist3D.h"
 #include "Grid3D.h"
-#include "Grid3DSystem.h"
+#include "D3Q27System.h"
 #include "InitDensityLBMKernel.h"
 #include "LBMKernel.h"
 #include <basics/utilities/UbFileInputASCII.h>
 
 InitDistributionsFromFileBlockVisitor::InitDistributionsFromFileBlockVisitor(/*LBMReal nu, */ LBMReal rho,
                                                                              std::string filename)
-    : Block3DVisitor(0, Grid3DSystem::MAXLEVEL), /*nu(nu),*/ rho(rho)
+    : Block3DVisitor(0, D3Q27System::MAXLEVEL), /*nu(nu),*/ rho(rho)
 {
     UbFileInputASCII in(filename);
     if (!in) {

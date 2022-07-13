@@ -5,11 +5,11 @@
 #include "BoundaryConditions.h"
 #include "D3Q27System.h"
 #include "Grid3D.h"
-#include "Grid3DSystem.h"
+#include "D3Q27System.h"
 #include "ILBMKernel.h"
 
 SetUndefinedNodesBlockVisitor::SetUndefinedNodesBlockVisitor(bool twoTypeOfConnectorsCheck)
-    : Block3DVisitor(0, Grid3DSystem::MAXLEVEL), twoTypeOfConnectorsCheck(twoTypeOfConnectorsCheck)
+    : Block3DVisitor(0, D3Q27System::MAXLEVEL), twoTypeOfConnectorsCheck(twoTypeOfConnectorsCheck)
 {
 }
 //////////////////////////////////////////////////////////////////////////

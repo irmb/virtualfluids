@@ -9,7 +9,7 @@
 #include "D3Q27System.h"
 #include "DataSet3D.h"
 #include "Grid3D.h"
-#include "Grid3DSystem.h"
+#include "D3Q27System.h"
 #include "LBMKernel.h"
 #include "UbFileInputASCII.h"
 #include "UbFileOutputASCII.h"

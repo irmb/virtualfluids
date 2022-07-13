@@ -35,11 +35,11 @@
 
 #include "Block3D.h"
 #include "Grid3D.h"
-#include "Grid3DSystem.h"
+#include "D3Q27System.h"
 #include "Interactor3D.h"
 
 SetBcBlocksBlockVisitor::SetBcBlocksBlockVisitor(SPtr<Interactor3D> interactor)
-    : Block3DVisitor(0, Grid3DSystem::MAXLEVEL), interactor(interactor)
+    : Block3DVisitor(0, D3Q27System::MAXLEVEL), interactor(interactor)
 {
 }
 

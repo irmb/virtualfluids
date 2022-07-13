@@ -295,7 +295,7 @@ void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel::calculate(int step)
 							+ (mfaab + mfacb + mfcab + mfccb) + (mfaba + mfabc + mfcba + mfcbc) + (mfbaa + mfbac + mfbca + mfbcc)
 							+ (mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc) + mfbbb;
 
-						LBMReal rho = rhoH + rhoToPhi * (phi[REST] - phiH);
+						LBMReal rho = rhoH + rhoToPhi * (phi[DIR_000] - phiH);
 						(*pressure)(x1, x2, x3) = (*pressure)(x1, x2, x3) + rho * c1o3 * drho;
 
 						////!!!!!! relplace by pointer swap!
@@ -545,13 +545,13 @@ void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel::calculate(int step)
 
 
 
-						collFactorM = collFactorL + (collFactorL - collFactorG) * (phi[REST] - phiH) / (phiH - phiL);
+						collFactorM = collFactorL + (collFactorL - collFactorG) * (phi[DIR_000] - phiH) / (phiH - phiL);
 
 
-                        LBMReal mu = 2 * beta * phi[REST] * (phi[REST] - 1) * (2 * phi[REST] - 1) - kappa * nabla2_phi();
+                        LBMReal mu = 2 * beta * phi[DIR_000] * (phi[DIR_000] - 1) * (2 * phi[DIR_000] - 1) - kappa * nabla2_phi();
 
                         //----------- Calculating Macroscopic Values -------------
-                        LBMReal rho = rhoH + rhoToPhi * (phi[REST] - phiH);
+                        LBMReal rho = rhoH + rhoToPhi * (phi[DIR_000] - phiH);
 
                             			   ////Incompressible Kernal
 
@@ -2719,11 +2719,11 @@ void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel::calculate(int step)
 			   
 
                cx = cx * (c1 - omegaD) + omegaD * vvx * concentration +
-                    normX1 * (c1 - 0.5 * omegaD) * (1.0 - phi[REST]) * (phi[REST]) * c1o3 * oneOverInterfaceScale;
+                    normX1 * (c1 - 0.5 * omegaD) * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * c1o3 * oneOverInterfaceScale;
                cy = cy * (c1 - omegaD) + omegaD * vvy * concentration +
-                    normX2 * (c1 - 0.5 * omegaD) * (1.0 - phi[REST]) * (phi[REST]) * c1o3 * oneOverInterfaceScale;
+                    normX2 * (c1 - 0.5 * omegaD) * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * c1o3 * oneOverInterfaceScale;
                cz = cz * (c1 - omegaD) + omegaD * vvz * concentration +
-                    normX3 * (c1 - 0.5 * omegaD) * (1.0 - phi[REST]) * (phi[REST]) * c1o3 * oneOverInterfaceScale;
+                    normX3 * (c1 - 0.5 * omegaD) * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * c1o3 * oneOverInterfaceScale;
 
 			   //mhx = (ux * phi[REST] + normX1 * (tauH - 0.5) * (1.0 - phi[REST]) * (phi[REST])) / tauH + (1.0 - 1.0 / tauH) * mhx;
 			   //mhy = (uy * phi[REST] + normX2 * (tauH - 0.5) * (1.0 - phi[REST]) * (phi[REST])) / tauH + (1.0 - 1.0 / tauH) * mhy;
@@ -3032,11 +3032,11 @@ void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel::calculate(int step)
 
    // collision of 1st order moments
    cx = cx * (c1 - omegaD) + omegaD * vvx * concentration +
-	   normX1 * (c1 - 0.5 * omegaD) * ( phi[REST]) * (phi2[REST]) * c1o3 * oneOverInterfaceScale;
+	   normX1 * (c1 - 0.5 * omegaD) * ( phi[DIR_000]) * (phi2[DIR_000]) * c1o3 * oneOverInterfaceScale;
    cy = cy * (c1 - omegaD) + omegaD * vvy * concentration +
-	   normX2 * (c1 - 0.5 * omegaD) * ( phi[REST]) * (phi2[REST]) * c1o3 * oneOverInterfaceScale;
+	   normX2 * (c1 - 0.5 * omegaD) * ( phi[DIR_000]) * (phi2[DIR_000]) * c1o3 * oneOverInterfaceScale;
    cz = cz * (c1 - omegaD) + omegaD * vvz * concentration +
-	   normX3 * (c1 - 0.5 * omegaD) * ( phi[REST]) * (phi2[REST]) * c1o3 * oneOverInterfaceScale;
+	   normX3 * (c1 - 0.5 * omegaD) * ( phi[DIR_000]) * (phi2[DIR_000]) * c1o3 * oneOverInterfaceScale;
 
    //mhx = (ux * phi[REST] + normX1 * (tauH - 0.5) * (1.0 - phi[REST]) * (phi[REST])) / tauH + (1.0 - 1.0 / tauH) * mhx;
    //mhy = (uy * phi[REST] + normX2 * (tauH - 0.5) * (1.0 - phi[REST]) * (phi[REST])) / tauH + (1.0 - 1.0 / tauH) * mhy;
@@ -3364,17 +3364,17 @@ LBMReal MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel::nabla2_phi()
 {
     using namespace D3Q27System;
     LBMReal sum = 0.0;
-	sum += WEIGTH[TNE] * ((((phi[TNE] - phi[REST]) + (phi[BSW] - phi[REST])) + ((phi[TSW] - phi[REST]) + (phi[BNE] - phi[REST])))
-		+ (((phi[TNW] - phi[REST]) + (phi[BSE] - phi[REST])) + ((phi[TSE] - phi[REST]) + (phi[BNW] - phi[REST]))));
+	sum += WEIGTH[TNE] * ((((phi[TNE] - phi[DIR_000]) + (phi[BSW] - phi[DIR_000])) + ((phi[TSW] - phi[DIR_000]) + (phi[BNE] - phi[DIR_000])))
+		+ (((phi[TNW] - phi[DIR_000]) + (phi[BSE] - phi[DIR_000])) + ((phi[TSE] - phi[DIR_000]) + (phi[BNW] - phi[DIR_000]))));
 	sum += WEIGTH[TN] * (
-			(((phi[TN] - phi[REST]) + (phi[BS] - phi[REST])) + ((phi[TS] - phi[REST]) + (phi[BN] - phi[REST])))
-		+	(((phi[TE] - phi[REST]) + (phi[BW] - phi[REST])) + ((phi[TW] - phi[REST]) + (phi[BE] - phi[REST])))
-		+	(((phi[NE] - phi[REST]) + (phi[SW] - phi[REST])) + ((phi[NW] - phi[REST]) + (phi[SE] - phi[REST])))
+			(((phi[TN] - phi[DIR_000]) + (phi[BS] - phi[DIR_000])) + ((phi[TS] - phi[DIR_000]) + (phi[BN] - phi[DIR_000])))
+		+	(((phi[TE] - phi[DIR_000]) + (phi[BW] - phi[DIR_000])) + ((phi[TW] - phi[DIR_000]) + (phi[BE] - phi[DIR_000])))
+		+	(((phi[NE] - phi[DIR_000]) + (phi[SW] - phi[DIR_000])) + ((phi[NW] - phi[DIR_000]) + (phi[SE] - phi[DIR_000])))
 		);
 	sum += WEIGTH[T] * (
-			((phi[T] - phi[REST]) + (phi[B] - phi[REST]))
-		+	((phi[N] - phi[REST]) + (phi[S] - phi[REST]))
-		+	((phi[E] - phi[REST]) + (phi[W] - phi[REST]))
+			((phi[T] - phi[DIR_000]) + (phi[B] - phi[DIR_000]))
+		+	((phi[N] - phi[DIR_000]) + (phi[S] - phi[DIR_000]))
+		+	((phi[E] - phi[DIR_000]) + (phi[W] - phi[DIR_000]))
 		);
     //for (int k = FSTARTDIR; k <= FENDDIR; k++) {
     //    sum += WEIGTH[k] * (phi[k] - phi[REST]);
@@ -3432,7 +3432,7 @@ void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel::computePhasefield()
                     h[BNW] = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNW, x1p, x2, x3p);
                     h[BNE] = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNE, x1, x2, x3p);
 
-                    h[REST] = (*this->zeroDistributionsH1)(x1, x2, x3);
+                    h[DIR_000] = (*this->zeroDistributionsH1)(x1, x2, x3);
                 }
             }
         }
@@ -3446,7 +3446,7 @@ void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel::findNeighbors(CbArray3D<
 
     SPtr<BCArray3D> bcArray = this->getBCProcessor()->getBCArray();
 
-    phi[REST] = (*ph)(x1, x2, x3);
+    phi[DIR_000] = (*ph)(x1, x2, x3);
 
 
     for (int k = FSTARTDIR; k <= FENDDIR; k++) {
@@ -3466,7 +3466,7 @@ void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel::findNeighbors2(CbArray3D
 
 	SPtr<BCArray3D> bcArray = this->getBCProcessor()->getBCArray();
 
-	phi2[REST] = (*ph)(x1, x2, x3);
+	phi2[DIR_000] = (*ph)(x1, x2, x3);
 
 
 	for (int k = FSTARTDIR; k <= FENDDIR; k++) {

@@ -38,11 +38,11 @@
 #include "DataSet3D.h"
 #include "EsoTwist3D.h"
 #include "Grid3D.h"
-#include "Grid3DSystem.h"
+#include "D3Q27System.h"
 #include "LBMKernel.h"
 
 MultiphaseVelocityFormInitDistributionsBlockVisitor::MultiphaseVelocityFormInitDistributionsBlockVisitor() 
-	: Block3DVisitor(0, Grid3DSystem::MAXLEVEL)
+	: Block3DVisitor(0, D3Q27System::MAXLEVEL)
 {
 	this->setVx1(0.0);
 	this->setVx2(0.0);
@@ -245,7 +245,7 @@ void MultiphaseVelocityFormInitDistributionsBlockVisitor::visit(const SPtr<Grid3
 					f[BNW]  =  geq[BNW]  ;
 					f[BSE]  =  geq[BSE]  ;
 					f[BSW]  =  geq[BSW]  ;
-					f[REST] =  geq[REST] ;
+					f[DIR_000] =  geq[DIR_000] ;
 
 					distributionsF->setDistribution(f, ix1, ix2, ix3);
 					distributionsF->setDistributionInv(f, ix1, ix2, ix3);
@@ -276,7 +276,7 @@ void MultiphaseVelocityFormInitDistributionsBlockVisitor::visit(const SPtr<Grid3
 					f[BNW]  =  phi * feq[BNW]  ;// / rho;
 					f[BSE]  =  phi * feq[BSE]  ;// / rho;
 					f[BSW]  =  phi * feq[BSW]  ;// / rho;
-					f[REST] =  phi * feq[REST] ;// / rho;
+					f[DIR_000] =  phi * feq[DIR_000] ;// / rho;
 
 					distributionsH->setDistribution(f, ix1, ix2, ix3);
 					distributionsH->setDistributionInv(f, ix1, ix2, ix3);
@@ -309,7 +309,7 @@ void MultiphaseVelocityFormInitDistributionsBlockVisitor::visit(const SPtr<Grid3
 						f[BNW]  = (1.-phi) * feq[BNW] ;// / rho;
 						f[BSE]  = (1.-phi) * feq[BSE] ;// / rho;
 						f[BSW]  = (1.-phi) * feq[BSW] ;// / rho;
-						f[REST] = (1.-phi) * feq[REST];//  / rho;
+						f[DIR_000] = (1.-phi) * feq[DIR_000];//  / rho;
 
                         distributionsH2->setDistribution(f, ix1, ix2, ix3);
                         distributionsH2->setDistributionInv(f, ix1, ix2, ix3);                    
