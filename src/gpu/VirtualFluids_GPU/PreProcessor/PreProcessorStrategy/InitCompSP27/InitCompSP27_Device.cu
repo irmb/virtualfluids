@@ -8,7 +8,7 @@ using namespace vf::lbm::dir;
 
 #include <stdio.h>
 
-extern "C" __global__ void LB_Init_Comp_SP_27(unsigned int* neighborX,
+__global__ void LB_Init_Comp_SP_27(unsigned int* neighborX,
 	unsigned int* neighborY,
 	unsigned int* neighborZ,
 	unsigned int* geoD,
@@ -179,7 +179,7 @@ extern "C" __global__ void LB_Init_Comp_SP_27(unsigned int* neighborX,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Init_Comp_Neq_SP_27( unsigned int* neighborX,
+__global__ void LB_Init_Comp_Neq_SP_27( unsigned int* neighborX,
                                                    unsigned int* neighborY,
                                                    unsigned int* neighborZ,
                                                    unsigned int* neighborWSB,

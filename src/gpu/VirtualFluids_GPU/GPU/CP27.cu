@@ -7,7 +7,7 @@ using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void CalcCP27(real* DD, 
+__global__ void CalcCP27(real* DD, 
 									int* cpIndex, 
 									int nonCp, 
 									double *cpPress,

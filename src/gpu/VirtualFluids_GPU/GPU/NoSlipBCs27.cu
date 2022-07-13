@@ -15,7 +15,7 @@ using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QDevice3rdMomentsComp27(
+__global__ void QDevice3rdMomentsComp27(
 													 real* distributions, 
 													 int* subgridDistanceIndices, 
 													 real* subgridDistances,
@@ -559,80 +559,77 @@ extern "C" __global__ void QDevice3rdMomentsComp27(
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QDeviceIncompHighNu27(int inx,
-												 int iny,
-												 real* DD, 
+__global__ void QDeviceIncompHighNu27(real* DD, 
 												 int* k_Q, 
 												 real* QQ,
-												 unsigned int  numberOfBCnodes,
-												 int numberOfNodes, 
+												 unsigned int numberOfBCnodes,
 												 real om1, 
 												 unsigned int* neighborX,
 												 unsigned int* neighborY,
 												 unsigned int* neighborZ,
-												 unsigned int size_Mat, 
+												 unsigned int numberOfLBnodes, 
 												 bool isEvenTimestep)
 {
    Distributions27 D;
    if (isEvenTimestep==true)
    {
-      D.f[E   ] = &DD[E   *size_Mat];
-      D.f[W   ] = &DD[W   *size_Mat];
-      D.f[N   ] = &DD[N   *size_Mat];
-      D.f[S   ] = &DD[S   *size_Mat];
-      D.f[T   ] = &DD[T   *size_Mat];
-      D.f[B   ] = &DD[B   *size_Mat];
-      D.f[NE  ] = &DD[NE  *size_Mat];
-      D.f[SW  ] = &DD[SW  *size_Mat];
-      D.f[SE  ] = &DD[SE  *size_Mat];
-      D.f[NW  ] = &DD[NW  *size_Mat];
-      D.f[TE  ] = &DD[TE  *size_Mat];
-      D.f[BW  ] = &DD[BW  *size_Mat];
-      D.f[BE  ] = &DD[BE  *size_Mat];
-      D.f[TW  ] = &DD[TW  *size_Mat];
-      D.f[TN  ] = &DD[TN  *size_Mat];
-      D.f[BS  ] = &DD[BS  *size_Mat];
-      D.f[BN  ] = &DD[BN  *size_Mat];
-      D.f[TS  ] = &DD[TS  *size_Mat];
-      D.f[REST] = &DD[REST*size_Mat];
-      D.f[TNE ] = &DD[TNE *size_Mat];
-      D.f[TSW ] = &DD[TSW *size_Mat];
-      D.f[TSE ] = &DD[TSE *size_Mat];
-      D.f[TNW ] = &DD[TNW *size_Mat];
-      D.f[BNE ] = &DD[BNE *size_Mat];
-      D.f[BSW ] = &DD[BSW *size_Mat];
-      D.f[BSE ] = &DD[BSE *size_Mat];
-      D.f[BNW ] = &DD[BNW *size_Mat];
+      D.f[E   ] = &DD[E   *numberOfLBnodes];
+      D.f[W   ] = &DD[W   *numberOfLBnodes];
+      D.f[N   ] = &DD[N   *numberOfLBnodes];
+      D.f[S   ] = &DD[S   *numberOfLBnodes];
+      D.f[T   ] = &DD[T   *numberOfLBnodes];
+      D.f[B   ] = &DD[B   *numberOfLBnodes];
+      D.f[NE  ] = &DD[NE  *numberOfLBnodes];
+      D.f[SW  ] = &DD[SW  *numberOfLBnodes];
+      D.f[SE  ] = &DD[SE  *numberOfLBnodes];
+      D.f[NW  ] = &DD[NW  *numberOfLBnodes];
+      D.f[TE  ] = &DD[TE  *numberOfLBnodes];
+      D.f[BW  ] = &DD[BW  *numberOfLBnodes];
+      D.f[BE  ] = &DD[BE  *numberOfLBnodes];
+      D.f[TW  ] = &DD[TW  *numberOfLBnodes];
+      D.f[TN  ] = &DD[TN  *numberOfLBnodes];
+      D.f[BS  ] = &DD[BS  *numberOfLBnodes];
+      D.f[BN  ] = &DD[BN  *numberOfLBnodes];
+      D.f[TS  ] = &DD[TS  *numberOfLBnodes];
+      D.f[REST] = &DD[REST*numberOfLBnodes];
+      D.f[TNE ] = &DD[TNE *numberOfLBnodes];
+      D.f[TSW ] = &DD[TSW *numberOfLBnodes];
+      D.f[TSE ] = &DD[TSE *numberOfLBnodes];
+      D.f[TNW ] = &DD[TNW *numberOfLBnodes];
+      D.f[BNE ] = &DD[BNE *numberOfLBnodes];
+      D.f[BSW ] = &DD[BSW *numberOfLBnodes];
+      D.f[BSE ] = &DD[BSE *numberOfLBnodes];
+      D.f[BNW ] = &DD[BNW *numberOfLBnodes];
    } 
    else
    {
-      D.f[W   ] = &DD[E   *size_Mat];
-      D.f[E   ] = &DD[W   *size_Mat];
-      D.f[S   ] = &DD[N   *size_Mat];
-      D.f[N   ] = &DD[S   *size_Mat];
-      D.f[B   ] = &DD[T   *size_Mat];
-      D.f[T   ] = &DD[B   *size_Mat];
-      D.f[SW  ] = &DD[NE  *size_Mat];
-      D.f[NE  ] = &DD[SW  *size_Mat];
-      D.f[NW  ] = &DD[SE  *size_Mat];
-      D.f[SE  ] = &DD[NW  *size_Mat];
-      D.f[BW  ] = &DD[TE  *size_Mat];
-      D.f[TE  ] = &DD[BW  *size_Mat];
-      D.f[TW  ] = &DD[BE  *size_Mat];
-      D.f[BE  ] = &DD[TW  *size_Mat];
-      D.f[BS  ] = &DD[TN  *size_Mat];
-      D.f[TN  ] = &DD[BS  *size_Mat];
-      D.f[TS  ] = &DD[BN  *size_Mat];
-      D.f[BN  ] = &DD[TS  *size_Mat];
-      D.f[REST] = &DD[REST*size_Mat];
-      D.f[TNE ] = &DD[BSW *size_Mat];
-      D.f[TSW ] = &DD[BNE *size_Mat];
-      D.f[TSE ] = &DD[BNW *size_Mat];
-      D.f[TNW ] = &DD[BSE *size_Mat];
-      D.f[BNE ] = &DD[TSW *size_Mat];
-      D.f[BSW ] = &DD[TNE *size_Mat];
-      D.f[BSE ] = &DD[TNW *size_Mat];
-      D.f[BNW ] = &DD[TSE *size_Mat];
+      D.f[W   ] = &DD[E   *numberOfLBnodes];
+      D.f[E   ] = &DD[W   *numberOfLBnodes];
+      D.f[S   ] = &DD[N   *numberOfLBnodes];
+      D.f[N   ] = &DD[S   *numberOfLBnodes];
+      D.f[B   ] = &DD[T   *numberOfLBnodes];
+      D.f[T   ] = &DD[B   *numberOfLBnodes];
+      D.f[SW  ] = &DD[NE  *numberOfLBnodes];
+      D.f[NE  ] = &DD[SW  *numberOfLBnodes];
+      D.f[NW  ] = &DD[SE  *numberOfLBnodes];
+      D.f[SE  ] = &DD[NW  *numberOfLBnodes];
+      D.f[BW  ] = &DD[TE  *numberOfLBnodes];
+      D.f[TE  ] = &DD[BW  *numberOfLBnodes];
+      D.f[TW  ] = &DD[BE  *numberOfLBnodes];
+      D.f[BE  ] = &DD[TW  *numberOfLBnodes];
+      D.f[BS  ] = &DD[TN  *numberOfLBnodes];
+      D.f[TN  ] = &DD[BS  *numberOfLBnodes];
+      D.f[TS  ] = &DD[BN  *numberOfLBnodes];
+      D.f[BN  ] = &DD[TS  *numberOfLBnodes];
+      D.f[REST] = &DD[REST*numberOfLBnodes];
+      D.f[TNE ] = &DD[BSW *numberOfLBnodes];
+      D.f[TSW ] = &DD[BNE *numberOfLBnodes];
+      D.f[TSE ] = &DD[BNW *numberOfLBnodes];
+      D.f[TNW ] = &DD[BSE *numberOfLBnodes];
+      D.f[BNE ] = &DD[TSW *numberOfLBnodes];
+      D.f[BSW ] = &DD[TNE *numberOfLBnodes];
+      D.f[BSE ] = &DD[TNW *numberOfLBnodes];
+      D.f[BNW ] = &DD[TSE *numberOfLBnodes];
    }
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -645,7 +642,7 @@ extern "C" __global__ void QDeviceIncompHighNu27(int inx,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<numberOfNodes)
+   if(k<numberOfBCnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
@@ -763,63 +760,63 @@ extern "C" __global__ void QDeviceIncompHighNu27(int inx,
       //////////////////////////////////////////////////////////////////////////
       if (isEvenTimestep==false)
       {
-         D.f[E   ] = &DD[E   *size_Mat];
-         D.f[W   ] = &DD[W   *size_Mat];
-         D.f[N   ] = &DD[N   *size_Mat];
-         D.f[S   ] = &DD[S   *size_Mat];
-         D.f[T   ] = &DD[T   *size_Mat];
-         D.f[B   ] = &DD[B   *size_Mat];
-         D.f[NE  ] = &DD[NE  *size_Mat];
-         D.f[SW  ] = &DD[SW  *size_Mat];
-         D.f[SE  ] = &DD[SE  *size_Mat];
-         D.f[NW  ] = &DD[NW  *size_Mat];
-         D.f[TE  ] = &DD[TE  *size_Mat];
-         D.f[BW  ] = &DD[BW  *size_Mat];
-         D.f[BE  ] = &DD[BE  *size_Mat];
-         D.f[TW  ] = &DD[TW  *size_Mat];
-         D.f[TN  ] = &DD[TN  *size_Mat];
-         D.f[BS  ] = &DD[BS  *size_Mat];
-         D.f[BN  ] = &DD[BN  *size_Mat];
-         D.f[TS  ] = &DD[TS  *size_Mat];
-         D.f[REST] = &DD[REST*size_Mat];
-         D.f[TNE ] = &DD[TNE *size_Mat];
-         D.f[TSW ] = &DD[TSW *size_Mat];
-         D.f[TSE ] = &DD[TSE *size_Mat];
-         D.f[TNW ] = &DD[TNW *size_Mat];
-         D.f[BNE ] = &DD[BNE *size_Mat];
-         D.f[BSW ] = &DD[BSW *size_Mat];
-         D.f[BSE ] = &DD[BSE *size_Mat];
-         D.f[BNW ] = &DD[BNW *size_Mat];
+         D.f[E   ] = &DD[E   *numberOfLBnodes];
+         D.f[W   ] = &DD[W   *numberOfLBnodes];
+         D.f[N   ] = &DD[N   *numberOfLBnodes];
+         D.f[S   ] = &DD[S   *numberOfLBnodes];
+         D.f[T   ] = &DD[T   *numberOfLBnodes];
+         D.f[B   ] = &DD[B   *numberOfLBnodes];
+         D.f[NE  ] = &DD[NE  *numberOfLBnodes];
+         D.f[SW  ] = &DD[SW  *numberOfLBnodes];
+         D.f[SE  ] = &DD[SE  *numberOfLBnodes];
+         D.f[NW  ] = &DD[NW  *numberOfLBnodes];
+         D.f[TE  ] = &DD[TE  *numberOfLBnodes];
+         D.f[BW  ] = &DD[BW  *numberOfLBnodes];
+         D.f[BE  ] = &DD[BE  *numberOfLBnodes];
+         D.f[TW  ] = &DD[TW  *numberOfLBnodes];
+         D.f[TN  ] = &DD[TN  *numberOfLBnodes];
+         D.f[BS  ] = &DD[BS  *numberOfLBnodes];
+         D.f[BN  ] = &DD[BN  *numberOfLBnodes];
+         D.f[TS  ] = &DD[TS  *numberOfLBnodes];
+         D.f[REST] = &DD[REST*numberOfLBnodes];
+         D.f[TNE ] = &DD[TNE *numberOfLBnodes];
+         D.f[TSW ] = &DD[TSW *numberOfLBnodes];
+         D.f[TSE ] = &DD[TSE *numberOfLBnodes];
+         D.f[TNW ] = &DD[TNW *numberOfLBnodes];
+         D.f[BNE ] = &DD[BNE *numberOfLBnodes];
+         D.f[BSW ] = &DD[BSW *numberOfLBnodes];
+         D.f[BSE ] = &DD[BSE *numberOfLBnodes];
+         D.f[BNW ] = &DD[BNW *numberOfLBnodes];
       } 
       else
       {
-         D.f[W   ] = &DD[E   *size_Mat];
-         D.f[E   ] = &DD[W   *size_Mat];
-         D.f[S   ] = &DD[N   *size_Mat];
-         D.f[N   ] = &DD[S   *size_Mat];
-         D.f[B   ] = &DD[T   *size_Mat];
-         D.f[T   ] = &DD[B   *size_Mat];
-         D.f[SW  ] = &DD[NE  *size_Mat];
-         D.f[NE  ] = &DD[SW  *size_Mat];
-         D.f[NW  ] = &DD[SE  *size_Mat];
-         D.f[SE  ] = &DD[NW  *size_Mat];
-         D.f[BW  ] = &DD[TE  *size_Mat];
-         D.f[TE  ] = &DD[BW  *size_Mat];
-         D.f[TW  ] = &DD[BE  *size_Mat];
-         D.f[BE  ] = &DD[TW  *size_Mat];
-         D.f[BS  ] = &DD[TN  *size_Mat];
-         D.f[TN  ] = &DD[BS  *size_Mat];
-         D.f[TS  ] = &DD[BN  *size_Mat];
-         D.f[BN  ] = &DD[TS  *size_Mat];
-         D.f[REST] = &DD[REST*size_Mat];
-         D.f[TNE ] = &DD[BSW *size_Mat];
-         D.f[TSW ] = &DD[BNE *size_Mat];
-         D.f[TSE ] = &DD[BNW *size_Mat];
-         D.f[TNW ] = &DD[BSE *size_Mat];
-         D.f[BNE ] = &DD[TSW *size_Mat];
-         D.f[BSW ] = &DD[TNE *size_Mat];
-         D.f[BSE ] = &DD[TNW *size_Mat];
-         D.f[BNW ] = &DD[TSE *size_Mat];
+         D.f[W   ] = &DD[E   *numberOfLBnodes];
+         D.f[E   ] = &DD[W   *numberOfLBnodes];
+         D.f[S   ] = &DD[N   *numberOfLBnodes];
+         D.f[N   ] = &DD[S   *numberOfLBnodes];
+         D.f[B   ] = &DD[T   *numberOfLBnodes];
+         D.f[T   ] = &DD[B   *numberOfLBnodes];
+         D.f[SW  ] = &DD[NE  *numberOfLBnodes];
+         D.f[NE  ] = &DD[SW  *numberOfLBnodes];
+         D.f[NW  ] = &DD[SE  *numberOfLBnodes];
+         D.f[SE  ] = &DD[NW  *numberOfLBnodes];
+         D.f[BW  ] = &DD[TE  *numberOfLBnodes];
+         D.f[TE  ] = &DD[BW  *numberOfLBnodes];
+         D.f[TW  ] = &DD[BE  *numberOfLBnodes];
+         D.f[BE  ] = &DD[TW  *numberOfLBnodes];
+         D.f[BS  ] = &DD[TN  *numberOfLBnodes];
+         D.f[TN  ] = &DD[BS  *numberOfLBnodes];
+         D.f[TS  ] = &DD[BN  *numberOfLBnodes];
+         D.f[BN  ] = &DD[TS  *numberOfLBnodes];
+         D.f[REST] = &DD[REST*numberOfLBnodes];
+         D.f[TNE ] = &DD[BSW *numberOfLBnodes];
+         D.f[TSW ] = &DD[BNE *numberOfLBnodes];
+         D.f[TSE ] = &DD[BNW *numberOfLBnodes];
+         D.f[TNW ] = &DD[BSE *numberOfLBnodes];
+         D.f[BNE ] = &DD[TSW *numberOfLBnodes];
+         D.f[BSW ] = &DD[TNE *numberOfLBnodes];
+         D.f[BSE ] = &DD[TNW *numberOfLBnodes];
+         D.f[BNW ] = &DD[TSE *numberOfLBnodes];
       }
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //Test
@@ -1057,7 +1054,7 @@ extern "C" __global__ void QDeviceIncompHighNu27(int inx,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QDeviceCompHighNu27(
+__global__ void QDeviceCompHighNu27(
 												 real* DD, 
 												 int* k_Q, 
 												 real* QQ,
@@ -1631,7 +1628,7 @@ extern "C" __global__ void QDeviceCompHighNu27(
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QDeviceComp27(
+__global__ void QDeviceComp27(
 										 real* distributions, 
 										 int* subgridDistanceIndices, 
 										 real* subgridDistances,
@@ -2015,7 +2012,7 @@ extern "C" __global__ void QDeviceComp27(
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QDevice27(real* distributions, 
+__global__ void QDevice27(real* distributions, 
                                      int* subgridDistanceIndices, 
                                      real* subgridDistances,
                                      unsigned int numberOfBCnodes, 
@@ -2402,7 +2399,7 @@ extern "C" __global__ void QDevice27(real* distributions,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void BBDevice27(real* distributions, 
+__global__ void BBDevice27(real* distributions, 
                                      int* subgridDistanceIndices, 
                                      real* subgridDistances,
                                      unsigned int numberOfBCnodes, 

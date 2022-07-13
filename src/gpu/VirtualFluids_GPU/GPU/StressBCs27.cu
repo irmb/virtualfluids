@@ -48,7 +48,7 @@ using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __host__ __device__ __forceinline__ void iMEM(uint k, uint kN,
+__host__ __device__ __forceinline__ void iMEM(uint k, uint kN,
                                                          real* _wallNormalX, real* _wallNormalY, real* _wallNormalZ,
                                                          real* vx, real* vy, real* vz,
                                                          real* vx_el,      real* vy_el,      real* vz_el,      //!>mean (temporally filtered) velocities at exchange location
@@ -135,7 +135,7 @@ extern "C" __host__ __device__ __forceinline__ void iMEM(uint k, uint kN,
 }
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QStressDeviceComp27(real* DD,
+__global__ void QStressDeviceComp27(real* DD,
 											   int* k_Q,
                                     int* k_N,
 											   real* QQ,
@@ -913,7 +913,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
 }
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void BBStressDevice27( real* DD,
+__global__ void BBStressDevice27( real* DD,
 											            int* k_Q,
                                              int* k_N,
                                              real* QQ,

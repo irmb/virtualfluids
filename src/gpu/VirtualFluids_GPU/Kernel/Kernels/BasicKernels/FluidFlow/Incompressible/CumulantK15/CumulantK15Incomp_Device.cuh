@@ -4,7 +4,7 @@
 #include <DataTypes.h>
 #include <curand.h>
 
-extern "C" __global__ void LB_Kernel_CumulantK15Incomp(real s9,
+__global__ void LB_Kernel_CumulantK15Incomp(real s9,
 	unsigned int* bcMatD,
 	unsigned int* neighborX,
 	unsigned int* neighborY,

@@ -7,7 +7,7 @@ using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LBCalc2ndMomentsIncompSP27(  real* kxyFromfcNEQ,
+__global__ void LBCalc2ndMomentsIncompSP27(  real* kxyFromfcNEQ,
 														real* kyzFromfcNEQ,
 														real* kxzFromfcNEQ,
 														real* kxxMyyFromfcNEQ,
@@ -206,7 +206,7 @@ extern "C" __global__ void LBCalc2ndMomentsIncompSP27(  real* kxyFromfcNEQ,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LBCalc2ndMomentsCompSP27(real* kxyFromfcNEQ,
+__global__ void LBCalc2ndMomentsCompSP27(real* kxyFromfcNEQ,
 													real* kyzFromfcNEQ,
 													real* kxzFromfcNEQ,
 													real* kxxMyyFromfcNEQ,
@@ -411,7 +411,7 @@ extern "C" __global__ void LBCalc2ndMomentsCompSP27(real* kxyFromfcNEQ,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
+__global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
 														real* CUMabc,
 														real* CUMbac,
 														real* CUMbca,
@@ -845,7 +845,7 @@ extern "C" __global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
+__global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
 													real* CUMabc,
 													real* CUMbac,
 													real* CUMbca,
@@ -1283,7 +1283,7 @@ extern "C" __global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
+__global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
 															real* CUMbcb,
 															real* CUMbbc,
 															real* CUMcca,
@@ -1737,7 +1737,7 @@ extern "C" __global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
+__global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
 														real* CUMbcb,
 														real* CUMbbc,
 														real* CUMcca,

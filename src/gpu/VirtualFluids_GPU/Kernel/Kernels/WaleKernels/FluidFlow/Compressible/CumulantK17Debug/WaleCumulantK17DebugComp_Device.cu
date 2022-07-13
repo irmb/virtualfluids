@@ -6,7 +6,7 @@ using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
 #include "math.h"
 
-extern "C" __global__ void LB_Kernel_WaleCumulantK17DebugComp(
+__global__ void LB_Kernel_WaleCumulantK17DebugComp(
 	real omega_in,
 	unsigned int* bcMatD,
 	unsigned int* neighborX,

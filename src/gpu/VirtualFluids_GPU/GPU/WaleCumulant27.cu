@@ -11,7 +11,7 @@ using namespace vf::lbm::dir;
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_WaleBySoniMalav_Cum_AA2016_Comp_SP_27(
+__global__ void LB_Kernel_WaleBySoniMalav_Cum_AA2016_Comp_SP_27(
 	real omega_in,
 	unsigned int* bcMatD,
 	unsigned int* neighborX,

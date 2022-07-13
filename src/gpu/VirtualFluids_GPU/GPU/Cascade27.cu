@@ -9,7 +9,7 @@ using namespace vf::lbm::dir;
 #include "math.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
+__global__ void LB_Kernel_Cascade_SP_27(     real omega,
 														unsigned int* bcMatD,
 														unsigned int* neighborX,
 														unsigned int* neighborY,
@@ -836,7 +836,7 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
+__global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 														   unsigned int* bcMatD,
 														   unsigned int* neighborX,
 														   unsigned int* neighborY,
@@ -1683,7 +1683,7 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  real omega,
+__global__ void LB_Kernel_Casc_SP_MS_OHM_27(  real omega,
                                                          unsigned int* bcMatD,
                                                          unsigned int* neighborX,
                                                          unsigned int* neighborY,
@@ -2315,7 +2315,7 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  real omega,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_Casc_SP_MS_27(   real omega,
+__global__ void LB_Kernel_Casc_SP_MS_27(   real omega,
                                                       unsigned int* bcMatD,
                                                       unsigned int* neighborX,
                                                       unsigned int* neighborY,
@@ -2840,7 +2840,7 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_27(   real omega,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_Casc_SP_MS_Diff_27(real omega,
+__global__ void LB_Kernel_Casc_SP_MS_Diff_27(real omega,
                                                         unsigned int* bcMatD,
                                                         unsigned int* neighborX,
                                                         unsigned int* neighborY,
@@ -3362,7 +3362,7 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_Diff_27(real omega,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_Casc_SP_27(  real omega,
+__global__ void LB_Kernel_Casc_SP_27(  real omega,
                                                   unsigned int* bcMatD,
                                                   unsigned int* neighborX,
                                                   unsigned int* neighborY,
@@ -4054,7 +4054,7 @@ extern "C" __global__ void LB_Kernel_Casc_SP_27(  real omega,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_Casc27(real omega,
+__global__ void LB_Kernel_Casc27(real omega,
                                             unsigned int* bcMatD,
                                             unsigned int* neighborX,
                                             unsigned int* neighborY,

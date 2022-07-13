@@ -12,7 +12,7 @@ using namespace vf::lbm::dir;
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void initRandom(curandState* state)
+__global__ void initRandom(curandState* state)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -36,7 +36,7 @@ extern "C" __global__ void initRandom(curandState* state)
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void generateRandomValues(curandState* state, real* randArray)
+__global__ void generateRandomValues(curandState* state, real* randArray)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 

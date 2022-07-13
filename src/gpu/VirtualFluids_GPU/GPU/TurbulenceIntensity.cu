@@ -19,7 +19,7 @@ using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void CalcTurbulenceIntensity(
+__global__ void CalcTurbulenceIntensity(
    real* vxx,
    real* vyy,
    real* vzz,

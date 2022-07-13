@@ -49,7 +49,7 @@ using namespace vf::lbm::dir;
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
+__global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
 	real omega_in,
 	uint* typeOfGridNode,
 	uint* neighborX,
@@ -784,7 +784,7 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
 // #include "lbm/MacroscopicQuantities.h"
 
 // ////////////////////////////////////////////////////////////////////////////////
-// extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
+// __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
 // 	real omega_in,
 // 	uint* typeOfGridNode,
 // 	uint* neighborX,

@@ -7,7 +7,7 @@ using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void GetVeloforForcing27( real* DD, 
+__global__ void GetVeloforForcing27( real* DD, 
 												int* bcIndex, 
 												int nonAtBC, 
 												real* Vx,
