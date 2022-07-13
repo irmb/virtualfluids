@@ -64,8 +64,7 @@ std::vector<PostProcessingVariable> PlaneProbe::getPostProcessingVariables(Stati
         break;
 
     default:
-        printf("Statistic unavailable in PlaneProbe\n");
-        assert(false);
+        throw std::runtime_error("PlaneProbe::getPostProcessingVariables: Statistic unavailable!");
         break;
     }
     return postProcessingVariables;

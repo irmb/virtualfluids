@@ -189,8 +189,7 @@ std::vector<PostProcessingVariable> PlanarAverageProbe::getPostProcessingVariabl
         break;
 
     default:
-        printf("Statistic unavailable in PlanarAverageProbe\n");
-        assert(false);
+        throw std::runtime_error("PlanarAverageProbe::getPostProcessingVariables: Statistic unavailable!");
         break;
     }
     return postProcessingVariables;

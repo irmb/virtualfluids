@@ -2274,7 +2274,7 @@ unsigned int Parameter::getTimeDoRestart()
 //!
 unsigned int Parameter::getTimeStep(int level, unsigned int t, bool isPostCollision)
 {
-	assert(level<=this->getMaxLevel());
+    if(level>this->getMaxLevel()) throw std::runtime_error("Parameter::getTimeStep: level>this->getMaxLevel()!");
 	unsigned int tLevel = t;                                                                  
     if(level>0)
     {

@@ -311,7 +311,7 @@ void Probe::free(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 
 void Probe::addStatistic(Statistic variable)
 {
-    assert(this->isAvailableStatistic(variable));
+    if (!this->isAvailableStatistic(variable)) throw std::runtime_error("Probe::addStatistic(): Statistic not available for this probe type!");
 
     this->quantities[int(variable)] = true;
     switch(variable)

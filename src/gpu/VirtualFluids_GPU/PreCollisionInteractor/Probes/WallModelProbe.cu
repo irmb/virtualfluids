@@ -142,8 +142,7 @@ std::vector<PostProcessingVariable> WallModelProbe::getPostProcessingVariables(S
         break;
 
     default:
-        printf("Statistic unavailable in WallModelProbe\n");
-        assert(false);
+        throw std::runtime_error("WallModelProbe::getPostProcessingVariables: Statistic unavailable!");
         break;
     }
     return postProcessingVariables;
@@ -156,7 +155,8 @@ void WallModelProbe::findPoints(Parameter* para, GridProvider* gridProvider, std
                             std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
                             int level)
 {
-    assert( para->getParD(level)->stressBC.numberOfBCnodes > 0 && para->getHasWallModelMonitor() );
+    if ( para->getParD(level)->stressBC.numberOfBCnodes < 1) throw std::runtime_error("WallModelProbe::findPoints(): stressBC.numberOfBCnodes < 1 !");
+    if ( !para->getHasWallModelMonitor())                    throw std::runtime_error("WallModelProbe::findPoints(): !para->getHasWallModelMonitor() !");
 
     real dt = para->getTimeRatio();
     uint nt = uint((para->getTEnd()-this->tStartAvg)/this->tAvg);
@@ -170,7 +170,7 @@ void WallModelProbe::findPoints(Parameter* para, GridProvider* gridProvider, std
 
     if(this->evaluatePressureGradient)
     {
-        assert(para->getIsBodyForce());
+        if (!para->getIsBodyForce()) throw std::runtime_error("WallModelProbe::findPoints(): bodyforce not allocated!");
         // Find all fluid nodes
         for(uint j=1; j<para->getParH(level)->numberOfNodes; j++ )
         {

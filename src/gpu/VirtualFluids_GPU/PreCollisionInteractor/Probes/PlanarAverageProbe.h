@@ -40,6 +40,8 @@
 #ifndef PlanarAverageProbe_H
 #define PlanarAverageProbe_H
 
+#include <iostream>
+
 #include "Probe.h"
 
 __global__ void moveIndicesInNegNormalDir( uint* pointIndices, uint nPoints, uint* neighborWSB, uint* neighborInplane1, uint* neighborInplane2, real* coordsX, real* coordsY, real* coordsZ ); 
@@ -72,7 +74,8 @@ public:
         planeNormal(_planeNormal)
 
     {   
-        assert(_planeNormal == 'x' || _planeNormal == 'y' || _planeNormal == 'z');
+        if(_planeNormal != 'x' || _planeNormal != 'y' || _planeNormal != 'z') 
+            throw std::runtime_error("PlanarAverageProbe: planeNormal must be 'x', 'y' or 'z'!");
     }
 
 

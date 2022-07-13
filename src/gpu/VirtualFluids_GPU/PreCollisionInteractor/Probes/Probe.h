@@ -43,6 +43,8 @@
 #ifndef Probe_H
 #define Probe_H
 
+#include <iostream>
+
 #include <cuda.h>
 
 #include "PreCollisionInteractor/PreCollisionInteractor.h"
@@ -150,7 +152,8 @@ public:
         outputTimeSeries(_outputTimeSeries),        
         PreCollisionInteractor()
     {
-        assert("Output starts before averaging!" && tStartOut>=tStartAvg);
+        if (_tStartOut<_tStartAvg)      throw std::runtime_error("Probe: tStartOut must be larger than tStartAvg!");
+        if (_tStartTmpAvg<_tStartAvg)   throw std::runtime_error("Probe: tStartTmpAvg must be larger than tStartAvg!");
     }
     
     void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaMemoryManager) override;
