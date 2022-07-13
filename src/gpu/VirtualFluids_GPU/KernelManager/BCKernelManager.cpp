@@ -48,7 +48,7 @@ BCKernelManager::BCKernelManager(SPtr<Parameter> parameter, BoundaryConditionFac
     this->slipBoundaryConditionPost     = bcFactory->getSlipBoundaryConditionPost();
     this->pressureBoundaryConditionPre  = bcFactory->getPressureBoundaryConditionPre();
     this->geometryBoundaryConditionPost = bcFactory->getGeometryBoundaryConditionPost();
-    this->stressBoundaryConditionPost       = bcFactory->getStressBoundaryConditionPost();
+    this->stressBoundaryConditionPost   = bcFactory->getStressBoundaryConditionPost();
 }
 
 void BCKernelManager::runVelocityBCKernelPre(const int level) const

@@ -43,14 +43,15 @@
 #include "lbm/constants/D3Q27.h"
 #include <lbm/constants/NumericConstants.h>
 #include "Kernel/Utilities/DistributionHelper.cuh"
+#include "VirtualFluids_GPU/GPU/KernelUtilities.h"
+#include "Kernel/ChimeraTransformation.h"
 
 using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
-#include "Kernel/ChimeraTransformation.h"
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
+__global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
 	real omega_in,
 	uint* typeOfGridNode,
 	uint* neighborX,
@@ -62,7 +63,7 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
     real* vy,
     real* vz,
     real* turbulentViscosity,
-	unsigned long size_Mat,
+	unsigned long numberOfLBnodes,
 	int level,
     bool bodyForce,
 	real* forces,
@@ -87,14 +88,15 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
 
     //////////////////////////////////////////////////////////////////////////
     // run for all indices in size_Mat and fluid nodes
-    if ((k < size_Mat) && (typeOfGridNode[k] == GEO_FLUID)) {
+    if ((k < numberOfLBnodes) && (typeOfGridNode[k] == GEO_FLUID)) {
         //////////////////////////////////////////////////////////////////////////
         //! - Read distributions: style of reading and writing the distributions from/to stored arrays dependent on
         //! timestep is based on the esoteric twist algorithm \ref <a
         //! href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017),
         //! DOI:10.3390/computation5020019 ]</b></a>
         //!
-        Distributions27 dist = vf::gpu::getDistributionReferences27(distributions, size_Mat, isEvenTimestep);
+        Distributions27 dist;
+        getPointersToDistributions(dist, distributions, numberOfLBnodes, isEvenTimestep);
 
         ////////////////////////////////////////////////////////////////////////////////
         //! - Set neighbor indices (necessary for indirect addressing)
@@ -165,8 +167,9 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
         //! DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
         //!
         real factor = c1o1;
-        for (size_t i = 1; i <= level; i++) 
+        for (size_t i = 1; i <= level; i++){
             factor *= c2o1;
+        } 
         
         real fx = forces[0];
         real fy = forces[1];
@@ -721,7 +724,7 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
 // #include "lbm/MacroscopicQuantities.h"
 
 // ////////////////////////////////////////////////////////////////////////////////
-// extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
+// __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
 // 	real omega_in,
 // 	uint* typeOfGridNode,
 // 	uint* neighborX,
