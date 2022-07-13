@@ -175,7 +175,6 @@
 #include <Grid/Block3D.h>
 #include <Grid/Calculator.h>
 #include <Grid/Grid3D.h>
-#include <Grid/Grid3DSystem.h>
 
 #include <Interactors/D3Q27Interactor.h>
 #include <Interactors/D3Q27TriFaceMeshInteractor.h>
