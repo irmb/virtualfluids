@@ -374,7 +374,7 @@ struct LBMSimulationParameter {
 class VIRTUALFLUIDS_GPU_EXPORT Parameter
 {
 public:
-    Parameter(const vf::basics::ConfigurationFile &configData, const int numberOfProcesses = 1, const int myId = 0);
+    explicit Parameter(const vf::basics::ConfigurationFile &configData, const int numberOfProcesses = 1, const int myId = 0);
     Parameter(const int numberOfProcesses = 1, const int myId = 0);
     ~Parameter();
     void initLBMSimulationParameter();
