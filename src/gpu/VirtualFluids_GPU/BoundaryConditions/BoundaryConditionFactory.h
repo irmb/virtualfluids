@@ -88,14 +88,15 @@ public:
     void setSlipBoundaryCondition(const BoundaryConditionFactory::SlipBC boundaryConditionType);
     void setPressureBoundaryCondition(const BoundaryConditionFactory::PressureBC boundaryConditionType);
     void setStressBoundaryCondition(const BoundaryConditionFactory::StressBC boundaryConditionType);
-    //!param boundaryConditionType: a velocity, no-slip or slip boundary condition
+    //! \brief set a boundary condition for the geometry
+    //! param boundaryConditionType: a velocity, no-slip or slip boundary condition
     //! \details suggestions for boundaryConditionType:
     //!
     //! - velocity: VelocityIncompressible, VelocityCompressible, VelocityAndPressureCompressible
     //!
-    //! - no-slip:  NoSlipBounceBack, NoSlipIncompressible, NoSlipCompressible, NoSlip3rdMomentsCompressible
+    //! - no-slip: NoSlipBounceBack, NoSlipIncompressible, NoSlipCompressible, NoSlip3rdMomentsCompressible
     //!
-    //! - slip:     SlipIncompressible
+    //! - slip: only use a slip boundary condition which sets the normals
     void setGeometryBoundaryCondition(const std::variant<VelocityBC, NoSlipBC, SlipBC> boundaryConditionType);
 
     // void setOutflowBoundaryCondition(...); // TODO:
