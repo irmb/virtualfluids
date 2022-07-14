@@ -56,15 +56,14 @@
 
 //////////////////////////////////////////////////////////////////////////
 
+#include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
+#include "VirtualFluids_GPU/Communication/Communicator.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
-#include "VirtualFluids_GPU/Communication/Communicator.h"
 #include "VirtualFluids_GPU/LBM/Simulation.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
-#include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
-#include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -92,11 +91,11 @@ int main(int argc, char *argv[])
         std::string path("./output/DrivenCavity");
         std::string simulationName("LidDrivenCavity");
 
-        const real L        = 1.0;
-        const real Re       = 1000.0;
+        const real L = 1.0;
+        const real Re = 1000.0;
         const real velocity = 1.0;
-        const real dt       = (real)0.5e-3;
-        const uint nx       = 64;
+        const real dt = (real)0.5e-3;
+        const uint nx = 64;
 
         const uint timeStepOut = 1000;
         const uint timeStepEnd = 10000;
@@ -139,17 +138,18 @@ int main(int argc, char *argv[])
         //////////////////////////////////////////////////////////////////////////
 
         if (lbmOrGks == LBM) {
-            SPtr<Parameter> para =std::make_shared<Parameter>();
+            SPtr<Parameter> para = std::make_shared<Parameter>();
             BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
-            vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();;
+            vf::gpu::Communicator &communicator = vf::gpu::Communicator::getInstance();
+
             //////////////////////////////////////////////////////////////////////////
             // compute parameters in lattice units
             //////////////////////////////////////////////////////////////////////////
 
             const real velocityLB = velocity * dt / dx; // LB units
 
-            const real vx = velocityLB / sqrt(2.0); // LB units
-            const real vy = velocityLB / sqrt(2.0); // LB units
+            const real vxLB = velocityLB / sqrt(2.0); // LB units
+            const real vyLB = velocityLB / sqrt(2.0); // LB units
 
             const real viscosityLB = nx * velocityLB / Re; // LB units
 
@@ -169,6 +169,7 @@ int main(int argc, char *argv[])
             para->setViscosityLB(viscosityLB);
 
             para->setVelocityRatio(velocity / velocityLB);
+            para->setDensityRatio(1.0);
 
             para->setTimestepOut(timeStepOut);
             para->setTimestepEnd(timeStepEnd);
@@ -181,17 +182,19 @@ int main(int argc, char *argv[])
             gridBuilder->setNoSlipBoundaryCondition(SideType::MX);
             gridBuilder->setNoSlipBoundaryCondition(SideType::PY);
             gridBuilder->setNoSlipBoundaryCondition(SideType::MY);
-            gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vx, vy, 0.0);
+            gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, vyLB, 0.0);
             gridBuilder->setNoSlipBoundaryCondition(SideType::MZ);
 
             bcFactory.setNoSlipBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipBounceBack);
             bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocitySimpleBounceBackCompressible);
+
             //////////////////////////////////////////////////////////////////////////
             // set copy mesh to simulation
             //////////////////////////////////////////////////////////////////////////
 
             auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
-            SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
+            SPtr<GridProvider> gridGenerator =
+                GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
 
             //////////////////////////////////////////////////////////////////////////
             // run simulation
@@ -324,10 +327,10 @@ int main(int argc, char *argv[])
         //         convergenceAnalyzer.run(iter);
         //     }
         // }
-    } catch (const std::bad_alloc& e) {
+    } catch (const std::bad_alloc &e) {
 
         *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
-    } catch (const std::exception& e) {
+    } catch (const std::exception &e) {
 
         *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
     } catch (std::string &s) {
