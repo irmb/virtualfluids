@@ -92,7 +92,7 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
         this->setPrintFiles(configData.getValue<bool>("WriteGrid"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("GeometryValues"))
-        this->setGeometryValues(configData.getValue<bool>("GeometryValues"));
+        this->setUseGeometryValues(configData.getValue<bool>("GeometryValues"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("calc2ndOrderMoments"))
         this->setCalc2ndOrderMoments(configData.getValue<bool>("calc2ndOrderMoments"));
@@ -1331,9 +1331,9 @@ void Parameter::setObj(std::string str, bool isObj)
         this->setIsOutflowNormal(isObj);
     }
 }
-void Parameter::setGeometryValues(bool GeometryValues)
+void Parameter::setUseGeometryValues(bool useGeometryValues)
 {
-    ic.GeometryValues = GeometryValues;
+    ic.GeometryValues = useGeometryValues;
 }
 void Parameter::setCalc2ndOrderMoments(bool is2ndOrderMoments)
 {

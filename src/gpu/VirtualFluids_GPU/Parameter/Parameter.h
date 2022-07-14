@@ -552,7 +552,7 @@ public:
     void setDoCheckPoint(bool doCheckPoint);
     void setDoRestart(bool doRestart);
     void setObj(std::string str, bool isObj);
-    void setGeometryValues(bool GeometryValues);
+    void setUseGeometryValues(bool GeometryValues);
     void setCalc2ndOrderMoments(bool is2ndOrderMoments);
     void setCalc3rdOrderMoments(bool is3rdOrderMoments);
     void setCalcHighOrderMoments(bool isHighOrderMoments);
