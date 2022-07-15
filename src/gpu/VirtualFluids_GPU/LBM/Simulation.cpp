@@ -172,7 +172,7 @@ Simulation::Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemo
     //////////////////////////////////////////////////////////////////////////
     // Particles preprocessing
     //////////////////////////////////////////////////////////////////////////
-    if (para->getCalcParticle()) {
+    if (para->getCalcParticles()) {
         rearrangeGeometry(para.get(), cudaMemoryManager.get());
         //////////////////////////////////////////////////////////////////////////
         allocParticles(para.get(), cudaMemoryManager.get());
@@ -383,7 +383,7 @@ Simulation::Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemo
     //////////////////////////////////////////////////////////////////////////
     output << "Print files Init...";
     dataWriter->writeInit(para, cudaMemoryManager);
-    if (para->getCalcParticle())
+    if (para->getCalcParticles())
         copyAndPrintParticles(para.get(), cudaMemoryManager.get(), 0, true);
     output << "done.\n";
 
@@ -479,7 +479,7 @@ void Simulation::run()
 	    ////////////////////////////////////////////////////////////////////////////////
 	    //Particles
 	    ////////////////////////////////////////////////////////////////////////////////
-	    if (para->getCalcParticle()) propagateParticles(para.get(), timestep);
+	    if (para->getCalcParticles()) propagateParticles(para.get(), timestep);
 	    ////////////////////////////////////////////////////////////////////////////////
 
 
@@ -990,7 +990,7 @@ void Simulation::run()
 			////////////////////////////////////////////////////////////////////////
             if (para->getCalcDragLift()) printDragLift(para.get(), cudaMemoryManager.get(), timestep);
 			////////////////////////////////////////////////////////////////////////
-			if (para->getCalcParticle()) copyAndPrintParticles(para.get(), cudaMemoryManager.get(), timestep, false);
+			if (para->getCalcParticles()) copyAndPrintParticles(para.get(), cudaMemoryManager.get(), timestep, false);
 			////////////////////////////////////////////////////////////////////////
 			output << "done.\n";
 			////////////////////////////////////////////////////////////////////////

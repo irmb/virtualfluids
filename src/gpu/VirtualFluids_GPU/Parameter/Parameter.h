@@ -627,7 +627,7 @@ public:
     bool getCalcMedian();
     bool getCalcDragLift();
     bool getCalcCp();
-    bool getCalcParticle();
+    bool getCalcParticles();
     bool getWriteVeloASCIIfiles();
     bool getCalcPlaneConc();
     //! \returns index of finest level
@@ -883,7 +883,7 @@ private:
     unsigned int timestep;
 
     // Kernel
-    std::string mainKernel{ "CumulantK17Comp" };
+    std::string mainKernel{ "CumulantK17CompChim" };
     bool multiKernelOn{ false };
     std::vector<int> multiKernelLevel;
     std::vector<std::string> multiKernel;

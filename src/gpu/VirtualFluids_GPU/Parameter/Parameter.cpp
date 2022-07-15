@@ -1781,7 +1781,7 @@ bool Parameter::getCalcCp()
 {
     return this->calcCp;
 }
-bool Parameter::getCalcParticle()
+bool Parameter::getCalcParticles()
 {
     return this->calcParticles;
 }
