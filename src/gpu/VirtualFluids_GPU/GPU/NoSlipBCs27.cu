@@ -1644,7 +1644,7 @@ extern "C" __global__ void QDeviceComp27(
 										 bool isEvenTimestep)
 {
    //////////////////////////////////////////////////////////////////////////
-   //! The velocity boundary condition is executed in the following steps
+   //! The no-slip boundary condition is executed in the following steps
    //!
    ////////////////////////////////////////////////////////////////////////////////
    //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.

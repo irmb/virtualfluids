@@ -145,8 +145,8 @@ void multipleLevel(const std::string& configPath)
     para->setMaxLevel(1);
 
 
-    para->setVelocity(velocityLB);
-    para->setViscosity(viscosityLB);
+    para->setVelocityLB(velocityLB);
+    para->setViscosityLB(viscosityLB);
     para->setVelocityRatio( dx / dt );
     para->setViscosityRatio( dx*dx/dt );
     para->setMainKernel("CumulantK17CompChim");

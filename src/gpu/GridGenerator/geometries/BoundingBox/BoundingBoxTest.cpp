@@ -31,15 +31,15 @@ TEST(BoundingBoxExactTest, findMinMaxFromTriangle)
     Vertex normal = Vertex(0.0f, 0.0f, 0.0f);
     Triangle t = Triangle(v1, v2, v3, normal);
 
-	box.setMinMax(t);
+    box.setMinMax(t);
 
-	EXPECT_THAT(box.minX, RealEq(minX));
-	EXPECT_THAT(box.minY, RealEq(minY));
-	EXPECT_THAT(box.minZ, RealEq(minZ));
-	
-	EXPECT_THAT(box.maxX, RealEq(maxX));
-	EXPECT_THAT(box.maxY, RealEq(maxY));
-	EXPECT_THAT(box.maxZ, RealEq(maxZ));
+    EXPECT_THAT(box.minX, RealEq(minX));
+    EXPECT_THAT(box.minY, RealEq(minY));
+    EXPECT_THAT(box.minZ, RealEq(minZ));
+    
+    EXPECT_THAT(box.maxX, RealEq(maxX));
+    EXPECT_THAT(box.maxY, RealEq(maxY));
+    EXPECT_THAT(box.maxZ, RealEq(maxZ));
 }
 
 TEST(BoundingBoxTest, isInside_true)
