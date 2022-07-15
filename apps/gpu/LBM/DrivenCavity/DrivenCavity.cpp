@@ -174,6 +174,8 @@ int main(int argc, char *argv[])
             para->setTimestepOut(timeStepOut);
             para->setTimestepEnd(timeStepEnd);
 
+            para->setMainKernel("CumulantK17CompChim");
+
             //////////////////////////////////////////////////////////////////////////
             // set boundary conditions
             //////////////////////////////////////////////////////////////////////////
@@ -196,6 +198,15 @@ int main(int argc, char *argv[])
             SPtr<GridProvider> gridGenerator =
                 GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
 
+            para->setCalcParticles(false);
+            para->setCalcMedian(false);
+            para->setCalcTurbulenceIntensity(false);
+            para->setDoCheckPoint(false);
+            para->setUseMeasurePoints(false);
+            para->setDiffOn(false);
+            para->setCalcPlaneConc(false);
+            para->setUseWale(false);
+            para->setSimulatePorousMedia(false);
             //////////////////////////////////////////////////////////////////////////
             // run simulation
             //////////////////////////////////////////////////////////////////////////
