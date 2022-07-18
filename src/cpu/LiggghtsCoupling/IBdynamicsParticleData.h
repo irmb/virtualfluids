@@ -26,63 +26,25 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file LiggghtsCouplingCoProcessor.h
-//! \ingroup LiggghtsCoupling
+//! \file DataSet3D.h
+//! \ingroup Data
 //! \author Konstantin Kutscher
 //=======================================================================================
 
-#ifndef LiggghtsCouplingCoProcessor_h
-#define LiggghtsCouplingCoProcessor_h
+#ifndef IBdynamicsParticleData_h
+#define IBdynamicsParticleData_h
 
-#include "CoProcessor.h"
+#include<array>
 
-#include "lammps.h"
-#include "input.h"
-#include "atom.h"
-#include "modify.h"
+constexpr auto SOLFRAC_MIN = 0.001;
+constexpr auto SOLFRAC_MAX = 0.999;
 
-#include <memory>
-#include <vector>
-
-
-class CoProcessor;
-class Communicator;
-class LiggghtsCouplingWrapper;
-class Grid3D;
-class Block3D;
-struct IBdynamicsParticleData;
-
-class LiggghtsCouplingCoProcessor : public CoProcessor
-{
+struct IBdynamicsParticleData {
 public:
-    LiggghtsCouplingCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<Communicator> comm,
-                                LiggghtsCouplingWrapper &wrapper, int demSteps);
-    virtual ~LiggghtsCouplingCoProcessor();
-
-    void process(double actualTimeStep) override;
-
-    
-protected:
-    void setSpheresOnLattice();
-    void getForcesFromLattice();
-    void setSingleSphere3D(double *x, double *v, double *omega, /* double *com,*/ double r,
-                           int id /*, bool initVelFlag*/);
-    double calcSolidFraction(double const dx_, double const dy_, double const dz_, double const r_);
-
-    void setValues(IBdynamicsParticleData &p, double const sf, double const dx, double const dy, double const dz,
-                   double *omega, int id);
-
-    void setToZero(IBdynamicsParticleData &p);
-
-private:
-    SPtr<Communicator> comm;
-    LiggghtsCouplingWrapper &wrapper;
-    int demSteps;
-    std::vector<std::vector<SPtr<Block3D>>> blockVector;
-    int minInitLevel;
-    int maxInitLevel;
-    int gridRank;
+    int partId{0};
+    double solidFraction{0};
+    std::array<double, 3> uPart{ 0., 0., 0. };
+    std::array<double, 3> hydrodynamicForce{ 0., 0., 0. };
 };
 
 #endif
-

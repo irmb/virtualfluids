@@ -21,9 +21,108 @@ using namespace std;
 int main(int argc, char *argv[])
 {
     SPtr<Communicator> comm = MPICommunicator::getInstance();
-    //MPI_Init(&argc, &argv);
+    int myid                                        = comm->getProcessID();
+
+
+    // bounding box
+    double g_minX1 = 0;
+    double g_minX2 = 0;
+    double g_minX3 = 0;
+
+    double g_maxX1 = 1;
+    double g_maxX2 = 1;
+    double g_maxX3 = 2;
+
+    int blockNX[3] = { 10, 10, 20 };
+
+    double dx = 0.1;
+
+    double nuLB = 0.005;
+
+    SPtr<Grid3D> grid = make_shared<Grid3D>(comm);
+    grid->setPeriodicX1(true);
+    grid->setPeriodicX2(true);
+    grid->setPeriodicX3(true);
+    grid->setDeltaX(dx);
+    grid->setBlockNX(blockNX[0], blockNX[1], blockNX[2]);
+
+    string outputPath = "d:/temp/lll2";
+    
+    SPtr<GbObject3D> gridCube = make_shared <GbCuboid3D>(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3);
+    if (myid == 0)
+        GbSystem3D::writeGeoObject(gridCube.get(), outputPath + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
+
+    GenBlocksGridVisitor genBlocks(gridCube);
+    grid->accept(genBlocks);
+
+    SPtr<CoProcessor> ppblocks =
+        make_shared <WriteBlocksCoProcessor>(grid, SPtr<UbScheduler>(new UbScheduler(1)), outputPath,
+                                                          WbWriterVtkXmlBinary::getInstance(), comm);
+    ppblocks->process(0);
+    ppblocks.reset();
+
+    SPtr<LBMKernel> kernel = make_shared<IncompressibleCumulantLBMKernel>();
+    SPtr<BCProcessor> bcProc = make_shared<BCProcessor>();
+    kernel->setBCProcessor(bcProc);
+
+    SetKernelBlockVisitor kernelVisitor(kernel, nuLB, 1e9, 1e9);
+    grid->accept(kernelVisitor);
+
+    InitDistributionsBlockVisitor initVisitor;
+    grid->accept(initVisitor);
+
+    SPtr<UbScheduler> lScheduler                    = make_shared<UbScheduler>(1);
+    string inFile1                                   = "d:/Projects/VirtualFluids_LIGGGHTS_coupling/apps/cpu/LiggghtsApp/in.lbdem";
+    //string inFile1 = "d:/Tools/LIGGGHTS/examples/LIGGGHTS/Tutorials_public/chute_wear/in.chute_wear2";
+    string inFile2                                   = "d:/Projects/VirtualFluids_LIGGGHTS_coupling/apps/cpu/LiggghtsApp/in2.lbdem";
     MPI_Comm mpi_comm       = *(MPI_Comm*)(comm->getNativeCommunicator());
     LiggghtsCouplingWrapper wrapper(argv, mpi_comm);
+
+    double d_part = 0.1;
+    double v_frac = 0.1;
+    double dt_phys  = 1; // units.getPhysTime(1);
+    int demSubsteps = 1;
+    double dt_dem   = 1e-1; //dt_phys / (double)demSubsteps;
+    int vtkSteps    = 1;
+    string demOutDir = "d:/temp/lll2/";
+
+    wrapper.setVariable("r_part", d_part / 2);
+    wrapper.setVariable("v_frac", v_frac);
+
+    wrapper.execFile((char*)inFile1.c_str());
+
+    //// set timestep and output directory
+    wrapper.setVariable("t_step", dt_dem);
+    wrapper.setVariable("dmp_stp", vtkSteps * demSubsteps);
+    wrapper.setVariable("dmp_dir", demOutDir);
+
+    wrapper.execFile((char *)inFile2.c_str());
+    //wrapper.runUpto(demSubsteps - 1);
+
+    SPtr<LiggghtsCouplingCoProcessor> lcCoProcessor =
+        make_shared<LiggghtsCouplingCoProcessor>(grid, lScheduler, comm, wrapper, demSubsteps);
+
+    // write data for visualization of macroscopic quantities
+    SPtr<UbScheduler> visSch(new UbScheduler(vtkSteps));
+    SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(
+        new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, outputPath, WbWriterVtkXmlASCII::getInstance(),
+                                                  SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
+
+    int endTime = 20;
+    SPtr<Calculator> calculator(new BasicCalculator(grid, lScheduler, endTime));
+    calculator->addCoProcessor(lcCoProcessor);
+    calculator->addCoProcessor(writeMQCoProcessor);
+
+    if (myid == 0) UBLOG(logINFO, "Simulation-start");
+    calculator->calculate();
+    if (myid == 0) UBLOG(logINFO, "Simulation-end");
+
+    //MPI_Init(&argc, &argv);
+    //MPI_Comm mpi_comm       = *(MPI_Comm*)(comm->getNativeCommunicator());
+    //LiggghtsCouplingWrapper wrapper(argv, mpi_comm);
+
+    //wrapper.execFile("in2.lbdem");
+    //wrapper.runUpto(demSubsteps - 1);
 
 	//LAMMPS_NS::LAMMPS *lmp;
  //   // custom argument vector for LAMMPS library
