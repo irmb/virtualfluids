@@ -116,7 +116,7 @@ public:
     [[nodiscard]] boundaryCondition getPressureBoundaryConditionPre() const;
     [[nodiscard]] boundaryCondition getGeometryBoundaryConditionPost() const;
 
-    boundaryConditionPara getStressBoundaryConditionPost() const;
+    [[nodiscard]] boundaryConditionPara getStressBoundaryConditionPost() const;
 
 private:
     VelocityBC velocityBoundaryCondition = VelocityBC::NotSpecified;
