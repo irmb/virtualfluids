@@ -264,7 +264,6 @@ nvidia_test:
 gpu_numerical_tests:
   stage: benchmark
 
-  # when: manual
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
 

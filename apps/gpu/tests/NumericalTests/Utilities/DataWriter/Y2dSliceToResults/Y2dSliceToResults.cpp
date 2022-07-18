@@ -51,19 +51,6 @@ void Y2dSliceToResults::writeTimestep(std::shared_ptr<Parameter> para, unsigned 
             y.at(posResults) = (double)para->getParH(level)->coordinateY[posPara] - (double)1.0;
             z.at(posResults) = (double)para->getParH(level)->coordinateZ[posPara] - (double)1.0;
             vx.at(posResults) = (double)para->getParH(level)->velocityX[posPara] * (double)para->getVelocityRatio();
-            // if (std::isnan(para->getParH(level)->velocityX[posPara])) {
-            //     std::ostringstream oss;
-            //     oss << "Vx is nan. Velocity in para->getParH(" << level << ")->velocityX[" << posPara
-            //         << "] = " << para->getParH(level)->velocityX[posPara] << std::endl
-            //         << "posResults is " << posResults << std::endl
-            //         << "velocityRatio: " << para->getVelocityRatio() << std::endl
-            //         << "maxY= " << maxY << std::endl
-            //         << "ySlice= " << ySliceForCalculation << std::endl
-            //         << "Broken 3D Index: (" << posX << ", " << ySliceForCalculation << ", " << posZ << ")" << std::endl;
-
-            //     throw std::runtime_error(oss.str());
-            // }
-
             vy.at(posResults) = (double)para->getParH(level)->velocityY[posPara] * (double)para->getVelocityRatio();
             vz.at(posResults) = (double)para->getParH(level)->velocityZ[posPara] * (double)para->getVelocityRatio();
             press.at(posResults) = (double)para->getParH(level)->pressure[posPara] / (double)3.0 *
