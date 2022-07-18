@@ -10,6 +10,7 @@
 #include "Utilities/Buffer2D.hpp"
 #include "LBM/LB.h"
 
+
 namespace vf::gpu { class Communicator; }
 
 class CudaMemoryManager;
@@ -35,6 +36,9 @@ class Simulation
 public:
     Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> memoryManager,
                vf::gpu::Communicator &communicator, GridProvider &gridProvider, BoundaryConditionFactory* bcFactory);
+
+    Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> memoryManager,
+               vf::gpu::Communicator &communicator, GridProvider &gridProvider, BoundaryConditionFactory* bcFactory, std::shared_ptr<PreProcessorFactory> preProcessorFactory);
     ~Simulation();
     void run();
 
@@ -45,12 +49,13 @@ public:
     void addEnstrophyAnalyzer(uint tAnalyse);
 
 private:
+	void init(GridProvider &gridProvider, BoundaryConditionFactory *bcFactory);
     void allocNeighborsOffsetsScalesAndBoundaries(GridProvider& gridProvider);
     void porousMedia();
     void definePMarea(std::shared_ptr<PorousMedia>& pm);
 
 	std::unique_ptr<KernelFactory> kernelFactory;
-	std::unique_ptr<PreProcessorFactory> preProcessorFactory;
+	std::shared_ptr<PreProcessorFactory> preProcessorFactory;
 
 	Buffer2D <real> sbuf_t;
 	Buffer2D <real> rbuf_t;

@@ -51,8 +51,8 @@
 #include "Output/DataWriter.h"
 #include "Kernel/Utilities/KernelFactory/KernelFactory.h"
 #include "PreProcessor/PreProcessorFactory/PreProcessorFactory.h"
-#include "Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
 #include "PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
+#include "Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
 #include "Kernel/Kernel.h"
 
 #include <cuda/DeviceInfo.h>
@@ -69,7 +69,20 @@ std::string getFileName(const std::string& fname, int step, int myID)
 Simulation::Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> memoryManager,
                        vf::gpu::Communicator &communicator, GridProvider &gridProvider, BoundaryConditionFactory* bcFactory)
     : para(para), cudaMemoryManager(memoryManager), communicator(communicator), kernelFactory(std::make_unique<KernelFactoryImp>()),
-      preProcessorFactory(std::make_unique<PreProcessorFactoryImp>()), dataWriter(std::make_unique<FileWriter>())
+      preProcessorFactory(std::make_shared<PreProcessorFactoryImp>()), dataWriter(std::make_unique<FileWriter>()) 
+{
+	init(gridProvider, bcFactory);
+}
+
+Simulation::Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> memoryManager,
+                       vf::gpu::Communicator &communicator, GridProvider &gridProvider, BoundaryConditionFactory* bcFactory, std::shared_ptr<PreProcessorFactory> preProcessorFactory)
+    : para(para), cudaMemoryManager(memoryManager), communicator(communicator), kernelFactory(std::make_unique<KernelFactoryImp>()),
+      preProcessorFactory(preProcessorFactory), dataWriter(std::make_unique<FileWriter>()) 
+{
+	init(gridProvider, bcFactory);
+}
+
+void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFactory)
 {
     gridProvider.initalGridInformations();
 

@@ -115,7 +115,7 @@ GridPath512=grids/gridUni512x4x768
 ##################################################
 # 			File Writing Information			 #
 ##################################################
-WriteVTKFiles=false
+WriteVTKFiles=true
 FolderForVTKFileWriting=Output
 StartStepFileWriter=0
 

@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <fstream>
 
+#include <iostream>
+
 std::shared_ptr<FFTCalculator> FFTCalculator::getInstance()
 {
 	static std::shared_ptr<FFTCalculator> uniqueInstance;
@@ -75,9 +77,23 @@ void FFTCalculator::init()
 
 double FFTCalculator::calcNy()
 {
+	std::cout << "======== BEGIN SUPER IMPORTANT OUTPUT ========" << std::endl;
 	std::vector<double> logAmplitude = calcLogAmplitudeForAllSteps();
 	std::vector<double> linReg = calcLinReg(logAmplitude);
+
+	std::cout << "lz: " << lz << "\t" << "lx: " << lx << "\t" << std::endl;
+	std::cout << "timestepLength: " << timeStepLength << "\t" << "linReg[0]: " << linReg.at(0) << "\t" << std::endl;
+
+	std::cout << "amplitude: " << "\t";
+	for (auto ampli : logAmplitude) {
+		std::cout << ampli << "\t";
+	}
+	std::cout << std::endl;
+
 	double nu = -(1.0 / (((2.0 * M_PI / lz) * (2.0 * M_PI / lz) + (2.0 * M_PI / lx)*(2.0 * M_PI / lx)) * timeStepLength)) * linReg.at(0);
+
+	std::cout << nu << std::endl;
+	std::cout << "======== END SUPER IMPORTANT OUTPUT ========" << std::endl;
 
 	return nu;
 }
@@ -152,6 +168,10 @@ std::vector<double> FFTCalculator::calcAmplitudeForAllSteps()
 		pos = 2 + (lx - 1);
 	else
 		pos = 2 + (lz - 1);
+
+	std::cout << "DataSize: " << data.size() << std::endl;
+	std::cout << "fftResultsRe Size: " << fftResultsRe.size() << std::endl;
+	std::cout << "fftResultsIm Size: " << fftResultsIm.size() << std::endl;
 
 	for (int step = 0; step < data.size(); step++)
 		amplitude.push_back(4.0 / (lx * lz)  * sqrt(fftResultsRe.at(step).at(pos) * fftResultsRe.at(step).at(pos) + fftResultsIm.at(step).at(pos) * fftResultsIm.at(step).at(pos)));

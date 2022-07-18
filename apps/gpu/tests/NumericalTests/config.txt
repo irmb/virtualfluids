@@ -115,7 +115,7 @@ GridPath512="E:\temp\numericalTests\grids\gridUni512x4x768"
 ##################################################
 # 			File Writing Information			 #
 ##################################################
-WriteVTKFiles=false
+WriteVTKFiles=true
 PathForVTKFileWriting="E:\temp\numericalTests\Output"
 StartStepFileWriter=0
 
