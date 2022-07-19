@@ -5,4 +5,4 @@
 #################################################################################
 
 
-SET(CMAKE_CUDA_ARCHITECTURES 70)
+set(CMAKE_CUDA_ARCHITECTURES 70)
