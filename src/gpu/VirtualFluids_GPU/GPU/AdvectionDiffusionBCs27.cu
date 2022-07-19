@@ -8,7 +8,7 @@ using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QADPress7(  real* DD, 
+__global__ void QADPress7(  real* DD, 
                                        real* DD7, 
                                        real* temp,
                                        real* velo,
@@ -449,7 +449,7 @@ extern "C" __global__ void QADPress7(  real* DD,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QADPress27( real* DD, 
+__global__ void QADPress27( real* DD, 
                                        real* DD27, 
                                        real* temp,
                                        real* velo,
@@ -980,7 +980,7 @@ extern "C" __global__ void QADPress27( real* DD,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QADPressNEQNeighbor27(
+__global__ void QADPressNEQNeighbor27(
 													real* DD,
 													real* DD27,
 													int* k_Q,
@@ -1415,7 +1415,7 @@ extern "C" __global__ void QADPressNEQNeighbor27(
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QADVel7( real* DD, 
+__global__ void QADVel7( real* DD, 
                                     real* DD7, 
                                     real* temp,
                                     real* velo,
@@ -1832,14 +1832,14 @@ extern "C" __global__ void QADVel7( real* DD,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QADVel27(real* DD, 
+__global__ void QADVel27(real* DD, 
                                     real* DD27, 
                                     real* temp,
                                     real* velo,
                                     real diffusivity,
                                     int* k_Q, 
                                     real* QQ,
-                                    int numberOfBCnodes, 
+                                    unsigned int numberOfBCnodes, 
                                     real om1, 
                                     unsigned int* neighborX,
                                     unsigned int* neighborY,
@@ -2420,7 +2420,7 @@ extern "C" __global__ void QADVel27(real* DD,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QAD7( real* DD, 
+__global__ void QAD7( real* DD, 
                                  real* DD7, 
                                  real* temp,
                                  real diffusivity,
@@ -2852,7 +2852,7 @@ extern "C" __global__ void QAD7( real* DD,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QADDirichlet27(
+__global__ void QADDirichlet27(
 											 real* DD, 
 											 real* DD27, 
 											 real* temp,
@@ -3378,7 +3378,7 @@ extern "C" __global__ void QADDirichlet27(
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QADBB27( real* DD, 
+__global__ void QADBB27( real* DD, 
                                    real* DD27, 
                                    real* temp,
                                    real diffusivity,
@@ -3893,7 +3893,7 @@ extern "C" __global__ void QADBB27( real* DD,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QNoSlipADincomp7(
+__global__ void QNoSlipADincomp7(
 											 real* DD, 
 											 real* DD7, 
 											 real* temp,
@@ -4317,7 +4317,7 @@ extern "C" __global__ void QNoSlipADincomp7(
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QNoSlipADincomp27(
+__global__ void QNoSlipADincomp27(
 											 real* DD, 
 											 real* DD27, 
 											 real* temp,
@@ -4798,7 +4798,7 @@ extern "C" __global__ void QNoSlipADincomp27(
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QADVeloIncomp7(
+__global__ void QADVeloIncomp7(
 											real* DD, 
 											real* DD7, 
 											real* temp,
@@ -5276,7 +5276,7 @@ extern "C" __global__ void QADVeloIncomp7(
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QADVeloIncomp27(
+__global__ void QADVeloIncomp27(
 											real* DD, 
 											real* DD27, 
 											real* temp,
@@ -5789,9 +5789,7 @@ extern "C" __global__ void QADVeloIncomp27(
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QADPressIncomp7(int inx,
-										   int iny,
-										   real* DD, 
+__global__ void QADPressIncomp7( real* DD, 
 										   real* DD7, 
 										   real* temp,
 										   real* velo,
@@ -6229,7 +6227,7 @@ extern "C" __global__ void QADPressIncomp7(int inx,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QADPressIncomp27(
+__global__ void QADPressIncomp27(
 											   real* DD,
 											   real* DD27,
 											   real* temp,
@@ -6728,7 +6726,7 @@ inline __device__ real calcDistributionBC_AD(real q, real weight, real v, real v
 
 // has to be excecuted before Fluid BCs
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void AD_SlipVelDeviceComp(
+__global__ void AD_SlipVelDeviceComp(
     real *normalX,
     real *normalY,
     real *normalZ,

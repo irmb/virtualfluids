@@ -15,7 +15,7 @@ using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_Kum_AA2016_Comp_Bulk_SP_27(real omega,
+__global__ void LB_Kernel_Kum_AA2016_Comp_Bulk_SP_27(real omega,
 																unsigned int* bcMatD,
 																unsigned int* neighborX,
 																unsigned int* neighborY,
@@ -966,7 +966,7 @@ extern "C" __global__ void LB_Kernel_Kum_AA2016_Comp_Bulk_SP_27(real omega,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_Kum_IsoTest_SP_27( real omega,
+__global__ void LB_Kernel_Kum_IsoTest_SP_27( real omega,
 														unsigned int* bcMatD,
 														unsigned int* neighborX,
 														unsigned int* neighborY,
@@ -2005,7 +2005,7 @@ extern "C" __global__ void LB_Kernel_Kum_IsoTest_SP_27( real omega,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_Kum_1h_SP_27(  real omega,
+__global__ void LB_Kernel_Kum_1h_SP_27(  real omega,
 													real deltaPhi,
 													real angularVelocity,
 													unsigned int* bcMatD,
@@ -3232,7 +3232,7 @@ extern "C" __global__ void LB_Kernel_Kum_1h_SP_27(  real omega,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_Kum_New_SP_27(     real omega,
+__global__ void LB_Kernel_Kum_New_SP_27(     real omega,
 														unsigned int* bcMatD,
 														unsigned int* neighborX,
 														unsigned int* neighborY,
@@ -4504,7 +4504,7 @@ extern "C" __global__ void LB_Kernel_Kum_New_SP_27(     real omega,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_Kum_Comp_SP_27(    real omega,
+__global__ void LB_Kernel_Kum_Comp_SP_27(    real omega,
 														unsigned int* bcMatD,
 														unsigned int* neighborX,
 														unsigned int* neighborY,
@@ -5444,7 +5444,7 @@ extern "C" __global__ void LB_Kernel_Kum_Comp_SP_27(    real omega,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_Kum_New_Comp_SRT_SP_27(
+__global__ void LB_Kernel_Kum_New_Comp_SRT_SP_27(
 	real omega,
 	unsigned int* bcMatD,
 	unsigned int* neighborX,

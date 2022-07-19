@@ -8,7 +8,7 @@ using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QInflowScaleByPressDevice27(  real* rhoBC,
+__global__ void QInflowScaleByPressDevice27(  real* rhoBC,
 														 real* DD, 
 														 int* k_Q, 
 														 int* k_N, 
@@ -465,7 +465,7 @@ extern "C" __global__ void QInflowScaleByPressDevice27(  real* rhoBC,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QPressDeviceIncompNEQ27( real* rhoBC,
+__global__ void QPressDeviceIncompNEQ27( real* rhoBC,
 													real* DD, 
 													int* k_Q, 
 													int* k_N, 
@@ -804,7 +804,7 @@ extern "C" __global__ void QPressDeviceIncompNEQ27( real* rhoBC,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QPressDeviceNEQ27(real* rhoBC,
+__global__ void QPressDeviceNEQ27(real* rhoBC,
                                              real* distribution, 
                                              int* bcNodeIndices,
                                              int* bcNeighborIndices,
@@ -1107,7 +1107,7 @@ extern "C" __global__ void QPressDeviceNEQ27(real* rhoBC,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_BC_Press_East27( int nx, 
+__global__ void LB_BC_Press_East27( int nx, 
                                                int ny, 
                                                int tz, 
                                                unsigned int* bcMatD, 
@@ -1416,7 +1416,7 @@ extern "C" __global__ void LB_BC_Press_East27( int nx,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QPressDevice27(real* rhoBC,
+__global__ void QPressDevice27(real* rhoBC,
                                            real* DD, 
                                            int* k_Q, 
                                            real* QQ,
@@ -1899,7 +1899,7 @@ extern "C" __global__ void QPressDevice27(real* rhoBC,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QPressDeviceAntiBB27(   real* rhoBC,
+__global__ void QPressDeviceAntiBB27(   real* rhoBC,
 												   real* vx,
 												   real* vy,
 												   real* vz,
@@ -2364,7 +2364,7 @@ extern "C" __global__ void QPressDeviceAntiBB27(   real* rhoBC,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QPressDeviceFixBackflow27( real* rhoBC,
+__global__ void QPressDeviceFixBackflow27( real* rhoBC,
                                                       real* DD, 
                                                       int* k_Q, 
                                                       int numberOfBCnodes, 
@@ -2555,7 +2555,7 @@ extern "C" __global__ void QPressDeviceFixBackflow27( real* rhoBC,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QPressDeviceDirDepBot27(  real* rhoBC,
+__global__ void QPressDeviceDirDepBot27(  real* rhoBC,
                                                      real* DD, 
                                                      int* k_Q, 
                                                      int numberOfBCnodes, 
@@ -2797,7 +2797,7 @@ extern "C" __global__ void QPressDeviceDirDepBot27(  real* rhoBC,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QPressNoRhoDevice27(  real* rhoBC,
+__global__ void QPressNoRhoDevice27(  real* rhoBC,
 												 real* DD, 
 												 int* k_Q, 
 												 int* k_N, 
@@ -3314,7 +3314,7 @@ extern "C" __global__ void QPressNoRhoDevice27(  real* rhoBC,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QPressDeviceOld27(real* rhoBC,
+__global__ void QPressDeviceOld27(real* rhoBC,
                                              real* DD, 
                                              int* k_Q, 
                                              int* k_N, 
@@ -3573,7 +3573,7 @@ extern "C" __global__ void QPressDeviceOld27(real* rhoBC,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QPressDeviceEQZ27(real* rhoBC,
+__global__ void QPressDeviceEQZ27(real* rhoBC,
                                              real* DD, 
                                              int* k_Q, 
                                              int* k_N,
@@ -4354,9 +4354,9 @@ extern "C" __global__ void QPressDeviceEQZ27(real* rhoBC,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QPressDeviceZero27(	 real* DD, 
+__global__ void QPressDeviceZero27(	 real* DD, 
 												 int* k_Q, 
-												 int numberOfBCnodes, 
+												 unsigned int numberOfBCnodes, 
 												 unsigned int* neighborX,
 												 unsigned int* neighborY,
 												 unsigned int* neighborZ,
@@ -4541,7 +4541,7 @@ extern "C" __global__ void QPressDeviceZero27(	 real* DD,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QPressDeviceFake27(	 real* rhoBC,
+__global__ void QPressDeviceFake27(	 real* rhoBC,
 												 real* DD, 
 												 int* k_Q, 
 												 int* k_N, 
@@ -4815,7 +4815,7 @@ extern "C" __global__ void QPressDeviceFake27(	 real* rhoBC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QPressDevice27_IntBB(real* rho,
+__global__ void QPressDevice27_IntBB(real* rho,
 												real* DD, 
 												int* k_Q, 
 												real* QQ,

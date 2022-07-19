@@ -66,7 +66,7 @@ inline __device__ void backwardChimera(real &mfa, real &mfb, real &mfc, real vv,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void Factorized_Central_Moments_Advection_Diffusion_Device_Kernel(
+__global__ void Factorized_Central_Moments_Advection_Diffusion_Device_Kernel(
 	real omegaDiffusivity,
 	uint* typeOfGridNode,
 	uint* neighborX,

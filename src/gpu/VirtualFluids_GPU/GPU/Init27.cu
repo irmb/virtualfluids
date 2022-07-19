@@ -7,7 +7,7 @@ using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LBInit27( int myid,
+__global__ void LBInit27( int myid,
                                      int numprocs,
                                      real u0,
                                      unsigned int* geoD,
@@ -182,7 +182,7 @@ extern "C" __global__ void LBInit27( int myid,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LBInitNonEqPartSP27( unsigned int* neighborX,
+__global__ void LBInitNonEqPartSP27( unsigned int* neighborX,
                                                 unsigned int* neighborY,
                                                 unsigned int* neighborZ,
                                                 unsigned int* neighborWSB,

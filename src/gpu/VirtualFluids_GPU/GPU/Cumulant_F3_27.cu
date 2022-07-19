@@ -16,7 +16,7 @@ using namespace vf::lbm::dir;
 #include "math.h"
 
 /////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(real omega,
+__global__ void LB_PostProcessor_F3_2018_Fehlberg(real omega,
 															 unsigned int* bcMatD,
 															 unsigned int* neighborX,
 															 unsigned int* neighborY,
@@ -992,7 +992,7 @@ extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(real omega,
 
 
 ///////////////////////////////////////////////////////////////////////////////////
-//extern "C" __global__ void LB_Kernel_Cumulant_D3Q27F3_2018(	real omega,
+//__global__ void LB_Kernel_Cumulant_D3Q27F3_2018(	real omega,
 //															unsigned int* bcMatD,
 //															unsigned int* neighborX,
 //															unsigned int* neighborY,
@@ -1972,7 +1972,7 @@ extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(real omega,
 
 
 /////////////////////////////////////////////////////////////////////////////////
-//extern "C" __global__ void LB_Kernel_Cumulant_D3Q27F3(	real omega,
+//__global__ void LB_Kernel_Cumulant_D3Q27F3(	real omega,
 //														unsigned int* bcMatD,
 //														unsigned int* neighborX,
 //														unsigned int* neighborY,

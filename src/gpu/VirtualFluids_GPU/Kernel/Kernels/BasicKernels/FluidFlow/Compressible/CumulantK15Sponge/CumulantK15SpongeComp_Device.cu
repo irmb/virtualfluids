@@ -6,7 +6,7 @@ using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
 #include "math.h"
 
-extern "C" __global__ void LB_Kernel_CumulantK15SpongeComp(real omegaIn,
+__global__ void LB_Kernel_CumulantK15SpongeComp(real omegaIn,
 	unsigned int* bcMatD,
 	unsigned int* neighborX,
 	unsigned int* neighborY,

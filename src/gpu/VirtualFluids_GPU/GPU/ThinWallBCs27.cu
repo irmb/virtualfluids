@@ -15,14 +15,14 @@ using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
 
 /////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QVelDeviceCompThinWallsPartOne27(
+__global__ void QVelDeviceCompThinWallsPartOne27(
 	real* vx,
 	real* vy,
 	real* vz,
 	real* DD, 
 	int* k_Q, 
 	real* QQ,
-	int numberOfBCnodes, 
+	uint numberOfBCnodes, 
 	real om1, 
 	uint* neighborX,
 	uint* neighborY,
@@ -447,7 +447,7 @@ extern "C" __global__ void QVelDeviceCompThinWallsPartOne27(
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QDeviceCompThinWallsPartOne27(
+__global__ void QDeviceCompThinWallsPartOne27(
 	real* DD,
 	int* k_Q,
 	real* QQ,
@@ -872,7 +872,7 @@ extern "C" __global__ void QDeviceCompThinWallsPartOne27(
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QThinWallsPartTwo27(
+__global__ void QThinWallsPartTwo27(
 	real* DD, 
 	int* k_Q, 
 	real* QQ,

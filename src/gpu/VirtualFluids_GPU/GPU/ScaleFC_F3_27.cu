@@ -14,7 +14,7 @@ using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
+__global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
 													 real* DF,
 													 real* G6,
 													 unsigned int* neighborCX,
@@ -1261,7 +1261,7 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFC_comp_D3Q27F3( real* DC,
+__global__ void scaleFC_comp_D3Q27F3( real* DC,
 												 real* DF,
 												 real* G6,
 												 unsigned int* neighborCX,

@@ -1,8 +1,8 @@
 #include <pybind11/pybind11.h>
 #include "gpu/VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
-#include <gpu/VirtualFluids_GPU/GPU/CudaMemoryManager.h>
-#include <gpu/VirtualFluids_GPU/Parameter/Parameter.h>
-#include "gpu/GridGenerator/grid/GridBuilder/GridBuilder.h"
+// #include <gpu/VirtualFluids_GPU/GPU/CudaMemoryManager.h>
+// #include <gpu/VirtualFluids_GPU/Parameter/Parameter.h>
+// #include "gpu/GridGenerator/grid/GridBuilder/GridBuilder.h"
 
 namespace grid_provider
 {

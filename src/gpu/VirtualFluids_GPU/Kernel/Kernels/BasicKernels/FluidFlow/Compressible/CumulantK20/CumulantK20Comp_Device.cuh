@@ -4,7 +4,7 @@
 #include <DataTypes.h>
 #include <curand.h>
 
-extern "C" __global__ void LB_Kernel_CumulantK20Comp(	real omega,
+__global__ void LB_Kernel_CumulantK20Comp(	real omega,
 															unsigned int* bcMatD,
 															unsigned int* neighborX,
 															unsigned int* neighborY,

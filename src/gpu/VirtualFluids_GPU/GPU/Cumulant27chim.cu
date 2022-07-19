@@ -44,7 +44,7 @@ using namespace vf::lbm::dir;
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void Cumulant_One_preconditioned_errorDiffusion_chim_Comp_SP_27(
+__global__ void Cumulant_One_preconditioned_errorDiffusion_chim_Comp_SP_27(
     real omega,
     unsigned int* bcMatD,
     unsigned int* neighborX,
@@ -959,7 +959,7 @@ extern "C" __global__ void Cumulant_One_preconditioned_errorDiffusion_chim_Comp_
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void Cumulant_One_preconditioned_chim_Comp_SP_27(
+__global__ void Cumulant_One_preconditioned_chim_Comp_SP_27(
     real omega,
     unsigned int* bcMatD,
     unsigned int* neighborX,
@@ -1755,7 +1755,7 @@ extern "C" __global__ void Cumulant_One_preconditioned_chim_Comp_SP_27(
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void Cumulant_One_chim_Comp_SP_27(
+__global__ void Cumulant_One_chim_Comp_SP_27(
     real omega,
     unsigned int* bcMatD,
     unsigned int* neighborX,

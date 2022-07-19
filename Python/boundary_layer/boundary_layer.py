@@ -4,20 +4,34 @@ from pathlib import Path
 from mpi4py import MPI
 from pyfluids import basics, gpu, logger
 #%%
-reference_diameter = 126
+reference_height = 1000 # boundary layer height in m
 
-length = np.array([30,8,8])*reference_diameter
+length = np.array([6,4,1])*reference_height
 viscosity = 1.56e-5
-velocity = 9
 mach = 0.1
-nodes_per_diameter = 32
+nodes_per_height = 32
+
+z_0 = 0.1
+u_star = 0.4
+kappa = 0.4
+
+velocity = 0.5*u_star/kappa*np.log(length[2]/z_0+1)
+flow_through_time = length[0]/velocity
+use_AMD = True
+
 
 sim_name = "BoundaryLayer"
 config_file = Path(__file__).parent/Path("config.txt")
 output_path = Path(__file__).parent/Path("output")
 output_path.mkdir(exist_ok=True)
-timeStepOut = 500
-t_end = 50
+t_out = 1000.
+t_end = 5000.
+
+t_start_averaging = 0
+t_start_tmp_averaging =  100_000
+t_averaging = 200
+t_start_out_probe = 0
+t_out_probe = 1000
 
 #%%
 logger.Logger.initialize_logger()
@@ -25,24 +39,37 @@ basics.logger.Logger.add_stdout()
 basics.logger.Logger.set_debug_level(basics.logger.Level.INFO_LOW)
 basics.logger.Logger.time_stamp(basics.logger.TimeStamp.ENABLE)
 basics.logger.Logger.enable_printed_rank_numbers(True)
-#%%
-grid_builder = gpu.MultipleGridBuilder.make_shared()
-dx = reference_diameter/nodes_per_diameter
-
-grid_builder.add_coarse_grid(0.0, 0.0, 0.0, *length, dx)
-grid_builder.set_periodic_boundary_condition(False, False, False)
-grid_builder.build_grids(basics.LbmOrGks.LBM, False)
 # %%
 comm = gpu.Communicator.get_instance()
+#%%
+grid_factory = gpu.grid_generator.GridFactory.make()
+grid_builder = gpu.grid_generator.MultipleGridBuilder.make_shared(grid_factory)
+
+#%%
+dx = reference_height/nodes_per_height
+dt = dx * mach / (np.sqrt(3) * velocity)
+velocity_lb = velocity * dt / dx # LB units
+viscosity_lb = viscosity * dt / (dx * dx) # LB units
+
+pressure_gradient = u_star**2 / reference_height
+pressure_gradient_lb = pressure_gradient * dt**2 / dx
+
+logger.vf_log_info(f"velocity    = {velocity_lb:1.6} dx/dt")
+logger.vf_log_info(f"dt          = {dt:1.6}")
+logger.vf_log_info(f"dx          = {dx:1.6}")
+logger.vf_log_info(f"u*          = {u_star:1.6}")
+logger.vf_log_info(f"dpdx        = {pressure_gradient:1.6}")
+logger.vf_log_info(f"dpdx        = {pressure_gradient_lb:1.6} dx/dt^2")
+logger.vf_log_info(f"viscosity   = {viscosity_lb:1.6} dx^2/dt")
+
+
 #%%
 config = basics.ConfigurationFile()
 config.load(str(config_file))
 #%%
 para = gpu.Parameter(config, comm.get_number_of_process(), comm.get_pid())
 
-dt = dx * mach / (np.sqrt(3) * velocity)
-velocity_lb = velocity * dt / dx # LB units
-viscosity_lb = viscosity * dt / (dx * dx) # LB units
+
 
 #%%
 para.set_devices([0])
@@ -55,54 +82,52 @@ para.set_max_level(1)
 para.set_velocity(velocity_lb)
 para.set_viscosity(viscosity_lb)    
 para.set_velocity_ratio(dx/dt)
-para.set_main_kernel("CumulantK17CompChim")
+para.set_viscosity_ratio(dx*dx/dt)
+para.set_use_AMD(use_AMD)
+
+para.set_main_kernel("TurbulentViscosityCumulantK17CompChim" if para.get_use_AMD() else "CummulantK17CompChim")
+
+para.set_SGS_constant(0.083)
 
 def init_func(coord_x, coord_y, coord_z):
-    return [0.0, velocity_lb, 0.0, 0.0]
+    return [
+        0.0, 
+        (u_star/kappa*np.log(max(coord_z/z_0,0)+1) + 2*np.sin(np.pi*16*coord_x/length[0])*np.sin(np.pi*8*coord_z/length[2]))/((coord_z/reference_height)**2+0.1)*dt/dx, 
+        2*np.sin(np.pi*16*coord_x/length[0])*np.sin(np.pi*8*coord_z/length[2])/((coord_z/reference_height)**2+0.1)*dt/dx, 
+        8*u_star/kappa*(np.sin(np.pi*8*coord_y/reference_height)*np.sin(np.pi*8*coord_z/reference_height)+np.sin(np.pi*8*coord_x/length[0]))/((length[2]/2-coord_z)**2+0.1)*dt/dx
+        ]
 
 para.set_initial_condition(init_func)
-para.set_t_out(timeStepOut)
+para.set_t_out(int(t_out/dt))
 para.set_t_end(int(t_end/dt))
 para.set_is_body_force(True)
+para.set_has_wall_model_monitor(True)
+
+
+grid_builder.add_coarse_grid(0.0, 0.0, 0.0, *length, dx)
+grid_builder.set_periodic_boundary_condition(True, True, False)
+grid_builder.build_grids(basics.LbmOrGks.LBM, False)
+#%%
+sampling_offset = 2
+grid_builder.set_stress_boundary_condition(gpu.SideType.MZ, 0.0, 0.0, 1.0, sampling_offset, z_0/dx)
+grid_builder.set_slip_boundary_condition(gpu.SideType.PZ, 0.0, 0.0, 0.0)
 
 #%%
-grid_builder.set_velocity_boundary_condition(gpu.SideType.MX, velocity_lb, 0.0, 0.0)
-grid_builder.set_velocity_boundary_condition(gpu.SideType.PX, velocity_lb, 0.0, 0.0)
-
-grid_builder.set_velocity_boundary_condition(gpu.SideType.MY, velocity_lb, 0.0, 0.0)
-grid_builder.set_velocity_boundary_condition(gpu.SideType.PY, velocity_lb, 0.0, 0.0)
-
-grid_builder.set_velocity_boundary_condition(gpu.SideType.MZ, velocity_lb, 0.0, 0.0)
-grid_builder.set_velocity_boundary_condition(gpu.SideType.PZ, velocity_lb, 0.0, 0.0)
+cuda_memory_manager = gpu.CudaMemoryManager(para)
+grid_generator = gpu.GridProvider.make_grid_generator(grid_builder, para, cuda_memory_manager, comm)
 
 #%%
-cuda_memory_manager = gpu.CudaMemoryManager.make(para)
-grid_generator = gpu.GridProvider.make_grid_generator(grid_builder, para, cuda_memory_manager)
-#%%
-turb_pos = np.array([3,3,3])*reference_diameter
-epsilon = 5
-density = 1.225
-level = 0
-n_blades = 3
-n_blade_nodes = 32
-alm = gpu.ActuatorLine(n_blades, density, n_blade_nodes, epsilon, *turb_pos, reference_diameter, level, dt, dx)
-para.add_actuator(alm)
-#%%
-point_probe = gpu.probes.PointProbe("pointProbe", str(output_path), 100, 500, 100)
-point_probe.add_probe_points_from_list(np.array([1,2,5])*reference_diameter, np.array([3,3,3])*reference_diameter, np.array([3,3,3])*reference_diameter)
-point_probe.add_post_processing_variable(gpu.probes.PostProcessingVariable.Means)
+wall_probe = gpu.probes.WallModelProbe("wallModelProbe", str(output_path), int(t_start_averaging/dt), int(t_start_tmp_averaging/dt), int(t_averaging/dt/4), int(t_start_out_probe/dt), int(t_out_probe/dt))
+wall_probe.add_all_available_statistics()
+wall_probe.set_file_name_to_n_out()
+wall_probe.set_force_output_to_stress(True)
+if para.get_is_body_force():
+    wall_probe.set_evaluate_pressure_gradient(True)
+planar_probe = gpu.probes.PlanarAverageProbe("planarAverageProbe", str(output_path), int(t_start_averaging/dt), int(t_start_tmp_averaging/dt), int(t_averaging/dt), int(t_start_out_probe/dt), int(t_out_probe/dt), "z")
+para.add_probe(wall_probe)
 
-para.add_probe(point_probe)
-
-plane_probe = gpu.probes.PlaneProbe("planeProbe", str(output_path), 100, 500, 100)
-plane_probe.set_probe_plane(5*reference_diameter, 0, 0, dx, length[1], length[2])
-para.add_probe(plane_probe)
 #%%
-sim = gpu.Simulation(comm)
-kernel_factory = gpu.KernelFactory.get_instance()
-sim.set_factories(kernel_factory, gpu.PreProcessorFactory.get_instance())
-sim.init(para, grid_generator, gpu.FileWriter(), cuda_memory_manager)
+sim = gpu.Simulation(para, cuda_memory_manager, comm, grid_generator)
 #%%
 sim.run()
-sim.free()
 MPI.Finalize()

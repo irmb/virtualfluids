@@ -7,7 +7,7 @@ using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void InitParticles( real* coordX,
+__global__ void InitParticles( real* coordX,
 										  real* coordY,
 										  real* coordZ, 
 										  real* coordParticleXlocal,
@@ -158,7 +158,7 @@ extern "C" __global__ void InitParticles( real* coordX,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void MoveParticles( real* coordX,
+__global__ void MoveParticles( real* coordX,
 										  real* coordY,
 										  real* coordZ, 
 										  real* coordParticleXlocal,
@@ -1030,7 +1030,7 @@ extern "C" __global__ void MoveParticles( real* coordX,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void MoveParticlesWithoutBCs(   real* coordX,
+__global__ void MoveParticlesWithoutBCs(   real* coordX,
 													  real* coordY,
 													  real* coordZ, 
 													  real* coordParticleXlocal,
@@ -1896,7 +1896,7 @@ extern "C" __global__ void MoveParticlesWithoutBCs(   real* coordX,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void ParticleNoSlipDeviceComp27(real* coordX,
+__global__ void ParticleNoSlipDeviceComp27(real* coordX,
 													  real* coordY,
 													  real* coordZ, 
 													  real* coordParticleXlocal,

@@ -8,7 +8,7 @@ using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QSlipDevice27(real* DD, 
+__global__ void QSlipDevice27(real* DD, 
                                          int* k_Q, 
                                          real* QQ,
                                          unsigned int numberOfBCnodes,
@@ -658,7 +658,7 @@ extern "C" __global__ void QSlipDevice27(real* DD,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QSlipDeviceComp27(
+__global__ void QSlipDeviceComp27(
                                     real* distributions, 
                                     int* subgridDistanceIndices, 
                                     real* subgridDistances,
@@ -1169,7 +1169,7 @@ extern "C" __global__ void QSlipDeviceComp27(
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QSlipDeviceComp27TurbViscosity(real* DD, 
+__global__ void QSlipDeviceComp27TurbViscosity(real* DD, 
 											 int* k_Q, 
 											 real* QQ,
 											 unsigned int numberOfBCnodes,
@@ -1874,7 +1874,7 @@ extern "C" __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QSlipGeomDeviceComp27(real* DD, 
+__global__ void QSlipGeomDeviceComp27(real* DD, 
 												 int* k_Q, 
 												 real* QQ,
 												 unsigned int  numberOfBCnodes,
@@ -2760,7 +2760,7 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QSlipNormDeviceComp27(real* DD, 
+__global__ void QSlipNormDeviceComp27(real* DD, 
 												 int* k_Q, 
 												 real* QQ,
 												 unsigned int  numberOfBCnodes,

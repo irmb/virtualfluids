@@ -7,7 +7,7 @@ using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void DragLiftPost27(  real* DD, 
+__global__ void DragLiftPost27(  real* DD, 
 											int* k_Q, 
 											real* QQ,
 											int numberOfBCnodes, 
@@ -272,7 +272,7 @@ extern "C" __global__ void DragLiftPost27(  real* DD,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void DragLiftPre27(   real* DD, 
+__global__ void DragLiftPre27(   real* DD, 
 											int* k_Q, 
 											real* QQ,
 											int numberOfBCnodes, 
