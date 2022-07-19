@@ -265,7 +265,9 @@ gpu_numerical_tests:
   stage: benchmark
 
   rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "schedule" && VF_GPU_NUMERICAL_TESTS
+      when: always
+    - when: manual
 
   needs: []
 
