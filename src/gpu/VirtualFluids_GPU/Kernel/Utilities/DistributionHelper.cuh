@@ -35,12 +35,77 @@
 
 #include "LBM/LB.h" 
 
-#include <lbm/KernelParameter.h>
+#include "lbm/KernelParameter.h"
+#include "lbm/constants/D3Q27.h"
 
-namespace vf
+using namespace vf::lbm::dir;
+
+namespace vf::gpu
 {
-namespace gpu
+
+__inline__ __device__ __host__ void getPointersToDistributions(Distributions27 &dist, real *distributionArray, const uint numberOfLBnodes, const bool isEvenTimestep)
 {
+    if (isEvenTimestep)
+    {
+        dist.f[E   ] = &distributionArray[E   *numberOfLBnodes];
+        dist.f[W   ] = &distributionArray[W   *numberOfLBnodes];
+        dist.f[N   ] = &distributionArray[N   *numberOfLBnodes];
+        dist.f[S   ] = &distributionArray[S   *numberOfLBnodes];
+        dist.f[T   ] = &distributionArray[T   *numberOfLBnodes];
+        dist.f[B   ] = &distributionArray[B   *numberOfLBnodes];
+        dist.f[NE  ] = &distributionArray[NE  *numberOfLBnodes];
+        dist.f[SW  ] = &distributionArray[SW  *numberOfLBnodes];
+        dist.f[SE  ] = &distributionArray[SE  *numberOfLBnodes];
+        dist.f[NW  ] = &distributionArray[NW  *numberOfLBnodes];
+        dist.f[TE  ] = &distributionArray[TE  *numberOfLBnodes];
+        dist.f[BW  ] = &distributionArray[BW  *numberOfLBnodes];
+        dist.f[BE  ] = &distributionArray[BE  *numberOfLBnodes];
+        dist.f[TW  ] = &distributionArray[TW  *numberOfLBnodes];
+        dist.f[TN  ] = &distributionArray[TN  *numberOfLBnodes];
+        dist.f[BS  ] = &distributionArray[BS  *numberOfLBnodes];
+        dist.f[BN  ] = &distributionArray[BN  *numberOfLBnodes];
+        dist.f[TS  ] = &distributionArray[TS  *numberOfLBnodes];
+        dist.f[REST] = &distributionArray[REST*numberOfLBnodes];
+        dist.f[TNE ] = &distributionArray[TNE *numberOfLBnodes];
+        dist.f[TSW ] = &distributionArray[TSW *numberOfLBnodes];
+        dist.f[TSE ] = &distributionArray[TSE *numberOfLBnodes];
+        dist.f[TNW ] = &distributionArray[TNW *numberOfLBnodes];
+        dist.f[BNE ] = &distributionArray[BNE *numberOfLBnodes];
+        dist.f[BSW ] = &distributionArray[BSW *numberOfLBnodes];
+        dist.f[BSE ] = &distributionArray[BSE *numberOfLBnodes];
+        dist.f[BNW ] = &distributionArray[BNW *numberOfLBnodes];
+    }
+    else
+    {
+         dist.f[W   ] = &distributionArray[E   *numberOfLBnodes];
+         dist.f[E   ] = &distributionArray[W   *numberOfLBnodes];
+         dist.f[S   ] = &distributionArray[N   *numberOfLBnodes];
+         dist.f[N   ] = &distributionArray[S   *numberOfLBnodes];
+         dist.f[B   ] = &distributionArray[T   *numberOfLBnodes];
+         dist.f[T   ] = &distributionArray[B   *numberOfLBnodes];
+         dist.f[SW  ] = &distributionArray[NE  *numberOfLBnodes];
+         dist.f[NE  ] = &distributionArray[SW  *numberOfLBnodes];
+         dist.f[NW  ] = &distributionArray[SE  *numberOfLBnodes];
+         dist.f[SE  ] = &distributionArray[NW  *numberOfLBnodes];
+         dist.f[BW  ] = &distributionArray[TE  *numberOfLBnodes];
+         dist.f[TE  ] = &distributionArray[BW  *numberOfLBnodes];
+         dist.f[TW  ] = &distributionArray[BE  *numberOfLBnodes];
+         dist.f[BE  ] = &distributionArray[TW  *numberOfLBnodes];
+         dist.f[BS  ] = &distributionArray[TN  *numberOfLBnodes];
+         dist.f[TN  ] = &distributionArray[BS  *numberOfLBnodes];
+         dist.f[TS  ] = &distributionArray[BN  *numberOfLBnodes];
+         dist.f[BN  ] = &distributionArray[TS  *numberOfLBnodes];
+         dist.f[REST] = &distributionArray[REST*numberOfLBnodes];
+         dist.f[TNE ] = &distributionArray[BSW *numberOfLBnodes];
+         dist.f[TSW ] = &distributionArray[BNE *numberOfLBnodes];
+         dist.f[TSE ] = &distributionArray[BNW *numberOfLBnodes];
+         dist.f[TNW ] = &distributionArray[BSE *numberOfLBnodes];
+         dist.f[BNE ] = &distributionArray[TSW *numberOfLBnodes];
+         dist.f[BSW ] = &distributionArray[TNE *numberOfLBnodes];
+         dist.f[BSE ] = &distributionArray[TNW *numberOfLBnodes];
+         dist.f[BNW ] = &distributionArray[TSE *numberOfLBnodes];
+    }
+}
 
 /**
 *  Getting references to the 27 directions.
@@ -49,7 +114,11 @@ namespace gpu
 *  @params isEvenTimestep: stored data dependent on timestep is based on the esoteric twist algorithm
 *  @return a data struct containing the addresses to the 27 directions within the 1D distribution array
 */
-__device__ __host__ DistributionReferences27 getDistributionReferences27(real* distributions, unsigned int matrix_size, bool isEvenTimestep);
+__inline__ __device__ __host__ DistributionReferences27 getDistributionReferences27(real* distributions, unsigned int numberOfLBnodes, bool isEvenTimestep){
+    DistributionReferences27 distribution_references;
+    getPointersToDistributions(distribution_references, distributions, numberOfLBnodes, isEvenTimestep);
+    return distribution_references;
+}
 
 
 /**
@@ -88,11 +157,20 @@ struct DistributionWrapper
     const uint kbsw;
 };
 
-__device__ unsigned int getNodeIndex();
+__inline__ __device__ unsigned int getNodeIndex()
+{
+    const unsigned x = threadIdx.x;
+    const unsigned y = blockIdx.x;
+    const unsigned z = blockIdx.y;
+
+    const unsigned nx = blockDim.x;
+    const unsigned ny = gridDim.x;
+
+    return nx * (ny * z + y) + x;
+}
 
 __device__ bool isValidFluidNode(uint nodeType);
 
-}
 }
 
 #endif
