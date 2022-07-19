@@ -5,7 +5,6 @@
 #include "GPU/GPU_Interface.h"
 #include "gpu/GridGenerator/grid/BoundaryConditions/BoundaryCondition.h"
 
-
 using bcFunction = void (*)(LBMSimulationParameter *, QforBoundaryConditions *);
 using bcFunctionParamter = void (*)(Parameter *, QforBoundaryConditions *, const int level);
 
@@ -55,7 +54,6 @@ TEST(BoundaryConditionFactoryTest, defaultStressBC)
     EXPECT_THAT(bc, testing::Eq(nullptr));
     EXPECT_THROW(bc(nullptr, nullptr, 0), std::bad_function_call);
 }
-
 
 bcFunction getVelocityBcTarget(BoundaryConditionFactory &bcFactory)
 {
@@ -136,7 +134,7 @@ TEST(BoundaryConditionFactoryTest, slipBC)
     bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipIncompressible);
     EXPECT_THAT(*(getSlipBcTarget(bcFactory)), testing::Eq(QSlipDev27))
         << "The returned boundary condition is not the expected function QSlipDev27.";
-    
+
     bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipCompressible);
     EXPECT_THAT(*(getSlipBcTarget(bcFactory)), testing::Eq(QSlipDevComp27))
         << "The returned boundary condition is not the expected function QSlipDevComp27.";
@@ -161,7 +159,7 @@ TEST(BoundaryConditionFactoryTest, pressureBC)
     bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::PressureEquilibrium);
     EXPECT_THAT(*(getPressureBcTarget(bcFactory)), testing::Eq(QPressDev27))
         << "The returned boundary condition is not the expected function QPressDev27.";
-        
+
     bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::PressureEquilibrium2);
     EXPECT_THAT(*(getPressureBcTarget(bcFactory)), testing::Eq(QPressDevEQZ27))
         << "The returned boundary condition is not the expected function QPressDevEQZ27.";
@@ -177,7 +175,6 @@ TEST(BoundaryConditionFactoryTest, pressureBC)
     bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflective);
     EXPECT_THAT(*(getPressureBcTarget(bcFactory)), testing::Eq(QPressNoRhoDev27))
         << "The returned boundary condition is not the expected function QPressNoRhoDev27.";
-
 }
 
 bcFunction getGeometryBcTarget(BoundaryConditionFactory &bcFactory)
