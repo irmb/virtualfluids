@@ -137,8 +137,8 @@ void multipleLevel(const std::string &configPath)
     *logging::out << logging::Logger::INFO_HIGH << "velocity  [dx/dt] = " << velocityLB << " \n";
     *logging::out << logging::Logger::INFO_HIGH << "viscosity [dx^2/dt] = " << viscosityLB << "\n";
 
-    para->setVelocity(velocityLB);
-    para->setViscosity(viscosityLB);
+    para->setVelocityLB(velocityLB);
+    para->setViscosityLB(viscosityLB);
     para->setVelocityRatio(velocity / velocityLB);
     para->setDensityRatio((real)1.0); // correct value?
 

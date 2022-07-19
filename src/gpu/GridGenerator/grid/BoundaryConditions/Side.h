@@ -36,7 +36,7 @@
 #include <string>
 #include <vector>
 
-#include "global.h"
+#include "gpu/GridGenerator/global.h"
 
 #define X_INDEX 0
 #define Y_INDEX 1

@@ -133,8 +133,8 @@ void multipleLevel(const std::string &configPath)
     real vxLB        = (real)0.0005; // LB units
     real viscosityLB = 0.001;        //(vxLB * dxGrid) / Re;
 
-    para->setVelocity(vxLB);
-    para->setViscosity(viscosityLB);
+    para->setVelocityLB(vxLB);
+    para->setViscosityLB(viscosityLB);
     para->setVelocityRatio((real)58.82352941);
     para->setViscosityRatio((real)0.058823529);
     para->setDensityRatio((real)998.0);

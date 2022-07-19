@@ -32,8 +32,6 @@
 //=======================================================================================
 #include "GridImp.h"
 
-#include <stdio.h>
-#include <time.h>
 #include <iostream>
 #include <omp.h>
 #include <sstream>
@@ -1265,7 +1263,7 @@ void GridImp::mesh(Triangle &triangle)
                     continue;
 
                 const Vertex point(x, y, z);
-                const int value = triangle.isUnderFace(point);
+                const char value = triangle.isUnderFace(point);
                 //setDebugPoint(index, value);
 
                 if (value == Q_DEPRECATED)

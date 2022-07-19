@@ -1,10 +1,10 @@
-
-#include <iostream>
-#include <cuda_runtime.h>
-#include "UbScheduler.h"
 #include "Timer.h"
-#include "VirtualFluids_GPU/Communication/Communicator.h"
+#include <iostream>
+#include <helper_cuda.h>
 
+#include "UbScheduler.h"
+#include "Parameter/Parameter.h"
+#include "VirtualFluids_GPU/Communication/Communicator.h"
 
 void Timer::initTimer()
 {
