@@ -68,140 +68,121 @@ __global__ void LB_Kernel_CumulantK17CompChimRedesigned(
     //! The cumulant kernel is executed in the following steps
     //!
     ////////////////////////////////////////////////////////////////////////////////
-    //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
+    //! - Get the thread index coordinates from threadIdx, blockIdx, blockDim and gridDim.
     //!
     const unsigned kThread = vf::gpu::getNodeIndex();
 
     //////////////////////////////////////////////////////////////////////////
     // run for all indices in fluidNodeIndices
     if (kThread < numberOfFluidNodes) {
+        ////////////////////////////////////////////////////////////////////////////////
+        //! - Get the node index from the array containing all indices of fluid nodes
+        //!
+        const unsigned k = fluidNodeIndices[kThread];
+
         //////////////////////////////////////////////////////////////////////////
         //! - Read distributions: style of reading and writing the distributions from/to stored arrays dependent on
         //! timestep is based on the esoteric twist algorithm \ref <a
         //! href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017),
         //! DOI:10.3390/computation5020019 ]</b></a>
-
-        const unsigned k = fluidNodeIndices[kThread];
-
-        Distributions27 dist;
-        if (isEvenTimestep) {
-            dist.f[E]    = &distributions[E * numberOfLBnodes];
-            dist.f[W]    = &distributions[W * numberOfLBnodes];
-            dist.f[N]    = &distributions[N * numberOfLBnodes];
-            dist.f[S]    = &distributions[S * numberOfLBnodes];
-            dist.f[T]    = &distributions[T * numberOfLBnodes];
-            dist.f[B]    = &distributions[B * numberOfLBnodes];
-            dist.f[NE]   = &distributions[NE * numberOfLBnodes];
-            dist.f[SW]   = &distributions[SW * numberOfLBnodes];
-            dist.f[SE]   = &distributions[SE * numberOfLBnodes];
-            dist.f[NW]   = &distributions[NW * numberOfLBnodes];
-            dist.f[TE]   = &distributions[TE * numberOfLBnodes];
-            dist.f[BW]   = &distributions[BW * numberOfLBnodes];
-            dist.f[BE]   = &distributions[BE * numberOfLBnodes];
-            dist.f[TW]   = &distributions[TW * numberOfLBnodes];
-            dist.f[TN]   = &distributions[TN * numberOfLBnodes];
-            dist.f[BS]   = &distributions[BS * numberOfLBnodes];
-            dist.f[BN]   = &distributions[BN * numberOfLBnodes];
-            dist.f[TS]   = &distributions[TS * numberOfLBnodes];
-            dist.f[REST] = &distributions[REST * numberOfLBnodes];
-            dist.f[TNE]  = &distributions[TNE * numberOfLBnodes];
-            dist.f[TSW]  = &distributions[TSW * numberOfLBnodes];
-            dist.f[TSE]  = &distributions[TSE * numberOfLBnodes];
-            dist.f[TNW]  = &distributions[TNW * numberOfLBnodes];
-            dist.f[BNE]  = &distributions[BNE * numberOfLBnodes];
-            dist.f[BSW]  = &distributions[BSW * numberOfLBnodes];
-            dist.f[BSE]  = &distributions[BSE * numberOfLBnodes];
-            dist.f[BNW]  = &distributions[BNW * numberOfLBnodes];
-        } else {
-            dist.f[W]    = &distributions[E * numberOfLBnodes];
-            dist.f[E]    = &distributions[W * numberOfLBnodes];
-            dist.f[S]    = &distributions[N * numberOfLBnodes];
-            dist.f[N]    = &distributions[S * numberOfLBnodes];
-            dist.f[B]    = &distributions[T * numberOfLBnodes];
-            dist.f[T]    = &distributions[B * numberOfLBnodes];
-            dist.f[SW]   = &distributions[NE * numberOfLBnodes];
-            dist.f[NE]   = &distributions[SW * numberOfLBnodes];
-            dist.f[NW]   = &distributions[SE * numberOfLBnodes];
-            dist.f[SE]   = &distributions[NW * numberOfLBnodes];
-            dist.f[BW]   = &distributions[TE * numberOfLBnodes];
-            dist.f[TE]   = &distributions[BW * numberOfLBnodes];
-            dist.f[TW]   = &distributions[BE * numberOfLBnodes];
-            dist.f[BE]   = &distributions[TW * numberOfLBnodes];
-            dist.f[BS]   = &distributions[TN * numberOfLBnodes];
-            dist.f[TN]   = &distributions[BS * numberOfLBnodes];
-            dist.f[TS]   = &distributions[BN * numberOfLBnodes];
-            dist.f[BN]   = &distributions[TS * numberOfLBnodes];
-            dist.f[REST] = &distributions[REST * numberOfLBnodes];
-            dist.f[BSW]  = &distributions[TNE * numberOfLBnodes];
-            dist.f[BNE]  = &distributions[TSW * numberOfLBnodes];
-            dist.f[BNW]  = &distributions[TSE * numberOfLBnodes];
-            dist.f[BSE]  = &distributions[TNW * numberOfLBnodes];
-            dist.f[TSW]  = &distributions[BNE * numberOfLBnodes];
-            dist.f[TNE]  = &distributions[BSW * numberOfLBnodes];
-            dist.f[TNW]  = &distributions[BSE * numberOfLBnodes];
-            dist.f[TSE]  = &distributions[BNW * numberOfLBnodes];
-        }
+        //!
+        Distributions27 dist = vf::gpu::getDistributionReferences27(distributions, numberOfLBnodes, isEvenTimestep);
+        
         ////////////////////////////////////////////////////////////////////////////////
         //! - Set neighbor indices (necessary for indirect addressing)
-        uint kw   = neighborX[k];
-        uint ks   = neighborY[k];
-        uint kb   = neighborZ[k];
-        uint ksw  = neighborY[kw];
-        uint kbw  = neighborZ[kw];
-        uint kbs  = neighborZ[ks];
-        uint kbsw = neighborZ[ksw];
-        ////////////////////////////////////////////////////////////////////////////////////
-        //! - Set local distributions
         //!
-        real mfcbb = (dist.f[E])[k];
-        real mfabb = (dist.f[W])[kw];
-        real mfbcb = (dist.f[N])[k];
-        real mfbab = (dist.f[S])[ks];
-        real mfbbc = (dist.f[T])[k];
-        real mfbba = (dist.f[B])[kb];
-        real mfccb = (dist.f[NE])[k];
-        real mfaab = (dist.f[SW])[ksw];
-        real mfcab = (dist.f[SE])[ks];
-        real mfacb = (dist.f[NW])[kw];
-        real mfcbc = (dist.f[TE])[k];
-        real mfaba = (dist.f[BW])[kbw];
-        real mfcba = (dist.f[BE])[kb];
-        real mfabc = (dist.f[TW])[kw];
-        real mfbcc = (dist.f[TN])[k];
-        real mfbaa = (dist.f[BS])[kbs];
-        real mfbca = (dist.f[BN])[kb];
-        real mfbac = (dist.f[TS])[ks];
-        real mfbbb = (dist.f[REST])[k];
-        real mfccc = (dist.f[TNE])[k];
-        real mfaac = (dist.f[TSW])[ksw];
-        real mfcac = (dist.f[TSE])[ks];
-        real mfacc = (dist.f[TNW])[kw];
-        real mfcca = (dist.f[BNE])[kb];
-        real mfaaa = (dist.f[BSW])[kbsw];
-        real mfcaa = (dist.f[BSE])[kbs];
-        real mfaca = (dist.f[BNW])[kbw];
+        uint k_M00 = neighborX[k];
+        uint k_0M0 = neighborY[k];
+        uint k_00M = neighborZ[k];
+        uint k_MM0 = neighborY[k_M00];
+        uint k_M0M = neighborZ[k_M00];
+        uint k_0MM = neighborZ[k_0M0];
+        uint k_MMM = neighborZ[k_MM0];
+
+        ////////////////////////////////////////////////////////////////////////////////////
+        //! - Set local distributions (f's):
+        //!
+        real f_000 = (dist.f[REST])[k];
+        real f_P00 = (dist.f[E])[k];
+        real f_M00 = (dist.f[W])[k_M00];
+        real f_0P0 = (dist.f[N])[k];
+        real f_0M0 = (dist.f[S])[k_0M0];
+        real f_00P = (dist.f[T])[k];
+        real f_00M = (dist.f[B])[k_00M];
+        real f_PP0 = (dist.f[NE])[k];
+        real f_MM0 = (dist.f[SW])[k_MM0];
+        real f_PM0 = (dist.f[SE])[k_0M0];
+        real f_MP0 = (dist.f[NW])[k_M00];
+        real f_P0P = (dist.f[TE])[k];
+        real f_M0M = (dist.f[BW])[k_M0M];
+        real f_P0M = (dist.f[BE])[k_00M];
+        real f_M0P = (dist.f[TW])[k_M00];
+        real f_0PP = (dist.f[TN])[k];
+        real f_0MM = (dist.f[BS])[k_0MM];
+        real f_0PM = (dist.f[BN])[k_00M];
+        real f_0MP = (dist.f[TS])[k_0M0];
+        real f_PPP = (dist.f[TNE])[k];
+        real f_MPP = (dist.f[TNW])[k_M00];
+        real f_PMP = (dist.f[TSE])[k_0M0];
+        real f_MMP = (dist.f[TSW])[k_MM0];
+        real f_PPM = (dist.f[BNE])[k_00M];
+        real f_MPM = (dist.f[BNW])[k_M0M];
+        real f_PMM = (dist.f[BSE])[k_0MM];
+        real f_MMM = (dist.f[BSW])[k_MMM];
+
+        ////////////////////////////////////////////////////////////////////////////////////
+        //! - Define aliases to use the same variable for the moments (m's):
+        //!
+        real& m_111 = f_000;
+        real& m_211 = f_P00;
+        real& m_011 = f_M00;
+        real& m_121 = f_0P0;
+        real& m_101 = f_0M0;
+        real& m_112 = f_00P;
+        real& m_110 = f_00M;
+        real& m_221 = f_PP0;
+        real& m_001 = f_MM0;
+        real& m_201 = f_PM0;
+        real& m_021 = f_MP0;
+        real& m_212 = f_P0P;
+        real& m_010 = f_M0M;
+        real& m_210 = f_P0M;
+        real& m_012 = f_M0P;
+        real& m_122 = f_0PP;
+        real& m_100 = f_0MM;
+        real& m_120 = f_0PM;
+        real& m_102 = f_0MP;
+        real& m_222 = f_PPP;
+        real& m_022 = f_MPP;
+        real& m_202 = f_PMP;
+        real& m_002 = f_MMP;
+        real& m_220 = f_PPM;
+        real& m_020 = f_MPM;
+        real& m_200 = f_PMM;
+        real& m_000 = f_MMM;
+
         ////////////////////////////////////////////////////////////////////////////////////
         //! - Calculate density and velocity using pyramid summation for low round-off errors as in Eq. (J1)-(J3) \ref
         //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015),
         //! DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
         //!
-        real drho = ((((mfccc + mfaaa) + (mfaca + mfcac)) + ((mfacc + mfcaa) + (mfaac + mfcca))) +
-                     (((mfbac + mfbca) + (mfbaa + mfbcc)) + ((mfabc + mfcba) + (mfaba + mfcbc)) +
-                      ((mfacb + mfcab) + (mfaab + mfccb))) +
-                     ((mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc))) +
-                    mfbbb;
+        real drho = ((((f_PPP + f_MMM) + (f_MPM + f_PMP)) + ((f_MPP + f_PMM) + (f_MMP + f_PPM))) +
+                     (((f_0MP + f_0PM) + (f_0MM + f_0PP)) + ((f_M0P + f_P0M) + (f_M0M + f_P0P)) +
+                      ((f_MP0 + f_PM0) + (f_MM0 + f_PP0))) +
+                     ((f_M00 + f_P00) + (f_0M0 + f_0P0) + (f_00M + f_00P))) +
+                    f_000;
 
         real rho   = c1o1 + drho;
         real OOrho = c1o1 / rho;
 
-        real vvx = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
-                    (((mfcba - mfabc) + (mfcbc - mfaba)) + ((mfcab - mfacb) + (mfccb - mfaab))) + (mfcbb - mfabb)) *
+        real vvx = ((((f_PPP - f_MMM) + (f_PMP - f_MPM)) + ((f_PMM - f_MPP) + (f_PPM - f_MMP))) +
+                    (((f_P0M - f_M0P) + (f_P0P - f_M0M)) + ((f_PM0 - f_MP0) + (f_PP0 - f_MM0))) + (f_P00 - f_M00)) *
                    OOrho;
-        real vvy = ((((mfccc - mfaaa) + (mfaca - mfcac)) + ((mfacc - mfcaa) + (mfcca - mfaac))) +
-                    (((mfbca - mfbac) + (mfbcc - mfbaa)) + ((mfacb - mfcab) + (mfccb - mfaab))) + (mfbcb - mfbab)) *
+        real vvy = ((((f_PPP - f_MMM) + (f_MPM - f_PMP)) + ((f_MPP - f_PMM) + (f_PPM - f_MMP))) +
+                    (((f_0PM - f_0MP) + (f_0PP - f_0MM)) + ((f_MP0 - f_PM0) + (f_PP0 - f_MM0))) + (f_0P0 - f_0M0)) *
                    OOrho;
-        real vvz = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfacc - mfcaa) + (mfaac - mfcca))) +
-                    (((mfbac - mfbca) + (mfbcc - mfbaa)) + ((mfabc - mfcba) + (mfcbc - mfaba))) + (mfbbc - mfbba)) *
+        real vvz = ((((f_PPP - f_MMM) + (f_PMP - f_MPM)) + ((f_MPP - f_PMM) + (f_MMP - f_PPM))) +
+                    (((f_0MP - f_0PM) + (f_0PP - f_0MM)) + ((f_M0P - f_P0M) + (f_P0P - f_M0M))) + (f_00P - f_00M)) *
                    OOrho;
         ////////////////////////////////////////////////////////////////////////////////////
         //! - Add half of the acceleration (body force) to the velocity as in Eq. (42) \ref
@@ -241,39 +222,39 @@ __global__ void LB_Kernel_CumulantK17CompChimRedesigned(
         //!
         ////////////////////////////////////////////////////////////////////////////////////
         // Z - Dir
-        forwardInverseChimeraWithK(mfaaa, mfaab, mfaac, vvz, vz2, c36o1, c1o36);
-        forwardInverseChimeraWithK(mfaba, mfabb, mfabc, vvz, vz2, c9o1, c1o9);
-        forwardInverseChimeraWithK(mfaca, mfacb, mfacc, vvz, vz2, c36o1, c1o36);
-        forwardInverseChimeraWithK(mfbaa, mfbab, mfbac, vvz, vz2, c9o1, c1o9);
-        forwardInverseChimeraWithK(mfbba, mfbbb, mfbbc, vvz, vz2, c9o4, c4o9);
-        forwardInverseChimeraWithK(mfbca, mfbcb, mfbcc, vvz, vz2, c9o1, c1o9);
-        forwardInverseChimeraWithK(mfcaa, mfcab, mfcac, vvz, vz2, c36o1, c1o36);
-        forwardInverseChimeraWithK(mfcba, mfcbb, mfcbc, vvz, vz2, c9o1, c1o9);
-        forwardInverseChimeraWithK(mfcca, mfccb, mfccc, vvz, vz2, c36o1, c1o36);
+        forwardInverseChimeraWithK(f_MMM, f_MM0, f_MMP, vvz, vz2, c36o1, c1o36);
+        forwardInverseChimeraWithK(f_M0M, f_M00, f_M0P, vvz, vz2, c9o1, c1o9);
+        forwardInverseChimeraWithK(f_MPM, f_MP0, f_MPP, vvz, vz2, c36o1, c1o36);
+        forwardInverseChimeraWithK(f_0MM, f_0M0, f_0MP, vvz, vz2, c9o1, c1o9);
+        forwardInverseChimeraWithK(f_00M, f_000, f_00P, vvz, vz2, c9o4, c4o9);
+        forwardInverseChimeraWithK(f_0PM, f_0P0, f_0PP, vvz, vz2, c9o1, c1o9);
+        forwardInverseChimeraWithK(f_PMM, f_PM0, f_PMP, vvz, vz2, c36o1, c1o36);
+        forwardInverseChimeraWithK(f_P0M, f_P00, f_P0P, vvz, vz2, c9o1, c1o9);
+        forwardInverseChimeraWithK(f_PPM, f_PP0, f_PPP, vvz, vz2, c36o1, c1o36);
 
         ////////////////////////////////////////////////////////////////////////////////////
         // Y - Dir
-        forwardInverseChimeraWithK(mfaaa, mfaba, mfaca, vvy, vy2, c6o1, c1o6);
-        forwardChimera(mfaab, mfabb, mfacb, vvy, vy2);
-        forwardInverseChimeraWithK(mfaac, mfabc, mfacc, vvy, vy2, c18o1, c1o18);
-        forwardInverseChimeraWithK(mfbaa, mfbba, mfbca, vvy, vy2, c3o2, c2o3);
-        forwardChimera(mfbab, mfbbb, mfbcb, vvy, vy2);
-        forwardInverseChimeraWithK(mfbac, mfbbc, mfbcc, vvy, vy2, c9o2, c2o9);
-        forwardInverseChimeraWithK(mfcaa, mfcba, mfcca, vvy, vy2, c6o1, c1o6);
-        forwardChimera(mfcab, mfcbb, mfccb, vvy, vy2);
-        forwardInverseChimeraWithK(mfcac, mfcbc, mfccc, vvy, vy2, c18o1, c1o18);
+        forwardInverseChimeraWithK(f_MMM, f_M0M, f_MPM, vvy, vy2, c6o1, c1o6);
+        forwardChimera(f_MM0, f_M00, f_MP0, vvy, vy2);
+        forwardInverseChimeraWithK(f_MMP, f_M0P, f_MPP, vvy, vy2, c18o1, c1o18);
+        forwardInverseChimeraWithK(f_0MM, f_00M, f_0PM, vvy, vy2, c3o2, c2o3);
+        forwardChimera(f_0M0, f_000, f_0P0, vvy, vy2);
+        forwardInverseChimeraWithK(f_0MP, f_00P, f_0PP, vvy, vy2, c9o2, c2o9);
+        forwardInverseChimeraWithK(f_PMM, f_P0M, f_PPM, vvy, vy2, c6o1, c1o6);
+        forwardChimera(f_PM0, f_P00, f_PP0, vvy, vy2);
+        forwardInverseChimeraWithK(f_PMP, f_P0P, f_PPP, vvy, vy2, c18o1, c1o18);
 
         ////////////////////////////////////////////////////////////////////////////////////
         // X - Dir
-        forwardInverseChimeraWithK(mfaaa, mfbaa, mfcaa, vvx, vx2, c1o1, c1o1);
-        forwardChimera(mfaba, mfbba, mfcba, vvx, vx2);
-        forwardInverseChimeraWithK(mfaca, mfbca, mfcca, vvx, vx2, c3o1, c1o3);
-        forwardChimera(mfaab, mfbab, mfcab, vvx, vx2);
-        forwardChimera(mfabb, mfbbb, mfcbb, vvx, vx2);
-        forwardChimera(mfacb, mfbcb, mfccb, vvx, vx2);
-        forwardInverseChimeraWithK(mfaac, mfbac, mfcac, vvx, vx2, c3o1, c1o3);
-        forwardChimera(mfabc, mfbbc, mfcbc, vvx, vx2);
-        forwardInverseChimeraWithK(mfacc, mfbcc, mfccc, vvx, vx2, c3o1, c1o9);
+        forwardInverseChimeraWithK(f_MMM, f_0MM, f_PMM, vvx, vx2, c1o1, c1o1);
+        forwardChimera(f_M0M, f_00M, f_P0M, vvx, vx2);
+        forwardInverseChimeraWithK(f_MPM, f_0PM, f_PPM, vvx, vx2, c3o1, c1o3);
+        forwardChimera(f_MM0, f_0M0, f_PM0, vvx, vx2);
+        forwardChimera(f_M00, f_000, f_P00, vvx, vx2);
+        forwardChimera(f_MP0, f_0P0, f_PP0, vvx, vx2);
+        forwardInverseChimeraWithK(f_MMP, f_0MP, f_PMP, vvx, vx2, c3o1, c1o3);
+        forwardChimera(f_M0P, f_00P, f_P0P, vvx, vx2);
+        forwardInverseChimeraWithK(f_MPP, f_0PP, f_PPP, vvx, vx2, c3o1, c1o9);
 
         ////////////////////////////////////////////////////////////////////////////////////
         //! - Setting relaxation rates for non-hydrodynamic cumulants (default values). Variable names and equations
@@ -329,42 +310,42 @@ __global__ void LB_Kernel_CumulantK17CompChimRedesigned(
         //!
         ////////////////////////////////////////////////////////////
         // 4.
-        real CUMcbb = mfcbb - ((mfcaa + c1o3) * mfabb + c2o1 * mfbba * mfbab) * OOrho;
-        real CUMbcb = mfbcb - ((mfaca + c1o3) * mfbab + c2o1 * mfbba * mfabb) * OOrho;
-        real CUMbbc = mfbbc - ((mfaac + c1o3) * mfbba + c2o1 * mfbab * mfabb) * OOrho;
+        real CUMcbb = f_P00 - ((f_PMM + c1o3) * f_M00 + c2o1 * f_00M * f_0M0) * OOrho;
+        real CUMbcb = f_0P0 - ((f_MPM + c1o3) * f_0M0 + c2o1 * f_00M * f_M00) * OOrho;
+        real CUMbbc = f_00P - ((f_MMP + c1o3) * f_00M + c2o1 * f_0M0 * f_M00) * OOrho;
 
         real CUMcca =
-            mfcca - (((mfcaa * mfaca + c2o1 * mfbba * mfbba) + c1o3 * (mfcaa + mfaca)) * OOrho - c1o9 * (drho * OOrho));
+            f_PPM - (((f_PMM * f_MPM + c2o1 * f_00M * f_00M) + c1o3 * (f_PMM + f_MPM)) * OOrho - c1o9 * (drho * OOrho));
         real CUMcac =
-            mfcac - (((mfcaa * mfaac + c2o1 * mfbab * mfbab) + c1o3 * (mfcaa + mfaac)) * OOrho - c1o9 * (drho * OOrho));
+            f_PMP - (((f_PMM * f_MMP + c2o1 * f_0M0 * f_0M0) + c1o3 * (f_PMM + f_MMP)) * OOrho - c1o9 * (drho * OOrho));
         real CUMacc =
-            mfacc - (((mfaac * mfaca + c2o1 * mfabb * mfabb) + c1o3 * (mfaac + mfaca)) * OOrho - c1o9 * (drho * OOrho));
+            f_MPP - (((f_MMP * f_MPM + c2o1 * f_M00 * f_M00) + c1o3 * (f_MMP + f_MPM)) * OOrho - c1o9 * (drho * OOrho));
         ////////////////////////////////////////////////////////////
         // 5.
         real CUMbcc =
-            mfbcc - ((mfaac * mfbca + mfaca * mfbac + c4o1 * mfabb * mfbbb + c2o1 * (mfbab * mfacb + mfbba * mfabc)) +
-                     c1o3 * (mfbca + mfbac)) *
+            f_0PP - ((f_MMP * f_0PM + f_MPM * f_0MP + c4o1 * f_M00 * f_000 + c2o1 * (f_0M0 * f_MP0 + f_00M * f_M0P)) +
+                     c1o3 * (f_0PM + f_0MP)) *
                         OOrho;
         real CUMcbc =
-            mfcbc - ((mfaac * mfcba + mfcaa * mfabc + c4o1 * mfbab * mfbbb + c2o1 * (mfabb * mfcab + mfbba * mfbac)) +
-                     c1o3 * (mfcba + mfabc)) *
+            f_P0P - ((f_MMP * f_P0M + f_PMM * f_M0P + c4o1 * f_0M0 * f_000 + c2o1 * (f_M00 * f_PM0 + f_00M * f_0MP)) +
+                     c1o3 * (f_P0M + f_M0P)) *
                         OOrho;
         real CUMccb =
-            mfccb - ((mfcaa * mfacb + mfaca * mfcab + c4o1 * mfbba * mfbbb + c2o1 * (mfbab * mfbca + mfabb * mfcba)) +
-                     c1o3 * (mfacb + mfcab)) *
+            f_PP0 - ((f_PMM * f_MP0 + f_MPM * f_PM0 + c4o1 * f_00M * f_000 + c2o1 * (f_0M0 * f_0PM + f_M00 * f_P0M)) +
+                     c1o3 * (f_MP0 + f_PM0)) *
                         OOrho;
         ////////////////////////////////////////////////////////////
         // 6.
-        real CUMccc = mfccc + ((-c4o1 * mfbbb * mfbbb - (mfcaa * mfacc + mfaca * mfcac + mfaac * mfcca) -
-                                c4o1 * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc) -
-                                c2o1 * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb)) *
+        real CUMccc = f_PPP + ((-c4o1 * f_000 * f_000 - (f_PMM * f_MPP + f_MPM * f_PMP + f_MMP * f_PPM) -
+                                c4o1 * (f_M00 * f_P00 + f_0M0 * f_0P0 + f_00M * f_00P) -
+                                c2o1 * (f_0PM * f_0MP + f_P0M * f_M0P + f_PM0 * f_MP0)) *
                                    OOrho +
-                               (c4o1 * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac) +
-                                c2o1 * (mfcaa * mfaca * mfaac) + c16o1 * mfbba * mfbab * mfabb) *
+                               (c4o1 * (f_0M0 * f_0M0 * f_MPM + f_M00 * f_M00 * f_PMM + f_00M * f_00M * f_MMP) +
+                                c2o1 * (f_PMM * f_MPM * f_MMP) + c16o1 * f_00M * f_0M0 * f_M00) *
                                    OOrho * OOrho -
-                               c1o3 * (mfacc + mfcac + mfcca) * OOrho - c1o9 * (mfcaa + mfaca + mfaac) * OOrho +
-                               (c2o1 * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba) +
-                                (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa) + c1o3 * (mfaac + mfaca + mfcaa)) *
+                               c1o3 * (f_MPP + f_PMP + f_PPM) * OOrho - c1o9 * (f_PMM + f_MPM + f_MMP) * OOrho +
+                               (c2o1 * (f_0M0 * f_0M0 + f_M00 * f_M00 + f_00M * f_00M) +
+                                (f_MMP * f_MPM + f_MMP * f_PMM + f_MPM * f_PMM) + c1o3 * (f_MMP + f_MPM + f_PMM)) *
                                    OOrho * OOrho * c2o3 +
                                c1o27 * ((drho * drho - drho) * OOrho * OOrho));
 
@@ -373,19 +354,19 @@ __global__ void LB_Kernel_CumulantK17CompChimRedesigned(
         //!
         ////////////////////////////////////////////////////////////
         // 2.
-        real mxxPyyPzz = mfcaa + mfaca + mfaac;
-        real mxxMyy    = mfcaa - mfaca;
-        real mxxMzz    = mfcaa - mfaac;
+        real mxxPyyPzz = f_PMM + f_MPM + f_MMP;
+        real mxxMyy    = f_PMM - f_MPM;
+        real mxxMzz    = f_PMM - f_MMP;
         ////////////////////////////////////////////////////////////
         // 3.
-        real mxxyPyzz = mfcba + mfabc;
-        real mxxyMyzz = mfcba - mfabc;
+        real mxxyPyzz = f_P0M + f_M0P;
+        real mxxyMyzz = f_P0M - f_M0P;
 
-        real mxxzPyyz = mfcab + mfacb;
-        real mxxzMyyz = mfcab - mfacb;
+        real mxxzPyyz = f_PM0 + f_MP0;
+        real mxxzMyyz = f_PM0 - f_MP0;
 
-        real mxyyPxzz = mfbca + mfbac;
-        real mxyyMxzz = mfbca - mfbac;
+        real mxyyPxzz = f_0PM + f_0MP;
+        real mxyyMxzz = f_0PM - f_0MP;
 
         ////////////////////////////////////////////////////////////////////////////////////
         // incl. correction
@@ -397,10 +378,10 @@ __global__ void LB_Kernel_CumulantK17CompChimRedesigned(
         //! DOI:10.1016/j.camwa.2015.05.001 ]</b></a> Note that the division by rho is omitted here as we need rho times
         //! the gradients later.
         //!
-        real Dxy  = -c3o1 * omega * mfbba;
-        real Dxz  = -c3o1 * omega * mfbab;
-        real Dyz  = -c3o1 * omega * mfabb;
-        real dxux = c1o2 * (-omega) * (mxxMyy + mxxMzz) + c1o2 * OxxPyyPzz * (mfaaa - mxxPyyPzz);
+        real Dxy  = -c3o1 * omega * f_00M;
+        real Dxz  = -c3o1 * omega * f_0M0;
+        real Dyz  = -c3o1 * omega * f_M00;
+        real dxux = c1o2 * (-omega) * (mxxMyy + mxxMzz) + c1o2 * OxxPyyPzz * (f_MMM - mxxPyyPzz);
         real dyuy = dxux + omega * c3o2 * mxxMyy;
         real dzuz = dxux + omega * c3o2 * mxxMzz;
         ////////////////////////////////////////////////////////////
@@ -409,7 +390,7 @@ __global__ void LB_Kernel_CumulantK17CompChimRedesigned(
         //! DOI:10.1016/j.jcp.2017.05.040 ]</b></a>
         //!
         mxxPyyPzz +=
-            OxxPyyPzz * (mfaaa - mxxPyyPzz) - c3o1 * (c1o1 - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
+            OxxPyyPzz * (f_MMM - mxxPyyPzz) - c3o1 * (c1o1 - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
         mxxMyy += omega * (-mxxMyy) - c3o1 * (c1o1 + c1o2 * (-omega)) * (vx2 * dxux - vy2 * dyuy);
         mxxMzz += omega * (-mxxMzz) - c3o1 * (c1o1 + c1o2 * (-omega)) * (vx2 * dxux - vz2 * dzuz);
 
@@ -419,9 +400,9 @@ __global__ void LB_Kernel_CumulantK17CompChimRedesigned(
         // mxxMyy += -(-omega) * (-mxxMyy);
         // mxxMzz += -(-omega) * (-mxxMzz);
         //////////////////////////////////////////////////////////////////////////
-        mfabb += omega * (-mfabb);
-        mfbab += omega * (-mfbab);
-        mfbba += omega * (-mfbba);
+        f_M00 += omega * (-f_M00);
+        f_0M0 += omega * (-f_0M0);
+        f_00M += omega * (-f_00M);
 
         ////////////////////////////////////////////////////////////////////////////////////
         // relax
@@ -431,8 +412,8 @@ __global__ void LB_Kernel_CumulantK17CompChimRedesigned(
         //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017),
         //! DOI:10.1016/j.jcp.2017.05.040 ]</b></a>
         //!
-        wadjust = Oxyz + (c1o1 - Oxyz) * abs(mfbbb) / (abs(mfbbb) + qudricLimitD);
-        mfbbb += wadjust * (-mfbbb);
+        wadjust = Oxyz + (c1o1 - Oxyz) * abs(f_000) / (abs(f_000) + qudricLimitD);
+        f_000 += wadjust * (-f_000);
         wadjust = OxyyPxzz + (c1o1 - OxyyPxzz) * abs(mxxyPyzz) / (abs(mxxyPyzz) + qudricLimitP);
         mxxyPyzz += wadjust * (-mxxyPyzz);
         wadjust = OxyyMxzz + (c1o1 - OxyyMxzz) * abs(mxxyMyzz) / (abs(mxxyMyzz) + qudricLimitM);
@@ -458,16 +439,16 @@ __global__ void LB_Kernel_CumulantK17CompChimRedesigned(
         ////////////////////////////////////////////////////////////////////////////////////
         //! - Compute inverse linear combinations of second and third order cumulants
         //!
-        mfcaa = c1o3 * (mxxMyy + mxxMzz + mxxPyyPzz);
-        mfaca = c1o3 * (-c2o1 * mxxMyy + mxxMzz + mxxPyyPzz);
-        mfaac = c1o3 * (mxxMyy - c2o1 * mxxMzz + mxxPyyPzz);
+        f_PMM = c1o3 * (mxxMyy + mxxMzz + mxxPyyPzz);
+        f_MPM = c1o3 * (-c2o1 * mxxMyy + mxxMzz + mxxPyyPzz);
+        f_MMP = c1o3 * (mxxMyy - c2o1 * mxxMzz + mxxPyyPzz);
 
-        mfcba = (mxxyMyzz + mxxyPyzz) * c1o2;
-        mfabc = (-mxxyMyzz + mxxyPyzz) * c1o2;
-        mfcab = (mxxzMyyz + mxxzPyyz) * c1o2;
-        mfacb = (-mxxzMyyz + mxxzPyyz) * c1o2;
-        mfbca = (mxyyMxzz + mxyyPxzz) * c1o2;
-        mfbac = (-mxyyMxzz + mxyyPxzz) * c1o2;
+        f_P0M = (mxxyMyzz + mxxyPyzz) * c1o2;
+        f_M0P = (-mxxyMyzz + mxxyPyzz) * c1o2;
+        f_PM0 = (mxxzMyyz + mxxzPyyz) * c1o2;
+        f_MP0 = (-mxxzMyyz + mxxzPyyz) * c1o2;
+        f_0PM = (mxyyMxzz + mxyyPxzz) * c1o2;
+        f_0MP = (-mxyyMxzz + mxyyPxzz) * c1o2;
         //////////////////////////////////////////////////////////////////////////
 
         //////////////////////////////////////////////////////////////////////////
@@ -502,50 +483,50 @@ __global__ void LB_Kernel_CumulantK17CompChimRedesigned(
 
         //////////////////////////////////////////////////////////////////////////
         // 4.
-        mfcbb = CUMcbb + c1o3 * ((c3o1 * mfcaa + c1o1) * mfabb + c6o1 * mfbba * mfbab) * OOrho;
-        mfbcb = CUMbcb + c1o3 * ((c3o1 * mfaca + c1o1) * mfbab + c6o1 * mfbba * mfabb) * OOrho;
-        mfbbc = CUMbbc + c1o3 * ((c3o1 * mfaac + c1o1) * mfbba + c6o1 * mfbab * mfabb) * OOrho;
+        f_P00 = CUMcbb + c1o3 * ((c3o1 * f_PMM + c1o1) * f_M00 + c6o1 * f_00M * f_0M0) * OOrho;
+        f_0P0 = CUMbcb + c1o3 * ((c3o1 * f_MPM + c1o1) * f_0M0 + c6o1 * f_00M * f_M00) * OOrho;
+        f_00P = CUMbbc + c1o3 * ((c3o1 * f_MMP + c1o1) * f_00M + c6o1 * f_0M0 * f_M00) * OOrho;
 
-        mfcca =
+        f_PPM =
             CUMcca +
-            (((mfcaa * mfaca + c2o1 * mfbba * mfbba) * c9o1 + c3o1 * (mfcaa + mfaca)) * OOrho - (drho * OOrho)) * c1o9;
-        mfcac =
+            (((f_PMM * f_MPM + c2o1 * f_00M * f_00M) * c9o1 + c3o1 * (f_PMM + f_MPM)) * OOrho - (drho * OOrho)) * c1o9;
+        f_PMP =
             CUMcac +
-            (((mfcaa * mfaac + c2o1 * mfbab * mfbab) * c9o1 + c3o1 * (mfcaa + mfaac)) * OOrho - (drho * OOrho)) * c1o9;
-        mfacc =
+            (((f_PMM * f_MMP + c2o1 * f_0M0 * f_0M0) * c9o1 + c3o1 * (f_PMM + f_MMP)) * OOrho - (drho * OOrho)) * c1o9;
+        f_MPP =
             CUMacc +
-            (((mfaac * mfaca + c2o1 * mfabb * mfabb) * c9o1 + c3o1 * (mfaac + mfaca)) * OOrho - (drho * OOrho)) * c1o9;
+            (((f_MMP * f_MPM + c2o1 * f_M00 * f_M00) * c9o1 + c3o1 * (f_MMP + f_MPM)) * OOrho - (drho * OOrho)) * c1o9;
 
         //////////////////////////////////////////////////////////////////////////
         // 5.
-        mfbcc = CUMbcc + c1o3 *
-                             (c3o1 * (mfaac * mfbca + mfaca * mfbac + c4o1 * mfabb * mfbbb +
-                                      c2o1 * (mfbab * mfacb + mfbba * mfabc)) +
-                              (mfbca + mfbac)) *
+        f_0PP = CUMbcc + c1o3 *
+                             (c3o1 * (f_MMP * f_0PM + f_MPM * f_0MP + c4o1 * f_M00 * f_000 +
+                                      c2o1 * (f_0M0 * f_MP0 + f_00M * f_M0P)) +
+                              (f_0PM + f_0MP)) *
                              OOrho;
-        mfcbc = CUMcbc + c1o3 *
-                             (c3o1 * (mfaac * mfcba + mfcaa * mfabc + c4o1 * mfbab * mfbbb +
-                                      c2o1 * (mfabb * mfcab + mfbba * mfbac)) +
-                              (mfcba + mfabc)) *
+        f_P0P = CUMcbc + c1o3 *
+                             (c3o1 * (f_MMP * f_P0M + f_PMM * f_M0P + c4o1 * f_0M0 * f_000 +
+                                      c2o1 * (f_M00 * f_PM0 + f_00M * f_0MP)) +
+                              (f_P0M + f_M0P)) *
                              OOrho;
-        mfccb = CUMccb + c1o3 *
-                             (c3o1 * (mfcaa * mfacb + mfaca * mfcab + c4o1 * mfbba * mfbbb +
-                                      c2o1 * (mfbab * mfbca + mfabb * mfcba)) +
-                              (mfacb + mfcab)) *
+        f_PP0 = CUMccb + c1o3 *
+                             (c3o1 * (f_PMM * f_MP0 + f_MPM * f_PM0 + c4o1 * f_00M * f_000 +
+                                      c2o1 * (f_0M0 * f_0PM + f_M00 * f_P0M)) +
+                              (f_MP0 + f_PM0)) *
                              OOrho;
 
         //////////////////////////////////////////////////////////////////////////
         // 6.
-        mfccc = CUMccc - ((-c4o1 * mfbbb * mfbbb - (mfcaa * mfacc + mfaca * mfcac + mfaac * mfcca) -
-                           c4o1 * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc) -
-                           c2o1 * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb)) *
+        f_PPP = CUMccc - ((-c4o1 * f_000 * f_000 - (f_PMM * f_MPP + f_MPM * f_PMP + f_MMP * f_PPM) -
+                           c4o1 * (f_M00 * f_P00 + f_0M0 * f_0P0 + f_00M * f_00P) -
+                           c2o1 * (f_0PM * f_0MP + f_P0M * f_M0P + f_PM0 * f_MP0)) *
                               OOrho +
-                          (c4o1 * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac) +
-                           c2o1 * (mfcaa * mfaca * mfaac) + c16o1 * mfbba * mfbab * mfabb) *
+                          (c4o1 * (f_0M0 * f_0M0 * f_MPM + f_M00 * f_M00 * f_PMM + f_00M * f_00M * f_MMP) +
+                           c2o1 * (f_PMM * f_MPM * f_MMP) + c16o1 * f_00M * f_0M0 * f_M00) *
                               OOrho * OOrho -
-                          c1o3 * (mfacc + mfcac + mfcca) * OOrho - c1o9 * (mfcaa + mfaca + mfaac) * OOrho +
-                          (c2o1 * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba) +
-                           (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa) + c1o3 * (mfaac + mfaca + mfcaa)) *
+                          c1o3 * (f_MPP + f_PMP + f_PPM) * OOrho - c1o9 * (f_PMM + f_MPM + f_MMP) * OOrho +
+                          (c2o1 * (f_0M0 * f_0M0 + f_M00 * f_M00 + f_00M * f_00M) +
+                           (f_MMP * f_MPM + f_MMP * f_PMM + f_MPM * f_PMM) + c1o3 * (f_MMP + f_MPM + f_PMM)) *
                               OOrho * OOrho * c2o3 +
                           c1o27 * ((drho * drho - drho) * OOrho * OOrho));
 
@@ -554,9 +535,9 @@ __global__ void LB_Kernel_CumulantK17CompChimRedesigned(
         //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015),
         //! DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
         //!
-        mfbaa = -mfbaa;
-        mfaba = -mfaba;
-        mfaab = -mfaab;
+        f_0MM = -f_0MM;
+        f_M0M = -f_M0M;
+        f_MM0 = -f_MM0;
 
         ////////////////////////////////////////////////////////////////////////////////////
         //! - Chimera transform from central moments to well conditioned distributions as defined in Appendix J in
@@ -567,39 +548,39 @@ __global__ void LB_Kernel_CumulantK17CompChimRedesigned(
         //!
         ////////////////////////////////////////////////////////////////////////////////////
         // X - Dir
-        backwardInverseChimeraWithK(mfaaa, mfbaa, mfcaa, vvx, vx2, c1o1, c1o1);
-        backwardChimera(mfaba, mfbba, mfcba, vvx, vx2);
-        backwardInverseChimeraWithK(mfaca, mfbca, mfcca, vvx, vx2, c3o1, c1o3);
-        backwardChimera(mfaab, mfbab, mfcab, vvx, vx2);
-        backwardChimera(mfabb, mfbbb, mfcbb, vvx, vx2);
-        backwardChimera(mfacb, mfbcb, mfccb, vvx, vx2);
-        backwardInverseChimeraWithK(mfaac, mfbac, mfcac, vvx, vx2, c3o1, c1o3);
-        backwardChimera(mfabc, mfbbc, mfcbc, vvx, vx2);
-        backwardInverseChimeraWithK(mfacc, mfbcc, mfccc, vvx, vx2, c9o1, c1o9);
+        backwardInverseChimeraWithK(f_MMM, f_0MM, f_PMM, vvx, vx2, c1o1, c1o1);
+        backwardChimera(f_M0M, f_00M, f_P0M, vvx, vx2);
+        backwardInverseChimeraWithK(f_MPM, f_0PM, f_PPM, vvx, vx2, c3o1, c1o3);
+        backwardChimera(f_MM0, f_0M0, f_PM0, vvx, vx2);
+        backwardChimera(f_M00, f_000, f_P00, vvx, vx2);
+        backwardChimera(f_MP0, f_0P0, f_PP0, vvx, vx2);
+        backwardInverseChimeraWithK(f_MMP, f_0MP, f_PMP, vvx, vx2, c3o1, c1o3);
+        backwardChimera(f_M0P, f_00P, f_P0P, vvx, vx2);
+        backwardInverseChimeraWithK(f_MPP, f_0PP, f_PPP, vvx, vx2, c9o1, c1o9);
 
         ////////////////////////////////////////////////////////////////////////////////////
         // Y - Dir
-        backwardInverseChimeraWithK(mfaaa, mfaba, mfaca, vvy, vy2, c6o1, c1o6);
-        backwardChimera(mfaab, mfabb, mfacb, vvy, vy2);
-        backwardInverseChimeraWithK(mfaac, mfabc, mfacc, vvy, vy2, c18o1, c1o18);
-        backwardInverseChimeraWithK(mfbaa, mfbba, mfbca, vvy, vy2, c3o2, c2o3);
-        backwardChimera(mfbab, mfbbb, mfbcb, vvy, vy2);
-        backwardInverseChimeraWithK(mfbac, mfbbc, mfbcc, vvy, vy2, c9o2, c2o9);
-        backwardInverseChimeraWithK(mfcaa, mfcba, mfcca, vvy, vy2, c6o1, c1o6);
-        backwardChimera(mfcab, mfcbb, mfccb, vvy, vy2);
-        backwardInverseChimeraWithK(mfcac, mfcbc, mfccc, vvy, vy2, c18o1, c1o18);
+        backwardInverseChimeraWithK(f_MMM, f_M0M, f_MPM, vvy, vy2, c6o1, c1o6);
+        backwardChimera(f_MM0, f_M00, f_MP0, vvy, vy2);
+        backwardInverseChimeraWithK(f_MMP, f_M0P, f_MPP, vvy, vy2, c18o1, c1o18);
+        backwardInverseChimeraWithK(f_0MM, f_00M, f_0PM, vvy, vy2, c3o2, c2o3);
+        backwardChimera(f_0M0, f_000, f_0P0, vvy, vy2);
+        backwardInverseChimeraWithK(f_0MP, f_00P, f_0PP, vvy, vy2, c9o2, c2o9);
+        backwardInverseChimeraWithK(f_PMM, f_P0M, f_PPM, vvy, vy2, c6o1, c1o6);
+        backwardChimera(f_PM0, f_P00, f_PP0, vvy, vy2);
+        backwardInverseChimeraWithK(f_PMP, f_P0P, f_PPP, vvy, vy2, c18o1, c1o18);
 
         ////////////////////////////////////////////////////////////////////////////////////
         // Z - Dir
-        backwardInverseChimeraWithK(mfaaa, mfaab, mfaac, vvz, vz2, c36o1, c1o36);
-        backwardInverseChimeraWithK(mfaba, mfabb, mfabc, vvz, vz2, c9o1, c1o9);
-        backwardInverseChimeraWithK(mfaca, mfacb, mfacc, vvz, vz2, c36o1, c1o36);
-        backwardInverseChimeraWithK(mfbaa, mfbab, mfbac, vvz, vz2, c9o1, c1o9);
-        backwardInverseChimeraWithK(mfbba, mfbbb, mfbbc, vvz, vz2, c9o4, c4o9);
-        backwardInverseChimeraWithK(mfbca, mfbcb, mfbcc, vvz, vz2, c9o1, c1o9);
-        backwardInverseChimeraWithK(mfcaa, mfcab, mfcac, vvz, vz2, c36o1, c1o36);
-        backwardInverseChimeraWithK(mfcba, mfcbb, mfcbc, vvz, vz2, c9o1, c1o9);
-        backwardInverseChimeraWithK(mfcca, mfccb, mfccc, vvz, vz2, c36o1, c1o36);
+        backwardInverseChimeraWithK(f_MMM, f_MM0, f_MMP, vvz, vz2, c36o1, c1o36);
+        backwardInverseChimeraWithK(f_M0M, f_M00, f_M0P, vvz, vz2, c9o1, c1o9);
+        backwardInverseChimeraWithK(f_MPM, f_MP0, f_MPP, vvz, vz2, c36o1, c1o36);
+        backwardInverseChimeraWithK(f_0MM, f_0M0, f_0MP, vvz, vz2, c9o1, c1o9);
+        backwardInverseChimeraWithK(f_00M, f_000, f_00P, vvz, vz2, c9o4, c4o9);
+        backwardInverseChimeraWithK(f_0PM, f_0P0, f_0PP, vvz, vz2, c9o1, c1o9);
+        backwardInverseChimeraWithK(f_PMM, f_PM0, f_PMP, vvz, vz2, c36o1, c1o36);
+        backwardInverseChimeraWithK(f_P0M, f_P00, f_P0P, vvz, vz2, c9o1, c1o9);
+        backwardInverseChimeraWithK(f_PPM, f_PP0, f_PPP, vvz, vz2, c36o1, c1o36);
 
         ////////////////////////////////////////////////////////////////////////////////////
         //! - Write distributions: style of reading and writing the distributions from/to
@@ -607,32 +588,32 @@ __global__ void LB_Kernel_CumulantK17CompChimRedesigned(
         //! <a href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017),
         //! DOI:10.3390/computation5020019 ]</b></a>
         //!
-        (dist.f[E])[k]      = mfabb;
-        (dist.f[W])[kw]     = mfcbb;
-        (dist.f[N])[k]      = mfbab;
-        (dist.f[S])[ks]     = mfbcb;
-        (dist.f[T])[k]      = mfbba;
-        (dist.f[B])[kb]     = mfbbc;
-        (dist.f[NE])[k]     = mfaab;
-        (dist.f[SW])[ksw]   = mfccb;
-        (dist.f[SE])[ks]    = mfacb;
-        (dist.f[NW])[kw]    = mfcab;
-        (dist.f[TE])[k]     = mfaba;
-        (dist.f[BW])[kbw]   = mfcbc;
-        (dist.f[BE])[kb]    = mfabc;
-        (dist.f[TW])[kw]    = mfcba;
-        (dist.f[TN])[k]     = mfbaa;
-        (dist.f[BS])[kbs]   = mfbcc;
-        (dist.f[BN])[kb]    = mfbac;
-        (dist.f[TS])[ks]    = mfbca;
-        (dist.f[REST])[k]   = mfbbb;
-        (dist.f[TNE])[k]    = mfaaa;
-        (dist.f[TSE])[ks]   = mfaca;
-        (dist.f[BNE])[kb]   = mfaac;
-        (dist.f[BSE])[kbs]  = mfacc;
-        (dist.f[TNW])[kw]   = mfcaa;
-        (dist.f[TSW])[ksw]  = mfcca;
-        (dist.f[BNW])[kbw]  = mfcac;
-        (dist.f[BSW])[kbsw] = mfccc;
+        (dist.f[E])[k]      = f_M00;
+        (dist.f[W])[k_M00]     = f_P00;
+        (dist.f[N])[k]      = f_0M0;
+        (dist.f[S])[k_0M0]     = f_0P0;
+        (dist.f[T])[k]      = f_00M;
+        (dist.f[B])[k_00M]     = f_00P;
+        (dist.f[NE])[k]     = f_MM0;
+        (dist.f[SW])[k_MM0]   = f_PP0;
+        (dist.f[SE])[k_0M0]    = f_MP0;
+        (dist.f[NW])[k_M00]    = f_PM0;
+        (dist.f[TE])[k]     = f_M0M;
+        (dist.f[BW])[k_M0M]   = f_P0P;
+        (dist.f[BE])[k_00M]    = f_M0P;
+        (dist.f[TW])[k_M00]    = f_P0M;
+        (dist.f[TN])[k]     = f_0MM;
+        (dist.f[BS])[k_0MM]   = f_0PP;
+        (dist.f[BN])[k_00M]    = f_0MP;
+        (dist.f[TS])[k_0M0]    = f_0PM;
+        (dist.f[REST])[k]   = f_000;
+        (dist.f[TNE])[k]    = f_MMM;
+        (dist.f[TSE])[k_0M0]   = f_MPM;
+        (dist.f[BNE])[k_00M]   = f_MMP;
+        (dist.f[BSE])[k_0MM]  = f_MPP;
+        (dist.f[TNW])[k_M00]   = f_PMM;
+        (dist.f[TSW])[k_MM0]  = f_PPM;
+        (dist.f[BNW])[k_M0M]  = f_PMP;
+        (dist.f[BSW])[k_MMM] = f_PPP;
     }
 }

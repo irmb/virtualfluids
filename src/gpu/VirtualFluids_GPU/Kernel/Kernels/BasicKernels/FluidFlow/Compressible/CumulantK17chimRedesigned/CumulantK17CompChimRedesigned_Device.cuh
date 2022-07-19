@@ -10,7 +10,7 @@ __global__ void LB_Kernel_CumulantK17CompChimRedesigned(
     uint* neighborY,
     uint* neighborZ,
     real* distributions,
-    unsigned long size_Mat,
+    unsigned long numberOfLBnodes,
     int level,
     real* forces,
     real* quadricLimiters,
