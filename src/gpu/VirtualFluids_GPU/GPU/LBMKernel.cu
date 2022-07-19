@@ -3370,7 +3370,7 @@ void QSlipDevCompTurbulentViscosity27(LBMSimulationParameter* parameterDevice, Q
          parameterDevice->isEvenTimestep);
    getLastCudaError("QSlipDeviceComp27TurbViscosity execution failed");
 }
-
+//////////////////////////////////////////////////////////////////////////
 void QSlipDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
    dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);

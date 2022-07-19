@@ -60,7 +60,7 @@ enum class FILEFORMAT
 class SimulationFileWriter : private NonCreatable
 {
 public:
-    GRIDGENERATOR_EXPORT static void write(std::string folder, SPtr<GridBuilder> builder, FILEFORMAT format);
+    GRIDGENERATOR_EXPORT static void write(const std::string& folder, SPtr<GridBuilder> builder, FILEFORMAT format);
 
 private:
     static void write(SPtr<GridBuilder> builder, FILEFORMAT format);
@@ -85,12 +85,12 @@ private:
     static void addQsToVector(int index, std::vector<std::vector<std::vector<real> > > &qs, SPtr<Grid> grid);
     static void fillRBForNode(int index, int direction, int directionSign, int rb, std::vector<std::vector<std::vector<real> > > &qs, SPtr<Grid> grid);
     static void writeBoundary(std::vector<real> boundary, int rb);
-	static void writeBoundaryShort(std::vector<real> boundary, int rb);
-	static void writeBoundaryShort(SPtr<Grid> grid, SPtr<gg::BoundaryCondition> boundaryCondition, uint side);
+    static void writeBoundaryShort(std::vector<real> boundary, int rb);
+    static void writeBoundaryShort(SPtr<Grid> grid, SPtr<gg::BoundaryCondition> boundaryCondition, uint side);
 
     static void writeCommunicationFiles(SPtr<GridBuilder> builder);
 
-	static void closeFiles();
+    static void closeFiles();
 
 
     static std::ofstream xCoordFile;

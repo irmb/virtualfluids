@@ -106,8 +106,8 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
     para->setTemperatureInit(StringUtil::toFloat(input->getValue("Temp")));
     para->setTemperatureBC(StringUtil::toFloat(input->getValue("TempBC")));
     //////////////////////////////////////////////////////////////////////////
-    para->setViscosity(StringUtil::toFloat(input->getValue("Viscosity_LB")));
-    para->setVelocity(StringUtil::toFloat(input->getValue("Velocity_LB")));
+    para->setViscosityLB(StringUtil::toFloat(input->getValue("Viscosity_LB")));
+    para->setVelocityLB(StringUtil::toFloat(input->getValue("Velocity_LB")));
     para->setViscosityRatio(StringUtil::toFloat(input->getValue("Viscosity_Ratio_World_to_LB")));
     para->setVelocityRatio(StringUtil::toFloat(input->getValue("Velocity_Ratio_World_to_LB")));
     para->setDensityRatio(StringUtil::toFloat(input->getValue("Density_Ratio_World_to_LB")));

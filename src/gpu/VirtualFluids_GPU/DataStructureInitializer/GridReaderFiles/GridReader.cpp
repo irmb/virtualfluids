@@ -634,7 +634,7 @@ void GridReader::setNoSlipQs(std::shared_ptr<BoundaryQs> boundaryQ) const
 			this->printQSize("no slip", boundaryQ, level);
 			this->setSizeNoSlip(boundaryQ, level);
 			this->initalQStruct(para->getParH(level)->noSlipBC, boundaryQ, level);
-            cudaMemoryManager->cudaCopyWallBC(level);
+            cudaMemoryManager->cudaCopyNoSlipBC(level);
 		}
 	}
 }
@@ -766,7 +766,7 @@ void GridReader::setSizeNoSlip(std::shared_ptr<BoundaryQs> boundaryQ, unsigned i
 {
 	para->getParH(level)->noSlipBC.numberOfBCnodes = boundaryQ->getSize(level);
 	para->getParD(level)->noSlipBC.numberOfBCnodes = para->getParH(level)->noSlipBC.numberOfBCnodes;
-    cudaMemoryManager->cudaAllocWallBC(level);
+    cudaMemoryManager->cudaAllocNoSlipBC(level);
 }
 
 void GridReader::setSizeGeoQs(std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const

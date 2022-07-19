@@ -51,20 +51,20 @@ public:
     bool is(uint index, char type) const;
     bool isCoarseToFineNode(uint index) const;
     bool isFineToCoarseNode(uint index) const;
-	bool isFluid(uint index) const;
-	bool isInvalidSolid(uint index) const;
+    bool isFluid(uint index) const;
+    bool isInvalidSolid(uint index) const;
     bool isQ(uint index) const;
     bool isBoundaryConditionNode(uint index) const;
     bool isInvalidCoarseUnderFine(uint index) const;
     bool isStopperOutOfGrid(uint index) const;
     bool isStopperCoarseUnderFine(uint index) const;
-	bool isStopperSolid(uint index) const;
-	bool isStopper(uint index) const;
+    bool isStopperSolid(uint index) const;
+    bool isStopper(uint index) const;
     bool isInvalidOutOfGrid(uint index) const;
 
     void setFieldEntry(uint index, char val);
-	void setFieldEntryToFluid(uint index);
-	void setFieldEntryToInvalidSolid(uint index);
+    void setFieldEntryToFluid(uint index);
+    void setFieldEntryToInvalidSolid(uint index);
     void setFieldEntryToStopperOutOfGrid(uint index);
     void setFieldEntryToStopperOutOfGridBoundary(uint index);
     void setFieldEntryToStopperCoarseUnderFine(uint index);
@@ -72,7 +72,7 @@ public:
     void setFieldEntryToInvalidOutOfGrid(uint index);
 
 private:
-    char *field;
+    char *field = nullptr;
     uint size;
 };
 

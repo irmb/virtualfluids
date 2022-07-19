@@ -374,7 +374,7 @@ struct LBMSimulationParameter {
 class VIRTUALFLUIDS_GPU_EXPORT Parameter
 {
 public:
-    Parameter(const vf::basics::ConfigurationFile &configData, const int numberOfProcesses = 1, const int myId = 0);
+    explicit Parameter(const vf::basics::ConfigurationFile &configData, const int numberOfProcesses = 1, const int myId = 0);
     Parameter(const int numberOfProcesses = 1, const int myId = 0);
     ~Parameter();
     void initLBMSimulationParameter();
@@ -408,8 +408,8 @@ public:
     void setCalcParticles(bool calcParticles);
     void setStartXHotWall(real startXHotWall);
     void setEndXHotWall(real endXHotWall);
-    void setTEnd(unsigned int tend);
-    void setTOut(unsigned int tout);
+    void setTimestepEnd(unsigned int tend);
+    void setTimestepOut(unsigned int tout);
     void setTStartOut(unsigned int tStartOut);
     void setTimestepOfCoarseLevel(unsigned int timestep);
     void setCalcTurbulenceIntensity(bool calcVelocityAndFluctuations);
@@ -497,8 +497,8 @@ public:
     void setReadGeo(bool readGeo);
     void setTemperatureInit(real Temp);
     void setTemperatureBC(real TempBC);
-    void setViscosity(real Viscosity);
-    void setVelocity(real Velocity);
+    void setViscosityLB(real Viscosity);
+    void setVelocityLB(real Velocity);
     void setViscosityRatio(real ViscosityRatio);
     void setVelocityRatio(real VelocityRatio);
     void setDensityRatio(real DensityRatio);
@@ -552,7 +552,7 @@ public:
     void setDoCheckPoint(bool doCheckPoint);
     void setDoRestart(bool doRestart);
     void setObj(std::string str, bool isObj);
-    void setGeometryValues(bool GeometryValues);
+    void setUseGeometryValues(bool GeometryValues);
     void setCalc2ndOrderMoments(bool is2ndOrderMoments);
     void setCalc3rdOrderMoments(bool is3rdOrderMoments);
     void setCalcHighOrderMoments(bool isHighOrderMoments);
@@ -627,7 +627,7 @@ public:
     bool getCalcMedian();
     bool getCalcDragLift();
     bool getCalcCp();
-    bool getCalcParticle();
+    bool getCalcParticles();
     bool getWriteVeloASCIIfiles();
     bool getCalcPlaneConc();
     //! \returns index of finest level
@@ -883,7 +883,7 @@ private:
     unsigned int timestep;
 
     // Kernel
-    std::string mainKernel{ "CumulantK17Comp" };
+    std::string mainKernel{ "CumulantK17CompChim" };
     bool multiKernelOn{ false };
     std::vector<int> multiKernelLevel;
     std::vector<std::string> multiKernel;

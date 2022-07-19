@@ -92,7 +92,7 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
         this->setPrintFiles(configData.getValue<bool>("WriteGrid"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("GeometryValues"))
-        this->setGeometryValues(configData.getValue<bool>("GeometryValues"));
+        this->setUseGeometryValues(configData.getValue<bool>("GeometryValues"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("calc2ndOrderMoments"))
         this->setCalc2ndOrderMoments(configData.getValue<bool>("calc2ndOrderMoments"));
@@ -146,10 +146,10 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
         this->setD3Qxx(configData.getValue<int>("D3Qxx"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("TimeEnd"))
-        this->setTEnd(configData.getValue<int>("TimeEnd"));
+        this->setTimestepEnd(configData.getValue<int>("TimeEnd"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("TimeOut"))
-        this->setTOut(configData.getValue<int>("TimeOut"));
+        this->setTimestepOut(configData.getValue<int>("TimeOut"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("TimeStartOut"))
         this->setTStartOut(configData.getValue<int>("TimeStartOut"));
@@ -191,10 +191,10 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
 
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("Viscosity_LB"))
-        this->setViscosity(configData.getValue<real>("Viscosity_LB"));
+        this->setViscosityLB(configData.getValue<real>("Viscosity_LB"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("Velocity_LB"))
-        this->setVelocity(configData.getValue<real>("Velocity_LB"));
+        this->setVelocityLB(configData.getValue<real>("Velocity_LB"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("Viscosity_Ratio_World_to_LB"))
         this->setViscosityRatio(configData.getValue<real>("Viscosity_Ratio_World_to_LB"));
@@ -699,11 +699,11 @@ void Parameter::setEndXHotWall(real endXHotWall)
 {
     this->endXHotWall = endXHotWall;
 }
-void Parameter::setTEnd(unsigned int tend)
+void Parameter::setTimestepEnd(unsigned int tend)
 {
     ic.tend = tend;
 }
-void Parameter::setTOut(unsigned int tout)
+void Parameter::setTimestepOut(unsigned int tout)
 {
     ic.tout = tout;
 }
@@ -788,11 +788,11 @@ void Parameter::setTemperatureBC(real TempBC)
 {
     ic.TempBC = TempBC;
 }
-void Parameter::setViscosity(real Viscosity)
+void Parameter::setViscosityLB(real Viscosity)
 {
     ic.vis = Viscosity;
 }
-void Parameter::setVelocity(real Velocity)
+void Parameter::setVelocityLB(real Velocity)
 {
     ic.u0 = Velocity;
 }
@@ -1331,9 +1331,9 @@ void Parameter::setObj(std::string str, bool isObj)
         this->setIsOutflowNormal(isObj);
     }
 }
-void Parameter::setGeometryValues(bool GeometryValues)
+void Parameter::setUseGeometryValues(bool useGeometryValues)
 {
-    ic.GeometryValues = GeometryValues;
+    ic.GeometryValues = useGeometryValues;
 }
 void Parameter::setCalc2ndOrderMoments(bool is2ndOrderMoments)
 {
@@ -1781,7 +1781,7 @@ bool Parameter::getCalcCp()
 {
     return this->calcCp;
 }
-bool Parameter::getCalcParticle()
+bool Parameter::getCalcParticles()
 {
     return this->calcParticles;
 }
