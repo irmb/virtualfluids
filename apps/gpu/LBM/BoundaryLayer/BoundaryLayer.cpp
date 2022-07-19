@@ -171,8 +171,8 @@ void multipleLevel(const std::string& configPath)
     para->setIsBodyForce( config.getValue<bool>("bodyForce") );
 
     para->setTStartOut(uint(tStartOut/dt) );
-    para->setTOut( uint(tOut/dt) );
-    para->setTEnd( uint(tEnd/dt) );
+    para->setTimestepOut( uint(tOut/dt) );
+    para->setTimestepEnd( uint(tEnd/dt) );
 
     // para->setTOut( 100 );
     // para->setTEnd( 100000 );
