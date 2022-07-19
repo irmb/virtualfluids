@@ -239,8 +239,8 @@ void multipleLevel(const std::string& configPath)
         vz  = (real)0.0;
     });
 
-    para->setTOut( timeStepOut );
-    para->setTEnd( timeStepEnd );
+    para->setTimestepOut( timeStepOut );
+    para->setTimestepEnd( timeStepEnd );
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

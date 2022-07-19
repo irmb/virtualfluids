@@ -4,6 +4,7 @@
 # OS:          Ubuntu 20.04
 #################################################################################
 
-set(NVCUDASAMPLES_ROOT "~/cuda-samples/Common")
 
+SET(CMAKE_CUDA_ARCHITECTURES 70)
 
+list(APPEND USER_APPS "apps/gpu/LBM/WTG_RUB")
