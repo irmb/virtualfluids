@@ -1,6 +1,5 @@
 #include "PostProcessingConfigFileReaderImp.h"
 
-// #include "Core/Input/Input.h"
 #include <basics/config/ConfigurationFile.h>
 #include "Core/StringUtilities/StringUtil.h"
 
@@ -16,16 +15,8 @@ std::shared_ptr<PostProcessingConfigFileReader> PostProcessingConfigFileReaderIm
 
 std::shared_ptr<PostProcessingConfigData> PostProcessingConfigFileReaderImp::readConfigFile(std::string filePath)
 {
-	// std::ifstream stream;
-	// stream.open(filePath.c_str(), std::ios::in);
-	// if (stream.fail()) {
-	// 	throw "can not open config file!\n";
-	// 	exit(1);
-	// }
-	// std::shared_ptr<input::Input> input = input::Input::makeInput(stream, "config");
 	auto input = std::make_shared<vf::basics::ConfigurationFile>();
 	input->load(filePath);
-
 
 	std::vector<BasicSimulation> simulation;
 	std::vector<Assistant> assistants;

@@ -40,7 +40,7 @@ public:
 
     void setFactories(std::unique_ptr<KernelFactory> &&kernelFactory,
                std::unique_ptr<PreProcessorFactory> &&preProcessorFactory);
-    void setDataWriter(std::unique_ptr<DataWriter>&& dataWriter);
+    void setDataWriter(std::shared_ptr<DataWriter> dataWriter);
     void addKineticEnergyAnalyzer(uint tAnalyse);
     void addEnstrophyAnalyzer(uint tAnalyse);
 
@@ -67,7 +67,7 @@ private:
 
 	vf::gpu::Communicator& communicator;
     SPtr<Parameter> para;
-    std::unique_ptr<DataWriter> dataWriter;
+    std::shared_ptr<DataWriter> dataWriter;
 	std::shared_ptr<CudaMemoryManager> cudaMemoryManager;
 	std::vector < SPtr< Kernel>> kernels;
 	std::vector < SPtr< ADKernel>> adKernels;

@@ -39,7 +39,11 @@ std::shared_ptr<Parameter> VirtualFluidSimulationFactoryImp::makeParameter(std::
 
 	para->setTimestepEnd(simPara->getEndTime());
 	para->setTimestepOut(simPara->getTimeStepLength());
+<<<<<<< HEAD
 	para->setTimestepStartOut(1);
+=======
+	para->setTStartOut(1);
+>>>>>>> Clean up unnecessary comments
 
 	para->setViscosityLB(simPara->getViscosity());
 	para->setVelocityLB(simPara->getMaxVelocity());
@@ -82,7 +86,7 @@ std::shared_ptr<Parameter> VirtualFluidSimulationFactoryImp::makeParameter(std::
 	para->setDiffOn(false);
 	para->setDoCheckPoint(false);
 	para->setDoRestart(false);
-	para->setGeometryValues(false);
+	para->setUseGeometryValues(false);
 	para->setCalc2ndOrderMoments(false);
 	para->setCalc3rdOrderMoments(false);
 	para->setCalcHighOrderMoments(false);

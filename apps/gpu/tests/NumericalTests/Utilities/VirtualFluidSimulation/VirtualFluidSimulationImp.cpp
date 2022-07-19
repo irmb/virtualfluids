@@ -13,11 +13,9 @@
 void VirtualFluidSimulationImp::run()
 {
 	numericalTestSuite->makeSimulationHeadOutput();
-	auto sim = Simulation(para, cudaManager, vf::gpu::Communicator::getInstance(), *grid.get(), new BoundaryConditionFactory());
-
- 	// These are created by the Simulation itself
-	// sim.setFactories(kernelFactory, preProcessorFactory);
-	// sim.init(para, grid, dataWriter, cudaManager);
+	BoundaryConditionFactory bc_factory;
+	auto sim = Simulation(para, cudaManager, vf::gpu::Communicator::getInstance(), *grid.get(), &bc_factory);
+	sim.setDataWriter(dataWriter);
 
 	timeTracking->setSimulationStartTime();
 	sim.run();

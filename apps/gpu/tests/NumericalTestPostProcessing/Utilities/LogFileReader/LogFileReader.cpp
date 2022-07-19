@@ -11,7 +11,6 @@
 
 #include "Utilities/LogFileData/LogFileDataImp.h"
 
-// #include "Core/Input/Input.h"
 #include <basics/config/ConfigurationFile.h>
 #include "Core/StringUtilities/StringUtil.h"
 
@@ -34,14 +33,6 @@ std::shared_ptr<LogFileData> LogFileReader::readLogFileToLogFileData(std::string
 {
 	std::shared_ptr<LogFileDataImp> logFileData = LogFileDataImp::getNewInstance();
 
-	// std::ifstream stream;
-	// stream.open(filePath.c_str(), std::ios::in);
-	// if (stream.fail()) {
-	// 	std::cout << "can not open log file!\n";
-	// 	exit(1);
-	// }
-
-	// std::unique_ptr<input::Input> input = input::Input::makeInput(stream, "config");
 	auto input = std::make_shared<vf::basics::ConfigurationFile>();
 	input->load(filePath);
 
