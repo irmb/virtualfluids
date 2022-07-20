@@ -661,3 +661,11 @@ GRIDGENERATOR_EXPORT SPtr<GeometryBoundaryCondition> LevelGridBuilder::getGeomet
 {
     return this->boundaryConditions[level]->geometryBoundaryCondition;
 }
+
+void LevelGridBuilder::findFluidNodes(bool splitDomain)
+{
+    *logging::out << logging::Logger::INFO_HIGH << "Start findFluidNodes()\n";
+    for (uint i = 0; i < grids.size(); i++)
+        grids[i]->findFluidNodeIndices(splitDomain);
+    *logging::out << logging::Logger::INFO_HIGH << "Done with findFluidNodes()\n";
+}

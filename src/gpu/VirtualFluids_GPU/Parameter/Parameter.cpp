@@ -1576,7 +1576,7 @@ void Parameter::setOutflowBoundaryNormalZ(std::string outflowNormalZ)
 void Parameter::setMainKernel(std::string kernel)
 {
     this->mainKernel = kernel;
-    if (kernel.find("Stream") != std::string::npos)
+    if (kernel.find("Stream") != std::string::npos || kernel.find("Redesigned") != std::string::npos)
         this->kernelNeedsFluidNodeIndicesToRun = true;
 }
 void Parameter::setMultiKernelOn(bool isOn)

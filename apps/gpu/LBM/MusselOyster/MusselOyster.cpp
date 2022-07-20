@@ -527,8 +527,6 @@ void multipleLevel(const std::string &configPath)
                 // gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
                 //////////////////////////////////////////////////////////////////////////
             }
-            if (para->getKernelNeedsFluidNodeIndicesToRun())
-                gridBuilder->findFluidNodes(useStreams);
 
             // gridBuilder->writeGridsToVtk(outPath +  bivalveType + "/grid/part" + std::to_string(generatePart) + "_");
             // gridBuilder->writeArrows(outPath + bivalveType + "/" + std::to_string(generatePart) + " /arrow");
@@ -558,8 +556,6 @@ void multipleLevel(const std::string &configPath)
             gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0); // set pressure BC after velocity BCs
 
             //////////////////////////////////////////////////////////////////////////
-            if (para->getKernelNeedsFluidNodeIndicesToRun())
-                gridBuilder->findFluidNodes(useStreams);
 
             // gridBuilder->writeGridsToVtk(outPath +  bivalveType + "/grid/");
             // gridBuilder->writeArrows ((outPath + bivalveType + "/arrow");

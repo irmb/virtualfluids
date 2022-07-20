@@ -501,8 +501,6 @@ void multipleLevel(const std::string &configPath)
                 }
                 //////////////////////////////////////////////////////////////////////////
             }
-            if (para->getKernelNeedsFluidNodeIndicesToRun())
-                gridBuilder->findFluidNodes(para->getUseStreams());
 
             // gridBuilder->writeGridsToVtk(outPath +  "/grid/part" + std::to_string(generatePart) + "_");
             // gridBuilder->writeArrows(outPath + "/" + std::to_string(generatePart) + " /arrow");
@@ -528,9 +526,6 @@ void multipleLevel(const std::string &configPath)
             gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, 0.0, 0.0);
 
             //////////////////////////////////////////////////////////////////////////
-            if (para->getKernelNeedsFluidNodeIndicesToRun())
-                gridBuilder->findFluidNodes(para->getUseStreams());
-
             gridBuilder->writeGridsToVtk(outPath + "/grid/");
             // gridBuilder->writeArrows(outPath + "/arrow");
 
