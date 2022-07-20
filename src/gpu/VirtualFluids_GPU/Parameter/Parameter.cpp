@@ -53,6 +53,8 @@ Parameter::Parameter(int numberOfProcesses, int myId)
     initGridBasePoints();
     initDefaultLBMkernelAllLevels();
     this->setFName(this->getOutputPath() + this->getOutputPrefix());
+    this->setQuadricLimiters(0.01, 0.01, 0.01);
+    this->setForcing(0.0, 0.0, 0.0);
 
     // initLBMSimulationParameter();
 }
