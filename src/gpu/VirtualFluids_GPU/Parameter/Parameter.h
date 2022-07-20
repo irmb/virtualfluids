@@ -963,6 +963,7 @@ public:
     bool getUseStreams();
     std::unique_ptr<CudaStreamManager> &getStreamManager();
     bool getKernelNeedsFluidNodeIndicesToRun();
+    void setKernelNeedsFluidNodeIndicesToRun(bool  kernelNeedsFluidNodeIndicesToRun);
 
     void initProcessNeighborsAfterFtoCX(int level);
     void initProcessNeighborsAfterFtoCY(int level);

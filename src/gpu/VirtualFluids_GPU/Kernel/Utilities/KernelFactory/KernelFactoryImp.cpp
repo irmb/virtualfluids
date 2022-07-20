@@ -205,9 +205,9 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
         throw std::runtime_error("KernelFactory does not know the KernelType.");
     }
 
-	newKernel->setCheckParameterStrategy(checkStrategy);
-	return newKernel;
-
+    newKernel->setCheckParameterStrategy(checkStrategy);
+    para->setKernelNeedsFluidNodeIndicesToRun(newKernel->getKernelUsesFluidNodeIndices());
+    return newKernel;
 }
 
 std::shared_ptr<ADKernel> KernelFactoryImp::makeAdvDifKernel(std::shared_ptr<Parameter> para, std::string kernel, int level)

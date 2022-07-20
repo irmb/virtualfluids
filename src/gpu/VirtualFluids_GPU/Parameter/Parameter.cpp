@@ -2636,6 +2636,10 @@ bool Parameter::getKernelNeedsFluidNodeIndicesToRun()
     return this->kernelNeedsFluidNodeIndicesToRun;
 }
 
+void Parameter::setKernelNeedsFluidNodeIndicesToRun(bool  kernelNeedsFluidNodeIndicesToRun){
+    this->kernelNeedsFluidNodeIndicesToRun = kernelNeedsFluidNodeIndicesToRun;
+}
+
 void Parameter::initProcessNeighborsAfterFtoCX(int level)
 {
     this->getParH(level)->sendProcessNeighborsAfterFtoCX.resize(this->getParH(level)->sendProcessNeighborX.size());

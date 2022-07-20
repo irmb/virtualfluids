@@ -64,5 +64,6 @@ CumulantK17CompChimRedesigned::CumulantK17CompChimRedesigned(std::shared_ptr<Par
     myPreProcessorTypes.push_back(InitCompSP27);
     myKernelGroup = BasicKernel;
     this->cudaGrid = vf::cuda::CudaGrid(para->getParD(level)->numberofthreads, para->getParD(level)->numberOfNodes);
+    this->kernelUsesFluidNodeIndices = true;
 }
 
