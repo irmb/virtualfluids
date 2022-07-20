@@ -660,9 +660,9 @@ void GridReader::modifyQElement(std::shared_ptr<BoundaryQs> boundaryQ, unsigned 
 {
 	QforBoundaryConditions Q;
 	real* QQ = para->getParH(level)->geometryBC.q27[0];
-	Q.q27[vf::lbm::dir::REST] = &QQ[vf::lbm::dir::REST * para->getParH(level)->geometryBC.numberOfBCnodes];
+	Q.q27[vf::lbm::dir::DIR_000] = &QQ[vf::lbm::dir::DIR_000 * para->getParH(level)->geometryBC.numberOfBCnodes];
 	for (unsigned int i = 0; i < boundaryQ->getSize(level); i++)
-		Q.q27[vf::lbm::dir::REST][i] = 0.0f;
+		Q.q27[vf::lbm::dir::DIR_000][i] = 0.0f;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -733,33 +733,33 @@ void GridReader::initalGridInformations()
 
 void GridReader::setQ27Size(QforBoundaryConditions &Q, real* QQ, unsigned int sizeQ) const
 {
-	Q.q27[E] = &QQ[E   *sizeQ];
-	Q.q27[W] = &QQ[W   *sizeQ];
-	Q.q27[N] = &QQ[N   *sizeQ];
-	Q.q27[S] = &QQ[S   *sizeQ];
-	Q.q27[T] = &QQ[T   *sizeQ];
-	Q.q27[B] = &QQ[B   *sizeQ];
-	Q.q27[NE] = &QQ[NE  *sizeQ];
-	Q.q27[SW] = &QQ[SW  *sizeQ];
-	Q.q27[SE] = &QQ[SE  *sizeQ];
-	Q.q27[NW] = &QQ[NW  *sizeQ];
-	Q.q27[TE] = &QQ[TE  *sizeQ];
-	Q.q27[BW] = &QQ[BW  *sizeQ];
-	Q.q27[BE] = &QQ[BE  *sizeQ];
-	Q.q27[TW] = &QQ[TW  *sizeQ];
-	Q.q27[TN] = &QQ[TN  *sizeQ];
-	Q.q27[BS] = &QQ[BS  *sizeQ];
-	Q.q27[BN] = &QQ[BN  *sizeQ];
-	Q.q27[TS] = &QQ[TS  *sizeQ];
-	Q.q27[REST] = &QQ[REST*sizeQ];
-	Q.q27[TNE] = &QQ[TNE *sizeQ];
-	Q.q27[TSW] = &QQ[TSW *sizeQ];
-	Q.q27[TSE] = &QQ[TSE *sizeQ];
-	Q.q27[TNW] = &QQ[TNW *sizeQ];
-	Q.q27[BNE] = &QQ[BNE *sizeQ];
-	Q.q27[BSW] = &QQ[BSW *sizeQ];
-	Q.q27[BSE] = &QQ[BSE *sizeQ];
-	Q.q27[BNW] = &QQ[BNW *sizeQ];
+	Q.q27[DIR_P00] = &QQ[DIR_P00   *sizeQ];
+	Q.q27[DIR_M00] = &QQ[DIR_M00   *sizeQ];
+	Q.q27[DIR_0P0] = &QQ[DIR_0P0   *sizeQ];
+	Q.q27[DIR_0M0] = &QQ[DIR_0M0   *sizeQ];
+	Q.q27[DIR_00P] = &QQ[DIR_00P   *sizeQ];
+	Q.q27[DIR_00M] = &QQ[DIR_00M   *sizeQ];
+	Q.q27[DIR_PP0] = &QQ[DIR_PP0  *sizeQ];
+	Q.q27[DIR_MM0] = &QQ[DIR_MM0  *sizeQ];
+	Q.q27[DIR_PM0] = &QQ[DIR_PM0  *sizeQ];
+	Q.q27[DIR_MP0] = &QQ[DIR_MP0  *sizeQ];
+	Q.q27[DIR_P0P] = &QQ[DIR_P0P  *sizeQ];
+	Q.q27[DIR_M0M] = &QQ[DIR_M0M  *sizeQ];
+	Q.q27[DIR_P0M] = &QQ[DIR_P0M  *sizeQ];
+	Q.q27[DIR_M0P] = &QQ[DIR_M0P  *sizeQ];
+	Q.q27[DIR_0PP] = &QQ[DIR_0PP  *sizeQ];
+	Q.q27[DIR_0MM] = &QQ[DIR_0MM  *sizeQ];
+	Q.q27[DIR_0PM] = &QQ[DIR_0PM  *sizeQ];
+	Q.q27[DIR_0MP] = &QQ[DIR_0MP  *sizeQ];
+	Q.q27[DIR_000] = &QQ[DIR_000*sizeQ];
+	Q.q27[DIR_PPP] = &QQ[DIR_PPP *sizeQ];
+	Q.q27[DIR_MMP] = &QQ[DIR_MMP *sizeQ];
+	Q.q27[DIR_PMP] = &QQ[DIR_PMP *sizeQ];
+	Q.q27[DIR_MPP] = &QQ[DIR_MPP *sizeQ];
+	Q.q27[DIR_PPM] = &QQ[DIR_PPM *sizeQ];
+	Q.q27[DIR_MMM] = &QQ[DIR_MMM *sizeQ];
+	Q.q27[DIR_PMM] = &QQ[DIR_PMM *sizeQ];
+	Q.q27[DIR_MPM] = &QQ[DIR_MPM *sizeQ];
 }
 
 void GridReader::setSizeNoSlip(std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const

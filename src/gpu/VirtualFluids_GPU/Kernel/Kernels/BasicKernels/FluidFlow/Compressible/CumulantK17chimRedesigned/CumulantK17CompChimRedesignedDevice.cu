@@ -102,33 +102,33 @@ __global__ void LB_Kernel_CumulantK17CompChimRedesigned(
         ////////////////////////////////////////////////////////////////////////////////////
         //! - Set local distributions (f's):
         //!
-        real f_000 = (dist.f[REST])[k_000];
-        real f_P00 = (dist.f[E])[k_000];
-        real f_M00 = (dist.f[W])[k_M00];
-        real f_0P0 = (dist.f[N])[k_000];
-        real f_0M0 = (dist.f[S])[k_0M0];
-        real f_00P = (dist.f[T])[k_000];
-        real f_00M = (dist.f[B])[k_00M];
-        real f_PP0 = (dist.f[NE])[k_000];
-        real f_MM0 = (dist.f[SW])[k_MM0];
-        real f_PM0 = (dist.f[SE])[k_0M0];
-        real f_MP0 = (dist.f[NW])[k_M00];
-        real f_P0P = (dist.f[TE])[k_000];
-        real f_M0M = (dist.f[BW])[k_M0M];
-        real f_P0M = (dist.f[BE])[k_00M];
-        real f_M0P = (dist.f[TW])[k_M00];
-        real f_0PP = (dist.f[TN])[k_000];
-        real f_0MM = (dist.f[BS])[k_0MM];
-        real f_0PM = (dist.f[BN])[k_00M];
-        real f_0MP = (dist.f[TS])[k_0M0];
-        real f_PPP = (dist.f[TNE])[k_000];
-        real f_MPP = (dist.f[TNW])[k_M00];
-        real f_PMP = (dist.f[TSE])[k_0M0];
-        real f_MMP = (dist.f[TSW])[k_MM0];
-        real f_PPM = (dist.f[BNE])[k_00M];
-        real f_MPM = (dist.f[BNW])[k_M0M];
-        real f_PMM = (dist.f[BSE])[k_0MM];
-        real f_MMM = (dist.f[BSW])[k_MMM];
+        real f_000 = (dist.f[DIR_000])[k_000];
+        real f_P00 = (dist.f[DIR_P00])[k_000];
+        real f_M00 = (dist.f[DIR_M00])[k_M00];
+        real f_0P0 = (dist.f[DIR_0P0])[k_000];
+        real f_0M0 = (dist.f[DIR_0M0])[k_0M0];
+        real f_00P = (dist.f[DIR_00P])[k_000];
+        real f_00M = (dist.f[DIR_00M])[k_00M];
+        real f_PP0 = (dist.f[DIR_PP0])[k_000];
+        real f_MM0 = (dist.f[DIR_MM0])[k_MM0];
+        real f_PM0 = (dist.f[DIR_PM0])[k_0M0];
+        real f_MP0 = (dist.f[DIR_MP0])[k_M00];
+        real f_P0P = (dist.f[DIR_P0P])[k_000];
+        real f_M0M = (dist.f[DIR_M0M])[k_M0M];
+        real f_P0M = (dist.f[DIR_P0M])[k_00M];
+        real f_M0P = (dist.f[DIR_M0P])[k_M00];
+        real f_0PP = (dist.f[DIR_0PP])[k_000];
+        real f_0MM = (dist.f[DIR_0MM])[k_0MM];
+        real f_0PM = (dist.f[DIR_0PM])[k_00M];
+        real f_0MP = (dist.f[DIR_0MP])[k_0M0];
+        real f_PPP = (dist.f[DIR_PPP])[k_000];
+        real f_MPP = (dist.f[DIR_MPP])[k_M00];
+        real f_PMP = (dist.f[DIR_PMP])[k_0M0];
+        real f_MMP = (dist.f[DIR_MMP])[k_MM0];
+        real f_PPM = (dist.f[DIR_PPM])[k_00M];
+        real f_MPM = (dist.f[DIR_MPM])[k_M0M];
+        real f_PMM = (dist.f[DIR_PMM])[k_0MM];
+        real f_MMM = (dist.f[DIR_MMM])[k_MMM];
 
         ////////////////////////////////////////////////////////////////////////////////////
         //! - Define aliases to use the same variable for the moments (m's):
@@ -576,32 +576,32 @@ __global__ void LB_Kernel_CumulantK17CompChimRedesigned(
         //! <a href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017),
         //! DOI:10.3390/computation5020019 ]</b></a>
         //!
-        (dist.f[E])[k_000]    = f_M00;
-        (dist.f[W])[k_M00]    = f_P00;
-        (dist.f[N])[k_000]    = f_0M0;
-        (dist.f[S])[k_0M0]    = f_0P0;
-        (dist.f[T])[k_000]    = f_00M;
-        (dist.f[B])[k_00M]    = f_00P;
-        (dist.f[NE])[k_000]   = f_MM0;
-        (dist.f[SW])[k_MM0]   = f_PP0;
-        (dist.f[SE])[k_0M0]   = f_MP0;
-        (dist.f[NW])[k_M00]   = f_PM0;
-        (dist.f[TE])[k_000]   = f_M0M;
-        (dist.f[BW])[k_M0M]   = f_P0P;
-        (dist.f[BE])[k_00M]   = f_M0P;
-        (dist.f[TW])[k_M00]   = f_P0M;
-        (dist.f[TN])[k_000]   = f_0MM;
-        (dist.f[BS])[k_0MM]   = f_0PP;
-        (dist.f[BN])[k_00M]   = f_0MP;
-        (dist.f[TS])[k_0M0]   = f_0PM;
-        (dist.f[REST])[k_000] = f_000;
-        (dist.f[TNE])[k_000]  = f_MMM;
-        (dist.f[TSE])[k_0M0]  = f_MPM;
-        (dist.f[BNE])[k_00M]  = f_MMP;
-        (dist.f[BSE])[k_0MM]  = f_MPP;
-        (dist.f[TNW])[k_M00]  = f_PMM;
-        (dist.f[TSW])[k_MM0]  = f_PPM;
-        (dist.f[BNW])[k_M0M]  = f_PMP;
-        (dist.f[BSW])[k_MMM]  = f_PPP;
+        (dist.f[DIR_P00])[k_000]    = f_M00;
+        (dist.f[DIR_M00])[k_M00]    = f_P00;
+        (dist.f[DIR_0P0])[k_000]    = f_0M0;
+        (dist.f[DIR_0M0])[k_0M0]    = f_0P0;
+        (dist.f[DIR_00P])[k_000]    = f_00M;
+        (dist.f[DIR_00M])[k_00M]    = f_00P;
+        (dist.f[DIR_PP0])[k_000]   = f_MM0;
+        (dist.f[DIR_MM0])[k_MM0]   = f_PP0;
+        (dist.f[DIR_PM0])[k_0M0]   = f_MP0;
+        (dist.f[DIR_MP0])[k_M00]   = f_PM0;
+        (dist.f[DIR_P0P])[k_000]   = f_M0M;
+        (dist.f[DIR_M0M])[k_M0M]   = f_P0P;
+        (dist.f[DIR_P0M])[k_00M]   = f_M0P;
+        (dist.f[DIR_M0P])[k_M00]   = f_P0M;
+        (dist.f[DIR_0PP])[k_000]   = f_0MM;
+        (dist.f[DIR_0MM])[k_0MM]   = f_0PP;
+        (dist.f[DIR_0PM])[k_00M]   = f_0MP;
+        (dist.f[DIR_0MP])[k_0M0]   = f_0PM;
+        (dist.f[DIR_000])[k_000] = f_000;
+        (dist.f[DIR_PPP])[k_000]  = f_MMM;
+        (dist.f[DIR_PMP])[k_0M0]  = f_MPM;
+        (dist.f[DIR_PPM])[k_00M]  = f_MMP;
+        (dist.f[DIR_PMM])[k_0MM]  = f_MPP;
+        (dist.f[DIR_MPP])[k_M00]  = f_PMM;
+        (dist.f[DIR_MMP])[k_MM0]  = f_PPM;
+        (dist.f[DIR_MPM])[k_M0M]  = f_PMP;
+        (dist.f[DIR_MMM])[k_MMM]  = f_PPP;
     }
 }

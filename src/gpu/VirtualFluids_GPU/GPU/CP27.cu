@@ -20,63 +20,63 @@ __global__ void CalcCP27(real* DD,
 	Distributions27 D;
 	if (isEvenTimestep==true)
 	{
-		D.f[E   ] = &DD[E   *size_Mat];
-		D.f[W   ] = &DD[W   *size_Mat];
-		D.f[N   ] = &DD[N   *size_Mat];
-		D.f[S   ] = &DD[S   *size_Mat];
-		D.f[T   ] = &DD[T   *size_Mat];
-		D.f[B   ] = &DD[B   *size_Mat];
-		D.f[NE  ] = &DD[NE  *size_Mat];
-		D.f[SW  ] = &DD[SW  *size_Mat];
-		D.f[SE  ] = &DD[SE  *size_Mat];
-		D.f[NW  ] = &DD[NW  *size_Mat];
-		D.f[TE  ] = &DD[TE  *size_Mat];
-		D.f[BW  ] = &DD[BW  *size_Mat];
-		D.f[BE  ] = &DD[BE  *size_Mat];
-		D.f[TW  ] = &DD[TW  *size_Mat];
-		D.f[TN  ] = &DD[TN  *size_Mat];
-		D.f[BS  ] = &DD[BS  *size_Mat];
-		D.f[BN  ] = &DD[BN  *size_Mat];
-		D.f[TS  ] = &DD[TS  *size_Mat];
-		D.f[REST] = &DD[REST*size_Mat];
-		D.f[TNE ] = &DD[TNE *size_Mat];
-		D.f[TSW ] = &DD[TSW *size_Mat];
-		D.f[TSE ] = &DD[TSE *size_Mat];
-		D.f[TNW ] = &DD[TNW *size_Mat];
-		D.f[BNE ] = &DD[BNE *size_Mat];
-		D.f[BSW ] = &DD[BSW *size_Mat];
-		D.f[BSE ] = &DD[BSE *size_Mat];
-		D.f[BNW ] = &DD[BNW *size_Mat];
+		D.f[DIR_P00   ] = &DD[DIR_P00   *size_Mat];
+		D.f[DIR_M00   ] = &DD[DIR_M00   *size_Mat];
+		D.f[DIR_0P0   ] = &DD[DIR_0P0   *size_Mat];
+		D.f[DIR_0M0   ] = &DD[DIR_0M0   *size_Mat];
+		D.f[DIR_00P   ] = &DD[DIR_00P   *size_Mat];
+		D.f[DIR_00M   ] = &DD[DIR_00M   *size_Mat];
+		D.f[DIR_PP0  ] = &DD[DIR_PP0  *size_Mat];
+		D.f[DIR_MM0  ] = &DD[DIR_MM0  *size_Mat];
+		D.f[DIR_PM0  ] = &DD[DIR_PM0  *size_Mat];
+		D.f[DIR_MP0  ] = &DD[DIR_MP0  *size_Mat];
+		D.f[DIR_P0P  ] = &DD[DIR_P0P  *size_Mat];
+		D.f[DIR_M0M  ] = &DD[DIR_M0M  *size_Mat];
+		D.f[DIR_P0M  ] = &DD[DIR_P0M  *size_Mat];
+		D.f[DIR_M0P  ] = &DD[DIR_M0P  *size_Mat];
+		D.f[DIR_0PP  ] = &DD[DIR_0PP  *size_Mat];
+		D.f[DIR_0MM  ] = &DD[DIR_0MM  *size_Mat];
+		D.f[DIR_0PM  ] = &DD[DIR_0PM  *size_Mat];
+		D.f[DIR_0MP  ] = &DD[DIR_0MP  *size_Mat];
+		D.f[DIR_000] = &DD[DIR_000*size_Mat];
+		D.f[DIR_PPP ] = &DD[DIR_PPP *size_Mat];
+		D.f[DIR_MMP ] = &DD[DIR_MMP *size_Mat];
+		D.f[DIR_PMP ] = &DD[DIR_PMP *size_Mat];
+		D.f[DIR_MPP ] = &DD[DIR_MPP *size_Mat];
+		D.f[DIR_PPM ] = &DD[DIR_PPM *size_Mat];
+		D.f[DIR_MMM ] = &DD[DIR_MMM *size_Mat];
+		D.f[DIR_PMM ] = &DD[DIR_PMM *size_Mat];
+		D.f[DIR_MPM ] = &DD[DIR_MPM *size_Mat];
 	} 
 	else
 	{
-		D.f[W   ] = &DD[E   *size_Mat];
-		D.f[E   ] = &DD[W   *size_Mat];
-		D.f[S   ] = &DD[N   *size_Mat];
-		D.f[N   ] = &DD[S   *size_Mat];
-		D.f[B   ] = &DD[T   *size_Mat];
-		D.f[T   ] = &DD[B   *size_Mat];
-		D.f[SW  ] = &DD[NE  *size_Mat];
-		D.f[NE  ] = &DD[SW  *size_Mat];
-		D.f[NW  ] = &DD[SE  *size_Mat];
-		D.f[SE  ] = &DD[NW  *size_Mat];
-		D.f[BW  ] = &DD[TE  *size_Mat];
-		D.f[TE  ] = &DD[BW  *size_Mat];
-		D.f[TW  ] = &DD[BE  *size_Mat];
-		D.f[BE  ] = &DD[TW  *size_Mat];
-		D.f[BS  ] = &DD[TN  *size_Mat];
-		D.f[TN  ] = &DD[BS  *size_Mat];
-		D.f[TS  ] = &DD[BN  *size_Mat];
-		D.f[BN  ] = &DD[TS  *size_Mat];
-		D.f[REST] = &DD[REST*size_Mat];
-		D.f[TNE ] = &DD[BSW *size_Mat];
-		D.f[TSW ] = &DD[BNE *size_Mat];
-		D.f[TSE ] = &DD[BNW *size_Mat];
-		D.f[TNW ] = &DD[BSE *size_Mat];
-		D.f[BNE ] = &DD[TSW *size_Mat];
-		D.f[BSW ] = &DD[TNE *size_Mat];
-		D.f[BSE ] = &DD[TNW *size_Mat];
-		D.f[BNW ] = &DD[TSE *size_Mat];
+		D.f[DIR_M00   ] = &DD[DIR_P00   *size_Mat];
+		D.f[DIR_P00   ] = &DD[DIR_M00   *size_Mat];
+		D.f[DIR_0M0   ] = &DD[DIR_0P0   *size_Mat];
+		D.f[DIR_0P0   ] = &DD[DIR_0M0   *size_Mat];
+		D.f[DIR_00M   ] = &DD[DIR_00P   *size_Mat];
+		D.f[DIR_00P   ] = &DD[DIR_00M   *size_Mat];
+		D.f[DIR_MM0  ] = &DD[DIR_PP0  *size_Mat];
+		D.f[DIR_PP0  ] = &DD[DIR_MM0  *size_Mat];
+		D.f[DIR_MP0  ] = &DD[DIR_PM0  *size_Mat];
+		D.f[DIR_PM0  ] = &DD[DIR_MP0  *size_Mat];
+		D.f[DIR_M0M  ] = &DD[DIR_P0P  *size_Mat];
+		D.f[DIR_P0P  ] = &DD[DIR_M0M  *size_Mat];
+		D.f[DIR_M0P  ] = &DD[DIR_P0M  *size_Mat];
+		D.f[DIR_P0M  ] = &DD[DIR_M0P  *size_Mat];
+		D.f[DIR_0MM  ] = &DD[DIR_0PP  *size_Mat];
+		D.f[DIR_0PP  ] = &DD[DIR_0MM  *size_Mat];
+		D.f[DIR_0MP  ] = &DD[DIR_0PM  *size_Mat];
+		D.f[DIR_0PM  ] = &DD[DIR_0MP  *size_Mat];
+		D.f[DIR_000] = &DD[DIR_000*size_Mat];
+		D.f[DIR_PPP ] = &DD[DIR_MMM *size_Mat];
+		D.f[DIR_MMP ] = &DD[DIR_PPM *size_Mat];
+		D.f[DIR_PMP ] = &DD[DIR_MPM *size_Mat];
+		D.f[DIR_MPP ] = &DD[DIR_PMM *size_Mat];
+		D.f[DIR_PPM ] = &DD[DIR_MMP *size_Mat];
+		D.f[DIR_MMM ] = &DD[DIR_PPP *size_Mat];
+		D.f[DIR_PMM ] = &DD[DIR_MPP *size_Mat];
+		D.f[DIR_MPM ] = &DD[DIR_PMP *size_Mat];
 	}
 	////////////////////////////////////////////////////////////////////////////////
 	const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -124,20 +124,20 @@ __global__ void CalcCP27(real* DD,
 		////////////////////////////////////////////////////////////////////////////////
 		double PressCP;
 
-		PressCP  =   (D.f[E   ])[ke  ]+ (D.f[W   ])[kw  ]+ 
-                     (D.f[N   ])[kn  ]+ (D.f[S   ])[ks  ]+
-                     (D.f[T   ])[kt  ]+ (D.f[B   ])[kb  ]+
-                     (D.f[NE  ])[kne ]+ (D.f[SW  ])[ksw ]+
-                     (D.f[SE  ])[kse ]+ (D.f[NW  ])[knw ]+
-                     (D.f[TE  ])[kte ]+ (D.f[BW  ])[kbw ]+
-                     (D.f[BE  ])[kbe ]+ (D.f[TW  ])[ktw ]+
-                     (D.f[TN  ])[ktn ]+ (D.f[BS  ])[kbs ]+
-                     (D.f[BN  ])[kbn ]+ (D.f[TS  ])[kts ]+
-                     (D.f[REST])[kzero]+ 
-                     (D.f[TNE ])[ktne]+ (D.f[TSW ])[ktsw]+ 
-                     (D.f[TSE ])[ktse]+ (D.f[TNW ])[ktnw]+ 
-                     (D.f[BNE ])[kbne]+ (D.f[BSW ])[kbsw]+ 
-                     (D.f[BSE ])[kbse]+ (D.f[BNW ])[kbnw];
+		PressCP  =   (D.f[DIR_P00   ])[ke  ]+ (D.f[DIR_M00   ])[kw  ]+ 
+                     (D.f[DIR_0P0   ])[kn  ]+ (D.f[DIR_0M0   ])[ks  ]+
+                     (D.f[DIR_00P   ])[kt  ]+ (D.f[DIR_00M   ])[kb  ]+
+                     (D.f[DIR_PP0  ])[kne ]+ (D.f[DIR_MM0  ])[ksw ]+
+                     (D.f[DIR_PM0  ])[kse ]+ (D.f[DIR_MP0  ])[knw ]+
+                     (D.f[DIR_P0P  ])[kte ]+ (D.f[DIR_M0M  ])[kbw ]+
+                     (D.f[DIR_P0M  ])[kbe ]+ (D.f[DIR_M0P  ])[ktw ]+
+                     (D.f[DIR_0PP  ])[ktn ]+ (D.f[DIR_0MM  ])[kbs ]+
+                     (D.f[DIR_0PM  ])[kbn ]+ (D.f[DIR_0MP  ])[kts ]+
+                     (D.f[DIR_000])[kzero]+ 
+                     (D.f[DIR_PPP ])[ktne]+ (D.f[DIR_MMP ])[ktsw]+ 
+                     (D.f[DIR_PMP ])[ktse]+ (D.f[DIR_MPP ])[ktnw]+ 
+                     (D.f[DIR_PPM ])[kbne]+ (D.f[DIR_MMM ])[kbsw]+ 
+                     (D.f[DIR_PMM ])[kbse]+ (D.f[DIR_MPM ])[kbnw];
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		cpPress[k] = PressCP;
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

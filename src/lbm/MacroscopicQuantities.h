@@ -25,10 +25,10 @@ namespace lbm
 
 inline __host__ __device__ real getDensity(const real *const &f /*[27]*/)
 {
-    return ((f[dir::TNE] + f[dir::BSW]) + (f[dir::TSE] + f[dir::BNW])) + ((f[dir::BSE] + f[dir::TNW]) + (f[dir::TSW] + f[dir::BNE])) +
-           (((f[dir::NE] + f[dir::SW]) + (f[dir::SE] + f[dir::NW])) + ((f[dir::TE] + f[dir::BW]) + (f[dir::BE] + f[dir::TW])) +
-            ((f[dir::BN] + f[dir::TS]) + (f[dir::TN] + f[dir::BS]))) +
-           ((f[dir::E] + f[dir::W]) + (f[dir::N] + f[dir::S]) + (f[dir::T] + f[dir::B])) + f[dir::REST];
+    return ((f[dir::DIR_PPP] + f[dir::DIR_MMM]) + (f[dir::DIR_PMP] + f[dir::DIR_MPM])) + ((f[dir::DIR_PMM] + f[dir::DIR_MPP]) + (f[dir::DIR_MMP] + f[dir::DIR_PPM])) +
+           (((f[dir::DIR_PP0] + f[dir::DIR_MM0]) + (f[dir::DIR_PM0] + f[dir::DIR_MP0])) + ((f[dir::DIR_P0P] + f[dir::DIR_M0M]) + (f[dir::DIR_P0M] + f[dir::DIR_M0P])) +
+            ((f[dir::DIR_0PM] + f[dir::DIR_0MP]) + (f[dir::DIR_0PP] + f[dir::DIR_0MM]))) +
+           ((f[dir::DIR_P00] + f[dir::DIR_M00]) + (f[dir::DIR_0P0] + f[dir::DIR_0M0]) + (f[dir::DIR_00P] + f[dir::DIR_00M])) + f[dir::DIR_000];
 }
 
 /*
@@ -36,22 +36,22 @@ inline __host__ __device__ real getDensity(const real *const &f /*[27]*/)
 */
 inline __host__ __device__ real getIncompressibleVelocityX1(const real *const &f /*[27]*/)
 {
-    return ((((f[dir::TNE] - f[dir::BSW]) + (f[dir::TSE] - f[dir::BNW])) + ((f[dir::BSE] - f[dir::TNW]) + (f[dir::BNE] - f[dir::TSW]))) +
-            (((f[dir::BE] - f[dir::TW]) + (f[dir::TE] - f[dir::BW])) + ((f[dir::SE] - f[dir::NW]) + (f[dir::NE] - f[dir::SW]))) + (f[dir::E] - f[dir::W]));
+    return ((((f[dir::DIR_PPP] - f[dir::DIR_MMM]) + (f[dir::DIR_PMP] - f[dir::DIR_MPM])) + ((f[dir::DIR_PMM] - f[dir::DIR_MPP]) + (f[dir::DIR_PPM] - f[dir::DIR_MMP]))) +
+            (((f[dir::DIR_P0M] - f[dir::DIR_M0P]) + (f[dir::DIR_P0P] - f[dir::DIR_M0M])) + ((f[dir::DIR_PM0] - f[dir::DIR_MP0]) + (f[dir::DIR_PP0] - f[dir::DIR_MM0]))) + (f[dir::DIR_P00] - f[dir::DIR_M00]));
 }
 
 
 inline __host__ __device__ real getIncompressibleVelocityX2(const real *const &f /*[27]*/)
 {
-    return ((((f[dir::TNE] - f[dir::BSW]) + (f[dir::BNW] - f[dir::TSE])) + ((f[dir::TNW] - f[dir::BSE]) + (f[dir::BNE] - f[dir::TSW]))) +
-            (((f[dir::BN] - f[dir::TS]) + (f[dir::TN] - f[dir::BS])) + ((f[dir::NW] - f[dir::SE]) + (f[dir::NE] - f[dir::SW]))) + (f[dir::N] - f[dir::S]));
+    return ((((f[dir::DIR_PPP] - f[dir::DIR_MMM]) + (f[dir::DIR_MPM] - f[dir::DIR_PMP])) + ((f[dir::DIR_MPP] - f[dir::DIR_PMM]) + (f[dir::DIR_PPM] - f[dir::DIR_MMP]))) +
+            (((f[dir::DIR_0PM] - f[dir::DIR_0MP]) + (f[dir::DIR_0PP] - f[dir::DIR_0MM])) + ((f[dir::DIR_MP0] - f[dir::DIR_PM0]) + (f[dir::DIR_PP0] - f[dir::DIR_MM0]))) + (f[dir::DIR_0P0] - f[dir::DIR_0M0]));
 }
 
 
 inline __host__ __device__ real getIncompressibleVelocityX3(const real *const &f /*[27]*/)
 {
-    return ((((f[dir::TNE] - f[dir::BSW]) + (f[dir::TSE] - f[dir::BNW])) + ((f[dir::TNW] - f[dir::BSE]) + (f[dir::TSW] - f[dir::BNE]))) +
-            (((f[dir::TS] - f[dir::BN]) + (f[dir::TN] - f[dir::BS])) + ((f[dir::TW] - f[dir::BE]) + (f[dir::TE] - f[dir::BW]))) + (f[dir::T] - f[dir::B]));
+    return ((((f[dir::DIR_PPP] - f[dir::DIR_MMM]) + (f[dir::DIR_PMP] - f[dir::DIR_MPM])) + ((f[dir::DIR_MPP] - f[dir::DIR_PMM]) + (f[dir::DIR_MMP] - f[dir::DIR_PPM]))) +
+            (((f[dir::DIR_0MP] - f[dir::DIR_0PM]) + (f[dir::DIR_0PP] - f[dir::DIR_0MM])) + ((f[dir::DIR_M0P] - f[dir::DIR_P0M]) + (f[dir::DIR_P0P] - f[dir::DIR_M0M]))) + (f[dir::DIR_00P] - f[dir::DIR_00M]));
 }
 
 
@@ -81,12 +81,12 @@ inline __host__ __device__ real getCompressibleVelocityX3(const real *const &f27
 */
 inline __host__ __device__ real getPressure(const real *const &f27, const real& rho, const real& vx, const real& vy, const real& vz)
 {
-    return (f27[dir::E] + f27[dir::W] + f27[dir::N] + f27[dir::S] + f27[dir::T] + f27[dir::B] + 
-    constant::c2o1 * (f27[dir::NE] + f27[dir::SW] + f27[dir::SE] + f27[dir::NW] + f27[dir::TE] + 
-                      f27[dir::BW] + f27[dir::BE] + f27[dir::TW] + f27[dir::TN] + f27[dir::BS] + 
-                      f27[dir::BN] + f27[dir::TS]) + 
-    constant::c3o1 * (f27[dir::TNE] + f27[dir::TSW] + f27[dir::TSE] + f27[dir::TNW] + 
-                      f27[dir::BNE] + f27[dir::BSW] + f27[dir::BSE] + f27[dir::BNW]) -
+    return (f27[dir::DIR_P00] + f27[dir::DIR_M00] + f27[dir::DIR_0P0] + f27[dir::DIR_0M0] + f27[dir::DIR_00P] + f27[dir::DIR_00M] + 
+    constant::c2o1 * (f27[dir::DIR_PP0] + f27[dir::DIR_MM0] + f27[dir::DIR_PM0] + f27[dir::DIR_MP0] + f27[dir::DIR_P0P] + 
+                      f27[dir::DIR_M0M] + f27[dir::DIR_P0M] + f27[dir::DIR_M0P] + f27[dir::DIR_0PP] + f27[dir::DIR_0MM] + 
+                      f27[dir::DIR_0PM] + f27[dir::DIR_0MP]) + 
+    constant::c3o1 * (f27[dir::DIR_PPP] + f27[dir::DIR_MMP] + f27[dir::DIR_PMP] + f27[dir::DIR_MPP] + 
+                      f27[dir::DIR_PPM] + f27[dir::DIR_MMM] + f27[dir::DIR_PMM] + f27[dir::DIR_MPM]) -
     rho - (vx * vx + vy * vy + vz * vz) * (constant::c1o1 + rho)) * 
     constant::c1o2 + rho; // times zero for incompressible case                 
                           // Attention: op defined directly to op = 1 ; ^^^^(1.0/op-0.5)=0.5

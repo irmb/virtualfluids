@@ -14,7 +14,7 @@ void findQ(Parameter* para, int lev)
    VF_LOG_CRITICAL("findQ() is deprecated! - see comment above for more information");
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   //////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
+   //////////////  DIR_P00   DIR_M00   DIR_0P0   DIR_0M0   DIR_00P   DIR_00M  DIR_PP0  DIR_MM0  DIR_PM0  DIR_MP0  DIR_P0P  DIR_M0M  DIR_P0M  DIR_M0P  DIR_0PP  DIR_0MM  DIR_0PM  DIR_0MP ZERO DIR_PPP DIR_PPM DIR_PMP DIR_PMM DIR_MPP DIR_MPM DIR_MMP DIR_MMM  ////////////////////////
    int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
    int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
    int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
@@ -41,33 +41,33 @@ void findQ(Parameter* para, int lev)
    //real        radius  = nny / 5.f;//2.56f;
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    QforBoundaryConditions Q;
-   Q.q27[E   ] = &QQ[E   *sizeQ];
-   Q.q27[W   ] = &QQ[W   *sizeQ];
-   Q.q27[N   ] = &QQ[N   *sizeQ];
-   Q.q27[S   ] = &QQ[S   *sizeQ];
-   Q.q27[T   ] = &QQ[T   *sizeQ];
-   Q.q27[B   ] = &QQ[B   *sizeQ];
-   Q.q27[NE  ] = &QQ[NE  *sizeQ];
-   Q.q27[SW  ] = &QQ[SW  *sizeQ];
-   Q.q27[SE  ] = &QQ[SE  *sizeQ];
-   Q.q27[NW  ] = &QQ[NW  *sizeQ];
-   Q.q27[TE  ] = &QQ[TE  *sizeQ];
-   Q.q27[BW  ] = &QQ[BW  *sizeQ];
-   Q.q27[BE  ] = &QQ[BE  *sizeQ];
-   Q.q27[TW  ] = &QQ[TW  *sizeQ];
-   Q.q27[TN  ] = &QQ[TN  *sizeQ];
-   Q.q27[BS  ] = &QQ[BS  *sizeQ];
-   Q.q27[BN  ] = &QQ[BN  *sizeQ];
-   Q.q27[TS  ] = &QQ[TS  *sizeQ];
-   Q.q27[REST] = &QQ[REST*sizeQ];
-   Q.q27[TNE ] = &QQ[TNE *sizeQ];
-   Q.q27[TSW ] = &QQ[TSW *sizeQ];
-   Q.q27[TSE ] = &QQ[TSE *sizeQ];
-   Q.q27[TNW ] = &QQ[TNW *sizeQ];
-   Q.q27[BNE ] = &QQ[BNE *sizeQ];
-   Q.q27[BSW ] = &QQ[BSW *sizeQ];
-   Q.q27[BSE ] = &QQ[BSE *sizeQ];
-   Q.q27[BNW ] = &QQ[BNW *sizeQ];
+   Q.q27[DIR_P00   ] = &QQ[DIR_P00   *sizeQ];
+   Q.q27[DIR_M00   ] = &QQ[DIR_M00   *sizeQ];
+   Q.q27[DIR_0P0   ] = &QQ[DIR_0P0   *sizeQ];
+   Q.q27[DIR_0M0   ] = &QQ[DIR_0M0   *sizeQ];
+   Q.q27[DIR_00P   ] = &QQ[DIR_00P   *sizeQ];
+   Q.q27[DIR_00M   ] = &QQ[DIR_00M   *sizeQ];
+   Q.q27[DIR_PP0  ] = &QQ[DIR_PP0  *sizeQ];
+   Q.q27[DIR_MM0  ] = &QQ[DIR_MM0  *sizeQ];
+   Q.q27[DIR_PM0  ] = &QQ[DIR_PM0  *sizeQ];
+   Q.q27[DIR_MP0  ] = &QQ[DIR_MP0  *sizeQ];
+   Q.q27[DIR_P0P  ] = &QQ[DIR_P0P  *sizeQ];
+   Q.q27[DIR_M0M  ] = &QQ[DIR_M0M  *sizeQ];
+   Q.q27[DIR_P0M  ] = &QQ[DIR_P0M  *sizeQ];
+   Q.q27[DIR_M0P  ] = &QQ[DIR_M0P  *sizeQ];
+   Q.q27[DIR_0PP  ] = &QQ[DIR_0PP  *sizeQ];
+   Q.q27[DIR_0MM  ] = &QQ[DIR_0MM  *sizeQ];
+   Q.q27[DIR_0PM  ] = &QQ[DIR_0PM  *sizeQ];
+   Q.q27[DIR_0MP  ] = &QQ[DIR_0MP  *sizeQ];
+   Q.q27[DIR_000] = &QQ[DIR_000*sizeQ];
+   Q.q27[DIR_PPP ] = &QQ[DIR_PPP *sizeQ];
+   Q.q27[DIR_MMP ] = &QQ[DIR_MMP *sizeQ];
+   Q.q27[DIR_PMP ] = &QQ[DIR_PMP *sizeQ];
+   Q.q27[DIR_MPP ] = &QQ[DIR_MPP *sizeQ];
+   Q.q27[DIR_PPM ] = &QQ[DIR_PPM *sizeQ];
+   Q.q27[DIR_MMM ] = &QQ[DIR_MMM *sizeQ];
+   Q.q27[DIR_PMM ] = &QQ[DIR_PMM *sizeQ];
+   Q.q27[DIR_MPM ] = &QQ[DIR_MPM *sizeQ];
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    for(k=STARTOFFZ + 1 ; k<=nnz+STARTOFFZ-2 ; k++){
       for(j=STARTOFFY + 1 ; j<=nny+STARTOFFY-2 ; j++){          //j<=nny/2+STARTOFFY     //j<=STARTOFFY+1
@@ -97,89 +97,89 @@ void findQ(Parameter* para, int lev)
                {
                   QIN.k[QIN.numberOfBCnodes]          = kk[m];
 
-                  //Q.q27[E   ][QIN.numberOfBCnodes] = -1.f;
-                  //Q.q27[W   ][QIN.numberOfBCnodes] = -1.f;
-                  //Q.q27[N   ][QIN.numberOfBCnodes] = 0.f;
-                  //Q.q27[S   ][QIN.numberOfBCnodes] = -1.f;
-                  //Q.q27[T   ][QIN.numberOfBCnodes] = -1.f;
-                  //Q.q27[B   ][QIN.numberOfBCnodes] = -1.f;
-                  //Q.q27[NE  ][QIN.numberOfBCnodes] = 0.f;
-                  //Q.q27[SW  ][QIN.numberOfBCnodes] = -1.f;
-                  //Q.q27[SE  ][QIN.numberOfBCnodes] = -1.f;
-                  //Q.q27[NW  ][QIN.numberOfBCnodes] = 0.f;
-                  //Q.q27[TE  ][QIN.numberOfBCnodes] = -1.f;
-                  //Q.q27[BW  ][QIN.numberOfBCnodes] = -1.f;
-                  //Q.q27[BE  ][QIN.numberOfBCnodes] = -1.f;
-                  //Q.q27[TW  ][QIN.numberOfBCnodes] = -1.f;
-                  //Q.q27[TN  ][QIN.numberOfBCnodes] = 0.f;
-                  //Q.q27[BS  ][QIN.numberOfBCnodes] = -1.f;
-                  //Q.q27[BN  ][QIN.numberOfBCnodes] = 0.f;
-                  //Q.q27[TS  ][QIN.numberOfBCnodes] = -1.f;
-                  //Q.q27[REST][QIN.numberOfBCnodes] = -1.f;
-                  //Q.q27[TNE ][QIN.numberOfBCnodes] = 0.f;
-                  //Q.q27[TSW ][QIN.numberOfBCnodes] = -1.f;
-                  //Q.q27[TSE ][QIN.numberOfBCnodes] = -1.f;
-                  //Q.q27[TNW ][QIN.numberOfBCnodes] = 0.f;
-                  //Q.q27[BNE ][QIN.numberOfBCnodes] = 0.f;
-                  //Q.q27[BSW ][QIN.numberOfBCnodes] = -1.f;
-                  //Q.q27[BSE ][QIN.numberOfBCnodes] = -1.f;
-                  //Q.q27[BNW ][QIN.numberOfBCnodes] = 0.f;
+                  //Q.q27[DIR_P00   ][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[DIR_M00   ][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[DIR_0P0   ][QIN.numberOfBCnodes] = 0.f;
+                  //Q.q27[DIR_0M0   ][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[DIR_00P   ][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[DIR_00M   ][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[DIR_PP0  ][QIN.numberOfBCnodes] = 0.f;
+                  //Q.q27[DIR_MM0  ][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[DIR_PM0  ][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[DIR_MP0  ][QIN.numberOfBCnodes] = 0.f;
+                  //Q.q27[DIR_P0P  ][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[DIR_M0M  ][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[DIR_P0M  ][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[DIR_M0P  ][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[DIR_0PP  ][QIN.numberOfBCnodes] = 0.f;
+                  //Q.q27[DIR_0MM  ][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[DIR_0PM  ][QIN.numberOfBCnodes] = 0.f;
+                  //Q.q27[DIR_0MP  ][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[DIR_000][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[DIR_PPP ][QIN.numberOfBCnodes] = 0.f;
+                  //Q.q27[DIR_MMP ][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[DIR_PMP ][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[DIR_MPP ][QIN.numberOfBCnodes] = 0.f;
+                  //Q.q27[DIR_PPM ][QIN.numberOfBCnodes] = 0.f;
+                  //Q.q27[DIR_MMM ][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[DIR_PMM ][QIN.numberOfBCnodes] = -1.f;
+                  //Q.q27[DIR_MPM ][QIN.numberOfBCnodes] = 0.f;
 
-                  //Q.q27[E   ][QIN.numberOfBCnodes] = ON[W   ];
-                  //Q.q27[W   ][QIN.numberOfBCnodes] = ON[E   ];
-                  //Q.q27[N   ][QIN.numberOfBCnodes] = ON[S   ];
-                  //Q.q27[S   ][QIN.numberOfBCnodes] = ON[N   ];
-                  //Q.q27[T   ][QIN.numberOfBCnodes] = ON[B   ];
-                  //Q.q27[B   ][QIN.numberOfBCnodes] = ON[T   ];
-                  //Q.q27[NE  ][QIN.numberOfBCnodes] = ON[SW  ];
-                  //Q.q27[SW  ][QIN.numberOfBCnodes] = ON[NE  ];
-                  //Q.q27[SE  ][QIN.numberOfBCnodes] = ON[NW  ];
-                  //Q.q27[NW  ][QIN.numberOfBCnodes] = ON[SE  ];
-                  //Q.q27[TE  ][QIN.numberOfBCnodes] = ON[BW  ];
-                  //Q.q27[BW  ][QIN.numberOfBCnodes] = ON[TE  ];
-                  //Q.q27[BE  ][QIN.numberOfBCnodes] = ON[TW  ];
-                  //Q.q27[TW  ][QIN.numberOfBCnodes] = ON[BE  ];
-                  //Q.q27[TN  ][QIN.numberOfBCnodes] = ON[BS  ];
-                  //Q.q27[BS  ][QIN.numberOfBCnodes] = ON[TN  ];
-                  //Q.q27[BN  ][QIN.numberOfBCnodes] = ON[TS  ];
-                  //Q.q27[TS  ][QIN.numberOfBCnodes] = ON[BN  ];
-                  //Q.q27[REST][QIN.numberOfBCnodes] = ON[REST];
-                  //Q.q27[TNE ][QIN.numberOfBCnodes] = ON[BSW ];
-                  //Q.q27[TSW ][QIN.numberOfBCnodes] = ON[BNE ];
-                  //Q.q27[TSE ][QIN.numberOfBCnodes] = ON[BNW ];
-                  //Q.q27[TNW ][QIN.numberOfBCnodes] = ON[BSE ];
-                  //Q.q27[BNE ][QIN.numberOfBCnodes] = ON[TSW ];
-                  //Q.q27[BSW ][QIN.numberOfBCnodes] = ON[TNE ];
-                  //Q.q27[BSE ][QIN.numberOfBCnodes] = ON[TNW ];
-                  //Q.q27[BNW ][QIN.numberOfBCnodes] = ON[TSE ];
+                  //Q.q27[DIR_P00   ][QIN.numberOfBCnodes] = ON[DIR_M00   ];
+                  //Q.q27[DIR_M00   ][QIN.numberOfBCnodes] = ON[DIR_P00   ];
+                  //Q.q27[DIR_0P0   ][QIN.numberOfBCnodes] = ON[DIR_0M0   ];
+                  //Q.q27[DIR_0M0   ][QIN.numberOfBCnodes] = ON[DIR_0P0   ];
+                  //Q.q27[DIR_00P   ][QIN.numberOfBCnodes] = ON[DIR_00M   ];
+                  //Q.q27[DIR_00M   ][QIN.numberOfBCnodes] = ON[DIR_00P   ];
+                  //Q.q27[DIR_PP0  ][QIN.numberOfBCnodes] = ON[DIR_MM0  ];
+                  //Q.q27[DIR_MM0  ][QIN.numberOfBCnodes] = ON[DIR_PP0  ];
+                  //Q.q27[DIR_PM0  ][QIN.numberOfBCnodes] = ON[DIR_MP0  ];
+                  //Q.q27[DIR_MP0  ][QIN.numberOfBCnodes] = ON[DIR_PM0  ];
+                  //Q.q27[DIR_P0P  ][QIN.numberOfBCnodes] = ON[DIR_M0M  ];
+                  //Q.q27[DIR_M0M  ][QIN.numberOfBCnodes] = ON[DIR_P0P  ];
+                  //Q.q27[DIR_P0M  ][QIN.numberOfBCnodes] = ON[DIR_M0P  ];
+                  //Q.q27[DIR_M0P  ][QIN.numberOfBCnodes] = ON[DIR_P0M  ];
+                  //Q.q27[DIR_0PP  ][QIN.numberOfBCnodes] = ON[DIR_0MM  ];
+                  //Q.q27[DIR_0MM  ][QIN.numberOfBCnodes] = ON[DIR_0PP  ];
+                  //Q.q27[DIR_0PM  ][QIN.numberOfBCnodes] = ON[DIR_0MP  ];
+                  //Q.q27[DIR_0MP  ][QIN.numberOfBCnodes] = ON[DIR_0PM  ];
+                  //Q.q27[DIR_000][QIN.numberOfBCnodes] = ON[DIR_000];
+                  //Q.q27[DIR_PPP ][QIN.numberOfBCnodes] = ON[DIR_MMM ];
+                  //Q.q27[DIR_MMP ][QIN.numberOfBCnodes] = ON[DIR_PPM ];
+                  //Q.q27[DIR_PMP ][QIN.numberOfBCnodes] = ON[DIR_MPM ];
+                  //Q.q27[DIR_MPP ][QIN.numberOfBCnodes] = ON[DIR_PMM ];
+                  //Q.q27[DIR_PPM ][QIN.numberOfBCnodes] = ON[DIR_MMP ];
+                  //Q.q27[DIR_MMM ][QIN.numberOfBCnodes] = ON[DIR_PPP ];
+                  //Q.q27[DIR_PMM ][QIN.numberOfBCnodes] = ON[DIR_MPP ];
+                  //Q.q27[DIR_MPM ][QIN.numberOfBCnodes] = ON[DIR_PMP ];
 
-                  Q.q27[E   ][QIN.numberOfBCnodes] = ON[E   ];
-                  Q.q27[W   ][QIN.numberOfBCnodes] = ON[W   ];
-                  Q.q27[N   ][QIN.numberOfBCnodes] = ON[N   ];
-                  Q.q27[S   ][QIN.numberOfBCnodes] = ON[S   ];
-                  Q.q27[T   ][QIN.numberOfBCnodes] = ON[T   ];
-                  Q.q27[B   ][QIN.numberOfBCnodes] = ON[B   ];
-                  Q.q27[NE  ][QIN.numberOfBCnodes] = ON[NE  ];
-                  Q.q27[SW  ][QIN.numberOfBCnodes] = ON[SW  ];
-                  Q.q27[SE  ][QIN.numberOfBCnodes] = ON[SE  ];
-                  Q.q27[NW  ][QIN.numberOfBCnodes] = ON[NW  ];
-                  Q.q27[TE  ][QIN.numberOfBCnodes] = ON[TE  ];
-                  Q.q27[BW  ][QIN.numberOfBCnodes] = ON[BW  ];
-                  Q.q27[BE  ][QIN.numberOfBCnodes] = ON[BE  ];
-                  Q.q27[TW  ][QIN.numberOfBCnodes] = ON[TW  ];
-                  Q.q27[TN  ][QIN.numberOfBCnodes] = ON[TN  ];
-                  Q.q27[BS  ][QIN.numberOfBCnodes] = ON[BS  ];
-                  Q.q27[BN  ][QIN.numberOfBCnodes] = ON[BN  ];
-                  Q.q27[TS  ][QIN.numberOfBCnodes] = ON[TS  ];
-                  Q.q27[REST][QIN.numberOfBCnodes] = ON[REST];
-                  Q.q27[TNE ][QIN.numberOfBCnodes] = ON[TNE ];
-                  Q.q27[TSW ][QIN.numberOfBCnodes] = ON[TSW ];
-                  Q.q27[TSE ][QIN.numberOfBCnodes] = ON[TSE ];
-                  Q.q27[TNW ][QIN.numberOfBCnodes] = ON[TNW ];
-                  Q.q27[BNE ][QIN.numberOfBCnodes] = ON[BNE ];
-                  Q.q27[BSW ][QIN.numberOfBCnodes] = ON[BSW ];
-                  Q.q27[BSE ][QIN.numberOfBCnodes] = ON[BSE ];
-                  Q.q27[BNW ][QIN.numberOfBCnodes] = ON[BNW ];
+                  Q.q27[DIR_P00   ][QIN.numberOfBCnodes] = ON[DIR_P00   ];
+                  Q.q27[DIR_M00   ][QIN.numberOfBCnodes] = ON[DIR_M00   ];
+                  Q.q27[DIR_0P0   ][QIN.numberOfBCnodes] = ON[DIR_0P0   ];
+                  Q.q27[DIR_0M0   ][QIN.numberOfBCnodes] = ON[DIR_0M0   ];
+                  Q.q27[DIR_00P   ][QIN.numberOfBCnodes] = ON[DIR_00P   ];
+                  Q.q27[DIR_00M   ][QIN.numberOfBCnodes] = ON[DIR_00M   ];
+                  Q.q27[DIR_PP0  ][QIN.numberOfBCnodes] = ON[DIR_PP0  ];
+                  Q.q27[DIR_MM0  ][QIN.numberOfBCnodes] = ON[DIR_MM0  ];
+                  Q.q27[DIR_PM0  ][QIN.numberOfBCnodes] = ON[DIR_PM0  ];
+                  Q.q27[DIR_MP0  ][QIN.numberOfBCnodes] = ON[DIR_MP0  ];
+                  Q.q27[DIR_P0P  ][QIN.numberOfBCnodes] = ON[DIR_P0P  ];
+                  Q.q27[DIR_M0M  ][QIN.numberOfBCnodes] = ON[DIR_M0M  ];
+                  Q.q27[DIR_P0M  ][QIN.numberOfBCnodes] = ON[DIR_P0M  ];
+                  Q.q27[DIR_M0P  ][QIN.numberOfBCnodes] = ON[DIR_M0P  ];
+                  Q.q27[DIR_0PP  ][QIN.numberOfBCnodes] = ON[DIR_0PP  ];
+                  Q.q27[DIR_0MM  ][QIN.numberOfBCnodes] = ON[DIR_0MM  ];
+                  Q.q27[DIR_0PM  ][QIN.numberOfBCnodes] = ON[DIR_0PM  ];
+                  Q.q27[DIR_0MP  ][QIN.numberOfBCnodes] = ON[DIR_0MP  ];
+                  Q.q27[DIR_000][QIN.numberOfBCnodes] = ON[DIR_000];
+                  Q.q27[DIR_PPP ][QIN.numberOfBCnodes] = ON[DIR_PPP ];
+                  Q.q27[DIR_MMP ][QIN.numberOfBCnodes] = ON[DIR_MMP ];
+                  Q.q27[DIR_PMP ][QIN.numberOfBCnodes] = ON[DIR_PMP ];
+                  Q.q27[DIR_MPP ][QIN.numberOfBCnodes] = ON[DIR_MPP ];
+                  Q.q27[DIR_PPM ][QIN.numberOfBCnodes] = ON[DIR_PPM ];
+                  Q.q27[DIR_MMM ][QIN.numberOfBCnodes] = ON[DIR_MMM ];
+                  Q.q27[DIR_PMM ][QIN.numberOfBCnodes] = ON[DIR_PMM ];
+                  Q.q27[DIR_MPM ][QIN.numberOfBCnodes] = ON[DIR_MPM ];
 
                   QIN.numberOfBCnodes++;
                }
@@ -199,7 +199,7 @@ void findKforQ(Parameter* para, int lev)
    VF_LOG_CRITICAL("findKforQ() is deprecated! - see comment above for more information");
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   //////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
+   //////////////  DIR_P00   DIR_M00   DIR_0P0   DIR_0M0   DIR_00P   DIR_00M  DIR_PP0  DIR_MM0  DIR_PM0  DIR_MP0  DIR_P0P  DIR_M0M  DIR_P0M  DIR_M0P  DIR_0PP  DIR_0MM  DIR_0PM  DIR_0MP ZERO DIR_PPP DIR_PPM DIR_PMP DIR_PMM DIR_MPP DIR_MPM DIR_MMP DIR_MMM  ////////////////////////
    int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
    int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
    int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
@@ -247,33 +247,33 @@ void findKforQ(Parameter* para, int lev)
 void findQ_MG( int nx, int ny, unsigned int nnx, unsigned int nny, unsigned int nnz, int* geo_mat, unsigned int* kk, unsigned int sizeQ, real* QQ, QforBoundaryConditions &QIN)
 {
    QforBoundaryConditions Q;
-   Q.q27[E   ] = &QQ[E   *sizeQ];
-   Q.q27[W   ] = &QQ[W   *sizeQ];
-   Q.q27[N   ] = &QQ[N   *sizeQ];
-   Q.q27[S   ] = &QQ[S   *sizeQ];
-   Q.q27[T   ] = &QQ[T   *sizeQ];
-   Q.q27[B   ] = &QQ[B   *sizeQ];
-   Q.q27[NE  ] = &QQ[NE  *sizeQ];
-   Q.q27[SW  ] = &QQ[SW  *sizeQ];
-   Q.q27[SE  ] = &QQ[SE  *sizeQ];
-   Q.q27[NW  ] = &QQ[NW  *sizeQ];
-   Q.q27[TE  ] = &QQ[TE  *sizeQ];
-   Q.q27[BW  ] = &QQ[BW  *sizeQ];
-   Q.q27[BE  ] = &QQ[BE  *sizeQ];
-   Q.q27[TW  ] = &QQ[TW  *sizeQ];
-   Q.q27[TN  ] = &QQ[TN  *sizeQ];
-   Q.q27[BS  ] = &QQ[BS  *sizeQ];
-   Q.q27[BN  ] = &QQ[BN  *sizeQ];
-   Q.q27[TS  ] = &QQ[TS  *sizeQ];
-   Q.q27[REST] = &QQ[REST*sizeQ];
-   Q.q27[TNE ] = &QQ[TNE *sizeQ];
-   Q.q27[TSW ] = &QQ[TSW *sizeQ];
-   Q.q27[TSE ] = &QQ[TSE *sizeQ];
-   Q.q27[TNW ] = &QQ[TNW *sizeQ];
-   Q.q27[BNE ] = &QQ[BNE *sizeQ];
-   Q.q27[BSW ] = &QQ[BSW *sizeQ];
-   Q.q27[BSE ] = &QQ[BSE *sizeQ];
-   Q.q27[BNW ] = &QQ[BNW *sizeQ];
+   Q.q27[DIR_P00   ] = &QQ[DIR_P00   *sizeQ];
+   Q.q27[DIR_M00   ] = &QQ[DIR_M00   *sizeQ];
+   Q.q27[DIR_0P0   ] = &QQ[DIR_0P0   *sizeQ];
+   Q.q27[DIR_0M0   ] = &QQ[DIR_0M0   *sizeQ];
+   Q.q27[DIR_00P   ] = &QQ[DIR_00P   *sizeQ];
+   Q.q27[DIR_00M   ] = &QQ[DIR_00M   *sizeQ];
+   Q.q27[DIR_PP0  ] = &QQ[DIR_PP0  *sizeQ];
+   Q.q27[DIR_MM0  ] = &QQ[DIR_MM0  *sizeQ];
+   Q.q27[DIR_PM0  ] = &QQ[DIR_PM0  *sizeQ];
+   Q.q27[DIR_MP0  ] = &QQ[DIR_MP0  *sizeQ];
+   Q.q27[DIR_P0P  ] = &QQ[DIR_P0P  *sizeQ];
+   Q.q27[DIR_M0M  ] = &QQ[DIR_M0M  *sizeQ];
+   Q.q27[DIR_P0M  ] = &QQ[DIR_P0M  *sizeQ];
+   Q.q27[DIR_M0P  ] = &QQ[DIR_M0P  *sizeQ];
+   Q.q27[DIR_0PP  ] = &QQ[DIR_0PP  *sizeQ];
+   Q.q27[DIR_0MM  ] = &QQ[DIR_0MM  *sizeQ];
+   Q.q27[DIR_0PM  ] = &QQ[DIR_0PM  *sizeQ];
+   Q.q27[DIR_0MP  ] = &QQ[DIR_0MP  *sizeQ];
+   Q.q27[DIR_000] = &QQ[DIR_000*sizeQ];
+   Q.q27[DIR_PPP ] = &QQ[DIR_PPP *sizeQ];
+   Q.q27[DIR_MMP ] = &QQ[DIR_MMP *sizeQ];
+   Q.q27[DIR_PMP ] = &QQ[DIR_PMP *sizeQ];
+   Q.q27[DIR_MPP ] = &QQ[DIR_MPP *sizeQ];
+   Q.q27[DIR_PPM ] = &QQ[DIR_PPM *sizeQ];
+   Q.q27[DIR_MMM ] = &QQ[DIR_MMM *sizeQ];
+   Q.q27[DIR_PMM ] = &QQ[DIR_PMM *sizeQ];
+   Q.q27[DIR_MPM ] = &QQ[DIR_MPM *sizeQ];
 
    // ! CAUTION ! Do not use this function!
    // As the order of the distributions was changed in July 2022, this does not work anymore.
@@ -282,7 +282,7 @@ void findQ_MG( int nx, int ny, unsigned int nnx, unsigned int nny, unsigned int 
     VF_LOG_CRITICAL("findQ_MG() is deprecated! - see comment above for more information");
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   //////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
+   //////////////  DIR_P00   DIR_M00   DIR_0P0   DIR_0M0   DIR_00P   DIR_00M  DIR_PP0  DIR_MM0  DIR_PM0  DIR_MP0  DIR_P0P  DIR_M0M  DIR_P0M  DIR_M0P  DIR_0PP  DIR_0MM  DIR_0PM  DIR_0MP ZERO DIR_PPP DIR_PPM DIR_PMP DIR_PMM DIR_MPP DIR_MPM DIR_MMP DIR_MMM  ////////////////////////
    int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
    int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
    int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
@@ -327,33 +327,33 @@ void findQ_MG( int nx, int ny, unsigned int nnx, unsigned int nny, unsigned int 
                {
                   QIN.k[QIN.numberOfBCnodes]          = kk[m];
 
-                  Q.q27[E   ][QIN.numberOfBCnodes] = ON[E   ];
-                  Q.q27[W   ][QIN.numberOfBCnodes] = ON[W   ];
-                  Q.q27[N   ][QIN.numberOfBCnodes] = ON[N   ];
-                  Q.q27[S   ][QIN.numberOfBCnodes] = ON[S   ];
-                  Q.q27[T   ][QIN.numberOfBCnodes] = ON[T   ];
-                  Q.q27[B   ][QIN.numberOfBCnodes] = ON[B   ];
-                  Q.q27[NE  ][QIN.numberOfBCnodes] = ON[NE  ];
-                  Q.q27[SW  ][QIN.numberOfBCnodes] = ON[SW  ];
-                  Q.q27[SE  ][QIN.numberOfBCnodes] = ON[SE  ];
-                  Q.q27[NW  ][QIN.numberOfBCnodes] = ON[NW  ];
-                  Q.q27[TE  ][QIN.numberOfBCnodes] = ON[TE  ];
-                  Q.q27[BW  ][QIN.numberOfBCnodes] = ON[BW  ];
-                  Q.q27[BE  ][QIN.numberOfBCnodes] = ON[BE  ];
-                  Q.q27[TW  ][QIN.numberOfBCnodes] = ON[TW  ];
-                  Q.q27[TN  ][QIN.numberOfBCnodes] = ON[TN  ];
-                  Q.q27[BS  ][QIN.numberOfBCnodes] = ON[BS  ];
-                  Q.q27[BN  ][QIN.numberOfBCnodes] = ON[BN  ];
-                  Q.q27[TS  ][QIN.numberOfBCnodes] = ON[TS  ];
-                  Q.q27[REST][QIN.numberOfBCnodes] = ON[REST];
-                  Q.q27[TNE ][QIN.numberOfBCnodes] = ON[TNE ];
-                  Q.q27[TSW ][QIN.numberOfBCnodes] = ON[TSW ];
-                  Q.q27[TSE ][QIN.numberOfBCnodes] = ON[TSE ];
-                  Q.q27[TNW ][QIN.numberOfBCnodes] = ON[TNW ];
-                  Q.q27[BNE ][QIN.numberOfBCnodes] = ON[BNE ];
-                  Q.q27[BSW ][QIN.numberOfBCnodes] = ON[BSW ];
-                  Q.q27[BSE ][QIN.numberOfBCnodes] = ON[BSE ];
-                  Q.q27[BNW ][QIN.numberOfBCnodes] = ON[BNW ];
+                  Q.q27[DIR_P00   ][QIN.numberOfBCnodes] = ON[DIR_P00   ];
+                  Q.q27[DIR_M00   ][QIN.numberOfBCnodes] = ON[DIR_M00   ];
+                  Q.q27[DIR_0P0   ][QIN.numberOfBCnodes] = ON[DIR_0P0   ];
+                  Q.q27[DIR_0M0   ][QIN.numberOfBCnodes] = ON[DIR_0M0   ];
+                  Q.q27[DIR_00P   ][QIN.numberOfBCnodes] = ON[DIR_00P   ];
+                  Q.q27[DIR_00M   ][QIN.numberOfBCnodes] = ON[DIR_00M   ];
+                  Q.q27[DIR_PP0  ][QIN.numberOfBCnodes] = ON[DIR_PP0  ];
+                  Q.q27[DIR_MM0  ][QIN.numberOfBCnodes] = ON[DIR_MM0  ];
+                  Q.q27[DIR_PM0  ][QIN.numberOfBCnodes] = ON[DIR_PM0  ];
+                  Q.q27[DIR_MP0  ][QIN.numberOfBCnodes] = ON[DIR_MP0  ];
+                  Q.q27[DIR_P0P  ][QIN.numberOfBCnodes] = ON[DIR_P0P  ];
+                  Q.q27[DIR_M0M  ][QIN.numberOfBCnodes] = ON[DIR_M0M  ];
+                  Q.q27[DIR_P0M  ][QIN.numberOfBCnodes] = ON[DIR_P0M  ];
+                  Q.q27[DIR_M0P  ][QIN.numberOfBCnodes] = ON[DIR_M0P  ];
+                  Q.q27[DIR_0PP  ][QIN.numberOfBCnodes] = ON[DIR_0PP  ];
+                  Q.q27[DIR_0MM  ][QIN.numberOfBCnodes] = ON[DIR_0MM  ];
+                  Q.q27[DIR_0PM  ][QIN.numberOfBCnodes] = ON[DIR_0PM  ];
+                  Q.q27[DIR_0MP  ][QIN.numberOfBCnodes] = ON[DIR_0MP  ];
+                  Q.q27[DIR_000][QIN.numberOfBCnodes] = ON[DIR_000];
+                  Q.q27[DIR_PPP ][QIN.numberOfBCnodes] = ON[DIR_PPP ];
+                  Q.q27[DIR_MMP ][QIN.numberOfBCnodes] = ON[DIR_MMP ];
+                  Q.q27[DIR_PMP ][QIN.numberOfBCnodes] = ON[DIR_PMP ];
+                  Q.q27[DIR_MPP ][QIN.numberOfBCnodes] = ON[DIR_MPP ];
+                  Q.q27[DIR_PPM ][QIN.numberOfBCnodes] = ON[DIR_PPM ];
+                  Q.q27[DIR_MMM ][QIN.numberOfBCnodes] = ON[DIR_MMM ];
+                  Q.q27[DIR_PMM ][QIN.numberOfBCnodes] = ON[DIR_PMM ];
+                  Q.q27[DIR_MPM ][QIN.numberOfBCnodes] = ON[DIR_MPM ];
 
                   QIN.numberOfBCnodes++;
                }
@@ -373,7 +373,7 @@ void findKforQ_MG(int nx, int ny, unsigned int nnx, unsigned int nny, unsigned i
     VF_LOG_CRITICAL("findKforQ_MG() is deprecated! - see comment above for more information");
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   //////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
+   //////////////  DIR_P00   DIR_M00   DIR_0P0   DIR_0M0   DIR_00P   DIR_00M  DIR_PP0  DIR_MM0  DIR_PM0  DIR_MP0  DIR_P0P  DIR_M0M  DIR_P0M  DIR_M0P  DIR_0PP  DIR_0MM  DIR_0PM  DIR_0MP ZERO DIR_PPP DIR_PPM DIR_PMP DIR_PMM DIR_MPP DIR_MPM DIR_MMP DIR_MMM  ////////////////////////
    int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
    int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
    int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
@@ -448,33 +448,33 @@ void findQInflow(Parameter* para)
    QIN.numberOfBCnodes = 0;
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    QforBoundaryConditions Q;
-   Q.q27[E   ] = &QQ[E   *sizeQ];
-   Q.q27[W   ] = &QQ[W   *sizeQ];
-   Q.q27[N   ] = &QQ[N   *sizeQ];
-   Q.q27[S   ] = &QQ[S   *sizeQ];
-   Q.q27[T   ] = &QQ[T   *sizeQ];
-   Q.q27[B   ] = &QQ[B   *sizeQ];
-   Q.q27[NE  ] = &QQ[NE  *sizeQ];
-   Q.q27[SW  ] = &QQ[SW  *sizeQ];
-   Q.q27[SE  ] = &QQ[SE  *sizeQ];
-   Q.q27[NW  ] = &QQ[NW  *sizeQ];
-   Q.q27[TE  ] = &QQ[TE  *sizeQ];
-   Q.q27[BW  ] = &QQ[BW  *sizeQ];
-   Q.q27[BE  ] = &QQ[BE  *sizeQ];
-   Q.q27[TW  ] = &QQ[TW  *sizeQ];
-   Q.q27[TN  ] = &QQ[TN  *sizeQ];
-   Q.q27[BS  ] = &QQ[BS  *sizeQ];
-   Q.q27[BN  ] = &QQ[BN  *sizeQ];
-   Q.q27[TS  ] = &QQ[TS  *sizeQ];
-   Q.q27[REST] = &QQ[REST*sizeQ];
-   Q.q27[TNE ] = &QQ[TNE *sizeQ];
-   Q.q27[TSW ] = &QQ[TSW *sizeQ];
-   Q.q27[TSE ] = &QQ[TSE *sizeQ];
-   Q.q27[TNW ] = &QQ[TNW *sizeQ];
-   Q.q27[BNE ] = &QQ[BNE *sizeQ];
-   Q.q27[BSW ] = &QQ[BSW *sizeQ];
-   Q.q27[BSE ] = &QQ[BSE *sizeQ];
-   Q.q27[BNW ] = &QQ[BNW *sizeQ];
+   Q.q27[DIR_P00   ] = &QQ[DIR_P00   *sizeQ];
+   Q.q27[DIR_M00   ] = &QQ[DIR_M00   *sizeQ];
+   Q.q27[DIR_0P0   ] = &QQ[DIR_0P0   *sizeQ];
+   Q.q27[DIR_0M0   ] = &QQ[DIR_0M0   *sizeQ];
+   Q.q27[DIR_00P   ] = &QQ[DIR_00P   *sizeQ];
+   Q.q27[DIR_00M   ] = &QQ[DIR_00M   *sizeQ];
+   Q.q27[DIR_PP0  ] = &QQ[DIR_PP0  *sizeQ];
+   Q.q27[DIR_MM0  ] = &QQ[DIR_MM0  *sizeQ];
+   Q.q27[DIR_PM0  ] = &QQ[DIR_PM0  *sizeQ];
+   Q.q27[DIR_MP0  ] = &QQ[DIR_MP0  *sizeQ];
+   Q.q27[DIR_P0P  ] = &QQ[DIR_P0P  *sizeQ];
+   Q.q27[DIR_M0M  ] = &QQ[DIR_M0M  *sizeQ];
+   Q.q27[DIR_P0M  ] = &QQ[DIR_P0M  *sizeQ];
+   Q.q27[DIR_M0P  ] = &QQ[DIR_M0P  *sizeQ];
+   Q.q27[DIR_0PP  ] = &QQ[DIR_0PP  *sizeQ];
+   Q.q27[DIR_0MM  ] = &QQ[DIR_0MM  *sizeQ];
+   Q.q27[DIR_0PM  ] = &QQ[DIR_0PM  *sizeQ];
+   Q.q27[DIR_0MP  ] = &QQ[DIR_0MP  *sizeQ];
+   Q.q27[DIR_000] = &QQ[DIR_000*sizeQ];
+   Q.q27[DIR_PPP ] = &QQ[DIR_PPP *sizeQ];
+   Q.q27[DIR_MMP ] = &QQ[DIR_MMP *sizeQ];
+   Q.q27[DIR_PMP ] = &QQ[DIR_PMP *sizeQ];
+   Q.q27[DIR_MPP ] = &QQ[DIR_MPP *sizeQ];
+   Q.q27[DIR_PPM ] = &QQ[DIR_PPM *sizeQ];
+   Q.q27[DIR_MMM ] = &QQ[DIR_MMM *sizeQ];
+   Q.q27[DIR_PMM ] = &QQ[DIR_PMM *sizeQ];
+   Q.q27[DIR_MPM ] = &QQ[DIR_MPM *sizeQ];
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //unsigned int li = ((nnx+STARTOFFX-2)-(STARTOFFX+1)-1);
    //unsigned int lj = ((nny+STARTOFFY-2)-(STARTOFFY+1)-1);
@@ -497,33 +497,33 @@ void findQInflow(Parameter* para)
                //vz[QIN.numberOfBCnodes]             = (real)(16.f*(u0*2.f)*i*j*(nx-i)*(ny-j))/(nx*nx*ny*ny);
                deltaVz[QIN.numberOfBCnodes]        = (real)0.f;
 			   //////////////////////////////////////////////////////////////////////////
-               //Q.q27[E   ][QIN.numberOfBCnodes] = (real)-1.f;
-               //Q.q27[W   ][QIN.numberOfBCnodes] = (real)-1.f;
-               //Q.q27[N   ][QIN.numberOfBCnodes] = (real)-1.f;
-               //Q.q27[S   ][QIN.numberOfBCnodes] = (real)-1.f;
-               //Q.q27[T   ][QIN.numberOfBCnodes] = (real)-1.f;
-               //Q.q27[B   ][QIN.numberOfBCnodes] = (real)1.f;
-               //Q.q27[NE  ][QIN.numberOfBCnodes] = (real)-1.f;
-               //Q.q27[SW  ][QIN.numberOfBCnodes] = (real)-1.f;
-               //Q.q27[SE  ][QIN.numberOfBCnodes] = (real)-1.f;
-               //Q.q27[NW  ][QIN.numberOfBCnodes] = (real)-1.f;
-               //Q.q27[TE  ][QIN.numberOfBCnodes] = (real)-1.f;
-               //Q.q27[BW  ][QIN.numberOfBCnodes] = (real)1.f;
-               //Q.q27[BE  ][QIN.numberOfBCnodes] = (real)1.f;
-               //Q.q27[TW  ][QIN.numberOfBCnodes] = (real)-1.f;
-               //Q.q27[TN  ][QIN.numberOfBCnodes] = (real)-1.f;
-               //Q.q27[BS  ][QIN.numberOfBCnodes] = (real)1.f;
-               //Q.q27[BN  ][QIN.numberOfBCnodes] = (real)1.f;
-               //Q.q27[TS  ][QIN.numberOfBCnodes] = (real)-1.f;
-               //Q.q27[REST][QIN.numberOfBCnodes] = (real)-1.f;
-               //Q.q27[TNE ][QIN.numberOfBCnodes] = (real)-1.f;
-               //Q.q27[TSW ][QIN.numberOfBCnodes] = (real)-1.f;
-               //Q.q27[TSE ][QIN.numberOfBCnodes] = (real)-1.f;
-               //Q.q27[TNW ][QIN.numberOfBCnodes] = (real)-1.f;
-               //Q.q27[BNE ][QIN.numberOfBCnodes] = (real)1.f;
-               //Q.q27[BSW ][QIN.numberOfBCnodes] = (real)1.f;
-               //Q.q27[BSE ][QIN.numberOfBCnodes] = (real)1.f;
-               //Q.q27[BNW ][QIN.numberOfBCnodes] = (real)1.f;
+               //Q.q27[DIR_P00   ][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[DIR_M00   ][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[DIR_0P0   ][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[DIR_0M0   ][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[DIR_00P   ][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[DIR_00M   ][QIN.numberOfBCnodes] = (real)1.f;
+               //Q.q27[DIR_PP0  ][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[DIR_MM0  ][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[DIR_PM0  ][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[DIR_MP0  ][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[DIR_P0P  ][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[DIR_M0M  ][QIN.numberOfBCnodes] = (real)1.f;
+               //Q.q27[DIR_P0M  ][QIN.numberOfBCnodes] = (real)1.f;
+               //Q.q27[DIR_M0P  ][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[DIR_0PP  ][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[DIR_0MM  ][QIN.numberOfBCnodes] = (real)1.f;
+               //Q.q27[DIR_0PM  ][QIN.numberOfBCnodes] = (real)1.f;
+               //Q.q27[DIR_0MP  ][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[DIR_000][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[DIR_PPP ][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[DIR_MMP ][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[DIR_PMP ][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[DIR_MPP ][QIN.numberOfBCnodes] = (real)-1.f;
+               //Q.q27[DIR_PPM ][QIN.numberOfBCnodes] = (real)1.f;
+               //Q.q27[DIR_MMM ][QIN.numberOfBCnodes] = (real)1.f;
+               //Q.q27[DIR_PMM ][QIN.numberOfBCnodes] = (real)1.f;
+               //Q.q27[DIR_MPM ][QIN.numberOfBCnodes] = (real)1.f;
 			   //////////////////////////////////////////////////////////////////////////
 
 
@@ -531,33 +531,33 @@ void findQInflow(Parameter* para)
    // As the order of the distributions was changed in July 2022, this does not work anymore.
    // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/14
 
-			   Q.q27[E   ][QIN.numberOfBCnodes] = (real)-1.f;
-			   Q.q27[W   ][QIN.numberOfBCnodes] = (real)-1.f;
-			   Q.q27[N   ][QIN.numberOfBCnodes] = (real)-1.f;
-			   Q.q27[S   ][QIN.numberOfBCnodes] = (real)-1.f;
-			   Q.q27[T   ][QIN.numberOfBCnodes] = (real)1.f;
-			   Q.q27[B   ][QIN.numberOfBCnodes] = (real)-1.f;
-			   Q.q27[NE  ][QIN.numberOfBCnodes] = (real)-1.f;
-			   Q.q27[SW  ][QIN.numberOfBCnodes] = (real)-1.f;
-			   Q.q27[SE  ][QIN.numberOfBCnodes] = (real)-1.f;
-			   Q.q27[NW  ][QIN.numberOfBCnodes] = (real)-1.f;
-			   Q.q27[TE  ][QIN.numberOfBCnodes] = (real)1.f;
-			   Q.q27[BW  ][QIN.numberOfBCnodes] = (real)-1.f;
-			   Q.q27[BE  ][QIN.numberOfBCnodes] = (real)-1.f;
-			   Q.q27[TW  ][QIN.numberOfBCnodes] = (real)1.f;
-			   Q.q27[TN  ][QIN.numberOfBCnodes] = (real)1.f;
-			   Q.q27[BS  ][QIN.numberOfBCnodes] = (real)-1.f;
-			   Q.q27[BN  ][QIN.numberOfBCnodes] = (real)-1.f;
-			   Q.q27[TS  ][QIN.numberOfBCnodes] = (real)1.f;
-			   Q.q27[REST][QIN.numberOfBCnodes] = (real)-1.f;
-			   Q.q27[TNE ][QIN.numberOfBCnodes] = (real)1.f;
-			   Q.q27[TSW ][QIN.numberOfBCnodes] = (real)1.f;
-			   Q.q27[TSE ][QIN.numberOfBCnodes] = (real)1.f;
-			   Q.q27[TNW ][QIN.numberOfBCnodes] = (real)1.f;
-			   Q.q27[BNE ][QIN.numberOfBCnodes] = (real)-1.f;
-			   Q.q27[BSW ][QIN.numberOfBCnodes] = (real)-1.f;
-			   Q.q27[BSE ][QIN.numberOfBCnodes] = (real)-1.f;
-			   Q.q27[BNW ][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[DIR_P00   ][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[DIR_M00   ][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[DIR_0P0   ][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[DIR_0M0   ][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[DIR_00P   ][QIN.numberOfBCnodes] = (real)1.f;
+			   Q.q27[DIR_00M   ][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[DIR_PP0  ][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[DIR_MM0  ][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[DIR_PM0  ][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[DIR_MP0  ][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[DIR_P0P  ][QIN.numberOfBCnodes] = (real)1.f;
+			   Q.q27[DIR_M0M  ][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[DIR_P0M  ][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[DIR_M0P  ][QIN.numberOfBCnodes] = (real)1.f;
+			   Q.q27[DIR_0PP  ][QIN.numberOfBCnodes] = (real)1.f;
+			   Q.q27[DIR_0MM  ][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[DIR_0PM  ][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[DIR_0MP  ][QIN.numberOfBCnodes] = (real)1.f;
+			   Q.q27[DIR_000][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[DIR_PPP ][QIN.numberOfBCnodes] = (real)1.f;
+			   Q.q27[DIR_MMP ][QIN.numberOfBCnodes] = (real)1.f;
+			   Q.q27[DIR_PMP ][QIN.numberOfBCnodes] = (real)1.f;
+			   Q.q27[DIR_MPP ][QIN.numberOfBCnodes] = (real)1.f;
+			   Q.q27[DIR_PPM ][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[DIR_MMM ][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[DIR_PMM ][QIN.numberOfBCnodes] = (real)-1.f;
+			   Q.q27[DIR_MPM ][QIN.numberOfBCnodes] = (real)-1.f;
 			   //////////////////////////////////////////////////////////////////////////
 			   QIN.numberOfBCnodes++;
             }
@@ -588,33 +588,33 @@ void findQInflow(Parameter* para)
    //               vy[QIN.numberOfBCnodes]             = 0.f;
    //               vz[QIN.numberOfBCnodes]             = u0;
 
-   //               Q.q27[E   ][QIN.numberOfBCnodes] = ON[E   ];
-   //               Q.q27[W   ][QIN.numberOfBCnodes] = ON[W   ];
-   //               Q.q27[N   ][QIN.numberOfBCnodes] = ON[N   ];
-   //               Q.q27[S   ][QIN.numberOfBCnodes] = ON[S   ];
-   //               Q.q27[T   ][QIN.numberOfBCnodes] = ON[T   ];
-   //               Q.q27[B   ][QIN.numberOfBCnodes] = ON[B   ];
-   //               Q.q27[NE  ][QIN.numberOfBCnodes] = ON[NE  ];
-   //               Q.q27[SW  ][QIN.numberOfBCnodes] = ON[SW  ];
-   //               Q.q27[SE  ][QIN.numberOfBCnodes] = ON[SE  ];
-   //               Q.q27[NW  ][QIN.numberOfBCnodes] = ON[NW  ];
-   //               Q.q27[TE  ][QIN.numberOfBCnodes] = ON[TE  ];
-   //               Q.q27[BW  ][QIN.numberOfBCnodes] = ON[BW  ];
-   //               Q.q27[BE  ][QIN.numberOfBCnodes] = ON[BE  ];
-   //               Q.q27[TW  ][QIN.numberOfBCnodes] = ON[TW  ];
-   //               Q.q27[TN  ][QIN.numberOfBCnodes] = ON[TN  ];
-   //               Q.q27[BS  ][QIN.numberOfBCnodes] = ON[BS  ];
-   //               Q.q27[BN  ][QIN.numberOfBCnodes] = ON[BN  ];
-   //               Q.q27[TS  ][QIN.numberOfBCnodes] = ON[TS  ];
-   //               Q.q27[REST][QIN.numberOfBCnodes] = ON[REST];
-   //               Q.q27[TNE ][QIN.numberOfBCnodes] = ON[TNE ];
-   //               Q.q27[TSW ][QIN.numberOfBCnodes] = ON[TSW ];
-   //               Q.q27[TSE ][QIN.numberOfBCnodes] = ON[TSE ];
-   //               Q.q27[TNW ][QIN.numberOfBCnodes] = ON[TNW ];
-   //               Q.q27[BNE ][QIN.numberOfBCnodes] = ON[BNE ];
-   //               Q.q27[BSW ][QIN.numberOfBCnodes] = ON[BSW ];
-   //               Q.q27[BSE ][QIN.numberOfBCnodes] = ON[BSE ];
-   //               Q.q27[BNW ][QIN.numberOfBCnodes] = ON[BNW ];
+   //               Q.q27[DIR_P00   ][QIN.numberOfBCnodes] = ON[DIR_P00   ];
+   //               Q.q27[DIR_M00   ][QIN.numberOfBCnodes] = ON[DIR_M00   ];
+   //               Q.q27[DIR_0P0   ][QIN.numberOfBCnodes] = ON[DIR_0P0   ];
+   //               Q.q27[DIR_0M0   ][QIN.numberOfBCnodes] = ON[DIR_0M0   ];
+   //               Q.q27[DIR_00P   ][QIN.numberOfBCnodes] = ON[DIR_00P   ];
+   //               Q.q27[DIR_00M   ][QIN.numberOfBCnodes] = ON[DIR_00M   ];
+   //               Q.q27[DIR_PP0  ][QIN.numberOfBCnodes] = ON[DIR_PP0  ];
+   //               Q.q27[DIR_MM0  ][QIN.numberOfBCnodes] = ON[DIR_MM0  ];
+   //               Q.q27[DIR_PM0  ][QIN.numberOfBCnodes] = ON[DIR_PM0  ];
+   //               Q.q27[DIR_MP0  ][QIN.numberOfBCnodes] = ON[DIR_MP0  ];
+   //               Q.q27[DIR_P0P  ][QIN.numberOfBCnodes] = ON[DIR_P0P  ];
+   //               Q.q27[DIR_M0M  ][QIN.numberOfBCnodes] = ON[DIR_M0M  ];
+   //               Q.q27[DIR_P0M  ][QIN.numberOfBCnodes] = ON[DIR_P0M  ];
+   //               Q.q27[DIR_M0P  ][QIN.numberOfBCnodes] = ON[DIR_M0P  ];
+   //               Q.q27[DIR_0PP  ][QIN.numberOfBCnodes] = ON[DIR_0PP  ];
+   //               Q.q27[DIR_0MM  ][QIN.numberOfBCnodes] = ON[DIR_0MM  ];
+   //               Q.q27[DIR_0PM  ][QIN.numberOfBCnodes] = ON[DIR_0PM  ];
+   //               Q.q27[DIR_0MP  ][QIN.numberOfBCnodes] = ON[DIR_0MP  ];
+   //               Q.q27[DIR_000][QIN.numberOfBCnodes] = ON[DIR_000];
+   //               Q.q27[DIR_PPP ][QIN.numberOfBCnodes] = ON[DIR_PPP ];
+   //               Q.q27[DIR_MMP ][QIN.numberOfBCnodes] = ON[DIR_MMP ];
+   //               Q.q27[DIR_PMP ][QIN.numberOfBCnodes] = ON[DIR_PMP ];
+   //               Q.q27[DIR_MPP ][QIN.numberOfBCnodes] = ON[DIR_MPP ];
+   //               Q.q27[DIR_PPM ][QIN.numberOfBCnodes] = ON[DIR_PPM ];
+   //               Q.q27[DIR_MMM ][QIN.numberOfBCnodes] = ON[DIR_MMM ];
+   //               Q.q27[DIR_PMM ][QIN.numberOfBCnodes] = ON[DIR_PMM ];
+   //               Q.q27[DIR_MPM ][QIN.numberOfBCnodes] = ON[DIR_MPM ];
 
    //               QIN.numberOfBCnodes++;
    //            }
@@ -647,33 +647,33 @@ void findQInflow(Parameter* para)
    //               vy[QIN.numberOfBCnodes]             = 0.f;
    //               vz[QIN.numberOfBCnodes]             = 0.f;//u0;
 
-   //               Q.q27[E   ][QIN.numberOfBCnodes] = ON[E   ];
-   //               Q.q27[W   ][QIN.numberOfBCnodes] = ON[W   ];
-   //               Q.q27[N   ][QIN.numberOfBCnodes] = ON[N   ];
-   //               Q.q27[S   ][QIN.numberOfBCnodes] = ON[S   ];
-   //               Q.q27[T   ][QIN.numberOfBCnodes] = ON[T   ];
-   //               Q.q27[B   ][QIN.numberOfBCnodes] = ON[B   ];
-   //               Q.q27[NE  ][QIN.numberOfBCnodes] = ON[NE  ];
-   //               Q.q27[SW  ][QIN.numberOfBCnodes] = ON[SW  ];
-   //               Q.q27[SE  ][QIN.numberOfBCnodes] = ON[SE  ];
-   //               Q.q27[NW  ][QIN.numberOfBCnodes] = ON[NW  ];
-   //               Q.q27[TE  ][QIN.numberOfBCnodes] = ON[TE  ];
-   //               Q.q27[BW  ][QIN.numberOfBCnodes] = ON[BW  ];
-   //               Q.q27[BE  ][QIN.numberOfBCnodes] = ON[BE  ];
-   //               Q.q27[TW  ][QIN.numberOfBCnodes] = ON[TW  ];
-   //               Q.q27[TN  ][QIN.numberOfBCnodes] = ON[TN  ];
-   //               Q.q27[BS  ][QIN.numberOfBCnodes] = ON[BS  ];
-   //               Q.q27[BN  ][QIN.numberOfBCnodes] = ON[BN  ];
-   //               Q.q27[TS  ][QIN.numberOfBCnodes] = ON[TS  ];
-   //               Q.q27[REST][QIN.numberOfBCnodes] = ON[REST];
-   //               Q.q27[TNE ][QIN.numberOfBCnodes] = ON[TNE ];
-   //               Q.q27[TSW ][QIN.numberOfBCnodes] = ON[TSW ];
-   //               Q.q27[TSE ][QIN.numberOfBCnodes] = ON[TSE ];
-   //               Q.q27[TNW ][QIN.numberOfBCnodes] = ON[TNW ];
-   //               Q.q27[BNE ][QIN.numberOfBCnodes] = ON[BNE ];
-   //               Q.q27[BSW ][QIN.numberOfBCnodes] = ON[BSW ];
-   //               Q.q27[BSE ][QIN.numberOfBCnodes] = ON[BSE ];
-   //               Q.q27[BNW ][QIN.numberOfBCnodes] = ON[BNW ];
+   //               Q.q27[DIR_P00   ][QIN.numberOfBCnodes] = ON[DIR_P00   ];
+   //               Q.q27[DIR_M00   ][QIN.numberOfBCnodes] = ON[DIR_M00   ];
+   //               Q.q27[DIR_0P0   ][QIN.numberOfBCnodes] = ON[DIR_0P0   ];
+   //               Q.q27[DIR_0M0   ][QIN.numberOfBCnodes] = ON[DIR_0M0   ];
+   //               Q.q27[DIR_00P   ][QIN.numberOfBCnodes] = ON[DIR_00P   ];
+   //               Q.q27[DIR_00M   ][QIN.numberOfBCnodes] = ON[DIR_00M   ];
+   //               Q.q27[DIR_PP0  ][QIN.numberOfBCnodes] = ON[DIR_PP0  ];
+   //               Q.q27[DIR_MM0  ][QIN.numberOfBCnodes] = ON[DIR_MM0  ];
+   //               Q.q27[DIR_PM0  ][QIN.numberOfBCnodes] = ON[DIR_PM0  ];
+   //               Q.q27[DIR_MP0  ][QIN.numberOfBCnodes] = ON[DIR_MP0  ];
+   //               Q.q27[DIR_P0P  ][QIN.numberOfBCnodes] = ON[DIR_P0P  ];
+   //               Q.q27[DIR_M0M  ][QIN.numberOfBCnodes] = ON[DIR_M0M  ];
+   //               Q.q27[DIR_P0M  ][QIN.numberOfBCnodes] = ON[DIR_P0M  ];
+   //               Q.q27[DIR_M0P  ][QIN.numberOfBCnodes] = ON[DIR_M0P  ];
+   //               Q.q27[DIR_0PP  ][QIN.numberOfBCnodes] = ON[DIR_0PP  ];
+   //               Q.q27[DIR_0MM  ][QIN.numberOfBCnodes] = ON[DIR_0MM  ];
+   //               Q.q27[DIR_0PM  ][QIN.numberOfBCnodes] = ON[DIR_0PM  ];
+   //               Q.q27[DIR_0MP  ][QIN.numberOfBCnodes] = ON[DIR_0MP  ];
+   //               Q.q27[DIR_000][QIN.numberOfBCnodes] = ON[DIR_000];
+   //               Q.q27[DIR_PPP ][QIN.numberOfBCnodes] = ON[DIR_PPP ];
+   //               Q.q27[DIR_MMP ][QIN.numberOfBCnodes] = ON[DIR_MMP ];
+   //               Q.q27[DIR_PMP ][QIN.numberOfBCnodes] = ON[DIR_PMP ];
+   //               Q.q27[DIR_MPP ][QIN.numberOfBCnodes] = ON[DIR_MPP ];
+   //               Q.q27[DIR_PPM ][QIN.numberOfBCnodes] = ON[DIR_PPM ];
+   //               Q.q27[DIR_MMM ][QIN.numberOfBCnodes] = ON[DIR_MMM ];
+   //               Q.q27[DIR_PMM ][QIN.numberOfBCnodes] = ON[DIR_PMM ];
+   //               Q.q27[DIR_MPM ][QIN.numberOfBCnodes] = ON[DIR_MPM ];
 
    //               QIN.numberOfBCnodes++;
    //            }
@@ -692,7 +692,7 @@ void findKforQInflow(Parameter* para)
     VF_LOG_CRITICAL("findKforQInflow() is deprecated! - see comment above for more information");
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   //////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
+   //////////////  DIR_P00   DIR_M00   DIR_0P0   DIR_0M0   DIR_00P   DIR_00M  DIR_PP0  DIR_MM0  DIR_PM0  DIR_MP0  DIR_P0P  DIR_M0M  DIR_P0M  DIR_M0P  DIR_0PP  DIR_0MM  DIR_0PM  DIR_0MP ZERO DIR_PPP DIR_PPM DIR_PMP DIR_PMM DIR_MPP DIR_MPM DIR_MMP DIR_MMM  ////////////////////////
    //int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
    //int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
    int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
@@ -780,7 +780,7 @@ void findQOutflow(Parameter* para)
     VF_LOG_CRITICAL("findQOutflow() is deprecated! - see comment above for more information");
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   //////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
+   //////////////  DIR_P00   DIR_M00   DIR_0P0   DIR_0M0   DIR_00P   DIR_00M  DIR_PP0  DIR_MM0  DIR_PM0  DIR_MP0  DIR_P0P  DIR_M0M  DIR_P0M  DIR_M0P  DIR_0PP  DIR_0MM  DIR_0PM  DIR_0MP ZERO DIR_PPP DIR_PPM DIR_PMP DIR_PMM DIR_MPP DIR_MPM DIR_MMP DIR_MMM  ////////////////////////
    //int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
    //int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
    //int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
@@ -814,33 +814,33 @@ void findQOutflow(Parameter* para)
    QIN.numberOfBCnodes = 0;
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    QforBoundaryConditions Q;
-   Q.q27[E   ] = &QQ[E   *sizeQ];
-   Q.q27[W   ] = &QQ[W   *sizeQ];
-   Q.q27[N   ] = &QQ[N   *sizeQ];
-   Q.q27[S   ] = &QQ[S   *sizeQ];
-   Q.q27[T   ] = &QQ[T   *sizeQ];
-   Q.q27[B   ] = &QQ[B   *sizeQ];
-   Q.q27[NE  ] = &QQ[NE  *sizeQ];
-   Q.q27[SW  ] = &QQ[SW  *sizeQ];
-   Q.q27[SE  ] = &QQ[SE  *sizeQ];
-   Q.q27[NW  ] = &QQ[NW  *sizeQ];
-   Q.q27[TE  ] = &QQ[TE  *sizeQ];
-   Q.q27[BW  ] = &QQ[BW  *sizeQ];
-   Q.q27[BE  ] = &QQ[BE  *sizeQ];
-   Q.q27[TW  ] = &QQ[TW  *sizeQ];
-   Q.q27[TN  ] = &QQ[TN  *sizeQ];
-   Q.q27[BS  ] = &QQ[BS  *sizeQ];
-   Q.q27[BN  ] = &QQ[BN  *sizeQ];
-   Q.q27[TS  ] = &QQ[TS  *sizeQ];
-   Q.q27[REST] = &QQ[REST*sizeQ];
-   Q.q27[TNE ] = &QQ[TNE *sizeQ];
-   Q.q27[TSW ] = &QQ[TSW *sizeQ];
-   Q.q27[TSE ] = &QQ[TSE *sizeQ];
-   Q.q27[TNW ] = &QQ[TNW *sizeQ];
-   Q.q27[BNE ] = &QQ[BNE *sizeQ];
-   Q.q27[BSW ] = &QQ[BSW *sizeQ];
-   Q.q27[BSE ] = &QQ[BSE *sizeQ];
-   Q.q27[BNW ] = &QQ[BNW *sizeQ];
+   Q.q27[DIR_P00   ] = &QQ[DIR_P00   *sizeQ];
+   Q.q27[DIR_M00   ] = &QQ[DIR_M00   *sizeQ];
+   Q.q27[DIR_0P0   ] = &QQ[DIR_0P0   *sizeQ];
+   Q.q27[DIR_0M0   ] = &QQ[DIR_0M0   *sizeQ];
+   Q.q27[DIR_00P   ] = &QQ[DIR_00P   *sizeQ];
+   Q.q27[DIR_00M   ] = &QQ[DIR_00M   *sizeQ];
+   Q.q27[DIR_PP0  ] = &QQ[DIR_PP0  *sizeQ];
+   Q.q27[DIR_MM0  ] = &QQ[DIR_MM0  *sizeQ];
+   Q.q27[DIR_PM0  ] = &QQ[DIR_PM0  *sizeQ];
+   Q.q27[DIR_MP0  ] = &QQ[DIR_MP0  *sizeQ];
+   Q.q27[DIR_P0P  ] = &QQ[DIR_P0P  *sizeQ];
+   Q.q27[DIR_M0M  ] = &QQ[DIR_M0M  *sizeQ];
+   Q.q27[DIR_P0M  ] = &QQ[DIR_P0M  *sizeQ];
+   Q.q27[DIR_M0P  ] = &QQ[DIR_M0P  *sizeQ];
+   Q.q27[DIR_0PP  ] = &QQ[DIR_0PP  *sizeQ];
+   Q.q27[DIR_0MM  ] = &QQ[DIR_0MM  *sizeQ];
+   Q.q27[DIR_0PM  ] = &QQ[DIR_0PM  *sizeQ];
+   Q.q27[DIR_0MP  ] = &QQ[DIR_0MP  *sizeQ];
+   Q.q27[DIR_000] = &QQ[DIR_000*sizeQ];
+   Q.q27[DIR_PPP ] = &QQ[DIR_PPP *sizeQ];
+   Q.q27[DIR_MMP ] = &QQ[DIR_MMP *sizeQ];
+   Q.q27[DIR_PMP ] = &QQ[DIR_PMP *sizeQ];
+   Q.q27[DIR_MPP ] = &QQ[DIR_MPP *sizeQ];
+   Q.q27[DIR_PPM ] = &QQ[DIR_PPM *sizeQ];
+   Q.q27[DIR_MMM ] = &QQ[DIR_MMM *sizeQ];
+   Q.q27[DIR_PMM ] = &QQ[DIR_PMM *sizeQ];
+   Q.q27[DIR_MPM ] = &QQ[DIR_MPM *sizeQ];
 
 
    //unsigned int li = ((nnx+STARTOFFX-2)-(STARTOFFX+1)-1);
@@ -862,33 +862,33 @@ void findQOutflow(Parameter* para)
                //vz[QIN.numberOfBCnodes]             =  (real)(16.f*(u0*2.f)*(i-(STARTOFFX+1)-0.5f)*(li-1.5f-(i-(STARTOFFX+1)))*(j-(STARTOFFY+1)-0.5f)*(lj-1.5f-(j-(STARTOFFY+1))))/(li*lj*li*lj);
                //vz[QIN.numberOfBCnodes]             = (real)(16.f*(u0*2.f)*i*j*(nx-i)*(ny-j))/(nx*nx*ny*ny);
                deltaVz[QIN.numberOfBCnodes]        = (real)0.f;
-               Q.q27[E   ][QIN.numberOfBCnodes] = (real)-1.f;
-               Q.q27[W   ][QIN.numberOfBCnodes] = (real)-1.f;
-               Q.q27[N   ][QIN.numberOfBCnodes] = (real)-1.f;
-               Q.q27[S   ][QIN.numberOfBCnodes] = (real)-1.f;
-               Q.q27[T   ][QIN.numberOfBCnodes] = (real)1.f;
-               Q.q27[B   ][QIN.numberOfBCnodes] = (real)-1.f;
-               Q.q27[NE  ][QIN.numberOfBCnodes] = (real)-1.f;
-               Q.q27[SW  ][QIN.numberOfBCnodes] = (real)-1.f;
-               Q.q27[SE  ][QIN.numberOfBCnodes] = (real)-1.f;
-               Q.q27[NW  ][QIN.numberOfBCnodes] = (real)-1.f;
-               Q.q27[TE  ][QIN.numberOfBCnodes] = (real)1.f;
-               Q.q27[BW  ][QIN.numberOfBCnodes] = (real)-1.f;
-               Q.q27[BE  ][QIN.numberOfBCnodes] = (real)-1.f;
-               Q.q27[TW  ][QIN.numberOfBCnodes] = (real)1.f;
-               Q.q27[TN  ][QIN.numberOfBCnodes] = (real)1.f;
-               Q.q27[BS  ][QIN.numberOfBCnodes] = (real)-1.f;
-               Q.q27[BN  ][QIN.numberOfBCnodes] = (real)-1.f;
-               Q.q27[TS  ][QIN.numberOfBCnodes] = (real)1.f;
-               Q.q27[REST][QIN.numberOfBCnodes] = (real)-1.f;
-               Q.q27[TNE ][QIN.numberOfBCnodes] = (real)1.f;
-               Q.q27[TSW ][QIN.numberOfBCnodes] = (real)1.f;
-               Q.q27[TSE ][QIN.numberOfBCnodes] = (real)1.f;
-               Q.q27[TNW ][QIN.numberOfBCnodes] = (real)1.f;
-               Q.q27[BNE ][QIN.numberOfBCnodes] = (real)-1.f;
-               Q.q27[BSW ][QIN.numberOfBCnodes] = (real)-1.f;
-               Q.q27[BSE ][QIN.numberOfBCnodes] = (real)-1.f;
-               Q.q27[BNW ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[DIR_P00   ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[DIR_M00   ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[DIR_0P0   ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[DIR_0M0   ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[DIR_00P   ][QIN.numberOfBCnodes] = (real)1.f;
+               Q.q27[DIR_00M   ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[DIR_PP0  ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[DIR_MM0  ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[DIR_PM0  ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[DIR_MP0  ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[DIR_P0P  ][QIN.numberOfBCnodes] = (real)1.f;
+               Q.q27[DIR_M0M  ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[DIR_P0M  ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[DIR_M0P  ][QIN.numberOfBCnodes] = (real)1.f;
+               Q.q27[DIR_0PP  ][QIN.numberOfBCnodes] = (real)1.f;
+               Q.q27[DIR_0MM  ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[DIR_0PM  ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[DIR_0MP  ][QIN.numberOfBCnodes] = (real)1.f;
+               Q.q27[DIR_000][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[DIR_PPP ][QIN.numberOfBCnodes] = (real)1.f;
+               Q.q27[DIR_MMP ][QIN.numberOfBCnodes] = (real)1.f;
+               Q.q27[DIR_PMP ][QIN.numberOfBCnodes] = (real)1.f;
+               Q.q27[DIR_MPP ][QIN.numberOfBCnodes] = (real)1.f;
+               Q.q27[DIR_PPM ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[DIR_MMM ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[DIR_PMM ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[DIR_MPM ][QIN.numberOfBCnodes] = (real)-1.f;
                QIN.numberOfBCnodes++;
             }
        }
@@ -912,7 +912,7 @@ void findKforQOutflow(Parameter* para)
     VF_LOG_CRITICAL("findKforQOutflow() is deprecated! - see comment above for more information");
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   //////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
+   //////////////  DIR_P00   DIR_M00   DIR_0P0   DIR_0M0   DIR_00P   DIR_00M  DIR_PP0  DIR_MM0  DIR_PM0  DIR_MP0  DIR_P0P  DIR_M0M  DIR_P0M  DIR_M0P  DIR_0PP  DIR_0MM  DIR_0PM  DIR_0MP ZERO DIR_PPP DIR_PPM DIR_PMP DIR_PMM DIR_MPP DIR_MPM DIR_MMP DIR_MMM  ////////////////////////
    //int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
    //int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
    int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
@@ -976,36 +976,36 @@ void findKforQOutflow(Parameter* para)
 //                   unsigned int sizeQW, real* vxW, real* vyW, real* vzW, real*deltaVW, real* QQW, QforBoundaryConditions &QWin)
 //{
 //   QforBoundaryConditions QN;
-//   QN.q27[E   ] = &QQN[E   *sizeQN];
-//   QN.q27[W   ] = &QQN[W   *sizeQN];
-//   QN.q27[N   ] = &QQN[N   *sizeQN];
-//   QN.q27[S   ] = &QQN[S   *sizeQN];
-//   QN.q27[T   ] = &QQN[T   *sizeQN];
-//   QN.q27[B   ] = &QQN[B   *sizeQN];
-//   QN.q27[NE  ] = &QQN[NE  *sizeQN];
-//   QN.q27[SW  ] = &QQN[SW  *sizeQN];
-//   QN.q27[SE  ] = &QQN[SE  *sizeQN];
-//   QN.q27[NW  ] = &QQN[NW  *sizeQN];
-//   QN.q27[TE  ] = &QQN[TE  *sizeQN];
-//   QN.q27[BW  ] = &QQN[BW  *sizeQN];
-//   QN.q27[BE  ] = &QQN[BE  *sizeQN];
-//   QN.q27[TW  ] = &QQN[TW  *sizeQN];
-//   QN.q27[TN  ] = &QQN[TN  *sizeQN];
-//   QN.q27[BS  ] = &QQN[BS  *sizeQN];
-//   QN.q27[BN  ] = &QQN[BN  *sizeQN];
-//   QN.q27[TS  ] = &QQN[TS  *sizeQN];
-//   QN.q27[REST] = &QQN[REST*sizeQN];
-//   QN.q27[TNE ] = &QQN[TNE *sizeQN];
-//   QN.q27[TSW ] = &QQN[TSW *sizeQN];
-//   QN.q27[TSE ] = &QQN[TSE *sizeQN];
-//   QN.q27[TNW ] = &QQN[TNW *sizeQN];
-//   QN.q27[BNE ] = &QQN[BNE *sizeQN];
-//   QN.q27[BSW ] = &QQN[BSW *sizeQN];
-//   QN.q27[BSE ] = &QQN[BSE *sizeQN];
-//   QN.q27[BNW ] = &QQN[BNW *sizeQN];
+//   QN.q27[DIR_P00   ] = &QQN[DIR_P00   *sizeQN];
+//   QN.q27[DIR_M00   ] = &QQN[DIR_M00   *sizeQN];
+//   QN.q27[DIR_0P0   ] = &QQN[DIR_0P0   *sizeQN];
+//   QN.q27[DIR_0M0   ] = &QQN[DIR_0M0   *sizeQN];
+//   QN.q27[DIR_00P   ] = &QQN[DIR_00P   *sizeQN];
+//   QN.q27[DIR_00M   ] = &QQN[DIR_00M   *sizeQN];
+//   QN.q27[DIR_PP0  ] = &QQN[DIR_PP0  *sizeQN];
+//   QN.q27[DIR_MM0  ] = &QQN[DIR_MM0  *sizeQN];
+//   QN.q27[DIR_PM0  ] = &QQN[DIR_PM0  *sizeQN];
+//   QN.q27[DIR_MP0  ] = &QQN[DIR_MP0  *sizeQN];
+//   QN.q27[DIR_P0P  ] = &QQN[DIR_P0P  *sizeQN];
+//   QN.q27[DIR_M0M  ] = &QQN[DIR_M0M  *sizeQN];
+//   QN.q27[DIR_P0M  ] = &QQN[DIR_P0M  *sizeQN];
+//   QN.q27[DIR_M0P  ] = &QQN[DIR_M0P  *sizeQN];
+//   QN.q27[DIR_0PP  ] = &QQN[DIR_0PP  *sizeQN];
+//   QN.q27[DIR_0MM  ] = &QQN[DIR_0MM  *sizeQN];
+//   QN.q27[DIR_0PM  ] = &QQN[DIR_0PM  *sizeQN];
+//   QN.q27[DIR_0MP  ] = &QQN[DIR_0MP  *sizeQN];
+//   QN.q27[DIR_000] = &QQN[DIR_000*sizeQN];
+//   QN.q27[DIR_PPP ] = &QQN[DIR_PPP *sizeQN];
+//   QN.q27[DIR_MMP ] = &QQN[DIR_MMP *sizeQN];
+//   QN.q27[DIR_PMP ] = &QQN[DIR_PMP *sizeQN];
+//   QN.q27[DIR_MPP ] = &QQN[DIR_MPP *sizeQN];
+//   QN.q27[DIR_PPM ] = &QQN[DIR_PPM *sizeQN];
+//   QN.q27[DIR_MMM ] = &QQN[DIR_MMM *sizeQN];
+//   QN.q27[DIR_PMM ] = &QQN[DIR_PMM *sizeQN];
+//   QN.q27[DIR_MPM ] = &QQN[DIR_MPM *sizeQN];
 //
 //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//   //////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
+//   //////////////  DIR_P00   DIR_M00   DIR_0P0   DIR_0M0   DIR_00P   DIR_00M  DIR_PP0  DIR_MM0  DIR_PM0  DIR_MP0  DIR_P0P  DIR_M0M  DIR_P0M  DIR_M0P  DIR_0PP  DIR_0MM  DIR_0PM  DIR_0MP ZERO DIR_PPP DIR_PPM DIR_PMP DIR_PMM DIR_MPP DIR_MPM DIR_MMP DIR_MMM  ////////////////////////
 //   int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
 //   int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
 //   int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
@@ -1018,7 +1018,7 @@ void findKforQOutflow(Parameter* para)
 //                      QforBoundaryConditions &QN, QforBoundaryConditions &QS, QforBoundaryConditions &QE, QforBoundaryConditions &QW)
 //{
 //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//   //////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
+//   //////////////  DIR_P00   DIR_M00   DIR_0P0   DIR_0M0   DIR_00P   DIR_00M  DIR_PP0  DIR_MM0  DIR_PM0  DIR_MP0  DIR_P0P  DIR_M0M  DIR_P0M  DIR_M0P  DIR_0PP  DIR_0MM  DIR_0PM  DIR_0MP ZERO DIR_PPP DIR_PPM DIR_PMP DIR_PMM DIR_MPP DIR_MPM DIR_MMP DIR_MMM  ////////////////////////
 //   int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
 //   int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
 //   int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
@@ -1069,7 +1069,7 @@ void findQPressX0(Parameter* para, int lev)
     VF_LOG_CRITICAL("findKforQPressX0() is deprecated! - see comment above for more information");
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
+	//////////////  DIR_P00   DIR_M00   DIR_0P0   DIR_0M0   DIR_00P   DIR_00M  DIR_PP0  DIR_MM0  DIR_PM0  DIR_MP0  DIR_P0P  DIR_M0M  DIR_P0M  DIR_M0P  DIR_0PP  DIR_0MM  DIR_0PM  DIR_0MP ZERO DIR_PPP DIR_PPM DIR_PMP DIR_PMM DIR_MPP DIR_MPM DIR_MMP DIR_MMM  ////////////////////////
 	//int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
 	//int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
 	//int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
@@ -1096,33 +1096,33 @@ void findQPressX0(Parameter* para, int lev)
 	QIN.numberOfBCnodes = 0;
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	QforBoundaryConditions Q;
-	Q.q27[E   ] = &QQ[E   *sizeQ];
-	Q.q27[W   ] = &QQ[W   *sizeQ];
-	Q.q27[N   ] = &QQ[N   *sizeQ];
-	Q.q27[S   ] = &QQ[S   *sizeQ];
-	Q.q27[T   ] = &QQ[T   *sizeQ];
-	Q.q27[B   ] = &QQ[B   *sizeQ];
-	Q.q27[NE  ] = &QQ[NE  *sizeQ];
-	Q.q27[SW  ] = &QQ[SW  *sizeQ];
-	Q.q27[SE  ] = &QQ[SE  *sizeQ];
-	Q.q27[NW  ] = &QQ[NW  *sizeQ];
-	Q.q27[TE  ] = &QQ[TE  *sizeQ];
-	Q.q27[BW  ] = &QQ[BW  *sizeQ];
-	Q.q27[BE  ] = &QQ[BE  *sizeQ];
-	Q.q27[TW  ] = &QQ[TW  *sizeQ];
-	Q.q27[TN  ] = &QQ[TN  *sizeQ];
-	Q.q27[BS  ] = &QQ[BS  *sizeQ];
-	Q.q27[BN  ] = &QQ[BN  *sizeQ];
-	Q.q27[TS  ] = &QQ[TS  *sizeQ];
-	Q.q27[REST] = &QQ[REST*sizeQ];
-	Q.q27[TNE ] = &QQ[TNE *sizeQ];
-	Q.q27[TSW ] = &QQ[TSW *sizeQ];
-	Q.q27[TSE ] = &QQ[TSE *sizeQ];
-	Q.q27[TNW ] = &QQ[TNW *sizeQ];
-	Q.q27[BNE ] = &QQ[BNE *sizeQ];
-	Q.q27[BSW ] = &QQ[BSW *sizeQ];
-	Q.q27[BSE ] = &QQ[BSE *sizeQ];
-	Q.q27[BNW ] = &QQ[BNW *sizeQ];
+	Q.q27[DIR_P00   ] = &QQ[DIR_P00   *sizeQ];
+	Q.q27[DIR_M00   ] = &QQ[DIR_M00   *sizeQ];
+	Q.q27[DIR_0P0   ] = &QQ[DIR_0P0   *sizeQ];
+	Q.q27[DIR_0M0   ] = &QQ[DIR_0M0   *sizeQ];
+	Q.q27[DIR_00P   ] = &QQ[DIR_00P   *sizeQ];
+	Q.q27[DIR_00M   ] = &QQ[DIR_00M   *sizeQ];
+	Q.q27[DIR_PP0  ] = &QQ[DIR_PP0  *sizeQ];
+	Q.q27[DIR_MM0  ] = &QQ[DIR_MM0  *sizeQ];
+	Q.q27[DIR_PM0  ] = &QQ[DIR_PM0  *sizeQ];
+	Q.q27[DIR_MP0  ] = &QQ[DIR_MP0  *sizeQ];
+	Q.q27[DIR_P0P  ] = &QQ[DIR_P0P  *sizeQ];
+	Q.q27[DIR_M0M  ] = &QQ[DIR_M0M  *sizeQ];
+	Q.q27[DIR_P0M  ] = &QQ[DIR_P0M  *sizeQ];
+	Q.q27[DIR_M0P  ] = &QQ[DIR_M0P  *sizeQ];
+	Q.q27[DIR_0PP  ] = &QQ[DIR_0PP  *sizeQ];
+	Q.q27[DIR_0MM  ] = &QQ[DIR_0MM  *sizeQ];
+	Q.q27[DIR_0PM  ] = &QQ[DIR_0PM  *sizeQ];
+	Q.q27[DIR_0MP  ] = &QQ[DIR_0MP  *sizeQ];
+	Q.q27[DIR_000] = &QQ[DIR_000*sizeQ];
+	Q.q27[DIR_PPP ] = &QQ[DIR_PPP *sizeQ];
+	Q.q27[DIR_MMP ] = &QQ[DIR_MMP *sizeQ];
+	Q.q27[DIR_PMP ] = &QQ[DIR_PMP *sizeQ];
+	Q.q27[DIR_MPP ] = &QQ[DIR_MPP *sizeQ];
+	Q.q27[DIR_PPM ] = &QQ[DIR_PPM *sizeQ];
+	Q.q27[DIR_MMM ] = &QQ[DIR_MMM *sizeQ];
+	Q.q27[DIR_PMM ] = &QQ[DIR_PMM *sizeQ];
+	Q.q27[DIR_MPM ] = &QQ[DIR_MPM *sizeQ];
 
 
 	//unsigned int li = ((nnx+STARTOFFX-2)-(STARTOFFX+1)-1);
@@ -1145,33 +1145,33 @@ void findQPressX0(Parameter* para, int lev)
 				//vz[QIN.numberOfBCnodes]             =  (real)(16.f*(u0*2.f)*(i-(STARTOFFX+1)-0.5f)*(li-1.5f-(i-(STARTOFFX+1)))*(j-(STARTOFFY+1)-0.5f)*(lj-1.5f-(j-(STARTOFFY+1))))/(li*lj*li*lj);
 				//vz[QIN.numberOfBCnodes]             = (real)(16.f*(u0*2.f)*i*j*(nx-i)*(ny-j))/(nx*nx*ny*ny);
 				deltaVz[QIN.numberOfBCnodes]        = (real)0.f;
-				Q.q27[E   ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[W   ][QIN.numberOfBCnodes] = (real)1.f;
-				Q.q27[N   ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[S   ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[T   ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[B   ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[NE  ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[SW  ][QIN.numberOfBCnodes] = (real)1.f;
-				Q.q27[SE  ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[NW  ][QIN.numberOfBCnodes] = (real)1.f;
-				Q.q27[TE  ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[BW  ][QIN.numberOfBCnodes] = (real)1.f;
-				Q.q27[BE  ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[TW  ][QIN.numberOfBCnodes] = (real)1.f;
-				Q.q27[TN  ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[BS  ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[BN  ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[TS  ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[REST][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[TNE ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[TSW ][QIN.numberOfBCnodes] = (real)1.f;
-				Q.q27[TSE ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[TNW ][QIN.numberOfBCnodes] = (real)1.f;
-				Q.q27[BNE ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[BSW ][QIN.numberOfBCnodes] = (real)1.f;
-				Q.q27[BSE ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[BNW ][QIN.numberOfBCnodes] = (real)1.f;
+				Q.q27[DIR_P00   ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[DIR_M00   ][QIN.numberOfBCnodes] = (real)1.f;
+				Q.q27[DIR_0P0   ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[DIR_0M0   ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[DIR_00P   ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[DIR_00M   ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[DIR_PP0  ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[DIR_MM0  ][QIN.numberOfBCnodes] = (real)1.f;
+				Q.q27[DIR_PM0  ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[DIR_MP0  ][QIN.numberOfBCnodes] = (real)1.f;
+				Q.q27[DIR_P0P  ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[DIR_M0M  ][QIN.numberOfBCnodes] = (real)1.f;
+				Q.q27[DIR_P0M  ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[DIR_M0P  ][QIN.numberOfBCnodes] = (real)1.f;
+				Q.q27[DIR_0PP  ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[DIR_0MM  ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[DIR_0PM  ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[DIR_0MP  ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[DIR_000][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[DIR_PPP ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[DIR_MMP ][QIN.numberOfBCnodes] = (real)1.f;
+				Q.q27[DIR_PMP ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[DIR_MPP ][QIN.numberOfBCnodes] = (real)1.f;
+				Q.q27[DIR_PPM ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[DIR_MMM ][QIN.numberOfBCnodes] = (real)1.f;
+				Q.q27[DIR_PMM ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[DIR_MPM ][QIN.numberOfBCnodes] = (real)1.f;
 				QIN.numberOfBCnodes++;
 			}
 		}
@@ -1187,7 +1187,7 @@ void findKforQPressX0(Parameter* para, int lev)
     VF_LOG_CRITICAL("findKforQPressX0() is deprecated! - see comment above for more information");
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
+	//////////////  DIR_P00   DIR_M00   DIR_0P0   DIR_0M0   DIR_00P   DIR_00M  DIR_PP0  DIR_MM0  DIR_PM0  DIR_MP0  DIR_P0P  DIR_M0M  DIR_P0M  DIR_M0P  DIR_0PP  DIR_0MM  DIR_0PM  DIR_0MP ZERO DIR_PPP DIR_PPM DIR_PMP DIR_PMM DIR_MPP DIR_MPM DIR_MMP DIR_MMM  ////////////////////////
 	//int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
 	//int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
 	int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
@@ -1245,7 +1245,7 @@ void findQPressX1(Parameter* para, int lev)
     VF_LOG_CRITICAL("findQPressX1() is deprecated! - see comment above for more information");
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
+	//////////////  DIR_P00   DIR_M00   DIR_0P0   DIR_0M0   DIR_00P   DIR_00M  DIR_PP0  DIR_MM0  DIR_PM0  DIR_MP0  DIR_P0P  DIR_M0M  DIR_P0M  DIR_M0P  DIR_0PP  DIR_0MM  DIR_0PM  DIR_0MP ZERO DIR_PPP DIR_PPM DIR_PMP DIR_PMM DIR_MPP DIR_MPM DIR_MMP DIR_MMM  ////////////////////////
 	//int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
 	//int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
 	//int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
@@ -1272,33 +1272,33 @@ void findQPressX1(Parameter* para, int lev)
 	QIN.numberOfBCnodes = 0;
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	QforBoundaryConditions Q;
-	Q.q27[E   ] = &QQ[E   *sizeQ];
-	Q.q27[W   ] = &QQ[W   *sizeQ];
-	Q.q27[N   ] = &QQ[N   *sizeQ];
-	Q.q27[S   ] = &QQ[S   *sizeQ];
-	Q.q27[T   ] = &QQ[T   *sizeQ];
-	Q.q27[B   ] = &QQ[B   *sizeQ];
-	Q.q27[NE  ] = &QQ[NE  *sizeQ];
-	Q.q27[SW  ] = &QQ[SW  *sizeQ];
-	Q.q27[SE  ] = &QQ[SE  *sizeQ];
-	Q.q27[NW  ] = &QQ[NW  *sizeQ];
-	Q.q27[TE  ] = &QQ[TE  *sizeQ];
-	Q.q27[BW  ] = &QQ[BW  *sizeQ];
-	Q.q27[BE  ] = &QQ[BE  *sizeQ];
-	Q.q27[TW  ] = &QQ[TW  *sizeQ];
-	Q.q27[TN  ] = &QQ[TN  *sizeQ];
-	Q.q27[BS  ] = &QQ[BS  *sizeQ];
-	Q.q27[BN  ] = &QQ[BN  *sizeQ];
-	Q.q27[TS  ] = &QQ[TS  *sizeQ];
-	Q.q27[REST] = &QQ[REST*sizeQ];
-	Q.q27[TNE ] = &QQ[TNE *sizeQ];
-	Q.q27[TSW ] = &QQ[TSW *sizeQ];
-	Q.q27[TSE ] = &QQ[TSE *sizeQ];
-	Q.q27[TNW ] = &QQ[TNW *sizeQ];
-	Q.q27[BNE ] = &QQ[BNE *sizeQ];
-	Q.q27[BSW ] = &QQ[BSW *sizeQ];
-	Q.q27[BSE ] = &QQ[BSE *sizeQ];
-	Q.q27[BNW ] = &QQ[BNW *sizeQ];
+	Q.q27[DIR_P00   ] = &QQ[DIR_P00   *sizeQ];
+	Q.q27[DIR_M00   ] = &QQ[DIR_M00   *sizeQ];
+	Q.q27[DIR_0P0   ] = &QQ[DIR_0P0   *sizeQ];
+	Q.q27[DIR_0M0   ] = &QQ[DIR_0M0   *sizeQ];
+	Q.q27[DIR_00P   ] = &QQ[DIR_00P   *sizeQ];
+	Q.q27[DIR_00M   ] = &QQ[DIR_00M   *sizeQ];
+	Q.q27[DIR_PP0  ] = &QQ[DIR_PP0  *sizeQ];
+	Q.q27[DIR_MM0  ] = &QQ[DIR_MM0  *sizeQ];
+	Q.q27[DIR_PM0  ] = &QQ[DIR_PM0  *sizeQ];
+	Q.q27[DIR_MP0  ] = &QQ[DIR_MP0  *sizeQ];
+	Q.q27[DIR_P0P  ] = &QQ[DIR_P0P  *sizeQ];
+	Q.q27[DIR_M0M  ] = &QQ[DIR_M0M  *sizeQ];
+	Q.q27[DIR_P0M  ] = &QQ[DIR_P0M  *sizeQ];
+	Q.q27[DIR_M0P  ] = &QQ[DIR_M0P  *sizeQ];
+	Q.q27[DIR_0PP  ] = &QQ[DIR_0PP  *sizeQ];
+	Q.q27[DIR_0MM  ] = &QQ[DIR_0MM  *sizeQ];
+	Q.q27[DIR_0PM  ] = &QQ[DIR_0PM  *sizeQ];
+	Q.q27[DIR_0MP  ] = &QQ[DIR_0MP  *sizeQ];
+	Q.q27[DIR_000] = &QQ[DIR_000*sizeQ];
+	Q.q27[DIR_PPP ] = &QQ[DIR_PPP *sizeQ];
+	Q.q27[DIR_MMP ] = &QQ[DIR_MMP *sizeQ];
+	Q.q27[DIR_PMP ] = &QQ[DIR_PMP *sizeQ];
+	Q.q27[DIR_MPP ] = &QQ[DIR_MPP *sizeQ];
+	Q.q27[DIR_PPM ] = &QQ[DIR_PPM *sizeQ];
+	Q.q27[DIR_MMM ] = &QQ[DIR_MMM *sizeQ];
+	Q.q27[DIR_PMM ] = &QQ[DIR_PMM *sizeQ];
+	Q.q27[DIR_MPM ] = &QQ[DIR_MPM *sizeQ];
 
 
 	//unsigned int li = ((nnx+STARTOFFX-2)-(STARTOFFX+1)-1);
@@ -1321,33 +1321,33 @@ void findQPressX1(Parameter* para, int lev)
 				//vz[QIN.numberOfBCnodes]             =  (real)(16.f*(u0*2.f)*(i-(STARTOFFX+1)-0.5f)*(li-1.5f-(i-(STARTOFFX+1)))*(j-(STARTOFFY+1)-0.5f)*(lj-1.5f-(j-(STARTOFFY+1))))/(li*lj*li*lj);
 				//vz[QIN.numberOfBCnodes]             = (real)(16.f*(u0*2.f)*i*j*(nx-i)*(ny-j))/(nx*nx*ny*ny);
 				deltaVz[QIN.numberOfBCnodes]        = (real)0.f;
-				Q.q27[E   ][QIN.numberOfBCnodes] = (real)1.f;
-				Q.q27[W   ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[N   ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[S   ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[T   ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[B   ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[NE  ][QIN.numberOfBCnodes] = (real)1.f;
-				Q.q27[SW  ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[SE  ][QIN.numberOfBCnodes] = (real)1.f;
-				Q.q27[NW  ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[TE  ][QIN.numberOfBCnodes] = (real)1.f;
-				Q.q27[BW  ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[BE  ][QIN.numberOfBCnodes] = (real)1.f;
-				Q.q27[TW  ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[TN  ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[BS  ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[BN  ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[TS  ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[REST][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[TNE ][QIN.numberOfBCnodes] = (real)1.f;
-				Q.q27[TSW ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[TSE ][QIN.numberOfBCnodes] = (real)1.f;
-				Q.q27[TNW ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[BNE ][QIN.numberOfBCnodes] = (real)1.f;
-				Q.q27[BSW ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[BSE ][QIN.numberOfBCnodes] = (real)1.f;
-				Q.q27[BNW ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[DIR_P00   ][QIN.numberOfBCnodes] = (real)1.f;
+				Q.q27[DIR_M00   ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[DIR_0P0   ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[DIR_0M0   ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[DIR_00P   ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[DIR_00M   ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[DIR_PP0  ][QIN.numberOfBCnodes] = (real)1.f;
+				Q.q27[DIR_MM0  ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[DIR_PM0  ][QIN.numberOfBCnodes] = (real)1.f;
+				Q.q27[DIR_MP0  ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[DIR_P0P  ][QIN.numberOfBCnodes] = (real)1.f;
+				Q.q27[DIR_M0M  ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[DIR_P0M  ][QIN.numberOfBCnodes] = (real)1.f;
+				Q.q27[DIR_M0P  ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[DIR_0PP  ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[DIR_0MM  ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[DIR_0PM  ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[DIR_0MP  ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[DIR_000][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[DIR_PPP ][QIN.numberOfBCnodes] = (real)1.f;
+				Q.q27[DIR_MMP ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[DIR_PMP ][QIN.numberOfBCnodes] = (real)1.f;
+				Q.q27[DIR_MPP ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[DIR_PPM ][QIN.numberOfBCnodes] = (real)1.f;
+				Q.q27[DIR_MMM ][QIN.numberOfBCnodes] = (real)-1.f;
+				Q.q27[DIR_PMM ][QIN.numberOfBCnodes] = (real)1.f;
+				Q.q27[DIR_MPM ][QIN.numberOfBCnodes] = (real)-1.f;
 				QIN.numberOfBCnodes++;
 			}
 		}
@@ -1363,7 +1363,7 @@ void findKforQPressX1(Parameter* para, int lev)
     VF_LOG_CRITICAL("findKforQPressX1() is deprecated! - see comment above for more information");
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
+	//////////////  DIR_P00   DIR_M00   DIR_0P0   DIR_0M0   DIR_00P   DIR_00M  DIR_PP0  DIR_MM0  DIR_PM0  DIR_MP0  DIR_P0P  DIR_M0M  DIR_P0M  DIR_M0P  DIR_0PP  DIR_0MM  DIR_0PM  DIR_0MP ZERO DIR_PPP DIR_PPM DIR_PMP DIR_PMM DIR_MPP DIR_MPM DIR_MMP DIR_MMM  ////////////////////////
 	//int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
 	//int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
 	int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
