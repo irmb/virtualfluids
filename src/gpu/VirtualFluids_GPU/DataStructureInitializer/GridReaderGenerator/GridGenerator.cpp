@@ -27,6 +27,8 @@ GridGenerator::~GridGenerator() = default;
 
 void GridGenerator::initalGridInformations()
 {
+    if (para->getKernelNeedsFluidNodeIndicesToRun())
+        builder->findFluidNodes(para->getUseStreams());
     std::vector<int> gridX, gridY, gridZ;
     std::vector<int> distX, distY, distZ;
     const int numberOfGridLevels = builder->getNumberOfGridLevels();

@@ -52,7 +52,9 @@ Parameter::Parameter(int numberOfProcesses, int myId)
     initGridPaths();
     initGridBasePoints();
     initDefaultLBMkernelAllLevels();
-    this->setFName(this->getOutputPath() + this->getOutputPrefix());
+    this->setPathAndFilename(this->getOutputPath() + this->getOutputPrefix());
+    this->setQuadricLimiters(0.01, 0.01, 0.01);
+    this->setForcing(0.0, 0.0, 0.0);
 
     // initLBMSimulationParameter();
 }
@@ -67,7 +69,7 @@ Parameter::Parameter(const vf::basics::ConfigurationFile &configData, int number
     initGridPaths();
     initGridBasePoints();
     initDefaultLBMkernelAllLevels();
-    this->setFName(this->getOutputPath() + this->getOutputPrefix());
+    this->setPathAndFilename(this->getOutputPath() + this->getOutputPrefix());
 
     // initLBMSimulationParameter();
 }
@@ -759,7 +761,7 @@ void Parameter::setOutputPrefix(std::string oPrefix)
 {
     ic.oPrefix = oPrefix;
 }
-void Parameter::setFName(std::string fname)
+void Parameter::setPathAndFilename(std::string fname)
 {
     ic.fname = fname;
 }
@@ -1574,7 +1576,7 @@ void Parameter::setOutflowBoundaryNormalZ(std::string outflowNormalZ)
 void Parameter::setMainKernel(std::string kernel)
 {
     this->mainKernel = kernel;
-    if (kernel.find("Stream") != std::string::npos)
+    if (kernel.find("Stream") != std::string::npos || kernel.find("Redesigned") != std::string::npos)
         this->kernelNeedsFluidNodeIndicesToRun = true;
 }
 void Parameter::setMultiKernelOn(bool isOn)
@@ -2632,6 +2634,10 @@ std::unique_ptr<CudaStreamManager> &Parameter::getStreamManager()
 bool Parameter::getKernelNeedsFluidNodeIndicesToRun()
 {
     return this->kernelNeedsFluidNodeIndicesToRun;
+}
+
+void Parameter::setKernelNeedsFluidNodeIndicesToRun(bool  kernelNeedsFluidNodeIndicesToRun){
+    this->kernelNeedsFluidNodeIndicesToRun = kernelNeedsFluidNodeIndicesToRun;
 }
 
 void Parameter::initProcessNeighborsAfterFtoCX(int level)

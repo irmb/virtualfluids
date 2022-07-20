@@ -162,6 +162,7 @@ int main(int argc, char *argv[])
 
             para->setOutputPath(path);
             para->setOutputPrefix(simulationName);
+            para->setPathAndFilename(para->getOutputPath() + para->getOutputPrefix());
 
             para->setPrintFiles(true);
 
@@ -174,7 +175,7 @@ int main(int argc, char *argv[])
             para->setTimestepOut(timeStepOut);
             para->setTimestepEnd(timeStepEnd);
 
-            para->setMainKernel("CumulantK17CompChim");
+            para->setMainKernel("CumulantK17CompChimRedesigned");
 
             //////////////////////////////////////////////////////////////////////////
             // set boundary conditions

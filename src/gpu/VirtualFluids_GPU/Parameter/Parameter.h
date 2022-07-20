@@ -430,7 +430,7 @@ public:
     void settimestepForMP(unsigned int timestepForMP);
     void setOutputPath(std::string oPath);
     void setOutputPrefix(std::string oPrefix);
-    void setFName(std::string fname);
+    void setPathAndFilename(std::string fname);
     void setGridPath(std::string gridPath);
     void setGeometryFileC(std::string GeometryFileC);
     void setGeometryFileM(std::string GeometryFileM);
@@ -963,6 +963,7 @@ public:
     bool getUseStreams();
     std::unique_ptr<CudaStreamManager> &getStreamManager();
     bool getKernelNeedsFluidNodeIndicesToRun();
+    void setKernelNeedsFluidNodeIndicesToRun(bool  kernelNeedsFluidNodeIndicesToRun);
 
     void initProcessNeighborsAfterFtoCX(int level);
     void initProcessNeighborsAfterFtoCY(int level);

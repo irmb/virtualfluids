@@ -5,10 +5,9 @@
 namespace vf::cuda
 {
 
-CudaGrid::CudaGrid(unsigned int numberOfThreads, unsigned int numberOfEntities)
+CudaGrid::CudaGrid(unsigned int numberOfThreads, unsigned int numberOfEntities): grid {getCudaGrid( numberOfThreads, numberOfEntities)},
+    threads{dim3(numberOfThreads, 1, 1)}
 {
-    grid = getCudaGrid( numberOfThreads, numberOfEntities);
-    threads = dim3(numberOfThreads, 1, 1);
 }
 
 void CudaGrid::print() const
