@@ -162,6 +162,7 @@ int main(int argc, char *argv[])
 
             para->setOutputPath(path);
             para->setOutputPrefix(simulationName);
+            para->setPathAndFilename(para->getOutputPath() + para->getOutputPrefix());
 
             para->setPrintFiles(true);
 

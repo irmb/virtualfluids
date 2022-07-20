@@ -52,7 +52,7 @@ Parameter::Parameter(int numberOfProcesses, int myId)
     initGridPaths();
     initGridBasePoints();
     initDefaultLBMkernelAllLevels();
-    this->setFName(this->getOutputPath() + this->getOutputPrefix());
+    this->setPathAndFilename(this->getOutputPath() + this->getOutputPrefix());
     this->setQuadricLimiters(0.01, 0.01, 0.01);
     this->setForcing(0.0, 0.0, 0.0);
 
@@ -69,7 +69,7 @@ Parameter::Parameter(const vf::basics::ConfigurationFile &configData, int number
     initGridPaths();
     initGridBasePoints();
     initDefaultLBMkernelAllLevels();
-    this->setFName(this->getOutputPath() + this->getOutputPrefix());
+    this->setPathAndFilename(this->getOutputPath() + this->getOutputPrefix());
 
     // initLBMSimulationParameter();
 }
@@ -761,7 +761,7 @@ void Parameter::setOutputPrefix(std::string oPrefix)
 {
     ic.oPrefix = oPrefix;
 }
-void Parameter::setFName(std::string fname)
+void Parameter::setPathAndFilename(std::string fname)
 {
     ic.fname = fname;
 }
