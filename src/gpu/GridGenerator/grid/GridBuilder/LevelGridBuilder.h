@@ -193,7 +193,7 @@ public:
 
 
     // needed for CUDA Streams MultiGPU (Communication Hiding)
-    void findFluidNodes(bool splitDomain);
+    void findFluidNodes(bool splitDomain) override;
 };
 
 #endif

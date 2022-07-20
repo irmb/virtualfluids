@@ -231,8 +231,8 @@ TEST(BoundaryConditionFactoryTest, stressBoundaryConditions)
     //     << "The returned boundary condition is not the expected function BBStressDev27.";
 
     bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressCompressible);
-    bc = bcFactory.getStressBoundaryConditionPost();
-    bcTarget = *bc.target<bcFunctionParamter>();
+    auto bc = bcFactory.getStressBoundaryConditionPost();
+    auto bcTarget = *bc.target<bcFunctionParamter>();
     EXPECT_THAT(*bcTarget, testing::Eq(QStressDevComp27))
         << "The returned boundary condition is not the expected function QStressDevComp27.";
 }
