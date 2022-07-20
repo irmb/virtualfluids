@@ -69,9 +69,9 @@ TEST(BoundaryConditionFactoryTest, velocityBC)
 {
     auto bcFactory = BoundaryConditionFactory();
 
-    bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocitySimpleBounceBackCompressible);
-    EXPECT_THAT(*(getVelocityBcTarget(bcFactory)), testing::Eq(QVelDevicePlainBB27))
-        << "The returned boundary condition is not the expected function QVelDevicePlainBB27.";
+    // bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocitySimpleBounceBackCompressible);
+    // EXPECT_THAT(*(getVelocityBcTarget(bcFactory)), testing::Eq(QVelDevicePlainBB27))
+    //     << "The returned boundary condition is not the expected function QVelDevicePlainBB27.";
 
     bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityIncompressible);
     EXPECT_THAT(*(getVelocityBcTarget(bcFactory)), testing::Eq(QVelDev27))
@@ -224,11 +224,11 @@ TEST(BoundaryConditionFactoryTest, stressBoundaryConditions)
 {
     auto bcFactory = BoundaryConditionFactory();
 
-    bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressBounceBack);
-    auto bc = bcFactory.getStressBoundaryConditionPost();
-    auto bcTarget = *bc.target<bcFunctionParamter>();
-    EXPECT_THAT(*bcTarget, testing::Eq(BBStressDev27))
-        << "The returned boundary condition is not the expected function BBStressDev27.";
+    // bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressBounceBack);
+    // auto bc = bcFactory.getStressBoundaryConditionPost();
+    // auto bcTarget = *bc.target<bcFunctionParamter>();
+    // EXPECT_THAT(*bcTarget, testing::Eq(BBStressDev27))
+    //     << "The returned boundary condition is not the expected function BBStressDev27.";
 
     bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressCompressible);
     bc = bcFactory.getStressBoundaryConditionPost();
