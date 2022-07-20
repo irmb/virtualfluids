@@ -6,7 +6,7 @@ using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
 #include "math.h"
 
-extern "C" __global__ void LB_Kernel_CumulantK20Comp(
+__global__ void LB_Kernel_CumulantK20Comp(
 	real omega,
 	unsigned int* bcMatD,
 	unsigned int* neighborX,

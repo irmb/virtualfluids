@@ -7,7 +7,7 @@ using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void getSendFsPost27(real* DD,
+__global__ void getSendFsPost27(real* DD,
 										   real* bufferFs,
 										   int* sendIndex,
                                            int buffmax,
@@ -243,7 +243,7 @@ extern "C" __global__ void getSendFsPost27(real* DD,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void setRecvFsPost27(real* DD,
+__global__ void setRecvFsPost27(real* DD,
 										   real* bufferFs,
 										   int* recvIndex,
                                            int buffmax,
@@ -478,7 +478,7 @@ extern "C" __global__ void setRecvFsPost27(real* DD,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void getSendFsPre27(real* DD,
+__global__ void getSendFsPre27(real* DD,
 										  real* bufferFs,
 										  int* sendIndex,
                                           int buffmax,
@@ -687,7 +687,7 @@ extern "C" __global__ void getSendFsPre27(real* DD,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void setRecvFsPre27(real* DD,
+__global__ void setRecvFsPre27(real* DD,
 										  real* bufferFs,
 										  int* recvIndex,
                                           int buffmax,
@@ -895,7 +895,7 @@ extern "C" __global__ void setRecvFsPre27(real* DD,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void getSendGsF3(
+__global__ void getSendGsF3(
 	real* G6,
 	real* bufferGs,
 	int* sendIndex,
@@ -998,7 +998,7 @@ extern "C" __global__ void getSendGsF3(
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void setRecvGsF3(
+__global__ void setRecvGsF3(
 	real* G6,
 	real* bufferGs,
 	int* recvIndex,

@@ -6,7 +6,7 @@ using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
 #include "math.h"
 
-extern "C" __global__ void LB_KERNEL_AD_COMP_27(real diffusivity,
+__global__ void LB_KERNEL_AD_COMP_27(real diffusivity,
 	unsigned int* bcMatD,
 	unsigned int* neighborX,
 	unsigned int* neighborY,

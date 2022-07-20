@@ -73,26 +73,26 @@ private:
 
 
 
-extern "C" void prepareExchangeMultiGPU(Parameter *para, int level, int streamIndex);
-extern "C" void prepareExchangeMultiGPUAfterFtoC(Parameter *para, int level, int streamIndex);
+void prepareExchangeMultiGPU(Parameter *para, int level, int streamIndex);
+void prepareExchangeMultiGPUAfterFtoC(Parameter *para, int level, int streamIndex);
 
-extern "C" void exchangeMultiGPU(Parameter *para, vf::gpu::Communicator &comm, CudaMemoryManager *cudaManager,
+void exchangeMultiGPU(Parameter *para, vf::gpu::Communicator &comm, CudaMemoryManager *cudaManager,
                                  int level, int streamIndex);
-extern "C" void exchangeMultiGPUAfterFtoC(Parameter *para, vf::gpu::Communicator &comm, CudaMemoryManager *cudaManager,
+void exchangeMultiGPUAfterFtoC(Parameter *para, vf::gpu::Communicator &comm, CudaMemoryManager *cudaManager,
                                  int level, int streamIndex);
-extern "C" void exchangeMultiGPU_noStreams_withPrepare(Parameter *para, vf::gpu::Communicator &comm,
+void exchangeMultiGPU_noStreams_withPrepare(Parameter *para, vf::gpu::Communicator &comm,
                                                        CudaMemoryManager *cudaManager, int level, bool useReducedComm);
 
 
 
-extern "C" void swapBetweenEvenAndOddTimestep(Parameter* para, int level);
+void swapBetweenEvenAndOddTimestep(Parameter* para, int level);
 
-extern "C" void calcMacroscopicQuantities(Parameter* para, int level);
+void calcMacroscopicQuantities(Parameter* para, int level);
 
-extern "C" void calcTurbulentViscosity(Parameter* para, int level);
+void calcTurbulentViscosity(Parameter* para, int level);
 
-extern "C" void interactWithActuators(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t);
+void interactWithActuators(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t);
 
-extern "C" void interactWithProbes(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t);
+void interactWithProbes(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t);
 
 #endif

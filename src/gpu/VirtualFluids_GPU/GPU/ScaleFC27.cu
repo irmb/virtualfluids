@@ -14,7 +14,7 @@ using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFC_0817_comp_27( real* DC, 
+__global__ void scaleFC_0817_comp_27( real* DC, 
 												 real* DF, 
 												 unsigned int* neighborCX,
 												 unsigned int* neighborCY,
@@ -1210,7 +1210,7 @@ extern "C" __global__ void scaleFC_0817_comp_27( real* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFC_AA2016_comp_27(real* DC, 
+__global__ void scaleFC_AA2016_comp_27(real* DC, 
 												  real* DF, 
 												  unsigned int* neighborCX,
 												  unsigned int* neighborCY,
@@ -5399,7 +5399,7 @@ extern "C" __global__ void scaleFC_AA2016_comp_27(real* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(real* DC, 
+__global__ void scaleFC_RhoSq_3rdMom_comp_27(real* DC, 
 														real* DF, 
 														unsigned int* neighborCX,
 														unsigned int* neighborCY,
@@ -11056,7 +11056,7 @@ __device__ void scaleFC_RhoSq_comp_27_Calculation(real *DC, real *DF, unsigned i
     }
 }
 
-extern "C" __global__ void scaleFC_RhoSq_comp_27(real* DC, 
+__global__ void scaleFC_RhoSq_comp_27(real* DC, 
 												 real* DF, 
 												 unsigned int* neighborCX,
 												 unsigned int* neighborCY,
@@ -11149,7 +11149,7 @@ extern "C" __global__ void scaleFC_RhoSq_comp_27(real* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFC_staggered_time_comp_27(   real* DC, 
+__global__ void scaleFC_staggered_time_comp_27(   real* DC, 
 															 real* DF, 
 															 unsigned int* neighborCX,
 															 unsigned int* neighborCY,
@@ -13270,7 +13270,7 @@ extern "C" __global__ void scaleFC_staggered_time_comp_27(   real* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFC_Fix_comp_27(  real* DC, 
+__global__ void scaleFC_Fix_comp_27(  real* DC, 
 												 real* DF, 
 												 unsigned int* neighborCX,
 												 unsigned int* neighborCY,
@@ -15130,7 +15130,7 @@ extern "C" __global__ void scaleFC_Fix_comp_27(  real* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFC_NSPress_27(   real* DC, 
+__global__ void scaleFC_NSPress_27(   real* DC, 
 												 real* DF, 
 												 unsigned int* neighborCX,
 												 unsigned int* neighborCY,
@@ -16336,7 +16336,7 @@ extern "C" __global__ void scaleFC_NSPress_27(   real* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFC_Fix_27(   real* DC, 
+__global__ void scaleFC_Fix_27(   real* DC, 
                                              real* DF, 
                                              unsigned int* neighborCX,
                                              unsigned int* neighborCY,
@@ -17696,7 +17696,7 @@ extern "C" __global__ void scaleFC_Fix_27(   real* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFCpress27(real* DC, 
+__global__ void scaleFCpress27(real* DC, 
                                           real* DF, 
                                           unsigned int* neighborCX,
                                           unsigned int* neighborCY,
@@ -18621,7 +18621,7 @@ extern "C" __global__ void scaleFCpress27(real* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFCLast27( real* DC, 
+__global__ void scaleFCLast27( real* DC, 
                                           real* DF, 
                                           unsigned int* neighborCX,
                                           unsigned int* neighborCY,
@@ -20017,7 +20017,7 @@ extern "C" __global__ void scaleFCLast27( real* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFCThSMG7(    real* DC, 
+__global__ void scaleFCThSMG7(    real* DC, 
                                              real* DF, 
                                              real* DD7C, 
                                              real* DD7F, 
@@ -20890,7 +20890,7 @@ extern "C" __global__ void scaleFCThSMG7(    real* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFCThS7(   real* DC, 
+__global__ void scaleFCThS7(   real* DC, 
                                           real* DF, 
                                           real* DD7C, 
                                           real* DD7F, 
@@ -21681,7 +21681,7 @@ extern "C" __global__ void scaleFCThS7(   real* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFCThS27(     real* DC, 
+__global__ void scaleFCThS27(     real* DC, 
                                              real* DF, 
                                              real* DD27C, 
                                              real* DD27F, 
@@ -22804,7 +22804,7 @@ extern "C" __global__ void scaleFCThS27(     real* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFCEff27(real* DC, 
+__global__ void scaleFCEff27(real* DC, 
                                         real* DF, 
                                         unsigned int* neighborCX,
                                         unsigned int* neighborCY,
@@ -23783,7 +23783,7 @@ extern "C" __global__ void scaleFCEff27(real* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFC27(real* DC, 
+__global__ void scaleFC27(real* DC, 
                                      real* DF, 
                                      unsigned int* neighborCX,
                                      unsigned int* neighborCY,

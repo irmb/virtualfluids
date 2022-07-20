@@ -4,7 +4,7 @@
 #include <DataTypes.h>
 #include <curand.h>
 
-extern "C" __global__ void LB_Kernel_PM_Cum_One_Comp_SP_27(real omega,
+__global__ void LB_Kernel_PM_Cum_One_Comp_SP_27(real omega,
 	unsigned int* neighborX,
 	unsigned int* neighborY,
 	unsigned int* neighborZ,

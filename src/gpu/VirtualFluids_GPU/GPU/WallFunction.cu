@@ -8,7 +8,7 @@ using namespace vf::lbm::dir;
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void WallFunction27(
+__global__ void WallFunction27(
 										  real* vx,
 										  real* vy,
 										  real* vz,
