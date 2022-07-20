@@ -264,10 +264,19 @@ __global__ void LBCalcMacSP27( real* vxD,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-__global__ void LBCalcMacCompSP27(real *vxD, real *vyD, real *vzD, real *rhoD, real *pressD,
-                                             unsigned int *geoD, unsigned int *neighborX, unsigned int *neighborY,
-                                             unsigned int *neighborZ, unsigned int size_Mat, real *distributions,
-                                             bool isEvenTimestep)
+__global__ void LBCalcMacCompSP27(
+   real *vxD,
+   real *vyD,
+   real *vzD,
+   real *rhoD,
+   real *pressD,
+   unsigned int *geoD,
+   unsigned int *neighborX,
+   unsigned int *neighborY,
+   unsigned int *neighborZ,
+   unsigned int size_Mat,
+   real *distributions,
+   bool isEvenTimestep)
 {
     const unsigned k = vf::gpu::getNodeIndex();
 
