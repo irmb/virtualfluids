@@ -1,6 +1,5 @@
 #include "ConfigFileReaderNT.h"
 
-// #include "Core/Input/Input.h"
 #include <basics/config/ConfigurationFile.h>
 #include "Core/StringUtilities/StringUtil.h"
 
@@ -11,63 +10,11 @@
 #define VAL(str) #str
 #define TOSTRING(str) VAL(str)
 
-std::shared_ptr<ConfigFileReader> ConfigFileReader::getNewInstance(const std::string aFilePath)
-{
-    return std::shared_ptr<ConfigFileReader>(new ConfigFileReader(aFilePath));
-}
+using ConfigFilePtr = std::shared_ptr<vf::basics::ConfigurationFile>;
+using ConfigDataPtr = std::shared_ptr<ConfigDataStruct>;
 
-ConfigFileReader::ConfigFileReader(const std::string aFilePath) : myFilePath(aFilePath)
-{
-    // If PATH_NUMERICAL_TESTS is not defined, the grid definitions for the tests needs to be placed in the project root
-    // directories.
-#ifdef PATH_NUMERICAL_TESTS
-    pathNumericalTests = TOSTRING(PATH_NUMERICAL_TESTS) + std::string("/");
-#else
-    pathNumericalTests = TOSTRING(SOURCE_ROOT) + std::string("/");
-#endif
-    std::cout << pathNumericalTests << "\n";
-}
 
-void ConfigFileReader::readConfigFile()
-{
-    configData           = std::shared_ptr<ConfigDataStruct>(new ConfigDataStruct);
-
-    auto input = std::make_shared<vf::basics::ConfigurationFile>();
-    input->load(myFilePath);
-
-    if (!checkConfigFile(input))
-        exit(1);
-
-    configData->viscosity            = StringUtil::toDoubleVector(input->getValue<std::string>("Viscosity"));
-    configData->kernelsToTest        = readKernelList(input);
-    configData->writeAnalyticalToVTK = StringUtil::toBool(input->getValue<std::string>("WriteAnalyResultsToVTK"));
-    configData->ySliceForCalculation = StringUtil::toInt(input->getValue<std::string>("ySliceForCalculation"));
-
-    configData->logFilePath         = pathNumericalTests + input->getValue<std::string>("FolderLogFile");
-    configData->numberOfSimulations = calcNumberOfSimulations(input);
-
-    std::shared_ptr<BasicSimulationParameterStruct> basicSimPara = makeBasicSimulationParameter(input);
-
-    configData->taylorGreenVortexUxParameter       = makeTaylorGreenVortexUxParameter(input, basicSimPara);
-    configData->taylorGreenVortexUxGridInformation = makeGridInformation(input, "TaylorGreenVortexUx");
-
-    configData->taylorGreenVortexUzParameter       = makeTaylorGreenVortexUzParameter(input, basicSimPara);
-    configData->taylorGreenVortexUzGridInformation = makeGridInformation(input, "TaylorGreenVortexUz");
-
-    configData->shearWaveParameter       = makeShearWaveParameter(input, basicSimPara);
-    configData->shearWaveGridInformation = makeGridInformation(input, "ShearWave");
-
-    configData->phiTestParameter                  = makePhiTestParameter(input);
-    configData->nyTestParameter                   = makeNyTestParameter(input);
-    configData->l2NormTestParameter               = makeL2NormTestParameter(input);
-    configData->l2NormTestBetweenKernelsParameter = makeL2NormTestBetweenKernelsParameter(input);
-
-    configData->vectorWriterInfo = makeVectorWriterInformationStruct(input);
-
-    configData->logFilePara = makeLogFilePara(input);
-}
-
-std::ifstream ConfigFileReader::openConfigFile(const std::string aFilePath)
+std::ifstream openConfigFile(const std::string aFilePath)
 {
     std::ifstream stream;
     stream.open(aFilePath.c_str(), std::ios::in);
@@ -77,9 +24,7 @@ std::ifstream ConfigFileReader::openConfigFile(const std::string aFilePath)
     return stream;
 }
 
-std::shared_ptr<ConfigDataStruct> ConfigFileReader::getConfigData() { return configData; }
-
-bool ConfigFileReader::checkConfigFile(std::shared_ptr<vf::basics::ConfigurationFile> input)
+bool checkConfigFile(ConfigFilePtr input)
 {
     std::vector<double> u0TGVux               = StringUtil::toDoubleVector(input->getValue<std::string>("ux_TGV_Ux"));
     std::vector<double> amplitudeTGVux        = StringUtil::toDoubleVector(input->getValue<std::string>("Amplitude_TGV_Ux"));
@@ -112,7 +57,7 @@ bool ConfigFileReader::checkConfigFile(std::shared_ptr<vf::basics::Configuration
 }
 
 std::shared_ptr<BasicSimulationParameterStruct>
-ConfigFileReader::makeBasicSimulationParameter(std::shared_ptr<vf::basics::ConfigurationFile> input)
+makeBasicSimulationParameter(ConfigFilePtr input)
 {
     std::shared_ptr<BasicSimulationParameterStruct> basicSimPara =
         std::shared_ptr<BasicSimulationParameterStruct>(new BasicSimulationParameterStruct);
@@ -123,8 +68,9 @@ ConfigFileReader::makeBasicSimulationParameter(std::shared_ptr<vf::basics::Confi
 }
 
 std::vector<std::shared_ptr<TaylorGreenVortexUxParameterStruct>>
-ConfigFileReader::makeTaylorGreenVortexUxParameter(std::shared_ptr<vf::basics::ConfigurationFile> input,
-                                                   std::shared_ptr<BasicSimulationParameterStruct> basicSimParameter)
+makeTaylorGreenVortexUxParameter(const std::string pathNumericalTests, 
+                                 ConfigFilePtr input,
+                                 std::shared_ptr<BasicSimulationParameterStruct> basicSimParameter)
 {
     std::vector<int> basisTimeStepLength = StringUtil::toIntVector(input->getValue<std::string>("BasisTimeStepLength_TGV_Ux"));
     std::vector<double> amplitude        = StringUtil::toDoubleVector(input->getValue<std::string>("Amplitude_TGV_Ux"));
@@ -151,8 +97,9 @@ ConfigFileReader::makeTaylorGreenVortexUxParameter(std::shared_ptr<vf::basics::C
 }
 
 std::vector<std::shared_ptr<TaylorGreenVortexUzParameterStruct>>
-ConfigFileReader::makeTaylorGreenVortexUzParameter(std::shared_ptr<vf::basics::ConfigurationFile> input,
-                                                   std::shared_ptr<BasicSimulationParameterStruct> basicSimParameter)
+makeTaylorGreenVortexUzParameter(const std::string pathNumericalTests,
+                                 ConfigFilePtr input,
+                                 std::shared_ptr<BasicSimulationParameterStruct> basicSimParameter)
 {
     std::vector<int> basisTimeStepLength = StringUtil::toIntVector(input->getValue<std::string>("BasisTimeStepLength_TGV_Uz"));
     std::vector<double> amplitude        = StringUtil::toDoubleVector(input->getValue<std::string>("Amplitude_TGV_Uz"));
@@ -177,8 +124,9 @@ ConfigFileReader::makeTaylorGreenVortexUzParameter(std::shared_ptr<vf::basics::C
     return parameter;
 }
 std::vector<std::shared_ptr<ShearWaveParameterStruct>>
-ConfigFileReader::makeShearWaveParameter(std::shared_ptr<vf::basics::ConfigurationFile> input,
-                                         std::shared_ptr<BasicSimulationParameterStruct> basicSimParameter)
+makeShearWaveParameter(const std::string pathNumericalTests,
+                       ConfigFilePtr input,
+                       std::shared_ptr<BasicSimulationParameterStruct> basicSimParameter)
 {
     std::vector<int> basisTimeStepLength = StringUtil::toIntVector(input->getValue<std::string>("BasisTimeStepLength_SW"));
     std::vector<double> uz               = StringUtil::toDoubleVector(input->getValue<std::string>("v0_SW"));
@@ -203,7 +151,7 @@ ConfigFileReader::makeShearWaveParameter(std::shared_ptr<vf::basics::Configurati
     return parameter;
 }
 
-std::shared_ptr<NyTestParameterStruct> ConfigFileReader::makeNyTestParameter(std::shared_ptr<vf::basics::ConfigurationFile> input)
+std::shared_ptr<NyTestParameterStruct> makeNyTestParameter(ConfigFilePtr input)
 {
     std::shared_ptr<BasicTestParameterStruct> basicTestParameter =
         std::shared_ptr<BasicTestParameterStruct>(new BasicTestParameterStruct);
@@ -220,7 +168,7 @@ std::shared_ptr<NyTestParameterStruct> ConfigFileReader::makeNyTestParameter(std
     return testParameter;
 }
 
-std::shared_ptr<PhiTestParameterStruct> ConfigFileReader::makePhiTestParameter(std::shared_ptr<vf::basics::ConfigurationFile> input)
+std::shared_ptr<PhiTestParameterStruct> makePhiTestParameter(ConfigFilePtr input)
 {
     std::shared_ptr<BasicTestParameterStruct> basicTestParameter =
         std::shared_ptr<BasicTestParameterStruct>(new BasicTestParameterStruct);
@@ -238,7 +186,7 @@ std::shared_ptr<PhiTestParameterStruct> ConfigFileReader::makePhiTestParameter(s
 }
 
 std::shared_ptr<L2NormTestParameterStruct>
-ConfigFileReader::makeL2NormTestParameter(std::shared_ptr<vf::basics::ConfigurationFile> input)
+makeL2NormTestParameter(ConfigFilePtr input)
 {
     std::shared_ptr<BasicTestParameterStruct> basicTestParameter =
         std::shared_ptr<BasicTestParameterStruct>(new BasicTestParameterStruct);
@@ -256,8 +204,42 @@ ConfigFileReader::makeL2NormTestParameter(std::shared_ptr<vf::basics::Configurat
     return testParameter;
 }
 
+std::vector<std::string> readKernelList(ConfigFilePtr input)
+{
+    if (StringUtil::toBool(input->getValue<std::string>("L2NormBetweenKernelsTest"))) {
+        std::vector<std::string> kernelList = StringUtil::toStringVector(input->getValue<std::string>("KernelsToTest"));
+        std::string beginKernel             = input->getValue<std::string>("BasicKernel_L2NormBetweenKernels");
+        bool basicKernelInKernelList        = false;
+        for (int i = 0; i < kernelList.size(); i++) {
+            if (kernelList.at(i) == beginKernel)
+                basicKernelInKernelList = true;
+        }
+        if (!basicKernelInKernelList)
+            kernelList.push_back(beginKernel);
+
+        std::vector<std::string> kernelNames = kernelList;
+
+        while (kernelNames.at(0) != beginKernel) {
+            kernelNames.push_back(kernelNames.at(0));
+            std::vector<std::string>::iterator it = kernelNames.begin();
+            kernelNames.erase(it);
+        }
+        std::vector<std::string> kernels;
+        for (int i = 0; i < kernelNames.size(); i++)
+            kernels.push_back(kernelNames.at(i));
+        return kernels;
+    } else {
+        std::vector<std::string> kernelList = StringUtil::toStringVector(input->getValue<std::string>("KernelsToTest"));
+        std::vector<std::string> kernels;
+        for (int i = 0; i < kernelList.size(); i++)
+            kernels.push_back(kernelList.at(i));
+
+        return kernels;
+    }
+}
+
 std::shared_ptr<L2NormTestBetweenKernelsParameterStruct>
-ConfigFileReader::makeL2NormTestBetweenKernelsParameter(std::shared_ptr<vf::basics::ConfigurationFile> input)
+makeL2NormTestBetweenKernelsParameter(ConfigFilePtr input)
 {
     std::shared_ptr<BasicTestParameterStruct> basicTestParameter =
         std::shared_ptr<BasicTestParameterStruct>(new BasicTestParameterStruct);
@@ -289,7 +271,7 @@ ConfigFileReader::makeL2NormTestBetweenKernelsParameter(std::shared_ptr<vf::basi
 }
 
 std::vector<std::shared_ptr<GridInformationStruct>>
-ConfigFileReader::makeGridInformation(std::shared_ptr<vf::basics::ConfigurationFile> input, std::string simName)
+makeGridInformation(const std::string pathNumericalTests, ConfigFilePtr input, std::string simName)
 {
     int number = 32;
     std::vector<std::string> valueNames;
@@ -333,64 +315,7 @@ ConfigFileReader::makeGridInformation(std::shared_ptr<vf::basics::ConfigurationF
     return gridInformation;
 }
 
-std::shared_ptr<VectorWriterInformationStruct>
-ConfigFileReader::makeVectorWriterInformationStruct(std::shared_ptr<vf::basics::ConfigurationFile> input)
-{
-    std::shared_ptr<VectorWriterInformationStruct> vectorWriter =
-        std::shared_ptr<VectorWriterInformationStruct>(new VectorWriterInformationStruct);
-    vectorWriter->startTimeVectorWriter  = calcStartStepForToVectorWriter(input);
-    vectorWriter->startTimeVTKDataWriter = StringUtil::toInt(input->getValue<std::string>("StartStepFileWriter"));
-    vectorWriter->writeVTKFiles          = StringUtil::toBool(input->getValue<std::string>("WriteVTKFiles"));
-
-    return vectorWriter;
-}
-
-std::shared_ptr<LogFileParameterStruct> ConfigFileReader::makeLogFilePara(std::shared_ptr<vf::basics::ConfigurationFile> input)
-{
-    std::shared_ptr<LogFileParameterStruct> logFilePara =
-        std::shared_ptr<LogFileParameterStruct>(new LogFileParameterStruct);
-    logFilePara->devices              = StringUtil::toIntVector(input->getValue<std::string>("Devices"));
-    logFilePara->numberOfTimeSteps    = StringUtil::toInt(input->getValue<std::string>("NumberOfTimeSteps"));
-    logFilePara->writeAnalyticalToVTK = StringUtil::toBool(input->getValue<std::string>("WriteAnalyResultsToVTK"));
-
-    return logFilePara;
-}
-
-std::vector<std::string> ConfigFileReader::readKernelList(std::shared_ptr<vf::basics::ConfigurationFile> input)
-{
-    if (StringUtil::toBool(input->getValue<std::string>("L2NormBetweenKernelsTest"))) {
-        std::vector<std::string> kernelList = StringUtil::toStringVector(input->getValue<std::string>("KernelsToTest"));
-        std::string beginKernel             = input->getValue<std::string>("BasicKernel_L2NormBetweenKernels");
-        bool basicKernelInKernelList        = false;
-        for (int i = 0; i < kernelList.size(); i++) {
-            if (kernelList.at(i) == beginKernel)
-                basicKernelInKernelList = true;
-        }
-        if (!basicKernelInKernelList)
-            kernelList.push_back(beginKernel);
-
-        std::vector<std::string> kernelNames = kernelList;
-
-        while (kernelNames.at(0) != beginKernel) {
-            kernelNames.push_back(kernelNames.at(0));
-            std::vector<std::string>::iterator it = kernelNames.begin();
-            kernelNames.erase(it);
-        }
-        std::vector<std::string> kernels;
-        for (int i = 0; i < kernelNames.size(); i++)
-            kernels.push_back(kernelNames.at(i));
-        return kernels;
-    } else {
-        std::vector<std::string> kernelList = StringUtil::toStringVector(input->getValue<std::string>("KernelsToTest"));
-        std::vector<std::string> kernels;
-        for (int i = 0; i < kernelList.size(); i++)
-            kernels.push_back(kernelList.at(i));
-
-        return kernels;
-    }
-}
-
-unsigned int ConfigFileReader::calcStartStepForToVectorWriter(std::shared_ptr<vf::basics::ConfigurationFile> input)
+unsigned int calcStartStepForToVectorWriter(ConfigFilePtr input)
 {
     std::vector<unsigned int> startStepsTests;
     startStepsTests.push_back(StringUtil::toInt(input->getValue<std::string>("BasicTimeStep_L2")));
@@ -401,7 +326,48 @@ unsigned int ConfigFileReader::calcStartStepForToVectorWriter(std::shared_ptr<vf
     return startStepsTests.at(0);
 }
 
-int ConfigFileReader::calcNumberOfSimulations(std::shared_ptr<vf::basics::ConfigurationFile> input)
+std::shared_ptr<VectorWriterInformationStruct>
+makeVectorWriterInformationStruct(ConfigFilePtr input)
+{
+    std::shared_ptr<VectorWriterInformationStruct> vectorWriter =
+        std::shared_ptr<VectorWriterInformationStruct>(new VectorWriterInformationStruct);
+    vectorWriter->startTimeVectorWriter  = calcStartStepForToVectorWriter(input);
+    vectorWriter->startTimeVTKDataWriter = StringUtil::toInt(input->getValue<std::string>("StartStepFileWriter"));
+    vectorWriter->writeVTKFiles          = StringUtil::toBool(input->getValue<std::string>("WriteVTKFiles"));
+
+    return vectorWriter;
+}
+
+std::shared_ptr<LogFileParameterStruct> makeLogFilePara(ConfigFilePtr input)
+{
+    std::shared_ptr<LogFileParameterStruct> logFilePara =
+        std::shared_ptr<LogFileParameterStruct>(new LogFileParameterStruct);
+    logFilePara->devices              = StringUtil::toIntVector(input->getValue<std::string>("Devices"));
+    logFilePara->numberOfTimeSteps    = StringUtil::toInt(input->getValue<std::string>("NumberOfTimeSteps"));
+    logFilePara->writeAnalyticalToVTK = StringUtil::toBool(input->getValue<std::string>("WriteAnalyResultsToVTK"));
+
+    return logFilePara;
+}
+
+int calcNumberOfSimulationGroup(ConfigFilePtr input, std::string simName)
+{
+    int counter = 0;
+    int number  = 32;
+    std::vector<std::string> valueNames;
+    for (int i = 1; i <= 5; i++) {
+        std::string aValueName = simName;
+        aValueName += std::to_string(number);
+        valueNames.push_back(aValueName);
+        number *= 2;
+    }
+    for (int i = 0; i < valueNames.size(); i++) {
+        if (StringUtil::toBool(input->getValue<std::string>(valueNames.at(i))))
+            counter++;
+    }
+    return counter;
+}
+
+int calcNumberOfSimulations(ConfigFilePtr input, ConfigDataPtr configData)
 {
     int counter = 0;
 
@@ -425,20 +391,51 @@ int ConfigFileReader::calcNumberOfSimulations(std::shared_ptr<vf::basics::Config
     return counter;
 }
 
-int ConfigFileReader::calcNumberOfSimulationGroup(std::shared_ptr<vf::basics::ConfigurationFile> input, std::string simName)
+ConfigDataPtr vf::gpu::tests::readConfigFile(const std::string aFilePath)
 {
-    int counter = 0;
-    int number  = 32;
-    std::vector<std::string> valueNames;
-    for (int i = 1; i <= 5; i++) {
-        std::string aValueName = simName;
-        aValueName += std::to_string(number);
-        valueNames.push_back(aValueName);
-        number *= 2;
-    }
-    for (int i = 0; i < valueNames.size(); i++) {
-        if (StringUtil::toBool(input->getValue<std::string>(valueNames.at(i))))
-            counter++;
-    }
-    return counter;
+    // If PATH_NUMERICAL_TESTS is not defined, the grid definitions for the tests needs to be placed in the project root
+    // directories.
+#ifdef PATH_NUMERICAL_TESTS
+    auto pathNumericalTests = TOSTRING(PATH_NUMERICAL_TESTS) + std::string("/");
+#else
+    auto pathNumericalTests = TOSTRING(SOURCE_ROOT) + std::string("/");
+#endif
+    std::cout << pathNumericalTests << "\n";
+
+    auto configData = std::make_shared<ConfigDataStruct>();
+    auto input      = std::make_shared<vf::basics::ConfigurationFile>();
+    input->load(aFilePath);
+
+    if (!checkConfigFile(input))
+        exit(1);
+
+    configData->viscosity            = StringUtil::toDoubleVector(input->getValue<std::string>("Viscosity"));
+    configData->kernelsToTest        = readKernelList(input);
+    configData->writeAnalyticalToVTK = StringUtil::toBool(input->getValue<std::string>("WriteAnalyResultsToVTK"));
+    configData->ySliceForCalculation = StringUtil::toInt(input->getValue<std::string>("ySliceForCalculation"));
+
+    configData->logFilePath         = pathNumericalTests + input->getValue<std::string>("FolderLogFile");
+    configData->numberOfSimulations = calcNumberOfSimulations(input, configData);
+
+    auto basicSimPara = makeBasicSimulationParameter(input);
+
+    configData->taylorGreenVortexUxParameter       = makeTaylorGreenVortexUxParameter(pathNumericalTests, input, basicSimPara);
+    configData->taylorGreenVortexUxGridInformation = makeGridInformation(pathNumericalTests, input, "TaylorGreenVortexUx");
+
+    configData->taylorGreenVortexUzParameter       = makeTaylorGreenVortexUzParameter(pathNumericalTests, input, basicSimPara);
+    configData->taylorGreenVortexUzGridInformation = makeGridInformation(pathNumericalTests, input, "TaylorGreenVortexUz");
+
+    configData->shearWaveParameter       = makeShearWaveParameter(pathNumericalTests, input, basicSimPara);
+    configData->shearWaveGridInformation = makeGridInformation(pathNumericalTests, input, "ShearWave");
+
+    configData->phiTestParameter                  = makePhiTestParameter(input);
+    configData->nyTestParameter                   = makeNyTestParameter(input);
+    configData->l2NormTestParameter               = makeL2NormTestParameter(input);
+    configData->l2NormTestBetweenKernelsParameter = makeL2NormTestBetweenKernelsParameter(input);
+
+    configData->vectorWriterInfo = makeVectorWriterInformationStruct(input);
+
+    configData->logFilePara = makeLogFilePara(input);
+
+    return configData;
 }
