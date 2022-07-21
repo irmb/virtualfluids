@@ -178,7 +178,7 @@ void multipleLevel(const std::string& configPath)
             para->setOutputPath( "F:/Work/Computations/out/Sphere/" );
             para->setOutputPrefix( "Sphere" );
 
-            para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
+            para->setPathAndFilename(para->getOutputPath() + "/" + para->getOutputPrefix());
 
             para->setPrintFiles(true);
     
@@ -187,8 +187,8 @@ void multipleLevel(const std::string& configPath)
 
             para->setVelocityRatio(1.0);
 
-            para->setTOut( 1000 );
-            para->setTEnd( 100000 );
+            para->setTimestepOut( 1000 );
+            para->setTimestepEnd( 100000 );
 
             para->setCalcDragLift(true);
 
@@ -266,7 +266,7 @@ void multipleLevel(const std::string& configPath)
             para->setOutputPath( "F:/Work/Computations/out/DrivAerNew/" );
             para->setOutputPrefix( "DrivAer" );
 
-            para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
+            para->setPathAndFilename(para->getOutputPath() + "/" + para->getOutputPrefix());
 
             para->setPrintFiles(true);
     
@@ -276,8 +276,8 @@ void multipleLevel(const std::string& configPath)
             //para->setVelocityRatio(1.0 / velocityLB);
             para->setVelocityRatio(1.0);
 
-            para->setTOut( 10000 );
-            para->setTEnd( 100000 );
+            para->setTimestepOut( 10000 );
+            para->setTimestepEnd( 100000 );
 
             para->setUseWale(false);
 
@@ -372,7 +372,7 @@ void multipleLevel(const std::string& configPath)
             para->setOutputPath( "F:/Work/Computations/out/PaperPlane/" );
             para->setOutputPrefix( "PaperPlaneK17winglet" );
 
-            para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
+            para->setPathAndFilename(para->getOutputPath() + "/" + para->getOutputPrefix());
 
             para->setPrintFiles(true);
     
@@ -381,8 +381,8 @@ void multipleLevel(const std::string& configPath)
 
             para->setVelocityRatio(1.0);
 
-            para->setTOut( 1000 );
-            para->setTEnd( 100000 );
+            para->setTimestepOut( 1000 );
+            para->setTimestepEnd( 100000 );
 
             para->setUseWale(false);
 
@@ -452,7 +452,7 @@ void multipleLevel(const std::string& configPath)
             para->setOutputPath( "F:/Work/Computations/out/StlGroupTest/" );
             para->setOutputPrefix( "StlGroupTest" );
 
-            para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
+            para->setPathAndFilename(para->getOutputPath() + "/" + para->getOutputPrefix());
 
             para->setPrintFiles(true);
     
@@ -461,8 +461,8 @@ void multipleLevel(const std::string& configPath)
 
             para->setVelocityRatio(1.0);
 
-            para->setTOut( 1000 );
-            para->setTEnd( 100000 );
+            para->setTimestepOut( 1000 );
+            para->setTimestepEnd( 100000 );
 
             para->setUseWale(false);
 
@@ -649,7 +649,7 @@ void multipleLevel(const std::string& configPath)
             para->setOutputPath( "F:/Work/Computations/out/Sphere/" );
             para->setOutputPrefix( "Sphere" );
 
-            para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
+            para->setPathAndFilename(para->getOutputPath() + "/" + para->getOutputPrefix());
 
             para->setPrintFiles(true);
     
@@ -658,8 +658,8 @@ void multipleLevel(const std::string& configPath)
 
             para->setVelocityRatio(1.0);
 
-            para->setTOut( 1000 );
-            para->setTEnd( 100000 );
+            para->setTimestepOut( 1000 );
+            para->setTimestepEnd( 100000 );
 
             para->setCalcDragLift(true);
 

@@ -152,7 +152,7 @@ void multipleLevel(const std::string& configPath)
 
     para->setOutputPrefix( simulationName );
 
-    para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
+    para->setPathAndFilename(para->getOutputPath() + "/" + para->getOutputPrefix());
 
     para->setPrintFiles(true);
 
@@ -170,12 +170,12 @@ void multipleLevel(const std::string& configPath)
 
     para->setIsBodyForce( config.getValue<bool>("bodyForce") );
 
-    para->setTStartOut(uint(tStartOut/dt) );
-    para->setTOut( uint(tOut/dt) );
-    para->setTEnd( uint(tEnd/dt) );
+    para->setTimestepStartOut(uint(tStartOut/dt) );
+    para->setTimestepOut( uint(tOut/dt) );
+    para->setTimestepEnd( uint(tEnd/dt) );
 
-    // para->setTOut( 100 );
-    // para->setTEnd( 100000 );
+    // para->setTimestepOut( 100 );
+    // para->setTimestepEnd( 100000 );
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

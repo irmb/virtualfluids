@@ -152,8 +152,8 @@ void multipleLevel(const std::string &configPath)
                   << "para->useReducedCommunicationAfterFtoC = " << para->useReducedCommunicationAfterFtoC << "\n";
     *logging::out << logging::Logger::INFO_HIGH << "scalingType = " << scalingType << "\n";
 
-    // para->setTOut(10);
-    // para->setTEnd(10);
+    // para->setTimestepOut(10);
+    // para->setTimestepEnd(10);
 
     para->setCalcDragLift(false);
     para->setUseWale(false);
@@ -162,7 +162,7 @@ void multipleLevel(const std::string &configPath)
         para->setOutputPath(outPath);
     }
     para->setOutputPrefix(simulationName);
-    para->setFName(para->getOutputPath() + para->getOutputPrefix());
+    para->setPathAndFilename(para->getOutputPath() + para->getOutputPrefix());
     para->setPrintFiles(true);
     std::cout << "Write result files to " << para->getFName() << std::endl;
 
