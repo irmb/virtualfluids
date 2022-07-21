@@ -35,10 +35,11 @@
 
 #include <functional>
 #include <memory>
+#include <string>
 
+#include "LBM/LB.h"
 #include "PointerDefinitions.h"
 #include "VirtualFluids_GPU_export.h"
-#include "LBM/LB.h"
 
 class CudaMemoryManager;
 class BoundaryConditionFactory;
@@ -88,6 +89,11 @@ public:
     void runStressWallModelKernelPost(const int level) const;
 
 private:
+    void checkBoundaryCondition(const boundaryCondition &bc, const QforBoundaryConditions &bcStruct,
+                                const std::string &bcName);
+    void checkBoundaryCondition(const boundaryConditionPara &bc, const QforBoundaryConditions &bcStruct,
+                                const std::string &bcName);
+
     SPtr<Parameter> para;
 
     boundaryCondition velocityBoundaryConditionPost;
