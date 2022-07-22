@@ -219,7 +219,7 @@ void multipleLevel(const std::string& configPath)
     para->setOutputPath( path );
     para->setOutputPrefix( "Unified_" + simulationName );
 
-    para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
+    para->setPathAndFilename(para->getOutputPath() + "/" + para->getOutputPrefix());
 
     para->setPrintFiles(true);
 

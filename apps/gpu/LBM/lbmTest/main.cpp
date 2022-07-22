@@ -76,7 +76,7 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
     std::string gridPath = getGridPath(para, _gridpath);
     para->setOutputPath(_path);
     para->setOutputPrefix(_prefix);
-    para->setFName(_path + "/" + _prefix);
+    para->setPathAndFilename(_path + "/" + _prefix);
     para->setPrintFiles(false);
     para->setPrintFiles(StringUtil::toBool(input->getValue("WriteGrid")));
     para->setGeometryValues(StringUtil::toBool(input->getValue("GeometryValues")));
@@ -90,9 +90,9 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
     para->setUseWale(StringUtil::toBool(input->getValue("UseWale")));
     para->setSimulatePorousMedia(StringUtil::toBool(input->getValue("SimulatePorousMedia")));
     para->setD3Qxx(StringUtil::toInt(input->getValue("D3Qxx")));
-    para->setTEnd(StringUtil::toInt(input->getValue("TimeEnd")));
-    para->setTOut(StringUtil::toInt(input->getValue("TimeOut")));
-    para->setTStartOut(StringUtil::toInt(input->getValue("TimeStartOut")));
+    para->setTimestepEnd(StringUtil::toInt(input->getValue("TimeEnd")));
+    para->setTimestepOut(StringUtil::toInt(input->getValue("TimeOut")));
+    para->setTimestepStartOut(StringUtil::toInt(input->getValue("TimeStartOut")));
     para->setTimeCalcMedStart(StringUtil::toInt(input->getValue("TimeStartCalcMedian")));
     para->setTimeCalcMedEnd(StringUtil::toInt(input->getValue("TimeEndCalcMedian")));
     para->setPressInID(StringUtil::toInt(input->getValue("PressInID")));

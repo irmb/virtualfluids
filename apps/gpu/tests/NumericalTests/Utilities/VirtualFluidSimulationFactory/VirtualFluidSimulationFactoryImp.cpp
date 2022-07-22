@@ -32,15 +32,15 @@ std::shared_ptr<Parameter> VirtualFluidSimulationFactoryImp::makeParameter(std::
 
 	std::string _prefix = "cells";
 	std::string gridPath = simPara->getGridPath() + "/";
-	para->setFName(simPara->getFilePath() + "/" + _prefix);
+	para->setPathAndFilename(simPara->getFilePath() + "/" + _prefix);
 	para->setPrintFiles(true);
 
 	para->setD3Qxx(27);
 	para->setMaxLevel(simPara->getNumberOfGridLevels());
 
-	para->setTEnd(simPara->getEndTime());
-	para->setTOut(simPara->getTimeStepLength());
-	para->setTStartOut(1);
+	para->setTimestepEnd(simPara->getEndTime());
+	para->setTimestepOut(simPara->getTimeStepLength());
+	para->setTimestepStartOut(1);
 
 	para->setViscosityLB(simPara->getViscosity());
 	para->setVelocityLB(simPara->getMaxVelocity());
