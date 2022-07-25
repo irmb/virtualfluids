@@ -52,40 +52,18 @@ BCKernelManager::BCKernelManager(SPtr<Parameter> parameter, BoundaryConditionFac
     this->geometryBoundaryConditionPost = bcFactory->getGeometryBoundaryConditionPost();
     this->stressBoundaryConditionPost   = bcFactory->getStressBoundaryConditionPost();
 
-    try {
-        checkBoundaryCondition(this->velocityBoundaryConditionPost, this->para->getParD(0)->velocityBC,
-                               "velocityBoundaryConditionPost");
-        checkBoundaryCondition(this->noSlipBoundaryConditionPost, this->para->getParD(0)->noSlipBC,
-                               "noSlipBoundaryConditionPost");
-        checkBoundaryCondition(this->slipBoundaryConditionPost, this->para->getParD(0)->slipBC,
-                               "slipBoundaryConditionPost");
-        checkBoundaryCondition(this->pressureBoundaryConditionPre, this->para->getParD(0)->pressureBC,
-                               "pressureBoundaryConditionPre");
-        checkBoundaryCondition(this->geometryBoundaryConditionPost, this->para->getParD(0)->geometryBC,
-                               "geometryBoundaryConditionPost");
-        checkBoundaryCondition(this->stressBoundaryConditionPost, this->para->getParD(0)->stressBC,
-                               "stressBoundaryConditionPost");
-    } catch (const std::runtime_error &e) {
-        std::cout << e.what() << std::endl;
-        throw;
-    } catch (const std::exception &e) {
-        std::cout << "Unknown exception in BCKernelManager: " << e.what() << std::endl;
-        throw;
-    }
-}
-
-void BCKernelManager::checkBoundaryCondition(const boundaryCondition &bc, const QforBoundaryConditions &bcStruct,
-                                             const std::string &bcName)
-{
-    if (!bc && bcStruct.numberOfBCnodes > 0)
-        throw std::runtime_error("The boundary condition " + bcName + " was not set!");
-}
-
-void BCKernelManager::checkBoundaryCondition(const boundaryConditionPara &bc, const QforBoundaryConditions &bcStruct,
-                                             const std::string &bcName)
-{
-    if (!bc && bcStruct.numberOfBCnodes > 0)
-        throw std::runtime_error("The boundary condition " + bcName + " was not set!");
+    checkBoundaryCondition(this->velocityBoundaryConditionPost, this->para->getParD(0)->velocityBC,
+                           "velocityBoundaryConditionPost");
+    checkBoundaryCondition(this->noSlipBoundaryConditionPost, this->para->getParD(0)->noSlipBC,
+                           "noSlipBoundaryConditionPost");
+    checkBoundaryCondition(this->slipBoundaryConditionPost, this->para->getParD(0)->slipBC,
+                           "slipBoundaryConditionPost");
+    checkBoundaryCondition(this->pressureBoundaryConditionPre, this->para->getParD(0)->pressureBC,
+                           "pressureBoundaryConditionPre");
+    checkBoundaryCondition(this->geometryBoundaryConditionPost, this->para->getParD(0)->geometryBC,
+                           "geometryBoundaryConditionPost");
+    checkBoundaryCondition(this->stressBoundaryConditionPost, this->para->getParD(0)->stressBC,
+                           "stressBoundaryConditionPost");
 }
 
 void BCKernelManager::runVelocityBCKernelPre(const int level) const

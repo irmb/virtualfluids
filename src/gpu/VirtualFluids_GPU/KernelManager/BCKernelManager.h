@@ -28,7 +28,7 @@
 //
 //! \file BCKernelManager.h
 //! \ingroup KernelManager
-//! \author Martin Schoenherr
+//! \author Martin Schoenherr, Anna Wellmann
 //=======================================================================================
 #ifndef BCKernelManager_H
 #define BCKernelManager_H
@@ -47,7 +47,7 @@ class Parameter;
 struct LBMSimulationParameter;
 
 using boundaryCondition = std::function<void(LBMSimulationParameter *, QforBoundaryConditions *)>;
-using boundaryConditionPara = std::function<void(Parameter *, QforBoundaryConditions *, const int level)>;
+using boundaryConditionParameter = std::function<void(Parameter *, QforBoundaryConditions *, const int level)>;
 
 //! \class BCKernelManager
 //! \brief manage the cuda kernel calls to boundary conditions
@@ -56,6 +56,7 @@ class VIRTUALFLUIDS_GPU_EXPORT BCKernelManager
 public:
     //! Class constructor
     //! \param parameter shared pointer to instance of class Parameter
+    //! \throws std::runtime_error when the user misconfigured the boundary condition(s)
     BCKernelManager(SPtr<Parameter> parameter, BoundaryConditionFactory *bcFactory);
 
     //! \brief calls the device function of the velocity boundary condition (post-collision)
@@ -89,18 +90,20 @@ public:
     void runStressWallModelKernelPost(const int level) const;
 
 private:
-    void checkBoundaryCondition(const boundaryCondition &bc, const QforBoundaryConditions &bcStruct,
-                                const std::string &bcName);
-    void checkBoundaryCondition(const boundaryConditionPara &bc, const QforBoundaryConditions &bcStruct,
-                                const std::string &bcName);
+    template<typename bcFunction>
+    void checkBoundaryCondition(const bcFunction &bc, const QforBoundaryConditions &bcStruct,
+                                const std::string &bcName){
+                                        if (!bc && bcStruct.numberOfBCnodes > 0)
+        throw std::runtime_error("The boundary condition " + bcName + " was not set!");
+                                }
 
     SPtr<Parameter> para;
 
-    boundaryCondition velocityBoundaryConditionPost;
-    boundaryCondition noSlipBoundaryConditionPost;
-    boundaryCondition slipBoundaryConditionPost;
-    boundaryCondition pressureBoundaryConditionPre;
-    boundaryCondition geometryBoundaryConditionPost;
-    boundaryConditionPara stressBoundaryConditionPost;
+    boundaryCondition velocityBoundaryConditionPost   = nullptr;
+    boundaryCondition noSlipBoundaryConditionPost     = nullptr;
+    boundaryCondition slipBoundaryConditionPost       = nullptr;
+    boundaryCondition pressureBoundaryConditionPre    = nullptr;
+    boundaryCondition geometryBoundaryConditionPost   = nullptr;
+    boundaryConditionParameter stressBoundaryConditionPost = nullptr;
 };
 #endif
