@@ -39,14 +39,14 @@ public:
     void operator()(UpdateGrid27 *updateGrid, Parameter *para, int level);
 };
 
-//! Version of refinement: for single-gpu simulations
+//! \brief Version of refinement: for single-gpu simulations
 class Refinement_noExchange
 {
 public:
     void operator()(UpdateGrid27 *updateGrid, Parameter *para, int level);
 };
 
-//! Version of refinement: for uniform simulations (no grid refinement)
+//! \brief Version of refinement: for uniform simulations (no grid refinement)
 class NoRefinement
 {
 public:
