@@ -5,7 +5,7 @@
 
 std::function<void(UpdateGrid27 *updateGrid, Parameter *para, int level)>
     getFunctionForRefinementAndExchange(const bool useStreams, const int numberOfMpiProcesses, const int maxLevel,
-                                        const bool useReducedCommunicationAfterFtoC)
+                                        const bool useReducedCommunicationAfterFtoC) noexcept
 {
     VF_LOG_INFO("Function used for refinementAndExchange: ");
     if (maxLevel == 0) {
@@ -41,28 +41,36 @@ void RefinementAndExchange_streams_exchangeInterface::operator()(UpdateGrid27 *u
     int borderStreamIndex = para->getStreamManager()->getBorderStreamIndex();
     int bulkStreamIndex = para->getStreamManager()->getBulkStreamIndex();
 
-    // fine to coarse border
+    //! \details steps:
+    //!
+    //! 1. Interpolation fine to coarse for nodes which are at the border of the gpus/processes
+    //!
     updateGrid->fineToCoarse(level, para->getParD(level)->intFCBorder.ICellFCC, para->getParD(level)->intFCBorder.ICellFCF,
                  para->getParD(level)->intFCBorder.kFC, borderStreamIndex);
 
-    // prepare exchange and trigger bulk kernel when finished
-     updateGrid->prepareExchangeMultiGPUAfterFtoC(level, borderStreamIndex);
+    //! 2. prepare the exchange between gpus (collect the send nodes for communication in a buffer on the gpu) and trigger bulk kernel execution when finished
+    //!
+    updateGrid->prepareExchangeMultiGPUAfterFtoC(level, borderStreamIndex);
     if (para->getUseStreams())
         para->getStreamManager()->triggerStartBulkKernel(borderStreamIndex);
 
-    // launch bulk kernels (fine to coarse and coarse to fine)
+    //! 3. launch the bulk kernels for both interpolation processes (fine to coarse and coarse to fine)
+    //!
     para->getStreamManager()->waitOnStartBulkKernelEvent(bulkStreamIndex);
     updateGrid->fineToCoarse(level, para->getParD(level)->intFCBulk.ICellFCC, para->getParD(level)->intFCBulk.ICellFCF,
                  para->getParD(level)->intFCBulk.kFC, bulkStreamIndex);
     updateGrid->coarseToFine(level, para->getParD(level)->intCFBulk.ICellCFC, para->getParD(level)->intCFBulk.ICellCFF,
                  para->getParD(level)->intCFBulk.kCF, para->getParD(level)->offCFBulk, bulkStreamIndex);
 
-    // exchange
+    //! 4. exchange information between GPUs (only nodes which are part of the interpolation)
+    //!
     updateGrid->exchangeMultiGPUAfterFtoC(level, borderStreamIndex);
 
-    // coarse to fine border
+    // 5. interpolation fine to coarse for nodes which are at the border of the gpus/processes
+    //!
     updateGrid->coarseToFine(level, para->getParD(level)->intCFBorder.ICellCFC, para->getParD(level)->intCFBorder.ICellCFF,
                  para->getParD(level)->intCFBorder.kCF, para->getParD(level)->offCF, borderStreamIndex);
+
     cudaDeviceSynchronize();
 }
 
@@ -70,37 +78,52 @@ void RefinementAndExchange_streams_exchangeAllNodes::operator()(UpdateGrid27 *up
     int borderStreamIndex = para->getStreamManager()->getBorderStreamIndex();
     int bulkStreamIndex = para->getStreamManager()->getBulkStreamIndex();
 
-    // fine to coarse border
+    //! \details steps:
+    //!
+    //! 1. interpolation fine to coarse for nodes which are at the border of the gpus/processes
+    //!
     updateGrid->fineToCoarse(level, para->getParD(level)->intFCBorder.ICellFCC, para->getParD(level)->intFCBorder.ICellFCF,
                  para->getParD(level)->intFCBorder.kFC, borderStreamIndex);
 
-    // prepare exchange and trigger bulk kernel when finished
+    //! 2. prepare the exchange between gpus (collect the send nodes for communication in a buffer on the gpu) and trigger bulk kernel execution when finished
+    //!
     updateGrid->prepareExchangeMultiGPU(level, borderStreamIndex);
     if (para->getUseStreams())
         para->getStreamManager()->triggerStartBulkKernel(borderStreamIndex);
 
-    // launch bulk kernels (fine to coarse and coarse to fine)
+    //! 3. launch the bulk kernels for both interpolation processes (fine to coarse and coarse to fine)
+    //!
     para->getStreamManager()->waitOnStartBulkKernelEvent(bulkStreamIndex);
     updateGrid->fineToCoarse(level, para->getParD(level)->intFCBulk.ICellFCC, para->getParD(level)->intFCBulk.ICellFCF,
                  para->getParD(level)->intFCBulk.kFC, bulkStreamIndex);
     updateGrid->coarseToFine(level, para->getParD(level)->intCFBulk.ICellCFC, para->getParD(level)->intCFBulk.ICellCFF,
                  para->getParD(level)->intCFBulk.kCF, para->getParD(level)->offCFBulk, bulkStreamIndex);
 
-    // exchange
+    //! 4. exchange information between GPUs (all nodes)
+    //!
     updateGrid->exchangeMultiGPU(level, borderStreamIndex);
 
-    // coarse to fine border
+    // 5. interpolation fine to coarse for nodes which are at the border of the gpus/processes
+    //!
     updateGrid->coarseToFine(level, para->getParD(level)->intCFBorder.ICellCFC, para->getParD(level)->intCFBorder.ICellCFF,
                  para->getParD(level)->intCFBorder.kCF, para->getParD(level)->offCF, borderStreamIndex);
+
     cudaDeviceSynchronize();
 }
 
 void RefinementAndExchange_noStreams_exchangeInterface::operator()(UpdateGrid27 *updateGrid, Parameter *para, int level)
 {
+    //! \details steps:
+    //!
+    //! 1. interpolation fine to coarse
+    //!
     updateGrid->fineToCoarse(level, para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF, para->getParD(level)->K_FC, -1);
 
+    //! 2. exchange information between GPUs (only nodes which are part of the interpolation)
+    //!
     updateGrid->exchangeMultiGPU_noStreams_withPrepare(level, true);
 
+    //! 3. interpolation coarse to fine
     updateGrid->coarseToFine(level, para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF, para->getParD(level)->K_CF,
                              para->getParD(level)->offCF, -1);
 }
@@ -109,15 +132,15 @@ void RefinementAndExchange_noStreams_exchangeAllNodes::operator()(UpdateGrid27 *
 {
     //! \details steps:
     //!
-    //! 1. Interpolation fine to coarse
+    //! 1. interpolation fine to coarse
     //!
     updateGrid->fineToCoarse(level, para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF, para->getParD(level)->K_FC, -1);
     
-    //! 2. Exchange informations between GPUs
+    //! 2. exchange information between GPUs (all nodes)
     //!
     updateGrid->exchangeMultiGPU_noStreams_withPrepare(level, false);
 
-    //! 3. Interpolation coarse to fine
+    //! 3. interpolation coarse to fine
     updateGrid->coarseToFine(level, para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF, para->getParD(level)->K_CF,
                              para->getParD(level)->offCF, -1);
 }
@@ -126,10 +149,10 @@ void Refinement_noExchange::operator()(UpdateGrid27 *updateGrid, Parameter *para
 {
     //! \details steps:
     //!
-    //! 1. Interpolation fine to coarse
+    //! 1. interpolation fine to coarse
     //!
     updateGrid->fineToCoarse(level, para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF, para->getParD(level)->K_FC, -1);
-    //! 2. Interpolation coarse to fine
+    //! 2. interpolation coarse to fine
     updateGrid->coarseToFine(level, para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF, para->getParD(level)->K_CF,
                  para->getParD(level)->offCF, -1);
 }

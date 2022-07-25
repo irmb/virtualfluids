@@ -29,7 +29,7 @@ public:
 
 private:
     void collisionAllNodes(int level, unsigned int t);
-    void collisionUsingIndex(int level, unsigned int t, uint *fluidNodeIndices = nullptr, uint numberOfFluidNodes = 0, int stream = -1);
+    void collisionUsingIndices(int level, unsigned int t, uint *fluidNodeIndices = nullptr, uint numberOfFluidNodes = 0, int stream = -1);
     void collisionAdvectionDiffusion(int level);
 
     void postCollisionBC(int level);
