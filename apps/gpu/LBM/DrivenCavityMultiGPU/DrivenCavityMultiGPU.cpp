@@ -125,8 +125,8 @@ void multipleLevel(const std::string &configPath)
     const uint nx       = 64;
     std::string simulationName("DrivenCavityChimMultiGPU");
 
-    // para->setTOut(10000);   // set in config
-    // para->setTEnd(10000);   // set in config
+    // para->setTimestepOut(10000);   // set in config
+    // para->setTimestepEnd(10000);   // set in config
 
     const real dxGrid      = L / real(nx);
     const real velocityLB  = velocity * dt / dxGrid;       // LB units
@@ -158,7 +158,7 @@ void multipleLevel(const std::string &configPath)
         para->setOutputPath(outPath);
     }
     para->setOutputPrefix(simulationName);
-    para->setFName(para->getOutputPath() + para->getOutputPrefix());
+    para->setPathAndFilename(para->getOutputPath() + para->getOutputPrefix());
     para->setPrintFiles(true);
     std::cout << "Write result files to " << para->getFName() << std::endl;
 

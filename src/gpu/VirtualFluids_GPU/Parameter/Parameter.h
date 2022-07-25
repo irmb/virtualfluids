@@ -367,7 +367,7 @@ struct LBMSimulationParameter {
     uint *fluidNodeIndices;
     uint numberOfFluidNodes;
     uint *fluidNodeIndicesBorder;
-    uint numberOffluidNodesBorder;
+    uint numberOfFluidNodesBorder;
 };
 
 //! \brief Class for LBM-parameter management
@@ -410,7 +410,7 @@ public:
     void setEndXHotWall(real endXHotWall);
     void setTimestepEnd(unsigned int tend);
     void setTimestepOut(unsigned int tout);
-    void setTStartOut(unsigned int tStartOut);
+    void setTimestepStartOut(unsigned int tStartOut);
     void setTimestepOfCoarseLevel(unsigned int timestep);
     void setCalcTurbulenceIntensity(bool calcVelocityAndFluctuations);
     void setCalcMedian(bool calcMedian);

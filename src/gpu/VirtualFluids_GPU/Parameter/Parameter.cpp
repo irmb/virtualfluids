@@ -154,7 +154,7 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
         this->setTimestepOut(configData.getValue<int>("TimeOut"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("TimeStartOut"))
-        this->setTStartOut(configData.getValue<int>("TimeStartOut"));
+        this->setTimestepStartOut(configData.getValue<int>("TimeStartOut"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("TimeStartCalcMedian"))
         this->setTimeCalcMedStart(configData.getValue<int>("TimeStartCalcMedian"));
@@ -709,7 +709,7 @@ void Parameter::setTimestepOut(unsigned int tout)
 {
     ic.tout = tout;
 }
-void Parameter::setTStartOut(unsigned int tStartOut)
+void Parameter::setTimestepStartOut(unsigned int tStartOut)
 {
     ic.tStartOut = tStartOut;
 }

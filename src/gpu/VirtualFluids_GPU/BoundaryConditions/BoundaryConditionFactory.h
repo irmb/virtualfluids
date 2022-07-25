@@ -46,7 +46,7 @@ struct LBMSimulationParameter;
 class Parameter;
 
 using boundaryCondition = std::function<void(LBMSimulationParameter *, QforBoundaryConditions *)>;
-using boundaryConditionPara = std::function<void(Parameter *, QforBoundaryConditions *, const int level)>;
+using boundaryConditionWithParameter = std::function<void(Parameter *, QforBoundaryConditions *, const int level)>;
 
 class BoundaryConditionFactory
 {
@@ -148,7 +148,7 @@ public:
     [[nodiscard]] boundaryCondition getPressureBoundaryConditionPre() const;
     [[nodiscard]] boundaryCondition getGeometryBoundaryConditionPost() const;
 
-    [[nodiscard]] boundaryConditionPara getStressBoundaryConditionPost() const;
+    [[nodiscard]] boundaryConditionWithParameter getStressBoundaryConditionPost() const;
 
 private:
     VelocityBC velocityBoundaryCondition = VelocityBC::NotSpecified;

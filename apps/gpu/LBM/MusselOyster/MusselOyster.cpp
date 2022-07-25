@@ -157,8 +157,8 @@ void multipleLevel(const std::string &configPath)
     *logging::out << logging::Logger::INFO_HIGH << "useStreams = " << useStreams << "\n";
     *logging::out << logging::Logger::INFO_HIGH << "number of processes = " << para->getNumprocs() << "\n";
 
-    // para->setTOut(1000);
-    // para->setTEnd(10000);
+    // para->setTimestepOut(1000);
+    // para->setTimestepEnd(10000);
 
     para->setCalcDragLift(false);
     para->setUseWale(false);
@@ -167,7 +167,7 @@ void multipleLevel(const std::string &configPath)
         para->setOutputPath(outPath);
     }
     para->setOutputPrefix(simulationName);
-    para->setFName(para->getOutputPath() + para->getOutputPrefix());
+    para->setPathAndFilename(para->getOutputPath() + para->getOutputPrefix());
     para->setPrintFiles(true);
     std::cout << "Write result files to " << para->getFName() << std::endl;
 
