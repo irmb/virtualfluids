@@ -887,7 +887,7 @@ void GridGenerator::allocArrays_BoundaryQs()
             //////////////////////////////////////////////////////////////////
             for (int node_i = 0; node_i < numberOfGeometryNodes; node_i++)
             {
-                Q.q27[REST][node_i] = 0.0f;
+                Q.q27[DIR_000][node_i] = 0.0f;
             }
             //for(int test = 0; test < 3; test++)
             //{
@@ -1120,31 +1120,31 @@ std::string GridGenerator::checkNeighbor(int level, real x, real y, real z, int 
 }
 
 void GridGenerator::getPointersToBoundaryConditions(QforBoundaryConditions& boundaryConditionStruct, real* subgridDistances, const unsigned int numberOfBCnodes){
-    boundaryConditionStruct.q27[E] =    &subgridDistances[E   * numberOfBCnodes];
-    boundaryConditionStruct.q27[W] =    &subgridDistances[W   * numberOfBCnodes];
-    boundaryConditionStruct.q27[N] =    &subgridDistances[N   * numberOfBCnodes];
-    boundaryConditionStruct.q27[S] =    &subgridDistances[S   * numberOfBCnodes];
-    boundaryConditionStruct.q27[T] =    &subgridDistances[T   * numberOfBCnodes];
-    boundaryConditionStruct.q27[B] =    &subgridDistances[B   * numberOfBCnodes];
-    boundaryConditionStruct.q27[NE] =   &subgridDistances[NE  * numberOfBCnodes];
-    boundaryConditionStruct.q27[SW] =   &subgridDistances[SW  * numberOfBCnodes];
-    boundaryConditionStruct.q27[SE] =   &subgridDistances[SE  * numberOfBCnodes];
-    boundaryConditionStruct.q27[NW] =   &subgridDistances[NW  * numberOfBCnodes];
-    boundaryConditionStruct.q27[TE] =   &subgridDistances[TE  * numberOfBCnodes];
-    boundaryConditionStruct.q27[BW] =   &subgridDistances[BW  * numberOfBCnodes];
-    boundaryConditionStruct.q27[BE] =   &subgridDistances[BE  * numberOfBCnodes];
-    boundaryConditionStruct.q27[TW] =   &subgridDistances[TW  * numberOfBCnodes];
-    boundaryConditionStruct.q27[TN] =   &subgridDistances[TN  * numberOfBCnodes];
-    boundaryConditionStruct.q27[BS] =   &subgridDistances[BS  * numberOfBCnodes];
-    boundaryConditionStruct.q27[BN] =   &subgridDistances[BN  * numberOfBCnodes];
-    boundaryConditionStruct.q27[TS] =   &subgridDistances[TS  * numberOfBCnodes];
-    boundaryConditionStruct.q27[REST] = &subgridDistances[REST* numberOfBCnodes];
-    boundaryConditionStruct.q27[TNE] =  &subgridDistances[TNE * numberOfBCnodes];
-    boundaryConditionStruct.q27[TSW] =  &subgridDistances[TSW * numberOfBCnodes];
-    boundaryConditionStruct.q27[TSE] =  &subgridDistances[TSE * numberOfBCnodes];
-    boundaryConditionStruct.q27[TNW] =  &subgridDistances[TNW * numberOfBCnodes];
-    boundaryConditionStruct.q27[BNE] =  &subgridDistances[BNE * numberOfBCnodes];
-    boundaryConditionStruct.q27[BSW] =  &subgridDistances[BSW * numberOfBCnodes];
-    boundaryConditionStruct.q27[BSE] =  &subgridDistances[BSE * numberOfBCnodes];
-    boundaryConditionStruct.q27[BNW] =  &subgridDistances[BNW * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_P00] =    &subgridDistances[DIR_P00   * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_M00] =    &subgridDistances[DIR_M00   * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_0P0] =    &subgridDistances[DIR_0P0   * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_0M0] =    &subgridDistances[DIR_0M0   * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_00P] =    &subgridDistances[DIR_00P   * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_00M] =    &subgridDistances[DIR_00M   * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_PP0] =   &subgridDistances[DIR_PP0  * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_MM0] =   &subgridDistances[DIR_MM0  * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_PM0] =   &subgridDistances[DIR_PM0  * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_MP0] =   &subgridDistances[DIR_MP0  * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_P0P] =   &subgridDistances[DIR_P0P  * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_M0M] =   &subgridDistances[DIR_M0M  * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_P0M] =   &subgridDistances[DIR_P0M  * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_M0P] =   &subgridDistances[DIR_M0P  * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_0PP] =   &subgridDistances[DIR_0PP  * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_0MM] =   &subgridDistances[DIR_0MM  * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_0PM] =   &subgridDistances[DIR_0PM  * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_0MP] =   &subgridDistances[DIR_0MP  * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_000] = &subgridDistances[DIR_000* numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_PPP] =  &subgridDistances[DIR_PPP * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_MMP] =  &subgridDistances[DIR_MMP * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_PMP] =  &subgridDistances[DIR_PMP * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_MPP] =  &subgridDistances[DIR_MPP * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_PPM] =  &subgridDistances[DIR_PPM * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_MMM] =  &subgridDistances[DIR_MMM * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_PMM] =  &subgridDistances[DIR_PMM * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_MPM] =  &subgridDistances[DIR_MPM * numberOfBCnodes];
 }

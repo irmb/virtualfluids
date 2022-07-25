@@ -76,63 +76,63 @@ __global__ void CalcConc27(
       Distributions27 distAD;
       if (isEvenTimestep)
       {
-         distAD.f[E   ] = &distributionsAD[E   *size_Mat];
-         distAD.f[W   ] = &distributionsAD[W   *size_Mat];
-         distAD.f[N   ] = &distributionsAD[N   *size_Mat];
-         distAD.f[S   ] = &distributionsAD[S   *size_Mat];
-         distAD.f[T   ] = &distributionsAD[T   *size_Mat];
-         distAD.f[B   ] = &distributionsAD[B   *size_Mat];
-         distAD.f[NE  ] = &distributionsAD[NE  *size_Mat];
-         distAD.f[SW  ] = &distributionsAD[SW  *size_Mat];
-         distAD.f[SE  ] = &distributionsAD[SE  *size_Mat];
-         distAD.f[NW  ] = &distributionsAD[NW  *size_Mat];
-         distAD.f[TE  ] = &distributionsAD[TE  *size_Mat];
-         distAD.f[BW  ] = &distributionsAD[BW  *size_Mat];
-         distAD.f[BE  ] = &distributionsAD[BE  *size_Mat];
-         distAD.f[TW  ] = &distributionsAD[TW  *size_Mat];
-         distAD.f[TN  ] = &distributionsAD[TN  *size_Mat];
-         distAD.f[BS  ] = &distributionsAD[BS  *size_Mat];
-         distAD.f[BN  ] = &distributionsAD[BN  *size_Mat];
-         distAD.f[TS  ] = &distributionsAD[TS  *size_Mat];
-         distAD.f[REST] = &distributionsAD[REST*size_Mat];
-         distAD.f[TNE ] = &distributionsAD[TNE *size_Mat];
-         distAD.f[TSW ] = &distributionsAD[TSW *size_Mat];
-         distAD.f[TSE ] = &distributionsAD[TSE *size_Mat];
-         distAD.f[TNW ] = &distributionsAD[TNW *size_Mat];
-         distAD.f[BNE ] = &distributionsAD[BNE *size_Mat];
-         distAD.f[BSW ] = &distributionsAD[BSW *size_Mat];
-         distAD.f[BSE ] = &distributionsAD[BSE *size_Mat];
-         distAD.f[BNW ] = &distributionsAD[BNW *size_Mat];
+         distAD.f[DIR_P00   ] = &distributionsAD[DIR_P00   *size_Mat];
+         distAD.f[DIR_M00   ] = &distributionsAD[DIR_M00   *size_Mat];
+         distAD.f[DIR_0P0   ] = &distributionsAD[DIR_0P0   *size_Mat];
+         distAD.f[DIR_0M0   ] = &distributionsAD[DIR_0M0   *size_Mat];
+         distAD.f[DIR_00P   ] = &distributionsAD[DIR_00P   *size_Mat];
+         distAD.f[DIR_00M   ] = &distributionsAD[DIR_00M   *size_Mat];
+         distAD.f[DIR_PP0  ] = &distributionsAD[DIR_PP0  *size_Mat];
+         distAD.f[DIR_MM0  ] = &distributionsAD[DIR_MM0  *size_Mat];
+         distAD.f[DIR_PM0  ] = &distributionsAD[DIR_PM0  *size_Mat];
+         distAD.f[DIR_MP0  ] = &distributionsAD[DIR_MP0  *size_Mat];
+         distAD.f[DIR_P0P  ] = &distributionsAD[DIR_P0P  *size_Mat];
+         distAD.f[DIR_M0M  ] = &distributionsAD[DIR_M0M  *size_Mat];
+         distAD.f[DIR_P0M  ] = &distributionsAD[DIR_P0M  *size_Mat];
+         distAD.f[DIR_M0P  ] = &distributionsAD[DIR_M0P  *size_Mat];
+         distAD.f[DIR_0PP  ] = &distributionsAD[DIR_0PP  *size_Mat];
+         distAD.f[DIR_0MM  ] = &distributionsAD[DIR_0MM  *size_Mat];
+         distAD.f[DIR_0PM  ] = &distributionsAD[DIR_0PM  *size_Mat];
+         distAD.f[DIR_0MP  ] = &distributionsAD[DIR_0MP  *size_Mat];
+         distAD.f[DIR_000] = &distributionsAD[DIR_000*size_Mat];
+         distAD.f[DIR_PPP ] = &distributionsAD[DIR_PPP *size_Mat];
+         distAD.f[DIR_MMP ] = &distributionsAD[DIR_MMP *size_Mat];
+         distAD.f[DIR_PMP ] = &distributionsAD[DIR_PMP *size_Mat];
+         distAD.f[DIR_MPP ] = &distributionsAD[DIR_MPP *size_Mat];
+         distAD.f[DIR_PPM ] = &distributionsAD[DIR_PPM *size_Mat];
+         distAD.f[DIR_MMM ] = &distributionsAD[DIR_MMM *size_Mat];
+         distAD.f[DIR_PMM ] = &distributionsAD[DIR_PMM *size_Mat];
+         distAD.f[DIR_MPM ] = &distributionsAD[DIR_MPM *size_Mat];
       }
       else
       {
-         distAD.f[W   ] = &distributionsAD[E   *size_Mat];
-         distAD.f[E   ] = &distributionsAD[W   *size_Mat];
-         distAD.f[S   ] = &distributionsAD[N   *size_Mat];
-         distAD.f[N   ] = &distributionsAD[S   *size_Mat];
-         distAD.f[B   ] = &distributionsAD[T   *size_Mat];
-         distAD.f[T   ] = &distributionsAD[B   *size_Mat];
-         distAD.f[SW  ] = &distributionsAD[NE  *size_Mat];
-         distAD.f[NE  ] = &distributionsAD[SW  *size_Mat];
-         distAD.f[NW  ] = &distributionsAD[SE  *size_Mat];
-         distAD.f[SE  ] = &distributionsAD[NW  *size_Mat];
-         distAD.f[BW  ] = &distributionsAD[TE  *size_Mat];
-         distAD.f[TE  ] = &distributionsAD[BW  *size_Mat];
-         distAD.f[TW  ] = &distributionsAD[BE  *size_Mat];
-         distAD.f[BE  ] = &distributionsAD[TW  *size_Mat];
-         distAD.f[BS  ] = &distributionsAD[TN  *size_Mat];
-         distAD.f[TN  ] = &distributionsAD[BS  *size_Mat];
-         distAD.f[TS  ] = &distributionsAD[BN  *size_Mat];
-         distAD.f[BN  ] = &distributionsAD[TS  *size_Mat];
-         distAD.f[REST] = &distributionsAD[REST*size_Mat];
-         distAD.f[TNE ] = &distributionsAD[BSW *size_Mat];
-         distAD.f[TSW ] = &distributionsAD[BNE *size_Mat];
-         distAD.f[TSE ] = &distributionsAD[BNW *size_Mat];
-         distAD.f[TNW ] = &distributionsAD[BSE *size_Mat];
-         distAD.f[BNE ] = &distributionsAD[TSW *size_Mat];
-         distAD.f[BSW ] = &distributionsAD[TNE *size_Mat];
-         distAD.f[BSE ] = &distributionsAD[TNW *size_Mat];
-         distAD.f[BNW ] = &distributionsAD[TSE *size_Mat];
+         distAD.f[DIR_M00   ] = &distributionsAD[DIR_P00   *size_Mat];
+         distAD.f[DIR_P00   ] = &distributionsAD[DIR_M00   *size_Mat];
+         distAD.f[DIR_0M0   ] = &distributionsAD[DIR_0P0   *size_Mat];
+         distAD.f[DIR_0P0   ] = &distributionsAD[DIR_0M0   *size_Mat];
+         distAD.f[DIR_00M   ] = &distributionsAD[DIR_00P   *size_Mat];
+         distAD.f[DIR_00P   ] = &distributionsAD[DIR_00M   *size_Mat];
+         distAD.f[DIR_MM0  ] = &distributionsAD[DIR_PP0  *size_Mat];
+         distAD.f[DIR_PP0  ] = &distributionsAD[DIR_MM0  *size_Mat];
+         distAD.f[DIR_MP0  ] = &distributionsAD[DIR_PM0  *size_Mat];
+         distAD.f[DIR_PM0  ] = &distributionsAD[DIR_MP0  *size_Mat];
+         distAD.f[DIR_M0M  ] = &distributionsAD[DIR_P0P  *size_Mat];
+         distAD.f[DIR_P0P  ] = &distributionsAD[DIR_M0M  *size_Mat];
+         distAD.f[DIR_M0P  ] = &distributionsAD[DIR_P0M  *size_Mat];
+         distAD.f[DIR_P0M  ] = &distributionsAD[DIR_M0P  *size_Mat];
+         distAD.f[DIR_0MM  ] = &distributionsAD[DIR_0PP  *size_Mat];
+         distAD.f[DIR_0PP  ] = &distributionsAD[DIR_0MM  *size_Mat];
+         distAD.f[DIR_0MP  ] = &distributionsAD[DIR_0PM  *size_Mat];
+         distAD.f[DIR_0PM  ] = &distributionsAD[DIR_0MP  *size_Mat];
+         distAD.f[DIR_000] = &distributionsAD[DIR_000*size_Mat];
+         distAD.f[DIR_PPP ] = &distributionsAD[DIR_MMM *size_Mat];
+         distAD.f[DIR_MMP ] = &distributionsAD[DIR_PPM *size_Mat];
+         distAD.f[DIR_PMP ] = &distributionsAD[DIR_MPM *size_Mat];
+         distAD.f[DIR_MPP ] = &distributionsAD[DIR_PMM *size_Mat];
+         distAD.f[DIR_PPM ] = &distributionsAD[DIR_MMP *size_Mat];
+         distAD.f[DIR_MMM ] = &distributionsAD[DIR_PPP *size_Mat];
+         distAD.f[DIR_PMM ] = &distributionsAD[DIR_MPP *size_Mat];
+         distAD.f[DIR_MPM ] = &distributionsAD[DIR_PMP *size_Mat];
       }
 	  ////////////////////////////////////////////////////////////////////////////////
 	  //! - Set neighbor indices (necessary for indirect addressing)
@@ -166,33 +166,33 @@ __global__ void CalcConc27(
 	  ////////////////////////////////////////////////////////////////////////////////
 	  //! - Set local distributions
 	  //!
-	  real mfcbb = (distAD.f[E   ])[ke  ];
-	  real mfabb = (distAD.f[W   ])[kw  ];
-	  real mfbcb = (distAD.f[N   ])[kn  ];
-	  real mfbab = (distAD.f[S   ])[ks  ];
-	  real mfbbc = (distAD.f[T   ])[kt  ];
-	  real mfbba = (distAD.f[B   ])[kb  ];
-	  real mfccb = (distAD.f[NE  ])[kne ];
-	  real mfaab = (distAD.f[SW  ])[ksw ];
-	  real mfcab = (distAD.f[SE  ])[kse ];
-	  real mfacb = (distAD.f[NW  ])[knw ];
-	  real mfcbc = (distAD.f[TE  ])[kte ];
-	  real mfaba = (distAD.f[BW  ])[kbw ];
-	  real mfcba = (distAD.f[BE  ])[kbe ];
-	  real mfabc = (distAD.f[TW  ])[ktw ];
-	  real mfbcc = (distAD.f[TN  ])[ktn ];
-	  real mfbaa = (distAD.f[BS  ])[kbs ];
-	  real mfbca = (distAD.f[BN  ])[kbn ];
-	  real mfbac = (distAD.f[TS  ])[kts ];
-	  real mfbbb = (distAD.f[REST])[k   ];
-	  real mfccc = (distAD.f[TNE ])[ktne];
-	  real mfaac = (distAD.f[TSW ])[ktsw];
-	  real mfcac = (distAD.f[TSE ])[ktse];
-	  real mfacc = (distAD.f[TNW ])[ktnw];
-	  real mfcca = (distAD.f[BNE ])[kbne];
-	  real mfaaa = (distAD.f[BSW ])[kbsw];
-	  real mfcaa = (distAD.f[BSE ])[kbse];
-	  real mfaca = (distAD.f[BNW ])[kbnw];
+	  real mfcbb = (distAD.f[DIR_P00   ])[ke  ];
+	  real mfabb = (distAD.f[DIR_M00   ])[kw  ];
+	  real mfbcb = (distAD.f[DIR_0P0   ])[kn  ];
+	  real mfbab = (distAD.f[DIR_0M0   ])[ks  ];
+	  real mfbbc = (distAD.f[DIR_00P   ])[kt  ];
+	  real mfbba = (distAD.f[DIR_00M   ])[kb  ];
+	  real mfccb = (distAD.f[DIR_PP0  ])[kne ];
+	  real mfaab = (distAD.f[DIR_MM0  ])[ksw ];
+	  real mfcab = (distAD.f[DIR_PM0  ])[kse ];
+	  real mfacb = (distAD.f[DIR_MP0  ])[knw ];
+	  real mfcbc = (distAD.f[DIR_P0P  ])[kte ];
+	  real mfaba = (distAD.f[DIR_M0M  ])[kbw ];
+	  real mfcba = (distAD.f[DIR_P0M  ])[kbe ];
+	  real mfabc = (distAD.f[DIR_M0P  ])[ktw ];
+	  real mfbcc = (distAD.f[DIR_0PP  ])[ktn ];
+	  real mfbaa = (distAD.f[DIR_0MM  ])[kbs ];
+	  real mfbca = (distAD.f[DIR_0PM  ])[kbn ];
+	  real mfbac = (distAD.f[DIR_0MP  ])[kts ];
+	  real mfbbb = (distAD.f[DIR_000])[k   ];
+	  real mfccc = (distAD.f[DIR_PPP ])[ktne];
+	  real mfaac = (distAD.f[DIR_MMP ])[ktsw];
+	  real mfcac = (distAD.f[DIR_PMP ])[ktse];
+	  real mfacc = (distAD.f[DIR_MPP ])[ktnw];
+	  real mfcca = (distAD.f[DIR_PPM ])[kbne];
+	  real mfaaa = (distAD.f[DIR_MMM ])[kbsw];
+	  real mfcaa = (distAD.f[DIR_PMM ])[kbse];
+	  real mfaca = (distAD.f[DIR_MPM ])[kbnw];
       //////////////////////////////////////////////////////////////////////////
 	  //! - Calculate concentration using pyramid summation for low round-off errors as in Eq. (J1)-(J3) \ref
 	  //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015), DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
@@ -327,63 +327,63 @@ __global__ void CalcConc7( real* Conc,
 //    Distributions27 D27;
 //    if (isEvenTimestep==true)
 //    {
-//       D27.f[E   ] = &DD27[E   *size_Mat];
-//       D27.f[W   ] = &DD27[W   *size_Mat];
-//       D27.f[N   ] = &DD27[N   *size_Mat];
-//       D27.f[S   ] = &DD27[S   *size_Mat];
-//       D27.f[T   ] = &DD27[T   *size_Mat];
-//       D27.f[B   ] = &DD27[B   *size_Mat];
-//       D27.f[NE  ] = &DD27[NE  *size_Mat];
-//       D27.f[SW  ] = &DD27[SW  *size_Mat];
-//       D27.f[SE  ] = &DD27[SE  *size_Mat];
-//       D27.f[NW  ] = &DD27[NW  *size_Mat];
-//       D27.f[TE  ] = &DD27[TE  *size_Mat];
-//       D27.f[BW  ] = &DD27[BW  *size_Mat];
-//       D27.f[BE  ] = &DD27[BE  *size_Mat];
-//       D27.f[TW  ] = &DD27[TW  *size_Mat];
-//       D27.f[TN  ] = &DD27[TN  *size_Mat];
-//       D27.f[BS  ] = &DD27[BS  *size_Mat];
-//       D27.f[BN  ] = &DD27[BN  *size_Mat];
-//       D27.f[TS  ] = &DD27[TS  *size_Mat];
-//       D27.f[REST] = &DD27[REST*size_Mat];
-//       D27.f[TNE ] = &DD27[TNE *size_Mat];
-//       D27.f[TSW ] = &DD27[TSW *size_Mat];
-//       D27.f[TSE ] = &DD27[TSE *size_Mat];
-//       D27.f[TNW ] = &DD27[TNW *size_Mat];
-//       D27.f[BNE ] = &DD27[BNE *size_Mat];
-//       D27.f[BSW ] = &DD27[BSW *size_Mat];
-//       D27.f[BSE ] = &DD27[BSE *size_Mat];
-//       D27.f[BNW ] = &DD27[BNW *size_Mat];
+//       D27.f[DIR_P00   ] = &DD27[DIR_P00   *size_Mat];
+//       D27.f[DIR_M00   ] = &DD27[DIR_M00   *size_Mat];
+//       D27.f[DIR_0P0   ] = &DD27[DIR_0P0   *size_Mat];
+//       D27.f[DIR_0M0   ] = &DD27[DIR_0M0   *size_Mat];
+//       D27.f[DIR_00P   ] = &DD27[DIR_00P   *size_Mat];
+//       D27.f[DIR_00M   ] = &DD27[DIR_00M   *size_Mat];
+//       D27.f[DIR_PP0  ] = &DD27[DIR_PP0  *size_Mat];
+//       D27.f[DIR_MM0  ] = &DD27[DIR_MM0  *size_Mat];
+//       D27.f[DIR_PM0  ] = &DD27[DIR_PM0  *size_Mat];
+//       D27.f[DIR_MP0  ] = &DD27[DIR_MP0  *size_Mat];
+//       D27.f[DIR_P0P  ] = &DD27[DIR_P0P  *size_Mat];
+//       D27.f[DIR_M0M  ] = &DD27[DIR_M0M  *size_Mat];
+//       D27.f[DIR_P0M  ] = &DD27[DIR_P0M  *size_Mat];
+//       D27.f[DIR_M0P  ] = &DD27[DIR_M0P  *size_Mat];
+//       D27.f[DIR_0PP  ] = &DD27[DIR_0PP  *size_Mat];
+//       D27.f[DIR_0MM  ] = &DD27[DIR_0MM  *size_Mat];
+//       D27.f[DIR_0PM  ] = &DD27[DIR_0PM  *size_Mat];
+//       D27.f[DIR_0MP  ] = &DD27[DIR_0MP  *size_Mat];
+//       D27.f[DIR_000] = &DD27[DIR_000*size_Mat];
+//       D27.f[DIR_PPP ] = &DD27[DIR_PPP *size_Mat];
+//       D27.f[DIR_MMP ] = &DD27[DIR_MMP *size_Mat];
+//       D27.f[DIR_PMP ] = &DD27[DIR_PMP *size_Mat];
+//       D27.f[DIR_MPP ] = &DD27[DIR_MPP *size_Mat];
+//       D27.f[DIR_PPM ] = &DD27[DIR_PPM *size_Mat];
+//       D27.f[DIR_MMM ] = &DD27[DIR_MMM *size_Mat];
+//       D27.f[DIR_PMM ] = &DD27[DIR_PMM *size_Mat];
+//       D27.f[DIR_MPM ] = &DD27[DIR_MPM *size_Mat];
 //    }
 //    else
 //    {
-//       D27.f[W   ] = &DD27[E   *size_Mat];
-//       D27.f[E   ] = &DD27[W   *size_Mat];
-//       D27.f[S   ] = &DD27[N   *size_Mat];
-//       D27.f[N   ] = &DD27[S   *size_Mat];
-//       D27.f[B   ] = &DD27[T   *size_Mat];
-//       D27.f[T   ] = &DD27[B   *size_Mat];
-//       D27.f[SW  ] = &DD27[NE  *size_Mat];
-//       D27.f[NE  ] = &DD27[SW  *size_Mat];
-//       D27.f[NW  ] = &DD27[SE  *size_Mat];
-//       D27.f[SE  ] = &DD27[NW  *size_Mat];
-//       D27.f[BW  ] = &DD27[TE  *size_Mat];
-//       D27.f[TE  ] = &DD27[BW  *size_Mat];
-//       D27.f[TW  ] = &DD27[BE  *size_Mat];
-//       D27.f[BE  ] = &DD27[TW  *size_Mat];
-//       D27.f[BS  ] = &DD27[TN  *size_Mat];
-//       D27.f[TN  ] = &DD27[BS  *size_Mat];
-//       D27.f[TS  ] = &DD27[BN  *size_Mat];
-//       D27.f[BN  ] = &DD27[TS  *size_Mat];
-//       D27.f[REST] = &DD27[REST*size_Mat];
-//       D27.f[BSW ] = &DD27[TNE *size_Mat];
-//       D27.f[BNE ] = &DD27[TSW *size_Mat];
-//       D27.f[BNW ] = &DD27[TSE *size_Mat];
-//       D27.f[BSE ] = &DD27[TNW *size_Mat];
-//       D27.f[TSW ] = &DD27[BNE *size_Mat];
-//       D27.f[TNE ] = &DD27[BSW *size_Mat];
-//       D27.f[TNW ] = &DD27[BSE *size_Mat];
-//       D27.f[TSE ] = &DD27[BNW *size_Mat];
+//       D27.f[DIR_M00   ] = &DD27[DIR_P00   *size_Mat];
+//       D27.f[DIR_P00   ] = &DD27[DIR_M00   *size_Mat];
+//       D27.f[DIR_0M0   ] = &DD27[DIR_0P0   *size_Mat];
+//       D27.f[DIR_0P0   ] = &DD27[DIR_0M0   *size_Mat];
+//       D27.f[DIR_00M   ] = &DD27[DIR_00P   *size_Mat];
+//       D27.f[DIR_00P   ] = &DD27[DIR_00M   *size_Mat];
+//       D27.f[DIR_MM0  ] = &DD27[DIR_PP0  *size_Mat];
+//       D27.f[DIR_PP0  ] = &DD27[DIR_MM0  *size_Mat];
+//       D27.f[DIR_MP0  ] = &DD27[DIR_PM0  *size_Mat];
+//       D27.f[DIR_PM0  ] = &DD27[DIR_MP0  *size_Mat];
+//       D27.f[DIR_M0M  ] = &DD27[DIR_P0P  *size_Mat];
+//       D27.f[DIR_P0P  ] = &DD27[DIR_M0M  *size_Mat];
+//       D27.f[DIR_M0P  ] = &DD27[DIR_P0M  *size_Mat];
+//       D27.f[DIR_P0M  ] = &DD27[DIR_M0P  *size_Mat];
+//       D27.f[DIR_0MM  ] = &DD27[DIR_0PP  *size_Mat];
+//       D27.f[DIR_0PP  ] = &DD27[DIR_0MM  *size_Mat];
+//       D27.f[DIR_0MP  ] = &DD27[DIR_0PM  *size_Mat];
+//       D27.f[DIR_0PM  ] = &DD27[DIR_0MP  *size_Mat];
+//       D27.f[DIR_000] = &DD27[DIR_000*size_Mat];
+//       D27.f[DIR_MMM ] = &DD27[DIR_PPP *size_Mat];
+//       D27.f[DIR_PPM ] = &DD27[DIR_MMP *size_Mat];
+//       D27.f[DIR_MPM ] = &DD27[DIR_PMP *size_Mat];
+//       D27.f[DIR_PMM ] = &DD27[DIR_MPP *size_Mat];
+//       D27.f[DIR_MMP ] = &DD27[DIR_PPM *size_Mat];
+//       D27.f[DIR_PPP ] = &DD27[DIR_MMM *size_Mat];
+//       D27.f[DIR_MPP ] = &DD27[DIR_PMM *size_Mat];
+//       D27.f[DIR_PMP ] = &DD27[DIR_MPM *size_Mat];
 //    }
 //    ////////////////////////////////////////////////////////////////////////////////
 //    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -432,20 +432,20 @@ __global__ void CalcConc7( real* Conc,
 
 //       if(geoD[k] == GEO_FLUID)
 //       {
-//          Conc[k]    =   (D27.f[E   ])[ke  ]+ (D27.f[W   ])[kw  ]+ 
-//                         (D27.f[N   ])[kn  ]+ (D27.f[S   ])[ks  ]+
-//                         (D27.f[T   ])[kt  ]+ (D27.f[B   ])[kb  ]+
-//                         (D27.f[NE  ])[kne ]+ (D27.f[SW  ])[ksw ]+
-//                         (D27.f[SE  ])[kse ]+ (D27.f[NW  ])[knw ]+
-//                         (D27.f[TE  ])[kte ]+ (D27.f[BW  ])[kbw ]+
-//                         (D27.f[BE  ])[kbe ]+ (D27.f[TW  ])[ktw ]+
-//                         (D27.f[TN  ])[ktn ]+ (D27.f[BS  ])[kbs ]+
-//                         (D27.f[BN  ])[kbn ]+ (D27.f[TS  ])[kts ]+
-//                         (D27.f[REST])[kzero]+ 
-//                         (D27.f[TNE ])[ktne]+ (D27.f[TSW ])[ktsw]+
-//                         (D27.f[TSE ])[ktse]+ (D27.f[TNW ])[ktnw]+
-//                         (D27.f[BNE ])[kbne]+ (D27.f[BSW ])[kbsw]+
-//                         (D27.f[BSE ])[kbse]+ (D27.f[BNW ])[kbnw];
+//          Conc[k]    =   (D27.f[DIR_P00   ])[ke  ]+ (D27.f[DIR_M00   ])[kw  ]+ 
+//                         (D27.f[DIR_0P0   ])[kn  ]+ (D27.f[DIR_0M0   ])[ks  ]+
+//                         (D27.f[DIR_00P   ])[kt  ]+ (D27.f[DIR_00M   ])[kb  ]+
+//                         (D27.f[DIR_PP0  ])[kne ]+ (D27.f[DIR_MM0  ])[ksw ]+
+//                         (D27.f[DIR_PM0  ])[kse ]+ (D27.f[DIR_MP0  ])[knw ]+
+//                         (D27.f[DIR_P0P  ])[kte ]+ (D27.f[DIR_M0M  ])[kbw ]+
+//                         (D27.f[DIR_P0M  ])[kbe ]+ (D27.f[DIR_M0P  ])[ktw ]+
+//                         (D27.f[DIR_0PP  ])[ktn ]+ (D27.f[DIR_0MM  ])[kbs ]+
+//                         (D27.f[DIR_0PM  ])[kbn ]+ (D27.f[DIR_0MP  ])[kts ]+
+//                         (D27.f[DIR_000])[kzero]+ 
+//                         (D27.f[DIR_PPP ])[ktne]+ (D27.f[DIR_MMP ])[ktsw]+
+//                         (D27.f[DIR_PMP ])[ktse]+ (D27.f[DIR_MPP ])[ktnw]+
+//                         (D27.f[DIR_PPM ])[kbne]+ (D27.f[DIR_MMM ])[kbsw]+
+//                         (D27.f[DIR_PMM ])[kbse]+ (D27.f[DIR_MPM ])[kbnw];
 //       }
 //    }   
 // }
@@ -588,63 +588,63 @@ __global__ void GetPlaneConc27(real* Conc,
    Distributions27 D27;
    if (isEvenTimestep==true)
    {
-      D27.f[E   ] = &DD27[E   *size_Mat];
-      D27.f[W   ] = &DD27[W   *size_Mat];
-      D27.f[N   ] = &DD27[N   *size_Mat];
-      D27.f[S   ] = &DD27[S   *size_Mat];
-      D27.f[T   ] = &DD27[T   *size_Mat];
-      D27.f[B   ] = &DD27[B   *size_Mat];
-      D27.f[NE  ] = &DD27[NE  *size_Mat];
-      D27.f[SW  ] = &DD27[SW  *size_Mat];
-      D27.f[SE  ] = &DD27[SE  *size_Mat];
-      D27.f[NW  ] = &DD27[NW  *size_Mat];
-      D27.f[TE  ] = &DD27[TE  *size_Mat];
-      D27.f[BW  ] = &DD27[BW  *size_Mat];
-      D27.f[BE  ] = &DD27[BE  *size_Mat];
-      D27.f[TW  ] = &DD27[TW  *size_Mat];
-      D27.f[TN  ] = &DD27[TN  *size_Mat];
-      D27.f[BS  ] = &DD27[BS  *size_Mat];
-      D27.f[BN  ] = &DD27[BN  *size_Mat];
-      D27.f[TS  ] = &DD27[TS  *size_Mat];
-      D27.f[REST] = &DD27[REST*size_Mat];
-      D27.f[TNE ] = &DD27[TNE *size_Mat];
-      D27.f[TSW ] = &DD27[TSW *size_Mat];
-      D27.f[TSE ] = &DD27[TSE *size_Mat];
-      D27.f[TNW ] = &DD27[TNW *size_Mat];
-      D27.f[BNE ] = &DD27[BNE *size_Mat];
-      D27.f[BSW ] = &DD27[BSW *size_Mat];
-      D27.f[BSE ] = &DD27[BSE *size_Mat];
-      D27.f[BNW ] = &DD27[BNW *size_Mat];
+      D27.f[DIR_P00   ] = &DD27[DIR_P00   *size_Mat];
+      D27.f[DIR_M00   ] = &DD27[DIR_M00   *size_Mat];
+      D27.f[DIR_0P0   ] = &DD27[DIR_0P0   *size_Mat];
+      D27.f[DIR_0M0   ] = &DD27[DIR_0M0   *size_Mat];
+      D27.f[DIR_00P   ] = &DD27[DIR_00P   *size_Mat];
+      D27.f[DIR_00M   ] = &DD27[DIR_00M   *size_Mat];
+      D27.f[DIR_PP0  ] = &DD27[DIR_PP0  *size_Mat];
+      D27.f[DIR_MM0  ] = &DD27[DIR_MM0  *size_Mat];
+      D27.f[DIR_PM0  ] = &DD27[DIR_PM0  *size_Mat];
+      D27.f[DIR_MP0  ] = &DD27[DIR_MP0  *size_Mat];
+      D27.f[DIR_P0P  ] = &DD27[DIR_P0P  *size_Mat];
+      D27.f[DIR_M0M  ] = &DD27[DIR_M0M  *size_Mat];
+      D27.f[DIR_P0M  ] = &DD27[DIR_P0M  *size_Mat];
+      D27.f[DIR_M0P  ] = &DD27[DIR_M0P  *size_Mat];
+      D27.f[DIR_0PP  ] = &DD27[DIR_0PP  *size_Mat];
+      D27.f[DIR_0MM  ] = &DD27[DIR_0MM  *size_Mat];
+      D27.f[DIR_0PM  ] = &DD27[DIR_0PM  *size_Mat];
+      D27.f[DIR_0MP  ] = &DD27[DIR_0MP  *size_Mat];
+      D27.f[DIR_000] = &DD27[DIR_000*size_Mat];
+      D27.f[DIR_PPP ] = &DD27[DIR_PPP *size_Mat];
+      D27.f[DIR_MMP ] = &DD27[DIR_MMP *size_Mat];
+      D27.f[DIR_PMP ] = &DD27[DIR_PMP *size_Mat];
+      D27.f[DIR_MPP ] = &DD27[DIR_MPP *size_Mat];
+      D27.f[DIR_PPM ] = &DD27[DIR_PPM *size_Mat];
+      D27.f[DIR_MMM ] = &DD27[DIR_MMM *size_Mat];
+      D27.f[DIR_PMM ] = &DD27[DIR_PMM *size_Mat];
+      D27.f[DIR_MPM ] = &DD27[DIR_MPM *size_Mat];
    }
    else
    {
-      D27.f[W   ] = &DD27[E   *size_Mat];
-      D27.f[E   ] = &DD27[W   *size_Mat];
-      D27.f[S   ] = &DD27[N   *size_Mat];
-      D27.f[N   ] = &DD27[S   *size_Mat];
-      D27.f[B   ] = &DD27[T   *size_Mat];
-      D27.f[T   ] = &DD27[B   *size_Mat];
-      D27.f[SW  ] = &DD27[NE  *size_Mat];
-      D27.f[NE  ] = &DD27[SW  *size_Mat];
-      D27.f[NW  ] = &DD27[SE  *size_Mat];
-      D27.f[SE  ] = &DD27[NW  *size_Mat];
-      D27.f[BW  ] = &DD27[TE  *size_Mat];
-      D27.f[TE  ] = &DD27[BW  *size_Mat];
-      D27.f[TW  ] = &DD27[BE  *size_Mat];
-      D27.f[BE  ] = &DD27[TW  *size_Mat];
-      D27.f[BS  ] = &DD27[TN  *size_Mat];
-      D27.f[TN  ] = &DD27[BS  *size_Mat];
-      D27.f[TS  ] = &DD27[BN  *size_Mat];
-      D27.f[BN  ] = &DD27[TS  *size_Mat];
-      D27.f[REST] = &DD27[REST*size_Mat];
-      D27.f[BSW ] = &DD27[TNE *size_Mat];
-      D27.f[BNE ] = &DD27[TSW *size_Mat];
-      D27.f[BNW ] = &DD27[TSE *size_Mat];
-      D27.f[BSE ] = &DD27[TNW *size_Mat];
-      D27.f[TSW ] = &DD27[BNE *size_Mat];
-      D27.f[TNE ] = &DD27[BSW *size_Mat];
-      D27.f[TNW ] = &DD27[BSE *size_Mat];
-      D27.f[TSE ] = &DD27[BNW *size_Mat];
+      D27.f[DIR_M00   ] = &DD27[DIR_P00   *size_Mat];
+      D27.f[DIR_P00   ] = &DD27[DIR_M00   *size_Mat];
+      D27.f[DIR_0M0   ] = &DD27[DIR_0P0   *size_Mat];
+      D27.f[DIR_0P0   ] = &DD27[DIR_0M0   *size_Mat];
+      D27.f[DIR_00M   ] = &DD27[DIR_00P   *size_Mat];
+      D27.f[DIR_00P   ] = &DD27[DIR_00M   *size_Mat];
+      D27.f[DIR_MM0  ] = &DD27[DIR_PP0  *size_Mat];
+      D27.f[DIR_PP0  ] = &DD27[DIR_MM0  *size_Mat];
+      D27.f[DIR_MP0  ] = &DD27[DIR_PM0  *size_Mat];
+      D27.f[DIR_PM0  ] = &DD27[DIR_MP0  *size_Mat];
+      D27.f[DIR_M0M  ] = &DD27[DIR_P0P  *size_Mat];
+      D27.f[DIR_P0P  ] = &DD27[DIR_M0M  *size_Mat];
+      D27.f[DIR_M0P  ] = &DD27[DIR_P0M  *size_Mat];
+      D27.f[DIR_P0M  ] = &DD27[DIR_M0P  *size_Mat];
+      D27.f[DIR_0MM  ] = &DD27[DIR_0PP  *size_Mat];
+      D27.f[DIR_0PP  ] = &DD27[DIR_0MM  *size_Mat];
+      D27.f[DIR_0MP  ] = &DD27[DIR_0PM  *size_Mat];
+      D27.f[DIR_0PM  ] = &DD27[DIR_0MP  *size_Mat];
+      D27.f[DIR_000] = &DD27[DIR_000*size_Mat];
+      D27.f[DIR_MMM ] = &DD27[DIR_PPP *size_Mat];
+      D27.f[DIR_PPM ] = &DD27[DIR_MMP *size_Mat];
+      D27.f[DIR_MPM ] = &DD27[DIR_PMP *size_Mat];
+      D27.f[DIR_PMM ] = &DD27[DIR_MPP *size_Mat];
+      D27.f[DIR_MMP ] = &DD27[DIR_PPM *size_Mat];
+      D27.f[DIR_PPP ] = &DD27[DIR_MMM *size_Mat];
+      D27.f[DIR_MPP ] = &DD27[DIR_PMM *size_Mat];
+      D27.f[DIR_PMP ] = &DD27[DIR_MPM *size_Mat];
    }
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -693,20 +693,20 @@ __global__ void GetPlaneConc27(real* Conc,
 
       if(geoD[k] == GEO_FLUID)
       {
-         Conc[k]    =   (D27.f[E   ])[ke  ]+ (D27.f[W   ])[kw  ]+ 
-                        (D27.f[N   ])[kn  ]+ (D27.f[S   ])[ks  ]+
-                        (D27.f[T   ])[kt  ]+ (D27.f[B   ])[kb  ]+
-                        (D27.f[NE  ])[kne ]+ (D27.f[SW  ])[ksw ]+
-                        (D27.f[SE  ])[kse ]+ (D27.f[NW  ])[knw ]+
-                        (D27.f[TE  ])[kte ]+ (D27.f[BW  ])[kbw ]+
-                        (D27.f[BE  ])[kbe ]+ (D27.f[TW  ])[ktw ]+
-                        (D27.f[TN  ])[ktn ]+ (D27.f[BS  ])[kbs ]+
-                        (D27.f[BN  ])[kbn ]+ (D27.f[TS  ])[kts ]+
-                        (D27.f[REST])[kzero]+ 
-                        (D27.f[TNE ])[ktne]+ (D27.f[TSW ])[ktsw]+
-                        (D27.f[TSE ])[ktse]+ (D27.f[TNW ])[ktnw]+
-                        (D27.f[BNE ])[kbne]+ (D27.f[BSW ])[kbsw]+
-                        (D27.f[BSE ])[kbse]+ (D27.f[BNW ])[kbnw];
+         Conc[k]    =   (D27.f[DIR_P00   ])[ke  ]+ (D27.f[DIR_M00   ])[kw  ]+ 
+                        (D27.f[DIR_0P0   ])[kn  ]+ (D27.f[DIR_0M0   ])[ks  ]+
+                        (D27.f[DIR_00P   ])[kt  ]+ (D27.f[DIR_00M   ])[kb  ]+
+                        (D27.f[DIR_PP0  ])[kne ]+ (D27.f[DIR_MM0  ])[ksw ]+
+                        (D27.f[DIR_PM0  ])[kse ]+ (D27.f[DIR_MP0  ])[knw ]+
+                        (D27.f[DIR_P0P  ])[kte ]+ (D27.f[DIR_M0M  ])[kbw ]+
+                        (D27.f[DIR_P0M  ])[kbe ]+ (D27.f[DIR_M0P  ])[ktw ]+
+                        (D27.f[DIR_0PP  ])[ktn ]+ (D27.f[DIR_0MM  ])[kbs ]+
+                        (D27.f[DIR_0PM  ])[kbn ]+ (D27.f[DIR_0MP  ])[kts ]+
+                        (D27.f[DIR_000])[kzero]+ 
+                        (D27.f[DIR_PPP ])[ktne]+ (D27.f[DIR_MMP ])[ktsw]+
+                        (D27.f[DIR_PMP ])[ktse]+ (D27.f[DIR_MPP ])[ktnw]+
+                        (D27.f[DIR_PPM ])[kbne]+ (D27.f[DIR_MMM ])[kbsw]+
+                        (D27.f[DIR_PMM ])[kbse]+ (D27.f[DIR_MPM ])[kbnw];
       }
    }   
 }

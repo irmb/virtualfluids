@@ -24,10 +24,6 @@ void CumulantK17CompChimRedesigned::run()
         level,
         para->getForcesDev(),
         para->getQuadricLimitersDev(),
-        para->getParD(level)->rho,
-        para->getParD(level)->velocityX,
-        para->getParD(level)->velocityY,
-        para->getParD(level)->velocityZ,
         para->getParD(level)->isEvenTimestep,
         para->getParD(level)->fluidNodeIndices,
         para->getParD(level)->numberOfFluidNodes);
@@ -48,10 +44,6 @@ void CumulantK17CompChimRedesigned::runOnIndices(const unsigned int *indices, un
         level,
         para->getForcesDev(), 
         para->getQuadricLimitersDev(),
-        para->getParD(level)->rho,
-        para->getParD(level)->velocityX,
-        para->getParD(level)->velocityY,
-        para->getParD(level)->velocityZ,
         para->getParD(level)->isEvenTimestep,
         indices,
         size_indices);
