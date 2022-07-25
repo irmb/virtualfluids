@@ -14,10 +14,6 @@ __global__ void LB_Kernel_CumulantK17CompChimRedesigned(
     int level,
     real* forces,
     real* quadricLimiters,
-    real* rho,
-    real* veloX,
-    real* veloY,
-    real* veloZ,
     bool isEvenTimestep,
     const uint* fluidNodeIndices,
     uint numberOfFluidNodes);
