@@ -8,7 +8,7 @@ using namespace vf::lbm::dir;
 
 // TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void PressSchlaff27(real* rhoBC,
+__global__ void PressSchlaff27(real* rhoBC,
                                           real* DD,
                                           real* vx0,
                                           real* vy0,
@@ -274,7 +274,7 @@ extern "C" __global__ void PressSchlaff27(real* rhoBC,
 
 // TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void VelSchlaff27(  int t,
+__global__ void VelSchlaff27(  int t,
                                           real* DD,
                                           real* vz0,
                                           real* deltaVz0,

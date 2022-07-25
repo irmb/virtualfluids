@@ -374,7 +374,7 @@ struct LBMSimulationParameter {
 class VIRTUALFLUIDS_GPU_EXPORT Parameter
 {
 public:
-    Parameter(const vf::basics::ConfigurationFile &configData, const int numberOfProcesses = 1, const int myId = 0);
+    explicit Parameter(const vf::basics::ConfigurationFile &configData, const int numberOfProcesses = 1, const int myId = 0);
     Parameter(const int numberOfProcesses = 1, const int myId = 0);
     ~Parameter();
     void initLBMSimulationParameter();
@@ -410,7 +410,7 @@ public:
     void setEndXHotWall(real endXHotWall);
     void setTimestepEnd(unsigned int tend);
     void setTimestepOut(unsigned int tout);
-    void setTStartOut(unsigned int tStartOut);
+    void setTimestepStartOut(unsigned int tStartOut);
     void setTimestepOfCoarseLevel(unsigned int timestep);
     void setCalcTurbulenceIntensity(bool calcVelocityAndFluctuations);
     void setCalcMedian(bool calcMedian);
@@ -430,7 +430,7 @@ public:
     void settimestepForMP(unsigned int timestepForMP);
     void setOutputPath(std::string oPath);
     void setOutputPrefix(std::string oPrefix);
-    void setFName(std::string fname);
+    void setPathAndFilename(std::string fname);
     void setGridPath(std::string gridPath);
     void setGeometryFileC(std::string GeometryFileC);
     void setGeometryFileM(std::string GeometryFileM);
@@ -552,7 +552,7 @@ public:
     void setDoCheckPoint(bool doCheckPoint);
     void setDoRestart(bool doRestart);
     void setObj(std::string str, bool isObj);
-    void setGeometryValues(bool GeometryValues);
+    void setUseGeometryValues(bool GeometryValues);
     void setCalc2ndOrderMoments(bool is2ndOrderMoments);
     void setCalc3rdOrderMoments(bool is3rdOrderMoments);
     void setCalcHighOrderMoments(bool isHighOrderMoments);
@@ -627,7 +627,7 @@ public:
     bool getCalcMedian();
     bool getCalcDragLift();
     bool getCalcCp();
-    bool getCalcParticle();
+    bool getCalcParticles();
     bool getWriteVeloASCIIfiles();
     bool getCalcPlaneConc();
     //! \returns index of finest level
@@ -883,7 +883,7 @@ private:
     unsigned int timestep;
 
     // Kernel
-    std::string mainKernel{ "CumulantK17Comp" };
+    std::string mainKernel{ "CumulantK17CompChim" };
     bool multiKernelOn{ false };
     std::vector<int> multiKernelLevel;
     std::vector<std::string> multiKernel;
@@ -963,6 +963,7 @@ public:
     bool getUseStreams();
     std::unique_ptr<CudaStreamManager> &getStreamManager();
     bool getKernelNeedsFluidNodeIndicesToRun();
+    void setKernelNeedsFluidNodeIndicesToRun(bool  kernelNeedsFluidNodeIndicesToRun);
 
     void initProcessNeighborsAfterFtoCX(int level);
     void initProcessNeighborsAfterFtoCY(int level);

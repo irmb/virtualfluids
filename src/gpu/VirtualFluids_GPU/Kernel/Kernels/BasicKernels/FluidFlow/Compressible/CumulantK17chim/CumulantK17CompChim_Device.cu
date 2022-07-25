@@ -40,7 +40,7 @@ using namespace vf::lbm::dir;
 #include "Kernel/ChimeraTransformation.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_CumulantK17CompChim(
+__global__ void LB_Kernel_CumulantK17CompChim(
 	real omega,
 	uint* typeOfGridNode,
 	uint* neighborX,

@@ -257,16 +257,16 @@ void multipleLevel(const std::string& configPath)
     para->setOutputPath( path );
     para->setOutputPrefix( simulationName );
 
-    para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
+    para->setPathAndFilename(para->getOutputPath() + "/" + para->getOutputPrefix());
 
     para->setPrintFiles(true);
 
- //   para->setTEnd( 40 * lround(L/velocity) );	
-	//para->setTOut(  5 * lround(L/velocity) );
-	para->setTOut(  100  );
+ //   para->setTimestepEnd( 40 * lround(L/velocity) );	
+	//para->setTimestepOut(  5 * lround(L/velocity) );
+	para->setTimestepOut(  100  );
 
-    para->setTEnd( 1000 );	
-	//para->setTOut(    1 );
+    para->setTimestepEnd( 1000 );	
+	//para->setTimestepOut(    1 );
 
     para->setVelocityLB( velocity );
 

@@ -16,7 +16,7 @@ using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QVelDeviceCompPlusSlip27(
+__global__ void QVelDeviceCompPlusSlip27(
 													real* vx,
 													real* vy,
 													real* vz,
@@ -553,7 +553,7 @@ extern "C" __global__ void QVelDeviceCompPlusSlip27(
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QVeloDeviceEQ27(real* VeloX,
+__global__ void QVeloDeviceEQ27(real* VeloX,
 										   real* VeloY,
 										   real* VeloZ,
                                            real* DD, 
@@ -833,7 +833,7 @@ extern "C" __global__ void QVeloDeviceEQ27(real* VeloX,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QVeloStreetDeviceEQ27(
+__global__ void QVeloStreetDeviceEQ27(
 	real* veloXfraction,
 	real* veloYfraction,
 	int*  naschVelo,
@@ -1119,8 +1119,7 @@ extern "C" __global__ void QVeloStreetDeviceEQ27(
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QVelDeviceIncompHighNu27(int inx,
-													int iny,
+__global__ void QVelDeviceIncompHighNu27(
 													real* vx,
 													real* vy,
 													real* vz,
@@ -1618,7 +1617,7 @@ extern "C" __global__ void QVelDeviceIncompHighNu27(int inx,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QVelDeviceCompHighNu27(
+__global__ void QVelDeviceCompHighNu27(
 													real* vx,
 													real* vy,
 													real* vz,
@@ -2194,7 +2193,7 @@ extern "C" __global__ void QVelDeviceCompHighNu27(
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QVelDeviceCompZeroPress27(
+__global__ void QVelDeviceCompZeroPress27(
 														real* velocityX,
 														real* velocityY,
 														real* velocityZ,
@@ -2620,7 +2619,7 @@ extern "C" __global__ void QVelDeviceCompZeroPress27(
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QVelDeviceCompZeroPress1h27( int inx,
+__global__ void QVelDeviceCompZeroPress1h27( int inx,
 														int iny,
 														real* vx,
 														real* vy,
@@ -3091,7 +3090,7 @@ extern "C" __global__ void QVelDeviceCompZeroPress1h27( int inx,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_BC_Vel_West_27( int nx, 
+__global__ void LB_BC_Vel_West_27( int nx, 
                                               int ny, 
                                               int nz, 
                                               int itz, 
@@ -3414,7 +3413,7 @@ extern "C" __global__ void LB_BC_Vel_West_27( int nx,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QVelDevPlainBB27(
+__global__ void QVelDevPlainBB27(
    real* velocityX,
    real* velocityY,
    real* velocityZ,
@@ -3605,7 +3604,7 @@ extern "C" __global__ void QVelDevPlainBB27(
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QVelDevCouette27(real* vx,
+__global__ void QVelDevCouette27(real* vx,
 											real* vy,
 	 										real* vz,
 											real* DD,
@@ -3965,7 +3964,7 @@ extern "C" __global__ void QVelDevCouette27(real* vx,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QVelDev1h27( int inx,
+__global__ void QVelDev1h27( int inx,
 										int iny,
 										real* vx,
 										real* vy,
@@ -4748,7 +4747,7 @@ extern "C" __global__ void QVelDev1h27( int inx,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QVelDeviceComp27(
+__global__ void QVelDeviceComp27(
 											real* velocityX,
 											real* velocityY,
 											real* velocityZ,
@@ -5171,7 +5170,7 @@ extern "C" __global__ void QVelDeviceComp27(
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QVelDevice27(int inx,
+__global__ void QVelDevice27(int inx,
                                         int iny,
                                         real* vx,
                                         real* vy,
@@ -5724,7 +5723,7 @@ extern "C" __global__ void QVelDevice27(int inx,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void PropellerBC(unsigned int* neighborX,
+__global__ void PropellerBC(unsigned int* neighborX,
                                        unsigned int* neighborY,
                                        unsigned int* neighborZ,
                                        real* rho,

@@ -19,7 +19,7 @@ using namespace vf::lbm::dir;
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LBCalcMac27( real* vxD,
+__global__ void LBCalcMac27( real* vxD,
                                         real* vyD,
                                         real* vzD,
                                         real* rhoD,
@@ -70,7 +70,7 @@ extern "C" __global__ void LBCalcMac27( real* vxD,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LBCalcMacSP27( real* vxD,
+__global__ void LBCalcMacSP27( real* vxD,
                                           real* vyD,
                                           real* vzD,
                                           real* rhoD,
@@ -264,7 +264,7 @@ extern "C" __global__ void LBCalcMacSP27( real* vxD,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LBCalcMacCompSP27(real *vxD, real *vyD, real *vzD, real *rhoD, real *pressD,
+__global__ void LBCalcMacCompSP27(real *vxD, real *vyD, real *vzD, real *rhoD, real *pressD,
                                              unsigned int *geoD, unsigned int *neighborX, unsigned int *neighborY,
                                              unsigned int *neighborZ, unsigned int size_Mat, real *distributions,
                                              bool isEvenTimestep)
@@ -330,7 +330,7 @@ extern "C" __global__ void LBCalcMacCompSP27(real *vxD, real *vyD, real *vzD, re
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LBCalcMedSP27( real* vxD,
+__global__ void LBCalcMedSP27( real* vxD,
                                           real* vyD,
                                           real* vzD,
                                           real* rhoD,
@@ -554,7 +554,7 @@ extern "C" __global__ void LBCalcMedSP27( real* vxD,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LBCalcMedCompSP27( real* vxD,
+__global__ void LBCalcMedCompSP27( real* vxD,
 											  real* vyD,
 											  real* vzD,
 											  real* rhoD,
@@ -831,7 +831,7 @@ extern "C" __global__ void LBCalcMedCompSP27( real* vxD,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LBCalcMedCompAD27(
+__global__ void LBCalcMedCompAD27(
 	real* vxD,
 	real* vyD,
 	real* vzD,
@@ -1159,7 +1159,7 @@ extern "C" __global__ void LBCalcMedCompAD27(
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LBCalcMacMedSP27( real* vxD,
+__global__ void LBCalcMacMedSP27( real* vxD,
                                              real* vyD,
                                              real* vzD,
                                              real* rhoD,
@@ -1231,7 +1231,7 @@ extern "C" __global__ void LBCalcMacMedSP27( real* vxD,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LBResetMedianValuesSP27(
+__global__ void LBResetMedianValuesSP27(
 	real* vxD,
 	real* vyD,
 	real* vzD,
@@ -1284,7 +1284,7 @@ extern "C" __global__ void LBResetMedianValuesSP27(
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LBResetMedianValuesAD27(
+__global__ void LBResetMedianValuesAD27(
 	real* vxD,
 	real* vyD,
 	real* vzD,
@@ -1339,7 +1339,7 @@ extern "C" __global__ void LBResetMedianValuesAD27(
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LBCalcMeasurePoints( real* vxMP,
+__global__ void LBCalcMeasurePoints( real* vxMP,
 												real* vyMP,
 												real* vzMP,
 												real* rhoMP,
@@ -1550,7 +1550,7 @@ extern "C" __global__ void LBCalcMeasurePoints( real* vxMP,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LBSetOutputWallVelocitySP27( real* vxD,
+__global__ void LBSetOutputWallVelocitySP27( real* vxD,
 														real* vyD,
 														real* vzD,
 														real* vxWall,

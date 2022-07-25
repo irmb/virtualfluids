@@ -6,7 +6,7 @@ using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
 
 
-extern "C" __global__ void LB_Init_Comp_AD_27(unsigned int* neighborX,
+__global__ void LB_Init_Comp_AD_27(unsigned int* neighborX,
 	unsigned int* neighborY,
 	unsigned int* neighborZ,
 	unsigned int* geoD,

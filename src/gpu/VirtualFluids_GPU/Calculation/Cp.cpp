@@ -370,7 +370,7 @@ void printCaseFile(Parameter* para)
 
 
 
-extern "C" void printGeoFile(Parameter* para, bool fileFormat)
+void printGeoFile(Parameter* para, bool fileFormat)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//set filename geo
@@ -545,7 +545,7 @@ extern "C" void printGeoFile(Parameter* para, bool fileFormat)
 
 
 
-extern "C" void printScalars(Parameter* para, bool fileFormat)
+void printScalars(Parameter* para, bool fileFormat)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//set filename scalar

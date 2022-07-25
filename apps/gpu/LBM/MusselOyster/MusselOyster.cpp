@@ -157,8 +157,8 @@ void multipleLevel(const std::string &configPath)
     *logging::out << logging::Logger::INFO_HIGH << "useStreams = " << useStreams << "\n";
     *logging::out << logging::Logger::INFO_HIGH << "number of processes = " << para->getNumprocs() << "\n";
 
-    // para->setTOut(1000);
-    // para->setTEnd(10000);
+    // para->setTimestepOut(1000);
+    // para->setTimestepEnd(10000);
 
     para->setCalcDragLift(false);
     para->setUseWale(false);
@@ -167,7 +167,7 @@ void multipleLevel(const std::string &configPath)
         para->setOutputPath(outPath);
     }
     para->setOutputPrefix(simulationName);
-    para->setFName(para->getOutputPath() + para->getOutputPrefix());
+    para->setPathAndFilename(para->getOutputPath() + para->getOutputPrefix());
     para->setPrintFiles(true);
     std::cout << "Write result files to " << para->getFName() << std::endl;
 
@@ -527,8 +527,6 @@ void multipleLevel(const std::string &configPath)
                 // gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
                 //////////////////////////////////////////////////////////////////////////
             }
-            if (para->getKernelNeedsFluidNodeIndicesToRun())
-                gridBuilder->findFluidNodes(useStreams);
 
             // gridBuilder->writeGridsToVtk(outPath +  bivalveType + "/grid/part" + std::to_string(generatePart) + "_");
             // gridBuilder->writeArrows(outPath + bivalveType + "/" + std::to_string(generatePart) + " /arrow");
@@ -558,8 +556,6 @@ void multipleLevel(const std::string &configPath)
             gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0); // set pressure BC after velocity BCs
 
             //////////////////////////////////////////////////////////////////////////
-            if (para->getKernelNeedsFluidNodeIndicesToRun())
-                gridBuilder->findFluidNodes(useStreams);
 
             // gridBuilder->writeGridsToVtk(outPath +  bivalveType + "/grid/");
             // gridBuilder->writeArrows ((outPath + bivalveType + "/arrow");

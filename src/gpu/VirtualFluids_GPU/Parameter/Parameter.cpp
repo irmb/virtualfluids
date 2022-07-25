@@ -52,7 +52,9 @@ Parameter::Parameter(int numberOfProcesses, int myId)
     initGridPaths();
     initGridBasePoints();
     initDefaultLBMkernelAllLevels();
-    this->setFName(this->getOutputPath() + this->getOutputPrefix());
+    this->setPathAndFilename(this->getOutputPath() + this->getOutputPrefix());
+    this->setQuadricLimiters(0.01, 0.01, 0.01);
+    this->setForcing(0.0, 0.0, 0.0);
 
     // initLBMSimulationParameter();
 }
@@ -67,7 +69,7 @@ Parameter::Parameter(const vf::basics::ConfigurationFile &configData, int number
     initGridPaths();
     initGridBasePoints();
     initDefaultLBMkernelAllLevels();
-    this->setFName(this->getOutputPath() + this->getOutputPrefix());
+    this->setPathAndFilename(this->getOutputPath() + this->getOutputPrefix());
 
     // initLBMSimulationParameter();
 }
@@ -92,7 +94,7 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
         this->setPrintFiles(configData.getValue<bool>("WriteGrid"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("GeometryValues"))
-        this->setGeometryValues(configData.getValue<bool>("GeometryValues"));
+        this->setUseGeometryValues(configData.getValue<bool>("GeometryValues"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("calc2ndOrderMoments"))
         this->setCalc2ndOrderMoments(configData.getValue<bool>("calc2ndOrderMoments"));
@@ -152,7 +154,7 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
         this->setTimestepOut(configData.getValue<int>("TimeOut"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("TimeStartOut"))
-        this->setTStartOut(configData.getValue<int>("TimeStartOut"));
+        this->setTimestepStartOut(configData.getValue<int>("TimeStartOut"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("TimeStartCalcMedian"))
         this->setTimeCalcMedStart(configData.getValue<int>("TimeStartCalcMedian"));
@@ -707,7 +709,7 @@ void Parameter::setTimestepOut(unsigned int tout)
 {
     ic.tout = tout;
 }
-void Parameter::setTStartOut(unsigned int tStartOut)
+void Parameter::setTimestepStartOut(unsigned int tStartOut)
 {
     ic.tStartOut = tStartOut;
 }
@@ -759,7 +761,7 @@ void Parameter::setOutputPrefix(std::string oPrefix)
 {
     ic.oPrefix = oPrefix;
 }
-void Parameter::setFName(std::string fname)
+void Parameter::setPathAndFilename(std::string fname)
 {
     ic.fname = fname;
 }
@@ -1331,9 +1333,9 @@ void Parameter::setObj(std::string str, bool isObj)
         this->setIsOutflowNormal(isObj);
     }
 }
-void Parameter::setGeometryValues(bool GeometryValues)
+void Parameter::setUseGeometryValues(bool useGeometryValues)
 {
-    ic.GeometryValues = GeometryValues;
+    ic.GeometryValues = useGeometryValues;
 }
 void Parameter::setCalc2ndOrderMoments(bool is2ndOrderMoments)
 {
@@ -1574,7 +1576,7 @@ void Parameter::setOutflowBoundaryNormalZ(std::string outflowNormalZ)
 void Parameter::setMainKernel(std::string kernel)
 {
     this->mainKernel = kernel;
-    if (kernel.find("Stream") != std::string::npos)
+    if (kernel.find("Stream") != std::string::npos || kernel.find("Redesigned") != std::string::npos)
         this->kernelNeedsFluidNodeIndicesToRun = true;
 }
 void Parameter::setMultiKernelOn(bool isOn)
@@ -1781,7 +1783,7 @@ bool Parameter::getCalcCp()
 {
     return this->calcCp;
 }
-bool Parameter::getCalcParticle()
+bool Parameter::getCalcParticles()
 {
     return this->calcParticles;
 }
@@ -2632,6 +2634,10 @@ std::unique_ptr<CudaStreamManager> &Parameter::getStreamManager()
 bool Parameter::getKernelNeedsFluidNodeIndicesToRun()
 {
     return this->kernelNeedsFluidNodeIndicesToRun;
+}
+
+void Parameter::setKernelNeedsFluidNodeIndicesToRun(bool  kernelNeedsFluidNodeIndicesToRun){
+    this->kernelNeedsFluidNodeIndicesToRun = kernelNeedsFluidNodeIndicesToRun;
 }
 
 void Parameter::initProcessNeighborsAfterFtoCX(int level)

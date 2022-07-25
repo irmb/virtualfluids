@@ -1,17 +1,15 @@
 #ifndef TIMER_H
 #define TIMER_H
-
-#include "helper_cuda.h"
 #include <cuda_runtime.h>
-#include "Core/DataTypes.h"
 
-#include "UbScheduler.h"
-#include "logger/Logger.h"
+#include "Core/DataTypes.h"
 #include "Parameter/Parameter.h"
+#include "logger/Logger.h"
 
 namespace vf::gpu{
     class Communicator;
 }
+class Parameter;
 
 class Timer
 {

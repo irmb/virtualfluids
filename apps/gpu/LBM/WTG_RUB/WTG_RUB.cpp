@@ -219,7 +219,7 @@ void multipleLevel(const std::string& configPath)
     para->setOutputPath( path );
     para->setOutputPrefix( "Unified_" + simulationName );
 
-    para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
+    para->setPathAndFilename(para->getOutputPath() + "/" + para->getOutputPrefix());
 
     para->setPrintFiles(true);
 
@@ -239,8 +239,8 @@ void multipleLevel(const std::string& configPath)
         vz  = (real)0.0;
     });
 
-    para->setTOut( timeStepOut );
-    para->setTEnd( timeStepEnd );
+    para->setTimestepOut( timeStepOut );
+    para->setTimestepEnd( timeStepEnd );
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

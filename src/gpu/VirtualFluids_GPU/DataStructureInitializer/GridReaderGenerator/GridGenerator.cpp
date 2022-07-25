@@ -27,6 +27,8 @@ GridGenerator::~GridGenerator() = default;
 
 void GridGenerator::initalGridInformations()
 {
+    if (para->getKernelNeedsFluidNodeIndicesToRun())
+        builder->findFluidNodes(para->getUseStreams());
     std::vector<int> gridX, gridY, gridZ;
     std::vector<int> distX, distY, distZ;
     const int numberOfGridLevels = builder->getNumberOfGridLevels();
@@ -112,53 +114,56 @@ void GridGenerator::allocArrays_fluidNodeIndicesBorder() {
 void GridGenerator::allocArrays_BoundaryValues()
 {
     std::cout << "------read BoundaryValues------" << std::endl;
+    int blocks = 0;
 
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
         const auto numberOfPressureValues = int(builder->getPressureSize(level));
-
         std::cout << "size pressure level " << level << " : " << numberOfPressureValues << std::endl;
+
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        para->getParH(level)->pressureBC.numberOfBCnodes = numberOfPressureValues;
-        para->getParD(level)->pressureBC.numberOfBCnodes = numberOfPressureValues;
-        para->getParH(level)->numberOfPressureBCnodesRead = numberOfPressureValues * para->getD3Qxx();
-        para->getParD(level)->numberOfPressureBCnodesRead = numberOfPressureValues * para->getD3Qxx();
+        para->getParH(level)->pressureBC.numberOfBCnodes = 0;
         if (numberOfPressureValues > 1)
         {
+            blocks = (numberOfPressureValues / para->getParH(level)->numberofthreads) + 1;
+            para->getParH(level)->pressureBC.numberOfBCnodes = blocks * para->getParH(level)->numberofthreads;
             cudaMemoryManager->cudaAllocPress(level);
             builder->getPressureValues(para->getParH(level)->pressureBC.RhoBC, para->getParH(level)->pressureBC.k, para->getParH(level)->pressureBC.kN, level);
             cudaMemoryManager->cudaCopyPress(level);
         }
+        para->getParD(level)->pressureBC.numberOfBCnodes = para->getParH(level)->pressureBC.numberOfBCnodes;
+        para->getParH(level)->numberOfPressureBCnodesRead = para->getParH(level)->pressureBC.numberOfBCnodes * para->getD3Qxx();
+        para->getParD(level)->numberOfPressureBCnodesRead = para->getParH(level)->pressureBC.numberOfBCnodes * para->getD3Qxx();
     }
 
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
         const auto numberOfSlipValues = int(builder->getSlipSize(level));
-
         std::cout << "size slip level " << level << " : " << numberOfSlipValues << std::endl;
+
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        para->getParH(level)->slipBC.numberOfBCnodes = numberOfSlipValues;
-        para->getParD(level)->slipBC.numberOfBCnodes = numberOfSlipValues;
-        para->getParH(level)->numberOfSlipBCnodesRead = numberOfSlipValues * para->getD3Qxx();
-        para->getParD(level)->numberOfSlipBCnodesRead = numberOfSlipValues * para->getD3Qxx();
+        para->getParH(level)->slipBC.numberOfBCnodes = 0;
         if (numberOfSlipValues > 1)
         {
+            blocks = (numberOfSlipValues / para->getParH(level)->numberofthreads) + 1;
+            para->getParH(level)->slipBC.numberOfBCnodes = blocks * para->getParH(level)->numberofthreads;
             cudaMemoryManager->cudaAllocSlipBC(level);
             builder->getSlipValues(para->getParH(level)->slipBC.normalX, para->getParH(level)->slipBC.normalY, para->getParH(level)->slipBC.normalZ, para->getParH(level)->slipBC.k, level);
             cudaMemoryManager->cudaCopySlipBC(level);
         }
+        para->getParD(level)->slipBC.numberOfBCnodes = para->getParH(level)->slipBC.numberOfBCnodes;
+        para->getParH(level)->numberOfSlipBCnodesRead = para->getParH(level)->slipBC.numberOfBCnodes * para->getD3Qxx();
+        para->getParD(level)->numberOfSlipBCnodesRead = para->getParH(level)->slipBC.numberOfBCnodes * para->getD3Qxx();
     }
 
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
         const auto numberOfStressValues = int(builder->getStressSize(level));
-
         std::cout << "size stress level " << level << " : " << numberOfStressValues << std::endl;
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        para->getParH(level)->stressBC.numberOfBCnodes = numberOfStressValues;
-        para->getParD(level)->stressBC.numberOfBCnodes = numberOfStressValues;
-        para->getParH(level)->numberOfStressBCnodesRead = numberOfStressValues * para->getD3Qxx();
-        para->getParD(level)->numberOfStressBCnodesRead = numberOfStressValues * para->getD3Qxx();
 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        para->getParH(level)->stressBC.numberOfBCnodes = 0;
         if (numberOfStressValues > 1)
         {
+            blocks = (numberOfStressValues / para->getParH(level)->numberofthreads) + 1;
+            para->getParH(level)->stressBC.numberOfBCnodes = blocks * para->getParH(level)->numberofthreads;
             cudaMemoryManager->cudaAllocStressBC(level);
             cudaMemoryManager->cudaAllocWallModel(level, para->getHasWallModelMonitor());
             builder->getStressValues(   para->getParH(level)->stressBC.normalX,  para->getParH(level)->stressBC.normalY,  para->getParH(level)->stressBC.normalZ, 
@@ -171,6 +176,9 @@ void GridGenerator::allocArrays_BoundaryValues()
             cudaMemoryManager->cudaCopyStressBC(level);
             cudaMemoryManager->cudaCopyWallModel(level, para->getHasWallModelMonitor());
         }
+        para->getParD(level)->stressBC.numberOfBCnodes = para->getParH(level)->stressBC.numberOfBCnodes;
+        para->getParH(level)->numberOfStressBCnodesRead = para->getParH(level)->stressBC.numberOfBCnodes * para->getD3Qxx();
+        para->getParD(level)->numberOfStressBCnodesRead = para->getParH(level)->stressBC.numberOfBCnodes * para->getD3Qxx();
     }
     
 
@@ -178,17 +186,13 @@ void GridGenerator::allocArrays_BoundaryValues()
         const auto numberOfVelocityValues = int(builder->getVelocitySize(level));
         std::cout << "size velocity level " << level << " : " << numberOfVelocityValues << std::endl;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        int blocks = (numberOfVelocityValues / para->getParH(level)->numberofthreads) + 1;
-        para->getParH(level)->velocityBC.kArray = blocks * para->getParH(level)->numberofthreads;
-        para->getParD(level)->velocityBC.kArray = para->getParH(level)->velocityBC.kArray;
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        para->getParH(level)->velocityBC.numberOfBCnodes = numberOfVelocityValues;
-        para->getParD(level)->velocityBC.numberOfBCnodes = numberOfVelocityValues;
-        para->getParH(level)->numberOfVeloBCnodesRead = numberOfVelocityValues * para->getD3Qxx();
-        para->getParD(level)->numberOfVeloBCnodesRead = numberOfVelocityValues * para->getD3Qxx();
+
+        para->getParH(level)->velocityBC.numberOfBCnodes = 0;
 
         if (numberOfVelocityValues > 1)
         {
+            blocks = (numberOfVelocityValues / para->getParH(level)->numberofthreads) + 1;
+            para->getParH(level)->velocityBC.numberOfBCnodes = blocks * para->getParH(level)->numberofthreads;
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             cudaMemoryManager->cudaAllocVeloBC(level);
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -203,7 +207,7 @@ void GridGenerator::allocArrays_BoundaryValues()
             // advection - diffusion stuff
             if (para->getDiffOn()==true){
                 //////////////////////////////////////////////////////////////////////////
-                para->getParH(level)->TempVel.kTemp = numberOfVelocityValues;
+                para->getParH(level)->TempVel.kTemp = para->getParH(level)->velocityBC.numberOfBCnodes;
                 //cout << "Groesse kTemp = " << para->getParH(i)->TempPress.kTemp << endl;
                 std::cout << "getTemperatureInit = " << para->getTemperatureInit() << std::endl;
                 std::cout << "getTemperatureBC = " << para->getTemperatureBC() << std::endl;
@@ -211,7 +215,7 @@ void GridGenerator::allocArrays_BoundaryValues()
                 cudaMemoryManager->cudaAllocTempVeloBC(level);
                 //cout << "nach alloc " << endl;
                 //////////////////////////////////////////////////////////////////////////
-                for (int m = 0; m < numberOfVelocityValues; m++)
+                for (uint m = 0; m < para->getParH(level)->velocityBC.numberOfBCnodes; m++)
                 {
                     para->getParH(level)->TempVel.temp[m]      = para->getTemperatureInit();
                     para->getParH(level)->TempVel.tempPulse[m] = para->getTemperatureBC();
@@ -226,51 +230,39 @@ void GridGenerator::allocArrays_BoundaryValues()
             }
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         }
+        para->getParD(level)->velocityBC.numberOfBCnodes = para->getParH(level)->velocityBC.numberOfBCnodes;
+        para->getParH(level)->numberOfVeloBCnodesRead = para->getParH(level)->velocityBC.numberOfBCnodes * para->getD3Qxx();
+        para->getParD(level)->numberOfVeloBCnodesRead = para->getParH(level)->velocityBC.numberOfBCnodes * para->getD3Qxx();
     }
 
 
 
     if (builder->hasGeometryValues()) {
-        para->setGeometryValues(true);
-        for (uint i = 0; i < builder->getNumberOfGridLevels(); i++) {
-            int numberOfGeometryValues = builder->getGeometrySize(i);
-            std::cout << "size geometry values, Level " << i << " : " << numberOfGeometryValues << std::endl;
+        para->setUseGeometryValues(true);
+        for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
+            int numberOfGeometryValues = builder->getGeometrySize(level);
+            std::cout << "size geometry values, Level " << level << " : " << numberOfGeometryValues << std::endl;
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            para->getParH(i)->geometryBC.numberOfBCnodes = numberOfGeometryValues;
-            para->getParD(i)->geometryBC.numberOfBCnodes = numberOfGeometryValues;
+
+            para->getParH(level)->geometryBC.numberOfBCnodes = 0;
             if (numberOfGeometryValues > 0)
             {
+                blocks = (numberOfGeometryValues / para->getParH(level)->numberofthreads) + 1;
+                para->getParH(level)->geometryBC.numberOfBCnodes = blocks * para->getParH(level)->numberofthreads;
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                cudaMemoryManager->cudaAllocGeomValuesBC(level);
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                builder->getGeometryValues(para->getParH(level)->geometryBC.Vx, para->getParH(level)->geometryBC.Vy, para->getParH(level)->geometryBC.Vz, level);
 
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                cudaMemoryManager->cudaAllocGeomValuesBC(i);
-                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                //Indexarray
-
-                builder->getGeometryValues(para->getParH(i)->geometryBC.Vx, para->getParH(i)->geometryBC.Vy, para->getParH(i)->geometryBC.Vz, i);
-
-                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                for (int m = 0; m < numberOfGeometryValues; m++)
+                for (uint m = 0; m < para->getParH(level)->geometryBC.numberOfBCnodes; m++)
                 {
-                    para->getParH(i)->geometryBC.Vx[m] = para->getParH(i)->geometryBC.Vx[m] / para->getVelocityRatio();
-                    para->getParH(i)->geometryBC.Vy[m] = para->getParH(i)->geometryBC.Vy[m] / para->getVelocityRatio();
-                    para->getParH(i)->geometryBC.Vz[m] = para->getParH(i)->geometryBC.Vz[m] / para->getVelocityRatio();
-                    //para->getParH(i)->geometryBC.Vx[m] = para->getParH(i)->geometryBC.Vx[m] / 100.0f;
-                    //para->getParH(i)->geometryBC.Vy[m] = para->getParH(i)->geometryBC.Vy[m] / 100.0f;
-                    //para->getParH(i)->geometryBC.Vz[m] = para->getParH(i)->geometryBC.Vz[m] / 100.0f;
-                    //para->getParH(i)->geometryBC.Vx[m] = 0.0f;
-                    //para->getParH(i)->geometryBC.Vy[m] = 0.0f;
-                    //para->getParH(i)->geometryBC.Vz[m] = 0.0f;
+                    para->getParH(level)->geometryBC.Vx[m] = para->getParH(level)->geometryBC.Vx[m] / para->getVelocityRatio();
+                    para->getParH(level)->geometryBC.Vy[m] = para->getParH(level)->geometryBC.Vy[m] / para->getVelocityRatio();
+                    para->getParH(level)->geometryBC.Vz[m] = para->getParH(level)->geometryBC.Vz[m] / para->getVelocityRatio();
                 }
-                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                ////T�st
-                //for (int m = 0; m < temp4; m++)
-                //{
-                //    para->getParH(i)->geometryBC.Vx[m] = para->getVelocity();//0.035f;
-                //    para->getParH(i)->geometryBC.Vy[m] = 0.0f;//para->getVelocity();//0.0f;
-                //    para->getParH(i)->geometryBC.Vz[m] = 0.0f;
-                //}
-                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                cudaMemoryManager->cudaCopyGeomValuesBC(i);
+                cudaMemoryManager->cudaCopyGeomValuesBC(level);
                 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 //// advection - diffusion stuff
                 //if (para->getDiffOn()==true){
@@ -291,6 +283,8 @@ void GridGenerator::allocArrays_BoundaryValues()
                 //}
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             }
+            para->getParD(level)->geometryBC.numberOfBCnodes = para->getParH(level)->geometryBC.numberOfBCnodes;
+
         }
     }//ende geo
 

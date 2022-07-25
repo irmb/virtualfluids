@@ -38,7 +38,7 @@
 using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
 
-extern "C" __global__ void InitAD27(
+__global__ void InitAD27(
 	uint* neighborX,
 	uint* neighborY,
 	uint* neighborZ,
@@ -229,7 +229,7 @@ extern "C" __global__ void InitAD27(
 // DEPRECATED (2022)
 
 // ////////////////////////////////////////////////////////////////////////////////
-// extern "C" __global__ void InitAD27(unsigned int* neighborX,
+// __global__ void InitAD27(unsigned int* neighborX,
 //                                        unsigned int* neighborY,
 //                                        unsigned int* neighborZ,
 //                                        unsigned int* geoD,
@@ -440,7 +440,7 @@ extern "C" __global__ void InitAD27(
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void InitAD7( unsigned int* neighborX,
+__global__ void InitAD7( unsigned int* neighborX,
                                     unsigned int* neighborY,
                                     unsigned int* neighborZ,
                                     unsigned int* geoD,

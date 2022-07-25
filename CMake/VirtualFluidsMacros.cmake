@@ -316,3 +316,13 @@ endfunction()
 function(groupTarget targetName folderName)
     set_property( TARGET  ${targetName}  PROPERTY  FOLDER  ${folderName} )
 endfunction(groupTarget)
+
+
+#################################################################################
+## load user apps, which are specified in the machine file
+#################################################################################
+function(vf_load_user_apps)
+    foreach(app IN LISTS USER_APPS)
+      add_subdirectory(${app})
+    endforeach()
+endfunction()

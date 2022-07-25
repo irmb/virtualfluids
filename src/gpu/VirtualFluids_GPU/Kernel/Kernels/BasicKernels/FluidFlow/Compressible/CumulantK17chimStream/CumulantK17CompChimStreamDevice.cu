@@ -40,7 +40,7 @@ using namespace vf::lbm::dir;
 #include "Kernel/ChimeraTransformation.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_CumulantK17CompChimStream(
+__global__ void LB_Kernel_CumulantK17CompChimStream(
 	real omega,
 	uint* neighborX,
 	uint* neighborY,
