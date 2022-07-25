@@ -47,16 +47,17 @@ class Parameter;
 struct LBMSimulationParameter;
 
 using boundaryCondition = std::function<void(LBMSimulationParameter *, QforBoundaryConditions *)>;
-using boundaryConditionParameter = std::function<void(Parameter *, QforBoundaryConditions *, const int level)>;
+using boundaryConditionWithParameter = std::function<void(Parameter *, QforBoundaryConditions *, const int level)>;
 
 //! \class BCKernelManager
 //! \brief manage the cuda kernel calls to boundary conditions
+//! \details This class stores the boundary conditions and manages the calls to the boundary condition kernels.
 class VIRTUALFLUIDS_GPU_EXPORT BCKernelManager
 {
 public:
     //! Class constructor
     //! \param parameter shared pointer to instance of class Parameter
-    //! \throws std::runtime_error when the user misconfigured the boundary condition(s)
+    //! \throws std::runtime_error when the user forgets to specify a boundary condition
     BCKernelManager(SPtr<Parameter> parameter, BoundaryConditionFactory *bcFactory);
 
     //! \brief calls the device function of the velocity boundary condition (post-collision)
@@ -90,20 +91,25 @@ public:
     void runStressWallModelKernelPost(const int level) const;
 
 private:
-    template<typename bcFunction>
-    void checkBoundaryCondition(const bcFunction &bc, const QforBoundaryConditions &bcStruct,
-                                const std::string &bcName){
-                                        if (!bc && bcStruct.numberOfBCnodes > 0)
-        throw std::runtime_error("The boundary condition " + bcName + " was not set!");
-                                }
+    //! \brief check if a boundary condition was set
+    //! \throws std::runtime_error if boundary nodes were assigned, but no boundary condition was set in the boundary condition factory
+    //! \param boundaryCondition: a kernel function for the boundary condition
+    //! \param bcStruct: a struct containing the grid nodes which are part of the boundary condition
+    //! \param bcName: the name of the checked boundary condition
+    template <typename bcFunction>
+    void checkBoundaryCondition(const bcFunction &boundaryCondition, const QforBoundaryConditions &bcStruct, const std::string &bcName)
+    {
+        if (!boundaryCondition && bcStruct.numberOfBCnodes > 0)
+            throw std::runtime_error("The boundary condition " + bcName + " was not set!");
+    }
 
     SPtr<Parameter> para;
 
-    boundaryCondition velocityBoundaryConditionPost   = nullptr;
-    boundaryCondition noSlipBoundaryConditionPost     = nullptr;
-    boundaryCondition slipBoundaryConditionPost       = nullptr;
-    boundaryCondition pressureBoundaryConditionPre    = nullptr;
-    boundaryCondition geometryBoundaryConditionPost   = nullptr;
-    boundaryConditionParameter stressBoundaryConditionPost = nullptr;
+    boundaryCondition velocityBoundaryConditionPost = nullptr;
+    boundaryCondition noSlipBoundaryConditionPost = nullptr;
+    boundaryCondition slipBoundaryConditionPost = nullptr;
+    boundaryCondition pressureBoundaryConditionPre = nullptr;
+    boundaryCondition geometryBoundaryConditionPost = nullptr;
+    boundaryConditionWithParameter stressBoundaryConditionPost = nullptr;
 };
 #endif
