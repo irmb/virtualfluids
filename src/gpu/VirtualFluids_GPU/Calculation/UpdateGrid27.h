@@ -16,6 +16,8 @@ class BoundaryConditionFactory;
 
 class UpdateGrid27;
 using CollisionStrategy = std::function<void (UpdateGrid27* updateGrid, Parameter* para, int level, unsigned int t)>;
+using RefinementStrategy = std::function<void (UpdateGrid27* updateGrid, Parameter* para, int level)>;
+
 
 class UpdateGrid27
 {
@@ -57,18 +59,13 @@ private:
     friend class CollisionAndExchange_noStreams_oldKernel;
     friend class CollisionAndExchange_streams;
 
-
-    typedef void (UpdateGrid27::*refinementAndExchangeFun)(int level);
-    refinementAndExchangeFun refinementAndExchange  = nullptr;
-    void chooseFunctionForRefinementAndExchange();
-
-    // functions for refinement and exchange
-    void refinementAndExchange_streams_onlyExchangeInterface(int level);
-    void refinementAndExchange_streams_completeExchange(int level);
-    void refinementAndExchange_noStreams_onlyExchangeInterface(int level);
-    void refinementAndExchange_noStreams_completeExchange(int level);
-    void refinementAndExchange_noRefinementAndExchange(int level);
-    void refinementAndExchange_noExchange(int level);
+    RefinementStrategy refinement;
+    friend class RefinementAndExchange_streams_exchangeInterface;
+    friend class RefinementAndExchange_streams_exchangeAllNodes;
+    friend class RefinementAndExchange_noStreams_exchangeInterface;
+    friend class RefinementAndExchange_noStreams_exchangeAllNodes;
+    friend class Refinement_noExchange;
+    friend class NoRefinement;
 
 private:
     SPtr<Parameter> para;

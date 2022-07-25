@@ -10,7 +10,7 @@ getFunctionForCollisionAndExchange(const bool useStreams, const int numberOfMpiP
     VF_LOG_INFO("Function used for collisionAndExchange: ");
 
     if (useStreams && numberOfMpiProcesses > 1 && kernelNeedsFluidNodeIndicesToRun) {
-        VF_LOG_INFO("collisionAndExchange_streams()");
+        VF_LOG_INFO("CollisionAndExchange_streams()");
         return CollisionAndExchange_streams();
 
     } else if (useStreams && !kernelNeedsFluidNodeIndicesToRun) {
@@ -20,11 +20,11 @@ getFunctionForCollisionAndExchange(const bool useStreams, const int numberOfMpiP
         VF_LOG_INFO("Cuda Streams can only be used with multiple MPI processes.");
 
     } else if (!useStreams && kernelNeedsFluidNodeIndicesToRun) {
-        VF_LOG_INFO("collisionAndExchange_noStreams_indexKernel()");
+        VF_LOG_INFO("CollisionAndExchange_noStreams_indexKernel()");
         return CollisionAndExchange_noStreams_indexKernel();
 
     } else if (!useStreams && !kernelNeedsFluidNodeIndicesToRun) {
-        VF_LOG_INFO("collisionAndExchange_noStreams_oldKernel()");
+        VF_LOG_INFO("CollisionAndExchange_noStreams_oldKernel()");
         return CollisionAndExchange_noStreams_oldKernel();
     }
 

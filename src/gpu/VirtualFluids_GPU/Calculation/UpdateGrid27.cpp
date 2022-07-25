@@ -11,6 +11,7 @@
 #include "Kernel/Kernel.h"
 
 #include "CollisionStrategy.h"
+#include "RefinementStrategy.h"
 
 void UpdateGrid27::updateGrid(int level, unsigned int t)
 {
@@ -48,101 +49,12 @@ void UpdateGrid27::updateGrid(int level, unsigned int t)
     //////////////////////////////////////////////////////////////////////////
     if( level != para->getFine() )
     {
-        (this->*refinementAndExchange)(level);
+        refinement(this, para.get(), level);
     }
 
     interactWithActuators(level, t);
 
     interactWithProbes(level, t);
-}
-
-void UpdateGrid27::refinementAndExchange_noRefinementAndExchange(int level) {}
-
-void UpdateGrid27::refinementAndExchange_streams_onlyExchangeInterface(int level)
-{
-    int borderStreamIndex = para->getStreamManager()->getBorderStreamIndex();
-    int bulkStreamIndex = para->getStreamManager()->getBulkStreamIndex();
-
-    // fine to coarse border
-    fineToCoarse(level, para->getParD(level)->intFCBorder.ICellFCC, para->getParD(level)->intFCBorder.ICellFCF,
-                 para->getParD(level)->intFCBorder.kFC, borderStreamIndex);
-
-    // prepare exchange and trigger bulk kernel when finished
-    prepareExchangeMultiGPUAfterFtoC(level, borderStreamIndex);
-    if (para->getUseStreams())
-        para->getStreamManager()->triggerStartBulkKernel(borderStreamIndex);
-
-    // launch bulk kernels (f to c and c to f)
-    para->getStreamManager()->waitOnStartBulkKernelEvent(bulkStreamIndex);
-    fineToCoarse(level, para->getParD(level)->intFCBulk.ICellFCC, para->getParD(level)->intFCBulk.ICellFCF,
-                 para->getParD(level)->intFCBulk.kFC, bulkStreamIndex);
-    coarseToFine(level, para->getParD(level)->intCFBulk.ICellCFC, para->getParD(level)->intCFBulk.ICellCFF,
-                 para->getParD(level)->intCFBulk.kCF, para->getParD(level)->offCFBulk, bulkStreamIndex);
-
-    // exchange
-    exchangeMultiGPUAfterFtoC(level, borderStreamIndex);
-
-    // coarse to fine border
-    coarseToFine(level, para->getParD(level)->intCFBorder.ICellCFC, para->getParD(level)->intCFBorder.ICellCFF,
-                 para->getParD(level)->intCFBorder.kCF, para->getParD(level)->offCF, borderStreamIndex);
-    cudaDeviceSynchronize();
-}
-
-void UpdateGrid27::refinementAndExchange_streams_completeExchange(int level)
-{
-    int borderStreamIndex = para->getStreamManager()->getBorderStreamIndex();
-    int bulkStreamIndex = para->getStreamManager()->getBulkStreamIndex();
-
-    // fine to coarse border
-    fineToCoarse(level, para->getParD(level)->intFCBorder.ICellFCC, para->getParD(level)->intFCBorder.ICellFCF,
-                 para->getParD(level)->intFCBorder.kFC, borderStreamIndex);
-
-    // prepare exchange and trigger bulk kernel when finished
-    prepareExchangeMultiGPU(level, borderStreamIndex);
-    if (para->getUseStreams())
-        para->getStreamManager()->triggerStartBulkKernel(borderStreamIndex);
-
-    // launch bulk kernels (f to c and c to f)
-    para->getStreamManager()->waitOnStartBulkKernelEvent(bulkStreamIndex);
-    fineToCoarse(level, para->getParD(level)->intFCBulk.ICellFCC, para->getParD(level)->intFCBulk.ICellFCF,
-                 para->getParD(level)->intFCBulk.kFC, bulkStreamIndex);
-    coarseToFine(level, para->getParD(level)->intCFBulk.ICellCFC, para->getParD(level)->intCFBulk.ICellCFF,
-                 para->getParD(level)->intCFBulk.kCF, para->getParD(level)->offCFBulk, bulkStreamIndex);
-
-    // exchange
-    exchangeMultiGPU(level, borderStreamIndex);
-
-    // coarse to fine border
-    coarseToFine(level, para->getParD(level)->intCFBorder.ICellCFC, para->getParD(level)->intCFBorder.ICellCFF,
-                 para->getParD(level)->intCFBorder.kCF, para->getParD(level)->offCF, borderStreamIndex);
-    cudaDeviceSynchronize();
-}
-
-void UpdateGrid27::refinementAndExchange_noStreams_onlyExchangeInterface(int level)
-{
-    fineToCoarse(level, para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF, para->getParD(level)->K_FC, -1);
-
-    exchangeMultiGPU_noStreams_withPrepare(level, true);
-
-    coarseToFine(level, para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF, para->getParD(level)->K_CF,
-                 para->getParD(level)->offCF, -1);
-}
-
-void UpdateGrid27::refinementAndExchange_noStreams_completeExchange(int level)
-{
-    fineToCoarse(level, para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF, para->getParD(level)->K_FC, -1);
-
-    exchangeMultiGPU_noStreams_withPrepare(level, false);
-
-    coarseToFine(level, para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF, para->getParD(level)->K_CF,
-                 para->getParD(level)->offCF, -1);
-}
-
-void UpdateGrid27::refinementAndExchange_noExchange(int level)
-{
-    fineToCoarse(level, para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF, para->getParD(level)->K_FC, -1);
-    coarseToFine(level, para->getParD(level)->intCF.ICellCFC, para->getParD(level)->intCF.ICellCFF, para->getParD(level)->K_CF,
-                 para->getParD(level)->offCF, -1);
 }
 
 void UpdateGrid27::collisionAllNodes(int level, unsigned int t)
@@ -456,49 +368,19 @@ void  UpdateGrid27::calcTurbulentViscosity(int level)
         calcTurbulentViscosityAMD(para.get(), level);
 }
 
+void UpdateGrid27::exchangeData(int level)
+{
+    exchangeMultiGPU_noStreams_withPrepare(level, false);
+}
 
 UpdateGrid27::UpdateGrid27(SPtr<Parameter> para, vf::gpu::Communicator &comm, SPtr<CudaMemoryManager> cudaMemoryManager,
                            std::vector<std::shared_ptr<PorousMedia>> &pm, std::vector<SPtr<Kernel>> &kernels , BoundaryConditionFactory* bcFactory)
     : para(para), comm(comm), cudaMemoryManager(cudaMemoryManager), pm(pm), kernels(kernels)
 {
     this->collision = getFunctionForCollisionAndExchange(para->getUseStreams(), para->getNumprocs(), para->getKernelNeedsFluidNodeIndicesToRun());
-    chooseFunctionForRefinementAndExchange();
+    this->refinement = getFunctionForRefinementAndExchange(para->getUseStreams(), para->getNumprocs(), para->getMaxLevel(), para->useReducedCommunicationAfterFtoC);
+
     this->bcKernelManager = std::make_shared<BCKernelManager>(para, bcFactory);
     this->adKernelManager = std::make_shared<ADKernelManager>(para);
     this->gridScalingKernelManager =  std::make_shared<GridScalingKernelManager>(para);
-}
-
-void UpdateGrid27::chooseFunctionForRefinementAndExchange()
-{
-    std::cout << "Function used for refinementAndExchange: ";
-    if (para->getMaxLevel() == 0) {
-        this->refinementAndExchange = &UpdateGrid27::refinementAndExchange_noRefinementAndExchange;
-        std::cout << "only one level - no function needed." << std::endl;
-
-    } else if (para->getNumprocs() == 1) {
-        this->refinementAndExchange = &UpdateGrid27::refinementAndExchange_noExchange;
-        std::cout << "refinementAndExchange_noExchange()" << std::endl;
-
-    } else if (para->getNumprocs() > 1 && para->getUseStreams() && para->useReducedCommunicationAfterFtoC) {
-        this->refinementAndExchange = &UpdateGrid27::refinementAndExchange_streams_onlyExchangeInterface;
-        std::cout << "refinementAndExchange_streams_onlyExchangeInterface()" << std::endl;
-
-    } else if(para->getNumprocs() > 1 && para->getUseStreams() && !para->useReducedCommunicationAfterFtoC){
-        this->refinementAndExchange = &UpdateGrid27::refinementAndExchange_streams_completeExchange;
-        std::cout << "refinementAndExchange_streams_completeExchange()" << std::endl;
-
-    } else if (para->getNumprocs() > 1 && !para->getUseStreams() && para->useReducedCommunicationAfterFtoC) {
-        this->refinementAndExchange = &UpdateGrid27::refinementAndExchange_noStreams_onlyExchangeInterface;
-        std::cout << "refinementAndExchange_noStreams_onlyExchangeInterface()" << std::endl;
-
-    } else {
-        this->refinementAndExchange = &UpdateGrid27::refinementAndExchange_noStreams_completeExchange;
-        std::cout << "refinementAndExchange_noStreams_completeExchange()" << std::endl;
-    }
-}
-
-
-void UpdateGrid27::exchangeData(int level)
-{
-    exchangeMultiGPU_noStreams_withPrepare(level, false);
 }
