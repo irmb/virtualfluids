@@ -32,22 +32,38 @@
 //=======================================================================================
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
+#include <iostream>
+#include <stdexcept>
+#include <string>
 
 #include "BCKernelManager.h"
-#include "Parameter/Parameter.h"
-#include "GPU/GPU_Interface.h"
-#include "Calculation/DragLift.h"
-#include "Calculation/Cp.h"
 #include "BoundaryConditions/BoundaryConditionFactory.h"
+#include "Calculation/Cp.h"
+#include "Calculation/DragLift.h"
+#include "GPU/GPU_Interface.h"
+#include "Parameter/Parameter.h"
 
-BCKernelManager::BCKernelManager(SPtr<Parameter> parameter, BoundaryConditionFactory* bcFactory): para(parameter)
+BCKernelManager::BCKernelManager(SPtr<Parameter> parameter, BoundaryConditionFactory *bcFactory) : para(parameter)
 {
     this->velocityBoundaryConditionPost = bcFactory->getVelocityBoundaryConditionPost();
     this->noSlipBoundaryConditionPost   = bcFactory->getNoSlipBoundaryConditionPost();
     this->slipBoundaryConditionPost     = bcFactory->getSlipBoundaryConditionPost();
     this->pressureBoundaryConditionPre  = bcFactory->getPressureBoundaryConditionPre();
     this->geometryBoundaryConditionPost = bcFactory->getGeometryBoundaryConditionPost();
-    this->stressBoundaryConditionPost       = bcFactory->getStressBoundaryConditionPost();
+    this->stressBoundaryConditionPost   = bcFactory->getStressBoundaryConditionPost();
+
+    checkBoundaryCondition(this->velocityBoundaryConditionPost, this->para->getParD(0)->velocityBC,
+                           "velocityBoundaryConditionPost");
+    checkBoundaryCondition(this->noSlipBoundaryConditionPost, this->para->getParD(0)->noSlipBC,
+                           "noSlipBoundaryConditionPost");
+    checkBoundaryCondition(this->slipBoundaryConditionPost, this->para->getParD(0)->slipBC,
+                           "slipBoundaryConditionPost");
+    checkBoundaryCondition(this->pressureBoundaryConditionPre, this->para->getParD(0)->pressureBC,
+                           "pressureBoundaryConditionPre");
+    checkBoundaryCondition(this->geometryBoundaryConditionPost, this->para->getParD(0)->geometryBC,
+                           "geometryBoundaryConditionPost");
+    checkBoundaryCondition(this->stressBoundaryConditionPost, this->para->getParD(0)->stressBC,
+                           "stressBoundaryConditionPost");
 }
 
 void BCKernelManager::runVelocityBCKernelPre(const int level) const

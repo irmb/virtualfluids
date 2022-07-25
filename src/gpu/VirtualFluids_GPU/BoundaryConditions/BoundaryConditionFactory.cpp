@@ -131,7 +131,7 @@ boundaryCondition BoundaryConditionFactory::getPressureBoundaryConditionPre() co
     }
 }
 
-boundaryConditionPara BoundaryConditionFactory::getStressBoundaryConditionPost() const
+boundaryConditionWithParameter BoundaryConditionFactory::getStressBoundaryConditionPost() const
 {
     switch (this->stressBoundaryCondition) {
         case StressBC::StressBounceBack:
