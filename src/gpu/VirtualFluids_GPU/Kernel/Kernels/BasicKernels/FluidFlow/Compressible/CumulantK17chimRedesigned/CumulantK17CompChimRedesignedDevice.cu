@@ -172,8 +172,7 @@ __global__ void LB_Kernel_CumulantK17CompChimRedesigned(
                       ((f_M00 + f_P00) + (f_0M0 + f_0P0) + (f_00M + f_00P))) +
                         f_000;
 
-        real rho   = c1o1 + drho;
-        real oneOverRho = c1o1 / rho;
+        real oneOverRho = c1o1 / (c1o1 + drho);
 
         real vvx = ((((f_PPP - f_MMM) + (f_PMP - f_MPM)) + ((f_PMM - f_MPP) + (f_PPM - f_MMP))) +
                     (((f_P0M - f_M0P) + (f_P0P - f_M0M)) + ((f_PM0 - f_MP0) + (f_PP0 - f_MM0))) + (f_P00 - f_M00)) *
@@ -526,6 +525,14 @@ __global__ void LB_Kernel_CumulantK17CompChimRedesigned(
         m_100 = -m_100;
         m_010 = -m_010;
         m_001 = -m_001;
+
+        ////////////////////////////////////////////////////////////////////////////////////
+        //! - Write the macroscopic velocities and the densities to a their respective arrays.
+        // Do it here to distribute read/write.
+        rho[k_000] = drho;
+        veloX[k_000] = vvx;
+        veloY[k_000] = vvy;
+        veloZ[k_000] = vvz;
 
         ////////////////////////////////////////////////////////////////////////////////////
         //! - Chimera transform from central moments to well conditioned distributions as defined in Appendix J in
