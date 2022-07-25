@@ -367,7 +367,7 @@ struct LBMSimulationParameter {
     uint *fluidNodeIndices;
     uint numberOfFluidNodes;
     uint *fluidNodeIndicesBorder;
-    uint numberOffluidNodesBorder;
+    uint numberOfFluidNodesBorder;
 };
 
 //! \brief Class for LBM-parameter management
