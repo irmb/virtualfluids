@@ -23,7 +23,7 @@ std::shared_ptr<Parameter> makeParameter(std::shared_ptr<SimulationParameter> si
 
     std::string _prefix = "cells";
     std::string gridPath = simPara->getGridPath() + "/";
-    para->setFName(simPara->getFilePath() + "/" + _prefix);
+    para->setPathAndFilename(simPara->getFilePath() + "/" + _prefix);
     para->setPrintFiles(true);
 
     para->setD3Qxx(27);
@@ -31,7 +31,7 @@ std::shared_ptr<Parameter> makeParameter(std::shared_ptr<SimulationParameter> si
 
     para->setTimestepEnd(simPara->getEndTime());
     para->setTimestepOut(simPara->getTimeStepLength());
-    para->setTStartOut(1);
+    para->setTimestepStartOut(1);
 
     para->setViscosityLB(simPara->getViscosity());
     para->setVelocityLB(simPara->getMaxVelocity());
