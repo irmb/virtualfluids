@@ -313,7 +313,7 @@ void printCaseFile(Parameter* para)
 	//////////////////////////////////////////////////////////////////////////
 	double deltaXcoarse = 0.256; // [m]
 	double deltat = (para->getVelocity() * deltaXcoarse) / (para->getVelocity() * para->getVelocityRatio());
-	unsigned int numberOfSteps = (unsigned int)((para->getTEnd() - para->getTStartOut()) * pow(2,5) );
+	unsigned int numberOfSteps = (unsigned int)((para->getTimestepEnd() - para->getTimestepStartOut()) * pow(2,5) );
 	//cout << "number of nodes:" << numberOfSteps << endl;
 	//////////////////////////////////////////////////////////////////////////
 	//set filename

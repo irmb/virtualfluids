@@ -1743,7 +1743,7 @@ int Parameter::getMaxLevel()
 {
     return this->maxlevel;
 }
-unsigned int Parameter::getTStart()
+unsigned int Parameter::getTimestepStart()
 {
     if (getDoRestart()) {
         return getTimeDoRestart() + 1;
@@ -1751,7 +1751,7 @@ unsigned int Parameter::getTStart()
         return 1;
     }
 }
-unsigned int Parameter::getTInit()
+unsigned int Parameter::getTimestepInit()
 {
     if (getDoRestart()) {
         return getTimeDoRestart();
@@ -1759,15 +1759,15 @@ unsigned int Parameter::getTInit()
         return 0;
     }
 }
-unsigned int Parameter::getTEnd()
+unsigned int Parameter::getTimestepEnd()
 {
     return ic.tend;
 }
-unsigned int Parameter::getTOut()
+unsigned int Parameter::getTimestepOut()
 {
     return ic.tout;
 }
-unsigned int Parameter::getTStartOut()
+unsigned int Parameter::getTimestepStartOut()
 {
     return ic.tStartOut;
 }

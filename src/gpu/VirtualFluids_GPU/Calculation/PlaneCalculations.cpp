@@ -375,7 +375,7 @@ void printRE(Parameter* para, CudaMemoryManager* cudaMemoryManager, int timestep
 	//close file
 	ostr.close();
 	//////////////////////////////////////////////////////////////////////////
-	if (timestep == (int)para->getTEnd())
+	if (timestep == (int)para->getTimestepEnd())
 	{
 		cudaMemoryManager->cudaFreeTestRE(lev);
 	}

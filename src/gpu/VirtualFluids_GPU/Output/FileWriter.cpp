@@ -24,7 +24,7 @@
 
 void FileWriter::writeInit(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager)
 {
-    unsigned int timestep = para->getTInit();
+    unsigned int timestep = para->getTimestepInit();
     for (int level = para->getCoarse(); level <= para->getFine(); level++) {
         cudaMemoryManager->cudaCopyPrint(level);
         writeTimestep(para, timestep, level);

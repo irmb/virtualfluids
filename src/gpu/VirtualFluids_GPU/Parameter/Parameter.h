@@ -722,11 +722,11 @@ public:
     unsigned int getMemSizeBool(int level);
     unsigned int getMemSizerealYZ(int level);
     unsigned int getSizeMat(int level);
-    unsigned int getTStart();
-    unsigned int getTInit();
-    unsigned int getTEnd();
-    unsigned int getTOut();
-    unsigned int getTStartOut();
+    unsigned int getTimestepStart();
+    unsigned int getTimestepInit();
+    unsigned int getTimestepEnd();
+    unsigned int getTimestepOut();
+    unsigned int getTimestepStartOut();
     unsigned int getTimestepForMP();
     unsigned int getTimestepOfCoarseLevel();
     real getDiffusivity();
