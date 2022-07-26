@@ -335,7 +335,7 @@ void Probe::write(Parameter* para, int level, int t)
     for (uint i = 1; i <= numberOfParts; i++)
 	{
         std::string fname = this->probeName + "_bin_lev_" + StringUtil::toString<int>(level)
-                                         + "_ID_" + StringUtil::toString<int>(para->getMyID())
+                                         + "_ID_" + StringUtil::toString<int>(para->getMyProcessID())
                                          + "_Part_" + StringUtil::toString<int>(i);
         if(!this->outputTimeSeries) fname += "_t_" + StringUtil::toString<int>(t_write);
         fname += ".vtk";
@@ -350,7 +350,7 @@ void Probe::write(Parameter* para, int level, int t)
 void Probe::writeCollectionFile(Parameter* para, int t)
 {
     int t_write = this->fileNameLU ? t: t/this->tOut; 
-    std::string filename = this->probeName + "_bin_ID_" + StringUtil::toString<int>(para->getMyID()) 
+    std::string filename = this->probeName + "_bin_ID_" + StringUtil::toString<int>(para->getMyProcessID()) 
                                            + "_t_" + StringUtil::toString<int>(t_write) 
                                            + ".vtk";
 
