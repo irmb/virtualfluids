@@ -228,7 +228,7 @@ int main(int argc, char *argv[])
         pointProbe->addStatistic(Statistic::Variances);
         para->addProbe( pointProbe );
         
-        SPtr<PlaneProbe> planeProbe = std::make_shared<PlaneProbe>("planeProbe", para->getOutputPath(), tStartAveraging, tAveraging, tStartOutProbe, tOutProbe) );
+        SPtr<PlaneProbe> planeProbe = std::make_shared<PlaneProbe>("planeProbe", para->getOutputPath(), tStartAveraging, tAveraging, tStartOutProbe, tOutProbe);
         planeProbe->setProbePlane(dSphere, 0, 0, 0.5, 0.1, 0.1);
         planeProbe->addStatistic(Statistic::Means);
         para->addProbe( planeProbe );

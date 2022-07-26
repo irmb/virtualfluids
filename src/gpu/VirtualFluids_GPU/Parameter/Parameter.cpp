@@ -1863,7 +1863,7 @@ real Parameter::getDensityRatio()
 {
     return ic.delta_rho;
 }
-real Parameter::getPressRatio()
+real Parameter::getPressureRatio()
 {
     return ic.delta_press;
 }
