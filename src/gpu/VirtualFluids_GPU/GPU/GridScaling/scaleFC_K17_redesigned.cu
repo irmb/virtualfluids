@@ -238,9 +238,6 @@ __global__ void scaleFC_K17_redesigned(
     real drho_PMM, vx1_PMM, vx2_PMM, vx3_PMM;
     real drho_MMM, vx1_MMM, vx2_MMM, vx3_MMM;
 
-    real f_P00, f_M00, f_0P0, f_0M0, f_00P, f_00M, f_PP0, f_MM0, f_PM0, f_MP0, f_P0P, f_M0M, f_P0M, f_M0P, f_0PP, f_0MM, f_0PM, f_0MP, f_000,
-        f_PPP, f_MMP, f_PMP, f_MPP, f_PPM, f_MMM, f_PMM, f_MPM;
-
     real kxyFromfcNEQ_PPP, kyzFromfcNEQ_PPP, kxzFromfcNEQ_PPP, kxxMyyFromfcNEQ_PPP, kxxMzzFromfcNEQ_PPP;
     real kxyFromfcNEQ_MPP, kyzFromfcNEQ_MPP, kxzFromfcNEQ_MPP, kxxMyyFromfcNEQ_MPP, kxxMzzFromfcNEQ_MPP;
     real kxyFromfcNEQ_PMP, kyzFromfcNEQ_PMP, kxzFromfcNEQ_PMP, kxxMyyFromfcNEQ_PMP, kxxMzzFromfcNEQ_PMP;
@@ -640,7 +637,7 @@ __global__ void scaleFC_K17_redesigned(
         real& f_MMM = m_000;
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        real m0, m1, m2, vvx, vvy, vvz, vx2, vy2, vz2, oMdrho;
+        real vvx, vvy, vvz, vx2, vy2, vz2;
         real mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
         real NeqOn = c1o1; // zero;//one;   //.... one = on ..... zero = off
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -665,7 +662,6 @@ __global__ void scaleFC_K17_redesigned(
         vx2    = vvx * vvx;
         vy2    = vvy * vvy;
         vz2    = vvz * vvz;
-        oMdrho = c1o1;
 
         // linear combinations for second order moments
         mxxPyyPzz = m_000;
