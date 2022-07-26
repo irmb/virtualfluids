@@ -70,6 +70,8 @@
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
 #include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
 #include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
+#include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PointProbe.h"
+#include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlaneProbe.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -89,8 +91,8 @@ int main(int argc, char *argv[])
         const real dt = (real)0.5e-3;
         const uint nx = 64;
 
-        const uint timeStepOut = 10000;
-        const uint timeStepEnd = 100000;
+        const uint timeStepOut = 1000;
+        const uint timeStepEnd = 10000;
 
         //////////////////////////////////////////////////////////////////////////
         // setup logger
@@ -206,7 +208,31 @@ int main(int argc, char *argv[])
         bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipCompressible);
         bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::PressureNonEquilibriumCompressible);
         bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipCompressible);
+
+        //////////////////////////////////////////////////////////////////////////
+        // setup probe(s)
+        //////////////////////////////////////////////////////////////////////////
+
+        const uint tStartAveraging = 0;
+        const uint tAveraging      = 100;
+        const uint tStartOutProbe  = 0;
+        const uint tOutProbe       = para->getTimestepOut();
+        SPtr<PointProbe> pointProbe = std::make_shared<PointProbe>( "pointProbe", para->getOutputPath(), tStartAveraging, tAveraging, tStartOutProbe, tOutProbe);
+        std::vector<real> probeCoordsX = {0.3, 0.5};
+        std::vector<real> probeCoordsY = {0.0, 0.0};
+        std::vector<real> probeCoordsZ = {0.0, 0.0};
+        pointProbe->addProbePointsFromList(probeCoordsX, probeCoordsY, probeCoordsZ);
+
+        pointProbe->addStatistic(Statistic::Instantaneous);
+        pointProbe->addStatistic(Statistic::Means);
+        pointProbe->addStatistic(Statistic::Variances);
+        para->addProbe( pointProbe );
         
+        SPtr<PlaneProbe> planeProbe = std::make_shared<PlaneProbe>("planeProbe", para->getOutputPath(), tStartAveraging, tAveraging, tStartOutProbe, tOutProbe) );
+        planeProbe->setProbePlane(dSphere, 0, 0, 0.5, 0.1, 0.1);
+        planeProbe->addStatistic(Statistic::Means);
+        para->addProbe( planeProbe );
+
         //////////////////////////////////////////////////////////////////////////
         // setup to copy mesh to simulation
         //////////////////////////////////////////////////////////////////////////
