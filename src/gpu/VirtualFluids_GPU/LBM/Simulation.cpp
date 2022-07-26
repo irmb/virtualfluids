@@ -74,7 +74,7 @@ Simulation::Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemo
     gridProvider.initalGridInformations();
 
     vf::cuda::verifyAndSetDevice(
-        communicator.mapCudaDevice(para->getMyID(), para->getNumprocs(), para->getDevices(), para->getMaxDev()));
+        communicator.mapCudaDevice(para->getMyProcessID(), para->getNumprocs(), para->getDevices(), para->getMaxDev()));
 
     para->initLBMSimulationParameter();
 
@@ -97,8 +97,8 @@ Simulation::Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemo
 
     restart_object = std::make_shared<ASCIIRestartObject>();
     //////////////////////////////////////////////////////////////////////////
-    output.setName(para->getFName() + StringUtil::toString<int>(para->getMyID()) + ".log");
-    if (para->getMyID() == 0)
+    output.setName(para->getFName() + StringUtil::toString<int>(para->getMyProcessID()) + ".log");
+    if (para->getMyProcessID() == 0)
         output.setConsoleOut(true);
     output.clearLogFile();
     //////////////////////////////////////////////////////////////////////////
@@ -350,7 +350,7 @@ Simulation::Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemo
     if (para->getDoRestart()) {
         output << "Restart...\n...get the Object...\n";
 
-        const auto name = getFileName(para->getFName(), para->getTimeDoRestart(), para->getMyID());
+        const auto name = getFileName(para->getFName(), para->getTimeDoRestart(), para->getMyProcessID());
         restart_object->deserialize(name, para);
 
         output << "...copy Memory for Restart...\n";
@@ -472,7 +472,7 @@ void Simulation::run()
 	////////////////////////////////////////////////////////////////////////////////
 	// Time loop
 	////////////////////////////////////////////////////////////////////////////////
-	for(timestep=para->getTStart();timestep<=para->getTEnd();timestep++)
+	for(timestep=para->getTimestepStart();timestep<=para->getTimestepEnd();timestep++)
 	{
         this->updateGrid27->updateGrid(0, timestep);
 
@@ -587,7 +587,7 @@ void Simulation::run()
 
                 output << "Write data for CheckPoint t=" << timestep << "...";
 
-				const auto name = getFileName(para->getFName(), timestep, para->getMyID());
+				const auto name = getFileName(para->getFName(), timestep, para->getMyProcessID());
 				restart_object->serialize(name, para);
 
                 output << "\n done\n";
@@ -700,7 +700,7 @@ void Simulation::run()
       // File IO
       ////////////////////////////////////////////////////////////////////////////////
       //communicator->startTimer();
-      if(para->getTOut()>0 && timestep%para->getTOut()==0 && timestep>para->getTStartOut())
+      if(para->getTimestepOut()>0 && timestep%para->getTimestepOut()==0 && timestep>para->getTimestepStartOut())
       {
 		  //////////////////////////////////////////////////////////////////////////////////
 		  //if (para->getParD(0)->evenOrOdd==true)  para->getParD(0)->evenOrOdd=false;
@@ -835,7 +835,7 @@ void Simulation::run()
 			   //////////////////////////////////////////////////////////////////////////
                if( this->kineticEnergyAnalyzer || this->enstrophyAnalyzer )
                {
-                   std::string fname = para->getFName() + "_ID_" + StringUtil::toString<int>(para->getMyID()) + "_t_" + StringUtil::toString<int>(timestep);
+                   std::string fname = para->getFName() + "_ID_" + StringUtil::toString<int>(para->getMyProcessID()) + "_t_" + StringUtil::toString<int>(timestep);
 
                    if (this->kineticEnergyAnalyzer) this->kineticEnergyAnalyzer->writeToFile(fname);
                    if (this->enstrophyAnalyzer)     this->enstrophyAnalyzer->writeToFile(fname);

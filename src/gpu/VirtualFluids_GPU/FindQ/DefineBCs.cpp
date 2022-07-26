@@ -48,7 +48,7 @@ void findQ27(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 
 void findBC27(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
-   if ( para->getMyID() == 0)
+   if ( para->getMyProcessID() == 0)
    {
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //Inflow

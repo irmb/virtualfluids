@@ -104,7 +104,7 @@ void printDragLift(Parameter* para, CudaMemoryManager* cudaMemoryManager, int ti
 	int lev = para->getMaxLevel();
 	//////////////////////////////////////////////////////////////////////////
 	//set filename
-	std::string ffname = para->getFName()+StringUtil::toString<int>(para->getMyID())+"_"+StringUtil::toString<int>(timestep)+"_DragLift.txt";
+	std::string ffname = para->getFName()+StringUtil::toString<int>(para->getMyProcessID())+"_"+StringUtil::toString<int>(timestep)+"_DragLift.txt";
 	const char* fname = ffname.c_str();
 	//////////////////////////////////////////////////////////////////////////
 	//set ofstream
@@ -122,7 +122,7 @@ void printDragLift(Parameter* para, CudaMemoryManager* cudaMemoryManager, int ti
 	//close file
 	ostr.close();
 	//////////////////////////////////////////////////////////////////////////
-	if (timestep == (int)para->getTEnd())
+	if (timestep == (int)para->getTimestepEnd())
 	{
 		cudaMemoryManager->cudaFreeDragLift(lev);
 	}

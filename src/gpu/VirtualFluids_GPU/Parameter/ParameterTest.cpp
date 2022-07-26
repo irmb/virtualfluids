@@ -66,9 +66,9 @@ TEST(ParameterTest, check_all_Parameter_CanBePassedToConstructor)
     EXPECT_THAT(para.getSimulatePorousMedia(), testing::Eq(true));
 
     EXPECT_THAT(para.getD3Qxx(), testing::Eq(99));
-    EXPECT_THAT(para.getTEnd(), testing::Eq(33));
-    EXPECT_THAT(para.getTOut(), testing::Eq(22));
-    EXPECT_THAT(para.getTStartOut(), testing::Eq(11));
+    EXPECT_THAT(para.getTimestepEnd(), testing::Eq(33));
+    EXPECT_THAT(para.getTimestepOut(), testing::Eq(22));
+    EXPECT_THAT(para.getTimestepStartOut(), testing::Eq(11));
     EXPECT_THAT(para.getTimeCalcMedStart(), testing::Eq(22));
     EXPECT_THAT(para.getTimeCalcMedEnd(), testing::Eq(44));
     EXPECT_THAT(para.getPressInID(), testing::Eq(25));
@@ -87,7 +87,7 @@ TEST(ParameterTest, check_all_Parameter_CanBePassedToConstructor)
     EXPECT_THAT(para.getViscosityRatio(), RealEq(6.66));
     EXPECT_THAT(para.getVelocityRatio(), RealEq(7.77));
     EXPECT_THAT(para.getDensityRatio(), RealEq(8.88));
-    EXPECT_THAT(para.getPressRatio(), RealEq(9.99));
+    EXPECT_THAT(para.getPressureRatio(), RealEq(9.99));
 
     EXPECT_THAT(para.getRealX(), RealEq(0.1));
     EXPECT_THAT(para.getRealY(), RealEq(0.2));

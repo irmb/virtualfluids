@@ -47,7 +47,7 @@
 Parameter::Parameter(int numberOfProcesses, int myId)
 {
     this->ic.numprocs = numberOfProcesses; 
-    this->ic.myid = myId;
+    this->ic.myProcessId = myId;
     
     initGridPaths();
     initGridBasePoints();
@@ -62,7 +62,7 @@ Parameter::Parameter(int numberOfProcesses, int myId)
 Parameter::Parameter(const vf::basics::ConfigurationFile &configData, int numberOfProcesses, int myId)
 {
     this->ic.numprocs = numberOfProcesses; 
-    this->ic.myid = myId;
+    this->ic.myProcessId = myId;
 
     readConfigData(configData);
 
@@ -374,7 +374,7 @@ void Parameter::initGridPaths(){
 
     // for multi-gpu add process id (if not already there)
     if (this->getNumprocs() > 1) {
-        gridPath += StringUtil::toString(this->getMyID()) + "/";
+        gridPath += StringUtil::toString(this->getMyProcessID()) + "/";
         ic.gridPath = gridPath;
     }
 
@@ -518,8 +518,8 @@ void Parameter::initLBMSimulationParameter()
         parH[i]->mem_size_bool    = sizeof(bool) * parH[i]->size_Mat;
         parH[i]->mem_size_real_yz = sizeof(real) * parH[i]->ny * parH[i]->nz;
         parH[i]->isEvenTimestep        = true;
-        parH[i]->startz           = parH[i]->gridNZ * ic.myid;
-        parH[i]->endz             = parH[i]->gridNZ * ic.myid + parH[i]->gridNZ;
+        parH[i]->startz           = parH[i]->gridNZ * ic.myProcessId;
+        parH[i]->endz             = parH[i]->gridNZ * ic.myProcessId + parH[i]->gridNZ;
         parH[i]->Lx               = (real)((1.f * parH[i]->gridNX - 1.f) / (pow(2.f, i)));
         parH[i]->Ly               = (real)((1.f * parH[i]->gridNY - 1.f) / (pow(2.f, i)));
         parH[i]->Lz               = (real)((1.f * parH[i]->gridNZ - 1.f) / (pow(2.f, i)));
@@ -856,7 +856,7 @@ void Parameter::setMaxDev(int maxdev)
 }
 void Parameter::setMyID(int myid)
 {
-    ic.myid = myid;
+    ic.myProcessId = myid;
 }
 void Parameter::setNumprocs(int numprocs)
 {
@@ -1743,7 +1743,7 @@ int Parameter::getMaxLevel()
 {
     return this->maxlevel;
 }
-unsigned int Parameter::getTStart()
+unsigned int Parameter::getTimestepStart()
 {
     if (getDoRestart()) {
         return getTimeDoRestart() + 1;
@@ -1751,7 +1751,7 @@ unsigned int Parameter::getTStart()
         return 1;
     }
 }
-unsigned int Parameter::getTInit()
+unsigned int Parameter::getTimestepInit()
 {
     if (getDoRestart()) {
         return getTimeDoRestart();
@@ -1759,15 +1759,15 @@ unsigned int Parameter::getTInit()
         return 0;
     }
 }
-unsigned int Parameter::getTEnd()
+unsigned int Parameter::getTimestepEnd()
 {
     return ic.tend;
 }
-unsigned int Parameter::getTOut()
+unsigned int Parameter::getTimestepOut()
 {
     return ic.tout;
 }
-unsigned int Parameter::getTStartOut()
+unsigned int Parameter::getTimestepStartOut()
 {
     return ic.tStartOut;
 }
@@ -1863,7 +1863,7 @@ real Parameter::getDensityRatio()
 {
     return ic.delta_rho;
 }
-real Parameter::getPressRatio()
+real Parameter::getPressureRatio()
 {
     return ic.delta_press;
 }
@@ -1895,9 +1895,9 @@ int Parameter::getMaxDev()
 {
     return ic.maxdev;
 }
-int Parameter::getMyID()
+int Parameter::getMyProcessID()
 {
-    return ic.myid;
+    return ic.myProcessId;
 }
 int Parameter::getNumprocs()
 {

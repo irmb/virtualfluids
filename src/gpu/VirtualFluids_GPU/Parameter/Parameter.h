@@ -640,11 +640,13 @@ public:
     int getDiffMod();
     int getFactorNZ();
     int getD3Qxx();
+    //! \returns the maximum level of grid refinement
     int getMaxLevel();
     int getTimeCalcMedStart();
     int getTimeCalcMedEnd();
     int getMaxDev();
-    int getMyID();
+    //! \returns the ID of the current MPI process
+    int getMyProcessID();
     int getNumprocs();
     std::string getOutputPath();
     std::string getOutputPrefix();
@@ -720,11 +722,11 @@ public:
     unsigned int getMemSizeBool(int level);
     unsigned int getMemSizerealYZ(int level);
     unsigned int getSizeMat(int level);
-    unsigned int getTStart();
-    unsigned int getTInit();
-    unsigned int getTEnd();
-    unsigned int getTOut();
-    unsigned int getTStartOut();
+    unsigned int getTimestepStart();
+    unsigned int getTimestepInit();
+    unsigned int getTimestepEnd();
+    unsigned int getTimestepOut();
+    unsigned int getTimestepStartOut();
     unsigned int getTimestepForMP();
     unsigned int getTimestepOfCoarseLevel();
     real getDiffusivity();
@@ -732,12 +734,19 @@ public:
     real getTemperatureBC();
     real getViscosity();
     real getVelocity();
+    //! \returns the viscosity ratio in SI/LB units
     real getViscosityRatio();
+    //! \returns the velocity ratio in SI/LB units
     real getVelocityRatio();
+    //! \returns the density ratio in SI/LB units
     real getDensityRatio();
-    real getPressRatio();
+    //! \returns the pressure ratio in SI/LB units
+    real getPressureRatio();
+    //! \returns the time ratio in SI/LB units
     real getTimeRatio();
+    //! \returns the length ratio in SI/LB units
     real getLengthRatio();
+    //! \returns the force ratio in SI/LB units
     real getForceRatio();
     real getRealX();
     real getRealY();
@@ -766,6 +775,7 @@ public:
     TempPressforBoundaryConditions *getTempPressH();
     TempPressforBoundaryConditions *getTempPressD();
     std::vector<SPtr<PreCollisionInteractor>> getActuators();
+    //! \returns the probes, e.g. point or plane probe
     std::vector<SPtr<PreCollisionInteractor>> getProbes();
     unsigned int getTimeDoCheckPoint();
     unsigned int getTimeDoRestart();
@@ -871,6 +881,7 @@ private:
     bool calcVelocityAndFluctuations{ false };
     bool isBodyForce{ false };
     int diffMod{ 27 };
+    //! \property maximum level of grid refinement
     int maxlevel{ 0 };
     int coarse{ 0 };
     int fine{ 0 };
