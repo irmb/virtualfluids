@@ -2,7 +2,7 @@
 #include <stdexcept>
 
 #include "BCKernelManager.h"
-#include "BoundaryConditions/BoundaryConditionFactory.h"
+#include "Factories/BoundaryConditionFactory.h"
 #include "Parameter/Parameter.h"
 #include "PointerDefinitions.h"
 

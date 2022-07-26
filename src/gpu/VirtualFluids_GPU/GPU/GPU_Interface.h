@@ -8,12 +8,11 @@
 #ifndef GPU_INTERFACE_H
 #define GPU_INTERFACE_H
 
-#include <curand.h> //random numbers
-#include <curand_kernel.h>
-#include <cuda_runtime.h>
-
-#include <DataTypes.h>
 #include "LBM/LB.h"
+
+#include <cuda_runtime.h>
+#include <curand.h>
+#include <curand_kernel.h>
 
 struct LBMSimulationParameter;
 class Parameter;
