@@ -201,46 +201,6 @@ gcc_9_python_bindings_test:
   script:
     - python3 -m unittest discover -s Python -v
 
-###############################################################################
-gcc_9_python_slurm_test:
-  stage: test
-
-  needs: ["gcc_9_python"]
-
-  rules:
-    - if: $PHOENIX_PRIVATE_KEY
-
-  tags:
-    - linux
-    - privileged
-
-  variables:
-    SSH_KEY: "$PHOENIX_PRIVATE_KEY"
-    HOST: "$PHOENIX_HOSTNAME"
-    USER: "$PHOENIX_USER"
-
-  before_script:
-    - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
-    - apt-get install -y rsync
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - eval $(ssh-agent -s)
-    - echo "$SSH_KEY" | tr -d '\r' | ssh-add -
-    - echo $SSH_KEY >> ansible/private_key
-    - ssh-keyscan -t rsa $HOST >> ~/.ssh/known_hosts
-    - ssh $USER@$HOST "rm -rf output-*"
-    - ssh $USER@$HOST "rm -f *.out"
-    - pip3 install git+git://github.com/SvenMarcus/ssh-slurm-runner
-
-  script:
-    - singularity build PoiseuilleTestContainer.sif Python/SlurmTests/poiseuille/PoiseuilleTestContainer.def
-    - scp PoiseuilleTestContainer.sif $USER@$HOST:PoiseuilleTestContainer.sif
-    - scp Python/SlurmTests/poiseuille/slurm.job $USER@$HOST:slurm.job
-    - python3 -m ssh_slurm_runner slurm.job --host $HOST --user $USER --keyfile ansible/private_key
-    - ssh $USER@$HOST "rm -rf output-*"
-    - ssh $USER@$HOST "rm -f *.out"
-    - ssh $USER@$HOST "rm PoiseuilleTestContainer.sif"
-    - ssh $USER@$HOST "rm slurm.job"
 
 ###############################################################################
 ##                            Benchmark                                      ##
