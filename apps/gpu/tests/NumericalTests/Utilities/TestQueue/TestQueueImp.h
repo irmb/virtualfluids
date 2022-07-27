@@ -12,6 +12,7 @@ class ColorConsoleOutput;
 class TestQueueImp : public TestQueue
 {
 public:
+	TestSuiteResult run() override;
 	void makeFinalOutput();
 
 	int getNumberOfFailedTests() const noexcept override;
