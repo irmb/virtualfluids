@@ -53,10 +53,12 @@
 #include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
 #include "GridGenerator/grid/GridFactory.h"
+#include "GridGenerator/geometries/Cuboid/Cuboid.h"
 
 //////////////////////////////////////////////////////////////////////////
 
 #include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
+#include "VirtualFluids_GPU/Factories/GridScalingFactory.h"
 #include "VirtualFluids_GPU/Communication/Communicator.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
@@ -129,6 +131,9 @@ int main(int argc, char *argv[])
 
         gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L, 0.5 * L, 0.5 * L, 0.5 * L, dx);
 
+        gridBuilder->setNumberOfLayers(10, 8);
+        gridBuilder->addGrid(new Cuboid(-0.1 * L, -0.1 * L,-0.1 * L, 0.1 * L,0.1 * L,0.1 * L), 1);
+
         gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
         gridBuilder->buildGrids(lbmOrGks, false);
@@ -140,6 +145,7 @@ int main(int argc, char *argv[])
         if (lbmOrGks == LBM) {
             SPtr<Parameter> para = std::make_shared<Parameter>();
             BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
+            GridScalingFactory scalingFactory = GridScalingFactory();
             vf::gpu::Communicator &communicator = vf::gpu::Communicator::getInstance();
 
             //////////////////////////////////////////////////////////////////////////
@@ -175,7 +181,12 @@ int main(int argc, char *argv[])
             para->setTimestepOut(timeStepOut);
             para->setTimestepEnd(timeStepEnd);
 
+            
+            para->setMaxLevel(2);
+
             para->setMainKernel("CumulantK17CompChimRedesigned");
+            scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleRhoSq);
+
 
             //////////////////////////////////////////////////////////////////////////
             // set boundary conditions
@@ -212,7 +223,7 @@ int main(int argc, char *argv[])
             // run simulation
             //////////////////////////////////////////////////////////////////////////
 
-            Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory);
+            Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory, &scalingFactory);
             sim.run();
         } // else {
         //     CudaUtility::setCudaDevice(0);
