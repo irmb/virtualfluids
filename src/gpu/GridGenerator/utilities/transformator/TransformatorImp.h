@@ -37,7 +37,6 @@
 #include <sstream>
 
 #include "global.h"
-#include "GridGenerator_export.h"
 
 #include "utilities/transformator/Transformator.h"
 #include "utilities/transformator/ArrowTransformator.h"

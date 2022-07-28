@@ -35,7 +35,6 @@
 
 #include <vector>
 #include <array>
-#include "GridGenerator_export.h"
 #include "Core/LbmOrGks.h"
 
 #include "global.h"
