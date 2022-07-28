@@ -5853,72 +5853,62 @@ void ScaleFC_staggered_time_comp_27(   real* DC,
       getLastCudaError("scaleFC_Fix_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-void ScaleFC_RhoSq_comp_27(real* DC,
-									  real* DF,
-									  unsigned int* neighborCX,
-									  unsigned int* neighborCY,
-									  unsigned int* neighborCZ,
-									  unsigned int* neighborFX,
-									  unsigned int* neighborFY,
-									  unsigned int* neighborFZ,
-									  unsigned int size_MatC,
-									  unsigned int size_MatF,
-									  bool isEvenTimestep,
-									  unsigned int* posC,
-									  unsigned int* posFSWB,
-									  unsigned int kFC,
-									  real omCoarse,
-									  real omFine,
-									  real nu,
-									  unsigned int nxC,
-									  unsigned int nyC,
-									  unsigned int nxF,
-									  unsigned int nyF,
-									  unsigned int numberOfThreads,
-									  OffFC offFC,
-                             CUstream_st *stream)
+void ScaleFC_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellFC * icellFC, CUstream_st *stream)
 {
-   int Grid = (kFC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_FC(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   dim3 grid = vf::cuda::getCudaGrid(parameterDeviceC->numberofthreads,  icellFC->kFC);
+   dim3 threads(parameterDeviceC->numberofthreads, 1, 1 );
 
-      scaleFC_RhoSq_comp_27<<<gridINT_FC, threads, 0, stream>>>(
-													   DC,
-													   DF,
-													   neighborCX,
-													   neighborCY,
-													   neighborCZ,
-													   neighborFX,
-													   neighborFY,
-													   neighborFZ,
-													   size_MatC,
-													   size_MatF,
-													   isEvenTimestep,
-													   posC,
-													   posFSWB,
-													   kFC,
-													   omCoarse,
-													   omFine,
-													   nu,
-													   nxC,
-													   nyC,
-													   nxF,
-													   nyF,
-													   offFC);
-      getLastCudaError("scaleFC_RhoSq_27 execution failed");
+   scaleFC_RhoSq_comp_27<<<grid, threads, 0, stream>>>(
+      parameterDeviceC->distributions.f[0],
+      parameterDeviceF->distributions.f[0],
+      parameterDeviceC->neighborX,
+      parameterDeviceC->neighborY,
+      parameterDeviceC->neighborZ,
+      parameterDeviceF->neighborX,
+      parameterDeviceF->neighborY,
+      parameterDeviceF->neighborZ,
+      parameterDeviceC->numberOfNodes,
+      parameterDeviceF->numberOfNodes,
+      parameterDeviceC->isEvenTimestep,
+      icellFC->ICellFCC,
+      icellFC->ICellFCF,
+      icellFC->kFC,
+      parameterDeviceC->omega,
+      parameterDeviceF->omega,
+      parameterDeviceC->vis,
+      parameterDeviceC->nx,
+      parameterDeviceC->ny,
+      parameterDeviceF->nx,
+      parameterDeviceF->ny,
+      parameterDeviceC->offFC);
+   getLastCudaError("scaleFC_RhoSq_27 execution failed");
 }
+//////////////////////////////////////////////////////////////////////////
+void ScaleFC_K17_redesigned(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellFC * icellFC, CUstream_st *stream)
+{
+   dim3 grid = vf::cuda::getCudaGrid(parameterDeviceC->numberofthreads,  icellFC->kFC);
+   dim3 threads(parameterDeviceC->numberofthreads, 1, 1 );
 
+   scaleFC_K17_redesigned<<<grid, threads, 0, stream>>>(
+      parameterDeviceC->distributions.f[0],
+      parameterDeviceF->distributions.f[0],
+      parameterDeviceC->neighborX,
+      parameterDeviceC->neighborY,
+      parameterDeviceC->neighborZ,
+      parameterDeviceF->neighborX,
+      parameterDeviceF->neighborY,
+      parameterDeviceF->neighborZ,
+      parameterDeviceC->numberOfNodes,
+      parameterDeviceF->numberOfNodes,
+      parameterDeviceC->isEvenTimestep,
+      icellFC->ICellFCC,
+      icellFC->ICellFCF,
+      icellFC->kFC,
+      parameterDeviceC->omega,
+      parameterDeviceF->omega,
+      parameterDeviceC->offFC);
+   getLastCudaError("scaleFC_RhoSq_27 execution failed");
+}
 //////////////////////////////////////////////////////////////////////////
 void ScaleFC_RhoSq_3rdMom_comp_27( real* DC,
 											  real* DF,

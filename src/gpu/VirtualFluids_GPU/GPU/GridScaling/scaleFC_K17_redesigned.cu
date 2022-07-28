@@ -148,8 +148,8 @@ __global__ void scaleFC_K17_redesigned(
     ////////////////////////////////////////////////////////////////////////////////
     //! - Get the thread index coordinates from threadIdx, blockIdx, blockDim and gridDim.
     //!
-    const unsigned k_000 = vf::gpu::getNodeIndex();
-
+    const unsigned k_thread = vf::gpu::getNodeIndex();
+    
     //////////////////////////////////////////////////////////////////////////
     //! - Read distributions: style of reading and writing the distributions from/to stored arrays dependent on
     //! timestep is based on the esoteric twist algorithm \ref <a
@@ -158,67 +158,6 @@ __global__ void scaleFC_K17_redesigned(
     //!
     Distributions27 distFine   = vf::gpu::getDistributionReferences27(distributionsFine,   numberOfLBnodesFine,   true);
     Distributions27 distCoarse = vf::gpu::getDistributionReferences27(distributionsCoarse, numberOfLBnodesCoarse, isEvenTimestep);
-
-    // real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC,
-    //     *fbnC, *ftsC, *fzeroC, *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
-
-    // if (isEvenTimestep == true) {
-    //     feC    = &distributionsCoarse[DIR_P00 * numberOfLBnodesCoarse];
-    //     fwC    = &distributionsCoarse[DIR_M00 * numberOfLBnodesCoarse];
-    //     fnC    = &distributionsCoarse[DIR_0P0 * numberOfLBnodesCoarse];
-    //     fsC    = &distributionsCoarse[DIR_0M0 * numberOfLBnodesCoarse];
-    //     ftC    = &distributionsCoarse[DIR_00P * numberOfLBnodesCoarse];
-    //     fbC    = &distributionsCoarse[DIR_00M * numberOfLBnodesCoarse];
-    //     fneC   = &distributionsCoarse[DIR_PP0 * numberOfLBnodesCoarse];
-    //     fswC   = &distributionsCoarse[DIR_MM0 * numberOfLBnodesCoarse];
-    //     fseC   = &distributionsCoarse[DIR_PM0 * numberOfLBnodesCoarse];
-    //     fnwC   = &distributionsCoarse[DIR_MP0 * numberOfLBnodesCoarse];
-    //     fteC   = &distributionsCoarse[DIR_P0P * numberOfLBnodesCoarse];
-    //     fbwC   = &distributionsCoarse[DIR_M0M * numberOfLBnodesCoarse];
-    //     fbeC   = &distributionsCoarse[DIR_P0M * numberOfLBnodesCoarse];
-    //     ftwC   = &distributionsCoarse[DIR_M0P * numberOfLBnodesCoarse];
-    //     ftnC   = &distributionsCoarse[DIR_0PP * numberOfLBnodesCoarse];
-    //     fbsC   = &distributionsCoarse[DIR_0MM * numberOfLBnodesCoarse];
-    //     fbnC   = &distributionsCoarse[DIR_0PM * numberOfLBnodesCoarse];
-    //     ftsC   = &distributionsCoarse[DIR_0MP * numberOfLBnodesCoarse];
-    //     fzeroC = &distributionsCoarse[DIR_000 * numberOfLBnodesCoarse];
-    //     ftneC  = &distributionsCoarse[DIR_PPP * numberOfLBnodesCoarse];
-    //     ftswC  = &distributionsCoarse[DIR_MMP * numberOfLBnodesCoarse];
-    //     ftseC  = &distributionsCoarse[DIR_PMP * numberOfLBnodesCoarse];
-    //     ftnwC  = &distributionsCoarse[DIR_MPP * numberOfLBnodesCoarse];
-    //     fbneC  = &distributionsCoarse[DIR_PPM * numberOfLBnodesCoarse];
-    //     fbswC  = &distributionsCoarse[DIR_MMM * numberOfLBnodesCoarse];
-    //     fbseC  = &distributionsCoarse[DIR_PMM * numberOfLBnodesCoarse];
-    //     fbnwC  = &distributionsCoarse[DIR_MPM * numberOfLBnodesCoarse];
-    // } else {
-    //     fwC    = &distributionsCoarse[DIR_P00 * numberOfLBnodesCoarse];
-    //     feC    = &distributionsCoarse[DIR_M00 * numberOfLBnodesCoarse];
-    //     fsC    = &distributionsCoarse[DIR_0P0 * numberOfLBnodesCoarse];
-    //     fnC    = &distributionsCoarse[DIR_0M0 * numberOfLBnodesCoarse];
-    //     fbC    = &distributionsCoarse[DIR_00P * numberOfLBnodesCoarse];
-    //     ftC    = &distributionsCoarse[DIR_00M * numberOfLBnodesCoarse];
-    //     fswC   = &distributionsCoarse[DIR_PP0 * numberOfLBnodesCoarse];
-    //     fneC   = &distributionsCoarse[DIR_MM0 * numberOfLBnodesCoarse];
-    //     fnwC   = &distributionsCoarse[DIR_PM0 * numberOfLBnodesCoarse];
-    //     fseC   = &distributionsCoarse[DIR_MP0 * numberOfLBnodesCoarse];
-    //     fbwC   = &distributionsCoarse[DIR_P0P * numberOfLBnodesCoarse];
-    //     fteC   = &distributionsCoarse[DIR_M0M * numberOfLBnodesCoarse];
-    //     ftwC   = &distributionsCoarse[DIR_P0M * numberOfLBnodesCoarse];
-    //     fbeC   = &distributionsCoarse[DIR_M0P * numberOfLBnodesCoarse];
-    //     fbsC   = &distributionsCoarse[DIR_0PP * numberOfLBnodesCoarse];
-    //     ftnC   = &distributionsCoarse[DIR_0MM * numberOfLBnodesCoarse];
-    //     ftsC   = &distributionsCoarse[DIR_0PM * numberOfLBnodesCoarse];
-    //     fbnC   = &distributionsCoarse[DIR_0MP * numberOfLBnodesCoarse];
-    //     fzeroC = &distributionsCoarse[DIR_000 * numberOfLBnodesCoarse];
-    //     fbswC  = &distributionsCoarse[DIR_PPP * numberOfLBnodesCoarse];
-    //     fbneC  = &distributionsCoarse[DIR_MMP * numberOfLBnodesCoarse];
-    //     fbnwC  = &distributionsCoarse[DIR_PMP * numberOfLBnodesCoarse];
-    //     fbseC  = &distributionsCoarse[DIR_MPP * numberOfLBnodesCoarse];
-    //     ftswC  = &distributionsCoarse[DIR_PPM * numberOfLBnodesCoarse];
-    //     ftneC  = &distributionsCoarse[DIR_MMM * numberOfLBnodesCoarse];
-    //     ftnwC  = &distributionsCoarse[DIR_PMM * numberOfLBnodesCoarse];
-    //     ftseC  = &distributionsCoarse[DIR_MPM * numberOfLBnodesCoarse];
-    // }
 
     ////////////////////////////////////////////////////////////////////////////////
     real eps_new = c2o1;
@@ -252,11 +191,13 @@ __global__ void scaleFC_K17_redesigned(
     real c_000, c_100, c_010, c_001, c_200, c_020, c_002, c_110, c_101, c_011;
     real d_000, d_100, d_010, d_001, d_110, d_101, d_011;
 
-    if (k_000 < numberOfInterfaceNodes) {
+
+    if (k_thread < numberOfInterfaceNodes) {
         //////////////////////////////////////////////////////////////////////////
-        xoff    = offsetFC.xOffFC[k_000];
-        yoff    = offsetFC.yOffFC[k_000];
-        zoff    = offsetFC.zOffFC[k_000];
+        xoff    = offsetFC.xOffFC[k_thread];
+        yoff    = offsetFC.yOffFC[k_thread];
+        zoff    = offsetFC.zOffFC[k_thread];
+         
         xoff_sq = xoff * xoff;
         yoff_sq = yoff * yoff;
         zoff_sq = zoff * zoff;
@@ -265,7 +206,7 @@ __global__ void scaleFC_K17_redesigned(
         // source node BSW = MMM
         //////////////////////////////////////////////////////////////////////////
         // index of the base node
-        unsigned int k_base_000 = indicesFineMMM[k_000];
+        unsigned int k_base_000 = indicesFineMMM[k_thread];
         unsigned int k_base_M00 = neighborXfine [k_base_000];
         unsigned int k_base_0M0 = neighborYfine [k_base_000];
         unsigned int k_base_00M = neighborZfine [k_base_000];
@@ -752,7 +693,7 @@ __global__ void scaleFC_K17_redesigned(
 
         ////////////////////////////////////////////////////////////////////////////////////
         // index 0
-        k_000 = indicesCoarse000[k_000];
+        k_000 = indicesCoarse000[k_thread];
         k_M00 = neighborXcoarse[k_000];
         k_0M0 = neighborYcoarse[k_000];
         k_00M = neighborZcoarse[k_000];
@@ -795,7 +736,6 @@ __global__ void scaleFC_K17_redesigned(
         (distCoarse.f[DIR_MPM])[k_M0M] = f_MPM;
         (distCoarse.f[DIR_PMM])[k_0MM] = f_PMM;
         (distCoarse.f[DIR_MMM])[k_MMM] = f_MMM;
-
         ////////////////////////////////////////////////////////////////////////////////////
     }
 }

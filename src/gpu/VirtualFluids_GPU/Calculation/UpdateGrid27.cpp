@@ -318,9 +318,9 @@ void UpdateGrid27::preCollisionBC(int level, unsigned int t)
     //////////////////////////////////////////////////////////////////////////////////
 }
 
-void UpdateGrid27::fineToCoarse(int level, uint *iCellFCC, uint *iCellFCF, uint k_FC, int streamIndex)
+void UpdateGrid27::fineToCoarse(int level, InterpolationCellFC* icellFC, int streamIndex)
 {
-    gridScalingKernelManager->runFineToCoarseKernelLB(level, iCellFCC, iCellFCF, k_FC, streamIndex);
+    gridScalingKernelManager->runFineToCoarseKernelLB(level, icellFC, streamIndex);
 
     if (para->getDiffOn()) {
         if (streamIndex != -1) {
@@ -331,10 +331,10 @@ void UpdateGrid27::fineToCoarse(int level, uint *iCellFCC, uint *iCellFCF, uint 
     }
 }
 
-void UpdateGrid27::coarseToFine(int level, uint *iCellCFC, uint *iCellCFF, uint k_CF, OffCF &offCF,
+void UpdateGrid27::coarseToFine(int level, InterpolationCellCF* icellCF, OffCF &offCF,
                                 int streamIndex)
 {
-    this->gridScalingKernelManager->runCoarseToFineKernelLB(level, iCellCFC, iCellCFF, k_CF, offCF, streamIndex);
+    this->gridScalingKernelManager->runCoarseToFineKernelLB(level, icellCF, offCF, streamIndex);
 
     if (para->getDiffOn())
     {
@@ -374,7 +374,7 @@ void UpdateGrid27::exchangeData(int level)
 }
 
 UpdateGrid27::UpdateGrid27(SPtr<Parameter> para, vf::gpu::Communicator &comm, SPtr<CudaMemoryManager> cudaMemoryManager,
-                           std::vector<std::shared_ptr<PorousMedia>> &pm, std::vector<SPtr<Kernel>> &kernels , BoundaryConditionFactory* bcFactory)
+                           std::vector<std::shared_ptr<PorousMedia>> &pm, std::vector<SPtr<Kernel>> &kernels , BoundaryConditionFactory* bcFactory, GridScalingFactory* scalingFactory)
     : para(para), comm(comm), cudaMemoryManager(cudaMemoryManager), pm(pm), kernels(kernels)
 {
     this->collision = getFunctionForCollisionAndExchange(para->getUseStreams(), para->getNumprocs(), para->getKernelNeedsFluidNodeIndicesToRun());
@@ -382,5 +382,5 @@ UpdateGrid27::UpdateGrid27(SPtr<Parameter> para, vf::gpu::Communicator &comm, SP
 
     this->bcKernelManager = std::make_shared<BCKernelManager>(para, bcFactory);
     this->adKernelManager = std::make_shared<ADKernelManager>(para);
-    this->gridScalingKernelManager =  std::make_shared<GridScalingKernelManager>(para);
+    this->gridScalingKernelManager = std::make_shared<GridScalingKernelManager>(para, scalingFactory);
 }

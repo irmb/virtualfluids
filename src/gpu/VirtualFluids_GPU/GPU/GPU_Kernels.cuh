@@ -2077,6 +2077,25 @@ __global__ void scaleFC_RhoSq_comp_27( real* DC,
 												  unsigned int nyF,
 												  OffFC offFC);
 
+__global__ void scaleFC_K17_redesigned(
+    real *distributionsCoarse,
+    real *distributionsFine,
+    unsigned int *neighborXcoarse,
+    unsigned int *neighborYcoarse,
+    unsigned int *neighborZcoarse,
+    unsigned int *neighborXfine,
+    unsigned int *neighborYfine,
+    unsigned int *neighborZfine,
+    unsigned int numberOfLBnodesCoarse,
+    unsigned int numberOfLBnodesFine,
+    bool isEvenTimestep,
+    unsigned int *indicesCoarse000,
+    unsigned int *indicesFineMMM,
+    unsigned int numberOfInterfaceNodes,
+    real omegaCoarse,
+    real omegaFine,
+    OffFC offsetFC);
+
 __global__ void scaleFC_RhoSq_3rdMom_comp_27(real* DC,
 														real* DF,
 														unsigned int* neighborCX,

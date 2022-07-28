@@ -29,12 +29,13 @@ class UpdateGrid27;
 class KineticEnergyAnalyzer;
 class EnstrophyAnalyzer;
 class BoundaryConditionFactory;
+class GridScalingFactory;
 
 class Simulation
 {
 public:
     Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> memoryManager,
-               vf::gpu::Communicator &communicator, GridProvider &gridProvider, BoundaryConditionFactory* bcFactory);
+               vf::gpu::Communicator &communicator, GridProvider &gridProvider, BoundaryConditionFactory* bcFactory, GridScalingFactory* scalingFactory = nullptr);
     ~Simulation();
     void run();
 

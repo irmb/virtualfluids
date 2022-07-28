@@ -13,6 +13,7 @@ class ADKernelManager;
 class GridScalingKernelManager;
 class Kernel;
 class BoundaryConditionFactory;
+class GridScalingFactory;
 
 class UpdateGrid27;
 using CollisionStrategy = std::function<void (UpdateGrid27* updateGrid, Parameter* para, int level, unsigned int t)>;
@@ -23,7 +24,7 @@ class UpdateGrid27
 {
 public:
     UpdateGrid27(SPtr<Parameter> para, vf::gpu::Communicator &comm, SPtr<CudaMemoryManager> cudaMemoryManager,
-                 std::vector<std::shared_ptr<PorousMedia>> &pm, std::vector<SPtr<Kernel>> &kernels, BoundaryConditionFactory* bcFactory);
+                 std::vector<std::shared_ptr<PorousMedia>> &pm, std::vector<SPtr<Kernel>> &kernels, BoundaryConditionFactory* bcFactory, GridScalingFactory* scalingFactory);
     void updateGrid(int level, unsigned int t);
     void exchangeData(int level);
 
@@ -36,8 +37,8 @@ private:
     void preCollisionBC(int level, unsigned int t);
     void collisionPorousMedia(int level);
 
-    void fineToCoarse(int level, uint *iCellFCC, uint *iCellFCF, uint k_FC, int streamIndex);
-    void coarseToFine(int level, uint *iCellCFC, uint *iCellCFF, uint k_CF, OffCF &offCF, int streamIndex);
+    void fineToCoarse(int level, InterpolationCellFC* icellFC, int streamIndex);
+    void coarseToFine(int level, InterpolationCellCF* icellCF, OffCF &offCF, int streamIndex);
 
     void prepareExchangeMultiGPU(int level, int streamIndex);
     void prepareExchangeMultiGPUAfterFtoC(int level, int streamIndex);

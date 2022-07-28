@@ -1854,30 +1854,8 @@ void ScaleFC_staggered_time_comp_27( real* DC,
 												unsigned int numberOfThreads,
 												OffFC offFC);
 
-void ScaleFC_RhoSq_comp_27(  real* DC, 
-										real* DF, 
-										unsigned int* neighborCX,
-										unsigned int* neighborCY,
-										unsigned int* neighborCZ,
-										unsigned int* neighborFX,
-										unsigned int* neighborFY,
-										unsigned int* neighborFZ,
-										unsigned int size_MatC, 
-										unsigned int size_MatF, 
-										bool isEvenTimestep,
-										unsigned int* posC, 
-										unsigned int* posFSWB, 
-										unsigned int kFC, 
-										real omCoarse, 
-										real omFine, 
-										real nu, 
-										unsigned int nxC, 
-										unsigned int nyC, 
-										unsigned int nxF, 
-										unsigned int nyF,
-										unsigned int numberOfThreads, 
-	                                    OffFC offFC,
-                                        CUstream_st *stream);
+void ScaleFC_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellFC * icellFC, CUstream_st *stream);
+void ScaleFC_K17_redesigned(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellFC * icellFC, CUstream_st *stream);
 
 void ScaleFC_RhoSq_3rdMom_comp_27( real* DC, 
 											  real* DF, 
