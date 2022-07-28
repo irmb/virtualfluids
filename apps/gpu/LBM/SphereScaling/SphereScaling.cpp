@@ -131,7 +131,7 @@ void multipleLevel(const std::string &configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     std::string gridPath(gridPathParent); // only for GridGenerator, for GridReader the gridPath needs to be set in the config file
 
-    real dxGrid      = (real)0.6;
+    real dxGrid      = (real)1.0;
     real vxLB        = (real)0.0005; // LB units
     real viscosityLB = 0.001;        //(vxLB * dxGrid) / Re;
 
@@ -643,12 +643,12 @@ void multipleLevel(const std::string &configPath)
 
             gridBuilder->setPeriodicBoundaryCondition(false, false, false);
             //////////////////////////////////////////////////////////////////////////
-            gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0); // set pressure BC after velocity BCs
             gridBuilder->setVelocityBoundaryCondition(SideType::MX, vxLB, 0.0, 0.0);
             gridBuilder->setVelocityBoundaryCondition(SideType::PY, vxLB, 0.0, 0.0);
             gridBuilder->setVelocityBoundaryCondition(SideType::MY, vxLB, 0.0, 0.0);
             gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vxLB, 0.0, 0.0);
             gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, 0.0, 0.0);
+            gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0); // set pressure BC after velocity BCs
 
             // gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
             //////////////////////////////////////////////////////////////////////////

@@ -33,12 +33,13 @@
 #ifndef GridScalingKernelManager_H
 #define GridScalingKernelManager_H
 
-#include "LBM/LB.h"
-#include "PointerDefinitions.h"
-#include "VirtualFluids_GPU_export.h"
 #include <memory>
 #include <functional>
 #include <stdexcept>
+#include "LBM/LB.h"
+#include "PointerDefinitions.h"
+#include "VirtualFluids_GPU_export.h"
+#include "logger/Logger.h"
 
 class Parameter;
 class CudaMemoryManager;
@@ -82,6 +83,8 @@ private:
     {
         if (!scalingFunctionFC && scalingStruct.kFC > 0)
             throw std::runtime_error("The scaling function " + scalingName + " was not set!");
+        if (scalingFunctionFC && scalingStruct.kFC == 0)
+            VF_LOG_WARNING("The scaling function {} was set, although there is no refinement", scalingName);
     }
 
     SPtr<Parameter> para;

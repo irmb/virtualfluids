@@ -33,22 +33,29 @@
 #include "KernelManager/GridScalingKernelManager.h"
 #include "GPU/CudaMemoryManager.h"
 #include "GPU/GPU_Interface.h"
+#include "Logger.h"
 #include "Parameter/Parameter.h"
 #include "Parameter/CudaStreamManager.h"
 #include "PreCollisionInteractor/PreCollisionInteractor.h"
 #include "Factories/GridScalingFactory.h"
+#include <stdexcept>
 
 GridScalingKernelManager::GridScalingKernelManager(SPtr<Parameter> parameter, GridScalingFactory *gridScalingFactory)
     : para(parameter)
 {
     if(para->getMaxLevel() != 0){
+        if(!gridScalingFactory){
+            throw std::runtime_error("There is more than one level, but no scalingFactory was provided.");
+        }
+        checkScalingFunction(gridScalingFactory->getGridScalingFC(), this->para->getParD(0)->intFC, "scalingFineToCoarse");
         this->scalingFineToCoarse = gridScalingFactory->getGridScalingFC();
-        checkScalingFunction(this->scalingFineToCoarse, this->para->getParD(0)->intFC, "scalingFineToCoarse");
     }
+    
+    if(this->scalingFineToCoarse == nullptr)
+        VF_LOG_TRACE("Function for scalingFineToCoarse is nullptr");
 }
 
 void GridScalingKernelManager::runFineToCoarseKernelLB(const int level, InterpolationCellFC* icellFC, int streamIndex) const{
-
     cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
 
     this->scalingFineToCoarse(para->getParD(level).get(), para->getParD(level+1).get(), icellFC, stream);
