@@ -11,9 +11,8 @@
 //#include "fix_lb_coupling_onetoone.h"
 
 #include "LiggghtsCouplingCoProcessor.h"
-
 #include "LiggghtsCouplingWrapper.h"
-
+#include "IBcumulantK17LBMKernel.h"
 
 using namespace std;
 
@@ -31,9 +30,9 @@ int main(int argc, char *argv[])
 
     double g_maxX1 = 1;
     double g_maxX2 = 1;
-    double g_maxX3 = 2;
+    double g_maxX3 = 1;
 
-    int blockNX[3] = { 10, 10, 20 };
+    int blockNX[3] = { 10, 10, 10 };
 
     double dx = 0.1;
 
@@ -61,7 +60,7 @@ int main(int argc, char *argv[])
     ppblocks->process(0);
     ppblocks.reset();
 
-    SPtr<LBMKernel> kernel = make_shared<IncompressibleCumulantLBMKernel>();
+    SPtr<LBMKernel> kernel   = make_shared<IBcumulantK17LBMKernel>();
     SPtr<BCProcessor> bcProc = make_shared<BCProcessor>();
     kernel->setBCProcessor(bcProc);
 
@@ -78,11 +77,17 @@ int main(int argc, char *argv[])
     MPI_Comm mpi_comm       = *(MPI_Comm*)(comm->getNativeCommunicator());
     LiggghtsCouplingWrapper wrapper(argv, mpi_comm);
 
-    double d_part = 0.1;
+
+    double d_part = 0.3;
+    double r_p       = d_part / 2.0;
+ 
+    // SPtr<LBMUnitConverter> units = std::make_shared<LBMUnitConverter>(r_p, 1.480, 2060, r_p/dx);
+    SPtr<LBMUnitConverter> units = std::make_shared<LBMUnitConverter>(r_p, LBMUnitConverter::WATER, r_p / dx);
+
     double v_frac = 0.1;
-    double dt_phys  = 1; // units.getPhysTime(1);
-    int demSubsteps = 1;
-    double dt_dem   = 1e-1; //dt_phys / (double)demSubsteps;
+    double dt_phys   = units->getFactorTimeLbToW();
+    int demSubsteps = 10;
+    double dt_dem   = dt_phys / (double)demSubsteps;
     int vtkSteps    = 1;
     string demOutDir = "d:/temp/lll2/";
 
@@ -99,8 +104,9 @@ int main(int argc, char *argv[])
     wrapper.execFile((char *)inFile2.c_str());
     //wrapper.runUpto(demSubsteps - 1);
 
+    
     SPtr<LiggghtsCouplingCoProcessor> lcCoProcessor =
-        make_shared<LiggghtsCouplingCoProcessor>(grid, lScheduler, comm, wrapper, demSubsteps);
+        make_shared<LiggghtsCouplingCoProcessor>(grid, lScheduler, comm, wrapper, demSubsteps, units);
 
     // write data for visualization of macroscopic quantities
     SPtr<UbScheduler> visSch(new UbScheduler(vtkSteps));
@@ -108,7 +114,7 @@ int main(int argc, char *argv[])
         new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, outputPath, WbWriterVtkXmlASCII::getInstance(),
                                                   SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
 
-    int endTime = 20;
+    int endTime = 1000; //20;
     SPtr<Calculator> calculator(new BasicCalculator(grid, lScheduler, endTime));
     calculator->addCoProcessor(lcCoProcessor);
     calculator->addCoProcessor(writeMQCoProcessor);

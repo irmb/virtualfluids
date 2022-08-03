@@ -41,10 +41,21 @@ constexpr auto SOLFRAC_MAX = 0.999;
 
 struct IBdynamicsParticleData {
 public:
-    int partId{0};
-    double solidFraction{0};
-    std::array<double, 3> uPart{ 0., 0., 0. };
-    std::array<double, 3> hydrodynamicForce{ 0., 0., 0. };
+    IBdynamicsParticleData()
+        : partId(0), solidFraction(0.)
+    {
+        uPart[0] = 0.;
+        uPart[1] = 0.;
+        uPart[2] = 0.;
+
+        hydrodynamicForce[0] = 0.;
+        hydrodynamicForce[1] = 0.;
+        hydrodynamicForce[2] = 0.;
+    };
+    int partId;
+    double solidFraction;
+    std::array<double, 3> uPart;
+    std::array<double, 3> hydrodynamicForce;
 };
 
 #endif

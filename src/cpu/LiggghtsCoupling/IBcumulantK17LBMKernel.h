@@ -71,7 +71,6 @@ protected:
     inline void backwardChimera(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2);
 
     virtual void initDataSet();
-    LBMReal f[D3Q27System::ENDF + 1];
 
     CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions;
     CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions;

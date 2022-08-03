@@ -51,12 +51,18 @@ class LiggghtsCouplingWrapper;
 class Grid3D;
 class Block3D;
 struct IBdynamicsParticleData;
+class LBMUnitConverter;
+
+struct ParticleData {
+    typedef typename std::vector<std::array<double, 3>> ParticleDataArrayVector;
+    typedef typename std::vector<double> ParticleDataScalarVector;
+};
 
 class LiggghtsCouplingCoProcessor : public CoProcessor
 {
 public:
     LiggghtsCouplingCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<Communicator> comm,
-                                LiggghtsCouplingWrapper &wrapper, int demSteps);
+                                LiggghtsCouplingWrapper &wrapper, int demSteps, SPtr<LBMUnitConverter> units);
     virtual ~LiggghtsCouplingCoProcessor();
 
     void process(double actualTimeStep) override;
@@ -64,24 +70,34 @@ public:
     
 protected:
     void setSpheresOnLattice();
-    void getForcesFromLattice();
-    void setSingleSphere3D(double *x, double *v, double *omega, /* double *com,*/ double r,
-                           int id /*, bool initVelFlag*/);
+    
+    void setSingleSphere3D(double *x, double *v, double *omega, double r, int id /*, bool initVelFlag*/);
+    
     double calcSolidFraction(double const dx_, double const dy_, double const dz_, double const r_);
-
-    void setValues(IBdynamicsParticleData &p, double const sf, double const dx, double const dy, double const dz,
-                   double *omega, int id);
-
+    
+    void setValues(IBdynamicsParticleData &p, int const id, double const sf, double const *v, double const dx, double const dy, double const dz, double const *omega);
+    
     void setToZero(IBdynamicsParticleData &p);
+    
+    void getForcesFromLattice();
+    
+    void SumForceTorque3D(ParticleData::ParticleDataArrayVector &x, double *force, double *torque);
+
+    void addForce(int const partId, int const coord, double const value, double *force);
+
+    void addTorque(int const partId, int const coord, double const value, double *torque);
 
 private:
     SPtr<Communicator> comm;
     LiggghtsCouplingWrapper &wrapper;
+    SPtr<LBMUnitConverter> units;
     int demSteps;
-    std::vector<std::vector<SPtr<Block3D>>> blockVector;
-    int minInitLevel;
-    int maxInitLevel;
+    //std::vector<std::vector<SPtr<Block3D>>> blockVector;
+    //int minInitLevel;
+    //int maxInitLevel;
     int gridRank;
+
+    double *force, *torque;
 };
 
 #endif
