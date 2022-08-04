@@ -35,6 +35,8 @@ void LiggghtsCouplingCoProcessor::process(double actualTimeStep)
 { 
     std::cout << "step: " << actualTimeStep << "\n";
     
+    getForcesFromLattice();
+
     wrapper.run(demSteps);
     
     setSpheresOnLattice();
@@ -74,10 +76,10 @@ void LiggghtsCouplingCoProcessor::setSpheresOnLattice()
         
         r = wrapper.lmp->atom->radius[iS]; // * units->getFactorLentghWToLb();
 
-        std::cout << "x[0] = " << x[0] << ", x[1] = " << x[1] << ", x[2] = " << x[2] << std::endl;
-        std::cout << "v[0] = " << v[0] << ", v[1] = " << v[1] << ", v[2] = " << v[2] << std::endl;
-        std::cout << "omega[0] = " << omega[0] << ", omega[1] = " << omega[1] << ", omega[2] = " << omega[2] << std::endl;
-        std::cout << "r = " << r << std::endl;
+        //std::cout << "x[0] = " << x[0] << ", x[1] = " << x[1] << ", x[2] = " << x[2] << std::endl;
+        //std::cout << "v[0] = " << v[0] << ", v[1] = " << v[1] << ", v[2] = " << v[2] << std::endl;
+        //std::cout << "omega[0] = " << omega[0] << ", omega[1] = " << omega[1] << ", omega[2] = " << omega[2] << std::endl;
+        //std::cout << "r = " << r << std::endl;
         
         setSingleSphere3D(x, v, omega, r, id);
     }
@@ -111,9 +113,9 @@ void LiggghtsCouplingCoProcessor::setSingleSphere3D(double *x, double *v, double
             int minX2 = 1;
             int minX3 = 1;
 
-            int maxX1 = (int)(distributions->getNX1()) - 2;
-            int maxX2 = (int)(distributions->getNX2()) - 2;
-            int maxX3 = (int)(distributions->getNX3()) - 2;
+            int maxX1 = (int)(distributions->getNX1()) - 1;
+            int maxX2 = (int)(distributions->getNX2()) - 1;
+            int maxX3 = (int)(distributions->getNX3()) - 1;
 
             for (int ix3 = minX3; ix3 < maxX3; ix3++) {
                 for (int ix2 = minX2; ix2 < maxX2; ix2++) {
@@ -341,9 +343,9 @@ void LiggghtsCouplingCoProcessor::SumForceTorque3D(ParticleData::ParticleDataArr
             int minX2 = 1;
             int minX3 = 1;
 
-            int maxX1 = (int)(distributions->getNX1()) - 2;
-            int maxX2 = (int)(distributions->getNX2()) - 2;
-            int maxX3 = (int)(distributions->getNX3()) - 2;
+            int maxX1 = (int)(distributions->getNX1()) - 1;
+            int maxX2 = (int)(distributions->getNX2()) - 1;
+            int maxX3 = (int)(distributions->getNX3()) - 1;
 
             for (int ix3 = minX3; ix3 < maxX3; ix3++) {
                 for (int ix2 = minX2; ix2 < maxX2; ix2++) {

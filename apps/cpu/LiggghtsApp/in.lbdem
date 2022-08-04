@@ -1,7 +1,10 @@
+echo none
 
 units		si
 atom_style	granular
 atom_modify	map array
+
+
 
 communicate	single vel yes
 
@@ -9,7 +12,7 @@ boundary	f f f
 newton		off
 
 processors * * 1
-region		box block 0. 1. 0. 1. 0. 1. units box
+region		box block 0. 1. 0. 1. 0. 2. units box
 create_box	1 box
 
 variable	skin equal 0.01
@@ -41,10 +44,10 @@ fix ywalls2 all wall/gran model hertz tangential history primitive type 1 yplane
 fix zwalls1 all wall/gran model hertz tangential history primitive type 1 zplane 0.
 fix zwalls2 all wall/gran model hertz tangential history primitive type 1 zplane 2.
 
-create_atoms 1 single 0.5 0.5 0.75
+create_atoms 1 single 0.5 0.5 1.75
 #create_atoms 1 single 0.38 0.05 0.05
 
-set group all diameter 0.3 density 2400
+set group all diameter 0.25 density 2400
 
 atom_modify sort 0 0.0
 
@@ -67,6 +70,6 @@ atom_modify sort 0 0.0
 # #fix ins all insert/pack seed 1001 distributiontemplate pdd1 insert_every once &
 # #                        overlapcheck yes particles_in_region 1 region insreg ntry_mc 10000 
 
-
+echo none
 
 run 1
