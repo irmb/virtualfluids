@@ -143,8 +143,7 @@ void GridGenerator::allocArrays_BoundaryValues()
         para->getParH(level)->slipBC.numberOfBCnodes = 0;
         if (numberOfSlipValues > 1)
         {
-            blocks = (numberOfSlipValues / para->getParH(level)->numberofthreads) + 1;
-            para->getParH(level)->slipBC.numberOfBCnodes = blocks * para->getParH(level)->numberofthreads;
+            para->getParH(level)->slipBC.numberOfBCnodes = numberOfSlipValues;
             cudaMemoryManager->cudaAllocSlipBC(level);
             builder->getSlipValues(para->getParH(level)->slipBC.normalX, para->getParH(level)->slipBC.normalY, para->getParH(level)->slipBC.normalZ, para->getParH(level)->slipBC.k, level);
             cudaMemoryManager->cudaCopySlipBC(level);
