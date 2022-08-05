@@ -40,7 +40,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
     // int offset = 2;
     int offset = 3;
 
-    if (block->hasInterpolationFlag(D3Q27System::E)) {
+    if (block->hasInterpolationFlag(D3Q27System::DIR_P00)) {
         int startix1 = maxX1;
         int endix1   = maxX1;
         if (block->hasInterpolationFlagCF())
@@ -51,7 +51,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
         int endix3   = maxX3;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlag(D3Q27System::W)) {
+    if (block->hasInterpolationFlag(D3Q27System::DIR_M00)) {
         int startix1 = minX1;
         int endix1   = minX1;
         if (block->hasInterpolationFlagCF())
@@ -62,7 +62,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
         int endix3   = maxX3;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlag(D3Q27System::N)) {
+    if (block->hasInterpolationFlag(D3Q27System::DIR_0P0)) {
         int startix1 = minX1;
         int endix1   = maxX1;
         int startix2 = maxX2;
@@ -73,7 +73,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
         int endix3   = maxX3;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlag(D3Q27System::S)) {
+    if (block->hasInterpolationFlag(D3Q27System::DIR_0M0)) {
         int startix1 = minX1;
         int endix1   = maxX1;
         int startix2 = minX2;
@@ -84,7 +84,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
         int endix3   = maxX3;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlag(D3Q27System::T)) {
+    if (block->hasInterpolationFlag(D3Q27System::DIR_00P)) {
         int startix1 = minX1;
         int endix1   = maxX1;
         int startix2 = minX2;
@@ -95,7 +95,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
             startix3 = startix3 - offset;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlag(D3Q27System::B)) {
+    if (block->hasInterpolationFlag(D3Q27System::DIR_00M)) {
         int startix1 = minX1;
         int endix1   = maxX1;
         int startix2 = minX2;
@@ -106,7 +106,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
             endix3 = endix3 + offset;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlag(D3Q27System::NE)) {
+    if (block->hasInterpolationFlag(D3Q27System::DIR_PP0)) {
         int startix1 = maxX1;
         int endix1   = maxX1;
         if (block->hasInterpolationFlagCF())
@@ -119,7 +119,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
         int endix3   = maxX3;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlag(D3Q27System::SW)) {
+    if (block->hasInterpolationFlag(D3Q27System::DIR_MM0)) {
         int startix1 = minX1;
         int endix1   = minX1;
         if (block->hasInterpolationFlagCF())
@@ -132,7 +132,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
         int endix3   = maxX3;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlag(D3Q27System::SE)) {
+    if (block->hasInterpolationFlag(D3Q27System::DIR_PM0)) {
         int startix1 = maxX1;
         int endix1   = maxX1;
         if (block->hasInterpolationFlagCF())
@@ -145,7 +145,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
         int endix3   = maxX3;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlag(D3Q27System::NW)) {
+    if (block->hasInterpolationFlag(D3Q27System::DIR_MP0)) {
         int startix1 = minX1;
         int endix1   = minX1;
         if (block->hasInterpolationFlagCF())
@@ -158,7 +158,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
         int endix3   = maxX3;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlag(D3Q27System::TE)) {
+    if (block->hasInterpolationFlag(D3Q27System::DIR_P0P)) {
         int startix1 = maxX1;
         int endix1   = maxX1;
         if (block->hasInterpolationFlagCF())
@@ -171,7 +171,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
             startix3 = startix3 - offset;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlag(D3Q27System::BW)) {
+    if (block->hasInterpolationFlag(D3Q27System::DIR_M0M)) {
         int startix1 = minX1;
         int endix1   = minX1;
         if (block->hasInterpolationFlagCF())
@@ -184,7 +184,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
             endix3 = endix3 + offset;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlag(D3Q27System::BE)) {
+    if (block->hasInterpolationFlag(D3Q27System::DIR_P0M)) {
         int startix1 = maxX1;
         int endix1   = maxX1;
         if (block->hasInterpolationFlagCF())
@@ -197,7 +197,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
             endix3 = endix3 + offset;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlag(D3Q27System::TW)) {
+    if (block->hasInterpolationFlag(D3Q27System::DIR_M0P)) {
         int startix1 = minX1;
         int endix1   = minX1;
         if (block->hasInterpolationFlagCF())
@@ -210,7 +210,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
             startix3 = startix3 - offset;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlag(D3Q27System::TN)) {
+    if (block->hasInterpolationFlag(D3Q27System::DIR_0PP)) {
         int startix1 = minX1;
         int endix1   = maxX1;
         int startix2 = maxX2;
@@ -223,7 +223,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
             startix3 = startix3 - offset;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlag(D3Q27System::BS)) {
+    if (block->hasInterpolationFlag(D3Q27System::DIR_0MM)) {
         int startix1 = minX1;
         int endix1   = maxX1;
         int startix2 = minX2;
@@ -236,7 +236,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
             endix3 = endix3 + offset;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlag(D3Q27System::BN)) {
+    if (block->hasInterpolationFlag(D3Q27System::DIR_0PM)) {
         int startix1 = minX1;
         int endix1   = maxX1;
         int startix2 = maxX2;
@@ -249,7 +249,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
             endix3 = endix3 + offset;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlag(D3Q27System::TS)) {
+    if (block->hasInterpolationFlag(D3Q27System::DIR_0MP)) {
         int startix1 = minX1;
         int endix1   = maxX1;
         int startix2 = minX2;
@@ -262,7 +262,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
             startix3 = startix3 - offset;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlag(D3Q27System::TNE)) {
+    if (block->hasInterpolationFlag(D3Q27System::DIR_PPP)) {
         int startix1 = maxX1;
         int endix1   = maxX1;
         if (block->hasInterpolationFlagCF())
@@ -277,7 +277,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
             startix3 = startix3 - offset;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlag(D3Q27System::TNW)) {
+    if (block->hasInterpolationFlag(D3Q27System::DIR_MPP)) {
         int startix1 = minX1;
         int endix1   = minX1;
         if (block->hasInterpolationFlagCF())
@@ -292,7 +292,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
             startix3 = startix3 - offset;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlag(D3Q27System::TSE)) {
+    if (block->hasInterpolationFlag(D3Q27System::DIR_PMP)) {
         int startix1 = maxX1;
         int endix1   = maxX1;
         if (block->hasInterpolationFlagCF())
@@ -307,7 +307,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
             startix3 = startix3 - offset;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlag(D3Q27System::TSW)) {
+    if (block->hasInterpolationFlag(D3Q27System::DIR_MMP)) {
         int startix1 = minX1;
         int endix1   = minX1;
         if (block->hasInterpolationFlagCF())
@@ -322,7 +322,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
             startix3 = startix3 - offset;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlag(D3Q27System::BNE)) {
+    if (block->hasInterpolationFlag(D3Q27System::DIR_PPM)) {
         int startix1 = maxX1;
         int endix1   = maxX1;
         if (block->hasInterpolationFlagCF())
@@ -337,7 +337,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
             endix3 = endix3 + offset;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlag(D3Q27System::BNW)) {
+    if (block->hasInterpolationFlag(D3Q27System::DIR_MPM)) {
         int startix1 = minX1;
         int endix1   = minX1;
         if (block->hasInterpolationFlagCF())
@@ -352,7 +352,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
             endix3 = endix3 + offset;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlag(D3Q27System::BSE)) {
+    if (block->hasInterpolationFlag(D3Q27System::DIR_PMM)) {
         int startix1 = maxX1;
         int endix1   = maxX1;
         if (block->hasInterpolationFlagCF())
@@ -367,7 +367,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
             endix3 = endix3 + offset;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlag(D3Q27System::BSW)) {
+    if (block->hasInterpolationFlag(D3Q27System::DIR_MMM)) {
         int startix1 = minX1;
         int endix1   = minX1;
         if (block->hasInterpolationFlagCF())
@@ -395,7 +395,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
     maxX2 = static_cast<int>(bcMatrix->getNX2()) - 1 - ll;
     maxX3 = static_cast<int>(bcMatrix->getNX3()) - 1 - ll;
 
-    if (block->hasInterpolationFlagFC(D3Q27System::E)) {
+    if (block->hasInterpolationFlagFC(D3Q27System::DIR_P00)) {
         int startix1 = maxX1 - offset2;
         int endix1   = maxX1;
         int startix2 = minX2;
@@ -404,7 +404,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
         int endix3   = maxX3;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlagFC(D3Q27System::W)) {
+    if (block->hasInterpolationFlagFC(D3Q27System::DIR_M00)) {
         int startix1 = minX1;
         int endix1   = minX1 + offset2;
         int startix2 = minX2;
@@ -413,7 +413,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
         int endix3   = maxX3;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlagFC(D3Q27System::N)) {
+    if (block->hasInterpolationFlagFC(D3Q27System::DIR_0P0)) {
         int startix1 = minX1;
         int endix1   = maxX1;
         int startix2 = maxX2 - offset2;
@@ -422,7 +422,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
         int endix3   = maxX3;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlagFC(D3Q27System::S)) {
+    if (block->hasInterpolationFlagFC(D3Q27System::DIR_0M0)) {
         int startix1 = minX1;
         int endix1   = maxX1;
         int startix2 = minX2;
@@ -431,7 +431,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
         int endix3   = maxX3;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlagFC(D3Q27System::T)) {
+    if (block->hasInterpolationFlagFC(D3Q27System::DIR_00P)) {
         int startix1 = minX1;
         int endix1   = maxX1;
         int startix2 = minX2;
@@ -440,7 +440,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
         int endix3   = maxX3;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlagFC(D3Q27System::B)) {
+    if (block->hasInterpolationFlagFC(D3Q27System::DIR_00M)) {
         int startix1 = minX1;
         int endix1   = maxX1;
         int startix2 = minX2;
@@ -449,7 +449,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
         int endix3   = minX3 + offset2;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlagFC(D3Q27System::NE)) {
+    if (block->hasInterpolationFlagFC(D3Q27System::DIR_PP0)) {
         int startix1 = maxX1 - offset2;
         int endix1   = maxX1;
         int startix2 = maxX2 - offset2;
@@ -458,7 +458,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
         int endix3   = maxX3;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlagFC(D3Q27System::SW)) {
+    if (block->hasInterpolationFlagFC(D3Q27System::DIR_MM0)) {
         int startix1 = minX1;
         int endix1   = minX1 + offset2;
         int startix2 = minX2;
@@ -467,7 +467,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
         int endix3   = maxX3;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlagFC(D3Q27System::SE)) {
+    if (block->hasInterpolationFlagFC(D3Q27System::DIR_PM0)) {
         int startix1 = maxX1 - offset2;
         int endix1   = maxX1;
         int startix2 = minX2;
@@ -476,7 +476,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
         int endix3   = maxX3;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlagFC(D3Q27System::NW)) {
+    if (block->hasInterpolationFlagFC(D3Q27System::DIR_MP0)) {
         int startix1 = minX1;
         int endix1   = minX1 + offset2;
         int startix2 = maxX2 - offset2;
@@ -485,7 +485,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
         int endix3   = maxX3;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlagFC(D3Q27System::TE)) {
+    if (block->hasInterpolationFlagFC(D3Q27System::DIR_P0P)) {
         int startix1 = maxX1 - offset2;
         int endix1   = maxX1;
         int startix2 = minX2;
@@ -494,7 +494,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
         int endix3   = maxX3;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlagFC(D3Q27System::BW)) {
+    if (block->hasInterpolationFlagFC(D3Q27System::DIR_M0M)) {
         int startix1 = minX1;
         int endix1   = minX1 + offset2;
         int startix2 = minX2;
@@ -503,7 +503,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
         int endix3   = minX3 + offset2;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlagFC(D3Q27System::BE)) {
+    if (block->hasInterpolationFlagFC(D3Q27System::DIR_P0M)) {
         int startix1 = maxX1 - offset2;
         int endix1   = maxX1;
         int startix2 = minX2;
@@ -512,7 +512,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
         int endix3   = minX3 + offset2;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlagFC(D3Q27System::TW)) {
+    if (block->hasInterpolationFlagFC(D3Q27System::DIR_M0P)) {
         int startix1 = minX1;
         int endix1   = minX1 + offset2;
         int startix2 = minX2;
@@ -521,7 +521,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
         int endix3   = maxX3;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlagFC(D3Q27System::TN)) {
+    if (block->hasInterpolationFlagFC(D3Q27System::DIR_0PP)) {
         int startix1 = minX1;
         int endix1   = maxX1;
         int startix2 = maxX2 - offset2;
@@ -530,7 +530,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
         int endix3   = maxX3;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlagFC(D3Q27System::BS)) {
+    if (block->hasInterpolationFlagFC(D3Q27System::DIR_0MM)) {
         int startix1 = minX1;
         int endix1   = maxX1;
         int startix2 = minX2;
@@ -539,7 +539,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
         int endix3   = minX3 + offset2;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlagFC(D3Q27System::BN)) {
+    if (block->hasInterpolationFlagFC(D3Q27System::DIR_0PM)) {
         int startix1 = minX1;
         int endix1   = maxX1;
         int startix2 = maxX2 - offset2;
@@ -548,7 +548,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
         int endix3   = minX3 + offset2;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlagFC(D3Q27System::TS)) {
+    if (block->hasInterpolationFlagFC(D3Q27System::DIR_0MP)) {
         int startix1 = minX1;
         int endix1   = maxX1;
         int startix2 = minX2;
@@ -557,7 +557,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
         int endix3   = maxX3;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlagFC(D3Q27System::TNE)) {
+    if (block->hasInterpolationFlagFC(D3Q27System::DIR_PPP)) {
         int startix1 = maxX1 - offset2;
         int endix1   = maxX1;
         int startix2 = maxX2 - offset2;
@@ -566,7 +566,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
         int endix3   = maxX3;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlagFC(D3Q27System::TNW)) {
+    if (block->hasInterpolationFlagFC(D3Q27System::DIR_MPP)) {
         int startix1 = minX1;
         int endix1   = minX1 + offset2;
         int startix2 = maxX2 - offset2;
@@ -575,7 +575,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
         int endix3   = maxX3;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlagFC(D3Q27System::TSE)) {
+    if (block->hasInterpolationFlagFC(D3Q27System::DIR_PMP)) {
         int startix1 = maxX1 - offset2;
         int endix1   = maxX1;
         int startix2 = minX2;
@@ -584,7 +584,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
         int endix3   = maxX3;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlagFC(D3Q27System::TSW)) {
+    if (block->hasInterpolationFlagFC(D3Q27System::DIR_MMP)) {
         int startix1 = minX1;
         int endix1   = minX1 + offset2;
         int startix2 = minX2;
@@ -593,7 +593,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
         int endix3   = maxX3;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlagFC(D3Q27System::BNE)) {
+    if (block->hasInterpolationFlagFC(D3Q27System::DIR_PPM)) {
         int startix1 = maxX1 - offset2;
         int endix1   = maxX1;
         int startix2 = maxX2 - offset2;
@@ -602,7 +602,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
         int endix3   = minX3 + offset2;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlagFC(D3Q27System::BNW)) {
+    if (block->hasInterpolationFlagFC(D3Q27System::DIR_MPM)) {
         int startix1 = minX1;
         int endix1   = minX1 + offset2;
         int startix2 = maxX2 - offset2;
@@ -611,7 +611,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
         int endix3   = minX3 + offset2;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlagFC(D3Q27System::BSE)) {
+    if (block->hasInterpolationFlagFC(D3Q27System::DIR_PMM)) {
         int startix1 = maxX1 - offset2;
         int endix1   = maxX1;
         int startix2 = minX2;
@@ -620,7 +620,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
         int endix3   = minX3 + offset2;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlagFC(D3Q27System::BSW)) {
+    if (block->hasInterpolationFlagFC(D3Q27System::DIR_MMM)) {
         int startix1 = minX1;
         int endix1   = minX1 + offset2;
         int startix2 = minX2;
@@ -633,10 +633,10 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
     // invert scaleCF blocks
     if (block->hasInterpolationFlagCF()) {
         if (block->hasInterpolationFlagFC() && twoTypeOfConnectorsCheck) {
-            for (int i = D3Q27System::E; i <= D3Q27System::BSW; i++) {
+            for (int i = D3Q27System::DIR_P00; i <= D3Q27System::DIR_MMM; i++) {
                 UBLOG(logINFO, "FC in dir=" << i << " " << block->hasInterpolationFlagFC(i));
             }
-            for (int i = D3Q27System::E; i <= D3Q27System::BSW; i++) {
+            for (int i = D3Q27System::DIR_P00; i <= D3Q27System::DIR_MMM; i++) {
                 UBLOG(logINFO, "CF in dir=" << i << " " << block->hasInterpolationFlagCF(i));
             }
             throw UbException(UB_EXARGS, "block " + block->toString() + " has CF and FC");

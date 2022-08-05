@@ -56,17 +56,17 @@ void SlipBCAdapter::adaptBC(const D3Q27Interactor &interactor, SPtr<BoundaryCond
     if (!geo)
         throw UbException(UB_EXARGS, "derzeit nur fuer Cubes valide");
 
-    if (bc->hasSlipBoundaryFlag(D3Q27System::E))
+    if (bc->hasSlipBoundaryFlag(D3Q27System::DIR_P00))
         bc->setNormalVector(1.0, 0.0, 0.0);
-    else if (bc->hasSlipBoundaryFlag(D3Q27System::W))
+    else if (bc->hasSlipBoundaryFlag(D3Q27System::DIR_M00))
         bc->setNormalVector(-1.0, 0.0, 0.0);
-    else if (bc->hasSlipBoundaryFlag(D3Q27System::N))
+    else if (bc->hasSlipBoundaryFlag(D3Q27System::DIR_0P0))
         bc->setNormalVector(0.0, 1.0, 0.0);
-    else if (bc->hasSlipBoundaryFlag(D3Q27System::S))
+    else if (bc->hasSlipBoundaryFlag(D3Q27System::DIR_0M0))
         bc->setNormalVector(0.0, -1.0, 0.0);
-    else if (bc->hasSlipBoundaryFlag(D3Q27System::T))
+    else if (bc->hasSlipBoundaryFlag(D3Q27System::DIR_00P))
         bc->setNormalVector(0.0, 0.0, 1.0);
-    else if (bc->hasSlipBoundaryFlag(D3Q27System::B))
+    else if (bc->hasSlipBoundaryFlag(D3Q27System::DIR_00M))
         bc->setNormalVector(0.0, 0.0, -1.0);
 
     bc->setBcAlgorithmType(algorithmType);

@@ -82,110 +82,110 @@ void SetInterpolationConnectorsBlockVisitor::setInterpolationConnectors(SPtr<Gri
 		int fbx3 = block->getX3() << 1;
 		int level = block->getLevel() + 1;
 
-		if( block->hasInterpolationFlagCF(D3Q27System::E))
+		if( block->hasInterpolationFlagCF(D3Q27System::DIR_P00))
 		{
 			SPtr<Block3D> fblockSW = grid->getBlock(fbx1+1,fbx2,fbx3,level);
 			SPtr<Block3D> fblockSE = grid->getBlock(fbx1+1,fbx2+1,fbx3,level);
 			SPtr<Block3D> fblockNW = grid->getBlock(fbx1+1,fbx2,fbx3+1,level);
 			SPtr<Block3D> fblockNE = grid->getBlock(fbx1+1,fbx2+1,fbx3+1,level);
 
-			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::E);
+			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::DIR_P00);
 		}
-		if( block->hasInterpolationFlagCF(D3Q27System::W))
+		if( block->hasInterpolationFlagCF(D3Q27System::DIR_M00))
 		{
 			SPtr<Block3D> fblockSW = grid->getBlock(fbx1,fbx2,fbx3,level);
 			SPtr<Block3D> fblockSE = grid->getBlock(fbx1,fbx2+1,fbx3,level);
 			SPtr<Block3D> fblockNW = grid->getBlock(fbx1,fbx2,fbx3+1,level);
 			SPtr<Block3D> fblockNE = grid->getBlock(fbx1,fbx2+1,fbx3+1,level);
 
-			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::W);
+			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::DIR_M00);
 		}
-		if( block->hasInterpolationFlagCF(D3Q27System::N))
+		if( block->hasInterpolationFlagCF(D3Q27System::DIR_0P0))
 		{
 			SPtr<Block3D> fblockSW = grid->getBlock(fbx1,fbx2+1,fbx3,level);
 			SPtr<Block3D> fblockSE = grid->getBlock(fbx1+1,fbx2+1,fbx3,level);
 			SPtr<Block3D> fblockNW = grid->getBlock(fbx1,fbx2+1,fbx3+1,level);
 			SPtr<Block3D> fblockNE = grid->getBlock(fbx1+1,fbx2+1,fbx3+1,level);
 
-			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::N);
+			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::DIR_0P0);
 		}
-		if( block->hasInterpolationFlagCF(D3Q27System::S))
+		if( block->hasInterpolationFlagCF(D3Q27System::DIR_0M0))
 		{
 			SPtr<Block3D> fblockSW = grid->getBlock(fbx1,fbx2,fbx3,level);
 			SPtr<Block3D> fblockSE = grid->getBlock(fbx1+1,fbx2,fbx3,level);
 			SPtr<Block3D> fblockNW = grid->getBlock(fbx1,fbx2,fbx3+1,level);
 			SPtr<Block3D> fblockNE = grid->getBlock(fbx1+1,fbx2,fbx3+1,level);
 
-			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::S);
+			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::DIR_0M0);
 		}
-		if( block->hasInterpolationFlagCF(D3Q27System::T))
+		if( block->hasInterpolationFlagCF(D3Q27System::DIR_00P))
 		{
 			SPtr<Block3D> fblockSW = grid->getBlock(fbx1,fbx2,fbx3+1,level);
 			SPtr<Block3D> fblockSE = grid->getBlock(fbx1+1,fbx2,fbx3+1,level);
 			SPtr<Block3D> fblockNW = grid->getBlock(fbx1,fbx2+1,fbx3+1,level);
 			SPtr<Block3D> fblockNE = grid->getBlock(fbx1+1,fbx2+1,fbx3+1,level);
 
-			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::T);
+			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::DIR_00P);
 		}
-		if( block->hasInterpolationFlagCF(D3Q27System::B))
+		if( block->hasInterpolationFlagCF(D3Q27System::DIR_00M))
 		{
 			SPtr<Block3D> fblockSW = grid->getBlock(fbx1,fbx2,fbx3,level);
 			SPtr<Block3D> fblockSE = grid->getBlock(fbx1+1,fbx2,fbx3,level);
 			SPtr<Block3D> fblockNW = grid->getBlock(fbx1,fbx2+1,fbx3,level);
 			SPtr<Block3D> fblockNE = grid->getBlock(fbx1+1,fbx2+1,fbx3,level);
 
-			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::B);
+			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::DIR_00M);
 		}
 
 		//////NE-NW-SE-SW
-		if( block->hasInterpolationFlagCF(D3Q27System::NE)&&!block->hasInterpolationFlagCF(D3Q27System::N) && !block->hasInterpolationFlagCF(D3Q27System::E))
+		if( block->hasInterpolationFlagCF(D3Q27System::DIR_PP0)&&!block->hasInterpolationFlagCF(D3Q27System::DIR_0P0) && !block->hasInterpolationFlagCF(D3Q27System::DIR_P00))
 		{
 			SPtr<Block3D> fblockSW = grid->getBlock(fbx1+1,fbx2+1,fbx3+0,level);
 			SPtr<Block3D> fblockSE = grid->getBlock(fbx1+1,fbx2+1,fbx3+1,level);
          SPtr<Block3D> fblockNW;// = grid->getBlock(fbx1+1, fbx2+1, fbx3+1, level);
          SPtr<Block3D> fblockNE;// = grid->getBlock(fbx1+1, fbx2+1, fbx3+1, level);
 
-			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::NE);
+			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::DIR_PP0);
 		}
-		if( block->hasInterpolationFlagCF(D3Q27System::SW)&& !block->hasInterpolationFlagCF(D3Q27System::W) && !block->hasInterpolationFlagCF(D3Q27System::S))
+		if( block->hasInterpolationFlagCF(D3Q27System::DIR_MM0)&& !block->hasInterpolationFlagCF(D3Q27System::DIR_M00) && !block->hasInterpolationFlagCF(D3Q27System::DIR_0M0))
 		{
 			SPtr<Block3D> fblockSW = grid->getBlock(fbx1,fbx2,fbx3,level);
 			SPtr<Block3D> fblockSE = grid->getBlock(fbx1,fbx2,fbx3+1,level);
          SPtr<Block3D> fblockNW;// = grid->getBlock(fbx1, fbx2, fbx3+1, level);
          SPtr<Block3D> fblockNE;// = grid->getBlock(fbx1, fbx2, fbx3+1, level);
 
-			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::SW);
+			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::DIR_MM0);
 		}
-		if( block->hasInterpolationFlagCF(D3Q27System::SE)&& !block->hasInterpolationFlagCF(D3Q27System::E) && !block->hasInterpolationFlagCF(D3Q27System::S))
+		if( block->hasInterpolationFlagCF(D3Q27System::DIR_PM0)&& !block->hasInterpolationFlagCF(D3Q27System::DIR_P00) && !block->hasInterpolationFlagCF(D3Q27System::DIR_0M0))
 		{
 			SPtr<Block3D> fblockSW = grid->getBlock(fbx1+1,fbx2,fbx3+0,level);
 			SPtr<Block3D> fblockSE = grid->getBlock(fbx1+1,fbx2,fbx3+1,level);
          SPtr<Block3D> fblockNW;// = grid->getBlock(fbx1+1, fbx2, fbx3+1, level);
          SPtr<Block3D> fblockNE;// = grid->getBlock(fbx1+1, fbx2, fbx3+1, level);
 
-			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::SE);
+			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::DIR_PM0);
 		}
-		if( block->hasInterpolationFlagCF(D3Q27System::NW)&& !block->hasInterpolationFlagCF(D3Q27System::N) && !block->hasInterpolationFlagCF(D3Q27System::W))
+		if( block->hasInterpolationFlagCF(D3Q27System::DIR_MP0)&& !block->hasInterpolationFlagCF(D3Q27System::DIR_0P0) && !block->hasInterpolationFlagCF(D3Q27System::DIR_M00))
 		{
 			SPtr<Block3D> fblockSW = grid->getBlock(fbx1,fbx2+1,fbx3,level);
 			SPtr<Block3D> fblockSE = grid->getBlock(fbx1,fbx2+1,fbx3+1,level);
          SPtr<Block3D> fblockNW;// = grid->getBlock(fbx1, fbx2+1, fbx3+1, level);
          SPtr<Block3D> fblockNE;// = grid->getBlock(fbx1, fbx2+1, fbx3+1, level);
 
-			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::NW);
+			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::DIR_MP0);
 		}
 
 		/////////TE-BW-BE-TW 1-0
-		if( block->hasInterpolationFlagCF(D3Q27System::TE)&& !block->hasInterpolationFlagCF(D3Q27System::E) && !block->hasInterpolationFlagCF(D3Q27System::T))
+		if( block->hasInterpolationFlagCF(D3Q27System::DIR_P0P)&& !block->hasInterpolationFlagCF(D3Q27System::DIR_P00) && !block->hasInterpolationFlagCF(D3Q27System::DIR_00P))
 		{
 			SPtr<Block3D> fblockSW = grid->getBlock(fbx1+1,fbx2+0,fbx3+1,level);
 			SPtr<Block3D> fblockSE = grid->getBlock(fbx1+1,fbx2+1,fbx3+1,level);
          SPtr<Block3D> fblockNW;// = grid->getBlock(fbx1+1, fbx2+0, fbx3+1, level);
          SPtr<Block3D> fblockNE;// = grid->getBlock(fbx1+1, fbx2+1, fbx3+1, level);
 
-			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::TE);
+			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::DIR_P0P);
 		}
-		if( block->hasInterpolationFlagCF(D3Q27System::BW)&& !block->hasInterpolationFlagCF(D3Q27System::W) && !block->hasInterpolationFlagCF(D3Q27System::B))
+		if( block->hasInterpolationFlagCF(D3Q27System::DIR_M0M)&& !block->hasInterpolationFlagCF(D3Q27System::DIR_M00) && !block->hasInterpolationFlagCF(D3Q27System::DIR_00M))
 		{
 
 			SPtr<Block3D> fblockSW = grid->getBlock(fbx1,fbx2+0,fbx3,level);
@@ -193,140 +193,140 @@ void SetInterpolationConnectorsBlockVisitor::setInterpolationConnectors(SPtr<Gri
          SPtr<Block3D> fblockNW;// = grid->getBlock(fbx1, fbx2+0, fbx3, level);
          SPtr<Block3D> fblockNE;// = grid->getBlock(fbx1, fbx2+1, fbx3, level);
 
-			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::BW);
+			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::DIR_M0M);
 		}
-		if( block->hasInterpolationFlagCF(D3Q27System::BE)&& !block->hasInterpolationFlagCF(D3Q27System::E) && !block->hasInterpolationFlagCF(D3Q27System::B))
+		if( block->hasInterpolationFlagCF(D3Q27System::DIR_P0M)&& !block->hasInterpolationFlagCF(D3Q27System::DIR_P00) && !block->hasInterpolationFlagCF(D3Q27System::DIR_00M))
 		{
 			SPtr<Block3D> fblockSW = grid->getBlock(fbx1+1,fbx2+0,fbx3,level);
 			SPtr<Block3D> fblockSE = grid->getBlock(fbx1+1,fbx2+1,fbx3,level);
          SPtr<Block3D> fblockNW;// = grid->getBlock(fbx1+1, fbx2+0, fbx3, level);
          SPtr<Block3D> fblockNE;// = grid->getBlock(fbx1+1, fbx2+1, fbx3, level);
 
-			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::BE);
+			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::DIR_P0M);
 		}
-		if( block->hasInterpolationFlagCF(D3Q27System::TW)&& !block->hasInterpolationFlagCF(D3Q27System::W) && !block->hasInterpolationFlagCF(D3Q27System::T))
+		if( block->hasInterpolationFlagCF(D3Q27System::DIR_M0P)&& !block->hasInterpolationFlagCF(D3Q27System::DIR_M00) && !block->hasInterpolationFlagCF(D3Q27System::DIR_00P))
 		{
 			SPtr<Block3D> fblockSW = grid->getBlock(fbx1,fbx2+0,fbx3+1,level);
 			SPtr<Block3D> fblockSE = grid->getBlock(fbx1,fbx2+1,fbx3+1,level);
          SPtr<Block3D> fblockNW;// = grid->getBlock(fbx1, fbx2+0, fbx3+1, level);
          SPtr<Block3D> fblockNE;// = grid->getBlock(fbx1, fbx2+1, fbx3+1, level);
 
-			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::TW);
+			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::DIR_M0P);
 		}
 
 		//////TN-BS-BN-TS
-		if( block->hasInterpolationFlagCF(D3Q27System::TN)&& !block->hasInterpolationFlagCF(D3Q27System::N) && !block->hasInterpolationFlagCF(D3Q27System::T))
+		if( block->hasInterpolationFlagCF(D3Q27System::DIR_0PP)&& !block->hasInterpolationFlagCF(D3Q27System::DIR_0P0) && !block->hasInterpolationFlagCF(D3Q27System::DIR_00P))
 		{
 			SPtr<Block3D> fblockSW = grid->getBlock(fbx1+0,fbx2+1,fbx3+1,level);
 			SPtr<Block3D> fblockSE = grid->getBlock(fbx1+1,fbx2+1,fbx3+1,level);
          SPtr<Block3D> fblockNW;// = grid->getBlock(fbx1+0, fbx2+1, fbx3+1, level);
          SPtr<Block3D> fblockNE;// = grid->getBlock(fbx1+1, fbx2+1, fbx3+1, level);
 
-			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::TN);
+			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::DIR_0PP);
 		}
-		if( block->hasInterpolationFlagCF(D3Q27System::BS)&& !block->hasInterpolationFlagCF(D3Q27System::S) && !block->hasInterpolationFlagCF(D3Q27System::B))
+		if( block->hasInterpolationFlagCF(D3Q27System::DIR_0MM)&& !block->hasInterpolationFlagCF(D3Q27System::DIR_0M0) && !block->hasInterpolationFlagCF(D3Q27System::DIR_00M))
 		{
 			SPtr<Block3D> fblockSW = grid->getBlock(fbx1+0,fbx2,fbx3,level);
 			SPtr<Block3D> fblockSE = grid->getBlock(fbx1+1,fbx2,fbx3,level);
          SPtr<Block3D> fblockNW;// = grid->getBlock(fbx1+0, fbx2, fbx3, level);
          SPtr<Block3D> fblockNE;// = grid->getBlock(fbx1+1, fbx2, fbx3, level);
 
-			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::BS);
+			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::DIR_0MM);
 		}
-		if( block->hasInterpolationFlagCF(D3Q27System::BN)&& !block->hasInterpolationFlagCF(D3Q27System::N) && !block->hasInterpolationFlagCF(D3Q27System::B))
+		if( block->hasInterpolationFlagCF(D3Q27System::DIR_0PM)&& !block->hasInterpolationFlagCF(D3Q27System::DIR_0P0) && !block->hasInterpolationFlagCF(D3Q27System::DIR_00M))
 		{
 			SPtr<Block3D> fblockSW = grid->getBlock(fbx1+0,fbx2+1,fbx3,level);
 			SPtr<Block3D> fblockSE = grid->getBlock(fbx1+1,fbx2+1,fbx3,level);
          SPtr<Block3D> fblockNW;// = grid->getBlock(fbx1+0, fbx2+1, fbx3, level);
          SPtr<Block3D> fblockNE;// = grid->getBlock(fbx1+1, fbx2+1, fbx3, level);
 
-			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::BN);
+			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::DIR_0PM);
 		}
-		if( block->hasInterpolationFlagCF(D3Q27System::TS)&& !block->hasInterpolationFlagCF(D3Q27System::S) && !block->hasInterpolationFlagCF(D3Q27System::T))
+		if( block->hasInterpolationFlagCF(D3Q27System::DIR_0MP)&& !block->hasInterpolationFlagCF(D3Q27System::DIR_0M0) && !block->hasInterpolationFlagCF(D3Q27System::DIR_00P))
 		{
 			SPtr<Block3D> fblockSW = grid->getBlock(fbx1+0,fbx2,fbx3+1,level);
 			SPtr<Block3D> fblockSE = grid->getBlock(fbx1+1,fbx2,fbx3+1,level);
          SPtr<Block3D> fblockNW;// = grid->getBlock(fbx1+0, fbx2, fbx3+1, level);
          SPtr<Block3D> fblockNE;// = grid->getBlock(fbx1+1, fbx2, fbx3+1, level);
 
-			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::TS);
+			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::DIR_0MP);
 		}
 
 
 
 
       //////corners
-      if (block->hasInterpolationFlagCF(D3Q27System::TNE)&&!block->hasInterpolationFlagCF(D3Q27System::TE)&&!block->hasInterpolationFlagCF(D3Q27System::TN)&&!block->hasInterpolationFlagCF(D3Q27System::NE)&&!block->hasInterpolationFlagCF(D3Q27System::T)&&!block->hasInterpolationFlagCF(D3Q27System::N) && !block->hasInterpolationFlagCF(D3Q27System::E))
+      if (block->hasInterpolationFlagCF(D3Q27System::DIR_PPP)&&!block->hasInterpolationFlagCF(D3Q27System::DIR_P0P)&&!block->hasInterpolationFlagCF(D3Q27System::DIR_0PP)&&!block->hasInterpolationFlagCF(D3Q27System::DIR_PP0)&&!block->hasInterpolationFlagCF(D3Q27System::DIR_00P)&&!block->hasInterpolationFlagCF(D3Q27System::DIR_0P0) && !block->hasInterpolationFlagCF(D3Q27System::DIR_P00))
       {
          SPtr<Block3D> fblockSW = grid->getBlock(fbx1+1, fbx2+1, fbx3+1, level);
          SPtr<Block3D> fblockSE;// = grid->getBlock(fbx1+1, fbx2+1, fbx3+0, level);
          SPtr<Block3D> fblockNW;// = grid->getBlock(fbx1+1, fbx2+1, fbx3+1, level);
          SPtr<Block3D> fblockNE;// = grid->getBlock(fbx1+1, fbx2+1, fbx3+1, level);
 
-         setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::TNE);
+         setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::DIR_PPP);
       }
-      if (block->hasInterpolationFlagCF(D3Q27System::TSW)&&!block->hasInterpolationFlagCF(D3Q27System::TW)&&!block->hasInterpolationFlagCF(D3Q27System::TS)&& !block->hasInterpolationFlagCF(D3Q27System::SW)&& !block->hasInterpolationFlagCF(D3Q27System::T)&& !block->hasInterpolationFlagCF(D3Q27System::W) && !block->hasInterpolationFlagCF(D3Q27System::S))
+      if (block->hasInterpolationFlagCF(D3Q27System::DIR_MMP)&&!block->hasInterpolationFlagCF(D3Q27System::DIR_M0P)&&!block->hasInterpolationFlagCF(D3Q27System::DIR_0MP)&& !block->hasInterpolationFlagCF(D3Q27System::DIR_MM0)&& !block->hasInterpolationFlagCF(D3Q27System::DIR_00P)&& !block->hasInterpolationFlagCF(D3Q27System::DIR_M00) && !block->hasInterpolationFlagCF(D3Q27System::DIR_0M0))
       {
          SPtr<Block3D> fblockSW = grid->getBlock(fbx1, fbx2, fbx3+1, level);
          SPtr<Block3D> fblockSE;// = grid->getBlock(fbx1, fbx2, fbx3, level);
          SPtr<Block3D> fblockNW;// = grid->getBlock(fbx1, fbx2, fbx3+1, level);
          SPtr<Block3D> fblockNE;// = grid->getBlock(fbx1, fbx2, fbx3+1, level);
 
-         setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::TSW);
+         setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::DIR_MMP);
       }
-      if (block->hasInterpolationFlagCF(D3Q27System::TSE)&&!block->hasInterpolationFlagCF(D3Q27System::TE)&&!block->hasInterpolationFlagCF(D3Q27System::TS)&& !block->hasInterpolationFlagCF(D3Q27System::SE)&& !block->hasInterpolationFlagCF(D3Q27System::T)&& !block->hasInterpolationFlagCF(D3Q27System::E) && !block->hasInterpolationFlagCF(D3Q27System::S))
+      if (block->hasInterpolationFlagCF(D3Q27System::DIR_PMP)&&!block->hasInterpolationFlagCF(D3Q27System::DIR_P0P)&&!block->hasInterpolationFlagCF(D3Q27System::DIR_0MP)&& !block->hasInterpolationFlagCF(D3Q27System::DIR_PM0)&& !block->hasInterpolationFlagCF(D3Q27System::DIR_00P)&& !block->hasInterpolationFlagCF(D3Q27System::DIR_P00) && !block->hasInterpolationFlagCF(D3Q27System::DIR_0M0))
       {
          SPtr<Block3D> fblockSW = grid->getBlock(fbx1+1, fbx2, fbx3+1, level);
          SPtr<Block3D> fblockSE;// = grid->getBlock(fbx1+1, fbx2, fbx3+0, level);
          SPtr<Block3D> fblockNW;// = grid->getBlock(fbx1+1, fbx2, fbx3+1, level);
          SPtr<Block3D> fblockNE;// = grid->getBlock(fbx1+1, fbx2, fbx3+1, level);
 
-         setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::TSE);
+         setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::DIR_PMP);
       }
-      if (block->hasInterpolationFlagCF(D3Q27System::TNW)&&!block->hasInterpolationFlagCF(D3Q27System::TW)&&!block->hasInterpolationFlagCF(D3Q27System::TN)&& !block->hasInterpolationFlagCF(D3Q27System::NW)&& !block->hasInterpolationFlagCF(D3Q27System::T)&& !block->hasInterpolationFlagCF(D3Q27System::N) && !block->hasInterpolationFlagCF(D3Q27System::W))
+      if (block->hasInterpolationFlagCF(D3Q27System::DIR_MPP)&&!block->hasInterpolationFlagCF(D3Q27System::DIR_M0P)&&!block->hasInterpolationFlagCF(D3Q27System::DIR_0PP)&& !block->hasInterpolationFlagCF(D3Q27System::DIR_MP0)&& !block->hasInterpolationFlagCF(D3Q27System::DIR_00P)&& !block->hasInterpolationFlagCF(D3Q27System::DIR_0P0) && !block->hasInterpolationFlagCF(D3Q27System::DIR_M00))
       {
          SPtr<Block3D> fblockSW = grid->getBlock(fbx1, fbx2+1, fbx3+1, level);
          SPtr<Block3D> fblockSE;// = grid->getBlock(fbx1, fbx2+1, fbx3, level);
          SPtr<Block3D> fblockNW;// = grid->getBlock(fbx1, fbx2+1, fbx3+1, level);
          SPtr<Block3D> fblockNE;// = grid->getBlock(fbx1, fbx2+1, fbx3+1, level);
 
-         setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::TNW);
+         setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::DIR_MPP);
       }
-      if (block->hasInterpolationFlagCF(D3Q27System::BNE)&&!block->hasInterpolationFlagCF(D3Q27System::BE)&&!block->hasInterpolationFlagCF(D3Q27System::BN)&& !block->hasInterpolationFlagCF(D3Q27System::NE)&&!block->hasInterpolationFlagCF(D3Q27System::B)&&!block->hasInterpolationFlagCF(D3Q27System::N) && !block->hasInterpolationFlagCF(D3Q27System::E))
+      if (block->hasInterpolationFlagCF(D3Q27System::DIR_PPM)&&!block->hasInterpolationFlagCF(D3Q27System::DIR_P0M)&&!block->hasInterpolationFlagCF(D3Q27System::DIR_0PM)&& !block->hasInterpolationFlagCF(D3Q27System::DIR_PP0)&&!block->hasInterpolationFlagCF(D3Q27System::DIR_00M)&&!block->hasInterpolationFlagCF(D3Q27System::DIR_0P0) && !block->hasInterpolationFlagCF(D3Q27System::DIR_P00))
       {
          SPtr<Block3D> fblockSW = grid->getBlock(fbx1+1, fbx2+1, fbx3+0, level);
          SPtr<Block3D> fblockSE;// = grid->getBlock(fbx1+1, fbx2+1, fbx3+0, level);
          SPtr<Block3D> fblockNW;// = grid->getBlock(fbx1+1, fbx2+1, fbx3+1, level);
          SPtr<Block3D> fblockNE;// = grid->getBlock(fbx1+1, fbx2+1, fbx3+1, level);
 
-         setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::BNE);
+         setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::DIR_PPM);
       }
-      if (block->hasInterpolationFlagCF(D3Q27System::BSW)&& !block->hasInterpolationFlagCF(D3Q27System::BS)&& !block->hasInterpolationFlagCF(D3Q27System::BW)&& !block->hasInterpolationFlagCF(D3Q27System::SW)&& !block->hasInterpolationFlagCF(D3Q27System::B)&& !block->hasInterpolationFlagCF(D3Q27System::W) && !block->hasInterpolationFlagCF(D3Q27System::S))
+      if (block->hasInterpolationFlagCF(D3Q27System::DIR_MMM)&& !block->hasInterpolationFlagCF(D3Q27System::DIR_0MM)&& !block->hasInterpolationFlagCF(D3Q27System::DIR_M0M)&& !block->hasInterpolationFlagCF(D3Q27System::DIR_MM0)&& !block->hasInterpolationFlagCF(D3Q27System::DIR_00M)&& !block->hasInterpolationFlagCF(D3Q27System::DIR_M00) && !block->hasInterpolationFlagCF(D3Q27System::DIR_0M0))
       {
          SPtr<Block3D> fblockSW = grid->getBlock(fbx1, fbx2, fbx3+0, level);
          SPtr<Block3D> fblockSE;// = grid->getBlock(fbx1, fbx2, fbx3, level);
          SPtr<Block3D> fblockNW;// = grid->getBlock(fbx1, fbx2, fbx3+1, level);
          SPtr<Block3D> fblockNE;// = grid->getBlock(fbx1, fbx2, fbx3+1, level);
 
-         setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::BSW);
+         setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::DIR_MMM);
       }
-      if (block->hasInterpolationFlagCF(D3Q27System::BSE)&& !block->hasInterpolationFlagCF(D3Q27System::BS)&& !block->hasInterpolationFlagCF(D3Q27System::BE)&& !block->hasInterpolationFlagCF(D3Q27System::SE)&& !block->hasInterpolationFlagCF(D3Q27System::B)&& !block->hasInterpolationFlagCF(D3Q27System::E) && !block->hasInterpolationFlagCF(D3Q27System::S))
+      if (block->hasInterpolationFlagCF(D3Q27System::DIR_PMM)&& !block->hasInterpolationFlagCF(D3Q27System::DIR_0MM)&& !block->hasInterpolationFlagCF(D3Q27System::DIR_P0M)&& !block->hasInterpolationFlagCF(D3Q27System::DIR_PM0)&& !block->hasInterpolationFlagCF(D3Q27System::DIR_00M)&& !block->hasInterpolationFlagCF(D3Q27System::DIR_P00) && !block->hasInterpolationFlagCF(D3Q27System::DIR_0M0))
       {
          SPtr<Block3D> fblockSW = grid->getBlock(fbx1+1, fbx2, fbx3, level);
          SPtr<Block3D> fblockSE;// = grid->getBlock(fbx1+1, fbx2, fbx3+0, level);
          SPtr<Block3D> fblockNW;// = grid->getBlock(fbx1+1, fbx2, fbx3+1, level);
          SPtr<Block3D> fblockNE;// = grid->getBlock(fbx1+1, fbx2, fbx3+1, level);
 
-         setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::BSE);
+         setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::DIR_PMM);
       }
-      if (block->hasInterpolationFlagCF(D3Q27System::BNW)&& !block->hasInterpolationFlagCF(D3Q27System::BN)&& !block->hasInterpolationFlagCF(D3Q27System::BW)&& !block->hasInterpolationFlagCF(D3Q27System::NW)&& !block->hasInterpolationFlagCF(D3Q27System::B)&& !block->hasInterpolationFlagCF(D3Q27System::N) && !block->hasInterpolationFlagCF(D3Q27System::W))
+      if (block->hasInterpolationFlagCF(D3Q27System::DIR_MPM)&& !block->hasInterpolationFlagCF(D3Q27System::DIR_0PM)&& !block->hasInterpolationFlagCF(D3Q27System::DIR_M0M)&& !block->hasInterpolationFlagCF(D3Q27System::DIR_MP0)&& !block->hasInterpolationFlagCF(D3Q27System::DIR_00M)&& !block->hasInterpolationFlagCF(D3Q27System::DIR_0P0) && !block->hasInterpolationFlagCF(D3Q27System::DIR_M00))
       {
          SPtr<Block3D> fblockSW = grid->getBlock(fbx1, fbx2+1, fbx3+0, level);
          SPtr<Block3D> fblockSE;// = grid->getBlock(fbx1, fbx2+1, fbx3, level);
          SPtr<Block3D> fblockNW;// = grid->getBlock(fbx1, fbx2+1, fbx3+1, level);
          SPtr<Block3D> fblockNE;// = grid->getBlock(fbx1, fbx2+1, fbx3+1, level);
 
-         setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::BNW);
+         setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, D3Q27System::DIR_MPM);
       }
 
 	}

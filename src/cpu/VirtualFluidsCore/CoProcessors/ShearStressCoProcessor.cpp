@@ -172,34 +172,34 @@ void ShearStressCoProcessor::calculateShearStress(double timeStep)
                     //////////////////////////////////////////////////////////////////////////
                     // compute velocity
                     //////////////////////////////////////////////////////////////////////////
-                    vx = ((((f[TNE] - f[BSW]) + (f[TSE] - f[BNW])) + ((f[BSE] - f[TNW]) + (f[BNE] - f[TSW]))) +
-                          (((f[BE] - f[TW]) + (f[TE] - f[BW])) + ((f[SE] - f[NW]) + (f[NE] - f[SW]))) + (f[E] - f[W]));
+                    vx = ((((f[DIR_PPP] - f[DIR_MMM]) + (f[DIR_PMP] - f[DIR_MPM])) + ((f[DIR_PMM] - f[DIR_MPP]) + (f[DIR_PPM] - f[DIR_MMP]))) +
+                          (((f[DIR_P0M] - f[DIR_M0P]) + (f[DIR_P0P] - f[DIR_M0M])) + ((f[DIR_PM0] - f[DIR_MP0]) + (f[NE] - f[DIR_MM0]))) + (f[DIR_P00] - f[W]));
 
-                    vy = ((((f[TNE] - f[BSW]) + (f[BNW] - f[TSE])) + ((f[TNW] - f[BSE]) + (f[BNE] - f[TSW]))) +
-                          (((f[BN] - f[TS]) + (f[TN] - f[BS])) + ((f[NW] - f[SE]) + (f[NE] - f[SW]))) + (f[N] - f[S]));
+                    vy = ((((f[DIR_PPP] - f[DIR_MMM]) + (f[DIR_MPM] - f[DIR_PMP])) + ((f[DIR_MPP] - f[DIR_PMM]) + (f[DIR_PPM] - f[DIR_MMP]))) +
+                          (((f[DIR_0PM] - f[DIR_0MP]) + (f[DIR_0PP] - f[DIR_0MM])) + ((f[DIR_MP0] - f[DIR_PM0]) + (f[NE] - f[DIR_MM0]))) + (f[N] - f[S]));
 
-                    vz = ((((f[TNE] - f[BSW]) + (f[TSE] - f[BNW])) + ((f[TNW] - f[BSE]) + (f[TSW] - f[BNE]))) +
-                          (((f[TS] - f[BN]) + (f[TN] - f[BS])) + ((f[TW] - f[BE]) + (f[TE] - f[BW]))) + (f[T] - f[B]));
+                    vz = ((((f[DIR_PPP] - f[DIR_MMM]) + (f[DIR_PMP] - f[DIR_MPM])) + ((f[DIR_MPP] - f[DIR_PMM]) + (f[DIR_MMP] - f[DIR_PPM]))) +
+                          (((f[DIR_0MP] - f[DIR_0PM]) + (f[DIR_0PP] - f[DIR_0MM])) + ((f[DIR_M0P] - f[DIR_P0M]) + (f[DIR_P0P] - f[DIR_M0M]))) + (f[T] - f[B]));
 
                     sxy = 3.0 * collFactor / (collFactor - 1.0) *
-                          (((f[TNE] + f[BSW]) - (f[TSE] + f[BNW])) + (-(f[BSE] + f[TNW]) + (f[TSW] + f[BNE])) +
-                           (((f[NE] + f[SW]) - (f[SE] + f[NW]))) - vx * vy);
+                          (((f[DIR_PPP] + f[DIR_MMM]) - (f[DIR_PMP] + f[DIR_MPM])) + (-(f[DIR_PMM] + f[DIR_MPP]) + (f[DIR_MMP] + f[DIR_PPM])) +
+                           (((f[NE] + f[DIR_MM0]) - (f[DIR_PM0] + f[DIR_MP0]))) - vx * vy);
 
                     sxz = 3.0 * collFactor / (collFactor - 1.0) *
-                          (((f[TNE] + f[BSW]) + (f[TSE] + f[BNW])) + (-(f[BSE] + f[TNW]) - (f[TSW] + f[BNE])) +
-                           ((f[TE] + f[BW]) - (f[BE] + f[TW])) - vx * vz);
+                          (((f[DIR_PPP] + f[DIR_MMM]) + (f[DIR_PMP] + f[DIR_MPM])) + (-(f[DIR_PMM] + f[DIR_MPP]) - (f[DIR_MMP] + f[DIR_PPM])) +
+                           ((f[DIR_P0P] + f[DIR_M0M]) - (f[DIR_P0M] + f[DIR_M0P])) - vx * vz);
 
                     syz = 3.0 * collFactor / (collFactor - 1.0) *
-                          (((f[TNE] + f[BSW]) - (f[TSE] + f[BNW])) + ((f[BSE] + f[TNW]) - (f[TSW] + f[BNE])) +
-                           (-(f[BN] + f[TS]) + (f[TN] + f[BS])) - vy * vz);
+                          (((f[DIR_PPP] + f[DIR_MMM]) - (f[DIR_PMP] + f[DIR_MPM])) + ((f[DIR_PMM] + f[DIR_MPP]) - (f[DIR_MMP] + f[DIR_PPM])) +
+                           (-(f[DIR_0PM] + f[DIR_0MP]) + (f[DIR_0PP] + f[DIR_0MM])) - vy * vz);
 
                     LBMReal dxxMyy = 3.0 / 2.0 * collFactor / (collFactor - 1.0) *
-                                     (((f[TE] + f[BW]) + (f[BE] + f[TW])) - ((f[BN] + f[TS]) + (f[TN] + f[BS])) +
-                                      ((f[E] + f[W]) - (f[N] + f[S])) - vx * vx + vy * vy);
+                                     (((f[DIR_P0P] + f[DIR_M0M]) + (f[DIR_P0M] + f[DIR_M0P])) - ((f[DIR_0PM] + f[DIR_0MP]) + (f[DIR_0PP] + f[DIR_0MM])) +
+                                      ((f[DIR_P00] + f[W]) - (f[N] + f[S])) - vx * vx + vy * vy);
 
                     LBMReal dxxMzz = 3.0 / 2.0 * collFactor / (collFactor - 1.0) *
-                                     ((((f[NE] + f[SW]) + (f[SE] + f[NW])) - ((f[BN] + f[TS]) + (f[TN] + f[BS]))) +
-                                      ((f[E] + f[W]) - (f[T] + f[B])) - vx * vx + vz * vz);
+                                     ((((f[NE] + f[DIR_MM0]) + (f[DIR_PM0] + f[DIR_MP0])) - ((f[DIR_0PM] + f[DIR_0MP]) + (f[DIR_0PP] + f[DIR_0MM]))) +
+                                      ((f[DIR_P00] + f[W]) - (f[T] + f[B])) - vx * vx + vz * vz);
 
                     // LBMReal dyyMzz =3.0/2.0 *collFactor/(collFactor-1.0)*((((f[NE] + f[SW]) + (f[SE] +
                     // f[NW]))-((f[TE] + f[BW])+(f[BE]+ f[TW])))
@@ -562,32 +562,32 @@ void ShearStressCoProcessor::findPlane(int ix1, int ix2, int ix3, SPtr<Grid3D> g
                                                 "ix2=" + UbSystem::toString(ix2) + "ix3=" + UbSystem::toString(ix3) +
                                                 "GlobalID=" + UbSystem::toString(block->getGlobalID()) +
                                                 "dx=" + UbSystem::toString(dx) +
-                                                "T=" + UbSystem::toString(bcPtr->getQ(D3Q27System::T)) +
-                                                "B=" + UbSystem::toString(bcPtr->getQ(D3Q27System::B)) +
-                                                "E=" + UbSystem::toString(bcPtr->getQ(D3Q27System::E)) +
-                                                "W=" + UbSystem::toString(bcPtr->getQ(D3Q27System::W)) +
-                                                "N=" + UbSystem::toString(bcPtr->getQ(D3Q27System::N)) +
-                                                "S=" + UbSystem::toString(bcPtr->getQ(D3Q27System::S)) +
-                                                "NE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::NE)) +
-                                                "SW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::SW)) +
-                                                "SE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::SE)) +
-                                                "NW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::NW)) +
-                                                "TE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::TE)) +
-                                                "BW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::BW)) +
-                                                "BE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::BE)) +
-                                                "TW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::TW)) +
-                                                "TN=" + UbSystem::toString(bcPtr->getQ(D3Q27System::TN)) +
-                                                "BS=" + UbSystem::toString(bcPtr->getQ(D3Q27System::BS)) +
-                                                "BN=" + UbSystem::toString(bcPtr->getQ(D3Q27System::BN)) +
-                                                "TS=" + UbSystem::toString(bcPtr->getQ(D3Q27System::TS)) +
-                                                "TNE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::TNE)) +
-                                                "TNW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::TNW)) +
-                                                "TSE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::TSE)) +
-                                                "TSW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::TSW)) +
-                                                "BNE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::BNE)) +
-                                                "BNW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::BNW)) +
-                                                "BSE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::BSE)) +
-                                                "BSW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::BSW) * dx)));
+                                                "T=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_00P)) +
+                                                "B=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_00M)) +
+                                                "E=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_P00)) +
+                                                "W=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_M00)) +
+                                                "N=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_0P0)) +
+                                                "S=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_0M0)) +
+                                                "NE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_PP0)) +
+                                                "SW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_MM0)) +
+                                                "SE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_PM0)) +
+                                                "NW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_MP0)) +
+                                                "TE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_P0P)) +
+                                                "BW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_M0M)) +
+                                                "BE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_P0M)) +
+                                                "TW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_M0P)) +
+                                                "TN=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_0PP)) +
+                                                "BS=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_0MM)) +
+                                                "BN=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_0PM)) +
+                                                "TS=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_0MP)) +
+                                                "TNE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_PPP)) +
+                                                "TNW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_MPP)) +
+                                                "TSE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_PMP)) +
+                                                "TSW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_MMP)) +
+                                                "BNE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_PPM)) +
+                                                "BNW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_MPM)) +
+                                                "BSE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_PMM)) +
+                                                "BSW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_MMM) * dx)));
         }
     }
 
@@ -608,7 +608,7 @@ void ShearStressCoProcessor::findPlane(int ix1, int ix2, int ix3, SPtr<Grid3D> g
                                 if (ii <= 2) {
                                     LBMReal q = bcPtrIn->getQ(fdir);
                                     if (q != 999.00000) {
-                                        if (fdir == D3Q27System::E) {
+                                        if (fdir == D3Q27System::DIR_P00) {
                                             // if(!bcArray->isSolid(i, j, k))continue;
                                             if (i + q <= x + 1) {
                                                 if (ii == 0) {
@@ -634,7 +634,7 @@ void ShearStressCoProcessor::findPlane(int ix1, int ix2, int ix3, SPtr<Grid3D> g
                                                 }
                                             }
                                         }
-                                        if (fdir == D3Q27System::W) {
+                                        if (fdir == D3Q27System::DIR_M00) {
                                             // if(!bcArray->isSolid(i, j, k))continue;
                                             if (i - q >= x) {
                                                 if (ii == 0) {
@@ -660,7 +660,7 @@ void ShearStressCoProcessor::findPlane(int ix1, int ix2, int ix3, SPtr<Grid3D> g
                                                 }
                                             }
                                         }
-                                        if (fdir == D3Q27System::N) {
+                                        if (fdir == D3Q27System::DIR_0P0) {
                                             // if(!bcArray->isSolid(i, j, k))continue;
                                             if (j + q <= y + 1) {
                                                 if (ii == 0) {
@@ -686,7 +686,7 @@ void ShearStressCoProcessor::findPlane(int ix1, int ix2, int ix3, SPtr<Grid3D> g
                                                 }
                                             }
                                         }
-                                        if (fdir == D3Q27System::S) {
+                                        if (fdir == D3Q27System::DIR_0M0) {
                                             // if(!bcArray->isSolid(i, j, k))continue;
                                             if (j - q >= y) {
                                                 if (ii == 0) {
@@ -713,7 +713,7 @@ void ShearStressCoProcessor::findPlane(int ix1, int ix2, int ix3, SPtr<Grid3D> g
                                             }
                                         }
 
-                                        if (fdir == D3Q27System::T) {
+                                        if (fdir == D3Q27System::DIR_00P) {
                                             // if(!bcArray->isSolid(i, j, k))continue;
                                             if (k + q <= z + 1) {
                                                 if (ii == 0) {
@@ -739,7 +739,7 @@ void ShearStressCoProcessor::findPlane(int ix1, int ix2, int ix3, SPtr<Grid3D> g
                                                 }
                                             }
                                         }
-                                        if (fdir == D3Q27System::B) {
+                                        if (fdir == D3Q27System::DIR_00M) {
                                             // if(!bcArray->isSolid(i, j, k))continue;
                                             if (k - q >= z) {
                                                 if (ii == 0) {
@@ -788,32 +788,32 @@ void ShearStressCoProcessor::findPlane(int ix1, int ix2, int ix3, SPtr<Grid3D> g
                     UB_EXARGS, "ii is=" + UbSystem::toString(ii) + "  ix1=" + UbSystem::toString(ix1) +
                                    " ix2=" + UbSystem::toString(ix2) + " ix3=" + UbSystem::toString(ix3) +
                                    " Block3D::GlobalID=" + UbSystem::toString(block->getGlobalID()) + " dx=" +
-                                   UbSystem::toString(dx) + " T=" + UbSystem::toString(bcPtr->getQ(D3Q27System::T)) +
-                                   " B=" + UbSystem::toString(bcPtr->getQ(D3Q27System::B)) +
-                                   " E=" + UbSystem::toString(bcPtr->getQ(D3Q27System::E)) +
-                                   " W=" + UbSystem::toString(bcPtr->getQ(D3Q27System::W)) +
-                                   " N=" + UbSystem::toString(bcPtr->getQ(D3Q27System::N)) +
-                                   " S=" + UbSystem::toString(bcPtr->getQ(D3Q27System::S)) +
-                                   " NE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::NE)) +
-                                   " SW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::SW)) +
-                                   " SE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::SE)) +
-                                   " NW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::NW)) +
-                                   " TE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::TE)) +
-                                   " BW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::BW)) +
-                                   " BE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::BE)) +
-                                   " TW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::TW)) +
-                                   " TN=" + UbSystem::toString(bcPtr->getQ(D3Q27System::TN)) +
-                                   " BS=" + UbSystem::toString(bcPtr->getQ(D3Q27System::BS)) +
-                                   " BN=" + UbSystem::toString(bcPtr->getQ(D3Q27System::BN)) +
-                                   " TS=" + UbSystem::toString(bcPtr->getQ(D3Q27System::TS)) +
-                                   " TNE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::TNE)) +
-                                   " TNW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::TNW)) +
-                                   " TSE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::TSE)) +
-                                   " TSW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::TSW)) +
-                                   " BNE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::BNE)) +
-                                   " BNW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::BNW)) +
-                                   " BSE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::BSE)) +
-                                   " BSW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::BSW))));
+                                   UbSystem::toString(dx) + " T=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_00P)) +
+                                   " B=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_00M)) +
+                                   " E=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_P00)) +
+                                   " W=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_M00)) +
+                                   " N=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_0P0)) +
+                                   " S=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_0M0)) +
+                                   " NE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_PP0)) +
+                                   " SW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_MM0)) +
+                                   " SE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_PM0)) +
+                                   " NW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_MP0)) +
+                                   " TE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_P0P)) +
+                                   " BW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_M0M)) +
+                                   " BE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_P0M)) +
+                                   " TW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_M0P)) +
+                                   " TN=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_0PP)) +
+                                   " BS=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_0MM)) +
+                                   " BN=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_0PM)) +
+                                   " TS=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_0MP)) +
+                                   " TNE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_PPP)) +
+                                   " TNW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_MPP)) +
+                                   " TSE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_PMP)) +
+                                   " TSW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_MMP)) +
+                                   " BNE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_PPM)) +
+                                   " BNW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_MPM)) +
+                                   " BSE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_PMM)) +
+                                   " BSW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::DIR_MMM))));
             }
         }
     }
@@ -876,22 +876,22 @@ void ShearStressCoProcessor::initDistance()
                         continue;
                     int numberOfCorner = 0;
 
-                    if (bc->getQ(D3Q27System::T) != 999.000) {
+                    if (bc->getQ(D3Q27System::DIR_00P) != 999.000) {
                         numberOfCorner++;
                     }
-                    if (bc->getQ(D3Q27System::B) != 999.000) {
+                    if (bc->getQ(D3Q27System::DIR_00M) != 999.000) {
                         numberOfCorner++;
                     }
-                    if (bc->getQ(D3Q27System::E) != 999.000) {
+                    if (bc->getQ(D3Q27System::DIR_P00) != 999.000) {
                         numberOfCorner++;
                     }
-                    if (bc->getQ(D3Q27System::W) != 999.000) {
+                    if (bc->getQ(D3Q27System::DIR_M00) != 999.000) {
                         numberOfCorner++;
                     }
-                    if (bc->getQ(D3Q27System::N) != 999.000) {
+                    if (bc->getQ(D3Q27System::DIR_0P0) != 999.000) {
                         numberOfCorner++;
                     }
-                    if (bc->getQ(D3Q27System::S) != 999.000) {
+                    if (bc->getQ(D3Q27System::DIR_0M0) != 999.000) {
                         numberOfCorner++;
                     }
                     // if(bc->hasVelocityBoundary()||bc->hasDensityBoundary())continue;

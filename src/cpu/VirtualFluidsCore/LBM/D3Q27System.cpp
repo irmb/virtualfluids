@@ -23,16 +23,16 @@ const double WEIGTH[] = { c8o27,
                           c1o54,  c1o54,  c1o54,  c1o54,  c1o54,  c1o54,  c1o54,  c1o54,  c1o54,  c1o54,  c1o54,  c1o54,
                           c1o216, c1o216, c1o216, c1o216, c1o216, c1o216, c1o216, c1o216 };
 
-const int INVDIR[] = { DIR_000, INV_E,   INV_W,   INV_N,   INV_S,   INV_T,   INV_B,   INV_NE,  INV_SW, INV_SE,
-                       INV_NW,  INV_TE,  INV_BW,  INV_BE,  INV_TW,  INV_TN,  INV_BS,  INV_BN, INV_TS,
-                       INV_TNE, INV_TNW, INV_TSE, INV_TSW, INV_BNE, INV_BNW, INV_BSE, INV_BSW };
+const int INVDIR[] = { DIR_000, INV_P00,   INV_M00,   INV_0P0,   INV_0M0,   INV_00P,   INV_00M,   INV_PP0,  INV_MM0, INV_PM0,
+                       INV_MP0,  INV_P0P,  INV_M0M,  INV_P0M,  INV_M0P,  INV_0PP,  INV_0MM,  INV_0PM, INV_0MP,
+                       INV_PPP, INV_MPP, INV_PMP, INV_MMP, INV_PPM, INV_MPM, INV_PMM, INV_MMM };
 
 // index             0   1   2   3   4   5  6   7   8    9  10  11  12  13  14  15  16  17  18
 // direction:        E,  W,  N,  S,  T,  B, NE, SW, SE, NW, TE, BW, BE, TW, TN, BS, BN, TS, TNE TNW TSE TSW BNE BNW BSE
 // BSW
-//const int EX1[] = { 0, 1, -1, 0, 0, 0, 0, 1, -1, 1, -1, 1, -1, 1, -1, 0, 0, 0, 0, 1, -1, 1, -1, 1, -1, 1, -1 };
-//const int EX2[] = { 0, 0, 0, 1, -1, 0, 0, 1, -1, -1, 1, 0, 0, 0, 0, 1, -1, 1, -1, 1, 1, -1, -1, 1, 1, -1, -1 };
-//const int EX3[] = { 0, 0, 0, 0, 0, 1, -1, 0, 0, 0, 0, 1, -1, -1, 1, 1, -1, -1, 1, 1, 1, 1, 1, -1, -1, -1, -1 };
+const int EX1[] = { 0, 1, -1, 0, 0, 0, 0, 1, -1, 1, -1, 1, -1, 1, -1, 0, 0, 0, 0, 1, -1, 1, -1, 1, -1, 1, -1 };
+const int EX2[] = { 0, 0, 0, 1, -1, 0, 0, 1, -1, -1, 1, 0, 0, 0, 0, 1, -1, 1, -1, 1, 1, -1, -1, 1, 1, -1, -1 };
+const int EX3[] = { 0, 0, 0, 0, 0, 1, -1, 0, 0, 0, 0, 1, -1, -1, 1, 1, -1, -1, 1, 1, 1, 1, 1, -1, -1, -1, -1 };
 
 //////////////////////////////////////////////////////////////////////////
 

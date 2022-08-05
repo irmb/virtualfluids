@@ -72,22 +72,22 @@ void SpongeLayerBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 
             double newCollFactor;
 
-            if (dir == D3Q27System::E) {
+            if (dir == D3Q27System::DIR_P00) {
                 int ibX1      = block->getX1();
                 int ibMax     = val<1>(ixMax) - val<1>(ixMin) + 1;
                 double index  = (double)(ibX1 - val<1>(ixMin) + 1);
                 newCollFactor = oldCollFactor - (oldCollFactor - 1.0) / (double)(ibMax)*index;
-            } else if (dir == D3Q27System::W) {
+            } else if (dir == D3Q27System::DIR_M00) {
                 int ibX1      = block->getX1();
                 int ibMax     = val<1>(ixMax) - val<1>(ixMin) + 1;
                 double index  = (double)(ibX1 - val<1>(ixMin) + 1);
                 newCollFactor = (oldCollFactor - 1.0) / (double)(ibMax)*index;
-            } else if (dir == D3Q27System::T) {
+            } else if (dir == D3Q27System::DIR_00P) {
                 int ibX3      = block->getX3();
                 int ibMax     = val<3>(ixMax) - val<3>(ixMin) + 1;
                 double index  = (double)(ibX3 - val<3>(ixMin) + 1);
                 newCollFactor = oldCollFactor - (oldCollFactor - 1.0) / (double)(ibMax)*index;
-            } else if (dir == D3Q27System::B) {
+            } else if (dir == D3Q27System::DIR_00M) {
                 int ibX3      = block->getX3();
                 int ibMax     = val<3>(ixMax) - val<3>(ixMin) + 1;
                 double index  = (double)(ibX3 - val<3>(ixMin) + 1);

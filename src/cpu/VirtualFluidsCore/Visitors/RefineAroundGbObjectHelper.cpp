@@ -38,7 +38,7 @@ void RefineAroundGbObjectHelper::refine()
     grid->accept(overlapVisitor);
 
     std::vector<int> dirs;
-    for (int i = D3Q27System::E; i <= D3Q27System::TS; i++) {
+    for (int i = D3Q27System::DIR_P00; i <= D3Q27System::DIR_0MP; i++) {
         dirs.push_back(i);
     }
     SetInterpolationDirsBlockVisitor interDirsVisitor(dirs);

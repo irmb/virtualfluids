@@ -76,7 +76,7 @@ void pf1()
 
    //set boundary conditions for blocks and create process decomposition for MPI
    SPtr<D3Q27Interactor> cylinderInt(new D3Q27Interactor(cylinder, grid, noSlipBCAdapter, Interactor3D::INVERSESOLID));
-   SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B));
+   SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::DIR_00M));
    InteractorsHelper intHelper(grid, metisVisitor);
    intHelper.addInteractor(cylinderInt);
    intHelper.selectBlocks();
