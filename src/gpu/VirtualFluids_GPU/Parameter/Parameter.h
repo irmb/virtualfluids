@@ -37,6 +37,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <optional>
 
 #include "lbm/constants/D3Q27.h"
 #include "LBM/LB.h"
@@ -116,7 +117,7 @@ struct LBMSimulationParameter {
     uint *neighborX, *neighborY, *neighborZ, *neighborInverse;
 
     // coordinates////////////////////////////////////////////////////////////
-    //! \brief store the coordinates for every lattice node 
+    //! \brief store the coordinates for every lattice node
     real *coordinateX, *coordinateY, *coordinateZ;
 
     // body forces////////////
@@ -374,10 +375,11 @@ struct LBMSimulationParameter {
 class VIRTUALFLUIDS_GPU_EXPORT Parameter
 {
 public:
-    explicit Parameter(const vf::basics::ConfigurationFile &configData, const int numberOfProcesses = 1, const int myId = 0);
-    Parameter(const int numberOfProcesses = 1, const int myId = 0);
+    Parameter();
+    explicit Parameter(const vf::basics::ConfigurationFile* configData);
+    explicit Parameter(const int numberOfProcesses, const int myId);
+    explicit Parameter(const int numberOfProcesses, const int myId, std::optional<const vf::basics::ConfigurationFile*> configData);
     ~Parameter();
-    void initLBMSimulationParameter();
 
     //! \brief Pointer to instance of LBMSimulationParameter - stored on Host System
     std::shared_ptr<LBMSimulationParameter> getParH(int level);
@@ -430,7 +432,6 @@ public:
     void settimestepForMP(unsigned int timestepForMP);
     void setOutputPath(std::string oPath);
     void setOutputPrefix(std::string oPrefix);
-    void setPathAndFilename(std::string fname);
     void setGridPath(std::string gridPath);
     void setGeometryFileC(std::string GeometryFileC);
     void setGeometryFileM(std::string GeometryFileM);
@@ -865,10 +866,16 @@ public:
     ////////////////////////////////////////////////////////////////////////////
 
 private:
+    void initialize(std::optional<const vf::basics::ConfigurationFile&> configData, int numberOfProcesses, int myId);
+
     void readConfigData(const vf::basics::ConfigurationFile &configData);
     void initGridPaths();
     void initGridBasePoints();
     void initDefaultLBMkernelAllLevels();
+
+    void initLBMSimulationParameter();
+
+    void setPathAndFilename(std::string fname);
 
 private:
     bool compOn{ false };

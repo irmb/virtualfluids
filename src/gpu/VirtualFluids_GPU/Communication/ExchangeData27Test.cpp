@@ -30,7 +30,6 @@ protected:
     {
         para = std::make_shared<Parameter>();
         para->setMaxLevel(level + 1);       // setMaxLevel resizes parH
-        para->initLBMSimulationParameter(); // init parH
 
         para->getParH(level)->edgeNodesXtoZ.emplace_back(0, 1, 0, 1);
         para->getParH(level)->edgeNodesXtoZ.emplace_back(0, 6, 0, 6);

@@ -14,7 +14,6 @@ protected:
 
     void SetUp() override
     {
-        para->initLBMSimulationParameter();
     }
 };
 

@@ -100,7 +100,7 @@ void multipleLevel(const std::string &configPath)
     vf::basics::ConfigurationFile config;
     std::cout << configPath << std::endl;
     config.load(configPath);
-    SPtr<Parameter> para = std::make_shared<Parameter>(config, communicator.getNummberOfProcess(), communicator.getPID());
+    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNummberOfProcess(), communicator.getPID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -163,11 +163,8 @@ void multipleLevel(const std::string &configPath)
     para->setCalcDragLift(false);
     para->setUseWale(false);
 
-    if (para->getOutputPath().size() == 0) {
-        para->setOutputPath(outPath);
-    }
     para->setOutputPrefix(simulationName);
-    para->setPathAndFilename(para->getOutputPath() + para->getOutputPrefix());
+
     para->setPrintFiles(true);
     std::cout << "Write result files to " << para->getFName() << std::endl;
 
