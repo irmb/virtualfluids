@@ -63,7 +63,7 @@ bcFunction getVelocityBcTarget(BoundaryConditionFactory &bcFactory)
     return bcTarget;
 }
 
-// tests for boundary conditions whcih are set by the user (tests both set and get functions)
+// tests for boundary conditions which are set by the user (tests both set and get functions)
 
 TEST(BoundaryConditionFactoryTest, velocityBC)
 {
