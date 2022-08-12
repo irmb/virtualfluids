@@ -65,8 +65,6 @@ Parameter::Parameter(int numberOfProcesses, int myId, std::optional<const vf::ba
     initGridPaths();
     initGridBasePoints();
     initDefaultLBMkernelAllLevels();
-
-    initLBMSimulationParameter();
 }
 
 Parameter::~Parameter() = default;

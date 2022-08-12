@@ -82,6 +82,8 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     vf::cuda::verifyAndSetDevice(
         communicator.mapCudaDevice(para->getMyProcessID(), para->getNumprocs(), para->getDevices(), para->getMaxDev()));
 
+    para->initLBMSimulationParameter();
+
     gridProvider.allocAndCopyForcing();
     gridProvider.allocAndCopyQuadricLimiters();
     if (para->getKernelNeedsFluidNodeIndicesToRun()) {

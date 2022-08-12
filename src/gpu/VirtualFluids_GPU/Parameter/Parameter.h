@@ -381,6 +381,8 @@ public:
     explicit Parameter(const int numberOfProcesses, const int myId, std::optional<const vf::basics::ConfigurationFile*> configData);
     ~Parameter();
 
+    void initLBMSimulationParameter();
+
     //! \brief Pointer to instance of LBMSimulationParameter - stored on Host System
     std::shared_ptr<LBMSimulationParameter> getParH(int level);
     //! \brief Pointer to instance of LBMSimulationParameter - stored on Device (GPU)
@@ -870,8 +872,6 @@ private:
     void initGridPaths();
     void initGridBasePoints();
     void initDefaultLBMkernelAllLevels();
-
-    void initLBMSimulationParameter();
 
     void setPathAndFilename(std::string fname);
 

@@ -44,6 +44,7 @@ private:
     void SetUp() override
     {
         para = std::make_shared<Parameter>();
+        para->initLBMSimulationParameter();
     }
 };
 
