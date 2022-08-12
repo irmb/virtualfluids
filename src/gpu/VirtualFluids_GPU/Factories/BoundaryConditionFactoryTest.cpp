@@ -55,6 +55,8 @@ TEST(BoundaryConditionFactoryTest, defaultStressBC)
     EXPECT_THROW(bc(nullptr, nullptr, 0), std::bad_function_call);
 }
 
+// tests for boundary conditions which are set by the user (tests both set and get functions)
+
 bcFunction getVelocityBcTarget(BoundaryConditionFactory &bcFactory)
 {
     auto bc = bcFactory.getVelocityBoundaryConditionPost();
@@ -62,8 +64,6 @@ bcFunction getVelocityBcTarget(BoundaryConditionFactory &bcFactory)
         (*bc.target<void (*)(LBMSimulationParameter *, QforBoundaryConditions *)>());
     return bcTarget;
 }
-
-// tests for boundary conditions which are set by the user (tests both set and get functions)
 
 TEST(BoundaryConditionFactoryTest, velocityBC)
 {

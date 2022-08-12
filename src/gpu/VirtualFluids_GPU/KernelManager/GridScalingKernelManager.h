@@ -84,7 +84,7 @@ private:
         if (!scalingFunctionFC && scalingStruct.kFC > 0)
             throw std::runtime_error("The scaling function " + scalingName + " was not set!");
         if (scalingFunctionFC && scalingStruct.kFC == 0)
-            VF_LOG_WARNING("The scaling function {} was set, although there is no refinement", scalingName);
+            VF_LOG_WARNING("The scaling function {} was provided, although there is no refinement.", scalingName);
     }
 
     SPtr<Parameter> para;

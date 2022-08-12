@@ -49,10 +49,10 @@ GridScalingKernelManager::GridScalingKernelManager(SPtr<Parameter> parameter, Gr
         }
         checkScalingFunction(gridScalingFactory->getGridScalingFC(), this->para->getParD(0)->intFC, "scalingFineToCoarse");
         this->scalingFineToCoarse = gridScalingFactory->getGridScalingFC();
+    } else{
+        if (gridScalingFactory && gridScalingFactory->getGridScalingFC() != nullptr)
+            VF_LOG_WARNING("A scaling function for fine to coarse was provided, although there is only one level.");
     }
-    
-    if(this->scalingFineToCoarse == nullptr)
-        VF_LOG_TRACE("Function for scalingFineToCoarse is nullptr");
 }
 
 void GridScalingKernelManager::runFineToCoarseKernelLB(const int level, InterpolationCellFC* icellFC, int streamIndex) const{
