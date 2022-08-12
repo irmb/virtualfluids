@@ -1,4 +1,5 @@
 #include <gmock/gmock-function-mocker.h>
+#include <gmock/gmock-matchers.h>
 #include <gmock/gmock.h>
 #include <stdexcept>
 
@@ -65,4 +66,41 @@ TEST_F(BCKernelManagerTest_BCsNotSpecified, stressBoundaryConditionPost_NotSpeci
     EXPECT_THROW(BCKernelManager(para, &bcFactory), std::runtime_error);
     para->getParD(0)->stressBC.numberOfBCnodes = 0;
     EXPECT_NO_THROW(BCKernelManager(para, &bcFactory));
+}
+
+class BoundaryConditionFactoryMock : public BoundaryConditionFactory
+{
+public:
+    mutable uint numberOfCalls = 0;
+
+    [[nodiscard]] boundaryCondition getVelocityBoundaryConditionPost(bool) const override
+    {
+        return [this](LBMSimulationParameter *, QforBoundaryConditions *) { numberOfCalls++; };
+    }
+};
+
+class BCKernelManagerTest_runBCs : public testing::Test
+{
+protected:
+    BoundaryConditionFactoryMock bcFactory;
+    SPtr<Parameter> para = std::make_shared<Parameter>();
+    UPtr<BCKernelManager> sut;
+
+    void SetUp() override
+    {
+        para->initLBMSimulationParameter();
+        sut = std::make_unique<BCKernelManager>(para, &bcFactory);
+    }
+};
+
+TEST_F(BCKernelManagerTest_runBCs, runVelocityBCKernelPost)
+{
+    para->getParD(0)->velocityBC.numberOfBCnodes = 1;
+    sut->runVelocityBCKernelPost(0);
+    EXPECT_THAT(bcFactory.numberOfCalls, testing::Eq(1));
+
+    bcFactory.numberOfCalls = 0;
+    para->getParD(0)->velocityBC.numberOfBCnodes = 0;
+    sut->runVelocityBCKernelPost(0);
+    EXPECT_THAT(bcFactory.numberOfCalls, testing::Eq(0));
 }
