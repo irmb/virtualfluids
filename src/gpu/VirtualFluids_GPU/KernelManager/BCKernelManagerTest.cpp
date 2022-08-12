@@ -1,3 +1,4 @@
+#include <gmock/gmock-function-mocker.h>
 #include <gmock/gmock.h>
 #include <stdexcept>
 
@@ -22,34 +23,46 @@ TEST_F(BCKernelManagerTest_BCsNotSpecified, velocityBoundaryConditionPost_NotSpe
 {
     para->getParD(0)->velocityBC.numberOfBCnodes = 1;
     EXPECT_THROW(BCKernelManager(para, &bcFactory), std::runtime_error);
+    para->getParD(0)->velocityBC.numberOfBCnodes = 0;
+    EXPECT_NO_THROW(BCKernelManager(para, &bcFactory));
 }
 
 TEST_F(BCKernelManagerTest_BCsNotSpecified, noSlipBoundaryConditionPost_NotSpecified)
 {
     para->getParD(0)->noSlipBC.numberOfBCnodes = 1;
     EXPECT_NO_THROW(BCKernelManager(para, &bcFactory)); // no throw, as a default is specified
+    para->getParD(0)->noSlipBC.numberOfBCnodes = 0;
+    EXPECT_NO_THROW(BCKernelManager(para, &bcFactory));
 }
 
 TEST_F(BCKernelManagerTest_BCsNotSpecified, slipBoundaryConditionPost_NotSpecified)
 {
     para->getParD(0)->slipBC.numberOfBCnodes = 1;
     EXPECT_THROW(BCKernelManager(para, &bcFactory), std::runtime_error);
+    para->getParD(0)->slipBC.numberOfBCnodes = 0;
+    EXPECT_NO_THROW(BCKernelManager(para, &bcFactory));
 }
 
 TEST_F(BCKernelManagerTest_BCsNotSpecified, pressureBoundaryConditionPre_NotSpecified)
 {
     para->getParD(0)->pressureBC.numberOfBCnodes = 1;
     EXPECT_THROW(BCKernelManager(para, &bcFactory), std::runtime_error);
+    para->getParD(0)->pressureBC.numberOfBCnodes = 0;
+    EXPECT_NO_THROW(BCKernelManager(para, &bcFactory));
 }
 
 TEST_F(BCKernelManagerTest_BCsNotSpecified, geometryBoundaryConditionPost_NotSpecified)
 {
     para->getParD(0)->geometryBC.numberOfBCnodes = 1;
     EXPECT_NO_THROW(BCKernelManager(para, &bcFactory)); // no throw, as a default is specified
+    para->getParD(0)->geometryBC.numberOfBCnodes = 0;
+    EXPECT_NO_THROW(BCKernelManager(para, &bcFactory));
 }
 
 TEST_F(BCKernelManagerTest_BCsNotSpecified, stressBoundaryConditionPost_NotSpecified)
 {
     para->getParD(0)->stressBC.numberOfBCnodes = 1;
     EXPECT_THROW(BCKernelManager(para, &bcFactory), std::runtime_error);
+    para->getParD(0)->stressBC.numberOfBCnodes = 0;
+    EXPECT_NO_THROW(BCKernelManager(para, &bcFactory));
 }
