@@ -866,8 +866,6 @@ public:
     ////////////////////////////////////////////////////////////////////////////
 
 private:
-    void initialize(std::optional<const vf::basics::ConfigurationFile&> configData, int numberOfProcesses, int myId);
-
     void readConfigData(const vf::basics::ConfigurationFile &configData);
     void initGridPaths();
     void initGridBasePoints();

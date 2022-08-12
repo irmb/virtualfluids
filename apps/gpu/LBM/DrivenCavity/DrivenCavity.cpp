@@ -117,11 +117,6 @@ int main()
 
         gridBuilder->buildGrids(LbmOrGks::LBM, false);
 
-
-        SPtr<Parameter> para = std::make_shared<Parameter>();
-        BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
-        vf::gpu::Communicator &communicator = vf::gpu::Communicator::getInstance();
-
         //////////////////////////////////////////////////////////////////////////
         // compute parameters in lattice units
         //////////////////////////////////////////////////////////////////////////
@@ -136,6 +131,7 @@ int main()
         //////////////////////////////////////////////////////////////////////////
         // set parameters
         //////////////////////////////////////////////////////////////////////////
+        SPtr<Parameter> para = std::make_shared<Parameter>();
 
         para->setOutputPath(path);
         para->setOutputPrefix(simulationName);
@@ -164,6 +160,8 @@ int main()
         gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, vyLB, 0.0);
         gridBuilder->setNoSlipBoundaryCondition(SideType::MZ);
 
+        BoundaryConditionFactory bcFactory;
+
         bcFactory.setNoSlipBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipBounceBack);
         bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocitySimpleBounceBackCompressible);
 
@@ -171,19 +169,16 @@ int main()
         // set copy mesh to simulation
         //////////////////////////////////////////////////////////////////////////
 
+        vf::gpu::Communicator &communicator = vf::gpu::Communicator::getInstance();
+
         auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
         SPtr<GridProvider> gridGenerator =
             GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
 
-        para->setCalcParticles(false);
-        para->setCalcMedian(false);
-        para->setCalcTurbulenceIntensity(false);
-        para->setDoCheckPoint(false);
-        para->setUseMeasurePoints(false);
-        para->setDiffOn(false);
-        para->setCalcPlaneConc(false);
-        para->setUseWale(false);
-        para->setSimulatePorousMedia(false);
+
+        //////////////////////////////////////////////////////////////////////////
+        // run simulation
+        //////////////////////////////////////////////////////////////////////////
 
         VF_LOG_INFO("Start Running DrivenCavity Showcase...");
         printf("\n");
@@ -212,12 +207,9 @@ int main()
         VF_LOG_INFO("write_nth_timestep     = {}", timeStepEnd);
         VF_LOG_INFO("output_path            = {}", path);
 
-        //////////////////////////////////////////////////////////////////////////
-        // run simulation
-        //////////////////////////////////////////////////////////////////////////
-
         Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory);
         sim.run();
+
     } catch (const spdlog::spdlog_ex &ex) {
         std::cout << "Log initialization failed: " << ex.what() << std::endl;
     } catch (const std::bad_alloc &e) {
