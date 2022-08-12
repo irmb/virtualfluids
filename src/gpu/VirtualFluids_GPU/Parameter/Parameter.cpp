@@ -32,9 +32,10 @@
 //=======================================================================================
 #include "Parameter.h"
 
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <optional>
 
 #include <curand_kernel.h>
 
@@ -44,34 +45,26 @@
 
 #include "Parameter/CudaStreamManager.h"
 
-Parameter::Parameter(int numberOfProcesses, int myId)
+Parameter::Parameter() : Parameter(1, 0, {}) {}
+
+Parameter::Parameter(const vf::basics::ConfigurationFile* configData) : Parameter(1, 0, configData) {}
+
+Parameter::Parameter(int numberOfProcesses, int myId) : Parameter(numberOfProcesses, myId, {}) {}
+
+Parameter::Parameter(int numberOfProcesses, int myId, std::optional<const vf::basics::ConfigurationFile*> configData)
 {
-    this->ic.numprocs = numberOfProcesses; 
+    this->ic.numprocs = numberOfProcesses;
     this->ic.myProcessId = myId;
-    
-    initGridPaths();
-    initGridBasePoints();
-    initDefaultLBMkernelAllLevels();
-    this->setPathAndFilename(this->getOutputPath() + this->getOutputPrefix());
+
     this->setQuadricLimiters(0.01, 0.01, 0.01);
     this->setForcing(0.0, 0.0, 0.0);
 
-    // initLBMSimulationParameter();
-}
-
-Parameter::Parameter(const vf::basics::ConfigurationFile &configData, int numberOfProcesses, int myId)
-{
-    this->ic.numprocs = numberOfProcesses; 
-    this->ic.myProcessId = myId;
-
-    readConfigData(configData);
+    if(configData)
+        readConfigData(**configData);
 
     initGridPaths();
     initGridBasePoints();
     initDefaultLBMkernelAllLevels();
-    this->setPathAndFilename(this->getOutputPath() + this->getOutputPrefix());
-
-    // initLBMSimulationParameter();
 }
 
 Parameter::~Parameter() = default;
@@ -379,7 +372,7 @@ void Parameter::initGridPaths(){
     }
 
     //////////////////////////////////////////////////////////////////////////
-        
+
     this->setgeoVec(gridPath + "geoVec.dat");
     this->setcoordX(gridPath + "coordX.dat");
     this->setcoordY(gridPath + "coordY.dat");
@@ -417,7 +410,7 @@ void Parameter::initGridPaths(){
     this->setcpBottom2(gridPath + "cpBottom2.dat");
     this->setConcentration(gridPath + "conc.dat");
     this->setStreetVelocity(gridPath + "streetVector.dat");
-    
+
     //////////////////////////////////////////////////////////////////////////
     // Normals - Geometry
     this->setgeomBoundaryNormalX(gridPath + "geomBoundaryNormalX.dat");
@@ -432,11 +425,11 @@ void Parameter::initGridPaths(){
     this->setOutflowBoundaryNormalY(gridPath + "outletBoundaryNormalY.dat");
     this->setOutflowBoundaryNormalZ(gridPath + "outletBoundaryNormalZ.dat");
     //////////////////////////////////////////////////////////////////////////
-    
+
     //////////////////////////////////////////////////////////////////////////
     // for Multi GPU
     if (this->getNumprocs() > 1) {
-        
+
         // 3D domain decomposition
         std::vector<std::string> sendProcNeighborsX, sendProcNeighborsY, sendProcNeighborsZ;
         std::vector<std::string> recvProcNeighborsX, recvProcNeighborsY, recvProcNeighborsZ;
@@ -454,7 +447,7 @@ void Parameter::initGridPaths(){
         this->setPossNeighborFilesX(recvProcNeighborsX, "recv");
         this->setPossNeighborFilesY(recvProcNeighborsY, "recv");
         this->setPossNeighborFilesZ(recvProcNeighborsZ, "recv");
-    
+
     //////////////////////////////////////////////////////////////////////////
     }
 }
@@ -484,7 +477,7 @@ void Parameter::initDefaultLBMkernelAllLevels(){
         }
         this->setMultiKernelLevel(tmp);
     }
-    
+
     if (this->getMultiKernelOn() && this->getMultiKernel().empty()) {
         std::vector<std::string> tmp;
         for (int i = 0; i < this->getMaxLevel() + 1; i++) {
@@ -756,10 +749,12 @@ void Parameter::setOutputPath(std::string oPath)
         oPath += "/";
 
     ic.oPath = oPath;
+    this->setPathAndFilename(this->getOutputPath() + this->getOutputPrefix());
 }
 void Parameter::setOutputPrefix(std::string oPrefix)
 {
     ic.oPrefix = oPrefix;
+    this->setPathAndFilename(this->getOutputPath() + this->getOutputPrefix());
 }
 void Parameter::setPathAndFilename(std::string fname)
 {

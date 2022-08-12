@@ -200,7 +200,7 @@ void multipleLevel(const std::string& configPath)
     vf::basics::ConfigurationFile config;
     config.load(configPath);
 
-    SPtr<Parameter> para = std::make_shared<Parameter>(config, communicator.getNummberOfProcess(), communicator.getPID());
+    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNummberOfProcess(), communicator.getPID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -218,8 +218,6 @@ void multipleLevel(const std::string& configPath)
 
     para->setOutputPath( path );
     para->setOutputPrefix( "Unified_" + simulationName );
-
-    para->setPathAndFilename(para->getOutputPath() + "/" + para->getOutputPrefix());
 
     para->setPrintFiles(true);
 

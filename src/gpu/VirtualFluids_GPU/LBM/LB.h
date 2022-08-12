@@ -1,7 +1,7 @@
 //  _    ___      __              __________      _     __        ______________   __
 // | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____   /  ___/ __  / /  / /
 // | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/  / /___/ /_/ / /  / /
-// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )  / /_) / ____/ /__/ / 
+// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )  / /_) / ____/ /__/ /
 // |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/   \____/_/    \_____/
 //
 //////////////////////////////////////////////////////////////////////////
@@ -78,10 +78,10 @@ struct InitCondition
    std::vector<int> GridX, GridY, GridZ, DistX, DistY, DistZ;
    std::vector<real> scaleLBMtoSI, translateLBMtoSI;
    std::vector<real> minCoordX, minCoordY, minCoordZ, maxCoordX, maxCoordY, maxCoordZ;
-   std::string fname;
+   std::string fname {"output/simulation"};
    std::string oPath {"output/"};
    std::string gridPath {"grid/"};
-   std::string oPrefix {"MyFile"};
+   std::string oPrefix {"simulation"};
    std::string geometryFileC, geometryFileM, geometryFileF;
    std::string kFull, geoFull, geoVec, coordX, coordY, coordZ, neighborX, neighborY, neighborZ, neighborWSB, scaleCFC, scaleCFF, scaleFCC, scaleFCF, scaleOffsetCF, scaleOffsetFC;
    std::string noSlipBcPos, noSlipBcQs, noSlipBcValue;
