@@ -55,6 +55,7 @@
 #include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
 #include "GridGenerator/grid/GridFactory.h"
+#include "GridGenerator/geometries/Cuboid/Cuboid.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -112,6 +113,8 @@ int main()
         real dx = L / real(nx);
 
         gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L, 0.5 * L, 0.5 * L, 0.5 * L, dx);
+
+        gridBuilder->addGrid(new Cuboid(-0.25, -0.25, -0.25, 0.25, 0.25, 0.25), 1); // add fine grid
 
         gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 

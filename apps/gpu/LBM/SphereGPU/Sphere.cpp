@@ -48,6 +48,7 @@
 #include "Core/VectorTypes.h"
 #include "PointerDefinitions.h"
 #include "config/ConfigurationFile.h"
+#include "logger/Logger.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -172,8 +173,9 @@ int main(int argc, char *argv[])
         const real velocityLB = velocity * dt / dx; // LB units
         const real viscosityLB =  (dSphere / dx) * velocityLB / Re; // LB units
 
-        *logging::out << logging::Logger::INFO_HIGH << "velocity  [dx/dt] = " << velocityLB << " \n";
-        *logging::out << logging::Logger::INFO_HIGH << "viscosity [dx^2/dt] = " << viscosityLB << "\n";
+        VF_LOG_INFO("LB parameters:");
+        VF_LOG_INFO("velocity LB [dx/dt]              = {}", velocityLB);
+        VF_LOG_INFO("viscosity LB [dx/dt]             = {}", viscosityLB);
 
         //////////////////////////////////////////////////////////////////////////
         // set parameters
@@ -247,14 +249,14 @@ int main(int argc, char *argv[])
         Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory);
         sim.run();
 
+    } catch (const spdlog::spdlog_ex &ex) {
+        std::cout << "Log initialization failed: " << ex.what() << std::endl;
     } catch (const std::bad_alloc &e) {
-        *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
+        VF_LOG_CRITICAL("Bad Alloc: {}", e.what());
     } catch (const std::exception &e) {
-        *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
-    } catch (std::string &s) {
-        *logging::out << logging::Logger::LOGGER_ERROR << s << "\n";
+        VF_LOG_CRITICAL("exception: {}", e.what());
     } catch (...) {
-        *logging::out << logging::Logger::LOGGER_ERROR << "Unknown exception!\n";
+        VF_LOG_CRITICAL("Unknown exception!");
     }
 
     return 0;

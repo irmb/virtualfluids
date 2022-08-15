@@ -6,6 +6,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <filesystem>
 
 #include "mpi.h"
 
@@ -19,6 +20,7 @@
 #include "basics/Core/Logger/Logger.h"
 #include "basics/Core/StringUtilities/StringUtil.h"
 #include "basics/config/ConfigurationFile.h"
+#include "logger/Logger.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -84,7 +86,7 @@ const std::string simulationName("DrivenCavity");
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void multipleLevel(const std::string &configPath)
+void multipleLevel(std::filesystem::path& configPath)
 {
     logging::Logger::addStream(&std::cout);
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
@@ -99,7 +101,7 @@ void multipleLevel(const std::string &configPath)
 
     vf::basics::ConfigurationFile config;
     std::cout << configPath << std::endl;
-    config.load(configPath);
+    config.load(configPath.string());
     SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNummberOfProcess(), communicator.getPID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
 
@@ -134,8 +136,10 @@ void multipleLevel(const std::string &configPath)
     const real vyLB        = velocityLB / (real)sqrt(2.0); // LB units
     const real viscosityLB = nx * velocityLB / Re;         // LB units
 
-    *logging::out << logging::Logger::INFO_HIGH << "velocity  [dx/dt] = " << velocityLB << " \n";
-    *logging::out << logging::Logger::INFO_HIGH << "viscosity [dx^2/dt] = " << viscosityLB << "\n";
+    VF_LOG_INFO("LB parameters:");
+    VF_LOG_INFO("velocity LB [dx/dt]              = {}", vxLB);
+    VF_LOG_INFO("viscosity LB [dx/dt]             = {}", viscosityLB);
+    VF_LOG_INFO("dxGrid [-]                       = {}\n", dxGrid);
 
     para->setVelocityLB(velocityLB);
     para->setViscosityLB(viscosityLB);
@@ -158,11 +162,6 @@ void multipleLevel(const std::string &configPath)
 
     para->setPrintFiles(true);
     std::cout << "Write result files to " << para->getFName() << std::endl;
-
-    if (useLevels)
-        para->setMaxLevel(2);
-    else
-        para->setMaxLevel(1);
 
     // para->setMainKernel("CumulantK17CompChim");
     para->setMainKernel("CumulantK17CompChimStream");
@@ -549,44 +548,39 @@ void multipleLevel(const std::string &configPath)
 
 int main(int argc, char *argv[])
 {
+    MPI_Init(&argc, &argv);
     std::string str, str2, configFile;
 
     if (argv != NULL) {
 
         try {
             //////////////////////////////////////////////////////////////////////////
+            // assuming that a config files is stored parallel to this file.
+            std::filesystem::path configPath = __FILE__;
 
-            std::string targetPath;
-
-            targetPath = __FILE__;
-
+            // the config file's default name can be replaced by passing a command line argument
+            std::string configName("config.txt");
             if (argc == 2) {
-                configFile = argv[1];
-                std::cout << "Using configFile command line argument: " << configFile << std::endl;
+                configName = argv[1];
+                std::cout << "Using configFile command line argument: " << configName << std::endl;
             }
 
-#ifdef _WIN32
-            targetPath = targetPath.substr(0, targetPath.find_last_of('\\') + 1);
-#else
-            targetPath = targetPath.substr(0, targetPath.find_last_of('/') + 1);
-#endif
+            configPath.replace_filename(configName);
 
-            std::cout << targetPath << std::endl;
-
-            if (configFile.size() == 0) {
-                configFile = targetPath + "configDrivenCavityMultiGPU.txt";
-            }
-
-            multipleLevel(configFile);
+            multipleLevel(configPath);
 
             //////////////////////////////////////////////////////////////////////////
+        } catch (const spdlog::spdlog_ex &ex) {
+            std::cout << "Log initialization failed: " << ex.what() << std::endl;
         } catch (const std::bad_alloc &e) {
-            *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
+            VF_LOG_CRITICAL("Bad Alloc: {}", e.what());
         } catch (const std::exception &e) {
-            *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
+            VF_LOG_CRITICAL("exception: {}", e.what());
         } catch (...) {
-            *logging::out << logging::Logger::LOGGER_ERROR << "Unknown exception!\n";
+            VF_LOG_CRITICAL("Unknown exception!");
         }
     }
+
+    MPI_Finalize();
     return 0;
 }
