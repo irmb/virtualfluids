@@ -14,16 +14,8 @@
 #include "Utilities/Test/SimulationObserver.h"
 #include "Utilities/Time/TimeTracking.h"
 
-// std::shared_ptr<TestSimulationImp> TestSimulationImp::getNewInsance(
-//     std::shared_ptr<TestSimulationDataStruct> testSimData, std::shared_ptr<SimulationResults> simResult,
-//     std::shared_ptr<TimeTracking> timeTracking, std::shared_ptr<ToVectorWriter> toVectorWriter,
-//     std::shared_ptr<AnalyticalResults2DToVTKWriter> anaResultWriter, std::shared_ptr<ColorConsoleOutput> colorOutput)
-// {
-//     return std::shared_ptr<TestSimulationImp>(
-//         new TestSimulationImp(testSimData, simResult, timeTracking, toVectorWriter, anaResultWriter, colorOutput));
-// }
-
-TestSimulationImp::TestSimulationImp(std::shared_ptr<TestSimulationDataStruct> testSimData,
+TestSimulationImp::TestSimulationImp(std::function<void()> runSimulation,
+                                     std::shared_ptr<TestSimulationDataStruct> testSimData,
                                      std::shared_ptr<SimulationResults> simResult,
                                      std::shared_ptr<TimeTracking> timeTracking,
                                      std::shared_ptr<ToVectorWriter> toVectorWriter,
@@ -46,6 +38,7 @@ TestSimulationImp::TestSimulationImp(std::shared_ptr<TestSimulationDataStruct> t
     this->simObserver.resize(0);
     this->dataToCalcTests = simInfo->getDataToCalcTests();
     this->status = initialized;
+    this->runSimulation = runSimulation;
 }
 
 void TestSimulationImp::run()

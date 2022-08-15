@@ -21,25 +21,12 @@ struct TestSimulationDataStruct;
 class TestSimulationImp : public TestSimulation, public NumericalTestSimulation
 {
 public:
-    // static std::shared_ptr<TestSimulationImp>
-    // getNewInsance(std::shared_ptr<TestSimulationDataStruct> testSimData, std::shared_ptr<SimulationResults>
-    // simResult,
-    //               std::shared_ptr<TimeTracking> timeTracking, std::shared_ptr<ToVectorWriter> toVectorWriter,
-    //               std::shared_ptr<AnalyticalResults2DToVTKWriter> anaResultWriter,
-    //               std::shared_ptr<ColorConsoleOutput> colorOutput);
-
-    TestSimulationImp(std::shared_ptr<TestSimulationDataStruct> testSimData,
+    TestSimulationImp(std::function<void()> runSimulation, std::shared_ptr<TestSimulationDataStruct> testSimData,
                       std::shared_ptr<SimulationResults> simResult, std::shared_ptr<TimeTracking> timeTracking,
                       std::shared_ptr<ToVectorWriter> toVectorWriter,
                       std::shared_ptr<AnalyticalResults2DToVTKWriter> anaResultWriter,
                       std::shared_ptr<ColorConsoleOutput> colorOutput);
     void run() override;
-
-	// TODO: remove this in favor of constructor argument, once the classes are more decoupled
-	void setSimulationRunner(std::function<void()> runSimulation) 
-	{
-		this->runSimulation = runSimulation;
-	}
 
     std::shared_ptr<SimulationParameter> getSimulationParameter();
     std::shared_ptr<SimulationInfo> getSimulationInfo();

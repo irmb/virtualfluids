@@ -248,11 +248,11 @@ std::vector<std::shared_ptr<TestSimulationImp> > NumericalTestFactoryImp::makeTe
 
 		auto currentTestSimData = testSimDataStruct.at(i);
 		auto para = vf::gpu::tests::makeParameter(currentTestSimData->simParameter);
-		auto testSim = std::make_shared<TestSimulationImp>(currentTestSimData, simResult, time, toVectorWriter, anaResultWriter, colorOutput);
-		testSim->setParameter(para);
 		currentTestSimData->initialCondition->setParameter(para);
 		auto vfsim = vf::gpu::tests::makeVirtualFluidSimulation(para, currentTestSimData->initialCondition, toVectorWriter);
-		testSim->setSimulationRunner(vfsim);
+
+		auto testSim = std::make_shared<TestSimulationImp>(vfsim, currentTestSimData, simResult, time, toVectorWriter, anaResultWriter, colorOutput);
+		testSim->setParameter(para);
 
 		testSimulations.push_back(testSim);
 	}
