@@ -13,4 +13,4 @@ PATH_TO_DIR=output/DrivenCavity
 PATH_TO_REFERENCE_DIR=regression-tests/reference_data/regression_tests_gpu/DrivenCavity
 
 
-~/.local/bin/fieldcompare dir $PATH_TO_DIR --reference $PATH_TO_REFERENCE_DIR --include-files "*.vtu"
+fieldcompare dir $PATH_TO_DIR --reference $PATH_TO_REFERENCE_DIR --include-files "*.vtu"

@@ -6,6 +6,7 @@ git clone https://github.com/irmb/test_data regression-tests/reference_data
 python3 -m venv .venv
 source .venv/bin/activate
 
+pip install rich
 pip install git+https://github.com/soerenPeters/meshio@update-pyproject-version
 pip install git+https://gitlab.com/dglaeser/fieldcompare
 

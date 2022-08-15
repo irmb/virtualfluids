@@ -288,6 +288,7 @@ run-regression-tests:
     - linux
 
   before_script:
+    - apt install python3.8-venv
     - chmod +x ./regression-tests/*
 
   script:
