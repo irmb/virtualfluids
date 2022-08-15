@@ -67,20 +67,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//  Tesla 03
-// const std::string outPath("E:/temp/DrivenCavityMultiGPUResults/");
-// const std::string gridPath = "D:/STLs/DrivenCavity";
-// const std::string simulationName("DrivenCavityMultiGPU");
-
-// Phoenix
-// const std::string outPath("/work/y0078217/Results/DrivenCavityMultiGPUResults/");
-// const std::string gridPath = "/work/y0078217/Grids/GridDrivenCavityMultiGPU/";
-// const std::string simulationName("DrivenCavityMultiGPU");
-
-//  Aragorn
 const std::string outPath("output/DrivenCavity_Results/");
 const std::string gridPath = "output/DrivenCavity_Results/grid/";
-const std::string simulationName("DrivenCavity");
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -136,16 +124,6 @@ void multipleLevel(std::filesystem::path& configPath)
     const real vyLB        = velocityLB / (real)sqrt(2.0); // LB units
     const real viscosityLB = nx * velocityLB / Re;         // LB units
 
-    VF_LOG_INFO("LB parameters:");
-    VF_LOG_INFO("velocity LB [dx/dt]              = {}", vxLB);
-    VF_LOG_INFO("viscosity LB [dx/dt]             = {}", viscosityLB);
-    VF_LOG_INFO("dxGrid [-]                       = {}\n", dxGrid);
-
-    para->setVelocityLB(velocityLB);
-    para->setViscosityLB(viscosityLB);
-    para->setVelocityRatio(velocity / velocityLB);
-    para->setDensityRatio((real)1.0); // correct value?
-
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)1.0;
         vx  = (real)(coordX * velocityLB);
@@ -153,11 +131,17 @@ void multipleLevel(std::filesystem::path& configPath)
         vz  = (real)(coordZ * velocityLB);
     });
 
+    para->setVelocityLB(velocityLB);
+    para->setViscosityLB(viscosityLB);
+    para->setVelocityRatio(velocity / velocityLB);
+    para->setDensityRatio((real)1.0); // correct value?
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     para->setCalcDragLift(false);
     para->setUseWale(false);
 
+    if (para->getOutputPath() == "output/") {para->setOutputPath(outPath);}
     para->setOutputPrefix(simulationName);
 
     para->setPrintFiles(true);
@@ -165,7 +149,17 @@ void multipleLevel(std::filesystem::path& configPath)
 
     // para->setMainKernel("CumulantK17CompChim");
     para->setMainKernel("CumulantK17CompChimStream");
-    *logging::out << logging::Logger::INFO_HIGH << "Kernel: " << para->getMainKernel() << "\n";
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    vf::logging::Logger::changeLogPath(para->getOutputPath());
+    VF_LOG_INFO("LB parameters:");
+    VF_LOG_INFO("velocity LB [dx/dt]              = {}", vxLB);
+    VF_LOG_INFO("viscosity LB [dx/dt]             = {}", viscosityLB);
+    VF_LOG_INFO("dxGrid [-]                       = {}\n", dxGrid);
+
+    VF_LOG_INFO("simulation parameters:");
+    VF_LOG_INFO("mainKernel                       = {}\n", para->getMainKernel());
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
