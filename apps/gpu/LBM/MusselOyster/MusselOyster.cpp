@@ -598,7 +598,7 @@ int main(int argc, char *argv[])
             std::filesystem::path configPath = __FILE__;
 
             // the config file's default name can be replaced by passing a command line argument
-            std::string configName("config.txt");
+            std::string configName("configMusselOyster.txt");
             if (argc == 2) {
                 configName = argv[1];
                 std::cout << "Using configFile command line argument: " << configName << std::endl;
