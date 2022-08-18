@@ -91,9 +91,9 @@ void LBMKernelETD3Q27BGK::calculate(int  /*step*/)
                f[DIR_000] = (*this->zeroDistributions)(x1,x2,x3);
 
                f[DIR_P00] = (*this->localDistributions)(D3Q27System::ET_E, x1,x2,x3);
-               f[N] = (*this->localDistributions)(D3Q27System::ET_N,x1,x2,x3);  
-               f[T] = (*this->localDistributions)(D3Q27System::ET_T,x1,x2,x3);
-               f[NE] = (*this->localDistributions)(D3Q27System::ET_NE,x1,x2,x3);
+               f[DIR_0P0] = (*this->localDistributions)(D3Q27System::ET_N,x1,x2,x3);
+               f[DIR_00P] = (*this->localDistributions)(D3Q27System::ET_T,x1,x2,x3);
+               f[DIR_PP0] = (*this->localDistributions)(D3Q27System::ET_NE,x1,x2,x3);
                f[DIR_MP0] = (*this->localDistributions)(D3Q27System::ET_NW,x1p,x2,x3);
                f[DIR_P0P] = (*this->localDistributions)(D3Q27System::ET_TE,x1,x2,x3);
                f[DIR_M0P] = (*this->localDistributions)(D3Q27System::ET_TW, x1p,x2,x3);
@@ -104,9 +104,9 @@ void LBMKernelETD3Q27BGK::calculate(int  /*step*/)
                f[DIR_PMP] = (*this->localDistributions)(D3Q27System::ET_TSE,x1,x2p,x3);
                f[DIR_MMP] = (*this->localDistributions)(D3Q27System::ET_TSW,x1p,x2p,x3);
 
-               f[W ] = (*this->nonLocalDistributions)(D3Q27System::ET_W,x1p,x2,x3  );
-               f[S ] = (*this->nonLocalDistributions)(D3Q27System::ET_S,x1,x2p,x3  );
-               f[B ] = (*this->nonLocalDistributions)(D3Q27System::ET_B,x1,x2,x3p  );
+               f[DIR_M00] = (*this->nonLocalDistributions)(D3Q27System::ET_W,x1p,x2,x3  );
+               f[DIR_0M0] = (*this->nonLocalDistributions)(D3Q27System::ET_S,x1,x2p,x3  );
+               f[DIR_00M] = (*this->nonLocalDistributions)(D3Q27System::ET_B,x1,x2,x3p  );
                f[DIR_MM0] = (*this->nonLocalDistributions)(D3Q27System::ET_SW,x1p,x2p,x3 );
                f[DIR_PM0] = (*this->nonLocalDistributions)(D3Q27System::ET_SE,x1,x2p,x3 );
                f[DIR_M0M] = (*this->nonLocalDistributions)(D3Q27System::ET_BW,x1p,x2,x3p );
@@ -119,20 +119,20 @@ void LBMKernelETD3Q27BGK::calculate(int  /*step*/)
                f[DIR_PPM] = (*this->nonLocalDistributions)(D3Q27System::ET_BNE,x1,x2,x3p);
                //////////////////////////////////////////////////////////////////////////
 
-               drho = f[DIR_000] + f[DIR_P00] + f[W] + f[N] + f[S] + f[T] + f[B] 
-               + f[NE] + f[DIR_MM0] + f[DIR_PM0] + f[DIR_MP0] + f[DIR_P0P] + f[DIR_M0M] + f[DIR_P0M]
+               drho = f[DIR_000] + f[DIR_P00] + f[DIR_M00] + f[DIR_0P0] + f[DIR_0M0] + f[DIR_00P] + f[DIR_00M]
+               + f[DIR_PP0] + f[DIR_MM0] + f[DIR_PM0] + f[DIR_MP0] + f[DIR_P0P] + f[DIR_M0M] + f[DIR_P0M]
                + f[DIR_M0P] + f[DIR_0PP] + f[DIR_0MM] + f[DIR_0PM] + f[DIR_0MP] + f[DIR_PPP] + f[DIR_MMP]
                + f[DIR_PMP] + f[DIR_MPP] + f[DIR_PPM] + f[DIR_MMM] + f[DIR_PMM] + f[DIR_MPM];
 
-               vx1 = f[DIR_P00] - f[W] + f[NE] - f[DIR_MM0] + f[DIR_PM0] - f[DIR_MP0] + f[DIR_P0P] - f[DIR_M0M]
+               vx1 = f[DIR_P00] - f[DIR_M00] + f[DIR_PP0] - f[DIR_MM0] + f[DIR_PM0] - f[DIR_MP0] + f[DIR_P0P] - f[DIR_M0M]
                + f[DIR_P0M] - f[DIR_M0P] + f[DIR_PPP] - f[DIR_MMP] + f[DIR_PMP] - f[DIR_MPP] + f[DIR_PPM] - f[DIR_MMM]
                + f[DIR_PMM] - f[DIR_MPM]; 
 
-               vx2 = f[N] - f[S] + f[NE] - f[DIR_MM0] - f[DIR_PM0] + f[DIR_MP0] + f[DIR_0PP] - f[DIR_0MM] + f[DIR_0PM]
+               vx2 = f[DIR_0P0] - f[DIR_0M0] + f[DIR_PP0] - f[DIR_MM0] - f[DIR_PM0] + f[DIR_MP0] + f[DIR_0PP] - f[DIR_0MM] + f[DIR_0PM]
                - f[DIR_0MP] + f[DIR_PPP] - f[DIR_MMP] - f[DIR_PMP] + f[DIR_MPP] + f[DIR_PPM] - f[DIR_MMM] - f[DIR_PMM] 
                + f[DIR_MPM]; 
 
-               vx3 = f[T] - f[B] + f[DIR_P0P] - f[DIR_M0M] - f[DIR_P0M] + f[DIR_M0P] + f[DIR_0PP] - f[DIR_0MM] - f[DIR_0PM] 
+               vx3 = f[DIR_00P] - f[DIR_00M] + f[DIR_P0P] - f[DIR_M0M] - f[DIR_P0M] + f[DIR_M0P] + f[DIR_0PP] - f[DIR_0MM] - f[DIR_0PM]
                + f[DIR_0MP] + f[DIR_PPP] + f[DIR_MMP] + f[DIR_PMP] + f[DIR_MPP] - f[DIR_PPM] - f[DIR_MMM] - f[DIR_PMM] 
                - f[DIR_MPM];
 
@@ -140,12 +140,12 @@ void LBMKernelETD3Q27BGK::calculate(int  /*step*/)
 
                feq[DIR_000] =  c8o27*(drho-cu_sq);
                feq[DIR_P00] =  c2o27*(drho+3.0*( vx1   )+c9o2*( vx1   )*( vx1   )-cu_sq);
-               feq[W] =  c2o27*(drho+3.0*(-vx1   )+c9o2*(-vx1   )*(-vx1   )-cu_sq);
-               feq[N] =  c2o27*(drho+3.0*(    vx2)+c9o2*(    vx2)*(    vx2)-cu_sq);
-               feq[S] =  c2o27*(drho+3.0*(   -vx2)+c9o2*(   -vx2)*(   -vx2)-cu_sq);
-               feq[T] =  c2o27*(drho+3.0*( vx3   )+c9o2*(    vx3)*(    vx3)-cu_sq);
-               feq[B] =  c2o27*(drho+3.0*(   -vx3)+c9o2*(   -vx3)*(   -vx3)-cu_sq);
-               feq[NE] = c1o54*(drho+3.0*( vx1+vx2)+c9o2*( vx1+vx2)*( vx1+vx2)-cu_sq);
+               feq[DIR_M00] =  c2o27*(drho+3.0*(-vx1   )+c9o2*(-vx1   )*(-vx1   )-cu_sq);
+               feq[DIR_0P0] =  c2o27*(drho+3.0*(    vx2)+c9o2*(    vx2)*(    vx2)-cu_sq);
+               feq[DIR_0M0] =  c2o27*(drho+3.0*(   -vx2)+c9o2*(   -vx2)*(   -vx2)-cu_sq);
+               feq[DIR_00P] =  c2o27*(drho+3.0*( vx3   )+c9o2*(    vx3)*(    vx3)-cu_sq);
+               feq[DIR_00M] =  c2o27*(drho+3.0*(   -vx3)+c9o2*(   -vx3)*(   -vx3)-cu_sq);
+               feq[DIR_PP0] = c1o54*(drho+3.0*( vx1+vx2)+c9o2*( vx1+vx2)*( vx1+vx2)-cu_sq);
                feq[DIR_MM0] = c1o54*(drho+3.0*(-vx1-vx2)+c9o2*(-vx1-vx2)*(-vx1-vx2)-cu_sq);
                feq[DIR_PM0] = c1o54*(drho+3.0*( vx1-vx2)+c9o2*( vx1-vx2)*( vx1-vx2)-cu_sq);
                feq[DIR_MP0] = c1o54*(drho+3.0*(-vx1+vx2)+c9o2*(-vx1+vx2)*(-vx1+vx2)-cu_sq);
@@ -169,12 +169,12 @@ void LBMKernelETD3Q27BGK::calculate(int  /*step*/)
                //Relaxation
                f[DIR_000] += (feq[DIR_000]-f[DIR_000])*collFactor;
                f[DIR_P00] += (feq[DIR_P00]-f[DIR_P00])*collFactor;
-               f[W] += (feq[W]-f[W])*collFactor;
-               f[N] += (feq[N]-f[N])*collFactor;
-               f[S] += (feq[S]-f[S])*collFactor;
-               f[T] += (feq[T]-f[T])*collFactor;
-               f[B] += (feq[B]-f[B])*collFactor;
-               f[NE] += (feq[NE]-f[NE])*collFactor;
+               f[DIR_M00] += (feq[DIR_M00]-f[DIR_M00])*collFactor;
+               f[DIR_0P0] += (feq[DIR_0P0]-f[DIR_0P0])*collFactor;
+               f[DIR_0M0] += (feq[DIR_0M0]-f[DIR_0M0])*collFactor;
+               f[DIR_00P] += (feq[DIR_00P]-f[DIR_00P])*collFactor;
+               f[DIR_00M] += (feq[DIR_00M]-f[DIR_00M])*collFactor;
+               f[DIR_PP0] += (feq[DIR_PP0]-f[DIR_PP0])*collFactor;
                f[DIR_MM0] += (feq[DIR_MM0]-f[DIR_MM0])*collFactor;
                f[DIR_PM0] += (feq[DIR_PM0]-f[DIR_PM0])*collFactor;
                f[DIR_MP0] += (feq[DIR_MP0]-f[DIR_MP0])*collFactor;
@@ -209,13 +209,13 @@ void LBMKernelETD3Q27BGK::calculate(int  /*step*/)
                   forcingX3 = muForcingX3.Eval();
 
                   f[DIR_000] +=                   0.0                        ;
-                  f[E  ] +=  3.0*c2o27  *  (forcingX1)                    ;
-                  f[W  ] +=  3.0*c2o27  *  (-forcingX1)                   ;
-                  f[N  ] +=  3.0*c2o27  *             (forcingX2)         ;
-                  f[S  ] +=  3.0*c2o27  *             (-forcingX2)        ;
-                  f[T  ] +=  3.0*c2o27  *                     (forcingX3) ;
-                  f[B  ] +=  3.0*c2o27  *                     (-forcingX3);
-                  f[NE ] +=  3.0*c1o54 * ( forcingX1+forcingX2          ) ;
+                  f[DIR_P00] +=  3.0*c2o27  *  (forcingX1)                    ;
+                  f[DIR_M00] +=  3.0*c2o27  *  (-forcingX1)                   ;
+                  f[DIR_0P0] +=  3.0*c2o27  *             (forcingX2)         ;
+                  f[DIR_0M0] +=  3.0*c2o27  *             (-forcingX2)        ;
+                  f[DIR_00P] +=  3.0*c2o27  *                     (forcingX3) ;
+                  f[DIR_00M] +=  3.0*c2o27  *                     (-forcingX3);
+                  f[DIR_PP0] +=  3.0*c1o54 * ( forcingX1+forcingX2          ) ;
                   f[DIR_MM0 ] +=  3.0*c1o54 * (-forcingX1-forcingX2          ) ;
                   f[DIR_PM0 ] +=  3.0*c1o54 * ( forcingX1-forcingX2          ) ;
                   f[DIR_MP0 ] +=  3.0*c1o54 * (-forcingX1+forcingX2          ) ;

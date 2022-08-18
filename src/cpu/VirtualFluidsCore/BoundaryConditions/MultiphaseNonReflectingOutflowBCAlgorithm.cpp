@@ -82,7 +82,7 @@ void MultiphaseNonReflectingOutflowBCAlgorithm::applyBC()
    else if (bcPtr->hasDensityBoundaryFlag(DIR_0P0)) { nx2 += 1; direction = DIR_0P0; }
    else if (bcPtr->hasDensityBoundaryFlag(DIR_0M0)) { nx2 -= 1; direction = DIR_0M0; }
    else if (bcPtr->hasDensityBoundaryFlag(DIR_00P)) { nx3 += 1; direction = DIR_00P; }
-   else if (bcPtr->hasDensityBoundaryFlag(B)) { nx3 -= 1; direction = B; }
+   else if (bcPtr->hasDensityBoundaryFlag(DIR_00M)) { nx3 -= 1; direction = DIR_00M; }
    else UB_THROW(UbException(UB_EXARGS, "Danger...no orthogonal BC-Flag on density boundary..."));
 
    distributions->getDistribution(f, x1, x2, x3);
@@ -182,8 +182,8 @@ void MultiphaseNonReflectingOutflowBCAlgorithm::applyBC()
 	  distributionsH->setDistributionInvForDirection(h[DIR_MMM], x1+DX1[DIR_PPP], x2+DX2[DIR_PPP], x3+DX3[DIR_PPP], DIR_PPP);
 
       break;
-   case N:
-      f[N]   = ftemp[N]   * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*f[N]   ;
+   case DIR_0P0:
+      f[DIR_0P0]   = ftemp[DIR_0P0]   * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*f[DIR_0P0]   ;
       f[DIR_PP0]  = ftemp[DIR_PP0]  * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*f[DIR_PP0]  ;
       f[DIR_MP0]  = ftemp[DIR_MP0]  * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*f[DIR_MP0]  ;
       f[DIR_0PP]  = ftemp[DIR_0PP]  * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*f[DIR_0PP]  ;
@@ -193,7 +193,7 @@ void MultiphaseNonReflectingOutflowBCAlgorithm::applyBC()
       f[DIR_PPM] = ftemp[DIR_PPM] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*f[DIR_PPM] ;
       f[DIR_MPM] = ftemp[DIR_MPM] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*f[DIR_MPM] ;
 
-      distributions->setDistributionInvForDirection(f[N],   x1+DX1[DIR_0M0],   x2+DX2[DIR_0M0],   x3+DX3[DIR_0M0],     DIR_0M0);
+      distributions->setDistributionInvForDirection(f[DIR_0P0],   x1+DX1[DIR_0M0],   x2+DX2[DIR_0M0],   x3+DX3[DIR_0M0],     DIR_0M0);
       distributions->setDistributionInvForDirection(f[DIR_PP0],  x1+DX1[DIR_MM0],  x2+DX2[DIR_MM0],  x3+DX3[DIR_MM0],   DIR_MM0);
       distributions->setDistributionInvForDirection(f[DIR_MP0],  x1+DX1[DIR_PM0],  x2+DX2[DIR_PM0],  x3+DX3[DIR_PM0],   DIR_PM0);
       distributions->setDistributionInvForDirection(f[DIR_0PP],  x1+DX1[DIR_0MM],  x2+DX2[DIR_0MM],  x3+DX3[DIR_0MM],   DIR_0MM);
@@ -203,7 +203,7 @@ void MultiphaseNonReflectingOutflowBCAlgorithm::applyBC()
       distributions->setDistributionInvForDirection(f[DIR_PPM], x1+DX1[DIR_MMP], x2+DX2[DIR_MMP], x3+DX3[DIR_MMP], DIR_MMP);
       distributions->setDistributionInvForDirection(f[DIR_MPM], x1+DX1[DIR_PMP], x2+DX2[DIR_PMP], x3+DX3[DIR_PMP], DIR_PMP);
 
-	  h[N]   = htemp[N]   * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*h[N]   ;
+	  h[DIR_0P0]   = htemp[DIR_0P0]   * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*h[DIR_0P0]   ;
 	  h[DIR_PP0]  = htemp[DIR_PP0]  * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*h[DIR_PP0]  ;
 	  h[DIR_MP0]  = htemp[DIR_MP0]  * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*h[DIR_MP0]  ;
 	  h[DIR_0PP]  = htemp[DIR_0PP]  * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*h[DIR_0PP]  ;
@@ -213,7 +213,7 @@ void MultiphaseNonReflectingOutflowBCAlgorithm::applyBC()
 	  h[DIR_PPM] = htemp[DIR_PPM] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*h[DIR_PPM] ;
 	  h[DIR_MPM] = htemp[DIR_MPM] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*h[DIR_MPM] ;
 
-	  distributionsH->setDistributionInvForDirection(h[N],   x1+DX1[DIR_0M0],   x2+DX2[DIR_0M0],   x3+DX3[DIR_0M0],     DIR_0M0);
+	  distributionsH->setDistributionInvForDirection(h[DIR_0P0],   x1+DX1[DIR_0M0],   x2+DX2[DIR_0M0],   x3+DX3[DIR_0M0],     DIR_0M0);
 	  distributionsH->setDistributionInvForDirection(h[DIR_PP0],  x1+DX1[DIR_MM0],  x2+DX2[DIR_MM0],  x3+DX3[DIR_MM0],   DIR_MM0);
 	  distributionsH->setDistributionInvForDirection(h[DIR_MP0],  x1+DX1[DIR_PM0],  x2+DX2[DIR_PM0],  x3+DX3[DIR_PM0],   DIR_PM0);
 	  distributionsH->setDistributionInvForDirection(h[DIR_0PP],  x1+DX1[DIR_0MM],  x2+DX2[DIR_0MM],  x3+DX3[DIR_0MM],   DIR_0MM);
@@ -235,7 +235,7 @@ void MultiphaseNonReflectingOutflowBCAlgorithm::applyBC()
       f[DIR_PMM] = ftemp[DIR_PMM] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*f[DIR_PMM] ;
       f[DIR_MMM] = ftemp[DIR_MMM] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*f[DIR_MMM] ;
 
-      distributions->setDistributionInvForDirection(f[DIR_0M0],   x1+DX1[N],   x2+DX2[N],   x3+DX3[N],     N);
+      distributions->setDistributionInvForDirection(f[DIR_0M0],   x1+DX1[DIR_0P0],   x2+DX2[DIR_0P0],   x3+DX3[DIR_0P0], DIR_0P0);
       distributions->setDistributionInvForDirection(f[DIR_PM0],  x1+DX1[DIR_MP0],  x2+DX2[DIR_MP0],  x3+DX3[DIR_MP0],   DIR_MP0);
       distributions->setDistributionInvForDirection(f[DIR_MM0],  x1+DX1[DIR_PP0],  x2+DX2[DIR_PP0],  x3+DX3[DIR_PP0],   DIR_PP0);
       distributions->setDistributionInvForDirection(f[DIR_0MP],  x1+DX1[DIR_0PM],  x2+DX2[DIR_0PM],  x3+DX3[DIR_0PM],   DIR_0PM);
@@ -255,7 +255,7 @@ void MultiphaseNonReflectingOutflowBCAlgorithm::applyBC()
 	  h[DIR_PMM] = htemp[DIR_PMM] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*h[DIR_PMM] ;
 	  h[DIR_MMM] = htemp[DIR_MMM] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*h[DIR_MMM] ;
 
-	  distributionsH->setDistributionInvForDirection(h[DIR_0M0],   x1+DX1[N],   x2+DX2[N],   x3+DX3[N],     N);
+	  distributionsH->setDistributionInvForDirection(h[DIR_0M0],   x1+DX1[DIR_0P0],   x2+DX2[DIR_0P0],   x3+DX3[DIR_0P0], DIR_0P0);
 	  distributionsH->setDistributionInvForDirection(h[DIR_PM0],  x1+DX1[DIR_MP0],  x2+DX2[DIR_MP0],  x3+DX3[DIR_MP0],   DIR_MP0);
 	  distributionsH->setDistributionInvForDirection(h[DIR_MM0],  x1+DX1[DIR_PP0],  x2+DX2[DIR_PP0],  x3+DX3[DIR_PP0],   DIR_PP0);
 	  distributionsH->setDistributionInvForDirection(h[DIR_0MP],  x1+DX1[DIR_0PM],  x2+DX2[DIR_0PM],  x3+DX3[DIR_0PM],   DIR_0PM);
@@ -277,7 +277,7 @@ void MultiphaseNonReflectingOutflowBCAlgorithm::applyBC()
       f[DIR_PMP] = ftemp[DIR_PMP] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*f[DIR_PMP] ;
       f[DIR_MMP] = ftemp[DIR_MMP] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*f[DIR_MMP] ;
 
-      distributions->setDistributionInvForDirection(f[DIR_00P],   x1+DX1[B],   x2+DX2[B],   x3+DX3[B],     B);
+      distributions->setDistributionInvForDirection(f[DIR_00P],   x1+DX1[DIR_00M],   x2+DX2[DIR_00M],   x3+DX3[DIR_00M], DIR_00M);
       distributions->setDistributionInvForDirection(f[DIR_P0P],  x1+DX1[DIR_M0M],  x2+DX2[DIR_M0M],  x3+DX3[DIR_M0M],   DIR_M0M);
       distributions->setDistributionInvForDirection(f[DIR_M0P],  x1+DX1[DIR_P0M],  x2+DX2[DIR_P0M],  x3+DX3[DIR_P0M],   DIR_P0M);
       distributions->setDistributionInvForDirection(f[DIR_0PP],  x1+DX1[DIR_0MM],  x2+DX2[DIR_0MM],  x3+DX3[DIR_0MM],   DIR_0MM);
@@ -297,7 +297,7 @@ void MultiphaseNonReflectingOutflowBCAlgorithm::applyBC()
 	  h[DIR_PMP] = htemp[DIR_PMP] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*h[DIR_PMP] ;
 	  h[DIR_MMP] = htemp[DIR_MMP] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*h[DIR_MMP] ;
 
-	  distributionsH->setDistributionInvForDirection(h[DIR_00P],   x1+DX1[B],   x2+DX2[B],   x3+DX3[B],     B);
+	  distributionsH->setDistributionInvForDirection(h[DIR_00P],   x1+DX1[DIR_00M],   x2+DX2[DIR_00M],   x3+DX3[DIR_00M], DIR_00M);
 	  distributionsH->setDistributionInvForDirection(h[DIR_P0P],  x1+DX1[DIR_M0M],  x2+DX2[DIR_M0M],  x3+DX3[DIR_M0M],   DIR_M0M);
 	  distributionsH->setDistributionInvForDirection(h[DIR_M0P],  x1+DX1[DIR_P0M],  x2+DX2[DIR_P0M],  x3+DX3[DIR_P0M],   DIR_P0M);
 	  distributionsH->setDistributionInvForDirection(h[DIR_0PP],  x1+DX1[DIR_0MM],  x2+DX2[DIR_0MM],  x3+DX3[DIR_0MM],   DIR_0MM);
@@ -308,8 +308,8 @@ void MultiphaseNonReflectingOutflowBCAlgorithm::applyBC()
 	  distributionsH->setDistributionInvForDirection(h[DIR_MMP], x1+DX1[DIR_PPM], x2+DX2[DIR_PPM], x3+DX3[DIR_PPM], DIR_PPM);
 
       break;
-   case B:
-      f[B]   = ftemp[B]   * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*f[B]   ;
+   case DIR_00M:
+      f[DIR_00M]   = ftemp[DIR_00M]   * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*f[DIR_00M]   ;
       f[DIR_P0M]  = ftemp[DIR_P0M]  * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*f[DIR_P0M]  ;
       f[DIR_M0M]  = ftemp[DIR_M0M]  * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*f[DIR_M0M]  ;
       f[DIR_0PM]  = ftemp[DIR_0PM]  * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*f[DIR_0PM]  ;
@@ -319,7 +319,7 @@ void MultiphaseNonReflectingOutflowBCAlgorithm::applyBC()
       f[DIR_PMM] = ftemp[DIR_PMM] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*f[DIR_PMM] ;
       f[DIR_MMM] = ftemp[DIR_MMM] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*f[DIR_MMM] ;
 
-      distributions->setDistributionInvForDirection(f[B],   x1+DX1[DIR_00P],   x2+DX2[DIR_00P],   x3+DX3[DIR_00P],     DIR_00P);
+      distributions->setDistributionInvForDirection(f[DIR_00M],   x1+DX1[DIR_00P],   x2+DX2[DIR_00P],   x3+DX3[DIR_00P],     DIR_00P);
       distributions->setDistributionInvForDirection(f[DIR_P0M],  x1+DX1[DIR_M0P],  x2+DX2[DIR_M0P],  x3+DX3[DIR_M0P],   DIR_M0P);
       distributions->setDistributionInvForDirection(f[DIR_M0M],  x1+DX1[DIR_P0P],  x2+DX2[DIR_P0P],  x3+DX3[DIR_P0P],   DIR_P0P);
       distributions->setDistributionInvForDirection(f[DIR_0PM],  x1+DX1[DIR_0MP],  x2+DX2[DIR_0MP],  x3+DX3[DIR_0MP],   DIR_0MP);
@@ -329,7 +329,7 @@ void MultiphaseNonReflectingOutflowBCAlgorithm::applyBC()
       distributions->setDistributionInvForDirection(f[DIR_PMM], x1+DX1[DIR_MPP], x2+DX2[DIR_MPP], x3+DX3[DIR_MPP], DIR_MPP);
       distributions->setDistributionInvForDirection(f[DIR_MMM], x1+DX1[DIR_PPP], x2+DX2[DIR_PPP], x3+DX3[DIR_PPP], DIR_PPP);
 
-	  h[B]   = htemp[B]   * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*h[B]   ;
+	  h[DIR_00M]   = htemp[DIR_00M]   * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*h[DIR_00M]   ;
 	  h[DIR_P0M]  = htemp[DIR_P0M]  * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*h[DIR_P0M]  ;
 	  h[DIR_M0M]  = htemp[DIR_M0M]  * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*h[DIR_M0M]  ;
 	  h[DIR_0PM]  = htemp[DIR_0PM]  * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*h[DIR_0PM]  ;
@@ -339,7 +339,7 @@ void MultiphaseNonReflectingOutflowBCAlgorithm::applyBC()
 	  h[DIR_PMM] = htemp[DIR_PMM] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*h[DIR_PMM] ;
 	  h[DIR_MMM] = htemp[DIR_MMM] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*h[DIR_MMM] ;
 
-	  distributionsH->setDistributionInvForDirection(h[B],   x1+DX1[DIR_00P],   x2+DX2[DIR_00P],   x3+DX3[DIR_00P],     DIR_00P);
+	  distributionsH->setDistributionInvForDirection(h[DIR_00M],   x1+DX1[DIR_00P],   x2+DX2[DIR_00P],   x3+DX3[DIR_00P],     DIR_00P);
 	  distributionsH->setDistributionInvForDirection(h[DIR_P0M],  x1+DX1[DIR_M0P],  x2+DX2[DIR_M0P],  x3+DX3[DIR_M0P],   DIR_M0P);
 	  distributionsH->setDistributionInvForDirection(h[DIR_M0M],  x1+DX1[DIR_P0P],  x2+DX2[DIR_P0P],  x3+DX3[DIR_P0P],   DIR_P0P);
 	  distributionsH->setDistributionInvForDirection(h[DIR_0PM],  x1+DX1[DIR_0MP],  x2+DX2[DIR_0MP],  x3+DX3[DIR_0MP],   DIR_0MP);

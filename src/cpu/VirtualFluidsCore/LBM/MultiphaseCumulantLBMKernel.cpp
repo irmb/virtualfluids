@@ -317,9 +317,9 @@ void MultiphaseCumulantLBMKernel::calculate(int step)
                         //--------------------------------------------------------
 
                         mfcbb = 3.0 * (mfcbb + 0.5 * forcingTerm[DIR_P00]) / rho;    //-(3.0*p1 - rho)*WEIGTH[E  ];
-                        mfbcb = 3.0 * (mfbcb + 0.5 * forcingTerm[N]) / rho;    //-(3.0*p1 - rho)*WEIGTH[N  ];
-                        mfbbc = 3.0 * (mfbbc + 0.5 * forcingTerm[T]) / rho;    //-(3.0*p1 - rho)*WEIGTH[T  ];
-                        mfccb = 3.0 * (mfccb + 0.5 * forcingTerm[NE]) / rho;   //-(3.0*p1 - rho)*WEIGTH[NE ];
+                        mfbcb = 3.0 * (mfbcb + 0.5 * forcingTerm[DIR_0P0]) / rho;    //-(3.0*p1 - rho)*WEIGTH[N  ];
+                        mfbbc = 3.0 * (mfbbc + 0.5 * forcingTerm[DIR_00P]) / rho;    //-(3.0*p1 - rho)*WEIGTH[T  ];
+                        mfccb = 3.0 * (mfccb + 0.5 * forcingTerm[DIR_PP0]) / rho;   //-(3.0*p1 - rho)*WEIGTH[NE ];
                         mfacb = 3.0 * (mfacb + 0.5 * forcingTerm[DIR_MP0]) / rho;   //-(3.0*p1 - rho)*WEIGTH[NW ];
                         mfcbc = 3.0 * (mfcbc + 0.5 * forcingTerm[DIR_P0P]) / rho;   //-(3.0*p1 - rho)*WEIGTH[TE ];
                         mfabc = 3.0 * (mfabc + 0.5 * forcingTerm[DIR_M0P]) / rho;   //-(3.0*p1 - rho)*WEIGTH[TW ];
@@ -329,9 +329,9 @@ void MultiphaseCumulantLBMKernel::calculate(int step)
                         mfacc = 3.0 * (mfacc + 0.5 * forcingTerm[DIR_MPP]) / rho;  //-(3.0*p1 - rho)*WEIGTH[TNW];
                         mfcac = 3.0 * (mfcac + 0.5 * forcingTerm[DIR_PMP]) / rho;  //-(3.0*p1 - rho)*WEIGTH[TSE];
                         mfaac = 3.0 * (mfaac + 0.5 * forcingTerm[DIR_MMP]) / rho;  //-(3.0*p1 - rho)*WEIGTH[TSW];
-                        mfabb = 3.0 * (mfabb + 0.5 * forcingTerm[W]) / rho;    //-(3.0*p1 - rho)*WEIGTH[W  ];
-                        mfbab = 3.0 * (mfbab + 0.5 * forcingTerm[S]) / rho;    //-(3.0*p1 - rho)*WEIGTH[S  ];
-                        mfbba = 3.0 * (mfbba + 0.5 * forcingTerm[B]) / rho;    //-(3.0*p1 - rho)*WEIGTH[B  ];
+                        mfabb = 3.0 * (mfabb + 0.5 * forcingTerm[DIR_M00]) / rho;    //-(3.0*p1 - rho)*WEIGTH[W  ];
+                        mfbab = 3.0 * (mfbab + 0.5 * forcingTerm[DIR_0M0]) / rho;    //-(3.0*p1 - rho)*WEIGTH[S  ];
+                        mfbba = 3.0 * (mfbba + 0.5 * forcingTerm[DIR_00M]) / rho;    //-(3.0*p1 - rho)*WEIGTH[B  ];
                         mfaab = 3.0 * (mfaab + 0.5 * forcingTerm[DIR_MM0]) / rho;   //-(3.0*p1 - rho)*WEIGTH[SW ];
                         mfcab = 3.0 * (mfcab + 0.5 * forcingTerm[DIR_PM0]) / rho;   //-(3.0*p1 - rho)*WEIGTH[SE ];
                         mfaba = 3.0 * (mfaba + 0.5 * forcingTerm[DIR_M0M]) / rho;   //-(3.0*p1 - rho)*WEIGTH[BW ];
@@ -1025,9 +1025,9 @@ void MultiphaseCumulantLBMKernel::calculate(int step)
 #endif
 
                         mfcbb = rho * c1o3 * (mfcbb) + 0.5 * forcingTerm[DIR_P00];
-                        mfbcb = rho * c1o3 * (mfbcb) + 0.5 * forcingTerm[N];
-                        mfbbc = rho * c1o3 * (mfbbc) + 0.5 * forcingTerm[T];
-                        mfccb = rho * c1o3 * (mfccb) + 0.5 * forcingTerm[NE];
+                        mfbcb = rho * c1o3 * (mfbcb) + 0.5 * forcingTerm[DIR_0P0];
+                        mfbbc = rho * c1o3 * (mfbbc) + 0.5 * forcingTerm[DIR_00P];
+                        mfccb = rho * c1o3 * (mfccb) + 0.5 * forcingTerm[DIR_PP0];
                         mfacb = rho * c1o3 * (mfacb) + 0.5 * forcingTerm[DIR_MP0];
                         mfcbc = rho * c1o3 * (mfcbc) + 0.5 * forcingTerm[DIR_P0P];
                         mfabc = rho * c1o3 * (mfabc) + 0.5 * forcingTerm[DIR_M0P];
@@ -1037,9 +1037,9 @@ void MultiphaseCumulantLBMKernel::calculate(int step)
                         mfacc = rho * c1o3 * (mfacc) + 0.5 * forcingTerm[DIR_MPP];
                         mfcac = rho * c1o3 * (mfcac) + 0.5 * forcingTerm[DIR_PMP];
                         mfaac = rho * c1o3 * (mfaac) + 0.5 * forcingTerm[DIR_MMP];
-                        mfabb = rho * c1o3 * (mfabb) + 0.5 * forcingTerm[W];
-                        mfbab = rho * c1o3 * (mfbab) + 0.5 * forcingTerm[S];
-                        mfbba = rho * c1o3 * (mfbba) + 0.5 * forcingTerm[B];
+                        mfabb = rho * c1o3 * (mfabb) + 0.5 * forcingTerm[DIR_M00];
+                        mfbab = rho * c1o3 * (mfbab) + 0.5 * forcingTerm[DIR_0M0];
+                        mfbba = rho * c1o3 * (mfbba) + 0.5 * forcingTerm[DIR_00M];
                         mfaab = rho * c1o3 * (mfaab) + 0.5 * forcingTerm[DIR_MM0];
                         mfcab = rho * c1o3 * (mfcab) + 0.5 * forcingTerm[DIR_PM0];
                         mfaba = rho * c1o3 * (mfaba) + 0.5 * forcingTerm[DIR_M0M];
@@ -1092,9 +1092,9 @@ void MultiphaseCumulantLBMKernel::calculate(int step)
                         /////////////////////   PHASE-FIELD BGK SOLVER ///////////////////////////////
 
                         h[DIR_P00]   = (*this->localDistributionsH)(D3Q27System::ET_E, x1, x2, x3);
-                        h[N]   = (*this->localDistributionsH)(D3Q27System::ET_N, x1, x2, x3);
-                        h[T]   = (*this->localDistributionsH)(D3Q27System::ET_T, x1, x2, x3);
-                        h[NE]  = (*this->localDistributionsH)(D3Q27System::ET_NE, x1, x2, x3);
+                        h[DIR_0P0]   = (*this->localDistributionsH)(D3Q27System::ET_N, x1, x2, x3);
+                        h[DIR_00P]   = (*this->localDistributionsH)(D3Q27System::ET_T, x1, x2, x3);
+                        h[DIR_PP0]  = (*this->localDistributionsH)(D3Q27System::ET_NE, x1, x2, x3);
                         h[DIR_MP0]  = (*this->localDistributionsH)(D3Q27System::ET_NW, x1p, x2, x3);
                         h[DIR_P0P]  = (*this->localDistributionsH)(D3Q27System::ET_TE, x1, x2, x3);
                         h[DIR_M0P]  = (*this->localDistributionsH)(D3Q27System::ET_TW, x1p, x2, x3);
@@ -1105,9 +1105,9 @@ void MultiphaseCumulantLBMKernel::calculate(int step)
                         h[DIR_PMP] = (*this->localDistributionsH)(D3Q27System::ET_TSE, x1, x2p, x3);
                         h[DIR_MMP] = (*this->localDistributionsH)(D3Q27System::ET_TSW, x1p, x2p, x3);
 
-                        h[W]   = (*this->nonLocalDistributionsH)(D3Q27System::ET_W, x1p, x2, x3);
-                        h[S]   = (*this->nonLocalDistributionsH)(D3Q27System::ET_S, x1, x2p, x3);
-                        h[B]   = (*this->nonLocalDistributionsH)(D3Q27System::ET_B, x1, x2, x3p);
+                        h[DIR_M00]   = (*this->nonLocalDistributionsH)(D3Q27System::ET_W, x1p, x2, x3);
+                        h[DIR_0M0]   = (*this->nonLocalDistributionsH)(D3Q27System::ET_S, x1, x2p, x3);
+                        h[DIR_00M]   = (*this->nonLocalDistributionsH)(D3Q27System::ET_B, x1, x2, x3p);
                         h[DIR_MM0]  = (*this->nonLocalDistributionsH)(D3Q27System::ET_SW, x1p, x2p, x3);
                         h[DIR_PM0]  = (*this->nonLocalDistributionsH)(D3Q27System::ET_SE, x1, x2p, x3);
                         h[DIR_M0M]  = (*this->nonLocalDistributionsH)(D3Q27System::ET_BW, x1p, x2, x3p);
@@ -1243,9 +1243,9 @@ void MultiphaseCumulantLBMKernel::computePhasefield()
                     int x3p = x3 + 1;
 
                     h[DIR_P00]   = (*this->localDistributionsH)(D3Q27System::ET_E, x1, x2, x3);
-                    h[N]   = (*this->localDistributionsH)(D3Q27System::ET_N, x1, x2, x3);
-                    h[T]   = (*this->localDistributionsH)(D3Q27System::ET_T, x1, x2, x3);
-                    h[NE]  = (*this->localDistributionsH)(D3Q27System::ET_NE, x1, x2, x3);
+                    h[DIR_0P0]   = (*this->localDistributionsH)(D3Q27System::ET_N, x1, x2, x3);
+                    h[DIR_00P]   = (*this->localDistributionsH)(D3Q27System::ET_T, x1, x2, x3);
+                    h[DIR_PP0]  = (*this->localDistributionsH)(D3Q27System::ET_NE, x1, x2, x3);
                     h[DIR_MP0]  = (*this->localDistributionsH)(D3Q27System::ET_NW, x1p, x2, x3);
                     h[DIR_P0P]  = (*this->localDistributionsH)(D3Q27System::ET_TE, x1, x2, x3);
                     h[DIR_M0P]  = (*this->localDistributionsH)(D3Q27System::ET_TW, x1p, x2, x3);
@@ -1256,9 +1256,9 @@ void MultiphaseCumulantLBMKernel::computePhasefield()
                     h[DIR_PMP] = (*this->localDistributionsH)(D3Q27System::ET_TSE, x1, x2p, x3);
                     h[DIR_MMP] = (*this->localDistributionsH)(D3Q27System::ET_TSW, x1p, x2p, x3);
 
-                    h[W]   = (*this->nonLocalDistributionsH)(D3Q27System::ET_W, x1p, x2, x3);
-                    h[S]   = (*this->nonLocalDistributionsH)(D3Q27System::ET_S, x1, x2p, x3);
-                    h[B]   = (*this->nonLocalDistributionsH)(D3Q27System::ET_B, x1, x2, x3p);
+                    h[DIR_M00]   = (*this->nonLocalDistributionsH)(D3Q27System::ET_W, x1p, x2, x3);
+                    h[DIR_0M0]   = (*this->nonLocalDistributionsH)(D3Q27System::ET_S, x1, x2p, x3);
+                    h[DIR_00M]   = (*this->nonLocalDistributionsH)(D3Q27System::ET_B, x1, x2, x3p);
                     h[DIR_MM0]  = (*this->nonLocalDistributionsH)(D3Q27System::ET_SW, x1p, x2p, x3);
                     h[DIR_PM0]  = (*this->nonLocalDistributionsH)(D3Q27System::ET_SE, x1, x2p, x3);
                     h[DIR_M0M]  = (*this->nonLocalDistributionsH)(D3Q27System::ET_BW, x1p, x2, x3p);

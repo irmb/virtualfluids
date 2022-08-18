@@ -228,12 +228,12 @@ void MultiphaseInitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPt
 
 
 					f[DIR_P00]    =  geq[DIR_P00]    ;
-					f[W]    =  geq[W]    ;
-					f[N]    =  geq[N]    ;
-					f[S]    =  geq[S]    ;
-					f[T]    =  geq[T]    ;
-					f[B]    =  geq[B]    ;
-					f[NE]   =  geq[NE]   ;
+					f[DIR_M00]    =  geq[DIR_M00]    ;
+					f[DIR_0P0]    =  geq[DIR_0P0]    ;
+					f[DIR_0M0]    =  geq[DIR_0M0]    ;
+					f[DIR_00P]    =  geq[DIR_00P]    ;
+					f[DIR_00M]    =  geq[DIR_00M]    ;
+					f[DIR_PP0]   =  geq[DIR_PP0]   ;
 					f[DIR_MM0]   =  geq[DIR_MM0]   ;
 					f[DIR_PM0]   =  geq[DIR_PM0]   ;
 					f[DIR_MP0]   =  geq[DIR_MP0]   ;
@@ -259,12 +259,12 @@ void MultiphaseInitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPt
 					distributionsF->setDistributionInv(f, ix1, ix2, ix3);
 
 					f[DIR_P00]    =  phi * feq[DIR_P00]    / rho;
-					f[W]    =  phi * feq[W]    / rho;
-					f[N]    =  phi * feq[N]    / rho;
-					f[S]    =  phi * feq[S]    / rho;
-					f[T]    =  phi * feq[T]    / rho;
-					f[B]    =  phi * feq[B]    / rho;
-					f[NE]   =  phi * feq[NE]   / rho;
+					f[DIR_M00]    =  phi * feq[DIR_M00]    / rho;
+					f[DIR_0P0]    =  phi * feq[DIR_0P0]    / rho;
+					f[DIR_0M0]    =  phi * feq[DIR_0M0]    / rho;
+					f[DIR_00P]    =  phi * feq[DIR_00P]    / rho;
+					f[DIR_00M]    =  phi * feq[DIR_00M]    / rho;
+					f[DIR_PP0]   =  phi * feq[DIR_PP0]   / rho;
 					f[DIR_MM0]   =  phi * feq[DIR_MM0]   / rho;
 					f[DIR_PM0]   =  phi * feq[DIR_PM0]   / rho;
 					f[DIR_MP0]   =  phi * feq[DIR_MP0]   / rho;
@@ -292,12 +292,12 @@ void MultiphaseInitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPt
 					if (distributionsH2) {
 
 						f[DIR_P00]    = (1.-phi) * feq[DIR_P00] / rho;
-						f[W]    = (1.-phi) * feq[W] / rho;
-						f[N]    = (1.-phi) * feq[N] / rho;
-						f[S]    = (1.-phi) * feq[S] / rho;
-						f[T]    = (1.-phi) * feq[T] / rho;
-						f[B]    = (1.-phi) * feq[B] / rho;
-						f[NE]   = (1.-phi) * feq[NE] / rho;
+						f[DIR_M00]    = (1.-phi) * feq[DIR_M00] / rho;
+						f[DIR_0P0]    = (1.-phi) * feq[DIR_0P0] / rho;
+						f[DIR_0M0]    = (1.-phi) * feq[DIR_0M0] / rho;
+						f[DIR_00P]    = (1.-phi) * feq[DIR_00P] / rho;
+						f[DIR_00M]    = (1.-phi) * feq[DIR_00M] / rho;
+						f[DIR_PP0]   = (1.-phi) * feq[DIR_PP0] / rho;
 						f[DIR_MM0]   = (1.-phi) * feq[DIR_MM0] / rho;
 						f[DIR_PM0]   = (1.-phi) * feq[DIR_PM0] / rho;
 						f[DIR_MP0]   = (1.-phi) * feq[DIR_MP0] / rho;

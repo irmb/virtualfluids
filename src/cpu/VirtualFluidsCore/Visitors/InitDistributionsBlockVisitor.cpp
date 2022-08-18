@@ -248,12 +248,12 @@ void InitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D>
 
 
                f[DIR_P00]    = f_E    + feq[DIR_P00];
-               f[W]    = f_E    + feq[W];
-               f[N]    = f_N    + feq[N];
-               f[S]    = f_N    + feq[S];
-               f[T]    = f_T    + feq[T];
-               f[B]    = f_T    + feq[B];
-               f[NE]   = f_NE   + feq[NE];
+               f[DIR_M00]    = f_E    + feq[DIR_M00];
+               f[DIR_0P0]    = f_N    + feq[DIR_0P0];
+               f[DIR_0M0]    = f_N    + feq[DIR_0M0];
+               f[DIR_00P]    = f_T    + feq[DIR_00P];
+               f[DIR_00M]    = f_T    + feq[DIR_00M];
+               f[DIR_PP0]   = f_NE   + feq[DIR_PP0];
                f[DIR_MM0]   = f_NE   + feq[DIR_MM0];
                f[DIR_PM0]   = f_SE   + feq[DIR_PM0];
                f[DIR_MP0]   = f_SE   + feq[DIR_MP0];
