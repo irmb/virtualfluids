@@ -34,6 +34,7 @@
 
 #include <iostream>
 #include <omp.h>
+#include <ostream>
 #include <sstream>
 # include <algorithm>
 #include <cmath>
@@ -993,13 +994,13 @@ void GridImp::setStopperNeighborCoords(uint index)
     real x, y, z;
     this->transIndexToCoords(index, x, y, z);
 
-    if (vf::Math::lessEqual(x + delta, endX) && !this->field.isInvalidOutOfGrid(this->transCoordToIndex(x + delta, y, z)))
+    if (vf::Math::lessEqual(x + delta, endX + delta) && !this->field.isInvalidOutOfGrid(this->transCoordToIndex(x + delta, y, z)))
         neighborIndexX[index] = getSparseIndex(x + delta, y, z);
 
-    if (vf::Math::lessEqual(y + delta, endY) && !this->field.isInvalidOutOfGrid(this->transCoordToIndex(x, y + delta, z)))
+    if (vf::Math::lessEqual(y + delta, endY + delta) && !this->field.isInvalidOutOfGrid(this->transCoordToIndex(x, y + delta, z)))
         neighborIndexY[index] = getSparseIndex(x, y + delta, z);
 
-    if (vf::Math::lessEqual(z + delta, endZ) && !this->field.isInvalidOutOfGrid(this->transCoordToIndex(x, y, z + delta)))
+    if (vf::Math::lessEqual(z + delta, endZ + delta) && !this->field.isInvalidOutOfGrid(this->transCoordToIndex(x, y, z + delta)))
         neighborIndexZ[index] = getSparseIndex(x, y, z + delta);
 
     if (vf::Math::greaterEqual(x - delta, endX) && 
@@ -2033,6 +2034,7 @@ void GridImp::getNodeValues(real *xCoords, real *yCoords, real *zCoords, uint *n
     geo[0] = GEOSOLID;
 
     int nodeNumber = 0;
+    std::cout << "size " <<  size << std::endl;
     for (uint i = 0; i < this->size; i++)
     {
         if (this->sparseIndices[i] == -1)
@@ -2046,6 +2048,10 @@ void GridImp::getNodeValues(real *xCoords, real *yCoords, real *zCoords, uint *n
         const uint neighborYIndex        = uint(this->neighborIndexY[i] + 1);
         const uint neighborZIndex        = uint(this->neighborIndexZ[i] + 1);
         const uint neighborNegativeIndex = uint(this->neighborIndexNegative[i] + 1);
+
+        if(i > 406599 && i < 406609){
+            std::cout << "..................... neighborZIndex[neigY] " << this->neighborIndexZ[neighborYIndex] << std::endl;
+        }
 
         const uint type = uint(this->field.isFluid(i) ? GEOFLUID : GEOSOLID);
 

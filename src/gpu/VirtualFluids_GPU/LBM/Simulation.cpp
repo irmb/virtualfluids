@@ -145,6 +145,7 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     cudaMemoryManager->setMemsizeGPU(0, true);
     //////////////////////////////////////////////////////////////////////////
     allocNeighborsOffsetsScalesAndBoundaries(gridProvider);
+    InterfaceDebugWriter::writeLinksDebug(para.get());
 
     for (SPtr<PreCollisionInteractor> actuator : para->getActuators()) {
         actuator->init(para.get(), &gridProvider, cudaMemoryManager.get());

@@ -87,12 +87,12 @@ int main(int argc, char *argv[])
         const real L = 1.0;
         const real dSphere = 0.2;
         const real Re = 1000.0; // related to the sphere's diameter
-        const real velocity = 1.0;
+        const real velocity = -0.1;
         const real dt = (real)0.5e-3;
         const uint nx = 64;
 
-        const uint timeStepOut = 1000;
-        const uint timeStepEnd = 10000;
+        const uint timeStepOut = 1;
+        const uint timeStepEnd = 2;
 
         //////////////////////////////////////////////////////////////////////////
         // setup logger
@@ -147,11 +147,11 @@ int main(int argc, char *argv[])
         //////////////////////////////////////////////////////////////////////////
 
         real dx = L / real(nx);
-        gridBuilder->addCoarseGrid(-1.0 * L, -0.8 * L, -0.8 * L,
-                                    6.0 * L,  0.8 * L,  0.8 * L, dx);
+        gridBuilder->addCoarseGrid(-1.0 * L, -0.6 * L, -0.6 * L,
+                                    0.0 * L,  0.6 * L,  0.6 * L, dx);
 
         // use primitive
-        Object *sphere = new Sphere(0.0, 0.0, 0.0, dSphere / 2.0);
+        // Object *sphere = new Sphere(0.0, 0.0, 0.0, dSphere / 2.0);
 
         // use stl
         // std::string stlPath = "stl/sphere02.stl";
@@ -161,7 +161,7 @@ int main(int argc, char *argv[])
         // std::cout << "Reading stl from " << stlPath << "." << std::endl;
         // Object *sphere = TriangularMesh::make(stlPath);
 
-        gridBuilder->addGeometry(sphere);
+        // gridBuilder->addGeometry(sphere);
         gridBuilder->setPeriodicBoundaryCondition(false, false, false);
         gridBuilder->buildGrids(LBM, false);  // buildGrids() has to be called before setting the BCs!!!!
 
@@ -189,6 +189,8 @@ int main(int argc, char *argv[])
 
         para->setTimestepOut(timeStepOut);
         para->setTimestepEnd(timeStepEnd);
+        // para->setTimestepStartOut(50000);
+
 
         //////////////////////////////////////////////////////////////////////////
         // set boundary conditions
@@ -196,42 +198,42 @@ int main(int argc, char *argv[])
 
         gridBuilder->setVelocityBoundaryCondition(SideType::MX, velocityLB, 0.0, 0.0);
 
-        gridBuilder->setSlipBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
-        gridBuilder->setSlipBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
-        gridBuilder->setSlipBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
-        gridBuilder->setSlipBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
+        // gridBuilder->setSlipBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
+        // gridBuilder->setSlipBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
+        // gridBuilder->setSlipBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
+        // gridBuilder->setSlipBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
 
-        gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
-        gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0); // set pressure boundary condition last
+        // gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
+        // gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0); // set pressure boundary condition last
 
         bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
-        bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipCompressible);
-        bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::PressureNonEquilibriumCompressible);
-        bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipCompressible);
+        // bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipCompressible);
+        // bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::PressureNonEquilibriumCompressible);
+        // bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipCompressible);
 
         //////////////////////////////////////////////////////////////////////////
         // setup probe(s)
         //////////////////////////////////////////////////////////////////////////
 
-        const uint tStartAveraging = 0;
-        const uint tAveraging      = 100;
-        const uint tStartOutProbe  = 0;
-        const uint tOutProbe       = para->getTimestepOut();
-        SPtr<PointProbe> pointProbe = std::make_shared<PointProbe>( "pointProbe", para->getOutputPath(), tStartAveraging, tAveraging, tStartOutProbe, tOutProbe);
-        std::vector<real> probeCoordsX = {0.3, 0.5};
-        std::vector<real> probeCoordsY = {0.0, 0.0};
-        std::vector<real> probeCoordsZ = {0.0, 0.0};
-        pointProbe->addProbePointsFromList(probeCoordsX, probeCoordsY, probeCoordsZ);
+        // const uint tStartAveraging = 0;
+        // const uint tAveraging      = 100;
+        // const uint tStartOutProbe  = 0;
+        // const uint tOutProbe       = para->getTimestepOut();
+        // SPtr<PointProbe> pointProbe = std::make_shared<PointProbe>( "pointProbe", para->getOutputPath(), tStartAveraging, tAveraging, tStartOutProbe, tOutProbe);
+        // std::vector<real> probeCoordsX = {0.3, 0.5};
+        // std::vector<real> probeCoordsY = {0.0, 0.0};
+        // std::vector<real> probeCoordsZ = {0.0, 0.0};
+        // pointProbe->addProbePointsFromList(probeCoordsX, probeCoordsY, probeCoordsZ);
 
-        pointProbe->addStatistic(Statistic::Instantaneous);
-        pointProbe->addStatistic(Statistic::Means);
-        pointProbe->addStatistic(Statistic::Variances);
-        para->addProbe( pointProbe );
+        // pointProbe->addStatistic(Statistic::Instantaneous);
+        // pointProbe->addStatistic(Statistic::Means);
+        // pointProbe->addStatistic(Statistic::Variances);
+        // para->addProbe( pointProbe );
         
-        SPtr<PlaneProbe> planeProbe = std::make_shared<PlaneProbe>("planeProbe", para->getOutputPath(), tStartAveraging, tAveraging, tStartOutProbe, tOutProbe);
-        planeProbe->setProbePlane(dSphere, 0, 0, 0.5, 0.1, 0.1);
-        planeProbe->addStatistic(Statistic::Means);
-        para->addProbe( planeProbe );
+        // SPtr<PlaneProbe> planeProbe = std::make_shared<PlaneProbe>("planeProbe", para->getOutputPath(), tStartAveraging, tAveraging, tStartOutProbe, tOutProbe);
+        // planeProbe->setProbePlane(dSphere, 0, 0, 0.5, 0.1, 0.1);
+        // planeProbe->addStatistic(Statistic::Means);
+        // para->addProbe( planeProbe );
 
         //////////////////////////////////////////////////////////////////////////
         // setup to copy mesh to simulation

@@ -53,8 +53,7 @@ void FileWriter::writeTimestep(std::shared_ptr<Parameter> para, unsigned int tim
     const unsigned int numberOfParts = para->getParH(level)->numberOfNodes / para->getlimitOfNodesForVTK() + 1;
     std::vector<std::string> fname;
     std::vector<std::string> fnameMed;
-
-    VF_LOG_INFO(para->getFName());
+    
     for (unsigned int i = 1; i <= numberOfParts; i++)
     {
         fname.push_back(para->getFName() + "_bin_lev_" + StringUtil::toString<int>(level) + "_ID_" + StringUtil::toString<int>(para->getMyProcessID()) + "_Part_" + StringUtil::toString<int>(i) + "_t_" + StringUtil::toString<int>(timestep) + ".vtk");
