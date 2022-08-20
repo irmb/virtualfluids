@@ -994,13 +994,17 @@ void GridImp::setStopperNeighborCoords(uint index)
     real x, y, z;
     this->transIndexToCoords(index, x, y, z);
 
-    if (vf::Math::lessEqual(x + delta, endX + delta) && !this->field.isInvalidOutOfGrid(this->transCoordToIndex(x + delta, y, z)))
+    if (index == 406667) {
+        std::cout << "..................... is neighborZ of 406667 invalid? " << this->field.isInvalidOutOfGrid(this->transCoordToIndex(x, y, z + delta)) << std::endl;
+    }
+
+    if (vf::Math::lessEqual(x + delta, endX + (0.5 * delta)) && !this->field.isInvalidOutOfGrid(this->transCoordToIndex(x + delta, y, z)))
         neighborIndexX[index] = getSparseIndex(x + delta, y, z);
 
-    if (vf::Math::lessEqual(y + delta, endY + delta) && !this->field.isInvalidOutOfGrid(this->transCoordToIndex(x, y + delta, z)))
+    if (vf::Math::lessEqual(y + delta, endY + (0.5 * delta)) && !this->field.isInvalidOutOfGrid(this->transCoordToIndex(x, y + delta, z)))
         neighborIndexY[index] = getSparseIndex(x, y + delta, z);
 
-    if (vf::Math::lessEqual(z + delta, endZ + delta) && !this->field.isInvalidOutOfGrid(this->transCoordToIndex(x, y, z + delta)))
+    if (vf::Math::lessEqual(z + delta, endZ + (0.5 * delta)) && !this->field.isInvalidOutOfGrid(this->transCoordToIndex(x, y, z + delta)))
         neighborIndexZ[index] = getSparseIndex(x, y, z + delta);
 
     if (vf::Math::greaterEqual(x - delta, endX) && 
@@ -2051,6 +2055,9 @@ void GridImp::getNodeValues(real *xCoords, real *yCoords, real *zCoords, uint *n
 
         if(i > 406599 && i < 406609){
             std::cout << "..................... neighborZIndex[neigY] " << this->neighborIndexZ[neighborYIndex] << std::endl;
+            std::cout << "..................... type of node Fluid? " << this->field.isFluid(i) << std::endl;
+            std::cout << "..................... type of NeighborY Stopper? " << this->field.isStopper(neighborYIndex) << std::endl;
+            std::cout << "..................... neigY " << neighborYIndex << std::endl;
         }
 
         const uint type = uint(this->field.isFluid(i) ? GEOFLUID : GEOSOLID);
