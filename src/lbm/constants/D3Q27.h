@@ -4,7 +4,7 @@
 #include <array>
 #include <map>
 #include <vector>
-
+#include "basics/Core/DataTypes.h"
 
 namespace vf::lbm::dir
 {
