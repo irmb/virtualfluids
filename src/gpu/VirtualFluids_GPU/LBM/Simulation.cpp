@@ -104,43 +104,21 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
 
     restart_object = std::make_shared<ASCIIRestartObject>();
     //////////////////////////////////////////////////////////////////////////
-    output.setName(para->getFName() + StringUtil::toString<int>(para->getMyProcessID()) + ".log");
-    if (para->getMyProcessID() == 0)
-        output.setConsoleOut(true);
-    output.clearLogFile();
-    //////////////////////////////////////////////////////////////////////////
     // CUDA streams
     if (para->getUseStreams()) {
         para->getStreamManager()->launchStreams(2u);
         para->getStreamManager()->createCudaEvents();
     }
     //////////////////////////////////////////////////////////////////////////
-    //
-    // output << para->getNeedInterface().at(0) << "\n";
-    // output << para->getNeedInterface().at(1) << "\n";
-    // output << para->getNeedInterface().at(2) << "\n";
-    // output << para->getNeedInterface().at(3) << "\n";
-    // output << para->getNeedInterface().at(4) << "\n";
-    // output << para->getNeedInterface().at(5) << "\n";
-    //////////////////////////////////////////////////////////////////////////
-    // output << "      \t GridX \t GridY \t GridZ \t DistX \t DistY \t DistZ\n";
-    // for (int testout=0; testout<=para->getMaxLevel();testout++)
-    //{
-    //   output << "Level " << testout << ":  " << para->getGridX().at(testout) << " \t " <<
-    //   para->getGridY().at(testout) << " \t " << para->getGridZ().at(testout) << " \t " <<
-    //   para->getDistX().at(testout) << " \t " << para->getDistY().at(testout) << " \t " <<
-    //   para->getDistZ().at(testout) << " \n";
-    //}
-    //////////////////////////////////////////////////////////////////////////
-    output << "LB_Modell:  D3Q" << para->getD3Qxx() << "\n";
-    output << "Re:         " << para->getRe() << "\n";
-    output << "vis_ratio:  " << para->getViscosityRatio() << "\n";
-    output << "u0_ratio:   " << para->getVelocityRatio() << "\n";
-    output << "delta_rho:  " << para->getDensityRatio() << "\n";
-    output << "QuadricLimiters:  " << para->getQuadricLimitersHost()[0] << "\t" << para->getQuadricLimitersHost()[1]
-           << "\t" << para->getQuadricLimitersHost()[2] << "\n";
+    VF_LOG_INFO("LB_Modell:       D3Q{}", para->getD3Qxx());
+    VF_LOG_INFO("Re:              {}", para->getRe());
+    VF_LOG_INFO("vis_ratio:       {}", para->getViscosityRatio());
+    VF_LOG_INFO("u0_ratio:        {}", para->getVelocityRatio());
+    VF_LOG_INFO("delta_rho:       {}", para->getDensityRatio());
+    VF_LOG_INFO("QuadricLimiters: {}, \t{}, \t{}", para->getQuadricLimitersHost()[0],
+                para->getQuadricLimitersHost()[1], para->getQuadricLimitersHost()[2]);
     if (para->getUseAMD())
-        output << "AMD SGS model:  " << para->getSGSConstant() << "\n";
+        VF_LOG_INFO("AMD SGS model:  {}", para->getSGSConstant());
     //////////////////////////////////////////////////////////////////////////
 
     /////////////////////////////////////////////////////////////////////////
@@ -159,20 +137,18 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     //////////////////////////////////////////////////////////////////////////
     // Kernel init
     //////////////////////////////////////////////////////////////////////////
-    output << "make Kernels  "
-           << "\n";
+    VF_LOG_INFO("make Kernels");
     kernels = kernelFactory->makeKernels(para);
 
-    output << "make AD Kernels  "
-           << "\n";
-    if (para->getDiffOn())
+    if (para->getDiffOn()) {
+        VF_LOG_INFO("make AD Kernels");
         adKernels = kernelFactory->makeAdvDifKernels(para);
+    }
 
     //////////////////////////////////////////////////////////////////////////
     // PreProcessor init
     //////////////////////////////////////////////////////////////////////////
-    output << "make Preprocessors  "
-           << "\n";
+    VF_LOG_INFO("make Preprocessors");
     std::vector<PreProcessorType> preProTypes = kernels.at(0)->getPreProcessorTypes();
     preProcessor = preProcessorFactory->makePreProcessor(preProTypes, para);
 
@@ -218,8 +194,7 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     // Median
     //////////////////////////////////////////////////////////////////////////
     if (para->getCalcMedian()) {
-        output << "alloc Calculation for Mean Values  "
-               << "\n";
+        VF_LOG_INFO("alloc Calculation for Mean Values");
         if (para->getDiffOn())
             allocMedianAD(para.get(), cudaMemoryManager.get());
         else
@@ -230,8 +205,7 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     // Turbulence Intensity
     //////////////////////////////////////////////////////////////////////////
     if (para->getCalcTurbulenceIntensity()) {
-        output << "alloc arrays for calculating Turbulence Intensity  "
-               << "\n";
+        VF_LOG_INFO("alloc arrays for calculating Turbulence Intensity");
         allocTurbulenceIntensity(para.get(), cudaMemoryManager.get());
     }
 
@@ -255,112 +229,103 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     // MeasurePoints
     //////////////////////////////////////////////////////////////////////////
     if (para->getUseMeasurePoints()) {
-        output << "read measure points...";
+        VF_LOG_INFO("read measure points");
         readMeasurePoints(para.get(), cudaMemoryManager.get());
-        output << "done.\n";
     }
 
     //////////////////////////////////////////////////////////////////////////
     // Porous Media
     //////////////////////////////////////////////////////////////////////////
     if (para->getSimulatePorousMedia()) {
-        output << "define area(s) of porous media...";
+        VF_LOG_INFO("define area(s) of porous media");
         porousMedia();
         kernelFactory->setPorousMedia(pm);
-        output << "done.\n";
     }
 
     //////////////////////////////////////////////////////////////////////////
     // enSightGold
     //////////////////////////////////////////////////////////////////////////
     // excludeGridInterfaceNodesForMirror(para, 7);
-    ////output << "print case file...";
+    ////VF_LOG_INFO("print case file...");
     // printCaseFile(para);
-    ////output << "done.\n";
-    ////output << "print geo file...";
+    ////VF_LOG_INFO("print geo file...");
     // printGeoFile(para, true);  //true for binary
-    ////output << "done.\n";
+    ////VF_LOG_INFO("done.");
 
     //////////////////////////////////////////////////////////////////////////
     // Forcing
     //////////////////////////////////////////////////////////////////////////
     ////allocVeloForForcing(para);
-    // output << "new object forceCalulator  " << "\n";
+    // VF_LOG_INFO("new object forceCalulator");
     // forceCalculator = std::make_shared<ForceCalculations>(para.get());
 
     //////////////////////////////////////////////////////////////////////////
-    // output << "define the Grid..." ;
+    // VF_LOG_INFO("define the Grid...");
     // defineGrid(para, communicator);
     ////allocateMemory();
-    // output << "done.\n";
+    // VF_LOG_INFO("done.");
 
-    output << "init lattice...";
+    VF_LOG_INFO("init lattice...");
     initLattice(para, preProcessor, cudaMemoryManager);
-    output << "done.\n";
+    VF_LOG_INFO("done");
 
-    // output << "set geo for Q...\n" ;
+    // VF_LOG_INFO("set geo for Q...\n");
     // setGeoForQ();
-    // output << "done.\n";
 
     // if (maxlevel>1)
     //{
-    // output << "find Qs...\n" ;
+    // VF_LOG_INFO("find Qs...");
     // findQ27(para);
-    // output << "done.\n";
+    // VF_LOG_INFO("done.");
     //}
 
     // if (para->getDiffOn()==true)
     //{
-    //   output << "define TempBC...\n" ;
+    //   VF_LOG_INFO("define TempBC...");
     //   findTempSim(para);
-    //   output << "done.\n";
 
-    //   output << "define TempVelBC...\n" ;
+    //   VF_LOG_INFO("define TempVelBC...");
     //   findTempVelSim(para);
-    //   output << "done.\n";
 
-    //   output << "define TempPressBC...\n" ;
+    //   VF_LOG_INFO("define TempPressBC...");
     //   findTempPressSim(para);
-    //   output << "done.\n";
+    //   VF_LOG_INFO("done.");
     //}
 
-    // output << "find Qs-BC...\n" ;
+    // VF_LOG_INFO("find Qs-BC...");
     // findBC27(para);
-    // output << "done.\n";
 
-    // output << "find Press-BC...\n" ;
+    // VF_LOG_INFO("find Press-BC...");
     // findPressQShip(para);
-    // output << "done.\n";
+    // VF_LOG_INFO("done.");
 
     //////////////////////////////////////////////////////////////////////////
     // find indices of corner nodes for multiGPU communication
     //////////////////////////////////////////////////////////////////////////
     if (para->getDevices().size() > 2) {
-        output << "Find indices of edge nodes for multiGPU communication ...";
+        VF_LOG_INFO("Find indices of edge nodes for multiGPU communication");
         vf::gpu::findEdgeNodesCommMultiGPU(*para);
-        output << "done.\n";
     }
     //////////////////////////////////////////////////////////////////////////
     // Memory alloc for CheckPoint / Restart
     //////////////////////////////////////////////////////////////////////////
     if (para->getDoCheckPoint() || para->getDoRestart()) {
-        output << "Alloc Memory for CheckPoint / Restart...";
+        VF_LOG_INFO("Alloc Memory for CheckPoint / Restart");
         for (int lev = para->getCoarse(); lev <= para->getFine(); lev++) {
             cudaMemoryManager->cudaAllocFsForCheckPointAndRestart(lev);
         }
-        output << "done.\n";
     }
 
     //////////////////////////////////////////////////////////////////////////
     // Restart
     //////////////////////////////////////////////////////////////////////////
     if (para->getDoRestart()) {
-        output << "Restart...\n...get the Object...\n";
+        VF_LOG_INFO("Restart...\n...get the Object...");
 
         const auto name = getFileName(para->getFName(), para->getTimeDoRestart(), para->getMyProcessID());
         restart_object->deserialize(name, para);
 
-        output << "...copy Memory for Restart...\n";
+        VF_LOG_INFO("...copy Memory for Restart...");
         for (int lev = para->getCoarse(); lev <= para->getFine(); lev++) {
             //////////////////////////////////////////////////////////////////////////
             cudaMemoryManager->cudaCopyFsForRestart(lev);
@@ -377,7 +342,7 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
             // test...should not work...and does not
             // para->getEvenOrOdd(lev)==false;
         }
-        output << "done.\n";
+        VF_LOG_INFO("done.");
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -580,27 +545,27 @@ void Simulation::run()
         ////////////////////////////////////////////////////////////////////////////////
         if(para->getDoCheckPoint() && para->getTimeDoCheckPoint()>0 && timestep%para->getTimeDoCheckPoint()==0 && timestep>0 && !para->overWritingRestart(timestep))
         {
-			averageTimer->stopTimer();
+            averageTimer->stopTimer();
             //////////////////////////////////////////////////////////////////////////
 
             if( para->getDoCheckPoint() )
             {
-                output << "Copy data for CheckPoint t=" << timestep << "...\n";
+                VF_LOG_INFO("Copy data for CheckPoint t = {}....", timestep);
 
                 for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
                 {
                     cudaMemoryManager->cudaCopyFsForCheckPoint(lev);
                 }
 
-                output << "Write data for CheckPoint t=" << timestep << "...";
+                VF_LOG_INFO("Write data for CheckPoint t = {}...", timestep);
 
-				const auto name = getFileName(para->getFName(), timestep, para->getMyProcessID());
-				restart_object->serialize(name, para);
+                const auto name = getFileName(para->getFName(), timestep, para->getMyProcessID());
+                restart_object->serialize(name, para);
 
-                output << "\n done\n";
+                VF_LOG_INFO("done");
             }
             //////////////////////////////////////////////////////////////////////////
-			averageTimer->startTimer();
+            averageTimer->startTimer();
         }
         //////////////////////////////////////////////////////////////////////////////
 
@@ -619,7 +584,7 @@ void Simulation::run()
                 unsigned int valuesPerClockCycle = (unsigned int)(para->getclockCycleForMP() / para->getTimestepForMP());
                 for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
                 {
-                    //output << "start level = " << lev << "\n";
+                    // VF_LOG_INFO("start level = {}", lev);
                     LBCalcMeasurePoints27(  para->getParD(lev)->VxMP,			para->getParD(lev)->VyMP,			para->getParD(lev)->VzMP,
                     				        para->getParD(lev)->RhoMP,		    para->getParD(lev)->kMP,			para->getParD(lev)->numberOfPointskMP,
                     				        valuesPerClockCycle,				t_MP,								para->getParD(lev)->typeOfGridNode,
@@ -637,7 +602,7 @@ void Simulation::run()
                 {
                     cudaMemoryManager->cudaCopyMeasurePointsToHost(lev);
                     para->copyMeasurePointsArrayToVector(lev);
-                    output << "\n Write MeasurePoints at level = " << lev << " and timestep = " << timestep << "\n";
+                    VF_LOG_INFO("Write MeasurePoints at level = {} and timestep = {}", lev, timestep);
                     for (int j = 0; j < (int)para->getParH(lev)->MP.size(); j++)
                     {
                         MeasurePointWriter::writeMeasurePoints(para.get(), lev, j, timestep);
@@ -1037,10 +1002,10 @@ void Simulation::run()
  //  //Copy Measure Values
 	//for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
 	//{
-	//	output << "\n Copy MeasurePoints at level = " << lev <<"\n";
+	//	VF_LOG_INFO("Copy MeasurePoints at level = {}", lev);
 	//	para->cudaCopyMeasurePointsToHost(lev);
 	//	para->copyMeasurePointsArrayToVector(lev);
-	//	output << "\n Write MeasurePoints at level = " << lev <<"\n";
+	//	VF_LOG_INFO("Write MeasurePoints at level = {}", lev);
 	//	for(int j = 0; j < (int)para->getParH(lev)->MP.size(); j++)
 	//	{
 	//		MeasurePointWriter::writeMeasurePoints(para, lev, j, 0);
@@ -1148,7 +1113,7 @@ void Simulation::definePMarea(std::shared_ptr<PorousMedia>& pMedia)
 	unsigned int counter = 0;
 	unsigned int level = pMedia->getLevelPM();
 	std::vector< unsigned int > nodeIDsPorousMedia;
-	output << "definePMarea....find nodes \n";
+	VF_LOG_INFO("definePMarea....find nodes");
 
 	for (unsigned int i = 0; i < para->getParH(level)->numberOfNodes; i++)
 	{
@@ -1165,21 +1130,21 @@ void Simulation::definePMarea(std::shared_ptr<PorousMedia>& pMedia)
 		}
 	}
 
-	output << "definePMarea....cuda copy SP \n";
+	VF_LOG_INFO("definePMarea....cuda copy SP");
 	cudaMemoryManager->cudaCopySP(level);
 	pMedia->setSizePM(counter);
-	output << "definePMarea....cuda alloc PM \n";
+	VF_LOG_INFO("definePMarea....cuda alloc PM");
 	cudaMemoryManager->cudaAllocPorousMedia(pMedia.get(), level);
 	unsigned int *tpmArrayIDs = pMedia->getHostNodeIDsPM();
 
-	output << "definePMarea....copy vector to array \n";
+	VF_LOG_INFO("definePMarea....copy vector to array");
 	for (unsigned int j = 0; j < pMedia->getSizePM(); j++)
 	{
 		tpmArrayIDs[j] = nodeIDsPorousMedia[j];
 	}
 
 	pMedia->setHostNodeIDsPM(tpmArrayIDs);
-	output << "definePMarea....cuda copy PM \n";
+	VF_LOG_INFO("definePMarea....cuda copy PM");
 	cudaMemoryManager->cudaCopyPorousMedia(pMedia.get(), level);
 }
 
