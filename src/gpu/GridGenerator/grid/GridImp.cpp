@@ -38,6 +38,7 @@
 #include <sstream>
 # include <algorithm>
 #include <cmath>
+#include <string>
 
 #include "global.h"
 
@@ -993,10 +994,6 @@ void GridImp::setStopperNeighborCoords(uint index)
 {
     real x, y, z;
     this->transIndexToCoords(index, x, y, z);
-
-    if (index == 406667) {
-        std::cout << "..................... is neighborZ of 406667 invalid? " << this->field.isInvalidOutOfGrid(this->transCoordToIndex(x, y, z + delta)) << std::endl;
-    }
 
     if (vf::Math::lessEqual(x + delta, endX + (0.5 * delta)) && !this->field.isInvalidOutOfGrid(this->transCoordToIndex(x + delta, y, z)))
         neighborIndexX[index] = getSparseIndex(x + delta, y, z);

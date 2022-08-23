@@ -71,7 +71,7 @@ public:
     void setFieldEntryToInvalidCoarseUnderFine(uint index);
     void setFieldEntryToInvalidOutOfGrid(uint index);
 
-private:
+protected:
     char *field = nullptr;
     uint size;
 };

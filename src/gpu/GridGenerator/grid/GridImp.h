@@ -109,11 +109,9 @@ private:
     uint sparseSize;
     bool periodicityX = false, periodicityY = false, periodicityZ = false;
 
-    Field field;
     Object* object;
     GridInterface *gridInterface;
 
-    int *neighborIndexX, *neighborIndexY, *neighborIndexZ, *neighborIndexNegative;
     int *sparseIndices;
 
     std::vector<uint> fluidNodeIndices;
@@ -132,6 +130,10 @@ private:
     uint numberOfSolidBoundaryNodes = 0;
 
     bool enableFixRefinementIntoTheWall;
+
+protected:
+    Field field;
+    int *neighborIndexX, *neighborIndexY, *neighborIndexZ, *neighborIndexNegative;
 
 public:
     void inital(const SPtr<Grid> fineGrid, uint numberOfLayers) override;
@@ -155,11 +157,11 @@ public:
     uint transCoordToIndex(const real &x, const real &y, const real &z) const override;
     void transIndexToCoords(uint index, real &x, real &y, real &z) const override;
 
-    virtual void findGridInterface(SPtr<Grid> grid, LbmOrGks lbmOrGks) override;
+    void findGridInterface(SPtr<Grid> grid, LbmOrGks lbmOrGks) override;
 
     void repairGridInterfaceOnMultiGPU(SPtr<Grid> fineGrid) override;
 
-    virtual void limitToSubDomain(SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks) override;
+    void limitToSubDomain(SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks) override;
 
     void freeMemory() override;
 
@@ -277,15 +279,16 @@ public:
     void setNeighborIndices(uint index);
     real getFirstFluidNode(real coords[3], int direction, real startCoord) const override;
     real getLastFluidNode(real coords[3], int direction, real startCoord) const override;
+protected:
+    virtual void setStopperNeighborCoords(uint index);
 private:
-    void setStopperNeighborCoords(uint index);
     void getNeighborCoords(real &neighborX, real &neighborY, real &neighborZ, real x, real y, real z) const;
     real getNeighborCoord(bool periodicity, real endCoord, real coords[3], int direction) const;
     void getNegativeNeighborCoords(real &neighborX, real &neighborY, real &neighborZ, real x, real y, real z) const;
     real getNegativeNeighborCoord(bool periodicity, real endCoord, real coords[3], int direction) const;
     
 
-    int getSparseIndex(const real &expectedX, const real &expectedY, const real &expectedZ) const;
+    virtual int getSparseIndex(const real &expectedX, const real &expectedY, const real &expectedZ) const;
 
     static real getMinimumOnNodes(const real &minExact, const real &decimalStart, const real &delta);
     static real getMaximumOnNodes(const real &maxExact, const real &decimalStart, const real &delta);
