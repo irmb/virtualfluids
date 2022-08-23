@@ -16,7 +16,7 @@ public:
 		//calc
 		int numberNodes = (int)para->getParH(level)->numberOfNodes;
 		//write
-		UbFileOutputASCII out(para->getFName() + "_VelocitiesASCII_" + std::to_string(level) + "_ID_" + StringUtil::toString<int>(para->getMyID()) + "_t_" + std::to_string(t) + ".dat");
+		UbFileOutputASCII out(para->getFName() + "_VelocitiesASCII_" + std::to_string(level) + "_ID_" + StringUtil::toString<int>(para->getMyProcessID()) + "_t_" + std::to_string(t) + ".dat");
 		//header
 		out.writeString("Level:");
 		out.writeInteger(level);

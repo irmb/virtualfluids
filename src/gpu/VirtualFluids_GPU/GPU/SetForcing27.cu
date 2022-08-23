@@ -7,7 +7,7 @@ using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void GetVeloforForcing27( real* DD, 
+__global__ void GetVeloforForcing27( real* DD, 
 												int* bcIndex, 
 												int nonAtBC, 
 												real* Vx,
@@ -22,63 +22,63 @@ extern "C" __global__ void GetVeloforForcing27( real* DD,
 	Distributions27 D;
 	if (isEvenTimestep==false)
 	{
-		D.f[E   ] = &DD[E   *size_Mat];
-		D.f[W   ] = &DD[W   *size_Mat];
-		D.f[N   ] = &DD[N   *size_Mat];
-		D.f[S   ] = &DD[S   *size_Mat];
-		D.f[T   ] = &DD[T   *size_Mat];
-		D.f[B   ] = &DD[B   *size_Mat];
-		D.f[NE  ] = &DD[NE  *size_Mat];
-		D.f[SW  ] = &DD[SW  *size_Mat];
-		D.f[SE  ] = &DD[SE  *size_Mat];
-		D.f[NW  ] = &DD[NW  *size_Mat];
-		D.f[TE  ] = &DD[TE  *size_Mat];
-		D.f[BW  ] = &DD[BW  *size_Mat];
-		D.f[BE  ] = &DD[BE  *size_Mat];
-		D.f[TW  ] = &DD[TW  *size_Mat];
-		D.f[TN  ] = &DD[TN  *size_Mat];
-		D.f[BS  ] = &DD[BS  *size_Mat];
-		D.f[BN  ] = &DD[BN  *size_Mat];
-		D.f[TS  ] = &DD[TS  *size_Mat];
-		D.f[REST] = &DD[REST*size_Mat];
-		D.f[TNE ] = &DD[TNE *size_Mat];
-		D.f[TSW ] = &DD[TSW *size_Mat];
-		D.f[TSE ] = &DD[TSE *size_Mat];
-		D.f[TNW ] = &DD[TNW *size_Mat];
-		D.f[BNE ] = &DD[BNE *size_Mat];
-		D.f[BSW ] = &DD[BSW *size_Mat];
-		D.f[BSE ] = &DD[BSE *size_Mat];
-		D.f[BNW ] = &DD[BNW *size_Mat];
+		D.f[DIR_P00   ] = &DD[DIR_P00   *size_Mat];
+		D.f[DIR_M00   ] = &DD[DIR_M00   *size_Mat];
+		D.f[DIR_0P0   ] = &DD[DIR_0P0   *size_Mat];
+		D.f[DIR_0M0   ] = &DD[DIR_0M0   *size_Mat];
+		D.f[DIR_00P   ] = &DD[DIR_00P   *size_Mat];
+		D.f[DIR_00M   ] = &DD[DIR_00M   *size_Mat];
+		D.f[DIR_PP0  ] = &DD[DIR_PP0  *size_Mat];
+		D.f[DIR_MM0  ] = &DD[DIR_MM0  *size_Mat];
+		D.f[DIR_PM0  ] = &DD[DIR_PM0  *size_Mat];
+		D.f[DIR_MP0  ] = &DD[DIR_MP0  *size_Mat];
+		D.f[DIR_P0P  ] = &DD[DIR_P0P  *size_Mat];
+		D.f[DIR_M0M  ] = &DD[DIR_M0M  *size_Mat];
+		D.f[DIR_P0M  ] = &DD[DIR_P0M  *size_Mat];
+		D.f[DIR_M0P  ] = &DD[DIR_M0P  *size_Mat];
+		D.f[DIR_0PP  ] = &DD[DIR_0PP  *size_Mat];
+		D.f[DIR_0MM  ] = &DD[DIR_0MM  *size_Mat];
+		D.f[DIR_0PM  ] = &DD[DIR_0PM  *size_Mat];
+		D.f[DIR_0MP  ] = &DD[DIR_0MP  *size_Mat];
+		D.f[DIR_000] = &DD[DIR_000*size_Mat];
+		D.f[DIR_PPP ] = &DD[DIR_PPP *size_Mat];
+		D.f[DIR_MMP ] = &DD[DIR_MMP *size_Mat];
+		D.f[DIR_PMP ] = &DD[DIR_PMP *size_Mat];
+		D.f[DIR_MPP ] = &DD[DIR_MPP *size_Mat];
+		D.f[DIR_PPM ] = &DD[DIR_PPM *size_Mat];
+		D.f[DIR_MMM ] = &DD[DIR_MMM *size_Mat];
+		D.f[DIR_PMM ] = &DD[DIR_PMM *size_Mat];
+		D.f[DIR_MPM ] = &DD[DIR_MPM *size_Mat];
 	} 
 	else
 	{
-		D.f[W   ] = &DD[E   *size_Mat];
-		D.f[E   ] = &DD[W   *size_Mat];
-		D.f[S   ] = &DD[N   *size_Mat];
-		D.f[N   ] = &DD[S   *size_Mat];
-		D.f[B   ] = &DD[T   *size_Mat];
-		D.f[T   ] = &DD[B   *size_Mat];
-		D.f[SW  ] = &DD[NE  *size_Mat];
-		D.f[NE  ] = &DD[SW  *size_Mat];
-		D.f[NW  ] = &DD[SE  *size_Mat];
-		D.f[SE  ] = &DD[NW  *size_Mat];
-		D.f[BW  ] = &DD[TE  *size_Mat];
-		D.f[TE  ] = &DD[BW  *size_Mat];
-		D.f[TW  ] = &DD[BE  *size_Mat];
-		D.f[BE  ] = &DD[TW  *size_Mat];
-		D.f[BS  ] = &DD[TN  *size_Mat];
-		D.f[TN  ] = &DD[BS  *size_Mat];
-		D.f[TS  ] = &DD[BN  *size_Mat];
-		D.f[BN  ] = &DD[TS  *size_Mat];
-		D.f[REST] = &DD[REST*size_Mat];
-		D.f[TNE ] = &DD[BSW *size_Mat];
-		D.f[TSW ] = &DD[BNE *size_Mat];
-		D.f[TSE ] = &DD[BNW *size_Mat];
-		D.f[TNW ] = &DD[BSE *size_Mat];
-		D.f[BNE ] = &DD[TSW *size_Mat];
-		D.f[BSW ] = &DD[TNE *size_Mat];
-		D.f[BSE ] = &DD[TNW *size_Mat];
-		D.f[BNW ] = &DD[TSE *size_Mat];
+		D.f[DIR_M00   ] = &DD[DIR_P00   *size_Mat];
+		D.f[DIR_P00   ] = &DD[DIR_M00   *size_Mat];
+		D.f[DIR_0M0   ] = &DD[DIR_0P0   *size_Mat];
+		D.f[DIR_0P0   ] = &DD[DIR_0M0   *size_Mat];
+		D.f[DIR_00M   ] = &DD[DIR_00P   *size_Mat];
+		D.f[DIR_00P   ] = &DD[DIR_00M   *size_Mat];
+		D.f[DIR_MM0  ] = &DD[DIR_PP0  *size_Mat];
+		D.f[DIR_PP0  ] = &DD[DIR_MM0  *size_Mat];
+		D.f[DIR_MP0  ] = &DD[DIR_PM0  *size_Mat];
+		D.f[DIR_PM0  ] = &DD[DIR_MP0  *size_Mat];
+		D.f[DIR_M0M  ] = &DD[DIR_P0P  *size_Mat];
+		D.f[DIR_P0P  ] = &DD[DIR_M0M  *size_Mat];
+		D.f[DIR_M0P  ] = &DD[DIR_P0M  *size_Mat];
+		D.f[DIR_P0M  ] = &DD[DIR_M0P  *size_Mat];
+		D.f[DIR_0MM  ] = &DD[DIR_0PP  *size_Mat];
+		D.f[DIR_0PP  ] = &DD[DIR_0MM  *size_Mat];
+		D.f[DIR_0MP  ] = &DD[DIR_0PM  *size_Mat];
+		D.f[DIR_0PM  ] = &DD[DIR_0MP  *size_Mat];
+		D.f[DIR_000] = &DD[DIR_000*size_Mat];
+		D.f[DIR_PPP ] = &DD[DIR_MMM *size_Mat];
+		D.f[DIR_MMP ] = &DD[DIR_PPM *size_Mat];
+		D.f[DIR_PMP ] = &DD[DIR_MPM *size_Mat];
+		D.f[DIR_MPP ] = &DD[DIR_PMM *size_Mat];
+		D.f[DIR_PPM ] = &DD[DIR_MMP *size_Mat];
+		D.f[DIR_MMM ] = &DD[DIR_PPP *size_Mat];
+		D.f[DIR_PMM ] = &DD[DIR_MPP *size_Mat];
+		D.f[DIR_MPM ] = &DD[DIR_PMP *size_Mat];
 	}
 	////////////////////////////////////////////////////////////////////////////////
 	const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -123,33 +123,33 @@ extern "C" __global__ void GetVeloforForcing27( real* DD,
 		unsigned int ktne = KQK;
 		unsigned int kbsw = neighborZ[ksw];
 		////////////////////////////////////////////////////////////////////////////////
-		real mfcbb = (D.f[E   ])[ke   ];
-		real mfabb = (D.f[W   ])[kw   ];
-		real mfbcb = (D.f[N   ])[kn   ];
-		real mfbab = (D.f[S   ])[ks   ];
-		real mfbbc = (D.f[T   ])[kt   ];
-		real mfbba = (D.f[B   ])[kb   ];
-		real mfccb = (D.f[NE  ])[kne  ];
-		real mfaab = (D.f[SW  ])[ksw  ];
-		real mfcab = (D.f[SE  ])[kse  ];
-		real mfacb = (D.f[NW  ])[knw  ];
-		real mfcbc = (D.f[TE  ])[kte  ];
-		real mfaba = (D.f[BW  ])[kbw  ];
-		real mfcba = (D.f[BE  ])[kbe  ];
-		real mfabc = (D.f[TW  ])[ktw  ];
-		real mfbcc = (D.f[TN  ])[ktn  ];
-		real mfbaa = (D.f[BS  ])[kbs  ];
-		real mfbca = (D.f[BN  ])[kbn  ];
-		real mfbac = (D.f[TS  ])[kts  ];
-		real mfbbb = (D.f[REST])[kzero];
-		real mfccc = (D.f[TNE ])[ktne ];
-		real mfaac = (D.f[TSW ])[ktsw ];
-		real mfcac = (D.f[TSE ])[ktse ];
-		real mfacc = (D.f[TNW ])[ktnw ];
-		real mfcca = (D.f[BNE ])[kbne ];
-		real mfaaa = (D.f[BSW ])[kbsw ];
-		real mfcaa = (D.f[BSE ])[kbse ];
-		real mfaca = (D.f[BNW ])[kbnw ];
+		real mfcbb = (D.f[DIR_P00   ])[ke   ];
+		real mfabb = (D.f[DIR_M00   ])[kw   ];
+		real mfbcb = (D.f[DIR_0P0   ])[kn   ];
+		real mfbab = (D.f[DIR_0M0   ])[ks   ];
+		real mfbbc = (D.f[DIR_00P   ])[kt   ];
+		real mfbba = (D.f[DIR_00M   ])[kb   ];
+		real mfccb = (D.f[DIR_PP0  ])[kne  ];
+		real mfaab = (D.f[DIR_MM0  ])[ksw  ];
+		real mfcab = (D.f[DIR_PM0  ])[kse  ];
+		real mfacb = (D.f[DIR_MP0  ])[knw  ];
+		real mfcbc = (D.f[DIR_P0P  ])[kte  ];
+		real mfaba = (D.f[DIR_M0M  ])[kbw  ];
+		real mfcba = (D.f[DIR_P0M  ])[kbe  ];
+		real mfabc = (D.f[DIR_M0P  ])[ktw  ];
+		real mfbcc = (D.f[DIR_0PP  ])[ktn  ];
+		real mfbaa = (D.f[DIR_0MM  ])[kbs  ];
+		real mfbca = (D.f[DIR_0PM  ])[kbn  ];
+		real mfbac = (D.f[DIR_0MP  ])[kts  ];
+		real mfbbb = (D.f[DIR_000])[kzero];
+		real mfccc = (D.f[DIR_PPP ])[ktne ];
+		real mfaac = (D.f[DIR_MMP ])[ktsw ];
+		real mfcac = (D.f[DIR_PMP ])[ktse ];
+		real mfacc = (D.f[DIR_MPP ])[ktnw ];
+		real mfcca = (D.f[DIR_PPM ])[kbne ];
+		real mfaaa = (D.f[DIR_MMM ])[kbsw ];
+		real mfcaa = (D.f[DIR_PMM ])[kbse ];
+		real mfaca = (D.f[DIR_MPM ])[kbnw ];
 		////////////////////////////////////////////////////////////////////////////////////
 		real rho   = (mfccc+mfaaa + mfaca+mfcac + mfacc+mfcaa + mfaac+mfcca + 
 					 	 mfbac+mfbca + mfbaa+mfbcc + mfabc+mfcba + mfaba+mfcbc + mfacb+mfcab + mfaab+mfccb +

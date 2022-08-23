@@ -15,6 +15,7 @@ class PostProcessingStrategy;
 class TestImp : public Test
 {
 public:
+	void run() override;
 	void update();
 	TestStatus getTestStatus();
 	virtual void makeConsoleOutput();

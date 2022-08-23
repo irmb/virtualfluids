@@ -1,9 +1,9 @@
 #include "Simulation.h"
 
-#include <stdio.h>
 #include <vector>
 
 #include <helper_timer.h>
+
 
 #include "LBM/LB.h"
 #include "Communication/Communicator.h"
@@ -44,6 +44,7 @@
 #include "Calculation/PorousMedia.h"
 //////////////////////////////////////////////////////////////////////////
 #include "Output/Timer.h"
+#include "Output/FileWriter.h"
 //////////////////////////////////////////////////////////////////////////
 #include "Restart/RestartObject.h"
 //////////////////////////////////////////////////////////////////////////
@@ -51,15 +52,14 @@
 #include "Output/DataWriter.h"
 #include "Kernel/Utilities/KernelFactory/KernelFactory.h"
 #include "PreProcessor/PreProcessorFactory/PreProcessorFactory.h"
-#include "Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
 #include "PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
+#include "Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
 #include "Kernel/Kernel.h"
 
 #include <cuda/DeviceInfo.h>
 
 #include <logger/Logger.h>
 
-#include "Output/FileWriter.h"
 
 
 std::string getFileName(const std::string& fname, int step, int myID)
@@ -70,12 +70,17 @@ std::string getFileName(const std::string& fname, int step, int myID)
 Simulation::Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> memoryManager,
                        vf::gpu::Communicator &communicator, GridProvider &gridProvider, BoundaryConditionFactory* bcFactory)
     : para(para), cudaMemoryManager(memoryManager), communicator(communicator), kernelFactory(std::make_unique<KernelFactoryImp>()),
-      preProcessorFactory(std::make_unique<PreProcessorFactoryImp>()), dataWriter(std::make_unique<FileWriter>())
+      preProcessorFactory(std::make_shared<PreProcessorFactoryImp>()), dataWriter(std::make_unique<FileWriter>())
+{
+	init(gridProvider, bcFactory);
+}
+
+void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFactory)
 {
     gridProvider.initalGridInformations();
 
     vf::cuda::verifyAndSetDevice(
-        communicator.mapCudaDevice(para->getMyID(), para->getNumprocs(), para->getDevices(), para->getMaxDev()));
+        communicator.mapCudaDevice(para->getMyProcessID(), para->getNumprocs(), para->getDevices(), para->getMaxDev()));
 
     para->initLBMSimulationParameter();
 
@@ -98,8 +103,8 @@ Simulation::Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemo
 
     restart_object = std::make_shared<ASCIIRestartObject>();
     //////////////////////////////////////////////////////////////////////////
-    output.setName(para->getFName() + StringUtil::toString<int>(para->getMyID()) + ".log");
-    if (para->getMyID() == 0)
+    output.setName(para->getFName() + StringUtil::toString<int>(para->getMyProcessID()) + ".log");
+    if (para->getMyProcessID() == 0)
         output.setConsoleOut(true);
     output.clearLogFile();
     //////////////////////////////////////////////////////////////////////////
@@ -173,7 +178,7 @@ Simulation::Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemo
     //////////////////////////////////////////////////////////////////////////
     // Particles preprocessing
     //////////////////////////////////////////////////////////////////////////
-    if (para->getCalcParticle()) {
+    if (para->getCalcParticles()) {
         rearrangeGeometry(para.get(), cudaMemoryManager.get());
         //////////////////////////////////////////////////////////////////////////
         allocParticles(para.get(), cudaMemoryManager.get());
@@ -351,7 +356,7 @@ Simulation::Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemo
     if (para->getDoRestart()) {
         output << "Restart...\n...get the Object...\n";
 
-        const auto name = getFileName(para->getFName(), para->getTimeDoRestart(), para->getMyID());
+        const auto name = getFileName(para->getFName(), para->getTimeDoRestart(), para->getMyProcessID());
         restart_object->deserialize(name, para);
 
         output << "...copy Memory for Restart...\n";
@@ -380,16 +385,16 @@ Simulation::Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemo
     this->updateGrid27 = std::make_unique<UpdateGrid27>(para, communicator, cudaMemoryManager, pm, kernels, bcFactory);
 
     //////////////////////////////////////////////////////////////////////////
-    // Print Init
+    // Write Initialized Files
     //////////////////////////////////////////////////////////////////////////
-    output << "Print files Init...";
+    VF_LOG_INFO("Write initialized Files ...");
     dataWriter->writeInit(para, cudaMemoryManager);
-    if (para->getCalcParticle())
+    if (para->getCalcParticles())
         copyAndPrintParticles(para.get(), cudaMemoryManager.get(), 0, true);
-    output << "done.\n";
+    VF_LOG_INFO("... done.");
 
     //////////////////////////////////////////////////////////////////////////
-    output << "used Device Memory: " << cudaMemoryManager->getMemsizeGPU() / 1000000.0 << " MB\n";
+    VF_LOG_INFO("used Device Memory: {} MB", cudaMemoryManager->getMemsizeGPU() / 1000000.0);
     // std::cout << "Process " << communicator.getPID() <<": used device memory" << cudaMemoryManager->getMemsizeGPU() /
     // 1000000.0 << " MB\n" << std::endl;
     //////////////////////////////////////////////////////////////////////////
@@ -418,9 +423,9 @@ void Simulation::addEnstrophyAnalyzer(uint tAnalyse)
     this->enstrophyAnalyzer = std::make_unique<EnstrophyAnalyzer>(this->para, tAnalyse);
 }
 
-void Simulation::setDataWriter(std::unique_ptr<DataWriter>&& dataWriter_)
+void Simulation::setDataWriter(std::shared_ptr<DataWriter> dataWriter_)
 {
-    this->dataWriter = std::move(dataWriter_);
+    this->dataWriter = dataWriter_;
 }
 
 void Simulation::setFactories(std::unique_ptr<KernelFactory> &&kernelFactory_,
@@ -442,7 +447,7 @@ void Simulation::allocNeighborsOffsetsScalesAndBoundaries(GridProvider &gridProv
 
 void Simulation::run()
 {
-   unsigned int t, t_prev;
+   unsigned int timestep, t_prev;
    uint t_turbulenceIntensity = 0;
    unsigned int t_MP = 0;
 
@@ -465,22 +470,20 @@ void Simulation::run()
 
    t_prev = para->getTimeCalcMedStart();
 
-	output << "getMaxLevel = " << para->getMaxLevel() << "\n";
-
 	Timer* averageTimer = new Timer("Average performance");
 	averageTimer->startTimer();
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Time loop
 	////////////////////////////////////////////////////////////////////////////////
-	for(t=para->getTStart();t<=para->getTEnd();t++)
+	for(timestep=para->getTimestepStart();timestep<=para->getTimestepEnd();timestep++)
 	{
-        this->updateGrid27->updateGrid(0, t);
+        this->updateGrid27->updateGrid(0, timestep);
 
 	    ////////////////////////////////////////////////////////////////////////////////
 	    //Particles
 	    ////////////////////////////////////////////////////////////////////////////////
-	    if (para->getCalcParticle()) propagateParticles(para.get(), t);
+	    if (para->getCalcParticles()) propagateParticles(para.get(), timestep);
 	    ////////////////////////////////////////////////////////////////////////////////
 
 
@@ -491,12 +494,11 @@ void Simulation::run()
         // these analyzers only work on level 0
 	    ////////////////////////////////////////////////////////////////////////////////
         if (this->kineticEnergyAnalyzer || this->enstrophyAnalyzer) {
-            prepareExchangeMultiGPU(para.get(), 0, -1);
-            exchangeMultiGPU(para.get(), communicator, cudaMemoryManager.get(), 0, -1);
+            updateGrid27->exchangeData(0);
         }
 
-	    if( this->kineticEnergyAnalyzer ) this->kineticEnergyAnalyzer->run(t);
-	    if( this->enstrophyAnalyzer     ) this->enstrophyAnalyzer->run(t);
+	    if( this->kineticEnergyAnalyzer ) this->kineticEnergyAnalyzer->run(timestep);
+	    if( this->enstrophyAnalyzer     ) this->enstrophyAnalyzer->run(timestep);
 	    ////////////////////////////////////////////////////////////////////////////////
 
 
@@ -505,7 +507,7 @@ void Simulation::run()
         ////////////////////////////////////////////////////////////////////////////////
         //Calc Median
         ////////////////////////////////////////////////////////////////////////////////
-        if (para->getCalcMedian() && ((int)t >= para->getTimeCalcMedStart()) && ((int)t <= para->getTimeCalcMedEnd()))
+        if (para->getCalcMedian() && ((int)timestep >= para->getTimeCalcMedStart()) && ((int)timestep <= para->getTimeCalcMedEnd()))
         {
           for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
           {
@@ -573,23 +575,23 @@ void Simulation::run()
         ////////////////////////////////////////////////////////////////////////////////
         // CheckPoint
         ////////////////////////////////////////////////////////////////////////////////
-        if(para->getDoCheckPoint() && para->getTimeDoCheckPoint()>0 && t%para->getTimeDoCheckPoint()==0 && t>0 && !para->overWritingRestart(t))
+        if(para->getDoCheckPoint() && para->getTimeDoCheckPoint()>0 && timestep%para->getTimeDoCheckPoint()==0 && timestep>0 && !para->overWritingRestart(timestep))
         {
 			averageTimer->stopTimer();
             //////////////////////////////////////////////////////////////////////////
 
             if( para->getDoCheckPoint() )
             {
-                output << "Copy data for CheckPoint t=" << t << "...\n";
+                output << "Copy data for CheckPoint t=" << timestep << "...\n";
 
                 for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
                 {
                     cudaMemoryManager->cudaCopyFsForCheckPoint(lev);
                 }
 
-                output << "Write data for CheckPoint t=" << t << "...";
+                output << "Write data for CheckPoint t=" << timestep << "...";
 
-				const auto name = getFileName(para->getFName(), t, para->getMyID());
+				const auto name = getFileName(para->getFName(), timestep, para->getMyProcessID());
 				restart_object->serialize(name, para);
 
                 output << "\n done\n";
@@ -609,7 +611,7 @@ void Simulation::run()
         //set MP-Time
         if (para->getUseMeasurePoints())
         {
-            if ((t%para->getTimestepForMP()) == 0)
+            if ((timestep%para->getTimestepForMP()) == 0)
             {
                 unsigned int valuesPerClockCycle = (unsigned int)(para->getclockCycleForMP() / para->getTimestepForMP());
                 for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
@@ -626,16 +628,16 @@ void Simulation::run()
             }
 
             //Copy Measure Values
-            if ((t % (unsigned int)para->getclockCycleForMP()) == 0)
+            if ((timestep % (unsigned int)para->getclockCycleForMP()) == 0)
             {
                 for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
                 {
                     cudaMemoryManager->cudaCopyMeasurePointsToHost(lev);
                     para->copyMeasurePointsArrayToVector(lev);
-                    output << "\n Write MeasurePoints at level = " << lev << " and timestep = " << t << "\n";
+                    output << "\n Write MeasurePoints at level = " << lev << " and timestep = " << timestep << "\n";
                     for (int j = 0; j < (int)para->getParH(lev)->MP.size(); j++)
                     {
-                        MeasurePointWriter::writeMeasurePoints(para.get(), lev, j, t);
+                        MeasurePointWriter::writeMeasurePoints(para.get(), lev, j, timestep);
                     }
                     //MeasurePointWriter::calcAndWriteMeanAndFluctuations(para.get(), lev, t, para->getTStartOut());
                 }
@@ -702,7 +704,7 @@ void Simulation::run()
       // File IO
       ////////////////////////////////////////////////////////////////////////////////
       //communicator->startTimer();
-      if(para->getTOut()>0 && t%para->getTOut()==0 && t>para->getTStartOut())
+      if(para->getTimestepOut()>0 && timestep%para->getTimestepOut()==0 && timestep>para->getTimestepStartOut())
       {
 		  //////////////////////////////////////////////////////////////////////////////////
 		  //if (para->getParD(0)->evenOrOdd==true)  para->getParD(0)->evenOrOdd=false;
@@ -711,18 +713,17 @@ void Simulation::run()
 
 		//////////////////////////////////////////////////////////////////////////
 		averageTimer->stopTimer();
-		averageTimer->outputPerformance(t, para.get(), communicator);
+		averageTimer->outputPerformance(timestep, para.get(), communicator);
 		//////////////////////////////////////////////////////////////////////////
 
          if( para->getPrintFiles() )
          {
-            output << "Write files t=" << t << "... ";
+            VF_LOG_INFO("Write files t = {} ...", timestep);
             for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
             {
 		        //////////////////////////////////////////////////////////////////////////
 		        //exchange data for valid post process
-                prepareExchangeMultiGPU(para.get(), lev, -1);
-		        exchangeMultiGPU(para.get(), communicator, cudaMemoryManager.get(), lev, -1);
+                updateGrid27->exchangeData(lev);
                 //////////////////////////////////////////////////////////////////////////
                //if (para->getD3Qxx()==19)
                //{
@@ -834,11 +835,11 @@ void Simulation::run()
 			   //////////////////////////////////////////////////////////////////////////
                //TODO: implement flag to write ASCII data
 			   if (para->getWriteVeloASCIIfiles())
-				   VeloASCIIWriter::writeVelocitiesAsTXT(para.get(), lev, t);
+				   VeloASCIIWriter::writeVelocitiesAsTXT(para.get(), lev, timestep);
 			   //////////////////////////////////////////////////////////////////////////
                if( this->kineticEnergyAnalyzer || this->enstrophyAnalyzer )
                {
-                   std::string fname = para->getFName() + "_ID_" + StringUtil::toString<int>(para->getMyID()) + "_t_" + StringUtil::toString<int>(t);
+                   std::string fname = para->getFName() + "_ID_" + StringUtil::toString<int>(para->getMyProcessID()) + "_t_" + StringUtil::toString<int>(timestep);
 
                    if (this->kineticEnergyAnalyzer) this->kineticEnergyAnalyzer->writeToFile(fname);
                    if (this->enstrophyAnalyzer)     this->enstrophyAnalyzer->writeToFile(fname);
@@ -964,36 +965,36 @@ void Simulation::run()
 			////////////////////////////////////////////////////////////////////////
 			//calculate median on host
 			////////////////////////////////////////////////////////////////////////
-			if (para->getCalcMedian() && ((int)t > para->getTimeCalcMedStart()) && ((int)t <= para->getTimeCalcMedEnd()) && ((t%(unsigned int)para->getclockCycleForMP())==0))
+			if (para->getCalcMedian() && ((int)timestep > para->getTimeCalcMedStart()) && ((int)timestep <= para->getTimeCalcMedEnd()) && ((timestep%(unsigned int)para->getclockCycleForMP())==0))
 			{
-				unsigned int tdiff = t - t_prev;
+				unsigned int tdiff = timestep - t_prev;
 				calcMedian(para.get(), tdiff);
 
 				/////////////////////////////////
 				//added for incremental averaging
-				t_prev = t;
+				t_prev = timestep;
 				resetMedian(para.get());
 				/////////////////////////////////
 			}
             if (para->getCalcTurbulenceIntensity())
 			{
-                uint t_diff = t - t_turbulenceIntensity;
+                uint t_diff = timestep - t_turbulenceIntensity;
                 calcTurbulenceIntensity(para.get(), cudaMemoryManager.get(), t_diff);
                 //writeAllTiDatafToFile(para.get(), t);
             }
 			////////////////////////////////////////////////////////////////////////
-			dataWriter->writeTimestep(para, t);
+			dataWriter->writeTimestep(para, timestep);
 			////////////////////////////////////////////////////////////////////////
             if (para->getCalcTurbulenceIntensity()) {
-                t_turbulenceIntensity = t;
+                t_turbulenceIntensity = timestep;
                 resetVelocityFluctuationsAndMeans(para.get(), cudaMemoryManager.get());
             }
 			////////////////////////////////////////////////////////////////////////
-            if (para->getCalcDragLift()) printDragLift(para.get(), cudaMemoryManager.get(), t);
+            if (para->getCalcDragLift()) printDragLift(para.get(), cudaMemoryManager.get(), timestep);
 			////////////////////////////////////////////////////////////////////////
-			if (para->getCalcParticle()) copyAndPrintParticles(para.get(), cudaMemoryManager.get(), t, false);
+			if (para->getCalcParticles()) copyAndPrintParticles(para.get(), cudaMemoryManager.get(), timestep, false);
 			////////////////////////////////////////////////////////////////////////
-			output << "done.\n";
+            VF_LOG_INFO("... done");
 			////////////////////////////////////////////////////////////////////////
          }
 

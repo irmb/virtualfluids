@@ -6,6 +6,7 @@
 
 #include "Tests/NyTest/NyTestParameterStruct.h"
 
+
 std::shared_ptr<NyTestPostProcessingStrategy> NyTestPostProcessingStrategy::getNewInstance(std::shared_ptr<SimulationResults> simResult, std::shared_ptr<AnalyticalResults> analyticalResult, std::shared_ptr<NyTestParameterStruct> testPara, std::vector<std::string> dataToCalcTests)
 {
 	return std::shared_ptr<NyTestPostProcessingStrategy>(new NyTestPostProcessingStrategy(simResult, analyticalResult, testPara, dataToCalcTests));

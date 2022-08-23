@@ -523,13 +523,13 @@ void LevelGridBuilder::getVelocityValues(real* vx, real* vy, real* vz, int* indi
     int allIndicesCounter = 0;
     for (auto boundaryCondition : boundaryConditions[level]->velocityBoundaryConditions)
     {
-        for(std::size_t i = 0; i < boundaryCondition->indices.size(); i++)
+        for (uint i = 0; i < (uint)boundaryCondition->indices.size(); i++)
         {
             indices[allIndicesCounter] = grids[level]->getSparseIndex(boundaryCondition->indices[i]) +1;  
 
-            vx[allIndicesCounter] = boundaryCondition->getVx((uint)i);
-            vy[allIndicesCounter] = boundaryCondition->getVy((uint)i);
-            vz[allIndicesCounter] = boundaryCondition->getVz((uint)i);
+            vx[allIndicesCounter] = boundaryCondition->getVx(i);
+            vy[allIndicesCounter] = boundaryCondition->getVy(i);
+            vz[allIndicesCounter] = boundaryCondition->getVz(i);
             allIndicesCounter++;
         }
     }
@@ -666,4 +666,12 @@ GRIDGENERATOR_EXPORT SPtr<gg::BoundaryCondition> LevelGridBuilder::getBoundaryCo
 GRIDGENERATOR_EXPORT SPtr<GeometryBoundaryCondition> LevelGridBuilder::getGeometryBoundaryCondition(uint level) const
 {
     return this->boundaryConditions[level]->geometryBoundaryCondition;
+}
+
+void LevelGridBuilder::findFluidNodes(bool splitDomain)
+{
+    *logging::out << logging::Logger::INFO_HIGH << "Start findFluidNodes()\n";
+    for (uint i = 0; i < grids.size(); i++)
+        grids[i]->findFluidNodeIndices(splitDomain);
+    *logging::out << logging::Logger::INFO_HIGH << "Done with findFluidNodes()\n";
 }

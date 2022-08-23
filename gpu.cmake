@@ -51,50 +51,13 @@ ENDIF()
 ###                  Virtual Fluids GKS                   ###
 #############################################################
 
-
 IF (BUILD_VF_GKS)
     add_subdirectory(src/gpu/GksMeshAdapter)
     add_subdirectory(src/gpu/GksVtkAdapter)
 
     add_subdirectory(src/gpu/GksGpu)
 
-    #add_subdirectory(targets/apps/GKS/gksTest)
-    #add_subdirectory(targets/apps/GKS/ChannelFlow)
-
-    #add_subdirectory(targets/apps/GKS/ChannelFlowObstacle)
-    #add_subdirectory(targets/apps/GKS/ShearWave)
-
-    #add_subdirectory(targets/apps/GKS/LiFuXu)
-
-    #add_subdirectory(targets/apps/GKS/TaylorGreen3D)
-    #add_subdirectory(targets/apps/GKS/DrivenCavity3D)
-    #add_subdirectory(targets/apps/GKS/ThermalCavity)
-
-    #add_subdirectory(targets/apps/GKS/ThermalCavityMultiGPU)
-    #add_subdirectory(targets/apps/GKS/DrivenCavityMultiGPU)
-    #add_subdirectory(targets/apps/GKS/RayleighBenardMultiGPU)
-
-    #add_subdirectory(targets/apps/GKS/SalinasVazquez)
-    #add_subdirectory(targets/apps/GKS/BoundaryJet)
-
-    #add_subdirectory(targets/apps/GKS/PropaneFlame)
-    #add_subdirectory(targets/apps/GKS/ConfinedCombustion)
-    #add_subdirectory(targets/apps/GKS/MethaneFlame)
-
-    #add_subdirectory(targets/apps/GKS/Room)
-    #add_subdirectory(targets/apps/GKS/RoomMultiGPU)
-    #add_subdirectory(targets/apps/GKS/RoomFire)
-    #add_subdirectory(targets/apps/GKS/RoomFireExtended)
-    #add_subdirectory(targets/apps/GKS/ConcreteHeatFluxBCTest)
-
-    #add_subdirectory(targets/apps/GKS/PoolFire)
     add_subdirectory(apps/gpu/GKS/Flame7cm)
-    #add_subdirectory(targets/apps/GKS/SandiaFlame_1m)
-    #add_subdirectory(targets/apps/GKS/Candle)
-
-    #add_subdirectory(targets/apps/GKS/MultiGPU)
-    #add_subdirectory(targets/apps/GKS/MultiGPU_nD)
-    #add_subdirectory(targets/apps/GKS/SingleGPU)
 ELSE()
     MESSAGE( STATUS "exclude Virtual Fluids GKS." )
 ENDIF()
@@ -130,7 +93,7 @@ if(BUILD_NUMERIC_TESTS)
 endif()
 
 #############################################################
-###					Annas Traffic Sim				      ###
+###                 Annas Traffic Sim                     ###
 #############################################################
 
 if(BUILD_VF_TRAFFIC)

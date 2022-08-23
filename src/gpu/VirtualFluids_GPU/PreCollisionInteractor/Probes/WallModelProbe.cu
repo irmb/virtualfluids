@@ -159,7 +159,7 @@ void WallModelProbe::findPoints(Parameter* para, GridProvider* gridProvider, std
     if ( !para->getHasWallModelMonitor())                    throw std::runtime_error("WallModelProbe::findPoints(): !para->getHasWallModelMonitor() !");
 
     real dt = para->getTimeRatio();
-    uint nt = uint((para->getTEnd()-this->tStartAvg)/this->tAvg);
+    uint nt = uint((para->getTimestepEnd()-this->tStartAvg)/this->tAvg);
     
     for(uint t=0; t<nt; t++)
     {
