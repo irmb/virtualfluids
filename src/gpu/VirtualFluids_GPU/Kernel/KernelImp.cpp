@@ -27,6 +27,10 @@ void KernelImp::setCheckParameterStrategy(std::shared_ptr<CheckParameterStrategy
     this->checkStrategy = strategy;
 }
 
+bool KernelImp::getKernelUsesFluidNodeIndices(){
+    return this->kernelUsesFluidNodeIndices;
+}
+
 KernelImp::KernelImp(std::shared_ptr<Parameter> para, int level) : para(para), level(level) {}
 
 KernelImp::KernelImp() {}

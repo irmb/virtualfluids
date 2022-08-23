@@ -1,3 +1,35 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file BoundaryConditionFactory.h
+//! \ingroup BoundaryCondition
+//! \author Anna Wellmann
+//=======================================================================================#ifndef BC_FACTORY
 #ifndef BC_FACTORY
 #define BC_FACTORY
 
@@ -14,7 +46,7 @@ struct LBMSimulationParameter;
 class Parameter;
 
 using boundaryCondition = std::function<void(LBMSimulationParameter *, QforBoundaryConditions *)>;
-using boundaryConditionPara = std::function<void(Parameter *, QforBoundaryConditions *, const int level)>;
+using boundaryConditionWithParameter = std::function<void(Parameter *, QforBoundaryConditions *, const int level)>;
 
 class BoundaryConditionFactory
 {
@@ -116,16 +148,15 @@ public:
     [[nodiscard]] boundaryCondition getPressureBoundaryConditionPre() const;
     [[nodiscard]] boundaryCondition getGeometryBoundaryConditionPost() const;
 
-    boundaryConditionPara getStressBoundaryConditionPost() const;
+    [[nodiscard]] boundaryConditionWithParameter getStressBoundaryConditionPost() const;
 
 private:
     VelocityBC velocityBoundaryCondition = VelocityBC::NotSpecified;
     NoSlipBC noSlipBoundaryCondition = NoSlipBC::NoSlipImplicitBounceBack;
     SlipBC slipBoundaryCondition = SlipBC::NotSpecified;
     PressureBC pressureBoundaryCondition = PressureBC::NotSpecified;
-    std::variant<VelocityBC, NoSlipBC, SlipBC> geometryBoundaryCondition  = NoSlipBC::NoSlipImplicitBounceBack;
+    std::variant<VelocityBC, NoSlipBC, SlipBC> geometryBoundaryCondition = NoSlipBC::NoSlipImplicitBounceBack;
     StressBC stressBoundaryCondition = StressBC::NotSpecified;
-
 
     // OutflowBoundaryConditon outflowBC // TODO: https://git.rz.tu-bs.de/m.schoenherr/VirtualFluids_dev/-/issues/16
 };

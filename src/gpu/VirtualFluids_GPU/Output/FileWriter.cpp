@@ -1,11 +1,12 @@
 //  _    ___      __              __________      _     __        ______________   __
 // | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____   /  ___/ __  / /  / /
 // | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/  / /___/ /_/ / /  / /
-// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )  / /_) / ____/ /__/ / 
+// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )  / /_) / ____/ /__/ /
 // |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/   \____/_/    \_____/
 //
 //////////////////////////////////////////////////////////////////////////
 #include "FileWriter.h"
+#include <logger/Logger.h>
 
 #include <stdio.h>
 #include <fstream>
@@ -24,7 +25,7 @@
 
 void FileWriter::writeInit(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager)
 {
-    unsigned int timestep = para->getTInit();
+    unsigned int timestep = para->getTimestepInit();
     for (int level = para->getCoarse(); level <= para->getFine(); level++) {
         cudaMemoryManager->cudaCopyPrint(level);
         writeTimestep(para, timestep, level);
@@ -52,10 +53,11 @@ void FileWriter::writeTimestep(std::shared_ptr<Parameter> para, unsigned int tim
     const unsigned int numberOfParts = para->getParH(level)->numberOfNodes / para->getlimitOfNodesForVTK() + 1;
     std::vector<std::string> fname;
     std::vector<std::string> fnameMed;
+
     for (unsigned int i = 1; i <= numberOfParts; i++)
     {
-        fname.push_back(para->getFName() + "_bin_lev_" + StringUtil::toString<int>(level) + "_ID_" + StringUtil::toString<int>(para->getMyID()) + "_Part_" + StringUtil::toString<int>(i) + "_t_" + StringUtil::toString<int>(timestep) + ".vtk");
-        fnameMed.push_back(para->getFName() + "_bin_median_lev_" + StringUtil::toString<int>(level) + "_ID_" + StringUtil::toString<int>(para->getMyID()) + "_Part_" + StringUtil::toString<int>(i) + "_t_" + StringUtil::toString<int>(timestep) + ".vtk");
+        fname.push_back(para->getFName() + "_bin_lev_" + StringUtil::toString<int>(level) + "_ID_" + StringUtil::toString<int>(para->getMyProcessID()) + "_Part_" + StringUtil::toString<int>(i) + "_t_" + StringUtil::toString<int>(timestep) + ".vtk");
+        fnameMed.push_back(para->getFName() + "_bin_median_lev_" + StringUtil::toString<int>(level) + "_ID_" + StringUtil::toString<int>(para->getMyProcessID()) + "_Part_" + StringUtil::toString<int>(i) + "_t_" + StringUtil::toString<int>(timestep) + ".vtk");
 
         this->fileNamesForCollectionFile.push_back( fname.back() );
         this->fileNamesForCollectionFileMedian.push_back( fnameMed.back() );
@@ -85,7 +87,7 @@ bool FileWriter::isPeriodicCell(std::shared_ptr<Parameter> para, int level, unsi
 void VIRTUALFLUIDS_GPU_EXPORT FileWriter::writeCollectionFile(std::shared_ptr<Parameter> para, unsigned int timestep)
 {
 
-    std::string filename = para->getFName() + "_bin_ID_" + StringUtil::toString<int>(para->getMyID()) + "_t_" + StringUtil::toString<int>(timestep) + ".vtk";
+    std::string filename = para->getFName() + "_bin_ID_" + StringUtil::toString<int>(para->getMyProcessID()) + "_t_" + StringUtil::toString<int>(timestep) + ".vtk";
 
     std::ofstream file;
 
@@ -129,14 +131,14 @@ void VIRTUALFLUIDS_GPU_EXPORT FileWriter::writeCollectionFile(std::shared_ptr<Pa
 void VIRTUALFLUIDS_GPU_EXPORT FileWriter::writeCollectionFileMedian(std::shared_ptr<Parameter> para, unsigned int timestep)
 {
 
-    std::string filename = para->getFName() + "_bin_median_ID_" + StringUtil::toString<int>(para->getMyID()) + "_t_" + StringUtil::toString<int>(timestep) + ".vtk";
+    std::string filename = para->getFName() + "_bin_median_ID_" + StringUtil::toString<int>(para->getMyProcessID()) + "_t_" + StringUtil::toString<int>(timestep) + ".vtk";
 
     std::ofstream file;
 
     file.open( filename + ".pvtu" );
 
     //////////////////////////////////////////////////////////////////////////
-    
+
     file << "<VTKFile type=\"PUnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">" << std::endl;
     file << "  <PUnstructuredGrid GhostLevel=\"1\">" << std::endl;
 
@@ -605,7 +607,7 @@ void FileWriter::writeUnstrucuredGridMedianLTConc(std::shared_ptr<Parameter> par
                 if (isPeriodicCell(para, level, number2, number1, number3, number5))
                     continue;
                 //////////////////////////////////////////////////////////////////////////
-                if (neighborsFluid) 
+                if (neighborsFluid)
                     cells.push_back(makeUbTuple(dn1, dn2, dn3, dn4, dn5, dn6, dn7, dn8));
                 //////////////////////////////////////////////////////////////////////////
             }

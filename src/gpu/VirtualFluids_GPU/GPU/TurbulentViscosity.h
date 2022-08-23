@@ -5,6 +5,6 @@
 
 class Parameter;
 
-extern "C" void calcTurbulentViscosityAMD(Parameter* para, int level);
+void calcTurbulentViscosityAMD(Parameter* para, int level);
 
 #endif //TURBULENT_VISCOSITY_H_

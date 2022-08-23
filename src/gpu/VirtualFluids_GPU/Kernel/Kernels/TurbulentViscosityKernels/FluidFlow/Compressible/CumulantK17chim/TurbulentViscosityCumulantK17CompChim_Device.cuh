@@ -4,7 +4,7 @@
 #include <DataTypes.h>
 #include <curand.h>
 
-extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
+__global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
 	real omega_in,
 	uint* typeOfGridNode,
 	uint* neighborX,

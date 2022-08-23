@@ -119,7 +119,7 @@ void multipleLevel(const std::string& configPath)
     vf::basics::ConfigurationFile config;
     config.load(configPath);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////^
-    SPtr<Parameter> para = std::make_shared<Parameter>(config, communicator.getNummberOfProcess(), communicator.getPID());
+    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNummberOfProcess(), communicator.getPID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -137,8 +137,6 @@ void multipleLevel(const std::string& configPath)
     para->setDevices(std::vector<uint>{(uint)0});
 
     para->setOutputPrefix( simulationName );
-
-    para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
 
     para->setPrintFiles(true);
 
@@ -158,8 +156,8 @@ void multipleLevel(const std::string& configPath)
         vz  = (real)0.0;
     });
 
-    para->setTOut( uint(tOut/dt) );
-    para->setTEnd( uint(tEnd/dt) );
+    para->setTimestepOut( uint(tOut/dt) );
+    para->setTimestepEnd( uint(tEnd/dt) );
 
     para->setIsBodyForce( true );
 
@@ -172,7 +170,7 @@ void multipleLevel(const std::string& configPath)
     gridBuilder->setVelocityBoundaryCondition(SideType::MZ,  velocityLB,  0.0, 0.0);
     gridBuilder->setVelocityBoundaryCondition(SideType::PZ,  velocityLB,  0.0, 0.0);
     gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
-    
+
     bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityAndPressureCompressible);
     bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::PressureNonEquilibriumCompressible);
 
@@ -194,7 +192,7 @@ void multipleLevel(const std::string& configPath)
     std::vector<real> probeCoordsZ = {3*reference_diameter,3*reference_diameter,3*reference_diameter};
     pointProbe->addProbePointsFromList(probeCoordsX, probeCoordsY, probeCoordsZ);
     // pointProbe->addProbePointsFromXNormalPlane(2*D, 0.0, 0.0, L_y, L_z, (uint)L_y/dx, (uint)L_z/dx);
-    
+
     pointProbe->addStatistic(Statistic::Means);
     pointProbe->addStatistic(Statistic::Variances);
     para->addProbe( pointProbe );

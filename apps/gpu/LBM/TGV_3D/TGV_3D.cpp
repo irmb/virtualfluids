@@ -121,10 +121,10 @@ void multipleLevel(const std::string& configPath)
     //gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_UNDER_TRIANGLE);
 
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
-    
+
     vf::basics::ConfigurationFile config;
     config.load(configPath);
-    SPtr<Parameter> para = std::make_shared<Parameter>(config, communicator.getNummberOfProcess(), communicator.getPID());
+    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNummberOfProcess(), communicator.getPID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -157,7 +157,7 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  
+
 	//std::stringstream _path;
  //   std::stringstream _prefix;
 
@@ -173,7 +173,7 @@ void multipleLevel(const std::string& configPath)
 
  //   para->setOutputPath(_path.str());
  //   para->setOutputPrefix(_prefix.str());
- //   para->setFName(_path.str() + "/" + _prefix.str());
+ //   para->setPathAndFilename(_path.str() + "/" + _prefix.str());
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -206,16 +206,14 @@ void multipleLevel(const std::string& configPath)
     para->setDevices(std::vector<uint>{gpuIndex});
 
     //////////////////////////////////////////////////////////////////////////
-    
+
     para->setOutputPath( path );
     para->setOutputPrefix( simulationName );
 
-    para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
-
     para->setPrintFiles(true);
 
-    para->setTEnd( 40 * lround(L/velocity) );	
-	para->setTOut(  5 * lround(L/velocity) );
+    para->setTimestepEnd( 40 * lround(L/velocity) );
+	para->setTimestepOut(  5 * lround(L/velocity) );
 
     para->setVelocityLB( velocity );
 
@@ -249,7 +247,7 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
+
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
     SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
     //SPtr<GridProvider> gridGenerator = GridProvider::makeGridReader(FILEFORMAT::BINARY, para, cudaMemoryManager);
@@ -257,7 +255,7 @@ void multipleLevel(const std::string& configPath)
     SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
     Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory);
     sim.run();
-    
+
     sim.addKineticEnergyAnalyzer( 10 );
     sim.addEnstrophyAnalyzer( 10 );
 
@@ -268,11 +266,11 @@ void multipleLevel(const std::string& configPath)
 int main( int argc, char* argv[])
 {
     MPI_Init(&argc, &argv);
-    std::string str, str2; 
+    std::string str, str2;
     if ( argv != NULL )
     {
         //str = static_cast<std::string>(argv[0]);
-        
+
         try
         {
             //////////////////////////////////////////////////////////////////////////
@@ -313,14 +311,14 @@ int main( int argc, char* argv[])
 		}
         catch (const std::bad_alloc& e)
         {
-                
+
             *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
             //std::cout << e.what() << std::flush;
             //MPI_Abort(MPI_COMM_WORLD, -1);
         }
         catch (const std::exception& e)
         {
-                
+
             *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
             //std::cout << e.what() << std::flush;
             //MPI_Abort(MPI_COMM_WORLD, -1);

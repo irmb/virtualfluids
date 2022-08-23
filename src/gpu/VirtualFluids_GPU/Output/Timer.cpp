@@ -38,8 +38,8 @@ void Timer::outputPerformance(uint t, Parameter* para, vf::gpu::Communicator& co
     
     for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
     {
-        fnups       += 1000.0 * (t-para->getTStart()) * para->getParH(lev)->numberOfNodes * pow(2.,lev) / (this->totalElapsedTime*1.0E6);
-        bandwidth   += (27.0+1.0) * 4.0 * 1000.0 * (t-para->getTStart()) * para->getParH(lev)->numberOfNodes  / (this->totalElapsedTime*1.0E9);
+        fnups       += 1000.0 * (t-para->getTimestepStart()) * para->getParH(lev)->numberOfNodes * pow(2.,lev) / (this->totalElapsedTime*1.0E6);
+        bandwidth   += (27.0+1.0) * 4.0 * 1000.0 * (t-para->getTimestepStart()) * para->getParH(lev)->numberOfNodes  / (this->totalElapsedTime*1.0E9);
     }
 
     if(this->firstOutput && communicator.getPID() == 0) //only display the legend once
