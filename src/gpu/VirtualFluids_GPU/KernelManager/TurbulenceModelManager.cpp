@@ -20,57 +20,35 @@
 //
 //  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
 //  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 //  for more details.
 //
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file TurbulentViscosityFactory.h
-//! \ingroup TurbulentViscosity
+//! \file TurbulenceModelManager.cpp
+//! \ingroup KernelManager
 //! \author Henrik Asmuth
-//=======================================================================================#ifndef BC_FACTORY
-#ifndef TurbulenceModelFactory_H
-#define TurbulenceModelFactory_H
-
-#include <functional>
-#include <map>
+//=======================================================================================
+#include <cuda_runtime.h>
+#include <helper_cuda.h>
+#include <iostream>
+#include <stdexcept>
 #include <string>
-#include <variant>
 
-#include "LBM/LB.h"
+#include "TurbulenceModelManager.h"
+#include "TurbulenceModels/TurbulenceModelFactory.h"
 #include "Parameter/Parameter.h"
 
-class Parameter;
-
-using TurbulenceModelKernel = std::function<void(Parameter *, int )>;
-
-class TurbulenceModelFactory
+TurbulenceModelManager::TurbulenceModelManager(SPtr<Parameter> parameter, TurbulenceModelFactory *turbulenceModelFactory) : para(parameter)
 {
-public:
-    //! \brief An enumeration for selecting a turbulence model
-    enum class TurbulenceModel {
-        //! - AMD (Anisotropic Minimum Dissipation) model, see e.g. Rozema et al., Phys. Fluids 27, 085107 (2015), https://doi.org/10.1063/1.4928700
-        AMD,
-        //! - Smagorinsky
-        Smagorinsky,
-        //! - QR model by Verstappen 
-        QR,
-        //! - TODO: move the model here from the old kernels
-        //WALE
-        //! - No turbulence model
-        None
-    };
- 
-    void setTurbulenceModel(const TurbulenceModelFactory::TurbulenceModel _turbulenceModel);
-    // void setModelConstant(const real modelConstant);
+    this->turbulenceModelKernel = turbulenceModelFactory->getTurbulenceModelKernel();
 
-    TurbulenceModelFactory::TurbulenceModel getTurbulenceModel();
-    [[nodiscard]] TurbulenceModelKernel getTurbulenceModelKernel() const;
+    // checkBoundaryCondition(this->velocityBoundaryConditionPost, this->para->getParD(0)->velocityBC,
+    //                        "velocityBoundaryConditionPost");
+}
 
-private:
-    TurbulenceModelFactory::TurbulenceModel turbulenceModel = TurbulenceModel::None;
-
-};
-
-#endif
+void TurbulenceModelManager::runTurbulenceModelKernel(const int level) const
+{
+    this->turbulenceModelKernel(para.get(), level);
+}

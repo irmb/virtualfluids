@@ -20,57 +20,65 @@
 //
 //  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
 //  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 //  for more details.
 //
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file TurbulentViscosityFactory.h
-//! \ingroup TurbulentViscosity
+//! \file TurbulenceModelManager.h
+//! \ingroup KernelManager
 //! \author Henrik Asmuth
-//=======================================================================================#ifndef BC_FACTORY
-#ifndef TurbulenceModelFactory_H
-#define TurbulenceModelFactory_H
+//=======================================================================================
+#ifndef TurbulenceModelManager_H
+#define TurbulenceModelManager_H
 
 #include <functional>
-#include <map>
+#include <memory>
 #include <string>
-#include <variant>
 
 #include "LBM/LB.h"
-#include "Parameter/Parameter.h"
+#include "PointerDefinitions.h"
+#include "VirtualFluids_GPU_export.h"
 
+class CudaMemoryManager;
+class TurbulenceModelFactory;
 class Parameter;
+struct LBMSimulationParameter;
 
 using TurbulenceModelKernel = std::function<void(Parameter *, int )>;
 
-class TurbulenceModelFactory
+//! \class BCKernelManager
+//! \brief manage the cuda kernel calls to boundary conditions
+//! \details This class stores the boundary conditions and manages the calls to the boundary condition kernels.
+class VIRTUALFLUIDS_GPU_EXPORT TurbulenceModelManager
 {
 public:
-    //! \brief An enumeration for selecting a turbulence model
-    enum class TurbulenceModel {
-        //! - AMD (Anisotropic Minimum Dissipation) model, see e.g. Rozema et al., Phys. Fluids 27, 085107 (2015), https://doi.org/10.1063/1.4928700
-        AMD,
-        //! - Smagorinsky
-        Smagorinsky,
-        //! - QR model by Verstappen 
-        QR,
-        //! - TODO: move the model here from the old kernels
-        //WALE
-        //! - No turbulence model
-        None
-    };
- 
-    void setTurbulenceModel(const TurbulenceModelFactory::TurbulenceModel _turbulenceModel);
-    // void setModelConstant(const real modelConstant);
+    //! Class constructor
+    //! \param parameter shared pointer to instance of class Parameter
+    //! \throws std::runtime_error when the user forgets to specify a boundary condition
+    TurbulenceModelManager(SPtr<Parameter> parameter, TurbulenceModelFactory *turbulenceModelFactory);
 
-    TurbulenceModelFactory::TurbulenceModel getTurbulenceModel();
-    [[nodiscard]] TurbulenceModelKernel getTurbulenceModelKernel() const;
+    //! \brief calls the device function of the velocity boundary condition (post-collision)
+    void runTurbulenceModelKernel(const int level) const;
 
 private:
-    TurbulenceModelFactory::TurbulenceModel turbulenceModel = TurbulenceModel::None;
+    //! \brief check if a boundary condition was set
+    //! \throws std::runtime_error if boundary nodes were assigned, but no boundary condition was set in the boundary condition factory
+    //! \param boundaryCondition: a kernel function for the boundary condition
+    //! \param bcStruct: a struct containing the grid nodes which are part of the boundary condition
+    //! \param bcName: the name of the checked boundary condition
+   
+    // template <typename bcFunction>
+    // void checkTurbulenceModel(const bcFunction &boundaryCondition, const QforBoundaryConditions &bcStruct, const std::string &bcName)
+    // {
+    //     if (!boundaryCondition && bcStruct.numberOfBCnodes > 0)
+    //         throw std::runtime_error("The boundary condition " + bcName + " was not set!");
+    // }
+
+    SPtr<Parameter> para;
+
+    TurbulenceModelKernel turbulenceModelKernel = nullptr;
 
 };
-
 #endif

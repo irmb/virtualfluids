@@ -13,7 +13,7 @@ TurbulenceModelFactory::TurbulenceModel TurbulenceModelFactory::getTurbulenceMod
     return this->turbulenceModel;
 }
 
-turbulenceModelKernel TurbulenceModelFactory::getTurbulenceModelKernel() const
+TurbulenceModelKernel TurbulenceModelFactory::getTurbulenceModelKernel() const
 {
     switch (this->turbulenceModel) {
         case TurbulenceModel::AMD:
