@@ -22,8 +22,8 @@ void allocParticles(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 	{
 		//////////////////////////////////////////////////////////////////////////
 		//all level store the same number of time steps
-		para->getParH(lev)->plp.numberOfTimestepsParticles = para->getTOut() * (unsigned int)pow(2,para->getParticleBasicLevel());
-		para->getParD(lev)->plp.numberOfTimestepsParticles = para->getTOut() * (unsigned int)pow(2,para->getParticleBasicLevel());
+		para->getParH(lev)->plp.numberOfTimestepsParticles = para->getTimestepOut() * (unsigned int)pow(2,para->getParticleBasicLevel());
+		para->getParD(lev)->plp.numberOfTimestepsParticles = para->getTimestepOut() * (unsigned int)pow(2,para->getParticleBasicLevel());
 		//////////////////////////////////////////////////////////////////////////
 		//all level store the same number of Particles
 		para->getParH(lev)->plp.numberOfParticles = para->getNumberOfParticles();

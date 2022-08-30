@@ -1,7 +1,7 @@
 #ifndef _GEOMETRYUTILS_H
 #define _GEOMETRYUTILS_H
 
-__inline__ __host__ __device__ void getNeighborIndicesOfBSW(  uint k, //index of BSW node
+__inline__ __host__ __device__ void getNeighborIndicesOfBSW(  uint k, //index of DIR_MMM node
                                         uint &ke, uint &kn, uint &kt, uint &kne, uint &kte,uint &ktn, uint &ktne,
                                         uint* neighborX, uint* neighborY, uint* neighborZ)
 {

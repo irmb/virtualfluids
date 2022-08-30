@@ -159,7 +159,7 @@ void WallModelProbe::findPoints(Parameter* para, GridProvider* gridProvider, std
     assert( para->getParD(level)->stressBC.numberOfBCnodes > 0 && para->getHasWallModelMonitor() );
 
     real dt = para->getTimeRatio();
-    uint nt = uint((para->getTEnd()-this->tStartAvg)/this->tAvg);
+    uint nt = uint((para->getTimestepEnd()-this->tStartAvg)/this->tAvg);
     
     for(uint t=0; t<nt; t++)
     {

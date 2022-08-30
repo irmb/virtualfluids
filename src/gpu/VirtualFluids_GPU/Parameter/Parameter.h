@@ -37,6 +37,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <optional>
 
 #include "lbm/constants/D3Q27.h"
 #include "LBM/LB.h"
@@ -116,7 +117,7 @@ struct LBMSimulationParameter {
     uint *neighborX, *neighborY, *neighborZ, *neighborInverse;
 
     // coordinates////////////////////////////////////////////////////////////
-    //! \brief store the coordinates for every lattice node 
+    //! \brief store the coordinates for every lattice node
     real *coordinateX, *coordinateY, *coordinateZ;
 
     // body forces////////////
@@ -368,16 +369,19 @@ struct LBMSimulationParameter {
     uint *fluidNodeIndices;
     uint numberOfFluidNodes;
     uint *fluidNodeIndicesBorder;
-    uint numberOffluidNodesBorder;
+    uint numberOfFluidNodesBorder;
 };
 
 //! \brief Class for LBM-parameter management
 class VIRTUALFLUIDS_GPU_EXPORT Parameter
 {
 public:
-    Parameter(const vf::basics::ConfigurationFile &configData, const int numberOfProcesses = 1, const int myId = 0);
-    Parameter(const int numberOfProcesses = 1, const int myId = 0);
+    Parameter();
+    explicit Parameter(const vf::basics::ConfigurationFile* configData);
+    explicit Parameter(const int numberOfProcesses, const int myId);
+    explicit Parameter(const int numberOfProcesses, const int myId, std::optional<const vf::basics::ConfigurationFile*> configData);
     ~Parameter();
+
     void initLBMSimulationParameter();
 
     //! \brief Pointer to instance of LBMSimulationParameter - stored on Host System
@@ -409,9 +413,9 @@ public:
     void setCalcParticles(bool calcParticles);
     void setStartXHotWall(real startXHotWall);
     void setEndXHotWall(real endXHotWall);
-    void setTEnd(unsigned int tend);
-    void setTOut(unsigned int tout);
-    void setTStartOut(unsigned int tStartOut);
+    void setTimestepEnd(unsigned int tend);
+    void setTimestepOut(unsigned int tout);
+    void setTimestepStartOut(unsigned int tStartOut);
     void setTimestepOfCoarseLevel(unsigned int timestep);
     void setCalcTurbulenceIntensity(bool calcVelocityAndFluctuations);
     void setCalcMedian(bool calcMedian);
@@ -431,7 +435,6 @@ public:
     void settimestepForMP(unsigned int timestepForMP);
     void setOutputPath(std::string oPath);
     void setOutputPrefix(std::string oPrefix);
-    void setFName(std::string fname);
     void setGridPath(std::string gridPath);
     void setGeometryFileC(std::string GeometryFileC);
     void setGeometryFileM(std::string GeometryFileM);
@@ -499,8 +502,8 @@ public:
     void setReadGeo(bool readGeo);
     void setTemperatureInit(real Temp);
     void setTemperatureBC(real TempBC);
-    void setViscosity(real Viscosity);
-    void setVelocity(real Velocity);
+    void setViscosityLB(real Viscosity);
+    void setVelocityLB(real Velocity);
     void setViscosityRatio(real ViscosityRatio);
     void setVelocityRatio(real VelocityRatio);
     void setDensityRatio(real DensityRatio);
@@ -554,7 +557,7 @@ public:
     void setDoCheckPoint(bool doCheckPoint);
     void setDoRestart(bool doRestart);
     void setObj(std::string str, bool isObj);
-    void setGeometryValues(bool GeometryValues);
+    void setUseGeometryValues(bool GeometryValues);
     void setCalc2ndOrderMoments(bool is2ndOrderMoments);
     void setCalc3rdOrderMoments(bool is3rdOrderMoments);
     void setCalcHighOrderMoments(bool isHighOrderMoments);
@@ -629,7 +632,7 @@ public:
     bool getCalcMedian();
     bool getCalcDragLift();
     bool getCalcCp();
-    bool getCalcParticle();
+    bool getCalcParticles();
     bool getWriteVeloASCIIfiles();
     bool getCalcPlaneConc();
     //! \returns index of finest level
@@ -642,11 +645,13 @@ public:
     int getDiffMod();
     int getFactorNZ();
     int getD3Qxx();
+    //! \returns the maximum level of grid refinement
     int getMaxLevel();
     int getTimeCalcMedStart();
     int getTimeCalcMedEnd();
     int getMaxDev();
-    int getMyID();
+    //! \returns the ID of the current MPI process
+    int getMyProcessID();
     int getNumprocs();
     std::string getOutputPath();
     std::string getOutputPrefix();
@@ -722,11 +727,11 @@ public:
     unsigned int getMemSizeBool(int level);
     unsigned int getMemSizerealYZ(int level);
     unsigned int getSizeMat(int level);
-    unsigned int getTStart();
-    unsigned int getTInit();
-    unsigned int getTEnd();
-    unsigned int getTOut();
-    unsigned int getTStartOut();
+    unsigned int getTimestepStart();
+    unsigned int getTimestepInit();
+    unsigned int getTimestepEnd();
+    unsigned int getTimestepOut();
+    unsigned int getTimestepStartOut();
     unsigned int getTimestepForMP();
     unsigned int getTimestepOfCoarseLevel();
     real getDiffusivity();
@@ -734,12 +739,19 @@ public:
     real getTemperatureBC();
     real getViscosity();
     real getVelocity();
+    //! \returns the viscosity ratio in SI/LB units
     real getViscosityRatio();
+    //! \returns the velocity ratio in SI/LB units
     real getVelocityRatio();
+    //! \returns the density ratio in SI/LB units
     real getDensityRatio();
-    real getPressRatio();
+    //! \returns the pressure ratio in SI/LB units
+    real getPressureRatio();
+    //! \returns the time ratio in SI/LB units
     real getTimeRatio();
+    //! \returns the length ratio in SI/LB units
     real getLengthRatio();
+    //! \returns the force ratio in SI/LB units
     real getForceRatio();
     real getRealX();
     real getRealY();
@@ -768,6 +780,7 @@ public:
     TempPressforBoundaryConditions *getTempPressH();
     TempPressforBoundaryConditions *getTempPressD();
     std::vector<SPtr<PreCollisionInteractor>> getActuators();
+    //! \returns the probes, e.g. point or plane probe
     std::vector<SPtr<PreCollisionInteractor>> getProbes();
     unsigned int getTimeDoCheckPoint();
     unsigned int getTimeDoRestart();
@@ -863,6 +876,8 @@ private:
     void initGridBasePoints();
     void initDefaultLBMkernelAllLevels();
 
+    void setPathAndFilename(std::string fname);
+
 private:
     bool compOn{ false };
     bool diffOn{ false };
@@ -874,6 +889,7 @@ private:
     bool calcVelocityAndFluctuations{ false };
     bool isBodyForce{ false };
     int diffMod{ 27 };
+    //! \property maximum level of grid refinement
     int maxlevel{ 0 };
     int coarse{ 0 };
     int fine{ 0 };
@@ -886,7 +902,7 @@ private:
     unsigned int timestep;
 
     // Kernel
-    std::string mainKernel{ "CumulantK17Comp" };
+    std::string mainKernel{ "CumulantK17CompChim" };
     bool multiKernelOn{ false };
     std::vector<int> multiKernelLevel;
     std::vector<std::string> multiKernel;
@@ -966,6 +982,7 @@ public:
     bool getUseStreams();
     std::unique_ptr<CudaStreamManager> &getStreamManager();
     bool getKernelNeedsFluidNodeIndicesToRun();
+    void setKernelNeedsFluidNodeIndicesToRun(bool  kernelNeedsFluidNodeIndicesToRun);
 
     void initProcessNeighborsAfterFtoCX(int level);
     void initProcessNeighborsAfterFtoCY(int level);

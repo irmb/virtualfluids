@@ -84,7 +84,7 @@ void multipleLevel(const std::string& configPath)
     vf::basics::ConfigurationFile config;
     config.load(configPath);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////^
-    SPtr<Parameter> para = std::make_shared<Parameter>(config, communicator.getNummberOfProcess(), communicator.getPID());
+    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNummberOfProcess(), communicator.getPID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -152,13 +152,11 @@ void multipleLevel(const std::string& configPath)
 
     para->setOutputPrefix( simulationName );
 
-    para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
-
     para->setPrintFiles(true);
 
     para->setForcing(pressureGradientLB, 0, 0);
-    para->setVelocity(velocityLB);
-    para->setViscosity(viscosityLB);
+    para->setVelocityLB(velocityLB);
+    para->setViscosityLB(viscosityLB);
     para->setVelocityRatio( dx / dt );
     para->setViscosityRatio( dx*dx/dt );
     para->setDensityRatio( 1.0 );
@@ -170,12 +168,12 @@ void multipleLevel(const std::string& configPath)
 
     para->setIsBodyForce( config.getValue<bool>("bodyForce") );
 
-    para->setTStartOut(uint(tStartOut/dt) );
-    para->setTOut( uint(tOut/dt) );
-    para->setTEnd( uint(tEnd/dt) );
+    para->setTimestepStartOut(uint(tStartOut/dt) );
+    para->setTimestepOut( uint(tOut/dt) );
+    para->setTimestepEnd( uint(tEnd/dt) );
 
-    // para->setTOut( 100 );
-    // para->setTEnd( 100000 );
+    // para->setTimestepOut( 100 );
+    // para->setTimestepEnd( 100000 );
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -205,7 +203,7 @@ void multipleLevel(const std::string& configPath)
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)0.0;
         vx  = (u_star/0.4 * log(coordZ/z0) + 2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1))  * dt / dx;
-        vy  =  2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1)  * dt / dx;
+        vy  = 2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1)  * dt / dx;
         vz  = 8.0*u_star/0.4*(sin(cPi*8.0*coordY/H)*sin(cPi*8.0*coordZ/H)+sin(cPi*8.0*coordX/L_x))/(pow(L_z/2.0-coordZ, c2o1)+c1o1) * dt / dx;
     });
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

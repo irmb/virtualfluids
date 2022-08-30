@@ -8,7 +8,7 @@
 
 using namespace vf::lbm::constant;
 
-extern "C" __host__ __device__ __forceinline__ void calcDerivatives(const uint& k, uint& kM, uint& kP, uint* typeOfGridNode, real* vx, real* vy, real* vz, real& dvx, real& dvy, real& dvz)
+__host__ __device__ __forceinline__ void calcDerivatives(const uint& k, uint& kM, uint& kP, uint* typeOfGridNode, real* vx, real* vy, real* vz, real& dvx, real& dvy, real& dvz)
 {
     bool fluidP = (typeOfGridNode[kP] == GEO_FLUID);
     bool fluidM = (typeOfGridNode[kM] == GEO_FLUID);
@@ -19,7 +19,7 @@ extern "C" __host__ __device__ __forceinline__ void calcDerivatives(const uint& 
     dvz = ((fluidP ? vz[kP] : vz[k])-(fluidM ? vz[kM] : vz[k]))*div;
 }
 
-extern "C" __global__ void calcAMD(real* vx,
+__global__ void calcAMD(real* vx,
                         real* vy,
                         real* vz,
                         real* turbulentViscosity,
@@ -72,7 +72,7 @@ extern "C" __global__ void calcAMD(real* vx,
     turbulentViscosity[k] = max(c0o1,-SGSConstant*enumerator)/denominator;
 }
 
-extern "C" void calcTurbulentViscosityAMD(Parameter* para, int level)
+void calcTurbulentViscosityAMD(Parameter* para, int level)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, para->getParH(level)->numberOfNodes);
     calcAMD<<<grid.grid, grid.threads>>>(

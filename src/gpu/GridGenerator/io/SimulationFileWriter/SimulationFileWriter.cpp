@@ -37,7 +37,6 @@
 #include <iomanip>
 #include <omp.h>
 #include <cmath>
-#include <stdint.h>
 
 #include "Core/Timer/Timer.h"
 
@@ -56,7 +55,7 @@ using namespace vf::gpu;
 /*#################################################################################*/
 /*---------------------------------public methods----------------------------------*/
 /*---------------------------------------------------------------------------------*/
-void SimulationFileWriter::write(std::string folder, SPtr<GridBuilder> builder, FILEFORMAT format)
+void SimulationFileWriter::write(const std::string& folder, SPtr<GridBuilder> builder, FILEFORMAT format)
 {
     SimulationFileWriter::folder = folder;
 
@@ -133,7 +132,7 @@ void SimulationFileWriter::openFiles(SPtr<GridBuilder> builder)
     qNames.push_back(path + simulationFileNames::bottomBoundaryQ);
     qNames.push_back(path + simulationFileNames::frontBoundaryQ);
     qNames.push_back(path + simulationFileNames::backBoundaryQ);
-	qNames.push_back(path + simulationFileNames::geomBoundaryQ);
+    qNames.push_back(path + simulationFileNames::geomBoundaryQ);
 
     std::vector<std::string> valueNames;
     valueNames.push_back(path + simulationFileNames::inletBoundaryValues);
@@ -142,7 +141,7 @@ void SimulationFileWriter::openFiles(SPtr<GridBuilder> builder)
     valueNames.push_back(path + simulationFileNames::bottomBoundaryValues);
     valueNames.push_back(path + simulationFileNames::frontBoundaryValues);
     valueNames.push_back(path + simulationFileNames::backBoundaryValues);
-	valueNames.push_back(path + simulationFileNames::geomBoundaryValues);
+    valueNames.push_back(path + simulationFileNames::geomBoundaryValues);
 
     for (int i = 0; i < QFILES; i++){
         SPtr<std::ofstream> outQ(new std::ofstream);
@@ -232,7 +231,7 @@ void SimulationFileWriter::writeLevelSize(uint numberOfNodes, FILEFORMAT format)
     const std::string zeroGeo = "16 ";
 
     if (format == FILEFORMAT::BINARY)
-	{
+    {
         //const uint zeroIndex = 0;
         //const uint zeroGeo   = 16;
 
@@ -258,7 +257,7 @@ void SimulationFileWriter::writeLevelSize(uint numberOfNodes, FILEFORMAT format)
         geoVecFile      << numberOfNodes << "\n" << zeroGeo  ;
     }
     else 
-	{
+    {
         xCoordFile      << numberOfNodes << "\n" << zeroIndex << "\n";
         yCoordFile      << numberOfNodes << "\n" << zeroIndex << "\n";
         zCoordFile      << numberOfNodes << "\n" << zeroIndex << "\n";
@@ -319,7 +318,7 @@ void SimulationFileWriter::writeCoordsNeighborsGeo(SPtr<GridBuilder> builder, in
     grid->transIndexToCoords(index, x, y, z);
 
     if (format == FILEFORMAT::BINARY)
-	{
+    {
         double tmpX = (double)x;
         double tmpY = (double)y;
         double tmpZ = (double)z;
@@ -342,7 +341,7 @@ void SimulationFileWriter::writeCoordsNeighborsGeo(SPtr<GridBuilder> builder, in
         geoVecFile.write((char*)&type, sizeof(unsigned int));
     }
     else 
-	{
+    {
         xCoordFile << x << "\n";
         yCoordFile << y << "\n";
         zCoordFile << z << "\n";
@@ -446,7 +445,7 @@ void SimulationFileWriter::writeGridInterfaceOffsetToFile(uint numberOfNodes, st
 std::vector<std::vector<std::vector<real> > > SimulationFileWriter::createBCVectors(SPtr<Grid> grid)
 {
     std::vector<std::vector<std::vector<real> > > qs;
-	qs.resize(QFILES);
+    qs.resize(QFILES);
     for (uint i = 0; i < grid->getSize(); i++)
     {
         real x, y, z;
@@ -472,9 +471,9 @@ void SimulationFileWriter::addShortQsToVector(int index, std::vector<std::vector
 
     for (int i = grid->getEndDirection(); i >= 0; i--)
     {
-		/*int qIndex = i * grid->getSize() + grid->getSparseIndex(index);
-		real q = grid->getDistribution()[qIndex];*/
-		real q = grid->getQValue(index, i);
+        /*int qIndex = i * grid->getSize() + grid->getSparseIndex(index);
+        real q = grid->getDistribution()[qIndex];*/
+        real q = grid->getQValue(index, i);
         if (q > 0) {
             //printf("Q%d (old:%d, new:%d), : %2.8f \n", i, coordsVec[index].matrixIndex, index, grid.d.f[i * grid.size + coordsVec[index].matrixIndex]);
             qKey += (uint32_t)pow(2, 26 - i);
@@ -499,10 +498,10 @@ void SimulationFileWriter::addQsToVector(int index, std::vector<std::vector<std:
     {
         //int qIndex = i * grid->getSize() + grid->getSparseIndex(index);
         //real q = grid->getDistribution()[qIndex];
-		real q = grid->getQValue(index, i);
+        real q = grid->getQValue(index, i);
         qNode.push_back(q);
-		if (q > 0)
-			printf("Q= %f; Index = %d \n", q, index);
+        if (q > 0)
+            printf("Q= %f; Index = %d \n", q, index);
             //qNode.push_back(q);
   //      else
   //          qNode.push_back(-1);
@@ -540,8 +539,8 @@ void SimulationFileWriter::writeBoundaryQsFile(SPtr<GridBuilder> builder)
   //  for (int rb = 0; rb < QFILES; rb++) {
   //      for (int index = 0; index < qFiles[rb].size(); index++) {
   //          //writeBoundary(qFiles[rb][index], rb);
-		//	writeBoundaryShort(qFiles[rb][index], rb);
-		//}
+        //    writeBoundaryShort(qFiles[rb][index], rb);
+        //}
   //  }
 
     SideType sides[] = {SideType::MX, SideType::PX, SideType::PZ, SideType::MZ, SideType::MY, SideType::PY, SideType::GEOMETRY};
@@ -593,18 +592,18 @@ void SimulationFileWriter::writeBoundary(std::vector<real> boundary, int rb)
 
 void SimulationFileWriter::writeBoundaryShort(std::vector<real> boundary, int rb)
 {
-	uint32_t key = *((uint32_t*)&boundary[boundary.size() - 2]);
-	int index = (int)boundary[boundary.size() - 1];
+    uint32_t key = *((uint32_t*)&boundary[boundary.size() - 2]);
+    int index = (int)boundary[boundary.size() - 1];
 
-	*qStreams[rb] << (index + 1) << " " << key;
+    *qStreams[rb] << (index + 1) << " " << key;
 
-	for (std::size_t i = 0; i < boundary.size() - 2; i++) {
-		*qStreams[rb] << " " << std::fixed << std::setprecision(16) << boundary[i];
-	}
-	*valueStreams[rb] << (index + 1) << " 0 0 0";
+    for (std::size_t i = 0; i < boundary.size() - 2; i++) {
+        *qStreams[rb] << " " << std::fixed << std::setprecision(16) << boundary[i];
+    }
+    *valueStreams[rb] << (index + 1) << " 0 0 0";
 
-	*qStreams[rb] << "\n";
-	*valueStreams[rb] << "\n";
+    *qStreams[rb] << "\n";
+    *valueStreams[rb] << "\n";
 }
 
 void SimulationFileWriter::writeBoundaryShort(SPtr<Grid> grid, SPtr<gg::BoundaryCondition> boundaryCondition, uint side)

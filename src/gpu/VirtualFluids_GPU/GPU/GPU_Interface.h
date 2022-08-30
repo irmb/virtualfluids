@@ -21,7 +21,7 @@ class Parameter;
 //////////////////////////////////////////////////////////////////////////
 //Kernel
 //////////////////////////////////////////////////////////////////////////
-extern "C" void KernelCas27(unsigned int grid_nx, 
+void KernelCas27(unsigned int grid_nx, 
                             unsigned int grid_ny, 
                             unsigned int grid_nz, 
                             real s9,
@@ -33,7 +33,7 @@ extern "C" void KernelCas27(unsigned int grid_nx,
                             int size_Mat,
                             bool EvenOrOdd);
 
-extern "C" void KernelCasSP27(unsigned int numberOfThreads, 
+void KernelCasSP27(unsigned int numberOfThreads, 
                               real s9,
                               unsigned int* bcMatD,
                               unsigned int* neighborX,
@@ -43,7 +43,7 @@ extern "C" void KernelCasSP27(unsigned int numberOfThreads,
                               int size_Mat,
                               bool EvenOrOdd);
 
-extern "C" void KernelCasSPMS27(unsigned int numberOfThreads, 
+void KernelCasSPMS27(unsigned int numberOfThreads, 
                                 real s9,
                                 unsigned int* bcMatD,
                                 unsigned int* neighborX,
@@ -53,7 +53,7 @@ extern "C" void KernelCasSPMS27(unsigned int numberOfThreads,
                                 int size_Mat,
                                 bool EvenOrOdd);
 
-extern "C" void KernelCasSPMSOHM27( unsigned int numberOfThreads, 
+void KernelCasSPMSOHM27( unsigned int numberOfThreads, 
                                    real s9,
                                    unsigned int* bcMatD,
                                    unsigned int* neighborX,
@@ -63,7 +63,7 @@ extern "C" void KernelCasSPMSOHM27( unsigned int numberOfThreads,
                                    int size_Mat,
                                    bool EvenOrOdd);
 
-extern "C" void KernelKumCompSRTSP27(
+void KernelKumCompSRTSP27(
 	unsigned int numberOfThreads,
 	real omega,
 	unsigned int* bcMatD,
@@ -76,7 +76,7 @@ extern "C" void KernelKumCompSRTSP27(
 	real* forces,
 	bool EvenOrOdd);
 
-extern "C" void KernelCumulantD3Q27All4(unsigned int numberOfThreads,
+void KernelCumulantD3Q27All4(unsigned int numberOfThreads,
 									    real s9,
 									    unsigned int* bcMatD,
 									    unsigned int* neighborX,
@@ -88,7 +88,7 @@ extern "C" void KernelCumulantD3Q27All4(unsigned int numberOfThreads,
 									    real* forces,
 									    bool EvenOrOdd);
 
-extern "C" void KernelKumAA2016CompBulkSP27(unsigned int numberOfThreads, 
+void KernelKumAA2016CompBulkSP27(unsigned int numberOfThreads, 
 											real s9,
 											unsigned int* bcMatD,
 											unsigned int* neighborX,
@@ -101,7 +101,7 @@ extern "C" void KernelKumAA2016CompBulkSP27(unsigned int numberOfThreads,
 											real* forces,
 											bool EvenOrOdd);
 
-extern "C" void KernelKum1hSP27(    unsigned int numberOfThreads, 
+void KernelKum1hSP27(    unsigned int numberOfThreads, 
 									real omega,
 									real deltaPhi,
 									real angularVelocity,
@@ -116,7 +116,7 @@ extern "C" void KernelKum1hSP27(    unsigned int numberOfThreads,
 									int size_Mat,
 									bool EvenOrOdd);
 
-extern "C" void KernelCascadeSP27(unsigned int numberOfThreads, 
+void KernelCascadeSP27(unsigned int numberOfThreads, 
 								  real s9,
 								  unsigned int* bcMatD,
 								  unsigned int* neighborX,
@@ -126,7 +126,7 @@ extern "C" void KernelCascadeSP27(unsigned int numberOfThreads,
 								  int size_Mat,
 								  bool EvenOrOdd);
 
-extern "C" void KernelKumNewSP27(   unsigned int numberOfThreads, 
+void KernelKumNewSP27(   unsigned int numberOfThreads, 
 									real s9,
 									unsigned int* bcMatD,
 									unsigned int* neighborX,
@@ -137,7 +137,7 @@ extern "C" void KernelKumNewSP27(   unsigned int numberOfThreads,
 									bool EvenOrOdd);
 
 
-extern "C" void CumulantOnePreconditionedErrorDiffusionChimCompSP27(
+void CumulantOnePreconditionedErrorDiffusionChimCompSP27(
 	unsigned int numberOfThreads,
 	real s9,
 	unsigned int* bcMatD,
@@ -151,7 +151,7 @@ extern "C" void CumulantOnePreconditionedErrorDiffusionChimCompSP27(
 	real* forces,
 	bool EvenOrOdd);
 
-extern "C" void CumulantOnePreconditionedChimCompSP27(
+void CumulantOnePreconditionedChimCompSP27(
 	unsigned int numberOfThreads,
 	real s9,
 	unsigned int* bcMatD,
@@ -165,7 +165,7 @@ extern "C" void CumulantOnePreconditionedChimCompSP27(
 	real* forces,
 	bool EvenOrOdd);
 
-extern "C" void CumulantOneChimCompSP27(
+void CumulantOneChimCompSP27(
 	unsigned int numberOfThreads,
 	real s9,
 	unsigned int* bcMatD,
@@ -180,7 +180,7 @@ extern "C" void CumulantOneChimCompSP27(
 	bool EvenOrOdd);
 
 
-extern "C" void KernelKumIsoTestSP27(unsigned int numberOfThreads, 
+void KernelKumIsoTestSP27(unsigned int numberOfThreads, 
 									 real s9,
 									 unsigned int* bcMatD,
 									 unsigned int* neighborX,
@@ -193,7 +193,7 @@ extern "C" void KernelKumIsoTestSP27(unsigned int numberOfThreads,
 									 int size_Mat,
 									 bool EvenOrOdd);
 
-extern "C" void KernelKumCompSP27(  unsigned int numberOfThreads, 
+void KernelKumCompSP27(  unsigned int numberOfThreads, 
 									real s9,
 									unsigned int* bcMatD,
 									unsigned int* neighborX,
@@ -203,7 +203,7 @@ extern "C" void KernelKumCompSP27(  unsigned int numberOfThreads,
 									int size_Mat,
 									bool EvenOrOdd);
 
-extern "C" void KernelWaleBySoniMalavCumAA2016CompSP27(
+void KernelWaleBySoniMalavCumAA2016CompSP27(
 	unsigned int numberOfThreads,
 	real s9,
 	unsigned int* bcMatD,
@@ -222,7 +222,7 @@ extern "C" void KernelWaleBySoniMalavCumAA2016CompSP27(
 	real* forces,
 	bool EvenOrOdd);
 
-extern "C" void KernelPMCumOneCompSP27(unsigned int numberOfThreads, 
+void KernelPMCumOneCompSP27(unsigned int numberOfThreads, 
 									   real omega,
 									   unsigned int* neighborX,
 									   unsigned int* neighborY,
@@ -238,7 +238,7 @@ extern "C" void KernelPMCumOneCompSP27(unsigned int numberOfThreads,
 									   unsigned int* nodeIdsPorousMedia, 
 									   bool EvenOrOdd);
 
-extern "C" void KernelADincomp7(   unsigned int numberOfThreads, 
+void KernelADincomp7(   unsigned int numberOfThreads, 
 								   real diffusivity,
 								   unsigned int* bcMatD,
 								   unsigned int* neighborX,
@@ -249,7 +249,7 @@ extern "C" void KernelADincomp7(   unsigned int numberOfThreads,
 								   int size_Mat,
 								   bool EvenOrOdd);
 
-extern "C" void KernelADincomp27(   unsigned int numberOfThreads, 
+void KernelADincomp27(   unsigned int numberOfThreads, 
 									real diffusivity,
 									unsigned int* bcMatD,
 									unsigned int* neighborX,
@@ -260,7 +260,7 @@ extern "C" void KernelADincomp27(   unsigned int numberOfThreads,
 									int size_Mat,
 									bool EvenOrOdd);
 
-extern "C" void Init27(int myid,
+void Init27(int myid,
                        int numprocs,
                        real u0,
                        unsigned int* geoD,
@@ -276,7 +276,7 @@ extern "C" void Init27(int myid,
                        int level,
                        int maxlevel);
 
-extern "C" void InitNonEqPartSP27(unsigned int numberOfThreads,
+void InitNonEqPartSP27(unsigned int numberOfThreads,
                                   unsigned int* neighborX,
                                   unsigned int* neighborY,
                                   unsigned int* neighborZ,
@@ -292,7 +292,7 @@ extern "C" void InitNonEqPartSP27(unsigned int numberOfThreads,
                                   bool EvenOrOdd);
 
 
-extern "C" void InitThS7(  unsigned int numberOfThreads,
+void InitThS7(  unsigned int numberOfThreads,
                            unsigned int* neighborX,
                            unsigned int* neighborY,
                            unsigned int* neighborZ,
@@ -305,7 +305,7 @@ extern "C" void InitThS7(  unsigned int numberOfThreads,
                            real* DD7,
                            bool EvenOrOdd);
 
-extern "C" void InitADDev27( unsigned int numberOfThreads,
+void InitADDev27( unsigned int numberOfThreads,
                            unsigned int* neighborX,
                            unsigned int* neighborY,
                            unsigned int* neighborZ,
@@ -318,7 +318,7 @@ extern "C" void InitADDev27( unsigned int numberOfThreads,
                            real* DD27,
                            bool EvenOrOdd);
 
-extern "C" void PostProcessorF3_2018Fehlberg(
+void PostProcessorF3_2018Fehlberg(
 	unsigned int numberOfThreads,
 	real omega,
 	unsigned int* bcMatD,
@@ -336,7 +336,7 @@ extern "C" void PostProcessorF3_2018Fehlberg(
 	real* forces,
 	bool EvenOrOdd);
 
-extern "C" void CalcMac27( real* vxD,
+void CalcMac27( real* vxD,
                           real* vyD,
                           real* vzD,
                           real* rhoD,
@@ -351,7 +351,7 @@ extern "C" void CalcMac27( real* vxD,
                           real* DD,
                           bool isEvenTimestep);
 
-extern "C" void CalcMacSP27(real* vxD,
+void CalcMacSP27(real* vxD,
                             real* vyD,
                             real* vzD,
                             real* rhoD,
@@ -365,7 +365,7 @@ extern "C" void CalcMacSP27(real* vxD,
                             real* DD,
                             bool isEvenTimestep);
 
-extern "C" void CalcMacCompSP27(real* vxD,
+void CalcMacCompSP27(real* vxD,
 								real* vyD,
 								real* vzD,
 								real* rhoD,
@@ -379,7 +379,7 @@ extern "C" void CalcMacCompSP27(real* vxD,
 								real* DD,
 								bool isEvenTimestep);
 
-extern "C" void CalcMacThS7(  real* Conc,
+void CalcMacThS7(  real* Conc,
                               unsigned int* geoD,
                               unsigned int* neighborX,
                               unsigned int* neighborY,
@@ -389,7 +389,7 @@ extern "C" void CalcMacThS7(  real* Conc,
                               real* DD7,
                               bool isEvenTimestep);
 
-extern "C" void PlaneConcThS7(real* Conc,
+void PlaneConcThS7(real* Conc,
 							  int* kPC,
 							  unsigned int numberOfPointskPC,
 							  unsigned int* geoD,
@@ -401,7 +401,7 @@ extern "C" void PlaneConcThS7(real* Conc,
 							  real* DD7,
 							  bool isEvenTimestep);
 
-extern "C" void PlaneConcThS27(real* Conc,
+void PlaneConcThS27(real* Conc,
 							   int* kPC,
 							   unsigned int numberOfPointskPC,
 							   unsigned int* geoD,
@@ -413,7 +413,7 @@ extern "C" void PlaneConcThS27(real* Conc,
 							   real* DD27,
 							   bool isEvenTimestep);
 
-extern "C" void CalcConcentration27( unsigned int numberOfThreads,
+void CalcConcentration27( unsigned int numberOfThreads,
 	                                 real* Conc,
                                      unsigned int* geoD,
                                      unsigned int* neighborX,
@@ -423,7 +423,7 @@ extern "C" void CalcConcentration27( unsigned int numberOfThreads,
                                      real* DD27,
                                      bool isEvenTimestep);
 
-extern "C" void CalcMedSP27(  real* vxD,
+void CalcMedSP27(  real* vxD,
                               real* vyD,
                               real* vzD,
                               real* rhoD,
@@ -437,7 +437,7 @@ extern "C" void CalcMedSP27(  real* vxD,
                               real* DD,
                               bool isEvenTimestep);
 
-extern "C" void CalcMedCompSP27(real* vxD,
+void CalcMedCompSP27(real* vxD,
 								real* vyD,
 								real* vzD,
 								real* rhoD,
@@ -451,7 +451,7 @@ extern "C" void CalcMedCompSP27(real* vxD,
 								real* DD,
 								bool isEvenTimestep);
 
-extern "C" void CalcMedCompAD27(
+void CalcMedCompAD27(
 	real* vxD,
 	real* vyD,
 	real* vzD,
@@ -468,7 +468,7 @@ extern "C" void CalcMedCompAD27(
 	real* DD_AD,
 	bool isEvenTimestep);
 
-extern "C" void CalcMacMedSP27(  real* vxD,
+void CalcMacMedSP27(  real* vxD,
                                  real* vyD,
                                  real* vzD,
                                  real* rhoD,
@@ -482,7 +482,7 @@ extern "C" void CalcMacMedSP27(  real* vxD,
                                  unsigned int numberOfThreads, 
                                  bool isEvenTimestep);
 
-extern "C" void ResetMedianValuesSP27(
+void ResetMedianValuesSP27(
 	real* vxD,
 	real* vyD,
 	real* vzD,
@@ -492,7 +492,7 @@ extern "C" void ResetMedianValuesSP27(
 	unsigned int numberOfThreads,
 	bool isEvenTimestep);
 
-extern "C" void ResetMedianValuesAD27(
+void ResetMedianValuesAD27(
 	real* vxD,
 	real* vyD,
 	real* vzD,
@@ -503,7 +503,7 @@ extern "C" void ResetMedianValuesAD27(
 	unsigned int numberOfThreads,
 	bool isEvenTimestep);
 
-extern "C" void Calc2ndMomentsIncompSP27(real* kxyFromfcNEQ,
+void Calc2ndMomentsIncompSP27(real* kxyFromfcNEQ,
 										 real* kyzFromfcNEQ,
 										 real* kxzFromfcNEQ,
 										 real* kxxMyyFromfcNEQ,
@@ -517,7 +517,7 @@ extern "C" void Calc2ndMomentsIncompSP27(real* kxyFromfcNEQ,
 										 real* DD,
 										 bool isEvenTimestep);
 
-extern "C" void Calc2ndMomentsCompSP27(real* kxyFromfcNEQ,
+void Calc2ndMomentsCompSP27(real* kxyFromfcNEQ,
 									   real* kyzFromfcNEQ,
 									   real* kxzFromfcNEQ,
 									   real* kxxMyyFromfcNEQ,
@@ -531,7 +531,7 @@ extern "C" void Calc2ndMomentsCompSP27(real* kxyFromfcNEQ,
 									   real* DD,
 									   bool isEvenTimestep);
 
-extern "C" void Calc3rdMomentsIncompSP27(real* CUMbbb,
+void Calc3rdMomentsIncompSP27(real* CUMbbb,
 										 real* CUMabc,
 										 real* CUMbac,
 										 real* CUMbca,
@@ -547,7 +547,7 @@ extern "C" void Calc3rdMomentsIncompSP27(real* CUMbbb,
 										 real* DD,
 										 bool isEvenTimestep);
 
-extern "C" void Calc3rdMomentsCompSP27(real* CUMbbb,
+void Calc3rdMomentsCompSP27(real* CUMbbb,
 									   real* CUMabc,
 									   real* CUMbac,
 									   real* CUMbca,
@@ -563,7 +563,7 @@ extern "C" void Calc3rdMomentsCompSP27(real* CUMbbb,
 									   real* DD,
 									   bool isEvenTimestep);
 
-extern "C" void CalcHigherMomentsIncompSP27(real* CUMcbb,
+void CalcHigherMomentsIncompSP27(real* CUMcbb,
 											real* CUMbcb,
 											real* CUMbbc,
 											real* CUMcca,
@@ -582,7 +582,7 @@ extern "C" void CalcHigherMomentsIncompSP27(real* CUMcbb,
 											real* DD,
 											bool isEvenTimestep);
 
-extern "C" void CalcHigherMomentsCompSP27(real* CUMcbb,
+void CalcHigherMomentsCompSP27(real* CUMcbb,
 										  real* CUMbcb,
 										  real* CUMbbc,
 										  real* CUMcca,
@@ -601,7 +601,7 @@ extern "C" void CalcHigherMomentsCompSP27(real* CUMcbb,
 										  real* DD,
 										  bool isEvenTimestep);
 
-extern "C" void LBCalcMeasurePoints27(real* vxMP,
+void LBCalcMeasurePoints27(real* vxMP,
                                       real* vyMP,
                                       real* vzMP,
                                       real* rhoMP,
@@ -618,7 +618,7 @@ extern "C" void LBCalcMeasurePoints27(real* vxMP,
                                       unsigned int numberOfThreads, 
                                       bool isEvenTimestep);
 
-extern "C" void BcPress27(int nx, 
+void BcPress27(int nx, 
                           int ny, 
                           int tz, 
                           unsigned int grid_nx, 
@@ -631,7 +631,7 @@ extern "C" void BcPress27(int nx,
                           unsigned int size_Mat, 
                           bool isEvenTimestep);
 
-extern "C" void BcVel27(int nx, 
+void BcVel27(int nx, 
                         int ny, 
                         int nz, 
                         int itz, 
@@ -647,11 +647,11 @@ extern "C" void BcVel27(int nx,
                         real u0x, 
                         real om);
 
-extern "C" void QDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
+void QDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
-extern "C" void QDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
+void QDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
-extern "C" void QDevCompThinWalls27(unsigned int numberOfThreads,
+void QDevCompThinWalls27(unsigned int numberOfThreads,
 									real* DD, 
 									int* k_Q, 
 									real* QQ,
@@ -665,9 +665,9 @@ extern "C" void QDevCompThinWalls27(unsigned int numberOfThreads,
 									unsigned int size_Mat, 
 									bool isEvenTimestep);
 
-extern "C" void QDev3rdMomentsComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
+void QDev3rdMomentsComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
-extern "C" void QDevIncompHighNu27(  unsigned int numberOfThreads,
+void QDevIncompHighNu27(  unsigned int numberOfThreads,
 									 real* DD, 
 									 int* k_Q, 
 									 real* QQ,
@@ -679,7 +679,7 @@ extern "C" void QDevIncompHighNu27(  unsigned int numberOfThreads,
 									 unsigned int size_Mat, 
 									 bool isEvenTimestep);
 
-extern "C" void QDevCompHighNu27(unsigned int numberOfThreads,
+void QDevCompHighNu27(unsigned int numberOfThreads,
 								 real* DD, 
 								 int* k_Q, 
 								 real* QQ,
@@ -691,9 +691,9 @@ extern "C" void QDevCompHighNu27(unsigned int numberOfThreads,
 								 unsigned int size_Mat, 
 								 bool isEvenTimestep);
 
-extern "C" void QVelDevicePlainBB27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
+void QVelDevicePlainBB27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 	
-extern "C" void QVelDeviceCouette27(unsigned int numberOfThreads,
+void QVelDeviceCouette27(unsigned int numberOfThreads,
 									real* vx,
 									real* vy,
 									real* vz,
@@ -708,7 +708,7 @@ extern "C" void QVelDeviceCouette27(unsigned int numberOfThreads,
 									unsigned int size_Mat, 
 									bool isEvenTimestep);
 
-extern "C" void QVelDevice1h27( unsigned int numberOfThreads,
+void QVelDevice1h27( unsigned int numberOfThreads,
 								int nx,
 								int ny,
 								real* vx,
@@ -730,9 +730,9 @@ extern "C" void QVelDevice1h27( unsigned int numberOfThreads,
 								unsigned int size_Mat, 
 								bool isEvenTimestep);
 
-extern "C" void QVelDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
+void QVelDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
-extern "C" void QVelDevCompPlusSlip27(unsigned int numberOfThreads,
+void QVelDevCompPlusSlip27(unsigned int numberOfThreads,
 									  real* vx,
 									  real* vy,
 									  real* vz,
@@ -747,9 +747,9 @@ extern "C" void QVelDevCompPlusSlip27(unsigned int numberOfThreads,
 									  unsigned int size_Mat, 
 									  bool isEvenTimestep);
 
-extern "C" void QVelDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
+void QVelDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
-extern "C" void QVelDevCompThinWalls27(unsigned int numberOfThreads,
+void QVelDevCompThinWalls27(unsigned int numberOfThreads,
 							           real* vx,
 							           real* vy,
 							           real* vz,
@@ -766,9 +766,9 @@ extern "C" void QVelDevCompThinWalls27(unsigned int numberOfThreads,
 							           unsigned int size_Mat, 
 							           bool isEvenTimestep);
 
-extern "C" void QVelDevCompZeroPress27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
+void QVelDevCompZeroPress27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
-extern "C" void QVelDevIncompHighNu27(  unsigned int numberOfThreads,
+void QVelDevIncompHighNu27(  unsigned int numberOfThreads,
 										real* vx,
 										real* vy,
 										real* vz,
@@ -783,7 +783,7 @@ extern "C" void QVelDevIncompHighNu27(  unsigned int numberOfThreads,
 										unsigned int size_Mat, 
 										bool isEvenTimestep);
 
-extern "C" void QVelDevCompHighNu27(unsigned int numberOfThreads,
+void QVelDevCompHighNu27(unsigned int numberOfThreads,
 									real* vx,
 									real* vy,
 									real* vz,
@@ -798,7 +798,7 @@ extern "C" void QVelDevCompHighNu27(unsigned int numberOfThreads,
 									unsigned int size_Mat, 
 									bool isEvenTimestep);
 
-extern "C" void QVeloDevEQ27(unsigned int numberOfThreads,
+void QVeloDevEQ27(unsigned int numberOfThreads,
 							 real* VeloX,
 							 real* VeloY,
 							 real* VeloZ,
@@ -812,7 +812,7 @@ extern "C" void QVeloDevEQ27(unsigned int numberOfThreads,
 							 unsigned int size_Mat, 
 							 bool isEvenTimestep);
 
-extern "C" void QVeloStreetDevEQ27(
+void QVeloStreetDevEQ27(
 	uint  numberOfThreads,
 	real* veloXfraction,
 	real* veloYfraction,
@@ -827,13 +827,13 @@ extern "C" void QVeloStreetDevEQ27(
 	uint  size_Mat,
 	bool  isEvenTimestep);
 
-extern "C" void QSlipDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
+void QSlipDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
-extern "C" void QSlipDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
+void QSlipDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
-extern "C" void QSlipDevCompTurbulentViscosity27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
+void QSlipDevCompTurbulentViscosity27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
-extern "C" void QSlipGeomDevComp27( unsigned int numberOfThreads,
+void QSlipGeomDevComp27( unsigned int numberOfThreads,
 									real* DD, 
 									int* k_Q, 
 									real* QQ,
@@ -848,7 +848,7 @@ extern "C" void QSlipGeomDevComp27( unsigned int numberOfThreads,
 									unsigned int size_Mat, 
 									bool isEvenTimestep);
 
-extern "C" void QSlipNormDevComp27(unsigned int numberOfThreads,
+void QSlipNormDevComp27(unsigned int numberOfThreads,
 								   real* DD, 
 								   int* k_Q, 
 								   real* QQ,
@@ -863,13 +863,13 @@ extern "C" void QSlipNormDevComp27(unsigned int numberOfThreads,
 								   unsigned int size_Mat, 
 								   bool isEvenTimestep);
 
-extern "C" void QStressDevComp27(Parameter *para,  QforBoundaryConditions* boundaryCondition, const int level);
+void QStressDevComp27(Parameter *para,  QforBoundaryConditions* boundaryCondition, const int level);
 
-extern "C" void BBStressDev27(Parameter *para,  QforBoundaryConditions* boundaryCondition, const int level);
+void BBStressDev27(Parameter *para,  QforBoundaryConditions* boundaryCondition, const int level);
 
-extern "C" void QPressDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
+void QPressDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
-extern "C" void QPressDevFixBackflow27(unsigned int numberOfThreads,
+void QPressDevFixBackflow27(unsigned int numberOfThreads,
                                        real* rhoBC,
                                        real* DD, 
                                        int* k_Q, 
@@ -881,7 +881,7 @@ extern "C" void QPressDevFixBackflow27(unsigned int numberOfThreads,
                                        unsigned int size_Mat, 
                                        bool isEvenTimestep);
 
-extern "C" void QPressDevDirDepBot27(unsigned int numberOfThreads,
+void QPressDevDirDepBot27(unsigned int numberOfThreads,
                                      real* rhoBC,
                                      real* DD, 
                                      int* k_Q, 
@@ -893,12 +893,13 @@ extern "C" void QPressDevDirDepBot27(unsigned int numberOfThreads,
                                      unsigned int size_Mat, 
                                      bool isEvenTimestep);
 
-extern "C" void QPressNoRhoDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
+void QPressNoRhoDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
+
 void QPressZeroRhoOutflowDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
-extern "C" void QInflowScaleByPressDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
+void QInflowScaleByPressDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
-extern "C" void QPressDevOld27(unsigned int numberOfThreads,
+void QPressDevOld27(unsigned int numberOfThreads,
                                real* rhoBC,
                                real* DD, 
                                int* k_Q, 
@@ -911,13 +912,13 @@ extern "C" void QPressDevOld27(unsigned int numberOfThreads,
                                unsigned int size_Mat, 
                                bool isEvenTimestep);
 
-extern "C" void QPressDevIncompNEQ27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
+void QPressDevIncompNEQ27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
-extern "C" void QPressDevNEQ27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
+void QPressDevNEQ27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
-extern "C" void QPressDevEQZ27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
+void QPressDevEQZ27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
-extern "C" void QPressDevZero27(unsigned int numberOfThreads,
+void QPressDevZero27(unsigned int numberOfThreads,
                                 real* DD, 
                                 int* k_Q, 
                                 unsigned int numberOfBCnodes, 
@@ -927,7 +928,7 @@ extern "C" void QPressDevZero27(unsigned int numberOfThreads,
                                 unsigned int size_Mat, 
                                 bool isEvenTimestep);
 
-extern "C" void QPressDevFake27(   unsigned int numberOfThreads,
+void QPressDevFake27(   unsigned int numberOfThreads,
 								   real* rhoBC,
 								   real* DD, 
 								   int* k_Q, 
@@ -940,9 +941,9 @@ extern "C" void QPressDevFake27(   unsigned int numberOfThreads,
 								   unsigned int size_Mat, 
 								   bool isEvenTimestep);
 
-extern "C" void BBDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
+void BBDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
-extern "C" void QPressDev27_IntBB(  unsigned int numberOfThreads,
+void QPressDev27_IntBB(  unsigned int numberOfThreads,
 									real* rho,
 									real* DD, 
 									int* k_Q, 
@@ -955,7 +956,7 @@ extern "C" void QPressDev27_IntBB(  unsigned int numberOfThreads,
 									unsigned int size_Mat, 
 									bool isEvenTimestep);
 
-extern "C" void QPressDevAntiBB27(  unsigned int numberOfThreads,
+void QPressDevAntiBB27(  unsigned int numberOfThreads,
 								  real* rhoBC,
 								  real* vx,
 								  real* vy,
@@ -971,7 +972,7 @@ extern "C" void QPressDevAntiBB27(  unsigned int numberOfThreads,
 								  unsigned int size_Mat, 
 								  bool isEvenTimestep);
 
-extern "C" void PressSchlaffer27(unsigned int numberOfThreads,
+void PressSchlaffer27(unsigned int numberOfThreads,
                                  real* rhoBC,
                                  real* DD,
                                  real* vx0,
@@ -988,7 +989,7 @@ extern "C" void PressSchlaffer27(unsigned int numberOfThreads,
                                  unsigned int size_Mat, 
                                  bool isEvenTimestep);
 
-extern "C" void VelSchlaffer27(  unsigned int numberOfThreads,
+void VelSchlaffer27(  unsigned int numberOfThreads,
                                  int t,
                                  real* DD,
                                  real* vz0,
@@ -1003,7 +1004,7 @@ extern "C" void VelSchlaffer27(  unsigned int numberOfThreads,
                                  unsigned int size_Mat, 
                                  bool isEvenTimestep);
 
-extern "C" void QADDev7(unsigned int numberOfThreads,
+void QADDev7(unsigned int numberOfThreads,
                         real* DD, 
                         real* DD7,
                         real* temp,
@@ -1020,7 +1021,7 @@ extern "C" void QADDev7(unsigned int numberOfThreads,
 
 //////////////////////////////////////////////////////////////////////////
 //! \brief Advection Diffusion kernel
-extern "C" void FactorizedCentralMomentsAdvectionDiffusionDeviceKernel(
+void FactorizedCentralMomentsAdvectionDiffusionDeviceKernel(
 	uint numberOfThreads,
 	real omegaDiffusivity,
 	uint* typeOfGridNode,
@@ -1035,7 +1036,7 @@ extern "C" void FactorizedCentralMomentsAdvectionDiffusionDeviceKernel(
 
 //////////////////////////////////////////////////////////////////////////
 //! \brief defines the behavior of a slip-AD boundary condition
-extern "C" void ADSlipVelDevComp(
+void ADSlipVelDevComp(
 	uint numberOfThreads,
 	real * normalX,
 	real * normalY,
@@ -1052,7 +1053,7 @@ extern "C" void ADSlipVelDevComp(
 	uint size_Mat,
 	bool isEvenTimestep);
 	
-extern "C" void QADDirichletDev27( unsigned int numberOfThreads,
+void QADDirichletDev27( unsigned int numberOfThreads,
 								   real* DD, 
 								   real* DD27,
 								   real* temp,
@@ -1067,7 +1068,7 @@ extern "C" void QADDirichletDev27( unsigned int numberOfThreads,
 								   unsigned int size_Mat, 
 								   bool isEvenTimestep);
 
-extern "C" void QADBBDev27(  unsigned int numberOfThreads,
+void QADBBDev27(  unsigned int numberOfThreads,
 							 real* DD, 
 							 real* DD27,
 							 real* temp,
@@ -1082,7 +1083,7 @@ extern "C" void QADBBDev27(  unsigned int numberOfThreads,
 							 unsigned int size_Mat, 
 							 bool isEvenTimestep);
 
-extern "C" void QADVelDev7(unsigned int numberOfThreads,
+void QADVelDev7(unsigned int numberOfThreads,
                            real* DD, 
                            real* DD7,
                            real* temp,
@@ -1099,7 +1100,7 @@ extern "C" void QADVelDev7(unsigned int numberOfThreads,
                            bool isEvenTimestep);
 
 
-extern "C" void QADVelDev27(  unsigned int numberOfThreads,
+void QADVelDev27(  unsigned int numberOfThreads,
                               real* DD, 
                               real* DD27,
                               real* temp,
@@ -1115,7 +1116,7 @@ extern "C" void QADVelDev27(  unsigned int numberOfThreads,
                               unsigned int size_Mat, 
                               bool isEvenTimestep);
 
-extern "C" void QADPressDev7( unsigned int numberOfThreads,
+void QADPressDev7( unsigned int numberOfThreads,
                               real* DD, 
                               real* DD7,
                               real* temp,
@@ -1131,7 +1132,7 @@ extern "C" void QADPressDev7( unsigned int numberOfThreads,
                               unsigned int size_Mat, 
                               bool isEvenTimestep);
 
-extern "C" void QADPressDev27(unsigned int numberOfThreads,
+void QADPressDev27(unsigned int numberOfThreads,
                               real* DD, 
                               real* DD27,
                               real* temp,
@@ -1147,7 +1148,7 @@ extern "C" void QADPressDev27(unsigned int numberOfThreads,
                               unsigned int size_Mat, 
                               bool isEvenTimestep);
 
-extern "C" void QADPressNEQNeighborDev27(
+void QADPressNEQNeighborDev27(
 											unsigned int numberOfThreads,
 											real* DD,
 											real* DD27,
@@ -1161,7 +1162,7 @@ extern "C" void QADPressNEQNeighborDev27(
 											bool isEvenTimestep
 										);
 
-extern "C" void QNoSlipADincompDev7(unsigned int numberOfThreads,
+void QNoSlipADincompDev7(unsigned int numberOfThreads,
 									real* DD, 
 									real* DD7,
 									real* temp,
@@ -1176,7 +1177,7 @@ extern "C" void QNoSlipADincompDev7(unsigned int numberOfThreads,
 									unsigned int size_Mat, 
 									bool isEvenTimestep);
 
-extern "C" void QNoSlipADincompDev27(unsigned int numberOfThreads,
+void QNoSlipADincompDev27(unsigned int numberOfThreads,
 									 real* DD, 
 									 real* DD27,
 									 real* temp,
@@ -1191,7 +1192,7 @@ extern "C" void QNoSlipADincompDev27(unsigned int numberOfThreads,
 									 unsigned int size_Mat, 
 									 bool isEvenTimestep);
 
-extern "C" void QADVeloIncompDev7( unsigned int numberOfThreads,
+void QADVeloIncompDev7( unsigned int numberOfThreads,
 								   real* DD, 
 								   real* DD7,
 								   real* temp,
@@ -1208,7 +1209,7 @@ extern "C" void QADVeloIncompDev7( unsigned int numberOfThreads,
 								   bool isEvenTimestep);
 
 
-extern "C" void QADVeloIncompDev27( unsigned int numberOfThreads,
+void QADVeloIncompDev27( unsigned int numberOfThreads,
 									real* DD, 
 									real* DD27,
 									real* temp,
@@ -1224,7 +1225,7 @@ extern "C" void QADVeloIncompDev27( unsigned int numberOfThreads,
 									unsigned int size_Mat, 
 									bool isEvenTimestep);
 
-extern "C" void QADPressIncompDev7(  unsigned int numberOfThreads,
+void QADPressIncompDev7(  unsigned int numberOfThreads,
 									 real* DD, 
 									 real* DD7,
 									 real* temp,
@@ -1240,7 +1241,7 @@ extern "C" void QADPressIncompDev7(  unsigned int numberOfThreads,
 									 unsigned int size_Mat, 
 									 bool isEvenTimestep);
 
-extern "C" void QADPressIncompDev27(  unsigned int numberOfThreads,
+void QADPressIncompDev27(  unsigned int numberOfThreads,
 									  real* DD, 
 									  real* DD27,
 									  real* temp,
@@ -1256,7 +1257,7 @@ extern "C" void QADPressIncompDev27(  unsigned int numberOfThreads,
 									  unsigned int size_Mat, 
 									  bool isEvenTimestep);
 
-extern "C" void PropVelo(   unsigned int numberOfThreads,
+void PropVelo(   unsigned int numberOfThreads,
 							unsigned int* neighborX,
 							unsigned int* neighborY,
 							unsigned int* neighborZ,
@@ -1271,7 +1272,7 @@ extern "C" void PropVelo(   unsigned int numberOfThreads,
 							real* DD,
 							bool EvenOrOdd);
 
-extern "C" void ScaleCF27( real* DC, 
+void ScaleCF27( real* DC, 
                            real* DF, 
                            unsigned int* neighborCX,
                            unsigned int* neighborCY,
@@ -1294,7 +1295,7 @@ extern "C" void ScaleCF27( real* DC,
                            unsigned int nyF,
                            unsigned int numberOfThreads);
 
-extern "C" void ScaleFC27( real* DC, 
+void ScaleFC27( real* DC, 
                            real* DF, 
                            unsigned int* neighborCX,
                            unsigned int* neighborCY,
@@ -1317,7 +1318,7 @@ extern "C" void ScaleFC27( real* DC,
                            unsigned int nyF,
                            unsigned int numberOfThreads);
 
-extern "C" void ScaleCFEff27(real* DC, 
+void ScaleCFEff27(real* DC, 
                              real* DF, 
                              unsigned int* neighborCX,
                              unsigned int* neighborCY,
@@ -1341,7 +1342,7 @@ extern "C" void ScaleCFEff27(real* DC,
                              unsigned int numberOfThreads,
                              OffCF offCF);
 
-extern "C" void ScaleFCEff27(real* DC, 
+void ScaleFCEff27(real* DC, 
                              real* DF, 
                              unsigned int* neighborCX,
                              unsigned int* neighborCY,
@@ -1365,7 +1366,7 @@ extern "C" void ScaleFCEff27(real* DC,
                              unsigned int numberOfThreads,
                              OffFC offFC);
 
-extern "C" void ScaleCFLast27(real* DC, 
+void ScaleCFLast27(real* DC, 
                               real* DF, 
                               unsigned int* neighborCX,
                               unsigned int* neighborCY,
@@ -1389,7 +1390,7 @@ extern "C" void ScaleCFLast27(real* DC,
                               unsigned int numberOfThreads,
                               OffCF offCF);
 
-extern "C" void ScaleFCLast27(real* DC, 
+void ScaleFCLast27(real* DC, 
                               real* DF, 
                               unsigned int* neighborCX,
                               unsigned int* neighborCY,
@@ -1413,7 +1414,7 @@ extern "C" void ScaleFCLast27(real* DC,
                               unsigned int numberOfThreads,
                               OffFC offFC);
 
-extern "C" void ScaleCFpress27(real* DC, 
+void ScaleCFpress27(real* DC, 
                               real* DF, 
                               unsigned int* neighborCX,
                               unsigned int* neighborCY,
@@ -1437,7 +1438,7 @@ extern "C" void ScaleCFpress27(real* DC,
                               unsigned int numberOfThreads,
                               OffCF offCF);
 
-extern "C" void ScaleFCpress27(  real* DC, 
+void ScaleFCpress27(  real* DC, 
                                  real* DF, 
                                  unsigned int* neighborCX,
                                  unsigned int* neighborCY,
@@ -1461,7 +1462,7 @@ extern "C" void ScaleFCpress27(  real* DC,
                                  unsigned int numberOfThreads,
                                  OffFC offFC);
 
-extern "C" void ScaleCF_Fix_27(real* DC, 
+void ScaleCF_Fix_27(real* DC, 
                               real* DF, 
                               unsigned int* neighborCX,
                               unsigned int* neighborCY,
@@ -1485,7 +1486,7 @@ extern "C" void ScaleCF_Fix_27(real* DC,
                               unsigned int numberOfThreads,
                               OffCF offCF);
 
-extern "C" void ScaleCF_Fix_comp_27(   real* DC, 
+void ScaleCF_Fix_comp_27(   real* DC, 
 									   real* DF, 
 									   unsigned int* neighborCX,
 									   unsigned int* neighborCY,
@@ -1509,7 +1510,7 @@ extern "C" void ScaleCF_Fix_comp_27(   real* DC,
 									   unsigned int numberOfThreads,
 									   OffCF offCF);
 
-extern "C" void ScaleCF_0817_comp_27(  real* DC, 
+void ScaleCF_0817_comp_27(  real* DC, 
 									   real* DF, 
 									   unsigned int* neighborCX,
 									   unsigned int* neighborCY,
@@ -1534,7 +1535,7 @@ extern "C" void ScaleCF_0817_comp_27(  real* DC,
 									   OffCF offCF,
 									   CUstream_st* stream);
 
-extern "C" void ScaleCF_comp_D3Q27F3_2018(	real* DC,
+void ScaleCF_comp_D3Q27F3_2018(	real* DC,
 											real* DF,
 											real* G6, 
 											unsigned int* neighborCX,
@@ -1559,7 +1560,7 @@ extern "C" void ScaleCF_comp_D3Q27F3_2018(	real* DC,
 											unsigned int numberOfThreads,
 											OffCF offCF);
 
-extern "C" void ScaleCF_comp_D3Q27F3(real* DC,
+void ScaleCF_comp_D3Q27F3(real* DC,
 									 real* DF,
 									 real* G6, 
 									 unsigned int* neighborCX,
@@ -1585,7 +1586,7 @@ extern "C" void ScaleCF_comp_D3Q27F3(real* DC,
 									 OffCF offCF,
 									 CUstream_st *stream);
 
-extern "C" void ScaleCF_staggered_time_comp_27( real* DC, 
+void ScaleCF_staggered_time_comp_27( real* DC, 
 												real* DF, 
 												unsigned int* neighborCX,
 												unsigned int* neighborCY,
@@ -1609,7 +1610,7 @@ extern "C" void ScaleCF_staggered_time_comp_27( real* DC,
 												unsigned int numberOfThreads,
 												OffCF offCF);
 
-extern "C" void ScaleCF_RhoSq_comp_27(  real* DC, 
+void ScaleCF_RhoSq_comp_27(  real* DC, 
 										real* DF, 
 										unsigned int* neighborCX,
 										unsigned int* neighborCY,
@@ -1634,7 +1635,7 @@ extern "C" void ScaleCF_RhoSq_comp_27(  real* DC,
 										OffCF offCF,
                                         CUstream_st *stream);
 
-extern "C" void ScaleCF_RhoSq_3rdMom_comp_27( real* DC, 
+void ScaleCF_RhoSq_3rdMom_comp_27( real* DC, 
 											  real* DF, 
 											  unsigned int* neighborCX,
 											  unsigned int* neighborCY,
@@ -1659,7 +1660,7 @@ extern "C" void ScaleCF_RhoSq_3rdMom_comp_27( real* DC,
 											  OffCF offCF,
 											  CUstream_st *stream);
 
-extern "C" void ScaleCF_AA2016_comp_27( real* DC, 
+void ScaleCF_AA2016_comp_27( real* DC, 
 										real* DF, 
 										unsigned int* neighborCX,
 										unsigned int* neighborCY,
@@ -1684,7 +1685,7 @@ extern "C" void ScaleCF_AA2016_comp_27( real* DC,
 										OffCF offCF,
 										CUstream_st *stream);
 
-extern "C" void ScaleCF_NSPress_27(real* DC, 
+void ScaleCF_NSPress_27(real* DC, 
 								  real* DF, 
 								  unsigned int* neighborCX,
 								  unsigned int* neighborCY,
@@ -1708,7 +1709,7 @@ extern "C" void ScaleCF_NSPress_27(real* DC,
 								  unsigned int numberOfThreads,
 								  OffCF offCF);
 
-extern "C" void ScaleFC_Fix_27(  real* DC, 
+void ScaleFC_Fix_27(  real* DC, 
                                  real* DF, 
                                  unsigned int* neighborCX,
                                  unsigned int* neighborCY,
@@ -1732,7 +1733,7 @@ extern "C" void ScaleFC_Fix_27(  real* DC,
                                  unsigned int numberOfThreads,
                                  OffFC offFC);
 
-extern "C" void ScaleFC_Fix_comp_27(   real* DC, 
+void ScaleFC_Fix_comp_27(   real* DC, 
 									   real* DF, 
 									   unsigned int* neighborCX,
 									   unsigned int* neighborCY,
@@ -1756,7 +1757,7 @@ extern "C" void ScaleFC_Fix_comp_27(   real* DC,
 									   unsigned int numberOfThreads,
 									   OffFC offFC);
 
-extern "C" void ScaleFC_0817_comp_27(  real* DC, 
+void ScaleFC_0817_comp_27(  real* DC, 
 									   real* DF, 
 									   unsigned int* neighborCX,
 									   unsigned int* neighborCY,
@@ -1781,7 +1782,7 @@ extern "C" void ScaleFC_0817_comp_27(  real* DC,
 									   OffFC offFC,
 									   CUstream_st *stream);
 
-extern "C" void ScaleFC_comp_D3Q27F3_2018(real* DC,
+void ScaleFC_comp_D3Q27F3_2018(real* DC,
 										  real* DF,
 										  real* G6,
 										  unsigned int* neighborCX,
@@ -1806,7 +1807,7 @@ extern "C" void ScaleFC_comp_D3Q27F3_2018(real* DC,
 										  unsigned int numberOfThreads,
 										  OffFC offFC);
 
-extern "C" void ScaleFC_comp_D3Q27F3( real* DC,
+void ScaleFC_comp_D3Q27F3( real* DC,
 									  real* DF,
 									  real* G6,
 									  unsigned int* neighborCX,
@@ -1832,7 +1833,7 @@ extern "C" void ScaleFC_comp_D3Q27F3( real* DC,
 									  OffFC offFC,
 									  CUstream_st *stream);
 
-extern "C" void ScaleFC_staggered_time_comp_27( real* DC, 
+void ScaleFC_staggered_time_comp_27( real* DC, 
 												real* DF, 
 												unsigned int* neighborCX,
 												unsigned int* neighborCY,
@@ -1856,7 +1857,7 @@ extern "C" void ScaleFC_staggered_time_comp_27( real* DC,
 												unsigned int numberOfThreads,
 												OffFC offFC);
 
-extern "C" void ScaleFC_RhoSq_comp_27(  real* DC, 
+void ScaleFC_RhoSq_comp_27(  real* DC, 
 										real* DF, 
 										unsigned int* neighborCX,
 										unsigned int* neighborCY,
@@ -1881,7 +1882,7 @@ extern "C" void ScaleFC_RhoSq_comp_27(  real* DC,
 	                                    OffFC offFC,
                                         CUstream_st *stream);
 
-extern "C" void ScaleFC_RhoSq_3rdMom_comp_27( real* DC, 
+void ScaleFC_RhoSq_3rdMom_comp_27( real* DC, 
 											  real* DF, 
 											  unsigned int* neighborCX,
 											  unsigned int* neighborCY,
@@ -1906,7 +1907,7 @@ extern "C" void ScaleFC_RhoSq_3rdMom_comp_27( real* DC,
 											  OffFC offFC,
 											  CUstream_st *stream);
 
-extern "C" void ScaleFC_AA2016_comp_27( real* DC, 
+void ScaleFC_AA2016_comp_27( real* DC, 
 										real* DF, 
 										unsigned int* neighborCX,
 										unsigned int* neighborCY,
@@ -1931,7 +1932,7 @@ extern "C" void ScaleFC_AA2016_comp_27( real* DC,
 										OffFC offFC,
 										CUstream_st *stream);
 
-extern "C" void ScaleFC_NSPress_27(  real* DC, 
+void ScaleFC_NSPress_27(  real* DC, 
 									 real* DF, 
 									 unsigned int* neighborCX,
 									 unsigned int* neighborCY,
@@ -1955,7 +1956,7 @@ extern "C" void ScaleFC_NSPress_27(  real* DC,
 									 unsigned int numberOfThreads,
 									 OffFC offFC);
 
-extern "C" void ScaleCFThS7(  real* DC, 
+void ScaleCFThS7(  real* DC, 
                               real* DF, 
                               real* DD7C, 
                               real* DD7F,
@@ -1975,7 +1976,7 @@ extern "C" void ScaleCFThS7(  real* DC,
                               real diffusivity_fine,
                               unsigned int numberOfThreads);
 
-extern "C" void ScaleFCThS7(  real* DC, 
+void ScaleFCThS7(  real* DC, 
                               real* DF,
                               real* DD7C, 
                               real* DD7F,
@@ -1995,7 +1996,7 @@ extern "C" void ScaleFCThS7(  real* DC,
                               real diffusivity_coarse,
                               unsigned int numberOfThreads);
 
-extern "C" void ScaleCFThSMG7(   real* DC, 
+void ScaleCFThSMG7(   real* DC, 
                                  real* DF,
                                  real* DD7C, 
                                  real* DD7F,
@@ -2016,7 +2017,7 @@ extern "C" void ScaleCFThSMG7(   real* DC,
                                  unsigned int numberOfThreads,
                                  OffCF offCF);
 
-extern "C" void ScaleFCThSMG7(real* DC, 
+void ScaleFCThSMG7(real* DC, 
                               real* DF,
                               real* DD7C, 
                               real* DD7F,
@@ -2037,7 +2038,7 @@ extern "C" void ScaleFCThSMG7(real* DC,
                               unsigned int numberOfThreads,
                               OffFC offFC);
 
-extern "C" void ScaleCFThS27( real* DC, 
+void ScaleCFThS27( real* DC, 
                               real* DF, 
                               real* DD27C, 
                               real* DD27F,
@@ -2058,7 +2059,7 @@ extern "C" void ScaleCFThS27( real* DC,
 							  unsigned int numberOfThreads,
 							  OffCF offCF);
 
-extern "C" void ScaleFCThS27( real* DC, 
+void ScaleFCThS27( real* DC, 
                               real* DF,
                               real* DD27C, 
                               real* DD27F,
@@ -2079,7 +2080,7 @@ extern "C" void ScaleFCThS27( real* DC,
 							  unsigned int numberOfThreads,
 							  OffFC offFC);
 
-extern "C" void DragLiftPostD27(real* DD, 
+void DragLiftPostD27(real* DD, 
 								int* k_Q, 
 								real* QQ,
 								int numberOfBCnodes, 
@@ -2093,7 +2094,7 @@ extern "C" void DragLiftPostD27(real* DD,
 								bool isEvenTimestep,
 								unsigned int numberOfThreads);
 
-extern "C" void DragLiftPreD27( real* DD, 
+void DragLiftPreD27( real* DD, 
 								int* k_Q, 
 								real* QQ,
 								int numberOfBCnodes, 
@@ -2107,7 +2108,7 @@ extern "C" void DragLiftPreD27( real* DD,
 								bool isEvenTimestep,
 								unsigned int numberOfThreads);
 
-extern "C" void CalcCPtop27(real* DD, 
+void CalcCPtop27(real* DD, 
 							int* cpIndex, 
 							int nonCp, 
 							double *cpPress,
@@ -2118,7 +2119,7 @@ extern "C" void CalcCPtop27(real* DD,
 							bool isEvenTimestep,
 							unsigned int numberOfThreads);
 
-extern "C" void CalcCPbottom27(real* DD, 
+void CalcCPbottom27(real* DD, 
 							   int* cpIndex, 
 							   int nonCp, 
 							   double *cpPress,
@@ -2129,7 +2130,7 @@ extern "C" void CalcCPbottom27(real* DD,
 							   bool isEvenTimestep,
 							   unsigned int numberOfThreads);
 
-extern "C" void GetSendFsPreDev27(real* DD,
+void GetSendFsPreDev27(real* DD,
 								  real* bufferFs,
 								  int* sendIndex,
 								  int buffmax,
@@ -2141,7 +2142,7 @@ extern "C" void GetSendFsPreDev27(real* DD,
 								  unsigned int numberOfThreads, 
 	                              cudaStream_t stream = CU_STREAM_LEGACY);
 
-extern "C" void GetSendFsPostDev27(real* DD,
+void GetSendFsPostDev27(real* DD,
 								   real* bufferFs,
 								   int* sendIndex,
 								   int buffmax,
@@ -2153,7 +2154,7 @@ extern "C" void GetSendFsPostDev27(real* DD,
 								   unsigned int numberOfThreads, 
 	                               cudaStream_t stream = CU_STREAM_LEGACY);
 
-extern "C" void SetRecvFsPreDev27(real* DD,
+void SetRecvFsPreDev27(real* DD,
 								  real* bufferFs,
 								  int* recvIndex,
 								  int buffmax,
@@ -2164,7 +2165,7 @@ extern "C" void SetRecvFsPreDev27(real* DD,
 								  bool isEvenTimestep, unsigned int numberOfThreads, 
 	                              cudaStream_t stream = CU_STREAM_LEGACY);
 
-extern "C" void SetRecvFsPostDev27(real* DD,
+void SetRecvFsPostDev27(real* DD,
 								   real* bufferFs,
 								   int* recvIndex,
 								   int buffmax,
@@ -2176,7 +2177,7 @@ extern "C" void SetRecvFsPostDev27(real* DD,
 								   unsigned int numberOfThreads,
                                    cudaStream_t stream = CU_STREAM_LEGACY);
 
-extern "C" void getSendGsDevF3(
+void getSendGsDevF3(
 	real* G6,
 	real* bufferGs,
 	int* sendIndex,
@@ -2188,7 +2189,7 @@ extern "C" void getSendGsDevF3(
 	bool isEvenTimestep,
 	unsigned int numberOfThreads);
 
-extern "C" void setRecvGsDevF3(
+void setRecvGsDevF3(
 	real* G6,
 	real* bufferGs,
 	int* recvIndex,
@@ -2200,7 +2201,7 @@ extern "C" void setRecvGsDevF3(
 	bool isEvenTimestep,
 	unsigned int numberOfThreads);
 
-extern "C" void WallFuncDev27(unsigned int numberOfThreads,
+void WallFuncDev27(unsigned int numberOfThreads,
 							  real* vx,
 							  real* vy,
 							  real* vz,
@@ -2215,7 +2216,7 @@ extern "C" void WallFuncDev27(unsigned int numberOfThreads,
 							  unsigned int size_Mat, 
 							  bool isEvenTimestep);
 
-extern "C" void SetOutputWallVelocitySP27(unsigned int numberOfThreads,
+void SetOutputWallVelocitySP27(unsigned int numberOfThreads,
 										  real* vxD,
 										  real* vyD,
 										  real* vzD,
@@ -2234,7 +2235,7 @@ extern "C" void SetOutputWallVelocitySP27(unsigned int numberOfThreads,
 										  real* DD,
 										  bool isEvenTimestep);
 
-extern "C" void GetVelotoForce27(unsigned int numberOfThreads,
+void GetVelotoForce27(unsigned int numberOfThreads,
 								 real* DD, 
 								 int* bcIndex, 
 								 int nonAtBC, 
@@ -2247,7 +2248,7 @@ extern "C" void GetVelotoForce27(unsigned int numberOfThreads,
 								 unsigned int size_Mat, 
 								 bool isEvenTimestep);
 
-extern "C" void InitParticlesDevice(real* coordX,
+void InitParticlesDevice(real* coordX,
 									real* coordY,
 									real* coordZ, 
 									real* coordParticleXlocal,
@@ -2272,7 +2273,7 @@ extern "C" void InitParticlesDevice(real* coordX,
 									unsigned int size_Mat,
 									unsigned int numberOfThreads);
 
-extern "C" void MoveParticlesDevice(real* coordX,
+void MoveParticlesDevice(real* coordX,
 									real* coordY,
 									real* coordZ, 
 									real* coordParticleXlocal,
@@ -2301,16 +2302,16 @@ extern "C" void MoveParticlesDevice(real* coordX,
 									unsigned int numberOfThreads,
 									bool isEvenTimestep);
 
-extern "C" void initRandomDevice(curandState* state,
+void initRandomDevice(curandState* state,
 								 unsigned int size_Mat,
 								 unsigned int numberOfThreads);
 
-extern "C" void generateRandomValuesDevice(curandState* state,
+void generateRandomValuesDevice(curandState* state,
 										   unsigned int size_Mat,
 										   real* randArray,
 										   unsigned int numberOfThreads);
 
-extern "C" void CalcTurbulenceIntensityDevice(
+void CalcTurbulenceIntensityDevice(
    real* vxx,
    real* vyy,
    real* vzz,
