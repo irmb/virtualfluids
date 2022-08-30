@@ -894,6 +894,7 @@ extern "C" void QPressDevDirDepBot27(unsigned int numberOfThreads,
                                      bool isEvenTimestep);
 
 extern "C" void QPressNoRhoDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
+void QPressZeroRhoOutflowDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
 extern "C" void QInflowScaleByPressDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 

@@ -125,6 +125,7 @@ void GridGenerator::allocArrays_BoundaryValues()
         para->getParD(level)->pressureBC.numberOfBCnodes = numberOfPressureValues;
         para->getParH(level)->numberOfPressureBCnodesRead = numberOfPressureValues * para->getD3Qxx();
         para->getParD(level)->numberOfPressureBCnodesRead = numberOfPressureValues * para->getD3Qxx();
+        para->getParD(level)->outflowPressureCorrectionFactor = para->getOutflowPressureCorrectionFactor();
         if (numberOfPressureValues > 1)
         {
             cudaMemoryManager->cudaAllocPress(level);

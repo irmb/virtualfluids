@@ -3727,8 +3727,31 @@ extern "C" void QPressNoRhoDev27(LBMSimulationParameter* parameterDevice, QforBo
          parameterDevice->neighborY,
          parameterDevice->neighborZ,
          parameterDevice->numberOfNodes,
-         parameterDevice->isEvenTimestep);
+         parameterDevice->isEvenTimestep,
+         vf::lbm::dir::W);
    getLastCudaError("QPressNoRhoDevice27 execution failed");
+}
+//////////////////////////////////////////////////////////////////////////
+void QPressZeroRhoOutflowDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
+{
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
+
+   QPressZeroRhoOutflowDevice27<<< grid, threads >>> (
+         boundaryCondition->RhoBC,
+         parameterDevice->distributions.f[0],
+         boundaryCondition->k,
+         boundaryCondition->kN,
+         boundaryCondition->numberOfBCnodes,
+         parameterDevice->omega,
+         parameterDevice->neighborX,
+         parameterDevice->neighborY,
+         parameterDevice->neighborZ,
+         parameterDevice->numberOfNodes,
+         parameterDevice->isEvenTimestep,
+         vf::lbm::dir::W,
+         parameterDevice->outflowPressureCorrectionFactor);
+   getLastCudaError("QPressZeroRhoOutflowDev27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QInflowScaleByPressDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)

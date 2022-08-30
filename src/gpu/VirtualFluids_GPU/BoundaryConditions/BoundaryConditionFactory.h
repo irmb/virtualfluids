@@ -69,7 +69,9 @@ public:
         //! - PressureNonEquilibriumCompressible = pressure boundary condition based on non-equilibrium
         PressureNonEquilibriumCompressible,
         //! - OutflowNonReflective = outflow boundary condition, should be combined with VelocityAndPressureCompressible
-        OutflowNonReflective
+        OutflowNonReflective,
+        //! - OutflowNonreflectivePressureCorrection = like OutflowNonReflective, but also reduces pressure overshoot
+        OutflowNonReflectivePressureCorrection
     };
 
     //! \brief An enumeration for selecting a stress boundary condition
