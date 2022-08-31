@@ -907,6 +907,19 @@ __global__ void QSlipDeviceComp27TurbViscosity(
                                     unsigned int numberOfLBnodes, 
                                     bool isEvenTimestep);
 
+__global__ void QSlipPressureDeviceComp27TurbViscosity(
+                                    real* distributions, 
+                                    int* subgridDistanceIndices, 
+                                    real* subgridDistances,
+                                    unsigned int numberOfBCnodes,
+                                    real omega, 
+                                    unsigned int* neighborX,
+                                    unsigned int* neighborY,
+                                    unsigned int* neighborZ,
+                                    real* turbViscosity,
+                                    unsigned int numberOfLBnodes, 
+                                    bool isEvenTimestep);
+
 __global__ void QSlipGeomDeviceComp27(real* DD,
 												 int* k_Q,
 												 real* QQ,

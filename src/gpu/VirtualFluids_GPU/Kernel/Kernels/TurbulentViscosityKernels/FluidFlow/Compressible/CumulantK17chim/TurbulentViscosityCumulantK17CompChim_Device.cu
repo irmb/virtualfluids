@@ -236,9 +236,9 @@ __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
         real fz = forces[2];
 
         if( bodyForce ){
-            fx += bodyForceX[k]; 
-            fy += bodyForceY[k];
-            fz += bodyForceZ[k];
+            // fx += bodyForceX[k]; 
+            // fy += bodyForceY[k];
+            // fz += bodyForceZ[k];
 
             real vx = vvx;
             real vy = vvy;

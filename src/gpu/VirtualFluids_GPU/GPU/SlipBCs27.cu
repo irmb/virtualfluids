@@ -1168,7 +1168,475 @@ __global__ void QSlipDeviceComp27(
    }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 //////////////////////////////////////////////////////////////////////////////
+__global__ void BBSlipDeviceComp27(
+                                    real* distributions, 
+                                    int* subgridDistanceIndices, 
+                                    real* subgridDistances,
+                                    unsigned int numberOfBCnodes,
+                                    real omega, 
+                                    unsigned int* neighborX,
+                                    unsigned int* neighborY,
+                                    unsigned int* neighborZ,
+                                    unsigned int numberOfLBnodes, 
+                                    bool isEvenTimestep)
+{
+   //! The slip boundary condition is executed in the following steps
+   //!
+   ////////////////////////////////////////////////////////////////////////////////
+   //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
+   //!
+   const unsigned  x = threadIdx.x;  // global x-index 
+   const unsigned  y = blockIdx.x;   // global y-index 
+   const unsigned  z = blockIdx.y;   // global z-index 
+
+   const unsigned nx = blockDim.x;
+   const unsigned ny = gridDim.x;
+
+   const unsigned k = nx*(ny*z + y) + x;
+
+   if(k < numberOfBCnodes)
+   {
+      //////////////////////////////////////////////////////////////////////////
+      //! - Read distributions: style of reading and writing the distributions from/to stored arrays dependent on timestep is based on the esoteric twist algorithm \ref
+      //! <a href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017), DOI:10.3390/computation5020019 ]</b></a>
+      //!
+      Distributions27 dist;
+      getPointersToDistributions(dist, distributions, numberOfLBnodes, isEvenTimestep);
+
+      ////////////////////////////////////////////////////////////////////////////////
+      //! - Set local subgrid distances (q's)
+      //!
+      SubgridDistances27 subgridD;
+      getPointersToSubgridDistances(subgridD, subgridDistances, numberOfBCnodes);
+      
+      ////////////////////////////////////////////////////////////////////////////////
+      //! - Set neighbor indices (necessary for indirect addressing)
+      //!
+      unsigned int indexOfBCnode  = subgridDistanceIndices[k];
+      unsigned int kzero= indexOfBCnode;
+      unsigned int ke   = indexOfBCnode;
+      unsigned int kw   = neighborX[indexOfBCnode];
+      unsigned int kn   = indexOfBCnode;
+      unsigned int ks   = neighborY[indexOfBCnode];
+      unsigned int kt   = indexOfBCnode;
+      unsigned int kb   = neighborZ[indexOfBCnode];
+      unsigned int ksw  = neighborY[kw];
+      unsigned int kne  = indexOfBCnode;
+      unsigned int kse  = ks;
+      unsigned int knw  = kw;
+      unsigned int kbw  = neighborZ[kw];
+      unsigned int kte  = indexOfBCnode;
+      unsigned int kbe  = kb;
+      unsigned int ktw  = kw;
+      unsigned int kbs  = neighborZ[ks];
+      unsigned int ktn  = indexOfBCnode;
+      unsigned int kbn  = kb;
+      unsigned int kts  = ks;
+      unsigned int ktse = ks;
+      unsigned int kbnw = kbw;
+      unsigned int ktnw = kw;
+      unsigned int kbse = kbs;
+      unsigned int ktsw = ksw;
+      unsigned int kbne = kb;
+      unsigned int ktne = indexOfBCnode;
+      unsigned int kbsw = neighborZ[ksw];
+      
+      ////////////////////////////////////////////////////////////////////////////////
+      //! - Set local distributions
+      //!
+      real f_W    = (dist.f[DIR_P00   ])[ke   ];
+      real f_E    = (dist.f[DIR_M00   ])[kw   ];
+      real f_S    = (dist.f[DIR_0P0   ])[kn   ];
+      real f_N    = (dist.f[DIR_0M0   ])[ks   ];
+      real f_B    = (dist.f[DIR_00P   ])[kt   ];
+      real f_T    = (dist.f[DIR_00M   ])[kb   ];
+      real f_SW   = (dist.f[DIR_PP0  ])[kne  ];
+      real f_NE   = (dist.f[DIR_MM0  ])[ksw  ];
+      real f_NW   = (dist.f[DIR_PM0  ])[kse  ];
+      real f_SE   = (dist.f[DIR_MP0  ])[knw  ];
+      real f_BW   = (dist.f[DIR_P0P  ])[kte  ];
+      real f_TE   = (dist.f[DIR_M0M  ])[kbw  ];
+      real f_TW   = (dist.f[DIR_P0M  ])[kbe  ];
+      real f_BE   = (dist.f[DIR_M0P  ])[ktw  ];
+      real f_BS   = (dist.f[DIR_0PP  ])[ktn  ];
+      real f_TN   = (dist.f[DIR_0MM  ])[kbs  ];
+      real f_TS   = (dist.f[DIR_0PM  ])[kbn  ];
+      real f_BN   = (dist.f[DIR_0MP  ])[kts  ];
+      real f_BSW  = (dist.f[DIR_PPP ])[ktne ];
+      real f_BNE  = (dist.f[DIR_MMP ])[ktsw ];
+      real f_BNW  = (dist.f[DIR_PMP ])[ktse ];
+      real f_BSE  = (dist.f[DIR_MPP ])[ktnw ];
+      real f_TSW  = (dist.f[DIR_PPM ])[kbne ];
+      real f_TNE  = (dist.f[DIR_MMM ])[kbsw ];
+      real f_TNW  = (dist.f[DIR_PMM ])[kbse ];
+      real f_TSE  = (dist.f[DIR_MPM ])[kbnw ];
+
+      ////////////////////////////////////////////////////////////////////////////////
+      //! - Calculate macroscopic quantities
+      //!
+      real drho = f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
+                  f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
+                  f_T + f_B + f_N + f_S + f_E + f_W + ((dist.f[DIR_000])[kzero]); 
+
+      real vx1  = (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
+                   ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
+                   (f_E - f_W)) / (c1o1 + drho);
+
+      real vx2  = ((-(f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
+                   ((f_BN - f_TS)   + (f_TN - f_BS))    + (-(f_SE - f_NW)  + (f_NE - f_SW)) +
+                   (f_N - f_S)) / (c1o1 + drho);
+
+      real vx3  = (((f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) + (f_TSW - f_BNE)) +
+                   (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
+                   (f_T - f_B)) / (c1o1 + drho);
+
+      real cu_sq = c3o2 * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3) * (c1o1 + drho);
+
+      ////////////////////////////////////////////////////////////////////////////////
+      //! - change the pointer to write the results in the correct array
+      //!
+      getPointersToDistributions(dist, distributions, numberOfLBnodes, !isEvenTimestep);
+
+      ////////////////////////////////////////////////////////////////////////////////
+      //! - Multiply the local velocities by the slipLength
+      //!
+      real slipLength = c1o1;
+      real VeloX = slipLength*vx1;
+      real VeloY = slipLength*vx2;
+      real VeloZ = slipLength*vx3;
+
+      ////////////////////////////////////////////////////////////////////////////////
+      //! - Update distributions with subgrid distance (q) between zero and one
+      //!
+      real q, velocityBC;
+
+      bool x = false;
+      bool y = false;
+      bool z = false;
+
+      q = (subgridD.q[DIR_P00])[k];
+      if (q>=c0o1 && q<=c1o1)  // only update distribution for q between zero and one
+      {
+         VeloX = c0o1;
+         x = true;
+
+         velocityBC = VeloX;
+         (dist.f[DIR_M00])[kw] = getBounceBackDistributionForVeloBC(f_W, velocityBC, c2o27);
+      }
+
+      q = (subgridD.q[DIR_M00])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloX = c0o1;
+         x = true;
+
+         velocityBC = -VeloX;
+         (dist.f[DIR_P00])[ke] = getBounceBackDistributionForVeloBC(f_E, velocityBC, c2o27);
+      }
+
+      q = (subgridD.q[DIR_0P0])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloY = c0o1;
+         y = true;
+
+         velocityBC = VeloY;
+         (dist.f[DIR_0M0])[ks] = getBounceBackDistributionForVeloBC(f_S, velocityBC, c2o27);
+      }
+
+      q = (subgridD.q[DIR_0M0])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloY = c0o1;
+         y = true;
+
+         velocityBC = -VeloY;
+         (dist.f[DIR_0P0])[kn] = getBounceBackDistributionForVeloBC(f_N, velocityBC, c2o27);
+      }
+
+      q = (subgridD.q[DIR_00P])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloZ = c0o1;
+         z = true;
+
+         velocityBC = VeloZ;
+         (dist.f[DIR_00M])[kb] = getBounceBackDistributionForVeloBC(f_B, velocityBC, c2o27);
+      }
+
+      q = (subgridD.q[DIR_00M])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloZ = c0o1;
+         z = true;
+
+         velocityBC = -VeloZ;
+         (dist.f[DIR_00P])[kt] = getBounceBackDistributionForVeloBC(f_T, velocityBC, c2o27);
+      }
+
+      q = (subgridD.q[DIR_PP0])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloX = slipLength*vx1;
+         VeloY = slipLength*vx2;
+         if (x == true) VeloX = c0o1;
+         if (y == true) VeloY = c0o1;
+
+         velocityBC = VeloX + VeloY;
+         (dist.f[DIR_MM0])[ksw] = getBounceBackDistributionForVeloBC(f_SW, velocityBC, c1o54);
+      }
+
+      q = (subgridD.q[DIR_MM0])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloX = slipLength*vx1;
+         VeloY = slipLength*vx2;
+         if (x == true) VeloX = c0o1;
+         if (y == true) VeloY = c0o1;
+
+         velocityBC = -VeloX - VeloY;
+         (dist.f[DIR_PP0])[kne] = getBounceBackDistributionForVeloBC(f_NE, velocityBC, c1o54);
+      }
+
+      q = (subgridD.q[DIR_PM0])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloX = slipLength*vx1;
+         VeloY = slipLength*vx2;
+         if (x == true) VeloX = c0o1;
+         if (y == true) VeloY = c0o1;
+
+         velocityBC = VeloX - VeloY;
+         (dist.f[DIR_MP0])[knw] = getBounceBackDistributionForVeloBC(f_NW, velocityBC, c1o54);
+      }
+
+      q = (subgridD.q[DIR_MP0])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloX = slipLength*vx1;
+         VeloY = slipLength*vx2;
+         if (x == true) VeloX = c0o1;
+         if (y == true) VeloY = c0o1;
+
+         velocityBC = -VeloX + VeloY;
+         (dist.f[DIR_PM0])[kse] = getBounceBackDistributionForVeloBC(f_SE, velocityBC, c1o54);
+      }
+
+      q = (subgridD.q[DIR_P0P])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloX = slipLength*vx1;
+         VeloZ = slipLength*vx3;
+         if (x == true) VeloX = c0o1;
+         if (z == true) VeloZ = c0o1;
+
+         velocityBC = VeloX + VeloZ;
+         (dist.f[DIR_M0M])[kbw] = getBounceBackDistributionForVeloBC(f_BW, velocityBC, c1o54);
+      }
+
+      q = (subgridD.q[DIR_M0M])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+        VeloX = slipLength*vx1;
+        VeloZ = slipLength*vx3;
+        if (x == true) VeloX = c0o1;
+        if (z == true) VeloZ = c0o1;
+
+         velocityBC = -VeloX - VeloZ;
+         (dist.f[DIR_P0P])[kte] = getBounceBackDistributionForVeloBC(f_TE, velocityBC, c1o54);
+      }
+
+      q = (subgridD.q[DIR_P0M])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloX = slipLength*vx1;
+         VeloZ = slipLength*vx3;
+         if (x == true) VeloX = c0o1;
+         if (z == true) VeloZ = c0o1;
+
+         velocityBC = VeloX - VeloZ;
+         (dist.f[DIR_M0P])[ktw] = getBounceBackDistributionForVeloBC(f_TW, velocityBC, c1o54);
+      }
+
+      q = (subgridD.q[DIR_M0P])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloX = slipLength*vx1;
+         VeloZ = slipLength*vx3;
+         if (x == true) VeloX = c0o1;
+         if (z == true) VeloZ = c0o1;
+
+         velocityBC = -VeloX + VeloZ;
+         (dist.f[DIR_P0M])[kbe] = getBounceBackDistributionForVeloBC(f_BE, velocityBC, c1o54);
+      }
+
+      q = (subgridD.q[DIR_0PP])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloY = slipLength*vx2;
+         VeloZ = slipLength*vx3;
+         if (y == true) VeloY = c0o1;
+         if (z == true) VeloZ = c0o1;
+
+         velocityBC = VeloY + VeloZ;
+         (dist.f[DIR_0MM])[kbs] = getBounceBackDistributionForVeloBC(f_BS, velocityBC, c1o54);
+      }
+
+      q = (subgridD.q[DIR_0MM])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloY = slipLength*vx2;
+         VeloZ = slipLength*vx3;
+         if (y == true) VeloY = c0o1;
+         if (z == true) VeloZ = c0o1;
+
+         velocityBC = -VeloY - VeloZ;
+         (dist.f[DIR_0PP])[ktn] = getBounceBackDistributionForVeloBC(f_TN, velocityBC, c1o54);
+      }
+
+
+      q = (subgridD.q[DIR_0PM])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloY = slipLength*vx2;
+         VeloZ = slipLength*vx3;
+         if (y == true) VeloY = c0o1;
+         if (z == true) VeloZ = c0o1;
+
+         velocityBC = VeloY - VeloZ;
+         (dist.f[DIR_0MP])[kts] = getBounceBackDistributionForVeloBC(f_TS, velocityBC, c1o54);
+      }
+
+      q = (subgridD.q[DIR_0MP])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloY = slipLength*vx2;
+         VeloZ = slipLength*vx3;
+         if (y == true) VeloY = c0o1;
+         if (z == true) VeloZ = c0o1;
+
+         velocityBC = -VeloY + VeloZ;
+         (dist.f[DIR_0PM])[kbn] = getBounceBackDistributionForVeloBC(f_BN, velocityBC, c1o54);
+      }
+
+      q = (subgridD.q[DIR_PPP])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloX = slipLength*vx1;
+         VeloY = slipLength*vx2;
+         VeloZ = slipLength*vx3;
+         if (x == true) VeloX = c0o1;
+         if (y == true) VeloY = c0o1;
+         if (z == true) VeloZ = c0o1;
+
+         velocityBC = VeloX + VeloY + VeloZ;
+         (dist.f[DIR_MMM])[kbsw] = getBounceBackDistributionForVeloBC(f_TNE, velocityBC, c1o216);
+      }
+
+      q = (subgridD.q[DIR_MMM])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloX = slipLength*vx1;
+         VeloY = slipLength*vx2;
+         VeloZ = slipLength*vx3;
+         if (x == true) VeloX = c0o1;
+         if (y == true) VeloY = c0o1;
+         if (z == true) VeloZ = c0o1;
+
+         velocityBC = -VeloX - VeloY - VeloZ;
+         (dist.f[DIR_PPP])[ktne] = getBounceBackDistributionForVeloBC(f_TNE, velocityBC, c1o216);
+      }
+
+
+      q = (subgridD.q[DIR_PPM])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloX = slipLength*vx1;
+         VeloY = slipLength*vx2;
+         VeloZ = slipLength*vx3;
+         if (x == true) VeloX = c0o1;
+         if (y == true) VeloY = c0o1;
+         if (z == true) VeloZ = c0o1;
+
+         velocityBC = VeloX + VeloY - VeloZ;
+         (dist.f[DIR_MMP])[ktsw] = getBounceBackDistributionForVeloBC(f_TSW, velocityBC, c1o216);
+      }
+
+      q = (subgridD.q[DIR_MMP])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloX = slipLength*vx1;
+         VeloY = slipLength*vx2;
+         VeloZ = slipLength*vx3;
+         if (x == true) VeloX = c0o1;
+         if (y == true) VeloY = c0o1;
+         if (z == true) VeloZ = c0o1;
+
+         velocityBC = -VeloX - VeloY + VeloZ;
+         (dist.f[DIR_PPM])[kbne] = getBounceBackDistributionForVeloBC(f_BNE, velocityBC, c1o216);
+      }
+
+      q = (subgridD.q[DIR_PMP])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloX = slipLength*vx1;
+         VeloY = slipLength*vx2;
+         VeloZ = slipLength*vx3;
+         if (x == true) VeloX = c0o1;
+         if (y == true) VeloY = c0o1;
+         if (z == true) VeloZ = c0o1;
+
+         velocityBC = VeloX - VeloY + VeloZ;
+         (dist.f[DIR_MPM])[kbnw] = getBounceBackDistributionForVeloBC(f_BNW, velocityBC, c1o216);
+      }
+
+      q = (subgridD.q[DIR_MPM])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloX = slipLength*vx1;
+         VeloY = slipLength*vx2;
+         VeloZ = slipLength*vx3;
+         if (x == true) VeloX = c0o1;
+         if (y == true) VeloY = c0o1;
+         if (z == true) VeloZ = c0o1;
+
+         velocityBC = -VeloX + VeloY - VeloZ;
+         (dist.f[DIR_PMP])[ktse] = getBounceBackDistributionForVeloBC(f_TSE, velocityBC, c1o216);
+      }
+
+      q = (subgridD.q[DIR_PMM])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloX = slipLength*vx1;
+         VeloY = slipLength*vx2;
+         VeloZ = slipLength*vx3;
+         if (x == true) VeloX = c0o1;
+         if (y == true) VeloY = c0o1;
+         if (z == true) VeloZ = c0o1;
+
+         velocityBC = VeloX - VeloY - VeloZ;
+         (dist.f[DIR_MPP])[ktnw] = getBounceBackDistributionForVeloBC(f_TNW, velocityBC, c1o216);
+      }
+
+      q = (subgridD.q[DIR_MPP])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloX = slipLength*vx1;
+         VeloY = slipLength*vx2;
+         VeloZ = slipLength*vx3;
+         if (x == true) VeloX = c0o1;
+         if (y == true) VeloY = c0o1;
+         if (z == true) VeloZ = c0o1;
+
+         velocityBC = -VeloX + VeloY + VeloZ;
+         (dist.f[DIR_PMM])[kbse] = getBounceBackDistributionForVeloBC(f_BSE, velocityBC, c1o216);
+      }
+   }
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 ////////////////////////////////////////////////////////////////////////////
 __global__ void QSlipDeviceComp27TurbViscosity(
@@ -1332,7 +1800,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          velocityLB = vx1;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
          velocityBC = VeloX;
-         (dist.f[DIR_M00])[kw] = getInterpolatedDistributionForVeloBC(q, f_E, f_W, feq, om_turb, velocityBC, c2o27)-drho*c2o27;
+         (dist.f[DIR_M00])[kw] = getInterpolatedDistributionForVeloBC(q, f_E, f_W, feq, om_turb, velocityBC, c2o27);
       }
 
       q = (subgridD.q[DIR_M00])[k];
@@ -1344,7 +1812,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          velocityLB = -vx1;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
          velocityBC = -VeloX;
-         (dist.f[DIR_P00])[ke] = getInterpolatedDistributionForVeloBC(q, f_W, f_E, feq, om_turb, velocityBC, c2o27)-drho*c2o27;
+         (dist.f[DIR_P00])[ke] = getInterpolatedDistributionForVeloBC(q, f_W, f_E, feq, om_turb, velocityBC, c2o27);
       }
 
       q = (subgridD.q[DIR_0P0])[k];
@@ -1356,7 +1824,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          velocityLB = vx2;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
          velocityBC = VeloY;
-         (dist.f[DIR_0M0])[ks] = getInterpolatedDistributionForVeloBC(q, f_N, f_S, feq, om_turb, velocityBC, c2o27)-drho*c2o27;
+         (dist.f[DIR_0M0])[ks] = getInterpolatedDistributionForVeloBC(q, f_N, f_S, feq, om_turb, velocityBC, c2o27);
       }
 
       q = (subgridD.q[DIR_0M0])[k];
@@ -1368,7 +1836,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          velocityLB = -vx2;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
          velocityBC = -VeloY;
-         (dist.f[DIR_0P0])[kn] = getInterpolatedDistributionForVeloBC(q, f_S, f_N, feq, om_turb, velocityBC, c2o27)-drho*c2o27;
+         (dist.f[DIR_0P0])[kn] = getInterpolatedDistributionForVeloBC(q, f_S, f_N, feq, om_turb, velocityBC, c2o27);
       }
 
       q = (subgridD.q[DIR_00P])[k];
@@ -1380,7 +1848,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          velocityLB = vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
          velocityBC = VeloZ;
-         (dist.f[DIR_00M])[kb] = getInterpolatedDistributionForVeloBC(q, f_T, f_B, feq, om_turb, velocityBC, c2o27)-drho*c2o27;
+         (dist.f[DIR_00M])[kb] = getInterpolatedDistributionForVeloBC(q, f_T, f_B, feq, om_turb, velocityBC, c2o27);
       }
 
       q = (subgridD.q[DIR_00M])[k];
@@ -1392,7 +1860,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          velocityLB = -vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
          velocityBC = -VeloZ;
-         (dist.f[DIR_00P])[kt] = getInterpolatedDistributionForVeloBC(q, f_B, f_T, feq, om_turb, velocityBC, c2o27)-drho*c2o27;
+         (dist.f[DIR_00P])[kt] = getInterpolatedDistributionForVeloBC(q, f_B, f_T, feq, om_turb, velocityBC, c2o27);
       }
 
       q = (subgridD.q[DIR_PP0])[k];
@@ -1406,7 +1874,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          velocityLB = vx1 + vx2;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
          velocityBC = VeloX + VeloY;
-         (dist.f[DIR_MM0])[ksw] = getInterpolatedDistributionForVeloBC(q, f_NE, f_SW, feq, om_turb, velocityBC, c1o54)-drho*c1o54;
+         (dist.f[DIR_MM0])[ksw] = getInterpolatedDistributionForVeloBC(q, f_NE, f_SW, feq, om_turb, velocityBC, c1o54);
       }
 
       q = (subgridD.q[DIR_MM0])[k];
@@ -1420,7 +1888,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          velocityLB = -vx1 - vx2;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
          velocityBC = -VeloX - VeloY;
-         (dist.f[DIR_PP0])[kne] = getInterpolatedDistributionForVeloBC(q, f_SW, f_NE, feq, om_turb, velocityBC, c1o54)-drho*c1o54;
+         (dist.f[DIR_PP0])[kne] = getInterpolatedDistributionForVeloBC(q, f_SW, f_NE, feq, om_turb, velocityBC, c1o54);
       }
 
       q = (subgridD.q[DIR_PM0])[k];
@@ -1434,7 +1902,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          velocityLB = vx1 - vx2;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
          velocityBC = VeloX - VeloY;
-         (dist.f[DIR_MP0])[knw] = getInterpolatedDistributionForVeloBC(q, f_SE, f_NW, feq, om_turb, velocityBC, c1o54)-drho*c1o54;
+         (dist.f[DIR_MP0])[knw] = getInterpolatedDistributionForVeloBC(q, f_SE, f_NW, feq, om_turb, velocityBC, c1o54);
       }
 
       q = (subgridD.q[DIR_MP0])[k];
@@ -1448,7 +1916,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          velocityLB = -vx1 + vx2;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
          velocityBC = -VeloX + VeloY;
-         (dist.f[DIR_PM0])[kse] = getInterpolatedDistributionForVeloBC(q, f_NW, f_SE, feq, om_turb, velocityBC, c1o54)-drho*c1o54;
+         (dist.f[DIR_PM0])[kse] = getInterpolatedDistributionForVeloBC(q, f_NW, f_SE, feq, om_turb, velocityBC, c1o54);
       }
 
       q = (subgridD.q[DIR_P0P])[k];
@@ -1462,7 +1930,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          velocityLB = vx1 + vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
          velocityBC = VeloX + VeloZ;
-         (dist.f[DIR_M0M])[kbw] = getInterpolatedDistributionForVeloBC(q, f_TE, f_BW, feq, om_turb, velocityBC, c1o54)-drho*c1o54;
+         (dist.f[DIR_M0M])[kbw] = getInterpolatedDistributionForVeloBC(q, f_TE, f_BW, feq, om_turb, velocityBC, c1o54);
       }
 
       q = (subgridD.q[DIR_M0M])[k];
@@ -1476,7 +1944,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          velocityLB = -vx1 - vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
          velocityBC = -VeloX - VeloZ;
-         (dist.f[DIR_P0P])[kte] = getInterpolatedDistributionForVeloBC(q, f_BW, f_TE, feq, om_turb, velocityBC, c1o54)-drho*c1o54;
+         (dist.f[DIR_P0P])[kte] = getInterpolatedDistributionForVeloBC(q, f_BW, f_TE, feq, om_turb, velocityBC, c1o54);
       }
 
       q = (subgridD.q[DIR_P0M])[k];
@@ -1490,7 +1958,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          velocityLB = vx1 - vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
          velocityBC = VeloX - VeloZ;
-         (dist.f[DIR_M0P])[ktw] = getInterpolatedDistributionForVeloBC(q, f_BE, f_TW, feq, om_turb, velocityBC, c1o54)-drho*c1o54;
+         (dist.f[DIR_M0P])[ktw] = getInterpolatedDistributionForVeloBC(q, f_BE, f_TW, feq, om_turb, velocityBC, c1o54);
       }
 
       q = (subgridD.q[DIR_M0P])[k];
@@ -1504,7 +1972,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          velocityLB = -vx1 + vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
          velocityBC = -VeloX + VeloZ;
-         (dist.f[DIR_P0M])[kbe] = getInterpolatedDistributionForVeloBC(q, f_TW, f_BE, feq, om_turb, velocityBC, c1o54)-drho*c1o54;
+         (dist.f[DIR_P0M])[kbe] = getInterpolatedDistributionForVeloBC(q, f_TW, f_BE, feq, om_turb, velocityBC, c1o54);
       }
 
       q = (subgridD.q[DIR_0PP])[k];
@@ -1518,7 +1986,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          velocityLB = vx2 + vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
          velocityBC = VeloY + VeloZ;
-         (dist.f[DIR_0MM])[kbs] = getInterpolatedDistributionForVeloBC(q, f_TN, f_BS, feq, om_turb, velocityBC, c1o54)-drho*c1o54;
+         (dist.f[DIR_0MM])[kbs] = getInterpolatedDistributionForVeloBC(q, f_TN, f_BS, feq, om_turb, velocityBC, c1o54);
       }
 
       q = (subgridD.q[DIR_0MM])[k];
@@ -1532,7 +2000,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          velocityLB = -vx2 - vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
          velocityBC = -VeloY - VeloZ;
-         (dist.f[DIR_0PP])[ktn] = getInterpolatedDistributionForVeloBC(q, f_BS, f_TN, feq, om_turb, velocityBC, c1o54)-drho*c1o54;
+         (dist.f[DIR_0PP])[ktn] = getInterpolatedDistributionForVeloBC(q, f_BS, f_TN, feq, om_turb, velocityBC, c1o54);
       }
 
 
@@ -1547,7 +2015,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          velocityLB = vx2 - vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
          velocityBC = VeloY - VeloZ;
-         (dist.f[DIR_0MP])[kts] = getInterpolatedDistributionForVeloBC(q, f_BN, f_TS, feq, om_turb, velocityBC, c1o54)-drho*c1o54;
+         (dist.f[DIR_0MP])[kts] = getInterpolatedDistributionForVeloBC(q, f_BN, f_TS, feq, om_turb, velocityBC, c1o54);
       }
 
       q = (subgridD.q[DIR_0MP])[k];
@@ -1561,7 +2029,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          velocityLB = -vx2 + vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
          velocityBC = -VeloY + VeloZ;
-         (dist.f[DIR_0PM])[kbn] = getInterpolatedDistributionForVeloBC(q, f_TS, f_BN, feq, om_turb, velocityBC, c1o54)-drho*c1o54;
+         (dist.f[DIR_0PM])[kbn] = getInterpolatedDistributionForVeloBC(q, f_TS, f_BN, feq, om_turb, velocityBC, c1o54);
       }
 
       q = (subgridD.q[DIR_PPP])[k];
@@ -1576,7 +2044,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          velocityLB = vx1 + vx2 + vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
          velocityBC = VeloX + VeloY + VeloZ;
-         (dist.f[DIR_MMM])[kbsw] = getInterpolatedDistributionForVeloBC(q, f_TNE, f_BSW, feq, om_turb, velocityBC, c1o216)-drho*c1o216;
+         (dist.f[DIR_MMM])[kbsw] = getInterpolatedDistributionForVeloBC(q, f_TNE, f_BSW, feq, om_turb, velocityBC, c1o216);
       }
 
       q = (subgridD.q[DIR_MMM])[k];
@@ -1591,7 +2059,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          velocityLB = -vx1 - vx2 - vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
          velocityBC = -VeloX - VeloY - VeloZ;
-         (dist.f[DIR_PPP])[ktne] = getInterpolatedDistributionForVeloBC(q, f_BSW, f_TNE, feq, om_turb, velocityBC, c1o216)-drho*c1o216;
+         (dist.f[DIR_PPP])[ktne] = getInterpolatedDistributionForVeloBC(q, f_BSW, f_TNE, feq, om_turb, velocityBC, c1o216);
       }
 
 
@@ -1607,7 +2075,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          velocityLB = vx1 + vx2 - vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
          velocityBC = VeloX + VeloY - VeloZ;
-         (dist.f[DIR_MMP])[ktsw] = getInterpolatedDistributionForVeloBC(q, f_BNE, f_TSW, feq, om_turb, velocityBC, c1o216)-drho*c1o216;
+         (dist.f[DIR_MMP])[ktsw] = getInterpolatedDistributionForVeloBC(q, f_BNE, f_TSW, feq, om_turb, velocityBC, c1o216);
       }
 
       q = (subgridD.q[DIR_MMP])[k];
@@ -1622,7 +2090,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          velocityLB = -vx1 - vx2 + vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
          velocityBC = -VeloX - VeloY + VeloZ;
-         (dist.f[DIR_PPM])[kbne] = getInterpolatedDistributionForVeloBC(q, f_TSW, f_BNE, feq, om_turb, velocityBC, c1o216)-drho*c1o216;
+         (dist.f[DIR_PPM])[kbne] = getInterpolatedDistributionForVeloBC(q, f_TSW, f_BNE, feq, om_turb, velocityBC, c1o216);
       }
 
       q = (subgridD.q[DIR_PMP])[k];
@@ -1637,7 +2105,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          velocityLB = vx1 - vx2 + vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
          velocityBC = VeloX - VeloY + VeloZ;
-         (dist.f[DIR_MPM])[kbnw] = getInterpolatedDistributionForVeloBC(q, f_TSE, f_BNW, feq, om_turb, velocityBC, c1o216)-drho*c1o216;
+         (dist.f[DIR_MPM])[kbnw] = getInterpolatedDistributionForVeloBC(q, f_TSE, f_BNW, feq, om_turb, velocityBC, c1o216);
       }
 
       q = (subgridD.q[DIR_MPM])[k];
@@ -1652,7 +2120,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          velocityLB = -vx1 + vx2 - vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
          velocityBC = -VeloX + VeloY - VeloZ;
-         (dist.f[DIR_PMP])[ktse] = getInterpolatedDistributionForVeloBC(q, f_BNW, f_TSE, feq, om_turb, velocityBC, c1o216)-drho*c1o216;
+         (dist.f[DIR_PMP])[ktse] = getInterpolatedDistributionForVeloBC(q, f_BNW, f_TSE, feq, om_turb, velocityBC, c1o216);
       }
 
       q = (subgridD.q[DIR_PMM])[k];
@@ -1667,7 +2135,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          velocityLB = vx1 - vx2 - vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
          velocityBC = VeloX - VeloY - VeloZ;
-         (dist.f[DIR_MPP])[ktnw] = getInterpolatedDistributionForVeloBC(q, f_BSE, f_TNW, feq, om_turb, velocityBC, c1o216)-drho*c1o216;
+         (dist.f[DIR_MPP])[ktnw] = getInterpolatedDistributionForVeloBC(q, f_BSE, f_TNW, feq, om_turb, velocityBC, c1o216);
       }
 
       q = (subgridD.q[DIR_MPP])[k];
@@ -1682,7 +2150,525 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          velocityLB = -vx1 + vx2 + vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
          velocityBC = -VeloX + VeloY + VeloZ;
-         (dist.f[DIR_PMM])[kbse] = getInterpolatedDistributionForVeloBC(q, f_TNW, f_BSE, feq, om_turb, velocityBC, c1o216)-drho*c1o216;
+         (dist.f[DIR_PMM])[kbse] = getInterpolatedDistributionForVeloBC(q, f_TNW, f_BSE, feq, om_turb, velocityBC, c1o216);
+      }
+   }
+}
+
+
+////////////////////////////////////////////////////////////////////////////
+__global__ void QSlipPressureDeviceComp27TurbViscosity(
+                                    real* distributions, 
+                                    int* subgridDistanceIndices, 
+                                    real* subgridDistances,
+                                    unsigned int numberOfBCnodes,
+                                    real omega, 
+                                    unsigned int* neighborX,
+                                    unsigned int* neighborY,
+                                    unsigned int* neighborZ,
+                                    real* turbViscosity,
+                                    unsigned int numberOfLBnodes, 
+                                    bool isEvenTimestep)
+{
+   //! The slip boundary condition is executed in the following steps
+   //!
+   ////////////////////////////////////////////////////////////////////////////////
+   //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
+   //!
+   const unsigned  x = threadIdx.x;  // global x-index 
+   const unsigned  y = blockIdx.x;   // global y-index 
+   const unsigned  z = blockIdx.y;   // global z-index 
+
+   const unsigned nx = blockDim.x;
+   const unsigned ny = gridDim.x;
+
+   const unsigned k = nx*(ny*z + y) + x;
+
+   if(k < numberOfBCnodes)
+   {
+      //////////////////////////////////////////////////////////////////////////
+      //! - Read distributions: style of reading and writing the distributions from/to stored arrays dependent on timestep is based on the esoteric twist algorithm \ref
+      //! <a href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017), DOI:10.3390/computation5020019 ]</b></a>
+      //!
+      Distributions27 dist;
+      getPointersToDistributions(dist, distributions, numberOfLBnodes, isEvenTimestep);
+      
+      ////////////////////////////////////////////////////////////////////////////////
+      //! - Set local subgrid distances (q's)
+      //!
+      SubgridDistances27 subgridD;
+      getPointersToSubgridDistances(subgridD, subgridDistances, numberOfBCnodes);
+      
+      ////////////////////////////////////////////////////////////////////////////////
+      //! - Set neighbor indices (necessary for indirect addressing)
+      //!
+      unsigned int indexOfBCnode  = subgridDistanceIndices[k];
+      unsigned int kzero= indexOfBCnode;
+      unsigned int ke   = indexOfBCnode;
+      unsigned int kw   = neighborX[indexOfBCnode];
+      unsigned int kn   = indexOfBCnode;
+      unsigned int ks   = neighborY[indexOfBCnode];
+      unsigned int kt   = indexOfBCnode;
+      unsigned int kb   = neighborZ[indexOfBCnode];
+      unsigned int ksw  = neighborY[kw];
+      unsigned int kne  = indexOfBCnode;
+      unsigned int kse  = ks;
+      unsigned int knw  = kw;
+      unsigned int kbw  = neighborZ[kw];
+      unsigned int kte  = indexOfBCnode;
+      unsigned int kbe  = kb;
+      unsigned int ktw  = kw;
+      unsigned int kbs  = neighborZ[ks];
+      unsigned int ktn  = indexOfBCnode;
+      unsigned int kbn  = kb;
+      unsigned int kts  = ks;
+      unsigned int ktse = ks;
+      unsigned int kbnw = kbw;
+      unsigned int ktnw = kw;
+      unsigned int kbse = kbs;
+      unsigned int ktsw = ksw;
+      unsigned int kbne = kb;
+      unsigned int ktne = indexOfBCnode;
+      unsigned int kbsw = neighborZ[ksw];
+      
+      ////////////////////////////////////////////////////////////////////////////////
+      //! - Set local distributions
+      //!
+      real f_W    = (dist.f[DIR_P00   ])[ke   ];
+      real f_E    = (dist.f[DIR_M00   ])[kw   ];
+      real f_S    = (dist.f[DIR_0P0   ])[kn   ];
+      real f_N    = (dist.f[DIR_0M0   ])[ks   ];
+      real f_B    = (dist.f[DIR_00P   ])[kt   ];
+      real f_T    = (dist.f[DIR_00M   ])[kb   ];
+      real f_SW   = (dist.f[DIR_PP0  ])[kne  ];
+      real f_NE   = (dist.f[DIR_MM0  ])[ksw  ];
+      real f_NW   = (dist.f[DIR_PM0  ])[kse  ];
+      real f_SE   = (dist.f[DIR_MP0  ])[knw  ];
+      real f_BW   = (dist.f[DIR_P0P  ])[kte  ];
+      real f_TE   = (dist.f[DIR_M0M  ])[kbw  ];
+      real f_TW   = (dist.f[DIR_P0M  ])[kbe  ];
+      real f_BE   = (dist.f[DIR_M0P  ])[ktw  ];
+      real f_BS   = (dist.f[DIR_0PP  ])[ktn  ];
+      real f_TN   = (dist.f[DIR_0MM  ])[kbs  ];
+      real f_TS   = (dist.f[DIR_0PM  ])[kbn  ];
+      real f_BN   = (dist.f[DIR_0MP  ])[kts  ];
+      real f_BSW  = (dist.f[DIR_PPP ])[ktne ];
+      real f_BNE  = (dist.f[DIR_MMP ])[ktsw ];
+      real f_BNW  = (dist.f[DIR_PMP ])[ktse ];
+      real f_BSE  = (dist.f[DIR_MPP ])[ktnw ];
+      real f_TSW  = (dist.f[DIR_PPM ])[kbne ];
+      real f_TNE  = (dist.f[DIR_MMM ])[kbsw ];
+      real f_TNW  = (dist.f[DIR_PMM ])[kbse ];
+      real f_TSE  = (dist.f[DIR_MPM ])[kbnw ];
+
+      ////////////////////////////////////////////////////////////////////////////////
+      //! - Calculate macroscopic quantities
+      //!
+      real drho = f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
+                  f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
+                  f_T + f_B + f_N + f_S + f_E + f_W + ((dist.f[DIR_000])[kzero]); 
+
+      real vx1  = (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
+                   ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
+                   (f_E - f_W)) / (c1o1 + drho);
+
+      real vx2  = ((-(f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
+                   ((f_BN - f_TS)   + (f_TN - f_BS))    + (-(f_SE - f_NW)  + (f_NE - f_SW)) +
+                   (f_N - f_S)) / (c1o1 + drho);
+
+      real vx3  = (((f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) + (f_TSW - f_BNE)) +
+                   (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
+                   (f_T - f_B)) / (c1o1 + drho);
+
+      real cu_sq = c3o2 * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3) * (c1o1 + drho);
+
+      ////////////////////////////////////////////////////////////////////////////////
+      //! - change the pointer to write the results in the correct array
+      //!
+      getPointersToDistributions(dist, distributions, numberOfLBnodes, !isEvenTimestep);
+
+      ////////////////////////////////////////////////////////////////////////////////
+      //! - compute local relaxation rate
+      //!
+      real om_turb = omega / (c1o1 + c3o1* omega* max(c0o1, turbViscosity[indexOfBCnode]) );
+
+      ////////////////////////////////////////////////////////////////////////////////
+      //! - Multiply the local velocities by the slipLength
+      //!
+      real slipLength = c1o1;
+      real VeloX = slipLength*vx1;
+      real VeloY = slipLength*vx2;
+      real VeloZ = slipLength*vx3;
+
+      ////////////////////////////////////////////////////////////////////////////////
+      //! - Update distributions with subgrid distance (q) between zero and one
+      //!
+      real feq, q, velocityLB, velocityBC;
+
+      bool x = false;
+      bool y = false;
+      bool z = false;
+
+      q = (subgridD.q[DIR_P00])[k];
+      if (q>=c0o1 && q<=c1o1)  // only update distribution for q between zero and one
+      {
+         VeloX = c0o1;
+         x = true;
+
+         velocityLB = vx1;
+         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
+         velocityBC = VeloX;
+         (dist.f[DIR_M00])[kw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_E, f_W, feq, om_turb, drho, velocityBC, c2o27);
+      }
+
+      q = (subgridD.q[DIR_M00])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloX = c0o1;
+         x = true;
+
+         velocityLB = -vx1;
+         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
+         velocityBC = -VeloX;
+         (dist.f[DIR_P00])[ke] = getInterpolatedDistributionForVeloWithPressureBC(q, f_W, f_E, feq, om_turb, drho, velocityBC, c2o27);
+      }
+
+      q = (subgridD.q[DIR_0P0])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloY = c0o1;
+         y = true;
+
+         velocityLB = vx2;
+         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
+         velocityBC = VeloY;
+         (dist.f[DIR_0M0])[ks] = getInterpolatedDistributionForVeloWithPressureBC(q, f_N, f_S, feq, om_turb, drho, velocityBC, c2o27);
+      }
+
+      q = (subgridD.q[DIR_0M0])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloY = c0o1;
+         y = true;
+
+         velocityLB = -vx2;
+         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
+         velocityBC = -VeloY;
+         (dist.f[DIR_0P0])[kn] = getInterpolatedDistributionForVeloWithPressureBC(q, f_S, f_N, feq, om_turb, drho, velocityBC, c2o27);
+      }
+
+      q = (subgridD.q[DIR_00P])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloZ = c0o1;
+         z = true;
+
+         velocityLB = vx3;
+         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
+         velocityBC = VeloZ;
+         (dist.f[DIR_00M])[kb] = getInterpolatedDistributionForVeloWithPressureBC(q, f_T, f_B, feq, om_turb, drho, velocityBC, c2o27);
+      }
+
+      q = (subgridD.q[DIR_00M])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloZ = c0o1;
+         z = true;
+
+         velocityLB = -vx3;
+         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
+         velocityBC = -VeloZ;
+         (dist.f[DIR_00P])[kt] = getInterpolatedDistributionForVeloWithPressureBC(q, f_B, f_T, feq, om_turb, drho, velocityBC, c2o27);
+      }
+
+      q = (subgridD.q[DIR_PP0])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloX = slipLength*vx1;
+         VeloY = slipLength*vx2;
+         if (x == true) VeloX = c0o1;
+         if (y == true) VeloY = c0o1;
+
+         velocityLB = vx1 + vx2;
+         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
+         velocityBC = VeloX + VeloY;
+         (dist.f[DIR_MM0])[ksw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_NE, f_SW, feq, om_turb, drho, velocityBC, c1o54);
+      }
+
+      q = (subgridD.q[DIR_MM0])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloX = slipLength*vx1;
+         VeloY = slipLength*vx2;
+         if (x == true) VeloX = c0o1;
+         if (y == true) VeloY = c0o1;
+
+         velocityLB = -vx1 - vx2;
+         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
+         velocityBC = -VeloX - VeloY;
+         (dist.f[DIR_PP0])[kne] = getInterpolatedDistributionForVeloWithPressureBC(q, f_SW, f_NE, feq, om_turb, drho, velocityBC, c1o54);
+      }
+
+      q = (subgridD.q[DIR_PM0])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloX = slipLength*vx1;
+         VeloY = slipLength*vx2;
+         if (x == true) VeloX = c0o1;
+         if (y == true) VeloY = c0o1;
+
+         velocityLB = vx1 - vx2;
+         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
+         velocityBC = VeloX - VeloY;
+         (dist.f[DIR_MP0])[knw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_SE, f_NW, feq, om_turb, drho, velocityBC, c1o54);
+      }
+
+      q = (subgridD.q[DIR_MP0])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloX = slipLength*vx1;
+         VeloY = slipLength*vx2;
+         if (x == true) VeloX = c0o1;
+         if (y == true) VeloY = c0o1;
+
+         velocityLB = -vx1 + vx2;
+         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
+         velocityBC = -VeloX + VeloY;
+         (dist.f[DIR_PM0])[kse] = getInterpolatedDistributionForVeloWithPressureBC(q, f_NW, f_SE, feq, om_turb, drho, velocityBC, c1o54);
+      }
+
+      q = (subgridD.q[DIR_P0P])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloX = slipLength*vx1;
+         VeloZ = slipLength*vx3;
+         if (x == true) VeloX = c0o1;
+         if (z == true) VeloZ = c0o1;
+
+         velocityLB = vx1 + vx3;
+         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
+         velocityBC = VeloX + VeloZ;
+         (dist.f[DIR_M0M])[kbw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_TE, f_BW, feq, om_turb, drho, velocityBC, c1o54);
+      }
+
+      q = (subgridD.q[DIR_M0M])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+        VeloX = slipLength*vx1;
+        VeloZ = slipLength*vx3;
+        if (x == true) VeloX = c0o1;
+        if (z == true) VeloZ = c0o1;
+
+         velocityLB = -vx1 - vx3;
+         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
+         velocityBC = -VeloX - VeloZ;
+         (dist.f[DIR_P0P])[kte] = getInterpolatedDistributionForVeloWithPressureBC(q, f_BW, f_TE, feq, om_turb, drho, velocityBC, c1o54);
+      }
+
+      q = (subgridD.q[DIR_P0M])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloX = slipLength*vx1;
+         VeloZ = slipLength*vx3;
+         if (x == true) VeloX = c0o1;
+         if (z == true) VeloZ = c0o1;
+
+         velocityLB = vx1 - vx3;
+         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
+         velocityBC = VeloX - VeloZ;
+         (dist.f[DIR_M0P])[ktw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_BE, f_TW, feq, om_turb, drho, velocityBC, c1o54);
+      }
+
+      q = (subgridD.q[DIR_M0P])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloX = slipLength*vx1;
+         VeloZ = slipLength*vx3;
+         if (x == true) VeloX = c0o1;
+         if (z == true) VeloZ = c0o1;
+
+         velocityLB = -vx1 + vx3;
+         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
+         velocityBC = -VeloX + VeloZ;
+         (dist.f[DIR_P0M])[kbe] = getInterpolatedDistributionForVeloWithPressureBC(q, f_TW, f_BE, feq, om_turb, drho, velocityBC, c1o54);
+      }
+
+      q = (subgridD.q[DIR_0PP])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloY = slipLength*vx2;
+         VeloZ = slipLength*vx3;
+         if (y == true) VeloY = c0o1;
+         if (z == true) VeloZ = c0o1;
+
+         velocityLB = vx2 + vx3;
+         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
+         velocityBC = VeloY + VeloZ;
+         (dist.f[DIR_0MM])[kbs] = getInterpolatedDistributionForVeloWithPressureBC(q, f_TN, f_BS, feq, om_turb, drho, velocityBC, c1o54);
+      }
+
+      q = (subgridD.q[DIR_0MM])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloY = slipLength*vx2;
+         VeloZ = slipLength*vx3;
+         if (y == true) VeloY = c0o1;
+         if (z == true) VeloZ = c0o1;
+
+         velocityLB = -vx2 - vx3;
+         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
+         velocityBC = -VeloY - VeloZ;
+         (dist.f[DIR_0PP])[ktn] = getInterpolatedDistributionForVeloWithPressureBC(q, f_BS, f_TN, feq, om_turb, drho, velocityBC, c1o54);
+      }
+
+
+      q = (subgridD.q[DIR_0PM])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloY = slipLength*vx2;
+         VeloZ = slipLength*vx3;
+         if (y == true) VeloY = c0o1;
+         if (z == true) VeloZ = c0o1;
+
+         velocityLB = vx2 - vx3;
+         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
+         velocityBC = VeloY - VeloZ;
+         (dist.f[DIR_0MP])[kts] = getInterpolatedDistributionForVeloWithPressureBC(q, f_BN, f_TS, feq, om_turb, drho, velocityBC, c1o54);
+      }
+
+      q = (subgridD.q[DIR_0MP])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloY = slipLength*vx2;
+         VeloZ = slipLength*vx3;
+         if (y == true) VeloY = c0o1;
+         if (z == true) VeloZ = c0o1;
+
+         velocityLB = -vx2 + vx3;
+         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
+         velocityBC = -VeloY + VeloZ;
+         (dist.f[DIR_0PM])[kbn] = getInterpolatedDistributionForVeloWithPressureBC(q, f_TS, f_BN, feq, om_turb, drho, velocityBC, c1o54);
+      }
+
+      q = (subgridD.q[DIR_PPP])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloX = slipLength*vx1;
+         VeloY = slipLength*vx2;
+         VeloZ = slipLength*vx3;
+         if (x == true) VeloX = c0o1;
+         if (y == true) VeloY = c0o1;
+         if (z == true) VeloZ = c0o1;
+         velocityLB = vx1 + vx2 + vx3;
+         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
+         velocityBC = VeloX + VeloY + VeloZ;
+         (dist.f[DIR_MMM])[kbsw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_TNE, f_BSW, feq, om_turb, drho, velocityBC, c1o216);
+      }
+
+      q = (subgridD.q[DIR_MMM])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloX = slipLength*vx1;
+         VeloY = slipLength*vx2;
+         VeloZ = slipLength*vx3;
+         if (x == true) VeloX = c0o1;
+         if (y == true) VeloY = c0o1;
+         if (z == true) VeloZ = c0o1;
+         velocityLB = -vx1 - vx2 - vx3;
+         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
+         velocityBC = -VeloX - VeloY - VeloZ;
+         (dist.f[DIR_PPP])[ktne] = getInterpolatedDistributionForVeloWithPressureBC(q, f_BSW, f_TNE, feq, om_turb, drho, velocityBC, c1o216);
+      }
+
+
+      q = (subgridD.q[DIR_PPM])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloX = slipLength*vx1;
+         VeloY = slipLength*vx2;
+         VeloZ = slipLength*vx3;
+         if (x == true) VeloX = c0o1;
+         if (y == true) VeloY = c0o1;
+         if (z == true) VeloZ = c0o1;
+         velocityLB = vx1 + vx2 - vx3;
+         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
+         velocityBC = VeloX + VeloY - VeloZ;
+         (dist.f[DIR_MMP])[ktsw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_BNE, f_TSW, feq, om_turb, drho, velocityBC, c1o216);
+      }
+
+      q = (subgridD.q[DIR_MMP])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloX = slipLength*vx1;
+         VeloY = slipLength*vx2;
+         VeloZ = slipLength*vx3;
+         if (x == true) VeloX = c0o1;
+         if (y == true) VeloY = c0o1;
+         if (z == true) VeloZ = c0o1;
+         velocityLB = -vx1 - vx2 + vx3;
+         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
+         velocityBC = -VeloX - VeloY + VeloZ;
+         (dist.f[DIR_PPM])[kbne] = getInterpolatedDistributionForVeloWithPressureBC(q, f_TSW, f_BNE, feq, om_turb, drho, velocityBC, c1o216);
+      }
+
+      q = (subgridD.q[DIR_PMP])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloX = slipLength*vx1;
+         VeloY = slipLength*vx2;
+         VeloZ = slipLength*vx3;
+         if (x == true) VeloX = c0o1;
+         if (y == true) VeloY = c0o1;
+         if (z == true) VeloZ = c0o1;
+         velocityLB = vx1 - vx2 + vx3;
+         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
+         velocityBC = VeloX - VeloY + VeloZ;
+         (dist.f[DIR_MPM])[kbnw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_TSE, f_BNW, feq, om_turb, drho, velocityBC, c1o216);
+      }
+
+      q = (subgridD.q[DIR_MPM])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloX = slipLength*vx1;
+         VeloY = slipLength*vx2;
+         VeloZ = slipLength*vx3;
+         if (x == true) VeloX = c0o1;
+         if (y == true) VeloY = c0o1;
+         if (z == true) VeloZ = c0o1;
+         velocityLB = -vx1 + vx2 - vx3;
+         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
+         velocityBC = -VeloX + VeloY - VeloZ;
+         (dist.f[DIR_PMP])[ktse] = getInterpolatedDistributionForVeloWithPressureBC(q, f_BNW, f_TSE, feq, om_turb, drho, velocityBC, c1o216);
+      }
+
+      q = (subgridD.q[DIR_PMM])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloX = slipLength*vx1;
+         VeloY = slipLength*vx2;
+         VeloZ = slipLength*vx3;
+         if (x == true) VeloX = c0o1;
+         if (y == true) VeloY = c0o1;
+         if (z == true) VeloZ = c0o1;
+         velocityLB = vx1 - vx2 - vx3;
+         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
+         velocityBC = VeloX - VeloY - VeloZ;
+         (dist.f[DIR_MPP])[ktnw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_BSE, f_TNW, feq, om_turb, drho, velocityBC, c1o216);
+      }
+
+      q = (subgridD.q[DIR_MPP])[k];
+      if (q>=c0o1 && q<=c1o1)
+      {
+         VeloX = slipLength*vx1;
+         VeloY = slipLength*vx2;
+         VeloZ = slipLength*vx3;
+         if (x == true) VeloX = c0o1;
+         if (y == true) VeloY = c0o1;
+         if (z == true) VeloZ = c0o1;
+         velocityLB = -vx1 + vx2 + vx3;
+         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
+         velocityBC = -VeloX + VeloY + VeloZ;
+         (dist.f[DIR_PMM])[kbse] = getInterpolatedDistributionForVeloWithPressureBC(q, f_TNW, f_BSE, feq, om_turb, drho, velocityBC, c1o216);
       }
    }
 }

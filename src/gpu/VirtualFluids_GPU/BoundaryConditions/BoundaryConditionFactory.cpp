@@ -99,8 +99,14 @@ boundaryCondition BoundaryConditionFactory::getSlipBoundaryConditionPost(bool is
         case SlipBC::SlipCompressible:
             return QSlipDevComp27;
             break;
+        case SlipBC::SlipBounceBack:
+            return BBSlipDevComp27;
+            break;
         case SlipBC::SlipCompressibleTurbulentViscosity:
             return QSlipDevCompTurbulentViscosity27;
+            break;
+        case SlipBC::SlipPressureCompressibleTurbulentViscosity:
+            return QSlipPressureDevCompTurbulentViscosity27;
             break;
         default:
             return nullptr;

@@ -3371,6 +3371,26 @@ void QSlipDevCompTurbulentViscosity27(LBMSimulationParameter* parameterDevice, Q
    getLastCudaError("QSlipDeviceComp27TurbViscosity execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
+void QSlipPressureDevCompTurbulentViscosity27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
+{
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
+
+   QSlipPressureDeviceComp27TurbViscosity<<< grid, threads >>> (
+         parameterDevice->distributions.f[0],
+         boundaryCondition->k,
+         boundaryCondition->q27[0],
+         boundaryCondition->numberOfBCnodes,
+         parameterDevice->omega,
+         parameterDevice->neighborX,
+         parameterDevice->neighborY,
+         parameterDevice->neighborZ,
+         parameterDevice->turbViscosity,
+         parameterDevice->numberOfNodes,
+         parameterDevice->isEvenTimestep);
+   getLastCudaError("QSlipDeviceComp27TurbViscosity execution failed");
+}
+//////////////////////////////////////////////////////////////////////////
 void QSlipDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
    dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
@@ -3388,6 +3408,25 @@ void QSlipDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditi
          parameterDevice->numberOfNodes,
          parameterDevice->isEvenTimestep);
    getLastCudaError("QSlipDeviceComp27 execution failed");
+}
+//////////////////////////////////////////////////////////////////////////
+void BBSlipDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
+{
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
+
+   QSlipDeviceComp27<<< grid, threads >>> (
+         parameterDevice->distributions.f[0],
+         boundaryCondition->k,
+         boundaryCondition->q27[0],
+         boundaryCondition->numberOfBCnodes,
+         parameterDevice->omega,
+         parameterDevice->neighborX,
+         parameterDevice->neighborY,
+         parameterDevice->neighborZ,
+         parameterDevice->numberOfNodes,
+         parameterDevice->isEvenTimestep);
+   getLastCudaError("BBSlipDeviceComp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void QSlipGeomDevComp27(unsigned int numberOfThreads,
