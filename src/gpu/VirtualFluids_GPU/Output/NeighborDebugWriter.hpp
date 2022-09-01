@@ -40,7 +40,7 @@ inline void writeNeighborLinkLines(Parameter *para, const int level, const uint 
         nodes.emplace_back(float(x1), float(x2), float(x3));
         nodes.emplace_back(float(x1Neighbor), float(x2Neighbor), float(x3Neighbor));
 
-        cells.emplace_back(nodes.size() - 2, nodes.size() - 1);
+        cells.emplace_back((int)nodes.size() - 2, (int)nodes.size() - 1);
     }
     WbWriterVtkXmlBinary::getInstance()->writeLines(name, nodes, cells);
 }
