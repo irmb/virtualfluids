@@ -3726,7 +3726,7 @@ void QPressNoRhoDev27(LBMSimulationParameter* parameterDevice, QforBoundaryCondi
          parameterDevice->neighborZ,
          parameterDevice->numberOfNodes,
          parameterDevice->isEvenTimestep,
-         vf::lbm::dir::DIR_M00);
+         vf::lbm::dir::DIR_P00);
    getLastCudaError("QPressNoRhoDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
