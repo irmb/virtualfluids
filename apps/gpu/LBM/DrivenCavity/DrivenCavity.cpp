@@ -126,7 +126,8 @@ int main(int argc, char *argv[])
         //////////////////////////////////////////////////////////////////////////
 
         real dx = L / real(nx);
-        gridBuilder->addCoarseGrid(-1.0 * L, -0.6 * L, -0.6 * L, 6.0 * L, 0.6 * L, 0.6 * L, dx);
+
+        gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L, 0.5 * L, 0.5 * L, 0.5 * L, dx);
 
         gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
@@ -180,14 +181,12 @@ int main(int argc, char *argv[])
             // set boundary conditions
             //////////////////////////////////////////////////////////////////////////
 
-            gridBuilder->setVelocityBoundaryCondition(SideType::MX, velocityLB, 0.0, 0.0);
-
-            gridBuilder->setSlipBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
-            gridBuilder->setSlipBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
-            gridBuilder->setSlipBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
-            gridBuilder->setSlipBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
-
-            gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0); // set pressure boundary condition last
+            gridBuilder->setNoSlipBoundaryCondition(SideType::PX);
+            gridBuilder->setNoSlipBoundaryCondition(SideType::MX);
+            gridBuilder->setNoSlipBoundaryCondition(SideType::PY);
+            gridBuilder->setNoSlipBoundaryCondition(SideType::MY);
+            gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, vyLB, 0.0);
+            gridBuilder->setNoSlipBoundaryCondition(SideType::MZ);
 
             bcFactory.setNoSlipBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipBounceBack);
             bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocitySimpleBounceBackCompressible);
