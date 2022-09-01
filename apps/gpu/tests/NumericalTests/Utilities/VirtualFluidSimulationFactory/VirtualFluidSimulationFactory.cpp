@@ -23,7 +23,8 @@ std::shared_ptr<Parameter> vf::gpu::tests::makeParameter(std::shared_ptr<Simulat
 
     std::string _prefix = "cells";
     std::string gridPath = simPara->getGridPath() + "/";
-    para->setPathAndFilename(simPara->getFilePath() + "/" + _prefix);
+    para->setOutputPath(simPara->getFilePath());
+    para->setOutputPrefix(_prefix);
     para->setPrintFiles(true);
 
     para->setD3Qxx(27);
