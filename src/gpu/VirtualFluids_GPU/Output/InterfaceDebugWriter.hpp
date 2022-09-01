@@ -4,10 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include <stdio.h>
-// #include <math.h>
 #include "Core/StringUtilities/StringUtil.h"
-#include "Logger.h"
 #include "grid/NodeValues.h"
 #include "lbm/constants/D3Q27.h"
 #include "LBM/LB.h"
@@ -18,7 +15,6 @@
 #include <string>
 
 #include "VirtualFluids_GPU/Communication/Communicator.h"
-#include "Utilities/FindNeighbors.h"
 
 namespace InterfaceDebugWriter
 {
@@ -48,41 +44,6 @@ void writeGridInterfaceLines(Parameter *para, int level, const uint *coarse, con
     }
     WbWriterVtkXmlBinary::getInstance()->writeLines(name, nodes, cells);
 }
-
-void writeLinkLines(Parameter *para, const int level, const uint numberOfNodes, const int direction,
-                             const std::string &name)
-{
-    // if (direction != 15)
-    //     return;
-    VF_LOG_INFO("Write node links in direction {}.", direction);
-    std::vector<UbTupleFloat3> nodes(numberOfNodes * 2);
-    std::vector<UbTupleInt2> cells(numberOfNodes);
-
-    for (uint position = 0; position < numberOfNodes; position++) {
-        if (para->getParH(level)->typeOfGridNode[position] != GEO_FLUID)
-            continue;
-
-        const double x1 = para->getParH(level)->coordinateX[position];
-        const double x2 = para->getParH(level)->coordinateY[position];
-        const double x3 = para->getParH(level)->coordinateZ[position];
-
-        const uint positionNeighbor = getNeighborIndex(para->getParH(level).get(), position, direction);
-
-        const double x1Neighbor = para->getParH(level)->coordinateX[positionNeighbor];
-        const double x2Neighbor = para->getParH(level)->coordinateY[positionNeighbor];
-        const double x3Neighbor = para->getParH(level)->coordinateZ[positionNeighbor];
-
-        if(positionNeighbor == 0 && direction == 15)
-            VF_LOG_WARNING("y = {}, yneighCoord = 0 @ {}, neighZneighY[pos] {}", x2, position, para->getParH(level)->neighborZ[para->getParH(level)->neighborY[position]]);
-
-        nodes.emplace_back(float(x1), float(x2), float(x3));
-        nodes.emplace_back(float(x1Neighbor), float(x2Neighbor), float(x3Neighbor));
-
-        cells.emplace_back(nodes.size() - 2, nodes.size() - 1);
-    }
-    WbWriterVtkXmlBinary::getInstance()->writeLines(name, nodes, cells);
-}
-
 
 void writeInterfaceLinesDebugCF(Parameter *para)
 {
@@ -944,17 +905,6 @@ void writeRecvNodesStream(Parameter *para)
                                   StringUtil::toString<int>(level);
 
         WbWriterVtkXmlBinary::getInstance()->writeNodesWithNodeData(filenameVec, nodesVec, datanames, nodedata);
-    }
-}
-
-
-void writeLinksDebug(Parameter *para)
-{
-    for (int level = 0; level <= para->getMaxLevel(); level++) {
-        for(int direction = vf::lbm::dir::STARTDIR; direction <= vf::lbm::dir::ENDDIR; direction++){
-            const std::string fileName = para->getFName() + "_" + StringUtil::toString<int>(level) + "_Link_" + std::to_string(direction) + "_Debug.vtk";
-            writeLinkLines(para, level, para->getParH(level)->numberOfNodes, direction, fileName);
-        }
     }
 }
 

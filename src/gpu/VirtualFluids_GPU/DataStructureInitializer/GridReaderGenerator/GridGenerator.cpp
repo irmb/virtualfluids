@@ -79,14 +79,6 @@ void GridGenerator::allocArrays_CoordNeighborGeo()
             para->getParH(level)->typeOfGridNode,
             level);
 
-    std::cout << "numberOfNodesPerLevel " << numberOfNodesPerLevel << std::endl;
-
-        for (int i = 0; i< numberOfNodesPerLevel; i++){            
-                    if(i > 406600 && i < 406610){
-            std::cout << "..................... neighborYIndex GridGen " << para->getParH(level)->neighborZ[para->getParH(level)->neighborY[i]] << std::endl;
-        }
-        }
-
         setInitalNodeValues(numberOfNodesPerLevel, level);
 
         cudaMemoryManager->cudaCopyNeighborWSB(level);

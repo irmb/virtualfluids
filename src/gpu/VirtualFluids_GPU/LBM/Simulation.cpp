@@ -13,12 +13,14 @@
 #include "GPU/GPU_Interface.h"
 #include "GPU/KineticEnergyAnalyzer.h"
 #include "GPU/EnstrophyAnalyzer.h"
+#include "StreetPointFinder/JunctionReader.h"
 #include "basics/utilities/UbFileOutputASCII.h"
 //////////////////////////////////////////////////////////////////////////
 #include "Output/MeasurePointWriter.hpp"
 #include "Output/AnalysisData.hpp"
 #include "Output/InterfaceDebugWriter.hpp"
 #include "Output/EdgeNodeDebugWriter.hpp"
+#include "Output/NeighborDebugWriter.hpp"
 #include "Output/VeloASCIIWriter.hpp"
 //////////////////////////////////////////////////////////////////////////
 #include "Utilities/Buffer2D.hpp"
@@ -145,7 +147,6 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     cudaMemoryManager->setMemsizeGPU(0, true);
     //////////////////////////////////////////////////////////////////////////
     allocNeighborsOffsetsScalesAndBoundaries(gridProvider);
-    InterfaceDebugWriter::writeLinksDebug(para.get());
 
     for (SPtr<PreCollisionInteractor> actuator : para->getActuators()) {
         actuator->init(para.get(), &gridProvider, cudaMemoryManager.get());
@@ -398,6 +399,8 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     // std::cout << "Process " << communicator.getPID() <<": used device memory" << cudaMemoryManager->getMemsizeGPU() /
     // 1000000.0 << " MB\n" << std::endl;
     //////////////////////////////////////////////////////////////////////////
+
+    // NeighborDebugWriter::writeNeighborLinkLinesDebug(para.get());
 
     // InterfaceDebugWriter::writeInterfaceLinesDebugCF(para.get());
     // InterfaceDebugWriter::writeInterfaceLinesDebugFC(para.get());

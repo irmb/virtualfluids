@@ -2050,13 +2050,6 @@ void GridImp::getNodeValues(real *xCoords, real *yCoords, real *zCoords, uint *n
         const uint neighborZIndex        = uint(this->neighborIndexZ[i] + 1);
         const uint neighborNegativeIndex = uint(this->neighborIndexNegative[i] + 1);
 
-        if(i > 406599 && i < 406609){
-            std::cout << "..................... neighborZIndex[neigY] " << this->neighborIndexZ[neighborYIndex] << std::endl;
-            std::cout << "..................... type of node Fluid? " << this->field.isFluid(i) << std::endl;
-            std::cout << "..................... type of NeighborY Stopper? " << this->field.isStopper(neighborYIndex) << std::endl;
-            std::cout << "..................... neigY " << neighborYIndex << std::endl;
-        }
-
         const uint type = uint(this->field.isFluid(i) ? GEOFLUID : GEOSOLID);
 
         xCoords[nodeNumber + 1] = x;
