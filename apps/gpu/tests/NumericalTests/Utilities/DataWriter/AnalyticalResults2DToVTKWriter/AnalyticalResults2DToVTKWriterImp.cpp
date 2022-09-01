@@ -49,7 +49,7 @@ void AnalyticalResults2DToVTKWriterImp::writeAnalyticalResult(std::shared_ptr<Pa
                     filePath.resize(filePath.size() - 5);
                     fname.push_back(filePath + "AnalyticalResult/Analytical_cells_bin_lev_" +
                                     StringUtil::toString<int>(level) + "_ID_" +
-                                    StringUtil::toString<int>(para->getMyID()) + "_Part_" +
+                                    StringUtil::toString<int>(para->getMyProcessID()) + "_Part_" +
                                     StringUtil::toString<int>(j) + "_t_" + StringUtil::toString<int>(time) + ".vtk");
                 }
                 std::cout << "\t Write TimeStep=" << timeStep << " t=" << time << "...";

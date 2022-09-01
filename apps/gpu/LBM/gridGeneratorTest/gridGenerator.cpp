@@ -76,11 +76,11 @@ void multipleLevel(const std::string& configPath)
     //gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_UNDER_TRIANGLE);
 
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
-    
+
     vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();
     vf::basics::ConfigurationFile config;
     config.load(configPath);
-    SPtr<Parameter> para = std::make_shared<Parameter>(config, communicator.getNummberOfProcess(), communicator.getPID());
+    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNummberOfProcess(), communicator.getPID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
 
 
@@ -104,7 +104,7 @@ void multipleLevel(const std::string& configPath)
         };
 
         int testcase = SphereTest;
-        
+
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		if (testcase == TGV)
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -118,7 +118,7 @@ void multipleLevel(const std::string& configPath)
 			//////////////////////////////////////////////////////////////////////////
 			gridBuilder->setPeriodicBoundaryCondition(true, true, true);
 			//////////////////////////////////////////////////////////////////////////
-			gridBuilder->buildGrids(LBM, true); 
+			gridBuilder->buildGrids(LBM, true);
 			//////////////////////////////////////////////////////////////////////////
 			SPtr<Grid> grid = gridBuilder->getGrid(gridBuilder->getNumberOfLevels() - 1);
 			//////////////////////////////////////////////////////////////////////////
@@ -178,10 +178,8 @@ void multipleLevel(const std::string& configPath)
             para->setOutputPath( "F:/Work/Computations/out/Sphere/" );
             para->setOutputPrefix( "Sphere" );
 
-            para->setPathAndFilename(para->getOutputPath() + "/" + para->getOutputPrefix());
-
             para->setPrintFiles(true);
-    
+
             para->setVelocityLB( vx );
             para->setViscosityLB( ( vx * D / dx ) / Re );
 
@@ -211,7 +209,7 @@ void multipleLevel(const std::string& configPath)
 
             //gridBuilder->setNumberOfLayers(10,8);
             //gridBuilder->addGrid(SphereSTL, 2);
-            
+
             gridBuilder->setNumberOfLayers(4,8);
             gridBuilder->addGrid(sphereRef_1_STL, 1);
             //gridBuilder->addGrid(sphereRef_2_STL, 4);
@@ -220,7 +218,7 @@ void multipleLevel(const std::string& configPath)
             //gridBuilder->addGrid(sphere, 5);
 
 
-        
+
             //gridBuilder->addGeometry(SphereSTL);
             gridBuilder->addGeometry(sphere);
 
@@ -237,7 +235,7 @@ void multipleLevel(const std::string& configPath)
             gridBuilder->setVelocityBoundaryCondition(SideType::MX, vx, 0.0, 0.0);
 
             gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
-            
+
             bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
             bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipCompressible);
             bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::PressureNonEquilibriumCompressible);
@@ -266,10 +264,8 @@ void multipleLevel(const std::string& configPath)
             para->setOutputPath( "F:/Work/Computations/out/DrivAerNew/" );
             para->setOutputPrefix( "DrivAer" );
 
-            para->setPathAndFilename(para->getOutputPath() + "/" + para->getOutputPrefix());
-
             para->setPrintFiles(true);
-    
+
             para->setVelocityLB( vx );
             para->setViscosityLB( ( vx * L / dx ) / Re );
 
@@ -309,7 +305,7 @@ void multipleLevel(const std::string& configPath)
 
             gridBuilder->setNumberOfLayers(10,8);
             gridBuilder->addGrid(DrivAerRefBoxSTL, 4);
-        
+
             gridBuilder->setNumberOfLayers(10,8);
             gridBuilder->addGrid(DrivAerSTL, 5);
 
@@ -372,10 +368,8 @@ void multipleLevel(const std::string& configPath)
             para->setOutputPath( "F:/Work/Computations/out/PaperPlane/" );
             para->setOutputPrefix( "PaperPlaneK17winglet" );
 
-            para->setPathAndFilename(para->getOutputPath() + "/" + para->getOutputPrefix());
-
             para->setPrintFiles(true);
-    
+
             para->setVelocityLB( vx );
             para->setViscosityLB( ( vx * L / dx ) / Re );
 
@@ -392,7 +386,7 @@ void multipleLevel(const std::string& configPath)
 
             TriangularMesh* STL = TriangularMesh::make("F:/Work/Computations/gridGenerator/stl/PaperPlane_1.stl");
             //TriangularMesh* STL = TriangularMesh::make("F:/Work/Computations/gridGenerator/stl/PaperPlane_1_winglet.stl");
-            
+
             TriangularMesh* RefBoxSTL = TriangularMesh::make("F:/Work/Computations/gridGenerator/stl/PaperPlane_1_ref.stl");
             //TriangularMesh* RefBoxSTL = TriangularMesh::make("F:/Work/Computations/gridGenerator/stl/PaperPlane_1_winglet_ref.stl");
 
@@ -452,10 +446,8 @@ void multipleLevel(const std::string& configPath)
             para->setOutputPath( "F:/Work/Computations/out/StlGroupTest/" );
             para->setOutputPrefix( "StlGroupTest" );
 
-            para->setPathAndFilename(para->getOutputPath() + "/" + para->getOutputPrefix());
-
             para->setPrintFiles(true);
-    
+
             para->setVelocityLB( vx );
             para->setViscosityLB( ( vx * L / dx ) / Re );
 
@@ -551,7 +543,7 @@ void multipleLevel(const std::string& configPath)
 
             gridBuilder->addCoarseGrid(-30.0, -20.0,  0.0 - z0,
                                         50.0,  20.0, 25.0 - z0, dx);
-            
+
             gridBuilder->setNumberOfLayers(10,8);
             gridBuilder->addGrid( new Cuboid( - 6.6, -6, -0.7, 20.6 , 6, 5.3  ), 1 );
             gridBuilder->addGrid( new Cuboid( -3.75, -3, -0.7, 11.75, 3, 2.65 ), 2 );
@@ -559,7 +551,7 @@ void multipleLevel(const std::string& configPath)
             gridBuilder->setNumberOfLayers(10,8);
             gridBuilder->addGrid(DLC_RefBox_Level_3, 3);
             gridBuilder->addGrid(DLC_RefBox_Level_4, 4);
-        
+
             Conglomerate* refinement = new Conglomerate();
             refinement->add(DLC_RefBox_Level_5);
             refinement->add(VW370_SERIE_STL);
@@ -588,7 +580,7 @@ void multipleLevel(const std::string& configPath)
             bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityAndPressureCompressible);
             bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipCompressible);
             bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflective);
- 
+
             //////////////////////////////////////////////////////////////////////////
 
             SPtr<Grid> grid = gridBuilder->getGrid(gridBuilder->getNumberOfLevels() - 1);
@@ -610,13 +602,13 @@ void multipleLevel(const std::string& configPath)
 
             for( uint patch : frontWheelPatches ){
                 gridBuilder->getGeometryBoundaryCondition(gridBuilder->getNumberOfLevels() - 1)->setTangentialVelocityForPatch( grid, patch, wheelsFrontX, -2.0, wheelsFrontZ,
-                                                                                                                                             wheelsFrontX,  2.0, wheelsFrontZ, 
+                                                                                                                                             wheelsFrontX,  2.0, wheelsFrontZ,
 					                                                                                                                         wheelTangentialVelocity, wheelsRadius);
             }
 
             for( uint patch : rearWheelPatches ){
                 gridBuilder->getGeometryBoundaryCondition(gridBuilder->getNumberOfLevels() - 1)->setTangentialVelocityForPatch( grid, patch, wheelsRearX , -2.0, wheelsRearZ ,
-                                                                                                                                             wheelsRearX ,  2.0, wheelsRearZ , 
+                                                                                                                                             wheelsRearX ,  2.0, wheelsRearZ ,
 					                                                                                                                         wheelTangentialVelocity, wheelsRadius);
             }
 
@@ -631,7 +623,7 @@ void multipleLevel(const std::string& configPath)
             //SimulationFileWriter::write("D:/GRIDGENERATION/files/", gridBuilder, FILEFORMAT::ASCII);
             //SimulationFileWriter::write("C:/Users/lenz/Desktop/Work/gridGenerator/grid/", gridBuilder, FILEFORMAT::ASCII);
             SimulationFileWriter::write("grid/", gridBuilder, FILEFORMAT::ASCII);
-            
+
             //gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
         }
 
@@ -649,10 +641,8 @@ void multipleLevel(const std::string& configPath)
             para->setOutputPath( "F:/Work/Computations/out/Sphere/" );
             para->setOutputPrefix( "Sphere" );
 
-            para->setPathAndFilename(para->getOutputPath() + "/" + para->getOutputPrefix());
-
             para->setPrintFiles(true);
-    
+
             para->setVelocityLB( vx );
             para->setViscosityLB( ( vx * D / dx ) / Re );
 
@@ -672,13 +662,13 @@ void multipleLevel(const std::string& configPath)
 
             //const uint generatePart = 1;
             const uint generatePart = communicator.getPID();
-            
+
             std::ofstream logFile2;
-            
+
             if( generatePart == 0 )
                 logFile2.open( "F:/Work/Computations/gridGenerator/grid/0/gridGeneratorLog.txt" );
                 //logFile2.open( "grid/0/gridGeneratorLog.txt" );
-            
+
             if( generatePart == 1 )
                 logFile2.open( "F:/Work/Computations/gridGenerator/grid/1/gridGeneratorLog.txt" );
                 //logFile2.open( "grid/1/gridGeneratorLog.txt" );
@@ -689,17 +679,17 @@ void multipleLevel(const std::string& configPath)
             //TriangularMesh* triangularMesh = TriangularMesh::make("stl/ShpereNotOptimal.lnx.stl");
 
             // all
-            //gridBuilder->addCoarseGrid(-2, -2, -2,  
+            //gridBuilder->addCoarseGrid(-2, -2, -2,
             //                            4,  2,  2, dx);
 
             real overlap = 10.0 * dx;
 
             if( generatePart == 0 )
-                gridBuilder->addCoarseGrid(-2.0          , -2.0, -2.0,  
+                gridBuilder->addCoarseGrid(-2.0          , -2.0, -2.0,
                                             0.5 + overlap,  2.0,  2.0, dx);
 
             if( generatePart == 1 )
-                gridBuilder->addCoarseGrid( 0.5 - overlap, -2.0, -2.0,  
+                gridBuilder->addCoarseGrid( 0.5 - overlap, -2.0, -2.0,
                                             4.0          ,  2.0,  2.0, dx);
 
 
@@ -707,26 +697,26 @@ void multipleLevel(const std::string& configPath)
             gridBuilder->addGrid(triangularMesh, 1);
 
             gridBuilder->addGeometry(triangularMesh);
-            
+
             if( generatePart == 0 )
-                gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>( -2.0, 0.5, 
-                                                                             -2.0, 2.0, 
+                gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>( -2.0, 0.5,
+                                                                             -2.0, 2.0,
                                                                              -2.0, 2.0 ) );
-            
+
             if( generatePart == 1 )
-                gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>(  0.5, 4.0, 
-                                                                             -2.0, 2.0, 
+                gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>(  0.5, 4.0,
+                                                                             -2.0, 2.0,
                                                                              -2.0, 2.0 ) );
 
             gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
             gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
-            
+
             if( generatePart == 0 ){
                 gridBuilder->findCommunicationIndices(CommunicationDirections::PX, LBM);
                 gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 1);
             }
-            
+
             if( generatePart == 1 ){
                 gridBuilder->findCommunicationIndices(CommunicationDirections::MX, LBM);
                 gridBuilder->setCommunicationProcess(CommunicationDirections::MX, 0);
@@ -771,7 +761,7 @@ void multipleLevel(const std::string& configPath)
                 //SimulationFileWriter::write("grid/1/", gridBuilder, FILEFORMAT::ASCII);
 
             //return;
-            
+
             //gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
         }
 
@@ -804,11 +794,11 @@ void multipleLevel(const std::string& configPath)
 int main( int argc, char* argv[])
 {
     MPI_Init(&argc, &argv);
-    std::string str, str2; 
+    std::string str, str2;
     if ( argv != NULL )
     {
         //str = static_cast<std::string>(argv[0]);
-        
+
         try
         {
             //////////////////////////////////////////////////////////////////////////
@@ -831,12 +821,12 @@ int main( int argc, char* argv[])
 		}
         catch (const std::bad_alloc& e)
         {
-                
+
             *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
         }
         catch (const std::exception& e)
         {
-                
+
             *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
         }
         catch (...)

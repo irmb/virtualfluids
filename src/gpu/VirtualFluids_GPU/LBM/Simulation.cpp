@@ -4,6 +4,7 @@
 
 #include <helper_timer.h>
 
+
 #include "LBM/LB.h"
 #include "Communication/Communicator.h"
 #include "Communication/ExchangeData27.h"
@@ -71,7 +72,7 @@ std::string getFileName(const std::string& fname, int step, int myID)
 Simulation::Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> memoryManager,
                        vf::gpu::Communicator &communicator, GridProvider &gridProvider, BoundaryConditionFactory* bcFactory)
     : para(para), cudaMemoryManager(memoryManager), communicator(communicator), kernelFactory(std::make_unique<KernelFactoryImp>()),
-      preProcessorFactory(std::make_shared<PreProcessorFactoryImp>()), dataWriter(std::make_unique<FileWriter>()) 
+      preProcessorFactory(std::make_shared<PreProcessorFactoryImp>()), dataWriter(std::make_unique<FileWriter>())
 {
 	init(gridProvider, bcFactory);
 }
@@ -386,16 +387,16 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     this->updateGrid27 = std::make_unique<UpdateGrid27>(para, communicator, cudaMemoryManager, pm, kernels, bcFactory);
 
     //////////////////////////////////////////////////////////////////////////
-    // Print Init
+    // Write Initialized Files
     //////////////////////////////////////////////////////////////////////////
-    output << "Print files Init...";
+    VF_LOG_INFO("Write initialized Files ...");
     dataWriter->writeInit(para, cudaMemoryManager);
     if (para->getCalcParticles())
         copyAndPrintParticles(para.get(), cudaMemoryManager.get(), 0, true);
-    output << "done.\n";
+    VF_LOG_INFO("... done.");
 
     //////////////////////////////////////////////////////////////////////////
-    output << "used Device Memory: " << cudaMemoryManager->getMemsizeGPU() / 1000000.0 << " MB\n";
+    VF_LOG_INFO("used Device Memory: {} MB", cudaMemoryManager->getMemsizeGPU() / 1000000.0);
     // std::cout << "Process " << communicator.getPID() <<": used device memory" << cudaMemoryManager->getMemsizeGPU() /
     // 1000000.0 << " MB\n" << std::endl;
     //////////////////////////////////////////////////////////////////////////
@@ -472,8 +473,6 @@ void Simulation::run()
    //////////////////////////////////////////////////////////////////////////
 
    t_prev = para->getTimeCalcMedStart();
-
-	output << "getMaxLevel = " << para->getMaxLevel() << "\n";
 
 	Timer* averageTimer = new Timer("Average performance");
 	averageTimer->startTimer();
@@ -723,7 +722,7 @@ void Simulation::run()
 
          if( para->getPrintFiles() )
          {
-            output << "Write files t=" << timestep << "... ";
+            VF_LOG_INFO("Write files t = {} ...", timestep);
             for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
             {
 		        //////////////////////////////////////////////////////////////////////////
@@ -999,7 +998,7 @@ void Simulation::run()
 			////////////////////////////////////////////////////////////////////////
 			if (para->getCalcParticles()) copyAndPrintParticles(para.get(), cudaMemoryManager.get(), timestep, false);
 			////////////////////////////////////////////////////////////////////////
-			output << "done.\n";
+            VF_LOG_INFO("... done");
 			////////////////////////////////////////////////////////////////////////
          }
 

@@ -24,7 +24,7 @@ TEST(ParameterTest, passingEmptyFileWithoutPath_ShouldNotThrow)
     vf::basics::ConfigurationFile config;
     config.load(filePath.string());
 
-    EXPECT_NO_THROW(Parameter para(config, 1, 0));
+    EXPECT_NO_THROW(Parameter para(1, 0, &config));
 }
 
 // TODO: test setPossNeighborFilesX
@@ -39,7 +39,7 @@ TEST(ParameterTest, check_all_Parameter_CanBePassedToConstructor)
     vf::basics::ConfigurationFile config;
     config.load(filePath.string());
 
-    Parameter para(config);
+    Parameter para(1, 0, &config);
 
     // test optional parameter
     EXPECT_THAT(para.getOutputPath(), testing::Eq("/output/path/"));
@@ -180,7 +180,7 @@ TEST(ParameterTest, setGridPathOverridesConfigFile)
     filePath.replace_filename("parameterTest.cfg");
     vf::basics::ConfigurationFile config;
     config.load(filePath.string());
-    auto para = Parameter(config, 2, 0);
+    auto para = Parameter(2, 0, &config);
     para.setGridPath("gridPathTest");
 
     EXPECT_THAT( para.getGridPath(), testing::Eq("gridPathTest/0/"));

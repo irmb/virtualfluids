@@ -48,6 +48,7 @@
 #include "Core/VectorTypes.h"
 #include "PointerDefinitions.h"
 #include "config/ConfigurationFile.h"
+#include "logger/Logger.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -129,7 +130,7 @@ int main(int argc, char *argv[])
             configPath.replace_filename(configName);
             config.load(configPath.string());
 
-            para = std::make_shared<Parameter>(config);
+            para = std::make_shared<Parameter>(&config);
         } else {
             para = std::make_shared<Parameter>();
         }
@@ -172,8 +173,9 @@ int main(int argc, char *argv[])
         const real velocityLB = velocity * dt / dx; // LB units
         const real viscosityLB =  (dSphere / dx) * velocityLB / Re; // LB units
 
-        *logging::out << logging::Logger::INFO_HIGH << "velocity  [dx/dt] = " << velocityLB << " \n";
-        *logging::out << logging::Logger::INFO_HIGH << "viscosity [dx^2/dt] = " << viscosityLB << "\n";
+        VF_LOG_INFO("LB parameters:");
+        VF_LOG_INFO("velocity LB [dx/dt]              = {}", velocityLB);
+        VF_LOG_INFO("viscosity LB [dx/dt]             = {}", viscosityLB);
 
         //////////////////////////////////////////////////////////////////////////
         // set parameters
@@ -227,7 +229,7 @@ int main(int argc, char *argv[])
         pointProbe->addStatistic(Statistic::Means);
         pointProbe->addStatistic(Statistic::Variances);
         para->addProbe( pointProbe );
-        
+
         SPtr<PlaneProbe> planeProbe = std::make_shared<PlaneProbe>("planeProbe", para->getOutputPath(), tStartAveraging, tAveraging, tStartOutProbe, tOutProbe);
         planeProbe->setProbePlane(dSphere, 0, 0, 0.5, 0.1, 0.1);
         planeProbe->addStatistic(Statistic::Means);
@@ -247,14 +249,14 @@ int main(int argc, char *argv[])
         Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory);
         sim.run();
 
+    } catch (const spdlog::spdlog_ex &ex) {
+        std::cout << "Log initialization failed: " << ex.what() << std::endl;
     } catch (const std::bad_alloc &e) {
-        *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
+        VF_LOG_CRITICAL("Bad Alloc: {}", e.what());
     } catch (const std::exception &e) {
-        *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
-    } catch (std::string &s) {
-        *logging::out << logging::Logger::LOGGER_ERROR << s << "\n";
+        VF_LOG_CRITICAL("exception: {}", e.what());
     } catch (...) {
-        *logging::out << logging::Logger::LOGGER_ERROR << "Unknown exception!\n";
+        VF_LOG_CRITICAL("Unknown exception!");
     }
 
     return 0;

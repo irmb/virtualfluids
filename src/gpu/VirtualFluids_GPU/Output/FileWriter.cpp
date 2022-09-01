@@ -1,7 +1,7 @@
 //  _    ___      __              __________      _     __        ______________   __
 // | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____   /  ___/ __  / /  / /
 // | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/  / /___/ /_/ / /  / /
-// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )  / /_) / ____/ /__/ / 
+// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )  / /_) / ____/ /__/ /
 // |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/   \____/_/    \_____/
 //
 //////////////////////////////////////////////////////////////////////////
@@ -53,7 +53,7 @@ void FileWriter::writeTimestep(std::shared_ptr<Parameter> para, unsigned int tim
     const unsigned int numberOfParts = para->getParH(level)->numberOfNodes / para->getlimitOfNodesForVTK() + 1;
     std::vector<std::string> fname;
     std::vector<std::string> fnameMed;
-    
+
     for (unsigned int i = 1; i <= numberOfParts; i++)
     {
         fname.push_back(para->getFName() + "_bin_lev_" + StringUtil::toString<int>(level) + "_ID_" + StringUtil::toString<int>(para->getMyProcessID()) + "_Part_" + StringUtil::toString<int>(i) + "_t_" + StringUtil::toString<int>(timestep) + ".vtk");
@@ -138,7 +138,7 @@ void VIRTUALFLUIDS_GPU_EXPORT FileWriter::writeCollectionFileMedian(std::shared_
     file.open( filename + ".pvtu" );
 
     //////////////////////////////////////////////////////////////////////////
-    
+
     file << "<VTKFile type=\"PUnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">" << std::endl;
     file << "  <PUnstructuredGrid GhostLevel=\"1\">" << std::endl;
 
@@ -607,7 +607,7 @@ void FileWriter::writeUnstrucuredGridMedianLTConc(std::shared_ptr<Parameter> par
                 if (isPeriodicCell(para, level, number2, number1, number3, number5))
                     continue;
                 //////////////////////////////////////////////////////////////////////////
-                if (neighborsFluid) 
+                if (neighborsFluid)
                     cells.push_back(makeUbTuple(dn1, dn2, dn3, dn4, dn5, dn6, dn7, dn8));
                 //////////////////////////////////////////////////////////////////////////
             }

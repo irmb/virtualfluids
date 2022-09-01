@@ -4,15 +4,15 @@
 #include "Utilities/KernelConfiguration/KernelConfiguration.h"
 #include "Utilities/NumericalTestGridReader/NumericalTestGridReader.h"
 #include "Utilities/SimulationParameter/SimulationParameter.h"
-#include "Utilities/TestSimulation/TestSimulation.h"
-#include "Utilities/VirtualFluidSimulation/VirtualFluidSimulation.h"
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
-#include "VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
-#include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
 
-std::shared_ptr<Parameter> makeParameter(std::shared_ptr<SimulationParameter> simPara)
+#include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
+#include "VirtualFluids_GPU/Communication/Communicator.h"
+#include "VirtualFluids_GPU/LBM/Simulation.h"
+
+std::shared_ptr<Parameter> vf::gpu::tests::makeParameter(std::shared_ptr<SimulationParameter> simPara)
 {
     auto para = std::make_shared<Parameter>(1, 0);
 
@@ -23,7 +23,8 @@ std::shared_ptr<Parameter> makeParameter(std::shared_ptr<SimulationParameter> si
 
     std::string _prefix = "cells";
     std::string gridPath = simPara->getGridPath() + "/";
-    para->setPathAndFilename(simPara->getFilePath() + "/" + _prefix);
+    para->setOutputPath(simPara->getFilePath());
+    para->setOutputPrefix(_prefix);
     para->setPrintFiles(true);
 
     para->setD3Qxx(27);
@@ -111,36 +112,16 @@ std::shared_ptr<NumericalTestGridReader> makeGridReader(std::shared_ptr<InitialC
     return NumericalTestGridReader::getNewInstance(para, initialCondition, cudaManager);
 }
 
-void initInitialConditions(std::shared_ptr<InitialCondition> initialCondition, std::shared_ptr<Parameter> para)
+const std::function<void()> vf::gpu::tests::makeVirtualFluidSimulation(std::shared_ptr<Parameter> para,
+                                                                       std::shared_ptr<InitialCondition> condition,
+                                                                       std::shared_ptr<DataWriter> dataWriter)
 {
-    initialCondition->setParameter(para);
-}
+    auto cudaManager = std::make_shared<CudaMemoryManager>(para);
+    auto grid = makeGridReader(condition, para, cudaManager);
+    BoundaryConditionFactory bc_factory;
+    auto simulation =
+        std::make_shared<Simulation>(para, cudaManager, vf::gpu::Communicator::getInstance(), *grid.get(), &bc_factory);
+    simulation->setDataWriter(dataWriter);
 
-std::vector<std::shared_ptr<VirtualFluidSimulation>>
-vf::gpu::tests::makeVirtualFluidSimulations(std::vector<std::shared_ptr<TestSimulation>> testSim)
-{
-    std::vector<std::shared_ptr<VirtualFluidSimulation>> vfSimulations;
-
-    for (const auto currentSim : testSim) {
-        auto vfSim = std::make_shared<VirtualFluidSimulation>();
-        auto simPara = currentSim->getSimulationParameter();
-        auto para = makeParameter(simPara);
-        vfSim->setParameter(para);
-        currentSim->setParameter(para);
-
-        auto cudaManager = std::make_shared<CudaMemoryManager>(para);
-        vfSim->setCudaMemoryManager(cudaManager);
-
-        initInitialConditions(currentSim->getInitialCondition(), para);
-        auto grid = makeGridReader(currentSim->getInitialCondition(), para, cudaManager);
-
-        vfSim->setGridProvider(grid);
-        vfSim->setDataWriter(currentSim->getDataWriter());
-        vfSim->setNumericalTestSuite(currentSim);
-        vfSim->setTimeTracking(currentSim->getTimeTracking());
-
-        vfSimulations.push_back(vfSim);
-    }
-
-    return vfSimulations;
+    return [simulation]() { simulation->run(); };
 }

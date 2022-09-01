@@ -12,10 +12,6 @@
     ],
     "runArgs": ["--gpus","all",                     // remove this line in case you have no gpus available
                 "--hostname=${localEnv:HOSTNAME}"], // HOSTNAME needs to be known by the vscode environment. It is probably necessary to add "export HOSTNAME=<hostname>" to the config file of your host machine's bash.
-    "image": "git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu20_04:1.3",
-    "containerEnv": {"HOME": "/workspaces/"},
-    "mounts": [
-        "source=/mnt/d/output,target=/${containerWorkspaceFolder}/output,type=bind", 
-        "source=${localEnv:HOME}/STLs,target=${containerWorkspaceFolder}/stl,type=bind"    
-    ]
+
+    "image": "git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu20_04:1.4"
 }

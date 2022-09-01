@@ -1,5 +1,6 @@
 #define _USE_MATH_DEFINES
 #include <exception>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <math.h>
@@ -20,6 +21,7 @@
 #include "basics/Core/Logger/Logger.h"
 #include "basics/Core/StringUtilities/StringUtil.h"
 #include "basics/config/ConfigurationFile.h"
+#include "logger/Logger.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -38,15 +40,15 @@
 
 //////////////////////////////////////////////////////////////////////////
 
+#include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
 #include "VirtualFluids_GPU/Communication/Communicator.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
+#include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 #include "VirtualFluids_GPU/LBM/Simulation.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
-#include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
-#include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -62,17 +64,17 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// Relative Paths
+const std::string outPath("./output/MusselOysterResults/");
+const std::string gridPathParent = "./output/MusselOysterResults/grid/";
+const std::string stlPath("./stl/MusselOyster/");
+const std::string simulationName("MusselOyster");
+
 // Tesla 03
 // const std::string outPath("E:/temp/MusselOysterResults/");
 // const std::string gridPathParent = "E:/temp/GridMussel/";
 // const std::string stlPath("C:/Users/Master/Documents/MasterAnna/STL/");
 // const std::string simulationName("MusselOyster");
-
-// Aragorn
-const std::string outPath("./output/MusselOysterResults/");
-const std::string gridPathParent = "./output/MusselOysterResults/grid/";
-const std::string stlPath("./stl/MusselOyster/");
-const std::string simulationName("MusselOyster");
 
 // Phoenix
 // const std::string outPath("/work/y0078217/Results/MusselOysterResults/");
@@ -84,23 +86,23 @@ const std::string simulationName("MusselOyster");
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void multipleLevel(const std::string &configPath)
+void multipleLevel(std::filesystem::path &configPath)
 {
     logging::Logger::addStream(&std::cout);
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
     logging::Logger::timeStamp(logging::Logger::ENABLE);
     logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
 
-    vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();
+    vf::gpu::Communicator &communicator = vf::gpu::Communicator::getInstance();
 
     auto gridFactory = GridFactory::make();
     gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
 
     vf::basics::ConfigurationFile config;
-    std::cout << configPath << std::endl;
-    config.load(configPath);
-    SPtr<Parameter> para = std::make_shared<Parameter>(config, communicator.getNummberOfProcess(), communicator.getPID());
+    config.load(configPath.string());
+    SPtr<Parameter> para =
+        std::make_shared<Parameter>(communicator.getNummberOfProcess(), communicator.getPID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -125,7 +127,6 @@ void multipleLevel(const std::string &configPath)
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     std::string bivalveType = "MUSSEL"; // "MUSSEL" "OYSTER"
     std::string gridPath(
         gridPathParent +
@@ -135,10 +136,10 @@ void multipleLevel(const std::string &configPath)
     // real dxGrid = (real)1.0; // 1.0
     if (para->getNumprocs() == 8)
         dxGrid = 0.5;
-    real vxLB            = (real)0.051; // LB units
-    real Re              = (real)300.0;
+    real vxLB = (real)0.051; // LB units
+    real Re = (real)300.0;
     real referenceLength = 1.0 / dxGrid; // heightBivalve / dxGrid
-    real viscosityLB     = (vxLB * referenceLength) / Re;
+    real viscosityLB = (vxLB * referenceLength) / Re;
 
     para->setVelocityLB(vxLB);
     para->setViscosityLB(viscosityLB);
@@ -146,40 +147,40 @@ void multipleLevel(const std::string &configPath)
     para->setViscosityRatio((real)0.058823529);
     para->setDensityRatio((real)998.0);
 
-    *logging::out << logging::Logger::INFO_HIGH << "bivalveType = " << bivalveType << " \n";
-    *logging::out << logging::Logger::INFO_HIGH << "velocity LB [dx/dt] = " << vxLB << " \n";
-    *logging::out << logging::Logger::INFO_HIGH << "viscosity LB [dx^2/dt] = " << viscosityLB << "\n";
-    *logging::out << logging::Logger::INFO_HIGH << "velocity real [m/s] = " << vxLB * para->getVelocityRatio() << " \n";
-    *logging::out << logging::Logger::INFO_HIGH
-                  << "viscosity real [m^2/s] = " << viscosityLB * para->getViscosityRatio() << "\n";
-    *logging::out << logging::Logger::INFO_HIGH << "dxGrid = " << dxGrid << "\n";
-    *logging::out << logging::Logger::INFO_HIGH << "useGridGenerator = " << useGridGenerator << "\n";
-    *logging::out << logging::Logger::INFO_HIGH << "useStreams = " << useStreams << "\n";
-    *logging::out << logging::Logger::INFO_HIGH << "number of processes = " << para->getNumprocs() << "\n";
-
     // para->setTimestepOut(1000);
     // para->setTimestepEnd(10000);
 
     para->setCalcDragLift(false);
     para->setUseWale(false);
 
-    if (para->getOutputPath().size() == 0) {
-        para->setOutputPath(outPath);
-    }
     para->setOutputPrefix(simulationName);
-    para->setPathAndFilename(para->getOutputPath() + para->getOutputPrefix());
+    if (para->getOutputPath() == "output/") {para->setOutputPath(outPath);}
+
     para->setPrintFiles(true);
     std::cout << "Write result files to " << para->getFName() << std::endl;
-
-    if (useLevels)
-        para->setMaxLevel(2);
-    else
-        para->setMaxLevel(1);
 
     para->setUseStreams(useStreams);
     // para->setMainKernel("CumulantK17CompChim");
     para->setMainKernel("CumulantK17CompChimStream");
-    *logging::out << logging::Logger::INFO_HIGH << "Kernel: " << para->getMainKernel() << "\n";
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    VF_LOG_INFO("LB parameters:");
+    VF_LOG_INFO("velocity LB [dx/dt]              = {}", vxLB);
+    VF_LOG_INFO("viscosity LB [dx/dt]             = {}", viscosityLB);
+    VF_LOG_INFO("dxGrid [-]                       = {}\n", dxGrid);
+
+    VF_LOG_INFO("world parameters:");
+    VF_LOG_INFO("velocity [m/s]                   = {}", vxLB * para->getVelocityRatio());
+    VF_LOG_INFO("viscosity [m^2/s]                = {}\n", viscosityLB * para->getViscosityRatio());
+
+    VF_LOG_INFO("simulation parameters:");
+    VF_LOG_INFO("useGridGenerator                 = {}", useGridGenerator);
+    VF_LOG_INFO("useStreams                       = {}", para->getUseStreams());
+    VF_LOG_INFO("number of processes              = {}", para->getNumprocs());
+    VF_LOG_INFO("useReducedCommunicationAfterFtoC = {}", para->useReducedCommunicationAfterFtoC);
+    VF_LOG_INFO("bivalveType                      = {}", bivalveType);
+    VF_LOG_INFO("mainKernel                       = {}\n", para->getMainKernel());
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -194,7 +195,7 @@ void multipleLevel(const std::string &configPath)
         // height MUSSEL = 35.0
         // height Oyster = 72.0
 
-        TriangularMesh *bivalveSTL       = TriangularMesh::make(stlPath + bivalveType + ".stl");
+        TriangularMesh *bivalveSTL = TriangularMesh::make(stlPath + bivalveType + ".stl");
         TriangularMesh *bivalveRef_1_STL = nullptr;
         if (useLevels)
             bivalveRef_1_STL = TriangularMesh::make(stlPath + bivalveType + "_Level1.stl");
@@ -566,11 +567,10 @@ void multipleLevel(const std::string &configPath)
         bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityAndPressureCompressible);
         bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflective);
         bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipCompressible);
-
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-   auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
+    auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
 
     SPtr<GridProvider> gridGenerator;
     if (useGridGenerator)
@@ -591,39 +591,32 @@ int main(int argc, char *argv[])
     std::string str, str2, configFile;
 
     if (argv != NULL) {
+
         try {
             //////////////////////////////////////////////////////////////////////////
+            // assuming that a config files is stored parallel to this file.
+            std::filesystem::path configPath = __FILE__;
 
-            std::string targetPath;
-
-            targetPath = __FILE__;
-
+            // the config file's default name can be replaced by passing a command line argument
+            std::string configName("configMusselOyster.txt");
             if (argc == 2) {
-                configFile = argv[1];
-                std::cout << "Using configFile command line argument: " << configFile << std::endl;
+                configName = argv[1];
+                std::cout << "Using configFile command line argument: " << configName << std::endl;
             }
 
-#ifdef _WIN32
-            targetPath = targetPath.substr(0, targetPath.find_last_of('\\') + 1);
-#else
-            targetPath = targetPath.substr(0, targetPath.find_last_of('/') + 1);
-#endif
+            configPath.replace_filename(configName);
 
-            std::cout << targetPath << std::endl;
-
-            if (configFile.size() == 0) {
-                configFile = targetPath + "configMusselOyster.txt";
-            }
-
-            multipleLevel(configFile);
+            multipleLevel(configPath);
 
             //////////////////////////////////////////////////////////////////////////
+        } catch (const spdlog::spdlog_ex &ex) {
+            std::cout << "Log initialization failed: " << ex.what() << std::endl;
         } catch (const std::bad_alloc &e) {
-            *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
+            VF_LOG_CRITICAL("Bad Alloc: {}", e.what());
         } catch (const std::exception &e) {
-            *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
+            VF_LOG_CRITICAL("exception: {}", e.what());
         } catch (...) {
-            *logging::out << logging::Logger::LOGGER_ERROR << "Unknown exception!\n";
+            VF_LOG_CRITICAL("Unknown exception!");
         }
     }
 
