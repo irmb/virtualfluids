@@ -1444,10 +1444,10 @@ __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
       q = q_dirE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 VeloX = c0o1;
-	     VeloY = fac*vx2;
-	     VeloZ = fac*vx3;
-		 x = true;
+         VeloX = c0o1;
+         VeloY = fac*vx2;
+         VeloZ = fac*vx3;
+         x = true;
          feq=c2o27* (drho/*+three*( vx1        )*/+c9o2*( vx1        )*( vx1        ) * (c1o1 + drho)-cu_sq); 
          (D.f[DIR_M00])[kw]=(c1o1-q)/(c1o1+q)*(f_E-f_W+(f_E+f_W-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_E+f_W)-c6o1*c2o27*( VeloX     ))/(c1o1+q) - c2o27 * drho;
          //feq=c2over27* (drho+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq); 
@@ -1458,10 +1458,10 @@ __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
       q = q_dirW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 VeloX = c0o1;
-	     VeloY = fac*vx2;
-	     VeloZ = fac*vx3;
-		 x = true;
+         VeloX = c0o1;
+         VeloY = fac*vx2;
+         VeloZ = fac*vx3;
+         x = true;
          feq=c2o27* (drho/*+three*(-vx1        )*/+c9o2*(-vx1        )*(-vx1        ) * (c1o1 + drho)-cu_sq); 
          (D.f[DIR_P00])[ke]=(c1o1-q)/(c1o1+q)*(f_W-f_E+(f_W+f_E-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_W+f_E)-c6o1*c2o27*(-VeloX     ))/(c1o1+q) - c2o27 * drho;
          //feq=c2over27* (drho+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq); 
@@ -1472,10 +1472,10 @@ __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
       q = q_dirN[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 VeloX = fac*vx1;
-		 VeloY = c0o1;
-	     VeloZ = fac*vx3;
-		 y = true;
+         VeloX = fac*vx1;
+         VeloY = c0o1;
+         VeloZ = fac*vx3;
+         y = true;
          feq=c2o27* (drho/*+three*(    vx2     )*/+c9o2*(     vx2    )*(     vx2    ) * (c1o1 + drho)-cu_sq); 
          (D.f[DIR_0M0])[ks]=(c1o1-q)/(c1o1+q)*(f_N-f_S+(f_N+f_S-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_N+f_S)-c6o1*c2o27*( VeloY     ))/(c1o1+q) - c2o27 * drho;
          //feq=c2over27* (drho+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq); 
@@ -1486,10 +1486,10 @@ __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
       q = q_dirS[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 VeloX = fac*vx1;
-		 VeloY = c0o1;
-	     VeloZ = fac*vx3;
-		 y = true;
+         VeloX = fac*vx1;
+         VeloY = c0o1;
+         VeloZ = fac*vx3;
+         y = true;
          feq=c2o27* (drho/*+three*(   -vx2     )*/+c9o2*(    -vx2    )*(    -vx2    ) * (c1o1 + drho)-cu_sq); 
          (D.f[DIR_0P0])[kn]=(c1o1-q)/(c1o1+q)*(f_S-f_N+(f_S+f_N-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_S+f_N)-c6o1*c2o27*(-VeloY     ))/(c1o1+q) - c2o27 * drho;
          //feq=c2over27* (drho+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq); 
@@ -1500,10 +1500,10 @@ __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
       q = q_dirT[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 VeloX = fac*vx1;
-	     VeloY = fac*vx2;
-		 VeloZ = c0o1;
-		 z = true;
+         VeloX = fac*vx1;
+         VeloY = fac*vx2;
+         VeloZ = c0o1;
+         z = true;
          feq=c2o27* (drho/*+three*(         vx3)*/+c9o2*(         vx3)*(         vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[DIR_00M])[kb]=(c1o1-q)/(c1o1+q)*(f_T-f_B+(f_T+f_B-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_T+f_B)-c6o1*c2o27*( VeloZ     ))/(c1o1+q) - c2o27 * drho;
          //feq=c2over27* (drho+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq); 
@@ -1514,10 +1514,10 @@ __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
       q = q_dirB[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 VeloX = fac*vx1;
-	     VeloY = fac*vx2;
-		 VeloZ = c0o1;
-		 z = true;
+         VeloX = fac*vx1;
+         VeloY = fac*vx2;
+         VeloZ = c0o1;
+         z = true;
          feq=c2o27* (drho/*+three*(        -vx3)*/+c9o2*(        -vx3)*(        -vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[DIR_00P])[kt]=(c1o1-q)/(c1o1+q)*(f_B-f_T+(f_B+f_T-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_B+f_T)-c6o1*c2o27*(-VeloZ     ))/(c1o1+q) - c2o27 * drho;
          //feq=c2over27* (drho+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq); 
@@ -1528,11 +1528,11 @@ __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
       q = q_dirNE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 VeloX = fac*vx1;
-	     VeloY = fac*vx2;
-	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = c0o1;
-		 if (y == true) VeloY = c0o1;
+         VeloX = fac*vx1;
+         VeloY = fac*vx2;
+         VeloZ = fac*vx3;
+         if (x == true) VeloX = c0o1;
+         if (y == true) VeloY = c0o1;
          feq=c1o54* (drho/*+three*( vx1+vx2    )*/+c9o2*( vx1+vx2    )*( vx1+vx2    ) * (c1o1 + drho)-cu_sq); 
          (D.f[DIR_MM0])[ksw]=(c1o1-q)/(c1o1+q)*(f_NE-f_SW+(f_NE+f_SW-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_NE+f_SW)-c6o1*c1o54*(VeloX+VeloY))/(c1o1+q) - c1o54 * drho;
          //feq=c1over54* (drho+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq); 
@@ -1543,11 +1543,11 @@ __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
       q = q_dirSW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 VeloX = fac*vx1;
-	     VeloY = fac*vx2;
-	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = c0o1;
-		 if (y == true) VeloY = c0o1;
+         VeloX = fac*vx1;
+         VeloY = fac*vx2;
+         VeloZ = fac*vx3;
+         if (x == true) VeloX = c0o1;
+         if (y == true) VeloY = c0o1;
          feq=c1o54* (drho/*+three*(-vx1-vx2    )*/+c9o2*(-vx1-vx2    )*(-vx1-vx2    ) * (c1o1 + drho)-cu_sq); 
          (D.f[DIR_PP0])[kne]=(c1o1-q)/(c1o1+q)*(f_SW-f_NE+(f_SW+f_NE-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_SW+f_NE)-c6o1*c1o54*(-VeloX-VeloY))/(c1o1+q) - c1o54 * drho;
          //feq=c1over54* (drho+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq); 
@@ -1558,11 +1558,11 @@ __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
       q = q_dirSE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 VeloX = fac*vx1;
-	     VeloY = fac*vx2;
-	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = c0o1;
-		 if (y == true) VeloY = c0o1;
+         VeloX = fac*vx1;
+         VeloY = fac*vx2;
+         VeloZ = fac*vx3;
+         if (x == true) VeloX = c0o1;
+         if (y == true) VeloY = c0o1;
          feq=c1o54* (drho/*+three*( vx1-vx2    )*/+c9o2*( vx1-vx2    )*( vx1-vx2    ) * (c1o1 + drho)-cu_sq); 
          (D.f[DIR_MP0])[knw]=(c1o1-q)/(c1o1+q)*(f_SE-f_NW+(f_SE+f_NW-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_SE+f_NW)-c6o1*c1o54*( VeloX-VeloY))/(c1o1+q) - c1o54 * drho;
          //feq=c1over54* (drho+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq); 
@@ -1573,11 +1573,11 @@ __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
       q = q_dirNW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 VeloX = fac*vx1;
-	     VeloY = fac*vx2;
-	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = c0o1;
-		 if (y == true) VeloY = c0o1;
+         VeloX = fac*vx1;
+         VeloY = fac*vx2;
+         VeloZ = fac*vx3;
+         if (x == true) VeloX = c0o1;
+         if (y == true) VeloY = c0o1;
          feq=c1o54* (drho/*+three*(-vx1+vx2    )*/+c9o2*(-vx1+vx2    )*(-vx1+vx2    ) * (c1o1 + drho)-cu_sq); 
          (D.f[DIR_PM0])[kse]=(c1o1-q)/(c1o1+q)*(f_NW-f_SE+(f_NW+f_SE-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_NW+f_SE)-c6o1*c1o54*(-VeloX+VeloY))/(c1o1+q) - c1o54 * drho;
          //feq=c1over54* (drho+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq); 
@@ -1588,11 +1588,11 @@ __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
       q = q_dirTE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 VeloX = fac*vx1;
-	     VeloY = fac*vx2;
-	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = c0o1;
-		 if (z == true) VeloZ = c0o1;
+         VeloX = fac*vx1;
+         VeloY = fac*vx2;
+         VeloZ = fac*vx3;
+         if (x == true) VeloX = c0o1;
+         if (z == true) VeloZ = c0o1;
       //  if (k==10000) printf("AFTER x: %u \t  y: %u \t z: %u \n  VeloX: %f \t VeloY: %f \t VeloZ: %f \n\n", x,y,z, VeloX,VeloY,VeloZ);
          feq=c1o54* (drho/*+three*( vx1    +vx3)*/+c9o2*( vx1    +vx3)*( vx1    +vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[DIR_M0M])[kbw]=(c1o1-q)/(c1o1+q)*(f_TE-f_BW+(f_TE+f_BW-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_TE+f_BW)-c6o1*c1o54*( VeloX+VeloZ))/(c1o1+q) - c1o54 * drho;
@@ -1604,11 +1604,11 @@ __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
       q = q_dirBW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 VeloX = fac*vx1;
-	     VeloY = fac*vx2;
-	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = c0o1;
-		 if (z == true) VeloZ = c0o1;
+         VeloX = fac*vx1;
+         VeloY = fac*vx2;
+         VeloZ = fac*vx3;
+         if (x == true) VeloX = c0o1;
+         if (z == true) VeloZ = c0o1;
          feq=c1o54* (drho/*+three*(-vx1    -vx3)*/+c9o2*(-vx1    -vx3)*(-vx1    -vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[DIR_P0P])[kte]=(c1o1-q)/(c1o1+q)*(f_BW-f_TE+(f_BW+f_TE-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_BW+f_TE)-c6o1*c1o54*(-VeloX-VeloZ))/(c1o1+q) - c1o54 * drho;
          //feq=c1over54* (drho+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq); 
@@ -1619,11 +1619,11 @@ __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
       q = q_dirBE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 VeloX = fac*vx1;
-	     VeloY = fac*vx2;
-	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = c0o1;
-		 if (z == true) VeloZ = c0o1;
+         VeloX = fac*vx1;
+         VeloY = fac*vx2;
+         VeloZ = fac*vx3;
+         if (x == true) VeloX = c0o1;
+         if (z == true) VeloZ = c0o1;
          feq=c1o54* (drho/*+three*( vx1    -vx3)*/+c9o2*( vx1    -vx3)*( vx1    -vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[DIR_M0P])[ktw]=(c1o1-q)/(c1o1+q)*(f_BE-f_TW+(f_BE+f_TW-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_BE+f_TW)-c6o1*c1o54*( VeloX-VeloZ))/(c1o1+q) - c1o54 * drho;
          //feq=c1over54* (drho+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq); 
@@ -1634,11 +1634,11 @@ __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
       q = q_dirTW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 VeloX = fac*vx1;
-	     VeloY = fac*vx2;
-	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = c0o1;
-		 if (z == true) VeloZ = c0o1;
+         VeloX = fac*vx1;
+         VeloY = fac*vx2;
+         VeloZ = fac*vx3;
+         if (x == true) VeloX = c0o1;
+         if (z == true) VeloZ = c0o1;
          feq=c1o54* (drho/*+three*(-vx1    +vx3)*/+c9o2*(-vx1    +vx3)*(-vx1    +vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[DIR_P0M])[kbe]=(c1o1-q)/(c1o1+q)*(f_TW-f_BE+(f_TW+f_BE-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_TW+f_BE)-c6o1*c1o54*(-VeloX+VeloZ))/(c1o1+q) - c1o54 * drho;
          //feq=c1over54* (drho+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq); 
@@ -1649,11 +1649,11 @@ __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
       q = q_dirTN[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 VeloX = fac*vx1;
-	     VeloY = fac*vx2;
-	     VeloZ = fac*vx3;
-		 if (y == true) VeloY = c0o1;
-		 if (z == true) VeloZ = c0o1;
+         VeloX = fac*vx1;
+         VeloY = fac*vx2;
+         VeloZ = fac*vx3;
+         if (y == true) VeloY = c0o1;
+         if (z == true) VeloZ = c0o1;
          feq=c1o54* (drho/*+three*(     vx2+vx3)*/+c9o2*(     vx2+vx3)*(     vx2+vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[DIR_0MM])[kbs]=(c1o1-q)/(c1o1+q)*(f_TN-f_BS+(f_TN+f_BS-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_TN+f_BS)-c6o1*c1o54*( VeloY+VeloZ))/(c1o1+q) - c1o54 * drho;
          //feq=c1over54* (drho+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq); 
@@ -1664,11 +1664,11 @@ __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
       q = q_dirBS[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 VeloX = fac*vx1;
-	     VeloY = fac*vx2;
-	     VeloZ = fac*vx3;
-		 if (y == true) VeloY = c0o1;
-		 if (z == true) VeloZ = c0o1;
+         VeloX = fac*vx1;
+         VeloY = fac*vx2;
+         VeloZ = fac*vx3;
+         if (y == true) VeloY = c0o1;
+         if (z == true) VeloZ = c0o1;
          feq=c1o54* (drho/*+three*(    -vx2-vx3)*/+c9o2*(    -vx2-vx3)*(    -vx2-vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[DIR_0PP])[ktn]=(c1o1-q)/(c1o1+q)*(f_BS-f_TN+(f_BS+f_TN-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_BS+f_TN)-c6o1*c1o54*( -VeloY-VeloZ))/(c1o1+q) - c1o54 * drho;
          //feq=c1over54* (drho+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq); 
@@ -1679,11 +1679,11 @@ __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
       q = q_dirBN[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 VeloX = fac*vx1;
-	     VeloY = fac*vx2;
-	     VeloZ = fac*vx3;
-		 if (y == true) VeloY = c0o1;
-		 if (z == true) VeloZ = c0o1;
+         VeloX = fac*vx1;
+         VeloY = fac*vx2;
+         VeloZ = fac*vx3;
+         if (y == true) VeloY = c0o1;
+         if (z == true) VeloZ = c0o1;
          feq=c1o54* (drho/*+three*(     vx2-vx3)*/+c9o2*(     vx2-vx3)*(     vx2-vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[DIR_0MP])[kts]=(c1o1-q)/(c1o1+q)*(f_BN-f_TS+(f_BN+f_TS-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_BN+f_TS)-c6o1*c1o54*( VeloY-VeloZ))/(c1o1+q) - c1o54 * drho;
          //feq=c1over54* (drho+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq); 
@@ -1694,11 +1694,11 @@ __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
       q = q_dirTS[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 VeloX = fac*vx1;
-	     VeloY = fac*vx2;
-	     VeloZ = fac*vx3;
-		 if (y == true) VeloY = c0o1;
-		 if (z == true) VeloZ = c0o1;
+         VeloX = fac*vx1;
+         VeloY = fac*vx2;
+         VeloZ = fac*vx3;
+         if (y == true) VeloY = c0o1;
+         if (z == true) VeloZ = c0o1;
          feq=c1o54* (drho/*+three*(    -vx2+vx3)*/+c9o2*(    -vx2+vx3)*(    -vx2+vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[DIR_0PM])[kbn]=(c1o1-q)/(c1o1+q)*(f_TS-f_BN+(f_TS+f_BN-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_TS+f_BN)-c6o1*c1o54*( -VeloY+VeloZ))/(c1o1+q) - c1o54 * drho;
          //feq=c1over54* (drho+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq); 
@@ -1709,12 +1709,12 @@ __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
       q = q_dirTNE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 VeloX = fac*vx1;
-	     VeloY = fac*vx2;
-	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = c0o1;
-		 if (y == true) VeloY = c0o1;
-		 if (z == true) VeloZ = c0o1;
+         VeloX = fac*vx1;
+         VeloY = fac*vx2;
+         VeloZ = fac*vx3;
+         if (x == true) VeloX = c0o1;
+         if (y == true) VeloY = c0o1;
+         if (z == true) VeloZ = c0o1;
          feq=c1o216*(drho/*+three*( vx1+vx2+vx3)*/+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[DIR_MMM])[kbsw]=(c1o1-q)/(c1o1+q)*(f_TNE-f_BSW+(f_TNE+f_BSW-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_TNE+f_BSW)-c6o1*c1o216*( VeloX+VeloY+VeloZ))/(c1o1+q) - c1o216 * drho;
          //feq=c1over216*(drho+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq); 
@@ -1725,12 +1725,12 @@ __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
       q = q_dirBSW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 VeloX = fac*vx1;
-	     VeloY = fac*vx2;
-	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = c0o1;
-		 if (y == true) VeloY = c0o1;
-		 if (z == true) VeloZ = c0o1;
+         VeloX = fac*vx1;
+         VeloY = fac*vx2;
+         VeloZ = fac*vx3;
+         if (x == true) VeloX = c0o1;
+         if (y == true) VeloY = c0o1;
+         if (z == true) VeloZ = c0o1;
          feq=c1o216*(drho/*+three*(-vx1-vx2-vx3)*/+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[DIR_PPP])[ktne]=(c1o1-q)/(c1o1+q)*(f_BSW-f_TNE+(f_BSW+f_TNE-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_BSW+f_TNE)-c6o1*c1o216*(-VeloX-VeloY-VeloZ))/(c1o1+q) - c1o216 * drho;
          //feq=c1over216*(drho+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq); 
@@ -1741,12 +1741,12 @@ __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
       q = q_dirBNE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 VeloX = fac*vx1;
-	     VeloY = fac*vx2;
-	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = c0o1;
-		 if (y == true) VeloY = c0o1;
-		 if (z == true) VeloZ = c0o1;
+         VeloX = fac*vx1;
+         VeloY = fac*vx2;
+         VeloZ = fac*vx3;
+         if (x == true) VeloX = c0o1;
+         if (y == true) VeloY = c0o1;
+         if (z == true) VeloZ = c0o1;
          feq=c1o216*(drho/*+three*( vx1+vx2-vx3)*/+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[DIR_MMP])[ktsw]=(c1o1-q)/(c1o1+q)*(f_BNE-f_TSW+(f_BNE+f_TSW-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_BNE+f_TSW)-c6o1*c1o216*( VeloX+VeloY-VeloZ))/(c1o1+q) - c1o216 * drho;
          //feq=c1over216*(drho+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq); 
@@ -1757,12 +1757,12 @@ __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
       q = q_dirTSW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 VeloX = fac*vx1;
-	     VeloY = fac*vx2;
-	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = c0o1;
-		 if (y == true) VeloY = c0o1;
-		 if (z == true) VeloZ = c0o1;
+         VeloX = fac*vx1;
+         VeloY = fac*vx2;
+         VeloZ = fac*vx3;
+         if (x == true) VeloX = c0o1;
+         if (y == true) VeloY = c0o1;
+         if (z == true) VeloZ = c0o1;
          feq=c1o216*(drho/*+three*(-vx1-vx2+vx3)*/+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[DIR_PPM])[kbne]=(c1o1-q)/(c1o1+q)*(f_TSW-f_BNE+(f_TSW+f_BNE-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_TSW+f_BNE)-c6o1*c1o216*(-VeloX-VeloY+VeloZ))/(c1o1+q) - c1o216 * drho;
          //feq=c1over216*(drho+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq); 
@@ -1773,12 +1773,12 @@ __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
       q = q_dirTSE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 VeloX = fac*vx1;
-	     VeloY = fac*vx2;
-	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = c0o1;
-		 if (y == true) VeloY = c0o1;
-		 if (z == true) VeloZ = c0o1;
+         VeloX = fac*vx1;
+         VeloY = fac*vx2;
+         VeloZ = fac*vx3;
+         if (x == true) VeloX = c0o1;
+         if (y == true) VeloY = c0o1;
+         if (z == true) VeloZ = c0o1;
          feq=c1o216*(drho/*+three*( vx1-vx2+vx3)*/+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[DIR_MPM])[kbnw]=(c1o1-q)/(c1o1+q)*(f_TSE-f_BNW+(f_TSE+f_BNW-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_TSE+f_BNW)-c6o1*c1o216*( VeloX-VeloY+VeloZ))/(c1o1+q) - c1o216 * drho;
          //feq=c1over216*(drho+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq); 
@@ -1789,12 +1789,12 @@ __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
       q = q_dirBNW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 VeloX = fac*vx1;
-	     VeloY = fac*vx2;
-	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = c0o1;
-		 if (y == true) VeloY = c0o1;
-		 if (z == true) VeloZ = c0o1;
+         VeloX = fac*vx1;
+         VeloY = fac*vx2;
+         VeloZ = fac*vx3;
+         if (x == true) VeloX = c0o1;
+         if (y == true) VeloY = c0o1;
+         if (z == true) VeloZ = c0o1;
          feq=c1o216*(drho/*+three*(-vx1+vx2-vx3)*/+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[DIR_PMP])[ktse]=(c1o1-q)/(c1o1+q)*(f_BNW-f_TSE+(f_BNW+f_TSE-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_BNW+f_TSE)-c6o1*c1o216*(-VeloX+VeloY-VeloZ))/(c1o1+q) - c1o216 * drho;
          //feq=c1over216*(drho+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq); 
@@ -1805,12 +1805,12 @@ __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
       q = q_dirBSE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 VeloX = fac*vx1;
-	     VeloY = fac*vx2;
-	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = c0o1;
-		 if (y == true) VeloY = c0o1;
-		 if (z == true) VeloZ = c0o1;
+         VeloX = fac*vx1;
+         VeloY = fac*vx2;
+         VeloZ = fac*vx3;
+         if (x == true) VeloX = c0o1;
+         if (y == true) VeloY = c0o1;
+         if (z == true) VeloZ = c0o1;
          feq=c1o216*(drho/*+three*( vx1-vx2-vx3)*/+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[DIR_MPP])[ktnw]=(c1o1-q)/(c1o1+q)*(f_BSE-f_TNW+(f_BSE+f_TNW-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_BSE+f_TNW)-c6o1*c1o216*( VeloX-VeloY-VeloZ))/(c1o1+q) - c1o216 * drho;
          //feq=c1over216*(drho+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq); 
@@ -1821,12 +1821,12 @@ __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
       q = q_dirTNW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 VeloX = fac*vx1;
-	     VeloY = fac*vx2;
-	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = c0o1;
-		 if (y == true) VeloY = c0o1;
-		 if (z == true) VeloZ = c0o1;
+         VeloX = fac*vx1;
+         VeloY = fac*vx2;
+         VeloZ = fac*vx3;
+         if (x == true) VeloX = c0o1;
+         if (y == true) VeloY = c0o1;
+         if (z == true) VeloZ = c0o1;
          feq=c1o216*(drho/*+three*(-vx1+vx2+vx3)*/+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[DIR_PMM])[kbse]=(c1o1-q)/(c1o1+q)*(f_TNW-f_BSE+(f_TNW+f_BSE-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_TNW+f_BSE)-c6o1*c1o216*(-VeloX+VeloY+VeloZ))/(c1o1+q) - c1o216 * drho;
          //feq=c1over216*(drho+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq); 
