@@ -34,11 +34,9 @@
 
 #include <iostream>
 #include <omp.h>
-#include <ostream>
 #include <sstream>
 # include <algorithm>
 #include <cmath>
-#include <string>
 
 #include "global.h"
 
@@ -2035,7 +2033,6 @@ void GridImp::getNodeValues(real *xCoords, real *yCoords, real *zCoords, uint *n
     geo[0] = GEOSOLID;
 
     int nodeNumber = 0;
-    std::cout << "size " <<  size << std::endl;
     for (uint i = 0; i < this->size; i++)
     {
         if (this->sparseIndices[i] == -1)

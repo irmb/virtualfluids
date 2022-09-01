@@ -1,9 +1,7 @@
 #ifndef LBM_D3Q27_H
 #define LBM_D3Q27_H
 
-#include <array>
 #include <map>
-#include <vector>
 #include "basics/Core/DataTypes.h"
 
 namespace vf::lbm::dir
@@ -21,25 +19,25 @@ static constexpr int DIR_0M0 = 4;	 // S
 static constexpr int DIR_00P = 5;	 // T
 static constexpr int DIR_00M = 6;	 // B
 
-static constexpr int DIR_PP0 = 7;	 // NE *
+static constexpr int DIR_PP0 = 7;	 // NE
 static constexpr int DIR_MM0 = 8;	 // SW
 static constexpr int DIR_PM0 = 9;	 // SE
-static constexpr int DIR_MP0 = 10;	 // NW *
-static constexpr int DIR_P0P = 11;	 // TE *
+static constexpr int DIR_MP0 = 10;	 // NW
+static constexpr int DIR_P0P = 11;	 // TE
 static constexpr int DIR_M0M = 12;	 // BW
 static constexpr int DIR_P0M = 13;	 // BE
-static constexpr int DIR_M0P = 14;	 // TW *
-static constexpr int DIR_0PP = 15;	 // TN *
+static constexpr int DIR_M0P = 14;	 // TW
+static constexpr int DIR_0PP = 15;	 // TN
 static constexpr int DIR_0MM = 16;	 // BS
-static constexpr int DIR_0PM = 17;	 // BN *
-static constexpr int DIR_0MP = 18;	 // TS *
+static constexpr int DIR_0PM = 17;	 // BN
+static constexpr int DIR_0MP = 18;	 // TS
 
-static constexpr int DIR_PPP = 19;	 // TNE **
-static constexpr int DIR_MPP = 20;	 // TNW **
-static constexpr int DIR_PMP = 21;	 // TSE *
-static constexpr int DIR_MMP = 22;	 // TSW *
-static constexpr int DIR_PPM = 23;	 // BNE *
-static constexpr int DIR_MPM = 24;	 // BNW *
+static constexpr int DIR_PPP = 19;	 // TNE
+static constexpr int DIR_MPP = 20;	 // TNW
+static constexpr int DIR_PMP = 21;	 // TSE
+static constexpr int DIR_MMP = 22;	 // TSW
+static constexpr int DIR_PPM = 23;	 // BNE
+static constexpr int DIR_MPM = 24;	 // BNW
 static constexpr int DIR_PMM = 25;	 // BSE
 static constexpr int DIR_MMM = 26;	 // BSW
 

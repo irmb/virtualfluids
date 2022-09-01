@@ -14,7 +14,6 @@
 #include "GPU/GPU_Interface.h"
 #include "GPU/KineticEnergyAnalyzer.h"
 #include "GPU/EnstrophyAnalyzer.h"
-#include "StreetPointFinder/JunctionReader.h"
 #include "basics/utilities/UbFileOutputASCII.h"
 //////////////////////////////////////////////////////////////////////////
 #include "Output/MeasurePointWriter.hpp"

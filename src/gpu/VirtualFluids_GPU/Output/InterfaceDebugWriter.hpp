@@ -2,17 +2,14 @@
 #define INTERFACEDEBUG_HPP
 
 #include <fstream>
-#include <iostream>
 #include <sstream>
 #include "Core/StringUtilities/StringUtil.h"
-#include "grid/NodeValues.h"
 #include "lbm/constants/D3Q27.h"
 #include "LBM/LB.h"
 #include "Parameter/Parameter.h"
 #include "basics/utilities/UbSystem.h"
 #include <basics/writer/WbWriterVtkXmlBinary.h>
 #include <cmath>
-#include <string>
 
 #include "VirtualFluids_GPU/Communication/Communicator.h"
 
@@ -910,5 +907,3 @@ void writeRecvNodesStream(Parameter *para)
 
 } // namespace InterfaceDebugWriter
 #endif
-
-
