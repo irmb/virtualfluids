@@ -3752,7 +3752,7 @@ void QPressZeroRhoOutflowDev27(LBMSimulationParameter* parameterDevice, QforBoun
    getLastCudaError("QPressZeroRhoOutflowDev27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QInflowScaleByPressDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
+void QInflowScaleByPressDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
    dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
    dim3 threads(parameterDevice->numberofthreads, 1, 1 );
