@@ -50,6 +50,19 @@
 #include <string>
 #include <vector>
 
+//! \brief An enumeration for selecting a turbulence model
+enum class TurbulenceModel {
+    //! - AMD (Anisotropic Minimum Dissipation) model, see e.g. Rozema et al., Phys. Fluids 27, 085107 (2015), https://doi.org/10.1063/1.4928700
+    AMD,
+    //! - Smagorinsky
+    Smagorinsky,
+    //! - QR model by Verstappen 
+    QR,
+    //! - TODO: move the WALE model here from the old kernels
+    //WALE
+    //! - No turbulence model
+    None
+};
 
 struct InitCondition
 {
@@ -122,8 +135,8 @@ struct InitCondition
    bool calcMedian {false};
    bool isConc {false};
    bool isWale {false};
+   TurbulenceModel turbulenceModel {TurbulenceModel::None};
    bool isTurbulentViscosity {false};
-   bool isAMD {false};
    real SGSConstant {0.0};
    bool isMeasurePoints {false};
    bool isInitNeq {false};
@@ -284,6 +297,8 @@ typedef struct PLP{
 	uint numberOfParticles, numberOfTimestepsParticles;
 	uint memSizeID, memSizeTimestep, memSizerealAll, memSizereal, memSizeBool, memSizeBoolBC;
 }PathLineParticles;
+
+
 
 //////////////////////////////////////////////////////////////////////////
 inline int vectorPosition(int i, int j, int k, int Lx, int Ly )

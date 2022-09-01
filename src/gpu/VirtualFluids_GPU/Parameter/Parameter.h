@@ -42,6 +42,7 @@
 #include "lbm/constants/D3Q27.h"
 #include "LBM/LB.h"
 #include "PreCollisionInteractor/PreCollisionInteractor.h"
+#include "TurbulenceModels/TurbulenceModelFactory.h"
 
 #include "VirtualFluids_GPU_export.h"
 
@@ -520,6 +521,7 @@ public:
     void setStreetVelocityFile(bool streetVelocityFile);
     void setUseMeasurePoints(bool useMeasurePoints);
     void setUseWale(bool useWale);
+    void setTurbulenceModel(TurbulenceModel turbulenceModel);
     void setUseTurbulentViscosity(bool useTurbulentViscosity);
     void setUseAMD(bool useAMD);
     void setSGSConstant(real SGSConstant);
@@ -800,8 +802,8 @@ public:
     bool isStreetVelocityFile();
     bool getUseMeasurePoints();
     bool getUseWale();
+    TurbulenceModel getTurbulenceModel();
     bool getUseTurbulentViscosity();
-    bool getUseAMD();
     real getSGSConstant();
     bool getHasWallModelMonitor();
     bool getUseInitNeq();

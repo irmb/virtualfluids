@@ -48,28 +48,19 @@ using TurbulenceModelKernel = std::function<void(Parameter *, int )>;
 class TurbulenceModelFactory
 {
 public:
-    //! \brief An enumeration for selecting a turbulence model
-    enum class TurbulenceModel {
-        //! - AMD (Anisotropic Minimum Dissipation) model, see e.g. Rozema et al., Phys. Fluids 27, 085107 (2015), https://doi.org/10.1063/1.4928700
-        AMD,
-        //! - Smagorinsky
-        Smagorinsky,
-        //! - QR model by Verstappen 
-        QR,
-        //! - TODO: move the model here from the old kernels
-        //WALE
-        //! - No turbulence model
-        None
-    };
- 
-    void setTurbulenceModel(const TurbulenceModelFactory::TurbulenceModel _turbulenceModel);
-    // void setModelConstant(const real modelConstant);
+    
+    TurbulenceModelFactory(SPtr<Parameter> parameter): para(parameter) {}
 
-    TurbulenceModelFactory::TurbulenceModel getTurbulenceModel();
-    [[nodiscard]] TurbulenceModelKernel getTurbulenceModelKernel() const;
+    void setTurbulenceModel(const TurbulenceModel _turbulenceModel);
+
+    void setModelConstant(const real modelConstant);
+
+    void runTurbulenceModelKernel(const int level) const;
 
 private:
-    TurbulenceModelFactory::TurbulenceModel turbulenceModel = TurbulenceModel::None;
+    TurbulenceModel turbulenceModel = TurbulenceModel::None;
+    TurbulenceModelKernel turbulenceModelKernel = nullptr;
+    SPtr<Parameter> para;
 
 };
 

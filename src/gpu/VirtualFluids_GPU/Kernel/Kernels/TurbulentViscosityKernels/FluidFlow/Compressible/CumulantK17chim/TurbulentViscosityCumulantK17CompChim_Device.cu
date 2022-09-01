@@ -49,6 +49,7 @@ using namespace vf::lbm::dir;
 
 
 ////////////////////////////////////////////////////////////////////////////////
+template<TurbulenceModel turbulenceModel>
 __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
 	real omega_in,
 	uint* typeOfGridNode,
@@ -61,6 +62,7 @@ __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
     real* vy,
     real* vz,
     real* turbulentViscosity,
+    real SGSconstant,
 	unsigned long size_Mat,
 	int level,
     bool bodyForce,
@@ -466,23 +468,23 @@ __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
         real dyuy = dxux + omega * c3o2 * mxxMyy;
         real dzuz = dxux + omega * c3o2 * mxxMzz;
 
-        //Smagorinsky for debugging
-        // if(true)
-        // {   
-            // if(false && k==99976)
-            // {
-            //     printf("dudz+dwdu: \t %1.14f \n", Dxz );
-            //     printf("dvdz+dudy: \t %1.14f \n", Dxy );  
-            //     printf("dwdy+dvdz: \t %1.14f \n", Dyz );  
-            //     printf("nu_t * dudz+dwdu: \t %1.14f \n", turbulentViscosity[k]*Dxz );
-            //     printf("nu_t * dvdz+dudy: \t %1.14f \n", turbulentViscosity[k]*Dxy );  
-            //     printf("nu_t * dwdy+dvdz: \t %1.14f \n", turbulentViscosity[k]*Dyz );      
-            // } 
-        //     real Sbar = sqrt(c2o1*(dxux*dxux+dyuy*dyuy+dzuz*dzuz)+Dxy*Dxy+Dxz*Dxz+Dyz*Dyz);
-        //     real Cs = 0.08f;
-        //     turbulentViscosity[k] = Cs*Cs*Sbar;
-        // }
-
+        ////////////////////////////////////////////////////////////////////////////////////
+ 
+        real modelTerm;
+        switch (turbulenceModel)
+        {
+        case TurbulenceModel::None:
+        case TurbulenceModel::AMD:
+            break;
+        case TurbulenceModel::Smagorinsky:
+            modelTerm = sqrt(c2o1*(dxux*dxux+dyuy*dyuy+dzuz*dzuz)+Dxy*Dxy+Dxz*Dxz+Dyz*Dyz);
+            turbulentViscosity[k] = SGSconstant*SGSconstant*modelTerm;
+            break;
+        case TurbulenceModel::QR:
+        default:
+            break;
+        }
+ 
         ////////////////////////////////////////////////////////////
         //! - Relaxation of second order cumulants with correction terms according to Eq. (33)-(35) in
         //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017),
@@ -725,3 +727,11 @@ __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
 
     }
 }
+
+template __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim < TurbulenceModel::AMD > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep);
+
+template __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim < TurbulenceModel::Smagorinsky > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep);
+
+template __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim < TurbulenceModel::QR > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep);
+
+template __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim < TurbulenceModel::None > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep);

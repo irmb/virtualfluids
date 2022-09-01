@@ -3,25 +3,27 @@
 #include "Parameter/Parameter.h"
 #include <variant>
 
-void TurbulenceModelFactory::setTurbulenceModel(const TurbulenceModelFactory::TurbulenceModel _turbulenceModel)
+void TurbulenceModelFactory::setTurbulenceModel(const TurbulenceModel _turbulenceModel)
 {
     this->turbulenceModel = _turbulenceModel;
-}
+    para->setTurbulenceModel(_turbulenceModel);
+    if(this->turbulenceModel != TurbulenceModel::None) para->setUseTurbulentViscosity(true);
 
-TurbulenceModelFactory::TurbulenceModel TurbulenceModelFactory::getTurbulenceModel()
-{
-    return this->turbulenceModel;
-}
-
-TurbulenceModelKernel TurbulenceModelFactory::getTurbulenceModelKernel() const
-{
     switch (this->turbulenceModel) {
         case TurbulenceModel::AMD:
-            return calcTurbulentViscosityAMD;
+            this->turbulenceModelKernel = calcTurbulentViscosityAMD;
             break;
         default:
-            return nullptr;
+            this->turbulenceModelKernel = nullptr;
     }
 }
 
+void TurbulenceModelFactory::setModelConstant(const real modelConstant)
+{
+    para->setSGSConstant(modelConstant);
+}
 
+void TurbulenceModelFactory::runTurbulenceModelKernel(const int level) const
+{
+    if(this->turbulenceModelKernel) this->turbulenceModelKernel(para.get(), level);
+}
