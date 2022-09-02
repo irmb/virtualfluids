@@ -172,9 +172,9 @@ void multipleLevel(const std::string& configPath)
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    TurbulenceModelFactory tmFactory(para);
-    tmFactory.setTurbulenceModel(TurbulenceModel::AMD);
-    tmFactory.setModelConstant(config.getValue<real>("SGSconstant"));
+    SPtr<TurbulenceModelFactory> tmFactory = SPtr<TurbulenceModelFactory>( new TurbulenceModelFactory(para) );
+    tmFactory->setTurbulenceModel(TurbulenceModel::AMD);
+    tmFactory->setModelConstant(config.getValue<real>("SGSconstant"));
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -229,7 +229,7 @@ void multipleLevel(const std::string& configPath)
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
     auto gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
 
-    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory, &tmFactory);
+    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory, tmFactory);
     sim.run();
 }
 

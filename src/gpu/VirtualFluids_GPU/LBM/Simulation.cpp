@@ -72,19 +72,19 @@ Simulation::Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemo
     : para(para), cudaMemoryManager(memoryManager), communicator(communicator), kernelFactory(std::make_unique<KernelFactoryImp>()),
       preProcessorFactory(std::make_shared<PreProcessorFactoryImp>()), dataWriter(std::make_unique<FileWriter>())
 {
-	TurbulenceModelFactory tmFactory = TurbulenceModelFactory(para);
-	init(gridProvider, bcFactory, &tmFactory);
+	this->tmFactory = SPtr<TurbulenceModelFactory>( new TurbulenceModelFactory(para) );
+	init(gridProvider, bcFactory, tmFactory);
 }
 
 Simulation::Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> memoryManager,
-                       vf::gpu::Communicator &communicator, GridProvider &gridProvider, BoundaryConditionFactory* bcFactory, TurbulenceModelFactory* tmFactory)
+                       vf::gpu::Communicator &communicator, GridProvider &gridProvider, BoundaryConditionFactory* bcFactory, SPtr<TurbulenceModelFactory> tmFactory)
     : para(para), cudaMemoryManager(memoryManager), communicator(communicator), kernelFactory(std::make_unique<KernelFactoryImp>()),
       preProcessorFactory(std::make_shared<PreProcessorFactoryImp>()), dataWriter(std::make_unique<FileWriter>())
 {
 	init(gridProvider, bcFactory, tmFactory);
 }
 
-void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFactory, TurbulenceModelFactory *tmFactory)
+void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFactory, SPtr<TurbulenceModelFactory> tmFactory)
 {
     gridProvider.initalGridInformations();
 

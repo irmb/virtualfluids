@@ -481,6 +481,7 @@ __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
             turbulentViscosity[k] = SGSconstant*SGSconstant*modelTerm;
             break;
         case TurbulenceModel::QR:
+            break;
         default:
             break;
         }
