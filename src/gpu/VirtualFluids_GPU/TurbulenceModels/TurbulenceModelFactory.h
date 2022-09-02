@@ -41,6 +41,8 @@
 #include "LBM/LB.h"
 #include "Parameter/Parameter.h"
 
+#include <basics/config/ConfigurationFile.h>
+
 class Parameter;
 
 using TurbulenceModelKernel = std::function<void(Parameter *, int )>;
@@ -54,6 +56,8 @@ public:
     void setTurbulenceModel(const TurbulenceModel _turbulenceModel);
 
     void setModelConstant(const real modelConstant);
+
+    void readConfigFile(const vf::basics::ConfigurationFile &configData);
 
     void runTurbulenceModelKernel(const int level) const;
 
