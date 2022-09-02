@@ -42,6 +42,7 @@
 #include "LBM/LB.h" 
 #include "lbm/constants/D3Q27.h"
 #include <lbm/constants/NumericConstants.h>
+#include "GPU/TurbulentViscosity.h"
 
 using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
@@ -470,15 +471,13 @@ __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
 
         ////////////////////////////////////////////////////////////////////////////////////
  
-        real modelTerm;
         switch (turbulenceModel)
         {
         case TurbulenceModel::None:
         case TurbulenceModel::AMD:
             break;
         case TurbulenceModel::Smagorinsky:
-            modelTerm = sqrt(c2o1*(dxux*dxux+dyuy*dyuy+dzuz*dzuz)+Dxy*Dxy+Dxz*Dxz+Dyz*Dyz);
-            turbulentViscosity[k] = SGSconstant*SGSconstant*modelTerm;
+            turbulentViscosity[k] = calcTurbulentViscositySmagorinsky(SGSconstant, dxux, dyuy, dzuz, Dxy, Dxz , Dyz);
             break;
         case TurbulenceModel::QR:
             break;
