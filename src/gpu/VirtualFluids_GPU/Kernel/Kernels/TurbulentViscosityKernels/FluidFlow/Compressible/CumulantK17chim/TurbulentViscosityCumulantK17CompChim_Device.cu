@@ -470,7 +470,6 @@ __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
         real dzuz = dxux + omega * c3o2 * mxxMzz;
 
         ////////////////////////////////////////////////////////////////////////////////////
- 
         switch (turbulenceModel)
         {
         case TurbulenceModel::None:
@@ -481,7 +480,7 @@ __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
             turbulentViscosity[k] = calcTurbulentViscositySmagorinsky(SGSconstant, dxux, dyuy, dzuz, Dxy, Dxz , Dyz);
             break;
         case TurbulenceModel::QR:
-            // turbulentViscosity[k] = calcTurbulentViscosityQR(SGSconstant, dxux, dyuy, dzuz, Dxy, Dxz , Dyz);
+            turbulentViscosity[k] = calcTurbulentViscosityQR(SGSconstant, dxux, dyuy, dzuz, Dxy, Dxz , Dyz);
             break;
         default:
             break;

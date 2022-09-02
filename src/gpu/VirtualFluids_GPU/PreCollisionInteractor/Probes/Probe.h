@@ -213,11 +213,13 @@ protected:
 
     uint tProbe = 0; //!> counter for number of probe evaluations. Only used when outputting timeseries
 
+
     real velocityRatio;
     real densityRatio;
     real forceRatio;
     real stressRatio;
     real accelerationRatio;
+    real viscosityRatio;
 };
 
 #endif
