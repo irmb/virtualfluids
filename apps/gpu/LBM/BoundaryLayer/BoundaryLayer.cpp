@@ -50,6 +50,7 @@
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlanarAverageProbe.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/WallModelProbe.h"
 #include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
+#include "VirtualFluids_GPU/TurbulenceModels/TurbulenceModelFactory.h"
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 
@@ -161,10 +162,7 @@ void multipleLevel(const std::string& configPath)
     para->setViscosityRatio( dx*dx/dt );
     para->setDensityRatio( 1.0 );
 
-    if(para->getUseAMD())
-        para->setMainKernel("TurbulentViscosityCumulantK17CompChim");
-    else
-        para->setMainKernel("CumulantK17CompChim");
+    para->setMainKernel("TurbulentViscosityCumulantK17CompChim");
 
     para->setIsBodyForce( config.getValue<bool>("bodyForce") );
 
@@ -172,8 +170,13 @@ void multipleLevel(const std::string& configPath)
     para->setTimestepOut( uint(tOut/dt) );
     para->setTimestepEnd( uint(tEnd/dt) );
 
-    // para->setTimestepOut( 100 );
-    // para->setTimestepEnd( 100000 );
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    SPtr<TurbulenceModelFactory> tmFactory = SPtr<TurbulenceModelFactory>( new TurbulenceModelFactory(para) );
+    tmFactory->readConfigFile( config );
+    
+    // tmFactory->setTurbulenceModel(TurbulenceModel::AMD);
+    // tmFactory->setModelConstant(config.getValue<real>("SGSconstant"));
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -228,7 +231,7 @@ void multipleLevel(const std::string& configPath)
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
     auto gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
 
-    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory);
+    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory, tmFactory);
     sim.run();
 }
 

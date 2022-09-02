@@ -125,12 +125,6 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
     if (configData.contains("UseWale"))
         this->setUseWale(configData.getValue<bool>("UseWale"));
     //////////////////////////////////////////////////////////////////////////
-    if (configData.contains("UseAMD"))
-        this->setUseAMD(configData.getValue<bool>("UseAMD"));
-    //////////////////////////////////////////////////////////////////////////
-    if (configData.contains("SGSconstant"))
-        this->setSGSConstant(configData.getValue<real>("SGSconstant"));
-    //////////////////////////////////////////////////////////////////////////
     if (configData.contains("UseInitNeq"))
         this->setUseInitNeq(configData.getValue<bool>("UseInitNeq"));
     //////////////////////////////////////////////////////////////////////////
@@ -935,11 +929,9 @@ void Parameter::setUseWale(bool useWale)
     if (useWale)
         setUseTurbulentViscosity(true);
 }
-void Parameter::setUseAMD(bool useAMD)
+void Parameter::setTurbulenceModel(TurbulenceModel turbulenceModel)
 {
-    ic.isAMD = useAMD;
-    if (useAMD)
-        setUseTurbulentViscosity(true);
+    ic.turbulenceModel = turbulenceModel;
 }
 void Parameter::setSGSConstant(real SGSConstant)
 {
@@ -2326,9 +2318,9 @@ bool Parameter::getUseWale()
 {
     return ic.isWale;
 }
-bool Parameter::getUseAMD()
+TurbulenceModel Parameter::getTurbulenceModel()
 {
-    return ic.isAMD;
+    return ic.turbulenceModel;
 }
 bool Parameter::getUseTurbulentViscosity()
 {

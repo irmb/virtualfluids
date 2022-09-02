@@ -184,6 +184,7 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
     this->forceRatio         = para->getForceRatio();
     this->stressRatio        = para->getDensityRatio()*pow(para->getVelocityRatio(), 2.0);
     this->accelerationRatio  = para->getVelocityRatio()/para->getTimeRatio();
+    this->viscosityRatio     = para->getViscosityRatio();
 
     probeParams.resize(para->getMaxLevel()+1);
 

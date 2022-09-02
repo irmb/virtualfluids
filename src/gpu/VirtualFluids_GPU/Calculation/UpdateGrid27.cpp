@@ -4,10 +4,10 @@
 
 #include "Communication/ExchangeData27.h"
 #include "Parameter/CudaStreamManager.h"
-#include "GPU/TurbulentViscosity.h"
 #include "KernelManager/BCKernelManager.h"
 #include "KernelManager/ADKernelManager.h"
 #include "KernelManager/GridScalingKernelManager.h"
+#include "TurbulenceModels/TurbulenceModelFactory.h"
 #include "Kernel/Kernel.h"
 
 #include "CollisionStrategy.h"
@@ -36,11 +36,10 @@ void UpdateGrid27::updateGrid(int level, unsigned int t)
 
     //////////////////////////////////////////////////////////////////////////
 
-    if (para->getUseWale())
+    if (para->getUseWale()) //TODO: make WALE consistent with structure of other turbulence models
         calcMacroscopicQuantities(level);
 
-    if (para->getUseTurbulentViscosity())
-        calcTurbulentViscosity(level);
+    calcTurbulentViscosity(level);
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -364,8 +363,7 @@ void  UpdateGrid27::interactWithProbes(int level, unsigned int t)
 
 void  UpdateGrid27::calcTurbulentViscosity(int level)
 {
-    if(para->getUseAMD())
-        calcTurbulentViscosityAMD(para.get(), level);
+    this->tmFactory->runTurbulenceModelKernel(level);
 }
 
 void UpdateGrid27::exchangeData(int level)
@@ -374,8 +372,8 @@ void UpdateGrid27::exchangeData(int level)
 }
 
 UpdateGrid27::UpdateGrid27(SPtr<Parameter> para, vf::gpu::Communicator &comm, SPtr<CudaMemoryManager> cudaMemoryManager,
-                           std::vector<std::shared_ptr<PorousMedia>> &pm, std::vector<SPtr<Kernel>> &kernels , BoundaryConditionFactory* bcFactory)
-    : para(para), comm(comm), cudaMemoryManager(cudaMemoryManager), pm(pm), kernels(kernels)
+                           std::vector<std::shared_ptr<PorousMedia>> &pm, std::vector<SPtr<Kernel>> &kernels , BoundaryConditionFactory* bcFactory, SPtr<TurbulenceModelFactory>  tmFactory)
+    : para(para), comm(comm), cudaMemoryManager(cudaMemoryManager), pm(pm), kernels(kernels), tmFactory(tmFactory)
 {
     this->collision = getFunctionForCollisionAndExchange(para->getUseStreams(), para->getNumprocs(), para->getKernelNeedsFluidNodeIndicesToRun());
     this->refinement = getFunctionForRefinementAndExchange(para->getUseStreams(), para->getNumprocs(), para->getMaxLevel(), para->useReducedCommunicationAfterFtoC);
