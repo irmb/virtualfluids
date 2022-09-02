@@ -871,6 +871,8 @@ void QStressDevComp27(Parameter *para,  QforBoundaryConditions* boundaryConditio
 
 void BBStressDev27(Parameter *para,  QforBoundaryConditions* boundaryCondition, const int level);
 
+void BBStressPressureDev27(Parameter *para,  QforBoundaryConditions* boundaryCondition, const int level);
+
 void QPressDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
 void QPressDevFixBackflow27(unsigned int numberOfThreads,

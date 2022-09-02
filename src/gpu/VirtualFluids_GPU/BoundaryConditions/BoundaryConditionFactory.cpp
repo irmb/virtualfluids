@@ -143,6 +143,9 @@ boundaryConditionWithParameter BoundaryConditionFactory::getStressBoundaryCondit
         case StressBC::StressBounceBack:
             return BBStressDev27;
             break;
+        case StressBC::StressPressureBounceBack:
+            return BBStressPressureDev27;
+            break;
         case StressBC::StressCompressible:
             return QStressDevComp27;
             break;

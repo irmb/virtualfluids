@@ -3599,6 +3599,46 @@ void BBStressDev27(Parameter *para,  QforBoundaryConditions* boundaryCondition, 
       para->getParD(level)->isEvenTimestep);
       getLastCudaError("BBStressDevice27 execution failed");
 }
+
+//////////////////////////////////////////////////////////////////////////
+void BBStressPressureDev27(Parameter *para,  QforBoundaryConditions* boundaryCondition, const int level)
+{
+   dim3 grid = vf::cuda::getCudaGrid( para->getParD(level)->numberofthreads, boundaryCondition->numberOfBCnodes);
+   dim3 threads(para->getParD(level)->numberofthreads, 1, 1 );
+
+   BBStressPressureDevice27<<< grid, threads >>> (
+      para->getParD(level)->distributions.f[0],
+      boundaryCondition->k,
+      boundaryCondition->kN,
+      boundaryCondition->q27[0],
+      boundaryCondition->numberOfBCnodes,
+      para->getParD(level)->velocityX,
+      para->getParD(level)->velocityY,
+      para->getParD(level)->velocityY,
+      boundaryCondition->normalX,
+      boundaryCondition->normalY,
+      boundaryCondition->normalZ,
+      boundaryCondition->Vx,
+      boundaryCondition->Vy,
+      boundaryCondition->Vz,
+      boundaryCondition->Vx1,
+      boundaryCondition->Vy1,
+      boundaryCondition->Vz1,
+      para->getParD(level)->wallModel.samplingOffset,
+      para->getParD(level)->wallModel.z0,
+      para->getHasWallModelMonitor(),
+      para->getParD(level)->wallModel.u_star,
+      para->getParD(level)->wallModel.Fx,
+      para->getParD(level)->wallModel.Fy,
+      para->getParD(level)->wallModel.Fz,
+      para->getParD(level)->neighborX,
+      para->getParD(level)->neighborY,
+      para->getParD(level)->neighborZ,
+      para->getParD(level)->numberOfNodes,
+      para->getParD(level)->isEvenTimestep);
+      getLastCudaError("BBStressDevice27 execution failed");
+}
+
 //////////////////////////////////////////////////////////////////////////
 void QPressDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {

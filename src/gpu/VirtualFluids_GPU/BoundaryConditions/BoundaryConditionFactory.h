@@ -119,6 +119,8 @@ public:
         StressCompressible,
         //! - StressBounceBack
         StressBounceBack,
+        //! - StressPressureBounceBack
+        StressPressureBounceBack,
         //! - NotSpecified =  the user did not set a boundary condition
         NotSpecified
     };
