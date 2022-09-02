@@ -174,6 +174,7 @@ void multipleLevel(const std::string& configPath)
 
     SPtr<TurbulenceModelFactory> tmFactory = SPtr<TurbulenceModelFactory>( new TurbulenceModelFactory(para) );
     tmFactory->readConfigFile( config );
+    
     // tmFactory->setTurbulenceModel(TurbulenceModel::AMD);
     // tmFactory->setModelConstant(config.getValue<real>("SGSconstant"));
 

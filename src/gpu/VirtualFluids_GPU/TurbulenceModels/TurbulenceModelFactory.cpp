@@ -30,7 +30,7 @@
 //! \ingroup TurbulentViscosity
 //! \author Henrik Asmuth
 //=======================================================================================
-
+#include "LBM/LB.h"
 #include "TurbulenceModelFactory.h"
 #include "GPU/TurbulentViscosityKernels.h"
 #include "Parameter/Parameter.h"
@@ -38,7 +38,7 @@
 
 #include <variant>
 
-void TurbulenceModelFactory::setTurbulenceModel(const TurbulenceModel _turbulenceModel)
+void TurbulenceModelFactory::setTurbulenceModel(TurbulenceModel _turbulenceModel)
 {
     this->turbulenceModel = _turbulenceModel;
     para->setTurbulenceModel(_turbulenceModel);
@@ -53,7 +53,7 @@ void TurbulenceModelFactory::setTurbulenceModel(const TurbulenceModel _turbulenc
     }
 }
 
-void TurbulenceModelFactory::setModelConstant(const real modelConstant)
+void TurbulenceModelFactory::setModelConstant(real modelConstant)
 {
     para->setSGSConstant(modelConstant);
 }
@@ -64,11 +64,11 @@ void TurbulenceModelFactory::readConfigFile(const vf::basics::ConfigurationFile 
     {
         std::string config = configData.getValue<std::string>("TurbulenceModel");
         
-        if      (config == "Smagorinsky") this->setTurbulenceModel( TurbulenceModel::Smagorinsky );
-        else if (config == "AMD")         this->setTurbulenceModel( TurbulenceModel::AMD );
-        else if (config == "QR" )         this->setTurbulenceModel( TurbulenceModel::QR );
-        else if (config == "None")        this->setTurbulenceModel( TurbulenceModel::None );
-        else    std::runtime_error("TurbulenceModelFactory: Invalid turbulence model!");
+        if      (config == "Smagorinsky") this->setTurbulenceModel( TurbulenceModel::Smagorinsky ); 
+        else if (config == "AMD")         this->setTurbulenceModel( TurbulenceModel::AMD );               
+        else if (config == "QR" )         this->setTurbulenceModel( TurbulenceModel::QR );             
+        else if (config == "None")        this->setTurbulenceModel( TurbulenceModel::None );           
+        else    std::runtime_error("TurbulenceModelFactory: Invalid turbulence model!");           
 
         VF_LOG_INFO("Turbulence model: {}", config);
         

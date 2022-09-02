@@ -53,9 +53,9 @@ public:
     
     TurbulenceModelFactory(SPtr<Parameter> parameter): para(parameter) {}
 
-    void setTurbulenceModel(const TurbulenceModel _turbulenceModel);
+    void setTurbulenceModel(TurbulenceModel _turbulenceModel);
 
-    void setModelConstant(const real modelConstant);
+    void setModelConstant(real modelConstant);
 
     void readConfigFile(const vf::basics::ConfigurationFile &configData);
 

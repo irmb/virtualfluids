@@ -473,8 +473,7 @@ __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
         switch (turbulenceModel)
         {
         case TurbulenceModel::None:
-        case TurbulenceModel::AMD:
-            //AMD is computed in separate kernel
+        case TurbulenceModel::AMD:  //AMD is computed in separate kernel
             break;
         case TurbulenceModel::Smagorinsky:
             turbulentViscosity[k] = calcTurbulentViscositySmagorinsky(SGSconstant, dxux, dyuy, dzuz, Dxy, Dxz , Dyz);
@@ -485,7 +484,6 @@ __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
         default:
             break;
         }
- 
         ////////////////////////////////////////////////////////////
         //! - Relaxation of second order cumulants with correction terms according to Eq. (33)-(35) in
         //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017),
