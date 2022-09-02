@@ -26,12 +26,12 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file TurbulentViscosity.h
+//! \file TurbulentViscosityKernels.cu
 //! \ingroup GPU
 //! \author Henry Korb, Henrik Asmuth
 //======================================================================================
 
-#include "TurbulentViscosity.h"
+#include "TurbulentViscosityKernels.h"
 #include "lbm/constants/NumericConstants.h"
 #include "Parameter/Parameter.h"
 #include "cuda/CudaGrid.h"
@@ -124,3 +124,12 @@ void calcTurbulentViscosityAMD(Parameter* para, int level)
     getLastCudaError("calcAMD execution failed");
 }
     
+__inline__ __device__ real calcTurbulentViscosityQR(real C, real dxux, real dyuy, real dzuz, real Dxy, real Dxz , real Dyz)
+{
+        // ! Verstappen's QR model
+        //! Second invariant of the strain-rate tensor
+        real Q = c1o2*( dxux*dxux + dyuy*dyuy + dzuz*dzuz ) + c1o4*( Dxy*Dxy + Dxz*Dxz + Dyz*Dyz);
+        //! Third invariant of the strain-rate tensor (determinant)
+        real R = - dxux*dyuy*dzuz - c1o4*( Dxy*Dxz*Dyz + dxux*Dyz*Dyz + dyuy*Dxz*Dxz + dzuz*Dxy*Dxy );
+        return C * max(R, c0o1) / Q;
+}

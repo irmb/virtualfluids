@@ -29,7 +29,7 @@
 //! \file TurbulentViscosityFactory.h
 //! \ingroup TurbulentViscosity
 //! \author Henrik Asmuth
-//=======================================================================================#ifndef BC_FACTORY
+//=======================================================================================
 #ifndef TurbulenceModelFactory_H
 #define TurbulenceModelFactory_H
 

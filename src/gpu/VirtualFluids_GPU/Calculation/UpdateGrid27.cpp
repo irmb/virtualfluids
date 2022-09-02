@@ -4,7 +4,6 @@
 
 #include "Communication/ExchangeData27.h"
 #include "Parameter/CudaStreamManager.h"
-#include "GPU/TurbulentViscosity.h"
 #include "KernelManager/BCKernelManager.h"
 #include "KernelManager/ADKernelManager.h"
 #include "KernelManager/GridScalingKernelManager.h"

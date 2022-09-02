@@ -31,25 +31,30 @@
 //! \author Henry Korb, Henrik Asmuth
 //======================================================================================
 
-#ifndef TURBULENT_VISCOSITY_H_
-#define TURBULENT_VISCOSITY_H_
+#ifndef TURBULENT_VISCOSITY_INLINES_CUH_
+#define TURBULENT_VISCOSITY_INLINES_CUH_
 
 #include <cuda.h>
 #include <cuda_runtime.h>
-#include "math.h"
 
-#include "Core/DataTypes.h"
+#include "LBM/LB.h" 
 #include <lbm/constants/NumericConstants.h>
 
 using namespace vf::lbm::constant;
 
-class Parameter;
-
-void calcTurbulentViscosityAMD(Parameter* para, int level);
-
 __inline__ __device__ real calcTurbulentViscositySmagorinsky(real Cs, real dxux, real dyuy, real dzuz, real Dxy, real Dxz , real Dyz)
 {
     return Cs*Cs * sqrt( c2o1 * ( dxux*dxux + dyuy*dyuy + dzuz*dzuz ) + Dxy*Dxy + Dxz*Dxz + Dyz*Dyz );
+}
+
+__inline__ __device__ real calcTurbulentViscosityQR(real C, real dxux, real dyuy, real dzuz, real Dxy, real Dxz , real Dyz)
+{
+        // ! Verstappen's QR model
+        //! Second invariant of the strain-rate tensor
+        real Q = c1o2*( dxux*dxux + dyuy*dyuy + dzuz*dzuz ) + c1o4*( Dxy*Dxy + Dxz*Dxz + Dyz*Dyz);
+        //! Third invariant of the strain-rate tensor (determinant)
+        real R = - dxux*dyuy*dzuz - c1o4*( Dxy*Dxz*Dyz + dxux*Dyz*Dyz + dyuy*Dxz*Dxz + dzuz*Dxy*Dxy );
+        return C * max(R, c0o1) / Q;
 }
 
 #endif //TURBULENT_VISCOSITY_H_e
