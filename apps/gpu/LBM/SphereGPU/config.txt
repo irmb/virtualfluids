@@ -8,7 +8,7 @@
 #informations for Writing
 ##################################################
 Path=output/Sphere/
-Prefix=Sphere
+Prefix=Sphere01
 #WriteGrid=true
 ##################################################
 #informations for reading
