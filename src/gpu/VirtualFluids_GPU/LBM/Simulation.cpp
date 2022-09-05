@@ -20,6 +20,7 @@
 #include "Output/AnalysisData.hpp"
 #include "Output/InterfaceDebugWriter.hpp"
 #include "Output/EdgeNodeDebugWriter.hpp"
+#include "Output/NeighborDebugWriter.hpp"
 #include "Output/VeloASCIIWriter.hpp"
 //////////////////////////////////////////////////////////////////////////
 #include "Utilities/Buffer2D.hpp"
@@ -405,6 +406,8 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     // std::cout << "Process " << communicator.getPID() <<": used device memory" << cudaMemoryManager->getMemsizeGPU() /
     // 1000000.0 << " MB\n" << std::endl;
     //////////////////////////////////////////////////////////////////////////
+
+    // NeighborDebugWriter::writeNeighborLinkLinesDebug(para.get());
 
     // InterfaceDebugWriter::writeInterfaceLinesDebugCF(para.get());
     // InterfaceDebugWriter::writeInterfaceLinesDebugFC(para.get());

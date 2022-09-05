@@ -1,6 +1,9 @@
 #ifndef LBM_D3Q27_H
 #define LBM_D3Q27_H
 
+#include <map>
+#include "basics/Core/DataTypes.h"
+
 namespace vf::lbm::dir
 {
 
@@ -36,7 +39,49 @@ static constexpr int DIR_MMP = 22;	 // TSW
 static constexpr int DIR_PPM = 23;	 // BNE
 static constexpr int DIR_MPM = 24;	 // BNW
 static constexpr int DIR_PMM = 25;	 // BSE
-static constexpr int DIR_MMM = 26;	 // BSW 
+static constexpr int DIR_MMM = 26;	 // BSW
+
+struct countersForPointerChasing{
+    uint counterInverse;
+    uint counterX;
+    uint counterY;
+    uint counterZ;
+};
+
+const std::map<const int, const countersForPointerChasing> mapForPointerChasing = 
+{
+    {DIR_000, countersForPointerChasing{0, 0, 0, 0}},
+    {DIR_P00, countersForPointerChasing{0, 1, 0, 0}},
+    {DIR_M00, countersForPointerChasing{1, 0, 1, 1}},
+    {DIR_0P0, countersForPointerChasing{0, 0, 1, 0}},
+    {DIR_0M0, countersForPointerChasing{1, 1, 0, 1}},
+    {DIR_00P, countersForPointerChasing{0, 0, 0, 1}},
+    {DIR_00M, countersForPointerChasing{1, 1, 1, 0}},
+
+    {DIR_PP0, countersForPointerChasing{0, 1, 1, 0}},
+    {DIR_MM0, countersForPointerChasing{1, 0, 0, 1}},
+    {DIR_PM0, countersForPointerChasing{1, 2, 0, 1}},
+    {DIR_MP0, countersForPointerChasing{1, 0, 2, 1}},
+    {DIR_P0P, countersForPointerChasing{0, 1, 0, 1}},
+    {DIR_M0M, countersForPointerChasing{1, 0, 1, 0}},
+    {DIR_P0M, countersForPointerChasing{1, 2, 1, 0}},
+    {DIR_M0P, countersForPointerChasing{1, 0, 1, 2}},
+    {DIR_0PP, countersForPointerChasing{0, 0, 1, 1}},
+    {DIR_0MM, countersForPointerChasing{1, 1, 0, 0}},
+    {DIR_0PM, countersForPointerChasing{1, 1, 2, 0}},
+    {DIR_0MP, countersForPointerChasing{1, 1, 0, 2}},
+
+    {DIR_PPP, countersForPointerChasing{0, 1, 1, 1}},
+    {DIR_MPP, countersForPointerChasing{1, 0, 2, 2}},
+    {DIR_PMP, countersForPointerChasing{1, 2, 0, 2}},
+    {DIR_MMP, countersForPointerChasing{1, 0, 0, 2}},
+    {DIR_PPM, countersForPointerChasing{1, 2, 2, 0}},
+    {DIR_MPM, countersForPointerChasing{1, 0, 2, 0}},
+    {DIR_PMM, countersForPointerChasing{1, 2, 0, 0}},
+    {DIR_MMM, countersForPointerChasing{1, 0, 0, 0}}
+};
+
+
 
 // used in the CPU version
 // static constexpr int INV_P00 = DIR_M00;

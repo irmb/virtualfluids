@@ -406,7 +406,7 @@ public:
     void setDiffMod(int DiffMod);
     void setDiffusivity(real Diffusivity);
     void setD3Qxx(int d3qxx);
-    void setMaxLevel(int maxlevel);
+    void setMaxLevel(int numberOfLevels);
     void setParticleBasicLevel(int pbl);
     void setParticleInitLevel(int pil);
     void setNumberOfParticles(int nop);

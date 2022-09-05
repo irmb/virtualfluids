@@ -657,9 +657,9 @@ void Parameter::setD3Qxx(int d3qxx)
 {
     this->D3Qxx = d3qxx;
 }
-void Parameter::setMaxLevel(int maxlevel)
+void Parameter::setMaxLevel(int numberOfLevels)
 {
-    this->maxlevel = maxlevel - 1;
+    this->maxlevel = numberOfLevels - 1;
     this->fine = this->maxlevel;
     parH.resize(this->maxlevel + 1);
     parD.resize(this->maxlevel + 1);

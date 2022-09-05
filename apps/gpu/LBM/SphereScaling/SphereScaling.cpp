@@ -149,11 +149,13 @@ void multipleLevel(std::filesystem::path& configPath)
 
 
     para->setOutputPrefix(simulationName);
+    if (para->getOutputPath() == "output/") {para->setOutputPath(outPath);}
     para->setPrintFiles(true);
-    std::cout << "Write result files to " << para->getFName() << std::endl;
 
     // para->setMainKernel("CumulantK17CompChim");
     para->setMainKernel("CumulantK17CompChimStream");
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     VF_LOG_INFO("LB parameters:");
     VF_LOG_INFO("velocity LB [dx/dt]              = {}", vxLB);

@@ -64,17 +64,17 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// Relative Paths
+const std::string outPath("./output/MusselOysterResults/");
+const std::string gridPathParent = "./output/MusselOysterResults/grid/";
+const std::string stlPath("./stl/MusselOyster/");
+const std::string simulationName("MusselOyster");
+
 // Tesla 03
 // const std::string outPath("E:/temp/MusselOysterResults/");
 // const std::string gridPathParent = "E:/temp/GridMussel/";
 // const std::string stlPath("C:/Users/Master/Documents/MasterAnna/STL/");
 // const std::string simulationName("MusselOyster");
-
-// Aragorn
-const std::string outPath("./output/MusselOysterResults/");
-const std::string gridPathParent = "./output/MusselOysterResults/grid/";
-const std::string stlPath("./stl/MusselOyster/");
-const std::string simulationName("MusselOyster");
 
 // Phoenix
 // const std::string outPath("/work/y0078217/Results/MusselOysterResults/");
@@ -127,7 +127,6 @@ void multipleLevel(std::filesystem::path &configPath)
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     std::string bivalveType = "MUSSEL"; // "MUSSEL" "OYSTER"
     std::string gridPath(
         gridPathParent +
@@ -148,6 +147,24 @@ void multipleLevel(std::filesystem::path &configPath)
     para->setViscosityRatio((real)0.058823529);
     para->setDensityRatio((real)998.0);
 
+    // para->setTimestepOut(1000);
+    // para->setTimestepEnd(10000);
+
+    para->setCalcDragLift(false);
+    para->setUseWale(false);
+
+    para->setOutputPrefix(simulationName);
+    if (para->getOutputPath() == "output/") {para->setOutputPath(outPath);}
+
+    para->setPrintFiles(true);
+    std::cout << "Write result files to " << para->getFName() << std::endl;
+
+    para->setUseStreams(useStreams);
+    // para->setMainKernel("CumulantK17CompChim");
+    para->setMainKernel("CumulantK17CompChimStream");
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
     VF_LOG_INFO("LB parameters:");
     VF_LOG_INFO("velocity LB [dx/dt]              = {}", vxLB);
     VF_LOG_INFO("viscosity LB [dx/dt]             = {}", viscosityLB);
@@ -164,22 +181,6 @@ void multipleLevel(std::filesystem::path &configPath)
     VF_LOG_INFO("useReducedCommunicationAfterFtoC = {}", para->useReducedCommunicationAfterFtoC);
     VF_LOG_INFO("bivalveType                      = {}", bivalveType);
     VF_LOG_INFO("mainKernel                       = {}\n", para->getMainKernel());
-
-    // para->setTimestepOut(1000);
-    // para->setTimestepEnd(10000);
-
-    para->setCalcDragLift(false);
-    para->setUseWale(false);
-
-    para->setOutputPrefix(simulationName);
-
-    para->setPrintFiles(true);
-    std::cout << "Write result files to " << para->getFName() << std::endl;
-
-    para->setUseStreams(useStreams);
-    // para->setMainKernel("CumulantK17CompChim");
-    para->setMainKernel("CumulantK17CompChimStream");
-    *logging::out << logging::Logger::INFO_HIGH << "Kernel: " << para->getMainKernel() << "\n";
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -597,7 +598,7 @@ int main(int argc, char *argv[])
             std::filesystem::path configPath = __FILE__;
 
             // the config file's default name can be replaced by passing a command line argument
-            std::string configName("config.txt");
+            std::string configName("configMusselOyster.txt");
             if (argc == 2) {
                 configName = argv[1];
                 std::cout << "Using configFile command line argument: " << configName << std::endl;
