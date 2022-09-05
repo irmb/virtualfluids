@@ -441,7 +441,7 @@ void Probe::writeGridFiles(Parameter* para, int level, std::vector<std::string>&
 
                 uint arrOff = probeStruct->arrayOffsetsH[var];
                 uint arrLen = probeStruct->nPoints;
-
+                
                 for(uint arr=0; arr<n_arrs; arr++)
                 {
                     coeff = postProcessingVariables[arr].conversionFactor;

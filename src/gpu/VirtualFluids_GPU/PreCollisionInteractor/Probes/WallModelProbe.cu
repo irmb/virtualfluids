@@ -155,7 +155,6 @@ void WallModelProbe::findPoints(Parameter* para, GridProvider* gridProvider, std
                             std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
                             int level)
 {
-    if ( para->getParD(level)->stressBC.numberOfBCnodes < 1) throw std::runtime_error("WallModelProbe::findPoints(): stressBC.numberOfBCnodes < 1 !");
     if ( !para->getHasWallModelMonitor())                    throw std::runtime_error("WallModelProbe::findPoints(): !para->getHasWallModelMonitor() !");
 
     real dt = para->getTimeRatio();
@@ -187,6 +186,10 @@ void WallModelProbe::findPoints(Parameter* para, GridProvider* gridProvider, std
 void WallModelProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, uint t, int level)
 {   
     bool doTmpAveraging = (t>this->getTStartTmpAveraging());
+    real N = para->getParD(level)->stressBC.numberOfBCnodes;
+    if(N<1) return; //Skipping levels without StressBC
+    real n = (real)probeStruct->vals;
+    int nPoints = probeStruct->nPoints;
 
     // Pointer casts to use device arrays in thrust reductions
     thrust::device_ptr<real> u_el_thrust    = thrust::device_pointer_cast(para->getParD(level)->stressBC.Vx);
@@ -212,10 +215,6 @@ void WallModelProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Paramete
     thrust::permutation_iterator<valIterator, indIterator> dpdy_iter_end  (dpdy_thrust, indices_thrust+probeStruct->nIndices);
     thrust::permutation_iterator<valIterator, indIterator> dpdz_iter_begin(dpdz_thrust, indices_thrust);
     thrust::permutation_iterator<valIterator, indIterator> dpdz_iter_end  (dpdz_thrust, indices_thrust+probeStruct->nIndices);
-
-    real N = para->getParD(level)->stressBC.numberOfBCnodes;
-    real n = (real)probeStruct->vals;
-    int nPoints = probeStruct->nPoints;
 
     if(probeStruct->quantitiesH[int(Statistic::SpatialMeans)])
     {
@@ -293,6 +292,7 @@ void WallModelProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Paramete
             }
         }    
     }
+        
 
     this->tProbe += 1;
     getLastCudaError("WallModelProbe::calculateQuantities execution failed");
