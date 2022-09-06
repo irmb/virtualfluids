@@ -92,9 +92,9 @@ enum class Statistic{
 
 typedef struct PostProcessingVariable{
     std::string name;
-    real conversionFactor;
+    std::function<real(int)> conversionFactor;
     PostProcessingVariable( std::string _name, 
-                            real        _conversionFactor): 
+                            std::function<real(int)>  _conversionFactor): 
     name(_name), conversionFactor(_conversionFactor){};
 } PostProcessingVariable;
 
@@ -171,6 +171,8 @@ public:
     void setFileNameToNOut(){this->fileNameLU = false;}
     void setTStartTmpAveraging(uint _tStartTmpAveraging){this->tStartTmpAveraging = _tStartTmpAveraging;}
 
+    real getNondimensionalConversionFactor(int level);
+
 private:
     virtual bool isAvailableStatistic(Statistic _variable) = 0;
 
@@ -214,12 +216,12 @@ protected:
     uint tProbe = 0; //!> counter for number of probe evaluations. Only used when outputting timeseries
 
 
-    real velocityRatio;
-    real densityRatio;
-    real forceRatio;
-    real stressRatio;
-    real accelerationRatio;
-    real viscosityRatio;
+    std::function<real(int)> velocityRatio;
+    std::function<real(int)> densityRatio;
+    std::function<real(int)> forceRatio;
+    std::function<real(int)> stressRatio;
+    std::function<real(int)> viscosityRatio;
+    std::function<real(int)> nondimensional;
 };
 
 #endif

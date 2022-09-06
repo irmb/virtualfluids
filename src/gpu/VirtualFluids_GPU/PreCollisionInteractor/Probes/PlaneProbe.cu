@@ -57,10 +57,10 @@ std::vector<PostProcessingVariable> PlaneProbe::getPostProcessingVariables(Stati
         postProcessingVariables.push_back( PostProcessingVariable("rho_mean", this->densityRatio ) );
         break;
     case Statistic::Variances:
-        postProcessingVariables.push_back( PostProcessingVariable("vx_var",  pow(this->velocityRatio, 2.0)) );
-        postProcessingVariables.push_back( PostProcessingVariable("vy_var",  pow(this->velocityRatio, 2.0)) );
-        postProcessingVariables.push_back( PostProcessingVariable("vz_var",  pow(this->velocityRatio, 2.0)) );
-        postProcessingVariables.push_back( PostProcessingVariable("rho_var", pow(this->densityRatio,  2.0)) );
+        postProcessingVariables.push_back( PostProcessingVariable("vx_var",  this->stressRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("vy_var",  this->stressRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("vz_var",  this->stressRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("rho_var", this->densityRatio) );
         break;
 
     default:

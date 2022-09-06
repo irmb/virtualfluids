@@ -117,9 +117,9 @@ std::vector<PostProcessingVariable> WallModelProbe::getPostProcessingVariables(S
         postProcessingVariables.push_back( PostProcessingVariable("Fz_spatMean",     this->outputStress? this->stressRatio: this->forceRatio) );
         if(this->evaluatePressureGradient)
         {
-            postProcessingVariables.push_back( PostProcessingVariable("dpdx_spatMean",     this->accelerationRatio) ); 
-            postProcessingVariables.push_back( PostProcessingVariable("dpdy_spatMean",     this->accelerationRatio) );
-            postProcessingVariables.push_back( PostProcessingVariable("dpdz_spatMean",     this->accelerationRatio) );
+            postProcessingVariables.push_back( PostProcessingVariable("dpdx_spatMean",     this->forceRatio) ); 
+            postProcessingVariables.push_back( PostProcessingVariable("dpdy_spatMean",     this->forceRatio) );
+            postProcessingVariables.push_back( PostProcessingVariable("dpdz_spatMean",     this->forceRatio) );
         }
         break;
     case Statistic::SpatioTemporalMeans:
@@ -135,9 +135,9 @@ std::vector<PostProcessingVariable> WallModelProbe::getPostProcessingVariables(S
         postProcessingVariables.push_back( PostProcessingVariable("Fz_spatTmpMean",     this->outputStress? this->stressRatio: this->forceRatio) );
         if(this->evaluatePressureGradient)
         {
-            postProcessingVariables.push_back( PostProcessingVariable("dpdx_spatTmpMean",     this->accelerationRatio) ); 
-            postProcessingVariables.push_back( PostProcessingVariable("dpdy_spatTmpMean",     this->accelerationRatio) );
-            postProcessingVariables.push_back( PostProcessingVariable("dpdz_spatTmpMean",     this->accelerationRatio) );
+            postProcessingVariables.push_back( PostProcessingVariable("dpdx_spatTmpMean",     this->forceRatio) ); 
+            postProcessingVariables.push_back( PostProcessingVariable("dpdy_spatTmpMean",     this->forceRatio) );
+            postProcessingVariables.push_back( PostProcessingVariable("dpdz_spatTmpMean",     this->forceRatio) );
         }
         break;
 

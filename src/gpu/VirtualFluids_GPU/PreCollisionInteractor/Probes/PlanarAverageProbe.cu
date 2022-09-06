@@ -154,40 +154,40 @@ std::vector<PostProcessingVariable> PlanarAverageProbe::getPostProcessingVariabl
         postProcessingVariables.push_back( PostProcessingVariable("nut_spatTmpMean", this->viscosityRatio) );
         break;
     case Statistic::SpatialCovariances:
-        postProcessingVariables.push_back( PostProcessingVariable("vxvx_spatMean",  pow(this->velocityRatio, 2.0)) );
-        postProcessingVariables.push_back( PostProcessingVariable("vyvy_spatMean",  pow(this->velocityRatio, 2.0)) );
-        postProcessingVariables.push_back( PostProcessingVariable("vzvz_spatMean",  pow(this->velocityRatio, 2.0)) );
-        postProcessingVariables.push_back( PostProcessingVariable("vxvy_spatMean",  pow(this->velocityRatio, 2.0)) );
-        postProcessingVariables.push_back( PostProcessingVariable("vxvz_spatMean",  pow(this->velocityRatio, 2.0)) );
-        postProcessingVariables.push_back( PostProcessingVariable("vyvz_spatMean",  pow(this->velocityRatio, 2.0)) );
+        postProcessingVariables.push_back( PostProcessingVariable("vxvx_spatMean",  this->stressRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("vyvy_spatMean",  this->stressRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("vzvz_spatMean",  this->stressRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("vxvy_spatMean",  this->stressRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("vxvz_spatMean",  this->stressRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("vyvz_spatMean",  this->stressRatio) );
         break;
     case Statistic::SpatioTemporalCovariances:
-        postProcessingVariables.push_back( PostProcessingVariable("vxvx_spatTmpMean",  pow(this->velocityRatio, 2.0)) );
-        postProcessingVariables.push_back( PostProcessingVariable("vyvy_spatTmpMean",  pow(this->velocityRatio, 2.0)) );
-        postProcessingVariables.push_back( PostProcessingVariable("vzvz_spatTmpMean",  pow(this->velocityRatio, 2.0)) );
-        postProcessingVariables.push_back( PostProcessingVariable("vxvy_spatTmpMean",  pow(this->velocityRatio, 2.0)) );
-        postProcessingVariables.push_back( PostProcessingVariable("vxvz_spatTmpMean",  pow(this->velocityRatio, 2.0)) );
-        postProcessingVariables.push_back( PostProcessingVariable("vyvz_spatTmpMean",  pow(this->velocityRatio, 2.0)) );
+        postProcessingVariables.push_back( PostProcessingVariable("vxvx_spatTmpMean",  this->stressRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("vyvy_spatTmpMean",  this->stressRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("vzvz_spatTmpMean",  this->stressRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("vxvy_spatTmpMean",  this->stressRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("vxvz_spatTmpMean",  this->stressRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("vyvz_spatTmpMean",  this->stressRatio) );
         break;
     case Statistic::SpatialSkewness:
-        postProcessingVariables.push_back( PostProcessingVariable("Sx_spatMean",  1.0) );
-        postProcessingVariables.push_back( PostProcessingVariable("Sy_spatMean",  1.0) );
-        postProcessingVariables.push_back( PostProcessingVariable("Sz_spatMean",  1.0) );
+        postProcessingVariables.push_back( PostProcessingVariable("Sx_spatMean",  this->nondimensional) );
+        postProcessingVariables.push_back( PostProcessingVariable("Sy_spatMean",  this->nondimensional) );
+        postProcessingVariables.push_back( PostProcessingVariable("Sz_spatMean",  this->nondimensional) );
         break;
     case Statistic::SpatioTemporalSkewness:
-        postProcessingVariables.push_back( PostProcessingVariable("Sx_spatTmpMean",  1.0) );
-        postProcessingVariables.push_back( PostProcessingVariable("Sy_spatTmpMean",  1.0) );
-        postProcessingVariables.push_back( PostProcessingVariable("Sz_spatTmpMean",  1.0) );
+        postProcessingVariables.push_back( PostProcessingVariable("Sx_spatTmpMean",  this->nondimensional) );
+        postProcessingVariables.push_back( PostProcessingVariable("Sy_spatTmpMean",  this->nondimensional) );
+        postProcessingVariables.push_back( PostProcessingVariable("Sz_spatTmpMean",  this->nondimensional) );
         break;
     case Statistic::SpatialFlatness:
-        postProcessingVariables.push_back( PostProcessingVariable("Fx_spatMean",  1.0) );
-        postProcessingVariables.push_back( PostProcessingVariable("Fy_spatMean",  1.0) );
-        postProcessingVariables.push_back( PostProcessingVariable("Fz_spatMean",  1.0) );
+        postProcessingVariables.push_back( PostProcessingVariable("Fx_spatMean",  this->nondimensional) );
+        postProcessingVariables.push_back( PostProcessingVariable("Fy_spatMean",  this->nondimensional) );
+        postProcessingVariables.push_back( PostProcessingVariable("Fz_spatMean",  this->nondimensional) );
         break;
     case Statistic::SpatioTemporalFlatness:
-        postProcessingVariables.push_back( PostProcessingVariable("Fx_spatTmpMean",  1.0) );
-        postProcessingVariables.push_back( PostProcessingVariable("Fy_spatTmpMean",  1.0) );
-        postProcessingVariables.push_back( PostProcessingVariable("Fz_spatTmpMean",  1.0) );
+        postProcessingVariables.push_back( PostProcessingVariable("Fx_spatTmpMean",  this->nondimensional) );
+        postProcessingVariables.push_back( PostProcessingVariable("Fy_spatTmpMean",  this->nondimensional) );
+        postProcessingVariables.push_back( PostProcessingVariable("Fz_spatTmpMean",  this->nondimensional) );
         break;
 
     default:

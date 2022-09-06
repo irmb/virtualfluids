@@ -37,6 +37,7 @@
 #include <helper_cuda.h>
 
 #include "VirtualFluids_GPU/GPU/GeometryUtils.h"
+#include <lbm/constants/NumericConstants.h>
 #include "basics/writer/WbWriterVtkXmlBinary.h"
 #include <Core/StringUtilities/StringUtil.h>
 
@@ -44,6 +45,7 @@
 #include "DataStructureInitializer/GridProvider.h"
 #include "GPU/CudaMemoryManager.h"
 
+using namespace vf::lbm::constant;
 
 __device__ void calculatePointwiseQuantities(uint n, real* quantityArray, bool* quantities, uint* quantityArrayOffsets, uint nPoints, uint node, real vx, real vy, real vz, real rho)
 {
@@ -177,14 +179,17 @@ __global__ void interpAndCalcQuantitiesKernel(   uint* pointIndices,
 
 bool Probe::getHasDeviceQuantityArray(){ return this->hasDeviceQuantityArray; }
 
+real Probe::getNondimensionalConversionFactor(int level){ return c1o1; }
+
 void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaMemoryManager)
 {
-    this->velocityRatio      = para->getVelocityRatio();
-    this->densityRatio       = para->getDensityRatio();
-    this->forceRatio         = para->getForceRatio();
-    this->stressRatio        = para->getDensityRatio()*pow(para->getVelocityRatio(), 2.0);
-    this->accelerationRatio  = para->getVelocityRatio()/para->getTimeRatio();
-    this->viscosityRatio     = para->getViscosityRatio();
+    using std::placeholders::_1;
+    this->velocityRatio      = std::bind(&Parameter::getScaledVelocityRatio,        para, _1); 
+    this->densityRatio       = std::bind(&Parameter::getScaledDensityRatio,         para, _1);
+    this->forceRatio         = std::bind(&Parameter::getScaledForceRatio,           para, _1);
+    this->stressRatio        = std::bind(&Parameter::getScaledPressureRatio,        para, _1);
+    this->viscosityRatio     = std::bind(&Parameter::getScaledViscosityRatio,       para, _1);
+    this->nondimensional     = std::bind(&Probe::getNondimensionalConversionFactor, this, _1);
 
     probeParams.resize(para->getMaxLevel()+1);
 
@@ -444,7 +449,7 @@ void Probe::writeGridFiles(Parameter* para, int level, std::vector<std::string>&
                 
                 for(uint arr=0; arr<n_arrs; arr++)
                 {
-                    coeff = postProcessingVariables[arr].conversionFactor;
+                    coeff = postProcessingVariables[arr].conversionFactor(level);
                     
                     for (uint pos = startpos; pos < endpos; pos++)
                     {
