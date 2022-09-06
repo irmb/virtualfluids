@@ -183,6 +183,20 @@ void FileWriter::writeUnstrucuredGridLT(std::shared_ptr<Parameter> para, int lev
     nodedatanames.push_back("vx2");
     nodedatanames.push_back("vx3");
     nodedatanames.push_back("geo");
+    
+    uint firstBodyForceNode = (uint) nodedatanames.size();
+    if(para->getIsBodyForce())
+    {
+        nodedatanames.push_back("Fx");
+        nodedatanames.push_back("Fy");
+        nodedatanames.push_back("Fz");
+    }
+
+    uint firstNutNode = (uint) nodedatanames.size();
+    if(para->getUseTurbulentViscosity())
+    {
+        nodedatanames.push_back("nut");
+    }
 
     uint firstTurbNode = (uint) nodedatanames.size();
     if (para->getCalcTurbulenceIntensity()) {
@@ -238,6 +252,18 @@ void FileWriter::writeUnstrucuredGridLT(std::shared_ptr<Parameter> para, int lev
                 nodedata[3][dn1] = (double)para->getParH(level)->velocityY[pos] * (double)para->getVelocityRatio();
                 nodedata[4][dn1] = (double)para->getParH(level)->velocityZ[pos] * (double)para->getVelocityRatio();
                 nodedata[5][dn1] = (double)para->getParH(level)->typeOfGridNode[pos];
+
+                if(para->getIsBodyForce())
+                {
+                    nodedata[firstBodyForceNode    ][dn1] = (double)para->getParH(level)->forceX_SP[pos] * (double)para->getScaledForceRatio(level);
+                    nodedata[firstBodyForceNode + 1][dn1] = (double)para->getParH(level)->forceY_SP[pos] * (double)para->getScaledForceRatio(level);
+                    nodedata[firstBodyForceNode + 2][dn1] = (double)para->getParH(level)->forceZ_SP[pos] * (double)para->getScaledForceRatio(level);
+                }
+
+                if(para->getUseTurbulentViscosity())
+                {
+                    nodedata[firstNutNode][dn1] = (double)para->getParH(level)->turbViscosity[pos] * (double)para->getScaledViscosityRatio(level);
+                }
 
                 if (para->getCalcTurbulenceIntensity()) {
                     nodedata[firstTurbNode    ][dn1] = (double)para->getParH(level)->vxx[pos];

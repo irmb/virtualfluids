@@ -197,7 +197,7 @@ void multipleLevel(const std::string& configPath)
     // gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
     gridBuilder->setStressBoundaryCondition(SideType::MZ,
                                             0.0, 0.0, 1.0,              // wall normals
-                                            samplingOffset, z0/dx);     // wall model settinng
+                                            samplingOffset, 2*z0/dx);     // wall model settinng
     para->setHasWallModelMonitor(true);
     bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressPressureBounceBack);
 
