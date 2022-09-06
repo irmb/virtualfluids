@@ -38,7 +38,6 @@ using namespace vf::gpu;
 
 Field::Field(uint size) : size(size)
 {
-    
 }
 
 void Field::allocateMemory()
