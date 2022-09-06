@@ -182,22 +182,29 @@ void multipleLevel(const std::string& configPath)
     // gridBuilder->setNumberOfLayers(0,0);
     // gridBuilder->addGrid( new Cuboid( 300., 300., 300., 1000. , 1000., 600.), 1 );
 
-    gridBuilder->setPeriodicBoundaryCondition(true, true, false);
+    gridBuilder->setPeriodicBoundaryCondition(false, true, false);
 
 	gridBuilder->buildGrids(lbmOrGks, false); // buildGrids() has to be called before setting the BCs!!!!
 
     uint samplingOffset = 2;
-    // gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::MX, velocityLB, 0.0, 0.0);
+    bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityAndPressureCompressible);
     gridBuilder->setStressBoundaryCondition(SideType::MZ,
                                             0.0, 0.0, 1.0,              // wall normals
                                             samplingOffset, z0/dx);     // wall model settinng
-    para->setHasWallModelMonitor(true);
-    bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressBounceBack);
+    // para->setHasWallModelMonitor(true);
+    bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressCompressible);
 
 
     // gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
     gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0,  0.0, 0.0);
+    // gridBuilder->setNoSlipBoundaryCondition(SideType::MZ);
     bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipCompressible);
+    bcFactory.setNoSlipBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipCompressible);
+
+    gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
+    bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflectivePressureCorrection);
+    para->setOutflowPressureCorrectionFactor(0.5);
 
     real cPi = 3.1415926535897932384626433832795;
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
@@ -208,19 +215,19 @@ void multipleLevel(const std::string& configPath)
     });
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    SPtr<PlanarAverageProbe> planarAverageProbe = SPtr<PlanarAverageProbe>( new PlanarAverageProbe("planeProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt , tStartOutProbe/dt, tOutProbe/dt, 'z') );
-    planarAverageProbe->addAllAvailableStatistics();
-    planarAverageProbe->setFileNameToNOut();
-    para->addProbe( planarAverageProbe );
+    // SPtr<PlanarAverageProbe> planarAverageProbe = SPtr<PlanarAverageProbe>( new PlanarAverageProbe("planeProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt , tStartOutProbe/dt, tOutProbe/dt, 'z') );
+    // planarAverageProbe->addAllAvailableStatistics();
+    // planarAverageProbe->setFileNameToNOut();
+    // para->addProbe( planarAverageProbe );
 
-    para->setHasWallModelMonitor(true);
-    SPtr<WallModelProbe> wallModelProbe = SPtr<WallModelProbe>( new WallModelProbe("wallModelProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt/4.0 , tStartOutProbe/dt, tOutProbe/dt) );
-    wallModelProbe->addAllAvailableStatistics();
-    wallModelProbe->setFileNameToNOut();
-    wallModelProbe->setForceOutputToStress(true);
-    if(para->getIsBodyForce())
-        wallModelProbe->setEvaluatePressureGradient(true);
-    para->addProbe( wallModelProbe );
+    // para->setHasWallModelMonitor(true);
+    // SPtr<WallModelProbe> wallModelProbe = SPtr<WallModelProbe>( new WallModelProbe("wallModelProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt/4.0 , tStartOutProbe/dt, tOutProbe/dt) );
+    // wallModelProbe->addAllAvailableStatistics();
+    // wallModelProbe->setFileNameToNOut();
+    // wallModelProbe->setForceOutputToStress(true);
+    // if(para->getIsBodyForce())
+    //     wallModelProbe->setEvaluatePressureGradient(true);
+    // para->addProbe( wallModelProbe );
 
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
     auto gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
