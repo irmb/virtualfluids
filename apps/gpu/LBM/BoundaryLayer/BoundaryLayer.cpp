@@ -118,8 +118,6 @@ void multipleLevel(const std::string& configPath)
 
     const uint nodes_per_H = config.contains("nz")? config.getValue<uint>("nz"): 64;
 
-    const bool driveWithGeostrophicWind = config.contains("driveWithGeostrophicWind")? config.getValue<bool>("driveWithGeostrophicWind"): false;
-
     // all in s
     const float tStartOut   = config.getValue<real>("tStartOut");
     const float tOut        = config.getValue<real>("tOut");
@@ -157,7 +155,7 @@ void multipleLevel(const std::string& configPath)
 
     para->setPrintFiles(true);
 
-    if(!driveWithGeostrophicWind) para->setForcing(pressureGradientLB, 0, 0);
+    para->setForcing(pressureGradientLB, 0, 0);
     para->setVelocityLB(velocityLB);
     para->setViscosityLB(viscosityLB);
     para->setVelocityRatio( dx / dt );
@@ -184,10 +182,10 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->addCoarseGrid(0.0, 0.0, 0.0,
                                 L_x,  L_y,  L_z, dx);
-    gridBuilder->setNumberOfLayers(12, 8);
+    // gridBuilder->setNumberOfLayers(12, 8);
 
-    gridBuilder->addGrid( new Cuboid( 0.0, 0.0, 0.0, L_x,  L_y,  0.3*L_z) , 1 );
-    para->setMaxLevel(2);
+    // gridBuilder->addGrid( new Cuboid( 0.0, 0.0, 0.0, L_x,  L_y,  0.3*L_z) , 1 );
+    // para->setMaxLevel(2);
 
     gridBuilder->setPeriodicBoundaryCondition(true, true, false);
 
@@ -197,21 +195,13 @@ void multipleLevel(const std::string& configPath)
     // gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
     gridBuilder->setStressBoundaryCondition(SideType::MZ,
                                             0.0, 0.0, 1.0,              // wall normals
-                                            samplingOffset, 2*z0/dx);     // wall model settinng
+                                            samplingOffset, z0/dx);     // wall model settinng
     para->setHasWallModelMonitor(true);
     bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressPressureBounceBack);
 
-    if(driveWithGeostrophicWind) 
-    {
-        real u_geostrophic = u_star/0.4*log(H/z0) * dt / dx ;
-        gridBuilder->setVelocityBoundaryCondition(SideType::PZ, u_geostrophic, 0.0, 0.0);
-        bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
-    }
-    else //drive with pressure gradient
-    {
-        gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0,  0.0, 0.0);
-        bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipBounceBack); 
-    }
+    gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0,  0.0, 0.0);
+    bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipBounceBack); 
+    
 
     real cPi = 3.1415926535897932384626433832795;
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
