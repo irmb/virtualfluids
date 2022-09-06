@@ -803,17 +803,61 @@ void Parameter::setPressRatio(real PressRatio)
 {
     ic.delta_press = PressRatio;
 }
+real Parameter::getViscosityRatio()
+{
+    return ic.vis_ratio;
+}
+real Parameter::getVelocityRatio()
+{
+    return ic.u0_ratio;
+}
+real Parameter::getDensityRatio()
+{
+    return ic.delta_rho;
+}
+real Parameter::getPressureRatio()
+{
+    return ic.delta_press;
+}
 real Parameter::getTimeRatio()
 {
     return this->getViscosityRatio() * pow(this->getVelocityRatio(), -2);
 }
-real Parameter::getForceRatio()
-{
-    return this->getDensityRatio() * pow(this->getViscosityRatio(), 2);
-}
 real Parameter::getLengthRatio()
 {
     return this->getViscosityRatio() / this->getVelocityRatio();
+}
+real Parameter::getForceRatio()
+{
+    return this->getDensityRatio() * this->getVelocityRatio()/this->getTimeRatio();
+}
+real Parameter::getScaledViscosityRatio(int level)
+{
+    return this->getViscosityRatio()/(level+1);
+}
+real Parameter::getScaledVelocityRatio(int level)
+{
+    return this->getVelocityRatio();
+}
+real Parameter::getScaledDensityRatio(int level)
+{
+    return this->getDensityRatio();
+}
+real Parameter::getScaledPressureRatio(int level)
+{
+    return this->getPressureRatio();
+}
+real Parameter::getScaledTimeRatio(int level)
+{
+    return this->getTimeRatio()/(level+1);
+}
+real Parameter::getScaledLengthRatio(int level)
+{
+    return this->getLengthRatio()/(level+1);
+}
+real Parameter::getScaledForceRatio(int level)
+{
+    return this->getForceRatio()*(level+1);
 }
 void Parameter::setRealX(real RealX)
 {
@@ -1837,22 +1881,6 @@ real Parameter::getViscosity()
 real Parameter::getVelocity()
 {
     return ic.u0;
-}
-real Parameter::getViscosityRatio()
-{
-    return ic.vis_ratio;
-}
-real Parameter::getVelocityRatio()
-{
-    return ic.u0_ratio;
-}
-real Parameter::getDensityRatio()
-{
-    return ic.delta_rho;
-}
-real Parameter::getPressureRatio()
-{
-    return ic.delta_press;
 }
 real Parameter::getRealX()
 {

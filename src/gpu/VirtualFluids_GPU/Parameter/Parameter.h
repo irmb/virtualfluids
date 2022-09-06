@@ -753,6 +753,20 @@ public:
     real getLengthRatio();
     //! \returns the force ratio in SI/LB units
     real getForceRatio();
+    //! \returns the viscosity ratio in SI/LB units scaled to the respective level
+    real getScaledViscosityRatio(int level);
+    //! \returns the velocity ratio in SI/LB units scaled to the respective level
+    real getScaledVelocityRatio(int level);
+    //! \returns the density ratio in SI/LB units scaled to the respective level
+    real getScaledDensityRatio(int level);
+    //! \returns the pressure ratio in SI/LB units scaled to the respective level
+    real getScaledPressureRatio(int level);
+    //! \returns the time ratio in SI/LB units scaled to the respective level
+    real getScaledTimeRatio(int level);
+    //! \returns the length ratio in SI/LB units scaled to the respective level
+    real getScaledLengthRatio(int level);
+    //! \returns the force ratio in SI/LB units scaled to the respective level
+    real getScaledForceRatio(int level);
     real getRealX();
     real getRealY();
     real getRe();
