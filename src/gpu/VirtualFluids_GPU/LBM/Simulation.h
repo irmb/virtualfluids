@@ -6,7 +6,6 @@
 
 #include <PointerDefinitions.h>
 
-#include "Output/LogWriter.hpp"
 #include "Utilities/Buffer2D.hpp"
 #include "LBM/LB.h"
 
@@ -65,8 +64,6 @@ private:
 	Buffer2D <int> geo_sbuf_b;
 	Buffer2D <int> geo_rbuf_b;
 
-
-	LogWriter output;
 
 	vf::gpu::Communicator& communicator;
     SPtr<Parameter> para;
