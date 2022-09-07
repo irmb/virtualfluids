@@ -17,11 +17,11 @@ void NumericalTestGridReader::setInitalNodeValues(const int numberOfNodes, const
 {
 	initialCondition->init(level);
 	for (int j = 0; j <= numberOfNodes; j++){
-		para->getParH(level)->vx_SP[j] = initialCondition->getInitVX(j, level);
-		para->getParH(level)->vy_SP[j] = initialCondition->getInitVY(j, level);
-		para->getParH(level)->vz_SP[j] = initialCondition->getInitVZ(j, level);
-		para->getParH(level)->rho_SP[j] = initialCondition->getInitROH(j, level);
-		para->getParH(level)->press_SP[j] = initialCondition->getInitPRESS(j, level);
+		para->getParH(level)->velocityX[j] = initialCondition->getInitVX(j, level);
+		para->getParH(level)->velocityY[j] = initialCondition->getInitVY(j, level);
+		para->getParH(level)->velocityZ[j] = initialCondition->getInitVZ(j, level);
+		para->getParH(level)->rho[j] = initialCondition->getInitROH(j, level);
+		para->getParH(level)->pressure[j] = initialCondition->getInitPRESS(j, level);
 	}
 }
 

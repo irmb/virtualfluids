@@ -37,6 +37,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <optional>
 
 #include "lbm/constants/D3Q27.h"
 #include "LBM/LB.h"
@@ -116,7 +117,7 @@ struct LBMSimulationParameter {
     uint *neighborX, *neighborY, *neighborZ, *neighborInverse;
 
     // coordinates////////////////////////////////////////////////////////////
-    //! \brief store the coordinates for every lattice node 
+    //! \brief store the coordinates for every lattice node
     real *coordinateX, *coordinateY, *coordinateZ;
 
     // body forces////////////
@@ -374,9 +375,12 @@ struct LBMSimulationParameter {
 class VIRTUALFLUIDS_GPU_EXPORT Parameter
 {
 public:
-    explicit Parameter(const vf::basics::ConfigurationFile &configData, const int numberOfProcesses = 1, const int myId = 0);
-    Parameter(const int numberOfProcesses = 1, const int myId = 0);
+    Parameter();
+    explicit Parameter(const vf::basics::ConfigurationFile* configData);
+    explicit Parameter(const int numberOfProcesses, const int myId);
+    explicit Parameter(const int numberOfProcesses, const int myId, std::optional<const vf::basics::ConfigurationFile*> configData);
     ~Parameter();
+
     void initLBMSimulationParameter();
 
     //! \brief Pointer to instance of LBMSimulationParameter - stored on Host System
@@ -401,7 +405,7 @@ public:
     void setDiffMod(int DiffMod);
     void setDiffusivity(real Diffusivity);
     void setD3Qxx(int d3qxx);
-    void setMaxLevel(int maxlevel);
+    void setMaxLevel(int numberOfLevels);
     void setParticleBasicLevel(int pbl);
     void setParticleInitLevel(int pil);
     void setNumberOfParticles(int nop);
@@ -430,7 +434,6 @@ public:
     void settimestepForMP(unsigned int timestepForMP);
     void setOutputPath(std::string oPath);
     void setOutputPrefix(std::string oPrefix);
-    void setPathAndFilename(std::string fname);
     void setGridPath(std::string gridPath);
     void setGeometryFileC(std::string GeometryFileC);
     void setGeometryFileM(std::string GeometryFileM);
@@ -640,11 +643,13 @@ public:
     int getDiffMod();
     int getFactorNZ();
     int getD3Qxx();
+    //! \returns the maximum level of grid refinement
     int getMaxLevel();
     int getTimeCalcMedStart();
     int getTimeCalcMedEnd();
     int getMaxDev();
-    int getMyID();
+    //! \returns the ID of the current MPI process
+    int getMyProcessID();
     int getNumprocs();
     std::string getOutputPath();
     std::string getOutputPrefix();
@@ -720,11 +725,11 @@ public:
     unsigned int getMemSizeBool(int level);
     unsigned int getMemSizerealYZ(int level);
     unsigned int getSizeMat(int level);
-    unsigned int getTStart();
-    unsigned int getTInit();
-    unsigned int getTEnd();
-    unsigned int getTOut();
-    unsigned int getTStartOut();
+    unsigned int getTimestepStart();
+    unsigned int getTimestepInit();
+    unsigned int getTimestepEnd();
+    unsigned int getTimestepOut();
+    unsigned int getTimestepStartOut();
     unsigned int getTimestepForMP();
     unsigned int getTimestepOfCoarseLevel();
     real getDiffusivity();
@@ -732,12 +737,19 @@ public:
     real getTemperatureBC();
     real getViscosity();
     real getVelocity();
+    //! \returns the viscosity ratio in SI/LB units
     real getViscosityRatio();
+    //! \returns the velocity ratio in SI/LB units
     real getVelocityRatio();
+    //! \returns the density ratio in SI/LB units
     real getDensityRatio();
-    real getPressRatio();
+    //! \returns the pressure ratio in SI/LB units
+    real getPressureRatio();
+    //! \returns the time ratio in SI/LB units
     real getTimeRatio();
+    //! \returns the length ratio in SI/LB units
     real getLengthRatio();
+    //! \returns the force ratio in SI/LB units
     real getForceRatio();
     real getRealX();
     real getRealY();
@@ -766,6 +778,7 @@ public:
     TempPressforBoundaryConditions *getTempPressH();
     TempPressforBoundaryConditions *getTempPressD();
     std::vector<SPtr<PreCollisionInteractor>> getActuators();
+    //! \returns the probes, e.g. point or plane probe
     std::vector<SPtr<PreCollisionInteractor>> getProbes();
     unsigned int getTimeDoCheckPoint();
     unsigned int getTimeDoRestart();
@@ -860,6 +873,8 @@ private:
     void initGridBasePoints();
     void initDefaultLBMkernelAllLevels();
 
+    void setPathAndFilename(std::string fname);
+
 private:
     bool compOn{ false };
     bool diffOn{ false };
@@ -871,6 +886,7 @@ private:
     bool calcVelocityAndFluctuations{ false };
     bool isBodyForce{ false };
     int diffMod{ 27 };
+    //! \property maximum level of grid refinement
     int maxlevel{ 0 };
     int coarse{ 0 };
     int fine{ 0 };

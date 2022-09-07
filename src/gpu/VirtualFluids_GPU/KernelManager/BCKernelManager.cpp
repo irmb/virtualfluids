@@ -174,7 +174,7 @@ void BCKernelManager::runGeoBCKernelPre(const int level, unsigned int t, CudaMem
             //Calculation of cp
             ////////////////////////////////////////////////////////////////////////////////
 
-            if(t > para->getTStartOut())
+            if(t > para->getTimestepStartOut())
             {
                 ////////////////////////////////////////////////////////////////////////////////
                 CalcCPtop27(

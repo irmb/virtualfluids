@@ -364,24 +364,24 @@ void GridReader::initalValuesDomainDecompostion(int level)
 				procNeighborsSendX.push_back(pnXsend);
 				procNeighborsRecvX.push_back(pnXrecv);
 				neighborRankX.push_back(process);
-				std::cout << "MyID: " << para->getMyID() << ", neighborRankX: " << process << std::endl;
+				std::cout << "MyID: " << para->getMyProcessID() << ", neighborRankX: " << process << std::endl;
 			}
 			if (para->getIsNeighborY())
 			{
 				procNeighborsSendY.push_back(pnYsend);
 				procNeighborsRecvY.push_back(pnYrecv);
 				neighborRankY.push_back(process);
-				std::cout << "MyID: " << para->getMyID() << ", neighborRankY: " << process << std::endl;
+				std::cout << "MyID: " << para->getMyProcessID() << ", neighborRankY: " << process << std::endl;
 			}
 			if (para->getIsNeighborZ())
 			{
 				procNeighborsSendZ.push_back(pnZsend);
 				procNeighborsRecvZ.push_back(pnZrecv);
 				neighborRankZ.push_back(process);
-				std::cout << "MyID: " << para->getMyID() << ", neighborRankZ: " << process << std::endl;
+				std::cout << "MyID: " << para->getMyProcessID() << ", neighborRankZ: " << process << std::endl;
 			}
 		}
-		std::cout << "MyID: " << para->getMyID() << ", size of neighborRankX: " << neighborRankX.size() << ", size of neighborRankY: " << neighborRankY.size() << ", size of neighborRankZ: " << neighborRankZ.size() << std::endl;
+		std::cout << "MyID: " << para->getMyProcessID() << ", size of neighborRankX: " << neighborRankX.size() << ", size of neighborRankY: " << neighborRankY.size() << ", size of neighborRankZ: " << neighborRankZ.size() << std::endl;
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -69,7 +69,7 @@ void printCpTopIntermediateStep(Parameter* para, unsigned int t, int lev)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//set filename
-	std::string ffname = para->getFName() + StringUtil::toString<int>(para->getMyID()) + "_" + StringUtil::toString<int>(t) + "_cp_top.txt";
+	std::string ffname = para->getFName() + StringUtil::toString<int>(para->getMyProcessID()) + "_" + StringUtil::toString<int>(t) + "_cp_top.txt";
 	const char* fname = ffname.c_str();
 	//////////////////////////////////////////////////////////////////////////
 	//set ofstream
@@ -101,7 +101,7 @@ void printCpTop(Parameter* para, CudaMemoryManager* cudaMemoryManager, int lev)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//set filename
-	std::string ffname = para->getFName()+StringUtil::toString<int>(para->getMyID())+"_cp_top.txt";
+	std::string ffname = para->getFName()+StringUtil::toString<int>(para->getMyProcessID())+"_cp_top.txt";
 	const char* fname = ffname.c_str();
 	//////////////////////////////////////////////////////////////////////////
 	//set ofstream
@@ -137,7 +137,7 @@ void printCpBottom(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 	int lev = para->getMaxLevel();
 	//////////////////////////////////////////////////////////////////////////
 	//set filename
-	std::string ffname = para->getFName()+StringUtil::toString<int>(para->getMyID())+"_cp_bottom.txt";
+	std::string ffname = para->getFName()+StringUtil::toString<int>(para->getMyProcessID())+"_cp_bottom.txt";
 	const char* fname = ffname.c_str();
 	//////////////////////////////////////////////////////////////////////////
 	//set ofstream
@@ -173,7 +173,7 @@ void printCpBottom2(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 	int lev = para->getMaxLevel();
 	//////////////////////////////////////////////////////////////////////////
 	//set filename
-	std::string ffname = para->getFName()+StringUtil::toString<int>(para->getMyID())+"_cp_bottom2.txt";
+	std::string ffname = para->getFName()+StringUtil::toString<int>(para->getMyProcessID())+"_cp_bottom2.txt";
 	const char* fname = ffname.c_str();
 	//////////////////////////////////////////////////////////////////////////
 	//set ofstream
@@ -313,19 +313,19 @@ void printCaseFile(Parameter* para)
 	//////////////////////////////////////////////////////////////////////////
 	double deltaXcoarse = 0.256; // [m]
 	double deltat = (para->getVelocity() * deltaXcoarse) / (para->getVelocity() * para->getVelocityRatio());
-	unsigned int numberOfSteps = (unsigned int)((para->getTEnd() - para->getTStartOut()) * pow(2,5) );
+	unsigned int numberOfSteps = (unsigned int)((para->getTimestepEnd() - para->getTimestepStartOut()) * pow(2,5) );
 	//cout << "number of nodes:" << numberOfSteps << endl;
 	//////////////////////////////////////////////////////////////////////////
 	//set filename
-	std::string ffname = para->getFName() + "_" + StringUtil::toString<int>(para->getMyID()) + ".case";
+	std::string ffname = para->getFName() + "_" + StringUtil::toString<int>(para->getMyProcessID()) + ".case";
 	const char* fname = ffname.c_str();
 	//////////////////////////////////////////////////////////////////////////
 	//set filename geo
-	std::string ffnameGeo = para->getOutputPrefix() + "_" + StringUtil::toString<int>(para->getMyID()) + ".geo";
+	std::string ffnameGeo = para->getOutputPrefix() + "_" + StringUtil::toString<int>(para->getMyProcessID()) + ".geo";
 	const char* fnameGeo = ffnameGeo.c_str();
 	//////////////////////////////////////////////////////////////////////////
 	//set filename scalar
-	std::string ffnameScalar = para->getOutputPrefix() + "_" + StringUtil::toString<int>(para->getMyID()) + ".*****.p";
+	std::string ffnameScalar = para->getOutputPrefix() + "_" + StringUtil::toString<int>(para->getMyProcessID()) + ".*****.p";
 	const char* fnameScalar = ffnameScalar.c_str();
 	//////////////////////////////////////////////////////////////////////////
 	//set ofstream
@@ -374,7 +374,7 @@ void printGeoFile(Parameter* para, bool fileFormat)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//set filename geo
-	std::string ffnameGeo = para->getOutputPrefix() + "_" + StringUtil::toString<int>(para->getMyID());
+	std::string ffnameGeo = para->getOutputPrefix() + "_" + StringUtil::toString<int>(para->getMyProcessID());
 	const char* fnameGeo = ffnameGeo.c_str();
 	//////////////////////////////////////////////////////////////////////////
 	char fname[1024];
@@ -549,7 +549,7 @@ void printScalars(Parameter* para, bool fileFormat)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//set filename scalar
-	std::string ffnameScalar = para->getOutputPrefix() + "_" + StringUtil::toString<int>(para->getMyID());
+	std::string ffnameScalar = para->getOutputPrefix() + "_" + StringUtil::toString<int>(para->getMyProcessID());
 	const char* fnameScalar = ffnameScalar.c_str();
 	//////////////////////////////////////////////////////////////////////////
     char fname[1024];

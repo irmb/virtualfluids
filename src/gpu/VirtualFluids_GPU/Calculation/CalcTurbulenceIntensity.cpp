@@ -153,7 +153,7 @@ void writeTiStuffToFile(Parameter *para, uint timestep, int sizeOfTiArray, std::
     // set filename
     std::string names;
     std::for_each(datanames.begin(), datanames.end(), [&names](const std::string &s) { return names += "_" + s; });
-    std::string ffname = para->getFName() + StringUtil::toString<int>(para->getMyID()) + "_" +
+    std::string ffname = para->getFName() + StringUtil::toString<int>(para->getMyProcessID()) + "_" +
                          StringUtil::toString<int>(timestep) + names + "_ti.txt";
     const char *fname = ffname.c_str();
     ////////////////////////////////////////////////////////////////////////
