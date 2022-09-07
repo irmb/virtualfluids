@@ -46,7 +46,7 @@ public:
     void addEnstrophyAnalyzer(uint tAnalyse);
 
 private:
-	void init(GridProvider &gridProvider, BoundaryConditionFactory *bcFactory);
+	void init(GridProvider &gridProvider, BoundaryConditionFactory *bcFactory, GridScalingFactory *scalingFactory);
     void allocNeighborsOffsetsScalesAndBoundaries(GridProvider& gridProvider);
     void porousMedia();
     void definePMarea(std::shared_ptr<PorousMedia>& pm);

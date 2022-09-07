@@ -5,6 +5,7 @@
 #include <helper_timer.h>
 
 
+#include "Factories/GridScalingFactory.h"
 #include "LBM/LB.h"
 #include "Communication/Communicator.h"
 #include "Communication/ExchangeData27.h"
@@ -73,10 +74,10 @@ Simulation::Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemo
     : para(para), cudaMemoryManager(memoryManager), communicator(communicator), kernelFactory(std::make_unique<KernelFactoryImp>()),
       preProcessorFactory(std::make_shared<PreProcessorFactoryImp>()), dataWriter(std::make_unique<FileWriter>())
 {
-    init(gridProvider, bcFactory);
+    init(gridProvider, bcFactory, scalingFactory);
 }
 
-void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFactory)
+void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFactory, GridScalingFactory *scalingFactory)
 {
     gridProvider.initalGridInformations();
 
