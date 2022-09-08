@@ -102,14 +102,14 @@ void multipleLevel(const std::string& configPath)
     const real H = 1000.0; // boundary layer height in m
 
     const real L_x = 6*H;
-    const real L_y = 4*H;
+    const real L_y = 2*H;
     const real L_z = 1*H;
 
     const real z0  = 0.1; // roughness length in m
     const real u_star = 0.4; //friction velocity in m/s
     const real kappa = 0.4; // von Karman constant
 
-    const real viscosity = 1.56e-5;
+    const real viscosity = 1.0;
 
     const real velocity  = 0.5*u_star/kappa*log(L_z/z0); //0.5 times max mean velocity at the top in m/s
 
@@ -187,31 +187,40 @@ void multipleLevel(const std::string& configPath)
 	gridBuilder->buildGrids(lbmOrGks, false); // buildGrids() has to be called before setting the BCs!!!!
 
     uint samplingOffset = 2;
+
+
+
+
+    // gridBuilder->setVelocityBoundaryCondition(SideType::PZ, velocityLB, 0.0, 0.0);
+    // gridBuilder->setNoSlipBoundaryCondition(SideType::PZ);
+    // gridBuilder->setVelocityBoundaryCondition(SideType::MX, velocityLB, 0.0, 0.0);
     gridBuilder->setVelocityBoundaryCondition(SideType::MX, velocityLB, 0.0, 0.0);
-    bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityAndPressureCompressible);
-    gridBuilder->setStressBoundaryCondition(SideType::MZ,
-                                            0.0, 0.0, 1.0,              // wall normals
-                                            samplingOffset, z0/dx);     // wall model settinng
-    // para->setHasWallModelMonitor(true);
-    bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressCompressible);
 
-
-    // gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
     gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0,  0.0, 0.0);
-    // gridBuilder->setNoSlipBoundaryCondition(SideType::MZ);
-    bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipCompressible);
-    bcFactory.setNoSlipBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipCompressible);
-
+    // gridBuilder->setVelocityBoundaryCondition(SideType::MZ, velocityLB, 0.0, 0.0);
+    gridBuilder->setNoSlipBoundaryCondition(SideType::MZ);
+    
+    // gridBuilder->setStressBoundaryCondition(SideType::MZ,
+    //                                         0.0, 0.0, 1.0,              // wall normals
+    //                                         samplingOffset, z0/dx);     // wall model settinng
+    // para->setHasWallModelMonitor(true);
+    
     gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
+    
+
+    bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
+    bcFactory.setNoSlipBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipCompressible);
+    bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipCompressible);
+    bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressCompressible);
     bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflectivePressureCorrection);
-    para->setOutflowPressureCorrectionFactor(0.5);
+    para->setOutflowPressureCorrectionFactor(0.0);
 
     real cPi = 3.1415926535897932384626433832795;
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)0.0;
-        vx  = (u_star/0.4 * log(coordZ/z0) + 2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1))  * dt / dx;
-        vy  = 2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1)  * dt / dx;
-        vz  = 8.0*u_star/0.4*(sin(cPi*8.0*coordY/H)*sin(cPi*8.0*coordZ/H)+sin(cPi*8.0*coordX/L_x))/(pow(L_z/2.0-coordZ, c2o1)+c1o1) * dt / dx;
+        vx  = velocityLB;
+        vy  = c0o1;
+        vz  = c0o1;
     });
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

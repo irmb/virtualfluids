@@ -27,6 +27,7 @@ IF (BUILD_VF_GPU)
 
     add_subdirectory(apps/gpu/LBM/DrivenCavity)
     add_subdirectory(apps/gpu/LBM/SphereGPU)
+    add_subdirectory(apps/gpu/LBM/BoundaryLayer)
 ELSE()
     MESSAGE( STATUS "exclude Virtual Fluids GPU." )
 ENDIF()

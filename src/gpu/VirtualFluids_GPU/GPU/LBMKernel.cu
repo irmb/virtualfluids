@@ -3355,7 +3355,7 @@ void QSlipDevCompTurbulentViscosity27(LBMSimulationParameter* parameterDevice, Q
 {
    dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
    dim3 threads(parameterDevice->numberofthreads, 1, 1 );
-
+   
    QSlipDeviceComp27TurbViscosity<<< grid, threads >>> (
          parameterDevice->distributions.f[0],
          boundaryCondition->k,
@@ -3375,7 +3375,7 @@ void QSlipDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditi
 {
    dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
    dim3 threads(parameterDevice->numberofthreads, 1, 1 );
-
+   
    QSlipDeviceComp27<<< grid, threads >>> (
          parameterDevice->distributions.f[0],
          boundaryCondition->k,
