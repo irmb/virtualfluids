@@ -126,8 +126,6 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     VF_LOG_INFO("delta_rho:       {}", para->getDensityRatio());
     VF_LOG_INFO("QuadricLimiters: {}, \t{}, \t{}", para->getQuadricLimitersHost()[0],
                 para->getQuadricLimitersHost()[1], para->getQuadricLimitersHost()[2]);
-    if (para->getUseAMD())
-        VF_LOG_INFO("AMD SGS model:  {}", para->getSGSConstant());
     //////////////////////////////////////////////////////////////////////////
 
     /////////////////////////////////////////////////////////////////////////
