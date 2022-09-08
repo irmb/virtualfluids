@@ -10,7 +10,6 @@
 
 class BCKernelManager;
 class ADKernelManager;
-class TurbulenceModelManager;
 class GridScalingKernelManager;
 class Kernel;
 class BoundaryConditionFactory;

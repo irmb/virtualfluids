@@ -882,18 +882,6 @@ __global__ void QSlipDeviceComp27(real* DD,
 											 unsigned int size_Mat,
 											 bool isEvenTimestep);
 
-// __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
-// 											 int* k_Q,
-// 											 real* QQ,
-// 											 unsigned int numberOfBCnodes,
-// 											 real om1,
-// 											 unsigned int* neighborX,
-// 											 unsigned int* neighborY,
-// 											 unsigned int* neighborZ,
-// 											 real* turbViscosity,
-// 											 unsigned int size_Mat,
-// 											 bool isEvenTimestep);
-
 __global__ void QSlipDeviceComp27TurbViscosity(
                                     real* distributions, 
                                     int* subgridDistanceIndices, 
