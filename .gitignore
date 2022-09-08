@@ -37,3 +37,6 @@ stl/
 
 # Settings
 .gitconfig
+.gitignore
+Cmake/cmake_config_files/MULE*
+Cmake/cmake_config_files/HINNY*
