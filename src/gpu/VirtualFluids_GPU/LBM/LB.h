@@ -1,7 +1,7 @@
 //  _    ___      __              __________      _     __        ______________   __
 // | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____   /  ___/ __  / /  / /
 // | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/  / /___/ /_/ / /  / /
-// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )  / /_) / ____/ /__/ / 
+// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )  / /_) / ____/ /__/ /
 // |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/   \____/_/    \_____/
 //
 //////////////////////////////////////////////////////////////////////////
@@ -50,6 +50,19 @@
 #include <string>
 #include <vector>
 
+//! \brief An enumeration for selecting a turbulence model
+enum class TurbulenceModel {
+   //! - Smagorinsky
+    Smagorinsky,
+    //! - AMD (Anisotropic Minimum Dissipation) model, see e.g. Rozema et al., Phys. Fluids 27, 085107 (2015), https://doi.org/10.1063/1.4928700
+    AMD,
+    //! - QR model by Verstappen 
+    QR,
+    //! - TODO: move the WALE model here from the old kernels
+    //WALE
+    //! - No turbulence model
+    None
+};
 
 struct InitCondition
 {
@@ -61,7 +74,7 @@ struct InitCondition
    real RealX {1.0};
    real RealY {1.0};
    int numprocs {1};
-   int myid {0};
+   int myProcessId {0};
    int maxdev {1};
    uint tDoCheckPoint {0};
    uint tDoRestart {0};
@@ -78,10 +91,10 @@ struct InitCondition
    std::vector<int> GridX, GridY, GridZ, DistX, DistY, DistZ;
    std::vector<real> scaleLBMtoSI, translateLBMtoSI;
    std::vector<real> minCoordX, minCoordY, minCoordZ, maxCoordX, maxCoordY, maxCoordZ;
-   std::string fname;
+   std::string fname {"output/simulation"};
    std::string oPath {"output/"};
    std::string gridPath {"grid/"};
-   std::string oPrefix {"MyFile"};
+   std::string oPrefix {"simulation"};
    std::string geometryFileC, geometryFileM, geometryFileF;
    std::string kFull, geoFull, geoVec, coordX, coordY, coordZ, neighborX, neighborY, neighborZ, neighborWSB, scaleCFC, scaleCFF, scaleFCC, scaleFCF, scaleOffsetCF, scaleOffsetFC;
    std::string noSlipBcPos, noSlipBcQs, noSlipBcValue;
@@ -122,8 +135,8 @@ struct InitCondition
    bool calcMedian {false};
    bool isConc {false};
    bool isWale {false};
+   TurbulenceModel turbulenceModel {TurbulenceModel::None};
    bool isTurbulentViscosity {false};
-   bool isAMD {false};
    real SGSConstant {0.0};
    bool isMeasurePoints {false};
    bool isInitNeq {false};
@@ -131,6 +144,7 @@ struct InitCondition
    bool hasWallModelMonitor {false};
    bool simulatePorousMedia {false};
    bool streetVelocityFile {false};
+   real outflowPressureCorrectionFactor {0.0};
 };
 
 //Interface Cells
@@ -300,6 +314,8 @@ typedef struct PLP{
 	uint numberOfParticles, numberOfTimestepsParticles;
 	uint memSizeID, memSizeTimestep, memSizerealAll, memSizereal, memSizeBool, memSizeBoolBC;
 }PathLineParticles;
+
+
 
 //////////////////////////////////////////////////////////////////////////
 inline int vectorPosition(int i, int j, int k, int Lx, int Ly )

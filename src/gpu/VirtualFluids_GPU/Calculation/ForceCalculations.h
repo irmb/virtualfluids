@@ -35,8 +35,8 @@ private:
 };
 
 
-//extern "C" void calcVeloForce(Parameter* para);
-//extern "C" void allocVeloForForcing(Parameter* para);
-//extern "C" void printForcing(Parameter* para);
+//void calcVeloForce(Parameter* para);
+//void allocVeloForForcing(Parameter* para);
+//void printForcing(Parameter* para);
 
 #endif /* FORCE_CALCULATIONS_H */

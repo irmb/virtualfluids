@@ -28,7 +28,7 @@ public:
 
 protected:
 	ResultsImp(int l0);
-	ResultsImp();
+	ResultsImp() = default;
 
 	unsigned int numberOfTimeSteps;
 	unsigned int timeStepLength;
@@ -46,6 +46,5 @@ protected:
 	int l0;
 
 private:
-
 };
 #endif

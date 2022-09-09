@@ -18,7 +18,7 @@
 
 #include "Parameter/Parameter.h"
 //////////////////////////////////////////////////////////////////////////
-extern "C" void KernelCas27( unsigned int grid_nx,
+void KernelCas27( unsigned int grid_nx,
                              unsigned int grid_ny,
                              unsigned int grid_nz,
                              real s9,
@@ -44,7 +44,7 @@ extern "C" void KernelCas27( unsigned int grid_nx,
      getLastCudaError("LB_Kernel_Casc27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void KernelCasSP27( unsigned int numberOfThreads,
+void KernelCasSP27( unsigned int numberOfThreads,
                                real s9,
                                unsigned int* bcMatD,
                                unsigned int* neighborX,
@@ -67,7 +67,7 @@ extern "C" void KernelCasSP27( unsigned int numberOfThreads,
       getLastCudaError("LB_Kernel_Casc_SP_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void KernelCasSPMS27( unsigned int numberOfThreads,
+void KernelCasSPMS27( unsigned int numberOfThreads,
                                  real s9,
                                  unsigned int* bcMatD,
                                  unsigned int* neighborX,
@@ -90,7 +90,7 @@ extern "C" void KernelCasSPMS27( unsigned int numberOfThreads,
       getLastCudaError("LB_Kernel_Casc_SP_MS_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void KernelCasSPMSOHM27( unsigned int numberOfThreads,
+void KernelCasSPMSOHM27( unsigned int numberOfThreads,
                                     real s9,
                                     unsigned int* bcMatD,
                                     unsigned int* neighborX,
@@ -113,7 +113,7 @@ extern "C" void KernelCasSPMSOHM27( unsigned int numberOfThreads,
       getLastCudaError("LB_Kernel_Casc_SP_MS_OHM_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void KernelKumCompSRTSP27(
+void KernelKumCompSRTSP27(
 	unsigned int numberOfThreads,
 	real omega,
 	unsigned int* bcMatD,
@@ -142,7 +142,7 @@ extern "C" void KernelKumCompSRTSP27(
       getLastCudaError("LB_Kernel_Kum_New_Comp_SRT_SP_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void KernelKum1hSP27(    unsigned int numberOfThreads,
+void KernelKum1hSP27(    unsigned int numberOfThreads,
 									real omega,
 									real deltaPhi,
 									real angularVelocity,
@@ -175,7 +175,7 @@ extern "C" void KernelKum1hSP27(    unsigned int numberOfThreads,
 		getLastCudaError("LB_Kernel_Kum_New_SP_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void KernelCascadeSP27(  unsigned int numberOfThreads,
+void KernelCascadeSP27(  unsigned int numberOfThreads,
 									real s9,
 									unsigned int* bcMatD,
 									unsigned int* neighborX,
@@ -198,7 +198,7 @@ extern "C" void KernelCascadeSP27(  unsigned int numberOfThreads,
 		getLastCudaError("LB_Kernel_Cascade_SP_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void KernelKumNewSP27(   unsigned int numberOfThreads,
+void KernelKumNewSP27(   unsigned int numberOfThreads,
 									real s9,
 									unsigned int* bcMatD,
 									unsigned int* neighborX,
@@ -222,7 +222,7 @@ extern "C" void KernelKumNewSP27(   unsigned int numberOfThreads,
 		getLastCudaError("LB_Kernel_Kum_New_SP_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void KernelKumNewCompSP27(unsigned int numberOfThreads,
+void KernelKumNewCompSP27(unsigned int numberOfThreads,
 									real s9,
 									unsigned int* bcMatD,
 									unsigned int* neighborX,
@@ -255,7 +255,7 @@ extern "C" void KernelKumNewCompSP27(unsigned int numberOfThreads,
 }
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" void CumulantOnePreconditionedErrorDiffusionChimCompSP27(unsigned int numberOfThreads,
+void CumulantOnePreconditionedErrorDiffusionChimCompSP27(unsigned int numberOfThreads,
 																	real s9,
 																	unsigned int* bcMatD,
 																	unsigned int* neighborX,
@@ -288,7 +288,7 @@ extern "C" void CumulantOnePreconditionedErrorDiffusionChimCompSP27(unsigned int
 		getLastCudaError("Cumulant_One_preconditioned_chim_Comp_SP_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void CumulantOnePreconditionedChimCompSP27(  unsigned int numberOfThreads,
+void CumulantOnePreconditionedChimCompSP27(  unsigned int numberOfThreads,
 														real s9,
 														unsigned int* bcMatD,
 														unsigned int* neighborX,
@@ -321,7 +321,7 @@ extern "C" void CumulantOnePreconditionedChimCompSP27(  unsigned int numberOfThr
 		getLastCudaError("Cumulant_One_preconditioned_chim_Comp_SP_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void CumulantOneChimCompSP27(unsigned int numberOfThreads,
+void CumulantOneChimCompSP27(unsigned int numberOfThreads,
 										real s9,
 										unsigned int* bcMatD,
 										unsigned int* neighborX,
@@ -354,7 +354,7 @@ extern "C" void CumulantOneChimCompSP27(unsigned int numberOfThreads,
 		getLastCudaError("Cumulant_One_chim_Comp_SP_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void KernelKumIsoTestSP27(unsigned int numberOfThreads,
+void KernelKumIsoTestSP27(unsigned int numberOfThreads,
 									 real s9,
 									 unsigned int* bcMatD,
 									 unsigned int* neighborX,
@@ -384,7 +384,7 @@ extern "C" void KernelKumIsoTestSP27(unsigned int numberOfThreads,
 	getLastCudaError("LB_Kernel_Kum_IsoTest_SP_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void KernelKumCompSP27(  unsigned int numberOfThreads,
+void KernelKumCompSP27(  unsigned int numberOfThreads,
 									real s9,
 									unsigned int* bcMatD,
 									unsigned int* neighborX,
@@ -408,7 +408,7 @@ extern "C" void KernelKumCompSP27(  unsigned int numberOfThreads,
 		getLastCudaError("LB_Kernel_Kum_Comp_SP_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void KernelPMCumOneCompSP27(unsigned int numberOfThreads,
+void KernelPMCumOneCompSP27(unsigned int numberOfThreads,
 									   real omega,
 									   unsigned int* neighborX,
 									   unsigned int* neighborY,
@@ -444,7 +444,7 @@ extern "C" void KernelPMCumOneCompSP27(unsigned int numberOfThreads,
 	getLastCudaError("LB_Kernel_PM_Cum_One_Comp_SP_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void KernelWaleBySoniMalavCumAA2016CompSP27(
+void KernelWaleBySoniMalavCumAA2016CompSP27(
 	unsigned int numberOfThreads,
 	real s9,
 	unsigned int* bcMatD,
@@ -489,7 +489,7 @@ extern "C" void KernelWaleBySoniMalavCumAA2016CompSP27(
 	getLastCudaError("LB_Kernel_WaleBySoniMalav_Cum_AA2016_Comp_SP_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void KernelADincomp7(   unsigned int numberOfThreads,
+void KernelADincomp7(   unsigned int numberOfThreads,
 								   real diffusivity,
 								   unsigned int* bcMatD,
 								   unsigned int* neighborX,
@@ -514,7 +514,7 @@ extern "C" void KernelADincomp7(   unsigned int numberOfThreads,
       getLastCudaError("LB_Kernel_AD_Incomp_7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void KernelADincomp27( unsigned int numberOfThreads,
+void KernelADincomp27( unsigned int numberOfThreads,
 								  real diffusivity,
 								  unsigned int* bcMatD,
 								  unsigned int* neighborX,
@@ -539,7 +539,7 @@ extern "C" void KernelADincomp27( unsigned int numberOfThreads,
 	getLastCudaError("LB_Kernel_AD_Incomp_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void Init27( int myid,
+void Init27( int myid,
                         int numprocs,
                         real u0,
                         unsigned int* geoD,
@@ -576,7 +576,7 @@ extern "C" void Init27( int myid,
 	getLastCudaError("LBInit27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void InitNonEqPartSP27( unsigned int numberOfThreads,
+void InitNonEqPartSP27( unsigned int numberOfThreads,
                                    unsigned int* neighborX,
                                    unsigned int* neighborY,
                                    unsigned int* neighborZ,
@@ -609,7 +609,7 @@ extern "C" void InitNonEqPartSP27( unsigned int numberOfThreads,
 	getLastCudaError("LBInitNonEqPartSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void InitThS7(     unsigned int numberOfThreads,
+void InitThS7(     unsigned int numberOfThreads,
                               unsigned int* neighborX,
                               unsigned int* neighborY,
                               unsigned int* neighborZ,
@@ -638,7 +638,7 @@ extern "C" void InitThS7(     unsigned int numberOfThreads,
 	getLastCudaError("InitAD7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void InitADDev27( unsigned int numberOfThreads,
+void InitADDev27( unsigned int numberOfThreads,
                            unsigned int* neighborX,
                            unsigned int* neighborY,
                            unsigned int* neighborZ,
@@ -667,7 +667,7 @@ extern "C" void InitADDev27( unsigned int numberOfThreads,
 	getLastCudaError("InitAD27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void PostProcessorF3_2018Fehlberg(
+void PostProcessorF3_2018Fehlberg(
 	unsigned int numberOfThreads,
 	real omega,
 	unsigned int* bcMatD,
@@ -705,7 +705,7 @@ extern "C" void PostProcessorF3_2018Fehlberg(
 	getLastCudaError("LB_PostProcessor_F3_2018_Fehlberg execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void CalcMac27( real* vxD,
+void CalcMac27( real* vxD,
                            real* vyD,
                            real* vzD,
                            real* rhoD,
@@ -737,7 +737,7 @@ extern "C" void CalcMac27( real* vxD,
 	getLastCudaError("LBCalcMac27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void CalcMacSP27( real* vxD,
+void CalcMacSP27( real* vxD,
                              real* vyD,
                              real* vzD,
                              real* rhoD,
@@ -768,7 +768,7 @@ extern "C" void CalcMacSP27( real* vxD,
 	getLastCudaError("LBCalcMacSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void CalcMacCompSP27( real* vxD,
+void CalcMacCompSP27( real* vxD,
 								 real* vyD,
 								 real* vzD,
 								 real* rhoD,
@@ -799,7 +799,7 @@ extern "C" void CalcMacCompSP27( real* vxD,
 	getLastCudaError("LBCalcMacSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void CalcMacThS7(  real* Conc,
+void CalcMacThS7(  real* Conc,
                               unsigned int* geoD,
                               unsigned int* neighborX,
                               unsigned int* neighborY,
@@ -822,7 +822,7 @@ extern "C" void CalcMacThS7(  real* Conc,
 	getLastCudaError("CalcConc7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void PlaneConcThS7(real* Conc,
+void PlaneConcThS7(real* Conc,
 							  int* kPC,
 							  unsigned int numberOfPointskPC,
 							  unsigned int* geoD,
@@ -849,7 +849,7 @@ extern "C" void PlaneConcThS7(real* Conc,
 	getLastCudaError("GetPlaneConc7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void PlaneConcThS27(real* Conc,
+void PlaneConcThS27(real* Conc,
 							   int* kPC,
 							   unsigned int numberOfPointskPC,
 							   unsigned int* geoD,
@@ -876,7 +876,7 @@ extern "C" void PlaneConcThS27(real* Conc,
 	getLastCudaError("GetPlaneConc27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void CalcConcentration27( unsigned int numberOfThreads,
+void CalcConcentration27( unsigned int numberOfThreads,
                                      real* Conc,
                                      unsigned int* geoD,
                                      unsigned int* neighborX,
@@ -899,7 +899,7 @@ extern "C" void CalcConcentration27( unsigned int numberOfThreads,
 	getLastCudaError("CalcConc27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void CalcMedSP27(  real* vxD,
+void CalcMedSP27(  real* vxD,
                               real* vyD,
                               real* vzD,
                               real* rhoD,
@@ -930,7 +930,7 @@ extern "C" void CalcMedSP27(  real* vxD,
 	getLastCudaError("LBCalcMedSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void CalcMedCompSP27(  real* vxD,
+void CalcMedCompSP27(  real* vxD,
 								  real* vyD,
 								  real* vzD,
 								  real* rhoD,
@@ -961,7 +961,7 @@ extern "C" void CalcMedCompSP27(  real* vxD,
 	getLastCudaError("LBCalcMedSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void CalcMedCompAD27(
+void CalcMedCompAD27(
 	real* vxD,
 	real* vyD,
 	real* vzD,
@@ -998,7 +998,7 @@ extern "C" void CalcMedCompAD27(
 	getLastCudaError("LBCalcMedAD27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void CalcMacMedSP27(  real* vxD,
+void CalcMacMedSP27(  real* vxD,
                                  real* vyD,
                                  real* vzD,
                                  real* rhoD,
@@ -1029,7 +1029,7 @@ extern "C" void CalcMacMedSP27(  real* vxD,
 	getLastCudaError("LBCalcMacMedSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ResetMedianValuesSP27(
+void ResetMedianValuesSP27(
 	real* vxD,
 	real* vyD,
 	real* vzD,
@@ -1053,7 +1053,7 @@ extern "C" void ResetMedianValuesSP27(
 	getLastCudaError("LBResetMedianValuesSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ResetMedianValuesAD27(
+void ResetMedianValuesAD27(
 	real* vxD,
 	real* vyD,
 	real* vzD,
@@ -1078,7 +1078,7 @@ extern "C" void ResetMedianValuesAD27(
 	getLastCudaError("LBResetMedianValuesAD27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void Calc2ndMomentsIncompSP27(real* kxyFromfcNEQ,
+void Calc2ndMomentsIncompSP27(real* kxyFromfcNEQ,
 										 real* kyzFromfcNEQ,
 										 real* kxzFromfcNEQ,
 										 real* kxxMyyFromfcNEQ,
@@ -1109,7 +1109,7 @@ extern "C" void Calc2ndMomentsIncompSP27(real* kxyFromfcNEQ,
 	getLastCudaError("LBCalc2ndMomentsIncompSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void Calc2ndMomentsCompSP27( real* kxyFromfcNEQ,
+void Calc2ndMomentsCompSP27( real* kxyFromfcNEQ,
 										real* kyzFromfcNEQ,
 										real* kxzFromfcNEQ,
 										real* kxxMyyFromfcNEQ,
@@ -1140,7 +1140,7 @@ extern "C" void Calc2ndMomentsCompSP27( real* kxyFromfcNEQ,
 	getLastCudaError("LBCalc2ndMomentsCompSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void Calc3rdMomentsIncompSP27(real* CUMbbb,
+void Calc3rdMomentsIncompSP27(real* CUMbbb,
 										 real* CUMabc,
 										 real* CUMbac,
 										 real* CUMbca,
@@ -1175,7 +1175,7 @@ extern "C" void Calc3rdMomentsIncompSP27(real* CUMbbb,
 	getLastCudaError("LBCalc3rdMomentsIncompSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void Calc3rdMomentsCompSP27( real* CUMbbb,
+void Calc3rdMomentsCompSP27( real* CUMbbb,
 										real* CUMabc,
 										real* CUMbac,
 										real* CUMbca,
@@ -1210,7 +1210,7 @@ extern "C" void Calc3rdMomentsCompSP27( real* CUMbbb,
 	getLastCudaError("LBCalc3rdMomentsCompSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void CalcHigherMomentsIncompSP27(real* CUMcbb,
+void CalcHigherMomentsIncompSP27(real* CUMcbb,
 											real* CUMbcb,
 											real* CUMbbc,
 											real* CUMcca,
@@ -1251,7 +1251,7 @@ extern "C" void CalcHigherMomentsIncompSP27(real* CUMcbb,
 	getLastCudaError("LBCalcHigherMomentsIncompSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void CalcHigherMomentsCompSP27(  real* CUMcbb,
+void CalcHigherMomentsCompSP27(  real* CUMcbb,
 											real* CUMbcb,
 											real* CUMbbc,
 											real* CUMcca,
@@ -1292,7 +1292,7 @@ extern "C" void CalcHigherMomentsCompSP27(  real* CUMcbb,
 	getLastCudaError("LBCalcHigherMomentsCompSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void LBCalcMeasurePoints27(real* vxMP,
+void LBCalcMeasurePoints27(real* vxMP,
                                       real* vyMP,
                                       real* vzMP,
                                       real* rhoMP,
@@ -1329,7 +1329,7 @@ extern "C" void LBCalcMeasurePoints27(real* vxMP,
 	getLastCudaError("LBCalcMeasurePoints execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void BcPress27( int nx,
+void BcPress27( int nx,
                            int ny,
                            int tz,
                            unsigned int grid_nx,
@@ -1358,7 +1358,7 @@ extern "C" void BcPress27( int nx,
 	getLastCudaError("LB_BC_Press_East27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void BcVel27(int nx,
+void BcVel27(int nx,
                         int ny,
                         int nz,
                         int itz,
@@ -1395,9 +1395,7 @@ extern "C" void BcVel27(int nx,
 	getLastCudaError("LB_BC_Vel_West_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QADPressDev7( unsigned int numberOfThreads,
-                              int nx,
-                              int ny,
+void QADPressDev7( unsigned int numberOfThreads,
                               real* DD,
                               real* DD7,
                               real* temp,
@@ -1432,7 +1430,7 @@ extern "C" void QADPressDev7( unsigned int numberOfThreads,
 	getLastCudaError("QADPress7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QADPressDev27(unsigned int numberOfThreads,
+void QADPressDev27(unsigned int numberOfThreads,
                               real* DD,
                               real* DD27,
                               real* temp,
@@ -1467,7 +1465,7 @@ extern "C" void QADPressDev27(unsigned int numberOfThreads,
 	getLastCudaError("QADPress27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QADPressNEQNeighborDev27(
+void QADPressNEQNeighborDev27(
 											unsigned int numberOfThreads,
 											real* DD,
 											real* DD27,
@@ -1499,7 +1497,7 @@ extern "C" void QADPressNEQNeighborDev27(
    	getLastCudaError("QADPressNEQNeighbor27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QADVelDev7(unsigned int numberOfThreads,
+void QADVelDev7(unsigned int numberOfThreads,
                            real* DD,
                            real* DD7,
                            real* temp,
@@ -1535,7 +1533,7 @@ extern "C" void QADVelDev7(unsigned int numberOfThreads,
 	getLastCudaError("QADVel7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QADVelDev27(  unsigned int numberOfThreads,
+void QADVelDev27(  unsigned int numberOfThreads,
                               real* DD,
                               real* DD27,
                               real* temp,
@@ -1570,7 +1568,7 @@ extern "C" void QADVelDev27(  unsigned int numberOfThreads,
       getLastCudaError("QADVel27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QADDev7(unsigned int numberOfThreads,
+void QADDev7(unsigned int numberOfThreads,
                         real* DD,
                         real* DD7,
                         real* temp,
@@ -1606,7 +1604,7 @@ extern "C" void QADDev7(unsigned int numberOfThreads,
 
 //////////////////////////////////////////////////////////////////////////
 // Other advection diffusion kernels are in kernel factory :(
-extern "C" void FactorizedCentralMomentsAdvectionDiffusionDeviceKernel(
+void FactorizedCentralMomentsAdvectionDiffusionDeviceKernel(
    uint numberOfThreads,
    real omegaDiffusivity,
    uint* typeOfGridNode,
@@ -1638,7 +1636,7 @@ extern "C" void FactorizedCentralMomentsAdvectionDiffusionDeviceKernel(
 }
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ADSlipVelDevComp(
+void ADSlipVelDevComp(
 	uint numberOfThreads,
 	real * normalX,
 	real * normalY,
@@ -1676,7 +1674,7 @@ extern "C" void ADSlipVelDevComp(
 }
 //////////////////////////////////////////////////////////////////////////
 
-extern "C" void QADDirichletDev27( unsigned int numberOfThreads,
+void QADDirichletDev27( unsigned int numberOfThreads,
 								   real* DD,
 								   real* DD27,
 								   real* temp,
@@ -1710,7 +1708,7 @@ extern "C" void QADDirichletDev27( unsigned int numberOfThreads,
       getLastCudaError("QADDirichletDev27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QADBBDev27(unsigned int numberOfThreads,
+void QADBBDev27(unsigned int numberOfThreads,
                            real* DD,
                            real* DD27,
                            real* temp,
@@ -1743,7 +1741,7 @@ extern "C" void QADBBDev27(unsigned int numberOfThreads,
       getLastCudaError("QADBB27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QNoSlipADincompDev7(unsigned int numberOfThreads,
+void QNoSlipADincompDev7(unsigned int numberOfThreads,
 									real* DD,
 									real* DD7,
 									real* temp,
@@ -1777,7 +1775,7 @@ extern "C" void QNoSlipADincompDev7(unsigned int numberOfThreads,
       getLastCudaError("QNoSlipADincomp7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QNoSlipADincompDev27(  unsigned int numberOfThreads,
+void QNoSlipADincompDev27(  unsigned int numberOfThreads,
 									   real* DD,
 									   real* DD27,
 									   real* temp,
@@ -1811,7 +1809,7 @@ extern "C" void QNoSlipADincompDev27(  unsigned int numberOfThreads,
       getLastCudaError("QNoSlipADincomp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QADVeloIncompDev7( unsigned int numberOfThreads,
+void QADVeloIncompDev7( unsigned int numberOfThreads,
 								   real* DD,
 								   real* DD7,
 								   real* temp,
@@ -1846,7 +1844,7 @@ extern "C" void QADVeloIncompDev7( unsigned int numberOfThreads,
       getLastCudaError("QADVeloIncomp7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QADVeloIncompDev27(   unsigned int numberOfThreads,
+void QADVeloIncompDev27(   unsigned int numberOfThreads,
 									  real* DD,
 									  real* DD27,
 									  real* temp,
@@ -1882,7 +1880,7 @@ extern "C" void QADVeloIncompDev27(   unsigned int numberOfThreads,
       getLastCudaError("QADVeloIncomp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QADPressIncompDev7( unsigned int numberOfThreads,
+void QADPressIncompDev7( unsigned int numberOfThreads,
 									  real* DD,
 									  real* DD7,
 									  real* temp,
@@ -1918,7 +1916,7 @@ extern "C" void QADPressIncompDev7( unsigned int numberOfThreads,
       getLastCudaError("QADPressIncomp7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QADPressIncompDev27(  unsigned int numberOfThreads,
+void QADPressIncompDev27(  unsigned int numberOfThreads,
 									  real* DD,
 									  real* DD27,
 									  real* temp,
@@ -1953,7 +1951,7 @@ extern "C" void QADPressIncompDev27(  unsigned int numberOfThreads,
       getLastCudaError("QADPressIncomp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
+void QDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
    dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
    dim3 threads(parameterDevice->numberofthreads, 1, 1 );
@@ -1973,7 +1971,7 @@ extern "C" void QDev27(LBMSimulationParameter* parameterDevice, QforBoundaryCond
       getLastCudaError("QDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
+void QDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
    dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
    dim3 threads(parameterDevice->numberofthreads, 1, 1 );
@@ -1992,7 +1990,7 @@ extern "C" void QDevComp27(LBMSimulationParameter* parameterDevice, QforBoundary
       getLastCudaError("QDeviceComp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QDevCompThinWalls27(unsigned int numberOfThreads,
+void QDevCompThinWalls27(unsigned int numberOfThreads,
 									real* DD,
 									int* k_Q,
 									real* QQ,
@@ -2035,7 +2033,7 @@ extern "C" void QDevCompThinWalls27(unsigned int numberOfThreads,
 
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QDev3rdMomentsComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
+void QDev3rdMomentsComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
    dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
    dim3 threads(parameterDevice->numberofthreads, 1, 1);
@@ -2054,7 +2052,7 @@ extern "C" void QDev3rdMomentsComp27(LBMSimulationParameter* parameterDevice, Qf
    getLastCudaError("QDevice3rdMomentsComp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QDevIncompHighNu27( unsigned int numberOfThreads,
+void QDevIncompHighNu27( unsigned int numberOfThreads,
 									real* DD,
 									int* k_Q,
 									real* QQ,
@@ -2082,7 +2080,7 @@ extern "C" void QDevIncompHighNu27( unsigned int numberOfThreads,
       getLastCudaError("QDeviceIncompHighNu27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QDevCompHighNu27(   unsigned int numberOfThreads,
+void QDevCompHighNu27(   unsigned int numberOfThreads,
 									real* DD,
 									int* k_Q,
 									real* QQ,
@@ -2110,7 +2108,7 @@ extern "C" void QDevCompHighNu27(   unsigned int numberOfThreads,
       getLastCudaError("QDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QVelDevicePlainBB27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
+void QVelDevicePlainBB27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
    dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
    dim3 threads(parameterDevice->numberofthreads, 1, 1 );
@@ -2131,7 +2129,7 @@ extern "C" void QVelDevicePlainBB27(LBMSimulationParameter* parameterDevice, Qfo
    getLastCudaError("QVelDevicePlainBB27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QVelDeviceCouette27(unsigned int numberOfThreads,
+void QVelDeviceCouette27(unsigned int numberOfThreads,
 									real* vx,
 									real* vy,
 									real* vz,
@@ -2164,7 +2162,7 @@ extern "C" void QVelDeviceCouette27(unsigned int numberOfThreads,
       getLastCudaError("QVelDevicePlainBB27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QVelDevice1h27(   unsigned int numberOfThreads,
+void QVelDevice1h27(   unsigned int numberOfThreads,
 								  int nx,
 								  int ny,
 								  real* vx,
@@ -2211,7 +2209,7 @@ extern "C" void QVelDevice1h27(   unsigned int numberOfThreads,
       getLastCudaError("QVelDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QVelDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
+void QVelDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
    dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
    dim3 threads(parameterDevice->numberofthreads, 1, 1 );
@@ -2235,7 +2233,7 @@ extern "C" void QVelDev27(LBMSimulationParameter* parameterDevice, QforBoundaryC
       getLastCudaError("QVelDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QVelDevCompPlusSlip27(unsigned int numberOfThreads,
+void QVelDevCompPlusSlip27(unsigned int numberOfThreads,
 									  real* vx,
 									  real* vy,
 									  real* vz,
@@ -2269,7 +2267,7 @@ extern "C" void QVelDevCompPlusSlip27(unsigned int numberOfThreads,
       getLastCudaError("QVelDeviceCompPlusSlip27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QVelDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
+void QVelDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
    dim3 grid = vf::cuda::getCudaGrid(parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
    dim3 threads(parameterDevice->numberofthreads, 1, 1 );
@@ -2291,7 +2289,7 @@ extern "C" void QVelDevComp27(LBMSimulationParameter* parameterDevice, QforBound
    getLastCudaError("QVelDeviceComp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QVelDevCompThinWalls27(unsigned int numberOfThreads,
+void QVelDevCompThinWalls27(unsigned int numberOfThreads,
 							           real* vx,
 							           real* vy,
 							           real* vz,
@@ -2340,7 +2338,7 @@ extern "C" void QVelDevCompThinWalls27(unsigned int numberOfThreads,
    getLastCudaError("QThinWallsPartTwo27 execution failed");
 }
 
-extern "C" void QVelDevCompZeroPress27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
+void QVelDevCompZeroPress27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
    dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
    dim3 threads(parameterDevice->numberofthreads, 1, 1 );
@@ -2362,7 +2360,7 @@ extern "C" void QVelDevCompZeroPress27(LBMSimulationParameter* parameterDevice, 
    getLastCudaError("QVelDeviceCompZeroPress27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QVelDevIncompHighNu27(unsigned int numberOfThreads,
+void QVelDevIncompHighNu27(unsigned int numberOfThreads,
 									  real* vx,
 									  real* vy,
 									  real* vz,
@@ -2396,7 +2394,7 @@ extern "C" void QVelDevIncompHighNu27(unsigned int numberOfThreads,
       getLastCudaError("QVelDeviceIncompHighNu27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QVelDevCompHighNu27(  unsigned int numberOfThreads,
+void QVelDevCompHighNu27(  unsigned int numberOfThreads,
 									  real* vx,
 									  real* vy,
 									  real* vz,
@@ -2430,7 +2428,7 @@ extern "C" void QVelDevCompHighNu27(  unsigned int numberOfThreads,
       getLastCudaError("QVelDeviceComp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QVeloDevEQ27(unsigned int numberOfThreads,
+void QVeloDevEQ27(unsigned int numberOfThreads,
 							 real* VeloX,
 							 real* VeloY,
 							 real* VeloZ,
@@ -2461,7 +2459,7 @@ extern "C" void QVeloDevEQ27(unsigned int numberOfThreads,
       getLastCudaError("QVeloDeviceEQ27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QVeloStreetDevEQ27(
+void QVeloStreetDevEQ27(
 	uint  numberOfThreads,
 	real* veloXfraction,
 	real* veloYfraction,
@@ -2494,7 +2492,7 @@ extern "C" void QVeloStreetDevEQ27(
 	getLastCudaError("QVeloStreetDeviceEQ27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QSlipDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
+void QSlipDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
    dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
    dim3 threads(parameterDevice->numberofthreads, 1, 1 );
@@ -2513,11 +2511,11 @@ extern "C" void QSlipDev27(LBMSimulationParameter* parameterDevice, QforBoundary
    getLastCudaError("QSlipDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QSlipDevCompTurbulentViscosity27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
+void QSlipDevCompTurbulentViscosity27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
    dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
    dim3 threads(parameterDevice->numberofthreads, 1, 1 );
-
+   
    QSlipDeviceComp27TurbViscosity<<< grid, threads >>> (
          parameterDevice->distributions.f[0],
          boundaryCondition->k,
@@ -2532,8 +2530,47 @@ extern "C" void QSlipDevCompTurbulentViscosity27(LBMSimulationParameter* paramet
          parameterDevice->isEvenTimestep);
    getLastCudaError("QSlipDeviceComp27TurbViscosity execution failed");
 }
+//////////////////////////////////////////////////////////////////////////
+void QSlipPressureDevCompTurbulentViscosity27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
+{
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
 
-extern "C" void QSlipDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
+   QSlipPressureDeviceComp27TurbViscosity<<< grid, threads >>> (
+         parameterDevice->distributions.f[0],
+         boundaryCondition->k,
+         boundaryCondition->q27[0],
+         boundaryCondition->numberOfBCnodes,
+         parameterDevice->omega,
+         parameterDevice->neighborX,
+         parameterDevice->neighborY,
+         parameterDevice->neighborZ,
+         parameterDevice->turbViscosity,
+         parameterDevice->numberOfNodes,
+         parameterDevice->isEvenTimestep);
+   getLastCudaError("QSlipDeviceComp27TurbViscosity execution failed");
+}
+//////////////////////////////////////////////////////////////////////////
+void QSlipDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
+{
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
+   
+   QSlipDeviceComp27<<< grid, threads >>> (
+         parameterDevice->distributions.f[0],
+         boundaryCondition->k,
+         boundaryCondition->q27[0],
+         boundaryCondition->numberOfBCnodes,
+         parameterDevice->omega,
+         parameterDevice->neighborX,
+         parameterDevice->neighborY,
+         parameterDevice->neighborZ,
+         parameterDevice->numberOfNodes,
+         parameterDevice->isEvenTimestep);
+   getLastCudaError("QSlipDeviceComp27 execution failed");
+}
+//////////////////////////////////////////////////////////////////////////
+void BBSlipDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
    dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
    dim3 threads(parameterDevice->numberofthreads, 1, 1 );
@@ -2549,10 +2586,10 @@ extern "C" void QSlipDevComp27(LBMSimulationParameter* parameterDevice, QforBoun
          parameterDevice->neighborZ,
          parameterDevice->numberOfNodes,
          parameterDevice->isEvenTimestep);
-   getLastCudaError("QSlipDeviceComp27 execution failed");
+   getLastCudaError("BBSlipDeviceComp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QSlipGeomDevComp27(unsigned int numberOfThreads,
+void QSlipGeomDevComp27(unsigned int numberOfThreads,
 								   real* DD,
 								   int* k_Q,
 								   real* QQ,
@@ -2585,7 +2622,7 @@ extern "C" void QSlipGeomDevComp27(unsigned int numberOfThreads,
    getLastCudaError("QSlipGeomDeviceComp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QSlipNormDevComp27(unsigned int numberOfThreads,
+void QSlipNormDevComp27(unsigned int numberOfThreads,
 								   real* DD,
 								   int* k_Q,
 								   real* QQ,
@@ -2618,7 +2655,7 @@ extern "C" void QSlipNormDevComp27(unsigned int numberOfThreads,
       getLastCudaError("QSlipGeomDeviceComp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QStressDevComp27(Parameter *para,  QforBoundaryConditions* boundaryCondition, const int level)
+void QStressDevComp27(Parameter *para,  QforBoundaryConditions* boundaryCondition, const int level)
 {
    dim3 grid = vf::cuda::getCudaGrid(  para->getParD(level)->numberofthreads, boundaryCondition->numberOfBCnodes);
    dim3 threads(para->getParD(level)->numberofthreads, 1, 1 );
@@ -2659,7 +2696,7 @@ extern "C" void QStressDevComp27(Parameter *para,  QforBoundaryConditions* bound
 }
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" void BBStressDev27(Parameter *para,  QforBoundaryConditions* boundaryCondition, const int level)
+void BBStressDev27(Parameter *para,  QforBoundaryConditions* boundaryCondition, const int level)
 {
    dim3 grid = vf::cuda::getCudaGrid( para->getParD(level)->numberofthreads, boundaryCondition->numberOfBCnodes);
    dim3 threads(para->getParD(level)->numberofthreads, 1, 1 );
@@ -2696,8 +2733,48 @@ extern "C" void BBStressDev27(Parameter *para,  QforBoundaryConditions* boundary
       para->getParD(level)->isEvenTimestep);
       getLastCudaError("BBStressDevice27 execution failed");
 }
+
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QPressDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
+void BBStressPressureDev27(Parameter *para,  QforBoundaryConditions* boundaryCondition, const int level)
+{
+   dim3 grid = vf::cuda::getCudaGrid( para->getParD(level)->numberofthreads, boundaryCondition->numberOfBCnodes);
+   dim3 threads(para->getParD(level)->numberofthreads, 1, 1 );
+
+   BBStressPressureDevice27<<< grid, threads >>> (
+      para->getParD(level)->distributions.f[0],
+      boundaryCondition->k,
+      boundaryCondition->kN,
+      boundaryCondition->q27[0],
+      boundaryCondition->numberOfBCnodes,
+      para->getParD(level)->velocityX,
+      para->getParD(level)->velocityY,
+      para->getParD(level)->velocityY,
+      boundaryCondition->normalX,
+      boundaryCondition->normalY,
+      boundaryCondition->normalZ,
+      boundaryCondition->Vx,
+      boundaryCondition->Vy,
+      boundaryCondition->Vz,
+      boundaryCondition->Vx1,
+      boundaryCondition->Vy1,
+      boundaryCondition->Vz1,
+      para->getParD(level)->wallModel.samplingOffset,
+      para->getParD(level)->wallModel.z0,
+      para->getHasWallModelMonitor(),
+      para->getParD(level)->wallModel.u_star,
+      para->getParD(level)->wallModel.Fx,
+      para->getParD(level)->wallModel.Fy,
+      para->getParD(level)->wallModel.Fz,
+      para->getParD(level)->neighborX,
+      para->getParD(level)->neighborY,
+      para->getParD(level)->neighborZ,
+      para->getParD(level)->numberOfNodes,
+      para->getParD(level)->isEvenTimestep);
+      getLastCudaError("BBStressDevice27 execution failed");
+}
+
+//////////////////////////////////////////////////////////////////////////
+void QPressDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
    dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
    dim3 threads(parameterDevice->numberofthreads, 1, 1 );
@@ -2717,7 +2794,7 @@ extern "C" void QPressDev27(LBMSimulationParameter* parameterDevice, QforBoundar
    getLastCudaError("QPressDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QPressDevAntiBB27(  unsigned int numberOfThreads,
+void QPressDevAntiBB27(  unsigned int numberOfThreads,
                                     real* rhoBC,
 									real* vx,
 									real* vy,
@@ -2752,7 +2829,7 @@ extern "C" void QPressDevAntiBB27(  unsigned int numberOfThreads,
    getLastCudaError("QPressDeviceAntiBB27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QPressDevFixBackflow27( unsigned int numberOfThreads,
+void QPressDevFixBackflow27( unsigned int numberOfThreads,
                                         real* rhoBC,
                                         real* DD,
                                         int* k_Q,
@@ -2779,7 +2856,7 @@ extern "C" void QPressDevFixBackflow27( unsigned int numberOfThreads,
    getLastCudaError("QPressDeviceFixBackflow27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QPressDevDirDepBot27(  unsigned int numberOfThreads,
+void QPressDevDirDepBot27(  unsigned int numberOfThreads,
                                        real* rhoBC,
                                        real* DD,
                                        int* k_Q,
@@ -2806,7 +2883,7 @@ extern "C" void QPressDevDirDepBot27(  unsigned int numberOfThreads,
    getLastCudaError("QPressDeviceDirDepBot27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QPressNoRhoDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
+void QPressNoRhoDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
    dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
    dim3 threads(parameterDevice->numberofthreads, 1, 1 );
@@ -2822,11 +2899,34 @@ extern "C" void QPressNoRhoDev27(LBMSimulationParameter* parameterDevice, QforBo
          parameterDevice->neighborY,
          parameterDevice->neighborZ,
          parameterDevice->numberOfNodes,
-         parameterDevice->isEvenTimestep);
+         parameterDevice->isEvenTimestep,
+         vf::lbm::dir::DIR_P00);
    getLastCudaError("QPressNoRhoDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QInflowScaleByPressDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
+void QPressZeroRhoOutflowDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
+{
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
+
+   QPressZeroRhoOutflowDevice27<<< grid, threads >>> (
+         boundaryCondition->RhoBC,
+         parameterDevice->distributions.f[0],
+         boundaryCondition->k,
+         boundaryCondition->kN,
+         boundaryCondition->numberOfBCnodes,
+         parameterDevice->omega,
+         parameterDevice->neighborX,
+         parameterDevice->neighborY,
+         parameterDevice->neighborZ,
+         parameterDevice->numberOfNodes,
+         parameterDevice->isEvenTimestep,
+         vf::lbm::dir::DIR_P00,
+         parameterDevice->outflowPressureCorrectionFactor);
+   getLastCudaError("QPressZeroRhoOutflowDev27 execution failed");
+}
+//////////////////////////////////////////////////////////////////////////
+void QInflowScaleByPressDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
    dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
    dim3 threads(parameterDevice->numberofthreads, 1, 1 );
@@ -2846,7 +2946,7 @@ extern "C" void QInflowScaleByPressDev27(LBMSimulationParameter* parameterDevice
    getLastCudaError("QInflowScaleByPressDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QPressDevOld27(  unsigned int numberOfThreads,
+void QPressDevOld27(  unsigned int numberOfThreads,
                                      real* rhoBC,
                                      real* DD,
                                      int* k_Q,
@@ -2875,7 +2975,7 @@ extern "C" void QPressDevOld27(  unsigned int numberOfThreads,
    getLastCudaError("QPressDeviceOld27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QPressDevIncompNEQ27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
+void QPressDevIncompNEQ27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
    dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
    dim3 threads(parameterDevice->numberofthreads, 1, 1 );
@@ -2895,7 +2995,7 @@ extern "C" void QPressDevIncompNEQ27(LBMSimulationParameter* parameterDevice, Qf
    getLastCudaError("QPressDeviceIncompNEQ27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QPressDevNEQ27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
+void QPressDevNEQ27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
    dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
    dim3 threads(parameterDevice->numberofthreads, 1, 1 );
@@ -2915,7 +3015,7 @@ extern "C" void QPressDevNEQ27(LBMSimulationParameter* parameterDevice, QforBoun
    getLastCudaError("QPressDevNEQ27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QPressDevEQZ27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
+void QPressDevEQZ27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
    dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
    dim3 threads(parameterDevice->numberofthreads, 1, 1 );
@@ -2936,7 +3036,7 @@ extern "C" void QPressDevEQZ27(LBMSimulationParameter* parameterDevice, QforBoun
       getLastCudaError("QPressDeviceEQZ27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QPressDevZero27(unsigned int numberOfThreads,
+void QPressDevZero27(unsigned int numberOfThreads,
                                 real* DD,
                                 int* k_Q,
                                 unsigned int numberOfBCnodes,
@@ -2959,7 +3059,7 @@ extern "C" void QPressDevZero27(unsigned int numberOfThreads,
    getLastCudaError("QPressDeviceOld27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QPressDevFake27(     unsigned int numberOfThreads,
+void QPressDevFake27(     unsigned int numberOfThreads,
                                      real* rhoBC,
                                      real* DD,
                                      int* k_Q,
@@ -2989,7 +3089,7 @@ extern "C" void QPressDevFake27(     unsigned int numberOfThreads,
       getLastCudaError("QPressDeviceFake27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void BBDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
+void BBDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
    dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
    dim3 threads(parameterDevice->numberofthreads, 1, 1 );
@@ -3007,7 +3107,7 @@ extern "C" void BBDev27(LBMSimulationParameter* parameterDevice, QforBoundaryCon
    getLastCudaError("BBDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QPressDev27_IntBB(  unsigned int numberOfThreads,
+void QPressDev27_IntBB(  unsigned int numberOfThreads,
 									real* rho,
 									real* DD,
 									int* k_Q,
@@ -3037,7 +3137,7 @@ extern "C" void QPressDev27_IntBB(  unsigned int numberOfThreads,
 }
 // TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
 //////////////////////////////////////////////////////////////////////////
-extern "C" void PressSchlaffer27(unsigned int numberOfThreads,
+void PressSchlaffer27(unsigned int numberOfThreads,
                                  real* rhoBC,
                                  real* DD,
                                  real* vx0,
@@ -3075,7 +3175,7 @@ extern "C" void PressSchlaffer27(unsigned int numberOfThreads,
 }
 // TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
 //////////////////////////////////////////////////////////////////////////
-extern "C" void VelSchlaffer27(  unsigned int numberOfThreads,
+void VelSchlaffer27(  unsigned int numberOfThreads,
                                  int t,
                                  real* DD,
                                  real* vz0,
@@ -3169,7 +3269,7 @@ extern "C" void PropVelo(   unsigned int numberOfThreads,
       getLastCudaError("PropellerBC execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ScaleCF27( real* DC,
+void ScaleCF27( real* DC,
                         real* DF,
                         unsigned int* neighborCX,
                         unsigned int* neighborCY,
@@ -3218,7 +3318,7 @@ extern "C" void ScaleCF27( real* DC,
       getLastCudaError("scaleCF27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ScaleCFEff27(real* DC,
+void ScaleCFEff27(real* DC,
                              real* DF,
                              unsigned int* neighborCX,
                              unsigned int* neighborCY,
@@ -3269,7 +3369,7 @@ extern "C" void ScaleCFEff27(real* DC,
       getLastCudaError("scaleCFEff27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ScaleCFLast27(real* DC,
+void ScaleCFLast27(real* DC,
                               real* DF,
                               unsigned int* neighborCX,
                               unsigned int* neighborCY,
@@ -3320,7 +3420,7 @@ extern "C" void ScaleCFLast27(real* DC,
       getLastCudaError("scaleCFLast27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ScaleCFpress27(  real* DC,
+void ScaleCFpress27(  real* DC,
                                  real* DF,
                                  unsigned int* neighborCX,
                                  unsigned int* neighborCY,
@@ -3371,7 +3471,7 @@ extern "C" void ScaleCFpress27(  real* DC,
       getLastCudaError("scaleCFpress27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ScaleCF_Fix_27(  real* DC,
+void ScaleCF_Fix_27(  real* DC,
                                  real* DF,
                                  unsigned int* neighborCX,
                                  unsigned int* neighborCY,
@@ -3422,7 +3522,7 @@ extern "C" void ScaleCF_Fix_27(  real* DC,
       getLastCudaError("scaleCF_Fix_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ScaleCF_Fix_comp_27( real* DC,
+void ScaleCF_Fix_comp_27( real* DC,
 									 real* DF,
 									 unsigned int* neighborCX,
 									 unsigned int* neighborCY,
@@ -3473,7 +3573,7 @@ extern "C" void ScaleCF_Fix_comp_27( real* DC,
       getLastCudaError("scaleCF_Fix_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ScaleCF_0817_comp_27(real* DC,
+void ScaleCF_0817_comp_27(real* DC,
 									 real* DF,
 									 unsigned int* neighborCX,
 									 unsigned int* neighborCY,
@@ -3525,7 +3625,7 @@ extern "C" void ScaleCF_0817_comp_27(real* DC,
       getLastCudaError("scaleCF_0817_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ScaleCF_comp_D3Q27F3_2018(real* DC,
+void ScaleCF_comp_D3Q27F3_2018(real* DC,
 										  real* DF,
 										  real* G6,
 										  unsigned int* neighborCX,
@@ -3578,7 +3678,7 @@ extern "C" void ScaleCF_comp_D3Q27F3_2018(real* DC,
       getLastCudaError("scaleCF_comp_D3Q27F3_2018 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ScaleCF_comp_D3Q27F3(real* DC,
+void ScaleCF_comp_D3Q27F3(real* DC,
 									 real* DF,
 									 real* G6,
 									 unsigned int* neighborCX,
@@ -3632,7 +3732,7 @@ extern "C" void ScaleCF_comp_D3Q27F3(real* DC,
       getLastCudaError("scaleCF_comp_D3Q27F3 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ScaleCF_staggered_time_comp_27(  real* DC,
+void ScaleCF_staggered_time_comp_27(  real* DC,
 												 real* DF,
 												 unsigned int* neighborCX,
 												 unsigned int* neighborCY,
@@ -3683,7 +3783,7 @@ extern "C" void ScaleCF_staggered_time_comp_27(  real* DC,
       getLastCudaError("scaleCF_Fix_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ScaleCF_RhoSq_comp_27(   real* DC,
+void ScaleCF_RhoSq_comp_27(   real* DC,
 										 real* DF,
 										 unsigned int* neighborCX,
 										 unsigned int* neighborCY,
@@ -3735,7 +3835,7 @@ extern "C" void ScaleCF_RhoSq_comp_27(   real* DC,
       getLastCudaError("scaleCF_RhoSq_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ScaleCF_RhoSq_3rdMom_comp_27(real* DC,
+void ScaleCF_RhoSq_3rdMom_comp_27(real* DC,
 											 real* DF,
 											 unsigned int* neighborCX,
 											 unsigned int* neighborCY,
@@ -3787,7 +3887,7 @@ extern "C" void ScaleCF_RhoSq_3rdMom_comp_27(real* DC,
       getLastCudaError("scaleCF_RhoSq_3rdMom_comp_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ScaleCF_AA2016_comp_27(real* DC,
+void ScaleCF_AA2016_comp_27(real* DC,
 									   real* DF,
 									   unsigned int* neighborCX,
 									   unsigned int* neighborCY,
@@ -3839,7 +3939,7 @@ extern "C" void ScaleCF_AA2016_comp_27(real* DC,
       getLastCudaError("scaleCF_AA2016_comp_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ScaleCF_NSPress_27(  real* DC,
+void ScaleCF_NSPress_27(  real* DC,
 									 real* DF,
 									 unsigned int* neighborCX,
 									 unsigned int* neighborCY,
@@ -3890,7 +3990,7 @@ extern "C" void ScaleCF_NSPress_27(  real* DC,
       getLastCudaError("scaleCF_Fix_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ScaleCFThSMG7(   real* DC,
+void ScaleCFThSMG7(   real* DC,
                                  real* DF,
                                  real* DD7C,
                                  real* DD7F,
@@ -3935,7 +4035,7 @@ extern "C" void ScaleCFThSMG7(   real* DC,
       getLastCudaError("scaleCFThSMG7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ScaleCFThS7(  real* DC,
+void ScaleCFThS7(  real* DC,
                               real* DF,
                               real* DD7C,
                               real* DD7F,
@@ -3978,7 +4078,7 @@ extern "C" void ScaleCFThS7(  real* DC,
       getLastCudaError("scaleCFThS7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ScaleCFThS27( real* DC,
+void ScaleCFThS27( real* DC,
                               real* DF,
                               real* DD27C,
                               real* DD27F,
@@ -4023,7 +4123,7 @@ extern "C" void ScaleCFThS27( real* DC,
       getLastCudaError("scaleCFThS27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ScaleFC27( real* DC,
+void ScaleFC27( real* DC,
                            real* DF,
                            unsigned int* neighborCX,
                            unsigned int* neighborCY,
@@ -4073,7 +4173,7 @@ extern "C" void ScaleFC27( real* DC,
       getLastCudaError("scaleFC27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ScaleFCEff27(real* DC,
+void ScaleFCEff27(real* DC,
                              real* DF,
                              unsigned int* neighborCX,
                              unsigned int* neighborCY,
@@ -4124,7 +4224,7 @@ extern "C" void ScaleFCEff27(real* DC,
       getLastCudaError("scaleFCEff27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ScaleFCLast27(real* DC,
+void ScaleFCLast27(real* DC,
                               real* DF,
                               unsigned int* neighborCX,
                               unsigned int* neighborCY,
@@ -4175,7 +4275,7 @@ extern "C" void ScaleFCLast27(real* DC,
       getLastCudaError("Kernel execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ScaleFCpress27(real* DC,
+void ScaleFCpress27(real* DC,
                               real* DF,
                               unsigned int* neighborCX,
                               unsigned int* neighborCY,
@@ -4226,7 +4326,7 @@ extern "C" void ScaleFCpress27(real* DC,
       getLastCudaError("scaleFCpress27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ScaleFC_Fix_27(real* DC,
+void ScaleFC_Fix_27(real* DC,
                               real* DF,
                               unsigned int* neighborCX,
                               unsigned int* neighborCY,
@@ -4277,7 +4377,7 @@ extern "C" void ScaleFC_Fix_27(real* DC,
       getLastCudaError("scaleFC_Fix_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ScaleFC_Fix_comp_27(  real* DC,
+void ScaleFC_Fix_comp_27(  real* DC,
 									  real* DF,
 									  unsigned int* neighborCX,
 									  unsigned int* neighborCY,
@@ -4328,7 +4428,7 @@ extern "C" void ScaleFC_Fix_comp_27(  real* DC,
       getLastCudaError("scaleFC_Fix_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ScaleFC_0817_comp_27( real* DC,
+void ScaleFC_0817_comp_27( real* DC,
 									  real* DF,
 									  unsigned int* neighborCX,
 									  unsigned int* neighborCY,
@@ -4380,7 +4480,7 @@ extern "C" void ScaleFC_0817_comp_27( real* DC,
       getLastCudaError("scaleFC_0817_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ScaleFC_comp_D3Q27F3_2018( real* DC,
+void ScaleFC_comp_D3Q27F3_2018( real* DC,
 										   real* DF,
 										   real* G6,
 										   unsigned int* neighborCX,
@@ -4433,7 +4533,7 @@ extern "C" void ScaleFC_comp_D3Q27F3_2018( real* DC,
       getLastCudaError("scaleFC_comp_D3Q27F3_2018 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ScaleFC_comp_D3Q27F3( real* DC,
+void ScaleFC_comp_D3Q27F3( real* DC,
 									  real* DF,
 									  real* G6,
 									  unsigned int* neighborCX,
@@ -4487,7 +4587,7 @@ extern "C" void ScaleFC_comp_D3Q27F3( real* DC,
       getLastCudaError("scaleFC_0817_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ScaleFC_staggered_time_comp_27(   real* DC,
+void ScaleFC_staggered_time_comp_27(   real* DC,
 												  real* DF,
 												  unsigned int* neighborCX,
 												  unsigned int* neighborCY,
@@ -4538,7 +4638,7 @@ extern "C" void ScaleFC_staggered_time_comp_27(   real* DC,
       getLastCudaError("scaleFC_Fix_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ScaleFC_RhoSq_comp_27(real* DC,
+void ScaleFC_RhoSq_comp_27(real* DC,
 									  real* DF,
 									  unsigned int* neighborCX,
 									  unsigned int* neighborCY,
@@ -4592,7 +4692,7 @@ extern "C" void ScaleFC_RhoSq_comp_27(real* DC,
 }
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ScaleFC_RhoSq_3rdMom_comp_27( real* DC,
+void ScaleFC_RhoSq_3rdMom_comp_27( real* DC,
 											  real* DF,
 											  unsigned int* neighborCX,
 											  unsigned int* neighborCY,
@@ -4644,7 +4744,7 @@ extern "C" void ScaleFC_RhoSq_3rdMom_comp_27( real* DC,
       getLastCudaError("scaleFC_RhoSq_3rdMom_comp_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ScaleFC_AA2016_comp_27( real* DC,
+void ScaleFC_AA2016_comp_27( real* DC,
 										real* DF,
 										unsigned int* neighborCX,
 										unsigned int* neighborCY,
@@ -4696,7 +4796,7 @@ extern "C" void ScaleFC_AA2016_comp_27( real* DC,
       getLastCudaError("scaleFC_AA2016_comp_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ScaleFC_NSPress_27(real* DC,
+void ScaleFC_NSPress_27(real* DC,
 								  real* DF,
 								  unsigned int* neighborCX,
 								  unsigned int* neighborCY,
@@ -4747,7 +4847,7 @@ extern "C" void ScaleFC_NSPress_27(real* DC,
       getLastCudaError("scaleFC_Fix_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ScaleFCThSMG7(real* DC,
+void ScaleFCThSMG7(real* DC,
                               real* DF,
                               real* DD7C,
                               real* DD7F,
@@ -4792,7 +4892,7 @@ extern "C" void ScaleFCThSMG7(real* DC,
       getLastCudaError("scaleFCThSMG7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ScaleFCThS7(  real* DC,
+void ScaleFCThS7(  real* DC,
                               real* DF,
                               real* DD7C,
                               real* DD7F,
@@ -4835,7 +4935,7 @@ extern "C" void ScaleFCThS7(  real* DC,
       getLastCudaError("scaleFCThS7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void ScaleFCThS27( real* DC,
+void ScaleFCThS27( real* DC,
                               real* DF,
                               real* DD27C,
                               real* DD27F,
@@ -4880,7 +4980,7 @@ extern "C" void ScaleFCThS27( real* DC,
       getLastCudaError("scaleFCThS27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void DragLiftPostD27(real* DD,
+void DragLiftPostD27(real* DD,
 								int* k_Q,
 								real* QQ,
 								int numberOfBCnodes,
@@ -4911,7 +5011,7 @@ extern "C" void DragLiftPostD27(real* DD,
 	getLastCudaError("DragLift27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void DragLiftPreD27( real* DD,
+void DragLiftPreD27( real* DD,
 								int* k_Q,
 								real* QQ,
 								int numberOfBCnodes,
@@ -4942,7 +5042,7 @@ extern "C" void DragLiftPreD27( real* DD,
 	getLastCudaError("DragLift27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void CalcCPtop27(real* DD,
+void CalcCPtop27(real* DD,
 							int* cpIndex,
 							int nonCp,
 							double *cpPress,
@@ -4967,7 +5067,7 @@ extern "C" void CalcCPtop27(real* DD,
 	getLastCudaError("CalcCP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void CalcCPbottom27( real* DD,
+void CalcCPbottom27( real* DD,
 								int* cpIndex,
 								int nonCp,
 								double *cpPress,
@@ -4992,7 +5092,7 @@ extern "C" void CalcCPbottom27( real* DD,
 	getLastCudaError("CalcCP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void GetSendFsPreDev27(real* DD,
+void GetSendFsPreDev27(real* DD,
 								  real* bufferFs,
 								  int* sendIndex,
 								  int buffmax,
@@ -5018,7 +5118,7 @@ extern "C" void GetSendFsPreDev27(real* DD,
 	getLastCudaError("getSendFsPre27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void GetSendFsPostDev27(real* DD,
+void GetSendFsPostDev27(real* DD,
 								   real* bufferFs,
 								   int* sendIndex,
 								   int buffmax,
@@ -5044,7 +5144,7 @@ extern "C" void GetSendFsPostDev27(real* DD,
 	getLastCudaError("getSendFsPost27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void SetRecvFsPreDev27(real* DD,
+void SetRecvFsPreDev27(real* DD,
 								  real* bufferFs,
 								  int* recvIndex,
 								  int buffmax,
@@ -5070,7 +5170,7 @@ extern "C" void SetRecvFsPreDev27(real* DD,
 	getLastCudaError("setRecvFsPre27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void SetRecvFsPostDev27(real* DD,
+void SetRecvFsPostDev27(real* DD,
 								   real* bufferFs,
 								   int* recvIndex,
 								   int buffmax,
@@ -5096,7 +5196,7 @@ extern "C" void SetRecvFsPostDev27(real* DD,
 	getLastCudaError("setRecvFsPost27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void getSendGsDevF3(
+void getSendGsDevF3(
 	real* G6,
 	real* bufferGs,
 	int* sendIndex,
@@ -5123,7 +5223,7 @@ extern "C" void getSendGsDevF3(
 	getLastCudaError("getSendGsF3 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void setRecvGsDevF3(
+void setRecvGsDevF3(
 	real* G6,
 	real* bufferGs,
 	int* recvIndex,
@@ -5150,7 +5250,7 @@ extern "C" void setRecvGsDevF3(
 	getLastCudaError("setRecvGsF3 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void WallFuncDev27(unsigned int numberOfThreads,
+void WallFuncDev27(unsigned int numberOfThreads,
 							  real* vx,
 							  real* vy,
 							  real* vz,
@@ -5184,7 +5284,7 @@ extern "C" void WallFuncDev27(unsigned int numberOfThreads,
       getLastCudaError("WallFunction27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void SetOutputWallVelocitySP27(unsigned int numberOfThreads,
+void SetOutputWallVelocitySP27(unsigned int numberOfThreads,
 										  real* vxD,
 										  real* vyD,
 										  real* vzD,
@@ -5225,7 +5325,7 @@ extern "C" void SetOutputWallVelocitySP27(unsigned int numberOfThreads,
       getLastCudaError("LBSetOutputWallVelocitySP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void GetVelotoForce27(unsigned int numberOfThreads,
+void GetVelotoForce27(unsigned int numberOfThreads,
 								 real* DD,
 								 int* bcIndex,
 								 int nonAtBC,
@@ -5254,7 +5354,7 @@ extern "C" void GetVelotoForce27(unsigned int numberOfThreads,
       getLastCudaError("GetVeloforForcing27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void InitParticlesDevice(real* coordX,
+void InitParticlesDevice(real* coordX,
 									real* coordY,
 									real* coordZ,
 									real* coordParticleXlocal,
@@ -5307,7 +5407,7 @@ extern "C" void InitParticlesDevice(real* coordX,
       getLastCudaError("InitParticles execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void MoveParticlesDevice(real* coordX,
+void MoveParticlesDevice(real* coordX,
 									real* coordY,
 									real* coordZ,
 									real* coordParticleXlocal,
@@ -5368,7 +5468,7 @@ extern "C" void MoveParticlesDevice(real* coordX,
       getLastCudaError("MoveParticles execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void initRandomDevice(curandState* state,
+void initRandomDevice(curandState* state,
 								 unsigned int size_Mat,
 								 unsigned int numberOfThreads)
 {
@@ -5377,7 +5477,7 @@ extern "C" void initRandomDevice(curandState* state,
    getLastCudaError("initRandom execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void generateRandomValuesDevice( curandState* state,
+void generateRandomValuesDevice( curandState* state,
 											unsigned int size_Mat,
 											real* randArray,
 											unsigned int numberOfThreads)
@@ -5387,7 +5487,7 @@ extern "C" void generateRandomValuesDevice( curandState* state,
    getLastCudaError("generateRandomValues execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void CalcTurbulenceIntensityDevice(
+void CalcTurbulenceIntensityDevice(
    real* vxx,
    real* vyy,
    real* vzz,

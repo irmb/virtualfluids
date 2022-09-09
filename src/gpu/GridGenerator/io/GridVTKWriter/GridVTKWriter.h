@@ -46,12 +46,12 @@ class GRIDGENERATOR_EXPORT GridVTKWriter
 {
 public:
     static void writeSparseGridToVTK(SPtr<Grid> grid, const std::string& name, WRITING_FORMAT format = WRITING_FORMAT::ASCII);
-    static void writeGridToVTKXML(SPtr<Grid> grid, const std::string& name, WRITING_FORMAT format = WRITING_FORMAT::ASCII);
-    static void writeInterpolationCellsToVTKXML(SPtr<Grid> grid, SPtr<Grid> gridCoarse, const std::string& name, WRITING_FORMAT format = WRITING_FORMAT::ASCII);
+    static void writeGridToVTKXML(SPtr<Grid> grid, const std::string& name);
+    static void writeInterpolationCellsToVTKXML(SPtr<Grid> grid, SPtr<Grid> gridCoarse, const std::string& name);
 
 private:
-    GridVTKWriter() {}
-    ~GridVTKWriter() {}
+    GridVTKWriter() = default;
+    ~GridVTKWriter() = default;
 
     static FILE *file;
     static WRITING_FORMAT format;

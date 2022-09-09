@@ -6,9 +6,9 @@
 
 #include <PointerDefinitions.h>
 
-#include "Output/LogWriter.hpp"
 #include "Utilities/Buffer2D.hpp"
 #include "LBM/LB.h"
+
 
 namespace vf::gpu { class Communicator; }
 
@@ -29,28 +29,34 @@ class UpdateGrid27;
 class KineticEnergyAnalyzer;
 class EnstrophyAnalyzer;
 class BoundaryConditionFactory;
+class TurbulenceModelFactory;
 
 class Simulation
 {
 public:
     Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> memoryManager,
                vf::gpu::Communicator &communicator, GridProvider &gridProvider, BoundaryConditionFactory* bcFactory);
+	
+	Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> memoryManager,
+               vf::gpu::Communicator &communicator, GridProvider &gridProvider, BoundaryConditionFactory* bcFactory, SPtr<TurbulenceModelFactory> tmFactory);
+
     ~Simulation();
     void run();
 
     void setFactories(std::unique_ptr<KernelFactory> &&kernelFactory,
                std::unique_ptr<PreProcessorFactory> &&preProcessorFactory);
-    void setDataWriter(std::unique_ptr<DataWriter>&& dataWriter);
+    void setDataWriter(std::shared_ptr<DataWriter> dataWriter);
     void addKineticEnergyAnalyzer(uint tAnalyse);
     void addEnstrophyAnalyzer(uint tAnalyse);
 
 private:
+	void init(GridProvider &gridProvider, BoundaryConditionFactory *bcFactory, SPtr<TurbulenceModelFactory> tmFactory);
     void allocNeighborsOffsetsScalesAndBoundaries(GridProvider& gridProvider);
     void porousMedia();
     void definePMarea(std::shared_ptr<PorousMedia>& pm);
 
 	std::unique_ptr<KernelFactory> kernelFactory;
-	std::unique_ptr<PreProcessorFactory> preProcessorFactory;
+	std::shared_ptr<PreProcessorFactory> preProcessorFactory;
 
 	Buffer2D <real> sbuf_t;
 	Buffer2D <real> rbuf_t;
@@ -63,15 +69,14 @@ private:
 	Buffer2D <int> geo_rbuf_b;
 
 
-	LogWriter output;
-
 	vf::gpu::Communicator& communicator;
     SPtr<Parameter> para;
-    std::unique_ptr<DataWriter> dataWriter;
+    std::shared_ptr<DataWriter> dataWriter;
 	std::shared_ptr<CudaMemoryManager> cudaMemoryManager;
 	std::vector < SPtr< Kernel>> kernels;
 	std::vector < SPtr< ADKernel>> adKernels;
 	std::shared_ptr<PreProcessor> preProcessor;
+	SPtr<TurbulenceModelFactory> tmFactory;
 
     SPtr<RestartObject> restart_object;
 

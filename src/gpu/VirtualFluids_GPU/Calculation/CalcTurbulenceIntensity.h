@@ -6,11 +6,11 @@
 #include "Parameter/Parameter.h"
 #include "GPU/CudaMemoryManager.h"
 
-extern "C" void allocTurbulenceIntensity(Parameter *para, CudaMemoryManager *cudaMemoryManager);
-extern "C" void calcVelocityAndFluctuations(Parameter *para, CudaMemoryManager *cudaMemoryManager, uint tdiff);
-extern "C" void calcTurbulenceIntensity(Parameter *para, CudaMemoryManager *cudaMemoryManager, uint tdiff);
-extern "C" void resetVelocityFluctuationsAndMeans(Parameter *para, CudaMemoryManager *cudaMemoryManager);
-extern "C" void cudaFreeTurbulenceIntensityArrays(Parameter *para, CudaMemoryManager *cudaMemoryManager);
+void allocTurbulenceIntensity(Parameter *para, CudaMemoryManager *cudaMemoryManager);
+void calcVelocityAndFluctuations(Parameter *para, CudaMemoryManager *cudaMemoryManager, uint tdiff);
+void calcTurbulenceIntensity(Parameter *para, CudaMemoryManager *cudaMemoryManager, uint tdiff);
+void resetVelocityFluctuationsAndMeans(Parameter *para, CudaMemoryManager *cudaMemoryManager);
+void cudaFreeTurbulenceIntensityArrays(Parameter *para, CudaMemoryManager *cudaMemoryManager);
 
 
 void writeTurbulenceIntensityToFile(Parameter *para, uint timestep);

@@ -37,6 +37,7 @@
 #include <helper_cuda.h>
 
 #include "VirtualFluids_GPU/GPU/GeometryUtils.h"
+#include <lbm/constants/NumericConstants.h>
 #include "basics/writer/WbWriterVtkXmlBinary.h"
 #include <Core/StringUtilities/StringUtil.h>
 
@@ -44,6 +45,7 @@
 #include "DataStructureInitializer/GridProvider.h"
 #include "GPU/CudaMemoryManager.h"
 
+using namespace vf::lbm::constant;
 
 __device__ void calculatePointwiseQuantities(uint n, real* quantityArray, bool* quantities, uint* quantityArrayOffsets, uint nPoints, uint node, real vx, real vy, real vz, real rho)
 {
@@ -177,13 +179,17 @@ __global__ void interpAndCalcQuantitiesKernel(   uint* pointIndices,
 
 bool Probe::getHasDeviceQuantityArray(){ return this->hasDeviceQuantityArray; }
 
+real Probe::getNondimensionalConversionFactor(int level){ return c1o1; }
+
 void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaMemoryManager)
 {
-    this->velocityRatio      = para->getVelocityRatio();
-    this->densityRatio       = para->getDensityRatio();
-    this->forceRatio         = para->getForceRatio();
-    this->stressRatio        = para->getDensityRatio()*pow(para->getVelocityRatio(), 2.0);
-    this->accelerationRatio = para->getVelocityRatio()/para->getTimeRatio();
+    using std::placeholders::_1;
+    this->velocityRatio      = std::bind(&Parameter::getScaledVelocityRatio,        para, _1); 
+    this->densityRatio       = std::bind(&Parameter::getScaledDensityRatio,         para, _1);
+    this->forceRatio         = std::bind(&Parameter::getScaledForceRatio,           para, _1);
+    this->stressRatio        = std::bind(&Parameter::getScaledPressureRatio,        para, _1);
+    this->viscosityRatio     = std::bind(&Parameter::getScaledViscosityRatio,       para, _1);
+    this->nondimensional     = std::bind(&Probe::getNondimensionalConversionFactor, this, _1);
 
     probeParams.resize(para->getMaxLevel()+1);
 
@@ -196,7 +202,7 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
         std::vector<real> pointCoordsX_level;
         std::vector<real> pointCoordsY_level;
         std::vector<real> pointCoordsZ_level;
-
+        
         this->findPoints(para, gridProvider, probeIndices_level, distX_level, distY_level, distZ_level,      
                        pointCoordsX_level, pointCoordsY_level, pointCoordsZ_level,
                        level);
@@ -274,16 +280,23 @@ void Probe::addProbeStruct(CudaMemoryManager* cudaMemoryManager, std::vector<int
 
 void Probe::interact(Parameter* para, CudaMemoryManager* cudaMemoryManager, int level, uint t)
 {
-    if(max(int(t) - int(this->tStartAvg), -1) % this->tAvg==0)
+    uint t_level = para->getTimeStep(level, t, false);
+
+    //! if tAvg==1 the probe will be evaluated in every sub-timestep of each respective level
+    //! else, the probe will only be evaluated in each synchronous time step tAvg
+
+    uint tAvg_level = this->tAvg==1? this->tAvg: this->tAvg*pow(2,level);          
+
+    if(max(int(t_level) - int(this->tStartAvg*pow(2,level)), -1) % tAvg_level==0)
     {
         SPtr<ProbeStruct> probeStruct = this->getProbeStruct(level);
-
-        this->calculateQuantities(probeStruct, para, t, level);
-        if(t>=this->tStartTmpAveraging) probeStruct->vals++;
+        this->calculateQuantities(probeStruct, para, t_level, level);
+        if(t_level>=(this->tStartTmpAveraging*pow(2,level))) probeStruct->vals++;
     }
 
-    if(max(int(t) - int(this->tStartOut), -1) % this->tOut == 0)
-    {
+    //! output only in synchronous timesteps
+    if(max(int(t_level) - int(this->tStartOut*pow(2,level)), -1) % int(this->tOut*pow(2,level)) == 0)
+    {   
         if(this->hasDeviceQuantityArray)
             cudaMemoryManager->cudaCopyProbeQuantityArrayDtoH(this, level);
         this->write(para, level, t);
@@ -304,7 +317,7 @@ void Probe::free(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 
 void Probe::addStatistic(Statistic variable)
 {
-    assert(this->isAvailableStatistic(variable));
+    if (!this->isAvailableStatistic(variable)) throw std::runtime_error("Probe::addStatistic(): Statistic not available for this probe type!");
 
     this->quantities[int(variable)] = true;
     switch(variable)

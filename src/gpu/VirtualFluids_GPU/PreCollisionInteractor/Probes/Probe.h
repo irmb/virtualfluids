@@ -43,6 +43,8 @@
 #ifndef Probe_H
 #define Probe_H
 
+#include <iostream>
+
 #include <cuda.h>
 
 #include "PreCollisionInteractor/PreCollisionInteractor.h"
@@ -91,9 +93,9 @@ enum class Statistic{
 
 typedef struct PostProcessingVariable{
     std::string name;
-    real conversionFactor;
+    std::function<real(int)> conversionFactor;
     PostProcessingVariable( std::string _name, 
-                            real        _conversionFactor): 
+                            std::function<real(int)>  _conversionFactor): 
     name(_name), conversionFactor(_conversionFactor){};
 } PostProcessingVariable;
 
@@ -106,6 +108,7 @@ struct ProbeStruct{
     real *quantitiesArrayH, *quantitiesArrayD;
     bool *quantitiesH, *quantitiesD;
     uint *arrayOffsetsH, *arrayOffsetsD;
+    bool isEvenTAvg = true;
 };
 
 __global__ void calcQuantitiesKernel(   uint* pointIndices,
@@ -150,7 +153,8 @@ public:
         outputTimeSeries(_outputTimeSeries),        
         PreCollisionInteractor()
     {
-        assert("Output starts before averaging!" && tStartOut>=tStartAvg);
+        if (_tStartOut<_tStartAvg)      throw std::runtime_error("Probe: tStartOut must be larger than tStartAvg!");
+        if (_tStartTmpAvg<_tStartAvg)   throw std::runtime_error("Probe: tStartTmpAvg must be larger than tStartAvg!");
     }
     
     void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaMemoryManager) override;
@@ -170,6 +174,8 @@ public:
 
 protected:
     virtual WbWriterVtkXmlBinary* getWriter(){ return WbWriterVtkXmlBinary::getInstance(); };
+    real getNondimensionalConversionFactor(int level);
+
 private:
     virtual bool isAvailableStatistic(Statistic _variable) = 0;
 
@@ -209,17 +215,19 @@ protected:
 protected:
     uint tStartAvg;
     uint tStartTmpAveraging; //!> only non-zero in PlanarAverageProbe and WallModelProbe to switch on Spatio-temporal averaging (while only doing spatial averaging for t<tStartTmpAveraging) 
-    uint tAvg;
+    uint tAvg;  //! for tAvg==1 the probe will be evaluated in every sub-timestep of each respective level, else, the probe will only be evaluated in each synchronous time step 
     uint tStartOut;
     uint tOut;
 
     uint tProbe = 0; //!> counter for number of probe evaluations. Only used when outputting timeseries
 
-    real velocityRatio;
-    real densityRatio;
-    real forceRatio;
-    real stressRatio;
-    real accelerationRatio;
+
+    std::function<real(int)> velocityRatio;
+    std::function<real(int)> densityRatio;
+    std::function<real(int)> forceRatio;
+    std::function<real(int)> stressRatio;
+    std::function<real(int)> viscosityRatio;
+    std::function<real(int)> nondimensional;
 };
 
 #endif

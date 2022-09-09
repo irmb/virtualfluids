@@ -3,8 +3,6 @@
 
 #include <fstream>
 #include <sstream>
-#include <stdio.h>
-// #include <math.h>
 #include "Core/StringUtilities/StringUtil.h"
 #include "lbm/constants/D3Q27.h"
 #include "LBM/LB.h"
@@ -906,6 +904,6 @@ void writeRecvNodesStream(Parameter *para)
         WbWriterVtkXmlBinary::getInstance()->writeNodesWithNodeData(filenameVec, nodesVec, datanames, nodedata);
     }
 }
-} // namespace InterfaceDebugWriter
 
+} // namespace InterfaceDebugWriter
 #endif

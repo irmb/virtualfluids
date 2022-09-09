@@ -6,6 +6,7 @@
 #include "Utilities/Structs/SimulationDataStruct.h"
 #include "Utilities/Structs/TestStruct.h"
 #include "Utilities/Structs/TestSimulationDataStruct.h"
+#include "Utilities/VirtualFluidSimulationFactory/VirtualFluidSimulationFactory.h"
 
 #include "Simulations/TaylorGreenVortexUx/AnalyticalResults/AnalyticalResultsTaylorGreenVortexUx.h"
 #include "Simulations/TaylorGreenVortexUx/InitialConditions/InitialConditionTaylorGreenVortexUx.h"
@@ -58,6 +59,7 @@
 
 #include <algorithm>
 
+
 std::shared_ptr<NumericalTestFactoryImp> NumericalTestFactoryImp::getNewInstance(std::shared_ptr<ConfigDataStruct> configFileData)
 {
 	return std::shared_ptr<NumericalTestFactoryImp>(new NumericalTestFactoryImp(configFileData));
@@ -94,9 +96,9 @@ void NumericalTestFactoryImp::init(std::shared_ptr<ConfigDataStruct> configFileD
 	simID = 1;
 	numberOfSimulations = configFileData->numberOfSimulations;
 
-	for (int i = 0; i < configFileData->kernelsToTest.size(); i++) {
-		for (int j = 0; j < configFileData->viscosity.size(); j++) {
-			for (int k = 0; k < configFileData->taylorGreenVortexUxParameter.size(); k++) {
+	for (size_t i = 0; i < configFileData->kernelsToTest.size(); i++) {
+		for (size_t j = 0; j < configFileData->viscosity.size(); j++) {
+			for (size_t k = 0; k < configFileData->taylorGreenVortexUxParameter.size(); k++) {
 				std::shared_ptr<SimulationDataStruct> simDataStruct = makeTaylorGreenUxSimulationData(configFileData->kernelsToTest.at(i), configFileData->viscosity.at(j), configFileData->taylorGreenVortexUxParameter.at(k), configFileData->taylorGreenVortexUxGridInformation);
 				if (simDataStruct->simGroupRun) {
 					std::shared_ptr<NumericalTestStruct> numericalTestStruct = makeNumericalTestStruct(configFileData, simDataStruct, configFileData->kernelsToTest.at(i), configFileData->viscosity.at(j), configFileData->taylorGreenVortexUxParameter.at(k)->basicTimeStepLength);
@@ -104,7 +106,7 @@ void NumericalTestFactoryImp::init(std::shared_ptr<ConfigDataStruct> configFileD
 				}
 			}
 
-			for (int k = 0; k < configFileData->taylorGreenVortexUzParameter.size(); k++) {
+			for (size_t k = 0; k < configFileData->taylorGreenVortexUzParameter.size(); k++) {
 				std::shared_ptr<SimulationDataStruct> simDataStruct = makeTaylorGreenUzSimulationData(configFileData->kernelsToTest.at(i), configFileData->viscosity.at(j), configFileData->taylorGreenVortexUzParameter.at(k), configFileData->taylorGreenVortexUzGridInformation);
 				if (simDataStruct->simGroupRun) {
 					std::shared_ptr<NumericalTestStruct> numericalTestStruct = makeNumericalTestStruct(configFileData, simDataStruct, configFileData->kernelsToTest.at(i), configFileData->viscosity.at(j), configFileData->taylorGreenVortexUzParameter.at(k)->basicTimeStepLength);
@@ -112,7 +114,7 @@ void NumericalTestFactoryImp::init(std::shared_ptr<ConfigDataStruct> configFileD
 				}
 			}
 
-			for (int k = 0; k < configFileData->shearWaveParameter.size(); k++) {
+			for (size_t k = 0; k < configFileData->shearWaveParameter.size(); k++) {
 				std::shared_ptr<SimulationDataStruct> simDataStruct = makeShearWaveSimulationData(configFileData->kernelsToTest.at(i), configFileData->viscosity.at(j), configFileData->shearWaveParameter.at(k), configFileData->shearWaveGridInformation);
 				if (simDataStruct->simGroupRun) {
 					std::shared_ptr<NumericalTestStruct> numericalTestStruct = makeNumericalTestStruct(configFileData, simDataStruct, configFileData->kernelsToTest.at(i), configFileData->viscosity.at(j), configFileData->shearWaveParameter.at(k)->basicTimeStepLength);
@@ -147,7 +149,7 @@ std::shared_ptr<NumericalTestStruct> NumericalTestFactoryImp::makeNumericalTestS
 	initTestStruct(l2NormTestBetweenKernelStruct, numTestStruct, testLogFileInfo, basicTestLogFileInfo);
 
 	std::vector<std::shared_ptr<SimulationInfo> > simInfo;
-	for (int i = 0; i < simDataStruct->testSimData.size(); i++)
+	for (size_t i = 0; i < simDataStruct->testSimData.size(); i++)
 		simInfo.push_back(simDataStruct->testSimData.at(i)->simInformation);
 
 	std::shared_ptr<LogFileWriter> logFileWriter = makeLogFileWriter(testLogFileInfo, simDataStruct->logFileInformation, simInfo, kernel, viscosity, basicTimeStepLength, configFileData->logFilePara, basicTestLogFileInfo);
@@ -158,10 +160,10 @@ std::shared_ptr<NumericalTestStruct> NumericalTestFactoryImp::makeNumericalTestS
 
 void NumericalTestFactoryImp::addNumericalTestStruct(std::shared_ptr<NumericalTestStruct> numericalTestStruct)
 {
-	for (int i = 0; i < numericalTestStruct->testSimulations.size(); i++)
+	for (size_t i = 0; i < numericalTestStruct->testSimulations.size(); i++)
 		myTestSimulations.push_back(numericalTestStruct->testSimulations.at(i));
 
-	for (int i = 0; i < numericalTestStruct->tests.size(); i++)
+	for (size_t i = 0; i < numericalTestStruct->tests.size(); i++)
 		myTestQueue->addTest(numericalTestStruct->tests.at(i));
 
 	myLogFileWriterQueue->addLogFileWriter(numericalTestStruct->logFileWriter);
@@ -172,7 +174,7 @@ std::shared_ptr<SimulationDataStruct> NumericalTestFactoryImp::makeTaylorGreenUx
 	std::shared_ptr<SimulationDataStruct> simDataStruct = std::shared_ptr<SimulationDataStruct>(new SimulationDataStruct);
 
 	if (gridInfoStruct.size() > 0) {
-		for (int i = 0; i < gridInfoStruct.size(); i++) {
+		for (size_t i = 0; i < gridInfoStruct.size(); i++) {
 			std::shared_ptr<TestSimulationDataStruct> aTestSimData = std::shared_ptr<TestSimulationDataStruct>(new TestSimulationDataStruct);
 			aTestSimData->simParameter = SimulationParameterTaylorGreenUx::getNewInstance(kernel, viscosity, simParaStruct, gridInfoStruct.at(i));
 			aTestSimData->initialCondition = InitialConditionTaylorGreenUx::getNewInstance(simParaStruct, gridInfoStruct.at(i));
@@ -194,7 +196,7 @@ std::shared_ptr<SimulationDataStruct> NumericalTestFactoryImp::makeTaylorGreenUz
 {
 	std::shared_ptr<SimulationDataStruct> simDataStruct = std::shared_ptr<SimulationDataStruct>(new SimulationDataStruct);
 	if (gridInfoStruct.size() > 0) {
-		for (int i = 0; i < gridInfoStruct.size(); i++) {
+		for (size_t i = 0; i < gridInfoStruct.size(); i++) {
 			std::shared_ptr<TestSimulationDataStruct> aTestSimData = std::shared_ptr<TestSimulationDataStruct>(new TestSimulationDataStruct);
 			aTestSimData->simParameter = SimulationParameterTaylorGreenUz::getNewInstance(kernel, viscosity, simParaStruct, gridInfoStruct.at(i));
 			aTestSimData->initialCondition = InitialConditionTaylorGreenUz::getNewInstance(simParaStruct, gridInfoStruct.at(i));
@@ -216,7 +218,7 @@ std::shared_ptr<SimulationDataStruct> NumericalTestFactoryImp::makeShearWaveSimu
 {
 	std::shared_ptr<SimulationDataStruct> simDataStruct = std::shared_ptr<SimulationDataStruct>(new SimulationDataStruct);
 	if (gridInfoStruct.size() > 0) {
-		for (int i = 0; i < gridInfoStruct.size(); i++) {
+		for (size_t i = 0; i < gridInfoStruct.size(); i++) {
 			std::shared_ptr<TestSimulationDataStruct> aTestSimData = std::shared_ptr<TestSimulationDataStruct>(new TestSimulationDataStruct);
 			aTestSimData->simParameter = ShearWaveSimulationParameter::getNewInstance(kernel, viscosity, simParaStruct, gridInfoStruct.at(i));
 			aTestSimData->initialCondition = InitialConditionShearWave::getNewInstance(simParaStruct, gridInfoStruct.at(i));
@@ -236,17 +238,26 @@ std::shared_ptr<SimulationDataStruct> NumericalTestFactoryImp::makeShearWaveSimu
 
 std::vector<std::shared_ptr<TestSimulationImp> > NumericalTestFactoryImp::makeTestSimulations(std::vector<std::shared_ptr<TestSimulationDataStruct> > testSimDataStruct, std::shared_ptr<VectorWriterInformationStruct> vectorWriterInfo, unsigned int ySliceForCalculation)
 {
-	std::vector<std::shared_ptr<TestSimulationImp> > testSimumlations;
-	for (int i = 0; i < testSimDataStruct.size(); i++) {
+	std::vector<std::shared_ptr<TestSimulationImp> > testSimulations;
+	for (size_t i = 0; i < testSimDataStruct.size(); i++) {
 		std::shared_ptr<TimeImp> time = TimeImp::getNewInstance();
 		testSimDataStruct.at(i)->simInformation->setTimeInfo(time);
 		std::shared_ptr<SimulationResults> simResult = SimulationResults::getNewInstance(testSimDataStruct.at(i)->simParameter);
 		std::shared_ptr<ToVectorWriter> toVectorWriter = Y2dSliceToResults::getNewInstance(vectorWriterInfo, testSimDataStruct.at(i)->simParameter->getTimeStepLength(), simResult, ySliceForCalculation);
 		
-		testSimumlations.push_back(TestSimulationImp::getNewInsance(testSimDataStruct.at(i), simResult, time, toVectorWriter, anaResultWriter, colorOutput));
+
+		auto currentTestSimData = testSimDataStruct.at(i);
+		auto para = vf::gpu::tests::makeParameter(currentTestSimData->simParameter);
+		currentTestSimData->initialCondition->setParameter(para);
+		auto vfsim = vf::gpu::tests::makeVirtualFluidSimulation(para, currentTestSimData->initialCondition, toVectorWriter);
+
+		auto testSim = std::make_shared<TestSimulationImp>(vfsim, currentTestSimData, simResult, time, toVectorWriter, anaResultWriter, colorOutput);
+		testSim->setParameter(para);
+
+		testSimulations.push_back(testSim);
 	}
 
-	return testSimumlations;
+	return testSimulations;
 }
 
 std::shared_ptr<TestStruct> NumericalTestFactoryImp::makePhiTestsStructs(std::shared_ptr<PhiTestParameterStruct> testParameter, std::vector<std::shared_ptr<TestSimulationImp>> testSimumlations, double viscosity)
@@ -257,13 +268,13 @@ std::shared_ptr<TestStruct> NumericalTestFactoryImp::makePhiTestsStructs(std::sh
 		std::shared_ptr<PhiTestLogFileInformation> testLogFileInfo = PhiTestLogFileInformation::getNewInstance(testParameter);
 		
 		std::vector<std::shared_ptr<PhiTestPostProcessingStrategy> > postProcessingStrategies;
-		for (int i = 0; i < testSimumlations.size(); i++)
+		for (size_t i = 0; i < testSimumlations.size(); i++)
 			postProcessingStrategies.push_back(PhiTestPostProcessingStrategy::getNewInstance(testSimumlations.at(i)->getSimulationResults(), testSimumlations.at(i)->getAnalyticalResults(), testParameter, testSimumlations.at(i)->getDataToCalcTests()));
 
-		for (int i = 0; i < testSimumlations.at(0)->getDataToCalcTests().size(); i++) {
+		for (size_t i = 0; i < testSimumlations.at(0)->getDataToCalcTests().size(); i++) {
 			std::vector<std::shared_ptr<PhiTest> > phiTests = makePhiTests(testParameter, testSimumlations, postProcessingStrategies, viscosity, testSimumlations.at(0)->getDataToCalcTests().at(i));
 			testLogFileInfo->addTestGroup(phiTests);
-			for (int j = 0; j < phiTests.size(); j++)
+			for (size_t j = 0; j < phiTests.size(); j++)
 				testStruct->tests.push_back(phiTests.at(j));
 		}
 		testStruct->logFileInfo = testLogFileInfo;
@@ -276,8 +287,8 @@ std::shared_ptr<TestStruct> NumericalTestFactoryImp::makePhiTestsStructs(std::sh
 std::vector<std::shared_ptr<PhiTest>> NumericalTestFactoryImp::makePhiTests(std::shared_ptr<PhiTestParameterStruct> testParameter, std::vector<std::shared_ptr<TestSimulationImp>> testSim, std::vector<std::shared_ptr<PhiTestPostProcessingStrategy>> phiPostProStrategy, double viscosity, std::string dataToCalculate)
 {
 	std::vector<std::shared_ptr<PhiTest> > phiTests;
-	for (int i = 1; i < testSim.size(); i++) {
-		for (int j = 0; j < i; j++) {
+	for (size_t i = 1; i < testSim.size(); i++) {
+		for (size_t j = 0; j < i; j++) {
 			std::shared_ptr<PhiTest> test = PhiTest::getNewInstance(colorOutput, viscosity, testParameter, dataToCalculate);
 			test->addSimulation(testSim.at(j), testSim.at(j)->getSimulationInfo(), phiPostProStrategy.at(j));
 			test->addSimulation(testSim.at(i), testSim.at(i)->getSimulationInfo(), phiPostProStrategy.at(i));
@@ -299,13 +310,13 @@ std::shared_ptr<TestStruct> NumericalTestFactoryImp::makeNyTestsStructs(std::sha
 		std::shared_ptr<NyTestLogFileInformation> testLogFileInfo = NyTestLogFileInformation::getNewInstance(testParameter);
 
 		std::vector<std::shared_ptr<NyTestPostProcessingStrategy> > postProcessingStrategies;
-		for (int i = 0; i < testSimumlations.size(); i++)
+		for (size_t i = 0; i < testSimumlations.size(); i++)
 			postProcessingStrategies.push_back(NyTestPostProcessingStrategy::getNewInstance(testSimumlations.at(i)->getSimulationResults(), testSimumlations.at(i)->getAnalyticalResults(), testParameter, testSimumlations.at(i)->getDataToCalcTests()));
 
-		for (int i = 0; i < testSimumlations.at(0)->getDataToCalcTests().size(); i++) {
+		for (size_t i = 0; i < testSimumlations.at(0)->getDataToCalcTests().size(); i++) {
 			std::vector<std::shared_ptr<NyTest> > nyTests = makeNyTests(testParameter, testSimumlations, postProcessingStrategies, viscosity, testSimumlations.at(0)->getDataToCalcTests().at(i));
 			testLogFileInfo->addTestGroup(nyTests);
-			for (int j = 0; j < nyTests.size(); j++)
+			for (size_t j = 0; j < nyTests.size(); j++)
 				testStruct->tests.push_back(nyTests.at(j));
 		}
 		testStruct->logFileInfo = testLogFileInfo;
@@ -318,8 +329,8 @@ std::shared_ptr<TestStruct> NumericalTestFactoryImp::makeNyTestsStructs(std::sha
 std::vector<std::shared_ptr<NyTest>> NumericalTestFactoryImp::makeNyTests(std::shared_ptr<NyTestParameterStruct> testParameter, std::vector<std::shared_ptr<TestSimulationImp>> testSim, std::vector<std::shared_ptr<NyTestPostProcessingStrategy>> nuPostProStrategy, double viscosity, std::string dataToCalculate)
 {
 	std::vector<std::shared_ptr<NyTest> > nyTests;
-	for (int i = 1; i < testSim.size(); i++) {
-		for (int j = 0; j < i; j++) {
+	for (size_t i = 1; i < testSim.size(); i++) {
+		for (size_t j = 0; j < i; j++) {
 			std::shared_ptr<NyTest> test = NyTest::getNewInstance(colorOutput, viscosity, testParameter, dataToCalculate);
 			test->addSimulation(testSim.at(j), testSim.at(j)->getSimulationInfo(), nuPostProStrategy.at(j));
 			test->addSimulation(testSim.at(i), testSim.at(i)->getSimulationInfo(), nuPostProStrategy.at(i));
@@ -339,13 +350,13 @@ std::shared_ptr<TestStruct> NumericalTestFactoryImp::makeL2NormTestsStructs(std:
 
 	if (testParameter->basicTestParameter->runTest) {
 		std::vector<std::shared_ptr<L2NormPostProcessingStrategy> >  postProcessingStrategies;
-		for (int i = 0; i < testSimumlations.size(); i++)
+		for (size_t i = 0; i < testSimumlations.size(); i++)
 			postProcessingStrategies.push_back(L2NormPostProcessingStrategy::getNewInstance(testSimumlations.at(i)->getSimulationResults(), testSimumlations.at(i)->getAnalyticalResults(), testParameter, l2NormCalculatorFactory, testSimumlations.at(i)->getDataToCalcTests()));
 
 		std::vector<std::shared_ptr<L2NormTest> > tests = makeL2NormTests(testSimumlations, postProcessingStrategies, testParameter);
 		std::shared_ptr<L2NormInformation> testLogFileInfo = L2NormInformation::getNewInstance(tests, testParameter, testSimumlations.at(0)->getDataToCalcTests());
 
-		for(int i = 0; i < tests.size(); i++)
+		for(size_t i = 0; i < tests.size(); i++)
 			testStruct->tests.push_back(tests.at(i));
 		testStruct->logFileInfo = testLogFileInfo;
 		testStruct->testName = "L2NormTest";
@@ -356,9 +367,9 @@ std::shared_ptr<TestStruct> NumericalTestFactoryImp::makeL2NormTestsStructs(std:
 std::vector<std::shared_ptr<L2NormTest> > NumericalTestFactoryImp::makeL2NormTests(std::vector<std::shared_ptr<TestSimulationImp> > testSim, std::vector<std::shared_ptr<L2NormPostProcessingStrategy> > postProStrategy, std::shared_ptr<L2NormTestParameterStruct> testParameter)
 {
 	std::vector<std::shared_ptr<L2NormTest> > l2Tests;
-	for (int k = 0; k < testParameter->normalizeData.size(); k++) {
-		for (int i = 0; i < testSim.size(); i++) {
-			for (int j = 0; j < testSim.at(i)->getDataToCalcTests().size(); j++) {
+	for (size_t k = 0; k < testParameter->normalizeData.size(); k++) {
+		for (size_t i = 0; i < testSim.size(); i++) {
+			for (size_t j = 0; j < testSim.at(i)->getDataToCalcTests().size(); j++) {
 				std::shared_ptr<L2NormTest> test = L2NormTest::getNewInstance(colorOutput, testParameter, testSim.at(i)->getDataToCalcTests().at(j), testParameter->maxDiff.at(k), testParameter->normalizeData.at(k));
 				test->addSimulation(testSim.at(i), testSim.at(i)->getSimulationInfo(), postProStrategy.at(i));
 				testSim.at(i)->registerSimulationObserver(test);
@@ -377,7 +388,7 @@ std::shared_ptr<TestStruct> NumericalTestFactoryImp::makeL2NormTestsBetweenKerne
 	if (testPara->basicTestParameter->runTest) {
 
 		std::vector<std::shared_ptr<L2NormBetweenKernelPostProcessingStrategy> > postProcessingStrategies;
-		for (int i = 0; i < testSim.size(); i++)
+		for (size_t i = 0; i < testSim.size(); i++)
 			postProcessingStrategies.push_back(L2NormBetweenKernelPostProcessingStrategy::getNewInstance(testSim.at(i)->getSimulationResults(), testSim.at(i)->getAnalyticalResults(), testPara, l2NormCalculatorFactory, testSim.at(i)->getDataToCalcTests()));
 
 		if (kernelName == testPara->basicKernel) {
@@ -387,14 +398,14 @@ std::shared_ptr<TestStruct> NumericalTestFactoryImp::makeL2NormTestsBetweenKerne
 				l2NormTestsBetweenKernels = tests;
 			}
 			else {
-				for (int i = 0; i < tests.size(); i++)
-					for (int j = 0; j < tests.at(i).size(); j++)
+				for (size_t i = 0; i < tests.size(); i++)
+					for (size_t j = 0; j < tests.at(i).size(); j++)
 						l2NormTestsBetweenKernels.at(i).push_back(tests.at(i).at(j));
 			}
 
 		}else{
 			std::vector<std::shared_ptr<L2NormTestBetweenKernels> > tests = linkL2NormTestsBetweenKernels(testPara, testSim, postProcessingStrategies);
-			for (int i = 0; i < tests.size(); i++)
+			for (size_t i = 0; i < tests.size(); i++)
 				testStruct->tests.push_back(tests.at(i));
 			testStruct->logFileInfo = L2NormBetweenKernelsInformation::getNewInstance(tests, testPara, testSim.at(0)->getDataToCalcTests());
 		}
@@ -408,11 +419,11 @@ std::vector<std::vector<std::shared_ptr<L2NormTestBetweenKernels> > >  Numerical
 
 	std::vector<std::shared_ptr<L2NormTestBetweenKernels> > testForOneKernel;
 
-	for (int l = 0; l < testPara->kernelsToTest.size() - 1; l++) {
-		for (int k = 0; k < testSim.size(); k++) {
-			for(int j = 0; j < testSim.at(k)->getDataToCalcTests().size(); j++){
-				for (int m = 0; m < testPara->normalizeData.size(); m++) {
-					for (int i = 0; i < testPara->timeSteps.size(); i++) {
+	for (size_t l = 0; l < testPara->kernelsToTest.size() - 1; l++) {
+		for (size_t k = 0; k < testSim.size(); k++) {
+			for(size_t j = 0; j < testSim.at(k)->getDataToCalcTests().size(); j++){
+				for (size_t m = 0; m < testPara->normalizeData.size(); m++) {
+					for (size_t i = 0; i < testPara->timeSteps.size(); i++) {
 						std::shared_ptr<L2NormTestBetweenKernels> aTest = L2NormTestBetweenKernels::getNewInstance(colorOutput, testSim.at(k)->getDataToCalcTests().at(j), testPara->timeSteps.at(i), testPara->normalizeData.at(m), l2NormCalculatorFactory);
 						aTest->setBasicSimulation(testSim.at(k), testSim.at(k)->getSimulationInfo(), postProcessingStrategies.at(k));
 						testSim.at(k)->registerSimulationObserver(aTest);
@@ -436,10 +447,10 @@ std::vector<std::shared_ptr<L2NormTestBetweenKernels> > NumericalTestFactoryImp:
 		if (l2NormTestsBetweenKernels.at(0).size() == 0)
 			l2NormTestsBetweenKernels.erase(l2NormTestsBetweenKernels.begin());
 
-	for (int k = 0; k < testSim.size(); k++) {
-		for (int j = 0; j < testSim.at(k)->getDataToCalcTests().size(); j++) {
-			for (int m = 0; m < testPara->normalizeData.size(); m++) {
-				for (int i = 0; i < testPara->timeSteps.size(); i++) {
+	for (size_t k = 0; k < testSim.size(); k++) {
+		for (size_t j = 0; j < testSim.at(k)->getDataToCalcTests().size(); j++) {
+			for (size_t m = 0; m < testPara->normalizeData.size(); m++) {
+				for (size_t i = 0; i < testPara->timeSteps.size(); i++) {
 					std::shared_ptr<L2NormTestBetweenKernels> aTest = l2NormTestsBetweenKernels.at(0).at(0);
 					l2NormTestsBetweenKernels.at(0).erase(l2NormTestsBetweenKernels.at(0).begin());
 					aTest->setDivergentKernelSimulation(testSim.at(k), testSim.at(k)->getSimulationInfo(), postProcessingStrategies.at(k));
@@ -454,7 +465,7 @@ std::vector<std::shared_ptr<L2NormTestBetweenKernels> > NumericalTestFactoryImp:
 
 void NumericalTestFactoryImp::initTestStruct(std::shared_ptr<TestStruct> testStruct, std::shared_ptr<NumericalTestStruct> numericalTestStruct, std::vector<std::shared_ptr<TestLogFileInformation> > &testLogFileInfo, std::shared_ptr<BasicTestLogFileInformation> basicTestLogFileInfo)
 {
-	for (int i = 0; i < testStruct->tests.size(); i++)
+	for (size_t i = 0; i < testStruct->tests.size(); i++)
 		numericalTestStruct->tests.push_back(testStruct->tests.at(i));
 	if (testStruct->tests.size() > 0) {
 		testLogFileInfo.push_back(testStruct->logFileInfo);

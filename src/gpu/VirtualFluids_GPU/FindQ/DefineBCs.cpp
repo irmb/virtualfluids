@@ -33,13 +33,13 @@ void findQ27(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 	   para->getParD(lev)->noSlipBC.numberOfBCnodes = para->getParH(lev)->noSlipBC.numberOfBCnodes;
       printf("numberOfBCnodes= %d\n", para->getParH(lev)->noSlipBC.numberOfBCnodes);
 
-	  cudaMemoryManager->cudaAllocWallBC(lev);
+	  cudaMemoryManager->cudaAllocNoSlipBC(lev);
 
       findQ(para, lev);
  	  para->getParD(lev)->noSlipBC.numberOfBCnodes = para->getParH(lev)->noSlipBC.numberOfBCnodes;
       printf("numberOfBCnodes= %d\n", para->getParH(lev)->noSlipBC.numberOfBCnodes);
 
-	  cudaMemoryManager->cudaCopyWallBC(lev);
+	  cudaMemoryManager->cudaCopyNoSlipBC(lev);
    }
 }
 
@@ -48,7 +48,7 @@ void findQ27(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 
 void findBC27(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
-   if ( para->getMyID() == 0)
+   if ( para->getMyProcessID() == 0)
    {
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //Inflow

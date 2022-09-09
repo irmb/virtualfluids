@@ -32,8 +32,6 @@
 //=======================================================================================
 #include "GridImp.h"
 
-#include <stdio.h>
-#include <time.h>
 #include <iostream>
 #include <omp.h>
 #include <sstream>
@@ -995,13 +993,13 @@ void GridImp::setStopperNeighborCoords(uint index)
     real x, y, z;
     this->transIndexToCoords(index, x, y, z);
 
-    if (vf::Math::lessEqual(x + delta, endX) && !this->field.isInvalidOutOfGrid(this->transCoordToIndex(x + delta, y, z)))
+    if (vf::Math::lessEqual(x + delta, endX + (0.5 * delta)) && !this->field.isInvalidOutOfGrid(this->transCoordToIndex(x + delta, y, z)))
         neighborIndexX[index] = getSparseIndex(x + delta, y, z);
 
-    if (vf::Math::lessEqual(y + delta, endY) && !this->field.isInvalidOutOfGrid(this->transCoordToIndex(x, y + delta, z)))
+    if (vf::Math::lessEqual(y + delta, endY + (0.5 * delta)) && !this->field.isInvalidOutOfGrid(this->transCoordToIndex(x, y + delta, z)))
         neighborIndexY[index] = getSparseIndex(x, y + delta, z);
 
-    if (vf::Math::lessEqual(z + delta, endZ) && !this->field.isInvalidOutOfGrid(this->transCoordToIndex(x, y, z + delta)))
+    if (vf::Math::lessEqual(z + delta, endZ + (0.5 * delta)) && !this->field.isInvalidOutOfGrid(this->transCoordToIndex(x, y, z + delta)))
         neighborIndexZ[index] = getSparseIndex(x, y, z + delta);
 
     if (vf::Math::greaterEqual(x - delta, endX) && 
@@ -1265,7 +1263,7 @@ void GridImp::mesh(Triangle &triangle)
                     continue;
 
                 const Vertex point(x, y, z);
-                const int value = triangle.isUnderFace(point);
+                const char value = triangle.isUnderFace(point);
                 //setDebugPoint(index, value);
 
                 if (value == Q_DEPRECATED)

@@ -143,6 +143,8 @@ public:
     virtual uint getNumberOfReceiveIndices(int direction, uint level)          = 0;
     virtual void getSendIndices(int *sendIndices, int direction, int level)    = 0;
     virtual void getReceiveIndices(int *sendIndices, int direction, int level) = 0;
+
+    virtual void findFluidNodes(bool splitDomain) = 0;
 };
 
 #endif

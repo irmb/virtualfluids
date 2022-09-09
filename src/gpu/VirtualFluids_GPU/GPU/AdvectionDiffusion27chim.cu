@@ -66,7 +66,7 @@ inline __device__ void backwardChimera(real &mfa, real &mfb, real &mfc, real vv,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void Factorized_Central_Moments_Advection_Diffusion_Device_Kernel(
+__global__ void Factorized_Central_Moments_Advection_Diffusion_Device_Kernel(
 	real omegaDiffusivity,
 	uint* typeOfGridNode,
 	uint* neighborX,
@@ -109,125 +109,125 @@ extern "C" __global__ void Factorized_Central_Moments_Advection_Diffusion_Device
 		Distributions27 dist;
 		if (isEvenTimestep)
 		{
-			dist.f[E   ] = &distributions[E   *size_Mat];
-			dist.f[W   ] = &distributions[W   *size_Mat];
-			dist.f[N   ] = &distributions[N   *size_Mat];
-			dist.f[S   ] = &distributions[S   *size_Mat];
-			dist.f[T   ] = &distributions[T   *size_Mat];
-			dist.f[B   ] = &distributions[B   *size_Mat];
-			dist.f[NE  ] = &distributions[NE  *size_Mat];
-			dist.f[SW  ] = &distributions[SW  *size_Mat];
-			dist.f[SE  ] = &distributions[SE  *size_Mat];
-			dist.f[NW  ] = &distributions[NW  *size_Mat];
-			dist.f[TE  ] = &distributions[TE  *size_Mat];
-			dist.f[BW  ] = &distributions[BW  *size_Mat];
-			dist.f[BE  ] = &distributions[BE  *size_Mat];
-			dist.f[TW  ] = &distributions[TW  *size_Mat];
-			dist.f[TN  ] = &distributions[TN  *size_Mat];
-			dist.f[BS  ] = &distributions[BS  *size_Mat];
-			dist.f[BN  ] = &distributions[BN  *size_Mat];
-			dist.f[TS  ] = &distributions[TS  *size_Mat];
-			dist.f[REST] = &distributions[REST*size_Mat];
-			dist.f[TNE ] = &distributions[TNE *size_Mat];
-			dist.f[TSW ] = &distributions[TSW *size_Mat];
-			dist.f[TSE ] = &distributions[TSE *size_Mat];
-			dist.f[TNW ] = &distributions[TNW *size_Mat];
-			dist.f[BNE ] = &distributions[BNE *size_Mat];
-			dist.f[BSW ] = &distributions[BSW *size_Mat];
-			dist.f[BSE ] = &distributions[BSE *size_Mat];
-			dist.f[BNW ] = &distributions[BNW *size_Mat];
+			dist.f[DIR_P00   ] = &distributions[DIR_P00   *size_Mat];
+			dist.f[DIR_M00   ] = &distributions[DIR_M00   *size_Mat];
+			dist.f[DIR_0P0   ] = &distributions[DIR_0P0   *size_Mat];
+			dist.f[DIR_0M0   ] = &distributions[DIR_0M0   *size_Mat];
+			dist.f[DIR_00P   ] = &distributions[DIR_00P   *size_Mat];
+			dist.f[DIR_00M   ] = &distributions[DIR_00M   *size_Mat];
+			dist.f[DIR_PP0  ] = &distributions[DIR_PP0  *size_Mat];
+			dist.f[DIR_MM0  ] = &distributions[DIR_MM0  *size_Mat];
+			dist.f[DIR_PM0  ] = &distributions[DIR_PM0  *size_Mat];
+			dist.f[DIR_MP0  ] = &distributions[DIR_MP0  *size_Mat];
+			dist.f[DIR_P0P  ] = &distributions[DIR_P0P  *size_Mat];
+			dist.f[DIR_M0M  ] = &distributions[DIR_M0M  *size_Mat];
+			dist.f[DIR_P0M  ] = &distributions[DIR_P0M  *size_Mat];
+			dist.f[DIR_M0P  ] = &distributions[DIR_M0P  *size_Mat];
+			dist.f[DIR_0PP  ] = &distributions[DIR_0PP  *size_Mat];
+			dist.f[DIR_0MM  ] = &distributions[DIR_0MM  *size_Mat];
+			dist.f[DIR_0PM  ] = &distributions[DIR_0PM  *size_Mat];
+			dist.f[DIR_0MP  ] = &distributions[DIR_0MP  *size_Mat];
+			dist.f[DIR_000] = &distributions[DIR_000*size_Mat];
+			dist.f[DIR_PPP ] = &distributions[DIR_PPP *size_Mat];
+			dist.f[DIR_MMP ] = &distributions[DIR_MMP *size_Mat];
+			dist.f[DIR_PMP ] = &distributions[DIR_PMP *size_Mat];
+			dist.f[DIR_MPP ] = &distributions[DIR_MPP *size_Mat];
+			dist.f[DIR_PPM ] = &distributions[DIR_PPM *size_Mat];
+			dist.f[DIR_MMM ] = &distributions[DIR_MMM *size_Mat];
+			dist.f[DIR_PMM ] = &distributions[DIR_PMM *size_Mat];
+			dist.f[DIR_MPM ] = &distributions[DIR_MPM *size_Mat];
 		}
 		else
 		{
-			dist.f[W   ] = &distributions[E   *size_Mat];
-			dist.f[E   ] = &distributions[W   *size_Mat];
-			dist.f[S   ] = &distributions[N   *size_Mat];
-			dist.f[N   ] = &distributions[S   *size_Mat];
-			dist.f[B   ] = &distributions[T   *size_Mat];
-			dist.f[T   ] = &distributions[B   *size_Mat];
-			dist.f[SW  ] = &distributions[NE  *size_Mat];
-			dist.f[NE  ] = &distributions[SW  *size_Mat];
-			dist.f[NW  ] = &distributions[SE  *size_Mat];
-			dist.f[SE  ] = &distributions[NW  *size_Mat];
-			dist.f[BW  ] = &distributions[TE  *size_Mat];
-			dist.f[TE  ] = &distributions[BW  *size_Mat];
-			dist.f[TW  ] = &distributions[BE  *size_Mat];
-			dist.f[BE  ] = &distributions[TW  *size_Mat];
-			dist.f[BS  ] = &distributions[TN  *size_Mat];
-			dist.f[TN  ] = &distributions[BS  *size_Mat];
-			dist.f[TS  ] = &distributions[BN  *size_Mat];
-			dist.f[BN  ] = &distributions[TS  *size_Mat];
-			dist.f[REST] = &distributions[REST*size_Mat];
-			dist.f[BSW ] = &distributions[TNE *size_Mat];
-			dist.f[BNE ] = &distributions[TSW *size_Mat];
-			dist.f[BNW ] = &distributions[TSE *size_Mat];
-			dist.f[BSE ] = &distributions[TNW *size_Mat];
-			dist.f[TSW ] = &distributions[BNE *size_Mat];
-			dist.f[TNE ] = &distributions[BSW *size_Mat];
-			dist.f[TNW ] = &distributions[BSE *size_Mat];
-			dist.f[TSE ] = &distributions[BNW *size_Mat];
+			dist.f[DIR_M00   ] = &distributions[DIR_P00   *size_Mat];
+			dist.f[DIR_P00   ] = &distributions[DIR_M00   *size_Mat];
+			dist.f[DIR_0M0   ] = &distributions[DIR_0P0   *size_Mat];
+			dist.f[DIR_0P0   ] = &distributions[DIR_0M0   *size_Mat];
+			dist.f[DIR_00M   ] = &distributions[DIR_00P   *size_Mat];
+			dist.f[DIR_00P   ] = &distributions[DIR_00M   *size_Mat];
+			dist.f[DIR_MM0  ] = &distributions[DIR_PP0  *size_Mat];
+			dist.f[DIR_PP0  ] = &distributions[DIR_MM0  *size_Mat];
+			dist.f[DIR_MP0  ] = &distributions[DIR_PM0  *size_Mat];
+			dist.f[DIR_PM0  ] = &distributions[DIR_MP0  *size_Mat];
+			dist.f[DIR_M0M  ] = &distributions[DIR_P0P  *size_Mat];
+			dist.f[DIR_P0P  ] = &distributions[DIR_M0M  *size_Mat];
+			dist.f[DIR_M0P  ] = &distributions[DIR_P0M  *size_Mat];
+			dist.f[DIR_P0M  ] = &distributions[DIR_M0P  *size_Mat];
+			dist.f[DIR_0MM  ] = &distributions[DIR_0PP  *size_Mat];
+			dist.f[DIR_0PP  ] = &distributions[DIR_0MM  *size_Mat];
+			dist.f[DIR_0MP  ] = &distributions[DIR_0PM  *size_Mat];
+			dist.f[DIR_0PM  ] = &distributions[DIR_0MP  *size_Mat];
+			dist.f[DIR_000] = &distributions[DIR_000*size_Mat];
+			dist.f[DIR_MMM ] = &distributions[DIR_PPP *size_Mat];
+			dist.f[DIR_PPM ] = &distributions[DIR_MMP *size_Mat];
+			dist.f[DIR_MPM ] = &distributions[DIR_PMP *size_Mat];
+			dist.f[DIR_PMM ] = &distributions[DIR_MPP *size_Mat];
+			dist.f[DIR_MMP ] = &distributions[DIR_PPM *size_Mat];
+			dist.f[DIR_PPP ] = &distributions[DIR_MMM *size_Mat];
+			dist.f[DIR_MPP ] = &distributions[DIR_PMM *size_Mat];
+			dist.f[DIR_PMP ] = &distributions[DIR_MPM *size_Mat];
 		}
 		////////////////////////////////////////////////////////////////////////////////
 		Distributions27 distAD;
 		if (isEvenTimestep)
 		{
-			distAD.f[E   ] = &distributionsAD[E   *size_Mat];
-			distAD.f[W   ] = &distributionsAD[W   *size_Mat];
-			distAD.f[N   ] = &distributionsAD[N   *size_Mat];
-			distAD.f[S   ] = &distributionsAD[S   *size_Mat];
-			distAD.f[T   ] = &distributionsAD[T   *size_Mat];
-			distAD.f[B   ] = &distributionsAD[B   *size_Mat];
-			distAD.f[NE  ] = &distributionsAD[NE  *size_Mat];
-			distAD.f[SW  ] = &distributionsAD[SW  *size_Mat];
-			distAD.f[SE  ] = &distributionsAD[SE  *size_Mat];
-			distAD.f[NW  ] = &distributionsAD[NW  *size_Mat];
-			distAD.f[TE  ] = &distributionsAD[TE  *size_Mat];
-			distAD.f[BW  ] = &distributionsAD[BW  *size_Mat];
-			distAD.f[BE  ] = &distributionsAD[BE  *size_Mat];
-			distAD.f[TW  ] = &distributionsAD[TW  *size_Mat];
-			distAD.f[TN  ] = &distributionsAD[TN  *size_Mat];
-			distAD.f[BS  ] = &distributionsAD[BS  *size_Mat];
-			distAD.f[BN  ] = &distributionsAD[BN  *size_Mat];
-			distAD.f[TS  ] = &distributionsAD[TS  *size_Mat];
-			distAD.f[REST] = &distributionsAD[REST*size_Mat];
-			distAD.f[TNE ] = &distributionsAD[TNE *size_Mat];
-			distAD.f[TSW ] = &distributionsAD[TSW *size_Mat];
-			distAD.f[TSE ] = &distributionsAD[TSE *size_Mat];
-			distAD.f[TNW ] = &distributionsAD[TNW *size_Mat];
-			distAD.f[BNE ] = &distributionsAD[BNE *size_Mat];
-			distAD.f[BSW ] = &distributionsAD[BSW *size_Mat];
-			distAD.f[BSE ] = &distributionsAD[BSE *size_Mat];
-			distAD.f[BNW ] = &distributionsAD[BNW *size_Mat];
+			distAD.f[DIR_P00   ] = &distributionsAD[DIR_P00   *size_Mat];
+			distAD.f[DIR_M00   ] = &distributionsAD[DIR_M00   *size_Mat];
+			distAD.f[DIR_0P0   ] = &distributionsAD[DIR_0P0   *size_Mat];
+			distAD.f[DIR_0M0   ] = &distributionsAD[DIR_0M0   *size_Mat];
+			distAD.f[DIR_00P   ] = &distributionsAD[DIR_00P   *size_Mat];
+			distAD.f[DIR_00M   ] = &distributionsAD[DIR_00M   *size_Mat];
+			distAD.f[DIR_PP0  ] = &distributionsAD[DIR_PP0  *size_Mat];
+			distAD.f[DIR_MM0  ] = &distributionsAD[DIR_MM0  *size_Mat];
+			distAD.f[DIR_PM0  ] = &distributionsAD[DIR_PM0  *size_Mat];
+			distAD.f[DIR_MP0  ] = &distributionsAD[DIR_MP0  *size_Mat];
+			distAD.f[DIR_P0P  ] = &distributionsAD[DIR_P0P  *size_Mat];
+			distAD.f[DIR_M0M  ] = &distributionsAD[DIR_M0M  *size_Mat];
+			distAD.f[DIR_P0M  ] = &distributionsAD[DIR_P0M  *size_Mat];
+			distAD.f[DIR_M0P  ] = &distributionsAD[DIR_M0P  *size_Mat];
+			distAD.f[DIR_0PP  ] = &distributionsAD[DIR_0PP  *size_Mat];
+			distAD.f[DIR_0MM  ] = &distributionsAD[DIR_0MM  *size_Mat];
+			distAD.f[DIR_0PM  ] = &distributionsAD[DIR_0PM  *size_Mat];
+			distAD.f[DIR_0MP  ] = &distributionsAD[DIR_0MP  *size_Mat];
+			distAD.f[DIR_000] = &distributionsAD[DIR_000*size_Mat];
+			distAD.f[DIR_PPP ] = &distributionsAD[DIR_PPP *size_Mat];
+			distAD.f[DIR_MMP ] = &distributionsAD[DIR_MMP *size_Mat];
+			distAD.f[DIR_PMP ] = &distributionsAD[DIR_PMP *size_Mat];
+			distAD.f[DIR_MPP ] = &distributionsAD[DIR_MPP *size_Mat];
+			distAD.f[DIR_PPM ] = &distributionsAD[DIR_PPM *size_Mat];
+			distAD.f[DIR_MMM ] = &distributionsAD[DIR_MMM *size_Mat];
+			distAD.f[DIR_PMM ] = &distributionsAD[DIR_PMM *size_Mat];
+			distAD.f[DIR_MPM ] = &distributionsAD[DIR_MPM *size_Mat];
 		}
 		else
 		{
-			distAD.f[W   ] = &distributionsAD[E   *size_Mat];
-			distAD.f[E   ] = &distributionsAD[W   *size_Mat];
-			distAD.f[S   ] = &distributionsAD[N   *size_Mat];
-			distAD.f[N   ] = &distributionsAD[S   *size_Mat];
-			distAD.f[B   ] = &distributionsAD[T   *size_Mat];
-			distAD.f[T   ] = &distributionsAD[B   *size_Mat];
-			distAD.f[SW  ] = &distributionsAD[NE  *size_Mat];
-			distAD.f[NE  ] = &distributionsAD[SW  *size_Mat];
-			distAD.f[NW  ] = &distributionsAD[SE  *size_Mat];
-			distAD.f[SE  ] = &distributionsAD[NW  *size_Mat];
-			distAD.f[BW  ] = &distributionsAD[TE  *size_Mat];
-			distAD.f[TE  ] = &distributionsAD[BW  *size_Mat];
-			distAD.f[TW  ] = &distributionsAD[BE  *size_Mat];
-			distAD.f[BE  ] = &distributionsAD[TW  *size_Mat];
-			distAD.f[BS  ] = &distributionsAD[TN  *size_Mat];
-			distAD.f[TN  ] = &distributionsAD[BS  *size_Mat];
-			distAD.f[TS  ] = &distributionsAD[BN  *size_Mat];
-			distAD.f[BN  ] = &distributionsAD[TS  *size_Mat];
-			distAD.f[REST] = &distributionsAD[REST*size_Mat];
-			distAD.f[BSW ] = &distributionsAD[TNE *size_Mat];
-			distAD.f[BNE ] = &distributionsAD[TSW *size_Mat];
-			distAD.f[BNW ] = &distributionsAD[TSE *size_Mat];
-			distAD.f[BSE ] = &distributionsAD[TNW *size_Mat];
-			distAD.f[TSW ] = &distributionsAD[BNE *size_Mat];
-			distAD.f[TNE ] = &distributionsAD[BSW *size_Mat];
-			distAD.f[TNW ] = &distributionsAD[BSE *size_Mat];
-			distAD.f[TSE ] = &distributionsAD[BNW *size_Mat];
+			distAD.f[DIR_M00   ] = &distributionsAD[DIR_P00   *size_Mat];
+			distAD.f[DIR_P00   ] = &distributionsAD[DIR_M00   *size_Mat];
+			distAD.f[DIR_0M0   ] = &distributionsAD[DIR_0P0   *size_Mat];
+			distAD.f[DIR_0P0   ] = &distributionsAD[DIR_0M0   *size_Mat];
+			distAD.f[DIR_00M   ] = &distributionsAD[DIR_00P   *size_Mat];
+			distAD.f[DIR_00P   ] = &distributionsAD[DIR_00M   *size_Mat];
+			distAD.f[DIR_MM0  ] = &distributionsAD[DIR_PP0  *size_Mat];
+			distAD.f[DIR_PP0  ] = &distributionsAD[DIR_MM0  *size_Mat];
+			distAD.f[DIR_MP0  ] = &distributionsAD[DIR_PM0  *size_Mat];
+			distAD.f[DIR_PM0  ] = &distributionsAD[DIR_MP0  *size_Mat];
+			distAD.f[DIR_M0M  ] = &distributionsAD[DIR_P0P  *size_Mat];
+			distAD.f[DIR_P0P  ] = &distributionsAD[DIR_M0M  *size_Mat];
+			distAD.f[DIR_M0P  ] = &distributionsAD[DIR_P0M  *size_Mat];
+			distAD.f[DIR_P0M  ] = &distributionsAD[DIR_M0P  *size_Mat];
+			distAD.f[DIR_0MM  ] = &distributionsAD[DIR_0PP  *size_Mat];
+			distAD.f[DIR_0PP  ] = &distributionsAD[DIR_0MM  *size_Mat];
+			distAD.f[DIR_0MP  ] = &distributionsAD[DIR_0PM  *size_Mat];
+			distAD.f[DIR_0PM  ] = &distributionsAD[DIR_0MP  *size_Mat];
+			distAD.f[DIR_000] = &distributionsAD[DIR_000*size_Mat];
+			distAD.f[DIR_MMM ] = &distributionsAD[DIR_PPP *size_Mat];
+			distAD.f[DIR_PPM ] = &distributionsAD[DIR_MMP *size_Mat];
+			distAD.f[DIR_MPM ] = &distributionsAD[DIR_PMP *size_Mat];
+			distAD.f[DIR_PMM ] = &distributionsAD[DIR_MPP *size_Mat];
+			distAD.f[DIR_MMP ] = &distributionsAD[DIR_PPM *size_Mat];
+			distAD.f[DIR_PPP ] = &distributionsAD[DIR_MMM *size_Mat];
+			distAD.f[DIR_MPP ] = &distributionsAD[DIR_PMM *size_Mat];
+			distAD.f[DIR_PMP ] = &distributionsAD[DIR_MPM *size_Mat];
 		}
 		////////////////////////////////////////////////////////////////////////////////
 		//! - Set neighbor indices (necessary for indirect addressing)
@@ -241,63 +241,63 @@ extern "C" __global__ void Factorized_Central_Moments_Advection_Diffusion_Device
 		////////////////////////////////////////////////////////////////////////////////////
 		//! - Set local distributions Fluid
 		//!
-		real fcbb = (dist.f[E   ])[k];
-		real fabb = (dist.f[W   ])[kw];
-		real fbcb = (dist.f[N   ])[k];
-		real fbab = (dist.f[S   ])[ks];
-		real fbbc = (dist.f[T   ])[k];
-		real fbba = (dist.f[B   ])[kb];
-		real fccb = (dist.f[NE  ])[k];
-		real faab = (dist.f[SW  ])[ksw];
-		real fcab = (dist.f[SE  ])[ks];
-		real facb = (dist.f[NW  ])[kw];
-		real fcbc = (dist.f[TE  ])[k];
-		real faba = (dist.f[BW  ])[kbw];
-		real fcba = (dist.f[BE  ])[kb];
-		real fabc = (dist.f[TW  ])[kw];
-		real fbcc = (dist.f[TN  ])[k];
-		real fbaa = (dist.f[BS  ])[kbs];
-		real fbca = (dist.f[BN  ])[kb];
-		real fbac = (dist.f[TS  ])[ks];
-		real fbbb = (dist.f[REST])[k];
-		real fccc = (dist.f[TNE ])[k];
-		real faac = (dist.f[TSW ])[ksw];
-		real fcac = (dist.f[TSE ])[ks];
-		real facc = (dist.f[TNW ])[kw];
-		real fcca = (dist.f[BNE ])[kb];
-		real faaa = (dist.f[BSW ])[kbsw];
-		real fcaa = (dist.f[BSE ])[kbs];
-		real faca = (dist.f[BNW ])[kbw];
+		real fcbb = (dist.f[DIR_P00   ])[k];
+		real fabb = (dist.f[DIR_M00   ])[kw];
+		real fbcb = (dist.f[DIR_0P0   ])[k];
+		real fbab = (dist.f[DIR_0M0   ])[ks];
+		real fbbc = (dist.f[DIR_00P   ])[k];
+		real fbba = (dist.f[DIR_00M   ])[kb];
+		real fccb = (dist.f[DIR_PP0  ])[k];
+		real faab = (dist.f[DIR_MM0  ])[ksw];
+		real fcab = (dist.f[DIR_PM0  ])[ks];
+		real facb = (dist.f[DIR_MP0  ])[kw];
+		real fcbc = (dist.f[DIR_P0P  ])[k];
+		real faba = (dist.f[DIR_M0M  ])[kbw];
+		real fcba = (dist.f[DIR_P0M  ])[kb];
+		real fabc = (dist.f[DIR_M0P  ])[kw];
+		real fbcc = (dist.f[DIR_0PP  ])[k];
+		real fbaa = (dist.f[DIR_0MM  ])[kbs];
+		real fbca = (dist.f[DIR_0PM  ])[kb];
+		real fbac = (dist.f[DIR_0MP  ])[ks];
+		real fbbb = (dist.f[DIR_000])[k];
+		real fccc = (dist.f[DIR_PPP ])[k];
+		real faac = (dist.f[DIR_MMP ])[ksw];
+		real fcac = (dist.f[DIR_PMP ])[ks];
+		real facc = (dist.f[DIR_MPP ])[kw];
+		real fcca = (dist.f[DIR_PPM ])[kb];
+		real faaa = (dist.f[DIR_MMM ])[kbsw];
+		real fcaa = (dist.f[DIR_PMM ])[kbs];
+		real faca = (dist.f[DIR_MPM ])[kbw];
 		////////////////////////////////////////////////////////////////////////////////////
 		//! - Set local distributions Advection Diffusion
 		//!
-		real mfcbb = (distAD.f[E   ])[k];
-		real mfabb = (distAD.f[W   ])[kw];
-		real mfbcb = (distAD.f[N   ])[k];
-		real mfbab = (distAD.f[S   ])[ks];
-		real mfbbc = (distAD.f[T   ])[k];
-		real mfbba = (distAD.f[B   ])[kb];
-		real mfccb = (distAD.f[NE  ])[k];
-		real mfaab = (distAD.f[SW  ])[ksw];
-		real mfcab = (distAD.f[SE  ])[ks];
-		real mfacb = (distAD.f[NW  ])[kw];
-		real mfcbc = (distAD.f[TE  ])[k];
-		real mfaba = (distAD.f[BW  ])[kbw];
-		real mfcba = (distAD.f[BE  ])[kb];
-		real mfabc = (distAD.f[TW  ])[kw];
-		real mfbcc = (distAD.f[TN  ])[k];
-		real mfbaa = (distAD.f[BS  ])[kbs];
-		real mfbca = (distAD.f[BN  ])[kb];
-		real mfbac = (distAD.f[TS  ])[ks];
-		real mfbbb = (distAD.f[REST])[k];
-		real mfccc = (distAD.f[TNE ])[k];
-		real mfaac = (distAD.f[TSW ])[ksw];
-		real mfcac = (distAD.f[TSE ])[ks];
-		real mfacc = (distAD.f[TNW ])[kw];
-		real mfcca = (distAD.f[BNE ])[kb];
-		real mfaaa = (distAD.f[BSW ])[kbsw];
-		real mfcaa = (distAD.f[BSE ])[kbs];
-		real mfaca = (distAD.f[BNW ])[kbw];
+		real mfcbb = (distAD.f[DIR_P00   ])[k];
+		real mfabb = (distAD.f[DIR_M00   ])[kw];
+		real mfbcb = (distAD.f[DIR_0P0   ])[k];
+		real mfbab = (distAD.f[DIR_0M0   ])[ks];
+		real mfbbc = (distAD.f[DIR_00P   ])[k];
+		real mfbba = (distAD.f[DIR_00M   ])[kb];
+		real mfccb = (distAD.f[DIR_PP0  ])[k];
+		real mfaab = (distAD.f[DIR_MM0  ])[ksw];
+		real mfcab = (distAD.f[DIR_PM0  ])[ks];
+		real mfacb = (distAD.f[DIR_MP0  ])[kw];
+		real mfcbc = (distAD.f[DIR_P0P  ])[k];
+		real mfaba = (distAD.f[DIR_M0M  ])[kbw];
+		real mfcba = (distAD.f[DIR_P0M  ])[kb];
+		real mfabc = (distAD.f[DIR_M0P  ])[kw];
+		real mfbcc = (distAD.f[DIR_0PP  ])[k];
+		real mfbaa = (distAD.f[DIR_0MM  ])[kbs];
+		real mfbca = (distAD.f[DIR_0PM  ])[kb];
+		real mfbac = (distAD.f[DIR_0MP  ])[ks];
+		real mfbbb = (distAD.f[DIR_000])[k];
+		real mfccc = (distAD.f[DIR_PPP ])[k];
+		real mfaac = (distAD.f[DIR_MMP ])[ksw];
+		real mfcac = (distAD.f[DIR_PMP ])[ks];
+		real mfacc = (distAD.f[DIR_MPP ])[kw];
+		real mfcca = (distAD.f[DIR_PPM ])[kb];
+		real mfaaa = (distAD.f[DIR_MMM ])[kbsw];
+		real mfcaa = (distAD.f[DIR_PMM ])[kbs];
+		real mfaca = (distAD.f[DIR_MPM ])[kbw];
 		////////////////////////////////////////////////////////////////////////////////////
 		//! - Calculate density and velocity using pyramid summation for low round-off errors as in Eq. (J1)-(J3) \ref
 		//! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015), DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
@@ -503,33 +503,33 @@ extern "C" __global__ void Factorized_Central_Moments_Advection_Diffusion_Device
 		//! stored arrays dependent on timestep is based on the esoteric twist algorithm
 		//! <a href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017), DOI:10.3390/computation5020019 ]</b></a>
 		//!
-		(distAD.f[E   ])[k   ] = mfabb;
-		(distAD.f[W   ])[kw  ] = mfcbb;
-		(distAD.f[N   ])[k   ] = mfbab;
-		(distAD.f[S   ])[ks  ] = mfbcb;
-		(distAD.f[T   ])[k   ] = mfbba;
-		(distAD.f[B   ])[kb  ] = mfbbc;
-		(distAD.f[NE  ])[k   ] = mfaab;
-		(distAD.f[SW  ])[ksw ] = mfccb;
-		(distAD.f[SE  ])[ks  ] = mfacb;
-		(distAD.f[NW  ])[kw  ] = mfcab;
-		(distAD.f[TE  ])[k   ] = mfaba;
-		(distAD.f[BW  ])[kbw ] = mfcbc;
-		(distAD.f[BE  ])[kb  ] = mfabc;
-		(distAD.f[TW  ])[kw  ] = mfcba;
-		(distAD.f[TN  ])[k   ] = mfbaa;
-		(distAD.f[BS  ])[kbs ] = mfbcc;
-		(distAD.f[BN  ])[kb  ] = mfbac;
-		(distAD.f[TS  ])[ks  ] = mfbca;
-		(distAD.f[REST])[k   ] = mfbbb;
-		(distAD.f[TNE ])[k   ] = mfaaa;
-		(distAD.f[TSE ])[ks  ] = mfaca;
-		(distAD.f[BNE ])[kb  ] = mfaac;
-		(distAD.f[BSE ])[kbs ] = mfacc;
-		(distAD.f[TNW ])[kw  ] = mfcaa;
-		(distAD.f[TSW ])[ksw ] = mfcca;
-		(distAD.f[BNW ])[kbw ] = mfcac;
-		(distAD.f[BSW ])[kbsw] = mfccc;
+		(distAD.f[DIR_P00   ])[k   ] = mfabb;
+		(distAD.f[DIR_M00   ])[kw  ] = mfcbb;
+		(distAD.f[DIR_0P0   ])[k   ] = mfbab;
+		(distAD.f[DIR_0M0   ])[ks  ] = mfbcb;
+		(distAD.f[DIR_00P   ])[k   ] = mfbba;
+		(distAD.f[DIR_00M   ])[kb  ] = mfbbc;
+		(distAD.f[DIR_PP0  ])[k   ] = mfaab;
+		(distAD.f[DIR_MM0  ])[ksw ] = mfccb;
+		(distAD.f[DIR_PM0  ])[ks  ] = mfacb;
+		(distAD.f[DIR_MP0  ])[kw  ] = mfcab;
+		(distAD.f[DIR_P0P  ])[k   ] = mfaba;
+		(distAD.f[DIR_M0M  ])[kbw ] = mfcbc;
+		(distAD.f[DIR_P0M  ])[kb  ] = mfabc;
+		(distAD.f[DIR_M0P  ])[kw  ] = mfcba;
+		(distAD.f[DIR_0PP  ])[k   ] = mfbaa;
+		(distAD.f[DIR_0MM  ])[kbs ] = mfbcc;
+		(distAD.f[DIR_0PM  ])[kb  ] = mfbac;
+		(distAD.f[DIR_0MP  ])[ks  ] = mfbca;
+		(distAD.f[DIR_000])[k   ] = mfbbb;
+		(distAD.f[DIR_PPP ])[k   ] = mfaaa;
+		(distAD.f[DIR_PMP ])[ks  ] = mfaca;
+		(distAD.f[DIR_PPM ])[kb  ] = mfaac;
+		(distAD.f[DIR_PMM ])[kbs ] = mfacc;
+		(distAD.f[DIR_MPP ])[kw  ] = mfcaa;
+		(distAD.f[DIR_MMP ])[ksw ] = mfcca;
+		(distAD.f[DIR_MPM ])[kbw ] = mfcac;
+		(distAD.f[DIR_MMM ])[kbsw] = mfccc;
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////
