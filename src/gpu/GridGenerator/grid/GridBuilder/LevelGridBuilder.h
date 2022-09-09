@@ -45,8 +45,6 @@
 #include "gpu/GridGenerator/grid/GridInterface.h"
 #include "gpu/GridGenerator/grid/NodeValues.h"
 
-#include "../VirtualFluids_GPU/PreCollisionInteractor/VelocitySetter.h"
-
 struct Vertex;
 class  Grid;
 class Transformator;
