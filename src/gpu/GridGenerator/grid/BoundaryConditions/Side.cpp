@@ -67,12 +67,13 @@ void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition
                                             ||  grid->getFieldEntry(index) == vf::gpu::FLUID_FCC
                                             ||  grid->getFieldEntry(index) == vf::gpu::FLUID_FCF 
                                             ||  grid->getFieldEntry(index) == vf::gpu::FLUID_FCF
-                                            //! Enforce overlap with pressure BC
-                                            || (boundaryCondition->getType() == vf::gpu::BC_PRESSURE    
-                                                && (    grid->getFieldEntry(index)  == vf::gpu::BC_VELOCITY 
-                                                    ||  grid->getFieldEntry(index)  == vf::gpu::BC_NOSLIP   
-                                                    ||  grid->getFieldEntry(index)  == vf::gpu::BC_SLIP     
-                                                    ||  grid->getFieldEntry(index)  == vf::gpu::BC_STRESS ))))
+                                            
+                                            //! Enforce overlap of BCs on edge nodes
+                                            ||  grid->getFieldEntry(index)  == vf::gpu::BC_PRESSURE
+                                            ||  grid->getFieldEntry(index)  == vf::gpu::BC_VELOCITY 
+                                            ||  grid->getFieldEntry(index)  == vf::gpu::BC_NOSLIP   
+                                            ||  grid->getFieldEntry(index)  == vf::gpu::BC_SLIP     
+                                            ||  grid->getFieldEntry(index)  == vf::gpu::BC_STRESS ))
             {
                 grid->setFieldEntry(index, boundaryCondition->getType());
                 boundaryCondition->indices.push_back(index);
@@ -171,11 +172,11 @@ void Side::setQs(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uin
             else                neighborZ = grid->getLastFluidNode ( coords, 2, grid->getEndZ() );
         }
 
+        //! Only seting q's that partially point in the Side-normal direction
         bool alignedWithNormal = (this->getNormal()[0]*grid->getDirection()[dir * DIMENSION + 0]+
                                   this->getNormal()[1]*grid->getDirection()[dir * DIMENSION + 1]+
                                   this->getNormal()[2]*grid->getDirection()[dir * DIMENSION + 2] ) > 0;
-        if(boundaryCondition->getType()==vf::gpu::BC_VELOCITY && x< grid->getDelta() ) alignedWithNormal = true;
-    
+
         uint neighborIndex = grid->transCoordToIndex( neighborX, neighborY, neighborZ );
         if((grid->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_OUT_OF_GRID_BOUNDARY ||
             grid->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_OUT_OF_GRID          ||
@@ -184,13 +185,6 @@ void Side::setQs(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uin
             qNode[dir] = 0.5;
         else
             qNode[dir] = -1.0;
-
-        if(boundaryCondition->getType()==vf::gpu::BC_SLIP && qNode[dir] == 0.5 && x> 5980.0 && y> 1977.0) 
-        {   printf("BC type: \t %u\t%u \n", index,  grid->getFieldEntry(index));
-            printf("XYZ: \t %f \t %f \t %f  \n",x, y, z ); 
-            printf("q, dir: %f \t %d %d %d \t %d \n\n", qNode[dir], grid->getDirection()[dir * DIMENSION + 0],grid->getDirection()[dir * DIMENSION + 1], grid->getDirection()[dir * DIMENSION + 2], alignedWithNormal );
-            
-        }
     }
     
     boundaryCondition->qs.push_back(qNode);

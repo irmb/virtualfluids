@@ -197,8 +197,8 @@ void multipleLevel(const std::string& configPath)
     gridBuilder->setVelocityBoundaryCondition(SideType::MX, velocityLB, 0.0, 0.0);
 
     gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0,  0.0, 0.0);
-    // gridBuilder->setVelocityBoundaryCondition(SideType::MZ, velocityLB, 0.0, 0.0);
-    gridBuilder->setNoSlipBoundaryCondition(SideType::MZ);
+    gridBuilder->setVelocityBoundaryCondition(SideType::MZ, velocityLB, 0.0, 0.0);
+    // gridBuilder->setNoSlipBoundaryCondition(SideType::MZ);
     
     // gridBuilder->setStressBoundaryCondition(SideType::MZ,
     //                                         0.0, 0.0, 1.0,              // wall normals
