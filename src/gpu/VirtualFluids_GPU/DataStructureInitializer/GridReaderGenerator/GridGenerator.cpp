@@ -122,6 +122,7 @@ void GridGenerator::allocArrays_BoundaryValues()
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         para->getParH(level)->pressureBC.numberOfBCnodes = 0;
+        para->getParD(level)->outflowPressureCorrectionFactor = para->getOutflowPressureCorrectionFactor();
         if (numberOfPressureValues > 1)
         {
             blocks = (numberOfPressureValues / para->getParH(level)->numberofthreads) + 1;

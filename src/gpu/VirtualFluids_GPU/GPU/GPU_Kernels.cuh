@@ -1092,7 +1092,7 @@ __global__ void QPressDeviceDirDepBot27(  real* rhoBC,
                                                      bool isEvenTimestep);
 
 __global__ void QPressNoRhoDevice27(  real* rhoBC,
-												 real* DD,
+												 real* distributions,
 												 int* k_Q,
 												 int* k_N,
 												 int numberOfBCnodes,
@@ -1100,8 +1100,23 @@ __global__ void QPressNoRhoDevice27(  real* rhoBC,
 												 unsigned int* neighborX,
 												 unsigned int* neighborY,
 												 unsigned int* neighborZ,
-												 unsigned int size_Mat,
-												 bool isEvenTimestep);
+												 unsigned int numberOfLBnodes,
+												 bool isEvenTimestep,
+												 int direction);
+
+__global__ void QPressZeroRhoOutflowDevice27(  real* rhoBC,
+											real* distributions, 
+											int* k_Q, 
+											int* k_N, 
+											int numberOfBCnodes, 
+											real om1, 
+											unsigned int* neighborX,
+											unsigned int* neighborY,
+											unsigned int* neighborZ,
+											unsigned int numberOfLBnodes, 
+											bool isEvenTimestep,
+											int direction,
+											real densityCorrectionFactor);
 
 __global__ void QInflowScaleByPressDevice27(  real* rhoBC,
 														 real* DD,

@@ -234,6 +234,7 @@ struct LBMSimulationParameter {
     unsigned int kInletQread, kOutletQread;  // DEPRECATED
 
     WallModelParameters wallModel;
+    real outflowPressureCorrectionFactor;
 
     // testRoundoffError
     Distributions27 kDistTestRE;
@@ -467,6 +468,7 @@ public:
     void setpressBcPos(std::string pressBcPos);
     void setpressBcQs(std::string pressBcQs);
     void setpressBcValue(std::string pressBcValue);
+    void setOutflowPressureCorrectionFactor(real correctionFactor);
     void setpressBcValues(std::string pressBcValues);
     void setvelBcQs(std::string velBcQs);
     void setvelBcValues(std::string velBcValues);
@@ -849,6 +851,7 @@ public:
     std::string getOutflowBoundaryNormalX();
     std::string getOutflowBoundaryNormalY();
     std::string getOutflowBoundaryNormalZ();
+    real getOutflowPressureCorrectionFactor();
     // CUDA random number
     curandState *getRandomState();
     // Kernel

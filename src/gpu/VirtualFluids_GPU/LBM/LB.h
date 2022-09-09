@@ -144,6 +144,7 @@ struct InitCondition
    bool hasWallModelMonitor {false};
    bool simulatePorousMedia {false};
    bool streetVelocityFile {false};
+   real outflowPressureCorrectionFactor {0.0};
 };
 
 //Interface Cells

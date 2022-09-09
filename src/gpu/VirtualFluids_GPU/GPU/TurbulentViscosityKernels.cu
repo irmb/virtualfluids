@@ -38,6 +38,7 @@
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
 #include "LBM/LB.h"
+#include "Kernel/Utilities/DistributionHelper.cuh"
 
 using namespace vf::lbm::constant;
 
@@ -64,15 +65,7 @@ __global__ void calcAMD(real* vx,
                         uint size_Mat,
                         real SGSConstant)
 {
-
-    const uint x = threadIdx.x; 
-    const uint y = blockIdx.x; 
-    const uint z = blockIdx.y; 
-
-    const uint nx = blockDim.x;
-    const uint ny = gridDim.x;
-
-    const uint k = nx*(ny*z + y) + x;
+    const uint k = vf::gpu::getNodeIndex();
     if(k >= size_Mat) return;
     if(typeOfGridNode[k] != GEO_FLUID) return;
 
@@ -102,7 +95,7 @@ __global__ void calcAMD(real* vx,
                         (dvxdx*dvzdx + dvxdy*dvzdy + dvxdz*dvzdz) * (dvxdz+dvzdx) + 
                         (dvydx*dvzdx + dvydy*dvzdy + dvydz*dvzdz) * (dvydz+dvzdy);
 
-    turbulentViscosity[k] = max(c0o1,-SGSConstant*enumerator)/denominator;
+    turbulentViscosity[k] = denominator != c0o1 ? max(c0o1,-SGSConstant*enumerator)/denominator : c0o1;
 }
 
 void calcTurbulentViscosityAMD(Parameter* para, int level)

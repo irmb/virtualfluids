@@ -132,6 +132,8 @@ boundaryCondition BoundaryConditionFactory::getPressureBoundaryConditionPre() co
         case PressureBC::OutflowNonReflective:
             return QPressNoRhoDev27;
             break;
+        case PressureBC::OutflowNonReflectivePressureCorrection:
+            return QPressZeroRhoOutflowDev27;
         default:
             return nullptr;
     }

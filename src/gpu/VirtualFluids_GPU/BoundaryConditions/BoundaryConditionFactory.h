@@ -109,6 +109,8 @@ public:
         PressureNonEquilibriumCompressible,
         //! - OutflowNonReflective = outflow boundary condition, should be combined with VelocityAndPressureCompressible
         OutflowNonReflective,
+        //! - OutflowNonreflectivePressureCorrection = like OutflowNonReflective, but also reduces pressure overshoot
+        OutflowNonReflectivePressureCorrection,
         //! - NotSpecified =  the user did not set a boundary condition
         NotSpecified
     };

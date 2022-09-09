@@ -3355,7 +3355,7 @@ void QSlipDevCompTurbulentViscosity27(LBMSimulationParameter* parameterDevice, Q
 {
    dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
    dim3 threads(parameterDevice->numberofthreads, 1, 1 );
-
+   
    QSlipDeviceComp27TurbViscosity<<< grid, threads >>> (
          parameterDevice->distributions.f[0],
          boundaryCondition->k,
@@ -3395,7 +3395,7 @@ void QSlipDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditi
 {
    dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
    dim3 threads(parameterDevice->numberofthreads, 1, 1 );
-
+   
    QSlipDeviceComp27<<< grid, threads >>> (
          parameterDevice->distributions.f[0],
          boundaryCondition->k,
@@ -3804,8 +3804,31 @@ void QPressNoRhoDev27(LBMSimulationParameter* parameterDevice, QforBoundaryCondi
          parameterDevice->neighborY,
          parameterDevice->neighborZ,
          parameterDevice->numberOfNodes,
-         parameterDevice->isEvenTimestep);
+         parameterDevice->isEvenTimestep,
+         vf::lbm::dir::DIR_P00);
    getLastCudaError("QPressNoRhoDevice27 execution failed");
+}
+//////////////////////////////////////////////////////////////////////////
+void QPressZeroRhoOutflowDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
+{
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
+
+   QPressZeroRhoOutflowDevice27<<< grid, threads >>> (
+         boundaryCondition->RhoBC,
+         parameterDevice->distributions.f[0],
+         boundaryCondition->k,
+         boundaryCondition->kN,
+         boundaryCondition->numberOfBCnodes,
+         parameterDevice->omega,
+         parameterDevice->neighborX,
+         parameterDevice->neighborY,
+         parameterDevice->neighborZ,
+         parameterDevice->numberOfNodes,
+         parameterDevice->isEvenTimestep,
+         vf::lbm::dir::DIR_P00,
+         parameterDevice->outflowPressureCorrectionFactor);
+   getLastCudaError("QPressZeroRhoOutflowDev27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void QInflowScaleByPressDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
