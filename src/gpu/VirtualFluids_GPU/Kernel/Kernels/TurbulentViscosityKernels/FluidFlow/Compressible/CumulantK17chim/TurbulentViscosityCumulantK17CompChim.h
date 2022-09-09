@@ -2,11 +2,13 @@
 #define TurbulentViscosityCUMULANT_K17_COMP_CHIM_H
 
 #include "Kernel/KernelImp.h"
+#include "Parameter/Parameter.h"
 
+template<TurbulenceModel turbulenceModel> 
 class TurbulentViscosityCumulantK17CompChim : public KernelImp
 {
 public:
-	static std::shared_ptr<TurbulentViscosityCumulantK17CompChim> getNewInstance(std::shared_ptr< Parameter> para, int level);
+	static std::shared_ptr< TurbulentViscosityCumulantK17CompChim<turbulenceModel> > getNewInstance(std::shared_ptr< Parameter> para, int level);
 	void run();
 
 private:
