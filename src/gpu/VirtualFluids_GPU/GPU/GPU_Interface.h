@@ -1010,7 +1010,7 @@ void VelSchlaffer27(  unsigned int numberOfThreads,
                                  unsigned int size_Mat, 
                                  bool isEvenTimestep);
 
-extern "C" void QPrecursorDevCompZeroPress(  uint numberOfThreads, real tRatio,
+void QPrecursorDevCompZeroPress(  uint numberOfThreads, real tRatio,
                                              real* DD, real* QQ, int* k_Q, 
 											 uint sizeQ, uint numberOfBCNodes,
 											 real omega, real velocityRatio,
@@ -1022,7 +1022,7 @@ extern "C" void QPrecursorDevCompZeroPress(  uint numberOfThreads, real tRatio,
 											real velocityX, real velocityY, real velocityZ,
                                              unsigned long long size_Mat, bool evenOrOdd);
 
-extern "C" void QADDev7(unsigned int numberOfThreads,
+void QADDev7(unsigned int numberOfThreads,
                         real* DD, 
                         real* DD7,
                         real* temp,

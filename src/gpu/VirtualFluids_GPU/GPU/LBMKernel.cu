@@ -3208,7 +3208,7 @@ void VelSchlaffer27(  unsigned int numberOfThreads,
       getLastCudaError("VelSchlaff27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void QPrecursorDevCompZeroPress(  uint numberOfThreads, real tRatio,
+void QPrecursorDevCompZeroPress(  uint numberOfThreads, real tRatio,
                                              real* DD, real* QQ, int* k_Q, 
                                              uint sizeQ, uint numberOfBCnodes,
                                              real omega, real velocityRatio,

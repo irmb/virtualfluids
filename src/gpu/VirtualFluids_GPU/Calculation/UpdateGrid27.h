@@ -34,7 +34,7 @@ private:
     void collisionUsingIndices(int level, unsigned int t, uint *fluidNodeIndices = nullptr, uint numberOfFluidNodes = 0, int stream = -1);
     void collisionAdvectionDiffusion(int level);
 
-    void postCollisionBC(int level);
+    void postCollisionBC(int level, unsigned int t);
     void preCollisionBC(int level, unsigned int t);
     void collisionPorousMedia(int level);
 

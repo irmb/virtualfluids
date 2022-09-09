@@ -971,33 +971,7 @@ void GridGenerator::allocArrays_BoundaryQs()
             real* QQ = para->getParH(i)->precursorBC.q27[0];
             unsigned int sizeQ = para->getParH(i)->precursorBC.numberOfBCnodes;
             QforBoundaryConditions Q;
-            Q.q27[E] = &QQ[E   *sizeQ];
-            Q.q27[W] = &QQ[W   *sizeQ];
-            Q.q27[N] = &QQ[N   *sizeQ];
-            Q.q27[S] = &QQ[S   *sizeQ];
-            Q.q27[T] = &QQ[T   *sizeQ];
-            Q.q27[B] = &QQ[B   *sizeQ];
-            Q.q27[NE] = &QQ[NE  *sizeQ];
-            Q.q27[SW] = &QQ[SW  *sizeQ];
-            Q.q27[SE] = &QQ[SE  *sizeQ];
-            Q.q27[NW] = &QQ[NW  *sizeQ];
-            Q.q27[TE] = &QQ[TE  *sizeQ];
-            Q.q27[BW] = &QQ[BW  *sizeQ];
-            Q.q27[BE] = &QQ[BE  *sizeQ];
-            Q.q27[TW] = &QQ[TW  *sizeQ];
-            Q.q27[TN] = &QQ[TN  *sizeQ];
-            Q.q27[BS] = &QQ[BS  *sizeQ];
-            Q.q27[BN] = &QQ[BN  *sizeQ];
-            Q.q27[TS] = &QQ[TS  *sizeQ];
-            Q.q27[REST] = &QQ[REST*sizeQ];
-            Q.q27[TNE] = &QQ[TNE *sizeQ];
-            Q.q27[TSW] = &QQ[TSW *sizeQ];
-            Q.q27[TSE] = &QQ[TSE *sizeQ];
-            Q.q27[TNW] = &QQ[TNW *sizeQ];
-            Q.q27[BNE] = &QQ[BNE *sizeQ];
-            Q.q27[BSW] = &QQ[BSW *sizeQ];
-            Q.q27[BSE] = &QQ[BSE *sizeQ];
-            Q.q27[BNW] = &QQ[BNW *sizeQ];
+            getPointersToBoundaryConditions(Q, QQ, sizeQ);
 
             builder->getPrecursorQs(Q.q27, i);
 
