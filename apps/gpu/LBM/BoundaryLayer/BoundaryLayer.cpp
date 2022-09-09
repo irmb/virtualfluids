@@ -186,11 +186,6 @@ void multipleLevel(const std::string& configPath)
 
     para->setIsBodyForce( config.getValue<bool>("bodyForce") );
 
-<<<<<<< HEAD
-    para->setTStartOut(uint(tStartOut/dt) );
-    para->setTOut( uint(tOut/dt) );
-    para->setTEnd( uint(tEnd/dt) );;
-=======
     para->setTimestepStartOut(uint(tStartOut/dt) );
     para->setTimestepOut( uint(tOut/dt) );
     para->setTimestepEnd( uint(tEnd/dt) );
@@ -202,19 +197,15 @@ void multipleLevel(const std::string& configPath)
     
     // tmFactory->setTurbulenceModel(TurbulenceModel::AMD);
     // tmFactory->setModelConstant(config.getValue<real>("SGSconstant"));
->>>>>>> 5c564ec3d3b15718f16c478a49878b98f3e28921
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     gridBuilder->addCoarseGrid(0.0, 0.0, 0.0,
                                 L_x,  L_y,  L_z, dx);
-<<<<<<< HEAD
-=======
     // gridBuilder->setNumberOfLayers(12, 8);
 
     // gridBuilder->addGrid( new Cuboid( 0.0, 0.0, 0.0, L_x,  L_y,  0.3*L_z) , 1 );
     // para->setMaxLevel(2);
->>>>>>> 5c564ec3d3b15718f16c478a49878b98f3e28921
 
     gridBuilder->setPeriodicBoundaryCondition(!readPrecursor, true, false);
 
@@ -241,18 +232,8 @@ void multipleLevel(const std::string& configPath)
                                             0.0, 0.0, 1.0,              // wall normals
                                             samplingOffset, z0/dx);     // wall model settinng
     para->setHasWallModelMonitor(true);
-<<<<<<< HEAD
-    bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressBounceBack);
-
-    // para->setHasWallModelMonitor(true);
-
-    
-    // gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
-    // gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
-=======
     bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressPressureBounceBack);
 
->>>>>>> 5c564ec3d3b15718f16c478a49878b98f3e28921
     gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0,  0.0, 0.0);
     bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipBounceBack); 
     
@@ -262,15 +243,9 @@ void multipleLevel(const std::string& configPath)
 
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)0.0;
-<<<<<<< HEAD
-        vx  = (u_star/kappa * log(coordZ/z0) + c2o1*sin(cPi*c16o1*coordX/L_x)*sin(cPi*c8o1*coordZ/L_z)/(pow(coordZ/L_z,c2o1)+c1o1))  * dt / dx; 
-        vy  = c2o1*sin(cPi*c16o1*coordX/L_x)*sin(cPi*c8o1*coordZ/L_z)/(pow(coordZ/L_z,c2o1)+c1o1)  * dt / dx; 
-        vz  = c8o1*u_star/c4o10*(sin(cPi*c8o1*coordY/L_y)*sin(cPi*c8o1*coordZ/L_z)+sin(cPi*c8o1*coordX/L_x))/(pow(L_z*c1o2-coordZ, c2o1)+c1o1) * dt / dx;
-=======
         vx  = (u_star/0.4 * log(coordZ/z0) + 2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1))  * dt / dx; 
         vy  = 2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1)  * dt / dx; 
         vz  = 8.0*u_star/0.4*(sin(cPi*8.0*coordY/H)*sin(cPi*8.0*coordZ/H)+sin(cPi*8.0*coordX/L_x))/(pow(L_z/2.0-coordZ, c2o1)+c1o1) * dt / dx;
->>>>>>> 5c564ec3d3b15718f16c478a49878b98f3e28921
     });
 
 
