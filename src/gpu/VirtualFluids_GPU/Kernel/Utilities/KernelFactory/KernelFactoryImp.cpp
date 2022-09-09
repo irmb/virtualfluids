@@ -195,11 +195,32 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
         checkStrategy = WaleFluidFlowCompStrategy::getInstance();
     } else if (kernel == "WaleBySoniMalavCumulantK15Comp") {                    //     /\      //
         newKernel     = WaleBySoniMalavCumulantK15Comp::getNewInstance(para, level);// ||
-        checkStrategy = WaleFluidFlowCompStrategy::getInstance();                    // wale model
-    }                                                                           //===============
-    else if (kernel == "TurbulentViscosityCumulantK17CompChim"){                               // AMD model
-        newKernel     = TurbulentViscosityCumulantK17CompChim::getNewInstance(para, level);    //      ||
-        checkStrategy = TurbulentViscosityFluidFlowCompStrategy::getInstance();                //      \/
+        checkStrategy = WaleFluidFlowCompStrategy::getInstance();               // wale model
+    }                                                                          //===============
+    else if (kernel == "TurbulentViscosityCumulantK17CompChim"){               // compressible with turbulent viscosity
+        switch(para->getTurbulenceModel())                                     //       ||          
+        {                                                                      //       \/      //
+            case TurbulenceModel::AMD:
+                newKernel = TurbulentViscosityCumulantK17CompChim<TurbulenceModel::AMD>::getNewInstance(para, level);   
+                break;
+            case TurbulenceModel::Smagorinsky:
+                newKernel = TurbulentViscosityCumulantK17CompChim<TurbulenceModel::Smagorinsky>::getNewInstance(para, level);  
+                break;
+            case TurbulenceModel::QR:
+                newKernel = TurbulentViscosityCumulantK17CompChim<TurbulenceModel::QR>::getNewInstance(para, level);  
+                break;
+            case TurbulenceModel::None:
+                throw std::runtime_error("TurbulentViscosityCumulantK17CompChim currently not implemented for TurbulenceModel::None!");
+                break;
+            default:
+                throw std::runtime_error("Unknown turbulence model!");
+            break;                                                              
+        }                                                                       
+        checkStrategy = TurbulentViscosityFluidFlowCompStrategy::getInstance(); 
+                                                                                //     /\      //
+                                                                                //     ||    
+                                                                                // compressible with turbulent viscosity  
+                                                                                //===============         
     }
     else {
         throw std::runtime_error("KernelFactory does not know the KernelType.");
