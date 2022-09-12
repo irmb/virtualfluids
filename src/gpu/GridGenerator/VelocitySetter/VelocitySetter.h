@@ -1,8 +1,7 @@
 #ifndef VELOCITY_SETTER_H_
 #define VELOCITY_SETTER_H_
 
-#include "PreCollisionInteractor.h"
-#include "PrecursorWriter.h"
+#include "VirtualFluids_GPU/PreCollisionInteractor/PrecursorWriter.h"
 #include <cuda_runtime.h>
 
 #include <string>

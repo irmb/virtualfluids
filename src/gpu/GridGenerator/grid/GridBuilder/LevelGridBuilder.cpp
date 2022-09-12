@@ -52,7 +52,7 @@
 #include "io/QLineWriter.h"
 #include "io/SimulationFileWriter/SimulationFileWriter.h"
 
-#include <VirtualFluids_GPU/PreCollisionInteractor/VelocitySetter.h>
+#include "VelocitySetter/VelocitySetter.h"
 
 #include "utilities/communication.h"
 #include "utilities/transformator/ArrowTransformator.h"

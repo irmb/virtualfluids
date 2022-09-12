@@ -38,7 +38,7 @@
 
 #include "BCKernelManager.h"
 #include "BoundaryConditions/BoundaryConditionFactory.h"
-#include "gpu/VirtualFluids_GPU/PreCollisionInteractor/VelocitySetter.h"
+#include "GridGenerator/VelocitySetter/VelocitySetter.h"
 #include "Calculation/Cp.h"
 #include "Calculation/DragLift.h"
 #include "GPU/GPU_Interface.h"

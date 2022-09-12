@@ -1,7 +1,4 @@
 #include "VelocitySetter.h"
-#include "GPU/CudaMemoryManager.h"
-#include "GPU/GeometryUtils.h"
-#include "Parameter/Parameter.h"
 #include "GridGenerator/grid/Grid.h"
 #include "GridGenerator/grid/BoundaryConditions/BoundaryCondition.h"
 #include <cuda/CudaGrid.h>

@@ -35,6 +35,7 @@
 
 #include "GridGenerator/io/SimulationFileWriter/SimulationFileWriter.h"
 #include "GridGenerator/io/GridVTKWriter/GridVTKWriter.h"
+#include "GridGenerator/VelocitySetter/VelocitySetter.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -50,7 +51,6 @@
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlanarAverageProbe.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/WallModelProbe.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/PrecursorWriter.h"
-#include "VirtualFluids_GPU/PreCollisionInteractor/VelocitySetter.h"
 #include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
 #include "VirtualFluids_GPU/TurbulenceModels/TurbulenceModelFactory.h"
 

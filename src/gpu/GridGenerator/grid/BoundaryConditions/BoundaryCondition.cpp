@@ -36,7 +36,7 @@
 
 #include "grid/BoundaryConditions/Side.h"
 #include "grid/Grid.h"
-#include "VirtualFluids_GPU/PreCollisionInteractor/VelocitySetter.h"
+#include "GridGenerator/VelocitySetter/VelocitySetter.h"
 
 bool gg::BoundaryCondition::isSide( SideType side ) const
 {

@@ -10,7 +10,7 @@
 #include <algorithm>
 #include "utilities/math/Math.h"
 #include "Output/QDebugWriter.hpp"
-#include "PreCollisionInteractor/VelocitySetter.h"
+#include "GridGenerator/VelocitySetter/VelocitySetter.h"
 
 #include "utilities/communication.h"
 
