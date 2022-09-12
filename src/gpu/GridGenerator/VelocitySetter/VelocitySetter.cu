@@ -203,6 +203,7 @@ SPtr<VelocityReader> VTKFileCollection::createReaderForCollection()
     return std::make_shared<VTKReader>(getSelf()); 
 }
 
+
 void VelocityReader::getNeighbors(uint* neighborNT, uint* neighborNB, uint* neighborST, uint* neighborSB)
 {
     std::copy(planeNeighborNT.begin(), planeNeighborNT.end(), &neighborNT[writingOffset]);
@@ -218,6 +219,7 @@ void VelocityReader::getWeights(real* _weightsNT, real* _weightsNB, real* _weigh
     std::copy(weightsST.begin(), weightsST.end(), &_weightsST[writingOffset]);
     std::copy(weightsSB.begin(), weightsSB.end(), &_weightsSB[writingOffset]);
 }
+
 
 void VTKReader::initializeIndexVectors()
 {

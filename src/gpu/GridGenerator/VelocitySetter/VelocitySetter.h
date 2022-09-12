@@ -1,8 +1,11 @@
 #ifndef VELOCITY_SETTER_H_
 #define VELOCITY_SETTER_H_
 
-#include "VirtualFluids_GPU/PreCollisionInteractor/PrecursorWriter.h"
 #include <cuda_runtime.h>
+
+#include "Core/DataTypes.h"
+#include <Core/StringUtilities/StringUtil.h>
+#include "PointerDefinitions.h"
 
 #include <string>
 #include <vector>
@@ -108,7 +111,13 @@ public:
 
 private:
     void findFiles();
-    std::string makeFileName(int level, int id, int part){ return PrecursorWriter::makeFileName(prefix, level, id, part) + ".bin." + suffix; };
+    std::string makeFileName(int level, int id, int part)
+    { 
+        return prefix + "_lev_" + StringUtil::toString<int>(level)
+                    + "_ID_" +    StringUtil::toString<int>(id)
+                    + "_File_" +  StringUtil::toString<int>(part) 
+                    + ".bin." + suffix;
+    };
 
 public:
     static inline const std::string suffix = "vti";

@@ -215,26 +215,33 @@ void multipleLevel(const std::string& configPath)
     if(readPrecursor)
     {
         auto precursor = SPtr<VTKFileCollection>( new VTKFileCollection(precursorFile) );
-        gridBuilder->setPrecursorBoundaryCondition(SideType::MX, 0.0f, 0.0f, 0.0f, precursor, nTReadPrecursor);
-        gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0f,  0.0f, -1.0f);
-        // gridBuilder->setVelocityBoundaryCondition(SideType::MX, velocityLB, 0.f,0.f);
 
+        gridBuilder->setPrecursorBoundaryCondition(SideType::MX, 0.0f, 0.0f, 0.0f, precursor, nTReadPrecursor);
+
+        gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0f,  0.0f, -1.0f);
+
+        uint samplingOffset = 2;
+        gridBuilder->setStressBoundaryCondition(SideType::MZ,
+                                            0.0, 0.0, 1.0,              // wall normals
+                                            samplingOffset, z0/dx);     // wall model settinng
+        para->setHasWallModelMonitor(true);
+        
         gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.f);
-        // gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 2*velocityLB, 0.f,0.f);
     } 
     else
     {
         gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0,  0.0, -1.0);
-    }
 
-    uint samplingOffset = 2;
-    gridBuilder->setStressBoundaryCondition(SideType::MZ,
+        uint samplingOffset = 2;
+        gridBuilder->setStressBoundaryCondition(SideType::MZ,
                                             0.0, 0.0, 1.0,              // wall normals
                                             samplingOffset, z0/dx);     // wall model settinng
-    para->setHasWallModelMonitor(true);
-    bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressPressureBounceBack);
+        para->setHasWallModelMonitor(true);
+    }
 
-    gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0,  0.0, 0.0);
+
+
+    bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressPressureBounceBack);
     bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipBounceBack); 
     
 
