@@ -298,7 +298,7 @@ void GridGenerator::allocArrays_BoundaryValues()
 
 
             //read second timestep of precursor into next and copy next to device
-            real nextTime = para->getParD(level)->precursorBC.nTRead*pow(2,-level)*para->getTimeRatio();
+            real nextTime = para->getParD(level)->precursorBC.nTRead*pow(2,-((real)level))*para->getTimeRatio();
             for(auto reader : para->getParH(level)->velocityReader)
             {   
                 reader->getNextVelocities(para->getParH(level)->precursorBC.vxNext, para->getParH(level)->precursorBC.vyNext, para->getParH(level)->precursorBC.vzNext, nextTime);
@@ -322,7 +322,7 @@ void GridGenerator::allocArrays_BoundaryValues()
 
             //start usual cycle of loading, i.e. read velocities of timestep after current and copy asynchronously to device
 
-            nextTime = 2*para->getParD(level)->precursorBC.nTRead*pow(2,-level)*para->getTimeRatio();
+            nextTime = 2*para->getParD(level)->precursorBC.nTRead*pow(2,-((real)level))*para->getTimeRatio();
 
             for(auto reader : para->getParH(level)->velocityReader)
             {   
