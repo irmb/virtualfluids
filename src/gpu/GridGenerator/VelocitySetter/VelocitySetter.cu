@@ -259,9 +259,9 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
         real posZ = coordsZ[i];
         bool foundNT = false, foundNB = false, foundST = false, foundSB = false, foundAll = false;
 
-        for(auto level=this->fileCollection->files.size(); level>0; level--) // go backwards to find finest nodes first
+        for(std::size_t level=this->fileCollection->files.size(); level>0; level--) // go backwards to find finest nodes first
         {
-            for(auto fileId=0; fileId<this->fileCollection->files[level].size(); fileId++)
+            for(std::size_t fileId=0; fileId<this->fileCollection->files[level].size(); fileId++)
             {
                 VTKFile file = this->fileCollection->files[level][fileId][0];
                 if(!file.inBoundingBox(posY, posZ, 0.0f)) continue;
