@@ -139,6 +139,7 @@ gcc_9_python:
 ##                            Container Upload                               ##
 ###############################################################################
 build_singularity_image:
+  image: quay.io/singularity/singularity
   stage: container_upload
 
   needs:
@@ -148,12 +149,13 @@ build_singularity_image:
     - linux
     - privileged
 
-  rules:
-    - if: $CI_COMMIT_TAG
+  artifacts:
+    expire_in: 1 hrs
+    paths:
+      - Containers/VirtualFluidsPython.sif
 
   script:
     - singularity build Containers/VirtualFluidsPython.sif Containers/VirtualFluidsPython.def
-    - singularity push --docker-username "${CI_REGISTRY_USER}" --docker-password "${CI_REGISTRY_PASSWORD}" Containers/VirtualFluidsPython.sif oras://"$CI_REGISTRY_IMAGE"/"$CI_PROJECT_NAME":"$CI_COMMIT_TAG"
 
 ###############################################################################
 ##                                Tests                                      ##
@@ -201,6 +203,20 @@ gcc_9_python_bindings_test:
 
   script:
     - python3 -m unittest discover -s Python -v
+
+
+###############################################################################
+gcc_9_python_hpc_test:
+  image: python:latest
+  stage: test
+
+  needs: ["build_singularity_image"]
+
+  before_script:
+    - pip install hpc-rocket
+
+  script:
+    - hpc-rocket launch --watch rocket.yml
 
 
 ###############################################################################
