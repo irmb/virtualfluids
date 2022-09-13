@@ -30,6 +30,18 @@ void CudaMemoryManager::cudaCopyPrint(int lev)
     checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->velocityZ   , parameter->getParD(lev)->velocityZ   , parameter->getParH(lev)->mem_size_real_SP , cudaMemcpyDeviceToHost));
     checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->rho  , parameter->getParD(lev)->rho  , parameter->getParH(lev)->mem_size_real_SP , cudaMemcpyDeviceToHost));
     checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->pressure, parameter->getParD(lev)->pressure, parameter->getParH(lev)->mem_size_real_SP , cudaMemcpyDeviceToHost));
+
+    if(parameter->getIsBodyForce())
+    {
+        checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->forceX_SP   , parameter->getParD(lev)->forceX_SP   , parameter->getParH(lev)->mem_size_real_SP , cudaMemcpyDeviceToHost));
+        checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->forceY_SP   , parameter->getParD(lev)->forceY_SP   , parameter->getParH(lev)->mem_size_real_SP , cudaMemcpyDeviceToHost));
+        checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->forceZ_SP   , parameter->getParD(lev)->forceZ_SP   , parameter->getParH(lev)->mem_size_real_SP , cudaMemcpyDeviceToHost));
+    }
+
+    if(parameter->getUseTurbulentViscosity())
+    {
+        checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->turbViscosity   , parameter->getParD(lev)->turbViscosity   , parameter->getParH(lev)->mem_size_real_SP , cudaMemcpyDeviceToHost));
+    }
 }
 void CudaMemoryManager::cudaCopyMedianPrint(int lev)
 {

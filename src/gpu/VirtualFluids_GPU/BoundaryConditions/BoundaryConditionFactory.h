@@ -87,9 +87,12 @@ public:
         SlipIncompressible,
         //! - SlipCompressible = interpolated slip boundary condition, based on subgrid distances
         SlipCompressible,
-        //! - SlipCompressible = interpolated slip boundary condition, based on subgrid distances.
+        //! - SlipBounceBack = simple bounce-back slip boundary condition.
+        SlipBounceBack,
         //! With turbulent viscosity -> para->setUseTurbulentViscosity(true) has to be set to true
         SlipCompressibleTurbulentViscosity,
+        //! With turbulent viscosity -> para->setUseTurbulentViscosity(true) has to be set to true
+        SlipPressureCompressibleTurbulentViscosity,
         //! - NotSpecified =  the user did not set a boundary condition
         NotSpecified
     };
@@ -116,6 +119,8 @@ public:
         StressCompressible,
         //! - StressBounceBack
         StressBounceBack,
+        //! - StressPressureBounceBack
+        StressPressureBounceBack,
         //! - NotSpecified =  the user did not set a boundary condition
         NotSpecified
     };

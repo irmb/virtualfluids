@@ -831,7 +831,11 @@ void QSlipDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions*
 
 void QSlipDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
+void BBSlipDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
+
 void QSlipDevCompTurbulentViscosity27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
+
+void QSlipPressureDevCompTurbulentViscosity27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
 void QSlipGeomDevComp27( unsigned int numberOfThreads,
 									real* DD, 
@@ -866,6 +870,8 @@ void QSlipNormDevComp27(unsigned int numberOfThreads,
 void QStressDevComp27(Parameter *para,  QforBoundaryConditions* boundaryCondition, const int level);
 
 void BBStressDev27(Parameter *para,  QforBoundaryConditions* boundaryCondition, const int level);
+
+void BBStressPressureDev27(Parameter *para,  QforBoundaryConditions* boundaryCondition, const int level);
 
 void QPressDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 

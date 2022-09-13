@@ -13,6 +13,7 @@ class ADKernelManager;
 class GridScalingKernelManager;
 class Kernel;
 class BoundaryConditionFactory;
+class TurbulenceModelFactory;
 
 class UpdateGrid27;
 using CollisionStrategy = std::function<void (UpdateGrid27* updateGrid, Parameter* para, int level, unsigned int t)>;
@@ -23,7 +24,7 @@ class UpdateGrid27
 {
 public:
     UpdateGrid27(SPtr<Parameter> para, vf::gpu::Communicator &comm, SPtr<CudaMemoryManager> cudaMemoryManager,
-                 std::vector<std::shared_ptr<PorousMedia>> &pm, std::vector<SPtr<Kernel>> &kernels, BoundaryConditionFactory* bcFactory);
+                 std::vector<std::shared_ptr<PorousMedia>> &pm, std::vector<SPtr<Kernel>> &kernels, BoundaryConditionFactory* bcFactory, SPtr<TurbulenceModelFactory> tmFactory);
     void updateGrid(int level, unsigned int t);
     void exchangeData(int level);
 
@@ -79,6 +80,8 @@ private:
     std::shared_ptr<ADKernelManager> adKernelManager;
     //! \property gridScalingKernelManager is a shared pointer to an object of GridScalingKernelManager
     std::shared_ptr<GridScalingKernelManager> gridScalingKernelManager;
+    //! \property tmFactory is a shared pointer to an object of TurbulenceModelFactory
+    std::shared_ptr<TurbulenceModelFactory> tmFactory;
 };
 
 #endif

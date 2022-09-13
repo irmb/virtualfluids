@@ -42,6 +42,7 @@
 #include "lbm/constants/D3Q27.h"
 #include "LBM/LB.h"
 #include "PreCollisionInteractor/PreCollisionInteractor.h"
+#include "TurbulenceModels/TurbulenceModelFactory.h"
 
 #include "VirtualFluids_GPU_export.h"
 
@@ -520,6 +521,7 @@ public:
     void setStreetVelocityFile(bool streetVelocityFile);
     void setUseMeasurePoints(bool useMeasurePoints);
     void setUseWale(bool useWale);
+    void setTurbulenceModel(TurbulenceModel turbulenceModel);
     void setUseTurbulentViscosity(bool useTurbulentViscosity);
     void setUseAMD(bool useAMD);
     void setSGSConstant(real SGSConstant);
@@ -751,6 +753,20 @@ public:
     real getLengthRatio();
     //! \returns the force ratio in SI/LB units
     real getForceRatio();
+    //! \returns the viscosity ratio in SI/LB units scaled to the respective level
+    real getScaledViscosityRatio(int level);
+    //! \returns the velocity ratio in SI/LB units scaled to the respective level
+    real getScaledVelocityRatio(int level);
+    //! \returns the density ratio in SI/LB units scaled to the respective level
+    real getScaledDensityRatio(int level);
+    //! \returns the pressure ratio in SI/LB units scaled to the respective level
+    real getScaledPressureRatio(int level);
+    //! \returns the time ratio in SI/LB units scaled to the respective level
+    real getScaledTimeRatio(int level);
+    //! \returns the length ratio in SI/LB units scaled to the respective level
+    real getScaledLengthRatio(int level);
+    //! \returns the force ratio in SI/LB units scaled to the respective level
+    real getScaledForceRatio(int level);
     real getRealX();
     real getRealY();
     real getRe();
@@ -782,6 +798,7 @@ public:
     std::vector<SPtr<PreCollisionInteractor>> getProbes();
     unsigned int getTimeDoCheckPoint();
     unsigned int getTimeDoRestart();
+    unsigned int getTimeStep(int level, unsigned int t, bool isPostCollision);
     bool getDoCheckPoint();
     bool getDoRestart();
     bool overWritingRestart(unsigned int t);
@@ -799,8 +816,8 @@ public:
     bool isStreetVelocityFile();
     bool getUseMeasurePoints();
     bool getUseWale();
+    TurbulenceModel getTurbulenceModel();
     bool getUseTurbulentViscosity();
-    bool getUseAMD();
     real getSGSConstant();
     bool getHasWallModelMonitor();
     bool getUseInitNeq();

@@ -29,12 +29,16 @@ class UpdateGrid27;
 class KineticEnergyAnalyzer;
 class EnstrophyAnalyzer;
 class BoundaryConditionFactory;
+class TurbulenceModelFactory;
 
 class Simulation
 {
 public:
     Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> memoryManager,
                vf::gpu::Communicator &communicator, GridProvider &gridProvider, BoundaryConditionFactory* bcFactory);
+	
+	Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> memoryManager,
+               vf::gpu::Communicator &communicator, GridProvider &gridProvider, BoundaryConditionFactory* bcFactory, SPtr<TurbulenceModelFactory> tmFactory);
 
     ~Simulation();
     void run();
@@ -46,7 +50,7 @@ public:
     void addEnstrophyAnalyzer(uint tAnalyse);
 
 private:
-	void init(GridProvider &gridProvider, BoundaryConditionFactory *bcFactory);
+	void init(GridProvider &gridProvider, BoundaryConditionFactory *bcFactory, SPtr<TurbulenceModelFactory> tmFactory);
     void allocNeighborsOffsetsScalesAndBoundaries(GridProvider& gridProvider);
     void porousMedia();
     void definePMarea(std::shared_ptr<PorousMedia>& pm);
@@ -72,6 +76,7 @@ private:
 	std::vector < SPtr< Kernel>> kernels;
 	std::vector < SPtr< ADKernel>> adKernels;
 	std::shared_ptr<PreProcessor> preProcessor;
+	SPtr<TurbulenceModelFactory> tmFactory;
 
     SPtr<RestartObject> restart_object;
 

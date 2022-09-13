@@ -56,7 +56,7 @@
 #include "PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
 #include "Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
 #include "Kernel/Kernel.h"
-
+#include "TurbulenceModels/TurbulenceModelFactory.h"
 #include <cuda/DeviceInfo.h>
 
 #include <logger/Logger.h>
@@ -73,10 +73,19 @@ Simulation::Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemo
     : para(para), cudaMemoryManager(memoryManager), communicator(communicator), kernelFactory(std::make_unique<KernelFactoryImp>()),
       preProcessorFactory(std::make_shared<PreProcessorFactoryImp>()), dataWriter(std::make_unique<FileWriter>())
 {
-    init(gridProvider, bcFactory);
+	this->tmFactory = SPtr<TurbulenceModelFactory>( new TurbulenceModelFactory(para) );
+	init(gridProvider, bcFactory, tmFactory);
 }
 
-void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFactory)
+Simulation::Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> memoryManager,
+                       vf::gpu::Communicator &communicator, GridProvider &gridProvider, BoundaryConditionFactory* bcFactory, SPtr<TurbulenceModelFactory> tmFactory)
+    : para(para), cudaMemoryManager(memoryManager), communicator(communicator), kernelFactory(std::make_unique<KernelFactoryImp>()),
+      preProcessorFactory(std::make_shared<PreProcessorFactoryImp>()), dataWriter(std::make_unique<FileWriter>())
+{
+	init(gridProvider, bcFactory, tmFactory);
+}
+
+void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFactory, SPtr<TurbulenceModelFactory> tmFactory)
 {
     gridProvider.initalGridInformations();
 
@@ -117,8 +126,6 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     VF_LOG_INFO("delta_rho:       {}", para->getDensityRatio());
     VF_LOG_INFO("QuadricLimiters: {}, \t{}, \t{}", para->getQuadricLimitersHost()[0],
                 para->getQuadricLimitersHost()[1], para->getQuadricLimitersHost()[2]);
-    if (para->getUseAMD())
-        VF_LOG_INFO("AMD SGS model:  {}", para->getSGSConstant());
     //////////////////////////////////////////////////////////////////////////
 
     /////////////////////////////////////////////////////////////////////////
@@ -348,7 +355,7 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     //////////////////////////////////////////////////////////////////////////
     // Init UpdateGrid
     //////////////////////////////////////////////////////////////////////////
-    this->updateGrid27 = std::make_unique<UpdateGrid27>(para, communicator, cudaMemoryManager, pm, kernels, bcFactory);
+    this->updateGrid27 = std::make_unique<UpdateGrid27>(para, communicator, cudaMemoryManager, pm, kernels, bcFactory, tmFactory);
 
     //////////////////////////////////////////////////////////////////////////
     // Write Initialized Files

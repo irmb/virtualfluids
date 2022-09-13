@@ -125,12 +125,6 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
     if (configData.contains("UseWale"))
         this->setUseWale(configData.getValue<bool>("UseWale"));
     //////////////////////////////////////////////////////////////////////////
-    if (configData.contains("UseAMD"))
-        this->setUseAMD(configData.getValue<bool>("UseAMD"));
-    //////////////////////////////////////////////////////////////////////////
-    if (configData.contains("SGSconstant"))
-        this->setSGSConstant(configData.getValue<real>("SGSconstant"));
-    //////////////////////////////////////////////////////////////////////////
     if (configData.contains("UseInitNeq"))
         this->setUseInitNeq(configData.getValue<bool>("UseInitNeq"));
     //////////////////////////////////////////////////////////////////////////
@@ -809,17 +803,61 @@ void Parameter::setPressRatio(real PressRatio)
 {
     ic.delta_press = PressRatio;
 }
+real Parameter::getViscosityRatio()
+{
+    return ic.vis_ratio;
+}
+real Parameter::getVelocityRatio()
+{
+    return ic.u0_ratio;
+}
+real Parameter::getDensityRatio()
+{
+    return ic.delta_rho;
+}
+real Parameter::getPressureRatio()
+{
+    return ic.delta_press;
+}
 real Parameter::getTimeRatio()
 {
     return this->getViscosityRatio() * pow(this->getVelocityRatio(), -2);
 }
-real Parameter::getForceRatio()
-{
-    return this->getDensityRatio() * pow(this->getViscosityRatio(), 2);
-}
 real Parameter::getLengthRatio()
 {
     return this->getViscosityRatio() / this->getVelocityRatio();
+}
+real Parameter::getForceRatio()
+{
+    return this->getDensityRatio() * this->getVelocityRatio()/this->getTimeRatio();
+}
+real Parameter::getScaledViscosityRatio(int level)
+{
+    return this->getViscosityRatio()/(level+1);
+}
+real Parameter::getScaledVelocityRatio(int level)
+{
+    return this->getVelocityRatio();
+}
+real Parameter::getScaledDensityRatio(int level)
+{
+    return this->getDensityRatio();
+}
+real Parameter::getScaledPressureRatio(int level)
+{
+    return this->getPressureRatio();
+}
+real Parameter::getScaledTimeRatio(int level)
+{
+    return this->getTimeRatio()/(level+1);
+}
+real Parameter::getScaledLengthRatio(int level)
+{
+    return this->getLengthRatio()/(level+1);
+}
+real Parameter::getScaledForceRatio(int level)
+{
+    return this->getForceRatio()*(level+1);
 }
 void Parameter::setRealX(real RealX)
 {
@@ -935,11 +973,9 @@ void Parameter::setUseWale(bool useWale)
     if (useWale)
         setUseTurbulentViscosity(true);
 }
-void Parameter::setUseAMD(bool useAMD)
+void Parameter::setTurbulenceModel(TurbulenceModel turbulenceModel)
 {
-    ic.isAMD = useAMD;
-    if (useAMD)
-        setUseTurbulentViscosity(true);
+    ic.turbulenceModel = turbulenceModel;
 }
 void Parameter::setSGSConstant(real SGSConstant)
 {
@@ -1712,7 +1748,7 @@ int Parameter::getNumberOfParticles()
 }
 bool Parameter::getEvenOrOdd(int level)
 {
-    return parH[level]->isEvenTimestep;
+	return parD[level]->isEvenTimestep;
 }
 bool Parameter::getDiffOn()
 {
@@ -1845,22 +1881,6 @@ real Parameter::getViscosity()
 real Parameter::getVelocity()
 {
     return ic.u0;
-}
-real Parameter::getViscosityRatio()
-{
-    return ic.vis_ratio;
-}
-real Parameter::getVelocityRatio()
-{
-    return ic.u0_ratio;
-}
-real Parameter::getDensityRatio()
-{
-    return ic.delta_rho;
-}
-real Parameter::getPressureRatio()
-{
-    return ic.delta_press;
 }
 real Parameter::getRealX()
 {
@@ -2262,6 +2282,26 @@ unsigned int Parameter::getTimeDoRestart()
 {
     return ic.tDoRestart;
 }
+
+//=======================================================================================
+//! \brief Get current (sub)time step of a given level.
+//! \param level 
+//! \param t current time step (of level 0)
+//! \param isPostCollision whether getTimeStep is called post- (before swap) or pre- (after swap) collision
+//!
+unsigned int Parameter::getTimeStep(int level, unsigned int t, bool isPostCollision)
+{
+    if(level>this->getMaxLevel()) throw std::runtime_error("Parameter::getTimeStep: level>this->getMaxLevel()!");
+	unsigned int tLevel = t;                                                                  
+    if(level>0)
+    {
+        for(int i=1; i<level; i++){ tLevel = 1 + 2*(tLevel-1) + !this->getEvenOrOdd(i); }     
+        bool addOne = isPostCollision? !this->getEvenOrOdd(level): this->getEvenOrOdd(level); 
+        tLevel = 1 + 2*(tLevel-1) + addOne;
+    }
+	return tLevel;
+}
+
 bool Parameter::getDoCheckPoint()
 {
     return ic.doCheckPoint;
@@ -2306,9 +2346,9 @@ bool Parameter::getUseWale()
 {
     return ic.isWale;
 }
-bool Parameter::getUseAMD()
+TurbulenceModel Parameter::getTurbulenceModel()
 {
-    return ic.isAMD;
+    return ic.turbulenceModel;
 }
 bool Parameter::getUseTurbulentViscosity()
 {
