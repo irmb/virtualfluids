@@ -138,12 +138,9 @@ gcc_9_python:
 ###############################################################################
 ##                            Container Upload                               ##
 ###############################################################################
-build_singularity_image:
+build_poiseuille_test_container:
   image: quay.io/singularity/singularity
   stage: container_upload
-
-  needs:
-    - gcc_9_python
 
   tags:
     - linux
@@ -152,10 +149,10 @@ build_singularity_image:
   artifacts:
     expire_in: 1 hrs
     paths:
-      - Containers/VirtualFluidsPython.sif
+      - Containers/PoiseuilleTestContainer.sif
 
   script:
-    - singularity build Containers/VirtualFluidsPython.sif Containers/VirtualFluidsPython.def
+    - singularity build Containers/PoiseuilleTestContainer.sif Containers/PoiseuilleTestContainer.def
 
 ###############################################################################
 ##                                Tests                                      ##
@@ -210,7 +207,7 @@ gcc_9_python_hpc_test:
   image: python:latest
   stage: test
 
-  needs: ["build_singularity_image"]
+  needs: ["build_poiseuille_test_container"]
 
   before_script:
     - pip install hpc-rocket
