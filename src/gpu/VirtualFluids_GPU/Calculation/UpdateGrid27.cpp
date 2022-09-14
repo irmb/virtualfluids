@@ -318,9 +318,10 @@ void UpdateGrid27::preCollisionBC(int level, unsigned int t)
     //////////////////////////////////////////////////////////////////////////////////
 }
 
-void UpdateGrid27::fineToCoarse(int level, InterpolationCellFC* icellFC, int streamIndex)
+void UpdateGrid27::fineToCoarse(int level, InterpolationCellFC* icellFC, OffFC &offFC,
+                                int streamIndex)
 {
-    gridScalingKernelManager->runFineToCoarseKernelLB(level, icellFC, streamIndex);
+    gridScalingKernelManager->runFineToCoarseKernelLB(level, icellFC, offFC, streamIndex);
 
     if (para->getDiffOn()) {
         if (streamIndex != -1) {

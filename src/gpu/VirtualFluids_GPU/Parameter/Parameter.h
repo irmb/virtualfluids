@@ -214,6 +214,7 @@ struct LBMSimulationParameter {
     OffsetCF offCF;
     OffsetCF offCFBulk;
     OffsetFC offFC;
+    OffsetFC offFCBulk;
     unsigned int mem_size_kCF_off;
     unsigned int mem_size_kFC_off;
 

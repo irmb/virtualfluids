@@ -1693,6 +1693,25 @@ __global__ void scaleCF_RhoSq_comp_27( real* DC,
 												  unsigned int nyF,
 												  OffCF offCF);
 
+__global__ void scaleCF_K17_redesigned(
+    real* distributionsCoarse, 
+    real* distributionsFine, 
+    unsigned int* neighborXcoarse,
+    unsigned int* neighborYcoarse,
+    unsigned int* neighborZcoarse,
+    unsigned int* neighborXfine,
+    unsigned int* neighborYfine,
+    unsigned int* neighborZfine,
+    unsigned int numberOfLBnodesCoarse, 
+    unsigned int numberOfLBnodesFine, 
+    bool isEvenTimestep,
+    unsigned int* indicesCoarseMMM, 
+    unsigned int* indicesFineMMM, 
+    unsigned int numberOfInterfaceNodes, 
+    real omegaCoarse, 
+    real omegaFine, 
+    OffCF offsetCF);
+
 __global__ void scaleCF_RhoSq_3rdMom_comp_27(real* DC,
 														real* DF,
 														unsigned int* neighborCX,

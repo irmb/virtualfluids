@@ -31,119 +31,20 @@
 //! \author Martin Schoenherr, Anna Wellmann
 //=======================================================================================
 
-#include "LBM/LB.h" 
-#include "lbm/constants/D3Q27.h"
-#include "lbm/constants/NumericConstants.h"
 #include "Kernel/Utilities/DistributionHelper.cuh"
 #include "Kernel/ChimeraTransformation.h"
+#include "Kernel/Utilities/ScalingHelperFunctions.h"
 
 using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
 
-__device__ __inline__ void calculateMomentsOnFineSourceNodes(
-    Distributions27& distFine,
-    real& omegaFine,
-    unsigned int& k_000,
-    unsigned int& k_M00,
-    unsigned int& k_0M0,
-    unsigned int& k_00M,
-    unsigned int& k_MM0,
-    unsigned int& k_M0M,
-    unsigned int& k_0MM,
-    unsigned int& k_MMM,
-    real& drho,
-    real& velocityX,
-    real& velocityY,
-    real& velocityZ,
-    real& kxyFromfcNEQ,
-    real& kyzFromfcNEQ,
-    real& kxzFromfcNEQ,
-    real& kxxMyyFromfcNEQ,
-    real& kxxMzzFromfcNEQ
-    ){
-        ////////////////////////////////////////////////////////////////////////////////////
-        //! - Set local distributions (f's) on fine source nodes:
-        //!
-        real f_000 = (distFine.f[DIR_000])[k_000]; 
-        real f_P00 = (distFine.f[DIR_P00])[k_000];
-        real f_M00 = (distFine.f[DIR_M00])[k_M00];
-        real f_0P0 = (distFine.f[DIR_0P0])[k_000];
-        real f_0M0 = (distFine.f[DIR_0M0])[k_0M0];
-        real f_00P = (distFine.f[DIR_00P])[k_000];
-        real f_00M = (distFine.f[DIR_00M])[k_00M];
-        real f_PP0 = (distFine.f[DIR_PP0])[k_000];
-        real f_MM0 = (distFine.f[DIR_MM0])[k_MM0];
-        real f_PM0 = (distFine.f[DIR_PM0])[k_0M0];
-        real f_MP0 = (distFine.f[DIR_MP0])[k_M00];
-        real f_P0P = (distFine.f[DIR_P0P])[k_000];
-        real f_M0M = (distFine.f[DIR_M0M])[k_M0M];
-        real f_P0M = (distFine.f[DIR_P0M])[k_00M];
-        real f_M0P = (distFine.f[DIR_M0P])[k_M00];
-        real f_0PP = (distFine.f[DIR_0PP])[k_000];
-        real f_0MM = (distFine.f[DIR_0MM])[k_0MM];
-        real f_0PM = (distFine.f[DIR_0PM])[k_00M];
-        real f_0MP = (distFine.f[DIR_0MP])[k_0M0];
-        real f_PPP = (distFine.f[DIR_PPP])[k_000];
-        real f_MPP = (distFine.f[DIR_MPP])[k_M00];
-        real f_PMP = (distFine.f[DIR_PMP])[k_0M0];
-        real f_MMP = (distFine.f[DIR_MMP])[k_MM0];
-        real f_PPM = (distFine.f[DIR_PPM])[k_00M];
-        real f_MPM = (distFine.f[DIR_MPM])[k_M0M];
-        real f_PMM = (distFine.f[DIR_PMM])[k_0MM];
-        real f_MMM = (distFine.f[DIR_MMM])[k_MMM];
+//////////////////////////////////////////////////////////////////////////
+//! \brief Interpolate from fine to coarse
+//! \details This scaling function is designed for the Cumulant K17 Kernel chimera collision kernel
+//! The function is executed in the following steps:
+//!
 
-        ////////////////////////////////////////////////////////////////////////////////////
-        //! - Calculate density and velocity using pyramid summation for low round-off errors as in Eq. (J1)-(J3) \ref
-        //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015),
-        //! DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
-        //!
-        drho = ((((f_PPP + f_MMM) + (f_MPM + f_PMP)) + ((f_MPP + f_PMM) + (f_MMP + f_PPM))) +
-                (((f_0MP + f_0PM) + (f_0MM + f_0PP)) + ((f_M0P + f_P0M) + (f_M0M + f_P0P)) +
-                 ((f_MP0 + f_PM0) + (f_MM0 + f_PP0))) +
-                 ((f_M00 + f_P00) + (f_0M0 + f_0P0) + (f_00M + f_00P))) +
-                   f_000;
-
-        real oneOverRho = c1o1 / (c1o1 + drho);
-
-        velocityX = ((((f_PPP - f_MMM) + (f_PMP - f_MPM)) + ((f_PMM - f_MPP) + (f_PPM - f_MMP))) +
-                     (((f_P0M - f_M0P) + (f_P0P - f_M0M)) + ((f_PM0 - f_MP0) + (f_PP0 - f_MM0))) + (f_P00 - f_M00)) *
-                    oneOverRho;
-        velocityY = ((((f_PPP - f_MMM) + (f_MPM - f_PMP)) + ((f_MPP - f_PMM) + (f_PPM - f_MMP))) +
-                     (((f_0PM - f_0MP) + (f_0PP - f_0MM)) + ((f_MP0 - f_PM0) + (f_PP0 - f_MM0))) + (f_0P0 - f_0M0)) *
-                    oneOverRho;
-        velocityZ = ((((f_PPP - f_MMM) + (f_PMP - f_MPM)) + ((f_MPP - f_PMM) + (f_MMP - f_PPM))) +
-                     (((f_0MP - f_0PM) + (f_0PP - f_0MM)) + ((f_M0P - f_P0M) + (f_P0P - f_M0M))) + (f_00P - f_00M)) *
-                    oneOverRho;
-
-        ////////////////////////////////////////////////////////////////////////////////////
-        //! - Calculate second order moments for interpolation
-        //!
-        // example: kxxMzz: moment, second derivative in x direction minus the second derivative in z direction
-        kxyFromfcNEQ =
-            -c3o1 * omegaFine *
-            ((f_MM0 + f_MMM + f_MMP - f_MP0 - f_MPM - f_MPP - f_PM0 - f_PMM - f_PMP + f_PP0 + f_PPM + f_PPP) /
-                 (c1o1 + drho) -
-             ((velocityX * velocityY)));
-        kyzFromfcNEQ =
-            -c3o1 * omegaFine *
-            ((f_0MM + f_PMM + f_MMM - f_0MP - f_PMP - f_MMP - f_0PM - f_PPM - f_MPM + f_0PP + f_PPP + f_MPP) /
-                 (c1o1 + drho) -
-             ((velocityY * velocityZ)));
-        kxzFromfcNEQ =
-            -c3o1 * omegaFine *
-            ((f_M0M + f_MMM + f_MPM - f_M0P - f_MMP - f_MPP - f_P0M - f_PMM - f_PPM + f_P0P + f_PMP + f_PPP) /
-                 (c1o1 + drho) -
-             ((velocityX * velocityZ)));
-        kxxMyyFromfcNEQ =
-            -c3o2 * omegaFine *
-            ((f_M0M + f_M00 + f_M0P - f_0MM - f_0M0 - f_0MP - f_0PM - f_0P0 - f_0PP + f_P0M + f_P00 + f_P0P) / (c1o1 + drho) -
-             ((velocityX * velocityX - velocityY * velocityY)));
-        kxxMzzFromfcNEQ =
-            -c3o2 * omegaFine *
-            ((f_MM0 + f_M00 + f_MP0 - f_0MM - f_0MP - f_00M - f_00P - f_0PM - f_0PP + f_PM0 + f_P00 + f_PP0) / (c1o1 + drho) -
-             ((velocityX * velocityX - velocityZ * velocityZ)));
-}
-
+// based on scaleFC_RhoSq_comp_27
 __global__ void scaleFC_K17_redesigned(
     real *distributionsCoarse,
     real *distributionsFine,
@@ -172,7 +73,7 @@ __global__ void scaleFC_K17_redesigned(
     //! - Return for non-interface node
     if (k_thread >= numberOfInterfaceNodes)
         return;
-    
+
     //////////////////////////////////////////////////////////////////////////
     //! - Read distributions: style of reading and writing the distributions from/to stored arrays dependent on
     //! timestep is based on the esoteric twist algorithm \ref <a
@@ -209,13 +110,13 @@ __global__ void scaleFC_K17_redesigned(
     real kxyFromfcNEQ_PMM, kyzFromfcNEQ_PMM, kxzFromfcNEQ_PMM, kxxMyyFromfcNEQ_PMM, kxxMzzFromfcNEQ_PMM;
     real kxyFromfcNEQ_MMM, kyzFromfcNEQ_MMM, kxzFromfcNEQ_MMM, kxxMyyFromfcNEQ_MMM, kxxMzzFromfcNEQ_MMM;
 
-    ////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
     //! - Calculate moments for each source node 
     //!
     //////////////////////////////////////////////////////////////////////////
     // source node BSW = MMM
     //////////////////////////////////////////////////////////////////////////
-    // index of the base node and its neighbors --> indices of all source nodes
+    // index of the base node and its neighbors
     unsigned int k_base_000 = indicesFineMMM[k_thread];
     unsigned int k_base_M00 = neighborXfine [k_base_000];
     unsigned int k_base_0M0 = neighborYfine [k_base_000];
@@ -235,7 +136,7 @@ __global__ void scaleFC_K17_redesigned(
     unsigned int k_0MM = k_base_0MM;
     unsigned int k_MMM = k_base_MMM;
 
-    calculateMomentsOnFineSourceNodes( distFine, omegaF,
+    calculateMomentsOnSourceNodes( distFine, omegaF,
         k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_MMM, vx1_MMM, vx2_MMM, vx3_MMM,
         kxyFromfcNEQ_MMM, kyzFromfcNEQ_MMM, kxzFromfcNEQ_MMM, kxxMyyFromfcNEQ_MMM, kxxMzzFromfcNEQ_MMM);
 
@@ -252,7 +153,7 @@ __global__ void scaleFC_K17_redesigned(
     k_0MM = neighborZfine[k_0MM];
     k_MMM = neighborZfine[k_MMM];
 
-    calculateMomentsOnFineSourceNodes( distFine, omegaF,
+    calculateMomentsOnSourceNodes( distFine, omegaF,
         k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_MMP, vx1_MMP, vx2_MMP, vx3_MMP,
         kxyFromfcNEQ_MMP, kyzFromfcNEQ_MMP, kxzFromfcNEQ_MMP, kxxMyyFromfcNEQ_MMP, kxxMzzFromfcNEQ_MMP);
 
@@ -269,7 +170,7 @@ __global__ void scaleFC_K17_redesigned(
     k_0MM = k_MMM;
     k_MMM = neighborXfine[k_MMM];
 
-    calculateMomentsOnFineSourceNodes( distFine, omegaF,
+    calculateMomentsOnSourceNodes( distFine, omegaF,
         k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_PMP, vx1_PMP, vx2_PMP, vx3_PMP,
         kxyFromfcNEQ_PMP, kyzFromfcNEQ_PMP, kxzFromfcNEQ_PMP, kxxMyyFromfcNEQ_PMP, kxxMzzFromfcNEQ_PMP);
 
@@ -286,7 +187,7 @@ __global__ void scaleFC_K17_redesigned(
     k_0M0 = k_base_MM0;
     k_MM0 = neighborXfine[k_base_MM0];
 
-    calculateMomentsOnFineSourceNodes( distFine, omegaF,
+    calculateMomentsOnSourceNodes( distFine, omegaF,
         k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_PMM, vx1_PMM, vx2_PMM, vx3_PMM,
         kxyFromfcNEQ_PMM, kyzFromfcNEQ_PMM, kxzFromfcNEQ_PMM, kxxMyyFromfcNEQ_PMM, kxxMzzFromfcNEQ_PMM);
 
@@ -313,7 +214,7 @@ __global__ void scaleFC_K17_redesigned(
     k_0MM = k_base_0MM;
     k_MMM = k_base_MMM;
 
-    calculateMomentsOnFineSourceNodes( distFine, omegaF,
+    calculateMomentsOnSourceNodes( distFine, omegaF,
         k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_MPM, vx1_MPM, vx2_MPM, vx3_MPM,
         kxyFromfcNEQ_MPM, kyzFromfcNEQ_MPM, kxzFromfcNEQ_MPM, kxxMyyFromfcNEQ_MPM, kxxMzzFromfcNEQ_MPM);
 
@@ -330,7 +231,7 @@ __global__ void scaleFC_K17_redesigned(
     k_0MM = neighborZfine[k_0MM];
     k_MMM = neighborZfine[k_MMM];
     
-    calculateMomentsOnFineSourceNodes( distFine, omegaF,
+    calculateMomentsOnSourceNodes( distFine, omegaF,
         k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_MPP, vx1_MPP, vx2_MPP, vx3_MPP,
         kxyFromfcNEQ_MPP, kyzFromfcNEQ_MPP, kxzFromfcNEQ_MPP, kxxMyyFromfcNEQ_MPP, kxxMzzFromfcNEQ_MPP);
 
@@ -347,7 +248,7 @@ __global__ void scaleFC_K17_redesigned(
     k_0MM = k_MMM;
     k_MMM = neighborXfine[k_MMM];
 
-    calculateMomentsOnFineSourceNodes( distFine, omegaF,
+    calculateMomentsOnSourceNodes( distFine, omegaF,
         k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_PPP, vx1_PPP, vx2_PPP, vx3_PPP,
         kxyFromfcNEQ_PPP, kyzFromfcNEQ_PPP, kxzFromfcNEQ_PPP, kxxMyyFromfcNEQ_PPP, kxxMzzFromfcNEQ_PPP);
 
@@ -364,7 +265,7 @@ __global__ void scaleFC_K17_redesigned(
     k_0M0 = k_base_MM0;
     k_MM0 = neighborXfine[k_base_MM0];
     
-    calculateMomentsOnFineSourceNodes( distFine, omegaF,
+    calculateMomentsOnSourceNodes( distFine, omegaF,
         k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_PPM, vx1_PPM, vx2_PPM, vx3_PPM,
         kxyFromfcNEQ_PPM, kyzFromfcNEQ_PPM, kxzFromfcNEQ_PPM, kxxMyyFromfcNEQ_PPM, kxxMzzFromfcNEQ_PPM);
 
@@ -511,9 +412,10 @@ __global__ void scaleFC_K17_redesigned(
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //!- Calculate coefficients for the polynomial interpolation of the pressure
     //! 
-    real LaplaceRho = ((xoff != c0o1) || (yoff != c0o1) || (zoff != c0o1))
-                      ? c0o1
-                      : -c3o1 * (a_100 * a_100 + b_010 * b_010 + c_001 * c_001) - c6o1 * (b_100 * a_010 + c_100 * a_001 + c_010 * b_001);
+    real LaplaceRho = 
+        ((xoff != c0o1) || (yoff != c0o1) || (zoff != c0o1))
+        ? c0o1
+        : -c3o1 * (a_100 * a_100 + b_010 * b_010 + c_001 * c_001) - c6o1 * (b_100 * a_010 + c_100 * a_001 + c_010 * b_001);
     d_000 = ( drho_PPM + drho_PPP + drho_MPM + drho_MPP + drho_PMM + drho_PMP + drho_MMM + drho_MMP - c2o1 * LaplaceRho) * c1o8;
     d_100 = ( drho_PPM + drho_PPP - drho_MPM - drho_MPP + drho_PMM + drho_PMP - drho_MMM - drho_MMP) * c1o4;
     d_010 = ( drho_PPM + drho_PPP + drho_MPM + drho_MPP - drho_PMM - drho_PMP - drho_MMM - drho_MMP) * c1o4;
@@ -534,6 +436,7 @@ __global__ void scaleFC_K17_redesigned(
     // |      |  \
     // x------x   \
     //          offset-vector
+    //
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     a_000 = a_000 + xoff * a_100 + yoff * a_010 + zoff * a_001 + xoff_sq * a_200 + yoff_sq * a_020 + zoff_sq * a_002 +
             xoff * yoff * a_110 + xoff * zoff * a_101 + yoff * zoff * a_011;
@@ -550,7 +453,8 @@ __global__ void scaleFC_K17_redesigned(
     c_100 = c_100 + c2o1 * xoff * c_200 + yoff * c_110 + zoff * c_101;
     c_010 = c_010 + c2o1 * yoff * c_020 + xoff * c_110 + zoff * c_011;
     c_001 = c_001 + c2o1 * zoff * c_002 + xoff * c_101 + yoff * c_011;
-    d_000 = d_000 + xoff * d_100 + yoff * d_010 + zoff * d_001 + xoff * yoff * d_110 + xoff * zoff * d_101 + yoff * zoff * d_011;
+    d_000 = d_000 + xoff * d_100 + yoff * d_010 + zoff * d_001 + 
+            xoff * yoff * d_110 + xoff * zoff * d_101 + yoff * zoff * d_011;
 
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Set all moments to zero
@@ -643,9 +547,9 @@ __global__ void scaleFC_K17_redesigned(
 
     m_000 = press; // m_000 is press, if drho is interpolated directly
 
-    vx_sq    = vvx * vvx;
-    vy_sq    = vvy * vvy;
-    vz_sq    = vvz * vvz;
+    vx_sq = vvx * vvx;
+    vy_sq = vvy * vvy;
+    vz_sq = vvz * vvz;
 
     ////////////////////////////////////////////////////////////////////////////////
     //! - Set moments (second to sixth order) on destination node
@@ -660,9 +564,9 @@ __global__ void scaleFC_K17_redesigned(
     m_101 = -c1o3 * ((a_001 + c_100) + kxzAverage) * eps_new / omegaC * (c1o1 + press);
     m_110 = -c1o3 * ((a_010 + b_100) + kxyAverage) * eps_new / omegaC * (c1o1 + press);
 
-    m_200 = c1o3 * (mxxMyy + mxxMzz + mxxPyyPzz) * NeqOn;
-    m_020 = c1o3 * (-c2o1 * mxxMyy + mxxMzz + mxxPyyPzz) * NeqOn;
-    m_002 = c1o3 * (mxxMyy - c2o1 * mxxMzz + mxxPyyPzz) * NeqOn;
+    m_200 = c1o3 * (        mxxMyy +        mxxMzz + mxxPyyPzz) * NeqOn;
+    m_020 = c1o3 * (-c2o1 * mxxMyy +        mxxMzz + mxxPyyPzz) * NeqOn;
+    m_002 = c1o3 * (        mxxMyy - c2o1 * mxxMzz + mxxPyyPzz) * NeqOn;
 
     // linear combinations for third order moments
     m_111 = c0o1;
@@ -674,11 +578,11 @@ __global__ void scaleFC_K17_redesigned(
     mxyyPxzz = c0o1;
     mxyyMxzz = c0o1;
 
-    m_210 = (mxxyMyzz + mxxyPyzz) * c1o2;
+    m_210 = ( mxxyMyzz + mxxyPyzz) * c1o2;
     m_012 = (-mxxyMyzz + mxxyPyzz) * c1o2;
-    m_201 = (mxxzMyyz + mxxzPyyz) * c1o2;
+    m_201 = ( mxxzMyyz + mxxzPyyz) * c1o2;
     m_021 = (-mxxzMyyz + mxxzPyyz) * c1o2;
-    m_120 = (mxyyMxzz + mxyyPxzz) * c1o2;
+    m_120 = ( mxyyMxzz + mxyyPxzz) * c1o2;
     m_102 = (-mxyyMxzz + mxyyPxzz) * c1o2;
 
     // fourth order moments
@@ -736,7 +640,7 @@ __global__ void scaleFC_K17_redesigned(
 
 
     ////////////////////////////////////////////////////////////////////////////////////
-    // index of the destination node and its neighbors --> indices of all source nodes
+    // index of the destination node and its neighbors
     k_000 = indicesCoarse000[k_thread];
     k_M00 = neighborXcoarse [k_000];
     k_0M0 = neighborYcoarse [k_000];

@@ -48,17 +48,21 @@ GridScalingKernelManager::GridScalingKernelManager(SPtr<Parameter> parameter, Gr
             throw std::runtime_error("There is more than one level, but no scalingFactory was provided.");
         }
         checkScalingFunction(gridScalingFactory->getGridScalingFC(), this->para->getParD(0)->intFC, "scalingFineToCoarse");
+        checkScalingFunction(gridScalingFactory->getGridScalingCF(), this->para->getParD(0)->intCF, "scalingCoarseToFine");
         this->scalingFineToCoarse = gridScalingFactory->getGridScalingFC();
+        this->scalingCoarseToFine = gridScalingFactory->getGridScalingCF();
     }
     
     if(this->scalingFineToCoarse == nullptr)
         VF_LOG_TRACE("Function for scalingFineToCoarse is nullptr");
+    if(this->scalingCoarseToFine == nullptr)
+        VF_LOG_TRACE("Function for scalingCoarseToFine is nullptr");
 }
 
-void GridScalingKernelManager::runFineToCoarseKernelLB(const int level, InterpolationCellFC* icellFC, int streamIndex) const{
+void GridScalingKernelManager::runFineToCoarseKernelLB(const int level, InterpolationCellFC *icellFC, OffFC &offFC, int streamIndex) const{
     cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
 
-    this->scalingFineToCoarse(para->getParD(level).get(), para->getParD(level+1).get(), icellFC, stream);
+    this->scalingFineToCoarse(para->getParD(level).get(), para->getParD(level+1).get(), icellFC, offFC, stream);
 
     // ScaleFC_comp_D3Q27F3(
     //     para->getParD(level)->distributions.f[0],
@@ -326,6 +330,7 @@ void GridScalingKernelManager::runFineToCoarseKernelAD(const int level) const
 void GridScalingKernelManager::runCoarseToFineKernelLB(const int level, InterpolationCellCF* icellCF, OffCF &offCF, int streamIndex) const
 {
     cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
+    this->scalingCoarseToFine(para->getParD(level).get(), para->getParD(level+1).get(), icellCF, offCF, stream);
 
     // ScaleCF_comp_D3Q27F3(
     //     para->getParD(level)->distributions.f[0],
@@ -405,32 +410,6 @@ void GridScalingKernelManager::runCoarseToFineKernelLB(const int level, Interpol
     //     para->getParD(level)->numberofthreads,
     //     offCF,
     //     stream);
-
-    ScaleCF_RhoSq_comp_27(
-        para->getParD(level)->distributions.f[0],
-        para->getParD(level + 1)->distributions.f[0],
-        para->getParD(level)->neighborX,
-        para->getParD(level)->neighborY,
-        para->getParD(level)->neighborZ,
-        para->getParD(level + 1)->neighborX,
-        para->getParD(level + 1)->neighborY,
-        para->getParD(level + 1)->neighborZ,
-        para->getParD(level)->numberOfNodes,
-        para->getParD(level + 1)->numberOfNodes,
-        para->getParD(level)->isEvenTimestep,
-        icellCF->ICellCFC,
-        icellCF->ICellCFF,
-        icellCF->kCF,
-        para->getParD(level)->omega,
-        para->getParD(level + 1)->omega,
-        para->getParD(level)->vis,
-        para->getParD(level)->nx,
-        para->getParD(level)->ny,
-        para->getParD(level + 1)->nx,
-        para->getParD(level + 1)->ny,
-        para->getParD(level)->numberofthreads,
-        offCF,
-        stream);
 
     // ScaleCF_AA2016_comp_27(
     //     para->getParD(level)->distributions.f[0],

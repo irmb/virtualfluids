@@ -37,7 +37,7 @@ private:
     void preCollisionBC(int level, unsigned int t);
     void collisionPorousMedia(int level);
 
-    void fineToCoarse(int level, InterpolationCellFC* icellFC, int streamIndex);
+    void fineToCoarse(int level, InterpolationCellFC* icellFC, OffFC &offFC, int streamIndex);
     void coarseToFine(int level, InterpolationCellCF* icellCF, OffCF &offCF, int streamIndex);
 
     void prepareExchangeMultiGPU(int level, int streamIndex);

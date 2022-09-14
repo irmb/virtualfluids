@@ -45,7 +45,7 @@ void RefinementAndExchange_streams_exchangeInterface::operator()(UpdateGrid27 *u
     //!
     //! 1. Interpolation fine to coarse for nodes which are at the border of the gpus/processes
     //!
-    updateGrid->fineToCoarse(level, &para->getParD(level)->intFCBorder, borderStreamIndex);
+    updateGrid->fineToCoarse(level, &para->getParD(level)->intFCBorder, para->getParD(level)->offFC, borderStreamIndex);
 
     //! 2. prepare the exchange between gpus (collect the send nodes for communication in a buffer on the gpu) and trigger bulk kernel execution when finished
     //!
@@ -56,7 +56,7 @@ void RefinementAndExchange_streams_exchangeInterface::operator()(UpdateGrid27 *u
     //! 3. launch the bulk kernels for both interpolation processes (fine to coarse and coarse to fine)
     //!
     para->getStreamManager()->waitOnStartBulkKernelEvent(bulkStreamIndex);
-    updateGrid->fineToCoarse(level, &para->getParD(level)->intFCBulk, bulkStreamIndex);
+    updateGrid->fineToCoarse(level, &para->getParD(level)->intFCBulk, para->getParD(level)->offFCBulk, bulkStreamIndex);
     updateGrid->coarseToFine(level, &para->getParD(level)->intCFBulk, para->getParD(level)->offCFBulk, bulkStreamIndex);
 
     //! 4. exchange information between GPUs (only nodes which are part of the interpolation)
@@ -78,7 +78,7 @@ void RefinementAndExchange_streams_exchangeAllNodes::operator()(UpdateGrid27 *up
     //!
     //! 1. interpolation fine to coarse for nodes which are at the border of the gpus/processes
     //!
-    updateGrid->fineToCoarse(level, &para->getParD(level)->intFCBorder, borderStreamIndex);
+    updateGrid->fineToCoarse(level, &para->getParD(level)->intFCBorder, para->getParD(level)->offFC, borderStreamIndex);
 
     //! 2. prepare the exchange between gpus (collect the send nodes for communication in a buffer on the gpu) and trigger bulk kernel execution when finished
     //!
@@ -89,7 +89,7 @@ void RefinementAndExchange_streams_exchangeAllNodes::operator()(UpdateGrid27 *up
     //! 3. launch the bulk kernels for both interpolation processes (fine to coarse and coarse to fine)
     //!
     para->getStreamManager()->waitOnStartBulkKernelEvent(bulkStreamIndex);
-    updateGrid->fineToCoarse(level, &para->getParD(level)->intFCBulk, bulkStreamIndex);
+    updateGrid->fineToCoarse(level, &para->getParD(level)->intFCBulk, para->getParD(level)->offFCBulk, bulkStreamIndex);
     updateGrid->coarseToFine(level, &para->getParD(level)->intCFBulk, para->getParD(level)->offCFBulk, bulkStreamIndex);
 
     //! 4. exchange information between GPUs (all nodes)
@@ -109,15 +109,14 @@ void RefinementAndExchange_noStreams_exchangeInterface::operator()(UpdateGrid27 
     //!
     //! 1. interpolation fine to coarse
     //!
-    updateGrid->fineToCoarse(level, &para->getParD(level)->intFC, -1);
+    updateGrid->fineToCoarse(level, &para->getParD(level)->intFC, para->getParD(level)->offFC, -1);
 
     //! 2. exchange information between GPUs (only nodes which are part of the interpolation)
     //!
     updateGrid->exchangeMultiGPU_noStreams_withPrepare(level, true);
 
     //! 3. interpolation coarse to fine
-    updateGrid->coarseToFine(level, &para->getParD(level)->intCF,
-                             para->getParD(level)->offCF, -1);
+    updateGrid->coarseToFine(level, &para->getParD(level)->intCF, para->getParD(level)->offCF, -1);
 }
 
 void RefinementAndExchange_noStreams_exchangeAllNodes::operator()(UpdateGrid27 *updateGrid, Parameter *para, int level)
@@ -126,15 +125,14 @@ void RefinementAndExchange_noStreams_exchangeAllNodes::operator()(UpdateGrid27 *
     //!
     //! 1. interpolation fine to coarse
     //!
-    updateGrid->fineToCoarse(level, &para->getParD(level)->intFC, -1);
-    
+    updateGrid->fineToCoarse(level, &para->getParD(level)->intFC, para->getParD(level)->offFC, -1);
+
     //! 2. exchange information between GPUs (all nodes)
     //!
     updateGrid->exchangeMultiGPU_noStreams_withPrepare(level, false);
 
     //! 3. interpolation coarse to fine
-    updateGrid->coarseToFine(level, &para->getParD(level)->intCF,
-                             para->getParD(level)->offCF, -1);
+    updateGrid->coarseToFine(level, &para->getParD(level)->intCF, para->getParD(level)->offCF, -1);
 }
 
 void Refinement_noExchange::operator()(UpdateGrid27 *updateGrid, Parameter *para, int level)
@@ -143,8 +141,7 @@ void Refinement_noExchange::operator()(UpdateGrid27 *updateGrid, Parameter *para
     //!
     //! 1. interpolation fine to coarse
     //!
-    updateGrid->fineToCoarse(level, &para->getParD(level)->intFC, -1);
+    updateGrid->fineToCoarse(level, &para->getParD(level)->intFC, para->getParD(level)->offFC, -1);
     //! 2. interpolation coarse to fine
-    updateGrid->coarseToFine(level, &para->getParD(level)->intCF,
-                             para->getParD(level)->offCF, -1);
+    updateGrid->coarseToFine(level, &para->getParD(level)->intCF, para->getParD(level)->offCF, -1);
 }
