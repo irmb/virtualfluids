@@ -139,7 +139,10 @@ gcc_9_python:
 ##                            Container Upload                               ##
 ###############################################################################
 build_poiseuille_test_container:
-  image: quay.io/singularity/singularity:v3.10.2
+  image: 
+    name: quay.io/singularity/singularity:v3.10.2
+    entrypoint: [""]
+
   stage: container_upload
 
   tags:
