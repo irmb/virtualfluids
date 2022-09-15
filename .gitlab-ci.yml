@@ -269,6 +269,30 @@ gpu_numerical_tests:
     paths:
       - $CI_PROJECT_DIR/numerical_tests_gpu_results.txt
 
+###############################################################################
+run-regression-tests:
+  stage: test
+
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: always
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - when: manual
+      allow_failure: true
+
+  needs: []
+
+  tags:
+    - gpu
+    - linux
+
+  before_script:
+    - apt-get update && apt-get -y install python3.8-venv
+    - chmod +x ./regression-tests/*
+
+  script:
+    - ./regression-tests/regression-tests.sh
 
 ###############################################################################
 ##                        Code analysis                                      ##
@@ -421,7 +445,7 @@ gcov_gcc_9:
       - coverage/
 
     reports:
-      coverage_report: 
+      coverage_report:
         coverage_format: cobertura
         path: coverage/coverage.xml
 
