@@ -152,7 +152,7 @@ build_poiseuille_test_container:
       - Containers/PoiseuilleTestContainer.sif
 
   script:
-    - singularity build Containers/PoiseuilleTestContainer.sif Python/SlurmTests/poiseuille/PoiseuilleTestContainer.def
+    - singularity build "Containers/PoiseuilleTestContainer.sif" "Python/SlurmTests/poiseuille/PoiseuilleTestContainer.def"
 
 ###############################################################################
 ##                                Tests                                      ##
