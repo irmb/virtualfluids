@@ -3236,6 +3236,33 @@ void QPrecursorDevCompZeroPress(  uint numberOfThreads, real tRatio,
 
 }
 //////////////////////////////////////////////////////////////////////////
+void PrecursorDevEQ27(  uint numberOfThreads, real tRatio,
+						real* DD, int* k_Q,
+						uint numberOfBCNodes,
+						real omega, real velocityRatio,
+						uint* neighborX, uint* neighborY, uint* neighborZ,
+						uint* neighborsNT, uint* neighborsNB, uint* neighborsST, uint* neighborsSB,
+						real* weightsNT, real* weightsNB, real* weightsST, real* weightsSB,
+						real* vxLast, real* vyLast, real* vzLast,
+						real* vxCurrent, real* vyCurrent, real* vzCurrent,
+						real velocityX, real velocityY, real velocityZ,
+						unsigned long long size_Mat, bool evenOrOdd)
+{
+
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCNodes);
+
+   PrecursorDeviceEQ27<<< grid.grid, grid.threads >>>(k_Q, numberOfBCNodes, omega, DD, 
+                                                               neighborX, neighborY, neighborZ,
+                                                               neighborsNT, neighborsNB, neighborsST, neighborsSB,
+                                                               weightsNT, weightsNB, weightsST, weightsSB,
+                                                               vxLast, vyLast, vzLast,
+                                                               vxCurrent, vyCurrent, vzCurrent, 
+                                                               velocityX, velocityY, velocityZ, 
+                                                               tRatio, velocityRatio, size_Mat, evenOrOdd);
+   getLastCudaError("PrecursorDeviceEQ27 execution failed"); 
+
+}
+//////////////////////////////////////////////////////////////////////////
 extern "C" void PropVelo(   unsigned int numberOfThreads,
                             unsigned int* neighborX,
                             unsigned int* neighborY,

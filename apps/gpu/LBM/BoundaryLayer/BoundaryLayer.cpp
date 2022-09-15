@@ -107,7 +107,7 @@ void multipleLevel(const std::string& configPath)
 
     const real L_x = 6*H;
     const real L_y = 4*H;
-    const real L_z = 0.8*H;
+    const real L_z = H;
 
     const real z0  = config.getValue("z0", 0.1f); // roughness length in m
     const real u_star = config.getValue("u_star", 0.4f); //friction velocity in m/s
@@ -194,9 +194,6 @@ void multipleLevel(const std::string& configPath)
 
     SPtr<TurbulenceModelFactory> tmFactory = SPtr<TurbulenceModelFactory>( new TurbulenceModelFactory(para) );
     tmFactory->readConfigFile( config );
-    
-    // tmFactory->setTurbulenceModel(TurbulenceModel::AMD);
-    // tmFactory->setModelConstant(config.getValue<real>("SGSconstant"));
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -214,17 +211,18 @@ void multipleLevel(const std::string& configPath)
     
     if(readPrecursor)
     {
-        auto precursor = SPtr<VTKFileCollection>( new VTKFileCollection(precursorFile) );
-
-        gridBuilder->setPrecursorBoundaryCondition(SideType::MX, 0.0f, 0.0f, 0.0f, precursor, nTReadPrecursor);
-
-        gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0f,  0.0f, -1.0f);
 
         uint samplingOffset = 2;
         gridBuilder->setStressBoundaryCondition(SideType::MZ,
                                             0.0, 0.0, 1.0,              // wall normals
                                             samplingOffset, z0/dx);     // wall model settinng
         para->setHasWallModelMonitor(true);
+
+        auto precursor = SPtr<VTKFileCollection>( new VTKFileCollection(precursorFile) );
+        
+        gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0f,  0.0f, -1.0f);
+
+        gridBuilder->setPrecursorBoundaryCondition(SideType::MX, 0.0f, 0.0f, 0.0f, precursor, nTReadPrecursor);
         
         gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.f);
     } 
@@ -243,6 +241,8 @@ void multipleLevel(const std::string& configPath)
 
     bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressPressureBounceBack);
     bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipBounceBack); 
+    bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflectivePressureCorrection);
+    para->setOutflowPressureCorrectionFactor(0.0); 
     
 
 
@@ -253,17 +253,23 @@ void multipleLevel(const std::string& configPath)
         vx  = (u_star/0.4 * log(coordZ/z0) + 2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1))  * dt / dx; 
         vy  = 2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1)  * dt / dx; 
         vz  = 8.0*u_star/0.4*(sin(cPi*8.0*coordY/H)*sin(cPi*8.0*coordZ/H)+sin(cPi*8.0*coordX/L_x))/(pow(L_z/2.0-coordZ, c2o1)+c1o1) * dt / dx;
+        if(readPrecursor)
+        {
+            vx  = u_star/0.4 * log(coordZ/z0)  * dt / dx; 
+            vy  = c0o1; 
+            vz  = c0o1;
+        }
     });
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // SPtr<PlanarAverageProbe> planarAverageProbe = SPtr<PlanarAverageProbe>( new PlanarAverageProbe("planeProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt , tStartOutProbe/dt, tOutProbe/dt, 'z') );
-    // planarAverageProbe->addAllAvailableStatistics();
-    // planarAverageProbe->setFileNameToNOut();
-    // para->addProbe( planarAverageProbe );
+    SPtr<PlanarAverageProbe> planarAverageProbe = SPtr<PlanarAverageProbe>( new PlanarAverageProbe("horizontalPlanes", para->getOutputPath(), 0, tStartTmpAveraging/dt, tAveraging/dt , tStartOutProbe/dt, tOutProbe/dt, 'z') );
+    planarAverageProbe->addAllAvailableStatistics();
+    planarAverageProbe->setFileNameToNOut();
+    para->addProbe( planarAverageProbe );
 
-    // SPtr<WallModelProbe> wallModelProbe = SPtr<WallModelProbe>( new WallModelProbe("wallModelProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt/4.0 , tStartOutProbe/dt, tOutProbe/dt) );
+    // SPtr<WallModelProbe> wallModelProbe = SPtr<WallModelProbe>( new WallModelProbe("wallModelProbe", para->getOutputPath(), 0, tStartTmpAveraging/dt, tAveraging/dt/4.0 , tStartOutProbe/dt, tOutProbe/dt) );
     // wallModelProbe->addAllAvailableStatistics();
     // wallModelProbe->setFileNameToNOut();
     // wallModelProbe->setForceOutputToStress(true);
@@ -271,9 +277,43 @@ void multipleLevel(const std::string& configPath)
     //     wallModelProbe->setEvaluatePressureGradient(true);
     // para->addProbe( wallModelProbe );
 
+    SPtr<PlaneProbe> planeProbe1 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_1", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
+    planeProbe1->setProbePlane(100.0, 0.0, 0, dx, L_y, L_z);
+    planeProbe1->addAllAvailableStatistics();
+    para->addProbe( planeProbe1 );
+
+    if(readPrecursor)
+    {
+        SPtr<PlaneProbe> planeProbe2 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_2", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
+        planeProbe2->setProbePlane(1000.0, 0.0, 0, dx, L_y, L_z);
+        planeProbe2->addAllAvailableStatistics();
+        para->addProbe( planeProbe2 );
+
+        SPtr<PlaneProbe> planeProbe3 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_3", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
+        planeProbe3->setProbePlane(1500.0, 0.0, 0, dx, L_y, L_z);
+        planeProbe3->addAllAvailableStatistics();
+        para->addProbe( planeProbe3 );
+
+        SPtr<PlaneProbe> planeProbe4 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_4", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
+        planeProbe4->setProbePlane(2000.0, 0.0, 0, dx, L_y, L_z);
+        planeProbe4->addAllAvailableStatistics();
+        para->addProbe( planeProbe4 );
+
+        SPtr<PlaneProbe> planeProbe5 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_5", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
+        planeProbe5->setProbePlane(2500.0, 0.0, 0, dx, L_y, L_z);
+        planeProbe5->addAllAvailableStatistics();
+        para->addProbe( planeProbe5 );
+
+        SPtr<PlaneProbe> planeProbe6 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_6", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
+        planeProbe6->setProbePlane(0.0, L_y/2.0, 0, L_x, dx, L_z);
+        planeProbe6->addAllAvailableStatistics();
+        para->addProbe( planeProbe6 );
+    }
+
+
     if(writePrecursor)
     {
-        SPtr<PrecursorWriter> precursorWriter = SPtr<PrecursorWriter>( new PrecursorWriter("precursorWriter", para->getOutputPath()+"/precursor", posXPrecursor, 0, L_y, 0, L_z, tStartPrecursor, nTWritePrecursor) );
+        SPtr<PrecursorWriter> precursorWriter = SPtr<PrecursorWriter>( new PrecursorWriter("precursorWriter", para->getOutputPath()+"/precursor", posXPrecursor, 0, L_y, 0, L_z, tStartPrecursor/dt, nTWritePrecursor) );
         para->addProbe(precursorWriter);
     }
 

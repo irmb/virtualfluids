@@ -483,5 +483,20 @@ void BCKernelManager::runPrecursorBCKernelPost(int level, uint t, CudaMemoryMana
                                     para->getParD(level)->precursorBC.velocityX, para->getParD(level)->precursorBC.velocityY, para->getParD(level)->precursorBC.velocityZ,
                                     para->getParD(level)->numberOfNodes, para->getParD(level)->isEvenTimestep);
         getLastCudaError("QPrecursorDevCompZeroPress execution failed");
+
+        // PrecursorDevEQ27( para->getParD(level)->numberofthreads, tRatio, para->getParD(level)->distributions.f[0],
+        //                             para->getParD(level)->precursorBC.k, para->getParD(level)->precursorBC.numberOfBCnodes, 
+        //                             para->getParD(level)->omega, para->getVelocityRatio(),
+        //                             para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ,
+        //                             para->getParD(level)->precursorBC.planeNeighborNT, para->getParD(level)->precursorBC.planeNeighborNB, para->getParD(level)->precursorBC.planeNeighborST, para->getParD(level)->precursorBC.planeNeighborSB, 
+        //                             para->getParD(level)->precursorBC.weightsNT, para->getParD(level)->precursorBC.weightsNB, para->getParD(level)->precursorBC.weightsST, para->getParD(level)->precursorBC.weightsSB, 
+        //                             para->getParD(level)->precursorBC.vxLast, para->getParD(level)->precursorBC.vyLast, para->getParD(level)->precursorBC.vzLast, 
+        //                             para->getParD(level)->precursorBC.vxCurrent, para->getParD(level)->precursorBC.vyCurrent, para->getParD(level)->precursorBC.vzCurrent, 
+        //                             para->getParD(level)->precursorBC.velocityX, para->getParD(level)->precursorBC.velocityY, para->getParD(level)->precursorBC.velocityZ,
+        //                             para->getParD(level)->numberOfNodes, para->getParD(level)->isEvenTimestep);
+        // getLastCudaError("QPrecursorDevCompZeroPress execution failed");
+
+
+        
     }
 }
