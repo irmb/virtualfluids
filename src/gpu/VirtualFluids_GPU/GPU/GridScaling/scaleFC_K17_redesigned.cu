@@ -32,7 +32,7 @@
 //=======================================================================================
 
 #include "Kernel/Utilities/DistributionHelper.cuh"
-#include "Kernel/ChimeraTransformation.h"
+#include "Kernel/Utilities/ChimeraTransformation.h"
 #include "Kernel/Utilities/ScalingHelperFunctions.h"
 
 using namespace vf::lbm::constant;

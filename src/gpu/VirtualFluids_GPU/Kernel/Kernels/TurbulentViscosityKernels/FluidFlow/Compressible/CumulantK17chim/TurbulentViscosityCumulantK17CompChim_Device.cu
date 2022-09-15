@@ -45,7 +45,7 @@
 
 using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
-#include "Kernel/ChimeraTransformation.h"
+#include "Kernel/Utilities/ChimeraTransformation.h"
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -777,7 +777,7 @@ __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
 // #include <lbm/constants/NumericConstants.h>
 
 // using namespace vf::lbm::constant;
-// #include "Kernel/ChimeraTransformation.h"
+// #include "Kernel/Utilities/ChimeraTransformation.h"
 
 // #include "Kernel/Utilities/DistributionHelper.cuh"
 
