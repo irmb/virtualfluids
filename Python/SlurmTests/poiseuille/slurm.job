@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH -J PyFluidsTest
-#SBATCH -o POISEUILLE_TEST.out
+#SBATCH -o poiseuille_test/POISEUILLE_TEST.out
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=20
@@ -10,6 +10,9 @@
 #SBATCH --partition=standard
 
 source $HOME/.bashrc
+module load singularity/3.9.9
+
+cd poiseuille_test
 
 echo "PyFluids Poiseuille Test Case"
 echo "Number of tasks: ${SLURM_NTASKS}"
