@@ -145,6 +145,9 @@ build_poiseuille_test_container:
 
   stage: container_upload
 
+  rules:
+    - if: $REMOTE_USER && $REMOTE_HOST && $PRIVATE_KEY
+
   tags:
     - linux
     - privileged
@@ -211,6 +214,9 @@ gcc_9_python_hpc_test:
   stage: test
 
   needs: ["build_poiseuille_test_container"]
+
+  rules:
+    - if: $REMOTE_USER && $REMOTE_HOST && $PRIVATE_KEY
 
   before_script:
     - pip install hpc-rocket
