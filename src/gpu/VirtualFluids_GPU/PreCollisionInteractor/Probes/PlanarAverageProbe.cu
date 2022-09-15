@@ -142,55 +142,56 @@ std::vector<PostProcessingVariable> PlanarAverageProbe::getPostProcessingVariabl
     switch (statistic)
     {
     case Statistic::SpatialMeans:
-        postProcessingVariables.push_back( PostProcessingVariable("vx_spatMean",  velocityRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("vx_spatMean",  this->velocityRatio) );
         postProcessingVariables.push_back( PostProcessingVariable("vy_spatMean",  this->velocityRatio) );
         postProcessingVariables.push_back( PostProcessingVariable("vz_spatMean",  this->velocityRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("nut_spatMean", this->viscosityRatio) );
         break;
     case Statistic::SpatioTemporalMeans:
         postProcessingVariables.push_back( PostProcessingVariable("vx_spatTmpMean",  this->velocityRatio) );
         postProcessingVariables.push_back( PostProcessingVariable("vy_spatTmpMean",  this->velocityRatio) );
         postProcessingVariables.push_back( PostProcessingVariable("vz_spatTmpMean",  this->velocityRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("nut_spatTmpMean", this->viscosityRatio) );
         break;
     case Statistic::SpatialCovariances:
-        postProcessingVariables.push_back( PostProcessingVariable("vxvx_spatMean",  pow(this->velocityRatio, 2.0)) );
-        postProcessingVariables.push_back( PostProcessingVariable("vyvy_spatMean",  pow(this->velocityRatio, 2.0)) );
-        postProcessingVariables.push_back( PostProcessingVariable("vzvz_spatMean",  pow(this->velocityRatio, 2.0)) );
-        postProcessingVariables.push_back( PostProcessingVariable("vxvy_spatMean",  pow(this->velocityRatio, 2.0)) );
-        postProcessingVariables.push_back( PostProcessingVariable("vxvz_spatMean",  pow(this->velocityRatio, 2.0)) );
-        postProcessingVariables.push_back( PostProcessingVariable("vyvz_spatMean",  pow(this->velocityRatio, 2.0)) );
+        postProcessingVariables.push_back( PostProcessingVariable("vxvx_spatMean",  this->stressRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("vyvy_spatMean",  this->stressRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("vzvz_spatMean",  this->stressRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("vxvy_spatMean",  this->stressRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("vxvz_spatMean",  this->stressRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("vyvz_spatMean",  this->stressRatio) );
         break;
     case Statistic::SpatioTemporalCovariances:
-        postProcessingVariables.push_back( PostProcessingVariable("vxvx_spatTmpMean",  pow(this->velocityRatio, 2.0)) );
-        postProcessingVariables.push_back( PostProcessingVariable("vyvy_spatTmpMean",  pow(this->velocityRatio, 2.0)) );
-        postProcessingVariables.push_back( PostProcessingVariable("vzvz_spatTmpMean",  pow(this->velocityRatio, 2.0)) );
-        postProcessingVariables.push_back( PostProcessingVariable("vxvy_spatTmpMean",  pow(this->velocityRatio, 2.0)) );
-        postProcessingVariables.push_back( PostProcessingVariable("vxvz_spatTmpMean",  pow(this->velocityRatio, 2.0)) );
-        postProcessingVariables.push_back( PostProcessingVariable("vyvz_spatTmpMean",  pow(this->velocityRatio, 2.0)) );
+        postProcessingVariables.push_back( PostProcessingVariable("vxvx_spatTmpMean",  this->stressRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("vyvy_spatTmpMean",  this->stressRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("vzvz_spatTmpMean",  this->stressRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("vxvy_spatTmpMean",  this->stressRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("vxvz_spatTmpMean",  this->stressRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("vyvz_spatTmpMean",  this->stressRatio) );
         break;
     case Statistic::SpatialSkewness:
-        postProcessingVariables.push_back( PostProcessingVariable("Sx_spatMean",  1.0) );
-        postProcessingVariables.push_back( PostProcessingVariable("Sy_spatMean",  1.0) );
-        postProcessingVariables.push_back( PostProcessingVariable("Sz_spatMean",  1.0) );
+        postProcessingVariables.push_back( PostProcessingVariable("Sx_spatMean",  this->nondimensional) );
+        postProcessingVariables.push_back( PostProcessingVariable("Sy_spatMean",  this->nondimensional) );
+        postProcessingVariables.push_back( PostProcessingVariable("Sz_spatMean",  this->nondimensional) );
         break;
     case Statistic::SpatioTemporalSkewness:
-        postProcessingVariables.push_back( PostProcessingVariable("Sx_spatTmpMean",  1.0) );
-        postProcessingVariables.push_back( PostProcessingVariable("Sy_spatTmpMean",  1.0) );
-        postProcessingVariables.push_back( PostProcessingVariable("Sz_spatTmpMean",  1.0) );
+        postProcessingVariables.push_back( PostProcessingVariable("Sx_spatTmpMean",  this->nondimensional) );
+        postProcessingVariables.push_back( PostProcessingVariable("Sy_spatTmpMean",  this->nondimensional) );
+        postProcessingVariables.push_back( PostProcessingVariable("Sz_spatTmpMean",  this->nondimensional) );
         break;
     case Statistic::SpatialFlatness:
-        postProcessingVariables.push_back( PostProcessingVariable("Fx_spatMean",  1.0) );
-        postProcessingVariables.push_back( PostProcessingVariable("Fy_spatMean",  1.0) );
-        postProcessingVariables.push_back( PostProcessingVariable("Fz_spatMean",  1.0) );
+        postProcessingVariables.push_back( PostProcessingVariable("Fx_spatMean",  this->nondimensional) );
+        postProcessingVariables.push_back( PostProcessingVariable("Fy_spatMean",  this->nondimensional) );
+        postProcessingVariables.push_back( PostProcessingVariable("Fz_spatMean",  this->nondimensional) );
         break;
     case Statistic::SpatioTemporalFlatness:
-        postProcessingVariables.push_back( PostProcessingVariable("Fx_spatTmpMean",  1.0) );
-        postProcessingVariables.push_back( PostProcessingVariable("Fy_spatTmpMean",  1.0) );
-        postProcessingVariables.push_back( PostProcessingVariable("Fz_spatTmpMean",  1.0) );
+        postProcessingVariables.push_back( PostProcessingVariable("Fx_spatTmpMean",  this->nondimensional) );
+        postProcessingVariables.push_back( PostProcessingVariable("Fy_spatTmpMean",  this->nondimensional) );
+        postProcessingVariables.push_back( PostProcessingVariable("Fz_spatTmpMean",  this->nondimensional) );
         break;
 
     default:
-        printf("Statistic unavailable in PlanarAverageProbe\n");
-        assert(false);
+        throw std::runtime_error("PlanarAverageProbe::getPostProcessingVariables: Statistic unavailable!");
         break;
     }
     return postProcessingVariables;
@@ -265,7 +266,7 @@ void PlanarAverageProbe::findPoints(Parameter* para, GridProvider* gridProvider,
 
 ///////////////////////////////////////////////////////////////////////////////////
 
-void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, uint t, int level)
+void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, uint t_level, int level)
 {   
     // Definition of normal and inplane directions for moveIndices kernels
     uint *neighborNormal, *neighborInplane1, *neighborInplane2;
@@ -288,13 +289,14 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
         neighborInplane2 = para->getParD(level)->neighborY;
     }
 
-    bool doTmpAveraging = (t>this->getTStartTmpAveraging());
+    bool doTmpAveraging = t_level>=(this->getTStartTmpAveraging()*pow(2,level));
 
     // Pointer casts to use device arrays in thrust reductions
     thrust::device_ptr<uint> indices_thrust = thrust::device_pointer_cast(probeStruct->pointIndicesD);
     thrust::device_ptr<real> vx_thrust = thrust::device_pointer_cast(para->getParD(level)->velocityX);
     thrust::device_ptr<real> vy_thrust = thrust::device_pointer_cast(para->getParD(level)->velocityY);
     thrust::device_ptr<real> vz_thrust = thrust::device_pointer_cast(para->getParD(level)->velocityZ);
+    thrust::device_ptr<real> nut_thrust = thrust::device_pointer_cast(para->getParD(level)->turbViscosity);
 
     real N = (real)probeStruct->nIndices;
     real n = (real)probeStruct->vals;
@@ -308,10 +310,12 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
     thrust::permutation_iterator<valIterator, indIterator> vy_iter_end  (vy_thrust, indices_thrust+probeStruct->nIndices);
     thrust::permutation_iterator<valIterator, indIterator> vz_iter_begin(vz_thrust, indices_thrust);
     thrust::permutation_iterator<valIterator, indIterator> vz_iter_end  (vz_thrust, indices_thrust+probeStruct->nIndices);
+    thrust::permutation_iterator<valIterator, indIterator> nut_iter_begin(nut_thrust, indices_thrust);
+    thrust::permutation_iterator<valIterator, indIterator> nut_iter_end  (nut_thrust, indices_thrust+probeStruct->nIndices);
 
     for( uint i=0; i<nPoints; i++ )
     {
-        uint node = this->isEvenTAvg? i : nPoints-1-i; // Note, loop moves in positive normal dir at even calls and in negative normal dir in odd calls
+        uint node = probeStruct->isEvenTAvg? i : nPoints-1-i; // Note, loop moves in positive normal dir at even calls and in negative normal dir in odd calls
 
         if(probeStruct->quantitiesH[int(Statistic::SpatialMeans)])
         {
@@ -320,10 +324,14 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
             real spatMean_vy = thrust::reduce(vy_iter_begin, vy_iter_end)/N;
             real spatMean_vz = thrust::reduce(vz_iter_begin, vz_iter_end)/N;
 
+            real spatMean_nut;
+            if(para->getUseTurbulentViscosity()) spatMean_nut = thrust::reduce(nut_iter_begin, nut_iter_end)/N;
+
             uint arrOff = probeStruct->arrayOffsetsH[int(Statistic::SpatialMeans)];
             probeStruct->quantitiesArrayH[(arrOff+0)*nPoints+node] = spatMean_vx;
             probeStruct->quantitiesArrayH[(arrOff+1)*nPoints+node] = spatMean_vy;
             probeStruct->quantitiesArrayH[(arrOff+2)*nPoints+node] = spatMean_vz;
+            if(para->getUseTurbulentViscosity()) probeStruct->quantitiesArrayH[(arrOff+3)*nPoints+node] = spatMean_nut;
 
             if(probeStruct->quantitiesH[int(Statistic::SpatioTemporalMeans)] && doTmpAveraging)
             {
@@ -331,10 +339,14 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
             real spatTmpMean_vx_old = probeStruct->quantitiesArrayH[(arrOff+0)*nPoints+node];
             real spatTmpMean_vy_old = probeStruct->quantitiesArrayH[(arrOff+1)*nPoints+node];
             real spatTmpMean_vz_old = probeStruct->quantitiesArrayH[(arrOff+2)*nPoints+node];
+            real spatTmpMean_nut_old;
+            if(para->getUseTurbulentViscosity()) spatTmpMean_nut_old = probeStruct->quantitiesArrayH[(arrOff+3)*nPoints+node];;
 
             probeStruct->quantitiesArrayH[(arrOff+0)*nPoints+node] += (spatMean_vx-spatTmpMean_vx_old)/n;
             probeStruct->quantitiesArrayH[(arrOff+1)*nPoints+node] += (spatMean_vy-spatTmpMean_vy_old)/n;
             probeStruct->quantitiesArrayH[(arrOff+2)*nPoints+node] += (spatMean_vz-spatTmpMean_vz_old)/n;
+            if(para->getUseTurbulentViscosity()) probeStruct->quantitiesArrayH[(arrOff+3)*nPoints+node] += (spatMean_nut-spatTmpMean_nut_old)/n;
+
             }
         
             if(probeStruct->quantitiesH[int(Statistic::SpatialCovariances)])
@@ -445,13 +457,13 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
         if(i<probeStruct->nPoints-1)
         {
             vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, probeStruct->nIndices);
-            if(this->isEvenTAvg) 
+            if(probeStruct->isEvenTAvg) 
                 moveIndicesInPosNormalDir<<<grid.grid, grid.threads>>>( probeStruct->pointIndicesD, probeStruct->nIndices, neighborNormal, para->getParD(level)->coordinateX, para->getParD(level)->coordinateY, para->getParD(level)->coordinateZ );
             else 
                 moveIndicesInNegNormalDir<<<grid.grid, grid.threads>>>( probeStruct->pointIndicesD, probeStruct->nIndices, para->getParD(level)->neighborInverse, neighborInplane1, neighborInplane2, para->getParD(level)->coordinateX, para->getParD(level)->coordinateY, para->getParD(level)->coordinateZ ); 
         } 
     }
-    this->isEvenTAvg=!this->isEvenTAvg;
+    probeStruct->isEvenTAvg=!(probeStruct->isEvenTAvg);
 
     getLastCudaError("PlanarAverageProbe::calculateQuantities execution failed");
 }

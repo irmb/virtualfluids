@@ -148,6 +148,13 @@ __inline__ __device__ real getInterpolatedDistributionForVeloBC(const real& q, c
            + (q * (f + fInverse) - c6o1 * weight * velocity) / (c1o1 + q);
 }
 
+__inline__ __device__ real getBounceBackDistributionForVeloBC(  const real& f, 
+                                                                const real& velocity, const real weight)
+{
+
+    return f - (c6o1 * weight * velocity);
+}
+
 __inline__ __device__ real getInterpolatedDistributionForNoSlipBC(const real& q, const real& f, const real& fInverse, const real& feq, 
                                                                   const real& omega)
 {

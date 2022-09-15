@@ -50,6 +50,7 @@
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlanarAverageProbe.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/WallModelProbe.h"
 #include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
+#include "VirtualFluids_GPU/TurbulenceModels/TurbulenceModelFactory.h"
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 
@@ -161,10 +162,7 @@ void multipleLevel(const std::string& configPath)
     para->setViscosityRatio( dx*dx/dt );
     para->setDensityRatio( 1.0 );
 
-    if(para->getUseAMD())
-        para->setMainKernel("TurbulentViscosityCumulantK17CompChim");
-    else
-        para->setMainKernel("CumulantK17CompChim");
+    para->setMainKernel("TurbulentViscosityCumulantK17CompChim");
 
     para->setIsBodyForce( config.getValue<bool>("bodyForce") );
 
@@ -172,15 +170,22 @@ void multipleLevel(const std::string& configPath)
     para->setTimestepOut( uint(tOut/dt) );
     para->setTimestepEnd( uint(tEnd/dt) );
 
-    // para->setTimestepOut( 100 );
-    // para->setTimestepEnd( 100000 );
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    SPtr<TurbulenceModelFactory> tmFactory = SPtr<TurbulenceModelFactory>( new TurbulenceModelFactory(para) );
+    tmFactory->readConfigFile( config );
+    
+    // tmFactory->setTurbulenceModel(TurbulenceModel::AMD);
+    // tmFactory->setModelConstant(config.getValue<real>("SGSconstant"));
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     gridBuilder->addCoarseGrid(0.0, 0.0, 0.0,
                                 L_x,  L_y,  L_z, dx);
-    // gridBuilder->setNumberOfLayers(0,0);
-    // gridBuilder->addGrid( new Cuboid( 300., 300., 300., 1000. , 1000., 600.), 1 );
+    // gridBuilder->setNumberOfLayers(12, 8);
+
+    // gridBuilder->addGrid( new Cuboid( 0.0, 0.0, 0.0, L_x,  L_y,  0.3*L_z) , 1 );
+    // para->setMaxLevel(2);
 
     gridBuilder->setPeriodicBoundaryCondition(true, true, false);
 
@@ -192,18 +197,17 @@ void multipleLevel(const std::string& configPath)
                                             0.0, 0.0, 1.0,              // wall normals
                                             samplingOffset, z0/dx);     // wall model settinng
     para->setHasWallModelMonitor(true);
-    bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressBounceBack);
+    bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressPressureBounceBack);
 
-
-    // gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
     gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0,  0.0, 0.0);
-    bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipCompressible);
+    bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipBounceBack); 
+    
 
     real cPi = 3.1415926535897932384626433832795;
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)0.0;
-        vx  = (u_star/0.4 * log(coordZ/z0) + 2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1))  * dt / dx;
-        vy  =  2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1)  * dt / dx;
+        vx  = (u_star/0.4 * log(coordZ/z0) + 2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1))  * dt / dx; 
+        vy  = 2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1)  * dt / dx; 
         vz  = 8.0*u_star/0.4*(sin(cPi*8.0*coordY/H)*sin(cPi*8.0*coordZ/H)+sin(cPi*8.0*coordX/L_x))/(pow(L_z/2.0-coordZ, c2o1)+c1o1) * dt / dx;
     });
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -225,7 +229,7 @@ void multipleLevel(const std::string& configPath)
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
     auto gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
 
-    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory);
+    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory, tmFactory);
     sim.run();
 }
 

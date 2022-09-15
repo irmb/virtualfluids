@@ -55,15 +55,14 @@ std::vector<PostProcessingVariable> PointProbe::getPostProcessingVariables(Stati
         postProcessingVariables.push_back( PostProcessingVariable("rho_mean", this->densityRatio ) );
         break;
     case Statistic::Variances:
-        postProcessingVariables.push_back( PostProcessingVariable("vx_var",  pow(this->velocityRatio, 2.0)) );
-        postProcessingVariables.push_back( PostProcessingVariable("vy_var",  pow(this->velocityRatio, 2.0)) );
-        postProcessingVariables.push_back( PostProcessingVariable("vz_var",  pow(this->velocityRatio, 2.0)) );
-        postProcessingVariables.push_back( PostProcessingVariable("rho_var", pow(this->densityRatio,  2.0)) );
+        postProcessingVariables.push_back( PostProcessingVariable("vx_var",  this->stressRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("vy_var",  this->stressRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("vz_var",  this->stressRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("rho_var", this->densityRatio) );
         break;
 
     default:
-        printf("Statistic unavailable in PointProbe\n");
-        assert(false);
+        throw std::runtime_error("PointProbe::getPostProcessingVariables: Statistic unavailable!");
         break;
     }
     return postProcessingVariables;
@@ -114,7 +113,7 @@ void PointProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* p
 void PointProbe::addProbePointsFromList(std::vector<real>& _pointCoordsX, std::vector<real>& _pointCoordsY, std::vector<real>& _pointCoordsZ)
 {
     bool isSameLength = ( (_pointCoordsX.size()==_pointCoordsY.size()) && (_pointCoordsY.size()==_pointCoordsZ.size()));
-    assert("Probe: point lists have different lengths" && isSameLength);
+    if (!isSameLength) throw std::runtime_error("Probe::addProbePointsFromList(): point lists have different lengths!");
     this->pointCoordsX.insert(this->pointCoordsX.end(), _pointCoordsX.begin(),  _pointCoordsX.end());
     this->pointCoordsY.insert(this->pointCoordsY.end(), _pointCoordsY.begin(),  _pointCoordsY.end());
     this->pointCoordsZ.insert(this->pointCoordsZ.end(), _pointCoordsZ.begin(),  _pointCoordsZ.end());
