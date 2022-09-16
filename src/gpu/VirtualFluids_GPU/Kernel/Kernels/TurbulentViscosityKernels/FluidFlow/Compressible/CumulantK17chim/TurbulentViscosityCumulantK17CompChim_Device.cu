@@ -92,15 +92,14 @@ __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
 
     //////////////////////////////////////////////////////////////////////////
     // run for all indices in size_Mat and fluid nodes
-    if ((k < numberOfLBnodes) && (typeOfGridNode[k] == GEO_FLUID)) {
+    if ((k_000 < numberOfLBnodes) && (typeOfGridNode[k_000] == GEO_FLUID)) {
         //////////////////////////////////////////////////////////////////////////
         //! - Read distributions: style of reading and writing the distributions from/to stored arrays dependent on
         //! timestep is based on the esoteric twist algorithm \ref <a
         //! href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017),
         //! DOI:10.3390/computation5020019 ]</b></a>
         //!
-        Distributions27 dist;
-        getPointersToDistributions(dist, distributions, numberOfLBnodes, isEvenTimestep);
+        Distributions27 dist = vf::gpu::getDistributionReferences27(distributions, numberOfLBnodes, isEvenTimestep);
 
         ////////////////////////////////////////////////////////////////////////////////
         //! - Set neighbor indices (necessary for indirect addressing)
@@ -682,7 +681,8 @@ __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
     }
 }
 
+template __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim < TurbulenceModel::AMD > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long numberOfLBnodes, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep);
 
-template __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim < TurbulenceModel::Smagorinsky > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep);
+template __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim < TurbulenceModel::Smagorinsky > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long numberOfLBnodes, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep);
 
-template __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim < TurbulenceModel::QR > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep);
+template __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim < TurbulenceModel::QR > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long numberOfLBnodes, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep);
