@@ -1,7 +1,4 @@
 #include "VelocitySetter.h"
-#include "GPU/CudaMemoryManager.h"
-#include "GPU/GeometryUtils.h"
-#include "Parameter/Parameter.h"
 #include "GridGenerator/grid/Grid.h"
 #include "GridGenerator/grid/BoundaryConditions/BoundaryCondition.h"
 #include <cuda/CudaGrid.h>
@@ -206,6 +203,7 @@ SPtr<VelocityReader> VTKFileCollection::createReaderForCollection()
     return std::make_shared<VTKReader>(getSelf()); 
 }
 
+
 void VelocityReader::getNeighbors(uint* neighborNT, uint* neighborNB, uint* neighborST, uint* neighborSB)
 {
     std::copy(planeNeighborNT.begin(), planeNeighborNT.end(), &neighborNT[writingOffset]);
@@ -221,6 +219,7 @@ void VelocityReader::getWeights(real* _weightsNT, real* _weightsNB, real* _weigh
     std::copy(weightsST.begin(), weightsST.end(), &_weightsST[writingOffset]);
     std::copy(weightsSB.begin(), weightsSB.end(), &_weightsSB[writingOffset]);
 }
+
 
 void VTKReader::initializeIndexVectors()
 {
@@ -260,9 +259,9 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
         real posZ = coordsZ[i];
         bool foundNT = false, foundNB = false, foundST = false, foundSB = false, foundAll = false;
 
-        for(int level=this->fileCollection->files.size()-1; level>=0; level--) // go backwards to find finest nodes first
+        for(int level= static_cast<int>(this->fileCollection->files.size())-1; level>=0; level--) // go backwards to find finest nodes first
         {
-            for(int fileId=0; fileId<this->fileCollection->files[level].size(); fileId++)
+            for(int fileId=0; static_cast<int>(fileId<this->fileCollection->files[level].size()); fileId++)
             {
                 VTKFile file = this->fileCollection->files[level][fileId][0];
                 if(!file.inBoundingBox(posY, posZ, 0.0f)) continue;

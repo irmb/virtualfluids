@@ -32,9 +32,10 @@
 //=======================================================================================
 #include "Parameter.h"
 
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <optional>
 
 #include <curand_kernel.h>
 
@@ -44,32 +45,26 @@
 
 #include "Parameter/CudaStreamManager.h"
 
-Parameter::Parameter(int numberOfProcesses, int myId)
+Parameter::Parameter() : Parameter(1, 0, {}) {}
+
+Parameter::Parameter(const vf::basics::ConfigurationFile* configData) : Parameter(1, 0, configData) {}
+
+Parameter::Parameter(int numberOfProcesses, int myId) : Parameter(numberOfProcesses, myId, {}) {}
+
+Parameter::Parameter(int numberOfProcesses, int myId, std::optional<const vf::basics::ConfigurationFile*> configData)
 {
-    this->ic.numprocs = numberOfProcesses; 
-    this->ic.myid = myId;
-    
+    this->ic.numprocs = numberOfProcesses;
+    this->ic.myProcessId = myId;
+
+    this->setQuadricLimiters(0.01, 0.01, 0.01);
+    this->setForcing(0.0, 0.0, 0.0);
+
+    if(configData)
+        readConfigData(**configData);
+
     initGridPaths();
     initGridBasePoints();
     initDefaultLBMkernelAllLevels();
-    this->setFName(this->getOutputPath() + this->getOutputPrefix());
-
-    // initLBMSimulationParameter();
-}
-
-Parameter::Parameter(const vf::basics::ConfigurationFile &configData, int numberOfProcesses, int myId)
-{
-    this->ic.numprocs = numberOfProcesses; 
-    this->ic.myid = myId;
-
-    readConfigData(configData);
-
-    initGridPaths();
-    initGridBasePoints();
-    initDefaultLBMkernelAllLevels();
-    this->setFName(this->getOutputPath() + this->getOutputPrefix());
-
-    // initLBMSimulationParameter();
 }
 
 Parameter::~Parameter() = default;
@@ -92,7 +87,7 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
         this->setPrintFiles(configData.getValue<bool>("WriteGrid"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("GeometryValues"))
-        this->setGeometryValues(configData.getValue<bool>("GeometryValues"));
+        this->setUseGeometryValues(configData.getValue<bool>("GeometryValues"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("calc2ndOrderMoments"))
         this->setCalc2ndOrderMoments(configData.getValue<bool>("calc2ndOrderMoments"));
@@ -130,12 +125,6 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
     if (configData.contains("UseWale"))
         this->setUseWale(configData.getValue<bool>("UseWale"));
     //////////////////////////////////////////////////////////////////////////
-    if (configData.contains("UseAMD"))
-        this->setUseAMD(configData.getValue<bool>("UseAMD"));
-    //////////////////////////////////////////////////////////////////////////
-    if (configData.contains("SGSconstant"))
-        this->setSGSConstant(configData.getValue<real>("SGSconstant"));
-    //////////////////////////////////////////////////////////////////////////
     if (configData.contains("UseInitNeq"))
         this->setUseInitNeq(configData.getValue<bool>("UseInitNeq"));
     //////////////////////////////////////////////////////////////////////////
@@ -146,13 +135,13 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
         this->setD3Qxx(configData.getValue<int>("D3Qxx"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("TimeEnd"))
-        this->setTEnd(configData.getValue<int>("TimeEnd"));
+        this->setTimestepEnd(configData.getValue<int>("TimeEnd"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("TimeOut"))
-        this->setTOut(configData.getValue<int>("TimeOut"));
+        this->setTimestepOut(configData.getValue<int>("TimeOut"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("TimeStartOut"))
-        this->setTStartOut(configData.getValue<int>("TimeStartOut"));
+        this->setTimestepStartOut(configData.getValue<int>("TimeStartOut"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("TimeStartCalcMedian"))
         this->setTimeCalcMedStart(configData.getValue<int>("TimeStartCalcMedian"));
@@ -191,10 +180,10 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
 
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("Viscosity_LB"))
-        this->setViscosity(configData.getValue<real>("Viscosity_LB"));
+        this->setViscosityLB(configData.getValue<real>("Viscosity_LB"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("Velocity_LB"))
-        this->setVelocity(configData.getValue<real>("Velocity_LB"));
+        this->setVelocityLB(configData.getValue<real>("Velocity_LB"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("Viscosity_Ratio_World_to_LB"))
         this->setViscosityRatio(configData.getValue<real>("Viscosity_Ratio_World_to_LB"));
@@ -372,12 +361,12 @@ void Parameter::initGridPaths(){
 
     // for multi-gpu add process id (if not already there)
     if (this->getNumprocs() > 1) {
-        gridPath += StringUtil::toString(this->getMyID()) + "/";
+        gridPath += StringUtil::toString(this->getMyProcessID()) + "/";
         ic.gridPath = gridPath;
     }
 
     //////////////////////////////////////////////////////////////////////////
-        
+
     this->setgeoVec(gridPath + "geoVec.dat");
     this->setcoordX(gridPath + "coordX.dat");
     this->setcoordY(gridPath + "coordY.dat");
@@ -415,7 +404,7 @@ void Parameter::initGridPaths(){
     this->setcpBottom2(gridPath + "cpBottom2.dat");
     this->setConcentration(gridPath + "conc.dat");
     this->setStreetVelocity(gridPath + "streetVector.dat");
-    
+
     //////////////////////////////////////////////////////////////////////////
     // Normals - Geometry
     this->setgeomBoundaryNormalX(gridPath + "geomBoundaryNormalX.dat");
@@ -430,11 +419,11 @@ void Parameter::initGridPaths(){
     this->setOutflowBoundaryNormalY(gridPath + "outletBoundaryNormalY.dat");
     this->setOutflowBoundaryNormalZ(gridPath + "outletBoundaryNormalZ.dat");
     //////////////////////////////////////////////////////////////////////////
-    
+
     //////////////////////////////////////////////////////////////////////////
     // for Multi GPU
     if (this->getNumprocs() > 1) {
-        
+
         // 3D domain decomposition
         std::vector<std::string> sendProcNeighborsX, sendProcNeighborsY, sendProcNeighborsZ;
         std::vector<std::string> recvProcNeighborsX, recvProcNeighborsY, recvProcNeighborsZ;
@@ -452,7 +441,7 @@ void Parameter::initGridPaths(){
         this->setPossNeighborFilesX(recvProcNeighborsX, "recv");
         this->setPossNeighborFilesY(recvProcNeighborsY, "recv");
         this->setPossNeighborFilesZ(recvProcNeighborsZ, "recv");
-    
+
     //////////////////////////////////////////////////////////////////////////
     }
 }
@@ -482,7 +471,7 @@ void Parameter::initDefaultLBMkernelAllLevels(){
         }
         this->setMultiKernelLevel(tmp);
     }
-    
+
     if (this->getMultiKernelOn() && this->getMultiKernel().empty()) {
         std::vector<std::string> tmp;
         for (int i = 0; i < this->getMaxLevel() + 1; i++) {
@@ -516,8 +505,8 @@ void Parameter::initLBMSimulationParameter()
         parH[i]->mem_size_bool    = sizeof(bool) * parH[i]->size_Mat;
         parH[i]->mem_size_real_yz = sizeof(real) * parH[i]->ny * parH[i]->nz;
         parH[i]->isEvenTimestep        = true;
-        parH[i]->startz           = parH[i]->gridNZ * ic.myid;
-        parH[i]->endz             = parH[i]->gridNZ * ic.myid + parH[i]->gridNZ;
+        parH[i]->startz           = parH[i]->gridNZ * ic.myProcessId;
+        parH[i]->endz             = parH[i]->gridNZ * ic.myProcessId + parH[i]->gridNZ;
         parH[i]->Lx               = (real)((1.f * parH[i]->gridNX - 1.f) / (pow(2.f, i)));
         parH[i]->Ly               = (real)((1.f * parH[i]->gridNY - 1.f) / (pow(2.f, i)));
         parH[i]->Lz               = (real)((1.f * parH[i]->gridNZ - 1.f) / (pow(2.f, i)));
@@ -668,9 +657,9 @@ void Parameter::setD3Qxx(int d3qxx)
 {
     this->D3Qxx = d3qxx;
 }
-void Parameter::setMaxLevel(int maxlevel)
+void Parameter::setMaxLevel(int numberOfLevels)
 {
-    this->maxlevel = maxlevel - 1;
+    this->maxlevel = numberOfLevels - 1;
     this->fine = this->maxlevel;
     parH.resize(this->maxlevel + 1);
     parD.resize(this->maxlevel + 1);
@@ -699,15 +688,15 @@ void Parameter::setEndXHotWall(real endXHotWall)
 {
     this->endXHotWall = endXHotWall;
 }
-void Parameter::setTEnd(unsigned int tend)
+void Parameter::setTimestepEnd(unsigned int tend)
 {
     ic.tend = tend;
 }
-void Parameter::setTOut(unsigned int tout)
+void Parameter::setTimestepOut(unsigned int tout)
 {
     ic.tout = tout;
 }
-void Parameter::setTStartOut(unsigned int tStartOut)
+void Parameter::setTimestepStartOut(unsigned int tStartOut)
 {
     ic.tStartOut = tStartOut;
 }
@@ -754,12 +743,14 @@ void Parameter::setOutputPath(std::string oPath)
         oPath += "/";
 
     ic.oPath = oPath;
+    this->setPathAndFilename(this->getOutputPath() + this->getOutputPrefix());
 }
 void Parameter::setOutputPrefix(std::string oPrefix)
 {
     ic.oPrefix = oPrefix;
+    this->setPathAndFilename(this->getOutputPath() + this->getOutputPrefix());
 }
-void Parameter::setFName(std::string fname)
+void Parameter::setPathAndFilename(std::string fname)
 {
     ic.fname = fname;
 }
@@ -788,11 +779,11 @@ void Parameter::setTemperatureBC(real TempBC)
 {
     ic.TempBC = TempBC;
 }
-void Parameter::setViscosity(real Viscosity)
+void Parameter::setViscosityLB(real Viscosity)
 {
     ic.vis = Viscosity;
 }
-void Parameter::setVelocity(real Velocity)
+void Parameter::setVelocityLB(real Velocity)
 {
     ic.u0 = Velocity;
 }
@@ -812,17 +803,61 @@ void Parameter::setPressRatio(real PressRatio)
 {
     ic.delta_press = PressRatio;
 }
+real Parameter::getViscosityRatio()
+{
+    return ic.vis_ratio;
+}
+real Parameter::getVelocityRatio()
+{
+    return ic.u0_ratio;
+}
+real Parameter::getDensityRatio()
+{
+    return ic.delta_rho;
+}
+real Parameter::getPressureRatio()
+{
+    return ic.delta_press;
+}
 real Parameter::getTimeRatio()
 {
     return this->getViscosityRatio() * pow(this->getVelocityRatio(), -2);
 }
-real Parameter::getForceRatio()
-{
-    return this->getDensityRatio() * pow(this->getViscosityRatio(), 2);
-}
 real Parameter::getLengthRatio()
 {
     return this->getViscosityRatio() / this->getVelocityRatio();
+}
+real Parameter::getForceRatio()
+{
+    return this->getDensityRatio() * this->getVelocityRatio()/this->getTimeRatio();
+}
+real Parameter::getScaledViscosityRatio(int level)
+{
+    return this->getViscosityRatio()/(level+1);
+}
+real Parameter::getScaledVelocityRatio(int level)
+{
+    return this->getVelocityRatio();
+}
+real Parameter::getScaledDensityRatio(int level)
+{
+    return this->getDensityRatio();
+}
+real Parameter::getScaledPressureRatio(int level)
+{
+    return this->getPressureRatio();
+}
+real Parameter::getScaledTimeRatio(int level)
+{
+    return this->getTimeRatio()/(level+1);
+}
+real Parameter::getScaledLengthRatio(int level)
+{
+    return this->getLengthRatio()/(level+1);
+}
+real Parameter::getScaledForceRatio(int level)
+{
+    return this->getForceRatio()*(level+1);
 }
 void Parameter::setRealX(real RealX)
 {
@@ -848,13 +883,17 @@ void Parameter::setPressOutZ(unsigned int PressOutZ)
 {
     ic.PressOutZ = PressOutZ;
 }
+void Parameter::setOutflowPressureCorrectionFactor(real pressBCrhoCorrectionFactor)
+{
+    ic.outflowPressureCorrectionFactor = pressBCrhoCorrectionFactor;
+}
 void Parameter::setMaxDev(int maxdev)
 {
     ic.maxdev = maxdev;
 }
 void Parameter::setMyID(int myid)
 {
-    ic.myid = myid;
+    ic.myProcessId = myid;
 }
 void Parameter::setNumprocs(int numprocs)
 {
@@ -938,11 +977,9 @@ void Parameter::setUseWale(bool useWale)
     if (useWale)
         setUseTurbulentViscosity(true);
 }
-void Parameter::setUseAMD(bool useAMD)
+void Parameter::setTurbulenceModel(TurbulenceModel turbulenceModel)
 {
-    ic.isAMD = useAMD;
-    if (useAMD)
-        setUseTurbulentViscosity(true);
+    ic.turbulenceModel = turbulenceModel;
 }
 void Parameter::setSGSConstant(real SGSConstant)
 {
@@ -1331,9 +1368,9 @@ void Parameter::setObj(std::string str, bool isObj)
         this->setIsOutflowNormal(isObj);
     }
 }
-void Parameter::setGeometryValues(bool GeometryValues)
+void Parameter::setUseGeometryValues(bool useGeometryValues)
 {
-    ic.GeometryValues = GeometryValues;
+    ic.GeometryValues = useGeometryValues;
 }
 void Parameter::setCalc2ndOrderMoments(bool is2ndOrderMoments)
 {
@@ -1574,7 +1611,7 @@ void Parameter::setOutflowBoundaryNormalZ(std::string outflowNormalZ)
 void Parameter::setMainKernel(std::string kernel)
 {
     this->mainKernel = kernel;
-    if (kernel.find("Stream") != std::string::npos)
+    if (kernel.find("Stream") != std::string::npos || kernel.find("Redesigned") != std::string::npos)
         this->kernelNeedsFluidNodeIndicesToRun = true;
 }
 void Parameter::setMultiKernelOn(bool isOn)
@@ -1715,7 +1752,7 @@ int Parameter::getNumberOfParticles()
 }
 bool Parameter::getEvenOrOdd(int level)
 {
-    return parH[level]->isEvenTimestep;
+	return parD[level]->isEvenTimestep;
 }
 bool Parameter::getDiffOn()
 {
@@ -1741,7 +1778,7 @@ int Parameter::getMaxLevel()
 {
     return this->maxlevel;
 }
-unsigned int Parameter::getTStart()
+unsigned int Parameter::getTimestepStart()
 {
     if (getDoRestart()) {
         return getTimeDoRestart() + 1;
@@ -1749,7 +1786,7 @@ unsigned int Parameter::getTStart()
         return 1;
     }
 }
-unsigned int Parameter::getTInit()
+unsigned int Parameter::getTimestepInit()
 {
     if (getDoRestart()) {
         return getTimeDoRestart();
@@ -1757,15 +1794,15 @@ unsigned int Parameter::getTInit()
         return 0;
     }
 }
-unsigned int Parameter::getTEnd()
+unsigned int Parameter::getTimestepEnd()
 {
     return ic.tend;
 }
-unsigned int Parameter::getTOut()
+unsigned int Parameter::getTimestepOut()
 {
     return ic.tout;
 }
-unsigned int Parameter::getTStartOut()
+unsigned int Parameter::getTimestepStartOut()
 {
     return ic.tStartOut;
 }
@@ -1781,7 +1818,7 @@ bool Parameter::getCalcCp()
 {
     return this->calcCp;
 }
-bool Parameter::getCalcParticle()
+bool Parameter::getCalcParticles()
 {
     return this->calcParticles;
 }
@@ -1849,22 +1886,6 @@ real Parameter::getVelocity()
 {
     return ic.u0;
 }
-real Parameter::getViscosityRatio()
-{
-    return ic.vis_ratio;
-}
-real Parameter::getVelocityRatio()
-{
-    return ic.u0_ratio;
-}
-real Parameter::getDensityRatio()
-{
-    return ic.delta_rho;
-}
-real Parameter::getPressRatio()
-{
-    return ic.delta_press;
-}
 real Parameter::getRealX()
 {
     return ic.RealX;
@@ -1889,13 +1910,17 @@ unsigned int Parameter::getPressOutZ()
 {
     return ic.PressOutZ;
 }
+real Parameter::getOutflowPressureCorrectionFactor()
+{
+    return ic.outflowPressureCorrectionFactor;
+}
 int Parameter::getMaxDev()
 {
     return ic.maxdev;
 }
-int Parameter::getMyID()
+int Parameter::getMyProcessID()
 {
-    return ic.myid;
+    return ic.myProcessId;
 }
 int Parameter::getNumprocs()
 {
@@ -2265,6 +2290,26 @@ unsigned int Parameter::getTimeDoRestart()
 {
     return ic.tDoRestart;
 }
+
+//=======================================================================================
+//! \brief Get current (sub)time step of a given level.
+//! \param level 
+//! \param t current time step (of level 0)
+//! \param isPostCollision whether getTimeStep is called post- (before swap) or pre- (after swap) collision
+//!
+unsigned int Parameter::getTimeStep(int level, unsigned int t, bool isPostCollision)
+{
+    if(level>this->getMaxLevel()) throw std::runtime_error("Parameter::getTimeStep: level>this->getMaxLevel()!");
+	unsigned int tLevel = t;                                                                  
+    if(level>0)
+    {
+        for(int i=1; i<level; i++){ tLevel = 1 + 2*(tLevel-1) + !this->getEvenOrOdd(i); }     
+        bool addOne = isPostCollision? !this->getEvenOrOdd(level): this->getEvenOrOdd(level); 
+        tLevel = 1 + 2*(tLevel-1) + addOne;
+    }
+	return tLevel;
+}
+
 bool Parameter::getDoCheckPoint()
 {
     return ic.doCheckPoint;
@@ -2309,9 +2354,9 @@ bool Parameter::getUseWale()
 {
     return ic.isWale;
 }
-bool Parameter::getUseAMD()
+TurbulenceModel Parameter::getTurbulenceModel()
 {
-    return ic.isAMD;
+    return ic.turbulenceModel;
 }
 bool Parameter::getUseTurbulentViscosity()
 {
@@ -2632,6 +2677,10 @@ std::unique_ptr<CudaStreamManager> &Parameter::getStreamManager()
 bool Parameter::getKernelNeedsFluidNodeIndicesToRun()
 {
     return this->kernelNeedsFluidNodeIndicesToRun;
+}
+
+void Parameter::setKernelNeedsFluidNodeIndicesToRun(bool  kernelNeedsFluidNodeIndicesToRun){
+    this->kernelNeedsFluidNodeIndicesToRun = kernelNeedsFluidNodeIndicesToRun;
 }
 
 void Parameter::initProcessNeighborsAfterFtoCX(int level)

@@ -99,8 +99,14 @@ boundaryCondition BoundaryConditionFactory::getSlipBoundaryConditionPost(bool is
         case SlipBC::SlipCompressible:
             return QSlipDevComp27;
             break;
+        case SlipBC::SlipBounceBack:
+            return BBSlipDevComp27;
+            break;
         case SlipBC::SlipCompressibleTurbulentViscosity:
             return QSlipDevCompTurbulentViscosity27;
+            break;
+        case SlipBC::SlipPressureCompressibleTurbulentViscosity:
+            return QSlipPressureDevCompTurbulentViscosity27;
             break;
         default:
             return nullptr;
@@ -126,16 +132,21 @@ boundaryCondition BoundaryConditionFactory::getPressureBoundaryConditionPre() co
         case PressureBC::OutflowNonReflective:
             return QPressNoRhoDev27;
             break;
+        case PressureBC::OutflowNonReflectivePressureCorrection:
+            return QPressZeroRhoOutflowDev27;
         default:
             return nullptr;
     }
 }
 
-boundaryConditionPara BoundaryConditionFactory::getStressBoundaryConditionPost() const
+boundaryConditionWithParameter BoundaryConditionFactory::getStressBoundaryConditionPost() const
 {
     switch (this->stressBoundaryCondition) {
         case StressBC::StressBounceBack:
             return BBStressDev27;
+            break;
+        case StressBC::StressPressureBounceBack:
+            return BBStressPressureDev27;
             break;
         case StressBC::StressCompressible:
             return QStressDevComp27;

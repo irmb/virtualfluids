@@ -4,7 +4,7 @@
 #include <DataTypes.h>
 #include <curand.h>
 
-extern "C" __global__ void LB_Kernel_WaleBySoniMalavCumulantK15Comp(real omega_in,
+__global__ void LB_Kernel_WaleBySoniMalavCumulantK15Comp(real omega_in,
 	unsigned int* bcMatD,
 	unsigned int* neighborX,
 	unsigned int* neighborY,

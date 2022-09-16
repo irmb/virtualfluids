@@ -36,9 +36,9 @@
 #include <vector>
 #include <functional>
 
-#include "global.h"
+#include "gpu/GridGenerator/global.h"
 
-#include "grid/NodeValues.h"
+#include "gpu/GridGenerator/grid/NodeValues.h"
 
 class Grid;
 

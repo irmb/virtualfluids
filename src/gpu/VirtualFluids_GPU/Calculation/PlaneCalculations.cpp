@@ -23,13 +23,13 @@ void setSizeOfPlane(Parameter* para, int lev, unsigned int z)
       for (unsigned int i=1; i<para->getParH(lev)->gridNX + 2 * STARTOFFX - 1; i++)
       {
          mm[0]= para->getParH(lev)->nx*(para->getParH(lev)->ny*k + j) + i;
-         mm[1]= mm[0]                                                                       -1; //W
-         mm[2]= mm[0]                                                -para->getParH(lev)->nx-1; //SW
-         mm[3]= mm[0]                                                -para->getParH(lev)->nx;   //S
-         mm[4]= mm[0]-(para->getParH(lev)->nx*para->getParH(lev)->ny);                          //B
-         mm[5]= mm[0]-(para->getParH(lev)->nx*para->getParH(lev)->ny)                       -1; //BW
-         mm[6]= mm[0]-(para->getParH(lev)->nx*para->getParH(lev)->ny)-para->getParH(lev)->nx;   //BS
-         mm[7]= mm[0]-(para->getParH(lev)->nx*para->getParH(lev)->ny)-para->getParH(lev)->nx-1; //BSW
+         mm[1]= mm[0]                                                                       -1; //DIR_M00
+         mm[2]= mm[0]                                                -para->getParH(lev)->nx-1; //DIR_MM0
+         mm[3]= mm[0]                                                -para->getParH(lev)->nx;   //DIR_0M0
+         mm[4]= mm[0]-(para->getParH(lev)->nx*para->getParH(lev)->ny);                          //DIR_00M
+         mm[5]= mm[0]-(para->getParH(lev)->nx*para->getParH(lev)->ny)                       -1; //DIR_M0M
+         mm[6]= mm[0]-(para->getParH(lev)->nx*para->getParH(lev)->ny)-para->getParH(lev)->nx;   //DIR_0MM
+         mm[7]= mm[0]-(para->getParH(lev)->nx*para->getParH(lev)->ny)-para->getParH(lev)->nx-1; //DIR_MMM
 
          if ( para->getParH(lev)->geo[mm[0]] != GEO_VOID ||
               para->getParH(lev)->geo[mm[1]] != GEO_VOID ||
@@ -267,7 +267,7 @@ void printPlaneConc(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 	int lev = para->getCoarse();
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//set filename
-	std::string ffnameIn = para->getFName() + UbSystem::toString(para->getMyID()) + "_" + "In" + "_PlaneConc.txt";
+	std::string ffnameIn = para->getFName() + UbSystem::toString(para->getMyProcessID()) + "_" + "In" + "_PlaneConc.txt";
 	const char* fnameIn = ffnameIn.c_str();
 	//////////////////////////////////////////////////////////////////////////
 	//set ofstream
@@ -287,7 +287,7 @@ void printPlaneConc(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//set filename
-	std::string ffnameOut1 = para->getFName() + UbSystem::toString(para->getMyID()) + "_" + "Out1" + "_PlaneConc.txt";
+	std::string ffnameOut1 = para->getFName() + UbSystem::toString(para->getMyProcessID()) + "_" + "Out1" + "_PlaneConc.txt";
 	const char* fnameOut1 = ffnameOut1.c_str();
 	//////////////////////////////////////////////////////////////////////////
 	//set ofstream
@@ -307,7 +307,7 @@ void printPlaneConc(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//set filename
-	std::string ffnameOut2 = para->getFName() + UbSystem::toString(para->getMyID()) + "_" + "Out2" + "_PlaneConc.txt";
+	std::string ffnameOut2 = para->getFName() + UbSystem::toString(para->getMyProcessID()) + "_" + "Out2" + "_PlaneConc.txt";
 	const char* fnameOut2 = ffnameOut2.c_str();
 	//////////////////////////////////////////////////////////////////////////
 	//set ofstream
@@ -342,7 +342,7 @@ void printRE(Parameter* para, CudaMemoryManager* cudaMemoryManager, int timestep
 	int lev = 0;
 	//////////////////////////////////////////////////////////////////////////
 	//set filename
-	std::string ffname = para->getFName()+StringUtil::toString<int>(para->getMyID())+"_"+StringUtil::toString<int>(timestep)+"_RE.txt";
+	std::string ffname = para->getFName()+StringUtil::toString<int>(para->getMyProcessID())+"_"+StringUtil::toString<int>(timestep)+"_RE.txt";
 	const char* fname = ffname.c_str();
 	//////////////////////////////////////////////////////////////////////////
 	//set ofstream
@@ -375,7 +375,7 @@ void printRE(Parameter* para, CudaMemoryManager* cudaMemoryManager, int timestep
 	//close file
 	ostr.close();
 	//////////////////////////////////////////////////////////////////////////
-	if (timestep == (int)para->getTEnd())
+	if (timestep == (int)para->getTimestepEnd())
 	{
 		cudaMemoryManager->cudaFreeTestRE(lev);
 	}

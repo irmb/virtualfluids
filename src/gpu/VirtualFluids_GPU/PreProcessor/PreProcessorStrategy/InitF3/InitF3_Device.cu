@@ -7,7 +7,7 @@ using namespace vf::lbm::dir;
 #include "math.h"
 
 
-extern "C" __global__ void LB_Init_F3(unsigned int* neighborX,
+__global__ void LB_Init_F3(unsigned int* neighborX,
 	unsigned int* neighborY,
 	unsigned int* neighborZ,
 	unsigned int* geoD,
@@ -41,21 +41,21 @@ extern "C" __global__ void LB_Init_F3(unsigned int* neighborX,
 			Distributions6 D;
 			if (EvenOrOdd == true)
 			{
-				D.g[E] = &G6[E   *size_Mat];
-				D.g[W] = &G6[W   *size_Mat];
-				D.g[N] = &G6[N   *size_Mat];
-				D.g[S] = &G6[S   *size_Mat];
-				D.g[T] = &G6[T   *size_Mat];
-				D.g[B] = &G6[B   *size_Mat];
+				D.g[DIR_P00] = &G6[DIR_P00   *size_Mat];
+				D.g[DIR_M00] = &G6[DIR_M00   *size_Mat];
+				D.g[DIR_0P0] = &G6[DIR_0P0   *size_Mat];
+				D.g[DIR_0M0] = &G6[DIR_0M0   *size_Mat];
+				D.g[DIR_00P] = &G6[DIR_00P   *size_Mat];
+				D.g[DIR_00M] = &G6[DIR_00M   *size_Mat];
 			}
 			else
 			{
-				D.g[W] = &G6[E   *size_Mat];
-				D.g[E] = &G6[W   *size_Mat];
-				D.g[S] = &G6[N   *size_Mat];
-				D.g[N] = &G6[S   *size_Mat];
-				D.g[B] = &G6[T   *size_Mat];
-				D.g[T] = &G6[B   *size_Mat];
+				D.g[DIR_M00] = &G6[DIR_P00   *size_Mat];
+				D.g[DIR_P00] = &G6[DIR_M00   *size_Mat];
+				D.g[DIR_0M0] = &G6[DIR_0P0   *size_Mat];
+				D.g[DIR_0P0] = &G6[DIR_0M0   *size_Mat];
+				D.g[DIR_00M] = &G6[DIR_00P   *size_Mat];
+				D.g[DIR_00P] = &G6[DIR_00M   *size_Mat];
 			}
 			//////////////////////////////////////////////////////////////////////////
 			//index
@@ -69,12 +69,12 @@ extern "C" __global__ void LB_Init_F3(unsigned int* neighborX,
 			unsigned int kb = neighborZ[k];
 			//////////////////////////////////////////////////////////////////////////
 
-			(D.g[E])[ke] = 0.0f;
-			(D.g[W])[kw] = 0.0f;
-			(D.g[N])[kn] = 0.0f;
-			(D.g[S])[ks] = 0.0f;
-			(D.g[T])[kt] = 0.0f;
-			(D.g[B])[kb] = 0.0f;
+			(D.g[DIR_P00])[ke] = 0.0f;
+			(D.g[DIR_M00])[kw] = 0.0f;
+			(D.g[DIR_0P0])[kn] = 0.0f;
+			(D.g[DIR_0M0])[ks] = 0.0f;
+			(D.g[DIR_00P])[kt] = 0.0f;
+			(D.g[DIR_00M])[kb] = 0.0f;
 		}
 	}
 }

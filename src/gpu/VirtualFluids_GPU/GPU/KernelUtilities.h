@@ -44,95 +44,95 @@ __inline__ __device__ void getPointersToDistributions(Distributions27 &dist, rea
 {
     if (isEvenTimestep)
     {
-        dist.f[E   ] = &distributionArray[E   *numberOfLBnodes];
-        dist.f[W   ] = &distributionArray[W   *numberOfLBnodes];
-        dist.f[N   ] = &distributionArray[N   *numberOfLBnodes];
-        dist.f[S   ] = &distributionArray[S   *numberOfLBnodes];
-        dist.f[T   ] = &distributionArray[T   *numberOfLBnodes];
-        dist.f[B   ] = &distributionArray[B   *numberOfLBnodes];
-        dist.f[NE  ] = &distributionArray[NE  *numberOfLBnodes];
-        dist.f[SW  ] = &distributionArray[SW  *numberOfLBnodes];
-        dist.f[SE  ] = &distributionArray[SE  *numberOfLBnodes];
-        dist.f[NW  ] = &distributionArray[NW  *numberOfLBnodes];
-        dist.f[TE  ] = &distributionArray[TE  *numberOfLBnodes];
-        dist.f[BW  ] = &distributionArray[BW  *numberOfLBnodes];
-        dist.f[BE  ] = &distributionArray[BE  *numberOfLBnodes];
-        dist.f[TW  ] = &distributionArray[TW  *numberOfLBnodes];
-        dist.f[TN  ] = &distributionArray[TN  *numberOfLBnodes];
-        dist.f[BS  ] = &distributionArray[BS  *numberOfLBnodes];
-        dist.f[BN  ] = &distributionArray[BN  *numberOfLBnodes];
-        dist.f[TS  ] = &distributionArray[TS  *numberOfLBnodes];
-        dist.f[REST] = &distributionArray[REST*numberOfLBnodes];
-        dist.f[TNE ] = &distributionArray[TNE *numberOfLBnodes];
-        dist.f[TSW ] = &distributionArray[TSW *numberOfLBnodes];
-        dist.f[TSE ] = &distributionArray[TSE *numberOfLBnodes];
-        dist.f[TNW ] = &distributionArray[TNW *numberOfLBnodes];
-        dist.f[BNE ] = &distributionArray[BNE *numberOfLBnodes];
-        dist.f[BSW ] = &distributionArray[BSW *numberOfLBnodes];
-        dist.f[BSE ] = &distributionArray[BSE *numberOfLBnodes];
-        dist.f[BNW ] = &distributionArray[BNW *numberOfLBnodes];
+        dist.f[DIR_P00   ] = &distributionArray[DIR_P00   *numberOfLBnodes];
+        dist.f[DIR_M00   ] = &distributionArray[DIR_M00   *numberOfLBnodes];
+        dist.f[DIR_0P0   ] = &distributionArray[DIR_0P0   *numberOfLBnodes];
+        dist.f[DIR_0M0   ] = &distributionArray[DIR_0M0   *numberOfLBnodes];
+        dist.f[DIR_00P   ] = &distributionArray[DIR_00P   *numberOfLBnodes];
+        dist.f[DIR_00M   ] = &distributionArray[DIR_00M   *numberOfLBnodes];
+        dist.f[DIR_PP0  ] = &distributionArray[DIR_PP0  *numberOfLBnodes];
+        dist.f[DIR_MM0  ] = &distributionArray[DIR_MM0  *numberOfLBnodes];
+        dist.f[DIR_PM0  ] = &distributionArray[DIR_PM0  *numberOfLBnodes];
+        dist.f[DIR_MP0  ] = &distributionArray[DIR_MP0  *numberOfLBnodes];
+        dist.f[DIR_P0P  ] = &distributionArray[DIR_P0P  *numberOfLBnodes];
+        dist.f[DIR_M0M  ] = &distributionArray[DIR_M0M  *numberOfLBnodes];
+        dist.f[DIR_P0M  ] = &distributionArray[DIR_P0M  *numberOfLBnodes];
+        dist.f[DIR_M0P  ] = &distributionArray[DIR_M0P  *numberOfLBnodes];
+        dist.f[DIR_0PP  ] = &distributionArray[DIR_0PP  *numberOfLBnodes];
+        dist.f[DIR_0MM  ] = &distributionArray[DIR_0MM  *numberOfLBnodes];
+        dist.f[DIR_0PM  ] = &distributionArray[DIR_0PM  *numberOfLBnodes];
+        dist.f[DIR_0MP  ] = &distributionArray[DIR_0MP  *numberOfLBnodes];
+        dist.f[DIR_000] = &distributionArray[DIR_000*numberOfLBnodes];
+        dist.f[DIR_PPP ] = &distributionArray[DIR_PPP *numberOfLBnodes];
+        dist.f[DIR_MMP ] = &distributionArray[DIR_MMP *numberOfLBnodes];
+        dist.f[DIR_PMP ] = &distributionArray[DIR_PMP *numberOfLBnodes];
+        dist.f[DIR_MPP ] = &distributionArray[DIR_MPP *numberOfLBnodes];
+        dist.f[DIR_PPM ] = &distributionArray[DIR_PPM *numberOfLBnodes];
+        dist.f[DIR_MMM ] = &distributionArray[DIR_MMM *numberOfLBnodes];
+        dist.f[DIR_PMM ] = &distributionArray[DIR_PMM *numberOfLBnodes];
+        dist.f[DIR_MPM ] = &distributionArray[DIR_MPM *numberOfLBnodes];
     }
     else
     {
-         dist.f[W   ] = &distributionArray[E   *numberOfLBnodes];
-         dist.f[E   ] = &distributionArray[W   *numberOfLBnodes];
-         dist.f[S   ] = &distributionArray[N   *numberOfLBnodes];
-         dist.f[N   ] = &distributionArray[S   *numberOfLBnodes];
-         dist.f[B   ] = &distributionArray[T   *numberOfLBnodes];
-         dist.f[T   ] = &distributionArray[B   *numberOfLBnodes];
-         dist.f[SW  ] = &distributionArray[NE  *numberOfLBnodes];
-         dist.f[NE  ] = &distributionArray[SW  *numberOfLBnodes];
-         dist.f[NW  ] = &distributionArray[SE  *numberOfLBnodes];
-         dist.f[SE  ] = &distributionArray[NW  *numberOfLBnodes];
-         dist.f[BW  ] = &distributionArray[TE  *numberOfLBnodes];
-         dist.f[TE  ] = &distributionArray[BW  *numberOfLBnodes];
-         dist.f[TW  ] = &distributionArray[BE  *numberOfLBnodes];
-         dist.f[BE  ] = &distributionArray[TW  *numberOfLBnodes];
-         dist.f[BS  ] = &distributionArray[TN  *numberOfLBnodes];
-         dist.f[TN  ] = &distributionArray[BS  *numberOfLBnodes];
-         dist.f[TS  ] = &distributionArray[BN  *numberOfLBnodes];
-         dist.f[BN  ] = &distributionArray[TS  *numberOfLBnodes];
-         dist.f[REST] = &distributionArray[REST*numberOfLBnodes];
-         dist.f[TNE ] = &distributionArray[BSW *numberOfLBnodes];
-         dist.f[TSW ] = &distributionArray[BNE *numberOfLBnodes];
-         dist.f[TSE ] = &distributionArray[BNW *numberOfLBnodes];
-         dist.f[TNW ] = &distributionArray[BSE *numberOfLBnodes];
-         dist.f[BNE ] = &distributionArray[TSW *numberOfLBnodes];
-         dist.f[BSW ] = &distributionArray[TNE *numberOfLBnodes];
-         dist.f[BSE ] = &distributionArray[TNW *numberOfLBnodes];
-         dist.f[BNW ] = &distributionArray[TSE *numberOfLBnodes];
+         dist.f[DIR_M00   ] = &distributionArray[DIR_P00   *numberOfLBnodes];
+         dist.f[DIR_P00   ] = &distributionArray[DIR_M00   *numberOfLBnodes];
+         dist.f[DIR_0M0   ] = &distributionArray[DIR_0P0   *numberOfLBnodes];
+         dist.f[DIR_0P0   ] = &distributionArray[DIR_0M0   *numberOfLBnodes];
+         dist.f[DIR_00M   ] = &distributionArray[DIR_00P   *numberOfLBnodes];
+         dist.f[DIR_00P   ] = &distributionArray[DIR_00M   *numberOfLBnodes];
+         dist.f[DIR_MM0  ] = &distributionArray[DIR_PP0  *numberOfLBnodes];
+         dist.f[DIR_PP0  ] = &distributionArray[DIR_MM0  *numberOfLBnodes];
+         dist.f[DIR_MP0  ] = &distributionArray[DIR_PM0  *numberOfLBnodes];
+         dist.f[DIR_PM0  ] = &distributionArray[DIR_MP0  *numberOfLBnodes];
+         dist.f[DIR_M0M  ] = &distributionArray[DIR_P0P  *numberOfLBnodes];
+         dist.f[DIR_P0P  ] = &distributionArray[DIR_M0M  *numberOfLBnodes];
+         dist.f[DIR_M0P  ] = &distributionArray[DIR_P0M  *numberOfLBnodes];
+         dist.f[DIR_P0M  ] = &distributionArray[DIR_M0P  *numberOfLBnodes];
+         dist.f[DIR_0MM  ] = &distributionArray[DIR_0PP  *numberOfLBnodes];
+         dist.f[DIR_0PP  ] = &distributionArray[DIR_0MM  *numberOfLBnodes];
+         dist.f[DIR_0MP  ] = &distributionArray[DIR_0PM  *numberOfLBnodes];
+         dist.f[DIR_0PM  ] = &distributionArray[DIR_0MP  *numberOfLBnodes];
+         dist.f[DIR_000] = &distributionArray[DIR_000*numberOfLBnodes];
+         dist.f[DIR_PPP ] = &distributionArray[DIR_MMM *numberOfLBnodes];
+         dist.f[DIR_MMP ] = &distributionArray[DIR_PPM *numberOfLBnodes];
+         dist.f[DIR_PMP ] = &distributionArray[DIR_MPM *numberOfLBnodes];
+         dist.f[DIR_MPP ] = &distributionArray[DIR_PMM *numberOfLBnodes];
+         dist.f[DIR_PPM ] = &distributionArray[DIR_MMP *numberOfLBnodes];
+         dist.f[DIR_MMM ] = &distributionArray[DIR_PPP *numberOfLBnodes];
+         dist.f[DIR_PMM ] = &distributionArray[DIR_MPP *numberOfLBnodes];
+         dist.f[DIR_MPM ] = &distributionArray[DIR_PMP *numberOfLBnodes];
     }
 }
 
 __inline__ __device__ void getPointersToSubgridDistances(SubgridDistances27& subgridD, real* subgridDistances, const unsigned int numberOfSubgridIndices)
 {
-    subgridD.q[E   ] = &subgridDistances[E    *numberOfSubgridIndices];
-    subgridD.q[W   ] = &subgridDistances[W    *numberOfSubgridIndices];
-    subgridD.q[N   ] = &subgridDistances[N    *numberOfSubgridIndices];
-    subgridD.q[S   ] = &subgridDistances[S    *numberOfSubgridIndices];
-    subgridD.q[T   ] = &subgridDistances[T    *numberOfSubgridIndices];
-    subgridD.q[B   ] = &subgridDistances[B    *numberOfSubgridIndices];
-    subgridD.q[NE  ] = &subgridDistances[NE   *numberOfSubgridIndices];
-    subgridD.q[SW  ] = &subgridDistances[SW   *numberOfSubgridIndices];
-    subgridD.q[SE  ] = &subgridDistances[SE   *numberOfSubgridIndices];
-    subgridD.q[NW  ] = &subgridDistances[NW   *numberOfSubgridIndices];
-    subgridD.q[TE  ] = &subgridDistances[TE   *numberOfSubgridIndices];
-    subgridD.q[BW  ] = &subgridDistances[BW   *numberOfSubgridIndices];
-    subgridD.q[BE  ] = &subgridDistances[BE   *numberOfSubgridIndices];
-    subgridD.q[TW  ] = &subgridDistances[TW   *numberOfSubgridIndices];
-    subgridD.q[TN  ] = &subgridDistances[TN   *numberOfSubgridIndices];
-    subgridD.q[BS  ] = &subgridDistances[BS   *numberOfSubgridIndices];
-    subgridD.q[BN  ] = &subgridDistances[BN   *numberOfSubgridIndices];
-    subgridD.q[TS  ] = &subgridDistances[TS   *numberOfSubgridIndices];
-    subgridD.q[REST] = &subgridDistances[REST *numberOfSubgridIndices];
-    subgridD.q[TNE ] = &subgridDistances[TNE  *numberOfSubgridIndices];
-    subgridD.q[TSW ] = &subgridDistances[TSW  *numberOfSubgridIndices];
-    subgridD.q[TSE ] = &subgridDistances[TSE  *numberOfSubgridIndices];
-    subgridD.q[TNW ] = &subgridDistances[TNW  *numberOfSubgridIndices];
-    subgridD.q[BNE ] = &subgridDistances[BNE  *numberOfSubgridIndices];
-    subgridD.q[BSW ] = &subgridDistances[BSW  *numberOfSubgridIndices];
-    subgridD.q[BSE ] = &subgridDistances[BSE  *numberOfSubgridIndices];
-    subgridD.q[BNW ] = &subgridDistances[BNW  *numberOfSubgridIndices];
+    subgridD.q[DIR_P00   ] = &subgridDistances[DIR_P00    *numberOfSubgridIndices];
+    subgridD.q[DIR_M00   ] = &subgridDistances[DIR_M00    *numberOfSubgridIndices];
+    subgridD.q[DIR_0P0   ] = &subgridDistances[DIR_0P0    *numberOfSubgridIndices];
+    subgridD.q[DIR_0M0   ] = &subgridDistances[DIR_0M0    *numberOfSubgridIndices];
+    subgridD.q[DIR_00P   ] = &subgridDistances[DIR_00P    *numberOfSubgridIndices];
+    subgridD.q[DIR_00M   ] = &subgridDistances[DIR_00M    *numberOfSubgridIndices];
+    subgridD.q[DIR_PP0  ] = &subgridDistances[DIR_PP0   *numberOfSubgridIndices];
+    subgridD.q[DIR_MM0  ] = &subgridDistances[DIR_MM0   *numberOfSubgridIndices];
+    subgridD.q[DIR_PM0  ] = &subgridDistances[DIR_PM0   *numberOfSubgridIndices];
+    subgridD.q[DIR_MP0  ] = &subgridDistances[DIR_MP0   *numberOfSubgridIndices];
+    subgridD.q[DIR_P0P  ] = &subgridDistances[DIR_P0P   *numberOfSubgridIndices];
+    subgridD.q[DIR_M0M  ] = &subgridDistances[DIR_M0M   *numberOfSubgridIndices];
+    subgridD.q[DIR_P0M  ] = &subgridDistances[DIR_P0M   *numberOfSubgridIndices];
+    subgridD.q[DIR_M0P  ] = &subgridDistances[DIR_M0P   *numberOfSubgridIndices];
+    subgridD.q[DIR_0PP  ] = &subgridDistances[DIR_0PP   *numberOfSubgridIndices];
+    subgridD.q[DIR_0MM  ] = &subgridDistances[DIR_0MM   *numberOfSubgridIndices];
+    subgridD.q[DIR_0PM  ] = &subgridDistances[DIR_0PM   *numberOfSubgridIndices];
+    subgridD.q[DIR_0MP  ] = &subgridDistances[DIR_0MP   *numberOfSubgridIndices];
+    subgridD.q[DIR_000] = &subgridDistances[DIR_000 *numberOfSubgridIndices];
+    subgridD.q[DIR_PPP ] = &subgridDistances[DIR_PPP  *numberOfSubgridIndices];
+    subgridD.q[DIR_MMP ] = &subgridDistances[DIR_MMP  *numberOfSubgridIndices];
+    subgridD.q[DIR_PMP ] = &subgridDistances[DIR_PMP  *numberOfSubgridIndices];
+    subgridD.q[DIR_MPP ] = &subgridDistances[DIR_MPP  *numberOfSubgridIndices];
+    subgridD.q[DIR_PPM ] = &subgridDistances[DIR_PPM  *numberOfSubgridIndices];
+    subgridD.q[DIR_MMM ] = &subgridDistances[DIR_MMM  *numberOfSubgridIndices];
+    subgridD.q[DIR_PMM ] = &subgridDistances[DIR_PMM  *numberOfSubgridIndices];
+    subgridD.q[DIR_MPM ] = &subgridDistances[DIR_MPM  *numberOfSubgridIndices];
 }
 
 __inline__ __device__ real getEquilibriumForBC(const real& drho, const real& velocity, const real& cu_sq, const real weight)
@@ -146,6 +146,13 @@ __inline__ __device__ real getInterpolatedDistributionForVeloBC(const real& q, c
 
     return (c1o1-q) / (c1o1+q) * (f - fInverse + (f + fInverse - c2o1 * feq * omega) / (c1o1 - omega)) * c1o2 
            + (q * (f + fInverse) - c6o1 * weight * velocity) / (c1o1 + q);
+}
+
+__inline__ __device__ real getBounceBackDistributionForVeloBC(  const real& f, 
+                                                                const real& velocity, const real weight)
+{
+
+    return f - (c6o1 * weight * velocity);
 }
 
 __inline__ __device__ real getInterpolatedDistributionForNoSlipBC(const real& q, const real& f, const real& fInverse, const real& feq, 

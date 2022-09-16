@@ -32,16 +32,19 @@
 //=======================================================================================
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
+#include <iostream>
+#include <stdexcept>
+#include <string>
 
 #include "BCKernelManager.h"
-#include "Parameter/Parameter.h"
-#include "GPU/GPU_Interface.h"
-#include "Calculation/DragLift.h"
-#include "Calculation/Cp.h"
 #include "BoundaryConditions/BoundaryConditionFactory.h"
-#include "gpu/VirtualFluids_GPU/PreCollisionInteractor/VelocitySetter.h"
+#include "GridGenerator/VelocitySetter/VelocitySetter.h"
+#include "Calculation/Cp.h"
+#include "Calculation/DragLift.h"
+#include "GPU/GPU_Interface.h"
+#include "Parameter/Parameter.h"
 
-BCKernelManager::BCKernelManager(SPtr<Parameter> parameter, BoundaryConditionFactory* bcFactory): para(parameter)
+BCKernelManager::BCKernelManager(SPtr<Parameter> parameter, BoundaryConditionFactory *bcFactory) : para(parameter)
 {
     this->velocityBoundaryConditionPost = bcFactory->getVelocityBoundaryConditionPost();
     this->noSlipBoundaryConditionPost   = bcFactory->getNoSlipBoundaryConditionPost();
@@ -49,6 +52,19 @@ BCKernelManager::BCKernelManager(SPtr<Parameter> parameter, BoundaryConditionFac
     this->pressureBoundaryConditionPre  = bcFactory->getPressureBoundaryConditionPre();
     this->geometryBoundaryConditionPost = bcFactory->getGeometryBoundaryConditionPost();
     this->stressBoundaryConditionPost   = bcFactory->getStressBoundaryConditionPost();
+
+    checkBoundaryCondition(this->velocityBoundaryConditionPost, this->para->getParD(0)->velocityBC,
+                           "velocityBoundaryConditionPost");
+    checkBoundaryCondition(this->noSlipBoundaryConditionPost, this->para->getParD(0)->noSlipBC,
+                           "noSlipBoundaryConditionPost");
+    checkBoundaryCondition(this->slipBoundaryConditionPost, this->para->getParD(0)->slipBC,
+                           "slipBoundaryConditionPost");
+    checkBoundaryCondition(this->pressureBoundaryConditionPre, this->para->getParD(0)->pressureBC,
+                           "pressureBoundaryConditionPre");
+    checkBoundaryCondition(this->geometryBoundaryConditionPost, this->para->getParD(0)->geometryBC,
+                           "geometryBoundaryConditionPost");
+    checkBoundaryCondition(this->stressBoundaryConditionPost, this->para->getParD(0)->stressBC,
+                           "stressBoundaryConditionPost");
 }
 
 void BCKernelManager::runVelocityBCKernelPre(const int level) const
@@ -159,7 +175,7 @@ void BCKernelManager::runGeoBCKernelPre(const int level, unsigned int t, CudaMem
             //Calculation of cp
             ////////////////////////////////////////////////////////////////////////////////
 
-            if(t > para->getTStartOut())
+            if(t > para->getTimestepStartOut())
             {
                 ////////////////////////////////////////////////////////////////////////////////
                 CalcCPtop27(
@@ -467,5 +483,20 @@ void BCKernelManager::runPrecursorBCKernelPost(int level, uint t, CudaMemoryMana
                                     para->getParD(level)->precursorBC.velocityX, para->getParD(level)->precursorBC.velocityY, para->getParD(level)->precursorBC.velocityZ,
                                     para->getParD(level)->numberOfNodes, para->getParD(level)->isEvenTimestep);
         getLastCudaError("QPrecursorDevCompZeroPress execution failed");
+
+        // PrecursorDevEQ27( para->getParD(level)->numberofthreads, tRatio, para->getParD(level)->distributions.f[0],
+        //                             para->getParD(level)->precursorBC.k, para->getParD(level)->precursorBC.numberOfBCnodes, 
+        //                             para->getParD(level)->omega, para->getVelocityRatio(),
+        //                             para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ,
+        //                             para->getParD(level)->precursorBC.planeNeighborNT, para->getParD(level)->precursorBC.planeNeighborNB, para->getParD(level)->precursorBC.planeNeighborST, para->getParD(level)->precursorBC.planeNeighborSB, 
+        //                             para->getParD(level)->precursorBC.weightsNT, para->getParD(level)->precursorBC.weightsNB, para->getParD(level)->precursorBC.weightsST, para->getParD(level)->precursorBC.weightsSB, 
+        //                             para->getParD(level)->precursorBC.vxLast, para->getParD(level)->precursorBC.vyLast, para->getParD(level)->precursorBC.vzLast, 
+        //                             para->getParD(level)->precursorBC.vxCurrent, para->getParD(level)->precursorBC.vyCurrent, para->getParD(level)->precursorBC.vzCurrent, 
+        //                             para->getParD(level)->precursorBC.velocityX, para->getParD(level)->precursorBC.velocityY, para->getParD(level)->precursorBC.velocityZ,
+        //                             para->getParD(level)->numberOfNodes, para->getParD(level)->isEvenTimestep);
+        // getLastCudaError("QPrecursorDevCompZeroPress execution failed");
+
+
+        
     }
 }

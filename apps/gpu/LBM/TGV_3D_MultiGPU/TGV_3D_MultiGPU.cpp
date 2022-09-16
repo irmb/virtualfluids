@@ -109,12 +109,12 @@ std::string simulationName("TGV_3D");
 
 void multipleLevel(const std::string& configPath)
 {
-    
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     int sideLengthX, sideLengthY, sideLengthZ, rankX, rankY, rankZ;
 
-    
+
     if      (mpiWorldSize == 1 ) { sideLengthX = 1; sideLengthY = 1; sideLengthZ = 1; }
     else if (mpiWorldSize == 2 ) { sideLengthX = 2; sideLengthY = 1; sideLengthZ = 1; }
     else if (mpiWorldSize == 4 ) { sideLengthX = 2; sideLengthY = 2; sideLengthZ = 1; }
@@ -129,7 +129,7 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     logging::Logger::addStream(&std::cout);
-    
+
     std::ofstream logFile( path + simulationName + "_rank_" + std::to_string(mpirank) + ".log" );
     logging::Logger::addStream(&logFile);
 
@@ -147,10 +147,10 @@ void multipleLevel(const std::string& configPath)
     //gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_UNDER_TRIANGLE);
 
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
-    
+
     vf::basics::ConfigurationFile config;
     config.load(configPath);
-    SPtr<Parameter> para = std::make_shared<Parameter>(config, communicator.getNummberOfProcess(), communicator.getPID());
+    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNummberOfProcess(), communicator.getPID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
 
     *logging::out << logging::Logger::INFO_HIGH << "SideLength = " << sideLengthX << " " << sideLengthY << " " << sideLengthZ << "\n";
@@ -194,7 +194,7 @@ void multipleLevel(const std::string& configPath)
     gridBuilder->addCoarseGrid(  rankX   *LX - PI - xOverlap,      rankY   *LY - PI - yOverlap,      rankZ   *LZ - PI - zOverlap,
                                 (rankX+1)*LX - PI + xOverlap,     (rankY+1)*LY - PI + yOverlap,     (rankZ+1)*LZ - PI + zOverlap, dx);
 
-    gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>( rankX*LX - PI, (rankX+1)*LX - PI, 
+    gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>( rankX*LX - PI, (rankX+1)*LX - PI,
                                                                  rankY*LY - PI, (rankY+1)*LY - PI,
                                                                  rankZ*LZ - PI, (rankZ+1)*LZ - PI  ) );
 
@@ -249,28 +249,26 @@ void multipleLevel(const std::string& configPath)
 
     //para->setDevices(std::vector<uint>{0,1});
     para->setDevices(devices);
-	
+
 	para->setMaxDev(mpiWorldSize);
 
     //////////////////////////////////////////////////////////////////////////
-    
+
     para->setOutputPath( path );
     para->setOutputPrefix( simulationName );
 
-    para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
-
     para->setPrintFiles(true);
 
- //   para->setTEnd( 40 * lround(L/velocity) );	
-	//para->setTOut(  5 * lround(L/velocity) );
-	para->setTOut(  100  );
+ //   para->setTimestepEnd( 40 * lround(L/velocity) );
+	//para->setTimestepOut(  5 * lround(L/velocity) );
+	para->setTimestepOut(  100  );
 
-    para->setTEnd( 1000 );	
-	//para->setTOut(    1 );
+    para->setTimestepEnd( 1000 );
+	//para->setTimestepOut(    1 );
 
-    para->setVelocity( velocity );
+    para->setVelocityLB( velocity );
 
-    para->setViscosity( viscosity );
+    para->setViscosityLB( viscosity );
 
     para->setVelocityRatio( 1.0 / velocity );
 
@@ -310,7 +308,7 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
+
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
     SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
     //SPtr<GridProvider> gridGenerator = GridProvider::makeGridReader(FILEFORMAT::BINARY, para, cudaMemoryManager);
@@ -318,7 +316,7 @@ void multipleLevel(const std::string& configPath)
     SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
     Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory);
     sim.run();
-    
+
     sim.addKineticEnergyAnalyzer( 10 );
     sim.addEnstrophyAnalyzer( 10 );
 
@@ -331,11 +329,11 @@ void multipleLevel(const std::string& configPath)
 int main( int argc, char* argv[])
 {
     MPI_Init(&argc, &argv);
-    std::string str, str2; 
+    std::string str, str2;
     if ( argv != NULL )
     {
         //str = static_cast<std::string>(argv[0]);
-        
+
         try
         {
             MPI_Comm_rank(MPI_COMM_WORLD, &mpirank);
@@ -407,14 +405,14 @@ int main( int argc, char* argv[])
 		}
         catch (const std::bad_alloc& e)
         {
-                
+
             *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
             //std::cout << e.what() << std::flush;
             //MPI_Abort(MPI_COMM_WORLD, -1);
         }
         catch (const std::exception& e)
         {
-                
+
             *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
             //std::cout << e.what() << std::flush;
             //MPI_Abort(MPI_COMM_WORLD, -1);

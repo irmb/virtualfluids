@@ -1,19 +1,46 @@
-#include "TurbulentViscosity.h"
-#include "Core/DataTypes.h"
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file TurbulentViscosityKernels.cu
+//! \ingroup GPU
+//! \author Henry Korb, Henrik Asmuth
+//======================================================================================
+
+#include "TurbulentViscosityKernels.h"
 #include "lbm/constants/NumericConstants.h"
 #include "Parameter/Parameter.h"
 #include "cuda/CudaGrid.h"
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
 #include "LBM/LB.h"
+#include "Kernel/Utilities/DistributionHelper.cuh"
 
 using namespace vf::lbm::constant;
-
-__host__ __device__ __forceinline__ real calcDamping(real kappa, real xPos, real x0, real x1)
-{
-    real x = max((xPos-x0)/(x1-x0), 0.f);
-    return kappa*x*x*(3-2*x); // polynomial with f(0)=0, f'(0) = 0, f(1) = 1, f'(1)=0
-}
 
 __host__ __device__ __forceinline__ void calcDerivatives(const uint& k, uint& kM, uint& kP, uint* typeOfGridNode, real* vx, real* vy, real* vz, real& dvx, real& dvy, real& dvz)
 {
@@ -30,25 +57,15 @@ __global__ void calcAMD(real* vx,
                         real* vy,
                         real* vz,
                         real* turbulentViscosity,
-                        real viscosity,
                         uint* neighborX,
                         uint* neighborY,
                         uint* neighborZ,
                         uint* neighborWSB,
-                        real* coordX,
                         uint* typeOfGridNode,
                         uint size_Mat,
                         real SGSConstant)
 {
-
-    const uint x = threadIdx.x; 
-    const uint y = blockIdx.x; 
-    const uint z = blockIdx.y; 
-
-    const uint nx = blockDim.x;
-    const uint ny = gridDim.x;
-
-    const uint k = nx*(ny*z + y) + x;
+    const uint k = vf::gpu::getNodeIndex();
     if(k >= size_Mat) return;
     if(typeOfGridNode[k] != GEO_FLUID) return;
 
@@ -78,18 +95,8 @@ __global__ void calcAMD(real* vx,
                         (dvxdx*dvzdx + dvxdy*dvzdy + dvxdz*dvzdz) * (dvxdz+dvzdx) + 
                         (dvydx*dvzdx + dvydy*dvzdy + dvydz*dvzdz) * (dvydz+dvzdy);
 
-    // const real kappa = 10000.f; // multiplier of the viscosity 
-    // const real x0 = 5500.f; // start of damping layer
-    // const real x1 = 6000.f; // total length of domain
-    // real xPos = coordX[k];
-    real nuDamping = 0.0f; //calcDamping(kappa, xPos, x0, x1)*viscosity;
-    real nuSGS = max(c0o1,-SGSConstant*enumerator)/denominator;
-
-    real nu = nuSGS + nuDamping;
-    // if(k >= 800600 && k <= 800637) printf("k %d x %f nu %f nu SGS %f nu damping %f \n ", k, xPos, nu, nuSGS, nuDamping);
-    turbulentViscosity[k] = nu;
+    turbulentViscosity[k] = denominator != c0o1 ? max(c0o1,-SGSConstant*enumerator)/denominator : c0o1;
 }
-
 
 void calcTurbulentViscosityAMD(Parameter* para, int level)
 {
@@ -99,12 +106,10 @@ void calcTurbulentViscosityAMD(Parameter* para, int level)
         para->getParD(level)->velocityY,
         para->getParD(level)->velocityZ,
         para->getParD(level)->turbViscosity,
-        para->getViscosity(),
         para->getParD(level)->neighborX,
         para->getParD(level)->neighborY,
         para->getParD(level)->neighborZ,
         para->getParD(level)->neighborInverse,
-        para->getParD(level)->coordinateX,
         para->getParD(level)->typeOfGridNode,
         para->getParD(level)->numberOfNodes,
         para->getSGSConstant()
@@ -112,3 +117,12 @@ void calcTurbulentViscosityAMD(Parameter* para, int level)
     getLastCudaError("calcAMD execution failed");
 }
     
+__inline__ __device__ real calcTurbulentViscosityQR(real C, real dxux, real dyuy, real dzuz, real Dxy, real Dxz , real Dyz)
+{
+        // ! Verstappen's QR model
+        //! Second invariant of the strain-rate tensor
+        real Q = c1o2*( dxux*dxux + dyuy*dyuy + dzuz*dzuz ) + c1o4*( Dxy*Dxy + Dxz*Dxz + Dyz*Dyz);
+        //! Third invariant of the strain-rate tensor (determinant)
+        real R = - dxux*dyuy*dzuz - c1o4*( Dxy*Dxz*Dyz + dxux*Dyz*Dyz + dyuy*Dxz*Dxz + dzuz*Dxy*Dxy );
+        return C * max(R, c0o1) / Q;
+}

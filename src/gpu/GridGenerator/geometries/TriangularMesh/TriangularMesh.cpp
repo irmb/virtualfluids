@@ -58,9 +58,9 @@ TriangularMesh* TriangularMesh::make(const std::string& fileName, const std::vec
 
 TriangularMesh::TriangularMesh(const std::string& input, const BoundingBox& box)
 {
-	this->triangleVec = STLReader::readSTL(box, input);
-	initalizeDataFromTriangles();
-	this->findNeighbors();
+    this->triangleVec = STLReader::readSTL(box, input);
+    initalizeDataFromTriangles();
+    this->findNeighbors();
 }
 
 TriangularMesh::TriangularMesh(const std::string& inputPath, const std::vector<uint> ignorePatches)
@@ -76,12 +76,7 @@ TriangularMesh::TriangularMesh(const std::string& inputPath, const std::vector<u
 
 TriangularMesh::TriangularMesh()
 {
-	this->minmax = BoundingBox::makeInvalidMinMaxBox();  // blame Lenz
-}
-
-TriangularMesh::~TriangularMesh()
-{
-
+    this->minmax = BoundingBox::makeInvalidMinMaxBox();  // blame Lenz
 }
 
 Object* TriangularMesh::clone() const
@@ -100,12 +95,12 @@ uint TriangularMesh::getNumberOfTriangles() const
 
 void TriangularMesh::findNeighbors()
 {
-	*logging::out << logging::Logger::INFO_INTERMEDIATE << "start finding neighbors ...\n";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "start finding neighbors ...\n";
 
     auto t = Timer::makeStart();
 
-	TriangleNeighborFinder finder(triangles, size);
-	finder.fillWithNeighborAngles(this);
+    TriangleNeighborFinder finder(triangles, size);
+    finder.fillWithNeighborAngles(this);
 
     t->end();
 
@@ -114,19 +109,19 @@ void TriangularMesh::findNeighbors()
 
 void TriangularMesh::setTriangles(std::vector<Triangle> triangles)
 {
-	this->triangleVec = triangles;
-	initalizeDataFromTriangles();
+    this->triangleVec = triangles;
+    initalizeDataFromTriangles();
 }
 
 void TriangularMesh::setMinMax(BoundingBox minmax)
 {
-	this->minmax = minmax;
+    this->minmax = minmax;
 }
 
 void TriangularMesh::initalizeDataFromTriangles()
 {
-	this->triangles = triangleVec.data();
-	this->size = long(triangleVec.size());
+    this->triangles = triangleVec.data();
+    this->size = long(triangleVec.size());
 
     for (std::size_t i = 0; i < (size_t)this->size; i++) {
         this->minmax.setMinMax(this->triangleVec[i]);
@@ -201,7 +196,7 @@ void TriangularMesh::scale(double offset)
     auto averrageNormals = getAverrageNormalsPerVertex(trianglesPerVertex);
 
 
-    for (std::size_t vertexID = 0; vertexID < this->getNumberOfTriangles() * 3; vertexID++)
+    for (uint vertexID = 0; vertexID < this->getNumberOfTriangles() * 3; vertexID++)
     {
         int coordinatedID = finder.sortedToTriangles[vertexID][IDS::coordinateID];
         Vertex averrageNormal = averrageNormals[coordinatedID];

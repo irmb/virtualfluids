@@ -21,6 +21,7 @@ public:
     KernelGroup getKernelGroup();
 
     void setCheckParameterStrategy(std::shared_ptr<CheckParameterStrategy> strategy);
+    bool getKernelUsesFluidNodeIndices();
 
 protected:
     KernelImp(std::shared_ptr<Parameter> para, int level);
@@ -33,6 +34,8 @@ protected:
     KernelGroup myKernelGroup;
 
     vf::cuda::CudaGrid cudaGrid;
+
+    bool kernelUsesFluidNodeIndices = false;
 };
 
 #endif

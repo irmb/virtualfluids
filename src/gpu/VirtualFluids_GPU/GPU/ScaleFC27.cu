@@ -14,7 +14,7 @@ using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFC_0817_comp_27( real* DC, 
+__global__ void scaleFC_0817_comp_27( real* DC, 
 												 real* DF, 
 												 unsigned int* neighborCX,
 												 unsigned int* neighborCY,
@@ -43,33 +43,33 @@ extern "C" __global__ void scaleFC_0817_comp_27( real* DC,
 	   *f000source, *fMMMsource, *fMMPsource, *fMPPsource, *fMPMsource, *fPPMsource, *fPPPsource, *fPMPsource, *fPMMsource;
 
 
-   fP00source = &DF[E   *size_MatF];
-   fM00source = &DF[W   *size_MatF];
-   f0P0source = &DF[N   *size_MatF];
-   f0M0source = &DF[S   *size_MatF];
-   f00Psource = &DF[T   *size_MatF];
-   f00Msource = &DF[B   *size_MatF];
-   fPP0source = &DF[NE  *size_MatF];
-   fMM0source = &DF[SW  *size_MatF];
-   fPM0source = &DF[SE  *size_MatF];
-   fMP0source = &DF[NW  *size_MatF];
-   fP0Psource = &DF[TE  *size_MatF];
-   fM0Msource = &DF[BW  *size_MatF];
-   fP0Msource = &DF[BE  *size_MatF];
-   fM0Psource = &DF[TW  *size_MatF];
-   f0PPsource = &DF[TN  *size_MatF];
-   f0MMsource = &DF[BS  *size_MatF];
-   f0PMsource = &DF[BN  *size_MatF];
-   f0MPsource = &DF[TS  *size_MatF];
-   f000source = &DF[REST*size_MatF];
-   fMMMsource = &DF[BSW *size_MatF];
-   fMMPsource = &DF[TSW *size_MatF];
-   fMPPsource = &DF[TNW *size_MatF];
-   fMPMsource = &DF[BNW *size_MatF];
-   fPPMsource = &DF[BNE *size_MatF];
-   fPPPsource = &DF[TNE *size_MatF];
-   fPMPsource = &DF[TSE *size_MatF];
-   fPMMsource = &DF[BSE *size_MatF];
+   fP00source = &DF[DIR_P00   *size_MatF];
+   fM00source = &DF[DIR_M00   *size_MatF];
+   f0P0source = &DF[DIR_0P0   *size_MatF];
+   f0M0source = &DF[DIR_0M0   *size_MatF];
+   f00Psource = &DF[DIR_00P   *size_MatF];
+   f00Msource = &DF[DIR_00M   *size_MatF];
+   fPP0source = &DF[DIR_PP0  *size_MatF];
+   fMM0source = &DF[DIR_MM0  *size_MatF];
+   fPM0source = &DF[DIR_PM0  *size_MatF];
+   fMP0source = &DF[DIR_MP0  *size_MatF];
+   fP0Psource = &DF[DIR_P0P  *size_MatF];
+   fM0Msource = &DF[DIR_M0M  *size_MatF];
+   fP0Msource = &DF[DIR_P0M  *size_MatF];
+   fM0Psource = &DF[DIR_M0P  *size_MatF];
+   f0PPsource = &DF[DIR_0PP  *size_MatF];
+   f0MMsource = &DF[DIR_0MM  *size_MatF];
+   f0PMsource = &DF[DIR_0PM  *size_MatF];
+   f0MPsource = &DF[DIR_0MP  *size_MatF];
+   f000source = &DF[DIR_000*size_MatF];
+   fMMMsource = &DF[DIR_MMM *size_MatF];
+   fMMPsource = &DF[DIR_MMP *size_MatF];
+   fMPPsource = &DF[DIR_MPP *size_MatF];
+   fMPMsource = &DF[DIR_MPM *size_MatF];
+   fPPMsource = &DF[DIR_PPM *size_MatF];
+   fPPPsource = &DF[DIR_PPP *size_MatF];
+   fPMPsource = &DF[DIR_PMP *size_MatF];
+   fPMMsource = &DF[DIR_PMM *size_MatF];
 
    real
 	   *fP00dest, *fM00dest, *f0P0dest, *f0M0dest, *f00Pdest, *f00Mdest, *fPP0dest, *fMM0dest, *fPM0dest,
@@ -78,63 +78,63 @@ extern "C" __global__ void scaleFC_0817_comp_27( real* DC,
 
    if (isEvenTimestep==true)
    {
-	   fP00dest = &DC[E   *size_MatC];
-	   fM00dest = &DC[W   *size_MatC];
-	   f0P0dest = &DC[N   *size_MatC];
-	   f0M0dest = &DC[S   *size_MatC];
-	   f00Pdest = &DC[T   *size_MatC];
-	   f00Mdest = &DC[B   *size_MatC];
-	   fPP0dest = &DC[NE  *size_MatC];
-	   fMM0dest = &DC[SW  *size_MatC];
-	   fPM0dest = &DC[SE  *size_MatC];
-	   fMP0dest = &DC[NW  *size_MatC];
-	   fP0Pdest = &DC[TE  *size_MatC];
-	   fM0Mdest = &DC[BW  *size_MatC];
-	   fP0Mdest = &DC[BE  *size_MatC];
-	   fM0Pdest = &DC[TW  *size_MatC];
-	   f0PPdest = &DC[TN  *size_MatC];
-	   f0MMdest = &DC[BS  *size_MatC];
-	   f0PMdest = &DC[BN  *size_MatC];
-	   f0MPdest = &DC[TS  *size_MatC];
-	   f000dest = &DC[REST*size_MatC];
-	   fMMMdest = &DC[BSW *size_MatC];
-	   fMMPdest = &DC[TSW *size_MatC];
-	   fMPPdest = &DC[TNW *size_MatC];
-	   fMPMdest = &DC[BNW *size_MatC];
-	   fPPMdest = &DC[BNE *size_MatC];
-	   fPPPdest = &DC[TNE *size_MatC];
-	   fPMPdest = &DC[TSE *size_MatC];
-	   fPMMdest = &DC[BSE *size_MatC];
+	   fP00dest = &DC[DIR_P00   *size_MatC];
+	   fM00dest = &DC[DIR_M00   *size_MatC];
+	   f0P0dest = &DC[DIR_0P0   *size_MatC];
+	   f0M0dest = &DC[DIR_0M0   *size_MatC];
+	   f00Pdest = &DC[DIR_00P   *size_MatC];
+	   f00Mdest = &DC[DIR_00M   *size_MatC];
+	   fPP0dest = &DC[DIR_PP0  *size_MatC];
+	   fMM0dest = &DC[DIR_MM0  *size_MatC];
+	   fPM0dest = &DC[DIR_PM0  *size_MatC];
+	   fMP0dest = &DC[DIR_MP0  *size_MatC];
+	   fP0Pdest = &DC[DIR_P0P  *size_MatC];
+	   fM0Mdest = &DC[DIR_M0M  *size_MatC];
+	   fP0Mdest = &DC[DIR_P0M  *size_MatC];
+	   fM0Pdest = &DC[DIR_M0P  *size_MatC];
+	   f0PPdest = &DC[DIR_0PP  *size_MatC];
+	   f0MMdest = &DC[DIR_0MM  *size_MatC];
+	   f0PMdest = &DC[DIR_0PM  *size_MatC];
+	   f0MPdest = &DC[DIR_0MP  *size_MatC];
+	   f000dest = &DC[DIR_000*size_MatC];
+	   fMMMdest = &DC[DIR_MMM *size_MatC];
+	   fMMPdest = &DC[DIR_MMP *size_MatC];
+	   fMPPdest = &DC[DIR_MPP *size_MatC];
+	   fMPMdest = &DC[DIR_MPM *size_MatC];
+	   fPPMdest = &DC[DIR_PPM *size_MatC];
+	   fPPPdest = &DC[DIR_PPP *size_MatC];
+	   fPMPdest = &DC[DIR_PMP *size_MatC];
+	   fPMMdest = &DC[DIR_PMM *size_MatC];
    } 
    else
    {
-	   fP00dest = &DC[W   *size_MatC];
-	   fM00dest = &DC[E   *size_MatC];
-	   f0P0dest = &DC[S   *size_MatC];
-	   f0M0dest = &DC[N   *size_MatC];
-	   f00Pdest = &DC[B   *size_MatC];
-	   f00Mdest = &DC[T   *size_MatC];
-	   fPP0dest = &DC[SW  *size_MatC];
-	   fMM0dest = &DC[NE  *size_MatC];
-	   fPM0dest = &DC[NW  *size_MatC];
-	   fMP0dest = &DC[SE  *size_MatC];
-	   fP0Pdest = &DC[BW  *size_MatC];
-	   fM0Mdest = &DC[TE  *size_MatC];
-	   fP0Mdest = &DC[TW  *size_MatC];
-	   fM0Pdest = &DC[BE  *size_MatC];
-	   f0PPdest = &DC[BS  *size_MatC];
-	   f0MMdest = &DC[TN  *size_MatC];
-	   f0PMdest = &DC[TS  *size_MatC];
-	   f0MPdest = &DC[BN  *size_MatC];
-	   f000dest = &DC[REST*size_MatC];
-	   fMMMdest = &DC[TNE *size_MatC];
-	   fMMPdest = &DC[BNE *size_MatC];
-	   fMPPdest = &DC[BSE *size_MatC];
-	   fMPMdest = &DC[TSE *size_MatC];
-	   fPPMdest = &DC[TSW *size_MatC];
-	   fPPPdest = &DC[BSW *size_MatC];
-	   fPMPdest = &DC[BNW *size_MatC];
-	   fPMMdest = &DC[TNW *size_MatC];
+	   fP00dest = &DC[DIR_M00   *size_MatC];
+	   fM00dest = &DC[DIR_P00   *size_MatC];
+	   f0P0dest = &DC[DIR_0M0   *size_MatC];
+	   f0M0dest = &DC[DIR_0P0   *size_MatC];
+	   f00Pdest = &DC[DIR_00M   *size_MatC];
+	   f00Mdest = &DC[DIR_00P   *size_MatC];
+	   fPP0dest = &DC[DIR_MM0  *size_MatC];
+	   fMM0dest = &DC[DIR_PP0  *size_MatC];
+	   fPM0dest = &DC[DIR_MP0  *size_MatC];
+	   fMP0dest = &DC[DIR_PM0  *size_MatC];
+	   fP0Pdest = &DC[DIR_M0M  *size_MatC];
+	   fM0Mdest = &DC[DIR_P0P  *size_MatC];
+	   fP0Mdest = &DC[DIR_M0P  *size_MatC];
+	   fM0Pdest = &DC[DIR_P0M  *size_MatC];
+	   f0PPdest = &DC[DIR_0MM  *size_MatC];
+	   f0MMdest = &DC[DIR_0PP  *size_MatC];
+	   f0PMdest = &DC[DIR_0MP  *size_MatC];
+	   f0MPdest = &DC[DIR_0PM  *size_MatC];
+	   f000dest = &DC[DIR_000*size_MatC];
+	   fMMMdest = &DC[DIR_PPP *size_MatC];
+	   fMMPdest = &DC[DIR_PPM *size_MatC];
+	   fMPPdest = &DC[DIR_PMM *size_MatC];
+	   fMPMdest = &DC[DIR_PMP *size_MatC];
+	   fPPMdest = &DC[DIR_MMP *size_MatC];
+	   fPPPdest = &DC[DIR_MMM *size_MatC];
+	   fPMPdest = &DC[DIR_MPM *size_MatC];
+	   fPMMdest = &DC[DIR_MPP *size_MatC];
    }
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  ix = threadIdx.x;  // Globaler x-Index 
@@ -1210,7 +1210,7 @@ extern "C" __global__ void scaleFC_0817_comp_27( real* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFC_AA2016_comp_27(real* DC, 
+__global__ void scaleFC_AA2016_comp_27(real* DC, 
 												  real* DF, 
 												  unsigned int* neighborCX,
 												  unsigned int* neighborCY,
@@ -1236,96 +1236,96 @@ extern "C" __global__ void scaleFC_AA2016_comp_27(real* DC,
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[E   *size_MatF];
-   fwF    = &DF[W   *size_MatF];
-   fnF    = &DF[N   *size_MatF];
-   fsF    = &DF[S   *size_MatF];
-   ftF    = &DF[T   *size_MatF];
-   fbF    = &DF[B   *size_MatF];
-   fneF   = &DF[NE  *size_MatF];
-   fswF   = &DF[SW  *size_MatF];
-   fseF   = &DF[SE  *size_MatF];
-   fnwF   = &DF[NW  *size_MatF];
-   fteF   = &DF[TE  *size_MatF];
-   fbwF   = &DF[BW  *size_MatF];
-   fbeF   = &DF[BE  *size_MatF];
-   ftwF   = &DF[TW  *size_MatF];
-   ftnF   = &DF[TN  *size_MatF];
-   fbsF   = &DF[BS  *size_MatF];
-   fbnF   = &DF[BN  *size_MatF];
-   ftsF   = &DF[TS  *size_MatF];
-   fzeroF = &DF[REST*size_MatF];
-   ftneF  = &DF[TNE *size_MatF];
-   ftswF  = &DF[TSW *size_MatF];
-   ftseF  = &DF[TSE *size_MatF];
-   ftnwF  = &DF[TNW *size_MatF];
-   fbneF  = &DF[BNE *size_MatF];
-   fbswF  = &DF[BSW *size_MatF];
-   fbseF  = &DF[BSE *size_MatF];
-   fbnwF  = &DF[BNW *size_MatF];
+   feF    = &DF[DIR_P00   *size_MatF];
+   fwF    = &DF[DIR_M00   *size_MatF];
+   fnF    = &DF[DIR_0P0   *size_MatF];
+   fsF    = &DF[DIR_0M0   *size_MatF];
+   ftF    = &DF[DIR_00P   *size_MatF];
+   fbF    = &DF[DIR_00M   *size_MatF];
+   fneF   = &DF[DIR_PP0  *size_MatF];
+   fswF   = &DF[DIR_MM0  *size_MatF];
+   fseF   = &DF[DIR_PM0  *size_MatF];
+   fnwF   = &DF[DIR_MP0  *size_MatF];
+   fteF   = &DF[DIR_P0P  *size_MatF];
+   fbwF   = &DF[DIR_M0M  *size_MatF];
+   fbeF   = &DF[DIR_P0M  *size_MatF];
+   ftwF   = &DF[DIR_M0P  *size_MatF];
+   ftnF   = &DF[DIR_0PP  *size_MatF];
+   fbsF   = &DF[DIR_0MM  *size_MatF];
+   fbnF   = &DF[DIR_0PM  *size_MatF];
+   ftsF   = &DF[DIR_0MP  *size_MatF];
+   fzeroF = &DF[DIR_000*size_MatF];
+   ftneF  = &DF[DIR_PPP *size_MatF];
+   ftswF  = &DF[DIR_MMP *size_MatF];
+   ftseF  = &DF[DIR_PMP *size_MatF];
+   ftnwF  = &DF[DIR_MPP *size_MatF];
+   fbneF  = &DF[DIR_PPM *size_MatF];
+   fbswF  = &DF[DIR_MMM *size_MatF];
+   fbseF  = &DF[DIR_PMM *size_MatF];
+   fbnwF  = &DF[DIR_MPM *size_MatF];
 
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[E   *size_MatC];
-      fwC    = &DC[W   *size_MatC];
-      fnC    = &DC[N   *size_MatC];
-      fsC    = &DC[S   *size_MatC];
-      ftC    = &DC[T   *size_MatC];
-      fbC    = &DC[B   *size_MatC];
-      fneC   = &DC[NE  *size_MatC];
-      fswC   = &DC[SW  *size_MatC];
-      fseC   = &DC[SE  *size_MatC];
-      fnwC   = &DC[NW  *size_MatC];
-      fteC   = &DC[TE  *size_MatC];
-      fbwC   = &DC[BW  *size_MatC];
-      fbeC   = &DC[BE  *size_MatC];
-      ftwC   = &DC[TW  *size_MatC];
-      ftnC   = &DC[TN  *size_MatC];
-      fbsC   = &DC[BS  *size_MatC];
-      fbnC   = &DC[BN  *size_MatC];
-      ftsC   = &DC[TS  *size_MatC];
-      fzeroC = &DC[REST*size_MatC];
-      ftneC  = &DC[TNE *size_MatC];
-      ftswC  = &DC[TSW *size_MatC];
-      ftseC  = &DC[TSE *size_MatC];
-      ftnwC  = &DC[TNW *size_MatC];
-      fbneC  = &DC[BNE *size_MatC];
-      fbswC  = &DC[BSW *size_MatC];
-      fbseC  = &DC[BSE *size_MatC];
-      fbnwC  = &DC[BNW *size_MatC];
+      feC    = &DC[DIR_P00   *size_MatC];
+      fwC    = &DC[DIR_M00   *size_MatC];
+      fnC    = &DC[DIR_0P0   *size_MatC];
+      fsC    = &DC[DIR_0M0   *size_MatC];
+      ftC    = &DC[DIR_00P   *size_MatC];
+      fbC    = &DC[DIR_00M   *size_MatC];
+      fneC   = &DC[DIR_PP0  *size_MatC];
+      fswC   = &DC[DIR_MM0  *size_MatC];
+      fseC   = &DC[DIR_PM0  *size_MatC];
+      fnwC   = &DC[DIR_MP0  *size_MatC];
+      fteC   = &DC[DIR_P0P  *size_MatC];
+      fbwC   = &DC[DIR_M0M  *size_MatC];
+      fbeC   = &DC[DIR_P0M  *size_MatC];
+      ftwC   = &DC[DIR_M0P  *size_MatC];
+      ftnC   = &DC[DIR_0PP  *size_MatC];
+      fbsC   = &DC[DIR_0MM  *size_MatC];
+      fbnC   = &DC[DIR_0PM  *size_MatC];
+      ftsC   = &DC[DIR_0MP  *size_MatC];
+      fzeroC = &DC[DIR_000*size_MatC];
+      ftneC  = &DC[DIR_PPP *size_MatC];
+      ftswC  = &DC[DIR_MMP *size_MatC];
+      ftseC  = &DC[DIR_PMP *size_MatC];
+      ftnwC  = &DC[DIR_MPP *size_MatC];
+      fbneC  = &DC[DIR_PPM *size_MatC];
+      fbswC  = &DC[DIR_MMM *size_MatC];
+      fbseC  = &DC[DIR_PMM *size_MatC];
+      fbnwC  = &DC[DIR_MPM *size_MatC];
    } 
    else
    {
-      fwC    = &DC[E   *size_MatC];
-      feC    = &DC[W   *size_MatC];
-      fsC    = &DC[N   *size_MatC];
-      fnC    = &DC[S   *size_MatC];
-      fbC    = &DC[T   *size_MatC];
-      ftC    = &DC[B   *size_MatC];
-      fswC   = &DC[NE  *size_MatC];
-      fneC   = &DC[SW  *size_MatC];
-      fnwC   = &DC[SE  *size_MatC];
-      fseC   = &DC[NW  *size_MatC];
-      fbwC   = &DC[TE  *size_MatC];
-      fteC   = &DC[BW  *size_MatC];
-      ftwC   = &DC[BE  *size_MatC];
-      fbeC   = &DC[TW  *size_MatC];
-      fbsC   = &DC[TN  *size_MatC];
-      ftnC   = &DC[BS  *size_MatC];
-      ftsC   = &DC[BN  *size_MatC];
-      fbnC   = &DC[TS  *size_MatC];
-      fzeroC = &DC[REST*size_MatC];
-      fbswC  = &DC[TNE *size_MatC];
-      fbneC  = &DC[TSW *size_MatC];
-      fbnwC  = &DC[TSE *size_MatC];
-      fbseC  = &DC[TNW *size_MatC];
-      ftswC  = &DC[BNE *size_MatC];
-      ftneC  = &DC[BSW *size_MatC];
-      ftnwC  = &DC[BSE *size_MatC];
-      ftseC  = &DC[BNW *size_MatC];
+      fwC    = &DC[DIR_P00   *size_MatC];
+      feC    = &DC[DIR_M00   *size_MatC];
+      fsC    = &DC[DIR_0P0   *size_MatC];
+      fnC    = &DC[DIR_0M0   *size_MatC];
+      fbC    = &DC[DIR_00P   *size_MatC];
+      ftC    = &DC[DIR_00M   *size_MatC];
+      fswC   = &DC[DIR_PP0  *size_MatC];
+      fneC   = &DC[DIR_MM0  *size_MatC];
+      fnwC   = &DC[DIR_PM0  *size_MatC];
+      fseC   = &DC[DIR_MP0  *size_MatC];
+      fbwC   = &DC[DIR_P0P  *size_MatC];
+      fteC   = &DC[DIR_M0M  *size_MatC];
+      ftwC   = &DC[DIR_P0M  *size_MatC];
+      fbeC   = &DC[DIR_M0P  *size_MatC];
+      fbsC   = &DC[DIR_0PP  *size_MatC];
+      ftnC   = &DC[DIR_0MM  *size_MatC];
+      ftsC   = &DC[DIR_0PM  *size_MatC];
+      fbnC   = &DC[DIR_0MP  *size_MatC];
+      fzeroC = &DC[DIR_000*size_MatC];
+      fbswC  = &DC[DIR_PPP *size_MatC];
+      fbneC  = &DC[DIR_MMP *size_MatC];
+      fbnwC  = &DC[DIR_PMP *size_MatC];
+      fbseC  = &DC[DIR_MPP *size_MatC];
+      ftswC  = &DC[DIR_PPM *size_MatC];
+      ftneC  = &DC[DIR_MMM *size_MatC];
+      ftnwC  = &DC[DIR_PMM *size_MatC];
+      ftseC  = &DC[DIR_MPM *size_MatC];
    }
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  ix = threadIdx.x;  // Globaler x-Index 
@@ -5399,7 +5399,7 @@ extern "C" __global__ void scaleFC_AA2016_comp_27(real* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(real* DC, 
+__global__ void scaleFC_RhoSq_3rdMom_comp_27(real* DC, 
 														real* DF, 
 														unsigned int* neighborCX,
 														unsigned int* neighborCY,
@@ -5425,96 +5425,96 @@ extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(real* DC,
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[E   *size_MatF];
-   fwF    = &DF[W   *size_MatF];
-   fnF    = &DF[N   *size_MatF];
-   fsF    = &DF[S   *size_MatF];
-   ftF    = &DF[T   *size_MatF];
-   fbF    = &DF[B   *size_MatF];
-   fneF   = &DF[NE  *size_MatF];
-   fswF   = &DF[SW  *size_MatF];
-   fseF   = &DF[SE  *size_MatF];
-   fnwF   = &DF[NW  *size_MatF];
-   fteF   = &DF[TE  *size_MatF];
-   fbwF   = &DF[BW  *size_MatF];
-   fbeF   = &DF[BE  *size_MatF];
-   ftwF   = &DF[TW  *size_MatF];
-   ftnF   = &DF[TN  *size_MatF];
-   fbsF   = &DF[BS  *size_MatF];
-   fbnF   = &DF[BN  *size_MatF];
-   ftsF   = &DF[TS  *size_MatF];
-   fzeroF = &DF[REST*size_MatF];
-   ftneF  = &DF[TNE *size_MatF];
-   ftswF  = &DF[TSW *size_MatF];
-   ftseF  = &DF[TSE *size_MatF];
-   ftnwF  = &DF[TNW *size_MatF];
-   fbneF  = &DF[BNE *size_MatF];
-   fbswF  = &DF[BSW *size_MatF];
-   fbseF  = &DF[BSE *size_MatF];
-   fbnwF  = &DF[BNW *size_MatF];
+   feF    = &DF[DIR_P00   *size_MatF];
+   fwF    = &DF[DIR_M00   *size_MatF];
+   fnF    = &DF[DIR_0P0   *size_MatF];
+   fsF    = &DF[DIR_0M0   *size_MatF];
+   ftF    = &DF[DIR_00P   *size_MatF];
+   fbF    = &DF[DIR_00M   *size_MatF];
+   fneF   = &DF[DIR_PP0  *size_MatF];
+   fswF   = &DF[DIR_MM0  *size_MatF];
+   fseF   = &DF[DIR_PM0  *size_MatF];
+   fnwF   = &DF[DIR_MP0  *size_MatF];
+   fteF   = &DF[DIR_P0P  *size_MatF];
+   fbwF   = &DF[DIR_M0M  *size_MatF];
+   fbeF   = &DF[DIR_P0M  *size_MatF];
+   ftwF   = &DF[DIR_M0P  *size_MatF];
+   ftnF   = &DF[DIR_0PP  *size_MatF];
+   fbsF   = &DF[DIR_0MM  *size_MatF];
+   fbnF   = &DF[DIR_0PM  *size_MatF];
+   ftsF   = &DF[DIR_0MP  *size_MatF];
+   fzeroF = &DF[DIR_000*size_MatF];
+   ftneF  = &DF[DIR_PPP *size_MatF];
+   ftswF  = &DF[DIR_MMP *size_MatF];
+   ftseF  = &DF[DIR_PMP *size_MatF];
+   ftnwF  = &DF[DIR_MPP *size_MatF];
+   fbneF  = &DF[DIR_PPM *size_MatF];
+   fbswF  = &DF[DIR_MMM *size_MatF];
+   fbseF  = &DF[DIR_PMM *size_MatF];
+   fbnwF  = &DF[DIR_MPM *size_MatF];
 
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[E   *size_MatC];
-      fwC    = &DC[W   *size_MatC];
-      fnC    = &DC[N   *size_MatC];
-      fsC    = &DC[S   *size_MatC];
-      ftC    = &DC[T   *size_MatC];
-      fbC    = &DC[B   *size_MatC];
-      fneC   = &DC[NE  *size_MatC];
-      fswC   = &DC[SW  *size_MatC];
-      fseC   = &DC[SE  *size_MatC];
-      fnwC   = &DC[NW  *size_MatC];
-      fteC   = &DC[TE  *size_MatC];
-      fbwC   = &DC[BW  *size_MatC];
-      fbeC   = &DC[BE  *size_MatC];
-      ftwC   = &DC[TW  *size_MatC];
-      ftnC   = &DC[TN  *size_MatC];
-      fbsC   = &DC[BS  *size_MatC];
-      fbnC   = &DC[BN  *size_MatC];
-      ftsC   = &DC[TS  *size_MatC];
-      fzeroC = &DC[REST*size_MatC];
-      ftneC  = &DC[TNE *size_MatC];
-      ftswC  = &DC[TSW *size_MatC];
-      ftseC  = &DC[TSE *size_MatC];
-      ftnwC  = &DC[TNW *size_MatC];
-      fbneC  = &DC[BNE *size_MatC];
-      fbswC  = &DC[BSW *size_MatC];
-      fbseC  = &DC[BSE *size_MatC];
-      fbnwC  = &DC[BNW *size_MatC];
+      feC    = &DC[DIR_P00   *size_MatC];
+      fwC    = &DC[DIR_M00   *size_MatC];
+      fnC    = &DC[DIR_0P0   *size_MatC];
+      fsC    = &DC[DIR_0M0   *size_MatC];
+      ftC    = &DC[DIR_00P   *size_MatC];
+      fbC    = &DC[DIR_00M   *size_MatC];
+      fneC   = &DC[DIR_PP0  *size_MatC];
+      fswC   = &DC[DIR_MM0  *size_MatC];
+      fseC   = &DC[DIR_PM0  *size_MatC];
+      fnwC   = &DC[DIR_MP0  *size_MatC];
+      fteC   = &DC[DIR_P0P  *size_MatC];
+      fbwC   = &DC[DIR_M0M  *size_MatC];
+      fbeC   = &DC[DIR_P0M  *size_MatC];
+      ftwC   = &DC[DIR_M0P  *size_MatC];
+      ftnC   = &DC[DIR_0PP  *size_MatC];
+      fbsC   = &DC[DIR_0MM  *size_MatC];
+      fbnC   = &DC[DIR_0PM  *size_MatC];
+      ftsC   = &DC[DIR_0MP  *size_MatC];
+      fzeroC = &DC[DIR_000*size_MatC];
+      ftneC  = &DC[DIR_PPP *size_MatC];
+      ftswC  = &DC[DIR_MMP *size_MatC];
+      ftseC  = &DC[DIR_PMP *size_MatC];
+      ftnwC  = &DC[DIR_MPP *size_MatC];
+      fbneC  = &DC[DIR_PPM *size_MatC];
+      fbswC  = &DC[DIR_MMM *size_MatC];
+      fbseC  = &DC[DIR_PMM *size_MatC];
+      fbnwC  = &DC[DIR_MPM *size_MatC];
    } 
    else
    {
-      fwC    = &DC[E   *size_MatC];
-      feC    = &DC[W   *size_MatC];
-      fsC    = &DC[N   *size_MatC];
-      fnC    = &DC[S   *size_MatC];
-      fbC    = &DC[T   *size_MatC];
-      ftC    = &DC[B   *size_MatC];
-      fswC   = &DC[NE  *size_MatC];
-      fneC   = &DC[SW  *size_MatC];
-      fnwC   = &DC[SE  *size_MatC];
-      fseC   = &DC[NW  *size_MatC];
-      fbwC   = &DC[TE  *size_MatC];
-      fteC   = &DC[BW  *size_MatC];
-      ftwC   = &DC[BE  *size_MatC];
-      fbeC   = &DC[TW  *size_MatC];
-      fbsC   = &DC[TN  *size_MatC];
-      ftnC   = &DC[BS  *size_MatC];
-      ftsC   = &DC[BN  *size_MatC];
-      fbnC   = &DC[TS  *size_MatC];
-      fzeroC = &DC[REST*size_MatC];
-      fbswC  = &DC[TNE *size_MatC];
-      fbneC  = &DC[TSW *size_MatC];
-      fbnwC  = &DC[TSE *size_MatC];
-      fbseC  = &DC[TNW *size_MatC];
-      ftswC  = &DC[BNE *size_MatC];
-      ftneC  = &DC[BSW *size_MatC];
-      ftnwC  = &DC[BSE *size_MatC];
-      ftseC  = &DC[BNW *size_MatC];
+      fwC    = &DC[DIR_P00   *size_MatC];
+      feC    = &DC[DIR_M00   *size_MatC];
+      fsC    = &DC[DIR_0P0   *size_MatC];
+      fnC    = &DC[DIR_0M0   *size_MatC];
+      fbC    = &DC[DIR_00P   *size_MatC];
+      ftC    = &DC[DIR_00M   *size_MatC];
+      fswC   = &DC[DIR_PP0  *size_MatC];
+      fneC   = &DC[DIR_MM0  *size_MatC];
+      fnwC   = &DC[DIR_PM0  *size_MatC];
+      fseC   = &DC[DIR_MP0  *size_MatC];
+      fbwC   = &DC[DIR_P0P  *size_MatC];
+      fteC   = &DC[DIR_M0M  *size_MatC];
+      ftwC   = &DC[DIR_P0M  *size_MatC];
+      fbeC   = &DC[DIR_M0P  *size_MatC];
+      fbsC   = &DC[DIR_0PP  *size_MatC];
+      ftnC   = &DC[DIR_0MM  *size_MatC];
+      ftsC   = &DC[DIR_0PM  *size_MatC];
+      fbnC   = &DC[DIR_0MP  *size_MatC];
+      fzeroC = &DC[DIR_000*size_MatC];
+      fbswC  = &DC[DIR_PPP *size_MatC];
+      fbneC  = &DC[DIR_MMP *size_MatC];
+      fbnwC  = &DC[DIR_PMP *size_MatC];
+      fbseC  = &DC[DIR_MPP *size_MatC];
+      ftswC  = &DC[DIR_PPM *size_MatC];
+      ftneC  = &DC[DIR_MMM *size_MatC];
+      ftnwC  = &DC[DIR_PMM *size_MatC];
+      ftseC  = &DC[DIR_MPM *size_MatC];
    }
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  ix = threadIdx.x;  // Globaler x-Index 
@@ -9597,93 +9597,93 @@ __device__ void scaleFC_RhoSq_comp_27_Calculation(real *DC, real *DF, unsigned i
     real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF,
         *fbnF, *ftsF, *fzeroF, *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-    feF    = &DF[E * size_MatF];
-    fwF    = &DF[W * size_MatF];
-    fnF    = &DF[N * size_MatF];
-    fsF    = &DF[S * size_MatF];
-    ftF    = &DF[T * size_MatF];
-    fbF    = &DF[B * size_MatF];
-    fneF   = &DF[NE * size_MatF];
-    fswF   = &DF[SW * size_MatF];
-    fseF   = &DF[SE * size_MatF];
-    fnwF   = &DF[NW * size_MatF];
-    fteF   = &DF[TE * size_MatF];
-    fbwF   = &DF[BW * size_MatF];
-    fbeF   = &DF[BE * size_MatF];
-    ftwF   = &DF[TW * size_MatF];
-    ftnF   = &DF[TN * size_MatF];
-    fbsF   = &DF[BS * size_MatF];
-    fbnF   = &DF[BN * size_MatF];
-    ftsF   = &DF[TS * size_MatF];
-    fzeroF = &DF[REST * size_MatF];
-    ftneF  = &DF[TNE * size_MatF];
-    ftswF  = &DF[TSW * size_MatF];
-    ftseF  = &DF[TSE * size_MatF];
-    ftnwF  = &DF[TNW * size_MatF];
-    fbneF  = &DF[BNE * size_MatF];
-    fbswF  = &DF[BSW * size_MatF];
-    fbseF  = &DF[BSE * size_MatF];
-    fbnwF  = &DF[BNW * size_MatF];
+    feF    = &DF[DIR_P00 * size_MatF];
+    fwF    = &DF[DIR_M00 * size_MatF];
+    fnF    = &DF[DIR_0P0 * size_MatF];
+    fsF    = &DF[DIR_0M0 * size_MatF];
+    ftF    = &DF[DIR_00P * size_MatF];
+    fbF    = &DF[DIR_00M * size_MatF];
+    fneF   = &DF[DIR_PP0 * size_MatF];
+    fswF   = &DF[DIR_MM0 * size_MatF];
+    fseF   = &DF[DIR_PM0 * size_MatF];
+    fnwF   = &DF[DIR_MP0 * size_MatF];
+    fteF   = &DF[DIR_P0P * size_MatF];
+    fbwF   = &DF[DIR_M0M * size_MatF];
+    fbeF   = &DF[DIR_P0M * size_MatF];
+    ftwF   = &DF[DIR_M0P * size_MatF];
+    ftnF   = &DF[DIR_0PP * size_MatF];
+    fbsF   = &DF[DIR_0MM * size_MatF];
+    fbnF   = &DF[DIR_0PM * size_MatF];
+    ftsF   = &DF[DIR_0MP * size_MatF];
+    fzeroF = &DF[DIR_000 * size_MatF];
+    ftneF  = &DF[DIR_PPP * size_MatF];
+    ftswF  = &DF[DIR_MMP * size_MatF];
+    ftseF  = &DF[DIR_PMP * size_MatF];
+    ftnwF  = &DF[DIR_MPP * size_MatF];
+    fbneF  = &DF[DIR_PPM * size_MatF];
+    fbswF  = &DF[DIR_MMM * size_MatF];
+    fbseF  = &DF[DIR_PMM * size_MatF];
+    fbnwF  = &DF[DIR_MPM * size_MatF];
 
     real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC,
         *fbnC, *ftsC, *fzeroC, *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
     if (isEvenTimestep == true) {
-        feC    = &DC[E * size_MatC];
-        fwC    = &DC[W * size_MatC];
-        fnC    = &DC[N * size_MatC];
-        fsC    = &DC[S * size_MatC];
-        ftC    = &DC[T * size_MatC];
-        fbC    = &DC[B * size_MatC];
-        fneC   = &DC[NE * size_MatC];
-        fswC   = &DC[SW * size_MatC];
-        fseC   = &DC[SE * size_MatC];
-        fnwC   = &DC[NW * size_MatC];
-        fteC   = &DC[TE * size_MatC];
-        fbwC   = &DC[BW * size_MatC];
-        fbeC   = &DC[BE * size_MatC];
-        ftwC   = &DC[TW * size_MatC];
-        ftnC   = &DC[TN * size_MatC];
-        fbsC   = &DC[BS * size_MatC];
-        fbnC   = &DC[BN * size_MatC];
-        ftsC   = &DC[TS * size_MatC];
-        fzeroC = &DC[REST * size_MatC];
-        ftneC  = &DC[TNE * size_MatC];
-        ftswC  = &DC[TSW * size_MatC];
-        ftseC  = &DC[TSE * size_MatC];
-        ftnwC  = &DC[TNW * size_MatC];
-        fbneC  = &DC[BNE * size_MatC];
-        fbswC  = &DC[BSW * size_MatC];
-        fbseC  = &DC[BSE * size_MatC];
-        fbnwC  = &DC[BNW * size_MatC];
+        feC    = &DC[DIR_P00 * size_MatC];
+        fwC    = &DC[DIR_M00 * size_MatC];
+        fnC    = &DC[DIR_0P0 * size_MatC];
+        fsC    = &DC[DIR_0M0 * size_MatC];
+        ftC    = &DC[DIR_00P * size_MatC];
+        fbC    = &DC[DIR_00M * size_MatC];
+        fneC   = &DC[DIR_PP0 * size_MatC];
+        fswC   = &DC[DIR_MM0 * size_MatC];
+        fseC   = &DC[DIR_PM0 * size_MatC];
+        fnwC   = &DC[DIR_MP0 * size_MatC];
+        fteC   = &DC[DIR_P0P * size_MatC];
+        fbwC   = &DC[DIR_M0M * size_MatC];
+        fbeC   = &DC[DIR_P0M * size_MatC];
+        ftwC   = &DC[DIR_M0P * size_MatC];
+        ftnC   = &DC[DIR_0PP * size_MatC];
+        fbsC   = &DC[DIR_0MM * size_MatC];
+        fbnC   = &DC[DIR_0PM * size_MatC];
+        ftsC   = &DC[DIR_0MP * size_MatC];
+        fzeroC = &DC[DIR_000 * size_MatC];
+        ftneC  = &DC[DIR_PPP * size_MatC];
+        ftswC  = &DC[DIR_MMP * size_MatC];
+        ftseC  = &DC[DIR_PMP * size_MatC];
+        ftnwC  = &DC[DIR_MPP * size_MatC];
+        fbneC  = &DC[DIR_PPM * size_MatC];
+        fbswC  = &DC[DIR_MMM * size_MatC];
+        fbseC  = &DC[DIR_PMM * size_MatC];
+        fbnwC  = &DC[DIR_MPM * size_MatC];
     } else {
-        fwC    = &DC[E * size_MatC];
-        feC    = &DC[W * size_MatC];
-        fsC    = &DC[N * size_MatC];
-        fnC    = &DC[S * size_MatC];
-        fbC    = &DC[T * size_MatC];
-        ftC    = &DC[B * size_MatC];
-        fswC   = &DC[NE * size_MatC];
-        fneC   = &DC[SW * size_MatC];
-        fnwC   = &DC[SE * size_MatC];
-        fseC   = &DC[NW * size_MatC];
-        fbwC   = &DC[TE * size_MatC];
-        fteC   = &DC[BW * size_MatC];
-        ftwC   = &DC[BE * size_MatC];
-        fbeC   = &DC[TW * size_MatC];
-        fbsC   = &DC[TN * size_MatC];
-        ftnC   = &DC[BS * size_MatC];
-        ftsC   = &DC[BN * size_MatC];
-        fbnC   = &DC[TS * size_MatC];
-        fzeroC = &DC[REST * size_MatC];
-        fbswC  = &DC[TNE * size_MatC];
-        fbneC  = &DC[TSW * size_MatC];
-        fbnwC  = &DC[TSE * size_MatC];
-        fbseC  = &DC[TNW * size_MatC];
-        ftswC  = &DC[BNE * size_MatC];
-        ftneC  = &DC[BSW * size_MatC];
-        ftnwC  = &DC[BSE * size_MatC];
-        ftseC  = &DC[BNW * size_MatC];
+        fwC    = &DC[DIR_P00 * size_MatC];
+        feC    = &DC[DIR_M00 * size_MatC];
+        fsC    = &DC[DIR_0P0 * size_MatC];
+        fnC    = &DC[DIR_0M0 * size_MatC];
+        fbC    = &DC[DIR_00P * size_MatC];
+        ftC    = &DC[DIR_00M * size_MatC];
+        fswC   = &DC[DIR_PP0 * size_MatC];
+        fneC   = &DC[DIR_MM0 * size_MatC];
+        fnwC   = &DC[DIR_PM0 * size_MatC];
+        fseC   = &DC[DIR_MP0 * size_MatC];
+        fbwC   = &DC[DIR_P0P * size_MatC];
+        fteC   = &DC[DIR_M0M * size_MatC];
+        ftwC   = &DC[DIR_P0M * size_MatC];
+        fbeC   = &DC[DIR_M0P * size_MatC];
+        fbsC   = &DC[DIR_0PP * size_MatC];
+        ftnC   = &DC[DIR_0MM * size_MatC];
+        ftsC   = &DC[DIR_0PM * size_MatC];
+        fbnC   = &DC[DIR_0MP * size_MatC];
+        fzeroC = &DC[DIR_000 * size_MatC];
+        fbswC  = &DC[DIR_PPP * size_MatC];
+        fbneC  = &DC[DIR_MMP * size_MatC];
+        fbnwC  = &DC[DIR_PMP * size_MatC];
+        fbseC  = &DC[DIR_MPP * size_MatC];
+        ftswC  = &DC[DIR_PPM * size_MatC];
+        ftneC  = &DC[DIR_MMM * size_MatC];
+        ftnwC  = &DC[DIR_PMM * size_MatC];
+        ftseC  = &DC[DIR_MPM * size_MatC];
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -11056,7 +11056,7 @@ __device__ void scaleFC_RhoSq_comp_27_Calculation(real *DC, real *DF, unsigned i
     }
 }
 
-extern "C" __global__ void scaleFC_RhoSq_comp_27(real* DC, 
+__global__ void scaleFC_RhoSq_comp_27(real* DC, 
 												 real* DF, 
 												 unsigned int* neighborCX,
 												 unsigned int* neighborCY,
@@ -11149,7 +11149,7 @@ extern "C" __global__ void scaleFC_RhoSq_comp_27(real* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFC_staggered_time_comp_27(   real* DC, 
+__global__ void scaleFC_staggered_time_comp_27(   real* DC, 
 															 real* DF, 
 															 unsigned int* neighborCX,
 															 unsigned int* neighborCY,
@@ -11175,96 +11175,96 @@ extern "C" __global__ void scaleFC_staggered_time_comp_27(   real* DC,
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[E   *size_MatF];
-   fwF    = &DF[W   *size_MatF];
-   fnF    = &DF[N   *size_MatF];
-   fsF    = &DF[S   *size_MatF];
-   ftF    = &DF[T   *size_MatF];
-   fbF    = &DF[B   *size_MatF];
-   fneF   = &DF[NE  *size_MatF];
-   fswF   = &DF[SW  *size_MatF];
-   fseF   = &DF[SE  *size_MatF];
-   fnwF   = &DF[NW  *size_MatF];
-   fteF   = &DF[TE  *size_MatF];
-   fbwF   = &DF[BW  *size_MatF];
-   fbeF   = &DF[BE  *size_MatF];
-   ftwF   = &DF[TW  *size_MatF];
-   ftnF   = &DF[TN  *size_MatF];
-   fbsF   = &DF[BS  *size_MatF];
-   fbnF   = &DF[BN  *size_MatF];
-   ftsF   = &DF[TS  *size_MatF];
-   fzeroF = &DF[REST*size_MatF];
-   ftneF  = &DF[TNE *size_MatF];
-   ftswF  = &DF[TSW *size_MatF];
-   ftseF  = &DF[TSE *size_MatF];
-   ftnwF  = &DF[TNW *size_MatF];
-   fbneF  = &DF[BNE *size_MatF];
-   fbswF  = &DF[BSW *size_MatF];
-   fbseF  = &DF[BSE *size_MatF];
-   fbnwF  = &DF[BNW *size_MatF];
+   feF    = &DF[DIR_P00   *size_MatF];
+   fwF    = &DF[DIR_M00   *size_MatF];
+   fnF    = &DF[DIR_0P0   *size_MatF];
+   fsF    = &DF[DIR_0M0   *size_MatF];
+   ftF    = &DF[DIR_00P   *size_MatF];
+   fbF    = &DF[DIR_00M   *size_MatF];
+   fneF   = &DF[DIR_PP0  *size_MatF];
+   fswF   = &DF[DIR_MM0  *size_MatF];
+   fseF   = &DF[DIR_PM0  *size_MatF];
+   fnwF   = &DF[DIR_MP0  *size_MatF];
+   fteF   = &DF[DIR_P0P  *size_MatF];
+   fbwF   = &DF[DIR_M0M  *size_MatF];
+   fbeF   = &DF[DIR_P0M  *size_MatF];
+   ftwF   = &DF[DIR_M0P  *size_MatF];
+   ftnF   = &DF[DIR_0PP  *size_MatF];
+   fbsF   = &DF[DIR_0MM  *size_MatF];
+   fbnF   = &DF[DIR_0PM  *size_MatF];
+   ftsF   = &DF[DIR_0MP  *size_MatF];
+   fzeroF = &DF[DIR_000*size_MatF];
+   ftneF  = &DF[DIR_PPP *size_MatF];
+   ftswF  = &DF[DIR_MMP *size_MatF];
+   ftseF  = &DF[DIR_PMP *size_MatF];
+   ftnwF  = &DF[DIR_MPP *size_MatF];
+   fbneF  = &DF[DIR_PPM *size_MatF];
+   fbswF  = &DF[DIR_MMM *size_MatF];
+   fbseF  = &DF[DIR_PMM *size_MatF];
+   fbnwF  = &DF[DIR_MPM *size_MatF];
 
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[E   *size_MatC];
-      fwC    = &DC[W   *size_MatC];
-      fnC    = &DC[N   *size_MatC];
-      fsC    = &DC[S   *size_MatC];
-      ftC    = &DC[T   *size_MatC];
-      fbC    = &DC[B   *size_MatC];
-      fneC   = &DC[NE  *size_MatC];
-      fswC   = &DC[SW  *size_MatC];
-      fseC   = &DC[SE  *size_MatC];
-      fnwC   = &DC[NW  *size_MatC];
-      fteC   = &DC[TE  *size_MatC];
-      fbwC   = &DC[BW  *size_MatC];
-      fbeC   = &DC[BE  *size_MatC];
-      ftwC   = &DC[TW  *size_MatC];
-      ftnC   = &DC[TN  *size_MatC];
-      fbsC   = &DC[BS  *size_MatC];
-      fbnC   = &DC[BN  *size_MatC];
-      ftsC   = &DC[TS  *size_MatC];
-      fzeroC = &DC[REST*size_MatC];
-      ftneC  = &DC[TNE *size_MatC];
-      ftswC  = &DC[TSW *size_MatC];
-      ftseC  = &DC[TSE *size_MatC];
-      ftnwC  = &DC[TNW *size_MatC];
-      fbneC  = &DC[BNE *size_MatC];
-      fbswC  = &DC[BSW *size_MatC];
-      fbseC  = &DC[BSE *size_MatC];
-      fbnwC  = &DC[BNW *size_MatC];
+      feC    = &DC[DIR_P00   *size_MatC];
+      fwC    = &DC[DIR_M00   *size_MatC];
+      fnC    = &DC[DIR_0P0   *size_MatC];
+      fsC    = &DC[DIR_0M0   *size_MatC];
+      ftC    = &DC[DIR_00P   *size_MatC];
+      fbC    = &DC[DIR_00M   *size_MatC];
+      fneC   = &DC[DIR_PP0  *size_MatC];
+      fswC   = &DC[DIR_MM0  *size_MatC];
+      fseC   = &DC[DIR_PM0  *size_MatC];
+      fnwC   = &DC[DIR_MP0  *size_MatC];
+      fteC   = &DC[DIR_P0P  *size_MatC];
+      fbwC   = &DC[DIR_M0M  *size_MatC];
+      fbeC   = &DC[DIR_P0M  *size_MatC];
+      ftwC   = &DC[DIR_M0P  *size_MatC];
+      ftnC   = &DC[DIR_0PP  *size_MatC];
+      fbsC   = &DC[DIR_0MM  *size_MatC];
+      fbnC   = &DC[DIR_0PM  *size_MatC];
+      ftsC   = &DC[DIR_0MP  *size_MatC];
+      fzeroC = &DC[DIR_000*size_MatC];
+      ftneC  = &DC[DIR_PPP *size_MatC];
+      ftswC  = &DC[DIR_MMP *size_MatC];
+      ftseC  = &DC[DIR_PMP *size_MatC];
+      ftnwC  = &DC[DIR_MPP *size_MatC];
+      fbneC  = &DC[DIR_PPM *size_MatC];
+      fbswC  = &DC[DIR_MMM *size_MatC];
+      fbseC  = &DC[DIR_PMM *size_MatC];
+      fbnwC  = &DC[DIR_MPM *size_MatC];
    } 
    else
    {
-      fwC    = &DC[E   *size_MatC];
-      feC    = &DC[W   *size_MatC];
-      fsC    = &DC[N   *size_MatC];
-      fnC    = &DC[S   *size_MatC];
-      fbC    = &DC[T   *size_MatC];
-      ftC    = &DC[B   *size_MatC];
-      fswC   = &DC[NE  *size_MatC];
-      fneC   = &DC[SW  *size_MatC];
-      fnwC   = &DC[SE  *size_MatC];
-      fseC   = &DC[NW  *size_MatC];
-      fbwC   = &DC[TE  *size_MatC];
-      fteC   = &DC[BW  *size_MatC];
-      ftwC   = &DC[BE  *size_MatC];
-      fbeC   = &DC[TW  *size_MatC];
-      fbsC   = &DC[TN  *size_MatC];
-      ftnC   = &DC[BS  *size_MatC];
-      ftsC   = &DC[BN  *size_MatC];
-      fbnC   = &DC[TS  *size_MatC];
-      fzeroC = &DC[REST*size_MatC];
-      fbswC  = &DC[TNE *size_MatC];
-      fbneC  = &DC[TSW *size_MatC];
-      fbnwC  = &DC[TSE *size_MatC];
-      fbseC  = &DC[TNW *size_MatC];
-      ftswC  = &DC[BNE *size_MatC];
-      ftneC  = &DC[BSW *size_MatC];
-      ftnwC  = &DC[BSE *size_MatC];
-      ftseC  = &DC[BNW *size_MatC];
+      fwC    = &DC[DIR_P00   *size_MatC];
+      feC    = &DC[DIR_M00   *size_MatC];
+      fsC    = &DC[DIR_0P0   *size_MatC];
+      fnC    = &DC[DIR_0M0   *size_MatC];
+      fbC    = &DC[DIR_00P   *size_MatC];
+      ftC    = &DC[DIR_00M   *size_MatC];
+      fswC   = &DC[DIR_PP0  *size_MatC];
+      fneC   = &DC[DIR_MM0  *size_MatC];
+      fnwC   = &DC[DIR_PM0  *size_MatC];
+      fseC   = &DC[DIR_MP0  *size_MatC];
+      fbwC   = &DC[DIR_P0P  *size_MatC];
+      fteC   = &DC[DIR_M0M  *size_MatC];
+      ftwC   = &DC[DIR_P0M  *size_MatC];
+      fbeC   = &DC[DIR_M0P  *size_MatC];
+      fbsC   = &DC[DIR_0PP  *size_MatC];
+      ftnC   = &DC[DIR_0MM  *size_MatC];
+      ftsC   = &DC[DIR_0PM  *size_MatC];
+      fbnC   = &DC[DIR_0MP  *size_MatC];
+      fzeroC = &DC[DIR_000*size_MatC];
+      fbswC  = &DC[DIR_PPP *size_MatC];
+      fbneC  = &DC[DIR_MMP *size_MatC];
+      fbnwC  = &DC[DIR_PMP *size_MatC];
+      fbseC  = &DC[DIR_MPP *size_MatC];
+      ftswC  = &DC[DIR_PPM *size_MatC];
+      ftneC  = &DC[DIR_MMM *size_MatC];
+      ftnwC  = &DC[DIR_PMM *size_MatC];
+      ftseC  = &DC[DIR_MPM *size_MatC];
    }
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  ix = threadIdx.x;  // Globaler x-Index 
@@ -11759,63 +11759,63 @@ extern "C" __global__ void scaleFC_staggered_time_comp_27(   real* DC,
 	  ////pointertausch
 	  // if (isEvenTimestep==false)
 	  // {
-		 // feC    = &DC[E   *size_MatC];
-		 // fwC    = &DC[W   *size_MatC];
-		 // fnC    = &DC[N   *size_MatC];
-		 // fsC    = &DC[S   *size_MatC];
-		 // ftC    = &DC[T   *size_MatC];
-		 // fbC    = &DC[B   *size_MatC];
-		 // fneC   = &DC[NE  *size_MatC];
-		 // fswC   = &DC[SW  *size_MatC];
-		 // fseC   = &DC[SE  *size_MatC];
-		 // fnwC   = &DC[NW  *size_MatC];
-		 // fteC   = &DC[TE  *size_MatC];
-		 // fbwC   = &DC[BW  *size_MatC];
-		 // fbeC   = &DC[BE  *size_MatC];
-		 // ftwC   = &DC[TW  *size_MatC];
-		 // ftnC   = &DC[TN  *size_MatC];
-		 // fbsC   = &DC[BS  *size_MatC];
-		 // fbnC   = &DC[BN  *size_MatC];
-		 // ftsC   = &DC[TS  *size_MatC];
-		 // fzeroC = &DC[REST*size_MatC];
-		 // ftneC  = &DC[TNE *size_MatC];
-		 // ftswC  = &DC[TSW *size_MatC];
-		 // ftseC  = &DC[TSE *size_MatC];
-		 // ftnwC  = &DC[TNW *size_MatC];
-		 // fbneC  = &DC[BNE *size_MatC];
-		 // fbswC  = &DC[BSW *size_MatC];
-		 // fbseC  = &DC[BSE *size_MatC];
-		 // fbnwC  = &DC[BNW *size_MatC];
+		 // feC    = &DC[DIR_P00   *size_MatC];
+		 // fwC    = &DC[DIR_M00   *size_MatC];
+		 // fnC    = &DC[DIR_0P0   *size_MatC];
+		 // fsC    = &DC[DIR_0M0   *size_MatC];
+		 // ftC    = &DC[DIR_00P   *size_MatC];
+		 // fbC    = &DC[DIR_00M   *size_MatC];
+		 // fneC   = &DC[DIR_PP0  *size_MatC];
+		 // fswC   = &DC[DIR_MM0  *size_MatC];
+		 // fseC   = &DC[DIR_PM0  *size_MatC];
+		 // fnwC   = &DC[DIR_MP0  *size_MatC];
+		 // fteC   = &DC[DIR_P0P  *size_MatC];
+		 // fbwC   = &DC[DIR_M0M  *size_MatC];
+		 // fbeC   = &DC[DIR_P0M  *size_MatC];
+		 // ftwC   = &DC[DIR_M0P  *size_MatC];
+		 // ftnC   = &DC[DIR_0PP  *size_MatC];
+		 // fbsC   = &DC[DIR_0MM  *size_MatC];
+		 // fbnC   = &DC[DIR_0PM  *size_MatC];
+		 // ftsC   = &DC[DIR_0MP  *size_MatC];
+		 // fzeroC = &DC[DIR_000*size_MatC];
+		 // ftneC  = &DC[DIR_PPP *size_MatC];
+		 // ftswC  = &DC[DIR_MMP *size_MatC];
+		 // ftseC  = &DC[DIR_PMP *size_MatC];
+		 // ftnwC  = &DC[DIR_MPP *size_MatC];
+		 // fbneC  = &DC[DIR_PPM *size_MatC];
+		 // fbswC  = &DC[DIR_MMM *size_MatC];
+		 // fbseC  = &DC[DIR_PMM *size_MatC];
+		 // fbnwC  = &DC[DIR_MPM *size_MatC];
 	  // } 
 	  // else
 	  // {
-		 // fwC    = &DC[E   *size_MatC];
-		 // feC    = &DC[W   *size_MatC];
-		 // fsC    = &DC[N   *size_MatC];
-		 // fnC    = &DC[S   *size_MatC];
-		 // fbC    = &DC[T   *size_MatC];
-		 // ftC    = &DC[B   *size_MatC];
-		 // fswC   = &DC[NE  *size_MatC];
-		 // fneC   = &DC[SW  *size_MatC];
-		 // fnwC   = &DC[SE  *size_MatC];
-		 // fseC   = &DC[NW  *size_MatC];
-		 // fbwC   = &DC[TE  *size_MatC];
-		 // fteC   = &DC[BW  *size_MatC];
-		 // ftwC   = &DC[BE  *size_MatC];
-		 // fbeC   = &DC[TW  *size_MatC];
-		 // fbsC   = &DC[TN  *size_MatC];
-		 // ftnC   = &DC[BS  *size_MatC];
-		 // ftsC   = &DC[BN  *size_MatC];
-		 // fbnC   = &DC[TS  *size_MatC];
-		 // fzeroC = &DC[REST*size_MatC];
-		 // fbswC  = &DC[TNE *size_MatC];
-		 // fbneC  = &DC[TSW *size_MatC];
-		 // fbnwC  = &DC[TSE *size_MatC];
-		 // fbseC  = &DC[TNW *size_MatC];
-		 // ftswC  = &DC[BNE *size_MatC];
-		 // ftneC  = &DC[BSW *size_MatC];
-		 // ftnwC  = &DC[BSE *size_MatC];
-		 // ftseC  = &DC[BNW *size_MatC];
+		 // fwC    = &DC[DIR_P00   *size_MatC];
+		 // feC    = &DC[DIR_M00   *size_MatC];
+		 // fsC    = &DC[DIR_0P0   *size_MatC];
+		 // fnC    = &DC[DIR_0M0   *size_MatC];
+		 // fbC    = &DC[DIR_00P   *size_MatC];
+		 // ftC    = &DC[DIR_00M   *size_MatC];
+		 // fswC   = &DC[DIR_PP0  *size_MatC];
+		 // fneC   = &DC[DIR_MM0  *size_MatC];
+		 // fnwC   = &DC[DIR_PM0  *size_MatC];
+		 // fseC   = &DC[DIR_MP0  *size_MatC];
+		 // fbwC   = &DC[DIR_P0P  *size_MatC];
+		 // fteC   = &DC[DIR_M0M  *size_MatC];
+		 // ftwC   = &DC[DIR_P0M  *size_MatC];
+		 // fbeC   = &DC[DIR_M0P  *size_MatC];
+		 // fbsC   = &DC[DIR_0PP  *size_MatC];
+		 // ftnC   = &DC[DIR_0MM  *size_MatC];
+		 // ftsC   = &DC[DIR_0PM  *size_MatC];
+		 // fbnC   = &DC[DIR_0MP  *size_MatC];
+		 // fzeroC = &DC[DIR_000*size_MatC];
+		 // fbswC  = &DC[DIR_PPP *size_MatC];
+		 // fbneC  = &DC[DIR_MMP *size_MatC];
+		 // fbnwC  = &DC[DIR_PMP *size_MatC];
+		 // fbseC  = &DC[DIR_MPP *size_MatC];
+		 // ftswC  = &DC[DIR_PPM *size_MatC];
+		 // ftneC  = &DC[DIR_MMM *size_MatC];
+		 // ftnwC  = &DC[DIR_PMM *size_MatC];
+		 // ftseC  = &DC[DIR_MPM *size_MatC];
 	  // }
 
  	 // real rho_tmp;
@@ -13270,7 +13270,7 @@ extern "C" __global__ void scaleFC_staggered_time_comp_27(   real* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFC_Fix_comp_27(  real* DC, 
+__global__ void scaleFC_Fix_comp_27(  real* DC, 
 												 real* DF, 
 												 unsigned int* neighborCX,
 												 unsigned int* neighborCY,
@@ -13296,96 +13296,96 @@ extern "C" __global__ void scaleFC_Fix_comp_27(  real* DC,
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[E   *size_MatF];
-   fwF    = &DF[W   *size_MatF];
-   fnF    = &DF[N   *size_MatF];
-   fsF    = &DF[S   *size_MatF];
-   ftF    = &DF[T   *size_MatF];
-   fbF    = &DF[B   *size_MatF];
-   fneF   = &DF[NE  *size_MatF];
-   fswF   = &DF[SW  *size_MatF];
-   fseF   = &DF[SE  *size_MatF];
-   fnwF   = &DF[NW  *size_MatF];
-   fteF   = &DF[TE  *size_MatF];
-   fbwF   = &DF[BW  *size_MatF];
-   fbeF   = &DF[BE  *size_MatF];
-   ftwF   = &DF[TW  *size_MatF];
-   ftnF   = &DF[TN  *size_MatF];
-   fbsF   = &DF[BS  *size_MatF];
-   fbnF   = &DF[BN  *size_MatF];
-   ftsF   = &DF[TS  *size_MatF];
-   fzeroF = &DF[REST*size_MatF];
-   ftneF  = &DF[TNE *size_MatF];
-   ftswF  = &DF[TSW *size_MatF];
-   ftseF  = &DF[TSE *size_MatF];
-   ftnwF  = &DF[TNW *size_MatF];
-   fbneF  = &DF[BNE *size_MatF];
-   fbswF  = &DF[BSW *size_MatF];
-   fbseF  = &DF[BSE *size_MatF];
-   fbnwF  = &DF[BNW *size_MatF];
+   feF    = &DF[DIR_P00   *size_MatF];
+   fwF    = &DF[DIR_M00   *size_MatF];
+   fnF    = &DF[DIR_0P0   *size_MatF];
+   fsF    = &DF[DIR_0M0   *size_MatF];
+   ftF    = &DF[DIR_00P   *size_MatF];
+   fbF    = &DF[DIR_00M   *size_MatF];
+   fneF   = &DF[DIR_PP0  *size_MatF];
+   fswF   = &DF[DIR_MM0  *size_MatF];
+   fseF   = &DF[DIR_PM0  *size_MatF];
+   fnwF   = &DF[DIR_MP0  *size_MatF];
+   fteF   = &DF[DIR_P0P  *size_MatF];
+   fbwF   = &DF[DIR_M0M  *size_MatF];
+   fbeF   = &DF[DIR_P0M  *size_MatF];
+   ftwF   = &DF[DIR_M0P  *size_MatF];
+   ftnF   = &DF[DIR_0PP  *size_MatF];
+   fbsF   = &DF[DIR_0MM  *size_MatF];
+   fbnF   = &DF[DIR_0PM  *size_MatF];
+   ftsF   = &DF[DIR_0MP  *size_MatF];
+   fzeroF = &DF[DIR_000*size_MatF];
+   ftneF  = &DF[DIR_PPP *size_MatF];
+   ftswF  = &DF[DIR_MMP *size_MatF];
+   ftseF  = &DF[DIR_PMP *size_MatF];
+   ftnwF  = &DF[DIR_MPP *size_MatF];
+   fbneF  = &DF[DIR_PPM *size_MatF];
+   fbswF  = &DF[DIR_MMM *size_MatF];
+   fbseF  = &DF[DIR_PMM *size_MatF];
+   fbnwF  = &DF[DIR_MPM *size_MatF];
 
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[E   *size_MatC];
-      fwC    = &DC[W   *size_MatC];
-      fnC    = &DC[N   *size_MatC];
-      fsC    = &DC[S   *size_MatC];
-      ftC    = &DC[T   *size_MatC];
-      fbC    = &DC[B   *size_MatC];
-      fneC   = &DC[NE  *size_MatC];
-      fswC   = &DC[SW  *size_MatC];
-      fseC   = &DC[SE  *size_MatC];
-      fnwC   = &DC[NW  *size_MatC];
-      fteC   = &DC[TE  *size_MatC];
-      fbwC   = &DC[BW  *size_MatC];
-      fbeC   = &DC[BE  *size_MatC];
-      ftwC   = &DC[TW  *size_MatC];
-      ftnC   = &DC[TN  *size_MatC];
-      fbsC   = &DC[BS  *size_MatC];
-      fbnC   = &DC[BN  *size_MatC];
-      ftsC   = &DC[TS  *size_MatC];
-      fzeroC = &DC[REST*size_MatC];
-      ftneC  = &DC[TNE *size_MatC];
-      ftswC  = &DC[TSW *size_MatC];
-      ftseC  = &DC[TSE *size_MatC];
-      ftnwC  = &DC[TNW *size_MatC];
-      fbneC  = &DC[BNE *size_MatC];
-      fbswC  = &DC[BSW *size_MatC];
-      fbseC  = &DC[BSE *size_MatC];
-      fbnwC  = &DC[BNW *size_MatC];
+      feC    = &DC[DIR_P00   *size_MatC];
+      fwC    = &DC[DIR_M00   *size_MatC];
+      fnC    = &DC[DIR_0P0   *size_MatC];
+      fsC    = &DC[DIR_0M0   *size_MatC];
+      ftC    = &DC[DIR_00P   *size_MatC];
+      fbC    = &DC[DIR_00M   *size_MatC];
+      fneC   = &DC[DIR_PP0  *size_MatC];
+      fswC   = &DC[DIR_MM0  *size_MatC];
+      fseC   = &DC[DIR_PM0  *size_MatC];
+      fnwC   = &DC[DIR_MP0  *size_MatC];
+      fteC   = &DC[DIR_P0P  *size_MatC];
+      fbwC   = &DC[DIR_M0M  *size_MatC];
+      fbeC   = &DC[DIR_P0M  *size_MatC];
+      ftwC   = &DC[DIR_M0P  *size_MatC];
+      ftnC   = &DC[DIR_0PP  *size_MatC];
+      fbsC   = &DC[DIR_0MM  *size_MatC];
+      fbnC   = &DC[DIR_0PM  *size_MatC];
+      ftsC   = &DC[DIR_0MP  *size_MatC];
+      fzeroC = &DC[DIR_000*size_MatC];
+      ftneC  = &DC[DIR_PPP *size_MatC];
+      ftswC  = &DC[DIR_MMP *size_MatC];
+      ftseC  = &DC[DIR_PMP *size_MatC];
+      ftnwC  = &DC[DIR_MPP *size_MatC];
+      fbneC  = &DC[DIR_PPM *size_MatC];
+      fbswC  = &DC[DIR_MMM *size_MatC];
+      fbseC  = &DC[DIR_PMM *size_MatC];
+      fbnwC  = &DC[DIR_MPM *size_MatC];
    } 
    else
    {
-      fwC    = &DC[E   *size_MatC];
-      feC    = &DC[W   *size_MatC];
-      fsC    = &DC[N   *size_MatC];
-      fnC    = &DC[S   *size_MatC];
-      fbC    = &DC[T   *size_MatC];
-      ftC    = &DC[B   *size_MatC];
-      fswC   = &DC[NE  *size_MatC];
-      fneC   = &DC[SW  *size_MatC];
-      fnwC   = &DC[SE  *size_MatC];
-      fseC   = &DC[NW  *size_MatC];
-      fbwC   = &DC[TE  *size_MatC];
-      fteC   = &DC[BW  *size_MatC];
-      ftwC   = &DC[BE  *size_MatC];
-      fbeC   = &DC[TW  *size_MatC];
-      fbsC   = &DC[TN  *size_MatC];
-      ftnC   = &DC[BS  *size_MatC];
-      ftsC   = &DC[BN  *size_MatC];
-      fbnC   = &DC[TS  *size_MatC];
-      fzeroC = &DC[REST*size_MatC];
-      fbswC  = &DC[TNE *size_MatC];
-      fbneC  = &DC[TSW *size_MatC];
-      fbnwC  = &DC[TSE *size_MatC];
-      fbseC  = &DC[TNW *size_MatC];
-      ftswC  = &DC[BNE *size_MatC];
-      ftneC  = &DC[BSW *size_MatC];
-      ftnwC  = &DC[BSE *size_MatC];
-      ftseC  = &DC[BNW *size_MatC];
+      fwC    = &DC[DIR_P00   *size_MatC];
+      feC    = &DC[DIR_M00   *size_MatC];
+      fsC    = &DC[DIR_0P0   *size_MatC];
+      fnC    = &DC[DIR_0M0   *size_MatC];
+      fbC    = &DC[DIR_00P   *size_MatC];
+      ftC    = &DC[DIR_00M   *size_MatC];
+      fswC   = &DC[DIR_PP0  *size_MatC];
+      fneC   = &DC[DIR_MM0  *size_MatC];
+      fnwC   = &DC[DIR_PM0  *size_MatC];
+      fseC   = &DC[DIR_MP0  *size_MatC];
+      fbwC   = &DC[DIR_P0P  *size_MatC];
+      fteC   = &DC[DIR_M0M  *size_MatC];
+      ftwC   = &DC[DIR_P0M  *size_MatC];
+      fbeC   = &DC[DIR_M0P  *size_MatC];
+      fbsC   = &DC[DIR_0PP  *size_MatC];
+      ftnC   = &DC[DIR_0MM  *size_MatC];
+      ftsC   = &DC[DIR_0PM  *size_MatC];
+      fbnC   = &DC[DIR_0MP  *size_MatC];
+      fzeroC = &DC[DIR_000*size_MatC];
+      fbswC  = &DC[DIR_PPP *size_MatC];
+      fbneC  = &DC[DIR_MMP *size_MatC];
+      fbnwC  = &DC[DIR_PMP *size_MatC];
+      fbseC  = &DC[DIR_MPP *size_MatC];
+      ftswC  = &DC[DIR_PPM *size_MatC];
+      ftneC  = &DC[DIR_MMM *size_MatC];
+      ftnwC  = &DC[DIR_PMM *size_MatC];
+      ftseC  = &DC[DIR_MPM *size_MatC];
    }
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  ix = threadIdx.x;  // Globaler x-Index 
@@ -15130,7 +15130,7 @@ extern "C" __global__ void scaleFC_Fix_comp_27(  real* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFC_NSPress_27(   real* DC, 
+__global__ void scaleFC_NSPress_27(   real* DC, 
 												 real* DF, 
 												 unsigned int* neighborCX,
 												 unsigned int* neighborCY,
@@ -15156,96 +15156,96 @@ extern "C" __global__ void scaleFC_NSPress_27(   real* DC,
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[E   *size_MatF];
-   fwF    = &DF[W   *size_MatF];
-   fnF    = &DF[N   *size_MatF];
-   fsF    = &DF[S   *size_MatF];
-   ftF    = &DF[T   *size_MatF];
-   fbF    = &DF[B   *size_MatF];
-   fneF   = &DF[NE  *size_MatF];
-   fswF   = &DF[SW  *size_MatF];
-   fseF   = &DF[SE  *size_MatF];
-   fnwF   = &DF[NW  *size_MatF];
-   fteF   = &DF[TE  *size_MatF];
-   fbwF   = &DF[BW  *size_MatF];
-   fbeF   = &DF[BE  *size_MatF];
-   ftwF   = &DF[TW  *size_MatF];
-   ftnF   = &DF[TN  *size_MatF];
-   fbsF   = &DF[BS  *size_MatF];
-   fbnF   = &DF[BN  *size_MatF];
-   ftsF   = &DF[TS  *size_MatF];
-   fzeroF = &DF[REST*size_MatF];
-   ftneF  = &DF[TNE *size_MatF];
-   ftswF  = &DF[TSW *size_MatF];
-   ftseF  = &DF[TSE *size_MatF];
-   ftnwF  = &DF[TNW *size_MatF];
-   fbneF  = &DF[BNE *size_MatF];
-   fbswF  = &DF[BSW *size_MatF];
-   fbseF  = &DF[BSE *size_MatF];
-   fbnwF  = &DF[BNW *size_MatF];
+   feF    = &DF[DIR_P00   *size_MatF];
+   fwF    = &DF[DIR_M00   *size_MatF];
+   fnF    = &DF[DIR_0P0   *size_MatF];
+   fsF    = &DF[DIR_0M0   *size_MatF];
+   ftF    = &DF[DIR_00P   *size_MatF];
+   fbF    = &DF[DIR_00M   *size_MatF];
+   fneF   = &DF[DIR_PP0  *size_MatF];
+   fswF   = &DF[DIR_MM0  *size_MatF];
+   fseF   = &DF[DIR_PM0  *size_MatF];
+   fnwF   = &DF[DIR_MP0  *size_MatF];
+   fteF   = &DF[DIR_P0P  *size_MatF];
+   fbwF   = &DF[DIR_M0M  *size_MatF];
+   fbeF   = &DF[DIR_P0M  *size_MatF];
+   ftwF   = &DF[DIR_M0P  *size_MatF];
+   ftnF   = &DF[DIR_0PP  *size_MatF];
+   fbsF   = &DF[DIR_0MM  *size_MatF];
+   fbnF   = &DF[DIR_0PM  *size_MatF];
+   ftsF   = &DF[DIR_0MP  *size_MatF];
+   fzeroF = &DF[DIR_000*size_MatF];
+   ftneF  = &DF[DIR_PPP *size_MatF];
+   ftswF  = &DF[DIR_MMP *size_MatF];
+   ftseF  = &DF[DIR_PMP *size_MatF];
+   ftnwF  = &DF[DIR_MPP *size_MatF];
+   fbneF  = &DF[DIR_PPM *size_MatF];
+   fbswF  = &DF[DIR_MMM *size_MatF];
+   fbseF  = &DF[DIR_PMM *size_MatF];
+   fbnwF  = &DF[DIR_MPM *size_MatF];
 
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[E   *size_MatC];
-      fwC    = &DC[W   *size_MatC];
-      fnC    = &DC[N   *size_MatC];
-      fsC    = &DC[S   *size_MatC];
-      ftC    = &DC[T   *size_MatC];
-      fbC    = &DC[B   *size_MatC];
-      fneC   = &DC[NE  *size_MatC];
-      fswC   = &DC[SW  *size_MatC];
-      fseC   = &DC[SE  *size_MatC];
-      fnwC   = &DC[NW  *size_MatC];
-      fteC   = &DC[TE  *size_MatC];
-      fbwC   = &DC[BW  *size_MatC];
-      fbeC   = &DC[BE  *size_MatC];
-      ftwC   = &DC[TW  *size_MatC];
-      ftnC   = &DC[TN  *size_MatC];
-      fbsC   = &DC[BS  *size_MatC];
-      fbnC   = &DC[BN  *size_MatC];
-      ftsC   = &DC[TS  *size_MatC];
-      fzeroC = &DC[REST*size_MatC];
-      ftneC  = &DC[TNE *size_MatC];
-      ftswC  = &DC[TSW *size_MatC];
-      ftseC  = &DC[TSE *size_MatC];
-      ftnwC  = &DC[TNW *size_MatC];
-      fbneC  = &DC[BNE *size_MatC];
-      fbswC  = &DC[BSW *size_MatC];
-      fbseC  = &DC[BSE *size_MatC];
-      fbnwC  = &DC[BNW *size_MatC];
+      feC    = &DC[DIR_P00   *size_MatC];
+      fwC    = &DC[DIR_M00   *size_MatC];
+      fnC    = &DC[DIR_0P0   *size_MatC];
+      fsC    = &DC[DIR_0M0   *size_MatC];
+      ftC    = &DC[DIR_00P   *size_MatC];
+      fbC    = &DC[DIR_00M   *size_MatC];
+      fneC   = &DC[DIR_PP0  *size_MatC];
+      fswC   = &DC[DIR_MM0  *size_MatC];
+      fseC   = &DC[DIR_PM0  *size_MatC];
+      fnwC   = &DC[DIR_MP0  *size_MatC];
+      fteC   = &DC[DIR_P0P  *size_MatC];
+      fbwC   = &DC[DIR_M0M  *size_MatC];
+      fbeC   = &DC[DIR_P0M  *size_MatC];
+      ftwC   = &DC[DIR_M0P  *size_MatC];
+      ftnC   = &DC[DIR_0PP  *size_MatC];
+      fbsC   = &DC[DIR_0MM  *size_MatC];
+      fbnC   = &DC[DIR_0PM  *size_MatC];
+      ftsC   = &DC[DIR_0MP  *size_MatC];
+      fzeroC = &DC[DIR_000*size_MatC];
+      ftneC  = &DC[DIR_PPP *size_MatC];
+      ftswC  = &DC[DIR_MMP *size_MatC];
+      ftseC  = &DC[DIR_PMP *size_MatC];
+      ftnwC  = &DC[DIR_MPP *size_MatC];
+      fbneC  = &DC[DIR_PPM *size_MatC];
+      fbswC  = &DC[DIR_MMM *size_MatC];
+      fbseC  = &DC[DIR_PMM *size_MatC];
+      fbnwC  = &DC[DIR_MPM *size_MatC];
    } 
    else
    {
-      fwC    = &DC[E   *size_MatC];
-      feC    = &DC[W   *size_MatC];
-      fsC    = &DC[N   *size_MatC];
-      fnC    = &DC[S   *size_MatC];
-      fbC    = &DC[T   *size_MatC];
-      ftC    = &DC[B   *size_MatC];
-      fswC   = &DC[NE  *size_MatC];
-      fneC   = &DC[SW  *size_MatC];
-      fnwC   = &DC[SE  *size_MatC];
-      fseC   = &DC[NW  *size_MatC];
-      fbwC   = &DC[TE  *size_MatC];
-      fteC   = &DC[BW  *size_MatC];
-      ftwC   = &DC[BE  *size_MatC];
-      fbeC   = &DC[TW  *size_MatC];
-      fbsC   = &DC[TN  *size_MatC];
-      ftnC   = &DC[BS  *size_MatC];
-      ftsC   = &DC[BN  *size_MatC];
-      fbnC   = &DC[TS  *size_MatC];
-      fzeroC = &DC[REST*size_MatC];
-      fbswC  = &DC[TNE *size_MatC];
-      fbneC  = &DC[TSW *size_MatC];
-      fbnwC  = &DC[TSE *size_MatC];
-      fbseC  = &DC[TNW *size_MatC];
-      ftswC  = &DC[BNE *size_MatC];
-      ftneC  = &DC[BSW *size_MatC];
-      ftnwC  = &DC[BSE *size_MatC];
-      ftseC  = &DC[BNW *size_MatC];
+      fwC    = &DC[DIR_P00   *size_MatC];
+      feC    = &DC[DIR_M00   *size_MatC];
+      fsC    = &DC[DIR_0P0   *size_MatC];
+      fnC    = &DC[DIR_0M0   *size_MatC];
+      fbC    = &DC[DIR_00P   *size_MatC];
+      ftC    = &DC[DIR_00M   *size_MatC];
+      fswC   = &DC[DIR_PP0  *size_MatC];
+      fneC   = &DC[DIR_MM0  *size_MatC];
+      fnwC   = &DC[DIR_PM0  *size_MatC];
+      fseC   = &DC[DIR_MP0  *size_MatC];
+      fbwC   = &DC[DIR_P0P  *size_MatC];
+      fteC   = &DC[DIR_M0M  *size_MatC];
+      ftwC   = &DC[DIR_P0M  *size_MatC];
+      fbeC   = &DC[DIR_M0P  *size_MatC];
+      fbsC   = &DC[DIR_0PP  *size_MatC];
+      ftnC   = &DC[DIR_0MM  *size_MatC];
+      ftsC   = &DC[DIR_0PM  *size_MatC];
+      fbnC   = &DC[DIR_0MP  *size_MatC];
+      fzeroC = &DC[DIR_000*size_MatC];
+      fbswC  = &DC[DIR_PPP *size_MatC];
+      fbneC  = &DC[DIR_MMP *size_MatC];
+      fbnwC  = &DC[DIR_PMP *size_MatC];
+      fbseC  = &DC[DIR_MPP *size_MatC];
+      ftswC  = &DC[DIR_PPM *size_MatC];
+      ftneC  = &DC[DIR_MMM *size_MatC];
+      ftnwC  = &DC[DIR_PMM *size_MatC];
+      ftseC  = &DC[DIR_MPM *size_MatC];
    }
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  ix = threadIdx.x;  // Globaler x-Index 
@@ -16336,7 +16336,7 @@ extern "C" __global__ void scaleFC_NSPress_27(   real* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFC_Fix_27(   real* DC, 
+__global__ void scaleFC_Fix_27(   real* DC, 
                                              real* DF, 
                                              unsigned int* neighborCX,
                                              unsigned int* neighborCY,
@@ -16362,96 +16362,96 @@ extern "C" __global__ void scaleFC_Fix_27(   real* DC,
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[E   *size_MatF];
-   fwF    = &DF[W   *size_MatF];
-   fnF    = &DF[N   *size_MatF];
-   fsF    = &DF[S   *size_MatF];
-   ftF    = &DF[T   *size_MatF];
-   fbF    = &DF[B   *size_MatF];
-   fneF   = &DF[NE  *size_MatF];
-   fswF   = &DF[SW  *size_MatF];
-   fseF   = &DF[SE  *size_MatF];
-   fnwF   = &DF[NW  *size_MatF];
-   fteF   = &DF[TE  *size_MatF];
-   fbwF   = &DF[BW  *size_MatF];
-   fbeF   = &DF[BE  *size_MatF];
-   ftwF   = &DF[TW  *size_MatF];
-   ftnF   = &DF[TN  *size_MatF];
-   fbsF   = &DF[BS  *size_MatF];
-   fbnF   = &DF[BN  *size_MatF];
-   ftsF   = &DF[TS  *size_MatF];
-   fzeroF = &DF[REST*size_MatF];
-   ftneF  = &DF[TNE *size_MatF];
-   ftswF  = &DF[TSW *size_MatF];
-   ftseF  = &DF[TSE *size_MatF];
-   ftnwF  = &DF[TNW *size_MatF];
-   fbneF  = &DF[BNE *size_MatF];
-   fbswF  = &DF[BSW *size_MatF];
-   fbseF  = &DF[BSE *size_MatF];
-   fbnwF  = &DF[BNW *size_MatF];
+   feF    = &DF[DIR_P00   *size_MatF];
+   fwF    = &DF[DIR_M00   *size_MatF];
+   fnF    = &DF[DIR_0P0   *size_MatF];
+   fsF    = &DF[DIR_0M0   *size_MatF];
+   ftF    = &DF[DIR_00P   *size_MatF];
+   fbF    = &DF[DIR_00M   *size_MatF];
+   fneF   = &DF[DIR_PP0  *size_MatF];
+   fswF   = &DF[DIR_MM0  *size_MatF];
+   fseF   = &DF[DIR_PM0  *size_MatF];
+   fnwF   = &DF[DIR_MP0  *size_MatF];
+   fteF   = &DF[DIR_P0P  *size_MatF];
+   fbwF   = &DF[DIR_M0M  *size_MatF];
+   fbeF   = &DF[DIR_P0M  *size_MatF];
+   ftwF   = &DF[DIR_M0P  *size_MatF];
+   ftnF   = &DF[DIR_0PP  *size_MatF];
+   fbsF   = &DF[DIR_0MM  *size_MatF];
+   fbnF   = &DF[DIR_0PM  *size_MatF];
+   ftsF   = &DF[DIR_0MP  *size_MatF];
+   fzeroF = &DF[DIR_000*size_MatF];
+   ftneF  = &DF[DIR_PPP *size_MatF];
+   ftswF  = &DF[DIR_MMP *size_MatF];
+   ftseF  = &DF[DIR_PMP *size_MatF];
+   ftnwF  = &DF[DIR_MPP *size_MatF];
+   fbneF  = &DF[DIR_PPM *size_MatF];
+   fbswF  = &DF[DIR_MMM *size_MatF];
+   fbseF  = &DF[DIR_PMM *size_MatF];
+   fbnwF  = &DF[DIR_MPM *size_MatF];
 
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[E   *size_MatC];
-      fwC    = &DC[W   *size_MatC];
-      fnC    = &DC[N   *size_MatC];
-      fsC    = &DC[S   *size_MatC];
-      ftC    = &DC[T   *size_MatC];
-      fbC    = &DC[B   *size_MatC];
-      fneC   = &DC[NE  *size_MatC];
-      fswC   = &DC[SW  *size_MatC];
-      fseC   = &DC[SE  *size_MatC];
-      fnwC   = &DC[NW  *size_MatC];
-      fteC   = &DC[TE  *size_MatC];
-      fbwC   = &DC[BW  *size_MatC];
-      fbeC   = &DC[BE  *size_MatC];
-      ftwC   = &DC[TW  *size_MatC];
-      ftnC   = &DC[TN  *size_MatC];
-      fbsC   = &DC[BS  *size_MatC];
-      fbnC   = &DC[BN  *size_MatC];
-      ftsC   = &DC[TS  *size_MatC];
-      fzeroC = &DC[REST*size_MatC];
-      ftneC  = &DC[TNE *size_MatC];
-      ftswC  = &DC[TSW *size_MatC];
-      ftseC  = &DC[TSE *size_MatC];
-      ftnwC  = &DC[TNW *size_MatC];
-      fbneC  = &DC[BNE *size_MatC];
-      fbswC  = &DC[BSW *size_MatC];
-      fbseC  = &DC[BSE *size_MatC];
-      fbnwC  = &DC[BNW *size_MatC];
+      feC    = &DC[DIR_P00   *size_MatC];
+      fwC    = &DC[DIR_M00   *size_MatC];
+      fnC    = &DC[DIR_0P0   *size_MatC];
+      fsC    = &DC[DIR_0M0   *size_MatC];
+      ftC    = &DC[DIR_00P   *size_MatC];
+      fbC    = &DC[DIR_00M   *size_MatC];
+      fneC   = &DC[DIR_PP0  *size_MatC];
+      fswC   = &DC[DIR_MM0  *size_MatC];
+      fseC   = &DC[DIR_PM0  *size_MatC];
+      fnwC   = &DC[DIR_MP0  *size_MatC];
+      fteC   = &DC[DIR_P0P  *size_MatC];
+      fbwC   = &DC[DIR_M0M  *size_MatC];
+      fbeC   = &DC[DIR_P0M  *size_MatC];
+      ftwC   = &DC[DIR_M0P  *size_MatC];
+      ftnC   = &DC[DIR_0PP  *size_MatC];
+      fbsC   = &DC[DIR_0MM  *size_MatC];
+      fbnC   = &DC[DIR_0PM  *size_MatC];
+      ftsC   = &DC[DIR_0MP  *size_MatC];
+      fzeroC = &DC[DIR_000*size_MatC];
+      ftneC  = &DC[DIR_PPP *size_MatC];
+      ftswC  = &DC[DIR_MMP *size_MatC];
+      ftseC  = &DC[DIR_PMP *size_MatC];
+      ftnwC  = &DC[DIR_MPP *size_MatC];
+      fbneC  = &DC[DIR_PPM *size_MatC];
+      fbswC  = &DC[DIR_MMM *size_MatC];
+      fbseC  = &DC[DIR_PMM *size_MatC];
+      fbnwC  = &DC[DIR_MPM *size_MatC];
    } 
    else
    {
-      fwC    = &DC[E   *size_MatC];
-      feC    = &DC[W   *size_MatC];
-      fsC    = &DC[N   *size_MatC];
-      fnC    = &DC[S   *size_MatC];
-      fbC    = &DC[T   *size_MatC];
-      ftC    = &DC[B   *size_MatC];
-      fswC   = &DC[NE  *size_MatC];
-      fneC   = &DC[SW  *size_MatC];
-      fnwC   = &DC[SE  *size_MatC];
-      fseC   = &DC[NW  *size_MatC];
-      fbwC   = &DC[TE  *size_MatC];
-      fteC   = &DC[BW  *size_MatC];
-      ftwC   = &DC[BE  *size_MatC];
-      fbeC   = &DC[TW  *size_MatC];
-      fbsC   = &DC[TN  *size_MatC];
-      ftnC   = &DC[BS  *size_MatC];
-      ftsC   = &DC[BN  *size_MatC];
-      fbnC   = &DC[TS  *size_MatC];
-      fzeroC = &DC[REST*size_MatC];
-      fbswC  = &DC[TNE *size_MatC];
-      fbneC  = &DC[TSW *size_MatC];
-      fbnwC  = &DC[TSE *size_MatC];
-      fbseC  = &DC[TNW *size_MatC];
-      ftswC  = &DC[BNE *size_MatC];
-      ftneC  = &DC[BSW *size_MatC];
-      ftnwC  = &DC[BSE *size_MatC];
-      ftseC  = &DC[BNW *size_MatC];
+      fwC    = &DC[DIR_P00   *size_MatC];
+      feC    = &DC[DIR_M00   *size_MatC];
+      fsC    = &DC[DIR_0P0   *size_MatC];
+      fnC    = &DC[DIR_0M0   *size_MatC];
+      fbC    = &DC[DIR_00P   *size_MatC];
+      ftC    = &DC[DIR_00M   *size_MatC];
+      fswC   = &DC[DIR_PP0  *size_MatC];
+      fneC   = &DC[DIR_MM0  *size_MatC];
+      fnwC   = &DC[DIR_PM0  *size_MatC];
+      fseC   = &DC[DIR_MP0  *size_MatC];
+      fbwC   = &DC[DIR_P0P  *size_MatC];
+      fteC   = &DC[DIR_M0M  *size_MatC];
+      ftwC   = &DC[DIR_P0M  *size_MatC];
+      fbeC   = &DC[DIR_M0P  *size_MatC];
+      fbsC   = &DC[DIR_0PP  *size_MatC];
+      ftnC   = &DC[DIR_0MM  *size_MatC];
+      ftsC   = &DC[DIR_0PM  *size_MatC];
+      fbnC   = &DC[DIR_0MP  *size_MatC];
+      fzeroC = &DC[DIR_000*size_MatC];
+      fbswC  = &DC[DIR_PPP *size_MatC];
+      fbneC  = &DC[DIR_MMP *size_MatC];
+      fbnwC  = &DC[DIR_PMP *size_MatC];
+      fbseC  = &DC[DIR_MPP *size_MatC];
+      ftswC  = &DC[DIR_PPM *size_MatC];
+      ftneC  = &DC[DIR_MMM *size_MatC];
+      ftnwC  = &DC[DIR_PMM *size_MatC];
+      ftseC  = &DC[DIR_MPM *size_MatC];
    }
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  ix = threadIdx.x;  // Globaler x-Index 
@@ -17696,7 +17696,7 @@ extern "C" __global__ void scaleFC_Fix_27(   real* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFCpress27(real* DC, 
+__global__ void scaleFCpress27(real* DC, 
                                           real* DF, 
                                           unsigned int* neighborCX,
                                           unsigned int* neighborCY,
@@ -17722,96 +17722,96 @@ extern "C" __global__ void scaleFCpress27(real* DC,
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[E   *size_MatF];
-   fwF    = &DF[W   *size_MatF];
-   fnF    = &DF[N   *size_MatF];
-   fsF    = &DF[S   *size_MatF];
-   ftF    = &DF[T   *size_MatF];
-   fbF    = &DF[B   *size_MatF];
-   fneF   = &DF[NE  *size_MatF];
-   fswF   = &DF[SW  *size_MatF];
-   fseF   = &DF[SE  *size_MatF];
-   fnwF   = &DF[NW  *size_MatF];
-   fteF   = &DF[TE  *size_MatF];
-   fbwF   = &DF[BW  *size_MatF];
-   fbeF   = &DF[BE  *size_MatF];
-   ftwF   = &DF[TW  *size_MatF];
-   ftnF   = &DF[TN  *size_MatF];
-   fbsF   = &DF[BS  *size_MatF];
-   fbnF   = &DF[BN  *size_MatF];
-   ftsF   = &DF[TS  *size_MatF];
-   fzeroF = &DF[REST*size_MatF];
-   ftneF  = &DF[TNE *size_MatF];
-   ftswF  = &DF[TSW *size_MatF];
-   ftseF  = &DF[TSE *size_MatF];
-   ftnwF  = &DF[TNW *size_MatF];
-   fbneF  = &DF[BNE *size_MatF];
-   fbswF  = &DF[BSW *size_MatF];
-   fbseF  = &DF[BSE *size_MatF];
-   fbnwF  = &DF[BNW *size_MatF];
+   feF    = &DF[DIR_P00   *size_MatF];
+   fwF    = &DF[DIR_M00   *size_MatF];
+   fnF    = &DF[DIR_0P0   *size_MatF];
+   fsF    = &DF[DIR_0M0   *size_MatF];
+   ftF    = &DF[DIR_00P   *size_MatF];
+   fbF    = &DF[DIR_00M   *size_MatF];
+   fneF   = &DF[DIR_PP0  *size_MatF];
+   fswF   = &DF[DIR_MM0  *size_MatF];
+   fseF   = &DF[DIR_PM0  *size_MatF];
+   fnwF   = &DF[DIR_MP0  *size_MatF];
+   fteF   = &DF[DIR_P0P  *size_MatF];
+   fbwF   = &DF[DIR_M0M  *size_MatF];
+   fbeF   = &DF[DIR_P0M  *size_MatF];
+   ftwF   = &DF[DIR_M0P  *size_MatF];
+   ftnF   = &DF[DIR_0PP  *size_MatF];
+   fbsF   = &DF[DIR_0MM  *size_MatF];
+   fbnF   = &DF[DIR_0PM  *size_MatF];
+   ftsF   = &DF[DIR_0MP  *size_MatF];
+   fzeroF = &DF[DIR_000*size_MatF];
+   ftneF  = &DF[DIR_PPP *size_MatF];
+   ftswF  = &DF[DIR_MMP *size_MatF];
+   ftseF  = &DF[DIR_PMP *size_MatF];
+   ftnwF  = &DF[DIR_MPP *size_MatF];
+   fbneF  = &DF[DIR_PPM *size_MatF];
+   fbswF  = &DF[DIR_MMM *size_MatF];
+   fbseF  = &DF[DIR_PMM *size_MatF];
+   fbnwF  = &DF[DIR_MPM *size_MatF];
 
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[E   *size_MatC];
-      fwC    = &DC[W   *size_MatC];
-      fnC    = &DC[N   *size_MatC];
-      fsC    = &DC[S   *size_MatC];
-      ftC    = &DC[T   *size_MatC];
-      fbC    = &DC[B   *size_MatC];
-      fneC   = &DC[NE  *size_MatC];
-      fswC   = &DC[SW  *size_MatC];
-      fseC   = &DC[SE  *size_MatC];
-      fnwC   = &DC[NW  *size_MatC];
-      fteC   = &DC[TE  *size_MatC];
-      fbwC   = &DC[BW  *size_MatC];
-      fbeC   = &DC[BE  *size_MatC];
-      ftwC   = &DC[TW  *size_MatC];
-      ftnC   = &DC[TN  *size_MatC];
-      fbsC   = &DC[BS  *size_MatC];
-      fbnC   = &DC[BN  *size_MatC];
-      ftsC   = &DC[TS  *size_MatC];
-      fzeroC = &DC[REST*size_MatC];
-      ftneC  = &DC[TNE *size_MatC];
-      ftswC  = &DC[TSW *size_MatC];
-      ftseC  = &DC[TSE *size_MatC];
-      ftnwC  = &DC[TNW *size_MatC];
-      fbneC  = &DC[BNE *size_MatC];
-      fbswC  = &DC[BSW *size_MatC];
-      fbseC  = &DC[BSE *size_MatC];
-      fbnwC  = &DC[BNW *size_MatC];
+      feC    = &DC[DIR_P00   *size_MatC];
+      fwC    = &DC[DIR_M00   *size_MatC];
+      fnC    = &DC[DIR_0P0   *size_MatC];
+      fsC    = &DC[DIR_0M0   *size_MatC];
+      ftC    = &DC[DIR_00P   *size_MatC];
+      fbC    = &DC[DIR_00M   *size_MatC];
+      fneC   = &DC[DIR_PP0  *size_MatC];
+      fswC   = &DC[DIR_MM0  *size_MatC];
+      fseC   = &DC[DIR_PM0  *size_MatC];
+      fnwC   = &DC[DIR_MP0  *size_MatC];
+      fteC   = &DC[DIR_P0P  *size_MatC];
+      fbwC   = &DC[DIR_M0M  *size_MatC];
+      fbeC   = &DC[DIR_P0M  *size_MatC];
+      ftwC   = &DC[DIR_M0P  *size_MatC];
+      ftnC   = &DC[DIR_0PP  *size_MatC];
+      fbsC   = &DC[DIR_0MM  *size_MatC];
+      fbnC   = &DC[DIR_0PM  *size_MatC];
+      ftsC   = &DC[DIR_0MP  *size_MatC];
+      fzeroC = &DC[DIR_000*size_MatC];
+      ftneC  = &DC[DIR_PPP *size_MatC];
+      ftswC  = &DC[DIR_MMP *size_MatC];
+      ftseC  = &DC[DIR_PMP *size_MatC];
+      ftnwC  = &DC[DIR_MPP *size_MatC];
+      fbneC  = &DC[DIR_PPM *size_MatC];
+      fbswC  = &DC[DIR_MMM *size_MatC];
+      fbseC  = &DC[DIR_PMM *size_MatC];
+      fbnwC  = &DC[DIR_MPM *size_MatC];
    } 
    else
    {
-      fwC    = &DC[E   *size_MatC];
-      feC    = &DC[W   *size_MatC];
-      fsC    = &DC[N   *size_MatC];
-      fnC    = &DC[S   *size_MatC];
-      fbC    = &DC[T   *size_MatC];
-      ftC    = &DC[B   *size_MatC];
-      fswC   = &DC[NE  *size_MatC];
-      fneC   = &DC[SW  *size_MatC];
-      fnwC   = &DC[SE  *size_MatC];
-      fseC   = &DC[NW  *size_MatC];
-      fbwC   = &DC[TE  *size_MatC];
-      fteC   = &DC[BW  *size_MatC];
-      ftwC   = &DC[BE  *size_MatC];
-      fbeC   = &DC[TW  *size_MatC];
-      fbsC   = &DC[TN  *size_MatC];
-      ftnC   = &DC[BS  *size_MatC];
-      ftsC   = &DC[BN  *size_MatC];
-      fbnC   = &DC[TS  *size_MatC];
-      fzeroC = &DC[REST*size_MatC];
-      fbswC  = &DC[TNE *size_MatC];
-      fbneC  = &DC[TSW *size_MatC];
-      fbnwC  = &DC[TSE *size_MatC];
-      fbseC  = &DC[TNW *size_MatC];
-      ftswC  = &DC[BNE *size_MatC];
-      ftneC  = &DC[BSW *size_MatC];
-      ftnwC  = &DC[BSE *size_MatC];
-      ftseC  = &DC[BNW *size_MatC];
+      fwC    = &DC[DIR_P00   *size_MatC];
+      feC    = &DC[DIR_M00   *size_MatC];
+      fsC    = &DC[DIR_0P0   *size_MatC];
+      fnC    = &DC[DIR_0M0   *size_MatC];
+      fbC    = &DC[DIR_00P   *size_MatC];
+      ftC    = &DC[DIR_00M   *size_MatC];
+      fswC   = &DC[DIR_PP0  *size_MatC];
+      fneC   = &DC[DIR_MM0  *size_MatC];
+      fnwC   = &DC[DIR_PM0  *size_MatC];
+      fseC   = &DC[DIR_MP0  *size_MatC];
+      fbwC   = &DC[DIR_P0P  *size_MatC];
+      fteC   = &DC[DIR_M0M  *size_MatC];
+      ftwC   = &DC[DIR_P0M  *size_MatC];
+      fbeC   = &DC[DIR_M0P  *size_MatC];
+      fbsC   = &DC[DIR_0PP  *size_MatC];
+      ftnC   = &DC[DIR_0MM  *size_MatC];
+      ftsC   = &DC[DIR_0PM  *size_MatC];
+      fbnC   = &DC[DIR_0MP  *size_MatC];
+      fzeroC = &DC[DIR_000*size_MatC];
+      fbswC  = &DC[DIR_PPP *size_MatC];
+      fbneC  = &DC[DIR_MMP *size_MatC];
+      fbnwC  = &DC[DIR_PMP *size_MatC];
+      fbseC  = &DC[DIR_MPP *size_MatC];
+      ftswC  = &DC[DIR_PPM *size_MatC];
+      ftneC  = &DC[DIR_MMM *size_MatC];
+      ftnwC  = &DC[DIR_PMM *size_MatC];
+      ftseC  = &DC[DIR_MPM *size_MatC];
    }
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  ix = threadIdx.x;  // Globaler x-Index 
@@ -18621,7 +18621,7 @@ extern "C" __global__ void scaleFCpress27(real* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFCLast27( real* DC, 
+__global__ void scaleFCLast27( real* DC, 
                                           real* DF, 
                                           unsigned int* neighborCX,
                                           unsigned int* neighborCY,
@@ -18647,96 +18647,96 @@ extern "C" __global__ void scaleFCLast27( real* DC,
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[E   *size_MatF];
-   fwF    = &DF[W   *size_MatF];
-   fnF    = &DF[N   *size_MatF];
-   fsF    = &DF[S   *size_MatF];
-   ftF    = &DF[T   *size_MatF];
-   fbF    = &DF[B   *size_MatF];
-   fneF   = &DF[NE  *size_MatF];
-   fswF   = &DF[SW  *size_MatF];
-   fseF   = &DF[SE  *size_MatF];
-   fnwF   = &DF[NW  *size_MatF];
-   fteF   = &DF[TE  *size_MatF];
-   fbwF   = &DF[BW  *size_MatF];
-   fbeF   = &DF[BE  *size_MatF];
-   ftwF   = &DF[TW  *size_MatF];
-   ftnF   = &DF[TN  *size_MatF];
-   fbsF   = &DF[BS  *size_MatF];
-   fbnF   = &DF[BN  *size_MatF];
-   ftsF   = &DF[TS  *size_MatF];
-   fzeroF = &DF[REST*size_MatF];
-   ftneF  = &DF[TNE *size_MatF];
-   ftswF  = &DF[TSW *size_MatF];
-   ftseF  = &DF[TSE *size_MatF];
-   ftnwF  = &DF[TNW *size_MatF];
-   fbneF  = &DF[BNE *size_MatF];
-   fbswF  = &DF[BSW *size_MatF];
-   fbseF  = &DF[BSE *size_MatF];
-   fbnwF  = &DF[BNW *size_MatF];
+   feF    = &DF[DIR_P00   *size_MatF];
+   fwF    = &DF[DIR_M00   *size_MatF];
+   fnF    = &DF[DIR_0P0   *size_MatF];
+   fsF    = &DF[DIR_0M0   *size_MatF];
+   ftF    = &DF[DIR_00P   *size_MatF];
+   fbF    = &DF[DIR_00M   *size_MatF];
+   fneF   = &DF[DIR_PP0  *size_MatF];
+   fswF   = &DF[DIR_MM0  *size_MatF];
+   fseF   = &DF[DIR_PM0  *size_MatF];
+   fnwF   = &DF[DIR_MP0  *size_MatF];
+   fteF   = &DF[DIR_P0P  *size_MatF];
+   fbwF   = &DF[DIR_M0M  *size_MatF];
+   fbeF   = &DF[DIR_P0M  *size_MatF];
+   ftwF   = &DF[DIR_M0P  *size_MatF];
+   ftnF   = &DF[DIR_0PP  *size_MatF];
+   fbsF   = &DF[DIR_0MM  *size_MatF];
+   fbnF   = &DF[DIR_0PM  *size_MatF];
+   ftsF   = &DF[DIR_0MP  *size_MatF];
+   fzeroF = &DF[DIR_000*size_MatF];
+   ftneF  = &DF[DIR_PPP *size_MatF];
+   ftswF  = &DF[DIR_MMP *size_MatF];
+   ftseF  = &DF[DIR_PMP *size_MatF];
+   ftnwF  = &DF[DIR_MPP *size_MatF];
+   fbneF  = &DF[DIR_PPM *size_MatF];
+   fbswF  = &DF[DIR_MMM *size_MatF];
+   fbseF  = &DF[DIR_PMM *size_MatF];
+   fbnwF  = &DF[DIR_MPM *size_MatF];
 
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[E   *size_MatC];
-      fwC    = &DC[W   *size_MatC];
-      fnC    = &DC[N   *size_MatC];
-      fsC    = &DC[S   *size_MatC];
-      ftC    = &DC[T   *size_MatC];
-      fbC    = &DC[B   *size_MatC];
-      fneC   = &DC[NE  *size_MatC];
-      fswC   = &DC[SW  *size_MatC];
-      fseC   = &DC[SE  *size_MatC];
-      fnwC   = &DC[NW  *size_MatC];
-      fteC   = &DC[TE  *size_MatC];
-      fbwC   = &DC[BW  *size_MatC];
-      fbeC   = &DC[BE  *size_MatC];
-      ftwC   = &DC[TW  *size_MatC];
-      ftnC   = &DC[TN  *size_MatC];
-      fbsC   = &DC[BS  *size_MatC];
-      fbnC   = &DC[BN  *size_MatC];
-      ftsC   = &DC[TS  *size_MatC];
-      fzeroC = &DC[REST*size_MatC];
-      ftneC  = &DC[TNE *size_MatC];
-      ftswC  = &DC[TSW *size_MatC];
-      ftseC  = &DC[TSE *size_MatC];
-      ftnwC  = &DC[TNW *size_MatC];
-      fbneC  = &DC[BNE *size_MatC];
-      fbswC  = &DC[BSW *size_MatC];
-      fbseC  = &DC[BSE *size_MatC];
-      fbnwC  = &DC[BNW *size_MatC];
+      feC    = &DC[DIR_P00   *size_MatC];
+      fwC    = &DC[DIR_M00   *size_MatC];
+      fnC    = &DC[DIR_0P0   *size_MatC];
+      fsC    = &DC[DIR_0M0   *size_MatC];
+      ftC    = &DC[DIR_00P   *size_MatC];
+      fbC    = &DC[DIR_00M   *size_MatC];
+      fneC   = &DC[DIR_PP0  *size_MatC];
+      fswC   = &DC[DIR_MM0  *size_MatC];
+      fseC   = &DC[DIR_PM0  *size_MatC];
+      fnwC   = &DC[DIR_MP0  *size_MatC];
+      fteC   = &DC[DIR_P0P  *size_MatC];
+      fbwC   = &DC[DIR_M0M  *size_MatC];
+      fbeC   = &DC[DIR_P0M  *size_MatC];
+      ftwC   = &DC[DIR_M0P  *size_MatC];
+      ftnC   = &DC[DIR_0PP  *size_MatC];
+      fbsC   = &DC[DIR_0MM  *size_MatC];
+      fbnC   = &DC[DIR_0PM  *size_MatC];
+      ftsC   = &DC[DIR_0MP  *size_MatC];
+      fzeroC = &DC[DIR_000*size_MatC];
+      ftneC  = &DC[DIR_PPP *size_MatC];
+      ftswC  = &DC[DIR_MMP *size_MatC];
+      ftseC  = &DC[DIR_PMP *size_MatC];
+      ftnwC  = &DC[DIR_MPP *size_MatC];
+      fbneC  = &DC[DIR_PPM *size_MatC];
+      fbswC  = &DC[DIR_MMM *size_MatC];
+      fbseC  = &DC[DIR_PMM *size_MatC];
+      fbnwC  = &DC[DIR_MPM *size_MatC];
    } 
    else
    {
-      fwC    = &DC[E   *size_MatC];
-      feC    = &DC[W   *size_MatC];
-      fsC    = &DC[N   *size_MatC];
-      fnC    = &DC[S   *size_MatC];
-      fbC    = &DC[T   *size_MatC];
-      ftC    = &DC[B   *size_MatC];
-      fswC   = &DC[NE  *size_MatC];
-      fneC   = &DC[SW  *size_MatC];
-      fnwC   = &DC[SE  *size_MatC];
-      fseC   = &DC[NW  *size_MatC];
-      fbwC   = &DC[TE  *size_MatC];
-      fteC   = &DC[BW  *size_MatC];
-      ftwC   = &DC[BE  *size_MatC];
-      fbeC   = &DC[TW  *size_MatC];
-      fbsC   = &DC[TN  *size_MatC];
-      ftnC   = &DC[BS  *size_MatC];
-      ftsC   = &DC[BN  *size_MatC];
-      fbnC   = &DC[TS  *size_MatC];
-      fzeroC = &DC[REST*size_MatC];
-      fbswC  = &DC[TNE *size_MatC];
-      fbneC  = &DC[TSW *size_MatC];
-      fbnwC  = &DC[TSE *size_MatC];
-      fbseC  = &DC[TNW *size_MatC];
-      ftswC  = &DC[BNE *size_MatC];
-      ftneC  = &DC[BSW *size_MatC];
-      ftnwC  = &DC[BSE *size_MatC];
-      ftseC  = &DC[BNW *size_MatC];
+      fwC    = &DC[DIR_P00   *size_MatC];
+      feC    = &DC[DIR_M00   *size_MatC];
+      fsC    = &DC[DIR_0P0   *size_MatC];
+      fnC    = &DC[DIR_0M0   *size_MatC];
+      fbC    = &DC[DIR_00P   *size_MatC];
+      ftC    = &DC[DIR_00M   *size_MatC];
+      fswC   = &DC[DIR_PP0  *size_MatC];
+      fneC   = &DC[DIR_MM0  *size_MatC];
+      fnwC   = &DC[DIR_PM0  *size_MatC];
+      fseC   = &DC[DIR_MP0  *size_MatC];
+      fbwC   = &DC[DIR_P0P  *size_MatC];
+      fteC   = &DC[DIR_M0M  *size_MatC];
+      ftwC   = &DC[DIR_P0M  *size_MatC];
+      fbeC   = &DC[DIR_M0P  *size_MatC];
+      fbsC   = &DC[DIR_0PP  *size_MatC];
+      ftnC   = &DC[DIR_0MM  *size_MatC];
+      ftsC   = &DC[DIR_0PM  *size_MatC];
+      fbnC   = &DC[DIR_0MP  *size_MatC];
+      fzeroC = &DC[DIR_000*size_MatC];
+      fbswC  = &DC[DIR_PPP *size_MatC];
+      fbneC  = &DC[DIR_MMP *size_MatC];
+      fbnwC  = &DC[DIR_PMP *size_MatC];
+      fbseC  = &DC[DIR_MPP *size_MatC];
+      ftswC  = &DC[DIR_PPM *size_MatC];
+      ftneC  = &DC[DIR_MMM *size_MatC];
+      ftnwC  = &DC[DIR_PMM *size_MatC];
+      ftseC  = &DC[DIR_MPM *size_MatC];
    }
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  ix = threadIdx.x;  // Globaler x-Index 
@@ -20017,7 +20017,7 @@ extern "C" __global__ void scaleFCLast27( real* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFCThSMG7(    real* DC, 
+__global__ void scaleFCThSMG7(    real* DC, 
                                              real* DF, 
                                              real* DD7C, 
                                              real* DD7F, 
@@ -20040,96 +20040,96 @@ extern "C" __global__ void scaleFCThSMG7(    real* DC,
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, //*fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[E   *size_MatF];
-   fwF    = &DF[W   *size_MatF];
-   fnF    = &DF[N   *size_MatF];
-   fsF    = &DF[S   *size_MatF];
-   ftF    = &DF[T   *size_MatF];
-   fbF    = &DF[B   *size_MatF];
-   fneF   = &DF[NE  *size_MatF];
-   fswF   = &DF[SW  *size_MatF];
-   fseF   = &DF[SE  *size_MatF];
-   fnwF   = &DF[NW  *size_MatF];
-   fteF   = &DF[TE  *size_MatF];
-   fbwF   = &DF[BW  *size_MatF];
-   fbeF   = &DF[BE  *size_MatF];
-   ftwF   = &DF[TW  *size_MatF];
-   ftnF   = &DF[TN  *size_MatF];
-   fbsF   = &DF[BS  *size_MatF];
-   fbnF   = &DF[BN  *size_MatF];
-   ftsF   = &DF[TS  *size_MatF];
-   //fzeroF = &DF[REST*size_MatF];
-   ftneF  = &DF[TNE *size_MatF];
-   ftswF  = &DF[TSW *size_MatF];
-   ftseF  = &DF[TSE *size_MatF];
-   ftnwF  = &DF[TNW *size_MatF];
-   fbneF  = &DF[BNE *size_MatF];
-   fbswF  = &DF[BSW *size_MatF];
-   fbseF  = &DF[BSE *size_MatF];
-   fbnwF  = &DF[BNW *size_MatF];
+   feF    = &DF[DIR_P00   *size_MatF];
+   fwF    = &DF[DIR_M00   *size_MatF];
+   fnF    = &DF[DIR_0P0   *size_MatF];
+   fsF    = &DF[DIR_0M0   *size_MatF];
+   ftF    = &DF[DIR_00P   *size_MatF];
+   fbF    = &DF[DIR_00M   *size_MatF];
+   fneF   = &DF[DIR_PP0  *size_MatF];
+   fswF   = &DF[DIR_MM0  *size_MatF];
+   fseF   = &DF[DIR_PM0  *size_MatF];
+   fnwF   = &DF[DIR_MP0  *size_MatF];
+   fteF   = &DF[DIR_P0P  *size_MatF];
+   fbwF   = &DF[DIR_M0M  *size_MatF];
+   fbeF   = &DF[DIR_P0M  *size_MatF];
+   ftwF   = &DF[DIR_M0P  *size_MatF];
+   ftnF   = &DF[DIR_0PP  *size_MatF];
+   fbsF   = &DF[DIR_0MM  *size_MatF];
+   fbnF   = &DF[DIR_0PM  *size_MatF];
+   ftsF   = &DF[DIR_0MP  *size_MatF];
+   //fzeroF = &DF[DIR_000*size_MatF];
+   ftneF  = &DF[DIR_PPP *size_MatF];
+   ftswF  = &DF[DIR_MMP *size_MatF];
+   ftseF  = &DF[DIR_PMP *size_MatF];
+   ftnwF  = &DF[DIR_MPP *size_MatF];
+   fbneF  = &DF[DIR_PPM *size_MatF];
+   fbswF  = &DF[DIR_MMM *size_MatF];
+   fbseF  = &DF[DIR_PMM *size_MatF];
+   fbnwF  = &DF[DIR_MPM *size_MatF];
 
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, //*fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[E   *size_MatC];
-      fwC    = &DC[W   *size_MatC];
-      fnC    = &DC[N   *size_MatC];
-      fsC    = &DC[S   *size_MatC];
-      ftC    = &DC[T   *size_MatC];
-      fbC    = &DC[B   *size_MatC];
-      fneC   = &DC[NE  *size_MatC];
-      fswC   = &DC[SW  *size_MatC];
-      fseC   = &DC[SE  *size_MatC];
-      fnwC   = &DC[NW  *size_MatC];
-      fteC   = &DC[TE  *size_MatC];
-      fbwC   = &DC[BW  *size_MatC];
-      fbeC   = &DC[BE  *size_MatC];
-      ftwC   = &DC[TW  *size_MatC];
-      ftnC   = &DC[TN  *size_MatC];
-      fbsC   = &DC[BS  *size_MatC];
-      fbnC   = &DC[BN  *size_MatC];
-      ftsC   = &DC[TS  *size_MatC];
-      //fzeroC = &DC[REST*size_MatC];
-      ftneC  = &DC[TNE *size_MatC];
-      ftswC  = &DC[TSW *size_MatC];
-      ftseC  = &DC[TSE *size_MatC];
-      ftnwC  = &DC[TNW *size_MatC];
-      fbneC  = &DC[BNE *size_MatC];
-      fbswC  = &DC[BSW *size_MatC];
-      fbseC  = &DC[BSE *size_MatC];
-      fbnwC  = &DC[BNW *size_MatC];
+      feC    = &DC[DIR_P00   *size_MatC];
+      fwC    = &DC[DIR_M00   *size_MatC];
+      fnC    = &DC[DIR_0P0   *size_MatC];
+      fsC    = &DC[DIR_0M0   *size_MatC];
+      ftC    = &DC[DIR_00P   *size_MatC];
+      fbC    = &DC[DIR_00M   *size_MatC];
+      fneC   = &DC[DIR_PP0  *size_MatC];
+      fswC   = &DC[DIR_MM0  *size_MatC];
+      fseC   = &DC[DIR_PM0  *size_MatC];
+      fnwC   = &DC[DIR_MP0  *size_MatC];
+      fteC   = &DC[DIR_P0P  *size_MatC];
+      fbwC   = &DC[DIR_M0M  *size_MatC];
+      fbeC   = &DC[DIR_P0M  *size_MatC];
+      ftwC   = &DC[DIR_M0P  *size_MatC];
+      ftnC   = &DC[DIR_0PP  *size_MatC];
+      fbsC   = &DC[DIR_0MM  *size_MatC];
+      fbnC   = &DC[DIR_0PM  *size_MatC];
+      ftsC   = &DC[DIR_0MP  *size_MatC];
+      //fzeroC = &DC[DIR_000*size_MatC];
+      ftneC  = &DC[DIR_PPP *size_MatC];
+      ftswC  = &DC[DIR_MMP *size_MatC];
+      ftseC  = &DC[DIR_PMP *size_MatC];
+      ftnwC  = &DC[DIR_MPP *size_MatC];
+      fbneC  = &DC[DIR_PPM *size_MatC];
+      fbswC  = &DC[DIR_MMM *size_MatC];
+      fbseC  = &DC[DIR_PMM *size_MatC];
+      fbnwC  = &DC[DIR_MPM *size_MatC];
    } 
    else
    {
-      fwC    = &DC[E   *size_MatC];
-      feC    = &DC[W   *size_MatC];
-      fsC    = &DC[N   *size_MatC];
-      fnC    = &DC[S   *size_MatC];
-      fbC    = &DC[T   *size_MatC];
-      ftC    = &DC[B   *size_MatC];
-      fswC   = &DC[NE  *size_MatC];
-      fneC   = &DC[SW  *size_MatC];
-      fnwC   = &DC[SE  *size_MatC];
-      fseC   = &DC[NW  *size_MatC];
-      fbwC   = &DC[TE  *size_MatC];
-      fteC   = &DC[BW  *size_MatC];
-      ftwC   = &DC[BE  *size_MatC];
-      fbeC   = &DC[TW  *size_MatC];
-      fbsC   = &DC[TN  *size_MatC];
-      ftnC   = &DC[BS  *size_MatC];
-      ftsC   = &DC[BN  *size_MatC];
-      fbnC   = &DC[TS  *size_MatC];
-      //fzeroC = &DC[REST*size_MatC];
-      fbswC  = &DC[TNE *size_MatC];
-      fbneC  = &DC[TSW *size_MatC];
-      fbnwC  = &DC[TSE *size_MatC];
-      fbseC  = &DC[TNW *size_MatC];
-      ftswC  = &DC[BNE *size_MatC];
-      ftneC  = &DC[BSW *size_MatC];
-      ftnwC  = &DC[BSE *size_MatC];
-      ftseC  = &DC[BNW *size_MatC];
+      fwC    = &DC[DIR_P00   *size_MatC];
+      feC    = &DC[DIR_M00   *size_MatC];
+      fsC    = &DC[DIR_0P0   *size_MatC];
+      fnC    = &DC[DIR_0M0   *size_MatC];
+      fbC    = &DC[DIR_00P   *size_MatC];
+      ftC    = &DC[DIR_00M   *size_MatC];
+      fswC   = &DC[DIR_PP0  *size_MatC];
+      fneC   = &DC[DIR_MM0  *size_MatC];
+      fnwC   = &DC[DIR_PM0  *size_MatC];
+      fseC   = &DC[DIR_MP0  *size_MatC];
+      fbwC   = &DC[DIR_P0P  *size_MatC];
+      fteC   = &DC[DIR_M0M  *size_MatC];
+      ftwC   = &DC[DIR_P0M  *size_MatC];
+      fbeC   = &DC[DIR_M0P  *size_MatC];
+      fbsC   = &DC[DIR_0PP  *size_MatC];
+      ftnC   = &DC[DIR_0MM  *size_MatC];
+      ftsC   = &DC[DIR_0PM  *size_MatC];
+      fbnC   = &DC[DIR_0MP  *size_MatC];
+      //fzeroC = &DC[DIR_000*size_MatC];
+      fbswC  = &DC[DIR_PPP *size_MatC];
+      fbneC  = &DC[DIR_MMP *size_MatC];
+      fbnwC  = &DC[DIR_PMP *size_MatC];
+      fbseC  = &DC[DIR_MPP *size_MatC];
+      ftswC  = &DC[DIR_PPM *size_MatC];
+      ftneC  = &DC[DIR_MMM *size_MatC];
+      ftnwC  = &DC[DIR_PMM *size_MatC];
+      ftseC  = &DC[DIR_MPM *size_MatC];
    }
 
    Distributions7 D7F;
@@ -20890,7 +20890,7 @@ extern "C" __global__ void scaleFCThSMG7(    real* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFCThS7(   real* DC, 
+__global__ void scaleFCThS7(   real* DC, 
                                           real* DF, 
                                           real* DD7C, 
                                           real* DD7F, 
@@ -20912,96 +20912,96 @@ extern "C" __global__ void scaleFCThS7(   real* DC,
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, //*fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[E   *size_MatF];
-   fwF    = &DF[W   *size_MatF];
-   fnF    = &DF[N   *size_MatF];
-   fsF    = &DF[S   *size_MatF];
-   ftF    = &DF[T   *size_MatF];
-   fbF    = &DF[B   *size_MatF];
-   fneF   = &DF[NE  *size_MatF];
-   fswF   = &DF[SW  *size_MatF];
-   fseF   = &DF[SE  *size_MatF];
-   fnwF   = &DF[NW  *size_MatF];
-   fteF   = &DF[TE  *size_MatF];
-   fbwF   = &DF[BW  *size_MatF];
-   fbeF   = &DF[BE  *size_MatF];
-   ftwF   = &DF[TW  *size_MatF];
-   ftnF   = &DF[TN  *size_MatF];
-   fbsF   = &DF[BS  *size_MatF];
-   fbnF   = &DF[BN  *size_MatF];
-   ftsF   = &DF[TS  *size_MatF];
-   //fzeroF = &DF[REST*size_MatF];
-   ftneF  = &DF[TNE *size_MatF];
-   ftswF  = &DF[TSW *size_MatF];
-   ftseF  = &DF[TSE *size_MatF];
-   ftnwF  = &DF[TNW *size_MatF];
-   fbneF  = &DF[BNE *size_MatF];
-   fbswF  = &DF[BSW *size_MatF];
-   fbseF  = &DF[BSE *size_MatF];
-   fbnwF  = &DF[BNW *size_MatF];
+   feF    = &DF[DIR_P00   *size_MatF];
+   fwF    = &DF[DIR_M00   *size_MatF];
+   fnF    = &DF[DIR_0P0   *size_MatF];
+   fsF    = &DF[DIR_0M0   *size_MatF];
+   ftF    = &DF[DIR_00P   *size_MatF];
+   fbF    = &DF[DIR_00M   *size_MatF];
+   fneF   = &DF[DIR_PP0  *size_MatF];
+   fswF   = &DF[DIR_MM0  *size_MatF];
+   fseF   = &DF[DIR_PM0  *size_MatF];
+   fnwF   = &DF[DIR_MP0  *size_MatF];
+   fteF   = &DF[DIR_P0P  *size_MatF];
+   fbwF   = &DF[DIR_M0M  *size_MatF];
+   fbeF   = &DF[DIR_P0M  *size_MatF];
+   ftwF   = &DF[DIR_M0P  *size_MatF];
+   ftnF   = &DF[DIR_0PP  *size_MatF];
+   fbsF   = &DF[DIR_0MM  *size_MatF];
+   fbnF   = &DF[DIR_0PM  *size_MatF];
+   ftsF   = &DF[DIR_0MP  *size_MatF];
+   //fzeroF = &DF[DIR_000*size_MatF];
+   ftneF  = &DF[DIR_PPP *size_MatF];
+   ftswF  = &DF[DIR_MMP *size_MatF];
+   ftseF  = &DF[DIR_PMP *size_MatF];
+   ftnwF  = &DF[DIR_MPP *size_MatF];
+   fbneF  = &DF[DIR_PPM *size_MatF];
+   fbswF  = &DF[DIR_MMM *size_MatF];
+   fbseF  = &DF[DIR_PMM *size_MatF];
+   fbnwF  = &DF[DIR_MPM *size_MatF];
 
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, //*fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[E   *size_MatC];
-      fwC    = &DC[W   *size_MatC];
-      fnC    = &DC[N   *size_MatC];
-      fsC    = &DC[S   *size_MatC];
-      ftC    = &DC[T   *size_MatC];
-      fbC    = &DC[B   *size_MatC];
-      fneC   = &DC[NE  *size_MatC];
-      fswC   = &DC[SW  *size_MatC];
-      fseC   = &DC[SE  *size_MatC];
-      fnwC   = &DC[NW  *size_MatC];
-      fteC   = &DC[TE  *size_MatC];
-      fbwC   = &DC[BW  *size_MatC];
-      fbeC   = &DC[BE  *size_MatC];
-      ftwC   = &DC[TW  *size_MatC];
-      ftnC   = &DC[TN  *size_MatC];
-      fbsC   = &DC[BS  *size_MatC];
-      fbnC   = &DC[BN  *size_MatC];
-      ftsC   = &DC[TS  *size_MatC];
-      //fzeroC = &DC[REST*size_MatC];
-      ftneC  = &DC[TNE *size_MatC];
-      ftswC  = &DC[TSW *size_MatC];
-      ftseC  = &DC[TSE *size_MatC];
-      ftnwC  = &DC[TNW *size_MatC];
-      fbneC  = &DC[BNE *size_MatC];
-      fbswC  = &DC[BSW *size_MatC];
-      fbseC  = &DC[BSE *size_MatC];
-      fbnwC  = &DC[BNW *size_MatC];
+      feC    = &DC[DIR_P00   *size_MatC];
+      fwC    = &DC[DIR_M00   *size_MatC];
+      fnC    = &DC[DIR_0P0   *size_MatC];
+      fsC    = &DC[DIR_0M0   *size_MatC];
+      ftC    = &DC[DIR_00P   *size_MatC];
+      fbC    = &DC[DIR_00M   *size_MatC];
+      fneC   = &DC[DIR_PP0  *size_MatC];
+      fswC   = &DC[DIR_MM0  *size_MatC];
+      fseC   = &DC[DIR_PM0  *size_MatC];
+      fnwC   = &DC[DIR_MP0  *size_MatC];
+      fteC   = &DC[DIR_P0P  *size_MatC];
+      fbwC   = &DC[DIR_M0M  *size_MatC];
+      fbeC   = &DC[DIR_P0M  *size_MatC];
+      ftwC   = &DC[DIR_M0P  *size_MatC];
+      ftnC   = &DC[DIR_0PP  *size_MatC];
+      fbsC   = &DC[DIR_0MM  *size_MatC];
+      fbnC   = &DC[DIR_0PM  *size_MatC];
+      ftsC   = &DC[DIR_0MP  *size_MatC];
+      //fzeroC = &DC[DIR_000*size_MatC];
+      ftneC  = &DC[DIR_PPP *size_MatC];
+      ftswC  = &DC[DIR_MMP *size_MatC];
+      ftseC  = &DC[DIR_PMP *size_MatC];
+      ftnwC  = &DC[DIR_MPP *size_MatC];
+      fbneC  = &DC[DIR_PPM *size_MatC];
+      fbswC  = &DC[DIR_MMM *size_MatC];
+      fbseC  = &DC[DIR_PMM *size_MatC];
+      fbnwC  = &DC[DIR_MPM *size_MatC];
    } 
    else
    {
-      fwC    = &DC[E   *size_MatC];
-      feC    = &DC[W   *size_MatC];
-      fsC    = &DC[N   *size_MatC];
-      fnC    = &DC[S   *size_MatC];
-      fbC    = &DC[T   *size_MatC];
-      ftC    = &DC[B   *size_MatC];
-      fswC   = &DC[NE  *size_MatC];
-      fneC   = &DC[SW  *size_MatC];
-      fnwC   = &DC[SE  *size_MatC];
-      fseC   = &DC[NW  *size_MatC];
-      fbwC   = &DC[TE  *size_MatC];
-      fteC   = &DC[BW  *size_MatC];
-      ftwC   = &DC[BE  *size_MatC];
-      fbeC   = &DC[TW  *size_MatC];
-      fbsC   = &DC[TN  *size_MatC];
-      ftnC   = &DC[BS  *size_MatC];
-      ftsC   = &DC[BN  *size_MatC];
-      fbnC   = &DC[TS  *size_MatC];
-      //fzeroC = &DC[REST*size_MatC];
-      fbswC  = &DC[TNE *size_MatC];
-      fbneC  = &DC[TSW *size_MatC];
-      fbnwC  = &DC[TSE *size_MatC];
-      fbseC  = &DC[TNW *size_MatC];
-      ftswC  = &DC[BNE *size_MatC];
-      ftneC  = &DC[BSW *size_MatC];
-      ftnwC  = &DC[BSE *size_MatC];
-      ftseC  = &DC[BNW *size_MatC];
+      fwC    = &DC[DIR_P00   *size_MatC];
+      feC    = &DC[DIR_M00   *size_MatC];
+      fsC    = &DC[DIR_0P0   *size_MatC];
+      fnC    = &DC[DIR_0M0   *size_MatC];
+      fbC    = &DC[DIR_00P   *size_MatC];
+      ftC    = &DC[DIR_00M   *size_MatC];
+      fswC   = &DC[DIR_PP0  *size_MatC];
+      fneC   = &DC[DIR_MM0  *size_MatC];
+      fnwC   = &DC[DIR_PM0  *size_MatC];
+      fseC   = &DC[DIR_MP0  *size_MatC];
+      fbwC   = &DC[DIR_P0P  *size_MatC];
+      fteC   = &DC[DIR_M0M  *size_MatC];
+      ftwC   = &DC[DIR_P0M  *size_MatC];
+      fbeC   = &DC[DIR_M0P  *size_MatC];
+      fbsC   = &DC[DIR_0PP  *size_MatC];
+      ftnC   = &DC[DIR_0MM  *size_MatC];
+      ftsC   = &DC[DIR_0PM  *size_MatC];
+      fbnC   = &DC[DIR_0MP  *size_MatC];
+      //fzeroC = &DC[DIR_000*size_MatC];
+      fbswC  = &DC[DIR_PPP *size_MatC];
+      fbneC  = &DC[DIR_MMP *size_MatC];
+      fbnwC  = &DC[DIR_PMP *size_MatC];
+      fbseC  = &DC[DIR_MPP *size_MatC];
+      ftswC  = &DC[DIR_PPM *size_MatC];
+      ftneC  = &DC[DIR_MMM *size_MatC];
+      ftnwC  = &DC[DIR_PMM *size_MatC];
+      ftseC  = &DC[DIR_MPM *size_MatC];
    }
 
    Distributions7 D7F;
@@ -21681,7 +21681,7 @@ extern "C" __global__ void scaleFCThS7(   real* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFCThS27(     real* DC, 
+__global__ void scaleFCThS27(     real* DC, 
                                              real* DF, 
                                              real* DD27C, 
                                              real* DD27F, 
@@ -21704,187 +21704,187 @@ extern "C" __global__ void scaleFCThS27(     real* DC,
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, //*fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[E   *size_MatF];
-   fwF    = &DF[W   *size_MatF];
-   fnF    = &DF[N   *size_MatF];
-   fsF    = &DF[S   *size_MatF];
-   ftF    = &DF[T   *size_MatF];
-   fbF    = &DF[B   *size_MatF];
-   fneF   = &DF[NE  *size_MatF];
-   fswF   = &DF[SW  *size_MatF];
-   fseF   = &DF[SE  *size_MatF];
-   fnwF   = &DF[NW  *size_MatF];
-   fteF   = &DF[TE  *size_MatF];
-   fbwF   = &DF[BW  *size_MatF];
-   fbeF   = &DF[BE  *size_MatF];
-   ftwF   = &DF[TW  *size_MatF];
-   ftnF   = &DF[TN  *size_MatF];
-   fbsF   = &DF[BS  *size_MatF];
-   fbnF   = &DF[BN  *size_MatF];
-   ftsF   = &DF[TS  *size_MatF];
-   //fzeroF = &DF[REST*size_MatF];
-   ftneF  = &DF[TNE *size_MatF];
-   ftswF  = &DF[TSW *size_MatF];
-   ftseF  = &DF[TSE *size_MatF];
-   ftnwF  = &DF[TNW *size_MatF];
-   fbneF  = &DF[BNE *size_MatF];
-   fbswF  = &DF[BSW *size_MatF];
-   fbseF  = &DF[BSE *size_MatF];
-   fbnwF  = &DF[BNW *size_MatF];
+   feF    = &DF[DIR_P00   *size_MatF];
+   fwF    = &DF[DIR_M00   *size_MatF];
+   fnF    = &DF[DIR_0P0   *size_MatF];
+   fsF    = &DF[DIR_0M0   *size_MatF];
+   ftF    = &DF[DIR_00P   *size_MatF];
+   fbF    = &DF[DIR_00M   *size_MatF];
+   fneF   = &DF[DIR_PP0  *size_MatF];
+   fswF   = &DF[DIR_MM0  *size_MatF];
+   fseF   = &DF[DIR_PM0  *size_MatF];
+   fnwF   = &DF[DIR_MP0  *size_MatF];
+   fteF   = &DF[DIR_P0P  *size_MatF];
+   fbwF   = &DF[DIR_M0M  *size_MatF];
+   fbeF   = &DF[DIR_P0M  *size_MatF];
+   ftwF   = &DF[DIR_M0P  *size_MatF];
+   ftnF   = &DF[DIR_0PP  *size_MatF];
+   fbsF   = &DF[DIR_0MM  *size_MatF];
+   fbnF   = &DF[DIR_0PM  *size_MatF];
+   ftsF   = &DF[DIR_0MP  *size_MatF];
+   //fzeroF = &DF[DIR_000*size_MatF];
+   ftneF  = &DF[DIR_PPP *size_MatF];
+   ftswF  = &DF[DIR_MMP *size_MatF];
+   ftseF  = &DF[DIR_PMP *size_MatF];
+   ftnwF  = &DF[DIR_MPP *size_MatF];
+   fbneF  = &DF[DIR_PPM *size_MatF];
+   fbswF  = &DF[DIR_MMM *size_MatF];
+   fbseF  = &DF[DIR_PMM *size_MatF];
+   fbnwF  = &DF[DIR_MPM *size_MatF];
 
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, //*fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[E   *size_MatC];
-      fwC    = &DC[W   *size_MatC];
-      fnC    = &DC[N   *size_MatC];
-      fsC    = &DC[S   *size_MatC];
-      ftC    = &DC[T   *size_MatC];
-      fbC    = &DC[B   *size_MatC];
-      fneC   = &DC[NE  *size_MatC];
-      fswC   = &DC[SW  *size_MatC];
-      fseC   = &DC[SE  *size_MatC];
-      fnwC   = &DC[NW  *size_MatC];
-      fteC   = &DC[TE  *size_MatC];
-      fbwC   = &DC[BW  *size_MatC];
-      fbeC   = &DC[BE  *size_MatC];
-      ftwC   = &DC[TW  *size_MatC];
-      ftnC   = &DC[TN  *size_MatC];
-      fbsC   = &DC[BS  *size_MatC];
-      fbnC   = &DC[BN  *size_MatC];
-      ftsC   = &DC[TS  *size_MatC];
-      //fzeroC = &DC[REST*size_MatC];
-      ftneC  = &DC[TNE *size_MatC];
-      ftswC  = &DC[TSW *size_MatC];
-      ftseC  = &DC[TSE *size_MatC];
-      ftnwC  = &DC[TNW *size_MatC];
-      fbneC  = &DC[BNE *size_MatC];
-      fbswC  = &DC[BSW *size_MatC];
-      fbseC  = &DC[BSE *size_MatC];
-      fbnwC  = &DC[BNW *size_MatC];
+      feC    = &DC[DIR_P00   *size_MatC];
+      fwC    = &DC[DIR_M00   *size_MatC];
+      fnC    = &DC[DIR_0P0   *size_MatC];
+      fsC    = &DC[DIR_0M0   *size_MatC];
+      ftC    = &DC[DIR_00P   *size_MatC];
+      fbC    = &DC[DIR_00M   *size_MatC];
+      fneC   = &DC[DIR_PP0  *size_MatC];
+      fswC   = &DC[DIR_MM0  *size_MatC];
+      fseC   = &DC[DIR_PM0  *size_MatC];
+      fnwC   = &DC[DIR_MP0  *size_MatC];
+      fteC   = &DC[DIR_P0P  *size_MatC];
+      fbwC   = &DC[DIR_M0M  *size_MatC];
+      fbeC   = &DC[DIR_P0M  *size_MatC];
+      ftwC   = &DC[DIR_M0P  *size_MatC];
+      ftnC   = &DC[DIR_0PP  *size_MatC];
+      fbsC   = &DC[DIR_0MM  *size_MatC];
+      fbnC   = &DC[DIR_0PM  *size_MatC];
+      ftsC   = &DC[DIR_0MP  *size_MatC];
+      //fzeroC = &DC[DIR_000*size_MatC];
+      ftneC  = &DC[DIR_PPP *size_MatC];
+      ftswC  = &DC[DIR_MMP *size_MatC];
+      ftseC  = &DC[DIR_PMP *size_MatC];
+      ftnwC  = &DC[DIR_MPP *size_MatC];
+      fbneC  = &DC[DIR_PPM *size_MatC];
+      fbswC  = &DC[DIR_MMM *size_MatC];
+      fbseC  = &DC[DIR_PMM *size_MatC];
+      fbnwC  = &DC[DIR_MPM *size_MatC];
    } 
    else
    {
-      fwC    = &DC[E   *size_MatC];
-      feC    = &DC[W   *size_MatC];
-      fsC    = &DC[N   *size_MatC];
-      fnC    = &DC[S   *size_MatC];
-      fbC    = &DC[T   *size_MatC];
-      ftC    = &DC[B   *size_MatC];
-      fswC   = &DC[NE  *size_MatC];
-      fneC   = &DC[SW  *size_MatC];
-      fnwC   = &DC[SE  *size_MatC];
-      fseC   = &DC[NW  *size_MatC];
-      fbwC   = &DC[TE  *size_MatC];
-      fteC   = &DC[BW  *size_MatC];
-      ftwC   = &DC[BE  *size_MatC];
-      fbeC   = &DC[TW  *size_MatC];
-      fbsC   = &DC[TN  *size_MatC];
-      ftnC   = &DC[BS  *size_MatC];
-      ftsC   = &DC[BN  *size_MatC];
-      fbnC   = &DC[TS  *size_MatC];
-      //fzeroC = &DC[REST*size_MatC];
-      fbswC  = &DC[TNE *size_MatC];
-      fbneC  = &DC[TSW *size_MatC];
-      fbnwC  = &DC[TSE *size_MatC];
-      fbseC  = &DC[TNW *size_MatC];
-      ftswC  = &DC[BNE *size_MatC];
-      ftneC  = &DC[BSW *size_MatC];
-      ftnwC  = &DC[BSE *size_MatC];
-      ftseC  = &DC[BNW *size_MatC];
+      fwC    = &DC[DIR_P00   *size_MatC];
+      feC    = &DC[DIR_M00   *size_MatC];
+      fsC    = &DC[DIR_0P0   *size_MatC];
+      fnC    = &DC[DIR_0M0   *size_MatC];
+      fbC    = &DC[DIR_00P   *size_MatC];
+      ftC    = &DC[DIR_00M   *size_MatC];
+      fswC   = &DC[DIR_PP0  *size_MatC];
+      fneC   = &DC[DIR_MM0  *size_MatC];
+      fnwC   = &DC[DIR_PM0  *size_MatC];
+      fseC   = &DC[DIR_MP0  *size_MatC];
+      fbwC   = &DC[DIR_P0P  *size_MatC];
+      fteC   = &DC[DIR_M0M  *size_MatC];
+      ftwC   = &DC[DIR_P0M  *size_MatC];
+      fbeC   = &DC[DIR_M0P  *size_MatC];
+      fbsC   = &DC[DIR_0PP  *size_MatC];
+      ftnC   = &DC[DIR_0MM  *size_MatC];
+      ftsC   = &DC[DIR_0PM  *size_MatC];
+      fbnC   = &DC[DIR_0MP  *size_MatC];
+      //fzeroC = &DC[DIR_000*size_MatC];
+      fbswC  = &DC[DIR_PPP *size_MatC];
+      fbneC  = &DC[DIR_MMP *size_MatC];
+      fbnwC  = &DC[DIR_PMP *size_MatC];
+      fbseC  = &DC[DIR_MPP *size_MatC];
+      ftswC  = &DC[DIR_PPM *size_MatC];
+      ftneC  = &DC[DIR_MMM *size_MatC];
+      ftnwC  = &DC[DIR_PMM *size_MatC];
+      ftseC  = &DC[DIR_MPM *size_MatC];
    }
 
    Distributions27 D27F;
-   D27F.f[E   ] = &DD27F[E   *size_MatF];
-   D27F.f[W   ] = &DD27F[W   *size_MatF];
-   D27F.f[N   ] = &DD27F[N   *size_MatF];
-   D27F.f[S   ] = &DD27F[S   *size_MatF];
-   D27F.f[T   ] = &DD27F[T   *size_MatF];
-   D27F.f[B   ] = &DD27F[B   *size_MatF];
-   D27F.f[NE  ] = &DD27F[NE  *size_MatF];
-   D27F.f[SW  ] = &DD27F[SW  *size_MatF];
-   D27F.f[SE  ] = &DD27F[SE  *size_MatF];
-   D27F.f[NW  ] = &DD27F[NW  *size_MatF];
-   D27F.f[TE  ] = &DD27F[TE  *size_MatF];
-   D27F.f[BW  ] = &DD27F[BW  *size_MatF];
-   D27F.f[BE  ] = &DD27F[BE  *size_MatF];
-   D27F.f[TW  ] = &DD27F[TW  *size_MatF];
-   D27F.f[TN  ] = &DD27F[TN  *size_MatF];
-   D27F.f[BS  ] = &DD27F[BS  *size_MatF];
-   D27F.f[BN  ] = &DD27F[BN  *size_MatF];
-   D27F.f[TS  ] = &DD27F[TS  *size_MatF];
-   D27F.f[REST] = &DD27F[REST*size_MatF];
-   D27F.f[TNE ] = &DD27F[TNE *size_MatF];
-   D27F.f[TSW ] = &DD27F[TSW *size_MatF];
-   D27F.f[TSE ] = &DD27F[TSE *size_MatF];
-   D27F.f[TNW ] = &DD27F[TNW *size_MatF];
-   D27F.f[BNE ] = &DD27F[BNE *size_MatF];
-   D27F.f[BSW ] = &DD27F[BSW *size_MatF];
-   D27F.f[BSE ] = &DD27F[BSE *size_MatF];
-   D27F.f[BNW ] = &DD27F[BNW *size_MatF];
+   D27F.f[DIR_P00   ] = &DD27F[DIR_P00   *size_MatF];
+   D27F.f[DIR_M00   ] = &DD27F[DIR_M00   *size_MatF];
+   D27F.f[DIR_0P0   ] = &DD27F[DIR_0P0   *size_MatF];
+   D27F.f[DIR_0M0   ] = &DD27F[DIR_0M0   *size_MatF];
+   D27F.f[DIR_00P   ] = &DD27F[DIR_00P   *size_MatF];
+   D27F.f[DIR_00M   ] = &DD27F[DIR_00M   *size_MatF];
+   D27F.f[DIR_PP0  ] = &DD27F[DIR_PP0  *size_MatF];
+   D27F.f[DIR_MM0  ] = &DD27F[DIR_MM0  *size_MatF];
+   D27F.f[DIR_PM0  ] = &DD27F[DIR_PM0  *size_MatF];
+   D27F.f[DIR_MP0  ] = &DD27F[DIR_MP0  *size_MatF];
+   D27F.f[DIR_P0P  ] = &DD27F[DIR_P0P  *size_MatF];
+   D27F.f[DIR_M0M  ] = &DD27F[DIR_M0M  *size_MatF];
+   D27F.f[DIR_P0M  ] = &DD27F[DIR_P0M  *size_MatF];
+   D27F.f[DIR_M0P  ] = &DD27F[DIR_M0P  *size_MatF];
+   D27F.f[DIR_0PP  ] = &DD27F[DIR_0PP  *size_MatF];
+   D27F.f[DIR_0MM  ] = &DD27F[DIR_0MM  *size_MatF];
+   D27F.f[DIR_0PM  ] = &DD27F[DIR_0PM  *size_MatF];
+   D27F.f[DIR_0MP  ] = &DD27F[DIR_0MP  *size_MatF];
+   D27F.f[DIR_000] = &DD27F[DIR_000*size_MatF];
+   D27F.f[DIR_PPP ] = &DD27F[DIR_PPP *size_MatF];
+   D27F.f[DIR_MMP ] = &DD27F[DIR_MMP *size_MatF];
+   D27F.f[DIR_PMP ] = &DD27F[DIR_PMP *size_MatF];
+   D27F.f[DIR_MPP ] = &DD27F[DIR_MPP *size_MatF];
+   D27F.f[DIR_PPM ] = &DD27F[DIR_PPM *size_MatF];
+   D27F.f[DIR_MMM ] = &DD27F[DIR_MMM *size_MatF];
+   D27F.f[DIR_PMM ] = &DD27F[DIR_PMM *size_MatF];
+   D27F.f[DIR_MPM ] = &DD27F[DIR_MPM *size_MatF];
 
    Distributions27 D27C;
    if (isEvenTimestep==true)
    {
-      D27C.f[E   ] = &DD27C[E   *size_MatC];
-      D27C.f[W   ] = &DD27C[W   *size_MatC];
-      D27C.f[N   ] = &DD27C[N   *size_MatC];
-      D27C.f[S   ] = &DD27C[S   *size_MatC];
-      D27C.f[T   ] = &DD27C[T   *size_MatC];
-      D27C.f[B   ] = &DD27C[B   *size_MatC];
-      D27C.f[NE  ] = &DD27C[NE  *size_MatC];
-      D27C.f[SW  ] = &DD27C[SW  *size_MatC];
-      D27C.f[SE  ] = &DD27C[SE  *size_MatC];
-      D27C.f[NW  ] = &DD27C[NW  *size_MatC];
-      D27C.f[TE  ] = &DD27C[TE  *size_MatC];
-      D27C.f[BW  ] = &DD27C[BW  *size_MatC];
-      D27C.f[BE  ] = &DD27C[BE  *size_MatC];
-      D27C.f[TW  ] = &DD27C[TW  *size_MatC];
-      D27C.f[TN  ] = &DD27C[TN  *size_MatC];
-      D27C.f[BS  ] = &DD27C[BS  *size_MatC];
-      D27C.f[BN  ] = &DD27C[BN  *size_MatC];
-      D27C.f[TS  ] = &DD27C[TS  *size_MatC];
-      D27C.f[REST] = &DD27C[REST*size_MatC];
-      D27C.f[TNE ] = &DD27C[TNE *size_MatC];
-      D27C.f[TSW ] = &DD27C[TSW *size_MatC];
-      D27C.f[TSE ] = &DD27C[TSE *size_MatC];
-      D27C.f[TNW ] = &DD27C[TNW *size_MatC];
-      D27C.f[BNE ] = &DD27C[BNE *size_MatC];
-      D27C.f[BSW ] = &DD27C[BSW *size_MatC];
-      D27C.f[BSE ] = &DD27C[BSE *size_MatC];
-      D27C.f[BNW ] = &DD27C[BNW *size_MatC];
+      D27C.f[DIR_P00   ] = &DD27C[DIR_P00   *size_MatC];
+      D27C.f[DIR_M00   ] = &DD27C[DIR_M00   *size_MatC];
+      D27C.f[DIR_0P0   ] = &DD27C[DIR_0P0   *size_MatC];
+      D27C.f[DIR_0M0   ] = &DD27C[DIR_0M0   *size_MatC];
+      D27C.f[DIR_00P   ] = &DD27C[DIR_00P   *size_MatC];
+      D27C.f[DIR_00M   ] = &DD27C[DIR_00M   *size_MatC];
+      D27C.f[DIR_PP0  ] = &DD27C[DIR_PP0  *size_MatC];
+      D27C.f[DIR_MM0  ] = &DD27C[DIR_MM0  *size_MatC];
+      D27C.f[DIR_PM0  ] = &DD27C[DIR_PM0  *size_MatC];
+      D27C.f[DIR_MP0  ] = &DD27C[DIR_MP0  *size_MatC];
+      D27C.f[DIR_P0P  ] = &DD27C[DIR_P0P  *size_MatC];
+      D27C.f[DIR_M0M  ] = &DD27C[DIR_M0M  *size_MatC];
+      D27C.f[DIR_P0M  ] = &DD27C[DIR_P0M  *size_MatC];
+      D27C.f[DIR_M0P  ] = &DD27C[DIR_M0P  *size_MatC];
+      D27C.f[DIR_0PP  ] = &DD27C[DIR_0PP  *size_MatC];
+      D27C.f[DIR_0MM  ] = &DD27C[DIR_0MM  *size_MatC];
+      D27C.f[DIR_0PM  ] = &DD27C[DIR_0PM  *size_MatC];
+      D27C.f[DIR_0MP  ] = &DD27C[DIR_0MP  *size_MatC];
+      D27C.f[DIR_000] = &DD27C[DIR_000*size_MatC];
+      D27C.f[DIR_PPP ] = &DD27C[DIR_PPP *size_MatC];
+      D27C.f[DIR_MMP ] = &DD27C[DIR_MMP *size_MatC];
+      D27C.f[DIR_PMP ] = &DD27C[DIR_PMP *size_MatC];
+      D27C.f[DIR_MPP ] = &DD27C[DIR_MPP *size_MatC];
+      D27C.f[DIR_PPM ] = &DD27C[DIR_PPM *size_MatC];
+      D27C.f[DIR_MMM ] = &DD27C[DIR_MMM *size_MatC];
+      D27C.f[DIR_PMM ] = &DD27C[DIR_PMM *size_MatC];
+      D27C.f[DIR_MPM ] = &DD27C[DIR_MPM *size_MatC];
    }
    else
    {
-      D27C.f[W   ] = &DD27C[E   *size_MatC];
-      D27C.f[E   ] = &DD27C[W   *size_MatC];
-      D27C.f[S   ] = &DD27C[N   *size_MatC];
-      D27C.f[N   ] = &DD27C[S   *size_MatC];
-      D27C.f[B   ] = &DD27C[T   *size_MatC];
-      D27C.f[T   ] = &DD27C[B   *size_MatC];
-      D27C.f[SW  ] = &DD27C[NE  *size_MatC];
-      D27C.f[NE  ] = &DD27C[SW  *size_MatC];
-      D27C.f[NW  ] = &DD27C[SE  *size_MatC];
-      D27C.f[SE  ] = &DD27C[NW  *size_MatC];
-      D27C.f[BW  ] = &DD27C[TE  *size_MatC];
-      D27C.f[TE  ] = &DD27C[BW  *size_MatC];
-      D27C.f[TW  ] = &DD27C[BE  *size_MatC];
-      D27C.f[BE  ] = &DD27C[TW  *size_MatC];
-      D27C.f[BS  ] = &DD27C[TN  *size_MatC];
-      D27C.f[TN  ] = &DD27C[BS  *size_MatC];
-      D27C.f[TS  ] = &DD27C[BN  *size_MatC];
-      D27C.f[BN  ] = &DD27C[TS  *size_MatC];
-      D27C.f[REST] = &DD27C[REST*size_MatC];
-      D27C.f[BSW ] = &DD27C[TNE *size_MatC];
-      D27C.f[BNE ] = &DD27C[TSW *size_MatC];
-      D27C.f[BNW ] = &DD27C[TSE *size_MatC];
-      D27C.f[BSE ] = &DD27C[TNW *size_MatC];
-      D27C.f[TSW ] = &DD27C[BNE *size_MatC];
-      D27C.f[TNE ] = &DD27C[BSW *size_MatC];
-      D27C.f[TNW ] = &DD27C[BSE *size_MatC];
-      D27C.f[TSE ] = &DD27C[BNW *size_MatC];
+      D27C.f[DIR_M00   ] = &DD27C[DIR_P00   *size_MatC];
+      D27C.f[DIR_P00   ] = &DD27C[DIR_M00   *size_MatC];
+      D27C.f[DIR_0M0   ] = &DD27C[DIR_0P0   *size_MatC];
+      D27C.f[DIR_0P0   ] = &DD27C[DIR_0M0   *size_MatC];
+      D27C.f[DIR_00M   ] = &DD27C[DIR_00P   *size_MatC];
+      D27C.f[DIR_00P   ] = &DD27C[DIR_00M   *size_MatC];
+      D27C.f[DIR_MM0  ] = &DD27C[DIR_PP0  *size_MatC];
+      D27C.f[DIR_PP0  ] = &DD27C[DIR_MM0  *size_MatC];
+      D27C.f[DIR_MP0  ] = &DD27C[DIR_PM0  *size_MatC];
+      D27C.f[DIR_PM0  ] = &DD27C[DIR_MP0  *size_MatC];
+      D27C.f[DIR_M0M  ] = &DD27C[DIR_P0P  *size_MatC];
+      D27C.f[DIR_P0P  ] = &DD27C[DIR_M0M  *size_MatC];
+      D27C.f[DIR_M0P  ] = &DD27C[DIR_P0M  *size_MatC];
+      D27C.f[DIR_P0M  ] = &DD27C[DIR_M0P  *size_MatC];
+      D27C.f[DIR_0MM  ] = &DD27C[DIR_0PP  *size_MatC];
+      D27C.f[DIR_0PP  ] = &DD27C[DIR_0MM  *size_MatC];
+      D27C.f[DIR_0MP  ] = &DD27C[DIR_0PM  *size_MatC];
+      D27C.f[DIR_0PM  ] = &DD27C[DIR_0MP  *size_MatC];
+      D27C.f[DIR_000] = &DD27C[DIR_000*size_MatC];
+      D27C.f[DIR_MMM ] = &DD27C[DIR_PPP *size_MatC];
+      D27C.f[DIR_PPM ] = &DD27C[DIR_MMP *size_MatC];
+      D27C.f[DIR_MPM ] = &DD27C[DIR_PMP *size_MatC];
+      D27C.f[DIR_PMM ] = &DD27C[DIR_MPP *size_MatC];
+      D27C.f[DIR_MMP ] = &DD27C[DIR_PPM *size_MatC];
+      D27C.f[DIR_PPP ] = &DD27C[DIR_MMM *size_MatC];
+      D27C.f[DIR_MPP ] = &DD27C[DIR_PMM *size_MatC];
+      D27C.f[DIR_PMP ] = &DD27C[DIR_MPM *size_MatC];
    }
 
    ////////////////////////////////////////////////////////////////////////////////
@@ -21980,33 +21980,33 @@ extern "C" __global__ void scaleFCThS27(     real* DC,
       f_BSE  = fbseF[kbs];
       f_BNW  = fbnwF[kbw];
       //////////////////////////////////////////////////////////////////////////////////
-      f27E    =  (D27F.f[E   ])[kzero];//ke
-      f27W    =  (D27F.f[W   ])[kw   ];
-      f27N    =  (D27F.f[N   ])[kzero];//kn
-      f27S    =  (D27F.f[S   ])[ks   ];
-      f27T    =  (D27F.f[T   ])[kzero];//kt
-      f27B    =  (D27F.f[B   ])[kb   ];
-      f27NE   =  (D27F.f[NE  ])[kzero];//kne
-      f27SW   =  (D27F.f[SW  ])[ksw  ];
-      f27SE   =  (D27F.f[SE  ])[ks   ];//kse
-      f27NW   =  (D27F.f[NW  ])[kw   ];//knw
-      f27TE   =  (D27F.f[TE  ])[kzero];//kte
-      f27BW   =  (D27F.f[BW  ])[kbw  ];
-      f27BE   =  (D27F.f[BE  ])[kb   ];//kbe
-      f27TW   =  (D27F.f[TW  ])[kw   ];//ktw
-      f27TN   =  (D27F.f[TN  ])[kzero];//ktn
-      f27BS   =  (D27F.f[BS  ])[kbs  ];
-      f27BN   =  (D27F.f[BN  ])[kb   ];//kbn
-      f27TS   =  (D27F.f[TS  ])[ks   ];//kts
-      f27ZERO =  (D27F.f[REST])[kzero];//kzero
-      f27TNE   = (D27F.f[TNE ])[kzero];//ktne
-      f27TSW   = (D27F.f[TSW ])[ksw  ];//ktsw
-      f27TSE   = (D27F.f[TSE ])[ks   ];//ktse
-      f27TNW   = (D27F.f[TNW ])[kw   ];//ktnw
-      f27BNE   = (D27F.f[BNE ])[kb   ];//kbne
-      f27BSW   = (D27F.f[BSW ])[kbsw ];
-      f27BSE   = (D27F.f[BSE ])[kbs  ];//kbse
-      f27BNW   = (D27F.f[BNW ])[kbw  ];//kbnw
+      f27E    =  (D27F.f[DIR_P00   ])[kzero];//ke
+      f27W    =  (D27F.f[DIR_M00   ])[kw   ];
+      f27N    =  (D27F.f[DIR_0P0   ])[kzero];//kn
+      f27S    =  (D27F.f[DIR_0M0   ])[ks   ];
+      f27T    =  (D27F.f[DIR_00P   ])[kzero];//kt
+      f27B    =  (D27F.f[DIR_00M   ])[kb   ];
+      f27NE   =  (D27F.f[DIR_PP0  ])[kzero];//kne
+      f27SW   =  (D27F.f[DIR_MM0  ])[ksw  ];
+      f27SE   =  (D27F.f[DIR_PM0  ])[ks   ];//kse
+      f27NW   =  (D27F.f[DIR_MP0  ])[kw   ];//knw
+      f27TE   =  (D27F.f[DIR_P0P  ])[kzero];//kte
+      f27BW   =  (D27F.f[DIR_M0M  ])[kbw  ];
+      f27BE   =  (D27F.f[DIR_P0M  ])[kb   ];//kbe
+      f27TW   =  (D27F.f[DIR_M0P  ])[kw   ];//ktw
+      f27TN   =  (D27F.f[DIR_0PP  ])[kzero];//ktn
+      f27BS   =  (D27F.f[DIR_0MM  ])[kbs  ];
+      f27BN   =  (D27F.f[DIR_0PM  ])[kb   ];//kbn
+      f27TS   =  (D27F.f[DIR_0MP  ])[ks   ];//kts
+      f27ZERO =  (D27F.f[DIR_000])[kzero];//kzero
+      f27TNE   = (D27F.f[DIR_PPP ])[kzero];//ktne
+      f27TSW   = (D27F.f[DIR_MMP ])[ksw  ];//ktsw
+      f27TSE   = (D27F.f[DIR_PMP ])[ks   ];//ktse
+      f27TNW   = (D27F.f[DIR_MPP ])[kw   ];//ktnw
+      f27BNE   = (D27F.f[DIR_PPM ])[kb   ];//kbne
+      f27BSW   = (D27F.f[DIR_MMM ])[kbsw ];
+      f27BSE   = (D27F.f[DIR_PMM ])[kbs  ];//kbse
+      f27BNW   = (D27F.f[DIR_MPM ])[kbw  ];//kbnw
 
       Conc_F_SWB = f27E + f27W + f27N + f27S + f27T + f27B + f27NE + f27SW + f27SE + f27NW + 
                    f27TE + f27BW + f27BE + f27TW + f27TN + f27BS + f27BN + f27TS + f27ZERO + 
@@ -22067,33 +22067,33 @@ extern "C" __global__ void scaleFCThS27(     real* DC,
       f_BSE  = fbseF[kbs];
       f_BNW  = fbnwF[kbw];
       //////////////////////////////////////////////////////////////////////////////////
-      f27E    =  (D27F.f[E   ])[kzero];//ke
-      f27W    =  (D27F.f[W   ])[kw   ];
-      f27N    =  (D27F.f[N   ])[kzero];//kn
-      f27S    =  (D27F.f[S   ])[ks   ];
-      f27T    =  (D27F.f[T   ])[kzero];//kt
-      f27B    =  (D27F.f[B   ])[kb   ];
-      f27NE   =  (D27F.f[NE  ])[kzero];//kne
-      f27SW   =  (D27F.f[SW  ])[ksw  ];
-      f27SE   =  (D27F.f[SE  ])[ks   ];//kse
-      f27NW   =  (D27F.f[NW  ])[kw   ];//knw
-      f27TE   =  (D27F.f[TE  ])[kzero];//kte
-      f27BW   =  (D27F.f[BW  ])[kbw  ];
-      f27BE   =  (D27F.f[BE  ])[kb   ];//kbe
-      f27TW   =  (D27F.f[TW  ])[kw   ];//ktw
-      f27TN   =  (D27F.f[TN  ])[kzero];//ktn
-      f27BS   =  (D27F.f[BS  ])[kbs  ];
-      f27BN   =  (D27F.f[BN  ])[kb   ];//kbn
-      f27TS   =  (D27F.f[TS  ])[ks   ];//kts
-      f27ZERO =  (D27F.f[REST])[kzero];//kzero
-      f27TNE   = (D27F.f[TNE ])[kzero];//ktne
-      f27TSW   = (D27F.f[TSW ])[ksw  ];//ktsw
-      f27TSE   = (D27F.f[TSE ])[ks   ];//ktse
-      f27TNW   = (D27F.f[TNW ])[kw   ];//ktnw
-      f27BNE   = (D27F.f[BNE ])[kb   ];//kbne
-      f27BSW   = (D27F.f[BSW ])[kbsw ];
-      f27BSE   = (D27F.f[BSE ])[kbs  ];//kbse
-      f27BNW   = (D27F.f[BNW ])[kbw  ];//kbnw
+      f27E    =  (D27F.f[DIR_P00   ])[kzero];//ke
+      f27W    =  (D27F.f[DIR_M00   ])[kw   ];
+      f27N    =  (D27F.f[DIR_0P0   ])[kzero];//kn
+      f27S    =  (D27F.f[DIR_0M0   ])[ks   ];
+      f27T    =  (D27F.f[DIR_00P   ])[kzero];//kt
+      f27B    =  (D27F.f[DIR_00M   ])[kb   ];
+      f27NE   =  (D27F.f[DIR_PP0  ])[kzero];//kne
+      f27SW   =  (D27F.f[DIR_MM0  ])[ksw  ];
+      f27SE   =  (D27F.f[DIR_PM0  ])[ks   ];//kse
+      f27NW   =  (D27F.f[DIR_MP0  ])[kw   ];//knw
+      f27TE   =  (D27F.f[DIR_P0P  ])[kzero];//kte
+      f27BW   =  (D27F.f[DIR_M0M  ])[kbw  ];
+      f27BE   =  (D27F.f[DIR_P0M  ])[kb   ];//kbe
+      f27TW   =  (D27F.f[DIR_M0P  ])[kw   ];//ktw
+      f27TN   =  (D27F.f[DIR_0PP  ])[kzero];//ktn
+      f27BS   =  (D27F.f[DIR_0MM  ])[kbs  ];
+      f27BN   =  (D27F.f[DIR_0PM  ])[kb   ];//kbn
+      f27TS   =  (D27F.f[DIR_0MP  ])[ks   ];//kts
+      f27ZERO =  (D27F.f[DIR_000])[kzero];//kzero
+      f27TNE   = (D27F.f[DIR_PPP ])[kzero];//ktne
+      f27TSW   = (D27F.f[DIR_MMP ])[ksw  ];//ktsw
+      f27TSE   = (D27F.f[DIR_PMP ])[ks   ];//ktse
+      f27TNW   = (D27F.f[DIR_MPP ])[kw   ];//ktnw
+      f27BNE   = (D27F.f[DIR_PPM ])[kb   ];//kbne
+      f27BSW   = (D27F.f[DIR_MMM ])[kbsw ];
+      f27BSE   = (D27F.f[DIR_PMM ])[kbs  ];//kbse
+      f27BNW   = (D27F.f[DIR_MPM ])[kbw  ];//kbnw
 
       Conc_F_SWT = f27E + f27W + f27N + f27S + f27T + f27B + f27NE + f27SW + f27SE + f27NW + 
                    f27TE + f27BW + f27BE + f27TW + f27TN + f27BS + f27BN + f27TS + f27ZERO + 
@@ -22154,33 +22154,33 @@ extern "C" __global__ void scaleFCThS27(     real* DC,
       f_BSE  = fbseF[kbs];
       f_BNW  = fbnwF[kbw];
       //////////////////////////////////////////////////////////////////////////////////
-      f27E    =  (D27F.f[E   ])[kzero];//ke
-      f27W    =  (D27F.f[W   ])[kw   ];
-      f27N    =  (D27F.f[N   ])[kzero];//kn
-      f27S    =  (D27F.f[S   ])[ks   ];
-      f27T    =  (D27F.f[T   ])[kzero];//kt
-      f27B    =  (D27F.f[B   ])[kb   ];
-      f27NE   =  (D27F.f[NE  ])[kzero];//kne
-      f27SW   =  (D27F.f[SW  ])[ksw  ];
-      f27SE   =  (D27F.f[SE  ])[ks   ];//kse
-      f27NW   =  (D27F.f[NW  ])[kw   ];//knw
-      f27TE   =  (D27F.f[TE  ])[kzero];//kte
-      f27BW   =  (D27F.f[BW  ])[kbw  ];
-      f27BE   =  (D27F.f[BE  ])[kb   ];//kbe
-      f27TW   =  (D27F.f[TW  ])[kw   ];//ktw
-      f27TN   =  (D27F.f[TN  ])[kzero];//ktn
-      f27BS   =  (D27F.f[BS  ])[kbs  ];
-      f27BN   =  (D27F.f[BN  ])[kb   ];//kbn
-      f27TS   =  (D27F.f[TS  ])[ks   ];//kts
-      f27ZERO =  (D27F.f[REST])[kzero];//kzero
-      f27TNE   = (D27F.f[TNE ])[kzero];//ktne
-      f27TSW   = (D27F.f[TSW ])[ksw  ];//ktsw
-      f27TSE   = (D27F.f[TSE ])[ks   ];//ktse
-      f27TNW   = (D27F.f[TNW ])[kw   ];//ktnw
-      f27BNE   = (D27F.f[BNE ])[kb   ];//kbne
-      f27BSW   = (D27F.f[BSW ])[kbsw ];
-      f27BSE   = (D27F.f[BSE ])[kbs  ];//kbse
-      f27BNW   = (D27F.f[BNW ])[kbw  ];//kbnw
+      f27E    =  (D27F.f[DIR_P00   ])[kzero];//ke
+      f27W    =  (D27F.f[DIR_M00   ])[kw   ];
+      f27N    =  (D27F.f[DIR_0P0   ])[kzero];//kn
+      f27S    =  (D27F.f[DIR_0M0   ])[ks   ];
+      f27T    =  (D27F.f[DIR_00P   ])[kzero];//kt
+      f27B    =  (D27F.f[DIR_00M   ])[kb   ];
+      f27NE   =  (D27F.f[DIR_PP0  ])[kzero];//kne
+      f27SW   =  (D27F.f[DIR_MM0  ])[ksw  ];
+      f27SE   =  (D27F.f[DIR_PM0  ])[ks   ];//kse
+      f27NW   =  (D27F.f[DIR_MP0  ])[kw   ];//knw
+      f27TE   =  (D27F.f[DIR_P0P  ])[kzero];//kte
+      f27BW   =  (D27F.f[DIR_M0M  ])[kbw  ];
+      f27BE   =  (D27F.f[DIR_P0M  ])[kb   ];//kbe
+      f27TW   =  (D27F.f[DIR_M0P  ])[kw   ];//ktw
+      f27TN   =  (D27F.f[DIR_0PP  ])[kzero];//ktn
+      f27BS   =  (D27F.f[DIR_0MM  ])[kbs  ];
+      f27BN   =  (D27F.f[DIR_0PM  ])[kb   ];//kbn
+      f27TS   =  (D27F.f[DIR_0MP  ])[ks   ];//kts
+      f27ZERO =  (D27F.f[DIR_000])[kzero];//kzero
+      f27TNE   = (D27F.f[DIR_PPP ])[kzero];//ktne
+      f27TSW   = (D27F.f[DIR_MMP ])[ksw  ];//ktsw
+      f27TSE   = (D27F.f[DIR_PMP ])[ks   ];//ktse
+      f27TNW   = (D27F.f[DIR_MPP ])[kw   ];//ktnw
+      f27BNE   = (D27F.f[DIR_PPM ])[kb   ];//kbne
+      f27BSW   = (D27F.f[DIR_MMM ])[kbsw ];
+      f27BSE   = (D27F.f[DIR_PMM ])[kbs  ];//kbse
+      f27BNW   = (D27F.f[DIR_MPM ])[kbw  ];//kbnw
 
       Conc_F_SET = f27E + f27W + f27N + f27S + f27T + f27B + f27NE + f27SW + f27SE + f27NW + 
                    f27TE + f27BW + f27BE + f27TW + f27TN + f27BS + f27BN + f27TS + f27ZERO + 
@@ -22241,33 +22241,33 @@ extern "C" __global__ void scaleFCThS27(     real* DC,
       f_BSE  = fbseF[kbs];
       f_BNW  = fbnwF[kbw];
       //////////////////////////////////////////////////////////////////////////////////
-      f27E    =  (D27F.f[E   ])[kzero];//ke
-      f27W    =  (D27F.f[W   ])[kw   ];
-      f27N    =  (D27F.f[N   ])[kzero];//kn
-      f27S    =  (D27F.f[S   ])[ks   ];
-      f27T    =  (D27F.f[T   ])[kzero];//kt
-      f27B    =  (D27F.f[B   ])[kb   ];
-      f27NE   =  (D27F.f[NE  ])[kzero];//kne
-      f27SW   =  (D27F.f[SW  ])[ksw  ];
-      f27SE   =  (D27F.f[SE  ])[ks   ];//kse
-      f27NW   =  (D27F.f[NW  ])[kw   ];//knw
-      f27TE   =  (D27F.f[TE  ])[kzero];//kte
-      f27BW   =  (D27F.f[BW  ])[kbw  ];
-      f27BE   =  (D27F.f[BE  ])[kb   ];//kbe
-      f27TW   =  (D27F.f[TW  ])[kw   ];//ktw
-      f27TN   =  (D27F.f[TN  ])[kzero];//ktn
-      f27BS   =  (D27F.f[BS  ])[kbs  ];
-      f27BN   =  (D27F.f[BN  ])[kb   ];//kbn
-      f27TS   =  (D27F.f[TS  ])[ks   ];//kts
-      f27ZERO =  (D27F.f[REST])[kzero];//kzero
-      f27TNE   = (D27F.f[TNE ])[kzero];//ktne
-      f27TSW   = (D27F.f[TSW ])[ksw  ];//ktsw
-      f27TSE   = (D27F.f[TSE ])[ks   ];//ktse
-      f27TNW   = (D27F.f[TNW ])[kw   ];//ktnw
-      f27BNE   = (D27F.f[BNE ])[kb   ];//kbne
-      f27BSW   = (D27F.f[BSW ])[kbsw ];
-      f27BSE   = (D27F.f[BSE ])[kbs  ];//kbse
-      f27BNW   = (D27F.f[BNW ])[kbw  ];//kbnw
+      f27E    =  (D27F.f[DIR_P00   ])[kzero];//ke
+      f27W    =  (D27F.f[DIR_M00   ])[kw   ];
+      f27N    =  (D27F.f[DIR_0P0   ])[kzero];//kn
+      f27S    =  (D27F.f[DIR_0M0   ])[ks   ];
+      f27T    =  (D27F.f[DIR_00P   ])[kzero];//kt
+      f27B    =  (D27F.f[DIR_00M   ])[kb   ];
+      f27NE   =  (D27F.f[DIR_PP0  ])[kzero];//kne
+      f27SW   =  (D27F.f[DIR_MM0  ])[ksw  ];
+      f27SE   =  (D27F.f[DIR_PM0  ])[ks   ];//kse
+      f27NW   =  (D27F.f[DIR_MP0  ])[kw   ];//knw
+      f27TE   =  (D27F.f[DIR_P0P  ])[kzero];//kte
+      f27BW   =  (D27F.f[DIR_M0M  ])[kbw  ];
+      f27BE   =  (D27F.f[DIR_P0M  ])[kb   ];//kbe
+      f27TW   =  (D27F.f[DIR_M0P  ])[kw   ];//ktw
+      f27TN   =  (D27F.f[DIR_0PP  ])[kzero];//ktn
+      f27BS   =  (D27F.f[DIR_0MM  ])[kbs  ];
+      f27BN   =  (D27F.f[DIR_0PM  ])[kb   ];//kbn
+      f27TS   =  (D27F.f[DIR_0MP  ])[ks   ];//kts
+      f27ZERO =  (D27F.f[DIR_000])[kzero];//kzero
+      f27TNE   = (D27F.f[DIR_PPP ])[kzero];//ktne
+      f27TSW   = (D27F.f[DIR_MMP ])[ksw  ];//ktsw
+      f27TSE   = (D27F.f[DIR_PMP ])[ks   ];//ktse
+      f27TNW   = (D27F.f[DIR_MPP ])[kw   ];//ktnw
+      f27BNE   = (D27F.f[DIR_PPM ])[kb   ];//kbne
+      f27BSW   = (D27F.f[DIR_MMM ])[kbsw ];
+      f27BSE   = (D27F.f[DIR_PMM ])[kbs  ];//kbse
+      f27BNW   = (D27F.f[DIR_MPM ])[kbw  ];//kbnw
 
       Conc_F_SEB = f27E + f27W + f27N + f27S + f27T + f27B + f27NE + f27SW + f27SE + f27NW + 
                    f27TE + f27BW + f27BE + f27TW + f27TN + f27BS + f27BN + f27TS + f27ZERO + 
@@ -22338,33 +22338,33 @@ extern "C" __global__ void scaleFCThS27(     real* DC,
       f_BSE  = fbseF[kbs];
       f_BNW  = fbnwF[kbw];
       //////////////////////////////////////////////////////////////////////////////////
-      f27E    =  (D27F.f[E   ])[kzero];//ke
-      f27W    =  (D27F.f[W   ])[kw   ];
-      f27N    =  (D27F.f[N   ])[kzero];//kn
-      f27S    =  (D27F.f[S   ])[ks   ];
-      f27T    =  (D27F.f[T   ])[kzero];//kt
-      f27B    =  (D27F.f[B   ])[kb   ];
-      f27NE   =  (D27F.f[NE  ])[kzero];//kne
-      f27SW   =  (D27F.f[SW  ])[ksw  ];
-      f27SE   =  (D27F.f[SE  ])[ks   ];//kse
-      f27NW   =  (D27F.f[NW  ])[kw   ];//knw
-      f27TE   =  (D27F.f[TE  ])[kzero];//kte
-      f27BW   =  (D27F.f[BW  ])[kbw  ];
-      f27BE   =  (D27F.f[BE  ])[kb   ];//kbe
-      f27TW   =  (D27F.f[TW  ])[kw   ];//ktw
-      f27TN   =  (D27F.f[TN  ])[kzero];//ktn
-      f27BS   =  (D27F.f[BS  ])[kbs  ];
-      f27BN   =  (D27F.f[BN  ])[kb   ];//kbn
-      f27TS   =  (D27F.f[TS  ])[ks   ];//kts
-      f27ZERO =  (D27F.f[REST])[kzero];//kzero
-      f27TNE   = (D27F.f[TNE ])[kzero];//ktne
-      f27TSW   = (D27F.f[TSW ])[ksw  ];//ktsw
-      f27TSE   = (D27F.f[TSE ])[ks   ];//ktse
-      f27TNW   = (D27F.f[TNW ])[kw   ];//ktnw
-      f27BNE   = (D27F.f[BNE ])[kb   ];//kbne
-      f27BSW   = (D27F.f[BSW ])[kbsw ];
-      f27BSE   = (D27F.f[BSE ])[kbs  ];//kbse
-      f27BNW   = (D27F.f[BNW ])[kbw  ];//kbnw
+      f27E    =  (D27F.f[DIR_P00   ])[kzero];//ke
+      f27W    =  (D27F.f[DIR_M00   ])[kw   ];
+      f27N    =  (D27F.f[DIR_0P0   ])[kzero];//kn
+      f27S    =  (D27F.f[DIR_0M0   ])[ks   ];
+      f27T    =  (D27F.f[DIR_00P   ])[kzero];//kt
+      f27B    =  (D27F.f[DIR_00M   ])[kb   ];
+      f27NE   =  (D27F.f[DIR_PP0  ])[kzero];//kne
+      f27SW   =  (D27F.f[DIR_MM0  ])[ksw  ];
+      f27SE   =  (D27F.f[DIR_PM0  ])[ks   ];//kse
+      f27NW   =  (D27F.f[DIR_MP0  ])[kw   ];//knw
+      f27TE   =  (D27F.f[DIR_P0P  ])[kzero];//kte
+      f27BW   =  (D27F.f[DIR_M0M  ])[kbw  ];
+      f27BE   =  (D27F.f[DIR_P0M  ])[kb   ];//kbe
+      f27TW   =  (D27F.f[DIR_M0P  ])[kw   ];//ktw
+      f27TN   =  (D27F.f[DIR_0PP  ])[kzero];//ktn
+      f27BS   =  (D27F.f[DIR_0MM  ])[kbs  ];
+      f27BN   =  (D27F.f[DIR_0PM  ])[kb   ];//kbn
+      f27TS   =  (D27F.f[DIR_0MP  ])[ks   ];//kts
+      f27ZERO =  (D27F.f[DIR_000])[kzero];//kzero
+      f27TNE   = (D27F.f[DIR_PPP ])[kzero];//ktne
+      f27TSW   = (D27F.f[DIR_MMP ])[ksw  ];//ktsw
+      f27TSE   = (D27F.f[DIR_PMP ])[ks   ];//ktse
+      f27TNW   = (D27F.f[DIR_MPP ])[kw   ];//ktnw
+      f27BNE   = (D27F.f[DIR_PPM ])[kb   ];//kbne
+      f27BSW   = (D27F.f[DIR_MMM ])[kbsw ];
+      f27BSE   = (D27F.f[DIR_PMM ])[kbs  ];//kbse
+      f27BNW   = (D27F.f[DIR_MPM ])[kbw  ];//kbnw
 
       Conc_F_NWB = f27E + f27W + f27N + f27S + f27T + f27B + f27NE + f27SW + f27SE + f27NW + 
                    f27TE + f27BW + f27BE + f27TW + f27TN + f27BS + f27BN + f27TS + f27ZERO + 
@@ -22425,33 +22425,33 @@ extern "C" __global__ void scaleFCThS27(     real* DC,
       f_BSE  = fbseF[kbs];
       f_BNW  = fbnwF[kbw];
       //////////////////////////////////////////////////////////////////////////////////
-      f27E    =  (D27F.f[E   ])[kzero];//ke
-      f27W    =  (D27F.f[W   ])[kw   ];
-      f27N    =  (D27F.f[N   ])[kzero];//kn
-      f27S    =  (D27F.f[S   ])[ks   ];
-      f27T    =  (D27F.f[T   ])[kzero];//kt
-      f27B    =  (D27F.f[B   ])[kb   ];
-      f27NE   =  (D27F.f[NE  ])[kzero];//kne
-      f27SW   =  (D27F.f[SW  ])[ksw  ];
-      f27SE   =  (D27F.f[SE  ])[ks   ];//kse
-      f27NW   =  (D27F.f[NW  ])[kw   ];//knw
-      f27TE   =  (D27F.f[TE  ])[kzero];//kte
-      f27BW   =  (D27F.f[BW  ])[kbw  ];
-      f27BE   =  (D27F.f[BE  ])[kb   ];//kbe
-      f27TW   =  (D27F.f[TW  ])[kw   ];//ktw
-      f27TN   =  (D27F.f[TN  ])[kzero];//ktn
-      f27BS   =  (D27F.f[BS  ])[kbs  ];
-      f27BN   =  (D27F.f[BN  ])[kb   ];//kbn
-      f27TS   =  (D27F.f[TS  ])[ks   ];//kts
-      f27ZERO =  (D27F.f[REST])[kzero];//kzero
-      f27TNE   = (D27F.f[TNE ])[kzero];//ktne
-      f27TSW   = (D27F.f[TSW ])[ksw  ];//ktsw
-      f27TSE   = (D27F.f[TSE ])[ks   ];//ktse
-      f27TNW   = (D27F.f[TNW ])[kw   ];//ktnw
-      f27BNE   = (D27F.f[BNE ])[kb   ];//kbne
-      f27BSW   = (D27F.f[BSW ])[kbsw ];
-      f27BSE   = (D27F.f[BSE ])[kbs  ];//kbse
-      f27BNW   = (D27F.f[BNW ])[kbw  ];//kbnw
+      f27E    =  (D27F.f[DIR_P00   ])[kzero];//ke
+      f27W    =  (D27F.f[DIR_M00   ])[kw   ];
+      f27N    =  (D27F.f[DIR_0P0   ])[kzero];//kn
+      f27S    =  (D27F.f[DIR_0M0   ])[ks   ];
+      f27T    =  (D27F.f[DIR_00P   ])[kzero];//kt
+      f27B    =  (D27F.f[DIR_00M   ])[kb   ];
+      f27NE   =  (D27F.f[DIR_PP0  ])[kzero];//kne
+      f27SW   =  (D27F.f[DIR_MM0  ])[ksw  ];
+      f27SE   =  (D27F.f[DIR_PM0  ])[ks   ];//kse
+      f27NW   =  (D27F.f[DIR_MP0  ])[kw   ];//knw
+      f27TE   =  (D27F.f[DIR_P0P  ])[kzero];//kte
+      f27BW   =  (D27F.f[DIR_M0M  ])[kbw  ];
+      f27BE   =  (D27F.f[DIR_P0M  ])[kb   ];//kbe
+      f27TW   =  (D27F.f[DIR_M0P  ])[kw   ];//ktw
+      f27TN   =  (D27F.f[DIR_0PP  ])[kzero];//ktn
+      f27BS   =  (D27F.f[DIR_0MM  ])[kbs  ];
+      f27BN   =  (D27F.f[DIR_0PM  ])[kb   ];//kbn
+      f27TS   =  (D27F.f[DIR_0MP  ])[ks   ];//kts
+      f27ZERO =  (D27F.f[DIR_000])[kzero];//kzero
+      f27TNE   = (D27F.f[DIR_PPP ])[kzero];//ktne
+      f27TSW   = (D27F.f[DIR_MMP ])[ksw  ];//ktsw
+      f27TSE   = (D27F.f[DIR_PMP ])[ks   ];//ktse
+      f27TNW   = (D27F.f[DIR_MPP ])[kw   ];//ktnw
+      f27BNE   = (D27F.f[DIR_PPM ])[kb   ];//kbne
+      f27BSW   = (D27F.f[DIR_MMM ])[kbsw ];
+      f27BSE   = (D27F.f[DIR_PMM ])[kbs  ];//kbse
+      f27BNW   = (D27F.f[DIR_MPM ])[kbw  ];//kbnw
 
       Conc_F_NWT = f27E + f27W + f27N + f27S + f27T + f27B + f27NE + f27SW + f27SE + f27NW + 
                    f27TE + f27BW + f27BE + f27TW + f27TN + f27BS + f27BN + f27TS + f27ZERO + 
@@ -22512,33 +22512,33 @@ extern "C" __global__ void scaleFCThS27(     real* DC,
       f_BSE  = fbseF[kbs];
       f_BNW  = fbnwF[kbw];
       //////////////////////////////////////////////////////////////////////////////////
-      f27E    =  (D27F.f[E   ])[kzero];//ke
-      f27W    =  (D27F.f[W   ])[kw   ];
-      f27N    =  (D27F.f[N   ])[kzero];//kn
-      f27S    =  (D27F.f[S   ])[ks   ];
-      f27T    =  (D27F.f[T   ])[kzero];//kt
-      f27B    =  (D27F.f[B   ])[kb   ];
-      f27NE   =  (D27F.f[NE  ])[kzero];//kne
-      f27SW   =  (D27F.f[SW  ])[ksw  ];
-      f27SE   =  (D27F.f[SE  ])[ks   ];//kse
-      f27NW   =  (D27F.f[NW  ])[kw   ];//knw
-      f27TE   =  (D27F.f[TE  ])[kzero];//kte
-      f27BW   =  (D27F.f[BW  ])[kbw  ];
-      f27BE   =  (D27F.f[BE  ])[kb   ];//kbe
-      f27TW   =  (D27F.f[TW  ])[kw   ];//ktw
-      f27TN   =  (D27F.f[TN  ])[kzero];//ktn
-      f27BS   =  (D27F.f[BS  ])[kbs  ];
-      f27BN   =  (D27F.f[BN  ])[kb   ];//kbn
-      f27TS   =  (D27F.f[TS  ])[ks   ];//kts
-      f27ZERO =  (D27F.f[REST])[kzero];//kzero
-      f27TNE   = (D27F.f[TNE ])[kzero];//ktne
-      f27TSW   = (D27F.f[TSW ])[ksw  ];//ktsw
-      f27TSE   = (D27F.f[TSE ])[ks   ];//ktse
-      f27TNW   = (D27F.f[TNW ])[kw   ];//ktnw
-      f27BNE   = (D27F.f[BNE ])[kb   ];//kbne
-      f27BSW   = (D27F.f[BSW ])[kbsw ];
-      f27BSE   = (D27F.f[BSE ])[kbs  ];//kbse
-      f27BNW   = (D27F.f[BNW ])[kbw  ];//kbnw
+      f27E    =  (D27F.f[DIR_P00   ])[kzero];//ke
+      f27W    =  (D27F.f[DIR_M00   ])[kw   ];
+      f27N    =  (D27F.f[DIR_0P0   ])[kzero];//kn
+      f27S    =  (D27F.f[DIR_0M0   ])[ks   ];
+      f27T    =  (D27F.f[DIR_00P   ])[kzero];//kt
+      f27B    =  (D27F.f[DIR_00M   ])[kb   ];
+      f27NE   =  (D27F.f[DIR_PP0  ])[kzero];//kne
+      f27SW   =  (D27F.f[DIR_MM0  ])[ksw  ];
+      f27SE   =  (D27F.f[DIR_PM0  ])[ks   ];//kse
+      f27NW   =  (D27F.f[DIR_MP0  ])[kw   ];//knw
+      f27TE   =  (D27F.f[DIR_P0P  ])[kzero];//kte
+      f27BW   =  (D27F.f[DIR_M0M  ])[kbw  ];
+      f27BE   =  (D27F.f[DIR_P0M  ])[kb   ];//kbe
+      f27TW   =  (D27F.f[DIR_M0P  ])[kw   ];//ktw
+      f27TN   =  (D27F.f[DIR_0PP  ])[kzero];//ktn
+      f27BS   =  (D27F.f[DIR_0MM  ])[kbs  ];
+      f27BN   =  (D27F.f[DIR_0PM  ])[kb   ];//kbn
+      f27TS   =  (D27F.f[DIR_0MP  ])[ks   ];//kts
+      f27ZERO =  (D27F.f[DIR_000])[kzero];//kzero
+      f27TNE   = (D27F.f[DIR_PPP ])[kzero];//ktne
+      f27TSW   = (D27F.f[DIR_MMP ])[ksw  ];//ktsw
+      f27TSE   = (D27F.f[DIR_PMP ])[ks   ];//ktse
+      f27TNW   = (D27F.f[DIR_MPP ])[kw   ];//ktnw
+      f27BNE   = (D27F.f[DIR_PPM ])[kb   ];//kbne
+      f27BSW   = (D27F.f[DIR_MMM ])[kbsw ];
+      f27BSE   = (D27F.f[DIR_PMM ])[kbs  ];//kbse
+      f27BNW   = (D27F.f[DIR_MPM ])[kbw  ];//kbnw
 
       Conc_F_NET = f27E + f27W + f27N + f27S + f27T + f27B + f27NE + f27SW + f27SE + f27NW + 
                    f27TE + f27BW + f27BE + f27TW + f27TN + f27BS + f27BN + f27TS + f27ZERO + 
@@ -22599,33 +22599,33 @@ extern "C" __global__ void scaleFCThS27(     real* DC,
       f_BSE  = fbseF[kbs];
       f_BNW  = fbnwF[kbw];
       //////////////////////////////////////////////////////////////////////////////////
-      f27E    =  (D27F.f[E   ])[kzero];//ke
-      f27W    =  (D27F.f[W   ])[kw   ];
-      f27N    =  (D27F.f[N   ])[kzero];//kn
-      f27S    =  (D27F.f[S   ])[ks   ];
-      f27T    =  (D27F.f[T   ])[kzero];//kt
-      f27B    =  (D27F.f[B   ])[kb   ];
-      f27NE   =  (D27F.f[NE  ])[kzero];//kne
-      f27SW   =  (D27F.f[SW  ])[ksw  ];
-      f27SE   =  (D27F.f[SE  ])[ks   ];//kse
-      f27NW   =  (D27F.f[NW  ])[kw   ];//knw
-      f27TE   =  (D27F.f[TE  ])[kzero];//kte
-      f27BW   =  (D27F.f[BW  ])[kbw  ];
-      f27BE   =  (D27F.f[BE  ])[kb   ];//kbe
-      f27TW   =  (D27F.f[TW  ])[kw   ];//ktw
-      f27TN   =  (D27F.f[TN  ])[kzero];//ktn
-      f27BS   =  (D27F.f[BS  ])[kbs  ];
-      f27BN   =  (D27F.f[BN  ])[kb   ];//kbn
-      f27TS   =  (D27F.f[TS  ])[ks   ];//kts
-      f27ZERO =  (D27F.f[REST])[kzero];//kzero
-      f27TNE   = (D27F.f[TNE ])[kzero];//ktne
-      f27TSW   = (D27F.f[TSW ])[ksw  ];//ktsw
-      f27TSE   = (D27F.f[TSE ])[ks   ];//ktse
-      f27TNW   = (D27F.f[TNW ])[kw   ];//ktnw
-      f27BNE   = (D27F.f[BNE ])[kb   ];//kbne
-      f27BSW   = (D27F.f[BSW ])[kbsw ];
-      f27BSE   = (D27F.f[BSE ])[kbs  ];//kbse
-      f27BNW   = (D27F.f[BNW ])[kbw  ];//kbnw
+      f27E    =  (D27F.f[DIR_P00   ])[kzero];//ke
+      f27W    =  (D27F.f[DIR_M00   ])[kw   ];
+      f27N    =  (D27F.f[DIR_0P0   ])[kzero];//kn
+      f27S    =  (D27F.f[DIR_0M0   ])[ks   ];
+      f27T    =  (D27F.f[DIR_00P   ])[kzero];//kt
+      f27B    =  (D27F.f[DIR_00M   ])[kb   ];
+      f27NE   =  (D27F.f[DIR_PP0  ])[kzero];//kne
+      f27SW   =  (D27F.f[DIR_MM0  ])[ksw  ];
+      f27SE   =  (D27F.f[DIR_PM0  ])[ks   ];//kse
+      f27NW   =  (D27F.f[DIR_MP0  ])[kw   ];//knw
+      f27TE   =  (D27F.f[DIR_P0P  ])[kzero];//kte
+      f27BW   =  (D27F.f[DIR_M0M  ])[kbw  ];
+      f27BE   =  (D27F.f[DIR_P0M  ])[kb   ];//kbe
+      f27TW   =  (D27F.f[DIR_M0P  ])[kw   ];//ktw
+      f27TN   =  (D27F.f[DIR_0PP  ])[kzero];//ktn
+      f27BS   =  (D27F.f[DIR_0MM  ])[kbs  ];
+      f27BN   =  (D27F.f[DIR_0PM  ])[kb   ];//kbn
+      f27TS   =  (D27F.f[DIR_0MP  ])[ks   ];//kts
+      f27ZERO =  (D27F.f[DIR_000])[kzero];//kzero
+      f27TNE   = (D27F.f[DIR_PPP ])[kzero];//ktne
+      f27TSW   = (D27F.f[DIR_MMP ])[ksw  ];//ktsw
+      f27TSE   = (D27F.f[DIR_PMP ])[ks   ];//ktse
+      f27TNW   = (D27F.f[DIR_MPP ])[kw   ];//ktnw
+      f27BNE   = (D27F.f[DIR_PPM ])[kb   ];//kbne
+      f27BSW   = (D27F.f[DIR_MMM ])[kbsw ];
+      f27BSE   = (D27F.f[DIR_PMM ])[kbs  ];//kbse
+      f27BNW   = (D27F.f[DIR_MPM ])[kbw  ];//kbnw
 
       Conc_F_NEB = f27E + f27W + f27N + f27S + f27T + f27B + f27NE + f27SW + f27SE + f27NW + 
                    f27TE + f27BW + f27BE + f27TW + f27TN + f27BS + f27BN + f27TS + f27ZERO + 
@@ -22738,33 +22738,33 @@ extern "C" __global__ void scaleFCThS27(     real* DC,
 
       cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
-      (D27C.f[REST])[kzero] =   c8o27* Conc_C*(c1o1-cu_sq);
-      (D27C.f[E   ])[kzero] =   c2o27* (c3o1*( Mx        )+Conc_C*(c1o1+c9o2*( vx1        )*( vx1        )-cu_sq));
-      (D27C.f[W   ])[kw   ] =   c2o27* (c3o1*(-Mx        )+Conc_C*(c1o1+c9o2*(-vx1        )*(-vx1        )-cu_sq));
-      (D27C.f[N   ])[kzero] =   c2o27* (c3o1*(     My    )+Conc_C*(c1o1+c9o2*(     vx2    )*(     vx2    )-cu_sq));
-      (D27C.f[S   ])[ks   ] =   c2o27* (c3o1*(    -My    )+Conc_C*(c1o1+c9o2*(    -vx2    )*(    -vx2    )-cu_sq));
-      (D27C.f[T   ])[kzero] =   c2o27* (c3o1*(         Mz)+Conc_C*(c1o1+c9o2*(         vx3)*(         vx3)-cu_sq));
-      (D27C.f[B   ])[kb   ] =   c2o27* (c3o1*(        -Mz)+Conc_C*(c1o1+c9o2*(        -vx3)*(        -vx3)-cu_sq));
-      (D27C.f[NE  ])[kzero] =   c1o54* (c3o1*( Mx +My    )+Conc_C*(c1o1+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq));
-      (D27C.f[SW  ])[ksw  ] =   c1o54* (c3o1*(-Mx -My    )+Conc_C*(c1o1+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq));
-      (D27C.f[SE  ])[ks   ] =   c1o54* (c3o1*( Mx -My    )+Conc_C*(c1o1+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq));
-      (D27C.f[NW  ])[kw   ] =   c1o54* (c3o1*(-Mx +My    )+Conc_C*(c1o1+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq));
-      (D27C.f[TE  ])[kzero] =   c1o54* (c3o1*( Mx     +Mz)+Conc_C*(c1o1+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq));
-      (D27C.f[BW  ])[kbw  ] =   c1o54* (c3o1*(-Mx     -Mz)+Conc_C*(c1o1+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq));
-      (D27C.f[BE  ])[kb   ] =   c1o54* (c3o1*( Mx     -Mz)+Conc_C*(c1o1+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq));
-      (D27C.f[TW  ])[kw   ] =   c1o54* (c3o1*(-Mx     +Mz)+Conc_C*(c1o1+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq));
-      (D27C.f[TN  ])[kzero] =   c1o54* (c3o1*(     My +Mz)+Conc_C*(c1o1+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq));
-      (D27C.f[BS  ])[kbs  ] =   c1o54* (c3o1*(    -My -Mz)+Conc_C*(c1o1+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq));
-      (D27C.f[BN  ])[kb   ] =   c1o54* (c3o1*(     My -Mz)+Conc_C*(c1o1+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq));
-      (D27C.f[TS  ])[ks   ] =   c1o54* (c3o1*(    -My +Mz)+Conc_C*(c1o1+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq));
-      (D27C.f[TNE ])[kzero] =   c1o216*(c3o1*( Mx +My +Mz)+Conc_C*(c1o1+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq));
-      (D27C.f[BSW ])[kbsw ] =   c1o216*(c3o1*(-Mx -My -Mz)+Conc_C*(c1o1+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq));
-      (D27C.f[BNE ])[kb   ] =   c1o216*(c3o1*( Mx +My -Mz)+Conc_C*(c1o1+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq));
-      (D27C.f[TSW ])[ksw  ] =   c1o216*(c3o1*(-Mx -My +Mz)+Conc_C*(c1o1+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq));
-      (D27C.f[TSE ])[ks   ] =   c1o216*(c3o1*( Mx -My +Mz)+Conc_C*(c1o1+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq));
-      (D27C.f[BNW ])[kbw  ] =   c1o216*(c3o1*(-Mx +My -Mz)+Conc_C*(c1o1+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq));
-      (D27C.f[BSE ])[kbs  ] =   c1o216*(c3o1*( Mx -My -Mz)+Conc_C*(c1o1+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq));
-      (D27C.f[TNW ])[kw   ] =   c1o216*(c3o1*(-Mx +My +Mz)+Conc_C*(c1o1+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq));
+      (D27C.f[DIR_000])[kzero] =   c8o27* Conc_C*(c1o1-cu_sq);
+      (D27C.f[DIR_P00   ])[kzero] =   c2o27* (c3o1*( Mx        )+Conc_C*(c1o1+c9o2*( vx1        )*( vx1        )-cu_sq));
+      (D27C.f[DIR_M00   ])[kw   ] =   c2o27* (c3o1*(-Mx        )+Conc_C*(c1o1+c9o2*(-vx1        )*(-vx1        )-cu_sq));
+      (D27C.f[DIR_0P0   ])[kzero] =   c2o27* (c3o1*(     My    )+Conc_C*(c1o1+c9o2*(     vx2    )*(     vx2    )-cu_sq));
+      (D27C.f[DIR_0M0   ])[ks   ] =   c2o27* (c3o1*(    -My    )+Conc_C*(c1o1+c9o2*(    -vx2    )*(    -vx2    )-cu_sq));
+      (D27C.f[DIR_00P   ])[kzero] =   c2o27* (c3o1*(         Mz)+Conc_C*(c1o1+c9o2*(         vx3)*(         vx3)-cu_sq));
+      (D27C.f[DIR_00M   ])[kb   ] =   c2o27* (c3o1*(        -Mz)+Conc_C*(c1o1+c9o2*(        -vx3)*(        -vx3)-cu_sq));
+      (D27C.f[DIR_PP0  ])[kzero] =   c1o54* (c3o1*( Mx +My    )+Conc_C*(c1o1+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq));
+      (D27C.f[DIR_MM0  ])[ksw  ] =   c1o54* (c3o1*(-Mx -My    )+Conc_C*(c1o1+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq));
+      (D27C.f[DIR_PM0  ])[ks   ] =   c1o54* (c3o1*( Mx -My    )+Conc_C*(c1o1+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq));
+      (D27C.f[DIR_MP0  ])[kw   ] =   c1o54* (c3o1*(-Mx +My    )+Conc_C*(c1o1+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq));
+      (D27C.f[DIR_P0P  ])[kzero] =   c1o54* (c3o1*( Mx     +Mz)+Conc_C*(c1o1+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq));
+      (D27C.f[DIR_M0M  ])[kbw  ] =   c1o54* (c3o1*(-Mx     -Mz)+Conc_C*(c1o1+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq));
+      (D27C.f[DIR_P0M  ])[kb   ] =   c1o54* (c3o1*( Mx     -Mz)+Conc_C*(c1o1+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq));
+      (D27C.f[DIR_M0P  ])[kw   ] =   c1o54* (c3o1*(-Mx     +Mz)+Conc_C*(c1o1+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq));
+      (D27C.f[DIR_0PP  ])[kzero] =   c1o54* (c3o1*(     My +Mz)+Conc_C*(c1o1+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq));
+      (D27C.f[DIR_0MM  ])[kbs  ] =   c1o54* (c3o1*(    -My -Mz)+Conc_C*(c1o1+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq));
+      (D27C.f[DIR_0PM  ])[kb   ] =   c1o54* (c3o1*(     My -Mz)+Conc_C*(c1o1+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq));
+      (D27C.f[DIR_0MP  ])[ks   ] =   c1o54* (c3o1*(    -My +Mz)+Conc_C*(c1o1+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq));
+      (D27C.f[DIR_PPP ])[kzero] =   c1o216*(c3o1*( Mx +My +Mz)+Conc_C*(c1o1+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq));
+      (D27C.f[DIR_MMM ])[kbsw ] =   c1o216*(c3o1*(-Mx -My -Mz)+Conc_C*(c1o1+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq));
+      (D27C.f[DIR_PPM ])[kb   ] =   c1o216*(c3o1*( Mx +My -Mz)+Conc_C*(c1o1+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq));
+      (D27C.f[DIR_MMP ])[ksw  ] =   c1o216*(c3o1*(-Mx -My +Mz)+Conc_C*(c1o1+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq));
+      (D27C.f[DIR_PMP ])[ks   ] =   c1o216*(c3o1*( Mx -My +Mz)+Conc_C*(c1o1+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq));
+      (D27C.f[DIR_MPM ])[kbw  ] =   c1o216*(c3o1*(-Mx +My -Mz)+Conc_C*(c1o1+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq));
+      (D27C.f[DIR_PMM ])[kbs  ] =   c1o216*(c3o1*( Mx -My -Mz)+Conc_C*(c1o1+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq));
+      (D27C.f[DIR_MPP ])[kw   ] =   c1o216*(c3o1*(-Mx +My +Mz)+Conc_C*(c1o1+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq));
 
    }
 }
@@ -22804,7 +22804,7 @@ extern "C" __global__ void scaleFCThS27(     real* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFCEff27(real* DC, 
+__global__ void scaleFCEff27(real* DC, 
                                         real* DF, 
                                         unsigned int* neighborCX,
                                         unsigned int* neighborCY,
@@ -22830,96 +22830,96 @@ extern "C" __global__ void scaleFCEff27(real* DC,
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[E   *size_MatF];
-   fwF    = &DF[W   *size_MatF];
-   fnF    = &DF[N   *size_MatF];
-   fsF    = &DF[S   *size_MatF];
-   ftF    = &DF[T   *size_MatF];
-   fbF    = &DF[B   *size_MatF];
-   fneF   = &DF[NE  *size_MatF];
-   fswF   = &DF[SW  *size_MatF];
-   fseF   = &DF[SE  *size_MatF];
-   fnwF   = &DF[NW  *size_MatF];
-   fteF   = &DF[TE  *size_MatF];
-   fbwF   = &DF[BW  *size_MatF];
-   fbeF   = &DF[BE  *size_MatF];
-   ftwF   = &DF[TW  *size_MatF];
-   ftnF   = &DF[TN  *size_MatF];
-   fbsF   = &DF[BS  *size_MatF];
-   fbnF   = &DF[BN  *size_MatF];
-   ftsF   = &DF[TS  *size_MatF];
-   fzeroF = &DF[REST*size_MatF];
-   ftneF  = &DF[TNE *size_MatF];
-   ftswF  = &DF[TSW *size_MatF];
-   ftseF  = &DF[TSE *size_MatF];
-   ftnwF  = &DF[TNW *size_MatF];
-   fbneF  = &DF[BNE *size_MatF];
-   fbswF  = &DF[BSW *size_MatF];
-   fbseF  = &DF[BSE *size_MatF];
-   fbnwF  = &DF[BNW *size_MatF];
+   feF    = &DF[DIR_P00   *size_MatF];
+   fwF    = &DF[DIR_M00   *size_MatF];
+   fnF    = &DF[DIR_0P0   *size_MatF];
+   fsF    = &DF[DIR_0M0   *size_MatF];
+   ftF    = &DF[DIR_00P   *size_MatF];
+   fbF    = &DF[DIR_00M   *size_MatF];
+   fneF   = &DF[DIR_PP0  *size_MatF];
+   fswF   = &DF[DIR_MM0  *size_MatF];
+   fseF   = &DF[DIR_PM0  *size_MatF];
+   fnwF   = &DF[DIR_MP0  *size_MatF];
+   fteF   = &DF[DIR_P0P  *size_MatF];
+   fbwF   = &DF[DIR_M0M  *size_MatF];
+   fbeF   = &DF[DIR_P0M  *size_MatF];
+   ftwF   = &DF[DIR_M0P  *size_MatF];
+   ftnF   = &DF[DIR_0PP  *size_MatF];
+   fbsF   = &DF[DIR_0MM  *size_MatF];
+   fbnF   = &DF[DIR_0PM  *size_MatF];
+   ftsF   = &DF[DIR_0MP  *size_MatF];
+   fzeroF = &DF[DIR_000*size_MatF];
+   ftneF  = &DF[DIR_PPP *size_MatF];
+   ftswF  = &DF[DIR_MMP *size_MatF];
+   ftseF  = &DF[DIR_PMP *size_MatF];
+   ftnwF  = &DF[DIR_MPP *size_MatF];
+   fbneF  = &DF[DIR_PPM *size_MatF];
+   fbswF  = &DF[DIR_MMM *size_MatF];
+   fbseF  = &DF[DIR_PMM *size_MatF];
+   fbnwF  = &DF[DIR_MPM *size_MatF];
 
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[E   *size_MatC];
-      fwC    = &DC[W   *size_MatC];
-      fnC    = &DC[N   *size_MatC];
-      fsC    = &DC[S   *size_MatC];
-      ftC    = &DC[T   *size_MatC];
-      fbC    = &DC[B   *size_MatC];
-      fneC   = &DC[NE  *size_MatC];
-      fswC   = &DC[SW  *size_MatC];
-      fseC   = &DC[SE  *size_MatC];
-      fnwC   = &DC[NW  *size_MatC];
-      fteC   = &DC[TE  *size_MatC];
-      fbwC   = &DC[BW  *size_MatC];
-      fbeC   = &DC[BE  *size_MatC];
-      ftwC   = &DC[TW  *size_MatC];
-      ftnC   = &DC[TN  *size_MatC];
-      fbsC   = &DC[BS  *size_MatC];
-      fbnC   = &DC[BN  *size_MatC];
-      ftsC   = &DC[TS  *size_MatC];
-      fzeroC = &DC[REST*size_MatC];
-      ftneC  = &DC[TNE *size_MatC];
-      ftswC  = &DC[TSW *size_MatC];
-      ftseC  = &DC[TSE *size_MatC];
-      ftnwC  = &DC[TNW *size_MatC];
-      fbneC  = &DC[BNE *size_MatC];
-      fbswC  = &DC[BSW *size_MatC];
-      fbseC  = &DC[BSE *size_MatC];
-      fbnwC  = &DC[BNW *size_MatC];
+      feC    = &DC[DIR_P00   *size_MatC];
+      fwC    = &DC[DIR_M00   *size_MatC];
+      fnC    = &DC[DIR_0P0   *size_MatC];
+      fsC    = &DC[DIR_0M0   *size_MatC];
+      ftC    = &DC[DIR_00P   *size_MatC];
+      fbC    = &DC[DIR_00M   *size_MatC];
+      fneC   = &DC[DIR_PP0  *size_MatC];
+      fswC   = &DC[DIR_MM0  *size_MatC];
+      fseC   = &DC[DIR_PM0  *size_MatC];
+      fnwC   = &DC[DIR_MP0  *size_MatC];
+      fteC   = &DC[DIR_P0P  *size_MatC];
+      fbwC   = &DC[DIR_M0M  *size_MatC];
+      fbeC   = &DC[DIR_P0M  *size_MatC];
+      ftwC   = &DC[DIR_M0P  *size_MatC];
+      ftnC   = &DC[DIR_0PP  *size_MatC];
+      fbsC   = &DC[DIR_0MM  *size_MatC];
+      fbnC   = &DC[DIR_0PM  *size_MatC];
+      ftsC   = &DC[DIR_0MP  *size_MatC];
+      fzeroC = &DC[DIR_000*size_MatC];
+      ftneC  = &DC[DIR_PPP *size_MatC];
+      ftswC  = &DC[DIR_MMP *size_MatC];
+      ftseC  = &DC[DIR_PMP *size_MatC];
+      ftnwC  = &DC[DIR_MPP *size_MatC];
+      fbneC  = &DC[DIR_PPM *size_MatC];
+      fbswC  = &DC[DIR_MMM *size_MatC];
+      fbseC  = &DC[DIR_PMM *size_MatC];
+      fbnwC  = &DC[DIR_MPM *size_MatC];
    } 
    else
    {
-      fwC    = &DC[E   *size_MatC];
-      feC    = &DC[W   *size_MatC];
-      fsC    = &DC[N   *size_MatC];
-      fnC    = &DC[S   *size_MatC];
-      fbC    = &DC[T   *size_MatC];
-      ftC    = &DC[B   *size_MatC];
-      fswC   = &DC[NE  *size_MatC];
-      fneC   = &DC[SW  *size_MatC];
-      fnwC   = &DC[SE  *size_MatC];
-      fseC   = &DC[NW  *size_MatC];
-      fbwC   = &DC[TE  *size_MatC];
-      fteC   = &DC[BW  *size_MatC];
-      ftwC   = &DC[BE  *size_MatC];
-      fbeC   = &DC[TW  *size_MatC];
-      fbsC   = &DC[TN  *size_MatC];
-      ftnC   = &DC[BS  *size_MatC];
-      ftsC   = &DC[BN  *size_MatC];
-      fbnC   = &DC[TS  *size_MatC];
-      fzeroC = &DC[REST*size_MatC];
-      fbswC  = &DC[TNE *size_MatC];
-      fbneC  = &DC[TSW *size_MatC];
-      fbnwC  = &DC[TSE *size_MatC];
-      fbseC  = &DC[TNW *size_MatC];
-      ftswC  = &DC[BNE *size_MatC];
-      ftneC  = &DC[BSW *size_MatC];
-      ftnwC  = &DC[BSE *size_MatC];
-      ftseC  = &DC[BNW *size_MatC];
+      fwC    = &DC[DIR_P00   *size_MatC];
+      feC    = &DC[DIR_M00   *size_MatC];
+      fsC    = &DC[DIR_0P0   *size_MatC];
+      fnC    = &DC[DIR_0M0   *size_MatC];
+      fbC    = &DC[DIR_00P   *size_MatC];
+      ftC    = &DC[DIR_00M   *size_MatC];
+      fswC   = &DC[DIR_PP0  *size_MatC];
+      fneC   = &DC[DIR_MM0  *size_MatC];
+      fnwC   = &DC[DIR_PM0  *size_MatC];
+      fseC   = &DC[DIR_MP0  *size_MatC];
+      fbwC   = &DC[DIR_P0P  *size_MatC];
+      fteC   = &DC[DIR_M0M  *size_MatC];
+      ftwC   = &DC[DIR_P0M  *size_MatC];
+      fbeC   = &DC[DIR_M0P  *size_MatC];
+      fbsC   = &DC[DIR_0PP  *size_MatC];
+      ftnC   = &DC[DIR_0MM  *size_MatC];
+      ftsC   = &DC[DIR_0PM  *size_MatC];
+      fbnC   = &DC[DIR_0MP  *size_MatC];
+      fzeroC = &DC[DIR_000*size_MatC];
+      fbswC  = &DC[DIR_PPP *size_MatC];
+      fbneC  = &DC[DIR_MMP *size_MatC];
+      fbnwC  = &DC[DIR_PMP *size_MatC];
+      fbseC  = &DC[DIR_MPP *size_MatC];
+      ftswC  = &DC[DIR_PPM *size_MatC];
+      ftneC  = &DC[DIR_MMM *size_MatC];
+      ftnwC  = &DC[DIR_PMM *size_MatC];
+      ftseC  = &DC[DIR_MPM *size_MatC];
    }
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  ix = threadIdx.x;  // Globaler x-Index 
@@ -23783,7 +23783,7 @@ extern "C" __global__ void scaleFCEff27(real* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFC27(real* DC, 
+__global__ void scaleFC27(real* DC, 
                                      real* DF, 
                                      unsigned int* neighborCX,
                                      unsigned int* neighborCY,
@@ -23808,96 +23808,96 @@ extern "C" __global__ void scaleFC27(real* DC,
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
          *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[E   *size_MatF];
-   fwF    = &DF[W   *size_MatF];
-   fnF    = &DF[N   *size_MatF];
-   fsF    = &DF[S   *size_MatF];
-   ftF    = &DF[T   *size_MatF];
-   fbF    = &DF[B   *size_MatF];
-   fneF   = &DF[NE  *size_MatF];
-   fswF   = &DF[SW  *size_MatF];
-   fseF   = &DF[SE  *size_MatF];
-   fnwF   = &DF[NW  *size_MatF];
-   fteF   = &DF[TE  *size_MatF];
-   fbwF   = &DF[BW  *size_MatF];
-   fbeF   = &DF[BE  *size_MatF];
-   ftwF   = &DF[TW  *size_MatF];
-   ftnF   = &DF[TN  *size_MatF];
-   fbsF   = &DF[BS  *size_MatF];
-   fbnF   = &DF[BN  *size_MatF];
-   ftsF   = &DF[TS  *size_MatF];
-   fzeroF = &DF[REST*size_MatF];
-   ftneF  = &DF[TNE *size_MatF];
-   ftswF  = &DF[TSW *size_MatF];
-   ftseF  = &DF[TSE *size_MatF];
-   ftnwF  = &DF[TNW *size_MatF];
-   fbneF  = &DF[BNE *size_MatF];
-   fbswF  = &DF[BSW *size_MatF];
-   fbseF  = &DF[BSE *size_MatF];
-   fbnwF  = &DF[BNW *size_MatF];
+   feF    = &DF[DIR_P00   *size_MatF];
+   fwF    = &DF[DIR_M00   *size_MatF];
+   fnF    = &DF[DIR_0P0   *size_MatF];
+   fsF    = &DF[DIR_0M0   *size_MatF];
+   ftF    = &DF[DIR_00P   *size_MatF];
+   fbF    = &DF[DIR_00M   *size_MatF];
+   fneF   = &DF[DIR_PP0  *size_MatF];
+   fswF   = &DF[DIR_MM0  *size_MatF];
+   fseF   = &DF[DIR_PM0  *size_MatF];
+   fnwF   = &DF[DIR_MP0  *size_MatF];
+   fteF   = &DF[DIR_P0P  *size_MatF];
+   fbwF   = &DF[DIR_M0M  *size_MatF];
+   fbeF   = &DF[DIR_P0M  *size_MatF];
+   ftwF   = &DF[DIR_M0P  *size_MatF];
+   ftnF   = &DF[DIR_0PP  *size_MatF];
+   fbsF   = &DF[DIR_0MM  *size_MatF];
+   fbnF   = &DF[DIR_0PM  *size_MatF];
+   ftsF   = &DF[DIR_0MP  *size_MatF];
+   fzeroF = &DF[DIR_000*size_MatF];
+   ftneF  = &DF[DIR_PPP *size_MatF];
+   ftswF  = &DF[DIR_MMP *size_MatF];
+   ftseF  = &DF[DIR_PMP *size_MatF];
+   ftnwF  = &DF[DIR_MPP *size_MatF];
+   fbneF  = &DF[DIR_PPM *size_MatF];
+   fbswF  = &DF[DIR_MMM *size_MatF];
+   fbseF  = &DF[DIR_PMM *size_MatF];
+   fbnwF  = &DF[DIR_MPM *size_MatF];
 
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
          *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[E   *size_MatC];
-      fwC    = &DC[W   *size_MatC];
-      fnC    = &DC[N   *size_MatC];
-      fsC    = &DC[S   *size_MatC];
-      ftC    = &DC[T   *size_MatC];
-      fbC    = &DC[B   *size_MatC];
-      fneC   = &DC[NE  *size_MatC];
-      fswC   = &DC[SW  *size_MatC];
-      fseC   = &DC[SE  *size_MatC];
-      fnwC   = &DC[NW  *size_MatC];
-      fteC   = &DC[TE  *size_MatC];
-      fbwC   = &DC[BW  *size_MatC];
-      fbeC   = &DC[BE  *size_MatC];
-      ftwC   = &DC[TW  *size_MatC];
-      ftnC   = &DC[TN  *size_MatC];
-      fbsC   = &DC[BS  *size_MatC];
-      fbnC   = &DC[BN  *size_MatC];
-      ftsC   = &DC[TS  *size_MatC];
-      fzeroC = &DC[REST*size_MatC];
-      ftneC  = &DC[TNE *size_MatC];
-      ftswC  = &DC[TSW *size_MatC];
-      ftseC  = &DC[TSE *size_MatC];
-      ftnwC  = &DC[TNW *size_MatC];
-      fbneC  = &DC[BNE *size_MatC];
-      fbswC  = &DC[BSW *size_MatC];
-      fbseC  = &DC[BSE *size_MatC];
-      fbnwC  = &DC[BNW *size_MatC];
+      feC    = &DC[DIR_P00   *size_MatC];
+      fwC    = &DC[DIR_M00   *size_MatC];
+      fnC    = &DC[DIR_0P0   *size_MatC];
+      fsC    = &DC[DIR_0M0   *size_MatC];
+      ftC    = &DC[DIR_00P   *size_MatC];
+      fbC    = &DC[DIR_00M   *size_MatC];
+      fneC   = &DC[DIR_PP0  *size_MatC];
+      fswC   = &DC[DIR_MM0  *size_MatC];
+      fseC   = &DC[DIR_PM0  *size_MatC];
+      fnwC   = &DC[DIR_MP0  *size_MatC];
+      fteC   = &DC[DIR_P0P  *size_MatC];
+      fbwC   = &DC[DIR_M0M  *size_MatC];
+      fbeC   = &DC[DIR_P0M  *size_MatC];
+      ftwC   = &DC[DIR_M0P  *size_MatC];
+      ftnC   = &DC[DIR_0PP  *size_MatC];
+      fbsC   = &DC[DIR_0MM  *size_MatC];
+      fbnC   = &DC[DIR_0PM  *size_MatC];
+      ftsC   = &DC[DIR_0MP  *size_MatC];
+      fzeroC = &DC[DIR_000*size_MatC];
+      ftneC  = &DC[DIR_PPP *size_MatC];
+      ftswC  = &DC[DIR_MMP *size_MatC];
+      ftseC  = &DC[DIR_PMP *size_MatC];
+      ftnwC  = &DC[DIR_MPP *size_MatC];
+      fbneC  = &DC[DIR_PPM *size_MatC];
+      fbswC  = &DC[DIR_MMM *size_MatC];
+      fbseC  = &DC[DIR_PMM *size_MatC];
+      fbnwC  = &DC[DIR_MPM *size_MatC];
    } 
    else
    {
-      fwC    = &DC[E   *size_MatC];
-      feC    = &DC[W   *size_MatC];
-      fsC    = &DC[N   *size_MatC];
-      fnC    = &DC[S   *size_MatC];
-      fbC    = &DC[T   *size_MatC];
-      ftC    = &DC[B   *size_MatC];
-      fswC   = &DC[NE  *size_MatC];
-      fneC   = &DC[SW  *size_MatC];
-      fnwC   = &DC[SE  *size_MatC];
-      fseC   = &DC[NW  *size_MatC];
-      fbwC   = &DC[TE  *size_MatC];
-      fteC   = &DC[BW  *size_MatC];
-      ftwC   = &DC[BE  *size_MatC];
-      fbeC   = &DC[TW  *size_MatC];
-      fbsC   = &DC[TN  *size_MatC];
-      ftnC   = &DC[BS  *size_MatC];
-      ftsC   = &DC[BN  *size_MatC];
-      fbnC   = &DC[TS  *size_MatC];
-      fzeroC = &DC[REST*size_MatC];
-      fbswC  = &DC[TNE *size_MatC];
-      fbneC  = &DC[TSW *size_MatC];
-      fbnwC  = &DC[TSE *size_MatC];
-      fbseC  = &DC[TNW *size_MatC];
-      ftswC  = &DC[BNE *size_MatC];
-      ftneC  = &DC[BSW *size_MatC];
-      ftnwC  = &DC[BSE *size_MatC];
-      ftseC  = &DC[BNW *size_MatC];
+      fwC    = &DC[DIR_P00   *size_MatC];
+      feC    = &DC[DIR_M00   *size_MatC];
+      fsC    = &DC[DIR_0P0   *size_MatC];
+      fnC    = &DC[DIR_0M0   *size_MatC];
+      fbC    = &DC[DIR_00P   *size_MatC];
+      ftC    = &DC[DIR_00M   *size_MatC];
+      fswC   = &DC[DIR_PP0  *size_MatC];
+      fneC   = &DC[DIR_MM0  *size_MatC];
+      fnwC   = &DC[DIR_PM0  *size_MatC];
+      fseC   = &DC[DIR_MP0  *size_MatC];
+      fbwC   = &DC[DIR_P0P  *size_MatC];
+      fteC   = &DC[DIR_M0M  *size_MatC];
+      ftwC   = &DC[DIR_P0M  *size_MatC];
+      fbeC   = &DC[DIR_M0P  *size_MatC];
+      fbsC   = &DC[DIR_0PP  *size_MatC];
+      ftnC   = &DC[DIR_0MM  *size_MatC];
+      ftsC   = &DC[DIR_0PM  *size_MatC];
+      fbnC   = &DC[DIR_0MP  *size_MatC];
+      fzeroC = &DC[DIR_000*size_MatC];
+      fbswC  = &DC[DIR_PPP *size_MatC];
+      fbneC  = &DC[DIR_MMP *size_MatC];
+      fbnwC  = &DC[DIR_PMP *size_MatC];
+      fbseC  = &DC[DIR_MPP *size_MatC];
+      ftswC  = &DC[DIR_PPM *size_MatC];
+      ftneC  = &DC[DIR_MMM *size_MatC];
+      ftnwC  = &DC[DIR_PMM *size_MatC];
+      ftseC  = &DC[DIR_MPM *size_MatC];
    }
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  ix = threadIdx.x;  // Globaler x-Index 

@@ -11,10 +11,12 @@
 //random numbers
 #include <curand.h>
 #include <curand_kernel.h>
+#include <cuda.h>
+#include <cuda_runtime.h>
 
 #include "LBM/LB.h"
 
-extern "C" __global__ void LB_Kernel_Casc27(real s9,
+__global__ void LB_Kernel_Casc27(real s9,
                                             unsigned int* bcMatD,
                                             unsigned int* neighborX,
                                             unsigned int* neighborY,
@@ -23,7 +25,7 @@ extern "C" __global__ void LB_Kernel_Casc27(real s9,
                                             int size_Mat,
                                             bool EvenOrOdd);
 
-extern "C" __global__ void LB_Kernel_Casc_SP_27(  real s9,
+__global__ void LB_Kernel_Casc_SP_27(  real s9,
                                                   unsigned int* bcMatD,
                                                   unsigned int* neighborX,
                                                   unsigned int* neighborY,
@@ -32,7 +34,7 @@ extern "C" __global__ void LB_Kernel_Casc_SP_27(  real s9,
                                                   int size_Mat,
                                                   bool EvenOrOdd);
 
-extern "C" __global__ void LB_Kernel_Casc_SP_MS_27(   real s9,
+__global__ void LB_Kernel_Casc_SP_MS_27(   real s9,
                                                       unsigned int* bcMatD,
                                                       unsigned int* neighborX,
                                                       unsigned int* neighborY,
@@ -41,7 +43,7 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_27(   real s9,
                                                       int size_Mat,
                                                       bool EvenOrOdd);
 
-extern "C" __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  real s9,
+__global__ void LB_Kernel_Casc_SP_MS_OHM_27(  real s9,
                                                          unsigned int* bcMatD,
                                                          unsigned int* neighborX,
                                                          unsigned int* neighborY,
@@ -50,7 +52,7 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  real s9,
                                                          int size_Mat,
                                                          bool EvenOrOdd);
 
-extern "C" __global__ void LB_Kernel_Kum_New_Comp_SRT_SP_27(
+__global__ void LB_Kernel_Kum_New_Comp_SRT_SP_27(
 	real omega,
 	unsigned int* bcMatD,
 	unsigned int* neighborX,
@@ -62,7 +64,7 @@ extern "C" __global__ void LB_Kernel_Kum_New_Comp_SRT_SP_27(
 	real* forces,
 	bool EvenOrOdd);
 
-extern "C" __global__ void LB_Kernel_Cumulant_D3Q27All4(real omega,
+__global__ void LB_Kernel_Cumulant_D3Q27All4(real omega,
 														unsigned int* bcMatD,
 														unsigned int* neighborX,
 														unsigned int* neighborY,
@@ -74,7 +76,7 @@ extern "C" __global__ void LB_Kernel_Cumulant_D3Q27All4(real omega,
 														bool EvenOrOdd);
 
 
-extern "C" __global__ void LB_Kernel_Kum_AA2016_Comp_Bulk_SP_27(real omega,
+__global__ void LB_Kernel_Kum_AA2016_Comp_Bulk_SP_27(real omega,
 																unsigned int* bcMatD,
 																unsigned int* neighborX,
 																unsigned int* neighborY,
@@ -87,7 +89,7 @@ extern "C" __global__ void LB_Kernel_Kum_AA2016_Comp_Bulk_SP_27(real omega,
 
 
 
-extern "C" __global__ void LB_Kernel_Kum_1h_SP_27(  real omega,
+__global__ void LB_Kernel_Kum_1h_SP_27(  real omega,
 													real deltaPhi,
 													real angularVelocity,
 													unsigned int* bcMatD,
@@ -101,7 +103,7 @@ extern "C" __global__ void LB_Kernel_Kum_1h_SP_27(  real omega,
 													int size_Mat,
 													bool EvenOrOdd);
 
-extern "C" __global__ void LB_Kernel_Cascade_SP_27( real s9,
+__global__ void LB_Kernel_Cascade_SP_27( real s9,
 													unsigned int* bcMatD,
 													unsigned int* neighborX,
 													unsigned int* neighborY,
@@ -110,7 +112,7 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27( real s9,
 													int size_Mat,
 													bool EvenOrOdd);
 
-extern "C" __global__ void LB_Kernel_Kum_New_SP_27( real s9,
+__global__ void LB_Kernel_Kum_New_SP_27( real s9,
 													unsigned int* bcMatD,
 													unsigned int* neighborX,
 													unsigned int* neighborY,
@@ -119,7 +121,7 @@ extern "C" __global__ void LB_Kernel_Kum_New_SP_27( real s9,
 													int size_Mat,
 													bool EvenOrOdd);
 
-extern "C" __global__ void LB_Kernel_Kum_IsoTest_SP_27( real omega,
+__global__ void LB_Kernel_Kum_IsoTest_SP_27( real omega,
 														unsigned int* bcMatD,
 														unsigned int* neighborX,
 														unsigned int* neighborY,
@@ -131,7 +133,7 @@ extern "C" __global__ void LB_Kernel_Kum_IsoTest_SP_27( real omega,
 														int size_Mat,
 														bool EvenOrOdd);
 
-extern "C" __global__ void LB_Kernel_Kum_Comp_SP_27(real s9,
+__global__ void LB_Kernel_Kum_Comp_SP_27(real s9,
 													unsigned int* bcMatD,
 													unsigned int* neighborX,
 													unsigned int* neighborY,
@@ -140,7 +142,7 @@ extern "C" __global__ void LB_Kernel_Kum_Comp_SP_27(real s9,
 													int size_Mat,
 													bool EvenOrOdd);
 
-extern "C" __global__ void Cumulant_One_preconditioned_errorDiffusion_chim_Comp_SP_27(
+__global__ void Cumulant_One_preconditioned_errorDiffusion_chim_Comp_SP_27(
 	real omega,
 	unsigned int* bcMatD,
 	unsigned int* neighborX,
@@ -152,7 +154,7 @@ extern "C" __global__ void Cumulant_One_preconditioned_errorDiffusion_chim_Comp_
 	real* forces,
 	bool EvenOrOdd);
 
-extern "C" __global__ void Cumulant_One_preconditioned_chim_Comp_SP_27(
+__global__ void Cumulant_One_preconditioned_chim_Comp_SP_27(
 	real omega,
 	unsigned int* bcMatD,
 	unsigned int* neighborX,
@@ -164,7 +166,7 @@ extern "C" __global__ void Cumulant_One_preconditioned_chim_Comp_SP_27(
 	real* forces,
 	bool EvenOrOdd);
 
-extern "C" __global__ void Cumulant_One_chim_Comp_SP_27(
+__global__ void Cumulant_One_chim_Comp_SP_27(
 	real omega,
 	unsigned int* bcMatD,
 	unsigned int* neighborX,
@@ -186,7 +188,7 @@ inline __device__ void backwardChimeraWithK(real &mfa, real &mfb, real &mfc, rea
 
 
 
-extern "C" __global__ void LB_Kernel_WaleBySoniMalav_Cum_AA2016_Comp_SP_27(
+__global__ void LB_Kernel_WaleBySoniMalav_Cum_AA2016_Comp_SP_27(
 	real omega_in,
 	unsigned int* bcMatD,
 	unsigned int* neighborX,
@@ -204,7 +206,7 @@ extern "C" __global__ void LB_Kernel_WaleBySoniMalav_Cum_AA2016_Comp_SP_27(
 	bool EvenOrOdd);
 
 
-extern "C" __global__ void LB_Kernel_PM_Cum_One_Comp_SP_27( real omega,
+__global__ void LB_Kernel_PM_Cum_One_Comp_SP_27( real omega,
 															unsigned int* neighborX,
 															unsigned int* neighborY,
 															unsigned int* neighborZ,
@@ -219,7 +221,7 @@ extern "C" __global__ void LB_Kernel_PM_Cum_One_Comp_SP_27( real omega,
 															unsigned int* nodeIdsPorousMedia,
 															bool EvenOrOdd);
 
-extern "C" __global__ void LB_Kernel_AD_Incomp_7( real diffusivity,
+__global__ void LB_Kernel_AD_Incomp_7( real diffusivity,
 												  unsigned int* bcMatD,
 												  unsigned int* neighborX,
 												  unsigned int* neighborY,
@@ -229,7 +231,7 @@ extern "C" __global__ void LB_Kernel_AD_Incomp_7( real diffusivity,
 												  int size_Mat,
 												  bool EvenOrOdd);
 
-extern "C" __global__ void LB_Kernel_AD_Incomp_27( real diffusivity,
+__global__ void LB_Kernel_AD_Incomp_27( real diffusivity,
 												   unsigned int* bcMatD,
 												   unsigned int* neighborX,
 												   unsigned int* neighborY,
@@ -239,7 +241,7 @@ extern "C" __global__ void LB_Kernel_AD_Incomp_27( real diffusivity,
 												   int size_Mat,
 												   bool EvenOrOdd);
 
-extern "C" __global__ void LBInit27( int myid,
+__global__ void LBInit27( int myid,
                                      int numprocs,
                                      real u0,
                                      unsigned int* geoD,
@@ -255,7 +257,7 @@ extern "C" __global__ void LBInit27( int myid,
                                      int lev,
                                      int maxlev);
 
-extern "C" __global__ void LBInitNonEqPartSP27(unsigned int* neighborX,
+__global__ void LBInitNonEqPartSP27(unsigned int* neighborX,
                                                unsigned int* neighborY,
                                                unsigned int* neighborZ,
                                                unsigned int* neighborWSB,
@@ -269,7 +271,7 @@ extern "C" __global__ void LBInitNonEqPartSP27(unsigned int* neighborX,
                                                real omega,
                                                bool EvenOrOdd);
 
-extern "C" __global__ void InitAD7( unsigned int* neighborX,
+__global__ void InitAD7( unsigned int* neighborX,
                                        unsigned int* neighborY,
                                        unsigned int* neighborZ,
                                        unsigned int* geoD,
@@ -281,7 +283,7 @@ extern "C" __global__ void InitAD7( unsigned int* neighborX,
                                        real* DD7,
                                        bool EvenOrOdd);
 
-extern "C" __global__ void InitAD27(unsigned int* neighborX,
+__global__ void InitAD27(unsigned int* neighborX,
                                        unsigned int* neighborY,
                                        unsigned int* neighborZ,
                                        unsigned int* geoD,
@@ -293,7 +295,7 @@ extern "C" __global__ void InitAD27(unsigned int* neighborX,
                                        real* DD27,
                                        bool EvenOrOdd);
 
-extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(
+__global__ void LB_PostProcessor_F3_2018_Fehlberg(
 	real omega,
 	unsigned int* bcMatD,
 	unsigned int* neighborX,
@@ -310,7 +312,7 @@ extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(
 	real* forces,
 	bool EvenOrOdd);
 
-extern "C" __global__ void LBCalcMac27( real* vxD,
+__global__ void LBCalcMac27( real* vxD,
                                         real* vyD,
                                         real* vzD,
                                         real* rhoD,
@@ -322,7 +324,7 @@ extern "C" __global__ void LBCalcMac27( real* vxD,
                                         real* DD,
                                         bool isEvenTimestep);
 
-extern "C" __global__ void LBCalcMacSP27( real* vxD,
+__global__ void LBCalcMacSP27( real* vxD,
                                           real* vyD,
                                           real* vzD,
                                           real* rhoD,
@@ -335,7 +337,7 @@ extern "C" __global__ void LBCalcMacSP27( real* vxD,
                                           real* DD,
                                           bool isEvenTimestep);
 
-extern "C" __global__ void LBCalcMacCompSP27( real* vxD,
+__global__ void LBCalcMacCompSP27( real* vxD,
 											  real* vyD,
 											  real* vzD,
 											  real* rhoD,
@@ -348,7 +350,7 @@ extern "C" __global__ void LBCalcMacCompSP27( real* vxD,
 											  real* DD,
 											  bool isEvenTimestep);
 
-extern "C" __global__ void CalcConc7( real* Conc,
+__global__ void CalcConc7( real* Conc,
                                           unsigned int* geoD,
                                           unsigned int* neighborX,
                                           unsigned int* neighborY,
@@ -357,7 +359,7 @@ extern "C" __global__ void CalcConc7( real* Conc,
                                           real* DD7,
                                           bool isEvenTimestep);
 
-extern "C" __global__ void GetPlaneConc7(real* Conc,
+__global__ void GetPlaneConc7(real* Conc,
 								            int* kPC,
 								            unsigned int numberOfPointskPC,
 											unsigned int* geoD,
@@ -368,7 +370,7 @@ extern "C" __global__ void GetPlaneConc7(real* Conc,
 											real* DD7,
 											bool isEvenTimestep);
 
-extern "C" __global__ void GetPlaneConc27(real* Conc,
+__global__ void GetPlaneConc27(real* Conc,
 								             int* kPC,
 								             unsigned int numberOfPointskPC,
 											 unsigned int* geoD,
@@ -379,7 +381,7 @@ extern "C" __global__ void GetPlaneConc27(real* Conc,
 											 real* DD27,
 											 bool isEvenTimestep);
 
-extern "C" __global__ void CalcConc27(real* Conc,
+__global__ void CalcConc27(real* Conc,
                                           unsigned int* geoD,
                                           unsigned int* neighborX,
                                           unsigned int* neighborY,
@@ -388,7 +390,7 @@ extern "C" __global__ void CalcConc27(real* Conc,
                                           real* DD27,
                                           bool isEvenTimestep);
 
-extern "C" __global__ void LBCalcMedSP27( real* vxD,
+__global__ void LBCalcMedSP27( real* vxD,
                                           real* vyD,
                                           real* vzD,
                                           real* rhoD,
@@ -401,7 +403,7 @@ extern "C" __global__ void LBCalcMedSP27( real* vxD,
                                           real* DD,
                                           bool isEvenTimestep);
 
-extern "C" __global__ void LBCalcMedCompSP27( real* vxD,
+__global__ void LBCalcMedCompSP27( real* vxD,
 											  real* vyD,
 											  real* vzD,
 											  real* rhoD,
@@ -414,7 +416,7 @@ extern "C" __global__ void LBCalcMedCompSP27( real* vxD,
 											  real* DD,
 											  bool isEvenTimestep);
 
-extern "C" __global__ void LBCalcMedCompAD27(
+__global__ void LBCalcMedCompAD27(
 	real* vxD,
 	real* vyD,
 	real* vzD,
@@ -430,7 +432,7 @@ extern "C" __global__ void LBCalcMedCompAD27(
 	real* DD_AD,
 	bool isEvenTimestep);
 
-extern "C" __global__ void LBCalcMacMedSP27( real* vxD,
+__global__ void LBCalcMacMedSP27( real* vxD,
                                              real* vyD,
                                              real* vzD,
                                              real* rhoD,
@@ -443,7 +445,7 @@ extern "C" __global__ void LBCalcMacMedSP27( real* vxD,
                                              unsigned int size_Mat,
                                              bool isEvenTimestep);
 
-extern "C" __global__ void LBResetMedianValuesSP27(
+__global__ void LBResetMedianValuesSP27(
 	real* vxD,
 	real* vyD,
 	real* vzD,
@@ -452,7 +454,7 @@ extern "C" __global__ void LBResetMedianValuesSP27(
 	unsigned int size_Mat,
 	bool isEvenTimestep);
 
-extern "C" __global__ void LBResetMedianValuesAD27(
+__global__ void LBResetMedianValuesAD27(
 	real* vxD,
 	real* vyD,
 	real* vzD,
@@ -462,7 +464,7 @@ extern "C" __global__ void LBResetMedianValuesAD27(
 	unsigned int size_Mat,
 	bool isEvenTimestep);
 
-extern "C" __global__ void LBCalc2ndMomentsIncompSP27(  real* kxyFromfcNEQ,
+__global__ void LBCalc2ndMomentsIncompSP27(  real* kxyFromfcNEQ,
 														real* kyzFromfcNEQ,
 														real* kxzFromfcNEQ,
 														real* kxxMyyFromfcNEQ,
@@ -475,7 +477,7 @@ extern "C" __global__ void LBCalc2ndMomentsIncompSP27(  real* kxyFromfcNEQ,
 														real* DD,
 														bool isEvenTimestep);
 
-extern "C" __global__ void LBCalc2ndMomentsCompSP27(real* kxyFromfcNEQ,
+__global__ void LBCalc2ndMomentsCompSP27(real* kxyFromfcNEQ,
 													real* kyzFromfcNEQ,
 													real* kxzFromfcNEQ,
 													real* kxxMyyFromfcNEQ,
@@ -488,7 +490,7 @@ extern "C" __global__ void LBCalc2ndMomentsCompSP27(real* kxyFromfcNEQ,
 													real* DD,
 													bool isEvenTimestep);
 
-extern "C" __global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
+__global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
 														real* CUMabc,
 														real* CUMbac,
 														real* CUMbca,
@@ -503,7 +505,7 @@ extern "C" __global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
 														int size_Mat,
 														bool EvenOrOdd);
 
-extern "C" __global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
+__global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
 													real* CUMabc,
 													real* CUMbac,
 													real* CUMbca,
@@ -518,7 +520,7 @@ extern "C" __global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
 													int size_Mat,
 													bool EvenOrOdd);
 
-extern "C" __global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
+__global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
 															real* CUMbcb,
 															real* CUMbbc,
 															real* CUMcca,
@@ -536,7 +538,7 @@ extern "C" __global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
 															int size_Mat,
 															bool EvenOrOdd);
 
-extern "C" __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
+__global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
 														real* CUMbcb,
 														real* CUMbbc,
 														real* CUMcca,
@@ -554,7 +556,7 @@ extern "C" __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
 														int size_Mat,
 														bool EvenOrOdd);
 
-extern "C" __global__ void LBCalcMeasurePoints(real* vxMP,
+__global__ void LBCalcMeasurePoints(real* vxMP,
                                                real* vyMP,
                                                real* vzMP,
                                                real* rhoMP,
@@ -570,7 +572,7 @@ extern "C" __global__ void LBCalcMeasurePoints(real* vxMP,
                                                real* DD,
                                                bool isEvenTimestep);
 
-extern "C" __global__ void LB_BC_Press_East27( int nx,
+__global__ void LB_BC_Press_East27( int nx,
                                                int ny,
                                                int tz,
                                                unsigned int* bcMatD,
@@ -581,7 +583,7 @@ extern "C" __global__ void LB_BC_Press_East27( int nx,
                                                unsigned int size_Mat,
                                                bool isEvenTimestep) ;
 
-extern "C" __global__ void LB_BC_Vel_West_27( int nx,
+__global__ void LB_BC_Vel_West_27( int nx,
                                               int ny,
                                               int nz,
                                               int itz,
@@ -598,7 +600,7 @@ extern "C" __global__ void LB_BC_Vel_West_27( int nx,
                                               real om);
 
 //no Slip BCs
-extern "C" __global__ void QDevice27(real* distributions,
+__global__ void QDevice27(real* distributions,
                                      int* subgridDistanceIndices,
                                      real* subgridDistances,
                                      unsigned int numberOfBCnodes,
@@ -609,7 +611,7 @@ extern "C" __global__ void QDevice27(real* distributions,
                                      unsigned int numberOfLBnodes,
                                      bool isEvenTimestep);
 
-extern "C" __global__ void QDeviceComp27(
+__global__ void QDeviceComp27(
 										 real* distributions,
 										 int* subgridDistanceIndices,
 										 real* subgridDistances,
@@ -621,7 +623,7 @@ extern "C" __global__ void QDeviceComp27(
 										 unsigned int numberOfLBnodes,
 										 bool isEvenTimestep);
 
-extern "C" __global__ void QDeviceCompThinWallsPartOne27(real* DD,
+__global__ void QDeviceCompThinWallsPartOne27(real* DD,
 														 int* k_Q,
 														 real* QQ,
 														 unsigned int numberOfBCnodes,
@@ -632,7 +634,7 @@ extern "C" __global__ void QDeviceCompThinWallsPartOne27(real* DD,
 														 unsigned int size_Mat,
 														 bool isEvenTimestep);
 
-extern "C" __global__ void QDevice3rdMomentsComp27(	 real* distributions, 
+__global__ void QDevice3rdMomentsComp27(	 real* distributions, 
 													 int* subgridDistanceIndices, 
 													 real* subgridDistances,
 													 unsigned int numberOfBCnodes, 
@@ -643,7 +645,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(	 real* distributions,
 													 unsigned int numberOfLBnodes, 
 													 bool isEvenTimestep);
 
-extern "C" __global__ void QDeviceIncompHighNu27(real* DD,
+__global__ void QDeviceIncompHighNu27(real* DD,
 												 int* k_Q,
 												 real* QQ,
 												 unsigned int numberOfBCnodes,
@@ -651,10 +653,10 @@ extern "C" __global__ void QDeviceIncompHighNu27(real* DD,
 												 unsigned int* neighborX,
 												 unsigned int* neighborY,
 												 unsigned int* neighborZ,
-												 unsigned int size_Mat,
+												 unsigned int numberOfLBnodes,
 												 bool isEvenTimestep);
 
-extern "C" __global__ void QDeviceCompHighNu27(	 real* DD,
+__global__ void QDeviceCompHighNu27(	 real* DD,
 												 int* k_Q,
 												 real* QQ,
 												 unsigned int numberOfBCnodes,
@@ -666,7 +668,7 @@ extern "C" __global__ void QDeviceCompHighNu27(	 real* DD,
 												 bool isEvenTimestep);
 
 //Velocity BCs
-extern "C" __global__ void QVelDevPlainBB27(
+__global__ void QVelDevPlainBB27(
     real* velocityX,
     real* velocityY,
     real* velocityZ,
@@ -680,7 +682,7 @@ extern "C" __global__ void QVelDevPlainBB27(
     uint numberOfLBnodes,
     bool isEvenTimestep);
 
-extern "C" __global__ void QVelDevCouette27(real* vx,
+__global__ void QVelDevCouette27(real* vx,
 											real* vy,
 											real* vz,
 											real* DD,
@@ -694,7 +696,7 @@ extern "C" __global__ void QVelDevCouette27(real* vx,
 											unsigned int size_Mat,
 											bool isEvenTimestep);
 
-extern "C" __global__ void QVelDev1h27( int inx,
+__global__ void QVelDev1h27( int inx,
 										int iny,
 										real* vx,
 										real* vy,
@@ -715,7 +717,7 @@ extern "C" __global__ void QVelDev1h27( int inx,
 										unsigned int size_Mat,
 										bool isEvenTimestep);
 
-extern "C" __global__ void QVelDevice27(int inx,
+__global__ void QVelDevice27(int inx,
                                         int iny,
                                         real* vx,
                                         real* vy,
@@ -731,7 +733,7 @@ extern "C" __global__ void QVelDevice27(int inx,
                                         unsigned int size_Mat,
                                         bool isEvenTimestep);
 
-extern "C" __global__ void QVelDeviceCompPlusSlip27(real* vx,
+__global__ void QVelDeviceCompPlusSlip27(real* vx,
 													real* vy,
 													real* vz,
 													real* DD,
@@ -745,7 +747,7 @@ extern "C" __global__ void QVelDeviceCompPlusSlip27(real* vx,
 													unsigned int size_Mat,
 													bool isEvenTimestep);
 
-extern "C" __global__ void QVelDeviceComp27(real* velocityX,
+__global__ void QVelDeviceComp27(real* velocityX,
 											real* velocityY,
 											real* velocityZ,
 											real* distribution,
@@ -759,7 +761,7 @@ extern "C" __global__ void QVelDeviceComp27(real* velocityX,
 											unsigned int numberOfLBnodes,
 											bool isEvenTimestep);
 
-extern "C" __global__ void QVelDeviceCompThinWallsPartOne27(
+__global__ void QVelDeviceCompThinWallsPartOne27(
 	real* vx,
 	real* vy,
 	real* vz,
@@ -774,7 +776,7 @@ extern "C" __global__ void QVelDeviceCompThinWallsPartOne27(
 	uint size_Mat,
 	bool isEvenTimestep);
 
-extern "C" __global__ void QThinWallsPartTwo27(
+__global__ void QThinWallsPartTwo27(
 	real* DD,
 	int* k_Q,
 	real* QQ,
@@ -787,7 +789,7 @@ extern "C" __global__ void QThinWallsPartTwo27(
 	uint size_Mat,
 	bool isEvenTimestep);
 
-extern "C" __global__ void QVelDeviceCompZeroPress27(
+__global__ void QVelDeviceCompZeroPress27(
 	real* velocityX,
 	real* velocityY,
 	real* velocityZ,
@@ -802,7 +804,7 @@ extern "C" __global__ void QVelDeviceCompZeroPress27(
 	unsigned int numberOfLBnodes,
 	bool isEvenTimestep);
 
-extern "C" __global__ void QVelDeviceIncompHighNu27(real* vx,
+__global__ void QVelDeviceIncompHighNu27(real* vx,
 													real* vy,
 													real* vz,
 													real* DD,
@@ -816,7 +818,7 @@ extern "C" __global__ void QVelDeviceIncompHighNu27(real* vx,
 													unsigned int size_Mat,
 													bool isEvenTimestep);
 
-extern "C" __global__ void QVelDeviceCompHighNu27(	real* vx,
+__global__ void QVelDeviceCompHighNu27(	real* vx,
 													real* vy,
 													real* vz,
 													real* DD,
@@ -830,7 +832,7 @@ extern "C" __global__ void QVelDeviceCompHighNu27(	real* vx,
 													unsigned int size_Mat,
 													bool isEvenTimestep);
 
-extern "C" __global__ void QVeloDeviceEQ27(real* VeloX,
+__global__ void QVeloDeviceEQ27(real* VeloX,
 										   real* VeloY,
 										   real* VeloZ,
                                            real* DD,
@@ -843,7 +845,7 @@ extern "C" __global__ void QVeloDeviceEQ27(real* VeloX,
                                            unsigned int size_Mat,
                                            bool isEvenTimestep);
 
-extern "C" __global__ void QVeloStreetDeviceEQ27(
+__global__ void QVeloStreetDeviceEQ27(
 	real* veloXfraction,
 	real* veloYfraction,
 	int*  naschVelo,
@@ -858,7 +860,7 @@ extern "C" __global__ void QVeloStreetDeviceEQ27(
 	bool  isEvenTimestep);
 
 //Slip BCs
-extern "C" __global__ void QSlipDevice27(real* DD,
+__global__ void QSlipDevice27(real* DD,
                                          int* k_Q,
                                          real* QQ,
                                          unsigned int numberOfBCnodes,
@@ -869,7 +871,7 @@ extern "C" __global__ void QSlipDevice27(real* DD,
                                          unsigned int size_Mat,
                                          bool isEvenTimestep);
 
-extern "C" __global__ void QSlipDeviceComp27(real* DD,
+__global__ void QSlipDeviceComp27(real* DD,
 											 int* k_Q,
 											 real* QQ,
 											 unsigned int numberOfBCnodes,
@@ -880,19 +882,45 @@ extern "C" __global__ void QSlipDeviceComp27(real* DD,
 											 unsigned int size_Mat,
 											 bool isEvenTimestep);
 
-extern "C" __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
-											 int* k_Q,
-											 real* QQ,
-											 unsigned int numberOfBCnodes,
-											 real om1,
-											 unsigned int* neighborX,
-											 unsigned int* neighborY,
-											 unsigned int* neighborZ,
-											 real* turbViscosity,
-											 unsigned int size_Mat,
-											 bool isEvenTimestep);
+// __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
+// 											 int* k_Q,
+// 											 real* QQ,
+// 											 unsigned int numberOfBCnodes,
+// 											 real om1,
+// 											 unsigned int* neighborX,
+// 											 unsigned int* neighborY,
+// 											 unsigned int* neighborZ,
+// 											 real* turbViscosity,
+// 											 unsigned int size_Mat,
+// 											 bool isEvenTimestep);
 
-extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
+__global__ void QSlipDeviceComp27TurbViscosity(
+                                    real* distributions, 
+                                    int* subgridDistanceIndices, 
+                                    real* subgridDistances,
+                                    unsigned int numberOfBCnodes,
+                                    real omega, 
+                                    unsigned int* neighborX,
+                                    unsigned int* neighborY,
+                                    unsigned int* neighborZ,
+                                    real* turbViscosity,
+                                    unsigned int numberOfLBnodes, 
+                                    bool isEvenTimestep);
+
+__global__ void QSlipPressureDeviceComp27TurbViscosity(
+                                    real* distributions, 
+                                    int* subgridDistanceIndices, 
+                                    real* subgridDistances,
+                                    unsigned int numberOfBCnodes,
+                                    real omega, 
+                                    unsigned int* neighborX,
+                                    unsigned int* neighborY,
+                                    unsigned int* neighborZ,
+                                    real* turbViscosity,
+                                    unsigned int numberOfLBnodes, 
+                                    bool isEvenTimestep);
+
+__global__ void QSlipGeomDeviceComp27(real* DD,
 												 int* k_Q,
 												 real* QQ,
 												 unsigned int numberOfBCnodes,
@@ -906,7 +934,7 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
 												 unsigned int size_Mat,
 												 bool isEvenTimestep);
 
-extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
+__global__ void QSlipNormDeviceComp27(real* DD,
 												 int* k_Q,
 												 real* QQ,
 												 unsigned int numberOfBCnodes,
@@ -921,7 +949,7 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
 												 bool isEvenTimestep);
 
 // Stress BCs (wall model)
-extern "C" __global__ void QStressDeviceComp27(real* DD,
+__global__ void QStressDeviceComp27(real* DD,
 											   int* k_Q,
 											 int* k_N,
 											 real* QQ,
@@ -953,7 +981,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
 											 unsigned int size_Mat,
 											 bool isEvenTimestep);
 
-extern "C" __global__ void BBStressDevice27( real* DD,
+__global__ void BBStressDevice27( real* DD,
 												int* k_Q,
 												int* k_N,
 												real* QQ,
@@ -983,8 +1011,38 @@ extern "C" __global__ void BBStressDevice27( real* DD,
 												unsigned int size_Mat,
 												bool isEvenTimestep);
 
+__global__ void BBStressPressureDevice27( real* DD,
+											            int* k_Q,
+                                             int* k_N,
+                                             real* QQ,
+                                             unsigned int  numberOfBCnodes,
+                                             real* vx,
+                                             real* vy,
+                                             real* vz,
+                                             real* normalX,
+                                             real* normalY,
+                                             real* normalZ,
+                                             real* vx_el,
+                                             real* vy_el,
+                                             real* vz_el,
+                                             real* vx_w_mean,
+                                             real* vy_w_mean,
+                                             real* vz_w_mean,
+                                             int* samplingOffset,
+                                             real* z0,
+                                             bool  hasWallModelMonitor,
+                                             real* u_star_monitor,
+                                             real* Fx_monitor,
+                                             real* Fy_monitor,
+                                             real* Fz_monitor,
+                                             unsigned int* neighborX,
+                                             unsigned int* neighborY,
+                                             unsigned int* neighborZ,
+                                             unsigned int size_Mat,
+                                             bool isEvenTimestep);
+
 //Pressure BCs
-extern "C" __global__ void QPressDevice27( real* rhoBC,
+__global__ void QPressDevice27( real* rhoBC,
                                            real* DD,
                                            int* k_Q,
                                            real* QQ,
@@ -996,7 +1054,7 @@ extern "C" __global__ void QPressDevice27( real* rhoBC,
                                            unsigned int size_Mat,
                                            bool isEvenTimestep);
 
-extern "C" __global__ void QPressDeviceAntiBB27(   real* rhoBC,
+__global__ void QPressDeviceAntiBB27(   real* rhoBC,
 												   real* vx,
 												   real* vy,
 												   real* vz,
@@ -1011,7 +1069,7 @@ extern "C" __global__ void QPressDeviceAntiBB27(   real* rhoBC,
 												   unsigned int size_Mat,
 												   bool isEvenTimestep);
 
-extern "C" __global__ void QPressDeviceFixBackflow27( real* rhoBC,
+__global__ void QPressDeviceFixBackflow27( real* rhoBC,
                                                       real* DD,
                                                       int* k_Q,
                                                       int numberOfBCnodes,
@@ -1022,7 +1080,7 @@ extern "C" __global__ void QPressDeviceFixBackflow27( real* rhoBC,
                                                       unsigned int size_Mat,
                                                       bool isEvenTimestep);
 
-extern "C" __global__ void QPressDeviceDirDepBot27(  real* rhoBC,
+__global__ void QPressDeviceDirDepBot27(  real* rhoBC,
                                                      real* DD,
                                                      int* k_Q,
                                                      int numberOfBCnodes,
@@ -1033,8 +1091,8 @@ extern "C" __global__ void QPressDeviceDirDepBot27(  real* rhoBC,
                                                      unsigned int size_Mat,
                                                      bool isEvenTimestep);
 
-extern "C" __global__ void QPressNoRhoDevice27(  real* rhoBC,
-												 real* DD,
+__global__ void QPressNoRhoDevice27(  real* rhoBC,
+												 real* distributions,
 												 int* k_Q,
 												 int* k_N,
 												 int numberOfBCnodes,
@@ -1042,10 +1100,25 @@ extern "C" __global__ void QPressNoRhoDevice27(  real* rhoBC,
 												 unsigned int* neighborX,
 												 unsigned int* neighborY,
 												 unsigned int* neighborZ,
-												 unsigned int size_Mat,
-												 bool isEvenTimestep);
+												 unsigned int numberOfLBnodes,
+												 bool isEvenTimestep,
+												 int direction);
 
-extern "C" __global__ void QInflowScaleByPressDevice27(  real* rhoBC,
+__global__ void QPressZeroRhoOutflowDevice27(  real* rhoBC,
+											real* distributions, 
+											int* k_Q, 
+											int* k_N, 
+											int numberOfBCnodes, 
+											real om1, 
+											unsigned int* neighborX,
+											unsigned int* neighborY,
+											unsigned int* neighborZ,
+											unsigned int numberOfLBnodes, 
+											bool isEvenTimestep,
+											int direction,
+											real densityCorrectionFactor);
+
+__global__ void QInflowScaleByPressDevice27(  real* rhoBC,
 														 real* DD,
 														 int* k_Q,
 														 int* k_N,
@@ -1057,7 +1130,7 @@ extern "C" __global__ void QInflowScaleByPressDevice27(  real* rhoBC,
 														 unsigned int size_Mat,
 														 bool isEvenTimestep);
 
-extern "C" __global__ void QPressDeviceOld27(real* rhoBC,
+__global__ void QPressDeviceOld27(real* rhoBC,
                                              real* DD,
                                              int* k_Q,
                                              int* k_N,
@@ -1069,7 +1142,7 @@ extern "C" __global__ void QPressDeviceOld27(real* rhoBC,
                                              unsigned int size_Mat,
                                              bool isEvenTimestep);
 
-extern "C" __global__ void QPressDeviceIncompNEQ27( real* rhoBC,
+__global__ void QPressDeviceIncompNEQ27( real* rhoBC,
 													real* DD,
 													int* k_Q,
 													int* k_N,
@@ -1081,7 +1154,7 @@ extern "C" __global__ void QPressDeviceIncompNEQ27( real* rhoBC,
 													unsigned int size_Mat,
 													bool isEvenTimestep);
 
-extern "C" __global__ void QPressDeviceNEQ27(real* rhoBC,
+__global__ void QPressDeviceNEQ27(real* rhoBC,
                                              real* distribution,
                                              int* bcNodeIndices,
                                              int* bcNeighborIndices,
@@ -1093,7 +1166,7 @@ extern "C" __global__ void QPressDeviceNEQ27(real* rhoBC,
                                              unsigned int size_Mat,
                                              bool isEvenTimestep);
 
-extern "C" __global__ void QPressDeviceEQZ27(real* rhoBC,
+__global__ void QPressDeviceEQZ27(real* rhoBC,
                                              real* DD,
                                              int* k_Q,
                                              int* k_N,
@@ -1106,7 +1179,7 @@ extern "C" __global__ void QPressDeviceEQZ27(real* rhoBC,
                                              unsigned int size_Mat,
                                              bool isEvenTimestep);
 
-extern "C" __global__ void QPressDeviceZero27(  real* DD,
+__global__ void QPressDeviceZero27(  real* DD,
 												int* k_Q,
 												unsigned int numberOfBCnodes,
 												unsigned int* neighborX,
@@ -1115,7 +1188,7 @@ extern "C" __global__ void QPressDeviceZero27(  real* DD,
 												unsigned int size_Mat,
 												bool isEvenTimestep);
 
-extern "C" __global__ void QPressDeviceFake27(real* rhoBC,
+__global__ void QPressDeviceFake27(real* rhoBC,
                                              real* DD,
                                              int* k_Q,
                                              int* k_N,
@@ -1127,7 +1200,7 @@ extern "C" __global__ void QPressDeviceFake27(real* rhoBC,
                                              unsigned int size_Mat,
                                              bool isEvenTimestep);
 
-extern "C" __global__ void BBDevice27(real* distributions,
+__global__ void BBDevice27(real* distributions,
                                      int* subgridDistanceIndices,
                                      real* subgridDistances,
                                      unsigned int numberOfBCnodes,
@@ -1137,7 +1210,7 @@ extern "C" __global__ void BBDevice27(real* distributions,
                                      unsigned int numberOfLBnodes,
                                      bool isEvenTimestep);
 
-extern "C" __global__ void QPressDevice27_IntBB(real* rho,
+__global__ void QPressDevice27_IntBB(real* rho,
 												real* DD,
 												int* k_Q,
 												real* QQ,
@@ -1151,7 +1224,7 @@ extern "C" __global__ void QPressDevice27_IntBB(real* rho,
 
 // TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
 //Schlaffer BCs
-extern "C" __global__ void PressSchlaff27(real* rhoBC,
+__global__ void PressSchlaff27(real* rhoBC,
                                           real* DD,
                                           real* vx0,
                                           real* vy0,
@@ -1168,7 +1241,7 @@ extern "C" __global__ void PressSchlaff27(real* rhoBC,
                                           bool isEvenTimestep);
 
 // TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
-extern "C" __global__ void VelSchlaff27(  int t,
+__global__ void VelSchlaff27(  int t,
                                           real* DD,
                                           real* vz0,
                                           real* deltaVz0,
@@ -1182,38 +1255,68 @@ extern "C" __global__ void VelSchlaff27(  int t,
                                           unsigned int size_Mat,
                                           bool isEvenTimestep);
 
-extern "C" __global__ void QPrecursorDeviceCompZeroPress( 	int* k_Q,
-															int numberOfBCNodes,
-															int sizeQ,
-															real om1,
-															real* DD,
-															real* QQ,
-															uint* neighborX, 
-                                                            uint* neighborY, 
-                                                            uint* neighborZ,
-															uint* neighborsNT, 
-															uint* neighborsNB,
-															uint* neighborsST,
-															uint* neighborsSB,
-															real* weightsNT, 
-															real* weightsNB,
-															real* weightsST,
-															real* weightsSB,
-															real* vxLast, 
-															real* vyLast, 
-															real* vzLast,
-															real* vxCurrent,
-															real* vyCurrent,
-															real* vzCurrent,
-															real velocityX,
-                                                            real velocityY,
-                                                            real velocityZ,
-															real tRatio,
-															real velocityRatio,
-															unsigned long long size_Mat,
-															bool evenOrOdd);
+__global__ void QPrecursorDeviceCompZeroPress( 	int* k_Q,
+												int numberOfBCNodes,
+												int sizeQ,
+												real om1,
+												real* DD,
+												real* QQ,
+												uint* neighborX, 
+												uint* neighborY, 
+												uint* neighborZ,
+												uint* neighborsNT, 
+												uint* neighborsNB,
+												uint* neighborsST,
+												uint* neighborsSB,
+												real* weightsNT, 
+												real* weightsNB,
+												real* weightsST,
+												real* weightsSB,
+												real* vxLast, 
+												real* vyLast, 
+												real* vzLast,
+												real* vxCurrent,
+												real* vyCurrent,
+												real* vzCurrent,
+												real velocityX,
+												real velocityY,
+												real velocityZ,
+												real tRatio,
+												real velocityRatio,
+												unsigned long long size_Mat,
+												bool evenOrOdd);
+
+__global__ void PrecursorDeviceEQ27( 	int* subgridDistanceIndices,
+                                                int numberOfBCnodes,
+                                                real omega,
+                                                real* distributions,
+                                                uint* neighborX, 
+                                                uint* neighborY, 
+                                                uint* neighborZ,
+                                                uint* neighborsNT, 
+                                                uint* neighborsNB,
+                                                uint* neighborsST,
+                                                uint* neighborsSB,
+                                                real* weightsNT, 
+                                                real* weightsNB,
+                                                real* weightsST,
+                                                real* weightsSB,
+                                                real* vxLast, 
+                                                real* vyLast, 
+                                                real* vzLast,
+                                                real* vxCurrent,
+                                                real* vyCurrent,
+                                                real* vzCurrent,
+                                                real velocityX,
+                                                real velocityY,
+                                                real velocityZ,
+                                                real tRatio,
+                                                real velocityRatio,
+                                                unsigned long long numberOfLBnodes,
+                                                bool isEvenTimestep);
+												
 //Advection / Diffusion BCs
-extern "C" __global__ void QAD7( real* DD,
+__global__ void QAD7( real* DD,
                                  real* DD7,
                                  real* temp,
                                  real diffusivity,
@@ -1229,7 +1332,7 @@ extern "C" __global__ void QAD7( real* DD,
 
 //////////////////////////////////////////////////////////////////////////
 //! \brief \ref Advection_Diffusion_Device_Kernel : Factorized central moments for Advection Diffusion Equation
-extern "C" __global__ void Factorized_Central_Moments_Advection_Diffusion_Device_Kernel(
+__global__ void Factorized_Central_Moments_Advection_Diffusion_Device_Kernel(
 	real omegaDiffusivity,
 	uint* typeOfGridNode,
 	uint* neighborX,
@@ -1243,7 +1346,7 @@ extern "C" __global__ void Factorized_Central_Moments_Advection_Diffusion_Device
 
 //////////////////////////////////////////////////////////////////////////
 //! \brief \ref AD_SlipVelDeviceComp : device function for the slip-AD boundary condition
-extern "C" __global__ void AD_SlipVelDeviceComp(
+__global__ void AD_SlipVelDeviceComp(
 	real * normalX,
 	real * normalY,
 	real * normalZ,
@@ -1259,7 +1362,7 @@ extern "C" __global__ void AD_SlipVelDeviceComp(
 	uint size_Mat,
 	bool isEvenTimestep);
 
-extern "C" __global__ void QADDirichlet27(   real* DD,
+__global__ void QADDirichlet27(   real* DD,
 											 real* DD27,
 											 real* temp,
 											 real diffusivity,
@@ -1273,7 +1376,7 @@ extern "C" __global__ void QADDirichlet27(   real* DD,
 											 unsigned int size_Mat,
 											 bool isEvenTimestep);
 
-extern "C" __global__ void QADBB27(  real* DD,
+__global__ void QADBB27(  real* DD,
 									 real* DD27,
 									 real* temp,
 									 real diffusivity,
@@ -1287,7 +1390,7 @@ extern "C" __global__ void QADBB27(  real* DD,
 									 unsigned int size_Mat,
 									 bool isEvenTimestep);
 
-extern "C" __global__ void QADVel7( real* DD,
+__global__ void QADVel7( real* DD,
                                     real* DD7,
                                     real* temp,
                                     real* velo,
@@ -1302,7 +1405,7 @@ extern "C" __global__ void QADVel7( real* DD,
                                     unsigned int size_Mat,
                                     bool isEvenTimestep);
 
-extern "C" __global__ void QADVel27(real* DD,
+__global__ void QADVel27(real* DD,
                                     real* DD27,
                                     real* temp,
                                     real* velo,
@@ -1317,7 +1420,7 @@ extern "C" __global__ void QADVel27(real* DD,
                                     unsigned int size_Mat,
                                     bool isEvenTimestep);
 
-extern "C" __global__ void QADPress7(  real* DD,
+__global__ void QADPress7(  real* DD,
                                        real* DD7,
                                        real* temp,
                                        real* velo,
@@ -1332,7 +1435,7 @@ extern "C" __global__ void QADPress7(  real* DD,
                                        unsigned int size_Mat,
                                        bool isEvenTimestep);
 
-extern "C" __global__ void QADPress27( real* DD,
+__global__ void QADPress27( real* DD,
                                        real* DD27,
                                        real* temp,
                                        real* velo,
@@ -1347,7 +1450,7 @@ extern "C" __global__ void QADPress27( real* DD,
                                        unsigned int size_Mat,
                                        bool isEvenTimestep);
 
-extern "C" __global__ void QADPressNEQNeighbor27(
+__global__ void QADPressNEQNeighbor27(
 												 real* DD,
 												 real* DD27,
 												 int* k_Q,
@@ -1360,7 +1463,7 @@ extern "C" __global__ void QADPressNEQNeighbor27(
 												 bool isEvenTimestep
 												);
 
-extern "C" __global__ void QNoSlipADincomp7( real* DD,
+__global__ void QNoSlipADincomp7( real* DD,
 											 real* DD7,
 											 real* temp,
 											 real diffusivity,
@@ -1374,7 +1477,7 @@ extern "C" __global__ void QNoSlipADincomp7( real* DD,
 											 unsigned int size_Mat,
 											 bool isEvenTimestep);
 
-extern "C" __global__ void QNoSlipADincomp27( real* DD,
+__global__ void QNoSlipADincomp27( real* DD,
 											 real* DD27,
 											 real* temp,
 											 real diffusivity,
@@ -1388,7 +1491,7 @@ extern "C" __global__ void QNoSlipADincomp27( real* DD,
 											 unsigned int size_Mat,
 											 bool isEvenTimestep);
 
-extern "C" __global__ void QADVeloIncomp7(  real* DD,
+__global__ void QADVeloIncomp7(  real* DD,
 											real* DD7,
 											real* temp,
 											real* velo,
@@ -1403,7 +1506,7 @@ extern "C" __global__ void QADVeloIncomp7(  real* DD,
 											unsigned int size_Mat,
 											bool isEvenTimestep);
 
-extern "C" __global__ void QADVeloIncomp27( real* DD,
+__global__ void QADVeloIncomp27( real* DD,
 											real* DD27,
 											real* temp,
 											real* velo,
@@ -1418,7 +1521,7 @@ extern "C" __global__ void QADVeloIncomp27( real* DD,
 											unsigned int size_Mat,
 											bool isEvenTimestep);
 
-extern "C" __global__ void QADPressIncomp7(real* DD,
+__global__ void QADPressIncomp7(real* DD,
 										   real* DD7,
 										   real* temp,
 										   real* velo,
@@ -1433,7 +1536,7 @@ extern "C" __global__ void QADPressIncomp7(real* DD,
 										   unsigned int size_Mat,
 										   bool isEvenTimestep);
 
-extern "C" __global__ void QADPressIncomp27(   real* DD,
+__global__ void QADPressIncomp27(   real* DD,
 											   real* DD27,
 											   real* temp,
 											   real* velo,
@@ -1449,7 +1552,7 @@ extern "C" __global__ void QADPressIncomp27(   real* DD,
 											   bool isEvenTimestep);
 
 //Propeller BC
-extern "C" __global__ void PropellerBC(unsigned int* neighborX,
+__global__ void PropellerBC(unsigned int* neighborX,
                                        unsigned int* neighborY,
                                        unsigned int* neighborZ,
                                        real* rho,
@@ -1466,7 +1569,7 @@ extern "C" __global__ void PropellerBC(unsigned int* neighborX,
 
 
 //coarse to fine
-extern "C" __global__ void scaleCF27(real* DC,
+__global__ void scaleCF27(real* DC,
                                      real* DF,
                                     unsigned int* neighborCX,
                                     unsigned int* neighborCY,
@@ -1488,7 +1591,7 @@ extern "C" __global__ void scaleCF27(real* DC,
 										       unsigned int nxF,
 										       unsigned int nyF);
 
-extern "C" __global__ void scaleCFEff27(real* DC,
+__global__ void scaleCFEff27(real* DC,
                                         real* DF,
                                         unsigned int* neighborCX,
                                         unsigned int* neighborCY,
@@ -1511,7 +1614,7 @@ extern "C" __global__ void scaleCFEff27(real* DC,
                                         unsigned int nyF,
                                         OffCF offCF);
 
-extern "C" __global__ void scaleCFLast27( real* DC,
+__global__ void scaleCFLast27( real* DC,
                                           real* DF,
                                           unsigned int* neighborCX,
                                           unsigned int* neighborCY,
@@ -1534,7 +1637,7 @@ extern "C" __global__ void scaleCFLast27( real* DC,
                                           unsigned int nyF,
                                           OffCF offCF);
 
-extern "C" __global__ void scaleCFpress27(real* DC,
+__global__ void scaleCFpress27(real* DC,
                                           real* DF,
                                           unsigned int* neighborCX,
                                           unsigned int* neighborCY,
@@ -1557,7 +1660,7 @@ extern "C" __global__ void scaleCFpress27(real* DC,
                                           unsigned int nyF,
                                           OffCF offCF);
 
-extern "C" __global__ void scaleCF_Fix_27(real* DC,
+__global__ void scaleCF_Fix_27(real* DC,
                                           real* DF,
                                           unsigned int* neighborCX,
                                           unsigned int* neighborCY,
@@ -1580,7 +1683,7 @@ extern "C" __global__ void scaleCF_Fix_27(real* DC,
                                           unsigned int nyF,
                                           OffCF offCF);
 
-extern "C" __global__ void scaleCF_Fix_comp_27(   real* DC,
+__global__ void scaleCF_Fix_comp_27(   real* DC,
 												  real* DF,
 												  unsigned int* neighborCX,
 												  unsigned int* neighborCY,
@@ -1603,7 +1706,7 @@ extern "C" __global__ void scaleCF_Fix_comp_27(   real* DC,
 												  unsigned int nyF,
 												  OffCF offCF);
 
-extern "C" __global__ void scaleCF_0817_comp_27(  real* DC,
+__global__ void scaleCF_0817_comp_27(  real* DC,
 												  real* DF,
 												  unsigned int* neighborCX,
 												  unsigned int* neighborCY,
@@ -1626,7 +1729,7 @@ extern "C" __global__ void scaleCF_0817_comp_27(  real* DC,
 												  unsigned int nyF,
 												  OffCF offCF);
 
-extern "C" __global__ void scaleCF_comp_D3Q27F3_2018( real* DC,
+__global__ void scaleCF_comp_D3Q27F3_2018( real* DC,
 													  real* DF,
 													  real* G6,
 													  unsigned int* neighborCX,
@@ -1650,7 +1753,7 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3_2018( real* DC,
 													  unsigned int nyF,
 													  OffCF offCF);
 
-extern "C" __global__ void scaleCF_comp_D3Q27F3( real* DC,
+__global__ void scaleCF_comp_D3Q27F3( real* DC,
 												 real* DF,
 												 real* G6,
 												 unsigned int* neighborCX,
@@ -1675,7 +1778,7 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3( real* DC,
 												 OffCF offCF);
 
 
-extern "C" __global__ void scaleCF_staggered_time_comp_27(real* DC,
+__global__ void scaleCF_staggered_time_comp_27(real* DC,
 														  real* DF,
 														  unsigned int* neighborCX,
 														  unsigned int* neighborCY,
@@ -1698,7 +1801,7 @@ extern "C" __global__ void scaleCF_staggered_time_comp_27(real* DC,
 														  unsigned int nyF,
 														  OffCF offCF);
 
-extern "C" __global__ void scaleCF_RhoSq_comp_27( real* DC,
+__global__ void scaleCF_RhoSq_comp_27( real* DC,
 												  real* DF,
 												  unsigned int* neighborCX,
 												  unsigned int* neighborCY,
@@ -1721,7 +1824,7 @@ extern "C" __global__ void scaleCF_RhoSq_comp_27( real* DC,
 												  unsigned int nyF,
 												  OffCF offCF);
 
-extern "C" __global__ void scaleCF_RhoSq_3rdMom_comp_27(real* DC,
+__global__ void scaleCF_RhoSq_3rdMom_comp_27(real* DC,
 														real* DF,
 														unsigned int* neighborCX,
 														unsigned int* neighborCY,
@@ -1744,7 +1847,7 @@ extern "C" __global__ void scaleCF_RhoSq_3rdMom_comp_27(real* DC,
 														unsigned int nyF,
 														OffCF offCF);
 
-extern "C" __global__ void scaleCF_AA2016_comp_27(real* DC,
+__global__ void scaleCF_AA2016_comp_27(real* DC,
 												  real* DF,
 												  unsigned int* neighborCX,
 												  unsigned int* neighborCY,
@@ -1767,7 +1870,7 @@ extern "C" __global__ void scaleCF_AA2016_comp_27(real* DC,
 												  unsigned int nyF,
 												  OffCF offCF);
 
-extern "C" __global__ void scaleCF_NSPress_27(real* DC,
+__global__ void scaleCF_NSPress_27(real* DC,
 											  real* DF,
 											  unsigned int* neighborCX,
 											  unsigned int* neighborCY,
@@ -1790,7 +1893,7 @@ extern "C" __global__ void scaleCF_NSPress_27(real* DC,
 											  unsigned int nyF,
 											  OffCF offCF);
 
-extern "C" __global__ void scaleCFThSMG7( real* DC,
+__global__ void scaleCFThSMG7( real* DC,
                                           real* DF,
                                           real* DD7C,
                                           real* DD7F,
@@ -1810,7 +1913,7 @@ extern "C" __global__ void scaleCFThSMG7( real* DC,
                                           real diffusivity_fine,
                                           OffCF offCF);
 
-extern "C" __global__ void scaleCFThS7(real* DC,
+__global__ void scaleCFThS7(real* DC,
                                        real* DF,
                                        real* DD7C,
                                        real* DD7F,
@@ -1829,7 +1932,7 @@ extern "C" __global__ void scaleCFThS7(real* DC,
                                        real nu,
                                        real diffusivity_fine);
 
-extern "C" __global__ void scaleCFThS27(real* DC,
+__global__ void scaleCFThS27(real* DC,
                                         real* DF,
                                         real* DD27C,
                                         real* DD27F,
@@ -1850,7 +1953,7 @@ extern "C" __global__ void scaleCFThS27(real* DC,
 										OffCF offCF);
 
 //fine to coarse
-extern "C" __global__ void scaleFC27(real* DC,
+__global__ void scaleFC27(real* DC,
                                      real* DF,
                                     unsigned int* neighborCX,
                                     unsigned int* neighborCY,
@@ -1872,7 +1975,7 @@ extern "C" __global__ void scaleFC27(real* DC,
 										       unsigned int nxF,
                                      unsigned int nyF);
 
-extern "C" __global__ void scaleFCEff27(real* DC,
+__global__ void scaleFCEff27(real* DC,
                                         real* DF,
                                         unsigned int* neighborCX,
                                         unsigned int* neighborCY,
@@ -1895,7 +1998,7 @@ extern "C" __global__ void scaleFCEff27(real* DC,
                                         unsigned int nyF,
                                         OffFC offFC);
 
-extern "C" __global__ void scaleFCLast27( real* DC,
+__global__ void scaleFCLast27( real* DC,
                                           real* DF,
                                           unsigned int* neighborCX,
                                           unsigned int* neighborCY,
@@ -1918,7 +2021,7 @@ extern "C" __global__ void scaleFCLast27( real* DC,
                                           unsigned int nyF,
                                           OffFC offFC);
 
-extern "C" __global__ void scaleFCpress27( real* DC,
+__global__ void scaleFCpress27( real* DC,
                                           real* DF,
                                           unsigned int* neighborCX,
                                           unsigned int* neighborCY,
@@ -1941,7 +2044,7 @@ extern "C" __global__ void scaleFCpress27( real* DC,
                                           unsigned int nyF,
                                           OffFC offFC);
 
-extern "C" __global__ void scaleFC_Fix_27( real* DC,
+__global__ void scaleFC_Fix_27( real* DC,
                                           real* DF,
                                           unsigned int* neighborCX,
                                           unsigned int* neighborCY,
@@ -1964,7 +2067,7 @@ extern "C" __global__ void scaleFC_Fix_27( real* DC,
                                           unsigned int nyF,
                                           OffFC offFC);
 
-extern "C" __global__ void scaleFC_Fix_comp_27(   real* DC,
+__global__ void scaleFC_Fix_comp_27(   real* DC,
 												  real* DF,
 												  unsigned int* neighborCX,
 												  unsigned int* neighborCY,
@@ -1987,7 +2090,7 @@ extern "C" __global__ void scaleFC_Fix_comp_27(   real* DC,
 												  unsigned int nyF,
 												  OffFC offFC);
 
-extern "C" __global__ void scaleFC_0817_comp_27(  real* DC,
+__global__ void scaleFC_0817_comp_27(  real* DC,
 												  real* DF,
 												  unsigned int* neighborCX,
 												  unsigned int* neighborCY,
@@ -2010,7 +2113,7 @@ extern "C" __global__ void scaleFC_0817_comp_27(  real* DC,
 												  unsigned int nyF,
 												  OffFC offFC);
 
-extern "C" __global__ void scaleFC_comp_D3Q27F3_2018( real* DC,
+__global__ void scaleFC_comp_D3Q27F3_2018( real* DC,
 													  real* DF,
 													  real* G6,
 													  unsigned int* neighborCX,
@@ -2034,7 +2137,7 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3_2018( real* DC,
 													  unsigned int nyF,
 													  OffFC offFC);
 
-extern "C" __global__ void scaleFC_comp_D3Q27F3( real* DC,
+__global__ void scaleFC_comp_D3Q27F3( real* DC,
 												 real* DF,
 												 real* G6,
 												 unsigned int* neighborCX,
@@ -2059,7 +2162,7 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3( real* DC,
 												 OffFC offFC);
 
 
-extern "C" __global__ void scaleFC_staggered_time_comp_27(real* DC,
+__global__ void scaleFC_staggered_time_comp_27(real* DC,
 														  real* DF,
 														  unsigned int* neighborCX,
 														  unsigned int* neighborCY,
@@ -2082,7 +2185,7 @@ extern "C" __global__ void scaleFC_staggered_time_comp_27(real* DC,
 														  unsigned int nyF,
 														  OffFC offFC);
 
-extern "C" __global__ void scaleFC_RhoSq_comp_27( real* DC,
+__global__ void scaleFC_RhoSq_comp_27( real* DC,
 												  real* DF,
 												  unsigned int* neighborCX,
 												  unsigned int* neighborCY,
@@ -2105,7 +2208,7 @@ extern "C" __global__ void scaleFC_RhoSq_comp_27( real* DC,
 												  unsigned int nyF,
 												  OffFC offFC);
 
-extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(real* DC,
+__global__ void scaleFC_RhoSq_3rdMom_comp_27(real* DC,
 														real* DF,
 														unsigned int* neighborCX,
 														unsigned int* neighborCY,
@@ -2128,7 +2231,7 @@ extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(real* DC,
 														unsigned int nyF,
 														OffFC offFC);
 
-extern "C" __global__ void scaleFC_AA2016_comp_27(real* DC,
+__global__ void scaleFC_AA2016_comp_27(real* DC,
 												  real* DF,
 												  unsigned int* neighborCX,
 												  unsigned int* neighborCY,
@@ -2151,7 +2254,7 @@ extern "C" __global__ void scaleFC_AA2016_comp_27(real* DC,
 												  unsigned int nyF,
 												  OffFC offFC);
 
-extern "C" __global__ void scaleFC_NSPress_27(real* DC,
+__global__ void scaleFC_NSPress_27(real* DC,
 											  real* DF,
 											  unsigned int* neighborCX,
 											  unsigned int* neighborCY,
@@ -2174,7 +2277,7 @@ extern "C" __global__ void scaleFC_NSPress_27(real* DC,
 											  unsigned int nyF,
 											  OffFC offFC);
 
-extern "C" __global__ void scaleFCThSMG7( real* DC,
+__global__ void scaleFCThSMG7( real* DC,
                                           real* DF,
                                           real* DD7C,
                                           real* DD7F,
@@ -2194,7 +2297,7 @@ extern "C" __global__ void scaleFCThSMG7( real* DC,
                                           real diffusivity_coarse,
                                           OffFC offFC);
 
-extern "C" __global__ void scaleFCThS7(real* DC,
+__global__ void scaleFCThS7(real* DC,
                                        real* DF,
                                        real* DD7C,
                                        real* DD7F,
@@ -2213,7 +2316,7 @@ extern "C" __global__ void scaleFCThS7(real* DC,
                                        real nu,
                                        real diffusivity_coarse);
 
-extern "C" __global__ void scaleFCThS27(  real* DC,
+__global__ void scaleFCThS27(  real* DC,
                                           real* DF,
                                           real* DD27C,
                                           real* DD27F,
@@ -2233,7 +2336,7 @@ extern "C" __global__ void scaleFCThS27(  real* DC,
                                           real diffusivity_coarse,
 										  OffFC offFC);
 
-extern "C" __global__ void DragLiftPost27(  real* DD,
+__global__ void DragLiftPost27(  real* DD,
 											int* k_Q,
 											real* QQ,
 											int numberOfBCnodes,
@@ -2246,7 +2349,7 @@ extern "C" __global__ void DragLiftPost27(  real* DD,
 											unsigned int size_Mat,
 											bool isEvenTimestep);
 
-extern "C" __global__ void DragLiftPre27(   real* DD,
+__global__ void DragLiftPre27(   real* DD,
 											int* k_Q,
 											real* QQ,
 											int numberOfBCnodes,
@@ -2259,7 +2362,7 @@ extern "C" __global__ void DragLiftPre27(   real* DD,
 											unsigned int size_Mat,
 											bool isEvenTimestep);
 
-extern "C" __global__ void CalcCP27(real* DD,
+__global__ void CalcCP27(real* DD,
 									int* cpIndex,
 									int nonCp,
 									double *cpPress,
@@ -2269,7 +2372,7 @@ extern "C" __global__ void CalcCP27(real* DD,
 									unsigned int size_Mat,
 									bool isEvenTimestep);
 
-extern "C" __global__ void getSendFsPre27(real* DD,
+__global__ void getSendFsPre27(real* DD,
 										  real* bufferFs,
 										  int* sendIndex,
                                           int buffmax,
@@ -2279,7 +2382,7 @@ extern "C" __global__ void getSendFsPre27(real* DD,
                                           unsigned int size_Mat,
                                           bool isEvenTimestep);
 
-extern "C" __global__ void getSendFsPost27(real* DD,
+__global__ void getSendFsPost27(real* DD,
 										   real* bufferFs,
 										   int* sendIndex,
                                            int buffmax,
@@ -2289,7 +2392,7 @@ extern "C" __global__ void getSendFsPost27(real* DD,
                                            unsigned int size_Mat,
                                            bool isEvenTimestep);
 
-extern "C" __global__ void setRecvFsPre27(real* DD,
+__global__ void setRecvFsPre27(real* DD,
 										  real* bufferFs,
 										  int* recvIndex,
                                           int buffmax,
@@ -2299,7 +2402,7 @@ extern "C" __global__ void setRecvFsPre27(real* DD,
                                           unsigned int size_Mat,
                                           bool isEvenTimestep);
 
-extern "C" __global__ void setRecvFsPost27(real* DD,
+__global__ void setRecvFsPost27(real* DD,
 										   real* bufferFs,
 										   int* recvIndex,
                                            int buffmax,
@@ -2309,7 +2412,7 @@ extern "C" __global__ void setRecvFsPost27(real* DD,
                                            unsigned int size_Mat,
                                            bool isEvenTimestep);
 
-extern "C" __global__ void getSendGsF3(
+__global__ void getSendGsF3(
 	real* G6,
 	real* bufferGs,
 	int* sendIndex,
@@ -2320,7 +2423,7 @@ extern "C" __global__ void getSendGsF3(
 	unsigned int size_Mat,
 	bool isEvenTimestep);
 
-extern "C" __global__ void setRecvGsF3(
+__global__ void setRecvGsF3(
 	real* G6,
 	real* bufferGs,
 	int* recvIndex,
@@ -2331,7 +2434,7 @@ extern "C" __global__ void setRecvGsF3(
 	unsigned int size_Mat,
 	bool isEvenTimestep);
 
-extern "C" __global__ void WallFunction27( 	real* vx,
+__global__ void WallFunction27( 	real* vx,
 											real* vy,
 											real* vz,
 											real* DD,
@@ -2345,7 +2448,7 @@ extern "C" __global__ void WallFunction27( 	real* vx,
 											unsigned int size_Mat,
 											bool isEvenTimestep);
 
-extern "C" __global__ void LBSetOutputWallVelocitySP27( real* vxD,
+__global__ void LBSetOutputWallVelocitySP27( real* vxD,
 														real* vyD,
 														real* vzD,
 														real* vxWall,
@@ -2363,7 +2466,7 @@ extern "C" __global__ void LBSetOutputWallVelocitySP27( real* vxD,
 														real* DD,
 														bool isEvenTimestep);
 
-extern "C" __global__ void GetVeloforForcing27( real* DD,
+__global__ void GetVeloforForcing27( real* DD,
 												int* bcIndex,
 												int nonAtBC,
 												real* Vx,
@@ -2375,7 +2478,7 @@ extern "C" __global__ void GetVeloforForcing27( real* DD,
 												unsigned int size_Mat,
 												bool isEvenTimestep);
 
-extern "C" __global__ void InitParticles( real* coordX,
+__global__ void InitParticles( real* coordX,
 										  real* coordY,
 										  real* coordZ,
 										  real* coordParticleXlocal,
@@ -2399,7 +2502,7 @@ extern "C" __global__ void InitParticles( real* coordX,
 									      unsigned int numberOfParticles,
 										  unsigned int size_Mat);
 
-extern "C" __global__ void MoveParticles( real* coordX,
+__global__ void MoveParticles( real* coordX,
 										  real* coordY,
 										  real* coordZ,
 										  real* coordParticleXlocal,
@@ -2427,7 +2530,7 @@ extern "C" __global__ void MoveParticles( real* coordX,
 										  unsigned int size_Mat,
 										  bool isEvenTimestep);
 
-extern "C" __global__ void MoveParticlesWithoutBCs(   real* coordX,
+__global__ void MoveParticlesWithoutBCs(   real* coordX,
 													  real* coordY,
 													  real* coordZ,
 													  real* coordParticleXlocal,
@@ -2455,12 +2558,12 @@ extern "C" __global__ void MoveParticlesWithoutBCs(   real* coordX,
 													  unsigned int size_Mat,
 													  bool isEvenTimestep);
 
-extern "C" __global__ void initRandom(curandState* state);
+__global__ void initRandom(curandState* state);
 
-extern "C" __global__ void generateRandomValues(curandState* state,
+__global__ void generateRandomValues(curandState* state,
 												real* randArray);
 
-extern "C" __global__ void CalcTurbulenceIntensity(
+__global__ void CalcTurbulenceIntensity(
    real* vxx,
    real* vyy,
    real* vzz,

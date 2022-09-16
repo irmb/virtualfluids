@@ -161,7 +161,7 @@ void PrecursorWriter::free(Parameter* para, CudaMemoryManager* cudaManager)
 void PrecursorWriter::write(Parameter* para, int level)
 {
     SPtr<PrecursorStruct> precursorStruct = this->getPrecursorStruct(level);
-    std::string fname = this->makeFileName(fileName, level, para->getMyID(), precursorStruct->filesWritten) + getWriter()->getFileExtension();
+    std::string fname = this->makeFileName(fileName, level, para->getMyProcessID(), precursorStruct->filesWritten) + getWriter()->getFileExtension();
     std::string wholeName = outputPath + "/" + fname;
 
     uint nPointsInPlane = precursorStruct->nPointsInPlane;

@@ -33,7 +33,6 @@
 #ifndef TriangularMesh_h
 #define TriangularMesh_h
 
-#include <stdio.h>
 #include <vector>
 #include <string>
 #include <memory>
@@ -55,20 +54,20 @@ class TriangularMesh : public Object
 public:
 
     GRIDGENERATOR_EXPORT static TriangularMesh* make(const std::string& fileName, const std::vector<uint> ignorePatches = std::vector<uint>());
-	GRIDGENERATOR_EXPORT TriangularMesh();
+    GRIDGENERATOR_EXPORT TriangularMesh();
     GRIDGENERATOR_EXPORT TriangularMesh(const std::string& inputPath, const std::vector<uint> ignorePatches = std::vector<uint>());
-	GRIDGENERATOR_EXPORT TriangularMesh(const std::string& inputPath, const BoundingBox &box);
-	GRIDGENERATOR_EXPORT ~TriangularMesh();
+    GRIDGENERATOR_EXPORT TriangularMesh(const std::string& inputPath, const BoundingBox &box);
+    GRIDGENERATOR_EXPORT ~TriangularMesh() override = default;
 
     GRIDGENERATOR_EXPORT uint getNumberOfTriangles() const;
 
-	GRIDGENERATOR_EXPORT void setTriangles(std::vector<Triangle> triangles);
-	GRIDGENERATOR_EXPORT void setMinMax(BoundingBox minmax);
+    GRIDGENERATOR_EXPORT void setTriangles(std::vector<Triangle> triangles);
+    GRIDGENERATOR_EXPORT void setMinMax(BoundingBox minmax);
 
-	std::vector<Triangle> triangleVec;
-	Triangle *triangles;
-	long size;
-	BoundingBox minmax;
+    std::vector<Triangle> triangleVec;
+    Triangle *triangles = nullptr;
+    long size = 0;
+    BoundingBox minmax;
 
     SPtr<GbTriFaceMesh3D> VF_GbTriFaceMesh3D;
 
@@ -81,8 +80,8 @@ public:
     GRIDGENERATOR_EXPORT void generateGbTriFaceMesh3D();
 
 private:
-	
-	void initalizeDataFromTriangles();
+
+    void initalizeDataFromTriangles();
 
     static std::vector<Vertex> getAverrageNormalsPerVertex(std::vector<std::vector<Triangle> > trianglesPerVertex);
     static void eliminateTriangleswithIdenticialNormal(std::vector<Triangle> &triangles);
@@ -110,4 +109,3 @@ public:
 
 
 #endif
-

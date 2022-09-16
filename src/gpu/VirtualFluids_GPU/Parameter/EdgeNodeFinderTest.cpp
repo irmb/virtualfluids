@@ -43,7 +43,7 @@ protected:
 private:
     void SetUp() override
     {
-        para = std::make_shared<Parameter>(1, 0);
+        para = std::make_shared<Parameter>();
         para->initLBMSimulationParameter();
     }
 };

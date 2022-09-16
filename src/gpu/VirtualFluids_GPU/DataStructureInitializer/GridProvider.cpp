@@ -36,8 +36,8 @@ void GridProvider::setNumberOfFluidNodes(const int numberOfNodes, const int leve
 }
 
 void GridProvider::setNumberOfFluidNodesBorder(const int numberOfNodes, const int level) const {
-    para->getParH(level)->numberOffluidNodesBorder = numberOfNodes;
-    para->getParD(level)->numberOffluidNodesBorder = numberOfNodes;
+    para->getParH(level)->numberOfFluidNodesBorder = numberOfNodes;
+    para->getParD(level)->numberOfFluidNodesBorder = numberOfNodes;
 }
 
 void GridProvider::setInitalNodeValues(const int numberOfNodes, const int level) const

@@ -32,6 +32,18 @@ void CudaMemoryManager::cudaCopyPrint(int lev)
     checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->velocityZ   , parameter->getParD(lev)->velocityZ   , parameter->getParH(lev)->mem_size_real_SP , cudaMemcpyDeviceToHost));
     checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->rho  , parameter->getParD(lev)->rho  , parameter->getParH(lev)->mem_size_real_SP , cudaMemcpyDeviceToHost));
     checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->pressure, parameter->getParD(lev)->pressure, parameter->getParH(lev)->mem_size_real_SP , cudaMemcpyDeviceToHost));
+
+    if(parameter->getIsBodyForce())
+    {
+        checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->forceX_SP   , parameter->getParD(lev)->forceX_SP   , parameter->getParH(lev)->mem_size_real_SP , cudaMemcpyDeviceToHost));
+        checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->forceY_SP   , parameter->getParD(lev)->forceY_SP   , parameter->getParH(lev)->mem_size_real_SP , cudaMemcpyDeviceToHost));
+        checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->forceZ_SP   , parameter->getParD(lev)->forceZ_SP   , parameter->getParH(lev)->mem_size_real_SP , cudaMemcpyDeviceToHost));
+    }
+
+    if(parameter->getUseTurbulentViscosity())
+    {
+        checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->turbViscosity   , parameter->getParD(lev)->turbViscosity   , parameter->getParH(lev)->mem_size_real_SP , cudaMemcpyDeviceToHost));
+    }
 }
 void CudaMemoryManager::cudaCopyMedianPrint(int lev)
 {
@@ -278,8 +290,8 @@ void CudaMemoryManager::cudaFreeOutflowBC(int lev)
 	checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->outflowBC.kN     ));
 	checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->outflowBC.RhoBC  ));
 }
-//Wall
-void CudaMemoryManager::cudaAllocWallBC(int lev)
+//No-Slip
+void CudaMemoryManager::cudaAllocNoSlipBC(int lev)
 {
 	unsigned int mem_size_Q_k      = sizeof(int)*parameter->getParH(lev)->noSlipBC.numberOfBCnodes;
 	unsigned int mem_size_Q_q      = sizeof(real)*parameter->getParH(lev)->noSlipBC.numberOfBCnodes;
@@ -300,7 +312,7 @@ void CudaMemoryManager::cudaAllocWallBC(int lev)
 	double tmp = (double)mem_size_Q_k + (double)parameter->getD3Qxx()*(double)mem_size_Q_q;
 	setMemsizeGPU(tmp, false);
 }
-void CudaMemoryManager::cudaCopyWallBC(int lev)
+void CudaMemoryManager::cudaCopyNoSlipBC(int lev)
 {
 	unsigned int mem_size_Q_k = sizeof(int)*parameter->getParH(lev)->noSlipBC.numberOfBCnodes;
 	unsigned int mem_size_Q_q = sizeof(real)*parameter->getParH(lev)->noSlipBC.numberOfBCnodes;
@@ -308,7 +320,7 @@ void CudaMemoryManager::cudaCopyWallBC(int lev)
 	checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->noSlipBC.q27[0], parameter->getParH(lev)->noSlipBC.q27[0], parameter->getD3Qxx()* mem_size_Q_q,       cudaMemcpyHostToDevice));
 	checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->noSlipBC.k,      parameter->getParH(lev)->noSlipBC.k,                  mem_size_Q_k,       cudaMemcpyHostToDevice));
 }
-void CudaMemoryManager::cudaFreeWallBC(int lev)
+void CudaMemoryManager::cudaFreeNoSlipBC(int lev)
 {
 	checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->noSlipBC.q27[0]));
 	checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->noSlipBC.k));
@@ -3082,7 +3094,7 @@ void CudaMemoryManager::cudaFreeFluidNodeIndices(int lev) {
 }
 
 void CudaMemoryManager::cudaAllocFluidNodeIndicesBorder(int lev) {
-    uint mem_size_fluid_nodes_border = sizeof(uint) * parameter->getParH(lev)->numberOffluidNodesBorder;
+    uint mem_size_fluid_nodes_border = sizeof(uint) * parameter->getParH(lev)->numberOfFluidNodesBorder;
     // Host
     checkCudaErrors(
         cudaMallocHost((void **)&(parameter->getParH(lev)->fluidNodeIndicesBorder), mem_size_fluid_nodes_border));
@@ -3094,7 +3106,7 @@ void CudaMemoryManager::cudaAllocFluidNodeIndicesBorder(int lev) {
 }
 
 void CudaMemoryManager::cudaCopyFluidNodeIndicesBorder(int lev) {
-    uint mem_size_fluid_nodes_border = sizeof(uint) * parameter->getParH(lev)->numberOffluidNodesBorder;
+    uint mem_size_fluid_nodes_border = sizeof(uint) * parameter->getParH(lev)->numberOfFluidNodesBorder;
     checkCudaErrors(cudaMemcpy(parameter->getParD(lev)->fluidNodeIndicesBorder,
                                parameter->getParH(lev)->fluidNodeIndicesBorder,
                                mem_size_fluid_nodes_border, cudaMemcpyHostToDevice));

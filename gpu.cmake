@@ -25,24 +25,9 @@ add_subdirectory(src/gpu/GridGenerator)
 IF (BUILD_VF_GPU)
     add_subdirectory(src/gpu/VirtualFluids_GPU)
 
-    #add_subdirectory(targets/apps/LBM/lbmTest)
-    #add_subdirectory(targets/apps/LBM/metisTest)
-    #add_subdirectory(targets/apps/LBM/Basel)
-    #add_subdirectory(targets/apps/LBM/BaselNU)
-    #add_subdirectory(targets/apps/LBM/BaselMultiGPU)
-
     add_subdirectory(apps/gpu/LBM/DrivenCavity)
     add_subdirectory(apps/gpu/LBM/SphereGPU)
-    #add_subdirectory(apps/gpu/LBM/WTG_RUB)
-    #add_subdirectory(apps/gpu/LBM/gridGeneratorTest)
-    #add_subdirectory(apps/gpu/LBM/TGV_3D)
-    #add_subdirectory(apps/gpu/LBM/TGV_3D_MultiGPU)
-    #add_subdirectory(apps/gpu/LBM/SphereScaling)
-    #add_subdirectory(apps/gpu/LBM/DrivenCavityMultiGPU)
-    #add_subdirectory(apps/gpu/LBM/MusselOyster)
-    #add_subdirectory(apps/gpu/LBM/Poiseuille)
-    #add_subdirectory(apps/gpu/LBM/ActuatorLine)
-    #add_subdirectory(apps/gpu/LBM/BoundaryLayer)
+    add_subdirectory(apps/gpu/LBM/BoundaryLayer)
 ELSE()
     MESSAGE( STATUS "exclude Virtual Fluids GPU." )
 ENDIF()
@@ -51,50 +36,13 @@ ENDIF()
 ###                  Virtual Fluids GKS                   ###
 #############################################################
 
-
 IF (BUILD_VF_GKS)
     add_subdirectory(src/gpu/GksMeshAdapter)
     add_subdirectory(src/gpu/GksVtkAdapter)
 
     add_subdirectory(src/gpu/GksGpu)
 
-    #add_subdirectory(targets/apps/GKS/gksTest)
-    #add_subdirectory(targets/apps/GKS/ChannelFlow)
-
-    #add_subdirectory(targets/apps/GKS/ChannelFlowObstacle)
-    #add_subdirectory(targets/apps/GKS/ShearWave)
-
-    #add_subdirectory(targets/apps/GKS/LiFuXu)
-
-    #add_subdirectory(targets/apps/GKS/TaylorGreen3D)
-    #add_subdirectory(targets/apps/GKS/DrivenCavity3D)
-    #add_subdirectory(targets/apps/GKS/ThermalCavity)
-
-    #add_subdirectory(targets/apps/GKS/ThermalCavityMultiGPU)
-    #add_subdirectory(targets/apps/GKS/DrivenCavityMultiGPU)
-    #add_subdirectory(targets/apps/GKS/RayleighBenardMultiGPU)
-
-    #add_subdirectory(targets/apps/GKS/SalinasVazquez)
-    #add_subdirectory(targets/apps/GKS/BoundaryJet)
-
-    #add_subdirectory(targets/apps/GKS/PropaneFlame)
-    #add_subdirectory(targets/apps/GKS/ConfinedCombustion)
-    #add_subdirectory(targets/apps/GKS/MethaneFlame)
-
-    #add_subdirectory(targets/apps/GKS/Room)
-    #add_subdirectory(targets/apps/GKS/RoomMultiGPU)
-    #add_subdirectory(targets/apps/GKS/RoomFire)
-    #add_subdirectory(targets/apps/GKS/RoomFireExtended)
-    #add_subdirectory(targets/apps/GKS/ConcreteHeatFluxBCTest)
-
-    #add_subdirectory(targets/apps/GKS/PoolFire)
     add_subdirectory(apps/gpu/GKS/Flame7cm)
-    #add_subdirectory(targets/apps/GKS/SandiaFlame_1m)
-    #add_subdirectory(targets/apps/GKS/Candle)
-
-    #add_subdirectory(targets/apps/GKS/MultiGPU)
-    #add_subdirectory(targets/apps/GKS/MultiGPU_nD)
-    #add_subdirectory(targets/apps/GKS/SingleGPU)
 ELSE()
     MESSAGE( STATUS "exclude Virtual Fluids GKS." )
 ENDIF()
@@ -130,7 +78,7 @@ if(BUILD_NUMERIC_TESTS)
 endif()
 
 #############################################################
-###					Annas Traffic Sim				      ###
+###                 Annas Traffic Sim                     ###
 #############################################################
 
 if(BUILD_VF_TRAFFIC)

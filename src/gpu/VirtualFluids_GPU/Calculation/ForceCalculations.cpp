@@ -125,7 +125,7 @@ void ForceCalculations::printForcing(Parameter* para)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//set filename
-	std::string ffname = para->getFName() + StringUtil::toString<int>(para->getMyID()) + "_forcing.txt";
+	std::string ffname = para->getFName() + StringUtil::toString<int>(para->getMyProcessID()) + "_forcing.txt";
 	const char* fname = ffname.c_str();
 	//////////////////////////////////////////////////////////////////////////
 	//set ofstream

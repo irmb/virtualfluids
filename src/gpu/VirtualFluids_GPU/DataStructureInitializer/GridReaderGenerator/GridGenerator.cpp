@@ -10,7 +10,7 @@
 #include <algorithm>
 #include "utilities/math/Math.h"
 #include "Output/QDebugWriter.hpp"
-#include "PreCollisionInteractor/VelocitySetter.h"
+#include "GridGenerator/VelocitySetter/VelocitySetter.h"
 
 #include "utilities/communication.h"
 
@@ -18,19 +18,18 @@ using namespace vf::lbm::dir;
 
 GridGenerator::GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::gpu::Communicator& communicator)
 {
-	this->builder = builder;
+    this->builder = builder;
     this->para = para;
     this->cudaMemoryManager = cudaMemoryManager;
     this->indexRearrangement = std::make_unique<IndexRearrangementForStreams>(para, builder, communicator);
 }
 
-GridGenerator::~GridGenerator()
-{
-
-}
+GridGenerator::~GridGenerator() = default;
 
 void GridGenerator::initalGridInformations()
 {
+    if (para->getKernelNeedsFluidNodeIndicesToRun())
+        builder->findFluidNodes(para->getUseStreams());
     std::vector<int> gridX, gridY, gridZ;
     std::vector<int> distX, distY, distZ;
     const int numberOfGridLevels = builder->getNumberOfGridLevels();
@@ -47,22 +46,22 @@ void GridGenerator::initalGridInformations()
 void GridGenerator::allocArrays_CoordNeighborGeo()
 {
     const uint numberOfLevels = builder->getNumberOfGridLevels();
-	std::cout << "Number of Level: " << numberOfLevels << std::endl;
-	int numberOfNodesGlobal = 0;
-	std::cout << "Number of Nodes: " << std::endl;
-	
-	for (uint level = 0; level < numberOfLevels; level++) 
-	{
-		const int numberOfNodesPerLevel = builder->getNumberOfNodes(level) + 1;
-		numberOfNodesGlobal += numberOfNodesPerLevel;
-		std::cout << "Level " << level << " = " << numberOfNodesPerLevel << " Nodes" << std::endl;
-	
-		setNumberOfNodes(numberOfNodesPerLevel, level);
-	
-		cudaMemoryManager->cudaAllocCoord(level);
+    std::cout << "Number of Level: " << numberOfLevels << std::endl;
+    int numberOfNodesGlobal = 0;
+    std::cout << "Number of Nodes: " << std::endl;
+    
+    for (uint level = 0; level < numberOfLevels; level++) 
+    {
+        const int numberOfNodesPerLevel = builder->getNumberOfNodes(level) + 1;
+        numberOfNodesGlobal += numberOfNodesPerLevel;
+        std::cout << "Level " << level << " = " << numberOfNodesPerLevel << " Nodes" << std::endl;
+    
+        setNumberOfNodes(numberOfNodesPerLevel, level);
+    
+        cudaMemoryManager->cudaAllocCoord(level);
         cudaMemoryManager->cudaAllocSP(level);
         //cudaMemoryManager->cudaAllocF3SP(level);
-		cudaMemoryManager->cudaAllocNeighborWSB(level);
+        cudaMemoryManager->cudaAllocNeighborWSB(level);
 
         if(para->getUseTurbulentViscosity())
             cudaMemoryManager->cudaAllocTurbulentViscosity(level);
@@ -70,18 +69,18 @@ void GridGenerator::allocArrays_CoordNeighborGeo()
         if(para->getIsBodyForce())
             cudaMemoryManager->cudaAllocBodyForce(level);
 
-		builder->getNodeValues(
-			para->getParH(level)->coordinateX,
-			para->getParH(level)->coordinateY,
-			para->getParH(level)->coordinateZ,
-			para->getParH(level)->neighborX,
-			para->getParH(level)->neighborY,
-			para->getParH(level)->neighborZ,
-			para->getParH(level)->neighborInverse,
-			para->getParH(level)->typeOfGridNode,
-			level);
+        builder->getNodeValues(
+            para->getParH(level)->coordinateX,
+            para->getParH(level)->coordinateY,
+            para->getParH(level)->coordinateZ,
+            para->getParH(level)->neighborX,
+            para->getParH(level)->neighborY,
+            para->getParH(level)->neighborZ,
+            para->getParH(level)->neighborInverse,
+            para->getParH(level)->typeOfGridNode,
+            level);
 
-		setInitalNodeValues(numberOfNodesPerLevel, level);
+        setInitalNodeValues(numberOfNodesPerLevel, level);
 
         cudaMemoryManager->cudaCopyNeighborWSB(level);
         cudaMemoryManager->cudaCopySP(level);
@@ -90,9 +89,9 @@ void GridGenerator::allocArrays_CoordNeighborGeo()
             cudaMemoryManager->cudaCopyBodyForce(level);
 
         //std::cout << verifyNeighborIndices(level);
-	}
-	std::cout << "Number of Nodes: " << numberOfNodesGlobal << std::endl;
-	std::cout << "-----finish Coord, Neighbor, Geo------" << std::endl;
+    }
+    std::cout << "Number of Nodes: " << numberOfNodesGlobal << std::endl;
+    std::cout << "-----finish Coord, Neighbor, Geo------" << std::endl;
 }
 
 void GridGenerator::allocArrays_fluidNodeIndices() {
@@ -115,54 +114,58 @@ void GridGenerator::allocArrays_fluidNodeIndicesBorder() {
 
 void GridGenerator::allocArrays_BoundaryValues()
 {
-	std::cout << "------read BoundaryValues------" << std::endl;
+    std::cout << "------read BoundaryValues------" << std::endl;
+    int blocks = 0;
 
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
         const auto numberOfPressureValues = int(builder->getPressureSize(level));
-
         std::cout << "size pressure level " << level << " : " << numberOfPressureValues << std::endl;
+
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        para->getParH(level)->pressureBC.numberOfBCnodes = numberOfPressureValues;
-        para->getParD(level)->pressureBC.numberOfBCnodes = numberOfPressureValues;
-        para->getParH(level)->numberOfPressureBCnodesRead = numberOfPressureValues * para->getD3Qxx();
-        para->getParD(level)->numberOfPressureBCnodesRead = numberOfPressureValues * para->getD3Qxx();
+        para->getParH(level)->pressureBC.numberOfBCnodes = 0;
+        para->getParD(level)->outflowPressureCorrectionFactor = para->getOutflowPressureCorrectionFactor();
         if (numberOfPressureValues > 1)
         {
+            blocks = (numberOfPressureValues / para->getParH(level)->numberofthreads) + 1;
+            para->getParH(level)->pressureBC.numberOfBCnodes = blocks * para->getParH(level)->numberofthreads;
             cudaMemoryManager->cudaAllocPress(level);
             builder->getPressureValues(para->getParH(level)->pressureBC.RhoBC, para->getParH(level)->pressureBC.k, para->getParH(level)->pressureBC.kN, level);
             cudaMemoryManager->cudaCopyPress(level);
         }
+        para->getParD(level)->pressureBC.numberOfBCnodes = para->getParH(level)->pressureBC.numberOfBCnodes;
+        para->getParH(level)->numberOfPressureBCnodesRead = para->getParH(level)->pressureBC.numberOfBCnodes * para->getD3Qxx();
+        para->getParD(level)->numberOfPressureBCnodesRead = para->getParH(level)->pressureBC.numberOfBCnodes * para->getD3Qxx();
     }
 
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
         const auto numberOfSlipValues = int(builder->getSlipSize(level));
-
         std::cout << "size slip level " << level << " : " << numberOfSlipValues << std::endl;
+
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        para->getParH(level)->slipBC.numberOfBCnodes = numberOfSlipValues;
-        para->getParD(level)->slipBC.numberOfBCnodes = numberOfSlipValues;
-        para->getParH(level)->numberOfSlipBCnodesRead = numberOfSlipValues * para->getD3Qxx();
-        para->getParD(level)->numberOfSlipBCnodesRead = numberOfSlipValues * para->getD3Qxx();
+        para->getParH(level)->slipBC.numberOfBCnodes = 0;
         if (numberOfSlipValues > 1)
         {
+            blocks = (numberOfSlipValues / para->getParH(level)->numberofthreads) + 1;
+            para->getParH(level)->slipBC.numberOfBCnodes = blocks * para->getParH(level)->numberofthreads;
             cudaMemoryManager->cudaAllocSlipBC(level);
             builder->getSlipValues(para->getParH(level)->slipBC.normalX, para->getParH(level)->slipBC.normalY, para->getParH(level)->slipBC.normalZ, para->getParH(level)->slipBC.k, level);
             cudaMemoryManager->cudaCopySlipBC(level);
         }
+        para->getParD(level)->slipBC.numberOfBCnodes = para->getParH(level)->slipBC.numberOfBCnodes;
+        para->getParH(level)->numberOfSlipBCnodesRead = para->getParH(level)->slipBC.numberOfBCnodes * para->getD3Qxx();
+        para->getParD(level)->numberOfSlipBCnodesRead = para->getParH(level)->slipBC.numberOfBCnodes * para->getD3Qxx();
     }
 
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
         const auto numberOfStressValues = int(builder->getStressSize(level));
-
         std::cout << "size stress level " << level << " : " << numberOfStressValues << std::endl;
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        para->getParH(level)->stressBC.numberOfBCnodes = numberOfStressValues;
-        para->getParD(level)->stressBC.numberOfBCnodes = numberOfStressValues;
-        para->getParH(level)->numberOfStressBCnodesRead = numberOfStressValues * para->getD3Qxx();
-        para->getParD(level)->numberOfStressBCnodesRead = numberOfStressValues * para->getD3Qxx();
 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        para->getParH(level)->stressBC.numberOfBCnodes = 0;
         if (numberOfStressValues > 1)
         {
+            blocks = (numberOfStressValues / para->getParH(level)->numberofthreads) + 1;
+            para->getParH(level)->stressBC.numberOfBCnodes = blocks * para->getParH(level)->numberofthreads;
             cudaMemoryManager->cudaAllocStressBC(level);
             cudaMemoryManager->cudaAllocWallModel(level, para->getHasWallModelMonitor());
             builder->getStressValues(   para->getParH(level)->stressBC.normalX,  para->getParH(level)->stressBC.normalY,  para->getParH(level)->stressBC.normalZ, 
@@ -175,6 +178,9 @@ void GridGenerator::allocArrays_BoundaryValues()
             cudaMemoryManager->cudaCopyStressBC(level);
             cudaMemoryManager->cudaCopyWallModel(level, para->getHasWallModelMonitor());
         }
+        para->getParD(level)->stressBC.numberOfBCnodes = para->getParH(level)->stressBC.numberOfBCnodes;
+        para->getParH(level)->numberOfStressBCnodesRead = para->getParH(level)->stressBC.numberOfBCnodes * para->getD3Qxx();
+        para->getParD(level)->numberOfStressBCnodesRead = para->getParH(level)->stressBC.numberOfBCnodes * para->getD3Qxx();
     }
     
 
@@ -182,17 +188,13 @@ void GridGenerator::allocArrays_BoundaryValues()
         const auto numberOfVelocityValues = int(builder->getVelocitySize(level));
         std::cout << "size velocity level " << level << " : " << numberOfVelocityValues << std::endl;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        int blocks = (numberOfVelocityValues / para->getParH(level)->numberofthreads) + 1;
-        para->getParH(level)->velocityBC.kArray = blocks * para->getParH(level)->numberofthreads;
-        para->getParD(level)->velocityBC.kArray = para->getParH(level)->velocityBC.kArray;
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        para->getParH(level)->velocityBC.numberOfBCnodes = numberOfVelocityValues;
-        para->getParD(level)->velocityBC.numberOfBCnodes = numberOfVelocityValues;
-        para->getParH(level)->numberOfVeloBCnodesRead = numberOfVelocityValues * para->getD3Qxx();
-        para->getParD(level)->numberOfVeloBCnodesRead = numberOfVelocityValues * para->getD3Qxx();
+
+        para->getParH(level)->velocityBC.numberOfBCnodes = 0;
 
         if (numberOfVelocityValues > 1)
         {
+            blocks = (numberOfVelocityValues / para->getParH(level)->numberofthreads) + 1;
+            para->getParH(level)->velocityBC.numberOfBCnodes = blocks * para->getParH(level)->numberofthreads;
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             cudaMemoryManager->cudaAllocVeloBC(level);
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -206,30 +208,33 @@ void GridGenerator::allocArrays_BoundaryValues()
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // advection - diffusion stuff
             if (para->getDiffOn()==true){
-            	//////////////////////////////////////////////////////////////////////////
-            	para->getParH(level)->TempVel.kTemp = numberOfVelocityValues;
-            	//cout << "Groesse kTemp = " << para->getParH(i)->TempPress.kTemp << endl;
-            	std::cout << "getTemperatureInit = " << para->getTemperatureInit() << std::endl;
-            	std::cout << "getTemperatureBC = " << para->getTemperatureBC() << std::endl;
-            	//////////////////////////////////////////////////////////////////////////
+                //////////////////////////////////////////////////////////////////////////
+                para->getParH(level)->TempVel.kTemp = para->getParH(level)->velocityBC.numberOfBCnodes;
+                //cout << "Groesse kTemp = " << para->getParH(i)->TempPress.kTemp << endl;
+                std::cout << "getTemperatureInit = " << para->getTemperatureInit() << std::endl;
+                std::cout << "getTemperatureBC = " << para->getTemperatureBC() << std::endl;
+                //////////////////////////////////////////////////////////////////////////
                 cudaMemoryManager->cudaAllocTempVeloBC(level);
-            	//cout << "nach alloc " << endl;
-            	//////////////////////////////////////////////////////////////////////////
-            	for (int m = 0; m < numberOfVelocityValues; m++)
-            	{
-            		para->getParH(level)->TempVel.temp[m]      = para->getTemperatureInit();
-            		para->getParH(level)->TempVel.tempPulse[m] = para->getTemperatureBC();
-            		para->getParH(level)->TempVel.velo[m]      = para->getVelocity();
-            		para->getParH(level)->TempVel.k[m]         = para->getParH(level)->velocityBC.k[m];
-            	}
-            	//////////////////////////////////////////////////////////////////////////
-            	//cout << "vor copy " << endl;
+                //cout << "nach alloc " << endl;
+                //////////////////////////////////////////////////////////////////////////
+                for (uint m = 0; m < para->getParH(level)->velocityBC.numberOfBCnodes; m++)
+                {
+                    para->getParH(level)->TempVel.temp[m]      = para->getTemperatureInit();
+                    para->getParH(level)->TempVel.tempPulse[m] = para->getTemperatureBC();
+                    para->getParH(level)->TempVel.velo[m]      = para->getVelocity();
+                    para->getParH(level)->TempVel.k[m]         = para->getParH(level)->velocityBC.k[m];
+                }
+                //////////////////////////////////////////////////////////////////////////
+                //cout << "vor copy " << endl;
                 cudaMemoryManager->cudaCopyTempVeloBCHD(level);
-            	//cout << "nach copy " << endl;
-            	//////////////////////////////////////////////////////////////////////////
+                //cout << "nach copy " << endl;
+                //////////////////////////////////////////////////////////////////////////
             }
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         }
+        para->getParD(level)->velocityBC.numberOfBCnodes = para->getParH(level)->velocityBC.numberOfBCnodes;
+        para->getParH(level)->numberOfVeloBCnodesRead = para->getParH(level)->velocityBC.numberOfBCnodes * para->getD3Qxx();
+        para->getParD(level)->numberOfVeloBCnodesRead = para->getParH(level)->velocityBC.numberOfBCnodes * para->getD3Qxx();
     }
 
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
@@ -293,7 +298,7 @@ void GridGenerator::allocArrays_BoundaryValues()
 
 
             //read second timestep of precursor into next and copy next to device
-            real nextTime = para->getParD(level)->precursorBC.nTRead*pow(2,-level)*para->getTimeRatio();
+            real nextTime = para->getParD(level)->precursorBC.nTRead*pow(2,-((real)level))*para->getTimeRatio();
             for(auto reader : para->getParH(level)->velocityReader)
             {   
                 reader->getNextVelocities(para->getParH(level)->precursorBC.vxNext, para->getParH(level)->precursorBC.vyNext, para->getParH(level)->precursorBC.vzNext, nextTime);
@@ -317,7 +322,7 @@ void GridGenerator::allocArrays_BoundaryValues()
 
             //start usual cycle of loading, i.e. read velocities of timestep after current and copy asynchronously to device
 
-            nextTime = 2*para->getParD(level)->precursorBC.nTRead*pow(2,-level)*para->getTimeRatio();
+            nextTime = 2*para->getParD(level)->precursorBC.nTRead*pow(2,-((real)level))*para->getTimeRatio();
 
             for(auto reader : para->getParH(level)->velocityReader)
             {   
@@ -340,66 +345,53 @@ void GridGenerator::allocArrays_BoundaryValues()
 
 
     if (builder->hasGeometryValues()) {
-        para->setGeometryValues(true);
-        for (uint i = 0; i < builder->getNumberOfGridLevels(); i++) {
-            int numberOfGeometryValues = builder->getGeometrySize(i);
-            std::cout << "size geometry values, Level " << i << " : " << numberOfGeometryValues << std::endl;
+        para->setUseGeometryValues(true);
+        for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
+            int numberOfGeometryValues = builder->getGeometrySize(level);
+            std::cout << "size geometry values, Level " << level << " : " << numberOfGeometryValues << std::endl;
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            para->getParH(i)->geometryBC.numberOfBCnodes = numberOfGeometryValues;
-            para->getParD(i)->geometryBC.numberOfBCnodes = numberOfGeometryValues;
+
+            para->getParH(level)->geometryBC.numberOfBCnodes = 0;
             if (numberOfGeometryValues > 0)
             {
+                blocks = (numberOfGeometryValues / para->getParH(level)->numberofthreads) + 1;
+                para->getParH(level)->geometryBC.numberOfBCnodes = blocks * para->getParH(level)->numberofthreads;
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                cudaMemoryManager->cudaAllocGeomValuesBC(level);
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                builder->getGeometryValues(para->getParH(level)->geometryBC.Vx, para->getParH(level)->geometryBC.Vy, para->getParH(level)->geometryBC.Vz, level);
 
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                cudaMemoryManager->cudaAllocGeomValuesBC(i);
-                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                //Indexarray
-
-                builder->getGeometryValues(para->getParH(i)->geometryBC.Vx, para->getParH(i)->geometryBC.Vy, para->getParH(i)->geometryBC.Vz, i);
-
-                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                for (int m = 0; m < numberOfGeometryValues; m++)
+                for (uint m = 0; m < para->getParH(level)->geometryBC.numberOfBCnodes; m++)
                 {
-                    para->getParH(i)->geometryBC.Vx[m] = para->getParH(i)->geometryBC.Vx[m] / para->getVelocityRatio();
-                    para->getParH(i)->geometryBC.Vy[m] = para->getParH(i)->geometryBC.Vy[m] / para->getVelocityRatio();
-                    para->getParH(i)->geometryBC.Vz[m] = para->getParH(i)->geometryBC.Vz[m] / para->getVelocityRatio();
-                    //para->getParH(i)->geometryBC.Vx[m] = para->getParH(i)->geometryBC.Vx[m] / 100.0f;
-                    //para->getParH(i)->geometryBC.Vy[m] = para->getParH(i)->geometryBC.Vy[m] / 100.0f;
-                    //para->getParH(i)->geometryBC.Vz[m] = para->getParH(i)->geometryBC.Vz[m] / 100.0f;
-                    //para->getParH(i)->geometryBC.Vx[m] = 0.0f;
-                    //para->getParH(i)->geometryBC.Vy[m] = 0.0f;
-                    //para->getParH(i)->geometryBC.Vz[m] = 0.0f;
+                    para->getParH(level)->geometryBC.Vx[m] = para->getParH(level)->geometryBC.Vx[m] / para->getVelocityRatio();
+                    para->getParH(level)->geometryBC.Vy[m] = para->getParH(level)->geometryBC.Vy[m] / para->getVelocityRatio();
+                    para->getParH(level)->geometryBC.Vz[m] = para->getParH(level)->geometryBC.Vz[m] / para->getVelocityRatio();
                 }
-                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                ////T�st
-                //for (int m = 0; m < temp4; m++)
-                //{
-                //	para->getParH(i)->geometryBC.Vx[m] = para->getVelocity();//0.035f;
-                //	para->getParH(i)->geometryBC.Vy[m] = 0.0f;//para->getVelocity();//0.0f;
-                //	para->getParH(i)->geometryBC.Vz[m] = 0.0f;
-                //}
-                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                cudaMemoryManager->cudaCopyGeomValuesBC(i);
+                cudaMemoryManager->cudaCopyGeomValuesBC(level);
                 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 //// advection - diffusion stuff
                 //if (para->getDiffOn()==true){
-                //	//////////////////////////////////////////////////////////////////////////
-                //	para->getParH(i)->Temp.kTemp = temp4;
-                //	cout << "Groesse kTemp = " << para->getParH(i)->Temp.kTemp << std::endl;
-                //	//////////////////////////////////////////////////////////////////////////
-                //	para->cudaAllocTempNoSlipBC(i);
-                //	//////////////////////////////////////////////////////////////////////////
-                //	for (int m = 0; m < temp4; m++)
-                //	{
-                //		para->getParH(i)->Temp.temp[m] = para->getTemperatureInit();
-                //		para->getParH(i)->Temp.k[m]    = para->getParH(i)->geometryBC.k[m];
-                //	}
-                //	//////////////////////////////////////////////////////////////////////////
-                //	para->cudaCopyTempNoSlipBCHD(i);
-                //	//////////////////////////////////////////////////////////////////////////
+                //    //////////////////////////////////////////////////////////////////////////
+                //    para->getParH(i)->Temp.kTemp = temp4;
+                //    cout << "Groesse kTemp = " << para->getParH(i)->Temp.kTemp << std::endl;
+                //    //////////////////////////////////////////////////////////////////////////
+                //    para->cudaAllocTempNoSlipBC(i);
+                //    //////////////////////////////////////////////////////////////////////////
+                //    for (int m = 0; m < temp4; m++)
+                //    {
+                //        para->getParH(i)->Temp.temp[m] = para->getTemperatureInit();
+                //        para->getParH(i)->Temp.k[m]    = para->getParH(i)->geometryBC.k[m];
+                //    }
+                //    //////////////////////////////////////////////////////////////////////////
+                //    para->cudaCopyTempNoSlipBCHD(i);
+                //    //////////////////////////////////////////////////////////////////////////
                 //}
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             }
+            para->getParD(level)->geometryBC.numberOfBCnodes = para->getParH(level)->geometryBC.numberOfBCnodes;
+
         }
     }//ende geo
 
@@ -837,11 +829,11 @@ void GridGenerator::initalValuesDomainDecompostion()
 
 void GridGenerator::allocArrays_BoundaryQs()
 {
-	std::cout << "------read BoundaryQs-------" << std::endl;
+    std::cout << "------read BoundaryQs-------" << std::endl;
 
 
     for (uint i = 0; i < builder->getNumberOfGridLevels(); i++) {
-        int numberOfPressureValues = (int)builder->getPressureSize(i);
+        const auto numberOfPressureValues = (int)builder->getPressureSize(i);
         if (numberOfPressureValues > 0)
         {
             std::cout << "size Pressure:  " << i << " : " << numberOfPressureValues << std::endl;
@@ -851,33 +843,7 @@ void GridGenerator::allocArrays_BoundaryQs()
             real* QQ = para->getParH(i)->pressureBC.q27[0];
             unsigned int sizeQ = para->getParH(i)->pressureBC.numberOfBCnodes;
             QforBoundaryConditions Q;
-            Q.q27[E] = &QQ[E   *sizeQ];
-            Q.q27[W] = &QQ[W   *sizeQ];
-            Q.q27[N] = &QQ[N   *sizeQ];
-            Q.q27[S] = &QQ[S   *sizeQ];
-            Q.q27[T] = &QQ[T   *sizeQ];
-            Q.q27[B] = &QQ[B   *sizeQ];
-            Q.q27[NE] = &QQ[NE  *sizeQ];
-            Q.q27[SW] = &QQ[SW  *sizeQ];
-            Q.q27[SE] = &QQ[SE  *sizeQ];
-            Q.q27[NW] = &QQ[NW  *sizeQ];
-            Q.q27[TE] = &QQ[TE  *sizeQ];
-            Q.q27[BW] = &QQ[BW  *sizeQ];
-            Q.q27[BE] = &QQ[BE  *sizeQ];
-            Q.q27[TW] = &QQ[TW  *sizeQ];
-            Q.q27[TN] = &QQ[TN  *sizeQ];
-            Q.q27[BS] = &QQ[BS  *sizeQ];
-            Q.q27[BN] = &QQ[BN  *sizeQ];
-            Q.q27[TS] = &QQ[TS  *sizeQ];
-            Q.q27[REST] = &QQ[REST*sizeQ];
-            Q.q27[TNE] = &QQ[TNE *sizeQ];
-            Q.q27[TSW] = &QQ[TSW *sizeQ];
-            Q.q27[TSE] = &QQ[TSE *sizeQ];
-            Q.q27[TNW] = &QQ[TNW *sizeQ];
-            Q.q27[BNE] = &QQ[BNE *sizeQ];
-            Q.q27[BSW] = &QQ[BSW *sizeQ];
-            Q.q27[BSE] = &QQ[BSE *sizeQ];
-            Q.q27[BNW] = &QQ[BNW *sizeQ];
+            getPointersToBoundaryConditions(Q, QQ, sizeQ);
             
             builder->getPressureQs(Q.q27, i);
 
@@ -924,33 +890,7 @@ void GridGenerator::allocArrays_BoundaryQs()
             real* QQ = para->getParH(i)->slipBC.q27[0];
             unsigned int sizeQ = para->getParH(i)->slipBC.numberOfBCnodes;
             QforBoundaryConditions Q;
-            Q.q27[E] = &QQ[E   *sizeQ];
-            Q.q27[W] = &QQ[W   *sizeQ];
-            Q.q27[N] = &QQ[N   *sizeQ];
-            Q.q27[S] = &QQ[S   *sizeQ];
-            Q.q27[T] = &QQ[T   *sizeQ];
-            Q.q27[B] = &QQ[B   *sizeQ];
-            Q.q27[NE] = &QQ[NE  *sizeQ];
-            Q.q27[SW] = &QQ[SW  *sizeQ];
-            Q.q27[SE] = &QQ[SE  *sizeQ];
-            Q.q27[NW] = &QQ[NW  *sizeQ];
-            Q.q27[TE] = &QQ[TE  *sizeQ];
-            Q.q27[BW] = &QQ[BW  *sizeQ];
-            Q.q27[BE] = &QQ[BE  *sizeQ];
-            Q.q27[TW] = &QQ[TW  *sizeQ];
-            Q.q27[TN] = &QQ[TN  *sizeQ];
-            Q.q27[BS] = &QQ[BS  *sizeQ];
-            Q.q27[BN] = &QQ[BN  *sizeQ];
-            Q.q27[TS] = &QQ[TS  *sizeQ];
-            Q.q27[REST] = &QQ[REST*sizeQ];
-            Q.q27[TNE] = &QQ[TNE *sizeQ];
-            Q.q27[TSW] = &QQ[TSW *sizeQ];
-            Q.q27[TSE] = &QQ[TSE *sizeQ];
-            Q.q27[TNW] = &QQ[TNW *sizeQ];
-            Q.q27[BNE] = &QQ[BNE *sizeQ];
-            Q.q27[BSW] = &QQ[BSW *sizeQ];
-            Q.q27[BSE] = &QQ[BSE *sizeQ];
-            Q.q27[BNW] = &QQ[BNW *sizeQ];
+            getPointersToBoundaryConditions(Q, QQ, sizeQ);
             
             builder->getSlipQs(Q.q27, i);
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -970,33 +910,7 @@ void GridGenerator::allocArrays_BoundaryQs()
             real* QQ = para->getParH(i)->stressBC.q27[0];
             unsigned int sizeQ = para->getParH(i)->stressBC.numberOfBCnodes;
             QforBoundaryConditions Q;
-            Q.q27[E] = &QQ[E   *sizeQ];
-            Q.q27[W] = &QQ[W   *sizeQ];
-            Q.q27[N] = &QQ[N   *sizeQ];
-            Q.q27[S] = &QQ[S   *sizeQ];
-            Q.q27[T] = &QQ[T   *sizeQ];
-            Q.q27[B] = &QQ[B   *sizeQ];
-            Q.q27[NE] = &QQ[NE  *sizeQ];
-            Q.q27[SW] = &QQ[SW  *sizeQ];
-            Q.q27[SE] = &QQ[SE  *sizeQ];
-            Q.q27[NW] = &QQ[NW  *sizeQ];
-            Q.q27[TE] = &QQ[TE  *sizeQ];
-            Q.q27[BW] = &QQ[BW  *sizeQ];
-            Q.q27[BE] = &QQ[BE  *sizeQ];
-            Q.q27[TW] = &QQ[TW  *sizeQ];
-            Q.q27[TN] = &QQ[TN  *sizeQ];
-            Q.q27[BS] = &QQ[BS  *sizeQ];
-            Q.q27[BN] = &QQ[BN  *sizeQ];
-            Q.q27[TS] = &QQ[TS  *sizeQ];
-            Q.q27[REST] = &QQ[REST*sizeQ];
-            Q.q27[TNE] = &QQ[TNE *sizeQ];
-            Q.q27[TSW] = &QQ[TSW *sizeQ];
-            Q.q27[TSE] = &QQ[TSE *sizeQ];
-            Q.q27[TNW] = &QQ[TNW *sizeQ];
-            Q.q27[BNE] = &QQ[BNE *sizeQ];
-            Q.q27[BSW] = &QQ[BSW *sizeQ];
-            Q.q27[BSE] = &QQ[BSE *sizeQ];
-            Q.q27[BNW] = &QQ[BNW *sizeQ];
+            getPointersToBoundaryConditions(Q, QQ, sizeQ);
             
             builder->getStressQs(Q.q27, i);
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1016,34 +930,7 @@ void GridGenerator::allocArrays_BoundaryQs()
             real* QQ = para->getParH(i)->velocityBC.q27[0];
             unsigned int sizeQ = para->getParH(i)->velocityBC.numberOfBCnodes;
             QforBoundaryConditions Q;
-            Q.q27[E] = &QQ[E   *sizeQ];
-            Q.q27[W] = &QQ[W   *sizeQ];
-            Q.q27[N] = &QQ[N   *sizeQ];
-            Q.q27[S] = &QQ[S   *sizeQ];
-            Q.q27[T] = &QQ[T   *sizeQ];
-            Q.q27[B] = &QQ[B   *sizeQ];
-            Q.q27[NE] = &QQ[NE  *sizeQ];
-            Q.q27[SW] = &QQ[SW  *sizeQ];
-            Q.q27[SE] = &QQ[SE  *sizeQ];
-            Q.q27[NW] = &QQ[NW  *sizeQ];
-            Q.q27[TE] = &QQ[TE  *sizeQ];
-            Q.q27[BW] = &QQ[BW  *sizeQ];
-            Q.q27[BE] = &QQ[BE  *sizeQ];
-            Q.q27[TW] = &QQ[TW  *sizeQ];
-            Q.q27[TN] = &QQ[TN  *sizeQ];
-            Q.q27[BS] = &QQ[BS  *sizeQ];
-            Q.q27[BN] = &QQ[BN  *sizeQ];
-            Q.q27[TS] = &QQ[TS  *sizeQ];
-            Q.q27[REST] = &QQ[REST*sizeQ];
-            Q.q27[TNE] = &QQ[TNE *sizeQ];
-            Q.q27[TSW] = &QQ[TSW *sizeQ];
-            Q.q27[TSE] = &QQ[TSE *sizeQ];
-            Q.q27[TNW] = &QQ[TNW *sizeQ];
-            Q.q27[BNE] = &QQ[BNE *sizeQ];
-            Q.q27[BSW] = &QQ[BSW *sizeQ];
-            Q.q27[BSE] = &QQ[BSE *sizeQ];
-            Q.q27[BNW] = &QQ[BNW *sizeQ];
-
+            getPointersToBoundaryConditions(Q, QQ, sizeQ);
             builder->getVelocityQs(Q.q27, i);
 
             if (para->getDiffOn()) {
@@ -1084,33 +971,7 @@ void GridGenerator::allocArrays_BoundaryQs()
             real* QQ = para->getParH(i)->precursorBC.q27[0];
             unsigned int sizeQ = para->getParH(i)->precursorBC.numberOfBCnodes;
             QforBoundaryConditions Q;
-            Q.q27[E] = &QQ[E   *sizeQ];
-            Q.q27[W] = &QQ[W   *sizeQ];
-            Q.q27[N] = &QQ[N   *sizeQ];
-            Q.q27[S] = &QQ[S   *sizeQ];
-            Q.q27[T] = &QQ[T   *sizeQ];
-            Q.q27[B] = &QQ[B   *sizeQ];
-            Q.q27[NE] = &QQ[NE  *sizeQ];
-            Q.q27[SW] = &QQ[SW  *sizeQ];
-            Q.q27[SE] = &QQ[SE  *sizeQ];
-            Q.q27[NW] = &QQ[NW  *sizeQ];
-            Q.q27[TE] = &QQ[TE  *sizeQ];
-            Q.q27[BW] = &QQ[BW  *sizeQ];
-            Q.q27[BE] = &QQ[BE  *sizeQ];
-            Q.q27[TW] = &QQ[TW  *sizeQ];
-            Q.q27[TN] = &QQ[TN  *sizeQ];
-            Q.q27[BS] = &QQ[BS  *sizeQ];
-            Q.q27[BN] = &QQ[BN  *sizeQ];
-            Q.q27[TS] = &QQ[TS  *sizeQ];
-            Q.q27[REST] = &QQ[REST*sizeQ];
-            Q.q27[TNE] = &QQ[TNE *sizeQ];
-            Q.q27[TSW] = &QQ[TSW *sizeQ];
-            Q.q27[TSE] = &QQ[TSE *sizeQ];
-            Q.q27[TNW] = &QQ[TNW *sizeQ];
-            Q.q27[BNE] = &QQ[BNE *sizeQ];
-            Q.q27[BSW] = &QQ[BSW *sizeQ];
-            Q.q27[BSE] = &QQ[BSE *sizeQ];
-            Q.q27[BNW] = &QQ[BNW *sizeQ];
+            getPointersToBoundaryConditions(Q, QQ, sizeQ);
 
             builder->getPrecursorQs(Q.q27, i);
 
@@ -1169,48 +1030,22 @@ void GridGenerator::allocArrays_BoundaryQs()
             real* QQ = para->getParH(i)->geometryBC.q27[0];
             unsigned int sizeQ = para->getParH(i)->geometryBC.numberOfBCnodes;
             QforBoundaryConditions Q;
-            Q.q27[E] = &QQ[E   *sizeQ];
-            Q.q27[W] = &QQ[W   *sizeQ];
-            Q.q27[N] = &QQ[N   *sizeQ];
-            Q.q27[S] = &QQ[S   *sizeQ];
-            Q.q27[T] = &QQ[T   *sizeQ];
-            Q.q27[B] = &QQ[B   *sizeQ];
-            Q.q27[NE] = &QQ[NE  *sizeQ];
-            Q.q27[SW] = &QQ[SW  *sizeQ];
-            Q.q27[SE] = &QQ[SE  *sizeQ];
-            Q.q27[NW] = &QQ[NW  *sizeQ];
-            Q.q27[TE] = &QQ[TE  *sizeQ];
-            Q.q27[BW] = &QQ[BW  *sizeQ];
-            Q.q27[BE] = &QQ[BE  *sizeQ];
-            Q.q27[TW] = &QQ[TW  *sizeQ];
-            Q.q27[TN] = &QQ[TN  *sizeQ];
-            Q.q27[BS] = &QQ[BS  *sizeQ];
-            Q.q27[BN] = &QQ[BN  *sizeQ];
-            Q.q27[TS] = &QQ[TS  *sizeQ];
-            Q.q27[REST] = &QQ[REST*sizeQ];
-            Q.q27[TNE] = &QQ[TNE *sizeQ];
-            Q.q27[TSW] = &QQ[TSW *sizeQ];
-            Q.q27[TSE] = &QQ[TSE *sizeQ];
-            Q.q27[TNW] = &QQ[TNW *sizeQ];
-            Q.q27[BNE] = &QQ[BNE *sizeQ];
-            Q.q27[BSW] = &QQ[BSW *sizeQ];
-            Q.q27[BSE] = &QQ[BSE *sizeQ];
-            Q.q27[BNW] = &QQ[BNW *sizeQ];
+            getPointersToBoundaryConditions(Q, QQ, sizeQ);
             //////////////////////////////////////////////////////////////////
 
             builder->getGeometryQs(Q.q27, i);
-			//QDebugWriter::writeQValues(Q, para->getParH(i)->geometryBC.k, para->getParH(i)->geometryBC.numberOfBCnodes, "M:/TestGridGeneration/results/GeomGPU.dat");
+            //QDebugWriter::writeQValues(Q, para->getParH(i)->geometryBC.k, para->getParH(i)->geometryBC.numberOfBCnodes, "M:/TestGridGeneration/results/GeomGPU.dat");
             //////////////////////////////////////////////////////////////////
             for (int node_i = 0; node_i < numberOfGeometryNodes; node_i++)
             {
-                Q.q27[REST][node_i] = 0.0f;
+                Q.q27[DIR_000][node_i] = 0.0f;
             }
             //for(int test = 0; test < 3; test++)
             //{
-            //	for (int tmp = 0; tmp < 27; tmp++)
-            //	{
-            //		cout <<"Kuhs: " << Q.q27[tmp][test]  << std::endl;
-            //	}
+            //    for (int tmp = 0; tmp < 27; tmp++)
+            //    {
+            //        cout <<"Kuhs: " << Q.q27[tmp][test]  << std::endl;
+            //    }
             //}
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1239,7 +1074,7 @@ void GridGenerator::allocArrays_BoundaryQs()
     }
 
 
-	std::cout << "-----finish BoundaryQs------" << std::endl;
+    std::cout << "-----finish BoundaryQs------" << std::endl;
 }
 
 void GridGenerator::allocArrays_OffsetScale()
@@ -1274,10 +1109,10 @@ void GridGenerator::allocArrays_OffsetScale()
         para->getParD(level)->mem_size_kFC_off = sizeof(real)* para->getParD(level)->K_FC;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //alloc
-		cudaMemoryManager->cudaAllocInterfaceCF(level);
-		cudaMemoryManager->cudaAllocInterfaceFC(level);
-		cudaMemoryManager->cudaAllocInterfaceOffCF(level);
-		cudaMemoryManager->cudaAllocInterfaceOffFC(level);
+        cudaMemoryManager->cudaAllocInterfaceCF(level);
+        cudaMemoryManager->cudaAllocInterfaceFC(level);
+        cudaMemoryManager->cudaAllocInterfaceOffCF(level);
+        cudaMemoryManager->cudaAllocInterfaceOffFC(level);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //init
         builder->getOffsetCF(para->getParH(level)->offCF.xOffCF, para->getParH(level)->offCF.yOffCF, para->getParH(level)->offCF.zOffCF, level);
@@ -1292,49 +1127,49 @@ void GridGenerator::allocArrays_OffsetScale()
         }
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //copy
-		cudaMemoryManager->cudaCopyInterfaceCF(level);
-		cudaMemoryManager->cudaCopyInterfaceFC(level);
-		cudaMemoryManager->cudaCopyInterfaceOffCF(level);
-		cudaMemoryManager->cudaCopyInterfaceOffFC(level);
+        cudaMemoryManager->cudaCopyInterfaceCF(level);
+        cudaMemoryManager->cudaCopyInterfaceFC(level);
+        cudaMemoryManager->cudaCopyInterfaceOffCF(level);
+        cudaMemoryManager->cudaCopyInterfaceOffFC(level);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     }
 }
 
 void GridGenerator::setDimensions()
 {
-	//std::vector<int> localGridNX(1);
-	//std::vector<int> localGridNY(1);
-	//std::vector<int> localGridNZ(1);
+    //std::vector<int> localGridNX(1);
+    //std::vector<int> localGridNY(1);
+    //std::vector<int> localGridNZ(1);
 
-	//builder->getDimensions(localGridNX[0], localGridNY[0], localGridNZ[0], 0);
+    //builder->getDimensions(localGridNX[0], localGridNY[0], localGridNZ[0], 0);
 
-	//para->setGridX(localGridNX);
-	//para->setGridY(localGridNY);
-	//para->setGridZ(localGridNZ);
+    //para->setGridX(localGridNX);
+    //para->setGridY(localGridNY);
+    //para->setGridZ(localGridNZ);
 }
 
 void GridGenerator::setBoundingBox()
 {
-	std::vector<int> localGridNX(1);
-	std::vector<int> localGridNY(1);
-	std::vector<int> localGridNZ(1);
-	builder->getDimensions(localGridNX[0], localGridNY[0], localGridNZ[0], 0);
+    std::vector<int> localGridNX(1);
+    std::vector<int> localGridNY(1);
+    std::vector<int> localGridNZ(1);
+    builder->getDimensions(localGridNX[0], localGridNY[0], localGridNZ[0], 0);
 
-	std::vector<real> minX, maxX, minY, maxY, minZ, maxZ;
-	minX.push_back(0);
-	minY.push_back(0);
-	minZ.push_back(0);
+    std::vector<real> minX, maxX, minY, maxY, minZ, maxZ;
+    minX.push_back(0);
+    minY.push_back(0);
+    minZ.push_back(0);
 
-	maxX.push_back((real)localGridNX[0]);
-	maxY.push_back((real)localGridNY[0]);
-	maxZ.push_back((real)localGridNZ[0]);
+    maxX.push_back((real)localGridNX[0]);
+    maxY.push_back((real)localGridNY[0]);
+    maxZ.push_back((real)localGridNZ[0]);
 
-	para->setMinCoordX(minX);
-	para->setMinCoordY(minY);
-	para->setMinCoordZ(minZ);
-	para->setMaxCoordX(maxX);
-	para->setMaxCoordY(maxY);
-	para->setMaxCoordZ(maxZ);
+    para->setMinCoordX(minX);
+    para->setMinCoordY(minY);
+    para->setMinCoordZ(minZ);
+    para->setMaxCoordX(maxX);
+    para->setMaxCoordY(maxY);
+    para->setMaxCoordZ(maxZ);
 }
 
 void GridGenerator::initPeriodicNeigh(std::vector<std::vector<std::vector<uint> > > periodV, std::vector<std::vector<uint> > periodIndex, std::string way)
@@ -1433,4 +1268,34 @@ std::string GridGenerator::checkNeighbor(int level, real x, real y, real z, int 
         numberOfWrongNeihgbors++;
     }
     return oss.str();
+}
+
+void GridGenerator::getPointersToBoundaryConditions(QforBoundaryConditions& boundaryConditionStruct, real* subgridDistances, const unsigned int numberOfBCnodes){
+    boundaryConditionStruct.q27[DIR_P00] =    &subgridDistances[DIR_P00   * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_M00] =    &subgridDistances[DIR_M00   * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_0P0] =    &subgridDistances[DIR_0P0   * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_0M0] =    &subgridDistances[DIR_0M0   * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_00P] =    &subgridDistances[DIR_00P   * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_00M] =    &subgridDistances[DIR_00M   * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_PP0] =   &subgridDistances[DIR_PP0  * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_MM0] =   &subgridDistances[DIR_MM0  * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_PM0] =   &subgridDistances[DIR_PM0  * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_MP0] =   &subgridDistances[DIR_MP0  * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_P0P] =   &subgridDistances[DIR_P0P  * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_M0M] =   &subgridDistances[DIR_M0M  * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_P0M] =   &subgridDistances[DIR_P0M  * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_M0P] =   &subgridDistances[DIR_M0P  * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_0PP] =   &subgridDistances[DIR_0PP  * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_0MM] =   &subgridDistances[DIR_0MM  * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_0PM] =   &subgridDistances[DIR_0PM  * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_0MP] =   &subgridDistances[DIR_0MP  * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_000] = &subgridDistances[DIR_000* numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_PPP] =  &subgridDistances[DIR_PPP * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_MMP] =  &subgridDistances[DIR_MMP * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_PMP] =  &subgridDistances[DIR_PMP * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_MPP] =  &subgridDistances[DIR_MPP * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_PPM] =  &subgridDistances[DIR_PPM * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_MMM] =  &subgridDistances[DIR_MMM * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_PMM] =  &subgridDistances[DIR_PMM * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_MPM] =  &subgridDistances[DIR_MPM * numberOfBCnodes];
 }

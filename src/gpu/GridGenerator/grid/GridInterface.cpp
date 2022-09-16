@@ -376,7 +376,7 @@ uint GridInterface::findOffsetCF(const uint& indexOnCoarseGrid, GridImp* coarseG
     Cell cell(x, y, z, coarseGrid->getDelta());
 
     if( coarseGrid->cellContainsOnly( cell, FLUID, FLUID_CFC ) ){
-        this->cf.offset[ interfaceIndex ] = dir::REST;
+        this->cf.offset[ interfaceIndex ] = dir::DIR_000;
         return indexOnCoarseGrid;
     }
 
@@ -411,7 +411,7 @@ uint GridInterface::findOffsetFC(const uint& indexOnFineGrid, GridImp* fineGrid,
     Cell cell(x, y, z, fineGrid->getDelta());
 
     if( fineGrid->cellContainsOnly( cell, FLUID, FLUID_FCF ) ){
-        this->fc.offset[ interfaceIndex ] = dir::REST;
+        this->fc.offset[ interfaceIndex ] = dir::DIR_000;
         return indexOnFineGrid;
     }
 
