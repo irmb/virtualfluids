@@ -396,8 +396,6 @@ __global__ void scaleFC_K17_redesigned(
     real kxxMyyAverage = c0o1;
     real kxxMzzAverage = c0o1;
 
-
-
     ////////////////////////////////////////////////////////////////////////////////
     //! - Set the relative position of the offset cell {-1, 0, 1}
     //!
@@ -523,7 +521,7 @@ __global__ void scaleFC_K17_redesigned(
     //!
     real vvx, vvy, vvz, vx_sq, vy_sq, vz_sq;
     real mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
-    real NeqOn = c1o1; // zero; //one;   //.... one = on ..... zero = off
+    real useNEQ = c1o1; // zero; //one;   //.... one = on ..... zero = off
     real press;
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -564,9 +562,9 @@ __global__ void scaleFC_K17_redesigned(
     m_101 = -c1o3 * ((a_001 + c_100) + kxzAverage) * eps_new / omegaC * (c1o1 + press);
     m_110 = -c1o3 * ((a_010 + b_100) + kxyAverage) * eps_new / omegaC * (c1o1 + press);
 
-    m_200 = c1o3 * (        mxxMyy +        mxxMzz + mxxPyyPzz) * NeqOn;
-    m_020 = c1o3 * (-c2o1 * mxxMyy +        mxxMzz + mxxPyyPzz) * NeqOn;
-    m_002 = c1o3 * (        mxxMyy - c2o1 * mxxMzz + mxxPyyPzz) * NeqOn;
+    m_200 = c1o3 * (        mxxMyy +        mxxMzz + mxxPyyPzz) * useNEQ;
+    m_020 = c1o3 * (-c2o1 * mxxMyy +        mxxMzz + mxxPyyPzz) * useNEQ;
+    m_002 = c1o3 * (        mxxMyy - c2o1 * mxxMzz + mxxPyyPzz) * useNEQ;
 
     // linear combinations for third order moments
     m_111 = c0o1;
