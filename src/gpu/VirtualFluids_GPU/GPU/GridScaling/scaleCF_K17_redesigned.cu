@@ -31,6 +31,7 @@
 //! \author Martin Schoenherr, Anna Wellmann
 //=======================================================================================
 
+#include "DataTypes.h"
 #include "Kernel/Utilities/DistributionHelper.cuh"
 #include "Kernel/Utilities/ChimeraTransformation.h"
 #include "Kernel/Utilities/ScalingHelperFunctions.h"
@@ -117,16 +118,16 @@ __device__ __inline__ void interpolateDistributions(
     real mxxPyyPzz = m_000;
 
     real mxxMyy = -c2o3 * (a_100 - b_010 + kxxMyyAverage + c2o1 * a_200 * x - b_110 * x + a_110 * y
-                  -c2o1 * b_020 * y + a_101 * z - b_011 * z - d_111 * x * z + d_111 * y * z) * eps_new / omegaF * (c1o1 + press);
+                  -c2o1 * b_020 * y + a_101 * z - b_011 * z - b_111 * x * z + a_111 * y * z) * eps_new/ omegaF * (c1o1 + press);
     real mxxMzz = -c2o3 * (a_100 - c_001 + kxxMzzAverage + c2o1 * a_200 * x - c_101 * x + a_110 * y
-                  -c_011 * y - d_111 * x * y + a_101 * z - c2o1 * c_002 * z + d_111 * y * z) * eps_new / omegaF * (c1o1 + press);
+                  -c_011 * y - c_111 * x * y + a_101 * z - c2o1 * c_002 * z + a_111 * y * z) * eps_new/ omegaF * (c1o1 + press);
 
-    m_011     = -c1o3 * (b_001 + c_010 + kyzAverage + b_101 * x +        c_110 * x +        b_011 * y
-                + c2o1 * c_020 * y + d_111 * x * y + c2o1 * b_002 * z + c_011 * z     + d_111 * x * z) * eps_new / omegaF * (c1o1 + press);
-    m_101     = -c1o3 * (a_001 + c_100 + kxzAverage + a_101 * x + c2o1 * c_200 * x +        a_011 * y
-                +        c_110 * y + a_111 * x * y + c2o1 * a_002 * z + c_101 * z     + c_111 * y * z) * eps_new / omegaF * (c1o1 + press);
-    m_110     = -c1o3 * (a_010 + b_100 + kxyAverage + a_110 * x + c2o1 * b_200 * x + c2o1 * a_020 * y
-                +        b_110 * y + a_011 * z     +        b_101 * z + a_111 * x * z + b_111 * y * z) * eps_new / omegaF * (c1o1 + press);
+    m_011 = -c1o3 * (b_001 + c_010 + kyzAverage + b_101 * x + c_110 * x + b_011 * y + c2o1 * c_020 * y
+            + b_111 * x * y + c2o1 * b_002 * z + c_011 * z + c_111 * x * z) * eps_new / omegaF * (c1o1 + press);
+    m_101 = -c1o3 * (a_001 + c_100 + kxzAverage + a_101 * x + c2o1 * c_200 * x + a_011 * y + c_110 * y
+            + a_111 * x * y + c2o1 * a_002 * z + c_101 * z + c_111 * y * z) * eps_new / omegaF * (c1o1 + press);
+    m_110 = -c1o3 * (a_010 + b_100 + kxyAverage + a_110 * x + c2o1 * b_200 * x + c2o1 * a_020 * y
+            + b_110 * y + a_011 * z + b_101 * z + a_111 * x * z + b_111 * y * z) * eps_new / omegaF * (c1o1 + press);
 
     m_200 = c1o3 * (        mxxMyy +        mxxMzz + mxxPyyPzz) * useNEQ;
     m_020 = c1o3 * (-c2o1 * mxxMyy +        mxxMzz + mxxPyyPzz) * useNEQ;
@@ -262,14 +263,14 @@ __global__ void scaleCF_K17_redesigned(
     real omegaF  = omegaFine;
 
     // zeroth and first order moments at the source nodes
-    real drho_PPP,vx1_PPP,vx2_PPP,vx3_PPP;
-    real drho_MPP,vx1_MPP,vx2_MPP,vx3_MPP;
-    real drho_PMP,vx1_PMP,vx2_PMP,vx3_PMP;
-    real drho_MMP,vx1_MMP,vx2_MMP,vx3_MMP;
-    real drho_PPM,vx1_PPM,vx2_PPM,vx3_PPM;
-    real drho_MPM,vx1_MPM,vx2_MPM,vx3_MPM;
-    real drho_PMM,vx1_PMM,vx2_PMM,vx3_PMM;
-    real drho_MMM,vx1_MMM,vx2_MMM,vx3_MMM;
+    real drho_PPP, vx1_PPP, vx2_PPP, vx3_PPP;
+    real drho_MPP, vx1_MPP, vx2_MPP, vx3_MPP;
+    real drho_PMP, vx1_PMP, vx2_PMP, vx3_PMP;
+    real drho_MMP, vx1_MMP, vx2_MMP, vx3_MMP;
+    real drho_PPM, vx1_PPM, vx2_PPM, vx3_PPM;
+    real drho_MPM, vx1_MPM, vx2_MPM, vx3_MPM;
+    real drho_PMM, vx1_PMM, vx2_PMM, vx3_PMM;
+    real drho_MMM, vx1_MMM, vx2_MMM, vx3_MMM;
 
     // second order moments at the source nodes
     real kxyFromfcNEQ_PPP, kyzFromfcNEQ_PPP, kxzFromfcNEQ_PPP, kxxMyyFromfcNEQ_PPP, kxxMzzFromfcNEQ_PPP;
@@ -306,7 +307,6 @@ __global__ void scaleCF_K17_redesigned(
     unsigned int k_M0M = k_base_M0M;
     unsigned int k_0MM = k_base_0MM;
     unsigned int k_MMM = k_base_MMM;
-    ////////////////////////////////////////////////////////////////////////////////
 
     calculateMomentsOnSourceNodes( distCoarse, omegaC,
         k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_MMM, vx1_MMM, vx2_MMM, vx3_MMM,
@@ -349,7 +349,7 @@ __global__ void scaleCF_K17_redesigned(
     //////////////////////////////////////////////////////////////////////////
     // source node BSE = PMM 
     //////////////////////////////////////////////////////////////////////////
-    // index 
+    // index
     k_00M = k_000;
     k_M0M = k_M00;
     k_0MM = k_0M0;
@@ -376,7 +376,7 @@ __global__ void scaleCF_K17_redesigned(
     k_base_0MM = neighborYcoarse[k_base_0MM];
     k_base_MMM = neighborYcoarse[k_base_MMM];
     //////////////////////////////////////////////////////////////////////////
-    //index 
+    // index
     k_000 = k_base_000;
     k_M00 = k_base_M00;
     k_0M0 = k_base_0M0;
@@ -402,7 +402,7 @@ __global__ void scaleCF_K17_redesigned(
     k_M0M = neighborZcoarse[k_M0M];
     k_0MM = neighborZcoarse[k_0MM];
     k_MMM = neighborZcoarse[k_MMM];
-
+    
     calculateMomentsOnSourceNodes( distCoarse, omegaC,
         k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_MPP, vx1_MPP, vx2_MPP, vx3_MPP,
         kxyFromfcNEQ_MPP, kyzFromfcNEQ_MPP, kxzFromfcNEQ_MPP, kxxMyyFromfcNEQ_MPP, kxxMzzFromfcNEQ_MPP);
@@ -410,6 +410,7 @@ __global__ void scaleCF_K17_redesigned(
     //////////////////////////////////////////////////////////////////////////
     // source node TNE = PPP
     //////////////////////////////////////////////////////////////////////////
+    // index
     // index
     k_000 = k_M00;
     k_M00 = neighborXcoarse[k_M00];
@@ -423,6 +424,7 @@ __global__ void scaleCF_K17_redesigned(
     calculateMomentsOnSourceNodes( distCoarse, omegaC,
         k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_PPP, vx1_PPP, vx2_PPP, vx3_PPP,
         kxyFromfcNEQ_PPP, kyzFromfcNEQ_PPP, kxzFromfcNEQ_PPP, kxxMyyFromfcNEQ_PPP, kxxMzzFromfcNEQ_PPP);
+
 
     //////////////////////////////////////////////////////////////////////////
     // source node BNE = PPM
@@ -448,7 +450,7 @@ __global__ void scaleCF_K17_redesigned(
     real a_000, a_100, a_010, a_001, a_200, a_020, a_002, a_110, a_101, a_011, a_111;
     real b_000, b_100, b_010, b_001, b_200, b_020, b_002, b_110, b_101, b_011, b_111;
     real c_000, c_100, c_010, c_001, c_200, c_020, c_002, c_110, c_101, c_011, c_111;
-    real d_000, d_100, d_010, d_001, d_110, d_101, d_011, d_111;;
+    real d_000, d_100, d_010, d_001, d_110, d_101, d_011, d_111;
 
     a_000 = (-kxxMyyFromfcNEQ_PPM - kxxMyyFromfcNEQ_PPP + kxxMyyFromfcNEQ_MPM + kxxMyyFromfcNEQ_MPP -
             kxxMyyFromfcNEQ_PMM - kxxMyyFromfcNEQ_PMP + kxxMyyFromfcNEQ_MMM + kxxMyyFromfcNEQ_MMP -
@@ -627,9 +629,9 @@ __global__ void scaleCF_K17_redesigned(
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //drho
     real LaplaceRho = 
-        ((xoff != c0o1) || (yoff != c0o1) || (zoff != c0o1)) 
-        ? c0o1 
-        : -c3o1*(a_100*a_100 + b_010*b_010 + c_001*c_001) - c6o1 * (b_100*a_010 + c_100*a_001 + c_010*b_001); 
+        ((xoff != c0o1) || (yoff != c0o1) || (zoff != c0o1))
+        ? c0o1
+        : -c3o1 * (a_100 * a_100 + b_010 * b_010 + c_001 * c_001) - c6o1 * (b_100 * a_010 + c_100 * a_001 + c_010 * b_001);
     d_000 = ( drho_PPM + drho_PPP + drho_MPM + drho_MPP + drho_PMM + drho_PMP + drho_MMM + drho_MMP) * c1o8;
     d_100 = ( drho_PPM + drho_PPP - drho_MPM - drho_MPP + drho_PMM + drho_PMP - drho_MMM - drho_MMP) * c1o4;
     d_010 = ( drho_PPM + drho_PPP + drho_MPM + drho_MPP - drho_PMM - drho_PMP - drho_MMM - drho_MMP) * c1o4;
@@ -646,22 +648,22 @@ __global__ void scaleCF_K17_redesigned(
     //
     // X------X
     // |      | x---x
-    // |   ---+-+-> |    ----> off-vector
+    // |   ---+-+-> |    ----> offset-vector
     // |      | x---x 
     // X------X
     //
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    a_000 = a_000 + xoff * a_100 + yoff * a_010 + zoff * a_001 + xoff_sq * a_200 + yoff_sq * a_020 + zoff_sq * a_002 + 
+    a_000 = a_000 + xoff * a_100 + yoff * a_010 + zoff * a_001 + xoff_sq * a_200 + yoff_sq * a_020 + zoff_sq * a_002 +
             xoff * yoff * a_110 + xoff * zoff * a_101 + yoff * zoff * a_011;
     a_100 = a_100 + c2o1 * xoff * a_200 + yoff * a_110 + zoff * a_101;
     a_010 = a_010 + c2o1 * yoff * a_020 + xoff * a_110 + zoff * a_011;
     a_001 = a_001 + c2o1 * zoff * a_002 + xoff * a_101 + yoff * a_011;
-    b_000 = b_000 + xoff * b_100 + yoff * b_010 + zoff * b_001 + xoff_sq * b_200 + yoff_sq * b_020 + zoff_sq * b_002 + 
+    b_000 = b_000 + xoff * b_100 + yoff * b_010 + zoff * b_001 + xoff_sq * b_200 + yoff_sq * b_020 + zoff_sq * b_002 +
             xoff * yoff * b_110 + xoff * zoff * b_101 + yoff * zoff * b_011;
     b_100 = b_100 + c2o1 * xoff * b_200 + yoff * b_110 + zoff * b_101;
     b_010 = b_010 + c2o1 * yoff * b_020 + xoff * b_110 + zoff * b_011;
     b_001 = b_001 + c2o1 * zoff * b_002 + xoff * b_101 + yoff * b_011;
-    c_000 = c_000 + xoff * c_100 + yoff * c_010 + zoff * c_001 + xoff_sq * c_200 + yoff_sq * c_020 + zoff_sq * c_002 + 
+    c_000 = c_000 + xoff * c_100 + yoff * c_010 + zoff * c_001 + xoff_sq * c_200 + yoff_sq * c_020 + zoff_sq * c_002 +
             xoff * yoff * c_110 + xoff * zoff * c_101 + yoff * zoff * c_011;
     c_100 = c_100 + c2o1 * xoff * c_200 + yoff * c_110 + zoff * c_101;
     c_010 = c_010 + c2o1 * yoff * c_020 + xoff * c_110 + zoff * c_011;
