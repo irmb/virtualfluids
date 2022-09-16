@@ -45,7 +45,7 @@ Alternatively enable the options via the cmake-gui.
   - Build VirtualFluids GPU variant
 - BUILD_VF_UNIT_TESTS
   -  Build VirtualFluids unit tests
-- VF_DOUBLE_ACCURACY
+- BUILD_VF_DOUBLE_ACCURACY
     - GPU change between Double and Single Precision
 
 ### Result Files
