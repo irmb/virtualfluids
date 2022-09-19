@@ -162,6 +162,7 @@ void multipleLevel(const std::string& configPath)
     para->setViscosityRatio( dx*dx/dt );
     para->setDensityRatio( 1.0 );
 
+    // para->setMainKernel("CumulantK17CompChim");
     para->setMainKernel("TurbulentViscosityCumulantK17CompChim");
 
     para->setIsBodyForce( config.getValue<bool>("bodyForce") );

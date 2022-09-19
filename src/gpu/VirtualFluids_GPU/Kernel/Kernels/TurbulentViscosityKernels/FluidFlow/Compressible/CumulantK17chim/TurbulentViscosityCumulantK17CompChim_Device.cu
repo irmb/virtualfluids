@@ -224,10 +224,10 @@ __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
             vvy += acc_y;
             vvz += acc_z;
             
-        //    // Reset body force. To be used when not using round-off correction.
-        // bodyForceX[k] = 0.0f;
-        // bodyForceY[k] = 0.0f;
-        // bodyForceZ[k] = 0.0f;
+            //    // Reset body force. To be used when not using round-off correction.
+            // bodyForceX[k] = 0.0f;
+            // bodyForceY[k] = 0.0f;
+            // bodyForceZ[k] = 0.0f;
 
             ////////////////////////////////////////////////////////////////////////////////////
             //!> Round-off correction
@@ -326,7 +326,8 @@ __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
         ////////////////////////////////////////////////////////////////////////////////////
         //! - Calculate modified omega with turbulent viscosity
         //!
-        real omega = omega_in / (c1o1 + c3o1*omega_in*turbulentViscosity[k_000]);
+        real omega = omega_in;
+        if(turbulenceModel != TurbulenceModel::None){ omega /= (c1o1 + c3o1*omega_in*turbulentViscosity[k_000]); }
         ////////////////////////////////////////////////////////////
         // 2.
         real OxxPyyPzz = c1o1;
@@ -438,6 +439,7 @@ __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
         ////////////////////////////////////////////////////////////////////////////////////
         switch (turbulenceModel)
         {
+        case TurbulenceModel::None:
         case TurbulenceModel::AMD:  //AMD is computed in separate kernel
             break;
         case TurbulenceModel::Smagorinsky:
@@ -596,10 +598,10 @@ __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
         m_001 = -m_001;
 
         //Write to array here to distribute read/write
-        rho[k_000] = drho;
-        vx[k_000] = vvx;
-        vy[k_000] = vvy;
-        vz[k_000] = vvz;
+        // rho[k_000] = drho;
+        // vx[k_000] = vvx;
+        // vy[k_000] = vvy;
+        // vz[k_000] = vvz;
 
         ////////////////////////////////////////////////////////////////////////////////////
         //! - Chimera transform from central moments to well conditioned distributions as defined in Appendix J in
@@ -685,3 +687,5 @@ template __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim < Turbu
 template __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim < TurbulenceModel::Smagorinsky > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep);
 
 template __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim < TurbulenceModel::QR > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep);
+
+template __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim < TurbulenceModel::None > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep);

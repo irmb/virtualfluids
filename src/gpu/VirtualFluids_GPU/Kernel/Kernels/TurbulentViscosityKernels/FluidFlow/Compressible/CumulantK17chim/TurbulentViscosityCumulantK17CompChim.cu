@@ -55,3 +55,4 @@ TurbulentViscosityCumulantK17CompChim<turbulenceModel>::TurbulentViscosityCumula
 template class TurbulentViscosityCumulantK17CompChim<TurbulenceModel::AMD>;
 template class TurbulentViscosityCumulantK17CompChim<TurbulenceModel::Smagorinsky>;
 template class TurbulentViscosityCumulantK17CompChim<TurbulenceModel::QR>;
+template class TurbulentViscosityCumulantK17CompChim<TurbulenceModel::None>;

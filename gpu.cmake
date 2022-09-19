@@ -26,6 +26,7 @@ IF (BUILD_VF_GPU)
     add_subdirectory(src/gpu/VirtualFluids_GPU)
 
     add_subdirectory(apps/gpu/LBM/DrivenCavity)
+    add_subdirectory(apps/gpu/LBM/DrivenCavityMultiGPU)
     add_subdirectory(apps/gpu/LBM/SphereGPU)
     add_subdirectory(apps/gpu/LBM/BoundaryLayer)
 ELSE()

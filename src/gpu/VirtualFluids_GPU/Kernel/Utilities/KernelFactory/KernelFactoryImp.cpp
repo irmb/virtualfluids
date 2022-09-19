@@ -210,7 +210,7 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
                 newKernel = TurbulentViscosityCumulantK17CompChim<TurbulenceModel::QR>::getNewInstance(para, level);  
                 break;
             case TurbulenceModel::None:
-                throw std::runtime_error("TurbulentViscosityCumulantK17CompChim currently not implemented for TurbulenceModel::None!");
+                newKernel = TurbulentViscosityCumulantK17CompChim<TurbulenceModel::None>::getNewInstance(para, level); 
                 break;
             default:
                 throw std::runtime_error("Unknown turbulence model!");
