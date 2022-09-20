@@ -93,6 +93,8 @@ public:
     VelocityFileCollection(std::string _prefix): 
     prefix(_prefix){};
 
+    ~VelocityFileCollection() = default;
+
     virtual FileType getFileType()=0;
 
 protected:
@@ -109,7 +111,7 @@ public:
         findFiles();
     };
 
-    FileType getFileType(){return FileType::VTK;};
+    FileType getFileType(){ return FileType::VTK; };
     
 
 private:
@@ -138,6 +140,8 @@ public:
         this->writingOffset = 0;
         
     };
+    ~VelocityReader() = default;
+
     virtual void getNextVelocities(real* vx, real* vy, real* vz, real t)=0;
     virtual void fillArrays(std::vector<real>& coordsY, std::vector<real>& coordsZ)=0;
     uint getNPoints(){return nPoints; };
@@ -170,7 +174,7 @@ private:
 
 private:
     std::vector<std::vector<std::vector<uint>>> readIndices, writeIndices;
-    std::vector<std::vector<uint>> nFile;
+    std::vector<std::vector<size_t>> nFile;
     SPtr<VTKFileCollection> fileCollection;
 };
 
