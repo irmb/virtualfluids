@@ -414,7 +414,7 @@ public:
     //Precursor Writer
     void cudaAllocPrecursorWriter(PrecursorWriter* writer, int level);
     void cudaCopyPrecursorWriterIndicesHtoD(PrecursorWriter* writer, int level);
-    void cudaCopyPrecursorWriterVelocitiesDtoH(PrecursorWriter* writer, int level);
+    void cudaCopyPrecursorWriterOutputVariablesDtoH(PrecursorWriter* writer, int level);
     void cudaFreePrecursorWriter(PrecursorWriter* writer, int level);
 
 private:

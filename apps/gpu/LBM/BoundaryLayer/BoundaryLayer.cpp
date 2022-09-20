@@ -269,13 +269,13 @@ void multipleLevel(const std::string& configPath)
     planarAverageProbe->setFileNameToNOut();
     para->addProbe( planarAverageProbe );
 
-    // SPtr<WallModelProbe> wallModelProbe = SPtr<WallModelProbe>( new WallModelProbe("wallModelProbe", para->getOutputPath(), 0, tStartTmpAveraging/dt, tAveraging/dt/4.0 , tStartOutProbe/dt, tOutProbe/dt) );
-    // wallModelProbe->addAllAvailableStatistics();
-    // wallModelProbe->setFileNameToNOut();
-    // wallModelProbe->setForceOutputToStress(true);
-    // if(para->getIsBodyForce())
-    //     wallModelProbe->setEvaluatePressureGradient(true);
-    // para->addProbe( wallModelProbe );
+    SPtr<WallModelProbe> wallModelProbe = SPtr<WallModelProbe>( new WallModelProbe("wallModelProbe", para->getOutputPath(), 0, tStartTmpAveraging/dt, tAveraging/dt/4.0 , tStartOutProbe/dt, tOutProbe/dt) );
+    wallModelProbe->addAllAvailableStatistics();
+    wallModelProbe->setFileNameToNOut();
+    wallModelProbe->setForceOutputToStress(true);
+    if(para->getIsBodyForce())
+        wallModelProbe->setEvaluatePressureGradient(true);
+    para->addProbe( wallModelProbe );
 
     SPtr<PlaneProbe> planeProbe1 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_1", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
     planeProbe1->setProbePlane(100.0, 0.0, 0, dx, L_y, L_z);
@@ -313,7 +313,7 @@ void multipleLevel(const std::string& configPath)
 
     if(writePrecursor)
     {
-        SPtr<PrecursorWriter> precursorWriter = SPtr<PrecursorWriter>( new PrecursorWriter("precursorWriter", para->getOutputPath()+"/precursor", posXPrecursor, 0, L_y, 0, L_z, tStartPrecursor/dt, nTWritePrecursor) );
+        SPtr<PrecursorWriter> precursorWriter = SPtr<PrecursorWriter>( new PrecursorWriter("precursorWriter", para->getOutputPath()+"/precursor", posXPrecursor, 0, L_y, 0, L_z, tStartPrecursor/dt, nTWritePrecursor, OutputVariable::Distributions) );
         para->addProbe(precursorWriter);
     }
 
