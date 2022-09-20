@@ -7,7 +7,7 @@ Path = .
 ##################################################
 GridPath = .
 ##################################################
-Devices = 1 
+Devices = 0 
 ##################################################
 tStartOut           = 0
 tOut                = 100000
@@ -28,3 +28,15 @@ SGSconstant = 0.2
 QuadricLimiterP = 100000.0
 QuadricLimiterM = 100000.0
 QuadricLimiterD = 100000.0
+
+##################################################
+readPrecursor = false
+nTimestepsReadPrecursor = 10
+precursorFile = precursor/Precursor
+
+##################################################
+writePrecursor = false
+nTimestepsWritePrecursor = 10
+
+tStartPrecursor = 100
+posXPrecursor = 3000
