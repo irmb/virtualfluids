@@ -193,6 +193,11 @@ typedef struct  Distri27{
    real* f[27];
 } Distributions27, DistributionReferences27;
 
+// Distribution subset of f 27
+typedef struct  DistriSub9{
+   real* f[9];
+} DistributionSubset9, DistributionReferencesSubset9;
+
 // Subgrid distances q 27
 typedef struct SubgridDist27{
    real* q[27];
