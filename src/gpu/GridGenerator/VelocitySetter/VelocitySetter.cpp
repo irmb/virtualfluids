@@ -1,7 +1,6 @@
 #include "VelocitySetter.h"
 #include "GridGenerator/grid/Grid.h"
 #include "GridGenerator/grid/BoundaryConditions/BoundaryCondition.h"
-#include <cuda/CudaGrid.h>
 #include <logger/Logger.h>
 
 
@@ -11,6 +10,29 @@
 #include <iostream>
 #include <algorithm>
 
+SPtr<VelocityFileCollection> createFileCollection(std::string prefix, FileType type)
+{
+    switch(type)
+    {
+        case FileType::VTK:
+            return std::make_shared<VTKFileCollection>(prefix);
+            break;
+        default:
+            return nullptr;
+    }
+}
+
+SPtr<VelocityReader> createReaderForCollection(SPtr<VelocityFileCollection> fileCollection)
+{
+    switch(fileCollection->getFileType())
+    {
+        case FileType::VTK:
+            return std::make_shared<VTKReader>(std::static_pointer_cast<VTKFileCollection>(fileCollection));
+            break;
+        default:
+            return nullptr;
+    }
+}
 template<typename T>
 std::vector<T> readStringToVector(std::string s)
 {
@@ -30,15 +52,6 @@ std::string readAttribute(std::string line, std::string attributeName)
     size_t attributeLen = line.find("\"", attributeStart)-attributeStart;
     return line.substr(attributeStart, attributeLen);
 }
-
-SPtr<VelocityFileCollection> VelocityFileCollection::createFileCollection(std::string prefix, std::string suffix)
-{
-    if(strcmp(suffix.c_str(), VTKFileCollection::suffix.c_str())==0)
-        return std::make_shared<VTKFileCollection>(prefix);
-    else return nullptr;
-}
-
-
 
 void VTKFile::readHeader()
 {
@@ -104,7 +117,6 @@ bool VTKFile::markNANs(std::vector<uint> readIndices)
 {
     std::ifstream buf(fileName.c_str(), std::ios::in | std::ios::binary);
 
-    size_t arraySize = sizeof(double)*readIndices.size();
     std::vector<double> tmp;
     tmp.reserve(readIndices.size());
     buf.seekg(this->offsetVx);
@@ -196,14 +208,7 @@ void VTKFileCollection::findFiles()
         else foundLastLevel = true;
     }
 }
-
-
-SPtr<VelocityReader> VTKFileCollection::createReaderForCollection()
-{
-    return std::make_shared<VTKReader>(getSelf()); 
-}
-
-
+    
 void VelocityReader::getNeighbors(uint* neighborNT, uint* neighborNB, uint* neighborST, uint* neighborSB)
 {
     std::copy(planeNeighborNT.begin(), planeNeighborNT.end(), &neighborNT[writingOffset]);
@@ -226,7 +231,7 @@ void VTKReader::initializeIndexVectors()
     this->readIndices.resize(this->fileCollection->files.size());
     this->writeIndices.resize(this->fileCollection->files.size());
     this->nFile.resize(this->fileCollection->files.size());
-    for(int lev=0; lev<this->fileCollection->files.size(); lev++)
+    for(size_t lev=0; lev<this->fileCollection->files.size(); lev++)
     {
         this->readIndices[lev].resize(this->fileCollection->files[lev].size());
         this->writeIndices[lev].resize(this->fileCollection->files[lev].size());
@@ -261,7 +266,7 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
 
         for(int level= static_cast<int>(this->fileCollection->files.size())-1; level>=0; level--) // go backwards to find finest nodes first
         {
-            for(int fileId=0; static_cast<int>(fileId<this->fileCollection->files[level].size()); fileId++)
+            for(size_t fileId=0; fileId<this->fileCollection->files[level].size(); fileId++)
             {
                 VTKFile file = this->fileCollection->files[level][fileId][0];
                 if(!file.inBoundingBox(posY, posZ, 0.0f)) continue;
@@ -283,7 +288,6 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
                         this->planeNeighborST.push_back(writeIdx);
                         this->planeNeighborSB.push_back(writeIdx);
                         foundNT = true; foundNB = true; foundSB = true; foundST = true;
-                        // printf("idx %d read idx %d write idx %d ,posY %f posZ %f idx X %d idx Y %d idx Z %d\n", idx, readIndices[level][fileId].back(), writeIdx, posY, posZ, file.getIdxX(idx), file.getIdxY(idx), file.getIdxZ(idx));
                     } 
                     else
                     {
@@ -355,8 +359,8 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
         printf("Precursor was a perfect match \n");
 
 
-    for(int level=0; level<this->fileCollection->files.size(); level++){
-        for(int id=0; id<this->fileCollection->files[level].size(); id++){
+    for(size_t level=0; level<this->fileCollection->files.size(); level++){
+        for(size_t id=0; id<this->fileCollection->files[level].size(); id++){
             if(this->fileCollection->files[level][id][0].markNANs(this->readIndices[level][id]))
                 throw std::runtime_error("Found a NAN in the precursor where a velocity is needed");
     }}
@@ -377,16 +381,16 @@ uint VTKReader::getWriteIndex(int level, int id, int linearIndex)
 
 void VTKReader::getNextVelocities(real* vx, real* vy, real* vz, real t)
 {
-    for(int level=0; level<this->fileCollection->files.size(); level++)
+    for(size_t level=0; level<this->fileCollection->files.size(); level++)
     {
-        for(int id=0; id<this->fileCollection->files[level].size(); id++)
+        for(size_t id=0; id<this->fileCollection->files[level].size(); id++)
         {
-            int nF = this->nFile[level][id];
+            size_t nF = this->nFile[level][id];
             if(!this->fileCollection->files[level][id][nF].inZBounds(t))
             {
                 this->fileCollection->files[level][id][nF].unloadFile();
                 nF++;
-                printf("switching to file %d\n", nF);
+                printf("switching to file %ld\n", nF);
             }
         
             if(nF == this->fileCollection->files[level][id].size())

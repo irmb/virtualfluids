@@ -1,8 +1,6 @@
 #ifndef VELOCITY_SETTER_H_
 #define VELOCITY_SETTER_H_
 
-#include <cuda_runtime.h>
-
 #include "Core/DataTypes.h"
 #include <Core/StringUtilities/StringUtil.h>
 #include "PointerDefinitions.h"
@@ -10,13 +8,21 @@
 #include <string>
 #include <vector>
 #include <math.h>
+#include <sstream>
+
 
 class Grid;
 namespace gg
 {
     class BoundaryCondition;
 }
-class VelocityReader;
+
+
+enum class FileType
+{
+    VTK
+};
+
 
 class VTKFile
 {
@@ -81,17 +87,15 @@ private:
 };
 
 
-class VelocityFileCollection : public std::enable_shared_from_this<VelocityFileCollection>
+class VelocityFileCollection
 {
 public:
-
-    static SPtr<VelocityFileCollection> createFileCollection(std::string prefix, std::string suffix);
-    virtual SPtr<VelocityReader> createReaderForCollection()=0;
-    SPtr<VelocityFileCollection> getSelf(){ return shared_from_this(); }
-
-protected:
     VelocityFileCollection(std::string _prefix): 
     prefix(_prefix){};
+
+    virtual FileType getFileType()=0;
+
+protected:
     std::string prefix;
 };
 
@@ -105,8 +109,7 @@ public:
         findFiles();
     };
 
-    SPtr<VelocityReader> createReaderForCollection() override;
-    SPtr<VTKFileCollection> getSelf(){ return std::dynamic_pointer_cast<VTKFileCollection>(shared_from_this()); }
+    FileType getFileType(){return FileType::VTK;};
     
 
 private:
@@ -120,7 +123,7 @@ private:
     };
 
 public:
-    static inline const std::string suffix = "vti";
+    static const inline std::string suffix = "vti";
     std::vector<std::vector<std::vector<VTKFile>>> files;
 };
 
@@ -128,8 +131,7 @@ public:
 class VelocityReader
 {
 public:
-    VelocityReader(SPtr<VelocityFileCollection> _fileCollection):
-    fileCollection(_fileCollection)
+    VelocityReader()
     { 
         this->nPoints = 0; 
         this->nPointsRead = 0;
@@ -149,7 +151,6 @@ public:
     std::vector<real> weightsNT, weightsNB, weightsST,  weightsSB;
 
 protected:
-    SPtr<VelocityFileCollection> fileCollection;
     uint nPoints, nPointsRead, writingOffset;
     uint nReads=0;
 };
@@ -159,8 +160,7 @@ class VTKReader : public VelocityReader
 {
 public:
     VTKReader(SPtr<VTKFileCollection> _fileCollection):
-    fileCollection(_fileCollection),
-    VelocityReader(_fileCollection)
+    fileCollection(_fileCollection)    
     {};
     void getNextVelocities(real* vx, real* vy, real* vz, real t) override;
     void fillArrays(std::vector<real>& coordsY, std::vector<real>& coordsZ) override;
@@ -173,4 +173,9 @@ private:
     std::vector<std::vector<uint>> nFile;
     SPtr<VTKFileCollection> fileCollection;
 };
+
+
+SPtr<VelocityFileCollection> createFileCollection(std::string prefix, FileType type);
+SPtr<VelocityReader> createReaderForCollection(SPtr<VelocityFileCollection> fileCollection);
+
 #endif //VELOCITY_SETTER_H_
