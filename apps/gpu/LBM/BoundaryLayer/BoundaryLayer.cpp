@@ -217,8 +217,7 @@ void multipleLevel(const std::string& configPath)
                                             0.0, 0.0, 1.0,              // wall normals
                                             samplingOffset, z0/dx);     // wall model settinng
         para->setHasWallModelMonitor(true);
-
-        auto precursor = SPtr<VTKFileCollection>( new VTKFileCollection(precursorFile) );
+        auto precursor = createFileCollection(precursorFile, FileType::VTK);
         
         gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0f,  0.0f, -1.0f);
 

@@ -28,12 +28,14 @@
 #include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
 #include "GridGenerator/grid/BoundaryConditions/Side.h"
+#include "GridGenerator/grid/BoundaryConditions/BoundaryCondition.h"
+
 #include "GridGenerator/grid/GridFactory.h"
 
 #include "GridGenerator/io/SimulationFileWriter/SimulationFileWriter.h"
 #include "GridGenerator/io/GridVTKWriter/GridVTKWriter.h"
-#include "GridGenerator/io/STLReaderWriter/STLReader.h"
-#include "GridGenerator/io/STLReaderWriter/STLWriter.h"
+#include "GridGenerator/VelocitySetter/VelocitySetter.h"
+
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -48,9 +50,9 @@
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PointProbe.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlaneProbe.h"
 #include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
+#include "VirtualFluids_GPU/TurbulenceModels/TurbulenceModelFactory.h"
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
-#include "VirtualFluids_GPU/PreCollisionInteractor/VelocitySetter.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -99,7 +101,6 @@ void multipleLevel(const std::string& configPath)
     vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();
 
     auto gridFactory = GridFactory::make();
-    gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -173,7 +174,10 @@ void multipleLevel(const std::string& configPath)
     gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
 
     bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityAndPressureCompressible);
-    bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::PressureNonEquilibriumCompressible);
+    bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflectivePressureCorrection);
+
+    SPtr<TurbulenceModelFactory> tmFactory = std::make_shared<TurbulenceModelFactory>(para);
+    tmFactory->readConfigFile(config);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -208,7 +212,7 @@ void multipleLevel(const std::string& configPath)
 
     auto gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
 
-    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory);
+    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory, tmFactory);
     sim.run();
 }
 
