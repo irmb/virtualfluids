@@ -264,9 +264,9 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
         real posZ = coordsZ[i];
         bool foundNT = false, foundNB = false, foundST = false, foundSB = false, foundAll = false;
 
-        for(int level= static_cast<int>(this->fileCollection->files.size())-1; level>=0; level--) // go backwards to find finest nodes first
+        for(int level = (int)this->fileCollection->files.size()-1; level>=0; level--) // go backwards to find finest nodes first
         {
-            for(size_t fileId=0; fileId<this->fileCollection->files[level].size(); fileId++)
+            for(int fileId=0; fileId<(int)this->fileCollection->files[level].size(); fileId++)
             {
                 VTKFile file = this->fileCollection->files[level][fileId][0];
                 if(!file.inBoundingBox(posY, posZ, 0.0f)) continue;
@@ -390,7 +390,7 @@ void VTKReader::getNextVelocities(real* vx, real* vy, real* vz, real t)
             {
                 this->fileCollection->files[level][id][nF].unloadFile();
                 nF++;
-                printf("switching to file %ld\n", nF);
+                printf("switching to file %zd\n", nF);
             }
         
             if(nF == this->fileCollection->files[level][id].size())
