@@ -93,7 +93,7 @@ public:
     VelocityFileCollection(std::string _prefix): 
     prefix(_prefix){};
 
-    ~VelocityFileCollection() = default;
+    virtual ~VelocityFileCollection() = default;
 
     virtual FileType getFileType()=0;
 
@@ -140,7 +140,7 @@ public:
         this->writingOffset = 0;
         
     };
-    ~VelocityReader() = default;
+    virtual ~VelocityReader() = default;
 
     virtual void getNextVelocities(real* vx, real* vy, real* vz, real t)=0;
     virtual void fillArrays(std::vector<real>& coordsY, std::vector<real>& coordsZ)=0;
