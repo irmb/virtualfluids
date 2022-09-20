@@ -249,7 +249,7 @@ void LevelGridBuilder::setPrecursorBoundaryCondition(SideType sideType, real vx,
 {
     for (uint level = 0; level < getNumberOfGridLevels(); level++)
     {
-        auto reader = fileCollection->createReaderForCollection();
+        auto reader = createReaderForCollection(fileCollection);
         SPtr<PrecursorBoundaryCondition> precursorBoundaryCondition = PrecursorBoundaryCondition::make(vx, vy, vz, reader, nTRead);
 
         auto side = SideFactory::make(sideType);
