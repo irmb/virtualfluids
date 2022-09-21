@@ -221,7 +221,7 @@ void multipleLevel(const std::string& configPath)
         
         gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0f,  0.0f, -1.0f);
 
-        gridBuilder->setPrecursorBoundaryCondition(SideType::MX, 0.0f, 0.0f, 0.0f, precursor, nTReadPrecursor);
+        gridBuilder->setPrecursorBoundaryCondition(SideType::MX, precursor, nTReadPrecursor);
         
         gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.f);
     } 

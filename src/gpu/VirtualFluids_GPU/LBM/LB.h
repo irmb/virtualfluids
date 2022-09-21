@@ -229,6 +229,9 @@ typedef struct QforPrecursorBC{
    real* vxCurrent, *vyCurrent, *vzCurrent;
    real* vxNext, *vyNext, *vzNext;
    real velocityX, velocityY, velocityZ;
+   real *f0Last, *f1Last, *f2Last, *f3Last, *f4Last, *f5Last, *f6Last, *f7Last, *f8Last;
+   real *f0Current, *f1Current, *f2Current, *f3Current, *f4Current, *f5Current, *f6Current, *f7Current, *f8Current;
+   real *f0Next, *f1Next, *f2Next, *f3Next, *f4Next, *f5Next, *f6Next, *f7Next, *f8Next;
 }QForPrecursorBoundaryCondition;
 
 //BCTemp

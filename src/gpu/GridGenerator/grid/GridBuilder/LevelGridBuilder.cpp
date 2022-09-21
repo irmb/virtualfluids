@@ -245,12 +245,12 @@ void LevelGridBuilder::setNoSlipGeometryBoundaryCondition()
     }
 }
 
-void LevelGridBuilder::setPrecursorBoundaryCondition(SideType sideType, real vx, real vy, real vz, SPtr<VelocityFileCollection> fileCollection, int nTRead)
+void LevelGridBuilder::setPrecursorBoundaryCondition(SideType sideType,SPtr<VelocityFileCollection> fileCollection, int nTRead)
 {
     for (uint level = 0; level < getNumberOfGridLevels(); level++)
     {
         auto reader = createReaderForCollection(fileCollection);
-        SPtr<PrecursorBoundaryCondition> precursorBoundaryCondition = PrecursorBoundaryCondition::make(vx, vy, vz, reader, nTRead);
+        SPtr<PrecursorBoundaryCondition> precursorBoundaryCondition = PrecursorBoundaryCondition::make( reader, nTRead);
 
         auto side = SideFactory::make(sideType);
 
