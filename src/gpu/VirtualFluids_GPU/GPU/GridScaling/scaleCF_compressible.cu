@@ -26,7 +26,7 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file scaleCF_K17_redesigned.cu
+//! \file scaleCF_compressible.cu
 //! \ingroup GPU/GridScaling
 //! \author Martin Schoenherr, Anna Wellmann
 //=======================================================================================
@@ -217,7 +217,7 @@ __device__ __inline__ void interpolateDistributions(
 //!
 
 // based on scaleCF_RhoSq_comp_27
-__global__ void scaleCF_K17_redesigned(
+__global__ void scaleCF_compressible(
     real* distributionsCoarse, 
     real* distributionsFine, 
     unsigned int* neighborXcoarse,

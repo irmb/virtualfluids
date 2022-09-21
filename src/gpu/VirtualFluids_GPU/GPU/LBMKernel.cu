@@ -4888,12 +4888,12 @@ void ScaleCF_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulat
    getLastCudaError("scaleCF_RhoSq_27 execution failed");
 }
 
-void ScaleCF_K17_redesigned(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellCF * icellCF, OffCF& offsetCF, CUstream_st *stream)
+void ScaleCF_compressible(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellCF * icellCF, OffCF& offsetCF, CUstream_st *stream)
 {
    dim3 grid = vf::cuda::getCudaGrid(parameterDeviceC->numberofthreads,  icellCF->kCF);
    dim3 threads(parameterDeviceC->numberofthreads, 1, 1 );
 
-   scaleCF_K17_redesigned<<<grid, threads, 0, stream>>>(
+   scaleCF_compressible<<<grid, threads, 0, stream>>>(
       parameterDeviceC->distributions.f[0],
       parameterDeviceF->distributions.f[0],
       parameterDeviceC->neighborX,
@@ -4911,7 +4911,7 @@ void ScaleCF_K17_redesigned(LBMSimulationParameter * parameterDeviceC, LBMSimula
       parameterDeviceC->omega,
       parameterDeviceF->omega,
       offsetCF);
-   getLastCudaError("scaleCF_K17_redesigned execution failed");
+   getLastCudaError("scaleCF_compressible execution failed");
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -5956,12 +5956,12 @@ void ScaleFC_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulat
    getLastCudaError("scaleFC_RhoSq_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-void ScaleFC_K17_redesigned(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellFC * icellFC, OffFC &offsetFC, CUstream_st *stream)
+void ScaleFC_compressible(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellFC * icellFC, OffFC &offsetFC, CUstream_st *stream)
 {
    dim3 grid = vf::cuda::getCudaGrid(parameterDeviceC->numberofthreads,  icellFC->kFC);
    dim3 threads(parameterDeviceC->numberofthreads, 1, 1 );
 
-   scaleFC_K17_redesigned<<<grid, threads, 0, stream>>>(
+   scaleFC_compressible<<<grid, threads, 0, stream>>>(
       parameterDeviceC->distributions.f[0],
       parameterDeviceF->distributions.f[0],
       parameterDeviceC->neighborX,
@@ -5979,7 +5979,7 @@ void ScaleFC_K17_redesigned(LBMSimulationParameter * parameterDeviceC, LBMSimula
       parameterDeviceC->omega,
       parameterDeviceF->omega,
       offsetFC);
-   getLastCudaError("scaleFC_K17_redesigned execution failed");
+   getLastCudaError("scaleFC_compressible execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void ScaleFC_RhoSq_3rdMom_comp_27( real* DC,

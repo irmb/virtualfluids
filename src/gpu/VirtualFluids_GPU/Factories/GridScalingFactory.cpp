@@ -13,8 +13,8 @@ gridScalingFC GridScalingFactory::getGridScalingFC() const
         case GridScaling::ScaleRhoSq:
             return ScaleFC_RhoSq_comp_27;
             break;
-        case GridScaling::ScaleK17:
-            return ScaleFC_K17_redesigned;
+        case GridScaling::ScaleCompressible:
+            return ScaleFC_compressible;
             break;
         default:
             return nullptr;
@@ -28,8 +28,8 @@ gridScalingCF GridScalingFactory::getGridScalingCF() const
         case GridScaling::ScaleRhoSq:
             return ScaleCF_RhoSq_comp_27;
             break;
-        case GridScaling::ScaleK17:
-            return ScaleCF_K17_redesigned;
+        case GridScaling::ScaleCompressible:
+            return ScaleCF_compressible;
             break;
         default:
             return nullptr;

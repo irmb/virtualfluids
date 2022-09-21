@@ -118,7 +118,7 @@ int main()
 
         gridBuilder->addGrid(new Cuboid(-0.25, -0.25, -0.25, 0.25, 0.25, 0.25), 1); // add fine grid
         GridScalingFactory scalingFactory = GridScalingFactory();
-        scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleK17);
+        scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
         gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 

@@ -50,8 +50,8 @@ class GridScalingFactory
 public:
     //! \brief An enumeration for selecting a scaling function
     enum class GridScaling {
-        //! - ScaleK17 = scaling for cumulant K17 kernel
-        ScaleK17,
+        //! - ScaleCompressible = basic scaling for compressible fluid flow
+        ScaleCompressible,
         //! - DEPRECATED: ScaleRhoSq = scaling for cumulant kernel rho squared
         ScaleRhoSq,
         NotSpecified
