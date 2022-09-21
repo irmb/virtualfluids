@@ -36,6 +36,8 @@ public:
     };
 
     void getVelocities(real* vx, real* vy, real* vz, std::vector<uint> readIndeces, std::vector<uint> writeIndices, uint offsetRead, uint offsetWrite);
+    void getDistributions(  real* f0, real* f1, real* f2, real* f3, real* f4, real* f5, real* f6, real* f7, real* f8, 
+                            std::vector<uint> readIndeces, std::vector<uint> writeIndices, uint offsetRead, uint offsetWrite);
     bool markNANs(std::vector<uint> readIndices);
     bool inBoundingBox(real posX, real posY, real posZ){return  inXBounds(posX) && inYBounds(posY) && inZBounds(posZ); };
     bool inXBounds(real posX){ return posX<=maxX && posX>=minX; };
@@ -83,6 +85,7 @@ private:
     real deltaX, deltaY, deltaZ;
     int nx, ny, nz;
     std::vector<double> vxFile, vyFile, vzFile;
+    std::vector<double> f0File, f1File, f2File, f3File, f4File, f5File, f6File, f7File, f8File; 
     bool loaded;
 };
 
@@ -143,6 +146,7 @@ public:
     virtual ~VelocityReader() = default;
 
     virtual void getNextVelocities(real* vx, real* vy, real* vz, real t)=0;
+    virtual void getNextDistributions(real* f0, real* f1, real* f2, real* f3, real* f4, real* f5, real* f6, real* f7, real* f8, real t)=0;
     virtual void fillArrays(std::vector<real>& coordsY, std::vector<real>& coordsZ)=0;
     uint getNPoints(){return nPoints; };
     uint getNPointsRead(){return nPointsRead; };
@@ -167,6 +171,7 @@ public:
     fileCollection(_fileCollection)    
     {};
     void getNextVelocities(real* vx, real* vy, real* vz, real t) override;
+    void getNextDistributions(real* f0, real* f1, real* f2, real* f3, real* f4, real* f5, real* f6, real* f7, real* f8, real t) override;
     void fillArrays(std::vector<real>& coordsY, std::vector<real>& coordsZ) override;
 private:  
     uint getWriteIndex(int level, int id, int linearIdx);
