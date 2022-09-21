@@ -29,29 +29,6 @@ void index2d(int idx, int& y, int& z, int ny, int nz)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-__inline__ __device__ __host__ void getPointersToDistributionSubset9(DistributionReferencesSubset9 &dist, real *distributionArray, const uint numberOfNodes)
-{
-    dist.f[0   ]   = &distributionArray[0   *numberOfNodes];
-    dist.f[1   ]   = &distributionArray[1   *numberOfNodes];
-    dist.f[2   ]   = &distributionArray[2   *numberOfNodes];
-    dist.f[3   ]   = &distributionArray[3   *numberOfNodes];
-    dist.f[4   ]   = &distributionArray[4   *numberOfNodes];
-    dist.f[5   ]   = &distributionArray[5   *numberOfNodes];
-    dist.f[6   ]   = &distributionArray[6   *numberOfNodes];
-    dist.f[7   ]   = &distributionArray[7   *numberOfNodes];
-    dist.f[8   ]   = &distributionArray[8   *numberOfNodes];
-    
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-__inline__ __device__ __host__ DistributionReferencesSubset9 getDistributionReferencesSubset9(real* distributionSubset, unsigned int numberOfNodes)
-{
-    DistributionReferencesSubset9 distribution_references;
-    getPointersToDistributionSubset9(distribution_references, distributionSubset, numberOfNodes);
-    return distribution_references;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 __global__ void fillArrayVelocities(uint nNodes, uint* indices, 
                                     real *precursorVx,
                                     real *precursorVy, 
@@ -75,7 +52,7 @@ __global__ void fillArrayVelocities(uint nNodes, uint* indices,
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 __global__ void fillArrayDistributions( uint nNodes, uint* indices, 
-                                        real* precursorDistributions,
+                                        real *f0D, real *f1D, real *f2D, real *f3D, real *f4D, real *f5D, real *f6D, real *f7D, real *f8D,
                                         real* distributions,
                                         uint* neighborX, uint* neighborY, uint* neighborZ,
                                         bool isEvenTimestep,
@@ -86,8 +63,6 @@ __global__ void fillArrayDistributions( uint nNodes, uint* indices,
     if(node>=nNodes) return;
 
     Distributions27 dist = vf::gpu::getDistributionReferences27(distributions, numberOfLBnodes, isEvenTimestep);
-
-    DistributionSubset9 distPrecursor = getDistributionReferencesSubset9(distributions, nNodes);    
     
     ////////////////////////////////////////////////////////////////////////////////
     // ! - Set neighbor indices (necessary for indirect addressing)
@@ -103,18 +78,18 @@ __global__ void fillArrayDistributions( uint nNodes, uint* indices,
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Get local distributions in PX directions
     //!
-    (distPrecursor.f[0])[node] = (dist.f[DIR_P00])[k_000];
-    (distPrecursor.f[1])[node] = (dist.f[DIR_PP0])[k_000];
-    (distPrecursor.f[2])[node] = (dist.f[DIR_PM0])[k_0M0];
-    (distPrecursor.f[3])[node] = (dist.f[DIR_P0P])[k_000];
-    (distPrecursor.f[4])[node] = (dist.f[DIR_P0M])[k_00M];
-    (distPrecursor.f[5])[node] = (dist.f[DIR_PPP])[k_000];
-    (distPrecursor.f[6])[node] = (dist.f[DIR_PMP])[k_0M0];
-    (distPrecursor.f[7])[node] = (dist.f[DIR_PPM])[k_00M];
-    (distPrecursor.f[8])[node] = (dist.f[DIR_PMM])[k_0MM];
+    f0D[node] = (dist.f[DIR_P00])[k_000];
+    f1D[node] = (dist.f[DIR_PP0])[k_000];
+    f2D[node] = (dist.f[DIR_PM0])[k_0M0];
+    f3D[node] = (dist.f[DIR_P0P])[k_000];
+    f4D[node] = (dist.f[DIR_P0M])[k_00M];
+    f5D[node] = (dist.f[DIR_PPP])[k_000];
+    f6D[node] = (dist.f[DIR_PMP])[k_0M0];
+    f7D[node] = (dist.f[DIR_PPM])[k_00M];
+    f8D[node] = (dist.f[DIR_PMM])[k_0MM];
     
-    if(node==1)
-        printf("thread %i, pos %i, f0 %f \n", node, indices[node], (distPrecursor.f[0])[node]);
+    // if(node==1)
+    //     printf("thread %i, pos %i, f0 %f \n", node, indices[node], f0D[node]);
 }
 
 
@@ -214,7 +189,7 @@ void PrecursorWriter::interact(Parameter* para, CudaMemoryManager* cudaManager, 
         else if(this->outputVariable==OutputVariable::Distributions)
         {
             fillArrayDistributions<<<grid.grid, grid.threads>>>(precursorStruct->nPoints, precursorStruct->indicesD, 
-                                                                precursorStruct->distD.f[0],
+                                                                precursorStruct->f0D, precursorStruct->f1D, precursorStruct->f2D, precursorStruct->f3D, precursorStruct->f4D, precursorStruct->f5D, precursorStruct->f6D, precursorStruct->f7D, precursorStruct->f8D,
                                                                 para->getParD(level)->distributions.f[0],
                                                                 para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ,
                                                                 para->getEvenOrOdd(level), para->getParD(level)->numberOfNodes);
@@ -223,11 +198,6 @@ void PrecursorWriter::interact(Parameter* para, CudaMemoryManager* cudaManager, 
 
         cudaManager->cudaCopyPrecursorWriterOutputVariablesDtoH(this, level);
         
-        DistributionSubset9 distPrecursor = getDistributionReferencesSubset9(precursorStruct->distH.f[0], precursorStruct->nPoints*precursorStruct->timestepsBuffered);
-        uint node = 1;
-        int idx = node+t*precursorStruct->nPoints;
-        printf("host %i, pos %i, f0 %f \n", node, precursorStruct->indicesH[node], (distPrecursor.f[0])[idx]);
-
         precursorStruct->timestepsBuffered++;
 
         if(precursorStruct->timestepsBuffered >= precursorStruct->timestepsPerFile)
@@ -302,26 +272,24 @@ void PrecursorWriter::write(Parameter* para, int level)
                                     f7Double(nPointsInPlane*precursorStruct->timestepsBuffered, NAN), 
                                     f8Double(nPointsInPlane*precursorStruct->timestepsBuffered, NAN);
 
-        DistributionSubset9 distPrecursor = getDistributionReferencesSubset9(precursorStruct->distH.f[0], precursorStruct->nPoints*precursorStruct->timestepsBuffered);
-
         for( uint timestep=0; timestep<precursorStruct->timestepsBuffered; timestep++)
         {
-            printf("offset %d npoints %d buf %d, max%d\n",timestep, precursorStruct->nPoints, precursorStruct->timestepsBuffered, precursorStruct->timestepsPerFile);
+            // printf("offset %d npoints %d buf %d, max%d\n",timestep, precursorStruct->nPoints, precursorStruct->timestepsBuffered, precursorStruct->timestepsPerFile);
             for (uint pos = 0; pos < precursorStruct->nPoints; pos++)
             {
                 int indexOnPlane = precursorStruct->indicesOnPlane[pos]+timestep*nPointsInPlane;
                 int idx = pos+timestep*precursorStruct->nPoints;
-                printf("timestep %i, pos %i, iOP %i \n", timestep, pos, indexOnPlane);
-                printf("f0 %f\n", double((distPrecursor.f[0])[idx]));
-                f0Double[indexOnPlane] = double((distPrecursor.f[0])[idx]);
-                f1Double[indexOnPlane] = double((distPrecursor.f[1])[idx]);
-                f2Double[indexOnPlane] = double((distPrecursor.f[2])[idx]);
-                f3Double[indexOnPlane] = double((distPrecursor.f[3])[idx]);
-                f4Double[indexOnPlane] = double((distPrecursor.f[4])[idx]);
-                f5Double[indexOnPlane] = double((distPrecursor.f[5])[idx]);
-                f6Double[indexOnPlane] = double((distPrecursor.f[6])[idx]);
-                f7Double[indexOnPlane] = double((distPrecursor.f[7])[idx]);
-                f8Double[indexOnPlane] = double((distPrecursor.f[8])[idx]);
+                // printf("timestep %i, pos %i, iOP %i \n", timestep, pos, indexOnPlane);
+                // printf("f0 %f\n", double(precursorStruct->f0H[idx]) );
+                f0Double[indexOnPlane] = double(precursorStruct->f0H[idx]);
+                f1Double[indexOnPlane] = double(precursorStruct->f1H[idx]);
+                f2Double[indexOnPlane] = double(precursorStruct->f2H[idx]);
+                f3Double[indexOnPlane] = double(precursorStruct->f3H[idx]);
+                f4Double[indexOnPlane] = double(precursorStruct->f4H[idx]);
+                f5Double[indexOnPlane] = double(precursorStruct->f5H[idx]);
+                f6Double[indexOnPlane] = double(precursorStruct->f6H[idx]);
+                f7Double[indexOnPlane] = double(precursorStruct->f7H[idx]);
+                f8Double[indexOnPlane] = double(precursorStruct->f8H[idx]);
             }
         }
         nodedata = {f0Double, f1Double, f2Double, f3Double, f4Double, f5Double, f6Double, f7Double, f8Double};

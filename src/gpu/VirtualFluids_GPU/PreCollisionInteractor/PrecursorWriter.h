@@ -27,7 +27,8 @@ struct PrecursorStruct
     real *vxH, *vxD;
     real *vyH, *vyD;
     real *vzH, *vzD;
-    DistributionSubset9 distH, distD;
+    real *f0H, *f1H, *f2H, *f3H, *f4H, *f5H, *f6H, *f7H, *f8H;
+    real *f0D, *f1D, *f2D, *f3D, *f4D, *f5D, *f6D, *f7D, *f8D;
     UbTupleInt4 extent;
     UbTupleFloat2 origin;
     UbTupleFloat3 spacing;

@@ -15,6 +15,7 @@
 
 #include "lbm/constants/NumericConstants.h"
 
+
 void CudaMemoryManager::cudaAllocFull(int lev)
 {
     checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->geo      ), parameter->getParH(lev)->mem_size_int  ));
@@ -3430,30 +3431,44 @@ void CudaMemoryManager::cudaAllocPrecursorWriter(PrecursorWriter* writer, int le
     checkCudaErrors( cudaMallocHost((void**) &prec->indicesH, indSize));
     checkCudaErrors( cudaMalloc((void**) &prec->indicesD, indSize));
 
+    size_t outputSize  = prec->nPoints*sizeof(real);
+    size_t ouputSizeH = outputSize * prec->timestepsPerFile;
+
     if(writer->getOutputVariable()==OutputVariable::Velocities)
     {
-        size_t velSize  = prec->nPoints*sizeof(real);
-        size_t velSizeH = velSize * prec->timestepsPerFile;
+        checkCudaErrors( cudaMallocHost((void**) &prec->vxH, ouputSizeH));
+        checkCudaErrors( cudaMallocHost((void**) &prec->vyH, ouputSizeH));
+        checkCudaErrors( cudaMallocHost((void**) &prec->vzH, ouputSizeH));
 
-        checkCudaErrors( cudaMallocHost((void**) &prec->vxH, velSizeH));
-        checkCudaErrors( cudaMallocHost((void**) &prec->vyH, velSizeH));
-        checkCudaErrors( cudaMallocHost((void**) &prec->vzH, velSizeH));
+        checkCudaErrors( cudaMalloc((void**) &prec->vxD, outputSize));
+        checkCudaErrors( cudaMalloc((void**) &prec->vyD, outputSize));
+        checkCudaErrors( cudaMalloc((void**) &prec->vzD, outputSize));
 
-        checkCudaErrors( cudaMalloc((void**) &prec->vxD, velSize));
-        checkCudaErrors( cudaMalloc((void**) &prec->vyD, velSize));
-        checkCudaErrors( cudaMalloc((void**) &prec->vzD, velSize));
-
-        setMemsizeGPU(indSize+3*velSize, false);
+        setMemsizeGPU(indSize+3*outputSize, false);
     }
     else if(writer->getOutputVariable()==OutputVariable::Distributions)
     {
-        size_t distSize  = prec->nPoints*sizeof(real)*9;
-        size_t distSizeH = distSize * prec->timestepsPerFile;
-        
-        checkCudaErrors( cudaMallocHost((void**) &prec->distH.f[0], distSizeH));
-        checkCudaErrors( cudaMalloc((void**) &prec->distD.f[0], distSize));
+        checkCudaErrors( cudaMallocHost((void**) &prec->f0H, ouputSizeH));
+        checkCudaErrors( cudaMallocHost((void**) &prec->f1H, ouputSizeH));
+        checkCudaErrors( cudaMallocHost((void**) &prec->f2H, ouputSizeH));
+        checkCudaErrors( cudaMallocHost((void**) &prec->f3H, ouputSizeH));
+        checkCudaErrors( cudaMallocHost((void**) &prec->f4H, ouputSizeH));
+        checkCudaErrors( cudaMallocHost((void**) &prec->f5H, ouputSizeH));
+        checkCudaErrors( cudaMallocHost((void**) &prec->f6H, ouputSizeH));
+        checkCudaErrors( cudaMallocHost((void**) &prec->f7H, ouputSizeH));
+        checkCudaErrors( cudaMallocHost((void**) &prec->f8H, ouputSizeH));
 
-        setMemsizeGPU(indSize+distSize, false);
+        checkCudaErrors( cudaMalloc((void**) &prec->f0D, outputSize));
+        checkCudaErrors( cudaMalloc((void**) &prec->f1D, outputSize));
+        checkCudaErrors( cudaMalloc((void**) &prec->f2D, outputSize));
+        checkCudaErrors( cudaMalloc((void**) &prec->f3D, outputSize));
+        checkCudaErrors( cudaMalloc((void**) &prec->f4D, outputSize));
+        checkCudaErrors( cudaMalloc((void**) &prec->f5D, outputSize));
+        checkCudaErrors( cudaMalloc((void**) &prec->f6D, outputSize));
+        checkCudaErrors( cudaMalloc((void**) &prec->f7D, outputSize));
+        checkCudaErrors( cudaMalloc((void**) &prec->f8D, outputSize));
+
+        setMemsizeGPU(indSize+9*outputSize, false);
     }
     else
     {
@@ -3471,19 +3486,31 @@ void CudaMemoryManager::cudaCopyPrecursorWriterOutputVariablesDtoH(PrecursorWrit
     auto prec =  writer->getPrecursorStruct(level);
     int off = prec->nPoints*prec->timestepsBuffered;
 
+    size_t outputSize = prec->nPoints*sizeof(real);
+
     if(writer->getOutputVariable()==OutputVariable::Velocities)
     {
-        size_t velSize = prec->nPoints*sizeof(real);
 
-        checkCudaErrors( cudaMemcpy(&prec->vxH[off], prec->vxD, velSize, cudaMemcpyDeviceToHost) );
-        checkCudaErrors( cudaMemcpy(&prec->vyH[off], prec->vyD, velSize, cudaMemcpyDeviceToHost) );
-        checkCudaErrors( cudaMemcpy(&prec->vzH[off], prec->vzD, velSize, cudaMemcpyDeviceToHost) );
+        checkCudaErrors( cudaMemcpy(&prec->vxH[off], prec->vxD, outputSize, cudaMemcpyDeviceToHost) );
+        checkCudaErrors( cudaMemcpy(&prec->vyH[off], prec->vyD, outputSize, cudaMemcpyDeviceToHost) );
+        checkCudaErrors( cudaMemcpy(&prec->vzH[off], prec->vzD, outputSize, cudaMemcpyDeviceToHost) );
     }
     else if(writer->getOutputVariable()==OutputVariable::Distributions)
     {
-        size_t distSize  = prec->nPoints*sizeof(real)*9;
+        checkCudaErrors( cudaMemcpy(&prec->f0H[off], prec->f0D, outputSize, cudaMemcpyDeviceToHost) );
+        checkCudaErrors( cudaMemcpy(&prec->f1H[off], prec->f1D, outputSize, cudaMemcpyDeviceToHost) );  
+        checkCudaErrors( cudaMemcpy(&prec->f2H[off], prec->f2D, outputSize, cudaMemcpyDeviceToHost) );  
+        checkCudaErrors( cudaMemcpy(&prec->f3H[off], prec->f3D, outputSize, cudaMemcpyDeviceToHost) );  
+        checkCudaErrors( cudaMemcpy(&prec->f4H[off], prec->f4D, outputSize, cudaMemcpyDeviceToHost) );  
+        checkCudaErrors( cudaMemcpy(&prec->f5H[off], prec->f5D, outputSize, cudaMemcpyDeviceToHost) );  
+        checkCudaErrors( cudaMemcpy(&prec->f6H[off], prec->f6D, outputSize, cudaMemcpyDeviceToHost) );  
+        checkCudaErrors( cudaMemcpy(&prec->f7H[off], prec->f7D, outputSize, cudaMemcpyDeviceToHost) );  
+        checkCudaErrors( cudaMemcpy(&prec->f8H[off], prec->f8D, outputSize, cudaMemcpyDeviceToHost) );  
 
-        checkCudaErrors( cudaMemcpy( &(prec->distH.f[0])[off], prec->distD.f[0], distSize, cudaMemcpyDeviceToHost));
+        // uint node = 1;
+        // int idx = off+node;
+        // printf("host %i, pos %i, f0 %f \n\n", node, prec->indicesH[node], prec->f0H[idx]);
+
     }
     else
     {
@@ -3508,8 +3535,24 @@ void CudaMemoryManager::cudaFreePrecursorWriter(PrecursorWriter* writer, int lev
     }
     else if(writer->getOutputVariable()==OutputVariable::Distributions)
     {
-        checkCudaErrors( cudaFreeHost(writer->getPrecursorStruct(level)->distH.f[0]));
-        checkCudaErrors( cudaFree(writer->getPrecursorStruct(level)->distD.f[0]));
+        checkCudaErrors( cudaFreeHost(writer->getPrecursorStruct(level)->f0H));
+        checkCudaErrors( cudaFreeHost(writer->getPrecursorStruct(level)->f1H));
+        checkCudaErrors( cudaFreeHost(writer->getPrecursorStruct(level)->f2H));
+        checkCudaErrors( cudaFreeHost(writer->getPrecursorStruct(level)->f3H));
+        checkCudaErrors( cudaFreeHost(writer->getPrecursorStruct(level)->f4H));
+        checkCudaErrors( cudaFreeHost(writer->getPrecursorStruct(level)->f5H));
+        checkCudaErrors( cudaFreeHost(writer->getPrecursorStruct(level)->f6H));
+        checkCudaErrors( cudaFreeHost(writer->getPrecursorStruct(level)->f7H));
+        checkCudaErrors( cudaFreeHost(writer->getPrecursorStruct(level)->f8H));
+        checkCudaErrors( cudaFree(writer->getPrecursorStruct(level)->f0H));
+        checkCudaErrors( cudaFree(writer->getPrecursorStruct(level)->f1H));
+        checkCudaErrors( cudaFree(writer->getPrecursorStruct(level)->f2H));
+        checkCudaErrors( cudaFree(writer->getPrecursorStruct(level)->f3H));
+        checkCudaErrors( cudaFree(writer->getPrecursorStruct(level)->f4H));
+        checkCudaErrors( cudaFree(writer->getPrecursorStruct(level)->f5H));
+        checkCudaErrors( cudaFree(writer->getPrecursorStruct(level)->f6H));
+        checkCudaErrors( cudaFree(writer->getPrecursorStruct(level)->f7H));
+        checkCudaErrors( cudaFree(writer->getPrecursorStruct(level)->f8H)); 
     }
     else
     {
