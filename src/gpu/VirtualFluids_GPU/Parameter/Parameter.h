@@ -528,7 +528,6 @@ public:
     void setUseWale(bool useWale);
     void setTurbulenceModel(TurbulenceModel turbulenceModel);
     void setUseTurbulentViscosity(bool useTurbulentViscosity);
-    void setUseAMD(bool useAMD);
     void setSGSConstant(real SGSConstant);
     void setHasWallModelMonitor(bool hasWallModelMonitor);
     void setUseInitNeq(bool useInitNeq);
