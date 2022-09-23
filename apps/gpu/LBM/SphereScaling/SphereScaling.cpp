@@ -157,6 +157,8 @@ void multipleLevel(std::filesystem::path& configPath)
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    VF_LOG_INFO("Number of processes: {}", para->getNumprocs());
+
     VF_LOG_INFO("LB parameters:");
     VF_LOG_INFO("velocity LB [dx/dt]              = {}", vxLB);
     VF_LOG_INFO("viscosity LB [dx/dt]             = {}", viscosityLB);
