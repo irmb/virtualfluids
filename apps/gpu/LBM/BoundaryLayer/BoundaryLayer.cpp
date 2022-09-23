@@ -176,21 +176,55 @@ void multipleLevel(const std::string& configPath)
     SPtr<TurbulenceModelFactory> tmFactory = SPtr<TurbulenceModelFactory>( new TurbulenceModelFactory(para) );
     tmFactory->readConfigFile( config );
     
-    // tmFactory->setTurbulenceModel(TurbulenceModel::AMD);
-    // tmFactory->setModelConstant(config.getValue<real>("SGSconstant"));
-
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    gridBuilder->addCoarseGrid(0.0, 0.0, 0.0,
-                                L_x,  L_y,  L_z, dx);
-    // gridBuilder->setNumberOfLayers(12, 8);
+    const int  nProcs = para->getNumprocs();
+    const uint procID = vf::gpu::Communicator::getInstance().getPID();
 
-    // gridBuilder->addGrid( new Cuboid( 0.0, 0.0, 0.0, L_x,  L_y,  0.3*L_z) , 1 );
-    // para->setMaxLevel(2);
+    if(nProcs > 1)
+        gridBuilder->setPeriodicBoundaryCondition(false, true, false);
+    else
+        gridBuilder->setPeriodicBoundaryCondition(false, true, false);
 
-    gridBuilder->setPeriodicBoundaryCondition(true, true, false);
+
+    const real xSplit = L_x/nProcs;
+    const real overlap = 8.0*dx
+
+    real xMin      =  procID    * xSplit;
+    real xMax      = (procID+1) * xSplit;
+    real xGridMin  =  procID    * xSplit;
+    real xGrid Max = (procID+1) * xSplit;
+
+    if(procID > 0) 
+        xGridMin -= overlap;
+    if(procID < nProcs-1 && nProcs > 1 )
+        xGridMax += overlap;
+
+    gridBuilder->addCoarseGrid( xMin,  0.0,  0.0,
+                                xMax,  L_y,  L_z, dx);
+    if(false)
+    {
+        gridBuilder->setNumberOfLayers(12, 8);
+        gridBuilder->addGrid( new Cuboid( 0.0, 0.0, 0.0, L_x,  L_y,  0.3*L_z) , 1 );
+        para->setMaxLevel(2);
+    }
+
+    gridBuilder->setSubDomainBox(
+        std::make_shared<BoundingBox>(xMin, xMax, 0.0, L_y, 0.0, L_z));
 
 	gridBuilder->buildGrids(lbmOrGks, false); // buildGrids() has to be called before setting the BCs!!!!
+
+    if (generatePart == 0) {
+        gridBuilder->findCommunicationIndices(CommunicationDirections::PZ, LBM);
+        gridBuilder->setCommunicationProcess(CommunicationDirections::PZ, 1);
+    }
+
+    if (generatePart == 1) {
+        gridBuilder->findCommunicationIndices(CommunicationDirections::MZ, LBM);
+        gridBuilder->setCommunicationProcess(CommunicationDirections::MZ, 0);
+    }
+
+
 
     uint samplingOffset = 2;
     // gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
