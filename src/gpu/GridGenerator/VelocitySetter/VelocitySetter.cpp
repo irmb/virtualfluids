@@ -171,27 +171,6 @@ void VTKFile::getData(real* data, uint numberOfNodes, std::vector<uint> readInde
     }
 }
 
-void VTKFile::getDistributions( real* f0, real* f1, real* f2, real* f3, real* f4, real* f5, real* f6, real* f7, real* f8,
-                                std::vector<uint> readIndeces, std::vector<uint> writeIndices, uint offsetRead, uint offsetWrite)
-{
-    if(!this->loaded) loadFile();
-
-    size_t nPoints = writeIndices.size();
-
-    for(size_t i=0; i<nPoints; i++)
-    {   
-        f0[offsetWrite+writeIndices[i]] = this->f0File[readIndeces[i]+offsetRead];
-        f1[offsetWrite+writeIndices[i]] = this->f1File[readIndeces[i]+offsetRead];
-        f2[offsetWrite+writeIndices[i]] = this->f2File[readIndeces[i]+offsetRead];
-        f3[offsetWrite+writeIndices[i]] = this->f3File[readIndeces[i]+offsetRead];
-        f4[offsetWrite+writeIndices[i]] = this->f4File[readIndeces[i]+offsetRead];
-        f5[offsetWrite+writeIndices[i]] = this->f5File[readIndeces[i]+offsetRead];
-        f6[offsetWrite+writeIndices[i]] = this->f6File[readIndeces[i]+offsetRead];
-        f7[offsetWrite+writeIndices[i]] = this->f7File[readIndeces[i]+offsetRead];
-        f8[offsetWrite+writeIndices[i]] = this->f8File[readIndeces[i]+offsetRead];
-    }
-}
-
 void VTKFile::printFileInfo()
 {
     printf("file %s with \n nx %i ny %i nz %i \n origin %f %f %f \n spacing %f %f %f \n", 
@@ -429,32 +408,6 @@ void VTKReader::getNextData(real* data, uint numberOfNodes, real time)
 
             int off = file->getClosestIdxZ(time)*file->getNumberOfPointsInXYPlane();
             file->getData(data, numberOfNodes, this->readIndices[level][id], this->writeIndices[level][id], off, this->writingOffset);
-            this->nFile[level][id] = nF;
-        }
-    }
-}
-
-void VTKReader::getNextDistributions(real* f0, real* f1, real* f2, real* f3, real* f4, real* f5, real* f6, real* f7, real* f8, real t)
-{
-    for(size_t level=0; level<this->fileCollection->files.size(); level++)
-    {
-        for(size_t id=0; id<this->fileCollection->files[level].size(); id++)
-        {
-            size_t nF = this->nFile[level][id];
-            if(!this->fileCollection->files[level][id][nF].inZBounds(t))
-            {
-                this->fileCollection->files[level][id][nF].unloadFile();
-                nF++;
-                printf("switching to file %zd\n", nF);
-            }
-        
-            if(nF == this->fileCollection->files[level][id].size())
-                throw std::runtime_error("Not enough Precursor Files to read");
-
-            VTKFile* file = &this->fileCollection->files[level][id][nF];
-
-            int off = (file->getClosestIdxZ(t))*file->getNumberOfPointsInXYPlane();
-            file->getDistributions(f0, f1, f2, f3, f4, f5, f6, f7, f8, this->readIndices[level][id], this->writeIndices[level][id], off, this->writingOffset);
             this->nFile[level][id] = nF;
         }
     }

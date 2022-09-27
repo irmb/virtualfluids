@@ -219,7 +219,7 @@ void multipleLevel(const std::string& configPath)
     if(readPrecursor)
     {
         auto precursor = createFileCollection(precursorDirectory + "/precursor", FileType::VTK);
-        gridBuilder->setPrecursorBoundaryCondition(SideType::MX, 0.0f, 0.0f, 0.0f, precursor, nTReadPrecursor);
+        gridBuilder->setPrecursorBoundaryCondition(SideType::MX, precursor, nTReadPrecursor);
 
         uint samplingOffset = 2;
         gridBuilder->setStressBoundaryCondition(SideType::MZ,
