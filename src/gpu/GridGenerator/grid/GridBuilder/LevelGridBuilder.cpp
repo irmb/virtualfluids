@@ -627,12 +627,13 @@ uint LevelGridBuilder::getPrecursorSize(int level) const
 void LevelGridBuilder::getPrecursorValues(  uint* neighborNT, uint* neighborNB, uint* neighborST, uint* neighborSB, 
                                             real* weightsNT, real* weightsNB, real* weightsST, real* weightsSB, 
                                             int* indices, std::vector<SPtr<VelocityReader>>& reader, 
-                                            int& nVelocityPoints, uint& nTRead, 
+                                            int& numberOfPrecursorNodes, int& numberOfQuantities, uint& nTRead, 
                                             real& velocityX, real& velocityY, real& velocityZ, int level) const
 {
     int allIndicesCounter = 0;
-    int allVelocitiesCounter = 0;
+    int allNodesCounter = 0;
     uint tmpNTRead = 0;
+    int tmpNQuantities = -1;
 
     for (auto boundaryCondition : boundaryConditions[level]->precursorBoundaryConditions)
     {
@@ -658,17 +659,24 @@ void LevelGridBuilder::getPrecursorValues(  uint* neighborNT, uint* neighborNB, 
         BCreader->fillArrays(y, z);
         BCreader->getNeighbors(neighborNT, neighborNB, neighborST, neighborSB);
         BCreader->getWeights(weightsNT, weightsNB, weightsST, weightsSB);
-        allVelocitiesCounter += BCreader->getNPointsRead();
+        if(tmpNQuantities == -1)
+            tmpNQuantities = BCreader->getNumberOfQuantities();
+        if(tmpNQuantities != BCreader->getNumberOfQuantities()) 
+            throw std::runtime_error("All precursor files must have the same quantities.");
+        allNodesCounter += BCreader->getNPointsRead();
         velocityX = boundaryCondition->getVelocityX();
         velocityY = boundaryCondition->getVelocityY();
         velocityZ = boundaryCondition->getVelocityZ();
     }
-    nVelocityPoints = allVelocitiesCounter;
+    numberOfPrecursorNodes = allNodesCounter;
 
     if (tmpNTRead == 0)
         throw std::runtime_error("NTRead of precursor needs to be larger than 0.");
-
     nTRead = tmpNTRead;
+    
+    if (tmpNQuantities == -1)
+        throw std::runtime_error("Number of Quantities in precursor needs to be larger than 0.");
+    numberOfQuantities = tmpNQuantities;
 }
 
 void LevelGridBuilder::getPrecursorQs(real* qs[27], int level) const

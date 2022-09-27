@@ -1010,29 +1010,11 @@ void VelSchlaffer27(  unsigned int numberOfThreads,
                                  unsigned int size_Mat, 
                                  bool isEvenTimestep);
 
-void QPrecursorDevCompZeroPress(  uint numberOfThreads, real tRatio,
-                                             real* DD, real* QQ, int* k_Q, 
-											 uint sizeQ, uint numberOfBCNodes,
-											 real omega, real velocityRatio,
-                                             uint* neighborX, uint* neighborY, uint* neighborZ,
-											 uint* neighborsNT, uint* neighborsNB, uint* neighborsST, uint* neighborsSB,
-                                             real* weightsNT, real* weightsNB, real* weightsST, real* weightsSB,
-                                             real* vxLast, real* vyLast, real* vzLast,
-                                             real* vxCurrent, real* vyCurrent, real* vzCurrent,
-											real velocityX, real velocityY, real velocityZ,
-                                             unsigned long long size_Mat, bool evenOrOdd);
+void QPrecursorDevCompZeroPress(LBMSimulationParameter* parameterDevice, QforPrecursorBoundaryConditions* boundaryCondition, real tRatio, real velocityRatio);
 
-void PrecursorDevEQ27(  uint numberOfThreads, real tRatio,
-						real* DD, int* k_Q,
-						uint numberOfBCNodes,
-						real omega, real velocityRatio,
-						uint* neighborX, uint* neighborY, uint* neighborZ,
-						uint* neighborsNT, uint* neighborsNB, uint* neighborsST, uint* neighborsSB,
-						real* weightsNT, real* weightsNB, real* weightsST, real* weightsSB,
-						real* vxLast, real* vyLast, real* vzLast,
-						real* vxCurrent, real* vyCurrent, real* vzCurrent,
-						real velocityX, real velocityY, real velocityZ,
-						unsigned long long size_Mat, bool evenOrOdd);
+void PrecursorDevEQ27(LBMSimulationParameter* parameterDevice, QforPrecursorBoundaryConditions* boundaryCondition, real tRatio, real velocityRatio);
+
+void QPrecursorDevDistributions(LBMSimulationParameter* parameterDevice, QforPrecursorBoundaryConditions* boundaryCondition, real tRatio, real velocityRatio);
 
 void QADDev7(unsigned int numberOfThreads,
                         real* DD, 

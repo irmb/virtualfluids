@@ -35,6 +35,11 @@ void BoundaryConditionFactory::setStressBoundaryCondition(const StressBC boundar
     this->stressBoundaryCondition = boundaryConditionType;
 }
 
+void BoundaryConditionFactory::setPrecursorBoundaryCondition(const PrecursorBC boundaryConditionType)
+{
+    this->precursorBoundaryCondition = boundaryConditionType;
+}
+
 boundaryCondition BoundaryConditionFactory::getVelocityBoundaryConditionPost(bool isGeometryBC) const
 {
     const VelocityBC &boundaryCondition =
@@ -134,6 +139,20 @@ boundaryCondition BoundaryConditionFactory::getPressureBoundaryConditionPre() co
             break;
         case PressureBC::OutflowNonReflectivePressureCorrection:
             return QPressZeroRhoOutflowDev27;
+        default:
+            return nullptr;
+    }
+}
+
+precursorBoundaryConditionFunc BoundaryConditionFactory::getPrecursorBoundaryConditionPost() const
+{
+    switch (this->precursorBoundaryCondition) {
+        case PrecursorBC::VelocityPrecursor:
+            return QPrecursorDevCompZeroPress;
+            break;
+        case PrecursorBC::DistributionsPrecursor:
+            return QPrecursorDevDistributions;
+            break;
         default:
             return nullptr;
     }

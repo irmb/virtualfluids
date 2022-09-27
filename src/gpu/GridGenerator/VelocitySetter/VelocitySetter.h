@@ -10,7 +10,6 @@
 #include <math.h>
 #include <sstream>
 
-
 class Grid;
 namespace gg
 {
@@ -23,6 +22,12 @@ enum class FileType
     VTK
 };
 
+struct Quantity
+{
+    std::string name;
+    int offset;
+    std::vector<double> values;
+};
 
 class VTKFile
 {
@@ -35,7 +40,7 @@ public:
         // printFileInfo();
     };
 
-    void getVelocities(real* vx, real* vy, real* vz, std::vector<uint> readIndeces, std::vector<uint> writeIndices, uint offsetRead, uint offsetWrite);
+    void getData(real* data, uint numberOfNodes, std::vector<uint> readIndeces, std::vector<uint> writeIndices, uint offsetRead, uint offsetWrite);
     bool markNANs(std::vector<uint> readIndices);
     bool inBoundingBox(real posX, real posY, real posZ){return  inXBounds(posX) && inYBounds(posY) && inZBounds(posZ); };
     bool inXBounds(real posX){ return posX<=maxX && posX>=minX; };
@@ -68,6 +73,7 @@ public:
     int getNumberOfPoints(){ return nx*ny*nz; }
     void loadFile();
     void unloadFile();
+    int getNumberOfQuantities(){ return quantities.size(); }
 
 
 private:
@@ -77,15 +83,13 @@ private:
 public:
 
 private:
-    int offsetVx, offsetVy, offsetVz;
     std::string fileName;
     real minX, maxX, minY, maxY, minZ, maxZ;
     real deltaX, deltaY, deltaZ;
     int nx, ny, nz;
-    std::vector<double> vxFile, vyFile, vzFile;
+    std::vector<Quantity> quantities;
     bool loaded;
 };
-
 
 class VelocityFileCollection
 {
@@ -94,6 +98,8 @@ public:
     prefix(_prefix){};
 
     virtual ~VelocityFileCollection() = default;
+
+    virtual int getNumberOfQuantities()=0;
 
     virtual FileType getFileType()=0;
 
@@ -112,6 +118,7 @@ public:
     };
 
     FileType getFileType(){ return FileType::VTK; };
+    int getNumberOfQuantities(){ return files[0][0][0].getNumberOfQuantities(); }
     
 
 private:
@@ -123,6 +130,7 @@ private:
                     + "_File_" +  StringUtil::toString<int>(part) 
                     + ".bin." + suffix;
     };
+
 
 public:
     static const inline std::string suffix = "vti";
@@ -137,15 +145,15 @@ public:
     { 
         this->nPoints = 0; 
         this->nPointsRead = 0;
-        this->writingOffset = 0;
-        
+        this->writingOffset = 0;        
     };
     virtual ~VelocityReader() = default;
 
-    virtual void getNextVelocities(real* vx, real* vy, real* vz, real t)=0;
+    virtual void getNextData(real* data, uint numberOfNodes, real time)=0;
     virtual void fillArrays(std::vector<real>& coordsY, std::vector<real>& coordsZ)=0;
     uint getNPoints(){return nPoints; };
     uint getNPointsRead(){return nPointsRead; };
+    int getNumberOfQuantities(){ return nQuantities; };
     void setWritingOffset(uint offset){ this->writingOffset = offset; }
     void getNeighbors(uint* neighborNT, uint* neighborNB, uint* neighborST, uint* neighborSN);
     void getWeights(real* _weightsNT, real* _weightsNB, real* _weightsST, real* _weightsSB);
@@ -157,6 +165,7 @@ public:
 protected:
     uint nPoints, nPointsRead, writingOffset;
     uint nReads=0;
+    int nQuantities=0;
 };
 
 
@@ -165,8 +174,10 @@ class VTKReader : public VelocityReader
 public:
     VTKReader(SPtr<VTKFileCollection> _fileCollection):
     fileCollection(_fileCollection)    
-    {};
-    void getNextVelocities(real* vx, real* vy, real* vz, real t) override;
+    {
+        this->nQuantities = fileCollection->getNumberOfQuantities();
+    };
+    void getNextData(real* data, uint numberOfNodes, real time) override;
     void fillArrays(std::vector<real>& coordsY, std::vector<real>& coordsZ) override;
 private:  
     uint getWriteIndex(int level, int id, int linearIdx);

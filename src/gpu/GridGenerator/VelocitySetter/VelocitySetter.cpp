@@ -45,6 +45,13 @@ std::vector<T> readStringToVector(std::string s)
     }
     return out;
 }
+std::string readElement(std::string line)
+{
+    size_t elemStart = line.find("<")+1;
+    // size_t elemEnd = line.find("/>", elemStart);
+    size_t nameLen = line.find(" ", elemStart)-elemStart;
+    return line.substr(elemStart, nameLen);
+}
 
 std::string readAttribute(std::string line, std::string attributeName)
 {
@@ -72,17 +79,27 @@ void VTKFile::readHeader()
     std::vector<int> pieceExtent = readStringToVector<int>(readAttribute(line, "Extent"));
     getline(file, line); // PointData
 
-    getline(file, line); // DataArray vx
-    if(strcmp(readAttribute(line, "Name").c_str(), "vx")==0) // just to make sure
-        this->offsetVx = std::stoi(readAttribute(line, "offset"));
+    getline(file, line);
+    while(strcmp(readElement(line).c_str(), "DataArray")==0)
+    {
+        Quantity quant = Quantity();
+        quant.name = readAttribute(line, "Name");
+        quant.offset = std::stoi(readAttribute(line, "offset"));
+        this->quantities.push_back( quant );
+        getline(file, line);
+    }
+    getline(file, line); // </Piece
+    getline(file, line); // </ImageData
+    getline(file, line); // AppendedData
 
-    getline(file, line); // DataArray vy
-    if(strcmp(readAttribute(line, "Name").c_str(), "vy")==0) // just to make sure
-        this->offsetVy = std::stoi(readAttribute(line, "offset"));
+    int offset = int(file.tellg())+sizeof(char)+4; // skip underscore and bytesPerVal
 
-    getline(file, line); // DataArray vz
-    if(strcmp(readAttribute(line, "Name").c_str(), "vz")==0) // just to make sure
-        this->offsetVz = std::stoi(readAttribute(line, "offset"));
+    for(auto& quantity: this->quantities)
+    {
+        quantity.offset += offset;
+    }
+
+    file.close();
 
     this->deltaX = spacing[0];
     this->deltaY = spacing[1];
@@ -92,22 +109,9 @@ void VTKFile::readHeader()
     this->ny = pieceExtent[3]-pieceExtent[2]+1;
     this->nz = pieceExtent[5]-pieceExtent[4]+1;
 
-    this->minX = origin[0]+this->deltaX*pieceExtent[0]; this->maxX = this->nx*this->deltaX+this->minX;
-    this->minY = origin[1]+this->deltaY*pieceExtent[2]; this->maxY = this->ny*this->deltaY+this->minY;
-    this->minZ = origin[2]+this->deltaZ*pieceExtent[4]; this->maxZ = this->nz*this->deltaZ+this->minZ;
-
-    getline(file, line); // </ PointData
-    getline(file, line); // </Piece
-    getline(file, line); // </ImageData
-    getline(file, line); // AppendedData
-
-    int offset = int(file.tellg())+sizeof(char)+4; // skip underscore and bytesPerVal
-
-    this->offsetVx += offset;
-    this->offsetVy += offset;
-    this->offsetVz += offset;
-
-    file.close();
+    this->minX = origin[0]+this->deltaX*pieceExtent[0]; this->maxX = (this->nx-1)*this->deltaX+this->minX;
+    this->minY = origin[1]+this->deltaY*pieceExtent[2]; this->maxY = (this->ny-1)*this->deltaY+this->minY;
+    this->minZ = origin[2]+this->deltaZ*pieceExtent[4]; this->maxZ = (this->nz-1)*this->deltaZ+this->minZ;
 
     printFileInfo();
 
@@ -119,7 +123,7 @@ bool VTKFile::markNANs(std::vector<uint> readIndices)
 
     std::vector<double> tmp;
     tmp.reserve(readIndices.size());
-    buf.seekg(this->offsetVx);
+    buf.seekg(this->quantities[0].offset);
     buf.read((char*) tmp.data(), sizeof(double)*readIndices.size());
     auto firstNAN = std::find_if(tmp.begin(), tmp.end(), [](auto it){ return isnan(it); });
     
@@ -129,50 +133,52 @@ bool VTKFile::markNANs(std::vector<uint> readIndices)
 void VTKFile::loadFile()
 {
     std::ifstream buf(this->fileName.c_str(), std::ios::in | std::ios::binary);
-    this->vxFile.resize(getNumberOfPoints()); 
-    buf.seekg(this->offsetVx);
-    buf.read(reinterpret_cast<char*>(this->vxFile.data()), this->getNumberOfPoints()*sizeof(double));
-
-    this->vyFile.resize(getNumberOfPoints()); 
-    buf.seekg(this->offsetVy);
-    buf.read((char*) this->vyFile.data(), this->getNumberOfPoints()*sizeof(double));
-
-    this->vzFile.resize(this->getNumberOfPoints());
-    buf.seekg(this->offsetVz);
-    buf.read((char*) this->vzFile.data(), this->getNumberOfPoints()*sizeof(double));
+    for(auto& quantity: this->quantities)
+    {
+        quantity.values.resize(getNumberOfPoints());
+        buf.seekg(quantity.offset);
+        buf.read(reinterpret_cast<char*>(quantity.values.data()), this->getNumberOfPoints()*sizeof(double));
+    }
 
     buf.close();
+
     this->loaded = true;
 }
 
 void VTKFile::unloadFile()
 {
-    std::vector<double> replaceX, replaceY, replaceZ;
-    this->vxFile.swap(replaceX);
-    this->vyFile.swap(replaceY);
-    this->vzFile.swap(replaceZ);
+    for(auto& quantity : this->quantities)
+    {
+        std::vector<double> replacement;
+        quantity.values.swap(replacement);
+    }
     this->loaded = false;
 }
 
-void VTKFile::getVelocities(real* vx, real* vy, real* vz, std::vector<uint> readIndeces, std::vector<uint> writeIndices, uint offsetRead, uint offsetWrite)
+void VTKFile::getData(real* data, uint numberOfNodes, std::vector<uint> readIndeces, std::vector<uint> writeIndices, uint offsetRead, uint offsetWrite)
 {
     if(!this->loaded) loadFile();
-
     size_t nPoints = writeIndices.size();
 
-    for(size_t i=0; i<nPoints; i++)
-    {   
-        // if(i<10)printf("point read %d point write %d idx read %d idx write %d\n", readIndeces[i], writeIndices[i], readIndeces[i]+offsetRead, offsetWrite+writeIndices[i]);
-        vx[offsetWrite+writeIndices[i]] = this->vxFile[readIndeces[i]+offsetRead];
-        vy[offsetWrite+writeIndices[i]] = this->vyFile[readIndeces[i]+offsetRead];
-        vz[offsetWrite+writeIndices[i]] = this->vzFile[readIndeces[i]+offsetRead];
+    for(size_t j=0; j<this->quantities.size(); j++)
+    {
+        real* quant = &data[j*numberOfNodes];
+
+        for(size_t i=0; i<nPoints; i++)
+        {
+            quant[offsetWrite+writeIndices[i]] = this->quantities[j].values[readIndeces[i]+offsetRead];
+        }
     }
 }
 
 void VTKFile::printFileInfo()
 {
-    printf("file %s with \n nx %i ny %i nz %i \n origin %f %f %f \n spacing %f %f %f \n offset %i %i %i \n", 
-            fileName.c_str(), nx, ny, nz, minX, minY, minZ, deltaX, deltaY, deltaZ, offsetVx, offsetVy, offsetVz);
+    printf("file %s with \n nx %i ny %i nz %i \n origin %f %f %f \n spacing %f %f %f \n", 
+            fileName.c_str(), nx, ny, nz, minX, minY, minZ, deltaX, deltaY, deltaZ);
+    for(auto quantity: this->quantities)
+    {
+        printf("\t quantity %s offset %i \n", quantity.name.c_str(), quantity.offset);
+    }
         
 }
 
@@ -379,18 +385,20 @@ uint VTKReader::getWriteIndex(int level, int id, int linearIndex)
     return idx;
 }
 
-void VTKReader::getNextVelocities(real* vx, real* vy, real* vz, real t)
+
+void VTKReader::getNextData(real* data, uint numberOfNodes, real time)
 {
+
     for(size_t level=0; level<this->fileCollection->files.size(); level++)
     {
         for(size_t id=0; id<this->fileCollection->files[level].size(); id++)
         {
             size_t nF = this->nFile[level][id];
-            if(!this->fileCollection->files[level][id][nF].inZBounds(t))
+            if(!this->fileCollection->files[level][id][nF].inZBounds(time))
             {
                 this->fileCollection->files[level][id][nF].unloadFile();
                 nF++;
-                printf("switching to file %zd\n", nF);
+                printf("switching to precursor file no %zd\n", nF);
             }
         
             if(nF == this->fileCollection->files[level][id].size())
@@ -398,8 +406,8 @@ void VTKReader::getNextVelocities(real* vx, real* vy, real* vz, real t)
 
             VTKFile* file = &this->fileCollection->files[level][id][nF];
 
-            int off = (file->getClosestIdxZ(t))*file->getNumberOfPointsInXYPlane();
-            file->getVelocities(vx, vy, vz, this->readIndices[level][id], this->writeIndices[level][id], off, this->writingOffset);
+            int off = file->getClosestIdxZ(time)*file->getNumberOfPointsInXYPlane();
+            file->getData(data, numberOfNodes, this->readIndices[level][id], this->writeIndices[level][id], off, this->writingOffset);
             this->nFile[level][id] = nF;
         }
     }

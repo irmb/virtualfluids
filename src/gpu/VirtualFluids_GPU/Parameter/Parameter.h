@@ -228,7 +228,7 @@ struct LBMSimulationParameter {
     QforBoundaryConditions QpressX0, QpressX1, QpressY0, QpressY1, QpressZ0, QpressZ1; // DEPRECATED
     QforBoundaryConditions propellerBC;
     QforBoundaryConditions geometryBC;
-    QForPrecursorBoundaryCondition precursorBC;
+    QforPrecursorBoundaryConditions precursorBC;
     QforBoundaryConditions geometryBCnormalX, geometryBCnormalY, geometryBCnormalZ;
     QforBoundaryConditions inflowBCnormalX, inflowBCnormalY, inflowBCnormalZ;
     QforBoundaryConditions outflowBCnormalX, outflowBCnormalY, outflowBCnormalZ;

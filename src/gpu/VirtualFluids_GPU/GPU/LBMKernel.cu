@@ -3208,58 +3208,51 @@ void VelSchlaffer27(  unsigned int numberOfThreads,
       getLastCudaError("VelSchlaff27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-void QPrecursorDevCompZeroPress(  uint numberOfThreads, real tRatio,
-                                             real* DD, real* QQ, int* k_Q, 
-                                             uint sizeQ, uint numberOfBCnodes,
-                                             real omega, real velocityRatio,
-                                             uint* neighborX, uint* neighborY, uint* neighborZ,
-                                             uint* neighborsNT, uint* neighborsNB, uint* neighborsST, uint* neighborsSB,
-                                             real* weightsNT, real* weightsNB, real* weightsST, real* weightsSB,
-                                             real* vxLast, real* vyLast, real* vzLast,
-                                             real* vxCurrent, real* vyCurrent, real* vzCurrent,
-                                             real velocityX, real velocityY, real velocityZ, 
-                                             unsigned long long size_Mat, bool evenOrOdd)
+void QPrecursorDevCompZeroPress(LBMSimulationParameter* parameterDevice, QforPrecursorBoundaryConditions* boundaryCondition, real tRatio, real velocityRatio)
 {
 
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
+	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
 
-   QPrecursorDeviceCompZeroPress<<< grid.grid, grid.threads >>>(k_Q, numberOfBCnodes, sizeQ, omega, DD, QQ,
-                                                               neighborX, neighborY, neighborZ,
-                                                               neighborsNT, neighborsNB, neighborsST, neighborsSB,
-                                                               weightsNT, weightsNB, weightsST, weightsSB,
-                                                               vxLast, vyLast, vzLast,
-                                                               vxCurrent, vyCurrent, vzCurrent, 
-                                                               velocityX, velocityY, velocityZ, 
-                                                               tRatio, velocityRatio, size_Mat, evenOrOdd);
-   getLastCudaError("QPrecursorDeviceCompZeroPress execution failed"); 
-
+	QPrecursorDeviceCompZeroPress<<< grid.grid, grid.threads >>>(boundaryCondition->k, boundaryCondition->numberOfBCnodes, boundaryCondition->numberOfPrecursorNodes, boundaryCondition->sizeQ, parameterDevice->omega, 
+		parameterDevice->distributions.f[0], boundaryCondition->q27[0],
+		parameterDevice->neighborX, parameterDevice->neighborY, parameterDevice->neighborZ,
+		boundaryCondition->planeNeighborNT, boundaryCondition->planeNeighborNB, boundaryCondition->planeNeighborST, boundaryCondition->planeNeighborSB,
+		boundaryCondition->weightsNT, boundaryCondition->weightsNB, boundaryCondition->weightsST, boundaryCondition->weightsSB,
+		boundaryCondition->last, boundaryCondition->current,
+		boundaryCondition->velocityX, boundaryCondition->velocityY, boundaryCondition->velocityZ, 
+		tRatio, velocityRatio, parameterDevice->numberOfNodes, parameterDevice->isEvenTimestep);
+	getLastCudaError("QPrecursorDeviceCompZeroPress execution failed"); 
 
 }
 //////////////////////////////////////////////////////////////////////////
-void PrecursorDevEQ27(  uint numberOfThreads, real tRatio,
-						real* DD, int* k_Q,
-						uint numberOfBCNodes,
-						real omega, real velocityRatio,
-						uint* neighborX, uint* neighborY, uint* neighborZ,
-						uint* neighborsNT, uint* neighborsNB, uint* neighborsST, uint* neighborsSB,
-						real* weightsNT, real* weightsNB, real* weightsST, real* weightsSB,
-						real* vxLast, real* vyLast, real* vzLast,
-						real* vxCurrent, real* vyCurrent, real* vzCurrent,
-						real velocityX, real velocityY, real velocityZ,
-						unsigned long long size_Mat, bool evenOrOdd)
+void PrecursorDevEQ27( LBMSimulationParameter* parameterDevice, QforPrecursorBoundaryConditions* boundaryCondition, real tRatio, real velocityRatio)
 {
 
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCNodes);
+	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
 
-   PrecursorDeviceEQ27<<< grid.grid, grid.threads >>>(k_Q, numberOfBCNodes, omega, DD, 
-                                                               neighborX, neighborY, neighborZ,
-                                                               neighborsNT, neighborsNB, neighborsST, neighborsSB,
-                                                               weightsNT, weightsNB, weightsST, weightsSB,
-                                                               vxLast, vyLast, vzLast,
-                                                               vxCurrent, vyCurrent, vzCurrent, 
-                                                               velocityX, velocityY, velocityZ, 
-                                                               tRatio, velocityRatio, size_Mat, evenOrOdd);
-   getLastCudaError("PrecursorDeviceEQ27 execution failed"); 
+	PrecursorDeviceEQ27<<< grid.grid, grid.threads >>>(boundaryCondition->k, boundaryCondition->numberOfBCnodes, boundaryCondition->numberOfPrecursorNodes, parameterDevice->omega, parameterDevice->distributions.f[0], 
+		parameterDevice->neighborX, parameterDevice->neighborX, parameterDevice->neighborX,
+		boundaryCondition->planeNeighborNT, boundaryCondition->planeNeighborNB, boundaryCondition->planeNeighborST, boundaryCondition->planeNeighborSB,
+		boundaryCondition->weightsNT, boundaryCondition->weightsNB, boundaryCondition->weightsST, boundaryCondition->weightsSB,
+		boundaryCondition->last, boundaryCondition->current,
+		boundaryCondition->velocityX, boundaryCondition->velocityY, boundaryCondition->velocityZ, 
+		tRatio, velocityRatio, parameterDevice->numberOfNodes, parameterDevice->isEvenTimestep);
+	getLastCudaError("PrecursorDeviceEQ27 execution failed"); 
+
+}
+//////////////////////////////////////////////////////////////////////////
+void QPrecursorDevDistributions( LBMSimulationParameter* parameterDevice, QforPrecursorBoundaryConditions* boundaryCondition, real tRatio, real velocityRatio)
+{
+
+	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
+
+	QPrecursorDeviceDistributions<<< grid.grid, grid.threads >>>(boundaryCondition->k, boundaryCondition->numberOfBCnodes, boundaryCondition->numberOfPrecursorNodes, parameterDevice->distributions.f[0],
+		parameterDevice->neighborX, parameterDevice->neighborY, parameterDevice->neighborZ,
+		boundaryCondition->planeNeighborNT, boundaryCondition->planeNeighborNB, boundaryCondition->planeNeighborST, boundaryCondition->planeNeighborSB,
+		boundaryCondition->weightsNT, boundaryCondition->weightsNB, boundaryCondition->weightsST, boundaryCondition->weightsSB,
+		boundaryCondition->last, boundaryCondition->current,
+		tRatio, parameterDevice->numberOfNodes, parameterDevice->isEvenTimestep);
+	getLastCudaError("QPrecursorDeviceCompZeroPress execution failed"); 
 
 }
 //////////////////////////////////////////////////////////////////////////

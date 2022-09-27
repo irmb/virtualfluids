@@ -261,64 +261,49 @@ void GridGenerator::allocArrays_BoundaryValues()
                     para->getParH(level)->precursorBC.planeNeighborST, para->getParH(level)->precursorBC.planeNeighborSB, 
                     para->getParH(level)->precursorBC.weightsNT, para->getParH(level)->precursorBC.weightsNB, 
                     para->getParH(level)->precursorBC.weightsST, para->getParH(level)->precursorBC.weightsSB, 
-                    para->getParH(level)->precursorBC.k, para->getParH(level)->velocityReader, para->getParH(level)->precursorBC.nVelocityPoints, para->getParH(level)->precursorBC.nTRead, 
+                    para->getParH(level)->precursorBC.k, para->getParH(level)->velocityReader, para->getParH(level)->precursorBC.numberOfPrecursorNodes, 
+                    para->getParH(level)->precursorBC.numberOfQuantities, para->getParH(level)->precursorBC.nTRead, 
                     para->getParH(level)->precursorBC.velocityX, para->getParH(level)->precursorBC.velocityY, para->getParH(level)->precursorBC.velocityZ,
                     level);
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            para->getParD(level)->precursorBC.nVelocityPoints = para->getParH(level)->precursorBC.nVelocityPoints;
+            para->getParD(level)->precursorBC.numberOfPrecursorNodes = para->getParH(level)->precursorBC.numberOfPrecursorNodes;
+            para->getParD(level)->precursorBC.numberOfQuantities = para->getParH(level)->precursorBC.numberOfQuantities;
             para->getParD(level)->precursorBC.nTRead = para->getParH(level)->precursorBC.nTRead;
             para->getParD(level)->precursorBC.velocityX = para->getParH(level)->precursorBC.velocityX;
             para->getParD(level)->precursorBC.velocityY = para->getParH(level)->precursorBC.velocityY;
             para->getParD(level)->precursorBC.velocityZ = para->getParH(level)->precursorBC.velocityZ;
 
             cudaMemoryManager->cudaCopyPrecursorBC(level);
-            cudaMemoryManager->cudaAllocPrecursorVelocities(level);
-
+            cudaMemoryManager->cudaAllocPrecursorData(level);
 
             // read first timestep of precursor into next and copy to next on device
             for(auto reader : para->getParH(level)->velocityReader)
             {   
-                reader->getNextVelocities(para->getParH(level)->precursorBC.vxNext, para->getParH(level)->precursorBC.vyNext, para->getParH(level)->precursorBC.vzNext, 0);
+                reader->getNextData(para->getParH(level)->precursorBC.next, para->getParH(level)->precursorBC.numberOfPrecursorNodes, 0);
             }
-            cudaMemoryManager->cudaCopyPrecursorVelocities(level);
+
+            cudaMemoryManager->cudaCopyPrecursorData(level);
             checkCudaErrors(cudaDeviceSynchronize());
 
             //switch next with last pointers
-            real* tmp = para->getParD(level)->precursorBC.vxLast;
-            para->getParD(level)->precursorBC.vxLast = para->getParD(level)->precursorBC.vxNext;
-            para->getParD(level)->precursorBC.vxNext = tmp;
-
-            tmp = para->getParD(level)->precursorBC.vyLast;
-            para->getParD(level)->precursorBC.vyLast = para->getParD(level)->precursorBC.vyNext;
-            para->getParD(level)->precursorBC.vyNext = tmp;
-            
-            tmp = para->getParD(level)->precursorBC.vzLast;
-            para->getParD(level)->precursorBC.vzLast = para->getParD(level)->precursorBC.vzNext;
-            para->getParD(level)->precursorBC.vzNext = tmp;
-
+            real* tmp = para->getParD(level)->precursorBC.last;
+            para->getParD(level)->precursorBC.last = para->getParD(level)->precursorBC.next;
+            para->getParD(level)->precursorBC.next = tmp;
 
             //read second timestep of precursor into next and copy next to device
             real nextTime = para->getParD(level)->precursorBC.nTRead*pow(2,-((real)level))*para->getTimeRatio();
             for(auto reader : para->getParH(level)->velocityReader)
             {   
-                reader->getNextVelocities(para->getParH(level)->precursorBC.vxNext, para->getParH(level)->precursorBC.vyNext, para->getParH(level)->precursorBC.vzNext, nextTime);
+                reader->getNextData(para->getParH(level)->precursorBC.next, para->getParH(level)->precursorBC.numberOfPrecursorNodes, nextTime);
             }
 
-            cudaMemoryManager->cudaCopyPrecursorVelocities(level);
+            cudaMemoryManager->cudaCopyPrecursorData(level);
             checkCudaErrors(cudaDeviceSynchronize());
 
             //switch next with current pointers
-            tmp = para->getParD(level)->precursorBC.vxCurrent;
-            para->getParD(level)->precursorBC.vxCurrent = para->getParD(level)->precursorBC.vxNext;
-            para->getParD(level)->precursorBC.vxNext = tmp;
-
-            tmp = para->getParD(level)->precursorBC.vyCurrent;
-            para->getParD(level)->precursorBC.vyCurrent = para->getParD(level)->precursorBC.vyNext;
-            para->getParD(level)->precursorBC.vyNext = tmp;
-            
-            tmp = para->getParD(level)->precursorBC.vzCurrent;
-            para->getParD(level)->precursorBC.vzCurrent = para->getParD(level)->precursorBC.vzNext;
-            para->getParD(level)->precursorBC.vzNext = tmp;
+            tmp = para->getParD(level)->precursorBC.current;
+            para->getParD(level)->precursorBC.current = para->getParD(level)->precursorBC.next;
+            para->getParD(level)->precursorBC.next = tmp;
 
             //start usual cycle of loading, i.e. read velocities of timestep after current and copy asynchronously to device
 
@@ -326,20 +311,22 @@ void GridGenerator::allocArrays_BoundaryValues()
 
             for(auto reader : para->getParH(level)->velocityReader)
             {   
-                reader->getNextVelocities(para->getParH(level)->precursorBC.vxNext, para->getParH(level)->precursorBC.vyNext, para->getParH(level)->precursorBC.vzNext, nextTime);
+                reader->getNextData(para->getParH(level)->precursorBC.next, para->getParH(level)->precursorBC.numberOfPrecursorNodes, nextTime);
             }
 
-            cudaMemoryManager->cudaCopyPrecursorVelocities(level);
+            cudaMemoryManager->cudaCopyPrecursorData(level);
 
             para->getParD(level)->precursorBC.nPrecursorReads = 2;
 
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            // advection - diffusion stuff
-            if (para->getDiffOn()==true){
-                throw std::runtime_error(" Advection Diffusion not implemented for Precursor!");
-            }
-            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            printf("finished precursor Setup \n");
         }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // advection - diffusion stuff
+        if (para->getDiffOn()==true){
+            throw std::runtime_error(" Advection Diffusion not implemented for Precursor!");
+        }
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     }
 
 

@@ -224,17 +224,16 @@ typedef struct QforPrecursorBC{
    int* k;
    int numberOfBCnodes=0;
    int sizeQ;
-   int nVelocityPoints;
+   int numberOfPrecursorNodes=0;
    uint nPrecursorReads=0;
    uint nTRead;
+   int numberOfQuantities;
    real* q27[27];
    uint* planeNeighborNT, *planeNeighborNB, *planeNeighborST, *planeNeighborSB;
    real* weightsNT, *weightsNB, *weightsST,  *weightsSB;
-   real* vxLast, *vyLast, *vzLast;
-   real* vxCurrent, *vyCurrent, *vzCurrent;
-   real* vxNext, *vyNext, *vzNext;
+   real* last, *current, *next;
    real velocityX, velocityY, velocityZ;
-}QForPrecursorBoundaryCondition;
+}QforPrecursorBoundaryConditions;
 
 //BCTemp
 typedef struct TempforBC{

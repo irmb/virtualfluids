@@ -117,9 +117,10 @@ public:
     virtual uint getPrecursorSize(int level) const              = 0;
     virtual void getPrecursorValues(uint* neighborNT, uint* neighborNB, uint* neighborST, uint* neighborSB, 
                                     real* weightsNT, real* weightsNB, real* weightsST, real* weightsSB, 
-                                    int* indices, std::vector<SPtr<VelocityReader>>& reader, int& nVelocityPoints, uint& nTRead, 
+                                    int* indices, std::vector<SPtr<VelocityReader>>& reader, 
+                                    int& numberOfPrecursorNodes, int& numberOfQuantities, uint& nTRead, 
                                     real& velocityX, real& velocityY, real& velocityZ, int level) const = 0;
-                                    
+
     virtual void getPrecursorQs(real* qs[27], int level) const  = 0;
 
     virtual uint getGeometrySize(int level) const                                 = 0;

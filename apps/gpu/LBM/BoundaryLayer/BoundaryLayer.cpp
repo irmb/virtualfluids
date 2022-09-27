@@ -122,21 +122,28 @@ void multipleLevel(const std::string& configPath)
     const uint nodes_per_H = config.getValue<uint>("nz", 64);
 
     const bool writePrecursor = config.getValue("writePrecursor", false);
+    bool useDistributions;
+    std::string precursorDirectory;
     int nTWritePrecursor; real tStartPrecursor, posXPrecursor;
     if(writePrecursor)
     {
         nTWritePrecursor      = config.getValue<int>("nTimestepsWritePrecursor");
         tStartPrecursor      = config.getValue<real>("tStartPrecursor");
         posXPrecursor        = config.getValue<real>("posXPrecursor");
+        useDistributions     = config.getValue<bool>("useDistributions", false);
+        precursorDirectory = config.getValue<std::string>("precursorDirectory");
+
+
     }
 
     const bool readPrecursor = config.getValue("readPrecursor", false);
     int nTReadPrecursor;
-    std::string precursorFile;
     if(readPrecursor)
     {
         nTReadPrecursor = config.getValue<int>("nTimestepsReadPrecursor");
-        precursorFile = config.getValue<std::string>("precursorFile");
+        precursorDirectory = config.getValue<std::string>("precursorDirectory");
+        useDistributions     = config.getValue<bool>("useDistributions", false);
+
     }
     // all in s
     const float tStartOut   = config.getValue<real>("tStartOut");
@@ -192,7 +199,7 @@ void multipleLevel(const std::string& configPath)
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    SPtr<TurbulenceModelFactory> tmFactory = SPtr<TurbulenceModelFactory>( new TurbulenceModelFactory(para) );
+    SPtr<TurbulenceModelFactory> tmFactory = std::make_shared<TurbulenceModelFactory>(para);
     tmFactory->readConfigFile( config );
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -211,17 +218,17 @@ void multipleLevel(const std::string& configPath)
     
     if(readPrecursor)
     {
+        auto precursor = createFileCollection(precursorDirectory + "/precursor", FileType::VTK);
+        gridBuilder->setPrecursorBoundaryCondition(SideType::MX, 0.0f, 0.0f, 0.0f, precursor, nTReadPrecursor);
 
         uint samplingOffset = 2;
         gridBuilder->setStressBoundaryCondition(SideType::MZ,
                                             0.0, 0.0, 1.0,              // wall normals
                                             samplingOffset, z0/dx);     // wall model settinng
         para->setHasWallModelMonitor(true);
-        auto precursor = createFileCollection(precursorFile, FileType::VTK);
         
         gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0f,  0.0f, -1.0f);
 
-        gridBuilder->setPrecursorBoundaryCondition(SideType::MX, 0.0f, 0.0f, 0.0f, precursor, nTReadPrecursor);
         
         gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.f);
     } 
@@ -240,10 +247,9 @@ void multipleLevel(const std::string& configPath)
 
     bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressPressureBounceBack);
     bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipBounceBack); 
-    bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflectivePressureCorrection);
+    bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflective);
+    bcFactory.setPrecursorBoundaryCondition(useDistributions ? BoundaryConditionFactory::PrecursorBC::DistributionsPrecursor : BoundaryConditionFactory::PrecursorBC::VelocityPrecursor);
     para->setOutflowPressureCorrectionFactor(0.0); 
-    
-
 
 
 
@@ -252,12 +258,6 @@ void multipleLevel(const std::string& configPath)
         vx  = (u_star/0.4 * log(coordZ/z0) + 2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1))  * dt / dx; 
         vy  = 2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1)  * dt / dx; 
         vz  = 8.0*u_star/0.4*(sin(cPi*8.0*coordY/H)*sin(cPi*8.0*coordZ/H)+sin(cPi*8.0*coordX/L_x))/(pow(L_z/2.0-coordZ, c2o1)+c1o1) * dt / dx;
-        if(readPrecursor)
-        {
-            vx  = u_star/0.4 * log(coordZ/z0)  * dt / dx; 
-            vy  = c0o1; 
-            vz  = c0o1;
-        }
     });
 
 
@@ -312,7 +312,7 @@ void multipleLevel(const std::string& configPath)
 
     if(writePrecursor)
     {
-        SPtr<PrecursorWriter> precursorWriter = SPtr<PrecursorWriter>( new PrecursorWriter("precursorWriter", para->getOutputPath()+"/precursor", posXPrecursor, 0, L_y, 0, L_z, tStartPrecursor/dt, nTWritePrecursor, OutputVariable::Distributions) );
+        SPtr<PrecursorWriter> precursorWriter = std::make_shared<PrecursorWriter>("precursor", para->getOutputPath()+precursorDirectory, posXPrecursor, 0, L_y, 0, L_z, tStartPrecursor/dt, nTWritePrecursor, useDistributions? OutputVariable::Distributions: OutputVariable::Velocities);
         para->addProbe(precursorWriter);
     }
 
