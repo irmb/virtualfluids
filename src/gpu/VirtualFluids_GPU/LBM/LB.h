@@ -46,10 +46,10 @@
 
 
 #include "Core/DataTypes.h"
+#include "cuda_runtime.h"
 
 #include <string>
 #include <vector>
-#include "cuda_runtime.h"
 
 //! \brief An enumeration for selecting a turbulence model
 enum class TurbulenceModel {

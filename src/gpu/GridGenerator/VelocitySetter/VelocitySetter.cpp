@@ -113,7 +113,7 @@ void VTKFile::readHeader()
     this->minY = origin[1]+this->deltaY*pieceExtent[2]; this->maxY = (this->ny-1)*this->deltaY+this->minY;
     this->minZ = origin[2]+this->deltaZ*pieceExtent[4]; this->maxZ = (this->nz-1)*this->deltaZ+this->minZ;
 
-    printFileInfo();
+    // printFileInfo();
 
 }
 
