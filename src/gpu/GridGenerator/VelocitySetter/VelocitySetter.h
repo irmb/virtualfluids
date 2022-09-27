@@ -73,7 +73,7 @@ public:
     int getNumberOfPoints(){ return nx*ny*nz; }
     void loadFile();
     void unloadFile();
-    int getNumberOfQuantities(){ return quantities.size(); }
+    size_t getNumberOfQuantities(){ return quantities.size(); }
 
 
 private:
@@ -99,7 +99,7 @@ public:
 
     virtual ~VelocityFileCollection() = default;
 
-    virtual int getNumberOfQuantities()=0;
+    virtual size_t getNumberOfQuantities()=0;
 
     virtual FileType getFileType()=0;
 
@@ -118,7 +118,7 @@ public:
     };
 
     FileType getFileType(){ return FileType::VTK; };
-    int getNumberOfQuantities(){ return files[0][0][0].getNumberOfQuantities(); }
+    size_t getNumberOfQuantities(){ return files[0][0][0].getNumberOfQuantities(); }
     
 
 private:
@@ -153,7 +153,7 @@ public:
     virtual void fillArrays(std::vector<real>& coordsY, std::vector<real>& coordsZ)=0;
     uint getNPoints(){return nPoints; };
     uint getNPointsRead(){return nPointsRead; };
-    int getNumberOfQuantities(){ return nQuantities; };
+    size_t getNumberOfQuantities(){ return nQuantities; };
     void setWritingOffset(uint offset){ this->writingOffset = offset; }
     void getNeighbors(uint* neighborNT, uint* neighborNB, uint* neighborST, uint* neighborSN);
     void getWeights(real* _weightsNT, real* _weightsNB, real* _weightsST, real* _weightsSB);
@@ -165,7 +165,7 @@ public:
 protected:
     uint nPoints, nPointsRead, writingOffset;
     uint nReads=0;
-    int nQuantities=0;
+    size_t nQuantities=0;
 };
 
 

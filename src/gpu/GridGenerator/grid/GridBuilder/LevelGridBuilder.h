@@ -130,7 +130,7 @@ public:
     GRIDGENERATOR_EXPORT void getPrecursorValues(   uint* neighborNT, uint* neighborNB, uint* neighborST, uint* neighborSB, 
                                                     real* weightsNT, real* weightsNB, real* weightsST, real* weightsSB, 
                                                     int* indices, std::vector<SPtr<VelocityReader>>& reader, 
-                                                    int& numberOfPrecursorNodes, int& numberOfQuantities, uint& nTRead,
+                                                    int& numberOfPrecursorNodes, size_t& numberOfQuantities, uint& nTRead,
                                                     real& velocityX, real& velocityY, real& velocityZ, int level) const override;
     GRIDGENERATOR_EXPORT virtual void getPrecursorQs(real* qs[27], int level) const override;
 
