@@ -30,6 +30,9 @@
 #include "GridGenerator/grid/BoundaryConditions/Side.h"
 #include "GridGenerator/grid/GridFactory.h"
 
+#include "geometries/Cuboid/Cuboid.h"
+#include "geometries/TriangularMesh/TriangularMesh.h"
+
 #include "GridGenerator/io/SimulationFileWriter/SimulationFileWriter.h"
 #include "GridGenerator/io/GridVTKWriter/GridVTKWriter.h"
 #include "GridGenerator/io/STLReaderWriter/STLReader.h"
@@ -53,6 +56,8 @@
 #include "VirtualFluids_GPU/TurbulenceModels/TurbulenceModelFactory.h"
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
+
+#include "utilities/communication.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -184,24 +189,105 @@ void multipleLevel(const std::string& configPath)
     if(nProcs > 1)
         gridBuilder->setPeriodicBoundaryCondition(false, true, false);
     else
-        gridBuilder->setPeriodicBoundaryCondition(false, true, false);
+        gridBuilder->setPeriodicBoundaryCondition(true, true, false);
 
+    // real L = 0.5*L_x;
+    // real dxGrid = dx;
+    // real vxLB = velocityLB;
+    // const real xGridMin = -0.5 * L;
+    // const real xGridMax = 0.5 * L;
+    // const real yGridMin = -0.5 * L;
+    // const real yGridMax = 0.5 * L;
+    // const real zGridMin = -0.5 * L;
+    // const real zGridMax = 0.5 * L;
+
+    // Cuboid *level1 = nullptr;
+
+    // const uint generatePart = vf::gpu::Communicator::getInstance().getPID();
+    // real overlap            = (real)8.0 * dxGrid;
+    // gridBuilder->setNumberOfLayers(10, 8);
+
+    // const real xSplit = 0.0;
+    // const real ySplit = 0.0;
+    // const real zSplit = 0.0;
+
+    // gridBuilder->setPeriodicBoundaryCondition(false, true, false);
+
+    // if (communicator.getNummberOfProcess() == 2) {
+
+    //     if (generatePart == 0) {
+    //         gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xSplit+overlap, yGridMax, zGridMax,
+    //                                     dxGrid);
+    //     }
+    //     if (generatePart == 1) {
+    //         gridBuilder->addCoarseGrid(xSplit-overlap, yGridMin, zGridMin, xGridMax+overlap, yGridMax, zGridMax,
+    //                                     dxGrid);
+    //     }
+
+    //     if (generatePart == 0) {
+    //         gridBuilder->setSubDomainBox(
+    //             std::make_shared<BoundingBox>(xGridMin, xSplit, yGridMin, yGridMax, zGridMin, zGridMax));
+    //     }
+    //     if (generatePart == 1) {
+    //         gridBuilder->setSubDomainBox(
+    //             std::make_shared<BoundingBox>(xSplit, xGridMax, yGridMin, yGridMax, zGridMin, zGridMax));
+    //     }
+
+    //     gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+
+
+    //     if (generatePart == 0) {
+    //         // gridBuilder->findCommunicationIndices(CommunicationDirections::MX, LBM);
+    //         // gridBuilder->setCommunicationProcess(CommunicationDirections::MX, 1);
+    //         // gridBuilder->setCommunicationProcess(CommunicationDirections::MX, 1);
+    //     }
+
+    //     if (generatePart == 1) {            
+    //         // gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 0);
+    //         gridBuilder->findCommunicationIndices(CommunicationDirections::PX, LBM);
+    //         gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 0);
+    //     }
+    //     // gridBuilder->getGrid(0)->repairCommunicationIndices(CommunicationDirections::MX);
+    //     //////////////////////////////////////////////////////////////////////////
+    //     gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
+    //     gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, 0.0, 0.0);
+    //     gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
+    //     gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
+    //     // if (generatePart == 0)
+    //     //     gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
+    //     // if (generatePart == 1)
+    //     //     gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
+
+    //     bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
+    //     //////////////////////////////////////////////////////////////////////////
+    // }
 
     const real xSplit = L_x/nProcs;
-    const real overlap = 8.0*dx
+    const real overlap = 8.0*dx;
 
     real xMin      =  procID    * xSplit;
     real xMax      = (procID+1) * xSplit;
     real xGridMin  =  procID    * xSplit;
-    real xGrid Max = (procID+1) * xSplit;
+    real xGridMax  = (procID+1) * xSplit;
+    
+    real yMin      = 0.0;
+    real yMax      = L_y;
+    real zMin      = 0.0;
+    real zMax      = L_z; 
 
-    if(procID > 0) 
-        xGridMin -= overlap;
-    if(procID < nProcs-1 && nProcs > 1 )
+    bool isFirstSubDomain = (procID == 0        && nProcs > 1)?                    true: false;
+    bool isLastSubDomain  = (procID == nProcs-1 && nProcs > 1)?                    true: false;
+    bool isMidSubDomain   = (!isFirstSubDomain && !isLastSubDomain && nProcs > 1)? true: false;
+    
+    if(isFirstSubDomain || isMidSubDomain) 
         xGridMax += overlap;
+        xGridMin -= overlap;
+    if(isLastSubDomain || isMidSubDomain)
+        xGridMax += overlap;
+        xGridMin -= overlap;
 
-    gridBuilder->addCoarseGrid( xMin,  0.0,  0.0,
-                                xMax,  L_y,  L_z, dx);
+    gridBuilder->addCoarseGrid( xGridMin,  0.0,  0.0,
+                                xGridMax,  L_y,  L_z, dx);
     if(false)
     {
         gridBuilder->setNumberOfLayers(12, 8);
@@ -210,24 +296,34 @@ void multipleLevel(const std::string& configPath)
     }
 
     gridBuilder->setSubDomainBox(
-        std::make_shared<BoundingBox>(xMin, xMax, 0.0, L_y, 0.0, L_z));
+                        std::make_shared<BoundingBox>(xMin, xMax, yMin, yMax, zMin, zMax));
 
-	gridBuilder->buildGrids(lbmOrGks, false); // buildGrids() has to be called before setting the BCs!!!!
+	gridBuilder->buildGrids(lbmOrGks, true); // buildGrids() has to be called before setting the BCs!!!!
 
-    if (generatePart == 0) {
-        gridBuilder->findCommunicationIndices(CommunicationDirections::PZ, LBM);
-        gridBuilder->setCommunicationProcess(CommunicationDirections::PZ, 1);
+    std::cout << "nProcs: "<< nProcs << "Proc: " << procID << " isFirstSubDomain: " << isFirstSubDomain << " isLastSubDomain: " << isLastSubDomain << " isMidSubDomain: " << isMidSubDomain << std::endl;
+    
+
+    if (isFirstSubDomain || isMidSubDomain) {
+        gridBuilder->findCommunicationIndices(CommunicationDirections::PX, lbmOrGks);
+        gridBuilder->setCommunicationProcess(CommunicationDirections::PX, procID+1);
     }
 
-    if (generatePart == 1) {
-        gridBuilder->findCommunicationIndices(CommunicationDirections::MZ, LBM);
-        gridBuilder->setCommunicationProcess(CommunicationDirections::MZ, 0);
+    if (isLastSubDomain || isMidSubDomain) {
+        gridBuilder->findCommunicationIndices(CommunicationDirections::MX, lbmOrGks);
+        gridBuilder->setCommunicationProcess(CommunicationDirections::MX, procID-1);
     }
 
+    if (isFirstSubDomain) {
+        gridBuilder->findCommunicationIndices(CommunicationDirections::MX, lbmOrGks);
+        gridBuilder->setCommunicationProcess(CommunicationDirections::MX, nProcs-1);
+    }
 
+    if (isLastSubDomain) {
+        gridBuilder->findCommunicationIndices(CommunicationDirections::PX, lbmOrGks);
+        gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 0);
+    }
 
     uint samplingOffset = 2;
-    // gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
     gridBuilder->setStressBoundaryCondition(SideType::MZ,
                                             0.0, 0.0, 1.0,              // wall normals
                                             samplingOffset, z0/dx);     // wall model settinng
@@ -247,19 +343,19 @@ void multipleLevel(const std::string& configPath)
     });
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    SPtr<PlanarAverageProbe> planarAverageProbe = SPtr<PlanarAverageProbe>( new PlanarAverageProbe("planeProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt , tStartOutProbe/dt, tOutProbe/dt, 'z') );
-    planarAverageProbe->addAllAvailableStatistics();
-    planarAverageProbe->setFileNameToNOut();
-    para->addProbe( planarAverageProbe );
+    // SPtr<PlanarAverageProbe> planarAverageProbe = SPtr<PlanarAverageProbe>( new PlanarAverageProbe("planeProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt , tStartOutProbe/dt, tOutProbe/dt, 'z') );
+    // planarAverageProbe->addAllAvailableStatistics();
+    // planarAverageProbe->setFileNameToNOut();
+    // para->addProbe( planarAverageProbe );
 
-    para->setHasWallModelMonitor(true);
-    SPtr<WallModelProbe> wallModelProbe = SPtr<WallModelProbe>( new WallModelProbe("wallModelProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt/4.0 , tStartOutProbe/dt, tOutProbe/dt) );
-    wallModelProbe->addAllAvailableStatistics();
-    wallModelProbe->setFileNameToNOut();
-    wallModelProbe->setForceOutputToStress(true);
-    if(para->getIsBodyForce())
-        wallModelProbe->setEvaluatePressureGradient(true);
-    para->addProbe( wallModelProbe );
+    // para->setHasWallModelMonitor(true);
+    // SPtr<WallModelProbe> wallModelProbe = SPtr<WallModelProbe>( new WallModelProbe("wallModelProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt/4.0 , tStartOutProbe/dt, tOutProbe/dt) );
+    // wallModelProbe->addAllAvailableStatistics();
+    // wallModelProbe->setFileNameToNOut();
+    // wallModelProbe->setForceOutputToStress(true);
+    // if(para->getIsBodyForce())
+    //     wallModelProbe->setEvaluatePressureGradient(true);
+    // para->addProbe( wallModelProbe );
 
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
     auto gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
