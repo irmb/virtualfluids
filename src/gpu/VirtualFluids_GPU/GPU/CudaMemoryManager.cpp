@@ -15,6 +15,7 @@
 
 #include "lbm/constants/NumericConstants.h"
 
+
 void CudaMemoryManager::cudaAllocFull(int lev)
 {
     checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->geo      ), parameter->getParH(lev)->mem_size_int  ));

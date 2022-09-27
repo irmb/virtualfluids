@@ -260,7 +260,7 @@ void PrecursorWriter::write(Parameter* para, int level)
 
     std::vector<std::vector<double>> nodedata;
     
-    for(uint quant = 0; quant < precursorStruct->nQuantities; quant++)
+    if(this->outputVariable==OutputVariable::Velocities)
     {
         std::vector<double> doubleArr(nPointsInPlane*precursorStruct->timestepsBuffered, NAN);
         for( uint timestep=0; timestep<precursorStruct->timestepsBuffered; timestep++)
