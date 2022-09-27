@@ -151,7 +151,7 @@ precursorBoundaryConditionFunc BoundaryConditionFactory::getPrecursorBoundaryCon
             return QPrecursorDevCompZeroPress;
             break;
         case PrecursorBC::DistributionsPrecursor:
-            return QPrecursorDevDistributions;
+            return PrecursorDevDistributions;
             break;
         default:
             return nullptr;

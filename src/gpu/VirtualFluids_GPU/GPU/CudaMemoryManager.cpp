@@ -1740,7 +1740,7 @@ void CudaMemoryManager::cudaCopyPrecursorData(int lev)
 {
     auto prec = parameter->getParH(lev)->precursorBC;
     size_t memSize = prec.numberOfPrecursorNodes*sizeof(real)*prec.numberOfQuantities;
-    checkCudaErrors(  cudaStreamSynchronize(prec.stream) );
+    checkCudaErrors( cudaStreamSynchronize(prec.stream) );
     checkCudaErrors( cudaMemcpyAsync(parameter->getParD(lev)->precursorBC.next, prec.next, memSize, cudaMemcpyHostToDevice, prec.stream)) ;
 }
 

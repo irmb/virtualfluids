@@ -647,7 +647,7 @@ __global__ void PrecursorDeviceEQ27( 	int* subgridDistanceIndices,
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-__global__ void QPrecursorDeviceDistributions( 	int* subgridDistanceIndices,
+__global__ void PrecursorDeviceDistributions( 	int* subgridDistanceIndices,
 												int numberOfBCnodes,
                                                 int numberOfPrecursorNodes,
 												real* distributions,
@@ -794,12 +794,182 @@ __global__ void QPrecursorDeviceDistributions( 	int* subgridDistanceIndices,
     dist.f[DIR_P00][ke]   = f0LastInterp*(1.f-tRatio) + f0NextInterp*tRatio;
     dist.f[DIR_PP0][kne]  = f1LastInterp*(1.f-tRatio) + f1NextInterp*tRatio;
     dist.f[DIR_PM0][kse]  = f2LastInterp*(1.f-tRatio) + f2NextInterp*tRatio;
-    dist.f[DIR_P0P][kte]  = f3LastInterp*(1.f-tRatio) + f3NextInterp*tRatio;
-    dist.f[DIR_P0M][kbe]  = f4LastInterp*(1.f-tRatio) + f4NextInterp*tRatio;
-    dist.f[DIR_PPP][ktne] = f5LastInterp*(1.f-tRatio) + f5NextInterp*tRatio;
-    dist.f[DIR_PMP][ktse] = f6LastInterp*(1.f-tRatio) + f6NextInterp*tRatio;
-    dist.f[DIR_PPM][kbne] = f7LastInterp*(1.f-tRatio) + f7NextInterp*tRatio;
-    dist.f[DIR_PMM][kbse] = f8LastInterp*(1.f-tRatio) + f8NextInterp*tRatio;
+
+    if(k>256*2)
+    {
+        dist.f[DIR_P0P][kte]  = f3LastInterp*(1.f-tRatio) + f3NextInterp*tRatio;
+        dist.f[DIR_PPP][ktne] = f5LastInterp*(1.f-tRatio) + f5NextInterp*tRatio;
+        dist.f[DIR_PMP][ktse] = f6LastInterp*(1.f-tRatio) + f6NextInterp*tRatio;
+
+    }
+    if(k<256*62)
+    {
+        dist.f[DIR_P0M][kbe]  = f4LastInterp*(1.f-tRatio) + f4NextInterp*tRatio;
+        dist.f[DIR_PPM][kbne] = f7LastInterp*(1.f-tRatio) + f7NextInterp*tRatio;
+        dist.f[DIR_PMM][kbse] = f8LastInterp*(1.f-tRatio) + f8NextInterp*tRatio;
+    }
+
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+__global__ void QPrecursorDeviceDistributions( 	int* subgridDistanceIndices,
+                                                real* subgridDistances,
+                                                int sizeQ,
+												int numberOfBCnodes,
+                                                int numberOfPrecursorNodes,
+												real* distributions,
+												uint* neighborX, 
+												uint* neighborY, 
+												uint* neighborZ,
+												uint* neighborsNT, 
+												uint* neighborsNB,
+												uint* neighborsST,
+												uint* neighborsSB,
+												real* weightsNT, 
+												real* weightsNB,
+												real* weightsST,
+												real* weightsSB,
+												real* fsLast, 
+												real* fsNext,
+												real tRatio,
+												unsigned long long numberOfLBnodes,
+												bool isEvenTimestep)
+{
+    const unsigned k = vf::gpu::getNodeIndex();
+
+    if(k>=numberOfBCnodes) return;
+
+    uint kNT = neighborsNT[k];
+    real dNT = weightsNT[k];
+
+    real f0LastInterp, f1LastInterp, f2LastInterp, f3LastInterp, f4LastInterp, f5LastInterp, f6LastInterp, f7LastInterp, f8LastInterp;
+    real f0NextInterp, f1NextInterp, f2NextInterp, f3NextInterp, f4NextInterp, f5NextInterp, f6NextInterp, f7NextInterp, f8NextInterp;
+
+    real* f0Last = fsLast;
+    real* f1Last = &fsLast[  numberOfPrecursorNodes];
+    real* f2Last = &fsLast[2*numberOfPrecursorNodes];
+    real* f3Last = &fsLast[3*numberOfPrecursorNodes];
+    real* f4Last = &fsLast[4*numberOfPrecursorNodes];
+    real* f5Last = &fsLast[5*numberOfPrecursorNodes];
+    real* f6Last = &fsLast[6*numberOfPrecursorNodes];
+    real* f7Last = &fsLast[7*numberOfPrecursorNodes];
+    real* f8Last = &fsLast[8*numberOfPrecursorNodes];
+
+    real* f0Next = fsNext;
+    real* f1Next = &fsNext[  numberOfPrecursorNodes];
+    real* f2Next = &fsNext[2*numberOfPrecursorNodes];
+    real* f3Next = &fsNext[3*numberOfPrecursorNodes];
+    real* f4Next = &fsNext[4*numberOfPrecursorNodes];
+    real* f5Next = &fsNext[5*numberOfPrecursorNodes];
+    real* f6Next = &fsNext[6*numberOfPrecursorNodes];
+    real* f7Next = &fsNext[7*numberOfPrecursorNodes];
+    real* f8Next = &fsNext[8*numberOfPrecursorNodes];
+
+
+    if(dNT<1e6)
+    {
+        uint kNB = neighborsNB[k];
+        uint kST = neighborsST[k];
+        uint kSB = neighborsSB[k];
+
+        real dNB = weightsNB[k];
+        real dST = weightsST[k];
+        real dSB = weightsSB[k];
+
+        real invWeightSum = 1.f/(dNT+dNB+dST+dSB);
+
+        f0LastInterp = (f0Last[kNT]*dNT + f0Last[kNB]*dNB + f0Last[kST]*dST + f0Last[kSB]*dSB)*invWeightSum;
+        f0NextInterp = (f0Next[kNT]*dNT + f0Next[kNB]*dNB + f0Next[kST]*dST + f0Next[kSB]*dSB)*invWeightSum;
+        
+        f1LastInterp = (f1Last[kNT]*dNT + f1Last[kNB]*dNB + f1Last[kST]*dST + f1Last[kSB]*dSB)*invWeightSum;
+        f1NextInterp = (f1Next[kNT]*dNT + f1Next[kNB]*dNB + f1Next[kST]*dST + f1Next[kSB]*dSB)*invWeightSum;
+        
+        f2LastInterp = (f2Last[kNT]*dNT + f2Last[kNB]*dNB + f2Last[kST]*dST + f2Last[kSB]*dSB)*invWeightSum;
+        f2NextInterp = (f2Next[kNT]*dNT + f2Next[kNB]*dNB + f2Next[kST]*dST + f2Next[kSB]*dSB)*invWeightSum;
+        
+        f3LastInterp = (f3Last[kNT]*dNT + f3Last[kNB]*dNB + f3Last[kST]*dST + f3Last[kSB]*dSB)*invWeightSum;
+        f3NextInterp = (f3Next[kNT]*dNT + f3Next[kNB]*dNB + f3Next[kST]*dST + f3Next[kSB]*dSB)*invWeightSum;
+        
+        f4LastInterp = (f4Last[kNT]*dNT + f4Last[kNB]*dNB + f4Last[kST]*dST + f4Last[kSB]*dSB)*invWeightSum;
+        f4NextInterp = (f4Next[kNT]*dNT + f4Next[kNB]*dNB + f4Next[kST]*dST + f4Next[kSB]*dSB)*invWeightSum;
+        
+        f5LastInterp = (f5Last[kNT]*dNT + f5Last[kNB]*dNB + f5Last[kST]*dST + f5Last[kSB]*dSB)*invWeightSum;
+        f5NextInterp = (f5Next[kNT]*dNT + f5Next[kNB]*dNB + f5Next[kST]*dST + f5Next[kSB]*dSB)*invWeightSum;
+        
+        f6LastInterp = (f6Last[kNT]*dNT + f6Last[kNB]*dNB + f6Last[kST]*dST + f6Last[kSB]*dSB)*invWeightSum;
+        f6NextInterp = (f6Next[kNT]*dNT + f6Next[kNB]*dNB + f6Next[kST]*dST + f6Next[kSB]*dSB)*invWeightSum;
+        
+        f7LastInterp = (f7Last[kNT]*dNT + f7Last[kNB]*dNB + f7Last[kST]*dST + f7Last[kSB]*dSB)*invWeightSum;
+        f7NextInterp = (f7Next[kNT]*dNT + f7Next[kNB]*dNB + f7Next[kST]*dST + f7Next[kSB]*dSB)*invWeightSum;
+        
+        f8LastInterp = (f8Last[kNT]*dNT + f8Last[kNB]*dNB + f8Last[kST]*dST + f8Last[kSB]*dSB)*invWeightSum;
+        f8NextInterp = (f8Next[kNT]*dNT + f8Next[kNB]*dNB + f8Next[kST]*dST + f8Next[kSB]*dSB)*invWeightSum;
+    
+    } else {
+        f0LastInterp = f0Last[kNT];
+        f1LastInterp = f1Last[kNT];
+        f2LastInterp = f2Last[kNT];
+        f3LastInterp = f3Last[kNT];
+        f4LastInterp = f4Last[kNT];
+        f5LastInterp = f5Last[kNT];
+        f6LastInterp = f6Last[kNT];
+        f7LastInterp = f7Last[kNT];
+        f8LastInterp = f8Last[kNT];
+
+        f0NextInterp = f0Next[kNT];
+        f1NextInterp = f1Next[kNT];
+        f2NextInterp = f2Next[kNT];
+        f3NextInterp = f3Next[kNT];
+        f4NextInterp = f4Next[kNT];
+        f5NextInterp = f5Next[kNT];
+        f6NextInterp = f6Next[kNT];
+        f7NextInterp = f7Next[kNT];
+        f8NextInterp = f8Next[kNT];
+    }
+    Distributions27 dist;
+    getPointersToDistributions(dist, distributions, numberOfLBnodes, isEvenTimestep);
+
+    unsigned int KQK  = subgridDistanceIndices[k];
+    // unsigned int kzero= KQK;
+    unsigned int ke   = KQK;
+    // unsigned int kw   = neighborX[KQK];
+    // unsigned int kn   = KQK;
+    unsigned int ks   = neighborY[KQK];
+    // unsigned int kt   = KQK;
+    unsigned int kb   = neighborZ[KQK];
+    // unsigned int ksw  = neighborY[kw];
+    unsigned int kne  = KQK;
+    unsigned int kse  = ks;
+    // unsigned int knw  = kw;
+    // unsigned int kbw  = neighborZ[kw];
+    unsigned int kte  = KQK;
+    unsigned int kbe  = kb;
+    // unsigned int ktw  = kw;
+    unsigned int kbs  = neighborZ[ks];
+    // unsigned int ktn  = KQK;
+    // unsigned int kbn  = kb;
+    // unsigned int kts  = ks;
+    unsigned int ktse = ks;
+    // unsigned int kbnw = kbw;
+    // unsigned int ktnw = kw;
+    unsigned int kbse = kbs;
+    // unsigned int ktsw = ksw;
+    unsigned int kbne = kb;
+    unsigned int ktne = KQK;
+    // unsigned int kbsw = neighborZ[ksw];
+    SubgridDistances27 qs;
+    getPointersToSubgridDistances(qs, subgridDistances, sizeQ);
+
+    real q;
+    q = qs.q[DIR_P00][k]; if(q>= c0o1 && q <= c1o1) dist.f[DIR_P00][ke]   = f0LastInterp*(1.f-tRatio) + f0NextInterp*tRatio;
+    q = qs.q[DIR_PP0][k]; if(q>= c0o1 && q <= c1o1) dist.f[DIR_PP0][kne]  = f1LastInterp*(1.f-tRatio) + f1NextInterp*tRatio;
+    q = qs.q[DIR_PM0][k]; if(q>= c0o1 && q <= c1o1) dist.f[DIR_PM0][kse]  = f2LastInterp*(1.f-tRatio) + f2NextInterp*tRatio;
+    q = qs.q[DIR_P0P][k]; if(q>= c0o1 && q <= c1o1) dist.f[DIR_P0P][kte]  = f3LastInterp*(1.f-tRatio) + f3NextInterp*tRatio;
+    q = qs.q[DIR_P0M][k]; if(q>= c0o1 && q <= c1o1) dist.f[DIR_P0M][kbe]  = f4LastInterp*(1.f-tRatio) + f4NextInterp*tRatio;
+    q = qs.q[DIR_PPP][k]; if(q>= c0o1 && q <= c1o1) dist.f[DIR_PPP][ktne] = f5LastInterp*(1.f-tRatio) + f5NextInterp*tRatio;
+    q = qs.q[DIR_PMP][k]; if(q>= c0o1 && q <= c1o1) dist.f[DIR_PMP][ktse] = f6LastInterp*(1.f-tRatio) + f6NextInterp*tRatio;
+    q = qs.q[DIR_PPM][k]; if(q>= c0o1 && q <= c1o1) dist.f[DIR_PPM][kbne] = f7LastInterp*(1.f-tRatio) + f7NextInterp*tRatio;
+    q = qs.q[DIR_PMM][k]; if(q>= c0o1 && q <= c1o1) dist.f[DIR_PMM][kbse] = f8LastInterp*(1.f-tRatio) + f8NextInterp*tRatio;
 
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

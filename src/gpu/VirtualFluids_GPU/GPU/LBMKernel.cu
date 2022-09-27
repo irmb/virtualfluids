@@ -3241,12 +3241,28 @@ void PrecursorDevEQ27( LBMSimulationParameter* parameterDevice, QforPrecursorBou
 
 }
 //////////////////////////////////////////////////////////////////////////
+void PrecursorDevDistributions( LBMSimulationParameter* parameterDevice, QforPrecursorBoundaryConditions* boundaryCondition, real tRatio, real velocityRatio)
+{
+
+	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
+
+	PrecursorDeviceDistributions<<< grid.grid, grid.threads >>>(boundaryCondition->k, boundaryCondition->numberOfBCnodes, boundaryCondition->numberOfPrecursorNodes, parameterDevice->distributions.f[0],
+		parameterDevice->neighborX, parameterDevice->neighborY, parameterDevice->neighborZ,
+		boundaryCondition->planeNeighborNT, boundaryCondition->planeNeighborNB, boundaryCondition->planeNeighborST, boundaryCondition->planeNeighborSB,
+		boundaryCondition->weightsNT, boundaryCondition->weightsNB, boundaryCondition->weightsST, boundaryCondition->weightsSB,
+		boundaryCondition->last, boundaryCondition->current,
+		tRatio, parameterDevice->numberOfNodes, parameterDevice->isEvenTimestep);
+	getLastCudaError("QPrecursorDeviceCompZeroPress execution failed"); 
+
+}
+
+//////////////////////////////////////////////////////////////////////////
 void QPrecursorDevDistributions( LBMSimulationParameter* parameterDevice, QforPrecursorBoundaryConditions* boundaryCondition, real tRatio, real velocityRatio)
 {
 
 	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
 
-	QPrecursorDeviceDistributions<<< grid.grid, grid.threads >>>(boundaryCondition->k, boundaryCondition->numberOfBCnodes, boundaryCondition->numberOfPrecursorNodes, parameterDevice->distributions.f[0],
+	QPrecursorDeviceDistributions<<< grid.grid, grid.threads >>>(boundaryCondition->k, boundaryCondition->q27[0], boundaryCondition->sizeQ, boundaryCondition->numberOfBCnodes, boundaryCondition->numberOfPrecursorNodes, parameterDevice->distributions.f[0],
 		parameterDevice->neighborX, parameterDevice->neighborY, parameterDevice->neighborZ,
 		boundaryCondition->planeNeighborNT, boundaryCondition->planeNeighborNB, boundaryCondition->planeNeighborST, boundaryCondition->planeNeighborSB,
 		boundaryCondition->weightsNT, boundaryCondition->weightsNB, boundaryCondition->weightsST, boundaryCondition->weightsSB,

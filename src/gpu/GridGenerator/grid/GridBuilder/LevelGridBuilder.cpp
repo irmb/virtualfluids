@@ -675,7 +675,7 @@ void LevelGridBuilder::getPrecursorValues(  uint* neighborNT, uint* neighborNB, 
     nTRead = tmpNTRead;
     
     if (tmpNQuantities == 0)
-        throw std::runtime_error("Number of Quantities in precursor needs to be larger than 0.");
+        throw std::runtime_error("Number of quantities in precursor needs to be larger than 0.");
     numberOfQuantities = tmpNQuantities;
 }
 

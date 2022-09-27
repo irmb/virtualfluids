@@ -1014,6 +1014,8 @@ void QPrecursorDevCompZeroPress(LBMSimulationParameter* parameterDevice, QforPre
 
 void PrecursorDevEQ27(LBMSimulationParameter* parameterDevice, QforPrecursorBoundaryConditions* boundaryCondition, real tRatio, real velocityRatio);
 
+void PrecursorDevDistributions(LBMSimulationParameter* parameterDevice, QforPrecursorBoundaryConditions* boundaryCondition, real tRatio, real velocityRatio);
+
 void QPrecursorDevDistributions(LBMSimulationParameter* parameterDevice, QforPrecursorBoundaryConditions* boundaryCondition, real tRatio, real velocityRatio);
 
 void QADDev7(unsigned int numberOfThreads,
