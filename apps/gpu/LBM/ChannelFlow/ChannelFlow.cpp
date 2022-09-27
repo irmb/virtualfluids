@@ -30,6 +30,7 @@
 //! \ingroup Applications
 //! \author Anna Wellmann
 //=======================================================================================
+#include <numeric>
 #define _USE_MATH_DEFINES
 #include <exception>
 #include <filesystem>
@@ -85,7 +86,7 @@ int main(int argc, char *argv[])
 
         const real channelWidth = 1.0;
         const real Re = 10000.0;
-        const uint nx = 700; // ~60 GB on A100 single precision
+        const uint nx = 700;          // 700 nodes need ~60 GB on A100 (single precision)
         const real velocityLB = 0.05; // LB units
 
         const uint timeStepOut = 10000;
@@ -96,9 +97,12 @@ int main(int argc, char *argv[])
         //////////////////////////////////////////////////////////////////////////
 
         vf::gpu::Communicator &communicator = vf::gpu::Communicator::getInstance();
-        SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNummberOfProcess(), communicator.getPID());
-        para->setDevices({ 0, 1, 2, 3, 4 });
-        para->setMaxDev(5);
+        const int numberOfProcesses = communicator.getNummberOfProcess();
+        SPtr<Parameter> para = std::make_shared<Parameter>(numberOfProcesses, communicator.getPID());
+        std::vector<uint> devices(10);
+        std::iota(devices.begin(), devices.end(), 0);
+        para->setDevices(devices);
+        para->setMaxDev(communicator.getNummberOfProcess());
         BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
 
         //////////////////////////////////////////////////////////////////////////
@@ -129,8 +133,6 @@ int main(int argc, char *argv[])
         // create grid
         //////////////////////////////////////////////////////////////////////////
 
-        const real xGridMin = 0.0 * channelWidth;
-        // const real xGridMax = 5.0 * channelWidth;
         const real yGridMin = 0.0 * channelWidth;
         const real yGridMax = 1.0 * channelWidth;
         const real zGridMin = 0.0 * channelWidth;
@@ -169,57 +171,32 @@ int main(int argc, char *argv[])
         const uint generatePart = vf::gpu::Communicator::getInstance().getPID();
         real overlap = (real)8.0 * dx;
 
-        if (communicator.getNummberOfProcess() == 5) {
+        if (numberOfProcesses > 1) {
 
             //////////////////////////////////////////////////////////////////////////
             // add coarse grids
             //////////////////////////////////////////////////////////////////////////
 
-            if (generatePart == 0) {
-                gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, 1.0 * channelWidth + overlap, yGridMax,
-                                           zGridMax, dx);
-            }
-            if (generatePart == 1) {
-                gridBuilder->addCoarseGrid(1.0 * channelWidth - overlap, yGridMin, zGridMin,
-                                           2.0 * channelWidth + overlap, yGridMax, zGridMax, dx);
-            }
-            if (generatePart == 2) {
-                gridBuilder->addCoarseGrid(2.0 * channelWidth - overlap, yGridMin, zGridMin,
-                                           3.0 * channelWidth + overlap, yGridMax, zGridMax, dx);
-            }
-            if (generatePart == 3) {
-                gridBuilder->addCoarseGrid(3.0 * channelWidth - overlap, yGridMin, zGridMin,
-                                           4.0 * channelWidth + overlap, yGridMax, zGridMax, dx);
-            }
-            if (generatePart == 4) {
-                gridBuilder->addCoarseGrid(4.0 * channelWidth - overlap, yGridMin, zGridMin, 5.0 * channelWidth,
-                                           yGridMax, zGridMax, dx);
-            }
+            real subdomainMinX = channelWidth * generatePart;
+            real subdomainMinXoverlap = subdomainMinX;
+            real subdomainMaxX = subdomainMinX + channelWidth;
+            real subdomainMaxXoverlap = subdomainMaxX;
+
+            if (generatePart != 0)
+                subdomainMinXoverlap -= overlap;
+
+            if (generatePart != numberOfProcesses - 1)
+                subdomainMaxXoverlap += overlap;
+
+            gridBuilder->addCoarseGrid(subdomainMinXoverlap, yGridMin, zGridMin, subdomainMaxXoverlap, yGridMax,
+                                       zGridMax, dx);
 
             //////////////////////////////////////////////////////////////////////////
             // set subdomain dimensions
             //////////////////////////////////////////////////////////////////////////
 
-            if (generatePart == 0) {
-                gridBuilder->setSubDomainBox(std::make_shared<BoundingBox>(xGridMin, 1.0 * channelWidth, yGridMin,
-                                                                           yGridMax, zGridMin, zGridMax));
-            }
-            if (generatePart == 1) {
-                gridBuilder->setSubDomainBox(std::make_shared<BoundingBox>(1.0 * channelWidth, 2.0 * channelWidth,
-                                                                           yGridMin, yGridMax, zGridMin, zGridMax));
-            }
-            if (generatePart == 2) {
-                gridBuilder->setSubDomainBox(std::make_shared<BoundingBox>(2.0 * channelWidth, 3.0 * channelWidth,
-                                                                           yGridMin, yGridMax, zGridMin, zGridMax));
-            }
-            if (generatePart == 3) {
-                gridBuilder->setSubDomainBox(std::make_shared<BoundingBox>(3.0 * channelWidth, 4.0 * channelWidth,
-                                                                           yGridMin, yGridMax, zGridMin, zGridMax));
-            }
-            if (generatePart == 4) {
-                gridBuilder->setSubDomainBox(std::make_shared<BoundingBox>(4.0 * channelWidth, 5.0 * channelWidth,
-                                                                           yGridMin, yGridMax, zGridMin, zGridMax));
-            }
+            gridBuilder->setSubDomainBox(
+                std::make_shared<BoundingBox>(subdomainMinX, subdomainMaxX, yGridMin, yGridMax, zGridMin, zGridMax));
 
             //////////////////////////////////////////////////////////////////////////
             // build grids
@@ -231,31 +208,14 @@ int main(int argc, char *argv[])
             // configure communication neighbors
             //////////////////////////////////////////////////////////////////////////
 
-            if (generatePart == 0) {
-                gridBuilder->findCommunicationIndices(CommunicationDirections::PX, LBM);
-                gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 1);
-            }
-            if (generatePart == 1) {
+            if (generatePart != 0) {
                 gridBuilder->findCommunicationIndices(CommunicationDirections::MX, LBM);
-                gridBuilder->setCommunicationProcess(CommunicationDirections::MX, 0);
-                gridBuilder->findCommunicationIndices(CommunicationDirections::PX, LBM);
-                gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 2);
+                gridBuilder->setCommunicationProcess(CommunicationDirections::MX, generatePart - 1);
             }
-            if (generatePart == 2) {
-                gridBuilder->findCommunicationIndices(CommunicationDirections::MX, LBM);
-                gridBuilder->setCommunicationProcess(CommunicationDirections::MX, 1);
+
+            if (generatePart != numberOfProcesses - 1) {
                 gridBuilder->findCommunicationIndices(CommunicationDirections::PX, LBM);
-                gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 3);
-            }
-            if (generatePart == 3) {
-                gridBuilder->findCommunicationIndices(CommunicationDirections::MX, LBM);
-                gridBuilder->setCommunicationProcess(CommunicationDirections::MX, 2);
-                gridBuilder->findCommunicationIndices(CommunicationDirections::PX, LBM);
-                gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 4);
-            }
-            if (generatePart == 4) {
-                gridBuilder->findCommunicationIndices(CommunicationDirections::MX, LBM);
-                gridBuilder->setCommunicationProcess(CommunicationDirections::MX, 3);
+                gridBuilder->setCommunicationProcess(CommunicationDirections::PX, generatePart + 1);
             }
 
             //////////////////////////////////////////////////////////////////////////
@@ -267,7 +227,7 @@ int main(int argc, char *argv[])
             if (generatePart == 0) {
                 gridBuilder->setVelocityBoundaryCondition(SideType::MX, velocityLB, 0.0, 0.0);
             }
-            if (generatePart == 4) {
+            if (generatePart == numberOfProcesses - 1) {
                 gridBuilder->setPressureBoundaryCondition(SideType::PX,
                                                           0.0); // set pressure boundary condition last
                 bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflective);
@@ -280,7 +240,7 @@ int main(int argc, char *argv[])
             bcFactory.setVelocityBoundaryCondition(
                 BoundaryConditionFactory::VelocityBC::VelocityAndPressureCompressible);
         } else {
-            VF_LOG_CRITICAL("This app has no setup for {} GPUs.", para->getNumprocs());
+            VF_LOG_CRITICAL("This app has no setup for a single GPU");
         }
 
         //////////////////////////////////////////////////////////////////////////
