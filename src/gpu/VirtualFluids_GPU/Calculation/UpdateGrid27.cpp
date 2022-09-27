@@ -227,7 +227,7 @@ void UpdateGrid27::exchangeMultiGPUAfterFtoC(int level, int streamIndex)
     }
 }
 
-void UpdateGrid27::postCollisionBC(int level, uint t) // TODO add t here so it can be passed to precursor
+void UpdateGrid27::postCollisionBC(int level, uint t)
 {
     //////////////////////////////////////////////////////////////////////////
     // G E O M E T R Y

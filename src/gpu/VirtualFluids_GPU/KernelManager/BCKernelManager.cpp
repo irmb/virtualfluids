@@ -442,8 +442,6 @@ void BCKernelManager::runPrecursorBCKernelPost(int level, uint t, CudaMemoryMana
         currentTime = nextTime;
         nextTime += para->getParD(level)->precursorBC.nTRead;
 
-        //TODO switch to streams and synch stream here
-        checkCudaErrors(cudaDeviceSynchronize());
         //cycle pointers
         real* tmp = para->getParD(level)->precursorBC.last;
         para->getParD(level)->precursorBC.last = para->getParD(level)->precursorBC.current;

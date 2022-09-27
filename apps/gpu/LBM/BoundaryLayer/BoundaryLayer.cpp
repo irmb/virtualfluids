@@ -215,13 +215,13 @@ void multipleLevel(const std::string& configPath)
 
 	gridBuilder->buildGrids(lbmOrGks, false); // buildGrids() has to be called before setting the BCs!!!!
 
+    uint samplingOffset = 2;
     
     if(readPrecursor)
     {
         auto precursor = createFileCollection(precursorDirectory + "/precursor", FileType::VTK);
         gridBuilder->setPrecursorBoundaryCondition(SideType::MX, precursor, nTReadPrecursor);
 
-        uint samplingOffset = 2;
         gridBuilder->setStressBoundaryCondition(SideType::MZ,
                                             0.0, 0.0, 1.0,              // wall normals
                                             samplingOffset, z0/dx);     // wall model settinng
@@ -236,7 +236,6 @@ void multipleLevel(const std::string& configPath)
     {
         gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0,  0.0, -1.0);
 
-        uint samplingOffset = 2;
         gridBuilder->setStressBoundaryCondition(SideType::MZ,
                                             0.0, 0.0, 1.0,              // wall normals
                                             samplingOffset, z0/dx);     // wall model settinng

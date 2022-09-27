@@ -274,63 +274,6 @@ void PrecursorWriter::write(Parameter* para, int level)
         nodedata.push_back(doubleArr);
     }
 
-    // if(this->outputVariable==OutputVariable::Velocities)
-    // {
-    //     std::vector<double> vxDouble(nPointsInPlane*precursorStruct->timestepsBuffered, NAN), 
-    //                         vyDouble(nPointsInPlane*precursorStruct->timestepsBuffered, NAN), 
-    //                         vzDouble(nPointsInPlane*precursorStruct->timestepsBuffered, NAN);
-
-
-    //     for( uint timestep=0; timestep<precursorStruct->timestepsBuffered; timestep++)
-    //     {
-    //         // printf("offset %d npoints %d buf %d, max%d\n",timestep, precursorStruct->nPoints, precursorStruct->timestepsBuffered, precursorStruct->timestepsPerFile);
-    //         for (uint pos = 0; pos < precursorStruct->nPoints; pos++)
-    //         {
-    //             int indexOnPlane = precursorStruct->indicesOnPlane[pos]+timestep*nPointsInPlane;
-    //             // int idx = pos+timestep*precursorStruct->nPoints*3;
-    //             // printf("timestep %i, pos %i, iOP %i \n", timestep, pos, indexOnPlane);
-    //             // printf("vx %f, vy %f, vz%f nodedata x %f\n", vx[level][timestep][pos], vy[level][timestep][pos], vz[level][timestep][pos], vxDouble[indexOnPlane]);
-    //             vxDouble[indexOnPlane] = double(precursorStruct->dataH[lIndex(0u, pos, timestep, 3, precursorStruct->nPoints)]);
-    //             vyDouble[indexOnPlane] = double(precursorStruct->dataH[lIndex(1u, pos, timestep, 3, precursorStruct->nPoints)]);
-    //             vzDouble[indexOnPlane] = double(precursorStruct->dataH[lIndex(2u, pos, timestep, 3, precursorStruct->nPoints)]);
-    //         }
-    //     }
-    //     nodedata = {vxDouble, vyDouble, vzDouble};
-    // }
-    // else if(this->outputVariable==OutputVariable::Distributions)
-    // {
-    //     std::vector<double> fP00Double(nPointsInPlane*precursorStruct->timestepsBuffered, NAN), 
-    //                         fPP0Double(nPointsInPlane*precursorStruct->timestepsBuffered, NAN), 
-    //                         fPM0Double(nPointsInPlane*precursorStruct->timestepsBuffered, NAN), 
-    //                         fP0PDouble(nPointsInPlane*precursorStruct->timestepsBuffered, NAN), 
-    //                         fP0MDouble(nPointsInPlane*precursorStruct->timestepsBuffered, NAN), 
-    //                         fPPPDouble(nPointsInPlane*precursorStruct->timestepsBuffered, NAN), 
-    //                         fPMPDouble(nPointsInPlane*precursorStruct->timestepsBuffered, NAN), 
-    //                         fPPMDouble(nPointsInPlane*precursorStruct->timestepsBuffered, NAN), 
-    //                         fPMMDouble(nPointsInPlane*precursorStruct->timestepsBuffered, NAN);
-
-    //     for( uint timestep=0; timestep<precursorStruct->timestepsBuffered; timestep++)
-    //     {
-    //         for (uint pos = 0; pos < precursorStruct->nPoints; pos++)
-    //         {
-    //             int indexOnPlane = precursorStruct->indicesOnPlane[pos]+timestep*nPointsInPlane;
-    //             // int idx = pos+timestep*precursorStruct->nPoints*9;
-    //             // printf("timestep %i, pos %i, iOP %i \n", timestep, pos, indexOnPlane);
-    //             // printf("f0 %f\n", double(precursorStruct->dataH[PrecP00*precursorStruct->nPoints+idx]));
-    //             fP00Double[indexOnPlane] = double(precursorStruct->dataH[lIndex(PrecP00, pos, timestep, 9, precursorStruct->nPoints)]);
-    //             fPP0Double[indexOnPlane] = double(precursorStruct->dataH[lIndex(PrecPP0, pos, timestep, 9, precursorStruct->nPoints)]);
-    //             fPM0Double[indexOnPlane] = double(precursorStruct->dataH[lIndex(PrecPM0, pos, timestep, 9, precursorStruct->nPoints)]);
-    //             fP0PDouble[indexOnPlane] = double(precursorStruct->dataH[lIndex(PrecP0P, pos, timestep, 9, precursorStruct->nPoints)]);
-    //             fP0MDouble[indexOnPlane] = double(precursorStruct->dataH[lIndex(PrecP0M, pos, timestep, 9, precursorStruct->nPoints)]);
-    //             fPPPDouble[indexOnPlane] = double(precursorStruct->dataH[lIndex(PrecPPP, pos, timestep, 9, precursorStruct->nPoints)]);
-    //             fPMPDouble[indexOnPlane] = double(precursorStruct->dataH[lIndex(PrecPMP, pos, timestep, 9, precursorStruct->nPoints)]);
-    //             fPPMDouble[indexOnPlane] = double(precursorStruct->dataH[lIndex(PrecPPM, pos, timestep, 9, precursorStruct->nPoints)]);
-    //             fPMMDouble[indexOnPlane] = double(precursorStruct->dataH[lIndex(PrecPMM, pos, timestep, 9, precursorStruct->nPoints)]);
-    //         }
-    //     }
-    //     nodedata = {fP00Double, fPP0Double, fPM0Double, fP0PDouble, fP0MDouble, fPPPDouble, fPMPDouble, fPPMDouble, fPMMDouble};
-    // }
-
     precursorStruct->timestepsBuffered = 0;
 
     std::vector<std::vector<double>> celldata;
