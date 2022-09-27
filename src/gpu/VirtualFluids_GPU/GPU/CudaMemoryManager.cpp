@@ -1702,7 +1702,7 @@ void CudaMemoryManager::cudaAllocPrecursorBC(int lev)
 
 void CudaMemoryManager::cudaAllocPrecursorData(int lev)
 {
-    uint size = parameter->getParH(lev)->precursorBC.numberOfPrecursorNodes*sizeof(real)*parameter->getParH(lev)->precursorBC.numberOfQuantities;
+    size_t size = parameter->getParH(lev)->precursorBC.numberOfPrecursorNodes*sizeof(real)*parameter->getParH(lev)->precursorBC.numberOfQuantities;
     checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->precursorBC.last, size));
     checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->precursorBC.current, size));
     checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->precursorBC.next, size));
@@ -1736,7 +1736,7 @@ void CudaMemoryManager::cudaCopyPrecursorBC(int lev)
 }
 void CudaMemoryManager::cudaCopyPrecursorData(int lev)
 {
-    uint memSize = parameter->getParH(lev)->precursorBC.numberOfPrecursorNodes*sizeof(real)*parameter->getParH(lev)->precursorBC.numberOfQuantities;
+    size_t memSize = parameter->getParH(lev)->precursorBC.numberOfPrecursorNodes*sizeof(real)*parameter->getParH(lev)->precursorBC.numberOfQuantities;
     checkCudaErrors( cudaMemcpyAsync(parameter->getParD(lev)->precursorBC.next, parameter->getParH(lev)->precursorBC.next, memSize, cudaMemcpyHostToDevice));
 }
 
