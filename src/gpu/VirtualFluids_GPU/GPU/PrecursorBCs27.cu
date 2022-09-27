@@ -794,21 +794,12 @@ __global__ void PrecursorDeviceDistributions( 	int* subgridDistanceIndices,
     dist.f[DIR_P00][ke]   = f0LastInterp*(1.f-tRatio) + f0NextInterp*tRatio;
     dist.f[DIR_PP0][kne]  = f1LastInterp*(1.f-tRatio) + f1NextInterp*tRatio;
     dist.f[DIR_PM0][kse]  = f2LastInterp*(1.f-tRatio) + f2NextInterp*tRatio;
-
-    if(k>256*2)
-    {
-        dist.f[DIR_P0P][kte]  = f3LastInterp*(1.f-tRatio) + f3NextInterp*tRatio;
-        dist.f[DIR_PPP][ktne] = f5LastInterp*(1.f-tRatio) + f5NextInterp*tRatio;
-        dist.f[DIR_PMP][ktse] = f6LastInterp*(1.f-tRatio) + f6NextInterp*tRatio;
-
-    }
-    if(k<256*62)
-    {
-        dist.f[DIR_P0M][kbe]  = f4LastInterp*(1.f-tRatio) + f4NextInterp*tRatio;
-        dist.f[DIR_PPM][kbne] = f7LastInterp*(1.f-tRatio) + f7NextInterp*tRatio;
-        dist.f[DIR_PMM][kbse] = f8LastInterp*(1.f-tRatio) + f8NextInterp*tRatio;
-    }
-
+    dist.f[DIR_P0P][kte]  = f3LastInterp*(1.f-tRatio) + f3NextInterp*tRatio;
+    dist.f[DIR_P0M][kbe]  = f4LastInterp*(1.f-tRatio) + f4NextInterp*tRatio;
+    dist.f[DIR_PPP][ktne] = f5LastInterp*(1.f-tRatio) + f5NextInterp*tRatio;
+    dist.f[DIR_PMP][ktse] = f6LastInterp*(1.f-tRatio) + f6NextInterp*tRatio;
+    dist.f[DIR_PPM][kbne] = f7LastInterp*(1.f-tRatio) + f7NextInterp*tRatio;
+    dist.f[DIR_PMM][kbse] = f8LastInterp*(1.f-tRatio) + f8NextInterp*tRatio;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

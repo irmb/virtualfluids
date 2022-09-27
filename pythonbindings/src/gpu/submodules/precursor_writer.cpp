@@ -10,18 +10,26 @@ namespace precursor_writer
 
     void makeModule(py::module_ &parentModule)
     {
+        py::enum_<OutputVariable>(parentModule, "OutputVariable")
+        .value("Velocities", OutputVariable::Velocities)
+        .value("Distributions", OutputVariable::Distributions);
+
         py::class_<PrecursorWriter, PreCollisionInteractor, std::shared_ptr<PrecursorWriter>>(parentModule, "PrecursorWriter")
         .def(py::init < std::string,
                         std::string,
                         real,
                         real, real,
                         real, real,
-                        uint, uint, uint>(),
+                        uint, uint, 
+                        OutputVariable, 
+                        uint>(),
                         "filename"
                         "output_path", 
                         "x_pos",
                         "y_min", "y_max",
                         "z_min", "z_max",
-                        "t_start_out", "t_save", "max_timesteps_per_file");
+                        "t_start_out", "t_save", 
+                        "output_variable", 
+                        "max_timesteps_per_file");
     }
 }
