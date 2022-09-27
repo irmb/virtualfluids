@@ -49,6 +49,7 @@
 
 #include <string>
 #include <vector>
+#include "cuda_runtime.h"
 
 //! \brief An enumeration for selecting a turbulence model
 enum class TurbulenceModel {
@@ -228,6 +229,7 @@ typedef struct QforPrecursorBC{
    real* weightsNT, *weightsNB, *weightsST,  *weightsSB;
    real* last, *current, *next;
    real velocityX, velocityY, velocityZ;
+   cudaStream_t stream;
 }QforPrecursorBoundaryConditions;
 
 //BCTemp

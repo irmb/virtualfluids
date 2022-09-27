@@ -40,6 +40,7 @@ struct PrecursorStruct
     UbTupleFloat2 origin;
     UbTupleFloat3 spacing;
     int* indicesOnPlane;
+    cudaStream_t stream;
 };
 
 class PrecursorWriter : public PreCollisionInteractor

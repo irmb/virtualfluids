@@ -109,6 +109,7 @@ struct ProbeStruct{
     bool *quantitiesH, *quantitiesD;
     uint *arrayOffsetsH, *arrayOffsetsD;
     bool isEvenTAvg = true;
+    cudaStream_t stream;
 };
 
 __global__ void calcQuantitiesKernel(   uint* pointIndices,
@@ -220,7 +221,6 @@ protected:
     uint tOut;
 
     uint tProbe = 0; //!> counter for number of probe evaluations. Only used when outputting timeseries
-
 
     std::function<real(int)> velocityRatio;
     std::function<real(int)> densityRatio;
