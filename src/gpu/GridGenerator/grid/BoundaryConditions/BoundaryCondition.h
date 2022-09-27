@@ -337,9 +337,9 @@ public:
 class PrecursorBoundaryCondition : public gg::BoundaryCondition
 {
 public:
-    static SPtr<PrecursorBoundaryCondition> make(SPtr<VelocityReader> reader, int nTRead)
+    static SPtr<PrecursorBoundaryCondition> make(SPtr<VelocityReader> reader, int nTRead, real velocityX, real velocityY, real velocityZ)
     {
-        return SPtr<PrecursorBoundaryCondition>(new PrecursorBoundaryCondition(reader, nTRead));
+        return SPtr<PrecursorBoundaryCondition>(new PrecursorBoundaryCondition(reader, nTRead, velocityX, velocityY, velocityZ));
     }
 
     SPtr<VelocityReader> getReader(){ return reader; }
@@ -348,7 +348,7 @@ public:
     real getVelocityZ() { return velocityZ; }
 
 private:
-    PrecursorBoundaryCondition(SPtr<VelocityReader> _reader, uint _nTRead) : reader(_reader), nTRead(_nTRead) { };
+    PrecursorBoundaryCondition(SPtr<VelocityReader> _reader, uint _nTRead, real vx, real vy, real vz) : reader(_reader), nTRead(_nTRead), velocityX(vx), velocityY(vy), velocityZ(vz) { };
     virtual char getType() const override
     {
         return vf::gpu::BC_VELOCITY;
