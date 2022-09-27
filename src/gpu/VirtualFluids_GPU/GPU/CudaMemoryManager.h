@@ -185,11 +185,11 @@ public:
     void cudaFreeStressBC(int lev);
 
     void cudaAllocPrecursorBC(int lev);
-    void cudaAllocPrecursorVelocities(int lev);
+    void cudaAllocPrecursorData(int lev);
     void cudaCopyPrecursorBC(int lev);
-    void cudaCopyPrecursorVelocities(int lev);
+    void cudaCopyPrecursorData(int lev);
     void cudaFreePrecursorBC(int lev);
-    void cudaFreePrecursorVelocities(int lev);
+    void cudaFreePrecursorData(int lev);
 
     void cudaAllocWallModel(int lev, bool hasWallModelMonitor);
     void cudaCopyWallModel(int lev,  bool hasWallModelMonitor);

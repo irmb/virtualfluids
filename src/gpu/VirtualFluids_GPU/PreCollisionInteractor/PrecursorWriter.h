@@ -20,14 +20,22 @@ enum class OutputVariable {
     Distributions    
 };
 
+static constexpr uint PrecP00 = 0;
+static constexpr uint PrecPP0 = 1;
+static constexpr uint PrecPM0 = 2;
+static constexpr uint PrecP0P = 3;
+static constexpr uint PrecP0M = 4;
+static constexpr uint PrecPPP = 5;
+static constexpr uint PrecPMP = 6;
+static constexpr uint PrecPPM = 7;
+static constexpr uint PrecPMM = 8;
+
 struct PrecursorStruct
 {
     uint nPoints, nPointsInPlane, timestepsPerFile, filesWritten, timestepsBuffered;
     uint *indicesH, *indicesD;
-    real *vxH, *vxD;
-    real *vyH, *vyD;
-    real *vzH, *vzD;
-    DistributionSubset9 distH, distD;
+    real *dataH, *dataD;
+    uint nQuantities;
     UbTupleInt4 extent;
     UbTupleFloat2 origin;
     UbTupleFloat3 spacing;
@@ -60,9 +68,7 @@ public:
     outputVariable(_outputVariable),
     maxtimestepsPerFile(_maxTimestepsPerFile)
     {
-        if(      _outputVariable==OutputVariable::Velocities   ){   nodedatanames = {"vx", "vy", "vz"};}
-        else if( _outputVariable==OutputVariable::Distributions){   nodedatanames = {"f0", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"};}
-        else{ throw std::runtime_error("Invalid OutputVariable for PrecursorWriter"); }
+        nodedatanames = determineNodeDataNames();
     };
     void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager) override;
     void interact(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t) override;
@@ -75,6 +81,23 @@ public:
 private:
     WbWriterVtkXmlImageBinary* getWriter(){ return WbWriterVtkXmlImageBinary::getInstance(); };
     void write(Parameter* para, int level);
+
+    std::vector<std::string> determineNodeDataNames()
+    {
+        switch (outputVariable)
+        {
+        case OutputVariable::Velocities:
+            return {"vx", "vy", "vz"};
+            break;       
+        case OutputVariable::Distributions:
+            return {"fP00", "fPP0", "fPM0", "fP0P", "fP0M", "fPPP", "fPMP", "fPPM", "fPMM"};
+            break;
+        
+        default:
+            throw std::runtime_error("Invalid OutputVariable for PrecursorWriter");
+            break;
+        }
+    }
 
 private:
     std::vector<SPtr<PrecursorStruct>> precursorStructs;
