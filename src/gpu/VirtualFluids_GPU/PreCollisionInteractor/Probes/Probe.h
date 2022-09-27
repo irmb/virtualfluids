@@ -109,7 +109,6 @@ struct ProbeStruct{
     bool *quantitiesH, *quantitiesD;
     uint *arrayOffsetsH, *arrayOffsetsD;
     bool isEvenTAvg = true;
-    cudaStream_t stream;
 };
 
 __global__ void calcQuantitiesKernel(   uint* pointIndices,

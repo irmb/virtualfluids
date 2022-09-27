@@ -217,7 +217,10 @@ void PrecursorWriter::interact(Parameter* para, CudaMemoryManager* cudaManager, 
                                                                 para->getEvenOrOdd(level), para->getParD(level)->numberOfNodes);
             getLastCudaError("In PrecursorWriter::interact fillArrayDistributions execution failed");
         }
-
+        // switch device buffer and data pointer
+        real *tmp = precursorStruct->deviceBuffer;
+        precursorStruct->deviceBuffer = precursorStruct->dataD;
+        precursorStruct->dataD = tmp;
         cudaManager->cudaCopyPrecursorWriterOutputVariablesDtoH(this, level);
 
         precursorStruct->timestepsBuffered++;

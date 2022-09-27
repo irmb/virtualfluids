@@ -34,7 +34,7 @@ struct PrecursorStruct
 {
     uint nPoints, nPointsInPlane, timestepsPerFile, filesWritten, timestepsBuffered;
     uint *indicesH, *indicesD;
-    real *dataH, *dataD;
+    real *dataH, *dataD, *deviceBuffer;
     uint nQuantities;
     UbTupleInt4 extent;
     UbTupleFloat2 origin;
