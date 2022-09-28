@@ -3419,8 +3419,9 @@ void CudaMemoryManager::cudaAllocPrecursorWriter(PrecursorWriter* writer, int le
     size_t dataSizeH = dataSize * prec->timestepsPerFile;
     
     checkCudaErrors( cudaMallocHost((void**) &prec->dataH, dataSizeH));
+    checkCudaErrors( cudaMallocHost((void**) &prec->bufferH, dataSizeH));
     checkCudaErrors( cudaMalloc((void**) &prec->dataD, dataSize));
-    checkCudaErrors( cudaMalloc((void**) &prec->deviceBuffer, dataSize));
+    checkCudaErrors( cudaMalloc((void**) &prec->bufferD, dataSize));
 
     setMemsizeGPU(indSize+2*dataSize, false);
 }
@@ -3436,7 +3437,7 @@ void CudaMemoryManager::cudaCopyPrecursorWriterOutputVariablesDtoH(PrecursorWrit
     int sizeTimestep = prec->nPoints*prec->nQuantities;
 
     checkCudaErrors( cudaStreamSynchronize(prec->stream) );
-    checkCudaErrors( cudaMemcpyAsync( &prec->dataH[prec->timestepsBuffered*sizeTimestep], prec->deviceBuffer, sizeof(real)*sizeTimestep, cudaMemcpyDeviceToHost, prec->stream));
+    checkCudaErrors( cudaMemcpyAsync( &prec->bufferH[prec->timestepsBuffered*sizeTimestep], prec->bufferD, sizeof(real)*sizeTimestep, cudaMemcpyDeviceToHost, prec->stream));
 }
 
 void CudaMemoryManager::cudaFreePrecursorWriter(PrecursorWriter* writer, int level)
@@ -3445,8 +3446,9 @@ void CudaMemoryManager::cudaFreePrecursorWriter(PrecursorWriter* writer, int lev
     checkCudaErrors( cudaFree(writer->getPrecursorStruct(level)->indicesD));
 
     checkCudaErrors( cudaFreeHost(writer->getPrecursorStruct(level)->dataH));
+    checkCudaErrors( cudaFreeHost(writer->getPrecursorStruct(level)->bufferH));
     checkCudaErrors( cudaFree(writer->getPrecursorStruct(level)->dataD));
-    checkCudaErrors( cudaFree(writer->getPrecursorStruct(level)->dataD));
+    checkCudaErrors( cudaFree(writer->getPrecursorStruct(level)->bufferD));
 }
 
 

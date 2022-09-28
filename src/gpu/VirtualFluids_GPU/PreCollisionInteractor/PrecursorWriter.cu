@@ -197,91 +197,99 @@ void PrecursorWriter::interact(Parameter* para, CudaMemoryManager* cudaManager, 
 {
     if(t>tStartOut ? ((t-tStartOut) % tSave)==0 : false)
     {
-        SPtr<PrecursorStruct> precursorStruct = precursorStructs[level];
-        vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, precursorStruct->nPoints);
+        vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, precursorStructs[level]->nPoints);
 
         if(this->outputVariable==OutputVariable::Velocities)
         {
-            fillArrayVelocities<<<grid.grid, grid.threads>>>(   precursorStruct->nPoints, precursorStruct->indicesD, 
-                                                                precursorStruct->dataD, 
+            fillArrayVelocities<<<grid.grid, grid.threads>>>(   precursorStructs[level]->nPoints, precursorStructs[level]->indicesD, 
+                                                                precursorStructs[level]->bufferD, 
                                                                 para->getParD(level)->velocityX, para->getParD(level)->velocityY, para->getParD(level)->velocityZ,
                                                                 para->getVelocityRatio());
             getLastCudaError("In PrecursorWriter::interact fillArrayVelocities execution failed");
         }
         else if(this->outputVariable==OutputVariable::Distributions)
         {
-            fillArrayDistributions<<<grid.grid, grid.threads>>>(precursorStruct->nPoints, precursorStruct->indicesD, 
-                                                                precursorStruct->dataD,
+            fillArrayDistributions<<<grid.grid, grid.threads>>>(precursorStructs[level]->nPoints, precursorStructs[level]->indicesD, 
+                                                                precursorStructs[level]->bufferD,
                                                                 para->getParD(level)->distributions.f[0],
                                                                 para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ,
                                                                 para->getEvenOrOdd(level), para->getParD(level)->numberOfNodes);
             getLastCudaError("In PrecursorWriter::interact fillArrayDistributions execution failed");
         }
-        // switch device buffer and data pointer
-        real *tmp = precursorStruct->deviceBuffer;
-        precursorStruct->deviceBuffer = precursorStruct->dataD;
-        precursorStruct->dataD = tmp;
         cudaManager->cudaCopyPrecursorWriterOutputVariablesDtoH(this, level);
 
-        precursorStruct->timestepsBuffered++;
+        // switch device buffer and data pointer so precursor data is gathered in buffer and copied from bufferD to bufferH
+        real *tmp = precursorStructs[level]->bufferD;
+        precursorStructs[level]->bufferD = precursorStructs[level]->dataD;
+        precursorStructs[level]->dataD = tmp;
 
-        if(precursorStruct->timestepsBuffered >= precursorStruct->timestepsPerFile)
-            this->write(para, level);
+        precursorStructs[level]->timestepsBuffered++;
+
+        if(precursorStructs[level]->timestepsBuffered >= precursorStructs[level]->timestepsPerFile)
+        {
+        // switch host buffer and data pointer so precursor data is copied in buffer and written from data
+
+            tmp = precursorStructs[level]->bufferH;
+            precursorStructs[level]->bufferH = precursorStructs[level]->dataH;
+            precursorStructs[level]->dataH = tmp;
+
+            writeFuture.wait();
+            writeFuture = std::async(std::launch::async, [this](Parameter* para, uint level, uint timesteps){ this->write(para, level, timesteps); }, para, level, precursorStructs[level]->timestepsBuffered);
+            precursorStructs[level]->timestepsBuffered = 0;
+        }
     }
 }
 
 
 void PrecursorWriter::free(Parameter* para, CudaMemoryManager* cudaManager)
 {
+    writeFuture.wait();
     for(int level=0; level<=para->getMaxLevel(); level++)
     {
         if(getPrecursorStruct(level)->timestepsBuffered>0)
-            write(para, level);
+            write(para, level, getPrecursorStruct(level)->timestepsBuffered);
 
         cudaManager->cudaFreePrecursorWriter(this, level);
     }
 }
 
 
-void PrecursorWriter::write(Parameter* para, int level)
+void PrecursorWriter::write(Parameter* para, int level, int timestepsBuffered)
 {
-    SPtr<PrecursorStruct> precursorStruct = this->getPrecursorStruct(level);
-    std::string fname = this->makeFileName(fileName, level, para->getMyProcessID(), precursorStruct->filesWritten) + getWriter()->getFileExtension();
+    std::string fname = this->makeFileName(fileName, level, para->getMyProcessID(), precursorStructs[level]->filesWritten) + getWriter()->getFileExtension();
     std::string wholeName = outputPath + "/" + fname;
 
-    uint nPointsInPlane = precursorStruct->nPointsInPlane;
+    uint nPointsInPlane = precursorStructs[level]->nPointsInPlane;
 
-    int startTime = precursorStruct->filesWritten*precursorStruct->timestepsPerFile;
+    int startTime = precursorStructs[level]->filesWritten*precursorStructs[level]->timestepsPerFile;
 
     // printf("points in plane %d, total timesteps %d, ntimesteps %d \n", nPointsInPlane, nTotalTimesteps, nTimesteps);
 
-    UbTupleInt6 extent = makeUbTuple(   val<1>(precursorStruct->extent),    val<2>(precursorStruct->extent), 
-                                        val<3>(precursorStruct->extent),    val<4>(precursorStruct->extent), 
-                                        startTime,                          startTime+(int)precursorStruct->timestepsBuffered-1);
+    UbTupleInt6 extent = makeUbTuple(   val<1>(precursorStructs[level]->extent),    val<2>(precursorStructs[level]->extent), 
+                                        val<3>(precursorStructs[level]->extent),    val<4>(precursorStructs[level]->extent), 
+                                        startTime,                          startTime+timestepsBuffered-1);
 
-    UbTupleFloat3 origin = makeUbTuple( val<1>(precursorStruct->origin), val<2>(precursorStruct->origin), 0.f);
+    UbTupleFloat3 origin = makeUbTuple( val<1>(precursorStructs[level]->origin), val<2>(precursorStructs[level]->origin), 0.f);
 
     std::vector<std::vector<double>> nodedata;
     
-    for(uint quant=0; quant<precursorStruct->nQuantities; quant++)
+    for(uint quant=0; quant<precursorStructs[level]->nQuantities; quant++)
     {
-        std::vector<double> doubleArr(nPointsInPlane*precursorStruct->timestepsBuffered, NAN);
-        for( uint timestep=0; timestep<precursorStruct->timestepsBuffered; timestep++)
+        std::vector<double> doubleArr(nPointsInPlane*timestepsBuffered, NAN);
+        for( uint timestep=0; timestep<timestepsBuffered; timestep++)
         {
-            for (uint pos=0; pos < precursorStruct->nPoints; pos++)
+            for (uint pos=0; pos < precursorStructs[level]->nPoints; pos++)
             {
-                int indexOnPlane = precursorStruct->indicesOnPlane[pos]+timestep*nPointsInPlane;
-                doubleArr[indexOnPlane] = double(precursorStruct->dataH[lIndex(quant, pos, timestep, precursorStruct->nQuantities, precursorStruct->nPoints)]);
+                int indexOnPlane = precursorStructs[level]->indicesOnPlane[pos]+timestep*nPointsInPlane;
+                doubleArr[indexOnPlane] = double(precursorStructs[level]->dataH[lIndex(quant, pos, timestep, precursorStructs[level]->nQuantities, precursorStructs[level]->nPoints)]);
             }
         }
         nodedata.push_back(doubleArr);
     }
 
-    precursorStruct->timestepsBuffered = 0;
-
     std::vector<std::vector<double>> celldata;
-    getWriter()->writeData(wholeName, nodedatanames, celldatanames, nodedata, celldata, extent, origin, precursorStruct->spacing, extent);
-    precursorStruct->filesWritten++;
+    getWriter()->writeData(wholeName, nodedatanames, celldatanames, nodedata, celldata, extent, origin, precursorStructs[level]->spacing, extent);
+    precursorStructs[level]->filesWritten++;
 }
 
 std::string PrecursorWriter::makeFileName(std::string fileName, int level, int id, uint filesWritten)

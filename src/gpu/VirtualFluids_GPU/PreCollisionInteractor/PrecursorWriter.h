@@ -6,6 +6,7 @@
 #include "LBM/LB.h"
 #include <string>
 #include <vector>
+#include <future>
 #include "PointerDefinitions.h"
 
 
@@ -34,7 +35,8 @@ struct PrecursorStruct
 {
     uint nPoints, nPointsInPlane, timestepsPerFile, filesWritten, timestepsBuffered;
     uint *indicesH, *indicesD;
-    real *dataH, *dataD, *deviceBuffer;
+    real *dataH, *dataD;
+    real *bufferH, *bufferD;
     uint nQuantities;
     UbTupleInt4 extent;
     UbTupleFloat2 origin;
@@ -70,7 +72,9 @@ public:
     maxtimestepsPerFile(_maxTimestepsPerFile)
     {
         nodedatanames = determineNodeDataNames();
+        writeFuture = std::async([](){});
     };
+
     void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager) override;
     void interact(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t) override;
     void free(Parameter* para, CudaMemoryManager* cudaManager) override;
@@ -79,9 +83,10 @@ public:
 
     SPtr<PrecursorStruct> getPrecursorStruct(int level){return precursorStructs[level];}
     static std::string makeFileName(std::string fileName, int level, int id, uint part);
+    
 private:
     WbWriterVtkXmlImageBinary* getWriter(){ return WbWriterVtkXmlImageBinary::getInstance(); };
-    void write(Parameter* para, int level);
+    void write(Parameter* para, int level, int timestepsBuffered);
 
     std::vector<std::string> determineNodeDataNames()
     {
@@ -108,6 +113,7 @@ private:
     uint tStartOut, tSave, maxtimestepsPerFile;
     real xPos, yMin, yMax, zMin, zMax;
     OutputVariable outputVariable;
+    std::future<void> writeFuture;
 };
 
 #endif //PRECURSORPROBE_H_
