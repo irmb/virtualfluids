@@ -398,7 +398,7 @@ void VTKReader::getNextData(real* data, uint numberOfNodes, real time)
                 this->fileCollection->files[level][id][nF].unloadFile();
                 read.wait();
 
-                uint nLoadFile = nF+2;
+                size_t nLoadFile = nF+2;
                 if(nLoadFile < this->fileCollection->files[level][id].size())
                 {
                     read = std::async(std::launch::async, [](VTKFile* file){ file->loadFile(); }, &this->fileCollection->files[level][id][nLoadFile]);
