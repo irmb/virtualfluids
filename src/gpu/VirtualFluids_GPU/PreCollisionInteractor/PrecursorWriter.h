@@ -86,7 +86,7 @@ public:
     
 private:
     WbWriterVtkXmlImageBinary* getWriter(){ return WbWriterVtkXmlImageBinary::getInstance(); };
-    void write(Parameter* para, int level, int timestepsBuffered);
+    void write(Parameter* para, int level, uint timestepsBuffered);
 
     std::vector<std::string> determineNodeDataNames()
     {

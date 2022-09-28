@@ -254,7 +254,7 @@ void PrecursorWriter::free(Parameter* para, CudaMemoryManager* cudaManager)
 }
 
 
-void PrecursorWriter::write(Parameter* para, int level, int timestepsBuffered)
+void PrecursorWriter::write(Parameter* para, int level, uint timestepsBuffered)
 {
     std::string fname = this->makeFileName(fileName, level, para->getMyProcessID(), precursorStructs[level]->filesWritten) + getWriter()->getFileExtension();
     std::string wholeName = outputPath + "/" + fname;
@@ -267,7 +267,7 @@ void PrecursorWriter::write(Parameter* para, int level, int timestepsBuffered)
 
     UbTupleInt6 extent = makeUbTuple(   val<1>(precursorStructs[level]->extent),    val<2>(precursorStructs[level]->extent), 
                                         val<3>(precursorStructs[level]->extent),    val<4>(precursorStructs[level]->extent), 
-                                        startTime,                          startTime+timestepsBuffered-1);
+                                        startTime,                          startTime+(int)timestepsBuffered-1);
 
     UbTupleFloat3 origin = makeUbTuple( val<1>(precursorStructs[level]->origin), val<2>(precursorStructs[level]->origin), 0.f);
 

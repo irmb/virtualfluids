@@ -46,7 +46,7 @@
 
 
 #include "Core/DataTypes.h"
-#include "cuda_runtime.h"
+#include <cuda_runtime.h>
 
 #include <string>
 #include <vector>
