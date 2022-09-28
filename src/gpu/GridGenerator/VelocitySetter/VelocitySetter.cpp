@@ -388,7 +388,6 @@ uint VTKReader::getWriteIndex(int level, int id, int linearIndex)
 
 void VTKReader::getNextData(real* data, uint numberOfNodes, real time)
 {
-
     for(size_t level=0; level<this->fileCollection->files.size(); level++)
     {
         for(size_t id=0; id<this->fileCollection->files[level].size(); id++)
@@ -397,12 +396,20 @@ void VTKReader::getNextData(real* data, uint numberOfNodes, real time)
             if(!this->fileCollection->files[level][id][nF].inZBounds(time))
             {
                 this->fileCollection->files[level][id][nF].unloadFile();
+                read.wait();
+
+                uint nLoadFile = nF+2;
+                if(nLoadFile < this->fileCollection->files[level][id].size())
+                {
+                    read = std::async(std::launch::async, [](VTKFile* file){ file->loadFile(); }, &this->fileCollection->files[level][id][nLoadFile]);
+                }
+
                 nF++;
                 printf("switching to precursor file no %zd\n", nF);
+                if(nF == this->fileCollection->files[level][id].size())
+                    throw std::runtime_error("Not enough Precursor Files to read");
             }
         
-            if(nF == this->fileCollection->files[level][id].size())
-                throw std::runtime_error("Not enough Precursor Files to read");
 
             VTKFile* file = &this->fileCollection->files[level][id][nF];
 

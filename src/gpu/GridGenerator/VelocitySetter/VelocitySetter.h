@@ -9,7 +9,7 @@
 #include <vector>
 #include <math.h>
 #include <sstream>
-
+#include <future>
 class Grid;
 namespace gg
 {
@@ -176,6 +176,7 @@ public:
     fileCollection(_fileCollection)    
     {
         this->nQuantities = fileCollection->getNumberOfQuantities();
+        read = std::async([](){});
     };
     void getNextData(real* data, uint numberOfNodes, real time) override;
     void fillArrays(std::vector<real>& coordsY, std::vector<real>& coordsZ) override;
@@ -187,6 +188,7 @@ private:
     std::vector<std::vector<std::vector<uint>>> readIndices, writeIndices;
     std::vector<std::vector<size_t>> nFile;
     SPtr<VTKFileCollection> fileCollection;
+    std::future<void> read;
 };
 
 
