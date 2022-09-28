@@ -100,8 +100,8 @@ private:
     //! \param boundaryCondition: a kernel function for the boundary condition
     //! \param bcStruct: a struct containing the grid nodes which are part of the boundary condition
     //! \param bcName: the name of the checked boundary condition
-    template <typename bcFunction>
-    void checkBoundaryCondition(const bcFunction &boundaryCondition, const QforBoundaryConditions &bcStruct, const std::string &bcName)
+    template <typename bcFunction, typename QforBC>
+    void checkBoundaryCondition(const bcFunction &boundaryCondition, const QforBC &bcStruct, const std::string &bcName)
     {
         if (!boundaryCondition && bcStruct.numberOfBCnodes > 0)
             throw std::runtime_error("The boundary condition " + bcName + " was not set!");

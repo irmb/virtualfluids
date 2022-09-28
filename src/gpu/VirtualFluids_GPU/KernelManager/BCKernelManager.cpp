@@ -66,6 +66,8 @@ BCKernelManager::BCKernelManager(SPtr<Parameter> parameter, BoundaryConditionFac
                            "geometryBoundaryConditionPost");
     checkBoundaryCondition(this->stressBoundaryConditionPost, this->para->getParD(0)->stressBC,
                            "stressBoundaryConditionPost");
+    checkBoundaryCondition(this->precursorBoundaryConditionPost, this->para->getParD(0)->precursorBC,
+                           "precursorBoundaryConditionPost");
 }
 
 void BCKernelManager::runVelocityBCKernelPre(const int level) const
