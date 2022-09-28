@@ -321,12 +321,11 @@ void GridGenerator::initalValuesDomainDecompostion()
                     if (tempSend > 0) {
                         ////////////////////////////////////////////////////////////////////////////////////////
                         // send
-                        std::cout << "In direction " << direction << " size of Data for X send buffer, Level " << level << " : " << tempSend
+                        std::cout << " size of Data for X send buffer, Level " << level << " : " << tempSend
                                   << std::endl;
                         ////////////////////////////////////////////////////////////////////////////////////////
                         para->getParH(level)->sendProcessNeighborX.back().rankNeighbor =
                             builder->getCommunicationProcess(direction);
-                        std::cout << "In direction " << direction << " sendProcessNeighbor: " << builder->getCommunicationProcess(direction) << std::endl;
                         ////////////////////////////////////////////////////////////////////////////////////////
                         para->getParH(level)->sendProcessNeighborX.back().numberOfNodes = tempSend;
                         para->getParD(level)->sendProcessNeighborX.back().numberOfNodes = tempSend;
@@ -369,12 +368,15 @@ void GridGenerator::initalValuesDomainDecompostion()
                         ////////////////////////////////////////////////////////////////////////////////////////
                         cudaMemoryManager->cudaCopyProcessNeighborXIndex(level, j);
                         ////////////////////////////////////////////////////////////////////////////////////////
+                        
+                        
                         int sendIDX = para->getParH(level)->sendProcessNeighborX[j].index[0];
                         int recvIDX = para->getParH(level)->recvProcessNeighborX[j].index[0];
-
-                        std::cout << "GridGenerator Dir: " << direction << " Sender: " << sendIDX << " x " << para->getParH(level)->coordinateX[sendIDX]
-                                      << " Receiver: "  << recvIDX << " x " << para->getParH(level)->coordinateX[recvIDX]
-                                      << std::endl<< std::endl;
+                        std::cout << "In direction " << direction << " sendProcessNeighbor: " << para->getParH(level)->sendProcessNeighborX.back().rankNeighbor <<
+                                                                    " receiveProcessNeighbor: " << para->getParH(level)->recvProcessNeighborX.back().rankNeighbor <<
+                        std::endl   <<  "Sender: "    << sendIDX << " x " << para->getParH(level)->coordinateX[sendIDX]
+                                    << " Receiver: "  << recvIDX << " x " << para->getParH(level)->coordinateX[recvIDX]
+                                    << std::endl<< std::endl;
                     }
                 }
 
