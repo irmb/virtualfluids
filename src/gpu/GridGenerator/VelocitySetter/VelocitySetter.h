@@ -71,9 +71,10 @@ public:
     int getNumberOfPointsInYZPlane(){ return ny*nz; }
     int getNumberOfPointsInXZPlane(){ return nx*nz; }
     int getNumberOfPoints(){ return nx*ny*nz; }
+    size_t getNumberOfQuantities(){ return quantities.size(); }
     void loadFile();
     void unloadFile();
-    size_t getNumberOfQuantities(){ return quantities.size(); }
+    bool isLoaded(){return loaded;};
 
 
 private:

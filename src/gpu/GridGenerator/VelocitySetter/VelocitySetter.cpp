@@ -109,9 +109,9 @@ void VTKFile::readHeader()
     this->ny = pieceExtent[3]-pieceExtent[2]+1;
     this->nz = pieceExtent[5]-pieceExtent[4]+1;
 
-    this->minX = origin[0]+this->deltaX*pieceExtent[0]; this->maxX = (this->nx-1)*this->deltaX+this->minX;
-    this->minY = origin[1]+this->deltaY*pieceExtent[2]; this->maxY = (this->ny-1)*this->deltaY+this->minY;
-    this->minZ = origin[2]+this->deltaZ*pieceExtent[4]; this->maxZ = (this->nz-1)*this->deltaZ+this->minZ;
+    this->minX = origin[0]+this->deltaX*pieceExtent[0]; this->maxX = this->nx*this->deltaX+this->minX;
+    this->minY = origin[1]+this->deltaY*pieceExtent[2]; this->maxY = this->ny*this->deltaY+this->minY;
+    this->minZ = origin[2]+this->deltaZ*pieceExtent[4]; this->maxZ = this->nz*this->deltaZ+this->minZ;
 
     // printFileInfo();
 
@@ -158,12 +158,12 @@ void VTKFile::unloadFile()
 void VTKFile::getData(real* data, uint numberOfNodes, std::vector<uint> readIndeces, std::vector<uint> writeIndices, uint offsetRead, uint offsetWrite)
 {
     if(!this->loaded) loadFile();
+
     size_t nPoints = writeIndices.size();
 
     for(size_t j=0; j<this->quantities.size(); j++)
     {
         real* quant = &data[j*numberOfNodes];
-
         for(size_t i=0; i<nPoints; i++)
         {
             quant[offsetWrite+writeIndices[i]] = this->quantities[j].values[readIndeces[i]+offsetRead];
@@ -393,27 +393,31 @@ void VTKReader::getNextData(real* data, uint numberOfNodes, real time)
         for(size_t id=0; id<this->fileCollection->files[level].size(); id++)
         {
             size_t nF = this->nFile[level][id];
+
+            if(nF+1<this->fileCollection->files[level][id].size())
+            {
+                read.wait();
+                VTKFile* nextFile = &this->fileCollection->files[level][id][nF+1];
+                if(! nextFile->isLoaded())
+                    read = std::async(std::launch::async, [](VTKFile* file){ file->loadFile(); }, &this->fileCollection->files[level][id][nF+1]);
+            }
+
             if(!this->fileCollection->files[level][id][nF].inZBounds(time))
             {
-                this->fileCollection->files[level][id][nF].unloadFile();
-                read.wait();
-
-                size_t nLoadFile = nF+2;
-                if(nLoadFile < this->fileCollection->files[level][id].size())
-                {
-                    read = std::async(std::launch::async, [](VTKFile* file){ file->loadFile(); }, &this->fileCollection->files[level][id][nLoadFile]);
-                }
-
                 nF++;
-                printf("switching to precursor file no %zd\n", nF);
+
+                printf("switching to precursor file no. %zd\n", nF);
                 if(nF == this->fileCollection->files[level][id].size())
                     throw std::runtime_error("Not enough Precursor Files to read");
+
+                this->fileCollection->files[level][id][nF-1].unloadFile();
             }
         
 
             VTKFile* file = &this->fileCollection->files[level][id][nF];
 
             int off = file->getClosestIdxZ(time)*file->getNumberOfPointsInXYPlane();
+            printf("off %i, idxZ %i, nPoints %i \n", off, file->getClosestIdxZ(time), file->getNumberOfPointsInXYPlane());
             file->getData(data, numberOfNodes, this->readIndices[level][id], this->writeIndices[level][id], off, this->writingOffset);
             this->nFile[level][id] = nF;
         }

@@ -283,7 +283,6 @@ void GridGenerator::allocArrays_BoundaryValues()
             }
 
             cudaMemoryManager->cudaCopyPrecursorData(level);
-            checkCudaErrors(cudaDeviceSynchronize());
 
             //switch next with last pointers
             real* tmp = para->getParD(level)->precursorBC.last;
@@ -298,7 +297,9 @@ void GridGenerator::allocArrays_BoundaryValues()
             }
 
             cudaMemoryManager->cudaCopyPrecursorData(level);
-            checkCudaErrors(cudaDeviceSynchronize());
+
+            para->getParD(level)->precursorBC.nPrecursorReads = 1;
+
 
             //switch next with current pointers
             tmp = para->getParD(level)->precursorBC.current;
@@ -306,19 +307,14 @@ void GridGenerator::allocArrays_BoundaryValues()
             para->getParD(level)->precursorBC.next = tmp;
 
             //start usual cycle of loading, i.e. read velocities of timestep after current and copy asynchronously to device
-
-            nextTime = 2*para->getParD(level)->precursorBC.nTRead*pow(2,-((real)level))*para->getTimeRatio();
-
             for(auto reader : para->getParH(level)->velocityReader)
             {   
-                reader->getNextData(para->getParH(level)->precursorBC.next, para->getParH(level)->precursorBC.numberOfPrecursorNodes, nextTime);
+                reader->getNextData(para->getParH(level)->precursorBC.next, para->getParH(level)->precursorBC.numberOfPrecursorNodes, 2*nextTime);
             }
 
             cudaMemoryManager->cudaCopyPrecursorData(level);
 
             para->getParD(level)->precursorBC.nPrecursorReads = 2;
-
-            printf("finished precursor Setup \n");
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
