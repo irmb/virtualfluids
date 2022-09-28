@@ -394,13 +394,6 @@ void VTKReader::getNextData(real* data, uint numberOfNodes, real time)
         {
             size_t nF = this->nFile[level][id];
 
-            if(nF+1<this->fileCollection->files[level][id].size())
-            {
-                read.wait();
-                VTKFile* nextFile = &this->fileCollection->files[level][id][nF+1];
-                if(! nextFile->isLoaded())
-                    read = std::async(std::launch::async, [](VTKFile* file){ file->loadFile(); }, &this->fileCollection->files[level][id][nF+1]);
-            }
 
             if(!this->fileCollection->files[level][id][nF].inZBounds(time))
             {
@@ -411,13 +404,21 @@ void VTKReader::getNextData(real* data, uint numberOfNodes, real time)
                     throw std::runtime_error("Not enough Precursor Files to read");
 
                 this->fileCollection->files[level][id][nF-1].unloadFile();
+                if(nF+1<this->fileCollection->files[level][id].size())
+                {
+                    VTKFile* nextFile = &this->fileCollection->files[level][id][nF+1];
+                    if(! nextFile->isLoaded())
+                    {
+                        read.wait();
+                        read = std::async(std::launch::async, [](VTKFile* file){ file->loadFile(); }, &this->fileCollection->files[level][id][nF+1]);
+                    }
+                }
             }
         
 
             VTKFile* file = &this->fileCollection->files[level][id][nF];
 
             int off = file->getClosestIdxZ(time)*file->getNumberOfPointsInXYPlane();
-            printf("off %i, idxZ %i, nPoints %i \n", off, file->getClosestIdxZ(time), file->getNumberOfPointsInXYPlane());
             file->getData(data, numberOfNodes, this->readIndices[level][id], this->writeIndices[level][id], off, this->writingOffset);
             this->nFile[level][id] = nF;
         }
