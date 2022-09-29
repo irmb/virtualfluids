@@ -12,12 +12,13 @@
 #include "Output/QDebugWriter.hpp"
 
 #include "utilities/communication.h"
+#include "Communication/Communicator.h"
 
 using namespace vf::lbm::dir;
 
-GridGenerator::GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::gpu::Communicator& communicator)
+GridGenerator::GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::gpu::Communicator& communicator):
+    mpiProcessID(communicator.getPID()), builder(builder)
 {
-    this->builder = builder;
     this->para = para;
     this->cudaMemoryManager = cudaMemoryManager;
     this->indexRearrangement = std::make_unique<IndexRearrangementForStreams>(para, builder, communicator);
@@ -296,7 +297,20 @@ void GridGenerator::initalValuesDomainDecompostion()
     if (para->getNumprocs() < 2)
         return;
     if ((para->getNumprocs() > 1) /*&& (procNeighborsSendX.size() == procNeighborsRecvX.size())*/) {
+        
+        // direction has to be changed in case of periodic BCs and multiple sub domains
+        std::vector<int> fillOrder = { 0, 1, 2, 3, 4, 5 };
+
         for (int direction = 0; direction < 6; direction++) {
+            if (direction % 2 > 0 && mpiProcessID % 2 > 0 && (builder->getCommunicationProcess(direction) == builder->getCommunicationProcess(direction - 1)))
+            {
+                int temp = fillOrder[direction];
+                fillOrder[direction] = fillOrder[direction-1];
+                fillOrder[direction-1] = temp;
+            }
+        }
+
+        for (int direction : fillOrder) {
             if (builder->getCommunicationProcess(direction) == INVALID_INDEX)
                 continue;
 

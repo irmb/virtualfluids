@@ -58,6 +58,7 @@ private:
 
     std::shared_ptr<GridBuilder> builder;
     std::unique_ptr<IndexRearrangementForStreams> indexRearrangement;
+    const uint mpiProcessID;
 
 public:
     VIRTUALFLUIDS_GPU_EXPORT GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::gpu::Communicator& communicator);
