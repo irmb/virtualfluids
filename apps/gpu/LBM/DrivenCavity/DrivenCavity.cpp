@@ -59,7 +59,8 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
+#include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
+#include "VirtualFluids_GPU/Factories/GridScalingFactory.h"
 #include "VirtualFluids_GPU/Communication/Communicator.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
@@ -67,6 +68,7 @@
 #include "VirtualFluids_GPU/LBM/Simulation.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
+#include "VirtualFluids_GPU/Factories/GridScalingFactory.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -115,6 +117,8 @@ int main()
         gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L, 0.5 * L, 0.5 * L, 0.5 * L, dx);
 
         gridBuilder->addGrid(new Cuboid(-0.25, -0.25, -0.25, 0.25, 0.25, 0.25), 1); // add fine grid
+        GridScalingFactory scalingFactory = GridScalingFactory();
+        scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
         gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
@@ -210,7 +214,7 @@ int main()
         VF_LOG_INFO("write_nth_timestep     = {}", timeStepEnd);
         VF_LOG_INFO("output_path            = {}", path);
 
-        Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory);
+        Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory, &scalingFactory);
         sim.run();
 
     } catch (const spdlog::spdlog_ex &ex) {

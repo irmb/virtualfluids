@@ -20,31 +20,50 @@
 //
 //  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
 //  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 //  for more details.
 //
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file global.h
-//! \ingroup GridGenerator
-//! \author Soeren Peters
+//! \file GridScalingFactory.h
+//! \ingroup Factories
+//! \author Anna Wellmann, Martin Schönherr
 //=======================================================================================
-#ifndef global_h
-#define global_h
+#ifndef GS_FACTORY
+#define GS_FACTORY
 
+#include <functional>
 
-#define DEBUG 1
-#define GLOB_NODE 5
-#define DIMENSION 3
-#define MASTERRANK 0
+#include "LBM/LB.h"
+#include "Parameter/Parameter.h"
 
+struct LBMSimulationParameter;
+class Parameter;
+struct CUstream_st;
 
-#include "GridGenerator_export.h"
+using gridScalingFC = std::function<void(LBMSimulationParameter *, LBMSimulationParameter *, ICellFC *, OffFC&, CUstream_st *stream)>;
+using gridScalingCF = std::function<void(LBMSimulationParameter *, LBMSimulationParameter *, ICellCF *, OffCF&, CUstream_st *stream)>;
 
-#include "basics/PointerDefinitions.h"
-#include "basics/Core/DataTypes.h"
+class GridScalingFactory
+{
+public:
+    //! \brief An enumeration for selecting a scaling function
+    enum class GridScaling {
+        //! - ScaleCompressible = basic scaling for compressible fluid flow
+        ScaleCompressible,
+        //! - DEPRECATED: ScaleRhoSq = scaling for cumulant kernel rho squared
+        ScaleRhoSq,
+        NotSpecified
+    };
 
-#include "basics/Core/Logger/Logger.h"
+    void setScalingFactory(const GridScalingFactory::GridScaling gridScalingType);
+
+    [[nodiscard]] gridScalingFC getGridScalingFC() const;
+    [[nodiscard]] gridScalingCF getGridScalingCF() const;
+
+private:
+    GridScaling gridScaling = GridScaling::NotSpecified;
+};
 
 #endif

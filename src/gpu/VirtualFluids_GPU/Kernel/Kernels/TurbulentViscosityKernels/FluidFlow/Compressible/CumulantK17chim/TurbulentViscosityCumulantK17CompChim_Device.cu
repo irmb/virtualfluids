@@ -48,7 +48,7 @@
 
 using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
-#include "Kernel/ChimeraTransformation.h"
+#include "Kernel/Utilities/ChimeraTransformation.h"
 
 
 ////////////////////////////////////////////////////////////////////////////////
