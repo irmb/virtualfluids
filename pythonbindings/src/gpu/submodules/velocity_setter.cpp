@@ -12,6 +12,8 @@ namespace velocity_setter
 
         parentModule.def("create_file_collection", &createFileCollection);
 
+        py::class_<VelocityFileCollection, std::shared_ptr<VelocityFileCollection>>(parentModule, "VelocityFileCollection");
+
         py::class_<VTKFileCollection, VelocityFileCollection, std::shared_ptr<VTKFileCollection>>(parentModule, "VTKFileCollection")
         .def(py::init <std::string>(), "prefix");
     }

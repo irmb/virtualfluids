@@ -418,7 +418,6 @@ void VTKReader::getNextData(real* data, uint numberOfNodes, real time)
             VTKFile* file = &this->fileCollection->files[level][id][nF];
 
             int off = file->getClosestIdxZ(time)*file->getNumberOfPointsInXYPlane();
-            printf("t%f, offset %i \n", time,  file->getClosestIdxZ(time));
             file->getData(data, numberOfNodes, this->readIndices[level][id], this->writeIndices[level][id], off, this->writingOffset);
             this->nFile[level][id] = nF;
         }

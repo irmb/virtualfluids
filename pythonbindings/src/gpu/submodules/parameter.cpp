@@ -46,11 +46,10 @@ namespace parameter
         .def("set_density_ratio", &Parameter::setDensityRatio)
         .def("set_devices", &Parameter::setDevices)
         .def("set_is_body_force", &Parameter::setIsBodyForce)
-        .def("set_turbulence_model", &Parameter::setTurbulenceModel)
-        .def("set_SGS_constant", &Parameter::setSGSConstant)
         .def("set_main_kernel", &Parameter::setMainKernel)
         .def("set_AD_kernel", &Parameter::setADKernel)
         .def("set_has_wall_monitor", &Parameter::setHasWallModelMonitor)
+        .def("set_outflow_pressure_correction_factor", &Parameter::setOutflowPressureCorrectionFactor)
         .def("set_initial_condition", [](Parameter &para, std::function<std::vector<float>(real, real, real)> &init_func)
         {
             para.setInitialCondition([init_func](real coordX, real coordY, real coordZ, real& rho, real& vx, real& vy, real& vz)

@@ -18,11 +18,13 @@ namespace boundary_conditions
         .value("GEOMETRY", SideType::GEOMETRY);
 
         py::class_<BoundaryConditionFactory>(parentModule, "BoundaryConditionFactory")
+        .def(py::init<>())
         .def("set_velocity_boundary_condition", &BoundaryConditionFactory::setVelocityBoundaryCondition)
         .def("set_no_slip_boundary_condition", &BoundaryConditionFactory::setNoSlipBoundaryCondition)
         .def("set_slip_boundary_condition", &BoundaryConditionFactory::setSlipBoundaryCondition)
         .def("set_pressure_boundary_condition", &BoundaryConditionFactory::setPressureBoundaryCondition)
         .def("set_stress_boundary_condition", &BoundaryConditionFactory::setStressBoundaryCondition)
+        .def("set_precursor_boundary_condition", &BoundaryConditionFactory::setPrecursorBoundaryCondition)
         .def("set_geometry_boundary_condition", &BoundaryConditionFactory::setGeometryBoundaryCondition);
 
         py::enum_<BoundaryConditionFactory::VelocityBC>(parentModule, "VelocityBC")
@@ -62,5 +64,10 @@ namespace boundary_conditions
         .value("StressBounceBack", BoundaryConditionFactory::StressBC::StressBounceBack)
         .value("StressPressureBounceBack", BoundaryConditionFactory::StressBC::StressPressureBounceBack)
         .value("NotSpecified", BoundaryConditionFactory::StressBC::NotSpecified);
+
+        py::enum_<BoundaryConditionFactory::PrecursorBC>(parentModule, "PrecursorBC")
+        .value("VelocityPrecursor", BoundaryConditionFactory::PrecursorBC::VelocityPrecursor)
+        .value("DistributionsPrecursor", BoundaryConditionFactory::PrecursorBC::VelocityPrecursor)
+        .value("NotSpecified", BoundaryConditionFactory::PrecursorBC::NotSpecified);
     }
 }
