@@ -16,12 +16,11 @@
 
 using namespace vf::lbm::dir;
 
-GridGenerator::GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::gpu::Communicator& communicator)
+GridGenerator::GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::gpu::Communicator& communicator):
+    mpiProcessID(communicator.getPID()), builder(builder)
 {
-    this->builder = builder;
     this->para = para;
     this->cudaMemoryManager = cudaMemoryManager;
-    procID = communicator.getPID();
     this->indexRearrangement = std::make_unique<IndexRearrangementForStreams>(para, builder, communicator);
 }
 
@@ -303,7 +302,7 @@ void GridGenerator::initalValuesDomainDecompostion()
         std::vector<int> fillOrder = { 0, 1, 2, 3, 4, 5 };
 
         for (int direction = 0; direction < 6; direction++) {
-            if (direction % 2 > 0 && procID % 2 > 0 && (builder->getCommunicationProcess(direction) == builder->getCommunicationProcess(direction - 1)))
+            if (direction % 2 > 0 && mpiProcessID % 2 > 0 && (builder->getCommunicationProcess(direction) == builder->getCommunicationProcess(direction - 1)))
             {
                 int temp = fillOrder[direction];
                 fillOrder[direction] = fillOrder[direction-1];

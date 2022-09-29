@@ -55,7 +55,6 @@ protected:
 
     std::shared_ptr<Parameter> para;
     std::shared_ptr<CudaMemoryManager> cudaMemoryManager;
-    uint procID;
 };
 
 #endif
