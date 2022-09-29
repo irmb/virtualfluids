@@ -13,4 +13,4 @@ list(APPEND USER_APPS
 )
 
 # run docker container with:
-# docker run -it -v `pwd`:`pwd` -w `pwd` --gpus all --hostname ki4allgpu --name virtual-fluids-environment ecfc68d67c36
+# docker run -it -v `pwd`:`pwd` -w `pwd` --gpus all --hostname ki4allgpu --name virtual-fluids-environment <containerid>
