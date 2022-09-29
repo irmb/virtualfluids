@@ -69,8 +69,8 @@
 #include "VirtualFluids_GPU/LBM/Simulation.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
-#include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
-#include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
+#include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
+#include "VirtualFluids_GPU/Factories/GridScalingFactory.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PointProbe.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlaneProbe.h"
 
@@ -111,6 +111,7 @@ int main(int argc, char *argv[])
         vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();;
         SPtr<Parameter> para;
         BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
+        GridScalingFactory scalingFactory = GridScalingFactory();
         vf::basics::ConfigurationFile config;
         if (useConfigFile) {
             //////////////////////////////////////////////////////////////////////////
@@ -148,8 +149,8 @@ int main(int argc, char *argv[])
         //////////////////////////////////////////////////////////////////////////
 
         real dx = L / real(nx);
-        gridBuilder->addCoarseGrid(-1.0 * L, -0.8 * L, -0.8 * L,
-                                    6.0 * L,  0.8 * L,  0.8 * L, dx);
+        gridBuilder->addCoarseGrid(-1.0 * L, -0.6 * L, -0.6 * L,
+                                    8.0 * L,  0.6 * L,  0.6 * L, dx);
 
         // use primitive
         // Object *sphere = new Sphere(0.0, 0.0, 0.0, dSphere / 2.0);
@@ -164,6 +165,20 @@ int main(int argc, char *argv[])
 
         gridBuilder->addGeometry(sphere);
         gridBuilder->setPeriodicBoundaryCondition(false, false, false);
+
+        //////////////////////////////////////////////////////////////////////////
+        // add grid refinement
+        //////////////////////////////////////////////////////////////////////////
+
+        // gridBuilder->setNumberOfLayers(10, 8);
+        // gridBuilder->addGrid(new Sphere(0.0, 0.0, 0.0, 2.0 * dSphere), 1);
+        // para->setMaxLevel(2);
+        // scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleK17);
+
+        //////////////////////////////////////////////////////////////////////////
+        // build grid
+        //////////////////////////////////////////////////////////////////////////
+
         gridBuilder->buildGrids(LBM, false);  // buildGrids() has to be called before setting the BCs!!!!
 
         //////////////////////////////////////////////////////////////////////////
@@ -246,7 +261,7 @@ int main(int argc, char *argv[])
         // run simulation
         //////////////////////////////////////////////////////////////////////////
 
-        Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory);
+        Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory, &scalingFactory);
         sim.run();
 
     } catch (const spdlog::spdlog_ex &ex) {

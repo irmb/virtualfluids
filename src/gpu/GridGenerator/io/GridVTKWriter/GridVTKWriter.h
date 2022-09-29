@@ -36,7 +36,6 @@
 #include <string>
 
 #include "global.h"
-#include "GridGenerator_export.h"
 
 enum class WRITING_FORMAT { BINARY, ASCII };
 

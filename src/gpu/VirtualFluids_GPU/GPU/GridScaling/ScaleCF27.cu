@@ -18065,7 +18065,11 @@ __global__ void scaleCF_RhoSq_comp_27(real* DC,
       f_BSE  = fbseC[kbs];
       f_BNW  = fbnwC[kbw];
 
-      drho_SWB = f_E+f_W+f_N+f_S+f_T+f_B+f_NE+f_SW+f_SE+f_NW+f_TE+f_BW+f_BE+f_TW+f_TN+f_BS+f_BN+f_TS+f_ZERO+f_TNE+f_TSW+f_TSE+f_TNW+f_BNE+f_BSW+f_BSE+f_BNW;
+      drho_SWB = ((((f_TNE + f_BSW) + (f_TSE + f_BNW)) + ((f_TNW + f_BSE) + (f_TSW + f_BNE))) +
+                  (((f_TS + f_BN) + (f_BS + f_TN)) + ((f_TW + f_BE) + (f_TE + f_BW)) +
+                   ((f_NW + f_SE) + (f_NE + f_SW))) +
+                   ((f_W + f_E) + (f_S + f_N) + (f_B + f_T))) +
+                     f_ZERO;
       vx1_SWB  = (((f_TNE-f_BSW)+(f_TSE-f_BNW)+(f_BNE-f_TSW)+(f_BSE-f_TNW)) + (((f_NE-f_SW)+(f_TE-f_BW))+((f_SE-f_NW)+(f_BE-f_TW))) + (f_E-f_W))/(c1o1 + drho_SWB);
 	  vx2_SWB  = (((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_BNE-f_TSW)+(f_BNW-f_TSE)) + (((f_NE-f_SW)+(f_TN-f_BS))+((f_BN-f_TS)+(f_NW-f_SE))) + (f_N-f_S))/(c1o1 + drho_SWB);
 	  vx3_SWB  = (((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_TSE-f_BNW)+(f_TSW-f_BNE)) + (((f_TE-f_BW)+(f_TN-f_BS))+((f_TW-f_BE)+(f_TS-f_BN))) + (f_T-f_B))/(c1o1 + drho_SWB);
@@ -18117,7 +18121,11 @@ __global__ void scaleCF_RhoSq_comp_27(real* DC,
       f_BSE  = fbseC[kbs];
       f_BNW  = fbnwC[kbw];
 
-      drho_SWT = f_E+f_W+f_N+f_S+f_T+f_B+f_NE+f_SW+f_SE+f_NW+f_TE+f_BW+f_BE+f_TW+f_TN+f_BS+f_BN+f_TS+f_ZERO+f_TNE+f_TSW+f_TSE+f_TNW+f_BNE+f_BSW+f_BSE+f_BNW;
+      drho_SWT =  ((((f_TNE + f_BSW) + (f_TSE + f_BNW)) + ((f_TNW + f_BSE) + (f_TSW + f_BNE))) +
+                   (((f_TS + f_BN) + (f_BS + f_TN)) + ((f_TW + f_BE) + (f_TE + f_BW)) +
+                    ((f_NW + f_SE) + (f_NE + f_SW))) +
+                    ((f_W + f_E) + (f_S + f_N) + (f_B + f_T))) +
+                      f_ZERO;
       vx1_SWT  = (((f_TNE-f_BSW)+(f_TSE-f_BNW)+(f_BNE-f_TSW)+(f_BSE-f_TNW)) + (((f_NE-f_SW)+(f_TE-f_BW))+((f_SE-f_NW)+(f_BE-f_TW))) + (f_E-f_W))/(c1o1 + drho_SWT);
 	  vx2_SWT  = (((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_BNE-f_TSW)+(f_BNW-f_TSE)) + (((f_NE-f_SW)+(f_TN-f_BS))+((f_BN-f_TS)+(f_NW-f_SE))) + (f_N-f_S))/(c1o1 + drho_SWT);
 	  vx3_SWT  = (((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_TSE-f_BNW)+(f_TSW-f_BNE)) + (((f_TE-f_BW)+(f_TN-f_BS))+((f_TW-f_BE)+(f_TS-f_BN))) + (f_T-f_B))/(c1o1 + drho_SWT);
@@ -18169,7 +18177,11 @@ __global__ void scaleCF_RhoSq_comp_27(real* DC,
       f_BSE  = fbseC[kbs];
       f_BNW  = fbnwC[kbw];
 
-      drho_SET = f_E+f_W+f_N+f_S+f_T+f_B+f_NE+f_SW+f_SE+f_NW+f_TE+f_BW+f_BE+f_TW+f_TN+f_BS+f_BN+f_TS+f_ZERO+f_TNE+f_TSW+f_TSE+f_TNW+f_BNE+f_BSW+f_BSE+f_BNW;
+      drho_SET =  ((((f_TNE + f_BSW) + (f_TSE + f_BNW)) + ((f_TNW + f_BSE) + (f_TSW + f_BNE))) +
+                   (((f_TS + f_BN) + (f_BS + f_TN)) + ((f_TW + f_BE) + (f_TE + f_BW)) +
+                    ((f_NW + f_SE) + (f_NE + f_SW))) +
+                    ((f_W + f_E) + (f_S + f_N) + (f_B + f_T))) +
+                      f_ZERO;
       vx1_SET  = (((f_TNE-f_BSW)+(f_TSE-f_BNW)+(f_BNE-f_TSW)+(f_BSE-f_TNW)) + (((f_NE-f_SW)+(f_TE-f_BW))+((f_SE-f_NW)+(f_BE-f_TW))) + (f_E-f_W))/(c1o1 + drho_SET);
 	  vx2_SET  = (((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_BNE-f_TSW)+(f_BNW-f_TSE)) + (((f_NE-f_SW)+(f_TN-f_BS))+((f_BN-f_TS)+(f_NW-f_SE))) + (f_N-f_S))/(c1o1 + drho_SET);
 	  vx3_SET  = (((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_TSE-f_BNW)+(f_TSW-f_BNE)) + (((f_TE-f_BW)+(f_TN-f_BS))+((f_TW-f_BE)+(f_TS-f_BN))) + (f_T-f_B))/(c1o1 + drho_SET);
@@ -18221,7 +18233,11 @@ __global__ void scaleCF_RhoSq_comp_27(real* DC,
       f_BSE  = fbseC[kbs];
       f_BNW  = fbnwC[kbw];
 
-      drho_SEB = f_E+f_W+f_N+f_S+f_T+f_B+f_NE+f_SW+f_SE+f_NW+f_TE+f_BW+f_BE+f_TW+f_TN+f_BS+f_BN+f_TS+f_ZERO+f_TNE+f_TSW+f_TSE+f_TNW+f_BNE+f_BSW+f_BSE+f_BNW;
+      drho_SEB = ((((f_TNE + f_BSW) + (f_TSE + f_BNW)) + ((f_TNW + f_BSE) + (f_TSW + f_BNE))) +
+                  (((f_TS + f_BN) + (f_BS + f_TN)) + ((f_TW + f_BE) + (f_TE + f_BW)) +
+                    ((f_NW + f_SE) + (f_NE + f_SW))) +
+                    ((f_W + f_E) + (f_S + f_N) + (f_B + f_T))) +
+                      f_ZERO;
       vx1_SEB  = (((f_TNE-f_BSW)+(f_TSE-f_BNW)+(f_BNE-f_TSW)+(f_BSE-f_TNW)) + (((f_NE-f_SW)+(f_TE-f_BW))+((f_SE-f_NW)+(f_BE-f_TW))) + (f_E-f_W))/(c1o1 + drho_SEB);
 	  vx2_SEB  = (((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_BNE-f_TSW)+(f_BNW-f_TSE)) + (((f_NE-f_SW)+(f_TN-f_BS))+((f_BN-f_TS)+(f_NW-f_SE))) + (f_N-f_S))/(c1o1 + drho_SEB);
 	  vx3_SEB  = (((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_TSE-f_BNW)+(f_TSW-f_BNE)) + (((f_TE-f_BW)+(f_TN-f_BS))+((f_TW-f_BE)+(f_TS-f_BN))) + (f_T-f_B))/(c1o1 + drho_SEB);
@@ -18283,7 +18299,11 @@ __global__ void scaleCF_RhoSq_comp_27(real* DC,
       f_BSE  = fbseC[kbs];
       f_BNW  = fbnwC[kbw];
 
-      drho_NWB = f_E+f_W+f_N+f_S+f_T+f_B+f_NE+f_SW+f_SE+f_NW+f_TE+f_BW+f_BE+f_TW+f_TN+f_BS+f_BN+f_TS+f_ZERO+f_TNE+f_TSW+f_TSE+f_TNW+f_BNE+f_BSW+f_BSE+f_BNW;
+      drho_NWB = ((((f_TNE + f_BSW) + (f_TSE + f_BNW)) + ((f_TNW + f_BSE) + (f_TSW + f_BNE))) +
+                  (((f_TS + f_BN) + (f_BS + f_TN)) + ((f_TW + f_BE) + (f_TE + f_BW)) +
+                   ((f_NW + f_SE) + (f_NE + f_SW))) +
+                   ((f_W + f_E) + (f_S + f_N) + (f_B + f_T))) +
+                     f_ZERO;
       vx1_NWB  = (((f_TNE-f_BSW)+(f_TSE-f_BNW)+(f_BNE-f_TSW)+(f_BSE-f_TNW)) + (((f_NE-f_SW)+(f_TE-f_BW))+((f_SE-f_NW)+(f_BE-f_TW))) + (f_E-f_W))/(c1o1 + drho_NWB);
 	  vx2_NWB  = (((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_BNE-f_TSW)+(f_BNW-f_TSE)) + (((f_NE-f_SW)+(f_TN-f_BS))+((f_BN-f_TS)+(f_NW-f_SE))) + (f_N-f_S))/(c1o1 + drho_NWB);
 	  vx3_NWB  = (((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_TSE-f_BNW)+(f_TSW-f_BNE)) + (((f_TE-f_BW)+(f_TN-f_BS))+((f_TW-f_BE)+(f_TS-f_BN))) + (f_T-f_B))/(c1o1 + drho_NWB);
@@ -18335,7 +18355,11 @@ __global__ void scaleCF_RhoSq_comp_27(real* DC,
       f_BSE  = fbseC[kbs];
       f_BNW  = fbnwC[kbw];
 
-      drho_NWT = f_E+f_W+f_N+f_S+f_T+f_B+f_NE+f_SW+f_SE+f_NW+f_TE+f_BW+f_BE+f_TW+f_TN+f_BS+f_BN+f_TS+f_ZERO+f_TNE+f_TSW+f_TSE+f_TNW+f_BNE+f_BSW+f_BSE+f_BNW;
+      drho_NWT = ((((f_TNE + f_BSW) + (f_TSE + f_BNW)) + ((f_TNW + f_BSE) + (f_TSW + f_BNE))) +
+                  (((f_TS + f_BN) + (f_BS + f_TN)) + ((f_TW + f_BE) + (f_TE + f_BW)) +
+                   ((f_NW + f_SE) + (f_NE + f_SW))) +
+                   ((f_W + f_E) + (f_S + f_N) + (f_B + f_T))) +
+                     f_ZERO;
       vx1_NWT  = (((f_TNE-f_BSW)+(f_TSE-f_BNW)+(f_BNE-f_TSW)+(f_BSE-f_TNW)) + (((f_NE-f_SW)+(f_TE-f_BW))+((f_SE-f_NW)+(f_BE-f_TW))) + (f_E-f_W))/(c1o1 + drho_NWT);
 	  vx2_NWT  = (((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_BNE-f_TSW)+(f_BNW-f_TSE)) + (((f_NE-f_SW)+(f_TN-f_BS))+((f_BN-f_TS)+(f_NW-f_SE))) + (f_N-f_S))/(c1o1 + drho_NWT);
 	  vx3_NWT  = (((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_TSE-f_BNW)+(f_TSW-f_BNE)) + (((f_TE-f_BW)+(f_TN-f_BS))+((f_TW-f_BE)+(f_TS-f_BN))) + (f_T-f_B))/(c1o1 + drho_NWT);
@@ -18387,7 +18411,11 @@ __global__ void scaleCF_RhoSq_comp_27(real* DC,
       f_BSE  = fbseC[kbs];
       f_BNW  = fbnwC[kbw];
 
-      drho_NET = f_E+f_W+f_N+f_S+f_T+f_B+f_NE+f_SW+f_SE+f_NW+f_TE+f_BW+f_BE+f_TW+f_TN+f_BS+f_BN+f_TS+f_ZERO+f_TNE+f_TSW+f_TSE+f_TNW+f_BNE+f_BSW+f_BSE+f_BNW;
+      drho_NET = ((((f_TNE + f_BSW) + (f_TSE + f_BNW)) + ((f_TNW + f_BSE) + (f_TSW + f_BNE))) +
+                  (((f_TS + f_BN) + (f_BS + f_TN)) + ((f_TW + f_BE) + (f_TE + f_BW)) +
+                   ((f_NW + f_SE) + (f_NE + f_SW))) +
+                   ((f_W + f_E) + (f_S + f_N) + (f_B + f_T))) +
+                     f_ZERO;
       vx1_NET  = (((f_TNE-f_BSW)+(f_TSE-f_BNW)+(f_BNE-f_TSW)+(f_BSE-f_TNW)) + (((f_NE-f_SW)+(f_TE-f_BW))+((f_SE-f_NW)+(f_BE-f_TW))) + (f_E-f_W))/(c1o1 + drho_NET);
 	  vx2_NET  = (((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_BNE-f_TSW)+(f_BNW-f_TSE)) + (((f_NE-f_SW)+(f_TN-f_BS))+((f_BN-f_TS)+(f_NW-f_SE))) + (f_N-f_S))/(c1o1 + drho_NET);
 	  vx3_NET  = (((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_TSE-f_BNW)+(f_TSW-f_BNE)) + (((f_TE-f_BW)+(f_TN-f_BS))+((f_TW-f_BE)+(f_TS-f_BN))) + (f_T-f_B))/(c1o1 + drho_NET);
@@ -18439,7 +18467,11 @@ __global__ void scaleCF_RhoSq_comp_27(real* DC,
       f_BSE  = fbseC[kbs];
       f_BNW  = fbnwC[kbw];
 
-      drho_NEB = f_E+f_W+f_N+f_S+f_T+f_B+f_NE+f_SW+f_SE+f_NW+f_TE+f_BW+f_BE+f_TW+f_TN+f_BS+f_BN+f_TS+f_ZERO+f_TNE+f_TSW+f_TSE+f_TNW+f_BNE+f_BSW+f_BSE+f_BNW;
+      drho_NEB = ((((f_TNE + f_BSW) + (f_TSE + f_BNW)) + ((f_TNW + f_BSE) + (f_TSW + f_BNE))) +
+                  (((f_TS + f_BN) + (f_BS + f_TN)) + ((f_TW + f_BE) + (f_TE + f_BW)) +
+                   ((f_NW + f_SE) + (f_NE + f_SW))) +
+                   ((f_W + f_E) + (f_S + f_N) + (f_B + f_T))) +
+                   f_ZERO;
       vx1_NEB  = (((f_TNE-f_BSW)+(f_TSE-f_BNW)+(f_BNE-f_TSW)+(f_BSE-f_TNW)) + (((f_NE-f_SW)+(f_TE-f_BW))+((f_SE-f_NW)+(f_BE-f_TW))) + (f_E-f_W))/(c1o1 + drho_NEB);
 	  vx2_NEB  = (((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_BNE-f_TSW)+(f_BNW-f_TSE)) + (((f_NE-f_SW)+(f_TN-f_BS))+((f_BN-f_TS)+(f_NW-f_SE))) + (f_N-f_S))/(c1o1 + drho_NEB);
 	  vx3_NEB  = (((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_TSE-f_BNW)+(f_TSW-f_BNE)) + (((f_TE-f_BW)+(f_TN-f_BS))+((f_TW-f_BE)+(f_TS-f_BN))) + (f_T-f_B))/(c1o1 + drho_NEB);
@@ -18853,11 +18885,15 @@ __global__ void scaleCF_RhoSq_comp_27(real* DC,
 	  //mfbab     = -c1o3 * (az + cx + axz*x + two*cxx*x + ayz*y + cxy*y + axyz*x*y + two*azz*z + cxz*z + cxyz*y*z)*eps_new/o;
 	  //mfbba     = -c1o3 * (ay + bx + axy*x + two*bxx*x + two*ayy*y + bxy*y + ayz*z + bxz*z + axyz*x*z + bxyz*y*z)*eps_new/o;
 
-  	  mxxMyy    = -c2o3*(ax - by + kxxMyyAverage + c2o1*axx*x - bxy*x + axy*y - c2o1*byy*y + axz*z - byz*z - bxyz*x*z + axyz*y*z)*eps_new/o * (c1o1 + press);
-	  mxxMzz    = -c2o3*(ax - cz + kxxMzzAverage + c2o1*axx*x - cxz*x + axy*y - cyz*y - cxyz*x*y + axz*z - c2o1*czz*z + axyz*y*z)*eps_new/o * (c1o1 + press);
+  	  mxxMyy    = -c2o3*(ax - by + kxxMyyAverage + c2o1*axx*x - bxy*x + axy*y 
+	              - c2o1*byy*y + axz*z - byz*z - bxyz*x*z + axyz*y*z)*eps_new/o * (c1o1 + press);
+	  mxxMzz    = -c2o3*(ax - cz + kxxMzzAverage + c2o1*axx*x - cxz*x + axy*y 
+	              - cyz*y - cxyz*x*y + axz*z - c2o1*czz*z + axyz*y*z)*eps_new/o * (c1o1 + press);
 	 
-	  mfabb     = -c1o3 * (bz + cy + kyzAverage + bxz*x + cxy*x + byz*y + c2o1*cyy*y + bxyz*x*y + c2o1*bzz*z + cyz*z + cxyz*x*z)*eps_new/o * (c1o1 + press);
-	  mfbab     = -c1o3 * (az + cx + kxzAverage + axz*x + c2o1*cxx*x + ayz*y + cxy*y + axyz*x*y + c2o1*azz*z + cxz*z + cxyz*y*z)*eps_new/o * (c1o1 + press);
+	  mfabb     = -c1o3 * (bz + cy + kyzAverage + bxz*x + cxy*x + byz*y + c2o1*cyy*y 
+	              + bxyz*x*y + c2o1*bzz*z + cyz*z + cxyz*x*z)*eps_new/o * (c1o1 + press);
+	  mfbab     = -c1o3 * (az + cx + kxzAverage + axz*x + c2o1*cxx*x + ayz*y + cxy*y 
+	              + axyz*x*y + c2o1*azz*z + cxz*z + cxyz*y*z)*eps_new/o * (c1o1 + press);
 	  mfbba     = -c1o3 * (ay + bx + kxyAverage + axy*x + c2o1*bxx*x + c2o1*ayy*y + bxy*y + ayz*z + bxz*z + axyz*x*z + bxyz*y*z)*eps_new/o * (c1o1 + press);
 
 	  // linear combinations back
