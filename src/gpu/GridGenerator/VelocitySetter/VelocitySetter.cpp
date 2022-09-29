@@ -109,10 +109,9 @@ void VTKFile::readHeader()
     this->ny = pieceExtent[3]-pieceExtent[2]+1;
     this->nz = pieceExtent[5]-pieceExtent[4]+1;
 
-    this->minX = origin[0]+this->deltaX*pieceExtent[0]; this->maxX = this->nx*this->deltaX+this->minX;
-    this->minY = origin[1]+this->deltaY*pieceExtent[2]; this->maxY = this->ny*this->deltaY+this->minY;
-    this->minZ = origin[2]+this->deltaZ*pieceExtent[4]; this->maxZ = this->nz*this->deltaZ+this->minZ;
-
+    this->minX = origin[0]+this->deltaX*pieceExtent[0]; this->maxX = (this->nx-1)*this->deltaX+this->minX;
+    this->minY = origin[1]+this->deltaY*pieceExtent[2]; this->maxY = (this->ny-1)*this->deltaY+this->minY;
+    this->minZ = origin[2]+this->deltaZ*pieceExtent[4]; this->maxZ = (this->nz-1)*this->deltaZ+this->minZ;
     // printFileInfo();
 
 }
@@ -419,6 +418,7 @@ void VTKReader::getNextData(real* data, uint numberOfNodes, real time)
             VTKFile* file = &this->fileCollection->files[level][id][nF];
 
             int off = file->getClosestIdxZ(time)*file->getNumberOfPointsInXYPlane();
+            printf("t%f, offset %i \n", time,  file->getClosestIdxZ(time));
             file->getData(data, numberOfNodes, this->readIndices[level][id], this->writeIndices[level][id], off, this->writingOffset);
             this->nFile[level][id] = nF;
         }

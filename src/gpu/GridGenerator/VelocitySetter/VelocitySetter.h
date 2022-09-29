@@ -63,9 +63,9 @@ public:
     int getIdxWX(real posX){ return (posX-minX)/deltaX; };
     int getIdxSY(real posY){ return (posY-minY)/deltaY; };
     int getIdxBZ(real posZ){ return (posZ-minZ)/deltaZ; };
-    int getClosestIdxX(real posX){ return round((posX-minX)/deltaX); };
-    int getClosestIdxY(real posY){ return round((posY-minY)/deltaY); };
-    int getClosestIdxZ(real posZ){ return round((posZ-minZ)/deltaZ); };
+    int getClosestIdxX(real posX){ int x = round((posX-minX)/deltaX); return x>nx ? nx : (x<0 ? 0 : x);};
+    int getClosestIdxY(real posY){ int y = round((posY-minY)/deltaY); return y>ny ? ny : (y<0 ? 0 : y);};
+    int getClosestIdxZ(real posZ){ int z = round((posZ-minZ)/deltaZ); return z>nz ? nz : (z<0 ? 0 : z);};
     int getLinearIndex(int idxX, int idxY, int idxZ){ return idxX + nx*(idxY+ny*idxZ); };
     int getNumberOfPointsInXYPlane(){ return nx*ny; }
     int getNumberOfPointsInYZPlane(){ return ny*nz; }
