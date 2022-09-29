@@ -61,8 +61,9 @@ namespace parameter
                 vz = values[3];
             });
         })
-        .def("set_initial_condition_uniform", [](Parameter &para, real velocity_x, real velocity_y, real velocity_z){
-            para.setInitialCondition([&](real coordX, real coordY, real coordZ, real& rho, real& vx, real& vy, real& vz)
+        .def("set_initial_condition_uniform", [](Parameter &para, real velocity_x, real velocity_y, real velocity_z)
+        {
+            para.setInitialCondition([velocity_x, velocity_y, velocity_z](real coordX, real coordY, real coordZ, real& rho, real& vx, real& vy, real& vz) // must capture values explicitly!
             {
                 rho = c0o1;
                 vx = velocity_x;
@@ -70,22 +71,32 @@ namespace parameter
                 vz = velocity_z;
             });
         })
-        .def("set_initial_condition_log_law", [](Parameter &para, real u_star, real z0, real velocityRatio){
-            para.setInitialCondition([&](real coordX, real coordY, real coordZ, real& rho, real& vx, real& vy, real& vz){
-                rho = c0o1;
-                vx  = u_star/c4o10 * log(coordZ/z0+1);
-                vy = c0o1;
-                vz = c0o1;
-            });
+        .def("set_initial_condition_log_law", [](Parameter &para, real u_star, real z0, real velocityRatio)
+        {
+            para.setInitialCondition(
+                [u_star, z0, velocityRatio](real coordX, real coordY, real coordZ, real& rho, real& vx, real& vy, real& vz)
+                {
+                    coordZ = coordZ > c0o1 ? coordZ : c0o1;
+
+                    rho = c0o1;
+                    vx  = u_star/c4o10 * log(coordZ/z0+c1o1) / velocityRatio;
+                    vy = c0o1;
+                    vz = c0o1;
+                }
+            );
         })
-        .def("set_initial_condition_perturbed_log_law", [](Parameter &para, real u_star, real z0, real L_x, real L_z, real H, real velocityRatio){
-            para.setInitialCondition([&](real coordX, real coordY, real coordZ, real& rho, real& vx, real& vy, real& vz)
-            {
-                rho = c0o1;
-                vx  = (u_star/c4o10 * log(coordZ/z0+c1o1) + c2o1*sin(cPi*c16o1*coordX/L_x)*sin(cPi*c8o1*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1)) / velocityRatio; 
-                vy  = c2o1*sin(cPi*c16o1*coordX/L_x)*sin(cPi*c8o1*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1) / velocityRatio; 
-                vz  = c8o1*u_star/c4o10*(sin(cPi*c8o1*coordY/H)*sin(cPi*c8o1*coordZ/H)+sin(cPi*c8o1*coordX/L_x))/(pow(c1o2*L_z-coordZ, c2o1)+c1o1) / velocityRatio;
-            });
+        .def("set_initial_condition_perturbed_log_law", [](Parameter &para, real u_star, real z0, real L_x, real L_z, real H, real velocityRatio)
+        {
+            para.setInitialCondition(
+                [u_star, z0, L_x, L_z, H, velocityRatio](real coordX, real coordY, real coordZ, real& rho, real& vx, real& vy, real& vz)
+                {
+                    coordZ = coordZ > c0o1 ? coordZ : c0o1;
+                    rho = c0o1;
+                    vx  = (u_star/c4o10 * log(coordZ/z0+c1o1) + c2o1*sin(cPi*c16o1*coordX/L_x)*sin(cPi*c8o1*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1)) / velocityRatio; 
+                    vy  = c2o1*sin(cPi*c16o1*coordX/L_x)*sin(cPi*c8o1*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1) / velocityRatio; 
+                    vz  = c8o1*u_star/c4o10*(sin(cPi*c8o1*coordY/H)*sin(cPi*c8o1*coordZ/H)+sin(cPi*c8o1*coordX/L_x))/(pow(c1o2*L_z-coordZ, c2o1)+c1o1) / velocityRatio;
+                }
+            );
         })
         .def("add_actuator", &Parameter::addActuator)
         .def("add_probe", &Parameter::addProbe)
