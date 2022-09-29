@@ -37,7 +37,7 @@
 #include <string>
 
 #include "BCKernelManager.h"
-#include "BoundaryConditions/BoundaryConditionFactory.h"
+#include "Factories/BoundaryConditionFactory.h"
 #include "Calculation/Cp.h"
 #include "Calculation/DragLift.h"
 #include "GPU/GPU_Interface.h"
