@@ -186,81 +186,8 @@ void multipleLevel(const std::string& configPath)
     const int  nProcs = para->getNumprocs();
     const uint procID = vf::gpu::Communicator::getInstance().getPID();
 
-    if(nProcs > 1)
-        gridBuilder->setPeriodicBoundaryCondition(false, true, false);
-    else
-        gridBuilder->setPeriodicBoundaryCondition(true, true, false);
-
-    // real L = 0.5*L_x;
-    // real dxGrid = dx;
-    // real vxLB = velocityLB;
-    // const real xGridMin = -0.5 * L;
-    // const real xGridMax = 0.5 * L;
-    // const real yGridMin = -0.5 * L;
-    // const real yGridMax = 0.5 * L;
-    // const real zGridMin = -0.5 * L;
-    // const real zGridMax = 0.5 * L;
-
-    // Cuboid *level1 = nullptr;
-
-    // const uint generatePart = vf::gpu::Communicator::getInstance().getPID();
-    // real overlap            = (real)8.0 * dxGrid;
-    // gridBuilder->setNumberOfLayers(10, 8);
-
-    // const real xSplit = 0.0;
-    // const real ySplit = 0.0;
-    // const real zSplit = 0.0;
-
-    // gridBuilder->setPeriodicBoundaryCondition(false, true, false);
-
-    // if (communicator.getNummberOfProcess() == 2) {
-
-    //     if (generatePart == 0) {
-    //         gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xSplit+overlap, yGridMax, zGridMax,
-    //                                     dxGrid);
-    //     }
-    //     if (generatePart == 1) {
-    //         gridBuilder->addCoarseGrid(xSplit-overlap, yGridMin, zGridMin, xGridMax+overlap, yGridMax, zGridMax,
-    //                                     dxGrid);
-    //     }
-
-    //     if (generatePart == 0) {
-    //         gridBuilder->setSubDomainBox(
-    //             std::make_shared<BoundingBox>(xGridMin, xSplit, yGridMin, yGridMax, zGridMin, zGridMax));
-    //     }
-    //     if (generatePart == 1) {
-    //         gridBuilder->setSubDomainBox(
-    //             std::make_shared<BoundingBox>(xSplit, xGridMax, yGridMin, yGridMax, zGridMin, zGridMax));
-    //     }
-
-    //     gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
-
-
-    //     if (generatePart == 0) {
-    //         // gridBuilder->findCommunicationIndices(CommunicationDirections::MX, LBM);
-    //         // gridBuilder->setCommunicationProcess(CommunicationDirections::MX, 1);
-    //         // gridBuilder->setCommunicationProcess(CommunicationDirections::MX, 1);
-    //     }
-
-    //     if (generatePart == 1) {            
-    //         // gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 0);
-    //         gridBuilder->findCommunicationIndices(CommunicationDirections::PX, LBM);
-    //         gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 0);
-    //     }
-    //     // gridBuilder->getGrid(0)->repairCommunicationIndices(CommunicationDirections::MX);
-    //     //////////////////////////////////////////////////////////////////////////
-    //     gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
-    //     gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, 0.0, 0.0);
-    //     gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
-    //     gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
-    //     // if (generatePart == 0)
-    //     //     gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
-    //     // if (generatePart == 1)
-    //     //     gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
-
-    //     bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
-    //     //////////////////////////////////////////////////////////////////////////
-    // }
+    if(nProcs > 1){ gridBuilder->setPeriodicBoundaryCondition(false, true, false);}
+    else          { gridBuilder->setPeriodicBoundaryCondition(true, true, false);}
 
     const real xSplit = L_x/nProcs;
     const real overlap = 8.0*dx;
@@ -269,7 +196,7 @@ void multipleLevel(const std::string& configPath)
     real xMax      = (procID+1) * xSplit;
     real xGridMin  =  procID    * xSplit;
     real xGridMax  = (procID+1) * xSplit;
-    
+
     real yMin      = 0.0;
     real yMax      = L_y;
     real zMin      = 0.0;
@@ -279,12 +206,16 @@ void multipleLevel(const std::string& configPath)
     bool isLastSubDomain  = (procID == nProcs-1 && nProcs > 1)?                    true: false;
     bool isMidSubDomain   = (!isFirstSubDomain && !isLastSubDomain && nProcs > 1)? true: false;
     
-    if(isFirstSubDomain || isMidSubDomain) 
+    if(isFirstSubDomain || isMidSubDomain)
+    {
         xGridMax += overlap;
         xGridMin -= overlap;
+    }
     if(isLastSubDomain || isMidSubDomain)
+    {
         xGridMax += overlap;
         xGridMin -= overlap;
+    }
 
     gridBuilder->addCoarseGrid( xGridMin,  0.0,  0.0,
                                 xGridMax,  L_y,  L_z, dx);
@@ -295,34 +226,36 @@ void multipleLevel(const std::string& configPath)
         para->setMaxLevel(2);
     }
 
-    gridBuilder->setSubDomainBox(
+    if(nProcs > 1){
+            gridBuilder->setSubDomainBox(
                         std::make_shared<BoundingBox>(xMin, xMax, yMin, yMax, zMin, zMax));
+    }
 
 	gridBuilder->buildGrids(lbmOrGks, true); // buildGrids() has to be called before setting the BCs!!!!
 
     std::cout << "nProcs: "<< nProcs << "Proc: " << procID << " isFirstSubDomain: " << isFirstSubDomain << " isLastSubDomain: " << isLastSubDomain << " isMidSubDomain: " << isMidSubDomain << std::endl;
     
+    if(nProcs > 1){
+        if (isFirstSubDomain || isMidSubDomain) {
+            gridBuilder->findCommunicationIndices(CommunicationDirections::PX, lbmOrGks);
+            gridBuilder->setCommunicationProcess(CommunicationDirections::PX, procID+1);
+        }
 
-    if (isFirstSubDomain || isMidSubDomain) {
-        gridBuilder->findCommunicationIndices(CommunicationDirections::PX, lbmOrGks);
-        gridBuilder->setCommunicationProcess(CommunicationDirections::PX, procID+1);
+        if (isLastSubDomain || isMidSubDomain) {
+            gridBuilder->findCommunicationIndices(CommunicationDirections::MX, lbmOrGks);
+            gridBuilder->setCommunicationProcess(CommunicationDirections::MX, procID-1);
+        }
+
+        if (isFirstSubDomain) {
+            gridBuilder->findCommunicationIndices(CommunicationDirections::MX, lbmOrGks);
+            gridBuilder->setCommunicationProcess(CommunicationDirections::MX, nProcs-1);
+        }
+
+        if (isLastSubDomain) {
+            gridBuilder->findCommunicationIndices(CommunicationDirections::PX, lbmOrGks);
+            gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 0);
+        }
     }
-
-    if (isLastSubDomain || isMidSubDomain) {
-        gridBuilder->findCommunicationIndices(CommunicationDirections::MX, lbmOrGks);
-        gridBuilder->setCommunicationProcess(CommunicationDirections::MX, procID-1);
-    }
-
-    if (isFirstSubDomain) {
-        gridBuilder->findCommunicationIndices(CommunicationDirections::MX, lbmOrGks);
-        gridBuilder->setCommunicationProcess(CommunicationDirections::MX, nProcs-1);
-    }
-
-    if (isLastSubDomain) {
-        gridBuilder->findCommunicationIndices(CommunicationDirections::PX, lbmOrGks);
-        gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 0);
-    }
-
     uint samplingOffset = 2;
     gridBuilder->setStressBoundaryCondition(SideType::MZ,
                                             0.0, 0.0, 1.0,              // wall normals
