@@ -67,7 +67,7 @@ namespace boundary_conditions
 
         py::enum_<BoundaryConditionFactory::PrecursorBC>(parentModule, "PrecursorBC")
         .value("VelocityPrecursor", BoundaryConditionFactory::PrecursorBC::VelocityPrecursor)
-        .value("DistributionsPrecursor", BoundaryConditionFactory::PrecursorBC::VelocityPrecursor)
+        .value("DistributionsPrecursor", BoundaryConditionFactory::PrecursorBC::DistributionsPrecursor)
         .value("NotSpecified", BoundaryConditionFactory::PrecursorBC::NotSpecified);
     }
 }
