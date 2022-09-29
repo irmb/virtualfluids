@@ -398,7 +398,7 @@ void GridReader::initalValuesDomainDecompostion(int level)
 				{
 					////////////////////////////////////////////////////////////////////////////////////////
 					//send
-					std::cout << "size of Data for X send buffer, Level " << i << " : " << tempSend << std::endl;
+					*logging::out << logging::Logger::INFO_INTERMEDIATE << "size of Data for X send buffer, Level " << i << " : " << tempSend << "\n";
 					////////////////////////////////////////////////////////////////////////////////////////
 					para->setNumberOfProcessNeighborsX((unsigned int)procNeighborsSendX.size(), i, "send");
 					para->getParH(i)->sendProcessNeighborX[j].rankNeighbor = neighborRankX[j];

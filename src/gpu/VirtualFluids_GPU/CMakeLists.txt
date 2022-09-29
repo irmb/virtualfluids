@@ -1,5 +1,8 @@
 project(VirtualFluids_GPU LANGUAGES CUDA CXX)
 
+find_package(CUDA  REQUIRED)
+include_directories("${CUDA_INCLUDE_DIRS}")
+
 set(additional_libraries "")
 if(MSVC)
     set(additional_libraries ws2_32 Traffic) # ws_32 throws an error on Phoenix
@@ -12,7 +15,6 @@ vf_add_library(PUBLIC_LINK basics lbmCuda PRIVATE_LINK ${additional_libraries} G
 #https://stackoverflow.com/questions/27442885/syntax-error-with-stdnumeric-limitsmax
 
 set_target_properties(VirtualFluids_GPU PROPERTIES CUDA_SEPARABLE_COMPILATION ON POSITION_INDEPENDENT_CODE ON)
-
 
 vf_add_tests()
 

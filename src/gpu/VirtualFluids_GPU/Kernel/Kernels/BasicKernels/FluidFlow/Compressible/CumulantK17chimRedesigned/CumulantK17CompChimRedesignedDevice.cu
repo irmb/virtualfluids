@@ -38,7 +38,7 @@
 
 using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
-#include "Kernel/ChimeraTransformation.h"
+#include "Kernel/Utilities/ChimeraTransformation.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 __global__ void LB_Kernel_CumulantK17CompChimRedesigned(
@@ -573,31 +573,31 @@ __global__ void LB_Kernel_CumulantK17CompChimRedesigned(
     //! <a href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017),
     //! DOI:10.3390/computation5020019 ]</b></a>
     //!
-    (dist.f[DIR_P00])[k_000]    = f_M00;
-    (dist.f[DIR_M00])[k_M00]    = f_P00;
-    (dist.f[DIR_0P0])[k_000]    = f_0M0;
-    (dist.f[DIR_0M0])[k_0M0]    = f_0P0;
-    (dist.f[DIR_00P])[k_000]    = f_00M;
-    (dist.f[DIR_00M])[k_00M]    = f_00P;
-    (dist.f[DIR_PP0])[k_000]   = f_MM0;
-    (dist.f[DIR_MM0])[k_MM0]   = f_PP0;
-    (dist.f[DIR_PM0])[k_0M0]   = f_MP0;
-    (dist.f[DIR_MP0])[k_M00]   = f_PM0;
-    (dist.f[DIR_P0P])[k_000]   = f_M0M;
-    (dist.f[DIR_M0M])[k_M0M]   = f_P0P;
-    (dist.f[DIR_P0M])[k_00M]   = f_M0P;
-    (dist.f[DIR_M0P])[k_M00]   = f_P0M;
-    (dist.f[DIR_0PP])[k_000]   = f_0MM;
-    (dist.f[DIR_0MM])[k_0MM]   = f_0PP;
-    (dist.f[DIR_0PM])[k_00M]   = f_0MP;
-    (dist.f[DIR_0MP])[k_0M0]   = f_0PM;
+    (dist.f[DIR_P00])[k_000] = f_M00;
+    (dist.f[DIR_M00])[k_M00] = f_P00;
+    (dist.f[DIR_0P0])[k_000] = f_0M0;
+    (dist.f[DIR_0M0])[k_0M0] = f_0P0;
+    (dist.f[DIR_00P])[k_000] = f_00M;
+    (dist.f[DIR_00M])[k_00M] = f_00P;
+    (dist.f[DIR_PP0])[k_000] = f_MM0;
+    (dist.f[DIR_MM0])[k_MM0] = f_PP0;
+    (dist.f[DIR_PM0])[k_0M0] = f_MP0;
+    (dist.f[DIR_MP0])[k_M00] = f_PM0;
+    (dist.f[DIR_P0P])[k_000] = f_M0M;
+    (dist.f[DIR_M0M])[k_M0M] = f_P0P;
+    (dist.f[DIR_P0M])[k_00M] = f_M0P;
+    (dist.f[DIR_M0P])[k_M00] = f_P0M;
+    (dist.f[DIR_0PP])[k_000] = f_0MM;
+    (dist.f[DIR_0MM])[k_0MM] = f_0PP;
+    (dist.f[DIR_0PM])[k_00M] = f_0MP;
+    (dist.f[DIR_0MP])[k_0M0] = f_0PM;
     (dist.f[DIR_000])[k_000] = f_000;
-    (dist.f[DIR_PPP])[k_000]  = f_MMM;
-    (dist.f[DIR_PMP])[k_0M0]  = f_MPM;
-    (dist.f[DIR_PPM])[k_00M]  = f_MMP;
-    (dist.f[DIR_PMM])[k_0MM]  = f_MPP;
-    (dist.f[DIR_MPP])[k_M00]  = f_PMM;
-    (dist.f[DIR_MMP])[k_MM0]  = f_PPM;
-    (dist.f[DIR_MPM])[k_M0M]  = f_PMP;
-    (dist.f[DIR_MMM])[k_MMM]  = f_PPP;
+    (dist.f[DIR_PPP])[k_000] = f_MMM;
+    (dist.f[DIR_PMP])[k_0M0] = f_MPM;
+    (dist.f[DIR_PPM])[k_00M] = f_MMP;
+    (dist.f[DIR_PMM])[k_0MM] = f_MPP;
+    (dist.f[DIR_MPP])[k_M00] = f_PMM;
+    (dist.f[DIR_MMP])[k_MM0] = f_PPM;
+    (dist.f[DIR_MPM])[k_M0M] = f_PMP;
+    (dist.f[DIR_MMM])[k_MMM] = f_PPP;
 }
