@@ -186,9 +186,6 @@ void multipleLevel(const std::string& configPath)
     const int  nProcs = para->getNumprocs();
     const uint procID = vf::gpu::Communicator::getInstance().getPID();
 
-    if(nProcs > 1){ gridBuilder->setPeriodicBoundaryCondition(false, true, false);}
-    else          { gridBuilder->setPeriodicBoundaryCondition(true, true, false);}
-
     const real xSplit = L_x/nProcs;
     const real overlap = 8.0*dx;
 
@@ -230,6 +227,9 @@ void multipleLevel(const std::string& configPath)
             gridBuilder->setSubDomainBox(
                         std::make_shared<BoundingBox>(xMin, xMax, yMin, yMax, zMin, zMax));
     }
+
+    if(nProcs > 1){ gridBuilder->setPeriodicBoundaryCondition(false, true, false);}
+    else          { gridBuilder->setPeriodicBoundaryCondition(true, true, false);}
 
 	gridBuilder->buildGrids(lbmOrGks, true); // buildGrids() has to be called before setting the BCs!!!!
 
