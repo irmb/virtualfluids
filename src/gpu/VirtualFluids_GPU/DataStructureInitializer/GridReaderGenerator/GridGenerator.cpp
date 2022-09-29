@@ -273,6 +273,11 @@ void GridGenerator::allocArrays_BoundaryValues()
             para->getParD(level)->precursorBC.velocityY = para->getParH(level)->precursorBC.velocityY;
             para->getParD(level)->precursorBC.velocityZ = para->getParH(level)->precursorBC.velocityZ;
 
+            for(auto reader : para->getParH(level)->velocityReader)
+            {
+                if(reader->getNumberOfQuantities() != para->getParD(level)->precursorBC.numberOfQuantities) throw std::exception("Number of quantities in reader and number of quantities needed for precursor don't match!");
+            }
+
             cudaMemoryManager->cudaCopyPrecursorBC(level);
             cudaMemoryManager->cudaAllocPrecursorData(level);
 
