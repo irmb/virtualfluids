@@ -90,13 +90,11 @@ __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
     //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
     //!
     const unsigned kThread = vf::gpu::getNodeIndex();
-
+    
     //////////////////////////////////////////////////////////////////////////
     // run for all indices in size_Mat and fluid nodes
     if (kThread >= numberOfFluidNodes) 
         return;
-    // if ((k_000 < size_Mat) && (typeOfGridNode[k_000] == GEO_FLUID)) 
-    //     return;
     ////////////////////////////////////////////////////////////////////////////////
     //! - Get the node index from the array containing all indices of fluid nodes
     //!

@@ -46,7 +46,7 @@ template<TurbulenceModel turbulenceModel>
 void TurbulentViscosityCumulantK17CompChim<turbulenceModel>::runOnIndices(const unsigned int *indices, unsigned int size_indices, int streamIndex)
 {
 	cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
-
+	
 	LB_Kernel_TurbulentViscosityCumulantK17CompChim < turbulenceModel  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>(   para->getParD(level)->omega, 	
 																											para->getParD(level)->typeOfGridNode, 										para->getParD(level)->neighborX,	
 																											para->getParD(level)->neighborY,	
@@ -83,6 +83,7 @@ TurbulentViscosityCumulantK17CompChim<turbulenceModel>::TurbulentViscosityCumula
 
 	myKernelGroup = BasicKernel;
 
+	this->cudaGrid = vf::cuda::CudaGrid(para->getParD(level)->numberofthreads, para->getParD(level)->numberOfNodes);
 	this->kernelUsesFluidNodeIndices = true;
 	
 	VF_LOG_INFO("Using turbulence model: {}", turbulenceModel);
