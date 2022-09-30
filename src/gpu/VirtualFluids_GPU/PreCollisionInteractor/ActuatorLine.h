@@ -88,6 +88,7 @@ public:
     void setOmega(real _omega){ this->omega = _omega; };
     void setAzimuth(real _azimuth){ this->azimuth = _azimuth; };
     void setYaw(real _yaw){ this->yaw = _yaw; };
+    void setPreInitBladeRadii(real* _bladeRadii);
     void setBladeCoords(real* _bladeCoordsX, real* _bladeCoordsY, real* _bladeCoordsZ);
     void setBladeVelocities(real* _bladeVelocitiesX, real* _bladeVelocitiesY, real* _bladeVelocitiesZ);
     void setBladeForces(real* _bladeForcesX, real* _bladeForcesY, real* _bladeForcesZ);
@@ -108,6 +109,7 @@ private:
     void calcForcesEllipticWing();
 
 public:
+    real* bladeRadiiPreInit;
     real* bladeRadiiH;
     real* bladeRadiiD;
     real* bladeCoordsXH, * bladeCoordsYH, * bladeCoordsZH;

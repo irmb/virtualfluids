@@ -369,6 +369,14 @@ void ActuatorLine::initBladeIndices(Parameter* para, CudaMemoryManager* cudaMemo
     }
     cudaMemoryManager->cudaCopyBladeIndicesHtoD(this);
 }
+void ActuatorLine::setPreInitBladeRadii(real* _bladeRadii)
+{
+    this->bladeRadiiPreInit = (real*) malloc(this->nBladeNodes*sizeof(real));
+    for(uint node=0; node<this->nBladeNodes; node++)
+    {
+        this->bladeRadiiPreInit[node] = _bladeRadii[node];
+    }
+}
 
 void ActuatorLine::initBoundingSphere(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {

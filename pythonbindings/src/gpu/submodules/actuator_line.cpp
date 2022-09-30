@@ -73,6 +73,7 @@ namespace actuator_line
         .def("get_blade_forces_x_device", [](ActuatorLine& al){ return arr({al.getNBlades(), al.getNBladeNodes()}, al.getBladeForcesXD()); } )
         .def("get_blade_forces_y_device", [](ActuatorLine& al){ return arr({al.getNBlades(), al.getNBladeNodes()}, al.getBladeForcesYD()); } )
         .def("get_blade_forces_z_device", [](ActuatorLine& al){ return arr({al.getNBlades(), al.getNBladeNodes()}, al.getBladeForcesZD()); } )
+        .def("set_preinit_blade_radii", [](ActuatorLine& al, arr radii){ al.setPreInitBladeRadii(static_cast<float *>(radii.request().ptr)); } )
         .def("set_blade_coords", [](ActuatorLine& al, arr coordsX, arr coordsY, arr coordsZ){ 
             al.setBladeCoords(static_cast<float *>(coordsX.request().ptr), static_cast<float *>(coordsY.request().ptr), static_cast<float *>(coordsZ.request().ptr)); } )
         .def("set_blade_velocities", [](ActuatorLine& al, arr velocitiesX, arr velocitiesY, arr velocitiesZ){ 
