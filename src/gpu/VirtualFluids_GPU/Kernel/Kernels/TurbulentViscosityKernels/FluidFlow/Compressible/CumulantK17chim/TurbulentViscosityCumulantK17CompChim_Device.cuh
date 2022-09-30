@@ -25,5 +25,7 @@ template< TurbulenceModel turbulenceModel > __global__ void LB_Kernel_TurbulentV
 	real* bodyForceY,
 	real* bodyForceZ,
 	real* quadricLimiters,
-	bool isEvenTimestep);
+	bool isEvenTimestep,
+	const uint *fluidNodeIndices,
+    uint numberOfFluidNodes);
 #endif

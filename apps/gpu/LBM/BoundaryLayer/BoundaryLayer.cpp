@@ -229,13 +229,16 @@ void multipleLevel(const std::string& configPath)
         para->setMaxLevel(2);
     }
 
-    if(nProcs > 1){
+    if(nProcs > 1)
+    {
             gridBuilder->setSubDomainBox(
-                        std::make_shared<BoundingBox>(xMin, xMax, yMin, yMax, zMin, zMax));
+                        std::make_shared<BoundingBox>(xMin, xMax, yMin, yMax, zMin, zMax));        
+            gridBuilder->setPeriodicBoundaryCondition(false, true, false);
     }
-
-    if(nProcs > 1){ gridBuilder->setPeriodicBoundaryCondition(false, true, false);}
-    else          { gridBuilder->setPeriodicBoundaryCondition(true, true, false);}
+    else         
+    { 
+        gridBuilder->setPeriodicBoundaryCondition(true, true, false);
+    }
 
 	gridBuilder->buildGrids(lbmOrGks, true); // buildGrids() has to be called before setting the BCs!!!!
 

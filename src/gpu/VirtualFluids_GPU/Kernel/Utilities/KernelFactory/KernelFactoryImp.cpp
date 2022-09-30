@@ -61,7 +61,6 @@
 #include "Kernel/Kernels/BasicKernels/AdvectionDiffusion/Incompressible/Mod7/ADMod7IncompStrategy.h"
 #include "Kernel/Kernels/PorousMediaKernels/FluidFlow/Compressible/PMFluidFlowCompStrategy.h"
 #include "Kernel/Kernels/WaleKernels/FluidFlow/Compressible/WaleFluidFlowCompStrategy.h"
-#include "Kernel/Kernels/TurbulentViscosityKernels/FluidFlow/Compressible/TurbulentViscosityFluidFlowCompStrategy.h"
 
 std::vector<std::shared_ptr<Kernel>> KernelFactoryImp::makeKernels(std::shared_ptr<Parameter> para)
 {
@@ -216,7 +215,7 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
                 throw std::runtime_error("Unknown turbulence model!");
             break;                                                              
         }                                                                       
-        checkStrategy = TurbulentViscosityFluidFlowCompStrategy::getInstance(); 
+        checkStrategy = FluidFlowCompStrategy::getInstance();
                                                                                 //     /\      //
                                                                                 //     ||    
                                                                                 // compressible with turbulent viscosity  
