@@ -421,3 +421,26 @@ void ActuatorLine::setBladeForces(real* _bladeForcesX, real* _bladeForcesY, real
         this->bladeForcesZH[node] = _bladeForcesZ[node];
     }
 }
+void ActuatorLine::setBladeCoordsD(real* _bladeCoordsX, real* _bladeCoordsY, real* _bladeCoordsZ)
+{
+    throw std::runtime_error("not implemented");
+    this->bladeCoordsXD = _bladeCoordsX;
+    this->bladeCoordsYD = _bladeCoordsY;
+    this->bladeCoordsZD = _bladeCoordsZ;
+}
+
+void ActuatorLine::setBladeVelocitiesD(real* _bladeVelocitiesX, real* _bladeVelocitiesY, real* _bladeVelocitiesZ)
+{
+    throw std::runtime_error("not implemented");
+    this->bladeVelocitiesXD = _bladeVelocitiesX;
+    this->bladeVelocitiesYD = _bladeVelocitiesY;
+    this->bladeVelocitiesZD = _bladeVelocitiesZ;
+}
+
+void ActuatorLine::setBladeForcesD(real* _bladeForcesX, real* _bladeForcesY, real* _bladeForcesZ)
+{
+    throw std::runtime_error("not implemented");
+    this->bladeCoordsXD = _bladeForcesX;
+    this->bladeCoordsYD = _bladeForcesY;
+    this->bladeCoordsZD = _bladeForcesZ;
+}
