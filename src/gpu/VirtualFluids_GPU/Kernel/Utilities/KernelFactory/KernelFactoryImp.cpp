@@ -224,7 +224,6 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
     else {
         throw std::runtime_error("KernelFactory does not know the KernelType.");
     }
-
     newKernel->setCheckParameterStrategy(checkStrategy);
     para->setKernelNeedsFluidNodeIndicesToRun(newKernel->getKernelUsesFluidNodeIndices());
     return newKernel;

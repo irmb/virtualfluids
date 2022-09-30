@@ -176,9 +176,9 @@ void multipleLevel(const std::string& configPath)
     para->setViscosityRatio( dx*dx/dt );
     para->setDensityRatio( 1.0 );
 
-    // para->setMainKernel("CumulantK17CompChim");
+    bool useStreams = (nProcs > 1 ? true: false);
+    para->setUseStreams(useStreams);
     para->setMainKernel("TurbulentViscosityCumulantK17CompChim");
-
     para->setIsBodyForce( config.getValue<bool>("bodyForce") );
 
     para->setTimestepStartOut(uint(tStartOut/dt) );

@@ -101,7 +101,7 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
         gridProvider.allocArrays_fluidNodeIndices();
         gridProvider.allocArrays_fluidNodeIndicesBorder();
     }
-
+    
     gridProvider.setDimensions();
     gridProvider.setBoundingBox();
 
