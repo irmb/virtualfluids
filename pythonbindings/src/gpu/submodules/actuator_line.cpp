@@ -74,18 +74,30 @@ namespace actuator_line
         .def("get_blade_forces_y_device", [](ActuatorLine& al){ return arr({al.getNBlades(), al.getNBladeNodes()}, al.getBladeForcesYD()); } )
         .def("get_blade_forces_z_device", [](ActuatorLine& al){ return arr({al.getNBlades(), al.getNBladeNodes()}, al.getBladeForcesZD()); } )
         .def("set_preinit_blade_radii", [](ActuatorLine& al, arr radii){ al.setPreInitBladeRadii(static_cast<float *>(radii.request().ptr)); } )
-        .def("set_blade_coords", [](ActuatorLine& al, arr coordsX, arr coordsY, arr coordsZ){ 
-            al.setBladeCoords(static_cast<float *>(coordsX.request().ptr), static_cast<float *>(coordsY.request().ptr), static_cast<float *>(coordsZ.request().ptr)); } )
-        .def("set_blade_velocities", [](ActuatorLine& al, arr velocitiesX, arr velocitiesY, arr velocitiesZ){ 
-            al.setBladeVelocities(static_cast<float *>(velocitiesX.request().ptr), static_cast<float *>(velocitiesY.request().ptr), static_cast<float *>(velocitiesZ.request().ptr)); } )
-        .def("set_blade_forces", [](ActuatorLine& al, arr forcesX, arr forcesY, arr forcesZ){ 
-            al.setBladeForcesD(static_cast<float *>(forcesX.request().ptr), static_cast<float *>(forcesY.request().ptr), static_cast<float *>(forcesZ.request().ptr)); } )
-        .def("set_blade_coords_device", [](ActuatorLine& al, arr coordsX, arr coordsY, arr coordsZ){ 
-            al.setBladeCoordsD(static_cast<float *>(coordsX.request().ptr), static_cast<float *>(coordsY.request().ptr), static_cast<float *>(coordsZ.request().ptr)); } )
-        .def("set_blade_velocities_device", [](ActuatorLine& al, arr velocitiesX, arr velocitiesY, arr velocitiesZ){ 
-            al.setBladeVelocitiesD(static_cast<float *>(velocitiesX.request().ptr), static_cast<float *>(velocitiesY.request().ptr), static_cast<float *>(velocitiesZ.request().ptr)); } )
-        .def("set_blade_forces_device", [](ActuatorLine& al, arr forcesX, arr forcesY, arr forcesZ){ 
-            al.setBladeForcesD(static_cast<float *>(forcesX.request().ptr), static_cast<float *>(forcesY.request().ptr), static_cast<float *>(forcesZ.request().ptr)); } )
+        .def("set_blade_coords", [](ActuatorLine& al, arr coordsX, arr coordsY, arr coordsZ)
+        { 
+            al.setBladeCoords(static_cast<float *>(coordsX.request().ptr), static_cast<float *>(coordsY.request().ptr), static_cast<float *>(coordsZ.request().ptr)); 
+        })
+        .def("set_blade_velocities", [](ActuatorLine& al, arr velocitiesX, arr velocitiesY, arr velocitiesZ)
+        { 
+            al.setBladeVelocities(static_cast<float *>(velocitiesX.request().ptr), static_cast<float *>(velocitiesY.request().ptr), static_cast<float *>(velocitiesZ.request().ptr)); 
+        })
+        .def("set_blade_forces", [](ActuatorLine& al, arr forcesX, arr forcesY, arr forcesZ)
+        { 
+            al.setBladeForces(static_cast<float *>(forcesX.request().ptr), static_cast<float *>(forcesY.request().ptr), static_cast<float *>(forcesZ.request().ptr));
+        })
+        .def("set_blade_coords_device", [](ActuatorLine& al, arr coordsX, arr coordsY, arr coordsZ)
+        { 
+            al.setBladeCoordsD(static_cast<float *>(coordsX.request().ptr), static_cast<float *>(coordsY.request().ptr), static_cast<float *>(coordsZ.request().ptr)); 
+        })
+        .def("set_blade_velocities_device", [](ActuatorLine& al, arr velocitiesX, arr velocitiesY, arr velocitiesZ)
+        { 
+            al.setBladeVelocitiesD(static_cast<float *>(velocitiesX.request().ptr), static_cast<float *>(velocitiesY.request().ptr), static_cast<float *>(velocitiesZ.request().ptr)); 
+        })
+        .def("set_blade_forces_device", [](ActuatorLine& al, arr forcesX, arr forcesY, arr forcesZ)
+        { 
+            al.setBladeForcesD(static_cast<float *>(forcesX.request().ptr), static_cast<float *>(forcesY.request().ptr), static_cast<float *>(forcesZ.request().ptr)); 
+        })
         .def("calc_blade_forces", &ActuatorLine::calcBladeForces);
     }
 }
