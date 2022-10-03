@@ -114,11 +114,12 @@ void multipleLevel(const std::string& configPath)
 
     LbmOrGks lbmOrGks = LBM;
 
-    const real H = 1000.0; // boundary layer height in m
 
-    const real L_x = 6*H;
-    const real L_y = 4*H;
-    const real L_z = 1*H;
+    real H = 1000.0; // boundary layer height in m
+    const real L_x = config.contains("L_x")? config.getValue<real>("L_x"): 6*H;
+    const real L_y = config.contains("L_y")? config.getValue<real>("L_y"): 4*H;
+    const real L_z = config.contains("L_z")? config.getValue<real>("L_z"): 1*H;
+    H = L_z;
 
     const real z0  = 0.1; // roughness length in m
     const real u_star = 0.4; //friction velocity in m/s
@@ -179,6 +180,7 @@ void multipleLevel(const std::string& configPath)
     bool useStreams = (nProcs > 1 ? true: false);
     para->setUseStreams(useStreams);
     para->setMainKernel("TurbulentViscosityCumulantK17CompChim");
+    // para->setMainKernel("CumulantK17CompChimRedesigned");
     para->setIsBodyForce( config.getValue<bool>("bodyForce") );
 
     para->setTimestepStartOut(uint(tStartOut/dt) );
