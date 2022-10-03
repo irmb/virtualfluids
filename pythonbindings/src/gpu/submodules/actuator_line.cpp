@@ -3,6 +3,8 @@
 #include <pybind11/numpy.h>
 #include <gpu/VirtualFluids_GPU/PreCollisionInteractor/PreCollisionInteractor.h>
 #include <gpu/VirtualFluids_GPU/PreCollisionInteractor/ActuatorLine.h>
+#include <cstdint>
+
 class PyActuatorLine : public ActuatorLine 
 {
 public:
@@ -12,12 +14,14 @@ public:
         PYBIND11_OVERRIDE_NAME(void, ActuatorLine, "calc_blade_forces", calcBladeForces,); 
     }
 };
+
 namespace actuator_line
 {
     namespace py = pybind11;
 
     void makeModule(py::module_ &parentModule)
     {
+
         using arr = py::array_t<float, py::array::c_style>;
         
         py::class_<ActuatorLine, PreCollisionInteractor, PyActuatorLine, std::shared_ptr<ActuatorLine>>(parentModule, "ActuatorLine", py::dynamic_attr())
@@ -29,7 +33,8 @@ namespace actuator_line
                         const real,
                         int,
                         const real,
-                        const real>(), 
+                        const real,
+                        const bool>(), 
                         "n_blades", 
                         "density", 
                         "n_blade_nodes", 
@@ -38,7 +43,8 @@ namespace actuator_line
                         "diameter", 
                         "level", 
                         "delta_t", 
-                        "delta_x")
+                        "delta_x",
+                        "use_host_arrays")
         .def_property("omega", &ActuatorLine::getOmega, &ActuatorLine::setOmega)
         .def_property("azimuth", &ActuatorLine::getAzimuth, &ActuatorLine::setAzimuth)
         .def_property("yaw", &ActuatorLine::getYaw, &ActuatorLine::setYaw)
@@ -63,16 +69,15 @@ namespace actuator_line
         .def("get_blade_forces_x", [](ActuatorLine& al){ return arr({al.getNBlades(), al.getNBladeNodes()}, al.getBladeForcesX()); } )
         .def("get_blade_forces_y", [](ActuatorLine& al){ return arr({al.getNBlades(), al.getNBladeNodes()}, al.getBladeForcesY()); } )
         .def("get_blade_forces_z", [](ActuatorLine& al){ return arr({al.getNBlades(), al.getNBladeNodes()}, al.getBladeForcesZ()); } )
-        .def("get_radii_device", [](ActuatorLine& al){ return arr(al.getNBladeNodes(), al.getBladeRadii()); } )
-        .def("get_blade_coords_x_device", [](ActuatorLine& al){ return arr({al.getNBlades(), al.getNBladeNodes()}, al.getBladeCoordsXD()); } )
-        .def("get_blade_coords_y_device", [](ActuatorLine& al){ return arr({al.getNBlades(), al.getNBladeNodes()}, al.getBladeCoordsYD()); } )
-        .def("get_blade_coords_z_device", [](ActuatorLine& al){ return arr({al.getNBlades(), al.getNBladeNodes()}, al.getBladeCoordsZD()); } )        
-        .def("get_blade_velocities_x_device", [](ActuatorLine& al){ return arr({al.getNBlades(), al.getNBladeNodes()}, al.getBladeVelocitiesXD()); } )
-        .def("get_blade_velocities_y_device", [](ActuatorLine& al){ return arr({al.getNBlades(), al.getNBladeNodes()}, al.getBladeVelocitiesYD()); } )
-        .def("get_blade_velocities_z_device", [](ActuatorLine& al){ return arr({al.getNBlades(), al.getNBladeNodes()}, al.getBladeVelocitiesZD()); } )
-        .def("get_blade_forces_x_device", [](ActuatorLine& al){ return arr({al.getNBlades(), al.getNBladeNodes()}, al.getBladeForcesXD()); } )
-        .def("get_blade_forces_y_device", [](ActuatorLine& al){ return arr({al.getNBlades(), al.getNBladeNodes()}, al.getBladeForcesYD()); } )
-        .def("get_blade_forces_z_device", [](ActuatorLine& al){ return arr({al.getNBlades(), al.getNBladeNodes()}, al.getBladeForcesZD()); } )
+        .def("get_blade_coords_x_device", [](ActuatorLine& al) -> intptr_t { return reinterpret_cast<intptr_t>(al.getBladeCoordsXD()); }, py::return_value_policy::reference)
+        .def("get_blade_coords_y_device", [](ActuatorLine& al) -> intptr_t { return reinterpret_cast<intptr_t>(al.getBladeCoordsYD()); }, py::return_value_policy::reference)
+        .def("get_blade_coords_z_device", [](ActuatorLine& al) -> intptr_t { return reinterpret_cast<intptr_t>(al.getBladeCoordsZD()); }, py::return_value_policy::reference)        
+        .def("get_blade_velocities_x_device", [](ActuatorLine& al) -> intptr_t { return reinterpret_cast<intptr_t>(al.getBladeVelocitiesXD()); }, py::return_value_policy::reference)
+        .def("get_blade_velocities_y_device", [](ActuatorLine& al) -> intptr_t { return reinterpret_cast<intptr_t>(al.getBladeVelocitiesYD()); }, py::return_value_policy::reference)
+        .def("get_blade_velocities_z_device", [](ActuatorLine& al) -> intptr_t { return reinterpret_cast<intptr_t>(al.getBladeVelocitiesZD()); }, py::return_value_policy::reference)
+        .def("get_blade_forces_x_device", [](ActuatorLine& al)-> intptr_t { return reinterpret_cast<intptr_t>(al.getBladeForcesXD()); }, py::return_value_policy::reference )
+        .def("get_blade_forces_y_device", [](ActuatorLine& al)-> intptr_t { return reinterpret_cast<intptr_t>(al.getBladeForcesYD()); }, py::return_value_policy::reference )
+        .def("get_blade_forces_z_device", [](ActuatorLine& al)-> intptr_t { return reinterpret_cast<intptr_t>(al.getBladeForcesZD()); }, py::return_value_policy::reference )
         .def("set_preinit_blade_radii", [](ActuatorLine& al, arr radii){ al.setPreInitBladeRadii(static_cast<float *>(radii.request().ptr)); } )
         .def("set_blade_coords", [](ActuatorLine& al, arr coordsX, arr coordsY, arr coordsZ)
         { 
@@ -86,18 +91,18 @@ namespace actuator_line
         { 
             al.setBladeForces(static_cast<float *>(forcesX.request().ptr), static_cast<float *>(forcesY.request().ptr), static_cast<float *>(forcesZ.request().ptr));
         })
-        .def("set_blade_coords_device", [](ActuatorLine& al, arr coordsX, arr coordsY, arr coordsZ)
-        { 
-            al.setBladeCoordsD(static_cast<float *>(coordsX.request().ptr), static_cast<float *>(coordsY.request().ptr), static_cast<float *>(coordsZ.request().ptr)); 
-        })
-        .def("set_blade_velocities_device", [](ActuatorLine& al, arr velocitiesX, arr velocitiesY, arr velocitiesZ)
-        { 
-            al.setBladeVelocitiesD(static_cast<float *>(velocitiesX.request().ptr), static_cast<float *>(velocitiesY.request().ptr), static_cast<float *>(velocitiesZ.request().ptr)); 
-        })
-        .def("set_blade_forces_device", [](ActuatorLine& al, arr forcesX, arr forcesY, arr forcesZ)
-        { 
-            al.setBladeForcesD(static_cast<float *>(forcesX.request().ptr), static_cast<float *>(forcesY.request().ptr), static_cast<float *>(forcesZ.request().ptr)); 
-        })
+        // .def("set_blade_coords_device", [](ActuatorLine& al, arr coordsX, arr coordsY, arr coordsZ)
+        // { 
+        //     al.setBladeCoordsD(static_cast<float *>(coordsX.request().ptr), static_cast<float *>(coordsY.request().ptr), static_cast<float *>(coordsZ.request().ptr)); 
+        // })
+        // .def("set_blade_velocities_device", [](ActuatorLine& al, arr velocitiesX, arr velocitiesY, arr velocitiesZ)
+        // { 
+        //     al.setBladeVelocitiesD(static_cast<float *>(velocitiesX.request().ptr), static_cast<float *>(velocitiesY.request().ptr), static_cast<float *>(velocitiesZ.request().ptr)); 
+        // })
+        // .def("set_blade_forces_device", [](ActuatorLine& al, arr forcesX, arr forcesY, arr forcesZ)
+        // { 
+        //     al.setBladeForcesD(static_cast<float *>(forcesX.request().ptr), static_cast<float *>(forcesY.request().ptr), static_cast<float *>(forcesZ.request().ptr)); 
+        // })
         .def("calc_blade_forces", &ActuatorLine::calcBladeForces);
     }
 }
