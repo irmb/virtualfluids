@@ -8,7 +8,7 @@
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
 
-#include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
+#include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
 #include "VirtualFluids_GPU/Communication/Communicator.h"
 #include "VirtualFluids_GPU/LBM/Simulation.h"
 
