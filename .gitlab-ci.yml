@@ -216,13 +216,14 @@ gcc_9_python_hpc_test:
   needs: ["build_poiseuille_test_container"]
 
   rules:
-    - if: $REMOTE_USER && $REMOTE_HOST && $PRIVATE_KEY
+    - if: $REMOTE_USER && $REMOTE_HOST && $PRIVATE_KEY && $CI_PIPELINE_SOURCE == "schedule"
+    - when: manual
 
   before_script:
     - pip install hpc-rocket
 
   script:
-    - hpc-rocket launch --watch rocket.yml
+    - hpc-rocket launch --watch Python/SlurmTests/poiseuille/rocket.yml
 
 
 ###############################################################################
