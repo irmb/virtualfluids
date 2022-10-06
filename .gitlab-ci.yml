@@ -146,7 +146,8 @@ build_poiseuille_test_container:
   stage: container_upload
 
   rules:
-    - if: $REMOTE_USER && $REMOTE_HOST && $PRIVATE_KEY
+    - if: $REMOTE_USER && $REMOTE_HOST && $PRIVATE_KEY && $CI_PIPELINE_SOURCE == "schedule"
+    - when: manual
 
   tags:
     - linux
