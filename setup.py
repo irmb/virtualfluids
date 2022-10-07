@@ -7,8 +7,12 @@ import setuptools
 
 """
 Install python wrapper of virtual fluids
-install via python setup.py install build_ext
-set CMAKE Flags via -DBUILD_VF_GPU:BOOL=1
+install via python:
+    python setup.py install build_ext
+    set CMAKE Flags via -DBUILD_VF_GPU:BOOL=1
+or install via pip:
+    pip install -e .
+    set CMAKE Flags via --configure-settings -DBUILD_VF_GPU=1
 """
 
 init_py = inspect.cleandoc(
