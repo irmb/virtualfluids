@@ -23,8 +23,9 @@ Ma = 0.1
 nz = 96 
 
 bodyForce = true
-UseAMD = true
-SGSconstant = 0.2
+SGSconstant = 0.333
+TurbulenceModel = QR
+
 QuadricLimiterP = 100000.0
 QuadricLimiterM = 100000.0
 QuadricLimiterD = 100000.0

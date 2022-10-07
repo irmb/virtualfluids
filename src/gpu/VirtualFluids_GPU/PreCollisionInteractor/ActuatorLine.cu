@@ -188,9 +188,9 @@ __global__ void applyBodyForces(real* gridCoordsX, real* gridCoordsY, real* grid
         }
     }
 
-    atomicAdd(&gridForcesX[gridIndex], gridForceX_RF);
-    atomicAdd(&gridForcesY[gridIndex], gridForceY_RF);
-    atomicAdd(&gridForcesZ[gridIndex], gridForceZ_RF);
+    gridForcesX[gridIndex] = gridForceX_RF;
+    gridForcesY[gridIndex] = gridForceY_RF;
+    gridForcesZ[gridIndex] = gridForceZ_RF;
 }
 
 
@@ -210,7 +210,7 @@ void ActuatorLine::interact(Parameter* para, CudaMemoryManager* cudaMemoryManage
 {
     if (level != this->level) return;
 
-    cudaMemoryManager->cudaCopyBladeCoordsHtoD(this);
+    if(useHostArrays) cudaMemoryManager->cudaCopyBladeCoordsHtoD(this);
 
     vf::cuda::CudaGrid bladeGrid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, this->nNodes);
 
@@ -225,11 +225,11 @@ void ActuatorLine::interact(Parameter* para, CudaMemoryManager* cudaMemoryManage
         this->turbinePosX, this->turbinePosY, this->turbinePosZ,
         this->bladeIndicesD, para->getVelocityRatio(), this->invDeltaX);
 
-    cudaMemoryManager->cudaCopyBladeVelocitiesDtoH(this);
+    if(useHostArrays) cudaMemoryManager->cudaCopyBladeVelocitiesDtoH(this);
 
     this->calcBladeForces();
 
-    cudaMemoryManager->cudaCopyBladeForcesHtoD(this);
+    if(useHostArrays) cudaMemoryManager->cudaCopyBladeForcesHtoD(this);
 
     vf::cuda::CudaGrid sphereGrid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, this->nIndices);
 

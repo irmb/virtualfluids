@@ -1,5 +1,4 @@
 #%%
-#%%
 import numpy as np
 from pathlib import Path
 from mpi4py import MPI
@@ -73,8 +72,9 @@ t_out_probe           =  config.get_float_value("tOutProbe")
 length = np.array([6,4,1])*boundary_layer_height
 dx = boundary_layer_height/nodes_per_height
 dt = dx * mach / (np.sqrt(3) * velocity)
-velocity_LB = velocity * dt / dx # LB units
-viscosity_LB = viscosity * dt / (dx * dx) # LB units
+velocity_ratio = dx/dt
+velocity_LB = velocity / velocity_ratio # LB units
+viscosity_LB = viscosity / (velocity_ratio * dx) # LB units
 pressure_gradient = u_star * u_star / boundary_layer_height
 pressure_gradient_LB = pressure_gradient * (dt*dt)/dx
 
@@ -85,8 +85,7 @@ logger.vf_log_info(f"viscosity [10^8 dx^2/dt] = {viscosity_LB*1e8}")
 logger.vf_log_info(f"u* /(dx/dt) = {u_star*dt/dx}")
 logger.vf_log_info(f"dpdx  = {pressure_gradient}")
 logger.vf_log_info(f"dpdx /(dx/dt^2) = {pressure_gradient_LB}")
-    
-#%%
+
 
 #%%
 para.set_output_prefix(sim_name)
@@ -127,16 +126,20 @@ if read_precursor:
 bc_factory.set_stress_boundary_condition(gpu.StressBC.StressPressureBounceBack)
 bc_factory.set_slip_boundary_condition(gpu.SlipBC.SlipBounceBack) 
 bc_factory.set_pressure_boundary_condition(gpu.PressureBC.OutflowNonReflective)
-bc_factory.set_precursor_boundary_condition(gpu.PrecursorBC.DistributionsPrecursor if use_distributions else gpu.PrecursorBC.VelocityPrecursor)
+if read_precursor:
+    bc_factory.set_precursor_boundary_condition(gpu.PrecursorBC.DistributionsPrecursor if use_distributions else gpu.PrecursorBC.VelocityPrecursor)
 para.set_outflow_pressure_correction_factor(0.0); 
 #%%
-def init_func(coord_x, coord_y, coord_z):
-    return [
-        0.0, 
-        (u_star/0.4 * np.log(np.maximum(coord_z,z0)/z0) + 2.0*np.sin(np.pi*16*coord_x/length[0])*np.sin(np.pi*8*coord_z/boundary_layer_height)/(np.square(coord_z/boundary_layer_height)+1))  * dt / dx, 
-        2.0*np.sin(np.pi*16.*coord_x/length[0])*np.sin(np.pi*8.*coord_z/boundary_layer_height)/(np.square(coord_z/boundary_layer_height)+1.)  * dt / dx, 
-        8.0*u_star/0.4*(np.sin(np.pi*8.0*coord_y/boundary_layer_height)*np.sin(np.pi*8.0*coord_z/boundary_layer_height)+np.sin(np.pi*8.0*coord_x/length[0]))/(np.square(length[2]/2.0-coord_z)+1.) * dt / dx]
-para.set_initial_condition(init_func)
+# don't use python init functions, they are very slow! Just kept as an example.
+# Define lambda in bindings and set it here.
+# def init_func(coord_x, coord_y, coord_z):
+#     return [
+#         0.0, 
+#         (u_star/0.4 * np.log(np.maximum(coord_z,z0)/z0) + 2.0*np.sin(np.pi*16*coord_x/length[0])*np.sin(np.pi*8*coord_z/boundary_layer_height)/(np.square(coord_z/boundary_layer_height)+1))  * dt / dx, 
+#         2.0*np.sin(np.pi*16.*coord_x/length[0])*np.sin(np.pi*8.*coord_z/boundary_layer_height)/(np.square(coord_z/boundary_layer_height)+1.)  * dt / dx, 
+#         8.0*u_star/0.4*(np.sin(np.pi*8.0*coord_y/boundary_layer_height)*np.sin(np.pi*8.0*coord_z/boundary_layer_height)+np.sin(np.pi*8.0*coord_x/length[0]))/(np.square(length[2]/2.0-coord_z)+1.) * dt / dx]
+# para.set_initial_condition(init_func)
+para.set_initial_condition_perturbed_log_law(u_star, z0, length[0], length[2], boundary_layer_height, velocity_ratio)
 
 #%%
 turb_pos = np.array([3,3,3])*turbine_diameter
@@ -145,7 +148,7 @@ density = 1.225
 level = 0
 n_blades = 3
 n_blade_nodes = 32
-alm = gpu.ActuatorLine(n_blades, density, n_blade_nodes, epsilon, *turb_pos, turbine_diameter, level, dt, dx)
+alm = gpu.ActuatorLine(n_blades, density, n_blade_nodes, epsilon, *turb_pos, turbine_diameter, level, dt, dx, True)
 para.add_actuator(alm)
 #%%
 planar_average_probe = gpu.probes.PlanarAverageProbe("horizontalPlanes", para.get_output_path(), 0, int(t_start_tmp_averaging/dt), int(t_averaging/dt) , int(t_start_out_probe/dt), int(t_out_probe/dt), 'z')

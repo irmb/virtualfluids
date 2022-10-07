@@ -22,7 +22,8 @@ public:
         const real _diameter,
         int _level,
         const real _deltaT,
-        const real _deltaX
+        const real _deltaX,
+        const bool _useHostArrays
     ) : nBlades(_nBlades),
         density(_density),
         nBladeNodes(_nBladeNodes), 
@@ -30,6 +31,7 @@ public:
         turbinePosX(_turbinePosX), turbinePosY(_turbinePosY), turbinePosZ(_turbinePosZ),
         diameter(_diameter),
         level(_level),
+        useHostArrays(_useHostArrays),
         PreCollisionInteractor()
     {
         this->deltaT = _deltaT*exp2(-this->level);
@@ -124,6 +126,7 @@ public:
     uint* boundingSphereIndicesD;
     
 private:
+    const bool useHostArrays;
     const real density;
     real turbinePosX, turbinePosY, turbinePosZ;
     real omega, azimuth, yaw, deltaT, deltaX, invDeltaX, forceRatio, factorGaussian, invEpsilonSqrd;
