@@ -15,8 +15,8 @@ std::shared_ptr< TurbulentViscosityCumulantK17CompChim<turbulenceModel> > Turbul
 template<TurbulenceModel turbulenceModel>
 void TurbulentViscosityCumulantK17CompChim<turbulenceModel>::run()
 {
-
-	LB_Kernel_TurbulentViscosityCumulantK17CompChim < turbulenceModel  > <<< cudaGrid.grid, cudaGrid.threads >>>(   para->getParD(level)->omega, 	
+	
+	LB_Kernel_TurbulentViscosityCumulantK17CompChim < turbulenceModel, false, false > <<< cudaGrid.grid, cudaGrid.threads >>>(   para->getParD(level)->omega, 	
 																											para->getParD(level)->typeOfGridNode, 										para->getParD(level)->neighborX,	
 																											para->getParD(level)->neighborY,	
 																											para->getParD(level)->neighborZ,	
@@ -47,7 +47,7 @@ void TurbulentViscosityCumulantK17CompChim<turbulenceModel>::runOnIndices(const 
 {
 	cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
 	
-	LB_Kernel_TurbulentViscosityCumulantK17CompChim < turbulenceModel  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>(   para->getParD(level)->omega, 	
+	LB_Kernel_TurbulentViscosityCumulantK17CompChim < turbulenceModel, false, false  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>(   para->getParD(level)->omega, 	
 																											para->getParD(level)->typeOfGridNode, 										para->getParD(level)->neighborX,	
 																											para->getParD(level)->neighborY,	
 																											para->getParD(level)->neighborZ,	
