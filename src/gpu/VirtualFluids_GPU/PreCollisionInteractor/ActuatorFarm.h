@@ -20,13 +20,13 @@ public:
         const real _deltaX,
         const bool _useHostArrays
     ) :
-        nBlades(_nBlades),
+        numberOfBlades(_nBlades),
         density(_density),
-        nBladeNodes(_nBladeNodes), 
+        numberOfBladeNodes(_nBladeNodes), 
         epsilon(_epsilon),
         level(_level),
         useHostArrays(_useHostArrays),
-        nTurbines(0),
+        numberOfTurbines(0),
         numberOfNodes(0),
         PreCollisionInteractor()
     {
@@ -44,9 +44,11 @@ public:
     void free(Parameter* para, CudaMemoryManager* cudaManager);
     void write(uint t);
 
-    uint getNTurbines(){return this->nTurbines; };
-    uint getNBladeNodes(){return this->nBladeNodes;};
-    uint getNBlades(){return this->nBlades;};
+    real getDensity(){ return this->density; };
+
+    uint getNumberOfTurbines(){ return this->numberOfTurbines; };
+    uint getNumberOfNodesPerBlade(){ return this->numberOfBladeNodes; };
+    uint getNumberOfBladesPerTurbine(){ return this->numberOfBlades; };
 
     real* getAllAzimuths(){ return azimuthsH; };
     real* getAllOmegas(){ return omegasH; };
@@ -64,47 +66,52 @@ public:
     real getTurbinePosY(uint turbine){ return turbinePosYH[turbine]; };
     real getTurbinePosZ(uint turbine){ return turbinePosZH[turbine]; };
 
-    uint getNumberOfIndices(){return this->numberOfIndices;};
-    uint getNumberOfNodes(){return this->numberOfNodes;};
-    real* getAllBladeCoordsX(){return this->bladeCoordsXH;};
-    real* getAllBladeCoordsY(){return this->bladeCoordsYH;};
-    real* getAllBladeCoordsZ(){return this->bladeCoordsZH;};
-    real* getAllBladeVelocitiesX(){return this->bladeVelocitiesXH;};
-    real* getAllBladeVelocitiesY(){return this->bladeVelocitiesYH;};
-    real* getAllBladeVelocitiesZ(){return this->bladeVelocitiesZH;};
-    real* getAllBladeForcesX(){return this->bladeForcesXH;};
-    real* getAllBladeForcesY(){return this->bladeForcesYH;};
-    real* getAllBladeForcesZ(){return this->bladeForcesZH;};
+    uint getNumberOfIndices(){ return this->numberOfIndices; };
+    uint getNumberOfNodes(){ return this->numberOfNodes; };
 
-    real* getTurbineBladeCoordsX(uint turbine){return &this->bladeCoordsXH[turbine*nBladeNodes*nBlades];};
-    real* getTurbineBladeCoordsY(uint turbine){return &this->bladeCoordsYH[turbine*nBladeNodes*nBlades];};
-    real* getTurbineBladeCoordsZ(uint turbine){return &this->bladeCoordsZH[turbine*nBladeNodes*nBlades];};
-    real* getTurbineBladeVelocitiesX(uint turbine){return &this->bladeVelocitiesXH[turbine*nBladeNodes*nBlades];};
-    real* getTurbineBladeVelocitiesY(uint turbine){return &this->bladeVelocitiesYH[turbine*nBladeNodes*nBlades];};
-    real* getTurbineBladeVelocitiesZ(uint turbine){return &this->bladeVelocitiesZH[turbine*nBladeNodes*nBlades];};
-    real* getTurbineBladeForcesX(uint turbine){return &this->bladeForcesXH[turbine*nBladeNodes*nBlades];};
-    real* getTurbineBladeForcesY(uint turbine){return &this->bladeForcesYH[turbine*nBladeNodes*nBlades];};
-    real* getTurbineBladeForcesZ(uint turbine){return &this->bladeForcesZH[turbine*nBladeNodes*nBlades];};
+    real* getAllBladeRadii(){ return this->bladeRadiiH; };
+    real* getAllBladeCoordsX(){ return this->bladeCoordsXH; };
+    real* getAllBladeCoordsY(){ return this->bladeCoordsYH; };
+    real* getAllBladeCoordsZ(){ return this->bladeCoordsZH; };
+    real* getAllBladeVelocitiesX(){ return this->bladeVelocitiesXH; };
+    real* getAllBladeVelocitiesY(){ return this->bladeVelocitiesYH; };
+    real* getAllBladeVelocitiesZ(){ return this->bladeVelocitiesZH; };
+    real* getAllBladeForcesX(){ return this->bladeForcesXH; };
+    real* getAllBladeForcesY(){ return this->bladeForcesYH; };
+    real* getAllBladeForcesZ(){ return this->bladeForcesZH; };
 
-    real* getAllBladeCoordsXDevice(){return this->bladeCoordsXD;};
-    real* getAllBladeCoordsYDevice(){return this->bladeCoordsYD;};
-    real* getAllBladeCoordsZDevice(){return this->bladeCoordsZD;};
-    real* getAllBladeVelocitiesXDevice(){return this->bladeVelocitiesXD;};
-    real* getAllBladeVelocitiesYDevice(){return this->bladeVelocitiesYD;};
-    real* getAllBladeVelocitiesZDevice(){return this->bladeVelocitiesZD;};
-    real* getAllBladeForcesXDevice(){return this->bladeForcesXD;};
-    real* getAllBladeForcesYDevice(){return this->bladeForcesYD;};
-    real* getAllBladeForcesZDevice(){return this->bladeForcesZD;};
+    real* getTurbineBladeRadii(uint turbine){ return &this->bladeRadiiH[turbine*numberOfBladeNodes*numberOfBlades]; };
+    real* getTurbineBladeCoordsX(uint turbine){ return &this->bladeCoordsXH[turbine*numberOfBladeNodes*numberOfBlades]; };
+    real* getTurbineBladeCoordsY(uint turbine){ return &this->bladeCoordsYH[turbine*numberOfBladeNodes*numberOfBlades]; };
+    real* getTurbineBladeCoordsZ(uint turbine){ return &this->bladeCoordsZH[turbine*numberOfBladeNodes*numberOfBlades]; };
+    real* getTurbineBladeVelocitiesX(uint turbine){ return &this->bladeVelocitiesXH[turbine*numberOfBladeNodes*numberOfBlades]; };
+    real* getTurbineBladeVelocitiesY(uint turbine){ return &this->bladeVelocitiesYH[turbine*numberOfBladeNodes*numberOfBlades]; };
+    real* getTurbineBladeVelocitiesZ(uint turbine){ return &this->bladeVelocitiesZH[turbine*numberOfBladeNodes*numberOfBlades]; };
+    real* getTurbineBladeForcesX(uint turbine){ return &this->bladeForcesXH[turbine*numberOfBladeNodes*numberOfBlades]; };
+    real* getTurbineBladeForcesY(uint turbine){ return &this->bladeForcesYH[turbine*numberOfBladeNodes*numberOfBlades]; };
+    real* getTurbineBladeForcesZ(uint turbine){ return &this->bladeForcesZH[turbine*numberOfBladeNodes*numberOfBlades]; };
 
-    real* getTurbineBladeCoordsXDevice(uint turbine){return &this->bladeCoordsXD[turbine*nBladeNodes*nBlades];};
-    real* getTurbineBladeCoordsYDevice(uint turbine){return &this->bladeCoordsYD[turbine*nBladeNodes*nBlades];};
-    real* getTurbineBladeCoordsZDevice(uint turbine){return &this->bladeCoordsZD[turbine*nBladeNodes*nBlades];};
-    real* getTurbineBladeVelocitiesXDevice(uint turbine){return &this->bladeVelocitiesXD[turbine*nBladeNodes*nBlades];};
-    real* getTurbineBladeVelocitiesYDevice(uint turbine){return &this->bladeVelocitiesYD[turbine*nBladeNodes*nBlades];};
-    real* getTurbineBladeVelocitiesZDevice(uint turbine){return &this->bladeVelocitiesZD[turbine*nBladeNodes*nBlades];};
-    real* getTurbineBladeForcesXDevice(uint turbine){return &this->bladeForcesXD[turbine*nBladeNodes*nBlades];};
-    real* getTurbineBladeForcesYDevice(uint turbine){return &this->bladeForcesYD[turbine*nBladeNodes*nBlades];};
-    real* getTurbineBladeForcesZDevice(uint turbine){return &this->bladeForcesZD[turbine*nBladeNodes*nBlades];};
+    real* getAllBladeRadiiDevice(){ return this->bladeRadiiD; };
+    real* getAllBladeCoordsXDevice(){ return this->bladeCoordsXD; };
+    real* getAllBladeCoordsYDevice(){ return this->bladeCoordsYD; };
+    real* getAllBladeCoordsZDevice(){ return this->bladeCoordsZD; };
+    real* getAllBladeVelocitiesXDevice(){ return this->bladeVelocitiesXD; };
+    real* getAllBladeVelocitiesYDevice(){ return this->bladeVelocitiesYD; };
+    real* getAllBladeVelocitiesZDevice(){ return this->bladeVelocitiesZD; };
+    real* getAllBladeForcesXDevice(){ return this->bladeForcesXD; };
+    real* getAllBladeForcesYDevice(){ return this->bladeForcesYD; };
+    real* getAllBladeForcesZDevice(){ return this->bladeForcesZD; };
+
+    real* getTurbineBladeRadiiDevice(uint turbine){ return &this->bladeRadiiD[turbine*numberOfBladeNodes]; };
+    real* getTurbineBladeCoordsXDevice(uint turbine){ return &this->bladeCoordsXD[turbine*numberOfBladeNodes*numberOfBlades]; };
+    real* getTurbineBladeCoordsYDevice(uint turbine){ return &this->bladeCoordsYD[turbine*numberOfBladeNodes*numberOfBlades]; };
+    real* getTurbineBladeCoordsZDevice(uint turbine){ return &this->bladeCoordsZD[turbine*numberOfBladeNodes*numberOfBlades]; };
+    real* getTurbineBladeVelocitiesXDevice(uint turbine){ return &this->bladeVelocitiesXD[turbine*numberOfBladeNodes*numberOfBlades]; };
+    real* getTurbineBladeVelocitiesYDevice(uint turbine){ return &this->bladeVelocitiesYD[turbine*numberOfBladeNodes*numberOfBlades]; };
+    real* getTurbineBladeVelocitiesZDevice(uint turbine){ return &this->bladeVelocitiesZD[turbine*numberOfBladeNodes*numberOfBlades]; };
+    real* getTurbineBladeForcesXDevice(uint turbine){ return &this->bladeForcesXD[turbine*numberOfBladeNodes*numberOfBlades]; };
+    real* getTurbineBladeForcesYDevice(uint turbine){ return &this->bladeForcesYD[turbine*numberOfBladeNodes*numberOfBlades]; };
+    real* getTurbineBladeForcesZDevice(uint turbine){ return &this->bladeForcesZD[turbine*numberOfBladeNodes*numberOfBlades]; };
 
     void setAllBladeCoords(real* _bladeCoordsX, real* _bladeCoordsY, real* _bladeCoordsZ);
     void setAllBladeVelocities(real* _bladeVelocitiesX, real* _bladeVelocitiesY, real* _bladeVelocitiesZ);
@@ -156,8 +163,8 @@ private:
     const bool useHostArrays;
     const real density;
     real deltaT, deltaX;
-    const uint nBladeNodes, nBlades;
-    uint nTurbines;
+    const uint numberOfBladeNodes, numberOfBlades;
+    uint numberOfTurbines;
     const real epsilon; // in m
     const int level;
     uint numberOfIndices;

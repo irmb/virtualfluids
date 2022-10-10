@@ -16,19 +16,19 @@
 using namespace vf::lbm::constant;
 
 
-__host__ __device__ __inline__ uint calcNode(uint bladeNode, uint nBladeNodes, uint blade, uint nBlades, uint turbine, uint nTurbines)
+__host__ __device__ __inline__ uint calcNode(uint bladeNode, uint numberOfBladeNodes, uint blade, uint numberOfBlades, uint turbine, uint numberOfTurbines)
 {
 
-    return bladeNode+nBladeNodes*(blade+turbine*nBlades);
+    return bladeNode+numberOfBladeNodes*(blade+turbine*numberOfBlades);
 }
 
-__host__ __device__ __inline__ void calcTurbineBladeAndBladeNode(uint node, uint& bladeNode, uint nBladeNodes, uint& blade, uint nBlades, uint& turbine, uint nTurbines)
+__host__ __device__ __inline__ void calcTurbineBladeAndBladeNode(uint node, uint& bladeNode, uint numberOfBladeNodes, uint& blade, uint numberOfBlades, uint& turbine, uint numberOfTurbines)
 {
-    turbine = node/(nBladeNodes*nBlades);
-    uint x_off = turbine*nBladeNodes*nBlades;
-    blade = (node - x_off)/nBlades;
-    uint y_off = nBladeNodes*blade+x_off;
-    bladeNode = (node - y_off)/nBladeNodes;
+    turbine = node/(numberOfBladeNodes*numberOfBlades);
+    uint x_off = turbine*numberOfBladeNodes*numberOfBlades;
+    blade = (node - x_off)/numberOfBlades;
+    uint y_off = numberOfBladeNodes*blade+x_off;
+    bladeNode = (node - y_off)/numberOfBladeNodes;
 }
 
 __host__ __device__ __forceinline__ real distSqrd(real distX, real distY, real distZ)
@@ -64,7 +64,7 @@ __global__ void interpolateVelocities(real* gridCoordsX, real* gridCoordsY, real
                                       real* vx, real* vy, real* vz, 
                                       real* bladeCoordsX, real* bladeCoordsY, real* bladeCoordsZ,
                                       real* bladeVelocitiesX, real* bladeVelocitiesY, real* bladeVelocitiesZ, 
-                                      uint nTurbines, uint nBlades, uint nBladeNodes, 
+                                      uint numberOfTurbines, uint numberOfBlades, uint numberOfBladeNodes, 
                                       real* azimuths, real* yaws, real* omegas, 
                                       real* turbPosX, real* turbPosY, real* turbPosZ,
                                       uint* bladeIndices, real velocityRatio, real invDeltaX)
@@ -72,11 +72,11 @@ __global__ void interpolateVelocities(real* gridCoordsX, real* gridCoordsY, real
 
     const uint node =  vf::gpu::getNodeIndex();
 
-    if(node>=nBladeNodes*nBlades*nTurbines) return;
+    if(node>=numberOfBladeNodes*numberOfBlades*numberOfTurbines) return;
 
     uint turbine, bladeNode, blade;
 
-    calcTurbineBladeAndBladeNode(node, bladeNode, nBladeNodes, blade, nBlades, turbine, nTurbines);
+    calcTurbineBladeAndBladeNode(node, bladeNode, numberOfBladeNodes, blade, numberOfBlades, turbine, numberOfTurbines);
 
     real bladeCoordX_BF = bladeCoordsX[node];
     real bladeCoordY_BF = bladeCoordsY[node];
@@ -84,7 +84,7 @@ __global__ void interpolateVelocities(real* gridCoordsX, real* gridCoordsY, real
 
     real bladeCoordX_GF, bladeCoordY_GF, bladeCoordZ_GF;
 
-    real localAzimuth = azimuths[turbine]+blade*c2Pi/nBlades;
+    real localAzimuth = azimuths[turbine]+blade*c2Pi/numberOfBlades;
     real yaw = yaws[turbine];
 
 
@@ -137,7 +137,7 @@ __global__ void applyBodyForces(real* gridCoordsX, real* gridCoordsY, real* grid
                                 real* gridForcesX, real* gridForcesY, real* gridForcesZ, 
                                 real* bladeCoordsX, real* bladeCoordsY, real* bladeCoordsZ, 
                                 real* bladeForcesX, real* bladeForcesY,real* bladeForcesZ,
-                                uint nTurbines, uint nBlades, uint nBladeNodes,
+                                uint numberOfTurbines, uint numberOfBlades, uint numberOfBladeNodes,
                                 real* azimuths, real* yaws, real* diameters,
                                 real* turbPosX, real* turbPosY, real* turbPosZ,
                                 uint* gridIndices, uint nIndices, 
@@ -165,9 +165,9 @@ __global__ void applyBodyForces(real* gridCoordsX, real* gridCoordsY, real* grid
     real gridForceY_RF = c0o1;
     real gridForceZ_RF = c0o1;
 
-    real dAzimuth = c2Pi/nBlades;
+    real dAzimuth = c2Pi/numberOfBlades;
 
-    for(uint turbine = 0; turbine<nTurbines; turbine++)
+    for(uint turbine = 0; turbine<numberOfTurbines; turbine++)
     {
         real radius = c1o2*diameters[turbine];
         real gridCoordX_RF = gridCoordX_GF - turbPosX[turbine];
@@ -180,7 +180,7 @@ __global__ void applyBodyForces(real* gridCoordsX, real* gridCoordsY, real* grid
         real azimuth = azimuths[turbine];
         real yaw = yaws[turbine];
 
-        for( uint blade=0; blade<nBlades; blade++)
+        for( uint blade=0; blade<numberOfBlades; blade++)
         { 
             real localAzimuth = azimuth+blade*dAzimuth;
 
@@ -193,8 +193,8 @@ __global__ void applyBodyForces(real* gridCoordsX, real* gridCoordsY, real* grid
 
             //Handle first and last node separately 
             
-            uint node = calcNode(0, nBladeNodes, blade, nBlades, turbine, nTurbines);
-            uint nextNode = calcNode(1, nBladeNodes, blade, nBlades, turbine, nTurbines);
+            uint node = calcNode(0, numberOfBladeNodes, blade, numberOfBlades, turbine, numberOfTurbines);
+            uint nextNode = calcNode(1, numberOfBladeNodes, blade, numberOfBlades, turbine, numberOfTurbines);
 
             real last_z = c0o1;
             real current_z = c0o1;
@@ -222,10 +222,10 @@ __global__ void applyBodyForces(real* gridCoordsX, real* gridCoordsY, real* grid
             gridForceY_RF += forceY_RF*eta;
             gridForceZ_RF += forceZ_RF*eta;
             
-            for( uint bladeNode=1; bladeNode<nBladeNodes-1; bladeNode++)
+            for( uint bladeNode=1; bladeNode<numberOfBladeNodes-1; bladeNode++)
             {
                 node = nextNode;
-                nextNode = calcNode(bladeNode+1, nBladeNodes, blade, nBlades, turbine, nTurbines);
+                nextNode = calcNode(bladeNode+1, numberOfBladeNodes, blade, numberOfBlades, turbine, numberOfTurbines);
 
                 x = bladeCoordsX[node];
                 y = bladeCoordsY[node];
@@ -246,7 +246,7 @@ __global__ void applyBodyForces(real* gridCoordsX, real* gridCoordsY, real* grid
                 gridForceZ_RF += forceZ_RF*eta;
             }
 
-            node = calcNode(nBladeNodes-1, nBladeNodes, blade, nBlades, turbine, nTurbines);
+            node = calcNode(numberOfBladeNodes-1, numberOfBladeNodes, blade, numberOfBlades, turbine, numberOfTurbines);
 
             x = bladeCoordsX[node];
             y = bladeCoordsY[node];
@@ -310,7 +310,7 @@ void ActuatorFarm::interact(Parameter* para, CudaMemoryManager* cudaMemoryManage
         para->getParD(this->level)->velocityX, para->getParD(this->level)->velocityY, para->getParD(this->level)->velocityZ,
         this->bladeCoordsXD, this->bladeCoordsYD, this->bladeCoordsZD,  
         this->bladeVelocitiesXD, this->bladeVelocitiesYD, this->bladeVelocitiesZD,  
-        this->nTurbines, this->nBlades, this->nBladeNodes,
+        this->numberOfTurbines, this->numberOfBlades, this->numberOfBladeNodes,
         this->azimuthsD, this->yawsD, this->omegasD, 
         this->turbinePosXD, this->turbinePosYD, this->turbinePosZD,
         this->bladeIndicesD, para->getVelocityRatio(), this->invDeltaX);
@@ -328,13 +328,13 @@ void ActuatorFarm::interact(Parameter* para, CudaMemoryManager* cudaMemoryManage
         para->getParD(this->level)->forceX_SP, para->getParD(this->level)->forceY_SP, para->getParD(this->level)->forceZ_SP,        
         this->bladeCoordsXD, this->bladeCoordsYD, this->bladeCoordsZD,  
         this->bladeForcesXD, this->bladeForcesYD, this->bladeForcesZD,
-        this->nTurbines, this->nBlades, this->nBladeNodes,
+        this->numberOfTurbines, this->numberOfBlades, this->numberOfBladeNodes,
         this->azimuthsD, this->yawsD, this->diametersD,
         this->turbinePosXD, this->turbinePosYD, this->turbinePosZD,
         this->boundingSphereIndicesD, this->numberOfIndices,
         this->invEpsilonSqrd, this->factorGaussian);
 
-    for(uint turbine=0; turbine<this->nTurbines; turbine++)
+    for(uint turbine=0; turbine<this->numberOfTurbines; turbine++)
         this->azimuthsH[turbine] = fmod(this->azimuthsH[turbine]+this->omegasH[turbine]*this->deltaT, c2Pi);
     
     cudaMemoryManager->cudaCopyBladeOrientationsHtoD(this);    
@@ -362,14 +362,14 @@ void ActuatorFarm::calcForcesEllipticWing()
     real c0 = c1o1;
 
     real c, Cn, Ct;
-    for(uint turbine=0; turbine<this->nTurbines; turbine++)
+    for(uint turbine=0; turbine<this->numberOfTurbines; turbine++)
     {
         real diameter = this->diametersH[turbine];
-        for( uint blade=0; blade<this->nBlades; blade++)
+        for( uint blade=0; blade<this->numberOfBlades; blade++)
         { 
-            for( uint bladeNode=0; bladeNode<this->nBladeNodes; bladeNode++)
+            for( uint bladeNode=0; bladeNode<this->numberOfBladeNodes; bladeNode++)
             {        
-                uint node = calcNode(bladeNode, this->nBladeNodes, blade, this->nBlades, turbine, this->nTurbines);
+                uint node = calcNode(bladeNode, this->numberOfBladeNodes, blade, this->numberOfBlades, turbine, this->numberOfTurbines);
 
                 u_rel = this->bladeVelocitiesXH[node];
                 v_rel = this->bladeVelocitiesYH[node];
@@ -395,17 +395,17 @@ void ActuatorFarm::calcBladeForces()
 }
 void ActuatorFarm::initTurbineGeometries(CudaMemoryManager* cudaMemoryManager)
 {
-    this->nTurbines = this->preInitDiameters.size();
-    this->numberOfNodes = nTurbines*nBladeNodes*nBlades;
+    this->numberOfTurbines = uint(this->preInitDiameters.size());
+    this->numberOfNodes = numberOfTurbines*numberOfBladeNodes*numberOfBlades;
 
     cudaMemoryManager->cudaAllocBladeGeometries(this);
     cudaMemoryManager->cudaAllocBladeOrientations(this);
 
-    for(uint turbine=0; turbine<this->nTurbines; turbine++)
+    for(uint turbine=0; turbine<this->numberOfTurbines; turbine++)
     {
-        for(uint node=0; node<this->nBladeNodes; node++)
+        for(uint node=0; node<this->numberOfBladeNodes; node++)
         {
-            this->bladeRadiiH[calcNode(node, nBladeNodes, 0, 1, turbine, nTurbines)] = this->preInitBladeRadii[turbine][node];
+            this->bladeRadiiH[calcNode(node, numberOfBladeNodes, 0, 1, turbine, numberOfTurbines)] = this->preInitBladeRadii[turbine][node];
         }
 
     }
@@ -428,17 +428,17 @@ void ActuatorFarm::initBladeCoords(CudaMemoryManager* cudaMemoryManager)
 {   
     cudaMemoryManager->cudaAllocBladeCoords(this);
 
-    for(uint turbine=0; turbine<nTurbines; turbine++)
+    for(uint turbine=0; turbine<numberOfTurbines; turbine++)
     {
-        for(uint blade=0; blade<this->nBlades; blade++)
+        for(uint blade=0; blade<this->numberOfBlades; blade++)
         {
-            for(uint bladeNode=0; bladeNode<this->nBladeNodes; bladeNode++)
+            for(uint bladeNode=0; bladeNode<this->numberOfBladeNodes; bladeNode++)
             {
-                uint node = calcNode(bladeNode, this->nBladeNodes, blade, this->nBlades, turbine, this->nTurbines);
+                uint node = calcNode(bladeNode, this->numberOfBladeNodes, blade, this->numberOfBlades, turbine, this->numberOfTurbines);
 
                 this->bladeCoordsXH[node] = c0o1;
                 this->bladeCoordsYH[node] = c0o1;
-                this->bladeCoordsZH[node] = this->bladeRadiiH[calcNode(bladeNode, nBladeNodes, 0, 1, turbine, nTurbines)];
+                this->bladeCoordsZH[node] = this->bladeRadiiH[calcNode(bladeNode, numberOfBladeNodes, 0, 1, turbine, numberOfTurbines)];
             }
         }
     }
@@ -481,7 +481,7 @@ void ActuatorFarm::initBoundingSphere(Parameter* para, CudaMemoryManager* cudaMe
     // Actuator line exists only on 1 level
     std::vector<int> nodesInSphere;
 
-    for(uint turbine=0; turbine<this->nTurbines; turbine++)
+    for(uint turbine=0; turbine<this->numberOfTurbines; turbine++)
     {
         real sphereRadius = c1o2*this->diametersH[turbine]+c4o1*this->epsilon;
 
@@ -531,21 +531,21 @@ void ActuatorFarm::setAllBladeForces(real* _bladeForcesX, real* _bladeForcesY, r
 
 }void ActuatorFarm::setTurbineBladeCoords(uint turbine, real* _bladeCoordsX, real* _bladeCoordsY, real* _bladeCoordsZ)
 { 
-    std::copy_n(&this->bladeCoordsXH[turbine*nBladeNodes*nBlades], nBladeNodes*nBlades, _bladeCoordsX);
-    std::copy_n(&this->bladeCoordsYH[turbine*nBladeNodes*nBlades], nBladeNodes*nBlades, _bladeCoordsY);
-    std::copy_n(&this->bladeCoordsZH[turbine*nBladeNodes*nBlades], nBladeNodes*nBlades, _bladeCoordsZ);
+    std::copy_n(&this->bladeCoordsXH[turbine*numberOfBladeNodes*numberOfBlades], numberOfBladeNodes*numberOfBlades, _bladeCoordsX);
+    std::copy_n(&this->bladeCoordsYH[turbine*numberOfBladeNodes*numberOfBlades], numberOfBladeNodes*numberOfBlades, _bladeCoordsY);
+    std::copy_n(&this->bladeCoordsZH[turbine*numberOfBladeNodes*numberOfBlades], numberOfBladeNodes*numberOfBlades, _bladeCoordsZ);
 }
 
 void ActuatorFarm::setTurbineBladeVelocities(uint turbine, real* _bladeVelocitiesX, real* _bladeVelocitiesY, real* _bladeVelocitiesZ)
 { 
-    std::copy_n(&this->bladeVelocitiesXH[turbine*nBladeNodes*nBlades], nBladeNodes*nBlades, _bladeVelocitiesX);
-    std::copy_n(&this->bladeVelocitiesYH[turbine*nBladeNodes*nBlades], nBladeNodes*nBlades, _bladeVelocitiesY);
-    std::copy_n(&this->bladeVelocitiesZH[turbine*nBladeNodes*nBlades], nBladeNodes*nBlades, _bladeVelocitiesZ);
+    std::copy_n(&this->bladeVelocitiesXH[turbine*numberOfBladeNodes*numberOfBlades], numberOfBladeNodes*numberOfBlades, _bladeVelocitiesX);
+    std::copy_n(&this->bladeVelocitiesYH[turbine*numberOfBladeNodes*numberOfBlades], numberOfBladeNodes*numberOfBlades, _bladeVelocitiesY);
+    std::copy_n(&this->bladeVelocitiesZH[turbine*numberOfBladeNodes*numberOfBlades], numberOfBladeNodes*numberOfBlades, _bladeVelocitiesZ);
 }
 
 void ActuatorFarm::setTurbineBladeForces(uint turbine, real* _bladeForcesX, real* _bladeForcesY, real* _bladeForcesZ)
 { 
-    std::copy_n(&this->bladeForcesXH[turbine*nBladeNodes*nBlades], nBladeNodes*nBlades, _bladeForcesX);
-    std::copy_n(&this->bladeForcesYH[turbine*nBladeNodes*nBlades], nBladeNodes*nBlades, _bladeForcesY);
-    std::copy_n(&this->bladeForcesZH[turbine*nBladeNodes*nBlades], nBladeNodes*nBlades, _bladeForcesZ);
+    std::copy_n(&this->bladeForcesXH[turbine*numberOfBladeNodes*numberOfBlades], numberOfBladeNodes*numberOfBlades, _bladeForcesX);
+    std::copy_n(&this->bladeForcesYH[turbine*numberOfBladeNodes*numberOfBlades], numberOfBladeNodes*numberOfBlades, _bladeForcesY);
+    std::copy_n(&this->bladeForcesZH[turbine*numberOfBladeNodes*numberOfBlades], numberOfBladeNodes*numberOfBlades, _bladeForcesZ);
 }

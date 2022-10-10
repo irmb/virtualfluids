@@ -66,9 +66,9 @@ LbmOrGks lbmOrGks = LBM;
 
 const real reference_diameter = 126.0; // diameter in m
 
-const real L_x = 30*reference_diameter;
-const real L_y = 10*reference_diameter;
-const real L_z = 10*reference_diameter;
+const real L_x = 10*reference_diameter;
+const real L_y = 6*reference_diameter;
+const real L_z = 6*reference_diameter;
 
 const real viscosity = 1.56e-5;
 
