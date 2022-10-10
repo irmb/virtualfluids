@@ -44,8 +44,6 @@
 #include <lbm/constants/NumericConstants.h>
 #include "Kernel/Utilities/DistributionHelper.cuh"
 #include "VirtualFluids_GPU/GPU/KernelUtilities.h"
-#include "Kernel/ChimeraTransformation.h"
-
 #include "GPU/TurbulentViscosityInlines.cuh"
 
 using namespace vf::lbm::constant;
