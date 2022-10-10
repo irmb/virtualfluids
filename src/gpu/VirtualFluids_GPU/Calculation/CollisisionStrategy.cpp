@@ -86,3 +86,20 @@ void CollisionAndExchange_streams::operator()(UpdateGrid27 *updateGrid, Paramete
     //! 4. exchange information between GPUs
     updateGrid->exchangeMultiGPU(level, borderStreamIndex);
 }
+
+void CollisionAndExchange_noStreams_withReadWriteFlags::operator()(UpdateGrid27 *updateGrid, Parameter *para, int level,
+                                                            unsigned int t)
+{
+    //! \details steps:
+    //!
+    //! 1. run collision
+    //!
+    updateGrid->collisionWithReadWriteFlags(level, t, 
+                                            para->getParD(level)->fluidNodeIndices,                     para->getParD(level)->numberOfFluidNodes,
+                                            para->getParD(level)->indicesWithMacroscopicVariableOutput, para->getParD(level)->numberOfIndicesWithMacroscopicVariableOutput,
+                                            para->getParD(level)->indicesWithApplyBodyForce,            para->getParD(level)->numberOfIndicesWithApplyBodyForce,
+                                            para->getParD(level)->indicesWithMacroscopicVariableOutputAndApplyBodyForce,   para->getParD(level)->numberOfIndicesWithMacroscopicVariableOutputAndApplyBodyForce);
+
+    //! 2. exchange information between GPUs
+    updateGrid->exchangeMultiGPU_noStreams_withPrepare(level, false);
+}

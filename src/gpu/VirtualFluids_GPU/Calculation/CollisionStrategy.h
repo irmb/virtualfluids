@@ -32,4 +32,10 @@ public:
     void operator()(UpdateGrid27 *updateGrid, Parameter *para, int level, unsigned int t);
 };
 
+//! \brief experimental version for specialized collision kernel calls with different read/write options
+class CollisionAndExchange_noStreams_withReadWriteFlags
+{
+    void operator()(UpdateGrid27 *updateGrid, Parameter *para, int level, unsigned int t);
+};
+
 #endif

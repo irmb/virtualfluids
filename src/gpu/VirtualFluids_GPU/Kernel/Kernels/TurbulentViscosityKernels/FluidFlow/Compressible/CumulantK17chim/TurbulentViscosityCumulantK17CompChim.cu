@@ -43,11 +43,104 @@ void TurbulentViscosityCumulantK17CompChim<turbulenceModel>::run()
 }
 
 template<TurbulenceModel turbulenceModel>
-void TurbulentViscosityCumulantK17CompChim<turbulenceModel>::runOnIndices(const unsigned int *indices, unsigned int size_indices, int streamIndex)
+void TurbulentViscosityCumulantK17CompChim<turbulenceModel>::runOnIndices(	const unsigned int *indices, unsigned int size_indices, int streamIndex )
 {
 	cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
 	
 	LB_Kernel_TurbulentViscosityCumulantK17CompChim < turbulenceModel, false, false  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>(   para->getParD(level)->omega, 	
+																											para->getParD(level)->typeOfGridNode, 										para->getParD(level)->neighborX,	
+																											para->getParD(level)->neighborY,	
+																											para->getParD(level)->neighborZ,	
+																											para->getParD(level)->distributions.f[0],	
+																											para->getParD(level)->rho,		
+																											para->getParD(level)->velocityX,		
+																											para->getParD(level)->velocityY,	
+																											para->getParD(level)->velocityZ,	
+																											para->getParD(level)->turbViscosity,
+																											para->getSGSConstant(),
+																											(unsigned long)para->getParD(level)->numberOfNodes,	
+																											level,				
+																											para->getIsBodyForce(),				
+																											para->getForcesDev(),				
+																											para->getParD(level)->forceX_SP,	
+																											para->getParD(level)->forceY_SP,
+																											para->getParD(level)->forceZ_SP,
+																											para->getQuadricLimitersDev(),			
+																											para->getParD(level)->isEvenTimestep,
+																											indices,
+        																									size_indices);
+
+	getLastCudaError("LB_Kernel_TurbulentViscosityCumulantK17CompChim execution failed");
+}
+
+template<TurbulenceModel turbulenceModel>
+void TurbulentViscosityCumulantK17CompChim<turbulenceModel>::runOnIndicesWithMacroscopicVariableOutput(	const unsigned int *indices, unsigned int size_indices, int streamIndex)
+{
+	cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
+	
+	LB_Kernel_TurbulentViscosityCumulantK17CompChim < turbulenceModel, true, false  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>(   para->getParD(level)->omega, 	
+																											para->getParD(level)->typeOfGridNode, 										para->getParD(level)->neighborX,	
+																											para->getParD(level)->neighborY,	
+																											para->getParD(level)->neighborZ,	
+																											para->getParD(level)->distributions.f[0],	
+																											para->getParD(level)->rho,		
+																											para->getParD(level)->velocityX,		
+																											para->getParD(level)->velocityY,	
+																											para->getParD(level)->velocityZ,	
+																											para->getParD(level)->turbViscosity,
+																											para->getSGSConstant(),
+																											(unsigned long)para->getParD(level)->numberOfNodes,	
+																											level,				
+																											para->getIsBodyForce(),				
+																											para->getForcesDev(),				
+																											para->getParD(level)->forceX_SP,	
+																											para->getParD(level)->forceY_SP,
+																											para->getParD(level)->forceZ_SP,
+																											para->getQuadricLimitersDev(),			
+																											para->getParD(level)->isEvenTimestep,
+																											indices,
+        																									size_indices);
+
+	getLastCudaError("LB_Kernel_TurbulentViscosityCumulantK17CompChim execution failed");
+}
+
+template<TurbulenceModel turbulenceModel>
+void TurbulentViscosityCumulantK17CompChim<turbulenceModel>::runOnIndicesWithApplyBodyForce(	const unsigned int *indices, unsigned int size_indices, int streamIndex)
+{
+	cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
+	
+	LB_Kernel_TurbulentViscosityCumulantK17CompChim < turbulenceModel, false, true  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>(   para->getParD(level)->omega, 	
+																											para->getParD(level)->typeOfGridNode, 										para->getParD(level)->neighborX,	
+																											para->getParD(level)->neighborY,	
+																											para->getParD(level)->neighborZ,	
+																											para->getParD(level)->distributions.f[0],	
+																											para->getParD(level)->rho,		
+																											para->getParD(level)->velocityX,		
+																											para->getParD(level)->velocityY,	
+																											para->getParD(level)->velocityZ,	
+																											para->getParD(level)->turbViscosity,
+																											para->getSGSConstant(),
+																											(unsigned long)para->getParD(level)->numberOfNodes,	
+																											level,				
+																											para->getIsBodyForce(),				
+																											para->getForcesDev(),				
+																											para->getParD(level)->forceX_SP,	
+																											para->getParD(level)->forceY_SP,
+																											para->getParD(level)->forceZ_SP,
+																											para->getQuadricLimitersDev(),			
+																											para->getParD(level)->isEvenTimestep,
+																											indices,
+        																									size_indices);
+
+	getLastCudaError("LB_Kernel_TurbulentViscosityCumulantK17CompChim execution failed");
+}
+
+template<TurbulenceModel turbulenceModel>
+void TurbulentViscosityCumulantK17CompChim<turbulenceModel>::runOnIndicesWithMacroscopicVariableOutputAndApplyBodyForce(	const unsigned int *indices, unsigned int size_indices, int streamIndex)
+{
+	cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
+	
+	LB_Kernel_TurbulentViscosityCumulantK17CompChim < turbulenceModel, true, true  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>(   para->getParD(level)->omega, 	
 																											para->getParD(level)->typeOfGridNode, 										para->getParD(level)->neighborX,	
 																											para->getParD(level)->neighborY,	
 																											para->getParD(level)->neighborZ,	

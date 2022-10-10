@@ -15,6 +15,9 @@ class KernelImp : public Kernel
 public:
     virtual void run() = 0;
     virtual void runOnIndices(const unsigned int *indices, unsigned int size_indices, int stream = -1);
+    virtual void runOnIndicesWithMacroscopicVariableOutput(const unsigned int *indices, unsigned int size_indices, int stream = -1);
+    virtual void runOnIndicesWithApplyBodyForce(const unsigned int *indices, unsigned int size_indices, int stream = -1);
+    virtual void runOnIndicesWithMacroscopicVariableOutputAndApplyBodyForce(const unsigned int *indices, unsigned int size_indices, int stream = -1);
 
     bool checkParameter();
     std::vector<PreProcessorType> getPreProcessorTypes();
