@@ -17,7 +17,7 @@ template< TurbulenceModel turbulenceModel > __global__ void LB_Kernel_TurbulentV
     real* vz,
 	real* turbulentViscosity,
 	real SGSconstant,
-	unsigned long size_Mat,
+	unsigned long numberOfLBnodes,
 	int level,
 	bool bodyForce,
 	real* forces,

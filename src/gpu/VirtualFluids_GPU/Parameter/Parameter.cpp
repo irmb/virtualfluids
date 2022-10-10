@@ -883,6 +883,10 @@ void Parameter::setPressOutZ(unsigned int PressOutZ)
 {
     ic.PressOutZ = PressOutZ;
 }
+void Parameter::setOutflowPressureCorrectionFactor(real pressBCrhoCorrectionFactor)
+{
+    ic.outflowPressureCorrectionFactor = pressBCrhoCorrectionFactor;
+}
 void Parameter::setMaxDev(int maxdev)
 {
     ic.maxdev = maxdev;
@@ -1905,6 +1909,10 @@ unsigned int Parameter::getPressInZ()
 unsigned int Parameter::getPressOutZ()
 {
     return ic.PressOutZ;
+}
+real Parameter::getOutflowPressureCorrectionFactor()
+{
+    return ic.outflowPressureCorrectionFactor;
 }
 int Parameter::getMaxDev()
 {

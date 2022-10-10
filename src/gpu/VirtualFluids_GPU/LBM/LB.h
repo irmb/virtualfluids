@@ -46,6 +46,7 @@
 
 
 #include "Core/DataTypes.h"
+#include <cuda_runtime.h>
 
 #include <string>
 #include <vector>
@@ -144,6 +145,7 @@ struct InitCondition
    bool hasWallModelMonitor {false};
    bool simulatePorousMedia {false};
    bool streetVelocityFile {false};
+   real outflowPressureCorrectionFactor {0.0};
 };
 
 //Interface Cells
@@ -213,6 +215,22 @@ typedef struct QforBC{
    real *deltaVz, *RhoBC;
    real *normalX, *normalY, *normalZ;
 }QforBoundaryConditions;
+
+typedef struct QforPrecursorBC{
+   int* k;
+   int numberOfBCnodes=0;
+   int sizeQ;
+   int numberOfPrecursorNodes=0;
+   uint nPrecursorReads=0;
+   uint nTRead;
+   size_t numberOfQuantities;
+   real* q27[27];
+   uint* planeNeighborNT, *planeNeighborNB, *planeNeighborST, *planeNeighborSB;
+   real* weightsNT, *weightsNB, *weightsST,  *weightsSB;
+   real* last, *current, *next;
+   real velocityX, velocityY, velocityZ;
+   cudaStream_t stream;
+}QforPrecursorBoundaryConditions;
 
 //BCTemp
 typedef struct TempforBC{

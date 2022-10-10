@@ -28,7 +28,7 @@ void UpdateGrid27::updateGrid(int level, unsigned int t)
 
     //////////////////////////////////////////////////////////////////////////
 
-    postCollisionBC(level);
+    postCollisionBC(level, t);
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -227,9 +227,10 @@ void UpdateGrid27::exchangeMultiGPUAfterFtoC(int level, int streamIndex)
     }
 }
 
-void UpdateGrid27::postCollisionBC(int level)
+void UpdateGrid27::postCollisionBC(int level, uint t)
 {
     //////////////////////////////////////////////////////////////////////////
+    // G E O M E T R Y
     // V E L O C I T Y (I N F L O W)
     this->bcKernelManager->runVelocityBCKernelPost(level);
 
@@ -256,6 +257,10 @@ void UpdateGrid27::postCollisionBC(int level)
     //////////////////////////////////////////////////////////////////////////
     // P R E S S U R E
     this->bcKernelManager->runPressureBCKernelPost(level);
+
+    //////////////////////////////////////////////////////////////////////////
+    // P R E C U R S O R
+    this->bcKernelManager->runPrecursorBCKernelPost(level, t, cudaMemoryManager.get());
 
     //////////////////////////////////////////////////////////////////////////
     // A D V E C T I O N    D I F F U S I O N

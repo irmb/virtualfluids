@@ -51,6 +51,7 @@ namespace grid_generator
         .def("set_pressure_boundary_condition", &LevelGridBuilder::setPressureBoundaryCondition)
         .def("set_periodic_boundary_condition", &LevelGridBuilder::setPeriodicBoundaryCondition)
         .def("set_no_slip_boundary_condition", &LevelGridBuilder::setNoSlipBoundaryCondition)
+        .def("set_precursor_boundary_condition", &LevelGridBuilder::setPrecursorBoundaryCondition)
         .def("set_stress_boundary_condition", &LevelGridBuilder::setStressBoundaryCondition);
 
         py::class_<MultipleGridBuilder, LevelGridBuilder, std::shared_ptr<MultipleGridBuilder>>(gridGeneratorModule, "MultipleGridBuilder")

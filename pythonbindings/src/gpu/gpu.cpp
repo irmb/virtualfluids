@@ -6,9 +6,12 @@
 #include "submodules/boundary_conditions.cpp"
 #include "submodules/communicator.cpp"
 #include "submodules/cuda_memory_manager.cpp"
+#include "submodules/probes.cpp"
+#include "submodules/precursor_writer.cpp"
 #include "submodules/grid_provider.cpp"
 #include "submodules/grid_generator.cpp"
-#include "submodules/probes.cpp"
+#include "submodules/turbulence_models.cpp"
+#include "submodules/velocity_setter.cpp"
 
 namespace gpu
 {
@@ -23,11 +26,14 @@ namespace gpu
         actuator_line::makeModule(gpuModule);
         actuator_farm::makeModule(gpuModule);
         boundary_conditions::makeModule(gpuModule);
+        velocity_setter::makeModule(gpuModule);
         communicator::makeModule(gpuModule); 
         cuda_memory_manager::makeModule(gpuModule);
-        grid_provider::makeModule(gpuModule);
         probes::makeModule(gpuModule);
+        precursor_writer::makeModule(gpuModule);
         grid_generator::makeModule(gpuModule);
+        grid_provider::makeModule(gpuModule);
+        turbulence_model::makeModule(gpuModule);
         return gpuModule;
     }
 }

@@ -16,7 +16,8 @@ void TurbulentViscosityCumulantK17CompChim<turbulenceModel>::run()
 	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, para->getParH(level)->numberOfNodes);
 
 	LB_Kernel_TurbulentViscosityCumulantK17CompChim < turbulenceModel  > <<< grid.grid, grid.threads >>>(   para->getParD(level)->omega, 	
-																											para->getParD(level)->typeOfGridNode, 										para->getParD(level)->neighborX,	
+																											para->getParD(level)->typeOfGridNode, 										
+																											para->getParD(level)->neighborX,	
 																											para->getParD(level)->neighborY,	
 																											para->getParD(level)->neighborZ,	
 																											para->getParD(level)->distributions.f[0],	

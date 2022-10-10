@@ -54,6 +54,8 @@ class ConfigurationFile;
 }
 class CudaStreamManager;
 
+class VelocityReader;
+
 //! \struct LBMSimulationParameter
 //! \brief struct holds and manages the LB-parameter of the simulation
 //! \brief For this purpose it holds structures and pointer for host and device data, respectively.
@@ -218,16 +220,16 @@ struct LBMSimulationParameter {
     OffsetFC offFCBulk;
     unsigned int mem_size_kCF_off;
     unsigned int mem_size_kFC_off;
-
-    // BC's////////////////////
+    
     //! \brief stores the boundary condition data
     QforBoundaryConditions noSlipBC, velocityBC, outflowBC, slipBC, stressBC, pressureBC;
     //! \brief number of lattice nodes for the boundary conditions
-    unsigned int numberOfNoSlipBCnodesRead, numberOfVeloBCnodesRead, numberOfOutflowBCnodesRead, numberOfSlipBCnodesRead, numberOfStressBCnodesRead, numberOfPressureBCnodesRead;
+    unsigned int numberOfNoSlipBCnodesRead, numberOfVeloBCnodesRead, numberOfOutflowBCnodesRead, numberOfSlipBCnodesRead, numberOfStressBCnodesRead, numberOfPressureBCnodesRead, numberOfPrecursorBCnodesRead;
 
     QforBoundaryConditions QpressX0, QpressX1, QpressY0, QpressY1, QpressZ0, QpressZ1; // DEPRECATED
     QforBoundaryConditions propellerBC;
     QforBoundaryConditions geometryBC;
+    QforPrecursorBoundaryConditions precursorBC;
     QforBoundaryConditions geometryBCnormalX, geometryBCnormalY, geometryBCnormalZ;
     QforBoundaryConditions inflowBCnormalX, inflowBCnormalY, inflowBCnormalZ;
     QforBoundaryConditions outflowBCnormalX, outflowBCnormalY, outflowBCnormalZ;
@@ -235,6 +237,8 @@ struct LBMSimulationParameter {
     unsigned int kInletQread, kOutletQread;  // DEPRECATED
 
     WallModelParameters wallModel;
+    std::vector<SPtr<VelocityReader>> velocityReader;
+    real outflowPressureCorrectionFactor;
 
     // testRoundoffError
     Distributions27 kDistTestRE;
@@ -468,6 +472,7 @@ public:
     void setpressBcPos(std::string pressBcPos);
     void setpressBcQs(std::string pressBcQs);
     void setpressBcValue(std::string pressBcValue);
+    void setOutflowPressureCorrectionFactor(real correctionFactor);
     void setpressBcValues(std::string pressBcValues);
     void setvelBcQs(std::string velBcQs);
     void setvelBcValues(std::string velBcValues);
@@ -524,7 +529,6 @@ public:
     void setUseWale(bool useWale);
     void setTurbulenceModel(TurbulenceModel turbulenceModel);
     void setUseTurbulentViscosity(bool useTurbulentViscosity);
-    void setUseAMD(bool useAMD);
     void setSGSConstant(real SGSConstant);
     void setHasWallModelMonitor(bool hasWallModelMonitor);
     void setUseInitNeq(bool useInitNeq);
@@ -850,6 +854,7 @@ public:
     std::string getOutflowBoundaryNormalX();
     std::string getOutflowBoundaryNormalY();
     std::string getOutflowBoundaryNormalZ();
+    real getOutflowPressureCorrectionFactor();
     // CUDA random number
     curandState *getRandomState();
     // Kernel

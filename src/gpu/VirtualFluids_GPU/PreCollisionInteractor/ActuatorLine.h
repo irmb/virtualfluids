@@ -22,7 +22,8 @@ public:
         const real _diameter,
         int _level,
         const real _deltaT,
-        const real _deltaX
+        const real _deltaX,
+        const bool _useHostArrays
     ) : nBlades(_nBlades),
         density(_density),
         nBladeNodes(_nBladeNodes), 
@@ -30,6 +31,7 @@ public:
         turbinePosX(_turbinePosX), turbinePosY(_turbinePosY), turbinePosZ(_turbinePosZ),
         diameter(_diameter),
         level(_level),
+        useHostArrays(_useHostArrays),
         PreCollisionInteractor()
     {
         this->deltaT = _deltaT*exp2(-this->level);
@@ -58,6 +60,8 @@ public:
     real getAzimuth(){ return this->azimuth; };
     real getYaw(){ return this->yaw; };
     real getDensity(){ return this->density; };
+    real getDeltaT(){ return this->deltaT; };
+    real getDeltaX(){ return this->deltaX; };
     real getPositionX(){ return this->turbinePosX; };
     real getPositionY(){ return this->turbinePosY; };
     real getPositionZ(){ return this->turbinePosZ; };
@@ -72,12 +76,27 @@ public:
     real* getBladeForcesY(){ return this->bladeForcesYH; };
     real* getBladeForcesZ(){ return this->bladeForcesZH; };
 
+    real* getBladeRadiiD(){ return this->bladeRadiiD; };
+    real* getBladeCoordsXD(){ return this->bladeCoordsXD; };
+    real* getBladeCoordsYD(){ return this->bladeCoordsYD; };
+    real* getBladeCoordsZD(){ return this->bladeCoordsZD; };
+    real* getBladeVelocitiesXD(){ return this->bladeVelocitiesXD; };
+    real* getBladeVelocitiesYD(){ return this->bladeVelocitiesYD; };
+    real* getBladeVelocitiesZD(){ return this->bladeVelocitiesZD; };
+    real* getBladeForcesXD(){ return this->bladeForcesXD; };
+    real* getBladeForcesYD(){ return this->bladeForcesYD; };
+    real* getBladeForcesZD(){ return this->bladeForcesZD; };
+
     void setOmega(real _omega){ this->omega = _omega; };
     void setAzimuth(real _azimuth){ this->azimuth = _azimuth; };
     void setYaw(real _yaw){ this->yaw = _yaw; };
+    void setPreInitBladeRadii(real* _bladeRadii);
     void setBladeCoords(real* _bladeCoordsX, real* _bladeCoordsY, real* _bladeCoordsZ);
     void setBladeVelocities(real* _bladeVelocitiesX, real* _bladeVelocitiesY, real* _bladeVelocitiesZ);
     void setBladeForces(real* _bladeForcesX, real* _bladeForcesY, real* _bladeForcesZ);
+    void setBladeCoordsD(real* _bladeCoordsX, real* _bladeCoordsY, real* _bladeCoordsZ);
+    void setBladeVelocitiesD(real* _bladeVelocitiesX, real* _bladeVelocitiesY, real* _bladeVelocitiesZ);
+    void setBladeForcesD(real* _bladeForcesX, real* _bladeForcesY, real* _bladeForcesZ);
     virtual void calcBladeForces();
 
 private:
@@ -92,6 +111,7 @@ private:
     void calcForcesEllipticWing();
 
 public:
+    real* bladeRadiiPreInit;
     real* bladeRadiiH;
     real* bladeRadiiD;
     real* bladeCoordsXH, * bladeCoordsYH, * bladeCoordsZH;
@@ -106,6 +126,7 @@ public:
     uint* boundingSphereIndicesD;
     
 private:
+    const bool useHostArrays;
     const real density;
     real turbinePosX, turbinePosY, turbinePosZ;
     real omega, azimuth, yaw, deltaT, deltaX, invDeltaX, forceRatio, factorGaussian, invEpsilonSqrd;
