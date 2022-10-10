@@ -21,6 +21,7 @@ namespace gpu
         parameter::makeModule(gpuModule);
         pre_collision_interactor::makeModule(gpuModule);
         actuator_line::makeModule(gpuModule);
+        actuator_farm::makeModule(gpuModule);
         boundary_conditions::makeModule(gpuModule);
         communicator::makeModule(gpuModule); 
         cuda_memory_manager::makeModule(gpuModule);
