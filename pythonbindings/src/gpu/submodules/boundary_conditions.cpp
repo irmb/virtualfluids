@@ -1,6 +1,6 @@
 #include <pybind11/pybind11.h>
 #include <gpu/GridGenerator/grid/BoundaryConditions/Side.h>
-#include "gpu/VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
+#include "gpu/VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
 
 namespace boundary_conditions
 {

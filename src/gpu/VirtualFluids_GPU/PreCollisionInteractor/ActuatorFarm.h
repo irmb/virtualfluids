@@ -45,10 +45,15 @@ public:
     void write(uint t);
 
     real getDensity(){ return this->density; };
+    real getDeltaT(){ return this->deltaT; };
+    real getDeltaX(){ return this->deltaX; };
 
     uint getNumberOfTurbines(){ return this->numberOfTurbines; };
     uint getNumberOfNodesPerBlade(){ return this->numberOfBladeNodes; };
     uint getNumberOfBladesPerTurbine(){ return this->numberOfBlades; };
+
+    uint getNumberOfIndices(){ return this->numberOfIndices; };
+    uint getNumberOfNodes(){ return this->numberOfNodes; };
 
     real* getAllAzimuths(){ return azimuthsH; };
     real* getAllOmegas(){ return omegasH; };
@@ -65,9 +70,6 @@ public:
     real getTurbinePosX(uint turbine){ return turbinePosXH[turbine]; };
     real getTurbinePosY(uint turbine){ return turbinePosYH[turbine]; };
     real getTurbinePosZ(uint turbine){ return turbinePosZH[turbine]; };
-
-    uint getNumberOfIndices(){ return this->numberOfIndices; };
-    uint getNumberOfNodes(){ return this->numberOfNodes; };
 
     real* getAllBladeRadii(){ return this->bladeRadiiH; };
     real* getAllBladeCoordsX(){ return this->bladeCoordsXH; };
@@ -113,6 +115,10 @@ public:
     real* getTurbineBladeForcesYDevice(uint turbine){ return &this->bladeForcesYD[turbine*numberOfBladeNodes*numberOfBlades]; };
     real* getTurbineBladeForcesZDevice(uint turbine){ return &this->bladeForcesZD[turbine*numberOfBladeNodes*numberOfBlades]; };
 
+    void setTurbineAzimuth(uint turbine, real azimuth){ azimuthsH[turbine] = azimuth; };
+    void setTurbineYaw(uint turbine, real yaw){ yawsH[turbine] = yaw; };
+    void setTurbineOmega(uint turbine, real omega){ omegasH[turbine] = omega; };
+
     void setAllBladeCoords(real* _bladeCoordsX, real* _bladeCoordsY, real* _bladeCoordsZ);
     void setAllBladeVelocities(real* _bladeVelocitiesX, real* _bladeVelocitiesY, real* _bladeVelocitiesZ);
     void setAllBladeForces(real* _bladeForcesX, real* _bladeForcesY, real* _bladeForcesZ);
@@ -121,6 +127,7 @@ public:
     void setTurbineBladeVelocities(uint turbine, real* _bladeVelocitiesX, real* _bladeVelocitiesY, real* _bladeVelocitiesZ);
     void setTurbineBladeForces(uint turbine, real* _bladeForcesX, real* _bladeForcesY, real* _bladeForcesZ);
 
+    virtual void calcBladeForces();
 
 private:
     void initTurbineGeometries(CudaMemoryManager* cudaManager);
@@ -131,7 +138,6 @@ private:
     void initBladeIndices(Parameter* para, CudaMemoryManager* cudaManager);
 
     void calcForcesEllipticWing();
-    void calcBladeForces();
     void rotateBlades(real angle, uint turbineID);
 
     void writeBladeCoords(uint t);

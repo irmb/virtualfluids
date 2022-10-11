@@ -9,7 +9,7 @@ public:
     using ActuatorFarm::ActuatorFarm; // Inherit constructors
     void calcBladeForces() override 
     { 
-        PYBIND11_OVERRIDE_NAME(void, ActuatorFarm, "calc_blade_forces", calcBladeForces,); 
+        PYBIND11_OVERRIDE_NAME(void, ActuatorFarm, "calc_blade_forces", calcBladeForces); 
     }
 };
 namespace actuator_farm
@@ -29,9 +29,9 @@ namespace actuator_farm
                         const real,
                         const real,
                         const bool>(), 
-                        "n_blades", 
+                        "number_of_blades_per_turbine", 
                         "density", 
-                        "n_blade_nodes", 
+                        "number_of_nodes_per_blade", 
                         "epsilon",
                         "level", 
                         "delta_t", 
@@ -41,16 +41,23 @@ namespace actuator_farm
         .def_property_readonly("number_of_nodes_per_blade", &ActuatorFarm::getNumberOfNodesPerBlade)
         .def_property_readonly("number_of_blades_per_turbine", &ActuatorFarm::getNumberOfBladesPerTurbine)
         .def_property_readonly("number_of_nodes", &ActuatorFarm::getNumberOfNodes)
-        .def_property_readonly("number_of_indices", &ActuatorFarm::getNumerOfIndices)
+        .def_property_readonly("number_of_indices", &ActuatorFarm::getNumberOfIndices)
         .def_property_readonly("density", &ActuatorFarm::getDensity)
+        .def_property_readonly("delta_t", &ActuatorFarm::getDeltaT)
+        .def_property_readonly("delta_x", &ActuatorFarm::getDeltaX)
 
         .def("add_turbine", &ActuatorFarm::addTurbine)
 
-        .def("get_turbine_pos" [](ActuatorFarm& al, uint turbine){ return arr(3, {al.getTurbinePosX(turbine), al.getTurbinePosY(turbine), al.getTurbinePosZ(turbine)}); })
-
-        .def("get_all_turbine_pos_x", [](ActuatorFarm& al){ return arr(al.getTurbines(), al.getAllTurbinePosX()); })
-        .def("get_all_turbine_pos_y", [](ActuatorFarm& al){ return arr(al.getTurbines(), al.getAllTurbinePosY()); })
-        .def("get_all_turbine_pos_z", [](ActuatorFarm& al){ return arr(al.getTurbines(), al.getAllTurbinePosZ()); })
+        .def("get_turbine_pos", [](ActuatorFarm& al, uint turbine){ real position[3] = {al.getTurbinePosX(turbine), al.getTurbinePosY(turbine), al.getTurbinePosZ(turbine)}; return arr(3,  position); } )
+        .def("get_turbine_azimuth", &ActuatorFarm::getTurbineAzimuth)
+        .def("get_turbine_yaw", &ActuatorFarm::getTurbineYaw)
+        .def("get_turbine_omega", &ActuatorFarm::getTurbineOmega)
+        .def("get_all_azimuths", [](ActuatorFarm& al){ return arr(al.getNumberOfTurbines(), al.getAllAzimuths()); } )
+        .def("get_all_yaws", [](ActuatorFarm& al){ return arr(al.getNumberOfTurbines(), al.getAllYaws()); } )
+        .def("get_all_omegas", [](ActuatorFarm& al){ return arr(al.getNumberOfTurbines(), al.getAllOmegas()); } )
+        .def("get_all_turbine_pos_x", [](ActuatorFarm& al){ return arr(al.getNumberOfTurbines(), al.getAllTurbinePosX()); } )
+        .def("get_all_turbine_pos_y", [](ActuatorFarm& al){ return arr(al.getNumberOfTurbines(), al.getAllTurbinePosY()); } )
+        .def("get_all_turbine_pos_z", [](ActuatorFarm& al){ return arr(al.getNumberOfTurbines(), al.getAllTurbinePosZ()); } )
     
         .def("get_all_blade_radii", [](ActuatorFarm& al){ return arr({al.getNumberOfTurbines(), al.getNumberOfNodesPerBlade()}, al.getAllBladeRadii()); } )
         .def("get_all_blade_coords_x", [](ActuatorFarm& al){ return arr({al.getNumberOfTurbines(), al.getNumberOfBladesPerTurbine(), al.getNumberOfNodesPerBlade()}, al.getAllBladeCoordsX()); } )
@@ -96,10 +103,14 @@ namespace actuator_farm
         .def("get_turbine_blade_forces_y_device", [](ActuatorFarm& al, uint turbine) -> intptr_t { return reinterpret_cast<intptr_t>(al.getTurbineBladeForcesYDevice(turbine)); } )
         .def("get_turbine_blade_forces_z_device", [](ActuatorFarm& al, uint turbine) -> intptr_t { return reinterpret_cast<intptr_t>(al.getTurbineBladeForcesZDevice(turbine)); } )
 
+        .def("set_turbine_azimuth", &ActuatorFarm::setTurbineAzimuth)
+        .def("set_turbine_yaw", &ActuatorFarm::setTurbineYaw)
+        .def("set_turbine_omega", &ActuatorFarm::setTurbineOmega)
+
         .def("set_all_blade_coords", [](ActuatorFarm& al, arr coordsX, arr coordsY, arr coordsZ)
         { 
             al.setAllBladeCoords(static_cast<float *>(coordsX.request().ptr), static_cast<float *>(coordsY.request().ptr), static_cast<float *>(coordsZ.request().ptr)); 
-        })
+        } )
         .def("set_all_blade_velocities", [](ActuatorFarm& al, arr velocitiesX, arr velocitiesY, arr velocitiesZ)
         { 
             al.setAllBladeVelocities(static_cast<float *>(velocitiesX.request().ptr), static_cast<float *>(velocitiesY.request().ptr), static_cast<float *>(velocitiesZ.request().ptr)); 

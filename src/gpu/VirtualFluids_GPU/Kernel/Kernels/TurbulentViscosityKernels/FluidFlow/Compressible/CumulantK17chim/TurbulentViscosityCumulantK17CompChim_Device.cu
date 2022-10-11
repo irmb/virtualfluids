@@ -45,10 +45,10 @@
 #include "Kernel/Utilities/DistributionHelper.cuh"
 #include "VirtualFluids_GPU/GPU/KernelUtilities.h"
 #include "GPU/TurbulentViscosityInlines.cuh"
+#include "Kernel/Utilities/ChimeraTransformation.h"
 
 using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
-#include "Kernel/Utilities/ChimeraTransformation.h"
 
 
 ////////////////////////////////////////////////////////////////////////////////

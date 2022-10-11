@@ -12,6 +12,7 @@
 #include "submodules/grid_generator.cpp"
 #include "submodules/turbulence_models.cpp"
 #include "submodules/velocity_setter.cpp"
+#include "submodules/actuator_farm.cpp"
 
 namespace gpu
 {
