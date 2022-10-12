@@ -14,9 +14,9 @@
 
 //////////////////////////////////////////////////////////////////////////
 // 1D domain decomposition
-void exchangePreCollDataGPU27(Parameter *para, vf::gpu::Communicator &comm, CudaMemoryManager *cudaMemoryManager,
+void exchangePreCollDataGPU27(Parameter *para, vf::gpu::Communicator &comm, CudaMemoryManager *cudaMemoryManager, 
                                          int level);
-void exchangePostCollDataGPU27(Parameter *para, vf::gpu::Communicator &comm, CudaMemoryManager *cudaMemoryManager,
+void exchangePostCollDataGPU27(Parameter *para, vf::gpu::Communicator &comm, CudaMemoryManager *cudaMemoryManager, 
                                           int level);
 //////////////////////////////////////////////////////////////////////////
 // 3D domain decomposition
@@ -24,13 +24,13 @@ void exchangePostCollDataGPU27(Parameter *para, vf::gpu::Communicator &comm, Cud
 // functions used for all directions
 
 //! \brief Collect the send nodes in a buffer on the gpu
-void collectNodesInSendBufferGPU(Parameter *para, int level, int streamIndex,
-                                            std::vector<ProcessNeighbor27> *sendProcessNeighbor,
-                                            unsigned int numberOfSendProcessNeighbors);
+void collectNodesInSendBufferGPU(Parameter *para, int level,
+                                 std::vector<ProcessNeighbor27> *sendProcessNeighbor,
+                                 unsigned int numberOfSendProcessNeighbors);
 //! \brief Distribute the receive nodes from the buffer on the gpu
-void scatterNodesFromRecvBufferGPU(Parameter *para, int level, int streamIndex,
-                                              std::vector<ProcessNeighbor27> *recvProcessNeighborDev,
-                                              unsigned int numberOfRecvProcessNeighbors);
+void scatterNodesFromRecvBufferGPU(Parameter *para, int level,
+                                   std::vector<ProcessNeighbor27> *recvProcessNeighborDev,
+                                   unsigned int numberOfRecvProcessNeighbors);
 //! \brief Copy nodes which are part of the communication in multiple directions
 //! \details The nodes are copied from the receive buffer in one direction to the send buffer in another direction. The
 //! copy operation is conducted on the cpu. 
@@ -49,21 +49,20 @@ void copyEdgeNodes(std::vector<LBMSimulationParameter::EdgeNodePositions> &edgeN
 
 //! \brief Collect the send nodes for communication in the x direction in a buffer on the gpu
 //! \details Needed to exchange all nodes, used in the communication after collision step
-void prepareExchangeCollDataXGPU27AllNodes(Parameter *para, int level, int streamIndex);
+void prepareExchangeCollDataXGPU27AllNodes(Parameter *para, int level);
 //! \brief Collect the send nodes for communication in the x direction in a buffer on the gpu
 //! \details Only exchange nodes which are part of the interpolation process on refined grids. This function is used in
 //! the exchange which takes place after the interpolation fine to coarse and before the interpolation coarse to fine.
 //! See [master thesis of Anna Wellmann]
-void prepareExchangeCollDataXGPU27AfterFtoC(Parameter *para, int level, int streamIndex);
+void prepareExchangeCollDataXGPU27AfterFtoC(Parameter *para, int level);
 //! \brief Exchange routine in x direction for simulations on multiple gpus
 //! \details Send and receive the nodes from the communication buffers on the gpus.
 //! \param Communicator is needed for the communication between the processes with mpi
 //! \param CudaMemoryManager is needed for moving the data between host and device
-//! \param streamIndex is the index of a CUDA Stream, which is needed for communication hiding
 //! \param sendProcessNeighborDev, recvProcessNeighborDev, sendProcessNeighborHost, recvProcessNeighborHost are pointers
 //! to the send and receive arrays, both on the device and the host
 void exchangeCollDataXGPU27(Parameter *para, vf::gpu::Communicator &comm, CudaMemoryManager *cudaMemoryManager,
-                                       int level, int streamIndex,
+                                       int level,
                                        std::vector<ProcessNeighbor27> *sendProcessNeighborDev,
                                        std::vector<ProcessNeighbor27> *recvProcessNeighborDev,
                                        std::vector<ProcessNeighbor27> *sendProcessNeighborHost,
@@ -71,59 +70,59 @@ void exchangeCollDataXGPU27(Parameter *para, vf::gpu::Communicator &comm, CudaMe
 //! \brief Calls exchangeCollDataXGPU27() for exchanging all nodes
 //! \details Used in the communication after collision step
 void exchangeCollDataXGPU27AllNodes(Parameter *para, vf::gpu::Communicator &comm,
-                                               CudaMemoryManager *cudaMemoryManager, int level, int streamIndex);
+                                               CudaMemoryManager *cudaMemoryManager, int level);
 //! \brief Calls exchangeCollDataXGPU27() for exchanging the nodes, which are part of the communication between the two
 //! interpolation processes on refined grids 
 //! \details Only exchange nodes which are part of the interpolation process on
 //! refined grids. This function is used in the exchange which takes place after the interpolation fine to coarse and
 //! before the interpolation coarse to fine. See [master thesis of Anna Wellmann]
 void exchangeCollDataXGPU27AfterFtoC(Parameter *para, vf::gpu::Communicator &comm,
-                                                CudaMemoryManager *cudaMemoryManager, int level, int streamIndex);
+                                                CudaMemoryManager *cudaMemoryManager, int level);
 //! \brief Distribute the receive nodes (x direction) from the buffer on the gpu
 //! \details Needed to exchange all nodes, used in the communication after collision step
-void scatterNodesFromRecvBufferXGPU27AllNodes(Parameter *para, int level, int streamIndex);
+void scatterNodesFromRecvBufferXGPU27AllNodes(Parameter *para, int level);
 //! \brief Distribute the receive nodes (x direction) from the buffer on the gpu
 //! \details Only exchange nodes which are part of the interpolation process on refined grids. This function is used in
 //! the exchange which takes place after the interpolation fine to coarse and before the interpolation coarse to fine.
 //! See [master thesis of Anna Wellmann]
-void scatterNodesFromRecvBufferXGPU27AfterFtoC(Parameter *para, int level, int streamIndex);
+void scatterNodesFromRecvBufferXGPU27AfterFtoC(Parameter *para, int level);
 
 //////////////////////////////////////////////////////////////////////////
 // y
 
-void prepareExchangeCollDataYGPU27AllNodes(Parameter *para, int level, int streamIndex);
-void prepareExchangeCollDataYGPU27AfterFtoC(Parameter *para, int level, int streamIndex);
+void prepareExchangeCollDataYGPU27AllNodes(Parameter *para, int level);
+void prepareExchangeCollDataYGPU27AfterFtoC(Parameter *para, int level);
 
 void exchangeCollDataYGPU27(Parameter *para, vf::gpu::Communicator &comm, CudaMemoryManager *cudaMemoryManager,
-                                       int level, int streamIndex,
+                                       int level,
                                        std::vector<ProcessNeighbor27> *sendProcessNeighborDev,
                                        std::vector<ProcessNeighbor27> *recvProcessNeighborDev,
                                        std::vector<ProcessNeighbor27> *sendProcessNeighborHost,
                                        std::vector<ProcessNeighbor27> *recvProcessNeighborHos);
 void exchangeCollDataYGPU27AllNodes(Parameter *para, vf::gpu::Communicator &comm,
-                                               CudaMemoryManager *cudaMemoryManager, int level, int streamIndex);
+                                               CudaMemoryManager *cudaMemoryManager, int level);
 void exchangeCollDataYGPU27AfterFtoC(Parameter *para, vf::gpu::Communicator &comm,
-                                                CudaMemoryManager *cudaMemoryManager, int level, int streamIndex);
-void scatterNodesFromRecvBufferYGPU27AllNodes(Parameter *para, int level, int streamIndex);
-void scatterNodesFromRecvBufferYGPU27AfterFtoC(Parameter *para, int level, int streamIndex);
+                                                CudaMemoryManager *cudaMemoryManager, int level);
+void scatterNodesFromRecvBufferYGPU27AllNodes(Parameter *para, int level);
+void scatterNodesFromRecvBufferYGPU27AfterFtoC(Parameter *para, int level);
 
 // z
-void prepareExchangeCollDataZGPU27AllNodes(Parameter *para, int level, int streamIndex);
-void prepareExchangeCollDataZGPU27AfterFtoC(Parameter *para, int level, int streamIndex);
+void prepareExchangeCollDataZGPU27AllNodes(Parameter *para, int level);
+void prepareExchangeCollDataZGPU27AfterFtoC(Parameter *para, int level);
 
 void exchangeCollDataZGPU27(Parameter *para, vf::gpu::Communicator &comm, CudaMemoryManager *cudaMemoryManager,
-                                       int level, int streamIndex,
+                                       int level,
                                        std::vector<ProcessNeighbor27> *sendProcessNeighborDev,
                                        std::vector<ProcessNeighbor27> *recvProcessNeighborDev,
                                        std::vector<ProcessNeighbor27> *sendProcessNeighborHost,
                                        std::vector<ProcessNeighbor27> *recvProcessNeighborHost);
 void exchangeCollDataZGPU27AllNodes(Parameter *para, vf::gpu::Communicator &comm,
-                                               CudaMemoryManager *cudaMemoryManager, int level, int streamIndex);
+                                               CudaMemoryManager *cudaMemoryManager, int level);
 void exchangeCollDataZGPU27AfterFtoC(Parameter *para, vf::gpu::Communicator &comm,
-                                                CudaMemoryManager *cudaMemoryManager, int level, int streamIndex);
+                                                CudaMemoryManager *cudaMemoryManager, int level);
 
-void scatterNodesFromRecvBufferZGPU27AllNodes(Parameter *para, int level, int streamIndex);
-void scatterNodesFromRecvBufferZGPU27AfterFtoC(Parameter *para, int level, int streamIndex);
+void scatterNodesFromRecvBufferZGPU27AllNodes(Parameter *para, int level);
+void scatterNodesFromRecvBufferZGPU27AfterFtoC(Parameter *para, int level);
 
 //////////////////////////////////////////////////////////////////////////
 // 3D domain decomposition convection diffusion

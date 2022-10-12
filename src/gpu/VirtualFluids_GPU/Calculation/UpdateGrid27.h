@@ -31,21 +31,21 @@ public:
 
 private:
     void collisionAllNodes(int level, unsigned int t);
-    void collisionUsingIndices(int level, unsigned int t, uint *fluidNodeIndices = nullptr, uint numberOfFluidNodes = 0, int stream = -1);
+    void collisionUsingIndices(int level, unsigned int t, uint *fluidNodeIndices = nullptr, uint numberOfFluidNodes = 0);
     void collisionAdvectionDiffusion(int level);
 
     void postCollisionBC(int level);
     void preCollisionBC(int level, unsigned int t);
     void collisionPorousMedia(int level);
 
-    void fineToCoarse(int level, InterpolationCellFC* icellFC, OffFC &offFC, int streamIndex);
-    void coarseToFine(int level, InterpolationCellCF* icellCF, OffCF &offCF, int streamIndex);
+    void fineToCoarse(int level, InterpolationCellFC* icellFC, OffFC &offFC);
+    void coarseToFine(int level, InterpolationCellCF* icellCF, OffCF &offCF);
 
-    void prepareExchangeMultiGPU(int level, int streamIndex);
-    void prepareExchangeMultiGPUAfterFtoC(int level, int streamIndex);
+    void prepareExchangeMultiGPU(int level);
+    void prepareExchangeMultiGPUAfterFtoC(int level);
 
-    void exchangeMultiGPU(int level, int streamIndex);
-    void exchangeMultiGPUAfterFtoC(int level, int streamIndex);
+    void exchangeMultiGPU(int level);
+    void exchangeMultiGPUAfterFtoC(int level);
     void exchangeMultiGPU_noStreams_withPrepare(int level, bool useReducedComm);
 
     void swapBetweenEvenAndOddTimestep(int level);

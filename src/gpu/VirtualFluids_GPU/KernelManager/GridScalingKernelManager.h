@@ -63,13 +63,13 @@ public:
     GridScalingKernelManager(SPtr<Parameter> parameter, GridScalingFactory *gridScalingFactory);
 
     //! \brief calls the device function of the fine to coarse grid interpolation kernel
-    void runFineToCoarseKernelLB(const int level, InterpolationCellFC *icellFC, OffFC &offFC, int streamIndex) const;
+    void runFineToCoarseKernelLB(const int level, InterpolationCellFC *icellFC, OffFC &offFC) const;
 
     //! \brief calls the device function of the fine to coarse grid interpolation kernel (advection diffusion)
     void runFineToCoarseKernelAD(const int level) const;
 
     //! \brief calls the device function of the coarse to fine grid interpolation kernel
-    void runCoarseToFineKernelLB(const int level, InterpolationCellCF *icellCF, OffCF &offCF, int streamIndex) const;
+    void runCoarseToFineKernelLB(const int level, InterpolationCellCF *icellCF, OffCF &offCF) const;
 
     //! \brief calls the device function of the coarse to fine grid interpolation kernel (advection diffusion)
     void runCoarseToFineKernelAD(const int level) const;
