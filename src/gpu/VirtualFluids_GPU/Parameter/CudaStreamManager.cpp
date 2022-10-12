@@ -52,7 +52,7 @@ void CudaStreamManager::terminateStreams()
 
 bool CudaStreamManager::streamIsRegistered(StreamIndex streamIndex)
 {
-    return cudaStreams.find(streamIndex) != cudaStreams.end();
+    return cudaStreams.count(streamIndex) == 1;
 }
 
 cudaStream_t &CudaStreamManager::getStream(StreamIndex streamIndex)
