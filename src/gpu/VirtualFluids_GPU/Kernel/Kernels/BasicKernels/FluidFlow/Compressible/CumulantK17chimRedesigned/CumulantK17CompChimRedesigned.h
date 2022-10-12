@@ -8,7 +8,7 @@ class CumulantK17CompChimRedesigned : public KernelImp
 public:
     static std::shared_ptr<CumulantK17CompChimRedesigned> getNewInstance(std::shared_ptr<Parameter> para, int level);
 	void run() override;
-    void runOnIndices(const unsigned int *indices, unsigned int size_indices, int stream = -1) override;
+    void runOnIndices(const unsigned int *indices, unsigned int size_indices) override;
 
 private:
     CumulantK17CompChimRedesigned();
