@@ -12,6 +12,7 @@
 #include "basics/utilities/UbSystem.h"
 #include <basics/writer/WbWriterVtkXmlBinary.h>
 #include "Core/StringUtilities/StringUtil.h"
+#include "BoundaryConditions/BoundaryConditionStructs.h"
 
 //using namespace std;
 

@@ -9,6 +9,7 @@
 #include "LBM/LB.h"
 #include "lbm/constants/D3Q27.h"
 #include "Parameter/Parameter.h"
+#include "BoundaryConditions/BoundaryConditionStructs.h"
 #include "basics/utilities/UbSystem.h"
 #include <basics/writer/WbWriterVtkXmlBinary.h>
 #include <basics/writer/WbWriterVtkXmlASCII.h>

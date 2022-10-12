@@ -3,6 +3,8 @@
 #include "Parameter/Parameter.h"
 
 #include <basics/utilities/UbFileInputASCII.h>
+#include "BoundaryConditions/BoundaryConditionStructs.h"
+
 using namespace vf::lbm::dir;
 
 //////////////////////////////////////////////////////////////////////////

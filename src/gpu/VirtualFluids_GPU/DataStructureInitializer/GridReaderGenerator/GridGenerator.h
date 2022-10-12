@@ -40,6 +40,8 @@
 #include <memory>
 
 #include "LBM/LB.h"
+#include "BoundaryConditions/BoundaryConditionStructs.h"
+
 
 class Parameter;
 class GridBuilder;

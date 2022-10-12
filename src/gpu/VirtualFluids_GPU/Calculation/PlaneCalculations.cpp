@@ -10,6 +10,7 @@
 //using namespace std;
 //////////////////////////////////////////////////////////////////////////
 #include "Core/StringUtilities/StringUtil.h"
+#include "BoundaryConditions/BoundaryConditionStructs.h"
 
 void setSizeOfPlane(Parameter* para, int lev, unsigned int z)
 {

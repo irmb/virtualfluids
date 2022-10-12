@@ -40,6 +40,8 @@
 #include "LBM/LB.h"
 #include "PointerDefinitions.h"
 #include "VirtualFluids_GPU_export.h"
+#include "BoundaryConditions/BoundaryConditionStructs.h"
+
 
 class CudaMemoryManager;
 class BoundaryConditionFactory;
