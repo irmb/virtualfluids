@@ -40,7 +40,7 @@
 #include <memory>
 
 #include "LBM/LB.h"
-#include "BoundaryConditions/BoundaryConditionStructs.h"
+#include "BoundaryConditions/BoundaryConditionStructs.cuh"
 
 
 class Parameter;

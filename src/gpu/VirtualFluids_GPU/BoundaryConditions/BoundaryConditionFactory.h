@@ -39,7 +39,7 @@
 #include <variant>
 
 #include "LBM/LB.h"
-#include "BoundaryConditionStructs.h"
+#include "BoundaryConditionStructs.cuh"
 #include "Parameter/Parameter.h"
 #include "gpu/GridGenerator/grid/BoundaryConditions/Side.h"
 

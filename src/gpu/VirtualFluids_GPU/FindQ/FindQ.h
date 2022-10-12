@@ -4,7 +4,7 @@
 #include "LBM/LB.h"
 #include "lbm/constants/D3Q27.h"
 #include "Parameter/Parameter.h"
-#include "BoundaryConditions/BoundaryConditionStructs.h"
+#include "BoundaryConditions/BoundaryConditionStructs.cuh"
 
 
 void findQ(Parameter* para, int lev);

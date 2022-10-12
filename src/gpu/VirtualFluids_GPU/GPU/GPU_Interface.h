@@ -14,7 +14,7 @@
 
 #include <DataTypes.h>
 #include "LBM/LB.h"
-#include "BoundaryConditions/BoundaryConditionStructs.h"
+#include "BoundaryConditions/BoundaryConditionStructs.cuh"
 
 struct LBMSimulationParameter;
 class Parameter;

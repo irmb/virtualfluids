@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "LBM/LB.h"
-#include "BoundaryConditions/BoundaryConditionStructs.h"
+#include "BoundaryConditions/BoundaryConditionStructs.cuh"
 
 //#include "VirtualFluids_GPU_export.h"
 
