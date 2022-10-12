@@ -49,7 +49,7 @@ void CudaStreamManager::terminateStreams()
 
 cudaStream_t &CudaStreamManager::getStream(Stream stream)
 {
-    return cudaStreams[stream]; 
+    return streamIsRegistered(stream) ? cudaStreams[stream] : legacyStream; 
 }
 
 bool CudaStreamManager::streamIsRegistered(Stream stream)
