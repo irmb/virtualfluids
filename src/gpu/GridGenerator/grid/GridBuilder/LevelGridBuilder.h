@@ -198,6 +198,9 @@ public:
     void addFluidNodeIndicesMacroVars(std::vector<uint> fluidNodeIndicesMacroVars, uint level) override;
     void addFluidNodeIndicesApplyBodyForce(std::vector<uint> fluidNodeIndicesApplyBodyForce, uint level) override;
     void addFluidNodeIndicesAllFeatures(std::vector<uint> fluidNodeIndicesAllFeatures, uint level) override;
+    void sortFluidNodeIndicesMacroVars(uint level) override;
+    void sortFluidNodeIndicesApplyBodyForce(uint level) override;
+    void sortFluidNodeIndicesAllFeatures(uint level) override;
 };
 
 #endif

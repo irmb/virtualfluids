@@ -233,6 +233,11 @@ void GridReader::tagFluidNodeIndices(std::vector<uint> taggedFluidNodeIndices, C
     // TODO
 }
 
+void GridReader::sortFluidNodeTags(){
+	std::cout << "GridReader::sortFluidNodeTags not implemented" << std::endl;
+    // TODO
+}
+
 void GridReader::setPressureValues(int channelSide) const
 {
 	for (unsigned int level = 0; level <= BC_Values[channelSide]->getLevel(); level++)

@@ -32,6 +32,7 @@ public:
     virtual void allocArrays_fluidNodeIndicesBorder() = 0;
 
     virtual void tagFluidNodeIndices(std::vector<uint> taggedFluidNodeIndices, CollisionTemplate tag, uint level) = 0;
+    virtual void sortFluidNodeTags() = 0;
 
 	virtual void setDimensions() = 0;
 	virtual void setBoundingBox() = 0;

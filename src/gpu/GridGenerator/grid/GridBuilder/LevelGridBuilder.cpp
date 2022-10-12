@@ -691,3 +691,18 @@ void LevelGridBuilder::addFluidNodeIndicesAllFeatures(std::vector<uint> fluidNod
 {
     grids[level]->addFluidNodeIndicesAllFeatures(fluidNodeIndicesAllFeatures);
 }
+
+void LevelGridBuilder::sortFluidNodeIndicesMacroVars(uint level)
+{
+
+}
+
+void LevelGridBuilder::sortFluidNodeIndicesApplyBodyForce(uint level)
+{
+
+}
+
+void LevelGridBuilder::sortFluidNodeIndicesAllFeatures(uint level)
+{
+
+}

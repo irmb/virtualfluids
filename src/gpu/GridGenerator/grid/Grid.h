@@ -182,6 +182,10 @@ public:
     virtual void addFluidNodeIndicesMacroVars(std::vector<uint> _fluidNodeIndicesMacroVars) = 0;
     virtual void addFluidNodeIndicesApplyBodyForce(std::vector<uint> _fluidNodeIndicesApplyBodyForce) = 0;
     virtual void addFluidNodeIndicesAllFeatures(std::vector<uint> _fluidNodeIndicesAllFeatures) = 0;
+    virtual void sortFluidNodeIndicesMacroVars() = 0;
+    virtual void sortFluidNodeIndicesApplyBodyForce() = 0;
+    virtual void sortFluidNodeIndicesAllFeatures() = 0;
+
 };
 
 #endif

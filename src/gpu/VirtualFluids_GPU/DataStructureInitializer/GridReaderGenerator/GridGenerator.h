@@ -75,6 +75,7 @@ public:
     void allocArrays_fluidNodeIndicesBorder() override;
 
     void tagFluidNodeIndices(std::vector<uint> taggedFluidNodeIndices, CollisionTemplate tag, uint level) override;
+    void sortFluidNodeTags() override;
 
     virtual void setDimensions() override;
     virtual void setBoundingBox() override;

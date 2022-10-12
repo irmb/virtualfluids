@@ -135,6 +135,13 @@ void GridGenerator::tagFluidNodeIndices(std::vector<uint> taggedFluidNodeIndices
     
 }
 
+void GridGenerator::sortFluidNodeTags() {
+    for (uint level = 0; level < builder->getNumberOfGridLevels(); level++)
+    {
+        
+    }
+}
+
 void GridGenerator::allocArrays_BoundaryValues()
 {
     std::cout << "------read BoundaryValues------" << std::endl;
