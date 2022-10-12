@@ -71,10 +71,10 @@ void UpdateGrid27::collisionAllNodes(int level, unsigned int t)
         collisionAdvectionDiffusion(level);
 }
 
-void UpdateGrid27::collisionUsingIndices(int level, unsigned int t, uint *fluidNodeIndices, uint numberOfFluidNodes)
+void UpdateGrid27::collisionUsingIndices(int level, unsigned int t, uint *fluidNodeIndices, uint numberOfFluidNodes, CudaStreamIndex stream)
 {
     if (fluidNodeIndices != nullptr && numberOfFluidNodes != 0)
-        kernels.at(level)->runOnIndices(fluidNodeIndices, numberOfFluidNodes);
+        kernels.at(level)->runOnIndices(fluidNodeIndices, numberOfFluidNodes, stream);
     else
         std::cout << "In collision: fluidNodeIndices or numberOfFluidNodes not definded"
                       << std::endl;
@@ -118,31 +118,31 @@ void UpdateGrid27::collisionAdvectionDiffusion(int level)
     this->adKernelManager->runADcollisionKernel(level);
 }
 
-void UpdateGrid27::prepareExchangeMultiGPU(int level)
+void UpdateGrid27::prepareExchangeMultiGPU(int level, CudaStreamIndex streamIndex)
 {
-    prepareExchangeCollDataXGPU27AllNodes(para.get(), level);
-    prepareExchangeCollDataYGPU27AllNodes(para.get(), level);
-    prepareExchangeCollDataZGPU27AllNodes(para.get(), level);
+    prepareExchangeCollDataXGPU27AllNodes(para.get(), level, streamIndex);
+    prepareExchangeCollDataYGPU27AllNodes(para.get(), level, streamIndex);
+    prepareExchangeCollDataZGPU27AllNodes(para.get(), level, streamIndex);
 }
 
-void UpdateGrid27::prepareExchangeMultiGPUAfterFtoC(int level)
+void UpdateGrid27::prepareExchangeMultiGPUAfterFtoC(int level, CudaStreamIndex streamIndex)
 {
-    prepareExchangeCollDataXGPU27AfterFtoC(para.get(), level);
-    prepareExchangeCollDataYGPU27AfterFtoC(para.get(), level);
-    prepareExchangeCollDataZGPU27AfterFtoC(para.get(), level);
+    prepareExchangeCollDataXGPU27AfterFtoC(para.get(), level, streamIndex);
+    prepareExchangeCollDataYGPU27AfterFtoC(para.get(), level, streamIndex);
+    prepareExchangeCollDataZGPU27AfterFtoC(para.get(), level, streamIndex);
 }
 
-void UpdateGrid27::exchangeMultiGPU(int level)
+void UpdateGrid27::exchangeMultiGPU(int level, CudaStreamIndex streamIndex)
 {
     //////////////////////////////////////////////////////////////////////////
     // 3D domain decomposition
-    exchangeCollDataXGPU27AllNodes(para.get(), comm, cudaMemoryManager.get(), level);
-    exchangeCollDataYGPU27AllNodes(para.get(), comm, cudaMemoryManager.get(), level);
-    exchangeCollDataZGPU27AllNodes(para.get(), comm, cudaMemoryManager.get(), level);
+    exchangeCollDataXGPU27AllNodes(para.get(), comm, cudaMemoryManager.get(), level, streamIndex);
+    exchangeCollDataYGPU27AllNodes(para.get(), comm, cudaMemoryManager.get(), level, streamIndex);
+    exchangeCollDataZGPU27AllNodes(para.get(), comm, cudaMemoryManager.get(), level, streamIndex);
 
-    scatterNodesFromRecvBufferXGPU27AllNodes(para.get(), level);
-    scatterNodesFromRecvBufferYGPU27AllNodes(para.get(), level);
-    scatterNodesFromRecvBufferZGPU27AllNodes(para.get(), level);
+    scatterNodesFromRecvBufferXGPU27AllNodes(para.get(), level, streamIndex);
+    scatterNodesFromRecvBufferYGPU27AllNodes(para.get(), level, streamIndex);
+    scatterNodesFromRecvBufferZGPU27AllNodes(para.get(), level, streamIndex);
 
     //////////////////////////////////////////////////////////////////////////
     // 3D domain decomposition convection diffusion
@@ -168,30 +168,30 @@ void UpdateGrid27::exchangeMultiGPU_noStreams_withPrepare(int level, bool useRed
     // 3D domain decomposition
     if (useReducedComm) {
         // X
-        prepareExchangeCollDataXGPU27AfterFtoC(para.get(), level);
-        exchangeCollDataXGPU27AfterFtoC(para.get(), comm, cudaMemoryManager.get(), level);
-        scatterNodesFromRecvBufferXGPU27AfterFtoC(para.get(), level);
+        prepareExchangeCollDataXGPU27AfterFtoC(para.get(), level, CudaStreamIndex::Legacy);
+        exchangeCollDataXGPU27AfterFtoC(para.get(), comm, cudaMemoryManager.get(), level, CudaStreamIndex::Legacy);
+        scatterNodesFromRecvBufferXGPU27AfterFtoC(para.get(), level, CudaStreamIndex::Legacy);
         // Y
-        prepareExchangeCollDataYGPU27AfterFtoC(para.get(), level);
-        exchangeCollDataYGPU27AfterFtoC(para.get(), comm, cudaMemoryManager.get(), level);
-        scatterNodesFromRecvBufferYGPU27AfterFtoC(para.get(), level);
+        prepareExchangeCollDataYGPU27AfterFtoC(para.get(), level, CudaStreamIndex::Legacy);
+        exchangeCollDataYGPU27AfterFtoC(para.get(), comm, cudaMemoryManager.get(), level, CudaStreamIndex::Legacy);
+        scatterNodesFromRecvBufferYGPU27AfterFtoC(para.get(), level, CudaStreamIndex::Legacy);
         // Z
-        prepareExchangeCollDataZGPU27AfterFtoC(para.get(), level);
-        exchangeCollDataZGPU27AfterFtoC(para.get(), comm, cudaMemoryManager.get(), level);
-        scatterNodesFromRecvBufferZGPU27AfterFtoC(para.get(), level);
+        prepareExchangeCollDataZGPU27AfterFtoC(para.get(), level, CudaStreamIndex::Legacy);
+        exchangeCollDataZGPU27AfterFtoC(para.get(), comm, cudaMemoryManager.get(), level, CudaStreamIndex::Legacy);
+        scatterNodesFromRecvBufferZGPU27AfterFtoC(para.get(), level, CudaStreamIndex::Legacy);
     } else {
         // X
-        prepareExchangeCollDataXGPU27AllNodes(para.get(), level);
-        exchangeCollDataXGPU27AllNodes(para.get(), comm, cudaMemoryManager.get(), level);
-        scatterNodesFromRecvBufferXGPU27AllNodes(para.get(), level);
+        prepareExchangeCollDataXGPU27AllNodes(para.get(), level, CudaStreamIndex::Legacy);
+        exchangeCollDataXGPU27AllNodes(para.get(), comm, cudaMemoryManager.get(), level, CudaStreamIndex::Legacy);
+        scatterNodesFromRecvBufferXGPU27AllNodes(para.get(), level, CudaStreamIndex::Legacy);
         // Y
-        prepareExchangeCollDataYGPU27AllNodes(para.get(), level);
-        exchangeCollDataYGPU27AllNodes(para.get(), comm, cudaMemoryManager.get(), level);
-        scatterNodesFromRecvBufferYGPU27AllNodes(para.get(), level);
+        prepareExchangeCollDataYGPU27AllNodes(para.get(), level, CudaStreamIndex::Legacy);
+        exchangeCollDataYGPU27AllNodes(para.get(), comm, cudaMemoryManager.get(), level, CudaStreamIndex::Legacy);
+        scatterNodesFromRecvBufferYGPU27AllNodes(para.get(), level, CudaStreamIndex::Legacy);
         // Z
-        prepareExchangeCollDataZGPU27AllNodes(para.get(), level);
-        exchangeCollDataZGPU27AllNodes(para.get(), comm, cudaMemoryManager.get(), level);
-        scatterNodesFromRecvBufferZGPU27AllNodes(para.get(), level);
+        prepareExchangeCollDataZGPU27AllNodes(para.get(), level, CudaStreamIndex::Legacy);
+        exchangeCollDataZGPU27AllNodes(para.get(), comm, cudaMemoryManager.get(), level, CudaStreamIndex::Legacy);
+        scatterNodesFromRecvBufferZGPU27AllNodes(para.get(), level, CudaStreamIndex::Legacy);
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -204,17 +204,17 @@ void UpdateGrid27::exchangeMultiGPU_noStreams_withPrepare(int level, bool useRed
         exchangePostCollDataADZGPU27(para.get(), comm, cudaMemoryManager.get(), level);
     }
 }
-void UpdateGrid27::exchangeMultiGPUAfterFtoC(int level)
+void UpdateGrid27::exchangeMultiGPUAfterFtoC(int level, CudaStreamIndex streamIndex)
 {
     //////////////////////////////////////////////////////////////////////////
     // 3D domain decomposition
-    exchangeCollDataXGPU27AfterFtoC(para.get(), comm, cudaMemoryManager.get(), level);
-    exchangeCollDataYGPU27AfterFtoC(para.get(), comm, cudaMemoryManager.get(), level);
-    exchangeCollDataZGPU27AfterFtoC(para.get(), comm, cudaMemoryManager.get(), level);
+    exchangeCollDataXGPU27AfterFtoC(para.get(), comm, cudaMemoryManager.get(), level, streamIndex);
+    exchangeCollDataYGPU27AfterFtoC(para.get(), comm, cudaMemoryManager.get(), level, streamIndex);
+    exchangeCollDataZGPU27AfterFtoC(para.get(), comm, cudaMemoryManager.get(), level, streamIndex);
 
-    scatterNodesFromRecvBufferXGPU27AfterFtoC(para.get(), level);
-    scatterNodesFromRecvBufferYGPU27AfterFtoC(para.get(), level);
-    scatterNodesFromRecvBufferZGPU27AfterFtoC(para.get(), level);
+    scatterNodesFromRecvBufferXGPU27AfterFtoC(para.get(), level, streamIndex);
+    scatterNodesFromRecvBufferYGPU27AfterFtoC(para.get(), level, streamIndex);
+    scatterNodesFromRecvBufferZGPU27AfterFtoC(para.get(), level, streamIndex);
 
     //////////////////////////////////////////////////////////////////////////
     // 3D domain decomposition convection diffusion
@@ -317,12 +317,12 @@ void UpdateGrid27::preCollisionBC(int level, unsigned int t)
     //////////////////////////////////////////////////////////////////////////////////
 }
 
-void UpdateGrid27::fineToCoarse(int level, InterpolationCellFC* icellFC, OffFC &offFC)
+void UpdateGrid27::fineToCoarse(int level, InterpolationCellFC* icellFC, OffFC &offFC, CudaStreamIndex streamIndex)
 {
-    gridScalingKernelManager->runFineToCoarseKernelLB(level, icellFC, offFC);
+    gridScalingKernelManager->runFineToCoarseKernelLB(level, icellFC, offFC, streamIndex);
 
     if (para->getDiffOn()) {
-        if (para->getStreamManager()->streamIsRegistered(CudaStreamManager::Stream::Border)) {
+        if (para->getStreamManager()->streamIsRegistered(streamIndex)) {
             printf("fineToCoarse Advection Diffusion not implemented"); // TODO
             return;
         }
@@ -330,13 +330,13 @@ void UpdateGrid27::fineToCoarse(int level, InterpolationCellFC* icellFC, OffFC &
     }
 }
 
-void UpdateGrid27::coarseToFine(int level, InterpolationCellCF* icellCF, OffCF &offCF)
+void UpdateGrid27::coarseToFine(int level, InterpolationCellCF* icellCF, OffCF &offCF, CudaStreamIndex streamIndex)
 {
-    this->gridScalingKernelManager->runCoarseToFineKernelLB(level, icellCF, offCF);
+    this->gridScalingKernelManager->runCoarseToFineKernelLB(level, icellCF, offCF, streamIndex);
 
     if (para->getDiffOn())
     {
-        if(para->getStreamManager()->streamIsRegistered(CudaStreamManager::Stream::Border)){
+        if(para->getStreamManager()->streamIsRegistered(streamIndex)){
             printf("CoarseToFineWithStream Advection Diffusion not implemented"); // TODO
             return;
         }

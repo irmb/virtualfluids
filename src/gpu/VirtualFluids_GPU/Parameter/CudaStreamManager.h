@@ -33,33 +33,34 @@
 #include <map>
 #include <cuda.h>
 #include <cuda_runtime.h>
-
-class CudaStreamManager
-{
-public:
-    enum class Stream
+enum class CudaStreamIndex
     {
+        Legacy,
         Bulk,
         Border
     };
+class CudaStreamManager
+{
+public:
+    
 private:
-    std::map<Stream, cudaStream_t> cudaStreams;
+    std::map<CudaStreamIndex, cudaStream_t> cudaStreams;
     cudaEvent_t startBulkKernel = NULL;
     cudaStream_t legacyStream = CU_STREAM_LEGACY;
 
 
 public:
-    void registerStream(Stream stream);
+    void registerStream(CudaStreamIndex streamIndex);
     void launchStreams();
     void terminateStreams();
-    cudaStream_t &getStream(Stream stream);
+    cudaStream_t &getStream(CudaStreamIndex streamIndex);
 
-    bool streamIsRegistered(Stream stream);
+    bool streamIsRegistered(CudaStreamIndex streamIndex);
     // Events
     void createCudaEvents();
     void destroyCudaEvents();
-    void triggerStartBulkKernel(Stream stream);
-    void waitOnStartBulkKernelEvent(Stream stream);
+    void triggerStartBulkKernel(CudaStreamIndex streamIndex);
+    void waitOnStartBulkKernelEvent(CudaStreamIndex streamIndex);
 };
 
 #endif
