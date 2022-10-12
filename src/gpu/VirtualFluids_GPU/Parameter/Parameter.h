@@ -372,12 +372,12 @@ struct LBMSimulationParameter {
     uint numberOfFluidNodes;
     uint *fluidNodeIndicesBorder;
     uint numberOfFluidNodesBorder;
-    uint *indicesWithMacroscopicVariableOutput;
-    uint numberOfIndicesWithMacroscopicVariableOutput;
-    uint *indicesWithApplyBodyForce;              
-    uint numberOfIndicesWithApplyBodyForce;
-    uint *indicesWithMacroscopicVariableOutputAndApplyBodyForce;    
-    uint numberOfIndicesWithMacroscopicVariableOutputAndApplyBodyForce;
+    uint *fluidNodeIndicesWriteMacroscopicVariables;
+    uint numberOfFluidNodeIndicesWriteMacroscopicVariables;
+    uint *fluidNodeIndicesApplyBodyForce;              
+    uint numberOfFluidNodeIndicesApplyBodyForce;
+    uint *indicesWriteMacroscopicVariablesAndApplyBodyForce;    
+    uint numberOfIndicesWriteMacroscopicVariablesAndApplyBodyForce;
 };
 
 //! \brief Class for LBM-parameter management

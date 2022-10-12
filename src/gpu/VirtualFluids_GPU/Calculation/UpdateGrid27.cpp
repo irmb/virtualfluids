@@ -74,41 +74,10 @@ void UpdateGrid27::collisionAllNodes(int level, unsigned int t)
 void UpdateGrid27::collisionUsingIndices(int level, unsigned int t, uint *fluidNodeIndices, uint numberOfFluidNodes, int stream)
 {
     if (fluidNodeIndices != nullptr && numberOfFluidNodes != 0)
-        kernels.at(level)->runOnIndices(fluidNodeIndices, numberOfFluidNodes, stream);
+        kernels.at(level)->runOnIndices(fluidNodeIndices, numberOfFluidNodes, false, false, stream);
     else
         std::cout << "In collision: fluidNodeIndices or numberOfFluidNodes not definded"
                       << std::endl;
-
-    //////////////////////////////////////////////////////////////////////////
-
-    if (para->getSimulatePorousMedia())
-        collisionPorousMedia(level);
-
-    //////////////////////////////////////////////////////////////////////////
-
-    if (para->getDiffOn())
-        collisionAdvectionDiffusion(level);
-}
-
-void UpdateGrid27::collisionWithReadWriteFlags(int level, unsigned int t, uint *fluidNodeIndices,                                   uint numberOfFluidNodes,
-                                                                    uint *indicesWithMacroscopicVariableOutput,                     uint numberOfIndicesWithMacroscopicVariableOutput,
-                                                                    uint *indicesWithApplyBodyForce,                                uint numberOfIndicesWithApplyBodyForce,
-                                                                    uint *indicesWithMacroscopicVariableOutputAndApplyBodyForce,    uint numberOfIndicesWithMacroscopicVariableOutputAndApplyBodyForce)
-{
-    void runOnIndicesWithMacroscopicVariableOutput(	const unsigned int *indices, unsigned int size_indices, int streamIndex = -1);
-    void runOnIndicesWithApplyBodyForce( const unsigned int *indices, unsigned int size_indices, int streamIndex = -1);
-    void runOnIndicesWithMacroscopicVariableOutputAndApplyBodyForce( const unsigned int *indices, unsigned int size_indices, int streamIndex = -1);
-    
-    if      (fluidNodeIndices != nullptr && numberOfFluidNodes != 0)
-        kernels.at(level)->runOnIndices(fluidNodeIndices, numberOfFluidNodes, 1);
-    else if (indicesWithMacroscopicVariableOutput != nullptr && numberOfIndicesWithMacroscopicVariableOutput != 0)
-        kernels.at(level)->runOnIndicesWithMacroscopicVariableOutput(indicesWithMacroscopicVariableOutput, numberOfIndicesWithMacroscopicVariableOutput, 2);
-    else if (indicesWithApplyBodyForce != nullptr && numberOfIndicesWithApplyBodyForce != 0)
-        kernels.at(level)->runOnIndicesWithApplyBodyForce(indicesWithMacroscopicVariableOutput, numberOfIndicesWithMacroscopicVariableOutput, 3);
-    else if (indicesWithMacroscopicVariableOutputAndApplyBodyForce != nullptr && numberOfIndicesWithMacroscopicVariableOutputAndApplyBodyForce != 0)
-        kernels.at(level)->runOnIndicesWithMacroscopicVariableOutputAndApplyBodyForce(indicesWithMacroscopicVariableOutputAndApplyBodyForce, numberOfIndicesWithMacroscopicVariableOutputAndApplyBodyForce, 4);
-    else
-        std::cout << "In collision: fluidNodeIndices or numberOfFluidNodes not definded" << std::endl;
 
     //////////////////////////////////////////////////////////////////////////
 

@@ -3,22 +3,7 @@
 #include "Kernel/Utilities/CheckParameterStrategy/CheckParameterStrategy.h"
 
 
-void KernelImp::runOnIndices(const unsigned int *indices, unsigned int size_indices, int stream)
-{
-    printf("Method not implemented for this Kernel \n");
-}
-
-void KernelImp::runOnIndicesWithMacroscopicVariableOutput(const unsigned int *indices, unsigned int size_indices, int stream)
-{
-    printf("Method not implemented for this Kernel \n");
-}
-
-void KernelImp::runOnIndicesWithApplyBodyForce(const unsigned int *indices, unsigned int size_indices, int stream)
-{
-    printf("Method not implemented for this Kernel \n");
-}
-
-void KernelImp::runOnIndicesWithMacroscopicVariableOutputAndApplyBodyForce(const unsigned int *indices, unsigned int size_indices, int stream)
+void KernelImp::runOnIndices(const unsigned int *indices, unsigned int size_indices, bool writeMacroscopicVariables, bool applyBodyForce, int stream)
 {
     printf("Method not implemented for this Kernel \n");
 }

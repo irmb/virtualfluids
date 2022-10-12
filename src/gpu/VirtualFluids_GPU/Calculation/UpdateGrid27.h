@@ -32,12 +32,6 @@ public:
 private:
     void collisionAllNodes(int level, unsigned int t);
     void collisionUsingIndices(int level, unsigned int t, uint *fluidNodeIndices = nullptr, uint numberOfFluidNodes = 0, int stream = -1);
-    
-    void collisionWithReadWriteFlags(int level, unsigned int t, 
-                                        uint *fluidNodeIndices,                                         uint numberOfFluidNodes,
-                                        uint *indicesWithMacroscopicVariableOutput,                     uint numberOfIndicesWithMacroscopicVariableOutput,
-                                        uint *indicesWithApplyBodyForce,                                uint numberOfIndicesWithApplyBodyForce,
-                                        uint *indicesWithMacroscopicVariableOutputAndApplyBodyForce,    uint numberOfIndicesWithMacroscopicVariableOutputAndApplyBodyForce);
     void collisionAdvectionDiffusion(int level);
 
     void postCollisionBC(int level);
