@@ -228,6 +228,10 @@ void GridReader::allocArrays_fluidNodeIndicesBorder() {
     // TODO
 }
 
+void GridReader::tagFluidNodeIndices(std::vector<uint> taggedFluidNodeIndices, CollisionTemplate tag, uint level){
+	std::cout << "GridReader::tagFluidNodeIndices not implemented" << std::endl;
+    // TODO
+}
 
 void GridReader::setPressureValues(int channelSide) const
 {

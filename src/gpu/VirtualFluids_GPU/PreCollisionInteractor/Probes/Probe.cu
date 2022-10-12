@@ -315,6 +315,12 @@ void Probe::free(Parameter* para, CudaMemoryManager* cudaMemoryManager)
     }
 }
 
+void Probe::getInteractorFluidNodes(Parameter *para, GridProvider* gridProvider)
+{
+    // Do nothing
+};
+
+
 void Probe::addStatistic(Statistic variable)
 {
     if (!this->isAvailableStatistic(variable)) throw std::runtime_error("Probe::addStatistic(): Statistic not available for this probe type!");

@@ -1,5 +1,6 @@
 #include "GridGenerator.h"
 
+#include "LBM/LB.h"
 #include "Parameter/Parameter.h"
 #include "GridGenerator/grid/GridBuilder/GridBuilder.h"
 #include "GPU/CudaMemoryManager.h"
@@ -110,6 +111,28 @@ void GridGenerator::allocArrays_fluidNodeIndicesBorder() {
         builder->getFluidNodeIndicesBorder(para->getParH(level)->fluidNodeIndicesBorder, level);
         cudaMemoryManager->cudaCopyFluidNodeIndicesBorder(level);
     }
+}
+
+void GridGenerator::tagFluidNodeIndices(std::vector<uint> taggedFluidNodeIndices, CollisionTemplate tag, uint level) {
+    switch(tag)
+    {
+        case CollisionTemplate::WriteMacroVars:
+            builder->addFluidNodeIndicesMacroVars( taggedFluidNodeIndices, level );
+            break;
+        case CollisionTemplate::ApplyBodyForce:
+            builder->addFluidNodeIndicesApplyBodyForce( taggedFluidNodeIndices, level );
+            break;
+        case CollisionTemplate::AllFeatures:
+            builder->addFluidNodeIndicesAllFeatures( taggedFluidNodeIndices, level );
+            break;
+        case CollisionTemplate::Default:
+            throw std::runtime_error("Cannot tag fluid nodes as CollisionTemplate::Default!");
+        default:
+            throw std::runtime_error("Tagging fluid nodes with invald tag!");
+            break;
+
+    }
+    
 }
 
 void GridGenerator::allocArrays_BoundaryValues()

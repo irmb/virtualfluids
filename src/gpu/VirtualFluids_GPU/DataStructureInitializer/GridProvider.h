@@ -5,7 +5,7 @@
 #include <vector>
 #include <memory>
 
-
+#include "LBM/LB.h"
 #include "PointerDefinitions.h"
 #include "VirtualFluids_GPU_export.h"
 #include "gpu/GridGenerator/io/SimulationFileWriter/SimulationFileWriter.h"
@@ -30,6 +30,8 @@ public:
     virtual void allocArrays_OffsetScale() = 0;
     virtual void allocArrays_fluidNodeIndices() = 0;
     virtual void allocArrays_fluidNodeIndicesBorder() = 0;
+
+    virtual void tagFluidNodeIndices(std::vector<uint> taggedFluidNodeIndices, CollisionTemplate tag, uint level) = 0;
 
 	virtual void setDimensions() = 0;
 	virtual void setBoundingBox() = 0;

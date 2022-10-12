@@ -68,12 +68,12 @@ void CollisionAndExchange_streams::operator()(UpdateGrid27 *updateGrid, Paramete
 
     //! \details steps:
     //!
-    //! 1. run collision for nodes which are at the border of the gpus/processes
-    //!
+    //! 1. run collision for nodes which are at the border of the gpus/processes, running with WriteMacroVars in case probes sample on these nodes
+    //!    
     updateGrid->collisionUsingIndices(  level, t, 
                                         para->getParD(level)->fluidNodeIndicesBorder,
                                         para->getParD(level)->numberOfFluidNodesBorder, 
-                                        CollisionTemplate::Default,
+                                        CollisionTemplate::WriteMacroVars,  
                                         borderStreamIndex);
 
     //! 2. prepare the exchange between gpus (collect the send nodes for communication in a buffer on the gpu) and trigger bulk kernel execution when finished

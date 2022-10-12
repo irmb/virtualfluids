@@ -675,3 +675,19 @@ void LevelGridBuilder::findFluidNodes(bool splitDomain)
         grids[i]->findFluidNodeIndices(splitDomain);
     *logging::out << logging::Logger::INFO_HIGH << "Done with findFluidNodes()\n";
 }
+
+
+void LevelGridBuilder::addFluidNodeIndicesMacroVars(std::vector<uint> fluidNodeIndicesMacroVars, uint level) 
+{
+    grids[level]->addFluidNodeIndicesMacroVars(fluidNodeIndicesMacroVars);
+}
+
+void LevelGridBuilder::addFluidNodeIndicesApplyBodyForce(std::vector<uint> fluidNodeIndicesApplyBodyForce, uint level)
+{
+    grids[level]->addFluidNodeIndicesApplyBodyForce(fluidNodeIndicesApplyBodyForce);
+}
+
+void LevelGridBuilder::addFluidNodeIndicesAllFeatures(std::vector<uint> fluidNodeIndicesAllFeatures, uint level)
+{
+    grids[level]->addFluidNodeIndicesAllFeatures(fluidNodeIndicesAllFeatures);
+}

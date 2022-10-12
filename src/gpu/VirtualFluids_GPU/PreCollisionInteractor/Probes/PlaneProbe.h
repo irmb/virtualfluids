@@ -72,6 +72,8 @@ public:
         this->deltaZ = _deltaZ; 
     }
 
+    void getInteractorFluidNodes(Parameter *para, GridProvider* gridProvider) override;
+
 private:
     bool isAvailableStatistic(Statistic _variable) override;
 

@@ -2099,6 +2099,21 @@ void GridImp::getFluidNodeIndicesBorder(uint *fluidNodeIndicesBorder) const
         fluidNodeIndicesBorder[nodeNumber] = this->fluidNodeIndicesBorder[nodeNumber];
 }
 
+void GridImp::addFluidNodeIndicesMacroVars(std::vector<uint> _fluidNodeIndicesMacroVars)
+{
+    this->fluidNodeIndicesMacroVars.insert(fluidNodeIndicesMacroVars.end(), fluidNodeIndicesMacroVars.begin(), _fluidNodeIndicesMacroVars.end());
+}
+
+void GridImp::addFluidNodeIndicesApplyBodyForce(std::vector<uint> _fluidNodeIndicesApplyBodyForce)
+{
+    this->fluidNodeIndicesApplyBodyForce.insert(_fluidNodeIndicesApplyBodyForce.end(), _fluidNodeIndicesApplyBodyForce.begin(), fluidNodeIndicesApplyBodyForce.end());
+}
+
+void GridImp::addFluidNodeIndicesAllFeatures(std::vector<uint> _fluidNodeIndicesAllFeatures) 
+{
+    this->fluidNodeIndicesAllFeatures.insert(fluidNodeIndicesAllFeatures.end(), fluidNodeIndicesAllFeatures.begin(), _fluidNodeIndicesAllFeatures.end());
+}
+
 void GridImp::print() const
 {
     printf("min: (%2.4f, %2.4f, %2.4f), max: (%2.4f, %2.4f, %2.4f), size: %d, delta: %2.4f\n", startX, startY, startZ,
