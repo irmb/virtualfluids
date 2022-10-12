@@ -51,6 +51,8 @@ int CudaStreamManager::getBorderStreamIndex() { return borderStreamIndex; }
 
 int CudaStreamManager::getBulkStreamIndex() { return bulkStreamIndex; }
 
+int CudaStreamManager::getPrecursorStreamIndex() { return precursorStreamIndex; }
+
 void CudaStreamManager::createCudaEvents()
 {
     checkCudaErrors(cudaEventCreateWithFlags(&startBulkKernel, cudaEventDisableTiming));

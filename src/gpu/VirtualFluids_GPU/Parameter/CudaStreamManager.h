@@ -40,6 +40,7 @@ class CudaStreamManager
 private:
     std::vector<cudaStream_t> cudaStreams;
     cudaEvent_t startBulkKernel = NULL;
+    const int precursorStreamIndex    = 2;
     const int borderStreamIndex       = 1;
     const int bulkStreamIndex         = 0;
 
@@ -47,9 +48,9 @@ public:
     void launchStreams(uint numberOfStreams);
     void terminateStreams();
     cudaStream_t &getStream(uint streamIndex);
-
     int getBorderStreamIndex();
     int getBulkStreamIndex();
+    int getPrecursorStreamIndex();
 
     // Events
     void createCudaEvents();

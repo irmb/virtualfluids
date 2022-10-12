@@ -1,7 +1,6 @@
 #ifndef BoundaryConditionStructs_H
 #define BoundaryConditionStructs_H
 #include "Core/DataTypes.h"
-#include <cuda_runtime.h>
 
 //Q for second order BCs
 //! \struct to manage sub-grid-distances (q) for second order Boundary Conditions (BCs)
@@ -33,7 +32,6 @@ typedef struct QforPrecursorBC{
    real* weightsNT, *weightsNB, *weightsST,  *weightsSB;
    real* last, *current, *next;
    real velocityX, velocityY, velocityZ;
-   cudaStream_t stream;
 }QforPrecursorBoundaryConditions;
 
 //BCTemp
