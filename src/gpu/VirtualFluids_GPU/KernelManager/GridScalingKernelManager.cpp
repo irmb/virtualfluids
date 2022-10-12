@@ -39,9 +39,9 @@
 
 GridScalingKernelManager::GridScalingKernelManager(SPtr<Parameter> parameter): para(parameter){}
 
-void GridScalingKernelManager::runFineToCoarseKernelLB(const int level, uint *iCellFCC, uint *iCellFCF, uint k_FC, int streamIndex) const{
+void GridScalingKernelManager::runFineToCoarseKernelLB(const int level, uint *iCellFCC, uint *iCellFCF, uint k_FC) const{
 
-    cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
+    cudaStream_t stream = para->getStreamManager()->getStream(CudaStreamManager::StreamIndex::borderStreamIndex);
 
     // ScaleFC_comp_D3Q27F3(
     //     para->getParD(level)->distributions.f[0],
@@ -332,9 +332,9 @@ void GridScalingKernelManager::runFineToCoarseKernelAD(const int level) const
     }
 }
 
-void GridScalingKernelManager::runCoarseToFineKernelLB(const int level, uint *iCellCFC, uint *iCellCFF, uint k_CF, OffCF &offCF, int streamIndex) const
+void GridScalingKernelManager::runCoarseToFineKernelLB(const int level, uint *iCellCFC, uint *iCellCFF, uint k_CF, OffCF &offCF) const
 {
-    cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
+    cudaStream_t stream = para->getStreamManager()->getStream(CudaStreamManager::StreamIndex::borderStreamIndex);
 
     // ScaleCF_comp_D3Q27F3(
     //     para->getParD(level)->distributions.f[0],

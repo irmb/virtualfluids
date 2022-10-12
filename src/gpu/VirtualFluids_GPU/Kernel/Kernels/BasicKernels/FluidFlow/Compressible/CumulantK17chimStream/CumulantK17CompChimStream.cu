@@ -32,7 +32,7 @@ void CumulantK17CompChimStream::run()
 
 void CumulantK17CompChimStream::runOnIndices(const unsigned int *indices, unsigned int size_indices, int streamIndex)
 {
-    cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
+    cudaStream_t stream = para->getStreamManager()->getStream(CudaStreamManager::StreamIndex::bulkStreamIndex);
 
     LB_Kernel_CumulantK17CompChimStream<<< cudaGrid.grid, cudaGrid.threads, 0, stream>>>(
         para->getParD(level)->omega, 

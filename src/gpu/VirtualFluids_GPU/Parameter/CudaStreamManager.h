@@ -32,31 +32,35 @@
 
 #include <vector>
 #include "Core/DataTypes.h"
-
+#include <map>
 #include <cuda_runtime.h>
+#include <cuda.h>
 
 class CudaStreamManager
 {
+public:
+    enum StreamIndex{
+        precursorStream,
+        borderStreamIndex,
+        bulkStreamIndex
+    };
 private:
-    std::vector<cudaStream_t> cudaStreams;
+    cudaStream_t legacyStream = CU_STREAM_LEGACY;
+    std::map<StreamIndex, cudaStream_t> cudaStreams;
     cudaEvent_t startBulkKernel = NULL;
-    const int precursorStreamIndex    = 2;
-    const int borderStreamIndex       = 1;
-    const int bulkStreamIndex         = 0;
 
 public:
-    void launchStreams(uint numberOfStreams);
+    void registerStream(StreamIndex streamIndex);
+    void launchStreams();
+    bool streamIsRegistered(StreamIndex streamIndex);
     void terminateStreams();
-    cudaStream_t &getStream(uint streamIndex);
-    int getBorderStreamIndex();
-    int getBulkStreamIndex();
-    int getPrecursorStreamIndex();
+    cudaStream_t &getStream(StreamIndex streamIndex);
 
     // Events
     void createCudaEvents();
     void destroyCudaEvents();
-    void triggerStartBulkKernel(int streamIndex);
-    void waitOnStartBulkKernelEvent(int strteamIndex);
+    void triggerStartBulkKernel(StreamIndex streamIndex);
+    void waitOnStartBulkKernelEvent(StreamIndex streamIndex);
 };
 
 #endif

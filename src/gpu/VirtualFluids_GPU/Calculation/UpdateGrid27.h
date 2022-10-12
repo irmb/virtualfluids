@@ -38,14 +38,14 @@ private:
     void preCollisionBC(int level, unsigned int t);
     void collisionPorousMedia(int level);
 
-    void fineToCoarse(int level, uint *iCellFCC, uint *iCellFCF, uint k_FC, int streamIndex);
-    void coarseToFine(int level, uint *iCellCFC, uint *iCellCFF, uint k_CF, OffCF &offCF, int streamIndex);
+    void fineToCoarse(int level, uint *iCellFCC, uint *iCellFCF, uint k_FC);
+    void coarseToFine(int level, uint *iCellCFC, uint *iCellCFF, uint k_CF, OffCF &offCF);
 
-    void prepareExchangeMultiGPU(int level, int streamIndex);
-    void prepareExchangeMultiGPUAfterFtoC(int level, int streamIndex);
+    void prepareExchangeMultiGPU(int level);
+    void prepareExchangeMultiGPUAfterFtoC(int level);
 
-    void exchangeMultiGPU(int level, int streamIndex);
-    void exchangeMultiGPUAfterFtoC(int level, int streamIndex);
+    void exchangeMultiGPU(int level);
+    void exchangeMultiGPUAfterFtoC(int level);
     void exchangeMultiGPU_noStreams_withPrepare(int level, bool useReducedComm);
 
     void swapBetweenEvenAndOddTimestep(int level);

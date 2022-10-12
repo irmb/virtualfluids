@@ -61,28 +61,25 @@ void CollisionAndExchange_noStreams_oldKernel::operator()(UpdateGrid27 *updateGr
 
 void CollisionAndExchange_streams::operator()(UpdateGrid27 *updateGrid, Parameter *para, int level, unsigned int t)
 {
-    int borderStreamIndex = para->getStreamManager()->getBorderStreamIndex();
-    int bulkStreamIndex = para->getStreamManager()->getBulkStreamIndex();
-
     //! \details steps:
     //!
     //! 1. run collision for nodes which are at the border of the gpus/processes
     //!
     updateGrid->collisionUsingIndices(level, t, para->getParD(level)->fluidNodeIndicesBorder,
-                                    para->getParD(level)->numberOfFluidNodesBorder, borderStreamIndex);
+                                    para->getParD(level)->numberOfFluidNodesBorder);
 
     //! 2. prepare the exchange between gpus (collect the send nodes for communication in a buffer on the gpu) and trigger bulk kernel execution when finished
     //!
-    updateGrid->prepareExchangeMultiGPU(level, borderStreamIndex);
+    updateGrid->prepareExchangeMultiGPU(level);
     if (para->getUseStreams())
-        para->getStreamManager()->triggerStartBulkKernel(borderStreamIndex);
+        para->getStreamManager()->triggerStartBulkKernel(CudaStreamManager::StreamIndex::borderStreamIndex);
 
     //! 3. launch the collision kernel for bulk nodes
     //!
-    para->getStreamManager()->waitOnStartBulkKernelEvent(bulkStreamIndex);
+    para->getStreamManager()->waitOnStartBulkKernelEvent(CudaStreamManager::StreamIndex::bulkStreamIndex);
     updateGrid->collisionUsingIndices(level, t, para->getParD(level)->fluidNodeIndices,
-                                    para->getParD(level)->numberOfFluidNodes, bulkStreamIndex);
+                                    para->getParD(level)->numberOfFluidNodes);
 
     //! 4. exchange information between GPUs
-    updateGrid->exchangeMultiGPU(level, borderStreamIndex);
+    updateGrid->exchangeMultiGPU(level);
 }
