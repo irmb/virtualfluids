@@ -1,9 +1,11 @@
 #include "KernelImp.h"
 
+#include "LBM/LB.h" 
+
 #include "Kernel/Utilities/CheckParameterStrategy/CheckParameterStrategy.h"
 
 
-void KernelImp::runOnIndices(const unsigned int *indices, unsigned int size_indices, bool writeMacroscopicVariables, bool applyBodyForce, int stream)
+void KernelImp::runOnIndices(const unsigned int *indices, unsigned int size_indices, CollisionTemplate collisionTemplate, int stream)
 {
     printf("Method not implemented for this Kernel \n");
 }

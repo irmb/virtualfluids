@@ -39,8 +39,10 @@ void CollisionAndExchange_noStreams_indexKernel::operator()(UpdateGrid27 *update
     //!
     //! 1. run collision
     //!
-    updateGrid->collisionUsingIndices(level, t, para->getParD(level)->fluidNodeIndices,
-                                    para->getParD(level)->numberOfFluidNodes, -1);
+    updateGrid->collisionUsingIndices(  level, t, 
+                                        para->getParD(level)->fluidNodeIndices,
+                                        para->getParD(level)->numberOfFluidNodes, 
+                                        CollisionTemplate::Default, -1);
 
     //! 2. exchange information between GPUs
     updateGrid->exchangeMultiGPU_noStreams_withPrepare(level, false);
@@ -68,8 +70,11 @@ void CollisionAndExchange_streams::operator()(UpdateGrid27 *updateGrid, Paramete
     //!
     //! 1. run collision for nodes which are at the border of the gpus/processes
     //!
-    updateGrid->collisionUsingIndices(level, t, para->getParD(level)->fluidNodeIndicesBorder,
-                                    para->getParD(level)->numberOfFluidNodesBorder, borderStreamIndex);
+    updateGrid->collisionUsingIndices(  level, t, 
+                                        para->getParD(level)->fluidNodeIndicesBorder,
+                                        para->getParD(level)->numberOfFluidNodesBorder, 
+                                        CollisionTemplate::Default,
+                                        borderStreamIndex);
 
     //! 2. prepare the exchange between gpus (collect the send nodes for communication in a buffer on the gpu) and trigger bulk kernel execution when finished
     //!
@@ -80,8 +85,11 @@ void CollisionAndExchange_streams::operator()(UpdateGrid27 *updateGrid, Paramete
     //! 3. launch the collision kernel for bulk nodes
     //!
     para->getStreamManager()->waitOnStartBulkKernelEvent(bulkStreamIndex);
-    updateGrid->collisionUsingIndices(level, t, para->getParD(level)->fluidNodeIndices,
-                                    para->getParD(level)->numberOfFluidNodes, bulkStreamIndex);
+    updateGrid->collisionUsingIndices(  level, t, 
+                                        para->getParD(level)->fluidNodeIndices,
+                                        para->getParD(level)->numberOfFluidNodes,
+                                        CollisionTemplate::Default,
+                                        bulkStreamIndex);
 
     //! 4. exchange information between GPUs
     updateGrid->exchangeMultiGPU(level, borderStreamIndex);

@@ -53,15 +53,27 @@
 //! \brief An enumeration for selecting a turbulence model
 enum class TurbulenceModel {
    //! - Smagorinsky
-    Smagorinsky,
+   Smagorinsky,
     //! - AMD (Anisotropic Minimum Dissipation) model, see e.g. Rozema et al., Phys. Fluids 27, 085107 (2015), https://doi.org/10.1063/1.4928700
-    AMD,
+   AMD,
     //! - QR model by Verstappen 
-    QR,
+   QR,
     //! - TODO: move the WALE model here from the old kernels
     //WALE
     //! - No turbulence model
-    None
+   None
+};
+
+//! \brief An enumeration for selecting a template of the collision kernel (CumulantK17Almighty)
+enum class CollisionTemplate {
+   //! - Default: plain collision without additional read/write
+   Default,
+    //! - WriteMacroVars: write out macroscopic variables in the collision kernel
+   WriteMacroVars,
+    //! - ApplyBodyForce: read and apply body force in the collision kernel
+   ApplyBodyForce,
+    //! - AllFeatures: write out macroscopic variables AND read and apply body force
+   AllFeatures
 };
 
 struct InitCondition

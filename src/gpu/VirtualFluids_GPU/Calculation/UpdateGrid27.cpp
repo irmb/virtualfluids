@@ -71,15 +71,16 @@ void UpdateGrid27::collisionAllNodes(int level, unsigned int t)
         collisionAdvectionDiffusion(level);
 }
 
-void UpdateGrid27::collisionUsingIndices(int level, unsigned int t, uint *fluidNodeIndices, uint numberOfFluidNodes, int stream)
+void UpdateGrid27::collisionUsingIndices(int level, unsigned int t, uint *indices, uint numberOfIndices, CollisionTemplate collisionTemplate, int stream)
 {
-    if (fluidNodeIndices != nullptr && numberOfFluidNodes != 0)
-        kernels.at(level)->runOnIndices(fluidNodeIndices, numberOfFluidNodes, false, false, stream);
+    if (indices != nullptr && numberOfIndices != 0)
+        kernels.at(level)->runOnIndices(indices, numberOfIndices, collisionTemplate, stream);
     else
         std::cout << "In collision: fluidNodeIndices or numberOfFluidNodes not definded"
                       << std::endl;
 
     //////////////////////////////////////////////////////////////////////////
+    //! \todo: AD collision and porousMedia should be called separately, not in collisionUsingIndices
 
     if (para->getSimulatePorousMedia())
         collisionPorousMedia(level);

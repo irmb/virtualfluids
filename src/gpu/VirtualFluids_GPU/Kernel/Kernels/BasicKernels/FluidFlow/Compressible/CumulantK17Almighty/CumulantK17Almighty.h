@@ -10,7 +10,7 @@ class CumulantK17Almighty : public KernelImp
 public:
 	static std::shared_ptr< CumulantK17Almighty<turbulenceModel> > getNewInstance(std::shared_ptr< Parameter> para, int level);
 	void run() override;
-    void runOnIndices(const unsigned int *indices, unsigned int size_indices, bool writeMacroscopicVariables, bool applyBodyForce, int stream = -1) override;
+    void runOnIndices(const unsigned int *indices, unsigned int size_indices, CollisionTemplate collisionTemplate, int streamIndex = -1) override;
 
 private:
     CumulantK17Almighty();
