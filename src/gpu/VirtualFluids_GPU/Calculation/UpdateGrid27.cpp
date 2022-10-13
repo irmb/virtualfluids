@@ -120,29 +120,29 @@ void UpdateGrid27::collisionAdvectionDiffusion(int level)
 
 void UpdateGrid27::prepareExchangeMultiGPU(int level, CudaStreamIndex streamIndex)
 {
-    prepareExchangeCollDataXGPU27AllNodes(para.get(), level);
-    prepareExchangeCollDataYGPU27AllNodes(para.get(), level);
-    prepareExchangeCollDataZGPU27AllNodes(para.get(), level);
+    prepareExchangeCollDataXGPU27AllNodes(para.get(), level, streamIndex);
+    prepareExchangeCollDataYGPU27AllNodes(para.get(), level, streamIndex);
+    prepareExchangeCollDataZGPU27AllNodes(para.get(), level, streamIndex);
 }
 
 void UpdateGrid27::prepareExchangeMultiGPUAfterFtoC(int level, CudaStreamIndex streamIndex)
 {
-    prepareExchangeCollDataXGPU27AfterFtoC(para.get(), level);
-    prepareExchangeCollDataYGPU27AfterFtoC(para.get(), level);
-    prepareExchangeCollDataZGPU27AfterFtoC(para.get(), level);
+    prepareExchangeCollDataXGPU27AfterFtoC(para.get(), level, streamIndex);
+    prepareExchangeCollDataYGPU27AfterFtoC(para.get(), level, streamIndex);
+    prepareExchangeCollDataZGPU27AfterFtoC(para.get(), level, streamIndex);
 }
 
 void UpdateGrid27::exchangeMultiGPU(int level, CudaStreamIndex streamIndex)
 {
     //////////////////////////////////////////////////////////////////////////
     // 3D domain decomposition
-    exchangeCollDataXGPU27AllNodes(para.get(), comm, cudaMemoryManager.get(), level);
-    exchangeCollDataYGPU27AllNodes(para.get(), comm, cudaMemoryManager.get(), level);
-    exchangeCollDataZGPU27AllNodes(para.get(), comm, cudaMemoryManager.get(), level);
+    exchangeCollDataXGPU27AllNodes(para.get(), comm, cudaMemoryManager.get(), level, streamIndex);
+    exchangeCollDataYGPU27AllNodes(para.get(), comm, cudaMemoryManager.get(), level, streamIndex);
+    exchangeCollDataZGPU27AllNodes(para.get(), comm, cudaMemoryManager.get(), level, streamIndex);
 
-    scatterNodesFromRecvBufferXGPU27AllNodes(para.get(), level);
-    scatterNodesFromRecvBufferYGPU27AllNodes(para.get(), level);
-    scatterNodesFromRecvBufferZGPU27AllNodes(para.get(), level);
+    scatterNodesFromRecvBufferXGPU27AllNodes(para.get(), level, streamIndex);
+    scatterNodesFromRecvBufferYGPU27AllNodes(para.get(), level, streamIndex);
+    scatterNodesFromRecvBufferZGPU27AllNodes(para.get(), level, streamIndex);
 
     //////////////////////////////////////////////////////////////////////////
     // 3D domain decomposition convection diffusion
@@ -208,13 +208,13 @@ void UpdateGrid27::exchangeMultiGPUAfterFtoC(int level, CudaStreamIndex streamIn
 {
     //////////////////////////////////////////////////////////////////////////
     // 3D domain decomposition
-    exchangeCollDataXGPU27AfterFtoC(para.get(), comm, cudaMemoryManager.get(), level);
-    exchangeCollDataYGPU27AfterFtoC(para.get(), comm, cudaMemoryManager.get(), level);
-    exchangeCollDataZGPU27AfterFtoC(para.get(), comm, cudaMemoryManager.get(), level);
+    exchangeCollDataXGPU27AfterFtoC(para.get(), comm, cudaMemoryManager.get(), level, streamIndex);
+    exchangeCollDataYGPU27AfterFtoC(para.get(), comm, cudaMemoryManager.get(), level, streamIndex);
+    exchangeCollDataZGPU27AfterFtoC(para.get(), comm, cudaMemoryManager.get(), level, streamIndex);
 
-    scatterNodesFromRecvBufferXGPU27AfterFtoC(para.get(), level);
-    scatterNodesFromRecvBufferYGPU27AfterFtoC(para.get(), level);
-    scatterNodesFromRecvBufferZGPU27AfterFtoC(para.get(), level);
+    scatterNodesFromRecvBufferXGPU27AfterFtoC(para.get(), level, streamIndex);
+    scatterNodesFromRecvBufferYGPU27AfterFtoC(para.get(), level, streamIndex);
+    scatterNodesFromRecvBufferZGPU27AfterFtoC(para.get(), level, streamIndex);
 
     //////////////////////////////////////////////////////////////////////////
     // 3D domain decomposition convection diffusion

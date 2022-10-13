@@ -37,7 +37,8 @@ enum class CudaStreamIndex
     {
         Legacy,
         Bulk,
-        Border
+        Border,
+        Precursor
     };
 class CudaStreamManager
 {

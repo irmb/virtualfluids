@@ -9,7 +9,6 @@
 #define GPU_INTERFACE_H
 
 #include "LBM/LB.h"
-#include "BoundaryConditions/BoundaryConditionStructs.cuh"
 
 #include <cuda_runtime.h>
 #include <curand.h>

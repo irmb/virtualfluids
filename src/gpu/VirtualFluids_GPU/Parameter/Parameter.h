@@ -43,7 +43,6 @@
 #include "LBM/LB.h"
 #include "PreCollisionInteractor/PreCollisionInteractor.h"
 #include "TurbulenceModels/TurbulenceModelFactory.h"
-#include "BoundaryConditions/BoundaryConditionStructs.cuh"
 
 #include "VirtualFluids_GPU_export.h"
 
