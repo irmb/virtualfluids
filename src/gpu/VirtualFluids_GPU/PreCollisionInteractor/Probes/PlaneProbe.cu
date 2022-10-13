@@ -108,7 +108,7 @@ void PlaneProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* p
     probeStruct->quantitiesD, probeStruct->arrayOffsetsD, probeStruct->quantitiesArrayD);
 }
 
-void PlaneProbe::getInteractorFluidNodes(Parameter *para, GridProvider* gridProvider)
+void PlaneProbe::getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider)
 {
     for(int level=0; level<=para->getMaxLevel(); level++)
     {

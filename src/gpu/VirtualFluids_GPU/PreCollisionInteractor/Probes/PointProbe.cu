@@ -142,7 +142,7 @@ void PointProbe::addProbePointsFromXNormalPlane(real pos_x, real pos0_y, real po
 
 }
 
-void PointProbe::getInteractorFluidNodes(Parameter *para, GridProvider* gridProvider)
+void PointProbe::getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider)
 {
     for(int level=0; level<=para->getMaxLevel(); level++)
     {

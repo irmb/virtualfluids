@@ -40,8 +40,8 @@ void CollisionAndExchange_noStreams_indexKernel::operator()(UpdateGrid27 *update
     //! 1. run collision
     //!
     updateGrid->collisionUsingIndices(  level, t, 
-                                        para->getParD(level)->fluidNodeIndices,
-                                        para->getParD(level)->numberOfFluidNodes, 
+                                        para->getParD(level)->taggedFluidNodeIndices[CollisionTemplate::Default],
+                                        para->getParD(level)->numberOfTaggedFluidNodes[CollisionTemplate::Default],  
                                         CollisionTemplate::Default, -1);
 
     //! 2. exchange information between GPUs
@@ -71,8 +71,8 @@ void CollisionAndExchange_streams::operator()(UpdateGrid27 *updateGrid, Paramete
     //! 1. run collision for nodes which are at the border of the gpus/processes, running with WriteMacroVars in case probes sample on these nodes
     //!    
     updateGrid->collisionUsingIndices(  level, t, 
-                                        para->getParD(level)->fluidNodeIndicesBorder,
-                                        para->getParD(level)->numberOfFluidNodesBorder, 
+                                        para->getParD(level)->taggedFluidNodeIndices[CollisionTemplate::Border],
+                                        para->getParD(level)->numberOfTaggedFluidNodes[CollisionTemplate::Border], 
                                         CollisionTemplate::WriteMacroVars,  
                                         borderStreamIndex);
 
@@ -86,8 +86,8 @@ void CollisionAndExchange_streams::operator()(UpdateGrid27 *updateGrid, Paramete
     //!
     para->getStreamManager()->waitOnStartBulkKernelEvent(bulkStreamIndex);
     updateGrid->collisionUsingIndices(  level, t, 
-                                        para->getParD(level)->fluidNodeIndices,
-                                        para->getParD(level)->numberOfFluidNodes,
+                                        para->getParD(level)->taggedFluidNodeIndices[CollisionTemplate::Default],
+                                        para->getParD(level)->numberOfTaggedFluidNodes[CollisionTemplate::Default], 
                                         CollisionTemplate::Default,
                                         bulkStreamIndex);
 

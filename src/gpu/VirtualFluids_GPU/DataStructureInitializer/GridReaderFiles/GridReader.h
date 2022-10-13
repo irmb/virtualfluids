@@ -39,8 +39,7 @@ public:
 	void allocArrays_CoordNeighborGeo() override;
 	void allocArrays_BoundaryValues() override;
     void allocArrays_OffsetScale() override;
-    void allocArrays_fluidNodeIndices() override;
-    void allocArrays_fluidNodeIndicesBorder() override;
+    void allocArrays_taggedFluidNodes() override;
 
 	void tagFluidNodeIndices(std::vector<uint> taggedFluidNodeIndices, CollisionTemplate tag, uint level) override;
 	void sortFluidNodeTags() override;

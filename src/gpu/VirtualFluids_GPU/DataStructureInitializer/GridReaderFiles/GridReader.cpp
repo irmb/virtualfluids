@@ -218,14 +218,9 @@ void GridReader::allocArrays_OffsetScale()
     std::cout << "-----Ende OffsetScale------" << std::endl;
 }
 
-void GridReader::allocArrays_fluidNodeIndices() {
+void GridReader::allocArrays_taggedFluidNodes() {
     std::cout << "GridReader::allocArrays_fluidNodeIndices not implemented" << std::endl;
 	// TODO
-}
-
-void GridReader::allocArrays_fluidNodeIndicesBorder() {
-    std::cout << "GridReader::allocArrays_fluidNodeIndicesBorder not implemented" << std::endl;
-    // TODO
 }
 
 void GridReader::tagFluidNodeIndices(std::vector<uint> taggedFluidNodeIndices, CollisionTemplate tag, uint level){

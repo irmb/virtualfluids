@@ -132,20 +132,18 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
 
     for (SPtr<PreCollisionInteractor> actuator : para->getActuators()) {
         actuator->init(para.get(), &gridProvider, cudaMemoryManager.get());
-        actuator->getInteractorFluidNodes( para.get(), &gridProvider );
+        actuator->getTaggedFluidNodes( para.get(), &gridProvider );
     }
 
     for (SPtr<PreCollisionInteractor> probe : para->getProbes()) {
         probe->init(para.get(), &gridProvider, cudaMemoryManager.get());
-        probe->getInteractorFluidNodes( para.get(), &gridProvider );
+        probe->getTaggedFluidNodes( para.get(), &gridProvider );
     }
 
     //////////////////////////////////////////////////////////////////////////
-    if (para->getKernelNeedsFluidNodeIndicesToRun()) {
-        gridProvider.allocArrays_fluidNodeIndices();
-        gridProvider.allocArrays_fluidNodeIndicesBorder();
-    }
-
+    if (para->getKernelNeedsFluidNodeIndicesToRun())
+        gridProvider.allocArrays_taggedFluidNodes();
+    
     //////////////////////////////////////////////////////////////////////////
     // Kernel init
     //////////////////////////////////////////////////////////////////////////

@@ -2179,6 +2179,39 @@ void GridImp::sortFluidNodeIndicesAllFeatures()
     }
 }
 
+uint GridImp::getNumberOfFluidNodeIndicesMacroVars() const { 
+    return (uint)this->fluidNodeIndicesMacroVars.size(); 
+}
+
+uint GridImp::getNumberOfFluidNodeIndicesApplyBodyForce() const { 
+    return (uint)this->fluidNodeIndicesApplyBodyForce.size(); 
+}
+
+uint GridImp::getNumberOfFluidNodeIndicesAllFeatures() const { 
+    return (uint)this->fluidNodeIndicesAllFeatures.size(); 
+}
+
+void GridImp::getFluidNodeIndicesMacroVars(uint *fluidNodeIndicesMacroVars) const 
+{
+    for (uint nodeNumber = 0; nodeNumber < (uint)this->fluidNodeIndicesMacroVars.size(); nodeNumber++)
+        fluidNodeIndicesMacroVars[nodeNumber] = this->fluidNodeIndicesMacroVars[nodeNumber];
+}
+void GridImp::getFluidNodeIndicesApplyBodyForce(uint *fluidNodeIndicesApplyBodyForce) const 
+{
+    for (uint nodeNumber = 0; nodeNumber < (uint)this->fluidNodeIndicesApplyBodyForce.size(); nodeNumber++)
+        fluidNodeIndicesApplyBodyForce[nodeNumber] = this->fluidNodeIndicesApplyBodyForce[nodeNumber];
+}
+void GridImp::getFluidNodeIndicesAllFeatures(uint *fluidNodeIndicesAllFeatures) const 
+{
+    for (uint nodeNumber = 0; nodeNumber < (uint)this->fluidNodeIndicesAllFeatures.size(); nodeNumber++)
+        fluidNodeIndicesAllFeatures[nodeNumber] = this->fluidNodeIndicesAllFeatures[nodeNumber];
+}
+
+
+
+
+
+
 void GridImp::print() const
 {
     printf("min: (%2.4f, %2.4f, %2.4f), max: (%2.4f, %2.4f, %2.4f), size: %d, delta: %2.4f\n", startX, startY, startZ,

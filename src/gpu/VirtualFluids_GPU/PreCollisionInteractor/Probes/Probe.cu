@@ -315,7 +315,7 @@ void Probe::free(Parameter* para, CudaMemoryManager* cudaMemoryManager)
     }
 }
 
-void Probe::getInteractorFluidNodes(Parameter *para, GridProvider* gridProvider)
+void Probe::getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider)
 {
     // Do nothing
 };

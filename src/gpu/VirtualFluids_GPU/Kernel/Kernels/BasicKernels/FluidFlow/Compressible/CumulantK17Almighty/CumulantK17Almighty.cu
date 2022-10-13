@@ -30,8 +30,8 @@ void CumulantK17Almighty<turbulenceModel>::run()
 																												para->getParD(level)->forceX_SP, para->getParD(level)->forceY_SP, para->getParD(level)->forceZ_SP,
 																												para->getQuadricLimitersDev(),			
 																												para->getParD(level)->isEvenTimestep,
-																												para->getParD(level)->fluidNodeIndices,
-        																										para->getParD(level)->numberOfFluidNodes);
+																												para->getParD(level)->taggedFluidNodeIndices[CollisionTemplate::Default],
+        																										para->getParD(level)->numberOfTaggedFluidNodes[CollisionTemplate::Default]);
 
 	getLastCudaError("LB_Kernel_CumulantK17Almighty execution failed");
 }
@@ -83,6 +83,7 @@ void CumulantK17Almighty<turbulenceModel>::runOnIndices( const unsigned int *ind
 																																size_indices);
 			break;
 		
+		case CollisionTemplate::Border:
 		case CollisionTemplate::AllFeatures:
 			LB_Kernel_CumulantK17Almighty < turbulenceModel, true, true  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>(  para->getParD(level)->omega, 	
 																																para->getParD(level)->typeOfGridNode, 										

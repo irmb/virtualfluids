@@ -95,21 +95,48 @@ void GridGenerator::allocArrays_CoordNeighborGeo()
     std::cout << "-----finish Coord, Neighbor, Geo------" << std::endl;
 }
 
-void GridGenerator::allocArrays_fluidNodeIndices() {
-    for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
-        setNumberOfFluidNodes(builder->getNumberOfFluidNodes(level), level);
-        cudaMemoryManager->cudaAllocFluidNodeIndices(level);
-        builder->getFluidNodeIndices(para->getParH(level)->fluidNodeIndices, level);
-        cudaMemoryManager->cudaCopyFluidNodeIndices(level);
-    }    
-}
+void GridGenerator::allocArrays_taggedFluidNodes() {
+    for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) 
+    {
+        for ( int tag = 0; tag < int(CollisionTemplate::LAST); tag++ )
+        {   //TODO: Need to add CollisionTemplate to GridBuilder to allow as argument and get rid of indivual get funtions for fluid node indices
+            switch(static_cast<CollisionTemplate>(tag))
+            {
+                case CollisionTemplate::Default:
+                    this->setNumberOfTaggedFluidNodes(builder->getNumberOfFluidNodes(level), CollisionTemplate::Default, level);
+                    cudaMemoryManager->cudaAllocTaggedFluidNodeIndices(CollisionTemplate::Default, level);
+                    builder->getFluidNodeIndices(para->getParH(level)->taggedFluidNodeIndices[CollisionTemplate::Default], level);
+                    cudaMemoryManager->cudaCopyTaggedFluidNodeIndices(CollisionTemplate::Default, level);
+                    break;
+                case CollisionTemplate::Border:
+                    this->setNumberOfTaggedFluidNodes(builder->getNumberOfFluidNodesBorder(level), CollisionTemplate::Border, level);
+                    cudaMemoryManager->cudaAllocTaggedFluidNodeIndices(CollisionTemplate::Border, level);
+                    builder->getFluidNodeIndicesBorder(para->getParH(level)->taggedFluidNodeIndices[CollisionTemplate::Border], level);
+                    cudaMemoryManager->cudaCopyTaggedFluidNodeIndices(CollisionTemplate::Border, level);
+                    break;
+                case CollisionTemplate::WriteMacroVars:
+                    this->setNumberOfTaggedFluidNodes(builder->getNumberOfFluidNodesMacroVars(level), CollisionTemplate::WriteMacroVars, level);
+                    cudaMemoryManager->cudaAllocTaggedFluidNodeIndices(CollisionTemplate::WriteMacroVars, level);
+                    builder->getFluidNodeIndicesMacroVars(para->getParH(level)->taggedFluidNodeIndices[CollisionTemplate::WriteMacroVars], level);
+                    cudaMemoryManager->cudaCopyTaggedFluidNodeIndices(CollisionTemplate::WriteMacroVars, level);
+                    break;
+                case CollisionTemplate::ApplyBodyForce:
+                    this->setNumberOfTaggedFluidNodes(builder->getNumberOfFluidNodesApplyBodyForce(level), CollisionTemplate::ApplyBodyForce, level);
+                    cudaMemoryManager->cudaAllocTaggedFluidNodeIndices(CollisionTemplate::ApplyBodyForce, level);
+                    builder->getFluidNodeIndicesApplyBodyForce(para->getParH(level)->taggedFluidNodeIndices[CollisionTemplate::ApplyBodyForce], level);
+                    cudaMemoryManager->cudaCopyTaggedFluidNodeIndices(CollisionTemplate::ApplyBodyForce, level);
+                    break;
+                case CollisionTemplate::AllFeatures:
+                    this->setNumberOfTaggedFluidNodes(builder->getNumberOfFluidNodesApplyBodyForce(level), CollisionTemplate::AllFeatures, level);
+                    cudaMemoryManager->cudaAllocTaggedFluidNodeIndices(CollisionTemplate::AllFeatures, level);
+                    builder->getFluidNodeIndicesAllFeatures(para->getParH(level)->taggedFluidNodeIndices[CollisionTemplate::AllFeatures], level);
+                    cudaMemoryManager->cudaCopyTaggedFluidNodeIndices(CollisionTemplate::AllFeatures, level);
+                    break;
+                default:
+                    break;
+            }
 
-void GridGenerator::allocArrays_fluidNodeIndicesBorder() {
-    for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
-        setNumberOfFluidNodesBorder(builder->getNumberOfFluidNodesBorder(level), level);
-        cudaMemoryManager->cudaAllocFluidNodeIndicesBorder(level);
-        builder->getFluidNodeIndicesBorder(para->getParH(level)->fluidNodeIndicesBorder, level);
-        cudaMemoryManager->cudaCopyFluidNodeIndicesBorder(level);
+        }
     }
 }
 
@@ -126,7 +153,8 @@ void GridGenerator::tagFluidNodeIndices(std::vector<uint> taggedFluidNodeIndices
             builder->addFluidNodeIndicesAllFeatures( taggedFluidNodeIndices, level );
             break;
         case CollisionTemplate::Default:
-            throw std::runtime_error("Cannot tag fluid nodes as CollisionTemplate::Default!");
+        case CollisionTemplate::Border:
+            throw std::runtime_error("Cannot tag fluid nodes as Default or Border!");
         default:
             throw std::runtime_error("Tagging fluid nodes with invald tag!");
             break;
@@ -138,7 +166,9 @@ void GridGenerator::tagFluidNodeIndices(std::vector<uint> taggedFluidNodeIndices
 void GridGenerator::sortFluidNodeTags() {
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++)
     {
-        
+        builder->sortFluidNodeIndicesAllFeatures(level); //has to be called first!
+        builder->sortFluidNodeIndicesMacroVars(level);
+        builder->sortFluidNodeIndicesApplyBodyForce(level);
     }
 }
 

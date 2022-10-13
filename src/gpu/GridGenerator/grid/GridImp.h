@@ -373,6 +373,13 @@ public:
     void sortFluidNodeIndicesApplyBodyForce() override;
     void sortFluidNodeIndicesAllFeatures() override;
 
+    uint getNumberOfFluidNodeIndicesMacroVars() const override;
+    uint getNumberOfFluidNodeIndicesApplyBodyForce() const override;
+    uint getNumberOfFluidNodeIndicesAllFeatures() const override; 
+    void getFluidNodeIndicesMacroVars(uint *fluidNodeIndicesMacroVars) const override;
+    void getFluidNodeIndicesApplyBodyForce(uint *fluidNodeIndicesApplyBodyForce) const override;
+    void getFluidNodeIndicesAllFeatures(uint *fluidNodeIndicesAllFeatures) const override;
+
 public:
     struct CommunicationIndices {
         std::vector<uint> sendIndices;

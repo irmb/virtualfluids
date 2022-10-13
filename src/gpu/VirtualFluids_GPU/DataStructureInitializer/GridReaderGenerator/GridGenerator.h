@@ -71,8 +71,7 @@ public:
     //! \brief allocates and initialized the sub-grid distances at the boundary conditions
     void allocArrays_BoundaryQs() override;
     void allocArrays_OffsetScale() override;
-    void allocArrays_fluidNodeIndices() override;
-    void allocArrays_fluidNodeIndicesBorder() override;
+    void allocArrays_taggedFluidNodes() override;
 
     void tagFluidNodeIndices(std::vector<uint> taggedFluidNodeIndices, CollisionTemplate tag, uint level) override;
     void sortFluidNodeTags() override;

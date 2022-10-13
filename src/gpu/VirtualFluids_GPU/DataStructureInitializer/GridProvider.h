@@ -28,8 +28,7 @@ public:
 	virtual void allocArrays_BoundaryValues() = 0;
 	virtual void allocArrays_BoundaryQs() = 0;
     virtual void allocArrays_OffsetScale() = 0;
-    virtual void allocArrays_fluidNodeIndices() = 0;
-    virtual void allocArrays_fluidNodeIndicesBorder() = 0;
+    virtual void allocArrays_taggedFluidNodes() = 0;
 
     virtual void tagFluidNodeIndices(std::vector<uint> taggedFluidNodeIndices, CollisionTemplate tag, uint level) = 0;
     virtual void sortFluidNodeTags() = 0;
@@ -48,8 +47,7 @@ public:
 
 protected:
 	void setNumberOfNodes(const int numberOfNodes, const int level) const;
-    void setNumberOfFluidNodes(const int numberOfNodes, const int level) const;
-    void setNumberOfFluidNodesBorder(const int numberOfNodes, const int level) const;
+    void setNumberOfTaggedFluidNodes(const int numberOfNodes, CollisionTemplate tag, const int level) const;
     virtual void setInitalNodeValues(const int numberOfNodes, const int level) const;
 
 	void setPressSizePerLevel(int level, int sizePerLevel) const;

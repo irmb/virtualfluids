@@ -33,7 +33,7 @@ public:
     virtual void init(Parameter *para, GridProvider *gridProvider, CudaMemoryManager *cudaMemoryManager) = 0;
     virtual void interact(Parameter *para, CudaMemoryManager *cudaMemoryManager, int level, uint t) = 0;
     virtual void free(Parameter *para, CudaMemoryManager *cudaMemoryManager) = 0;
-    virtual void getInteractorFluidNodes(Parameter *para, GridProvider* gridProvider) = 0;
+    virtual void getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider) = 0;
 
 protected:
     uint updateInterval;
