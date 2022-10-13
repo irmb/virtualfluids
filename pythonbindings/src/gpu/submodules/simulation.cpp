@@ -8,7 +8,7 @@
 #include <gpu/VirtualFluids_GPU/GPU/CudaMemoryManager.h>
 #include <gpu/VirtualFluids_GPU/DataStructureInitializer/GridProvider.h>
 #include <gpu/VirtualFluids_GPU/Output/DataWriter.h>
-#include "gpu/VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
+#include "gpu/VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
 #include "gpu/VirtualFluids_GPU/TurbulenceModels/TurbulenceModelFactory.h"
 
 namespace simulation
