@@ -2101,17 +2101,25 @@ void GridImp::getFluidNodeIndicesBorder(uint *fluidNodeIndicesBorder) const
 
 void GridImp::addFluidNodeIndicesMacroVars(std::vector<uint> _fluidNodeIndicesMacroVars)
 {
-    this->fluidNodeIndicesMacroVars.insert(fluidNodeIndicesMacroVars.end(), fluidNodeIndicesMacroVars.begin(), _fluidNodeIndicesMacroVars.end());
+    size_t newSize = this->fluidNodeIndicesMacroVars.size()+_fluidNodeIndicesMacroVars.size();
+    this->fluidNodeIndicesMacroVars.reserve(newSize);
+    std::copy(_fluidNodeIndicesMacroVars.begin(), _fluidNodeIndicesMacroVars.end(), std::back_inserter(this->fluidNodeIndicesMacroVars));
 }
 
 void GridImp::addFluidNodeIndicesApplyBodyForce(std::vector<uint> _fluidNodeIndicesApplyBodyForce)
-{
-    this->fluidNodeIndicesApplyBodyForce.insert(_fluidNodeIndicesApplyBodyForce.end(), _fluidNodeIndicesApplyBodyForce.begin(), fluidNodeIndicesApplyBodyForce.end());
+{    
+    
+    size_t newSize = this->fluidNodeIndicesApplyBodyForce.size()+_fluidNodeIndicesApplyBodyForce.size();
+    this->fluidNodeIndicesApplyBodyForce.reserve(newSize);
+    std::copy(_fluidNodeIndicesApplyBodyForce.begin(), _fluidNodeIndicesApplyBodyForce.end(), std::back_inserter(this->fluidNodeIndicesApplyBodyForce));
 }
 
 void GridImp::addFluidNodeIndicesAllFeatures(std::vector<uint> _fluidNodeIndicesAllFeatures) 
 {
-    this->fluidNodeIndicesAllFeatures.insert(fluidNodeIndicesAllFeatures.end(), fluidNodeIndicesAllFeatures.begin(), _fluidNodeIndicesAllFeatures.end());
+
+    size_t newSize = this->fluidNodeIndicesAllFeatures.size()+_fluidNodeIndicesAllFeatures.size();
+    this->fluidNodeIndicesAllFeatures.reserve(newSize);
+    std::copy(_fluidNodeIndicesAllFeatures.begin(), _fluidNodeIndicesAllFeatures.end(), std::back_inserter(this->fluidNodeIndicesAllFeatures));
 }
 
 void GridImp::sortFluidNodeIndicesMacroVars()
