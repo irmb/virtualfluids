@@ -71,10 +71,10 @@ void UpdateGrid27::collisionAllNodes(int level, unsigned int t)
         collisionAdvectionDiffusion(level);
 }
 
-void UpdateGrid27::collisionUsingIndices(int level, unsigned int t, uint *indices, uint numberOfIndices, CollisionTemplate collisionTemplate, CudaStreamIndex stream)
+void UpdateGrid27::collisionUsingIndices(int level, unsigned int t, uint *taggedFluidNodeIndices, uint numberOfTaggedFluidNodes, CollisionTemplate collisionTemplate, CudaStreamIndex stream)
 {
-    if (indices != nullptr && numberOfIndices != 0)
-        kernels.at(level)->runOnIndices(indices, numberOfIndices, collisionTemplate, stream);
+    if (taggedFluidNodeIndices != nullptr && numberOfTaggedFluidNodes != 0)
+        kernels.at(level)->runOnIndices(taggedFluidNodeIndices, numberOfTaggedFluidNodes, collisionTemplate, stream);
     else
         std::cout << "In collision: fluidNodeIndices or numberOfFluidNodes not definded"
                       << std::endl;
