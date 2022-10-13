@@ -23,8 +23,9 @@ Ma = 0.1
 nz = 96 
 
 bodyForce = true
-UseAMD = true
-SGSconstant = 0.2
+SGSconstant = 0.333
+TurbulenceModel = QR
+
 QuadricLimiterP = 100000.0
 QuadricLimiterM = 100000.0
 QuadricLimiterD = 100000.0
@@ -35,8 +36,4 @@ nTimestepsReadPrecursor = 10
 precursorFile = precursor/Precursor
 
 ##################################################
-writePrecursor = false
-nTimestepsWritePrecursor = 10
-
-tStartPrecursor = 100
-posXPrecursor = 3000
+turbineDiameter = 126.0

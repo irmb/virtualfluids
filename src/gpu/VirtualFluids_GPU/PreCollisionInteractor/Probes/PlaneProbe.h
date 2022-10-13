@@ -54,7 +54,7 @@ public:
     ): Probe(_probeName, 
              _outputPath,
              _tStartAvg, 
-             0,
+             _tStartAvg+1,
              _tAvg,
              _tStartOut, 
              _tOut,

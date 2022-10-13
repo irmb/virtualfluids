@@ -5,7 +5,7 @@ namespace py_bindings
 {
     namespace py = pybind11;
 
-    PYBIND11_MODULE(pyfluids, m)
+    PYBIND11_MODULE(bindings, m)
     {
         cpu::makeModule(m);
     }

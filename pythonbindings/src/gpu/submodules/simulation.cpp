@@ -8,6 +8,8 @@
 #include <gpu/VirtualFluids_GPU/GPU/CudaMemoryManager.h>
 #include <gpu/VirtualFluids_GPU/DataStructureInitializer/GridProvider.h>
 #include <gpu/VirtualFluids_GPU/Output/DataWriter.h>
+#include "gpu/VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
+#include "gpu/VirtualFluids_GPU/TurbulenceModels/TurbulenceModelFactory.h"
 
 namespace simulation
 {
@@ -20,11 +22,25 @@ namespace simulation
         .def(py::init<  std::shared_ptr<Parameter>,
                         std::shared_ptr<CudaMemoryManager>,
                         vf::gpu::Communicator &,
-                        GridProvider &>(), 
+                        GridProvider &,
+                        BoundaryConditionFactory*>(), 
                         "parameter",
                         "memoryManager",
                         "communicator",
-                        "gridProvider")
+                        "gridProvider",
+                        "bcFactory")
+        .def(py::init<  std::shared_ptr<Parameter>,
+                        std::shared_ptr<CudaMemoryManager>,
+                        vf::gpu::Communicator &,
+                        GridProvider &,
+                        BoundaryConditionFactory*,
+                        std::shared_ptr<TurbulenceModelFactory>>(), 
+                        "parameter",
+                        "memoryManager",
+                        "communicator",
+                        "gridProvider",
+                        "bcFactory",
+                        "tmFactory")
         .def("run", &Simulation::run)
         .def("addKineticEnergyAnalyzer", &Simulation::addKineticEnergyAnalyzer)
         .def("addEnstrophyAnalyzer", &Simulation::addEnstrophyAnalyzer);

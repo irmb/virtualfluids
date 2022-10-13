@@ -597,6 +597,8 @@ inline UbTuple<T1, T2, T3, T4, T5, T6, T7, T8> makeUbTuple(T1 const &a1, T2 cons
 // some typedefs
 using UbTupleFloat2        = UbTuple<float, float>;
 using UbTupleFloat3        = UbTuple<float, float, float>;
+using UbTupleFloat4        = UbTuple<float, float, float, float>;
+using UbTupleFloat6        = UbTuple<float, float, float,float, float, float>;
 using UbTupleInt2          = UbTuple<int, int>;
 using UbTupleInt3          = UbTuple<int, int, int>;
 using UbTupleInt4          = UbTuple<int, int, int, int>;

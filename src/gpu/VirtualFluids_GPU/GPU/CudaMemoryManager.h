@@ -20,6 +20,8 @@ class Parameter;
 class PorousMedia;
 class ActuatorLine;
 class Probe;
+class VelocitySetter;
+class PrecursorWriter;
 
 class VIRTUALFLUIDS_GPU_EXPORT CudaMemoryManager
 {
@@ -175,6 +177,13 @@ public:
     void cudaAllocStressBC(int lev);
     void cudaCopyStressBC(int lev);
     void cudaFreeStressBC(int lev);
+
+    void cudaAllocPrecursorBC(int lev);
+    void cudaAllocPrecursorData(int lev);
+    void cudaCopyPrecursorBC(int lev);
+    void cudaCopyPrecursorData(int lev);
+    void cudaFreePrecursorBC(int lev);
+    void cudaFreePrecursorData(int lev);
 
     void cudaAllocWallModel(int lev, bool hasWallModelMonitor);
     void cudaCopyWallModel(int lev,  bool hasWallModelMonitor);
@@ -372,6 +381,7 @@ public:
     void cudaCopySphereIndicesHtoD(ActuatorLine* actuatorLine);
     void cudaFreeSphereIndices(ActuatorLine* actuatorLine);
 
+    //Probe
     void cudaAllocProbeDistances(Probe* probe, int level);
     void cudaCopyProbeDistancesHtoD(Probe* probe, int level);
     void cudaCopyProbeDistancesDtoH(Probe* probe, int level);
@@ -391,6 +401,12 @@ public:
     void cudaCopyProbeQuantitiesAndOffsetsHtoD(Probe* probe, int level);
     void cudaCopyProbeQuantitiesAndOffsetsDtoH(Probe* probe, int level);
     void cudaFreeProbeQuantitiesAndOffsets(Probe* probe, int level);
+
+    //Precursor Writer
+    void cudaAllocPrecursorWriter(PrecursorWriter* writer, int level);
+    void cudaCopyPrecursorWriterIndicesHtoD(PrecursorWriter* writer, int level);
+    void cudaCopyPrecursorWriterOutputVariablesDtoH(PrecursorWriter* writer, int level);
+    void cudaFreePrecursorWriter(PrecursorWriter* writer, int level);
 
 private:
     std::shared_ptr<Parameter> parameter;

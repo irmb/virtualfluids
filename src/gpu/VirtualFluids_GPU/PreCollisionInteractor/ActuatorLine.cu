@@ -188,9 +188,9 @@ __global__ void applyBodyForces(real* gridCoordsX, real* gridCoordsY, real* grid
         }
     }
 
-    atomicAdd(&gridForcesX[gridIndex], gridForceX_RF);
-    atomicAdd(&gridForcesY[gridIndex], gridForceY_RF);
-    atomicAdd(&gridForcesZ[gridIndex], gridForceZ_RF);
+    gridForcesX[gridIndex] = gridForceX_RF;
+    gridForcesY[gridIndex] = gridForceY_RF;
+    gridForcesZ[gridIndex] = gridForceZ_RF;
 }
 
 
@@ -210,7 +210,7 @@ void ActuatorLine::interact(Parameter* para, CudaMemoryManager* cudaMemoryManage
 {
     if (level != this->level) return;
 
-    cudaMemoryManager->cudaCopyBladeCoordsHtoD(this);
+    if(useHostArrays) cudaMemoryManager->cudaCopyBladeCoordsHtoD(this);
 
     vf::cuda::CudaGrid bladeGrid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, this->nNodes);
 
@@ -225,11 +225,11 @@ void ActuatorLine::interact(Parameter* para, CudaMemoryManager* cudaMemoryManage
         this->turbinePosX, this->turbinePosY, this->turbinePosZ,
         this->bladeIndicesD, para->getVelocityRatio(), this->invDeltaX);
 
-    cudaMemoryManager->cudaCopyBladeVelocitiesDtoH(this);
+    if(useHostArrays) cudaMemoryManager->cudaCopyBladeVelocitiesDtoH(this);
 
     this->calcBladeForces();
 
-    cudaMemoryManager->cudaCopyBladeForcesHtoD(this);
+    if(useHostArrays) cudaMemoryManager->cudaCopyBladeForcesHtoD(this);
 
     vf::cuda::CudaGrid sphereGrid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, this->nIndices);
 
@@ -374,6 +374,14 @@ void ActuatorLine::initBladeIndices(Parameter* para, CudaMemoryManager* cudaMemo
     }
     cudaMemoryManager->cudaCopyBladeIndicesHtoD(this);
 }
+void ActuatorLine::setPreInitBladeRadii(real* _bladeRadii)
+{
+    this->bladeRadiiPreInit = (real*) malloc(this->nBladeNodes*sizeof(real));
+    for(uint node=0; node<this->nBladeNodes; node++)
+    {
+        this->bladeRadiiPreInit[node] = _bladeRadii[node];
+    }
+}
 
 void ActuatorLine::initBoundingSphere(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
@@ -425,4 +433,27 @@ void ActuatorLine::setBladeForces(real* _bladeForcesX, real* _bladeForcesY, real
         this->bladeForcesYH[node] = _bladeForcesY[node];
         this->bladeForcesZH[node] = _bladeForcesZ[node];
     }
+}
+void ActuatorLine::setBladeCoordsD(real* _bladeCoordsX, real* _bladeCoordsY, real* _bladeCoordsZ)
+{
+    throw std::runtime_error("not implemented");
+    this->bladeCoordsXD = _bladeCoordsX;
+    this->bladeCoordsYD = _bladeCoordsY;
+    this->bladeCoordsZD = _bladeCoordsZ;
+}
+
+void ActuatorLine::setBladeVelocitiesD(real* _bladeVelocitiesX, real* _bladeVelocitiesY, real* _bladeVelocitiesZ)
+{
+    throw std::runtime_error("not implemented");
+    this->bladeVelocitiesXD = _bladeVelocitiesX;
+    this->bladeVelocitiesYD = _bladeVelocitiesY;
+    this->bladeVelocitiesZD = _bladeVelocitiesZ;
+}
+
+void ActuatorLine::setBladeForcesD(real* _bladeForcesX, real* _bladeForcesY, real* _bladeForcesZ)
+{
+    throw std::runtime_error("not implemented");
+    this->bladeCoordsXD = _bladeForcesX;
+    this->bladeCoordsYD = _bladeForcesY;
+    this->bladeCoordsZD = _bladeForcesZ;
 }

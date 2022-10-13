@@ -20,6 +20,7 @@
 #include "Core/VectorTypes.h"
 
 #include <basics/config/ConfigurationFile.h>
+#include "lbm/constants/NumericConstants.h"
 
 #include <logger/Logger.h>
 
@@ -29,6 +30,8 @@
 #include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
 #include "GridGenerator/grid/BoundaryConditions/Side.h"
+#include "GridGenerator/grid/BoundaryConditions/BoundaryCondition.h"
+
 #include "GridGenerator/grid/GridFactory.h"
 
 #include "geometries/Cuboid/Cuboid.h"
@@ -36,8 +39,7 @@
 
 #include "GridGenerator/io/SimulationFileWriter/SimulationFileWriter.h"
 #include "GridGenerator/io/GridVTKWriter/GridVTKWriter.h"
-#include "GridGenerator/io/STLReaderWriter/STLReader.h"
-#include "GridGenerator/io/STLReaderWriter/STLWriter.h"
+#include "GridGenerator/VelocitySetter/VelocitySetter.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -48,11 +50,11 @@
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
-#include "VirtualFluids_GPU/PreCollisionInteractor/ActuatorLine.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PointProbe.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlaneProbe.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlanarAverageProbe.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/WallModelProbe.h"
+#include "VirtualFluids_GPU/PreCollisionInteractor/PrecursorWriter.h"
 #include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
 #include "VirtualFluids_GPU/TurbulenceModels/TurbulenceModelFactory.h"
 
@@ -66,8 +68,9 @@
 
 std::string path(".");
 
-std::string simulationName("BoundayLayer");
+std::string simulationName("BoundaryLayer");
 
+using namespace vf::lbm::constant;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -114,25 +117,48 @@ void multipleLevel(const std::string& configPath)
 
     LbmOrGks lbmOrGks = LBM;
 
+    const real H = config.getValue("boundaryLayerHeight", 1000.0); // boundary layer height in m
 
-    real H = 1000.0; // boundary layer height in m
-    const real L_x = config.contains("L_x")? config.getValue<real>("L_x"): 6*H;
-    const real L_y = config.contains("L_y")? config.getValue<real>("L_y"): 4*H;
-    const real L_z = config.contains("L_z")? config.getValue<real>("L_z"): 1*H;
-    H = L_z;
+    const real L_x = 6*H;
+    const real L_y = 4*H;
+    const real L_z = H;
 
-    const real z0  = 0.1; // roughness length in m
-    const real u_star = 0.4; //friction velocity in m/s
-    const real kappa = 0.4; // von Karman constant
+    const real z0  = config.getValue("z0", 0.1f); // roughness length in m
+    const real u_star = config.getValue("u_star", 0.4f); //friction velocity in m/s
+    const real kappa = config.getValue("vonKarmanConstant", 0.4f); // von Karman constant
 
-    const real viscosity = 1.56e-5;
+    const real viscosity = config.getValue("viscosity", 1.56e-5f);
 
-    const real velocity  = 0.5*u_star/kappa*log(L_z/z0); //0.5 times max mean velocity at the top in m/s
+    const real velocity  = 0.5f*u_star/kappa*log(H/z0+1.f); //0.5 times max mean velocity at the top in m/s
 
-    const real mach = config.contains("Ma")? config.getValue<real>("Ma"): 0.1;
+    const real mach = config.getValue<real>("Ma", 0.1);
 
-    const uint nodes_per_H = config.contains("nz")? config.getValue<uint>("nz"): 64;
+    const uint nodes_per_H = config.getValue<uint>("nz", 64);
 
+    const bool writePrecursor = config.getValue("writePrecursor", false);
+    bool useDistributions;
+    std::string precursorDirectory;
+    int nTWritePrecursor; real tStartPrecursor, posXPrecursor;
+    if(writePrecursor)
+    {
+        nTWritePrecursor      = config.getValue<int>("nTimestepsWritePrecursor");
+        tStartPrecursor      = config.getValue<real>("tStartPrecursor");
+        posXPrecursor        = config.getValue<real>("posXPrecursor");
+        useDistributions     = config.getValue<bool>("useDistributions", false);
+        precursorDirectory = config.getValue<std::string>("precursorDirectory");
+
+
+    }
+
+    const bool readPrecursor = config.getValue("readPrecursor", false);
+    int nTReadPrecursor;
+    if(readPrecursor)
+    {
+        nTReadPrecursor = config.getValue<int>("nTimestepsReadPrecursor");
+        precursorDirectory = config.getValue<std::string>("precursorDirectory");
+        useDistributions     = config.getValue<bool>("useDistributions", false);
+
+    }
     // all in s
     const float tStartOut   = config.getValue<real>("tStartOut");
     const float tOut        = config.getValue<real>("tOut");
@@ -145,7 +171,7 @@ void multipleLevel(const std::string& configPath)
     const float tOutProbe           =  config.getValue<real>("tOutProbe");
 
 
-    const real dx = L_z/real(nodes_per_H);
+    const real dx = H/real(nodes_per_H);
 
     const real dt = dx * mach / (sqrt(3) * velocity);
 
@@ -189,9 +215,8 @@ void multipleLevel(const std::string& configPath)
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    SPtr<TurbulenceModelFactory> tmFactory = SPtr<TurbulenceModelFactory>( new TurbulenceModelFactory(para) );
+    SPtr<TurbulenceModelFactory> tmFactory = std::make_shared<TurbulenceModelFactory>(para);
     tmFactory->readConfigFile( config );
-    
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     const real xSplit = L_x/nProcs;
@@ -221,6 +246,7 @@ void multipleLevel(const std::string& configPath)
         xGridMax += overlap;
         xGridMin -= overlap;
     }
+    gridBuilder->setPeriodicBoundaryCondition(!readPrecursor, true, false);
 
     gridBuilder->addCoarseGrid( xGridMin,  0.0,  0.0,
                                 xGridMax,  L_y,  L_z, dx);
@@ -268,23 +294,51 @@ void multipleLevel(const std::string& configPath)
         }
     }
     uint samplingOffset = 2;
-    gridBuilder->setStressBoundaryCondition(SideType::MZ,
+    
+    if(readPrecursor)
+    {
+        auto precursor = createFileCollection(precursorDirectory + "/precursor", FileType::VTK);
+        gridBuilder->setPrecursorBoundaryCondition(SideType::MX, precursor, nTReadPrecursor);
+
+        gridBuilder->setStressBoundaryCondition(SideType::MZ,
                                             0.0, 0.0, 1.0,              // wall normals
                                             samplingOffset, z0/dx);     // wall model settinng
-    para->setHasWallModelMonitor(true);
+        para->setHasWallModelMonitor(true);
+        
+        gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0f,  0.0f, -1.0f);
+
+        
+        gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.f);
+    } 
+    else
+    {
+        gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0,  0.0, -1.0);
+
+        gridBuilder->setStressBoundaryCondition(SideType::MZ,
+                                            0.0, 0.0, 1.0,              // wall normals
+                                            samplingOffset, z0/dx);     // wall model settinng
+        para->setHasWallModelMonitor(true);
+    }
+
+
+
     bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressPressureBounceBack);
-
-    gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0,  0.0, 0.0);
     bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipBounceBack); 
-    
+    bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflective);
+    bcFactory.setPrecursorBoundaryCondition(useDistributions ? BoundaryConditionFactory::PrecursorBC::DistributionsPrecursor : BoundaryConditionFactory::PrecursorBC::VelocityPrecursor);
+    para->setOutflowPressureCorrectionFactor(0.0); 
 
-    real cPi = 3.1415926535897932384626433832795;
+
+
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)0.0;
-        vx  = (u_star/0.4 * log(coordZ/z0) + 2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1))  * dt / dx; 
-        vy  = 2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1)  * dt / dx; 
-        vz  = 8.0*u_star/0.4*(sin(cPi*8.0*coordY/H)*sin(cPi*8.0*coordZ/H)+sin(cPi*8.0*coordX/L_x))/(pow(L_z/2.0-coordZ, c2o1)+c1o1) * dt / dx;
+        vx  = rho = c0o1;
+        vx  = (u_star/c4o10 * log(coordZ/z0+c1o1) + c2o1*sin(cPi*c16o1*coordX/L_x)*sin(cPi*c8o1*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1)) * dt/dx; 
+        vy  = c2o1*sin(cPi*c16o1*coordX/L_x)*sin(cPi*c8o1*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1) * dt/dx; 
+        vz  = c8o1*u_star/c4o10*(sin(cPi*c8o1*coordY/H)*sin(cPi*c8o1*coordZ/H)+sin(cPi*c8o1*coordX/L_x))/(pow(c1o2*L_z-coordZ, c2o1)+c1o1) * dt/dx;
     });
+
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     if(isFirstSubDomain)
     {
@@ -301,6 +355,46 @@ void multipleLevel(const std::string& configPath)
         if(para->getIsBodyForce())
             wallModelProbe->setEvaluatePressureGradient(true);
         para->addProbe( wallModelProbe );
+    }
+
+    SPtr<PlaneProbe> planeProbe1 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_1", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
+    planeProbe1->setProbePlane(100.0, 0.0, 0, dx, L_y, L_z);
+    planeProbe1->addAllAvailableStatistics();
+    para->addProbe( planeProbe1 );
+
+    if(readPrecursor)
+    {
+        SPtr<PlaneProbe> planeProbe2 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_2", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
+        planeProbe2->setProbePlane(1000.0, 0.0, 0, dx, L_y, L_z);
+        planeProbe2->addAllAvailableStatistics();
+        para->addProbe( planeProbe2 );
+
+        SPtr<PlaneProbe> planeProbe3 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_3", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
+        planeProbe3->setProbePlane(1500.0, 0.0, 0, dx, L_y, L_z);
+        planeProbe3->addAllAvailableStatistics();
+        para->addProbe( planeProbe3 );
+
+        SPtr<PlaneProbe> planeProbe4 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_4", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
+        planeProbe4->setProbePlane(2000.0, 0.0, 0, dx, L_y, L_z);
+        planeProbe4->addAllAvailableStatistics();
+        para->addProbe( planeProbe4 );
+
+        SPtr<PlaneProbe> planeProbe5 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_5", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
+        planeProbe5->setProbePlane(2500.0, 0.0, 0, dx, L_y, L_z);
+        planeProbe5->addAllAvailableStatistics();
+        para->addProbe( planeProbe5 );
+
+        SPtr<PlaneProbe> planeProbe6 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_6", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
+        planeProbe6->setProbePlane(0.0, L_y/2.0, 0, L_x, dx, L_z);
+        planeProbe6->addAllAvailableStatistics();
+        para->addProbe( planeProbe6 );
+    }
+
+
+    if(writePrecursor)
+    {
+        SPtr<PrecursorWriter> precursorWriter = std::make_shared<PrecursorWriter>("precursor", para->getOutputPath()+precursorDirectory, posXPrecursor, 0, L_y, 0, L_z, tStartPrecursor/dt, nTWritePrecursor, useDistributions? OutputVariable::Distributions: OutputVariable::Velocities);
+        para->addProbe(precursorWriter);
     }
 
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);

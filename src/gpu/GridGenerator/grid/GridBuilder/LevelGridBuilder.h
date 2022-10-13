@@ -58,7 +58,11 @@ class SlipBoundaryCondition;
 class StressBoundaryCondition;
 class PressureBoundaryCondition;
 class GeometryBoundaryCondition;
+class PrecursorBoundaryCondition;
 enum class SideType;
+
+class VelocityReader;
+class VelocityFileCollection;
 
 
 
@@ -80,6 +84,7 @@ public:
     GRIDGENERATOR_EXPORT void setPressureBoundaryCondition(SideType sideType, real rho);
     GRIDGENERATOR_EXPORT void setPeriodicBoundaryCondition(bool periodic_X, bool periodic_Y, bool periodic_Z);
     GRIDGENERATOR_EXPORT void setNoSlipBoundaryCondition(SideType sideType);
+    GRIDGENERATOR_EXPORT void setPrecursorBoundaryCondition(SideType sideType, SPtr<VelocityFileCollection> fileCollection, int nTRead, real velocityX=0.0f, real velocityY=0.0f, real velocityZ=0.0f);
 
     GRIDGENERATOR_EXPORT void setEnableFixRefinementIntoTheWall(bool enableFixRefinementIntoTheWall);
 
@@ -121,6 +126,14 @@ public:
     GRIDGENERATOR_EXPORT void getPressureValues(real* rho, int* indices, int* neighborIndices, int level) const override;
     GRIDGENERATOR_EXPORT virtual void getPressureQs(real* qs[27], int level) const override;
 
+    GRIDGENERATOR_EXPORT uint getPrecursorSize(int level) const override;
+    GRIDGENERATOR_EXPORT void getPrecursorValues(   uint* neighborNT, uint* neighborNB, uint* neighborST, uint* neighborSB, 
+                                                    real* weightsNT, real* weightsNB, real* weightsST, real* weightsSB, 
+                                                    int* indices, std::vector<SPtr<VelocityReader>>& reader, 
+                                                    int& numberOfPrecursorNodes, size_t& numberOfQuantities, uint& nTRead,
+                                                    real& velocityX, real& velocityY, real& velocityZ, int level) const override;
+    GRIDGENERATOR_EXPORT virtual void getPrecursorQs(real* qs[27], int level) const override;
+
     GRIDGENERATOR_EXPORT virtual void getGeometryQs(real *qs[27], int level) const override;
     GRIDGENERATOR_EXPORT virtual uint getGeometrySize(int level) const override;
     GRIDGENERATOR_EXPORT virtual void getGeometryIndices(int *indices, int level) const override;
@@ -148,6 +161,8 @@ protected:
         std::vector<SPtr<PressureBoundaryCondition>> pressureBoundaryConditions;
 
         std::vector<SPtr<VelocityBoundaryCondition>> noSlipBoundaryConditions;
+
+        std::vector<SPtr<PrecursorBoundaryCondition>> precursorBoundaryConditions;
 
         SPtr<GeometryBoundaryCondition> geometryBoundaryCondition;
     };

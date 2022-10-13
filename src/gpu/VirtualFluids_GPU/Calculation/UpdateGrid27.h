@@ -34,7 +34,7 @@ private:
     void collisionUsingIndices(int level, unsigned int t, uint *taggedFluidNodeIndices = nullptr, uint numberOfTaggedFluidNodes = 0, CollisionTemplate collisionTemplate = CollisionTemplate::Default, CudaStreamIndex streamIndex=CudaStreamIndex::Legacy);
     void collisionAdvectionDiffusion(int level);
 
-    void postCollisionBC(int level);
+    void postCollisionBC(int level, unsigned int t);
     void preCollisionBC(int level, unsigned int t);
     void collisionPorousMedia(int level);
 

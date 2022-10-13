@@ -29,6 +29,8 @@
 //=======================================================================================
 #include "CudaStreamManager.h"
 #include <helper_cuda.h>
+#include <cuda_runtime.h>
+#include <cuda.h>
 #include <iostream>
 
 void CudaStreamManager::registerStream(CudaStreamIndex streamIndex)

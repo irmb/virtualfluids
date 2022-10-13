@@ -28,12 +28,14 @@
 #include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
 #include "GridGenerator/grid/BoundaryConditions/Side.h"
+#include "GridGenerator/grid/BoundaryConditions/BoundaryCondition.h"
+
 #include "GridGenerator/grid/GridFactory.h"
 
 #include "GridGenerator/io/SimulationFileWriter/SimulationFileWriter.h"
 #include "GridGenerator/io/GridVTKWriter/GridVTKWriter.h"
-#include "GridGenerator/io/STLReaderWriter/STLReader.h"
-#include "GridGenerator/io/STLReaderWriter/STLWriter.h"
+#include "GridGenerator/VelocitySetter/VelocitySetter.h"
+
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -48,6 +50,7 @@
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PointProbe.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlaneProbe.h"
 #include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
+#include "VirtualFluids_GPU/TurbulenceModels/TurbulenceModelFactory.h"
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 
@@ -98,7 +101,6 @@ void multipleLevel(const std::string& configPath)
     vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();
 
     auto gridFactory = GridFactory::make();
-    gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -172,7 +174,10 @@ void multipleLevel(const std::string& configPath)
     gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
 
     bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityAndPressureCompressible);
-    bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::PressureNonEquilibriumCompressible);
+    bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflectivePressureCorrection);
+
+    SPtr<TurbulenceModelFactory> tmFactory = std::make_shared<TurbulenceModelFactory>(para);
+    tmFactory->readConfigFile(config);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -183,10 +188,10 @@ void multipleLevel(const std::string& configPath)
     uint nBlades = 3;
     uint nBladeNodes = 32;
 
-    SPtr<ActuatorLine> actuator_line =SPtr<ActuatorLine>( new ActuatorLine(nBlades, density, nBladeNodes, epsilon, turbPos[0], turbPos[1], turbPos[2], reference_diameter, level, dt, dx) );
+    SPtr<ActuatorLine> actuator_line = std::make_shared<ActuatorLine>(nBlades, density, nBladeNodes, epsilon, turbPos[0], turbPos[1], turbPos[2], reference_diameter, level, dt, dx, true);
     para->addActuator( actuator_line );
 
-    SPtr<PointProbe> pointProbe = SPtr<PointProbe>( new PointProbe("pointProbe", para->getOutputPath(), 100, 1, 500, 100) );
+    SPtr<PointProbe> pointProbe = std::make_shared<PointProbe>("pointProbe", para->getOutputPath(), 100, 1, 500, 100);
     std::vector<real> probeCoordsX = {reference_diameter,2*reference_diameter,5*reference_diameter};
     std::vector<real> probeCoordsY = {3*reference_diameter,3*reference_diameter,3*reference_diameter};
     std::vector<real> probeCoordsZ = {3*reference_diameter,3*reference_diameter,3*reference_diameter};
@@ -197,7 +202,7 @@ void multipleLevel(const std::string& configPath)
     pointProbe->addStatistic(Statistic::Variances);
     para->addProbe( pointProbe );
 
-    SPtr<PlaneProbe> planeProbe = SPtr<PlaneProbe>( new PlaneProbe("planeProbe", para->getOutputPath(), 100, 500, 100, 100) );
+    SPtr<PlaneProbe> planeProbe = std::make_shared<PlaneProbe>("planeProbe", para->getOutputPath(), 100, 500, 100, 100);
     planeProbe->setProbePlane(5*reference_diameter, 0, 0, dx, L_y, L_z);
     planeProbe->addStatistic(Statistic::Means);
     para->addProbe( planeProbe );
@@ -207,7 +212,7 @@ void multipleLevel(const std::string& configPath)
 
     auto gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
 
-    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory);
+    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory, tmFactory);
     sim.run();
 }
 

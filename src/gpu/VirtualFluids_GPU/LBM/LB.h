@@ -231,6 +231,21 @@ typedef struct QforBC{
    real *normalX, *normalY, *normalZ;
 }QforBoundaryConditions;
 
+typedef struct QforPrecursorBC{
+   int* k;
+   int numberOfBCnodes=0;
+   int sizeQ;
+   int numberOfPrecursorNodes=0;
+   uint nPrecursorReads=0;
+   uint nTRead;
+   size_t numberOfQuantities;
+   real* q27[27];
+   uint* planeNeighborNT, *planeNeighborNB, *planeNeighborST, *planeNeighborSB;
+   real* weightsNT, *weightsNB, *weightsST,  *weightsSB;
+   real* last, *current, *next;
+   real velocityX, velocityY, velocityZ;
+}QforPrecursorBoundaryConditions;
+
 //BCTemp
 typedef struct TempforBC{
    int* k;
@@ -265,6 +280,7 @@ typedef struct WMparas{
    real* Fy;
    real* Fz;
 }WallModelParameters;
+
 
 //measurePoints
 typedef struct MeasP{

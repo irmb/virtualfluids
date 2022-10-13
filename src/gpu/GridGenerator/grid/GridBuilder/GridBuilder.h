@@ -54,6 +54,7 @@ class GridWrapper;
 class Transformator;
 class ArrowTransformator;
 class PolyDataWriterWrapper;
+class VelocityReader;
 
 class BoundingBox;
 class Grid;
@@ -112,6 +113,15 @@ public:
     virtual uint getPressureSize(int level) const                                                  = 0;
     virtual void getPressureValues(real *rho, int *indices, int *neighborIndices, int level) const = 0;
     virtual void getPressureQs(real *qs[27], int level) const                                      = 0;
+
+    virtual uint getPrecursorSize(int level) const              = 0;
+    virtual void getPrecursorValues(uint* neighborNT, uint* neighborNB, uint* neighborST, uint* neighborSB, 
+                                    real* weightsNT, real* weightsNB, real* weightsST, real* weightsSB, 
+                                    int* indices, std::vector<SPtr<VelocityReader>>& reader, 
+                                    int& numberOfPrecursorNodes, size_t& numberOfQuantities, uint& nTRead, 
+                                    real& velocityX, real& velocityY, real& velocityZ, int level) const = 0;
+
+    virtual void getPrecursorQs(real* qs[27], int level) const  = 0;
 
     virtual uint getGeometrySize(int level) const                                 = 0;
     virtual void getGeometryIndices(int *indices, int level) const                = 0;
