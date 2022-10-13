@@ -136,21 +136,15 @@ __global__ void interpolateVelocities(real* gridCoordsX, real* gridCoordsY, real
 __global__ void applyBodyForces(real* gridCoordsX, real* gridCoordsY, real* gridCoordsZ,
                                 real* gridForcesX, real* gridForcesY, real* gridForcesZ, 
                                 real* bladeCoordsX, real* bladeCoordsY, real* bladeCoordsZ, 
-                                real* bladeForcesX, real* bladeForcesY,real* bladeForcesZ,
-                                uint numberOfTurbines, uint numberOfBlades, uint numberOfBladeNodes,
+                                real* bladeForcesX, real* bladeForcesY, real* bladeForcesZ,
+                                const uint numberOfTurbines, const uint numberOfBlades, const uint numberOfBladeNodes,
                                 real* azimuths, real* yaws, real* diameters,
                                 real* turbPosX, real* turbPosY, real* turbPosZ,
                                 uint* gridIndices, uint nIndices, 
-                                real invEpsilonSqrd, real factorGaussian)
+                                const real invEpsilonSqrd, const real factorGaussian)
 {
-    const uint x = threadIdx.x; 
-    const uint y = blockIdx.x;
-    const uint z = blockIdx.y;
 
-    const uint nx = blockDim.x;
-    const uint ny = gridDim.x;
-
-    const uint index = nx*(ny*z + y) + x;
+    const uint index = vf::gpu::getNodeIndex();
 
     if(index>=nIndices) return;
 
@@ -174,7 +168,7 @@ __global__ void applyBodyForces(real* gridCoordsX, real* gridCoordsY, real* grid
         real gridCoordY_RF = gridCoordY_GF - turbPosY[turbine];
         real gridCoordZ_RF = gridCoordZ_GF - turbPosZ[turbine];
 
-        if(distSqrd(gridCoordX_RF, gridCoordY_RF, gridCoordZ_RF)*invEpsilonSqrd< radius*radius*invEpsilonSqrd+c7o1)
+        if(distSqrd(gridCoordX_RF, gridCoordY_RF, gridCoordZ_RF)*invEpsilonSqrd > radius*radius*invEpsilonSqrd+c7o1)
             continue;
 
         real azimuth = azimuths[turbine];
@@ -221,7 +215,7 @@ __global__ void applyBodyForces(real* gridCoordsX, real* gridCoordsY, real* grid
             gridForceX_RF += forceX_RF*eta;
             gridForceY_RF += forceY_RF*eta;
             gridForceZ_RF += forceZ_RF*eta;
-            
+
             for( uint bladeNode=1; bladeNode<numberOfBladeNodes-1; bladeNode++)
             {
                 node = nextNode;
@@ -231,22 +225,21 @@ __global__ void applyBodyForces(real* gridCoordsX, real* gridCoordsY, real* grid
                 y = bladeCoordsY[node];
                 last_z = current_z;
                 current_z = next_z;
-                next_z = bladeCoordsZ[node+1];
+                next_z = bladeCoordsZ[nextNode];
 
                 dz = c1o2*(next_z-last_z);
 
-                eta = dz*factorGaussian*exp(-distSqrd(x-gridCoordX_BF, y-gridCoordY_BF, current_z-gridCoordZ_BF)*invEpsilonSqrd);
 
+                eta = dz*factorGaussian*exp(-distSqrd(x-gridCoordX_BF, y-gridCoordY_BF, current_z-gridCoordZ_BF)*invEpsilonSqrd);
                 rotateFromBladeToGlobal(bladeForcesX[node], bladeForcesY[node], bladeForcesZ[node], 
                                         forceX_RF, forceY_RF, forceZ_RF, 
                                         localAzimuth, yaw);
-                
                 gridForceX_RF += forceX_RF*eta;
                 gridForceY_RF += forceY_RF*eta;
                 gridForceZ_RF += forceZ_RF*eta;
             }
 
-            node = calcNode(numberOfBladeNodes-1, numberOfBladeNodes, blade, numberOfBlades, turbine, numberOfTurbines);
+            node = nextNode;
 
             x = bladeCoordsX[node];
             y = bladeCoordsY[node];
@@ -265,11 +258,10 @@ __global__ void applyBodyForces(real* gridCoordsX, real* gridCoordsY, real* grid
             gridForceY_RF += forceY_RF*eta;
             gridForceZ_RF += forceZ_RF*eta;
         }
-
-        gridForcesX[gridIndex] = gridForceX_RF;
-        gridForcesY[gridIndex] = gridForceY_RF;
-        gridForcesZ[gridIndex] = gridForceZ_RF;
     }
+    gridForcesX[gridIndex] = gridForceX_RF;
+    gridForcesY[gridIndex] = gridForceY_RF;
+    gridForcesZ[gridIndex] = gridForceZ_RF;
 }
 
 void ActuatorFarm::addTurbine(real posX, real posY, real posZ, real diameter, real omega, real azimuth, real yaw, std::vector<real> bladeRadii)
@@ -287,6 +279,7 @@ void ActuatorFarm::addTurbine(real posX, real posY, real posZ, real diameter, re
 void ActuatorFarm::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaMemoryManager)
 {
     if(!para->getIsBodyForce()) throw std::runtime_error("try to allocate ActuatorFarm but BodyForce is not set in Parameter.");
+    this->forceRatio = para->getForceRatio();
     this->initTurbineGeometries(cudaMemoryManager);
     this->initBladeCoords(cudaMemoryManager);    
     this->initBladeIndices(para, cudaMemoryManager);
@@ -336,7 +329,6 @@ void ActuatorFarm::interact(Parameter* para, CudaMemoryManager* cudaMemoryManage
 
     for(uint turbine=0; turbine<this->numberOfTurbines; turbine++)
         this->azimuthsH[turbine] = fmod(this->azimuthsH[turbine]+this->omegasH[turbine]*this->deltaT, c2Pi);
-    
     cudaMemoryManager->cudaCopyBladeOrientationsHtoD(this);    
 }
 
