@@ -15,6 +15,8 @@
 #include "utilities/communication.h"
 #include "Communication/Communicator.h"
 
+#include <logger/Logger.h>
+
 using namespace vf::lbm::dir;
 
 GridGenerator::GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::gpu::Communicator& communicator):
@@ -96,6 +98,7 @@ void GridGenerator::allocArrays_CoordNeighborGeo()
 }
 
 void GridGenerator::allocArrays_taggedFluidNodes() {
+
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) 
     {
         for ( int tag = 0; tag < int(CollisionTemplate::LAST); tag++ )
@@ -135,8 +138,14 @@ void GridGenerator::allocArrays_taggedFluidNodes() {
                 default:
                     break;
             }
-
         }
+        VF_LOG_INFO("Number of tagged nodes on level {}:", level);
+        VF_LOG_INFO("Default: {}, Border: {}, WriteMacroVars: {}, ApplyBodyForce: {}, AllFeatures: {}", 
+                    para->getParH(level)->numberOfTaggedFluidNodes[CollisionTemplate::Default],
+                    para->getParH(level)->numberOfTaggedFluidNodes[CollisionTemplate::Border],
+                    para->getParH(level)->numberOfTaggedFluidNodes[CollisionTemplate::WriteMacroVars],
+                    para->getParH(level)->numberOfTaggedFluidNodes[CollisionTemplate::ApplyBodyForce],
+                    para->getParH(level)->numberOfTaggedFluidNodes[CollisionTemplate::AllFeatures]    );        
     }
 }
 
@@ -164,12 +173,14 @@ void GridGenerator::tagFluidNodeIndices(std::vector<uint> taggedFluidNodeIndices
 }
 
 void GridGenerator::sortFluidNodeTags() {
+    VF_LOG_INFO("Start sorting tagged fluid nodes...");
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++)
     {
         builder->sortFluidNodeIndicesAllFeatures(level); //has to be called first!
         builder->sortFluidNodeIndicesMacroVars(level);
         builder->sortFluidNodeIndicesApplyBodyForce(level);
     }
+    VF_LOG_INFO("done.");
 }
 
 void GridGenerator::allocArrays_BoundaryValues()
@@ -446,11 +457,6 @@ void GridGenerator::initalValuesDomainDecompostion()
                         
                         int sendIDX = para->getParH(level)->sendProcessNeighborX[j].index[0];
                         int recvIDX = para->getParH(level)->recvProcessNeighborX[j].index[0];
-                        std::cout << "In direction " << direction << " sendProcessNeighbor: " << para->getParH(level)->sendProcessNeighborX.back().rankNeighbor <<
-                                                                    " receiveProcessNeighbor: " << para->getParH(level)->recvProcessNeighborX.back().rankNeighbor <<
-                        std::endl   <<  "Sender: "    << sendIDX << " x " << para->getParH(level)->coordinateX[sendIDX]
-                                    << " Receiver: "  << recvIDX << " x " << para->getParH(level)->coordinateX[recvIDX]
-                                    << std::endl<< std::endl;
                     }
                 }
 
