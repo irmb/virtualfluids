@@ -97,7 +97,7 @@ void multipleLevel(std::filesystem::path& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     bool useGridGenerator = true;
-    bool useLevels        = true;
+    bool useLevels        = false;
     // para->setUseStreams(useStreams);                  // set in config
     // para->useReducedCommunicationAfterFtoC = true;    // set in config
     para->setCalcTurbulenceIntensity(false);
@@ -112,7 +112,7 @@ void multipleLevel(std::filesystem::path& configPath)
     const real Re       = 1000.0; // 1000
     const real velocity = 1.0;
     const real dt       = (real)1.0e-3; // 0.5e-3;
-    const uint nx       = 64;
+    const uint nx       = 16;
     std::string simulationName("DrivenCavityChimMultiGPU");
 
     // para->setTimestepOut(10000);   // set in config
@@ -212,21 +212,25 @@ void multipleLevel(std::filesystem::path& configPath)
                 gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
 
                 if (generatePart == 0) {
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MZ, LBM);
                     gridBuilder->findCommunicationIndices(CommunicationDirections::PZ, LBM);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PZ, 1);
+                    gridBuilder->setCommunicationProcess(CommunicationDirections::MZ, 1);
                 }
 
                 if (generatePart == 1) {
                     gridBuilder->findCommunicationIndices(CommunicationDirections::MZ, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PZ, LBM);
+                    gridBuilder->setCommunicationProcess(CommunicationDirections::PZ, 0);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::MZ, 0);
                 }
 
                 gridBuilder->setPeriodicBoundaryCondition(false, false, false);
                 //////////////////////////////////////////////////////////////////////////
-                if (generatePart == 0)
-                    gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
-                if (generatePart == 1)
-                    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, 0.0, 0.0);
+                // if (generatePart == 0)
+                //     gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
+                // if (generatePart == 1)
+                //     gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, 0.0, 0.0);
                 gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
                 gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
                 gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);

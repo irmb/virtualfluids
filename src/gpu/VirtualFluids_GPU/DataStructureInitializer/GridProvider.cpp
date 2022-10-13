@@ -29,15 +29,10 @@ void GridProvider::setNumberOfNodes(const int numberOfNodes, const int level) co
     para->getParD(level)->mem_size_int_SP = sizeof(uint) * para->getParD(level)->numberOfNodes;
 }
 
-void GridProvider::setNumberOfFluidNodes(const int numberOfNodes, const int level) const
+void GridProvider::setNumberOfTaggedFluidNodes(const int numberOfNodes, CollisionTemplate tag, const int level) const
 {
-    para->getParH(level)->numberOfFluidNodes = numberOfNodes;
-    para->getParD(level)->numberOfFluidNodes = numberOfNodes;
-}
-
-void GridProvider::setNumberOfFluidNodesBorder(const int numberOfNodes, const int level) const {
-    para->getParH(level)->numberOfFluidNodesBorder = numberOfNodes;
-    para->getParD(level)->numberOfFluidNodesBorder = numberOfNodes;
+    para->getParH(level)->numberOfTaggedFluidNodes[tag] = numberOfNodes;
+    para->getParD(level)->numberOfTaggedFluidNodes[tag] = numberOfNodes;
 }
 
 void GridProvider::setInitalNodeValues(const int numberOfNodes, const int level) const

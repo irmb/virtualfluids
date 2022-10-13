@@ -1,10 +1,10 @@
-#ifndef LB_Kernel_TURBULENT_VISCOSITY_CUMULANT_K17_COMP_CHIM_H
-#define LB_Kernel_TURBULENT_VISCOSITY_CUMULANT_K17_COMP_CHIM_H
+#ifndef LB_Kernel_CUMULANT_K17_ALMIGHTY_H
+#define LB_Kernel_CUMULANT_K17_ALMIGHTY_H
 
 #include <DataTypes.h>
 #include <curand.h>
 
-template< TurbulenceModel turbulenceModel > __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
+template< TurbulenceModel turbulenceModel, bool writeMacroscopicVariables, bool applyBodyForce > __global__ void LB_Kernel_CumulantK17Almighty(
 	real omega_in,
 	uint* typeOfGridNode,
 	uint* neighborX,
@@ -25,5 +25,7 @@ template< TurbulenceModel turbulenceModel > __global__ void LB_Kernel_TurbulentV
 	real* bodyForceY,
 	real* bodyForceZ,
 	real* quadricLimiters,
-	bool isEvenTimestep);
+	bool isEvenTimestep,
+	const uint *fluidNodeIndices,
+    uint numberOfFluidNodes);
 #endif

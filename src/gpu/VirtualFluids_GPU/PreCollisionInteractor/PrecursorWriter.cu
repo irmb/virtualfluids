@@ -298,3 +298,15 @@ std::string PrecursorWriter::makeFileName(std::string fileName, int level, int i
                     + "_ID_" + StringUtil::toString<int>(id)
                     + "_File_" + StringUtil::toString<int>(filesWritten);
 }
+
+void PrecursorWriter::getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider)
+{
+    for(uint level=0; level<para->getMaxLevel(); level++)
+    {
+        if(outputVariable==OutputVariable::Velocities)
+        {
+            std::vector<uint> indices(precursorStructs[level]->indicesH, precursorStructs[level]->indicesH+precursorStructs[level]->nPoints);
+            gridProvider->tagFluidNodeIndices(indices, CollisionTemplate::WriteMacroVars, level);
+        }
+    }
+}

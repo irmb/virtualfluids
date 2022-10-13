@@ -26,9 +26,17 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file Cumulant27chimStream.cu
-//! \ingroup GPU
-//! \author Martin Schoenherr, Anna Wellmann
+//! \file CumulantK17Almighty_Device.cu
+//! \author Henry Korb, Henrik Asmuth
+//! \date 16/05/2022
+//! \brief CumulantK17CompChim kernel by Martin Schönherr that inlcudes turbulent viscosity and other small mods.
+//!
+//! Additions to CumulantK17CompChim:
+//!     - can incorporate local body force 
+//!     - when applying a local body force, the total round of error of forcing+bodyforce is saved and added in next time step
+//!     - uses turbulent viscosity that is computed in separate kernel (as of now AMD)
+//!     - saves macroscopic values (needed for instance for probes, AMD, and actuator models)
+//!
 //=======================================================================================
 /* Device code */
 #include "LBM/LB.h" 
@@ -36,22 +44,37 @@
 #include <lbm/constants/NumericConstants.h>
 #include "Kernel/Utilities/DistributionHelper.cuh"
 
+#include "GPU/TurbulentViscosityInlines.cuh"
+
 using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
 #include "Kernel/Utilities/ChimeraTransformation.h"
 
+
 ////////////////////////////////////////////////////////////////////////////////
-__global__ void LB_Kernel_CumulantK17CompChimRedesigned(
-    real omega,
-    uint* neighborX,
-    uint* neighborY,
-    uint* neighborZ,
-    real* distributions,
-    unsigned long numberOfLBnodes,
-    int level,
-    real* forces,
-    real* quadricLimiters,
-    bool isEvenTimestep,
+template<TurbulenceModel turbulenceModel, bool writeMacroscopicVariables, bool applyBodyForce>
+__global__ void LB_Kernel_CumulantK17Almighty(
+	real omega_in,
+	uint* typeOfGridNode,
+	uint* neighborX,
+	uint* neighborY,
+	uint* neighborZ,
+	real* distributions,
+    real* rho,
+    real* vx,
+    real* vy,
+    real* vz,
+    real* turbulentViscosity,
+    real SGSconstant,
+	unsigned long numberOfLBnodes,
+	int level,
+    bool bodyForce,
+	real* forces,
+    real* bodyForceX,
+    real* bodyForceY,
+    real* bodyForceZ,
+	real* quadricLimiters,
+	bool isEvenTimestep,
     const uint *fluidNodeIndices,
     uint numberOfFluidNodes)
 {
@@ -64,15 +87,14 @@ __global__ void LB_Kernel_CumulantK17CompChimRedesigned(
     //! The cumulant kernel is executed in the following steps
     //!
     ////////////////////////////////////////////////////////////////////////////////
-    //! - Get the thread index coordinates from threadIdx, blockIdx, blockDim and gridDim.
+    //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
     //!
     const unsigned kThread = vf::gpu::getNodeIndex();
-
+    
     //////////////////////////////////////////////////////////////////////////
-    //! - Return for non-fluid nodes
+    // run for all indices in size_Mat and fluid nodes
     if (kThread >= numberOfFluidNodes) 
         return;
-
     ////////////////////////////////////////////////////////////////////////////////
     //! - Get the node index from the array containing all indices of fluid nodes
     //!
@@ -85,10 +107,9 @@ __global__ void LB_Kernel_CumulantK17CompChimRedesigned(
     //! DOI:10.3390/computation5020019 ]</b></a>
     //!
     Distributions27 dist = vf::gpu::getDistributionReferences27(distributions, numberOfLBnodes, isEvenTimestep);
-    
+
     ////////////////////////////////////////////////////////////////////////////////
     //! - Set neighbor indices (necessary for indirect addressing)
-    //!
     uint k_M00 = neighborX[k_000];
     uint k_0M0 = neighborY[k_000];
     uint k_00M = neighborZ[k_000];
@@ -96,9 +117,8 @@ __global__ void LB_Kernel_CumulantK17CompChimRedesigned(
     uint k_M0M = neighborZ[k_M00];
     uint k_0MM = neighborZ[k_0M0];
     uint k_MMM = neighborZ[k_MM0];
-
     ////////////////////////////////////////////////////////////////////////////////////
-    //! - Set local distributions (f's):
+    //! - Set local distributions
     //!
     real f_000 = (dist.f[DIR_000])[k_000];
     real f_P00 = (dist.f[DIR_P00])[k_000];
@@ -159,45 +179,84 @@ __global__ void LB_Kernel_CumulantK17CompChimRedesigned(
     real& m_200 = f_PMM;
     real& m_000 = f_MMM;
 
-    ////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////(unsigned long)//////////////////////////////
     //! - Calculate density and velocity using pyramid summation for low round-off errors as in Eq. (J1)-(J3) \ref
     //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015),
     //! DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
     //!
     real drho = ((((f_PPP + f_MMM) + (f_MPM + f_PMP)) + ((f_MPP + f_PMM) + (f_MMP + f_PPM))) +
-                 (((f_0MP + f_0PM) + (f_0MM + f_0PP)) + ((f_M0P + f_P0M) + (f_M0M + f_P0P)) +
-                  ((f_MP0 + f_PM0) + (f_MM0 + f_PP0))) +
-                  ((f_M00 + f_P00) + (f_0M0 + f_0P0) + (f_00M + f_00P))) +
+                (((f_0MP + f_0PM) + (f_0MM + f_0PP)) + ((f_M0P + f_P0M) + (f_M0M + f_P0P)) +
+                ((f_MP0 + f_PM0) + (f_MM0 + f_PP0))) +
+                ((f_M00 + f_P00) + (f_0M0 + f_0P0) + (f_00M + f_00P))) +
                     f_000;
 
     real oneOverRho = c1o1 / (c1o1 + drho);
 
     real vvx = ((((f_PPP - f_MMM) + (f_PMP - f_MPM)) + ((f_PMM - f_MPP) + (f_PPM - f_MMP))) +
                 (((f_P0M - f_M0P) + (f_P0P - f_M0M)) + ((f_PM0 - f_MP0) + (f_PP0 - f_MM0))) + (f_P00 - f_M00)) *
-               oneOverRho;
+            oneOverRho;
     real vvy = ((((f_PPP - f_MMM) + (f_MPM - f_PMP)) + ((f_MPP - f_PMM) + (f_PPM - f_MMP))) +
                 (((f_0PM - f_0MP) + (f_0PP - f_0MM)) + ((f_MP0 - f_PM0) + (f_PP0 - f_MM0))) + (f_0P0 - f_0M0)) *
-               oneOverRho;
+            oneOverRho;
     real vvz = ((((f_PPP - f_MMM) + (f_PMP - f_MPM)) + ((f_MPP - f_PMM) + (f_MMP - f_PPM))) +
                 (((f_0MP - f_0PM) + (f_0PP - f_0MM)) + ((f_M0P - f_P0M) + (f_P0P - f_M0M))) + (f_00P - f_00M)) *
-               oneOverRho;
-
+            oneOverRho;
+    
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Add half of the acceleration (body force) to the velocity as in Eq. (42) \ref
     //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015),
     //! DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
     //!
     real factor = c1o1;
-    // The factor has to be scaled for each level to get the correct acceleration.
     for (size_t i = 1; i <= level; i++) {
         factor *= c2o1;
     }
-    real fx = forces[0] / factor;
-    real fy = forces[1] / factor;
-    real fz = forces[2] / factor;
-    vvx += fx * c1o2;
-    vvy += fy * c1o2;
-    vvz += fz * c1o2;
+    
+    real fx = forces[0];
+    real fy = forces[1];
+    real fz = forces[2];
+
+    if( applyBodyForce ){
+        fx += bodyForceX[k_000]; 
+        fy += bodyForceY[k_000];
+        fz += bodyForceZ[k_000];
+
+        real vx = vvx;
+        real vy = vvy;
+        real vz = vvz;
+        real acc_x = fx * c1o2 / factor;
+        real acc_y = fy * c1o2 / factor;
+        real acc_z = fz * c1o2 / factor;
+
+        vvx += acc_x;
+        vvy += acc_y;
+        vvz += acc_z;
+        
+        //    // Reset body force. To be used when not using round-off correction.
+        // bodyForceX[k] = 0.0f;
+        // bodyForceY[k] = 0.0f;
+        // bodyForceZ[k] = 0.0f;
+
+        ////////////////////////////////////////////////////////////////////////////////////
+        //!> Round-off correction
+        //!
+        //!> Similar to Kahan summation algorithm (https://en.wikipedia.org/wiki/Kahan_summation_algorithm)
+        //!> Essentially computes the round-off error of the applied force and adds it in the next time step as a compensation.
+        //!> Seems to be necesseary at very high Re boundary layers, where the forcing and velocity can  
+        //!> differ by several orders of magnitude.
+        //!> \note 16/05/2022: Testing, still ongoing! 
+        //!
+        bodyForceX[k_000] = (acc_x-(vvx-vx))*factor*c2o1;
+        bodyForceY[k_000] = (acc_y-(vvy-vy))*factor*c2o1;
+        bodyForceZ[k_000] = (acc_z-(vvz-vz))*factor*c2o1;
+    }
+    else{
+        vvx += fx * c1o2 / factor;
+        vvy += fy * c1o2 / factor;
+        vvz += fz * c1o2 / factor;
+    }
+    
+
     ////////////////////////////////////////////////////////////////////////////////////
     // calculate the square of velocities for this lattice node
     real vx2 = vvx * vvx;
@@ -272,15 +331,21 @@ __global__ void LB_Kernel_CumulantK17CompChimRedesigned(
     //!  - Fifth order cumulants \f$ C_{221}, C_{212}, C_{122}\f$: \f$\omega_9=O5=1.0\f$.
     //!  - Sixth order cumulant \f$ C_{222}\f$: \f$\omega_{10}=O6=1.0\f$.
     //!
+    ////////////////////////////////////////////////////////////////////////////////////
+    //! - Calculate modified omega with turbulent viscosity
+    //!
+    real omega = omega_in;
+    if(turbulenceModel != TurbulenceModel::None){ omega /= (c1o1 + c3o1*omega_in*turbulentViscosity[k_000]); }
     ////////////////////////////////////////////////////////////
     // 2.
     real OxxPyyPzz = c1o1;
     ////////////////////////////////////////////////////////////
     // 3.
-    real OxyyPxzz = c8o1 * (-c2o1 + omega) * (c1o1 + c2o1 * omega)  / (-c8o1 - c14o1 * omega + c7o1 * omega * omega);
-    real OxyyMxzz = c8o1 * (-c2o1 + omega) * (-c7o1 + c4o1 * omega) / (c56o1 - c50o1 * omega + c9o1 * omega * omega);
-    real Oxyz     = c24o1 * (-c2o1 + omega) * (-c2o1 - c7o1 * omega + c3o1 * omega * omega) /
-                    (c48o1 + c152o1 * omega - c130o1 * omega * omega + c29o1 * omega * omega * omega);
+    real OxyyPxzz = c8o1 * (-c2o1 + omega) * (c1o1 + c2o1 * omega) / (-c8o1 - c14o1 * omega + c7o1 * omega * omega);
+    real OxyyMxzz =
+        c8o1 * (-c2o1 + omega) * (-c7o1 + c4o1 * omega) / (c56o1 - c50o1 * omega + c9o1 * omega * omega);
+    real Oxyz = c24o1 * (-c2o1 + omega) * (-c2o1 - c7o1 * omega + c3o1 * omega * omega) /
+                (c48o1 + c152o1 * omega - c130o1 * omega * omega + c29o1 * omega * omega * omega);
     ////////////////////////////////////////////////////////////
     // 4.
     real O4 = c1o1;
@@ -292,16 +357,16 @@ __global__ void LB_Kernel_CumulantK17CompChimRedesigned(
     real O6 = c1o1;
 
     ////////////////////////////////////////////////////////////////////////////////////
-    //! - A and B: parameters for fourth order convergence of the diffusion term according to Eq. (115) and (116)
+    //! - A and DIR_00M: parameters for fourth order convergence of the diffusion term according to Eq. (115) and (116)
     //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017),
     //! DOI:10.1016/j.jcp.2017.05.040 ]</b></a> with simplifications assuming \f$ \omega_2 = 1.0 \f$ (modify for
     //! different bulk viscosity).
     //!
-    real factorA = (c4o1 + c2o1  * omega - c3o1  * omega * omega) / (c2o1 - c7o1  * omega + c5o1  * omega * omega);
+    real factorA = (c4o1 + c2o1 * omega - c3o1 * omega * omega) / (c2o1 - c7o1 * omega + c5o1 * omega * omega);
     real factorB = (c4o1 + c28o1 * omega - c14o1 * omega * omega) / (c6o1 - c21o1 * omega + c15o1 * omega * omega);
 
     ////////////////////////////////////////////////////////////////////////////////////
-    //! - Compute cumulants (c's) from central moments according to Eq. (20)-(23) in
+    //! - Compute cumulants from central moments according to Eq. (20)-(23) in
     //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017),
     //! DOI:10.1016/j.jcp.2017.05.040 ]</b></a>
     //!
@@ -318,27 +383,27 @@ __global__ void LB_Kernel_CumulantK17CompChimRedesigned(
     // 5.
     real c_122 =
         m_122 - ((m_002 * m_120 + m_020 * m_102 + c4o1 * m_011 * m_111 + c2o1 * (m_101 * m_021 + m_110 * m_012)) +
-                 c1o3 * (m_120 + m_102)) *
-                 oneOverRho;
+                c1o3 * (m_120 + m_102)) *
+                oneOverRho;
     real c_212 =
         m_212 - ((m_002 * m_210 + m_200 * m_012 + c4o1 * m_101 * m_111 + c2o1 * (m_011 * m_201 + m_110 * m_102)) +
-                 c1o3 * (m_210 + m_012)) *
-                 oneOverRho;
+                c1o3 * (m_210 + m_012)) *
+                oneOverRho;
     real c_221 =
         m_221 - ((m_200 * m_021 + m_020 * m_201 + c4o1 * m_110 * m_111 + c2o1 * (m_101 * m_120 + m_011 * m_210)) +
-                 c1o3 * (m_021 + m_201)) *
-                 oneOverRho;
+                c1o3 * (m_021 + m_201)) *
+                oneOverRho;
     ////////////////////////////////////////////////////////////
     // 6.
     real c_222 = m_222 + ((-c4o1 * m_111 * m_111 - (m_200 * m_022 + m_020 * m_202 + m_002 * m_220) -
                             c4o1 * (m_011 * m_211 + m_101 * m_121 + m_110 * m_112) -
                             c2o1 * (m_120 * m_102 + m_210 * m_012 + m_201 * m_021)) *
                             oneOverRho +
-                           (c4o1 * (m_101 * m_101 * m_020 + m_011 * m_011 * m_200 + m_110 * m_110 * m_002) +
+                        (c4o1 * (m_101 * m_101 * m_020 + m_011 * m_011 * m_200 + m_110 * m_110 * m_002) +
                             c2o1 * (m_200 * m_020 * m_002) + c16o1 * m_110 * m_101 * m_011) *
                             oneOverRho * oneOverRho -
                             c1o3 * (m_022 + m_202 + m_220) * oneOverRho - c1o9 * (m_200 + m_020 + m_002) * oneOverRho +
-                           (c2o1 * (m_101 * m_101 + m_011 * m_011 + m_110 * m_110) +
+                        (c2o1 * (m_101 * m_101 + m_011 * m_011 + m_110 * m_110) +
                             (m_002 * m_020 + m_002 * m_200 + m_020 * m_200) + c1o3 * (m_002 + m_020 + m_200)) *
                             oneOverRho * oneOverRho * c2o3 +
                             c1o27 * ((drho * drho - drho) * oneOverRho * oneOverRho));
@@ -378,6 +443,22 @@ __global__ void LB_Kernel_CumulantK17CompChimRedesigned(
     real dxux = c1o2 * (-omega) * (mxxMyy + mxxMzz) + c1o2 * OxxPyyPzz * (m_000 - mxxPyyPzz);
     real dyuy = dxux + omega * c3o2 * mxxMyy;
     real dzuz = dxux + omega * c3o2 * mxxMzz;
+
+    ////////////////////////////////////////////////////////////////////////////////////
+    switch (turbulenceModel)
+    {
+    case TurbulenceModel::None:
+    case TurbulenceModel::AMD:  //AMD is computed in separate kernel
+        break;
+    case TurbulenceModel::Smagorinsky:
+        turbulentViscosity[k_000] = calcTurbulentViscositySmagorinsky(SGSconstant, dxux, dyuy, dzuz, Dxy, Dxz , Dyz);
+        break;
+    case TurbulenceModel::QR:
+        turbulentViscosity[k_000] = calcTurbulentViscosityQR(SGSconstant, dxux, dyuy, dzuz, Dxy, Dxz , Dyz);
+        break;
+    default:
+        break;
+    }
     ////////////////////////////////////////////////////////////
     //! - Relaxation of second order cumulants with correction terms according to Eq. (33)-(35) in
     //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017),
@@ -386,7 +467,6 @@ __global__ void LB_Kernel_CumulantK17CompChimRedesigned(
     mxxPyyPzz += OxxPyyPzz * (m_000 - mxxPyyPzz) - c3o1 * (c1o1 - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
     mxxMyy += omega * (-mxxMyy) - c3o1 * (c1o1 + c1o2 * (-omega)) * (vx2 * dxux - vy2 * dyuy);
     mxxMzz += omega * (-mxxMzz) - c3o1 * (c1o1 + c1o2 * (-omega)) * (vx2 * dxux - vz2 * dzuz);
-    //////////////////////////////////////////////////////////////////////////
 
     ////////////////////////////////////////////////////////////////////////////////////
     ////no correction
@@ -394,18 +474,18 @@ __global__ void LB_Kernel_CumulantK17CompChimRedesigned(
     // mxxMyy += -(-omega) * (-mxxMyy);
     // mxxMzz += -(-omega) * (-mxxMzz);
     //////////////////////////////////////////////////////////////////////////
-    
     m_011 += omega * (-m_011);
     m_101 += omega * (-m_101);
     m_110 += omega * (-m_110);
 
+    ////////////////////////////////////////////////////////////////////////////////////
+    // relax
     //////////////////////////////////////////////////////////////////////////
+    // incl. limiter
     //! - Relaxation of third order cumulants including limiter according to Eq. (116)-(123)
     //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017),
     //! DOI:10.1016/j.jcp.2017.05.040 ]</b></a>
     //!
-    //////////////////////////////////////////////////////////////////////////
-    // incl. limiter
     real wadjust = Oxyz + (c1o1 - Oxyz) * abs(m_111) / (abs(m_111) + quadricLimitD);
     m_111 += wadjust * (-m_111);
     wadjust = OxyyPxzz + (c1o1 - OxyyPxzz) * abs(mxxyPyzz) / (abs(mxxyPyzz) + quadricLimitP);
@@ -459,6 +539,7 @@ __global__ void LB_Kernel_CumulantK17CompChimRedesigned(
     c_121 = -O4 * (c1o1 / omega - c1o2) * Dxz           * c1o3 * factorB + (c1o1 - O4) * (c_121);
     c_211 = -O4 * (c1o1 / omega - c1o2) * Dyz           * c1o3 * factorB + (c1o1 - O4) * (c_211);
 
+
     //////////////////////////////////////////////////////////////////////////
     // 5.
     c_122 += O5 * (-c_122);
@@ -503,17 +584,17 @@ __global__ void LB_Kernel_CumulantK17CompChimRedesigned(
     //////////////////////////////////////////////////////////////////////////
     // 6.
     m_222 = c_222 - ((-c4o1 * m_111 * m_111 - (m_200 * m_022 + m_020 * m_202 + m_002 * m_220) -
-                       c4o1 * (m_011 * m_211 + m_101 * m_121 + m_110 * m_112) -
-                       c2o1 * (m_120 * m_102 + m_210 * m_012 + m_201 * m_021)) *
-                       oneOverRho +
-                      (c4o1 * (m_101 * m_101 * m_020 + m_011 * m_011 * m_200 + m_110 * m_110 * m_002) +
-                       c2o1 * (m_200 * m_020 * m_002) + c16o1 * m_110 * m_101 * m_011) *
-                       oneOverRho * oneOverRho -
-                       c1o3 * (m_022 + m_202 + m_220) * oneOverRho - c1o9 * (m_200 + m_020 + m_002) * oneOverRho +
-                      (c2o1 * (m_101 * m_101 + m_011 * m_011 + m_110 * m_110) +
-                       (m_002 * m_020 + m_002 * m_200 + m_020 * m_200) + c1o3 * (m_002 + m_020 + m_200)) *
-                       oneOverRho * oneOverRho * c2o3 +
-                       c1o27 * ((drho * drho - drho) * oneOverRho * oneOverRho));
+                    c4o1 * (m_011 * m_211 + m_101 * m_121 + m_110 * m_112) -
+                    c2o1 * (m_120 * m_102 + m_210 * m_012 + m_201 * m_021)) *
+                    oneOverRho +
+                    (c4o1 * (m_101 * m_101 * m_020 + m_011 * m_011 * m_200 + m_110 * m_110 * m_002) +
+                    c2o1 * (m_200 * m_020 * m_002) + c16o1 * m_110 * m_101 * m_011) *
+                    oneOverRho * oneOverRho -
+                    c1o3 * (m_022 + m_202 + m_220) * oneOverRho - c1o9 * (m_200 + m_020 + m_002) * oneOverRho +
+                    (c2o1 * (m_101 * m_101 + m_011 * m_011 + m_110 * m_110) +
+                    (m_002 * m_020 + m_002 * m_200 + m_020 * m_200) + c1o3 * (m_002 + m_020 + m_200)) *
+                    oneOverRho * oneOverRho * c2o3 +
+                    c1o27 * ((drho * drho - drho) * oneOverRho * oneOverRho));
 
     ////////////////////////////////////////////////////////////////////////////////////
     //! -  Add acceleration (body force) to first order cumulants according to Eq. (85)-(87) in
@@ -523,6 +604,15 @@ __global__ void LB_Kernel_CumulantK17CompChimRedesigned(
     m_100 = -m_100;
     m_010 = -m_010;
     m_001 = -m_001;
+
+    //Write to array here to distribute read/write
+    if(writeMacroscopicVariables)
+    {
+        rho[k_000] = drho;
+        vx[k_000] = vvx;
+        vy[k_000] = vvy;
+        vz[k_000] = vvz;
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Chimera transform from central moments to well conditioned distributions as defined in Appendix J in
@@ -573,31 +663,63 @@ __global__ void LB_Kernel_CumulantK17CompChimRedesigned(
     //! <a href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017),
     //! DOI:10.3390/computation5020019 ]</b></a>
     //!
-    (dist.f[DIR_P00])[k_000] = f_M00;
-    (dist.f[DIR_M00])[k_M00] = f_P00;
-    (dist.f[DIR_0P0])[k_000] = f_0M0;
-    (dist.f[DIR_0M0])[k_0M0] = f_0P0;
-    (dist.f[DIR_00P])[k_000] = f_00M;
-    (dist.f[DIR_00M])[k_00M] = f_00P;
-    (dist.f[DIR_PP0])[k_000] = f_MM0;
-    (dist.f[DIR_MM0])[k_MM0] = f_PP0;
-    (dist.f[DIR_PM0])[k_0M0] = f_MP0;
-    (dist.f[DIR_MP0])[k_M00] = f_PM0;
-    (dist.f[DIR_P0P])[k_000] = f_M0M;
-    (dist.f[DIR_M0M])[k_M0M] = f_P0P;
-    (dist.f[DIR_P0M])[k_00M] = f_M0P;
-    (dist.f[DIR_M0P])[k_M00] = f_P0M;
-    (dist.f[DIR_0PP])[k_000] = f_0MM;
-    (dist.f[DIR_0MM])[k_0MM] = f_0PP;
-    (dist.f[DIR_0PM])[k_00M] = f_0MP;
-    (dist.f[DIR_0MP])[k_0M0] = f_0PM;
+    (dist.f[DIR_P00])[k_000]    = f_M00;
+    (dist.f[DIR_M00])[k_M00]    = f_P00;
+    (dist.f[DIR_0P0])[k_000]    = f_0M0;
+    (dist.f[DIR_0M0])[k_0M0]    = f_0P0;
+    (dist.f[DIR_00P])[k_000]    = f_00M;
+    (dist.f[DIR_00M])[k_00M]    = f_00P;
+    (dist.f[DIR_PP0])[k_000]   = f_MM0;
+    (dist.f[DIR_MM0])[k_MM0]   = f_PP0;
+    (dist.f[DIR_PM0])[k_0M0]   = f_MP0;
+    (dist.f[DIR_MP0])[k_M00]   = f_PM0;
+    (dist.f[DIR_P0P])[k_000]   = f_M0M;
+    (dist.f[DIR_M0M])[k_M0M]   = f_P0P;
+    (dist.f[DIR_P0M])[k_00M]   = f_M0P;
+    (dist.f[DIR_M0P])[k_M00]   = f_P0M;
+    (dist.f[DIR_0PP])[k_000]   = f_0MM;
+    (dist.f[DIR_0MM])[k_0MM]   = f_0PP;
+    (dist.f[DIR_0PM])[k_00M]   = f_0MP;
+    (dist.f[DIR_0MP])[k_0M0]   = f_0PM;
     (dist.f[DIR_000])[k_000] = f_000;
-    (dist.f[DIR_PPP])[k_000] = f_MMM;
-    (dist.f[DIR_PMP])[k_0M0] = f_MPM;
-    (dist.f[DIR_PPM])[k_00M] = f_MMP;
-    (dist.f[DIR_PMM])[k_0MM] = f_MPP;
-    (dist.f[DIR_MPP])[k_M00] = f_PMM;
-    (dist.f[DIR_MMP])[k_MM0] = f_PPM;
-    (dist.f[DIR_MPM])[k_M0M] = f_PMP;
-    (dist.f[DIR_MMM])[k_MMM] = f_PPP;
+    (dist.f[DIR_PPP])[k_000]  = f_MMM;
+    (dist.f[DIR_PMP])[k_0M0]  = f_MPM;
+    (dist.f[DIR_PPM])[k_00M]  = f_MMP;
+    (dist.f[DIR_PMM])[k_0MM]  = f_MPP;
+    (dist.f[DIR_MPP])[k_M00]  = f_PMM;
+    (dist.f[DIR_MMP])[k_MM0]  = f_PPM;
+    (dist.f[DIR_MPM])[k_M0M]  = f_PMP;
+    (dist.f[DIR_MMM])[k_MMM]  = f_PPP;
 }
+
+template __global__ void LB_Kernel_CumulantK17Almighty < TurbulenceModel::AMD, true, true > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+
+template __global__ void LB_Kernel_CumulantK17Almighty < TurbulenceModel::Smagorinsky, true, true > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+
+template __global__ void LB_Kernel_CumulantK17Almighty < TurbulenceModel::QR, true, true > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+
+template __global__ void LB_Kernel_CumulantK17Almighty < TurbulenceModel::None, true, true > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+
+template __global__ void LB_Kernel_CumulantK17Almighty < TurbulenceModel::AMD, true, false > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+
+template __global__ void LB_Kernel_CumulantK17Almighty < TurbulenceModel::Smagorinsky, true, false > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+
+template __global__ void LB_Kernel_CumulantK17Almighty < TurbulenceModel::QR, true, false > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+
+template __global__ void LB_Kernel_CumulantK17Almighty < TurbulenceModel::None, true, false > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+
+template __global__ void LB_Kernel_CumulantK17Almighty < TurbulenceModel::AMD, false, true > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+
+template __global__ void LB_Kernel_CumulantK17Almighty < TurbulenceModel::Smagorinsky, false, true > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+
+template __global__ void LB_Kernel_CumulantK17Almighty < TurbulenceModel::QR, false, true > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+
+template __global__ void LB_Kernel_CumulantK17Almighty < TurbulenceModel::None, false, true > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+
+template __global__ void LB_Kernel_CumulantK17Almighty < TurbulenceModel::AMD, false, false > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+
+template __global__ void LB_Kernel_CumulantK17Almighty < TurbulenceModel::Smagorinsky, false, false > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+
+template __global__ void LB_Kernel_CumulantK17Almighty < TurbulenceModel::QR, false, false > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+
+template __global__ void LB_Kernel_CumulantK17Almighty < TurbulenceModel::None, false, false > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);

@@ -258,6 +258,11 @@ void ActuatorLine::free(Parameter* para, CudaMemoryManager* cudaMemoryManager)
     cudaMemoryManager->cudaFreeSphereIndices(this);
 }
 
+void ActuatorLine::getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider)
+{
+    std::vector<uint> indicesInSphere(this->boundingSphereIndicesH, this->boundingSphereIndicesH+this->nIndices);
+    gridProvider->tagFluidNodeIndices(indicesInSphere, CollisionTemplate::AllFeatures, this->level);
+}   
 
 void ActuatorLine::calcForcesEllipticWing()
 {

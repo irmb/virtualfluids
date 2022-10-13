@@ -65,6 +65,8 @@ Parameter::Parameter(int numberOfProcesses, int myId, std::optional<const vf::ba
     initGridPaths();
     initGridBasePoints();
     initDefaultLBMkernelAllLevels();
+
+    this->cudaStreamManager = std::make_unique<CudaStreamManager>();
 }
 
 Parameter::~Parameter() = default;
@@ -1611,7 +1613,7 @@ void Parameter::setOutflowBoundaryNormalZ(std::string outflowNormalZ)
 void Parameter::setMainKernel(std::string kernel)
 {
     this->mainKernel = kernel;
-    if (kernel.find("Stream") != std::string::npos || kernel.find("Redesigned") != std::string::npos)
+    if ( kernel.find("Almighty") != std::string::npos )
         this->kernelNeedsFluidNodeIndicesToRun = true;
 }
 void Parameter::setMultiKernelOn(bool isOn)
@@ -2655,10 +2657,7 @@ void Parameter::setUseStreams(bool useStreams)
     if (useStreams) {
         if (this->getNumprocs() != 1) {
             this->useStreams = useStreams;
-            this->cudaStreamManager = std::make_unique<CudaStreamManager>();
-            return;
-        } else {
-            std::cout << "Can't use streams with only one process!" << std::endl;
+            return; 
         }
     }
     this->useStreams = false;

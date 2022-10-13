@@ -41,6 +41,7 @@
 #include "PointerDefinitions.h"
 #include "VirtualFluids_GPU_export.h"
 
+
 class CudaMemoryManager;
 class BoundaryConditionFactory;
 class Parameter;

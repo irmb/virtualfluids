@@ -78,6 +78,7 @@ public:
     void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager) override;
     void interact(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t) override;
     void free(Parameter* para, CudaMemoryManager* cudaManager) override;
+    void getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider) override;
 
     OutputVariable getOutputVariable(){ return this->outputVariable; }
 

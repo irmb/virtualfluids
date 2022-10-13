@@ -39,8 +39,11 @@ void CollisionAndExchange_noStreams_indexKernel::operator()(UpdateGrid27 *update
     //!
     //! 1. run collision
     //!
-    updateGrid->collisionUsingIndices(level, t, para->getParD(level)->fluidNodeIndices,
-                                    para->getParD(level)->numberOfFluidNodes, -1);
+    updateGrid->collisionUsingIndices(  level, t, 
+                                        para->getParD(level)->taggedFluidNodeIndices[CollisionTemplate::Default],
+                                        para->getParD(level)->numberOfTaggedFluidNodes[CollisionTemplate::Default],
+                                        CollisionTemplate::Default,
+                                        CudaStreamIndex::Legacy);
 
     //! 2. exchange information between GPUs
     updateGrid->exchangeMultiGPU_noStreams_withPrepare(level, false);
@@ -61,28 +64,31 @@ void CollisionAndExchange_noStreams_oldKernel::operator()(UpdateGrid27 *updateGr
 
 void CollisionAndExchange_streams::operator()(UpdateGrid27 *updateGrid, Parameter *para, int level, unsigned int t)
 {
-    int borderStreamIndex = para->getStreamManager()->getBorderStreamIndex();
-    int bulkStreamIndex = para->getStreamManager()->getBulkStreamIndex();
-
     //! \details steps:
     //!
-    //! 1. run collision for nodes which are at the border of the gpus/processes
-    //!
-    updateGrid->collisionUsingIndices(level, t, para->getParD(level)->fluidNodeIndicesBorder,
-                                    para->getParD(level)->numberOfFluidNodesBorder, borderStreamIndex);
+    //! 1. run collision for nodes which are at the border of the gpus/processes, running with WriteMacroVars in case probes sample on these nodes
+    //!    
+    updateGrid->collisionUsingIndices(  level, t, 
+                                        para->getParD(level)->taggedFluidNodeIndices[CollisionTemplate::Border],
+                                        para->getParD(level)->numberOfTaggedFluidNodes[CollisionTemplate::Border], 
+                                        CollisionTemplate::WriteMacroVars,  
+                                        CudaStreamIndex::Border);
 
     //! 2. prepare the exchange between gpus (collect the send nodes for communication in a buffer on the gpu) and trigger bulk kernel execution when finished
     //!
-    updateGrid->prepareExchangeMultiGPU(level, borderStreamIndex);
+    updateGrid->prepareExchangeMultiGPU(level, CudaStreamIndex::Border);
     if (para->getUseStreams())
-        para->getStreamManager()->triggerStartBulkKernel(borderStreamIndex);
+        para->getStreamManager()->triggerStartBulkKernel(CudaStreamIndex::Border);
 
     //! 3. launch the collision kernel for bulk nodes
     //!
-    para->getStreamManager()->waitOnStartBulkKernelEvent(bulkStreamIndex);
-    updateGrid->collisionUsingIndices(level, t, para->getParD(level)->fluidNodeIndices,
-                                    para->getParD(level)->numberOfFluidNodes, bulkStreamIndex);
+    para->getStreamManager()->waitOnStartBulkKernelEvent(CudaStreamIndex::Bulk);
+    updateGrid->collisionUsingIndices(  level, t, 
+                                        para->getParD(level)->taggedFluidNodeIndices[CollisionTemplate::Default],
+                                        para->getParD(level)->numberOfTaggedFluidNodes[CollisionTemplate::Default], 
+                                        CollisionTemplate::Default,
+                                        CudaStreamIndex::Bulk);
 
     //! 4. exchange information between GPUs
-    updateGrid->exchangeMultiGPU(level, borderStreamIndex);
+    updateGrid->exchangeMultiGPU(level, CudaStreamIndex::Border);
 }

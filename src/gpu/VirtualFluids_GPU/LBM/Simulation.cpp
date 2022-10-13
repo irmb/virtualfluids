@@ -97,11 +97,7 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
 
     gridProvider.allocAndCopyForcing();
     gridProvider.allocAndCopyQuadricLimiters();
-    if (para->getKernelNeedsFluidNodeIndicesToRun()) {
-        gridProvider.allocArrays_fluidNodeIndices();
-        gridProvider.allocArrays_fluidNodeIndicesBorder();
-    }
-
+        
     gridProvider.setDimensions();
     gridProvider.setBoundingBox();
 
@@ -116,9 +112,15 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     //////////////////////////////////////////////////////////////////////////
     // CUDA streams
     if (para->getUseStreams()) {
-        para->getStreamManager()->launchStreams(2u);
+        para->getStreamManager()->registerStream(CudaStreamIndex::Border);
+        para->getStreamManager()->registerStream(CudaStreamIndex::Bulk);
+        para->getStreamManager()->launchStreams();
         para->getStreamManager()->createCudaEvents();
     }
+    std::cout << "OKDIDOKI 1" << std::endl;
+    auto test = para->getStreamManager()->getStream(CudaStreamIndex::Legacy);
+    if(test == CU_STREAM_LEGACY)
+        std::cout << "OKDIDOKI 2" << std::endl;
     //////////////////////////////////////////////////////////////////////////
     VF_LOG_INFO("LB_Modell:       D3Q{}", para->getD3Qxx());
     VF_LOG_INFO("Re:              {}", para->getRe());
@@ -136,12 +138,20 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
 
     for (SPtr<PreCollisionInteractor> actuator : para->getActuators()) {
         actuator->init(para.get(), &gridProvider, cudaMemoryManager.get());
+        actuator->getTaggedFluidNodes( para.get(), &gridProvider );
     }
 
     for (SPtr<PreCollisionInteractor> probe : para->getProbes()) {
         probe->init(para.get(), &gridProvider, cudaMemoryManager.get());
+        probe->getTaggedFluidNodes( para.get(), &gridProvider );
     }
 
+    //////////////////////////////////////////////////////////////////////////
+    if (para->getKernelNeedsFluidNodeIndicesToRun())
+    {
+        gridProvider.sortFluidNodeTags();
+        gridProvider.allocArrays_taggedFluidNodes();
+    }
     //////////////////////////////////////////////////////////////////////////
     // Kernel init
     //////////////////////////////////////////////////////////////////////////
