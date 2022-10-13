@@ -10,6 +10,7 @@
 #include <gpu/VirtualFluids_GPU/Output/DataWriter.h>
 #include "gpu/VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
 #include "gpu/VirtualFluids_GPU/TurbulenceModels/TurbulenceModelFactory.h"
+#include "gpu/VirtualFluids_GPU/Factories/GridScalingFactory.h"
 
 namespace simulation
 {
@@ -19,6 +20,18 @@ namespace simulation
     {
         // missing setFactories and setDataWriter, not possible to wrap these functions as long as they take unique ptr arguments
         py::class_<Simulation>(parentModule, "Simulation")
+        .def(py::init<  std::shared_ptr<Parameter>,
+                        std::shared_ptr<CudaMemoryManager>,
+                        vf::gpu::Communicator &,
+                        GridProvider &,
+                        BoundaryConditionFactory*,
+                        GridScalingFactory*>(), 
+                        "parameter",
+                        "memoryManager",
+                        "communicator",
+                        "gridProvider",
+                        "bcFactory",
+                        "gridScalingFactory")
         .def(py::init<  std::shared_ptr<Parameter>,
                         std::shared_ptr<CudaMemoryManager>,
                         vf::gpu::Communicator &,
@@ -34,13 +47,15 @@ namespace simulation
                         vf::gpu::Communicator &,
                         GridProvider &,
                         BoundaryConditionFactory*,
-                        std::shared_ptr<TurbulenceModelFactory>>(), 
+                        std::shared_ptr<TurbulenceModelFactory>,
+                        GridScalingFactory*>(), 
                         "parameter",
                         "memoryManager",
                         "communicator",
                         "gridProvider",
                         "bcFactory",
-                        "tmFactory")
+                        "tmFactory",
+                        "gridScalingFactory")
         .def("run", &Simulation::run)
         .def("addKineticEnergyAnalyzer", &Simulation::addKineticEnergyAnalyzer)
         .def("addEnstrophyAnalyzer", &Simulation::addEnstrophyAnalyzer);

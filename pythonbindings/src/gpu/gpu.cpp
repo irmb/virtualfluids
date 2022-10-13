@@ -13,6 +13,7 @@
 #include "submodules/turbulence_models.cpp"
 #include "submodules/velocity_setter.cpp"
 #include "submodules/actuator_farm.cpp"
+#include "submodules/grid_scaling_factory.cpp"
 
 namespace gpu
 {
@@ -35,6 +36,7 @@ namespace gpu
         grid_generator::makeModule(gpuModule);
         grid_provider::makeModule(gpuModule);
         turbulence_model::makeModule(gpuModule);
+        grid_scaling_factory::makeModule(gpuModule);
         return gpuModule;
     }
 }

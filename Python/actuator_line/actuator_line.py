@@ -108,6 +108,9 @@ para.set_is_body_force(True)
 tm_factory = gpu.TurbulenceModelFactory(para)
 tm_factory.read_config_file(config)
 #%%
+grid_scaling_factory = gpu.GridScalingFactor()
+grid_scaling_factory.set_grid_scaling_factory(gpu.GridScaling.ScaleCompressible)
+
 grid_builder.add_coarse_grid(0.0, 0.0, 0.0, *length, dx)
 grid_builder.set_periodic_boundary_condition(not read_precursor, True, False)
 grid_builder.build_grids(basics.LbmOrGks.LBM, False)
