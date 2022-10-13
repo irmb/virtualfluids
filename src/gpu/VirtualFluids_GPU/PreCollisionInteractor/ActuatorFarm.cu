@@ -385,6 +385,14 @@ void ActuatorFarm::calcBladeForces()
 {
     // this->calcForcesEllipticWing();
 }
+
+void ActuatorFarm::getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider)
+{
+    std::vector<uint> indicesInSphere(this->boundingSphereIndicesH, this->boundingSphereIndicesH+this->numberOfIndices);
+    gridProvider->tagFluidNodeIndices(indicesInSphere, CollisionTemplate::AllFeatures, this->level);
+}   
+
+
 void ActuatorFarm::initTurbineGeometries(CudaMemoryManager* cudaMemoryManager)
 {
     this->numberOfTurbines = uint(this->preInitDiameters.size());
@@ -470,7 +478,6 @@ void ActuatorFarm::initBladeIndices(Parameter* para, CudaMemoryManager* cudaMemo
 
 void ActuatorFarm::initBoundingSphere(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
-    // Actuator line exists only on 1 level
     std::vector<int> nodesInSphere;
 
     for(uint turbine=0; turbine<this->numberOfTurbines; turbine++)

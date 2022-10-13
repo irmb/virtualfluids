@@ -43,6 +43,8 @@ public:
     void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager);
     void interact(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t);
     void free(Parameter* para, CudaMemoryManager* cudaManager);
+    void getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider) override;
+
     void write(uint t);
 
     real getDensity(){ return this->density; };
