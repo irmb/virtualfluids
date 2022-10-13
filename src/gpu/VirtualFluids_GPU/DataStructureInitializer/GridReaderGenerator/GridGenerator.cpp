@@ -130,7 +130,7 @@ void GridGenerator::allocArrays_taggedFluidNodes() {
                     cudaMemoryManager->cudaCopyTaggedFluidNodeIndices(CollisionTemplate::ApplyBodyForce, level);
                     break;
                 case CollisionTemplate::AllFeatures:
-                    this->setNumberOfTaggedFluidNodes(builder->getNumberOfFluidNodesApplyAllFeatures(level), CollisionTemplate::AllFeatures, level);
+                    this->setNumberOfTaggedFluidNodes(builder->getNumberOfFluidNodesAllFeatures(level), CollisionTemplate::AllFeatures, level);
                     cudaMemoryManager->cudaAllocTaggedFluidNodeIndices(CollisionTemplate::AllFeatures, level);
                     builder->getFluidNodeIndicesAllFeatures(para->getParH(level)->taggedFluidNodeIndices[CollisionTemplate::AllFeatures], level);
                     cudaMemoryManager->cudaCopyTaggedFluidNodeIndices(CollisionTemplate::AllFeatures, level);
