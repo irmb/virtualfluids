@@ -42,7 +42,8 @@ void CollisionAndExchange_noStreams_indexKernel::operator()(UpdateGrid27 *update
     updateGrid->collisionUsingIndices(  level, t, 
                                         para->getParD(level)->taggedFluidNodeIndices[CollisionTemplate::Default],
                                         para->getParD(level)->numberOfTaggedFluidNodes[CollisionTemplate::Default],  
-                                        CollisionTemplate::Default, -1);
+                                        CollisionTemplate::Default, 
+                                        CudaStreamIndex::Legacy);
 
     //! 2. exchange information between GPUs
     updateGrid->exchangeMultiGPU_noStreams_withPrepare(level, false);
@@ -81,7 +82,7 @@ void CollisionAndExchange_streams::operator()(UpdateGrid27 *updateGrid, Paramete
 
     //! 3. launch the collision kernel for bulk nodes
     //!
-    para->getStreamManager()->waitOnStartBulkKernelEvent(bulkStreamIndex);
+    para->getStreamManager()->waitOnStartBulkKernelEvent(CudaStreamIndex::Bulk);
     updateGrid->collisionUsingIndices(  level, t, 
                                         para->getParD(level)->taggedFluidNodeIndices[CollisionTemplate::Default],
                                         para->getParD(level)->numberOfTaggedFluidNodes[CollisionTemplate::Default], 

@@ -31,7 +31,7 @@ public:
 
 private:
     void collisionAllNodes(int level, unsigned int t);
-    void collisionUsingIndices(int level, unsigned int t, uint *indices, uint numberOfIndices = 0, CollisionTemplate collisionTemplate, CudaStreamIndex streamIndex=CudaStreamIndex::Legacy);
+    void collisionUsingIndices(int level, unsigned int t, uint *indices, uint numberOfIndices, CollisionTemplate collisionTemplate, CudaStreamIndex streamIndex=CudaStreamIndex::Legacy);
     void collisionAdvectionDiffusion(int level);
 
     void postCollisionBC(int level);
