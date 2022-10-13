@@ -4,14 +4,13 @@
 # OS:          Ubuntu 20.04 (Docker container)
 #################################################################################
 
-set(CMAKE_CUDA_ARCHITECTURES 86)     # Nvidia GeForce RTX 3060
-
-set(PATH_NUMERICAL_TESTS "D:/out/numericalTests/")
-list(APPEND VF_COMPILER_DEFINITION "PATH_NUMERICAL_TESTS=${PATH_NUMERICAL_TESTS}")
+set(CMAKE_CUDA_ARCHITECTURES 80)     # Nvidia Tesla A100
 
 set(GPU_APP "apps/gpu/LBM/")
 list(APPEND USER_APPS 
-    "${GPU_APP}DrivenCavityMultiGPU"
+    "${GPU_APP}ChannelFlow"
     "${GPU_APP}SphereScaling"
-    # "${GPU_APP}MusselOyster"
-    )
+)
+
+# run docker container with:
+# docker run -it -v `pwd`:`pwd` -w `pwd` --gpus all --hostname ki4allgpu --name virtual-fluids-environment <containerid>
