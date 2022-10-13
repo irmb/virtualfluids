@@ -141,3 +141,13 @@ void PointProbe::addProbePointsFromXNormalPlane(real pos_x, real pos0_y, real po
     printf("Added %u  points \n",  n_y*n_z);
 
 }
+
+void PointProbe::getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider)
+{
+    for(int level=0; level<=para->getMaxLevel(); level++)
+    {
+        SPtr<ProbeStruct> probeStruct = this->getProbeStruct(level);
+        std::vector<uint> probeIndices( probeStruct->pointIndicesH, probeStruct->pointIndicesH+probeStruct->nIndices);
+        gridProvider->tagFluidNodeIndices( probeIndices, CollisionTemplate::WriteMacroVars, level);
+    }
+}

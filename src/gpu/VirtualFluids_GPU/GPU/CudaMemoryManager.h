@@ -339,12 +339,9 @@ public:
     void cudaCopyProcessNeighborADZIndex(int lev, unsigned int processNeighbor);
     void cudaFreeProcessNeighborADZ(int lev, unsigned int processNeighbor);
 
-    void cudaAllocFluidNodeIndices(int lev);
-    void cudaCopyFluidNodeIndices(int lev);
-    void cudaFreeFluidNodeIndices(int lev);
-    void cudaAllocFluidNodeIndicesBorder(int lev);
-    void cudaCopyFluidNodeIndicesBorder(int lev);
-    void cudaFreeFluidNodeIndicesBorder(int lev);
+    void cudaAllocTaggedFluidNodeIndices(CollisionTemplate tag, int lev);
+    void cudaCopyTaggedFluidNodeIndices(CollisionTemplate tag, int lev);
+    void cudaFreeTaggedFluidNodeIndices(CollisionTemplate tag, int lev);
 
     // Actuator Line
     void cudaAllocBladeRadii(ActuatorLine* actuatorLine);

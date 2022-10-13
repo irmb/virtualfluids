@@ -31,7 +31,7 @@ public:
 
 private:
     void collisionAllNodes(int level, unsigned int t);
-    void collisionUsingIndices(int level, unsigned int t, uint *fluidNodeIndices = nullptr, uint numberOfFluidNodes = 0, CudaStreamIndex streamIndex=CudaStreamIndex::Legacy);
+    void collisionUsingIndices(int level, unsigned int t, uint *indices, uint numberOfIndices = 0, CollisionTemplate collisionTemplate, CudaStreamIndex streamIndex=CudaStreamIndex::Legacy);
     void collisionAdvectionDiffusion(int level);
 
     void postCollisionBC(int level);
@@ -60,6 +60,7 @@ private:
     friend class CollisionAndExchange_noStreams_indexKernel;
     friend class CollisionAndExchange_noStreams_oldKernel;
     friend class CollisionAndExchange_streams;
+    friend class CollisionAndExchange_noStreams_withReadWriteFlags;
 
     RefinementStrategy refinement;
     friend class RefinementAndExchange_streams_exchangeInterface;

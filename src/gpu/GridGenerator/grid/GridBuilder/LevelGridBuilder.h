@@ -194,6 +194,21 @@ public:
 
     // needed for CUDA Streams MultiGPU (Communication Hiding)
     void findFluidNodes(bool splitDomain) override;
+
+    void addFluidNodeIndicesMacroVars(std::vector<uint> fluidNodeIndicesMacroVars, uint level) override;
+    void addFluidNodeIndicesApplyBodyForce(std::vector<uint> fluidNodeIndicesApplyBodyForce, uint level) override;
+    void addFluidNodeIndicesAllFeatures(std::vector<uint> fluidNodeIndicesAllFeatures, uint level) override;
+    
+    void sortFluidNodeIndicesMacroVars(uint level) override;
+    void sortFluidNodeIndicesApplyBodyForce(uint level) override;
+    void sortFluidNodeIndicesAllFeatures(uint level) override;
+
+    uint getNumberOfFluidNodesMacroVars(unsigned int level) const override;
+    void getFluidNodeIndicesMacroVars(uint *fluidNodeIndicesMacroVars, const int level) const override;
+    uint getNumberOfFluidNodesApplyBodyForce(unsigned int level) const override;
+    void getFluidNodeIndicesApplyBodyForce(uint *fluidNodeIndicesApplyBodyForce, const int level) const override;
+    uint getNumberOfFluidNodesAllFeatures(unsigned int level) const override;
+    void getFluidNodeIndicesAllFeatures(uint *fluidNodeIndicesAllFeatures, const int level) const override;
 };
 
 #endif

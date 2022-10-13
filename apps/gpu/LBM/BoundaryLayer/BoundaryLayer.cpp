@@ -178,9 +178,9 @@ void multipleLevel(const std::string& configPath)
     para->setDensityRatio( 1.0 );
 
     bool useStreams = (nProcs > 1 ? true: false);
+    useStreams=true;
     para->setUseStreams(useStreams);
-    para->setMainKernel("TurbulentViscosityCumulantK17CompChim");
-    // para->setMainKernel("CumulantK17CompChimRedesigned");
+    para->setMainKernel("CumulantK17Almighty");
     para->setIsBodyForce( config.getValue<bool>("bodyForce") );
 
     para->setTimestepStartOut(uint(tStartOut/dt) );
@@ -286,20 +286,22 @@ void multipleLevel(const std::string& configPath)
         vz  = 8.0*u_star/0.4*(sin(cPi*8.0*coordY/H)*sin(cPi*8.0*coordZ/H)+sin(cPi*8.0*coordX/L_x))/(pow(L_z/2.0-coordZ, c2o1)+c1o1) * dt / dx;
     });
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    if(isFirstSubDomain)
+    {
+        SPtr<PlanarAverageProbe> planarAverageProbe = SPtr<PlanarAverageProbe>( new PlanarAverageProbe("planeProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt , tStartOutProbe/dt, tOutProbe/dt, 'z') );
+        planarAverageProbe->addAllAvailableStatistics();
+        planarAverageProbe->setFileNameToNOut();
+        para->addProbe( planarAverageProbe );
 
-    // SPtr<PlanarAverageProbe> planarAverageProbe = SPtr<PlanarAverageProbe>( new PlanarAverageProbe("planeProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt , tStartOutProbe/dt, tOutProbe/dt, 'z') );
-    // planarAverageProbe->addAllAvailableStatistics();
-    // planarAverageProbe->setFileNameToNOut();
-    // para->addProbe( planarAverageProbe );
-
-    // para->setHasWallModelMonitor(true);
-    // SPtr<WallModelProbe> wallModelProbe = SPtr<WallModelProbe>( new WallModelProbe("wallModelProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt/4.0 , tStartOutProbe/dt, tOutProbe/dt) );
-    // wallModelProbe->addAllAvailableStatistics();
-    // wallModelProbe->setFileNameToNOut();
-    // wallModelProbe->setForceOutputToStress(true);
-    // if(para->getIsBodyForce())
-    //     wallModelProbe->setEvaluatePressureGradient(true);
-    // para->addProbe( wallModelProbe );
+        para->setHasWallModelMonitor(true);
+        SPtr<WallModelProbe> wallModelProbe = SPtr<WallModelProbe>( new WallModelProbe("wallModelProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt/4.0 , tStartOutProbe/dt, tOutProbe/dt) );
+        wallModelProbe->addAllAvailableStatistics();
+        wallModelProbe->setFileNameToNOut();
+        wallModelProbe->setForceOutputToStress(true);
+        if(para->getIsBodyForce())
+            wallModelProbe->setEvaluatePressureGradient(true);
+        para->addProbe( wallModelProbe );
+    }
 
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
     auto gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);

@@ -114,8 +114,11 @@ private:
 
     int *sparseIndices;
 
-    std::vector<uint> fluidNodeIndices;
-    std::vector<uint> fluidNodeIndicesBorder;
+    std::vector<uint> fluidNodeIndices;                 // run on CollisionTemplate::Default
+    std::vector<uint> fluidNodeIndicesBorder;           // run on border nodes
+    std::vector<uint> fluidNodeIndicesMacroVars;        // run on CollisionTemplate::MacroVars
+    std::vector<uint> fluidNodeIndicesApplyBodyForce;   // run on CollisionTemplate::ApplyBodyForce
+    std::vector<uint> fluidNodeIndicesAllFeatures;      // run on CollisionTemplate::AllFeatures
 
 	uint *qIndices;     //maps from matrix index to qIndex
 	real *qValues;
@@ -363,6 +366,19 @@ public:
     uint getNumberOfFluidNodesBorder() const override;
     void getFluidNodeIndicesBorder(uint *fluidNodeIndicesBorder) const override;
 
+    void addFluidNodeIndicesMacroVars(std::vector<uint> _fluidNodeIndicesMacroVars) override;
+    void addFluidNodeIndicesApplyBodyForce(std::vector<uint> _fluidNodeIndicesApplyBodyForce) override;
+    void addFluidNodeIndicesAllFeatures(std::vector<uint> _fluidNodeIndicesAllFeatures) override;
+    void sortFluidNodeIndicesMacroVars() override;
+    void sortFluidNodeIndicesApplyBodyForce() override;
+    void sortFluidNodeIndicesAllFeatures() override;
+
+    uint getNumberOfFluidNodeIndicesMacroVars() const override;
+    uint getNumberOfFluidNodeIndicesApplyBodyForce() const override;
+    uint getNumberOfFluidNodeIndicesAllFeatures() const override; 
+    void getFluidNodeIndicesMacroVars(uint *fluidNodeIndicesMacroVars) const override;
+    void getFluidNodeIndicesApplyBodyForce(uint *fluidNodeIndicesApplyBodyForce) const override;
+    void getFluidNodeIndicesAllFeatures(uint *fluidNodeIndicesAllFeatures) const override;
 
 public:
     struct CommunicationIndices {

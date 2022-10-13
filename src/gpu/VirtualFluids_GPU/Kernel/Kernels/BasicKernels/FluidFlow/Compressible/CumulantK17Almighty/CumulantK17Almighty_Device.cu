@@ -26,7 +26,7 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file TurbulentViscosityCumulantK17CompChim_Device.cu
+//! \file CumulantK17Almighty_Device.cu
 //! \author Henry Korb, Henrik Asmuth
 //! \date 16/05/2022
 //! \brief CumulantK17CompChim kernel by Martin Schönherr that inlcudes turbulent viscosity and other small mods.
@@ -52,8 +52,8 @@ using namespace vf::lbm::dir;
 
 
 ////////////////////////////////////////////////////////////////////////////////
-template<TurbulenceModel turbulenceModel>
-__global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
+template<TurbulenceModel turbulenceModel, bool writeMacroscopicVariables, bool applyBodyForce>
+__global__ void LB_Kernel_CumulantK17Almighty(
 	real omega_in,
 	uint* typeOfGridNode,
 	uint* neighborX,
@@ -216,7 +216,7 @@ __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
     real fy = forces[1];
     real fz = forces[2];
 
-    if( bodyForce ){
+    if( applyBodyForce ){
         fx += bodyForceX[k_000]; 
         fy += bodyForceY[k_000];
         fz += bodyForceZ[k_000];
@@ -606,10 +606,13 @@ __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
     m_001 = -m_001;
 
     //Write to array here to distribute read/write
-    // rho[k_000] = drho;
-    // vx[k_000] = vvx;
-    // vy[k_000] = vvy;
-    // vz[k_000] = vvz;
+    if(writeMacroscopicVariables)
+    {
+        rho[k_000] = drho;
+        vx[k_000] = vvx;
+        vy[k_000] = vvy;
+        vz[k_000] = vvz;
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Chimera transform from central moments to well conditioned distributions as defined in Appendix J in
@@ -689,10 +692,34 @@ __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
     (dist.f[DIR_MMM])[k_MMM]  = f_PPP;
 }
 
-template __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim < TurbulenceModel::AMD > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+template __global__ void LB_Kernel_CumulantK17Almighty < TurbulenceModel::AMD, true, true > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
 
-template __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim < TurbulenceModel::Smagorinsky > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+template __global__ void LB_Kernel_CumulantK17Almighty < TurbulenceModel::Smagorinsky, true, true > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
 
-template __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim < TurbulenceModel::QR > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+template __global__ void LB_Kernel_CumulantK17Almighty < TurbulenceModel::QR, true, true > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
 
-template __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim < TurbulenceModel::None > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+template __global__ void LB_Kernel_CumulantK17Almighty < TurbulenceModel::None, true, true > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+
+template __global__ void LB_Kernel_CumulantK17Almighty < TurbulenceModel::AMD, true, false > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+
+template __global__ void LB_Kernel_CumulantK17Almighty < TurbulenceModel::Smagorinsky, true, false > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+
+template __global__ void LB_Kernel_CumulantK17Almighty < TurbulenceModel::QR, true, false > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+
+template __global__ void LB_Kernel_CumulantK17Almighty < TurbulenceModel::None, true, false > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+
+template __global__ void LB_Kernel_CumulantK17Almighty < TurbulenceModel::AMD, false, true > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+
+template __global__ void LB_Kernel_CumulantK17Almighty < TurbulenceModel::Smagorinsky, false, true > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+
+template __global__ void LB_Kernel_CumulantK17Almighty < TurbulenceModel::QR, false, true > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+
+template __global__ void LB_Kernel_CumulantK17Almighty < TurbulenceModel::None, false, true > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+
+template __global__ void LB_Kernel_CumulantK17Almighty < TurbulenceModel::AMD, false, false > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+
+template __global__ void LB_Kernel_CumulantK17Almighty < TurbulenceModel::Smagorinsky, false, false > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+
+template __global__ void LB_Kernel_CumulantK17Almighty < TurbulenceModel::QR, false, false > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+
+template __global__ void LB_Kernel_CumulantK17Almighty < TurbulenceModel::None, false, false > ( real omega_in, uint* typeOfGridNode, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, bool bodyForce, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);

@@ -97,11 +97,7 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
 
     gridProvider.allocAndCopyForcing();
     gridProvider.allocAndCopyQuadricLimiters();
-    if (para->getKernelNeedsFluidNodeIndicesToRun()) {
-        gridProvider.allocArrays_fluidNodeIndices();
-        gridProvider.allocArrays_fluidNodeIndicesBorder();
-    }
-    
+        
     gridProvider.setDimensions();
     gridProvider.setBoundingBox();
 
@@ -138,12 +134,20 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
 
     for (SPtr<PreCollisionInteractor> actuator : para->getActuators()) {
         actuator->init(para.get(), &gridProvider, cudaMemoryManager.get());
+        actuator->getTaggedFluidNodes( para.get(), &gridProvider );
     }
 
     for (SPtr<PreCollisionInteractor> probe : para->getProbes()) {
         probe->init(para.get(), &gridProvider, cudaMemoryManager.get());
+        probe->getTaggedFluidNodes( para.get(), &gridProvider );
     }
 
+    //////////////////////////////////////////////////////////////////////////
+    if (para->getKernelNeedsFluidNodeIndicesToRun())
+    {
+        gridProvider.sortFluidNodeTags();
+        gridProvider.allocArrays_taggedFluidNodes();
+    }
     //////////////////////////////////////////////////////////////////////////
     // Kernel init
     //////////////////////////////////////////////////////////////////////////

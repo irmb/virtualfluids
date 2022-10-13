@@ -49,6 +49,8 @@ public:
     void interact(Parameter* para, CudaMemoryManager* cudaMemoryManager, int level, uint t) override;
     void free(Parameter* para, CudaMemoryManager* cudaMemoryManager) override;
     void write(uint t);
+    void getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider) override;
+
 
     uint getNBladeNodes(){ return this->nBladeNodes; };
     uint getNBlades(){ return this->nBlades;};

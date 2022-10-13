@@ -2099,6 +2099,119 @@ void GridImp::getFluidNodeIndicesBorder(uint *fluidNodeIndicesBorder) const
         fluidNodeIndicesBorder[nodeNumber] = this->fluidNodeIndicesBorder[nodeNumber];
 }
 
+void GridImp::addFluidNodeIndicesMacroVars(std::vector<uint> _fluidNodeIndicesMacroVars)
+{
+    this->fluidNodeIndicesMacroVars.insert(fluidNodeIndicesMacroVars.end(), fluidNodeIndicesMacroVars.begin(), _fluidNodeIndicesMacroVars.end());
+}
+
+void GridImp::addFluidNodeIndicesApplyBodyForce(std::vector<uint> _fluidNodeIndicesApplyBodyForce)
+{
+    this->fluidNodeIndicesApplyBodyForce.insert(_fluidNodeIndicesApplyBodyForce.end(), _fluidNodeIndicesApplyBodyForce.begin(), fluidNodeIndicesApplyBodyForce.end());
+}
+
+void GridImp::addFluidNodeIndicesAllFeatures(std::vector<uint> _fluidNodeIndicesAllFeatures) 
+{
+    this->fluidNodeIndicesAllFeatures.insert(fluidNodeIndicesAllFeatures.end(), fluidNodeIndicesAllFeatures.begin(), _fluidNodeIndicesAllFeatures.end());
+}
+
+void GridImp::sortFluidNodeIndicesMacroVars()
+{
+    if(this->fluidNodeIndicesMacroVars.size()>0)
+    {
+        sort(this->fluidNodeIndicesMacroVars.begin(), this->fluidNodeIndicesMacroVars.end());
+        // Remove duplicates
+        this->fluidNodeIndicesMacroVars.erase( unique( this->fluidNodeIndicesMacroVars.begin(), this->fluidNodeIndicesMacroVars.end() ), this->fluidNodeIndicesMacroVars.end() );
+
+         // Remove indices of fluidNodeIndicesAllFeatures from fluidNodeIndicesMacroVars
+        if(this->fluidNodeIndicesAllFeatures.size()>0)
+        {
+            this->fluidNodeIndicesMacroVars.erase(   std::remove_if(   this->fluidNodeIndicesMacroVars.begin(), this->fluidNodeIndicesMacroVars.end(), 
+                                                        [&](auto x){return binary_search(fluidNodeIndicesAllFeatures.begin(),fluidNodeIndicesAllFeatures.end(),x);} ),
+                                            this->fluidNodeIndicesMacroVars.end()
+                                        );
+        }
+
+        // Remove indices of fluidNodeIndicesMacroVars from fluidNodeIndices
+        this->fluidNodeIndices.erase(   std::remove_if(   this->fluidNodeIndices.begin(), this->fluidNodeIndices.end(), 
+                                                        [&](auto x){return binary_search(fluidNodeIndicesMacroVars.begin(),fluidNodeIndicesMacroVars.end(),x);} ),
+                                        this->fluidNodeIndices.end()
+                                    );
+    }
+}
+
+void GridImp::sortFluidNodeIndicesApplyBodyForce()
+{
+    if(this->fluidNodeIndicesApplyBodyForce.size()>0)
+    {
+        sort(this->fluidNodeIndicesApplyBodyForce.begin(), this->fluidNodeIndicesApplyBodyForce.end());
+        // Remove duplicates
+        this->fluidNodeIndicesApplyBodyForce.erase( unique( this->fluidNodeIndicesApplyBodyForce.begin(), this->fluidNodeIndicesApplyBodyForce.end() ), this->fluidNodeIndicesApplyBodyForce.end() );
+
+         // Remove indices of fluidNodeIndicesAllFeatures from fluidNodeIndicesMacroVars
+        if(this->fluidNodeIndicesAllFeatures.size()>0)
+        {
+            this->fluidNodeIndicesApplyBodyForce.erase(   std::remove_if(   this->fluidNodeIndicesApplyBodyForce.begin(), this->fluidNodeIndicesApplyBodyForce.end(), 
+                                                        [&](auto x){return binary_search(fluidNodeIndicesAllFeatures.begin(),fluidNodeIndicesAllFeatures.end(),x);} ),
+                                            this->fluidNodeIndicesApplyBodyForce.end()
+                                        );
+        }
+
+        // Remove indices of fluidNodeIndicesMacroVars from fluidNodeIndices
+        this->fluidNodeIndices.erase(   std::remove_if(   this->fluidNodeIndices.begin(), this->fluidNodeIndices.end(), 
+                                                        [&](auto x){return binary_search(fluidNodeIndicesApplyBodyForce.begin(),fluidNodeIndicesApplyBodyForce.end(),x);} ),
+                                        this->fluidNodeIndices.end()
+                                    );
+    }
+}
+
+void GridImp::sortFluidNodeIndicesAllFeatures()
+{
+    if(this->fluidNodeIndicesAllFeatures.size()>0)
+    {
+        sort(this->fluidNodeIndicesAllFeatures.begin(), this->fluidNodeIndicesAllFeatures.end());
+        // Remove duplicates
+        this->fluidNodeIndicesAllFeatures.erase( unique( this->fluidNodeIndicesAllFeatures.begin(), this->fluidNodeIndicesAllFeatures.end() ), this->fluidNodeIndicesAllFeatures.end() );
+        // Remove indices of fluidNodeIndicesMacroVars from fluidNodeIndices
+        this->fluidNodeIndices.erase(   std::remove_if(   this->fluidNodeIndices.begin(), this->fluidNodeIndices.end(), 
+                                                        [&](auto x){return binary_search(fluidNodeIndicesAllFeatures.begin(),fluidNodeIndicesAllFeatures.end(),x);} ),
+                                        this->fluidNodeIndices.end()
+                                    );
+    }
+}
+
+uint GridImp::getNumberOfFluidNodeIndicesMacroVars() const { 
+    return (uint)this->fluidNodeIndicesMacroVars.size(); 
+}
+
+uint GridImp::getNumberOfFluidNodeIndicesApplyBodyForce() const { 
+    return (uint)this->fluidNodeIndicesApplyBodyForce.size(); 
+}
+
+uint GridImp::getNumberOfFluidNodeIndicesAllFeatures() const { 
+    return (uint)this->fluidNodeIndicesAllFeatures.size(); 
+}
+
+void GridImp::getFluidNodeIndicesMacroVars(uint *fluidNodeIndicesMacroVars) const 
+{
+    for (uint nodeNumber = 0; nodeNumber < (uint)this->fluidNodeIndicesMacroVars.size(); nodeNumber++)
+        fluidNodeIndicesMacroVars[nodeNumber] = this->fluidNodeIndicesMacroVars[nodeNumber];
+}
+void GridImp::getFluidNodeIndicesApplyBodyForce(uint *fluidNodeIndicesApplyBodyForce) const 
+{
+    for (uint nodeNumber = 0; nodeNumber < (uint)this->fluidNodeIndicesApplyBodyForce.size(); nodeNumber++)
+        fluidNodeIndicesApplyBodyForce[nodeNumber] = this->fluidNodeIndicesApplyBodyForce[nodeNumber];
+}
+void GridImp::getFluidNodeIndicesAllFeatures(uint *fluidNodeIndicesAllFeatures) const 
+{
+    for (uint nodeNumber = 0; nodeNumber < (uint)this->fluidNodeIndicesAllFeatures.size(); nodeNumber++)
+        fluidNodeIndicesAllFeatures[nodeNumber] = this->fluidNodeIndicesAllFeatures[nodeNumber];
+}
+
+
+
+
+
+
 void GridImp::print() const
 {
     printf("min: (%2.4f, %2.4f, %2.4f), max: (%2.4f, %2.4f, %2.4f), size: %d, delta: %2.4f\n", startX, startY, startZ,

@@ -136,6 +136,21 @@ public:
     virtual void getReceiveIndices(int *sendIndices, int direction, int level) = 0;
 
     virtual void findFluidNodes(bool splitDomain) = 0;
+
+    virtual void addFluidNodeIndicesMacroVars(std::vector<uint> fluidNodeIndicesMacroVars, uint level)           = 0;
+    virtual void addFluidNodeIndicesApplyBodyForce(std::vector<uint> fluidNodeIndicesApplyBodyForce, uint level) = 0;
+    virtual void addFluidNodeIndicesAllFeatures(std::vector<uint> fluidNodeIndicesAllFeatures, uint level)       = 0;
+    virtual void sortFluidNodeIndicesMacroVars(uint level) = 0;
+    virtual void sortFluidNodeIndicesApplyBodyForce(uint level) = 0;
+    virtual void sortFluidNodeIndicesAllFeatures(uint level) = 0;
+    virtual uint getNumberOfFluidNodesMacroVars(unsigned int level) const = 0;
+    virtual void getFluidNodeIndicesMacroVars(uint *fluidNodeIndicesMacroVars, const int level) const = 0;
+    virtual uint getNumberOfFluidNodesApplyBodyForce(unsigned int level) const = 0;
+    virtual void getFluidNodeIndicesApplyBodyForce(uint *fluidNodeIndicesApplyBodyForce, const int level) const = 0;
+    virtual uint getNumberOfFluidNodesAllFeatures(unsigned int level) const = 0;
+    virtual void getFluidNodeIndicesAllFeatures(uint *fluidNodeIndicesAllFeatures, const int level) const = 0;
+
+
 };
 
 #endif

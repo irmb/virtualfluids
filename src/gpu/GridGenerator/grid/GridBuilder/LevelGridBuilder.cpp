@@ -675,3 +675,64 @@ void LevelGridBuilder::findFluidNodes(bool splitDomain)
         grids[i]->findFluidNodeIndices(splitDomain);
     *logging::out << logging::Logger::INFO_HIGH << "Done with findFluidNodes()\n";
 }
+
+
+void LevelGridBuilder::addFluidNodeIndicesMacroVars(std::vector<uint> fluidNodeIndicesMacroVars, uint level) 
+{
+    grids[level]->addFluidNodeIndicesMacroVars(fluidNodeIndicesMacroVars);
+}
+
+void LevelGridBuilder::addFluidNodeIndicesApplyBodyForce(std::vector<uint> fluidNodeIndicesApplyBodyForce, uint level)
+{
+    grids[level]->addFluidNodeIndicesApplyBodyForce(fluidNodeIndicesApplyBodyForce);
+}
+
+void LevelGridBuilder::addFluidNodeIndicesAllFeatures(std::vector<uint> fluidNodeIndicesAllFeatures, uint level)
+{
+    grids[level]->addFluidNodeIndicesAllFeatures(fluidNodeIndicesAllFeatures);
+}
+
+void LevelGridBuilder::sortFluidNodeIndicesMacroVars(uint level)
+{
+    grids[level]->sortFluidNodeIndicesMacroVars();
+}
+
+void LevelGridBuilder::sortFluidNodeIndicesApplyBodyForce(uint level)
+{
+    grids[level]->sortFluidNodeIndicesApplyBodyForce();
+}
+
+void LevelGridBuilder::sortFluidNodeIndicesAllFeatures(uint level)
+{
+    grids[level]->sortFluidNodeIndicesAllFeatures();
+}
+
+uint LevelGridBuilder::getNumberOfFluidNodesMacroVars(unsigned int level) const 
+{
+    return grids[level]->getNumberOfFluidNodeIndicesMacroVars();
+}
+
+void LevelGridBuilder::getFluidNodeIndicesMacroVars(uint *fluidNodeIndicesMacroVars, const int level) const 
+{
+    grids[level]->getFluidNodeIndicesMacroVars(fluidNodeIndicesMacroVars);
+}
+
+uint LevelGridBuilder::getNumberOfFluidNodesApplyBodyForce(unsigned int level) const 
+{
+    return grids[level]->getNumberOfFluidNodeIndicesApplyBodyForce();
+}
+
+void LevelGridBuilder::getFluidNodeIndicesApplyBodyForce(uint *fluidNodeIndicesApplyBodyForce, const int level) const
+{
+    grids[level]->getFluidNodeIndicesApplyBodyForce(fluidNodeIndicesApplyBodyForce);
+}
+
+uint LevelGridBuilder::getNumberOfFluidNodesAllFeatures(unsigned int level) const
+{
+    return grids[level]->getNumberOfFluidNodeIndicesAllFeatures();
+}
+
+void LevelGridBuilder::getFluidNodeIndicesAllFeatures(uint *fluidNodeIndicesAllFeatures, const int level) const
+{
+    grids[level]->getFluidNodeIndicesAllFeatures(fluidNodeIndicesAllFeatures);
+}

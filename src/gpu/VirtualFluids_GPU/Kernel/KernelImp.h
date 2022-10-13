@@ -1,6 +1,8 @@
 #ifndef KERNEL_IMP_H
 #define KERNEL_IMP_H
 
+#include "LBM/LB.h" 
+
 #include "Kernel.h"
 
 #include <memory>
@@ -14,7 +16,7 @@ class KernelImp : public Kernel
 {
 public:
     virtual void run() = 0;
-    virtual void runOnIndices(const unsigned int *indices, unsigned int size_indices, CudaStreamIndex streamIndex=CudaStreamIndex::Legacy);
+    virtual void runOnIndices(const unsigned int *indices, unsigned int size_indices, CollisionTemplate collisionTemplate, CudaStreamIndex streamIndex);
 
     bool checkParameter();
     std::vector<PreProcessorType> getPreProcessorTypes();
