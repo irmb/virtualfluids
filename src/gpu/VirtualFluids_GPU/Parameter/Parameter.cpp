@@ -65,6 +65,8 @@ Parameter::Parameter(int numberOfProcesses, int myId, std::optional<const vf::ba
     initGridPaths();
     initGridBasePoints();
     initDefaultLBMkernelAllLevels();
+
+    this->cudaStreamManager = std::make_unique<CudaStreamManager>();
 }
 
 Parameter::~Parameter() = default;
@@ -2647,10 +2649,7 @@ void Parameter::setUseStreams(bool useStreams)
     if (useStreams) {
         if (this->getNumprocs() != 1) {
             this->useStreams = useStreams;
-            this->cudaStreamManager = std::make_unique<CudaStreamManager>();
-            return;
-        } else {
-            std::cout << "Can't use streams with only one process!" << std::endl;
+            return; 
         }
     }
     this->useStreams = false;
