@@ -31,25 +31,33 @@
 #include <helper_cuda.h>
 #include <iostream>
 
-void CudaStreamManager::launchStreams(uint numberOfStreams)
+void CudaStreamManager::registerStream(CudaStreamIndex streamIndex)
 {
-    cudaStreams.resize(numberOfStreams);
-    for (cudaStream_t &stream : cudaStreams)
-        cudaStreamCreate(&stream);
+    if(streamIndex != CudaStreamIndex::Legacy)
+        cudaStreams.emplace(streamIndex, nullptr);
+}
+void CudaStreamManager::launchStreams()
+{
+    for (auto &stream : cudaStreams)
+        cudaStreamCreate(&stream.second);
 }
 
 void CudaStreamManager::terminateStreams()
 {
-    for (cudaStream_t &stream : cudaStreams)
-        cudaStreamDestroy(stream);
+    for (auto &stream : cudaStreams)
+        cudaStreamDestroy(stream.second);
 }
 
-cudaStream_t &CudaStreamManager::getStream(uint streamIndex)
-{ return cudaStreams[streamIndex]; }
+cudaStream_t &CudaStreamManager::getStream(CudaStreamIndex streamIndex)
+{
+    if(streamIndex == CudaStreamIndex::Legacy)  return legacyStream;
+    return streamIsRegistered(streamIndex) ? cudaStreams[streamIndex] : legacyStream; 
+}
 
-int CudaStreamManager::getBorderStreamIndex() { return borderStreamIndex; }
-
-int CudaStreamManager::getBulkStreamIndex() { return bulkStreamIndex; }
+bool CudaStreamManager::streamIsRegistered(CudaStreamIndex streamIndex)
+{
+    return cudaStreams.count(streamIndex) > 0;
+}
 
 void CudaStreamManager::createCudaEvents()
 {
@@ -61,12 +69,12 @@ void CudaStreamManager::destroyCudaEvents()
     checkCudaErrors(cudaEventDestroy(startBulkKernel)); 
 }
 
-void CudaStreamManager::triggerStartBulkKernel(int streamIndex)
+void CudaStreamManager::triggerStartBulkKernel(CudaStreamIndex streamIndex)
 {
     checkCudaErrors(cudaEventRecord(startBulkKernel, cudaStreams[streamIndex]));
 }
 
-void CudaStreamManager::waitOnStartBulkKernelEvent(int streamIndex)
+void CudaStreamManager::waitOnStartBulkKernelEvent(CudaStreamIndex streamIndex)
 {
     checkCudaErrors(cudaStreamWaitEvent(cudaStreams[streamIndex], startBulkKernel));
 }

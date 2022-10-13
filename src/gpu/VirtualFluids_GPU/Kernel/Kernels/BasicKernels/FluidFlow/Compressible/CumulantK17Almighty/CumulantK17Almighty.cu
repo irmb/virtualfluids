@@ -37,9 +37,9 @@ void CumulantK17Almighty<turbulenceModel>::run()
 }
 
 template<TurbulenceModel turbulenceModel>
-void CumulantK17Almighty<turbulenceModel>::runOnIndices( const unsigned int *indices, unsigned int size_indices, CollisionTemplate collisionTemplate, int streamIndex )
+void CumulantK17Almighty<turbulenceModel>::runOnIndices( const unsigned int *indices, unsigned int size_indices, CollisionTemplate collisionTemplate, CudaStreamIndex streamIndex )
 {
-	cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
+	cudaStream_t stream = para->getStreamManager()->getStream(streamIndex);
 
 	switch (collisionTemplate)
 	{
