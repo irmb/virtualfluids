@@ -30,32 +30,37 @@
 #ifndef STREAM_MANAGER_H
 #define STREAM_MANAGER_H
 
-#include <vector>
-#include "Core/DataTypes.h"
-
+#include <map>
+#include <cuda.h>
 #include <cuda_runtime.h>
-
+enum class CudaStreamIndex
+    {
+        Legacy,
+        Bulk,
+        Border
+    };
 class CudaStreamManager
 {
+public:
+    
 private:
-    std::vector<cudaStream_t> cudaStreams;
+    std::map<CudaStreamIndex, cudaStream_t> cudaStreams;
     cudaEvent_t startBulkKernel = NULL;
-    const int borderStreamIndex       = 1;
-    const int bulkStreamIndex         = 0;
+    cudaStream_t legacyStream = CU_STREAM_LEGACY;
+
 
 public:
-    void launchStreams(uint numberOfStreams);
+    void registerStream(CudaStreamIndex streamIndex);
+    void launchStreams();
     void terminateStreams();
-    cudaStream_t &getStream(uint streamIndex);
+    cudaStream_t &getStream(CudaStreamIndex streamIndex);
 
-    int getBorderStreamIndex();
-    int getBulkStreamIndex();
-
+    bool streamIsRegistered(CudaStreamIndex streamIndex);
     // Events
     void createCudaEvents();
     void destroyCudaEvents();
-    void triggerStartBulkKernel(int streamIndex);
-    void waitOnStartBulkKernelEvent(int strteamIndex);
+    void triggerStartBulkKernel(CudaStreamIndex streamIndex);
+    void waitOnStartBulkKernelEvent(CudaStreamIndex streamIndex);
 };
 
 #endif

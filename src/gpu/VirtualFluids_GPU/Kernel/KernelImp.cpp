@@ -3,7 +3,7 @@
 #include "Kernel/Utilities/CheckParameterStrategy/CheckParameterStrategy.h"
 
 
-void KernelImp::runOnIndices(const unsigned int *indices, unsigned int size_indices, int stream)
+void KernelImp::runOnIndices(const unsigned int *indices, unsigned int size_indices, CudaStreamIndex streamIndex)
 {
     printf("Method not implemented for this Kernel \n");
 }
