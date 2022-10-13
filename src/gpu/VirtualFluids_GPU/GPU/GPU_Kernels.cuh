@@ -882,18 +882,6 @@ __global__ void QSlipDeviceComp27(real* DD,
 											 unsigned int size_Mat,
 											 bool isEvenTimestep);
 
-// __global__ void QSlipDeviceComp27TurbViscosity(real* DD,
-// 											 int* k_Q,
-// 											 real* QQ,
-// 											 unsigned int numberOfBCnodes,
-// 											 real om1,
-// 											 unsigned int* neighborX,
-// 											 unsigned int* neighborY,
-// 											 unsigned int* neighborZ,
-// 											 real* turbViscosity,
-// 											 unsigned int size_Mat,
-// 											 bool isEvenTimestep);
-
 __global__ void QSlipDeviceComp27TurbViscosity(
                                     real* distributions, 
                                     int* subgridDistanceIndices, 
@@ -1861,6 +1849,25 @@ __global__ void scaleCF_RhoSq_comp_27( real* DC,
 												  unsigned int nyF,
 												  OffCF offCF);
 
+__global__ void scaleCF_compressible(
+    real* distributionsCoarse, 
+    real* distributionsFine, 
+    unsigned int* neighborXcoarse,
+    unsigned int* neighborYcoarse,
+    unsigned int* neighborZcoarse,
+    unsigned int* neighborXfine,
+    unsigned int* neighborYfine,
+    unsigned int* neighborZfine,
+    unsigned int numberOfLBnodesCoarse, 
+    unsigned int numberOfLBnodesFine, 
+    bool isEvenTimestep,
+    unsigned int* indicesCoarseMMM, 
+    unsigned int* indicesFineMMM, 
+    unsigned int numberOfInterfaceNodes, 
+    real omegaCoarse, 
+    real omegaFine, 
+    OffCF offsetCF);
+
 __global__ void scaleCF_RhoSq_3rdMom_comp_27(real* DC,
 														real* DF,
 														unsigned int* neighborCX,
@@ -2244,6 +2251,25 @@ __global__ void scaleFC_RhoSq_comp_27( real* DC,
 												  unsigned int nxF,
 												  unsigned int nyF,
 												  OffFC offFC);
+
+__global__ void scaleFC_compressible(
+    real *distributionsCoarse,
+    real *distributionsFine,
+    unsigned int *neighborXcoarse,
+    unsigned int *neighborYcoarse,
+    unsigned int *neighborZcoarse,
+    unsigned int *neighborXfine,
+    unsigned int *neighborYfine,
+    unsigned int *neighborZfine,
+    unsigned int numberOfLBnodesCoarse,
+    unsigned int numberOfLBnodesFine,
+    bool isEvenTimestep,
+    unsigned int *indicesCoarse000,
+    unsigned int *indicesFineMMM,
+    unsigned int numberOfInterfaceNodes,
+    real omegaCoarse,
+    real omegaFine,
+    OffFC offsetFC);
 
 __global__ void scaleFC_RhoSq_3rdMom_comp_27(real* DC,
 														real* DF,

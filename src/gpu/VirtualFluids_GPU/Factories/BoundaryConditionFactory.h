@@ -27,9 +27,9 @@
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
 //! \file BoundaryConditionFactory.h
-//! \ingroup BoundaryCondition
+//! \ingroup Factories
 //! \author Anna Wellmann
-//=======================================================================================#ifndef BC_FACTORY
+//=======================================================================================
 #ifndef BC_FACTORY
 #define BC_FACTORY
 

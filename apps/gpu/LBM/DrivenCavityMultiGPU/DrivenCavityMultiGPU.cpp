@@ -49,7 +49,7 @@
 
 #include "VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
 #include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
-#include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
+#include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 

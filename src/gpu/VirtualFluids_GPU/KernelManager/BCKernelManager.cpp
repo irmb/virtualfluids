@@ -37,7 +37,7 @@
 #include <string>
 
 #include "BCKernelManager.h"
-#include "BoundaryConditions/BoundaryConditionFactory.h"
+#include "Factories/BoundaryConditionFactory.h"
 #include "GridGenerator/VelocitySetter/VelocitySetter.h"
 #include "Calculation/Cp.h"
 #include "Calculation/DragLift.h"

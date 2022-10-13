@@ -36,7 +36,7 @@
 
 #include "Communicator.h"
 
-namespace vf::mpi 
+namespace vf::mpi
 {
 
 //! \brief A class implements Communicator for shared memory.
@@ -44,22 +44,45 @@ namespace vf::mpi
 class NullCommunicator : public Communicator
 {
 public:
-    // static std::shared_ptr<Communicator> getInstance();
-    int getBundleID() override;
-    int getNumberOfBundles() override;
-    int getProcessID() override;
-    int getNumberOfProcesses() override;
-    void *getNativeCommunicator() override;
-    int getRoot() override;
-    int getBundleRoot() override;
-    int getProcessRoot() override;
-    std::vector<std::string> gather(const std::string &str) override;
-    std::vector<double> gatherDoubles(std::vector<double> &values);
-    void allGatherInts(std::vector<int> &svalues, std::vector<int> &rvalues);
-    void sendSerializedObject(std::stringstream &ss, int target) override;
-    void receiveSerializedObject(std::stringstream &ss, int source) override;
+    static std::shared_ptr<Communicator> getInstance();
 
-    
+    int getBundleID();
+    int getNumberOfBundles();
+    int getProcessID();
+    int getProcessID(int bundle, int rank);
+    int getNumberOfProcesses();
+    bool isRoot();
+    void *getNativeCommunicator();
+
+    void sendSerializedObject(std::stringstream &ss, int target);
+    void receiveSerializedObject(std::stringstream &ss, int source);
+
+    int getRoot();
+    int getBundleRoot();
+    int getProcessRoot();
+    int getNumberOfProcessesInBundle(int bundle);
+    void barrier();
+    void abort(int errorcode);
+
+    std::vector<std::string> gather(const std::string &str);
+    std::vector<int> gather(std::vector<int> &values);
+    std::vector<float> gather(std::vector<float> &values);
+    std::vector<double> gather(std::vector<double> &values);
+    std::vector<unsigned long long> gather(std::vector<unsigned long long> &values);
+
+    void allGather(std::vector<int> &svalues, std::vector<int> &rvalues);
+    void allGather(std::vector<float> &svalues, std::vector<float> &rvalues);
+    void allGather(std::vector<double> &svalues, std::vector<double> &rvalues);
+    void allGather(std::vector<unsigned long long> &svalues, std::vector<unsigned long long> &rvalues);
+
+    void broadcast(int &value);
+    void broadcast(float &value);
+    void broadcast(double &value);
+    void broadcast(long int &value);
+    void broadcast(std::vector<int> &values);
+    void broadcast(std::vector<float> &values);
+    void broadcast(std::vector<double> &values);
+    void broadcast(std::vector<long int> &values);
 };
 
 }

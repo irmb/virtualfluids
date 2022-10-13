@@ -36,31 +36,77 @@
 #include "LBM/LB.h"
 #include "PointerDefinitions.h"
 #include "VirtualFluids_GPU_export.h"
+#include "logger/Logger.h"
+#include <functional>
 #include <memory>
+#include <stdexcept>
 
 class Parameter;
 class CudaMemoryManager;
+class GridScalingFactory;
+enum class CudaStreamIndex;
+struct LBMSimulationParameter;
+struct CUstream_st;
+
+using gridScalingFC =
+    std::function<void(LBMSimulationParameter *, LBMSimulationParameter *, ICellFC *, OffFC &, CUstream_st *stream)>;
+using gridScalingCF =
+    std::function<void(LBMSimulationParameter *, LBMSimulationParameter *, ICellCF *, OffCF &, CUstream_st *stream)>;
 
 //! \class GridScalingKernelManager
 //! \brief manage the cuda kernel calls
 class VIRTUALFLUIDS_GPU_EXPORT GridScalingKernelManager
 {
 public:
-    GridScalingKernelManager(SPtr<Parameter> parameter);
+    //! Class constructor
+    //! \param parameter shared pointer to instance of class Parameter
+    //! \throws std::runtime_error when the user forgets to specify a scaling function
+    GridScalingKernelManager(SPtr<Parameter> parameter, GridScalingFactory *gridScalingFactory);
 
-    //! \brief calls the device function of the fine to coarse grid interpolation kernel
-    void runFineToCoarseKernelLB(const int level, uint *iCellFCC, uint *iCellFCF, uint k_FC) const;
+    //! \brief calls the device function of the fine to coarse grid interpolation kernelH
+    void runFineToCoarseKernelLB(const int level, InterpolationCellFC *icellFC, OffFC &offFC, CudaStreamIndex streamIndex) const;
 
     //! \brief calls the device function of the fine to coarse grid interpolation kernel (advection diffusion)
     void runFineToCoarseKernelAD(const int level) const;
 
     //! \brief calls the device function of the coarse to fine grid interpolation kernel
-    void runCoarseToFineKernelLB(const int level, uint *iCellCFC, uint *iCellCFF, uint k_CF, OffCF &offCF) const;
+    void runCoarseToFineKernelLB(const int level, InterpolationCellCF *icellCF, OffCF &offCF, CudaStreamIndex streamIndex) const;
 
     //! \brief calls the device function of the coarse to fine grid interpolation kernel (advection diffusion)
     void runCoarseToFineKernelAD(const int level) const;
 
 private:
+    //! \brief check if grid scaling was set
+    //! \throws std::runtime_error if interpolation nodes were assigned, but no scaling function was set in the grid
+    //! scaling factory \param scalingFunctionFC: a kernel function for the grid scaling \param scalingStruct: a struct
+    //! containing the grid nodes which are part of the interpolation \param scalingName: the name of the checked
+    //! scaling function
+    void checkScalingFunction(const gridScalingFC &scalingFunctionFC, const InterpolationCellFC &scalingStruct,
+                              const std::string &scalingName)
+    {
+        if (!scalingFunctionFC && scalingStruct.kFC > 0)
+            throw std::runtime_error("The scaling function " + scalingName + " was not set!");
+        if (scalingFunctionFC && scalingStruct.kFC == 0)
+            VF_LOG_WARNING("The scaling function {} was set, although there is no refinement", scalingName);
+    }
+
+    //! \brief check if grid scaling was set
+    //! \throws std::runtime_error if interpolation nodes were assigned, but no scaling function was set in the grid
+    //! scaling factory \param scalingFunctionCF: a kernel function for the grid scaling \param scalingStruct: a struct
+    //! containing the grid nodes which are part of the interpolation \param scalingName: the name of the checked
+    //! scaling function
+    void checkScalingFunction(const gridScalingCF &scalingFunctionCF, const InterpolationCellCF &scalingStruct,
+                              const std::string &scalingName)
+    {
+        if (!scalingFunctionCF && scalingStruct.kCF > 0)
+            throw std::runtime_error("The scaling function " + scalingName + " was not set!");
+        if (scalingFunctionCF && scalingStruct.kCF == 0)
+            VF_LOG_WARNING("The scaling function {} was set, although there is no refinement", scalingName);
+    }
+
     SPtr<Parameter> para;
+
+    gridScalingFC scalingFineToCoarse = nullptr;
+    gridScalingCF scalingCoarseToFine = nullptr;
 };
 #endif

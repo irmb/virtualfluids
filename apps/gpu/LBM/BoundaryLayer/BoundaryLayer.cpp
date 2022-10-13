@@ -51,7 +51,7 @@
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlanarAverageProbe.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/WallModelProbe.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/PrecursorWriter.h"
-#include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
+#include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
 #include "VirtualFluids_GPU/TurbulenceModels/TurbulenceModelFactory.h"
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"

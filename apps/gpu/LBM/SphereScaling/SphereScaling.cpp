@@ -53,7 +53,8 @@
 
 #include "VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
 #include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
-#include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
+#include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
+#include "VirtualFluids_GPU/Factories/GridScalingFactory.h"
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 
@@ -104,6 +105,7 @@ void multipleLevel(std::filesystem::path& configPath)
     config.load(configPath.string());
     SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNummberOfProcess(), communicator.getPID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
+    GridScalingFactory scalingFactory = GridScalingFactory();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -130,7 +132,7 @@ void multipleLevel(std::filesystem::path& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     std::string gridPath(gridPathParent); // only for GridGenerator, for GridReader the gridPath needs to be set in the config file
 
-    real dxGrid      = (real)0.4;
+    real dxGrid      = (real)1.0;
     real vxLB        = (real)0.0005; // LB units
     real viscosityLB = 0.001;        //(vxLB * dxGrid) / Re;
 
@@ -152,10 +154,21 @@ void multipleLevel(std::filesystem::path& configPath)
     if (para->getOutputPath() == "output/") {para->setOutputPath(outPath);}
     para->setPrintFiles(true);
 
+    if (useLevels)
+        para->setMaxLevel(2);
+    else
+        para->setMaxLevel(1);
+
     // para->setMainKernel("CumulantK17CompChim");
     para->setMainKernel("CumulantK17CompChimStream");
+    //para->setMainKernel("CumulantK17CompChimRedesigned");
+    scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleRhoSq);
+
+
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    VF_LOG_INFO("Number of processes: {}", para->getNumprocs());
 
     VF_LOG_INFO("LB parameters:");
     VF_LOG_INFO("velocity LB [dx/dt]              = {}", vxLB);
@@ -639,9 +652,9 @@ void multipleLevel(std::filesystem::path& configPath)
 
             gridBuilder->setPeriodicBoundaryCondition(false, false, false);
             //////////////////////////////////////////////////////////////////////////
+            gridBuilder->setVelocityBoundaryCondition(SideType::MX, vxLB, 0.0, 0.0);
             gridBuilder->setVelocityBoundaryCondition(SideType::PY, vxLB, 0.0, 0.0);
             gridBuilder->setVelocityBoundaryCondition(SideType::MY, vxLB, 0.0, 0.0);
-            gridBuilder->setVelocityBoundaryCondition(SideType::MX, vxLB, 0.0, 0.0);
             gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vxLB, 0.0, 0.0);
             gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, 0.0, 0.0);
             gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0); // set pressure BC after velocity BCs
@@ -670,7 +683,7 @@ void multipleLevel(std::filesystem::path& configPath)
         gridGenerator = GridProvider::makeGridReader(FILEFORMAT::BINARY, para, cudaMemoryManager);
     }
 
-    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory);
+    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory, &scalingFactory);
     sim.run();
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }

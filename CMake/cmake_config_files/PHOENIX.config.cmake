@@ -25,3 +25,10 @@ ENDIF()
 
 ## nvidia
 set(CMAKE_CUDA_ARCHITECTURES 60) # NVIDIA Tesla P100
+
+set(GPU_APP "apps/gpu/LBM/")
+list(APPEND USER_APPS 
+    # "${GPU_APP}DrivenCavityMultiGPU"
+    "${GPU_APP}SphereScaling"
+    # "${GPU_APP}MusselOyster"
+    )

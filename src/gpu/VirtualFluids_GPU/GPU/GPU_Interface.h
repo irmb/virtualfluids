@@ -8,13 +8,12 @@
 #ifndef GPU_INTERFACE_H
 #define GPU_INTERFACE_H
 
-#include <curand.h> //random numbers
-#include <curand_kernel.h>
-#include <cuda_runtime.h>
-
-#include <DataTypes.h>
 #include "LBM/LB.h"
 #include "BoundaryConditions/BoundaryConditionStructs.cuh"
+
+#include <cuda_runtime.h>
+#include <curand.h>
+#include <curand_kernel.h>
 
 struct LBMSimulationParameter;
 class Parameter;
@@ -1625,30 +1624,8 @@ void ScaleCF_staggered_time_comp_27( real* DC,
 												unsigned int numberOfThreads,
 												OffCF offCF);
 
-void ScaleCF_RhoSq_comp_27(  real* DC, 
-										real* DF, 
-										unsigned int* neighborCX,
-										unsigned int* neighborCY,
-										unsigned int* neighborCZ,
-										unsigned int* neighborFX,
-										unsigned int* neighborFY,
-										unsigned int* neighborFZ,
-										unsigned int size_MatC, 
-										unsigned int size_MatF, 
-										bool isEvenTimestep,
-										unsigned int* posCSWB, 
-										unsigned int* posFSWB, 
-										unsigned int kCF, 
-										real omCoarse, 
-										real omFine, 
-										real nu, 
-										unsigned int nxC, 
-										unsigned int nyC, 
-										unsigned int nxF, 
-										unsigned int nyF,
-										unsigned int numberOfThreads,
-										OffCF offCF,
-                                        CUstream_st *stream);
+void ScaleCF_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellCF * icellCF, OffCF &offsetCF, CUstream_st *stream);
+void ScaleCF_compressible(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellCF * icellCF, OffCF &offsetCF, CUstream_st *stream);
 
 void ScaleCF_RhoSq_3rdMom_comp_27( real* DC, 
 											  real* DF, 
@@ -1872,30 +1849,8 @@ void ScaleFC_staggered_time_comp_27( real* DC,
 												unsigned int numberOfThreads,
 												OffFC offFC);
 
-void ScaleFC_RhoSq_comp_27(  real* DC, 
-										real* DF, 
-										unsigned int* neighborCX,
-										unsigned int* neighborCY,
-										unsigned int* neighborCZ,
-										unsigned int* neighborFX,
-										unsigned int* neighborFY,
-										unsigned int* neighborFZ,
-										unsigned int size_MatC, 
-										unsigned int size_MatF, 
-										bool isEvenTimestep,
-										unsigned int* posC, 
-										unsigned int* posFSWB, 
-										unsigned int kFC, 
-										real omCoarse, 
-										real omFine, 
-										real nu, 
-										unsigned int nxC, 
-										unsigned int nyC, 
-										unsigned int nxF, 
-										unsigned int nyF,
-										unsigned int numberOfThreads, 
-	                                    OffFC offFC,
-                                        CUstream_st *stream);
+void ScaleFC_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellFC * icellFC, OffFC& offsetFC, CUstream_st *stream);
+void ScaleFC_compressible(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellFC * icellFC, OffFC& offsetFC, CUstream_st *stream);
 
 void ScaleFC_RhoSq_3rdMom_comp_27( real* DC, 
 											  real* DF, 

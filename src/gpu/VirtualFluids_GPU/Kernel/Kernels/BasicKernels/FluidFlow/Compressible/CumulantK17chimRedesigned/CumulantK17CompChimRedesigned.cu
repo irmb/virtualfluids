@@ -30,11 +30,10 @@ void CumulantK17CompChimRedesigned::run()
     getLastCudaError("LB_Kernel_CumulantK17CompChim execution failed");
 }
 
-void CumulantK17CompChimRedesigned::runOnIndices(const unsigned int *indices, unsigned int size_indices, int streamIndex)
+void CumulantK17CompChimRedesigned::runOnIndices(const unsigned int *indices, unsigned int size_indices, CudaStreamIndex streamIndex)
 {
-    cudaStream_t stream = para->getStreamManager()->getStream(CudaStreamManager::StreamIndex::bulkStreamIndex);
 
-    LB_Kernel_CumulantK17CompChimRedesigned<<< cudaGrid.grid, cudaGrid.threads, 0, stream>>>(
+    LB_Kernel_CumulantK17CompChimRedesigned<<< cudaGrid.grid, cudaGrid.threads, 0, para->getStreamManager()->getStream(streamIndex)>>>(
         para->getParD(level)->omega, 
         para->getParD(level)->neighborX, 
         para->getParD(level)->neighborY,

@@ -37,7 +37,7 @@
 
 using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
-#include "Kernel/ChimeraTransformation.h"
+#include "Kernel/Utilities/ChimeraTransformation.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 __global__ void LB_Kernel_CumulantK17CompChimStream(
