@@ -19,6 +19,7 @@ pyfluids*
 .idea/
 .ccache/
 .cache/
+.devcontainer/devcontainer.json
 
 # simulation results
 output/
