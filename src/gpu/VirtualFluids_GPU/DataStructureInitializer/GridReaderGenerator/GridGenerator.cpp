@@ -557,10 +557,6 @@ void GridGenerator::initalValuesDomainDecompostion()
                         ////////////////////////////////////////////////////////////////////////////////////////
                         cudaMemoryManager->cudaCopyProcessNeighborXIndex(level, j);
                         ////////////////////////////////////////////////////////////////////////////////////////
-                        
-                        
-                        int sendIDX = para->getParH(level)->sendProcessNeighborX[j].index[0];
-                        int recvIDX = para->getParH(level)->recvProcessNeighborX[j].index[0];
                     }
                 }
 
