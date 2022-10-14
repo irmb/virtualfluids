@@ -281,12 +281,12 @@ void multipleLevel(const std::string& configPath)
     real cPi = 3.1415926535897932384626433832795;
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)0.0;
-        vx  = (u_star/0.4 * log(coordZ/z0) + 2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1))  * dt / dx; 
-        vy  = 2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1)  * dt / dx; 
-        vz  = 8.0*u_star/0.4*(sin(cPi*8.0*coordY/H)*sin(cPi*8.0*coordZ/H)+sin(cPi*8.0*coordX/L_x))/(pow(L_z/2.0-coordZ, c2o1)+c1o1) * dt / dx;
+        vx  = u_star/0.4 * log(coordZ/z0) * dt / dx;//(u_star/0.4 * log(coordZ/z0) + 2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1))  * dt / dx; 
+        vy  = 0.0f;//2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1)  * dt / dx; 
+        vz  = 0.0f;//8.0*u_star/0.4*(sin(cPi*8.0*coordY/H)*sin(cPi*8.0*coordZ/H)+sin(cPi*8.0*coordX/L_x))/(pow(L_z/2.0-coordZ, c2o1)+c1o1) * dt / dx;
     });
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    if(isFirstSubDomain)
+    if(isFirstSubDomain || nProcs == 1)
     {
         SPtr<PlanarAverageProbe> planarAverageProbe = SPtr<PlanarAverageProbe>( new PlanarAverageProbe("planeProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt , tStartOutProbe/dt, tOutProbe/dt, 'z') );
         planarAverageProbe->addAllAvailableStatistics();
@@ -301,6 +301,29 @@ void multipleLevel(const std::string& configPath)
         if(para->getIsBodyForce())
             wallModelProbe->setEvaluatePressureGradient(true);
         para->addProbe( wallModelProbe );
+
+        real D = 126;
+        std::vector<real> turbPos{L_x/4.f, L_y/2.f, 2*D};
+        SPtr<ActuatorLine> actuator_line =SPtr<ActuatorLine>( new ActuatorLine(3, 1.0, 32, 5.f, turbPos[0], turbPos[1], turbPos[2], D, 0, dt, dx) );
+        para->addActuator( actuator_line );
+
+        // SPtr<PointProbe> pointProbe = SPtr<PointProbe>( new PointProbe("pointProbe", para->getOutputPath(), 100, 1, 500, 100) );
+        // std::vector<real> probeCoordsX = {reference_diameter,2*reference_diameter,5*reference_diameter};
+        // std::vector<real> probeCoordsY = {3*reference_diameter,3*reference_diameter,3*reference_diameter};
+        // std::vector<real> probeCoordsZ = {3*reference_diameter,3*reference_diameter,3*reference_diameter};
+        // pointProbe->addProbePointsFromList(probeCoordsX, probeCoordsY, probeCoordsZ);
+        // // pointProbe->addProbePointsFromXNormalPlane(2*D, 0.0, 0.0, L_y, L_z, (uint)L_y/dx, (uint)L_z/dx);
+
+        // pointProbe->addStatistic(Statistic::Means);
+        // pointProbe->addStatistic(Statistic::Variances);
+        // para->addProbe( pointProbe );
+
+        // SPtr<PlaneProbe> planeProbe = SPtr<PlaneProbe>( new PlaneProbe("planeProbe", para->getOutputPath(), 100, 500, 100, 100) );
+        // planeProbe->setProbePlane(5*reference_diameter, 0, 0, dx, L_y, L_z);
+        // planeProbe->addStatistic(Statistic::Means);
+        // para->addProbe( planeProbe );
+
+        
     }
 
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
