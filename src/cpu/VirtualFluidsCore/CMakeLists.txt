@@ -24,13 +24,11 @@ if(BUILD_USE_OPENMP)
    list(APPEND VF_LIBRARIES OpenMP::OpenMP_CXX)
 endif()
 
-vf_add_library(BUILDTYPE static PUBLIC_LINK basics muparser ${VF_LIBRARIES} PRIVATE_LINK lbm mpi logger)
-
 IF(${USE_LIGGGHTS})
    list(APPEND VF_LIBRARIES optimized ${LIGGGHTS_RELEASE_LIBRARY} debug ${LIGGGHTS_DEBUG_LIBRARY})
 ENDIF()
 
-vf_add_library(BUILDTYPE static PUBLIC_LINK basics muparser MPI::MPI_CXX ${VF_LIBRARIES})
+vf_add_library(BUILDTYPE static PUBLIC_LINK basics muparser ${VF_LIBRARIES} PRIVATE_LINK lbm mpi logger)
 
 vf_get_library_name(library_name)
 

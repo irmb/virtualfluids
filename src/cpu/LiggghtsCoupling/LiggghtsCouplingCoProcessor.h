@@ -46,7 +46,7 @@
 
 
 class CoProcessor;
-class Communicator;
+namespace vf::mpi {class Communicator;}
 class LiggghtsCouplingWrapper;
 class Grid3D;
 class Block3D;
@@ -61,7 +61,7 @@ struct ParticleData {
 class LiggghtsCouplingCoProcessor : public CoProcessor
 {
 public:
-    LiggghtsCouplingCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<Communicator> comm,
+    LiggghtsCouplingCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<vf::mpi::Communicator> comm,
                                 LiggghtsCouplingWrapper &wrapper, int demSteps, SPtr<LBMUnitConverter> units);
     virtual ~LiggghtsCouplingCoProcessor();
 
@@ -88,7 +88,7 @@ protected:
     void addTorque(int const partId, int const coord, double const value, double *torque);
 
 private:
-    SPtr<Communicator> comm;
+    SPtr<vf::mpi::Communicator> comm;
     LiggghtsCouplingWrapper &wrapper;
     SPtr<LBMUnitConverter> units;
     int demSteps;

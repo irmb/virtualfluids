@@ -13,7 +13,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-    SPtr<Communicator> comm = MPICommunicator::getInstance();
+    std::shared_ptr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
     int myid                                        = comm->getProcessID();
 
 

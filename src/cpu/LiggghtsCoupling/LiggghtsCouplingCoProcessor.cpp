@@ -1,6 +1,6 @@
 #include "LiggghtsCouplingCoProcessor.h"
 #include "GbSphere3D.h"
-#include "MPICommunicator.h"
+#include "mpi/MPICommunicator.h"
 #include "CoProcessor.h"
 #include "LiggghtsCouplingWrapper.h"
 #include "Grid3D.h"
@@ -13,7 +13,9 @@
 #include "fix_lb_coupling_onetoone.h"
 
 LiggghtsCouplingCoProcessor::LiggghtsCouplingCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
-                                                         SPtr<Communicator> comm, LiggghtsCouplingWrapper &wrapper, int demSteps, SPtr<LBMUnitConverter> units)
+                                                         SPtr<vf::mpi::Communicator> comm,
+                                                         LiggghtsCouplingWrapper &wrapper, int demSteps,
+                                                         SPtr<LBMUnitConverter> units)
     : CoProcessor(grid, s), comm(comm), wrapper(wrapper), demSteps(demSteps), units(units)
 {
 

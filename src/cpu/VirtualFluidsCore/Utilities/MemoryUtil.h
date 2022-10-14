@@ -66,7 +66,6 @@
 #include <string>
 #include <vector>
 #include "Grid3D.h"
-#include "Communicator.h"
 
 //////////////////////////////////////////////////////////////////////////
 // MemoryUtil
