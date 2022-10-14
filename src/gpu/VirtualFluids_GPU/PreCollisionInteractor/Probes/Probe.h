@@ -153,7 +153,6 @@ public:
         PreCollisionInteractor()
     {
         if (_tStartOut<_tStartAvg)      throw std::runtime_error("Probe: tStartOut must be larger than tStartAvg!");
-        if (_tStartTmpAvg<_tStartAvg)   throw std::runtime_error("Probe: tStartTmpAvg must be larger than tStartAvg!");
     }
     
     void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaMemoryManager) override;

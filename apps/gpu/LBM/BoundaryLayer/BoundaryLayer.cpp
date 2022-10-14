@@ -302,10 +302,10 @@ void multipleLevel(const std::string& configPath)
             wallModelProbe->setEvaluatePressureGradient(true);
         para->addProbe( wallModelProbe );
 
-        real D = 126;
-        std::vector<real> turbPos{L_x/4.f, L_y/2.f, 2*D};
-        SPtr<ActuatorLine> actuator_line =SPtr<ActuatorLine>( new ActuatorLine(3, 1.0, 32, 5.f, turbPos[0], turbPos[1], turbPos[2], D, 0, dt, dx) );
-        para->addActuator( actuator_line );
+        // real D = 126;
+        // std::vector<real> turbPos{L_x/4.f, L_y/2.f, 2*D};
+        // SPtr<ActuatorLine> actuator_line =SPtr<ActuatorLine>( new ActuatorLine(3, 1.0, 32, 5.f, turbPos[0], turbPos[1], turbPos[2], D, 0, dt, dx) );
+        // para->addActuator( actuator_line );
 
         // SPtr<PointProbe> pointProbe = SPtr<PointProbe>( new PointProbe("pointProbe", para->getOutputPath(), 100, 1, 500, 100) );
         // std::vector<real> probeCoordsX = {reference_diameter,2*reference_diameter,5*reference_diameter};
