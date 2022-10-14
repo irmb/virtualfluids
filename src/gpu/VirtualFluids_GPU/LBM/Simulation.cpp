@@ -117,10 +117,7 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
         para->getStreamManager()->launchStreams();
         para->getStreamManager()->createCudaEvents();
     }
-    std::cout << "OKDIDOKI 1" << std::endl;
-    auto test = para->getStreamManager()->getStream(CudaStreamIndex::Legacy);
-    if(test == CU_STREAM_LEGACY)
-        std::cout << "OKDIDOKI 2" << std::endl;
+
     //////////////////////////////////////////////////////////////////////////
     VF_LOG_INFO("LB_Modell:       D3Q{}", para->getD3Qxx());
     VF_LOG_INFO("Re:              {}", para->getRe());

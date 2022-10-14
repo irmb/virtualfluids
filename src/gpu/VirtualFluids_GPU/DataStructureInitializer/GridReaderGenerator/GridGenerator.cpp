@@ -103,7 +103,7 @@ void GridGenerator::allocArrays_taggedFluidNodes() {
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) 
     {
         for ( CollisionTemplate tag: all_CollisionTemplate )
-        {   //TODO: Need to add CollisionTemplate to GridBuilder to allow as argument and get rid of indivual get funtions for fluid node indices
+        {   //TODO: Need to add CollisionTemplate to GridBuilder to allow as argument and get rid of indivual get funtions for fluid node indices... and clean up this mess
             switch(tag)
             {
                 case CollisionTemplate::Default:
@@ -111,30 +111,40 @@ void GridGenerator::allocArrays_taggedFluidNodes() {
                     cudaMemoryManager->cudaAllocTaggedFluidNodeIndices(CollisionTemplate::Default, level);
                     builder->getFluidNodeIndices(para->getParH(level)->taggedFluidNodeIndices[CollisionTemplate::Default], level);
                     cudaMemoryManager->cudaCopyTaggedFluidNodeIndices(CollisionTemplate::Default, level);
+                    if(para->getParH(level)->numberOfTaggedFluidNodes[tag]>0)
+                        para->getParH(level)->allocatedBulkFluidNodeTags.push_back(tag);
                     break;
                 case CollisionTemplate::Border:
                     this->setNumberOfTaggedFluidNodes(builder->getNumberOfFluidNodesBorder(level), CollisionTemplate::Border, level);
                     cudaMemoryManager->cudaAllocTaggedFluidNodeIndices(CollisionTemplate::Border, level);
                     builder->getFluidNodeIndicesBorder(para->getParH(level)->taggedFluidNodeIndices[CollisionTemplate::Border], level);
                     cudaMemoryManager->cudaCopyTaggedFluidNodeIndices(CollisionTemplate::Border, level);
+                    if(para->getParH(level)->numberOfTaggedFluidNodes[tag]>0)
+                        para->getParH(level)->allocatedBulkFluidNodeTags.push_back(tag);
                     break;
                 case CollisionTemplate::WriteMacroVars:
                     this->setNumberOfTaggedFluidNodes(builder->getNumberOfFluidNodesMacroVars(level), CollisionTemplate::WriteMacroVars, level);
                     cudaMemoryManager->cudaAllocTaggedFluidNodeIndices(CollisionTemplate::WriteMacroVars, level);
                     builder->getFluidNodeIndicesMacroVars(para->getParH(level)->taggedFluidNodeIndices[CollisionTemplate::WriteMacroVars], level);
                     cudaMemoryManager->cudaCopyTaggedFluidNodeIndices(CollisionTemplate::WriteMacroVars, level);
+                    if(para->getParH(level)->numberOfTaggedFluidNodes[tag]>0)
+                        para->getParH(level)->allocatedBulkFluidNodeTags.push_back(tag);
                     break;
                 case CollisionTemplate::ApplyBodyForce:
                     this->setNumberOfTaggedFluidNodes(builder->getNumberOfFluidNodesApplyBodyForce(level), CollisionTemplate::ApplyBodyForce, level);
                     cudaMemoryManager->cudaAllocTaggedFluidNodeIndices(CollisionTemplate::ApplyBodyForce, level);
                     builder->getFluidNodeIndicesApplyBodyForce(para->getParH(level)->taggedFluidNodeIndices[CollisionTemplate::ApplyBodyForce], level);
                     cudaMemoryManager->cudaCopyTaggedFluidNodeIndices(CollisionTemplate::ApplyBodyForce, level);
+                    if(para->getParH(level)->numberOfTaggedFluidNodes[tag]>0)
+                        para->getParH(level)->allocatedBulkFluidNodeTags.push_back(tag);
                     break;
                 case CollisionTemplate::AllFeatures:
                     this->setNumberOfTaggedFluidNodes(builder->getNumberOfFluidNodesAllFeatures(level), CollisionTemplate::AllFeatures, level);
                     cudaMemoryManager->cudaAllocTaggedFluidNodeIndices(CollisionTemplate::AllFeatures, level);
                     builder->getFluidNodeIndicesAllFeatures(para->getParH(level)->taggedFluidNodeIndices[CollisionTemplate::AllFeatures], level);
                     cudaMemoryManager->cudaCopyTaggedFluidNodeIndices(CollisionTemplate::AllFeatures, level);
+                    if(para->getParH(level)->numberOfTaggedFluidNodes[tag]>0)
+                        para->getParH(level)->allocatedBulkFluidNodeTags.push_back(tag);
                     break;
                 default:
                     break;
