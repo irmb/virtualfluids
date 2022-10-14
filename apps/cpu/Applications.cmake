@@ -14,10 +14,6 @@ add_subdirectory(${APPS_ROOT_CPU}/JetBreakup)
 add_subdirectory(${APPS_ROOT_CPU}/LiggghtsApp)
 add_subdirectory(${APPS_ROOT_CPU}/FallingSphere)
 add_subdirectory(${APPS_ROOT_CPU}/Nozzle)
-<<<<<<< HEAD
-=======
-
->>>>>>> LIGGGHTS_coupling
 #add_subdirectory(tests)
 #add_subdirectory(Applications/gridRf)
 #add_subdirectory(Applications/greenvortex)
