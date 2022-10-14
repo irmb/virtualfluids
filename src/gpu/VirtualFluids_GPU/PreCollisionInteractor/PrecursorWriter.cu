@@ -301,7 +301,7 @@ std::string PrecursorWriter::makeFileName(std::string fileName, int level, int i
 
 void PrecursorWriter::getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider)
 {
-    for(uint level=0; level<para->getMaxLevel(); level++)
+    for(int level=0; level<para->getMaxLevel(); level++)
     {
         if(outputVariable==OutputVariable::Velocities)
         {
