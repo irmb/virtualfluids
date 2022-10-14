@@ -74,6 +74,7 @@ public:
         planeNormal(_planeNormal)
 
     {   
+        if (_tStartTmpAvg<_tStartAvg)   throw std::runtime_error("Probe: tStartTmpAvg must be larger than tStartAvg!");
         if(!(_planeNormal == 'x' || _planeNormal == 'y' || _planeNormal == 'z')) 
             throw std::runtime_error("PlanarAverageProbe: planeNormal must be 'x', 'y' or 'z'!");
     }

@@ -221,9 +221,9 @@ __global__ void LB_Kernel_CumulantK17Almighty(
         fy += bodyForceY[k_000];
         fz += bodyForceZ[k_000];
 
-        real vx = vvx;
-        real vy = vvy;
-        real vz = vvz;
+        // real vx = vvx;
+        // real vy = vvy;
+        // real vz = vvz;
         real acc_x = fx * c1o2 / factor;
         real acc_y = fy * c1o2 / factor;
         real acc_z = fz * c1o2 / factor;
@@ -233,9 +233,9 @@ __global__ void LB_Kernel_CumulantK17Almighty(
         vvz += acc_z;
         
         //    // Reset body force. To be used when not using round-off correction.
-        // bodyForceX[k] = 0.0f;
-        // bodyForceY[k] = 0.0f;
-        // bodyForceZ[k] = 0.0f;
+        bodyForceX[k_000] = 0.0f;
+        bodyForceY[k_000] = 0.0f;
+        bodyForceZ[k_000] = 0.0f;
 
         ////////////////////////////////////////////////////////////////////////////////////
         //!> Round-off correction
@@ -246,9 +246,9 @@ __global__ void LB_Kernel_CumulantK17Almighty(
         //!> differ by several orders of magnitude.
         //!> \note 16/05/2022: Testing, still ongoing! 
         //!
-        bodyForceX[k_000] = (acc_x-(vvx-vx))*factor*c2o1;
-        bodyForceY[k_000] = (acc_y-(vvy-vy))*factor*c2o1;
-        bodyForceZ[k_000] = (acc_z-(vvz-vz))*factor*c2o1;
+        // bodyForceX[k_000] = (acc_x-(vvx-vx))*factor*c2o1;
+        // bodyForceY[k_000] = (acc_y-(vvy-vy))*factor*c2o1;
+        // bodyForceZ[k_000] = (acc_z-(vvz-vz))*factor*c2o1;
     }
     else{
         vvx += fx * c1o2 / factor;
