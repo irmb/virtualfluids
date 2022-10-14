@@ -10,6 +10,8 @@ add_subdirectory(${APPS_ROOT_CPU}/FlowAroundCylinder)
 add_subdirectory(${APPS_ROOT_CPU}/LaminarTubeFlow)
 add_subdirectory(${APPS_ROOT_CPU}/MultiphaseDropletTest)
 add_subdirectory(${APPS_ROOT_CPU}/LiggghtsApp)
+add_subdirectory(${APPS_ROOT_CPU}/FallingSphere)
+add_subdirectory(${APPS_ROOT_CPU}/Nozzle)
 
 #add_subdirectory(tests)
 #add_subdirectory(Applications/gridRf)

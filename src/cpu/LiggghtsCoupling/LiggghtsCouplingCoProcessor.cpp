@@ -16,15 +16,7 @@ LiggghtsCouplingCoProcessor::LiggghtsCouplingCoProcessor(SPtr<Grid3D> grid, SPtr
                                                          SPtr<Communicator> comm, LiggghtsCouplingWrapper &wrapper, int demSteps, SPtr<LBMUnitConverter> units)
     : CoProcessor(grid, s), comm(comm), wrapper(wrapper), demSteps(demSteps), units(units)
 {
-    //gridRank     = comm->getProcessID();
-    //minInitLevel = this->grid->getCoarsestInitializedLevel();
-    //maxInitLevel = this->grid->getFinestInitializedLevel();
 
-    //blockVector.resize(maxInitLevel + 1);
-
-    //for (int level = minInitLevel; level <= maxInitLevel; level++) {
-    //    grid->getBlocks(level, gridRank, true, blockVector[level]);
-    //}
 }
 
 LiggghtsCouplingCoProcessor::~LiggghtsCouplingCoProcessor()

@@ -366,7 +366,7 @@ void bflow(string configname)
          wallXminInt->initInteractor();
       }
       
-      omp_set_num_threads(numOfThreads);
+      //omp_set_num_threads(numOfThreads);
 
       //set connectors
       //InterpolationProcessorPtr iProcessor(new ThixotropyInterpolationProcessor());

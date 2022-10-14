@@ -1,0 +1,125 @@
+# shotcrete nozzle simulation
+
+atom_style    granular
+atom_modify   map array
+boundary      f f f
+newton        off
+
+communicate   single vel yes
+
+units         si
+
+#region        domain block -1.35 -1.25 0.34 0.44 -0.25 0.25 units box
+region        domain block -1.35 -1.25 0.34 0.44 -0.4 0.25 units box
+create_box    1 domain
+
+neighbor      0.002 bin
+neigh_modify  delay 0
+
+
+#Material properties required for new pair styles
+
+fix  m1 all property/global youngsModulus peratomtype 5.e6
+fix  m2 all property/global poissonsRatio peratomtype 0.45
+fix  m3 all property/global coefficientRestitution peratomtypepair 1 0.3
+fix  m4 all property/global coefficientFriction peratomtypepair 1 0.5
+fix  m5 all property/global k_finnie peratomtypepair 1 1.0
+
+# lb coupling fix
+fix lbcoupling all couple/lb/onetoone
+
+#New pair style
+pair_style  gran model hertz tangential history #Hertzian without cohesion
+pair_coeff  * *
+
+timestep    ${t_step}
+
+fix  gravi all gravity 9.81 vector 0.0 0.0 -1.0
+
+#the chute
+#variable meshes_dir string d:/Projects/TRR277/Project/WP4/Liggghts/
+variable meshes_dir string d:/Projects/TRR277/Project/WP4/Liggghts/A04/
+
+fix  cad1 all mesh/surface file ${meshes_dir}Duese_Acc_Einlass.stl type 1 scale 0.001
+fix  cad2 all mesh/surface file ${meshes_dir}Duese_Acc_Verteiler.stl type 1 scale 0.001
+fix  cad3 all mesh/surface file ${meshes_dir}Duese_Air_Einlass.stl type 1 scale 0.001
+fix  cad4 all mesh/surface file ${meshes_dir}Duese_Air_Verteiler.stl type 1 scale 0.001
+fix  cad5 all mesh/surface file ${meshes_dir}Duese_Volcan_Duese.stl type 1 scale 0.001
+fix  cad6 all mesh/surface file ${meshes_dir}Duese_Zwischenstueck.stl type 1 element_exclusion_list read list.file scale 0.001 curvature_tolerant yes
+
+fix  inface all mesh/surface file ${meshes_dir}InsertDisk2.stl type 1 scale 0.001
+fix  wallTop all mesh/surface file ${meshes_dir}InsertDisk3.stl type 1 scale 0.001
+
+#fix  granwalls all wall/gran model hertz tangential history mesh n_meshes 7 meshes cad1 cad2 cad3 cad4 cad5 cad6 wallTop
+fix  granwalls all wall/gran model hertz tangential history mesh n_meshes 8 meshes cad1 cad2 cad3 cad4 cad5 cad6 wallTop inface
+
+#distributions for insertion
+
+fix  pts1 all particletemplate/sphere 15485863 atom_type 1 density constant 2500 radius constant 0.001
+fix  pts2 all particletemplate/sphere 15485867 atom_type 1 density constant 2500 radius constant 0.002
+fix  pdd1 all particledistribution/discrete 32452843  2 pts1 0.3 pts2 0.7
+
+#region and insertion
+group  nve_group region domain
+#region bc cylinder z 0.0 0.0 0.015 0.201 0.23 units box
+#region bc cylinder z 0.0 0.0 10 213 220 units box
+
+region bc cylinder z -1.3013105 0.388582 0.01275005 0.18055 0.20105 units box
+
+#particle insertion
+# fix    ins nve_group insert/stream seed 32452867 distributiontemplate pdd1 &
+       # nparticles 6000 massrate 0.1 insert_every 1000 overlapcheck yes all_in no vel constant 0.0 0.0 -1.0 &
+       # insertion_face inface 
+
+
+# fix    ins nve_group insert/stream seed 32452867 distributiontemplate pdd1 &
+       # nparticles 6000 massrate 0.1 insert_every 1000 overlapcheck yes all_in no vel constant 0.0 0.0 -1.0 &
+       # insertion_face inface 
+       
+# fix    ins nve_group insert/stream seed 32452867 distributiontemplate pdd1 &
+       # nparticles 6000 massrate 0.1 insert_every ones overlapcheck yes all_in no vel constant 0.0 0.0 -1.0 &
+       # insertion_face inface 
+
+fix ins nve_group insert/pack seed 32452867 distributiontemplate pdd1 insert_every 1000 &
+                        overlapcheck yes volumefraction_region 0.1 region bc ntry_mc 1001
+   
+       
+# fix    ins all insert/stream seed 32452867 distributiontemplate pdd1 &
+       # nparticles INF massrate 0.1 overlapcheck yes all_in yes vel constant 0.0 0.0 -1.0 &
+       # insertion_face inface extrude_length 0.25   
+	   
+   
+
+#apply nve integration to all particles that are inserted as single particles
+fix    integr nve_group nve/sphere
+
+#output settings, include total thermal energy
+compute       1 all erotate/sphere
+thermo_style  custom step atoms ke c_1 vol
+thermo        1000
+thermo_modify lost ignore norm no
+
+variable dmp_time_cad equal 100000000
+
+dump   dumpcad1 all mesh/stl ${dmp_time_cad} ${dmp_dir}/cad1_*.stl cad1
+dump   dumpcad2 all mesh/stl ${dmp_time_cad} ${dmp_dir}/cad2_*.stl cad2
+dump   dumpcad3 all mesh/stl ${dmp_time_cad} ${dmp_dir}/cad3_*.stl cad3
+dump   dumpcad4 all mesh/stl ${dmp_time_cad} ${dmp_dir}/cad4_*.stl cad4
+dump   dumpcad5 all mesh/stl ${dmp_time_cad} ${dmp_dir}/cad5_*.stl cad5
+dump   dumpcad6 all mesh/stl ${dmp_time_cad} ${dmp_dir}/cad6_*.stl cad6
+dump   dumpinface all mesh/stl ${dmp_time_cad} ${dmp_dir}/inface_*.stl inface
+dump   dumpwallTop all mesh/stl ${dmp_time_cad} ${dmp_dir}/wallTop_*.stl wallTop
+
+#insert the first particles so that dump is not empty
+run    1
+dump   dmp all custom/vtk ${dmp_stp} ${dmp_dir}/particles_*.vtk id type type x y z ix iy iz vx vy vz fx fy fz omegax omegay omegaz radius 
+
+
+#run 1
+#run 1
+
+#insert particles
+#run    100000 upto
+#unfix  ins
+
+ 

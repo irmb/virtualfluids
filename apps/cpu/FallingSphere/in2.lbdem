@@ -14,14 +14,12 @@ compute_modify	thermo_temp dynamic yes
 # particle dump
 variable dmp_fname string ${dmp_dir}d_*.liggghts
 
-#dump		dmp all custom ${dmp_stp} ${dmp_fname} & 
-#		 id type type x y z ix iy iz vx vy vz fx fy fz omegax omegay omegaz radius 
+# dump		dmp all custom ${dmp_stp} ${dmp_fname} & 
+#		id type type x y z ix iy iz vx vy vz fx fy fz omegax omegay omegaz radius 
 
-#dump		dmp all custom ${dmp_stp} ${dmp_dir}d_*.liggghts & 
+# dump		dmp all custom ${dmp_stp} ${dmp_dir}d_*.liggghts & 
 # 		id type type x y z ix iy iz vx vy vz fx fy fz omegax omegay omegaz radius 
-
-
 	
-dump   dmp all custom/vtk ${dmp_stp} ${dmp_dir}/post/atom_*.vtk id type type x y z ix iy iz vx vy vz fx fy fz omegax omegay omegaz radius 	
+dump   dmp all custom/vtk ${dmp_stp} ${dmp_dir}/liggghts/atom_*.vtk id type type x y z ix iy iz vx vy vz fx fy fz omegax omegay omegaz radius 	
 
 echo none
