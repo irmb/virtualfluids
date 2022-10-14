@@ -340,7 +340,7 @@ void multipleLevel(const std::string& configPath)
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    if(isFirstSubDomain)
+    if(isFirstSubDomain || nProcs == 1)
     {
         SPtr<PlanarAverageProbe> planarAverageProbe = SPtr<PlanarAverageProbe>( new PlanarAverageProbe("planeProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt , tStartOutProbe/dt, tOutProbe/dt, 'z') );
         planarAverageProbe->addAllAvailableStatistics();

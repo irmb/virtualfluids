@@ -67,18 +67,18 @@ enum class TurbulenceModel {
 //! \brief An enumeration for selecting a template of the collision kernel (CumulantK17Almighty)
 enum class CollisionTemplate {
    //! - Default: plain collision without additional read/write
-   Default = 0,
-   //! - Border: collision on border nodes
-   Border = 1,
-   //! - WriteMacroVars: collision \w write out macroscopic variables
-   WriteMacroVars = 2,
+   Default,
+   //!  - WriteMacroVars: collision \w write out macroscopic variables
+   WriteMacroVars,
    //! - ApplyBodyForce: collision \w read and apply body force in the collision kernel
-   ApplyBodyForce = 3,
+   ApplyBodyForce,
    //! - AllFeatures: collision \w write out macroscopic variables AND read and apply body force
-   AllFeatures = 4,
-   //!
-   LAST = 5
+   AllFeatures,
+   //! - Border: collision on border nodes
+   Border
 };
+constexpr std::initializer_list<CollisionTemplate> all_CollisionTemplate  = { CollisionTemplate::Default, CollisionTemplate::WriteMacroVars, CollisionTemplate::ApplyBodyForce, CollisionTemplate::AllFeatures, CollisionTemplate::Border};
+constexpr std::initializer_list<CollisionTemplate> bulk_CollisionTemplate = { CollisionTemplate::Default, CollisionTemplate::WriteMacroVars, CollisionTemplate::ApplyBodyForce, CollisionTemplate::AllFeatures};
 
 struct InitCondition
 {

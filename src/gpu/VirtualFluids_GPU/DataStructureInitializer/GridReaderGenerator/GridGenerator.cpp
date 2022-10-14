@@ -102,9 +102,9 @@ void GridGenerator::allocArrays_taggedFluidNodes() {
 
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) 
     {
-        for ( int tag = 0; tag < int(CollisionTemplate::LAST); tag++ )
+        for ( CollisionTemplate tag: all_CollisionTemplate )
         {   //TODO: Need to add CollisionTemplate to GridBuilder to allow as argument and get rid of indivual get funtions for fluid node indices
-            switch(static_cast<CollisionTemplate>(tag))
+            switch(tag)
             {
                 case CollisionTemplate::Default:
                     this->setNumberOfTaggedFluidNodes(builder->getNumberOfFluidNodes(level), CollisionTemplate::Default, level);
