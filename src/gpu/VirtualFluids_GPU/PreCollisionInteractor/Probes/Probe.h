@@ -160,7 +160,7 @@ public:
     void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaMemoryManager) override;
     void interact(Parameter* para, CudaMemoryManager* cudaMemoryManager, int level, uint t) override;
     void free(Parameter* para, CudaMemoryManager* cudaMemoryManager) override;
-    virtual void getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider);
+    virtual void getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider) override;
 
     SPtr<ProbeStruct> getProbeStruct(int level){ return this->probeParams[level]; }
 
