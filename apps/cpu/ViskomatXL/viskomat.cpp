@@ -398,7 +398,7 @@ void bflow(string configname)
          ppblocks->process(1);
       }
       
-      omp_set_num_threads(numOfThreads);
+      //omp_set_num_threads(numOfThreads);
 
       //set connectors
       //InterpolationProcessorPtr iProcessor(new ThixotropyInterpolationProcessor());

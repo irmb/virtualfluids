@@ -53,7 +53,7 @@ SetKernelBlockVisitor::SetKernelBlockVisitor(SPtr<LBMKernel> kernel, LBMReal nue
     }
 }
 
-SetKernelBlockVisitor::SetKernelBlockVisitor(SPtr<LBMKernel> kernel, LBMReal nue, int &numberOfProcesses,
+SetKernelBlockVisitor::SetKernelBlockVisitor(SPtr<LBMKernel> kernel, LBMReal nue, int numberOfProcesses,
                                              SetKernelBlockVisitor::Action action)
     : Block3DVisitor(0, Grid3DSystem::MAXLEVEL), kernel(std::move(kernel)), nue(nue), action(action), dataSetFlag(true),
       numberOfProcesses(numberOfProcesses)
@@ -127,7 +127,7 @@ double SetKernelBlockVisitor::getRequiredPhysicalMemory(const SPtr<Grid3D> &grid
     unsigned long long numberOfNodesPerBlockWithGhostLayer;
     auto numberOfBlocks = (unsigned long long)grid->getNumberOfBlocks();
     auto blockNx        = grid->getBlockNX();
-    int ghostLayer      = 3;
+    int ghostLayer      = grid->getGhostLayerWidth() * 2 + 1;
 
     numberOfNodesPerBlockWithGhostLayer = numberOfBlocks * (val<1>(blockNx) + ghostLayer) *
                                           (val<2>(blockNx) + ghostLayer) * (val<3>(blockNx) + ghostLayer);
