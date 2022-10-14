@@ -378,14 +378,9 @@ struct LBMSimulationParameter {
                                                                     {CollisionTemplate::WriteMacroVars, 0},
                                                                     {CollisionTemplate::ApplyBodyForce, 0},
                                                                     {CollisionTemplate::AllFeatures,    0}};
-    // uint *fluidNodeIndicesBorder;
-    // uint numberOfFluidNodesBorder;
-    // uint *fluidNodeIndicesWriteMacroscopicVariables;
-    // uint numberOfFluidNodeIndicesWriteMacroscopicVariables;
-    // uint *fluidNodeIndicesApplyBodyForce;              
-    // uint numberOfFluidNodeIndicesApplyBodyForce;
-    // uint *indicesWriteMacroscopicVariablesAndApplyBodyForce;    
-    // uint numberOfIndicesWriteMacroscopicVariablesAndApplyBodyForce;
+
+    std::vector<CollisionTemplate> allocatedBulkFluidNodeTags = {};
+
 };
 
 //! \brief Class for LBM-parameter management
