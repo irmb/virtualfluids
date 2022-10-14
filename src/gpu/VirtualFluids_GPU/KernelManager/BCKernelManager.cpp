@@ -392,43 +392,6 @@ void BCKernelManager::runNoSlipBCKernelPost(const int level) const{
     }
 }
 
-// void LBKernelManager::calculateMacroscopicValues(const int level) const
-// {
-//     if (para->getIsADcalculationOn()) {
-//           CalcMacADCompSP27(
-//                para->getParD()->velocityX,
-//                para->getParD()->velocityY,
-//                para->getParD()->velocityZ,
-//                para->getParD()->rho,
-//                para->getParD()->pressure,
-//                para->getParD()->typeOfGridNode,
-//                para->getParD()->neighborX,
-//                para->getParD()->neighborY,
-//                para->getParD()->neighborZ,
-//                para->getParD()->numberOfNodes,
-//                para->getParD()->numberofthreads,
-//                para->getParD()->distributions.f[0],
-//                para->getParD()->distributionsAD.f[0],
-//             para->getParD()->forcing,
-//                para->getParD()->isEvenTimestep);
-//     } else {
-//           CalcMacCompSP27(
-//                para->getParD()->velocityX,
-//                para->getParD()->velocityY,
-//                para->getParD()->velocityZ,
-//                para->getParD()->rho,
-//                para->getParD()->pressure,
-//                para->getParD()->typeOfGridNode,
-//                para->getParD()->neighborX,
-//                para->getParD()->neighborY,
-//                para->getParD()->neighborZ,
-//                para->getParD()->numberOfNodes,
-//                para->getParD()->numberofthreads,
-//                para->getParD()->distributions.f[0],
-//                para->getParD()->isEvenTimestep);
-//      }
-// }
-
 void BCKernelManager::runPrecursorBCKernelPost(int level, uint t, CudaMemoryManager* cudaMemoryManager)
 {
     if(para->getParH(level)->precursorBC.numberOfBCnodes == 0) return;

@@ -2658,6 +2658,8 @@ void Parameter::setUseStreams(bool useStreams)
         if (this->getNumprocs() != 1) {
             this->useStreams = useStreams;
             return; 
+        } else {
+            std::cout << "Can't use streams with only one process!" << std::endl;
         }
     }
     this->useStreams = false;

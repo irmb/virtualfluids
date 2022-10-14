@@ -76,7 +76,7 @@ void UpdateGrid27::collisionUsingIndices(int level, unsigned int t, uint *tagged
     if (taggedFluidNodeIndices != nullptr && numberOfTaggedFluidNodes != 0)
         kernels.at(level)->runOnIndices(taggedFluidNodeIndices, numberOfTaggedFluidNodes, collisionTemplate, stream);
     else
-        std::cout << "In collision: fluidNodeIndices or numberOfFluidNodes not definded"
+        std::cout << "In collision: fluidNodeIndices or numberOfFluidNodes not defined"
                       << std::endl;
 
     //////////////////////////////////////////////////////////////////////////

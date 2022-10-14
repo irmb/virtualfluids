@@ -70,13 +70,13 @@ TEST_F(EdgeNodeFinderTest_findEdgeNodes, shouldReturnCorrectVectorForXY)
 
     vf::gpu::findEdgeNodesCommMultiGPU(*para);
 
-    const std::vector<std::pair<int, int>> expectedEdgeNodesXtoYRecv = { std::pair<int, int>(numRecvNeighbor, 0),
-                                                                         std::pair<int, int>(numRecvNeighbor, 4),
-                                                                         std::pair<int, int>(numRecvNeighbor, 5) };
+    const std::vector<std::pair<int, int>> expectedEdgeNodesXtoYRecv = { (numRecvNeighbor, 0),
+                                                                         (numRecvNeighbor, 4),
+                                                                         (numRecvNeighbor, 5) };
 
-    const std::vector<std::pair<int, int>> expectedEdgeNodesXtoYSend = { std::pair<int, int>(numSendNeighbor, 1),
-                                                                         std::pair<int, int>(numSendNeighbor, 6),
-                                                                         std::pair<int, int>(numSendNeighbor, 4) };
+    const std::vector<std::pair<int, int>> expectedEdgeNodesXtoYSend = { (numSendNeighbor, 1),
+                                                                         (numSendNeighbor, 6),
+                                                                         (numSendNeighbor, 4) };
 
     EXPECT_THAT(para->parH[level]->edgeNodesXtoY.size(), testing::Eq(expectedEdgeNodesXtoYRecv.size()));
     EXPECT_TRUE(compareEdgeNodesRecv(para->parH[level]->edgeNodesXtoY, expectedEdgeNodesXtoYRecv))
