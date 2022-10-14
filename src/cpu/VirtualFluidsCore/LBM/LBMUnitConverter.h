@@ -97,14 +97,6 @@ public:
         this->init(refLengthWorld, csWorld, rhoWorld, csWorld, refLengthLb, rhoLb, csLb);
     }
 
-    LBMUnitConverter(int /*dummy*/, double uReal, double uLB, double nuReal, double nuLB)
-    {
-        factorVelocityLbToW  = uReal / uLB;
-        factorViscosityLbToW = nuReal / nuLB;
-        factorDensityLbToW   = factorViscosityLbToW * factorVelocityLbToW * factorVelocityLbToW;
-        factorPressureLbToW  = factorDensityLbToW;
-    }
-
     virtual ~LBMUnitConverter() = default;
 
     double getRefRhoLb() { return refRhoLb; }
@@ -124,10 +116,7 @@ public:
     double getFactorDensityLbToW() { return this->factorMassLbToW / std::pow(factorLengthLbToW, 3.0); }
     double getFactorDensityWToLb() { return 1.0 / this->getFactorDensityLbToW(); }
 
-    double getFactorPressureLbToW()
-    {
-        return this->factorMassLbToW / (std::pow(factorTimeLbToW, 2.0) * factorLengthLbToW);
-    }
+    double getFactorPressureLbToW(){ return this->factorMassLbToW / (factorLengthLbToW * factorTimeLbToW * factorTimeLbToW); }
     double getFactorPressureWToLb() { return 1.0 / this->getFactorPressureLbToW(); }
 
     double getFactorMassLbToW() { return this->factorMassLbToW; }
@@ -136,14 +125,14 @@ public:
     double getFactorForceLbToW() { return factorMassLbToW * factorLengthLbToW / (factorTimeLbToW * factorTimeLbToW); }
     double getFactorForceWToLb() { return 1.0 / this->getFactorForceLbToW(); }
 
+    double getFactorTorqueLbToW() { return factorMassLbToW * factorLengthLbToW * factorLengthLbToW / (factorTimeLbToW * factorTimeLbToW);}
+    double getFactorTorqueWToLb() { return 1.0 / this->getFactorTorqueWToLb(); }
+
     double getFactorAccLbToW() { return factorLengthLbToW / (factorTimeLbToW * factorTimeLbToW); }
     double getFactorAccWToLb() { return 1.0 / this->getFactorAccLbToW(); }
 
     double getFactorTimeLbToW(double deltaX) const { return factorTimeWithoutDx * deltaX; }
-    //////////////////////////////////////////////////////////////////////////
-    double getFactorVelocityLbToW2() { return factorVelocityLbToW; }
-    double getFactorDensityLbToW2() { return factorDensityLbToW; }
-    double getFactorPressureLbToW2() { return factorPressureLbToW; }
+
 
     /*==========================================================*/
     friend inline std::ostream &operator<<(std::ostream &os, LBMUnitConverter c)
@@ -212,11 +201,6 @@ protected:
     double factorMassLbToW{ 1.0 };
     double refRhoLb{ 1.0 };
     double factorTimeWithoutDx{ 0.0 };
-
-    double factorVelocityLbToW{ 1.0 };
-    double factorViscosityLbToW{ 1.0 };
-    double factorDensityLbToW{ 1.0 };
-    double factorPressureLbToW{ 1.0 };
 };
 
 #endif // LBMUNITCONVERTER_H

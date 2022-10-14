@@ -29,6 +29,8 @@ SET(USE_CATALYST OFF CACHE BOOL "include Paraview Catalyst support")
 SET(USE_HLRN_LUSTRE OFF CACHE BOOL "include HLRN Lustre support")
 SET(USE_DEM_COUPLING OFF CACHE BOOL "PE plugin")
 
+SET(USE_LIGGGHTS ON CACHE BOOL "include LIGGGHTS library support")
+
 #MPI
 IF((NOT ${CMAKE_CXX_COMPILER} MATCHES mpicxx) AND (NOT ${CMAKE_CXX_COMPILER} MATCHES mpiicpc))# OR NOT ${CMAKE_CXX_COMPILER} MATCHES cc OR NOT ${CMAKE_CXX_COMPILER} MATCHES mpiCC)
     FIND_PACKAGE(MPI REQUIRED)
@@ -83,6 +85,10 @@ if(BUILD_VF_PYTHON_BINDINGS)
     add_subdirectory(${VF_THIRD_DIR}/pybind11/pybind11-2.6.0)
     add_subdirectory(src/cpu/simulationconfig)
     add_subdirectory(src/cpu/pythonbindings)
+endif()
+
+if(USE_LIGGGHTS)
+    add_subdirectory(src/cpu/LiggghtsCoupling)
 endif()
 
 set (APPS_ROOT_CPU "${VF_ROOT_DIR}/apps/cpu/")

@@ -27,6 +27,15 @@ SET(BOOST_LIBRARYDIR ${BOOST_ROOT}"/stageMSVC64/lib")
 set(VTK_DIR "d:/Tools/VTK/build/VTK-8.0.0")
 
 #################################################################################
+#  LIGGGHTS  
+#################################################################################
+set(LIGGGHTS_SOURCE_DIR "d:/Tools/LIGGGHTS/src")
+set(LIGGGHTS_DEBUG_LIBRARY "d:/Tools/LIGGGHTS/build/Debug/liggghts.lib")
+set(LIGGGHTS_RELEASE_LIBRARY "d:/Tools/LIGGGHTS/build/Release/liggghts.lib")
+
+
+
+#################################################################################
 #  METIS  
 #################################################################################
 #IF(${USE_METIS})
