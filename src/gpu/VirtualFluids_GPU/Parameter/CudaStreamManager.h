@@ -41,11 +41,9 @@ enum class CudaStreamIndex
         Precursor
     };
 class CudaStreamManager
-{
-public:
-    
+{   
 private:
-    std::map<CudaStreamIndex, cudaStream_t> cudaStreams;
+    std::multimap<CudaStreamIndex, cudaStream_t> cudaStreams;
     cudaEvent_t startBulkKernel = NULL;
     cudaStream_t legacyStream = CU_STREAM_LEGACY;
 
@@ -54,14 +52,15 @@ public:
     void registerStream(CudaStreamIndex streamIndex);
     void launchStreams();
     void terminateStreams();
-    cudaStream_t &getStream(CudaStreamIndex streamIndex);
+    cudaStream_t &getStream(CudaStreamIndex streamIndex, uint multiStreamIndex=0);
 
     bool streamIsRegistered(CudaStreamIndex streamIndex);
     // Events
     void createCudaEvents();
     void destroyCudaEvents();
-    void triggerStartBulkKernel(CudaStreamIndex streamIndex);
-    void waitOnStartBulkKernelEvent(CudaStreamIndex streamIndex);
+
+    void triggerStartBulkKernel(CudaStreamIndex streamIndex, uint multiStreamIndex=0);
+    void waitOnStartBulkKernelEvent(CudaStreamIndex streamIndex, uint multiStreamIndex=0);
 };
 
 #endif
