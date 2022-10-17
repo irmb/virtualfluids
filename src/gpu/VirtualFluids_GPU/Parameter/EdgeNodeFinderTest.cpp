@@ -70,13 +70,13 @@ TEST_F(EdgeNodeFinderTest_findEdgeNodes, shouldReturnCorrectVectorForXY)
 
     vf::gpu::findEdgeNodesCommMultiGPU(*para);
 
-    const std::vector<std::pair<int, int>> expectedEdgeNodesXtoYRecv = { (numRecvNeighbor, 0),
-                                                                         (numRecvNeighbor, 4),
-                                                                         (numRecvNeighbor, 5) };
+    const std::vector<std::pair<int, int>> expectedEdgeNodesXtoYRecv = { std::pair(numRecvNeighbor, 0),
+                                                                         std::pair(numRecvNeighbor, 4),
+                                                                         std::pair(numRecvNeighbor, 5) };
 
-    const std::vector<std::pair<int, int>> expectedEdgeNodesXtoYSend = { (numSendNeighbor, 1),
-                                                                         (numSendNeighbor, 6),
-                                                                         (numSendNeighbor, 4) };
+    const std::vector<std::pair<int, int>> expectedEdgeNodesXtoYSend = { std::pair(numSendNeighbor, 1),
+                                                                         std::pair(numSendNeighbor, 6),
+                                                                         std::pair(numSendNeighbor, 4) };
 
     EXPECT_THAT(para->parH[level]->edgeNodesXtoY.size(), testing::Eq(expectedEdgeNodesXtoYRecv.size()));
     EXPECT_TRUE(compareEdgeNodesRecv(para->parH[level]->edgeNodesXtoY, expectedEdgeNodesXtoYRecv))
@@ -107,12 +107,12 @@ TEST_F(EdgeNodeFinderTest_findEdgeNodes, shouldReturnCorrectVectorForXZ)
 
     vf::gpu::findEdgeNodesCommMultiGPU(*para);
 
-    const std::vector<std::pair<int, int>> expectedEdgeNodesXtoZRecv = { std::pair<int, int>(numRecvNeighbor, 1),
-                                                                         std::pair<int, int>(numRecvNeighbor, 4),
-                                                                         std::pair<int, int>(numRecvNeighbor, 6) };
-    const std::vector<std::pair<int, int>> expectedEdgeNodesXtoZSend = { std::pair<int, int>(numSendNeighbor, 0),
-                                                                         std::pair<int, int>(numSendNeighbor, 5),
-                                                                         std::pair<int, int>(numSendNeighbor, 4) };
+    const std::vector<std::pair<int, int>> expectedEdgeNodesXtoZRecv = { std::pair(numRecvNeighbor, 1),
+                                                                         std::pair(numRecvNeighbor, 4),
+                                                                         std::pair(numRecvNeighbor, 6) };
+    const std::vector<std::pair<int, int>> expectedEdgeNodesXtoZSend = { std::pair(numSendNeighbor, 0),
+                                                                         std::pair(numSendNeighbor, 5),
+                                                                         std::pair(numSendNeighbor, 4) };
 
     EXPECT_THAT(para->parH[level]->edgeNodesXtoZ.size(), testing::Eq(expectedEdgeNodesXtoZRecv.size()));
     EXPECT_TRUE(compareEdgeNodesRecv(para->parH[level]->edgeNodesXtoZ, expectedEdgeNodesXtoZRecv))
