@@ -33,6 +33,7 @@ public:
         this->deltaT = _deltaX/pow(2,this->level);
         this->deltaX = _deltaX/pow(2,this->level);
         this->invEpsilonSqrd = 1/(epsilon*epsilon);
+        this->invDeltaX = c1o1/this->deltaX;
     }
 
     virtual  ~ActuatorFarm()

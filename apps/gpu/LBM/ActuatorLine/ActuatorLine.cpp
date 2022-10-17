@@ -150,7 +150,7 @@ void multipleLevel(const std::string& configPath)
     para->setViscosityLB(viscosityLB);
     para->setVelocityRatio( dx / dt );
     para->setViscosityRatio( dx*dx/dt );
-    para->setMainKernel("CumulantK17CompChim");
+    para->setMainKernel("CumulantK17Almighty");
 
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)0.0;
@@ -190,31 +190,31 @@ void multipleLevel(const std::string& configPath)
     uint nBladeNodes = 32;
     real omega = 1.0f;
     // SPtr<ActuatorLine> actuator_line =SPtr<ActuatorLine>( new ActuatorLine(nBlades, density, nBladeNodes, epsilon, turbPos[0], turbPos[1], turbPos[2], reference_diameter, level, dt, dx) );
-    SPtr<ActuatorFarm> actuator_farm = std::make_shared<ActuatorFarm>(nBlades, density, nBladeNodes, epsilon, level, dt, dx, false);
-    std::vector<real> bladeRadii;
-    real dr = reference_diameter/nBladeNodes;
-    for(uint node=0; node<nBladeNodes; node++){bladeRadii.emplace_back(dr*(node+1));}
-    actuator_farm->addTurbine(turbPos[0], turbPos[1], turbPos[2], reference_diameter, omega, 0, 0, bladeRadii);
-    para->addActuator( actuator_farm );
+    // SPtr<ActuatorFarm> actuator_farm = std::make_shared<ActuatorFarm>(nBlades, density, nBladeNodes, epsilon, level, dt, dx, false);
+    // std::vector<real> bladeRadii;
+    // real dr = reference_diameter/nBladeNodes;
+    // for(uint node=0; node<nBladeNodes; node++){bladeRadii.emplace_back(dr*(node+1));}
+    // actuator_farm->addTurbine(turbPos[0], turbPos[1], turbPos[2], reference_diameter, omega, 0, 0, bladeRadii);
+    // para->addActuator( actuator_farm );
 
     SPtr<ActuatorLine> actuator_line = std::make_shared<ActuatorLine>(nBlades, density, nBladeNodes, epsilon, turbPos[0], turbPos[1], turbPos[2], reference_diameter, level, dt, dx, true);
     para->addActuator( actuator_line );
 
-    SPtr<PointProbe> pointProbe = std::make_shared<PointProbe>("pointProbe", para->getOutputPath(), 100, 1, 500, 100);
-    std::vector<real> probeCoordsX = {reference_diameter,2*reference_diameter,5*reference_diameter};
-    std::vector<real> probeCoordsY = {3*reference_diameter,3*reference_diameter,3*reference_diameter};
-    std::vector<real> probeCoordsZ = {3*reference_diameter,3*reference_diameter,3*reference_diameter};
-    pointProbe->addProbePointsFromList(probeCoordsX, probeCoordsY, probeCoordsZ);
-    // pointProbe->addProbePointsFromXNormalPlane(2*D, 0.0, 0.0, L_y, L_z, (uint)L_y/dx, (uint)L_z/dx);
+    // SPtr<PointProbe> pointProbe = std::make_shared<PointProbe>("pointProbe", para->getOutputPath(), 100, 1, 500, 100);
+    // std::vector<real> probeCoordsX = {reference_diameter,2*reference_diameter,5*reference_diameter};
+    // std::vector<real> probeCoordsY = {3*reference_diameter,3*reference_diameter,3*reference_diameter};
+    // std::vector<real> probeCoordsZ = {3*reference_diameter,3*reference_diameter,3*reference_diameter};
+    // pointProbe->addProbePointsFromList(probeCoordsX, probeCoordsY, probeCoordsZ);
+    // // pointProbe->addProbePointsFromXNormalPlane(2*D, 0.0, 0.0, L_y, L_z, (uint)L_y/dx, (uint)L_z/dx);
 
-    pointProbe->addStatistic(Statistic::Means);
-    pointProbe->addStatistic(Statistic::Variances);
-    para->addProbe( pointProbe );
+    // pointProbe->addStatistic(Statistic::Means);
+    // pointProbe->addStatistic(Statistic::Variances);
+    // para->addProbe( pointProbe );
 
-    SPtr<PlaneProbe> planeProbe = std::make_shared<PlaneProbe>("planeProbe", para->getOutputPath(), 100, 500, 100, 100);
-    planeProbe->setProbePlane(5*reference_diameter, 0, 0, dx, L_y, L_z);
-    planeProbe->addStatistic(Statistic::Means);
-    para->addProbe( planeProbe );
+    // SPtr<PlaneProbe> planeProbe = std::make_shared<PlaneProbe>("planeProbe", para->getOutputPath(), 100, 500, 100, 100);
+    // planeProbe->setProbePlane(5*reference_diameter, 0, 0, dx, L_y, L_z);
+    // planeProbe->addStatistic(Statistic::Means);
+    // para->addProbe( planeProbe );
 
 
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);

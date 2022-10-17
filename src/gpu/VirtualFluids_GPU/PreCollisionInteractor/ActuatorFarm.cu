@@ -184,39 +184,17 @@ __global__ void applyBodyForces(real* gridCoordsX, real* gridCoordsY, real* grid
             rotateFromGlobalToBlade(gridCoordX_BF, gridCoordY_BF, gridCoordZ_BF,
                                     gridCoordX_RF, gridCoordY_RF, gridCoordZ_RF,
                                     localAzimuth, yaw);
-
-            //Handle first and last node separately 
             
-            uint node = calcNode(0, numberOfBladeNodes, blade, numberOfBlades, turbine, numberOfTurbines);
-            uint nextNode = calcNode(1, numberOfBladeNodes, blade, numberOfBlades, turbine, numberOfTurbines);
+            uint node;
+            uint nextNode = calcNode(0, numberOfBladeNodes, blade, numberOfBlades, turbine, numberOfTurbines);;
 
             real last_z = c0o1;
             real current_z = c0o1;
-            real next_z = bladeCoordsZ[node];
+            real next_z = bladeCoordsZ[nextNode];
 
-            real x, y, dz;
+            real x, y, dz, eta, forceX_RF, forceY_RF, forceZ_RF;
 
-            x = bladeCoordsX[node];
-            y = bladeCoordsY[node];
-            last_z = current_z;
-            current_z = next_z;
-            next_z = bladeCoordsZ[nextNode];
-
-            dz = c1o2*(next_z+current_z);
-
-            real eta = dz*factorGaussian*exp(-distSqrd(x-gridCoordX_BF, y-gridCoordY_BF, current_z-gridCoordZ_BF)*invEpsilonSqrd);
-
-            real forceX_RF, forceY_RF, forceZ_RF;
-
-            rotateFromBladeToGlobal(bladeForcesX[node], bladeForcesY[node], bladeForcesZ[node], 
-                                    forceX_RF, forceY_RF, forceZ_RF, 
-                                    localAzimuth, yaw);
-            
-            gridForceX_RF += forceX_RF*eta;
-            gridForceY_RF += forceY_RF*eta;
-            gridForceZ_RF += forceZ_RF*eta;
-
-            for( uint bladeNode=1; bladeNode<numberOfBladeNodes-1; bladeNode++)
+            for( uint bladeNode=0; bladeNode<numberOfBladeNodes-1; bladeNode++)
             {
                 node = nextNode;
                 nextNode = calcNode(bladeNode+1, numberOfBladeNodes, blade, numberOfBlades, turbine, numberOfTurbines);
@@ -229,15 +207,17 @@ __global__ void applyBodyForces(real* gridCoordsX, real* gridCoordsY, real* grid
 
                 dz = c1o2*(next_z-last_z);
 
-
                 eta = dz*factorGaussian*exp(-distSqrd(x-gridCoordX_BF, y-gridCoordY_BF, current_z-gridCoordZ_BF)*invEpsilonSqrd);
                 rotateFromBladeToGlobal(bladeForcesX[node], bladeForcesY[node], bladeForcesZ[node], 
                                         forceX_RF, forceY_RF, forceZ_RF, 
                                         localAzimuth, yaw);
+
                 gridForceX_RF += forceX_RF*eta;
                 gridForceY_RF += forceY_RF*eta;
                 gridForceZ_RF += forceZ_RF*eta;
             }
+
+            //Handle last node separately
 
             node = nextNode;
 
@@ -246,7 +226,7 @@ __global__ void applyBodyForces(real* gridCoordsX, real* gridCoordsY, real* grid
             last_z = current_z;
             current_z = next_z;
 
-            dz = radius-c1o2*(current_z+last_z);
+            dz = c1o2*(radius-last_z);
 
             eta = dz*factorGaussian*exp(-distSqrd(x-gridCoordX_BF, y-gridCoordY_BF, current_z-gridCoordZ_BF)*invEpsilonSqrd);
 
@@ -257,11 +237,17 @@ __global__ void applyBodyForces(real* gridCoordsX, real* gridCoordsY, real* grid
             gridForceX_RF += forceX_RF*eta;
             gridForceY_RF += forceY_RF*eta;
             gridForceZ_RF += forceZ_RF*eta;
+
+            // if(eta>1e-4) printf("gridForcs %f % f% f",gridForceX_RF, gridForceY_RF, gridForceZ_RF );
         }
     }
-    gridForcesX[gridIndex] = gridForceX_RF;
-    gridForcesY[gridIndex] = gridForceY_RF;
-    gridForcesZ[gridIndex] = gridForceZ_RF;
+    // if(index==nIndices/2) printf("gridForcs %f % f% f",gridForceX_RF, gridForceY_RF, gridForceZ_RF );
+    // if(index==nIndices/4) printf("gridForcs %f % f% f",gridForceX_RF, gridForceY_RF, gridForceZ_RF );
+    // if(index==3*nIndices/4) printf("gridForcs %f % f% f",gridForceX_RF, gridForceY_RF, gridForceZ_RF );
+    // if(index==nIndices/2+10) printf("gridForcs %f % f% f",gridForceX_RF, gridForceY_RF, gridForceZ_RF );
+    gridForcesX[gridIndex] += gridForceX_RF;
+    gridForcesY[gridIndex] += gridForceY_RF;
+    gridForcesZ[gridIndex] += gridForceZ_RF;
 }
 
 void ActuatorFarm::addTurbine(real posX, real posY, real posZ, real diameter, real omega, real azimuth, real yaw, std::vector<real> bladeRadii)
@@ -420,8 +406,7 @@ void ActuatorFarm::initTurbineGeometries(CudaMemoryManager* cudaMemoryManager)
     std::copy(preInitYaws.begin(), preInitYaws.end(), this->yawsH);
 
     cudaMemoryManager->cudaCopyBladeOrientationsHtoD(this);
-    real dxOPiSqrtEps = pow(this->deltaX/(this->epsilon*sqrt(cPi)),c3o1);
-    this->factorGaussian = dxOPiSqrtEps/this->forceRatio;
+    this->factorGaussian = pow(this->epsilon*sqrt(cPi),-c3o1)/this->forceRatio;
 }
 
 void ActuatorFarm::initBladeCoords(CudaMemoryManager* cudaMemoryManager)
@@ -484,9 +469,9 @@ void ActuatorFarm::initBoundingSphere(Parameter* para, CudaMemoryManager* cudaMe
     {
         real sphereRadius = c1o2*this->diametersH[turbine]+c4o1*this->epsilon;
 
-        real posX = this->turbinePosXH[level];
-        real posY = this->turbinePosYH[level];
-        real posZ = this->turbinePosZH[level];
+        real posX = this->turbinePosXH[turbine];
+        real posY = this->turbinePosYH[turbine];
+        real posZ = this->turbinePosZH[turbine];
             
         real sphereRadiusSqrd = sphereRadius*sphereRadius;
 

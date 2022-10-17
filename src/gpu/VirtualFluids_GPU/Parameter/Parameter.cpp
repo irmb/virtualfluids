@@ -831,7 +831,7 @@ real Parameter::getLengthRatio()
 }
 real Parameter::getForceRatio()
 {
-    return this->getDensityRatio() * this->getVelocityRatio()/this->getTimeRatio();
+    return (this->getDensityRatio()+1.0) * this->getVelocityRatio()/this->getTimeRatio();
 }
 real Parameter::getScaledViscosityRatio(int level)
 {

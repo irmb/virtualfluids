@@ -315,8 +315,7 @@ void ActuatorLine::initBladeRadii(CudaMemoryManager* cudaMemoryManager)
     }
     cudaMemoryManager->cudaCopyBladeRadiiHtoD(this);
 
-    real dxOPiSqrtEps = pow(this->deltaX/(this->epsilon*sqrt(cPi)),c3o1);
-    this->factorGaussian = dr*dxOPiSqrtEps/this->forceRatio;
+    this->factorGaussian = dr*pow(this->epsilon*sqrt(cPi),-c3o1)/this->forceRatio;
 }
 
 void ActuatorLine::initBladeCoords(CudaMemoryManager* cudaMemoryManager)
