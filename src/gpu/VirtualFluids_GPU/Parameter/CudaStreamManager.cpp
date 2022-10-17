@@ -34,7 +34,7 @@
 #include <iostream>
 
 void CudaStreamManager::registerStream(CudaStreamIndex streamIndex)
-{
+{   
     if(streamIndex != CudaStreamIndex::Legacy)
         cudaStreams.emplace(streamIndex, nullptr);
 }
@@ -42,6 +42,10 @@ void CudaStreamManager::launchStreams()
 {
     for (auto &stream : cudaStreams)
         cudaStreamCreate(&stream.second);
+
+    std::cout << std::endl << "Stream bulk "<< (int)CudaStreamIndex::Bulk << " " << cudaStreams.find(CudaStreamIndex::Bulk)->second << std::endl 
+                            << "Stream border " << (int)CudaStreamIndex::Border << " "<< cudaStreams.find(CudaStreamIndex::Border)->second << std::endl << std::endl ;
+    
 }
 
 void CudaStreamManager::terminateStreams()

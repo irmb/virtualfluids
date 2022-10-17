@@ -545,7 +545,7 @@ void CudaMemoryManager::cudaCopyProcessNeighborXFsHD(int lev, unsigned int proce
 }
 void CudaMemoryManager::cudaCopyProcessNeighborXFsDH(int lev, unsigned int processNeighbor,
                                                      const unsigned int &memsizeFsSend)
-{
+{  
     if (parameter->getStreamManager()->streamIsRegistered(CudaStreamIndex::Border))
     	checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->sendProcessNeighborX[processNeighbor].f[0],
     								parameter->getParD(lev)->sendProcessNeighborX[processNeighbor].f[0],
