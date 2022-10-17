@@ -42,8 +42,8 @@ void CudaStreamManager::launchStreams()
 {
     for (auto &stream : cudaStreams)
         cudaStreamCreate(&stream.second);
-
-    std::cout << std::endl << "Stream bulk "<< (int)CudaStreamIndex::Bulk << " " << cudaStreams.find(CudaStreamIndex::Bulk)->second << std::endl 
+    std::cout << std::endl << "Stream default "<< (int)CudaStreamIndex::Legacy << " " << cudaStreams.find(CudaStreamIndex::Legacy)->second << std::endl 
+            << std::endl << "Stream bulk "<< (int)CudaStreamIndex::Bulk << " " << cudaStreams.find(CudaStreamIndex::Bulk)->second << std::endl 
                             << "Stream border " << (int)CudaStreamIndex::Border << " "<< cudaStreams.find(CudaStreamIndex::Border)->second << std::endl << std::endl ;
     
 }

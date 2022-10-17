@@ -16,7 +16,7 @@ void collectNodesInSendBufferGPU(Parameter *para, int level, CudaStreamIndex str
                                  unsigned int numberOfSendProcessNeighbors)
 {
     cudaStream_t stream = para->getStreamManager()->getStream(streamIndex);
-
+    
     for (unsigned int i = 0; i < numberOfSendProcessNeighbors; i++) {
         GetSendFsPostDev27(para->getParD(level)->distributions.f[0], 
                            (*sendProcessNeighbor)[i].f[0],

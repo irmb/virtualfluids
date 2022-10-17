@@ -41,7 +41,7 @@ void CumulantK17Almighty<turbulenceModel>::runOnIndices( const unsigned int *ind
 {
 	cudaStream_t stream = para->getStreamManager()->getStream(streamIndex);
 	
-	std::cout << std::endl << "Run On indices:  "<< (int)streamIndex << " " << stream << std::endl << std::endl ;
+	// std::cout << std::endl << "Run On indices:  "<< (int)streamIndex << " " << stream << std::endl << std::endl ;
 
 	switch (collisionTemplate)
 	{
