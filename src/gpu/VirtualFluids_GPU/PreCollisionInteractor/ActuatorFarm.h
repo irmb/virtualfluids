@@ -6,6 +6,7 @@
 
 class Parameter;
 class GridProvider;
+using namespace vf::lbm::constant;
 
 class ActuatorFarm : public PreCollisionInteractor
 {
