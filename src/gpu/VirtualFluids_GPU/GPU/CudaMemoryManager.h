@@ -19,6 +19,7 @@
 class Parameter;
 class PorousMedia;
 class ActuatorLine;
+class ActuatorFarm;
 class Probe;
 class VelocitySetter;
 class PrecursorWriter;
@@ -381,7 +382,40 @@ public:
     void cudaCopySphereIndicesHtoD(ActuatorLine* actuatorLine);
     void cudaFreeSphereIndices(ActuatorLine* actuatorLine);
 
-    //Probe
+    // ActuatorFarm
+    void cudaAllocBladeGeometries(ActuatorFarm* actuatorFarm);
+    void cudaCopyBladeGeometriesHtoD(ActuatorFarm* actuatorFarm);
+    void cudaCopyBladeGeometriesDtoH(ActuatorFarm* actuatorFarm);
+    void cudaFreeBladeGeometries(ActuatorFarm* actuatorFarm);
+
+    void cudaAllocBladeOrientations(ActuatorFarm* actuatorFarm);
+    void cudaCopyBladeOrientationsHtoD(ActuatorFarm* actuatorFarm);
+    void cudaCopyBladeOrientationsDtoH(ActuatorFarm* actuatorFarm);
+    void cudaFreeBladeOrientations(ActuatorFarm* actuatorFarm);
+
+    void cudaAllocBladeCoords(ActuatorFarm* actuatorFarm);
+    void cudaCopyBladeCoordsHtoD(ActuatorFarm* actuatorFarm);
+    void cudaCopyBladeCoordsDtoH(ActuatorFarm* actuatorFarm);
+    void cudaFreeBladeCoords(ActuatorFarm* actuatorFarm);
+
+    void cudaAllocBladeIndices(ActuatorFarm* actuatorFarm);
+    void cudaCopyBladeIndicesHtoD(ActuatorFarm* actuatorFarm);
+    void cudaFreeBladeIndices(ActuatorFarm* actuatorFarm);
+
+    void cudaAllocBladeVelocities(ActuatorFarm* actuatorFarm);
+    void cudaCopyBladeVelocitiesHtoD(ActuatorFarm* actuatorFarm);
+    void cudaCopyBladeVelocitiesDtoH(ActuatorFarm* actuatorFarm);
+    void cudaFreeBladeVelocities(ActuatorFarm* actuatorFarm);
+
+    void cudaAllocBladeForces(ActuatorFarm* actuatorFarm);
+    void cudaCopyBladeForcesHtoD(ActuatorFarm* actuatorFarm);
+    void cudaCopyBladeForcesDtoH(ActuatorFarm* actuatorFarm);
+    void cudaFreeBladeForces(ActuatorFarm* actuatorFarm);
+
+    void cudaAllocSphereIndices(ActuatorFarm* actuatorFarm);
+    void cudaCopySphereIndicesHtoD(ActuatorFarm* actuatorFarm);
+    void cudaFreeSphereIndices(ActuatorFarm* actuatorFarm);
+    // Probes
     void cudaAllocProbeDistances(Probe* probe, int level);
     void cudaCopyProbeDistancesHtoD(Probe* probe, int level);
     void cudaCopyProbeDistancesDtoH(Probe* probe, int level);

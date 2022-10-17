@@ -12,7 +12,7 @@ install via python:
     set CMAKE Flags via -DBUILD_VF_GPU:BOOL=1
 or install via pip:
     pip install -e .
-    set CMAKE Flags via --configure-settings -DBUILD_VF_GPU=1
+    set CMAKE Flags via --config-settings -DBUILD_VF_GPU=1
 """
 
 init_py = inspect.cleandoc(

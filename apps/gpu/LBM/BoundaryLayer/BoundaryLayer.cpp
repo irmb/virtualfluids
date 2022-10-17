@@ -355,7 +355,6 @@ void multipleLevel(const std::string& configPath)
         if(para->getIsBodyForce())
             wallModelProbe->setEvaluatePressureGradient(true);
         para->addProbe( wallModelProbe );
-
     }
 
     SPtr<PlaneProbe> planeProbe1 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_1", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );

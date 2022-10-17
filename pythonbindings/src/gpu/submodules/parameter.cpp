@@ -46,6 +46,7 @@ namespace parameter
         .def("set_density_ratio", &Parameter::setDensityRatio)
         .def("set_devices", &Parameter::setDevices)
         .def("set_is_body_force", &Parameter::setIsBodyForce)
+        .def("set_use_streams", &Parameter::setUseStreams)
         .def("set_main_kernel", &Parameter::setMainKernel)
         .def("set_AD_kernel", &Parameter::setADKernel)
         .def("set_has_wall_monitor", &Parameter::setHasWallModelMonitor)
@@ -98,6 +99,7 @@ namespace parameter
                 }
             );
         })
+        .def("set_has_wall_model_monitor", &Parameter::setHasWallModelMonitor)
         .def("add_actuator", &Parameter::addActuator)
         .def("add_probe", &Parameter::addProbe)
         .def("get_output_path", &Parameter::getOutputPath)
@@ -110,7 +112,6 @@ namespace parameter
         .def("get_force_ratio", &Parameter::getForceRatio)
         .def("get_SGS_constant", &Parameter::getSGSConstant)
         .def("get_is_body_force", &Parameter::getIsBodyForce)
-        .def("set_has_wall_model_monitor", &Parameter::setHasWallModelMonitor)
         ;
 
     }

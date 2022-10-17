@@ -2199,20 +2199,17 @@ uint GridImp::getNumberOfFluidNodeIndicesAllFeatures() const {
     return (uint)this->fluidNodeIndicesAllFeatures.size(); 
 }
 
-void GridImp::getFluidNodeIndicesMacroVars(uint *fluidNodeIndicesMacroVars) const 
+void GridImp::getFluidNodeIndicesMacroVars(uint *_fluidNodeIndicesMacroVars) const 
 {
-    for (uint nodeNumber = 0; nodeNumber < (uint)this->fluidNodeIndicesMacroVars.size(); nodeNumber++)
-        fluidNodeIndicesMacroVars[nodeNumber] = this->fluidNodeIndicesMacroVars[nodeNumber];
+    std::copy(fluidNodeIndicesMacroVars.begin(), fluidNodeIndicesMacroVars.end(), _fluidNodeIndicesMacroVars);       
 }
-void GridImp::getFluidNodeIndicesApplyBodyForce(uint *fluidNodeIndicesApplyBodyForce) const 
+void GridImp::getFluidNodeIndicesApplyBodyForce(uint *_fluidNodeIndicesApplyBodyForce) const 
 {
-    for (uint nodeNumber = 0; nodeNumber < (uint)this->fluidNodeIndicesApplyBodyForce.size(); nodeNumber++)
-        fluidNodeIndicesApplyBodyForce[nodeNumber] = this->fluidNodeIndicesApplyBodyForce[nodeNumber];
+    std::copy(fluidNodeIndicesApplyBodyForce.begin(), fluidNodeIndicesApplyBodyForce.end(), _fluidNodeIndicesApplyBodyForce);
 }
-void GridImp::getFluidNodeIndicesAllFeatures(uint *fluidNodeIndicesAllFeatures) const 
+void GridImp::getFluidNodeIndicesAllFeatures(uint *_fluidNodeIndicesAllFeatures) const 
 {
-    for (uint nodeNumber = 0; nodeNumber < (uint)this->fluidNodeIndicesAllFeatures.size(); nodeNumber++)
-        fluidNodeIndicesAllFeatures[nodeNumber] = this->fluidNodeIndicesAllFeatures[nodeNumber];
+    std::copy(fluidNodeIndicesAllFeatures.begin(), fluidNodeIndicesAllFeatures.end(), _fluidNodeIndicesAllFeatures);
 }
 
 

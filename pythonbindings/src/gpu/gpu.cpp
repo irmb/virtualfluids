@@ -12,6 +12,8 @@
 #include "submodules/grid_generator.cpp"
 #include "submodules/turbulence_models.cpp"
 #include "submodules/velocity_setter.cpp"
+#include "submodules/actuator_farm.cpp"
+#include "submodules/grid_scaling_factory.cpp"
 
 namespace gpu
 {
@@ -24,6 +26,7 @@ namespace gpu
         parameter::makeModule(gpuModule);
         pre_collision_interactor::makeModule(gpuModule);
         actuator_line::makeModule(gpuModule);
+        actuator_farm::makeModule(gpuModule);
         boundary_conditions::makeModule(gpuModule);
         velocity_setter::makeModule(gpuModule);
         communicator::makeModule(gpuModule); 
@@ -33,6 +36,7 @@ namespace gpu
         grid_generator::makeModule(gpuModule);
         grid_provider::makeModule(gpuModule);
         turbulence_model::makeModule(gpuModule);
+        grid_scaling_factory::makeModule(gpuModule);
         return gpuModule;
     }
 }

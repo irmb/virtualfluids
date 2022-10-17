@@ -831,7 +831,7 @@ real Parameter::getLengthRatio()
 }
 real Parameter::getForceRatio()
 {
-    return this->getDensityRatio() * this->getVelocityRatio()/this->getTimeRatio();
+    return (this->getDensityRatio()+1.0) * this->getVelocityRatio()/this->getTimeRatio();
 }
 real Parameter::getScaledViscosityRatio(int level)
 {
@@ -2658,6 +2658,8 @@ void Parameter::setUseStreams(bool useStreams)
         if (this->getNumprocs() != 1) {
             this->useStreams = useStreams;
             return; 
+        } else {
+            std::cout << "Can't use streams with only one process!" << std::endl;
         }
     }
     this->useStreams = false;
