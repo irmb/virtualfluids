@@ -3,6 +3,7 @@
 
 #include "PreCollisionInteractor.h"
 #include "PointerDefinitions.h"
+#include "lbm/constants/NumericConstants.h"
 
 class Parameter;
 class GridProvider;
