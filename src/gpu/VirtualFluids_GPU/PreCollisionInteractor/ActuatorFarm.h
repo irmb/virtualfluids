@@ -3,6 +3,9 @@
 
 #include "PreCollisionInteractor.h"
 #include "PointerDefinitions.h"
+#include "lbm/constants/NumericConstants.h"
+
+using namespace vf::lbm::constant;
 
 class Parameter;
 class GridProvider;
