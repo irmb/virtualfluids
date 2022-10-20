@@ -56,6 +56,7 @@
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/WallModelProbe.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/PrecursorWriter.h"
 #include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
+#include "VirtualFluids_GPU/Factories/GridScalingFactory.h"
 #include "VirtualFluids_GPU/TurbulenceModels/TurbulenceModelFactory.h"
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
@@ -96,7 +97,7 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////^
     SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNummberOfProcess(), communicator.getPID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
-    
+    GridScalingFactory scalingFactory  = GridScalingFactory();
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
     const int  nProcs = communicator.getNummberOfProcess();
@@ -255,6 +256,7 @@ void multipleLevel(const std::string& configPath)
         gridBuilder->setNumberOfLayers(12, 8);
         gridBuilder->addGrid( new Cuboid( 0.0, 0.0, 0.0, L_x,  L_y,  0.3*L_z) , 1 );
         para->setMaxLevel(2);
+        scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleRhoSq);
     }
 
     if(nProcs > 1)
@@ -400,7 +402,7 @@ void multipleLevel(const std::string& configPath)
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
     auto gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
 
-    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory, tmFactory);
+    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory, tmFactory, &scalingFactory);
     sim.run();
 }
 
