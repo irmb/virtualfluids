@@ -205,7 +205,7 @@ void multipleLevel(const std::string& configPath)
     para->setDensityRatio( 1.0 );
 
     bool useStreams = (nProcs > 1 ? true: false);
-    // useStreams=true;
+    // useStreams=false;
     para->setUseStreams(useStreams);
     para->setMainKernel("CumulantK17Almighty");
     para->setIsBodyForce( config.getValue<bool>("bodyForce") );
@@ -251,10 +251,10 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->addCoarseGrid( xGridMin,  0.0,  0.0,
                                 xGridMax,  L_y,  L_z, dx);
-    if(false)
+    if(false)// Add refinement
     {
         gridBuilder->setNumberOfLayers(12, 8);
-        gridBuilder->addGrid( new Cuboid( 0.0, 0.0, 0.0, L_x,  L_y,  0.3*L_z) , 1 );
+        gridBuilder->addGrid( new Cuboid( 0.1*L_x, 0.2*L_y, 0.2*L_z, 0.8*L_x,  0.8*L_y,  0.3*L_z) , 1 );
         para->setMaxLevel(2);
         scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleRhoSq);
     }
@@ -263,7 +263,7 @@ void multipleLevel(const std::string& configPath)
     {
             gridBuilder->setSubDomainBox(
                         std::make_shared<BoundingBox>(xMin, xMax, yMin, yMax, zMin, zMax));        
-            gridBuilder->setPeriodicBoundaryCondition(false, true, false);
+            gridBuilder->setPeriodicBoundaryCondition(false, false, false);
     }
     else         
     { 
@@ -285,15 +285,15 @@ void multipleLevel(const std::string& configPath)
             gridBuilder->setCommunicationProcess(CommunicationDirections::MX, procID-1);
         }
 
-        if (isFirstSubDomain) {
-            gridBuilder->findCommunicationIndices(CommunicationDirections::MX, lbmOrGks);
-            gridBuilder->setCommunicationProcess(CommunicationDirections::MX, nProcs-1);
-        }
+        // if (isFirstSubDomain) {
+        //     gridBuilder->findCommunicationIndices(CommunicationDirections::MX, lbmOrGks);
+        //     gridBuilder->setCommunicationProcess(CommunicationDirections::MX, nProcs-1);
+        // }
 
-        if (isLastSubDomain) {
-            gridBuilder->findCommunicationIndices(CommunicationDirections::PX, lbmOrGks);
-            gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 0);
-        }
+        // if (isLastSubDomain) {
+        //     gridBuilder->findCommunicationIndices(CommunicationDirections::PX, lbmOrGks);
+        //     gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 0);
+        // }
     }
     uint samplingOffset = 2;
     
@@ -342,62 +342,62 @@ void multipleLevel(const std::string& configPath)
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    if(isFirstSubDomain || nProcs == 1)
-    {
-        SPtr<PlanarAverageProbe> planarAverageProbe = SPtr<PlanarAverageProbe>( new PlanarAverageProbe("planeProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt , tStartOutProbe/dt, tOutProbe/dt, 'z') );
-        planarAverageProbe->addAllAvailableStatistics();
-        planarAverageProbe->setFileNameToNOut();
-        para->addProbe( planarAverageProbe );
+    // if(isFirstSubDomain || nProcs == 1)
+    // {
+    //     SPtr<PlanarAverageProbe> planarAverageProbe = SPtr<PlanarAverageProbe>( new PlanarAverageProbe("planeProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt , tStartOutProbe/dt, tOutProbe/dt, 'z') );
+    //     planarAverageProbe->addAllAvailableStatistics();
+    //     planarAverageProbe->setFileNameToNOut();
+    //     para->addProbe( planarAverageProbe );
 
-        para->setHasWallModelMonitor(true);
-        SPtr<WallModelProbe> wallModelProbe = SPtr<WallModelProbe>( new WallModelProbe("wallModelProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt/4.0 , tStartOutProbe/dt, tOutProbe/dt) );
-        wallModelProbe->addAllAvailableStatistics();
-        wallModelProbe->setFileNameToNOut();
-        wallModelProbe->setForceOutputToStress(true);
-        if(para->getIsBodyForce())
-            wallModelProbe->setEvaluatePressureGradient(true);
-        para->addProbe( wallModelProbe );
-    }
+    //     para->setHasWallModelMonitor(true);
+    //     SPtr<WallModelProbe> wallModelProbe = SPtr<WallModelProbe>( new WallModelProbe("wallModelProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt/4.0 , tStartOutProbe/dt, tOutProbe/dt) );
+    //     wallModelProbe->addAllAvailableStatistics();
+    //     wallModelProbe->setFileNameToNOut();
+    //     wallModelProbe->setForceOutputToStress(true);
+    //     if(para->getIsBodyForce())
+    //         wallModelProbe->setEvaluatePressureGradient(true);
+    //     para->addProbe( wallModelProbe );
+    // }
 
-    SPtr<PlaneProbe> planeProbe1 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_1", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
-    planeProbe1->setProbePlane(100.0, 0.0, 0, dx, L_y, L_z);
-    planeProbe1->addAllAvailableStatistics();
-    para->addProbe( planeProbe1 );
+    // SPtr<PlaneProbe> planeProbe1 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_1", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
+    // planeProbe1->setProbePlane(100.0, 0.0, 0, dx, L_y, L_z);
+    // planeProbe1->addAllAvailableStatistics();
+    // para->addProbe( planeProbe1 );
 
-    if(readPrecursor)
-    {
-        SPtr<PlaneProbe> planeProbe2 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_2", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
-        planeProbe2->setProbePlane(1000.0, 0.0, 0, dx, L_y, L_z);
-        planeProbe2->addAllAvailableStatistics();
-        para->addProbe( planeProbe2 );
+    // if(readPrecursor)
+    // {
+    //     SPtr<PlaneProbe> planeProbe2 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_2", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
+    //     planeProbe2->setProbePlane(1000.0, 0.0, 0, dx, L_y, L_z);
+    //     planeProbe2->addAllAvailableStatistics();
+    //     para->addProbe( planeProbe2 );
 
-        SPtr<PlaneProbe> planeProbe3 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_3", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
-        planeProbe3->setProbePlane(1500.0, 0.0, 0, dx, L_y, L_z);
-        planeProbe3->addAllAvailableStatistics();
-        para->addProbe( planeProbe3 );
+    //     SPtr<PlaneProbe> planeProbe3 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_3", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
+    //     planeProbe3->setProbePlane(1500.0, 0.0, 0, dx, L_y, L_z);
+    //     planeProbe3->addAllAvailableStatistics();
+    //     para->addProbe( planeProbe3 );
 
-        SPtr<PlaneProbe> planeProbe4 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_4", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
-        planeProbe4->setProbePlane(2000.0, 0.0, 0, dx, L_y, L_z);
-        planeProbe4->addAllAvailableStatistics();
-        para->addProbe( planeProbe4 );
+    //     SPtr<PlaneProbe> planeProbe4 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_4", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
+    //     planeProbe4->setProbePlane(2000.0, 0.0, 0, dx, L_y, L_z);
+    //     planeProbe4->addAllAvailableStatistics();
+    //     para->addProbe( planeProbe4 );
 
-        SPtr<PlaneProbe> planeProbe5 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_5", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
-        planeProbe5->setProbePlane(2500.0, 0.0, 0, dx, L_y, L_z);
-        planeProbe5->addAllAvailableStatistics();
-        para->addProbe( planeProbe5 );
+    //     SPtr<PlaneProbe> planeProbe5 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_5", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
+    //     planeProbe5->setProbePlane(2500.0, 0.0, 0, dx, L_y, L_z);
+    //     planeProbe5->addAllAvailableStatistics();
+    //     para->addProbe( planeProbe5 );
 
-        SPtr<PlaneProbe> planeProbe6 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_6", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
-        planeProbe6->setProbePlane(0.0, L_y/2.0, 0, L_x, dx, L_z);
-        planeProbe6->addAllAvailableStatistics();
-        para->addProbe( planeProbe6 );
-    }
+    //     SPtr<PlaneProbe> planeProbe6 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_6", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
+    //     planeProbe6->setProbePlane(0.0, L_y/2.0, 0, L_x, dx, L_z);
+    //     planeProbe6->addAllAvailableStatistics();
+    //     para->addProbe( planeProbe6 );
+    // }
 
 
-    if(writePrecursor)
-    {
-        SPtr<PrecursorWriter> precursorWriter = std::make_shared<PrecursorWriter>("precursor", para->getOutputPath()+precursorDirectory, posXPrecursor, 0, L_y, 0, L_z, tStartPrecursor/dt, nTWritePrecursor, useDistributions? OutputVariable::Distributions: OutputVariable::Velocities);
-        para->addProbe(precursorWriter);
-    }
+    // if(writePrecursor)
+    // {
+    //     SPtr<PrecursorWriter> precursorWriter = std::make_shared<PrecursorWriter>("precursor", para->getOutputPath()+precursorDirectory, posXPrecursor, 0, L_y, 0, L_z, tStartPrecursor/dt, nTWritePrecursor, useDistributions? OutputVariable::Distributions: OutputVariable::Velocities);
+    //     para->addProbe(precursorWriter);
+    // }
 
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
     auto gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);

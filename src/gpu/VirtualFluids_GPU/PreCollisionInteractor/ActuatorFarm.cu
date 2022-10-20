@@ -273,7 +273,7 @@ void ActuatorFarm::init(Parameter* para, GridProvider* gridProvider, CudaMemoryM
     this->initBladeVelocities(cudaMemoryManager);
     this->initBladeForces(cudaMemoryManager);    
     this->initBoundingSphere(para, cudaMemoryManager);  
-    para->getStreamManager()->registerStream(CudaStreamIndex::ActuatorFarm);
+    this->streamIndex = 0;
 }
 
 
