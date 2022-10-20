@@ -40,7 +40,8 @@ enum class CudaStreamIndex
         Legacy,
         Bulk,
         Border,
-        Precursor
+        Precursor,
+        ActuatorFarm
     };
 class CudaStreamManager
 {   
