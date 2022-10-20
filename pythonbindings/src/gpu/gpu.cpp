@@ -1,5 +1,4 @@
 #include <pybind11/pybind11.h>
-#include "submodules/actuator_line.cpp"
 #include "submodules/pre_collision_interactor.cpp"
 #include "submodules/simulation.cpp"
 #include "submodules/parameter.cpp"
@@ -25,7 +24,6 @@ namespace gpu
         simulation::makeModule(gpuModule);
         parameter::makeModule(gpuModule);
         pre_collision_interactor::makeModule(gpuModule);
-        actuator_line::makeModule(gpuModule);
         actuator_farm::makeModule(gpuModule);
         boundary_conditions::makeModule(gpuModule);
         velocity_setter::makeModule(gpuModule);
