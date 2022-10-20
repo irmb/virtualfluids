@@ -46,7 +46,6 @@
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
-#include "VirtualFluids_GPU/PreCollisionInteractor/ActuatorLine.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/ActuatorFarm.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PointProbe.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlaneProbe.h"
@@ -189,16 +188,14 @@ void multipleLevel(const std::string& configPath)
     uint nBlades = 3;
     uint nBladeNodes = 32;
     real omega = 1.0f;
-    // SPtr<ActuatorLine> actuator_line =SPtr<ActuatorLine>( new ActuatorLine(nBlades, density, nBladeNodes, epsilon, turbPos[0], turbPos[1], turbPos[2], reference_diameter, level, dt, dx) );
-    // SPtr<ActuatorFarm> actuator_farm = std::make_shared<ActuatorFarm>(nBlades, density, nBladeNodes, epsilon, level, dt, dx, false);
-    // std::vector<real> bladeRadii;
-    // real dr = reference_diameter/nBladeNodes;
-    // for(uint node=0; node<nBladeNodes; node++){bladeRadii.emplace_back(dr*(node+1));}
-    // actuator_farm->addTurbine(turbPos[0], turbPos[1], turbPos[2], reference_diameter, omega, 0, 0, bladeRadii);
-    // para->addActuator( actuator_farm );
 
-    SPtr<ActuatorLine> actuator_line = std::make_shared<ActuatorLine>(nBlades, density, nBladeNodes, epsilon, turbPos[0], turbPos[1], turbPos[2], reference_diameter, level, dt, dx, true);
-    para->addActuator( actuator_line );
+    SPtr<ActuatorFarm> actuator_farm = std::make_shared<ActuatorFarm>(nBlades, density, nBladeNodes, epsilon, level, dt, dx, false);
+    std::vector<real> bladeRadii;
+    real dr = reference_diameter/nBladeNodes;
+    for(uint node=0; node<nBladeNodes; node++){bladeRadii.emplace_back(dr*(node+1));}
+    actuator_farm->addTurbine(turbPos[0], turbPos[1], turbPos[2], reference_diameter, omega, 0, 0, bladeRadii);
+    para->addActuator( actuator_farm );
+
 
     // SPtr<PointProbe> pointProbe = std::make_shared<PointProbe>("pointProbe", para->getOutputPath(), 100, 1, 500, 100);
     // std::vector<real> probeCoordsX = {reference_diameter,2*reference_diameter,5*reference_diameter};

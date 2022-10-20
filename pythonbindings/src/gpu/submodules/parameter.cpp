@@ -2,8 +2,12 @@
 #include <pybind11/functional.h>
 #include <pybind11/stl.h>
 #include <gpu/VirtualFluids_GPU/Parameter/Parameter.h>
+#include "lbm/constants/NumericConstants.h"
 #include <basics/config/ConfigurationFile.h>
 #include <gpu/VirtualFluids_GPU/PreCollisionInteractor/PreCollisionInteractor.h>
+
+
+using namespace vf::lbm::constant;
 
 namespace parameter
 {
