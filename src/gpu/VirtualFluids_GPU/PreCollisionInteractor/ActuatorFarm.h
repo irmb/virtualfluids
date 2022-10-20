@@ -100,27 +100,31 @@ public:
     real* getTurbineBladeForcesZ(uint turbine){ return &this->bladeForcesZH[turbine*numberOfBladeNodes*numberOfBlades]; };
 
     real* getAllBladeRadiiDevice(){ return this->bladeRadiiD; };
-    real* getAllBladeCoordsXDevice(){ return this->bladeCoordsXD; };
-    real* getAllBladeCoordsYDevice(){ return this->bladeCoordsYD; };
-    real* getAllBladeCoordsZDevice(){ return this->bladeCoordsZD; };
-    real* getAllBladeVelocitiesXDevice(){ return this->bladeVelocitiesXD; };
-    real* getAllBladeVelocitiesYDevice(){ return this->bladeVelocitiesYD; };
-    real* getAllBladeVelocitiesZDevice(){ return this->bladeVelocitiesZD; };
-    real* getAllBladeForcesXDevice(){ return this->bladeForcesXD; };
-    real* getAllBladeForcesYDevice(){ return this->bladeForcesYD; };
-    real* getAllBladeForcesZDevice(){ return this->bladeForcesZD; };
+    real* getAllBladeCoordsXDevice(){ return this->bladeCoordsXDNew; };
+    real* getAllBladeCoordsYDevice(){ return this->bladeCoordsYDNew; };
+    real* getAllBladeCoordsZDevice(){ return this->bladeCoordsZDNew; };
+    real* getAllBladeVelocitiesXDevice(){ return this->bladeVelocitiesXDNew; };
+    real* getAllBladeVelocitiesYDevice(){ return this->bladeVelocitiesYDNew; };
+    real* getAllBladeVelocitiesZDevice(){ return this->bladeVelocitiesZDNew; };
+    real* getAllBladeForcesXDevice(){ return this->bladeForcesXDNew; };
+    real* getAllBladeForcesYDevice(){ return this->bladeForcesYDNew; };
+    real* getAllBladeForcesZDevice(){ return this->bladeForcesZDNew; };
 
     real* getTurbineBladeRadiiDevice(uint turbine){ return &this->bladeRadiiD[turbine*numberOfBladeNodes]; };
-    real* getTurbineBladeCoordsXDevice(uint turbine){ return &this->bladeCoordsXD[turbine*numberOfBladeNodes*numberOfBlades]; };
-    real* getTurbineBladeCoordsYDevice(uint turbine){ return &this->bladeCoordsYD[turbine*numberOfBladeNodes*numberOfBlades]; };
-    real* getTurbineBladeCoordsZDevice(uint turbine){ return &this->bladeCoordsZD[turbine*numberOfBladeNodes*numberOfBlades]; };
-    real* getTurbineBladeVelocitiesXDevice(uint turbine){ return &this->bladeVelocitiesXD[turbine*numberOfBladeNodes*numberOfBlades]; };
-    real* getTurbineBladeVelocitiesYDevice(uint turbine){ return &this->bladeVelocitiesYD[turbine*numberOfBladeNodes*numberOfBlades]; };
-    real* getTurbineBladeVelocitiesZDevice(uint turbine){ return &this->bladeVelocitiesZD[turbine*numberOfBladeNodes*numberOfBlades]; };
-    real* getTurbineBladeForcesXDevice(uint turbine){ return &this->bladeForcesXD[turbine*numberOfBladeNodes*numberOfBlades]; };
-    real* getTurbineBladeForcesYDevice(uint turbine){ return &this->bladeForcesYD[turbine*numberOfBladeNodes*numberOfBlades]; };
-    real* getTurbineBladeForcesZDevice(uint turbine){ return &this->bladeForcesZD[turbine*numberOfBladeNodes*numberOfBlades]; };
+    real* getTurbineBladeCoordsXDevice(uint turbine){ return &this->bladeCoordsXDNew[turbine*numberOfBladeNodes*numberOfBlades]; };
+    real* getTurbineBladeCoordsYDevice(uint turbine){ return &this->bladeCoordsYDNew[turbine*numberOfBladeNodes*numberOfBlades]; };
+    real* getTurbineBladeCoordsZDevice(uint turbine){ return &this->bladeCoordsZDNew[turbine*numberOfBladeNodes*numberOfBlades]; };
+    real* getTurbineBladeVelocitiesXDevice(uint turbine){ return &this->bladeVelocitiesXDNew[turbine*numberOfBladeNodes*numberOfBlades]; };
+    real* getTurbineBladeVelocitiesYDevice(uint turbine){ return &this->bladeVelocitiesYDNew[turbine*numberOfBladeNodes*numberOfBlades]; };
+    real* getTurbineBladeVelocitiesZDevice(uint turbine){ return &this->bladeVelocitiesZDNew[turbine*numberOfBladeNodes*numberOfBlades]; };
+    real* getTurbineBladeForcesXDevice(uint turbine){ return &this->bladeForcesXDNew[turbine*numberOfBladeNodes*numberOfBlades]; };
+    real* getTurbineBladeForcesYDevice(uint turbine){ return &this->bladeForcesYDNew[turbine*numberOfBladeNodes*numberOfBlades]; };
+    real* getTurbineBladeForcesZDevice(uint turbine){ return &this->bladeForcesZDNew[turbine*numberOfBladeNodes*numberOfBlades]; };
 
+    void setAllAzimuths(real* _azimuth);
+    void setAllOmegas(real* _omegas);
+    void setAllYaws(real* yaws);
+    
     void setTurbineAzimuth(uint turbine, real azimuth){ azimuthsH[turbine] = azimuth; };
     void setTurbineYaw(uint turbine, real yaw){ yawsH[turbine] = yaw; };
     void setTurbineOmega(uint turbine, real omega){ omegasH[turbine] = omega; };
@@ -150,18 +154,20 @@ private:
     void writeBladeForces(uint t);
     void writeBladeVelocities(uint t);
 
-
-    
+    void swapDeviceArrays();
 
 public:
     real* bladeRadiiH;
     real* bladeRadiiD;
     real* bladeCoordsXH, * bladeCoordsYH, * bladeCoordsZH;
-    real* bladeCoordsXD, * bladeCoordsYD, * bladeCoordsZD;
+    real* bladeCoordsXDNew, * bladeCoordsYDNew, * bladeCoordsZDNew;    
+    real* bladeCoordsXDOld, * bladeCoordsYDOld, * bladeCoordsZDOld;
     real* bladeVelocitiesXH, * bladeVelocitiesYH, * bladeVelocitiesZH;
-    real* bladeVelocitiesXD, * bladeVelocitiesYD, * bladeVelocitiesZD;
+    real* bladeVelocitiesXDOld, * bladeVelocitiesYDOld, * bladeVelocitiesZDOld;
+    real* bladeVelocitiesXDNew, * bladeVelocitiesYDNew, * bladeVelocitiesZDNew;
     real* bladeForcesXH, * bladeForcesYH, * bladeForcesZH;
-    real* bladeForcesXD, * bladeForcesYD, * bladeForcesZD;
+    real* bladeForcesXDOld, * bladeForcesYDOld, * bladeForcesZDOld;
+    real* bladeForcesXDNew, * bladeForcesYDNew, * bladeForcesZDNew;
     uint* bladeIndicesH;
     uint* bladeIndicesD; 
     uint* boundingSphereIndicesH;
@@ -182,6 +188,7 @@ private:
     uint numberOfIndices;
     uint numberOfNodes;
     real forceRatio, factorGaussian, invEpsilonSqrd, invDeltaX;
+    int streamIndex;
 };
 
 #endif

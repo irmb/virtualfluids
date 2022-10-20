@@ -109,14 +109,6 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
         para->setStartTurn((unsigned int)0); // 100000
 
     restart_object = std::make_shared<ASCIIRestartObject>();
-    //////////////////////////////////////////////////////////////////////////
-    // CUDA streams
-    if (para->getUseStreams()) {
-        para->getStreamManager()->registerStream(CudaStreamIndex::Border);
-        para->getStreamManager()->registerStream(CudaStreamIndex::Bulk);
-        para->getStreamManager()->launchStreams();
-        para->getStreamManager()->createCudaEvents();
-    }
 
     //////////////////////////////////////////////////////////////////////////
     VF_LOG_INFO("LB_Modell:       D3Q{}", para->getD3Qxx());
@@ -143,6 +135,14 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
         probe->getTaggedFluidNodes( para.get(), &gridProvider );
     }
 
+    //////////////////////////////////////////////////////////////////////////
+    // CUDA streams
+    if (para->getUseStreams()) {
+        para->getStreamManager()->registerStream(CudaStreamIndex::Border);
+        para->getStreamManager()->registerStream(CudaStreamIndex::Bulk);
+        para->getStreamManager()->launchStreams();
+        para->getStreamManager()->createCudaEvents();
+    }
     //////////////////////////////////////////////////////////////////////////
     if (para->getKernelNeedsFluidNodeIndicesToRun())
     {
