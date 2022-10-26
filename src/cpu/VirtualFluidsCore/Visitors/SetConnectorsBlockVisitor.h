@@ -38,7 +38,7 @@
 
 #include "Block3DVisitor.h"
 #include "D3Q27System.h"
-#include "Grid3DSystem.h"
+#include "D3Q27System.h"
 #include "Grid3D.h"
 #include "CreateTransmittersHelper.h"
 #include <mpi/Communicator.h>
@@ -75,7 +75,7 @@ protected:
 
 template <class T1, class T2>
 SetConnectorsBlockVisitor<T1, T2>::SetConnectorsBlockVisitor(std::shared_ptr<vf::mpi::Communicator> comm)
-    : Block3DVisitor(0, Grid3DSystem::MAXLEVEL), comm(comm)
+    : Block3DVisitor(0, D3Q27System::MAXLEVEL), comm(comm)
 {
 }
 //////////////////////////////////////////////////////////////////////////
@@ -114,7 +114,7 @@ void SetConnectorsBlockVisitor<T1, T2>::setSameLevelConnectors(SPtr<Grid3D> grid
         int ix3   = block->getX3();
         int level = block->getLevel();
 
-        for (int dir = 0; dir < D3Q27System::ENDDIR; dir++) {
+        for (int dir = D3Q27System::STARTDIR; dir < D3Q27System::ENDDIR; dir++) {
             SPtr<Block3D> neighBlock = grid->getNeighborBlock(dir, ix1, ix2, ix3, level);
 
             if (neighBlock) {

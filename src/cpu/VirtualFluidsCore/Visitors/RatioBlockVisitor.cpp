@@ -1,10 +1,10 @@
 #include "RatioBlockVisitor.h"
 #include "Block3D.h"
 #include "Grid3D.h"
-#include "Grid3DSystem.h"
+#include "D3Q27System.h"
 
 RatioBlockVisitor::RatioBlockVisitor(int levelDepth, bool includeNotActiveBlocks)
-    : Block3DVisitor(0, Grid3DSystem::MAXLEVEL), maxLevelRatio(1), expandBlocks(true), levelDepth(levelDepth),
+    : Block3DVisitor(0, D3Q27System::MAXLEVEL), maxLevelRatio(1), expandBlocks(true), levelDepth(levelDepth),
       includeNotActiveBlocks(includeNotActiveBlocks)
 {
 }

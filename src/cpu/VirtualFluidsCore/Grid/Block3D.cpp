@@ -34,7 +34,7 @@
 #include "Block3D.h"
 
 #include "Block3DConnector.h"
-#include "Grid3DSystem.h"
+#include "D3Q27System.h"
 #include "LBMKernel.h"
 
 int Block3D::counter = 0;
@@ -335,13 +335,13 @@ std::string Block3D::toString()
     for (std::size_t i = 0; i < connectors.size(); i++)
         if (connectors[i]) {
             if (connectors[i]->isLocalConnector())
-                ss << "l." << Grid3DSystem::getDirectionString(connectors[i]->getSendDir()) << ", ";
+                ss << "l." << D3Q27System::getDirectionString(connectors[i]->getSendDir()) << ", ";
             if (connectors[i]->isRemoteConnector())
-                ss << "r." << Grid3DSystem::getDirectionString(connectors[i]->getSendDir()) << ", ";
+                ss << "r." << D3Q27System::getDirectionString(connectors[i]->getSendDir()) << ", ";
             if (connectors[i]->isInterpolationConnectorCF())
-                ss << "cf." << Grid3DSystem::getDirectionString(connectors[i]->getSendDir()) << ", ";
+                ss << "cf." << D3Q27System::getDirectionString(connectors[i]->getSendDir()) << ", ";
             if (connectors[i]->isInterpolationConnectorFC())
-                ss << "fc." << Grid3DSystem::getDirectionString(connectors[i]->getSendDir()) << ", ";
+                ss << "fc." << D3Q27System::getDirectionString(connectors[i]->getSendDir()) << ", ";
         }
     return ss.str();
 }

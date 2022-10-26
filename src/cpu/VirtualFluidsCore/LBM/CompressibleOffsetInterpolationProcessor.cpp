@@ -66,11 +66,11 @@ void CompressibleOffsetInterpolationProcessor::calcMoments(const LBMReal* const 
    
    press = drho; //interpolate rho!
 
-   kxy   = -3.*omega*((((f[TSW]+f[BNE])-(f[TNW]+f[BSE]))+((f[BSW]+f[TNE])-(f[BNW]+f[TSE])))+((f[SW]+f[NE])-(f[NW]+f[SE]))/(one + drho)-(vx1*vx2));// might not be optimal MG 25.2.13
-   kyz   = -3.*omega*((((f[BSW]+f[TNE])-(f[TSE]+f[BNW]))+((f[BSE]+f[TNW])-(f[TSW]+f[BNE])))+((f[BS]+f[TN])-(f[TS]+f[BN]))/(one + drho)-(vx2*vx3));
-   kxz   = -3.*omega*((((f[BNW]+f[TSE])-(f[TSW]+f[BNE]))+((f[BSW]+f[TNE])-(f[BSE]+f[TNW])))+((f[BW]+f[TE])-(f[TW]+f[BE]))/(one + drho)-(vx1*vx3));
-   kxxMyy = -3./2.*omega*((((f[BW]+f[TE])-(f[BS]+f[TN]))+((f[TW]+f[BE])-(f[TS]+f[BN])))+((f[W]+f[E])-(f[S]+f[N]))/(one + drho)-(vx1*vx1-vx2*vx2));
-   kxxMzz = -3./2.*omega*((((f[NW]+f[SE])-(f[BS]+f[TN]))+((f[SW]+f[NE])-(f[TS]+f[BN])))+((f[W]+f[E])-(f[B]+f[T]))/(one + drho)-(vx1*vx1-vx3*vx3));
+   kxy   = -3.*omega*((((f[DIR_MMP]+f[DIR_PPM])-(f[DIR_MPP]+f[DIR_PMM]))+((f[DIR_MMM]+f[DIR_PPP])-(f[DIR_MPM]+f[DIR_PMP])))+((f[DIR_MM0]+f[DIR_PP0])-(f[DIR_MP0]+f[DIR_PM0]))/(one + drho)-(vx1*vx2));// might not be optimal MG 25.2.13
+   kyz   = -3.*omega*((((f[DIR_MMM]+f[DIR_PPP])-(f[DIR_PMP]+f[DIR_MPM]))+((f[DIR_PMM]+f[DIR_MPP])-(f[DIR_MMP]+f[DIR_PPM])))+((f[DIR_0MM]+f[DIR_0PP])-(f[DIR_0MP]+f[DIR_0PM]))/(one + drho)-(vx2*vx3));
+   kxz   = -3.*omega*((((f[DIR_MPM]+f[DIR_PMP])-(f[DIR_MMP]+f[DIR_PPM]))+((f[DIR_MMM]+f[DIR_PPP])-(f[DIR_PMM]+f[DIR_MPP])))+((f[DIR_M0M]+f[DIR_P0P])-(f[DIR_M0P]+f[DIR_P0M]))/(one + drho)-(vx1*vx3));
+   kxxMyy = -3./2.*omega*((((f[DIR_M0M]+f[DIR_P0P])-(f[DIR_0MM]+f[DIR_0PP]))+((f[DIR_M0P]+f[DIR_P0M])-(f[DIR_0MP]+f[DIR_0PM])))+((f[DIR_M00]+f[DIR_P00])-(f[DIR_0M0]+f[DIR_0P0]))/(one + drho)-(vx1*vx1-vx2*vx2));
+   kxxMzz = -3./2.*omega*((((f[DIR_MP0]+f[DIR_PM0])-(f[DIR_0MM]+f[DIR_0PP]))+((f[DIR_MM0]+f[DIR_PP0])-(f[DIR_0MP]+f[DIR_0PM])))+((f[DIR_M00]+f[DIR_P00])-(f[DIR_00M]+f[DIR_00P]))/(one + drho)-(vx1*vx1-vx3*vx3));
 }
 //////////////////////////////////////////////////////////////////////////
 void CompressibleOffsetInterpolationProcessor::calcInterpolatedCoefficiets(const D3Q27ICell& icell, LBMReal omega, LBMReal eps_new)
@@ -471,33 +471,33 @@ void CompressibleOffsetInterpolationProcessor::calcInterpolatedNodeCF(LBMReal* f
    LBMReal feq[ENDF+1];
    D3Q27System::calcCompFeq(feq,rho,vx1,vx2,vx3);
 
-   f[E]    = f_E    + xs*x_E    + ys*y_E    + zs*z_E    + xs*ys*xy_E    + xs*zs*xz_E    + ys*zs*yz_E    + feq[E];
-   f[W]    = f_E    + xs*x_E    + ys*y_E    + zs*z_E    + xs*ys*xy_E    + xs*zs*xz_E    + ys*zs*yz_E    + feq[W];
-   f[N]    = f_N    + xs*x_N    + ys*y_N    + zs*z_N    + xs*ys*xy_N    + xs*zs*xz_N    + ys*zs*yz_N    + feq[N];
-   f[S]    = f_N    + xs*x_N    + ys*y_N    + zs*z_N    + xs*ys*xy_N    + xs*zs*xz_N    + ys*zs*yz_N    + feq[S];
-   f[T]    = f_T    + xs*x_T    + ys*y_T    + zs*z_T    + xs*ys*xy_T    + xs*zs*xz_T    + ys*zs*yz_T    + feq[T];
-   f[B]    = f_T    + xs*x_T    + ys*y_T    + zs*z_T    + xs*ys*xy_T    + xs*zs*xz_T    + ys*zs*yz_T    + feq[B];
-   f[NE]   = f_NE   + xs*x_NE   + ys*y_NE   + zs*z_NE   + xs*ys*xy_NE   + xs*zs*xz_NE   + ys*zs*yz_NE   + feq[NE];
-   f[SW]   = f_NE   + xs*x_NE   + ys*y_NE   + zs*z_NE   + xs*ys*xy_NE   + xs*zs*xz_NE   + ys*zs*yz_NE   + feq[SW];
-   f[SE]   = f_SE   + xs*x_SE   + ys*y_SE   + zs*z_SE   + xs*ys*xy_SE   + xs*zs*xz_SE   + ys*zs*yz_SE   + feq[SE];
-   f[NW]   = f_SE   + xs*x_SE   + ys*y_SE   + zs*z_SE   + xs*ys*xy_SE   + xs*zs*xz_SE   + ys*zs*yz_SE   + feq[NW];
-   f[TE]   = f_TE   + xs*x_TE   + ys*y_TE   + zs*z_TE   + xs*ys*xy_TE   + xs*zs*xz_TE   + ys*zs*yz_TE   + feq[TE];
-   f[BW]   = f_TE   + xs*x_TE   + ys*y_TE   + zs*z_TE   + xs*ys*xy_TE   + xs*zs*xz_TE   + ys*zs*yz_TE   + feq[BW];
-   f[BE]   = f_BE   + xs*x_BE   + ys*y_BE   + zs*z_BE   + xs*ys*xy_BE   + xs*zs*xz_BE   + ys*zs*yz_BE   + feq[BE];
-   f[TW]   = f_BE   + xs*x_BE   + ys*y_BE   + zs*z_BE   + xs*ys*xy_BE   + xs*zs*xz_BE   + ys*zs*yz_BE   + feq[TW];
-   f[TN]   = f_TN   + xs*x_TN   + ys*y_TN   + zs*z_TN   + xs*ys*xy_TN   + xs*zs*xz_TN   + ys*zs*yz_TN   + feq[TN];
-   f[BS]   = f_TN   + xs*x_TN   + ys*y_TN   + zs*z_TN   + xs*ys*xy_TN   + xs*zs*xz_TN   + ys*zs*yz_TN   + feq[BS];
-   f[BN]   = f_BN   + xs*x_BN   + ys*y_BN   + zs*z_BN   + xs*ys*xy_BN   + xs*zs*xz_BN   + ys*zs*yz_BN   + feq[BN];
-   f[TS]   = f_BN   + xs*x_BN   + ys*y_BN   + zs*z_BN   + xs*ys*xy_BN   + xs*zs*xz_BN   + ys*zs*yz_BN   + feq[TS];
-   f[TNE]  = f_TNE  + xs*x_TNE  + ys*y_TNE  + zs*z_TNE  + xs*ys*xy_TNE  + xs*zs*xz_TNE  + ys*zs*yz_TNE  + feq[TNE];
-   f[TSW]  = f_TSW  + xs*x_TSW  + ys*y_TSW  + zs*z_TSW  + xs*ys*xy_TSW  + xs*zs*xz_TSW  + ys*zs*yz_TSW  + feq[TSW];
-   f[TSE]  = f_TSE  + xs*x_TSE  + ys*y_TSE  + zs*z_TSE  + xs*ys*xy_TSE  + xs*zs*xz_TSE  + ys*zs*yz_TSE  + feq[TSE];
-   f[TNW]  = f_TNW  + xs*x_TNW  + ys*y_TNW  + zs*z_TNW  + xs*ys*xy_TNW  + xs*zs*xz_TNW  + ys*zs*yz_TNW  + feq[TNW];
-   f[BNE]  = f_TSW  + xs*x_TSW  + ys*y_TSW  + zs*z_TSW  + xs*ys*xy_TSW  + xs*zs*xz_TSW  + ys*zs*yz_TSW  + feq[BNE];
-   f[BSW]  = f_TNE  + xs*x_TNE  + ys*y_TNE  + zs*z_TNE  + xs*ys*xy_TNE  + xs*zs*xz_TNE  + ys*zs*yz_TNE  + feq[BSW];
-   f[BSE]  = f_TNW  + xs*x_TNW  + ys*y_TNW  + zs*z_TNW  + xs*ys*xy_TNW  + xs*zs*xz_TNW  + ys*zs*yz_TNW  + feq[BSE];
-   f[BNW]  = f_TSE  + xs*x_TSE  + ys*y_TSE  + zs*z_TSE  + xs*ys*xy_TSE  + xs*zs*xz_TSE  + ys*zs*yz_TSE  + feq[BNW];
-   f[REST] = f_ZERO + xs*x_ZERO + ys*y_ZERO + zs*z_ZERO                                                 + feq[REST];
+   f[DIR_P00]    = f_E    + xs*x_E    + ys*y_E    + zs*z_E    + xs*ys*xy_E    + xs*zs*xz_E    + ys*zs*yz_E    + feq[DIR_P00];
+   f[DIR_M00]    = f_E    + xs*x_E    + ys*y_E    + zs*z_E    + xs*ys*xy_E    + xs*zs*xz_E    + ys*zs*yz_E    + feq[DIR_M00];
+   f[DIR_0P0]    = f_N    + xs*x_N    + ys*y_N    + zs*z_N    + xs*ys*xy_N    + xs*zs*xz_N    + ys*zs*yz_N    + feq[DIR_0P0];
+   f[DIR_0M0]    = f_N    + xs*x_N    + ys*y_N    + zs*z_N    + xs*ys*xy_N    + xs*zs*xz_N    + ys*zs*yz_N    + feq[DIR_0M0];
+   f[DIR_00P]    = f_T    + xs*x_T    + ys*y_T    + zs*z_T    + xs*ys*xy_T    + xs*zs*xz_T    + ys*zs*yz_T    + feq[DIR_00P];
+   f[DIR_00M]    = f_T    + xs*x_T    + ys*y_T    + zs*z_T    + xs*ys*xy_T    + xs*zs*xz_T    + ys*zs*yz_T    + feq[DIR_00M];
+   f[DIR_PP0]   = f_NE   + xs*x_NE   + ys*y_NE   + zs*z_NE   + xs*ys*xy_NE   + xs*zs*xz_NE   + ys*zs*yz_NE   + feq[DIR_PP0];
+   f[DIR_MM0]   = f_NE   + xs*x_NE   + ys*y_NE   + zs*z_NE   + xs*ys*xy_NE   + xs*zs*xz_NE   + ys*zs*yz_NE   + feq[DIR_MM0];
+   f[DIR_PM0]   = f_SE   + xs*x_SE   + ys*y_SE   + zs*z_SE   + xs*ys*xy_SE   + xs*zs*xz_SE   + ys*zs*yz_SE   + feq[DIR_PM0];
+   f[DIR_MP0]   = f_SE   + xs*x_SE   + ys*y_SE   + zs*z_SE   + xs*ys*xy_SE   + xs*zs*xz_SE   + ys*zs*yz_SE   + feq[DIR_MP0];
+   f[DIR_P0P]   = f_TE   + xs*x_TE   + ys*y_TE   + zs*z_TE   + xs*ys*xy_TE   + xs*zs*xz_TE   + ys*zs*yz_TE   + feq[DIR_P0P];
+   f[DIR_M0M]   = f_TE   + xs*x_TE   + ys*y_TE   + zs*z_TE   + xs*ys*xy_TE   + xs*zs*xz_TE   + ys*zs*yz_TE   + feq[DIR_M0M];
+   f[DIR_P0M]   = f_BE   + xs*x_BE   + ys*y_BE   + zs*z_BE   + xs*ys*xy_BE   + xs*zs*xz_BE   + ys*zs*yz_BE   + feq[DIR_P0M];
+   f[DIR_M0P]   = f_BE   + xs*x_BE   + ys*y_BE   + zs*z_BE   + xs*ys*xy_BE   + xs*zs*xz_BE   + ys*zs*yz_BE   + feq[DIR_M0P];
+   f[DIR_0PP]   = f_TN   + xs*x_TN   + ys*y_TN   + zs*z_TN   + xs*ys*xy_TN   + xs*zs*xz_TN   + ys*zs*yz_TN   + feq[DIR_0PP];
+   f[DIR_0MM]   = f_TN   + xs*x_TN   + ys*y_TN   + zs*z_TN   + xs*ys*xy_TN   + xs*zs*xz_TN   + ys*zs*yz_TN   + feq[DIR_0MM];
+   f[DIR_0PM]   = f_BN   + xs*x_BN   + ys*y_BN   + zs*z_BN   + xs*ys*xy_BN   + xs*zs*xz_BN   + ys*zs*yz_BN   + feq[DIR_0PM];
+   f[DIR_0MP]   = f_BN   + xs*x_BN   + ys*y_BN   + zs*z_BN   + xs*ys*xy_BN   + xs*zs*xz_BN   + ys*zs*yz_BN   + feq[DIR_0MP];
+   f[DIR_PPP]  = f_TNE  + xs*x_TNE  + ys*y_TNE  + zs*z_TNE  + xs*ys*xy_TNE  + xs*zs*xz_TNE  + ys*zs*yz_TNE  + feq[DIR_PPP];
+   f[DIR_MMP]  = f_TSW  + xs*x_TSW  + ys*y_TSW  + zs*z_TSW  + xs*ys*xy_TSW  + xs*zs*xz_TSW  + ys*zs*yz_TSW  + feq[DIR_MMP];
+   f[DIR_PMP]  = f_TSE  + xs*x_TSE  + ys*y_TSE  + zs*z_TSE  + xs*ys*xy_TSE  + xs*zs*xz_TSE  + ys*zs*yz_TSE  + feq[DIR_PMP];
+   f[DIR_MPP]  = f_TNW  + xs*x_TNW  + ys*y_TNW  + zs*z_TNW  + xs*ys*xy_TNW  + xs*zs*xz_TNW  + ys*zs*yz_TNW  + feq[DIR_MPP];
+   f[DIR_PPM]  = f_TSW  + xs*x_TSW  + ys*y_TSW  + zs*z_TSW  + xs*ys*xy_TSW  + xs*zs*xz_TSW  + ys*zs*yz_TSW  + feq[DIR_PPM];
+   f[DIR_MMM]  = f_TNE  + xs*x_TNE  + ys*y_TNE  + zs*z_TNE  + xs*ys*xy_TNE  + xs*zs*xz_TNE  + ys*zs*yz_TNE  + feq[DIR_MMM];
+   f[DIR_PMM]  = f_TNW  + xs*x_TNW  + ys*y_TNW  + zs*z_TNW  + xs*ys*xy_TNW  + xs*zs*xz_TNW  + ys*zs*yz_TNW  + feq[DIR_PMM];
+   f[DIR_MPM]  = f_TSE  + xs*x_TSE  + ys*y_TSE  + zs*z_TSE  + xs*ys*xy_TSE  + xs*zs*xz_TSE  + ys*zs*yz_TSE  + feq[DIR_MPM];
+   f[DIR_000] = f_ZERO + xs*x_ZERO + ys*y_ZERO + zs*z_ZERO                                                 + feq[DIR_000];
 }
 //////////////////////////////////////////////////////////////////////////
 //Position SWB -0.25, -0.25, -0.25
@@ -665,33 +665,33 @@ void CompressibleOffsetInterpolationProcessor::calcInterpolatedNodeFC(LBMReal* f
    f_TSE = eps_new*((ay - az + bx + bz - cx + cy+kxyAverage-kxzAverage+kyzAverage)/(72.*o));
    f_TNW = eps_new*((ay + az + bx - bz + cx - cy+kxyAverage+kxzAverage-kyzAverage)/(72.*o));
 
-   f[E]    = f_E    + feq[E];
-   f[W]    = f_E    + feq[W];
-   f[N]    = f_N    + feq[N];
-   f[S]    = f_N    + feq[S];
-   f[T]    = f_T    + feq[T];
-   f[B]    = f_T    + feq[B];
-   f[NE]   = f_NE   + feq[NE];
-   f[SW]   = f_NE   + feq[SW];
-   f[SE]   = f_SE   + feq[SE];
-   f[NW]   = f_SE   + feq[NW];
-   f[TE]   = f_TE   + feq[TE];
-   f[BW]   = f_TE   + feq[BW];
-   f[BE]   = f_BE   + feq[BE];
-   f[TW]   = f_BE   + feq[TW];
-   f[TN]   = f_TN   + feq[TN];
-   f[BS]   = f_TN   + feq[BS];
-   f[BN]   = f_BN   + feq[BN];
-   f[TS]   = f_BN   + feq[TS];
-   f[TNE]  = f_TNE  + feq[TNE];
-   f[TNW]  = f_TNW  + feq[TNW];
-   f[TSE]  = f_TSE  + feq[TSE];
-   f[TSW]  = f_TSW  + feq[TSW];
-   f[BNE]  = f_TSW  + feq[BNE];
-   f[BNW]  = f_TSE  + feq[BNW];
-   f[BSE]  = f_TNW  + feq[BSE];
-   f[BSW]  = f_TNE  + feq[BSW];
-   f[REST] = f_ZERO + feq[REST];
+   f[DIR_P00]    = f_E    + feq[DIR_P00];
+   f[DIR_M00]    = f_E    + feq[DIR_M00];
+   f[DIR_0P0]    = f_N    + feq[DIR_0P0];
+   f[DIR_0M0]    = f_N    + feq[DIR_0M0];
+   f[DIR_00P]    = f_T    + feq[DIR_00P];
+   f[DIR_00M]    = f_T    + feq[DIR_00M];
+   f[DIR_PP0]   = f_NE   + feq[DIR_PP0];
+   f[DIR_MM0]   = f_NE   + feq[DIR_MM0];
+   f[DIR_PM0]   = f_SE   + feq[DIR_PM0];
+   f[DIR_MP0]   = f_SE   + feq[DIR_MP0];
+   f[DIR_P0P]   = f_TE   + feq[DIR_P0P];
+   f[DIR_M0M]   = f_TE   + feq[DIR_M0M];
+   f[DIR_P0M]   = f_BE   + feq[DIR_P0M];
+   f[DIR_M0P]   = f_BE   + feq[DIR_M0P];
+   f[DIR_0PP]   = f_TN   + feq[DIR_0PP];
+   f[DIR_0MM]   = f_TN   + feq[DIR_0MM];
+   f[DIR_0PM]   = f_BN   + feq[DIR_0PM];
+   f[DIR_0MP]   = f_BN   + feq[DIR_0MP];
+   f[DIR_PPP]  = f_TNE  + feq[DIR_PPP];
+   f[DIR_MPP]  = f_TNW  + feq[DIR_MPP];
+   f[DIR_PMP]  = f_TSE  + feq[DIR_PMP];
+   f[DIR_MMP]  = f_TSW  + feq[DIR_MMP];
+   f[DIR_PPM]  = f_TSW  + feq[DIR_PPM];
+   f[DIR_MPM]  = f_TSE  + feq[DIR_MPM];
+   f[DIR_PMM]  = f_TNW  + feq[DIR_PMM];
+   f[DIR_MMM]  = f_TNE  + feq[DIR_MMM];
+   f[DIR_000] = f_ZERO + feq[DIR_000];
 }
 //////////////////////////////////////////////////////////////////////////
 void CompressibleOffsetInterpolationProcessor::calcInterpolatedVelocity(LBMReal x, LBMReal y, LBMReal z, LBMReal& vx1, LBMReal& vx2, LBMReal& vx3)

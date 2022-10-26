@@ -1,17 +1,17 @@
 #include "MultiphaseSetKernelBlockVisitor.h"
-#include "Grid3DSystem.h"
+#include "D3Q27System.h"
 #include "LBMSystem.h"
 #include "Block3D.h"
 #include "Grid3D.h"
 
 //SetKernelBlockVisitor::SetKernelBlockVisitor(LBMKernel3DPtr kernel, LBMReal nue) : 
-//                        Block3DVisitor(0, Grid3DSystem::MAXLEVEL), kernel(kernel), nue(nue)
+//                        Block3DVisitor(0, D3Q27System::MAXLEVEL), kernel(kernel), nue(nue)
 //{
 //
 //}
 //////////////////////////////////////////////////////////////////////////
 //SetKernelBlockVisitor::SetKernelBlockVisitor( LBMKernel3DPtr kernel, LBMReal nue, double availMem, double needMem ) : 
-//                                              Block3DVisitor(0, Grid3DSystem::MAXLEVEL), kernel(kernel), nue(nue)
+//                                              Block3DVisitor(0, D3Q27System::MAXLEVEL), kernel(kernel), nue(nue)
 //{
 //   if (needMem > availMem)
 //   {
@@ -20,7 +20,7 @@
 //}
 //////////////////////////////////////////////////////////////////////////
 MultiphaseSetKernelBlockVisitor::MultiphaseSetKernelBlockVisitor(SPtr<LBMKernel> kernel, LBMReal nuL, LBMReal nuG, double availMem, double needMem, MultiphaseSetKernelBlockVisitor::Action action /*= SetKernelBlockVisitor::New*/) :
-	Block3DVisitor(0, Grid3DSystem::MAXLEVEL), kernel(kernel), nuL(nuL), nuG(nuG), action(action), dataSetFlag(true)
+	Block3DVisitor(0, D3Q27System::MAXLEVEL), kernel(kernel), nuL(nuL), nuG(nuG), action(action), dataSetFlag(true)
 {
 	if (needMem > availMem)
 	{

@@ -1,12 +1,12 @@
 #include "RenumberBlockVisitor.h"
 #include "Block3D.h"
 #include "Grid3D.h"
-#include "Grid3DSystem.h"
+#include "D3Q27System.h"
 #include "LBMSystem.h"
 
 int RenumberBlockVisitor::counter = 0;
 
-RenumberBlockVisitor::RenumberBlockVisitor() : Block3DVisitor(0, Grid3DSystem::MAXLEVEL) {}
+RenumberBlockVisitor::RenumberBlockVisitor() : Block3DVisitor(0, D3Q27System::MAXLEVEL) {}
 //////////////////////////////////////////////////////////////////////////
 void RenumberBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 {
