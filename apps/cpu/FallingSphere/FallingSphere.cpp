@@ -56,13 +56,12 @@ int main(int argc, char *argv[])
     grid->setDeltaX(dx);
     grid->setBlockNX(blockNX[0], blockNX[1], blockNX[2]);
 
-    string outputPath = "d:/temp/FallingSpheres";
+    string outputPath = "d:/temp/FallingSpheres2";
 
     UbSystem::makeDirectory(outputPath);
     UbSystem::makeDirectory(outputPath + "/liggghts");
 
-    SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased,
-                                                                      D3Q27System::BSW, MetisPartitioner::RECURSIVE));
+    SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::DIR_MMM, MetisPartitioner::RECURSIVE));
     
     SPtr<GbObject3D> gridCube = make_shared <GbCuboid3D>(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3);
     if (myid == 0)
@@ -102,8 +101,8 @@ int main(int argc, char *argv[])
     grid->accept(initVisitor);
 
     SPtr<UbScheduler> lScheduler = make_shared<UbScheduler>(1);
-    string inFile1 = "d:/Projects/VirtualFluids_LIGGGHTS_coupling/apps/cpu/FallingSphere/in.lbdem";
-    string inFile2 = "d:/Projects/VirtualFluids_LIGGGHTS_coupling/apps/cpu/FallingSphere/in2.lbdem";
+    string inFile1 = "d:/Projects/VirtualFluids_Develop/apps/cpu/FallingSphere/in.lbdem";
+    string inFile2 = "d:/Projects/VirtualFluids_Develop/apps/cpu/FallingSphere/in2.lbdem";
     MPI_Comm mpi_comm = *(MPI_Comm*)(comm->getNativeCommunicator());
     LiggghtsCouplingWrapper wrapper(argv, mpi_comm);
 
@@ -124,17 +123,17 @@ int main(int argc, char *argv[])
     wrapper.execCommand("echo none");
 
     //wrapper.setVariable("d_part", d_part);
-    wrapper.setVariable("r_part", d_part/2.);
-    wrapper.setVariable("v_frac", v_frac);
+    //wrapper.setVariable("r_part", d_part/2.);
+    //wrapper.setVariable("v_frac", v_frac);
 
-    //wrapper.execFile((char*)inFile1.c_str());
-
+    wrapper.execFile((char*)inFile1.c_str());
+ 
     //// set timestep and output directory
     wrapper.setVariable("t_step", dt_dem);
     wrapper.setVariable("dmp_stp", vtkSteps * demSubsteps);
     wrapper.setVariable("dmp_dir", demOutDir);
 
-    wrapper.execFile((char *)inFile1.c_str());
+    wrapper.execFile((char *)inFile2.c_str());
     wrapper.runUpto(demSubsteps - 1);
   
     SPtr<LiggghtsCouplingCoProcessor> lcCoProcessor =

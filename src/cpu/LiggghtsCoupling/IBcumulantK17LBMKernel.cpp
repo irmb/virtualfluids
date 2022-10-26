@@ -223,66 +223,66 @@ void IBcumulantK17LBMKernel::calculate(int step)
                     LBMReal fEqSolid[D3Q27System::ENDF + 1];
                     LBMReal fPre[D3Q27System::ENDF + 1];
 
-                    f[D3Q27System::REST] = mfbbb;
+                    f[D3Q27System::DIR_000] = mfbbb;
 
-                    f[D3Q27System::E]   = mfcbb;
-                    f[D3Q27System::N]   = mfbcb;
-                    f[D3Q27System::T]   = mfbbc;
-                    f[D3Q27System::NE]  = mfccb;
-                    f[D3Q27System::NW]  = mfacb;
-                    f[D3Q27System::TE]  = mfcbc;
-                    f[D3Q27System::TW]  = mfabc;
-                    f[D3Q27System::TN]  = mfbcc;
-                    f[D3Q27System::TS]  = mfbac;
-                    f[D3Q27System::TNE] = mfccc;
-                    f[D3Q27System::TNW] = mfacc;
-                    f[D3Q27System::TSE] = mfcac;
-                    f[D3Q27System::TSW] = mfaac;
+                    f[D3Q27System::DIR_P00] = mfcbb;
+                    f[D3Q27System::DIR_0P0] = mfbcb;
+                    f[D3Q27System::DIR_00P] = mfbbc;
+                    f[D3Q27System::DIR_PP0] = mfccb;
+                    f[D3Q27System::DIR_MP0] = mfacb;
+                    f[D3Q27System::DIR_P0P] = mfcbc;
+                    f[D3Q27System::DIR_M0P] = mfabc;
+                    f[D3Q27System::DIR_0PP] = mfbcc;
+                    f[D3Q27System::DIR_0MP] = mfbac;
+                    f[D3Q27System::DIR_PPP] = mfccc;
+                    f[D3Q27System::DIR_MPP] = mfacc;
+                    f[D3Q27System::DIR_PMP] = mfcac;
+                    f[D3Q27System::DIR_MMP] = mfaac;
 
-                    f[D3Q27System::W]   = mfabb;
-                    f[D3Q27System::S]   = mfbab;
-                    f[D3Q27System::B]   = mfbba;
-                    f[D3Q27System::SW]  = mfaab;
-                    f[D3Q27System::SE]  = mfcab;
-                    f[D3Q27System::BW]  = mfaba;
-                    f[D3Q27System::BE]  = mfcba;
-                    f[D3Q27System::BS]  = mfbaa;
-                    f[D3Q27System::BN]  = mfbca;
-                    f[D3Q27System::BSW] = mfaaa;
-                    f[D3Q27System::BSE] = mfcaa;
-                    f[D3Q27System::BNW] = mfaca;
-                    f[D3Q27System::BNE] = mfcca;
+                    f[D3Q27System::DIR_M00] = mfabb;
+                    f[D3Q27System::DIR_0M0] = mfbab;
+                    f[D3Q27System::DIR_00M] = mfbba;
+                    f[D3Q27System::DIR_MM0] = mfaab;
+                    f[D3Q27System::DIR_PM0] = mfcab;
+                    f[D3Q27System::DIR_M0M] = mfaba;
+                    f[D3Q27System::DIR_P0M] = mfcba;
+                    f[D3Q27System::DIR_0MM] = mfbaa;
+                    f[D3Q27System::DIR_0PM] = mfbca;
+                    f[D3Q27System::DIR_MMM] = mfaaa;
+                    f[D3Q27System::DIR_PMM] = mfcaa;
+                    f[D3Q27System::DIR_MPM] = mfaca;
+                    f[D3Q27System::DIR_PPM] = mfcca;
 
                     if ((*particleData)(x1, x2, x3)->solidFraction > SOLFRAC_MIN) {
-                        fPre[D3Q27System::REST] = mfbbb;
+                        fPre[D3Q27System::DIR_000] = mfbbb;
 
-                        fPre[D3Q27System::E]   = mfcbb;
-                        fPre[D3Q27System::N]   = mfbcb;
-                        fPre[D3Q27System::T]   = mfbbc;
-                        fPre[D3Q27System::NE]  = mfccb;
-                        fPre[D3Q27System::NW]  = mfacb;
-                        fPre[D3Q27System::TE]  = mfcbc;
-                        fPre[D3Q27System::TW]  = mfabc;
-                        fPre[D3Q27System::TN]  = mfbcc;
-                        fPre[D3Q27System::TS]  = mfbac;
-                        fPre[D3Q27System::TNE] = mfccc;
-                        fPre[D3Q27System::TNW] = mfacc;
-                        fPre[D3Q27System::TSE] = mfcac;
-                        fPre[D3Q27System::TSW] = mfaac;
+                        fPre[D3Q27System::DIR_P00] = mfcbb;
+                        fPre[D3Q27System::DIR_0P0] = mfbcb;
+                        fPre[D3Q27System::DIR_00P] = mfbbc;
+                        fPre[D3Q27System::DIR_PP0] = mfccb;
+                        fPre[D3Q27System::DIR_MP0] = mfacb;
+                        fPre[D3Q27System::DIR_P0P] = mfcbc;
+                        fPre[D3Q27System::DIR_M0P] = mfabc;
+                        fPre[D3Q27System::DIR_0PP] = mfbcc;
+                        fPre[D3Q27System::DIR_0MP] = mfbac;
+                        fPre[D3Q27System::DIR_PPP] = mfccc;
+                        fPre[D3Q27System::DIR_MPP] = mfacc;
+                        fPre[D3Q27System::DIR_PMP] = mfcac;
+                        fPre[D3Q27System::DIR_MMP] = mfaac;
 
-                        fPre[D3Q27System::W]   = mfabb;
-                        fPre[D3Q27System::S]   = mfbab;
-                        fPre[D3Q27System::B]   = mfbba;
-                        fPre[D3Q27System::SW]  = mfaab;
-                        fPre[D3Q27System::SE]  = mfcab;
-                        fPre[D3Q27System::BW]  = mfaba;
-                        fPre[D3Q27System::BE]  = mfcba;
-                        fPre[D3Q27System::BS]  = mfbaa;
-                        fPre[D3Q27System::BN]  = mfbca;
-                        fPre[D3Q27System::BSW] = mfaaa;
-                        fPre[D3Q27System::BSE] = mfcaa;
-                        fPre[D3Q27System::BNW] = mfaca;
-                        fPre[D3Q27System::BNE] = mfcca;
+                        fPre[D3Q27System::DIR_M00] = mfabb;
+                        fPre[D3Q27System::DIR_0M0] = mfbab;
+                        fPre[D3Q27System::DIR_00M] = mfbba;
+                        fPre[D3Q27System::DIR_MM0] = mfaab;
+                        fPre[D3Q27System::DIR_PM0] = mfcab;
+                        fPre[D3Q27System::DIR_M0M] = mfaba;
+                        fPre[D3Q27System::DIR_P0M] = mfcba;
+                        fPre[D3Q27System::DIR_0MM] = mfbaa;
+                        fPre[D3Q27System::DIR_0PM] = mfbca;
+                        fPre[D3Q27System::DIR_MMM] = mfaaa;
+                        fPre[D3Q27System::DIR_PMM] = mfcaa;
+                        fPre[D3Q27System::DIR_MPM] = mfaca;
+                        fPre[D3Q27System::DIR_PPM] = mfcca;
                     }
 
                     (*particleData)(x1, x2, x3)->hydrodynamicForce.fill(0.0);
@@ -789,35 +789,35 @@ void IBcumulantK17LBMKernel::calculate(int step)
 
                     (*this->restDistributions)(x1, x2, x3) = mfbbb;
                     //////////////////////////////////////////////////////////////////////////
-                    f[D3Q27System::REST] = mfbbb;
+                    f[D3Q27System::DIR_000] = mfbbb;
                      
-                    f[D3Q27System::E]    = mfcbb;
-                    f[D3Q27System::N]    = mfbcb;
-                    f[D3Q27System::T]    = mfbbc;
-                    f[D3Q27System::NE]   = mfccb;
-                    f[D3Q27System::NW]   = mfacb;
-                    f[D3Q27System::TE]   = mfcbc;
-                    f[D3Q27System::TW]   = mfabc;
-                    f[D3Q27System::TN]   = mfbcc;
-                    f[D3Q27System::TS]   = mfbac;
-                    f[D3Q27System::TNE]  = mfccc;
-                    f[D3Q27System::TNW]  = mfacc;
-                    f[D3Q27System::TSE]  = mfcac;
-                    f[D3Q27System::TSW]  = mfaac;
+                    f[D3Q27System::DIR_P00]  = mfcbb;
+                    f[D3Q27System::DIR_0P0]  = mfbcb;
+                    f[D3Q27System::DIR_00P]  = mfbbc;
+                    f[D3Q27System::DIR_PP0]  = mfccb;
+                    f[D3Q27System::DIR_MP0]  = mfacb;
+                    f[D3Q27System::DIR_P0P]  = mfcbc;
+                    f[D3Q27System::DIR_M0P]  = mfabc;
+                    f[D3Q27System::DIR_0PP]  = mfbcc;
+                    f[D3Q27System::DIR_0MP]  = mfbac;
+                    f[D3Q27System::DIR_PPP]  = mfccc;
+                    f[D3Q27System::DIR_MPP]  = mfacc;
+                    f[D3Q27System::DIR_PMP]  = mfcac;
+                    f[D3Q27System::DIR_MMP]  = mfaac;
                                      
-                    f[D3Q27System::W]    = mfabb;
-                    f[D3Q27System::S]    = mfbab;
-                    f[D3Q27System::B]    = mfbba;
-                    f[D3Q27System::SW]   = mfaab;
-                    f[D3Q27System::SE]   = mfcab;
-                    f[D3Q27System::BW]   = mfaba;
-                    f[D3Q27System::BE]   = mfcba;
-                    f[D3Q27System::BS]   = mfbaa;
-                    f[D3Q27System::BN]   = mfbca;
-                    f[D3Q27System::BSW]  = mfaaa;
-                    f[D3Q27System::BSE]  = mfcaa;
-                    f[D3Q27System::BNW]  = mfaca;
-                    f[D3Q27System::BNE]  = mfcca;
+                    f[D3Q27System::DIR_M00]  = mfabb;
+                    f[D3Q27System::DIR_0M0]  = mfbab;
+                    f[D3Q27System::DIR_00M]  = mfbba;
+                    f[D3Q27System::DIR_MM0]  = mfaab;
+                    f[D3Q27System::DIR_PM0]  = mfcab;
+                    f[D3Q27System::DIR_M0M]  = mfaba;
+                    f[D3Q27System::DIR_P0M]  = mfcba;
+                    f[D3Q27System::DIR_0MM]  = mfbaa;
+                    f[D3Q27System::DIR_0PM]  = mfbca;
+                    f[D3Q27System::DIR_MMM]  = mfaaa;
+                    f[D3Q27System::DIR_PMM]  = mfcaa;
+                    f[D3Q27System::DIR_MPM]  = mfaca;
+                    f[D3Q27System::DIR_PPM]  = mfcca;
                 }
                     if ((*particleData)(x1, x2, x3)->solidFraction < SOLFRAC_MIN)
                         continue;
@@ -834,8 +834,8 @@ void IBcumulantK17LBMKernel::calculate(int step)
                     D3Q27System::calcCompFeq(fEqSolid, drho, uPart[0], uPart[1], uPart[2]);
 
                     if ((*particleData)(x1, x2, x3)->solidFraction > SOLFRAC_MAX) {
-                        double const bb0     = fEq[D3Q27System::REST] - fEqSolid[D3Q27System::REST];
-                        f[D3Q27System::REST] = fPre[D3Q27System::REST] + bb0;
+                        double const bb0     = fEq[D3Q27System::DIR_000] - fEqSolid[D3Q27System::DIR_000];
+                        f[D3Q27System::DIR_000] = fPre[D3Q27System::DIR_000] + bb0;
                         for (int iPop = D3Q27System::FSTARTDIR; iPop <= D3Q27System::FENDDIR; iPop++) {
                             const int iOpp        = D3Q27System::INVDIR[iPop];
                             double const bb       = ((fPre[iOpp] - fEq[iOpp]) - (fPre[iPop] - fEqSolid[iPop]));
@@ -858,8 +858,8 @@ void IBcumulantK17LBMKernel::calculate(int step)
 //#endif
                         double const oneMinB = 1. - B;
 
-                        double const bb0 = fEq[D3Q27System::REST] - fEqSolid[D3Q27System::REST];
-                        f[D3Q27System::REST] = fPre[D3Q27System::REST] + oneMinB * (f[D3Q27System::REST] - fPre[D3Q27System::REST]) + B * bb0;
+                        double const bb0 = fEq[D3Q27System::DIR_000] - fEqSolid[D3Q27System::DIR_000];
+                        f[D3Q27System::DIR_000] = fPre[D3Q27System::DIR_000] + oneMinB * (f[D3Q27System::DIR_000] - fPre[D3Q27System::DIR_000]) + B * bb0;
 
                         for (int iPop = D3Q27System::FSTARTDIR; iPop <= D3Q27System::FENDDIR; iPop++) {
                             int const iOpp = D3Q27System::INVDIR[iPop];
@@ -875,35 +875,35 @@ void IBcumulantK17LBMKernel::calculate(int step)
                         }
                     } /* if solidFraction > SOLFRAC_MAX */
 
-                    (*this->restDistributions)(x1, x2, x3)                             = f[D3Q27System::REST];
+                    (*this->restDistributions)(x1, x2, x3)                             = f[D3Q27System::DIR_000];
                                                                                           
-                    (*this->localDistributions)(D3Q27System::ET_E, x1, x2, x3)         = f[D3Q27System::W]   ;
-                    (*this->localDistributions)(D3Q27System::ET_N, x1, x2, x3)         = f[D3Q27System::S]   ;
-                    (*this->localDistributions)(D3Q27System::ET_T, x1, x2, x3)         = f[D3Q27System::B]   ;
-                    (*this->localDistributions)(D3Q27System::ET_NE, x1, x2, x3)        = f[D3Q27System::SW]  ;
-                    (*this->localDistributions)(D3Q27System::ET_NW, x1p, x2, x3)       = f[D3Q27System::SE]  ;
-                    (*this->localDistributions)(D3Q27System::ET_TE, x1, x2, x3)        = f[D3Q27System::BW]  ;
-                    (*this->localDistributions)(D3Q27System::ET_TW, x1p, x2, x3)       = f[D3Q27System::BE]  ;
-                    (*this->localDistributions)(D3Q27System::ET_TN, x1, x2, x3)        = f[D3Q27System::BS]  ;
-                    (*this->localDistributions)(D3Q27System::ET_TS, x1, x2p, x3)       = f[D3Q27System::BN]  ;
-                    (*this->localDistributions)(D3Q27System::ET_TNE, x1, x2, x3)       = f[D3Q27System::BSW] ;
-                    (*this->localDistributions)(D3Q27System::ET_TNW, x1p, x2, x3)      = f[D3Q27System::BSE] ;
-                    (*this->localDistributions)(D3Q27System::ET_TSE, x1, x2p, x3)      = f[D3Q27System::BNW] ;
-                    (*this->localDistributions)(D3Q27System::ET_TSW, x1p, x2p, x3)     = f[D3Q27System::BNE] ;
+                    (*this->localDistributions)(D3Q27System::ET_E, x1, x2, x3)         = f[D3Q27System::DIR_M00];
+                    (*this->localDistributions)(D3Q27System::ET_N, x1, x2, x3)         = f[D3Q27System::DIR_0M0];
+                    (*this->localDistributions)(D3Q27System::ET_T, x1, x2, x3)         = f[D3Q27System::DIR_00M];
+                    (*this->localDistributions)(D3Q27System::ET_NE, x1, x2, x3)        = f[D3Q27System::DIR_MM0];
+                    (*this->localDistributions)(D3Q27System::ET_NW, x1p, x2, x3)       = f[D3Q27System::DIR_PM0];
+                    (*this->localDistributions)(D3Q27System::ET_TE, x1, x2, x3)        = f[D3Q27System::DIR_M0M];
+                    (*this->localDistributions)(D3Q27System::ET_TW, x1p, x2, x3)       = f[D3Q27System::DIR_P0M];
+                    (*this->localDistributions)(D3Q27System::ET_TN, x1, x2, x3)        = f[D3Q27System::DIR_0MM];
+                    (*this->localDistributions)(D3Q27System::ET_TS, x1, x2p, x3)       = f[D3Q27System::DIR_0PM];
+                    (*this->localDistributions)(D3Q27System::ET_TNE, x1, x2, x3)       = f[D3Q27System::DIR_MMM];
+                    (*this->localDistributions)(D3Q27System::ET_TNW, x1p, x2, x3)      = f[D3Q27System::DIR_PMM];
+                    (*this->localDistributions)(D3Q27System::ET_TSE, x1, x2p, x3)      = f[D3Q27System::DIR_MPM];
+                    (*this->localDistributions)(D3Q27System::ET_TSW, x1p, x2p, x3)     = f[D3Q27System::DIR_PPM];
                                                                                                           
-                    (*this->nonLocalDistributions)(D3Q27System::ET_W, x1p, x2, x3)     =  f[D3Q27System::E]  ;
-                    (*this->nonLocalDistributions)(D3Q27System::ET_S, x1, x2p, x3)     =  f[D3Q27System::N]  ;
-                    (*this->nonLocalDistributions)(D3Q27System::ET_B, x1, x2, x3p)     =  f[D3Q27System::T]  ;
-                    (*this->nonLocalDistributions)(D3Q27System::ET_SW, x1p, x2p, x3)   =  f[D3Q27System::NE] ;
-                    (*this->nonLocalDistributions)(D3Q27System::ET_SE, x1, x2p, x3)    =  f[D3Q27System::NW] ;
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BW, x1p, x2, x3p)   =  f[D3Q27System::TE] ;
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BE, x1, x2, x3p)    =  f[D3Q27System::TW] ;
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BS, x1, x2p, x3p)   =  f[D3Q27System::TN] ;
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BN, x1, x2, x3p)    =  f[D3Q27System::TS] ;
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BSW, x1p, x2p, x3p) =  f[D3Q27System::TNE];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BSE, x1, x2p, x3p)  =  f[D3Q27System::TNW];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BNW, x1p, x2, x3p)  =  f[D3Q27System::TSE];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BNE, x1, x2, x3p)   =  f[D3Q27System::TSW];
+                    (*this->nonLocalDistributions)(D3Q27System::ET_W, x1p, x2, x3)     =  f[D3Q27System::DIR_P00];
+                    (*this->nonLocalDistributions)(D3Q27System::ET_S, x1, x2p, x3)     =  f[D3Q27System::DIR_0P0];
+                    (*this->nonLocalDistributions)(D3Q27System::ET_B, x1, x2, x3p)     =  f[D3Q27System::DIR_00P];
+                    (*this->nonLocalDistributions)(D3Q27System::ET_SW, x1p, x2p, x3)   =  f[D3Q27System::DIR_PP0];
+                    (*this->nonLocalDistributions)(D3Q27System::ET_SE, x1, x2p, x3)    =  f[D3Q27System::DIR_MP0];
+                    (*this->nonLocalDistributions)(D3Q27System::ET_BW, x1p, x2, x3p)   =  f[D3Q27System::DIR_P0P];
+                    (*this->nonLocalDistributions)(D3Q27System::ET_BE, x1, x2, x3p)    =  f[D3Q27System::DIR_M0P];
+                    (*this->nonLocalDistributions)(D3Q27System::ET_BS, x1, x2p, x3p)   =  f[D3Q27System::DIR_0PP];
+                    (*this->nonLocalDistributions)(D3Q27System::ET_BN, x1, x2, x3p)    =  f[D3Q27System::DIR_0MP];
+                    (*this->nonLocalDistributions)(D3Q27System::ET_BSW, x1p, x2p, x3p) =  f[D3Q27System::DIR_PPP];
+                    (*this->nonLocalDistributions)(D3Q27System::ET_BSE, x1, x2p, x3p)  =  f[D3Q27System::DIR_MPP];
+                    (*this->nonLocalDistributions)(D3Q27System::ET_BNW, x1p, x2, x3p)  =  f[D3Q27System::DIR_PMP];
+                    (*this->nonLocalDistributions)(D3Q27System::ET_BNE, x1, x2, x3p)   =  f[D3Q27System::DIR_MMP];
                 }
             }
         }
