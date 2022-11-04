@@ -466,7 +466,7 @@ void IndexRearrangementForStreams::reorderRecvIndicesForCommAfterFtoC(
 
 void IndexRearrangementForStreams::splitFineToCoarseIntoBorderAndBulk(const uint &level)
 {
-    this->getGridInterfaceIndicesBorderBulkFC(level);
+    this->reorderFineToCoarseIntoBorderAndBulk(level);
 
     para->getParD(level)->intFCBorder.kFC      = para->getParH(level)->intFCBorder.kFC;
     para->getParD(level)->intFCBulk.kFC        = para->getParH(level)->intFCBulk.kFC;
@@ -481,7 +481,7 @@ void IndexRearrangementForStreams::splitFineToCoarseIntoBorderAndBulk(const uint
     para->getParD(level)->offFCBulk.zOffFC = para->getParD(level)->offFC.zOffFC + para->getParD(level)->intFCBorder.kFC;
 }
 
-void IndexRearrangementForStreams::getGridInterfaceIndicesBorderBulkFC(int level)
+void IndexRearrangementForStreams::reorderFineToCoarseIntoBorderAndBulk(int level)
 {
     // create some local variables for better readability
     uint *iCellFccAll = para->getParH(level)->intFC.ICellFCC;
@@ -547,7 +547,7 @@ void IndexRearrangementForStreams::getGridInterfaceIndicesBorderBulkFC(int level
 
 void IndexRearrangementForStreams::splitCoarseToFineIntoBorderAndBulk(const uint &level)
 {
-    this->getGridInterfaceIndicesBorderBulkCF(level);
+    this->reorderCoarseToFineIntoBorderAndBulk(level);
 
     para->getParD(level)->intCFBorder.kCF      = para->getParH(level)->intCFBorder.kCF;
     para->getParD(level)->intCFBulk.kCF        = para->getParH(level)->intCFBulk.kCF;
@@ -562,7 +562,7 @@ void IndexRearrangementForStreams::splitCoarseToFineIntoBorderAndBulk(const uint
     para->getParD(level)->offCFBulk.zOffCF = para->getParD(level)->offCF.zOffCF + para->getParD(level)->intCFBorder.kCF;
 }
 
-void IndexRearrangementForStreams::getGridInterfaceIndicesBorderBulkCF(int level)
+void IndexRearrangementForStreams::reorderCoarseToFineIntoBorderAndBulk(int level)
 {
     // create some local variables for better readability
     uint *iCellCfcAll  = para->getParH(level)->intCF.ICellCFC;
