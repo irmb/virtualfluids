@@ -27,7 +27,7 @@
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
 //! \file DataSet3D.h
-//! \ingroup Data
+//! \ingroup LiggghtsCoupling
 //! \author Konstantin Kutscher
 //=======================================================================================
 

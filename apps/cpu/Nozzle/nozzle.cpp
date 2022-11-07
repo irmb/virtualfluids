@@ -13,6 +13,8 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
+    //Sleep(30000);
+
     std::shared_ptr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
     int myid = comm->getProcessID();
 
@@ -74,9 +76,15 @@ int main(int argc, char *argv[])
 
     string geoPath = "d:/Projects/TRR277/Project/WP4/NozzleGeo";
 
-    string outputPath = "d:/temp/NozzleFlow";
+    string outputPath = "f:/temp/NozzleFlowTestSerial";
     UbSystem::makeDirectory(outputPath);
     UbSystem::makeDirectory(outputPath + "/liggghts");
+
+    if (myid == 0) {
+        stringstream logFilename;
+        logFilename << outputPath + "/logfile" + UbSystem::toString(UbSystem::getTimeStamp()) + ".txt";
+        UbLog::output_policy::setStream(logFilename.str());
+    }
 
     SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::DIR_MMM, MetisPartitioner::RECURSIVE));
     
@@ -186,7 +194,7 @@ int main(int argc, char *argv[])
     grid->accept(initVisitor);
 
   
-    string inFile1 = "d:/Projects/VirtualFluids_LIGGGHTS_coupling/apps/cpu/Nozzle/in.nozzle";
+    string inFile1 = "d:/Projects/VirtualFluids_Develop/apps/cpu/Nozzle/in.nozzle";
     //string inFile2 = "d:/Projects/VirtualFluids_LIGGGHTS_coupling/apps/cpu/LiggghtsApp/in2.lbdem";
     MPI_Comm mpi_comm = *(MPI_Comm*)(comm->getNativeCommunicator());
     LiggghtsCouplingWrapper wrapper(argv, mpi_comm);
@@ -197,7 +205,7 @@ int main(int argc, char *argv[])
     // SPtr<LBMUnitConverter> units = std::make_shared<LBMUnitConverter>(r_p, 1.480, 2060, r_p/dx);
     //SPtr<LBMUnitConverter> units = std::make_shared<LBMUnitConverter>(r_p, LBMUnitConverter::AIR_20C, r_p / dx);
     SPtr<LBMUnitConverter> units = std::make_shared<LBMUnitConverter>(d_part, 1., 1000, d_part / dx, 0.01);
-    std::cout << units->toString() << std::endl;
+    if (myid == 0) std::cout << units->toString() << std::endl;
 
     //return 0;
 
@@ -246,13 +254,15 @@ int main(int argc, char *argv[])
     SPtr<NUPSCounterCoProcessor> nupsCoProcessor = make_shared<NUPSCounterCoProcessor>(grid, nupsSch, numOfThreads, comm);
 
     //// write data for visualization of macroscopic quantities
-    SPtr<UbScheduler> visSch(new UbScheduler(vtkSteps));
+    SPtr < UbScheduler> visSch(new UbScheduler(vtkSteps));
+    //SPtr<UbScheduler> visSch(new UbScheduler(1, 8700, 8800));
+    visSch->addSchedule(1, 8700, 8800);
     SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(
         new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(),
                                                   SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
     writeMQCoProcessor->process(0);
 
-    int endTime = 1000000; //20;
+    int endTime = 10000000; //20;
     SPtr<Calculator> calculator(new BasicCalculator(grid, lScheduler, endTime));
     calculator->addCoProcessor(nupsCoProcessor);
     calculator->addCoProcessor(lcCoProcessor);

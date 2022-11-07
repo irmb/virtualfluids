@@ -12,7 +12,7 @@ boundary	f f f
 newton		off
 
 processors * * 1
-region		box block 0. 1. 0. 1. 0. 10. units box
+region		box block 0. 1. 0. 1. 0. 2. units box
 create_box	1 box
 
 variable	skin equal 0.01
@@ -44,31 +44,32 @@ fix ywalls2 all wall/gran model hertz tangential history primitive type 1 yplane
 fix zwalls1 all wall/gran model hertz tangential history primitive type 1 zplane 0.
 fix zwalls2 all wall/gran model hertz tangential history primitive type 1 zplane 2.
 
-create_atoms 1 single 0.5 0.5 9.75
+#create_atoms 1 single 0.5 0.5 9.75
 #create_atoms 1 single 0.38 0.05 0.05
 
-set group all diameter 0.25 density 2400
+#set group all diameter 0.25 density 2400
 
-atom_modify sort 0 0.0
+#atom_modify sort 0 0.0
 
 #fix pts1 all particletemplate/sphere 1 atom_type 1 density constant 1000 radius constant 0.015 
 #fix pts2 all particletemplate/sphere 1 atom_type 1 density constant 1000 radius constant 0.01 
 #fix pts1 all particletemplate/sphere 1 atom_type 1 density constant 1100 radius constant ${r_part} 
+fix  pts1 all particletemplate/sphere 15485863 atom_type 1 density constant 2500 radius constant 0.01
 
-# fix pdd1 all particledistribution/discrete 6778  1 pts1 1.0
-# #fix pdd2 all particledistribution/discrete 6778  2 pts2 0.2 pts3 0.8
+fix pdd1 all particledistribution/discrete 32452843  1 pts1 1.0
+#fix pdd2 all particledistribution/discrete 6778  2 pts2 0.2 pts3 0.8
 
-# # region  insreg block 0.1 0.9 0.1 0.9 1.3 1.9 units box
+region  insreg block 0.1 0.9 0.1 0.9 1.3 1.9 units box
 
 
-# #fix ins all insert/pack seed 1001 distributiontemplate pdd1 insert_every once &
-# #                         overlapcheck yes particles_in_region 350 region insreg ntry_mc 10000 
-# fix ins all insert/pack seed 1001 distributiontemplate pdd1 insert_every once &
-#                         overlapcheck yes volumefraction_region ${v_frac} region insreg ntry_mc 10000 
-# #fix ins all insert/pack seed 1001 distributiontemplate pdd2 insert_every once &
-# #                        overlapcheck yes volumefraction_region 0.05 region insreg ntry_mc 10000 
-# #fix ins all insert/pack seed 1001 distributiontemplate pdd1 insert_every once &
-# #                        overlapcheck yes particles_in_region 1 region insreg ntry_mc 10000 
+#fix ins all insert/pack seed 1001 distributiontemplate pdd1 insert_every once &
+#                         overlapcheck yes particles_in_region 350 region insreg ntry_mc 10000 
+#fix ins all insert/pack seed 1001 distributiontemplate pdd1 insert_every once &
+#                        overlapcheck yes volumefraction_region ${v_frac} region insreg ntry_mc 10000 
+fix ins all insert/pack seed 32452867 distributiontemplate pdd1 insert_every once &
+                        overlapcheck yes volumefraction_region 0.1 region insreg ntry_mc 1001 
+#fix ins all insert/pack seed 1001 distributiontemplate pdd1 insert_every once &
+#                        overlapcheck yes particles_in_region 1 region insreg ntry_mc 10000 
 
 echo none
 

@@ -27,7 +27,7 @@
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
 //! \file IBcumulantK17LBMKernel.h
-//! \ingroup LBM
+//! \ingroup LiggghtsCoupling
 //! \author Konstantin Kutscher, Martin Geier
 //=======================================================================================
 

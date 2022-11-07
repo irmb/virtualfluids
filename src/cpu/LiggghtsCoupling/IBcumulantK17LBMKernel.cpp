@@ -47,6 +47,9 @@ using namespace UbMath;
 IBcumulantK17LBMKernel::IBcumulantK17LBMKernel()
 {
     this->compressible = true;
+    forcingX1 = 0.0;
+    forcingX2 = 0.0;
+    forcingX3 = 0.0;
 }
 //////////////////////////////////////////////////////////////////////////
 void IBcumulantK17LBMKernel::initDataSet()
@@ -54,8 +57,7 @@ void IBcumulantK17LBMKernel::initDataSet()
     SPtr<DistributionArray3D> d(new D3Q27EsoTwist3DSplittedVector(nx[0] + 2, nx[1] + 2, nx[2] + 2, -999.9));
     dataSet->setFdistributions(d);
 
-    particleData =
-        std::make_shared<CbArray3D<SPtr<IBdynamicsParticleData>, IndexerX3X2X1>>(nx[0] + 2, nx[1] + 2, nx[2] + 2);
+    particleData = std::make_shared<CbArray3D<SPtr<IBdynamicsParticleData>, IndexerX3X2X1>>(nx[0] + 2, nx[1] + 2, nx[2] + 2);
 
     int minX1 = 0;
     int minX2 = 0;

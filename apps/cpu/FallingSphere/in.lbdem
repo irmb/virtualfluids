@@ -47,7 +47,7 @@ fix zwalls2 all wall/gran model hertz tangential history primitive type 1 zplane
 create_atoms 1 single 0.5 0.5 9.75
 #create_atoms 1 single 0.38 0.05 0.05
 
-#set group all diameter ${d_part} density 2400
+set group all diameter ${d_part} density 2400
 
 atom_modify sort 0 0.0
 

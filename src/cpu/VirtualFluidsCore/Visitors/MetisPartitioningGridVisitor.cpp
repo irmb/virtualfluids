@@ -133,7 +133,7 @@ void MetisPartitioningGridVisitor::buildMetisGraphLevelIntersected(SPtr<Grid3D> 
             // the weights of the vertices are 2^level of grid (1, 2, 4, 8 .....) 1<<level
             metis.vwgt.push_back((idx_t)(1 << block->getLevel()));
 
-            for (int dir = 0; dir <= numOfDirs; dir++) {
+            for (int dir = D3Q27System::DIR_P00; dir <= numOfDirs; dir++) {
                 SPtr<Block3D> neighBlock = grid->getNeighborBlock(dir, block);
                 if (neighBlock) {
                     if (this->getPartitionCondition(neighBlock, level)) {
@@ -200,7 +200,7 @@ void MetisPartitioningGridVisitor::buildMetisGraphLevelBased(SPtr<Grid3D> grid, 
             metis.xadj.push_back(edges);
             metis.vwgt.push_back(vertexWeight);
 
-            for (int dir = 0; dir <= numOfDirs; dir++) {
+            for (int dir = D3Q27System::DIR_P00; dir <= numOfDirs; dir++) {
                 SPtr<Block3D> neighBlock = grid->getNeighborBlock(dir, block);
                 if (neighBlock) {
                     if (this->getPartitionCondition(neighBlock, level)) {

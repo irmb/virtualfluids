@@ -27,13 +27,22 @@ LiggghtsCouplingCoProcessor::~LiggghtsCouplingCoProcessor()
 
 void LiggghtsCouplingCoProcessor::process(double actualTimeStep)
 { 
-    std::cout << "step: " << actualTimeStep << "\n";
+    if (comm->getProcessID() == 0)
+        std::cout << "LiggghtsCouplingCoProcessor step: " << actualTimeStep << "\n";
     
+    //comm->barrier();
+
     getForcesFromLattice();
 
+    //comm->barrier();
+    
     wrapper.run(demSteps);
+
+    //comm->barrier();
     
     setSpheresOnLattice();
+
+    //comm->barrier();
 }
 
 void LiggghtsCouplingCoProcessor::setSpheresOnLattice()
@@ -88,9 +97,6 @@ void LiggghtsCouplingCoProcessor::setSingleSphere3D(double *x, double *v, double
     
     std::vector<SPtr<Block3D>> blocks;
     grid->getBlocksByCuboid(level, x[0] - r, x[1] - r, x[2] - r, x[0] + r, x[1] + r, x[2] + r, blocks);
-    
-
-
 
     for (SPtr<Block3D> block : blocks) {
         if (block) {
@@ -319,7 +325,7 @@ void LiggghtsCouplingCoProcessor::SumForceTorque3D(ParticleData::ParticleDataArr
 
     std::vector < SPtr < Block3D > > blocks;
     int level = 0;
-    grid->getBlocks(level, gridRank, true, blocks);
+    grid->getBlocks(level, grid->getRank(), true, blocks);
 
         
     for (SPtr<Block3D> block : blocks) {

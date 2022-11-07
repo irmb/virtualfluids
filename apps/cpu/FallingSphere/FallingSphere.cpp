@@ -24,16 +24,16 @@ int main(int argc, char *argv[])
 
     double g_maxX1 = 1;
     double g_maxX2 = 1;
-    double g_maxX3 = 2;
+    double g_maxX3 = 10;
 
-    //int blockNX[3] = { 16, 16, 16 };
-    //double dx = 1./32.;
+    int blockNX[3] = { 16, 16, 16 };
+    double dx = 1./32.;
 
-    double d_part = 0.1;
+    double d_part = 0.25;
     double r_p    = d_part / 2.0;
 
-    int blockNX[3] = { 10, 10, 10 };
-    double dx      = 0.05;
+    //int blockNX[3] = { 10, 10, 10 };
+    //double dx      = 0.05;
 
 
     double nuLB = 1e-2;
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
     grid->setDeltaX(dx);
     grid->setBlockNX(blockNX[0], blockNX[1], blockNX[2]);
 
-    string outputPath = "d:/temp/FallingSpheres2";
+    string outputPath = "f:/temp/FallingSpheresTest";
 
     UbSystem::makeDirectory(outputPath);
     UbSystem::makeDirectory(outputPath + "/liggghts");
@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
 
     wrapper.execCommand("echo none");
 
-    //wrapper.setVariable("d_part", d_part);
+    wrapper.setVariable("d_part", d_part);
     //wrapper.setVariable("r_part", d_part/2.);
     //wrapper.setVariable("v_frac", v_frac);
 

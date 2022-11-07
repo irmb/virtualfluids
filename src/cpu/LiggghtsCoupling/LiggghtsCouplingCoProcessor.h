@@ -95,7 +95,7 @@ private:
     //std::vector<std::vector<SPtr<Block3D>>> blockVector;
     //int minInitLevel;
     //int maxInitLevel;
-    int gridRank;
+    //int gridRank;
 
     double *force, *torque;
 };

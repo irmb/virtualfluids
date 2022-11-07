@@ -262,28 +262,27 @@ int Block3D::getNumberOfLocalConnectorsForSurfaces()
     if (connectors.size() < 6)
         return count;
 
-    for (int dir = 0; dir <= 5; dir++) // Hard coding. It works if you have 0...5 for E, N ... B
-    {
-        SPtr<Block3DConnector> connector = this->connectors[dir];
-        if (this->connectors[dir]) {
-            if (connector->isLocalConnector())
+    for (SPtr<Block3DConnector> c : connectors) {
+        if (c) {
+            if (c->getSendDir() >= D3Q27System::DIR_P00 && c->getSendDir() <= D3Q27System ::DIR_00M && c->isLocalConnector())
                 count++;
         }
     }
+
     return count;
 }
 //////////////////////////////////////////////////////////////////////////
 int Block3D::getNumberOfRemoteConnectorsForSurfaces()
 {
     int count = 0;
-    for (int dir = 0; dir <= 5; dir++) // Hard coding. It works if you have 0...5 for E, N ... B
-    {
-        SPtr<Block3DConnector> connector = this->connectors[dir];
-        if (this->connectors[dir]) {
-            if (connector->isRemoteConnector())
+
+    for (SPtr<Block3DConnector> c : connectors) {
+        if (c) {
+            if (c->getSendDir() >= D3Q27System::DIR_P00 && c->getSendDir() <= D3Q27System ::DIR_00M && c->isRemoteConnector())
                 count++;
         }
     }
+
     return count;
 }
 void Block3D::setCollectionOfInterpolationFlagCF(int flags) { interpolationFlagCF = flags; }

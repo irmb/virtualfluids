@@ -19,6 +19,8 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
+    //Sleep(30000);
+
     std::shared_ptr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
     int myid                                        = comm->getProcessID();
 
@@ -30,7 +32,7 @@ int main(int argc, char *argv[])
 
     double g_maxX1 = 1;
     double g_maxX2 = 1;
-    double g_maxX3 = 10;
+    double g_maxX3 = 2;
 
     int blockNX[3] = { 16, 16, 16 };
 
@@ -71,7 +73,9 @@ int main(int argc, char *argv[])
     grid->setDeltaX(dx);
     grid->setBlockNX(blockNX[0], blockNX[1], blockNX[2]);
 
-    string outputPath = "d:/temp/lll8";
+    string outputPath = "d:/temp/LiggghtsCoupling";
+    UbSystem::makeDirectory(outputPath);
+    UbSystem::makeDirectory(outputPath + "/liggghts");
 
     SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::DIR_MMM, MetisPartitioner::RECURSIVE));
     
@@ -113,18 +117,12 @@ int main(int argc, char *argv[])
     grid->accept(initVisitor);
 
     SPtr<UbScheduler> lScheduler                    = make_shared<UbScheduler>(1);
-    string inFile1                                   = "d:/Projects/VirtualFluids_LIGGGHTS_coupling/apps/cpu/LiggghtsApp/in.lbdem";
+    string inFile1                                   = "d:/Projects/VirtualFluids_Develop/apps/cpu/LiggghtsApp/in.lbdem";
     //string inFile1 = "d:/Tools/LIGGGHTS/examples/LIGGGHTS/Tutorials_public/chute_wear/in.chute_wear2";
-    string inFile2                                   = "d:/Projects/VirtualFluids_LIGGGHTS_coupling/apps/cpu/LiggghtsApp/in2.lbdem";
+    string inFile2                                   = "d:/Projects/VirtualFluids_Develop/apps/cpu/LiggghtsApp/in2.lbdem";
     MPI_Comm mpi_comm       = *(MPI_Comm*)(comm->getNativeCommunicator());
     LiggghtsCouplingWrapper wrapper(argv, mpi_comm);
 
-
-
-
-
-
-    //return 0;
 
     double v_frac = 0.1;
     double dt_phys   = units->getFactorTimeLbToW();
@@ -140,6 +138,7 @@ int main(int argc, char *argv[])
 
     wrapper.execFile((char*)inFile1.c_str());
 
+ 
     //// set timestep and output directory
     wrapper.setVariable("t_step", dt_dem);
     wrapper.setVariable("dmp_stp", vtkSteps * demSubsteps);
