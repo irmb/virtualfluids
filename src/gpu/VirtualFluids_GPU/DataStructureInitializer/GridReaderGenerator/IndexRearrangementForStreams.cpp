@@ -466,7 +466,7 @@ void IndexRearrangementForStreams::reorderRecvIndicesForCommAfterFtoC(
 
 void IndexRearrangementForStreams::splitFineToCoarseIntoBorderAndBulk(const uint &level)
 {
-    this->getGridInterfaceIndicesBorderBulkFC(level);
+    this->reorderFineToCoarseIntoBorderAndBulk(level);
 
     para->getParD(level)->intFCBorder.kFC      = para->getParH(level)->intFCBorder.kFC;
     para->getParD(level)->intFCBulk.kFC        = para->getParH(level)->intFCBulk.kFC;
@@ -476,9 +476,12 @@ void IndexRearrangementForStreams::splitFineToCoarseIntoBorderAndBulk(const uint
     para->getParD(level)->intFCBorder.ICellFCF = para->getParD(level)->intFC.ICellFCF;
     para->getParD(level)->intFCBulk.ICellFCF =
         para->getParD(level)->intFCBorder.ICellFCF + para->getParD(level)->intFCBorder.kFC;
+    para->getParD(level)->offFCBulk.xOffFC = para->getParD(level)->offFC.xOffFC + para->getParD(level)->intFCBorder.kFC;
+    para->getParD(level)->offFCBulk.yOffFC = para->getParD(level)->offFC.yOffFC + para->getParD(level)->intFCBorder.kFC;
+    para->getParD(level)->offFCBulk.zOffFC = para->getParD(level)->offFC.zOffFC + para->getParD(level)->intFCBorder.kFC;
 }
 
-void IndexRearrangementForStreams::getGridInterfaceIndicesBorderBulkFC(int level)
+void IndexRearrangementForStreams::reorderFineToCoarseIntoBorderAndBulk(int level)
 {
     // create some local variables for better readability
     uint *iCellFccAll = para->getParH(level)->intFC.ICellFCC;
@@ -489,15 +492,27 @@ void IndexRearrangementForStreams::getGridInterfaceIndicesBorderBulkFC(int level
     std::vector<uint> iCellFccBulkVector;
     std::vector<uint> iCellFcfBorderVector;
     std::vector<uint> iCellFcfBulkVector;
+    std::vector<real> xOffFCBorderVector;
+    std::vector<real> yOffFCBorderVector;
+    std::vector<real> zOffFCBorderVector;
+    std::vector<real> xOffFCBulkVector;
+    std::vector<real> yOffFCBulkVector;
+    std::vector<real> zOffFCBulkVector;
 
     // fill border and bulk vectors with iCellFCs
     for (uint i = 0; i < para->getParH(level)->intFC.kFC; i++)
         if (grid->isSparseIndexInFluidNodeIndicesBorder(iCellFccAll[i])) {
             iCellFccBorderVector.push_back(iCellFccAll[i]);
             iCellFcfBorderVector.push_back(iCellFcfAll[i]);
+            xOffFCBorderVector.push_back(para->getParH(level)->offFC.xOffFC[i]);
+            yOffFCBorderVector.push_back(para->getParH(level)->offFC.yOffFC[i]);
+            zOffFCBorderVector.push_back(para->getParH(level)->offFC.zOffFC[i]);
         } else {
             iCellFccBulkVector.push_back(iCellFccAll[i]);
             iCellFcfBulkVector.push_back(iCellFcfAll[i]);
+            xOffFCBulkVector.push_back(para->getParH(level)->offFC.xOffFC[i]);
+            yOffFCBulkVector.push_back(para->getParH(level)->offFC.yOffFC[i]);
+            zOffFCBulkVector.push_back(para->getParH(level)->offFC.zOffFC[i]);
         }
 
     // set new sizes and pointers
@@ -507,22 +522,32 @@ void IndexRearrangementForStreams::getGridInterfaceIndicesBorderBulkFC(int level
     para->getParH(level)->intFCBulk.kFC        = (uint)iCellFccBulkVector.size();
     para->getParH(level)->intFCBulk.ICellFCC   = iCellFccAll + para->getParH(level)->intFCBorder.kFC;
     para->getParH(level)->intFCBulk.ICellFCF   = iCellFcfAll + para->getParH(level)->intFCBorder.kFC;
+    para->getParH(level)->offFCBulk.xOffFC = para->getParH(level)->offFC.xOffFC + para->getParH(level)->intFCBorder.kFC;
+    para->getParH(level)->offFCBulk.yOffFC = para->getParH(level)->offFC.yOffFC + para->getParH(level)->intFCBorder.kFC;
+    para->getParH(level)->offFCBulk.zOffFC = para->getParH(level)->offFC.zOffFC + para->getParH(level)->intFCBorder.kFC;
+
 
     // copy the created vectors to the memory addresses of the old arrays
     // this is inefficient :(
     for (uint i = 0; i < (uint)iCellFccBorderVector.size(); i++) {
         iCellFccAll[i] = iCellFccBorderVector[i];
         iCellFcfAll[i] = iCellFcfBorderVector[i];
+        para->getParH(level)->offFC.xOffFC[i] = xOffFCBorderVector[i];
+        para->getParH(level)->offFC.yOffFC[i] = yOffFCBorderVector[i];
+        para->getParH(level)->offFC.zOffFC[i] = zOffFCBorderVector[i];
     }
     for (uint i = 0; i < (uint)iCellFccBulkVector.size(); i++) {
         para->getParH(level)->intFCBulk.ICellFCC[i] = iCellFccBulkVector[i];
         para->getParH(level)->intFCBulk.ICellFCF[i] = iCellFcfBulkVector[i];
+        para->getParH(level)->offFCBulk.xOffFC[i]   = xOffFCBulkVector[i];
+        para->getParH(level)->offFCBulk.yOffFC[i]   = yOffFCBulkVector[i];
+        para->getParH(level)->offFCBulk.zOffFC[i]   = zOffFCBulkVector[i];
     }
 }
 
 void IndexRearrangementForStreams::splitCoarseToFineIntoBorderAndBulk(const uint &level)
 {
-    this->getGridInterfaceIndicesBorderBulkCF(level);
+    this->reorderCoarseToFineIntoBorderAndBulk(level);
 
     para->getParD(level)->intCFBorder.kCF      = para->getParH(level)->intCFBorder.kCF;
     para->getParD(level)->intCFBulk.kCF        = para->getParH(level)->intCFBulk.kCF;
@@ -537,7 +562,7 @@ void IndexRearrangementForStreams::splitCoarseToFineIntoBorderAndBulk(const uint
     para->getParD(level)->offCFBulk.zOffCF = para->getParD(level)->offCF.zOffCF + para->getParD(level)->intCFBorder.kCF;
 }
 
-void IndexRearrangementForStreams::getGridInterfaceIndicesBorderBulkCF(int level)
+void IndexRearrangementForStreams::reorderCoarseToFineIntoBorderAndBulk(int level)
 {
     // create some local variables for better readability
     uint *iCellCfcAll  = para->getParH(level)->intCF.ICellCFC;
@@ -570,8 +595,7 @@ void IndexRearrangementForStreams::getGridInterfaceIndicesBorderBulkCF(int level
             grid->isSparseIndexInFluidNodeIndicesBorder(neighborY[neighborX[sparseIndexOfICellBSW]]) ||
             grid->isSparseIndexInFluidNodeIndicesBorder(neighborZ[neighborX[sparseIndexOfICellBSW]]) ||
             grid->isSparseIndexInFluidNodeIndicesBorder(neighborZ[neighborY[sparseIndexOfICellBSW]]) ||
-            grid->isSparseIndexInFluidNodeIndicesBorder(
-                neighborZ[neighborY[neighborX[sparseIndexOfICellBSW]]])) {
+            grid->isSparseIndexInFluidNodeIndicesBorder(neighborZ[neighborY[neighborX[sparseIndexOfICellBSW]]])) {
 
             iCellCfcBorderVector.push_back(iCellCfcAll[i]);
             iCellCffBorderVector.push_back(iCellCffAll[i]);
