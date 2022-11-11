@@ -251,10 +251,10 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->addCoarseGrid( xGridMin,  0.0,  0.0,
                                 xGridMax,  L_y,  L_z, dx);
-    if(false)// Add refinement
+    if(true)// Add refinement
     {
         gridBuilder->setNumberOfLayers(12, 8);
-        gridBuilder->addGrid( new Cuboid( 0.1*L_x, 0.2*L_y, 0.2*L_z, 0.8*L_x,  0.8*L_y,  0.3*L_z) , 1 );
+        gridBuilder->addGrid( new Cuboid( xGridMin, 0.f, 0.f, xGridMax, L_y,  0.3*L_z) , 1 );
         para->setMaxLevel(2);
         scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleRhoSq);
     }
@@ -263,7 +263,7 @@ void multipleLevel(const std::string& configPath)
     {
             gridBuilder->setSubDomainBox(
                         std::make_shared<BoundingBox>(xMin, xMax, yMin, yMax, zMin, zMax));        
-            gridBuilder->setPeriodicBoundaryCondition(false, false, false);
+            gridBuilder->setPeriodicBoundaryCondition(false, true, false);
     }
     else         
     { 
@@ -285,15 +285,15 @@ void multipleLevel(const std::string& configPath)
             gridBuilder->setCommunicationProcess(CommunicationDirections::MX, procID-1);
         }
 
-        // if (isFirstSubDomain) {
-        //     gridBuilder->findCommunicationIndices(CommunicationDirections::MX, lbmOrGks);
-        //     gridBuilder->setCommunicationProcess(CommunicationDirections::MX, nProcs-1);
-        // }
+        if (isFirstSubDomain) {
+            gridBuilder->findCommunicationIndices(CommunicationDirections::MX, lbmOrGks);
+            gridBuilder->setCommunicationProcess(CommunicationDirections::MX, nProcs-1);
+        }
 
-        // if (isLastSubDomain) {
-        //     gridBuilder->findCommunicationIndices(CommunicationDirections::PX, lbmOrGks);
-        //     gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 0);
-        // }
+        if (isLastSubDomain) {
+            gridBuilder->findCommunicationIndices(CommunicationDirections::PX, lbmOrGks);
+            gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 0);
+        }
     }
     uint samplingOffset = 2;
     
