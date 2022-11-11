@@ -56,9 +56,12 @@ void startBlockingMpiSend(unsigned int numberOfSendProcessNeighbors, vf::gpu::Co
                           std::vector<ProcessNeighbor27> *sendProcessNeighborHost)
 {
     for (unsigned int i = 0; i < numberOfSendProcessNeighbors; i++) {
-        comm.sendDataGPU((*sendProcessNeighborHost)[i].f[0], 
-                          (*sendProcessNeighborHost)[i].numberOfFs,
-                          (*sendProcessNeighborHost)[i].rankNeighbor);
+        std::cout << "Process " << comm.getPID() << " dir " << i << " n send " << (*sendProcessNeighborHost)[i].numberOfNodes << std::endl;
+        // if((*sendProcessNeighborHost)[i].numberOfNodes>0){
+            comm.sendDataGPU((*sendProcessNeighborHost)[i].f[0], 
+                            (*sendProcessNeighborHost)[i].numberOfFs,
+                            (*sendProcessNeighborHost)[i].rankNeighbor);
+        // }
     }
 }
 
@@ -66,9 +69,12 @@ void startNonBlockingMpiReceive(unsigned int numberOfSendProcessNeighbors, vf::g
                                 std::vector<ProcessNeighbor27> *recvProcessNeighborHost)
 {
     for (unsigned int i = 0; i < numberOfSendProcessNeighbors; i++) {
-        comm.nbRecvDataGPU((*recvProcessNeighborHost)[i].f[0], 
-                            (*recvProcessNeighborHost)[i].numberOfFs,
-                            (*recvProcessNeighborHost)[i].rankNeighbor);
+        std::cout << "Process " << comm.getPID() << " dir " << i << " n receive " << (*recvProcessNeighborHost)[i].numberOfNodes << std::endl;
+        // if((*recvProcessNeighborHost)[i].numberOfNodes>0){
+            comm.nbRecvDataGPU((*recvProcessNeighborHost)[i].f[0], 
+                                (*recvProcessNeighborHost)[i].numberOfFs,
+                                (*recvProcessNeighborHost)[i].rankNeighbor);
+        // }
     }
 }
 
@@ -113,6 +119,7 @@ void prepareExchangeCollDataXGPU27AllNodes(Parameter *para, int level, int strea
 
 void prepareExchangeCollDataXGPU27AfterFtoC(Parameter *para, int level, int streamIndex)
 {
+    // std::cout<< "&para->getParD(level)->sendProcessNeighborsAfterFtoCX "<< para->getParD(level)->sendProcessNeighborsAfterFtoCX << std::endl;
     collectNodesInSendBufferGPU(para, level, streamIndex, &para->getParD(level)->sendProcessNeighborsAfterFtoCX,
                                 (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")));
 }
