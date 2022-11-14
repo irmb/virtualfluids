@@ -102,6 +102,10 @@ namespace actuator_farm
         .def("get_turbine_blade_forces_y_device", [](ActuatorFarm& al, uint turbine) -> intptr_t { return reinterpret_cast<intptr_t>(al.getTurbineBladeForcesYDevice(turbine)); } )
         .def("get_turbine_blade_forces_z_device", [](ActuatorFarm& al, uint turbine) -> intptr_t { return reinterpret_cast<intptr_t>(al.getTurbineBladeForcesZDevice(turbine)); } )
 
+        .def("set_all_azimuths", [](ActuatorFarm& al, arr azimuths){ al.setAllAzimuths(static_cast<float *>(azimuths.request().ptr)); })
+        .def("set_all_yaws", [](ActuatorFarm& al, arr yaws){ al.setAllYaws(static_cast<float *>(yaws.request().ptr)); })
+        .def("set_all_omegas", [](ActuatorFarm& al, arr omegas){ al.setAllOmegas(static_cast<float *>(omegas.request().ptr)); })
+
         .def("set_turbine_azimuth", &ActuatorFarm::setTurbineAzimuth)
         .def("set_turbine_yaw", &ActuatorFarm::setTurbineYaw)
         .def("set_turbine_omega", &ActuatorFarm::setTurbineOmega)

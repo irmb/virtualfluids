@@ -5,9 +5,9 @@
 #include <iostream>
 #include <mpi.h>
 
+#include "DataStructureInitializer/GridReaderGenerator/IndexRearrangementForStreams.h"
 #include "Parameter/Parameter.h"
 #include "basics/config/ConfigurationFile.h"
-#include "DataStructureInitializer/GridReaderGenerator/IndexRearrangementForStreams.h"
 #include "gpu/GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "gpu/GridGenerator/grid/GridImp.h"
 #include "gpu/GridGenerator/utilities/communication.h"
@@ -33,10 +33,22 @@ private:
 
 public:
     LevelGridBuilderDouble(SPtr<Grid> grid) : LevelGridBuilder(), grid(grid){};
-    SPtr<Grid> getGrid(uint level) override { return grid; };
-    std::shared_ptr<Grid> getGrid(int level, int box) override { return grid; };
-    void setNumberOfSendIndices(uint numberOfSendIndices) { this->numberOfSendIndices = numberOfSendIndices; };
-    uint getNumberOfSendIndices(int direction, uint level) override { return numberOfSendIndices; };
+    SPtr<Grid> getGrid(uint level) override
+    {
+        return grid;
+    };
+    std::shared_ptr<Grid> getGrid(int level, int box) override
+    {
+        return grid;
+    };
+    void setNumberOfSendIndices(uint numberOfSendIndices)
+    {
+        this->numberOfSendIndices = numberOfSendIndices;
+    };
+    uint getNumberOfSendIndices(int direction, uint level) override
+    {
+        return numberOfSendIndices;
+    };
 };
 
 class GridImpDouble : public GridImp
@@ -52,11 +64,9 @@ public:
     }
 
     static SPtr<GridImpDouble> makeShared(Object *object, real startX, real startY, real startZ, real endX, real endY,
-                                          real endZ, real delta, Distribution d,
-                                          uint level)
+                                          real endZ, real delta, Distribution d, uint level)
     {
-        SPtr<GridImpDouble> grid(
-            new GridImpDouble(object, startX, startY, startZ, endX, endY, endZ, delta, d, level));
+        SPtr<GridImpDouble> grid(new GridImpDouble(object, startX, startY, startZ, endX, endY, endZ, delta, d, level));
         return grid;
     }
 
@@ -75,28 +85,28 @@ public:
 struct CFBorderBulk {
     // data to work on
     std::vector<uint> fluidNodeIndicesBorder = { 10, 11, 12, 13, 14, 15, 16 };
-    std::vector<uint> iCellCFC               = { 1, 11, 3, 13, 5, 15, 7 };
-    std::vector<uint> iCellCFF               = { 2, 12, 4, 14, 6, 16, 8 };
-    uint sizeOfICellCf                       = (uint)iCellCFC.size();
-    uint neighborX[17]                    = { 0u };
-    uint neighborY[17]                    = { 0u };
-    uint neighborZ[17]                    = { 0u };
-    int level                                = 0;
-    std::vector<real> offsetCFx              = { 1, 11, 3, 13, 5, 15, 7 };
-    std::vector<real> offsetCFy              = { 101, 111, 103, 113, 105, 115, 107 };
-    std::vector<real> offsetCFz              = { 1001, 1011, 1003, 1013, 1005, 1015, 1007 };
+    std::vector<uint> iCellCFC = { 1, 11, 3, 13, 5, 15, 7 };
+    std::vector<uint> iCellCFF = { 2, 12, 4, 14, 6, 16, 8 };
+    uint sizeOfICellCf = (uint)iCellCFC.size();
+    uint neighborX[17] = { 0u };
+    uint neighborY[17] = { 0u };
+    uint neighborZ[17] = { 0u };
+    int level = 0;
+    std::vector<real> offsetCFx = { 1, 11, 3, 13, 5, 15, 7 };
+    std::vector<real> offsetCFy = { 101, 111, 103, 113, 105, 115, 107 };
+    std::vector<real> offsetCFz = { 1001, 1011, 1003, 1013, 1005, 1015, 1007 };
 
     // expected data
-    std::vector<uint> iCellCfcBorder_expected   = { 11, 13, 15 };
-    std::vector<uint> iCellCfcBulk_expected     = { 1, 3, 5, 7 };
-    std::vector<uint> iCellCffBorder_expected   = { 12, 14, 16 };
-    std::vector<uint> iCellCffBulk_expected     = { 2, 4, 6, 8 };
+    std::vector<uint> iCellCfcBorder_expected = { 11, 13, 15 };
+    std::vector<uint> iCellCfcBulk_expected = { 1, 3, 5, 7 };
+    std::vector<uint> iCellCffBorder_expected = { 12, 14, 16 };
+    std::vector<uint> iCellCffBulk_expected = { 2, 4, 6, 8 };
     std::vector<real> offsetCFx_Border_expected = { 11, 13, 15 };
-    std::vector<real> offsetCFx_Bulk_expected   = { 1, 3, 5, 7 };
+    std::vector<real> offsetCFx_Bulk_expected = { 1, 3, 5, 7 };
     std::vector<real> offsetCFy_Border_expected = { 111, 113, 115 };
-    std::vector<real> offsetCFy_Bulk_expected   = { 101, 103, 105, 107 };
+    std::vector<real> offsetCFy_Bulk_expected = { 101, 103, 105, 107 };
     std::vector<real> offsetCFz_Border_expected = { 1011, 1013, 1015 };
-    std::vector<real> offsetCFz_Bulk_expected   = { 1001, 1003, 1005, 1007 };
+    std::vector<real> offsetCFz_Bulk_expected = { 1001, 1003, 1005, 1007 };
 };
 
 class IndexRearrangementForStreamsTest_IndicesCFBorderBulkTest : public testing::Test
@@ -115,17 +125,17 @@ private:
         std::shared_ptr<LevelGridBuilderDouble> builder = std::make_shared<LevelGridBuilderDouble>(grid);
 
         para->setMaxLevel(cf.level + 1); // setMaxLevel resizes parH and parD
-        para->parH[cf.level]                    = std::make_shared<LBMSimulationParameter>();
-        para->parD[cf.level]                    = std::make_shared<LBMSimulationParameter>();
+        para->parH[cf.level] = std::make_shared<LBMSimulationParameter>();
+        para->parD[cf.level] = std::make_shared<LBMSimulationParameter>();
         para->getParH(cf.level)->intCF.ICellCFC = &(cf.iCellCFC.front());
         para->getParH(cf.level)->intCF.ICellCFF = &(cf.iCellCFF.front());
-        para->getParH(cf.level)->neighborX   = cf.neighborX;
-        para->getParH(cf.level)->neighborY   = cf.neighborY;
-        para->getParH(cf.level)->neighborZ   = cf.neighborZ;
-        para->getParH(cf.level)->intCF.kCF      = cf.sizeOfICellCf;
-        para->getParH(cf.level)->offCF.xOffCF   = &(cf.offsetCFx.front());
-        para->getParH(cf.level)->offCF.yOffCF   = &(cf.offsetCFy.front());
-        para->getParH(cf.level)->offCF.zOffCF   = &(cf.offsetCFz.front());
+        para->getParH(cf.level)->neighborX = cf.neighborX;
+        para->getParH(cf.level)->neighborY = cf.neighborY;
+        para->getParH(cf.level)->neighborZ = cf.neighborZ;
+        para->getParH(cf.level)->intCF.kCF = cf.sizeOfICellCf;
+        para->getParH(cf.level)->offCF.xOffCF = &(cf.offsetCFx.front());
+        para->getParH(cf.level)->offCF.yOffCF = &(cf.offsetCFy.front());
+        para->getParH(cf.level)->offCF.zOffCF = &(cf.offsetCFz.front());
 
         return std::make_unique<IndexRearrangementForStreams>(para, builder, vf::gpu::Communicator::getInstance());
     };
@@ -176,16 +186,25 @@ TEST_F(IndexRearrangementForStreamsTest_IndicesCFBorderBulkTest, splitCoarseToFi
 struct FCBorderBulk {
     // data to work on
     std::vector<uint> fluidNodeIndicesBorder = { 110, 111, 112, 113, 114, 115, 116 };
-    std::vector<uint> iCellFCC               = { 11, 111, 13, 113, 15, 115, 17 };
-    std::vector<uint> iCellFCF               = { 12, 112, 14, 114, 16, 116, 18 };
-    uint sizeOfICellFC                       = (uint)iCellFCC.size();
-    int level                                = 1;
+    std::vector<uint> iCellFCC = { 11, 111, 13, 113, 15, 115, 17 };
+    std::vector<uint> iCellFCF = { 12, 112, 14, 114, 16, 116, 18 };
+    uint sizeOfICellFC = (uint)iCellFCC.size();
+    int level = 1;
+    std::vector<real> offsetFCx = { 11, 111, 13, 113, 15, 115, 17 };
+    std::vector<real> offsetFCy = { 1101, 1111, 1103, 1113, 1105, 1115, 1107 };
+    std::vector<real> offsetFCz = { 11001, 11011, 11003, 11013, 11005, 11015, 11007 };
 
     // expected data
     std::vector<uint> iCellFccBorder_expected = { 111, 113, 115 };
-    std::vector<uint> iCellFccBulk_expected   = { 11, 13, 15, 17 };
+    std::vector<uint> iCellFccBulk_expected = { 11, 13, 15, 17 };
     std::vector<uint> iCellFcfBorder_expected = { 112, 114, 116 };
-    std::vector<uint> iCellFcfBulk_expected   = { 12, 14, 16, 18 };
+    std::vector<uint> iCellFcfBulk_expected = { 12, 14, 16, 18 };
+    std::vector<real> offsetFCx_Border_expected = { 111, 113, 115 };
+    std::vector<real> offsetFCx_Bulk_expected = { 11, 13, 15, 17 };
+    std::vector<real> offsetFCy_Border_expected = { 1111, 1113, 1115 };
+    std::vector<real> offsetFCy_Bulk_expected = { 1101, 1103, 1105, 1107 };
+    std::vector<real> offsetFCz_Border_expected = { 11011, 11013, 11015 };
+    std::vector<real> offsetFCz_Bulk_expected = { 11001, 11003, 11005, 11007 };
 };
 
 class IndexRearrangementForStreamsTest_IndicesFCBorderBulkTest : public testing::Test
@@ -204,18 +223,21 @@ private:
         std::shared_ptr<LevelGridBuilderDouble> builder = std::make_shared<LevelGridBuilderDouble>(grid);
 
         para->setMaxLevel(fc.level + 1); // setMaxLevel resizes parH and parD
-        para->parH[fc.level]                    = std::make_shared<LBMSimulationParameter>();
-        para->parD[fc.level]                    = std::make_shared<LBMSimulationParameter>();
+        para->parH[fc.level] = std::make_shared<LBMSimulationParameter>();
+        para->parD[fc.level] = std::make_shared<LBMSimulationParameter>();
         para->getParH(fc.level)->intFC.ICellFCC = &(fc.iCellFCC.front());
         para->getParH(fc.level)->intFC.ICellFCF = &(fc.iCellFCF.front());
-        para->getParH(fc.level)->intFC.kFC      = fc.sizeOfICellFC;
+        para->getParH(fc.level)->intFC.kFC = fc.sizeOfICellFC;
+        para->getParH(fc.level)->offFC.xOffFC = &(fc.offsetFCx.front());
+        para->getParH(fc.level)->offFC.yOffFC = &(fc.offsetFCy.front());
+        para->getParH(fc.level)->offFC.zOffFC = &(fc.offsetFCz.front());
 
         return std::make_unique<IndexRearrangementForStreams>(para, builder, vf::gpu::Communicator::getInstance());
     };
 
     void SetUp() override
     {
-        para        = std::make_shared<Parameter>();
+        para = std::make_shared<Parameter>();
         testSubject = createTestSubjectFCBorderBulk();
     }
 };
@@ -245,29 +267,38 @@ TEST_F(IndexRearrangementForStreamsTest_IndicesFCBorderBulkTest, splitFineToCoar
     EXPECT_THAT(para->getParH(fc.level)->intFCBulk.kFC, testing::Eq((uint)fc.iCellFcfBulk_expected.size()));
     EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->intFCBulk.ICellFCF, fc.iCellFcfBulk_expected))
         << "intFCBulk.ICellFCF does not match the expected bulk vector";
+
+    // check offset cells
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->offFC.xOffFC, fc.offsetFCx_Border_expected));
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->offFCBulk.xOffFC, fc.offsetFCx_Bulk_expected));
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->offFC.yOffFC, fc.offsetFCy_Border_expected));
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->offFCBulk.yOffFC, fc.offsetFCy_Bulk_expected));
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->offFC.zOffFC, fc.offsetFCz_Border_expected));
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->offFCBulk.zOffFC, fc.offsetFCz_Bulk_expected));
 }
+
 struct SendIndicesForCommAfterFtoCX {
     // data to work on
     std::vector<int> sendIndices = { 10, 11, 12, 13, 14, 15, 16 };
-    int level                    = 0;
-    int direction                = CommunicationDirections::MX;
+    int level = 0;
+    int direction = CommunicationDirections::MX;
     int numberOfProcessNeighbors = 1;
-    int indexOfProcessNeighbor   = 0;
+    int indexOfProcessNeighbor = 0;
 
     std::vector<uint> iCellCFC = { 8, 10, 12 };
     std::vector<uint> iCellFCC = { 14, 16, 18 };
-    uint kCF                   = (uint)iCellCFC.size();
-    uint kFC                   = (uint)iCellFCC.size();
-    uint neighborX[18]      = { 0u };
-    uint neighborY[18]      = { 0u };
-    uint neighborZ[18]      = { 0u };
+    uint kCF = (uint)iCellCFC.size();
+    uint kFC = (uint)iCellFCC.size();
+    uint neighborX[18] = { 0u };
+    uint neighborY[18] = { 0u };
+    uint neighborZ[18] = { 0u };
 
     // output data
     std::vector<uint> sendIndicesForCommAfterFtoCPositions;
 
     // expected data
     std::vector<uint> sendIndicesForCommAfterFtoCPositions_expected = { 4, 6, 0, 2 };
-    std::vector<int> sendProcessNeighborX_expected                  = { 14, 16, 10, 12, 11, 13, 15 };
+    std::vector<int> sendProcessNeighborX_expected = { 14, 16, 10, 12, 11, 13, 15 };
     int numberOfSendNodesAfterFtoC_expected = (int)sendIndicesForCommAfterFtoCPositions_expected.size();
 };
 
@@ -283,6 +314,7 @@ protected:
         testSubject->reorderSendIndicesForCommAfterFtoCX(si.direction, si.level, si.indexOfProcessNeighbor,
                                                          si.sendIndicesForCommAfterFtoCPositions);
     };
+
 private:
     std::unique_ptr<IndexRearrangementForStreams> createTestSubjectReorderSendIndices()
     {
@@ -297,24 +329,25 @@ private:
         para->parH[si.level] = std::make_shared<LBMSimulationParameter>();
         para->parD[si.level] = std::make_shared<LBMSimulationParameter>();
 
-        para->getParH(si.level)->intFC.kFC      = si.kFC;
+        para->getParH(si.level)->intFC.kFC = si.kFC;
         para->getParH(si.level)->intFC.ICellFCC = &(si.iCellFCC.front());
         para->getParH(si.level)->intCF.ICellCFC = &(si.iCellCFC.front());
-        para->getParH(si.level)->intCF.kCF      = si.kCF;
-        para->getParH(si.level)->neighborX   = si.neighborX;
-        para->getParH(si.level)->neighborY   = si.neighborY;
-        para->getParH(si.level)->neighborZ   = si.neighborZ;
+        para->getParH(si.level)->intCF.kCF = si.kCF;
+        para->getParH(si.level)->neighborX = si.neighborX;
+        para->getParH(si.level)->neighborY = si.neighborY;
+        para->getParH(si.level)->neighborZ = si.neighborZ;
 
         para->setNumberOfProcessNeighborsX(si.numberOfProcessNeighbors, si.level, "send");
         para->getParH(si.level)->sendProcessNeighborX[si.indexOfProcessNeighbor].index = si.sendIndices.data();
         para->initProcessNeighborsAfterFtoCX(si.level);
 
-        return std::make_unique<IndexRearrangementForStreams>(IndexRearrangementForStreams(para, builder, vf::gpu::Communicator::getInstance()));
+        return std::make_unique<IndexRearrangementForStreams>(
+            IndexRearrangementForStreams(para, builder, vf::gpu::Communicator::getInstance()));
     };
 
     void SetUp() override
     {
-        para        = std::make_shared<Parameter>();
+        para = std::make_shared<Parameter>();
         testSubject = createTestSubjectReorderSendIndices();
     };
 };

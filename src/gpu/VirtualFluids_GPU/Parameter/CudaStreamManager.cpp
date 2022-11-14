@@ -34,7 +34,7 @@
 #include <iostream>
 
 void CudaStreamManager::registerStream(CudaStreamIndex streamIndex)
-{
+{   
     if(streamIndex != CudaStreamIndex::Legacy)
         cudaStreams.emplace(streamIndex, nullptr);
 }
@@ -50,10 +50,16 @@ void CudaStreamManager::terminateStreams()
         cudaStreamDestroy(stream.second);
 }
 
-cudaStream_t &CudaStreamManager::getStream(CudaStreamIndex streamIndex)
+cudaStream_t &CudaStreamManager::getStream(CudaStreamIndex streamIndex, uint multiStreamIndex)
 {
     if(streamIndex == CudaStreamIndex::Legacy)  return legacyStream;
-    return streamIsRegistered(streamIndex) ? cudaStreams[streamIndex] : legacyStream; 
+    if(streamIsRegistered(streamIndex))
+    {
+        auto it = cudaStreams.find(streamIndex);
+        for(uint idx=0; idx<multiStreamIndex; idx++) it++;
+        return it->second;
+    }
+    return legacyStream;
 }
 
 bool CudaStreamManager::streamIsRegistered(CudaStreamIndex streamIndex)
@@ -71,12 +77,12 @@ void CudaStreamManager::destroyCudaEvents()
     checkCudaErrors(cudaEventDestroy(startBulkKernel)); 
 }
 
-void CudaStreamManager::triggerStartBulkKernel(CudaStreamIndex streamIndex)
+void CudaStreamManager::triggerStartBulkKernel(CudaStreamIndex streamIndex, uint multiStreamIndex)
 {
-    checkCudaErrors(cudaEventRecord(startBulkKernel, cudaStreams[streamIndex]));
+    checkCudaErrors(cudaEventRecord(startBulkKernel, getStream(streamIndex, multiStreamIndex)));
 }
 
-void CudaStreamManager::waitOnStartBulkKernelEvent(CudaStreamIndex streamIndex)
+void CudaStreamManager::waitOnStartBulkKernelEvent(CudaStreamIndex streamIndex, uint multiStreamIndex)
 {
-    checkCudaErrors(cudaStreamWaitEvent(cudaStreams[streamIndex], startBulkKernel));
+    checkCudaErrors(cudaStreamWaitEvent(getStream(streamIndex, multiStreamIndex), startBulkKernel));
 }

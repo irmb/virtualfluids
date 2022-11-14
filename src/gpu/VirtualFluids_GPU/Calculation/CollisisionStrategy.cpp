@@ -89,11 +89,11 @@ void CollisionAndExchange_streams::operator()(UpdateGrid27 *updateGrid, Paramete
     
     for( CollisionTemplate tag: para->getParH(level)->allocatedBulkFluidNodeTags )
     {
-    updateGrid->collisionUsingIndices(  level, t, 
-                                        para->getParD(level)->taggedFluidNodeIndices[tag],
-                                        para->getParD(level)->numberOfTaggedFluidNodes[tag], 
-                                        tag,
-                                        CudaStreamIndex::Bulk);
+        updateGrid->collisionUsingIndices(  level, t, 
+                                            para->getParD(level)->taggedFluidNodeIndices[tag],
+                                            para->getParD(level)->numberOfTaggedFluidNodes[tag], 
+                                            tag,
+                                            CudaStreamIndex::Bulk);
     }
     //! 4. exchange information between GPUs
     updateGrid->exchangeMultiGPU(level, CudaStreamIndex::Border);

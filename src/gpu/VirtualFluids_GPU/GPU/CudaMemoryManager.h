@@ -18,7 +18,6 @@
 
 class Parameter;
 class PorousMedia;
-class ActuatorLine;
 class ActuatorFarm;
 class Probe;
 class VelocitySetter;
@@ -352,35 +351,6 @@ public:
     void cudaAllocTaggedFluidNodeIndices(CollisionTemplate tag, int lev);
     void cudaCopyTaggedFluidNodeIndices(CollisionTemplate tag, int lev);
     void cudaFreeTaggedFluidNodeIndices(CollisionTemplate tag, int lev);
-
-    // Actuator Line
-    void cudaAllocBladeRadii(ActuatorLine* actuatorLine);
-    void cudaCopyBladeRadiiHtoD(ActuatorLine* actuatorLine);
-    void cudaCopyBladeRadiiDtoH(ActuatorLine* actuatorLine);
-    void cudaFreeBladeRadii(ActuatorLine* actuatorLine);
-
-    void cudaAllocBladeCoords(ActuatorLine* actuatorLine);
-    void cudaCopyBladeCoordsHtoD(ActuatorLine* actuatorLine);
-    void cudaCopyBladeCoordsDtoH(ActuatorLine* actuatorLine);
-    void cudaFreeBladeCoords(ActuatorLine* actuatorLine);
-
-    void cudaAllocBladeIndices(ActuatorLine* actuatorLine);
-    void cudaCopyBladeIndicesHtoD(ActuatorLine* actuatorLine);
-    void cudaFreeBladeIndices(ActuatorLine* actuatorLine);
-
-    void cudaAllocBladeVelocities(ActuatorLine* actuatorLine);
-    void cudaCopyBladeVelocitiesHtoD(ActuatorLine* actuatorLine);
-    void cudaCopyBladeVelocitiesDtoH(ActuatorLine* actuatorLine);
-    void cudaFreeBladeVelocities(ActuatorLine* actuatorLine);
-
-    void cudaAllocBladeForces(ActuatorLine* actuatorLine);
-    void cudaCopyBladeForcesHtoD(ActuatorLine* actuatorLine);
-    void cudaCopyBladeForcesDtoH(ActuatorLine* actuatorLine);
-    void cudaFreeBladeForces(ActuatorLine* actuatorLine);
-
-    void cudaAllocSphereIndices(ActuatorLine* actuatorLine);
-    void cudaCopySphereIndicesHtoD(ActuatorLine* actuatorLine);
-    void cudaFreeSphereIndices(ActuatorLine* actuatorLine);
 
     // ActuatorFarm
     void cudaAllocBladeGeometries(ActuatorFarm* actuatorFarm);

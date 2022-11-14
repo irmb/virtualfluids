@@ -119,8 +119,6 @@ void GridGenerator::allocArrays_taggedFluidNodes() {
                     cudaMemoryManager->cudaAllocTaggedFluidNodeIndices(CollisionTemplate::Border, level);
                     builder->getFluidNodeIndicesBorder(para->getParH(level)->taggedFluidNodeIndices[CollisionTemplate::Border], level);
                     cudaMemoryManager->cudaCopyTaggedFluidNodeIndices(CollisionTemplate::Border, level);
-                    if(para->getParH(level)->numberOfTaggedFluidNodes[tag]>0)
-                        para->getParH(level)->allocatedBulkFluidNodeTags.push_back(tag);
                     break;
                 case CollisionTemplate::WriteMacroVars:
                     this->setNumberOfTaggedFluidNodes(builder->getNumberOfFluidNodesMacroVars(level), CollisionTemplate::WriteMacroVars, level);
@@ -557,10 +555,6 @@ void GridGenerator::initalValuesDomainDecompostion()
                         ////////////////////////////////////////////////////////////////////////////////////////
                         cudaMemoryManager->cudaCopyProcessNeighborXIndex(level, j);
                         ////////////////////////////////////////////////////////////////////////////////////////
-                        
-                        
-                        // int sendIDX = para->getParH(level)->sendProcessNeighborX[j].index[0];
-                        // int recvIDX = para->getParH(level)->recvProcessNeighborX[j].index[0];
                     }
                 }
 

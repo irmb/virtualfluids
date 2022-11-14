@@ -40,7 +40,7 @@ template<TurbulenceModel turbulenceModel>
 void CumulantK17Almighty<turbulenceModel>::runOnIndices( const unsigned int *indices, unsigned int size_indices, CollisionTemplate collisionTemplate, CudaStreamIndex streamIndex )
 {
 	cudaStream_t stream = para->getStreamManager()->getStream(streamIndex);
-
+	
 	switch (collisionTemplate)
 	{
 		case CollisionTemplate::Default:
