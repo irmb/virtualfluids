@@ -227,7 +227,7 @@ void multipleLevel(const std::string& configPath)
     if(true)// Add refinement
     {
         gridBuilder->setNumberOfLayers(12, 8);
-        gridBuilder->addGrid( new Cuboid( 0.1*L_x, 0.2*L_y, 0.2*L_z, 0.8*L_x,  0.8*L_y,  0.3*L_z) , 1 );
+        gridBuilder->addGrid( new Cuboid( xGridMin,  0.0,  0.0, xGridMax,  L_y,  L_z*0.2) , 1 );
         para->setMaxLevel(2);
         scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
     }

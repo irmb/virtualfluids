@@ -56,7 +56,7 @@ void startBlockingMpiSend(unsigned int numberOfSendProcessNeighbors, vf::gpu::Co
                           std::vector<ProcessNeighbor27> *sendProcessNeighborHost)
 {
     for (unsigned int i = 0; i < numberOfSendProcessNeighbors; i++) {
-        std::cout << "Process " << comm.getPID() << " dir " << i << " n send " << (*sendProcessNeighborHost)[i].numberOfNodes << std::endl;
+        // std::cout << "Process " << comm.getPID() << " dir " << i << " n send " << (*sendProcessNeighborHost)[i].numberOfNodes << " n f's " << (*sendProcessNeighborHost)[i].numberOfFs << std::endl;
         // if((*sendProcessNeighborHost)[i].numberOfNodes>0){
             comm.sendDataGPU((*sendProcessNeighborHost)[i].f[0], 
                             (*sendProcessNeighborHost)[i].numberOfFs,
@@ -69,7 +69,7 @@ void startNonBlockingMpiReceive(unsigned int numberOfSendProcessNeighbors, vf::g
                                 std::vector<ProcessNeighbor27> *recvProcessNeighborHost)
 {
     for (unsigned int i = 0; i < numberOfSendProcessNeighbors; i++) {
-        std::cout << "Process " << comm.getPID() << " dir " << i << " n receive " << (*recvProcessNeighborHost)[i].numberOfNodes << std::endl;
+        // std::cout << "Process " << comm.getPID() << " dir " << i << " n receive " << (*recvProcessNeighborHost)[i].numberOfNodes << " n f's " << (*recvProcessNeighborHost)[i].numberOfFs << std::endl;
         // if((*recvProcessNeighborHost)[i].numberOfNodes>0){
             comm.nbRecvDataGPU((*recvProcessNeighborHost)[i].f[0], 
                                 (*recvProcessNeighborHost)[i].numberOfFs,
