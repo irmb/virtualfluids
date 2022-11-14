@@ -49,6 +49,7 @@ namespace parameter
         .def("set_velocity_ratio", &Parameter::setVelocityRatio)
         .def("set_density_ratio", &Parameter::setDensityRatio)
         .def("set_devices", &Parameter::setDevices)
+        .def("set_max_dev", &Parameter::setMaxDev)
         .def("set_is_body_force", &Parameter::setIsBodyForce)
         .def("set_use_streams", &Parameter::setUseStreams)
         .def("set_main_kernel", &Parameter::setMainKernel)
