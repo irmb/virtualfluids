@@ -180,7 +180,8 @@ void multipleLevel(const std::string& configPath)
     para->setDensityRatio( 1.0 );
 
     bool useStreams = (nProcs > 1 ? true: false);
-    para->setUseStreams(true);
+    para->setUseStreams(false);
+    para->useReducedCommunicationAfterFtoC = false;
     para->setMainKernel("CumulantK17CompChimRedesigned");
     para->setIsBodyForce( config.getValue<bool>("bodyForce") );
     para->setTimestepStartOut(uint(tStartOut/dt) );
@@ -227,7 +228,7 @@ void multipleLevel(const std::string& configPath)
     if(true)// Add refinement
     {
         gridBuilder->setNumberOfLayers(12, 8);
-        gridBuilder->addGrid( new Cuboid( xGridMin,  0.0,  0.0, xGridMax,  L_y,  L_z*0.2) , 1 );
+        gridBuilder->addGrid( new Cuboid( xGridMin+500.f,  0.0,  0.0, xGridMax-500.f,  L_y,  L_z*0.2) , 1 );
         para->setMaxLevel(2);
         scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
     }
