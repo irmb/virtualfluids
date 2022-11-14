@@ -56,7 +56,7 @@ void startBlockingMpiSend(unsigned int numberOfSendProcessNeighbors, vf::gpu::Co
                           std::vector<ProcessNeighbor27> *sendProcessNeighborHost)
 {
     for (unsigned int i = 0; i < numberOfSendProcessNeighbors; i++) {
-        // std::cout << "Process " << comm.getPID() << " dir " << i << " n send " << (*sendProcessNeighborHost)[i].numberOfNodes << " n f's " << (*sendProcessNeighborHost)[i].numberOfFs << std::endl;
+        std::cout << "Process " << comm.getPID() << " dir " << i << " n send " << (*sendProcessNeighborHost)[i].numberOfNodes << " n f's " << (*sendProcessNeighborHost)[i].numberOfFs << std::endl;
         // if((*sendProcessNeighborHost)[i].numberOfNodes>0){
             comm.sendDataGPU((*sendProcessNeighborHost)[i].f[0], 
                             (*sendProcessNeighborHost)[i].numberOfFs,
@@ -69,7 +69,7 @@ void startNonBlockingMpiReceive(unsigned int numberOfSendProcessNeighbors, vf::g
                                 std::vector<ProcessNeighbor27> *recvProcessNeighborHost)
 {
     for (unsigned int i = 0; i < numberOfSendProcessNeighbors; i++) {
-        // std::cout << "Process " << comm.getPID() << " dir " << i << " n receive " << (*recvProcessNeighborHost)[i].numberOfNodes << " n f's " << (*recvProcessNeighborHost)[i].numberOfFs << std::endl;
+        std::cout << "Process " << comm.getPID() << " dir " << i << " n receive " << (*recvProcessNeighborHost)[i].numberOfNodes << " n f's " << (*recvProcessNeighborHost)[i].numberOfFs << std::endl;
         // if((*recvProcessNeighborHost)[i].numberOfNodes>0){
             comm.nbRecvDataGPU((*recvProcessNeighborHost)[i].f[0], 
                                 (*recvProcessNeighborHost)[i].numberOfFs,
@@ -166,7 +166,7 @@ void exchangeCollDataXGPU27(Parameter *para, vf::gpu::Communicator &comm, CudaMe
     cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //! \details steps: 
-
+    std::cout << "PROCESS " << comm.getPID() << " LEVEL " << level << std::endl;
     //! 1. copy data from device to host
     for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
         cudaMemoryManager->cudaCopyProcessNeighborXFsDH(level, i, (*sendProcessNeighborDev)[i].memsizeFs, streamIndex);
