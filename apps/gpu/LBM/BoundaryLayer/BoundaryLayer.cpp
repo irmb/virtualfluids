@@ -251,12 +251,12 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->addCoarseGrid( xGridMin,  0.0,  0.0,
                                 xGridMax,  L_y,  L_z, dx);
-    if(true)// Add refinement
+    if(false)// Add refinement
     {
         gridBuilder->setNumberOfLayers(12, 8);
         gridBuilder->addGrid( new Cuboid( xGridMin, 0.f, 0.f, xGridMax, L_y,  0.3*L_z) , 1 );
         para->setMaxLevel(2);
-        scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleRhoSq);
+        scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
     }
 
     if(nProcs > 1)
