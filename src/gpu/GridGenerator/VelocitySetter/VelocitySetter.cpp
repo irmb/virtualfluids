@@ -201,8 +201,7 @@ void VTKFileCollection::findFiles()
                 if(f.good())
                     filesWithThisId.emplace_back(fname);
                 else
-                    foundLastPart = true;
-                
+                    foundLastPart = true;    
             }
             if(!filesWithThisId.empty())
                 filesOnThisLevel.push_back(filesWithThisId);
@@ -210,8 +209,12 @@ void VTKFileCollection::findFiles()
         }
         if(!filesOnThisLevel.empty())
             files.push_back(filesOnThisLevel);
-        else foundLastLevel = true;
+        else 
+            foundLastLevel = true;
     }
+
+    if(files.empty())
+        VF_LOG_CRITICAL("VTKFileCollection found no files!"); 
 }
     
 void VelocityReader::getNeighbors(uint* neighborNT, uint* neighborNB, uint* neighborST, uint* neighborSB)

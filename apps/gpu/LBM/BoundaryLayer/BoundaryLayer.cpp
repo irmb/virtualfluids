@@ -142,7 +142,7 @@ void multipleLevel(const std::string& configPath)
     int nTWritePrecursor; real tStartPrecursor, posXPrecursor;
     if(writePrecursor)
     {
-        nTWritePrecursor      = config.getValue<int>("nTimestepsWritePrecursor");
+        nTWritePrecursor     = config.getValue<int>("nTimestepsWritePrecursor");
         tStartPrecursor      = config.getValue<real>("tStartPrecursor");
         posXPrecursor        = config.getValue<real>("posXPrecursor");
         useDistributions     = config.getValue<bool>("useDistributions", false);
@@ -294,15 +294,17 @@ void multipleLevel(const std::string& configPath)
     }
     uint samplingOffset = 2;
     
+    std::cout << " precursorDirectory " << precursorDirectory << std::endl;
+    
     if(readPrecursor)
     {
-        if(isFirstSubDomain)
-        {
+        if(isFirstSubDomain || nProcs == 1)
+        {   
             auto precursor = createFileCollection(precursorDirectory + "/precursor", FileType::VTK);
             gridBuilder->setPrecursorBoundaryCondition(SideType::MX, precursor, nTReadPrecursor);
         }
 
-        if(isLastSubDomain)
+        if(isLastSubDomain || nProcs == 1)
         {
             gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.f);
         }     
@@ -380,12 +382,11 @@ void multipleLevel(const std::string& configPath)
     //     para->addProbe( planeProbe6 );
     // }
 
-
-    // if(writePrecursor)
-    // {
-    //     SPtr<PrecursorWriter> precursorWriter = std::make_shared<PrecursorWriter>("precursor", para->getOutputPath()+precursorDirectory, posXPrecursor, 0, L_y, 0, L_z, tStartPrecursor/dt, nTWritePrecursor, useDistributions? OutputVariable::Distributions: OutputVariable::Velocities);
-    //     para->addProbe(precursorWriter);
-    // }
+    if(writePrecursor && (posXPrecursor > xMin && posXPrecursor < xMax))
+    {
+        SPtr<PrecursorWriter> precursorWriter = std::make_shared<PrecursorWriter>("precursor", para->getOutputPath()+precursorDirectory, posXPrecursor, 0, L_y, 0, L_z, tStartPrecursor/dt, nTWritePrecursor, useDistributions? OutputVariable::Distributions: OutputVariable::Velocities);
+        para->addProbe(precursorWriter);
+    }
 
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
     auto gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
