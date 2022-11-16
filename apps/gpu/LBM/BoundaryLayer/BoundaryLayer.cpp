@@ -248,7 +248,7 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->addCoarseGrid( xGridMin,  0.0,  0.0,
                                 xGridMax,  L_y,  L_z, dx);
-    if(false)// Add refinement
+    if(true)// Add refinement
     {
         gridBuilder->setNumberOfLayers(12, 8);
         gridBuilder->addGrid( new Cuboid( xGridMin, 0.f, 0.f, xGridMax, L_y,  0.3*L_z) , 1 );

@@ -204,13 +204,19 @@ void VTKFileCollection::findFiles()
                     foundLastPart = true;    
             }
             if(!filesWithThisId.empty())
+            {
+                VF_LOG_INFO("VTKFileCollection found {} files with ID {} level {}", filesWithThisId.size(), filesOnThisLevel.size(), files.size() );
                 filesOnThisLevel.push_back(filesWithThisId);
+            }
             else foundLastID = true;
         }
+
+
         if(!filesOnThisLevel.empty())
             files.push_back(filesOnThisLevel);
         else 
             foundLastLevel = true;
+
     }
 
     if(files.empty())
