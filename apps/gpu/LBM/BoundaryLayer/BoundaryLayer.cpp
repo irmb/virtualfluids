@@ -147,8 +147,6 @@ void multipleLevel(const std::string& configPath)
         posXPrecursor        = config.getValue<real>("posXPrecursor");
         useDistributions     = config.getValue<bool>("useDistributions", false);
         precursorDirectory = config.getValue<std::string>("precursorDirectory");
-
-
     }
 
     const bool readPrecursor = config.getValue("readPrecursor", false);
@@ -158,8 +156,8 @@ void multipleLevel(const std::string& configPath)
         nTReadPrecursor = config.getValue<int>("nTimestepsReadPrecursor");
         precursorDirectory = config.getValue<std::string>("precursorDirectory");
         useDistributions     = config.getValue<bool>("useDistributions", false);
-
     }
+
     // all in s
     const float tStartOut   = config.getValue<real>("tStartOut");
     const float tOut        = config.getValue<real>("tOut");
@@ -247,7 +245,6 @@ void multipleLevel(const std::string& configPath)
         xGridMax += overlap;
         xGridMin -= overlap;
     }
-    gridBuilder->setPeriodicBoundaryCondition(!readPrecursor, true, false);
 
     gridBuilder->addCoarseGrid( xGridMin,  0.0,  0.0,
                                 xGridMax,  L_y,  L_z, dx);
@@ -267,7 +264,7 @@ void multipleLevel(const std::string& configPath)
     }
     else         
     { 
-        gridBuilder->setPeriodicBoundaryCondition(true, true, false);
+        gridBuilder->setPeriodicBoundaryCondition(!readPrecursor, true, false);
     }
 
 	gridBuilder->buildGrids(lbmOrGks, true); // buildGrids() has to be called before setting the BCs!!!!
@@ -285,12 +282,12 @@ void multipleLevel(const std::string& configPath)
             gridBuilder->setCommunicationProcess(CommunicationDirections::MX, procID-1);
         }
 
-        if (isFirstSubDomain) {
+        if (isFirstSubDomain && !readPrecursor) {
             gridBuilder->findCommunicationIndices(CommunicationDirections::MX, lbmOrGks);
             gridBuilder->setCommunicationProcess(CommunicationDirections::MX, nProcs-1);
         }
 
-        if (isLastSubDomain) {
+        if (isLastSubDomain && !readPrecursor) {
             gridBuilder->findCommunicationIndices(CommunicationDirections::PX, lbmOrGks);
             gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 0);
         }
@@ -299,38 +296,29 @@ void multipleLevel(const std::string& configPath)
     
     if(readPrecursor)
     {
-        auto precursor = createFileCollection(precursorDirectory + "/precursor", FileType::VTK);
-        gridBuilder->setPrecursorBoundaryCondition(SideType::MX, precursor, nTReadPrecursor);
+        if(isFirstSubDomain)
+        {
+            auto precursor = createFileCollection(precursorDirectory + "/precursor", FileType::VTK);
+            gridBuilder->setPrecursorBoundaryCondition(SideType::MX, precursor, nTReadPrecursor);
+        }
 
-        gridBuilder->setStressBoundaryCondition(SideType::MZ,
-                                            0.0, 0.0, 1.0,              // wall normals
-                                            samplingOffset, z0/dx);     // wall model settinng
-        para->setHasWallModelMonitor(true);
-        
-        gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0f,  0.0f, -1.0f);
-
-        
-        gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.f);
+        if(isLastSubDomain)
+        {
+            gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.f);
+        }     
     } 
-    else
-    {
-        gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0,  0.0, -1.0);
 
-        gridBuilder->setStressBoundaryCondition(SideType::MZ,
+    gridBuilder->setStressBoundaryCondition(SideType::MZ,
                                             0.0, 0.0, 1.0,              // wall normals
                                             samplingOffset, z0/dx);     // wall model settinng
-        para->setHasWallModelMonitor(true);
-    }
-
-
+    para->setHasWallModelMonitor(true);   
+    gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0f,  0.0f, -1.0f); 
 
     bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressPressureBounceBack);
     bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipBounceBack); 
     bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflective);
     bcFactory.setPrecursorBoundaryCondition(useDistributions ? BoundaryConditionFactory::PrecursorBC::DistributionsPrecursor : BoundaryConditionFactory::PrecursorBC::VelocityPrecursor);
     para->setOutflowPressureCorrectionFactor(0.0); 
-
-
 
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)0.0;
