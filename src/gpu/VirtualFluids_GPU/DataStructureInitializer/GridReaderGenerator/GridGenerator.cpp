@@ -329,13 +329,12 @@ void GridGenerator::allocArrays_BoundaryValues()
         para->getParD(level)->precursorBC.numberOfBCnodes = numberOfPrecursorValues;
         para->getParH(level)->numberOfPrecursorBCnodesRead = numberOfPrecursorValues * para->getD3Qxx();
         para->getParD(level)->numberOfPrecursorBCnodesRead = numberOfPrecursorValues * para->getD3Qxx();
-
+        
         if (numberOfPrecursorValues > 1)
         {
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             cudaMemoryManager->cudaAllocPrecursorBC(level);
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
             builder->getPrecursorValues(
                     para->getParH(level)->precursorBC.planeNeighborNT, para->getParH(level)->precursorBC.planeNeighborNB, 
                     para->getParH(level)->precursorBC.planeNeighborST, para->getParH(level)->precursorBC.planeNeighborSB, 

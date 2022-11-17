@@ -634,14 +634,13 @@ void LevelGridBuilder::getPrecursorValues(  uint* neighborNT, uint* neighborNB, 
     int allNodesCounter = 0;
     uint tmpNTRead = 0;
     size_t tmpNQuantities = 0;
-
+    
     for (auto boundaryCondition : boundaryConditions[level]->precursorBoundaryConditions)
     {
         if( tmpNTRead == 0 )
             tmpNTRead = boundaryCondition->nTRead;
         if( tmpNTRead != boundaryCondition->nTRead )
             throw std::runtime_error("All precursor boundary conditions must have the same NTRead value");
-
         auto BCreader = boundaryCondition->getReader();
         BCreader->setWritingOffset(allIndicesCounter);
         reader.push_back(BCreader);

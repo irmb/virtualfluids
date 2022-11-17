@@ -354,7 +354,7 @@ private:
         return vf::gpu::BC_VELOCITY;
     }
 public:
-    uint nTRead;
+    uint nTRead; //!> read data every nth timestep
 
 private:
     real velocityX = 0.0;

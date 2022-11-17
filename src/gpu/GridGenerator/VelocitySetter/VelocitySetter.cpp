@@ -282,11 +282,12 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
         {
             for(int fileId=0; fileId<(int)this->fileCollection->files[level].size(); fileId++)
             {
-                VTKFile file = this->fileCollection->files[level][fileId][0];
+                VTKFile &file = this->fileCollection->files[level][fileId][0];
                 if(!file.inBoundingBox(posY, posZ, 0.0f)) continue;
+                std::cout << "level: " << level << ", fileID: " << fileId << ", pos: " << posY << " " << posZ << ", inBB: " << file.inBoundingBox(posY, posZ, 0.0f) << std::endl;
                 // y in simulation is x in precursor/file, z in simulation is y in precursor/file 
                 // simulation -> file: N -> E, S -> W, T -> N, B -> S
-                int idx = file.findNeighborWSB(posY, posZ, 0.f);
+                int idx = file.findNeighborWSB(posY, posZ, 0.f);                            //!> index of nearest WSB neighbor on precursor file
                 if(idx!=-1)
                 {
                     // Filter for exact matches
@@ -296,8 +297,8 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
                         this->weightsNB.emplace_back(0.f);
                         this->weightsST.emplace_back(0.f);
                         this->weightsSB.emplace_back(0.f);
-                        uint writeIdx = this->getWriteIndex(level, fileId, idx);
-                        this->planeNeighborNT.push_back(writeIdx);
+                        uint writeIdx = this->getWriteIndex(level, fileId, idx);            //!> writeIdx: index on host/device array where precursor value will be written to after loading from file
+                        this->planeNeighborNT.push_back(writeIdx);                          //!> neighbor lists mapping where BC kernel should read from on host/device array
                         this->planeNeighborNB.push_back(writeIdx);
                         this->planeNeighborST.push_back(writeIdx);
                         this->planeNeighborSB.push_back(writeIdx);
@@ -318,7 +319,7 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
                     }
                     
                 } 
-
+                std::cout << "idx: " << idx << ", point matches: " << (abs(posY-file.getX(idx)) < max_diff && abs(posZ-file.getY(idx)) < max_diff) << std::endl;
                 if(!foundNT) //NT in simulation is EN in precursor
                 {
                     int idx = file.findNeighborENB(posY, posZ, 0.f);
@@ -384,10 +385,10 @@ uint VTKReader::getWriteIndex(int level, int id, int linearIndex)
 {
     auto it = std::find(this->writeIndices[level][id].begin(), this->writeIndices[level][id].end(), linearIndex);
     uint idx = it-this->writeIndices[level][id].begin();
-    if(it==this->writeIndices[level][id].end())
+    if(it==this->writeIndices[level][id].end())                         
     {
-        this->writeIndices[level][id].push_back(this->nPointsRead);
-        this->readIndices[level][id].push_back(linearIndex);
+        this->writeIndices[level][id].push_back(this->nPointsRead);     //!> index on host/device array where value from file will be written to
+        this->readIndices[level][id].push_back(linearIndex);            //!> index in file that will be read from 
         this->nPointsRead++;
     }
     return idx;
