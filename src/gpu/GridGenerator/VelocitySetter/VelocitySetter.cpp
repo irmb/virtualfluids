@@ -270,7 +270,7 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
     this->planeNeighborNB.reserve(this->nPoints);
     this->planeNeighborST.reserve(this->nPoints);
     this->planeNeighborSB.reserve(this->nPoints);
-
+    std::cout << "nPoints " << nPoints << std::endl;
     for(uint i=0; i<nPoints; i++)
     {
 
@@ -278,13 +278,14 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
         real posZ = coordsZ[i];
         bool foundNT = false, foundNB = false, foundST = false, foundSB = false, foundAll = false;
 
-        for(int level = (int)this->fileCollection->files.size()-1; level>=0; level--) // go backwards to find finest nodes first
-        {
+        // for(int level = (int)this->fileCollection->files.size()-1; level>=0; level--) // go backwards to find finest nodes first
+        // {
+            uint level = this->readLevel;
             for(int fileId=0; fileId<(int)this->fileCollection->files[level].size(); fileId++)
             {
                 VTKFile &file = this->fileCollection->files[level][fileId][0];
-                if(!file.inBoundingBox(posY, posZ, 0.0f)) continue;
                 std::cout << "level: " << level << ", fileID: " << fileId << ", pos: " << posY << " " << posZ << ", inBB: " << file.inBoundingBox(posY, posZ, 0.0f) << std::endl;
+                if(!file.inBoundingBox(posY, posZ, 0.0f)) continue;
                 // y in simulation is x in precursor/file, z in simulation is y in precursor/file 
                 // simulation -> file: N -> E, S -> W, T -> N, B -> S
                 int idx = file.findNeighborWSB(posY, posZ, 0.f);                            //!> index of nearest WSB neighbor on precursor file
@@ -363,8 +364,8 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
 
                 if(foundAll) break;
             }
-            if(foundAll) break;
-        }
+            // if(foundAll) break;
+        // }
 
         if(!foundAll)
             throw std::runtime_error("Did not find neighbors in the VelocityFileCollection for all points");
@@ -397,8 +398,9 @@ uint VTKReader::getWriteIndex(int level, int id, int linearIndex)
 
 void VTKReader::getNextData(real* data, uint numberOfNodes, real time)
 {
-    for(size_t level=0; level<this->fileCollection->files.size(); level++)
-    {
+    // for(size_t level=0; level<this->fileCollection->files.size(); level++)
+    // {
+        uint level = this->readLevel;
         for(size_t id=0; id<this->fileCollection->files[level].size(); id++)
         {
             size_t nF = this->nFile[level][id];
@@ -431,5 +433,5 @@ void VTKReader::getNextData(real* data, uint numberOfNodes, real time)
             file->getData(data, numberOfNodes, this->readIndices[level][id], this->writeIndices[level][id], off, this->writingOffset);
             this->nFile[level][id] = nF;
         }
-    }
+    // }
 }
