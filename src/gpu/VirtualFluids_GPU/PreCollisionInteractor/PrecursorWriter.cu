@@ -160,7 +160,7 @@ void PrecursorWriter::init(Parameter* para, GridProvider* gridProvider, CudaMemo
         precursorStructs[level] = SPtr<PrecursorStruct>(new PrecursorStruct);
         precursorStructs[level]->nPoints = (uint)indicesOnGrid.size();
         precursorStructs[level]->indicesOnPlane = (int*) malloc(precursorStructs[level]->nPoints*sizeof(int));
-        precursorStructs[level]->spacing = makeUbTuple(dx, dx, tSave*para->getTimeRatio());
+        precursorStructs[level]->spacing = makeUbTuple(dx, dx, tSave*para->getTimeRatio()*pow(2,-level));
         precursorStructs[level]->origin = makeUbTuple(lowestY, lowestZ);
         precursorStructs[level]->extent = makeUbTuple(0, ny-1, 0, nz-1);
         precursorStructs[level]->nPointsInPlane = ny*nz;
