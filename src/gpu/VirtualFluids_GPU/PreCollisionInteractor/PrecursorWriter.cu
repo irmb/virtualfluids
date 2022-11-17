@@ -225,7 +225,7 @@ void PrecursorWriter::interact(Parameter* para, CudaMemoryManager* cudaManager, 
 
         precursorStructs[level]->timestepsBuffered++;
 
-        if(precursorStructs[level]->timestepsBuffered >= precursorStructs[level]->timestepsPerFile)
+        if(precursorStructs[level]->timestepsBuffered >= precursorStructs[level]->timestepsPerFile || t == para->getTimestepEnd())
         {
         // switch host buffer and data pointer so precursor data is copied in buffer and written from data
 
