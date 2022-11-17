@@ -22,12 +22,12 @@ SPtr<VelocityFileCollection> createFileCollection(std::string prefix, FileType t
     }
 }
 
-SPtr<VelocityReader> createReaderForCollection(SPtr<VelocityFileCollection> fileCollection)
+SPtr<VelocityReader> createReaderForCollection(SPtr<VelocityFileCollection> fileCollection, uint readLevel)
 {
     switch(fileCollection->getFileType())
     {
         case FileType::VTK:
-            return std::make_shared<VTKReader>(std::static_pointer_cast<VTKFileCollection>(fileCollection));
+            return std::make_shared<VTKReader>(std::static_pointer_cast<VTKFileCollection>(fileCollection), readLevel);
             break;
         default:
             return nullptr;
