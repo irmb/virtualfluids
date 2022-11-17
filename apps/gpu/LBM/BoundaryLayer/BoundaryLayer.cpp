@@ -146,7 +146,7 @@ void multipleLevel(const std::string& configPath)
         tStartPrecursor      = config.getValue<real>("tStartPrecursor");
         posXPrecursor        = config.getValue<real>("posXPrecursor");
         useDistributions     = config.getValue<bool>("useDistributions", false);
-        precursorDirectory = config.getValue<std::string>("precursorDirectory");
+        precursorDirectory   = config.getValue<std::string>("precursorDirectory");
     }
 
     const bool readPrecursor = config.getValue("readPrecursor", false);
@@ -251,7 +251,8 @@ void multipleLevel(const std::string& configPath)
     if(true)// Add refinement
     {
         gridBuilder->setNumberOfLayers(12, 8);
-        gridBuilder->addGrid( new Cuboid( xGridMin, 0.f, 0.f, xGridMax, L_y,  0.3*L_z) , 1 );
+        real xMaxRefinement = readPrecursor? xGridMax-0.5f*H: xGridMax;   //Stop refinement some distance before outlet if domain ist not periodic
+        gridBuilder->addGrid( new Cuboid( xGridMin, 0.f, 0.f, xMaxRefinement, L_y,  0.3*L_z) , 1 );
         para->setMaxLevel(2);
         scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
     }
@@ -322,13 +323,27 @@ void multipleLevel(const std::string& configPath)
     bcFactory.setPrecursorBoundaryCondition(useDistributions ? BoundaryConditionFactory::PrecursorBC::DistributionsPrecursor : BoundaryConditionFactory::PrecursorBC::VelocityPrecursor);
     para->setOutflowPressureCorrectionFactor(0.0); 
 
-    para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
+    if(readPrecursor)
+    {
+        para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
+        rho = (real)0.0;
+        vx  = rho = c0o1;
+        vx  = (u_star/c4o10 * log(coordZ/z0+c1o1)) * dt/dx; 
+        vy  = c0o1; 
+        vz  = c0o1;
+        });
+    }
+    else
+    {
+        para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)0.0;
         vx  = rho = c0o1;
         vx  = (u_star/c4o10 * log(coordZ/z0+c1o1) + c2o1*sin(cPi*c16o1*coordX/L_x)*sin(cPi*c8o1*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1)) * dt/dx; 
         vy  = c2o1*sin(cPi*c16o1*coordX/L_x)*sin(cPi*c8o1*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1) * dt/dx; 
         vz  = c8o1*u_star/c4o10*(sin(cPi*c8o1*coordY/H)*sin(cPi*c8o1*coordZ/H)+sin(cPi*c8o1*coordX/L_x))/(pow(c1o2*L_z-coordZ, c2o1)+c1o1) * dt/dx;
-    });
+        });
+    }
+
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
