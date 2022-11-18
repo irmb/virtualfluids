@@ -17,7 +17,6 @@ class builder(build_meta._BuildMetaBackend):
 
     def add_settings(self, config_settings):
         self.extra_args = dict()
-        print(config_settings)
         if config_settings:
             self.extra_args = {k:v for k,v in config_settings.items() if k[:2] == "-D"}
 

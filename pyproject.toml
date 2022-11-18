@@ -1,10 +1,8 @@
 [build-system]
 requires = [
-    "wheel",
-    "cmake>=3.1.0",
-    "setuptools",
-    "setuptools_scm[toml]",
-    "cmake_build_extension"
+    "setuptools>=42",
+    "scikit-build",
+    "cmake",
+    "ninja; platform_system!='Windows'"
 ]
-build-backend = "setup_builder"
-backend-path = ["utilities"]
+build-backend = "setuptools.build_meta"

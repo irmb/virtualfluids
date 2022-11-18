@@ -132,7 +132,7 @@ gcc_9_python:
     - export CCACHE_DIR=$CI_PROJECT_DIR/cache
 
   script:
-    - python3 setup.py bdist_wheel build_ext --build-temp=build -DBUILD_VF_CPU=ON
+    - python3 setup.py bdist_wheel build_ext --build-temp=build -- -DBUILD_VF_CPU=ON -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_CUDA_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache
 
 ###############################################################################
 ##                            Container Upload                               ##

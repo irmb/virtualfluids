@@ -2,7 +2,7 @@ import inspect
 import sys
 from pathlib import Path
 
-import cmake_build_extension
+import skbuild
 import setuptools
 
 """
@@ -15,40 +15,35 @@ or install via pip:
     set CMAKE Flags via --config-settings -DBUILD_VF_GPU=1
 """
 
-init_py = inspect.cleandoc(
-    """
-    import cmake_build_extension
-    with cmake_build_extension.build_extension_env():
-        from .bindings import *
-    """
-)
+init_py = "from .bindings import *"
+top_dir = Path(__file__).parent
 
-extra_args = []
-if("cmake_args" in locals()):
-    extra_args.extend([f"{k}={v}" for k,v in locals()["cmake_args"].items()])
+#create __init__.py
+pyfluids_dir =  top_dir / "pythonbindings/pyfluids"
+pyfluids_dir.mkdir(exist_ok=True)
+init_file = pyfluids_dir / "__init__.py"
+init_file.write_text(init_py)
+(pyfluids_dir / "__init__.py").touch()
 
-setuptools.setup(
-    ext_modules=[
-        cmake_build_extension.CMakeExtension(
-            name="pyfluids",
-            install_prefix="pyfluids",
-            write_top_level_init=init_py,
-            source_dir=str(Path(__file__).parent.absolute()),
-            cmake_configure_options = [
-                f"-DPython3_ROOT_DIR={Path(sys.prefix)}",
-                "-DCALL_FROM_SETUP_PY:BOOL=ON",
-                "-DBUILD_VF_PYTHON_BINDINGS=ON",
-                "-DCMAKE_CXX_COMPILER_LAUNCHER=ccache",
-                "-DCMAKE_CUDA_COMPILER_LAUNCHER=ccache",
-                "-DCMAKE_C_COMPILER_LAUNCHER=ccache",
-                "-DBUILD_SHARED_LIBS=OFF",
-                "-DBUILD_VF_DOUBLE_ACCURACY=OFF",
-                "-DBUILD_VF_UNIT_TESTS:BOOL=OFF",
-                "-DBUILD_WARNINGS_AS_ERRORS=OFF",
-            ] + extra_args,
-        )
-    ],
-    cmdclass=dict(
-        build_ext=cmake_build_extension.BuildExtension,
-    ),
+# create build_dir
+name_of_build_dir = "build"
+
+build_dir = (top_dir/name_of_build_dir).mkdir(exist_ok=True)
+
+cmake_args = [
+        f"-DPython3_ROOT_DIR={Path(sys.prefix)}",
+        "-DBUILD_VF_PYTHON_BINDINGS=ON",
+        "-DBUILD_SHARED_LIBS=OFF",
+        "-DBUILD_VF_DOUBLE_ACCURACY=OFF",
+        "-DBUILD_VF_UNIT_TESTS:BOOL=OFF",
+        "-DBUILD_WARNINGS_AS_ERRORS=OFF",
+    ]
+
+skbuild.setup(
+    name="pyfluids",
+    packages=["pyfluids"],
+    package_dir={"": "pythonbindings"},
+    cmake_args = cmake_args,
+    cmake_install_dir=str(build_dir),
+    cmake_install_target="python_bindings"
 )
