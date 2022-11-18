@@ -21,6 +21,7 @@ void UpdateGrid27::updateGrid(int level, unsigned int t)
         updateGrid(level + 1, t);
         updateGrid(level + 1, t);
     }
+    interactWithProbes(level, t);
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -47,13 +48,14 @@ void UpdateGrid27::updateGrid(int level, unsigned int t)
 
     //////////////////////////////////////////////////////////////////////////
     if( level != para->getFine() )
-    {
+    {   
+        // std::cout << "Refinement: level " << level << ", t " << t << ", evenOrOdd " << para->getParD(level)->isEvenTimestep << std::endl;
         refinement(this, para.get(), level);
     }
 
+
     interactWithActuators(level, t);
 
-    interactWithProbes(level, t);
 }
 
 void UpdateGrid27::collisionAllNodes(int level, unsigned int t)

@@ -396,11 +396,13 @@ void BCKernelManager::runPrecursorBCKernelPost(int level, uint t, CudaMemoryMana
 {
     if(para->getParH(level)->precursorBC.numberOfBCnodes == 0) return;
 
+    uint t_level = para->getTimeStep(level, t, true);
+
     uint lastTime =    (para->getParD(level)->precursorBC.nPrecursorReads-2)*para->getParD(level)->precursorBC.nTRead; // timestep currently loaded into last arrays
     uint currentTime = (para->getParD(level)->precursorBC.nPrecursorReads-1)*para->getParD(level)->precursorBC.nTRead; // timestep currently loaded into current arrays
     uint nextTime =     para->getParD(level)->precursorBC.nPrecursorReads   *para->getParD(level)->precursorBC.nTRead; // timestep currently loaded into next arrays
-
-    if(t>=currentTime)
+    
+    if(t_level>=currentTime)
     {
         //cycle time
         lastTime = currentTime;
@@ -414,6 +416,7 @@ void BCKernelManager::runPrecursorBCKernelPost(int level, uint t, CudaMemoryMana
         para->getParD(level)->precursorBC.next = tmp;
 
         real loadTime = nextTime*pow(2,-level)*para->getTimeRatio();
+
         for(auto reader : para->getParH(level)->velocityReader)
         {   
             reader->getNextData(para->getParH(level)->precursorBC.next, para->getParH(level)->precursorBC.numberOfPrecursorNodes, loadTime);
@@ -423,6 +426,6 @@ void BCKernelManager::runPrecursorBCKernelPost(int level, uint t, CudaMemoryMana
         para->getParH(level)->precursorBC.nPrecursorReads++;  
     }
     
-    real tRatio = real(t-lastTime)/para->getParD(level)->precursorBC.nTRead;
+    real tRatio = real(t_level-lastTime)/para->getParD(level)->precursorBC.nTRead;
     precursorBoundaryConditionPost(para->getParD(level).get(), &para->getParD(level)->precursorBC, tRatio, para->getVelocityRatio());
 }

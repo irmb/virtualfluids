@@ -284,7 +284,7 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
             for(int fileId=0; fileId<(int)this->fileCollection->files[level].size(); fileId++)
             {
                 VTKFile &file = this->fileCollection->files[level][fileId][0];
-                std::cout << "level: " << level << ", fileID: " << fileId << ", pos: " << posY << " " << posZ << ", inBB: " << file.inBoundingBox(posY, posZ, 0.0f) << std::endl;
+                // std::cout << "level: " << level << ", fileID: " << fileId << ", pos: " << posY << " " << posZ << ", inBB: " << file.inBoundingBox(posY, posZ, 0.0f) << std::endl;
                 if(!file.inBoundingBox(posY, posZ, 0.0f)) continue;
                 // y in simulation is x in precursor/file, z in simulation is y in precursor/file 
                 // simulation -> file: N -> E, S -> W, T -> N, B -> S
@@ -320,7 +320,7 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
                     }
                     
                 } 
-                std::cout << "idx: " << idx << ", point matches: " << (abs(posY-file.getX(idx)) < max_diff && abs(posZ-file.getY(idx)) < max_diff) << std::endl;
+                // std::cout << "idx: " << idx << ", point matches: " << (abs(posY-file.getX(idx)) < max_diff && abs(posZ-file.getY(idx)) < max_diff) << std::endl;
                 if(!foundNT) //NT in simulation is EN in precursor
                 {
                     int idx = file.findNeighborENB(posY, posZ, 0.f);
