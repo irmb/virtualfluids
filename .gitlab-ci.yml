@@ -126,6 +126,7 @@ gcc_9_python:
     paths:
       - build/
       - dist/
+      - _skbuild/
 
   before_script:
     - export CCACHE_BASEDIR=$CI_PROJECT_DIR
