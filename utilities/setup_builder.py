@@ -11,14 +11,14 @@ class builder(build_meta._BuildMetaBackend):
         with build_meta._open_setup_script(__file__) as f:
             code = f.read().replace(r'\r\n', r'\n')
         args = locals()
-        args["cmake_args"] = self.extra_args
+        args["config_args"] = self.extra_args
         exec(code, args)
 
 
     def add_settings(self, config_settings):
         self.extra_args = dict()
         if config_settings:
-            self.extra_args = {k:v for k,v in config_settings.items() if k[:2] == "-D"}
+            self.extra_args = config_settings
 
     def build_wheel(self, wheel_directory, config_settings=None,
                     metadata_directory=None):

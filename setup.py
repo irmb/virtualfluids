@@ -5,72 +5,46 @@ import setuptools
 import skbuild
 
 """
-Install python wrapper of virtual fluids
+Install python wrapper of Virtual Fluids
 install via python:
-    python setup.py develop
+    python setup.py install
     set CMAKE Flags via -DBUILD_VF_GPU:BOOL=1
     CMAKE flags have to be separated by -- 
-    example: python setup.py develop -- VBUILD_VF_CPU:BOOL=ON
+    example: python setup.py install -- VBUILD_VF_CPU:BOOL=ON
 or install via pip:
-    pip install -e .
+    pip install .
     for pip>21:
         set CMAKE Flags via --config-settings "-DBUILD_VF_GPU=ON"
-        example: pip install -e . --config-settings="-DBUILD_VF_GPU=ON"
+        example: pip install . --config-settings="-DBUILD_VF_GPU=ON"
+        each option has to be passed in individually i.e --config-settings="-DOPT1=ON" --config-settings="-DOPT2=OFF"
     for pip <21:
         set CMAKE Flags via --global-option ="-DBUILD_VF_GPU=ON"
-        example: pip install -e . --global-option="-DBUILD_VF_GPU=ON"
+        example: pip install . --global-option="-DBUILD_VF_GPU=ON"
 """
 
-init_py = "from .bindings import *"
-top_dir = Path(__file__).parent
-
-#create __init__.py
-pyfluids_dir =  top_dir / "pythonbindings/pyfluids"
-pyfluids_dir.mkdir(exist_ok=True)
-init_file = pyfluids_dir / "__init__.py"
-init_file.write_text(init_py)
-(pyfluids_dir / "__init__.py").touch()
-
-# # create build_dir
-# name_of_build_dir = "build"
-
-# build_dir = top_dir/name_of_build_dir
-# build_dir.mkdir(exist_ok=True)
-
-
+package_name = "pyfluids"
 target = "python_bindings"
+src_dir = "pythonbindings"
 
-config_args = []
-if("cmake_args" in locals()):
-    config_args.extend([f"{k}={v}" for k,v in locals()["cmake_args"].items()])
+# hack to get config-args for installation with pip>21
+cmake_args = []
+if("config_args" in locals()):
+    cmake_args.extend([f"{k}={v}" for k,v in locals()["config_args"].items()])
 
-    
-cmake_args = [
+cmake_args += [
         f"-DPython3_ROOT_DIR={Path(sys.prefix)}",
         "-DBUILD_VF_PYTHON_BINDINGS=ON",
         "-DBUILD_SHARED_LIBS=OFF",
         "-DBUILD_VF_DOUBLE_ACCURACY=OFF",
         "-DBUILD_VF_UNIT_TESTS:BOOL=OFF",
         "-DBUILD_WARNINGS_AS_ERRORS=OFF",
-    ] + config_args #+ sys_args
-
-# maker = skbuild.cmaker.CMaker()
-# maker.configure(clargs=cmake_args, cmake_install_dir=build_dir)
-# maker.make(install_target=target)
+    ]
 
 skbuild.setup(
-    name="pyfluids",
-    packages=["pyfluids"],
-    package_dir={"": "pythonbindings"},
+    name=package_name,
+    packages=[package_name],
+    package_dir={"": src_dir},
     cmake_args = cmake_args,
     cmake_install_target=target,
-    # package_data={"pyfluids": ["bindings.*"]},
     include_package_data=True,
-    # cmake_install_dir="pythonbindings"
-    # data_files=[("python_bindings/pyfluids", ["bindings.*"])]
 )
-# setuptools.setup(
-#      name="pyfluids",
-#     packages=["pyfluids"],
-#     package_dir={"": "pythonbindings"},
-# )
