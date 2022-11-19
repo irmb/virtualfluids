@@ -11,11 +11,14 @@ install via python:
     set CMAKE Flags via -DBUILD_VF_GPU:BOOL=1
     CMAKE flags have to be separated by -- 
     example: python setup.py develop -- VBUILD_VF_CPU:BOOL=ON
-    then run pip install -e . to add to environment
 or install via pip:
     pip install -e .
-    set CMAKE Flags via --config-settings "-DBUILD_VF_GPU=1"
-    example: pip install -e . --config-settings="-DBUILD_VF_GPU=ON"
+    for pip>21:
+        set CMAKE Flags via --config-settings "-DBUILD_VF_GPU=ON"
+        example: pip install -e . --config-settings="-DBUILD_VF_GPU=ON"
+    for pip <21:
+        set CMAKE Flags via --global-option ="-DBUILD_VF_GPU=ON"
+        example: pip install -e . --global-option="-DBUILD_VF_GPU=ON"
 """
 
 init_py = "from .bindings import *"
@@ -41,15 +44,6 @@ config_args = []
 if("cmake_args" in locals()):
     config_args.extend([f"{k}={v}" for k,v in locals()["cmake_args"].items()])
 
-# if __name__ == "__main__":
-#     args = sys.argv.copy()
-#     args.append("--")
-#     ind = args.index("--")
-
-#     sys_args = args[ind+1:-1]
-#     for arg in sys_args:
-#         sys.argv.remove(arg)
-
     
 cmake_args = [
         f"-DPython3_ROOT_DIR={Path(sys.prefix)}",
@@ -69,7 +63,11 @@ skbuild.setup(
     packages=["pyfluids"],
     package_dir={"": "pythonbindings"},
     cmake_args = cmake_args,
-    cmake_install_target=target
+    cmake_install_target=target,
+    # package_data={"pyfluids": ["bindings.*"]},
+    include_package_data=True,
+    # cmake_install_dir="pythonbindings"
+    # data_files=[("python_bindings/pyfluids", ["bindings.*"])]
 )
 # setuptools.setup(
 #      name="pyfluids",
