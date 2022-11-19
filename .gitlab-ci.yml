@@ -194,7 +194,7 @@ gcc_9_python_bindings_test:
   needs: ["gcc_9_python"]
 
   before_script:
-   - export PYTHONPATH="Python"
+    - export PYTHONPATH="Python"
     - export VF_WHEEL=$(find dist/*.whl)
     - pip3 install $VF_WHEEL
     - pip3 install -r Python/requirements.txt
