@@ -319,7 +319,7 @@ void GridGenerator::allocArrays_BoundaryValues()
 
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
         const auto numberOfPrecursorValues = int(builder->getPrecursorSize(level));
-        std::cout << "size precursor level " << level << " : " << numberOfPrecursorValues << std::endl;
+        *logging::out << logging::Logger::INFO_INTERMEDIATE << "size precursor level " << level << " : " << numberOfPrecursorValues << "\n";
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         int blocks = (numberOfPrecursorValues / para->getParH(level)->numberofthreads) + 1;
         para->getParH(level)->precursorBC.sizeQ = blocks * para->getParH(level)->numberofthreads;

@@ -87,11 +87,6 @@ __global__ void fillArrayDistributions( uint nNodes, uint* indices,
     uint k_0MM = neighborZ[k_0M0];
     // uint k_MMM = neighborZ[k_MM0];
 
-    if(k_000 == 8852)
-    {
-        printf("Distributions in reader: \n  DIR_P00 \t %f \n DIR_PP0 \t %f \n DIR_PM0 \t %f \n DIR_P0P \t %f \n DIR_P0M \t %f \n DIR_PPP \t %f \n DIR_PMP \t %f \n DIR_PPM \t %f \n DIR_PMM \t %f  \n\n",  (dist.f[DIR_P00])[k_000], (dist.f[DIR_PP0])[k_000], (dist.f[DIR_PM0])[k_0M0], (dist.f[DIR_P0P])[k_000], (dist.f[DIR_P0M])[k_00M], (dist.f[DIR_PPP])[k_000], (dist.f[DIR_PMP])[k_0M0], (dist.f[DIR_PPM])[k_00M], (dist.f[DIR_PMM])[k_0MM]);
-    }
-
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Get local distributions in PX directions
     //!
@@ -104,6 +99,13 @@ __global__ void fillArrayDistributions( uint nNodes, uint* indices,
     precursorData[lIndex(PrecPMP, node, nNodes)] = (dist.f[DIR_PMP])[k_0M0];
     precursorData[lIndex(PrecPPM, node, nNodes)] = (dist.f[DIR_PPM])[k_00M];
     precursorData[lIndex(PrecPMM, node, nNodes)] = (dist.f[DIR_PMM])[k_0MM];
+
+    precursorData[lIndex(Prec0P0, node, nNodes)] = (dist.f[DIR_0P0])[k_000];
+    precursorData[lIndex(Prec0M0, node, nNodes)] = (dist.f[DIR_0M0])[k_0M0];
+    precursorData[lIndex(Prec00P, node, nNodes)] = (dist.f[DIR_00P])[k_000];
+    precursorData[lIndex(Prec00M, node, nNodes)] = (dist.f[DIR_00M])[k_00M];
+    precursorData[lIndex(Prec0PP, node, nNodes)] = (dist.f[DIR_0PP])[k_000];
+    precursorData[lIndex(Prec0MP, node, nNodes)] = (dist.f[DIR_0MP])[k_0M0];
 }
 
 
@@ -147,9 +149,6 @@ void PrecursorWriter::init(Parameter* para, GridProvider* gridProvider, CudaMemo
                 indicesOnGrid.push_back(j);    
                 coordY.push_back(pointCoordY);            
                 coordZ.push_back(pointCoordZ);    
-
-                if(pointCoordZ < 550.f && level == 0)
-                    std::cout << "index " << j << ", coords " <<  pointCoordX << " " << pointCoordY << " " << pointCoordZ << std::endl;
             }
         }
         assert("PrecursorWriter did not find any points on the grid"&& indicesOnGrid.size()==0);
@@ -183,7 +182,7 @@ void PrecursorWriter::init(Parameter* para, GridProvider* gridProvider, CudaMemo
             precursorStructs[level]->nQuantities = 3;
             break;
         case OutputVariable::Distributions:
-            precursorStructs[level]->nQuantities = 9;
+            precursorStructs[level]->nQuantities = 15;//9; DEBUG
             break;
         
         default:
@@ -204,13 +203,13 @@ void PrecursorWriter::init(Parameter* para, GridProvider* gridProvider, CudaMemo
 
 void PrecursorWriter::interact(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t)
 {
-    // uint t_level         = para->getTimeStep(level, t, true);
-    // uint tStartOut_level = tStartOut*pow(2, level)+1;
-    // // tStartOut_level = tStartOut_level%2==0? tStartOut_level: tStartOut_level+1;
-    // uint tEnd_level      = para->getTimestepEnd()*pow(2, level);
+    uint t_level         = para->getTimeStep(level, t, true);
+    uint tStartOut_level = tStartOut*pow(2, level)+1;
+    // tStartOut_level = tStartOut_level%2==0? tStartOut_level: tStartOut_level+1;
+    uint tEnd_level      = para->getTimestepEnd()*pow(2, level);
 
-    // if(t_level>tStartOut_level && ((t_level-tStartOut_level) % tSave)==0)
-    if(t>tStartOut && ((t-tStartOut) % tSave)==0 )
+    if(t_level>tStartOut_level && ((t_level-tStartOut_level) % tSave)==0)
+    // if(t>tStartOut && ((t-tStartOut) % tSave)==0 )
     {
         // std::cout << "PrecurserWriter: level " << level << ", t " << t << ", evenOrOdd " << para->getParD(level)->isEvenTimestep << std::endl << std::endl;
 

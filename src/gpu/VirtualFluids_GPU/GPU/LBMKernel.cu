@@ -3247,7 +3247,7 @@ void PrecursorDevDistributions( LBMSimulationParameter* parameterDevice, QforPre
 	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
 
 	PrecursorDeviceDistributions<<< grid.grid, grid.threads >>>(boundaryCondition->k, boundaryCondition->numberOfBCnodes, boundaryCondition->numberOfPrecursorNodes, parameterDevice->distributions.f[0],
-		parameterDevice->neighborX, parameterDevice->neighborY, parameterDevice->neighborZ,
+		parameterDevice->neighborX, parameterDevice->neighborY, parameterDevice->neighborZ, parameterDevice->typeOfGridNode,
 		boundaryCondition->planeNeighborNT, boundaryCondition->planeNeighborNB, boundaryCondition->planeNeighborST, boundaryCondition->planeNeighborSB,
 		boundaryCondition->weightsNT, boundaryCondition->weightsNB, boundaryCondition->weightsST, boundaryCondition->weightsSB,
 		boundaryCondition->last, boundaryCondition->current,
@@ -3864,6 +3864,7 @@ void ScaleCF_compressible(LBMSimulationParameter * parameterDeviceC, LBMSimulati
       parameterDeviceF->neighborX,
       parameterDeviceF->neighborY,
       parameterDeviceF->neighborZ,
+	  parameterDeviceF->typeOfGridNode,
       parameterDeviceC->numberOfNodes,
       parameterDeviceF->numberOfNodes,
       parameterDeviceC->isEvenTimestep,

@@ -226,6 +226,7 @@ __global__ void scaleCF_compressible(
     unsigned int* neighborXfine,
     unsigned int* neighborYfine,
     unsigned int* neighborZfine,
+    unsigned int* typeOfGridNode,
     unsigned int numberOfLBnodesCoarse, 
     unsigned int numberOfLBnodesFine, 
     bool isEvenTimestep,
@@ -451,6 +452,59 @@ __global__ void scaleCF_compressible(
     real b_000, b_100, b_010, b_001, b_200, b_020, b_002, b_110, b_101, b_011, b_111;
     real c_000, c_100, c_010, c_001, c_200, c_020, c_002, c_110, c_101, c_011, c_111;
     real d_000, d_100, d_010, d_001, d_110, d_101, d_011, d_111;
+
+    //! Workaround for precursorBC
+    bool isEdgeNode = typeOfGridNode[k_base_000]!=GEO_FLUID? true: false;
+    // isEdgeNode =false;
+    if(false)
+    {
+        printf("drho_MMM: %f \t drho_PMM: %f \t vx1_MMM: %f \t vx1_PMM: %f \n", drho_MMM, drho_PMM, vx3_MMM , vx3_PMM);
+        // printf("kxyFromfcNEQ_MMM: %f \t kxyFromfcNEQ_PMM: %f \t kxxMyyFromfcNEQ_MMM: %f \t kxxMyyFromfcNEQ_PMM: %f \n", kxyFromfcNEQ_MMM, kxyFromfcNEQ_PMM, kxxMyyFromfcNEQ_MMM , kxxMyyFromfcNEQ_PMM);
+    }
+    if(false)
+    {
+        drho_MMM = drho_PMM;
+        vx1_MMM  = vx1_PMM;
+        vx2_MMM  = vx2_PMM;
+        vx3_MMM  = vx3_PMM;
+        kxyFromfcNEQ_MMM = kxyFromfcNEQ_PMM;
+        kyzFromfcNEQ_MMM = kyzFromfcNEQ_PMM;
+        kxzFromfcNEQ_MMM = kxzFromfcNEQ_PMM;
+        kxxMyyFromfcNEQ_MMM = kxxMyyFromfcNEQ_PMM;
+        kxxMzzFromfcNEQ_MMM = kxxMzzFromfcNEQ_PMM;
+
+        drho_MPM = drho_PPM;
+        vx1_MPM  = vx1_PPM;
+        vx2_MPM  = vx2_PPM;
+        vx3_MPM  = vx3_PPM;
+        kxyFromfcNEQ_MPM = kxyFromfcNEQ_PPM;
+        kyzFromfcNEQ_MPM = kyzFromfcNEQ_PPM;
+        kxzFromfcNEQ_MPM = kxzFromfcNEQ_PPM;
+        kxxMyyFromfcNEQ_MPM = kxxMyyFromfcNEQ_PPM;
+        kxxMzzFromfcNEQ_MPM = kxxMzzFromfcNEQ_PPM;
+        kxxMzzFromfcNEQ_MPM = kxxMzzFromfcNEQ_PPM;
+
+        drho_MMP = drho_PMP;
+        vx1_MMP  = vx1_PMP;
+        vx2_MMP  = vx2_PMP;
+        vx3_MMP  = vx3_PMP;
+        kxyFromfcNEQ_MMP = kxyFromfcNEQ_PMP;
+        kyzFromfcNEQ_MMP = kyzFromfcNEQ_PMP;
+        kxzFromfcNEQ_MMP = kxzFromfcNEQ_PMP;
+        kxxMyyFromfcNEQ_MMP = kxxMyyFromfcNEQ_PMP;
+        kxxMzzFromfcNEQ_MMP = kxxMzzFromfcNEQ_PMP;
+
+        drho_MPP = drho_PPP;
+        vx1_MPP  = vx1_PPP;
+        vx2_MPP  = vx2_PPP;
+        vx3_MPP  = vx3_PPP;
+        kxyFromfcNEQ_MPP = kxyFromfcNEQ_PPP;
+        kyzFromfcNEQ_MPP = kyzFromfcNEQ_PPP;
+        kxzFromfcNEQ_MPP = kxzFromfcNEQ_PPP;
+        kxxMyyFromfcNEQ_MPP = kxxMyyFromfcNEQ_PPP;
+        kxxMzzFromfcNEQ_MPP = kxxMzzFromfcNEQ_PPP;
+        kxxMzzFromfcNEQ_MPP = kxxMzzFromfcNEQ_PPP;
+    }
 
     a_000 = (-kxxMyyFromfcNEQ_PPM - kxxMyyFromfcNEQ_PPP + kxxMyyFromfcNEQ_MPM + kxxMyyFromfcNEQ_MPP -
             kxxMyyFromfcNEQ_PMM - kxxMyyFromfcNEQ_PMP + kxxMyyFromfcNEQ_MMM + kxxMyyFromfcNEQ_MMP -
@@ -1148,6 +1202,13 @@ __global__ void scaleCF_compressible(
     k_M0M = neighborZfine[k_M0M];
     k_0MM = neighborZfine[k_0MM];
     k_MMM = neighborZfine[k_MMM];
+
+    // if(k_000==522209 || k_000==497639)
+    // {
+    //     printf("CF: node MPP \t %u \t fP0M %f \n", k_000, f_P0M);
+    //     printf("GEO node: %u \n", typeOfGridNode[k_000]);
+    //     printf("GEO base: %u \n", typeOfGridNode[k_base_000]);
+    // } 
 
     //////////////////////////////////////////////////////////////////////////
     // Write distributions

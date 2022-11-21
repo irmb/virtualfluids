@@ -647,6 +647,7 @@ __global__ void scaleFC_compressible(
     k_M0M = neighborZcoarse [k_M00];
     k_0MM = neighborZcoarse [k_0M0];
     k_MMM = neighborZcoarse [k_MM0];
+
     ////////////////////////////////////////////////////////////////////////////////////
 
     ////////////////////////////////////////////////////////////////////////////////////
@@ -655,12 +656,6 @@ __global__ void scaleFC_compressible(
     //! <a href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017),
     //! DOI:10.3390/computation5020019 ]</b></a>
     //!
-
-        if(k_000 == 8852)
-        {
-        printf("Distributions Refinement: \n  DIR_P00 \t %f \n DIR_PP0 \t %f \n DIR_PM0 \t %f \n DIR_P0P \t %f \n DIR_P0M \t %f \n DIR_PPP \t %f \n DIR_PMP \t %f \n DIR_PPM \t %f \n DIR_PMM \t %f  \n\n",  (distCoarse.f[DIR_P00])[k_000], (distCoarse.f[DIR_PP0])[k_000], (distCoarse.f[DIR_PM0])[k_0M0], (distCoarse.f[DIR_P0P])[k_000], (distCoarse.f[DIR_P0M])[k_00M], (distCoarse.f[DIR_PPP])[k_000], (distCoarse.f[DIR_PMP])[k_0M0], (distCoarse.f[DIR_PPM])[k_00M], (distCoarse.f[DIR_PMM])[k_0MM]);
-        }
-
 
     (distCoarse.f[DIR_000])[k_000] = f_000;
     (distCoarse.f[DIR_P00])[k_000] = f_P00;

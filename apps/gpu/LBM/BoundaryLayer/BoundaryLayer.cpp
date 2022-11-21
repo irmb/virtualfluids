@@ -252,7 +252,7 @@ void multipleLevel(const std::string& configPath)
     {
         gridBuilder->setNumberOfLayers(12, 8);
         real xMaxRefinement = readPrecursor? xGridMax-0.5f*H: xGridMax;   //Stop refinement some distance before outlet if domain ist not periodic
-        gridBuilder->addGrid( new Cuboid( xGridMin, 0.f, 0.f, xMaxRefinement, L_y,  0.3*L_z) , 1 );
+        gridBuilder->addGrid( new Cuboid( xGridMin+dx, 0.f, 0.f, xMaxRefinement, L_y,  0.3*L_z) , 1 );
         para->setMaxLevel(2);
         scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
     }
@@ -303,6 +303,7 @@ void multipleLevel(const std::string& configPath)
         {   
             auto precursor = createFileCollection(precursorDirectory + "/precursor", FileType::VTK);
             gridBuilder->setPrecursorBoundaryCondition(SideType::MX, precursor, nTReadPrecursor);
+            // gridBuilder->setVelocityBoundaryCondition(SideType::MX, 10.f*dt/dx, 0.f, 0.f);
         }
 
         if(isLastSubDomain || nProcs == 1)
@@ -311,24 +312,29 @@ void multipleLevel(const std::string& configPath)
         }     
     } 
 
-    gridBuilder->setStressBoundaryCondition(SideType::MZ,
-                                            0.0, 0.0, 1.0,              // wall normals
-                                            samplingOffset, z0/dx);     // wall model settinng
-    para->setHasWallModelMonitor(true);   
-    gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0f,  0.0f, -1.0f); 
+    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, u_star/c4o10* dt/dx, 0.f, 0.f);
+    gridBuilder->setVelocityBoundaryCondition(SideType::MZ, u_star/c4o10* dt/dx, 0.f, 0.f);
 
+
+    // gridBuilder->setStressBoundaryCondition(SideType::MZ,
+    //                                         0.0, 0.0, 1.0,              // wall normals
+    //                                         samplingOffset, z0/dx);     // wall model settinng
+    // para->setHasWallModelMonitor(true);   
+    // gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0f,  0.0f, -1.0f); 
+
+    bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
     bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressPressureBounceBack);
     bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipBounceBack); 
     bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflective);
     bcFactory.setPrecursorBoundaryCondition(useDistributions ? BoundaryConditionFactory::PrecursorBC::DistributionsPrecursor : BoundaryConditionFactory::PrecursorBC::VelocityPrecursor);
     para->setOutflowPressureCorrectionFactor(0.0); 
 
-    if(readPrecursor)
+    if(true/*readPrecursor*/)
     {
         para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)0.0;
         vx  = rho = c0o1;
-        vx  = (u_star/c4o10 * log(coordZ/z0+c1o1)) * dt/dx; 
+        vx  = u_star/c4o10/*(u_star/c4o10 * log(coordZ/z0+c1o1))*/ * dt/dx; 
         vy  = c0o1; 
         vz  = c0o1;
         });
