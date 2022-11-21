@@ -1,1 +1,1 @@
-include pythonbindings/pyfluids/bindings*
+include pythonbindings/*/bindings*

@@ -1,16 +1,15 @@
 import sys
 from pathlib import Path
 
-import setuptools
 import skbuild
 
 """
 Install python wrapper of Virtual Fluids
 install via python:
     python setup.py install
-    set CMAKE Flags via -DBUILD_VF_GPU:BOOL=1
+    set CMAKE Flags via -DBUILD_VF_GPU:BOOL=ON
     CMAKE flags have to be separated by -- 
-    example: python setup.py install -- VBUILD_VF_CPU:BOOL=ON
+    example: python setup.py install -- -DBUILD_VF_CPU:BOOL=ON
 or install via pip:
     pip install .
     for pip>21:
@@ -42,7 +41,7 @@ cmake_args += [
 
 skbuild.setup(
     name=package_name,
-    packages=[package_name],
+    packages=[package_name, "pymuparser"],
     package_dir={"": src_dir},
     cmake_args = cmake_args,
     cmake_install_target=target,

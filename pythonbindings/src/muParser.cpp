@@ -3,7 +3,7 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(pymuparser, m) {
+PYBIND11_MODULE(bindings, m) {
     py::class_<mu::ParserBase>(m, "_ParserBase");
 
     py::class_<mu::Parser, mu::ParserBase>(m, "Parser")
