@@ -8,9 +8,9 @@ run/
 _skbuild/
 dist/
 *.egg-info/
-__pycache__/
+**/__pycache__/
 .venv/
-pyfluids*
+pythonbindings/*/bindings*
 
 # IDE
 .vscode/
