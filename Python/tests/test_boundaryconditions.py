@@ -1,5 +1,5 @@
 import unittest
-from pyfluids.cpu.boundaryconditions import *
+from pyfluids import cpu
 
 
 class BoundaryConditionsTest(unittest.TestCase):
@@ -8,13 +8,13 @@ class BoundaryConditionsTest(unittest.TestCase):
         """
         Should be able to create NoSlipBoundaryCondition
         """
-        sut = NoSlipBoundaryCondition()
+        sut = cpu.boundaryconditions.NoSlipBoundaryCondition()
 
     def test__can_create_velocity_bc(self):
         """
         Should be able to create VelocityBoundaryCondition
         """
-        sut = VelocityBoundaryCondition()
+        sut = cpu.boundaryconditions.VelocityBoundaryCondition()
 
     def test__can_create_velocity_bc_with_directions_function_and_time(self):
         """
@@ -24,7 +24,7 @@ class BoundaryConditionsTest(unittest.TestCase):
 
         parser = Parser()
         parser.expression = "1"
-        sut = VelocityBoundaryCondition(True, True, True, parser, 0, 1)
+        sut = cpu.boundaryconditions.VelocityBoundaryCondition(True, True, True, parser, 0, 1)
 
     def test__can_create_velocity_bc_with_directions__function_per_direction__and__time(self):
         """
@@ -40,7 +40,7 @@ class BoundaryConditionsTest(unittest.TestCase):
 
         f3 = Parser()
         f3.expression = "1"
-        sut = VelocityBoundaryCondition(True, True, True, f1, f2, f3, 0, 1)
+        sut = cpu.boundaryconditions.VelocityBoundaryCondition(True, True, True, f1, f2, f3, 0, 1)
 
     def test__can_create_velocity_bc_with_speeds_and_times_per_direction(self):
         """
@@ -51,11 +51,11 @@ class BoundaryConditionsTest(unittest.TestCase):
         start2, end2 = 1, 2
         start3, end3 = 2, 3
 
-        sut = VelocityBoundaryCondition(vx1, start1, end1, vx2, start2, end2, vx3, start3, end3)
+        sut = cpu.boundaryconditions.VelocityBoundaryCondition(vx1, start1, end1, vx2, start2, end2, vx3, start3, end3)
 
     def test__can_create_non_reflecting_outflow(self):
         """
         Should be able to create NonReflectingOutflow
         """
 
-        sut = NonReflectingOutflow()
+        sut = cpu.boundaryconditions.NonReflectingOutflow()

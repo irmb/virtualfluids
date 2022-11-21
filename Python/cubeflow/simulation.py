@@ -1,12 +1,7 @@
-from pyfluids.cpu import Simulation
-from pyfluids.cpu.boundaryconditions import NoSlipBoundaryCondition, VelocityBoundaryCondition, DensityBoundaryCondition
-from pyfluids.cpu.geometry import GbCuboid3D
-from pyfluids.cpu.kernel import LBMKernel, KernelType
-from pyfluids.cpu.parameters import PhysicalParameters, RuntimeParameters, GridParameters
-from pyfluids.cpu.writer import Writer, OutputFormat
-from pymuparser import Parser
-
 import os
+
+from pyfluids import cpu
+from pymuparser import Parser
 
 
 def get_max_length(number_of_nodes_per_direction, delta_x):
@@ -15,10 +10,10 @@ def get_max_length(number_of_nodes_per_direction, delta_x):
             number_of_nodes_per_direction[2] * delta_x)
 
 
-physical_params = PhysicalParameters()
+physical_params = cpu.parameters.PhysicalParameters()
 physical_params.lattice_viscosity = 0.005
 
-grid_params = GridParameters()
+grid_params = cpu.parameters.GridParameters()
 grid_params.number_of_nodes_per_direction = [200, 120, 120]
 grid_params.blocks_per_direction = [2, 2, 2]
 grid_params.node_distance = 0.125
@@ -26,7 +21,7 @@ grid_params.periodic_boundary_in_x1 = False
 grid_params.periodic_boundary_in_x2 = True
 grid_params.periodic_boundary_in_x3 = True
 
-runtime_params = RuntimeParameters()
+runtime_params = cpu.parameters.RuntimeParameters()
 runtime_params.timestep_log_interval = 1000
 runtime_params.number_of_timesteps = 50000
 runtime_params.number_of_threads = int(os.environ.get("OMP_NUM_THREADS", 4))
@@ -39,46 +34,46 @@ def run_simulation(physical_parameters=physical_params, grid_parameters=grid_par
     min_x, min_y, min_z = 0, 0, 0
     max_x, max_y, max_z = get_max_length(grid_parameters.number_of_nodes_per_direction, grid_parameters.node_distance)
 
-    bottom_wall = GbCuboid3D(min_x - wall_thickness, min_y - wall_thickness, min_z, max_x + wall_thickness,
+    bottom_wall = cpu.geometry.GbCuboid3D(min_x - wall_thickness, min_y - wall_thickness, min_z, max_x + wall_thickness,
                              max_y + wall_thickness, min_z - wall_thickness)
 
-    top_wall = GbCuboid3D(min_x - wall_thickness, min_y - wall_thickness, max_z, max_x + wall_thickness,
+    top_wall = cpu.geometry.GbCuboid3D(min_x - wall_thickness, min_y - wall_thickness, max_z, max_x + wall_thickness,
                           max_y + wall_thickness,
                           max_z + wall_thickness)
 
-    left_wall = GbCuboid3D(min_x - wall_thickness, min_y, min_z - wall_thickness, max_x + wall_thickness,
+    left_wall = cpu.geometry.GbCuboid3D(min_x - wall_thickness, min_y, min_z - wall_thickness, max_x + wall_thickness,
                            min_y - wall_thickness,
                            max_z + wall_thickness)
 
-    right_wall = GbCuboid3D(min_x - wall_thickness, max_y, min_z - wall_thickness, max_x + wall_thickness,
+    right_wall = cpu.geometry.GbCuboid3D(min_x - wall_thickness, max_y, min_z - wall_thickness, max_x + wall_thickness,
                             max_y + wall_thickness, max_z + wall_thickness)
 
-    obstacle = GbCuboid3D(7, 7, 7, 8, 8, 8)
+    obstacle = cpu.geometry.GbCuboid3D(7, 7, 7, 8, 8, 8)
 
-    velocity_boundary = GbCuboid3D(min_x - wall_thickness, min_y - wall_thickness, min_z - wall_thickness, min_x,
+    velocity_boundary = cpu.geometry.GbCuboid3D(min_x - wall_thickness, min_y - wall_thickness, min_z - wall_thickness, min_x,
                                    max_y + wall_thickness, max_z + wall_thickness)
 
-    outflow_boundary = GbCuboid3D(max_x, min_y - wall_thickness, min_z - wall_thickness, max_x + wall_thickness,
+    outflow_boundary = cpu.geometry.GbCuboid3D(max_x, min_y - wall_thickness, min_z - wall_thickness, max_x + wall_thickness,
                                   max_y + wall_thickness, max_z + wall_thickness)
 
-    no_slip_bc = NoSlipBoundaryCondition()
+    no_slip_bc = cpu.boundaryconditions.NoSlipBoundaryCondition()
 
-    outflow_bc = DensityBoundaryCondition()
+    outflow_bc = cpu.boundaryconditions.DensityBoundaryCondition()
 
     velocity_function = Parser()
     velocity_function.define_constant("u", 0.07)
     velocity_function.expression = "u"
-    velocity_bc = VelocityBoundaryCondition(True, False, False, velocity_function, 0, -10)
+    velocity_bc = cpu.boundaryconditions.VelocityBoundaryCondition(True, False, False, velocity_function, 0, -10)
 
-    kernel = LBMKernel(KernelType.CompressibleCumulantFourthOrderViscosity)
+    kernel = cpu.kernel.LBMKernel(cpu.kernel.KernelType.CompressibleCumulantFourthOrderViscosity)
     # kernel.use_forcing = True
     # kernel.forcing_in_x1 = 3e-6
 
-    writer = Writer()
+    writer = cpu.writer.Writer()
     writer.output_path = "./output"
-    writer.output_format = OutputFormat.BINARY
+    writer.output_format = cpu.writer.OutputFormat.BINARY
 
-    simulation = Simulation()
+    simulation = cpu.Simulation()
     simulation.set_writer(writer)
 
     simulation.set_physical_parameters(physical_parameters)

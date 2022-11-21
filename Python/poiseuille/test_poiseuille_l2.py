@@ -5,8 +5,7 @@ import unittest
 import matplotlib.pyplot as plt
 import numpy as np
 import pyvista as pv
-from pyfluids.cpu.kernel import LBMKernel, KernelType
-from pyfluids.cpu.parameters import GridParameters, PhysicalParameters, RuntimeParameters
+from pyfluids import cpu
 from scipy import stats
 
 from errors import normalized_l2_error
@@ -33,13 +32,13 @@ class TestPoiseuilleFlow(unittest.TestCase):
         self.skipTest("This test is not implemented correctly yet")
         plt.ion()
 
-        physical_params = PhysicalParameters()
+        physical_params = cpu.parameters.PhysicalParameters()
 
-        runtime_params = RuntimeParameters()
+        runtime_params = cpu.parameters.RuntimeParameters()
         runtime_params.number_of_threads = os.cpu_count()
         runtime_params.timestep_log_interval = 10000
 
-        kernel = LBMKernel(KernelType.CompressibleCumulantFourthOrderViscosity)
+        kernel = cpu.kernel.LBMKernel(cpu.kernel.KernelType.CompressibleCumulantFourthOrderViscosity)
         kernel.use_forcing = True
 
         normalized_l2_errors = []
@@ -140,7 +139,7 @@ def get_heights_from_indices(mesh, indices):
 
 
 def create_grid_params_with_nodes_in_column(nodes_in_column, delta_x):
-    grid_params = GridParameters()
+    grid_params = cpu.parameters.GridParameters()
     grid_params.node_distance = delta_x
     grid_params.number_of_nodes_per_direction = [1, 1, nodes_in_column]
     grid_params.blocks_per_direction = [1, 1, 8]

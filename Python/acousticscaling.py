@@ -1,22 +1,21 @@
-from pyfluids.cpu.kernel import LBMKernel
-from pyfluids.cpu.parameters import GridParameters, PhysicalParameters, RuntimeParameters
+from pyfluids import cpu
 
 
 class OneDirectionalAcousticScaling:
 
-    def __init__(self, grid_parameters: GridParameters,
-                 physical_parameters: PhysicalParameters,
-                 runtime_parameters: RuntimeParameters,
-                 kernel: LBMKernel):
+    def __init__(self, grid_parameters: cpu.parameters.GridParameters,
+                 physical_parameters: cpu.parameters.PhysicalParameters,
+                 runtime_parameters: cpu.parameters.RuntimeParameters,
+                 kernel: cpu.kernel.LBMKernel):
         self._grid_params = grid_parameters
         self._physical_params = physical_parameters
         self._runtime_params = runtime_parameters
         self._kernel = kernel
 
-    def configuration_for_scale_level(self, level: int = 1) -> tuple[GridParameters,
-                                                                PhysicalParameters,
-                                                                RuntimeParameters,
-                                                                LBMKernel]:
+    def configuration_for_scale_level(self, level: int = 1) -> tuple[cpu.parameters.GridParameters,
+                                                                cpu.parameters.PhysicalParameters,
+                                                                cpu.parameters.RuntimeParameters,
+                                                                cpu.kernel.LBMKernel]:
         if level < 0:
             raise ValueError("level must be >= 0")
 
@@ -27,8 +26,8 @@ class OneDirectionalAcousticScaling:
 
         return grid_params, physical_params, runtime_params, kernel
 
-    def clone_grid_params_for_level(self, level) -> GridParameters:
-        grid_params = GridParameters()
+    def clone_grid_params_for_level(self, level) -> cpu.parameters.GridParameters:
+        grid_params = cpu.parameters.GridParameters()
         grid_params.reference_direction_index = self._grid_params.reference_direction_index
         grid_params.periodic_boundary_in_x1 = self._grid_params.periodic_boundary_in_x1
         grid_params.periodic_boundary_in_x2 = self._grid_params.periodic_boundary_in_x2
@@ -51,7 +50,7 @@ class OneDirectionalAcousticScaling:
         return grid_params
 
     def clone_physical_parameters(self, level):
-        physical_params = PhysicalParameters()
+        physical_params = cpu.parameters.PhysicalParameters()
         physical_params.lattice_viscosity = self._physical_params.lattice_viscosity
 
         if level > 0:
@@ -60,7 +59,7 @@ class OneDirectionalAcousticScaling:
         return physical_params
 
     def clone_runtime_params_for_level(self, level):
-        runtime_params = RuntimeParameters()
+        runtime_params = cpu.parameters.RuntimeParameters()
         runtime_params.number_of_timesteps = self._runtime_params.number_of_timesteps
         runtime_params.number_of_threads = self._runtime_params.number_of_threads
         runtime_params.timestep_log_interval = self._runtime_params.timestep_log_interval
@@ -71,7 +70,7 @@ class OneDirectionalAcousticScaling:
         return runtime_params
 
     def clone_kernel_for_level(self, level):
-        kernel = LBMKernel(self._kernel.type)
+        kernel = cpu.kernel.LBMKernel(self._kernel.type)
         kernel.use_forcing = self._kernel.use_forcing
         kernel.forcing_in_x1 = self._kernel.forcing_in_x1
         kernel.forcing_in_x2 = self._kernel.forcing_in_x2

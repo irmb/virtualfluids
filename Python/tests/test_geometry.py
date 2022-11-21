@@ -1,6 +1,6 @@
 import unittest
 
-from pyfluids.cpu.geometry import *
+from pyfluids import cpu
 
 
 class TestGeometry(unittest.TestCase):
@@ -9,7 +9,7 @@ class TestGeometry(unittest.TestCase):
         """
         WHEN setting point coordinates in constructor THEN point should have coordinates
         """
-        sut = GbPoint3D(4, 8, 3)
+        sut = cpu.geometry.GbPoint3D(4, 8, 3)
 
         self.assertEqual(sut.x1, 4)
         self.assertEqual(sut.x2, 8)
@@ -19,7 +19,7 @@ class TestGeometry(unittest.TestCase):
         """
         WHEN setting point coordinates THEN point should have coordinates
         """
-        sut = GbPoint3D()
+        sut = cpu.geometry.GbPoint3D()
 
         sut.x1 = 4
         sut.x2 = 8
@@ -33,10 +33,10 @@ class TestGeometry(unittest.TestCase):
         """
         WHEN setting line points THEN line should have points
         """
-        sut = GbLine3D()
+        sut = cpu.geometry.GbLine3D()
 
-        point1 = GbPoint3D()
-        point2 = GbPoint3D()
+        point1 = cpu.geometry.GbPoint3D()
+        point2 = cpu.geometry.GbPoint3D()
         sut.point1 = point1
         sut.point2 = point2
 
