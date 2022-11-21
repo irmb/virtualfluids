@@ -175,7 +175,7 @@ void exchangeCollDataXGPU27(Parameter *para, vf::gpu::Communicator &comm, CudaMe
     //! 2. start non-blocking receive (MPI)
     startNonBlockingMpiReceive((unsigned int)(*sendProcessNeighborHost).size(), comm, recvProcessNeighborHost);
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //! 3. before sending data, wait for memcopy (from device to host) to finish 
+    //! 3. before sending data, wait for memcopy (from device to host) to finish
     if (para->getUseStreams()) cudaStreamSynchronize(stream); 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //! 4. send data to neighboring process (MPI)
