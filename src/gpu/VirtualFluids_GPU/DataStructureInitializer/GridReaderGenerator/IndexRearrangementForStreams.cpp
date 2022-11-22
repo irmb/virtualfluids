@@ -434,7 +434,7 @@ void IndexRearrangementForStreams::reorderRecvIndicesForCommAfterFtoC(
 
     std::cout << "\n n send indices: " << (uint)sendIndicesForCommAfterFtoCPositions.size() << std::endl;
     if (sendIndicesForCommAfterFtoCPositions.size() <= 0)
-        *logging::out << logging::Logger::LOGGER_ERROR
+        *logging::out << logging::Logger::INFO_HIGH
                       << "reorderRecvIndicesForCommAfterFtoC(): sendIndicesForCommAfterFtoCPositions is empty."
                       << "\n";
 
