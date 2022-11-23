@@ -30,13 +30,6 @@ static constexpr uint PrecPPP = 5;
 static constexpr uint PrecPMP = 6;
 static constexpr uint PrecPPM = 7;
 static constexpr uint PrecPMM = 8;
-//DEBUG
-static constexpr uint Prec0P0 = 9;
-static constexpr uint Prec0M0 = 10;
-static constexpr uint Prec00P = 11;
-static constexpr uint Prec00M = 12;
-static constexpr uint Prec0PP = 13;
-static constexpr uint Prec0MP = 14;
 
 struct PrecursorStruct
 {

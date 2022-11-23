@@ -99,13 +99,6 @@ __global__ void fillArrayDistributions( uint nNodes, uint* indices,
     precursorData[lIndex(PrecPMP, node, nNodes)] = (dist.f[DIR_PMP])[k_0M0];
     precursorData[lIndex(PrecPPM, node, nNodes)] = (dist.f[DIR_PPM])[k_00M];
     precursorData[lIndex(PrecPMM, node, nNodes)] = (dist.f[DIR_PMM])[k_0MM];
-
-    precursorData[lIndex(Prec0P0, node, nNodes)] = (dist.f[DIR_0P0])[k_000];
-    precursorData[lIndex(Prec0M0, node, nNodes)] = (dist.f[DIR_0M0])[k_0M0];
-    precursorData[lIndex(Prec00P, node, nNodes)] = (dist.f[DIR_00P])[k_000];
-    precursorData[lIndex(Prec00M, node, nNodes)] = (dist.f[DIR_00M])[k_00M];
-    precursorData[lIndex(Prec0PP, node, nNodes)] = (dist.f[DIR_0PP])[k_000];
-    precursorData[lIndex(Prec0MP, node, nNodes)] = (dist.f[DIR_0MP])[k_0M0];
 }
 
 
@@ -162,7 +155,6 @@ void PrecursorWriter::init(Parameter* para, GridProvider* gridProvider, CudaMemo
                 int idx;
                 index1d(idx, idxY, idxZ, ny, nz);
                 indicesOnPlane.push_back(idx);
-                // printf("idx %d, idy %d, idz %d, ny %d, nz %d\n", idx, idxY, idxZ, ny, nz);
         }
 
         precursorStructs[level] = SPtr<PrecursorStruct>(new PrecursorStruct);
@@ -182,14 +174,12 @@ void PrecursorWriter::init(Parameter* para, GridProvider* gridProvider, CudaMemo
             precursorStructs[level]->nQuantities = 3;
             break;
         case OutputVariable::Distributions:
-            precursorStructs[level]->nQuantities = 15;//9; DEBUG
+            precursorStructs[level]->nQuantities = 9;
             break;
         
         default:
             break;
         }
-
-        // printf("points %zu points on plane %zu \n",  indicesOnGrid.size(),  indicesOnPlane.size());
 
         cudaManager->cudaAllocPrecursorWriter(this, level);
     
@@ -204,15 +194,11 @@ void PrecursorWriter::init(Parameter* para, GridProvider* gridProvider, CudaMemo
 void PrecursorWriter::interact(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t)
 {
     uint t_level         = para->getTimeStep(level, t, true);
-    uint tStartOut_level = tStartOut*pow(2, level)+1;
-    // tStartOut_level = tStartOut_level%2==0? tStartOut_level: tStartOut_level+1;
+    uint tStartOut_level = tStartOut*pow(2, level);
     uint tEnd_level      = para->getTimestepEnd()*pow(2, level);
 
     if(t_level>tStartOut_level && ((t_level-tStartOut_level) % tSave)==0)
-    // if(t>tStartOut && ((t-tStartOut) % tSave)==0 )
     {
-        // std::cout << "PrecurserWriter: level " << level << ", t " << t << ", evenOrOdd " << para->getParD(level)->isEvenTimestep << std::endl << std::endl;
-
         vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, precursorStructs[level]->nPoints);
 
         if(this->outputVariable==OutputVariable::Velocities)
@@ -278,8 +264,6 @@ void PrecursorWriter::write(Parameter* para, int level, uint timestepsBuffered)
     uint nPointsInPlane = precursorStructs[level]->nPointsInPlane;
 
     int startTime = precursorStructs[level]->filesWritten*precursorStructs[level]->timestepsPerFile;
-
-    // printf("points in plane %d, total timesteps %d, ntimesteps %d \n", nPointsInPlane, nTotalTimesteps, nTimesteps);
 
     UbTupleInt6 extent = makeUbTuple(   val<1>(precursorStructs[level]->extent),    val<2>(precursorStructs[level]->extent), 
                                         val<3>(precursorStructs[level]->extent),    val<4>(precursorStructs[level]->extent), 

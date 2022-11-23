@@ -1859,7 +1859,6 @@ __global__ void scaleCF_compressible(
     unsigned int* neighborXfine,
     unsigned int* neighborYfine,
     unsigned int* neighborZfine,
-	unsigned int* typeOfGridNode,
     unsigned int numberOfLBnodesCoarse, 
     unsigned int numberOfLBnodesFine, 
     bool isEvenTimestep,

@@ -3864,7 +3864,6 @@ void ScaleCF_compressible(LBMSimulationParameter * parameterDeviceC, LBMSimulati
       parameterDeviceF->neighborX,
       parameterDeviceF->neighborY,
       parameterDeviceF->neighborZ,
-	  parameterDeviceF->typeOfGridNode,
       parameterDeviceC->numberOfNodes,
       parameterDeviceF->numberOfNodes,
       parameterDeviceC->isEvenTimestep,
@@ -3874,6 +3873,7 @@ void ScaleCF_compressible(LBMSimulationParameter * parameterDeviceC, LBMSimulati
       parameterDeviceC->omega,
       parameterDeviceF->omega,
       offsetCF);
+
    getLastCudaError("scaleCF_compressible execution failed");
 }
 

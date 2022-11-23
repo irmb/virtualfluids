@@ -509,7 +509,7 @@ __global__ void PrecursorDeviceEQ27( 	int* subgridDistanceIndices,
     ////////////////////////////////////////////////////////////////////////////////
 
     Distributions27 dist;
-    getPointersToDistributions(dist, distributions, numberOfLBnodes, isEvenTimestep);
+    getPointersToDistributions(dist, distributions, numberOfLBnodes, !isEvenTimestep);
 
     unsigned int KQK  = subgridDistanceIndices[k];
     unsigned int kzero= KQK;
@@ -617,32 +617,34 @@ __global__ void PrecursorDeviceEQ27( 	int* subgridDistanceIndices,
       //! write the new distributions to the bc nodes
       //!
       (dist.f[DIR_P00   ])[ke  ] = f_W   ;
+      (dist.f[DIR_PP0  ])[kne  ] = f_SW  ;
+      (dist.f[DIR_P0M  ])[kbe  ] = f_TW  ;
+      (dist.f[DIR_PM0  ])[kse  ] = f_NW  ;
+      (dist.f[DIR_PMP ])[ktse ] = f_BNW ;
+      (dist.f[DIR_P0P  ])[kte  ] = f_BW  ;
+      (dist.f[DIR_PPM ])[kbne ] = f_TSW ;
+      (dist.f[DIR_PPP ])[ktne ] = f_BSW ;
+      (dist.f[DIR_PMM ])[kbse ] = f_TNW ;
+      
       (dist.f[DIR_M00   ])[kw  ] = f_E   ;
+      (dist.f[DIR_MM0  ])[ksw  ] = f_NE  ;
+      (dist.f[DIR_M0M  ])[kbw  ] = f_TE  ;
+      (dist.f[DIR_MP0  ])[knw  ] = f_SE  ;
+      (dist.f[DIR_M0P  ])[ktw  ] = f_BE  ;
+      (dist.f[DIR_MMM ])[kbsw ] = f_TNE ;
+      (dist.f[DIR_MMP ])[ktsw ] = f_BNE ;
+      (dist.f[DIR_MPP ])[ktnw ] = f_BSE ;
+      (dist.f[DIR_MPM ])[kbnw ] = f_TSE ;
+
       (dist.f[DIR_0P0   ])[kn  ] = f_S   ;
       (dist.f[DIR_0M0   ])[ks  ] = f_N   ;
       (dist.f[DIR_00P   ])[kt  ] = f_B   ;
       (dist.f[DIR_00M   ])[kb  ] = f_T   ;
-      (dist.f[DIR_PP0  ])[kne  ] = f_SW  ;
-      (dist.f[DIR_MM0  ])[ksw  ] = f_NE  ;
-      (dist.f[DIR_PM0  ])[kse  ] = f_NW  ;
-      (dist.f[DIR_MP0  ])[knw  ] = f_SE  ;
-      (dist.f[DIR_P0P  ])[kte  ] = f_BW  ;
-      (dist.f[DIR_M0M  ])[kbw  ] = f_TE  ;
-      (dist.f[DIR_P0M  ])[kbe  ] = f_TW  ;
-      (dist.f[DIR_M0P  ])[ktw  ] = f_BE  ;
       (dist.f[DIR_0PP  ])[ktn  ] = f_BS  ;
       (dist.f[DIR_0MM  ])[kbs  ] = f_TN  ;
       (dist.f[DIR_0PM  ])[kbn  ] = f_TS  ;
       (dist.f[DIR_0MP  ])[kts  ] = f_BN  ;
       (dist.f[DIR_000])[kzero] = f_ZERO;
-      (dist.f[DIR_PPP ])[ktne ] = f_BSW ;
-      (dist.f[DIR_MMP ])[ktsw ] = f_BNE ;
-      (dist.f[DIR_PMP ])[ktse ] = f_BNW ;
-      (dist.f[DIR_MPP ])[ktnw ] = f_BSE ;
-      (dist.f[DIR_PPM ])[kbne ] = f_TSW ;
-      (dist.f[DIR_MMM ])[kbsw ] = f_TNE ;
-      (dist.f[DIR_PMM ])[kbse ] = f_TNW ;
-      (dist.f[DIR_MPM ])[kbnw ] = f_TSE ;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -654,7 +656,7 @@ __global__ void PrecursorDeviceDistributions( 	int* subgridDistanceIndices,
 												uint* neighborX, 
 												uint* neighborY, 
 												uint* neighborZ,
-                                                uint* typeOfGridNode,       //DEBUG: remove later
+                                                uint* typeOfGridNode,
 												uint* neighborsNT, 
 												uint* neighborsNB,
 												uint* neighborsST,
@@ -676,8 +678,8 @@ __global__ void PrecursorDeviceDistributions( 	int* subgridDistanceIndices,
     uint kNT = neighborsNT[k];
     real dNT = weightsNT[k];
 
-    real f0LastInterp, f1LastInterp, f2LastInterp, f3LastInterp, f4LastInterp, f5LastInterp, f6LastInterp, f7LastInterp, f8LastInterp, f9LastInterp, f10LastInterp, f11LastInterp, f12LastInterp, f13LastInterp, f14LastInterp;
-    real f0NextInterp, f1NextInterp, f2NextInterp, f3NextInterp, f4NextInterp, f5NextInterp, f6NextInterp, f7NextInterp, f8NextInterp, f9NextInterp, f10NextInterp, f11NextInterp, f12NextInterp, f13NextInterp, f14NextInterp;
+    real f0LastInterp, f1LastInterp, f2LastInterp, f3LastInterp, f4LastInterp, f5LastInterp, f6LastInterp, f7LastInterp, f8LastInterp;
+    real f0NextInterp, f1NextInterp, f2NextInterp, f3NextInterp, f4NextInterp, f5NextInterp, f6NextInterp, f7NextInterp, f8NextInterp;
 
     real* f0Last = fsLast;
     real* f1Last = &fsLast[  numberOfPrecursorNodes];
@@ -689,13 +691,6 @@ __global__ void PrecursorDeviceDistributions( 	int* subgridDistanceIndices,
     real* f7Last = &fsLast[7*numberOfPrecursorNodes];
     real* f8Last = &fsLast[8*numberOfPrecursorNodes];
 
-    real* f9Last = &fsLast[9*numberOfPrecursorNodes];
-    real* f10Last = &fsLast[10*numberOfPrecursorNodes];
-    real* f11Last = &fsLast[11*numberOfPrecursorNodes];
-    real* f12Last = &fsLast[12*numberOfPrecursorNodes];
-    real* f13Last = &fsLast[13*numberOfPrecursorNodes];
-    real* f14Last = &fsLast[14*numberOfPrecursorNodes];
-
     real* f0Next = fsNext;
     real* f1Next = &fsNext[  numberOfPrecursorNodes];
     real* f2Next = &fsNext[2*numberOfPrecursorNodes];
@@ -705,13 +700,6 @@ __global__ void PrecursorDeviceDistributions( 	int* subgridDistanceIndices,
     real* f6Next = &fsNext[6*numberOfPrecursorNodes];
     real* f7Next = &fsNext[7*numberOfPrecursorNodes];
     real* f8Next = &fsNext[8*numberOfPrecursorNodes];
-
-    real* f9Next  = &fsNext[9*numberOfPrecursorNodes];
-    real* f10Next = &fsNext[10*numberOfPrecursorNodes];
-    real* f11Next = &fsNext[11*numberOfPrecursorNodes];
-    real* f12Next = &fsNext[12*numberOfPrecursorNodes];
-    real* f13Next = &fsNext[13*numberOfPrecursorNodes];
-    real* f14Next = &fsNext[14*numberOfPrecursorNodes];
 
 
     if(dNT<1e6)
@@ -752,24 +740,6 @@ __global__ void PrecursorDeviceDistributions( 	int* subgridDistanceIndices,
         
         f8LastInterp = (f8Last[kNT]*dNT + f8Last[kNB]*dNB + f8Last[kST]*dST + f8Last[kSB]*dSB)*invWeightSum;
         f8NextInterp = (f8Next[kNT]*dNT + f8Next[kNB]*dNB + f8Next[kST]*dST + f8Next[kSB]*dSB)*invWeightSum;
-
-        f9LastInterp = (f9Last[kNT]*dNT + f9Last[kNB]*dNB + f9Last[kST]*dST + f9Last[kSB]*dSB)*invWeightSum;
-        f9NextInterp = (f9Next[kNT]*dNT + f9Next[kNB]*dNB + f9Next[kST]*dST + f9Next[kSB]*dSB)*invWeightSum;
-
-        f10LastInterp = (f10Last[kNT]*dNT + f10Last[kNB]*dNB + f10Last[kST]*dST + f10Last[kSB]*dSB)*invWeightSum;
-        f10NextInterp = (f10Next[kNT]*dNT + f10Next[kNB]*dNB + f10Next[kST]*dST + f10Next[kSB]*dSB)*invWeightSum;
-
-        f11LastInterp = (f11Last[kNT]*dNT + f11Last[kNB]*dNB + f11Last[kST]*dST + f11Last[kSB]*dSB)*invWeightSum;
-        f11NextInterp = (f11Next[kNT]*dNT + f11Next[kNB]*dNB + f11Next[kST]*dST + f11Next[kSB]*dSB)*invWeightSum;
-
-        f12LastInterp = (f12Last[kNT]*dNT + f12Last[kNB]*dNB + f12Last[kST]*dST + f12Last[kSB]*dSB)*invWeightSum;
-        f12NextInterp = (f12Next[kNT]*dNT + f12Next[kNB]*dNB + f12Next[kST]*dST + f12Next[kSB]*dSB)*invWeightSum;
-
-        f13LastInterp = (f13Last[kNT]*dNT + f13Last[kNB]*dNB + f13Last[kST]*dST + f13Last[kSB]*dSB)*invWeightSum;
-        f13NextInterp = (f13Next[kNT]*dNT + f13Next[kNB]*dNB + f13Next[kST]*dST + f13Next[kSB]*dSB)*invWeightSum;
-
-        f14LastInterp = (f14Last[kNT]*dNT + f14Last[kNB]*dNB + f14Last[kST]*dST + f14Last[kSB]*dSB)*invWeightSum;
-        f14NextInterp = (f14Next[kNT]*dNT + f14Next[kNB]*dNB + f14Next[kST]*dST + f14Next[kSB]*dSB)*invWeightSum;
     
     } else {
         f0LastInterp = f0Last[kNT];
@@ -782,13 +752,6 @@ __global__ void PrecursorDeviceDistributions( 	int* subgridDistanceIndices,
         f7LastInterp = f7Last[kNT];
         f8LastInterp = f8Last[kNT];
 
-        f9LastInterp = f9Last[kNT];
-        f10LastInterp = f10Last[kNT];
-        f11LastInterp = f11Last[kNT];
-        f12LastInterp = f12Last[kNT];
-        f13LastInterp = f13Last[kNT];
-        f14LastInterp = f14Last[kNT];
-
         f0NextInterp = f0Next[kNT];
         f1NextInterp = f1Next[kNT];
         f2NextInterp = f2Next[kNT];
@@ -798,24 +761,17 @@ __global__ void PrecursorDeviceDistributions( 	int* subgridDistanceIndices,
         f6NextInterp = f6Next[kNT];
         f7NextInterp = f7Next[kNT];
         f8NextInterp = f8Next[kNT];
-
-        f9NextInterp = f9Next[kNT];
-        f10NextInterp = f10Next[kNT];
-        f11NextInterp = f11Next[kNT];
-        f12NextInterp = f12Next[kNT];
-        f13NextInterp = f13Next[kNT];
-        f14NextInterp = f14Next[kNT];
     }
     Distributions27 dist;
-    getPointersToDistributions(dist, distributions, numberOfLBnodes, isEvenTimestep);
+    getPointersToDistributions(dist, distributions, numberOfLBnodes, !isEvenTimestep);
 
     unsigned int KQK  = subgridDistanceIndices[k];
     // unsigned int kzero= KQK;
     unsigned int ke   = KQK;
     // unsigned int kw   = neighborX[KQK];
-    unsigned int kn   = KQK;
+    // unsigned int kn   = KQK;
     unsigned int ks   = neighborY[KQK];
-    unsigned int kt   = KQK;
+    // unsigned int kt   = KQK;
     unsigned int kb   = neighborZ[KQK];
     // unsigned int ksw  = neighborY[kw];
     unsigned int kne  = KQK;
@@ -826,9 +782,9 @@ __global__ void PrecursorDeviceDistributions( 	int* subgridDistanceIndices,
     unsigned int kbe  = kb;
     // unsigned int ktw  = kw;
     unsigned int kbs  = neighborZ[ks];
-    unsigned int ktn  = KQK;
+    // unsigned int ktn  = KQK;
     // unsigned int kbn  = kb;
-    unsigned int kts  = ks;
+    // unsigned int kts  = ks;
     unsigned int ktse = ks;
     // unsigned int kbnw = kbw;
     // unsigned int ktnw = kw;
@@ -847,18 +803,10 @@ __global__ void PrecursorDeviceDistributions( 	int* subgridDistanceIndices,
     dist.f[DIR_PMP][ktse] = f6LastInterp*(1.f-tRatio) + f6NextInterp*tRatio;
     dist.f[DIR_PPM][kbne] = f7LastInterp*(1.f-tRatio) + f7NextInterp*tRatio;
     dist.f[DIR_PMM][kbse] = f8LastInterp*(1.f-tRatio) + f8NextInterp*tRatio;
-
-    dist.f[DIR_0P0][kn]  = f9LastInterp*(1.f-tRatio) + f9NextInterp*tRatio;
-    dist.f[DIR_0M0][ks] = f10LastInterp*(1.f-tRatio) + f10NextInterp*tRatio;
-    dist.f[DIR_00P][kt] = f11LastInterp*(1.f-tRatio) + f11NextInterp*tRatio;
-    dist.f[DIR_00M][kb] = f12LastInterp*(1.f-tRatio) + f12NextInterp*tRatio;
-    dist.f[DIR_0PP][ktn] = f13LastInterp*(1.f-tRatio) + f13NextInterp*tRatio;
-    dist.f[DIR_0MP][kts] = f14LastInterp*(1.f-tRatio) + f14NextInterp*tRatio;
-
-
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+//NOTE: Has not been tested after bug fix!
 __global__ void QPrecursorDeviceDistributions( 	int* subgridDistanceIndices,
                                                 real* subgridDistances,
                                                 int sizeQ,
@@ -974,7 +922,7 @@ __global__ void QPrecursorDeviceDistributions( 	int* subgridDistanceIndices,
         f8NextInterp = f8Next[kNT];
     }
     Distributions27 dist;
-    getPointersToDistributions(dist, distributions, numberOfLBnodes, isEvenTimestep);
+    getPointersToDistributions(dist, distributions, numberOfLBnodes, !isEvenTimestep);
 
     unsigned int KQK  = subgridDistanceIndices[k];
     // unsigned int kzero= KQK;
