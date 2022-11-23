@@ -13,6 +13,8 @@
 #include "CollisionStrategy.h"
 #include "RefinementStrategy.h"
 
+#include "Output/DistributionDebugInspector.h"
+
 void UpdateGrid27::updateGrid(int level, unsigned int t)
 {
     //////////////////////////////////////////////////////////////////////////
@@ -22,6 +24,13 @@ void UpdateGrid27::updateGrid(int level, unsigned int t)
         updateGrid(level + 1, t);
     }
 
+    // DistributionDebugInspector pre_inspector(1, 0.0, 16.0, 1000.0, 1030.0, 500.0, 700.0, "Pre Collision");
+    // DistributionDebugInspector post_inspector(1, 0.0, 16.0, 1000.0, 1030.0, 500.0, 700.0, "Post Collision");
+    //////////////////////////////////////////////////////////////////////////
+    
+    interactWithProbes(level, t);
+
+    // pre_inspector.inspect(para, level, t);
     //////////////////////////////////////////////////////////////////////////
 
     collision(this, para.get(), level, t);
@@ -47,13 +56,13 @@ void UpdateGrid27::updateGrid(int level, unsigned int t)
 
     //////////////////////////////////////////////////////////////////////////
     if( level != para->getFine() )
-    {
+    {   
         refinement(this, para.get(), level);
     }
 
+
     interactWithActuators(level, t);
 
-    interactWithProbes(level, t);
 }
 
 void UpdateGrid27::collisionAllNodes(int level, unsigned int t)

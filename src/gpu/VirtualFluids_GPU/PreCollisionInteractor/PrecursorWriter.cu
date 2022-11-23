@@ -129,8 +129,9 @@ void PrecursorWriter::init(Parameter* para, GridProvider* gridProvider, CudaMemo
             real pointCoordX = para->getParH(level)->coordinateX[j];
             real pointCoordY = para->getParH(level)->coordinateY[j];
             real pointCoordZ = para->getParH(level)->coordinateZ[j];
-            if( pointCoordX < (dx+xPos) && pointCoordX >= xPos &&
-                pointCoordY<=yMax && pointCoordY>=yMin && 
+            if( para->getParH(level)->typeOfGridNode[j] == GEO_FLUID &&
+                pointCoordX < (dx+xPos) && pointCoordX >= xPos       &&
+                pointCoordY<=yMax && pointCoordY>=yMin               && 
                 pointCoordZ<=zMax && pointCoordZ>=zMin)
             {
                 highestY = max(highestY, pointCoordY);
@@ -140,7 +141,7 @@ void PrecursorWriter::init(Parameter* para, GridProvider* gridProvider, CudaMemo
                 lowestZ = min(lowestZ, pointCoordZ);
                 indicesOnGrid.push_back(j);    
                 coordY.push_back(pointCoordY);            
-                coordZ.push_back(pointCoordZ);            
+                coordZ.push_back(pointCoordZ);    
             }
         }
         assert("PrecursorWriter did not find any points on the grid"&& indicesOnGrid.size()==0);
@@ -154,13 +155,12 @@ void PrecursorWriter::init(Parameter* para, GridProvider* gridProvider, CudaMemo
                 int idx;
                 index1d(idx, idxY, idxZ, ny, nz);
                 indicesOnPlane.push_back(idx);
-                // printf("idx %d, idy %d, idz %d, ny %d, nz %d\n", idx, idxY, idxZ, ny, nz);
         }
 
         precursorStructs[level] = SPtr<PrecursorStruct>(new PrecursorStruct);
         precursorStructs[level]->nPoints = (uint)indicesOnGrid.size();
         precursorStructs[level]->indicesOnPlane = (int*) malloc(precursorStructs[level]->nPoints*sizeof(int));
-        precursorStructs[level]->spacing = makeUbTuple(dx, dx, tSave*para->getTimeRatio());
+        precursorStructs[level]->spacing = makeUbTuple(dx, dx, tSave*para->getTimeRatio()*pow(2,-level));
         precursorStructs[level]->origin = makeUbTuple(lowestY, lowestZ);
         precursorStructs[level]->extent = makeUbTuple(0, ny-1, 0, nz-1);
         precursorStructs[level]->nPointsInPlane = ny*nz;
@@ -181,8 +181,6 @@ void PrecursorWriter::init(Parameter* para, GridProvider* gridProvider, CudaMemo
             break;
         }
 
-        // printf("points %zu points on plane %zu \n",  indicesOnGrid.size(),  indicesOnPlane.size());
-
         cudaManager->cudaAllocPrecursorWriter(this, level);
     
         std::copy(indicesOnGrid.begin(), indicesOnGrid.end(), precursorStructs[level]->indicesH);
@@ -195,7 +193,11 @@ void PrecursorWriter::init(Parameter* para, GridProvider* gridProvider, CudaMemo
 
 void PrecursorWriter::interact(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t)
 {
-    if(t>tStartOut ? ((t-tStartOut) % tSave)==0 : false)
+    uint t_level         = para->getTimeStep(level, t, true);
+    uint tStartOut_level = tStartOut*pow(2, level);
+    uint tEnd_level      = para->getTimestepEnd()*pow(2, level);
+
+    if(t_level>tStartOut_level && ((t_level-tStartOut_level) % tSave)==0)
     {
         vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, precursorStructs[level]->nPoints);
 
@@ -225,7 +227,7 @@ void PrecursorWriter::interact(Parameter* para, CudaMemoryManager* cudaManager, 
 
         precursorStructs[level]->timestepsBuffered++;
 
-        if(precursorStructs[level]->timestepsBuffered >= precursorStructs[level]->timestepsPerFile)
+        if(precursorStructs[level]->timestepsBuffered >= precursorStructs[level]->timestepsPerFile || t == para->getTimestepEnd())
         {
         // switch host buffer and data pointer so precursor data is copied in buffer and written from data
 
@@ -262,8 +264,6 @@ void PrecursorWriter::write(Parameter* para, int level, uint timestepsBuffered)
     uint nPointsInPlane = precursorStructs[level]->nPointsInPlane;
 
     int startTime = precursorStructs[level]->filesWritten*precursorStructs[level]->timestepsPerFile;
-
-    // printf("points in plane %d, total timesteps %d, ntimesteps %d \n", nPointsInPlane, nTotalTimesteps, nTimesteps);
 
     UbTupleInt6 extent = makeUbTuple(   val<1>(precursorStructs[level]->extent),    val<2>(precursorStructs[level]->extent), 
                                         val<3>(precursorStructs[level]->extent),    val<4>(precursorStructs[level]->extent), 

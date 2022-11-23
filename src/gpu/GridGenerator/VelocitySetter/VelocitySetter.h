@@ -173,8 +173,9 @@ protected:
 class VTKReader : public VelocityReader
 {
 public:
-    VTKReader(SPtr<VTKFileCollection> _fileCollection):
-    fileCollection(_fileCollection)    
+    VTKReader(SPtr<VTKFileCollection> _fileCollection, uint _readLevel):
+    fileCollection(_fileCollection), 
+    readLevel(_readLevel)
     {
         this->nQuantities = fileCollection->getNumberOfQuantities();
         read = std::async([](){});
@@ -189,11 +190,12 @@ private:
     std::vector<std::vector<std::vector<uint>>> readIndices, writeIndices;
     std::vector<std::vector<size_t>> nFile;
     SPtr<VTKFileCollection> fileCollection;
+    uint readLevel;
     std::future<void> read;
 };
 
 
 SPtr<VelocityFileCollection> createFileCollection(std::string prefix, FileType type);
-SPtr<VelocityReader> createReaderForCollection(SPtr<VelocityFileCollection> fileCollection);
+SPtr<VelocityReader> createReaderForCollection(SPtr<VelocityFileCollection> fileCollection, uint readLevel);
 
 #endif //VELOCITY_SETTER_H_

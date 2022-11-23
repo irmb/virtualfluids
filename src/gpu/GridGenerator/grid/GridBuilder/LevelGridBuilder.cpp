@@ -119,13 +119,19 @@ void LevelGridBuilder::setSlipGeometryBoundaryCondition(real normalX, real norma
     }
 }
 
+//=======================================================================================
+//! \brief Set stress boundary concdition using iMEM
+//! \param samplingOffset number of grid points above boundary where velocity for wall model is sampled
+//! \param z0 roghness length [m]
+//! \param dx dx of level 0 [m] 
+//!
 void LevelGridBuilder::setStressBoundaryCondition(  SideType sideType, 
                                                     real nomalX, real normalY, real normalZ, 
-                                                    uint samplingOffset, real z0)
+                                                    uint samplingOffset, real z0, real dx)
 {
     for (uint level = 0; level < getNumberOfGridLevels(); level++)
     {
-        SPtr<StressBoundaryCondition> stressBoundaryCondition = StressBoundaryCondition::make(nomalX, normalY, normalZ, samplingOffset, z0);
+        SPtr<StressBoundaryCondition> stressBoundaryCondition = StressBoundaryCondition::make(nomalX, normalY, normalZ, samplingOffset, z0/(dx*(level+1)));
 
         auto side = SideFactory::make(sideType);
 
@@ -245,11 +251,26 @@ void LevelGridBuilder::setNoSlipGeometryBoundaryCondition()
     }
 }
 
-void LevelGridBuilder::setPrecursorBoundaryCondition(SideType sideType, SPtr<VelocityFileCollection> fileCollection, int nTRead, real velocityX, real velocityY, real velocityZ)
+void LevelGridBuilder::setPrecursorBoundaryCondition(SideType sideType, SPtr<VelocityFileCollection> fileCollection, int nTRead, 
+                                                        real velocityX, real velocityY, real velocityZ, std::vector<uint> fileLevelToGridLevelMap)
 {
+    if(fileLevelToGridLevelMap.empty())                         
+    {
+        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Mapping precursor file levels to the corresponding grid levels" << "\n";
+
+        for (uint level = 0; level < getNumberOfGridLevels(); level++)  
+            fileLevelToGridLevelMap.push_back(level);
+    }
+    else
+    {
+        if(fileLevelToGridLevelMap.size()!=getNumberOfGridLevels())
+            throw std::runtime_error("In setPrecursorBoundaryCondition: fileLevelToGridLevelMap does not match with the number of levels");
+        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Using user defined file to grid level mapping"  << "\n";
+    }
+
     for (uint level = 0; level < getNumberOfGridLevels(); level++)
     {
-        auto reader = createReaderForCollection(fileCollection);
+        auto reader = createReaderForCollection(fileCollection, fileLevelToGridLevelMap[level]);
         SPtr<PrecursorBoundaryCondition> precursorBoundaryCondition = PrecursorBoundaryCondition::make( reader, nTRead, velocityX, velocityY, velocityZ);
 
         auto side = SideFactory::make(sideType);
@@ -634,14 +655,13 @@ void LevelGridBuilder::getPrecursorValues(  uint* neighborNT, uint* neighborNB, 
     int allNodesCounter = 0;
     uint tmpNTRead = 0;
     size_t tmpNQuantities = 0;
-
+    
     for (auto boundaryCondition : boundaryConditions[level]->precursorBoundaryConditions)
     {
         if( tmpNTRead == 0 )
             tmpNTRead = boundaryCondition->nTRead;
         if( tmpNTRead != boundaryCondition->nTRead )
             throw std::runtime_error("All precursor boundary conditions must have the same NTRead value");
-
         auto BCreader = boundaryCondition->getReader();
         BCreader->setWritingOffset(allIndicesCounter);
         reader.push_back(BCreader);

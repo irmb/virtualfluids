@@ -120,7 +120,7 @@ void multipleLevel(const std::string& configPath)
 
     const real H = config.getValue("boundaryLayerHeight", 1000.0); // boundary layer height in m
 
-    const real L_x = 6*H;
+    const real L_x = 10*H;
     const real L_y = 4*H;
     const real L_z = H;
 
@@ -142,13 +142,11 @@ void multipleLevel(const std::string& configPath)
     int nTWritePrecursor; real tStartPrecursor, posXPrecursor;
     if(writePrecursor)
     {
-        nTWritePrecursor      = config.getValue<int>("nTimestepsWritePrecursor");
+        nTWritePrecursor     = config.getValue<int>("nTimestepsWritePrecursor");
         tStartPrecursor      = config.getValue<real>("tStartPrecursor");
         posXPrecursor        = config.getValue<real>("posXPrecursor");
         useDistributions     = config.getValue<bool>("useDistributions", false);
-        precursorDirectory = config.getValue<std::string>("precursorDirectory");
-
-
+        precursorDirectory   = config.getValue<std::string>("precursorDirectory");
     }
 
     const bool readPrecursor = config.getValue("readPrecursor", false);
@@ -158,8 +156,8 @@ void multipleLevel(const std::string& configPath)
         nTReadPrecursor = config.getValue<int>("nTimestepsReadPrecursor");
         precursorDirectory = config.getValue<std::string>("precursorDirectory");
         useDistributions     = config.getValue<bool>("useDistributions", false);
-
     }
+
     // all in s
     const float tStartOut   = config.getValue<real>("tStartOut");
     const float tOut        = config.getValue<real>("tOut");
@@ -197,7 +195,7 @@ void multipleLevel(const std::string& configPath)
 
     para->setPrintFiles(true);
 
-    para->setForcing(pressureGradientLB, 0, 0);
+    if(!readPrecursor) para->setForcing(pressureGradientLB, 0, 0);
     para->setVelocityLB(velocityLB);
     para->setViscosityLB(viscosityLB);
     para->setVelocityRatio( dx / dt );
@@ -247,14 +245,14 @@ void multipleLevel(const std::string& configPath)
         xGridMax += overlap;
         xGridMin -= overlap;
     }
-    gridBuilder->setPeriodicBoundaryCondition(!readPrecursor, true, false);
 
     gridBuilder->addCoarseGrid( xGridMin,  0.0,  0.0,
                                 xGridMax,  L_y,  L_z, dx);
-    if(false)// Add refinement
+    if(true)// Add refinement
     {
-        gridBuilder->setNumberOfLayers(12, 8);
-        gridBuilder->addGrid( new Cuboid( xGridMin, 0.f, 0.f, xGridMax, L_y,  0.3*L_z) , 1 );
+        gridBuilder->setNumberOfLayers(4,0);
+        real xMaxRefinement = readPrecursor? xGridMax-H: xGridMax;   //Stop refinement some distance before outlet if domain ist not periodic
+        gridBuilder->addGrid( new Cuboid( xGridMin+dx, 0.f, 0.f, xMaxRefinement, L_y,  0.5*L_z) , 1 );
         para->setMaxLevel(2);
         scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
     }
@@ -267,7 +265,7 @@ void multipleLevel(const std::string& configPath)
     }
     else         
     { 
-        gridBuilder->setPeriodicBoundaryCondition(true, true, false);
+        gridBuilder->setPeriodicBoundaryCondition(!readPrecursor, true, false);
     }
 
 	gridBuilder->buildGrids(lbmOrGks, true); // buildGrids() has to be called before setting the BCs!!!!
@@ -285,60 +283,68 @@ void multipleLevel(const std::string& configPath)
             gridBuilder->setCommunicationProcess(CommunicationDirections::MX, procID-1);
         }
 
-        if (isFirstSubDomain) {
+        if (isFirstSubDomain && !readPrecursor) {
             gridBuilder->findCommunicationIndices(CommunicationDirections::MX, lbmOrGks);
             gridBuilder->setCommunicationProcess(CommunicationDirections::MX, nProcs-1);
         }
 
-        if (isLastSubDomain) {
+        if (isLastSubDomain && !readPrecursor) {
             gridBuilder->findCommunicationIndices(CommunicationDirections::PX, lbmOrGks);
             gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 0);
         }
     }
     uint samplingOffset = 2;
     
+    std::cout << " precursorDirectory " << precursorDirectory << std::endl;
+    
     if(readPrecursor)
     {
-        auto precursor = createFileCollection(precursorDirectory + "/precursor", FileType::VTK);
-        gridBuilder->setPrecursorBoundaryCondition(SideType::MX, precursor, nTReadPrecursor);
+        if(isFirstSubDomain || nProcs == 1)
+        {   
+            auto precursor = createFileCollection(precursorDirectory + "/precursor", FileType::VTK);
+            gridBuilder->setPrecursorBoundaryCondition(SideType::MX, precursor, nTReadPrecursor);
+        }
 
-        gridBuilder->setStressBoundaryCondition(SideType::MZ,
-                                            0.0, 0.0, 1.0,              // wall normals
-                                            samplingOffset, z0/dx);     // wall model settinng
-        para->setHasWallModelMonitor(true);
-        
-        gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0f,  0.0f, -1.0f);
-
-        
-        gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.f);
+        if(isLastSubDomain || nProcs == 1)
+        {
+            gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.f);
+        }     
     } 
-    else
-    {
-        gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0,  0.0, -1.0);
 
-        gridBuilder->setStressBoundaryCondition(SideType::MZ,
+    gridBuilder->setStressBoundaryCondition(SideType::MZ,
                                             0.0, 0.0, 1.0,              // wall normals
-                                            samplingOffset, z0/dx);     // wall model settinng
-        para->setHasWallModelMonitor(true);
-    }
+                                            samplingOffset, z0, dx);     // wall model settinng
+    para->setHasWallModelMonitor(true);   
+    gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0f,  0.0f, -1.0f); 
 
-
-
+    bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
     bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressPressureBounceBack);
     bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipBounceBack); 
     bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflective);
     bcFactory.setPrecursorBoundaryCondition(useDistributions ? BoundaryConditionFactory::PrecursorBC::DistributionsPrecursor : BoundaryConditionFactory::PrecursorBC::VelocityPrecursor);
     para->setOutflowPressureCorrectionFactor(0.0); 
 
-
-
-    para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
+    if(readPrecursor)
+    {
+        para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
+        rho = (real)0.0;
+        vx  = rho = c0o1;
+        vx  = u_star/c4o10*(u_star/c4o10 * log(coordZ/z0+c1o1)) * dt/dx; 
+        vy  = c0o1; 
+        vz  = c0o1;
+        });
+    }
+    else
+    {
+        para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)0.0;
         vx  = rho = c0o1;
         vx  = (u_star/c4o10 * log(coordZ/z0+c1o1) + c2o1*sin(cPi*c16o1*coordX/L_x)*sin(cPi*c8o1*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1)) * dt/dx; 
         vy  = c2o1*sin(cPi*c16o1*coordX/L_x)*sin(cPi*c8o1*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1) * dt/dx; 
         vz  = c8o1*u_star/c4o10*(sin(cPi*c8o1*coordY/H)*sin(cPi*c8o1*coordZ/H)+sin(cPi*c8o1*coordX/L_x))/(pow(c1o2*L_z-coordZ, c2o1)+c1o1) * dt/dx;
-    });
+        });
+    }
+
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -359,45 +365,44 @@ void multipleLevel(const std::string& configPath)
     //     para->addProbe( wallModelProbe );
     // }
 
-    // SPtr<PlaneProbe> planeProbe1 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_1", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
-    // planeProbe1->setProbePlane(100.0, 0.0, 0, dx, L_y, L_z);
-    // planeProbe1->addAllAvailableStatistics();
-    // para->addProbe( planeProbe1 );
+    SPtr<PlaneProbe> planeProbe1 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_1", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
+    planeProbe1->setProbePlane(100.0, 0.0, 0, dx, L_y, L_z);
+    planeProbe1->addAllAvailableStatistics();
+    para->addProbe( planeProbe1 );
 
-    // if(readPrecursor)
-    // {
-    //     SPtr<PlaneProbe> planeProbe2 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_2", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
-    //     planeProbe2->setProbePlane(1000.0, 0.0, 0, dx, L_y, L_z);
-    //     planeProbe2->addAllAvailableStatistics();
-    //     para->addProbe( planeProbe2 );
+    if(readPrecursor)
+    {
+        SPtr<PlaneProbe> planeProbe2 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_2", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
+        planeProbe2->setProbePlane(1000.0, 0.0, 0, dx, L_y, L_z);
+        planeProbe2->addAllAvailableStatistics();
+        para->addProbe( planeProbe2 );
 
-    //     SPtr<PlaneProbe> planeProbe3 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_3", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
-    //     planeProbe3->setProbePlane(1500.0, 0.0, 0, dx, L_y, L_z);
-    //     planeProbe3->addAllAvailableStatistics();
-    //     para->addProbe( planeProbe3 );
+        SPtr<PlaneProbe> planeProbe3 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_3", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
+        planeProbe3->setProbePlane(1500.0, 0.0, 0, dx, L_y, L_z);
+        planeProbe3->addAllAvailableStatistics();
+        para->addProbe( planeProbe3 );
 
-    //     SPtr<PlaneProbe> planeProbe4 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_4", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
-    //     planeProbe4->setProbePlane(2000.0, 0.0, 0, dx, L_y, L_z);
-    //     planeProbe4->addAllAvailableStatistics();
-    //     para->addProbe( planeProbe4 );
+        SPtr<PlaneProbe> planeProbe4 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_4", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
+        planeProbe4->setProbePlane(2000.0, 0.0, 0, dx, L_y, L_z);
+        planeProbe4->addAllAvailableStatistics();
+        para->addProbe( planeProbe4 );
 
-    //     SPtr<PlaneProbe> planeProbe5 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_5", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
-    //     planeProbe5->setProbePlane(2500.0, 0.0, 0, dx, L_y, L_z);
-    //     planeProbe5->addAllAvailableStatistics();
-    //     para->addProbe( planeProbe5 );
+        SPtr<PlaneProbe> planeProbe5 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_5", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
+        planeProbe5->setProbePlane(2500.0, 0.0, 0, dx, L_y, L_z);
+        planeProbe5->addAllAvailableStatistics();
+        para->addProbe( planeProbe5 );
 
-    //     SPtr<PlaneProbe> planeProbe6 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_6", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
-    //     planeProbe6->setProbePlane(0.0, L_y/2.0, 0, L_x, dx, L_z);
-    //     planeProbe6->addAllAvailableStatistics();
-    //     para->addProbe( planeProbe6 );
-    // }
+        SPtr<PlaneProbe> planeProbe6 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_6", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
+        planeProbe6->setProbePlane(0.0, L_y/2.0, 0, L_x, dx, L_z);
+        planeProbe6->addAllAvailableStatistics();
+        para->addProbe( planeProbe6 );
+    }
 
-
-    // if(writePrecursor)
-    // {
-    //     SPtr<PrecursorWriter> precursorWriter = std::make_shared<PrecursorWriter>("precursor", para->getOutputPath()+precursorDirectory, posXPrecursor, 0, L_y, 0, L_z, tStartPrecursor/dt, nTWritePrecursor, useDistributions? OutputVariable::Distributions: OutputVariable::Velocities);
-    //     para->addProbe(precursorWriter);
-    // }
+    if(writePrecursor && (posXPrecursor > xMin && posXPrecursor < xMax))
+    {
+        SPtr<PrecursorWriter> precursorWriter = std::make_shared<PrecursorWriter>("precursor", para->getOutputPath()+precursorDirectory, posXPrecursor, 0, L_y, 0, L_z, tStartPrecursor/dt, nTWritePrecursor, useDistributions? OutputVariable::Distributions: OutputVariable::Velocities, 1000);
+        para->addProbe(precursorWriter);
+    }
 
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
     auto gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);

@@ -319,7 +319,7 @@ void GridGenerator::allocArrays_BoundaryValues()
 
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
         const auto numberOfPrecursorValues = int(builder->getPrecursorSize(level));
-        std::cout << "size precursor level " << level << " : " << numberOfPrecursorValues << std::endl;
+        *logging::out << logging::Logger::INFO_INTERMEDIATE << "size precursor level " << level << " : " << numberOfPrecursorValues << "\n";
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         int blocks = (numberOfPrecursorValues / para->getParH(level)->numberofthreads) + 1;
         para->getParH(level)->precursorBC.sizeQ = blocks * para->getParH(level)->numberofthreads;
@@ -329,13 +329,12 @@ void GridGenerator::allocArrays_BoundaryValues()
         para->getParD(level)->precursorBC.numberOfBCnodes = numberOfPrecursorValues;
         para->getParH(level)->numberOfPrecursorBCnodesRead = numberOfPrecursorValues * para->getD3Qxx();
         para->getParD(level)->numberOfPrecursorBCnodesRead = numberOfPrecursorValues * para->getD3Qxx();
-
+        
         if (numberOfPrecursorValues > 1)
         {
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             cudaMemoryManager->cudaAllocPrecursorBC(level);
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
             builder->getPrecursorValues(
                     para->getParH(level)->precursorBC.planeNeighborNT, para->getParH(level)->precursorBC.planeNeighborNB, 
                     para->getParH(level)->precursorBC.planeNeighborST, para->getParH(level)->precursorBC.planeNeighborSB, 

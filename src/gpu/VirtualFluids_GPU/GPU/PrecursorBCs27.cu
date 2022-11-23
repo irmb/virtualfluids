@@ -509,7 +509,7 @@ __global__ void PrecursorDeviceEQ27( 	int* subgridDistanceIndices,
     ////////////////////////////////////////////////////////////////////////////////
 
     Distributions27 dist;
-    getPointersToDistributions(dist, distributions, numberOfLBnodes, isEvenTimestep);
+    getPointersToDistributions(dist, distributions, numberOfLBnodes, !isEvenTimestep);
 
     unsigned int KQK  = subgridDistanceIndices[k];
     unsigned int kzero= KQK;
@@ -617,32 +617,34 @@ __global__ void PrecursorDeviceEQ27( 	int* subgridDistanceIndices,
       //! write the new distributions to the bc nodes
       //!
       (dist.f[DIR_P00   ])[ke  ] = f_W   ;
+      (dist.f[DIR_PP0  ])[kne  ] = f_SW  ;
+      (dist.f[DIR_P0M  ])[kbe  ] = f_TW  ;
+      (dist.f[DIR_PM0  ])[kse  ] = f_NW  ;
+      (dist.f[DIR_PMP ])[ktse ] = f_BNW ;
+      (dist.f[DIR_P0P  ])[kte  ] = f_BW  ;
+      (dist.f[DIR_PPM ])[kbne ] = f_TSW ;
+      (dist.f[DIR_PPP ])[ktne ] = f_BSW ;
+      (dist.f[DIR_PMM ])[kbse ] = f_TNW ;
+      
       (dist.f[DIR_M00   ])[kw  ] = f_E   ;
+      (dist.f[DIR_MM0  ])[ksw  ] = f_NE  ;
+      (dist.f[DIR_M0M  ])[kbw  ] = f_TE  ;
+      (dist.f[DIR_MP0  ])[knw  ] = f_SE  ;
+      (dist.f[DIR_M0P  ])[ktw  ] = f_BE  ;
+      (dist.f[DIR_MMM ])[kbsw ] = f_TNE ;
+      (dist.f[DIR_MMP ])[ktsw ] = f_BNE ;
+      (dist.f[DIR_MPP ])[ktnw ] = f_BSE ;
+      (dist.f[DIR_MPM ])[kbnw ] = f_TSE ;
+
       (dist.f[DIR_0P0   ])[kn  ] = f_S   ;
       (dist.f[DIR_0M0   ])[ks  ] = f_N   ;
       (dist.f[DIR_00P   ])[kt  ] = f_B   ;
       (dist.f[DIR_00M   ])[kb  ] = f_T   ;
-      (dist.f[DIR_PP0  ])[kne  ] = f_SW  ;
-      (dist.f[DIR_MM0  ])[ksw  ] = f_NE  ;
-      (dist.f[DIR_PM0  ])[kse  ] = f_NW  ;
-      (dist.f[DIR_MP0  ])[knw  ] = f_SE  ;
-      (dist.f[DIR_P0P  ])[kte  ] = f_BW  ;
-      (dist.f[DIR_M0M  ])[kbw  ] = f_TE  ;
-      (dist.f[DIR_P0M  ])[kbe  ] = f_TW  ;
-      (dist.f[DIR_M0P  ])[ktw  ] = f_BE  ;
       (dist.f[DIR_0PP  ])[ktn  ] = f_BS  ;
       (dist.f[DIR_0MM  ])[kbs  ] = f_TN  ;
       (dist.f[DIR_0PM  ])[kbn  ] = f_TS  ;
       (dist.f[DIR_0MP  ])[kts  ] = f_BN  ;
       (dist.f[DIR_000])[kzero] = f_ZERO;
-      (dist.f[DIR_PPP ])[ktne ] = f_BSW ;
-      (dist.f[DIR_MMP ])[ktsw ] = f_BNE ;
-      (dist.f[DIR_PMP ])[ktse ] = f_BNW ;
-      (dist.f[DIR_MPP ])[ktnw ] = f_BSE ;
-      (dist.f[DIR_PPM ])[kbne ] = f_TSW ;
-      (dist.f[DIR_MMM ])[kbsw ] = f_TNE ;
-      (dist.f[DIR_PMM ])[kbse ] = f_TNW ;
-      (dist.f[DIR_MPM ])[kbnw ] = f_TSE ;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -654,6 +656,7 @@ __global__ void PrecursorDeviceDistributions( 	int* subgridDistanceIndices,
 												uint* neighborX, 
 												uint* neighborY, 
 												uint* neighborZ,
+                                                uint* typeOfGridNode,
 												uint* neighborsNT, 
 												uint* neighborsNB,
 												uint* neighborsST,
@@ -760,7 +763,7 @@ __global__ void PrecursorDeviceDistributions( 	int* subgridDistanceIndices,
         f8NextInterp = f8Next[kNT];
     }
     Distributions27 dist;
-    getPointersToDistributions(dist, distributions, numberOfLBnodes, isEvenTimestep);
+    getPointersToDistributions(dist, distributions, numberOfLBnodes, !isEvenTimestep);
 
     unsigned int KQK  = subgridDistanceIndices[k];
     // unsigned int kzero= KQK;
@@ -803,6 +806,7 @@ __global__ void PrecursorDeviceDistributions( 	int* subgridDistanceIndices,
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+//NOTE: Has not been tested after bug fix!
 __global__ void QPrecursorDeviceDistributions( 	int* subgridDistanceIndices,
                                                 real* subgridDistances,
                                                 int sizeQ,
@@ -918,7 +922,7 @@ __global__ void QPrecursorDeviceDistributions( 	int* subgridDistanceIndices,
         f8NextInterp = f8Next[kNT];
     }
     Distributions27 dist;
-    getPointersToDistributions(dist, distributions, numberOfLBnodes, isEvenTimestep);
+    getPointersToDistributions(dist, distributions, numberOfLBnodes, !isEvenTimestep);
 
     unsigned int KQK  = subgridDistanceIndices[k];
     // unsigned int kzero= KQK;
