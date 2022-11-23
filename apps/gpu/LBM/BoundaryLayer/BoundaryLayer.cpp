@@ -120,7 +120,7 @@ void multipleLevel(const std::string& configPath)
 
     const real H = config.getValue("boundaryLayerHeight", 1000.0); // boundary layer height in m
 
-    const real L_x = 6*H;
+    const real L_x = 10*H;
     const real L_y = 4*H;
     const real L_z = H;
 
@@ -195,7 +195,7 @@ void multipleLevel(const std::string& configPath)
 
     para->setPrintFiles(true);
 
-    para->setForcing(pressureGradientLB, 0, 0);
+    if(!readPrecursor) para->setForcing(pressureGradientLB, 0, 0);
     para->setVelocityLB(velocityLB);
     para->setViscosityLB(viscosityLB);
     para->setVelocityRatio( dx / dt );
@@ -251,7 +251,7 @@ void multipleLevel(const std::string& configPath)
     if(true)// Add refinement
     {
         gridBuilder->setNumberOfLayers(4,0);
-        real xMaxRefinement = readPrecursor? xGridMax-0.5f*H: xGridMax;   //Stop refinement some distance before outlet if domain ist not periodic
+        real xMaxRefinement = readPrecursor? xGridMax-H: xGridMax;   //Stop refinement some distance before outlet if domain ist not periodic
         gridBuilder->addGrid( new Cuboid( xGridMin+dx, 0.f, 0.f, xMaxRefinement, L_y,  0.5*L_z) , 1 );
         para->setMaxLevel(2);
         scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
@@ -313,7 +313,7 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->setStressBoundaryCondition(SideType::MZ,
                                             0.0, 0.0, 1.0,              // wall normals
-                                            samplingOffset, z0/dx);     // wall model settinng
+                                            samplingOffset, z0, dx);     // wall model settinng
     para->setHasWallModelMonitor(true);   
     gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0f,  0.0f, -1.0f); 
 
@@ -365,38 +365,38 @@ void multipleLevel(const std::string& configPath)
     //     para->addProbe( wallModelProbe );
     // }
 
-    // SPtr<PlaneProbe> planeProbe1 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_1", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
-    // planeProbe1->setProbePlane(100.0, 0.0, 0, dx, L_y, L_z);
-    // planeProbe1->addAllAvailableStatistics();
-    // para->addProbe( planeProbe1 );
+    SPtr<PlaneProbe> planeProbe1 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_1", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
+    planeProbe1->setProbePlane(100.0, 0.0, 0, dx, L_y, L_z);
+    planeProbe1->addAllAvailableStatistics();
+    para->addProbe( planeProbe1 );
 
-    // if(readPrecursor)
-    // {
-    //     SPtr<PlaneProbe> planeProbe2 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_2", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
-    //     planeProbe2->setProbePlane(1000.0, 0.0, 0, dx, L_y, L_z);
-    //     planeProbe2->addAllAvailableStatistics();
-    //     para->addProbe( planeProbe2 );
+    if(readPrecursor)
+    {
+        SPtr<PlaneProbe> planeProbe2 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_2", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
+        planeProbe2->setProbePlane(1000.0, 0.0, 0, dx, L_y, L_z);
+        planeProbe2->addAllAvailableStatistics();
+        para->addProbe( planeProbe2 );
 
-    //     SPtr<PlaneProbe> planeProbe3 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_3", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
-    //     planeProbe3->setProbePlane(1500.0, 0.0, 0, dx, L_y, L_z);
-    //     planeProbe3->addAllAvailableStatistics();
-    //     para->addProbe( planeProbe3 );
+        SPtr<PlaneProbe> planeProbe3 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_3", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
+        planeProbe3->setProbePlane(1500.0, 0.0, 0, dx, L_y, L_z);
+        planeProbe3->addAllAvailableStatistics();
+        para->addProbe( planeProbe3 );
 
-    //     SPtr<PlaneProbe> planeProbe4 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_4", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
-    //     planeProbe4->setProbePlane(2000.0, 0.0, 0, dx, L_y, L_z);
-    //     planeProbe4->addAllAvailableStatistics();
-    //     para->addProbe( planeProbe4 );
+        SPtr<PlaneProbe> planeProbe4 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_4", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
+        planeProbe4->setProbePlane(2000.0, 0.0, 0, dx, L_y, L_z);
+        planeProbe4->addAllAvailableStatistics();
+        para->addProbe( planeProbe4 );
 
-    //     SPtr<PlaneProbe> planeProbe5 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_5", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
-    //     planeProbe5->setProbePlane(2500.0, 0.0, 0, dx, L_y, L_z);
-    //     planeProbe5->addAllAvailableStatistics();
-    //     para->addProbe( planeProbe5 );
+        SPtr<PlaneProbe> planeProbe5 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_5", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
+        planeProbe5->setProbePlane(2500.0, 0.0, 0, dx, L_y, L_z);
+        planeProbe5->addAllAvailableStatistics();
+        para->addProbe( planeProbe5 );
 
-    //     SPtr<PlaneProbe> planeProbe6 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_6", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
-    //     planeProbe6->setProbePlane(0.0, L_y/2.0, 0, L_x, dx, L_z);
-    //     planeProbe6->addAllAvailableStatistics();
-    //     para->addProbe( planeProbe6 );
-    // }
+        SPtr<PlaneProbe> planeProbe6 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_6", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
+        planeProbe6->setProbePlane(0.0, L_y/2.0, 0, L_x, dx, L_z);
+        planeProbe6->addAllAvailableStatistics();
+        para->addProbe( planeProbe6 );
+    }
 
     if(writePrecursor && (posXPrecursor > xMin && posXPrecursor < xMax))
     {

@@ -119,13 +119,19 @@ void LevelGridBuilder::setSlipGeometryBoundaryCondition(real normalX, real norma
     }
 }
 
+//=======================================================================================
+//! \brief Set stress boundary concdition using iMEM
+//! \param samplingOffset number of grid points above boundary where velocity for wall model is sampled
+//! \param z0 roghness length [m]
+//! \param dx dx of level 0 [m] 
+//!
 void LevelGridBuilder::setStressBoundaryCondition(  SideType sideType, 
                                                     real nomalX, real normalY, real normalZ, 
-                                                    uint samplingOffset, real z0)
+                                                    uint samplingOffset, real z0, real dx)
 {
     for (uint level = 0; level < getNumberOfGridLevels(); level++)
     {
-        SPtr<StressBoundaryCondition> stressBoundaryCondition = StressBoundaryCondition::make(nomalX, normalY, normalZ, samplingOffset, z0);
+        SPtr<StressBoundaryCondition> stressBoundaryCondition = StressBoundaryCondition::make(nomalX, normalY, normalZ, samplingOffset, z0/(dx*(level+1)));
 
         auto side = SideFactory::make(sideType);
 
