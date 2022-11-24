@@ -218,7 +218,7 @@ __global__ void applyBodyForces(real* gridCoordsX, real* gridCoordsY, real* grid
                 rotateFromBladeToGlobal(bladeForcesX[node], bladeForcesY[node], bladeForcesZ[node], 
                                         forceX_RF, forceY_RF, forceZ_RF, 
                                         localAzimuth, yaw);
-
+                                        
                 gridForceX_RF += forceX_RF*eta;
                 gridForceY_RF += forceY_RF*eta;
                 gridForceZ_RF += forceZ_RF*eta;
@@ -246,6 +246,7 @@ __global__ void applyBodyForces(real* gridCoordsX, real* gridCoordsY, real* grid
             gridForceZ_RF += forceZ_RF*eta;
         }
     }
+
     gridForcesX[gridIndex] += gridForceX_RF;
     gridForcesY[gridIndex] += gridForceY_RF;
     gridForcesZ[gridIndex] += gridForceZ_RF;
@@ -341,7 +342,6 @@ void ActuatorFarm::calcForcesEllipticWing()
     real Cl = c1o1;
     real Cd = c0o1;
     real c0 = c1o1;
-
     real c, Cn, Ct;
     for(uint turbine=0; turbine<this->numberOfTurbines; turbine++)
     {
@@ -361,7 +361,6 @@ void ActuatorFarm::calcForcesEllipticWing()
                 c = c0 * sqrt( c1o1- tmp*tmp );
                 Cn = Cl*cos(phi)+Cd*sin(phi);
                 Ct = Cl*sin(phi)-Cd*cos(phi);
-            
                 this->bladeForcesXH[node] = -c1o2*u_rel_sq*c*this->density*Cn;
                 this->bladeForcesYH[node] = -c1o2*u_rel_sq*c*this->density*Ct;
                 this->bladeForcesZH[node] = c0o1;
@@ -372,7 +371,8 @@ void ActuatorFarm::calcForcesEllipticWing()
 
 void ActuatorFarm::calcBladeForces()
 {
-    // this->calcForcesEllipticWing();
+    if(this->useCalcForcesEllipticWing) 
+        this->calcForcesEllipticWing();
 }
 
 void ActuatorFarm::getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider)

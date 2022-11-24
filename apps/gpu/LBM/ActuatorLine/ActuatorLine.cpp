@@ -51,6 +51,7 @@
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlaneProbe.h"
 #include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
 #include "VirtualFluids_GPU/TurbulenceModels/TurbulenceModelFactory.h"
+#include "VirtualFluids_GPU/Factories/GridScalingFactory.h"
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 
@@ -68,7 +69,7 @@ LbmOrGks lbmOrGks = LBM;
 
 const real reference_diameter = 126.0; // diameter in m
 
-const real L_x = 10*reference_diameter;
+const real L_x = 16*reference_diameter;
 const real L_y = 6*reference_diameter;
 const real L_z = 6*reference_diameter;
 
@@ -78,14 +79,14 @@ const real velocity  = 9.0;
 
 const real mach = 0.1;
 
-const uint nodes_per_diameter = 32;
+const uint nodes_per_diameter = 16;
 
 std::string path(".");
 
 std::string simulationName("ActuatorLine");
 
 const float tOut = 100;
-const float tEnd = 280; // total time of simulation in s
+const float tEnd = 300; // total time of simulation in s
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -103,27 +104,33 @@ void multipleLevel(const std::string& configPath)
     auto gridFactory = GridFactory::make();
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    vf::basics::ConfigurationFile config;
+    config.load(configPath);
+    
+    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNummberOfProcess(), communicator.getPID(), &config);
+    BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
+    GridScalingFactory scalingFactory  = GridScalingFactory();
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	const real dx = reference_diameter/real(nodes_per_diameter);
 
+    real turbPos[3] = {3*reference_diameter, 3*reference_diameter, 3*reference_diameter};
+
 	gridBuilder->addCoarseGrid(0.0, 0.0, 0.0,
 							   L_x,  L_y,  L_z, dx);
+
+    // gridBuilder->setNumberOfLayers(4,0);
+    // gridBuilder->addGrid( new Cuboid(   turbPos[0]-1.5*reference_diameter,  turbPos[1]-1.5*reference_diameter,  turbPos[2]-1.5*reference_diameter, 
+    //                                     turbPos[0]+10.0*reference_diameter, turbPos[1]+1.5*reference_diameter,  turbPos[2]+1.5*reference_diameter) , 1 );
+    // para->setMaxLevel(2);
+    // scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
 	gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
 	gridBuilder->buildGrids(lbmOrGks, false); // buildGrids() has to be called before setting the BCs!!!!
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    vf::basics::ConfigurationFile config;
-    config.load(configPath);
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////^
-    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNummberOfProcess(), communicator.getPID(), &config);
-    BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     const real dt = dx * mach / (sqrt(3) * velocity);
 
@@ -163,8 +170,8 @@ void multipleLevel(const std::string& configPath)
 
     para->setIsBodyForce( true );
 
-
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     gridBuilder->setVelocityBoundaryCondition(SideType::MX,  velocityLB,  0.0, 0.0);
 
     gridBuilder->setVelocityBoundaryCondition(SideType::MY,  velocityLB,  0.0, 0.0);
@@ -174,14 +181,13 @@ void multipleLevel(const std::string& configPath)
     gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
 
     bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityAndPressureCompressible);
-    bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflectivePressureCorrection);
+    bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflective);
 
     SPtr<TurbulenceModelFactory> tmFactory = std::make_shared<TurbulenceModelFactory>(para);
     tmFactory->readConfigFile(config);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    real turbPos[3] = {3*reference_diameter, 3*reference_diameter, 3*reference_diameter};
     real epsilon = 5.f; // width of gaussian smearing
     real density = 1.225f;
     int level = 0;
@@ -189,11 +195,12 @@ void multipleLevel(const std::string& configPath)
     uint nBladeNodes = 32;
     real omega = 1.0f;
 
-    SPtr<ActuatorFarm> actuator_farm = std::make_shared<ActuatorFarm>(nBlades, density, nBladeNodes, epsilon, level, dt, dx, false);
+    SPtr<ActuatorFarm> actuator_farm = std::make_shared<ActuatorFarm>(nBlades, density, nBladeNodes, epsilon, level, dt, dx, true);
     std::vector<real> bladeRadii;
     real dr = reference_diameter/nBladeNodes;
     for(uint node=0; node<nBladeNodes; node++){bladeRadii.emplace_back(dr*(node+1));}
     actuator_farm->addTurbine(turbPos[0], turbPos[1], turbPos[2], reference_diameter, omega, 0, 0, bladeRadii);
+    actuator_farm->setUseCalcForcesEllipticWing(true);
     para->addActuator( actuator_farm );
 
 
@@ -218,7 +225,7 @@ void multipleLevel(const std::string& configPath)
 
     auto gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
 
-    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory, tmFactory);
+    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory, tmFactory, &scalingFactory);
     sim.run();
 }
 
