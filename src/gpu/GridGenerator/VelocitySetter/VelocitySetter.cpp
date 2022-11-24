@@ -283,12 +283,12 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
         for(int fileId=0; fileId<(int)this->fileCollection->files[level].size(); fileId++)
         {
             VTKFile &file = this->fileCollection->files[level][fileId][0];
-            printf("Point %u at \t(%f \t %f) is in BB %u)\n", i, posY, posZ,file.inBoundingBox(posY, posZ, 0.0f) );
             if(!file.inBoundingBox(posY, posZ, 0.0f)) continue;
+
             // y in simulation is x in precursor/file, z in simulation is y in precursor/file 
             // simulation -> file: N -> E, S -> W, T -> N, B -> S
             int idx = file.findNeighborWSB(posY, posZ, 0.f);                            //!> index of nearest WSB neighbor on precursor file
-            printf("Point %u at \t(%f \t %f): nearest neighbor %u at (%f \t %f)\n", i, posY, posZ, idx, file.getX(idx), file.getY(idx));
+            
             if(idx!=-1)
             {
                 // Filter for exact matches
