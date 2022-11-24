@@ -763,14 +763,29 @@ __global__ void scaleCF_compressible(
         ((xoff != c0o1) || (yoff != c0o1) || (zoff != c0o1))
         ? c0o1 : c0o1;
         //: -c3o1 * (a_100 * a_100 + b_010 * b_010 + c_001 * c_001) - c6o1 * (b_100 * a_010 + c_100 * a_001 + c_010 * b_001);
-    d_000 = ( drho_PPM + drho_PPP + drho_MPM + drho_MPP + drho_PMM + drho_PMP + drho_MMM + drho_MMP) * c1o8;
-    d_100 = ( drho_PPM + drho_PPP - drho_MPM - drho_MPP + drho_PMM + drho_PMP - drho_MMM - drho_MMP) * c1o4;
-    d_010 = ( drho_PPM + drho_PPP + drho_MPM + drho_MPP - drho_PMM - drho_PMP - drho_MMM - drho_MMP) * c1o4;
-    d_001 = (-drho_PPM + drho_PPP - drho_MPM + drho_MPP - drho_PMM + drho_PMP - drho_MMM + drho_MMP) * c1o4;
-    d_110 = ( drho_PPM + drho_PPP - drho_MPM - drho_MPP - drho_PMM - drho_PMP + drho_MMM + drho_MMP) * c1o2;
-    d_101 = (-drho_PPM + drho_PPP + drho_MPM - drho_MPP - drho_PMM + drho_PMP + drho_MMM - drho_MMP) * c1o2;
-    d_011 = (-drho_PPM + drho_PPP - drho_MPM + drho_MPP + drho_PMM - drho_PMP + drho_MMM - drho_MMP) * c1o2;
-    d_111 =  -drho_PPM + drho_PPP + drho_MPM - drho_MPP + drho_PMM - drho_PMP - drho_MMM + drho_MMP;
+    //d_000 = ( drho_PPM + drho_PPP + drho_MPM + drho_MPP + drho_PMM + drho_PMP + drho_MMM + drho_MMP) * c1o8;
+    d_000 = c1o8 * (((drho_PPP + drho_MMM) + (drho_PPM + drho_MMP)) + ((drho_PMM + drho_MPP) + (drho_PMP + drho_MPM)));
+
+    //d_100 = ( drho_PPM + drho_PPP - drho_MPM - drho_MPP + drho_PMM + drho_PMP - drho_MMM - drho_MMP) * c1o4;
+    d_100 = c1o4 * (((drho_PPP - drho_MMM) + (drho_PPM - drho_MMP)) + ((drho_PMM - drho_MPP) + (drho_PMP - drho_MPM)));
+
+    //d_010 = ( drho_PPM + drho_PPP + drho_MPM + drho_MPP - drho_PMM - drho_PMP - drho_MMM - drho_MMP) * c1o4;
+    d_010 = c1o4 * (((drho_PPP - drho_MMM) + (drho_PPM - drho_MMP)) + ((drho_MPP - drho_PMM) + (drho_MPM - drho_PMP)));
+
+    //d_001 = (-drho_PPM + drho_PPP - drho_MPM + drho_MPP - drho_PMM + drho_PMP - drho_MMM + drho_MMP) * c1o4;
+    d_001 = c1o4 * (((drho_PPP - drho_MMM) + (drho_MMP - drho_PPM)) + ((drho_MPP - drho_PMM) + (drho_PMP - drho_MPM)));
+
+    //d_110 = ( drho_PPM + drho_PPP - drho_MPM - drho_MPP - drho_PMM - drho_PMP + drho_MMM + drho_MMP) * c1o2;
+    d_110 = c1o2 * (((drho_PPP + drho_MMM) + (drho_PPM + drho_MMP)) - ((drho_PMM + drho_MPP) + (drho_PMP + drho_MPM)));
+
+    //d_101 = (-drho_PPM + drho_PPP + drho_MPM - drho_MPP - drho_PMM + drho_PMP + drho_MMM - drho_MMP) * c1o2;
+    d_101 = c1o2 * (((drho_PPP + drho_MMM) - (drho_PPM + drho_MMP)) + ((drho_PMP + drho_MPM) - (drho_PMM + drho_MPP)));
+
+    //d_011 = (-drho_PPM + drho_PPP - drho_MPM + drho_MPP + drho_PMM - drho_PMP + drho_MMM - drho_MMP) * c1o2;
+    d_011 = c1o2 * (((drho_PPP + drho_MMM) - (drho_PPM + drho_MMP)) + ((drho_PMM + drho_MPP) - (drho_PMP + drho_MPM)));
+
+    //d_111 =  -drho_PPM + drho_PPP + drho_MPM - drho_MPP + drho_PMM - drho_PMP - drho_MMM + drho_MMP;
+    d_111 = (((drho_PPP - drho_MMM) + (drho_MMP - drho_PPM)) + ((drho_PMM - drho_MPP) + (drho_MPM - drho_PMP)));
 
     //////////////////////////////////////////////////////////////////////////
     //! - Extrapolation for refinement in to the wall (polynomial coefficients)
