@@ -101,7 +101,7 @@ public:
                                             std::vector<std::string> &pointDataNames, std::vector<std::string> &cellDataNames,
                                             std::vector<std::vector<double>> &nodedata, std::vector<std::vector<double>> &celldata, 
                                             UbTupleInt6 &wholeExtent,
-                                            UbTupleFloat3 &origin, UbTupleFloat3 &spacing, UbTupleInt6 &extent);
+                                            UbTupleFloat3 &origin, UbTupleFloat3 &spacing, UbTupleInt6 &extent, uint precision=6);
 
 private:
     void getMetaDataOfImage(std::vector<UbTupleFloat3> &nodes, UbTupleFloat3& origin, UbTupleFloat3& spacing, UbTupleInt6& extent);

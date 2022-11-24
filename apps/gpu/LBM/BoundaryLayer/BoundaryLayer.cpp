@@ -120,8 +120,8 @@ void multipleLevel(const std::string& configPath)
 
     const real H = config.getValue("boundaryLayerHeight", 1000.0); // boundary layer height in m
 
-    const real L_x = 0.5*H;
-    const real L_y = 16*H;
+    const real L_x = 500;
+    const real L_y = 16000;
     const real L_z = H;
 
     const real z0  = config.getValue("z0", 0.1f); // roughness length in m

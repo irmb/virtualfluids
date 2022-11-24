@@ -296,7 +296,7 @@ void PrecursorWriter::write(Parameter* para, int level, uint timestepsBuffered)
     }
 
     std::vector<std::vector<double>> celldata;
-    getWriter()->writeData(wholeName, nodedatanames, celldatanames, nodedata, celldata, extent, origin, precursorStructs[level]->spacing, extent);
+    getWriter()->writeData(wholeName, nodedatanames, celldatanames, nodedata, celldata, extent, origin, precursorStructs[level]->spacing, extent, writePrecision);
     precursorStructs[level]->filesWritten++;
 }
 

@@ -84,6 +84,8 @@ public:
 
     SPtr<PrecursorStruct> getPrecursorStruct(int level){return precursorStructs[level];}
     static std::string makeFileName(std::string fileName, int level, int id, uint part);
+
+    void setWritePrecision(uint _writePrecision){ this->writePrecision=_writePrecision;}
     
 private:
     WbWriterVtkXmlImageBinary* getWriter(){ return WbWriterVtkXmlImageBinary::getInstance(); };
@@ -115,6 +117,7 @@ private:
     real xPos, yMin, yMax, zMin, zMax;
     OutputVariable outputVariable;
     std::future<void> writeFuture;
+    uint writePrecision = 8;
 };
 
 #endif //PRECURSORPROBE_H_

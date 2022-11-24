@@ -257,9 +257,11 @@ void WbWriterVtkXmlImageBinary::writeData(const string &vtkfilename,
                                             vector<string> &pointDataNames, vector<string> &cellDataNames,
                                             vector<vector<double>> &nodedata, vector<vector<double>> &celldata,
                                             UbTupleInt6& wholeExtent,
-                                            UbTupleFloat3& origin, UbTupleFloat3& spacing, UbTupleInt6& extent)
+                                            UbTupleFloat3& origin, UbTupleFloat3& spacing, UbTupleInt6& extent, uint precision)
 {
     ofstream out(vtkfilename.c_str(), ios::out | ios::binary);
+    out.precision(precision);
+
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
         string path = UbSystem::getPathFromString(vtkfilename);
@@ -278,7 +280,7 @@ void WbWriterVtkXmlImageBinary::writeData(const string &vtkfilename,
     int bytesScalarData      = 1 /*scalar         */ * (int)nPoints * sizeof(double);
 
     int offset = 0;
-
+    
     // VTK FILE
     out << "<?xml version=\"1.0\"?>\n";
     out << "<VTKFile type=\"ImageData\" version=\"0.1\" byte_order=\"LittleEndian\" >"
