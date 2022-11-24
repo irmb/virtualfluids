@@ -3247,7 +3247,7 @@ void PrecursorDevDistributions( LBMSimulationParameter* parameterDevice, QforPre
 	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
 
 	PrecursorDeviceDistributions<<< grid.grid, grid.threads >>>(boundaryCondition->k, boundaryCondition->numberOfBCnodes, boundaryCondition->numberOfPrecursorNodes, parameterDevice->distributions.f[0],
-		parameterDevice->neighborX, parameterDevice->neighborY, parameterDevice->neighborZ, parameterDevice->typeOfGridNode,
+		parameterDevice->neighborX, parameterDevice->neighborY, parameterDevice->neighborZ,
 		boundaryCondition->planeNeighborNT, boundaryCondition->planeNeighborNB, boundaryCondition->planeNeighborST, boundaryCondition->planeNeighborSB,
 		boundaryCondition->weightsNT, boundaryCondition->weightsNB, boundaryCondition->weightsST, boundaryCondition->weightsSB,
 		boundaryCondition->last, boundaryCondition->current,
