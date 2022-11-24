@@ -257,7 +257,7 @@ void WbWriterVtkXmlImageBinary::writeData(const string &vtkfilename,
                                             vector<string> &pointDataNames, vector<string> &cellDataNames,
                                             vector<vector<double>> &nodedata, vector<vector<double>> &celldata,
                                             UbTupleInt6& wholeExtent,
-                                            UbTupleFloat3& origin, UbTupleFloat3& spacing, UbTupleInt6& extent, uint precision)
+                                            UbTupleFloat3& origin, UbTupleFloat3& spacing, UbTupleInt6& extent, unsigned int precision)
 {
     ofstream out(vtkfilename.c_str(), ios::out | ios::binary);
     out.precision(precision);
