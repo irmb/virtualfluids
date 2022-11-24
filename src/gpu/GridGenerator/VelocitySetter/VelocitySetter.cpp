@@ -270,7 +270,7 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
     this->planeNeighborNB.reserve(this->nPoints);
     this->planeNeighborST.reserve(this->nPoints);
     this->planeNeighborSB.reserve(this->nPoints);
-    std::cout << "nPoints " << nPoints << std::endl;
+
     for(uint i=0; i<nPoints; i++)
     {
 
@@ -279,13 +279,16 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
         bool foundNT = false, foundNB = false, foundST = false, foundSB = false, foundAll = false;
 
         uint level = this->readLevel;
+
         for(int fileId=0; fileId<(int)this->fileCollection->files[level].size(); fileId++)
         {
             VTKFile &file = this->fileCollection->files[level][fileId][0];
+            printf("Point %u at \t(%f \t %f) is in BB %u)\n", i, posY, posZ,file.inBoundingBox(posY, posZ, 0.0f) );
             if(!file.inBoundingBox(posY, posZ, 0.0f)) continue;
             // y in simulation is x in precursor/file, z in simulation is y in precursor/file 
             // simulation -> file: N -> E, S -> W, T -> N, B -> S
             int idx = file.findNeighborWSB(posY, posZ, 0.f);                            //!> index of nearest WSB neighbor on precursor file
+            printf("Point %u at \t(%f \t %f): nearest neighbor %u at (%f \t %f)\n", i, posY, posZ, idx, file.getX(idx), file.getY(idx));
             if(idx!=-1)
             {
                 // Filter for exact matches
@@ -363,7 +366,7 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
         }
 
         if(!foundAll)
-            throw std::runtime_error("Did not find neighbors in the VelocityFileCollection for all points");
+            throw std::runtime_error("VTKReader::fillArrays(): Did not find neighbors in the VelocityFileCollection for all points");
     }
 
     if(perfect_match)

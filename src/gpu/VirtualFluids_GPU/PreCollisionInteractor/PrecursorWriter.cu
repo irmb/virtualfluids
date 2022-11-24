@@ -105,6 +105,9 @@ __global__ void fillArrayDistributions( uint nNodes, uint* indices,
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void PrecursorWriter::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager)
 {
+    VF_LOG_INFO("PrecursorWriter: Start initializing...");
+    VF_LOG_INFO("Writing yz-planes at x={}m every {}. timestep, starting at t={}", this->xPos, this->tSave, this->tStartOut);
+
     precursorStructs.resize(para->getMaxLevel()+1);
     for(int level=0; level<=para->getMaxLevel(); level++)
     {
@@ -144,7 +147,9 @@ void PrecursorWriter::init(Parameter* para, GridProvider* gridProvider, CudaMemo
                 coordZ.push_back(pointCoordZ);    
             }
         }
-        assert("PrecursorWriter did not find any points on the grid"&& indicesOnGrid.size()==0);
+        if(indicesOnGrid.size()==0)
+            throw std::runtime_error("PrecursorWriter did not find any points on the grid");
+
         int ny = int((highestY-lowestY)/dx)+1;
         int nz = int((highestZ-lowestZ)/dx)+1;
 
@@ -187,7 +192,10 @@ void PrecursorWriter::init(Parameter* para, GridProvider* gridProvider, CudaMemo
         std::copy(indicesOnPlane.begin(), indicesOnPlane.end(), precursorStructs[level]->indicesOnPlane);
 
         cudaManager->cudaCopyPrecursorWriterIndicesHtoD(this, level);
+
+        VF_LOG_INFO("Found {} points in precursor plane on level {}", precursorStructs[level]->nPoints, level);
     }
+    VF_LOG_INFO("PrecursorWriter: Done initializing.");
 }
 
 

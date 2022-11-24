@@ -120,8 +120,8 @@ void multipleLevel(const std::string& configPath)
 
     const real H = config.getValue("boundaryLayerHeight", 1000.0); // boundary layer height in m
 
-    const real L_x = 10*H;
-    const real L_y = 4*H;
+    const real L_x = 0.5*H;
+    const real L_y = 16*H;
     const real L_z = H;
 
     const real z0  = config.getValue("z0", 0.1f); // roughness length in m
@@ -248,7 +248,7 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->addCoarseGrid( xGridMin,  0.0,  0.0,
                                 xGridMax,  L_y,  L_z, dx);
-    if(true)// Add refinement
+    if(false)// Add refinement
     {
         gridBuilder->setNumberOfLayers(4,0);
         real xMaxRefinement = readPrecursor? xGridMax-H: xGridMax;   //Stop refinement some distance before outlet if domain ist not periodic
@@ -398,7 +398,7 @@ void multipleLevel(const std::string& configPath)
         para->addProbe( planeProbe6 );
     }
 
-    if(writePrecursor && (posXPrecursor > xMin && posXPrecursor < xMax))
+    if(writePrecursor)
     {
         SPtr<PrecursorWriter> precursorWriter = std::make_shared<PrecursorWriter>("precursor", para->getOutputPath()+precursorDirectory, posXPrecursor, 0, L_y, 0, L_z, tStartPrecursor/dt, nTWritePrecursor, useDistributions? OutputVariable::Distributions: OutputVariable::Velocities, 1000);
         para->addProbe(precursorWriter);

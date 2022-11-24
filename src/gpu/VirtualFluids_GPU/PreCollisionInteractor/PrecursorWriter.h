@@ -8,7 +8,7 @@
 #include <vector>
 #include <future>
 #include "PointerDefinitions.h"
-
+#include "Logger.h"
 
 class Parameter;
 class CudaMemoryManager;
