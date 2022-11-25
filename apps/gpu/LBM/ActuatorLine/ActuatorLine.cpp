@@ -96,7 +96,7 @@ void multipleLevel(const std::string& configPath)
     const real velocity = config.getValue<real>("Velocity");
 
 
-    const real L_x = 16*reference_diameter;
+    const real L_x = 24*reference_diameter;
     const real L_y = 6*reference_diameter;
     const real L_z = 6*reference_diameter;
 
@@ -128,11 +128,11 @@ void multipleLevel(const std::string& configPath)
 	gridBuilder->addCoarseGrid(0.0, 0.0, 0.0,
 							   L_x,  L_y,  L_z, dx);
 
-    // gridBuilder->setNumberOfLayers(4,0);
-    // gridBuilder->addGrid( new Cuboid(   turbPos[0]-1.5*reference_diameter,  turbPos[1]-1.5*reference_diameter,  turbPos[2]-1.5*reference_diameter, 
-    //                                     turbPos[0]+10.0*reference_diameter, turbPos[1]+1.5*reference_diameter,  turbPos[2]+1.5*reference_diameter) , 1 );
-    // para->setMaxLevel(2);
-    // scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
+    gridBuilder->setNumberOfLayers(4,0);
+    gridBuilder->addGrid( new Cuboid(   turbPos[0]-1.5*reference_diameter,  turbPos[1]-1.5*reference_diameter,  turbPos[2]-1.5*reference_diameter, 
+                                        turbPos[0]+10.0*reference_diameter, turbPos[1]+1.5*reference_diameter,  turbPos[2]+1.5*reference_diameter) , 1 );
+    para->setMaxLevel(2);
+    scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
 	gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
@@ -157,9 +157,6 @@ void multipleLevel(const std::string& configPath)
 
     para->setPrintFiles(true);
 
-    para->setMaxLevel(1);
-
-
     para->setVelocityLB(velocityLB);
     para->setViscosityLB(viscosityLB);
     para->setVelocityRatio( dx / dt );
@@ -173,10 +170,12 @@ void multipleLevel(const std::string& configPath)
         vz  = (real)0.0;
     });
 
+    para->setTimestepStartOut( uint(tStartOut/dt) );
     para->setTimestepOut( uint(tOut/dt) );
     para->setTimestepEnd( uint(tEnd/dt) );
 
     para->setIsBodyForce( true );
+    para->setUseStreams( true );
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -196,12 +195,14 @@ void multipleLevel(const std::string& configPath)
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    real epsilon = 5.f; // width of gaussian smearing
-    real density = 1.225f;
-    int level = 0;
-    uint nBlades = 3;
-    uint nBladeNodes = 32;
-    real omega = 1.0f;
+    int level = 1; // grid level at which the turbine samples velocities and distributes forces
+    const real epsilon = dx*exp2(-level)*1.5; // width of gaussian smearing
+    const real density = 1.225f;
+    const uint nBlades = 3;
+    const uint nBladeNodes = 32;
+    const real tipspeed_ratio = 7.5f; // tipspeed ratio = angular vel * radius / inflow vel
+    const real omega = 2*tipspeed_ratio*velocity/reference_diameter;
+    
 
     SPtr<ActuatorFarm> actuator_farm = std::make_shared<ActuatorFarm>(nBlades, density, nBladeNodes, epsilon, level, dt, dx, true);
     std::vector<real> bladeRadii;

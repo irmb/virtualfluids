@@ -341,7 +341,7 @@ void ActuatorFarm::calcForcesEllipticWing()
     real phi;
     real Cl = c1o1;
     real Cd = c0o1;
-    real c0 = c1o1;
+    real c0 = 20*c1o10;
     real c, Cn, Ct;
     for(uint turbine=0; turbine<this->numberOfTurbines; turbine++)
     {
@@ -361,11 +361,15 @@ void ActuatorFarm::calcForcesEllipticWing()
                 c = c0 * sqrt( c1o1- tmp*tmp );
                 Cn = Cl*cos(phi)+Cd*sin(phi);
                 Ct = Cl*sin(phi)-Cd*cos(phi);
-                this->bladeForcesXH[node] = -c1o2*u_rel_sq*c*this->density*Cn;
-                this->bladeForcesYH[node] = -c1o2*u_rel_sq*c*this->density*Ct;
+                real fx = c1o2*u_rel_sq*c*this->density*Cn;
+                real fy = c1o2*u_rel_sq*c*this->density*Ct;
+                this->bladeForcesXH[node] = -fx;
+                this->bladeForcesYH[node] = -fy;
                 this->bladeForcesZH[node] = c0o1;
+                // printf("u %f v %f fx %f fy %f \n", u_rel, v_rel, fx, fy);
             }
         }
+        azimuthsH[turbine] = azimuthsH[turbine]+deltaT*omegasH[turbine];
     }
 }
 

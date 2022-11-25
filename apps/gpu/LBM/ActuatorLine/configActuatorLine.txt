@@ -11,7 +11,7 @@ ReferenceDiameter=126
 NodesPerDiameter=32
 Velocity=9
 ##################################################
-tStartOut=500
+tStartOut=100
 tOut=100
 tEnd=1000
 ##################################################
@@ -22,3 +22,13 @@ tAveraging=100
 tTmpAveraging=100
 tStartOutProbe=100
 tOutProbe=100
+
+##################################################
+#TurbulenceModel = QR
+#SGSconstant = 0.3333333
+#
+#QuadricLimiterP = 100000.0
+#QuadricLimiterM = 100000.0
+#QuadricLimiterD = 100000.0
+##################################################
+
