@@ -137,8 +137,6 @@ public:
     void setTurbineBladeVelocities(uint turbine, real* _bladeVelocitiesX, real* _bladeVelocitiesY, real* _bladeVelocitiesZ);
     void setTurbineBladeForces(uint turbine, real* _bladeForcesX, real* _bladeForcesY, real* _bladeForcesZ);
 
-    void setUseCalcForcesEllipticWing(bool _useCalcForcesEllipticWing){ this->useCalcForcesEllipticWing = _useCalcForcesEllipticWing; }
-
     virtual void calcBladeForces();
 
 private:
@@ -181,7 +179,6 @@ private:
     std::vector<real> preInitPosX, preInitPosY, preInitPosZ, preInitDiameters, preInitOmegas, preInitAzimuths, preInitYaws;
     std::vector<std::vector<real>> preInitBladeRadii;
     const bool useHostArrays;
-    bool useCalcForcesEllipticWing = false;
     const real density;
     real deltaT, deltaX;
     const uint numberOfBladeNodes, numberOfBlades;

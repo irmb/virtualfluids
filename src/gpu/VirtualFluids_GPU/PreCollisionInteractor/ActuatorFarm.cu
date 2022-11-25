@@ -371,8 +371,7 @@ void ActuatorFarm::calcForcesEllipticWing()
 
 void ActuatorFarm::calcBladeForces()
 {
-    if(this->useCalcForcesEllipticWing) 
-        this->calcForcesEllipticWing();
+    this->calcForcesEllipticWing();
 }
 
 void ActuatorFarm::getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider)

@@ -67,26 +67,10 @@
 
 LbmOrGks lbmOrGks = LBM;
 
-const real reference_diameter = 126.0; // diameter in m
-
-const real L_x = 16*reference_diameter;
-const real L_y = 6*reference_diameter;
-const real L_z = 6*reference_diameter;
-
-const real viscosity = 1.56e-5;
-
-const real velocity  = 9.0;
-
-const real mach = 0.1;
-
-const uint nodes_per_diameter = 16;
-
 std::string path(".");
 
 std::string simulationName("ActuatorLine");
 
-const float tOut = 100;
-const float tEnd = 300; // total time of simulation in s
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -106,7 +90,31 @@ void multipleLevel(const std::string& configPath)
 
     vf::basics::ConfigurationFile config;
     config.load(configPath);
-    
+
+    const real reference_diameter = config.getValue<real>("ReferenceDiameter");
+    const uint nodes_per_diameter = config.getValue<uint>("NodesPerDiameter");
+    const real velocity = config.getValue<real>("Velocity");
+
+
+    const real L_x = 16*reference_diameter;
+    const real L_y = 6*reference_diameter;
+    const real L_z = 6*reference_diameter;
+
+    const real viscosity = 1.56e-5;
+
+    const real mach = 0.1;
+
+
+    const float tStartOut   = config.getValue<real>("tStartOut");
+    const float tOut        = config.getValue<real>("tOut");
+    const float tEnd        = config.getValue<real>("tEnd"); // total time of simulation
+
+    const float tStartAveraging     =  config.getValue<real>("tStartAveraging");
+    const float tStartTmpAveraging  =  config.getValue<real>("tStartTmpAveraging");
+    const float tAveraging          =  config.getValue<real>("tAveraging");
+    const float tStartOutProbe      =  config.getValue<real>("tStartOutProbe");
+    const float tOutProbe           =  config.getValue<real>("tOutProbe");
+        
     SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNummberOfProcess(), communicator.getPID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
     GridScalingFactory scalingFactory  = GridScalingFactory();
@@ -197,10 +205,9 @@ void multipleLevel(const std::string& configPath)
 
     SPtr<ActuatorFarm> actuator_farm = std::make_shared<ActuatorFarm>(nBlades, density, nBladeNodes, epsilon, level, dt, dx, true);
     std::vector<real> bladeRadii;
-    real dr = reference_diameter/nBladeNodes;
-    for(uint node=0; node<nBladeNodes; node++){bladeRadii.emplace_back(dr*(node+1));}
+    real dr = reference_diameter/(nBladeNodes*2);
+    for(uint node=0; node<nBladeNodes; node++){ bladeRadii.emplace_back(dr*(node+1)); }
     actuator_farm->addTurbine(turbPos[0], turbPos[1], turbPos[2], reference_diameter, omega, 0, 0, bladeRadii);
-    actuator_farm->setUseCalcForcesEllipticWing(true);
     para->addActuator( actuator_farm );
 
 
