@@ -500,10 +500,10 @@ void Parameter::initLBMSimulationParameter()
         parH[i]->sizePlaneXY      = parH[i]->nx * parH[i]->ny;
         parH[i]->sizePlaneYZ      = parH[i]->ny * parH[i]->nz;
         parH[i]->sizePlaneXZ      = parH[i]->nx * parH[i]->nz;
-        parH[i]->mem_size_real    = sizeof(real) * parH[i]->size_Mat;
-        parH[i]->mem_size_int     = sizeof(unsigned int) * parH[i]->size_Mat;
-        parH[i]->mem_size_bool    = sizeof(bool) * parH[i]->size_Mat;
-        parH[i]->mem_size_real_yz = sizeof(real) * parH[i]->ny * parH[i]->nz;
+//        parH[i]->mem_size_real    = sizeof(real) * parH[i]->size_Mat;         //DEPRECATED: related to full matrix
+//        parH[i]->mem_size_int     = sizeof(unsigned int) * parH[i]->size_Mat; //DEPRECATED: related to full matrix
+//        parH[i]->mem_size_bool    = sizeof(bool) * parH[i]->size_Mat;         //DEPRECATED: related to full matrix
+//        parH[i]->mem_size_real_yz = sizeof(real) * parH[i]->ny * parH[i]->nz; //DEPRECATED: related to full matrix
         parH[i]->isEvenTimestep        = true;
         parH[i]->startz           = parH[i]->gridNZ * ic.myProcessId;
         parH[i]->endz             = parH[i]->gridNZ * ic.myProcessId + parH[i]->gridNZ;
@@ -568,10 +568,10 @@ void Parameter::initLBMSimulationParameter()
         parD[i]->sizePlaneXY      = parH[i]->sizePlaneXY;
         parD[i]->sizePlaneYZ      = parH[i]->sizePlaneYZ;
         parD[i]->sizePlaneXZ      = parH[i]->sizePlaneXZ;
-        parD[i]->mem_size_real    = sizeof(real) * parD[i]->size_Mat;
-        parD[i]->mem_size_int     = sizeof(unsigned int) * parD[i]->size_Mat;
-        parD[i]->mem_size_bool    = sizeof(bool) * parD[i]->size_Mat;
-        parD[i]->mem_size_real_yz = sizeof(real) * parD[i]->ny * parD[i]->nz;
+        //parD[i]->mem_size_real    = sizeof(real) * parD[i]->size_Mat;          //DEPRECATED: related to full matrix
+        //parD[i]->mem_size_int     = sizeof(unsigned int) * parD[i]->size_Mat;  //DEPRECATED: related to full matrix
+        //parD[i]->mem_size_bool    = sizeof(bool) * parD[i]->size_Mat;          //DEPRECATED: related to full matrix
+        //parD[i]->mem_size_real_yz = sizeof(real) * parD[i]->ny * parD[i]->nz;  //DEPRECATED: related to full matrix
         parD[i]->isEvenTimestep        = parH[i]->isEvenTimestep;
         parD[i]->startz           = parH[i]->startz;
         parD[i]->endz             = parH[i]->endz;
@@ -1710,22 +1710,22 @@ unsigned int Parameter::getSizeMat(int level)
 {
     return parH[level]->size_Mat;
 }
-unsigned int Parameter::getMemSizereal(int level)
-{
-    return parH[level]->mem_size_real;
-}
-unsigned int Parameter::getMemSizeInt(int level)
-{
-    return parH[level]->mem_size_int;
-}
-unsigned int Parameter::getMemSizeBool(int level)
-{
-    return parH[level]->mem_size_bool;
-}
-unsigned int Parameter::getMemSizerealYZ(int level)
-{
-    return parH[level]->mem_size_real_yz;
-}
+//unsigned int Parameter::getMemSizereal(int level)      //DEPRECATED: related to full matrix
+//{
+//    return parH[level]->mem_size_real;
+//}
+//unsigned int Parameter::getMemSizeInt(int level)     //DEPRECATED: related to full matrix
+//{
+//    return parH[level]->mem_size_int;
+//}
+//unsigned int Parameter::getMemSizeBool(int level)    //DEPRECATED: related to full matrix
+//{
+//    return parH[level]->mem_size_bool;
+//}
+//unsigned int Parameter::getMemSizerealYZ(int level)  //DEPRECATED: related to full matrix
+//{
+//    return parH[level]->mem_size_real_yz;
+//}
 int Parameter::getFine()
 {
     return fine;

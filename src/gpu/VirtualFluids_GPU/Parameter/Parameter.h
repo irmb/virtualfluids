@@ -65,15 +65,77 @@ struct LBMSimulationParameter {
     //////////////////////////////////////////////////////////////////////////
     //! \brief stores the number of threads per GPU block
     uint numberofthreads;
+    //! \brief store all distribution functions for the D3Q27
+    Distributions27 distributions;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the type for every lattice node (f.e. fluid node)
+    uint *typeOfGridNode;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief store the neighbors in +X, +Y, +Z, and in diagonal negative direction
+    //! \brief this information is important because we use an indirect addressing scheme
+    uint *neighborX, *neighborY, *neighborZ, *neighborInverse;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief store the coordinates for every lattice node
+    real *coordinateX, *coordinateY, *coordinateZ;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief store the macroscopic values (velocity, density, pressure)
+    //! \brief for every lattice node
+    real *velocityX, *velocityY, *velocityZ, *rho, *pressure;
+    //! \brief stores the value for omega
+    real omega;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the number of nodes (based on indirect addressing scheme)
+    unsigned int numberOfNodes;
+    //! \brief stores the size of the memory consumption for real/int values of the arrays (e.g. coordinates, velocity)
+    uint mem_size_real_SP, mem_size_int_SP;
+
+
+
+
+
+
+    //////////////////////////////////////////////////////////////////////////
+    // DEPRECATED
+    //////////////////////////////////////////////////////////////////////////
 
     // distributions///////////
     // Distributions19 d0;
     Distributions27 d0;  // DEPRECATED: distribution functions for full matrix (not sparse)
-    //! \brief store all distribution functions for the D3Q27
-    Distributions27 distributions;
+
+    // typeOfGridNode (formerly known as "geo") /////////////////////
+    int *geo; // DEPRECATED: typeOfGridNode for full matrix (not sparse)
+
+    // k///////////////////////
+    unsigned int *k; // DEPRECATED: index for full matrix
+
+    // memsize/////////////////
+    //unsigned int mem_size_real_yz;
+    //unsigned int mem_size_bool;
+    //unsigned int mem_size_int;
+    //unsigned int mem_size_real;
+
+    //////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+    //////////////////////////////////////////////////////////////////////////
+    // additional logic 
+    //////////////////////////////////////////////////////////////////////////
 
     // distributions F3////////
     Distributions6 g6;
+
+    unsigned int size_Array_SP;
+
+
+    // memsizeSP/////////////////
+
+
+
+    //////////////////////////////////////////////////////////////////////////
+
 
     // advection diffusion //////////////////
     //! \brief store all distribution functions for the D3Q7 advection diffusion field
@@ -104,22 +166,6 @@ struct LBMSimulationParameter {
     real cStartx, cStarty, cStartz;
     real cFx, cFy, cFz;
 
-    // typeOfGridNode (formerly known as "geo") /////////////////////
-    int *geo; // DEPRECATED: typeOfGridNode for full matrix (not sparse)
-    //! \brief stores the type for every lattice node (f.e. fluid node)
-    unsigned int *typeOfGridNode;
-
-    // k///////////////////////
-    unsigned int *k; // DEPRECATED: index for full matrix
-
-    // neighbor///////////////////////////////////////////////////////////////
-    //! \brief store the neighbors in +X, +Y, +Z, and in diagonal negative direction
-    //! \brief this information is important because we use an indirect addressing scheme
-    uint *neighborX, *neighborY, *neighborZ, *neighborInverse;
-
-    // coordinates////////////////////////////////////////////////////////////
-    //! \brief store the coordinates for every lattice node
-    real *coordinateX, *coordinateY, *coordinateZ;
 
     // body forces////////////
     real *forceX_SP, *forceY_SP, *forceZ_SP;
@@ -138,11 +184,6 @@ struct LBMSimulationParameter {
 
     // macroscopic values//////
     // real *vx, *vy, *vz, *rho;  // DEPRECATED: macroscopic values for full matrix
-    //! \brief store the macroscopic values (velocity, density, pressure)
-    //! \brief for every lattice node
-    real *velocityX, *velocityY, *velocityZ, *rho, *pressure;
-    //! \brief stores the value for omega
-    real omega;
     //! \brief stores the value for viscosity (on level 0)
     real vis;
 
@@ -163,11 +204,6 @@ struct LBMSimulationParameter {
     unsigned int size_Mat;
     unsigned int sizePlaneXY, sizePlaneYZ, sizePlaneXZ;
 
-    // size of sparse matrix//////////
-    //! \brief stores the number of nodes (based on indirect addressing scheme)
-    unsigned int numberOfNodes;
-    unsigned int size_Array_SP;
-
     // size of Plane btw. 2 GPUs//////
     unsigned int sizePlaneSB, sizePlaneRB, startB, endB;
     unsigned int sizePlaneST, sizePlaneRT, startT, endT;
@@ -180,16 +216,6 @@ struct LBMSimulationParameter {
     unsigned int sizePlanePressOUT, startPOUT;
     bool isSetPress;
 
-    // memsizeSP/////////////////
-    //! \brief stores the size of the memory consumption for real/int values of the arrays (e.g. coordinates, velocity)
-    unsigned int mem_size_real_SP;
-    unsigned int mem_size_int_SP;
-
-    // memsize/////////////////
-    unsigned int mem_size_real;
-    unsigned int mem_size_int;
-    unsigned int mem_size_bool;
-    unsigned int mem_size_real_yz;
 
     // print///////////////////
     unsigned int startz, endz;
@@ -723,10 +749,10 @@ public:
     unsigned int getPressOutID();
     unsigned int getPressInZ();
     unsigned int getPressOutZ();
-    unsigned int getMemSizereal(int level);
-    unsigned int getMemSizeInt(int level);
-    unsigned int getMemSizeBool(int level);
-    unsigned int getMemSizerealYZ(int level);
+//    unsigned int getMemSizereal(int level);    //DEPRECATED: related to full matrix
+//    unsigned int getMemSizeInt(int level);     //DEPRECATED: related to full matrix
+//    unsigned int getMemSizeBool(int level);    //DEPRECATED: related to full matrix
+//    unsigned int getMemSizerealYZ(int level);  //DEPRECATED: related to full matrix
     unsigned int getSizeMat(int level);
     unsigned int getTimestepStart();
     unsigned int getTimestepInit();

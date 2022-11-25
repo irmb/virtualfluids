@@ -29,8 +29,8 @@ public:
     void setMemsizeGPU(double admem, bool reset);
     double getMemsizeGPU();
 
-    void cudaAllocFull(int lev);
-    void cudaFreeFull(int lev);
+    //void cudaAllocFull(int lev); //DEPRECATED: related to full matrix
+    //void cudaFreeFull(int lev);  //DEPRECATED: related to full matrix
 
     void cudaCopyPrint(int lev);
     void cudaCopyMedianPrint(int lev);
