@@ -44,6 +44,7 @@
 class Parameter;
 class GridBuilder;
 class IndexRearrangementForStreams;
+class InterpolationCellGrouper;
 
 //! \class GridGenerator derived class of GridProvider
 //! \brief mapping the grid of grid generator to data structure for simulation
@@ -58,6 +59,7 @@ private:
 
     std::shared_ptr<GridBuilder> builder;
     std::unique_ptr<IndexRearrangementForStreams> indexRearrangement;
+    std::unique_ptr<InterpolationCellGrouper> interpolationGrouper;
     const uint mpiProcessID;
 
 public:

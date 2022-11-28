@@ -4,7 +4,9 @@
 #include "GridGenerator/grid/GridBuilder/GridBuilder.h"
 #include "GPU/CudaMemoryManager.h"
 #include "IndexRearrangementForStreams.h"
+#include "InterpolationCellGrouper.h"
 
+#include <memory>
 #include <sstream>
 #include <iostream>
 #include <algorithm>
@@ -22,6 +24,7 @@ GridGenerator::GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_p
     this->para = para;
     this->cudaMemoryManager = cudaMemoryManager;
     this->indexRearrangement = std::make_unique<IndexRearrangementForStreams>(para, builder, communicator);
+    this->interpolationGrouper = std::make_unique<InterpolationCellGrouper>(para, builder);
 }
 
 GridGenerator::~GridGenerator() = default;
@@ -984,9 +987,9 @@ void GridGenerator::allocArrays_OffsetScale()
         
         if (para->getUseStreams() || para->getNumprocs() > 1) {
             // split fine-to-coarse indices into border and bulk
-            indexRearrangement->splitFineToCoarseIntoBorderAndBulk(level);
+            interpolationGrouper->splitFineToCoarseIntoBorderAndBulk(level);
             // split coarse-to-fine indices into border and bulk
-            indexRearrangement->splitCoarseToFineIntoBorderAndBulk(level);
+            interpolationGrouper->splitCoarseToFineIntoBorderAndBulk(level);
         }
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //copy
