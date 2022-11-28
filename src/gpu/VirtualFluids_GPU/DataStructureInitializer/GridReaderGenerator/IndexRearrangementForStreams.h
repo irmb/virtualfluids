@@ -28,7 +28,7 @@ public:
     IndexRearrangementForStreams(std::shared_ptr<Parameter> para, std::shared_ptr<GridBuilder> builder, vf::gpu::Communicator& communicator);
 
     //////////////////////////////////////////////////////////////////////////
-    // communication after coarse to fine
+    // communication after fine to coarse
     //////////////////////////////////////////////////////////////////////////
 
     //! \brief Initialize the arrays for the communication after the interpolation from fine to coarse in x direction
@@ -72,15 +72,35 @@ public:
 
 protected:
     //////////////////////////////////////////////////////////////////////////
-    // communication after coarse to fine
+    // communication after fine to coarse
     //////////////////////////////////////////////////////////////////////////
 
-    //! \brief Initializes pointers for reduced communication after interpolation fine to coarse by copying them from "normal"
-    //! communication
+    //! \brief Initializes the send indices for the communication after the interpolation from fine to coarse
+    std::vector<uint> initSendIndicesForCommAfterFToCX(uint level, int indexOfProcessNeighbor, int direction);
+    std::vector<uint> initSendIndicesForCommAfterFToCY(uint level, int indexOfProcessNeighbor, int direction);
+    std::vector<uint> initSendIndicesForCommAfterFToCZ(uint level, int indexOfProcessNeighbor, int direction);
+
+    //! \brief send sendIndicesForCommAfterFtoCPositions to receiving process and receive
+    //! recvIndicesForCommAfterFtoCPositions from neighboring process
+    std::vector<uint> exchangeIndicesForCommAfterFtoCX(uint level, int indexOfProcessNeighbor, int direction,
+                                                       std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
+    std::vector<uint> exchangeIndicesForCommAfterFtoCY(uint level, int indexOfProcessNeighbor, int direction,
+                                                       std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
+    std::vector<uint> exchangeIndicesForCommAfterFtoCZ(uint level, int indexOfProcessNeighbor, int direction,
+                                                       std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
+
+    //! \brief Initializes the send indices for the communication after the interpolation from fine to coarse
+    void initRecvIndicesForCommAfterFToCX(uint level, int indexOfProcessNeighbor, int direction, std::vector<uint>& recvIndicesForCommAfterFtoCPositions);
+    void initRecvIndicesForCommAfterFToCY(uint level, int indexOfProcessNeighbor, int direction, std::vector<uint>& recvIndicesForCommAfterFtoCPositions);
+    void initRecvIndicesForCommAfterFToCZ(uint level, int indexOfProcessNeighbor, int direction, std::vector<uint>& recvIndicesForCommAfterFtoCPositions);
+
+    //! \brief Initializes pointers for reduced communication after the interpolation from fine to coarse by copying
+    //! them from "normal" communication
     void copyProcessNeighborToCommAfterFtoCX(uint level, int indexOfProcessNeighbor);
     void copyProcessNeighborToCommAfterFtoCY(uint level, int indexOfProcessNeighbor);
     void copyProcessNeighborToCommAfterFtoCZ(uint level, int indexOfProcessNeighbor);
 
+    //! \brief --> see reorderSendIndicesForCommAfterFtoC
     void reorderSendIndicesForCommAfterFtoCX(int direction, int level, int indexOfProcessNeighbor,
                                              std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
     void reorderSendIndicesForCommAfterFtoCY(int direction, int level, int indexOfProcessNeighbor,
@@ -117,6 +137,7 @@ protected:
                                        std::vector<int> &sendOrReceiveIndicesAfterFtoC,
                                        std::vector<int> &sendOrIndicesOther);
 
+    //! \brief --> see reorderRecvIndicesForCommAfterFtoC
     void reorderRecvIndicesForCommAfterFtoCX(int direction, int level, int indexOfProcessNeighbor,
                                              std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
     void reorderRecvIndicesForCommAfterFtoCY(int direction, int level, int indexOfProcessNeighbor,
