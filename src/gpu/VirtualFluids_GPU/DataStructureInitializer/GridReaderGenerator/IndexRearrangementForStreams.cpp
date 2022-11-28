@@ -14,11 +14,11 @@ IndexRearrangementForStreams::IndexRearrangementForStreams(std::shared_ptr<Param
 {
 }
 
-void IndexRearrangementForStreams::initCommunicationArraysForCommAfterFinetoCoarseX(const uint &level,
+void IndexRearrangementForStreams::initCommunicationArraysForCommAfterFinetoCoarseX(uint level,
                                                                                     int indexOfProcessNeighbor,
                                                                                     int direction)
 {
-    // init send indices for communication after coarse to fine
+    // init send indices for communication after fine to coarse
     std::cout << "communication: reorder send indices X ";
     para->initProcessNeighborsAfterFtoCX(level);
     std::vector<uint> sendIndicesForCommAfterFtoCPositions;
@@ -33,7 +33,7 @@ void IndexRearrangementForStreams::initCommunicationArraysForCommAfterFinetoCoar
     std::vector<uint> recvIndicesForCommAfterFtoCPositions;
     recvIndicesForCommAfterFtoCPositions.resize(
         (size_t)para->getParH(level)->sendProcessNeighborsAfterFtoCX[indexOfProcessNeighbor].numberOfNodes *
-        2); // give vector an arbitraty size (larger than needed) // TODO: Find a better way
+        2); // give vector an arbitrary size (larger than needed) // TODO: Find a better way
 
     communicator.exchangeIndices(recvIndicesForCommAfterFtoCPositions.data(), (int)recvIndicesForCommAfterFtoCPositions.size(),
                           para->getParH(level)->recvProcessNeighborX[indexOfProcessNeighbor].rankNeighbor,
@@ -59,11 +59,11 @@ void IndexRearrangementForStreams::initCommunicationArraysForCommAfterFinetoCoar
     std::cout << "done." << std::endl;
 }
 
-void IndexRearrangementForStreams::initCommunicationArraysForCommAfterFinetoCoarseY(const uint &level,
+void IndexRearrangementForStreams::initCommunicationArraysForCommAfterFinetoCoarseY(uint level,
                                                                                     int indexOfProcessNeighbor,
                                                                                     int direction)
 {
-    // init send indices for communication after coarse to fine
+    // init send indices for communication after fine to coarse
     std::cout << "communication: reorder send indices Y ";
     para->initProcessNeighborsAfterFtoCY(level);
     std::vector<uint> sendIndicesForCommAfterFtoCPositions;
@@ -78,7 +78,7 @@ void IndexRearrangementForStreams::initCommunicationArraysForCommAfterFinetoCoar
     std::vector<uint> recvIndicesForCommAfterFtoCPositions;
     recvIndicesForCommAfterFtoCPositions.resize(
         (size_t)para->getParH(level)->sendProcessNeighborsAfterFtoCY[indexOfProcessNeighbor].numberOfNodes *
-        2); // give vector an arbitraty size (larger than needed) // TODO: Find a better way
+        2); // give vector an arbitrary size (larger than needed) // TODO: Find a better way
     communicator.exchangeIndices(recvIndicesForCommAfterFtoCPositions.data(), (int)recvIndicesForCommAfterFtoCPositions.size(),
                           para->getParH(level)->recvProcessNeighborY[indexOfProcessNeighbor].rankNeighbor,
                           sendIndicesForCommAfterFtoCPositions.data(), (int)sendIndicesForCommAfterFtoCPositions.size(),
@@ -101,11 +101,11 @@ void IndexRearrangementForStreams::initCommunicationArraysForCommAfterFinetoCoar
     std::cout << "done." << std::endl;
 }
 
-void IndexRearrangementForStreams::initCommunicationArraysForCommAfterFinetoCoarseZ(const uint &level,
+void IndexRearrangementForStreams::initCommunicationArraysForCommAfterFinetoCoarseZ(uint level,
                                                                                     int indexOfProcessNeighbor,
                                                                                     int direction)
 {
-    // init send indices for communication after coarse to fine
+    // init send indices for communication after fine to coarse
     std::cout << "communication: reorder send indices Z ";
     para->initProcessNeighborsAfterFtoCZ(level);
     std::vector<uint> sendIndicesForCommAfterFtoCPositions;
@@ -120,7 +120,7 @@ void IndexRearrangementForStreams::initCommunicationArraysForCommAfterFinetoCoar
     std::vector<uint> recvIndicesForCommAfterFtoCPositions;
     recvIndicesForCommAfterFtoCPositions.resize(
         (size_t)para->getParH(level)->sendProcessNeighborsAfterFtoCZ[indexOfProcessNeighbor].numberOfNodes *
-        2); // give vector an arbitraty size (larger than needed) // TODO: Find a better way
+        2); // give vector an arbitrary size (larger than needed) // TODO: Find a better way
     communicator.exchangeIndices(recvIndicesForCommAfterFtoCPositions.data(), (int)recvIndicesForCommAfterFtoCPositions.size(),
                           para->getParH(level)->recvProcessNeighborZ[indexOfProcessNeighbor].rankNeighbor,
                           sendIndicesForCommAfterFtoCPositions.data(), (int)sendIndicesForCommAfterFtoCPositions.size(),
@@ -143,7 +143,7 @@ void IndexRearrangementForStreams::initCommunicationArraysForCommAfterFinetoCoar
     std::cout << "done." << std::endl;
 }
 
-void IndexRearrangementForStreams::copyProcessNeighborToCommAfterFtoCX(const uint &level, int indexOfProcessNeighbor)
+void IndexRearrangementForStreams::copyProcessNeighborToCommAfterFtoCX(uint level, int indexOfProcessNeighbor)
 {
     // init f[0]*
     para->getParD(level)->sendProcessNeighborsAfterFtoCX[indexOfProcessNeighbor].f[0] =
@@ -172,7 +172,7 @@ void IndexRearrangementForStreams::copyProcessNeighborToCommAfterFtoCX(const uin
         para->getParH(level)->recvProcessNeighborX[indexOfProcessNeighbor].rankNeighbor;
 }
 
-void IndexRearrangementForStreams::copyProcessNeighborToCommAfterFtoCY(const uint &level, int indexOfProcessNeighbor)
+void IndexRearrangementForStreams::copyProcessNeighborToCommAfterFtoCY(uint level, int indexOfProcessNeighbor)
 {
     // init f[0]*
     para->getParD(level)->sendProcessNeighborsAfterFtoCY[indexOfProcessNeighbor].f[0] =
@@ -201,7 +201,7 @@ void IndexRearrangementForStreams::copyProcessNeighborToCommAfterFtoCY(const uin
         para->getParH(level)->recvProcessNeighborY[indexOfProcessNeighbor].rankNeighbor;
 }
 
-void IndexRearrangementForStreams::copyProcessNeighborToCommAfterFtoCZ(const uint &level, int indexOfProcessNeighbor)
+void IndexRearrangementForStreams::copyProcessNeighborToCommAfterFtoCZ(uint level, int indexOfProcessNeighbor)
 {
     // init f[0]*
     para->getParD(level)->sendProcessNeighborsAfterFtoCZ[indexOfProcessNeighbor].f[0] =
@@ -470,7 +470,7 @@ void IndexRearrangementForStreams::reorderRecvIndicesForCommAfterFtoC(
     }
 }
 
-void IndexRearrangementForStreams::splitFineToCoarseIntoBorderAndBulk(const uint &level)
+void IndexRearrangementForStreams::splitFineToCoarseIntoBorderAndBulk(uint level)
 {
     this->reorderFineToCoarseIntoBorderAndBulk(level);
 
@@ -551,7 +551,7 @@ void IndexRearrangementForStreams::reorderFineToCoarseIntoBorderAndBulk(int leve
     }
 }
 
-void IndexRearrangementForStreams::splitCoarseToFineIntoBorderAndBulk(const uint &level)
+void IndexRearrangementForStreams::splitCoarseToFineIntoBorderAndBulk(uint level)
 {
     this->reorderCoarseToFineIntoBorderAndBulk(level);
 

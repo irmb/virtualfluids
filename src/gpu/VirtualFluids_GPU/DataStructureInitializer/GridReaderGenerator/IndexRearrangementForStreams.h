@@ -35,13 +35,13 @@ public:
     //! \details Only the nodes involved in the interpolation need to be exchanged. Therefore in this method all nodes,
     //! which are part of the interpolation as well as the communication, are identified.
     //!See [master thesis of Anna Wellmann (p. 59-62: "Reduzieren der auszutauschenden Knoten")]
-    void initCommunicationArraysForCommAfterFinetoCoarseX(const uint &level, int j, int direction);
+    void initCommunicationArraysForCommAfterFinetoCoarseX(uint level, int j, int direction);
     //! \brief Initialize the arrays for the communication after the interpolation from fine to coarse in y direction
     //! \details --> see x direction
-    void initCommunicationArraysForCommAfterFinetoCoarseY(const uint &level, int j, int direction);
+    void initCommunicationArraysForCommAfterFinetoCoarseY(uint level, int j, int direction);
     //! \brief Initialize the arrays for the communication after the interpolation from fine to coarse in z direction
     //! \details --> see x direction
-    void initCommunicationArraysForCommAfterFinetoCoarseZ(const uint &level, int j, int direction);
+    void initCommunicationArraysForCommAfterFinetoCoarseZ(uint level, int j, int direction);
 
 public:
     //////////////////////////////////////////////////////////////////////////
@@ -57,7 +57,7 @@ public:
     //! - the other cells which are not directly related to the communication between the two gpus --> "bulk"
     //!
     //! see [master thesis of Anna Wellmann (p. 62-68: "Überdeckung der reduzierten Kommunikation")]
-    void splitCoarseToFineIntoBorderAndBulk(const uint &level);
+    void splitCoarseToFineIntoBorderAndBulk(uint level);
 
     //! \brief Split the interpolation cells from fine to coarse into border an bulk
     //! \details For communication hiding, the interpolation cells from the fine to the coarse grid need to be split
@@ -68,18 +68,18 @@ public:
     //! - the other cells which are not directly related to the communication between the two gpus --> "bulk"
     //!
     //! See [master thesis of Anna Wellmann (p. 62-68: "Überdeckung der reduzierten Kommunikation")]
-    void splitFineToCoarseIntoBorderAndBulk(const uint &level);
+    void splitFineToCoarseIntoBorderAndBulk(uint level);
 
-private:
+protected:
     //////////////////////////////////////////////////////////////////////////
     // communication after coarse to fine
     //////////////////////////////////////////////////////////////////////////
 
     //! \brief Initializes pointers for reduced communication after interpolation fine to coarse by copying them from "normal"
     //! communication
-    void copyProcessNeighborToCommAfterFtoCX(const uint &level, int indexOfProcessNeighbor);
-    void copyProcessNeighborToCommAfterFtoCY(const uint &level, int indexOfProcessNeighbor);
-    void copyProcessNeighborToCommAfterFtoCZ(const uint &level, int indexOfProcessNeighbor);
+    void copyProcessNeighborToCommAfterFtoCX(uint level, int indexOfProcessNeighbor);
+    void copyProcessNeighborToCommAfterFtoCY(uint level, int indexOfProcessNeighbor);
+    void copyProcessNeighborToCommAfterFtoCZ(uint level, int indexOfProcessNeighbor);
 
     void reorderSendIndicesForCommAfterFtoCX(int direction, int level, int indexOfProcessNeighbor,
                                              std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
@@ -133,7 +133,7 @@ private:
     void reorderRecvIndicesForCommAfterFtoC(int *recvIndices, int &numberOfRecvNodesAfterFtoC, int direction,
                                             int level, std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
 
-private:
+protected:
     //////////////////////////////////////////////////////////////////////////
     // split interpolation cells
     //////////////////////////////////////////////////////////////////////////
