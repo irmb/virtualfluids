@@ -111,13 +111,14 @@ std::vector<uint> IndexRearrangementForStreams::initSendIndicesForCommAfterFToCZ
     return sendIndicesForCommAfterFtoCPositions;
 }
 
-std::vector<uint> IndexRearrangementForStreams::exchangeIndicesForCommAfterFtoCX(uint level, int indexOfProcessNeighbor, int direction,
-                                                   std::vector<uint> &sendIndicesForCommAfterFtoCPositions)
+std::vector<uint>
+IndexRearrangementForStreams::exchangeIndicesForCommAfterFtoCX(uint level, int indexOfProcessNeighbor, int direction,
+                                                               std::vector<uint> &sendIndicesForCommAfterFtoCPositions)
 {
-    std::vector<uint> recvIndicesForCommAfterFtoCPositions;
-    recvIndicesForCommAfterFtoCPositions.resize(
-        (size_t)para->getParH(level)->sendProcessNeighborsAfterFtoCX[indexOfProcessNeighbor].numberOfNodes *
-        2); // give vector an arbitrary size (larger than needed) // TODO: Find a better way
+    // fill the receive vector with zeros as placeholders (0 is never a valid fluid node)
+    // give vector an arbitrary size (larger than needed) // TODO: Find a better way
+    std::vector<uint> recvIndicesForCommAfterFtoCPositions(
+        (size_t)para->getParH(level)->sendProcessNeighborsAfterFtoCX[indexOfProcessNeighbor].numberOfNodes * 2, 0);
 
     communicator.exchangeIndices(
         recvIndicesForCommAfterFtoCPositions.data(), (int)recvIndicesForCommAfterFtoCPositions.size(),
@@ -125,54 +126,51 @@ std::vector<uint> IndexRearrangementForStreams::exchangeIndicesForCommAfterFtoCX
         sendIndicesForCommAfterFtoCPositions.data(), (int)sendIndicesForCommAfterFtoCPositions.size(),
         para->getParH(level)->sendProcessNeighborX[indexOfProcessNeighbor].rankNeighbor);
 
-    // resize receiving vector to correct size
-    if ((uint)recvIndicesForCommAfterFtoCPositions.size() > 0) {
-        auto it = std::unique(recvIndicesForCommAfterFtoCPositions.begin(), recvIndicesForCommAfterFtoCPositions.end());
-        recvIndicesForCommAfterFtoCPositions.erase(
-            std::prev(it, 1), // <- HA:why prev? not working for recvIndicesForCommAfterFtoCPositions.size()=0
-            recvIndicesForCommAfterFtoCPositions.end()); // TODO: Find a better way
-    }
+    // resize receiving vector to correct size (remove all zeros)
+    auto it = std::find(recvIndicesForCommAfterFtoCPositions.begin(), recvIndicesForCommAfterFtoCPositions.end(), 0);
+    recvIndicesForCommAfterFtoCPositions.erase(it, recvIndicesForCommAfterFtoCPositions.end());
     return recvIndicesForCommAfterFtoCPositions;
 }
 
-std::vector<uint> IndexRearrangementForStreams::exchangeIndicesForCommAfterFtoCY(uint level, int indexOfProcessNeighbor, int direction,
-                                                   std::vector<uint> &sendIndicesForCommAfterFtoCPositions)
+std::vector<uint>
+IndexRearrangementForStreams::exchangeIndicesForCommAfterFtoCY(uint level, int indexOfProcessNeighbor, int direction,
+                                                               std::vector<uint> &sendIndicesForCommAfterFtoCPositions)
 {
-    std::vector<uint> recvIndicesForCommAfterFtoCPositions;
-    recvIndicesForCommAfterFtoCPositions.resize(
-        (size_t)para->getParH(level)->sendProcessNeighborsAfterFtoCY[indexOfProcessNeighbor].numberOfNodes *
-        2); // give vector an arbitrary size (larger than needed) // TODO: Find a better way
+    // fill the receive vector with zeros as placeholders (0 is never a valid fluid node)
+    // give vector an arbitrary size (larger than needed) // TODO: Find a better way
+    std::vector<uint> recvIndicesForCommAfterFtoCPositions(
+        (size_t)para->getParH(level)->sendProcessNeighborsAfterFtoCY[indexOfProcessNeighbor].numberOfNodes * 2, 0);
+
     communicator.exchangeIndices(
         recvIndicesForCommAfterFtoCPositions.data(), (int)recvIndicesForCommAfterFtoCPositions.size(),
         para->getParH(level)->recvProcessNeighborY[indexOfProcessNeighbor].rankNeighbor,
         sendIndicesForCommAfterFtoCPositions.data(), (int)sendIndicesForCommAfterFtoCPositions.size(),
         para->getParH(level)->sendProcessNeighborY[indexOfProcessNeighbor].rankNeighbor);
 
-    // resize receiving vector to correct size
-    auto it = std::unique(recvIndicesForCommAfterFtoCPositions.begin(), recvIndicesForCommAfterFtoCPositions.end());
-    recvIndicesForCommAfterFtoCPositions.erase(std::prev(it, 1),
-                                               recvIndicesForCommAfterFtoCPositions.end()); // TODO: Find a better way
-
+    // resize receiving vector to correct size (remove all zeros)
+    auto it = std::find(recvIndicesForCommAfterFtoCPositions.begin(), recvIndicesForCommAfterFtoCPositions.end(), 0);
+    recvIndicesForCommAfterFtoCPositions.erase(it, recvIndicesForCommAfterFtoCPositions.end());
     return recvIndicesForCommAfterFtoCPositions;
 }
 
-std::vector<uint> IndexRearrangementForStreams::exchangeIndicesForCommAfterFtoCZ(uint level, int indexOfProcessNeighbor, int direction,
-                                                   std::vector<uint> &sendIndicesForCommAfterFtoCPositions)
+std::vector<uint>
+IndexRearrangementForStreams::exchangeIndicesForCommAfterFtoCZ(uint level, int indexOfProcessNeighbor, int direction,
+                                                               std::vector<uint> &sendIndicesForCommAfterFtoCPositions)
 {
-    std::vector<uint> recvIndicesForCommAfterFtoCPositions;
-    recvIndicesForCommAfterFtoCPositions.resize(
-        (size_t)para->getParH(level)->sendProcessNeighborsAfterFtoCZ[indexOfProcessNeighbor].numberOfNodes *
-        2); // give vector an arbitrary size (larger than needed) // TODO: Find a better way
+    // fill the receive vector with zeros as placeholders (0 is never a valid fluid node)
+    // give vector an arbitrary size (larger than needed) // TODO: Find a better way
+    std::vector<uint> recvIndicesForCommAfterFtoCPositions(
+        (size_t)para->getParH(level)->sendProcessNeighborsAfterFtoCZ[indexOfProcessNeighbor].numberOfNodes * 2, 0);
+
     communicator.exchangeIndices(
         recvIndicesForCommAfterFtoCPositions.data(), (int)recvIndicesForCommAfterFtoCPositions.size(),
         para->getParH(level)->recvProcessNeighborZ[indexOfProcessNeighbor].rankNeighbor,
         sendIndicesForCommAfterFtoCPositions.data(), (int)sendIndicesForCommAfterFtoCPositions.size(),
         para->getParH(level)->sendProcessNeighborZ[indexOfProcessNeighbor].rankNeighbor);
 
-    // resize receiving vector to correct size
-    auto it = std::unique(recvIndicesForCommAfterFtoCPositions.begin(), recvIndicesForCommAfterFtoCPositions.end());
-    recvIndicesForCommAfterFtoCPositions.erase(std::prev(it, 1),
-                                               recvIndicesForCommAfterFtoCPositions.end()); // TODO: Find a better way
+    // resize receiving vector to correct size (remove all zeros)
+    auto it = std::find(recvIndicesForCommAfterFtoCPositions.begin(), recvIndicesForCommAfterFtoCPositions.end(), 0);
+    recvIndicesForCommAfterFtoCPositions.erase(it, recvIndicesForCommAfterFtoCPositions.end());
     return recvIndicesForCommAfterFtoCPositions;
 }
 
