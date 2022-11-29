@@ -60,8 +60,8 @@ public:
     std::vector<double> gatherNUPS(double processNups);
     double sumNups(double processNups);
     //////////////////////////////////////////////////////////////////////////
-    void exchangeIndices(uint *rbuf, int count_r, int nb_rank_r, uint *sbuf, int count_s, int nb_rank_s);
-private:
+    virtual void exchangeIndices(uint *rbuf, int count_r, int nb_rank_r, uint *sbuf, int count_s, int nb_rank_s);
+protected:
    int numprocs, PID;
    int nbrbottom, nbrtop; 
    MPI_Comm comm1d, commGPU;
@@ -74,7 +74,7 @@ private:
    double starttime;
    double endtime;
    Communicator();
-   ~Communicator();
+   virtual ~Communicator();
 };
 
 }
