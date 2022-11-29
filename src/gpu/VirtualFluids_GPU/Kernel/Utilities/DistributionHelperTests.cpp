@@ -1,18 +1,10 @@
 #include <gmock/gmock.h>
+#include "../utilities/testUtilities.h"
 
 #include "DistributionHelper.cuh"
 
 #include "lbm/constants/D3Q27.h"
 using namespace vf::lbm::dir;
-
-auto RealEq = [](auto value) { 
-#ifdef VF_DOUBLE_ACCURACY
-    return testing::DoubleEq(value); 
-#else 
-    return testing::FloatEq(value);
-#endif
-};
-
 
 TEST(DistributionHelperTests, getPointerToDistribution_WhenEvenTimeStep_ShouldBeEqualToInput)
 {

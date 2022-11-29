@@ -1,16 +1,9 @@
 #include "gmock/gmock.h"
+#include "../utilities/testUtilities.h"
 
 #include "geometries/Triangle/Triangle.h"
 #include "geometries/BoundingBox/BoundingBox.h"
 #include "geometries/Vertex/Vertex.h"
-
-auto RealEq = [](auto value) { 
-#ifdef VF_DOUBLE_ACCURACY
-    return testing::DoubleEq(value); 
-#else 
-    return testing::FloatEq(value);
-#endif
-};
 
 using namespace testing;
 
