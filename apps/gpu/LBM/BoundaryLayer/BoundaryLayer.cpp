@@ -8,7 +8,6 @@
 #include <fstream>
 #include <exception>
 #include <memory>
-#include <numeric>
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -20,7 +19,6 @@
 #include "Core/VectorTypes.h"
 
 #include <basics/config/ConfigurationFile.h>
-#include "lbm/constants/NumericConstants.h"
 
 #include <logger/Logger.h>
 
@@ -30,15 +28,12 @@
 #include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
 #include "GridGenerator/grid/BoundaryConditions/Side.h"
-#include "GridGenerator/grid/BoundaryConditions/BoundaryCondition.h"
-
 #include "GridGenerator/grid/GridFactory.h"
-
-#include "geometries/Cuboid/Cuboid.h"
-#include "geometries/TriangularMesh/TriangularMesh.h"
 
 #include "GridGenerator/io/SimulationFileWriter/SimulationFileWriter.h"
 #include "GridGenerator/io/GridVTKWriter/GridVTKWriter.h"
+#include "GridGenerator/io/STLReaderWriter/STLReader.h"
+#include "GridGenerator/io/STLReaderWriter/STLWriter.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -49,18 +44,15 @@
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
+#include "VirtualFluids_GPU/PreCollisionInteractor/ActuatorLine.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PointProbe.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlaneProbe.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlanarAverageProbe.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/WallModelProbe.h"
-
 #include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
-#include "VirtualFluids_GPU/Factories/GridScalingFactory.h"
 #include "VirtualFluids_GPU/TurbulenceModels/TurbulenceModelFactory.h"
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
-
-#include "utilities/communication.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -68,9 +60,8 @@
 
 std::string path(".");
 
-std::string simulationName("BoundaryLayer");
+std::string simulationName("BoundayLayer");
 
-using namespace vf::lbm::constant;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -96,16 +87,8 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////^
     SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNummberOfProcess(), communicator.getPID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
-    GridScalingFactory scalingFactory  = GridScalingFactory();
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
-    const int  nProcs = communicator.getNummberOfProcess();
-    const uint procID = vf::gpu::Communicator::getInstance().getPID();
-    std::vector<uint> devices(10);
-    std::iota(devices.begin(), devices.end(), 0);
-    para->setDevices(devices);
-    para->setMaxDev(nProcs);
-    
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -121,19 +104,19 @@ void multipleLevel(const std::string& configPath)
 
     const real L_x = 6*H;
     const real L_y = 4*H;
-    const real L_z = H;
+    const real L_z = 1*H;
 
-    const real z0  = 0.1f; // roughness length in m
-    const real u_star = 0.4f; //friction velocity in m/s
-    const real kappa =  0.4f; // von Karman constant
+    const real z0  = 0.1; // roughness length in m
+    const real u_star = 0.4; //friction velocity in m/s
+    const real kappa = 0.4; // von Karman constant
 
-    const real viscosity =  1.56e-5f;
+    const real viscosity = 1.56e-5;
 
-    const real velocity  = 0.5f*u_star/kappa*log(H/z0+1.f); //0.5 times max mean velocity at the top in m/s
+    const real velocity  = 0.5*u_star/kappa*log(L_z/z0); //0.5 times max mean velocity at the top in m/s
 
-    const real mach =0.1;
+    const real mach = config.contains("Ma")? config.getValue<real>("Ma"): 0.1;
 
-    const uint nodes_per_H = 64;
+    const uint nodes_per_H = config.contains("nz")? config.getValue<uint>("nz"): 64;
 
     // all in s
     const float tStartOut   = config.getValue<real>("tStartOut");
@@ -147,7 +130,7 @@ void multipleLevel(const std::string& configPath)
     const float tOutProbe           =  config.getValue<real>("tOutProbe");
 
 
-    const real dx = H/real(nodes_per_H);
+    const real dx = L_z/real(nodes_per_H);
 
     const real dt = dx * mach / (sqrt(3) * velocity);
 
@@ -158,13 +141,13 @@ void multipleLevel(const std::string& configPath)
     const real pressureGradient = u_star * u_star / H ;
     const real pressureGradientLB = pressureGradient * (dt*dt)/dx; // LB units
 
-    // VF_LOG_INFO("velocity  [dx/dt] = {}", velocityLB);
-    // VF_LOG_INFO("dt   = {}", dt);
-    // VF_LOG_INFO("dx   = {}", dx);
-    // VF_LOG_INFO("viscosity [10^8 dx^2/dt] = {}", viscosityLB*1e8);
-    // VF_LOG_INFO("u* /(dx/dt) = {}", u_star*dt/dx);
-    // VF_LOG_INFO("dpdx  = {}", pressureGradient);
-    // VF_LOG_INFO("dpdx /(dx/dt^2) = {}", pressureGradientLB);
+    VF_LOG_INFO("velocity  [dx/dt] = {}", velocityLB);
+    VF_LOG_INFO("dt   = {}", dt);
+    VF_LOG_INFO("dx   = {}", dx);
+    VF_LOG_INFO("viscosity [10^8 dx^2/dt] = {}", viscosityLB*1e8);
+    VF_LOG_INFO("u* /(dx/dt) = {}", u_star*dt/dx);
+    VF_LOG_INFO("dpdx  = {}", pressureGradient);
+    VF_LOG_INFO("dpdx /(dx/dt^2) = {}", pressureGradientLB);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -179,184 +162,74 @@ void multipleLevel(const std::string& configPath)
     para->setViscosityRatio( dx*dx/dt );
     para->setDensityRatio( 1.0 );
 
-    bool useStreams = (nProcs > 1 ? true: false);
-    para->setUseStreams(true);
-    para->useReducedCommunicationAfterFtoC = true;
-    para->setMainKernel("CumulantK17CompChimRedesigned");
+    para->setMainKernel("TurbulentViscosityCumulantK17CompChim");
+
     para->setIsBodyForce( config.getValue<bool>("bodyForce") );
+
     para->setTimestepStartOut(uint(tStartOut/dt) );
     para->setTimestepOut( uint(tOut/dt) );
     para->setTimestepEnd( uint(tEnd/dt) );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    SPtr<TurbulenceModelFactory> tmFactory = std::make_shared<TurbulenceModelFactory>(para);
+    SPtr<TurbulenceModelFactory> tmFactory = SPtr<TurbulenceModelFactory>( new TurbulenceModelFactory(para) );
     tmFactory->readConfigFile( config );
-    tmFactory->setTurbulenceModel(TurbulenceModel::QR);
+    
+    // tmFactory->setTurbulenceModel(TurbulenceModel::AMD);
+    // tmFactory->setModelConstant(config.getValue<real>("SGSconstant"));
+
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const real xSplit = L_x/nProcs;
-    const real overlap = 8.0*dx;
+    gridBuilder->addCoarseGrid(0.0, 0.0, 0.0,
+                                L_x,  L_y,  L_z, dx);
+    // gridBuilder->setNumberOfLayers(12, 8);
 
-    real xMin      =  procID    * xSplit;
-    real xMax      = (procID+1) * xSplit;
-    real xGridMin  =  procID    * xSplit;
-    real xGridMax  = (procID+1) * xSplit;
+    // gridBuilder->addGrid( new Cuboid( 0.0, 0.0, 0.0, L_x,  L_y,  0.3*L_z) , 1 );
+    // para->setMaxLevel(2);
 
-    real yMin      = 0.0;
-    real yMax      = L_y;
-    real zMin      = 0.0;
-    real zMax      = L_z; 
+    gridBuilder->setPeriodicBoundaryCondition(true, true, false);
 
-    bool isFirstSubDomain = (procID == 0        && nProcs > 1)?                    true: false;
-    bool isLastSubDomain  = (procID == nProcs-1 && nProcs > 1)?                    true: false;
-    bool isMidSubDomain   = (!isFirstSubDomain && !isLastSubDomain && nProcs > 1)? true: false;
-    
-    if(isFirstSubDomain || isMidSubDomain)
-    {
-        xGridMax += overlap;
-        xGridMin -= overlap;
-    }
-    if(isLastSubDomain || isMidSubDomain)
-    {
-        xGridMax += overlap;
-        xGridMin -= overlap;
-    }
+	gridBuilder->buildGrids(lbmOrGks, false); // buildGrids() has to be called before setting the BCs!!!!
 
-    gridBuilder->addCoarseGrid( xGridMin,  0.0,  0.0,
-                                xGridMax,  L_y,  L_z, dx);
-    if(true)// Add refinement
-    {
-        gridBuilder->setNumberOfLayers(12, 8);
-        gridBuilder->addGrid( new Cuboid( 0.3*L_x,  0.2*L_y,  0.1*L_z, L_x*0.7,  0.8*L_y,  L_z*0.2) , 1 );
-        para->setMaxLevel(2);
-        scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
-    }
-
-    if(nProcs > 1)
-    {
-            gridBuilder->setSubDomainBox(
-                        std::make_shared<BoundingBox>(xMin, xMax, yMin, yMax, zMin, zMax));        
-            gridBuilder->setPeriodicBoundaryCondition(false, true, false);
-    }
-    else         
-    { 
-        gridBuilder->setPeriodicBoundaryCondition(true, true, false);
-    }
-
-	gridBuilder->buildGrids(lbmOrGks, true); // buildGrids() has to be called before setting the BCs!!!!
-
-    std::cout << "nProcs: "<< nProcs << "Proc: " << procID << " isFirstSubDomain: " << isFirstSubDomain << " isLastSubDomain: " << isLastSubDomain << " isMidSubDomain: " << isMidSubDomain << std::endl;
-    
-    if(nProcs > 1){
-        if (isFirstSubDomain || isMidSubDomain) {
-            gridBuilder->findCommunicationIndices(CommunicationDirections::PX, lbmOrGks);
-            gridBuilder->setCommunicationProcess(CommunicationDirections::PX, procID+1);
-        }
-
-        if (isLastSubDomain || isMidSubDomain) {
-            gridBuilder->findCommunicationIndices(CommunicationDirections::MX, lbmOrGks);
-            gridBuilder->setCommunicationProcess(CommunicationDirections::MX, procID-1);
-        }
-
-        if (isFirstSubDomain) {
-            gridBuilder->findCommunicationIndices(CommunicationDirections::MX, lbmOrGks);
-            gridBuilder->setCommunicationProcess(CommunicationDirections::MX, nProcs-1);
-        }
-
-        if (isLastSubDomain) {
-            gridBuilder->findCommunicationIndices(CommunicationDirections::PX, lbmOrGks);
-            gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 0);
-        }
-    }
     uint samplingOffset = 2;
-    
-    gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0,  0.0, -1.0);
-
+    // gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
     gridBuilder->setStressBoundaryCondition(SideType::MZ,
                                             0.0, 0.0, 1.0,              // wall normals
                                             samplingOffset, z0/dx);     // wall model settinng
-        para->setHasWallModelMonitor(true);
-
-    // if(isLastSubDomain){ gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.f); }
-    // if(isFirstSubDomain){ gridBuilder->setVelocityBoundaryCondition(SideType::MX,  8.0f*dt/dx, 0.0, 0.0);}
-    // bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityAndPressureCompressible);
-    
+    para->setHasWallModelMonitor(true);
     bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressPressureBounceBack);
-    bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipBounceBack); 
-    bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflective);
 
+    gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0,  0.0, 0.0);
+    bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipBounceBack); 
+    
+
+    real cPi = 3.1415926535897932384626433832795;
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)0.0;
-        vx  = rho = c0o1;
-        vx  = (u_star/0.4f * log(coordZ/z0+c1o1) + c2o1*sin(cPi*c16o1*coordX/L_x)*sin(cPi*c8o1*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1)) * dt/dx; 
-        vy  = c2o1*sin(cPi*c16o1*coordX/L_x)*sin(cPi*c8o1*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1) * dt/dx; 
-        vz  = c8o1*u_star/0.4f*(sin(cPi*c8o1*coordY/H)*sin(cPi*c8o1*coordZ/H)+sin(cPi*c8o1*coordX/L_x))/(pow(c1o2*L_z-coordZ, c2o1)+c1o1) * dt/dx;
+        vx  = (u_star/0.4 * log(coordZ/z0) + 2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1))  * dt / dx; 
+        vy  = 2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1)  * dt / dx; 
+        vz  = 8.0*u_star/0.4*(sin(cPi*8.0*coordY/H)*sin(cPi*8.0*coordZ/H)+sin(cPi*8.0*coordX/L_x))/(pow(L_z/2.0-coordZ, c2o1)+c1o1) * dt / dx;
     });
-
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // if(isFirstSubDomain || nProcs == 1)
-    // {
-    //     SPtr<PlanarAverageProbe> planarAverageProbe = SPtr<PlanarAverageProbe>( new PlanarAverageProbe("planeProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt , tStartOutProbe/dt, tOutProbe/dt, 'z') );
-    //     planarAverageProbe->addAllAvailableStatistics();
-    //     planarAverageProbe->setFileNameToNOut();
-    //     para->addProbe( planarAverageProbe );
 
-    //     para->setHasWallModelMonitor(true);
-    //     SPtr<WallModelProbe> wallModelProbe = SPtr<WallModelProbe>( new WallModelProbe("wallModelProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt/4.0 , tStartOutProbe/dt, tOutProbe/dt) );
-    //     wallModelProbe->addAllAvailableStatistics();
-    //     wallModelProbe->setFileNameToNOut();
-    //     wallModelProbe->setForceOutputToStress(true);
-    //     if(para->getIsBodyForce())
-    //         wallModelProbe->setEvaluatePressureGradient(true);
-    //     para->addProbe( wallModelProbe );
-    // }
+    SPtr<PlanarAverageProbe> planarAverageProbe = SPtr<PlanarAverageProbe>( new PlanarAverageProbe("planeProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt , tStartOutProbe/dt, tOutProbe/dt, 'z') );
+    planarAverageProbe->addAllAvailableStatistics();
+    planarAverageProbe->setFileNameToNOut();
+    para->addProbe( planarAverageProbe );
 
-    // SPtr<PlaneProbe> planeProbe1 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_1", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
-    // planeProbe1->setProbePlane(100.0, 0.0, 0, dx, L_y, L_z);
-    // planeProbe1->addAllAvailableStatistics();
-    // para->addProbe( planeProbe1 );
-
-    // if(readPrecursor)
-    // {
-    //     SPtr<PlaneProbe> planeProbe2 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_2", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
-    //     planeProbe2->setProbePlane(1000.0, 0.0, 0, dx, L_y, L_z);
-    //     planeProbe2->addAllAvailableStatistics();
-    //     para->addProbe( planeProbe2 );
-
-    //     SPtr<PlaneProbe> planeProbe3 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_3", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
-    //     planeProbe3->setProbePlane(1500.0, 0.0, 0, dx, L_y, L_z);
-    //     planeProbe3->addAllAvailableStatistics();
-    //     para->addProbe( planeProbe3 );
-
-    //     SPtr<PlaneProbe> planeProbe4 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_4", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
-    //     planeProbe4->setProbePlane(2000.0, 0.0, 0, dx, L_y, L_z);
-    //     planeProbe4->addAllAvailableStatistics();
-    //     para->addProbe( planeProbe4 );
-
-    //     SPtr<PlaneProbe> planeProbe5 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_5", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
-    //     planeProbe5->setProbePlane(2500.0, 0.0, 0, dx, L_y, L_z);
-    //     planeProbe5->addAllAvailableStatistics();
-    //     para->addProbe( planeProbe5 );
-
-    //     SPtr<PlaneProbe> planeProbe6 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_6", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
-    //     planeProbe6->setProbePlane(0.0, L_y/2.0, 0, L_x, dx, L_z);
-    //     planeProbe6->addAllAvailableStatistics();
-    //     para->addProbe( planeProbe6 );
-    // }
-
-
-    // if(writePrecursor)
-    // {
-    //     SPtr<PrecursorWriter> precursorWriter = std::make_shared<PrecursorWriter>("precursor", para->getOutputPath()+precursorDirectory, posXPrecursor, 0, L_y, 0, L_z, tStartPrecursor/dt, nTWritePrecursor, useDistributions? OutputVariable::Distributions: OutputVariable::Velocities);
-    //     para->addProbe(precursorWriter);
-    // }
+    para->setHasWallModelMonitor(true);
+    SPtr<WallModelProbe> wallModelProbe = SPtr<WallModelProbe>( new WallModelProbe("wallModelProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt/4.0 , tStartOutProbe/dt, tOutProbe/dt) );
+    wallModelProbe->addAllAvailableStatistics();
+    wallModelProbe->setFileNameToNOut();
+    wallModelProbe->setForceOutputToStress(true);
+    if(para->getIsBodyForce())
+        wallModelProbe->setEvaluatePressureGradient(true);
+    para->addProbe( wallModelProbe );
 
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
     auto gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
 
-    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory, tmFactory, &scalingFactory);
+    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory, tmFactory);
     sim.run();
 }
 
