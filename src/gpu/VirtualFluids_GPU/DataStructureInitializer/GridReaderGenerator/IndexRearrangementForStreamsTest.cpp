@@ -205,7 +205,7 @@ public:
     }
 
 private:
-    std::vector<uint> receivedIndices = {};
+    std::vector<uint> receivedIndices;
 };
 
 class IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX : public testing::Test
@@ -259,7 +259,19 @@ private:
 
 TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, emptyRecvInX)
 {
-    createTestSubject(CommunicatorDouble::getInstance());
+    CommunicatorDouble &comm = CommunicatorDouble::getInstance();
+    comm.setReceivedIndices(std::vector<uint>());
+    createTestSubject(comm);
+
+    std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(0));
+}
+
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, zeroRecvIndexX)
+{
+    CommunicatorDouble &comm = CommunicatorDouble::getInstance();
+    comm.setReceivedIndices({0});
+    createTestSubject(comm);
 
     std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
     EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(0));
@@ -358,7 +370,19 @@ private:
 
 TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY, emptyRecvInY)
 {
-    createTestSubject(CommunicatorDouble::getInstance());
+    CommunicatorDouble &comm = CommunicatorDouble::getInstance();
+    comm.setReceivedIndices(std::vector<uint>());
+    createTestSubject(comm);
+
+    std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(0));
+}
+
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY, zeroRecvIndexY)
+{
+    CommunicatorDouble &comm = CommunicatorDouble::getInstance();
+    comm.setReceivedIndices({0});
+    createTestSubject(comm);
 
     std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
     EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(0));
@@ -455,9 +479,21 @@ private:
     };
 };
 
-TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ, emptZRecvInZ)
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ, emptyRecvInZ)
 {
-    createTestSubject(CommunicatorDouble::getInstance());
+    CommunicatorDouble &comm = CommunicatorDouble::getInstance();
+    comm.setReceivedIndices(std::vector<uint>());
+    createTestSubject(comm);
+
+    std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(0));
+}
+
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ, zeroRecvIndexZ)
+{
+    CommunicatorDouble &comm = CommunicatorDouble::getInstance();
+    comm.setReceivedIndices({0});
+    createTestSubject(comm);
 
     std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
     EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(0));
