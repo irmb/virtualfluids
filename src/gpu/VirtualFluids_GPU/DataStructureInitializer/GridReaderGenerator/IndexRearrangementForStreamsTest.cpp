@@ -7,6 +7,8 @@
 #include <mpi.h>
 #include <vector>
 
+#include "../utilities/testUtilitiesGPU.h"
+
 #include "Communication/Communicator.h"
 #include "DataStructureInitializer/GridReaderGenerator/IndexRearrangementForStreams.h"
 #include "Parameter/Parameter.h"
@@ -135,11 +137,10 @@ private:
         SPtr<GridImpDouble> grid =
             GridImpDouble::makeShared(nullptr, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, Distribution(), 1);
         std::shared_ptr<LevelGridBuilderDouble> builder = std::make_shared<LevelGridBuilderDouble>(grid);
-
         builder->setNumberOfSendIndices((uint)si.sendIndices.size());
-        para->setMaxLevel(si.level + 1); // setMaxLevel resizes parH and parD
-        para->parH[si.level] = std::make_shared<LBMSimulationParameter>();
-        para->parD[si.level] = std::make_shared<LBMSimulationParameter>();
+
+        para = testingVF::createParameterForLevel(si.level);
+
 
         para->getParH(si.level)->intFC.kFC = si.kFC;
         para->getParH(si.level)->intFC.ICellFCC = &(si.iCellFCC.front());
@@ -239,10 +240,7 @@ private:
     {
         logging::Logger::addStream(&std::cout);
 
-        para = std::make_shared<Parameter>();
-        para->setMaxLevel(level + 1); // setMaxLevel resizes parH and parD
-        para->parH[level] = std::make_shared<LBMSimulationParameter>();
-        para->parD[level] = std::make_shared<LBMSimulationParameter>();
+        para = testingVF::createParameterForLevel(level);
 
         para->setNumberOfProcessNeighborsX(numberOfProcessNeighbors, level, "send");
         para->initProcessNeighborsAfterFtoCX(level);
@@ -350,10 +348,7 @@ private:
     {
         logging::Logger::addStream(&std::cout);
 
-        para = std::make_shared<Parameter>();
-        para->setMaxLevel(level + 1); // setMaxLevel resizes parH and parD
-        para->parH[level] = std::make_shared<LBMSimulationParameter>();
-        para->parD[level] = std::make_shared<LBMSimulationParameter>();
+        para = testingVF::createParameterForLevel(level);
 
         para->setNumberOfProcessNeighborsY(numberOfProcessNeighbors, level, "send");
         para->initProcessNeighborsAfterFtoCY(level);
@@ -461,10 +456,7 @@ private:
     {
         logging::Logger::addStream(&std::cout);
 
-        para = std::make_shared<Parameter>();
-        para->setMaxLevel(level + 1); // setMaxLevel resizes parH and parD
-        para->parH[level] = std::make_shared<LBMSimulationParameter>();
-        para->parD[level] = std::make_shared<LBMSimulationParameter>();
+        para = testingVF::createParameterForLevel(level);
 
         para->setNumberOfProcessNeighborsZ(numberOfProcessNeighbors, level, "send");
         para->initProcessNeighborsAfterFtoCZ(level);
