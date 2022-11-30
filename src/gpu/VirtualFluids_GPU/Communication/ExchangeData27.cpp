@@ -56,9 +56,9 @@ void startBlockingMpiSend(unsigned int numberOfSendProcessNeighbors, vf::gpu::Co
                           std::vector<ProcessNeighbor27> *sendProcessNeighborHost)
 {
     for (unsigned int i = 0; i < numberOfSendProcessNeighbors; i++) {
-        comm.sendDataGPU((*sendProcessNeighborHost)[i].f[0], 
-                          (*sendProcessNeighborHost)[i].numberOfFs,
-                          (*sendProcessNeighborHost)[i].rankNeighbor);
+            comm.sendDataGPU((*sendProcessNeighborHost)[i].f[0], 
+                            (*sendProcessNeighborHost)[i].numberOfFs,
+                            (*sendProcessNeighborHost)[i].rankNeighbor);
     }
 }
 
@@ -66,9 +66,9 @@ void startNonBlockingMpiReceive(unsigned int numberOfSendProcessNeighbors, vf::g
                                 std::vector<ProcessNeighbor27> *recvProcessNeighborHost)
 {
     for (unsigned int i = 0; i < numberOfSendProcessNeighbors; i++) {
-        comm.nbRecvDataGPU((*recvProcessNeighborHost)[i].f[0], 
-                            (*recvProcessNeighborHost)[i].numberOfFs,
-                            (*recvProcessNeighborHost)[i].rankNeighbor);
+            comm.nbRecvDataGPU((*recvProcessNeighborHost)[i].f[0], 
+                                (*recvProcessNeighborHost)[i].numberOfFs,
+                                (*recvProcessNeighborHost)[i].rankNeighbor);
     }
 }
 
@@ -159,7 +159,6 @@ void exchangeCollDataXGPU27(Parameter *para, vf::gpu::Communicator &comm, CudaMe
     cudaStream_t stream = para->getStreamManager()->getStream(streamIndex);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //! \details steps: 
-
     //! 1. copy data from device to host
     for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
         cudaMemoryManager->cudaCopyProcessNeighborXFsDH(level, i, (*sendProcessNeighborDev)[i].memsizeFs);
@@ -168,7 +167,7 @@ void exchangeCollDataXGPU27(Parameter *para, vf::gpu::Communicator &comm, CudaMe
     //! 2. start non-blocking receive (MPI)
     startNonBlockingMpiReceive((unsigned int)(*sendProcessNeighborHost).size(), comm, recvProcessNeighborHost);
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //! 3. before sending data, wait for memcopy (from device to host) to finish 
+    //! 3. before sending data, wait for memcopy (from device to host) to finish
     if (para->getUseStreams()) cudaStreamSynchronize(stream); 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //! 4. send data to neighboring process (MPI)
