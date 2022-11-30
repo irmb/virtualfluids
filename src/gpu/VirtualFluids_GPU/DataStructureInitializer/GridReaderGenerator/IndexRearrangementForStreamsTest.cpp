@@ -19,7 +19,7 @@
 #include "gpu/VirtualFluids_GPU/Communication/Communicator.cpp"
 
 template <typename T>
-bool vectorsAreEqual(T *vector1, std::vector<T> vectorExpected)
+bool vectorsAreEqual(const T * vector1, const std::vector<T> vectorExpected)
 {
     for (uint i = 0; i < vectorExpected.size(); i++) {
         if (vector1[i] != vectorExpected[i])
@@ -94,15 +94,15 @@ public:
 struct SendIndicesForCommAfterFtoCX {
     // data to work on
     std::vector<int> sendIndices = { 10, 11, 12, 13, 14, 15, 16 };
-    int level = 0;
-    int direction = CommunicationDirections::MX;
-    int numberOfProcessNeighbors = 1;
-    int indexOfProcessNeighbor = 0;
+    const int level = 0;
+    const int direction = CommunicationDirections::MX;
+    const int numberOfProcessNeighbors = 1;
+    const int indexOfProcessNeighbor = 0;
 
     std::vector<uint> iCellCFC = { 8, 10, 12 };
     std::vector<uint> iCellFCC = { 14, 16, 18 };
-    uint kCF = (uint)iCellCFC.size();
-    uint kFC = (uint)iCellFCC.size();
+    const uint kCF = (uint)iCellCFC.size();
+    const uint kFC = (uint)iCellFCC.size();
     uint neighborX[18] = { 0u };
     uint neighborY[18] = { 0u };
     uint neighborZ[18] = { 0u };
@@ -111,9 +111,9 @@ struct SendIndicesForCommAfterFtoCX {
     std::vector<uint> sendIndicesForCommAfterFtoCPositions;
 
     // expected data
-    std::vector<uint> sendIndicesForCommAfterFtoCPositions_expected = { 4, 6, 0, 2 };
-    std::vector<int> sendProcessNeighborX_expected = { 14, 16, 10, 12, 11, 13, 15 };
-    int numberOfSendNodesAfterFtoC_expected = (int)sendIndicesForCommAfterFtoCPositions_expected.size();
+    const std::vector<uint> sendIndicesForCommAfterFtoCPositions_expected = { 4, 6, 0, 2 };
+    const std::vector<int> sendProcessNeighborX_expected = { 14, 16, 10, 12, 11, 13, 15 };
+    const int numberOfSendNodesAfterFtoC_expected = (int)sendIndicesForCommAfterFtoCPositions_expected.size();
 };
 
 class IndexRearrangementForStreamsTest_reorderSendIndices : public testing::Test
@@ -221,7 +221,6 @@ public:
 protected:
     std::vector<uint> act()
     {
-
         return sut->exchangeIndicesForCommAfterFtoCX(level, indexOfProcessNeighbor, CommunicationDirections::PX,
                                                      sendIndicesForCommAfterFtoCPositions);
     }
@@ -329,7 +328,6 @@ public:
 protected:
     std::vector<uint> act()
     {
-
         return sut->exchangeIndicesForCommAfterFtoCY(level, indexOfProcessNeighbor, CommunicationDirections::PY,
                                                      sendIndicesForCommAfterFtoCPositions);
     }
@@ -437,7 +435,6 @@ public:
 protected:
     std::vector<uint> act()
     {
-
         return sut->exchangeIndicesForCommAfterFtoCZ(level, indexOfProcessNeighbor, CommunicationDirections::PZ,
                                                      sendIndicesForCommAfterFtoCPositions);
     }
