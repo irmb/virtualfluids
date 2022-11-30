@@ -14,6 +14,14 @@ endif (POLICY CMP0077)
 project(googletest-distribution)
 set(GOOGLETEST_VERSION 1.12.1)
 
+##########################################################
+# Enable MACOSX_RPATH support for gtest and gmock
+# to avoid CMP0042 warnings
+IF(APPLE)
+  SET(CMAKE_MACOSX_RPATH 1)
+ENDIF()
+##########################################################
+
 if(NOT CYGWIN AND NOT MSYS AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL QNX)
   set(CMAKE_CXX_EXTENSIONS OFF)
 endif()
@@ -24,11 +32,16 @@ include(CMakeDependentOption)
 include(GNUInstallDirs)
 
 #Note that googlemock target already builds googletest
-option(BUILD_GMOCK "Builds the googlemock subproject" ON)
-option(INSTALL_GTEST "Enable installation of googletest. (Projects embedding googletest may want to turn this OFF.)" ON)
+#option(BUILD_GMOCK "Builds the googlemock subproject" ON)
+#option(INSTALL_GTEST "Enable installation of googletest. (Projects embedding googletest may want to turn this OFF.)" ON)
 
-if(BUILD_GMOCK)
+#if(BUILD_GMOCK)
   add_subdirectory( googlemock )
-else()
-  add_subdirectory( googletest )
-endif()
+#else()
+#  add_subdirectory( googletest )
+#endif()
+
+groupTarget(gmock ${thirdFolder}/googletest)
+groupTarget(gmock_main ${thirdFolder}/googletest)
+groupTarget(gtest ${thirdFolder}/googletest)
+groupTarget(gtest_main ${thirdFolder}/googletest)
