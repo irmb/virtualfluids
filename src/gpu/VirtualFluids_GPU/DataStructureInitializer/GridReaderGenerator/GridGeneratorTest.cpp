@@ -16,7 +16,7 @@ namespace GridGeneratorTest
 class LevelGridBuilderStub : public LevelGridBuilder
 {
 private:
-    SPtr<Grid> grid;
+    const SPtr<Grid> grid;
     LevelGridBuilderStub() = default;
 
 public:
@@ -72,9 +72,9 @@ public:
                                        vf::gpu::Communicator &communicator)
         : IndexRearrangementForStreams(para, builder, communicator){};
 
-    void initCommunicationArraysForCommAfterFinetoCoarseX(uint level, int j, int direction) override {};
-    void initCommunicationArraysForCommAfterFinetoCoarseY(uint level, int j, int direction) override {};
-    void initCommunicationArraysForCommAfterFinetoCoarseZ(uint level, int j, int direction) override {};
+    void initCommunicationArraysForCommAfterFinetoCoarseX(uint level, int indexOfProcessNeighbor, int direction) const override {};
+    void initCommunicationArraysForCommAfterFinetoCoarseY(uint level, int indexOfProcessNeighbor, int direction) const override {};
+    void initCommunicationArraysForCommAfterFinetoCoarseZ(uint level, int indexOfProcessNeighbor, int direction) const override {};
 };
 
 } // namespace GridGeneratorTest
@@ -84,7 +84,7 @@ using namespace GridGeneratorTest;
 class GridGeneratorTests_initalValuesDomainDecompostion : public testing::Test
 {
 public:
-    void act()
+    void act() const
     {
         gridGenerator->initalValuesDomainDecompostion();
     }
@@ -93,8 +93,8 @@ protected:
     SPtr<Parameter> para;
     std::shared_ptr<LevelGridBuilderStub> builder;
 
-    uint level = 1;
-    uint direction = CommunicationDirections::MX;
+    const uint level = 1;
+    const uint direction = CommunicationDirections::MX;
 
     SPtr<GridGenerator> gridGenerator;
 

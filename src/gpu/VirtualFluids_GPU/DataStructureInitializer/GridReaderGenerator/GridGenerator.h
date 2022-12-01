@@ -58,7 +58,7 @@ private:
 
     std::shared_ptr<GridBuilder> builder;
     std::unique_ptr<const IndexRearrangementForStreams> indexRearrangement;
-    std::unique_ptr<InterpolationCellGrouper> interpolationGrouper;
+    std::unique_ptr<const InterpolationCellGrouper> interpolationGrouper;
     const uint mpiProcessID;
 
 public:

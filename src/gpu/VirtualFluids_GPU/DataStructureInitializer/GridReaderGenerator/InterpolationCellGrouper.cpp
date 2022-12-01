@@ -10,7 +10,7 @@ InterpolationCellGrouper::InterpolationCellGrouper(const LBMSimulationParameters
 {
 }
 
-void InterpolationCellGrouper::splitFineToCoarseIntoBorderAndBulk(uint level)
+void InterpolationCellGrouper::splitFineToCoarseIntoBorderAndBulk(uint level) const
 {
     this->reorderFineToCoarseIntoBorderAndBulk(level);
 
@@ -25,7 +25,7 @@ void InterpolationCellGrouper::splitFineToCoarseIntoBorderAndBulk(uint level)
     parDs[level]->offFCBulk.zOffFC = parDs[level]->offFC.zOffFC + parDs[level]->intFCBorder.kFC;
 }
 
-void InterpolationCellGrouper::reorderFineToCoarseIntoBorderAndBulk(int level)
+void InterpolationCellGrouper::reorderFineToCoarseIntoBorderAndBulk(int level) const
 {
     // create some local variables for better readability
     uint *iCellFccAll = parHs[level]->intFC.ICellFCC;
@@ -88,7 +88,7 @@ void InterpolationCellGrouper::reorderFineToCoarseIntoBorderAndBulk(int level)
     }
 }
 
-void InterpolationCellGrouper::splitCoarseToFineIntoBorderAndBulk(uint level)
+void InterpolationCellGrouper::splitCoarseToFineIntoBorderAndBulk(uint level) const
 {
     this->reorderCoarseToFineIntoBorderAndBulk(level);
 
@@ -103,7 +103,7 @@ void InterpolationCellGrouper::splitCoarseToFineIntoBorderAndBulk(uint level)
     parDs[level]->offCFBulk.zOffCF = parDs[level]->offCF.zOffCF + parDs[level]->intCFBorder.kCF;
 }
 
-void InterpolationCellGrouper::reorderCoarseToFineIntoBorderAndBulk(int level)
+void InterpolationCellGrouper::reorderCoarseToFineIntoBorderAndBulk(int level) const
 {
     // create some local variables for better readability
     uint *iCellCfcAll = parHs[level]->intCF.ICellCFC;
