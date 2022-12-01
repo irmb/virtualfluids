@@ -34,15 +34,19 @@ void IndexRearrangementForStreams::initCommunicationArraysForCommAfterFinetoCoar
     recvIndicesForCommAfterFtoCPositions.resize(
         (size_t)para->getParH(level)->sendProcessNeighborsAfterFtoCX[indexOfProcessNeighbor].numberOfNodes *
         2); // give vector an arbitraty size (larger than needed) // TODO: Find a better way
+
     communicator.exchangeIndices(recvIndicesForCommAfterFtoCPositions.data(), (int)recvIndicesForCommAfterFtoCPositions.size(),
                           para->getParH(level)->recvProcessNeighborX[indexOfProcessNeighbor].rankNeighbor,
                           sendIndicesForCommAfterFtoCPositions.data(), (int)sendIndicesForCommAfterFtoCPositions.size(),
                           para->getParH(level)->sendProcessNeighborX[indexOfProcessNeighbor].rankNeighbor);
 
     // resize receiving vector to correct size
-    auto it = std::unique(recvIndicesForCommAfterFtoCPositions.begin(), recvIndicesForCommAfterFtoCPositions.end());
-    recvIndicesForCommAfterFtoCPositions.erase(std::prev(it, 1),
-                                               recvIndicesForCommAfterFtoCPositions.end()); // TODO: Find a better way
+    if((uint)recvIndicesForCommAfterFtoCPositions.size()>0)
+    {
+        auto it = std::unique(recvIndicesForCommAfterFtoCPositions.begin(), recvIndicesForCommAfterFtoCPositions.end());
+        recvIndicesForCommAfterFtoCPositions.erase(std::prev(it, 1), // <- HA:why prev? not working for recvIndicesForCommAfterFtoCPositions.size()=0
+                                                recvIndicesForCommAfterFtoCPositions.end()); // TODO: Find a better way
+    }
 
     // init receive indices for communication after coarse to fine
     std::cout << "reorder receive indices ";
@@ -427,8 +431,10 @@ void IndexRearrangementForStreams::reorderRecvIndicesForCommAfterFtoC(
     *logging::out << logging::Logger::INFO_INTERMEDIATE
                   << "reorder receive indices for communication after fine to coarse: level: " << level
                   << " direction: " << direction;
-    if (sendIndicesForCommAfterFtoCPositions.size() == 0)
-        *logging::out << logging::Logger::LOGGER_ERROR
+
+    std::cout << "\n n send indices: " << (uint)sendIndicesForCommAfterFtoCPositions.size() << std::endl;
+    if (sendIndicesForCommAfterFtoCPositions.size() <= 0)
+        *logging::out << logging::Logger::INFO_HIGH
                       << "reorderRecvIndicesForCommAfterFtoC(): sendIndicesForCommAfterFtoCPositions is empty."
                       << "\n";
 
