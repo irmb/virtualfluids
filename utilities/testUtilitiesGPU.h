@@ -7,7 +7,7 @@
 namespace testingVF
 {
 
-SPtr<Parameter> createParameterForLevel(uint level)
+inline SPtr<Parameter> createParameterForLevel(uint level)
 {
     SPtr<Parameter> para = std::make_shared<Parameter>();
     para->setMaxLevel(level + 1); // setMaxLevel resizes parH and parD

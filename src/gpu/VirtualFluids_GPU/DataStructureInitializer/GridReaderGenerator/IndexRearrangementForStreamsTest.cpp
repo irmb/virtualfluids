@@ -18,6 +18,7 @@
 #include "gpu/GridGenerator/utilities/communication.h"
 #include "gpu/VirtualFluids_GPU/Communication/Communicator.cpp"
 
+namespace indexRearrangementTests {
 template <typename T>
 bool vectorsAreEqual(const T * vector1, const std::vector<T> vectorExpected)
 {
@@ -39,10 +40,6 @@ private:
 public:
     LevelGridBuilderDouble(SPtr<Grid> grid) : LevelGridBuilder(), grid(grid){};
     SPtr<Grid> getGrid(uint level) override
-    {
-        return grid;
-    };
-    std::shared_ptr<Grid> getGrid(int level, int box) override
     {
         return grid;
     };
@@ -74,22 +71,14 @@ public:
         SPtr<GridImpDouble> grid(new GridImpDouble(object, startX, startY, startZ, endX, endY, endZ, delta, d, level));
         return grid;
     }
-
-    void setFluidNodeIndicesBorder(std::vector<uint> fluidNodeIndicesBorder)
-    {
-        this->fluidNodeIndicesBorder = fluidNodeIndicesBorder;
-    }
-
-    bool isSparseIndexInFluidNodeIndicesBorder(uint &sparseIndex) const override
-    {
-        return std::find(this->fluidNodeIndicesBorder.begin(), this->fluidNodeIndicesBorder.end(), sparseIndex) !=
-               this->fluidNodeIndicesBorder.end();
-    }
 };
+
+}
 
 //////////////////////////////////////////////////////////////////////////
 // Test reorderSendIndices
 //////////////////////////////////////////////////////////////////////////
+using namespace indexRearrangementTests;
 
 struct SendIndicesForCommAfterFtoCX {
     // data to work on

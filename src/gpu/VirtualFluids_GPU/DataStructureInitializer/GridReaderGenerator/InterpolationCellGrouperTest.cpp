@@ -1,4 +1,5 @@
 #include <gmock/gmock.h>
+#include "../utilities/testUtilitiesGPU.h"
 
 #include <iostream>
 
@@ -8,7 +9,7 @@
 #include "gpu/GridGenerator/grid/GridImp.h"
 
 template <typename T>
-bool vectorsAreEqual(T *vector1, std::vector<T> vectorExpected)
+bool vectorsAreEqual(const T * vector1, const std::vector<T> vectorExpected)
 {
     for (uint i = 0; i < vectorExpected.size(); i++) {
         if (vector1[i] != vectorExpected[i])
@@ -23,25 +24,11 @@ private:
     SPtr<Grid> grid;
     LevelGridBuilderDouble() = default;
 
-    uint numberOfSendIndices;
-
 public:
     LevelGridBuilderDouble(SPtr<Grid> grid) : LevelGridBuilder(), grid(grid){};
     SPtr<Grid> getGrid(uint level) override
     {
         return grid;
-    };
-    std::shared_ptr<Grid> getGrid(int level, int box) override
-    {
-        return grid;
-    };
-    void setNumberOfSendIndices(uint numberOfSendIndices)
-    {
-        this->numberOfSendIndices = numberOfSendIndices;
-    };
-    uint getNumberOfSendIndices(int direction, uint level) override
-    {
-        return numberOfSendIndices;
     };
 };
 
@@ -81,11 +68,11 @@ struct CFBorderBulk {
     std::vector<uint> fluidNodeIndicesBorder = { 10, 11, 12, 13, 14, 15, 16 };
     std::vector<uint> iCellCFC = { 1, 11, 3, 13, 5, 15, 7 };
     std::vector<uint> iCellCFF = { 2, 12, 4, 14, 6, 16, 8 };
-    uint sizeOfICellCf = (uint)iCellCFC.size();
+    const uint sizeOfICellCf = (uint)iCellCFC.size();
     uint neighborX[17] = { 0u };
     uint neighborY[17] = { 0u };
     uint neighborZ[17] = { 0u };
-    int level = 0;
+    const int level = 0;
     std::vector<real> offsetCFx = { 1, 11, 3, 13, 5, 15, 7 };
     std::vector<real> offsetCFy = { 101, 111, 103, 113, 105, 115, 107 };
     std::vector<real> offsetCFz = { 1001, 1011, 1003, 1013, 1005, 1015, 1007 };
@@ -118,9 +105,7 @@ private:
         grid->setFluidNodeIndicesBorder(cf.fluidNodeIndicesBorder);
         std::shared_ptr<LevelGridBuilderDouble> builder = std::make_shared<LevelGridBuilderDouble>(grid);
 
-        para->setMaxLevel(cf.level + 1); // setMaxLevel resizes parH and parD
-        para->parH[cf.level] = std::make_shared<LBMSimulationParameter>();
-        para->parD[cf.level] = std::make_shared<LBMSimulationParameter>();
+        para = testingVF::createParameterForLevel(cf.level);
         para->getParH(cf.level)->intCF.ICellCFC = &(cf.iCellCFC.front());
         para->getParH(cf.level)->intCF.ICellCFF = &(cf.iCellCFF.front());
         para->getParH(cf.level)->neighborX = cf.neighborX;
@@ -136,8 +121,6 @@ private:
 
     void SetUp() override
     {
-        para = std::make_shared<Parameter>();
-        para->initLBMSimulationParameter();
         testSubject = createTestSubjectCFBorderBulk();
     }
 };
@@ -182,8 +165,8 @@ struct FCBorderBulk {
     std::vector<uint> fluidNodeIndicesBorder = { 110, 111, 112, 113, 114, 115, 116 };
     std::vector<uint> iCellFCC = { 11, 111, 13, 113, 15, 115, 17 };
     std::vector<uint> iCellFCF = { 12, 112, 14, 114, 16, 116, 18 };
-    uint sizeOfICellFC = (uint)iCellFCC.size();
-    int level = 1;
+    const uint sizeOfICellFC = (uint)iCellFCC.size();
+    const int level = 1;
     std::vector<real> offsetFCx = { 11, 111, 13, 113, 15, 115, 17 };
     std::vector<real> offsetFCy = { 1101, 1111, 1103, 1113, 1105, 1115, 1107 };
     std::vector<real> offsetFCz = { 11001, 11011, 11003, 11013, 11005, 11015, 11007 };
@@ -216,9 +199,7 @@ private:
         grid->setFluidNodeIndicesBorder(fc.fluidNodeIndicesBorder);
         std::shared_ptr<LevelGridBuilderDouble> builder = std::make_shared<LevelGridBuilderDouble>(grid);
 
-        para->setMaxLevel(fc.level + 1); // setMaxLevel resizes parH and parD
-        para->parH[fc.level] = std::make_shared<LBMSimulationParameter>();
-        para->parD[fc.level] = std::make_shared<LBMSimulationParameter>();
+        para = testingVF::createParameterForLevel(fc.level);
         para->getParH(fc.level)->intFC.ICellFCC = &(fc.iCellFCC.front());
         para->getParH(fc.level)->intFC.ICellFCF = &(fc.iCellFCF.front());
         para->getParH(fc.level)->intFC.kFC = fc.sizeOfICellFC;
@@ -231,7 +212,6 @@ private:
 
     void SetUp() override
     {
-        para = std::make_shared<Parameter>();
         testSubject = createTestSubjectFCBorderBulk();
     }
 };
