@@ -2,7 +2,7 @@
 import numpy as np
 from pathlib import Path
 from mpi4py import MPI
-from pyfluids import basics, gpu, logger
+from pyfluids.bindings import basics, gpu, logger
 #%%
 sim_name = "ABL"
 config_file = Path(__file__).parent/"configActuatorLine.txt"
@@ -121,7 +121,7 @@ if read_precursor:
     grid_builder.set_precursor_boundary_condition(gpu.SideType.MX, precursor, nTReadPrecursor, 0, 0, 0)
 
 grid_builder.set_stress_boundary_condition(gpu.SideType.MZ, 0, 0, 1, sampling_offset, z0/dx)
-para.set_has_wall_monitor(True)
+para.set_has_wall_model_monitor(True)
 grid_builder.set_slip_boundary_condition(gpu.SideType.PZ, 0, 0, -1)
 
 if read_precursor:

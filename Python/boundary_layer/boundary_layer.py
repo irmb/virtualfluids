@@ -119,7 +119,7 @@ if read_precursor:
     grid_builder.set_precursor_boundary_condition(gpu.SideType.MX, precursor, nTReadPrecursor, 0, 0, 0)
 
 grid_builder.set_stress_boundary_condition(gpu.SideType.MZ, 0, 0, 1, sampling_offset, z0/dx)
-para.set_has_wall_monitor(True)
+para.set_has_wall_model_monitor(True)
 grid_builder.set_slip_boundary_condition(gpu.SideType.PZ, 0, 0, -1)
 
 if read_precursor:
