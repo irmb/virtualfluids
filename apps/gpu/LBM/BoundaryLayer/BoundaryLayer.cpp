@@ -248,11 +248,12 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->addCoarseGrid( xGridMin,  0.0,  0.0,
                                 xGridMax,  L_y,  L_z, dx);
-    if(false)// Add refinement
+    if(true)// Add refinement
     {
         gridBuilder->setNumberOfLayers(4,0);
         real xMaxRefinement = readPrecursor? xGridMax-H: xGridMax;   //Stop refinement some distance before outlet if domain ist not periodic
         gridBuilder->addGrid( new Cuboid( xGridMin+dx, 0.f, 0.f, xMaxRefinement, L_y,  0.5*L_z) , 1 );
+
         para->setMaxLevel(2);
         scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
     }

@@ -1648,7 +1648,6 @@ bool GridImp::checkIfAtLeastOneValidQ(const uint index, const Vertex & point, co
 void GridImp::findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks)
 {
     for( uint index = 0; index < this->size; index++ ){
-        
         real x, y, z;
         this->transIndexToCoords(index, x, y, z);
 
@@ -1660,7 +1659,6 @@ void GridImp::findCommunicationIndices(int direction, SPtr<BoundingBox> subDomai
 
         if( lbmOrGks == LBM && this->getFieldEntry(index) == STOPPER_OUT_OF_GRID_BOUNDARY ) continue;
         if( lbmOrGks == LBM && this->getFieldEntry(index) == STOPPER_SOLID ) continue;
-
         if( direction == CommunicationDirections::MX ) findCommunicationIndex( index, x, subDomainBox->minX, direction);
         if( direction == CommunicationDirections::PX ) findCommunicationIndex( index, x, subDomainBox->maxX, direction);
         if( direction == CommunicationDirections::MY ) findCommunicationIndex( index, y, subDomainBox->minY, direction);
@@ -1668,39 +1666,17 @@ void GridImp::findCommunicationIndices(int direction, SPtr<BoundingBox> subDomai
         if( direction == CommunicationDirections::MZ ) findCommunicationIndex( index, z, subDomainBox->minZ, direction);
         if( direction == CommunicationDirections::PZ ) findCommunicationIndex( index, z, subDomainBox->maxZ, direction);
     }
-    real xS, yS, zS;
-        this->transIndexToCoords(this->communicationIndices[direction].sendIndices[0], xS, yS, zS);
-    real xR, yR, zR;
-        this->transIndexToCoords(this->communicationIndices[direction].receiveIndices[0], xR, yR, zR);
-    std::cout << "Dir: " << direction << " Sender: " << xS << " " << yS<< " "  << zS<< " " 
-                                      << this->communicationIndices[direction].sendIndices[0] << " "
-                                      << (int)this->getFieldEntry(this->communicationIndices[direction].sendIndices[0]) 
-                                      << " Receiver: "  << xR << " " << yR << " " << zR << " " 
-                                      << this->communicationIndices[direction].receiveIndices[0] << " "
-                                      << (int)this->getFieldEntry(this->communicationIndices[direction].receiveIndices[0])
-                                      << std::endl<< std::endl;
-
 }
 
 void GridImp::findCommunicationIndex( uint index, real coordinate, real limit, int direction ){
     // negative direction get a negative sign
     real s = ( direction % 2 == 0 ) ? ( -1.0 ) : ( 1.0 );  
-    bool send = false;
-    bool rec = false;
-	if (std::abs(coordinate - (limit + s * 0.5 * this->delta)) < 0.1 * this->delta) {
-		this->communicationIndices[direction].receiveIndices.push_back(index);
-        rec = true;
-	}
 
-	if (std::abs(coordinate - (limit - s * 0.5 * this->delta)) < 0.1 * this->delta) {
+	if (std::abs(coordinate - (limit + s * 0.5 * this->delta)) < 0.1 * this->delta)
+		this->communicationIndices[direction].receiveIndices.push_back(index);
+
+	if (std::abs(coordinate - (limit - s * 0.5 * this->delta)) < 0.1 * this->delta) 
 		this->communicationIndices[direction].sendIndices.push_back(index);
-        send = true;
-	}
-    if( false && (send || rec ) ) 
-    {
-        std::cout << "Send Idx: " << index << " limit: " << limit << " coord: " << coordinate << " dir: " << direction << " send: " << send << " receive: " << rec << std::endl;
-        std::cout << "IDX: " << (int)this->getFieldEntry(index)<< std::endl;
-    }
 }
 
 bool GridImp::isSendNode(int index) const
