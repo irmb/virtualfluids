@@ -24,6 +24,8 @@ public:
     //! \brief Construct IndexRearrangementForStreams object
     IndexRearrangementForStreams(std::shared_ptr<Parameter> para, std::shared_ptr<GridBuilder> builder, vf::gpu::CommunicationRoutine& communicator);
 
+    virtual ~IndexRearrangementForStreams() = default;
+
     //////////////////////////////////////////////////////////////////////////
     // communication after fine to coarse
     //////////////////////////////////////////////////////////////////////////

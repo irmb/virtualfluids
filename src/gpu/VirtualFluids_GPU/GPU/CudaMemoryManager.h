@@ -25,6 +25,7 @@ class VIRTUALFLUIDS_GPU_EXPORT CudaMemoryManager
 {
 public:
     CudaMemoryManager(std::shared_ptr<Parameter> parameter);
+    virtual ~CudaMemoryManager() = default;
 
     void setMemsizeGPU(double admem, bool reset);
     double getMemsizeGPU();
@@ -90,12 +91,12 @@ public:
 
     //////////////////////////////////////////////////////////////////////////
     //3D domain decomposition
-    void cudaAllocProcessNeighborX(int lev, unsigned int processNeighbor);
+    virtual void cudaAllocProcessNeighborX(int lev, unsigned int processNeighbor);
     void cudaCopyProcessNeighborXFsHD(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsRecv,
                                       int streamIndex);
     void cudaCopyProcessNeighborXFsDH(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsSend,
                                       int streamIndex);
-    void cudaCopyProcessNeighborXIndex(int lev, unsigned int processNeighbor);
+    virtual void cudaCopyProcessNeighborXIndex(int lev, unsigned int processNeighbor);
     void cudaFreeProcessNeighborX(int lev, unsigned int processNeighbor);
     //
     void cudaAllocProcessNeighborY(int lev, unsigned int processNeighbor);

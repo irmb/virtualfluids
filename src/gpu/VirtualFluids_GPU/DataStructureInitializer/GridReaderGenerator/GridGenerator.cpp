@@ -27,6 +27,11 @@ GridGenerator::GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_p
 
 GridGenerator::~GridGenerator() = default;
 
+void GridGenerator::setIndexRearrangementForStreams(std::unique_ptr<IndexRearrangementForStreams> &&indexRearrangement)
+{
+    this->indexRearrangement = std::move(indexRearrangement);
+}
+
 void GridGenerator::initalGridInformations()
 {
     if (para->getKernelNeedsFluidNodeIndicesToRun())
