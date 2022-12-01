@@ -23,13 +23,13 @@ namespace precursor_writer
                         uint, uint, 
                         OutputVariable, 
                         uint>(),
-                        "filename"
-                        "output_path", 
-                        "x_pos",
-                        "y_min", "y_max",
-                        "z_min", "z_max",
-                        "t_start_out", "t_save", 
-                        "output_variable", 
-                        "max_timesteps_per_file");
+                        py::arg("filename"),
+                        py::arg("output_path"), 
+                        py::arg("x_pos"),
+                        py::arg("y_min"), py::arg("y_max"),
+                        py::arg("z_min"), py::arg("z_max"),
+                        py::arg("t_start_out"), py::arg("t_save"), 
+                        py::arg("output_variable"), 
+                        py::arg("max_timesteps_per_file"));
     }
 }

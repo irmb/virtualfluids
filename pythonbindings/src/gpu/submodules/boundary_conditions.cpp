@@ -19,13 +19,13 @@ namespace boundary_conditions
 
         py::class_<BoundaryConditionFactory>(parentModule, "BoundaryConditionFactory")
         .def(py::init<>())
-        .def("set_velocity_boundary_condition", &BoundaryConditionFactory::setVelocityBoundaryCondition)
-        .def("set_no_slip_boundary_condition", &BoundaryConditionFactory::setNoSlipBoundaryCondition)
-        .def("set_slip_boundary_condition", &BoundaryConditionFactory::setSlipBoundaryCondition)
-        .def("set_pressure_boundary_condition", &BoundaryConditionFactory::setPressureBoundaryCondition)
-        .def("set_stress_boundary_condition", &BoundaryConditionFactory::setStressBoundaryCondition)
-        .def("set_precursor_boundary_condition", &BoundaryConditionFactory::setPrecursorBoundaryCondition)
-        .def("set_geometry_boundary_condition", &BoundaryConditionFactory::setGeometryBoundaryCondition);
+        .def("set_velocity_boundary_condition", &BoundaryConditionFactory::setVelocityBoundaryCondition, py::arg("boundary_condition_type"))
+        .def("set_no_slip_boundary_condition", &BoundaryConditionFactory::setNoSlipBoundaryCondition, py::arg("boundary_condition_type"))
+        .def("set_slip_boundary_condition", &BoundaryConditionFactory::setSlipBoundaryCondition, py::arg("boundary_condition_type"))
+        .def("set_pressure_boundary_condition", &BoundaryConditionFactory::setPressureBoundaryCondition, py::arg("boundary_condition_type"))
+        .def("set_stress_boundary_condition", &BoundaryConditionFactory::setStressBoundaryCondition, py::arg("boundary_condition_type"))
+        .def("set_precursor_boundary_condition", &BoundaryConditionFactory::setPrecursorBoundaryCondition, py::arg("boundary_condition_type"))
+        .def("set_geometry_boundary_condition", &BoundaryConditionFactory::setGeometryBoundaryCondition, py::arg("boundary_condition_type"));
 
         py::enum_<BoundaryConditionFactory::VelocityBC>(parentModule, "VelocityBC")
         .value("VelocitySimpleBounceBackCompressible", BoundaryConditionFactory::VelocityBC::VelocitySimpleBounceBackCompressible)

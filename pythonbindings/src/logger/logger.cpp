@@ -14,11 +14,11 @@ namespace logging
         .def("change_log_path", &vf::logging::Logger::changeLogPath);
 
         // use f-strings (f"text {float}") in python for compounded messages
-        loggerModule.def("vf_log_trace", [](std::string arg){ VF_LOG_TRACE(arg); });        
-        loggerModule.def("vf_log_debug", [](std::string arg){ VF_LOG_DEBUG(arg); });        
-        loggerModule.def("vf_log_info", [](std::string arg){ VF_LOG_INFO(arg); });        
-        loggerModule.def("vf_log_warning", [](std::string arg){ VF_LOG_WARNING(arg); });        
-        loggerModule.def("vf_log_critical", [](std::string arg){ VF_LOG_CRITICAL(arg); });        
+        loggerModule.def("vf_log_trace", [](std::string message){ VF_LOG_TRACE(message); }, py::arg("message"));        
+        loggerModule.def("vf_log_debug", [](std::string message){ VF_LOG_DEBUG(message); }, py::arg("message"));        
+        loggerModule.def("vf_log_info", [](std::string message){ VF_LOG_INFO(message); }, py::arg("message"));        
+        loggerModule.def("vf_log_warning", [](std::string message){ VF_LOG_WARNING(message); }, py::arg("message"));        
+        loggerModule.def("vf_log_critical", [](std::string message){ VF_LOG_CRITICAL(message); }, py::arg("message"));        
 
         return loggerModule;
     }

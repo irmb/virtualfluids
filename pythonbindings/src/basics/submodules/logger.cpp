@@ -12,12 +12,12 @@ namespace logger
         py::module loggerModule = parentModule.def_submodule("logger");
 
         py::class_<logging::Logger>(loggerModule, "Logger")
-        .def("add_stdout", [](){
+        .def_static("add_stdout", [](){
             logging::Logger::addStream(&std::cout);
         })
-        .def("set_debug_level", &logging::Logger::setDebugLevel)
-        .def("time_stamp", &logging::Logger::timeStamp)
-        .def("enable_printed_rank_numbers", &logging::Logger::enablePrintedRankNumbers);
+        .def_static("set_debug_level", &logging::Logger::setDebugLevel)
+        .def_static("time_stamp", &logging::Logger::timeStamp, py::arg("time_stamp"))
+        .def_static("enable_printed_rank_numbers", &logging::Logger::enablePrintedRankNumbers);
 
         loggerModule.attr("log") = logging::out;
         py::enum_<logging::Logger::Level>(loggerModule, "Level")

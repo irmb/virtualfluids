@@ -10,11 +10,11 @@ namespace velocity_setter
         py::enum_<FileType>(parentModule, "FileType")
         .value("VTK", FileType::VTK);
 
-        parentModule.def("create_file_collection", &createFileCollection);
+        parentModule.def("create_file_collection", &createFileCollection, py::arg("prefix"), py::arg("type"));
 
         py::class_<VelocityFileCollection, std::shared_ptr<VelocityFileCollection>>(parentModule, "VelocityFileCollection");
 
         py::class_<VTKFileCollection, VelocityFileCollection, std::shared_ptr<VTKFileCollection>>(parentModule, "VTKFileCollection")
-        .def(py::init <std::string>(), "prefix");
+        .def(py::init <std::string>(), py::arg("prefix"));
     }
 }

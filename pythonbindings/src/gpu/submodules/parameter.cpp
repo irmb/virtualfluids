@@ -20,42 +20,41 @@ namespace parameter
                 int,
                 int,
                 std::optional<const vf::basics::ConfigurationFile*>>(),
-                "number_of_processes",
-                "my_ID",
-                "config_data")
+                py::arg("number_of_processes"),
+                py::arg("my_ID"),
+                py::arg("config_data"))
         .def(py::init<int, int>(),
-                "number_of_processes",
-                "my_ID")
-        .def(py::init<const vf::basics::ConfigurationFile*>(), "config_data")
-        .def("set_forcing", &Parameter::setForcing)
-        .def("set_quadric_limiters", &Parameter::setQuadricLimiters)
-        .def("set_diff_on", &Parameter::setDiffOn)
-        .def("set_comp_on", &Parameter::setCompOn)
-        .def("set_max_level", &Parameter::setMaxLevel)
-        .def("set_timestep_end", &Parameter::setTimestepEnd)
-        .def("set_timestep_out", &Parameter::setTimestepOut)
-        .def("set_timestep_start_out", &Parameter::setTimestepStartOut)
-        .def("set_timestep_of_coarse_level", &Parameter::setTimestepOfCoarseLevel)
-        .def("set_calc_turbulence_intensity", &Parameter::setCalcTurbulenceIntensity)
-        .def("set_output_path", &Parameter::setOutputPath)
-        .def("set_output_prefix", &Parameter::setOutputPrefix)
-        .def("set_print_files", &Parameter::setOutflowPressureCorrectionFactor)
-        .def("set_print_files", &Parameter::setPrintFiles)
-        .def("set_temperature_init", &Parameter::setTemperatureInit)
-        .def("set_temperature_BC", &Parameter::setTemperatureBC)
-        .def("set_viscosity_LB", &Parameter::setViscosityLB)
-        .def("set_velocity_LB", &Parameter::setVelocityLB)
-        .def("set_viscosity_ratio", &Parameter::setViscosityRatio)
-        .def("set_velocity_ratio", &Parameter::setVelocityRatio)
-        .def("set_density_ratio", &Parameter::setDensityRatio)
-        .def("set_devices", &Parameter::setDevices)
-        .def("set_max_dev", &Parameter::setMaxDev)
-        .def("set_is_body_force", &Parameter::setIsBodyForce)
-        .def("set_use_streams", &Parameter::setUseStreams)
-        .def("set_main_kernel", &Parameter::setMainKernel)
-        .def("set_AD_kernel", &Parameter::setADKernel)
-        .def("set_has_wall_monitor", &Parameter::setHasWallModelMonitor)
-        .def("set_outflow_pressure_correction_factor", &Parameter::setOutflowPressureCorrectionFactor)
+                py::arg("number_of_processes"),
+                py::arg("my_ID"))
+        .def(py::init<const vf::basics::ConfigurationFile*>(), py::arg("config_data"))
+        .def("set_forcing", &Parameter::setForcing, py::arg("forcing_x"), py::arg("forcing_y"), py::arg("forcing_z"))
+        .def("set_quadric_limiters", &Parameter::setQuadricLimiters, py::arg("quadric_limiter_p"), py::arg("quadric_limiter_m"), py::arg("quadric_limiter_d"))
+        .def("set_diff_on", &Parameter::setDiffOn, py::arg("is_diff"))
+        .def("set_comp_on", &Parameter::setCompOn, py::arg("is_comp"))
+        .def("set_max_level", &Parameter::setMaxLevel, py::arg("number_of_levels"))
+        .def("set_timestep_end", &Parameter::setTimestepEnd, py::arg("tend"))
+        .def("set_timestep_out", &Parameter::setTimestepOut, py::arg("tout"))
+        .def("set_timestep_start_out", &Parameter::setTimestepStartOut, py::arg("t_start_out"))
+        .def("set_timestep_of_coarse_level", &Parameter::setTimestepOfCoarseLevel, py::arg("timestep"))
+        .def("set_calc_turbulence_intensity", &Parameter::setCalcTurbulenceIntensity, py::arg("calc_velocity_and_fluctuations"))
+        .def("set_output_path", &Parameter::setOutputPath, py::arg("o_path"))
+        .def("set_output_prefix", &Parameter::setOutputPrefix, py::arg("o_prefix"))
+        .def("set_print_files", &Parameter::setPrintFiles, py::arg("print_files"))
+        .def("set_temperature_init", &Parameter::setTemperatureInit, py::arg("temp"))
+        .def("set_temperature_BC", &Parameter::setTemperatureBC, py::arg("temp_bc"))
+        .def("set_viscosity_LB", &Parameter::setViscosityLB, py::arg("viscosity"))
+        .def("set_velocity_LB", &Parameter::setVelocityLB, py::arg("velocity"))
+        .def("set_viscosity_ratio", &Parameter::setViscosityRatio, py::arg("viscosity_ratio"))
+        .def("set_velocity_ratio", &Parameter::setVelocityRatio, py::arg("velocity_ratio"))
+        .def("set_density_ratio", &Parameter::setDensityRatio, py::arg("density_ratio"))
+        .def("set_devices", &Parameter::setDevices, py::arg("devices"))
+        .def("set_max_dev", &Parameter::setMaxDev, py::arg("max_dev"))
+        .def("set_is_body_force", &Parameter::setIsBodyForce, py::arg("is_body_force"))
+        .def("set_use_streams", &Parameter::setUseStreams, py::arg("use_streams"))
+        .def("set_main_kernel", &Parameter::setMainKernel, py::arg("kernel"))
+        .def("set_AD_kernel", &Parameter::setADKernel, py::arg("ad_kernel"))
+        .def("set_has_wall_model_monitor", &Parameter::setHasWallModelMonitor, py::arg("has_wall_monitor"))
+        .def("set_outflow_pressure_correction_factor", &Parameter::setOutflowPressureCorrectionFactor, py::arg("correction_factor"))
         .def("set_initial_condition", [](Parameter &para, std::function<std::vector<float>(real, real, real)> &init_func)
         {
             para.setInitialCondition([init_func](real coordX, real coordY, real coordZ, real& rho, real& vx, real& vy, real& vz)
@@ -66,7 +65,7 @@ namespace parameter
                 vy = values[2];
                 vz = values[3];
             });
-        })
+        }, py::arg("init_func"))
         .def("set_initial_condition_uniform", [](Parameter &para, real velocity_x, real velocity_y, real velocity_z)
         {
             para.setInitialCondition([velocity_x, velocity_y, velocity_z](real coordX, real coordY, real coordZ, real& rho, real& vx, real& vy, real& vz) // must capture values explicitly!
@@ -76,7 +75,7 @@ namespace parameter
                 vy = velocity_y;
                 vz = velocity_z;
             });
-        })
+        }, py::arg("velocity_x"), py::arg("velocity_y"), py::arg("velocity_z"))
         .def("set_initial_condition_log_law", [](Parameter &para, real u_star, real z0, real velocityRatio)
         {
             para.setInitialCondition(
@@ -90,7 +89,7 @@ namespace parameter
                     vz = c0o1;
                 }
             );
-        })
+        }, py::arg("u_star"), py::arg("z0"), py::arg("velocity_ratio"))
         .def("set_initial_condition_perturbed_log_law", [](Parameter &para, real u_star, real z0, real L_x, real L_z, real H, real velocityRatio)
         {
             para.setInitialCondition(
@@ -103,10 +102,9 @@ namespace parameter
                     vz  = c8o1*u_star/c4o10*(sin(cPi*c8o1*coordY/H)*sin(cPi*c8o1*coordZ/H)+sin(cPi*c8o1*coordX/L_x))/(pow(c1o2*L_z-coordZ, c2o1)+c1o1) / velocityRatio;
                 }
             );
-        })
-        .def("set_has_wall_model_monitor", &Parameter::setHasWallModelMonitor)
-        .def("add_actuator", &Parameter::addActuator)
-        .def("add_probe", &Parameter::addProbe)
+        }, py::arg("u_star"), py::arg("z0"), py::arg("length_x"), py::arg("length_z"), py::arg("height"), py::arg("velocity_ratio"))
+        .def("add_actuator", &Parameter::addActuator, py::arg("actuator"))
+        .def("add_probe", &Parameter::addProbe, py::arg("probe"))
         .def("get_output_path", &Parameter::getOutputPath)
         .def("get_output_prefix", &Parameter::getOutputPrefix)
         .def("get_velocity", &Parameter::getVelocity)

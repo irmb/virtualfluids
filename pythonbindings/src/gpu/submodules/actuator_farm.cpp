@@ -28,14 +28,14 @@ namespace actuator_farm
                         const real,
                         const real,
                         const bool>(), 
-                        "number_of_blades_per_turbine", 
-                        "density", 
-                        "number_of_nodes_per_blade", 
-                        "epsilon",
-                        "level", 
-                        "delta_t", 
-                        "delta_x",
-                        "use_host_arrays")
+                        py::arg("number_of_blades_per_turbine"), 
+                        py::arg("density"), 
+                        py::arg("number_of_nodes_per_blade"), 
+                        py::arg("epsilon"),
+                        py::arg("level"), 
+                        py::arg("delta_t"), 
+                        py::arg("delta_x"),
+                        py::arg("use_host_arrays"))
         .def_property_readonly("number_of_turbines", &ActuatorFarm::getNumberOfTurbines)
         .def_property_readonly("number_of_nodes_per_blade", &ActuatorFarm::getNumberOfNodesPerBlade)
         .def_property_readonly("number_of_blades_per_turbine", &ActuatorFarm::getNumberOfBladesPerTurbine)
@@ -45,12 +45,12 @@ namespace actuator_farm
         .def_property_readonly("delta_t", &ActuatorFarm::getDeltaT)
         .def_property_readonly("delta_x", &ActuatorFarm::getDeltaX)
 
-        .def("add_turbine", &ActuatorFarm::addTurbine)
+        .def("add_turbine", &ActuatorFarm::addTurbine, py::arg("posX"), py::arg("posY"), py::arg("posZ"), py::arg("diameter"), py::arg("omega"), py::arg("azimuth"), py::arg("yaw"), py::arg("bladeRadii"))
 
-        .def("get_turbine_pos", [](ActuatorFarm& al, uint turbine){ real position[3] = {al.getTurbinePosX(turbine), al.getTurbinePosY(turbine), al.getTurbinePosZ(turbine)}; return arr(3,  position); } )
-        .def("get_turbine_azimuth", &ActuatorFarm::getTurbineAzimuth)
-        .def("get_turbine_yaw", &ActuatorFarm::getTurbineYaw)
-        .def("get_turbine_omega", &ActuatorFarm::getTurbineOmega)
+        .def("get_turbine_pos", [](ActuatorFarm& al, uint turbine){ real position[3] = {al.getTurbinePosX(turbine), al.getTurbinePosY(turbine), al.getTurbinePosZ(turbine)}; return arr(3,  position); }, py::arg("turbine"))
+        .def("get_turbine_azimuth", &ActuatorFarm::getTurbineAzimuth, py::arg("turbine"))
+        .def("get_turbine_yaw", &ActuatorFarm::getTurbineYaw, py::arg("turbine"))
+        .def("get_turbine_omega", &ActuatorFarm::getTurbineOmega, py::arg("turbine"))
         .def("get_all_azimuths", [](ActuatorFarm& al){ return arr(al.getNumberOfTurbines(), al.getAllAzimuths()); } )
         .def("get_all_yaws", [](ActuatorFarm& al){ return arr(al.getNumberOfTurbines(), al.getAllYaws()); } )
         .def("get_all_omegas", [](ActuatorFarm& al){ return arr(al.getNumberOfTurbines(), al.getAllOmegas()); } )
@@ -69,16 +69,16 @@ namespace actuator_farm
         .def("get_all_blade_forces_y", [](ActuatorFarm& al){ return arr({al.getNumberOfTurbines(), al.getNumberOfBladesPerTurbine(), al.getNumberOfNodesPerBlade()}, al.getAllBladeForcesY()); } )
         .def("get_all_blade_forces_z", [](ActuatorFarm& al){ return arr({al.getNumberOfTurbines(), al.getNumberOfBladesPerTurbine(), al.getNumberOfNodesPerBlade()}, al.getAllBladeForcesZ()); } )
 
-        .def("get_turbine_blade_radii", [](ActuatorFarm& al, uint turbine){ return arr(al.getNumberOfNodesPerBlade(), al.getTurbineBladeRadiiDevice(turbine)); } )
-        .def("get_turbine_blade_coords_x", [](ActuatorFarm& al, uint turbine){ return arr({al.getNumberOfBladesPerTurbine(), al.getNumberOfNodesPerBlade()}, al.getTurbineBladeCoordsXDevice(turbine)); } )
-        .def("get_turbine_blade_coords_y", [](ActuatorFarm& al, uint turbine){ return arr({al.getNumberOfBladesPerTurbine(), al.getNumberOfNodesPerBlade()}, al.getTurbineBladeCoordsYDevice(turbine)); } )
-        .def("get_turbine_blade_coords_z", [](ActuatorFarm& al, uint turbine){ return arr({al.getNumberOfBladesPerTurbine(), al.getNumberOfNodesPerBlade()}, al.getTurbineBladeCoordsZDevice(turbine)); } )        
-        .def("get_turbine_blade_velocities_x", [](ActuatorFarm& al, uint turbine){ return arr({al.getNumberOfBladesPerTurbine(), al.getNumberOfNodesPerBlade()}, al.getTurbineBladeVelocitiesXDevice(turbine)); } )
-        .def("get_turbine_blade_velocities_y", [](ActuatorFarm& al, uint turbine){ return arr({al.getNumberOfBladesPerTurbine(), al.getNumberOfNodesPerBlade()}, al.getTurbineBladeVelocitiesYDevice(turbine)); } )
-        .def("get_turbine_blade_velocities_z", [](ActuatorFarm& al, uint turbine){ return arr({al.getNumberOfBladesPerTurbine(), al.getNumberOfNodesPerBlade()}, al.getTurbineBladeVelocitiesZDevice(turbine)); } )
-        .def("get_turbine_blade_forces_x", [](ActuatorFarm& al, uint turbine){ return arr({al.getNumberOfBladesPerTurbine(), al.getNumberOfNodesPerBlade()}, al.getTurbineBladeForcesXDevice(turbine)); } )
-        .def("get_turbine_blade_forces_y", [](ActuatorFarm& al, uint turbine){ return arr({al.getNumberOfBladesPerTurbine(), al.getNumberOfNodesPerBlade()}, al.getTurbineBladeForcesYDevice(turbine)); } )
-        .def("get_turbine_blade_forces_z", [](ActuatorFarm& al, uint turbine){ return arr({al.getNumberOfBladesPerTurbine(), al.getNumberOfNodesPerBlade()}, al.getTurbineBladeForcesZDevice(turbine)); } )
+        .def("get_turbine_blade_radii", [](ActuatorFarm& al, uint turbine){ return arr(al.getNumberOfNodesPerBlade(), al.getTurbineBladeRadiiDevice(turbine)); } , py::arg("turbine"))
+        .def("get_turbine_blade_coords_x", [](ActuatorFarm& al, uint turbine){ return arr({al.getNumberOfBladesPerTurbine(), al.getNumberOfNodesPerBlade()}, al.getTurbineBladeCoordsXDevice(turbine)); }, py::arg("turbine") )
+        .def("get_turbine_blade_coords_y", [](ActuatorFarm& al, uint turbine){ return arr({al.getNumberOfBladesPerTurbine(), al.getNumberOfNodesPerBlade()}, al.getTurbineBladeCoordsYDevice(turbine)); }, py::arg("turbine") )
+        .def("get_turbine_blade_coords_z", [](ActuatorFarm& al, uint turbine){ return arr({al.getNumberOfBladesPerTurbine(), al.getNumberOfNodesPerBlade()}, al.getTurbineBladeCoordsZDevice(turbine)); }, py::arg("turbine") )        
+        .def("get_turbine_blade_velocities_x", [](ActuatorFarm& al, uint turbine){ return arr({al.getNumberOfBladesPerTurbine(), al.getNumberOfNodesPerBlade()}, al.getTurbineBladeVelocitiesXDevice(turbine)); }, py::arg("turbine") )
+        .def("get_turbine_blade_velocities_y", [](ActuatorFarm& al, uint turbine){ return arr({al.getNumberOfBladesPerTurbine(), al.getNumberOfNodesPerBlade()}, al.getTurbineBladeVelocitiesYDevice(turbine)); }, py::arg("turbine") )
+        .def("get_turbine_blade_velocities_z", [](ActuatorFarm& al, uint turbine){ return arr({al.getNumberOfBladesPerTurbine(), al.getNumberOfNodesPerBlade()}, al.getTurbineBladeVelocitiesZDevice(turbine)); }, py::arg("turbine") )
+        .def("get_turbine_blade_forces_x", [](ActuatorFarm& al, uint turbine){ return arr({al.getNumberOfBladesPerTurbine(), al.getNumberOfNodesPerBlade()}, al.getTurbineBladeForcesXDevice(turbine)); }, py::arg("turbine") )
+        .def("get_turbine_blade_forces_y", [](ActuatorFarm& al, uint turbine){ return arr({al.getNumberOfBladesPerTurbine(), al.getNumberOfNodesPerBlade()}, al.getTurbineBladeForcesYDevice(turbine)); }, py::arg("turbine") )
+        .def("get_turbine_blade_forces_z", [](ActuatorFarm& al, uint turbine){ return arr({al.getNumberOfBladesPerTurbine(), al.getNumberOfNodesPerBlade()}, al.getTurbineBladeForcesZDevice(turbine)); }, py::arg("turbine") )
 
         .def("get_all_blade_radii_device", [](ActuatorFarm& al) -> intptr_t { return reinterpret_cast<intptr_t>(al.getAllBladeRadiiDevice()); } )
         .def("get_all_blade_coords_x_device", [](ActuatorFarm& al) -> intptr_t { return reinterpret_cast<intptr_t> (al.getAllBladeCoordsXDevice()); } )
@@ -91,49 +91,49 @@ namespace actuator_farm
         .def("get_all_blade_forces_y_device", [](ActuatorFarm& al) -> intptr_t { return reinterpret_cast<intptr_t> (al.getAllBladeForcesYDevice()); } )
         .def("get_all_blade_forces_z_device", [](ActuatorFarm& al) -> intptr_t { return reinterpret_cast<intptr_t> (al.getAllBladeForcesZDevice()); } )
 
-        .def("get_turbine_blade_radii_device", [](ActuatorFarm& al, uint turbine) -> intptr_t { return reinterpret_cast<intptr_t>(al.getTurbineBladeRadiiDevice(turbine)); } )
-        .def("get_turbine_blade_coords_x_device", [](ActuatorFarm& al, uint turbine) -> intptr_t { return reinterpret_cast<intptr_t>(al.getTurbineBladeCoordsXDevice(turbine)); } )
-        .def("get_turbine_blade_coords_y_device", [](ActuatorFarm& al, uint turbine) -> intptr_t { return reinterpret_cast<intptr_t>(al.getTurbineBladeCoordsYDevice(turbine)); } )
-        .def("get_turbine_blade_coords_z_device", [](ActuatorFarm& al, uint turbine) -> intptr_t { return reinterpret_cast<intptr_t>(al.getTurbineBladeCoordsZDevice(turbine)); } )        
-        .def("get_turbine_blade_velocities_x_device", [](ActuatorFarm& al, uint turbine) -> intptr_t { return reinterpret_cast<intptr_t>(al.getTurbineBladeVelocitiesXDevice(turbine)); } )
-        .def("get_turbine_blade_velocities_y_device", [](ActuatorFarm& al, uint turbine) -> intptr_t { return reinterpret_cast<intptr_t>(al.getTurbineBladeVelocitiesYDevice(turbine)); } )
-        .def("get_turbine_blade_velocities_z_device", [](ActuatorFarm& al, uint turbine) -> intptr_t { return reinterpret_cast<intptr_t>(al.getTurbineBladeVelocitiesZDevice(turbine)); } )
-        .def("get_turbine_blade_forces_x_device", [](ActuatorFarm& al, uint turbine) -> intptr_t { return reinterpret_cast<intptr_t>(al.getTurbineBladeForcesXDevice(turbine)); } )
-        .def("get_turbine_blade_forces_y_device", [](ActuatorFarm& al, uint turbine) -> intptr_t { return reinterpret_cast<intptr_t>(al.getTurbineBladeForcesYDevice(turbine)); } )
-        .def("get_turbine_blade_forces_z_device", [](ActuatorFarm& al, uint turbine) -> intptr_t { return reinterpret_cast<intptr_t>(al.getTurbineBladeForcesZDevice(turbine)); } )
+        .def("get_turbine_blade_radii_device", [](ActuatorFarm& al, uint turbine) -> intptr_t { return reinterpret_cast<intptr_t>(al.getTurbineBladeRadiiDevice(turbine)); }, py::arg("turbine") )
+        .def("get_turbine_blade_coords_x_device", [](ActuatorFarm& al, uint turbine) -> intptr_t { return reinterpret_cast<intptr_t>(al.getTurbineBladeCoordsXDevice(turbine)); }, py::arg("turbine") )
+        .def("get_turbine_blade_coords_y_device", [](ActuatorFarm& al, uint turbine) -> intptr_t { return reinterpret_cast<intptr_t>(al.getTurbineBladeCoordsYDevice(turbine)); }, py::arg("turbine") )
+        .def("get_turbine_blade_coords_z_device", [](ActuatorFarm& al, uint turbine) -> intptr_t { return reinterpret_cast<intptr_t>(al.getTurbineBladeCoordsZDevice(turbine)); }, py::arg("turbine") )        
+        .def("get_turbine_blade_velocities_x_device", [](ActuatorFarm& al, uint turbine) -> intptr_t { return reinterpret_cast<intptr_t>(al.getTurbineBladeVelocitiesXDevice(turbine)); }, py::arg("turbine") )
+        .def("get_turbine_blade_velocities_y_device", [](ActuatorFarm& al, uint turbine) -> intptr_t { return reinterpret_cast<intptr_t>(al.getTurbineBladeVelocitiesYDevice(turbine)); }, py::arg("turbine") )
+        .def("get_turbine_blade_velocities_z_device", [](ActuatorFarm& al, uint turbine) -> intptr_t { return reinterpret_cast<intptr_t>(al.getTurbineBladeVelocitiesZDevice(turbine)); }, py::arg("turbine") )
+        .def("get_turbine_blade_forces_x_device", [](ActuatorFarm& al, uint turbine) -> intptr_t { return reinterpret_cast<intptr_t>(al.getTurbineBladeForcesXDevice(turbine)); }, py::arg("turbine") )
+        .def("get_turbine_blade_forces_y_device", [](ActuatorFarm& al, uint turbine) -> intptr_t { return reinterpret_cast<intptr_t>(al.getTurbineBladeForcesYDevice(turbine)); }, py::arg("turbine") )
+        .def("get_turbine_blade_forces_z_device", [](ActuatorFarm& al, uint turbine) -> intptr_t { return reinterpret_cast<intptr_t>(al.getTurbineBladeForcesZDevice(turbine)); }, py::arg("turbine") )
 
-        .def("set_all_azimuths", [](ActuatorFarm& al, arr azimuths){ al.setAllAzimuths(static_cast<float *>(azimuths.request().ptr)); })
-        .def("set_all_yaws", [](ActuatorFarm& al, arr yaws){ al.setAllYaws(static_cast<float *>(yaws.request().ptr)); })
-        .def("set_all_omegas", [](ActuatorFarm& al, arr omegas){ al.setAllOmegas(static_cast<float *>(omegas.request().ptr)); })
+        .def("set_all_azimuths", [](ActuatorFarm& al, arr azimuths){ al.setAllAzimuths(static_cast<float *>(azimuths.request().ptr)); }, py::arg("azimuths"))
+        .def("set_all_yaws", [](ActuatorFarm& al, arr yaws){ al.setAllYaws(static_cast<float *>(yaws.request().ptr)); }, py::arg("yaws"))
+        .def("set_all_omegas", [](ActuatorFarm& al, arr omegas){ al.setAllOmegas(static_cast<float *>(omegas.request().ptr)); }, py::arg("omegas"))
 
-        .def("set_turbine_azimuth", &ActuatorFarm::setTurbineAzimuth)
-        .def("set_turbine_yaw", &ActuatorFarm::setTurbineYaw)
-        .def("set_turbine_omega", &ActuatorFarm::setTurbineOmega)
+        .def("set_turbine_azimuth", &ActuatorFarm::setTurbineAzimuth, py::arg("turbine"), py::arg("azimuth"))
+        .def("set_turbine_yaw", &ActuatorFarm::setTurbineYaw, py::arg("turbine"), py::arg("yaw"))
+        .def("set_turbine_omega", &ActuatorFarm::setTurbineOmega, py::arg("turbine"), py::arg("omega"))
 
         .def("set_all_blade_coords", [](ActuatorFarm& al, arr coordsX, arr coordsY, arr coordsZ)
         { 
             al.setAllBladeCoords(static_cast<float *>(coordsX.request().ptr), static_cast<float *>(coordsY.request().ptr), static_cast<float *>(coordsZ.request().ptr)); 
-        } )
+        }, py::arg("blade_coords_x"), py::arg("blade_coords_y"), py::arg("blade_coords_z") )
         .def("set_all_blade_velocities", [](ActuatorFarm& al, arr velocitiesX, arr velocitiesY, arr velocitiesZ)
         { 
             al.setAllBladeVelocities(static_cast<float *>(velocitiesX.request().ptr), static_cast<float *>(velocitiesY.request().ptr), static_cast<float *>(velocitiesZ.request().ptr)); 
-        } )
+        }, py::arg("blade_velocities_x"), py::arg("blade_velocities_y"), py::arg("blade_velocities_z") )
         .def("set_all_blade_forces", [](ActuatorFarm& al, arr forcesX, arr forcesY, arr forcesZ)
         { 
             al.setAllBladeForces(static_cast<float *>(forcesX.request().ptr), static_cast<float *>(forcesY.request().ptr), static_cast<float *>(forcesZ.request().ptr));
-        } )     
+        }, py::arg("blade_forces_x"), py::arg("blade_forces_y"), py::arg("blade_forces_z") )     
         .def("set_turbine_blade_coords", [](ActuatorFarm& al, uint turbine, arr coordsX, arr coordsY, arr coordsZ)
         { 
             al.setTurbineBladeCoords(turbine, static_cast<float *>(coordsX.request().ptr), static_cast<float *>(coordsY.request().ptr), static_cast<float *>(coordsZ.request().ptr)); 
-        } )
+        }, py::arg("turbine"), py::arg("blade_coords_x"), py::arg("blade_coords_y"), py::arg("blade_coords_z") )
         .def("set_turbine_blade_velocities", [](ActuatorFarm& al, uint turbine, arr velocitiesX, arr velocitiesY, arr velocitiesZ)
         {
             al.setTurbineBladeVelocities(turbine, static_cast<float *>(velocitiesX.request().ptr), static_cast<float *>(velocitiesY.request().ptr), static_cast<float *>(velocitiesZ.request().ptr)); 
-        } )
+        }, py::arg("turbine"), py::arg("blade_velocities_x"), py::arg("blade_velocities_y"), py::arg("blade_velocities_z") )
         .def("set_turbine_blade_forces", [](ActuatorFarm& al, uint turbine, arr forcesX, arr forcesY, arr forcesZ)
         { 
             al.setTurbineBladeForces(turbine, static_cast<float *>(forcesX.request().ptr), static_cast<float *>(forcesY.request().ptr), static_cast<float *>(forcesZ.request().ptr)); 
-        } )
+        }, py::arg("turbine"), py::arg("blade_forces_x"), py::arg("blade_forces_y"), py::arg("blade_forces_z") )
         .def("calc_blade_forces", &ActuatorFarm::calcBladeForces);
     }
 }

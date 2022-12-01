@@ -26,22 +26,22 @@ namespace simulation
                         GridProvider &,
                         BoundaryConditionFactory*,
                         GridScalingFactory*>(), 
-                        "parameter",
-                        "memoryManager",
-                        "communicator",
-                        "gridProvider",
-                        "bcFactory",
-                        "gridScalingFactory")
+                        py::arg("parameter"),
+                        py::arg("memoryManager"),
+                        py::arg("communicator"),
+                        py::arg("gridProvider"),
+                        py::arg("bcFactory"),
+                        py::arg("gridScalingFactory"))
         .def(py::init<  std::shared_ptr<Parameter>,
                         std::shared_ptr<CudaMemoryManager>,
                         vf::gpu::Communicator &,
                         GridProvider &,
                         BoundaryConditionFactory*>(), 
-                        "parameter",
-                        "memoryManager",
-                        "communicator",
-                        "gridProvider",
-                        "bcFactory")
+                        py::arg("parameter"),
+                        py::arg("memoryManager"),
+                        py::arg("communicator"),
+                        py::arg("gridProvider"),
+                        py::arg("bcFactory"))
         .def(py::init<  std::shared_ptr<Parameter>,
                         std::shared_ptr<CudaMemoryManager>,
                         vf::gpu::Communicator &,
@@ -49,15 +49,15 @@ namespace simulation
                         BoundaryConditionFactory*,
                         std::shared_ptr<TurbulenceModelFactory>,
                         GridScalingFactory*>(), 
-                        "parameter",
-                        "memoryManager",
-                        "communicator",
-                        "gridProvider",
-                        "bcFactory",
-                        "tmFactory",
-                        "gridScalingFactory")
+                        py::arg("parameter"),
+                        py::arg("memoryManager"),
+                        py::arg("communicator"),
+                        py::arg("gridProvider"),
+                        py::arg("bcFactory"),
+                        py::arg("tmFactory"),
+                        py::arg("gridScalingFactory"))
         .def("run", &Simulation::run)
-        .def("addKineticEnergyAnalyzer", &Simulation::addKineticEnergyAnalyzer)
-        .def("addEnstrophyAnalyzer", &Simulation::addEnstrophyAnalyzer);
+        .def("addKineticEnergyAnalyzer", &Simulation::addKineticEnergyAnalyzer, py::arg("t_analyse"))
+        .def("addEnstrophyAnalyzer", &Simulation::addEnstrophyAnalyzer, py::arg("t_analyse"));
     }
 }
