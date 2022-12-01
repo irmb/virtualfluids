@@ -58,7 +58,7 @@ private:
     std::vector<std::string> channelBoundaryConditions;
 
     std::shared_ptr<GridBuilder> builder;
-    std::unique_ptr<IndexRearrangementForStreams> indexRearrangement;
+    std::unique_ptr<const IndexRearrangementForStreams> indexRearrangement;
     std::unique_ptr<InterpolationCellGrouper> interpolationGrouper;
     const uint mpiProcessID;
 
