@@ -2,6 +2,7 @@
 #include <gmock/gmock.h>
 
 #include "Communication/Communicator.h"
+#include "DataTypes.h"
 #include "GPU/CudaMemoryManager.h"
 #include "IndexRearrangementForStreams.h"
 #include "Parameter/Parameter.h"
@@ -19,11 +20,16 @@ private:
     LevelGridBuilderStub() = default;
 
 public:
+    uint numberOfSendIndices = 0;
+
     LevelGridBuilderStub(SPtr<Grid> grid) : LevelGridBuilder(), grid(grid){};
 
     uint getCommunicationProcess(int direction) override
     {
-        return 0;
+        uint process = 0;
+        if (direction != CommunicationDirections::MX)
+            process = INVALID_INDEX;
+        return process;
     }
 
     uint getNumberOfGridLevels() const override
@@ -33,7 +39,7 @@ public:
 
     uint getNumberOfSendIndices(int direction, uint level) override
     {
-        return 0;
+        return numberOfSendIndices;
     }
 
     uint getNumberOfReceiveIndices(int direction, uint level) override
@@ -120,6 +126,15 @@ TEST_F(GridGeneratorTests_initalValuesDomainDecompostion, whenNoCommunication_se
 {
     act();
     EXPECT_THAT(para->getParH(level)->sendProcessNeighborX.size(), testing::Eq(0));
+    EXPECT_THAT(para->getParH(level)->sendProcessNeighborY.size(), testing::Eq(0));
+    EXPECT_THAT(para->getParH(level)->sendProcessNeighborZ.size(), testing::Eq(0));
+}
+
+TEST_F(GridGeneratorTests_initalValuesDomainDecompostion, whenCommunicationInX_sendProcessNeighborShouldExistInX)
+{
+    builder->numberOfSendIndices = 1;
+    act();
+    EXPECT_THAT(para->getParH(level)->sendProcessNeighborX.size(), testing::Eq(1)); // one entry for CommunicationDirections::MX
     EXPECT_THAT(para->getParH(level)->sendProcessNeighborY.size(), testing::Eq(0));
     EXPECT_THAT(para->getParH(level)->sendProcessNeighborZ.size(), testing::Eq(0));
 }
