@@ -248,7 +248,7 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->addCoarseGrid( xGridMin,  0.0,  0.0,
                                 xGridMax,  L_y,  L_z, dx);
-    if(true)// Add refinement
+    if(false)// Add refinement
     {
         gridBuilder->setNumberOfLayers(4,0);
         real xMaxRefinement = readPrecursor? xGridMax-H: xGridMax;   //Stop refinement some distance before outlet if domain ist not periodic
@@ -348,23 +348,23 @@ void multipleLevel(const std::string& configPath)
 
 
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // if(isFirstSubDomain || nProcs == 1)
-    // {
-    //     SPtr<PlanarAverageProbe> planarAverageProbe = SPtr<PlanarAverageProbe>( new PlanarAverageProbe("planeProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt , tStartOutProbe/dt, tOutProbe/dt, 'z') );
-    //     planarAverageProbe->addAllAvailableStatistics();
-    //     planarAverageProbe->setFileNameToNOut();
-    //     para->addProbe( planarAverageProbe );
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    if(!readPrecursor && (isFirstSubDomain || nProcs == 1))
+    {
+        SPtr<PlanarAverageProbe> planarAverageProbe = SPtr<PlanarAverageProbe>( new PlanarAverageProbe("planeProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt , tStartOutProbe/dt, tOutProbe/dt, 'z') );
+        planarAverageProbe->addAllAvailableStatistics();
+        planarAverageProbe->setFileNameToNOut();
+        para->addProbe( planarAverageProbe );
 
-    //     para->setHasWallModelMonitor(true);
-    //     SPtr<WallModelProbe> wallModelProbe = SPtr<WallModelProbe>( new WallModelProbe("wallModelProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt/4.0 , tStartOutProbe/dt, tOutProbe/dt) );
-    //     wallModelProbe->addAllAvailableStatistics();
-    //     wallModelProbe->setFileNameToNOut();
-    //     wallModelProbe->setForceOutputToStress(true);
-    //     if(para->getIsBodyForce())
-    //         wallModelProbe->setEvaluatePressureGradient(true);
-    //     para->addProbe( wallModelProbe );
-    // }
+        para->setHasWallModelMonitor(true);
+        SPtr<WallModelProbe> wallModelProbe = SPtr<WallModelProbe>( new WallModelProbe("wallModelProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt/4.0 , tStartOutProbe/dt, tOutProbe/dt) );
+        wallModelProbe->addAllAvailableStatistics();
+        wallModelProbe->setFileNameToNOut();
+        wallModelProbe->setForceOutputToStress(true);
+        if(para->getIsBodyForce())
+            wallModelProbe->setEvaluatePressureGradient(true);
+        para->addProbe( wallModelProbe );
+    }
 
     SPtr<PlaneProbe> planeProbe1 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_1", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
     planeProbe1->setProbePlane(100.0, 0.0, 0, dx, L_y, L_z);
