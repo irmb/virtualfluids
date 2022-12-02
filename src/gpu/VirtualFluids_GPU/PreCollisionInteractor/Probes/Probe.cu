@@ -436,8 +436,8 @@ void Probe::writeGridFile(Parameter* para, int level, int t, uint part)
             }
         }
     }
-    
-    this->fileNamesForCollectionFile.push_back(getWriter()->writeNodesWithNodeData(fname, nodes, nodedatanames, nodedata));
+    std::string fullName = getWriter()->writeNodesWithNodeData(fname, nodes, nodedatanames, nodedata);
+    this->fileNamesForCollectionFile.push_back(fullName.substr(fullName.find_last_of('/') + 1));
 }
 
 std::vector<std::string> Probe::getVarNames()
