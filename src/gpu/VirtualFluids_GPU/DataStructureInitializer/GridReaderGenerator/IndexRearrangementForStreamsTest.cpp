@@ -180,10 +180,10 @@ public:
         return comm;
     }
 
-    void exchangeIndices(uint *rbuf, int count_r, int nb_rank_r, uint *sbuf, int count_s, int nb_rank_s) override
+    void exchangeIndices(uint *buffer_receive, int, int, uint *, int, int) override
     {
         for (int i = 0; i < (int)receivedIndices.size(); ++i) {
-            *(rbuf + i) = receivedIndices[i];
+            *(buffer_receive + i) = receivedIndices[i];
         }
     }
 

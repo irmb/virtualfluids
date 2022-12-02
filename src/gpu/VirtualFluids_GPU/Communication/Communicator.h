@@ -60,7 +60,9 @@ public:
     std::vector<double> gatherNUPS(double processNups);
     double sumNups(double processNups);
     //////////////////////////////////////////////////////////////////////////
-    virtual void exchangeIndices(uint *rbuf, int count_r, int nb_rank_r, uint *sbuf, int count_s, int nb_rank_s);
+    virtual void exchangeIndices(uint *buffer_receive, int size_buffer_recv, int neighbor_rank_recv, uint *buffer_send,
+                                 int size_buffer_send, int neighbor_rank_send);
+
 protected:
    int numprocs, PID;
    int nbrbottom, nbrtop; 
