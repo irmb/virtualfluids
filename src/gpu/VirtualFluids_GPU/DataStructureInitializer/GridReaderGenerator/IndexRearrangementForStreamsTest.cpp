@@ -7,7 +7,7 @@
 #include <mpi.h>
 #include <vector>
 
-#include "../utilities/testUtilitiesGPU.h"
+#include "Utilities/testUtilitiesGPU.h"
 
 #include "Communication/Communicator.h"
 #include "DataStructureInitializer/GridReaderGenerator/IndexRearrangementForStreams.h"

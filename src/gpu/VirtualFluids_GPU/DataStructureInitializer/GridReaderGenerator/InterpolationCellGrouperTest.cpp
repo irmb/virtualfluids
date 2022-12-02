@@ -1,5 +1,5 @@
 #include <gmock/gmock.h>
-#include "../utilities/testUtilitiesGPU.h"
+#include "Utilities/testUtilitiesGPU.h"
 
 #include <iostream>
 

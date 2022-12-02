@@ -1,5 +1,5 @@
 #include "gmock/gmock.h"
-#include "../utilities/testUtilities.h"
+#include "basics/tests/testUtilities.h"
 
 #include "geometries/Triangle/Triangle.h"
 #include "geometries/BoundingBox/BoundingBox.h"

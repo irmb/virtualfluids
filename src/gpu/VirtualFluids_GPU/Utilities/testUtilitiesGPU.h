@@ -2,7 +2,7 @@
 #ifndef TESTUTILITIESGPU_H
 #define TESTUTILITIESGPU_H
 
-#include "../src/gpu/VirtualFluids_GPU/Parameter/Parameter.h"
+#include "Parameter/Parameter.h"
 
 namespace testingVF
 {
