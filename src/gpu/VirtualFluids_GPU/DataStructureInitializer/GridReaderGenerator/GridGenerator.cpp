@@ -6,8 +6,6 @@
 #include "IndexRearrangementForStreams.h"
 #include "InterpolationCellGrouper.h"
 
-#include <memory>
-#include <sstream>
 #include <iostream>
 #include <algorithm>
 #include "utilities/math/Math.h"

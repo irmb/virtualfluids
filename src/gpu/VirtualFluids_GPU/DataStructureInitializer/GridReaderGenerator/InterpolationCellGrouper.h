@@ -6,13 +6,7 @@
 #ifndef InterpolationCellGrouper_H
 #define InterpolationCellGrouper_H
 
-#include <gpu/VirtualFluids_GPU/DataStructureInitializer/GridProvider.h>
-
 #include <memory>
-#include <string>
-#include <vector>
-
-#include "LBM/LB.h"
 
 class Parameter;
 class GridBuilder;
@@ -65,7 +59,6 @@ protected:
     //! border and bulk. The fine cells (iCellFCF) are reordered accordingly. The offset cells (xOffFC,
     //! yOffFC, zOffFC) must be reordered in the same way.
     void reorderFineToCoarseIntoBorderAndBulk(int level);
-
 
 private:
     std::shared_ptr<GridBuilder> builder;

@@ -37,7 +37,6 @@
 
 #include <vector>
 #include <string>
-#include <memory>
 
 #include "LBM/LB.h"
 

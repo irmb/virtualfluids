@@ -6,13 +6,8 @@
 #ifndef IndexRearrangementForStreams_H
 #define IndexRearrangementForStreams_H
 
-#include <gpu/VirtualFluids_GPU/DataStructureInitializer/GridProvider.h>
-
 #include <memory>
-#include <string>
 #include <vector>
-
-#include "LBM/LB.h"
 
 class Parameter;
 class GridBuilder;
