@@ -64,7 +64,7 @@ enum class TurbulenceModel {
    None
 };
 
-//! \brief An enumeration for selecting a template of the collision kernel (CumulantK17Almighty)
+//! \brief An enumeration for selecting a template of the collision kernel (CumulantK17)
 enum class CollisionTemplate {
    //! - Default: plain collision without additional read/write
    Default,

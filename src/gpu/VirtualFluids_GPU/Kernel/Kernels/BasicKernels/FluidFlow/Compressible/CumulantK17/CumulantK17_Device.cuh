@@ -1,10 +1,10 @@
-#ifndef LB_Kernel_CUMULANT_K17_ALMIGHTY_H
-#define LB_Kernel_CUMULANT_K17_ALMIGHTY_H
+#ifndef LB_Kernel_CUMULANT_K17_H
+#define LB_Kernel_CUMULANT_K17_H
 
 #include <DataTypes.h>
 #include <curand.h>
 
-template< TurbulenceModel turbulenceModel, bool writeMacroscopicVariables, bool applyBodyForce > __global__ void LB_Kernel_CumulantK17Almighty(
+template< TurbulenceModel turbulenceModel, bool writeMacroscopicVariables, bool applyBodyForce > __global__ void LB_Kernel_CumulantK17(
 	real omega_in,
 	uint* typeOfGridNode,
 	uint* neighborX,

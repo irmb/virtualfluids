@@ -1,21 +1,21 @@
-#include "CumulantK17Almighty.h"
+#include "CumulantK17.h"
 #include <logger/Logger.h>
 #include "Parameter/Parameter.h"
 #include "Parameter/CudaStreamManager.h"
-#include "CumulantK17Almighty_Device.cuh"
+#include "CumulantK17_Device.cuh"
 
 #include <cuda.h>
 
 template<TurbulenceModel turbulenceModel> 
-std::shared_ptr< CumulantK17Almighty<turbulenceModel> > CumulantK17Almighty<turbulenceModel>::getNewInstance(std::shared_ptr<Parameter> para, int level)
+std::shared_ptr< CumulantK17<turbulenceModel> > CumulantK17<turbulenceModel>::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {
-	return std::shared_ptr<CumulantK17Almighty<turbulenceModel> >(new CumulantK17Almighty<turbulenceModel>(para,level));
+	return std::shared_ptr<CumulantK17<turbulenceModel> >(new CumulantK17<turbulenceModel>(para,level));
 }
 
 template<TurbulenceModel turbulenceModel>
-void CumulantK17Almighty<turbulenceModel>::run()
+void CumulantK17<turbulenceModel>::run()
 {
-	LB_Kernel_CumulantK17Almighty < turbulenceModel, false, false  > <<< cudaGrid.grid, cudaGrid.threads >>>(   para->getParD(level)->omega, 	
+	LB_Kernel_CumulantK17 < turbulenceModel, false, false  > <<< cudaGrid.grid, cudaGrid.threads >>>(   para->getParD(level)->omega, 	
 																												para->getParD(level)->typeOfGridNode, 										
 																												para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ,	
 																												para->getParD(level)->distributions.f[0],	
@@ -33,18 +33,18 @@ void CumulantK17Almighty<turbulenceModel>::run()
 																												para->getParD(level)->taggedFluidNodeIndices[CollisionTemplate::Default],
         																										para->getParD(level)->numberOfTaggedFluidNodes[CollisionTemplate::Default]);
 
-	getLastCudaError("LB_Kernel_CumulantK17Almighty execution failed");
+	getLastCudaError("LB_Kernel_CumulantK17 execution failed");
 }
 
 template<TurbulenceModel turbulenceModel>
-void CumulantK17Almighty<turbulenceModel>::runOnIndices( const unsigned int *indices, unsigned int size_indices, CollisionTemplate collisionTemplate, CudaStreamIndex streamIndex )
+void CumulantK17<turbulenceModel>::runOnIndices( const unsigned int *indices, unsigned int size_indices, CollisionTemplate collisionTemplate, CudaStreamIndex streamIndex )
 {
 	cudaStream_t stream = para->getStreamManager()->getStream(streamIndex);
 	
 	switch (collisionTemplate)
 	{
 		case CollisionTemplate::Default:
-			LB_Kernel_CumulantK17Almighty < turbulenceModel, false, false  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>(   
+			LB_Kernel_CumulantK17 < turbulenceModel, false, false  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>(   
 																																	para->getParD(level)->omega, 	
 																																	para->getParD(level)->typeOfGridNode, 										
 																																	para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ,	
@@ -65,7 +65,7 @@ void CumulantK17Almighty<turbulenceModel>::runOnIndices( const unsigned int *ind
 			break;
 		
 		case CollisionTemplate::WriteMacroVars:
-			LB_Kernel_CumulantK17Almighty < turbulenceModel, true, false  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>( 
+			LB_Kernel_CumulantK17 < turbulenceModel, true, false  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>( 
 																																para->getParD(level)->omega, 	
 																																para->getParD(level)->typeOfGridNode, 										
 																																para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ,	
@@ -87,7 +87,7 @@ void CumulantK17Almighty<turbulenceModel>::runOnIndices( const unsigned int *ind
 		
 		case CollisionTemplate::Border:
 		case CollisionTemplate::AllFeatures:
-			LB_Kernel_CumulantK17Almighty < turbulenceModel, true, true  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>(  
+			LB_Kernel_CumulantK17 < turbulenceModel, true, true  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>(  
 																																para->getParD(level)->omega, 	
 																																para->getParD(level)->typeOfGridNode, 										
 																																para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ,	
@@ -107,7 +107,7 @@ void CumulantK17Almighty<turbulenceModel>::runOnIndices( const unsigned int *ind
 																																size_indices);
 			break;
 		case CollisionTemplate::ApplyBodyForce:
-			LB_Kernel_CumulantK17Almighty < turbulenceModel, false, true  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>( 
+			LB_Kernel_CumulantK17 < turbulenceModel, false, true  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>( 
 																																para->getParD(level)->omega, 	
 																																para->getParD(level)->typeOfGridNode, 										
 																																para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ,	
@@ -127,15 +127,15 @@ void CumulantK17Almighty<turbulenceModel>::runOnIndices( const unsigned int *ind
 																																size_indices);
 			break;
 		default:
-			throw std::runtime_error("Invalid CollisionTemplate in CumulantK17Almighty::runOnIndices()");
+			throw std::runtime_error("Invalid CollisionTemplate in CumulantK17::runOnIndices()");
 			break;
 	}
 
-	getLastCudaError("LB_Kernel_CumulantK17Almighty execution failed");
+	getLastCudaError("LB_Kernel_CumulantK17 execution failed");
 }
 
 template<TurbulenceModel turbulenceModel>
-CumulantK17Almighty<turbulenceModel>::CumulantK17Almighty(std::shared_ptr<Parameter> para, int level)
+CumulantK17<turbulenceModel>::CumulantK17(std::shared_ptr<Parameter> para, int level)
 {
 	this->para = para;
 	this->level = level;
@@ -150,7 +150,7 @@ CumulantK17Almighty<turbulenceModel>::CumulantK17Almighty(std::shared_ptr<Parame
 	VF_LOG_INFO("Using turbulence model: {}", turbulenceModel);
 }
 
-template class CumulantK17Almighty<TurbulenceModel::AMD>;
-template class CumulantK17Almighty<TurbulenceModel::Smagorinsky>;
-template class CumulantK17Almighty<TurbulenceModel::QR>;
-template class CumulantK17Almighty<TurbulenceModel::None>;
+template class CumulantK17<TurbulenceModel::AMD>;
+template class CumulantK17<TurbulenceModel::Smagorinsky>;
+template class CumulantK17<TurbulenceModel::QR>;
+template class CumulantK17<TurbulenceModel::None>;

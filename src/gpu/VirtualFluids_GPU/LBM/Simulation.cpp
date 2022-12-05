@@ -125,6 +125,7 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     //////////////////////////////////////////////////////////////////////////
     allocNeighborsOffsetsScalesAndBoundaries(gridProvider);
 
+    //! Get tagged fluid nodes with corresponding value for CollisionTemplate from interactors
     for (SPtr<PreCollisionInteractor> actuator : para->getActuators()) {
         actuator->init(para.get(), &gridProvider, cudaMemoryManager.get());
         actuator->getTaggedFluidNodes( para.get(), &gridProvider );
@@ -144,6 +145,7 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
         para->getStreamManager()->createCudaEvents();
     }
     //////////////////////////////////////////////////////////////////////////
+    
     if (para->getKernelNeedsFluidNodeIndicesToRun())
     {
         gridProvider.sortFluidNodeTags();
