@@ -1,4 +1,5 @@
 #include <pybind11/pybind11.h>
+#include "gpu/GridGenerator/utilities/communication.h"
 #include "gpu/GridGenerator/geometries/Object.h"
 #include "gpu/GridGenerator/geometries/BoundingBox/BoundingBox.h"
 #include "gpu/GridGenerator/geometries/Conglomerate/Conglomerate.h"
@@ -16,6 +17,15 @@ namespace grid_generator
     py::module makeModule(py::module_ &parentModule)
     {  
         py::module gridGeneratorModule = parentModule.def_submodule("grid_generator");
+
+        //TODO:
+        // py::enum_<CommunicationDirections>(gridGeneratorModule, "CommunicationDirections")
+        // .value("MX", CommunicationDirections::MX)
+        // .value("PX", CommunicationDirections::PX)
+        // .value("MY", CommunicationDirections::MY)
+        // .value("PY", CommunicationDirections::PY)
+        // .value("MZ", CommunicationDirections::MZ)
+        // .value("PZ", CommunicationDirections::PZ);
 
         py::class_<GridFactory, std::shared_ptr<GridFactory>>(gridGeneratorModule, "GridFactory")
         .def_static("make", &GridFactory::make, py::return_value_policy::reference);
@@ -62,7 +72,10 @@ namespace grid_generator
         .def("add_geometry", py::overload_cast<Object*>(&MultipleGridBuilder::addGeometry), py::arg("solid_object"))
         .def("add_geometry", py::overload_cast<Object*, uint>(&MultipleGridBuilder::addGeometry), py::arg("solid_object"), py::arg("level"))
         .def("get_number_of_levels", &MultipleGridBuilder::getNumberOfLevels)
-        .def("build_grids", &MultipleGridBuilder::buildGrids, py::arg("lbm_or_gks"), py::arg("enable_thin_walls"));
+        .def("build_grids", &MultipleGridBuilder::buildGrids, py::arg("lbm_or_gks"), py::arg("enable_thin_walls"))
+        .def("set_subdomain_box", &MultipleGridBuilder::setSubDomainBox)
+        .def("find_communication_indices", &MultipleGridBuilder::findCommunicationIndices)
+        .def("set_communication_process", &MultipleGridBuilder::setCommunicationProcess);
 
         return gridGeneratorModule;
     }
