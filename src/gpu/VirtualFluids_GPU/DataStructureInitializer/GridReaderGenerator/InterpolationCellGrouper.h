@@ -7,6 +7,7 @@
 #define InterpolationCellGrouper_H
 
 #include <memory>
+#include <basics/Core/DataTypes.h>
 
 class Parameter;
 class GridBuilder;

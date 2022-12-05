@@ -9,6 +9,8 @@
 #include <memory>
 #include <vector>
 
+#include <basics/Core/DataTypes.h>
+
 class Parameter;
 class GridBuilder;
 namespace vf::gpu
