@@ -8,10 +8,9 @@
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/BGKPlus/BGKPlusCompSP27.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/Cascade/CascadeCompSP27.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/Cumulant/CumulantCompSP27.h"
-#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK17/CumulantK17Comp.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK17Unified/CumulantK17Unified.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK17chim/CumulantK17CompChim.h"
-#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK17Almighty/CumulantK17Almighty.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK17/CumulantK17.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK17Bulk/CumulantK17BulkComp.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantAll4/CumulantAll4CompSP27.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK18/CumulantK18Comp.h"
@@ -113,9 +112,6 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
     } else if (kernel == "CumulantCompSP27") {
         newKernel     = CumulantCompSP27::getNewInstance(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
-    } else if (kernel == "CumulantK17Comp") {
-        newKernel     = CumulantK17Comp::getNewInstance(para, level);
-        checkStrategy = FluidFlowCompStrategy::getInstance();
     } else if (kernel == "CumulantK15Unified") {
         newKernel     = std::make_shared<vf::gpu::CumulantK15Unified>(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
@@ -128,20 +124,20 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
     } else if (kernel == "CumulantK17CompChim") {
         newKernel     = CumulantK17CompChim::getNewInstance(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
-    } else if (kernel == "CumulantK17Almighty"){               
+    } else if (kernel == "CumulantK17"){               
         switch(para->getTurbulenceModel())                                          
         {   
             case TurbulenceModel::AMD:
-                newKernel = CumulantK17Almighty<TurbulenceModel::AMD>::getNewInstance(para, level);   
+                newKernel = CumulantK17<TurbulenceModel::AMD>::getNewInstance(para, level);   
                 break;
             case TurbulenceModel::Smagorinsky:
-                newKernel = CumulantK17Almighty<TurbulenceModel::Smagorinsky>::getNewInstance(para, level);  
+                newKernel = CumulantK17<TurbulenceModel::Smagorinsky>::getNewInstance(para, level);  
                 break;
             case TurbulenceModel::QR:
-                newKernel = CumulantK17Almighty<TurbulenceModel::QR>::getNewInstance(para, level);  
+                newKernel = CumulantK17<TurbulenceModel::QR>::getNewInstance(para, level);  
                 break;
             case TurbulenceModel::None:
-                newKernel = CumulantK17Almighty<TurbulenceModel::None>::getNewInstance(para, level); 
+                newKernel = CumulantK17<TurbulenceModel::None>::getNewInstance(para, level); 
                 break;
             default:
                 throw std::runtime_error("Unknown turbulence model!");
