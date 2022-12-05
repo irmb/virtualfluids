@@ -6,20 +6,21 @@
 #ifndef InterpolationCellGrouper_H
 #define InterpolationCellGrouper_H
 
+#include <basics/Core/DataTypes.h>
+#include <basics/PointerDefinitions.h>
 #include <memory>
 #include <vector>
-#include <basics/PointerDefinitions.h>
 
-class LBMSimulationParameter;
+struct LBMSimulationParameter;
 class GridBuilder;
 
 using LBMSimulationParameters = std::vector<std::shared_ptr<LBMSimulationParameter>>;
 
-class InterpolationCellGrouper
-{
+class InterpolationCellGrouper {
 public:
     //! \brief Construct InterpolationCellGrouper object
-    InterpolationCellGrouper(const LBMSimulationParameters & parHs, const LBMSimulationParameters & parDs, SPtr<GridBuilder> builder);
+    InterpolationCellGrouper(const LBMSimulationParameters &parHs, const LBMSimulationParameters &parDs,
+                             SPtr<GridBuilder> builder);
 
     //////////////////////////////////////////////////////////////////////////
     // split interpolation cells
@@ -66,8 +67,8 @@ protected:
 
 private:
     SPtr<GridBuilder> builder;
-    const LBMSimulationParameters & parHs;
-    const LBMSimulationParameters & parDs;
+    const LBMSimulationParameters &parHs;
+    const LBMSimulationParameters &parDs;
 };
 
 #endif
