@@ -241,8 +241,8 @@ double Communicator::sumNups(double processNups)
     return *buffer_recv;
 }
 
-void vf::gpu::Communicator::exchangeIndices(uint *buffer_receive, int size_buffer_recv, int neighbor_rank_recv,
-                                            uint *buffer_send, int size_buffer_send, int neighbor_rank_send)
+void Communicator::exchangeIndices(uint *buffer_receive, int size_buffer_recv, int neighbor_rank_recv, uint *buffer_send,
+                         int size_buffer_send, int neighbor_rank_send) const
 {
     MPI_Request recv_request;
     MPI_Irecv(buffer_receive, size_buffer_recv, MPI_UNSIGNED, neighbor_rank_recv, 0, commGPU, &recv_request);

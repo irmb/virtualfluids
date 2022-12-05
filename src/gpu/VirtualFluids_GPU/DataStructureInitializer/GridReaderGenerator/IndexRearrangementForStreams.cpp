@@ -10,7 +10,7 @@
 
 IndexRearrangementForStreams::IndexRearrangementForStreams(std::shared_ptr<Parameter> para,
                                                            std::shared_ptr<GridBuilder> builder,
-                                                           vf::gpu::Communicator &communicator)
+                                                           vf::gpu::IndexExchange &communicator)
     : para(para), builder(builder), communicator(communicator)
 {
 }

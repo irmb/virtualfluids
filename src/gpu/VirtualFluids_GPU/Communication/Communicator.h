@@ -8,6 +8,7 @@
 #include "VirtualFluids_GPU_export.h"
 
 #include <basics/Core/DataTypes.h>
+#include "IndexExchange.h"
 
 //////////////////////////////////
 #ifdef VF_DOUBLE_ACCURACY
@@ -22,7 +23,7 @@ namespace vf::gpu
 {
 
 
-class VIRTUALFLUIDS_GPU_EXPORT Communicator
+class VIRTUALFLUIDS_GPU_EXPORT Communicator : public IndexExchange
 {
 public:
     static Communicator& getInstance();
@@ -33,7 +34,7 @@ public:
     void exchngTopToBottom(float* sbuf, float* rbuf, int count);
     void waitAll();
     void distributeGeometry(unsigned int* dataRoot, unsigned int* dataNode, int dataSizePerNode);
-    int getPID() const;
+    int getPID() const override;
     int getNummberOfProcess() const;
     int getNeighbourTop();
     int getNeighbourBottom();
@@ -60,10 +61,10 @@ public:
     std::vector<double> gatherNUPS(double processNups);
     double sumNups(double processNups);
     //////////////////////////////////////////////////////////////////////////
-    virtual void exchangeIndices(uint *buffer_receive, int size_buffer_recv, int neighbor_rank_recv, uint *buffer_send,
-                                 int size_buffer_send, int neighbor_rank_send);
+    void exchangeIndices(uint *buffer_receive, int size_buffer_recv, int neighbor_rank_recv, uint *buffer_send,
+                         int size_buffer_send, int neighbor_rank_send) const override;
 
-protected:
+private:
    int numprocs, PID;
    int nbrbottom, nbrtop; 
    MPI_Comm comm1d, commGPU;

@@ -15,14 +15,14 @@ class Parameter;
 class GridBuilder;
 namespace vf::gpu
 {
-class Communicator;
+class IndexExchange;
 }
 
 class IndexRearrangementForStreams
 {
 public:
     //! \brief Construct IndexRearrangementForStreams object
-    IndexRearrangementForStreams(std::shared_ptr<Parameter> para, std::shared_ptr<GridBuilder> builder, vf::gpu::Communicator& communicator);
+    IndexRearrangementForStreams(std::shared_ptr<Parameter> para, std::shared_ptr<GridBuilder> builder, vf::gpu::IndexExchange& communicator);
 
     //////////////////////////////////////////////////////////////////////////
     // communication after fine to coarse
@@ -127,7 +127,7 @@ protected:
 private:
     std::shared_ptr<GridBuilder> builder;
     std::shared_ptr<Parameter> para;
-    vf::gpu::Communicator& communicator;
+    vf::gpu::IndexExchange& communicator;
 
     // used for tests
     friend class IndexRearrangementForStreamsTest_reorderSendIndices;
