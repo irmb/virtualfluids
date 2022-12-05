@@ -26,7 +26,7 @@ private:
 
 public:
     LevelGridBuilderDouble(SPtr<Grid> grid) : LevelGridBuilder(), grid(grid){};
-    SPtr<Grid> getGrid(uint level) override
+    SPtr<Grid> getGrid(uint) override
     {
         return grid;
     };
@@ -116,7 +116,7 @@ private:
         para->getParH(cf.level)->offCF.yOffCF = &(cf.offsetCFy.front());
         para->getParH(cf.level)->offCF.zOffCF = &(cf.offsetCFz.front());
 
-        return std::make_unique<InterpolationCellGrouper>(para, builder);
+        return std::make_unique<InterpolationCellGrouper>(para->getParHallLevels(), para->getParDallLevels(), builder);
     };
 
     void SetUp() override
@@ -207,7 +207,7 @@ private:
         para->getParH(fc.level)->offFC.yOffFC = &(fc.offsetFCy.front());
         para->getParH(fc.level)->offFC.zOffFC = &(fc.offsetFCz.front());
 
-        return std::make_unique<InterpolationCellGrouper>(para, builder);
+        return std::make_unique<InterpolationCellGrouper>(para->getParHallLevels(), para->getParDallLevels(), builder);
     };
 
     void SetUp() override

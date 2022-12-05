@@ -4,9 +4,9 @@
 #include <GridGenerator/grid/Grid.h>
 #include <GridGenerator/grid/GridBuilder/GridBuilder.h>
 
-InterpolationCellGrouper::InterpolationCellGrouper(std::shared_ptr<Parameter> para,
-                                                           std::shared_ptr<GridBuilder> builder)
-    : para(para), builder(builder)
+InterpolationCellGrouper::InterpolationCellGrouper(const LBMSimulationParameters &parHs,
+                                                   const LBMSimulationParameters &parDs, SPtr<GridBuilder> builder)
+    : parHs(parHs), parDs(parDs), builder(builder)
 {
 }
 
@@ -14,25 +14,23 @@ void InterpolationCellGrouper::splitFineToCoarseIntoBorderAndBulk(uint level)
 {
     this->reorderFineToCoarseIntoBorderAndBulk(level);
 
-    para->getParD(level)->intFCBorder.kFC      = para->getParH(level)->intFCBorder.kFC;
-    para->getParD(level)->intFCBulk.kFC        = para->getParH(level)->intFCBulk.kFC;
-    para->getParD(level)->intFCBorder.ICellFCC = para->getParD(level)->intFC.ICellFCC;
-    para->getParD(level)->intFCBulk.ICellFCC =
-        para->getParD(level)->intFCBorder.ICellFCC + para->getParD(level)->intFCBorder.kFC;
-    para->getParD(level)->intFCBorder.ICellFCF = para->getParD(level)->intFC.ICellFCF;
-    para->getParD(level)->intFCBulk.ICellFCF =
-        para->getParD(level)->intFCBorder.ICellFCF + para->getParD(level)->intFCBorder.kFC;
-    para->getParD(level)->offFCBulk.xOffFC = para->getParD(level)->offFC.xOffFC + para->getParD(level)->intFCBorder.kFC;
-    para->getParD(level)->offFCBulk.yOffFC = para->getParD(level)->offFC.yOffFC + para->getParD(level)->intFCBorder.kFC;
-    para->getParD(level)->offFCBulk.zOffFC = para->getParD(level)->offFC.zOffFC + para->getParD(level)->intFCBorder.kFC;
+    parDs[level]->intFCBorder.kFC = parHs[level]->intFCBorder.kFC;
+    parDs[level]->intFCBulk.kFC = parHs[level]->intFCBulk.kFC;
+    parDs[level]->intFCBorder.ICellFCC = parDs[level]->intFC.ICellFCC;
+    parDs[level]->intFCBulk.ICellFCC = parDs[level]->intFCBorder.ICellFCC + parDs[level]->intFCBorder.kFC;
+    parDs[level]->intFCBorder.ICellFCF = parDs[level]->intFC.ICellFCF;
+    parDs[level]->intFCBulk.ICellFCF = parDs[level]->intFCBorder.ICellFCF + parDs[level]->intFCBorder.kFC;
+    parDs[level]->offFCBulk.xOffFC = parDs[level]->offFC.xOffFC + parDs[level]->intFCBorder.kFC;
+    parDs[level]->offFCBulk.yOffFC = parDs[level]->offFC.yOffFC + parDs[level]->intFCBorder.kFC;
+    parDs[level]->offFCBulk.zOffFC = parDs[level]->offFC.zOffFC + parDs[level]->intFCBorder.kFC;
 }
 
 void InterpolationCellGrouper::reorderFineToCoarseIntoBorderAndBulk(int level)
 {
     // create some local variables for better readability
-    uint *iCellFccAll = para->getParH(level)->intFC.ICellFCC;
-    uint *iCellFcfAll = para->getParH(level)->intFC.ICellFCF;
-    auto grid         = this->builder->getGrid((uint)level);
+    uint *iCellFccAll = parHs[level]->intFC.ICellFCC;
+    uint *iCellFcfAll = parHs[level]->intFC.ICellFCF;
+    auto grid = this->builder->getGrid((uint)level);
 
     std::vector<uint> iCellFccBorderVector;
     std::vector<uint> iCellFccBulkVector;
@@ -46,48 +44,47 @@ void InterpolationCellGrouper::reorderFineToCoarseIntoBorderAndBulk(int level)
     std::vector<real> zOffFCBulkVector;
 
     // fill border and bulk vectors with iCellFCs
-    for (uint i = 0; i < para->getParH(level)->intFC.kFC; i++)
+    for (uint i = 0; i < parHs[level]->intFC.kFC; i++)
         if (grid->isSparseIndexInFluidNodeIndicesBorder(iCellFccAll[i])) {
             iCellFccBorderVector.push_back(iCellFccAll[i]);
             iCellFcfBorderVector.push_back(iCellFcfAll[i]);
-            xOffFCBorderVector.push_back(para->getParH(level)->offFC.xOffFC[i]);
-            yOffFCBorderVector.push_back(para->getParH(level)->offFC.yOffFC[i]);
-            zOffFCBorderVector.push_back(para->getParH(level)->offFC.zOffFC[i]);
+            xOffFCBorderVector.push_back(parHs[level]->offFC.xOffFC[i]);
+            yOffFCBorderVector.push_back(parHs[level]->offFC.yOffFC[i]);
+            zOffFCBorderVector.push_back(parHs[level]->offFC.zOffFC[i]);
         } else {
             iCellFccBulkVector.push_back(iCellFccAll[i]);
             iCellFcfBulkVector.push_back(iCellFcfAll[i]);
-            xOffFCBulkVector.push_back(para->getParH(level)->offFC.xOffFC[i]);
-            yOffFCBulkVector.push_back(para->getParH(level)->offFC.yOffFC[i]);
-            zOffFCBulkVector.push_back(para->getParH(level)->offFC.zOffFC[i]);
+            xOffFCBulkVector.push_back(parHs[level]->offFC.xOffFC[i]);
+            yOffFCBulkVector.push_back(parHs[level]->offFC.yOffFC[i]);
+            zOffFCBulkVector.push_back(parHs[level]->offFC.zOffFC[i]);
         }
 
     // set new sizes and pointers
-    para->getParH(level)->intFCBorder.ICellFCC = iCellFccAll;
-    para->getParH(level)->intFCBorder.ICellFCF = iCellFcfAll;
-    para->getParH(level)->intFCBorder.kFC      = (uint)iCellFccBorderVector.size();
-    para->getParH(level)->intFCBulk.kFC        = (uint)iCellFccBulkVector.size();
-    para->getParH(level)->intFCBulk.ICellFCC   = iCellFccAll + para->getParH(level)->intFCBorder.kFC;
-    para->getParH(level)->intFCBulk.ICellFCF   = iCellFcfAll + para->getParH(level)->intFCBorder.kFC;
-    para->getParH(level)->offFCBulk.xOffFC = para->getParH(level)->offFC.xOffFC + para->getParH(level)->intFCBorder.kFC;
-    para->getParH(level)->offFCBulk.yOffFC = para->getParH(level)->offFC.yOffFC + para->getParH(level)->intFCBorder.kFC;
-    para->getParH(level)->offFCBulk.zOffFC = para->getParH(level)->offFC.zOffFC + para->getParH(level)->intFCBorder.kFC;
-
+    parHs[level]->intFCBorder.ICellFCC = iCellFccAll;
+    parHs[level]->intFCBorder.ICellFCF = iCellFcfAll;
+    parHs[level]->intFCBorder.kFC = (uint)iCellFccBorderVector.size();
+    parHs[level]->intFCBulk.kFC = (uint)iCellFccBulkVector.size();
+    parHs[level]->intFCBulk.ICellFCC = iCellFccAll + parHs[level]->intFCBorder.kFC;
+    parHs[level]->intFCBulk.ICellFCF = iCellFcfAll + parHs[level]->intFCBorder.kFC;
+    parHs[level]->offFCBulk.xOffFC = parHs[level]->offFC.xOffFC + parHs[level]->intFCBorder.kFC;
+    parHs[level]->offFCBulk.yOffFC = parHs[level]->offFC.yOffFC + parHs[level]->intFCBorder.kFC;
+    parHs[level]->offFCBulk.zOffFC = parHs[level]->offFC.zOffFC + parHs[level]->intFCBorder.kFC;
 
     // copy the created vectors to the memory addresses of the old arrays
     // this is inefficient :(
     for (uint i = 0; i < (uint)iCellFccBorderVector.size(); i++) {
         iCellFccAll[i] = iCellFccBorderVector[i];
         iCellFcfAll[i] = iCellFcfBorderVector[i];
-        para->getParH(level)->offFC.xOffFC[i] = xOffFCBorderVector[i];
-        para->getParH(level)->offFC.yOffFC[i] = yOffFCBorderVector[i];
-        para->getParH(level)->offFC.zOffFC[i] = zOffFCBorderVector[i];
+        parHs[level]->offFC.xOffFC[i] = xOffFCBorderVector[i];
+        parHs[level]->offFC.yOffFC[i] = yOffFCBorderVector[i];
+        parHs[level]->offFC.zOffFC[i] = zOffFCBorderVector[i];
     }
     for (uint i = 0; i < (uint)iCellFccBulkVector.size(); i++) {
-        para->getParH(level)->intFCBulk.ICellFCC[i] = iCellFccBulkVector[i];
-        para->getParH(level)->intFCBulk.ICellFCF[i] = iCellFcfBulkVector[i];
-        para->getParH(level)->offFCBulk.xOffFC[i]   = xOffFCBulkVector[i];
-        para->getParH(level)->offFCBulk.yOffFC[i]   = yOffFCBulkVector[i];
-        para->getParH(level)->offFCBulk.zOffFC[i]   = zOffFCBulkVector[i];
+        parHs[level]->intFCBulk.ICellFCC[i] = iCellFccBulkVector[i];
+        parHs[level]->intFCBulk.ICellFCF[i] = iCellFcfBulkVector[i];
+        parHs[level]->offFCBulk.xOffFC[i] = xOffFCBulkVector[i];
+        parHs[level]->offFCBulk.yOffFC[i] = yOffFCBulkVector[i];
+        parHs[level]->offFCBulk.zOffFC[i] = zOffFCBulkVector[i];
     }
 }
 
@@ -95,28 +92,26 @@ void InterpolationCellGrouper::splitCoarseToFineIntoBorderAndBulk(uint level)
 {
     this->reorderCoarseToFineIntoBorderAndBulk(level);
 
-    para->getParD(level)->intCFBorder.kCF      = para->getParH(level)->intCFBorder.kCF;
-    para->getParD(level)->intCFBulk.kCF        = para->getParH(level)->intCFBulk.kCF;
-    para->getParD(level)->intCFBorder.ICellCFC = para->getParD(level)->intCF.ICellCFC;
-    para->getParD(level)->intCFBulk.ICellCFC =
-        para->getParD(level)->intCFBorder.ICellCFC + para->getParD(level)->intCFBorder.kCF;
-    para->getParD(level)->intCFBorder.ICellCFF = para->getParD(level)->intCF.ICellCFF;
-    para->getParD(level)->intCFBulk.ICellCFF =
-        para->getParD(level)->intCFBorder.ICellCFF + para->getParD(level)->intCFBorder.kCF;
-    para->getParD(level)->offCFBulk.xOffCF = para->getParD(level)->offCF.xOffCF + para->getParD(level)->intCFBorder.kCF;
-    para->getParD(level)->offCFBulk.yOffCF = para->getParD(level)->offCF.yOffCF + para->getParD(level)->intCFBorder.kCF;
-    para->getParD(level)->offCFBulk.zOffCF = para->getParD(level)->offCF.zOffCF + para->getParD(level)->intCFBorder.kCF;
+    parDs[level]->intCFBorder.kCF = parHs[level]->intCFBorder.kCF;
+    parDs[level]->intCFBulk.kCF = parHs[level]->intCFBulk.kCF;
+    parDs[level]->intCFBorder.ICellCFC = parDs[level]->intCF.ICellCFC;
+    parDs[level]->intCFBulk.ICellCFC = parDs[level]->intCFBorder.ICellCFC + parDs[level]->intCFBorder.kCF;
+    parDs[level]->intCFBorder.ICellCFF = parDs[level]->intCF.ICellCFF;
+    parDs[level]->intCFBulk.ICellCFF = parDs[level]->intCFBorder.ICellCFF + parDs[level]->intCFBorder.kCF;
+    parDs[level]->offCFBulk.xOffCF = parDs[level]->offCF.xOffCF + parDs[level]->intCFBorder.kCF;
+    parDs[level]->offCFBulk.yOffCF = parDs[level]->offCF.yOffCF + parDs[level]->intCFBorder.kCF;
+    parDs[level]->offCFBulk.zOffCF = parDs[level]->offCF.zOffCF + parDs[level]->intCFBorder.kCF;
 }
 
 void InterpolationCellGrouper::reorderCoarseToFineIntoBorderAndBulk(int level)
 {
     // create some local variables for better readability
-    uint *iCellCfcAll  = para->getParH(level)->intCF.ICellCFC;
-    uint *iCellCffAll  = para->getParH(level)->intCF.ICellCFF;
-    uint *neighborX = this->para->getParH(level)->neighborX;
-    uint *neighborY = this->para->getParH(level)->neighborY;
-    uint *neighborZ = this->para->getParH(level)->neighborZ;
-    auto grid          = this->builder->getGrid((uint)level);
+    uint *iCellCfcAll = parHs[level]->intCF.ICellCFC;
+    uint *iCellCffAll = parHs[level]->intCF.ICellCFF;
+    uint *neighborX = this->parHs[level]->neighborX;
+    uint *neighborY = this->parHs[level]->neighborY;
+    uint *neighborZ = this->parHs[level]->neighborZ;
+    auto grid = this->builder->getGrid((uint)level);
 
     std::vector<uint> iCellCfcBorderVector;
     std::vector<uint> iCellCfcBulkVector;
@@ -131,7 +126,7 @@ void InterpolationCellGrouper::reorderCoarseToFineIntoBorderAndBulk(int level)
     uint sparseIndexOfICellBSW;
 
     // fill border and bulk vectors with iCellCFs
-    for (uint i = 0; i < para->getParH(level)->intCF.kCF; i++) {
+    for (uint i = 0; i < parHs[level]->intCF.kCF; i++) {
         sparseIndexOfICellBSW = iCellCfcAll[i];
 
         if (grid->isSparseIndexInFluidNodeIndicesBorder(sparseIndexOfICellBSW) ||
@@ -145,45 +140,43 @@ void InterpolationCellGrouper::reorderCoarseToFineIntoBorderAndBulk(int level)
 
             iCellCfcBorderVector.push_back(iCellCfcAll[i]);
             iCellCffBorderVector.push_back(iCellCffAll[i]);
-            xOffCFBorderVector.push_back(para->getParH(level)->offCF.xOffCF[i]);
-            yOffCFBorderVector.push_back(para->getParH(level)->offCF.yOffCF[i]);
-            zOffCFBorderVector.push_back(para->getParH(level)->offCF.zOffCF[i]);
+            xOffCFBorderVector.push_back(parHs[level]->offCF.xOffCF[i]);
+            yOffCFBorderVector.push_back(parHs[level]->offCF.yOffCF[i]);
+            zOffCFBorderVector.push_back(parHs[level]->offCF.zOffCF[i]);
         } else {
             iCellCfcBulkVector.push_back(iCellCfcAll[i]);
             iCellCffBulkVector.push_back(iCellCffAll[i]);
-            xOffCFBulkVector.push_back(para->getParH(level)->offCF.xOffCF[i]);
-            yOffCFBulkVector.push_back(para->getParH(level)->offCF.yOffCF[i]);
-            zOffCFBulkVector.push_back(para->getParH(level)->offCF.zOffCF[i]);
+            xOffCFBulkVector.push_back(parHs[level]->offCF.xOffCF[i]);
+            yOffCFBulkVector.push_back(parHs[level]->offCF.yOffCF[i]);
+            zOffCFBulkVector.push_back(parHs[level]->offCF.zOffCF[i]);
         }
     }
 
     // set new sizes and pointers
-    para->getParH(level)->intCFBorder.ICellCFC = para->getParH(level)->intCF.ICellCFC;
-    para->getParH(level)->intCFBorder.ICellCFF = para->getParH(level)->intCF.ICellCFF;
-    para->getParH(level)->intCFBorder.kCF      = (uint)iCellCfcBorderVector.size();
-    para->getParH(level)->intCFBulk.kCF        = (uint)iCellCfcBulkVector.size();
-    para->getParH(level)->intCFBulk.ICellCFC =
-        para->getParH(level)->intCF.ICellCFC + para->getParH(level)->intCFBorder.kCF;
-    para->getParH(level)->intCFBulk.ICellCFF =
-        para->getParH(level)->intCF.ICellCFF + para->getParH(level)->intCFBorder.kCF;
-    para->getParH(level)->offCFBulk.xOffCF = para->getParH(level)->offCF.xOffCF + para->getParH(level)->intCFBorder.kCF;
-    para->getParH(level)->offCFBulk.yOffCF = para->getParH(level)->offCF.yOffCF + para->getParH(level)->intCFBorder.kCF;
-    para->getParH(level)->offCFBulk.zOffCF = para->getParH(level)->offCF.zOffCF + para->getParH(level)->intCFBorder.kCF;
+    parHs[level]->intCFBorder.ICellCFC = parHs[level]->intCF.ICellCFC;
+    parHs[level]->intCFBorder.ICellCFF = parHs[level]->intCF.ICellCFF;
+    parHs[level]->intCFBorder.kCF = (uint)iCellCfcBorderVector.size();
+    parHs[level]->intCFBulk.kCF = (uint)iCellCfcBulkVector.size();
+    parHs[level]->intCFBulk.ICellCFC = parHs[level]->intCF.ICellCFC + parHs[level]->intCFBorder.kCF;
+    parHs[level]->intCFBulk.ICellCFF = parHs[level]->intCF.ICellCFF + parHs[level]->intCFBorder.kCF;
+    parHs[level]->offCFBulk.xOffCF = parHs[level]->offCF.xOffCF + parHs[level]->intCFBorder.kCF;
+    parHs[level]->offCFBulk.yOffCF = parHs[level]->offCF.yOffCF + parHs[level]->intCFBorder.kCF;
+    parHs[level]->offCFBulk.zOffCF = parHs[level]->offCF.zOffCF + parHs[level]->intCFBorder.kCF;
 
     // copy the created vectors to the memory addresses of the old arrays
     // this is inefficient :(
     for (uint i = 0; i < (uint)iCellCfcBorderVector.size(); i++) {
-        para->getParH(level)->intCFBorder.ICellCFC[i] = iCellCfcBorderVector[i];
-        para->getParH(level)->intCFBorder.ICellCFF[i] = iCellCffBorderVector[i];
-        para->getParH(level)->offCF.xOffCF[i]         = xOffCFBorderVector[i];
-        para->getParH(level)->offCF.yOffCF[i]         = yOffCFBorderVector[i];
-        para->getParH(level)->offCF.zOffCF[i]         = zOffCFBorderVector[i];
+        parHs[level]->intCFBorder.ICellCFC[i] = iCellCfcBorderVector[i];
+        parHs[level]->intCFBorder.ICellCFF[i] = iCellCffBorderVector[i];
+        parHs[level]->offCF.xOffCF[i] = xOffCFBorderVector[i];
+        parHs[level]->offCF.yOffCF[i] = yOffCFBorderVector[i];
+        parHs[level]->offCF.zOffCF[i] = zOffCFBorderVector[i];
     }
     for (uint i = 0; i < (uint)iCellCfcBulkVector.size(); i++) {
-        para->getParH(level)->intCFBulk.ICellCFC[i] = iCellCfcBulkVector[i];
-        para->getParH(level)->intCFBulk.ICellCFF[i] = iCellCffBulkVector[i];
-        para->getParH(level)->offCFBulk.xOffCF[i]   = xOffCFBulkVector[i];
-        para->getParH(level)->offCFBulk.yOffCF[i]   = yOffCFBulkVector[i];
-        para->getParH(level)->offCFBulk.zOffCF[i]   = zOffCFBulkVector[i];
+        parHs[level]->intCFBulk.ICellCFC[i] = iCellCfcBulkVector[i];
+        parHs[level]->intCFBulk.ICellCFF[i] = iCellCffBulkVector[i];
+        parHs[level]->offCFBulk.xOffCF[i] = xOffCFBulkVector[i];
+        parHs[level]->offCFBulk.yOffCF[i] = yOffCFBulkVector[i];
+        parHs[level]->offCFBulk.zOffCF[i] = zOffCFBulkVector[i];
     }
 }

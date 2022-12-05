@@ -22,7 +22,7 @@ GridGenerator::GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_p
     this->para = para;
     this->cudaMemoryManager = cudaMemoryManager;
     this->indexRearrangement = std::make_unique<IndexRearrangementForStreams>(para, builder, communicator);
-    this->interpolationGrouper = std::make_unique<InterpolationCellGrouper>(para, builder);
+    this->interpolationGrouper = std::make_unique<InterpolationCellGrouper>(para->getParHallLevels(), para->getParDallLevels(), builder);
 }
 
 GridGenerator::~GridGenerator() = default;

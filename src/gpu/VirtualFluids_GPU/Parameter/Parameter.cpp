@@ -1706,6 +1706,16 @@ std::shared_ptr<LBMSimulationParameter> Parameter::getParH(int level)
 {
     return parH[level];
 }
+
+const std::vector<std::shared_ptr<LBMSimulationParameter>> &Parameter::getParHallLevels()
+{
+    return parH;
+}
+const std::vector<std::shared_ptr<LBMSimulationParameter>> &Parameter::getParDallLevels()
+{
+    return parD;
+}
+
 unsigned int Parameter::getSizeMat(int level)
 {
     return parH[level]->size_Mat;

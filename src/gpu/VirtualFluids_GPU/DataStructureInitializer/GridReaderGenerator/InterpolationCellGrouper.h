@@ -7,16 +7,19 @@
 #define InterpolationCellGrouper_H
 
 #include <memory>
-#include <basics/Core/DataTypes.h>
+#include <vector>
+#include <basics/PointerDefinitions.h>
 
-class Parameter;
+class LBMSimulationParameter;
 class GridBuilder;
+
+using LBMSimulationParameters = std::vector<std::shared_ptr<LBMSimulationParameter>>;
 
 class InterpolationCellGrouper
 {
 public:
     //! \brief Construct InterpolationCellGrouper object
-    InterpolationCellGrouper(std::shared_ptr<Parameter> para, std::shared_ptr<GridBuilder> builder);
+    InterpolationCellGrouper(const LBMSimulationParameters & parHs, const LBMSimulationParameters & parDs, SPtr<GridBuilder> builder);
 
     //////////////////////////////////////////////////////////////////////////
     // split interpolation cells
@@ -62,8 +65,9 @@ protected:
     void reorderFineToCoarseIntoBorderAndBulk(int level);
 
 private:
-    std::shared_ptr<GridBuilder> builder;
-    std::shared_ptr<Parameter> para;
+    SPtr<GridBuilder> builder;
+    const LBMSimulationParameters & parHs;
+    const LBMSimulationParameters & parDs;
 };
 
 #endif
