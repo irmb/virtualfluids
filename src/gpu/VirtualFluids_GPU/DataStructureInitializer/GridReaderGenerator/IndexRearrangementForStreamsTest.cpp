@@ -208,7 +208,7 @@ public:
 protected:
     std::vector<uint> act()
     {
-        return sut->exchangeIndicesForCommAfterFtoCX(level, indexOfProcessNeighbor, CommunicationDirections::PX,
+        return sut->exchangeIndicesForCommAfterFtoCX(level, indexOfProcessNeighbor,
                                                      sendIndicesForCommAfterFtoCPositions);
     }
 
@@ -315,7 +315,7 @@ public:
 protected:
     std::vector<uint> act()
     {
-        return sut->exchangeIndicesForCommAfterFtoCY(level, indexOfProcessNeighbor, CommunicationDirections::PY,
+        return sut->exchangeIndicesForCommAfterFtoCY(level, indexOfProcessNeighbor,
                                                      sendIndicesForCommAfterFtoCPositions);
     }
 
@@ -422,7 +422,7 @@ public:
 protected:
     std::vector<uint> act()
     {
-        return sut->exchangeIndicesForCommAfterFtoCZ(level, indexOfProcessNeighbor, CommunicationDirections::PZ,
+        return sut->exchangeIndicesForCommAfterFtoCZ(level, indexOfProcessNeighbor,
                                                      sendIndicesForCommAfterFtoCPositions);
     }
 

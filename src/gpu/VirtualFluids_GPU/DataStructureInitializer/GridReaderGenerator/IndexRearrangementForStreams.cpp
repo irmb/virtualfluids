@@ -25,7 +25,7 @@ void IndexRearrangementForStreams::initCommunicationArraysForCommAfterFinetoCoar
 
     std::cout << "mpi send and receive ";
     std::vector<uint> recvIndicesForCommAfterFtoCPositions = exchangeIndicesForCommAfterFtoCX(
-        level, indexOfProcessNeighbor, direction, sendIndicesForCommAfterFtoCPositions);
+        level, indexOfProcessNeighbor, sendIndicesForCommAfterFtoCPositions);
 
     std::cout << "reorder receive indices ";
     initRecvIndicesForCommAfterFToCX(level, indexOfProcessNeighbor, direction, recvIndicesForCommAfterFtoCPositions);
@@ -45,7 +45,7 @@ void IndexRearrangementForStreams::initCommunicationArraysForCommAfterFinetoCoar
 
     std::cout << "mpi send and receive ";
     std::vector<uint> recvIndicesForCommAfterFtoCPositions = exchangeIndicesForCommAfterFtoCY(
-        level, indexOfProcessNeighbor, direction, sendIndicesForCommAfterFtoCPositions);
+        level, indexOfProcessNeighbor, sendIndicesForCommAfterFtoCPositions);
 
     std::cout << "reorder receive indices ";
     initRecvIndicesForCommAfterFToCY(level, indexOfProcessNeighbor, direction, recvIndicesForCommAfterFtoCPositions);
@@ -65,7 +65,7 @@ void IndexRearrangementForStreams::initCommunicationArraysForCommAfterFinetoCoar
 
     std::cout << "mpi send and receive ";
     std::vector<uint> recvIndicesForCommAfterFtoCPositions = exchangeIndicesForCommAfterFtoCZ(
-        level, indexOfProcessNeighbor, direction, sendIndicesForCommAfterFtoCPositions);
+        level, indexOfProcessNeighbor, sendIndicesForCommAfterFtoCPositions);
 
     std::cout << "reorder receive indices ";
     initRecvIndicesForCommAfterFToCZ(level, indexOfProcessNeighbor, direction, recvIndicesForCommAfterFtoCPositions);
@@ -111,9 +111,8 @@ std::vector<uint> IndexRearrangementForStreams::initSendIndicesForCommAfterFToCZ
     return sendIndicesForCommAfterFtoCPositions;
 }
 
-std::vector<uint>
-IndexRearrangementForStreams::exchangeIndicesForCommAfterFtoCX(uint level, int indexOfProcessNeighbor, int direction,
-                                                               std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const 
+std::vector<uint> IndexRearrangementForStreams::exchangeIndicesForCommAfterFtoCX(
+    uint level, int indexOfProcessNeighbor, std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const
 {
     // fill the receive vector with zeros as placeholders (0 is never a valid fluid node)
     // give vector an arbitrary size (larger than needed) // TODO: Find a better way
@@ -132,9 +131,8 @@ IndexRearrangementForStreams::exchangeIndicesForCommAfterFtoCX(uint level, int i
     return recvIndicesForCommAfterFtoCPositions;
 }
 
-std::vector<uint>
-IndexRearrangementForStreams::exchangeIndicesForCommAfterFtoCY(uint level, int indexOfProcessNeighbor, int direction,
-                                                               std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const 
+std::vector<uint> IndexRearrangementForStreams::exchangeIndicesForCommAfterFtoCY(
+    uint level, int indexOfProcessNeighbor, std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const
 {
     // fill the receive vector with zeros as placeholders (0 is never a valid fluid node)
     // give vector an arbitrary size (larger than needed) // TODO: Find a better way
@@ -153,9 +151,8 @@ IndexRearrangementForStreams::exchangeIndicesForCommAfterFtoCY(uint level, int i
     return recvIndicesForCommAfterFtoCPositions;
 }
 
-std::vector<uint>
-IndexRearrangementForStreams::exchangeIndicesForCommAfterFtoCZ(uint level, int indexOfProcessNeighbor, int direction,
-                                                               std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const 
+std::vector<uint> IndexRearrangementForStreams::exchangeIndicesForCommAfterFtoCZ(
+    uint level, int indexOfProcessNeighbor, std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const
 {
     // fill the receive vector with zeros as placeholders (0 is never a valid fluid node)
     // give vector an arbitrary size (larger than needed) // TODO: Find a better way

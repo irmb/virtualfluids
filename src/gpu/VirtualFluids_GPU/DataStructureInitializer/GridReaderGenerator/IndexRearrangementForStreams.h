@@ -50,11 +50,11 @@ protected:
 
     //! \brief send sendIndicesForCommAfterFtoCPositions to receiving process and receive
     //! recvIndicesForCommAfterFtoCPositions from neighboring process
-    std::vector<uint> exchangeIndicesForCommAfterFtoCX(uint level, int indexOfProcessNeighbor, int direction,
+    std::vector<uint> exchangeIndicesForCommAfterFtoCX(uint level, int indexOfProcessNeighbor,
                                                        std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const;
-    std::vector<uint> exchangeIndicesForCommAfterFtoCY(uint level, int indexOfProcessNeighbor, int direction,
+    std::vector<uint> exchangeIndicesForCommAfterFtoCY(uint level, int indexOfProcessNeighbor,
                                                        std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const;
-    std::vector<uint> exchangeIndicesForCommAfterFtoCZ(uint level, int indexOfProcessNeighbor, int direction,
+    std::vector<uint> exchangeIndicesForCommAfterFtoCZ(uint level, int indexOfProcessNeighbor,
                                                        std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const;
 
     //! \brief Initializes the send indices for the communication after the interpolation from fine to coarse
