@@ -41,11 +41,9 @@ namespace grid_generator
         .def_static("make", &TriangularMesh::make, py::return_value_policy::reference);
 
         py::class_<GridBuilder, std::shared_ptr<GridBuilder>>(gridGeneratorModule, "GridBuilder")
-        .def("get_number_of_grid_levels", &GridBuilder::getNumberOfGridLevels)
-        .def("get_grid", &GridBuilder::getGrid, py::arg("level"));
+        .def("get_number_of_grid_levels", &GridBuilder::getNumberOfGridLevels);
 
         py::class_<LevelGridBuilder, GridBuilder, std::shared_ptr<LevelGridBuilder>>(gridGeneratorModule, "LevelGridBuilder")
-        .def("get_grid", py::overload_cast<int, int>(&LevelGridBuilder::getGrid), py::arg("level"), py::arg("box"))
         .def("set_slip_boundary_condition", &LevelGridBuilder::setSlipBoundaryCondition, py::arg("side_type"), py::arg("normal_x"), py::arg("normal_y"), py::arg("normal_z"))
         .def("set_velocity_boundary_condition", &LevelGridBuilder::setVelocityBoundaryCondition, py::arg("side_type"), py::arg("vx"), py::arg("vy"), py::arg("vz"))
         .def("set_pressure_boundary_condition", &LevelGridBuilder::setPressureBoundaryCondition, py::arg("side_type"), py::arg("rho"))
