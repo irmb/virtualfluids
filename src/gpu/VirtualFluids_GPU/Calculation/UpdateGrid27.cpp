@@ -55,7 +55,8 @@ void UpdateGrid27::updateGrid(int level, unsigned int t)
         refinement(this, para.get(), level);
     }
 
-
+    //////////////////////////////////////////////////////////////////////////
+    
     interactWithActuators(level, t);
 
 }

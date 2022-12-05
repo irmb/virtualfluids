@@ -205,7 +205,7 @@ void multipleLevel(const std::string& configPath)
     bool useStreams = (nProcs > 1 ? true: false);
     // useStreams=false;
     para->setUseStreams(useStreams);
-    para->setMainKernel("CumulantK17Almighty");
+    para->setMainKernel("CumulantK17");
     para->setIsBodyForce( config.getValue<bool>("bodyForce") );
 
     para->setTimestepStartOut(uint(tStartOut/dt) );

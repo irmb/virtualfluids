@@ -83,8 +83,9 @@ void CollisionAndExchange_streams::operator()(UpdateGrid27 *updateGrid, Paramete
     if (para->getUseStreams())
         para->getStreamManager()->triggerStartBulkKernel(CudaStreamIndex::Border);
 
-    //! 3. launch the collision kernel for bulk nodes
-    //!
+    //! 3. launch the collision kernel for bulk nodes. This includes nodes with \param tag Default, WriteMacroVars, ApplyBodyForce, 
+    //!    or AllFeatures. All assigned tags are listed in \param allocatedBulkFluidNodeTags during initialization in Simulation::init
+
     para->getStreamManager()->waitOnStartBulkKernelEvent(CudaStreamIndex::Bulk);
     
     for( CollisionTemplate tag: para->getParH(level)->allocatedBulkFluidNodeTags )

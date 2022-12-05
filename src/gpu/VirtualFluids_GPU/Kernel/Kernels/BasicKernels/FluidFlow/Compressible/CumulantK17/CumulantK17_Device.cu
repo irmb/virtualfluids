@@ -34,8 +34,11 @@
 //! CumulantK17 kernel using chimera transformations and quartic limiters as present in Geier et al. (2017). Additional options are three different
 //! eddy-viscosity turbulence models (Smagorinsky, AMD, QR) that can be set via the template parameter turbulenceModel (with default 
 //! TurbulenceModel::None). 
-//! Whether the template parameters applyBodyForce and writeMacroscopicVariables are true is set in CumulantK17<turbulenceModel>::runOnIndices and
-//! depends on the value of CollisionTemplate. 
+//! The kernel is executed separately for each subset of fluid node indices with a different tag CollisionTemplate. For each subset, only the locally
+//! required options are switched on ( \param writeMacroscopicVariables and/or \param applyBodyForce) in order to minimize memory accesses. The default 
+//! refers to the plain cumlant kernel (CollisionTemplate::Default). 
+//! Nodes are added to subsets (taggedFluidNodes) in Simulation::init using a corresponding tag with different values of CollisionTemplate. These subsets 
+//! are provided by the utilized PostCollisionInteractiors depending on they specifc requirements (e.g. writeMacroscopicVariables for probes).
 
 //=======================================================================================
 /* Device code */
