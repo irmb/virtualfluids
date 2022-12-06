@@ -504,7 +504,7 @@ void IndexRearrangementForStreams::reorderRecvIndicesForCommAfterFtoC(
 
     numberOfRecvNodesAfterFtoC = (int)recvIndicesAfterFtoC.size();
 
-    // copy new vectors back to sendIndices array
+    // copy new vectors back to recvIndices array
     for (int i = 0; i < numberOfRecvNodesAfterFtoC; i++)
         recvIndices[i] = recvIndicesAfterFtoC[i];
     for (uint i = 0; i < (uint)recvIndicesOther.size(); i++)

@@ -117,7 +117,7 @@ protected:
     };
 
 private:
-    std::unique_ptr<IndexRearrangementForStreams> createTestSubjectForReorderSendIndices()
+    void SetUp() override
     {
         logging::Logger::addStream(&std::cout);
 
@@ -140,14 +140,8 @@ private:
         para->getParH(si.level)->sendProcessNeighborX[si.indexOfProcessNeighbor].index = si.sendIndices.data();
         para->initProcessNeighborsAfterFtoCX(si.level);
 
-        return std::make_unique<IndexRearrangementForStreams>(
+        testSubject = std::make_unique<IndexRearrangementForStreams>(
             IndexRearrangementForStreams(para, builder, vf::gpu::Communicator::getInstance()));
-    };
-
-    void SetUp() override
-    {
-        para = std::make_shared<Parameter>();
-        testSubject = createTestSubjectForReorderSendIndices();
     };
 };
 
