@@ -484,15 +484,15 @@ t1 point1.quant1 point2.quant1 ... point1.quant2 point2.quant2 ...
     out << "Positions: \n";
 
     out << "x: ";
-    for(int i=0;i<probeStruct->nPoints;i++) out << probeStruct->pointCoordsX[i];   
+    for(uint i=0;i<probeStruct->nPoints;i++) out << probeStruct->pointCoordsX[i];   
     out << "\n"; 
 
     out << "y: ";
-    for(int i=0;i<probeStruct->nPoints;i++) out << probeStruct->pointCoordsX[i];  
+    for(uint i=0;i<probeStruct->nPoints;i++) out << probeStruct->pointCoordsX[i];  
     out << "\n"; 
 
     out << "z: ";
-    for(int i=0;i<probeStruct->nPoints;i++) out << probeStruct->pointCoordsX[i];
+    for(uint i=0;i<probeStruct->nPoints;i++) out << probeStruct->pointCoordsX[i];
     out << "\n";
 
     out.close();
@@ -510,7 +510,7 @@ void Probe::appendTimeseriesFile(Parameter* para, int level, int t)
 
     real t_start = (t-tStartOut)/tOut*para->getTimeRatio();
 
-    for(int timestep=0; timestep<probeStruct->timestepInTimeseries; timestep++)
+    for(uint timestep=0; timestep<probeStruct->timestepInTimeseries; timestep++)
     {
         out << t_start+timestep*dt;
 
@@ -524,10 +524,10 @@ void Probe::appendTimeseriesFile(Parameter* para, int level, int t)
 
             uint arrOff = probeStruct->arrayOffsetsH[var];
 
-            for(int arr=0; arr<n_arrs; arr++)
+            for(uint arr=0; arr<n_arrs; arr++)
             {
                 real coeff = postProcessingVariables[arr].conversionFactor(level);
-                for(int point=0; point<probeStruct->nPoints; point++)
+                for(uint point=0; point<probeStruct->nPoints; point++)
                 {
                     out << probeStruct->quantitiesArrayH[calcArrayIndex(point, probeStruct->nPoints, timestep, probeStruct->timestepInTimeseries, arrOff+arr)]*coeff;
                 }
