@@ -40,13 +40,15 @@ namespace probes
                         uint,
                         uint, 
                         uint,
-                        uint>(), 
+                        uint,
+                        bool>(), 
                         py::arg("probe_name"),
                         py::arg("output_path"),
                         py::arg("t_start_avg"),
                         py::arg("t_avg"),
                         py::arg("t_start_out"),
-                        py::arg("t_out"))
+                        py::arg("t_out"),
+                        py::arg("output_timeseries"))
         .def("add_probe_points_from_list", &PointProbe::addProbePointsFromList, py::arg("point_coords_x"), py::arg("point_coords_y"), py::arg("point_coords_z"))
         .def("add_probe_points_from_x_normal_plane", &PointProbe::addProbePointsFromXNormalPlane, py::arg("pos_x"), py::arg("pos0_y"), py::arg("pos0_z"), py::arg("pos1_y"), py::arg("pos1_z"), py::arg("n_y"), py::arg("n_z"));
 

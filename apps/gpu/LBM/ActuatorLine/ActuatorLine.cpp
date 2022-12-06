@@ -212,21 +212,29 @@ void multipleLevel(const std::string& configPath)
     para->addActuator( actuator_farm );
 
 
-    // SPtr<PointProbe> pointProbe = std::make_shared<PointProbe>("pointProbe", para->getOutputPath(), 100, 1, 500, 100);
-    // std::vector<real> probeCoordsX = {reference_diameter,2*reference_diameter,5*reference_diameter};
-    // std::vector<real> probeCoordsY = {3*reference_diameter,3*reference_diameter,3*reference_diameter};
-    // std::vector<real> probeCoordsZ = {3*reference_diameter,3*reference_diameter,3*reference_diameter};
-    // pointProbe->addProbePointsFromList(probeCoordsX, probeCoordsY, probeCoordsZ);
-    // // pointProbe->addProbePointsFromXNormalPlane(2*D, 0.0, 0.0, L_y, L_z, (uint)L_y/dx, (uint)L_z/dx);
+    SPtr<PointProbe> pointProbe = std::make_shared<PointProbe>("pointProbe", para->getOutputPath(), 100, 1, 500, 100, false);
+    std::vector<real> probeCoordsX = {reference_diameter,2*reference_diameter,5*reference_diameter};
+    std::vector<real> probeCoordsY = {3*reference_diameter,3*reference_diameter,3*reference_diameter};
+    std::vector<real> probeCoordsZ = {3*reference_diameter,3*reference_diameter,3*reference_diameter};
+    pointProbe->addProbePointsFromList(probeCoordsX, probeCoordsY, probeCoordsZ);
+    // pointProbe->addProbePointsFromXNormalPlane(2*D, 0.0, 0.0, L_y, L_z, (uint)L_y/dx, (uint)L_z/dx);
 
-    // pointProbe->addStatistic(Statistic::Means);
-    // pointProbe->addStatistic(Statistic::Variances);
-    // para->addProbe( pointProbe );
+    pointProbe->addStatistic(Statistic::Means);
+    pointProbe->addStatistic(Statistic::Variances);
+    para->addProbe( pointProbe );
 
-    // SPtr<PlaneProbe> planeProbe = std::make_shared<PlaneProbe>("planeProbe", para->getOutputPath(), 100, 500, 100, 100);
-    // planeProbe->setProbePlane(5*reference_diameter, 0, 0, dx, L_y, L_z);
-    // planeProbe->addStatistic(Statistic::Means);
-    // para->addProbe( planeProbe );
+    SPtr<PointProbe> timeseriesProbe = std::make_shared<PointProbe>("timeProbe", para->getOutputPath(), 100, 1, 500, 100, true);
+
+    timeseriesProbe->addProbePointsFromList(probeCoordsX, probeCoordsY, probeCoordsZ);
+    // pointProbe->addProbePointsFromXNormalPlane(2*D, 0.0, 0.0, L_y, L_z, (uint)L_y/dx, (uint)L_z/dx);
+
+    timeseriesProbe->addStatistic(Statistic::Instantaneous);
+    para->addProbe( timeseriesProbe );
+
+    SPtr<PlaneProbe> planeProbe = std::make_shared<PlaneProbe>("planeProbe", para->getOutputPath(), 100, 500, 100, 100);
+    planeProbe->setProbePlane(5*reference_diameter, 0, 0, dx, L_y, L_z);
+    planeProbe->addStatistic(Statistic::Means);
+    para->addProbe( planeProbe );
 
 
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
