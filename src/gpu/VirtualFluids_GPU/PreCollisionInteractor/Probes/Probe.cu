@@ -290,6 +290,8 @@ void Probe::interact(Parameter* para, CudaMemoryManager* cudaMemoryManager, int 
 {
     uint t_level = para->getTimeStep(level, t, false);
 
+    SPtr<ProbeStruct> probeStruct = this->getProbeStruct(level);
+
     //! if tAvg==1 the probe will be evaluated in every sub-timestep of each respective level
     //! else, the probe will only be evaluated in each synchronous time step tAvg
 
@@ -297,7 +299,6 @@ void Probe::interact(Parameter* para, CudaMemoryManager* cudaMemoryManager, int 
 
     if(max(int(t_level) - int(this->tStartAvg*exp2(level)), -1) % tAvg_level==0)
     {
-        SPtr<ProbeStruct> probeStruct = this->getProbeStruct(level);
         this->calculateQuantities(probeStruct, para, t_level, level);
 
         if(t_level>=(this->tStartTmpAveraging*exp2(level))) probeStruct->timestepInTimeAverage++;
@@ -310,6 +311,7 @@ void Probe::interact(Parameter* para, CudaMemoryManager* cudaMemoryManager, int 
         if(this->hasDeviceQuantityArray)
             cudaMemoryManager->cudaCopyProbeQuantityArrayDtoH(this, level);
         this->write(para, level, t);
+        probeStruct->timestepInTimeseries = 0;
     }
 }
 
@@ -377,19 +379,24 @@ void Probe::addAllAvailableStatistics()
 
 void Probe::write(Parameter* para, int level, int t)
 {
-    int t_write = this->fileNameLU ? t: t/this->tOut; 
-
-    const uint numberOfParts = this->getProbeStruct(level)->nPoints / para->getlimitOfNodesForVTK() + 1;
-
-    std::vector<std::string> fnames;
-    for (uint i = 1; i <= numberOfParts; i++)
-	{
-        this->writeGridFile(para, level, t_write, i);
-    }
-    if(level == 0&& !this->outputTimeSeries) this->writeParallelFile(para, t);
-
     if(this->outputTimeSeries)
-        appendTimeseriesFile(para, level, t);
+    {
+        this->appendTimeseriesFile(para, level, t);
+    }
+    else
+    {
+        int t_write = this->fileNameLU ? t: t/this->tOut; 
+
+        const uint numberOfParts = this->getProbeStruct(level)->nPoints / para->getlimitOfNodesForVTK() + 1;
+
+        std::vector<std::string> fnames;
+        for (uint i = 1; i <= numberOfParts; i++)
+        {
+            this->writeGridFile(para, level, t_write, i);
+        }
+        if(level == 0&& !this->outputTimeSeries) this->writeParallelFile(para, t);
+    }
+
 }
 
 void Probe::writeParallelFile(Parameter* para, int t)
@@ -479,20 +486,20 @@ t1 point1.quant1 point2.quant1 ... point1.quant2 point2.quant2 ...
     out << "TimeseriesOutput \n";
     out << "Quantities: ";
     for(std::string name : getVarNames())
-        out << name;
+        out << name << ", ";
     out << "\n";
     out << "Positions: \n";
 
     out << "x: ";
-    for(uint i=0;i<probeStruct->nPoints;i++) out << probeStruct->pointCoordsX[i];   
+    for(uint i=0;i<probeStruct->nPoints;i++) out << probeStruct->pointCoordsX[i] << ", ";   
     out << "\n"; 
 
     out << "y: ";
-    for(uint i=0;i<probeStruct->nPoints;i++) out << probeStruct->pointCoordsX[i];  
+    for(uint i=0;i<probeStruct->nPoints;i++) out << probeStruct->pointCoordsY[i] << ", ";  
     out << "\n"; 
 
     out << "z: ";
-    for(uint i=0;i<probeStruct->nPoints;i++) out << probeStruct->pointCoordsX[i];
+    for(uint i=0;i<probeStruct->nPoints;i++) out << probeStruct->pointCoordsZ[i] << ", ";
     out << "\n";
 
     out.close();
