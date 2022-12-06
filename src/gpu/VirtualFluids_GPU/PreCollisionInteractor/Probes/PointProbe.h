@@ -50,7 +50,8 @@ public:
         uint _tStartAvg,
         uint _tAvg,
         uint _tStartOut,
-        uint _tOut
+        uint _tOut,
+        bool _outputTimeseries
     ): Probe(_probeName, 
              _outputPath,
              _tStartAvg, 
@@ -59,7 +60,7 @@ public:
              _tStartOut, 
              _tOut,
              true,
-             false)
+             _outputTimeseries)
     {}
 
     void addProbePointsFromList(std::vector<real>& _pointCoordsX, std::vector<real>& _pointCoordsY, std::vector<real>& _pointCoordsZ);
@@ -80,6 +81,8 @@ private:
 
 private:
     std::vector<real> pointCoordsX, pointCoordsY, pointCoordsZ; 
+    uint getNumberOfTimestepsInTimeseries(Parameter* para, int level) override { return outputTimeSeries ? tOut : 1; }
+
 
 };
 
