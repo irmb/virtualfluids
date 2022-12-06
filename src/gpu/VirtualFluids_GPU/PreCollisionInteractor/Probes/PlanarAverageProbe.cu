@@ -16,9 +16,11 @@
 #include "DataStructureInitializer/GridProvider.h"
 #include "GPU/CudaMemoryManager.h"
 #include "GPU/GPU_Interface.h"
+#include "lbm/constants/NumericConstants.h"
 
 #include <algorithm>
 
+using namespace vf::lbm::constant;
 ///////////////////////////////////////////////////////////////////////////////////
 /// Functors for thrust reductions
 ///////////////////////////////////////////////////////////////////////////////////
@@ -309,7 +311,7 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
     thrust::device_ptr<real> nut_thrust = thrust::device_pointer_cast(para->getParD(level)->turbViscosity);
 
     real N = (real)probeStruct->nIndices;
-    real n = (real)probeStruct->vals;
+    real invNumberOfTimestepsInTmpAvg = c1o1/real(probeStruct->timestepInTimeAverage);
     uint nPoints = probeStruct->nPoints;
     // Permutation iterators for direct iteration over the velocities of the planes
     typedef thrust::device_vector<real>::iterator valIterator;
@@ -352,10 +354,10 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
             real spatTmpMean_nut_old;
             if(para->getUseTurbulentViscosity()) spatTmpMean_nut_old = probeStruct->quantitiesArrayH[(arrOff+3)*nPoints+node];;
 
-            probeStruct->quantitiesArrayH[(arrOff+0)*nPoints+node] += (spatMean_vx-spatTmpMean_vx_old)/n;
-            probeStruct->quantitiesArrayH[(arrOff+1)*nPoints+node] += (spatMean_vy-spatTmpMean_vy_old)/n;
-            probeStruct->quantitiesArrayH[(arrOff+2)*nPoints+node] += (spatMean_vz-spatTmpMean_vz_old)/n;
-            if(para->getUseTurbulentViscosity()) probeStruct->quantitiesArrayH[(arrOff+3)*nPoints+node] += (spatMean_nut-spatTmpMean_nut_old)/n;
+            probeStruct->quantitiesArrayH[(arrOff+0)*nPoints+node] += (spatMean_vx-spatTmpMean_vx_old)*invNumberOfTimestepsInTmpAvg;
+            probeStruct->quantitiesArrayH[(arrOff+1)*nPoints+node] += (spatMean_vy-spatTmpMean_vy_old)*invNumberOfTimestepsInTmpAvg;
+            probeStruct->quantitiesArrayH[(arrOff+2)*nPoints+node] += (spatMean_vz-spatTmpMean_vz_old)*invNumberOfTimestepsInTmpAvg;
+            if(para->getUseTurbulentViscosity()) probeStruct->quantitiesArrayH[(arrOff+3)*nPoints+node] += (spatMean_nut-spatTmpMean_nut_old)*invNumberOfTimestepsInTmpAvg;
 
             }
         
@@ -392,12 +394,12 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
                     real spatTmpMean_vxvz_old = probeStruct->quantitiesArrayH[(arrOff+4)*nPoints+node];
                     real spatTmpMean_vyvz_old = probeStruct->quantitiesArrayH[(arrOff+5)*nPoints+node];
 
-                    probeStruct->quantitiesArrayH[(arrOff+0)*nPoints+node] += (spatMean_vxvx-spatTmpMean_vxvx_old)/n;
-                    probeStruct->quantitiesArrayH[(arrOff+1)*nPoints+node] += (spatMean_vyvy-spatTmpMean_vyvy_old)/n;
-                    probeStruct->quantitiesArrayH[(arrOff+2)*nPoints+node] += (spatMean_vzvz-spatTmpMean_vzvz_old)/n;
-                    probeStruct->quantitiesArrayH[(arrOff+3)*nPoints+node] += (spatMean_vxvy-spatTmpMean_vxvy_old)/n;
-                    probeStruct->quantitiesArrayH[(arrOff+4)*nPoints+node] += (spatMean_vxvz-spatTmpMean_vxvz_old)/n;
-                    probeStruct->quantitiesArrayH[(arrOff+5)*nPoints+node] += (spatMean_vyvz-spatTmpMean_vyvz_old)/n;
+                    probeStruct->quantitiesArrayH[(arrOff+0)*nPoints+node] += (spatMean_vxvx-spatTmpMean_vxvx_old)*invNumberOfTimestepsInTmpAvg;
+                    probeStruct->quantitiesArrayH[(arrOff+1)*nPoints+node] += (spatMean_vyvy-spatTmpMean_vyvy_old)*invNumberOfTimestepsInTmpAvg;
+                    probeStruct->quantitiesArrayH[(arrOff+2)*nPoints+node] += (spatMean_vzvz-spatTmpMean_vzvz_old)*invNumberOfTimestepsInTmpAvg;
+                    probeStruct->quantitiesArrayH[(arrOff+3)*nPoints+node] += (spatMean_vxvy-spatTmpMean_vxvy_old)*invNumberOfTimestepsInTmpAvg;
+                    probeStruct->quantitiesArrayH[(arrOff+4)*nPoints+node] += (spatMean_vxvz-spatTmpMean_vxvz_old)*invNumberOfTimestepsInTmpAvg;
+                    probeStruct->quantitiesArrayH[(arrOff+5)*nPoints+node] += (spatMean_vyvz-spatTmpMean_vyvz_old)*invNumberOfTimestepsInTmpAvg;
                 }
 
                 if(probeStruct->quantitiesH[int(Statistic::SpatialSkewness)])
@@ -427,9 +429,9 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
                         real spatTmpMean_Sy_old = probeStruct->quantitiesArrayH[(arrOff+1)*nPoints+node];
                         real spatTmpMean_Sz_old = probeStruct->quantitiesArrayH[(arrOff+2)*nPoints+node];
 
-                        probeStruct->quantitiesArrayH[(arrOff+0)*nPoints+node] += (spatMean_Sx-spatTmpMean_Sx_old)/n;
-                        probeStruct->quantitiesArrayH[(arrOff+1)*nPoints+node] += (spatMean_Sy-spatTmpMean_Sy_old)/n;
-                        probeStruct->quantitiesArrayH[(arrOff+2)*nPoints+node] += (spatMean_Sz-spatTmpMean_Sz_old)/n;
+                        probeStruct->quantitiesArrayH[(arrOff+0)*nPoints+node] += (spatMean_Sx-spatTmpMean_Sx_old)*invNumberOfTimestepsInTmpAvg;
+                        probeStruct->quantitiesArrayH[(arrOff+1)*nPoints+node] += (spatMean_Sy-spatTmpMean_Sy_old)*invNumberOfTimestepsInTmpAvg;
+                        probeStruct->quantitiesArrayH[(arrOff+2)*nPoints+node] += (spatMean_Sz-spatTmpMean_Sz_old)*invNumberOfTimestepsInTmpAvg;
                     }
 
                     if(probeStruct->quantitiesH[int(Statistic::SpatialFlatness)])
@@ -456,9 +458,9 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
                             real spatTmpMean_Fy_old = probeStruct->quantitiesArrayH[(arrOff+1)*nPoints+node];
                             real spatTmpMean_Fz_old = probeStruct->quantitiesArrayH[(arrOff+2)*nPoints+node];
 
-                            probeStruct->quantitiesArrayH[(arrOff+0)*nPoints+node] += (spatMean_Fx-spatTmpMean_Fx_old)/n;
-                            probeStruct->quantitiesArrayH[(arrOff+1)*nPoints+node] += (spatMean_Fy-spatTmpMean_Fy_old)/n;
-                            probeStruct->quantitiesArrayH[(arrOff+2)*nPoints+node] += (spatMean_Fz-spatTmpMean_Fz_old)/n;
+                            probeStruct->quantitiesArrayH[(arrOff+0)*nPoints+node] += (spatMean_Fx-spatTmpMean_Fx_old)*invNumberOfTimestepsInTmpAvg;
+                            probeStruct->quantitiesArrayH[(arrOff+1)*nPoints+node] += (spatMean_Fy-spatTmpMean_Fy_old)*invNumberOfTimestepsInTmpAvg;
+                            probeStruct->quantitiesArrayH[(arrOff+2)*nPoints+node] += (spatMean_Fz-spatTmpMean_Fz_old)*invNumberOfTimestepsInTmpAvg;
                         }
                     }
                 }
