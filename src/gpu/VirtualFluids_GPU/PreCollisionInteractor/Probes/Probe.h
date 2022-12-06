@@ -100,7 +100,10 @@ typedef struct PostProcessingVariable{
 } PostProcessingVariable;
 
 struct ProbeStruct{
-    uint nPoints, nIndices, nArrays, vals;
+    uint nPoints, nIndices, nArrays;
+    uint nTimesteps=1;
+    uint timestepInTimeseries=0;
+    uint timestepInTimeAverage=0;
     uint *pointIndicesH, *pointIndicesD;
     real *pointCoordsX, *pointCoordsY, *pointCoordsZ;
     bool hasDistances=false;
@@ -112,7 +115,7 @@ struct ProbeStruct{
 };
 
 __global__ void calcQuantitiesKernel(   uint* pointIndices,
-                                    uint nPoints, uint n,
+                                    uint nPoints, uint timestep, uint nTimesteps,
                                     real* vx, real* vy, real* vz, real* rho,            
                                     uint* neighborX, uint* neighborY, uint* neighborZ,
                                     bool* quantities,
@@ -120,7 +123,7 @@ __global__ void calcQuantitiesKernel(   uint* pointIndices,
                                 );
 
 __global__ void interpAndCalcQuantitiesKernel(   uint* pointIndices,
-                                    uint nPoints, uint n,
+                                    uint nPoints, uint timestep, uint nTimesteps,
                                     real* distX, real* distY, real* distZ,
                                     real* vx, real* vy, real* vz, real* rho,            
                                     uint* neighborX, uint* neighborY, uint* neighborZ,
@@ -159,7 +162,6 @@ public:
     void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaMemoryManager) override;
     void interact(Parameter* para, CudaMemoryManager* cudaMemoryManager, int level, uint t) override;
     void free(Parameter* para, CudaMemoryManager* cudaMemoryManager) override;
-    virtual void getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider) override;
 
     SPtr<ProbeStruct> getProbeStruct(int level){ return this->probeParams[level]; }
 
@@ -185,7 +187,7 @@ private:
                        std::vector<real>& distX_level, std::vector<real>& distY_level, std::vector<real>& distZ_level,      
                        std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
                        int level) = 0;
-    void addProbeStruct(CudaMemoryManager* cudaMemoryManager, std::vector<int>& probeIndices,
+    void addProbeStruct(Parameter* para, CudaMemoryManager* cudaMemoryManager, std::vector<int>& probeIndices,
                         std::vector<real>& distX, std::vector<real>& distY, std::vector<real>& distZ,   
                         std::vector<real>& pointCoordsX, std::vector<real>& pointCoordsY, std::vector<real>& pointCoordsZ,
                         int level);
@@ -194,10 +196,15 @@ private:
     virtual void write(Parameter* para, int level, int t);
     virtual void writeParallelFile(Parameter* para, int t);
     virtual void writeGridFile(Parameter* para, int level, int t, uint part);
+    std::string writeTimeseriesHeader(Parameter* para, int level);
+    void appendTimeseriesFile(Parameter* para, int level, int t);
 
     std::vector<std::string> getVarNames();
     std::string makeGridFileName(int level, int id, int t, uint part);
     std::string makeParallelFileName(int id, int t);
+    std::string makeTimeseriesFileName(int leve, int id);
+
+    virtual uint getNumberOfTimestepsInTimeseries(Parameter* para, int level){ return 1; }
 
 protected:
     const std::string probeName;
@@ -209,6 +216,7 @@ protected:
     bool outputTimeSeries;          //!> flag initiating overwrite of output vtk files, skipping collection files and limiting the length of the written data to the current time step (currently only used for WallModelProbe)
     std::vector<std::string> fileNamesForCollectionFile;
     std::vector<std::string> varNames;
+    std::vector<std::string> timeseriesFileNames;
 
     bool fileNameLU = true; //!> if true, written file name contains time step in LU, else is the number of the written probe files
 
@@ -218,8 +226,6 @@ protected:
     uint tAvg;  //! for tAvg==1 the probe will be evaluated in every sub-timestep of each respective level, else, the probe will only be evaluated in each synchronous time step 
     uint tStartOut;
     uint tOut;
-
-    uint tProbe = 0; //!> counter for number of probe evaluations. Only used when outputting timeseries
 
     std::function<real(int)> velocityRatio;
     std::function<real(int)> densityRatio;

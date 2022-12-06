@@ -47,64 +47,69 @@
 
 using namespace vf::lbm::constant;
 
-__device__ void calculatePointwiseQuantities(uint n, real* quantityArray, bool* quantities, uint* quantityArrayOffsets, uint nPoints, uint node, real vx, real vy, real vz, real rho)
+__host__ __device__ int calcArrayIndex(int node, int nNodes, int timestep, int nTimesteps, int array)
+{
+    return node+nNodes*(timestep+nTimesteps*array);
+}
+
+__device__ void calculatePointwiseQuantities(uint timestep, uint nTimesteps, real* quantityArray, bool* quantities, uint* quantityArrayOffsets, uint nPoints, uint node, real vx, real vy, real vz, real rho)
 {
     //"https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm"
     // also has extensions for higher order and covariances
-    real inv_n = 1/real(n);
+    real inv_n = 1/real(timestep);
 
     if(quantities[int(Statistic::Instantaneous)])
     {
         uint arrOff = quantityArrayOffsets[int(Statistic::Instantaneous)];
-        quantityArray[(arrOff+0)*nPoints+node] = vx;
-        quantityArray[(arrOff+1)*nPoints+node] = vy;
-        quantityArray[(arrOff+2)*nPoints+node] = vz;
-        quantityArray[(arrOff+3)*nPoints+node] = rho;
+        quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+0)] = vx;
+        quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+1)] = vy;
+        quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+2)] = vz;
+        quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+3)] = rho;
     }
 
     if(quantities[int(Statistic::Means)])
     {
         
         uint arrOff = quantityArrayOffsets[int(Statistic::Means)];
-        real vx_m_old  = quantityArray[(arrOff+0)*nPoints+node];
-        real vy_m_old  = quantityArray[(arrOff+1)*nPoints+node];
-        real vz_m_old  = quantityArray[(arrOff+2)*nPoints+node];
-        real rho_m_old = quantityArray[(arrOff+3)*nPoints+node];
+        real vx_m_old  = quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+0)];
+        real vy_m_old  = quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+1)];
+        real vz_m_old  = quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+2)];
+        real rho_m_old = quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+3)];
 
-        real vx_m_new  = ( (n-1)*vx_m_old + vx  )*inv_n;
-        real vy_m_new  = ( (n-1)*vy_m_old + vy  )*inv_n;
-        real vz_m_new  = ( (n-1)*vz_m_old + vz  )*inv_n;
-        real rho_m_new = ( (n-1)*rho_m_old+ rho )*inv_n;
+        real vx_m_new  = ( (timestep-1)*vx_m_old + vx  )*inv_n;
+        real vy_m_new  = ( (timestep-1)*vy_m_old + vy  )*inv_n;
+        real vz_m_new  = ( (timestep-1)*vz_m_old + vz  )*inv_n;
+        real rho_m_new = ( (timestep-1)*rho_m_old+ rho )*inv_n;
 
-        quantityArray[(arrOff+0)*nPoints+node] = vx_m_new;
-        quantityArray[(arrOff+1)*nPoints+node] = vy_m_new;
-        quantityArray[(arrOff+2)*nPoints+node] = vz_m_new;
-        quantityArray[(arrOff+3)*nPoints+node] = rho_m_new;
+        quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+0)] = vx_m_new;
+        quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+1)] = vy_m_new;
+        quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+2)] = vz_m_new;
+        quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+3)] = rho_m_new;
     
         if(quantities[int(Statistic::Variances)])
         {
             arrOff = quantityArrayOffsets[int(Statistic::Variances)];
 
-            real vx_var_old  = quantityArray[(arrOff+0)*nPoints+node];
-            real vy_var_old  = quantityArray[(arrOff+1)*nPoints+node];
-            real vz_var_old  = quantityArray[(arrOff+2)*nPoints+node];
-            real rho_var_old = quantityArray[(arrOff+3)*nPoints+node];
+            real vx_var_old  = quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+0)];
+            real vy_var_old  = quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+1)];
+            real vz_var_old  = quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+2)];
+            real rho_var_old = quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+3)];
 
-            real vx_var_new  = ( (n-1)*(vx_var_old )+(vx  - vx_m_old )*(vx  - vx_m_new ) )*inv_n;
-            real vy_var_new  = ( (n-1)*(vy_var_old )+(vy  - vy_m_old )*(vy  - vy_m_new ) )*inv_n;
-            real vz_var_new  = ( (n-1)*(vz_var_old )+(vz  - vz_m_old )*(vz  - vz_m_new ) )*inv_n;
-            real rho_var_new = ( (n-1)*(rho_var_old)+(rho - rho_m_old)*(rho - rho_m_new) )*inv_n;
+            real vx_var_new  = ( (timestep-1)*(vx_var_old )+(vx  - vx_m_old )*(vx  - vx_m_new ) )*inv_n;
+            real vy_var_new  = ( (timestep-1)*(vy_var_old )+(vy  - vy_m_old )*(vy  - vy_m_new ) )*inv_n;
+            real vz_var_new  = ( (timestep-1)*(vz_var_old )+(vz  - vz_m_old )*(vz  - vz_m_new ) )*inv_n;
+            real rho_var_new = ( (timestep-1)*(rho_var_old)+(rho - rho_m_old)*(rho - rho_m_new) )*inv_n;
 
-            quantityArray[(arrOff+0)*nPoints+node] = vx_var_new;
-            quantityArray[(arrOff+1)*nPoints+node] = vy_var_new;
-            quantityArray[(arrOff+2)*nPoints+node] = vz_var_new;
-            quantityArray[(arrOff+3)*nPoints+node] = rho_var_new; 
+            quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+0)] = vx_var_new;
+            quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+1)] = vy_var_new;
+            quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+2)] = vz_var_new;
+            quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+3)] = rho_var_new; 
         }
     }
 }
 
 __global__ void calcQuantitiesKernel(   uint* pointIndices,
-                                    uint nPoints, uint n,
+                                    uint nPoints, uint timestep, uint nTimesteps,
                                     real* vx, real* vy, real* vz, real* rho,            
                                     uint* neighborX, uint* neighborY, uint* neighborZ,
                                     bool* quantities,
@@ -132,12 +137,12 @@ __global__ void calcQuantitiesKernel(   uint* pointIndices,
     u_interpZ = vz[k];
     rho_interp = rho[k];
 
-    calculatePointwiseQuantities(n, quantityArray, quantities, quantityArrayOffsets, nPoints, node, u_interpX, u_interpY, u_interpZ, rho_interp);
+    calculatePointwiseQuantities(timestep, nTimesteps, quantityArray, quantities, quantityArrayOffsets, nPoints, node, u_interpX, u_interpY, u_interpZ, rho_interp);
 
 }
 
 __global__ void interpAndCalcQuantitiesKernel(   uint* pointIndices,
-                                    uint nPoints, uint n,
+                                    uint nPoints, uint timestep, uint nTimesteps,
                                     real* distX, real* distY, real* distZ,
                                     real* vx, real* vy, real* vz, real* rho,            
                                     uint* neighborX, uint* neighborY, uint* neighborZ,
@@ -173,7 +178,7 @@ __global__ void interpAndCalcQuantitiesKernel(   uint* pointIndices,
     u_interpZ  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vz );
     rho_interp = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, rho );
 
-    calculatePointwiseQuantities(n, quantityArray, quantities, quantityArrayOffsets, nPoints, node, u_interpX, u_interpY, u_interpZ, rho_interp);
+    calculatePointwiseQuantities(timestep, nTimesteps, quantityArray, quantities, quantityArrayOffsets, nPoints, node, u_interpX, u_interpY, u_interpZ, rho_interp);
 
 }
 
@@ -207,20 +212,22 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
                        pointCoordsX_level, pointCoordsY_level, pointCoordsZ_level,
                        level);
         
-        this->addProbeStruct(cudaMemoryManager, probeIndices_level, 
+        this->addProbeStruct(para, cudaMemoryManager, probeIndices_level, 
                             distX_level, distY_level, distZ_level, 
                             pointCoordsX_level, pointCoordsY_level, pointCoordsZ_level, 
                             level);
+
+        if(this->outputTimeSeries) timeseriesFileNames.push_back(this->writeTimeseriesHeader(para, level));
     }
 }
 
-void Probe::addProbeStruct(CudaMemoryManager* cudaMemoryManager, std::vector<int>& probeIndices,
-                                      std::vector<real>& distX, std::vector<real>& distY, std::vector<real>& distZ,   
-                                      std::vector<real>& pointCoordsX, std::vector<real>& pointCoordsY, std::vector<real>& pointCoordsZ,
-                                      int level)
+void Probe::addProbeStruct( Parameter* para, CudaMemoryManager* cudaMemoryManager, std::vector<int>& probeIndices,
+                            std::vector<real>& distX, std::vector<real>& distY, std::vector<real>& distZ,   
+                            std::vector<real>& pointCoordsX, std::vector<real>& pointCoordsY, std::vector<real>& pointCoordsZ,
+                            int level)
 {
     probeParams[level] = SPtr<ProbeStruct>(new ProbeStruct);
-    probeParams[level]->vals = 1;
+    probeParams[level]->nTimesteps = this->getNumberOfTimestepsInTimeseries(para, level);
     probeParams[level]->nPoints  = uint(pointCoordsX.size()); // Note, need to have both nPoints and nIndices because they differ in PlanarAverage
     probeParams[level]->nIndices = uint(probeIndices.size());
 
@@ -276,6 +283,7 @@ void Probe::addProbeStruct(CudaMemoryManager* cudaMemoryManager, std::vector<int
     }
     if(this->hasDeviceQuantityArray)
         cudaMemoryManager->cudaCopyProbeQuantityArrayHtoD(this, level);
+
 }
 
 void Probe::interact(Parameter* para, CudaMemoryManager* cudaMemoryManager, int level, uint t)
@@ -285,17 +293,19 @@ void Probe::interact(Parameter* para, CudaMemoryManager* cudaMemoryManager, int 
     //! if tAvg==1 the probe will be evaluated in every sub-timestep of each respective level
     //! else, the probe will only be evaluated in each synchronous time step tAvg
 
-    uint tAvg_level = this->tAvg==1? this->tAvg: this->tAvg*pow(2,level);          
+    uint tAvg_level = this->tAvg==1? this->tAvg: this->tAvg*exp2(level);          
 
-    if(max(int(t_level) - int(this->tStartAvg*pow(2,level)), -1) % tAvg_level==0)
+    if(max(int(t_level) - int(this->tStartAvg*exp2(level)), -1) % tAvg_level==0)
     {
         SPtr<ProbeStruct> probeStruct = this->getProbeStruct(level);
         this->calculateQuantities(probeStruct, para, t_level, level);
-        if(t_level>=(this->tStartTmpAveraging*pow(2,level))) probeStruct->vals++;
+
+        if(t_level>=(this->tStartTmpAveraging*exp2(level))) probeStruct->timestepInTimeAverage++;
+        if(t_level>=(this->tStartOut*exp2(level))) probeStruct->timestepInTimeseries++;
     }
 
     //! output only in synchronous timesteps
-    if(max(int(t_level) - int(this->tStartOut*pow(2,level)), -1) % int(this->tOut*pow(2,level)) == 0)
+    if(max(int(t_level) - int(this->tStartOut*exp2(level)), -1) % int(this->tOut*exp2(level)) == 0)
     {   
         if(this->hasDeviceQuantityArray)
             cudaMemoryManager->cudaCopyProbeQuantityArrayDtoH(this, level);
@@ -315,11 +325,6 @@ void Probe::free(Parameter* para, CudaMemoryManager* cudaMemoryManager)
     }
 }
 
-void Probe::getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider)
-{
-    // Do nothing
-};
-
 
 void Probe::addStatistic(Statistic variable)
 {
@@ -335,22 +340,32 @@ void Probe::addStatistic(Statistic variable)
     }
 }
 
+template<typename T>
+std::string nameComponent(std::string name, T value)
+{
+    return "_" + name + "_" + StringUtil::toString<T>(value); 
+}
+
 std::string Probe::makeParallelFileName(int id, int t)
 {
-    return this->probeName + "_bin_ID_" + StringUtil::toString<int>(id) 
-                                           + "_t_" + StringUtil::toString<int>(t) 
-                                           + ".vtk";
+    return this->probeName + "_bin" + nameComponent<int>("ID", id) + nameComponent<int>("t", t) + ".vtk"; 
+
 }
 
 std::string Probe::makeGridFileName(int level, int id, int t, uint part)
 {
-    return this->probeName + "_bin_lev_" + StringUtil::toString<int>(level)
-                                         + "_ID_" + StringUtil::toString<int>(id)
-                                         + "_Part_" + StringUtil::toString<int>(part) 
-                                         + "_t_" + StringUtil::toString<int>(t) 
-                                         + ".vtk";
+    return this->probeName + "_bin" + nameComponent<int>("lev", level)
+                                    + nameComponent<int>("ID", id)
+                                    + nameComponent<int>("part", part)
+                                    + nameComponent<int>("t", t) + ".vtk";
 }
 
+std::string Probe::makeTimeseriesFileName(int level, int id)
+{
+    return this->probeName + "_timeseries" + nameComponent<int>("lev", level)
+                                    + nameComponent<int>("ID", id)
+                                    + ".txt";
+}
 void Probe::addAllAvailableStatistics()
 {
     for( int var=0; var < int(Statistic::LAST); var++)
@@ -372,6 +387,9 @@ void Probe::write(Parameter* para, int level, int t)
         this->writeGridFile(para, level, t_write, i);
     }
     if(level == 0&& !this->outputTimeSeries) this->writeParallelFile(para, t);
+
+    if(this->outputTimeSeries)
+        appendTimeseriesFile(para, level, t);
 }
 
 void Probe::writeParallelFile(Parameter* para, int t)
@@ -412,26 +430,26 @@ void Probe::writeGridFile(Parameter* para, int level, int t, uint part)
     }
 
     for( auto it=nodedata.begin(); it!=nodedata.end(); it++) it->resize(sizeOfNodes);
+            uint arrLen = probeStruct->nPoints;
 
-    for( int var=0; var < int(Statistic::LAST); var++){           
+    for( int var=0; var < int(Statistic::LAST); var++)
+    {           
         if(this->quantities[var])
         {
-            Statistic statistic = static_cast<Statistic>(var);
-            real coeff;
 
+            Statistic statistic = static_cast<Statistic>(var);
             std::vector<PostProcessingVariable> postProcessingVariables = this->getPostProcessingVariables(statistic);
             uint n_arrs = uint(postProcessingVariables.size());
 
             uint arrOff = probeStruct->arrayOffsetsH[var];
-            uint arrLen = probeStruct->nPoints;
 
             for(uint arr=0; arr<n_arrs; arr++)
             {
-                coeff = postProcessingVariables[arr].conversionFactor(level);
+                real coeff = postProcessingVariables[arr].conversionFactor(level);
                 
                 for (uint pos = startpos; pos < endpos; pos++)
                 {
-                    nodedata[arrOff+arr][pos-startpos] = double(probeStruct->quantitiesArrayH[(arrOff+arr)*arrLen+pos]*coeff);
+                    nodedata[arrOff+arr][pos-startpos] = double(probeStruct->quantitiesArrayH[calcArrayIndex(pos, arrLen, 0, 1, arrOff+arr)]*coeff);
                 }
             }
         }
@@ -439,6 +457,91 @@ void Probe::writeGridFile(Parameter* para, int level, int t, uint part)
     std::string fullName = getWriter()->writeNodesWithNodeData(fname, nodes, nodedatanames, nodedata);
     this->fileNamesForCollectionFile.push_back(fullName.substr(fullName.find_last_of('/') + 1));
 }
+
+std::string Probe::writeTimeseriesHeader(Parameter* para, int level)
+{
+/*
+File Layout:
+TimeseriesOutput
+Quantities: Quant1 Quant2 Quant3
+Positions:
+x: point1.x point2.x ...
+y: point1.y point2.y ...
+z: point1.z point2.z ... 
+t0 point1.quant1 point2.quant1 ... point1.quant2 point2.quant2 ...
+t1 point1.quant1 point2.quant1 ... point1.quant2 point2.quant2 ...
+*/
+    std::string fname = this->outputPath + "/" + this->makeTimeseriesFileName(level, para->getMyProcessID());
+    auto probeStruct = this->getProbeStruct(level);
+    std::ofstream out(fname.c_str(), std::ios::out | std::ios::binary);
+
+    if(!out.is_open()) throw std::runtime_error("Could not open timeseries file!");
+    out << "TimeseriesOutput \n";
+    out << "Quantities: ";
+    for(std::string name : getVarNames())
+        out << name;
+    out << "\n";
+    out << "Positions: \n";
+
+    out << "x: ";
+    for(int i=0;i<probeStruct->nPoints;i++) out << probeStruct->pointCoordsX[i];   
+    out << "\n"; 
+
+    out << "y: ";
+    for(int i=0;i<probeStruct->nPoints;i++) out << probeStruct->pointCoordsX[i];  
+    out << "\n"; 
+
+    out << "z: ";
+    for(int i=0;i<probeStruct->nPoints;i++) out << probeStruct->pointCoordsX[i];
+    out << "\n";
+
+    out.close();
+
+    return fname;
+}
+
+void Probe::appendTimeseriesFile(Parameter* para, int level, int t)
+{
+    std::ofstream out(this->timeseriesFileNames[level], std::ios::app | std::ios::binary);
+
+    uint t_level = para->getTimeStep(level, t, false);
+    real dt = para->getTimeRatio()*exp2(-level);
+    auto probeStruct = this->getProbeStruct(level);
+
+    real t_start = (t-tStartOut)/tOut*para->getTimeRatio();
+
+    for(int timestep=0; timestep<probeStruct->timestepInTimeseries; timestep++)
+    {
+        out << t_start+timestep*dt;
+
+        for( int var=0; var < int(Statistic::LAST); var++)
+        {           
+            if(!this->quantities[var]) continue;
+            
+            Statistic statistic = static_cast<Statistic>(var);
+            std::vector<PostProcessingVariable> postProcessingVariables = this->getPostProcessingVariables(statistic);
+            uint n_arrs = uint(postProcessingVariables.size());
+
+            uint arrOff = probeStruct->arrayOffsetsH[var];
+
+            for(int arr=0; arr<n_arrs; arr++)
+            {
+                real coeff = postProcessingVariables[arr].conversionFactor(level);
+                for(int point=0; point<probeStruct->nPoints; point++)
+                {
+                    out << probeStruct->quantitiesArrayH[calcArrayIndex(point, probeStruct->nPoints, timestep, probeStruct->timestepInTimeseries, arrOff+arr)]*coeff;
+                }
+            }
+            
+        }
+    }
+
+    out << "\n";
+
+    out.close();
+}
+
+
 
 std::vector<std::string> Probe::getVarNames()
 {
