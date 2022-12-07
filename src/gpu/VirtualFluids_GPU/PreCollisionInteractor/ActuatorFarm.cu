@@ -12,7 +12,7 @@
 #include "Parameter/CudaStreamManager.h"
 #include "DataStructureInitializer/GridProvider.h"
 #include "GPU/CudaMemoryManager.h"
-#include "lbm/constants/NumericConstants.h"
+#include <lbm/constants/NumericConstants.h>
 #include <logger/Logger.h>
 
 using namespace vf::lbm::constant;
