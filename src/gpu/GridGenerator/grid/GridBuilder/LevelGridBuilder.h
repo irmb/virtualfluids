@@ -72,7 +72,7 @@ public:
 
     GRIDGENERATOR_EXPORT SPtr<Grid> getGrid(uint level) override;
 
-    GRIDGENERATOR_EXPORT virtual ~LevelGridBuilder();
+    GRIDGENERATOR_EXPORT  ~LevelGridBuilder() override;
 
     GRIDGENERATOR_EXPORT void setSlipBoundaryCondition(SideType sideType, real nomalX, real normalY, real normalZ);
     GRIDGENERATOR_EXPORT void setStressBoundaryCondition(SideType sideType, real nomalX, real normalY, real normalZ, uint samplingOffset, real z0);
@@ -87,7 +87,7 @@ public:
 
     GRIDGENERATOR_EXPORT uint getCommunicationProcess(int direction) override;
 
-    GRIDGENERATOR_EXPORT virtual std::shared_ptr<Grid> getGrid(int level, int box);
+    GRIDGENERATOR_EXPORT std::shared_ptr<Grid> getGrid(int level, int box);
 
     GRIDGENERATOR_EXPORT virtual unsigned int getNumberOfNodes(unsigned int level) const override;
 
@@ -137,7 +137,7 @@ protected:
 
     struct BoundaryConditions
     {
-		BoundaryConditions() {}
+		BoundaryConditions() = default;
 
         std::vector<SPtr<SlipBoundaryCondition>> slipBoundaryConditions;
 

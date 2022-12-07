@@ -55,7 +55,7 @@ class TriangularMeshDiscretizationStrategy;
 #ifdef __GNUC__
     #ifndef __clang__
         #pragma push
-        #pragma diag_suppress = 3156
+        #pragma nv_diag_suppress = 3156
     #endif
 #endif
 

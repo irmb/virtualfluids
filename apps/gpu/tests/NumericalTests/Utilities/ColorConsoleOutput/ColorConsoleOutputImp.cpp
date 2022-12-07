@@ -4,7 +4,12 @@
 
 #include <iomanip>
 #include <ctime>
+#include <logger/Logger.h>
 
+
+void log(const char* fmt) {
+    VF_LOG_INFO("{}", fmt);
+}
 
 std::shared_ptr<ColorConsoleOutput> ColorConsoleOutputImp::getInstance()
 {
@@ -18,7 +23,7 @@ void ColorConsoleOutputImp::makeSimulationHeadOutput(std::shared_ptr<SimulationI
 {
 	std::ostringstream ossLine0;
 	ossLine0 << "# Simulation Number " << simInfo->getSimulationID() << " of " << simInfo->getNumberOfSimulations();
-	int length = 49 - ossLine0.str().size(); 
+	int length = 49 - ossLine0.str().size();
 	ossLine0 << std::setfill(' ') << std::right << std::setw(length) << "#";
 
 	std::ostringstream ossLine1;
@@ -29,7 +34,7 @@ void ColorConsoleOutputImp::makeSimulationHeadOutput(std::shared_ptr<SimulationI
 
 	std::ostringstream ossLine3;
 	ossLine3 << "# SIMULATION: " << std::setfill(' ') << std::left << std::setw(34) << simInfo->getSimulationName() << "#";
-	
+
 	std::ostringstream ossLine4;
 	ossLine4 << std::setfill(' ') << std::left << std::setw(14) << "#" << std::setw(34) << simInfo->getSimulationParameterString() << "#";
 
@@ -63,7 +68,7 @@ void ColorConsoleOutputImp::makeTestOutput(std::vector<std::string> testOutput, 
 	printColor(testOutput.at(0));
 	printColor("");
 
-	for (int i = 1; i < testOutput.size(); i++)
+	for (uint i = 1; i < testOutput.size(); i++)
 		print(testOutput.at(i));
 
 	printColor("");
@@ -85,79 +90,70 @@ void ColorConsoleOutputImp::makeFinalTestOutputFoot(int numberOfTests, int numbe
 	setColor(numberOfTests == numberOfPassedTest);
 	printLine();
 	printTestPassed(numberOfTests, numberOfExecutedTest, numberOfPassedTest, numberOfFailedTest, numberOfErrorTest, numberOfNotExecutedTest);
-	std::cout << std::endl;
 }
 
 void ColorConsoleOutputImp::printTestStart()
 {
-	testing::internal::ColoredPrintf(color, "[-----------]");
-	std::cout << std::endl;
-	testing::internal::ColoredPrintf(color, "[Run Test   ]");
-	std::cout << std::endl;
-	testing::internal::ColoredPrintf(color, "[TestInfo   ]");
-	std::cout << std::endl;
+	log( "[-----------]");
+	log( "[Run Test   ]");
+	log( "[TestInfo   ]");
 }
 
 void ColorConsoleOutputImp::printTestEnd(TestStatus status)
 {
-	testing::internal::ColoredPrintf(color, "[   TestInfo]");
-	std::cout << std::endl;
+	log( "[   TestInfo]");
 	switch (status)
 	{
-	case passed: testing::internal::ColoredPrintf(color , "[     PASSED]");
+	case passed: log( "[     PASSED]");
 		break;
-	case failed: testing::internal::ColoredPrintf(color, "[     FAILED]");
+	case failed: log( "[     FAILED]");
 		break;
-	case test_error: testing::internal::ColoredPrintf(color, "[      ERROR]");
+	case test_error: log( "[      ERROR]");
 		break;
-	case simulationCrashed: testing::internal::ColoredPrintf(color, "[Sim crashed]");
+	case simulationCrashed: log( "[Sim crashed]");
 		break;
 	default:
 		break;
 	}
 
-	std::cout << std::endl;
-	testing::internal::ColoredPrintf(color, "[-----------]");
-	std::cout << std::endl << std::endl;
+	log( "[-----------]");
 }
 
 void ColorConsoleOutputImp::print(std::string output)
 {
-	testing::internal::ColoredPrintf(color, "[           ] ");
-	testing::internal::ColoredPrintf(testing::internal::COLOR_DEFAULT, output.c_str());
-	std::cout << std::endl;
+	log("[           ] ");
+	log(output.c_str());
 }
 
 void ColorConsoleOutputImp::printColor(std::string output)
 {
-	testing::internal::ColoredPrintf(color, "[-----------] ");
-	testing::internal::ColoredPrintf(color, output.c_str());
-	std::cout << std::endl;
+	log("[-----------] ");
+	log(output.c_str());
 }
 
 void ColorConsoleOutputImp::setColor(TestStatus status)
 {
 	switch (status)
 	{
-	case passed: color = testing::internal::COLOR_GREEN;
+	case passed: color = "green";
 		break;
-	case failed: color = testing::internal::COLOR_RED;
+	case failed: color = "red";
 		break;
-	case test_error: color = testing::internal::COLOR_YELLOW;
+	case test_error: color = "yellow";
 		break;
-	case simulationCrashed: color = testing::internal::COLOR_YELLOW;
+	case simulationCrashed: color = "yellow";
 		break;
 	default:
 		break;
-	}		
+	}
 }
 
 void ColorConsoleOutputImp::setColor(bool passed)
 {
 	if (passed)
-		color = testing::internal::COLOR_GREEN;
+		color = "green";
 	else
-		color = testing::internal::COLOR_RED;
+		color = "red";
 }
 
 void ColorConsoleOutputImp::printTestPassed(int numberOfTests, int numberOfExecutedTest, int numberOfPassedTest, int numberOfFailedTest, int numberOfErrorTest, int numberOfNotExecutedTest)
@@ -174,21 +170,20 @@ void ColorConsoleOutputImp::printTestPassed(int numberOfTests, int numberOfExecu
 	test << "[-----------] " << numberOfPassedTest << " out of " << numberOfExecutedTest << " executed Tests passed" << std::endl;
 	test << "[-----------] " << numberOfFailedTest << " out of " << numberOfExecutedTest << " executed Tests failed" << std::endl;
 	test << "[-----------]" << std::endl;
-	testing::internal::ColoredPrintf(color, test.str().c_str());
+	log(test.str().c_str());
 }
 
 void ColorConsoleOutputImp::printLine()
 {
-	testing::internal::ColoredPrintf(color, "----------------------------------------------------------------------\n");
+	log("----------------------------------------------------------------------");
 }
 
 void ColorConsoleOutputImp::printGreen(std::string output)
 {
-	testing::internal::ColoredPrintf(testing::internal::COLOR_GREEN, output.c_str());
-	std::cout << std::endl;
+	log(output.c_str());
 }
 
 void ColorConsoleOutputImp::printGreenHashLine()
 {
-	testing::internal::ColoredPrintf(testing::internal::COLOR_GREEN, "#################################################\n"); 
+	log("#################################################");
 }
