@@ -9,7 +9,7 @@
 #include "gpu/GridGenerator/grid/GridImp.h"
 
 template <typename T>
-bool vectorsAreEqual(const T * vector1, const std::vector<T> vectorExpected)
+bool vectorsAreEqual(const T * vector1, const std::vector<T>& vectorExpected)
 {
     for (uint i = 0; i < vectorExpected.size(); i++) {
         if (vector1[i] != vectorExpected[i])
@@ -25,7 +25,7 @@ private:
     LevelGridBuilderDouble() = default;
 
 public:
-    LevelGridBuilderDouble(SPtr<Grid> grid) : LevelGridBuilder(), grid(grid){};
+    explicit LevelGridBuilderDouble(SPtr<Grid> grid) : LevelGridBuilder(), grid(grid){};
     SPtr<Grid> getGrid(uint) override
     {
         return grid;
@@ -44,14 +44,13 @@ public:
     {
     }
 
-    static SPtr<GridImpDouble> makeShared(Object *object, real startX, real startY, real startZ, real endX, real endY,
-                                          real endZ, real delta, Distribution d, uint level)
+    static SPtr<GridImpDouble> makeShared()
     {
-        SPtr<GridImpDouble> grid(new GridImpDouble(object, startX, startY, startZ, endX, endY, endZ, delta, d, level));
+        SPtr<GridImpDouble> grid(new GridImpDouble(nullptr, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, Distribution(), 1));
         return grid;
     }
 
-    void setFluidNodeIndicesBorder(std::vector<uint> fluidNodeIndicesBorder)
+    void setFluidNodeIndicesBorder(const std::vector<uint>& fluidNodeIndicesBorder)
     {
         this->fluidNodeIndicesBorder = fluidNodeIndicesBorder;
     }
@@ -101,7 +100,7 @@ private:
     std::unique_ptr<InterpolationCellGrouper> createTestSubjectCFBorderBulk()
     {
         SPtr<GridImpDouble> grid =
-            GridImpDouble::makeShared(nullptr, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, Distribution(), 1);
+            GridImpDouble::makeShared();
         grid->setFluidNodeIndicesBorder(cf.fluidNodeIndicesBorder);
         std::shared_ptr<LevelGridBuilderDouble> builder = std::make_shared<LevelGridBuilderDouble>(grid);
 
@@ -195,7 +194,7 @@ private:
     std::unique_ptr<InterpolationCellGrouper> createTestSubjectFCBorderBulk()
     {
         SPtr<GridImpDouble> grid =
-            GridImpDouble::makeShared(nullptr, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, Distribution(), 1);
+            GridImpDouble::makeShared();
         grid->setFluidNodeIndicesBorder(fc.fluidNodeIndicesBorder);
         std::shared_ptr<LevelGridBuilderDouble> builder = std::make_shared<LevelGridBuilderDouble>(grid);
 
