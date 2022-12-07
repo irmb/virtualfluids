@@ -241,15 +241,15 @@ double Communicator::sumNups(double processNups)
     return *buffer_recv;
 }
 
-void vf::gpu::Communicator::exchangeIndices(uint *rbuf, int count_r, int nb_rank_r, uint *sbuf, int count_s,
-                                            int nb_rank_s)
+void Communicator::receive_send(uint *buffer_receive, int size_buffer_recv, int neighbor_rank_recv, uint *buffer_send,
+                         int size_buffer_send, int neighbor_rank_send) const
 {
     MPI_Request recv_request;
-    MPI_Irecv(rbuf, count_r, MPI_UNSIGNED, nb_rank_r, 0, commGPU, &recv_request);
-    //printf("exchangeIndices PID: %i,   nbRev: nb_rank_recv: %i", this->getPID(), nb_rank_r);
+    MPI_Irecv(buffer_receive, size_buffer_recv, MPI_UNSIGNED, neighbor_rank_recv, 0, commGPU, &recv_request);
+    //printf("receive_send PID: %i,   nbRev: nb_rank_recv: %i", this->getPID(), nb_rank_r);
     //fflush(stdout);
-    MPI_Send(sbuf, count_s, MPI_UNSIGNED, nb_rank_s, 0, commGPU);
-    //printf("exchangeIndices PID: %i,   sendUintGPU: nb_rank_send: %i", this->getPID(), nb_rank_s);
+    MPI_Send(buffer_send, size_buffer_send, MPI_UNSIGNED, neighbor_rank_send, 0, commGPU);
+    //printf("receive_send PID: %i,   sendUintGPU: nb_rank_send: %i", this->getPID(), nb_rank_s);
     //fflush(stdout);
     MPI_Wait(&recv_request, MPI_STATUSES_IGNORE);
 }
