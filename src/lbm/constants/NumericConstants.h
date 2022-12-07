@@ -49,6 +49,7 @@ static constexpr double c99o100 = 0.99;
 static constexpr double c1o126 = 0.007936507936508;
 static constexpr double c1o216 = 0.004629629629630;
 static constexpr double c5o4 = 1.25;
+static constexpr double c4o3 = 1.333333333333333;
 static constexpr double c9o4 = 2.25;
 static constexpr double c5o2 = 2.5;
 static constexpr double c9o2 = 4.5;
