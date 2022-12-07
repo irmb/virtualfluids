@@ -138,6 +138,7 @@ private:
 
     // used for tests
     friend class IndexRearrangementForStreamsTest_reorderSendIndices;
+    friend class IndexRearrangementForStreamsTest_reorderRecvIndicesX;
     friend class IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX;
     friend class IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY;
     friend class IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ;
