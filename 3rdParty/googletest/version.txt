@@ -1,3 +1,0 @@
-release v1.10.0, 03.10.2019
-
-https://github.com/google/googletest/releases/tag/release-1.10.0
