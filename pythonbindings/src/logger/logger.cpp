@@ -10,8 +10,8 @@ namespace logging
         py::module loggerModule = parentModule.def_submodule("logger");
 
         py::class_<vf::logging::Logger>(loggerModule, "Logger")
-        .def("initialize_logger", &vf::logging::Logger::initalizeLogger)
-        .def("change_log_path", &vf::logging::Logger::changeLogPath);
+        .def_static("initialize_logger", &vf::logging::Logger::initalizeLogger)
+        .def_static("change_log_path", &vf::logging::Logger::changeLogPath, py::arg("path"));
 
         // use f-strings (f"text {float}") in python for compounded messages
         loggerModule.def("vf_log_trace", [](std::string message){ VF_LOG_TRACE(message); }, py::arg("message"));        
