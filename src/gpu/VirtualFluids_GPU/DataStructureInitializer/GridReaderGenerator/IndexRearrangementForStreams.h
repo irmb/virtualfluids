@@ -15,14 +15,14 @@ class Parameter;
 class GridBuilder;
 namespace vf::gpu
 {
-class IndexExchange;
+class CommunicationRoutine;
 }
 
 class IndexRearrangementForStreams
 {
 public:
     //! \brief Construct IndexRearrangementForStreams object
-    IndexRearrangementForStreams(std::shared_ptr<Parameter> para, std::shared_ptr<GridBuilder> builder, vf::gpu::IndexExchange& communicator);
+    IndexRearrangementForStreams(std::shared_ptr<Parameter> para, std::shared_ptr<GridBuilder> builder, vf::gpu::CommunicationRoutine& communicator);
 
     //////////////////////////////////////////////////////////////////////////
     // communication after fine to coarse
@@ -52,11 +52,11 @@ protected:
 
     //! \brief send sendIndicesForCommAfterFtoCPositions to receiving process and receive
     //! recvIndicesForCommAfterFtoCPositions from neighboring process
-    std::vector<uint> exchangeIndicesForCommAfterFtoCX(uint level, int indexOfProcessNeighbor,
+    std::vector<uint> receive_sendForCommAfterFtoCX(uint level, int indexOfProcessNeighbor,
                                                        std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const;
-    std::vector<uint> exchangeIndicesForCommAfterFtoCY(uint level, int indexOfProcessNeighbor,
+    std::vector<uint> receive_sendForCommAfterFtoCY(uint level, int indexOfProcessNeighbor,
                                                        std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const;
-    std::vector<uint> exchangeIndicesForCommAfterFtoCZ(uint level, int indexOfProcessNeighbor,
+    std::vector<uint> receive_sendForCommAfterFtoCZ(uint level, int indexOfProcessNeighbor,
                                                        std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const;
 
     //! \brief Initializes the send indices for the communication after the interpolation from fine to coarse
@@ -127,13 +127,13 @@ protected:
 private:
     std::shared_ptr<GridBuilder> builder;
     std::shared_ptr<Parameter> para;
-    vf::gpu::IndexExchange& communicator;
+    vf::gpu::CommunicationRoutine& communicator;
 
     // used for tests
     friend class IndexRearrangementForStreamsTest_reorderSendIndices;
-    friend class IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX;
-    friend class IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY;
-    friend class IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ;
+    friend class IndexRearrangementForStreamsTest_receive_sendForCommAfterFtoCX;
+    friend class IndexRearrangementForStreamsTest_receive_sendForCommAfterFtoCY;
+    friend class IndexRearrangementForStreamsTest_receive_sendForCommAfterFtoCZ;
 };
 
 #endif

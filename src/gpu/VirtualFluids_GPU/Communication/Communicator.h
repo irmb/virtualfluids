@@ -8,7 +8,7 @@
 #include "VirtualFluids_GPU_export.h"
 
 #include <basics/Core/DataTypes.h>
-#include "IndexExchange.h"
+#include "CommunicationRoutine.h"
 
 //////////////////////////////////
 #ifdef VF_DOUBLE_ACCURACY
@@ -23,7 +23,7 @@ namespace vf::gpu
 {
 
 
-class VIRTUALFLUIDS_GPU_EXPORT Communicator : public IndexExchange
+class VIRTUALFLUIDS_GPU_EXPORT Communicator : public CommunicationRoutine
 {
 public:
     static Communicator& getInstance();
@@ -61,7 +61,7 @@ public:
     std::vector<double> gatherNUPS(double processNups);
     double sumNups(double processNups);
     //////////////////////////////////////////////////////////////////////////
-    void exchangeIndices(uint *buffer_receive, int size_buffer_recv, int neighbor_rank_recv, uint *buffer_send,
+    void receive_send(uint *buffer_receive, int size_buffer_recv, int neighbor_rank_recv, uint *buffer_send,
                          int size_buffer_send, int neighbor_rank_send) const override;
 
 private:
