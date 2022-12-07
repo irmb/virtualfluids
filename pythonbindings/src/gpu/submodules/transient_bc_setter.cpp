@@ -1,7 +1,7 @@
 #include <pybind11/pybind11.h>
-#include <gpu/GridGenerator/VelocitySetter/VelocitySetter.h>
+#include <gpu/GridGenerator/TransientBCSetter/TransientBCSetter.h>
 
-namespace velocity_setter
+namespace transient_bc_setter
 {
     namespace py = pybind11;
 
@@ -12,9 +12,9 @@ namespace velocity_setter
 
         parentModule.def("create_file_collection", &createFileCollection, py::arg("prefix"), py::arg("type"));
 
-        py::class_<VelocityFileCollection, std::shared_ptr<VelocityFileCollection>>(parentModule, "VelocityFileCollection");
+        py::class_<FileCollection, std::shared_ptr<FileCollection>>(parentModule, "FileCollection");
 
-        py::class_<VTKFileCollection, VelocityFileCollection, std::shared_ptr<VTKFileCollection>>(parentModule, "VTKFileCollection")
+        py::class_<VTKFileCollection, FileCollection, std::shared_ptr<VTKFileCollection>>(parentModule, "VTKFileCollection")
         .def(py::init <std::string>(), py::arg("prefix"));
     }
 }

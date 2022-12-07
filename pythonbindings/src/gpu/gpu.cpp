@@ -10,7 +10,7 @@
 #include "submodules/grid_provider.cpp"
 #include "submodules/grid_generator.cpp"
 #include "submodules/turbulence_models.cpp"
-#include "submodules/velocity_setter.cpp"
+#include "submodules/transient_bc_setter.cpp"
 #include "submodules/actuator_farm.cpp"
 #include "submodules/grid_scaling_factory.cpp"
 
@@ -26,7 +26,7 @@ namespace gpu
         pre_collision_interactor::makeModule(gpuModule);
         actuator_farm::makeModule(gpuModule);
         boundary_conditions::makeModule(gpuModule);
-        velocity_setter::makeModule(gpuModule);
+        transient_bc_setter::makeModule(gpuModule);
         communicator::makeModule(gpuModule); 
         cuda_memory_manager::makeModule(gpuModule);
         probes::makeModule(gpuModule);
