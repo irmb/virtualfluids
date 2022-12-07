@@ -3394,14 +3394,17 @@ void CudaMemoryManager::cudaAllocProbeIndices(Probe* probe, int level)
     checkCudaErrors( cudaMalloc    ((void**) &probe->getProbeStruct(level)->pointIndicesD, tmp) );
     setMemsizeGPU(1.f*tmp, false);
 }
+
 void CudaMemoryManager::cudaCopyProbeIndicesHtoD(Probe* probe, int level)
 {
     checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->pointIndicesD, probe->getProbeStruct(level)->pointIndicesH, sizeof(int)*probe->getProbeStruct(level)->nIndices, cudaMemcpyHostToDevice) );
 }
+
 void CudaMemoryManager::cudaCopyProbeIndicesDtoH(Probe* probe, int level)
 {
     checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->pointIndicesH, probe->getProbeStruct(level)->pointIndicesD, sizeof(int)*probe->getProbeStruct(level)->nIndices, cudaMemcpyDeviceToHost) );
 }
+
 void CudaMemoryManager::cudaFreeProbeIndices(Probe* probe, int level)
 {
     checkCudaErrors( cudaFreeHost(probe->getProbeStruct(level)->pointIndicesH) );

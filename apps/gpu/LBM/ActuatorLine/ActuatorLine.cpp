@@ -216,6 +216,7 @@ void multipleLevel(const std::string& configPath)
     std::vector<real> probeCoordsX = {reference_diameter,2*reference_diameter,5*reference_diameter};
     std::vector<real> probeCoordsY = {3*reference_diameter,3*reference_diameter,3*reference_diameter};
     std::vector<real> probeCoordsZ = {3*reference_diameter,3*reference_diameter,3*reference_diameter};
+
     pointProbe->addProbePointsFromList(probeCoordsX, probeCoordsY, probeCoordsZ);
     // pointProbe->addProbePointsFromXNormalPlane(2*D, 0.0, 0.0, L_y, L_z, (uint)L_y/dx, (uint)L_z/dx);
 
@@ -224,11 +225,9 @@ void multipleLevel(const std::string& configPath)
     para->addProbe( pointProbe );
 
     SPtr<PointProbe> timeseriesProbe = std::make_shared<PointProbe>("timeProbe", para->getOutputPath(), 100, 1, 500, 100, true);
-
     timeseriesProbe->addProbePointsFromList(probeCoordsX, probeCoordsY, probeCoordsZ);
-    // pointProbe->addProbePointsFromXNormalPlane(2*D, 0.0, 0.0, L_y, L_z, (uint)L_y/dx, (uint)L_z/dx);
-
     timeseriesProbe->addStatistic(Statistic::Instantaneous);
+    timeseriesProbe->addStatistic(Statistic::Means);
     para->addProbe( timeseriesProbe );
 
     SPtr<PlaneProbe> planeProbe = std::make_shared<PlaneProbe>("planeProbe", para->getOutputPath(), 100, 500, 100, 100);
