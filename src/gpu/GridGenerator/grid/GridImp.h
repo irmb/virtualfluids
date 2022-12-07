@@ -76,6 +76,7 @@ protected:
 
 public:
     static SPtr<GridImp> makeShared(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, std::string d3Qxx, uint level);
+    virtual ~GridImp() = default;
 
 private:
     void initalNumberOfNodesAndSize();

@@ -10,7 +10,7 @@ InterpolationCellGrouper::InterpolationCellGrouper(const LBMSimulationParameters
 {
 }
 
-void InterpolationCellGrouper::splitFineToCoarseIntoBorderAndBulk(uint level)
+void InterpolationCellGrouper::splitFineToCoarseIntoBorderAndBulk(uint level) const
 {
     this->reorderFineToCoarseIntoBorderAndBulk(level);
 
@@ -25,12 +25,12 @@ void InterpolationCellGrouper::splitFineToCoarseIntoBorderAndBulk(uint level)
     parDs[level]->offFCBulk.zOffFC = parDs[level]->offFC.zOffFC + parDs[level]->intFCBorder.kFC;
 }
 
-void InterpolationCellGrouper::reorderFineToCoarseIntoBorderAndBulk(int level)
+void InterpolationCellGrouper::reorderFineToCoarseIntoBorderAndBulk(uint level) const
 {
     // create some local variables for better readability
     uint *iCellFccAll = parHs[level]->intFC.ICellFCC;
     uint *iCellFcfAll = parHs[level]->intFC.ICellFCF;
-    auto grid = this->builder->getGrid((uint)level);
+    auto grid = this->builder->getGrid(level);
 
     std::vector<uint> iCellFccBorderVector;
     std::vector<uint> iCellFccBulkVector;
@@ -88,7 +88,7 @@ void InterpolationCellGrouper::reorderFineToCoarseIntoBorderAndBulk(int level)
     }
 }
 
-void InterpolationCellGrouper::splitCoarseToFineIntoBorderAndBulk(uint level)
+void InterpolationCellGrouper::splitCoarseToFineIntoBorderAndBulk(uint level) const
 {
     this->reorderCoarseToFineIntoBorderAndBulk(level);
 
@@ -103,7 +103,7 @@ void InterpolationCellGrouper::splitCoarseToFineIntoBorderAndBulk(uint level)
     parDs[level]->offCFBulk.zOffCF = parDs[level]->offCF.zOffCF + parDs[level]->intCFBorder.kCF;
 }
 
-void InterpolationCellGrouper::reorderCoarseToFineIntoBorderAndBulk(int level)
+void InterpolationCellGrouper::reorderCoarseToFineIntoBorderAndBulk(uint level) const
 {
     // create some local variables for better readability
     uint *iCellCfcAll = parHs[level]->intCF.ICellCFC;
@@ -111,7 +111,7 @@ void InterpolationCellGrouper::reorderCoarseToFineIntoBorderAndBulk(int level)
     uint *neighborX = this->parHs[level]->neighborX;
     uint *neighborY = this->parHs[level]->neighborY;
     uint *neighborZ = this->parHs[level]->neighborZ;
-    auto grid = this->builder->getGrid((uint)level);
+    auto grid = this->builder->getGrid(level);
 
     std::vector<uint> iCellCfcBorderVector;
     std::vector<uint> iCellCfcBulkVector;
