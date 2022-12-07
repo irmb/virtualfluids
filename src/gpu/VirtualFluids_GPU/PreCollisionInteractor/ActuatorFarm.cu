@@ -483,8 +483,6 @@ void ActuatorFarm::initBoundingSpheres(Parameter* para, CudaMemoryManager* cudaM
 {
     std::vector<int> nodesInSpheres;
 
-    real dx = para->getScaledLengthRatio(this->level);
-
     for(uint turbine=0; turbine<this->numberOfTurbines; turbine++)
     {
         real sphereRadius = c1o2*this->diametersH[turbine]+c4o1*this->epsilon;
@@ -495,7 +493,7 @@ void ActuatorFarm::initBoundingSpheres(Parameter* para, CudaMemoryManager* cudaM
 
         real sphereRadiusSqrd = sphereRadius*sphereRadius;
             
-        uint minimumNumberOfNodesPerSphere = (uint)(c4o3*cPi*pow(sphereRadius, c3o1)/pow(dx, c3o1));
+        uint minimumNumberOfNodesPerSphere = (uint)(c4o3*cPi*pow(sphereRadius-this->deltaX, c3o1)/pow(this->deltaX, c3o1));
         uint nodesInThisSphere = 0;
 
         for (uint j = 1; j <= para->getParH(this->level)->numberOfNodes; j++)

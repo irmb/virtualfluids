@@ -38,6 +38,9 @@ public:
         this->deltaX = _deltaX*exp2(-this->level);
         this->invEpsilonSqrd = 1/(epsilon*epsilon);
         this->invDeltaX = c1o1/this->deltaX;
+     
+        if(this->epsilon<this->deltaX)
+            throw std::runtime_error("ActuatorFarm::ActuatorFarm: epsilon needs to be larger than dx!");
     }
 
     virtual  ~ActuatorFarm()
