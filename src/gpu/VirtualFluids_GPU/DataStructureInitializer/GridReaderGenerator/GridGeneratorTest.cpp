@@ -72,9 +72,12 @@ public:
                                        vf::gpu::Communicator &communicator)
         : IndexRearrangementForStreams(para, builder, communicator){};
 
-    void initCommunicationArraysForCommAfterFinetoCoarseX(uint level, int indexOfProcessNeighbor, int direction) const override {};
-    void initCommunicationArraysForCommAfterFinetoCoarseY(uint level, int indexOfProcessNeighbor, int direction) const override {};
-    void initCommunicationArraysForCommAfterFinetoCoarseZ(uint level, int indexOfProcessNeighbor, int direction) const override {};
+    void initCommunicationArraysForCommAfterFinetoCoarseX(uint level, int indexOfProcessNeighbor,
+                                                          int direction) const override{};
+    void initCommunicationArraysForCommAfterFinetoCoarseY(uint level, int indexOfProcessNeighbor,
+                                                          int direction) const override{};
+    void initCommunicationArraysForCommAfterFinetoCoarseZ(uint level, int indexOfProcessNeighbor,
+                                                          int direction) const override{};
 };
 
 } // namespace GridGeneratorTest
@@ -134,7 +137,8 @@ TEST_F(GridGeneratorTests_initalValuesDomainDecompostion, whenCommunicationInX_s
 {
     builder->numberOfSendIndices = 1;
     act();
-    EXPECT_THAT(para->getParH(level)->sendProcessNeighborX.size(), testing::Eq(1)); // one entry for CommunicationDirections::MX
+    EXPECT_THAT(para->getParH(level)->sendProcessNeighborX.size(),
+                testing::Eq(1)); // one entry for CommunicationDirections::MX
     EXPECT_THAT(para->getParH(level)->sendProcessNeighborY.size(), testing::Eq(0));
     EXPECT_THAT(para->getParH(level)->sendProcessNeighborZ.size(), testing::Eq(0));
 }
