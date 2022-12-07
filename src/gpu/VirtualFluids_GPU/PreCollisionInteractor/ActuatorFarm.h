@@ -143,7 +143,7 @@ public:
 
 private:
     void initTurbineGeometries(CudaMemoryManager* cudaManager);
-    void initBoundingSphere(Parameter* para, CudaMemoryManager* cudaManager);
+    void initBoundingSpheres(Parameter* para, CudaMemoryManager* cudaManager);
     void initBladeCoords(CudaMemoryManager* cudaManager);
     void initBladeVelocities(CudaMemoryManager* cudaManager);
     void initBladeForces(CudaMemoryManager* cudaManager);

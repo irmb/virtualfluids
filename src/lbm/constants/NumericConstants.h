@@ -164,6 +164,7 @@ static constexpr float c99o100 = 0.99f;
 static constexpr float c1o126 = (1.0f / 126.0f);
 static constexpr float c1o216 = (1.0f / 216.0f);
 static constexpr float c5o4 = 1.25f;
+static constexpr float c4o3 = (4.0f / 3.0f);//1.33333333f;
 static constexpr float c9o4 = 2.25f;
 static constexpr float c5o2 = 2.5f;
 static constexpr float c9o2 = 4.5f;

@@ -13,6 +13,7 @@
 #include "DataStructureInitializer/GridProvider.h"
 #include "GPU/CudaMemoryManager.h"
 #include "lbm/constants/NumericConstants.h"
+#include <logger/Logger.h>
 
 using namespace vf::lbm::constant;
 
@@ -273,10 +274,9 @@ void ActuatorFarm::init(Parameter* para, GridProvider* gridProvider, CudaMemoryM
     this->initBladeIndices(para, cudaMemoryManager);
     this->initBladeVelocities(cudaMemoryManager);
     this->initBladeForces(cudaMemoryManager);    
-    this->initBoundingSphere(para, cudaMemoryManager);  
+    this->initBoundingSpheres(para, cudaMemoryManager);  
     this->streamIndex = 0;
 }
-
 
 void ActuatorFarm::interact(Parameter* para, CudaMemoryManager* cudaMemoryManager, int level, unsigned int t)
 {
@@ -479,9 +479,11 @@ void ActuatorFarm::initBladeIndices(Parameter* para, CudaMemoryManager* cudaMemo
     cudaMemoryManager->cudaCopyBladeIndicesHtoD(this);
 }
 
-void ActuatorFarm::initBoundingSphere(Parameter* para, CudaMemoryManager* cudaMemoryManager)
+void ActuatorFarm::initBoundingSpheres(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
-    std::vector<int> nodesInSphere;
+    std::vector<int> nodesInSpheres;
+
+    real dx = para->getScaledLengthRatio(this->level);
 
     for(uint turbine=0; turbine<this->numberOfTurbines; turbine++)
     {
@@ -490,22 +492,35 @@ void ActuatorFarm::initBoundingSphere(Parameter* para, CudaMemoryManager* cudaMe
         real posX = this->turbinePosXH[turbine];
         real posY = this->turbinePosYH[turbine];
         real posZ = this->turbinePosZH[turbine];
-            
+
         real sphereRadiusSqrd = sphereRadius*sphereRadius;
+            
+        uint minimumNumberOfNodesPerSphere = (uint)(c4o3*cPi*pow(sphereRadius, c3o1)/pow(dx, c3o1));
+        uint nodesInThisSphere = 0;
 
         for (uint j = 1; j <= para->getParH(this->level)->numberOfNodes; j++)
         {
             const real distX = para->getParH(this->level)->coordinateX[j]-posX;
             const real distY = para->getParH(this->level)->coordinateY[j]-posY;
             const real distZ = para->getParH(this->level)->coordinateZ[j]-posZ;
-            if(distSqrd(distX,distY,distZ) < sphereRadiusSqrd) nodesInSphere.push_back(j);
+            if(distSqrd(distX,distY,distZ) < sphereRadiusSqrd) 
+            {
+                nodesInSpheres.push_back(j);
+                nodesInThisSphere++;
+            }
+        }
+
+        if(nodesInThisSphere<minimumNumberOfNodesPerSphere)
+        {
+            VF_LOG_CRITICAL("Found only {} nodes in bounding sphere of turbine no. {}, expected at least {}!", nodesInThisSphere, turbine, minimumNumberOfNodesPerSphere);
+            throw std::runtime_error("ActuatorFarm::initBoundingSpheres: Turbine bounding sphere partially out of domain.");
         }
     }
 
-    this->numberOfIndices = uint(nodesInSphere.size());
+    this->numberOfIndices = uint(nodesInSpheres.size());
 
     cudaMemoryManager->cudaAllocSphereIndices(this);
-    std::copy(nodesInSphere.begin(), nodesInSphere.end(), this->boundingSphereIndicesH);
+    std::copy(nodesInSpheres.begin(), nodesInSpheres.end(), this->boundingSphereIndicesH);
     cudaMemoryManager->cudaCopySphereIndicesHtoD(this);
 }
 
