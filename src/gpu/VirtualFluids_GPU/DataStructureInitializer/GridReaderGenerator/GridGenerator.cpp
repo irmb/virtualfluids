@@ -11,7 +11,7 @@
 #include <algorithm>
 #include "utilities/math/Math.h"
 #include "Output/QDebugWriter.hpp"
-#include "GridGenerator/VelocitySetter/VelocitySetter.h"
+#include "GridGenerator/TransientBCSetter/TransientBCSetter.h"
 
 #include "utilities/communication.h"
 #include "Communication/Communicator.h"
@@ -340,7 +340,7 @@ void GridGenerator::allocArrays_BoundaryValues()
                     para->getParH(level)->precursorBC.planeNeighborST, para->getParH(level)->precursorBC.planeNeighborSB, 
                     para->getParH(level)->precursorBC.weightsNT, para->getParH(level)->precursorBC.weightsNB, 
                     para->getParH(level)->precursorBC.weightsST, para->getParH(level)->precursorBC.weightsSB, 
-                    para->getParH(level)->precursorBC.k, para->getParH(level)->velocityReader, para->getParH(level)->precursorBC.numberOfPrecursorNodes, 
+                    para->getParH(level)->precursorBC.k, para->getParH(level)->transientBCInputFileReader, para->getParH(level)->precursorBC.numberOfPrecursorNodes, 
                     para->getParH(level)->precursorBC.numberOfQuantities, para->getParH(level)->precursorBC.nTRead, 
                     para->getParH(level)->precursorBC.velocityX, para->getParH(level)->precursorBC.velocityY, para->getParH(level)->precursorBC.velocityZ,
                     level);
@@ -352,7 +352,7 @@ void GridGenerator::allocArrays_BoundaryValues()
             para->getParD(level)->precursorBC.velocityY = para->getParH(level)->precursorBC.velocityY;
             para->getParD(level)->precursorBC.velocityZ = para->getParH(level)->precursorBC.velocityZ;
 
-            for(auto reader : para->getParH(level)->velocityReader)
+            for(auto reader : para->getParH(level)->transientBCInputFileReader)
             {
                 if(reader->getNumberOfQuantities() != para->getParD(level)->precursorBC.numberOfQuantities) throw std::runtime_error("Number of quantities in reader and number of quantities needed for precursor don't match!");
             }
@@ -361,7 +361,7 @@ void GridGenerator::allocArrays_BoundaryValues()
             cudaMemoryManager->cudaAllocPrecursorData(level);
 
             // read first timestep of precursor into next and copy to next on device
-            for(auto reader : para->getParH(level)->velocityReader)
+            for(auto reader : para->getParH(level)->transientBCInputFileReader)
             {   
                 reader->getNextData(para->getParH(level)->precursorBC.next, para->getParH(level)->precursorBC.numberOfPrecursorNodes, 0);
             }
@@ -375,7 +375,7 @@ void GridGenerator::allocArrays_BoundaryValues()
 
             //read second timestep of precursor into next and copy next to device
             real nextTime = para->getParD(level)->precursorBC.nTRead*pow(2,-((real)level))*para->getTimeRatio();
-            for(auto reader : para->getParH(level)->velocityReader)
+            for(auto reader : para->getParH(level)->transientBCInputFileReader)
             {   
                 reader->getNextData(para->getParH(level)->precursorBC.next, para->getParH(level)->precursorBC.numberOfPrecursorNodes, nextTime);
             }
@@ -391,7 +391,7 @@ void GridGenerator::allocArrays_BoundaryValues()
             para->getParD(level)->precursorBC.next = tmp;
 
             //start usual cycle of loading, i.e. read velocities of timestep after current and copy asynchronously to device
-            for(auto reader : para->getParH(level)->velocityReader)
+            for(auto reader : para->getParH(level)->transientBCInputFileReader)
             {   
                 reader->getNextData(para->getParH(level)->precursorBC.next, para->getParH(level)->precursorBC.numberOfPrecursorNodes, 2*nextTime);
             }

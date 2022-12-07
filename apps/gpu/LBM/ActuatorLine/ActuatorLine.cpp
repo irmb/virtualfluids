@@ -34,7 +34,7 @@
 
 #include "GridGenerator/io/SimulationFileWriter/SimulationFileWriter.h"
 #include "GridGenerator/io/GridVTKWriter/GridVTKWriter.h"
-#include "GridGenerator/VelocitySetter/VelocitySetter.h"
+#include "GridGenerator/TransientBCSetter/TransientBCSetter.h"
 
 
 //////////////////////////////////////////////////////////////////////////

@@ -1,5 +1,5 @@
-#ifndef VELOCITY_SETTER_H_
-#define VELOCITY_SETTER_H_
+#ifndef TRANSIENTBCSETTER_H_
+#define TRANSIENTBCSETTER_H_
 
 #include "Core/DataTypes.h"
 #include <Core/StringUtilities/StringUtil.h>
@@ -92,13 +92,13 @@ private:
     bool loaded;
 };
 
-class VelocityFileCollection
+class FileCollection
 {
 public:
-    VelocityFileCollection(std::string _prefix): 
+    FileCollection(std::string _prefix): 
     prefix(_prefix){};
 
-    virtual ~VelocityFileCollection() = default;
+    virtual ~FileCollection() = default;
 
     virtual size_t getNumberOfQuantities()=0;
 
@@ -109,11 +109,11 @@ protected:
 };
 
 
-class VTKFileCollection : public VelocityFileCollection
+class VTKFileCollection : public FileCollection
 {
 public:
     VTKFileCollection(std::string _prefix): 
-    VelocityFileCollection(_prefix)
+    FileCollection(_prefix)
     {
         findFiles();
     };
@@ -139,16 +139,16 @@ public:
 };
 
 
-class VelocityReader
+class TransientBCInputFileReader
 {
 public:
-    VelocityReader()
+    TransientBCInputFileReader()
     { 
         this->nPoints = 0; 
         this->nPointsRead = 0;
         this->writingOffset = 0;        
     };
-    virtual ~VelocityReader() = default;
+    virtual ~TransientBCInputFileReader() = default;
 
     virtual void getNextData(real* data, uint numberOfNodes, real time)=0;
     virtual void fillArrays(std::vector<real>& coordsY, std::vector<real>& coordsZ)=0;
@@ -170,7 +170,7 @@ protected:
 };
 
 
-class VTKReader : public VelocityReader
+class VTKReader : public TransientBCInputFileReader
 {
 public:
     VTKReader(SPtr<VTKFileCollection> _fileCollection, uint _readLevel):
@@ -195,7 +195,7 @@ private:
 };
 
 
-SPtr<VelocityFileCollection> createFileCollection(std::string prefix, FileType type);
-SPtr<VelocityReader> createReaderForCollection(SPtr<VelocityFileCollection> fileCollection, uint readLevel);
+SPtr<FileCollection> createFileCollection(std::string prefix, FileType type);
+SPtr<TransientBCInputFileReader> createReaderForCollection(SPtr<FileCollection> fileCollection, uint readLevel);
 
-#endif //VELOCITY_SETTER_H_
+#endif //TRANSIENTBCSETTER_H_

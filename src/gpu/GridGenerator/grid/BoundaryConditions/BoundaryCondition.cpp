@@ -36,7 +36,7 @@
 
 #include "grid/BoundaryConditions/Side.h"
 #include "grid/Grid.h"
-#include "GridGenerator/VelocitySetter/VelocitySetter.h"
+#include "GridGenerator/TransientBCSetter/TransientBCSetter.h"
 
 bool gg::BoundaryCondition::isSide( SideType side ) const
 {

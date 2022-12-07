@@ -52,7 +52,7 @@
 #include "io/QLineWriter.h"
 #include "io/SimulationFileWriter/SimulationFileWriter.h"
 
-#include "VelocitySetter/VelocitySetter.h"
+#include "TransientBCSetter/TransientBCSetter.h"
 
 #include "utilities/communication.h"
 #include "utilities/transformator/ArrowTransformator.h"
@@ -251,7 +251,7 @@ void LevelGridBuilder::setNoSlipGeometryBoundaryCondition()
     }
 }
 
-void LevelGridBuilder::setPrecursorBoundaryCondition(SideType sideType, SPtr<VelocityFileCollection> fileCollection, int nTRead, 
+void LevelGridBuilder::setPrecursorBoundaryCondition(SideType sideType, SPtr<FileCollection> fileCollection, int nTRead, 
                                                         real velocityX, real velocityY, real velocityZ, std::vector<uint> fileLevelToGridLevelMap)
 {
     if(fileLevelToGridLevelMap.empty())                         
@@ -647,7 +647,7 @@ uint LevelGridBuilder::getPrecursorSize(int level) const
 
 void LevelGridBuilder::getPrecursorValues(  uint* neighborNT, uint* neighborNB, uint* neighborST, uint* neighborSB, 
                                             real* weightsNT, real* weightsNB, real* weightsST, real* weightsSB, 
-                                            int* indices, std::vector<SPtr<VelocityReader>>& reader, 
+                                            int* indices, std::vector<SPtr<TransientBCInputFileReader>>& reader, 
                                             int& numberOfPrecursorNodes, size_t& numberOfQuantities, uint& nTRead, 
                                             real& velocityX, real& velocityY, real& velocityZ, int level) const
 {

@@ -54,7 +54,7 @@ class ConfigurationFile;
 }
 class CudaStreamManager;
 
-class VelocityReader;
+class TransientBCInputFileReader;
 
 //! \struct LBMSimulationParameter
 //! \brief struct holds and manages the LB-parameter of the simulation
@@ -237,7 +237,7 @@ struct LBMSimulationParameter {
     unsigned int kInletQread, kOutletQread;  // DEPRECATED
 
     WallModelParameters wallModel;
-    std::vector<SPtr<VelocityReader>> velocityReader;
+    std::vector<SPtr<TransientBCInputFileReader>> transientBCInputFileReader;
     real outflowPressureCorrectionFactor;
 
     // testRoundoffError

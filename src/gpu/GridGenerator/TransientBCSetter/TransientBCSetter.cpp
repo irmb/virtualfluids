@@ -1,4 +1,4 @@
-#include "VelocitySetter.h"
+#include "TransientBCSetter.h"
 #include "GridGenerator/grid/Grid.h"
 #include "GridGenerator/grid/BoundaryConditions/BoundaryCondition.h"
 #include <logger/Logger.h>
@@ -10,7 +10,7 @@
 #include <iostream>
 #include <algorithm>
 
-SPtr<VelocityFileCollection> createFileCollection(std::string prefix, FileType type)
+SPtr<FileCollection> createFileCollection(std::string prefix, FileType type)
 {
     switch(type)
     {
@@ -22,7 +22,7 @@ SPtr<VelocityFileCollection> createFileCollection(std::string prefix, FileType t
     }
 }
 
-SPtr<VelocityReader> createReaderForCollection(SPtr<VelocityFileCollection> fileCollection, uint readLevel)
+SPtr<TransientBCInputFileReader> createReaderForCollection(SPtr<FileCollection> fileCollection, uint readLevel)
 {
     switch(fileCollection->getFileType())
     {
@@ -223,7 +223,7 @@ void VTKFileCollection::findFiles()
         VF_LOG_CRITICAL("VTKFileCollection found no files!"); 
 }
     
-void VelocityReader::getNeighbors(uint* neighborNT, uint* neighborNB, uint* neighborST, uint* neighborSB)
+void TransientBCInputFileReader::getNeighbors(uint* neighborNT, uint* neighborNB, uint* neighborST, uint* neighborSB)
 {
     std::copy(planeNeighborNT.begin(), planeNeighborNT.end(), &neighborNT[writingOffset]);
     std::copy(planeNeighborNB.begin(), planeNeighborNB.end(), &neighborNB[writingOffset]);
@@ -231,7 +231,7 @@ void VelocityReader::getNeighbors(uint* neighborNT, uint* neighborNB, uint* neig
     std::copy(planeNeighborSB.begin(), planeNeighborSB.end(), &neighborSB[writingOffset]);
 }
 
-void VelocityReader::getWeights(real* _weightsNT, real* _weightsNB, real* _weightsST, real* _weightsSB)
+void TransientBCInputFileReader::getWeights(real* _weightsNT, real* _weightsNB, real* _weightsST, real* _weightsSB)
 {
     std::copy(weightsNT.begin(), weightsNT.end(), &_weightsNT[writingOffset]);
     std::copy(weightsNB.begin(), weightsNB.end(), &_weightsNB[writingOffset]);
@@ -368,7 +368,7 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
         if(!foundAll)
         {
             VF_LOG_CRITICAL("Found no matching precursor neighbors for grid point at y={}, z={} \n", posY, posZ);
-            throw std::runtime_error("VTKReader::fillArrays(): Did not find neighbors in the VelocityFileCollection for all points");
+            throw std::runtime_error("VTKReader::fillArrays(): Did not find neighbors in the FileCollection for all points");
         }
     }
 

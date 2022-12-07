@@ -54,7 +54,7 @@ class GridWrapper;
 class Transformator;
 class ArrowTransformator;
 class PolyDataWriterWrapper;
-class VelocityReader;
+class TransientBCInputFileReader;
 
 class BoundingBox;
 class Grid;
@@ -117,7 +117,7 @@ public:
     virtual uint getPrecursorSize(int level) const              = 0;
     virtual void getPrecursorValues(uint* neighborNT, uint* neighborNB, uint* neighborST, uint* neighborSB, 
                                     real* weightsNT, real* weightsNB, real* weightsST, real* weightsSB, 
-                                    int* indices, std::vector<SPtr<VelocityReader>>& reader, 
+                                    int* indices, std::vector<SPtr<TransientBCInputFileReader>>& reader, 
                                     int& numberOfPrecursorNodes, size_t& numberOfQuantities, uint& nTRead, 
                                     real& velocityX, real& velocityY, real& velocityZ, int level) const = 0;
 

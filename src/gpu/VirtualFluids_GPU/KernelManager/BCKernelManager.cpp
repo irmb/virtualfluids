@@ -38,7 +38,7 @@
 
 #include "BCKernelManager.h"
 #include "Factories/BoundaryConditionFactory.h"
-#include "GridGenerator/VelocitySetter/VelocitySetter.h"
+#include "GridGenerator/TransientBCSetter/TransientBCSetter.h"
 #include "Calculation/Cp.h"
 #include "Calculation/DragLift.h"
 #include "GPU/GPU_Interface.h"
@@ -417,7 +417,7 @@ void BCKernelManager::runPrecursorBCKernelPost(int level, uint t, CudaMemoryMana
 
         real loadTime = nextTime*pow(2,-level)*para->getTimeRatio();
 
-        for(auto reader : para->getParH(level)->velocityReader)
+        for(auto reader : para->getParH(level)->transientBCInputFileReader)
         {   
             reader->getNextData(para->getParH(level)->precursorBC.next, para->getParH(level)->precursorBC.numberOfPrecursorNodes, loadTime);
         }
