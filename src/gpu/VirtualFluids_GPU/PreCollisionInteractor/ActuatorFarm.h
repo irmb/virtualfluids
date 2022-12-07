@@ -4,6 +4,7 @@
 #include "PreCollisionInteractor.h"
 #include "PointerDefinitions.h"
 #include "lbm/constants/NumericConstants.h"
+#include <stdexcept>
 
 using namespace vf::lbm::constant;
 
