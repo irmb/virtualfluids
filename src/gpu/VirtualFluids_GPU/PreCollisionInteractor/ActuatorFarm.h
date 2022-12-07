@@ -4,6 +4,9 @@
 #include "PreCollisionInteractor.h"
 #include "PointerDefinitions.h"
 #include "lbm/constants/NumericConstants.h"
+#include <stdexcept>
+
+using namespace vf::lbm::constant;
 
 class Parameter;
 class GridProvider;
@@ -36,6 +39,9 @@ public:
         this->deltaX = _deltaX*exp2(-this->level);
         this->invEpsilonSqrd = 1/(epsilon*epsilon);
         this->invDeltaX = c1o1/this->deltaX;
+     
+        if(this->epsilon<this->deltaX)
+            throw std::runtime_error("ActuatorFarm::ActuatorFarm: epsilon needs to be larger than dx!");
     }
 
     virtual  ~ActuatorFarm()
@@ -141,7 +147,7 @@ public:
 
 private:
     void initTurbineGeometries(CudaMemoryManager* cudaManager);
-    void initBoundingSphere(Parameter* para, CudaMemoryManager* cudaManager);
+    void initBoundingSpheres(Parameter* para, CudaMemoryManager* cudaManager);
     void initBladeCoords(CudaMemoryManager* cudaManager);
     void initBladeVelocities(CudaMemoryManager* cudaManager);
     void initBladeForces(CudaMemoryManager* cudaManager);

@@ -366,7 +366,10 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
         }
 
         if(!foundAll)
+        {
+            VF_LOG_CRITICAL("Found no matching precursor neighbors for grid point at y={}, z={} \n", posY, posZ);
             throw std::runtime_error("VTKReader::fillArrays(): Did not find neighbors in the VelocityFileCollection for all points");
+        }
     }
 
     if(perfect_match)
