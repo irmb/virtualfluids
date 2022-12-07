@@ -81,7 +81,7 @@ private:
 
 private:
     std::vector<real> pointCoordsX, pointCoordsY, pointCoordsZ; 
-    uint getNumberOfTimestepsInTimeseries(Parameter* para, int level) override { return outputTimeSeries ? tOut : 1; }
+    uint getNumberOfTimestepsInTimeseries(Parameter* para, int level) override { return outputTimeSeries ? tOut*exp2(level) : 1; }
 
 
 };

@@ -52,58 +52,63 @@ __host__ __device__ int calcArrayIndex(int node, int nNodes, int timestep, int n
     return node+nNodes*(timestep+nTimesteps*array);
 }
 
-__device__ void calculatePointwiseQuantities(uint timestep, uint nTimesteps, real* quantityArray, bool* quantities, uint* quantityArrayOffsets, uint nPoints, uint node, real vx, real vy, real vz, real rho)
+__device__ void calculatePointwiseQuantities(uint timestep, uint nTimesteps, real* quantityArray, bool* quantities, uint* quantityArrayOffsets, uint nPoints, uint node, real vx, real vy, real vz, real rho, bool timeseries)
 {
     //"https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm"
     // also has extensions for higher order and covariances
-    real inv_n = 1/real(timestep);
+    int old_value = timeseries ? max(timestep-1, 0) : 0;
+    int new_value = timeseries ? timestep : 0;
+    int n = timestep+1;
+    real inv_n = 1/real(n);
+
 
     if(quantities[int(Statistic::Instantaneous)])
     {
         uint arrOff = quantityArrayOffsets[int(Statistic::Instantaneous)];
-        quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+0)] = vx;
-        quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+1)] = vy;
-        quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+2)] = vz;
-        quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+3)] = rho;
+        quantityArray[calcArrayIndex(node, nPoints, new_value, nTimesteps, arrOff+0)] = vx;
+        quantityArray[calcArrayIndex(node, nPoints, new_value, nTimesteps, arrOff+1)] = vy;
+        quantityArray[calcArrayIndex(node, nPoints, new_value, nTimesteps, arrOff+2)] = vz;
+        quantityArray[calcArrayIndex(node, nPoints, new_value, nTimesteps, arrOff+3)] = rho;
     }
+
 
     if(quantities[int(Statistic::Means)])
     {
         
         uint arrOff = quantityArrayOffsets[int(Statistic::Means)];
-        real vx_m_old  = quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+0)];
-        real vy_m_old  = quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+1)];
-        real vz_m_old  = quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+2)];
-        real rho_m_old = quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+3)];
+        real vx_m_old  = quantityArray[calcArrayIndex(node, nPoints, old_value, nTimesteps, arrOff+0)];
+        real vy_m_old  = quantityArray[calcArrayIndex(node, nPoints, old_value, nTimesteps, arrOff+1)];
+        real vz_m_old  = quantityArray[calcArrayIndex(node, nPoints, old_value, nTimesteps, arrOff+2)];
+        real rho_m_old = quantityArray[calcArrayIndex(node, nPoints, old_value, nTimesteps, arrOff+3)];
 
-        real vx_m_new  = ( (timestep-1)*vx_m_old + vx  )*inv_n;
-        real vy_m_new  = ( (timestep-1)*vy_m_old + vy  )*inv_n;
-        real vz_m_new  = ( (timestep-1)*vz_m_old + vz  )*inv_n;
-        real rho_m_new = ( (timestep-1)*rho_m_old+ rho )*inv_n;
+        real vx_m_new  = ( (n-1)*vx_m_old + vx  )*inv_n;
+        real vy_m_new  = ( (n-1)*vy_m_old + vy  )*inv_n;
+        real vz_m_new  = ( (n-1)*vz_m_old + vz  )*inv_n;
+        real rho_m_new = ( (n-1)*rho_m_old+ rho )*inv_n;
 
-        quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+0)] = vx_m_new;
-        quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+1)] = vy_m_new;
-        quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+2)] = vz_m_new;
-        quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+3)] = rho_m_new;
+        quantityArray[calcArrayIndex(node, nPoints, new_value, nTimesteps, arrOff+0)] = vx_m_new;
+        quantityArray[calcArrayIndex(node, nPoints, new_value, nTimesteps, arrOff+1)] = vy_m_new;
+        quantityArray[calcArrayIndex(node, nPoints, new_value, nTimesteps, arrOff+2)] = vz_m_new;
+        quantityArray[calcArrayIndex(node, nPoints, new_value, nTimesteps, arrOff+3)] = rho_m_new;
     
         if(quantities[int(Statistic::Variances)])
         {
             arrOff = quantityArrayOffsets[int(Statistic::Variances)];
 
-            real vx_var_old  = quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+0)];
-            real vy_var_old  = quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+1)];
-            real vz_var_old  = quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+2)];
-            real rho_var_old = quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+3)];
+            real vx_var_old  = quantityArray[calcArrayIndex(node, nPoints, old_value, nTimesteps, arrOff+0)];
+            real vy_var_old  = quantityArray[calcArrayIndex(node, nPoints, old_value, nTimesteps, arrOff+1)];
+            real vz_var_old  = quantityArray[calcArrayIndex(node, nPoints, old_value, nTimesteps, arrOff+2)];
+            real rho_var_old = quantityArray[calcArrayIndex(node, nPoints, old_value, nTimesteps, arrOff+3)];
 
-            real vx_var_new  = ( (timestep-1)*(vx_var_old )+(vx  - vx_m_old )*(vx  - vx_m_new ) )*inv_n;
-            real vy_var_new  = ( (timestep-1)*(vy_var_old )+(vy  - vy_m_old )*(vy  - vy_m_new ) )*inv_n;
-            real vz_var_new  = ( (timestep-1)*(vz_var_old )+(vz  - vz_m_old )*(vz  - vz_m_new ) )*inv_n;
-            real rho_var_new = ( (timestep-1)*(rho_var_old)+(rho - rho_m_old)*(rho - rho_m_new) )*inv_n;
+            real vx_var_new  = ( (n-1)*(vx_var_old )+(vx  - vx_m_old )*(vx  - vx_m_new ) )*inv_n;
+            real vy_var_new  = ( (n-1)*(vy_var_old )+(vy  - vy_m_old )*(vy  - vy_m_new ) )*inv_n;
+            real vz_var_new  = ( (n-1)*(vz_var_old )+(vz  - vz_m_old )*(vz  - vz_m_new ) )*inv_n;
+            real rho_var_new = ( (n-1)*(rho_var_old)+(rho - rho_m_old)*(rho - rho_m_new) )*inv_n;
 
-            quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+0)] = vx_var_new;
-            quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+1)] = vy_var_new;
-            quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+2)] = vz_var_new;
-            quantityArray[calcArrayIndex(node, nPoints, timestep, nTimesteps, arrOff+3)] = rho_var_new; 
+            quantityArray[calcArrayIndex(node, nPoints, new_value, nTimesteps, arrOff+0)] = vx_var_new;
+            quantityArray[calcArrayIndex(node, nPoints, new_value, nTimesteps, arrOff+1)] = vy_var_new;
+            quantityArray[calcArrayIndex(node, nPoints, new_value, nTimesteps, arrOff+2)] = vz_var_new;
+            quantityArray[calcArrayIndex(node, nPoints, new_value, nTimesteps, arrOff+3)] = rho_var_new; 
         }
     }
 }
@@ -113,7 +118,8 @@ __global__ void calcQuantitiesKernel(   uint* pointIndices,
                                     real* vx, real* vy, real* vz, real* rho,            
                                     uint* neighborX, uint* neighborY, uint* neighborZ,
                                     bool* quantities,
-                                    uint* quantityArrayOffsets, real* quantityArray
+                                    uint* quantityArrayOffsets, real* quantityArray,
+                                    bool timeseries
                                 )
 {
     const uint x = threadIdx.x; 
@@ -137,7 +143,7 @@ __global__ void calcQuantitiesKernel(   uint* pointIndices,
     u_interpZ = vz[k];
     rho_interp = rho[k];
 
-    calculatePointwiseQuantities(timestep, nTimesteps, quantityArray, quantities, quantityArrayOffsets, nPoints, node, u_interpX, u_interpY, u_interpZ, rho_interp);
+    calculatePointwiseQuantities(timestep, nTimesteps, quantityArray, quantities, quantityArrayOffsets, nPoints, node, u_interpX, u_interpY, u_interpZ, rho_interp, timeseries);
 
 }
 
@@ -147,7 +153,8 @@ __global__ void interpAndCalcQuantitiesKernel(   uint* pointIndices,
                                     real* vx, real* vy, real* vz, real* rho,            
                                     uint* neighborX, uint* neighborY, uint* neighborZ,
                                     bool* quantities,
-                                    uint* quantityArrayOffsets, real* quantityArray
+                                    uint* quantityArrayOffsets, real* quantityArray,
+                                    bool timeseries
                                 )
 {
     const uint x = threadIdx.x; 
@@ -178,7 +185,7 @@ __global__ void interpAndCalcQuantitiesKernel(   uint* pointIndices,
     u_interpZ  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vz );
     rho_interp = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, rho );
 
-    calculatePointwiseQuantities(timestep, nTimesteps, quantityArray, quantities, quantityArrayOffsets, nPoints, node, u_interpX, u_interpY, u_interpZ, rho_interp);
+    calculatePointwiseQuantities(timestep, nTimesteps, quantityArray, quantities, quantityArrayOffsets, nPoints, node, u_interpX, u_interpY, u_interpZ, rho_interp, timeseries);
 
 }
 
@@ -274,13 +281,8 @@ void Probe::addProbeStruct( Parameter* para, CudaMemoryManager* cudaMemoryManage
 
     cudaMemoryManager->cudaAllocProbeQuantityArray(this, level);
 
-    for(uint arr=0; arr<probeParams[level]->nArrays; arr++)
-    {
-        for( uint point=0; point<probeParams[level]->nPoints; point++)
-        {
-            probeParams[level]->quantitiesArrayH[arr*probeParams[level]->nPoints+point] = 0.0f;
-        }
-    }
+    std::fill_n(probeParams[level]->quantitiesArrayH, probeParams[level]->nArrays*probeParams[level]->nPoints*probeParams[level]->nTimesteps, c0o1);
+
     if(this->hasDeviceQuantityArray)
         cudaMemoryManager->cudaCopyProbeQuantityArrayHtoD(this, level);
 
@@ -302,7 +304,8 @@ void Probe::interact(Parameter* para, CudaMemoryManager* cudaMemoryManager, int 
         this->calculateQuantities(probeStruct, para, t_level, level);
 
         if(t_level>=(this->tStartTmpAveraging*exp2(level))) probeStruct->timestepInTimeAverage++;
-        if(t_level>=(this->tStartOut*exp2(level))) probeStruct->timestepInTimeseries++;
+        if(this->outputTimeSeries && t_level>=(this->tStartOut*exp2(level)))
+            probeStruct->timestepInTimeseries++;
     }
 
     //! output only in synchronous timesteps
@@ -437,7 +440,10 @@ void Probe::writeGridFile(Parameter* para, int level, int t, uint part)
     }
 
     for( auto it=nodedata.begin(); it!=nodedata.end(); it++) it->resize(sizeOfNodes);
-            uint arrLen = probeStruct->nPoints;
+
+    uint arrLen = probeStruct->nPoints;
+    int timestep = probeStruct->timestepInTimeseries;
+    int nTimesteps = probeStruct->nTimesteps;
 
     for( int var=0; var < int(Statistic::LAST); var++)
     {           
@@ -456,7 +462,7 @@ void Probe::writeGridFile(Parameter* para, int level, int t, uint part)
                 
                 for (uint pos = startpos; pos < endpos; pos++)
                 {
-                    nodedata[arrOff+arr][pos-startpos] = double(probeStruct->quantitiesArrayH[calcArrayIndex(pos, arrLen, 0, 1, arrOff+arr)]*coeff);
+                    nodedata[arrOff+arr][pos-startpos] = double(probeStruct->quantitiesArrayH[calcArrayIndex(pos, arrLen, timestep, nTimesteps, arrOff+arr)]*coeff);
                 }
             }
         }
@@ -491,16 +497,16 @@ t1 point1.quant1 point2.quant1 ... point1.quant2 point2.quant2 ...
     out << "Positions: \n";
 
     out << "x: ";
-    for(uint i=0;i<probeStruct->nPoints;i++) out << probeStruct->pointCoordsX[i] << ", ";   
-    out << "\n"; 
+    for(uint i=0;i<probeStruct->nPoints-1;i++) out << probeStruct->pointCoordsX[i] << ", ";   
+    out << probeStruct->pointCoordsX[probeStruct->nPoints-1] << "\n"; 
 
     out << "y: ";
-    for(uint i=0;i<probeStruct->nPoints;i++) out << probeStruct->pointCoordsY[i] << ", ";  
-    out << "\n"; 
+    for(uint i=0;i<probeStruct->nPoints-1;i++) out << probeStruct->pointCoordsY[i] << ", ";  
+    out << probeStruct->pointCoordsY[probeStruct->nPoints-1] << "\n"; 
 
     out << "z: ";
-    for(uint i=0;i<probeStruct->nPoints;i++) out << probeStruct->pointCoordsZ[i] << ", ";
-    out << "\n";
+    for(uint i=0;i<probeStruct->nPoints-1;i++) out << probeStruct->pointCoordsZ[i] << ", ";
+    out << probeStruct->pointCoordsZ[probeStruct->nPoints-1] << "\n"; 
 
     out.close();
 
@@ -515,11 +521,17 @@ void Probe::appendTimeseriesFile(Parameter* para, int level, int t)
     real dt = para->getTimeRatio()*exp2(-level);
     auto probeStruct = this->getProbeStruct(level);
 
-    real t_start = (t-tStartOut)/tOut*para->getTimeRatio();
+    real t_start = ( t-tOut )*para->getTimeRatio();
+
+    int vals_per_timestep = probeStruct->nPoints*probeStruct->nArrays+1;
+
+    real* timestep_array = (real*) malloc(vals_per_timestep*sizeof(real));
 
     for(uint timestep=0; timestep<probeStruct->timestepInTimeseries; timestep++)
     {
-        out << t_start+timestep*dt;
+        int val = 0;
+        timestep_array[val] = t_start+timestep*dt;
+        val++;
 
         for( int var=0; var < int(Statistic::LAST); var++)
         {           
@@ -536,15 +548,18 @@ void Probe::appendTimeseriesFile(Parameter* para, int level, int t)
                 real coeff = postProcessingVariables[arr].conversionFactor(level);
                 for(uint point=0; point<probeStruct->nPoints; point++)
                 {
-                    out << probeStruct->quantitiesArrayH[calcArrayIndex(point, probeStruct->nPoints, timestep, probeStruct->timestepInTimeseries, arrOff+arr)]*coeff;
+                    timestep_array[val] = probeStruct->quantitiesArrayH[calcArrayIndex(point, probeStruct->nPoints, timestep, probeStruct->nTimesteps, arrOff+arr)]*coeff;
+                    val++;
                 }
             }
             
         }
+        // for(int i=0; i<val; i++)
+        //     printf("%f, ", timestep_array[i]);
+        // printf("\n");
+
+        out.write((char*) timestep_array, sizeof(real)*vals_per_timestep);
     }
-
-    out << "\n";
-
     out.close();
 }
 

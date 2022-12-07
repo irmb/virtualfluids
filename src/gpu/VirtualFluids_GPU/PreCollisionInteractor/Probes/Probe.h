@@ -119,7 +119,7 @@ __global__ void calcQuantitiesKernel(   uint* pointIndices,
                                     real* vx, real* vy, real* vz, real* rho,            
                                     uint* neighborX, uint* neighborY, uint* neighborZ,
                                     bool* quantities,
-                                    uint* quantityArrayOffsets, real* quantityArray
+                                    uint* quantityArrayOffsets, real* quantityArray, bool timeseries
                                 );
 
 __global__ void interpAndCalcQuantitiesKernel(   uint* pointIndices,
@@ -128,7 +128,7 @@ __global__ void interpAndCalcQuantitiesKernel(   uint* pointIndices,
                                     real* vx, real* vy, real* vz, real* rho,            
                                     uint* neighborX, uint* neighborY, uint* neighborZ,
                                     bool* quantities,
-                                    uint* quantityArrayOffsets, real* quantityArray
+                                    uint* quantityArrayOffsets, real* quantityArray, bool timeseries
                                 );
 
 
@@ -138,13 +138,13 @@ public:
     Probe(
         const std::string _probeName,
         const std::string _outputPath,
-        uint _tStartAvg,
-        uint _tStartTmpAvg,
-        uint _tAvg,
-        uint _tStartOut,
-        uint _tOut,
-        bool _hasDeviceQuantityArray,
-        bool _outputTimeSeries
+        const uint _tStartAvg,
+        const uint _tStartTmpAvg,
+        const uint _tAvg,
+        const uint _tStartOut,
+        const uint _tOut,
+        const bool _hasDeviceQuantityArray,
+        const bool _outputTimeSeries
     ):  probeName(_probeName),
         outputPath(_outputPath),
         tStartAvg(_tStartAvg),
@@ -156,7 +156,7 @@ public:
         outputTimeSeries(_outputTimeSeries),        
         PreCollisionInteractor()
     {
-        if (_tStartOut<_tStartAvg)      throw std::runtime_error("Probe: tStartOut must be larger than tStartAvg!");
+        if (tStartOut < tStartAvg)      throw std::runtime_error("Probe: tStartOut must be larger than tStartAvg!");
     }
     
     void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaMemoryManager) override;
@@ -172,7 +172,6 @@ public:
     uint getTStartTmpAveraging(){return this->tStartTmpAveraging;}
 
     void setFileNameToNOut(){this->fileNameLU = false;}
-    void setTStartTmpAveraging(uint _tStartTmpAveraging){this->tStartTmpAveraging = _tStartTmpAveraging;}
 
 protected:
     virtual WbWriterVtkXmlBinary* getWriter(){ return WbWriterVtkXmlBinary::getInstance(); };
@@ -212,8 +211,8 @@ protected:
 
     std::vector<SPtr<ProbeStruct>> probeParams;
     bool quantities[int(Statistic::LAST)] = {};
-    bool hasDeviceQuantityArray;    //!> flag initiating memCopy in Point and PlaneProbe. Other probes are only based on thrust reduce functions and therefore dont need explict memCopy in interact()
-    bool outputTimeSeries;          //!> flag initiating overwrite of output vtk files, skipping collection files and limiting the length of the written data to the current time step (currently only used for WallModelProbe)
+    const bool hasDeviceQuantityArray;    //!> flag initiating memCopy in Point and PlaneProbe. Other probes are only based on thrust reduce functions and therefore dont need explict memCopy in interact()
+    const bool outputTimeSeries;          //!> flag initiating overwrite of output vtk files, skipping collection files and limiting the length of the written data to the current time step (currently only used for WallModelProbe)
     std::vector<std::string> fileNamesForCollectionFile;
     std::vector<std::string> varNames;
     std::vector<std::string> timeseriesFileNames;
@@ -221,11 +220,11 @@ protected:
     bool fileNameLU = true; //!> if true, written file name contains time step in LU, else is the number of the written probe files
 
 protected:
-    uint tStartAvg;
-    uint tStartTmpAveraging; //!> only non-zero in PlanarAverageProbe and WallModelProbe to switch on Spatio-temporal averaging (while only doing spatial averaging for t<tStartTmpAveraging) 
-    uint tAvg;  //! for tAvg==1 the probe will be evaluated in every sub-timestep of each respective level, else, the probe will only be evaluated in each synchronous time step 
-    uint tStartOut;
-    uint tOut;
+    const uint tStartAvg;
+    const uint tStartTmpAveraging; //!> only non-zero in PlanarAverageProbe and WallModelProbe to switch on Spatio-temporal averaging (while only doing spatial averaging for t<tStartTmpAveraging) 
+    const uint tAvg;  //! for tAvg==1 the probe will be evaluated in every sub-timestep of each respective level, else, the probe will only be evaluated in each synchronous time step 
+    const uint tStartOut;
+    const uint tOut;
 
     std::function<real(int)> velocityRatio;
     std::function<real(int)> densityRatio;
