@@ -161,7 +161,7 @@ TEST_F(IndexRearrangementForStreamsTest_reorderSendIndices, reorderSendIndicesFo
 }
 
 //////////////////////////////////////////////////////////////////////////
-// Test receive_sendForCommAfterFtoC
+// Test exchangeIndicesForCommAfterFtoC
 //////////////////////////////////////////////////////////////////////////
 
 class CommunicationRoutineDouble : public vf::gpu::CommunicationRoutine
@@ -188,7 +188,7 @@ private:
     std::vector<uint> receivedIndices;
 };
 
-class IndexRearrangementForStreamsTest_receive_sendForCommAfterFtoCX : public testing::Test
+class IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX : public testing::Test
 {
 
 public:
@@ -200,7 +200,7 @@ public:
 protected:
     std::vector<uint> act()
     {
-        return sut->receive_sendForCommAfterFtoCX(level, indexOfProcessNeighbor,
+        return sut->exchangeIndicesForCommAfterFtoCX(level, indexOfProcessNeighbor,
                                                      sendIndicesForCommAfterFtoCPositions);
     }
 
@@ -233,7 +233,7 @@ private:
     };
 };
 
-TEST_F(IndexRearrangementForStreamsTest_receive_sendForCommAfterFtoCX, emptyRecvInX)
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, emptyRecvInX)
 {
     CommunicationRoutineDouble communicator;
     communicator.setReceivedIndices(std::vector<uint>());
@@ -243,7 +243,7 @@ TEST_F(IndexRearrangementForStreamsTest_receive_sendForCommAfterFtoCX, emptyRecv
     EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(0));
 }
 
-TEST_F(IndexRearrangementForStreamsTest_receive_sendForCommAfterFtoCX, zeroRecvIndexX)
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, zeroRecvIndexX)
 {
     CommunicationRoutineDouble communicator;
     communicator.setReceivedIndices({ 0 });
@@ -253,7 +253,7 @@ TEST_F(IndexRearrangementForStreamsTest_receive_sendForCommAfterFtoCX, zeroRecvI
     EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(0));
 }
 
-TEST_F(IndexRearrangementForStreamsTest_receive_sendForCommAfterFtoCX, oneRecvIndexX)
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, oneRecvIndexX)
 {
     CommunicationRoutineDouble communicator;
     std::vector<uint> expected = { 10 };
@@ -267,7 +267,7 @@ TEST_F(IndexRearrangementForStreamsTest_receive_sendForCommAfterFtoCX, oneRecvIn
     EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
 }
 
-TEST_F(IndexRearrangementForStreamsTest_receive_sendForCommAfterFtoCX, threeRecvIndicesX)
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, threeRecvIndicesX)
 {
     CommunicationRoutineDouble communicator;
     std::vector<uint> expected = { 10, 20, 30 };
@@ -281,7 +281,7 @@ TEST_F(IndexRearrangementForStreamsTest_receive_sendForCommAfterFtoCX, threeRecv
     EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
 }
 
-TEST_F(IndexRearrangementForStreamsTest_receive_sendForCommAfterFtoCX, sixRecvIndicesX)
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, sixRecvIndicesX)
 {
     CommunicationRoutineDouble communicator;
     std::vector<uint> expected = { 10, 20, 30, 40, 50, 60 };
@@ -295,7 +295,7 @@ TEST_F(IndexRearrangementForStreamsTest_receive_sendForCommAfterFtoCX, sixRecvIn
     EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
 }
 
-class IndexRearrangementForStreamsTest_receive_sendForCommAfterFtoCY : public testing::Test
+class IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY : public testing::Test
 {
 
 public:
@@ -307,7 +307,7 @@ public:
 protected:
     std::vector<uint> act()
     {
-        return sut->receive_sendForCommAfterFtoCY(level, indexOfProcessNeighbor,
+        return sut->exchangeIndicesForCommAfterFtoCY(level, indexOfProcessNeighbor,
                                                      sendIndicesForCommAfterFtoCPositions);
     }
 
@@ -340,7 +340,7 @@ private:
     };
 };
 
-TEST_F(IndexRearrangementForStreamsTest_receive_sendForCommAfterFtoCY, emptyRecvInY)
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY, emptyRecvInY)
 {
     CommunicationRoutineDouble communicator;
     communicator.setReceivedIndices(std::vector<uint>());
@@ -350,7 +350,7 @@ TEST_F(IndexRearrangementForStreamsTest_receive_sendForCommAfterFtoCY, emptyRecv
     EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(0));
 }
 
-TEST_F(IndexRearrangementForStreamsTest_receive_sendForCommAfterFtoCY, zeroRecvIndexY)
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY, zeroRecvIndexY)
 {
     CommunicationRoutineDouble communicator;
     communicator.setReceivedIndices({ 0 });
@@ -360,7 +360,7 @@ TEST_F(IndexRearrangementForStreamsTest_receive_sendForCommAfterFtoCY, zeroRecvI
     EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(0));
 }
 
-TEST_F(IndexRearrangementForStreamsTest_receive_sendForCommAfterFtoCY, oneRecvIndexY)
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY, oneRecvIndexY)
 {
     CommunicationRoutineDouble communicator;
     std::vector<uint> expected = { 10 };
@@ -374,7 +374,7 @@ TEST_F(IndexRearrangementForStreamsTest_receive_sendForCommAfterFtoCY, oneRecvIn
     EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
 }
 
-TEST_F(IndexRearrangementForStreamsTest_receive_sendForCommAfterFtoCY, threeRecvIndicesY)
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY, threeRecvIndicesY)
 {
     CommunicationRoutineDouble communicator;
     std::vector<uint> expected = { 10, 20, 30 };
@@ -388,7 +388,7 @@ TEST_F(IndexRearrangementForStreamsTest_receive_sendForCommAfterFtoCY, threeRecv
     EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
 }
 
-TEST_F(IndexRearrangementForStreamsTest_receive_sendForCommAfterFtoCY, sixRecvIndicesY)
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY, sixRecvIndicesY)
 {
     CommunicationRoutineDouble communicator;
     std::vector<uint> expected = { 10, 20, 30, 40, 50, 60 };
@@ -402,7 +402,7 @@ TEST_F(IndexRearrangementForStreamsTest_receive_sendForCommAfterFtoCY, sixRecvIn
     EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
 }
 
-class IndexRearrangementForStreamsTest_receive_sendForCommAfterFtoCZ : public testing::Test
+class IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ : public testing::Test
 {
 
 public:
@@ -414,7 +414,7 @@ public:
 protected:
     std::vector<uint> act()
     {
-        return sut->receive_sendForCommAfterFtoCZ(level, indexOfProcessNeighbor,
+        return sut->exchangeIndicesForCommAfterFtoCZ(level, indexOfProcessNeighbor,
                                                      sendIndicesForCommAfterFtoCPositions);
     }
 
@@ -447,7 +447,7 @@ private:
     };
 };
 
-TEST_F(IndexRearrangementForStreamsTest_receive_sendForCommAfterFtoCZ, emptyRecvInZ)
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ, emptyRecvInZ)
 {
     CommunicationRoutineDouble communicator;
     communicator.setReceivedIndices(std::vector<uint>());
@@ -457,7 +457,7 @@ TEST_F(IndexRearrangementForStreamsTest_receive_sendForCommAfterFtoCZ, emptyRecv
     EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(0));
 }
 
-TEST_F(IndexRearrangementForStreamsTest_receive_sendForCommAfterFtoCZ, zeroRecvIndexZ)
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ, zeroRecvIndexZ)
 {
     CommunicationRoutineDouble communicator;
     communicator.setReceivedIndices({ 0 });
@@ -467,7 +467,7 @@ TEST_F(IndexRearrangementForStreamsTest_receive_sendForCommAfterFtoCZ, zeroRecvI
     EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(0));
 }
 
-TEST_F(IndexRearrangementForStreamsTest_receive_sendForCommAfterFtoCZ, oneRecvIndexZ)
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ, oneRecvIndexZ)
 {
     CommunicationRoutineDouble communicator;
     std::vector<uint> expected = { 10 };
@@ -481,7 +481,7 @@ TEST_F(IndexRearrangementForStreamsTest_receive_sendForCommAfterFtoCZ, oneRecvIn
     EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
 }
 
-TEST_F(IndexRearrangementForStreamsTest_receive_sendForCommAfterFtoCZ, threeRecvIndicesZ)
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ, threeRecvIndicesZ)
 {
     CommunicationRoutineDouble communicator;
     std::vector<uint> expected = { 10, 20, 30 };
@@ -495,7 +495,7 @@ TEST_F(IndexRearrangementForStreamsTest_receive_sendForCommAfterFtoCZ, threeRecv
     EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
 }
 
-TEST_F(IndexRearrangementForStreamsTest_receive_sendForCommAfterFtoCZ, sixRecvIndicesZ)
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ, sixRecvIndicesZ)
 {
     CommunicationRoutineDouble communicator;
     std::vector<uint> expected = { 10, 20, 30, 40, 50, 60 };

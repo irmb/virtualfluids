@@ -24,7 +24,7 @@ void IndexRearrangementForStreams::initCommunicationArraysForCommAfterFinetoCoar
         initSendIndicesForCommAfterFToCX(level, indexOfProcessNeighbor, direction);
 
     std::cout << "mpi send and receive ";
-    std::vector<uint> recvIndicesForCommAfterFtoCPositions = receive_sendForCommAfterFtoCX(
+    std::vector<uint> recvIndicesForCommAfterFtoCPositions = exchangeIndicesForCommAfterFtoCX(
         level, indexOfProcessNeighbor, sendIndicesForCommAfterFtoCPositions);
 
     std::cout << "reorder receive indices ";
@@ -44,7 +44,7 @@ void IndexRearrangementForStreams::initCommunicationArraysForCommAfterFinetoCoar
         initSendIndicesForCommAfterFToCY(level, indexOfProcessNeighbor, direction);
 
     std::cout << "mpi send and receive ";
-    std::vector<uint> recvIndicesForCommAfterFtoCPositions = receive_sendForCommAfterFtoCY(
+    std::vector<uint> recvIndicesForCommAfterFtoCPositions = exchangeIndicesForCommAfterFtoCY(
         level, indexOfProcessNeighbor, sendIndicesForCommAfterFtoCPositions);
 
     std::cout << "reorder receive indices ";
@@ -64,7 +64,7 @@ void IndexRearrangementForStreams::initCommunicationArraysForCommAfterFinetoCoar
         initSendIndicesForCommAfterFToCZ(level, indexOfProcessNeighbor, direction);
 
     std::cout << "mpi send and receive ";
-    std::vector<uint> recvIndicesForCommAfterFtoCPositions = receive_sendForCommAfterFtoCZ(
+    std::vector<uint> recvIndicesForCommAfterFtoCPositions = exchangeIndicesForCommAfterFtoCZ(
         level, indexOfProcessNeighbor, sendIndicesForCommAfterFtoCPositions);
 
     std::cout << "reorder receive indices ";
@@ -111,7 +111,7 @@ std::vector<uint> IndexRearrangementForStreams::initSendIndicesForCommAfterFToCZ
     return sendIndicesForCommAfterFtoCPositions;
 }
 
-std::vector<uint> IndexRearrangementForStreams::receive_sendForCommAfterFtoCX(
+std::vector<uint> IndexRearrangementForStreams::exchangeIndicesForCommAfterFtoCX(
     uint level, int indexOfProcessNeighbor, std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const
 {
     // fill the receive vector with zeros as placeholders (0 is never a valid fluid node)
@@ -131,7 +131,7 @@ std::vector<uint> IndexRearrangementForStreams::receive_sendForCommAfterFtoCX(
     return recvIndicesForCommAfterFtoCPositions;
 }
 
-std::vector<uint> IndexRearrangementForStreams::receive_sendForCommAfterFtoCY(
+std::vector<uint> IndexRearrangementForStreams::exchangeIndicesForCommAfterFtoCY(
     uint level, int indexOfProcessNeighbor, std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const
 {
     // fill the receive vector with zeros as placeholders (0 is never a valid fluid node)
@@ -151,7 +151,7 @@ std::vector<uint> IndexRearrangementForStreams::receive_sendForCommAfterFtoCY(
     return recvIndicesForCommAfterFtoCPositions;
 }
 
-std::vector<uint> IndexRearrangementForStreams::receive_sendForCommAfterFtoCZ(
+std::vector<uint> IndexRearrangementForStreams::exchangeIndicesForCommAfterFtoCZ(
     uint level, int indexOfProcessNeighbor, std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const
 {
     // fill the receive vector with zeros as placeholders (0 is never a valid fluid node)
