@@ -323,7 +323,7 @@ void IndexRearrangementForStreams::reorderSendIndicesForCommAfterFtoC(
                   << " direction: " << direction;
     if (para->getParH(level)->intCF.kCF == 0 || para->getParH(level)->intFC.kFC == 0)
         *logging::out << logging::Logger::LOGGER_ERROR
-                      << "reorderSendIndicesForCommAfterFtoC(): para->getParH(level)->intCF needs to be inititalized before calling "
+                      << "reorderSendIndicesForCommAfterFtoC(): para->getParH(level)->intCF needs to be initialized before calling "
                          "this function "
                       << "\n";
 
