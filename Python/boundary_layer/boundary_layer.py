@@ -99,7 +99,7 @@ para.set_velocity_ratio(dx/dt)
 para.set_viscosity_ratio(dx*dx/dt)
 para.set_density_ratio(1.0)
 
-para.set_main_kernel("TurbulentViscosityCumulantK17CompChim")
+para.set_main_kernel("CumulantK17")
 
 para.set_timestep_start_out(int(t_start_out/dt))
 para.set_timestep_out(int(t_out/dt))
