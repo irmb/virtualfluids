@@ -445,7 +445,7 @@ void IndexRearrangementForStreams::findIfSparseIndexIsInSendIndicesAndAddToCommV
 void IndexRearrangementForStreams::findIndicesNotInCommAfterFtoC(const uint &numberOfSendOrRecvIndices,
                                                                  int *sendOrReceiveIndices,
                                                                  std::vector<int> &sendOrReceiveIndicesAfterFtoC,
-                                                                 std::vector<int> &sendOrIndicesOther) const
+                                                                 std::vector<int> &sendOrIndicesOther)
 {
     int sparseIndexSend;
     for (uint posInSendIndices = 0; posInSendIndices < numberOfSendOrRecvIndices; posInSendIndices++) {
