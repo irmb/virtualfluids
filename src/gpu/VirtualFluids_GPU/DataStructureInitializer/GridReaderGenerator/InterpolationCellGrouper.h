@@ -57,13 +57,13 @@ protected:
     //! subarrays: \details The coarse cells for interpolation from coarse to fine (iCellCFC) are divided into two
     //! subgroups: border and bulk. The fine cells (iCellCFF) are reordered accordingly. The offset cells (xOffCF,
     //! yOffCF, zOffCF) must be reordered in the same way.
-    void reorderCoarseToFineIntoBorderAndBulk(int level) const;
+    void reorderCoarseToFineIntoBorderAndBulk(uint level) const;
 
     //! \brief This function reorders the arrays of FCC/FCF indices and return pointers and sizes of the new subarrays:
     //! \details The coarse cells for interpolation from fine to coarse (iCellFCC) are divided into two subgroups:
     //! border and bulk. The fine cells (iCellFCF) are reordered accordingly. The offset cells (xOffFC,
     //! yOffFC, zOffFC) must be reordered in the same way.
-    void reorderFineToCoarseIntoBorderAndBulk(int level) const;
+    void reorderFineToCoarseIntoBorderAndBulk(uint level) const;
 
 private:
     SPtr<GridBuilder> builder;
