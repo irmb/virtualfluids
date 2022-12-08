@@ -493,7 +493,7 @@ void IndexRearrangementForStreams::reorderRecvIndicesForCommAfterFtoC(
     VF_LOG_INFO("Reorder recv indices for communication after fine to coarse: level: {} direction: {}", level,
                 direction);
 
-    if (sendIndicesForCommAfterFtoCPositions.size() <= 0)
+    if (sendIndicesForCommAfterFtoCPositions.size() == 0)
         VF_LOG_WARNING("ReorderRecvIndicesForCommAfterFtoC(): sendIndicesForCommAfterFtoCPositions is empty.");
 
     uint numberOfRecvIndices = builder->getNumberOfReceiveIndices(direction, level);

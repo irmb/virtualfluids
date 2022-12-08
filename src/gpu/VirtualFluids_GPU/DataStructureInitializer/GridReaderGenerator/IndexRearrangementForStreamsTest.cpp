@@ -18,7 +18,7 @@
 namespace indexRearrangementTests
 {
 template <typename T>
-bool vectorsAreEqual(const T *vector1, const std::vector<T> vectorExpected)
+bool vectorsAreEqual(const T *vector1, const std::vector<T>& vectorExpected)
 {
     for (uint i = 0; i < vectorExpected.size(); i++) {
         if (vector1[i] != vectorExpected[i])
@@ -179,7 +179,7 @@ public:
         return 0;
     }
 
-    void setReceivedIndices(std::vector<uint> receivedIndices)
+    void setReceivedIndices(const std::vector<uint>& receivedIndices)
     {
         this->receivedIndices = receivedIndices;
     }
