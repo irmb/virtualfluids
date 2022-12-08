@@ -40,7 +40,7 @@ public:
     virtual void freeMemoryOnHost();
     virtual void cudaCopyDataToHost(int level);
 
-	virtual ~GridProvider() {}
+	virtual ~GridProvider() = default;
     virtual void initalGridInformations() = 0;
 
 protected:
