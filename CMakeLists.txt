@@ -145,6 +145,7 @@ endif()
 #################################################################################
 include(FetchContent)
 
+# spdlog
 set(spdlog_version "v1.9.1")
 set(spdlog_url "https://github.com/gabime/spdlog")
 message(STATUS "Fetching spdlog: ${spdlog_version}")
@@ -158,8 +159,23 @@ FetchContent_MakeAvailable(spdlog)
 target_compile_options(spdlog PRIVATE "-fPIC")
 groupTarget(spdlog ${thirdFolder})
 
+# googletest
 if(BUILD_VF_UNIT_TESTS)
-    add_subdirectory(${VF_THIRD_DIR}/googletest)
+    FetchContent_Declare(
+        googletest
+        DOWNLOAD_EXTRACT_TIMESTAMP FALSE # https://cmake.org/cmake/help/latest/policy/CMP0135.html
+        URL https://github.com/google/googletest/archive/1f643f71d4151c3b364c0e9302042f7a6debd439.zip # 30.11.2022
+    )
+    # For Windows: Prevent overriding the parent project's compiler/linker settings
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+
+    FetchContent_MakeAvailable(googletest)
+
+    groupTarget(gmock ${thirdFolder}/googletest)
+    groupTarget(gmock_main ${thirdFolder}/googletest)
+    groupTarget(gtest ${thirdFolder}/googletest)
+    groupTarget(gtest_main ${thirdFolder}/googletest)
+
     include(GoogleTest)
     enable_testing()
 endif()

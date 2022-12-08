@@ -1,10 +1,12 @@
 #include <gmock/gmock.h>
 
 #include <algorithm>
-#include <filesystem>
 #include <iostream>
-#include <mpi.h>
+#include <vector>
 
+#include "Utilities/testUtilitiesGPU.h"
+
+#include "Communication/Communicator.h"
 #include "DataStructureInitializer/GridReaderGenerator/IndexRearrangementForStreams.h"
 #include "Parameter/Parameter.h"
 #include "basics/config/ConfigurationFile.h"
@@ -13,8 +15,10 @@
 #include "gpu/GridGenerator/utilities/communication.h"
 #include "gpu/VirtualFluids_GPU/Communication/Communicator.cpp"
 
+namespace indexRearrangementTests
+{
 template <typename T>
-bool vectorsAreEqual(T *vector1, std::vector<T> vectorExpected)
+bool vectorsAreEqual(const T *vector1, const std::vector<T>& vectorExpected)
 {
     for (uint i = 0; i < vectorExpected.size(); i++) {
         if (vector1[i] != vectorExpected[i])
@@ -34,10 +38,6 @@ private:
 public:
     LevelGridBuilderDouble(SPtr<Grid> grid) : LevelGridBuilder(), grid(grid){};
     SPtr<Grid> getGrid(uint level) override
-    {
-        return grid;
-    };
-    std::shared_ptr<Grid> getGrid(int level, int box) override
     {
         return grid;
     };
@@ -69,226 +69,27 @@ public:
         SPtr<GridImpDouble> grid(new GridImpDouble(object, startX, startY, startZ, endX, endY, endZ, delta, d, level));
         return grid;
     }
-
-    void setFluidNodeIndicesBorder(std::vector<uint> fluidNodeIndicesBorder)
-    {
-        this->fluidNodeIndicesBorder = fluidNodeIndicesBorder;
-    }
-
-    bool isSparseIndexInFluidNodeIndicesBorder(uint &sparseIndex) const override
-    {
-        return std::find(this->fluidNodeIndicesBorder.begin(), this->fluidNodeIndicesBorder.end(), sparseIndex) !=
-               this->fluidNodeIndicesBorder.end();
-    }
 };
 
-struct CFBorderBulk {
-    // data to work on
-    std::vector<uint> fluidNodeIndicesBorder = { 10, 11, 12, 13, 14, 15, 16 };
-    std::vector<uint> iCellCFC = { 1, 11, 3, 13, 5, 15, 7 };
-    std::vector<uint> iCellCFF = { 2, 12, 4, 14, 6, 16, 8 };
-    uint sizeOfICellCf = (uint)iCellCFC.size();
-    uint neighborX[17] = { 0u };
-    uint neighborY[17] = { 0u };
-    uint neighborZ[17] = { 0u };
-    int level = 0;
-    std::vector<real> offsetCFx = { 1, 11, 3, 13, 5, 15, 7 };
-    std::vector<real> offsetCFy = { 101, 111, 103, 113, 105, 115, 107 };
-    std::vector<real> offsetCFz = { 1001, 1011, 1003, 1013, 1005, 1015, 1007 };
+} // namespace indexRearrangementTests
 
-    // expected data
-    std::vector<uint> iCellCfcBorder_expected = { 11, 13, 15 };
-    std::vector<uint> iCellCfcBulk_expected = { 1, 3, 5, 7 };
-    std::vector<uint> iCellCffBorder_expected = { 12, 14, 16 };
-    std::vector<uint> iCellCffBulk_expected = { 2, 4, 6, 8 };
-    std::vector<real> offsetCFx_Border_expected = { 11, 13, 15 };
-    std::vector<real> offsetCFx_Bulk_expected = { 1, 3, 5, 7 };
-    std::vector<real> offsetCFy_Border_expected = { 111, 113, 115 };
-    std::vector<real> offsetCFy_Bulk_expected = { 101, 103, 105, 107 };
-    std::vector<real> offsetCFz_Border_expected = { 1011, 1013, 1015 };
-    std::vector<real> offsetCFz_Bulk_expected = { 1001, 1003, 1005, 1007 };
-};
-
-class IndexRearrangementForStreamsTest_IndicesCFBorderBulkTest : public testing::Test
-{
-protected:
-    CFBorderBulk cf;
-    SPtr<Parameter> para;
-    std::unique_ptr<IndexRearrangementForStreams> testSubject;
-
-private:
-    std::unique_ptr<IndexRearrangementForStreams> createTestSubjectCFBorderBulk()
-    {
-        SPtr<GridImpDouble> grid =
-            GridImpDouble::makeShared(nullptr, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, Distribution(), 1);
-        grid->setFluidNodeIndicesBorder(cf.fluidNodeIndicesBorder);
-        std::shared_ptr<LevelGridBuilderDouble> builder = std::make_shared<LevelGridBuilderDouble>(grid);
-
-        para->setMaxLevel(cf.level + 1); // setMaxLevel resizes parH and parD
-        para->parH[cf.level] = std::make_shared<LBMSimulationParameter>();
-        para->parD[cf.level] = std::make_shared<LBMSimulationParameter>();
-        para->getParH(cf.level)->intCF.ICellCFC = &(cf.iCellCFC.front());
-        para->getParH(cf.level)->intCF.ICellCFF = &(cf.iCellCFF.front());
-        para->getParH(cf.level)->neighborX = cf.neighborX;
-        para->getParH(cf.level)->neighborY = cf.neighborY;
-        para->getParH(cf.level)->neighborZ = cf.neighborZ;
-        para->getParH(cf.level)->intCF.kCF = cf.sizeOfICellCf;
-        para->getParH(cf.level)->offCF.xOffCF = &(cf.offsetCFx.front());
-        para->getParH(cf.level)->offCF.yOffCF = &(cf.offsetCFy.front());
-        para->getParH(cf.level)->offCF.zOffCF = &(cf.offsetCFz.front());
-
-        return std::make_unique<IndexRearrangementForStreams>(para, builder, vf::gpu::Communicator::getInstance());
-    };
-
-    void SetUp() override
-    {
-        para = std::make_shared<Parameter>();
-        para->initLBMSimulationParameter();
-        testSubject = createTestSubjectCFBorderBulk();
-    }
-};
-
-TEST_F(IndexRearrangementForStreamsTest_IndicesCFBorderBulkTest, splitCoarseToFineIntoBorderAndBulk)
-{
-    testSubject->splitCoarseToFineIntoBorderAndBulk(cf.level);
-
-    EXPECT_THAT(para->getParH(cf.level)->intCFBorder.kCF + para->getParH(cf.level)->intCFBulk.kCF,
-                testing::Eq(cf.sizeOfICellCf))
-        << "The number of interpolation cells from coarse to fine changed during reordering.";
-
-    // check coarse to fine border (coarse nodes)
-    EXPECT_THAT(para->getParH(cf.level)->intCFBorder.kCF, testing::Eq((uint)cf.iCellCfcBorder_expected.size()));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->intCFBorder.ICellCFC, cf.iCellCfcBorder_expected))
-        << "intCFBorder.ICellCFC does not match the expected border vector";
-    // check coarse to fine border (fine nodes)
-    EXPECT_THAT(para->getParH(cf.level)->intCFBorder.kCF, testing::Eq((uint)cf.iCellCffBorder_expected.size()));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->intCFBorder.ICellCFF, cf.iCellCffBorder_expected))
-        << "intCFBorder.ICellCFF does not match the expected border vector";
-
-    // check coarse to fine bulk (coarse nodes)
-    EXPECT_THAT(para->getParH(cf.level)->intCFBulk.kCF, testing::Eq((uint)cf.iCellCfcBulk_expected.size()));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->intCFBulk.ICellCFC, cf.iCellCfcBulk_expected))
-        << "intCFBulk.ICellCFC does not match the expected bulk vector";
-    // check coarse to fine bulk (fine nodes)
-    EXPECT_THAT(para->getParH(cf.level)->intCFBulk.kCF, testing::Eq((uint)cf.iCellCffBulk_expected.size()));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->intCFBulk.ICellCFF, cf.iCellCffBulk_expected))
-        << "intCFBulk.ICellCFF does not match the expected bulk vector";
-
-    // check offset cells
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->offCF.xOffCF, cf.offsetCFx_Border_expected));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->offCFBulk.xOffCF, cf.offsetCFx_Bulk_expected));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->offCF.yOffCF, cf.offsetCFy_Border_expected));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->offCFBulk.yOffCF, cf.offsetCFy_Bulk_expected));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->offCF.zOffCF, cf.offsetCFz_Border_expected));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->offCFBulk.zOffCF, cf.offsetCFz_Bulk_expected));
-}
-
-struct FCBorderBulk {
-    // data to work on
-    std::vector<uint> fluidNodeIndicesBorder = { 110, 111, 112, 113, 114, 115, 116 };
-    std::vector<uint> iCellFCC = { 11, 111, 13, 113, 15, 115, 17 };
-    std::vector<uint> iCellFCF = { 12, 112, 14, 114, 16, 116, 18 };
-    uint sizeOfICellFC = (uint)iCellFCC.size();
-    int level = 1;
-    std::vector<real> offsetFCx = { 11, 111, 13, 113, 15, 115, 17 };
-    std::vector<real> offsetFCy = { 1101, 1111, 1103, 1113, 1105, 1115, 1107 };
-    std::vector<real> offsetFCz = { 11001, 11011, 11003, 11013, 11005, 11015, 11007 };
-
-    // expected data
-    std::vector<uint> iCellFccBorder_expected = { 111, 113, 115 };
-    std::vector<uint> iCellFccBulk_expected = { 11, 13, 15, 17 };
-    std::vector<uint> iCellFcfBorder_expected = { 112, 114, 116 };
-    std::vector<uint> iCellFcfBulk_expected = { 12, 14, 16, 18 };
-    std::vector<real> offsetFCx_Border_expected = { 111, 113, 115 };
-    std::vector<real> offsetFCx_Bulk_expected = { 11, 13, 15, 17 };
-    std::vector<real> offsetFCy_Border_expected = { 1111, 1113, 1115 };
-    std::vector<real> offsetFCy_Bulk_expected = { 1101, 1103, 1105, 1107 };
-    std::vector<real> offsetFCz_Border_expected = { 11011, 11013, 11015 };
-    std::vector<real> offsetFCz_Bulk_expected = { 11001, 11003, 11005, 11007 };
-};
-
-class IndexRearrangementForStreamsTest_IndicesFCBorderBulkTest : public testing::Test
-{
-protected:
-    FCBorderBulk fc;
-    SPtr<Parameter> para;
-    std::unique_ptr<IndexRearrangementForStreams> testSubject;
-
-private:
-    std::unique_ptr<IndexRearrangementForStreams> createTestSubjectFCBorderBulk()
-    {
-        SPtr<GridImpDouble> grid =
-            GridImpDouble::makeShared(nullptr, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, Distribution(), 1);
-        grid->setFluidNodeIndicesBorder(fc.fluidNodeIndicesBorder);
-        std::shared_ptr<LevelGridBuilderDouble> builder = std::make_shared<LevelGridBuilderDouble>(grid);
-
-        para->setMaxLevel(fc.level + 1); // setMaxLevel resizes parH and parD
-        para->parH[fc.level] = std::make_shared<LBMSimulationParameter>();
-        para->parD[fc.level] = std::make_shared<LBMSimulationParameter>();
-        para->getParH(fc.level)->intFC.ICellFCC = &(fc.iCellFCC.front());
-        para->getParH(fc.level)->intFC.ICellFCF = &(fc.iCellFCF.front());
-        para->getParH(fc.level)->intFC.kFC = fc.sizeOfICellFC;
-        para->getParH(fc.level)->offFC.xOffFC = &(fc.offsetFCx.front());
-        para->getParH(fc.level)->offFC.yOffFC = &(fc.offsetFCy.front());
-        para->getParH(fc.level)->offFC.zOffFC = &(fc.offsetFCz.front());
-
-        return std::make_unique<IndexRearrangementForStreams>(para, builder, vf::gpu::Communicator::getInstance());
-    };
-
-    void SetUp() override
-    {
-        para = std::make_shared<Parameter>();
-        testSubject = createTestSubjectFCBorderBulk();
-    }
-};
-
-TEST_F(IndexRearrangementForStreamsTest_IndicesFCBorderBulkTest, splitFineToCoarseIntoBorderAndBulk)
-{
-    testSubject->splitFineToCoarseIntoBorderAndBulk(fc.level);
-
-    EXPECT_THAT(para->getParH(fc.level)->intFCBorder.kFC + para->getParH(fc.level)->intFCBulk.kFC,
-                testing::Eq(fc.sizeOfICellFC))
-        << "The number of interpolation cells from coarse to fine changed during reordering.";
-
-    // check coarse to fine border (coarse nodes)
-    EXPECT_THAT(para->getParH(fc.level)->intFCBorder.kFC, testing::Eq((uint)fc.iCellFccBorder_expected.size()));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->intFCBorder.ICellFCC, fc.iCellFccBorder_expected))
-        << "intFCBorder.ICellFCC does not match the expected border vector";
-    // check coarse to fine border (fine nodes)
-    EXPECT_THAT(para->getParH(fc.level)->intFCBorder.kFC, testing::Eq((uint)fc.iCellFcfBorder_expected.size()));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->intFCBorder.ICellFCF, fc.iCellFcfBorder_expected))
-        << "intFCBorder.ICellFCF does not match the expected border vector";
-
-    // check coarse to fine bulk (coarse nodes)
-    EXPECT_THAT(para->getParH(fc.level)->intFCBulk.kFC, testing::Eq((uint)fc.iCellFccBulk_expected.size()));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->intFCBulk.ICellFCC, fc.iCellFccBulk_expected))
-        << "intFCBulk.ICellFCC does not match the expected bulk vector";
-    // check coarse to fine bulk (fine nodes)
-    EXPECT_THAT(para->getParH(fc.level)->intFCBulk.kFC, testing::Eq((uint)fc.iCellFcfBulk_expected.size()));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->intFCBulk.ICellFCF, fc.iCellFcfBulk_expected))
-        << "intFCBulk.ICellFCF does not match the expected bulk vector";
-
-    // check offset cells
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->offFC.xOffFC, fc.offsetFCx_Border_expected));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->offFCBulk.xOffFC, fc.offsetFCx_Bulk_expected));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->offFC.yOffFC, fc.offsetFCy_Border_expected));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->offFCBulk.yOffFC, fc.offsetFCy_Bulk_expected));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->offFC.zOffFC, fc.offsetFCz_Border_expected));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->offFCBulk.zOffFC, fc.offsetFCz_Bulk_expected));
-}
+//////////////////////////////////////////////////////////////////////////
+// Test reorderSendIndices
+//////////////////////////////////////////////////////////////////////////
+using namespace indexRearrangementTests;
 
 struct SendIndicesForCommAfterFtoCX {
     // data to work on
     std::vector<int> sendIndices = { 10, 11, 12, 13, 14, 15, 16 };
-    int level = 0;
-    int direction = CommunicationDirections::MX;
-    int numberOfProcessNeighbors = 1;
-    int indexOfProcessNeighbor = 0;
+    const int level = 0;
+    const int direction = CommunicationDirections::MX;
+    const int numberOfProcessNeighbors = 1;
+    const int indexOfProcessNeighbor = 0;
 
     std::vector<uint> iCellCFC = { 8, 10, 12 };
     std::vector<uint> iCellFCC = { 14, 16, 18 };
-    uint kCF = (uint)iCellCFC.size();
-    uint kFC = (uint)iCellFCC.size();
+    const uint kCF = (uint)iCellCFC.size();
+    const uint kFC = (uint)iCellFCC.size();
     uint neighborX[18] = { 0u };
     uint neighborY[18] = { 0u };
     uint neighborZ[18] = { 0u };
@@ -297,9 +98,9 @@ struct SendIndicesForCommAfterFtoCX {
     std::vector<uint> sendIndicesForCommAfterFtoCPositions;
 
     // expected data
-    std::vector<uint> sendIndicesForCommAfterFtoCPositions_expected = { 4, 6, 0, 2 };
-    std::vector<int> sendProcessNeighborX_expected = { 14, 16, 10, 12, 11, 13, 15 };
-    int numberOfSendNodesAfterFtoC_expected = (int)sendIndicesForCommAfterFtoCPositions_expected.size();
+    const std::vector<uint> sendIndicesForCommAfterFtoCPositions_expected = { 4, 6, 0, 2 };
+    const std::vector<int> sendProcessNeighborX_expected = { 14, 16, 10, 12, 11, 13, 15 };
+    const int numberOfSendNodesAfterFtoC_expected = (int)sendIndicesForCommAfterFtoCPositions_expected.size();
 };
 
 class IndexRearrangementForStreamsTest_reorderSendIndices : public testing::Test
@@ -316,18 +117,16 @@ protected:
     };
 
 private:
-    std::unique_ptr<IndexRearrangementForStreams> createTestSubjectReorderSendIndices()
+    void SetUp() override
     {
         logging::Logger::addStream(&std::cout);
 
         SPtr<GridImpDouble> grid =
             GridImpDouble::makeShared(nullptr, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, Distribution(), 1);
         std::shared_ptr<LevelGridBuilderDouble> builder = std::make_shared<LevelGridBuilderDouble>(grid);
-
         builder->setNumberOfSendIndices((uint)si.sendIndices.size());
-        para->setMaxLevel(si.level + 1); // setMaxLevel resizes parH and parD
-        para->parH[si.level] = std::make_shared<LBMSimulationParameter>();
-        para->parD[si.level] = std::make_shared<LBMSimulationParameter>();
+
+        para = testingVF::createParameterForLevel(si.level);
 
         para->getParH(si.level)->intFC.kFC = si.kFC;
         para->getParH(si.level)->intFC.ICellFCC = &(si.iCellFCC.front());
@@ -341,14 +140,8 @@ private:
         para->getParH(si.level)->sendProcessNeighborX[si.indexOfProcessNeighbor].index = si.sendIndices.data();
         para->initProcessNeighborsAfterFtoCX(si.level);
 
-        return std::make_unique<IndexRearrangementForStreams>(
+        testSubject = std::make_unique<IndexRearrangementForStreams>(
             IndexRearrangementForStreams(para, builder, vf::gpu::Communicator::getInstance()));
-    };
-
-    void SetUp() override
-    {
-        para = std::make_shared<Parameter>();
-        testSubject = createTestSubjectReorderSendIndices();
     };
 };
 
@@ -365,4 +158,395 @@ TEST_F(IndexRearrangementForStreamsTest_reorderSendIndices, reorderSendIndicesFo
     EXPECT_TRUE(vectorsAreEqual(para->getParH(si.level)->sendProcessNeighborX[si.indexOfProcessNeighbor].index,
                                 si.sendProcessNeighborX_expected))
         << "sendProcessNeighborX[].index does not match the expected vector";
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Test exchangeIndicesForCommAfterFtoC
+//////////////////////////////////////////////////////////////////////////
+
+class CommunicationRoutineDouble : public vf::gpu::CommunicationRoutine
+{
+public:
+    void receive_send(uint *buffer_receive, int, int, uint *, int, int) const override
+    {
+        for (int i = 0; i < (int)receivedIndices.size(); ++i) {
+            *(buffer_receive + i) = receivedIndices[i];
+        }
+    }
+
+    int getPID() const override
+    {
+        return 0;
+    }
+
+    void setReceivedIndices(const std::vector<uint>& receivedIndices)
+    {
+        this->receivedIndices = receivedIndices;
+    }
+
+private:
+    std::vector<uint> receivedIndices;
+};
+
+class IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX : public testing::Test
+{
+
+public:
+    void createTestSubject(vf::gpu::CommunicationRoutine &CommunicationRoutine)
+    {
+        sut = std::make_unique<IndexRearrangementForStreams>(para, builder, CommunicationRoutine);
+    }
+
+protected:
+    std::vector<uint> act()
+    {
+        return sut->exchangeIndicesForCommAfterFtoCX(level, indexOfProcessNeighbor,
+                                                     sendIndicesForCommAfterFtoCPositions);
+    }
+
+protected:
+    SPtr<Parameter> para;
+    std::shared_ptr<LevelGridBuilderDouble> builder;
+    std::unique_ptr<IndexRearrangementForStreams> sut;
+    const uint level = 1;
+    const int indexOfProcessNeighbor = 0;
+    const uint numberOfProcessNeighbors = 2;
+    std::vector<uint> sendIndicesForCommAfterFtoCPositions = { 1, 2, 3 };
+
+private:
+    void SetUp() override
+    {
+        logging::Logger::addStream(&std::cout);
+
+        para = testingVF::createParameterForLevel(level);
+
+        para->setNumberOfProcessNeighborsX(numberOfProcessNeighbors, level, "send");
+        para->initProcessNeighborsAfterFtoCX(level);
+        para->getParH(level)->sendProcessNeighborsAfterFtoCX[indexOfProcessNeighbor].numberOfNodes = 3;
+
+        para->setNumberOfProcessNeighborsX(numberOfProcessNeighbors, level, "recv");
+        para->getParH(level)->recvProcessNeighborX[indexOfProcessNeighbor].rankNeighbor = 0;
+
+        SPtr<GridImpDouble> grid =
+            GridImpDouble::makeShared(nullptr, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, Distribution(), 1);
+        builder = std::make_shared<LevelGridBuilderDouble>(grid);
+    };
+};
+
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, emptyRecvInX)
+{
+    CommunicationRoutineDouble communicator;
+    communicator.setReceivedIndices(std::vector<uint>());
+    createTestSubject(communicator);
+
+    std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(0));
+}
+
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, zeroRecvIndexX)
+{
+    CommunicationRoutineDouble communicator;
+    communicator.setReceivedIndices({ 0 });
+    createTestSubject(communicator);
+
+    std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(0));
+}
+
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, oneRecvIndexX)
+{
+    CommunicationRoutineDouble communicator;
+    std::vector<uint> expected = { 10 };
+    std::vector<uint> receivedIndicesByComm(4, 0);
+    std::copy(expected.begin(), expected.end(), receivedIndicesByComm.begin());
+    communicator.setReceivedIndices(receivedIndicesByComm);
+    createTestSubject(communicator);
+
+    std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(1));
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
+}
+
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, threeRecvIndicesX)
+{
+    CommunicationRoutineDouble communicator;
+    std::vector<uint> expected = { 10, 20, 30 };
+    std::vector<uint> receivedIndicesByComm(5, 0);
+    std::copy(expected.begin(), expected.end(), receivedIndicesByComm.begin());
+    communicator.setReceivedIndices(receivedIndicesByComm);
+    createTestSubject(communicator);
+
+    std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(3));
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
+}
+
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, sixRecvIndicesX)
+{
+    // this test shows the limits of the current approach. The last index is always deleted
+    CommunicationRoutineDouble communicator;
+    std::vector<uint> expected = { 10, 20, 30, 40, 50 };
+    std::vector<uint> receivedIndicesByComm = { 10, 20, 30, 40, 50, 60 };
+    communicator.setReceivedIndices(receivedIndicesByComm);
+    createTestSubject(communicator);
+
+    std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(5));
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
+}
+
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, recvIndicesXContainZero)
+{
+    CommunicationRoutineDouble communicator;
+    std::vector<uint> expected = { 0, 20, 30, 40 };
+    std::vector<uint> receivedIndicesByComm(6, 0);
+    std::copy(expected.begin(), expected.end(), receivedIndicesByComm.begin());
+    communicator.setReceivedIndices(receivedIndicesByComm);
+    createTestSubject(communicator);
+
+    std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(4));
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
+}
+
+class IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY : public testing::Test
+{
+
+public:
+    void createTestSubject(vf::gpu::CommunicationRoutine &CommunicationRoutine)
+    {
+        sut = std::make_unique<IndexRearrangementForStreams>(para, builder, CommunicationRoutine);
+    }
+
+protected:
+    std::vector<uint> act()
+    {
+        return sut->exchangeIndicesForCommAfterFtoCY(level, indexOfProcessNeighbor,
+                                                     sendIndicesForCommAfterFtoCPositions);
+    }
+
+protected:
+    SPtr<Parameter> para;
+    std::shared_ptr<LevelGridBuilderDouble> builder;
+    std::unique_ptr<IndexRearrangementForStreams> sut;
+    const uint level = 1;
+    const int indexOfProcessNeighbor = 0;
+    const uint numberOfProcessNeighbors = 2;
+    std::vector<uint> sendIndicesForCommAfterFtoCPositions = { 1, 2, 3 };
+
+private:
+    void SetUp() override
+    {
+        logging::Logger::addStream(&std::cout);
+
+        para = testingVF::createParameterForLevel(level);
+
+        para->setNumberOfProcessNeighborsY(numberOfProcessNeighbors, level, "send");
+        para->initProcessNeighborsAfterFtoCY(level);
+        para->getParH(level)->sendProcessNeighborsAfterFtoCY[indexOfProcessNeighbor].numberOfNodes = 3;
+
+        para->setNumberOfProcessNeighborsY(numberOfProcessNeighbors, level, "recv");
+        para->getParH(level)->recvProcessNeighborY[indexOfProcessNeighbor].rankNeighbor = 0;
+
+        SPtr<GridImpDouble> grid =
+            GridImpDouble::makeShared(nullptr, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, Distribution(), 1);
+        builder = std::make_shared<LevelGridBuilderDouble>(grid);
+    };
+};
+
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY, emptyRecvInY)
+{
+    CommunicationRoutineDouble communicator;
+    communicator.setReceivedIndices(std::vector<uint>());
+    createTestSubject(communicator);
+
+    std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(0));
+}
+
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY, zeroRecvIndexY)
+{
+    CommunicationRoutineDouble communicator;
+    communicator.setReceivedIndices({ 0 });
+    createTestSubject(communicator);
+
+    std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(0));
+}
+
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY, oneRecvIndexY)
+{
+    CommunicationRoutineDouble communicator;
+    std::vector<uint> expected = { 10 };
+    std::vector<uint> receivedIndicesByComm(4, 0);
+    std::copy(expected.begin(), expected.end(), receivedIndicesByComm.begin());
+    communicator.setReceivedIndices(receivedIndicesByComm);
+    createTestSubject(communicator);
+
+    std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(1));
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
+}
+
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY, threeRecvIndicesY)
+{
+    CommunicationRoutineDouble communicator;
+    std::vector<uint> expected = { 10, 20, 30 };
+    std::vector<uint> receivedIndicesByComm(5, 0);
+    std::copy(expected.begin(), expected.end(), receivedIndicesByComm.begin());
+    communicator.setReceivedIndices(receivedIndicesByComm);
+    createTestSubject(communicator);
+
+    std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(3));
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
+}
+
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY, sixRecvIndicesY)
+{
+    // this test shows the limits of the current approach. The last index is always deleted
+    CommunicationRoutineDouble communicator;
+    std::vector<uint> expected = { 10, 20, 30, 40, 50 };
+    std::vector<uint> receivedIndicesByComm = { 10, 20, 30, 40, 50, 60 };
+    communicator.setReceivedIndices(receivedIndicesByComm);
+    createTestSubject(communicator);
+
+    std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(5));
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
+}
+
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY, recvIndicesYContainZero)
+{
+    CommunicationRoutineDouble communicator;
+    std::vector<uint> expected = { 0, 20, 30, 40 };
+    std::vector<uint> receivedIndicesByComm(6, 0);
+    std::copy(expected.begin(), expected.end(), receivedIndicesByComm.begin());
+    communicator.setReceivedIndices(receivedIndicesByComm);
+    createTestSubject(communicator);
+
+    std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(4));
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
+}
+
+class IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ : public testing::Test
+{
+
+public:
+    void createTestSubject(vf::gpu::CommunicationRoutine &CommunicationRoutine)
+    {
+        sut = std::make_unique<IndexRearrangementForStreams>(para, builder, CommunicationRoutine);
+    }
+
+protected:
+    std::vector<uint> act()
+    {
+        return sut->exchangeIndicesForCommAfterFtoCZ(level, indexOfProcessNeighbor,
+                                                     sendIndicesForCommAfterFtoCPositions);
+    }
+
+protected:
+    SPtr<Parameter> para;
+    std::shared_ptr<LevelGridBuilderDouble> builder;
+    std::unique_ptr<IndexRearrangementForStreams> sut;
+    const uint level = 1;
+    const int indexOfProcessNeighbor = 0;
+    const uint numberOfProcessNeighbors = 2;
+    std::vector<uint> sendIndicesForCommAfterFtoCPositions = { 1, 2, 3 };
+
+private:
+    void SetUp() override
+    {
+        logging::Logger::addStream(&std::cout);
+
+        para = testingVF::createParameterForLevel(level);
+
+        para->setNumberOfProcessNeighborsZ(numberOfProcessNeighbors, level, "send");
+        para->initProcessNeighborsAfterFtoCZ(level);
+        para->getParH(level)->sendProcessNeighborsAfterFtoCZ[indexOfProcessNeighbor].numberOfNodes = 3;
+
+        para->setNumberOfProcessNeighborsZ(numberOfProcessNeighbors, level, "recv");
+        para->getParH(level)->recvProcessNeighborZ[indexOfProcessNeighbor].rankNeighbor = 0;
+
+        SPtr<GridImpDouble> grid =
+            GridImpDouble::makeShared(nullptr, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, Distribution(), 1);
+        builder = std::make_shared<LevelGridBuilderDouble>(grid);
+    };
+};
+
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ, emptyRecvInZ)
+{
+    CommunicationRoutineDouble communicator;
+    communicator.setReceivedIndices(std::vector<uint>());
+    createTestSubject(communicator);
+
+    std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(0));
+}
+
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ, zeroRecvIndexZ)
+{
+    CommunicationRoutineDouble communicator;
+    communicator.setReceivedIndices({ 0 });
+    createTestSubject(communicator);
+
+    std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(0));
+}
+
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ, oneRecvIndexZ)
+{
+    CommunicationRoutineDouble communicator;
+    std::vector<uint> expected = { 10 };
+    std::vector<uint> receivedIndicesBZComm(4, 0);
+    std::copy(expected.begin(), expected.end(), receivedIndicesBZComm.begin());
+    communicator.setReceivedIndices(receivedIndicesBZComm);
+    createTestSubject(communicator);
+
+    std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(1));
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
+}
+
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ, threeRecvIndicesZ)
+{
+    CommunicationRoutineDouble communicator;
+    std::vector<uint> expected = { 10, 20, 30 };
+    std::vector<uint> receivedIndicesBZComm(5, 0);
+    std::copy(expected.begin(), expected.end(), receivedIndicesBZComm.begin());
+    communicator.setReceivedIndices(receivedIndicesBZComm);
+    createTestSubject(communicator);
+
+    std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(3));
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
+}
+
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ, sixRecvIndicesYZ)
+{
+    // this test shows the limits of the current approach. The last index is always deleted
+    CommunicationRoutineDouble communicator;
+    std::vector<uint> expected = { 10, 20, 30, 40, 50 };
+    std::vector<uint> receivedIndicesByComm = { 10, 20, 30, 40, 50, 60 };
+    communicator.setReceivedIndices(receivedIndicesByComm);
+    createTestSubject(communicator);
+
+    std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(5));
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
+}
+
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ, recvIndicesZContainZero)
+{
+    CommunicationRoutineDouble communicator;
+    std::vector<uint> expected = { 0, 20, 30, 40 };
+    std::vector<uint> receivedIndicesByComm(6, 0);
+    std::copy(expected.begin(), expected.end(), receivedIndicesByComm.begin());
+    communicator.setReceivedIndices(receivedIndicesByComm);
+    createTestSubject(communicator);
+
+    std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(4));
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
 }
