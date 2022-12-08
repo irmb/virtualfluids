@@ -22,7 +22,7 @@ private:
 public:
     uint numberOfSendIndices = 0;
 
-    LevelGridBuilderStub(SPtr<Grid> grid) : LevelGridBuilder(), grid(grid){};
+    explicit LevelGridBuilderStub(SPtr<Grid> grid) : LevelGridBuilder(), grid(grid){};
 
     uint getCommunicationProcess(int direction) override
     {
@@ -59,7 +59,7 @@ public:
 class CudaMemoryManagerDouble : public CudaMemoryManager
 {
 public:
-    CudaMemoryManagerDouble(std::shared_ptr<Parameter> parameter) : CudaMemoryManager(parameter){};
+    explicit CudaMemoryManagerDouble(std::shared_ptr<Parameter> parameter) : CudaMemoryManager(parameter){};
 
     void cudaAllocProcessNeighborX(int lev, unsigned int processNeighbor) override{};
     void cudaCopyProcessNeighborXIndex(int lev, unsigned int processNeighbor) override{};
