@@ -103,10 +103,10 @@ std::vector<uint> IndexRearrangementForStreams::initSendIndicesForCommAfterFToCZ
 std::vector<uint> IndexRearrangementForStreams::exchangeIndicesForCommAfterFtoCX(
     uint level, int indexOfProcessNeighbor, std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const
 {
-    // fill the receive vector with zeros as placeholders (0 is not a valid fluid node)
+    // fill the receive vector with zeros as placeholders
     // give vector an arbitrary size (larger than needed) // TODO: Find a better way
     std::vector<uint> recvIndicesForCommAfterFtoCPositions(
-        (size_t)para->getParH(level)->sendProcessNeighborsAfterFtoCY[indexOfProcessNeighbor].numberOfNodes * 2, 0);
+        (size_t)para->getParH(level)->sendProcessNeighborsAfterFtoCX[indexOfProcessNeighbor].numberOfNodes * 2, 0);
 
     communicator.receive_send(
         recvIndicesForCommAfterFtoCPositions.data(), (int)recvIndicesForCommAfterFtoCPositions.size(),
@@ -130,7 +130,7 @@ std::vector<uint> IndexRearrangementForStreams::exchangeIndicesForCommAfterFtoCX
 std::vector<uint> IndexRearrangementForStreams::exchangeIndicesForCommAfterFtoCY(
     uint level, int indexOfProcessNeighbor, std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const
 {
-    // fill the receive vector with zeros as placeholders (0 is not a valid fluid node)
+    // fill the receive vector with zeros as placeholders
     // give vector an arbitrary size (larger than needed) // TODO: Find a better way
     std::vector<uint> recvIndicesForCommAfterFtoCPositions(
         (size_t)para->getParH(level)->sendProcessNeighborsAfterFtoCY[indexOfProcessNeighbor].numberOfNodes * 2, 0);
@@ -157,7 +157,7 @@ std::vector<uint> IndexRearrangementForStreams::exchangeIndicesForCommAfterFtoCY
 std::vector<uint> IndexRearrangementForStreams::exchangeIndicesForCommAfterFtoCZ(
     uint level, int indexOfProcessNeighbor, std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const
 {
-    // fill the receive vector with zeros as placeholders (0 is not a valid fluid node)
+    // fill the receive vector with zeros as placeholders
     // give vector an arbitrary size (larger than needed) // TODO: Find a better way
     std::vector<uint> recvIndicesForCommAfterFtoCPositions(
         (size_t)para->getParH(level)->sendProcessNeighborsAfterFtoCZ[indexOfProcessNeighbor].numberOfNodes * 2, 0);
