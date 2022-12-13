@@ -1,15 +1,16 @@
 /* Device code */
 #include "LBM/LB.h" 
-#include "LBM/D3Q27.h"
+#include "lbm/constants/D3Q27.h"
 #include <lbm/constants/NumericConstants.h>
 
 using namespace vf::lbm::constant;
+using namespace vf::lbm::dir;
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void DragLiftPost27(  real* DD, 
+__global__ void DragLiftPost27(  real* DD, 
 											int* k_Q, 
 											real* QQ,
-											int kQ, 
+											int numberOfBCnodes, 
 											double *DragX,
 											double *DragY,
 											double *DragZ,
@@ -17,68 +18,68 @@ extern "C" __global__ void DragLiftPost27(  real* DD,
 											unsigned int* neighborY,
 											unsigned int* neighborZ,
 											unsigned int size_Mat, 
-											bool evenOrOdd)
+											bool isEvenTimestep)
 {
 	Distributions27 D;
-	if (evenOrOdd==true)
+	if (isEvenTimestep==true)
 	{
-		D.f[dirE   ] = &DD[dirE   *size_Mat];
-		D.f[dirW   ] = &DD[dirW   *size_Mat];
-		D.f[dirN   ] = &DD[dirN   *size_Mat];
-		D.f[dirS   ] = &DD[dirS   *size_Mat];
-		D.f[dirT   ] = &DD[dirT   *size_Mat];
-		D.f[dirB   ] = &DD[dirB   *size_Mat];
-		D.f[dirNE  ] = &DD[dirNE  *size_Mat];
-		D.f[dirSW  ] = &DD[dirSW  *size_Mat];
-		D.f[dirSE  ] = &DD[dirSE  *size_Mat];
-		D.f[dirNW  ] = &DD[dirNW  *size_Mat];
-		D.f[dirTE  ] = &DD[dirTE  *size_Mat];
-		D.f[dirBW  ] = &DD[dirBW  *size_Mat];
-		D.f[dirBE  ] = &DD[dirBE  *size_Mat];
-		D.f[dirTW  ] = &DD[dirTW  *size_Mat];
-		D.f[dirTN  ] = &DD[dirTN  *size_Mat];
-		D.f[dirBS  ] = &DD[dirBS  *size_Mat];
-		D.f[dirBN  ] = &DD[dirBN  *size_Mat];
-		D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-		D.f[dirZERO] = &DD[dirZERO*size_Mat];
-		D.f[dirTNE ] = &DD[dirTNE *size_Mat];
-		D.f[dirTSW ] = &DD[dirTSW *size_Mat];
-		D.f[dirTSE ] = &DD[dirTSE *size_Mat];
-		D.f[dirTNW ] = &DD[dirTNW *size_Mat];
-		D.f[dirBNE ] = &DD[dirBNE *size_Mat];
-		D.f[dirBSW ] = &DD[dirBSW *size_Mat];
-		D.f[dirBSE ] = &DD[dirBSE *size_Mat];
-		D.f[dirBNW ] = &DD[dirBNW *size_Mat];
+		D.f[DIR_P00   ] = &DD[DIR_P00   *size_Mat];
+		D.f[DIR_M00   ] = &DD[DIR_M00   *size_Mat];
+		D.f[DIR_0P0   ] = &DD[DIR_0P0   *size_Mat];
+		D.f[DIR_0M0   ] = &DD[DIR_0M0   *size_Mat];
+		D.f[DIR_00P   ] = &DD[DIR_00P   *size_Mat];
+		D.f[DIR_00M   ] = &DD[DIR_00M   *size_Mat];
+		D.f[DIR_PP0  ] = &DD[DIR_PP0  *size_Mat];
+		D.f[DIR_MM0  ] = &DD[DIR_MM0  *size_Mat];
+		D.f[DIR_PM0  ] = &DD[DIR_PM0  *size_Mat];
+		D.f[DIR_MP0  ] = &DD[DIR_MP0  *size_Mat];
+		D.f[DIR_P0P  ] = &DD[DIR_P0P  *size_Mat];
+		D.f[DIR_M0M  ] = &DD[DIR_M0M  *size_Mat];
+		D.f[DIR_P0M  ] = &DD[DIR_P0M  *size_Mat];
+		D.f[DIR_M0P  ] = &DD[DIR_M0P  *size_Mat];
+		D.f[DIR_0PP  ] = &DD[DIR_0PP  *size_Mat];
+		D.f[DIR_0MM  ] = &DD[DIR_0MM  *size_Mat];
+		D.f[DIR_0PM  ] = &DD[DIR_0PM  *size_Mat];
+		D.f[DIR_0MP  ] = &DD[DIR_0MP  *size_Mat];
+		D.f[DIR_000] = &DD[DIR_000*size_Mat];
+		D.f[DIR_PPP ] = &DD[DIR_PPP *size_Mat];
+		D.f[DIR_MMP ] = &DD[DIR_MMP *size_Mat];
+		D.f[DIR_PMP ] = &DD[DIR_PMP *size_Mat];
+		D.f[DIR_MPP ] = &DD[DIR_MPP *size_Mat];
+		D.f[DIR_PPM ] = &DD[DIR_PPM *size_Mat];
+		D.f[DIR_MMM ] = &DD[DIR_MMM *size_Mat];
+		D.f[DIR_PMM ] = &DD[DIR_PMM *size_Mat];
+		D.f[DIR_MPM ] = &DD[DIR_MPM *size_Mat];
 	} 
 	else
 	{
-		D.f[dirW   ] = &DD[dirE   *size_Mat];
-		D.f[dirE   ] = &DD[dirW   *size_Mat];
-		D.f[dirS   ] = &DD[dirN   *size_Mat];
-		D.f[dirN   ] = &DD[dirS   *size_Mat];
-		D.f[dirB   ] = &DD[dirT   *size_Mat];
-		D.f[dirT   ] = &DD[dirB   *size_Mat];
-		D.f[dirSW  ] = &DD[dirNE  *size_Mat];
-		D.f[dirNE  ] = &DD[dirSW  *size_Mat];
-		D.f[dirNW  ] = &DD[dirSE  *size_Mat];
-		D.f[dirSE  ] = &DD[dirNW  *size_Mat];
-		D.f[dirBW  ] = &DD[dirTE  *size_Mat];
-		D.f[dirTE  ] = &DD[dirBW  *size_Mat];
-		D.f[dirTW  ] = &DD[dirBE  *size_Mat];
-		D.f[dirBE  ] = &DD[dirTW  *size_Mat];
-		D.f[dirBS  ] = &DD[dirTN  *size_Mat];
-		D.f[dirTN  ] = &DD[dirBS  *size_Mat];
-		D.f[dirTS  ] = &DD[dirBN  *size_Mat];
-		D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-		D.f[dirZERO] = &DD[dirZERO*size_Mat];
-		D.f[dirTNE ] = &DD[dirBSW *size_Mat];
-		D.f[dirTSW ] = &DD[dirBNE *size_Mat];
-		D.f[dirTSE ] = &DD[dirBNW *size_Mat];
-		D.f[dirTNW ] = &DD[dirBSE *size_Mat];
-		D.f[dirBNE ] = &DD[dirTSW *size_Mat];
-		D.f[dirBSW ] = &DD[dirTNE *size_Mat];
-		D.f[dirBSE ] = &DD[dirTNW *size_Mat];
-		D.f[dirBNW ] = &DD[dirTSE *size_Mat];
+		D.f[DIR_M00   ] = &DD[DIR_P00   *size_Mat];
+		D.f[DIR_P00   ] = &DD[DIR_M00   *size_Mat];
+		D.f[DIR_0M0   ] = &DD[DIR_0P0   *size_Mat];
+		D.f[DIR_0P0   ] = &DD[DIR_0M0   *size_Mat];
+		D.f[DIR_00M   ] = &DD[DIR_00P   *size_Mat];
+		D.f[DIR_00P   ] = &DD[DIR_00M   *size_Mat];
+		D.f[DIR_MM0  ] = &DD[DIR_PP0  *size_Mat];
+		D.f[DIR_PP0  ] = &DD[DIR_MM0  *size_Mat];
+		D.f[DIR_MP0  ] = &DD[DIR_PM0  *size_Mat];
+		D.f[DIR_PM0  ] = &DD[DIR_MP0  *size_Mat];
+		D.f[DIR_M0M  ] = &DD[DIR_P0P  *size_Mat];
+		D.f[DIR_P0P  ] = &DD[DIR_M0M  *size_Mat];
+		D.f[DIR_M0P  ] = &DD[DIR_P0M  *size_Mat];
+		D.f[DIR_P0M  ] = &DD[DIR_M0P  *size_Mat];
+		D.f[DIR_0MM  ] = &DD[DIR_0PP  *size_Mat];
+		D.f[DIR_0PP  ] = &DD[DIR_0MM  *size_Mat];
+		D.f[DIR_0MP  ] = &DD[DIR_0PM  *size_Mat];
+		D.f[DIR_0PM  ] = &DD[DIR_0MP  *size_Mat];
+		D.f[DIR_000] = &DD[DIR_000*size_Mat];
+		D.f[DIR_PPP ] = &DD[DIR_MMM *size_Mat];
+		D.f[DIR_MMP ] = &DD[DIR_PPM *size_Mat];
+		D.f[DIR_PMP ] = &DD[DIR_MPM *size_Mat];
+		D.f[DIR_MPP ] = &DD[DIR_PMM *size_Mat];
+		D.f[DIR_PPM ] = &DD[DIR_MMP *size_Mat];
+		D.f[DIR_MMM ] = &DD[DIR_PPP *size_Mat];
+		D.f[DIR_PMM ] = &DD[DIR_MPP *size_Mat];
+		D.f[DIR_MPM ] = &DD[DIR_PMP *size_Mat];
 	}
 	////////////////////////////////////////////////////////////////////////////////
 	const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -91,41 +92,40 @@ extern "C" __global__ void DragLiftPost27(  real* DD,
 	const unsigned k = nx*(ny*z + y) + x;
 	//////////////////////////////////////////////////////////////////////////
 
-	if(k<kQ)
+	if(k<numberOfBCnodes)
 	{
-		unsigned int sizeQ = kQ;
 		////////////////////////////////////////////////////////////////////////////////
 		real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
 			*q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
 			*q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
 			*q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
 			*q_dirBSE, *q_dirBNW; 
-		q_dirE   = &QQ[dirE   *sizeQ];
-		q_dirW   = &QQ[dirW   *sizeQ];
-		q_dirN   = &QQ[dirN   *sizeQ];
-		q_dirS   = &QQ[dirS   *sizeQ];
-		q_dirT   = &QQ[dirT   *sizeQ];
-		q_dirB   = &QQ[dirB   *sizeQ];
-		q_dirNE  = &QQ[dirNE  *sizeQ];
-		q_dirSW  = &QQ[dirSW  *sizeQ];
-		q_dirSE  = &QQ[dirSE  *sizeQ];
-		q_dirNW  = &QQ[dirNW  *sizeQ];
-		q_dirTE  = &QQ[dirTE  *sizeQ];
-		q_dirBW  = &QQ[dirBW  *sizeQ];
-		q_dirBE  = &QQ[dirBE  *sizeQ];
-		q_dirTW  = &QQ[dirTW  *sizeQ];
-		q_dirTN  = &QQ[dirTN  *sizeQ];
-		q_dirBS  = &QQ[dirBS  *sizeQ];
-		q_dirBN  = &QQ[dirBN  *sizeQ];
-		q_dirTS  = &QQ[dirTS  *sizeQ];
-		q_dirTNE = &QQ[dirTNE *sizeQ];
-		q_dirTSW = &QQ[dirTSW *sizeQ];
-		q_dirTSE = &QQ[dirTSE *sizeQ];
-		q_dirTNW = &QQ[dirTNW *sizeQ];
-		q_dirBNE = &QQ[dirBNE *sizeQ];
-		q_dirBSW = &QQ[dirBSW *sizeQ];
-		q_dirBSE = &QQ[dirBSE *sizeQ];
-		q_dirBNW = &QQ[dirBNW *sizeQ];
+		q_dirE   = &QQ[DIR_P00   * numberOfBCnodes];
+		q_dirW   = &QQ[DIR_M00   * numberOfBCnodes];
+		q_dirN   = &QQ[DIR_0P0   * numberOfBCnodes];
+		q_dirS   = &QQ[DIR_0M0   * numberOfBCnodes];
+		q_dirT   = &QQ[DIR_00P   * numberOfBCnodes];
+		q_dirB   = &QQ[DIR_00M   * numberOfBCnodes];
+		q_dirNE  = &QQ[DIR_PP0  * numberOfBCnodes];
+		q_dirSW  = &QQ[DIR_MM0  * numberOfBCnodes];
+		q_dirSE  = &QQ[DIR_PM0  * numberOfBCnodes];
+		q_dirNW  = &QQ[DIR_MP0  * numberOfBCnodes];
+		q_dirTE  = &QQ[DIR_P0P  * numberOfBCnodes];
+		q_dirBW  = &QQ[DIR_M0M  * numberOfBCnodes];
+		q_dirBE  = &QQ[DIR_P0M  * numberOfBCnodes];
+		q_dirTW  = &QQ[DIR_M0P  * numberOfBCnodes];
+		q_dirTN  = &QQ[DIR_0PP  * numberOfBCnodes];
+		q_dirBS  = &QQ[DIR_0MM  * numberOfBCnodes];
+		q_dirBN  = &QQ[DIR_0PM  * numberOfBCnodes];
+		q_dirTS  = &QQ[DIR_0MP  * numberOfBCnodes];
+		q_dirTNE = &QQ[DIR_PPP * numberOfBCnodes];
+		q_dirTSW = &QQ[DIR_MMP * numberOfBCnodes];
+		q_dirTSE = &QQ[DIR_PMP * numberOfBCnodes];
+		q_dirTNW = &QQ[DIR_MPP * numberOfBCnodes];
+		q_dirBNE = &QQ[DIR_PPM * numberOfBCnodes];
+		q_dirBSW = &QQ[DIR_MMM * numberOfBCnodes];
+		q_dirBSE = &QQ[DIR_PMM * numberOfBCnodes];
+		q_dirBNW = &QQ[DIR_MPM * numberOfBCnodes];
 		////////////////////////////////////////////////////////////////////////////////
 		//index
 		unsigned int KQK  = k_Q[k];
@@ -160,32 +160,32 @@ extern "C" __global__ void DragLiftPost27(  real* DD,
 		real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
                 f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
-		f_W    = (D.f[dirE   ])[ke   ];
-		f_E    = (D.f[dirW   ])[kw   ];
-		f_S    = (D.f[dirN   ])[kn   ];
-		f_N    = (D.f[dirS   ])[ks   ];
-		f_B    = (D.f[dirT   ])[kt   ];
-		f_T    = (D.f[dirB   ])[kb   ];
-		f_SW   = (D.f[dirNE  ])[kne  ];
-		f_NE   = (D.f[dirSW  ])[ksw  ];
-		f_NW   = (D.f[dirSE  ])[kse  ];
-		f_SE   = (D.f[dirNW  ])[knw  ];
-		f_BW   = (D.f[dirTE  ])[kte  ];
-		f_TE   = (D.f[dirBW  ])[kbw  ];
-		f_TW   = (D.f[dirBE  ])[kbe  ];
-		f_BE   = (D.f[dirTW  ])[ktw  ];
-		f_BS   = (D.f[dirTN  ])[ktn  ];
-		f_TN   = (D.f[dirBS  ])[kbs  ];
-		f_TS   = (D.f[dirBN  ])[kbn  ];
-		f_BN   = (D.f[dirTS  ])[kts  ];
-		f_BSW  = (D.f[dirTNE ])[ktne ];
-		f_BNE  = (D.f[dirTSW ])[ktsw ];
-		f_BNW  = (D.f[dirTSE ])[ktse ];
-		f_BSE  = (D.f[dirTNW ])[ktnw ];
-		f_TSW  = (D.f[dirBNE ])[kbne ];
-		f_TNE  = (D.f[dirBSW ])[kbsw ];
-		f_TNW  = (D.f[dirBSE ])[kbse ];
-		f_TSE  = (D.f[dirBNW ])[kbnw ];
+		f_W    = (D.f[DIR_P00   ])[ke   ];
+		f_E    = (D.f[DIR_M00   ])[kw   ];
+		f_S    = (D.f[DIR_0P0   ])[kn   ];
+		f_N    = (D.f[DIR_0M0   ])[ks   ];
+		f_B    = (D.f[DIR_00P   ])[kt   ];
+		f_T    = (D.f[DIR_00M   ])[kb   ];
+		f_SW   = (D.f[DIR_PP0  ])[kne  ];
+		f_NE   = (D.f[DIR_MM0  ])[ksw  ];
+		f_NW   = (D.f[DIR_PM0  ])[kse  ];
+		f_SE   = (D.f[DIR_MP0  ])[knw  ];
+		f_BW   = (D.f[DIR_P0P  ])[kte  ];
+		f_TE   = (D.f[DIR_M0M  ])[kbw  ];
+		f_TW   = (D.f[DIR_P0M  ])[kbe  ];
+		f_BE   = (D.f[DIR_M0P  ])[ktw  ];
+		f_BS   = (D.f[DIR_0PP  ])[ktn  ];
+		f_TN   = (D.f[DIR_0MM  ])[kbs  ];
+		f_TS   = (D.f[DIR_0PM  ])[kbn  ];
+		f_BN   = (D.f[DIR_0MP  ])[kts  ];
+		f_BSW  = (D.f[DIR_PPP ])[ktne ];
+		f_BNE  = (D.f[DIR_MMP ])[ktsw ];
+		f_BNW  = (D.f[DIR_PMP ])[ktse ];
+		f_BSE  = (D.f[DIR_MPP ])[ktnw ];
+		f_TSW  = (D.f[DIR_PPM ])[kbne ];
+		f_TNE  = (D.f[DIR_MMM ])[kbsw ];
+		f_TNW  = (D.f[DIR_PMM ])[kbse ];
+		f_TSE  = (D.f[DIR_MPM ])[kbnw ];
 		////////////////////////////////////////////////////////////////////////////////
 		double	OnE   = c0o1, OnW   = c0o1, OnN   = c0o1, OnS   = c0o1, OnT = c0o1, OnB = c0o1, 
 				OnNE  = c0o1, OnSW  = c0o1, OnSE  = c0o1, OnNW  = c0o1, 
@@ -272,10 +272,10 @@ extern "C" __global__ void DragLiftPost27(  real* DD,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void DragLiftPre27(   real* DD, 
+__global__ void DragLiftPre27(   real* DD, 
 											int* k_Q, 
 											real* QQ,
-											int kQ, 
+											int numberOfBCnodes, 
 											double *DragX,
 											double *DragY,
 											double *DragZ,
@@ -283,68 +283,68 @@ extern "C" __global__ void DragLiftPre27(   real* DD,
 											unsigned int* neighborY,
 											unsigned int* neighborZ,
 											unsigned int size_Mat, 
-											bool evenOrOdd)
+											bool isEvenTimestep)
 {
 	Distributions27 D;
-	if (evenOrOdd==true)
+	if (isEvenTimestep==true)
 	{
-		D.f[dirE   ] = &DD[dirE   *size_Mat];
-		D.f[dirW   ] = &DD[dirW   *size_Mat];
-		D.f[dirN   ] = &DD[dirN   *size_Mat];
-		D.f[dirS   ] = &DD[dirS   *size_Mat];
-		D.f[dirT   ] = &DD[dirT   *size_Mat];
-		D.f[dirB   ] = &DD[dirB   *size_Mat];
-		D.f[dirNE  ] = &DD[dirNE  *size_Mat];
-		D.f[dirSW  ] = &DD[dirSW  *size_Mat];
-		D.f[dirSE  ] = &DD[dirSE  *size_Mat];
-		D.f[dirNW  ] = &DD[dirNW  *size_Mat];
-		D.f[dirTE  ] = &DD[dirTE  *size_Mat];
-		D.f[dirBW  ] = &DD[dirBW  *size_Mat];
-		D.f[dirBE  ] = &DD[dirBE  *size_Mat];
-		D.f[dirTW  ] = &DD[dirTW  *size_Mat];
-		D.f[dirTN  ] = &DD[dirTN  *size_Mat];
-		D.f[dirBS  ] = &DD[dirBS  *size_Mat];
-		D.f[dirBN  ] = &DD[dirBN  *size_Mat];
-		D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-		D.f[dirZERO] = &DD[dirZERO*size_Mat];
-		D.f[dirTNE ] = &DD[dirTNE *size_Mat];
-		D.f[dirTSW ] = &DD[dirTSW *size_Mat];
-		D.f[dirTSE ] = &DD[dirTSE *size_Mat];
-		D.f[dirTNW ] = &DD[dirTNW *size_Mat];
-		D.f[dirBNE ] = &DD[dirBNE *size_Mat];
-		D.f[dirBSW ] = &DD[dirBSW *size_Mat];
-		D.f[dirBSE ] = &DD[dirBSE *size_Mat];
-		D.f[dirBNW ] = &DD[dirBNW *size_Mat];
+		D.f[DIR_P00   ] = &DD[DIR_P00   *size_Mat];
+		D.f[DIR_M00   ] = &DD[DIR_M00   *size_Mat];
+		D.f[DIR_0P0   ] = &DD[DIR_0P0   *size_Mat];
+		D.f[DIR_0M0   ] = &DD[DIR_0M0   *size_Mat];
+		D.f[DIR_00P   ] = &DD[DIR_00P   *size_Mat];
+		D.f[DIR_00M   ] = &DD[DIR_00M   *size_Mat];
+		D.f[DIR_PP0  ] = &DD[DIR_PP0  *size_Mat];
+		D.f[DIR_MM0  ] = &DD[DIR_MM0  *size_Mat];
+		D.f[DIR_PM0  ] = &DD[DIR_PM0  *size_Mat];
+		D.f[DIR_MP0  ] = &DD[DIR_MP0  *size_Mat];
+		D.f[DIR_P0P  ] = &DD[DIR_P0P  *size_Mat];
+		D.f[DIR_M0M  ] = &DD[DIR_M0M  *size_Mat];
+		D.f[DIR_P0M  ] = &DD[DIR_P0M  *size_Mat];
+		D.f[DIR_M0P  ] = &DD[DIR_M0P  *size_Mat];
+		D.f[DIR_0PP  ] = &DD[DIR_0PP  *size_Mat];
+		D.f[DIR_0MM  ] = &DD[DIR_0MM  *size_Mat];
+		D.f[DIR_0PM  ] = &DD[DIR_0PM  *size_Mat];
+		D.f[DIR_0MP  ] = &DD[DIR_0MP  *size_Mat];
+		D.f[DIR_000] = &DD[DIR_000*size_Mat];
+		D.f[DIR_PPP ] = &DD[DIR_PPP *size_Mat];
+		D.f[DIR_MMP ] = &DD[DIR_MMP *size_Mat];
+		D.f[DIR_PMP ] = &DD[DIR_PMP *size_Mat];
+		D.f[DIR_MPP ] = &DD[DIR_MPP *size_Mat];
+		D.f[DIR_PPM ] = &DD[DIR_PPM *size_Mat];
+		D.f[DIR_MMM ] = &DD[DIR_MMM *size_Mat];
+		D.f[DIR_PMM ] = &DD[DIR_PMM *size_Mat];
+		D.f[DIR_MPM ] = &DD[DIR_MPM *size_Mat];
 	} 
 	else
 	{
-		D.f[dirW   ] = &DD[dirE   *size_Mat];
-		D.f[dirE   ] = &DD[dirW   *size_Mat];
-		D.f[dirS   ] = &DD[dirN   *size_Mat];
-		D.f[dirN   ] = &DD[dirS   *size_Mat];
-		D.f[dirB   ] = &DD[dirT   *size_Mat];
-		D.f[dirT   ] = &DD[dirB   *size_Mat];
-		D.f[dirSW  ] = &DD[dirNE  *size_Mat];
-		D.f[dirNE  ] = &DD[dirSW  *size_Mat];
-		D.f[dirNW  ] = &DD[dirSE  *size_Mat];
-		D.f[dirSE  ] = &DD[dirNW  *size_Mat];
-		D.f[dirBW  ] = &DD[dirTE  *size_Mat];
-		D.f[dirTE  ] = &DD[dirBW  *size_Mat];
-		D.f[dirTW  ] = &DD[dirBE  *size_Mat];
-		D.f[dirBE  ] = &DD[dirTW  *size_Mat];
-		D.f[dirBS  ] = &DD[dirTN  *size_Mat];
-		D.f[dirTN  ] = &DD[dirBS  *size_Mat];
-		D.f[dirTS  ] = &DD[dirBN  *size_Mat];
-		D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-		D.f[dirZERO] = &DD[dirZERO*size_Mat];
-		D.f[dirTNE ] = &DD[dirBSW *size_Mat];
-		D.f[dirTSW ] = &DD[dirBNE *size_Mat];
-		D.f[dirTSE ] = &DD[dirBNW *size_Mat];
-		D.f[dirTNW ] = &DD[dirBSE *size_Mat];
-		D.f[dirBNE ] = &DD[dirTSW *size_Mat];
-		D.f[dirBSW ] = &DD[dirTNE *size_Mat];
-		D.f[dirBSE ] = &DD[dirTNW *size_Mat];
-		D.f[dirBNW ] = &DD[dirTSE *size_Mat];
+		D.f[DIR_M00   ] = &DD[DIR_P00   *size_Mat];
+		D.f[DIR_P00   ] = &DD[DIR_M00   *size_Mat];
+		D.f[DIR_0M0   ] = &DD[DIR_0P0   *size_Mat];
+		D.f[DIR_0P0   ] = &DD[DIR_0M0   *size_Mat];
+		D.f[DIR_00M   ] = &DD[DIR_00P   *size_Mat];
+		D.f[DIR_00P   ] = &DD[DIR_00M   *size_Mat];
+		D.f[DIR_MM0  ] = &DD[DIR_PP0  *size_Mat];
+		D.f[DIR_PP0  ] = &DD[DIR_MM0  *size_Mat];
+		D.f[DIR_MP0  ] = &DD[DIR_PM0  *size_Mat];
+		D.f[DIR_PM0  ] = &DD[DIR_MP0  *size_Mat];
+		D.f[DIR_M0M  ] = &DD[DIR_P0P  *size_Mat];
+		D.f[DIR_P0P  ] = &DD[DIR_M0M  *size_Mat];
+		D.f[DIR_M0P  ] = &DD[DIR_P0M  *size_Mat];
+		D.f[DIR_P0M  ] = &DD[DIR_M0P  *size_Mat];
+		D.f[DIR_0MM  ] = &DD[DIR_0PP  *size_Mat];
+		D.f[DIR_0PP  ] = &DD[DIR_0MM  *size_Mat];
+		D.f[DIR_0MP  ] = &DD[DIR_0PM  *size_Mat];
+		D.f[DIR_0PM  ] = &DD[DIR_0MP  *size_Mat];
+		D.f[DIR_000] = &DD[DIR_000*size_Mat];
+		D.f[DIR_PPP ] = &DD[DIR_MMM *size_Mat];
+		D.f[DIR_MMP ] = &DD[DIR_PPM *size_Mat];
+		D.f[DIR_PMP ] = &DD[DIR_MPM *size_Mat];
+		D.f[DIR_MPP ] = &DD[DIR_PMM *size_Mat];
+		D.f[DIR_PPM ] = &DD[DIR_MMP *size_Mat];
+		D.f[DIR_MMM ] = &DD[DIR_PPP *size_Mat];
+		D.f[DIR_PMM ] = &DD[DIR_MPP *size_Mat];
+		D.f[DIR_MPM ] = &DD[DIR_PMP *size_Mat];
 	}
 	////////////////////////////////////////////////////////////////////////////////
 	const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -357,41 +357,40 @@ extern "C" __global__ void DragLiftPre27(   real* DD,
 	const unsigned k = nx*(ny*z + y) + x;
 	//////////////////////////////////////////////////////////////////////////
 
-	if(k<kQ)
+	if(k<numberOfBCnodes)
 	{
-		unsigned int sizeQ = kQ;
 		////////////////////////////////////////////////////////////////////////////////
 		real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
 			*q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
 			*q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
 			*q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
 			*q_dirBSE, *q_dirBNW; 
-		q_dirE   = &QQ[dirE   *sizeQ];
-		q_dirW   = &QQ[dirW   *sizeQ];
-		q_dirN   = &QQ[dirN   *sizeQ];
-		q_dirS   = &QQ[dirS   *sizeQ];
-		q_dirT   = &QQ[dirT   *sizeQ];
-		q_dirB   = &QQ[dirB   *sizeQ];
-		q_dirNE  = &QQ[dirNE  *sizeQ];
-		q_dirSW  = &QQ[dirSW  *sizeQ];
-		q_dirSE  = &QQ[dirSE  *sizeQ];
-		q_dirNW  = &QQ[dirNW  *sizeQ];
-		q_dirTE  = &QQ[dirTE  *sizeQ];
-		q_dirBW  = &QQ[dirBW  *sizeQ];
-		q_dirBE  = &QQ[dirBE  *sizeQ];
-		q_dirTW  = &QQ[dirTW  *sizeQ];
-		q_dirTN  = &QQ[dirTN  *sizeQ];
-		q_dirBS  = &QQ[dirBS  *sizeQ];
-		q_dirBN  = &QQ[dirBN  *sizeQ];
-		q_dirTS  = &QQ[dirTS  *sizeQ];
-		q_dirTNE = &QQ[dirTNE *sizeQ];
-		q_dirTSW = &QQ[dirTSW *sizeQ];
-		q_dirTSE = &QQ[dirTSE *sizeQ];
-		q_dirTNW = &QQ[dirTNW *sizeQ];
-		q_dirBNE = &QQ[dirBNE *sizeQ];
-		q_dirBSW = &QQ[dirBSW *sizeQ];
-		q_dirBSE = &QQ[dirBSE *sizeQ];
-		q_dirBNW = &QQ[dirBNW *sizeQ];
+		q_dirE   = &QQ[DIR_P00   * numberOfBCnodes];
+		q_dirW   = &QQ[DIR_M00   * numberOfBCnodes];
+		q_dirN   = &QQ[DIR_0P0   * numberOfBCnodes];
+		q_dirS   = &QQ[DIR_0M0   * numberOfBCnodes];
+		q_dirT   = &QQ[DIR_00P   * numberOfBCnodes];
+		q_dirB   = &QQ[DIR_00M   * numberOfBCnodes];
+		q_dirNE  = &QQ[DIR_PP0  * numberOfBCnodes];
+		q_dirSW  = &QQ[DIR_MM0  * numberOfBCnodes];
+		q_dirSE  = &QQ[DIR_PM0  * numberOfBCnodes];
+		q_dirNW  = &QQ[DIR_MP0  * numberOfBCnodes];
+		q_dirTE  = &QQ[DIR_P0P  * numberOfBCnodes];
+		q_dirBW  = &QQ[DIR_M0M  * numberOfBCnodes];
+		q_dirBE  = &QQ[DIR_P0M  * numberOfBCnodes];
+		q_dirTW  = &QQ[DIR_M0P  * numberOfBCnodes];
+		q_dirTN  = &QQ[DIR_0PP  * numberOfBCnodes];
+		q_dirBS  = &QQ[DIR_0MM  * numberOfBCnodes];
+		q_dirBN  = &QQ[DIR_0PM  * numberOfBCnodes];
+		q_dirTS  = &QQ[DIR_0MP  * numberOfBCnodes];
+		q_dirTNE = &QQ[DIR_PPP * numberOfBCnodes];
+		q_dirTSW = &QQ[DIR_MMP * numberOfBCnodes];
+		q_dirTSE = &QQ[DIR_PMP * numberOfBCnodes];
+		q_dirTNW = &QQ[DIR_MPP * numberOfBCnodes];
+		q_dirBNE = &QQ[DIR_PPM * numberOfBCnodes];
+		q_dirBSW = &QQ[DIR_MMM * numberOfBCnodes];
+		q_dirBSE = &QQ[DIR_PMM * numberOfBCnodes];
+		q_dirBNW = &QQ[DIR_MPM * numberOfBCnodes];
 		////////////////////////////////////////////////////////////////////////////////
 		//index
 		unsigned int KQK  = k_Q[k];
@@ -426,32 +425,32 @@ extern "C" __global__ void DragLiftPre27(   real* DD,
 		real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
                 f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
-		f_E   = (D.f[dirE   ])[ke   ];
-		f_W   = (D.f[dirW   ])[kw   ];
-		f_N   = (D.f[dirN   ])[kn   ];
-		f_S   = (D.f[dirS   ])[ks   ];
-		f_T   = (D.f[dirT   ])[kt   ];
-		f_B   = (D.f[dirB   ])[kb   ];
-		f_NE  = (D.f[dirNE  ])[kne  ];
-		f_SW  = (D.f[dirSW  ])[ksw  ];
-		f_SE  = (D.f[dirSE  ])[kse  ];
-		f_NW  = (D.f[dirNW  ])[knw  ];
-		f_TE  = (D.f[dirTE  ])[kte  ];
-		f_BW  = (D.f[dirBW  ])[kbw  ];
-		f_BE  = (D.f[dirBE  ])[kbe  ];
-		f_TW  = (D.f[dirTW  ])[ktw  ];
-		f_TN  = (D.f[dirTN  ])[ktn  ];
-		f_BS  = (D.f[dirBS  ])[kbs  ];
-		f_BN  = (D.f[dirBN  ])[kbn  ];
-		f_TS  = (D.f[dirTS  ])[kts  ];
-		f_TNE = (D.f[dirTNE ])[ktne ];
-		f_TSW = (D.f[dirTSW ])[ktsw ];
-		f_TSE = (D.f[dirTSE ])[ktse ];
-		f_TNW = (D.f[dirTNW ])[ktnw ];
-		f_BNE = (D.f[dirBNE ])[kbne ];
-		f_BSW = (D.f[dirBSW ])[kbsw ];
-		f_BSE = (D.f[dirBSE ])[kbse ];
-		f_BNW = (D.f[dirBNW ])[kbnw ];
+		f_E   = (D.f[DIR_P00   ])[ke   ];
+		f_W   = (D.f[DIR_M00   ])[kw   ];
+		f_N   = (D.f[DIR_0P0   ])[kn   ];
+		f_S   = (D.f[DIR_0M0   ])[ks   ];
+		f_T   = (D.f[DIR_00P   ])[kt   ];
+		f_B   = (D.f[DIR_00M   ])[kb   ];
+		f_NE  = (D.f[DIR_PP0  ])[kne  ];
+		f_SW  = (D.f[DIR_MM0  ])[ksw  ];
+		f_SE  = (D.f[DIR_PM0  ])[kse  ];
+		f_NW  = (D.f[DIR_MP0  ])[knw  ];
+		f_TE  = (D.f[DIR_P0P  ])[kte  ];
+		f_BW  = (D.f[DIR_M0M  ])[kbw  ];
+		f_BE  = (D.f[DIR_P0M  ])[kbe  ];
+		f_TW  = (D.f[DIR_M0P  ])[ktw  ];
+		f_TN  = (D.f[DIR_0PP  ])[ktn  ];
+		f_BS  = (D.f[DIR_0MM  ])[kbs  ];
+		f_BN  = (D.f[DIR_0PM  ])[kbn  ];
+		f_TS  = (D.f[DIR_0MP  ])[kts  ];
+		f_TNE = (D.f[DIR_PPP ])[ktne ];
+		f_TSW = (D.f[DIR_MMP ])[ktsw ];
+		f_TSE = (D.f[DIR_PMP ])[ktse ];
+		f_TNW = (D.f[DIR_MPP ])[ktnw ];
+		f_BNE = (D.f[DIR_PPM ])[kbne ];
+		f_BSW = (D.f[DIR_MMM ])[kbsw ];
+		f_BSE = (D.f[DIR_PMM ])[kbse ];
+		f_BNW = (D.f[DIR_MPM ])[kbnw ];
 		 ////////////////////////////////////////////////////////////////////////////////
 		double	OnE   = c0o1, OnW   = c0o1, OnN   = c0o1, OnS   = c0o1, OnT = c0o1, OnB = c0o1, 
 				OnNE  = c0o1, OnSW  = c0o1, OnSE  = c0o1, OnNW  = c0o1, 

@@ -35,12 +35,12 @@
 
 #include <vector>
 #include <array>
-#include "GridGenerator_export.h"
 #include "Core/LbmOrGks.h"
 
 #include "global.h"
 
 #include "grid/GridBuilder/LevelGridBuilder.h"
+#include "grid/GridFactory.h"
 #include "grid/distributions/Distribution.h"
 
 class Object;
@@ -49,10 +49,10 @@ class BoundingBox;
 class MultipleGridBuilder : public LevelGridBuilder
 {
 private:
-    GRIDGENERATOR_EXPORT MultipleGridBuilder();
+    GRIDGENERATOR_EXPORT MultipleGridBuilder(SPtr<GridFactory> gridFactory);
 
 public:
-    GRIDGENERATOR_EXPORT static SPtr<MultipleGridBuilder> makeShared();
+    GRIDGENERATOR_EXPORT static SPtr<MultipleGridBuilder> makeShared(SPtr<GridFactory> gridFactory);
 
     GRIDGENERATOR_EXPORT void addCoarseGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta);
     GRIDGENERATOR_EXPORT void addGrid(Object *gridShape);
@@ -103,6 +103,7 @@ private:
     static void emitNoCoarseGridExistsWarning();
     static void emitGridIsNotInCoarseGridWarning();
 
+    SPtr<GridFactory> gridFactory;
     Object *solidObject = nullptr;
 
     uint numberOfLayersFine;

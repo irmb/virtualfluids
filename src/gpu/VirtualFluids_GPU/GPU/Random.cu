@@ -1,16 +1,18 @@
 /* Device code */
 #include "LBM/LB.h" 
-#include "LBM/D3Q27.h"
+#include "lbm/constants/D3Q27.h"
 #include <lbm/constants/NumericConstants.h>
 
 using namespace vf::lbm::constant;
+using namespace vf::lbm::dir;
+
 //random numbers
 #include <curand.h>
 #include <curand_kernel.h>
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void initRandom(curandState* state)
+__global__ void initRandom(curandState* state)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -34,7 +36,7 @@ extern "C" __global__ void initRandom(curandState* state)
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void generateRandomValues(curandState* state, real* randArray)
+__global__ void generateRandomValues(curandState* state, real* randArray)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 

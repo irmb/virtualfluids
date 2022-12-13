@@ -20,9 +20,8 @@
 //#include "metis.h"
 
 #include "Core/LbmOrGks.h"
-#include "Core/Input/Input.h"
 #include "Core/StringUtilities/StringUtil.h"
-#include "Core/Input/ConfigFileReader/ConfigFileReader.h"
+#include "basics/config/ConfigurationFile.h"
 
 #include "VirtualFluids_GPU/LBM/Simulation.h"
 #include "VirtualFluids_GPU/Communication/Communicator.h"
@@ -34,9 +33,9 @@
 
 #include "VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
 #include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
+#include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
-#include "VirtualFluids_GPU/Kernel/Utilities/Mapper/KernelMapper/KernelMapper.h"
 
 #include "global.h"
 
@@ -110,12 +109,12 @@ std::string simulationName("TGV_3D");
 
 void multipleLevel(const std::string& configPath)
 {
-    
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     int sideLengthX, sideLengthY, sideLengthZ, rankX, rankY, rankZ;
 
-    
+
     if      (mpiWorldSize == 1 ) { sideLengthX = 1; sideLengthY = 1; sideLengthZ = 1; }
     else if (mpiWorldSize == 2 ) { sideLengthX = 2; sideLengthY = 1; sideLengthZ = 1; }
     else if (mpiWorldSize == 4 ) { sideLengthX = 2; sideLengthY = 2; sideLengthZ = 1; }
@@ -130,7 +129,7 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     logging::Logger::addStream(&std::cout);
-    
+
     std::ofstream logFile( path + simulationName + "_rank_" + std::to_string(mpirank) + ".log" );
     logging::Logger::addStream(&logFile);
 
@@ -138,22 +137,21 @@ void multipleLevel(const std::string& configPath)
     logging::Logger::timeStamp(logging::Logger::ENABLE);
     logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
 
+    vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();
+
     //UbLog::reportingLevel() = UbLog::logLevelFromString("DEBUG5");
 
     auto gridFactory = GridFactory::make();
-    gridFactory->setGridStrategy(Device::CPU);
     //gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::RAYCASTING);
     gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
     //gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_UNDER_TRIANGLE);
 
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
-    
-	SPtr<ConfigFileReader> configReader = ConfigFileReader::getNewInstance();
-	SPtr<ConfigData> configData = configReader->readConfigFile(configPath);
-	Communicator* comm = Communicator::getInstanz();
-    SPtr<Parameter> para = Parameter::make(configData, comm);
 
-    std::shared_ptr<KernelMapper> kernelMapper = KernelMapper::getInstance();
+    vf::basics::ConfigurationFile config;
+    config.load(configPath);
+    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNummberOfProcess(), communicator.getPID(), &config);
+    BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
 
     *logging::out << logging::Logger::INFO_HIGH << "SideLength = " << sideLengthX << " " << sideLengthY << " " << sideLengthZ << "\n";
     *logging::out << logging::Logger::INFO_HIGH << "rank       = " << rankX << " " << rankY << " " << rankZ << "\n";
@@ -196,7 +194,7 @@ void multipleLevel(const std::string& configPath)
     gridBuilder->addCoarseGrid(  rankX   *LX - PI - xOverlap,      rankY   *LY - PI - yOverlap,      rankZ   *LZ - PI - zOverlap,
                                 (rankX+1)*LX - PI + xOverlap,     (rankY+1)*LY - PI + yOverlap,     (rankZ+1)*LZ - PI + zOverlap, dx);
 
-    gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>( rankX*LX - PI, (rankX+1)*LX - PI, 
+    gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>( rankX*LX - PI, (rankX+1)*LX - PI,
                                                                  rankY*LY - PI, (rankY+1)*LY - PI,
                                                                  rankZ*LZ - PI, (rankZ+1)*LZ - PI  ) );
 
@@ -228,9 +226,9 @@ void multipleLevel(const std::string& configPath)
         if( sideLengthY > 1 && rankMY != rankPY ) gridBuilder->setCommunicationProcess ( CommunicationDirections::PY, rankPY);
         if( sideLengthZ > 1 && rankMZ != rankPZ ) gridBuilder->setCommunicationProcess ( CommunicationDirections::PZ, rankPZ);
 
-        if( rankMX == rankPX ) gridBuilder->getGrid(0)->repairCommunicationInices(CommunicationDirections::MX);
-        if( rankMY == rankPY ) gridBuilder->getGrid(0)->repairCommunicationInices(CommunicationDirections::MY);
-        if( rankMZ == rankPZ ) gridBuilder->getGrid(0)->repairCommunicationInices(CommunicationDirections::MZ);
+        if( rankMX == rankPX ) gridBuilder->getGrid(0)->repairCommunicationIndices(CommunicationDirections::MX);
+        if( rankMY == rankPY ) gridBuilder->getGrid(0)->repairCommunicationIndices(CommunicationDirections::MY);
+        if( rankMZ == rankPZ ) gridBuilder->getGrid(0)->repairCommunicationIndices(CommunicationDirections::MZ);
 
         *logging::out << logging::Logger::INFO_HIGH << "neighborRanks = " << rankPX << " " << rankMX << " " << rankPY << " " << rankMY << " " << rankPZ << " " << rankMZ << "\n";
     }
@@ -251,28 +249,26 @@ void multipleLevel(const std::string& configPath)
 
     //para->setDevices(std::vector<uint>{0,1});
     para->setDevices(devices);
-	
+
 	para->setMaxDev(mpiWorldSize);
 
     //////////////////////////////////////////////////////////////////////////
-    
+
     para->setOutputPath( path );
     para->setOutputPrefix( simulationName );
 
-    para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
-
     para->setPrintFiles(true);
 
- //   para->setTEnd( 40 * lround(L/velocity) );	
-	//para->setTOut(  5 * lround(L/velocity) );
-	para->setTOut(  100  );
+ //   para->setTimestepEnd( 40 * lround(L/velocity) );
+	//para->setTimestepOut(  5 * lround(L/velocity) );
+	para->setTimestepOut(  100  );
 
-    para->setTEnd( 1000 );	
-	//para->setTOut(    1 );
+    para->setTimestepEnd( 1000 );
+	//para->setTimestepOut(    1 );
 
-    para->setVelocity( velocity );
+    para->setVelocityLB( velocity );
 
-    para->setViscosity( viscosity );
+    para->setViscosityLB( viscosity );
 
     para->setVelocityRatio( 1.0 / velocity );
 
@@ -294,7 +290,7 @@ void multipleLevel(const std::string& configPath)
 
     } );
 
-    para->setMainKernel(kernelMapper->getEnum( kernel ));
+    para->setMainKernel(kernel);
 
     if( !useLimiter )
         para->setQuadricLimiters( 1000000.0, 1000000.0, 1000000.0 );
@@ -312,23 +308,19 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
-    SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
-    SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
+
+    auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
+    SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
     //SPtr<GridProvider> gridGenerator = GridProvider::makeGridReader(FILEFORMAT::BINARY, para, cudaMemoryManager);
 
-    Simulation sim;
     SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
-    SPtr<KernelFactoryImp> kernelFactory = KernelFactoryImp::getInstance();
-    SPtr<PreProcessorFactoryImp> preProcessorFactory = PreProcessorFactoryImp::getInstance();
-    sim.setFactories(kernelFactory, preProcessorFactory);
-    sim.init(para, gridGenerator, fileWriter, cudaMemoryManager);
-    
+    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory);
+    sim.run();
+
     sim.addKineticEnergyAnalyzer( 10 );
     sim.addEnstrophyAnalyzer( 10 );
 
     sim.run();
-    sim.free();
 
     logFile.close();
 }
@@ -337,11 +329,11 @@ void multipleLevel(const std::string& configPath)
 int main( int argc, char* argv[])
 {
     MPI_Init(&argc, &argv);
-    std::string str, str2; 
+    std::string str, str2;
     if ( argv != NULL )
     {
         //str = static_cast<std::string>(argv[0]);
-        
+
         try
         {
             MPI_Comm_rank(MPI_COMM_WORLD, &mpirank);
@@ -411,17 +403,17 @@ int main( int argc, char* argv[])
 
             //////////////////////////////////////////////////////////////////////////
 		}
-        catch (const std::exception& e)
+        catch (const std::bad_alloc& e)
         {
-                
-            *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
+
+            *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
             //std::cout << e.what() << std::flush;
             //MPI_Abort(MPI_COMM_WORLD, -1);
         }
-        catch (const std::bad_alloc e)
+        catch (const std::exception& e)
         {
-                
-            *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
+
+            *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
             //std::cout << e.what() << std::flush;
             //MPI_Abort(MPI_COMM_WORLD, -1);
         }

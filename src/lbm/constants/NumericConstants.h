@@ -2,11 +2,7 @@
 #define REAL_CONSTANT_H
 
 
-namespace vf
-{
-namespace lbm 
-{
-namespace constant
+namespace vf::lbm::constant
 {
 
 #ifdef VF_DOUBLE_ACCURACY
@@ -119,6 +115,7 @@ static constexpr double c10eM10 = 1e-10;
 static constexpr double smallSingle = 0.0000000002;
 
 static constexpr double cPi = 3.1415926535;
+static constexpr double c2Pi = 6.28318530717;
 static constexpr double cPio180 = 1.74532925199e-2;
 static constexpr double c180oPi = 57.2957795131;
 
@@ -232,13 +229,12 @@ static constexpr float c10eM10 = 1e-10f;
 static constexpr float smallSingle = 0.0000000002f;
 
 static constexpr float cPi = 3.1415926535f;
+static constexpr double c2Pi = 6.2831853071f;
 static constexpr float cPio180 = 1.74532925199e-2f;
 static constexpr float c180oPi = 57.2957795131f;
 
 #endif
 
-}
-}
 }
 
 #endif

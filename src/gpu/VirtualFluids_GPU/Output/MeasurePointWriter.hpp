@@ -10,7 +10,7 @@
 //#include <cmath>
 
 //#include "LBM/LB.h"
-//#include "LBM/D3Q27.h"
+//#include "lbm/constants/D3Q27.h"
 #include <numeric>
 #include "basics/utilities/UbFileOutputASCII.h"
 #include "Parameter/Parameter.h"
@@ -58,7 +58,7 @@ public:
 
 		UbFileOutputASCII out(para->getFName() + "_timestep_" + st + "_level_" + sLevel + "_XY.dat");
 
-		int numberNodes = (int)para->getParH(level)->size_Mat_SP;
+		int numberNodes = (int)para->getParH(level)->numberOfNodes;
 		
 		real deltaX = 1.0f / pow(2, level);
 		real halfDx = deltaX / 2.0f;
@@ -67,14 +67,14 @@ public:
 
 		for (int u = 0; u < numberNodes; u++)
 		{
-			if ((para->getParH(level)->geoSP[u] == GEO_FLUID) &&
-				((middleOfTheGrid - halfDx) <= para->getParH(level)->coordZ_SP[u]) &&
-				((middleOfTheGrid + halfDx) >= para->getParH(level)->coordZ_SP[u]) )
+			if ((para->getParH(level)->typeOfGridNode[u] == GEO_FLUID) &&
+				((middleOfTheGrid - halfDx) <= para->getParH(level)->coordinateZ[u]) &&
+				((middleOfTheGrid + halfDx) >= para->getParH(level)->coordinateZ[u]) )
 			{
-				out.writeFloat((float)(para->getParH(level)->rho_SP[u]));
-				out.writeFloat((float)(para->getParH(level)->press_SP[u]));
-				out.writeFloat((float)(para->getParH(level)->coordX_SP[u]));
-				out.writeFloat((float)(para->getParH(level)->coordY_SP[u]));
+				out.writeFloat((float)(para->getParH(level)->rho[u]));
+				out.writeFloat((float)(para->getParH(level)->pressure[u]));
+				out.writeFloat((float)(para->getParH(level)->coordinateX[u]));
+				out.writeFloat((float)(para->getParH(level)->coordinateY[u]));
 				out.writeLine();
 			}
 		}
@@ -91,7 +91,7 @@ public:
 
 		UbFileOutputASCII out(para->getFName() + "_timestep_" + st + "_level_" + sLevel + "_YZ.dat");
 
-		int numberNodes = (int)para->getParH(level)->size_Mat_SP;
+		int numberNodes = (int)para->getParH(level)->numberOfNodes;
 
 		real deltaX = 1.0f / pow(2, level);
 		real halfDx = deltaX / 2.0f;
@@ -99,14 +99,14 @@ public:
 
 		for (int u = 0; u < numberNodes; u++)
 		{
-			if ((para->getParH(level)->geoSP[u] == GEO_FLUID) &&
-				((middleOfTheGrid - halfDx) <= para->getParH(level)->coordX_SP[u]) &&
-				((middleOfTheGrid + halfDx) >= para->getParH(level)->coordX_SP[u]))
+			if ((para->getParH(level)->typeOfGridNode[u] == GEO_FLUID) &&
+				((middleOfTheGrid - halfDx) <= para->getParH(level)->coordinateX[u]) &&
+				((middleOfTheGrid + halfDx) >= para->getParH(level)->coordinateX[u]))
 			{
-				out.writeFloat((float)(para->getParH(level)->rho_SP[u]));
-				out.writeFloat((float)(para->getParH(level)->press_SP[u]));
-				out.writeFloat((float)(para->getParH(level)->coordY_SP[u]));
-				out.writeFloat((float)(para->getParH(level)->coordZ_SP[u]));
+				out.writeFloat((float)(para->getParH(level)->rho[u]));
+				out.writeFloat((float)(para->getParH(level)->pressure[u]));
+				out.writeFloat((float)(para->getParH(level)->coordinateY[u]));
+				out.writeFloat((float)(para->getParH(level)->coordinateZ[u]));
 				out.writeLine();
 			}
 		}
@@ -123,7 +123,7 @@ public:
 
 		UbFileOutputASCII out(para->getFName() + "_timestep_" + st + "_level_" + sLevel + "_XZ.dat");
 
-		int numberNodes = (int)para->getParH(level)->size_Mat_SP;
+		int numberNodes = (int)para->getParH(level)->numberOfNodes;
 
 		real deltaX = 1.0f / pow(2, level);
 		real halfDx = deltaX / 2.0f;
@@ -131,14 +131,14 @@ public:
 
 		for (int u = 0; u < numberNodes; u++)
 		{
-			if ((para->getParH(level)->geoSP[u] == GEO_FLUID) &&
-				((middleOfTheGrid - halfDx) <= para->getParH(level)->coordY_SP[u]) &&
-				((middleOfTheGrid + halfDx) >= para->getParH(level)->coordY_SP[u]))
+			if ((para->getParH(level)->typeOfGridNode[u] == GEO_FLUID) &&
+				((middleOfTheGrid - halfDx) <= para->getParH(level)->coordinateY[u]) &&
+				((middleOfTheGrid + halfDx) >= para->getParH(level)->coordinateY[u]))
 			{
-				out.writeFloat((float)(para->getParH(level)->rho_SP[u]));
-				out.writeFloat((float)(para->getParH(level)->press_SP[u]));
-				out.writeFloat((float)(para->getParH(level)->coordX_SP[u]));
-				out.writeFloat((float)(para->getParH(level)->coordZ_SP[u]));
+				out.writeFloat((float)(para->getParH(level)->rho[u]));
+				out.writeFloat((float)(para->getParH(level)->pressure[u]));
+				out.writeFloat((float)(para->getParH(level)->coordinateX[u]));
+				out.writeFloat((float)(para->getParH(level)->coordinateZ[u]));
 				out.writeLine();
 			}
 		}
@@ -276,15 +276,15 @@ public:
 		out.writeLine();
 		out.writeString("Index  Nx  Ny  Ny");
 		out.writeLine();
-		int numberNodes = (int)para->getParH(level)->size_Mat_SP;
+		int numberNodes = (int)para->getParH(level)->numberOfNodes;
 		out.writeInteger(numberNodes);
 		out.writeLine();
 		for (int u = 0; u < numberNodes; u++)
 		{
 			out.writeInteger((int)(u));
-			out.writeInteger((int)(para->getParH(level)->neighborX_SP[u]));
-			out.writeInteger((int)(para->getParH(level)->neighborY_SP[u]));
-			out.writeInteger((int)(para->getParH(level)->neighborZ_SP[u]));
+			out.writeInteger((int)(para->getParH(level)->neighborX[u]));
+			out.writeInteger((int)(para->getParH(level)->neighborY[u]));
+			out.writeInteger((int)(para->getParH(level)->neighborZ[u]));
 			out.writeLine();
 		}
 		out.writeLine();

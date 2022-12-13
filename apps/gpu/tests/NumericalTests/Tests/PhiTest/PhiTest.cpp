@@ -19,6 +19,7 @@ void PhiTest::evaluate()
 {
 	for (int i = 0; i < postProStrategies.size(); i++)
 		phiDiff.push_back(postProStrategies.at(i)->getPhiDiff(dataToCalculate));
+	
 	orderOfAccuracy = calcOrderOfAccuracy(phiDiff);
 	testStatus = checkTestPassed(orderOfAccuracy);
 	

@@ -11,10 +11,12 @@
 #include <GPU/CudaMemoryManager.h>
 #include "OffsetScale.h"
 
-GridReader::GridReader(FILEFORMAT format, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager)
+using namespace vf::lbm::dir;
+
+GridReader::GridReader(FILEFORMAT format, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager)
 {
     this->para = para;
-    this->cudaMemoryManager = cudaManager;
+    this->cudaMemoryManager = cudaMemoryManager;
 
 	if (format == FILEFORMAT::ASCII)
 		this->binaer = false;
@@ -45,11 +47,11 @@ bool GridReader::getBinaer()
 
 void rearrangeGeometry(Parameter* para, int lev)
 {
-    for (uint index = 0; index < para->getParH(lev)->size_Mat_SP; index++)
+    for (uint index = 0; index < para->getParH(lev)->numberOfNodes; index++)
     {
-        if (para->getParH(lev)->geoSP[index] == GEO_FLUID_OLD)
+        if (para->getParH(lev)->typeOfGridNode[index] == GEO_FLUID_OLD)
         {
-            para->getParH(lev)->geoSP[index] = GEO_FLUID;
+            para->getParH(lev)->typeOfGridNode[index] = GEO_FLUID;
         }
     }
 }
@@ -88,14 +90,14 @@ void GridReader::allocArrays_CoordNeighborGeo()
         if (para->getUseWale())
 			cudaMemoryManager->cudaAllocTurbulentViscosity(level);
 
-		coordX.initalCoords(      para->getParH(level)->coordX_SP,      level);
-		coordY.initalCoords(      para->getParH(level)->coordY_SP,      level);
-		coordZ.initalCoords(      para->getParH(level)->coordZ_SP,      level);
-		neighX->initalNeighbors(  para->getParH(level)->neighborX_SP,   level);
-		neighY->initalNeighbors(  para->getParH(level)->neighborY_SP,   level);
-		neighZ->initalNeighbors(  para->getParH(level)->neighborZ_SP,   level);
-        neighWSB->initalNeighbors(para->getParH(level)->neighborWSB_SP, level);
-        geoV.initalNeighbors(     para->getParH(level)->geoSP,          level);
+		coordX.initalCoords(      para->getParH(level)->coordinateX,      level);
+		coordY.initalCoords(      para->getParH(level)->coordinateY,      level);
+		coordZ.initalCoords(      para->getParH(level)->coordinateZ,      level);
+		neighX->initalNeighbors(  para->getParH(level)->neighborX,   level);
+		neighY->initalNeighbors(  para->getParH(level)->neighborY,   level);
+		neighZ->initalNeighbors(  para->getParH(level)->neighborZ,   level);
+        neighWSB->initalNeighbors(para->getParH(level)->neighborInverse, level);
+        geoV.initalNeighbors(     para->getParH(level)->typeOfGridNode,          level);
         rearrangeGeometry(para.get(), level);
 		setInitalNodeValues(numberOfNodesPerLevel, level);
 
@@ -216,6 +218,16 @@ void GridReader::allocArrays_OffsetScale()
     std::cout << "-----Ende OffsetScale------" << std::endl;
 }
 
+void GridReader::allocArrays_fluidNodeIndices() {
+    std::cout << "GridReader::allocArrays_fluidNodeIndices not implemented" << std::endl;
+	// TODO
+}
+
+void GridReader::allocArrays_fluidNodeIndicesBorder() {
+    std::cout << "GridReader::allocArrays_fluidNodeIndicesBorder not implemented" << std::endl;
+    // TODO
+}
+
 
 void GridReader::setPressureValues(int channelSide) const
 {
@@ -238,9 +250,9 @@ void GridReader::setPressureValues(int channelSide) const
 
 void GridReader::setPressRhoBC(int sizePerLevel, int level, int channelSide) const
 {
-	BC_Values[channelSide]->setPressValues(para->getParH(level)->QPress.RhoBC, para->getParH(level)->QPress.kN, level);
+	BC_Values[channelSide]->setPressValues(para->getParH(level)->pressureBC.RhoBC, para->getParH(level)->pressureBC.kN, level);
 	for (int m = 0; m < sizePerLevel; m++)
-		para->getParH(level)->QPress.RhoBC[m] = (para->getParH(level)->QPress.RhoBC[m] / para->getFactorPressBC());
+		para->getParH(level)->pressureBC.RhoBC[m] = (para->getParH(level)->pressureBC.RhoBC[m] / para->getFactorPressBC());
 }
 
 
@@ -294,9 +306,9 @@ void GridReader::setVelocity(int level, int sizePerLevel) const
 {
 	for (int index = 0; index < sizePerLevel; index++)
 	{
-        para->getParH(level)->Qinflow.Vx[index] = this->velocityX_BCvalues[level][index] / para->getVelocityRatio();
-        para->getParH(level)->Qinflow.Vy[index] = this->velocityY_BCvalues[level][index] / para->getVelocityRatio();
-        para->getParH(level)->Qinflow.Vz[index] = this->velocityZ_BCvalues[level][index] / para->getVelocityRatio();
+        para->getParH(level)->velocityBC.Vx[index] = this->velocityX_BCvalues[level][index] / para->getVelocityRatio();
+        para->getParH(level)->velocityBC.Vy[index] = this->velocityY_BCvalues[level][index] / para->getVelocityRatio();
+        para->getParH(level)->velocityBC.Vz[index] = this->velocityZ_BCvalues[level][index] / para->getVelocityRatio();
 	}
 }
 
@@ -323,9 +335,9 @@ void GridReader::setOutflowValues(int channelSide) const
 
 void GridReader::setOutflow(int level, int sizePerLevel, int channelSide) const
 {
-	BC_Values[channelSide]->setOutflowValues(para->getParH(level)->Qoutflow.RhoBC, para->getParH(level)->Qoutflow.kN, level);
+	BC_Values[channelSide]->setOutflowValues(para->getParH(level)->outflowBC.RhoBC, para->getParH(level)->outflowBC.kN, level);
 	for (int index = 0; index < sizePerLevel; index++)
-		para->getParH(level)->Qoutflow.RhoBC[index] = (para->getParH(level)->Qoutflow.RhoBC[index] / para->getFactorPressBC()) * (real)0.0;
+		para->getParH(level)->outflowBC.RhoBC[index] = (para->getParH(level)->outflowBC.RhoBC[index] / para->getFactorPressBC()) * (real)0.0;
 }
 
 
@@ -352,24 +364,24 @@ void GridReader::initalValuesDomainDecompostion(int level)
 				procNeighborsSendX.push_back(pnXsend);
 				procNeighborsRecvX.push_back(pnXrecv);
 				neighborRankX.push_back(process);
-				std::cout << "MyID: " << para->getMyID() << ", neighborRankX: " << process << std::endl;
+				std::cout << "MyID: " << para->getMyProcessID() << ", neighborRankX: " << process << std::endl;
 			}
 			if (para->getIsNeighborY())
 			{
 				procNeighborsSendY.push_back(pnYsend);
 				procNeighborsRecvY.push_back(pnYrecv);
 				neighborRankY.push_back(process);
-				std::cout << "MyID: " << para->getMyID() << ", neighborRankY: " << process << std::endl;
+				std::cout << "MyID: " << para->getMyProcessID() << ", neighborRankY: " << process << std::endl;
 			}
 			if (para->getIsNeighborZ())
 			{
 				procNeighborsSendZ.push_back(pnZsend);
 				procNeighborsRecvZ.push_back(pnZrecv);
 				neighborRankZ.push_back(process);
-				std::cout << "MyID: " << para->getMyID() << ", neighborRankZ: " << process << std::endl;
+				std::cout << "MyID: " << para->getMyProcessID() << ", neighborRankZ: " << process << std::endl;
 			}
 		}
-		std::cout << "MyID: " << para->getMyID() << ", size of neighborRankX: " << neighborRankX.size() << ", size of neighborRankY: " << neighborRankY.size() << ", size of neighborRankZ: " << neighborRankZ.size() << std::endl;
+		std::cout << "MyID: " << para->getMyProcessID() << ", size of neighborRankX: " << neighborRankX.size() << ", size of neighborRankY: " << neighborRankY.size() << ", size of neighborRankZ: " << neighborRankZ.size() << std::endl;
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -386,7 +398,7 @@ void GridReader::initalValuesDomainDecompostion(int level)
 				{
 					////////////////////////////////////////////////////////////////////////////////////////
 					//send
-					std::cout << "size of Data for X send buffer, Level " << i << " : " << tempSend << std::endl;
+					*logging::out << logging::Logger::INFO_INTERMEDIATE << "size of Data for X send buffer, Level " << i << " : " << tempSend << "\n";
 					////////////////////////////////////////////////////////////////////////////////////////
 					para->setNumberOfProcessNeighborsX((unsigned int)procNeighborsSendX.size(), i, "send");
 					para->getParH(i)->sendProcessNeighborX[j].rankNeighbor = neighborRankX[j];
@@ -559,7 +571,7 @@ void GridReader::allocArrays_BoundaryQs()
 
 	for (int lev = 0; lev < (int)(velocityIndex.size()); lev++) {
         if (velocityIndex[lev].size() > 1) {
-            copyVectorsToQStruct(velocityQs[lev], velocityIndex[lev], para->getParH(lev)->Qinflow);
+            copyVectorsToQStruct(velocityQs[lev], velocityIndex[lev], para->getParH(lev)->velocityBC);
             cudaMemoryManager->cudaCopyVeloBC(lev);
         }
     }
@@ -582,7 +594,7 @@ void GridReader::setPressQs(std::shared_ptr<BoundaryQs> boundaryQ) const
 		if (hasQs(boundaryQ, level))
 		{
 			this->printQSize("pressure", boundaryQ, level);
-			this->initalQStruct(para->getParH(level)->QPress, boundaryQ, level);
+			this->initalQStruct(para->getParH(level)->pressureBC, boundaryQ, level);
             cudaMemoryManager->cudaCopyPress(level);
 		}
 	}
@@ -607,7 +619,7 @@ void GridReader::setOutflowQs(std::shared_ptr<BoundaryQs> boundaryQ) const
 		if (hasQs(boundaryQ, level))
 		{
 			this->printQSize("outflow", boundaryQ, level);
-			this->initalQStruct(para->getParH(level)->Qoutflow, boundaryQ, level);
+			this->initalQStruct(para->getParH(level)->outflowBC, boundaryQ, level);
             cudaMemoryManager->cudaCopyOutflowBC(level);
 		}
 	}
@@ -621,8 +633,8 @@ void GridReader::setNoSlipQs(std::shared_ptr<BoundaryQs> boundaryQ) const
 		{
 			this->printQSize("no slip", boundaryQ, level);
 			this->setSizeNoSlip(boundaryQ, level);
-			this->initalQStruct(para->getParH(level)->QWall, boundaryQ, level);
-            cudaMemoryManager->cudaCopyWallBC(level);
+			this->initalQStruct(para->getParH(level)->noSlipBC, boundaryQ, level);
+            cudaMemoryManager->cudaCopyNoSlipBC(level);
 		}
 	}
 }
@@ -635,7 +647,7 @@ void GridReader::setGeoQs(std::shared_ptr<BoundaryQs> boundaryQ) const
 		{
 			this->printQSize("geo Qs", boundaryQ, level);
 			this->setSizeGeoQs(boundaryQ, level);
-			this->initalQStruct(para->getParH(level)->QGeom, boundaryQ, level);
+			this->initalQStruct(para->getParH(level)->geometryBC, boundaryQ, level);
 
 			modifyQElement(boundaryQ, level);
 
@@ -647,10 +659,10 @@ void GridReader::setGeoQs(std::shared_ptr<BoundaryQs> boundaryQ) const
 void GridReader::modifyQElement(std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const
 {
 	QforBoundaryConditions Q;
-	real* QQ = para->getParH(level)->QGeom.q27[0];
-	Q.q27[dirZERO] = &QQ[dirZERO * para->getParH(level)->QGeom.kQ];
+	real* QQ = para->getParH(level)->geometryBC.q27[0];
+	Q.q27[vf::lbm::dir::DIR_000] = &QQ[vf::lbm::dir::DIR_000 * para->getParH(level)->geometryBC.numberOfBCnodes];
 	for (unsigned int i = 0; i < boundaryQ->getSize(level); i++)
-		Q.q27[dirZERO][i] = 0.0f;
+		Q.q27[vf::lbm::dir::DIR_000][i] = 0.0f;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -667,7 +679,7 @@ void GridReader::copyVectorsToQStruct(std::vector<std::vector<real>> &Qs,
                                       std::vector<int> &index, QforBoundaryConditions &Q) const
 {
     QforBoundaryConditions qTemp;
-    this->setQ27Size(qTemp, Q.q27[0], Q.kQ);
+    this->setQ27Size(qTemp, Q.q27[0], Q.numberOfBCnodes);
 
 	uint sizeOfValues = (uint)index.size();
 
@@ -686,7 +698,7 @@ void GridReader::initalQStruct(QforBoundaryConditions &Q, std::shared_ptr<Bounda
                                unsigned int level) const
 {
 	QforBoundaryConditions qTemp;
-	this->setQ27Size(qTemp, Q.q27[0], Q.kQ);
+	this->setQ27Size(qTemp, Q.q27[0], Q.numberOfBCnodes);
 	boundaryQ->setValues(qTemp.q27, level);
 	boundaryQ->setIndex(Q.k, level);
 }
@@ -721,48 +733,46 @@ void GridReader::initalGridInformations()
 
 void GridReader::setQ27Size(QforBoundaryConditions &Q, real* QQ, unsigned int sizeQ) const
 {
-	Q.q27[dirE] = &QQ[dirE   *sizeQ];
-	Q.q27[dirW] = &QQ[dirW   *sizeQ];
-	Q.q27[dirN] = &QQ[dirN   *sizeQ];
-	Q.q27[dirS] = &QQ[dirS   *sizeQ];
-	Q.q27[dirT] = &QQ[dirT   *sizeQ];
-	Q.q27[dirB] = &QQ[dirB   *sizeQ];
-	Q.q27[dirNE] = &QQ[dirNE  *sizeQ];
-	Q.q27[dirSW] = &QQ[dirSW  *sizeQ];
-	Q.q27[dirSE] = &QQ[dirSE  *sizeQ];
-	Q.q27[dirNW] = &QQ[dirNW  *sizeQ];
-	Q.q27[dirTE] = &QQ[dirTE  *sizeQ];
-	Q.q27[dirBW] = &QQ[dirBW  *sizeQ];
-	Q.q27[dirBE] = &QQ[dirBE  *sizeQ];
-	Q.q27[dirTW] = &QQ[dirTW  *sizeQ];
-	Q.q27[dirTN] = &QQ[dirTN  *sizeQ];
-	Q.q27[dirBS] = &QQ[dirBS  *sizeQ];
-	Q.q27[dirBN] = &QQ[dirBN  *sizeQ];
-	Q.q27[dirTS] = &QQ[dirTS  *sizeQ];
-	Q.q27[dirZERO] = &QQ[dirZERO*sizeQ];
-	Q.q27[dirTNE] = &QQ[dirTNE *sizeQ];
-	Q.q27[dirTSW] = &QQ[dirTSW *sizeQ];
-	Q.q27[dirTSE] = &QQ[dirTSE *sizeQ];
-	Q.q27[dirTNW] = &QQ[dirTNW *sizeQ];
-	Q.q27[dirBNE] = &QQ[dirBNE *sizeQ];
-	Q.q27[dirBSW] = &QQ[dirBSW *sizeQ];
-	Q.q27[dirBSE] = &QQ[dirBSE *sizeQ];
-	Q.q27[dirBNW] = &QQ[dirBNW *sizeQ];
+	Q.q27[DIR_P00] = &QQ[DIR_P00   *sizeQ];
+	Q.q27[DIR_M00] = &QQ[DIR_M00   *sizeQ];
+	Q.q27[DIR_0P0] = &QQ[DIR_0P0   *sizeQ];
+	Q.q27[DIR_0M0] = &QQ[DIR_0M0   *sizeQ];
+	Q.q27[DIR_00P] = &QQ[DIR_00P   *sizeQ];
+	Q.q27[DIR_00M] = &QQ[DIR_00M   *sizeQ];
+	Q.q27[DIR_PP0] = &QQ[DIR_PP0  *sizeQ];
+	Q.q27[DIR_MM0] = &QQ[DIR_MM0  *sizeQ];
+	Q.q27[DIR_PM0] = &QQ[DIR_PM0  *sizeQ];
+	Q.q27[DIR_MP0] = &QQ[DIR_MP0  *sizeQ];
+	Q.q27[DIR_P0P] = &QQ[DIR_P0P  *sizeQ];
+	Q.q27[DIR_M0M] = &QQ[DIR_M0M  *sizeQ];
+	Q.q27[DIR_P0M] = &QQ[DIR_P0M  *sizeQ];
+	Q.q27[DIR_M0P] = &QQ[DIR_M0P  *sizeQ];
+	Q.q27[DIR_0PP] = &QQ[DIR_0PP  *sizeQ];
+	Q.q27[DIR_0MM] = &QQ[DIR_0MM  *sizeQ];
+	Q.q27[DIR_0PM] = &QQ[DIR_0PM  *sizeQ];
+	Q.q27[DIR_0MP] = &QQ[DIR_0MP  *sizeQ];
+	Q.q27[DIR_000] = &QQ[DIR_000*sizeQ];
+	Q.q27[DIR_PPP] = &QQ[DIR_PPP *sizeQ];
+	Q.q27[DIR_MMP] = &QQ[DIR_MMP *sizeQ];
+	Q.q27[DIR_PMP] = &QQ[DIR_PMP *sizeQ];
+	Q.q27[DIR_MPP] = &QQ[DIR_MPP *sizeQ];
+	Q.q27[DIR_PPM] = &QQ[DIR_PPM *sizeQ];
+	Q.q27[DIR_MMM] = &QQ[DIR_MMM *sizeQ];
+	Q.q27[DIR_PMM] = &QQ[DIR_PMM *sizeQ];
+	Q.q27[DIR_MPM] = &QQ[DIR_MPM *sizeQ];
 }
 
 void GridReader::setSizeNoSlip(std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const
 {
-	para->getParH(level)->QWall.kQ = boundaryQ->getSize(level);
-	para->getParD(level)->QWall.kQ = para->getParH(level)->QWall.kQ;
-	para->getParH(level)->kQ = para->getParH(level)->QWall.kQ;
-	para->getParD(level)->kQ = para->getParH(level)->QWall.kQ;
-    cudaMemoryManager->cudaAllocWallBC(level);
+	para->getParH(level)->noSlipBC.numberOfBCnodes = boundaryQ->getSize(level);
+	para->getParD(level)->noSlipBC.numberOfBCnodes = para->getParH(level)->noSlipBC.numberOfBCnodes;
+    cudaMemoryManager->cudaAllocNoSlipBC(level);
 }
 
 void GridReader::setSizeGeoQs(std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const
 {
-	para->getParH(level)->QGeom.kQ = boundaryQ->getSize(level);
-	para->getParD(level)->QGeom.kQ = para->getParH(level)->QGeom.kQ;
+	para->getParH(level)->geometryBC.numberOfBCnodes = boundaryQ->getSize(level);
+	para->getParD(level)->geometryBC.numberOfBCnodes = para->getParH(level)->geometryBC.numberOfBCnodes;
 
     cudaMemoryManager->cudaAllocGeomBC(level);
 }

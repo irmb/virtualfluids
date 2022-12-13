@@ -1,28 +1,28 @@
 //=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
 //           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
 //
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
 //  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
+//  License as published by the Free Software Foundation, either version 3 of
 //  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 //  for more details.
-//  
+//
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
@@ -32,9 +32,10 @@
 //=======================================================================================
 #include "Parameter.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <optional>
 
 #include <curand_kernel.h>
 
@@ -42,31 +43,42 @@
 
 #include <basics/config/ConfigurationFile.h>
 
+#include "Parameter/CudaStreamManager.h"
 
+Parameter::Parameter() : Parameter(1, 0, {}) {}
 
-Parameter::Parameter(const vf::basics::ConfigurationFile &configData, int numberOfProcesses, int myId)
+Parameter::Parameter(const vf::basics::ConfigurationFile* configData) : Parameter(1, 0, configData) {}
+
+Parameter::Parameter(int numberOfProcesses, int myId) : Parameter(numberOfProcesses, myId, {}) {}
+
+Parameter::Parameter(int numberOfProcesses, int myId, std::optional<const vf::basics::ConfigurationFile*> configData)
 {
-    ic.numprocs = numberOfProcesses;
-    ic.myid = myId;
+    this->ic.numprocs = numberOfProcesses;
+    this->ic.myProcessId = myId;
 
-    readConfigData(configData);
-    //initLBMSimulationParameter();
+    this->setQuadricLimiters(0.01, 0.01, 0.01);
+    this->setForcing(0.0, 0.0, 0.0);
+
+    if(configData)
+        readConfigData(**configData);
+
+    initGridPaths();
+    initGridBasePoints();
+    initDefaultLBMkernelAllLevels();
 }
+
+Parameter::~Parameter() = default;
 
 void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
 {
-   if (configData.contains("NumberOfDevices"))
+    if (configData.contains("NumberOfDevices"))
         this->setMaxDev(configData.getValue<int>("NumberOfDevices"));
-
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("Devices"))
         this->setDevices(configData.getVector<uint>("Devices"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("Path"))
         this->setOutputPath(configData.getValue<std::string>("Path"));
-    else
-        throw std::runtime_error("<Path> need to be defined in config file!");
-
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("Prefix"))
         this->setOutputPrefix(configData.getValue<std::string>("Prefix"));
@@ -75,7 +87,7 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
         this->setPrintFiles(configData.getValue<bool>("WriteGrid"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("GeometryValues"))
-        this->setGeometryValues(configData.getValue<bool>("GeometryValues"));
+        this->setUseGeometryValues(configData.getValue<bool>("GeometryValues"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("calc2ndOrderMoments"))
         this->setCalc2ndOrderMoments(configData.getValue<bool>("calc2ndOrderMoments"));
@@ -123,13 +135,13 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
         this->setD3Qxx(configData.getValue<int>("D3Qxx"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("TimeEnd"))
-        this->setTEnd(configData.getValue<int>("TimeEnd"));
+        this->setTimestepEnd(configData.getValue<int>("TimeEnd"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("TimeOut"))
-        this->setTOut(configData.getValue<int>("TimeOut"));
+        this->setTimestepOut(configData.getValue<int>("TimeOut"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("TimeStartOut"))
-        this->setTStartOut(configData.getValue<int>("TimeStartOut"));
+        this->setTimestepStartOut(configData.getValue<int>("TimeStartOut"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("TimeStartCalcMedian"))
         this->setTimeCalcMedStart(configData.getValue<int>("TimeStartCalcMedian"));
@@ -150,7 +162,7 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
         this->setPressOutZ(configData.getValue<int>("PressOutZ"));
 
     //////////////////////////////////////////////////////////////////////////
-    //second component
+    // second component
     if (configData.contains("DiffOn"))
         this->setDiffOn(configData.getValue<bool>("DiffOn"));
     //////////////////////////////////////////////////////////////////////////
@@ -168,10 +180,10 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
 
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("Viscosity_LB"))
-        this->setViscosity(configData.getValue<real>("Viscosity_LB"));
+        this->setViscosityLB(configData.getValue<real>("Viscosity_LB"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("Velocity_LB"))
-        this->setVelocity(configData.getValue<real>("Velocity_LB"));
+        this->setVelocityLB(configData.getValue<real>("Velocity_LB"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("Viscosity_Ratio_World_to_LB"))
         this->setViscosityRatio(configData.getValue<real>("Viscosity_Ratio_World_to_LB"));
@@ -196,7 +208,21 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
         this->setFactorPressBC(configData.getValue<real>("FactorPressBC"));
 
     //////////////////////////////////////////////////////////////////////////
-    //read Geometry (STL)
+    // CUDA streams and optimized communication
+    if (this->getNumprocs() > 1) {
+        if (configData.contains("useStreams")) {
+            if (configData.getValue<bool>("useStreams"))
+                this->setUseStreams(true);
+        }
+
+        if (configData.contains("useReducedCommunicationInInterpolation")) {
+            this->useReducedCommunicationAfterFtoC =
+                configData.getValue<bool>("useReducedCommunicationInInterpolation");
+        }
+    }
+    //////////////////////////////////////////////////////////////////////////
+
+    // read Geometry (STL)
     if (configData.contains("ReadGeometry"))
         this->setReadGeo(configData.getValue<bool>("ReadGeometry"));
 
@@ -224,72 +250,10 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
 
     //////////////////////////////////////////////////////////////////////////
 
-    std::string gridPath{ "" };
     if (configData.contains("GridPath"))
-        gridPath = configData.getValue<std::string>("GridPath");
-    else
-        throw std::runtime_error("GridPath has to be defined in config file!");
+        this->setGridPath(configData.getValue<std::string>("GridPath"));
 
-    if (this->getNumprocs() == 1)
-        gridPath += "/";
-    else
-        gridPath += "/" + StringUtil::toString(this->getMyID()) + "/";
-
-    // //////////////////////////////////////////////////////////////////////////
-    this->setFName(this->getOutputPath() + "/" + this->getOutputPrefix());
-    //////////////////////////////////////////////////////////////////////////
-    this->setgeoVec(gridPath + "geoVec.dat");
-    this->setcoordX(gridPath + "coordX.dat");
-    this->setcoordY(gridPath + "coordY.dat");
-    this->setcoordZ(gridPath + "coordZ.dat");
-    this->setneighborX(gridPath + "neighborX.dat");
-    this->setneighborY(gridPath + "neighborY.dat");
-    this->setneighborZ(gridPath + "neighborZ.dat");
-    this->setneighborWSB(gridPath + "neighborWSB.dat");
-    this->setscaleCFC(gridPath + "scaleCFC.dat");
-    this->setscaleCFF(gridPath + "scaleCFF.dat");
-    this->setscaleFCC(gridPath + "scaleFCC.dat");
-    this->setscaleFCF(gridPath + "scaleFCF.dat");
-    this->setscaleOffsetCF(gridPath + "offsetVecCF.dat");
-    this->setscaleOffsetFC(gridPath + "offsetVecFC.dat");
-    this->setgeomBoundaryBcQs(gridPath + "geomBoundaryQs.dat");
-    this->setgeomBoundaryBcValues(gridPath + "geomBoundaryValues.dat");
-    this->setinletBcQs(gridPath + "inletBoundaryQs.dat");
-    this->setinletBcValues(gridPath + "inletBoundaryValues.dat");
-    this->setoutletBcQs(gridPath + "outletBoundaryQs.dat");
-    this->setoutletBcValues(gridPath + "outletBoundaryValues.dat");
-    this->settopBcQs(gridPath + "topBoundaryQs.dat");
-    this->settopBcValues(gridPath + "topBoundaryValues.dat");
-    this->setbottomBcQs(gridPath + "bottomBoundaryQs.dat");
-    this->setbottomBcValues(gridPath + "bottomBoundaryValues.dat");
-    this->setfrontBcQs(gridPath + "frontBoundaryQs.dat");
-    this->setfrontBcValues(gridPath + "frontBoundaryValues.dat");
-    this->setbackBcQs(gridPath + "backBoundaryQs.dat");
-    this->setbackBcValues(gridPath + "backBoundaryValues.dat");
-    this->setnumberNodes(gridPath + "numberNodes.dat");
-    this->setLBMvsSI(gridPath + "LBMvsSI.dat");
-    this->setmeasurePoints(gridPath + "measurePoints.dat");
-    this->setpropellerValues(gridPath + "propellerValues.dat");
-    this->setcpTop(gridPath + "cpTop.dat");
-    this->setcpBottom(gridPath + "cpBottom.dat");
-    this->setcpBottom2(gridPath + "cpBottom2.dat");
-    this->setConcentration(gridPath + "conc.dat");
-    this->setStreetVelocity(gridPath + "streetVector.dat");
-    //////////////////////////////////////////////////////////////////////////
-    // Normals - Geometry
-    this->setgeomBoundaryNormalX(gridPath + "geomBoundaryNormalX.dat");
-    this->setgeomBoundaryNormalY(gridPath + "geomBoundaryNormalY.dat");
-    this->setgeomBoundaryNormalZ(gridPath + "geomBoundaryNormalZ.dat");
-    // Normals - Inlet
-    this->setInflowBoundaryNormalX(gridPath + "inletBoundaryNormalX.dat");
-    this->setInflowBoundaryNormalY(gridPath + "inletBoundaryNormalY.dat");
-    this->setInflowBoundaryNormalZ(gridPath + "inletBoundaryNormalZ.dat");
-    // Normals - Outlet
-    this->setOutflowBoundaryNormalX(gridPath + "outletBoundaryNormalX.dat");
-    this->setOutflowBoundaryNormalY(gridPath + "outletBoundaryNormalY.dat");
-    this->setOutflowBoundaryNormalZ(gridPath + "outletBoundaryNormalZ.dat");
-    //////////////////////////////////////////////////////////////////////////
-    // //Forcing
+    // Forcing
     real forcingX = 0.0;
     real forcingY = 0.0;
     real forcingZ = 0.0;
@@ -335,28 +299,6 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
 
     if (configData.contains("endXHotWall"))
         this->setEndXHotWall(configData.getValue<real>("endXHotWall"));
-    //////////////////////////////////////////////////////////////////////////
-    // for Multi GPU
-    if (this->getNumprocs() > 1) {
-        //////////////////////////////////////////////////////////////////////////
-        // 3D domain decomposition
-        std::vector<std::string> sendProcNeighborsX, sendProcNeighborsY, sendProcNeighborsZ;
-        std::vector<std::string> recvProcNeighborsX, recvProcNeighborsY, recvProcNeighborsZ;
-        for (int i = 0; i < this->getNumprocs(); i++) {
-            sendProcNeighborsX.push_back(gridPath + StringUtil::toString(i) + "Xs.dat");
-            sendProcNeighborsY.push_back(gridPath + StringUtil::toString(i) + "Ys.dat");
-            sendProcNeighborsZ.push_back(gridPath + StringUtil::toString(i) + "Zs.dat");
-            recvProcNeighborsX.push_back(gridPath + StringUtil::toString(i) + "Xr.dat");
-            recvProcNeighborsY.push_back(gridPath + StringUtil::toString(i) + "Yr.dat");
-            recvProcNeighborsZ.push_back(gridPath + StringUtil::toString(i) + "Zr.dat");
-        }
-        this->setPossNeighborFilesX(sendProcNeighborsX, "send");
-        this->setPossNeighborFilesY(sendProcNeighborsY, "send");
-        this->setPossNeighborFilesZ(sendProcNeighborsZ, "send");
-        this->setPossNeighborFilesX(recvProcNeighborsX, "recv");
-        this->setPossNeighborFilesY(recvProcNeighborsY, "recv");
-        this->setPossNeighborFilesZ(recvProcNeighborsZ, "recv");
-    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Restart
@@ -374,14 +316,6 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     if (configData.contains("NOGL"))
         setMaxLevel(configData.getValue<int>("NOGL"));
-
-    this->setGridX(std::vector<int>(this->getMaxLevel() + 1, 32));
-    this->setGridY(std::vector<int>(this->getMaxLevel() + 1, 32));
-    this->setGridZ(std::vector<int>(this->getMaxLevel() + 1, 32));
-
-    this->setDistX(std::vector<int>(this->getMaxLevel() + 1, 32));
-    this->setDistY(std::vector<int>(this->getMaxLevel() + 1, 32));
-    this->setDistZ(std::vector<int>(this->getMaxLevel() + 1, 32));
 
     if (configData.contains("GridX"))
         this->setGridX(configData.getVector<int>("GridX"));
@@ -411,7 +345,126 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
 
     if (configData.contains("MultiKernelLevel"))
         this->setMultiKernelLevel(configData.getVector<int>("MultiKernelLevel"));
-    else if (this->getMultiKernelOn()) {
+
+    if (configData.contains("MultiKernelName"))
+        this->setMultiKernel(configData.getVector<std::string>("MultiKernelName"));
+}
+
+void Parameter::initGridPaths(){
+    std::string gridPath = this->getGridPath();
+
+    // add missing slash to gridPath
+    if (gridPath.back() != '/') {
+        gridPath += "/";
+        ic.gridPath = gridPath;
+    }
+
+    // for multi-gpu add process id (if not already there)
+    if (this->getNumprocs() > 1) {
+        gridPath += StringUtil::toString(this->getMyProcessID()) + "/";
+        ic.gridPath = gridPath;
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+
+    this->setgeoVec(gridPath + "geoVec.dat");
+    this->setcoordX(gridPath + "coordX.dat");
+    this->setcoordY(gridPath + "coordY.dat");
+    this->setcoordZ(gridPath + "coordZ.dat");
+    this->setneighborX(gridPath + "neighborX.dat");
+    this->setneighborY(gridPath + "neighborY.dat");
+    this->setneighborZ(gridPath + "neighborZ.dat");
+    this->setneighborWSB(gridPath + "neighborWSB.dat");
+    this->setscaleCFC(gridPath + "scaleCFC.dat");
+    this->setscaleCFF(gridPath + "scaleCFF.dat");
+    this->setscaleFCC(gridPath + "scaleFCC.dat");
+    this->setscaleFCF(gridPath + "scaleFCF.dat");
+    this->setscaleOffsetCF(gridPath + "offsetVecCF.dat");
+    this->setscaleOffsetFC(gridPath + "offsetVecFC.dat");
+    this->setgeomBoundaryBcQs(gridPath + "geomBoundaryQs.dat");
+    this->setgeomBoundaryBcValues(gridPath + "geomBoundaryValues.dat");
+    this->setinletBcQs(gridPath + "inletBoundaryQs.dat");
+    this->setinletBcValues(gridPath + "inletBoundaryValues.dat");
+    this->setoutletBcQs(gridPath + "outletBoundaryQs.dat");
+    this->setoutletBcValues(gridPath + "outletBoundaryValues.dat");
+    this->settopBcQs(gridPath + "topBoundaryQs.dat");
+    this->settopBcValues(gridPath + "topBoundaryValues.dat");
+    this->setbottomBcQs(gridPath + "bottomBoundaryQs.dat");
+    this->setbottomBcValues(gridPath + "bottomBoundaryValues.dat");
+    this->setfrontBcQs(gridPath + "frontBoundaryQs.dat");
+    this->setfrontBcValues(gridPath + "frontBoundaryValues.dat");
+    this->setbackBcQs(gridPath + "backBoundaryQs.dat");
+    this->setbackBcValues(gridPath + "backBoundaryValues.dat");
+    this->setnumberNodes(gridPath + "numberNodes.dat");
+    this->setLBMvsSI(gridPath + "LBMvsSI.dat");
+    this->setmeasurePoints(gridPath + "measurePoints.dat");
+    this->setpropellerValues(gridPath + "propellerValues.dat");
+    this->setcpTop(gridPath + "cpTop.dat");
+    this->setcpBottom(gridPath + "cpBottom.dat");
+    this->setcpBottom2(gridPath + "cpBottom2.dat");
+    this->setConcentration(gridPath + "conc.dat");
+    this->setStreetVelocity(gridPath + "streetVector.dat");
+
+    //////////////////////////////////////////////////////////////////////////
+    // Normals - Geometry
+    this->setgeomBoundaryNormalX(gridPath + "geomBoundaryNormalX.dat");
+    this->setgeomBoundaryNormalY(gridPath + "geomBoundaryNormalY.dat");
+    this->setgeomBoundaryNormalZ(gridPath + "geomBoundaryNormalZ.dat");
+    // Normals - Inlet
+    this->setInflowBoundaryNormalX(gridPath + "inletBoundaryNormalX.dat");
+    this->setInflowBoundaryNormalY(gridPath + "inletBoundaryNormalY.dat");
+    this->setInflowBoundaryNormalZ(gridPath + "inletBoundaryNormalZ.dat");
+    // Normals - Outlet
+    this->setOutflowBoundaryNormalX(gridPath + "outletBoundaryNormalX.dat");
+    this->setOutflowBoundaryNormalY(gridPath + "outletBoundaryNormalY.dat");
+    this->setOutflowBoundaryNormalZ(gridPath + "outletBoundaryNormalZ.dat");
+    //////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////
+    // for Multi GPU
+    if (this->getNumprocs() > 1) {
+
+        // 3D domain decomposition
+        std::vector<std::string> sendProcNeighborsX, sendProcNeighborsY, sendProcNeighborsZ;
+        std::vector<std::string> recvProcNeighborsX, recvProcNeighborsY, recvProcNeighborsZ;
+        for (int i = 0; i < this->getNumprocs(); i++) {
+            sendProcNeighborsX.push_back(gridPath + StringUtil::toString(i) + "Xs.dat");
+            sendProcNeighborsY.push_back(gridPath + StringUtil::toString(i) + "Ys.dat");
+            sendProcNeighborsZ.push_back(gridPath + StringUtil::toString(i) + "Zs.dat");
+            recvProcNeighborsX.push_back(gridPath + StringUtil::toString(i) + "Xr.dat");
+            recvProcNeighborsY.push_back(gridPath + StringUtil::toString(i) + "Yr.dat");
+            recvProcNeighborsZ.push_back(gridPath + StringUtil::toString(i) + "Zr.dat");
+        }
+        this->setPossNeighborFilesX(sendProcNeighborsX, "send");
+        this->setPossNeighborFilesY(sendProcNeighborsY, "send");
+        this->setPossNeighborFilesZ(sendProcNeighborsZ, "send");
+        this->setPossNeighborFilesX(recvProcNeighborsX, "recv");
+        this->setPossNeighborFilesY(recvProcNeighborsY, "recv");
+        this->setPossNeighborFilesZ(recvProcNeighborsZ, "recv");
+
+    //////////////////////////////////////////////////////////////////////////
+    }
+}
+
+void Parameter::initGridBasePoints()
+{
+    if (this->getGridX().empty())
+        this->setGridX(std::vector<int>(this->getMaxLevel() + 1, 32));
+    if (this->getGridY().empty())
+        this->setGridY(std::vector<int>(this->getMaxLevel() + 1, 32));
+    if (this->getGridZ().empty())
+        this->setGridZ(std::vector<int>(this->getMaxLevel() + 1, 32));
+
+    if (this->getDistX().empty())
+        this->setDistX(std::vector<int>(this->getMaxLevel() + 1, 32));
+    if (this->getDistY().empty())
+        this->setDistY(std::vector<int>(this->getMaxLevel() + 1, 32));
+    if (this->getDistZ().empty())
+        this->setDistZ(std::vector<int>(this->getMaxLevel() + 1, 32));
+}
+
+void Parameter::initDefaultLBMkernelAllLevels(){
+    if (this->getMultiKernelOn() && this->getMultiKernelLevel().empty()) {
         std::vector<int> tmp;
         for (int i = 0; i < this->getMaxLevel() + 1; i++) {
             tmp.push_back(i);
@@ -419,9 +472,7 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
         this->setMultiKernelLevel(tmp);
     }
 
-    if (configData.contains("MultiKernelName"))
-        this->setMultiKernel(configData.getVector<std::string>("MultiKernelName"));
-    else if (this->getMultiKernelOn()) {
+    if (this->getMultiKernelOn() && this->getMultiKernel().empty()) {
         std::vector<std::string> tmp;
         for (int i = 0; i < this->getMaxLevel() + 1; i++) {
             tmp.push_back("CumulantK17Comp");
@@ -432,2088 +483,2235 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
 
 void Parameter::initLBMSimulationParameter()
 {
-	//host
-	for (int i = coarse; i <= fine; i++)
-	{
-		parH[i]                        = std::make_shared<LBMSimulationParameter>();
-		parH[i]->numberofthreads       = 64;// 128;
-		parH[i]->gridNX                = getGridX().at(i);
-		parH[i]->gridNY                = getGridY().at(i);
-		parH[i]->gridNZ                = getGridZ().at(i);
-		parH[i]->vis                   = ic.vis*pow(2.f,i);
-		parH[i]->diffusivity           = ic.Diffusivity*pow(2.f,i);
-		parH[i]->omega                 = 1.0f/(3.0f*parH[i]->vis+0.5f);//omega :-) not s9 = -1.0f/(3.0f*parH[i]->vis+0.5f);//
-		parH[i]->nx                    = parH[i]->gridNX + 2 * STARTOFFX;
-		parH[i]->ny                    = parH[i]->gridNY + 2 * STARTOFFY;
-		parH[i]->nz                    = parH[i]->gridNZ + 2 * STARTOFFZ;
-		parH[i]->size_Mat              = parH[i]->nx * parH[i]->ny * parH[i]->nz;
-		parH[i]->sizePlaneXY           = parH[i]->nx * parH[i]->ny;
-		parH[i]->sizePlaneYZ           = parH[i]->ny * parH[i]->nz;
-		parH[i]->sizePlaneXZ           = parH[i]->nx * parH[i]->nz;
-		parH[i]->mem_size_real         = sizeof(real     ) * parH[i]->size_Mat;
-		parH[i]->mem_size_int          = sizeof(unsigned int) * parH[i]->size_Mat;
-		parH[i]->mem_size_bool         = sizeof(bool        ) * parH[i]->size_Mat;
-		parH[i]->mem_size_real_yz      = sizeof(real     ) * parH[i]->ny * parH[i]->nz;
-		parH[i]->evenOrOdd             = true;
-		parH[i]->startz                = parH[i]->gridNZ * ic.myid;
-		parH[i]->endz                  = parH[i]->gridNZ * ic.myid + parH[i]->gridNZ;
-		parH[i]->Lx                    = (real)((1.f*parH[i]->gridNX - 1.f)/(pow(2.f,i)));
-		parH[i]->Ly                    = (real)((1.f*parH[i]->gridNY - 1.f)/(pow(2.f,i)));
-		parH[i]->Lz                    = (real)((1.f*parH[i]->gridNZ - 1.f)/(pow(2.f,i)));
-		parH[i]->dx                    = (real)(1.f/(pow(2.f,i)));
-		parH[i]->XdistKn               = getDistX().at(i);
-		parH[i]->YdistKn               = getDistY().at(i);
-		parH[i]->ZdistKn               = getDistZ().at(i);
-		if (i == coarse)
-		{
-			parH[i]->distX                 = (real)getDistX().at(i);
-			parH[i]->distY                 = (real)getDistY().at(i);
-			parH[i]->distZ                 = (real)getDistZ().at(i);
-			parH[i]->mTtoWx                = (real)1.0f;
-			parH[i]->mTtoWy                = (real)1.0f;
-			parH[i]->mTtoWz                = (real)1.0f;
-			parH[i]->cTtoWx                = (real)0.0f;
-			parH[i]->cTtoWy                = (real)0.0f;
-			parH[i]->cTtoWz                = (real)0.0f;
-			////MGs Trafo///////////////////////////////////////////////////////////////
-			//parH[i]->cStartx               = (real)parH[i]->XdistKn;
-			//parH[i]->cStarty               = (real)parH[i]->XdistKn;
-			//parH[i]->cStartz               = (real)parH[i]->XdistKn;
-			////////////////////////////////////////////////////////////////////////////
-		} 
-		else
-		{
-			//Geller
-			parH[i]->distX                 = ((real)getDistX().at(i) + 0.25f) * parH[i-1]->dx;
-			parH[i]->distY                 = ((real)getDistY().at(i) + 0.25f) * parH[i-1]->dx;
-			parH[i]->distZ                 = ((real)getDistZ().at(i) + 0.25f) * parH[i-1]->dx;
-			//parH[i]->distX                 = ((real)getDistX().at(i) + 0.25f) * parH[i-1]->dx + parH[i-1]->distX;
-			//parH[i]->distY                 = ((real)getDistY().at(i) + 0.25f) * parH[i-1]->dx + parH[i-1]->distY;
-			//parH[i]->distZ                 = ((real)getDistZ().at(i) + 0.25f) * parH[i-1]->dx + parH[i-1]->distZ;
-			parH[i]->mTtoWx                = (real)pow(0.5f,i);
-			parH[i]->mTtoWy                = (real)pow(0.5f,i);
-			parH[i]->mTtoWz                = (real)pow(0.5f,i);
-			parH[i]->cTtoWx                = (real)(STARTOFFX/2.f + (parH[i]->gridNX+1.f)/4.f); //funzt nur fuer zwei level
-			parH[i]->cTtoWy                = (real)(STARTOFFY/2.f + (parH[i]->gridNY+1.f)/4.f); //funzt nur fuer zwei level
-			parH[i]->cTtoWz                = (real)(STARTOFFZ/2.f + (parH[i]->gridNZ+1.f)/4.f); //funzt nur fuer zwei level
-			////MGs Trafo///////////////////////////////////////////////////////////////
-			//parH[i]->cStartx               = (real)parH[i]->XdistKn;
-			//parH[i]->cStarty               = (real)parH[i]->XdistKn;
-			//parH[i]->cStartz               = (real)parH[i]->XdistKn;
-			////////////////////////////////////////////////////////////////////////////
-		}
-	}
+    // host
+    for (int i = coarse; i <= fine; i++) {
+        parH[i]                   = std::make_shared<LBMSimulationParameter>();
+        parH[i]->numberofthreads  = 64; // 128;
+        parH[i]->gridNX           = getGridX().at(i);
+        parH[i]->gridNY           = getGridY().at(i);
+        parH[i]->gridNZ           = getGridZ().at(i);
+        parH[i]->vis              = ic.vis * pow(2.f, i);
+        parH[i]->diffusivity      = ic.Diffusivity * pow(2.f, i);
+        parH[i]->omega            = 1.0f / (3.0f * parH[i]->vis + 0.5f); // omega :-) not s9 = -1.0f/(3.0f*parH[i]->vis+0.5f);//
+        parH[i]->nx               = parH[i]->gridNX + 2 * STARTOFFX;
+        parH[i]->ny               = parH[i]->gridNY + 2 * STARTOFFY;
+        parH[i]->nz               = parH[i]->gridNZ + 2 * STARTOFFZ;
+        parH[i]->size_Mat         = parH[i]->nx * parH[i]->ny * parH[i]->nz;
+        parH[i]->sizePlaneXY      = parH[i]->nx * parH[i]->ny;
+        parH[i]->sizePlaneYZ      = parH[i]->ny * parH[i]->nz;
+        parH[i]->sizePlaneXZ      = parH[i]->nx * parH[i]->nz;
+        parH[i]->mem_size_real    = sizeof(real) * parH[i]->size_Mat;
+        parH[i]->mem_size_int     = sizeof(unsigned int) * parH[i]->size_Mat;
+        parH[i]->mem_size_bool    = sizeof(bool) * parH[i]->size_Mat;
+        parH[i]->mem_size_real_yz = sizeof(real) * parH[i]->ny * parH[i]->nz;
+        parH[i]->isEvenTimestep        = true;
+        parH[i]->startz           = parH[i]->gridNZ * ic.myProcessId;
+        parH[i]->endz             = parH[i]->gridNZ * ic.myProcessId + parH[i]->gridNZ;
+        parH[i]->Lx               = (real)((1.f * parH[i]->gridNX - 1.f) / (pow(2.f, i)));
+        parH[i]->Ly               = (real)((1.f * parH[i]->gridNY - 1.f) / (pow(2.f, i)));
+        parH[i]->Lz               = (real)((1.f * parH[i]->gridNZ - 1.f) / (pow(2.f, i)));
+        parH[i]->dx               = (real)(1.f / (pow(2.f, i)));
+        parH[i]->XdistKn          = getDistX().at(i);
+        parH[i]->YdistKn          = getDistY().at(i);
+        parH[i]->ZdistKn          = getDistZ().at(i);
+        if (i == coarse) {
+            parH[i]->distX  = (real)getDistX().at(i);
+            parH[i]->distY  = (real)getDistY().at(i);
+            parH[i]->distZ  = (real)getDistZ().at(i);
+            parH[i]->mTtoWx = (real)1.0f;
+            parH[i]->mTtoWy = (real)1.0f;
+            parH[i]->mTtoWz = (real)1.0f;
+            parH[i]->cTtoWx = (real)0.0f;
+            parH[i]->cTtoWy = (real)0.0f;
+            parH[i]->cTtoWz = (real)0.0f;
+            ////MGs Trafo///////////////////////////////////////////////////////////////
+            // parH[i]->cStartx               = (real)parH[i]->XdistKn;
+            // parH[i]->cStarty               = (real)parH[i]->XdistKn;
+            // parH[i]->cStartz               = (real)parH[i]->XdistKn;
+            ////////////////////////////////////////////////////////////////////////////
+        } else {
+            // Geller
+            parH[i]->distX = ((real)getDistX().at(i) + 0.25f) * parH[i - 1]->dx;
+            parH[i]->distY = ((real)getDistY().at(i) + 0.25f) * parH[i - 1]->dx;
+            parH[i]->distZ = ((real)getDistZ().at(i) + 0.25f) * parH[i - 1]->dx;
+            // parH[i]->distX                 = ((real)getDistX().at(i) + 0.25f) * parH[i-1]->dx + parH[i-1]->distX;
+            // parH[i]->distY                 = ((real)getDistY().at(i) + 0.25f) * parH[i-1]->dx + parH[i-1]->distY;
+            // parH[i]->distZ                 = ((real)getDistZ().at(i) + 0.25f) * parH[i-1]->dx + parH[i-1]->distZ;
+            parH[i]->mTtoWx = (real)pow(0.5f, i);
+            parH[i]->mTtoWy = (real)pow(0.5f, i);
+            parH[i]->mTtoWz = (real)pow(0.5f, i);
+            parH[i]->cTtoWx = (real)(STARTOFFX / 2.f + (parH[i]->gridNX + 1.f) / 4.f); // funzt nur fuer zwei level
+            parH[i]->cTtoWy = (real)(STARTOFFY / 2.f + (parH[i]->gridNY + 1.f) / 4.f); // funzt nur fuer zwei level
+            parH[i]->cTtoWz = (real)(STARTOFFZ / 2.f + (parH[i]->gridNZ + 1.f) / 4.f); // funzt nur fuer zwei level
+            ////MGs Trafo///////////////////////////////////////////////////////////////
+            // parH[i]->cStartx               = (real)parH[i]->XdistKn;
+            // parH[i]->cStarty               = (real)parH[i]->XdistKn;
+            // parH[i]->cStartz               = (real)parH[i]->XdistKn;
+            ////////////////////////////////////////////////////////////////////////////
+        }
+    }
 
-	//device
-	for (int i = coarse; i <= fine; i++)
-	{
-		parD[i]                        = std::make_shared<LBMSimulationParameter>();
-		parD[i]->numberofthreads       = parH[i]->numberofthreads;
-		parD[i]->gridNX                = parH[i]->gridNX;
-		parD[i]->gridNY                = parH[i]->gridNY;
-		parD[i]->gridNZ                = parH[i]->gridNZ;
-		parD[i]->vis                   = parH[i]->vis;
-		parD[i]->diffusivity           = parH[i]->diffusivity;
-		parD[i]->omega                 = parH[i]->omega;
-		parD[i]->nx                    = parH[i]->nx;
-		parD[i]->ny                    = parH[i]->ny;
-		parD[i]->nz                    = parH[i]->nz;
-		parD[i]->size_Mat              = parH[i]->size_Mat;
-		parD[i]->sizePlaneXY           = parH[i]->sizePlaneXY;
-		parD[i]->sizePlaneYZ           = parH[i]->sizePlaneYZ;
-		parD[i]->sizePlaneXZ           = parH[i]->sizePlaneXZ;
-		parD[i]->mem_size_real         = sizeof(real     ) * parD[i]->size_Mat;
-		parD[i]->mem_size_int          = sizeof(unsigned int) * parD[i]->size_Mat;
-		parD[i]->mem_size_bool         = sizeof(bool        ) * parD[i]->size_Mat;
-		parD[i]->mem_size_real_yz      = sizeof(real     ) * parD[i]->ny * parD[i]->nz;
-		parD[i]->evenOrOdd             = parH[i]->evenOrOdd;
-		parD[i]->startz                = parH[i]->startz;
-		parD[i]->endz                  = parH[i]->endz;
-		parD[i]->Lx                    = parH[i]->Lx;
-		parD[i]->Ly                    = parH[i]->Ly;
-		parD[i]->Lz                    = parH[i]->Lz;
-		parD[i]->dx                    = parH[i]->dx;
-		parD[i]->XdistKn               = parH[i]->XdistKn;
-		parD[i]->YdistKn               = parH[i]->YdistKn;
-		parD[i]->ZdistKn               = parH[i]->ZdistKn;
-		parD[i]->distX                 = parH[i]->distX;
-		parD[i]->distY                 = parH[i]->distY;
-		parD[i]->distZ                 = parH[i]->distZ;
-	}
+    // device
+    for (int i = coarse; i <= fine; i++) {
+        parD[i]                   = std::make_shared<LBMSimulationParameter>();
+        parD[i]->numberofthreads  = parH[i]->numberofthreads;
+        parD[i]->gridNX           = parH[i]->gridNX;
+        parD[i]->gridNY           = parH[i]->gridNY;
+        parD[i]->gridNZ           = parH[i]->gridNZ;
+        parD[i]->vis              = parH[i]->vis;
+        parD[i]->diffusivity      = parH[i]->diffusivity;
+        parD[i]->omega            = parH[i]->omega;
+        parD[i]->nx               = parH[i]->nx;
+        parD[i]->ny               = parH[i]->ny;
+        parD[i]->nz               = parH[i]->nz;
+        parD[i]->size_Mat         = parH[i]->size_Mat;
+        parD[i]->sizePlaneXY      = parH[i]->sizePlaneXY;
+        parD[i]->sizePlaneYZ      = parH[i]->sizePlaneYZ;
+        parD[i]->sizePlaneXZ      = parH[i]->sizePlaneXZ;
+        parD[i]->mem_size_real    = sizeof(real) * parD[i]->size_Mat;
+        parD[i]->mem_size_int     = sizeof(unsigned int) * parD[i]->size_Mat;
+        parD[i]->mem_size_bool    = sizeof(bool) * parD[i]->size_Mat;
+        parD[i]->mem_size_real_yz = sizeof(real) * parD[i]->ny * parD[i]->nz;
+        parD[i]->isEvenTimestep        = parH[i]->isEvenTimestep;
+        parD[i]->startz           = parH[i]->startz;
+        parD[i]->endz             = parH[i]->endz;
+        parD[i]->Lx               = parH[i]->Lx;
+        parD[i]->Ly               = parH[i]->Ly;
+        parD[i]->Lz               = parH[i]->Lz;
+        parD[i]->dx               = parH[i]->dx;
+        parD[i]->XdistKn          = parH[i]->XdistKn;
+        parD[i]->YdistKn          = parH[i]->YdistKn;
+        parD[i]->ZdistKn          = parH[i]->ZdistKn;
+        parD[i]->distX            = parH[i]->distX;
+        parD[i]->distY            = parH[i]->distY;
+        parD[i]->distZ            = parH[i]->distZ;
+    }
 }
 
 void Parameter::copyMeasurePointsArrayToVector(int lev)
 {
-	int valuesPerClockCycle = (int)(getclockCycleForMP()/getTimestepForMP());
-	for(int i = 0; i < (int)parH[lev]->MP.size(); i++)
-	{
-		for(int j = 0; j < valuesPerClockCycle; j++)
-		{
-			int index = i*valuesPerClockCycle+j;
-			parH[lev]->MP[i].Vx.push_back(parH[lev]->VxMP[index]);
-			parH[lev]->MP[i].Vy.push_back(parH[lev]->VyMP[index]);
-			parH[lev]->MP[i].Vz.push_back(parH[lev]->VzMP[index]);
-			parH[lev]->MP[i].Rho.push_back(parH[lev]->RhoMP[index]);
-		}
-	}
+    int valuesPerClockCycle = (int)(getclockCycleForMP() / getTimestepForMP());
+    for (int i = 0; i < (int)parH[lev]->MP.size(); i++) {
+        for (int j = 0; j < valuesPerClockCycle; j++) {
+            int index = i * valuesPerClockCycle + j;
+            parH[lev]->MP[i].Vx.push_back(parH[lev]->VxMP[index]);
+            parH[lev]->MP[i].Vy.push_back(parH[lev]->VyMP[index]);
+            parH[lev]->MP[i].Vz.push_back(parH[lev]->VzMP[index]);
+            parH[lev]->MP[i].Rho.push_back(parH[lev]->RhoMP[index]);
+        }
+    }
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//set-methods
+// set-methods
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void Parameter::setForcing(real forcingX, real forcingY, real forcingZ)
 {
-	this->hostForcing[0] = forcingX;
-	this->hostForcing[1] = forcingY;
-	this->hostForcing[2] = forcingZ;
+    this->hostForcing[0] = forcingX;
+    this->hostForcing[1] = forcingY;
+    this->hostForcing[2] = forcingZ;
 }
 void Parameter::setQuadricLimiters(real quadricLimiterP, real quadricLimiterM, real quadricLimiterD)
 {
-	this->hostQuadricLimiters[0] = quadricLimiterP;
-	this->hostQuadricLimiters[1] = quadricLimiterM;
-	this->hostQuadricLimiters[2] = quadricLimiterD;
+    this->hostQuadricLimiters[0] = quadricLimiterP;
+    this->hostQuadricLimiters[1] = quadricLimiterM;
+    this->hostQuadricLimiters[2] = quadricLimiterD;
 }
 void Parameter::setPhi(real inPhi)
 {
-	Phi = inPhi;
+    Phi = inPhi;
 }
 void Parameter::setAngularVelocity(real inAngVel)
 {
-	angularVelocity = inAngVel;
+    angularVelocity = inAngVel;
 }
 void Parameter::setStepEnsight(unsigned int step)
 {
-	this->stepEnsight = step;
+    this->stepEnsight = step;
 }
 void Parameter::setOutputCount(unsigned int outputCount)
 {
-	this->outputCount = outputCount;
+    this->outputCount = outputCount;
 }
 void Parameter::setlimitOfNodesForVTK(unsigned int limitOfNodesForVTK)
 {
-	this->limitOfNodesForVTK = limitOfNodesForVTK;
+    this->limitOfNodesForVTK = limitOfNodesForVTK;
 }
 void Parameter::setStartTurn(unsigned int inStartTurn)
 {
-	startTurn = inStartTurn;
+    startTurn = inStartTurn;
 }
 void Parameter::setDiffOn(bool isDiff)
 {
-	diffOn = isDiff;
+    diffOn = isDiff;
 }
 void Parameter::setCompOn(bool isComp)
 {
-	compOn = isComp;
+    compOn = isComp;
 }
 void Parameter::setDiffMod(int DiffMod)
 {
-	diffMod = DiffMod;
+    diffMod = DiffMod;
 }
 void Parameter::setD3Qxx(int d3qxx)
 {
-	this->D3Qxx = d3qxx;
+    this->D3Qxx = d3qxx;
 }
-void Parameter::setMaxLevel(int maxlevel)
+void Parameter::setMaxLevel(int numberOfLevels)
 {
-    this->maxlevel = maxlevel-1;
-    this->fine     = this->maxlevel;
+    this->maxlevel = numberOfLevels - 1;
+    this->fine = this->maxlevel;
     parH.resize(this->maxlevel + 1);
     parD.resize(this->maxlevel + 1);
 }
 void Parameter::setParticleBasicLevel(int pbl)
 {
-	this->particleBasicLevel = pbl;
+    this->particleBasicLevel = pbl;
 }
 void Parameter::setParticleInitLevel(int pil)
 {
-	this->particleInitLevel = pil;
+    this->particleInitLevel = pil;
 }
 void Parameter::setNumberOfParticles(int nop)
 {
-	this->numberOfParticles = nop;
+    this->numberOfParticles = nop;
 }
 void Parameter::setCalcParticles(bool calcParticles)
 {
-	this->calcParticles = calcParticles;
+    this->calcParticles = calcParticles;
 }
 void Parameter::setStartXHotWall(real startXHotWall)
 {
-	this->startXHotWall = startXHotWall;
+    this->startXHotWall = startXHotWall;
 }
 void Parameter::setEndXHotWall(real endXHotWall)
 {
-	this->endXHotWall = endXHotWall;
+    this->endXHotWall = endXHotWall;
 }
-void Parameter::setTEnd(unsigned int tend)
+void Parameter::setTimestepEnd(unsigned int tend)
 {
-	ic.tend = tend;
+    ic.tend = tend;
 }
-void Parameter::setTOut(unsigned int tout)
+void Parameter::setTimestepOut(unsigned int tout)
 {
-	ic.tout = tout;
+    ic.tout = tout;
 }
-void Parameter::setTStartOut(unsigned int tStartOut)
+void Parameter::setTimestepStartOut(unsigned int tStartOut)
 {
-	ic.tStartOut = tStartOut;
+    ic.tStartOut = tStartOut;
 }
 void Parameter::setTimestepOfCoarseLevel(unsigned int timestep)
 {
-	this->timestep = timestep;
+    this->timestep = timestep;
+}
+void Parameter::setCalcTurbulenceIntensity(bool calcVelocityAndFluctuations)
+{
+    this->calcVelocityAndFluctuations = calcVelocityAndFluctuations;
 }
 void Parameter::setCalcMedian(bool calcMedian)
 {
-	ic.calcMedian = calcMedian;
+    ic.calcMedian = calcMedian;
 }
 void Parameter::setCalcDragLift(bool calcDragLift)
 {
-	this->calcDragLift = calcDragLift;
+    this->calcDragLift = calcDragLift;
 }
 void Parameter::setCalcCp(bool calcCp)
 {
-	this->calcCp = calcCp;
+    this->calcCp = calcCp;
 }
 void Parameter::setWriteVeloASCIIfiles(bool writeVeloASCII)
 {
-	this->writeVeloASCII = writeVeloASCII;
+    this->writeVeloASCII = writeVeloASCII;
 }
 void Parameter::setCalcPlaneConc(bool calcPlaneConc)
 {
-	this->calcPlaneConc = calcPlaneConc;
+    this->calcPlaneConc = calcPlaneConc;
 }
 void Parameter::setTimeCalcMedStart(int CalcMedStart)
-{		
-	ic.tCalcMedStart = CalcMedStart;
+{
+    ic.tCalcMedStart = CalcMedStart;
 }
 void Parameter::setTimeCalcMedEnd(int CalcMedEnd)
 {
-	ic.tCalcMedEnd = CalcMedEnd;
+    ic.tCalcMedEnd = CalcMedEnd;
 }
 void Parameter::setOutputPath(std::string oPath)
 {
-	ic.oPath = oPath;
+    // add missing slash to outputPath
+    if (oPath.back() != '/')
+        oPath += "/";
+
+    ic.oPath = oPath;
+    this->setPathAndFilename(this->getOutputPath() + this->getOutputPrefix());
 }
 void Parameter::setOutputPrefix(std::string oPrefix)
 {
-	//std::string test = fname;
-	ic.oPrefix = oPrefix;
+    ic.oPrefix = oPrefix;
+    this->setPathAndFilename(this->getOutputPath() + this->getOutputPrefix());
 }
-void Parameter::setFName(std::string fname)
+void Parameter::setPathAndFilename(std::string fname)
 {
-	//std::string test = fname;
-	ic.fname = fname;
+    ic.fname = fname;
+}
+void Parameter::setGridPath(std::string gridPath)
+{
+    ic.gridPath = gridPath;
+    this->initGridPaths();
 }
 void Parameter::setPrintFiles(bool printfiles)
 {
-	ic.printFiles = printfiles;
+    ic.printFiles = printfiles;
 }
 void Parameter::setReadGeo(bool readGeo)
 {
-	ic.readGeo = readGeo;
+    ic.readGeo = readGeo;
 }
 void Parameter::setDiffusivity(real Diffusivity)
 {
-	ic.Diffusivity = Diffusivity;
+    ic.Diffusivity = Diffusivity;
 }
 void Parameter::setTemperatureInit(real Temp)
 {
-	ic.Temp = Temp;
+    ic.Temp = Temp;
 }
 void Parameter::setTemperatureBC(real TempBC)
 {
-	ic.TempBC = TempBC;
+    ic.TempBC = TempBC;
 }
-void Parameter::setViscosity(real Viscosity)
+void Parameter::setViscosityLB(real Viscosity)
 {
-	ic.vis = Viscosity;
+    ic.vis = Viscosity;
 }
-void Parameter::setVelocity(real Velocity)
+void Parameter::setVelocityLB(real Velocity)
 {
-	ic.u0 = Velocity;
+    ic.u0 = Velocity;
 }
 void Parameter::setViscosityRatio(real ViscosityRatio)
 {
-	ic.vis_ratio = ViscosityRatio;
+    ic.vis_ratio = ViscosityRatio;
 }
 void Parameter::setVelocityRatio(real VelocityRatio)
 {
-	ic.u0_ratio = VelocityRatio;
+    ic.u0_ratio = VelocityRatio;
 }
 void Parameter::setDensityRatio(real DensityRatio)
 {
-	ic.delta_rho = DensityRatio;
+    ic.delta_rho = DensityRatio;
 }
 void Parameter::setPressRatio(real PressRatio)
 {
-	ic.delta_press = PressRatio;
+    ic.delta_press = PressRatio;
+}
+real Parameter::getViscosityRatio()
+{
+    return ic.vis_ratio;
+}
+real Parameter::getVelocityRatio()
+{
+    return ic.u0_ratio;
+}
+real Parameter::getDensityRatio()
+{
+    return ic.delta_rho;
+}
+real Parameter::getPressureRatio()
+{
+    return ic.delta_press;
+}
+real Parameter::getTimeRatio()
+{
+    return this->getViscosityRatio() * pow(this->getVelocityRatio(), -2);
+}
+real Parameter::getLengthRatio()
+{
+    return this->getViscosityRatio() / this->getVelocityRatio();
+}
+real Parameter::getForceRatio()
+{
+    return this->getDensityRatio() * this->getVelocityRatio()/this->getTimeRatio();
+}
+real Parameter::getScaledViscosityRatio(int level)
+{
+    return this->getViscosityRatio()/(level+1);
+}
+real Parameter::getScaledVelocityRatio(int level)
+{
+    return this->getVelocityRatio();
+}
+real Parameter::getScaledDensityRatio(int level)
+{
+    return this->getDensityRatio();
+}
+real Parameter::getScaledPressureRatio(int level)
+{
+    return this->getPressureRatio();
+}
+real Parameter::getScaledTimeRatio(int level)
+{
+    return this->getTimeRatio()/(level+1);
+}
+real Parameter::getScaledLengthRatio(int level)
+{
+    return this->getLengthRatio()/(level+1);
+}
+real Parameter::getScaledForceRatio(int level)
+{
+    return this->getForceRatio()*(level+1);
 }
 void Parameter::setRealX(real RealX)
 {
-	ic.RealX = RealX;
+    ic.RealX = RealX;
 }
 void Parameter::setRealY(real RealY)
 {
-	ic.RealY = RealY;
+    ic.RealY = RealY;
 }
 void Parameter::setPressInID(unsigned int PressInID)
 {
-	ic.PressInID = PressInID;
+    ic.PressInID = PressInID;
 }
 void Parameter::setPressOutID(unsigned int PressOutID)
 {
-	ic.PressOutID = PressOutID;
+    ic.PressOutID = PressOutID;
 }
 void Parameter::setPressInZ(unsigned int PressInZ)
 {
-	ic.PressInZ = PressInZ;
+    ic.PressInZ = PressInZ;
 }
 void Parameter::setPressOutZ(unsigned int PressOutZ)
 {
-	ic.PressOutZ = PressOutZ;
+    ic.PressOutZ = PressOutZ;
 }
 void Parameter::setMaxDev(int maxdev)
 {
-	ic.maxdev = maxdev;
+    ic.maxdev = maxdev;
 }
 void Parameter::setMyID(int myid)
 {
-	ic.myid = myid;
+    ic.myProcessId = myid;
 }
 void Parameter::setNumprocs(int numprocs)
 {
-	ic.numprocs = numprocs;
+    ic.numprocs = numprocs;
 }
 void Parameter::setDevices(std::vector<uint> devices)
 {
-	ic.devices = devices;
+    ic.devices = devices;
 }
 void Parameter::setGeometryFileC(std::string GeometryFileC)
 {
-	ic.geometryFileC = GeometryFileC;
+    ic.geometryFileC = GeometryFileC;
 }
 void Parameter::setGeometryFileM(std::string GeometryFileM)
 {
-	ic.geometryFileM = GeometryFileM;
+    ic.geometryFileM = GeometryFileM;
 }
 void Parameter::setGeometryFileF(std::string GeometryFileF)
 {
-	ic.geometryFileF = GeometryFileF;
+    ic.geometryFileF = GeometryFileF;
 }
 void Parameter::setRe(real Re)
 {
-	ic.Re = Re;
+    ic.Re = Re;
 }
 void Parameter::setFactorPressBC(real factorPressBC)
 {
-	ic.factorPressBC = factorPressBC;
+    ic.factorPressBC = factorPressBC;
 }
 void Parameter::setIsGeo(bool isGeo)
 {
-	ic.isGeo = isGeo;
+    ic.isGeo = isGeo;
 }
 void Parameter::setIsGeoNormal(bool isGeoNormal)
 {
-	ic.isGeoNormal = isGeoNormal;
+    ic.isGeoNormal = isGeoNormal;
 }
 void Parameter::setIsInflowNormal(bool isInflowNormal)
 {
-	ic.isInflowNormal = isInflowNormal;
+    ic.isInflowNormal = isInflowNormal;
 }
 void Parameter::setIsOutflowNormal(bool isOutflowNormal)
 {
-	ic.isOutflowNormal = isOutflowNormal;
+    ic.isOutflowNormal = isOutflowNormal;
 }
 void Parameter::setIsProp(bool isProp)
 {
-	ic.isProp = isProp;
+    ic.isProp = isProp;
 }
 void Parameter::setIsCp(bool isCp)
 {
-	ic.isCp = isCp;
+    ic.isCp = isCp;
 }
 void Parameter::setConcFile(bool concFile)
 {
-	ic.isConc = concFile;
+    ic.isConc = concFile;
 }
 void Parameter::setStreetVelocityFile(bool streetVelocityFile)
 {
-	ic.streetVelocityFile = streetVelocityFile;
+    ic.streetVelocityFile = streetVelocityFile;
 }
 void Parameter::setUseMeasurePoints(bool useMeasurePoints)
 {
-	ic.isMeasurePoints = useMeasurePoints;
-}
-void Parameter::setUseWale(bool useWale)
-{
-	ic.isWale = useWale;
+    ic.isMeasurePoints = useMeasurePoints;
 }
 void Parameter::setUseInitNeq(bool useInitNeq)
 {
-	ic.isInitNeq = useInitNeq;
+    ic.isInitNeq = useInitNeq;
 }
 void Parameter::setSimulatePorousMedia(bool simulatePorousMedia)
 {
-	ic.simulatePorousMedia = simulatePorousMedia;
+    ic.simulatePorousMedia = simulatePorousMedia;
+}
+void Parameter::setUseTurbulentViscosity(bool useTurbulentViscosity)
+{
+    ic.isTurbulentViscosity = useTurbulentViscosity;
+}
+void Parameter::setUseWale(bool useWale)
+{
+    ic.isWale = useWale;
+    if (useWale)
+        setUseTurbulentViscosity(true);
+}
+void Parameter::setTurbulenceModel(TurbulenceModel turbulenceModel)
+{
+    ic.turbulenceModel = turbulenceModel;
+}
+void Parameter::setSGSConstant(real SGSConstant)
+{
+    ic.SGSConstant = SGSConstant;
+}
+void Parameter::setHasWallModelMonitor(bool hasWallModelMonitor)
+{
+    ic.hasWallModelMonitor = hasWallModelMonitor;
 }
 
 void Parameter::setIsF3(bool isF3)
 {
-	this->isF3 = isF3; 
+    this->isF3 = isF3;
 }
 
-void Parameter::setIsBodyForce(bool isBodyForce) 
+void Parameter::setIsBodyForce(bool isBodyForce)
 {
-	this->isBodyForce = isBodyForce;
+    this->isBodyForce = isBodyForce;
 }
 
 void Parameter::setGridX(std::vector<int> GridX)
 {
-	ic.GridX = GridX;
+    ic.GridX = GridX;
 }
 void Parameter::setGridY(std::vector<int> GridY)
 {
-	ic.GridY = GridY;
+    ic.GridY = GridY;
 }
 void Parameter::setGridZ(std::vector<int> GridZ)
 {
-	ic.GridZ = GridZ;
+    ic.GridZ = GridZ;
 }
 void Parameter::setDistX(std::vector<int> DistX)
 {
-	ic.DistX = DistX;
+    ic.DistX = DistX;
 }
 void Parameter::setDistY(std::vector<int> DistY)
 {
-	ic.DistY = DistY;
+    ic.DistY = DistY;
 }
 void Parameter::setDistZ(std::vector<int> DistZ)
 {
-	ic.DistZ = DistZ;
+    ic.DistZ = DistZ;
 }
 void Parameter::setScaleLBMtoSI(std::vector<real> scaleLBMtoSI)
 {
-	ic.scaleLBMtoSI = scaleLBMtoSI;
+    ic.scaleLBMtoSI = scaleLBMtoSI;
 }
 void Parameter::setTranslateLBMtoSI(std::vector<real> translateLBMtoSI)
 {
-	ic.translateLBMtoSI = translateLBMtoSI;
+    ic.translateLBMtoSI = translateLBMtoSI;
 }
 void Parameter::setMinCoordX(std::vector<real> MinCoordX)
 {
-	ic.minCoordX = MinCoordX;
+    ic.minCoordX = MinCoordX;
 }
 void Parameter::setMinCoordY(std::vector<real> MinCoordY)
 {
-	ic.minCoordY = MinCoordY;
+    ic.minCoordY = MinCoordY;
 }
 void Parameter::setMinCoordZ(std::vector<real> MinCoordZ)
 {
-	ic.minCoordZ = MinCoordZ;
+    ic.minCoordZ = MinCoordZ;
 }
 void Parameter::setMaxCoordX(std::vector<real> MaxCoordX)
 {
-	ic.maxCoordX = MaxCoordX;
+    ic.maxCoordX = MaxCoordX;
 }
 void Parameter::setMaxCoordY(std::vector<real> MaxCoordY)
 {
-	ic.maxCoordY = MaxCoordY;
+    ic.maxCoordY = MaxCoordY;
 }
 void Parameter::setMaxCoordZ(std::vector<real> MaxCoordZ)
 {
-	ic.maxCoordZ = MaxCoordZ;
+    ic.maxCoordZ = MaxCoordZ;
 }
-void Parameter::setTempH(TempforBoundaryConditions* TempH)
+void Parameter::setTempH(TempforBoundaryConditions *TempH)
 {
-	this->TempH = TempH;
+    this->TempH = TempH;
 }
-void Parameter::setTempD(TempforBoundaryConditions* TempD)
+void Parameter::setTempD(TempforBoundaryConditions *TempD)
 {
-	this->TempD = TempD;
+    this->TempD = TempD;
 }
-void Parameter::setTempVelH(TempVelforBoundaryConditions* TempVelH)
+void Parameter::setTempVelH(TempVelforBoundaryConditions *TempVelH)
 {
-	this->TempVelH = TempVelH;
+    this->TempVelH = TempVelH;
 }
-void Parameter::setTempVelD(TempVelforBoundaryConditions* TempVelD)
+void Parameter::setTempVelD(TempVelforBoundaryConditions *TempVelD)
 {
-	this->TempVelD = TempVelD;
+    this->TempVelD = TempVelD;
 }
-void Parameter::setTempPressH(TempPressforBoundaryConditions* TempPressH)
+void Parameter::setTempPressH(TempPressforBoundaryConditions *TempPressH)
 {
-	this->TempPressH = TempPressH;
+    this->TempPressH = TempPressH;
 }
-void Parameter::setTempPressD(TempPressforBoundaryConditions* TempPressD)
+void Parameter::setTempPressD(TempPressforBoundaryConditions *TempPressD)
 {
-	this->TempPressD = TempPressD;
+    this->TempPressD = TempPressD;
 }
-//void Parameter::setkInflowQ(unsigned int kInflowQ)
-//{
-//   this->kInflowQ = kInflowQ;
-//}
-//void Parameter::setkOutflowQ(unsigned int kOutflowQ)
-//{
-//   this->kOutflowQ = kOutflowQ;
-//}
-//void Parameter::setQinflowH(QforBoundaryConditions* QinflowH)
+// void Parameter::setQinflowH(QforBoundaryConditions* QinflowH)
 //{
 //   this->QinflowH = QinflowH;
 //}
-//void Parameter::setQinflowD(QforBoundaryConditions* QinflowD)
+// void Parameter::setQinflowD(QforBoundaryConditions* QinflowD)
 //{
 //   this->QinflowD = QinflowD;
 //}
-//void Parameter::setQoutflowH(QforBoundaryConditions* QoutflowH)
+// void Parameter::setQoutflowH(QforBoundaryConditions* QoutflowH)
 //{
 //   this->QoutflowH = QoutflowH;
 //}
-//void Parameter::setQoutflowD(QforBoundaryConditions* QoutflowD)
+// void Parameter::setQoutflowD(QforBoundaryConditions* QoutflowD)
 //{
 //   this->QoutflowD = QoutflowD;
 //}
 void Parameter::setkFull(std::string kFull)
 {
-	ic.kFull = kFull;
+    ic.kFull = kFull;
 }
 void Parameter::setgeoFull(std::string geoFull)
 {
-	ic.geoFull = geoFull;
+    ic.geoFull = geoFull;
 }
 void Parameter::setgeoVec(std::string geoVec)
 {
-	ic.geoVec = geoVec;
+    ic.geoVec = geoVec;
 }
 void Parameter::setcoordX(std::string coordX)
 {
-	ic.coordX = coordX;
+    ic.coordX = coordX;
 }
 void Parameter::setcoordY(std::string coordY)
 {
-	ic.coordY = coordY;
+    ic.coordY = coordY;
 }
 void Parameter::setcoordZ(std::string coordZ)
 {
-	ic.coordZ = coordZ;
+    ic.coordZ = coordZ;
 }
 void Parameter::setneighborX(std::string neighborX)
 {
-	ic.neighborX = neighborX;
+    ic.neighborX = neighborX;
 }
 void Parameter::setneighborY(std::string neighborY)
 {
-	ic.neighborY = neighborY;
+    ic.neighborY = neighborY;
 }
 void Parameter::setneighborZ(std::string neighborZ)
 {
-	ic.neighborZ = neighborZ;
+    ic.neighborZ = neighborZ;
 }
 void Parameter::setneighborWSB(std::string neighborWSB)
 {
-	ic.neighborWSB = neighborWSB;
+    ic.neighborWSB = neighborWSB;
 }
 void Parameter::setscaleCFC(std::string scaleCFC)
 {
-	ic.scaleCFC = scaleCFC;
+    ic.scaleCFC = scaleCFC;
 }
 void Parameter::setscaleCFF(std::string scaleCFF)
 {
-	ic.scaleCFF = scaleCFF;
+    ic.scaleCFF = scaleCFF;
 }
 void Parameter::setscaleFCC(std::string scaleFCC)
 {
-	ic.scaleFCC = scaleFCC;
+    ic.scaleFCC = scaleFCC;
 }
 void Parameter::setscaleFCF(std::string scaleFCF)
 {
-	ic.scaleFCF = scaleFCF;
+    ic.scaleFCF = scaleFCF;
 }
 void Parameter::setscaleOffsetCF(std::string scaleOffsetCF)
 {
-	ic.scaleOffsetCF = scaleOffsetCF;
+    ic.scaleOffsetCF = scaleOffsetCF;
 }
 void Parameter::setscaleOffsetFC(std::string scaleOffsetFC)
 {
-	ic.scaleOffsetFC = scaleOffsetFC;
+    ic.scaleOffsetFC = scaleOffsetFC;
 }
 void Parameter::setgeomBoundaryBcQs(std::string geomBoundaryBcQs)
 {
-	ic.geomBoundaryBcQs = geomBoundaryBcQs;
+    ic.geomBoundaryBcQs = geomBoundaryBcQs;
 }
 void Parameter::setgeomBoundaryBcValues(std::string geomBoundaryBcValues)
 {
-	ic.geomBoundaryBcValues = geomBoundaryBcValues;
+    ic.geomBoundaryBcValues = geomBoundaryBcValues;
 }
 void Parameter::setnoSlipBcPos(std::string noSlipBcPos)
 {
-	ic.noSlipBcPos = noSlipBcPos;
+    ic.noSlipBcPos = noSlipBcPos;
 }
 void Parameter::setnoSlipBcQs(std::string noSlipBcQs)
 {
-	ic.noSlipBcQs = noSlipBcQs;
+    ic.noSlipBcQs = noSlipBcQs;
 }
 void Parameter::setnoSlipBcValue(std::string noSlipBcValue)
 {
-	ic.noSlipBcValue = noSlipBcValue;
+    ic.noSlipBcValue = noSlipBcValue;
 }
 void Parameter::setnoSlipBcValues(std::string noSlipBcValues)
 {
-	ic.noSlipBcValues = noSlipBcValues;
+    ic.noSlipBcValues = noSlipBcValues;
 }
 void Parameter::setslipBcPos(std::string slipBcPos)
 {
-	ic.slipBcPos = slipBcPos;
+    ic.slipBcPos = slipBcPos;
 }
 void Parameter::setslipBcQs(std::string slipBcQs)
 {
-	ic.slipBcQs = slipBcQs;
+    ic.slipBcQs = slipBcQs;
 }
 void Parameter::setslipBcValue(std::string slipBcValue)
 {
-	ic.slipBcValue = slipBcValue;
+    ic.slipBcValue = slipBcValue;
 }
 void Parameter::setpressBcPos(std::string pressBcPos)
 {
-	ic.pressBcPos = pressBcPos;
+    ic.pressBcPos = pressBcPos;
 }
 void Parameter::setpressBcQs(std::string pressBcQs)
 {
-	ic.pressBcQs = pressBcQs;
+    ic.pressBcQs = pressBcQs;
 }
 void Parameter::setpressBcValue(std::string pressBcValue)
 {
-	ic.pressBcValue = pressBcValue;
+    ic.pressBcValue = pressBcValue;
 }
 void Parameter::setpressBcValues(std::string pressBcValues)
 {
-	ic.pressBcValues = pressBcValues;
+    ic.pressBcValues = pressBcValues;
 }
 void Parameter::setvelBcQs(std::string velBcQs)
 {
-	ic.velBcQs = velBcQs;
+    ic.velBcQs = velBcQs;
 }
 void Parameter::setvelBcValues(std::string velBcValues)
 {
-	ic.velBcValues = velBcValues;
+    ic.velBcValues = velBcValues;
 }
 void Parameter::setinletBcQs(std::string inletBcQs)
 {
-	ic.inletBcQs = inletBcQs;
+    ic.inletBcQs = inletBcQs;
 }
 void Parameter::setinletBcValues(std::string inletBcValues)
 {
-	ic.inletBcValues = inletBcValues;
+    ic.inletBcValues = inletBcValues;
 }
 void Parameter::setoutletBcQs(std::string outletBcQs)
 {
-	ic.outletBcQs = outletBcQs;
+    ic.outletBcQs = outletBcQs;
 }
 void Parameter::setoutletBcValues(std::string outletBcValues)
 {
-	ic.outletBcValues = outletBcValues;
+    ic.outletBcValues = outletBcValues;
 }
 void Parameter::settopBcQs(std::string topBcQs)
 {
-	ic.topBcQs = topBcQs;
+    ic.topBcQs = topBcQs;
 }
 void Parameter::settopBcValues(std::string topBcValues)
 {
-	ic.topBcValues = topBcValues;
+    ic.topBcValues = topBcValues;
 }
 void Parameter::setbottomBcQs(std::string bottomBcQs)
 {
-	ic.bottomBcQs = bottomBcQs;
+    ic.bottomBcQs = bottomBcQs;
 }
 void Parameter::setbottomBcValues(std::string bottomBcValues)
 {
-	ic.bottomBcValues = bottomBcValues;
+    ic.bottomBcValues = bottomBcValues;
 }
 void Parameter::setfrontBcQs(std::string frontBcQs)
 {
-	ic.frontBcQs = frontBcQs;
+    ic.frontBcQs = frontBcQs;
 }
 void Parameter::setfrontBcValues(std::string frontBcValues)
 {
-	ic.frontBcValues = frontBcValues;
+    ic.frontBcValues = frontBcValues;
 }
 void Parameter::setbackBcQs(std::string backBcQs)
 {
-	ic.backBcQs = backBcQs;
+    ic.backBcQs = backBcQs;
 }
 void Parameter::setbackBcValues(std::string backBcValues)
 {
-	ic.backBcValues = backBcValues;
+    ic.backBcValues = backBcValues;
 }
 void Parameter::setwallBcQs(std::string wallBcQs)
 {
-	ic.wallBcQs = wallBcQs;
+    ic.wallBcQs = wallBcQs;
 }
 void Parameter::setwallBcValues(std::string wallBcValues)
 {
-	ic.wallBcValues = wallBcValues;
+    ic.wallBcValues = wallBcValues;
 }
 void Parameter::setperiodicBcQs(std::string periodicBcQs)
 {
-	ic.periodicBcQs = periodicBcQs;
+    ic.periodicBcQs = periodicBcQs;
 }
 void Parameter::setperiodicBcValues(std::string periodicBcValues)
 {
-	ic.periodicBcValues = periodicBcValues;
+    ic.periodicBcValues = periodicBcValues;
 }
 void Parameter::setpropellerQs(std::string propellerQs)
 {
-	ic.propellerQs = propellerQs;
+    ic.propellerQs = propellerQs;
 }
 void Parameter::setpropellerValues(std::string propellerValues)
 {
-	ic.propellerValues = propellerValues;
+    ic.propellerValues = propellerValues;
 }
 void Parameter::setpropellerCylinder(std::string propellerCylinder)
 {
-	ic.propellerCylinder = propellerCylinder;
+    ic.propellerCylinder = propellerCylinder;
 }
 void Parameter::setmeasurePoints(std::string measurePoints)
 {
-	ic.measurePoints = measurePoints;
+    ic.measurePoints = measurePoints;
 }
 void Parameter::setnumberNodes(std::string numberNodes)
 {
-	ic.numberNodes = numberNodes;
+    ic.numberNodes = numberNodes;
 }
 void Parameter::setLBMvsSI(std::string LBMvsSI)
 {
-	ic.LBMvsSI = LBMvsSI;
+    ic.LBMvsSI = LBMvsSI;
 }
 void Parameter::setcpTop(std::string cpTop)
 {
-	ic.cpTop = cpTop;
+    ic.cpTop = cpTop;
 }
 void Parameter::setcpBottom(std::string cpBottom)
 {
-	ic.cpBottom = cpBottom;
+    ic.cpBottom = cpBottom;
 }
 void Parameter::setcpBottom2(std::string cpBottom2)
 {
-	ic.cpBottom2 = cpBottom2;
+    ic.cpBottom2 = cpBottom2;
 }
 void Parameter::setConcentration(std::string concFile)
 {
-	ic.concentration = concFile;
+    ic.concentration = concFile;
 }
 void Parameter::setStreetVelocity(std::string streetVelocity)
 {
-	ic.streetVelocity = streetVelocity;
+    ic.streetVelocity = streetVelocity;
 }
 void Parameter::setclockCycleForMP(real clockCycleForMP)
 {
-	ic.clockCycleForMP = clockCycleForMP;
+    ic.clockCycleForMP = clockCycleForMP;
 }
 void Parameter::setTimeDoCheckPoint(unsigned int tDoCheckPoint)
 {
-	ic.tDoCheckPoint = tDoCheckPoint;
+    ic.tDoCheckPoint = tDoCheckPoint;
 }
 void Parameter::setTimeDoRestart(unsigned int tDoRestart)
 {
-	ic.tDoRestart = tDoRestart;
+    ic.tDoRestart = tDoRestart;
 }
 void Parameter::setDoCheckPoint(bool doCheckPoint)
 {
-	ic.doCheckPoint = doCheckPoint;
+    ic.doCheckPoint = doCheckPoint;
 }
 void Parameter::setDoRestart(bool doRestart)
 {
-	ic.doRestart = doRestart;
+    ic.doRestart = doRestart;
 }
 void Parameter::settimestepForMP(unsigned int timestepForMP)
 {
-	ic.timeStepForMP = timestepForMP;
+    ic.timeStepForMP = timestepForMP;
 }
 void Parameter::setObj(std::string str, bool isObj)
 {
-	if (str == "geo")
-	{
-		this->setIsGeo(isObj);
-	}
-	else if (str == "prop")
-	{
-		this->setIsProp(isObj);
-	}
-	else if (str == "cp")
-	{
-		this->setIsCp(isObj);
-	}
-	else if (str == "geoNormal")
-	{
-		this->setIsGeoNormal(isObj);
-	}
-	else if (str == "inflowNormal")
-	{
-		this->setIsInflowNormal(isObj);
-	}
-	else if (str == "outflowNormal")
-	{
-		this->setIsOutflowNormal(isObj);
-	}
+    if (str == "geo") {
+        this->setIsGeo(isObj);
+    } else if (str == "prop") {
+        this->setIsProp(isObj);
+    } else if (str == "cp") {
+        this->setIsCp(isObj);
+    } else if (str == "geoNormal") {
+        this->setIsGeoNormal(isObj);
+    } else if (str == "inflowNormal") {
+        this->setIsInflowNormal(isObj);
+    } else if (str == "outflowNormal") {
+        this->setIsOutflowNormal(isObj);
+    }
 }
-void Parameter::setGeometryValues(bool GeometryValues)
+void Parameter::setUseGeometryValues(bool useGeometryValues)
 {
-	ic.GeometryValues = GeometryValues;
+    ic.GeometryValues = useGeometryValues;
 }
 void Parameter::setCalc2ndOrderMoments(bool is2ndOrderMoments)
 {
-	ic.is2ndOrderMoments = is2ndOrderMoments;
+    ic.is2ndOrderMoments = is2ndOrderMoments;
 }
 void Parameter::setCalc3rdOrderMoments(bool is3rdOrderMoments)
 {
-	ic.is3rdOrderMoments = is3rdOrderMoments;
+    ic.is3rdOrderMoments = is3rdOrderMoments;
 }
 void Parameter::setCalcHighOrderMoments(bool isHighOrderMoments)
 {
-	ic.isHighOrderMoments = isHighOrderMoments;
+    ic.isHighOrderMoments = isHighOrderMoments;
 }
 void Parameter::setMemsizeGPU(double admem, bool reset)
 {
-	if (reset == true)
-	{
-		this->memsizeGPU = 0.;
-	} 
-	else
-	{
-		this->memsizeGPU += admem;
-	}
+    if (reset == true) {
+        this->memsizeGPU = 0.;
+    } else {
+        this->memsizeGPU += admem;
+    }
 }
-//1D domain decomposition
+// 1D domain decomposition
 void Parameter::setPossNeighborFiles(std::vector<std::string> possNeighborFiles, std::string sor)
 {
-	if (sor=="send")
-	{
-		this->possNeighborFilesSend = possNeighborFiles;
-	} 
-	else if (sor == "recv")
-	{
-		this->possNeighborFilesRecv = possNeighborFiles;
-	}
+    if (sor == "send") {
+        this->possNeighborFilesSend = possNeighborFiles;
+    } else if (sor == "recv") {
+        this->possNeighborFilesRecv = possNeighborFiles;
+    }
 }
 void Parameter::setNumberOfProcessNeighbors(unsigned int numberOfProcessNeighbors, int level, std::string sor)
 {
-	if (sor=="send")
-	{
-		parH[level]->sendProcessNeighbor.resize(numberOfProcessNeighbors);
-		parD[level]->sendProcessNeighbor.resize(numberOfProcessNeighbors);
-	} 
-	else if (sor == "recv")
-	{
-		parH[level]->recvProcessNeighbor.resize(numberOfProcessNeighbors);
-		parD[level]->recvProcessNeighbor.resize(numberOfProcessNeighbors);
-	}
+    if (sor == "send") {
+        parH[level]->sendProcessNeighbor.resize(numberOfProcessNeighbors);
+        parD[level]->sendProcessNeighbor.resize(numberOfProcessNeighbors);
+    } else if (sor == "recv") {
+        parH[level]->recvProcessNeighbor.resize(numberOfProcessNeighbors);
+        parD[level]->recvProcessNeighbor.resize(numberOfProcessNeighbors);
+    }
 }
 void Parameter::setIsNeighbor(bool isNeigbor)
 {
-	this->isNeigbor = isNeigbor;
+    this->isNeigbor = isNeigbor;
 }
-//3D domain decomposition
+// 3D domain decomposition
 void Parameter::setPossNeighborFilesX(std::vector<std::string> possNeighborFiles, std::string sor)
 {
-	if (sor=="send")
-	{
-		this->possNeighborFilesSendX = possNeighborFiles;
-	} 
-	else if (sor == "recv")
-	{
-		this->possNeighborFilesRecvX = possNeighborFiles;
-	}
+    if (sor == "send") {
+        this->possNeighborFilesSendX = possNeighborFiles;
+    } else if (sor == "recv") {
+        this->possNeighborFilesRecvX = possNeighborFiles;
+    }
 }
 void Parameter::setPossNeighborFilesY(std::vector<std::string> possNeighborFiles, std::string sor)
 {
-	if (sor=="send")
-	{
-		this->possNeighborFilesSendY = possNeighborFiles;
-	} 
-	else if (sor == "recv")
-	{
-		this->possNeighborFilesRecvY = possNeighborFiles;
-	}
+    if (sor == "send") {
+        this->possNeighborFilesSendY = possNeighborFiles;
+    } else if (sor == "recv") {
+        this->possNeighborFilesRecvY = possNeighborFiles;
+    }
 }
 void Parameter::setPossNeighborFilesZ(std::vector<std::string> possNeighborFiles, std::string sor)
 {
-	if (sor=="send")
-	{
-		this->possNeighborFilesSendZ = possNeighborFiles;
-	} 
-	else if (sor == "recv")
-	{
-		this->possNeighborFilesRecvZ = possNeighborFiles;
-	}
+    if (sor == "send") {
+        this->possNeighborFilesSendZ = possNeighborFiles;
+    } else if (sor == "recv") {
+        this->possNeighborFilesRecvZ = possNeighborFiles;
+    }
 }
 void Parameter::setNumberOfProcessNeighborsX(unsigned int numberOfProcessNeighbors, int level, std::string sor)
 {
-	if (sor=="send")
-	{
-		parH[level]->sendProcessNeighborX.resize(numberOfProcessNeighbors);
-		parD[level]->sendProcessNeighborX.resize(numberOfProcessNeighbors);
-		//////////////////////////////////////////////////////////////////////////
-		if (getDiffOn()==true){
-			parH[level]->sendProcessNeighborADX.resize(numberOfProcessNeighbors);
-			parD[level]->sendProcessNeighborADX.resize(numberOfProcessNeighbors);
-		}
-		//////////////////////////////////////////////////////////////////////////
-	} 
-	else if (sor == "recv")
-	{
-		parH[level]->recvProcessNeighborX.resize(numberOfProcessNeighbors);
-		parD[level]->recvProcessNeighborX.resize(numberOfProcessNeighbors);
-		//////////////////////////////////////////////////////////////////////////
-		if (getDiffOn()==true){
-			parH[level]->recvProcessNeighborADX.resize(numberOfProcessNeighbors);
-			parD[level]->recvProcessNeighborADX.resize(numberOfProcessNeighbors);
-		}
-		//////////////////////////////////////////////////////////////////////////
-	}
+    if (sor == "send") {
+        parH[level]->sendProcessNeighborX.resize(numberOfProcessNeighbors);
+        parD[level]->sendProcessNeighborX.resize(numberOfProcessNeighbors);
+        //////////////////////////////////////////////////////////////////////////
+        if (getDiffOn() == true) {
+            parH[level]->sendProcessNeighborADX.resize(numberOfProcessNeighbors);
+            parD[level]->sendProcessNeighborADX.resize(numberOfProcessNeighbors);
+        }
+        //////////////////////////////////////////////////////////////////////////
+    } else if (sor == "recv") {
+        parH[level]->recvProcessNeighborX.resize(numberOfProcessNeighbors);
+        parD[level]->recvProcessNeighborX.resize(numberOfProcessNeighbors);
+        //////////////////////////////////////////////////////////////////////////
+        if (getDiffOn() == true) {
+            parH[level]->recvProcessNeighborADX.resize(numberOfProcessNeighbors);
+            parD[level]->recvProcessNeighborADX.resize(numberOfProcessNeighbors);
+        }
+        //////////////////////////////////////////////////////////////////////////
+    }
 }
 void Parameter::setNumberOfProcessNeighborsY(unsigned int numberOfProcessNeighbors, int level, std::string sor)
 {
-	if (sor=="send")
-	{
-		parH[level]->sendProcessNeighborY.resize(numberOfProcessNeighbors);
-		parD[level]->sendProcessNeighborY.resize(numberOfProcessNeighbors);
-		//////////////////////////////////////////////////////////////////////////
-		if (getDiffOn()==true){
-			parH[level]->sendProcessNeighborADY.resize(numberOfProcessNeighbors);
-			parD[level]->sendProcessNeighborADY.resize(numberOfProcessNeighbors);
-		}
-		//////////////////////////////////////////////////////////////////////////
-	} 
-	else if (sor == "recv")
-	{
-		parH[level]->recvProcessNeighborY.resize(numberOfProcessNeighbors);
-		parD[level]->recvProcessNeighborY.resize(numberOfProcessNeighbors);
-		//////////////////////////////////////////////////////////////////////////
-		if (getDiffOn()==true){
-			parH[level]->recvProcessNeighborADY.resize(numberOfProcessNeighbors);
-			parD[level]->recvProcessNeighborADY.resize(numberOfProcessNeighbors);
-		}
-		//////////////////////////////////////////////////////////////////////////
-	}
+    if (sor == "send") {
+        parH[level]->sendProcessNeighborY.resize(numberOfProcessNeighbors);
+        parD[level]->sendProcessNeighborY.resize(numberOfProcessNeighbors);
+        //////////////////////////////////////////////////////////////////////////
+        if (getDiffOn() == true) {
+            parH[level]->sendProcessNeighborADY.resize(numberOfProcessNeighbors);
+            parD[level]->sendProcessNeighborADY.resize(numberOfProcessNeighbors);
+        }
+        //////////////////////////////////////////////////////////////////////////
+    } else if (sor == "recv") {
+        parH[level]->recvProcessNeighborY.resize(numberOfProcessNeighbors);
+        parD[level]->recvProcessNeighborY.resize(numberOfProcessNeighbors);
+        //////////////////////////////////////////////////////////////////////////
+        if (getDiffOn() == true) {
+            parH[level]->recvProcessNeighborADY.resize(numberOfProcessNeighbors);
+            parD[level]->recvProcessNeighborADY.resize(numberOfProcessNeighbors);
+        }
+        //////////////////////////////////////////////////////////////////////////
+    }
 }
 void Parameter::setNumberOfProcessNeighborsZ(unsigned int numberOfProcessNeighbors, int level, std::string sor)
 {
-	if (sor=="send")
-	{
-		parH[level]->sendProcessNeighborZ.resize(numberOfProcessNeighbors);
-		parD[level]->sendProcessNeighborZ.resize(numberOfProcessNeighbors);
-		//////////////////////////////////////////////////////////////////////////
-		if (getDiffOn()==true){
-			parH[level]->sendProcessNeighborADZ.resize(numberOfProcessNeighbors);
-			parD[level]->sendProcessNeighborADZ.resize(numberOfProcessNeighbors);
-		}
-		//////////////////////////////////////////////////////////////////////////
-	} 
-	else if (sor == "recv")
-	{
-		parH[level]->recvProcessNeighborZ.resize(numberOfProcessNeighbors);
-		parD[level]->recvProcessNeighborZ.resize(numberOfProcessNeighbors);
-		//////////////////////////////////////////////////////////////////////////
-		if (getDiffOn()==true){
-			parH[level]->recvProcessNeighborADZ.resize(numberOfProcessNeighbors);
-			parD[level]->recvProcessNeighborADZ.resize(numberOfProcessNeighbors);
-		}
-		//////////////////////////////////////////////////////////////////////////
-	}
+    if (sor == "send") {
+        parH[level]->sendProcessNeighborZ.resize(numberOfProcessNeighbors);
+        parD[level]->sendProcessNeighborZ.resize(numberOfProcessNeighbors);
+        //////////////////////////////////////////////////////////////////////////
+        if (getDiffOn() == true) {
+            parH[level]->sendProcessNeighborADZ.resize(numberOfProcessNeighbors);
+            parD[level]->sendProcessNeighborADZ.resize(numberOfProcessNeighbors);
+        }
+        //////////////////////////////////////////////////////////////////////////
+    } else if (sor == "recv") {
+        parH[level]->recvProcessNeighborZ.resize(numberOfProcessNeighbors);
+        parD[level]->recvProcessNeighborZ.resize(numberOfProcessNeighbors);
+        //////////////////////////////////////////////////////////////////////////
+        if (getDiffOn() == true) {
+            parH[level]->recvProcessNeighborADZ.resize(numberOfProcessNeighbors);
+            parD[level]->recvProcessNeighborADZ.resize(numberOfProcessNeighbors);
+        }
+        //////////////////////////////////////////////////////////////////////////
+    }
 }
 void Parameter::setIsNeighborX(bool isNeigbor)
 {
-	this->isNeigborX = isNeigbor;
+    this->isNeigborX = isNeigbor;
 }
 void Parameter::setIsNeighborY(bool isNeigbor)
 {
-	this->isNeigborY = isNeigbor;
+    this->isNeigborY = isNeigbor;
 }
 void Parameter::setIsNeighborZ(bool isNeigbor)
 {
-	this->isNeigborZ = isNeigbor;
+    this->isNeigborZ = isNeigbor;
+}
+void Parameter::setSendProcessNeighborsAfterFtoCX(int numberOfNodes, int level, int arrayIndex)
+{
+    this->getParH(level)->sendProcessNeighborsAfterFtoCX[arrayIndex].numberOfNodes = numberOfNodes;
+    this->getParD(level)->sendProcessNeighborsAfterFtoCX[arrayIndex].numberOfNodes = numberOfNodes;
+    this->getParH(level)->sendProcessNeighborsAfterFtoCX[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
+    this->getParD(level)->sendProcessNeighborsAfterFtoCX[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
+    this->getParH(level)->sendProcessNeighborsAfterFtoCX[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
+    this->getParD(level)->sendProcessNeighborsAfterFtoCX[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
+}
+void Parameter::setSendProcessNeighborsAfterFtoCY(int numberOfNodes, int level, int arrayIndex)
+{
+    this->getParH(level)->sendProcessNeighborsAfterFtoCY[arrayIndex].numberOfNodes = numberOfNodes;
+    this->getParD(level)->sendProcessNeighborsAfterFtoCY[arrayIndex].numberOfNodes = numberOfNodes;
+    this->getParH(level)->sendProcessNeighborsAfterFtoCY[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
+    this->getParD(level)->sendProcessNeighborsAfterFtoCY[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
+    this->getParH(level)->sendProcessNeighborsAfterFtoCY[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
+    this->getParD(level)->sendProcessNeighborsAfterFtoCY[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
+}
+void Parameter::setSendProcessNeighborsAfterFtoCZ(int numberOfNodes, int level, int arrayIndex)
+{
+    this->getParH(level)->sendProcessNeighborsAfterFtoCZ[arrayIndex].numberOfNodes = numberOfNodes;
+    this->getParD(level)->sendProcessNeighborsAfterFtoCZ[arrayIndex].numberOfNodes = numberOfNodes;
+    this->getParH(level)->sendProcessNeighborsAfterFtoCZ[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
+    this->getParD(level)->sendProcessNeighborsAfterFtoCZ[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
+    this->getParH(level)->sendProcessNeighborsAfterFtoCZ[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
+    this->getParD(level)->sendProcessNeighborsAfterFtoCZ[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
+}
+void Parameter::setRecvProcessNeighborsAfterFtoCX(int numberOfNodes, int level, int arrayIndex)
+{
+    this->getParH(level)->recvProcessNeighborsAfterFtoCX[arrayIndex].numberOfNodes = numberOfNodes;
+    this->getParD(level)->recvProcessNeighborsAfterFtoCX[arrayIndex].numberOfNodes = numberOfNodes;
+    this->getParH(level)->recvProcessNeighborsAfterFtoCX[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
+    this->getParD(level)->recvProcessNeighborsAfterFtoCX[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
+    this->getParH(level)->recvProcessNeighborsAfterFtoCX[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
+    this->getParD(level)->recvProcessNeighborsAfterFtoCX[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
+}
+void Parameter::setRecvProcessNeighborsAfterFtoCY(int numberOfNodes, int level, int arrayIndex)
+{
+    this->getParH(level)->recvProcessNeighborsAfterFtoCY[arrayIndex].numberOfNodes = numberOfNodes;
+    this->getParD(level)->recvProcessNeighborsAfterFtoCY[arrayIndex].numberOfNodes = numberOfNodes;
+    this->getParH(level)->recvProcessNeighborsAfterFtoCY[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
+    this->getParD(level)->recvProcessNeighborsAfterFtoCY[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
+    this->getParH(level)->recvProcessNeighborsAfterFtoCY[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
+    this->getParD(level)->recvProcessNeighborsAfterFtoCY[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
+}
+void Parameter::setRecvProcessNeighborsAfterFtoCZ(int numberOfNodes, int level, int arrayIndex)
+{
+    this->getParH(level)->recvProcessNeighborsAfterFtoCZ[arrayIndex].numberOfNodes = numberOfNodes;
+    this->getParD(level)->recvProcessNeighborsAfterFtoCZ[arrayIndex].numberOfNodes = numberOfNodes;
+    this->getParH(level)->recvProcessNeighborsAfterFtoCZ[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
+    this->getParD(level)->recvProcessNeighborsAfterFtoCZ[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
+    this->getParH(level)->recvProcessNeighborsAfterFtoCZ[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
+    this->getParD(level)->recvProcessNeighborsAfterFtoCZ[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
 }
 void Parameter::setgeomBoundaryNormalX(std::string geomNormalX)
 {
-	ic.geomNormalX = geomNormalX;
+    ic.geomNormalX = geomNormalX;
 }
 void Parameter::setgeomBoundaryNormalY(std::string geomNormalY)
 {
-	ic.geomNormalY = geomNormalY;
+    ic.geomNormalY = geomNormalY;
 }
 void Parameter::setgeomBoundaryNormalZ(std::string geomNormalZ)
 {
-	ic.geomNormalZ = geomNormalZ;
+    ic.geomNormalZ = geomNormalZ;
 }
 void Parameter::setInflowBoundaryNormalX(std::string inflowNormalX)
 {
-	ic.inflowNormalX = inflowNormalX;
+    ic.inflowNormalX = inflowNormalX;
 }
 void Parameter::setInflowBoundaryNormalY(std::string inflowNormalY)
 {
-	ic.inflowNormalY = inflowNormalY;
+    ic.inflowNormalY = inflowNormalY;
 }
 void Parameter::setInflowBoundaryNormalZ(std::string inflowNormalZ)
 {
-	ic.inflowNormalZ = inflowNormalZ;
+    ic.inflowNormalZ = inflowNormalZ;
 }
 void Parameter::setOutflowBoundaryNormalX(std::string outflowNormalX)
 {
-	ic.outflowNormalX = outflowNormalX;
+    ic.outflowNormalX = outflowNormalX;
 }
 void Parameter::setOutflowBoundaryNormalY(std::string outflowNormalY)
 {
-	ic.outflowNormalY = outflowNormalY;
+    ic.outflowNormalY = outflowNormalY;
 }
 void Parameter::setOutflowBoundaryNormalZ(std::string outflowNormalZ)
 {
-	ic.outflowNormalZ = outflowNormalZ;
+    ic.outflowNormalZ = outflowNormalZ;
 }
 void Parameter::setMainKernel(std::string kernel)
 {
-	this->mainKernel = kernel;
+    this->mainKernel = kernel;
+    if (kernel.find("Stream") != std::string::npos || kernel.find("Redesigned") != std::string::npos)
+        this->kernelNeedsFluidNodeIndicesToRun = true;
 }
 void Parameter::setMultiKernelOn(bool isOn)
 {
-	this->multiKernelOn = isOn;
+    this->multiKernelOn = isOn;
 }
-void Parameter::setMultiKernelLevel(std::vector< int> kernelLevel)
+void Parameter::setMultiKernelLevel(std::vector<int> kernelLevel)
 {
-	this->multiKernelLevel = kernelLevel;
+    this->multiKernelLevel = kernelLevel;
 }
-void Parameter::setMultiKernel(std::vector< std::string> kernel)
+void Parameter::setMultiKernel(std::vector<std::string> kernel)
 {
-	this->multiKernel = kernel;
+    this->multiKernel = kernel;
 }
 void Parameter::setADKernel(std::string adKernel)
 {
-	this->adKernel = adKernel;
+    this->adKernel = adKernel;
 }
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//add-methods
+// add-methods
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void Parameter::addActuator(SPtr<PreCollisionInteractor> actuator)
 {
-	actuators.push_back(actuator);
+    actuators.push_back(actuator);
 }
 void Parameter::addProbe(SPtr<PreCollisionInteractor> probe)
 {
-	probes.push_back(probe);
+    probes.push_back(probe);
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//get-methods
+// get-methods
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-double* Parameter::getForcesDouble()
+double *Parameter::getForcesDouble()
 {
-	return this->hostForcing;
+    return this->hostForcing;
 }
-real* Parameter::getForcesHost()
+real *Parameter::getForcesHost()
 {
-	return this->forcingH;
+    return this->forcingH;
 }
-real* Parameter::getForcesDev()
+real *Parameter::getForcesDev()
 {
-	return this->forcingD;
+    return this->forcingD;
 }
-double * Parameter::getQuadricLimitersDouble()
+double *Parameter::getQuadricLimitersDouble()
 {
     return this->hostQuadricLimiters;
 }
-real * Parameter::getQuadricLimitersHost()
+real *Parameter::getQuadricLimitersHost()
 {
     return this->quadricLimitersH;
 }
-real * Parameter::getQuadricLimitersDev()
+real *Parameter::getQuadricLimitersDev()
 {
     return this->quadricLimitersD;
 }
 real Parameter::getPhi()
 {
-	return Phi;
+    return Phi;
 }
 real Parameter::getAngularVelocity()
 {
-	return angularVelocity;
+    return angularVelocity;
 }
 real Parameter::getStartXHotWall()
 {
-	return this->startXHotWall;
+    return this->startXHotWall;
 }
 real Parameter::getEndXHotWall()
 {
-	return this->endXHotWall;
+    return this->endXHotWall;
 }
 unsigned int Parameter::getStepEnsight()
 {
-	return this->stepEnsight;
+    return this->stepEnsight;
 }
 unsigned int Parameter::getOutputCount()
 {
-	return this->outputCount;
+    return this->outputCount;
 }
 unsigned int Parameter::getlimitOfNodesForVTK()
 {
-	return this->limitOfNodesForVTK;
+    return this->limitOfNodesForVTK;
 }
 unsigned int Parameter::getStartTurn()
 {
-	return startTurn;
+    return startTurn;
 }
 std::shared_ptr<LBMSimulationParameter> Parameter::getParD(int level)
 {
-	return parD[level];
+    return parD[level];
 }
 std::shared_ptr<LBMSimulationParameter> Parameter::getParH(int level)
 {
-	return parH[level];
+    return parH[level];
 }
+
+const std::vector<std::shared_ptr<LBMSimulationParameter>> &Parameter::getParHallLevels()
+{
+    return parH;
+}
+const std::vector<std::shared_ptr<LBMSimulationParameter>> &Parameter::getParDallLevels()
+{
+    return parD;
+}
+
 unsigned int Parameter::getSizeMat(int level)
 {
-	return parH[level]->size_Mat;
+    return parH[level]->size_Mat;
 }
 unsigned int Parameter::getMemSizereal(int level)
 {
-	return parH[level]->mem_size_real;
+    return parH[level]->mem_size_real;
 }
 unsigned int Parameter::getMemSizeInt(int level)
 {
-	return parH[level]->mem_size_int;
+    return parH[level]->mem_size_int;
 }
 unsigned int Parameter::getMemSizeBool(int level)
 {
-	return parH[level]->mem_size_bool;
+    return parH[level]->mem_size_bool;
 }
 unsigned int Parameter::getMemSizerealYZ(int level)
 {
-	return parH[level]->mem_size_real_yz;
+    return parH[level]->mem_size_real_yz;
 }
 int Parameter::getFine()
 {
-	return fine;
+    return fine;
 }
 int Parameter::getCoarse()
 {
-	return coarse;
+    return coarse;
 }
 int Parameter::getParticleBasicLevel()
 {
-	return this->particleBasicLevel;
+    return this->particleBasicLevel;
 }
 int Parameter::getParticleInitLevel()
 {
-	return this->particleInitLevel;
+    return this->particleInitLevel;
 }
 int Parameter::getNumberOfParticles()
 {
-	return this->numberOfParticles;
+    return this->numberOfParticles;
 }
 bool Parameter::getEvenOrOdd(int level)
 {
-	return parH[level]->evenOrOdd;
+	return parD[level]->isEvenTimestep;
 }
 bool Parameter::getDiffOn()
 {
-	return diffOn;
+    return diffOn;
 }
 bool Parameter::getCompOn()
 {
-	return compOn;
+    return compOn;
 }
 int Parameter::getDiffMod()
 {
-	return diffMod;
+    return diffMod;
 }
 int Parameter::getFactorNZ()
 {
-	return factor_gridNZ;
+    return factor_gridNZ;
 }
 int Parameter::getD3Qxx()
 {
-	return this->D3Qxx;
+    return this->D3Qxx;
 }
 int Parameter::getMaxLevel()
 {
-	return this->maxlevel;
+    return this->maxlevel;
 }
-unsigned int Parameter::getTStart()
+unsigned int Parameter::getTimestepStart()
 {
-	if (getDoRestart())
-	{
-		return getTimeDoRestart() + 1;
-	} 
-	else
-	{
-		return 1;
-	}
+    if (getDoRestart()) {
+        return getTimeDoRestart() + 1;
+    } else {
+        return 1;
+    }
 }
-unsigned int Parameter::getTInit()
+unsigned int Parameter::getTimestepInit()
 {
-	if (getDoRestart())
-	{
-		return getTimeDoRestart();
-	} 
-	else
-	{
-		return 0;
-	}
+    if (getDoRestart()) {
+        return getTimeDoRestart();
+    } else {
+        return 0;
+    }
 }
-unsigned int Parameter::getTEnd()
+unsigned int Parameter::getTimestepEnd()
 {
-	return ic.tend;
+    return ic.tend;
 }
-unsigned int Parameter::getTOut()
+unsigned int Parameter::getTimestepOut()
 {
-	return ic.tout;
+    return ic.tout;
 }
-unsigned int Parameter::getTStartOut()
+unsigned int Parameter::getTimestepStartOut()
 {
-	return ic.tStartOut;
+    return ic.tStartOut;
 }
 bool Parameter::getCalcMedian()
 {
-	return ic.calcMedian;
+    return ic.calcMedian;
 }
 bool Parameter::getCalcDragLift()
 {
-	return this->calcDragLift;
+    return this->calcDragLift;
 }
 bool Parameter::getCalcCp()
 {
-	return this->calcCp;
+    return this->calcCp;
 }
-bool Parameter::getCalcParticle()
+bool Parameter::getCalcParticles()
 {
-	return this->calcParticles;
+    return this->calcParticles;
 }
 bool Parameter::getWriteVeloASCIIfiles()
 {
-	return this->writeVeloASCII;
+    return this->writeVeloASCII;
 }
 bool Parameter::getCalcPlaneConc()
 {
-	return this->calcPlaneConc;
+    return this->calcPlaneConc;
 }
 int Parameter::getTimeCalcMedStart()
 {
-	return ic.tCalcMedStart;
+    return ic.tCalcMedStart;
 }
 int Parameter::getTimeCalcMedEnd()
 {
-	return ic.tCalcMedEnd;
+    return ic.tCalcMedEnd;
 }
 std::string Parameter::getOutputPath()
 {
-	return ic.oPath;
+    return ic.oPath;
 }
 std::string Parameter::getOutputPrefix()
 {
-	return ic.oPrefix;
+    return ic.oPrefix;
 }
 std::string Parameter::getFName()
 {
-	return ic.fname;
+    return ic.fname;
+}
+std::string Parameter::getGridPath()
+{
+    return ic.gridPath;
 }
 bool Parameter::getPrintFiles()
 {
-	return ic.printFiles;
+    return ic.printFiles;
 }
 bool Parameter::getReadGeo()
 {
-	return ic.readGeo;
+    return ic.readGeo;
+}
+bool Parameter::getCalcTurbulenceIntensity()
+{
+    return this->calcVelocityAndFluctuations;
 }
 real Parameter::getDiffusivity()
 {
-	return ic.Diffusivity;
+    return ic.Diffusivity;
 }
 real Parameter::getTemperatureInit()
 {
-	return ic.Temp;
+    return ic.Temp;
 }
 real Parameter::getTemperatureBC()
 {
-	return ic.TempBC;
+    return ic.TempBC;
 }
 real Parameter::getViscosity()
 {
-	return ic.vis;
+    return ic.vis;
 }
 real Parameter::getVelocity()
 {
-	return ic.u0;
-}
-real Parameter::getViscosityRatio()
-{
-	return ic.vis_ratio;
-}
-real Parameter::getVelocityRatio()
-{
-	return ic.u0_ratio;
-}
-real Parameter::getDensityRatio()
-{
-	return ic.delta_rho;
-}
-real Parameter::getPressRatio()
-{
-	return ic.delta_press;
-}
-real Parameter::getTimeRatio()
-{
-	return this->getViscosityRatio()*pow(this->getVelocityRatio(),-2);
-}
-real Parameter::getLengthRatio()
-{
-	return this->getViscosityRatio()/this->getVelocityRatio();
-}
-real Parameter::getForceRatio()
-{
-	return this->getDensityRatio()*pow(this->getViscosityRatio(),2);
+    return ic.u0;
 }
 real Parameter::getRealX()
 {
-	return ic.RealX;
+    return ic.RealX;
 }
 real Parameter::getRealY()
 {
-	return ic.RealY;
+    return ic.RealY;
 }
 unsigned int Parameter::getPressInID()
 {
-	return ic.PressInID;
+    return ic.PressInID;
 }
 unsigned int Parameter::getPressOutID()
 {
-	return ic.PressOutID;
+    return ic.PressOutID;
 }
 unsigned int Parameter::getPressInZ()
 {
-	return ic.PressInZ;
+    return ic.PressInZ;
 }
 unsigned int Parameter::getPressOutZ()
 {
-	return ic.PressOutZ;
+    return ic.PressOutZ;
 }
 int Parameter::getMaxDev()
 {
-	return ic.maxdev;
+    return ic.maxdev;
 }
-int Parameter::getMyID()
+int Parameter::getMyProcessID()
 {
-	return ic.myid;
+    return ic.myProcessId;
 }
 int Parameter::getNumprocs()
 {
-	return ic.numprocs;
+    return ic.numprocs;
 }
 std::vector<uint> Parameter::getDevices()
 {
-	return ic.devices;
+    return ic.devices;
 }
 std::string Parameter::getGeometryFileC()
 {
-	return ic.geometryFileC;
+    return ic.geometryFileC;
 }
 std::string Parameter::getGeometryFileM()
 {
-	return ic.geometryFileM;
+    return ic.geometryFileM;
 }
 std::string Parameter::getGeometryFileF()
 {
-	return ic.geometryFileF;
+    return ic.geometryFileF;
 }
 real Parameter::getRe()
 {
-	return ic.Re;
+    return ic.Re;
 }
 real Parameter::getFactorPressBC()
 {
-	return ic.factorPressBC;
+    return ic.factorPressBC;
 }
 std::vector<int> Parameter::getGridX()
 {
-	return ic.GridX;
+    return ic.GridX;
 }
 std::vector<int> Parameter::getGridY()
 {
-	return ic.GridY;
+    return ic.GridY;
 }
 std::vector<int> Parameter::getGridZ()
 {
-	return ic.GridZ;
+    return ic.GridZ;
 }
 std::vector<int> Parameter::getDistX()
 {
-	return ic.DistX;
+    return ic.DistX;
 }
 std::vector<int> Parameter::getDistY()
 {
-	return ic.DistY;
+    return ic.DistY;
 }
 std::vector<int> Parameter::getDistZ()
 {
-	return ic.DistZ;
+    return ic.DistZ;
 }
 std::vector<real> Parameter::getScaleLBMtoSI()
 {
-	return ic.scaleLBMtoSI;
+    return ic.scaleLBMtoSI;
 }
 std::vector<real> Parameter::getTranslateLBMtoSI()
 {
-	return ic.translateLBMtoSI;
+    return ic.translateLBMtoSI;
 }
 std::vector<real> Parameter::getMinCoordX()
 {
-	return ic.minCoordX;
+    return ic.minCoordX;
 }
 std::vector<real> Parameter::getMinCoordY()
 {
-	return ic.minCoordY;
+    return ic.minCoordY;
 }
 std::vector<real> Parameter::getMinCoordZ()
 {
-	return ic.minCoordZ;
+    return ic.minCoordZ;
 }
 std::vector<real> Parameter::getMaxCoordX()
 {
-	return ic.maxCoordX;
+    return ic.maxCoordX;
 }
 std::vector<real> Parameter::getMaxCoordY()
 {
-	return ic.maxCoordY;
+    return ic.maxCoordY;
 }
 std::vector<real> Parameter::getMaxCoordZ()
 {
-	return ic.maxCoordZ;
+    return ic.maxCoordZ;
 }
-TempforBoundaryConditions* Parameter::getTempH()
+TempforBoundaryConditions *Parameter::getTempH()
 {
-	return this->TempH;
+    return this->TempH;
 }
-TempforBoundaryConditions* Parameter::getTempD()
+TempforBoundaryConditions *Parameter::getTempD()
 {
-	return this->TempD;
+    return this->TempD;
 }
-TempVelforBoundaryConditions* Parameter::getTempVelH()
+TempVelforBoundaryConditions *Parameter::getTempVelH()
 {
-	return this->TempVelH;
+    return this->TempVelH;
 }
-TempVelforBoundaryConditions* Parameter::getTempVelD()
+TempVelforBoundaryConditions *Parameter::getTempVelD()
 {
-	return this->TempVelD;
+    return this->TempVelD;
 }
-TempPressforBoundaryConditions* Parameter::getTempPressH()
+TempPressforBoundaryConditions *Parameter::getTempPressH()
 {
-	return this->TempPressH;
+    return this->TempPressH;
 }
-TempPressforBoundaryConditions* Parameter::getTempPressD()
+TempPressforBoundaryConditions *Parameter::getTempPressD()
 {
-	return this->TempPressD;
+    return this->TempPressD;
 }
-std::vector<SPtr<PreCollisionInteractor>> Parameter::getActuators()
-{
-	return actuators;
-}
-std::vector<SPtr<PreCollisionInteractor>> Parameter::getProbes()
-{
-	return probes;
-}
-//unsigned int Parameter::getkInflowQ()
-//{
-//   return this->kInflowQ;
-//}
-//unsigned int Parameter::getkOutflowQ()
-//{
-//   return this->kOutflowQ;
-//}
-//QforBoundaryConditions* Parameter::getQinflowH()
+// QforBoundaryConditions* Parameter::getQinflowH()
 //{
 //   return this->QinflowH;
 //}
-//QforBoundaryConditions* Parameter::getQinflowD()
+// QforBoundaryConditions* Parameter::getQinflowD()
 //{
 //   return this->QinflowD;
 //}
-//QforBoundaryConditions* Parameter::getQoutflowH()
+// QforBoundaryConditions* Parameter::getQoutflowH()
 //{
 //   return this->QoutflowH;
 //}
-//QforBoundaryConditions* Parameter::getQoutflowD()
+// QforBoundaryConditions* Parameter::getQoutflowD()
 //{
 //   return this->QoutflowD;
 //}
 std::string Parameter::getkFull()
 {
-	return ic.kFull;
+    return ic.kFull;
 }
 std::string Parameter::getgeoFull()
 {
-	return ic.geoFull;
+    return ic.geoFull;
 }
 std::string Parameter::getgeoVec()
 {
-	return ic.geoVec;
+    return ic.geoVec;
 }
 std::string Parameter::getcoordX()
 {
-	return ic.coordX;
+    return ic.coordX;
 }
 std::string Parameter::getcoordY()
 {
-	return ic.coordY;
+    return ic.coordY;
 }
 std::string Parameter::getcoordZ()
 {
-	return ic.coordZ;
+    return ic.coordZ;
 }
 std::string Parameter::getneighborX()
 {
-	return ic.neighborX;
+    return ic.neighborX;
 }
 std::string Parameter::getneighborY()
 {
-	return ic.neighborY;
+    return ic.neighborY;
 }
 std::string Parameter::getneighborZ()
 {
-	return ic.neighborZ;
+    return ic.neighborZ;
 }
 std::string Parameter::getneighborWSB()
 {
-	return ic.neighborWSB;
+    return ic.neighborWSB;
 }
 std::string Parameter::getscaleCFC()
 {
-	return ic.scaleCFC;
+    return ic.scaleCFC;
 }
 std::string Parameter::getscaleCFF()
 {
-	return ic.scaleCFF;
+    return ic.scaleCFF;
 }
 std::string Parameter::getscaleFCC()
 {
-	return ic.scaleFCC;
+    return ic.scaleFCC;
 }
 std::string Parameter::getscaleFCF()
 {
-	return ic.scaleFCF;
+    return ic.scaleFCF;
 }
 std::string Parameter::getscaleOffsetCF()
 {
-	return ic.scaleOffsetCF;
+    return ic.scaleOffsetCF;
 }
 std::string Parameter::getscaleOffsetFC()
 {
-	return ic.scaleOffsetFC;
+    return ic.scaleOffsetFC;
 }
 std::string Parameter::getgeomBoundaryBcQs()
 {
-	return ic.geomBoundaryBcQs;
+    return ic.geomBoundaryBcQs;
 }
 std::string Parameter::getgeomBoundaryBcValues()
 {
-	return ic.geomBoundaryBcValues;
+    return ic.geomBoundaryBcValues;
 }
 std::string Parameter::getnoSlipBcPos()
 {
-	return ic.noSlipBcPos;
+    return ic.noSlipBcPos;
 }
 std::string Parameter::getnoSlipBcQs()
 {
-	return ic.noSlipBcQs;
+    return ic.noSlipBcQs;
 }
 std::string Parameter::getnoSlipBcValue()
 {
-	return ic.noSlipBcValue;
+    return ic.noSlipBcValue;
 }
 std::string Parameter::getnoSlipBcValues()
 {
-	return ic.noSlipBcValues;
+    return ic.noSlipBcValues;
 }
 std::string Parameter::getslipBcPos()
 {
-	return ic.slipBcPos;
+    return ic.slipBcPos;
 }
 std::string Parameter::getslipBcQs()
 {
-	return ic.slipBcQs;
+    return ic.slipBcQs;
 }
 std::string Parameter::getslipBcValue()
 {
-	return ic.slipBcValue;
+    return ic.slipBcValue;
 }
 std::string Parameter::getpressBcPos()
 {
-	return ic.pressBcPos;
+    return ic.pressBcPos;
 }
 std::string Parameter::getpressBcQs()
 {
-	return ic.pressBcQs;
+    return ic.pressBcQs;
 }
 std::string Parameter::getpressBcValue()
 {
-	return ic.pressBcValue;
+    return ic.pressBcValue;
 }
 std::string Parameter::getpressBcValues()
 {
-	return ic.pressBcValues;
+    return ic.pressBcValues;
 }
 std::string Parameter::getvelBcQs()
 {
-	return ic.velBcQs;
+    return ic.velBcQs;
 }
 std::string Parameter::getvelBcValues()
 {
-	return ic.velBcValues;
+    return ic.velBcValues;
 }
 std::string Parameter::getinletBcQs()
 {
-	return ic.inletBcQs;
+    return ic.inletBcQs;
 }
 std::string Parameter::getinletBcValues()
 {
-	return ic.inletBcValues;
+    return ic.inletBcValues;
 }
 std::string Parameter::getoutletBcQs()
 {
-	return ic.outletBcQs;
+    return ic.outletBcQs;
 }
 std::string Parameter::getoutletBcValues()
 {
-	return ic.outletBcValues;
+    return ic.outletBcValues;
 }
 std::string Parameter::gettopBcQs()
 {
-	return ic.topBcQs;
+    return ic.topBcQs;
 }
 std::string Parameter::gettopBcValues()
 {
-	return ic.topBcValues;
+    return ic.topBcValues;
 }
 std::string Parameter::getbottomBcQs()
 {
-	return ic.bottomBcQs;
+    return ic.bottomBcQs;
 }
 std::string Parameter::getbottomBcValues()
 {
-	return ic.bottomBcValues;
+    return ic.bottomBcValues;
 }
 std::string Parameter::getfrontBcQs()
 {
-	return ic.frontBcQs;
+    return ic.frontBcQs;
 }
 std::string Parameter::getfrontBcValues()
 {
-	return ic.frontBcValues;
+    return ic.frontBcValues;
 }
 std::string Parameter::getbackBcQs()
 {
-	return ic.backBcQs;
+    return ic.backBcQs;
 }
 std::string Parameter::getbackBcValues()
 {
-	return ic.backBcValues;
+    return ic.backBcValues;
 }
 std::string Parameter::getwallBcQs()
 {
-	return ic.wallBcQs;
+    return ic.wallBcQs;
 }
 std::string Parameter::getwallBcValues()
 {
-	return ic.wallBcValues;
+    return ic.wallBcValues;
 }
 std::string Parameter::getperiodicBcQs()
 {
-	return ic.periodicBcQs;
+    return ic.periodicBcQs;
 }
 std::string Parameter::getperiodicBcValues()
 {
-	return ic.periodicBcValues;
+    return ic.periodicBcValues;
 }
 std::string Parameter::getpropellerQs()
 {
-	return ic.propellerQs;
+    return ic.propellerQs;
 }
 std::string Parameter::getpropellerValues()
 {
-	return ic.propellerValues;
+    return ic.propellerValues;
 }
 std::string Parameter::getpropellerCylinder()
 {
-	return ic.propellerCylinder;
+    return ic.propellerCylinder;
 }
 std::string Parameter::getmeasurePoints()
 {
-	return ic.measurePoints;
+    return ic.measurePoints;
 }
 std::string Parameter::getLBMvsSI()
 {
-	return ic.LBMvsSI;
+    return ic.LBMvsSI;
 }
 std::string Parameter::getnumberNodes()
 {
-	return ic.numberNodes;
+    return ic.numberNodes;
 }
 std::string Parameter::getcpTop()
 {
-	return ic.cpTop;
+    return ic.cpTop;
 }
 std::string Parameter::getcpBottom()
 {
-	return ic.cpBottom;
+    return ic.cpBottom;
 }
 std::string Parameter::getcpBottom2()
 {
-	return ic.cpBottom2;
+    return ic.cpBottom2;
 }
 std::string Parameter::getConcentration()
 {
-	return ic.concentration;
+    return ic.concentration;
 }
 std::string Parameter::getStreetVelocityFilePath()
 {
-	return ic.streetVelocity;
+    return ic.streetVelocity;
 }
 real Parameter::getclockCycleForMP()
 {
-	return ic.clockCycleForMP;
+    return ic.clockCycleForMP;
 }
 unsigned int Parameter::getTimeDoCheckPoint()
 {
-	return ic.tDoCheckPoint;
+    return ic.tDoCheckPoint;
 }
 unsigned int Parameter::getTimeDoRestart()
 {
-	return ic.tDoRestart;
+    return ic.tDoRestart;
 }
+
+//=======================================================================================
+//! \brief Get current (sub)time step of a given level.
+//! \param level 
+//! \param t current time step (of level 0)
+//! \param isPostCollision whether getTimeStep is called post- (before swap) or pre- (after swap) collision
+//!
+unsigned int Parameter::getTimeStep(int level, unsigned int t, bool isPostCollision)
+{
+    if(level>this->getMaxLevel()) throw std::runtime_error("Parameter::getTimeStep: level>this->getMaxLevel()!");
+	unsigned int tLevel = t;                                                                  
+    if(level>0)
+    {
+        for(int i=1; i<level; i++){ tLevel = 1 + 2*(tLevel-1) + !this->getEvenOrOdd(i); }     
+        bool addOne = isPostCollision? !this->getEvenOrOdd(level): this->getEvenOrOdd(level); 
+        tLevel = 1 + 2*(tLevel-1) + addOne;
+    }
+	return tLevel;
+}
+
 bool Parameter::getDoCheckPoint()
 {
-	return ic.doCheckPoint;
+    return ic.doCheckPoint;
 }
 bool Parameter::getDoRestart()
 {
-	return ic.doRestart;
+    return ic.doRestart;
 }
 bool Parameter::getIsGeo()
 {
-	return ic.isGeo;
+    return ic.isGeo;
 }
 bool Parameter::getIsGeoNormal()
 {
-	return ic.isGeoNormal;
+    return ic.isGeoNormal;
 }
 bool Parameter::getIsInflowNormal()
 {
-	return ic.isInflowNormal;
+    return ic.isInflowNormal;
 }
 bool Parameter::getIsOutflowNormal()
 {
-	return ic.isOutflowNormal;
+    return ic.isOutflowNormal;
 }
 bool Parameter::getIsCp()
 {
-	return ic.isCp;
+    return ic.isCp;
 }
 bool Parameter::getConcFile()
 {
-	return ic.isConc;
+    return ic.isConc;
 }
 bool Parameter::isStreetVelocityFile()
 {
-	return ic.streetVelocityFile;
+    return ic.streetVelocityFile;
 }
 bool Parameter::getUseMeasurePoints()
 {
-	return ic.isMeasurePoints;
+    return ic.isMeasurePoints;
 }
 bool Parameter::getUseWale()
 {
-	return ic.isWale;
+    return ic.isWale;
+}
+TurbulenceModel Parameter::getTurbulenceModel()
+{
+    return ic.turbulenceModel;
+}
+bool Parameter::getUseTurbulentViscosity()
+{
+    return ic.isTurbulentViscosity;
+}
+real Parameter::getSGSConstant()
+{
+    return ic.SGSConstant;
+}
+bool Parameter::getHasWallModelMonitor()
+{
+    return ic.hasWallModelMonitor;
+}
+std::vector<SPtr<PreCollisionInteractor>> Parameter::getActuators()
+{
+    return actuators;
+}
+std::vector<SPtr<PreCollisionInteractor>> Parameter::getProbes()
+{
+    return probes;
 }
 bool Parameter::getUseInitNeq()
 {
-	return ic.isInitNeq;
+    return ic.isInitNeq;
 }
 bool Parameter::getSimulatePorousMedia()
 {
-	return ic.simulatePorousMedia;
+    return ic.simulatePorousMedia;
 }
 
 bool Parameter::getIsF3()
 {
-	return this->isF3; 
+    return this->isF3;
 }
 
-bool Parameter::getIsBodyForce() 
-{ 
-	return this->isBodyForce; 
+bool Parameter::getIsBodyForce()
+{
+    return this->isBodyForce;
 }
 
 bool Parameter::getIsGeometryValues()
 {
-	return ic.GeometryValues;
+    return ic.GeometryValues;
 }
 bool Parameter::getCalc2ndOrderMoments()
 {
-	return ic.is2ndOrderMoments;
+    return ic.is2ndOrderMoments;
 }
 bool Parameter::getCalc3rdOrderMoments()
 {
-	return ic.is3rdOrderMoments;
+    return ic.is3rdOrderMoments;
 }
 bool Parameter::getCalcHighOrderMoments()
 {
-	return ic.isHighOrderMoments;
+    return ic.isHighOrderMoments;
 }
 bool Parameter::getIsProp()
 {
-	return ic.isProp;
+    return ic.isProp;
 }
 bool Parameter::overWritingRestart(uint t)
 {
-	return t == getTimeDoRestart();
+    return t == getTimeDoRestart();
 }
 unsigned int Parameter::getTimestepForMP()
 {
-	return ic.timeStepForMP;
+    return ic.timeStepForMP;
 }
 unsigned int Parameter::getTimestepOfCoarseLevel()
 {
-	return this->timestep;
+    return this->timestep;
 }
 double Parameter::getMemsizeGPU()
 {
-	return this->memsizeGPU;
+    return this->memsizeGPU;
 }
-//1D domain decomposition
+// 1D domain decomposition
 std::vector<std::string> Parameter::getPossNeighborFiles(std::string sor)
 {
-	if (sor=="send")
-	{
-		return this->possNeighborFilesSend;
-	} 
-	else if (sor == "recv")
-	{
-		return this->possNeighborFilesRecv;
-	}
+    if (sor == "send") {
+        return this->possNeighborFilesSend;
+    } else if (sor == "recv") {
+        return this->possNeighborFilesRecv;
+    }
     throw std::runtime_error("Parameter string invalid.");
 }
 unsigned int Parameter::getNumberOfProcessNeighbors(int level, std::string sor)
 {
-	if (sor=="send")
-	{
-		return (unsigned int)parH[level]->sendProcessNeighbor.size();
-	} 
-	else if (sor == "recv")
-	{
-		return (unsigned int)parH[level]->recvProcessNeighbor.size();
-	}
+    if (sor == "send") {
+        return (unsigned int)parH[level]->sendProcessNeighbor.size();
+    } else if (sor == "recv") {
+        return (unsigned int)parH[level]->recvProcessNeighbor.size();
+    }
     throw std::runtime_error("Parameter string invalid.");
 }
 bool Parameter::getIsNeighbor()
 {
-	return this->isNeigbor;
+    return this->isNeigbor;
 }
-//3D domain decomposition
+// 3D domain decomposition
 std::vector<std::string> Parameter::getPossNeighborFilesX(std::string sor)
 {
-	if (sor=="send")
-	{
-		return this->possNeighborFilesSendX;
-	} 
-	else if (sor == "recv")
-	{
-		return this->possNeighborFilesRecvX;
-	}
+    if (sor == "send") {
+        return this->possNeighborFilesSendX;
+    } else if (sor == "recv") {
+        return this->possNeighborFilesRecvX;
+    }
     throw std::runtime_error("Parameter string invalid.");
 }
 std::vector<std::string> Parameter::getPossNeighborFilesY(std::string sor)
 {
-	if (sor=="send")
-	{
-		return this->possNeighborFilesSendY;
-	} 
-	else if (sor == "recv")
-	{
-		return this->possNeighborFilesRecvY;
-	}
+    if (sor == "send") {
+        return this->possNeighborFilesSendY;
+    } else if (sor == "recv") {
+        return this->possNeighborFilesRecvY;
+    }
     throw std::runtime_error("Parameter string invalid.");
 }
 std::vector<std::string> Parameter::getPossNeighborFilesZ(std::string sor)
 {
-	if (sor=="send")
-	{
-		return this->possNeighborFilesSendZ;
-	} 
-	else if (sor == "recv")
-	{
-		return this->possNeighborFilesRecvZ;
-	}
+    if (sor == "send") {
+        return this->possNeighborFilesSendZ;
+    } else if (sor == "recv") {
+        return this->possNeighborFilesRecvZ;
+    }
     throw std::runtime_error("Parameter string invalid.");
 }
 unsigned int Parameter::getNumberOfProcessNeighborsX(int level, std::string sor)
 {
-	if (sor=="send")
-	{
-		return (unsigned int)parH[level]->sendProcessNeighborX.size();
-	} 
-	else if (sor == "recv")
-	{
-		return (unsigned int)parH[level]->recvProcessNeighborX.size();
-	}
-    throw std::runtime_error("Parameter string invalid.");
+    if (sor == "send") {
+        return (unsigned int)parH[level]->sendProcessNeighborX.size();
+    } else if (sor == "recv") {
+        return (unsigned int)parH[level]->recvProcessNeighborX.size();
+    }
+    throw std::runtime_error("getNumberOfProcessNeighborsX: Parameter string invalid.");
 }
 unsigned int Parameter::getNumberOfProcessNeighborsY(int level, std::string sor)
 {
-	if (sor=="send")
-	{
-		return (unsigned int)parH[level]->sendProcessNeighborY.size();
-	} 
-	else if (sor == "recv")
-	{
-		return (unsigned int)parH[level]->recvProcessNeighborY.size();
-	}
-    throw std::runtime_error("Parameter string invalid.");
+    if (sor == "send") {
+        return (unsigned int)parH[level]->sendProcessNeighborY.size();
+    } else if (sor == "recv") {
+        return (unsigned int)parH[level]->recvProcessNeighborY.size();
+    }
+    throw std::runtime_error("getNumberOfProcessNeighborsY: Parameter string invalid.");
 }
 unsigned int Parameter::getNumberOfProcessNeighborsZ(int level, std::string sor)
 {
-	if (sor=="send")
-	{
-		return (unsigned int)parH[level]->sendProcessNeighborZ.size();
-	} 
-	else if (sor == "recv")
-	{
-		return (unsigned int)parH[level]->recvProcessNeighborZ.size();
-	}
-    throw std::runtime_error("Parameter string invalid.");
+    if (sor == "send") {
+        return (unsigned int)parH[level]->sendProcessNeighborZ.size();
+    } else if (sor == "recv") {
+        return (unsigned int)parH[level]->recvProcessNeighborZ.size();
+    }
+    throw std::runtime_error("getNumberOfProcessNeighborsZ: Parameter string invalid.");
 }
 
 bool Parameter::getIsNeighborX()
 {
-	return this->isNeigborX;
+    return this->isNeigborX;
 }
 bool Parameter::getIsNeighborY()
 {
-	return this->isNeigborY;
+    return this->isNeigborY;
 }
 bool Parameter::getIsNeighborZ()
 {
-	return this->isNeigborZ;
+    return this->isNeigborZ;
 }
 std::string Parameter::getgeomBoundaryNormalX()
 {
-	return ic.geomNormalX;
+    return ic.geomNormalX;
 }
 std::string Parameter::getgeomBoundaryNormalY()
 {
-	return ic.geomNormalY;
+    return ic.geomNormalY;
 }
 std::string Parameter::getgeomBoundaryNormalZ()
 {
-	return ic.geomNormalZ;
+    return ic.geomNormalZ;
 }
 std::string Parameter::getInflowBoundaryNormalX()
 {
-	return ic.inflowNormalX;
+    return ic.inflowNormalX;
 }
 std::string Parameter::getInflowBoundaryNormalY()
 {
-	return ic.inflowNormalY;
+    return ic.inflowNormalY;
 }
 std::string Parameter::getInflowBoundaryNormalZ()
 {
-	return ic.inflowNormalZ;
+    return ic.inflowNormalZ;
 }
 std::string Parameter::getOutflowBoundaryNormalX()
 {
-	return ic.outflowNormalX;
+    return ic.outflowNormalX;
 }
 std::string Parameter::getOutflowBoundaryNormalY()
 {
-	return ic.outflowNormalY;
+    return ic.outflowNormalY;
 }
 std::string Parameter::getOutflowBoundaryNormalZ()
 {
-	return ic.outflowNormalZ;
+    return ic.outflowNormalZ;
 }
-curandState* Parameter::getRandomState()
+curandState *Parameter::getRandomState()
 {
-	return this->devState;
+    return this->devState;
 }
 
 std::string Parameter::getMainKernel()
 {
-	return mainKernel;
+    return mainKernel;
 }
 bool Parameter::getMultiKernelOn()
 {
-	return multiKernelOn;
+    return multiKernelOn;
 }
-std::vector< int> Parameter::getMultiKernelLevel()
+std::vector<int> Parameter::getMultiKernelLevel()
 {
-	return multiKernelLevel;
+    return multiKernelLevel;
 }
 std::vector<std::string> Parameter::getMultiKernel()
 {
-	return multiKernel;
+    return multiKernel;
 }
 std::string Parameter::getADKernel()
 {
-	return adKernel;
+    return adKernel;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void Parameter::setInitialCondition(std::function<void(real,real,real,real&,real&,real&,real&)> initialCondition)
+// initial condition fluid
+void Parameter::setInitialCondition(
+    std::function<void(real, real, real, real &, real &, real &, real &)> initialCondition)
 {
     this->initialCondition = initialCondition;
 }
 
-std::function<void(real,real,real,real&,real&,real&,real&)>& Parameter::getInitialCondition()
+std::function<void(real, real, real, real &, real &, real &, real &)> &Parameter::getInitialCondition()
 {
     return this->initialCondition;
 }
 
+// initial condition concentration
+void Parameter::setInitialConditionAD(std::function<void(real, real, real, real&)> initialConditionAD)
+{
+    this->initialConditionAD = initialConditionAD;
+}
+
+std::function<void(real, real, real, real&)>& Parameter::getInitialConditionAD()
+{
+    return this->initialConditionAD;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 real Parameter::TrafoXtoWorld(int CoordX, int level)
 {
-	return (parH[level]->mTtoWx*CoordX+parH[level]->cTtoWx);
+    return (parH[level]->mTtoWx * CoordX + parH[level]->cTtoWx);
 }
 real Parameter::TrafoYtoWorld(int CoordY, int level)
 {
-	return (parH[level]->mTtoWy*CoordY+parH[level]->cTtoWy);
+    return (parH[level]->mTtoWy * CoordY + parH[level]->cTtoWy);
 }
 real Parameter::TrafoZtoWorld(int CoordZ, int level)
 {
-	return (parH[level]->mTtoWz*CoordZ+parH[level]->cTtoWz);
+    return (parH[level]->mTtoWz * CoordZ + parH[level]->cTtoWz);
 }
 real Parameter::TrafoXtoMGsWorld(int CoordX, int level)
 {
-	real temp = 0;
-	for (int i = 0; i <= level; i++)
-	{
-		temp += (parH[i]->XdistKn + 0.25f) * 2.f * parH[i]->dx;
-	}
-	temp += (real)((CoordX ) * parH[level]->dx);
-	return temp;
+    real temp = 0;
+    for (int i = 0; i <= level; i++) {
+        temp += (parH[i]->XdistKn + 0.25f) * 2.f * parH[i]->dx;
+    }
+    temp += (real)((CoordX)*parH[level]->dx);
+    return temp;
 }
 real Parameter::TrafoYtoMGsWorld(int CoordY, int level)
 {
-	real temp = 0;
-	for (int i = 0; i <= level; i++)
-	{
-		temp += (parH[i]->YdistKn + 0.25f) * 2.f * parH[i]->dx;
-	}
-	temp += (real)((CoordY ) * parH[level]->dx);
-	return temp;
+    real temp = 0;
+    for (int i = 0; i <= level; i++) {
+        temp += (parH[i]->YdistKn + 0.25f) * 2.f * parH[i]->dx;
+    }
+    temp += (real)((CoordY)*parH[level]->dx);
+    return temp;
 }
 real Parameter::TrafoZtoMGsWorld(int CoordZ, int level)
 {
-	real temp = 0;
-	for (int i = 0; i <= level; i++)
-	{
-		temp += (parH[i]->ZdistKn + 0.25f) * 2.f * parH[i]->dx;
-	}
-	temp += (real)((CoordZ) * parH[level]->dx);
-	return temp;
+    real temp = 0;
+    for (int i = 0; i <= level; i++) {
+        temp += (parH[i]->ZdistKn + 0.25f) * 2.f * parH[i]->dx;
+    }
+    temp += (real)((CoordZ)*parH[level]->dx);
+    return temp;
+}
+
+void Parameter::setUseStreams(bool useStreams)
+{
+    if (useStreams) {
+        if (this->getNumprocs() != 1) {
+            this->useStreams = useStreams;
+            this->cudaStreamManager = std::make_unique<CudaStreamManager>();
+            return;
+        } else {
+            std::cout << "Can't use streams with only one process!" << std::endl;
+        }
+    }
+    this->useStreams = false;
+}
+
+bool Parameter::getUseStreams()
+{
+    return this->useStreams;
+}
+
+std::unique_ptr<CudaStreamManager> &Parameter::getStreamManager()
+{
+    return this->cudaStreamManager;
+}
+
+bool Parameter::getKernelNeedsFluidNodeIndicesToRun()
+{
+    return this->kernelNeedsFluidNodeIndicesToRun;
+}
+
+void Parameter::setKernelNeedsFluidNodeIndicesToRun(bool  kernelNeedsFluidNodeIndicesToRun){
+    this->kernelNeedsFluidNodeIndicesToRun = kernelNeedsFluidNodeIndicesToRun;
+}
+
+void Parameter::initProcessNeighborsAfterFtoCX(int level)
+{
+    this->getParH(level)->sendProcessNeighborsAfterFtoCX.resize(this->getParH(level)->sendProcessNeighborX.size());
+    this->getParH(level)->recvProcessNeighborsAfterFtoCX.resize(this->getParH(level)->recvProcessNeighborX.size());
+    this->getParD(level)->sendProcessNeighborsAfterFtoCX.resize(
+        this->getParH(level)->sendProcessNeighborsAfterFtoCX.size());
+    this->getParD(level)->recvProcessNeighborsAfterFtoCX.resize(
+        this->getParH(level)->recvProcessNeighborsAfterFtoCX.size());
+}
+
+void Parameter::initProcessNeighborsAfterFtoCY(int level)
+{
+    this->getParH(level)->sendProcessNeighborsAfterFtoCY.resize(this->getParH(level)->sendProcessNeighborY.size());
+    this->getParH(level)->recvProcessNeighborsAfterFtoCY.resize(this->getParH(level)->recvProcessNeighborY.size());
+    this->getParD(level)->sendProcessNeighborsAfterFtoCY.resize(
+        this->getParH(level)->sendProcessNeighborsAfterFtoCY.size());
+    this->getParD(level)->recvProcessNeighborsAfterFtoCY.resize(
+        this->getParH(level)->recvProcessNeighborsAfterFtoCY.size());
+}
+
+void Parameter::initProcessNeighborsAfterFtoCZ(int level)
+{
+    this->getParH(level)->sendProcessNeighborsAfterFtoCZ.resize(this->getParH(level)->sendProcessNeighborZ.size());
+    this->getParH(level)->recvProcessNeighborsAfterFtoCZ.resize(this->getParH(level)->recvProcessNeighborZ.size());
+    this->getParD(level)->sendProcessNeighborsAfterFtoCZ.resize(
+        this->getParH(level)->sendProcessNeighborsAfterFtoCZ.size());
+    this->getParD(level)->recvProcessNeighborsAfterFtoCZ.resize(
+        this->getParH(level)->recvProcessNeighborsAfterFtoCZ.size());
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

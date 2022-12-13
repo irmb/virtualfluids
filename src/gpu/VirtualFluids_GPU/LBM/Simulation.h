@@ -3,15 +3,12 @@
 
 #include <memory>
 #include <vector>
+
 #include <PointerDefinitions.h>
 
-#include "Output/LogWriter.hpp"
-#include "GPU/KineticEnergyAnalyzer.h"
-#include "GPU/EnstrophyAnalyzer.h"
 #include "Utilities/Buffer2D.hpp"
 #include "LBM/LB.h"
 
-#include "VirtualFluids_GPU_export.h"
 
 namespace vf::gpu { class Communicator; }
 
@@ -28,48 +25,58 @@ class KernelFactory;
 class PreProcessor;
 class PreProcessorFactory;
 class TrafficMovementFactory;
+class UpdateGrid27;
+class KineticEnergyAnalyzer;
+class EnstrophyAnalyzer;
+class BoundaryConditionFactory;
+class GridScalingFactory;
+class TurbulenceModelFactory;
 
-class VIRTUALFLUIDS_GPU_EXPORT Simulation
+class Simulation
 {
 public:
-	Simulation(vf::gpu::Communicator& communicator);
-	void run();
-	void init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std::shared_ptr<DataWriter> dataWriter, std::shared_ptr<CudaMemoryManager> cudaManager);
-	void free();
-	void bulk();
-	void porousMedia();
-	void definePMarea(std::shared_ptr<PorousMedia> pm);
+    Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> memoryManager,
+               vf::gpu::Communicator &communicator, GridProvider &gridProvider, BoundaryConditionFactory* bcFactory, GridScalingFactory* scalingFactory = nullptr);	
+	Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> memoryManager,
+               vf::gpu::Communicator &communicator, GridProvider &gridProvider, BoundaryConditionFactory* bcFactory, SPtr<TurbulenceModelFactory> tmFactory, GridScalingFactory* scalingFactory = nullptr);
 
-	void setFactories(std::shared_ptr<KernelFactory> kernelFactory, std::shared_ptr<PreProcessorFactory> preProcessorFactory);
+    ~Simulation();
+    void run();
 
-    void addKineticEnergyAnalyzer( uint tAnalyse );
-    void addEnstrophyAnalyzer    ( uint tAnalyse );
+    void setFactories(std::unique_ptr<KernelFactory> &&kernelFactory,
+               std::unique_ptr<PreProcessorFactory> &&preProcessorFactory);
+    void setDataWriter(std::shared_ptr<DataWriter> dataWriter);
+    void addKineticEnergyAnalyzer(uint tAnalyse);
+    void addEnstrophyAnalyzer(uint tAnalyse);
 
-protected:
-	std::shared_ptr<KernelFactory> kernelFactory;
+private:
+	void init(GridProvider &gridProvider, BoundaryConditionFactory *bcFactory, SPtr<TurbulenceModelFactory> tmFactory, GridScalingFactory *scalingFactory);
+    void allocNeighborsOffsetsScalesAndBoundaries(GridProvider& gridProvider);
+    void porousMedia();
+    void definePMarea(std::shared_ptr<PorousMedia>& pm);
+
+	std::unique_ptr<KernelFactory> kernelFactory;
 	std::shared_ptr<PreProcessorFactory> preProcessorFactory;
 
-	Buffer2D <real> sbuf_t; 
+	Buffer2D <real> sbuf_t;
 	Buffer2D <real> rbuf_t;
 	Buffer2D <real> sbuf_b;
 	Buffer2D <real> rbuf_b;
 
-	Buffer2D <int> geo_sbuf_t; 
+	Buffer2D <int> geo_sbuf_t;
 	Buffer2D <int> geo_rbuf_t;
 	Buffer2D <int> geo_sbuf_b;
 	Buffer2D <int> geo_rbuf_b;
 
 
-	LogWriter output;
-
 	vf::gpu::Communicator& communicator;
     SPtr<Parameter> para;
-    SPtr<GridProvider> gridProvider;
-    SPtr<DataWriter> dataWriter;
-	SPtr<CudaMemoryManager> cudaManager;
+    std::shared_ptr<DataWriter> dataWriter;
+	std::shared_ptr<CudaMemoryManager> cudaMemoryManager;
 	std::vector < SPtr< Kernel>> kernels;
 	std::vector < SPtr< ADKernel>> adKernels;
 	std::shared_ptr<PreProcessor> preProcessor;
+	SPtr<TurbulenceModelFactory> tmFactory;
 
     SPtr<RestartObject> restart_object;
 
@@ -82,27 +89,25 @@ protected:
 	//PorousMedia* pm1;
 	//PorousMedia* pm2;
 
+    // TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
 	//KQ - Schlaff
-	unsigned int            kNQ, kSQ, kEQ, kWQ;
-	QforBoundaryConditions  QnH, QnD;
-	QforBoundaryConditions  QsH, QsD;
-	QforBoundaryConditions  QeH, QeD;
-	QforBoundaryConditions  QwH, QwD;
-	real *VxNH,          *VyNH,       *VzNH,       *deltaVNH;
-	real *VxND,          *VyND,       *VzND,       *deltaVND;
-	real *VxSH,          *VySH,       *VzSH,       *deltaVSH;
-	real *VxSD,          *VySD,       *VzSD,       *deltaVSD;
-	real *VxEH,          *VyEH,       *VzEH,       *deltaVEH;
-	real *VxED,          *VyED,       *VzED,       *deltaVED;
-	real *VxWH,          *VyWH,       *VzWH,       *deltaVWH;
-	real *VxWD,          *VyWD,       *VzWD,       *deltaVWD;
+	// unsigned int            kNQ, kSQ, kEQ, kWQ;
+	// QforBoundaryConditions  QnH, QnD;
+	// QforBoundaryConditions  QsH, QsD;
+	// QforBoundaryConditions  QeH, QeD;
+	// QforBoundaryConditions  QwH, QwD;
+	// real *VxNH,          *VyNH,       *VzNH,       *deltaVNH;
+	// real *VxND,          *VyND,       *VzND,       *deltaVND;
+	// real *VxSH,          *VySH,       *VzSH,       *deltaVSH;
+	// real *VxSD,          *VySD,       *VzSD,       *deltaVSD;
+	// real *VxEH,          *VyEH,       *VzEH,       *deltaVEH;
+	// real *VxED,          *VyED,       *VzED,       *deltaVED;
+	// real *VxWH,          *VyWH,       *VzWH,       *deltaVWH;
+	// real *VxWD,          *VyWD,       *VzWD,       *deltaVWD;
 
 
-	////////////////////////////////////////////////////////////////////////////
-	SPtr<KineticEnergyAnalyzer> kineticEnergyAnalyzer;
-	////////////////////////////////////////////////////////////////////////////
-	SPtr<EnstrophyAnalyzer> enstrophyAnalyzer;
-	////////////////////////////////////////////////////////////////////////////
-
- };
+    std::unique_ptr<KineticEnergyAnalyzer> kineticEnergyAnalyzer;
+    std::unique_ptr<EnstrophyAnalyzer> enstrophyAnalyzer;
+    std::unique_ptr<UpdateGrid27> updateGrid27;
+};
 #endif

@@ -36,6 +36,7 @@
 #include "global.h"
 
 #include "geometries/Cuboid/Cuboid.h"
+#include "geometries/TriangularMesh/TriangularMeshStrategy.h"
 
 #include "grid/GridImp.h"
 
@@ -54,8 +55,33 @@ public:
 
     SPtr<Grid> makeGrid(Object* gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, uint level, const std::string& d3Qxx = "D3Q27")
     {
-        return GridImp::makeShared(gridShape, startX, startY, startZ, endX, endY, endZ, delta, d3Qxx, level);
+        SPtr<GridImp> grid;
+        
+        grid = GridImp::makeShared(gridShape, startX, startY, startZ, endX, endY, endZ, delta, d3Qxx, level);
+
+        grid->setTriangularMeshDiscretizationStrategy(new PointInObjectDiscretizationStrategy());
+
+        return grid;
     }
+
+    void setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod triangularMeshDiscretizationMethod)
+    {
+        switch (triangularMeshDiscretizationMethod)
+        {
+        case TriangularMeshDiscretizationMethod::POINT_UNDER_TRIANGLE:
+            triangularMeshDiscretizationStrategy = new PointUnderTriangleStrategy();
+            break;
+        case TriangularMeshDiscretizationMethod::RAYCASTING:
+            triangularMeshDiscretizationStrategy = new RayCastingDiscretizationStrategy();
+            break;
+        case TriangularMeshDiscretizationMethod::POINT_IN_OBJECT:
+            triangularMeshDiscretizationStrategy = new PointInObjectDiscretizationStrategy();
+            break;
+        }
+    }
+
+private:
+    TriangularMeshDiscretizationStrategy* triangularMeshDiscretizationStrategy;
 };
 
 

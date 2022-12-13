@@ -38,7 +38,6 @@ using namespace vf::gpu;
 
 Field::Field(uint size) : size(size)
 {
-    
 }
 
 void Field::allocateMemory()
@@ -115,7 +114,7 @@ bool Field::isStopperCoarseUnderFine(uint index) const
 
 bool Field::isStopperSolid(uint index) const
 {
-	return field[index] == STOPPER_SOLID;
+    return field[index] == STOPPER_SOLID;
 }
 
 bool Field::isStopper(uint index) const
@@ -130,7 +129,7 @@ bool Field::isQ(uint index) const
 
 bool Field::isBoundaryConditionNode(uint index) const
 {
-    return  field[index] == BC_SOLID || field[index] == BC_OUTFLOW || field[index] == BC_VELOCITY || field[index] == BC_PRESSURE || field[index] == BC_SLIP;
+    return  field[index] == BC_SOLID || field[index] == BC_OUTFLOW || field[index] == BC_VELOCITY || field[index] == BC_PRESSURE || field[index] == BC_SLIP || field[index] == BC_STRESS;
 }
 
 // --------------------------------------------------------- //

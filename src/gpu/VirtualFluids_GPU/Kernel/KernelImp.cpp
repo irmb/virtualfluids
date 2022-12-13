@@ -2,8 +2,13 @@
 
 #include "Kernel/Utilities/CheckParameterStrategy/CheckParameterStrategy.h"
 
-bool KernelImp::checkParameter() 
-{ 
+
+void KernelImp::runOnIndices(const unsigned int *indices, unsigned int size_indices, int stream)
+{
+    printf("Method not implemented for this Kernel \n");
+}
+
+bool KernelImp::checkParameter() { 
     return checkStrategy->checkParameter(para);
 }
 
@@ -20,6 +25,10 @@ KernelGroup KernelImp::getKernelGroup()
 void KernelImp::setCheckParameterStrategy(std::shared_ptr<CheckParameterStrategy> strategy)
 {
     this->checkStrategy = strategy;
+}
+
+bool KernelImp::getKernelUsesFluidNodeIndices(){
+    return this->kernelUsesFluidNodeIndices;
 }
 
 KernelImp::KernelImp(std::shared_ptr<Parameter> para, int level) : para(para), level(level) {}

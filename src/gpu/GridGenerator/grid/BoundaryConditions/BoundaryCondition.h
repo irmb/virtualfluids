@@ -36,9 +36,9 @@
 #include <vector>
 #include <functional>
 
-#include "global.h"
+#include "gpu/GridGenerator/global.h"
 
-#include "grid/NodeValues.h"
+#include "gpu/GridGenerator/grid/NodeValues.h"
 
 class Grid;
 
@@ -118,7 +118,7 @@ public:
     }
 
     void fillSlipNormalLists()
-    {
+    {   
         for (uint index : this->indices) {
             (void)index;
             this->normalXList.push_back(normalX);
@@ -134,6 +134,77 @@ public:
     real getNormalx(uint index) { return this->normalXList[index]; }
     real getNormaly(uint index) { return this->normalYList[index]; }
     real getNormalz(uint index) { return this->normalZList[index]; }
+};
+
+//////////////////////////////////////////////////////////////////////////
+
+class StressBoundaryCondition : public gg::BoundaryCondition
+{
+public:
+    static SPtr<StressBoundaryCondition> make(real normalX, real normalY, real normalZ, uint samplingOffset, real z0)
+    {
+        return SPtr<StressBoundaryCondition>(new StressBoundaryCondition(normalX, normalY, normalZ, samplingOffset, z0));
+    }
+
+    real normalX, normalY, normalZ;
+    uint samplingOffset;
+    real z0;
+    std::vector<real> normalXList, normalYList, normalZList;
+    std::vector<uint> samplingOffsetList;
+    std::vector<real> z0List;
+    std::vector<uint> velocitySamplingIndices;
+
+protected:
+    StressBoundaryCondition(real normalX, real normalY, real normalZ, uint samplingOffset, real z0) :   normalX(normalX), normalY(normalY), normalZ(normalZ), samplingOffset(samplingOffset), z0(z0){ }
+
+public:
+    virtual char getType() const override
+    {
+        return vf::gpu::BC_STRESS;
+    }
+    
+    void fillStressNormalLists()
+    {
+        for (uint index : this->indices) {
+            (void)index;
+            this->normalXList.push_back(normalX);
+            this->normalYList.push_back(normalY);
+            this->normalZList.push_back(normalZ);
+        }
+    }
+
+    void fillZ0Lists()
+    {
+        for (uint index : this->indices) {
+            (void)index;
+            this->z0List.push_back(z0);
+        }
+    }
+
+    void fillSamplingOffsetLists()
+    {
+        for (uint index : this->indices) {
+            (void)index;
+            this->samplingOffsetList.push_back(samplingOffset);
+        }
+    }
+
+    real getNormalx() { return this->normalX; }
+    real getNormaly() { return this->normalY; }
+    real getNormalz() { return this->normalZ; }
+
+    real getNormalx(uint index) { return this->normalXList[index]; }
+    real getNormaly(uint index) { return this->normalYList[index]; }
+    real getNormalz(uint index) { return this->normalZList[index]; }
+
+    uint getSamplingOffset() { return this->samplingOffset; }
+    uint getSamplingOffset(uint index) { return this->samplingOffsetList[index]; }
+
+    real getZ0() { return this->z0; }
+    real getZ0(uint index) { return this->z0List[index]; }
+
+    void fillSamplingIndices(std::vector<SPtr<Grid> > grid, uint level, uint samplingOffset);
+
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -181,7 +252,7 @@ public:
 //////////////////////////////////////////////////////////////////////////
 
 
-class GeometryBoundaryCondition : public VelocityBoundaryCondition
+class GeometryBoundaryCondition : public gg::BoundaryCondition
 {
 public:
     static SPtr<GeometryBoundaryCondition> make()
@@ -189,8 +260,15 @@ public:
         return SPtr<GeometryBoundaryCondition>(new GeometryBoundaryCondition());
     }
 
+    real normalX, normalY, normalZ;
+    std::vector<real> normalXList, normalYList, normalZList;
+
+    real vx, vy, vz;
+    std::vector<real> vxList, vyList, vzList;
+
 private:
-    GeometryBoundaryCondition() : VelocityBoundaryCondition(0.0, 0.0, 0.0) { }
+    GeometryBoundaryCondition(real vx = 0.0, real vy = 0.0, real vz = 0.0, real normalX = 0.0, real normalY = 0.0, real normalZ = 0.0) :
+        vx(vx), vy(vy), vz(vz), normalX(normalX), normalY(normalY), normalZ(normalZ) { }
 
 public:
     char getType() const override
@@ -212,6 +290,43 @@ public:
                                                   real p1x, real p1y, real p1z, 
                                                   real p2x, real p2y, real p2z, 
                                                   real v, real r );
+
+    void fillVelocityLists()
+    {
+        for( uint index : this->indices ) {
+            (void) index;
+            this->vxList.push_back(vx);
+            this->vyList.push_back(vy);
+            this->vzList.push_back(vz);
+        }
+    }
+
+    real getVx() { return this->vx; }
+    real getVy() { return this->vy; }
+    real getVz() { return this->vz; }
+
+    real getVx(uint index) { return this->vxList[index]; }
+    real getVy(uint index) { return this->vyList[index]; }
+    real getVz(uint index) { return this->vzList[index]; }
+
+
+    void fillSlipNormalLists()
+    {   
+        for (uint index : this->indices) {
+            (void)index;
+            this->normalXList.push_back(normalX);
+            this->normalYList.push_back(normalY);
+            this->normalZList.push_back(normalZ);
+        }
+    }
+
+    real getNormalx() { return this->normalX; }
+    real getNormaly() { return this->normalY; }
+    real getNormalz() { return this->normalZ; }
+
+    real getNormalx(uint index) { return this->normalXList[index]; }
+    real getNormaly(uint index) { return this->normalYList[index]; }
+    real getNormalz(uint index) { return this->normalZList[index]; }
 };
 
 

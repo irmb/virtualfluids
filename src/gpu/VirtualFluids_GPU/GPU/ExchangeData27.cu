@@ -1,12 +1,13 @@
 /* Device code */
 #include "LBM/LB.h" 
-#include "LBM/D3Q27.h"
+#include "lbm/constants/D3Q27.h"
 #include <lbm/constants/NumericConstants.h>
 
 using namespace vf::lbm::constant;
+using namespace vf::lbm::dir;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void getSendFsPost27(real* DD,
+__global__ void getSendFsPost27(real* DD,
 										   real* bufferFs,
 										   int* sendIndex,
                                            int buffmax,
@@ -14,7 +15,7 @@ extern "C" __global__ void getSendFsPost27(real* DD,
                                            unsigned int* neighborY,
                                            unsigned int* neighborZ,
                                            unsigned int size_Mat, 
-                                           bool evenOrOdd)
+                                           bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -62,152 +63,152 @@ extern "C" __global__ void getSendFsPost27(real* DD,
       ////////////////////////////////////////////////////////////////////////////////
 	  //set Pointer for Fs
       Distributions27 D;
-      if (evenOrOdd==true)
+      if (isEvenTimestep==true)
       {
-         D.f[dirE   ] = &DD[dirE   *size_Mat];
-         D.f[dirW   ] = &DD[dirW   *size_Mat];
-         D.f[dirN   ] = &DD[dirN   *size_Mat];
-         D.f[dirS   ] = &DD[dirS   *size_Mat];
-         D.f[dirT   ] = &DD[dirT   *size_Mat];
-         D.f[dirB   ] = &DD[dirB   *size_Mat];
-         D.f[dirNE  ] = &DD[dirNE  *size_Mat];
-         D.f[dirSW  ] = &DD[dirSW  *size_Mat];
-         D.f[dirSE  ] = &DD[dirSE  *size_Mat];
-         D.f[dirNW  ] = &DD[dirNW  *size_Mat];
-         D.f[dirTE  ] = &DD[dirTE  *size_Mat];
-         D.f[dirBW  ] = &DD[dirBW  *size_Mat];
-         D.f[dirBE  ] = &DD[dirBE  *size_Mat];
-         D.f[dirTW  ] = &DD[dirTW  *size_Mat];
-         D.f[dirTN  ] = &DD[dirTN  *size_Mat];
-         D.f[dirBS  ] = &DD[dirBS  *size_Mat];
-         D.f[dirBN  ] = &DD[dirBN  *size_Mat];
-         D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
-         D.f[dirTNE ] = &DD[dirTNE *size_Mat];
-         D.f[dirTSW ] = &DD[dirTSW *size_Mat];
-         D.f[dirTSE ] = &DD[dirTSE *size_Mat];
-         D.f[dirTNW ] = &DD[dirTNW *size_Mat];
-         D.f[dirBNE ] = &DD[dirBNE *size_Mat];
-         D.f[dirBSW ] = &DD[dirBSW *size_Mat];
-         D.f[dirBSE ] = &DD[dirBSE *size_Mat];
-         D.f[dirBNW ] = &DD[dirBNW *size_Mat];
+         D.f[DIR_P00   ] = &DD[DIR_P00   *size_Mat];
+         D.f[DIR_M00   ] = &DD[DIR_M00   *size_Mat];
+         D.f[DIR_0P0   ] = &DD[DIR_0P0   *size_Mat];
+         D.f[DIR_0M0   ] = &DD[DIR_0M0   *size_Mat];
+         D.f[DIR_00P   ] = &DD[DIR_00P   *size_Mat];
+         D.f[DIR_00M   ] = &DD[DIR_00M   *size_Mat];
+         D.f[DIR_PP0  ] = &DD[DIR_PP0  *size_Mat];
+         D.f[DIR_MM0  ] = &DD[DIR_MM0  *size_Mat];
+         D.f[DIR_PM0  ] = &DD[DIR_PM0  *size_Mat];
+         D.f[DIR_MP0  ] = &DD[DIR_MP0  *size_Mat];
+         D.f[DIR_P0P  ] = &DD[DIR_P0P  *size_Mat];
+         D.f[DIR_M0M  ] = &DD[DIR_M0M  *size_Mat];
+         D.f[DIR_P0M  ] = &DD[DIR_P0M  *size_Mat];
+         D.f[DIR_M0P  ] = &DD[DIR_M0P  *size_Mat];
+         D.f[DIR_0PP  ] = &DD[DIR_0PP  *size_Mat];
+         D.f[DIR_0MM  ] = &DD[DIR_0MM  *size_Mat];
+         D.f[DIR_0PM  ] = &DD[DIR_0PM  *size_Mat];
+         D.f[DIR_0MP  ] = &DD[DIR_0MP  *size_Mat];
+         D.f[DIR_000] = &DD[DIR_000*size_Mat];
+         D.f[DIR_PPP ] = &DD[DIR_PPP *size_Mat];
+         D.f[DIR_MMP ] = &DD[DIR_MMP *size_Mat];
+         D.f[DIR_PMP ] = &DD[DIR_PMP *size_Mat];
+         D.f[DIR_MPP ] = &DD[DIR_MPP *size_Mat];
+         D.f[DIR_PPM ] = &DD[DIR_PPM *size_Mat];
+         D.f[DIR_MMM ] = &DD[DIR_MMM *size_Mat];
+         D.f[DIR_PMM ] = &DD[DIR_PMM *size_Mat];
+         D.f[DIR_MPM ] = &DD[DIR_MPM *size_Mat];
       } 
       else
       {
-         D.f[dirW   ] = &DD[dirE   *size_Mat];
-         D.f[dirE   ] = &DD[dirW   *size_Mat];
-         D.f[dirS   ] = &DD[dirN   *size_Mat];
-         D.f[dirN   ] = &DD[dirS   *size_Mat];
-         D.f[dirB   ] = &DD[dirT   *size_Mat];
-         D.f[dirT   ] = &DD[dirB   *size_Mat];
-         D.f[dirSW  ] = &DD[dirNE  *size_Mat];
-         D.f[dirNE  ] = &DD[dirSW  *size_Mat];
-         D.f[dirNW  ] = &DD[dirSE  *size_Mat];
-         D.f[dirSE  ] = &DD[dirNW  *size_Mat];
-         D.f[dirBW  ] = &DD[dirTE  *size_Mat];
-         D.f[dirTE  ] = &DD[dirBW  *size_Mat];
-         D.f[dirTW  ] = &DD[dirBE  *size_Mat];
-         D.f[dirBE  ] = &DD[dirTW  *size_Mat];
-         D.f[dirBS  ] = &DD[dirTN  *size_Mat];
-         D.f[dirTN  ] = &DD[dirBS  *size_Mat];
-         D.f[dirTS  ] = &DD[dirBN  *size_Mat];
-         D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
-         D.f[dirTNE ] = &DD[dirBSW *size_Mat];
-         D.f[dirTSW ] = &DD[dirBNE *size_Mat];
-         D.f[dirTSE ] = &DD[dirBNW *size_Mat];
-         D.f[dirTNW ] = &DD[dirBSE *size_Mat];
-         D.f[dirBNE ] = &DD[dirTSW *size_Mat];
-         D.f[dirBSW ] = &DD[dirTNE *size_Mat];
-         D.f[dirBSE ] = &DD[dirTNW *size_Mat];
-         D.f[dirBNW ] = &DD[dirTSE *size_Mat];
+         D.f[DIR_M00   ] = &DD[DIR_P00   *size_Mat];
+         D.f[DIR_P00   ] = &DD[DIR_M00   *size_Mat];
+         D.f[DIR_0M0   ] = &DD[DIR_0P0   *size_Mat];
+         D.f[DIR_0P0   ] = &DD[DIR_0M0   *size_Mat];
+         D.f[DIR_00M   ] = &DD[DIR_00P   *size_Mat];
+         D.f[DIR_00P   ] = &DD[DIR_00M   *size_Mat];
+         D.f[DIR_MM0  ] = &DD[DIR_PP0  *size_Mat];
+         D.f[DIR_PP0  ] = &DD[DIR_MM0  *size_Mat];
+         D.f[DIR_MP0  ] = &DD[DIR_PM0  *size_Mat];
+         D.f[DIR_PM0  ] = &DD[DIR_MP0  *size_Mat];
+         D.f[DIR_M0M  ] = &DD[DIR_P0P  *size_Mat];
+         D.f[DIR_P0P  ] = &DD[DIR_M0M  *size_Mat];
+         D.f[DIR_M0P  ] = &DD[DIR_P0M  *size_Mat];
+         D.f[DIR_P0M  ] = &DD[DIR_M0P  *size_Mat];
+         D.f[DIR_0MM  ] = &DD[DIR_0PP  *size_Mat];
+         D.f[DIR_0PP  ] = &DD[DIR_0MM  *size_Mat];
+         D.f[DIR_0MP  ] = &DD[DIR_0PM  *size_Mat];
+         D.f[DIR_0PM  ] = &DD[DIR_0MP  *size_Mat];
+         D.f[DIR_000] = &DD[DIR_000*size_Mat];
+         D.f[DIR_PPP ] = &DD[DIR_MMM *size_Mat];
+         D.f[DIR_MMP ] = &DD[DIR_PPM *size_Mat];
+         D.f[DIR_PMP ] = &DD[DIR_MPM *size_Mat];
+         D.f[DIR_MPP ] = &DD[DIR_PMM *size_Mat];
+         D.f[DIR_PPM ] = &DD[DIR_MMP *size_Mat];
+         D.f[DIR_MMM ] = &DD[DIR_PPP *size_Mat];
+         D.f[DIR_PMM ] = &DD[DIR_MPP *size_Mat];
+         D.f[DIR_MPM ] = &DD[DIR_PMP *size_Mat];
       }
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //set Pointer for Buffer Fs
       Distributions27 Dbuff;
-      Dbuff.f[dirE   ] = &bufferFs[dirE   *buffmax];
-      Dbuff.f[dirW   ] = &bufferFs[dirW   *buffmax];
-      Dbuff.f[dirN   ] = &bufferFs[dirN   *buffmax];
-      Dbuff.f[dirS   ] = &bufferFs[dirS   *buffmax];
-      Dbuff.f[dirT   ] = &bufferFs[dirT   *buffmax];
-      Dbuff.f[dirB   ] = &bufferFs[dirB   *buffmax];
-      Dbuff.f[dirNE  ] = &bufferFs[dirNE  *buffmax];
-      Dbuff.f[dirSW  ] = &bufferFs[dirSW  *buffmax];
-      Dbuff.f[dirSE  ] = &bufferFs[dirSE  *buffmax];
-      Dbuff.f[dirNW  ] = &bufferFs[dirNW  *buffmax];
-      Dbuff.f[dirTE  ] = &bufferFs[dirTE  *buffmax];
-      Dbuff.f[dirBW  ] = &bufferFs[dirBW  *buffmax];
-      Dbuff.f[dirBE  ] = &bufferFs[dirBE  *buffmax];
-      Dbuff.f[dirTW  ] = &bufferFs[dirTW  *buffmax];
-      Dbuff.f[dirTN  ] = &bufferFs[dirTN  *buffmax];
-      Dbuff.f[dirBS  ] = &bufferFs[dirBS  *buffmax];
-      Dbuff.f[dirBN  ] = &bufferFs[dirBN  *buffmax];
-      Dbuff.f[dirTS  ] = &bufferFs[dirTS  *buffmax];
-      Dbuff.f[dirZERO] = &bufferFs[dirZERO*buffmax];
-      Dbuff.f[dirTNE ] = &bufferFs[dirTNE *buffmax];
-      Dbuff.f[dirTSW ] = &bufferFs[dirTSW *buffmax];
-      Dbuff.f[dirTSE ] = &bufferFs[dirTSE *buffmax];
-      Dbuff.f[dirTNW ] = &bufferFs[dirTNW *buffmax];
-      Dbuff.f[dirBNE ] = &bufferFs[dirBNE *buffmax];
-      Dbuff.f[dirBSW ] = &bufferFs[dirBSW *buffmax];
-      Dbuff.f[dirBSE ] = &bufferFs[dirBSE *buffmax];
-      Dbuff.f[dirBNW ] = &bufferFs[dirBNW *buffmax];
+      Dbuff.f[DIR_P00   ] = &bufferFs[DIR_P00   *buffmax];
+      Dbuff.f[DIR_M00   ] = &bufferFs[DIR_M00   *buffmax];
+      Dbuff.f[DIR_0P0   ] = &bufferFs[DIR_0P0   *buffmax];
+      Dbuff.f[DIR_0M0   ] = &bufferFs[DIR_0M0   *buffmax];
+      Dbuff.f[DIR_00P   ] = &bufferFs[DIR_00P   *buffmax];
+      Dbuff.f[DIR_00M   ] = &bufferFs[DIR_00M   *buffmax];
+      Dbuff.f[DIR_PP0  ] = &bufferFs[DIR_PP0  *buffmax];
+      Dbuff.f[DIR_MM0  ] = &bufferFs[DIR_MM0  *buffmax];
+      Dbuff.f[DIR_PM0  ] = &bufferFs[DIR_PM0  *buffmax];
+      Dbuff.f[DIR_MP0  ] = &bufferFs[DIR_MP0  *buffmax];
+      Dbuff.f[DIR_P0P  ] = &bufferFs[DIR_P0P  *buffmax];
+      Dbuff.f[DIR_M0M  ] = &bufferFs[DIR_M0M  *buffmax];
+      Dbuff.f[DIR_P0M  ] = &bufferFs[DIR_P0M  *buffmax];
+      Dbuff.f[DIR_M0P  ] = &bufferFs[DIR_M0P  *buffmax];
+      Dbuff.f[DIR_0PP  ] = &bufferFs[DIR_0PP  *buffmax];
+      Dbuff.f[DIR_0MM  ] = &bufferFs[DIR_0MM  *buffmax];
+      Dbuff.f[DIR_0PM  ] = &bufferFs[DIR_0PM  *buffmax];
+      Dbuff.f[DIR_0MP  ] = &bufferFs[DIR_0MP  *buffmax];
+      Dbuff.f[DIR_000] = &bufferFs[DIR_000*buffmax];
+      Dbuff.f[DIR_PPP ] = &bufferFs[DIR_PPP *buffmax];
+      Dbuff.f[DIR_MMP ] = &bufferFs[DIR_MMP *buffmax];
+      Dbuff.f[DIR_PMP ] = &bufferFs[DIR_PMP *buffmax];
+      Dbuff.f[DIR_MPP ] = &bufferFs[DIR_MPP *buffmax];
+      Dbuff.f[DIR_PPM ] = &bufferFs[DIR_PPM *buffmax];
+      Dbuff.f[DIR_MMM ] = &bufferFs[DIR_MMM *buffmax];
+      Dbuff.f[DIR_PMM ] = &bufferFs[DIR_PMM *buffmax];
+      Dbuff.f[DIR_MPM ] = &bufferFs[DIR_MPM *buffmax];
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //copy to buffer
-      //(Dbuff.f[dirE   ])[k] = (D.f[dirE   ])[ke   ];
-      //(Dbuff.f[dirW   ])[k] = (D.f[dirW   ])[kw   ];
-      //(Dbuff.f[dirN   ])[k] = (D.f[dirN   ])[kn   ];
-      //(Dbuff.f[dirS   ])[k] = (D.f[dirS   ])[ks   ];
-      //(Dbuff.f[dirT   ])[k] = (D.f[dirT   ])[kt   ];
-      //(Dbuff.f[dirB   ])[k] = (D.f[dirB   ])[kb   ];
-      //(Dbuff.f[dirNE  ])[k] = (D.f[dirNE  ])[kne  ];
-      //(Dbuff.f[dirSW  ])[k] = (D.f[dirSW  ])[ksw  ];
-      //(Dbuff.f[dirSE  ])[k] = (D.f[dirSE  ])[kse  ];
-      //(Dbuff.f[dirNW  ])[k] = (D.f[dirNW  ])[knw  ];
-      //(Dbuff.f[dirTE  ])[k] = (D.f[dirTE  ])[kte  ];
-      //(Dbuff.f[dirBW  ])[k] = (D.f[dirBW  ])[kbw  ];
-      //(Dbuff.f[dirBE  ])[k] = (D.f[dirBE  ])[kbe  ];
-      //(Dbuff.f[dirTW  ])[k] = (D.f[dirTW  ])[ktw  ];
-      //(Dbuff.f[dirTN  ])[k] = (D.f[dirTN  ])[ktn  ];
-      //(Dbuff.f[dirBS  ])[k] = (D.f[dirBS  ])[kbs  ];
-      //(Dbuff.f[dirBN  ])[k] = (D.f[dirBN  ])[kbn  ];
-      //(Dbuff.f[dirTS  ])[k] = (D.f[dirTS  ])[kts  ];
-      //(Dbuff.f[dirZERO])[k] = (D.f[dirZERO])[kzero];
-      //(Dbuff.f[dirTNE ])[k] = (D.f[dirTNE ])[ktne ];
-      //(Dbuff.f[dirTSW ])[k] = (D.f[dirTSW ])[ktsw ];
-      //(Dbuff.f[dirTSE ])[k] = (D.f[dirTSE ])[ktse ];
-      //(Dbuff.f[dirTNW ])[k] = (D.f[dirTNW ])[ktnw ];
-      //(Dbuff.f[dirBNE ])[k] = (D.f[dirBNE ])[kbne ];
-      //(Dbuff.f[dirBSW ])[k] = (D.f[dirBSW ])[kbsw ];
-      //(Dbuff.f[dirBSE ])[k] = (D.f[dirBSE ])[kbse ];
-      //(Dbuff.f[dirBNW ])[k] = (D.f[dirBNW ])[kbnw ];
-      (Dbuff.f[dirE   ])[k] = (D.f[dirW   ])[kw   ];
-      (Dbuff.f[dirW   ])[k] = (D.f[dirE   ])[ke   ];
-      (Dbuff.f[dirN   ])[k] = (D.f[dirS   ])[ks   ];
-      (Dbuff.f[dirS   ])[k] = (D.f[dirN   ])[kn   ];
-      (Dbuff.f[dirT   ])[k] = (D.f[dirB   ])[kb   ];
-      (Dbuff.f[dirB   ])[k] = (D.f[dirT   ])[kt   ];
-      (Dbuff.f[dirNE  ])[k] = (D.f[dirSW  ])[ksw  ];
-      (Dbuff.f[dirSW  ])[k] = (D.f[dirNE  ])[kne  ];
-      (Dbuff.f[dirSE  ])[k] = (D.f[dirNW  ])[knw  ];
-      (Dbuff.f[dirNW  ])[k] = (D.f[dirSE  ])[kse  ];
-      (Dbuff.f[dirTE  ])[k] = (D.f[dirBW  ])[kbw  ];
-      (Dbuff.f[dirBW  ])[k] = (D.f[dirTE  ])[kte  ];
-      (Dbuff.f[dirBE  ])[k] = (D.f[dirTW  ])[ktw  ];
-      (Dbuff.f[dirTW  ])[k] = (D.f[dirBE  ])[kbe  ];
-      (Dbuff.f[dirTN  ])[k] = (D.f[dirBS  ])[kbs  ];
-      (Dbuff.f[dirBS  ])[k] = (D.f[dirTN  ])[ktn  ];
-      (Dbuff.f[dirBN  ])[k] = (D.f[dirTS  ])[kts  ];
-      (Dbuff.f[dirTS  ])[k] = (D.f[dirBN  ])[kbn  ];
-      (Dbuff.f[dirZERO])[k] = (D.f[dirZERO])[kzero];
-      (Dbuff.f[dirTNE ])[k] = (D.f[dirBSW ])[kbsw ];
-      (Dbuff.f[dirTSW ])[k] = (D.f[dirBNE ])[kbne ];
-      (Dbuff.f[dirTSE ])[k] = (D.f[dirBNW ])[kbnw ];
-      (Dbuff.f[dirTNW ])[k] = (D.f[dirBSE ])[kbse ];
-      (Dbuff.f[dirBNE ])[k] = (D.f[dirTSW ])[ktsw ];
-      (Dbuff.f[dirBSW ])[k] = (D.f[dirTNE ])[ktne ];
-      (Dbuff.f[dirBSE ])[k] = (D.f[dirTNW ])[ktnw ];
-      (Dbuff.f[dirBNW ])[k] = (D.f[dirTSE ])[ktse ];
+      //(Dbuff.f[DIR_P00   ])[k] = (D.f[DIR_P00   ])[ke   ];
+      //(Dbuff.f[DIR_M00   ])[k] = (D.f[DIR_M00   ])[kw   ];
+      //(Dbuff.f[DIR_0P0   ])[k] = (D.f[DIR_0P0   ])[kn   ];
+      //(Dbuff.f[DIR_0M0   ])[k] = (D.f[DIR_0M0   ])[ks   ];
+      //(Dbuff.f[DIR_00P   ])[k] = (D.f[DIR_00P   ])[kt   ];
+      //(Dbuff.f[DIR_00M   ])[k] = (D.f[DIR_00M   ])[kb   ];
+      //(Dbuff.f[DIR_PP0  ])[k] = (D.f[DIR_PP0  ])[kne  ];
+      //(Dbuff.f[DIR_MM0  ])[k] = (D.f[DIR_MM0  ])[ksw  ];
+      //(Dbuff.f[DIR_PM0  ])[k] = (D.f[DIR_PM0  ])[kse  ];
+      //(Dbuff.f[DIR_MP0  ])[k] = (D.f[DIR_MP0  ])[knw  ];
+      //(Dbuff.f[DIR_P0P  ])[k] = (D.f[DIR_P0P  ])[kte  ];
+      //(Dbuff.f[DIR_M0M  ])[k] = (D.f[DIR_M0M  ])[kbw  ];
+      //(Dbuff.f[DIR_P0M  ])[k] = (D.f[DIR_P0M  ])[kbe  ];
+      //(Dbuff.f[DIR_M0P  ])[k] = (D.f[DIR_M0P  ])[ktw  ];
+      //(Dbuff.f[DIR_0PP  ])[k] = (D.f[DIR_0PP  ])[ktn  ];
+      //(Dbuff.f[DIR_0MM  ])[k] = (D.f[DIR_0MM  ])[kbs  ];
+      //(Dbuff.f[DIR_0PM  ])[k] = (D.f[DIR_0PM  ])[kbn  ];
+      //(Dbuff.f[DIR_0MP  ])[k] = (D.f[DIR_0MP  ])[kts  ];
+      //(Dbuff.f[DIR_000])[k] = (D.f[DIR_000])[kzero];
+      //(Dbuff.f[DIR_PPP ])[k] = (D.f[DIR_PPP ])[ktne ];
+      //(Dbuff.f[DIR_MMP ])[k] = (D.f[DIR_MMP ])[ktsw ];
+      //(Dbuff.f[DIR_PMP ])[k] = (D.f[DIR_PMP ])[ktse ];
+      //(Dbuff.f[DIR_MPP ])[k] = (D.f[DIR_MPP ])[ktnw ];
+      //(Dbuff.f[DIR_PPM ])[k] = (D.f[DIR_PPM ])[kbne ];
+      //(Dbuff.f[DIR_MMM ])[k] = (D.f[DIR_MMM ])[kbsw ];
+      //(Dbuff.f[DIR_PMM ])[k] = (D.f[DIR_PMM ])[kbse ];
+      //(Dbuff.f[DIR_MPM ])[k] = (D.f[DIR_MPM ])[kbnw ];
+      (Dbuff.f[DIR_P00   ])[k] = (D.f[DIR_M00   ])[kw   ];
+      (Dbuff.f[DIR_M00   ])[k] = (D.f[DIR_P00   ])[ke   ];
+      (Dbuff.f[DIR_0P0   ])[k] = (D.f[DIR_0M0   ])[ks   ];
+      (Dbuff.f[DIR_0M0   ])[k] = (D.f[DIR_0P0   ])[kn   ];
+      (Dbuff.f[DIR_00P   ])[k] = (D.f[DIR_00M   ])[kb   ];
+      (Dbuff.f[DIR_00M   ])[k] = (D.f[DIR_00P   ])[kt   ];
+      (Dbuff.f[DIR_PP0  ])[k] = (D.f[DIR_MM0  ])[ksw  ];
+      (Dbuff.f[DIR_MM0  ])[k] = (D.f[DIR_PP0  ])[kne  ];
+      (Dbuff.f[DIR_PM0  ])[k] = (D.f[DIR_MP0  ])[knw  ];
+      (Dbuff.f[DIR_MP0  ])[k] = (D.f[DIR_PM0  ])[kse  ];
+      (Dbuff.f[DIR_P0P  ])[k] = (D.f[DIR_M0M  ])[kbw  ];
+      (Dbuff.f[DIR_M0M  ])[k] = (D.f[DIR_P0P  ])[kte  ];
+      (Dbuff.f[DIR_P0M  ])[k] = (D.f[DIR_M0P  ])[ktw  ];
+      (Dbuff.f[DIR_M0P  ])[k] = (D.f[DIR_P0M  ])[kbe  ];
+      (Dbuff.f[DIR_0PP  ])[k] = (D.f[DIR_0MM  ])[kbs  ];
+      (Dbuff.f[DIR_0MM  ])[k] = (D.f[DIR_0PP  ])[ktn  ];
+      (Dbuff.f[DIR_0PM  ])[k] = (D.f[DIR_0MP  ])[kts  ];
+      (Dbuff.f[DIR_0MP  ])[k] = (D.f[DIR_0PM  ])[kbn  ];
+      (Dbuff.f[DIR_000])[k] = (D.f[DIR_000])[kzero];
+      (Dbuff.f[DIR_PPP ])[k] = (D.f[DIR_MMM ])[kbsw ];
+      (Dbuff.f[DIR_MMP ])[k] = (D.f[DIR_PPM ])[kbne ];
+      (Dbuff.f[DIR_PMP ])[k] = (D.f[DIR_MPM ])[kbnw ];
+      (Dbuff.f[DIR_MPP ])[k] = (D.f[DIR_PMM ])[kbse ];
+      (Dbuff.f[DIR_PPM ])[k] = (D.f[DIR_MMP ])[ktsw ];
+      (Dbuff.f[DIR_MMM ])[k] = (D.f[DIR_PPP ])[ktne ];
+      (Dbuff.f[DIR_PMM ])[k] = (D.f[DIR_MPP ])[ktnw ];
+      (Dbuff.f[DIR_MPM ])[k] = (D.f[DIR_PMP ])[ktse ];
    }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -242,7 +243,7 @@ extern "C" __global__ void getSendFsPost27(real* DD,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void setRecvFsPost27(real* DD,
+__global__ void setRecvFsPost27(real* DD,
 										   real* bufferFs,
 										   int* recvIndex,
                                            int buffmax,
@@ -250,7 +251,7 @@ extern "C" __global__ void setRecvFsPost27(real* DD,
                                            unsigned int* neighborY,
                                            unsigned int* neighborZ,
                                            unsigned int size_Mat, 
-                                           bool evenOrOdd)
+                                           bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -298,152 +299,152 @@ extern "C" __global__ void setRecvFsPost27(real* DD,
       ////////////////////////////////////////////////////////////////////////////////
 	  //set Pointer for Fs
       Distributions27 D;
-      if (evenOrOdd==true)
+      if (isEvenTimestep==true)
       {
-         D.f[dirE   ] = &DD[dirE   *size_Mat];
-         D.f[dirW   ] = &DD[dirW   *size_Mat];
-         D.f[dirN   ] = &DD[dirN   *size_Mat];
-         D.f[dirS   ] = &DD[dirS   *size_Mat];
-         D.f[dirT   ] = &DD[dirT   *size_Mat];
-         D.f[dirB   ] = &DD[dirB   *size_Mat];
-         D.f[dirNE  ] = &DD[dirNE  *size_Mat];
-         D.f[dirSW  ] = &DD[dirSW  *size_Mat];
-         D.f[dirSE  ] = &DD[dirSE  *size_Mat];
-         D.f[dirNW  ] = &DD[dirNW  *size_Mat];
-         D.f[dirTE  ] = &DD[dirTE  *size_Mat];
-         D.f[dirBW  ] = &DD[dirBW  *size_Mat];
-         D.f[dirBE  ] = &DD[dirBE  *size_Mat];
-         D.f[dirTW  ] = &DD[dirTW  *size_Mat];
-         D.f[dirTN  ] = &DD[dirTN  *size_Mat];
-         D.f[dirBS  ] = &DD[dirBS  *size_Mat];
-         D.f[dirBN  ] = &DD[dirBN  *size_Mat];
-         D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
-         D.f[dirTNE ] = &DD[dirTNE *size_Mat];
-         D.f[dirTSW ] = &DD[dirTSW *size_Mat];
-         D.f[dirTSE ] = &DD[dirTSE *size_Mat];
-         D.f[dirTNW ] = &DD[dirTNW *size_Mat];
-         D.f[dirBNE ] = &DD[dirBNE *size_Mat];
-         D.f[dirBSW ] = &DD[dirBSW *size_Mat];
-         D.f[dirBSE ] = &DD[dirBSE *size_Mat];
-         D.f[dirBNW ] = &DD[dirBNW *size_Mat];
+         D.f[DIR_P00   ] = &DD[DIR_P00   *size_Mat];
+         D.f[DIR_M00   ] = &DD[DIR_M00   *size_Mat];
+         D.f[DIR_0P0   ] = &DD[DIR_0P0   *size_Mat];
+         D.f[DIR_0M0   ] = &DD[DIR_0M0   *size_Mat];
+         D.f[DIR_00P   ] = &DD[DIR_00P   *size_Mat];
+         D.f[DIR_00M   ] = &DD[DIR_00M   *size_Mat];
+         D.f[DIR_PP0  ] = &DD[DIR_PP0  *size_Mat];
+         D.f[DIR_MM0  ] = &DD[DIR_MM0  *size_Mat];
+         D.f[DIR_PM0  ] = &DD[DIR_PM0  *size_Mat];
+         D.f[DIR_MP0  ] = &DD[DIR_MP0  *size_Mat];
+         D.f[DIR_P0P  ] = &DD[DIR_P0P  *size_Mat];
+         D.f[DIR_M0M  ] = &DD[DIR_M0M  *size_Mat];
+         D.f[DIR_P0M  ] = &DD[DIR_P0M  *size_Mat];
+         D.f[DIR_M0P  ] = &DD[DIR_M0P  *size_Mat];
+         D.f[DIR_0PP  ] = &DD[DIR_0PP  *size_Mat];
+         D.f[DIR_0MM  ] = &DD[DIR_0MM  *size_Mat];
+         D.f[DIR_0PM  ] = &DD[DIR_0PM  *size_Mat];
+         D.f[DIR_0MP  ] = &DD[DIR_0MP  *size_Mat];
+         D.f[DIR_000] = &DD[DIR_000*size_Mat];
+         D.f[DIR_PPP ] = &DD[DIR_PPP *size_Mat];
+         D.f[DIR_MMP ] = &DD[DIR_MMP *size_Mat];
+         D.f[DIR_PMP ] = &DD[DIR_PMP *size_Mat];
+         D.f[DIR_MPP ] = &DD[DIR_MPP *size_Mat];
+         D.f[DIR_PPM ] = &DD[DIR_PPM *size_Mat];
+         D.f[DIR_MMM ] = &DD[DIR_MMM *size_Mat];
+         D.f[DIR_PMM ] = &DD[DIR_PMM *size_Mat];
+         D.f[DIR_MPM ] = &DD[DIR_MPM *size_Mat];
       } 
       else
       {
-         D.f[dirW   ] = &DD[dirE   *size_Mat];
-         D.f[dirE   ] = &DD[dirW   *size_Mat];
-         D.f[dirS   ] = &DD[dirN   *size_Mat];
-         D.f[dirN   ] = &DD[dirS   *size_Mat];
-         D.f[dirB   ] = &DD[dirT   *size_Mat];
-         D.f[dirT   ] = &DD[dirB   *size_Mat];
-         D.f[dirSW  ] = &DD[dirNE  *size_Mat];
-         D.f[dirNE  ] = &DD[dirSW  *size_Mat];
-         D.f[dirNW  ] = &DD[dirSE  *size_Mat];
-         D.f[dirSE  ] = &DD[dirNW  *size_Mat];
-         D.f[dirBW  ] = &DD[dirTE  *size_Mat];
-         D.f[dirTE  ] = &DD[dirBW  *size_Mat];
-         D.f[dirTW  ] = &DD[dirBE  *size_Mat];
-         D.f[dirBE  ] = &DD[dirTW  *size_Mat];
-         D.f[dirBS  ] = &DD[dirTN  *size_Mat];
-         D.f[dirTN  ] = &DD[dirBS  *size_Mat];
-         D.f[dirTS  ] = &DD[dirBN  *size_Mat];
-         D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
-         D.f[dirTNE ] = &DD[dirBSW *size_Mat];
-         D.f[dirTSW ] = &DD[dirBNE *size_Mat];
-         D.f[dirTSE ] = &DD[dirBNW *size_Mat];
-         D.f[dirTNW ] = &DD[dirBSE *size_Mat];
-         D.f[dirBNE ] = &DD[dirTSW *size_Mat];
-         D.f[dirBSW ] = &DD[dirTNE *size_Mat];
-         D.f[dirBSE ] = &DD[dirTNW *size_Mat];
-         D.f[dirBNW ] = &DD[dirTSE *size_Mat];
+         D.f[DIR_M00   ] = &DD[DIR_P00   *size_Mat];
+         D.f[DIR_P00   ] = &DD[DIR_M00   *size_Mat];
+         D.f[DIR_0M0   ] = &DD[DIR_0P0   *size_Mat];
+         D.f[DIR_0P0   ] = &DD[DIR_0M0   *size_Mat];
+         D.f[DIR_00M   ] = &DD[DIR_00P   *size_Mat];
+         D.f[DIR_00P   ] = &DD[DIR_00M   *size_Mat];
+         D.f[DIR_MM0  ] = &DD[DIR_PP0  *size_Mat];
+         D.f[DIR_PP0  ] = &DD[DIR_MM0  *size_Mat];
+         D.f[DIR_MP0  ] = &DD[DIR_PM0  *size_Mat];
+         D.f[DIR_PM0  ] = &DD[DIR_MP0  *size_Mat];
+         D.f[DIR_M0M  ] = &DD[DIR_P0P  *size_Mat];
+         D.f[DIR_P0P  ] = &DD[DIR_M0M  *size_Mat];
+         D.f[DIR_M0P  ] = &DD[DIR_P0M  *size_Mat];
+         D.f[DIR_P0M  ] = &DD[DIR_M0P  *size_Mat];
+         D.f[DIR_0MM  ] = &DD[DIR_0PP  *size_Mat];
+         D.f[DIR_0PP  ] = &DD[DIR_0MM  *size_Mat];
+         D.f[DIR_0MP  ] = &DD[DIR_0PM  *size_Mat];
+         D.f[DIR_0PM  ] = &DD[DIR_0MP  *size_Mat];
+         D.f[DIR_000] = &DD[DIR_000*size_Mat];
+         D.f[DIR_PPP ] = &DD[DIR_MMM *size_Mat];
+         D.f[DIR_MMP ] = &DD[DIR_PPM *size_Mat];
+         D.f[DIR_PMP ] = &DD[DIR_MPM *size_Mat];
+         D.f[DIR_MPP ] = &DD[DIR_PMM *size_Mat];
+         D.f[DIR_PPM ] = &DD[DIR_MMP *size_Mat];
+         D.f[DIR_MMM ] = &DD[DIR_PPP *size_Mat];
+         D.f[DIR_PMM ] = &DD[DIR_MPP *size_Mat];
+         D.f[DIR_MPM ] = &DD[DIR_PMP *size_Mat];
       }
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //set Pointer for Buffer Fs
       Distributions27 Dbuff;
-      Dbuff.f[dirE   ] = &bufferFs[dirE   *buffmax];
-      Dbuff.f[dirW   ] = &bufferFs[dirW   *buffmax];
-      Dbuff.f[dirN   ] = &bufferFs[dirN   *buffmax];
-      Dbuff.f[dirS   ] = &bufferFs[dirS   *buffmax];
-      Dbuff.f[dirT   ] = &bufferFs[dirT   *buffmax];
-      Dbuff.f[dirB   ] = &bufferFs[dirB   *buffmax];
-      Dbuff.f[dirNE  ] = &bufferFs[dirNE  *buffmax];
-      Dbuff.f[dirSW  ] = &bufferFs[dirSW  *buffmax];
-      Dbuff.f[dirSE  ] = &bufferFs[dirSE  *buffmax];
-      Dbuff.f[dirNW  ] = &bufferFs[dirNW  *buffmax];
-      Dbuff.f[dirTE  ] = &bufferFs[dirTE  *buffmax];
-      Dbuff.f[dirBW  ] = &bufferFs[dirBW  *buffmax];
-      Dbuff.f[dirBE  ] = &bufferFs[dirBE  *buffmax];
-      Dbuff.f[dirTW  ] = &bufferFs[dirTW  *buffmax];
-      Dbuff.f[dirTN  ] = &bufferFs[dirTN  *buffmax];
-      Dbuff.f[dirBS  ] = &bufferFs[dirBS  *buffmax];
-      Dbuff.f[dirBN  ] = &bufferFs[dirBN  *buffmax];
-      Dbuff.f[dirTS  ] = &bufferFs[dirTS  *buffmax];
-      Dbuff.f[dirZERO] = &bufferFs[dirZERO*buffmax];
-      Dbuff.f[dirTNE ] = &bufferFs[dirTNE *buffmax];
-      Dbuff.f[dirTSW ] = &bufferFs[dirTSW *buffmax];
-      Dbuff.f[dirTSE ] = &bufferFs[dirTSE *buffmax];
-      Dbuff.f[dirTNW ] = &bufferFs[dirTNW *buffmax];
-      Dbuff.f[dirBNE ] = &bufferFs[dirBNE *buffmax];
-      Dbuff.f[dirBSW ] = &bufferFs[dirBSW *buffmax];
-      Dbuff.f[dirBSE ] = &bufferFs[dirBSE *buffmax];
-      Dbuff.f[dirBNW ] = &bufferFs[dirBNW *buffmax];
+      Dbuff.f[DIR_P00   ] = &bufferFs[DIR_P00   *buffmax];
+      Dbuff.f[DIR_M00   ] = &bufferFs[DIR_M00   *buffmax];
+      Dbuff.f[DIR_0P0   ] = &bufferFs[DIR_0P0   *buffmax];
+      Dbuff.f[DIR_0M0   ] = &bufferFs[DIR_0M0   *buffmax];
+      Dbuff.f[DIR_00P   ] = &bufferFs[DIR_00P   *buffmax];
+      Dbuff.f[DIR_00M   ] = &bufferFs[DIR_00M   *buffmax];
+      Dbuff.f[DIR_PP0  ] = &bufferFs[DIR_PP0  *buffmax];
+      Dbuff.f[DIR_MM0  ] = &bufferFs[DIR_MM0  *buffmax];
+      Dbuff.f[DIR_PM0  ] = &bufferFs[DIR_PM0  *buffmax];
+      Dbuff.f[DIR_MP0  ] = &bufferFs[DIR_MP0  *buffmax];
+      Dbuff.f[DIR_P0P  ] = &bufferFs[DIR_P0P  *buffmax];
+      Dbuff.f[DIR_M0M  ] = &bufferFs[DIR_M0M  *buffmax];
+      Dbuff.f[DIR_P0M  ] = &bufferFs[DIR_P0M  *buffmax];
+      Dbuff.f[DIR_M0P  ] = &bufferFs[DIR_M0P  *buffmax];
+      Dbuff.f[DIR_0PP  ] = &bufferFs[DIR_0PP  *buffmax];
+      Dbuff.f[DIR_0MM  ] = &bufferFs[DIR_0MM  *buffmax];
+      Dbuff.f[DIR_0PM  ] = &bufferFs[DIR_0PM  *buffmax];
+      Dbuff.f[DIR_0MP  ] = &bufferFs[DIR_0MP  *buffmax];
+      Dbuff.f[DIR_000] = &bufferFs[DIR_000*buffmax];
+      Dbuff.f[DIR_PPP ] = &bufferFs[DIR_PPP *buffmax];
+      Dbuff.f[DIR_MMP ] = &bufferFs[DIR_MMP *buffmax];
+      Dbuff.f[DIR_PMP ] = &bufferFs[DIR_PMP *buffmax];
+      Dbuff.f[DIR_MPP ] = &bufferFs[DIR_MPP *buffmax];
+      Dbuff.f[DIR_PPM ] = &bufferFs[DIR_PPM *buffmax];
+      Dbuff.f[DIR_MMM ] = &bufferFs[DIR_MMM *buffmax];
+      Dbuff.f[DIR_PMM ] = &bufferFs[DIR_PMM *buffmax];
+      Dbuff.f[DIR_MPM ] = &bufferFs[DIR_MPM *buffmax];
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //copy from buffer
-      //(D.f[dirE   ])[ke   ] = (Dbuff.f[dirE   ])[k];
-      //(D.f[dirW   ])[kw   ] = (Dbuff.f[dirW   ])[k];
-      //(D.f[dirN   ])[kn   ] = (Dbuff.f[dirN   ])[k];
-      //(D.f[dirS   ])[ks   ] = (Dbuff.f[dirS   ])[k];
-      //(D.f[dirT   ])[kt   ] = (Dbuff.f[dirT   ])[k];
-      //(D.f[dirB   ])[kb   ] = (Dbuff.f[dirB   ])[k];
-      //(D.f[dirNE  ])[kne  ] = (Dbuff.f[dirNE  ])[k];
-      //(D.f[dirSW  ])[ksw  ] = (Dbuff.f[dirSW  ])[k];
-      //(D.f[dirSE  ])[kse  ] = (Dbuff.f[dirSE  ])[k];
-      //(D.f[dirNW  ])[knw  ] = (Dbuff.f[dirNW  ])[k];
-      //(D.f[dirTE  ])[kte  ] = (Dbuff.f[dirTE  ])[k];
-      //(D.f[dirBW  ])[kbw  ] = (Dbuff.f[dirBW  ])[k];
-      //(D.f[dirBE  ])[kbe  ] = (Dbuff.f[dirBE  ])[k];
-      //(D.f[dirTW  ])[ktw  ] = (Dbuff.f[dirTW  ])[k];
-      //(D.f[dirTN  ])[ktn  ] = (Dbuff.f[dirTN  ])[k];
-      //(D.f[dirBS  ])[kbs  ] = (Dbuff.f[dirBS  ])[k];
-      //(D.f[dirBN  ])[kbn  ] = (Dbuff.f[dirBN  ])[k];
-      //(D.f[dirTS  ])[kts  ] = (Dbuff.f[dirTS  ])[k];
-      //(D.f[dirZERO])[kzero] = (Dbuff.f[dirZERO])[k];
-      //(D.f[dirTNE ])[ktne ] = (Dbuff.f[dirTNE ])[k];
-      //(D.f[dirTSW ])[ktsw ] = (Dbuff.f[dirTSW ])[k];
-      //(D.f[dirTSE ])[ktse ] = (Dbuff.f[dirTSE ])[k];
-      //(D.f[dirTNW ])[ktnw ] = (Dbuff.f[dirTNW ])[k];
-      //(D.f[dirBNE ])[kbne ] = (Dbuff.f[dirBNE ])[k];
-      //(D.f[dirBSW ])[kbsw ] = (Dbuff.f[dirBSW ])[k];
-      //(D.f[dirBSE ])[kbse ] = (Dbuff.f[dirBSE ])[k];
-      //(D.f[dirBNW ])[kbnw ] = (Dbuff.f[dirBNW ])[k];
-      (D.f[dirW   ])[kw   ] = (Dbuff.f[dirE   ])[k];
-      (D.f[dirE   ])[ke   ] = (Dbuff.f[dirW   ])[k];
-      (D.f[dirS   ])[ks   ] = (Dbuff.f[dirN   ])[k];
-      (D.f[dirN   ])[kn   ] = (Dbuff.f[dirS   ])[k];
-      (D.f[dirB   ])[kb   ] = (Dbuff.f[dirT   ])[k];
-      (D.f[dirT   ])[kt   ] = (Dbuff.f[dirB   ])[k];
-      (D.f[dirSW  ])[ksw  ] = (Dbuff.f[dirNE  ])[k];
-      (D.f[dirNE  ])[kne  ] = (Dbuff.f[dirSW  ])[k];
-      (D.f[dirNW  ])[knw  ] = (Dbuff.f[dirSE  ])[k];
-      (D.f[dirSE  ])[kse  ] = (Dbuff.f[dirNW  ])[k];
-      (D.f[dirBW  ])[kbw  ] = (Dbuff.f[dirTE  ])[k];
-      (D.f[dirTE  ])[kte  ] = (Dbuff.f[dirBW  ])[k];
-      (D.f[dirTW  ])[ktw  ] = (Dbuff.f[dirBE  ])[k];
-      (D.f[dirBE  ])[kbe  ] = (Dbuff.f[dirTW  ])[k];
-      (D.f[dirBS  ])[kbs  ] = (Dbuff.f[dirTN  ])[k];
-      (D.f[dirTN  ])[ktn  ] = (Dbuff.f[dirBS  ])[k];
-      (D.f[dirTS  ])[kts  ] = (Dbuff.f[dirBN  ])[k];
-      (D.f[dirBN  ])[kbn  ] = (Dbuff.f[dirTS  ])[k];
-      (D.f[dirZERO])[kzero] = (Dbuff.f[dirZERO])[k];
-      (D.f[dirBSW ])[kbsw ] = (Dbuff.f[dirTNE ])[k];
-      (D.f[dirBNE ])[kbne ] = (Dbuff.f[dirTSW ])[k];
-      (D.f[dirBNW ])[kbnw ] = (Dbuff.f[dirTSE ])[k];
-      (D.f[dirBSE ])[kbse ] = (Dbuff.f[dirTNW ])[k];
-      (D.f[dirTSW ])[ktsw ] = (Dbuff.f[dirBNE ])[k];
-      (D.f[dirTNE ])[ktne ] = (Dbuff.f[dirBSW ])[k];
-      (D.f[dirTNW ])[ktnw ] = (Dbuff.f[dirBSE ])[k];
-      (D.f[dirTSE ])[ktse ] = (Dbuff.f[dirBNW ])[k];
+      //(D.f[DIR_P00   ])[ke   ] = (Dbuff.f[DIR_P00   ])[k];
+      //(D.f[DIR_M00   ])[kw   ] = (Dbuff.f[DIR_M00   ])[k];
+      //(D.f[DIR_0P0   ])[kn   ] = (Dbuff.f[DIR_0P0   ])[k];
+      //(D.f[DIR_0M0   ])[ks   ] = (Dbuff.f[DIR_0M0   ])[k];
+      //(D.f[DIR_00P   ])[kt   ] = (Dbuff.f[DIR_00P   ])[k];
+      //(D.f[DIR_00M   ])[kb   ] = (Dbuff.f[DIR_00M   ])[k];
+      //(D.f[DIR_PP0  ])[kne  ] = (Dbuff.f[DIR_PP0  ])[k];
+      //(D.f[DIR_MM0  ])[ksw  ] = (Dbuff.f[DIR_MM0  ])[k];
+      //(D.f[DIR_PM0  ])[kse  ] = (Dbuff.f[DIR_PM0  ])[k];
+      //(D.f[DIR_MP0  ])[knw  ] = (Dbuff.f[DIR_MP0  ])[k];
+      //(D.f[DIR_P0P  ])[kte  ] = (Dbuff.f[DIR_P0P  ])[k];
+      //(D.f[DIR_M0M  ])[kbw  ] = (Dbuff.f[DIR_M0M  ])[k];
+      //(D.f[DIR_P0M  ])[kbe  ] = (Dbuff.f[DIR_P0M  ])[k];
+      //(D.f[DIR_M0P  ])[ktw  ] = (Dbuff.f[DIR_M0P  ])[k];
+      //(D.f[DIR_0PP  ])[ktn  ] = (Dbuff.f[DIR_0PP  ])[k];
+      //(D.f[DIR_0MM  ])[kbs  ] = (Dbuff.f[DIR_0MM  ])[k];
+      //(D.f[DIR_0PM  ])[kbn  ] = (Dbuff.f[DIR_0PM  ])[k];
+      //(D.f[DIR_0MP  ])[kts  ] = (Dbuff.f[DIR_0MP  ])[k];
+      //(D.f[DIR_000])[kzero] = (Dbuff.f[DIR_000])[k];
+      //(D.f[DIR_PPP ])[ktne ] = (Dbuff.f[DIR_PPP ])[k];
+      //(D.f[DIR_MMP ])[ktsw ] = (Dbuff.f[DIR_MMP ])[k];
+      //(D.f[DIR_PMP ])[ktse ] = (Dbuff.f[DIR_PMP ])[k];
+      //(D.f[DIR_MPP ])[ktnw ] = (Dbuff.f[DIR_MPP ])[k];
+      //(D.f[DIR_PPM ])[kbne ] = (Dbuff.f[DIR_PPM ])[k];
+      //(D.f[DIR_MMM ])[kbsw ] = (Dbuff.f[DIR_MMM ])[k];
+      //(D.f[DIR_PMM ])[kbse ] = (Dbuff.f[DIR_PMM ])[k];
+      //(D.f[DIR_MPM ])[kbnw ] = (Dbuff.f[DIR_MPM ])[k];
+      (D.f[DIR_M00   ])[kw   ] = (Dbuff.f[DIR_P00   ])[k];
+      (D.f[DIR_P00   ])[ke   ] = (Dbuff.f[DIR_M00   ])[k];
+      (D.f[DIR_0M0   ])[ks   ] = (Dbuff.f[DIR_0P0   ])[k];
+      (D.f[DIR_0P0   ])[kn   ] = (Dbuff.f[DIR_0M0   ])[k];
+      (D.f[DIR_00M   ])[kb   ] = (Dbuff.f[DIR_00P   ])[k];
+      (D.f[DIR_00P   ])[kt   ] = (Dbuff.f[DIR_00M   ])[k];
+      (D.f[DIR_MM0  ])[ksw  ] = (Dbuff.f[DIR_PP0  ])[k];
+      (D.f[DIR_PP0  ])[kne  ] = (Dbuff.f[DIR_MM0  ])[k];
+      (D.f[DIR_MP0  ])[knw  ] = (Dbuff.f[DIR_PM0  ])[k];
+      (D.f[DIR_PM0  ])[kse  ] = (Dbuff.f[DIR_MP0  ])[k];
+      (D.f[DIR_M0M  ])[kbw  ] = (Dbuff.f[DIR_P0P  ])[k];
+      (D.f[DIR_P0P  ])[kte  ] = (Dbuff.f[DIR_M0M  ])[k];
+      (D.f[DIR_M0P  ])[ktw  ] = (Dbuff.f[DIR_P0M  ])[k];
+      (D.f[DIR_P0M  ])[kbe  ] = (Dbuff.f[DIR_M0P  ])[k];
+      (D.f[DIR_0MM  ])[kbs  ] = (Dbuff.f[DIR_0PP  ])[k];
+      (D.f[DIR_0PP  ])[ktn  ] = (Dbuff.f[DIR_0MM  ])[k];
+      (D.f[DIR_0MP  ])[kts  ] = (Dbuff.f[DIR_0PM  ])[k];
+      (D.f[DIR_0PM  ])[kbn  ] = (Dbuff.f[DIR_0MP  ])[k];
+      (D.f[DIR_000])[kzero] = (Dbuff.f[DIR_000])[k];
+      (D.f[DIR_MMM ])[kbsw ] = (Dbuff.f[DIR_PPP ])[k];
+      (D.f[DIR_PPM ])[kbne ] = (Dbuff.f[DIR_MMP ])[k];
+      (D.f[DIR_MPM ])[kbnw ] = (Dbuff.f[DIR_PMP ])[k];
+      (D.f[DIR_PMM ])[kbse ] = (Dbuff.f[DIR_MPP ])[k];
+      (D.f[DIR_MMP ])[ktsw ] = (Dbuff.f[DIR_PPM ])[k];
+      (D.f[DIR_PPP ])[ktne ] = (Dbuff.f[DIR_MMM ])[k];
+      (D.f[DIR_MPP ])[ktnw ] = (Dbuff.f[DIR_PMM ])[k];
+      (D.f[DIR_PMP ])[ktse ] = (Dbuff.f[DIR_MPM ])[k];
    }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -477,7 +478,7 @@ extern "C" __global__ void setRecvFsPost27(real* DD,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void getSendFsPre27(real* DD,
+__global__ void getSendFsPre27(real* DD,
 										  real* bufferFs,
 										  int* sendIndex,
                                           int buffmax,
@@ -485,7 +486,7 @@ extern "C" __global__ void getSendFsPre27(real* DD,
                                           unsigned int* neighborY,
                                           unsigned int* neighborZ,
                                           unsigned int size_Mat, 
-                                          bool evenOrOdd)
+                                          bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -533,125 +534,125 @@ extern "C" __global__ void getSendFsPre27(real* DD,
       ////////////////////////////////////////////////////////////////////////////////
 	  //set Pointer for Fs
       Distributions27 D;
-      if (evenOrOdd==true)
+      if (isEvenTimestep==true)
       {
-         D.f[dirE   ] = &DD[dirE   *size_Mat];
-         D.f[dirW   ] = &DD[dirW   *size_Mat];
-         D.f[dirN   ] = &DD[dirN   *size_Mat];
-         D.f[dirS   ] = &DD[dirS   *size_Mat];
-         D.f[dirT   ] = &DD[dirT   *size_Mat];
-         D.f[dirB   ] = &DD[dirB   *size_Mat];
-         D.f[dirNE  ] = &DD[dirNE  *size_Mat];
-         D.f[dirSW  ] = &DD[dirSW  *size_Mat];
-         D.f[dirSE  ] = &DD[dirSE  *size_Mat];
-         D.f[dirNW  ] = &DD[dirNW  *size_Mat];
-         D.f[dirTE  ] = &DD[dirTE  *size_Mat];
-         D.f[dirBW  ] = &DD[dirBW  *size_Mat];
-         D.f[dirBE  ] = &DD[dirBE  *size_Mat];
-         D.f[dirTW  ] = &DD[dirTW  *size_Mat];
-         D.f[dirTN  ] = &DD[dirTN  *size_Mat];
-         D.f[dirBS  ] = &DD[dirBS  *size_Mat];
-         D.f[dirBN  ] = &DD[dirBN  *size_Mat];
-         D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
-         D.f[dirTNE ] = &DD[dirTNE *size_Mat];
-         D.f[dirTSW ] = &DD[dirTSW *size_Mat];
-         D.f[dirTSE ] = &DD[dirTSE *size_Mat];
-         D.f[dirTNW ] = &DD[dirTNW *size_Mat];
-         D.f[dirBNE ] = &DD[dirBNE *size_Mat];
-         D.f[dirBSW ] = &DD[dirBSW *size_Mat];
-         D.f[dirBSE ] = &DD[dirBSE *size_Mat];
-         D.f[dirBNW ] = &DD[dirBNW *size_Mat];
+         D.f[DIR_P00   ] = &DD[DIR_P00   *size_Mat];
+         D.f[DIR_M00   ] = &DD[DIR_M00   *size_Mat];
+         D.f[DIR_0P0   ] = &DD[DIR_0P0   *size_Mat];
+         D.f[DIR_0M0   ] = &DD[DIR_0M0   *size_Mat];
+         D.f[DIR_00P   ] = &DD[DIR_00P   *size_Mat];
+         D.f[DIR_00M   ] = &DD[DIR_00M   *size_Mat];
+         D.f[DIR_PP0  ] = &DD[DIR_PP0  *size_Mat];
+         D.f[DIR_MM0  ] = &DD[DIR_MM0  *size_Mat];
+         D.f[DIR_PM0  ] = &DD[DIR_PM0  *size_Mat];
+         D.f[DIR_MP0  ] = &DD[DIR_MP0  *size_Mat];
+         D.f[DIR_P0P  ] = &DD[DIR_P0P  *size_Mat];
+         D.f[DIR_M0M  ] = &DD[DIR_M0M  *size_Mat];
+         D.f[DIR_P0M  ] = &DD[DIR_P0M  *size_Mat];
+         D.f[DIR_M0P  ] = &DD[DIR_M0P  *size_Mat];
+         D.f[DIR_0PP  ] = &DD[DIR_0PP  *size_Mat];
+         D.f[DIR_0MM  ] = &DD[DIR_0MM  *size_Mat];
+         D.f[DIR_0PM  ] = &DD[DIR_0PM  *size_Mat];
+         D.f[DIR_0MP  ] = &DD[DIR_0MP  *size_Mat];
+         D.f[DIR_000] = &DD[DIR_000*size_Mat];
+         D.f[DIR_PPP ] = &DD[DIR_PPP *size_Mat];
+         D.f[DIR_MMP ] = &DD[DIR_MMP *size_Mat];
+         D.f[DIR_PMP ] = &DD[DIR_PMP *size_Mat];
+         D.f[DIR_MPP ] = &DD[DIR_MPP *size_Mat];
+         D.f[DIR_PPM ] = &DD[DIR_PPM *size_Mat];
+         D.f[DIR_MMM ] = &DD[DIR_MMM *size_Mat];
+         D.f[DIR_PMM ] = &DD[DIR_PMM *size_Mat];
+         D.f[DIR_MPM ] = &DD[DIR_MPM *size_Mat];
       } 
       else
       {
-         D.f[dirW   ] = &DD[dirE   *size_Mat];
-         D.f[dirE   ] = &DD[dirW   *size_Mat];
-         D.f[dirS   ] = &DD[dirN   *size_Mat];
-         D.f[dirN   ] = &DD[dirS   *size_Mat];
-         D.f[dirB   ] = &DD[dirT   *size_Mat];
-         D.f[dirT   ] = &DD[dirB   *size_Mat];
-         D.f[dirSW  ] = &DD[dirNE  *size_Mat];
-         D.f[dirNE  ] = &DD[dirSW  *size_Mat];
-         D.f[dirNW  ] = &DD[dirSE  *size_Mat];
-         D.f[dirSE  ] = &DD[dirNW  *size_Mat];
-         D.f[dirBW  ] = &DD[dirTE  *size_Mat];
-         D.f[dirTE  ] = &DD[dirBW  *size_Mat];
-         D.f[dirTW  ] = &DD[dirBE  *size_Mat];
-         D.f[dirBE  ] = &DD[dirTW  *size_Mat];
-         D.f[dirBS  ] = &DD[dirTN  *size_Mat];
-         D.f[dirTN  ] = &DD[dirBS  *size_Mat];
-         D.f[dirTS  ] = &DD[dirBN  *size_Mat];
-         D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
-         D.f[dirTNE ] = &DD[dirBSW *size_Mat];
-         D.f[dirTSW ] = &DD[dirBNE *size_Mat];
-         D.f[dirTSE ] = &DD[dirBNW *size_Mat];
-         D.f[dirTNW ] = &DD[dirBSE *size_Mat];
-         D.f[dirBNE ] = &DD[dirTSW *size_Mat];
-         D.f[dirBSW ] = &DD[dirTNE *size_Mat];
-         D.f[dirBSE ] = &DD[dirTNW *size_Mat];
-         D.f[dirBNW ] = &DD[dirTSE *size_Mat];
+         D.f[DIR_M00   ] = &DD[DIR_P00   *size_Mat];
+         D.f[DIR_P00   ] = &DD[DIR_M00   *size_Mat];
+         D.f[DIR_0M0   ] = &DD[DIR_0P0   *size_Mat];
+         D.f[DIR_0P0   ] = &DD[DIR_0M0   *size_Mat];
+         D.f[DIR_00M   ] = &DD[DIR_00P   *size_Mat];
+         D.f[DIR_00P   ] = &DD[DIR_00M   *size_Mat];
+         D.f[DIR_MM0  ] = &DD[DIR_PP0  *size_Mat];
+         D.f[DIR_PP0  ] = &DD[DIR_MM0  *size_Mat];
+         D.f[DIR_MP0  ] = &DD[DIR_PM0  *size_Mat];
+         D.f[DIR_PM0  ] = &DD[DIR_MP0  *size_Mat];
+         D.f[DIR_M0M  ] = &DD[DIR_P0P  *size_Mat];
+         D.f[DIR_P0P  ] = &DD[DIR_M0M  *size_Mat];
+         D.f[DIR_M0P  ] = &DD[DIR_P0M  *size_Mat];
+         D.f[DIR_P0M  ] = &DD[DIR_M0P  *size_Mat];
+         D.f[DIR_0MM  ] = &DD[DIR_0PP  *size_Mat];
+         D.f[DIR_0PP  ] = &DD[DIR_0MM  *size_Mat];
+         D.f[DIR_0MP  ] = &DD[DIR_0PM  *size_Mat];
+         D.f[DIR_0PM  ] = &DD[DIR_0MP  *size_Mat];
+         D.f[DIR_000] = &DD[DIR_000*size_Mat];
+         D.f[DIR_PPP ] = &DD[DIR_MMM *size_Mat];
+         D.f[DIR_MMP ] = &DD[DIR_PPM *size_Mat];
+         D.f[DIR_PMP ] = &DD[DIR_MPM *size_Mat];
+         D.f[DIR_MPP ] = &DD[DIR_PMM *size_Mat];
+         D.f[DIR_PPM ] = &DD[DIR_MMP *size_Mat];
+         D.f[DIR_MMM ] = &DD[DIR_PPP *size_Mat];
+         D.f[DIR_PMM ] = &DD[DIR_MPP *size_Mat];
+         D.f[DIR_MPM ] = &DD[DIR_PMP *size_Mat];
       }
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //set Pointer for Buffer Fs
       Distributions27 Dbuff;
-      Dbuff.f[dirE   ] = &bufferFs[dirE   *buffmax];
-      Dbuff.f[dirW   ] = &bufferFs[dirW   *buffmax];
-      Dbuff.f[dirN   ] = &bufferFs[dirN   *buffmax];
-      Dbuff.f[dirS   ] = &bufferFs[dirS   *buffmax];
-      Dbuff.f[dirT   ] = &bufferFs[dirT   *buffmax];
-      Dbuff.f[dirB   ] = &bufferFs[dirB   *buffmax];
-      Dbuff.f[dirNE  ] = &bufferFs[dirNE  *buffmax];
-      Dbuff.f[dirSW  ] = &bufferFs[dirSW  *buffmax];
-      Dbuff.f[dirSE  ] = &bufferFs[dirSE  *buffmax];
-      Dbuff.f[dirNW  ] = &bufferFs[dirNW  *buffmax];
-      Dbuff.f[dirTE  ] = &bufferFs[dirTE  *buffmax];
-      Dbuff.f[dirBW  ] = &bufferFs[dirBW  *buffmax];
-      Dbuff.f[dirBE  ] = &bufferFs[dirBE  *buffmax];
-      Dbuff.f[dirTW  ] = &bufferFs[dirTW  *buffmax];
-      Dbuff.f[dirTN  ] = &bufferFs[dirTN  *buffmax];
-      Dbuff.f[dirBS  ] = &bufferFs[dirBS  *buffmax];
-      Dbuff.f[dirBN  ] = &bufferFs[dirBN  *buffmax];
-      Dbuff.f[dirTS  ] = &bufferFs[dirTS  *buffmax];
-      Dbuff.f[dirZERO] = &bufferFs[dirZERO*buffmax];
-      Dbuff.f[dirTNE ] = &bufferFs[dirTNE *buffmax];
-      Dbuff.f[dirTSW ] = &bufferFs[dirTSW *buffmax];
-      Dbuff.f[dirTSE ] = &bufferFs[dirTSE *buffmax];
-      Dbuff.f[dirTNW ] = &bufferFs[dirTNW *buffmax];
-      Dbuff.f[dirBNE ] = &bufferFs[dirBNE *buffmax];
-      Dbuff.f[dirBSW ] = &bufferFs[dirBSW *buffmax];
-      Dbuff.f[dirBSE ] = &bufferFs[dirBSE *buffmax];
-      Dbuff.f[dirBNW ] = &bufferFs[dirBNW *buffmax];
+      Dbuff.f[DIR_P00   ] = &bufferFs[DIR_P00   *buffmax];
+      Dbuff.f[DIR_M00   ] = &bufferFs[DIR_M00   *buffmax];
+      Dbuff.f[DIR_0P0   ] = &bufferFs[DIR_0P0   *buffmax];
+      Dbuff.f[DIR_0M0   ] = &bufferFs[DIR_0M0   *buffmax];
+      Dbuff.f[DIR_00P   ] = &bufferFs[DIR_00P   *buffmax];
+      Dbuff.f[DIR_00M   ] = &bufferFs[DIR_00M   *buffmax];
+      Dbuff.f[DIR_PP0  ] = &bufferFs[DIR_PP0  *buffmax];
+      Dbuff.f[DIR_MM0  ] = &bufferFs[DIR_MM0  *buffmax];
+      Dbuff.f[DIR_PM0  ] = &bufferFs[DIR_PM0  *buffmax];
+      Dbuff.f[DIR_MP0  ] = &bufferFs[DIR_MP0  *buffmax];
+      Dbuff.f[DIR_P0P  ] = &bufferFs[DIR_P0P  *buffmax];
+      Dbuff.f[DIR_M0M  ] = &bufferFs[DIR_M0M  *buffmax];
+      Dbuff.f[DIR_P0M  ] = &bufferFs[DIR_P0M  *buffmax];
+      Dbuff.f[DIR_M0P  ] = &bufferFs[DIR_M0P  *buffmax];
+      Dbuff.f[DIR_0PP  ] = &bufferFs[DIR_0PP  *buffmax];
+      Dbuff.f[DIR_0MM  ] = &bufferFs[DIR_0MM  *buffmax];
+      Dbuff.f[DIR_0PM  ] = &bufferFs[DIR_0PM  *buffmax];
+      Dbuff.f[DIR_0MP  ] = &bufferFs[DIR_0MP  *buffmax];
+      Dbuff.f[DIR_000] = &bufferFs[DIR_000*buffmax];
+      Dbuff.f[DIR_PPP ] = &bufferFs[DIR_PPP *buffmax];
+      Dbuff.f[DIR_MMP ] = &bufferFs[DIR_MMP *buffmax];
+      Dbuff.f[DIR_PMP ] = &bufferFs[DIR_PMP *buffmax];
+      Dbuff.f[DIR_MPP ] = &bufferFs[DIR_MPP *buffmax];
+      Dbuff.f[DIR_PPM ] = &bufferFs[DIR_PPM *buffmax];
+      Dbuff.f[DIR_MMM ] = &bufferFs[DIR_MMM *buffmax];
+      Dbuff.f[DIR_PMM ] = &bufferFs[DIR_PMM *buffmax];
+      Dbuff.f[DIR_MPM ] = &bufferFs[DIR_MPM *buffmax];
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //copy to buffer
-      (Dbuff.f[dirE   ])[k] = (D.f[dirE   ])[ke   ];
-      (Dbuff.f[dirW   ])[k] = (D.f[dirW   ])[kw   ];
-      (Dbuff.f[dirN   ])[k] = (D.f[dirN   ])[kn   ];
-      (Dbuff.f[dirS   ])[k] = (D.f[dirS   ])[ks   ];
-      (Dbuff.f[dirT   ])[k] = (D.f[dirT   ])[kt   ];
-      (Dbuff.f[dirB   ])[k] = (D.f[dirB   ])[kb   ];
-      (Dbuff.f[dirNE  ])[k] = (D.f[dirNE  ])[kne  ];
-      (Dbuff.f[dirSW  ])[k] = (D.f[dirSW  ])[ksw  ];
-      (Dbuff.f[dirSE  ])[k] = (D.f[dirSE  ])[kse  ];
-      (Dbuff.f[dirNW  ])[k] = (D.f[dirNW  ])[knw  ];
-      (Dbuff.f[dirTE  ])[k] = (D.f[dirTE  ])[kte  ];
-      (Dbuff.f[dirBW  ])[k] = (D.f[dirBW  ])[kbw  ];
-      (Dbuff.f[dirBE  ])[k] = (D.f[dirBE  ])[kbe  ];
-      (Dbuff.f[dirTW  ])[k] = (D.f[dirTW  ])[ktw  ];
-      (Dbuff.f[dirTN  ])[k] = (D.f[dirTN  ])[ktn  ];
-      (Dbuff.f[dirBS  ])[k] = (D.f[dirBS  ])[kbs  ];
-      (Dbuff.f[dirBN  ])[k] = (D.f[dirBN  ])[kbn  ];
-      (Dbuff.f[dirTS  ])[k] = (D.f[dirTS  ])[kts  ];
-      (Dbuff.f[dirZERO])[k] = (D.f[dirZERO])[kzero];
-      (Dbuff.f[dirTNE ])[k] = (D.f[dirTNE ])[ktne ];
-      (Dbuff.f[dirTSW ])[k] = (D.f[dirTSW ])[ktsw ];
-      (Dbuff.f[dirTSE ])[k] = (D.f[dirTSE ])[ktse ];
-      (Dbuff.f[dirTNW ])[k] = (D.f[dirTNW ])[ktnw ];
-      (Dbuff.f[dirBNE ])[k] = (D.f[dirBNE ])[kbne ];
-      (Dbuff.f[dirBSW ])[k] = (D.f[dirBSW ])[kbsw ];
-      (Dbuff.f[dirBSE ])[k] = (D.f[dirBSE ])[kbse ];
-      (Dbuff.f[dirBNW ])[k] = (D.f[dirBNW ])[kbnw ];
+      (Dbuff.f[DIR_P00   ])[k] = (D.f[DIR_P00   ])[ke   ];
+      (Dbuff.f[DIR_M00   ])[k] = (D.f[DIR_M00   ])[kw   ];
+      (Dbuff.f[DIR_0P0   ])[k] = (D.f[DIR_0P0   ])[kn   ];
+      (Dbuff.f[DIR_0M0   ])[k] = (D.f[DIR_0M0   ])[ks   ];
+      (Dbuff.f[DIR_00P   ])[k] = (D.f[DIR_00P   ])[kt   ];
+      (Dbuff.f[DIR_00M   ])[k] = (D.f[DIR_00M   ])[kb   ];
+      (Dbuff.f[DIR_PP0  ])[k] = (D.f[DIR_PP0  ])[kne  ];
+      (Dbuff.f[DIR_MM0  ])[k] = (D.f[DIR_MM0  ])[ksw  ];
+      (Dbuff.f[DIR_PM0  ])[k] = (D.f[DIR_PM0  ])[kse  ];
+      (Dbuff.f[DIR_MP0  ])[k] = (D.f[DIR_MP0  ])[knw  ];
+      (Dbuff.f[DIR_P0P  ])[k] = (D.f[DIR_P0P  ])[kte  ];
+      (Dbuff.f[DIR_M0M  ])[k] = (D.f[DIR_M0M  ])[kbw  ];
+      (Dbuff.f[DIR_P0M  ])[k] = (D.f[DIR_P0M  ])[kbe  ];
+      (Dbuff.f[DIR_M0P  ])[k] = (D.f[DIR_M0P  ])[ktw  ];
+      (Dbuff.f[DIR_0PP  ])[k] = (D.f[DIR_0PP  ])[ktn  ];
+      (Dbuff.f[DIR_0MM  ])[k] = (D.f[DIR_0MM  ])[kbs  ];
+      (Dbuff.f[DIR_0PM  ])[k] = (D.f[DIR_0PM  ])[kbn  ];
+      (Dbuff.f[DIR_0MP  ])[k] = (D.f[DIR_0MP  ])[kts  ];
+      (Dbuff.f[DIR_000])[k] = (D.f[DIR_000])[kzero];
+      (Dbuff.f[DIR_PPP ])[k] = (D.f[DIR_PPP ])[ktne ];
+      (Dbuff.f[DIR_MMP ])[k] = (D.f[DIR_MMP ])[ktsw ];
+      (Dbuff.f[DIR_PMP ])[k] = (D.f[DIR_PMP ])[ktse ];
+      (Dbuff.f[DIR_MPP ])[k] = (D.f[DIR_MPP ])[ktnw ];
+      (Dbuff.f[DIR_PPM ])[k] = (D.f[DIR_PPM ])[kbne ];
+      (Dbuff.f[DIR_MMM ])[k] = (D.f[DIR_MMM ])[kbsw ];
+      (Dbuff.f[DIR_PMM ])[k] = (D.f[DIR_PMM ])[kbse ];
+      (Dbuff.f[DIR_MPM ])[k] = (D.f[DIR_MPM ])[kbnw ];
    }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -686,7 +687,7 @@ extern "C" __global__ void getSendFsPre27(real* DD,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void setRecvFsPre27(real* DD,
+__global__ void setRecvFsPre27(real* DD,
 										  real* bufferFs,
 										  int* recvIndex,
                                           int buffmax,
@@ -694,7 +695,7 @@ extern "C" __global__ void setRecvFsPre27(real* DD,
                                           unsigned int* neighborY,
                                           unsigned int* neighborZ,
                                           unsigned int size_Mat, 
-                                          bool evenOrOdd)
+                                          bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -742,125 +743,125 @@ extern "C" __global__ void setRecvFsPre27(real* DD,
       ////////////////////////////////////////////////////////////////////////////////
 	  //set Pointer for Fs
       Distributions27 D;
-      if (evenOrOdd==true)
+      if (isEvenTimestep==true)
       {
-         D.f[dirE   ] = &DD[dirE   *size_Mat];
-         D.f[dirW   ] = &DD[dirW   *size_Mat];
-         D.f[dirN   ] = &DD[dirN   *size_Mat];
-         D.f[dirS   ] = &DD[dirS   *size_Mat];
-         D.f[dirT   ] = &DD[dirT   *size_Mat];
-         D.f[dirB   ] = &DD[dirB   *size_Mat];
-         D.f[dirNE  ] = &DD[dirNE  *size_Mat];
-         D.f[dirSW  ] = &DD[dirSW  *size_Mat];
-         D.f[dirSE  ] = &DD[dirSE  *size_Mat];
-         D.f[dirNW  ] = &DD[dirNW  *size_Mat];
-         D.f[dirTE  ] = &DD[dirTE  *size_Mat];
-         D.f[dirBW  ] = &DD[dirBW  *size_Mat];
-         D.f[dirBE  ] = &DD[dirBE  *size_Mat];
-         D.f[dirTW  ] = &DD[dirTW  *size_Mat];
-         D.f[dirTN  ] = &DD[dirTN  *size_Mat];
-         D.f[dirBS  ] = &DD[dirBS  *size_Mat];
-         D.f[dirBN  ] = &DD[dirBN  *size_Mat];
-         D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
-         D.f[dirTNE ] = &DD[dirTNE *size_Mat];
-         D.f[dirTSW ] = &DD[dirTSW *size_Mat];
-         D.f[dirTSE ] = &DD[dirTSE *size_Mat];
-         D.f[dirTNW ] = &DD[dirTNW *size_Mat];
-         D.f[dirBNE ] = &DD[dirBNE *size_Mat];
-         D.f[dirBSW ] = &DD[dirBSW *size_Mat];
-         D.f[dirBSE ] = &DD[dirBSE *size_Mat];
-         D.f[dirBNW ] = &DD[dirBNW *size_Mat];
+         D.f[DIR_P00   ] = &DD[DIR_P00   *size_Mat];
+         D.f[DIR_M00   ] = &DD[DIR_M00   *size_Mat];
+         D.f[DIR_0P0   ] = &DD[DIR_0P0   *size_Mat];
+         D.f[DIR_0M0   ] = &DD[DIR_0M0   *size_Mat];
+         D.f[DIR_00P   ] = &DD[DIR_00P   *size_Mat];
+         D.f[DIR_00M   ] = &DD[DIR_00M   *size_Mat];
+         D.f[DIR_PP0  ] = &DD[DIR_PP0  *size_Mat];
+         D.f[DIR_MM0  ] = &DD[DIR_MM0  *size_Mat];
+         D.f[DIR_PM0  ] = &DD[DIR_PM0  *size_Mat];
+         D.f[DIR_MP0  ] = &DD[DIR_MP0  *size_Mat];
+         D.f[DIR_P0P  ] = &DD[DIR_P0P  *size_Mat];
+         D.f[DIR_M0M  ] = &DD[DIR_M0M  *size_Mat];
+         D.f[DIR_P0M  ] = &DD[DIR_P0M  *size_Mat];
+         D.f[DIR_M0P  ] = &DD[DIR_M0P  *size_Mat];
+         D.f[DIR_0PP  ] = &DD[DIR_0PP  *size_Mat];
+         D.f[DIR_0MM  ] = &DD[DIR_0MM  *size_Mat];
+         D.f[DIR_0PM  ] = &DD[DIR_0PM  *size_Mat];
+         D.f[DIR_0MP  ] = &DD[DIR_0MP  *size_Mat];
+         D.f[DIR_000] = &DD[DIR_000*size_Mat];
+         D.f[DIR_PPP ] = &DD[DIR_PPP *size_Mat];
+         D.f[DIR_MMP ] = &DD[DIR_MMP *size_Mat];
+         D.f[DIR_PMP ] = &DD[DIR_PMP *size_Mat];
+         D.f[DIR_MPP ] = &DD[DIR_MPP *size_Mat];
+         D.f[DIR_PPM ] = &DD[DIR_PPM *size_Mat];
+         D.f[DIR_MMM ] = &DD[DIR_MMM *size_Mat];
+         D.f[DIR_PMM ] = &DD[DIR_PMM *size_Mat];
+         D.f[DIR_MPM ] = &DD[DIR_MPM *size_Mat];
       } 
       else
       {
-         D.f[dirW   ] = &DD[dirE   *size_Mat];
-         D.f[dirE   ] = &DD[dirW   *size_Mat];
-         D.f[dirS   ] = &DD[dirN   *size_Mat];
-         D.f[dirN   ] = &DD[dirS   *size_Mat];
-         D.f[dirB   ] = &DD[dirT   *size_Mat];
-         D.f[dirT   ] = &DD[dirB   *size_Mat];
-         D.f[dirSW  ] = &DD[dirNE  *size_Mat];
-         D.f[dirNE  ] = &DD[dirSW  *size_Mat];
-         D.f[dirNW  ] = &DD[dirSE  *size_Mat];
-         D.f[dirSE  ] = &DD[dirNW  *size_Mat];
-         D.f[dirBW  ] = &DD[dirTE  *size_Mat];
-         D.f[dirTE  ] = &DD[dirBW  *size_Mat];
-         D.f[dirTW  ] = &DD[dirBE  *size_Mat];
-         D.f[dirBE  ] = &DD[dirTW  *size_Mat];
-         D.f[dirBS  ] = &DD[dirTN  *size_Mat];
-         D.f[dirTN  ] = &DD[dirBS  *size_Mat];
-         D.f[dirTS  ] = &DD[dirBN  *size_Mat];
-         D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
-         D.f[dirTNE ] = &DD[dirBSW *size_Mat];
-         D.f[dirTSW ] = &DD[dirBNE *size_Mat];
-         D.f[dirTSE ] = &DD[dirBNW *size_Mat];
-         D.f[dirTNW ] = &DD[dirBSE *size_Mat];
-         D.f[dirBNE ] = &DD[dirTSW *size_Mat];
-         D.f[dirBSW ] = &DD[dirTNE *size_Mat];
-         D.f[dirBSE ] = &DD[dirTNW *size_Mat];
-         D.f[dirBNW ] = &DD[dirTSE *size_Mat];
+         D.f[DIR_M00   ] = &DD[DIR_P00   *size_Mat];
+         D.f[DIR_P00   ] = &DD[DIR_M00   *size_Mat];
+         D.f[DIR_0M0   ] = &DD[DIR_0P0   *size_Mat];
+         D.f[DIR_0P0   ] = &DD[DIR_0M0   *size_Mat];
+         D.f[DIR_00M   ] = &DD[DIR_00P   *size_Mat];
+         D.f[DIR_00P   ] = &DD[DIR_00M   *size_Mat];
+         D.f[DIR_MM0  ] = &DD[DIR_PP0  *size_Mat];
+         D.f[DIR_PP0  ] = &DD[DIR_MM0  *size_Mat];
+         D.f[DIR_MP0  ] = &DD[DIR_PM0  *size_Mat];
+         D.f[DIR_PM0  ] = &DD[DIR_MP0  *size_Mat];
+         D.f[DIR_M0M  ] = &DD[DIR_P0P  *size_Mat];
+         D.f[DIR_P0P  ] = &DD[DIR_M0M  *size_Mat];
+         D.f[DIR_M0P  ] = &DD[DIR_P0M  *size_Mat];
+         D.f[DIR_P0M  ] = &DD[DIR_M0P  *size_Mat];
+         D.f[DIR_0MM  ] = &DD[DIR_0PP  *size_Mat];
+         D.f[DIR_0PP  ] = &DD[DIR_0MM  *size_Mat];
+         D.f[DIR_0MP  ] = &DD[DIR_0PM  *size_Mat];
+         D.f[DIR_0PM  ] = &DD[DIR_0MP  *size_Mat];
+         D.f[DIR_000] = &DD[DIR_000*size_Mat];
+         D.f[DIR_PPP ] = &DD[DIR_MMM *size_Mat];
+         D.f[DIR_MMP ] = &DD[DIR_PPM *size_Mat];
+         D.f[DIR_PMP ] = &DD[DIR_MPM *size_Mat];
+         D.f[DIR_MPP ] = &DD[DIR_PMM *size_Mat];
+         D.f[DIR_PPM ] = &DD[DIR_MMP *size_Mat];
+         D.f[DIR_MMM ] = &DD[DIR_PPP *size_Mat];
+         D.f[DIR_PMM ] = &DD[DIR_MPP *size_Mat];
+         D.f[DIR_MPM ] = &DD[DIR_PMP *size_Mat];
       }
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //set Pointer for Buffer Fs
       Distributions27 Dbuff;
-      Dbuff.f[dirE   ] = &bufferFs[dirE   *buffmax];
-      Dbuff.f[dirW   ] = &bufferFs[dirW   *buffmax];
-      Dbuff.f[dirN   ] = &bufferFs[dirN   *buffmax];
-      Dbuff.f[dirS   ] = &bufferFs[dirS   *buffmax];
-      Dbuff.f[dirT   ] = &bufferFs[dirT   *buffmax];
-      Dbuff.f[dirB   ] = &bufferFs[dirB   *buffmax];
-      Dbuff.f[dirNE  ] = &bufferFs[dirNE  *buffmax];
-      Dbuff.f[dirSW  ] = &bufferFs[dirSW  *buffmax];
-      Dbuff.f[dirSE  ] = &bufferFs[dirSE  *buffmax];
-      Dbuff.f[dirNW  ] = &bufferFs[dirNW  *buffmax];
-      Dbuff.f[dirTE  ] = &bufferFs[dirTE  *buffmax];
-      Dbuff.f[dirBW  ] = &bufferFs[dirBW  *buffmax];
-      Dbuff.f[dirBE  ] = &bufferFs[dirBE  *buffmax];
-      Dbuff.f[dirTW  ] = &bufferFs[dirTW  *buffmax];
-      Dbuff.f[dirTN  ] = &bufferFs[dirTN  *buffmax];
-      Dbuff.f[dirBS  ] = &bufferFs[dirBS  *buffmax];
-      Dbuff.f[dirBN  ] = &bufferFs[dirBN  *buffmax];
-      Dbuff.f[dirTS  ] = &bufferFs[dirTS  *buffmax];
-      Dbuff.f[dirZERO] = &bufferFs[dirZERO*buffmax];
-      Dbuff.f[dirTNE ] = &bufferFs[dirTNE *buffmax];
-      Dbuff.f[dirTSW ] = &bufferFs[dirTSW *buffmax];
-      Dbuff.f[dirTSE ] = &bufferFs[dirTSE *buffmax];
-      Dbuff.f[dirTNW ] = &bufferFs[dirTNW *buffmax];
-      Dbuff.f[dirBNE ] = &bufferFs[dirBNE *buffmax];
-      Dbuff.f[dirBSW ] = &bufferFs[dirBSW *buffmax];
-      Dbuff.f[dirBSE ] = &bufferFs[dirBSE *buffmax];
-      Dbuff.f[dirBNW ] = &bufferFs[dirBNW *buffmax];
+      Dbuff.f[DIR_P00   ] = &bufferFs[DIR_P00   *buffmax];
+      Dbuff.f[DIR_M00   ] = &bufferFs[DIR_M00   *buffmax];
+      Dbuff.f[DIR_0P0   ] = &bufferFs[DIR_0P0   *buffmax];
+      Dbuff.f[DIR_0M0   ] = &bufferFs[DIR_0M0   *buffmax];
+      Dbuff.f[DIR_00P   ] = &bufferFs[DIR_00P   *buffmax];
+      Dbuff.f[DIR_00M   ] = &bufferFs[DIR_00M   *buffmax];
+      Dbuff.f[DIR_PP0  ] = &bufferFs[DIR_PP0  *buffmax];
+      Dbuff.f[DIR_MM0  ] = &bufferFs[DIR_MM0  *buffmax];
+      Dbuff.f[DIR_PM0  ] = &bufferFs[DIR_PM0  *buffmax];
+      Dbuff.f[DIR_MP0  ] = &bufferFs[DIR_MP0  *buffmax];
+      Dbuff.f[DIR_P0P  ] = &bufferFs[DIR_P0P  *buffmax];
+      Dbuff.f[DIR_M0M  ] = &bufferFs[DIR_M0M  *buffmax];
+      Dbuff.f[DIR_P0M  ] = &bufferFs[DIR_P0M  *buffmax];
+      Dbuff.f[DIR_M0P  ] = &bufferFs[DIR_M0P  *buffmax];
+      Dbuff.f[DIR_0PP  ] = &bufferFs[DIR_0PP  *buffmax];
+      Dbuff.f[DIR_0MM  ] = &bufferFs[DIR_0MM  *buffmax];
+      Dbuff.f[DIR_0PM  ] = &bufferFs[DIR_0PM  *buffmax];
+      Dbuff.f[DIR_0MP  ] = &bufferFs[DIR_0MP  *buffmax];
+      Dbuff.f[DIR_000] = &bufferFs[DIR_000*buffmax];
+      Dbuff.f[DIR_PPP ] = &bufferFs[DIR_PPP *buffmax];
+      Dbuff.f[DIR_MMP ] = &bufferFs[DIR_MMP *buffmax];
+      Dbuff.f[DIR_PMP ] = &bufferFs[DIR_PMP *buffmax];
+      Dbuff.f[DIR_MPP ] = &bufferFs[DIR_MPP *buffmax];
+      Dbuff.f[DIR_PPM ] = &bufferFs[DIR_PPM *buffmax];
+      Dbuff.f[DIR_MMM ] = &bufferFs[DIR_MMM *buffmax];
+      Dbuff.f[DIR_PMM ] = &bufferFs[DIR_PMM *buffmax];
+      Dbuff.f[DIR_MPM ] = &bufferFs[DIR_MPM *buffmax];
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //copy from buffer
-      (D.f[dirE   ])[ke   ] = (Dbuff.f[dirE   ])[k];
-      (D.f[dirW   ])[kw   ] = (Dbuff.f[dirW   ])[k];
-      (D.f[dirN   ])[kn   ] = (Dbuff.f[dirN   ])[k];
-      (D.f[dirS   ])[ks   ] = (Dbuff.f[dirS   ])[k];
-      (D.f[dirT   ])[kt   ] = (Dbuff.f[dirT   ])[k];
-      (D.f[dirB   ])[kb   ] = (Dbuff.f[dirB   ])[k];
-      (D.f[dirNE  ])[kne  ] = (Dbuff.f[dirNE  ])[k];
-      (D.f[dirSW  ])[ksw  ] = (Dbuff.f[dirSW  ])[k];
-      (D.f[dirSE  ])[kse  ] = (Dbuff.f[dirSE  ])[k];
-      (D.f[dirNW  ])[knw  ] = (Dbuff.f[dirNW  ])[k];
-      (D.f[dirTE  ])[kte  ] = (Dbuff.f[dirTE  ])[k];
-      (D.f[dirBW  ])[kbw  ] = (Dbuff.f[dirBW  ])[k];
-      (D.f[dirBE  ])[kbe  ] = (Dbuff.f[dirBE  ])[k];
-      (D.f[dirTW  ])[ktw  ] = (Dbuff.f[dirTW  ])[k];
-      (D.f[dirTN  ])[ktn  ] = (Dbuff.f[dirTN  ])[k];
-      (D.f[dirBS  ])[kbs  ] = (Dbuff.f[dirBS  ])[k];
-      (D.f[dirBN  ])[kbn  ] = (Dbuff.f[dirBN  ])[k];
-      (D.f[dirTS  ])[kts  ] = (Dbuff.f[dirTS  ])[k];
-      (D.f[dirZERO])[kzero] = (Dbuff.f[dirZERO])[k];
-      (D.f[dirTNE ])[ktne ] = (Dbuff.f[dirTNE ])[k];
-      (D.f[dirTSW ])[ktsw ] = (Dbuff.f[dirTSW ])[k];
-      (D.f[dirTSE ])[ktse ] = (Dbuff.f[dirTSE ])[k];
-      (D.f[dirTNW ])[ktnw ] = (Dbuff.f[dirTNW ])[k];
-      (D.f[dirBNE ])[kbne ] = (Dbuff.f[dirBNE ])[k];
-      (D.f[dirBSW ])[kbsw ] = (Dbuff.f[dirBSW ])[k];
-      (D.f[dirBSE ])[kbse ] = (Dbuff.f[dirBSE ])[k];
-      (D.f[dirBNW ])[kbnw ] = (Dbuff.f[dirBNW ])[k];
+      (D.f[DIR_P00   ])[ke   ] = (Dbuff.f[DIR_P00   ])[k];
+      (D.f[DIR_M00   ])[kw   ] = (Dbuff.f[DIR_M00   ])[k];
+      (D.f[DIR_0P0   ])[kn   ] = (Dbuff.f[DIR_0P0   ])[k];
+      (D.f[DIR_0M0   ])[ks   ] = (Dbuff.f[DIR_0M0   ])[k];
+      (D.f[DIR_00P   ])[kt   ] = (Dbuff.f[DIR_00P   ])[k];
+      (D.f[DIR_00M   ])[kb   ] = (Dbuff.f[DIR_00M   ])[k];
+      (D.f[DIR_PP0  ])[kne  ] = (Dbuff.f[DIR_PP0  ])[k];
+      (D.f[DIR_MM0  ])[ksw  ] = (Dbuff.f[DIR_MM0  ])[k];
+      (D.f[DIR_PM0  ])[kse  ] = (Dbuff.f[DIR_PM0  ])[k];
+      (D.f[DIR_MP0  ])[knw  ] = (Dbuff.f[DIR_MP0  ])[k];
+      (D.f[DIR_P0P  ])[kte  ] = (Dbuff.f[DIR_P0P  ])[k];
+      (D.f[DIR_M0M  ])[kbw  ] = (Dbuff.f[DIR_M0M  ])[k];
+      (D.f[DIR_P0M  ])[kbe  ] = (Dbuff.f[DIR_P0M  ])[k];
+      (D.f[DIR_M0P  ])[ktw  ] = (Dbuff.f[DIR_M0P  ])[k];
+      (D.f[DIR_0PP  ])[ktn  ] = (Dbuff.f[DIR_0PP  ])[k];
+      (D.f[DIR_0MM  ])[kbs  ] = (Dbuff.f[DIR_0MM  ])[k];
+      (D.f[DIR_0PM  ])[kbn  ] = (Dbuff.f[DIR_0PM  ])[k];
+      (D.f[DIR_0MP  ])[kts  ] = (Dbuff.f[DIR_0MP  ])[k];
+      (D.f[DIR_000])[kzero] = (Dbuff.f[DIR_000])[k];
+      (D.f[DIR_PPP ])[ktne ] = (Dbuff.f[DIR_PPP ])[k];
+      (D.f[DIR_MMP ])[ktsw ] = (Dbuff.f[DIR_MMP ])[k];
+      (D.f[DIR_PMP ])[ktse ] = (Dbuff.f[DIR_PMP ])[k];
+      (D.f[DIR_MPP ])[ktnw ] = (Dbuff.f[DIR_MPP ])[k];
+      (D.f[DIR_PPM ])[kbne ] = (Dbuff.f[DIR_PPM ])[k];
+      (D.f[DIR_MMM ])[kbsw ] = (Dbuff.f[DIR_MMM ])[k];
+      (D.f[DIR_PMM ])[kbse ] = (Dbuff.f[DIR_PMM ])[k];
+      (D.f[DIR_MPM ])[kbnw ] = (Dbuff.f[DIR_MPM ])[k];
    }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -894,7 +895,7 @@ extern "C" __global__ void setRecvFsPre27(real* DD,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void getSendGsF3(
+__global__ void getSendGsF3(
 	real* G6,
 	real* bufferGs,
 	int* sendIndex,
@@ -903,7 +904,7 @@ extern "C" __global__ void getSendGsF3(
 	unsigned int* neighborY,
 	unsigned int* neighborZ,
 	unsigned int size_Mat,
-	bool evenOrOdd)
+	bool isEvenTimestep)
 {
 	////////////////////////////////////////////////////////////////////////////////
 	const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -928,41 +929,41 @@ extern "C" __global__ void getSendGsF3(
 		////////////////////////////////////////////////////////////////////////////////
 		//set Pointer for Gs
 		Distributions6 G;
-		if (evenOrOdd)
+		if (isEvenTimestep)
 		{
-			G.g[dirE] = &G6[dirE   *size_Mat];
-			G.g[dirW] = &G6[dirW   *size_Mat];
-			G.g[dirN] = &G6[dirN   *size_Mat];
-			G.g[dirS] = &G6[dirS   *size_Mat];
-			G.g[dirT] = &G6[dirT   *size_Mat];
-			G.g[dirB] = &G6[dirB   *size_Mat];
+			G.g[DIR_P00] = &G6[DIR_P00   *size_Mat];
+			G.g[DIR_M00] = &G6[DIR_M00   *size_Mat];
+			G.g[DIR_0P0] = &G6[DIR_0P0   *size_Mat];
+			G.g[DIR_0M0] = &G6[DIR_0M0   *size_Mat];
+			G.g[DIR_00P] = &G6[DIR_00P   *size_Mat];
+			G.g[DIR_00M] = &G6[DIR_00M   *size_Mat];
 		}
 		else
 		{
-			G.g[dirW] = &G6[dirE   *size_Mat];
-			G.g[dirE] = &G6[dirW   *size_Mat];
-			G.g[dirS] = &G6[dirN   *size_Mat];
-			G.g[dirN] = &G6[dirS   *size_Mat];
-			G.g[dirB] = &G6[dirT   *size_Mat];
-			G.g[dirT] = &G6[dirB   *size_Mat];
+			G.g[DIR_M00] = &G6[DIR_P00   *size_Mat];
+			G.g[DIR_P00] = &G6[DIR_M00   *size_Mat];
+			G.g[DIR_0M0] = &G6[DIR_0P0   *size_Mat];
+			G.g[DIR_0P0] = &G6[DIR_0M0   *size_Mat];
+			G.g[DIR_00M] = &G6[DIR_00P   *size_Mat];
+			G.g[DIR_00P] = &G6[DIR_00M   *size_Mat];
 		}
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		//set Pointer for Buffer Gs
 		Distributions6 Dbuff;
-		Dbuff.g[dirE] = &bufferGs[dirE   *buffmax];
-		Dbuff.g[dirW] = &bufferGs[dirW   *buffmax];
-		Dbuff.g[dirN] = &bufferGs[dirN   *buffmax];
-		Dbuff.g[dirS] = &bufferGs[dirS   *buffmax];
-		Dbuff.g[dirT] = &bufferGs[dirT   *buffmax];
-		Dbuff.g[dirB] = &bufferGs[dirB   *buffmax];
+		Dbuff.g[DIR_P00] = &bufferGs[DIR_P00   *buffmax];
+		Dbuff.g[DIR_M00] = &bufferGs[DIR_M00   *buffmax];
+		Dbuff.g[DIR_0P0] = &bufferGs[DIR_0P0   *buffmax];
+		Dbuff.g[DIR_0M0] = &bufferGs[DIR_0M0   *buffmax];
+		Dbuff.g[DIR_00P] = &bufferGs[DIR_00P   *buffmax];
+		Dbuff.g[DIR_00M] = &bufferGs[DIR_00M   *buffmax];
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		//write Gs to buffer
-		(Dbuff.g[dirE])[k] = (G.g[dirW])[kw];
-		(Dbuff.g[dirW])[k] = (G.g[dirE])[kr];
-		(Dbuff.g[dirN])[k] = (G.g[dirS])[ks];
-		(Dbuff.g[dirS])[k] = (G.g[dirN])[kr];
-		(Dbuff.g[dirT])[k] = (G.g[dirB])[kb];
-		(Dbuff.g[dirB])[k] = (G.g[dirT])[kr];
+		(Dbuff.g[DIR_P00])[k] = (G.g[DIR_M00])[kw];
+		(Dbuff.g[DIR_M00])[k] = (G.g[DIR_P00])[kr];
+		(Dbuff.g[DIR_0P0])[k] = (G.g[DIR_0M0])[ks];
+		(Dbuff.g[DIR_0M0])[k] = (G.g[DIR_0P0])[kr];
+		(Dbuff.g[DIR_00P])[k] = (G.g[DIR_00M])[kb];
+		(Dbuff.g[DIR_00M])[k] = (G.g[DIR_00P])[kr];
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -997,7 +998,7 @@ extern "C" __global__ void getSendGsF3(
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void setRecvGsF3(
+__global__ void setRecvGsF3(
 	real* G6,
 	real* bufferGs,
 	int* recvIndex,
@@ -1006,7 +1007,7 @@ extern "C" __global__ void setRecvGsF3(
 	unsigned int* neighborY,
 	unsigned int* neighborZ,
 	unsigned int size_Mat,
-	bool evenOrOdd)
+	bool isEvenTimestep)
 {
 	////////////////////////////////////////////////////////////////////////////////
 	const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -1031,41 +1032,41 @@ extern "C" __global__ void setRecvGsF3(
 		////////////////////////////////////////////////////////////////////////////////
 		//set Pointer for Gs
 		Distributions6 G;
-		if (evenOrOdd)
+		if (isEvenTimestep)
 		{
-			G.g[dirE] = &G6[dirE   *size_Mat];
-			G.g[dirW] = &G6[dirW   *size_Mat];
-			G.g[dirN] = &G6[dirN   *size_Mat];
-			G.g[dirS] = &G6[dirS   *size_Mat];
-			G.g[dirT] = &G6[dirT   *size_Mat];
-			G.g[dirB] = &G6[dirB   *size_Mat];
+			G.g[DIR_P00] = &G6[DIR_P00   *size_Mat];
+			G.g[DIR_M00] = &G6[DIR_M00   *size_Mat];
+			G.g[DIR_0P0] = &G6[DIR_0P0   *size_Mat];
+			G.g[DIR_0M0] = &G6[DIR_0M0   *size_Mat];
+			G.g[DIR_00P] = &G6[DIR_00P   *size_Mat];
+			G.g[DIR_00M] = &G6[DIR_00M   *size_Mat];
 		}
 		else
 		{
-			G.g[dirW] = &G6[dirE   *size_Mat];
-			G.g[dirE] = &G6[dirW   *size_Mat];
-			G.g[dirS] = &G6[dirN   *size_Mat];
-			G.g[dirN] = &G6[dirS   *size_Mat];
-			G.g[dirB] = &G6[dirT   *size_Mat];
-			G.g[dirT] = &G6[dirB   *size_Mat];
+			G.g[DIR_M00] = &G6[DIR_P00   *size_Mat];
+			G.g[DIR_P00] = &G6[DIR_M00   *size_Mat];
+			G.g[DIR_0M0] = &G6[DIR_0P0   *size_Mat];
+			G.g[DIR_0P0] = &G6[DIR_0M0   *size_Mat];
+			G.g[DIR_00M] = &G6[DIR_00P   *size_Mat];
+			G.g[DIR_00P] = &G6[DIR_00M   *size_Mat];
 		}
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		//set Pointer for Buffer Gs
 		Distributions6 Dbuff;
-		Dbuff.g[dirE] = &bufferGs[dirE   *buffmax];
-		Dbuff.g[dirW] = &bufferGs[dirW   *buffmax];
-		Dbuff.g[dirN] = &bufferGs[dirN   *buffmax];
-		Dbuff.g[dirS] = &bufferGs[dirS   *buffmax];
-		Dbuff.g[dirT] = &bufferGs[dirT   *buffmax];
-		Dbuff.g[dirB] = &bufferGs[dirB   *buffmax];
+		Dbuff.g[DIR_P00] = &bufferGs[DIR_P00   *buffmax];
+		Dbuff.g[DIR_M00] = &bufferGs[DIR_M00   *buffmax];
+		Dbuff.g[DIR_0P0] = &bufferGs[DIR_0P0   *buffmax];
+		Dbuff.g[DIR_0M0] = &bufferGs[DIR_0M0   *buffmax];
+		Dbuff.g[DIR_00P] = &bufferGs[DIR_00P   *buffmax];
+		Dbuff.g[DIR_00M] = &bufferGs[DIR_00M   *buffmax];
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		//write buffer to Gs
-		(G.g[dirW])[kw] = (Dbuff.g[dirE])[k];
-		(G.g[dirE])[kr] = (Dbuff.g[dirW])[k];
-		(G.g[dirS])[ks] = (Dbuff.g[dirN])[k];
-		(G.g[dirN])[kr] = (Dbuff.g[dirS])[k];
-		(G.g[dirB])[kb] = (Dbuff.g[dirT])[k];
-		(G.g[dirT])[kr] = (Dbuff.g[dirB])[k];
+		(G.g[DIR_M00])[kw] = (Dbuff.g[DIR_P00])[k];
+		(G.g[DIR_P00])[kr] = (Dbuff.g[DIR_M00])[k];
+		(G.g[DIR_0M0])[ks] = (Dbuff.g[DIR_0P0])[k];
+		(G.g[DIR_0P0])[kr] = (Dbuff.g[DIR_0M0])[k];
+		(G.g[DIR_00M])[kb] = (Dbuff.g[DIR_00P])[k];
+		(G.g[DIR_00P])[kr] = (Dbuff.g[DIR_00M])[k];
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

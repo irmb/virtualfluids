@@ -1,13 +1,13 @@
 /* Device code */
 #include "LBM/LB.h" 
-#include "LBM/D3Q27.h"
+#include "lbm/constants/D3Q27.h"
 #include <lbm/constants/NumericConstants.h>
 
 using namespace vf::lbm::constant;
-
+using namespace vf::lbm::dir;
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void InitParticles( real* coordX,
+__global__ void InitParticles( real* coordX,
 										  real* coordY,
 										  real* coordZ, 
 										  real* coordParticleXlocal,
@@ -158,7 +158,7 @@ extern "C" __global__ void InitParticles( real* coordX,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void MoveParticles( real* coordX,
+__global__ void MoveParticles( real* coordX,
 										  real* coordY,
 										  real* coordZ, 
 										  real* coordParticleXlocal,
@@ -184,7 +184,7 @@ extern "C" __global__ void MoveParticles( real* coordX,
 										  unsigned int numberOfTimesteps, 
 									      unsigned int numberOfParticles, 
 										  unsigned int size_Mat,
-										  bool evenOrOdd)
+										  bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  ix = threadIdx.x;  // Globaler x-Index 
@@ -246,65 +246,65 @@ extern "C" __global__ void MoveParticles( real* coordX,
 			(BC0yz >= GEO_FLUID) || 
 			(BCxyz >= GEO_FLUID) )
 		{
-		   if (evenOrOdd==true)
+		   if (isEvenTimestep==true)
 		   {
-			  feC    = &DD[dirE   *size_Mat];
-			  fwC    = &DD[dirW   *size_Mat];
-			  fnC    = &DD[dirN   *size_Mat];
-			  fsC    = &DD[dirS   *size_Mat];
-			  ftC    = &DD[dirT   *size_Mat];
-			  fbC    = &DD[dirB   *size_Mat];
-			  fneC   = &DD[dirNE  *size_Mat];
-			  fswC   = &DD[dirSW  *size_Mat];
-			  fseC   = &DD[dirSE  *size_Mat];
-			  fnwC   = &DD[dirNW  *size_Mat];
-			  fteC   = &DD[dirTE  *size_Mat];
-			  fbwC   = &DD[dirBW  *size_Mat];
-			  fbeC   = &DD[dirBE  *size_Mat];
-			  ftwC   = &DD[dirTW  *size_Mat];
-			  ftnC   = &DD[dirTN  *size_Mat];
-			  fbsC   = &DD[dirBS  *size_Mat];
-			  fbnC   = &DD[dirBN  *size_Mat];
-			  ftsC   = &DD[dirTS  *size_Mat];
-			  fzeroC = &DD[dirZERO*size_Mat];
-			  ftneC  = &DD[dirTNE *size_Mat];
-			  ftswC  = &DD[dirTSW *size_Mat];
-			  ftseC  = &DD[dirTSE *size_Mat];
-			  ftnwC  = &DD[dirTNW *size_Mat];
-			  fbneC  = &DD[dirBNE *size_Mat];
-			  fbswC  = &DD[dirBSW *size_Mat];
-			  fbseC  = &DD[dirBSE *size_Mat];
-			  fbnwC  = &DD[dirBNW *size_Mat];
+			  feC    = &DD[DIR_P00   *size_Mat];
+			  fwC    = &DD[DIR_M00   *size_Mat];
+			  fnC    = &DD[DIR_0P0   *size_Mat];
+			  fsC    = &DD[DIR_0M0   *size_Mat];
+			  ftC    = &DD[DIR_00P   *size_Mat];
+			  fbC    = &DD[DIR_00M   *size_Mat];
+			  fneC   = &DD[DIR_PP0  *size_Mat];
+			  fswC   = &DD[DIR_MM0  *size_Mat];
+			  fseC   = &DD[DIR_PM0  *size_Mat];
+			  fnwC   = &DD[DIR_MP0  *size_Mat];
+			  fteC   = &DD[DIR_P0P  *size_Mat];
+			  fbwC   = &DD[DIR_M0M  *size_Mat];
+			  fbeC   = &DD[DIR_P0M  *size_Mat];
+			  ftwC   = &DD[DIR_M0P  *size_Mat];
+			  ftnC   = &DD[DIR_0PP  *size_Mat];
+			  fbsC   = &DD[DIR_0MM  *size_Mat];
+			  fbnC   = &DD[DIR_0PM  *size_Mat];
+			  ftsC   = &DD[DIR_0MP  *size_Mat];
+			  fzeroC = &DD[DIR_000*size_Mat];
+			  ftneC  = &DD[DIR_PPP *size_Mat];
+			  ftswC  = &DD[DIR_MMP *size_Mat];
+			  ftseC  = &DD[DIR_PMP *size_Mat];
+			  ftnwC  = &DD[DIR_MPP *size_Mat];
+			  fbneC  = &DD[DIR_PPM *size_Mat];
+			  fbswC  = &DD[DIR_MMM *size_Mat];
+			  fbseC  = &DD[DIR_PMM *size_Mat];
+			  fbnwC  = &DD[DIR_MPM *size_Mat];
 		   } 			 
 		   else			 
 		   {			 
-			  fwC    = &DD[dirE   *size_Mat];
-			  feC    = &DD[dirW   *size_Mat];
-			  fsC    = &DD[dirN   *size_Mat];
-			  fnC    = &DD[dirS   *size_Mat];
-			  fbC    = &DD[dirT   *size_Mat];
-			  ftC    = &DD[dirB   *size_Mat];
-			  fswC   = &DD[dirNE  *size_Mat];
-			  fneC   = &DD[dirSW  *size_Mat];
-			  fnwC   = &DD[dirSE  *size_Mat];
-			  fseC   = &DD[dirNW  *size_Mat];
-			  fbwC   = &DD[dirTE  *size_Mat];
-			  fteC   = &DD[dirBW  *size_Mat];
-			  ftwC   = &DD[dirBE  *size_Mat];
-			  fbeC   = &DD[dirTW  *size_Mat];
-			  fbsC   = &DD[dirTN  *size_Mat];
-			  ftnC   = &DD[dirBS  *size_Mat];
-			  ftsC   = &DD[dirBN  *size_Mat];
-			  fbnC   = &DD[dirTS  *size_Mat];
-			  fzeroC = &DD[dirZERO*size_Mat];
-			  fbswC  = &DD[dirTNE *size_Mat];
-			  fbneC  = &DD[dirTSW *size_Mat];
-			  fbnwC  = &DD[dirTSE *size_Mat];
-			  fbseC  = &DD[dirTNW *size_Mat];
-			  ftswC  = &DD[dirBNE *size_Mat];
-			  ftneC  = &DD[dirBSW *size_Mat];
-			  ftnwC  = &DD[dirBSE *size_Mat];
-			  ftseC  = &DD[dirBNW *size_Mat];
+			  fwC    = &DD[DIR_P00   *size_Mat];
+			  feC    = &DD[DIR_M00   *size_Mat];
+			  fsC    = &DD[DIR_0P0   *size_Mat];
+			  fnC    = &DD[DIR_0M0   *size_Mat];
+			  fbC    = &DD[DIR_00P   *size_Mat];
+			  ftC    = &DD[DIR_00M   *size_Mat];
+			  fswC   = &DD[DIR_PP0  *size_Mat];
+			  fneC   = &DD[DIR_MM0  *size_Mat];
+			  fnwC   = &DD[DIR_PM0  *size_Mat];
+			  fseC   = &DD[DIR_MP0  *size_Mat];
+			  fbwC   = &DD[DIR_P0P  *size_Mat];
+			  fteC   = &DD[DIR_M0M  *size_Mat];
+			  ftwC   = &DD[DIR_P0M  *size_Mat];
+			  fbeC   = &DD[DIR_M0P  *size_Mat];
+			  fbsC   = &DD[DIR_0PP  *size_Mat];
+			  ftnC   = &DD[DIR_0MM  *size_Mat];
+			  ftsC   = &DD[DIR_0PM  *size_Mat];
+			  fbnC   = &DD[DIR_0MP  *size_Mat];
+			  fzeroC = &DD[DIR_000*size_Mat];
+			  fbswC  = &DD[DIR_PPP *size_Mat];
+			  fbneC  = &DD[DIR_MMP *size_Mat];
+			  fbnwC  = &DD[DIR_PMP *size_Mat];
+			  fbseC  = &DD[DIR_MPP *size_Mat];
+			  ftswC  = &DD[DIR_PPM *size_Mat];
+			  ftneC  = &DD[DIR_MMM *size_Mat];
+			  ftnwC  = &DD[DIR_PMM *size_Mat];
+			  ftseC  = &DD[DIR_MPM *size_Mat];
 		   }
 
 			  //////////////////////////////////////////////////////////////////////////
@@ -1030,7 +1030,7 @@ extern "C" __global__ void MoveParticles( real* coordX,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void MoveParticlesWithoutBCs(   real* coordX,
+__global__ void MoveParticlesWithoutBCs(   real* coordX,
 													  real* coordY,
 													  real* coordZ, 
 													  real* coordParticleXlocal,
@@ -1056,7 +1056,7 @@ extern "C" __global__ void MoveParticlesWithoutBCs(   real* coordX,
 													  unsigned int numberOfTimesteps, 
 													  unsigned int numberOfParticles, 
 													  unsigned int size_Mat,
-													  bool evenOrOdd)
+													  bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  ix = threadIdx.x;  // Globaler x-Index 
@@ -1112,65 +1112,65 @@ extern "C" __global__ void MoveParticlesWithoutBCs(   real* coordX,
    		if( (BC000 == GEO_FLUID) || (BCx00 == GEO_FLUID) || (BC0y0 == GEO_FLUID) || (BC00z == GEO_FLUID) || 
 			(BCxy0 == GEO_FLUID) || (BCx0z == GEO_FLUID) || (BC0yz == GEO_FLUID) || (BCxyz == GEO_FLUID) )
 		{
-		   if (evenOrOdd==true)
+		   if (isEvenTimestep==true)
 		   {
-			  feC    = &DD[dirE   *size_Mat];
-			  fwC    = &DD[dirW   *size_Mat];
-			  fnC    = &DD[dirN   *size_Mat];
-			  fsC    = &DD[dirS   *size_Mat];
-			  ftC    = &DD[dirT   *size_Mat];
-			  fbC    = &DD[dirB   *size_Mat];
-			  fneC   = &DD[dirNE  *size_Mat];
-			  fswC   = &DD[dirSW  *size_Mat];
-			  fseC   = &DD[dirSE  *size_Mat];
-			  fnwC   = &DD[dirNW  *size_Mat];
-			  fteC   = &DD[dirTE  *size_Mat];
-			  fbwC   = &DD[dirBW  *size_Mat];
-			  fbeC   = &DD[dirBE  *size_Mat];
-			  ftwC   = &DD[dirTW  *size_Mat];
-			  ftnC   = &DD[dirTN  *size_Mat];
-			  fbsC   = &DD[dirBS  *size_Mat];
-			  fbnC   = &DD[dirBN  *size_Mat];
-			  ftsC   = &DD[dirTS  *size_Mat];
-			  fzeroC = &DD[dirZERO*size_Mat];
-			  ftneC  = &DD[dirTNE *size_Mat];
-			  ftswC  = &DD[dirTSW *size_Mat];
-			  ftseC  = &DD[dirTSE *size_Mat];
-			  ftnwC  = &DD[dirTNW *size_Mat];
-			  fbneC  = &DD[dirBNE *size_Mat];
-			  fbswC  = &DD[dirBSW *size_Mat];
-			  fbseC  = &DD[dirBSE *size_Mat];
-			  fbnwC  = &DD[dirBNW *size_Mat];
+			  feC    = &DD[DIR_P00   *size_Mat];
+			  fwC    = &DD[DIR_M00   *size_Mat];
+			  fnC    = &DD[DIR_0P0   *size_Mat];
+			  fsC    = &DD[DIR_0M0   *size_Mat];
+			  ftC    = &DD[DIR_00P   *size_Mat];
+			  fbC    = &DD[DIR_00M   *size_Mat];
+			  fneC   = &DD[DIR_PP0  *size_Mat];
+			  fswC   = &DD[DIR_MM0  *size_Mat];
+			  fseC   = &DD[DIR_PM0  *size_Mat];
+			  fnwC   = &DD[DIR_MP0  *size_Mat];
+			  fteC   = &DD[DIR_P0P  *size_Mat];
+			  fbwC   = &DD[DIR_M0M  *size_Mat];
+			  fbeC   = &DD[DIR_P0M  *size_Mat];
+			  ftwC   = &DD[DIR_M0P  *size_Mat];
+			  ftnC   = &DD[DIR_0PP  *size_Mat];
+			  fbsC   = &DD[DIR_0MM  *size_Mat];
+			  fbnC   = &DD[DIR_0PM  *size_Mat];
+			  ftsC   = &DD[DIR_0MP  *size_Mat];
+			  fzeroC = &DD[DIR_000*size_Mat];
+			  ftneC  = &DD[DIR_PPP *size_Mat];
+			  ftswC  = &DD[DIR_MMP *size_Mat];
+			  ftseC  = &DD[DIR_PMP *size_Mat];
+			  ftnwC  = &DD[DIR_MPP *size_Mat];
+			  fbneC  = &DD[DIR_PPM *size_Mat];
+			  fbswC  = &DD[DIR_MMM *size_Mat];
+			  fbseC  = &DD[DIR_PMM *size_Mat];
+			  fbnwC  = &DD[DIR_MPM *size_Mat];
 		   } 			 
 		   else			 
 		   {			 
-			  fwC    = &DD[dirE   *size_Mat];
-			  feC    = &DD[dirW   *size_Mat];
-			  fsC    = &DD[dirN   *size_Mat];
-			  fnC    = &DD[dirS   *size_Mat];
-			  fbC    = &DD[dirT   *size_Mat];
-			  ftC    = &DD[dirB   *size_Mat];
-			  fswC   = &DD[dirNE  *size_Mat];
-			  fneC   = &DD[dirSW  *size_Mat];
-			  fnwC   = &DD[dirSE  *size_Mat];
-			  fseC   = &DD[dirNW  *size_Mat];
-			  fbwC   = &DD[dirTE  *size_Mat];
-			  fteC   = &DD[dirBW  *size_Mat];
-			  ftwC   = &DD[dirBE  *size_Mat];
-			  fbeC   = &DD[dirTW  *size_Mat];
-			  fbsC   = &DD[dirTN  *size_Mat];
-			  ftnC   = &DD[dirBS  *size_Mat];
-			  ftsC   = &DD[dirBN  *size_Mat];
-			  fbnC   = &DD[dirTS  *size_Mat];
-			  fzeroC = &DD[dirZERO*size_Mat];
-			  fbswC  = &DD[dirTNE *size_Mat];
-			  fbneC  = &DD[dirTSW *size_Mat];
-			  fbnwC  = &DD[dirTSE *size_Mat];
-			  fbseC  = &DD[dirTNW *size_Mat];
-			  ftswC  = &DD[dirBNE *size_Mat];
-			  ftneC  = &DD[dirBSW *size_Mat];
-			  ftnwC  = &DD[dirBSE *size_Mat];
-			  ftseC  = &DD[dirBNW *size_Mat];
+			  fwC    = &DD[DIR_P00   *size_Mat];
+			  feC    = &DD[DIR_M00   *size_Mat];
+			  fsC    = &DD[DIR_0P0   *size_Mat];
+			  fnC    = &DD[DIR_0M0   *size_Mat];
+			  fbC    = &DD[DIR_00P   *size_Mat];
+			  ftC    = &DD[DIR_00M   *size_Mat];
+			  fswC   = &DD[DIR_PP0  *size_Mat];
+			  fneC   = &DD[DIR_MM0  *size_Mat];
+			  fnwC   = &DD[DIR_PM0  *size_Mat];
+			  fseC   = &DD[DIR_MP0  *size_Mat];
+			  fbwC   = &DD[DIR_P0P  *size_Mat];
+			  fteC   = &DD[DIR_M0M  *size_Mat];
+			  ftwC   = &DD[DIR_P0M  *size_Mat];
+			  fbeC   = &DD[DIR_M0P  *size_Mat];
+			  fbsC   = &DD[DIR_0PP  *size_Mat];
+			  ftnC   = &DD[DIR_0MM  *size_Mat];
+			  ftsC   = &DD[DIR_0PM  *size_Mat];
+			  fbnC   = &DD[DIR_0MP  *size_Mat];
+			  fzeroC = &DD[DIR_000*size_Mat];
+			  fbswC  = &DD[DIR_PPP *size_Mat];
+			  fbneC  = &DD[DIR_MMP *size_Mat];
+			  fbnwC  = &DD[DIR_PMP *size_Mat];
+			  fbseC  = &DD[DIR_MPP *size_Mat];
+			  ftswC  = &DD[DIR_PPM *size_Mat];
+			  ftneC  = &DD[DIR_MMM *size_Mat];
+			  ftnwC  = &DD[DIR_PMM *size_Mat];
+			  ftseC  = &DD[DIR_MPM *size_Mat];
 		   }
 
 			  //////////////////////////////////////////////////////////////////////////
@@ -1896,7 +1896,7 @@ extern "C" __global__ void MoveParticlesWithoutBCs(   real* coordX,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void ParticleNoSlipDeviceComp27(real* coordX,
+__global__ void ParticleNoSlipDeviceComp27(real* coordX,
 													  real* coordY,
 													  real* coordZ, 
 													  real* coordParticleXlocal,
@@ -1924,76 +1924,76 @@ extern "C" __global__ void ParticleNoSlipDeviceComp27(real* coordX,
 													  unsigned int numberOfParticles, 
 													  int* k_Q, 
 													  real* QQ,
-													  unsigned int sizeQ,
+													  unsigned int  numberOfBCnodes,
 													  real* NormalX,
 													  real* NormalY,
 													  real* NormalZ,
 													  unsigned int size_Mat, 
-													  bool evenOrOdd)
+													  bool isEvenTimestep)
 {
 
 	//TODO: What is this function for???
 
    //Distributions27 D;
-   //if (evenOrOdd==true)
+   //if (isEvenTimestep==true)
    //{
-   //   D.f[dirE   ] = &DD[dirE   *size_Mat];
-   //   D.f[dirW   ] = &DD[dirW   *size_Mat];
-   //   D.f[dirN   ] = &DD[dirN   *size_Mat];
-   //   D.f[dirS   ] = &DD[dirS   *size_Mat];
-   //   D.f[dirT   ] = &DD[dirT   *size_Mat];
-   //   D.f[dirB   ] = &DD[dirB   *size_Mat];
-   //   D.f[dirNE  ] = &DD[dirNE  *size_Mat];
-   //   D.f[dirSW  ] = &DD[dirSW  *size_Mat];
-   //   D.f[dirSE  ] = &DD[dirSE  *size_Mat];
-   //   D.f[dirNW  ] = &DD[dirNW  *size_Mat];
-   //   D.f[dirTE  ] = &DD[dirTE  *size_Mat];
-   //   D.f[dirBW  ] = &DD[dirBW  *size_Mat];
-   //   D.f[dirBE  ] = &DD[dirBE  *size_Mat];
-   //   D.f[dirTW  ] = &DD[dirTW  *size_Mat];
-   //   D.f[dirTN  ] = &DD[dirTN  *size_Mat];
-   //   D.f[dirBS  ] = &DD[dirBS  *size_Mat];
-   //   D.f[dirBN  ] = &DD[dirBN  *size_Mat];
-   //   D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-   //   D.f[dirZERO] = &DD[dirZERO*size_Mat];
-   //   D.f[dirTNE ] = &DD[dirTNE *size_Mat];
-   //   D.f[dirTSW ] = &DD[dirTSW *size_Mat];
-   //   D.f[dirTSE ] = &DD[dirTSE *size_Mat];
-   //   D.f[dirTNW ] = &DD[dirTNW *size_Mat];
-   //   D.f[dirBNE ] = &DD[dirBNE *size_Mat];
-   //   D.f[dirBSW ] = &DD[dirBSW *size_Mat];
-   //   D.f[dirBSE ] = &DD[dirBSE *size_Mat];
-   //   D.f[dirBNW ] = &DD[dirBNW *size_Mat];
+   //   D.f[DIR_P00   ] = &DD[DIR_P00   *size_Mat];
+   //   D.f[DIR_M00   ] = &DD[DIR_M00   *size_Mat];
+   //   D.f[DIR_0P0   ] = &DD[DIR_0P0   *size_Mat];
+   //   D.f[DIR_0M0   ] = &DD[DIR_0M0   *size_Mat];
+   //   D.f[DIR_00P   ] = &DD[DIR_00P   *size_Mat];
+   //   D.f[DIR_00M   ] = &DD[DIR_00M   *size_Mat];
+   //   D.f[DIR_PP0  ] = &DD[DIR_PP0  *size_Mat];
+   //   D.f[DIR_MM0  ] = &DD[DIR_MM0  *size_Mat];
+   //   D.f[DIR_PM0  ] = &DD[DIR_PM0  *size_Mat];
+   //   D.f[DIR_MP0  ] = &DD[DIR_MP0  *size_Mat];
+   //   D.f[DIR_P0P  ] = &DD[DIR_P0P  *size_Mat];
+   //   D.f[DIR_M0M  ] = &DD[DIR_M0M  *size_Mat];
+   //   D.f[DIR_P0M  ] = &DD[DIR_P0M  *size_Mat];
+   //   D.f[DIR_M0P  ] = &DD[DIR_M0P  *size_Mat];
+   //   D.f[DIR_0PP  ] = &DD[DIR_0PP  *size_Mat];
+   //   D.f[DIR_0MM  ] = &DD[DIR_0MM  *size_Mat];
+   //   D.f[DIR_0PM  ] = &DD[DIR_0PM  *size_Mat];
+   //   D.f[DIR_0MP  ] = &DD[DIR_0MP  *size_Mat];
+   //   D.f[DIR_000] = &DD[DIR_000*size_Mat];
+   //   D.f[DIR_PPP ] = &DD[DIR_PPP *size_Mat];
+   //   D.f[DIR_MMP ] = &DD[DIR_MMP *size_Mat];
+   //   D.f[DIR_PMP ] = &DD[DIR_PMP *size_Mat];
+   //   D.f[DIR_MPP ] = &DD[DIR_MPP *size_Mat];
+   //   D.f[DIR_PPM ] = &DD[DIR_PPM *size_Mat];
+   //   D.f[DIR_MMM ] = &DD[DIR_MMM *size_Mat];
+   //   D.f[DIR_PMM ] = &DD[DIR_PMM *size_Mat];
+   //   D.f[DIR_MPM ] = &DD[DIR_MPM *size_Mat];
    //} 
    //else
    //{
-   //   D.f[dirW   ] = &DD[dirE   *size_Mat];
-   //   D.f[dirE   ] = &DD[dirW   *size_Mat];
-   //   D.f[dirS   ] = &DD[dirN   *size_Mat];
-   //   D.f[dirN   ] = &DD[dirS   *size_Mat];
-   //   D.f[dirB   ] = &DD[dirT   *size_Mat];
-   //   D.f[dirT   ] = &DD[dirB   *size_Mat];
-   //   D.f[dirSW  ] = &DD[dirNE  *size_Mat];
-   //   D.f[dirNE  ] = &DD[dirSW  *size_Mat];
-   //   D.f[dirNW  ] = &DD[dirSE  *size_Mat];
-   //   D.f[dirSE  ] = &DD[dirNW  *size_Mat];
-   //   D.f[dirBW  ] = &DD[dirTE  *size_Mat];
-   //   D.f[dirTE  ] = &DD[dirBW  *size_Mat];
-   //   D.f[dirTW  ] = &DD[dirBE  *size_Mat];
-   //   D.f[dirBE  ] = &DD[dirTW  *size_Mat];
-   //   D.f[dirBS  ] = &DD[dirTN  *size_Mat];
-   //   D.f[dirTN  ] = &DD[dirBS  *size_Mat];
-   //   D.f[dirTS  ] = &DD[dirBN  *size_Mat];
-   //   D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-   //   D.f[dirZERO] = &DD[dirZERO*size_Mat];
-   //   D.f[dirTNE ] = &DD[dirBSW *size_Mat];
-   //   D.f[dirTSW ] = &DD[dirBNE *size_Mat];
-   //   D.f[dirTSE ] = &DD[dirBNW *size_Mat];
-   //   D.f[dirTNW ] = &DD[dirBSE *size_Mat];
-   //   D.f[dirBNE ] = &DD[dirTSW *size_Mat];
-   //   D.f[dirBSW ] = &DD[dirTNE *size_Mat];
-   //   D.f[dirBSE ] = &DD[dirTNW *size_Mat];
-   //   D.f[dirBNW ] = &DD[dirTSE *size_Mat];
+   //   D.f[DIR_M00   ] = &DD[DIR_P00   *size_Mat];
+   //   D.f[DIR_P00   ] = &DD[DIR_M00   *size_Mat];
+   //   D.f[DIR_0M0   ] = &DD[DIR_0P0   *size_Mat];
+   //   D.f[DIR_0P0   ] = &DD[DIR_0M0   *size_Mat];
+   //   D.f[DIR_00M   ] = &DD[DIR_00P   *size_Mat];
+   //   D.f[DIR_00P   ] = &DD[DIR_00M   *size_Mat];
+   //   D.f[DIR_MM0  ] = &DD[DIR_PP0  *size_Mat];
+   //   D.f[DIR_PP0  ] = &DD[DIR_MM0  *size_Mat];
+   //   D.f[DIR_MP0  ] = &DD[DIR_PM0  *size_Mat];
+   //   D.f[DIR_PM0  ] = &DD[DIR_MP0  *size_Mat];
+   //   D.f[DIR_M0M  ] = &DD[DIR_P0P  *size_Mat];
+   //   D.f[DIR_P0P  ] = &DD[DIR_M0M  *size_Mat];
+   //   D.f[DIR_M0P  ] = &DD[DIR_P0M  *size_Mat];
+   //   D.f[DIR_P0M  ] = &DD[DIR_M0P  *size_Mat];
+   //   D.f[DIR_0MM  ] = &DD[DIR_0PP  *size_Mat];
+   //   D.f[DIR_0PP  ] = &DD[DIR_0MM  *size_Mat];
+   //   D.f[DIR_0MP  ] = &DD[DIR_0PM  *size_Mat];
+   //   D.f[DIR_0PM  ] = &DD[DIR_0MP  *size_Mat];
+   //   D.f[DIR_000] = &DD[DIR_000*size_Mat];
+   //   D.f[DIR_PPP ] = &DD[DIR_MMM *size_Mat];
+   //   D.f[DIR_MMP ] = &DD[DIR_PPM *size_Mat];
+   //   D.f[DIR_PMP ] = &DD[DIR_MPM *size_Mat];
+   //   D.f[DIR_MPP ] = &DD[DIR_PMM *size_Mat];
+   //   D.f[DIR_PPM ] = &DD[DIR_MMP *size_Mat];
+   //   D.f[DIR_MMM ] = &DD[DIR_PPP *size_Mat];
+   //   D.f[DIR_PMM ] = &DD[DIR_MPP *size_Mat];
+   //   D.f[DIR_MPM ] = &DD[DIR_PMP *size_Mat];
    //}
    //////////////////////////////////////////////////////////////////////////////////
    //const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -2006,7 +2006,7 @@ extern "C" __global__ void ParticleNoSlipDeviceComp27(real* coordX,
    //const unsigned k = nx*(ny*z + y) + x;
    ////////////////////////////////////////////////////////////////////////////
 
-   //if(k < sizeQ)
+   //if(k <  numberOfBCnodes)
    //{
    //   ////////////////////////////////////////////////////////////////////////////////
    //   real *q_dirW, *q_dirS, *q_dirB;
@@ -2015,128 +2015,128 @@ extern "C" __global__ void ParticleNoSlipDeviceComp27(real* coordX,
    // //         *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
    // //         *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
    // //         *q_dirBSE, *q_dirBNW; 
-   // //   q_dirE   = &QQ[dirE   *sizeQ];
-   //    q_dirW   = &QQ[dirW   *sizeQ];
-   // //   q_dirN   = &QQ[dirN   *sizeQ];
-   //    q_dirS   = &QQ[dirS   *sizeQ];
-   // //   q_dirT   = &QQ[dirT   *sizeQ];
-   //    q_dirB   = &QQ[dirB   *sizeQ];
-   // //   q_dirNE  = &QQ[dirNE  *sizeQ];
-   // //   q_dirSW  = &QQ[dirSW  *sizeQ];
-   // //   q_dirSE  = &QQ[dirSE  *sizeQ];
-   // //   q_dirNW  = &QQ[dirNW  *sizeQ];
-   // //   q_dirTE  = &QQ[dirTE  *sizeQ];
-   // //   q_dirBW  = &QQ[dirBW  *sizeQ];
-   // //   q_dirBE  = &QQ[dirBE  *sizeQ];
-   // //   q_dirTW  = &QQ[dirTW  *sizeQ];
-   // //   q_dirTN  = &QQ[dirTN  *sizeQ];
-   // //   q_dirBS  = &QQ[dirBS  *sizeQ];
-   // //   q_dirBN  = &QQ[dirBN  *sizeQ];
-   // //   q_dirTS  = &QQ[dirTS  *sizeQ];
-   // //   q_dirTNE = &QQ[dirTNE *sizeQ];
-   // //   q_dirTSW = &QQ[dirTSW *sizeQ];
-   // //   q_dirTSE = &QQ[dirTSE *sizeQ];
-   // //   q_dirTNW = &QQ[dirTNW *sizeQ];
-   // //   q_dirBNE = &QQ[dirBNE *sizeQ];
-   // //   q_dirBSW = &QQ[dirBSW *sizeQ];
-   // //   q_dirBSE = &QQ[dirBSE *sizeQ];
-   // //   q_dirBNW = &QQ[dirBNW *sizeQ];
+   // //   q_dirE   = &QQ[DIR_P00   * numberOfBCnodes];
+   //    q_dirW   = &QQ[DIR_M00   * numberOfBCnodes];
+   // //   q_dirN   = &QQ[DIR_0P0   * numberOfBCnodes];
+   //    q_dirS   = &QQ[DIR_0M0   * numberOfBCnodes];
+   // //   q_dirT   = &QQ[DIR_00P   * numberOfBCnodes];
+   //    q_dirB   = &QQ[DIR_00M   * numberOfBCnodes];
+   // //   q_dirNE  = &QQ[DIR_PP0  * numberOfBCnodes];
+   // //   q_dirSW  = &QQ[DIR_MM0  * numberOfBCnodes];
+   // //   q_dirSE  = &QQ[DIR_PM0  * numberOfBCnodes];
+   // //   q_dirNW  = &QQ[DIR_MP0  * numberOfBCnodes];
+   // //   q_dirTE  = &QQ[DIR_P0P  * numberOfBCnodes];
+   // //   q_dirBW  = &QQ[DIR_M0M  * numberOfBCnodes];
+   // //   q_dirBE  = &QQ[DIR_P0M  * numberOfBCnodes];
+   // //   q_dirTW  = &QQ[DIR_M0P  * numberOfBCnodes];
+   // //   q_dirTN  = &QQ[DIR_0PP  * numberOfBCnodes];
+   // //   q_dirBS  = &QQ[DIR_0MM  * numberOfBCnodes];
+   // //   q_dirBN  = &QQ[DIR_0PM  * numberOfBCnodes];
+   // //   q_dirTS  = &QQ[DIR_0MP  * numberOfBCnodes];
+   // //   q_dirTNE = &QQ[DIR_PPP * numberOfBCnodes];
+   // //   q_dirTSW = &QQ[DIR_MMP * numberOfBCnodes];
+   // //   q_dirTSE = &QQ[DIR_PMP * numberOfBCnodes];
+   // //   q_dirTNW = &QQ[DIR_MPP * numberOfBCnodes];
+   // //   q_dirBNE = &QQ[DIR_PPM * numberOfBCnodes];
+   // //   q_dirBSW = &QQ[DIR_MMM * numberOfBCnodes];
+   // //   q_dirBSE = &QQ[DIR_PMM * numberOfBCnodes];
+   // //   q_dirBNW = &QQ[DIR_MPM * numberOfBCnodes];
    //   ////////////////////////////////////////////////////////////////////////////////
    // //   real *nx_dirE,   *nx_dirW,   *nx_dirN,   *nx_dirS,   *nx_dirT,   *nx_dirB, 
    // //           *nx_dirNE,  *nx_dirSW,  *nx_dirSE,  *nx_dirNW,  *nx_dirTE,  *nx_dirBW,
    // //           *nx_dirBE,  *nx_dirTW,  *nx_dirTN,  *nx_dirBS,  *nx_dirBN,  *nx_dirTS,
    // //           *nx_dirTNE, *nx_dirTSW, *nx_dirTSE, *nx_dirTNW, *nx_dirBNE, *nx_dirBSW,
    // //           *nx_dirBSE, *nx_dirBNW; 
-   // //   nx_dirE   = &NormalX[dirE   *sizeQ];
-   // //   nx_dirW   = &NormalX[dirW   *sizeQ];
-   // //   nx_dirN   = &NormalX[dirN   *sizeQ];
-   // //   nx_dirS   = &NormalX[dirS   *sizeQ];
-   // //   nx_dirT   = &NormalX[dirT   *sizeQ];
-   // //   nx_dirB   = &NormalX[dirB   *sizeQ];
-   // //   nx_dirNE  = &NormalX[dirNE  *sizeQ];
-   // //   nx_dirSW  = &NormalX[dirSW  *sizeQ];
-   // //   nx_dirSE  = &NormalX[dirSE  *sizeQ];
-   // //   nx_dirNW  = &NormalX[dirNW  *sizeQ];
-   // //   nx_dirTE  = &NormalX[dirTE  *sizeQ];
-   // //   nx_dirBW  = &NormalX[dirBW  *sizeQ];
-   // //   nx_dirBE  = &NormalX[dirBE  *sizeQ];
-   // //   nx_dirTW  = &NormalX[dirTW  *sizeQ];
-   // //   nx_dirTN  = &NormalX[dirTN  *sizeQ];
-   // //   nx_dirBS  = &NormalX[dirBS  *sizeQ];
-   // //   nx_dirBN  = &NormalX[dirBN  *sizeQ];
-   // //   nx_dirTS  = &NormalX[dirTS  *sizeQ];
-   // //   nx_dirTNE = &NormalX[dirTNE *sizeQ];
-   // //   nx_dirTSW = &NormalX[dirTSW *sizeQ];
-   // //   nx_dirTSE = &NormalX[dirTSE *sizeQ];
-   // //   nx_dirTNW = &NormalX[dirTNW *sizeQ];
-   // //   nx_dirBNE = &NormalX[dirBNE *sizeQ];
-   // //   nx_dirBSW = &NormalX[dirBSW *sizeQ];
-   // //   nx_dirBSE = &NormalX[dirBSE *sizeQ];
-   // //   nx_dirBNW = &NormalX[dirBNW *sizeQ];
+   // //   nx_dirE   = &NormalX[DIR_P00   * numberOfBCnodes];
+   // //   nx_dirW   = &NormalX[DIR_M00   * numberOfBCnodes];
+   // //   nx_dirN   = &NormalX[DIR_0P0   * numberOfBCnodes];
+   // //   nx_dirS   = &NormalX[DIR_0M0   * numberOfBCnodes];
+   // //   nx_dirT   = &NormalX[DIR_00P   * numberOfBCnodes];
+   // //   nx_dirB   = &NormalX[DIR_00M   * numberOfBCnodes];
+   // //   nx_dirNE  = &NormalX[DIR_PP0  * numberOfBCnodes];
+   // //   nx_dirSW  = &NormalX[DIR_MM0  * numberOfBCnodes];
+   // //   nx_dirSE  = &NormalX[DIR_PM0  * numberOfBCnodes];
+   // //   nx_dirNW  = &NormalX[DIR_MP0  * numberOfBCnodes];
+   // //   nx_dirTE  = &NormalX[DIR_P0P  * numberOfBCnodes];
+   // //   nx_dirBW  = &NormalX[DIR_M0M  * numberOfBCnodes];
+   // //   nx_dirBE  = &NormalX[DIR_P0M  * numberOfBCnodes];
+   // //   nx_dirTW  = &NormalX[DIR_M0P  * numberOfBCnodes];
+   // //   nx_dirTN  = &NormalX[DIR_0PP  * numberOfBCnodes];
+   // //   nx_dirBS  = &NormalX[DIR_0MM  * numberOfBCnodes];
+   // //   nx_dirBN  = &NormalX[DIR_0PM  * numberOfBCnodes];
+   // //   nx_dirTS  = &NormalX[DIR_0MP  * numberOfBCnodes];
+   // //   nx_dirTNE = &NormalX[DIR_PPP * numberOfBCnodes];
+   // //   nx_dirTSW = &NormalX[DIR_MMP * numberOfBCnodes];
+   // //   nx_dirTSE = &NormalX[DIR_PMP * numberOfBCnodes];
+   // //   nx_dirTNW = &NormalX[DIR_MPP * numberOfBCnodes];
+   // //   nx_dirBNE = &NormalX[DIR_PPM * numberOfBCnodes];
+   // //   nx_dirBSW = &NormalX[DIR_MMM * numberOfBCnodes];
+   // //   nx_dirBSE = &NormalX[DIR_PMM * numberOfBCnodes];
+   // //   nx_dirBNW = &NormalX[DIR_MPM * numberOfBCnodes];
    //   ////////////////////////////////////////////////////////////////////////////////
    // //   real *ny_dirE,   *ny_dirW,   *ny_dirN,   *ny_dirS,   *ny_dirT,   *ny_dirB, 
    // //           *ny_dirNE,  *ny_dirSW,  *ny_dirSE,  *ny_dirNW,  *ny_dirTE,  *ny_dirBW,
    // //           *ny_dirBE,  *ny_dirTW,  *ny_dirTN,  *ny_dirBS,  *ny_dirBN,  *ny_dirTS,
    // //           *ny_dirTNE, *ny_dirTSW, *ny_dirTSE, *ny_dirTNW, *ny_dirBNE, *ny_dirBSW,
    // //           *ny_dirBSE, *ny_dirBNW; 
-   // //   ny_dirE   = &NormalY[dirE   *sizeQ];
-   // //   ny_dirW   = &NormalY[dirW   *sizeQ];
-   // //   ny_dirN   = &NormalY[dirN   *sizeQ];
-   // //   ny_dirS   = &NormalY[dirS   *sizeQ];
-   // //   ny_dirT   = &NormalY[dirT   *sizeQ];
-   // //   ny_dirB   = &NormalY[dirB   *sizeQ];
-   // //   ny_dirNE  = &NormalY[dirNE  *sizeQ];
-   // //   ny_dirSW  = &NormalY[dirSW  *sizeQ];
-   // //   ny_dirSE  = &NormalY[dirSE  *sizeQ];
-   // //   ny_dirNW  = &NormalY[dirNW  *sizeQ];
-   // //   ny_dirTE  = &NormalY[dirTE  *sizeQ];
-   // //   ny_dirBW  = &NormalY[dirBW  *sizeQ];
-   // //   ny_dirBE  = &NormalY[dirBE  *sizeQ];
-   // //   ny_dirTW  = &NormalY[dirTW  *sizeQ];
-   // //   ny_dirTN  = &NormalY[dirTN  *sizeQ];
-   // //   ny_dirBS  = &NormalY[dirBS  *sizeQ];
-   // //   ny_dirBN  = &NormalY[dirBN  *sizeQ];
-   // //   ny_dirTS  = &NormalY[dirTS  *sizeQ];
-   // //   ny_dirTNE = &NormalY[dirTNE *sizeQ];
-   // //   ny_dirTSW = &NormalY[dirTSW *sizeQ];
-   // //   ny_dirTSE = &NormalY[dirTSE *sizeQ];
-   // //   ny_dirTNW = &NormalY[dirTNW *sizeQ];
-   // //   ny_dirBNE = &NormalY[dirBNE *sizeQ];
-   // //   ny_dirBSW = &NormalY[dirBSW *sizeQ];
-   // //   ny_dirBSE = &NormalY[dirBSE *sizeQ];
-   // //   ny_dirBNW = &NormalY[dirBNW *sizeQ];
+   // //   ny_dirE   = &NormalY[DIR_P00   * numberOfBCnodes];
+   // //   ny_dirW   = &NormalY[DIR_M00   * numberOfBCnodes];
+   // //   ny_dirN   = &NormalY[DIR_0P0   * numberOfBCnodes];
+   // //   ny_dirS   = &NormalY[DIR_0M0   * numberOfBCnodes];
+   // //   ny_dirT   = &NormalY[DIR_00P   * numberOfBCnodes];
+   // //   ny_dirB   = &NormalY[DIR_00M   * numberOfBCnodes];
+   // //   ny_dirNE  = &NormalY[DIR_PP0  * numberOfBCnodes];
+   // //   ny_dirSW  = &NormalY[DIR_MM0  * numberOfBCnodes];
+   // //   ny_dirSE  = &NormalY[DIR_PM0  * numberOfBCnodes];
+   // //   ny_dirNW  = &NormalY[DIR_MP0  * numberOfBCnodes];
+   // //   ny_dirTE  = &NormalY[DIR_P0P  * numberOfBCnodes];
+   // //   ny_dirBW  = &NormalY[DIR_M0M  * numberOfBCnodes];
+   // //   ny_dirBE  = &NormalY[DIR_P0M  * numberOfBCnodes];
+   // //   ny_dirTW  = &NormalY[DIR_M0P  * numberOfBCnodes];
+   // //   ny_dirTN  = &NormalY[DIR_0PP  * numberOfBCnodes];
+   // //   ny_dirBS  = &NormalY[DIR_0MM  * numberOfBCnodes];
+   // //   ny_dirBN  = &NormalY[DIR_0PM  * numberOfBCnodes];
+   // //   ny_dirTS  = &NormalY[DIR_0MP  * numberOfBCnodes];
+   // //   ny_dirTNE = &NormalY[DIR_PPP * numberOfBCnodes];
+   // //   ny_dirTSW = &NormalY[DIR_MMP * numberOfBCnodes];
+   // //   ny_dirTSE = &NormalY[DIR_PMP * numberOfBCnodes];
+   // //   ny_dirTNW = &NormalY[DIR_MPP * numberOfBCnodes];
+   // //   ny_dirBNE = &NormalY[DIR_PPM * numberOfBCnodes];
+   // //   ny_dirBSW = &NormalY[DIR_MMM * numberOfBCnodes];
+   // //   ny_dirBSE = &NormalY[DIR_PMM * numberOfBCnodes];
+   // //   ny_dirBNW = &NormalY[DIR_MPM * numberOfBCnodes];
    //   ////////////////////////////////////////////////////////////////////////////////
    // //   real *nz_dirE,   *nz_dirW,   *nz_dirN,   *nz_dirS,   *nz_dirT,   *nz_dirB, 
    // //           *nz_dirNE,  *nz_dirSW,  *nz_dirSE,  *nz_dirNW,  *nz_dirTE,  *nz_dirBW,
    // //           *nz_dirBE,  *nz_dirTW,  *nz_dirTN,  *nz_dirBS,  *nz_dirBN,  *nz_dirTS,
    // //           *nz_dirTNE, *nz_dirTSW, *nz_dirTSE, *nz_dirTNW, *nz_dirBNE, *nz_dirBSW,
    // //           *nz_dirBSE, *nz_dirBNW; 
-   // //   nz_dirE   = &NormalZ[dirE   *sizeQ];
-   // //   nz_dirW   = &NormalZ[dirW   *sizeQ];
-   // //   nz_dirN   = &NormalZ[dirN   *sizeQ];
-   // //   nz_dirS   = &NormalZ[dirS   *sizeQ];
-   // //   nz_dirT   = &NormalZ[dirT   *sizeQ];
-   // //   nz_dirB   = &NormalZ[dirB   *sizeQ];
-   // //   nz_dirNE  = &NormalZ[dirNE  *sizeQ];
-   // //   nz_dirSW  = &NormalZ[dirSW  *sizeQ];
-   // //   nz_dirSE  = &NormalZ[dirSE  *sizeQ];
-   // //   nz_dirNW  = &NormalZ[dirNW  *sizeQ];
-   // //   nz_dirTE  = &NormalZ[dirTE  *sizeQ];
-   // //   nz_dirBW  = &NormalZ[dirBW  *sizeQ];
-   // //   nz_dirBE  = &NormalZ[dirBE  *sizeQ];
-   // //   nz_dirTW  = &NormalZ[dirTW  *sizeQ];
-   // //   nz_dirTN  = &NormalZ[dirTN  *sizeQ];
-   // //   nz_dirBS  = &NormalZ[dirBS  *sizeQ];
-   // //   nz_dirBN  = &NormalZ[dirBN  *sizeQ];
-   // //   nz_dirTS  = &NormalZ[dirTS  *sizeQ];
-   // //   nz_dirTNE = &NormalZ[dirTNE *sizeQ];
-   // //   nz_dirTSW = &NormalZ[dirTSW *sizeQ];
-   // //   nz_dirTSE = &NormalZ[dirTSE *sizeQ];
-   // //   nz_dirTNW = &NormalZ[dirTNW *sizeQ];
-   // //   nz_dirBNE = &NormalZ[dirBNE *sizeQ];
-   // //   nz_dirBSW = &NormalZ[dirBSW *sizeQ];
-   // //   nz_dirBSE = &NormalZ[dirBSE *sizeQ];
-   // //   nz_dirBNW = &NormalZ[dirBNW *sizeQ];
+   // //   nz_dirE   = &NormalZ[DIR_P00   * numberOfBCnodes];
+   // //   nz_dirW   = &NormalZ[DIR_M00   * numberOfBCnodes];
+   // //   nz_dirN   = &NormalZ[DIR_0P0   * numberOfBCnodes];
+   // //   nz_dirS   = &NormalZ[DIR_0M0   * numberOfBCnodes];
+   // //   nz_dirT   = &NormalZ[DIR_00P   * numberOfBCnodes];
+   // //   nz_dirB   = &NormalZ[DIR_00M   * numberOfBCnodes];
+   // //   nz_dirNE  = &NormalZ[DIR_PP0  * numberOfBCnodes];
+   // //   nz_dirSW  = &NormalZ[DIR_MM0  * numberOfBCnodes];
+   // //   nz_dirSE  = &NormalZ[DIR_PM0  * numberOfBCnodes];
+   // //   nz_dirNW  = &NormalZ[DIR_MP0  * numberOfBCnodes];
+   // //   nz_dirTE  = &NormalZ[DIR_P0P  * numberOfBCnodes];
+   // //   nz_dirBW  = &NormalZ[DIR_M0M  * numberOfBCnodes];
+   // //   nz_dirBE  = &NormalZ[DIR_P0M  * numberOfBCnodes];
+   // //   nz_dirTW  = &NormalZ[DIR_M0P  * numberOfBCnodes];
+   // //   nz_dirTN  = &NormalZ[DIR_0PP  * numberOfBCnodes];
+   // //   nz_dirBS  = &NormalZ[DIR_0MM  * numberOfBCnodes];
+   // //   nz_dirBN  = &NormalZ[DIR_0PM  * numberOfBCnodes];
+   // //   nz_dirTS  = &NormalZ[DIR_0MP  * numberOfBCnodes];
+   // //   nz_dirTNE = &NormalZ[DIR_PPP * numberOfBCnodes];
+   // //   nz_dirTSW = &NormalZ[DIR_MMP * numberOfBCnodes];
+   // //   nz_dirTSE = &NormalZ[DIR_PMP * numberOfBCnodes];
+   // //   nz_dirTNW = &NormalZ[DIR_MPP * numberOfBCnodes];
+   // //   nz_dirBNE = &NormalZ[DIR_PPM * numberOfBCnodes];
+   // //   nz_dirBSW = &NormalZ[DIR_MMM * numberOfBCnodes];
+   // //   nz_dirBSE = &NormalZ[DIR_PMM * numberOfBCnodes];
+   // //   nz_dirBNW = &NormalZ[DIR_MPM * numberOfBCnodes];
    //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //bool changeCell = false;
    //   unsigned int KQK  = k_Q[k];
@@ -2190,38 +2190,38 @@ extern "C" __global__ void ParticleNoSlipDeviceComp27(real* coordX,
    //   unsigned int ktne = KQK;
    //   unsigned int kbsw = neighborZ[ksw];
    //   ////////////////////////////////////////////////////////////////////////////////
-   //   real f_W    = (D.f[dirE   ])[ke   ];
-   //   real f_E    = (D.f[dirW   ])[kw   ];
-   //   real f_S    = (D.f[dirN   ])[kn   ];
-   //   real f_N    = (D.f[dirS   ])[ks   ];
-   //   real f_B    = (D.f[dirT   ])[kt   ];
-   //   real f_T    = (D.f[dirB   ])[kb   ];
-   //   real f_SW   = (D.f[dirNE  ])[kne  ];
-   //   real f_NE   = (D.f[dirSW  ])[ksw  ];
-   //   real f_NW   = (D.f[dirSE  ])[kse  ];
-   //   real f_SE   = (D.f[dirNW  ])[knw  ];
-   //   real f_BW   = (D.f[dirTE  ])[kte  ];
-   //   real f_TE   = (D.f[dirBW  ])[kbw  ];
-   //   real f_TW   = (D.f[dirBE  ])[kbe  ];
-   //   real f_BE   = (D.f[dirTW  ])[ktw  ];
-   //   real f_BS   = (D.f[dirTN  ])[ktn  ];
-   //   real f_TN   = (D.f[dirBS  ])[kbs  ];
-   //   real f_TS   = (D.f[dirBN  ])[kbn  ];
-   //   real f_BN   = (D.f[dirTS  ])[kts  ];
-   //   real f_BSW  = (D.f[dirTNE ])[ktne ];
-   //   real f_BNE  = (D.f[dirTSW ])[ktsw ];
-   //   real f_BNW  = (D.f[dirTSE ])[ktse ];
-   //   real f_BSE  = (D.f[dirTNW ])[ktnw ];
-   //   real f_TSW  = (D.f[dirBNE ])[kbne ];
-   //   real f_TNE  = (D.f[dirBSW ])[kbsw ];
-   //   real f_TNW  = (D.f[dirBSE ])[kbse ];
-   //   real f_TSE  = (D.f[dirBNW ])[kbnw ];
+   //   real f_W    = (D.f[DIR_P00   ])[ke   ];
+   //   real f_E    = (D.f[DIR_M00   ])[kw   ];
+   //   real f_S    = (D.f[DIR_0P0   ])[kn   ];
+   //   real f_N    = (D.f[DIR_0M0   ])[ks   ];
+   //   real f_B    = (D.f[DIR_00P   ])[kt   ];
+   //   real f_T    = (D.f[DIR_00M   ])[kb   ];
+   //   real f_SW   = (D.f[DIR_PP0  ])[kne  ];
+   //   real f_NE   = (D.f[DIR_MM0  ])[ksw  ];
+   //   real f_NW   = (D.f[DIR_PM0  ])[kse  ];
+   //   real f_SE   = (D.f[DIR_MP0  ])[knw  ];
+   //   real f_BW   = (D.f[DIR_P0P  ])[kte  ];
+   //   real f_TE   = (D.f[DIR_M0M  ])[kbw  ];
+   //   real f_TW   = (D.f[DIR_P0M  ])[kbe  ];
+   //   real f_BE   = (D.f[DIR_M0P  ])[ktw  ];
+   //   real f_BS   = (D.f[DIR_0PP  ])[ktn  ];
+   //   real f_TN   = (D.f[DIR_0MM  ])[kbs  ];
+   //   real f_TS   = (D.f[DIR_0PM  ])[kbn  ];
+   //   real f_BN   = (D.f[DIR_0MP  ])[kts  ];
+   //   real f_BSW  = (D.f[DIR_PPP ])[ktne ];
+   //   real f_BNE  = (D.f[DIR_MMP ])[ktsw ];
+   //   real f_BNW  = (D.f[DIR_PMP ])[ktse ];
+   //   real f_BSE  = (D.f[DIR_MPP ])[ktnw ];
+   //   real f_TSW  = (D.f[DIR_PPM ])[kbne ];
+   //   real f_TNE  = (D.f[DIR_MMM ])[kbsw ];
+   //   real f_TNW  = (D.f[DIR_PMM ])[kbse ];
+   //   real f_TSE  = (D.f[DIR_MPM ])[kbnw ];
    //   ////////////////////////////////////////////////////////////////////////////////
    //   // real feq, q;
    //   real vx1, vx2, vx3, drho;
    //   drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
    //             f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-   //             f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
+   //             f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[DIR_000])[kzero]); 
 
    //   vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
    //             ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -2239,65 +2239,65 @@ extern "C" __global__ void ParticleNoSlipDeviceComp27(real* coordX,
    //   //real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (c1o1 + drho);
 
    //   //////////////////////////////////////////////////////////////////////////
-   //   if (evenOrOdd==false)
+   //   if (isEvenTimestep==false)
    //   {
-   //      D.f[dirE   ] = &DD[dirE   *size_Mat];
-   //      D.f[dirW   ] = &DD[dirW   *size_Mat];
-   //      D.f[dirN   ] = &DD[dirN   *size_Mat];
-   //      D.f[dirS   ] = &DD[dirS   *size_Mat];
-   //      D.f[dirT   ] = &DD[dirT   *size_Mat];
-   //      D.f[dirB   ] = &DD[dirB   *size_Mat];
-   //      D.f[dirNE  ] = &DD[dirNE  *size_Mat];
-   //      D.f[dirSW  ] = &DD[dirSW  *size_Mat];
-   //      D.f[dirSE  ] = &DD[dirSE  *size_Mat];
-   //      D.f[dirNW  ] = &DD[dirNW  *size_Mat];
-   //      D.f[dirTE  ] = &DD[dirTE  *size_Mat];
-   //      D.f[dirBW  ] = &DD[dirBW  *size_Mat];
-   //      D.f[dirBE  ] = &DD[dirBE  *size_Mat];
-   //      D.f[dirTW  ] = &DD[dirTW  *size_Mat];
-   //      D.f[dirTN  ] = &DD[dirTN  *size_Mat];
-   //      D.f[dirBS  ] = &DD[dirBS  *size_Mat];
-   //      D.f[dirBN  ] = &DD[dirBN  *size_Mat];
-   //      D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-   //      D.f[dirZERO] = &DD[dirZERO*size_Mat];
-   //      D.f[dirTNE ] = &DD[dirTNE *size_Mat];
-   //      D.f[dirTSW ] = &DD[dirTSW *size_Mat];
-   //      D.f[dirTSE ] = &DD[dirTSE *size_Mat];
-   //      D.f[dirTNW ] = &DD[dirTNW *size_Mat];
-   //      D.f[dirBNE ] = &DD[dirBNE *size_Mat];
-   //      D.f[dirBSW ] = &DD[dirBSW *size_Mat];
-   //      D.f[dirBSE ] = &DD[dirBSE *size_Mat];
-   //      D.f[dirBNW ] = &DD[dirBNW *size_Mat];
+   //      D.f[DIR_P00   ] = &DD[DIR_P00   *size_Mat];
+   //      D.f[DIR_M00   ] = &DD[DIR_M00   *size_Mat];
+   //      D.f[DIR_0P0   ] = &DD[DIR_0P0   *size_Mat];
+   //      D.f[DIR_0M0   ] = &DD[DIR_0M0   *size_Mat];
+   //      D.f[DIR_00P   ] = &DD[DIR_00P   *size_Mat];
+   //      D.f[DIR_00M   ] = &DD[DIR_00M   *size_Mat];
+   //      D.f[DIR_PP0  ] = &DD[DIR_PP0  *size_Mat];
+   //      D.f[DIR_MM0  ] = &DD[DIR_MM0  *size_Mat];
+   //      D.f[DIR_PM0  ] = &DD[DIR_PM0  *size_Mat];
+   //      D.f[DIR_MP0  ] = &DD[DIR_MP0  *size_Mat];
+   //      D.f[DIR_P0P  ] = &DD[DIR_P0P  *size_Mat];
+   //      D.f[DIR_M0M  ] = &DD[DIR_M0M  *size_Mat];
+   //      D.f[DIR_P0M  ] = &DD[DIR_P0M  *size_Mat];
+   //      D.f[DIR_M0P  ] = &DD[DIR_M0P  *size_Mat];
+   //      D.f[DIR_0PP  ] = &DD[DIR_0PP  *size_Mat];
+   //      D.f[DIR_0MM  ] = &DD[DIR_0MM  *size_Mat];
+   //      D.f[DIR_0PM  ] = &DD[DIR_0PM  *size_Mat];
+   //      D.f[DIR_0MP  ] = &DD[DIR_0MP  *size_Mat];
+   //      D.f[DIR_000] = &DD[DIR_000*size_Mat];
+   //      D.f[DIR_PPP ] = &DD[DIR_PPP *size_Mat];
+   //      D.f[DIR_MMP ] = &DD[DIR_MMP *size_Mat];
+   //      D.f[DIR_PMP ] = &DD[DIR_PMP *size_Mat];
+   //      D.f[DIR_MPP ] = &DD[DIR_MPP *size_Mat];
+   //      D.f[DIR_PPM ] = &DD[DIR_PPM *size_Mat];
+   //      D.f[DIR_MMM ] = &DD[DIR_MMM *size_Mat];
+   //      D.f[DIR_PMM ] = &DD[DIR_PMM *size_Mat];
+   //      D.f[DIR_MPM ] = &DD[DIR_MPM *size_Mat];
    //   } 
    //   else
    //   {
-   //      D.f[dirW   ] = &DD[dirE   *size_Mat];
-   //      D.f[dirE   ] = &DD[dirW   *size_Mat];
-   //      D.f[dirS   ] = &DD[dirN   *size_Mat];
-   //      D.f[dirN   ] = &DD[dirS   *size_Mat];
-   //      D.f[dirB   ] = &DD[dirT   *size_Mat];
-   //      D.f[dirT   ] = &DD[dirB   *size_Mat];
-   //      D.f[dirSW  ] = &DD[dirNE  *size_Mat];
-   //      D.f[dirNE  ] = &DD[dirSW  *size_Mat];
-   //      D.f[dirNW  ] = &DD[dirSE  *size_Mat];
-   //      D.f[dirSE  ] = &DD[dirNW  *size_Mat];
-   //      D.f[dirBW  ] = &DD[dirTE  *size_Mat];
-   //      D.f[dirTE  ] = &DD[dirBW  *size_Mat];
-   //      D.f[dirTW  ] = &DD[dirBE  *size_Mat];
-   //      D.f[dirBE  ] = &DD[dirTW  *size_Mat];
-   //      D.f[dirBS  ] = &DD[dirTN  *size_Mat];
-   //      D.f[dirTN  ] = &DD[dirBS  *size_Mat];
-   //      D.f[dirTS  ] = &DD[dirBN  *size_Mat];
-   //      D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-   //      D.f[dirZERO] = &DD[dirZERO*size_Mat];
-   //      D.f[dirTNE ] = &DD[dirBSW *size_Mat];
-   //      D.f[dirTSW ] = &DD[dirBNE *size_Mat];
-   //      D.f[dirTSE ] = &DD[dirBNW *size_Mat];
-   //      D.f[dirTNW ] = &DD[dirBSE *size_Mat];
-   //      D.f[dirBNE ] = &DD[dirTSW *size_Mat];
-   //      D.f[dirBSW ] = &DD[dirTNE *size_Mat];
-   //      D.f[dirBSE ] = &DD[dirTNW *size_Mat];
-   //      D.f[dirBNW ] = &DD[dirTSE *size_Mat];
+   //      D.f[DIR_M00   ] = &DD[DIR_P00   *size_Mat];
+   //      D.f[DIR_P00   ] = &DD[DIR_M00   *size_Mat];
+   //      D.f[DIR_0M0   ] = &DD[DIR_0P0   *size_Mat];
+   //      D.f[DIR_0P0   ] = &DD[DIR_0M0   *size_Mat];
+   //      D.f[DIR_00M   ] = &DD[DIR_00P   *size_Mat];
+   //      D.f[DIR_00P   ] = &DD[DIR_00M   *size_Mat];
+   //      D.f[DIR_MM0  ] = &DD[DIR_PP0  *size_Mat];
+   //      D.f[DIR_PP0  ] = &DD[DIR_MM0  *size_Mat];
+   //      D.f[DIR_MP0  ] = &DD[DIR_PM0  *size_Mat];
+   //      D.f[DIR_PM0  ] = &DD[DIR_MP0  *size_Mat];
+   //      D.f[DIR_M0M  ] = &DD[DIR_P0P  *size_Mat];
+   //      D.f[DIR_P0P  ] = &DD[DIR_M0M  *size_Mat];
+   //      D.f[DIR_M0P  ] = &DD[DIR_P0M  *size_Mat];
+   //      D.f[DIR_P0M  ] = &DD[DIR_M0P  *size_Mat];
+   //      D.f[DIR_0MM  ] = &DD[DIR_0PP  *size_Mat];
+   //      D.f[DIR_0PP  ] = &DD[DIR_0MM  *size_Mat];
+   //      D.f[DIR_0MP  ] = &DD[DIR_0PM  *size_Mat];
+   //      D.f[DIR_0PM  ] = &DD[DIR_0MP  *size_Mat];
+   //      D.f[DIR_000] = &DD[DIR_000*size_Mat];
+   //      D.f[DIR_PPP ] = &DD[DIR_MMM *size_Mat];
+   //      D.f[DIR_MMP ] = &DD[DIR_PPM *size_Mat];
+   //      D.f[DIR_PMP ] = &DD[DIR_MPM *size_Mat];
+   //      D.f[DIR_MPP ] = &DD[DIR_PMM *size_Mat];
+   //      D.f[DIR_PPM ] = &DD[DIR_MMP *size_Mat];
+   //      D.f[DIR_MMM ] = &DD[DIR_PPP *size_Mat];
+   //      D.f[DIR_PMM ] = &DD[DIR_MPP *size_Mat];
+   //      D.f[DIR_MPM ] = &DD[DIR_PMP *size_Mat];
    //   }
    //}
 }

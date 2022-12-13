@@ -8,15 +8,15 @@
 #include <iostream>
 #include <stdio.h>
 
-extern "C" void setSizeOfPlane(Parameter* para, int lev, unsigned int z);
-extern "C" void calcPressure(Parameter* para, std::string inorout, int lev);
-extern "C" void calcFlowRate(Parameter* para, int lev);
+void setSizeOfPlane(Parameter* para, int lev, unsigned int z);
+void calcPressure(Parameter* para, std::string inorout, int lev);
+void calcFlowRate(Parameter* para, int lev);
 
 //advection + diffusion
-extern "C" void calcPlaneConc(Parameter* para, CudaMemoryManager* cudaManager, int lev);
-extern "C" void allocPlaneConc(Parameter* para, CudaMemoryManager* cudaManager);
-extern "C" void printPlaneConc(Parameter* para, CudaMemoryManager* cudaManager);
+void calcPlaneConc(Parameter* para, CudaMemoryManager* cudaMemoryManager, int lev);
+void allocPlaneConc(Parameter* para, CudaMemoryManager* cudaMemoryManager);
+void printPlaneConc(Parameter* para, CudaMemoryManager* cudaMemoryManager);
 
-extern "C" void printRE(Parameter* para, CudaMemoryManager* cudaManager, int timestep);
+void printRE(Parameter* para, CudaMemoryManager* cudaMemoryManager, int timestep);
 
 #endif

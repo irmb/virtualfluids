@@ -13,12 +13,28 @@ __pycache__/
 
 # IDE
 .vscode/
+.vscode-server/
 .sync/
 .idea/
+.ccache/
+.cache/
+.devcontainer/devcontainer.json
 
-# Simulation results
+# simulation results
 output/
 logs/
 
+# grid
+.grid/
+
+# scripts
+scripts/
+
+# stl files
+stl/
+
 # MacOS
 .DS_Store
+
+# Settings
+.gitconfig

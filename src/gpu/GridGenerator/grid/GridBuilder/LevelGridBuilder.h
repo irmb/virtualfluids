@@ -28,7 +28,7 @@
 //
 //! \file LevelGridBuilder.h
 //! \ingroup grid
-//! \author Soeren Peters, Stephan Lenz, Martin Schönherr
+//! \author Soeren Peters, Stephan Lenz, Martin Schï¿½nherr
 //=======================================================================================
 #ifndef LEVEL_GRID_BUILDER_H
 #define LEVEL_GRID_BUILDER_H
@@ -38,11 +38,12 @@
 #include <memory>
 #include <array>
 
-#include "global.h"
+#include "gpu/GridGenerator/global.h"
 
-#include "grid/GridBuilder/GridBuilder.h"
-#include "grid/Grid.h"
-#include "grid/NodeValues.h"
+#include "gpu/GridGenerator/grid/GridBuilder/GridBuilder.h"
+#include "gpu/GridGenerator/grid/Grid.h"
+#include "gpu/GridGenerator/grid/GridInterface.h"
+#include "gpu/GridGenerator/grid/NodeValues.h"
 
 struct Vertex;
 class  Grid;
@@ -54,6 +55,7 @@ class BoundingBox;
 class Side;
 class VelocityBoundaryCondition;
 class SlipBoundaryCondition;
+class StressBoundaryCondition;
 class PressureBoundaryCondition;
 class GeometryBoundaryCondition;
 enum class SideType;
@@ -70,9 +72,10 @@ public:
 
     GRIDGENERATOR_EXPORT SPtr<Grid> getGrid(uint level) override;
 
-    GRIDGENERATOR_EXPORT virtual ~LevelGridBuilder();
+    GRIDGENERATOR_EXPORT  ~LevelGridBuilder() override;
 
     GRIDGENERATOR_EXPORT void setSlipBoundaryCondition(SideType sideType, real nomalX, real normalY, real normalZ);
+    GRIDGENERATOR_EXPORT void setStressBoundaryCondition(SideType sideType, real nomalX, real normalY, real normalZ, uint samplingOffset, real z0);
     GRIDGENERATOR_EXPORT void setVelocityBoundaryCondition(SideType sideType, real vx, real vy, real vz);
     GRIDGENERATOR_EXPORT void setPressureBoundaryCondition(SideType sideType, real rho);
     GRIDGENERATOR_EXPORT void setPeriodicBoundaryCondition(bool periodic_X, bool periodic_Y, bool periodic_Z);
@@ -82,12 +85,16 @@ public:
 
     GRIDGENERATOR_EXPORT void setCommunicationProcess(int direction, uint process);
 
-    GRIDGENERATOR_EXPORT uint getCommunicationProcess(int direction) override;
+    GRIDGENERATOR_EXPORT virtual uint getCommunicationProcess(int direction) override;
 
-    GRIDGENERATOR_EXPORT virtual std::shared_ptr<Grid> getGrid(int level, int box);
+    GRIDGENERATOR_EXPORT std::shared_ptr<Grid> getGrid(int level, int box);
 
     GRIDGENERATOR_EXPORT virtual unsigned int getNumberOfNodes(unsigned int level) const override;
 
+    GRIDGENERATOR_EXPORT virtual uint getNumberOfFluidNodes(unsigned int level) const override;
+    GRIDGENERATOR_EXPORT virtual void getFluidNodeIndices(uint* fluidNodeIndices, const int level) const override;
+    GRIDGENERATOR_EXPORT virtual uint getNumberOfFluidNodesBorder(unsigned int level) const override;
+    GRIDGENERATOR_EXPORT virtual void getFluidNodeIndicesBorder(uint *fluidNodeIndices, const int level) const override;
 
     GRIDGENERATOR_EXPORT virtual void getNodeValues(real *xCoords, real *yCoords, real *zCoords,
                                          uint *neighborX, uint *neighborY, uint *neighborZ, uint *neighborNegative, 
@@ -99,6 +106,13 @@ public:
     GRIDGENERATOR_EXPORT virtual void getSlipValues(real* normalX, real* normalY, real* normalZ, int* indices, int level) const override;
     GRIDGENERATOR_EXPORT virtual void getSlipQs(real* qs[27], int level) const override;
 
+    GRIDGENERATOR_EXPORT uint getStressSize(int level) const override;
+    GRIDGENERATOR_EXPORT virtual void getStressValues(  real* normalX, real* normalY, real* normalZ, 
+                                                        real* vx,      real* vy,      real* vz, 
+                                                        real* vx1,     real* vy1,     real* vz1, 
+                                                        int* indices, int* samplingIndices, int* samplingOffsets, real* z0, int level) const override;
+    GRIDGENERATOR_EXPORT virtual void getStressQs(real* qs[27], int level) const override;
+        
     GRIDGENERATOR_EXPORT uint getVelocitySize(int level) const override;
     GRIDGENERATOR_EXPORT virtual void getVelocityValues(real* vx, real* vy, real* vz, int* indices, int level) const override;
     GRIDGENERATOR_EXPORT virtual void getVelocityQs(real* qs[27], int level) const override;
@@ -123,15 +137,17 @@ protected:
 
     struct BoundaryConditions
     {
-		BoundaryConditions() {}
+		BoundaryConditions() = default;
 
         std::vector<SPtr<SlipBoundaryCondition>> slipBoundaryConditions;
+
+        std::vector<SPtr<StressBoundaryCondition>> stressBoundaryConditions;
 
         std::vector<SPtr<VelocityBoundaryCondition>> velocityBoundaryConditions;
 
         std::vector<SPtr<PressureBoundaryCondition>> pressureBoundaryConditions;
 
-        std::vector<SPtr<VelocityBoundaryCondition> > noSlipBoundaryConditions;
+        std::vector<SPtr<VelocityBoundaryCondition>> noSlipBoundaryConditions;
 
         SPtr<GeometryBoundaryCondition> geometryBoundaryCondition;
     };
@@ -146,6 +162,8 @@ protected:
 
 protected:
     void setVelocityGeometryBoundaryCondition(real vx, real vy, real vz);
+    void setNoSlipGeometryBoundaryCondition();
+    void setSlipGeometryBoundaryCondition(real normalX, real normalY, real normalZ);
 
     void createBCVectors();
     void addShortQsToVector(int index);
@@ -158,7 +176,7 @@ public:
     GRIDGENERATOR_EXPORT void getGridInformations(std::vector<int>& gridX, std::vector<int>& gridY,
                                        std::vector<int>& gridZ, std::vector<int>& distX, std::vector<int>& distY,
                                        std::vector<int>& distZ) override;
-    GRIDGENERATOR_EXPORT uint getNumberOfGridLevels() const override;
+    GRIDGENERATOR_EXPORT virtual uint getNumberOfGridLevels() const override;
 
     GRIDGENERATOR_EXPORT uint getNumberOfNodesCF(int level) override;
     GRIDGENERATOR_EXPORT uint getNumberOfNodesFC(int level) override;
@@ -168,10 +186,14 @@ public:
     GRIDGENERATOR_EXPORT void getOffsetFC(real* xOffCf, real* yOffCf, real* zOffCf, int level) override;
     GRIDGENERATOR_EXPORT void getOffsetCF(real* xOffFc, real* yOffFc, real* zOffFc, int level) override;
 
-    GRIDGENERATOR_EXPORT uint getNumberOfSendIndices(int direction, uint level) override;
-    GRIDGENERATOR_EXPORT uint getNumberOfReceiveIndices(int direction, uint level) override;
-    GRIDGENERATOR_EXPORT void getSendIndices(int *sendIndices, int direction, int level) override;
-    GRIDGENERATOR_EXPORT void getReceiveIndices(int *sendIndices, int direction, int level) override;
+    GRIDGENERATOR_EXPORT virtual uint getNumberOfSendIndices(int direction, uint level) override;
+    GRIDGENERATOR_EXPORT virtual uint getNumberOfReceiveIndices(int direction, uint level) override;
+    GRIDGENERATOR_EXPORT virtual void getSendIndices(int *sendIndices, int direction, int level) override;
+    GRIDGENERATOR_EXPORT virtual void getReceiveIndices(int *sendIndices, int direction, int level) override;
+
+
+    // needed for CUDA Streams MultiGPU (Communication Hiding)
+    void findFluidNodes(bool splitDomain) override;
 };
 
 #endif

@@ -1,28 +1,28 @@
 //=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
 //           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
 //
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
 //  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
+//  License as published by the Free Software Foundation, either version 3 of
 //  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 //  for more details.
-//  
+//
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
@@ -63,6 +63,7 @@
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
+#include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -127,50 +128,49 @@ int main( int argc, char* argv[])
         auto gridFactory = GridFactory::make();
         gridFactory->setGridStrategy(Device::CPU);
         auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
-    
+
         //////////////////////////////////////////////////////////////////////////
         // create grid
         //////////////////////////////////////////////////////////////////////////
 
-	    real dx = L / real(nx);
+        real dx = L / real(nx);
 
-	    gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L,
-								    0.5 * L,  0.5 * L,  0.5 * L, dx);
+        gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L,
+                                    0.5 * L,  0.5 * L,  0.5 * L, dx);
 
-	    gridBuilder->setPeriodicBoundaryCondition(false, false, false);
+        gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
-	    gridBuilder->buildGrids(lbmOrGks, false);
-    
+        gridBuilder->buildGrids(lbmOrGks, false);
+
         //////////////////////////////////////////////////////////////////////////
         // branch between LBM and GKS
         //////////////////////////////////////////////////////////////////////////
 
         if( lbmOrGks == LBM )
         {
-		    SPtr<Parameter> para = Parameter::make();
-    
+            SPtr<Parameter> para = Parameter::make();
+            BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
+
             //////////////////////////////////////////////////////////////////////////
             // compute parameters in lattice units
             //////////////////////////////////////////////////////////////////////////
 
             const real velocityLB = velocity * dt / dx; // LB units
 
-	        const real vx = velocityLB / sqrt(2.0); // LB units
-	        const real vy = velocityLB / sqrt(2.0); // LB units
+            const real vx = velocityLB / sqrt(2.0); // LB units
+            const real vy = velocityLB / sqrt(2.0); // LB units
 
             const real viscosityLB = nx * velocityLB / Re; // LB units
 
             *logging::out << logging::Logger::INFO_HIGH << "velocity  [dx/dt] = " << velocityLB << " \n";
             *logging::out << logging::Logger::INFO_HIGH << "viscosity [dx^2/dt] = " << viscosityLB << "\n";
-    
+
             //////////////////////////////////////////////////////////////////////////
             // set parameters
             //////////////////////////////////////////////////////////////////////////
 
             para->setOutputPath( path );
             para->setOutputPrefix( simulationName );
-
-            para->setPathAndFilename(para->getOutputPath() + "/" + para->getOutputPrefix());
 
             para->setPrintFiles(true);
 
@@ -181,26 +181,29 @@ int main( int argc, char* argv[])
 
             para->setTimestepOut( timeStepOut );
             para->setTimestepEnd( timeStepEnd );
-    
+
             //////////////////////////////////////////////////////////////////////////
             // set boundary conditions
             //////////////////////////////////////////////////////////////////////////
 
-		    gridBuilder->setNoSlipBoundaryCondition  (SideType::PX);
-		    gridBuilder->setNoSlipBoundaryCondition  (SideType::MX);
-		    gridBuilder->setNoSlipBoundaryCondition  (SideType::PY);
-		    gridBuilder->setNoSlipBoundaryCondition  (SideType::MY);
-	        gridBuilder->setVelocityBoundaryCondition(SideType::PZ,  vx,  vy, 0.0);
-		    gridBuilder->setNoSlipBoundaryCondition  (SideType::MZ);
-    
+            gridBuilder->setNoSlipBoundaryCondition  (SideType::PX);
+            gridBuilder->setNoSlipBoundaryCondition  (SideType::MX);
+            gridBuilder->setNoSlipBoundaryCondition  (SideType::PY);
+            gridBuilder->setNoSlipBoundaryCondition  (SideType::MY);
+            gridBuilder->setVelocityBoundaryCondition(SideType::PZ,  vx,  vy, 0.0);
+            gridBuilder->setNoSlipBoundaryCondition  (SideType::MZ);
+
+            bcFactory.setNoSlipBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipBounceBack);
+            bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocitySimpleBounceBackCompressible);
+
             //////////////////////////////////////////////////////////////////////////
             // set copy mesh to simulation
             //////////////////////////////////////////////////////////////////////////
 
-		    SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
+            SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
 
-            SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
-    
+            SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
+
             //////////////////////////////////////////////////////////////////////////
             // run simulation
             //////////////////////////////////////////////////////////////////////////
@@ -214,19 +217,19 @@ int main( int argc, char* argv[])
         else
         {
             CudaUtility::setCudaDevice(0);
-        
+
             Parameters parameters;
-    
+
             //////////////////////////////////////////////////////////////////////////
             // compute remaining parameters
             //////////////////////////////////////////////////////////////////////////
 
-	        const real vx = velocity / sqrt(2.0);
-	        const real vy = velocity / sqrt(2.0);
-    
+            const real vx = velocity / sqrt(2.0);
+            const real vy = velocity / sqrt(2.0);
+
             parameters.K  = 2.0;
             parameters.Pr = 1.0;
-        
+
             const real Ma = 0.1;
 
             real rho = 1.0;
@@ -239,7 +242,7 @@ int main( int argc, char* argv[])
             *logging::out << logging::Logger::INFO_HIGH << "mu  = " << mu << " m^2/s\n";
 
             *logging::out << logging::Logger::INFO_HIGH << "CFL = " << dt * ( velocity + cs ) / dx << "\n";
-    
+
             //////////////////////////////////////////////////////////////////////////
             // set parameters
             //////////////////////////////////////////////////////////////////////////
@@ -250,7 +253,7 @@ int main( int argc, char* argv[])
             parameters.dx = dx;
 
             parameters.lambdaRef = lambda;
-    
+
             //////////////////////////////////////////////////////////////////////////
             // set copy mesh to simulation
             //////////////////////////////////////////////////////////////////////////
@@ -260,7 +263,7 @@ int main( int argc, char* argv[])
             meshAdapter.inputGrid();
 
             auto dataBase = std::make_shared<DataBase>( "GPU" );
-    
+
             //////////////////////////////////////////////////////////////////////////
             // set boundary conditions
             //////////////////////////////////////////////////////////////////////////
@@ -268,21 +271,21 @@ int main( int argc, char* argv[])
             SPtr<BoundaryCondition> bcLid  = std::make_shared<IsothermalWall>( dataBase, Vec3(  vx,  vy, 0.0 ), lambda, false );
             SPtr<BoundaryCondition> bcWall = std::make_shared<IsothermalWall>( dataBase, Vec3( 0.0, 0.0, 0.0 ), lambda, false );
 
-            bcLid->findBoundaryCells ( meshAdapter, false,  [&](Vec3 center){ return center.z >  0.5 && 
-                                                                                     center.x > -0.5 && 
-                                                                                     center.x <  0.5 && 
-                                                                                     center.y > -0.5 && 
+            bcLid->findBoundaryCells ( meshAdapter, false,  [&](Vec3 center){ return center.z >  0.5 &&
+                                                                                     center.x > -0.5 &&
+                                                                                     center.x <  0.5 &&
+                                                                                     center.y > -0.5 &&
                                                                                      center.y <  0.5; } );
 
-            bcWall->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.x < -0.5 || 
-                                                                                   center.x >  0.5 || 
-                                                                                   center.y < -0.5 || 
+            bcWall->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.x < -0.5 ||
+                                                                                   center.x >  0.5 ||
+                                                                                   center.y < -0.5 ||
                                                                                    center.y >  0.5 ||
                                                                                    center.z < -0.5; } );
 
             dataBase->boundaryConditions.push_back( bcLid  );
             dataBase->boundaryConditions.push_back( bcWall );
-    
+
             //////////////////////////////////////////////////////////////////////////
             // set initial condition and upload mesh and initial condition to GPGPU
             //////////////////////////////////////////////////////////////////////////
@@ -299,7 +302,7 @@ int main( int argc, char* argv[])
             Initializer::initializeDataUpdate(dataBase);
 
             VtkWriter::write( dataBase, parameters, path + "/" + simulationName + "_0" );
-    
+
             //////////////////////////////////////////////////////////////////////////
             // set analyzers
             //////////////////////////////////////////////////////////////////////////
@@ -309,7 +312,7 @@ int main( int argc, char* argv[])
             ConvergenceAnalyzer convergenceAnalyzer( dataBase, 10000 );
 
             cupsAnalyzer.start();
-    
+
             //////////////////////////////////////////////////////////////////////////
             // run simulation
             //////////////////////////////////////////////////////////////////////////
@@ -324,7 +327,7 @@ int main( int argc, char* argv[])
 
                     VtkWriter::write( dataBase, parameters, path + "/" + simulationName + "_" + std::to_string( iter ) );
                 }
-            
+
                 int crashCellIndex = dataBase->getCrashCellIndex();
                 if( crashCellIndex >= 0 )
                 {
@@ -342,20 +345,20 @@ int main( int argc, char* argv[])
                 convergenceAnalyzer.run( iter );
             }
         }
-	}
+    }
     catch (const std::bad_alloc e)
     {
-                
+
         *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
     }
     catch (const std::exception& e)
     {
-                
+
         *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
     }
     catch (std::string& s)
     {
-                
+
         *logging::out << logging::Logger::LOGGER_ERROR << s << "\n";
     }
     catch (...)

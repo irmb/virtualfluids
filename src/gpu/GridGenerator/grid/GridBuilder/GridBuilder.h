@@ -28,7 +28,7 @@
 //
 //! \file GridBuilder.h
 //! \ingroup grid
-//! \author Soeren Peters, Stephan Lenz, Martin Schönherr
+//! \author Soeren Peters, Stephan Lenz, Martin Schï¿½nherr
 //=======================================================================================
 #ifndef GridBuilder_H
 #define GridBuilder_H
@@ -37,7 +37,7 @@
 #include <string>
 #include <memory>
 
-#include "GridGenerator/global.h"
+#include "gpu/GridGenerator/global.h"
 
 #define GEOMQS 6
 #define INLETQS 0
@@ -98,6 +98,13 @@ public:
     virtual void getSlipValues(real *normalX, real *normalY, real *normalZ, int *indices, int level) const = 0;
     virtual void getSlipQs(real* qs[27], int level) const = 0;
 
+    virtual uint getStressSize(int level) const = 0;
+    virtual void getStressValues(real *normalX, real *normalY, real *normalZ, 
+                                real* vx1,     real* vy1,     real* vz1, 
+                                real* vx, real* vy, real* vz, 
+                                int *indices, int* samplingIndices, int*        samplingOffsets, real* z0, int level) const = 0;
+    virtual void getStressQs(real* qs[27], int level) const = 0;
+
     virtual uint getVelocitySize(int level) const = 0;
     virtual void getVelocityValues(real* vx, real* vy, real* vz, int* indices, int level) const = 0;
     virtual void getVelocityQs(real* qs[27], int level) const = 0;
@@ -118,11 +125,17 @@ public:
 
     virtual uint getCommunicationProcess(int direction) = 0;
 
+    virtual uint getNumberOfFluidNodes(unsigned int level) const = 0;
+    virtual void getFluidNodeIndices(uint *fluidNodeIndices, const int level) const = 0;
+    virtual uint getNumberOfFluidNodesBorder(unsigned int level) const = 0;
+    virtual void getFluidNodeIndicesBorder(uint *fluidNodeIndices, const int level) const = 0;
+
     virtual uint getNumberOfSendIndices(int direction, uint level)             = 0;
     virtual uint getNumberOfReceiveIndices(int direction, uint level)          = 0;
     virtual void getSendIndices(int *sendIndices, int direction, int level)    = 0;
     virtual void getReceiveIndices(int *sendIndices, int direction, int level) = 0;
+
+    virtual void findFluidNodes(bool splitDomain) = 0;
 };
 
 #endif
-

@@ -59,7 +59,7 @@ void GridVTKWriter::writeSparseGridToVTK(SPtr<Grid> grid, const std::string& nam
     writeVtkFile(grid);
 }
 
-void GridVTKWriter::writeGridToVTKXML(SPtr<Grid> grid, const std::string& name, WRITING_FORMAT format)
+void GridVTKWriter::writeGridToVTKXML(SPtr<Grid> grid, const std::string& name)
 {
     
     const uint chunkSize = 20000000; 
@@ -87,9 +87,9 @@ void GridVTKWriter::writeGridToVTKXML(SPtr<Grid> grid, const std::string& name, 
 
         *logging::out << logging::Logger::INFO_INTERMEDIATE << "Write Grid to XML VTK (*.vtu) output file : " + name + "_Part_" + std::to_string(part) + "\n";
 
-        nodedatanames.push_back("types");
-        nodedatanames.push_back("sparse_id");
-        nodedatanames.push_back("matrix_id");
+        nodedatanames.emplace_back("types");
+        nodedatanames.emplace_back("sparse_id");
+        nodedatanames.emplace_back("matrix_id");
 
         nodedata.resize(nodedatanames.size());
 
@@ -111,7 +111,7 @@ void GridVTKWriter::writeGridToVTKXML(SPtr<Grid> grid, const std::string& name, 
                     grid->transIndexToCoords(index, x, y, z);
 
                     nodeNumbers(xIndex, yIndex, zIndex) = nr++;
-                    nodes.push_back(UbTupleFloat3(float(x), float(y), float(z)));
+                    nodes.emplace_back(UbTupleFloat3(float(x), float(y), float(z)));
 
                     const char type = grid->getFieldEntry(grid->transCoordToIndex(x, y, z));
                     nodedata[0].push_back(type);
@@ -146,7 +146,7 @@ void GridVTKWriter::writeGridToVTKXML(SPtr<Grid> grid, const std::string& name, 
                     {
                         Cell cell(x, y, z, grid->getDelta());
                         //if (grid->nodeInCellIs(cell, INVALID_OUT_OF_GRID) || grid->nodeInCellIs(cell, INVALID_COARSE_UNDER_FINE))
-                        //	continue;
+                        // continue;
 
                         cells.push_back(makeUbTuple(uint(SWB), uint(SEB), uint(NEB), uint(NWB), uint(SWT), uint(SET), uint(NET), uint(NWT)));
                     }
@@ -159,7 +159,7 @@ void GridVTKWriter::writeGridToVTKXML(SPtr<Grid> grid, const std::string& name, 
 
 }
 
-void GridVTKWriter::writeInterpolationCellsToVTKXML(SPtr<Grid> grid, SPtr<Grid> gridCoarse, const std::string& name, WRITING_FORMAT format)
+void GridVTKWriter::writeInterpolationCellsToVTKXML(SPtr<Grid> grid, SPtr<Grid> gridCoarse, const std::string& name)
 {
     std::vector<char> nodeInterpolationCellType( grid->getSize() );
     for( auto& type : nodeInterpolationCellType ) type = -1;
@@ -198,79 +198,79 @@ void GridVTKWriter::writeInterpolationCellsToVTKXML(SPtr<Grid> grid, SPtr<Grid> 
         }
     }
 
-	std::vector<UbTupleFloat3> nodes;
-	std::vector<UbTupleInt8> cells;
-	std::vector<std::string> celldatanames;
-	std::vector< std::vector<double> > celldata;
+    std::vector<UbTupleFloat3> nodes;
+    std::vector<UbTupleInt8> cells;
+    std::vector<std::string> celldatanames;
+    std::vector< std::vector<double> > celldata;
 
-	celldatanames.push_back("InterpolationCells");
-    celldatanames.push_back("Offset");
+    celldatanames.emplace_back("InterpolationCells");
+    celldatanames.emplace_back("Offset");
 
-	celldata.resize(celldatanames.size());
+    celldata.resize(celldatanames.size());
 
-	CbArray3D<int> nodeNumbers(grid->getNumberOfNodesX(), grid->getNumberOfNodesY(), grid->getNumberOfNodesZ(), -1);
-	int nr = 0;
+    CbArray3D<int> nodeNumbers(grid->getNumberOfNodesX(), grid->getNumberOfNodesY(), grid->getNumberOfNodesZ(), -1);
+    int nr = 0;
 
-	for (uint xIndex = 0; xIndex < grid->getNumberOfNodesX(); xIndex++)
-	{
-		for (uint yIndex = 0; yIndex < grid->getNumberOfNodesY(); yIndex++)
-		{
-			for (uint zIndex = 0; zIndex < grid->getNumberOfNodesZ(); zIndex++)
-			{
-				real x, y, z;
-				uint index = 
-					  grid->getNumberOfNodesX() * grid->getNumberOfNodesY() * zIndex
-					+ grid->getNumberOfNodesX() *                             yIndex
-					+ xIndex;
+    for (uint xIndex = 0; xIndex < grid->getNumberOfNodesX(); xIndex++)
+    {
+        for (uint yIndex = 0; yIndex < grid->getNumberOfNodesY(); yIndex++)
+        {
+            for (uint zIndex = 0; zIndex < grid->getNumberOfNodesZ(); zIndex++)
+            {
+                real x, y, z;
+                uint index = 
+                      grid->getNumberOfNodesX() * grid->getNumberOfNodesY() * zIndex
+                    + grid->getNumberOfNodesX() *                             yIndex
+                    + xIndex;
 
-				grid->transIndexToCoords(index, x, y, z);
+                grid->transIndexToCoords(index, x, y, z);
 
-				nodeNumbers(xIndex, yIndex, zIndex) = nr++;
-				nodes.push_back(UbTupleFloat3(float(x), float(y), float(z)));
-			}
-		}
-	}
+                nodeNumbers(xIndex, yIndex, zIndex) = nr++;
+                nodes.emplace_back(UbTupleFloat3(float(x), float(y), float(z)));
+            }
+        }
+    }
 
-	int SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;
-	for (uint xIndex = 0; xIndex < grid->getNumberOfNodesX() - 1; xIndex++)
-	{
-		for (uint yIndex = 0; yIndex < grid->getNumberOfNodesY() - 1; yIndex++)
-		{
-			for (uint zIndex = 0; zIndex < grid->getNumberOfNodesZ() - 1; zIndex++)
-			{
-				real x, y, z;
-				uint index = grid->getNumberOfNodesX() * grid->getNumberOfNodesY() * zIndex
-					+ grid->getNumberOfNodesX() *                             yIndex
-					+ xIndex;
+    int SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;
+    for (uint xIndex = 0; xIndex < grid->getNumberOfNodesX() - 1; xIndex++)
+    {
+        for (uint yIndex = 0; yIndex < grid->getNumberOfNodesY() - 1; yIndex++)
+        {
+            for (uint zIndex = 0; zIndex < grid->getNumberOfNodesZ() - 1; zIndex++)
+            {
+                real x, y, z;
+                uint index = grid->getNumberOfNodesX() * grid->getNumberOfNodesY() * zIndex
+                    + grid->getNumberOfNodesX() *                             yIndex
+                    + xIndex;
 
-				grid->transIndexToCoords(index, x, y, z);
+                grid->transIndexToCoords(index, x, y, z);
 
-				if ((SWB = nodeNumbers(xIndex, yIndex, zIndex)) >= 0
-					&& (SEB = nodeNumbers(xIndex + 1, yIndex, zIndex)) >= 0
-					&& (NEB = nodeNumbers(xIndex + 1, yIndex + 1, zIndex)) >= 0
-					&& (NWB = nodeNumbers(xIndex, yIndex + 1, zIndex)) >= 0
-					&& (SWT = nodeNumbers(xIndex, yIndex, zIndex + 1)) >= 0
-					&& (SET = nodeNumbers(xIndex + 1, yIndex, zIndex + 1)) >= 0
-					&& (NET = nodeNumbers(xIndex + 1, yIndex + 1, zIndex + 1)) >= 0
-					&& (NWT = nodeNumbers(xIndex, yIndex + 1, zIndex + 1)) >= 0)
-				{
-					Cell cell(x, y, z, grid->getDelta());
-					//if (grid->nodeInCellIs(cell, INVALID_OUT_OF_GRID) || grid->nodeInCellIs(cell, INVALID_COARSE_UNDER_FINE))
-					//	continue;
+                if ((SWB = nodeNumbers(xIndex, yIndex, zIndex)) >= 0
+                    && (SEB = nodeNumbers(xIndex + 1, yIndex, zIndex)) >= 0
+                    && (NEB = nodeNumbers(xIndex + 1, yIndex + 1, zIndex)) >= 0
+                    && (NWB = nodeNumbers(xIndex, yIndex + 1, zIndex)) >= 0
+                    && (SWT = nodeNumbers(xIndex, yIndex, zIndex + 1)) >= 0
+                    && (SET = nodeNumbers(xIndex + 1, yIndex, zIndex + 1)) >= 0
+                    && (NET = nodeNumbers(xIndex + 1, yIndex + 1, zIndex + 1)) >= 0
+                    && (NWT = nodeNumbers(xIndex, yIndex + 1, zIndex + 1)) >= 0)
+                {
+                    Cell cell(x, y, z, grid->getDelta());
+                    //if (grid->nodeInCellIs(cell, INVALID_OUT_OF_GRID) || grid->nodeInCellIs(cell, INVALID_COARSE_UNDER_FINE))
+                    //    continue;
 
-					cells.push_back(makeUbTuple(SWB, SEB, NEB, NWB, SWT, SET, NET, NWT));
+                    cells.push_back(makeUbTuple(SWB, SEB, NEB, NWB, SWT, SET, NET, NWT));
 
-				    //const char type = grid->getFieldEntry(grid->transCoordToIndex(nodes[SWB].v1, nodes[SWB].v2.v1, nodes[SWB].v2.v2));
-				    //const char type = grid->getFieldEntry(grid->transCoordToIndex(val<1>(nodes[SWB]), val<2>(nodes[SWB]), val<3>(nodes[SWB])));
-				    const char type = nodeInterpolationCellType[ grid->transCoordToIndex(val<1>(nodes[SWB]), val<2>(nodes[SWB]), val<3>(nodes[SWB])) ];
+                    //const char type = grid->getFieldEntry(grid->transCoordToIndex(nodes[SWB].v1, nodes[SWB].v2.v1, nodes[SWB].v2.v2));
+                    //const char type = grid->getFieldEntry(grid->transCoordToIndex(val<1>(nodes[SWB]), val<2>(nodes[SWB]), val<3>(nodes[SWB])));
+                    const char type = nodeInterpolationCellType[ grid->transCoordToIndex(val<1>(nodes[SWB]), val<2>(nodes[SWB]), val<3>(nodes[SWB])) ];
                     const char offset = nodeOffset               [ grid->transCoordToIndex(val<1>(nodes[SWB]), val<2>(nodes[SWB]), val<3>(nodes[SWB])) ];
 
                     celldata[0].push_back( type );
                     celldata[1].push_back( offset );
-				}
-			}
-		}
-	}
+                }
+            }
+        }
+    }
     WbWriterVtkXmlBinary::getInstance()->writeOctsWithCellData(name, nodes, cells, celldatanames, celldata);
 }
 
@@ -319,18 +319,18 @@ void GridVTKWriter::openFile(const std::string& name, const std::string& mode)
 void GridVTKWriter::closeFile()
 {
     GridVTKWriter::end_line();
-	fclose(file);
+    fclose(file);
 }
 
 void GridVTKWriter::writeHeader()
 {
-	fprintf(file, "# vtk DataFile Version 3.0\n");
-	fprintf(file, "by MeshGenerator\n");
-	if (isBinaryWritingFormat())
-		fprintf(file, "BINARY\n");
-	else
-		fprintf(file, "ASCII\n");
-	fprintf(file, "DATASET UNSTRUCTURED_GRID\n");
+    fprintf(file, "# vtk DataFile Version 3.0\n");
+    fprintf(file, "by MeshGenerator\n");
+    if (isBinaryWritingFormat())
+        fprintf(file, "BINARY\n");
+    else
+        fprintf(file, "ASCII\n");
+    fprintf(file, "DATASET UNSTRUCTURED_GRID\n");
 }
 
 void GridVTKWriter::writePoints(SPtr<Grid> grid)
@@ -356,34 +356,34 @@ void GridVTKWriter::writePoints(SPtr<Grid> grid)
 
 void GridVTKWriter::writeCells(const unsigned int &size)
 {
-	fprintf(file, "\nCELLS %d %d\n", size, size * 2);
-	for (unsigned int i = 0; i < size; ++i)
-	{
-		if (isBinaryWritingFormat()){
-			write_int(1);
-			write_int(i);
-		}
-		else
-			fprintf(file, "1 %d\n", i);
-	}
+    fprintf(file, "\nCELLS %u %u\n", size, size * 2);
+    for (unsigned int i = 0; i < size; ++i)
+    {
+        if (isBinaryWritingFormat()){
+            write_int(1);
+            write_int(i);
+        }
+        else
+            fprintf(file, "1 %u\n", i);
+    }
 
-	fprintf(file, "\nCELL_TYPES %d\n", size);
-	for (unsigned int i = 0; i < size; ++i)
-	{
-		if (isBinaryWritingFormat())
-			write_int(1);
-		else
-			fprintf(file, "1 ");
-	}
-	if (!isBinaryWritingFormat())
+    fprintf(file, "\nCELL_TYPES %u\n", size);
+    for (unsigned int i = 0; i < size; ++i)
+    {
+        if (isBinaryWritingFormat())
+            write_int(1);
+        else
+            fprintf(file, "1 ");
+    }
+    if (!isBinaryWritingFormat())
         GridVTKWriter::end_line();
 }
 
 void GridVTKWriter::writeTypeHeader(const unsigned int &size)
 {
-	fprintf(file, "\nPOINT_DATA %d\n", size);
-	fprintf(file, "SCALARS type int\n");
-	fprintf(file, "LOOKUP_TABLE default\n");
+    fprintf(file, "\nPOINT_DATA %u\n", size);
+    fprintf(file, "SCALARS type int\n");
+    fprintf(file, "LOOKUP_TABLE default\n");
 }
 
 void GridVTKWriter::writeTypes(SPtr<Grid> grid)
@@ -402,38 +402,38 @@ void GridVTKWriter::writeTypes(SPtr<Grid> grid)
 
 void GridVTKWriter::end_line()
 {
-	char str2[8] = "\n";
-	fprintf(file, "%s", str2);
+    char str2[8] = "\n";
+    fprintf(file, "%s", str2);
 }
 
 void GridVTKWriter::write_int(int val)
 {
-	force_big_endian((unsigned char *)&val);
-	fwrite(&val, sizeof(int), 1, file);
+    force_big_endian((unsigned char *)&val);
+    fwrite(&val, sizeof(int), 1, file);
 }
 
 void GridVTKWriter::write_float(float val)
 {
-	force_big_endian((unsigned char *)&val);
-	fwrite(&val, sizeof(float), 1, file);
+    force_big_endian((unsigned char *)&val);
+    fwrite(&val, sizeof(float), 1, file);
 }
 
 
 void GridVTKWriter::force_big_endian(unsigned char *bytes)
 {
-	bool shouldSwap = false;
-	int tmp1 = 1;
-	unsigned char *tmp2 = (unsigned char *)&tmp1;
-	if (*tmp2 != 0)
-		shouldSwap = true;
+    bool shouldSwap = false;
+    int tmp1 = 1;
+    unsigned char *tmp2 = (unsigned char *)&tmp1;
+    if (*tmp2 != 0)
+        shouldSwap = true;
 
-	if (shouldSwap)
-	{
-		unsigned char tmp = bytes[0];
-		bytes[0] = bytes[3];
-		bytes[3] = tmp;
-		tmp = bytes[1];
-		bytes[1] = bytes[2];
-		bytes[2] = tmp;
-	}
+    if (shouldSwap)
+    {
+        unsigned char tmp = bytes[0];
+        bytes[0] = bytes[3];
+        bytes[3] = tmp;
+        tmp = bytes[1];
+        bytes[1] = bytes[2];
+        bytes[2] = tmp;
+    }
 }

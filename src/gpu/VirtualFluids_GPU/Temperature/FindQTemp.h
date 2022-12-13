@@ -2,21 +2,21 @@
 #define FIND_Q_TEMP_H
 
 #include "LBM/LB.h"
-#include "LBM/D3Q27.h"
+#include "lbm/constants/D3Q27.h"
 #include "Parameter/Parameter.h"
 
 
-extern "C" void findTempPress(Parameter* para);
+void findTempPress(Parameter* para);
 
-extern "C" void findKforTempPress(Parameter* para);
+void findKforTempPress(Parameter* para);
 
-extern "C" void findTempVel(Parameter* para);
+void findTempVel(Parameter* para);
 
-extern "C" void findKforTempVel(Parameter* para);
+void findKforTempVel(Parameter* para);
 
-extern "C" void findTemp(Parameter* para);
+void findTemp(Parameter* para);
 
-extern "C" void findKforTemp(Parameter* para);
+void findKforTemp(Parameter* para);
 
 
 #endif

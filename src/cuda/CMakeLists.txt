@@ -1,3 +1,3 @@
 project(cuda LANGUAGES CUDA CXX)
 
-vf_add_library(NAME cuda PUBLIC_LINK logger)
+vf_add_library(NAME vf_cuda PUBLIC_LINK logger)

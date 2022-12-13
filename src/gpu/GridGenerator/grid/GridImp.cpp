@@ -32,11 +32,10 @@
 //=======================================================================================
 #include "GridImp.h"
 
-#include <stdio.h>
-#include <time.h>
 #include <iostream>
 #include <omp.h>
 #include <sstream>
+# include <algorithm>
 #include <cmath>
 
 #include "global.h"
@@ -160,24 +159,24 @@ void GridImp::inital(const SPtr<Grid> fineGrid, uint numberOfLayers)
 #pragma omp parallel for
         for (int xIdx = 0; xIdx < (int)this->nx; xIdx++) {
             for (uint yIdx = 0; yIdx < this->ny; yIdx++) {
-                this->fixRefinementIntoWall(xIdx, yIdx, 0, 3);
-                this->fixRefinementIntoWall(xIdx, yIdx, this->nz - 1, -3);
+                this->fixRefinementIntoWall( xIdx, yIdx, 0           ,  3 );
+                this->fixRefinementIntoWall( xIdx, yIdx, this->nz - 1, -3 );
             }
         }
 
 #pragma omp parallel for
         for (int xIdx = 0; xIdx < (int)this->nx; xIdx++) {
             for (uint zIdx = 0; zIdx < this->nz; zIdx++) {
-                this->fixRefinementIntoWall(xIdx, 0, zIdx, 2);
-                this->fixRefinementIntoWall(xIdx, this->ny - 1, zIdx, -2);
+                this->fixRefinementIntoWall( xIdx, 0           , zIdx,  2 );
+                this->fixRefinementIntoWall( xIdx, this->ny - 1, zIdx, -2 );
             }
         }
 
 #pragma omp parallel for
         for (int yIdx = 0; yIdx < (int)this->ny; yIdx++) {
             for (uint zIdx = 0; zIdx < this->nz; zIdx++) {
-                this->fixRefinementIntoWall(0, yIdx, zIdx, 1);
-                this->fixRefinementIntoWall(this->nx - 1, yIdx, zIdx, -1);
+                this->fixRefinementIntoWall( 0           , yIdx, zIdx,  1 );
+                this->fixRefinementIntoWall( this->nx - 1, yIdx, zIdx, -1 );
             }
         }
     }
@@ -186,7 +185,7 @@ void GridImp::inital(const SPtr<Grid> fineGrid, uint numberOfLayers)
 #pragma omp parallel for
     for (int index = 0; index < (int)this->size; index++)
         this->findEndOfGridStopperNode(index);
-
+    
     *logging::out << logging::Logger::INFO_INTERMEDIATE
         << "Grid created: " << "from (" << this->startX << ", " << this->startY << ", " << this->startZ << ") to (" << this->endX << ", " << this->endY << ", " << this->endZ << ")\n"
         << "nodes: " << this->nx << " x " << this->ny << " x " << this->nz << " = " << this->size << "\n";
@@ -440,7 +439,7 @@ void GridImp::findEndOfGridStopperNode(uint index)
         else
             this->field.setFieldEntryToStopperOutOfGridBoundary(index);
     }
-
+    
 	if (isValidEndOfGridBoundaryStopper(index))
 		this->field.setFieldEntryToStopperOutOfGridBoundary(index);
 }
@@ -868,6 +867,7 @@ void GridImp::findSparseIndices(SPtr<Grid> finerGrid)
 
     if (fineGrid) {
         fineGrid->updateSparseIndices();
+        this->findForGridInterfaceNewIndices(fineGrid);
     }
 
     const uint newGridSize = this->getSparseSize();
@@ -875,6 +875,16 @@ void GridImp::findSparseIndices(SPtr<Grid> finerGrid)
                   << ", delete nodes:" << this->getSize() - newGridSize << "\n";
 }
 
+void GridImp::findForGridInterfaceNewIndices(SPtr<GridImp> fineGrid)
+{
+#pragma omp parallel for
+    for (int index = 0; index < (int)this->getNumberOfNodesCF(); index++)
+        this->gridInterface->findForGridInterfaceSparseIndexCF(this, fineGrid.get(), index);
+
+#pragma omp parallel for
+    for (int index = 0; index < (int)this->getNumberOfNodesFC(); index++)
+        this->gridInterface->findForGridInterfaceSparseIndexFC(this, fineGrid.get(), index);
+}
 
 void GridImp::updateSparseIndices()
 {
@@ -894,6 +904,53 @@ void GridImp::updateSparseIndices()
         }
     }
     sparseSize = size - removedNodes;
+}
+
+void GridImp::findFluidNodeIndices(bool splitDomain) 
+{
+    // find sparse index of all fluid nodes
+    this->fluidNodeIndices.clear();
+    for (uint index = 0; index < this->size; index++) {
+        int sparseIndex = this->getSparseIndex(index);
+        if (sparseIndex == -1)
+            continue;
+        if (this->field.isFluid(index))
+            this->fluidNodeIndices.push_back((uint)sparseIndex+1); // + 1 for numbering shift between GridGenerator and VF_GPU
+    }
+
+    // If splitDomain: find fluidNodeIndicesBorder and remove all indices in fluidNodeIndicesBorder from fluidNodeIndices
+    if (splitDomain) {
+        findFluidNodeIndicesBorder();
+        std::sort(this->fluidNodeIndices.begin(), this->fluidNodeIndices.end());
+        auto iterator = std::set_difference(this->fluidNodeIndices.begin(), this->fluidNodeIndices.end(),
+                            this->fluidNodeIndicesBorder.begin(), this->fluidNodeIndicesBorder.end(),
+                            this->fluidNodeIndices.begin());
+        this->fluidNodeIndices.resize(iterator - this->fluidNodeIndices.begin());
+    }
+}
+
+void GridImp::findFluidNodeIndicesBorder() {
+    this->fluidNodeIndicesBorder.clear();
+
+    // resize fluidNodeIndicesBorder (for better performance in copy operation)
+    size_t newSize = 0;
+    for (CommunicationIndices& ci : this->communicationIndices)
+        newSize += ci.sendIndices.size();    
+    this->fluidNodeIndicesBorder.reserve(newSize);
+
+    // copy all send indices to fluidNodeIndicesBorder
+    for (CommunicationIndices& ci : this->communicationIndices)
+        std::copy(ci.sendIndices.begin(), ci.sendIndices.end(), std::back_inserter(this->fluidNodeIndicesBorder));
+
+    // remove duplicate elements
+    std::sort(this->fluidNodeIndicesBorder.begin(), this->fluidNodeIndicesBorder.end());
+    this->fluidNodeIndicesBorder.erase(
+        std::unique(this->fluidNodeIndicesBorder.begin(), this->fluidNodeIndicesBorder.end()),
+        this->fluidNodeIndicesBorder.end());
+
+    // + 1 for numbering shift between GridGenerator and VF_GPU
+    for (size_t i = 0; i < this->fluidNodeIndicesBorder.size(); i++)
+        this->fluidNodeIndicesBorder[i] = this->getSparseIndex(this->fluidNodeIndicesBorder[i])+1;
 }
 
 void GridImp::setNeighborIndices(uint index)
@@ -936,13 +993,13 @@ void GridImp::setStopperNeighborCoords(uint index)
     real x, y, z;
     this->transIndexToCoords(index, x, y, z);
 
-    if (vf::Math::lessEqual(x + delta, endX) && !this->field.isInvalidOutOfGrid(this->transCoordToIndex(x + delta, y, z)))
+    if (vf::Math::lessEqual(x + delta, endX + (0.5 * delta)) && !this->field.isInvalidOutOfGrid(this->transCoordToIndex(x + delta, y, z)))
         neighborIndexX[index] = getSparseIndex(x + delta, y, z);
 
-    if (vf::Math::lessEqual(y + delta, endY) && !this->field.isInvalidOutOfGrid(this->transCoordToIndex(x, y + delta, z)))
+    if (vf::Math::lessEqual(y + delta, endY + (0.5 * delta)) && !this->field.isInvalidOutOfGrid(this->transCoordToIndex(x, y + delta, z)))
         neighborIndexY[index] = getSparseIndex(x, y + delta, z);
 
-    if (vf::Math::lessEqual(z + delta, endZ) && !this->field.isInvalidOutOfGrid(this->transCoordToIndex(x, y, z + delta)))
+    if (vf::Math::lessEqual(z + delta, endZ + (0.5 * delta)) && !this->field.isInvalidOutOfGrid(this->transCoordToIndex(x, y, z + delta)))
         neighborIndexZ[index] = getSparseIndex(x, y, z + delta);
 
     if (vf::Math::greaterEqual(x - delta, endX) && 
@@ -1156,7 +1213,7 @@ void GridImp::findInvalidBoundaryNodes(uint index)
 // --------------------------------------------------------- //
 void GridImp::mesh(Object* object)
 {
-    TriangularMesh* triangularMesh = dynamic_cast<TriangularMesh*>(object);
+    TriangularMesh *triangularMesh = dynamic_cast<TriangularMesh *>(object);
     if (triangularMesh)
         triangularMeshDiscretizationStrategy->discretize(triangularMesh, this, INVALID_SOLID, FLUID);
     else
@@ -1206,7 +1263,7 @@ void GridImp::mesh(Triangle &triangle)
                     continue;
 
                 const Vertex point(x, y, z);
-                const int value = triangle.isUnderFace(point);
+                const char value = triangle.isUnderFace(point);
                 //setDebugPoint(index, value);
 
                 if (value == Q_DEPRECATED)
@@ -1223,6 +1280,7 @@ void GridImp::closeNeedleCells()
     uint numberOfClosedNeedleCells = 0;
 
     do{
+        numberOfClosedNeedleCells = 0;
 #pragma omp parallel for reduction(+ : numberOfClosedNeedleCells)
         for (int index = 0; index < (int)this->size; index++) {
             if (this->closeCellIfNeedle(index))
@@ -1263,6 +1321,7 @@ void GridImp::closeNeedleCellsThinWall()
     uint numberOfClosedNeedleCells = 0;
 
     do{
+        numberOfClosedNeedleCells = 0;
 #pragma omp parallel for reduction(+ : numberOfClosedNeedleCells)
         for (int index = 0; index < (int)this->size; index++) {
             if (this->closeCellIfNeedleThinWall(index))
@@ -1446,7 +1505,6 @@ void GridImp::calculateQs(const uint index, const Vertex &point, Object* object)
                     
                 this->qPatches[ this->qIndices[index] ] = 0;
 
-				//printf("%d %f \n", this->qIndices[index], subdistance);
 			}
 		}
 	}
@@ -1626,6 +1684,27 @@ void GridImp::findCommunicationIndex( uint index, real coordinate, real limit, i
 	}
 }
 
+bool GridImp::isSendNode(int index) const
+{
+    bool isSendNode = false;
+    for (size_t direction = 0; direction < this->communicationIndices.size(); direction++)
+        if (std::find(this->communicationIndices[direction].sendIndices.begin(),
+                      this->communicationIndices[direction].sendIndices.end(), index) != this->communicationIndices[direction].sendIndices.end())
+            isSendNode = true;
+    return isSendNode;
+}
+
+bool GridImp::isReceiveNode(int index) const
+{
+    bool isReceiveNode = false;
+    for (size_t direction = 0; direction < this->communicationIndices.size(); direction++)
+        if (std::find(this->communicationIndices[direction].receiveIndices.begin(),
+                      this->communicationIndices[direction].receiveIndices.end(),
+                      index) != this->communicationIndices[direction].receiveIndices.end())
+            isReceiveNode = true;
+    return isReceiveNode;
+}
+
 uint GridImp::getNumberOfSendNodes(int direction)
 {
     return (uint)this->communicationIndices[direction].sendIndices.size();
@@ -1646,7 +1725,7 @@ uint GridImp::getReceiveIndex(int direction, uint index)
     return this->communicationIndices[direction].receiveIndices[ index ];
 }
 
-void GridImp::repairCommunicationInices(int direction )
+void GridImp::repairCommunicationIndices(int direction)
 {
     this->communicationIndices[direction].sendIndices.insert( this->communicationIndices[direction].sendIndices.end(), 
                                                               this->communicationIndices[direction+1].sendIndices.begin(), 
@@ -1787,7 +1866,11 @@ uint GridImp::getSize() const
 
 uint GridImp::getSparseSize() const
 {
-    return this->sparseSize;
+    return this->sparseSize; 
+}
+
+uint GridImp::getNumberOfFluidNodes() const { 
+    return (uint)this->fluidNodeIndices.size(); 
 }
 
 Field GridImp::getField() const
@@ -1930,6 +2013,12 @@ void GridImp::getGridInterface(uint* gridInterfaceList, const uint* oldGridInter
         gridInterfaceList[i] = oldGridInterfaceList[i] + 1; // + 1 for numbering shift between GridGenerator and VF_GPU
 }
 
+bool GridImp::isSparseIndexInFluidNodeIndicesBorder(uint &sparseIndex) const
+{
+    return std::find(this->fluidNodeIndicesBorder.begin(), this->fluidNodeIndicesBorder.end(), sparseIndex) !=
+           this->fluidNodeIndicesBorder.end();
+}
+
 #define GEOFLUID 19
 #define GEOSOLID 16
 
@@ -1944,7 +2033,7 @@ void GridImp::getNodeValues(real *xCoords, real *yCoords, real *zCoords, uint *n
     geo[0] = GEOSOLID;
 
     int nodeNumber = 0;
-    for (uint i = 0; i < this->getSize(); i++)
+    for (uint i = 0; i < this->size; i++)
     {
         if (this->sparseIndices[i] == -1)
             continue;
@@ -1972,6 +2061,23 @@ void GridImp::getNodeValues(real *xCoords, real *yCoords, real *zCoords, uint *n
         geo[nodeNumber + 1] = type;
         nodeNumber++;
     }
+}
+
+void GridImp::getFluidNodeIndices(uint *fluidNodeIndices) const 
+{ 
+    for (uint nodeNumber = 0; nodeNumber < (uint)this->fluidNodeIndices.size(); nodeNumber++)
+        fluidNodeIndices[nodeNumber] = this->fluidNodeIndices[nodeNumber];
+}
+
+uint GridImp::getNumberOfFluidNodesBorder() const 
+{ 
+    return (uint)this->fluidNodeIndicesBorder.size(); 
+}
+
+void GridImp::getFluidNodeIndicesBorder(uint *fluidNodeIndicesBorder) const 
+{
+    for (uint nodeNumber = 0; nodeNumber < (uint)this->fluidNodeIndicesBorder.size(); nodeNumber++)
+        fluidNodeIndicesBorder[nodeNumber] = this->fluidNodeIndicesBorder[nodeNumber];
 }
 
 void GridImp::print() const

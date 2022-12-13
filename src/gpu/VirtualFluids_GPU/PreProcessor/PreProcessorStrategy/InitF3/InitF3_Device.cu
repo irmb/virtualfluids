@@ -1,12 +1,13 @@
 #include "LBM/LB.h" 
-#include "LBM/D3Q27.h"
+#include "lbm/constants/D3Q27.h"
 #include <lbm/constants/NumericConstants.h>
 
 using namespace vf::lbm::constant;
+using namespace vf::lbm::dir;
 #include "math.h"
 
 
-extern "C" __global__ void LB_Init_F3(unsigned int* neighborX,
+__global__ void LB_Init_F3(unsigned int* neighborX,
 	unsigned int* neighborY,
 	unsigned int* neighborZ,
 	unsigned int* geoD,
@@ -40,21 +41,21 @@ extern "C" __global__ void LB_Init_F3(unsigned int* neighborX,
 			Distributions6 D;
 			if (EvenOrOdd == true)
 			{
-				D.g[dirE] = &G6[dirE   *size_Mat];
-				D.g[dirW] = &G6[dirW   *size_Mat];
-				D.g[dirN] = &G6[dirN   *size_Mat];
-				D.g[dirS] = &G6[dirS   *size_Mat];
-				D.g[dirT] = &G6[dirT   *size_Mat];
-				D.g[dirB] = &G6[dirB   *size_Mat];
+				D.g[DIR_P00] = &G6[DIR_P00   *size_Mat];
+				D.g[DIR_M00] = &G6[DIR_M00   *size_Mat];
+				D.g[DIR_0P0] = &G6[DIR_0P0   *size_Mat];
+				D.g[DIR_0M0] = &G6[DIR_0M0   *size_Mat];
+				D.g[DIR_00P] = &G6[DIR_00P   *size_Mat];
+				D.g[DIR_00M] = &G6[DIR_00M   *size_Mat];
 			}
 			else
 			{
-				D.g[dirW] = &G6[dirE   *size_Mat];
-				D.g[dirE] = &G6[dirW   *size_Mat];
-				D.g[dirS] = &G6[dirN   *size_Mat];
-				D.g[dirN] = &G6[dirS   *size_Mat];
-				D.g[dirB] = &G6[dirT   *size_Mat];
-				D.g[dirT] = &G6[dirB   *size_Mat];
+				D.g[DIR_M00] = &G6[DIR_P00   *size_Mat];
+				D.g[DIR_P00] = &G6[DIR_M00   *size_Mat];
+				D.g[DIR_0M0] = &G6[DIR_0P0   *size_Mat];
+				D.g[DIR_0P0] = &G6[DIR_0M0   *size_Mat];
+				D.g[DIR_00M] = &G6[DIR_00P   *size_Mat];
+				D.g[DIR_00P] = &G6[DIR_00M   *size_Mat];
 			}
 			//////////////////////////////////////////////////////////////////////////
 			//index
@@ -68,12 +69,12 @@ extern "C" __global__ void LB_Init_F3(unsigned int* neighborX,
 			unsigned int kb = neighborZ[k];
 			//////////////////////////////////////////////////////////////////////////
 
-			(D.g[dirE])[ke] = 0.0f;
-			(D.g[dirW])[kw] = 0.0f;
-			(D.g[dirN])[kn] = 0.0f;
-			(D.g[dirS])[ks] = 0.0f;
-			(D.g[dirT])[kt] = 0.0f;
-			(D.g[dirB])[kb] = 0.0f;
+			(D.g[DIR_P00])[ke] = 0.0f;
+			(D.g[DIR_M00])[kw] = 0.0f;
+			(D.g[DIR_0P0])[kn] = 0.0f;
+			(D.g[DIR_0M0])[ks] = 0.0f;
+			(D.g[DIR_00P])[kt] = 0.0f;
+			(D.g[DIR_00M])[kb] = 0.0f;
 		}
 	}
 }

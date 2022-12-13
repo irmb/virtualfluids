@@ -14,9 +14,9 @@ public:
 	static void writeVelocitiesAsTXT(Parameter* para, int level, int t)
 	{
 		//calc
-		int numberNodes = (int)para->getParH(level)->size_Mat_SP;
+		int numberNodes = (int)para->getParH(level)->numberOfNodes;
 		//write
-		UbFileOutputASCII out(para->getFName() + "_VelocitiesASCII_" + std::to_string(level) + "_ID_" + StringUtil::toString<int>(para->getMyID()) + "_t_" + std::to_string(t) + ".dat");
+		UbFileOutputASCII out(para->getFName() + "_VelocitiesASCII_" + std::to_string(level) + "_ID_" + StringUtil::toString<int>(para->getMyProcessID()) + "_t_" + std::to_string(t) + ".dat");
 		//header
 		out.writeString("Level:");
 		out.writeInteger(level);
@@ -27,9 +27,9 @@ public:
 		//out.writeLine();
 		for (int index = 0; index < numberNodes; index++)
 		{
-			out.writeFloat((float)(para->getParH(level)->vx_SP[index] * para->getVelocityRatio()));
-			out.writeFloat((float)(para->getParH(level)->vy_SP[index] * para->getVelocityRatio()));
-			out.writeFloat((float)(para->getParH(level)->vz_SP[index] * para->getVelocityRatio()));
+			out.writeFloat((float)(para->getParH(level)->velocityX[index] * para->getVelocityRatio()));
+			out.writeFloat((float)(para->getParH(level)->velocityY[index] * para->getVelocityRatio()));
+			out.writeFloat((float)(para->getParH(level)->velocityZ[index] * para->getVelocityRatio()));
 			out.writeLine();
 		}
 		out.writeLine();

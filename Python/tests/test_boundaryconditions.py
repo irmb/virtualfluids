@@ -1,5 +1,5 @@
 import unittest
-from pyfluids.boundaryconditions import *
+from pyfluids.cpu.boundaryconditions import *
 
 
 class BoundaryConditionsTest(unittest.TestCase):

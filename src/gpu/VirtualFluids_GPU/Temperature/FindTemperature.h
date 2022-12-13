@@ -6,13 +6,13 @@ class CudaMemoryManager;
 class Parameter;
 
 
-void initTemperatur(Parameter* para, CudaMemoryManager* cudaManager, int lev);
+void initTemperatur(Parameter* para, CudaMemoryManager* cudaMemoryManager, int lev);
 
-void findTempSim(Parameter* para, CudaMemoryManager* cudaManager);
+void findTempSim(Parameter* para, CudaMemoryManager* cudaMemoryManager);
 
-void findTempVelSim(Parameter* para, CudaMemoryManager* cudaManager);
+void findTempVelSim(Parameter* para, CudaMemoryManager* cudaMemoryManager);
 
-void findTempPressSim(Parameter* para, CudaMemoryManager* cudaManager);
+void findTempPressSim(Parameter* para, CudaMemoryManager* cudaMemoryManager);
 
 
 #endif

@@ -32,14 +32,15 @@
 //=======================================================================================
 /* Device code */
 #include "LBM/LB.h" 
-#include "LBM/D3Q27.h"
+#include "lbm/constants/D3Q27.h"
 #include <lbm/constants/NumericConstants.h>
 
 using namespace vf::lbm::constant;
-#include "Kernel/ChimeraTransformation.h"
+using namespace vf::lbm::dir;
+#include "Kernel/Utilities/ChimeraTransformation.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_CumulantK17CompChim(
+__global__ void LB_Kernel_CumulantK17CompChim(
 	real omega,
 	uint* typeOfGridNode,
 	uint* neighborX,
@@ -65,7 +66,7 @@ extern "C" __global__ void LB_Kernel_CumulantK17CompChim(
     //! The cumulant kernel is executed in the following steps
     //!
     ////////////////////////////////////////////////////////////////////////////////
-    //! - Get node index coordinates from thredIdx, blockIdx, blockDim and gridDim.
+    //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
     //!
     const unsigned x = threadIdx.x;
     const unsigned y = blockIdx.x;
@@ -87,61 +88,61 @@ extern "C" __global__ void LB_Kernel_CumulantK17CompChim(
         //!
         Distributions27 dist;
         if (isEvenTimestep) {
-            dist.f[dirE]    = &distributions[dirE * size_Mat];
-            dist.f[dirW]    = &distributions[dirW * size_Mat];
-            dist.f[dirN]    = &distributions[dirN * size_Mat];
-            dist.f[dirS]    = &distributions[dirS * size_Mat];
-            dist.f[dirT]    = &distributions[dirT * size_Mat];
-            dist.f[dirB]    = &distributions[dirB * size_Mat];
-            dist.f[dirNE]   = &distributions[dirNE * size_Mat];
-            dist.f[dirSW]   = &distributions[dirSW * size_Mat];
-            dist.f[dirSE]   = &distributions[dirSE * size_Mat];
-            dist.f[dirNW]   = &distributions[dirNW * size_Mat];
-            dist.f[dirTE]   = &distributions[dirTE * size_Mat];
-            dist.f[dirBW]   = &distributions[dirBW * size_Mat];
-            dist.f[dirBE]   = &distributions[dirBE * size_Mat];
-            dist.f[dirTW]   = &distributions[dirTW * size_Mat];
-            dist.f[dirTN]   = &distributions[dirTN * size_Mat];
-            dist.f[dirBS]   = &distributions[dirBS * size_Mat];
-            dist.f[dirBN]   = &distributions[dirBN * size_Mat];
-            dist.f[dirTS]   = &distributions[dirTS * size_Mat];
-            dist.f[dirZERO] = &distributions[dirZERO * size_Mat];
-            dist.f[dirTNE]  = &distributions[dirTNE * size_Mat];
-            dist.f[dirTSW]  = &distributions[dirTSW * size_Mat];
-            dist.f[dirTSE]  = &distributions[dirTSE * size_Mat];
-            dist.f[dirTNW]  = &distributions[dirTNW * size_Mat];
-            dist.f[dirBNE]  = &distributions[dirBNE * size_Mat];
-            dist.f[dirBSW]  = &distributions[dirBSW * size_Mat];
-            dist.f[dirBSE]  = &distributions[dirBSE * size_Mat];
-            dist.f[dirBNW]  = &distributions[dirBNW * size_Mat];
+            dist.f[DIR_P00]    = &distributions[DIR_P00 * size_Mat];
+            dist.f[DIR_M00]    = &distributions[DIR_M00 * size_Mat];
+            dist.f[DIR_0P0]    = &distributions[DIR_0P0 * size_Mat];
+            dist.f[DIR_0M0]    = &distributions[DIR_0M0 * size_Mat];
+            dist.f[DIR_00P]    = &distributions[DIR_00P * size_Mat];
+            dist.f[DIR_00M]    = &distributions[DIR_00M * size_Mat];
+            dist.f[DIR_PP0]   = &distributions[DIR_PP0 * size_Mat];
+            dist.f[DIR_MM0]   = &distributions[DIR_MM0 * size_Mat];
+            dist.f[DIR_PM0]   = &distributions[DIR_PM0 * size_Mat];
+            dist.f[DIR_MP0]   = &distributions[DIR_MP0 * size_Mat];
+            dist.f[DIR_P0P]   = &distributions[DIR_P0P * size_Mat];
+            dist.f[DIR_M0M]   = &distributions[DIR_M0M * size_Mat];
+            dist.f[DIR_P0M]   = &distributions[DIR_P0M * size_Mat];
+            dist.f[DIR_M0P]   = &distributions[DIR_M0P * size_Mat];
+            dist.f[DIR_0PP]   = &distributions[DIR_0PP * size_Mat];
+            dist.f[DIR_0MM]   = &distributions[DIR_0MM * size_Mat];
+            dist.f[DIR_0PM]   = &distributions[DIR_0PM * size_Mat];
+            dist.f[DIR_0MP]   = &distributions[DIR_0MP * size_Mat];
+            dist.f[DIR_000] = &distributions[DIR_000 * size_Mat];
+            dist.f[DIR_PPP]  = &distributions[DIR_PPP * size_Mat];
+            dist.f[DIR_MMP]  = &distributions[DIR_MMP * size_Mat];
+            dist.f[DIR_PMP]  = &distributions[DIR_PMP * size_Mat];
+            dist.f[DIR_MPP]  = &distributions[DIR_MPP * size_Mat];
+            dist.f[DIR_PPM]  = &distributions[DIR_PPM * size_Mat];
+            dist.f[DIR_MMM]  = &distributions[DIR_MMM * size_Mat];
+            dist.f[DIR_PMM]  = &distributions[DIR_PMM * size_Mat];
+            dist.f[DIR_MPM]  = &distributions[DIR_MPM * size_Mat];
         } else {
-            dist.f[dirW]    = &distributions[dirE * size_Mat];
-            dist.f[dirE]    = &distributions[dirW * size_Mat];
-            dist.f[dirS]    = &distributions[dirN * size_Mat];
-            dist.f[dirN]    = &distributions[dirS * size_Mat];
-            dist.f[dirB]    = &distributions[dirT * size_Mat];
-            dist.f[dirT]    = &distributions[dirB * size_Mat];
-            dist.f[dirSW]   = &distributions[dirNE * size_Mat];
-            dist.f[dirNE]   = &distributions[dirSW * size_Mat];
-            dist.f[dirNW]   = &distributions[dirSE * size_Mat];
-            dist.f[dirSE]   = &distributions[dirNW * size_Mat];
-            dist.f[dirBW]   = &distributions[dirTE * size_Mat];
-            dist.f[dirTE]   = &distributions[dirBW * size_Mat];
-            dist.f[dirTW]   = &distributions[dirBE * size_Mat];
-            dist.f[dirBE]   = &distributions[dirTW * size_Mat];
-            dist.f[dirBS]   = &distributions[dirTN * size_Mat];
-            dist.f[dirTN]   = &distributions[dirBS * size_Mat];
-            dist.f[dirTS]   = &distributions[dirBN * size_Mat];
-            dist.f[dirBN]   = &distributions[dirTS * size_Mat];
-            dist.f[dirZERO] = &distributions[dirZERO * size_Mat];
-            dist.f[dirBSW]  = &distributions[dirTNE * size_Mat];
-            dist.f[dirBNE]  = &distributions[dirTSW * size_Mat];
-            dist.f[dirBNW]  = &distributions[dirTSE * size_Mat];
-            dist.f[dirBSE]  = &distributions[dirTNW * size_Mat];
-            dist.f[dirTSW]  = &distributions[dirBNE * size_Mat];
-            dist.f[dirTNE]  = &distributions[dirBSW * size_Mat];
-            dist.f[dirTNW]  = &distributions[dirBSE * size_Mat];
-            dist.f[dirTSE]  = &distributions[dirBNW * size_Mat];
+            dist.f[DIR_M00]    = &distributions[DIR_P00 * size_Mat];
+            dist.f[DIR_P00]    = &distributions[DIR_M00 * size_Mat];
+            dist.f[DIR_0M0]    = &distributions[DIR_0P0 * size_Mat];
+            dist.f[DIR_0P0]    = &distributions[DIR_0M0 * size_Mat];
+            dist.f[DIR_00M]    = &distributions[DIR_00P * size_Mat];
+            dist.f[DIR_00P]    = &distributions[DIR_00M * size_Mat];
+            dist.f[DIR_MM0]   = &distributions[DIR_PP0 * size_Mat];
+            dist.f[DIR_PP0]   = &distributions[DIR_MM0 * size_Mat];
+            dist.f[DIR_MP0]   = &distributions[DIR_PM0 * size_Mat];
+            dist.f[DIR_PM0]   = &distributions[DIR_MP0 * size_Mat];
+            dist.f[DIR_M0M]   = &distributions[DIR_P0P * size_Mat];
+            dist.f[DIR_P0P]   = &distributions[DIR_M0M * size_Mat];
+            dist.f[DIR_M0P]   = &distributions[DIR_P0M * size_Mat];
+            dist.f[DIR_P0M]   = &distributions[DIR_M0P * size_Mat];
+            dist.f[DIR_0MM]   = &distributions[DIR_0PP * size_Mat];
+            dist.f[DIR_0PP]   = &distributions[DIR_0MM * size_Mat];
+            dist.f[DIR_0MP]   = &distributions[DIR_0PM * size_Mat];
+            dist.f[DIR_0PM]   = &distributions[DIR_0MP * size_Mat];
+            dist.f[DIR_000] = &distributions[DIR_000 * size_Mat];
+            dist.f[DIR_MMM]  = &distributions[DIR_PPP * size_Mat];
+            dist.f[DIR_PPM]  = &distributions[DIR_MMP * size_Mat];
+            dist.f[DIR_MPM]  = &distributions[DIR_PMP * size_Mat];
+            dist.f[DIR_PMM]  = &distributions[DIR_MPP * size_Mat];
+            dist.f[DIR_MMP]  = &distributions[DIR_PPM * size_Mat];
+            dist.f[DIR_PPP]  = &distributions[DIR_MMM * size_Mat];
+            dist.f[DIR_MPP]  = &distributions[DIR_PMM * size_Mat];
+            dist.f[DIR_PMP]  = &distributions[DIR_MPM * size_Mat];
         }
         ////////////////////////////////////////////////////////////////////////////////
         //! - Set neighbor indices (necessary for indirect addressing)
@@ -155,33 +156,33 @@ extern "C" __global__ void LB_Kernel_CumulantK17CompChim(
         ////////////////////////////////////////////////////////////////////////////////////
         //! - Set local distributions
         //!
-        real mfcbb = (dist.f[dirE])[k];
-        real mfabb = (dist.f[dirW])[kw];
-        real mfbcb = (dist.f[dirN])[k];
-        real mfbab = (dist.f[dirS])[ks];
-        real mfbbc = (dist.f[dirT])[k];
-        real mfbba = (dist.f[dirB])[kb];
-        real mfccb = (dist.f[dirNE])[k];
-        real mfaab = (dist.f[dirSW])[ksw];
-        real mfcab = (dist.f[dirSE])[ks];
-        real mfacb = (dist.f[dirNW])[kw];
-        real mfcbc = (dist.f[dirTE])[k];
-        real mfaba = (dist.f[dirBW])[kbw];
-        real mfcba = (dist.f[dirBE])[kb];
-        real mfabc = (dist.f[dirTW])[kw];
-        real mfbcc = (dist.f[dirTN])[k];
-        real mfbaa = (dist.f[dirBS])[kbs];
-        real mfbca = (dist.f[dirBN])[kb];
-        real mfbac = (dist.f[dirTS])[ks];
-        real mfbbb = (dist.f[dirZERO])[k];
-        real mfccc = (dist.f[dirTNE])[k];
-        real mfaac = (dist.f[dirTSW])[ksw];
-        real mfcac = (dist.f[dirTSE])[ks];
-        real mfacc = (dist.f[dirTNW])[kw];
-        real mfcca = (dist.f[dirBNE])[kb];
-        real mfaaa = (dist.f[dirBSW])[kbsw];
-        real mfcaa = (dist.f[dirBSE])[kbs];
-        real mfaca = (dist.f[dirBNW])[kbw];
+        real mfcbb = (dist.f[DIR_P00])[k];
+        real mfabb = (dist.f[DIR_M00])[kw];
+        real mfbcb = (dist.f[DIR_0P0])[k];
+        real mfbab = (dist.f[DIR_0M0])[ks];
+        real mfbbc = (dist.f[DIR_00P])[k];
+        real mfbba = (dist.f[DIR_00M])[kb];
+        real mfccb = (dist.f[DIR_PP0])[k];
+        real mfaab = (dist.f[DIR_MM0])[ksw];
+        real mfcab = (dist.f[DIR_PM0])[ks];
+        real mfacb = (dist.f[DIR_MP0])[kw];
+        real mfcbc = (dist.f[DIR_P0P])[k];
+        real mfaba = (dist.f[DIR_M0M])[kbw];
+        real mfcba = (dist.f[DIR_P0M])[kb];
+        real mfabc = (dist.f[DIR_M0P])[kw];
+        real mfbcc = (dist.f[DIR_0PP])[k];
+        real mfbaa = (dist.f[DIR_0MM])[kbs];
+        real mfbca = (dist.f[DIR_0PM])[kb];
+        real mfbac = (dist.f[DIR_0MP])[ks];
+        real mfbbb = (dist.f[DIR_000])[k];
+        real mfccc = (dist.f[DIR_PPP])[k];
+        real mfaac = (dist.f[DIR_MMP])[ksw];
+        real mfcac = (dist.f[DIR_PMP])[ks];
+        real mfacc = (dist.f[DIR_MPP])[kw];
+        real mfcca = (dist.f[DIR_PPM])[kb];
+        real mfaaa = (dist.f[DIR_MMM])[kbsw];
+        real mfcaa = (dist.f[DIR_PMM])[kbs];
+        real mfaca = (dist.f[DIR_MPM])[kbw];
         ////////////////////////////////////////////////////////////////////////////////////
         //! - Calculate density and velocity using pyramid summation for low round-off errors as in Eq. (J1)-(J3) \ref
         //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015),
@@ -329,13 +330,13 @@ extern "C" __global__ void LB_Kernel_CumulantK17CompChim(
         real O6 = c1o1;
 
         ////////////////////////////////////////////////////////////////////////////////////
-        //! - A and B: parameters for fourth order convergence of the diffusion term according to Eq. (114) and (115)
+        //! - A and DIR_00M: parameters for fourth order convergence of the diffusion term according to Eq. (115) and (116)
         //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017),
         //! DOI:10.1016/j.jcp.2017.05.040 ]</b></a> with simplifications assuming \f$ \omega_2 = 1.0 \f$ (modify for
         //! different bulk viscosity).
         //!
-        real A = (c4o1 + c2o1 * omega - c3o1 * omega * omega) / (c2o1 - c7o1 * omega + c5o1 * omega * omega);
-        real B = (c4o1 + c28o1 * omega - c14o1 * omega * omega) / (c6o1 - c21o1 * omega + c15o1 * omega * omega);
+        real factorA = (c4o1 + c2o1 * omega - c3o1 * omega * omega) / (c2o1 - c7o1 * omega + c5o1 * omega * omega);
+        real factorB = (c4o1 + c28o1 * omega - c14o1 * omega * omega) / (c6o1 - c21o1 * omega + c15o1 * omega * omega);
 
         ////////////////////////////////////////////////////////////////////////////////////
         //! - Compute cumulants from central moments according to Eq. (20)-(23) in
@@ -492,12 +493,12 @@ extern "C" __global__ void LB_Kernel_CumulantK17CompChim(
         //! to Eq. (43)-(48) <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017),
         //! DOI:10.1016/j.jcp.2017.05.040 ]</b></a>
         //!
-        CUMacc = -O4 * (c1o1 / omega - c1o2) * (dyuy + dzuz) * c2o3 * A + (c1o1 - O4) * (CUMacc);
-        CUMcac = -O4 * (c1o1 / omega - c1o2) * (dxux + dzuz) * c2o3 * A + (c1o1 - O4) * (CUMcac);
-        CUMcca = -O4 * (c1o1 / omega - c1o2) * (dyuy + dxux) * c2o3 * A + (c1o1 - O4) * (CUMcca);
-        CUMbbc = -O4 * (c1o1 / omega - c1o2) * Dxy * c1o3 * B + (c1o1 - O4) * (CUMbbc);
-        CUMbcb = -O4 * (c1o1 / omega - c1o2) * Dxz * c1o3 * B + (c1o1 - O4) * (CUMbcb);
-        CUMcbb = -O4 * (c1o1 / omega - c1o2) * Dyz * c1o3 * B + (c1o1 - O4) * (CUMcbb);
+        CUMacc = -O4 * (c1o1 / omega - c1o2) * (dyuy + dzuz) * c2o3 * factorA + (c1o1 - O4) * (CUMacc);
+        CUMcac = -O4 * (c1o1 / omega - c1o2) * (dxux + dzuz) * c2o3 * factorA + (c1o1 - O4) * (CUMcac);
+        CUMcca = -O4 * (c1o1 / omega - c1o2) * (dyuy + dxux) * c2o3 * factorA + (c1o1 - O4) * (CUMcca);
+        CUMbbc = -O4 * (c1o1 / omega - c1o2) * Dxy * c1o3 * factorB + (c1o1 - O4) * (CUMbbc);
+        CUMbcb = -O4 * (c1o1 / omega - c1o2) * Dxz * c1o3 * factorB + (c1o1 - O4) * (CUMbcb);
+        CUMcbb = -O4 * (c1o1 / omega - c1o2) * Dyz * c1o3 * factorB + (c1o1 - O4) * (CUMcbb);
 
         //////////////////////////////////////////////////////////////////////////
         // 5.
@@ -622,32 +623,32 @@ extern "C" __global__ void LB_Kernel_CumulantK17CompChim(
         //! <a href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017),
         //! DOI:10.3390/computation5020019 ]</b></a>
         //!
-        (dist.f[dirE])[k]      = mfabb;
-        (dist.f[dirW])[kw]     = mfcbb;
-        (dist.f[dirN])[k]      = mfbab;
-        (dist.f[dirS])[ks]     = mfbcb;
-        (dist.f[dirT])[k]      = mfbba;
-        (dist.f[dirB])[kb]     = mfbbc;
-        (dist.f[dirNE])[k]     = mfaab;
-        (dist.f[dirSW])[ksw]   = mfccb;
-        (dist.f[dirSE])[ks]    = mfacb;
-        (dist.f[dirNW])[kw]    = mfcab;
-        (dist.f[dirTE])[k]     = mfaba;
-        (dist.f[dirBW])[kbw]   = mfcbc;
-        (dist.f[dirBE])[kb]    = mfabc;
-        (dist.f[dirTW])[kw]    = mfcba;
-        (dist.f[dirTN])[k]     = mfbaa;
-        (dist.f[dirBS])[kbs]   = mfbcc;
-        (dist.f[dirBN])[kb]    = mfbac;
-        (dist.f[dirTS])[ks]    = mfbca;
-        (dist.f[dirZERO])[k]   = mfbbb;
-        (dist.f[dirTNE])[k]    = mfaaa;
-        (dist.f[dirTSE])[ks]   = mfaca;
-        (dist.f[dirBNE])[kb]   = mfaac;
-        (dist.f[dirBSE])[kbs]  = mfacc;
-        (dist.f[dirTNW])[kw]   = mfcaa;
-        (dist.f[dirTSW])[ksw]  = mfcca;
-        (dist.f[dirBNW])[kbw]  = mfcac;
-        (dist.f[dirBSW])[kbsw] = mfccc;
+        (dist.f[DIR_P00])[k]      = mfabb;
+        (dist.f[DIR_M00])[kw]     = mfcbb;
+        (dist.f[DIR_0P0])[k]      = mfbab;
+        (dist.f[DIR_0M0])[ks]     = mfbcb;
+        (dist.f[DIR_00P])[k]      = mfbba;
+        (dist.f[DIR_00M])[kb]     = mfbbc;
+        (dist.f[DIR_PP0])[k]     = mfaab;
+        (dist.f[DIR_MM0])[ksw]   = mfccb;
+        (dist.f[DIR_PM0])[ks]    = mfacb;
+        (dist.f[DIR_MP0])[kw]    = mfcab;
+        (dist.f[DIR_P0P])[k]     = mfaba;
+        (dist.f[DIR_M0M])[kbw]   = mfcbc;
+        (dist.f[DIR_P0M])[kb]    = mfabc;
+        (dist.f[DIR_M0P])[kw]    = mfcba;
+        (dist.f[DIR_0PP])[k]     = mfbaa;
+        (dist.f[DIR_0MM])[kbs]   = mfbcc;
+        (dist.f[DIR_0PM])[kb]    = mfbac;
+        (dist.f[DIR_0MP])[ks]    = mfbca;
+        (dist.f[DIR_000])[k]   = mfbbb;
+        (dist.f[DIR_PPP])[k]    = mfaaa;
+        (dist.f[DIR_PMP])[ks]   = mfaca;
+        (dist.f[DIR_PPM])[kb]   = mfaac;
+        (dist.f[DIR_PMM])[kbs]  = mfacc;
+        (dist.f[DIR_MPP])[kw]   = mfcaa;
+        (dist.f[DIR_MMP])[ksw]  = mfcca;
+        (dist.f[DIR_MPM])[kbw]  = mfcac;
+        (dist.f[DIR_MMM])[kbsw] = mfccc;
     }
 }

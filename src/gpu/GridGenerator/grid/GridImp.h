@@ -28,7 +28,7 @@
 //
 //! \file GridImp.h
 //! \ingroup grid
-//! \author Soeren Peters, Stephan Lenz, Martin Schönherr
+//! \author Soeren Peters, Stephan Lenz, Martin Schoenherr
 //=======================================================================================
 #ifndef GRID_IMP_H
 #define GRID_IMP_H
@@ -37,12 +37,12 @@
 
 #include "Core/LbmOrGks.h"
 
-#include "global.h"
+#include "gpu/GridGenerator/global.h"
 
-#include "grid/distributions/Distribution.h"
-#include "grid/Grid.h"
-#include "grid/Cell.h"
-#include "grid/Field.h" 
+#include "gpu/GridGenerator/grid/distributions/Distribution.h"
+#include "gpu/GridGenerator/grid/Grid.h"
+#include "gpu/GridGenerator/grid/Cell.h"
+#include "gpu/GridGenerator/grid/Field.h" 
 
 class TriangularMesh;
 struct Vertex;
@@ -53,29 +53,30 @@ class BoundingBox;
 class TriangularMeshDiscretizationStrategy;
 
 #ifdef __GNUC__
-#ifndef __clang__
-#pragma push
-#pragma diag_suppress = 3156
-#endif
+    #ifndef __clang__
+        #pragma push
+        #pragma nv_diag_suppress = 3156
+    #endif
 #endif
 
 // GCC:  warning #3156-D: extern declaration of the entity DIRECTIONS is treated as a static definition
 extern int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
 #ifdef __GNUC__
-#ifndef __clang__
-#pragma pop
-#endif
+    #ifndef __clang__
+        #pragma pop
+    #endif
 #endif
 
 class GRIDGENERATOR_EXPORT GridImp : public enableSharedFromThis<GridImp>, public Grid
 {
-private:
+protected:
     GridImp() = default;
     GridImp(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, Distribution d, uint level);
 
 public:
     static SPtr<GridImp> makeShared(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, std::string d3Qxx, uint level);
+    virtual ~GridImp() = default;
 
 private:
     void initalNumberOfNodesAndSize();
@@ -109,12 +110,13 @@ private:
     uint sparseSize;
     bool periodicityX = false, periodicityY = false, periodicityZ = false;
 
-    Field field;
     Object* object;
     GridInterface *gridInterface;
 
-    int *neighborIndexX, *neighborIndexY, *neighborIndexZ, *neighborIndexNegative;
     int *sparseIndices;
+
+    std::vector<uint> fluidNodeIndices;
+    std::vector<uint> fluidNodeIndicesBorder;
 
 	uint *qIndices;     //maps from matrix index to qIndex
 	real *qValues;
@@ -126,9 +128,13 @@ private:
 
     TriangularMeshDiscretizationStrategy *triangularMeshDiscretizationStrategy;
 
-    uint numberOfSolidBoundaryNodes;
+    uint numberOfSolidBoundaryNodes = 0;
 
     bool enableFixRefinementIntoTheWall;
+
+protected:
+    Field field;
+    int *neighborIndexX, *neighborIndexY, *neighborIndexZ, *neighborIndexNegative;
 
 public:
     void inital(const SPtr<Grid> fineGrid, uint numberOfLayers) override;
@@ -152,11 +158,11 @@ public:
     uint transCoordToIndex(const real &x, const real &y, const real &z) const override;
     void transIndexToCoords(uint index, real &x, real &y, real &z) const override;
 
-    virtual void findGridInterface(SPtr<Grid> grid, LbmOrGks lbmOrGks) override;
+    void findGridInterface(SPtr<Grid> grid, LbmOrGks lbmOrGks) override;
 
     void repairGridInterfaceOnMultiGPU(SPtr<Grid> fineGrid) override;
 
-    virtual void limitToSubDomain(SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks) override;
+    void limitToSubDomain(SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks) override;
 
     void freeMemory() override;
 
@@ -209,7 +215,7 @@ public:
     bool isNode(uint index, char type) const;
     bool nodeInNextCellIs(int index, char type) const;
     bool hasAllNeighbors(uint index) const;
-    bool hasNeighborOfType(uint index, char type)const;
+    bool hasNeighborOfType(uint index, char type) const;
     bool cellContainsOnly(Cell &cell, char type) const;
     bool cellContainsOnly(Cell &cell, char typeA, char typeB) const;
 
@@ -246,7 +252,10 @@ public:
     uint getNumberOfNodesCF() const override;
     uint getNumberOfNodesFC() const override;
     void getGridInterfaceIndices(uint *iCellCfc, uint *iCellCff, uint *iCellFcc, uint *iCellFcf) const override;
+
     static void getGridInterface(uint *gridInterfaceList, const uint *oldGridInterfaceList, uint size);
+
+    bool isSparseIndexInFluidNodeIndicesBorder(uint &sparseIndex) const override;
 
     int *getNeighborsX() const override;
     int* getNeighborsY() const override;
@@ -266,19 +275,21 @@ public:
 public:
     virtual void findSparseIndices(SPtr<Grid> fineGrid) override;
 
+    void findForGridInterfaceNewIndices(SPtr<GridImp> fineGrid);
     void updateSparseIndices();
     void setNeighborIndices(uint index);
     real getFirstFluidNode(real coords[3], int direction, real startCoord) const override;
     real getLastFluidNode(real coords[3], int direction, real startCoord) const override;
+protected:
+    virtual void setStopperNeighborCoords(uint index);
 private:
-    void setStopperNeighborCoords(uint index);
     void getNeighborCoords(real &neighborX, real &neighborY, real &neighborZ, real x, real y, real z) const;
     real getNeighborCoord(bool periodicity, real endCoord, real coords[3], int direction) const;
     void getNegativeNeighborCoords(real &neighborX, real &neighborY, real &neighborZ, real x, real y, real z) const;
     real getNegativeNeighborCoord(bool periodicity, real endCoord, real coords[3], int direction) const;
     
 
-    int getSparseIndex(const real &expectedX, const real &expectedY, const real &expectedZ) const;
+    virtual int getSparseIndex(const real &expectedX, const real &expectedY, const real &expectedZ) const;
 
     static real getMinimumOnNodes(const real &minExact, const real &decimalStart, const real &delta);
     static real getMaximumOnNodes(const real &maxExact, const real &decimalStart, const real &delta);
@@ -304,7 +315,11 @@ public:
     void findQsPrimitive(Object *object);
 
 private:
-    enum class qComputationStageType { FindSolidBoundaryNodes, ComputeQs } qComputationStage;
+
+    enum class qComputationStageType{
+        FindSolidBoundaryNodes,
+        ComputeQs
+    } qComputationStage;
 
 public:
     void enableFindSolidBoundaryNodes() override
@@ -335,7 +350,20 @@ public:
     uint getSendIndex(int direction, uint index) override;
     uint getReceiveIndex(int direction, uint index) override;
 
-    void repairCommunicationInices(int direction) override;
+    bool isSendNode(int index) const override;
+    bool isReceiveNode(int index) const override;
+
+    void repairCommunicationIndices(int direction) override;
+
+    void findFluidNodeIndices(bool splitDomain) override;
+    void findFluidNodeIndicesBorder() override;
+
+    uint getNumberOfFluidNodes() const override;
+    void getFluidNodeIndices(uint *fluidNodeIndices) const override;
+
+    uint getNumberOfFluidNodesBorder() const override;
+    void getFluidNodeIndicesBorder(uint *fluidNodeIndicesBorder) const override;
+
 
 public:
     struct CommunicationIndices {

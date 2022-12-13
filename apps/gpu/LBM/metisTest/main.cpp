@@ -76,7 +76,7 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
     std::string gridPath = getGridPath(para, _gridpath);
     para->setOutputPath(_path);
     para->setOutputPrefix(_prefix);
-    para->setFName(_path + "/" + _prefix);
+    para->setPathAndFilename(_path + "/" + _prefix);
     para->setPrintFiles(false);
     para->setPrintFiles(StringUtil::toBool(input->getValue("WriteGrid")));
     para->setGeometryValues(StringUtil::toBool(input->getValue("GeometryValues")));
@@ -90,9 +90,9 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
     para->setUseWale(StringUtil::toBool(input->getValue("UseWale")));
     para->setSimulatePorousMedia(StringUtil::toBool(input->getValue("SimulatePorousMedia")));
     para->setD3Qxx(StringUtil::toInt(input->getValue("D3Qxx")));
-    para->setTEnd(StringUtil::toInt(input->getValue("TimeEnd")));
-    para->setTOut(StringUtil::toInt(input->getValue("TimeOut")));
-    para->setTStartOut(StringUtil::toInt(input->getValue("TimeStartOut")));
+    para->setTimestepEnd(StringUtil::toInt(input->getValue("TimeEnd")));
+    para->setTimestepOut(StringUtil::toInt(input->getValue("TimeOut")));
+    para->setTimestepStartOut(StringUtil::toInt(input->getValue("TimeStartOut")));
     para->setTimeCalcMedStart(StringUtil::toInt(input->getValue("TimeStartCalcMedian")));
     para->setTimeCalcMedEnd(StringUtil::toInt(input->getValue("TimeEndCalcMedian")));
     para->setPressInID(StringUtil::toInt(input->getValue("PressInID")));
@@ -106,8 +106,8 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
     para->setTemperatureInit(StringUtil::toFloat(input->getValue("Temp")));
     para->setTemperatureBC(StringUtil::toFloat(input->getValue("TempBC")));
     //////////////////////////////////////////////////////////////////////////
-    para->setViscosity(StringUtil::toFloat(input->getValue("Viscosity_LB")));
-    para->setVelocity(StringUtil::toFloat(input->getValue("Velocity_LB")));
+    para->setViscosityLB(StringUtil::toFloat(input->getValue("Viscosity_LB")));
+    para->setVelocityLB(StringUtil::toFloat(input->getValue("Velocity_LB")));
     para->setViscosityRatio(StringUtil::toFloat(input->getValue("Viscosity_Ratio_World_to_LB")));
     para->setVelocityRatio(StringUtil::toFloat(input->getValue("Velocity_Ratio_World_to_LB")));
     para->setDensityRatio(StringUtil::toFloat(input->getValue("Density_Ratio_World_to_LB")));
@@ -332,9 +332,12 @@ void multipleLevel(const std::string& configPath)
         gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
 
         gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
-        
-        //////////////////////////////////////////////////////////////////////////
 
+        bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
+        bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipCompressible);
+        bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::PressureNonEquilibriumCompressible);
+
+        //////////////////////////////////////////////////////////////////////////
         gridBuilder->writeGridsToVtk("F:/Work/Computations/gridGenerator/grid/Test_");
         //gridBuilder->writeArrows    ("F:/Work/Computations/gridGenerator/grid/Test_Arrow");
 

@@ -6,20 +6,20 @@
 #include "GPU/CudaMemoryManager.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-void readPropellerCylinder(Parameter* para, CudaMemoryManager* cudaManager)
+void readPropellerCylinder(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
 	PositionReader::readFilePropellerCylinderForAlloc(para);
 
-	cudaManager->cudaAllocVeloPropeller(para->getFine());
+	cudaMemoryManager->cudaAllocVeloPropeller(para->getFine());
 
 	PositionReader::readFilePropellerCylinder(para);
 	//PositionReader::definePropellerQs(para);
 
-	cudaManager->cudaCopyVeloPropeller(para->getFine());
+	cudaMemoryManager->cudaCopyVeloPropeller(para->getFine());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void readMeasurePoints(Parameter* para, CudaMemoryManager* cudaManager)
+void readMeasurePoints(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
 	//read measure points from file
 	PositionReader::readMeasurePoints(para);
@@ -42,7 +42,7 @@ void readMeasurePoints(Parameter* para, CudaMemoryManager* cudaManager)
 		
 		printf("Level: %d, numberOfValuesMP: %d, memSizeIntkMP: %d, memSizerealkMP: %d\n",lev,para->getParH(lev)->numberOfValuesMP,para->getParH(lev)->memSizeIntkMP, para->getParD(lev)->memSizerealkMP);
 
-		cudaManager->cudaAllocMeasurePointsIndex(lev);
+		cudaMemoryManager->cudaAllocMeasurePointsIndex(lev);
 
 		//loop over all measure points per level 
 		for(int index = 0; index < (int)para->getParH(lev)->MP.size(); index++)
@@ -61,7 +61,7 @@ void readMeasurePoints(Parameter* para, CudaMemoryManager* cudaManager)
 		}
 
 		//copy indices-arrays
-		cudaManager->cudaCopyMeasurePointsIndex(lev);
+		cudaMemoryManager->cudaCopyMeasurePointsIndex(lev);
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////

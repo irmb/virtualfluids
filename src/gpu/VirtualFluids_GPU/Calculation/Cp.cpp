@@ -17,13 +17,13 @@ using namespace std;
 
 
 
-void calcCp(Parameter* para, CudaMemoryManager* cudaManager, int lev)
+void calcCp(Parameter* para, CudaMemoryManager* cudaMemoryManager, int lev)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//copy to host
-	cudaManager->cudaCopyCpTop(lev);
-	cudaManager->cudaCopyCpBottom(lev);
-	cudaManager->cudaCopyCpBottom2(lev);
+	cudaMemoryManager->cudaCopyCpTop(lev);
+	cudaMemoryManager->cudaCopyCpBottom(lev);
+	cudaMemoryManager->cudaCopyCpBottom2(lev);
 	//////////////////////////////////////////////////////////////////////////
 	//Parameter
 	double rhoSI = 1.204; // kg/m^3
@@ -69,7 +69,7 @@ void printCpTopIntermediateStep(Parameter* para, unsigned int t, int lev)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//set filename
-	std::string ffname = para->getFName() + StringUtil::toString<int>(para->getMyID()) + "_" + StringUtil::toString<int>(t) + "_cp_top.txt";
+	std::string ffname = para->getFName() + StringUtil::toString<int>(para->getMyProcessID()) + "_" + StringUtil::toString<int>(t) + "_cp_top.txt";
 	const char* fname = ffname.c_str();
 	//////////////////////////////////////////////////////////////////////////
 	//set ofstream
@@ -97,11 +97,11 @@ void printCpTopIntermediateStep(Parameter* para, unsigned int t, int lev)
 
 
 
-void printCpTop(Parameter* para, CudaMemoryManager* cudaManager, int lev)
+void printCpTop(Parameter* para, CudaMemoryManager* cudaMemoryManager, int lev)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//set filename
-	std::string ffname = para->getFName()+StringUtil::toString<int>(para->getMyID())+"_cp_top.txt";
+	std::string ffname = para->getFName()+StringUtil::toString<int>(para->getMyProcessID())+"_cp_top.txt";
 	const char* fname = ffname.c_str();
 	//////////////////////////////////////////////////////////////////////////
 	//set ofstream
@@ -124,20 +124,20 @@ void printCpTop(Parameter* para, CudaMemoryManager* cudaManager, int lev)
 	ostr.close();
 	//////////////////////////////////////////////////////////////////////////
 	para->getParH((int)lev)->cpTop.clear();
-	cudaManager->cudaFreeCpTop(lev);
+	cudaMemoryManager->cudaFreeCpTop(lev);
 	//////////////////////////////////////////////////////////////////////////
 }
 
 
 
-void printCpBottom(Parameter* para, CudaMemoryManager* cudaManager)
+void printCpBottom(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//set level
 	int lev = para->getMaxLevel();
 	//////////////////////////////////////////////////////////////////////////
 	//set filename
-	std::string ffname = para->getFName()+StringUtil::toString<int>(para->getMyID())+"_cp_bottom.txt";
+	std::string ffname = para->getFName()+StringUtil::toString<int>(para->getMyProcessID())+"_cp_bottom.txt";
 	const char* fname = ffname.c_str();
 	//////////////////////////////////////////////////////////////////////////
 	//set ofstream
@@ -160,20 +160,20 @@ void printCpBottom(Parameter* para, CudaMemoryManager* cudaManager)
 	ostr.close();
 	//////////////////////////////////////////////////////////////////////////
 	para->getParH((int)lev)->cpBottom.clear();
-	cudaManager->cudaFreeCpBottom(lev);
+	cudaMemoryManager->cudaFreeCpBottom(lev);
 	//////////////////////////////////////////////////////////////////////////
 }
 
 
 
-void printCpBottom2(Parameter* para, CudaMemoryManager* cudaManager)
+void printCpBottom2(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//set level
 	int lev = para->getMaxLevel();
 	//////////////////////////////////////////////////////////////////////////
 	//set filename
-	std::string ffname = para->getFName()+StringUtil::toString<int>(para->getMyID())+"_cp_bottom2.txt";
+	std::string ffname = para->getFName()+StringUtil::toString<int>(para->getMyProcessID())+"_cp_bottom2.txt";
 	const char* fname = ffname.c_str();
 	//////////////////////////////////////////////////////////////////////////
 	//set ofstream
@@ -196,7 +196,7 @@ void printCpBottom2(Parameter* para, CudaMemoryManager* cudaManager)
 	ostr.close();
 	//////////////////////////////////////////////////////////////////////////
 	para->getParH((int)lev)->cpBottom2.clear();
-	cudaManager->cudaFreeCpBottom2(lev);
+	cudaMemoryManager->cudaFreeCpBottom2(lev);
 	//////////////////////////////////////////////////////////////////////////
 }
 
@@ -233,13 +233,13 @@ void excludeGridInterfaceNodesForMirror(Parameter* para, int lev)
 		for (unsigned int ifit = 0; ifit < para->getParH((int)lev)->K_CF; ifit++)
 		{
 			if ((para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH((int)lev)->intCF.ICellCFF[ifit]) ||
-				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborX_SP[para->getParH((int)lev)->intCF.ICellCFF[ifit]]) ||
-				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborY_SP[para->getParH((int)lev)->intCF.ICellCFF[ifit]]) ||
-				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborZ_SP[para->getParH((int)lev)->intCF.ICellCFF[ifit]]) ||
-				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborY_SP[para->getParH(lev + 1)->neighborX_SP[para->getParH((int)lev)->intCF.ICellCFF[ifit]]]) ||
-				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborZ_SP[para->getParH(lev + 1)->neighborX_SP[para->getParH((int)lev)->intCF.ICellCFF[ifit]]]) ||
-				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborZ_SP[para->getParH(lev + 1)->neighborY_SP[para->getParH((int)lev)->intCF.ICellCFF[ifit]]]) ||
-				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborZ_SP[para->getParH(lev + 1)->neighborY_SP[para->getParH(lev + 1)->neighborX_SP[para->getParH((int)lev)->intCF.ICellCFF[ifit]]]]))
+				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborX[para->getParH((int)lev)->intCF.ICellCFF[ifit]]) ||
+				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborY[para->getParH((int)lev)->intCF.ICellCFF[ifit]]) ||
+				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborZ[para->getParH((int)lev)->intCF.ICellCFF[ifit]]) ||
+				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborY[para->getParH(lev + 1)->neighborX[para->getParH((int)lev)->intCF.ICellCFF[ifit]]]) ||
+				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborZ[para->getParH(lev + 1)->neighborX[para->getParH((int)lev)->intCF.ICellCFF[ifit]]]) ||
+				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborZ[para->getParH(lev + 1)->neighborY[para->getParH((int)lev)->intCF.ICellCFF[ifit]]]) ||
+				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborZ[para->getParH(lev + 1)->neighborY[para->getParH(lev + 1)->neighborX[para->getParH((int)lev)->intCF.ICellCFF[ifit]]]]))
 			{
 				para->getParH(lev + 1)->isOutsideInterface.push_back(false);
 				tempBool = false;
@@ -283,11 +283,11 @@ void excludeGridInterfaceNodesForMirror(Parameter* para, int lev)
 
 
 
-void calcPressForMirror(Parameter* para, CudaMemoryManager* cudaManager, int lev)
+void calcPressForMirror(Parameter* para, CudaMemoryManager* cudaMemoryManager, int lev)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//copy to host
-	cudaManager->cudaCopyCpTop(lev);
+	cudaMemoryManager->cudaCopyCpTop(lev);
 	//////////////////////////////////////////////////////////////////////////
 	//Parameter
 	double pressSI;
@@ -313,19 +313,19 @@ void printCaseFile(Parameter* para)
 	//////////////////////////////////////////////////////////////////////////
 	double deltaXcoarse = 0.256; // [m]
 	double deltat = (para->getVelocity() * deltaXcoarse) / (para->getVelocity() * para->getVelocityRatio());
-	unsigned int numberOfSteps = (unsigned int)((para->getTEnd() - para->getTStartOut()) * pow(2,5) );
+	unsigned int numberOfSteps = (unsigned int)((para->getTimestepEnd() - para->getTimestepStartOut()) * pow(2,5) );
 	//cout << "number of nodes:" << numberOfSteps << endl;
 	//////////////////////////////////////////////////////////////////////////
 	//set filename
-	std::string ffname = para->getFName() + "_" + StringUtil::toString<int>(para->getMyID()) + ".case";
+	std::string ffname = para->getFName() + "_" + StringUtil::toString<int>(para->getMyProcessID()) + ".case";
 	const char* fname = ffname.c_str();
 	//////////////////////////////////////////////////////////////////////////
 	//set filename geo
-	std::string ffnameGeo = para->getOutputPrefix() + "_" + StringUtil::toString<int>(para->getMyID()) + ".geo";
+	std::string ffnameGeo = para->getOutputPrefix() + "_" + StringUtil::toString<int>(para->getMyProcessID()) + ".geo";
 	const char* fnameGeo = ffnameGeo.c_str();
 	//////////////////////////////////////////////////////////////////////////
 	//set filename scalar
-	std::string ffnameScalar = para->getOutputPrefix() + "_" + StringUtil::toString<int>(para->getMyID()) + ".*****.p";
+	std::string ffnameScalar = para->getOutputPrefix() + "_" + StringUtil::toString<int>(para->getMyProcessID()) + ".*****.p";
 	const char* fnameScalar = ffnameScalar.c_str();
 	//////////////////////////////////////////////////////////////////////////
 	//set ofstream
@@ -370,11 +370,11 @@ void printCaseFile(Parameter* para)
 
 
 
-extern "C" void printGeoFile(Parameter* para, bool fileFormat)
+void printGeoFile(Parameter* para, bool fileFormat)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//set filename geo
-	std::string ffnameGeo = para->getOutputPrefix() + "_" + StringUtil::toString<int>(para->getMyID());
+	std::string ffnameGeo = para->getOutputPrefix() + "_" + StringUtil::toString<int>(para->getMyProcessID());
 	const char* fnameGeo = ffnameGeo.c_str();
 	//////////////////////////////////////////////////////////////////////////
 	char fname[1024];
@@ -419,7 +419,7 @@ extern "C" void printGeoFile(Parameter* para, bool fileFormat)
             {
                 if (para->getParH((int)lev)->isOutsideInterface[i])
                 {
-                    ostr << (para->getParH((int)lev)->coordX_SP[para->getParH((int)lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(0) + para->getTranslateLBMtoSI().at(0)) << std::endl;
+                    ostr << (para->getParH((int)lev)->coordinateX[para->getParH((int)lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(0) + para->getTranslateLBMtoSI().at(0)) << std::endl;
                 }
             }
         }
@@ -431,7 +431,7 @@ extern "C" void printGeoFile(Parameter* para, bool fileFormat)
             {
                 if (para->getParH((int)lev)->isOutsideInterface[i])
                 {
-                    ostr << (para->getParH((int)lev)->coordY_SP[para->getParH((int)lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(1) + para->getTranslateLBMtoSI().at(1)) << std::endl;
+                    ostr << (para->getParH((int)lev)->coordinateY[para->getParH((int)lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(1) + para->getTranslateLBMtoSI().at(1)) << std::endl;
                 }
             }
         }
@@ -443,7 +443,7 @@ extern "C" void printGeoFile(Parameter* para, bool fileFormat)
             {
                 if (para->getParH((int)lev)->isOutsideInterface[i])
                 {
-                    ostr << (para->getParH((int)lev)->coordZ_SP[para->getParH((int)lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(2) + para->getTranslateLBMtoSI().at(2)) << std::endl;
+                    ostr << (para->getParH((int)lev)->coordinateZ[para->getParH((int)lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(2) + para->getTranslateLBMtoSI().at(2)) << std::endl;
                 }
             }
         }
@@ -489,7 +489,7 @@ extern "C" void printGeoFile(Parameter* para, bool fileFormat)
             {
                 if (para->getParH((int)lev)->isOutsideInterface[i])
                 {
-                    tempCoord = (para->getParH((int)lev)->coordX_SP[para->getParH((int)lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(0) + para->getTranslateLBMtoSI().at(0));
+                    tempCoord = (para->getParH((int)lev)->coordinateX[para->getParH((int)lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(0) + para->getTranslateLBMtoSI().at(0));
                     writeFloatToFile(tempCoord, ostr);
                     tempX++;
                 }
@@ -504,7 +504,7 @@ extern "C" void printGeoFile(Parameter* para, bool fileFormat)
             {
                 if (para->getParH((int)lev)->isOutsideInterface[i])
                 {
-                    tempCoord = (para->getParH((int)lev)->coordY_SP[para->getParH((int)lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(1) + para->getTranslateLBMtoSI().at(1));
+                    tempCoord = (para->getParH((int)lev)->coordinateY[para->getParH((int)lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(1) + para->getTranslateLBMtoSI().at(1));
                     writeFloatToFile(tempCoord, ostr);
                 }
             }
@@ -517,7 +517,7 @@ extern "C" void printGeoFile(Parameter* para, bool fileFormat)
             {
                 if (para->getParH((int)lev)->isOutsideInterface[i])
                 {
-                    tempCoord = (para->getParH((int)lev)->coordZ_SP[para->getParH((int)lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(2) + para->getTranslateLBMtoSI().at(2));
+                    tempCoord = (para->getParH((int)lev)->coordinateZ[para->getParH((int)lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(2) + para->getTranslateLBMtoSI().at(2));
                     writeFloatToFile(tempCoord, ostr);
                 }
             }
@@ -545,11 +545,11 @@ extern "C" void printGeoFile(Parameter* para, bool fileFormat)
 
 
 
-extern "C" void printScalars(Parameter* para, bool fileFormat)
+void printScalars(Parameter* para, bool fileFormat)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//set filename scalar
-	std::string ffnameScalar = para->getOutputPrefix() + "_" + StringUtil::toString<int>(para->getMyID());
+	std::string ffnameScalar = para->getOutputPrefix() + "_" + StringUtil::toString<int>(para->getMyProcessID());
 	const char* fnameScalar = ffnameScalar.c_str();
 	//////////////////////////////////////////////////////////////////////////
     char fname[1024];

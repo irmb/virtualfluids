@@ -7,14 +7,15 @@
 //////////////////////////////////////////////////////////////////////////
 /* Device code */
 #include "LBM/LB.h" 
-#include "LBM/D3Q27.h"
-#include <lbm/constants/NumericConstants.h>
+#include "lbm/constants/NumericConstants.h"
+#include "lbm/constants/D3Q27.h"
+
 
 using namespace vf::lbm::constant;
-#include "math.h"
+using namespace vf::lbm::dir;
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_Kum_AA2016_Comp_Bulk_SP_27(real omega,
+__global__ void LB_Kernel_Kum_AA2016_Comp_Bulk_SP_27(real omega,
 																unsigned int* bcMatD,
 																unsigned int* neighborX,
 																unsigned int* neighborY,
@@ -47,63 +48,63 @@ extern "C" __global__ void LB_Kernel_Kum_AA2016_Comp_Bulk_SP_27(real omega,
 			Distributions27 D;
 			if (EvenOrOdd==true)
 			{
-				D.f[dirE   ] = &DDStart[dirE   *size_Mat];
-				D.f[dirW   ] = &DDStart[dirW   *size_Mat];
-				D.f[dirN   ] = &DDStart[dirN   *size_Mat];
-				D.f[dirS   ] = &DDStart[dirS   *size_Mat];
-				D.f[dirT   ] = &DDStart[dirT   *size_Mat];
-				D.f[dirB   ] = &DDStart[dirB   *size_Mat];
-				D.f[dirNE  ] = &DDStart[dirNE  *size_Mat];
-				D.f[dirSW  ] = &DDStart[dirSW  *size_Mat];
-				D.f[dirSE  ] = &DDStart[dirSE  *size_Mat];
-				D.f[dirNW  ] = &DDStart[dirNW  *size_Mat];
-				D.f[dirTE  ] = &DDStart[dirTE  *size_Mat];
-				D.f[dirBW  ] = &DDStart[dirBW  *size_Mat];
-				D.f[dirBE  ] = &DDStart[dirBE  *size_Mat];
-				D.f[dirTW  ] = &DDStart[dirTW  *size_Mat];
-				D.f[dirTN  ] = &DDStart[dirTN  *size_Mat];
-				D.f[dirBS  ] = &DDStart[dirBS  *size_Mat];
-				D.f[dirBN  ] = &DDStart[dirBN  *size_Mat];
-				D.f[dirTS  ] = &DDStart[dirTS  *size_Mat];
-				D.f[dirZERO] = &DDStart[dirZERO*size_Mat];
-				D.f[dirTNE ] = &DDStart[dirTNE *size_Mat];
-				D.f[dirTSW ] = &DDStart[dirTSW *size_Mat];
-				D.f[dirTSE ] = &DDStart[dirTSE *size_Mat];
-				D.f[dirTNW ] = &DDStart[dirTNW *size_Mat];
-				D.f[dirBNE ] = &DDStart[dirBNE *size_Mat];
-				D.f[dirBSW ] = &DDStart[dirBSW *size_Mat];
-				D.f[dirBSE ] = &DDStart[dirBSE *size_Mat];
-				D.f[dirBNW ] = &DDStart[dirBNW *size_Mat];
+				D.f[DIR_P00   ] = &DDStart[DIR_P00   *size_Mat];
+				D.f[DIR_M00   ] = &DDStart[DIR_M00   *size_Mat];
+				D.f[DIR_0P0   ] = &DDStart[DIR_0P0   *size_Mat];
+				D.f[DIR_0M0   ] = &DDStart[DIR_0M0   *size_Mat];
+				D.f[DIR_00P   ] = &DDStart[DIR_00P   *size_Mat];
+				D.f[DIR_00M   ] = &DDStart[DIR_00M   *size_Mat];
+				D.f[DIR_PP0  ] = &DDStart[DIR_PP0  *size_Mat];
+				D.f[DIR_MM0  ] = &DDStart[DIR_MM0  *size_Mat];
+				D.f[DIR_PM0  ] = &DDStart[DIR_PM0  *size_Mat];
+				D.f[DIR_MP0  ] = &DDStart[DIR_MP0  *size_Mat];
+				D.f[DIR_P0P  ] = &DDStart[DIR_P0P  *size_Mat];
+				D.f[DIR_M0M  ] = &DDStart[DIR_M0M  *size_Mat];
+				D.f[DIR_P0M  ] = &DDStart[DIR_P0M  *size_Mat];
+				D.f[DIR_M0P  ] = &DDStart[DIR_M0P  *size_Mat];
+				D.f[DIR_0PP  ] = &DDStart[DIR_0PP  *size_Mat];
+				D.f[DIR_0MM  ] = &DDStart[DIR_0MM  *size_Mat];
+				D.f[DIR_0PM  ] = &DDStart[DIR_0PM  *size_Mat];
+				D.f[DIR_0MP  ] = &DDStart[DIR_0MP  *size_Mat];
+				D.f[DIR_000] = &DDStart[DIR_000*size_Mat];
+				D.f[DIR_PPP ] = &DDStart[DIR_PPP *size_Mat];
+				D.f[DIR_MMP ] = &DDStart[DIR_MMP *size_Mat];
+				D.f[DIR_PMP ] = &DDStart[DIR_PMP *size_Mat];
+				D.f[DIR_MPP ] = &DDStart[DIR_MPP *size_Mat];
+				D.f[DIR_PPM ] = &DDStart[DIR_PPM *size_Mat];
+				D.f[DIR_MMM ] = &DDStart[DIR_MMM *size_Mat];
+				D.f[DIR_PMM ] = &DDStart[DIR_PMM *size_Mat];
+				D.f[DIR_MPM ] = &DDStart[DIR_MPM *size_Mat];
 			}
 			else
 			{
-				D.f[dirW   ] = &DDStart[dirE   *size_Mat];
-				D.f[dirE   ] = &DDStart[dirW   *size_Mat];
-				D.f[dirS   ] = &DDStart[dirN   *size_Mat];
-				D.f[dirN   ] = &DDStart[dirS   *size_Mat];
-				D.f[dirB   ] = &DDStart[dirT   *size_Mat];
-				D.f[dirT   ] = &DDStart[dirB   *size_Mat];
-				D.f[dirSW  ] = &DDStart[dirNE  *size_Mat];
-				D.f[dirNE  ] = &DDStart[dirSW  *size_Mat];
-				D.f[dirNW  ] = &DDStart[dirSE  *size_Mat];
-				D.f[dirSE  ] = &DDStart[dirNW  *size_Mat];
-				D.f[dirBW  ] = &DDStart[dirTE  *size_Mat];
-				D.f[dirTE  ] = &DDStart[dirBW  *size_Mat];
-				D.f[dirTW  ] = &DDStart[dirBE  *size_Mat];
-				D.f[dirBE  ] = &DDStart[dirTW  *size_Mat];
-				D.f[dirBS  ] = &DDStart[dirTN  *size_Mat];
-				D.f[dirTN  ] = &DDStart[dirBS  *size_Mat];
-				D.f[dirTS  ] = &DDStart[dirBN  *size_Mat];
-				D.f[dirBN  ] = &DDStart[dirTS  *size_Mat];
-				D.f[dirZERO] = &DDStart[dirZERO*size_Mat];
-				D.f[dirBSW ] = &DDStart[dirTNE *size_Mat];
-				D.f[dirBNE ] = &DDStart[dirTSW *size_Mat];
-				D.f[dirBNW ] = &DDStart[dirTSE *size_Mat];
-				D.f[dirBSE ] = &DDStart[dirTNW *size_Mat];
-				D.f[dirTSW ] = &DDStart[dirBNE *size_Mat];
-				D.f[dirTNE ] = &DDStart[dirBSW *size_Mat];
-				D.f[dirTNW ] = &DDStart[dirBSE *size_Mat];
-				D.f[dirTSE ] = &DDStart[dirBNW *size_Mat];
+				D.f[DIR_M00   ] = &DDStart[DIR_P00   *size_Mat];
+				D.f[DIR_P00   ] = &DDStart[DIR_M00   *size_Mat];
+				D.f[DIR_0M0   ] = &DDStart[DIR_0P0   *size_Mat];
+				D.f[DIR_0P0   ] = &DDStart[DIR_0M0   *size_Mat];
+				D.f[DIR_00M   ] = &DDStart[DIR_00P   *size_Mat];
+				D.f[DIR_00P   ] = &DDStart[DIR_00M   *size_Mat];
+				D.f[DIR_MM0  ] = &DDStart[DIR_PP0  *size_Mat];
+				D.f[DIR_PP0  ] = &DDStart[DIR_MM0  *size_Mat];
+				D.f[DIR_MP0  ] = &DDStart[DIR_PM0  *size_Mat];
+				D.f[DIR_PM0  ] = &DDStart[DIR_MP0  *size_Mat];
+				D.f[DIR_M0M  ] = &DDStart[DIR_P0P  *size_Mat];
+				D.f[DIR_P0P  ] = &DDStart[DIR_M0M  *size_Mat];
+				D.f[DIR_M0P  ] = &DDStart[DIR_P0M  *size_Mat];
+				D.f[DIR_P0M  ] = &DDStart[DIR_M0P  *size_Mat];
+				D.f[DIR_0MM  ] = &DDStart[DIR_0PP  *size_Mat];
+				D.f[DIR_0PP  ] = &DDStart[DIR_0MM  *size_Mat];
+				D.f[DIR_0MP  ] = &DDStart[DIR_0PM  *size_Mat];
+				D.f[DIR_0PM  ] = &DDStart[DIR_0MP  *size_Mat];
+				D.f[DIR_000] = &DDStart[DIR_000*size_Mat];
+				D.f[DIR_MMM ] = &DDStart[DIR_PPP *size_Mat];
+				D.f[DIR_PPM ] = &DDStart[DIR_MMP *size_Mat];
+				D.f[DIR_MPM ] = &DDStart[DIR_PMP *size_Mat];
+				D.f[DIR_PMM ] = &DDStart[DIR_MPP *size_Mat];
+				D.f[DIR_MMP ] = &DDStart[DIR_PPM *size_Mat];
+				D.f[DIR_PPP ] = &DDStart[DIR_MMM *size_Mat];
+				D.f[DIR_MPP ] = &DDStart[DIR_PMM *size_Mat];
+				D.f[DIR_PMP ] = &DDStart[DIR_MPM *size_Mat];
 			}
 
 			////////////////////////////////////////////////////////////////////////////////
@@ -136,33 +137,33 @@ extern "C" __global__ void LB_Kernel_Kum_AA2016_Comp_Bulk_SP_27(real omega,
 			//unsigned int ktne = k;
 			unsigned int kbsw = neighborZ[ksw];
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			real mfcbb = (D.f[dirE   ])[k  ];//[ke   ];// +  c2over27 ;(D.f[dirE   ])[k  ];//ke
-			real mfabb = (D.f[dirW   ])[kw ];//[kw   ];// +  c2over27 ;(D.f[dirW   ])[kw ];
-			real mfbcb = (D.f[dirN   ])[k  ];//[kn   ];// +  c2over27 ;(D.f[dirN   ])[k  ];//kn
-			real mfbab = (D.f[dirS   ])[ks ];//[ks   ];// +  c2over27 ;(D.f[dirS   ])[ks ];
-			real mfbbc = (D.f[dirT   ])[k  ];//[kt   ];// +  c2over27 ;(D.f[dirT   ])[k  ];//kt
-			real mfbba = (D.f[dirB   ])[kb ];//[kb   ];// +  c2over27 ;(D.f[dirB   ])[kb ];
-			real mfccb = (D.f[dirNE  ])[k  ];//[kne  ];// +  c1over54 ;(D.f[dirNE  ])[k  ];//kne
-			real mfaab = (D.f[dirSW  ])[ksw];//[ksw  ];// +  c1over54 ;(D.f[dirSW  ])[ksw];
-			real mfcab = (D.f[dirSE  ])[ks ];//[kse  ];// +  c1over54 ;(D.f[dirSE  ])[ks ];//kse
-			real mfacb = (D.f[dirNW  ])[kw ];//[knw  ];// +  c1over54 ;(D.f[dirNW  ])[kw ];//knw
-			real mfcbc = (D.f[dirTE  ])[k  ];//[kte  ];// +  c1over54 ;(D.f[dirTE  ])[k  ];//kte
-			real mfaba = (D.f[dirBW  ])[kbw];//[kbw  ];// +  c1over54 ;(D.f[dirBW  ])[kbw];
-			real mfcba = (D.f[dirBE  ])[kb ];//[kbe  ];// +  c1over54 ;(D.f[dirBE  ])[kb ];//kbe
-			real mfabc = (D.f[dirTW  ])[kw ];//[ktw  ];// +  c1over54 ;(D.f[dirTW  ])[kw ];//ktw
-			real mfbcc = (D.f[dirTN  ])[k  ];//[ktn  ];// +  c1over54 ;(D.f[dirTN  ])[k  ];//ktn
-			real mfbaa = (D.f[dirBS  ])[kbs];//[kbs  ];// +  c1over54 ;(D.f[dirBS  ])[kbs];
-			real mfbca = (D.f[dirBN  ])[kb ];//[kbn  ];// +  c1over54 ;(D.f[dirBN  ])[kb ];//kbn
-			real mfbac = (D.f[dirTS  ])[ks ];//[kts  ];// +  c1over54 ;(D.f[dirTS  ])[ks ];//kts
-			real mfbbb = (D.f[dirZERO])[k  ];//[kzero];// +  c8over27 ;(D.f[dirZERO])[k  ];//kzero
-			real mfccc = (D.f[dirTNE ])[k  ];//[ktne ];// +  c1over216;(D.f[dirTNE ])[k  ];//ktne
-			real mfaac = (D.f[dirTSW ])[ksw];//[ktsw ];// +  c1over216;(D.f[dirTSW ])[ksw];//ktsw
-			real mfcac = (D.f[dirTSE ])[ks ];//[ktse ];// +  c1over216;(D.f[dirTSE ])[ks ];//ktse
-			real mfacc = (D.f[dirTNW ])[kw ];//[ktnw ];// +  c1over216;(D.f[dirTNW ])[kw ];//ktnw
-			real mfcca = (D.f[dirBNE ])[kb ];//[kbne ];// +  c1over216;(D.f[dirBNE ])[kb ];//kbne
-			real mfaaa = (D.f[dirBSW ])[kbsw];//[kbsw ];// +  c1over216;(D.f[dirBSW ])[kbsw];
-			real mfcaa = (D.f[dirBSE ])[kbs];//[kbse ];// +  c1over216;(D.f[dirBSE ])[kbs];//kbse
-			real mfaca = (D.f[dirBNW ])[kbw];//[kbnw ];// +  c1over216;(D.f[dirBNW ])[kbw];//kbnw
+			real mfcbb = (D.f[DIR_P00   ])[k  ];//[ke   ];// +  c2over27 ;(D.f[DIR_P00   ])[k  ];//ke
+			real mfabb = (D.f[DIR_M00   ])[kw ];//[kw   ];// +  c2over27 ;(D.f[DIR_M00   ])[kw ];
+			real mfbcb = (D.f[DIR_0P0   ])[k  ];//[kn   ];// +  c2over27 ;(D.f[DIR_0P0   ])[k  ];//kn
+			real mfbab = (D.f[DIR_0M0   ])[ks ];//[ks   ];// +  c2over27 ;(D.f[DIR_0M0   ])[ks ];
+			real mfbbc = (D.f[DIR_00P   ])[k  ];//[kt   ];// +  c2over27 ;(D.f[DIR_00P   ])[k  ];//kt
+			real mfbba = (D.f[DIR_00M   ])[kb ];//[kb   ];// +  c2over27 ;(D.f[DIR_00M   ])[kb ];
+			real mfccb = (D.f[DIR_PP0  ])[k  ];//[kne  ];// +  c1over54 ;(D.f[DIR_PP0  ])[k  ];//kne
+			real mfaab = (D.f[DIR_MM0  ])[ksw];//[ksw  ];// +  c1over54 ;(D.f[DIR_MM0  ])[ksw];
+			real mfcab = (D.f[DIR_PM0  ])[ks ];//[kse  ];// +  c1over54 ;(D.f[DIR_PM0  ])[ks ];//kse
+			real mfacb = (D.f[DIR_MP0  ])[kw ];//[knw  ];// +  c1over54 ;(D.f[DIR_MP0  ])[kw ];//knw
+			real mfcbc = (D.f[DIR_P0P  ])[k  ];//[kte  ];// +  c1over54 ;(D.f[DIR_P0P  ])[k  ];//kte
+			real mfaba = (D.f[DIR_M0M  ])[kbw];//[kbw  ];// +  c1over54 ;(D.f[DIR_M0M  ])[kbw];
+			real mfcba = (D.f[DIR_P0M  ])[kb ];//[kbe  ];// +  c1over54 ;(D.f[DIR_P0M  ])[kb ];//kbe
+			real mfabc = (D.f[DIR_M0P  ])[kw ];//[ktw  ];// +  c1over54 ;(D.f[DIR_M0P  ])[kw ];//ktw
+			real mfbcc = (D.f[DIR_0PP  ])[k  ];//[ktn  ];// +  c1over54 ;(D.f[DIR_0PP  ])[k  ];//ktn
+			real mfbaa = (D.f[DIR_0MM  ])[kbs];//[kbs  ];// +  c1over54 ;(D.f[DIR_0MM  ])[kbs];
+			real mfbca = (D.f[DIR_0PM  ])[kb ];//[kbn  ];// +  c1over54 ;(D.f[DIR_0PM  ])[kb ];//kbn
+			real mfbac = (D.f[DIR_0MP  ])[ks ];//[kts  ];// +  c1over54 ;(D.f[DIR_0MP  ])[ks ];//kts
+			real mfbbb = (D.f[DIR_000])[k  ];//[kzero];// +  c8over27 ;(D.f[DIR_000])[k  ];//kzero
+			real mfccc = (D.f[DIR_PPP ])[k  ];//[ktne ];// +  c1over216;(D.f[DIR_PPP ])[k  ];//ktne
+			real mfaac = (D.f[DIR_MMP ])[ksw];//[ktsw ];// +  c1over216;(D.f[DIR_MMP ])[ksw];//ktsw
+			real mfcac = (D.f[DIR_PMP ])[ks ];//[ktse ];// +  c1over216;(D.f[DIR_PMP ])[ks ];//ktse
+			real mfacc = (D.f[DIR_MPP ])[kw ];//[ktnw ];// +  c1over216;(D.f[DIR_MPP ])[kw ];//ktnw
+			real mfcca = (D.f[DIR_PPM ])[kb ];//[kbne ];// +  c1over216;(D.f[DIR_PPM ])[kb ];//kbne
+			real mfaaa = (D.f[DIR_MMM ])[kbsw];//[kbsw ];// +  c1over216;(D.f[DIR_MMM ])[kbsw];
+			real mfcaa = (D.f[DIR_PMM ])[kbs];//[kbse ];// +  c1over216;(D.f[DIR_PMM ])[kbs];//kbse
+			real mfaca = (D.f[DIR_MPM ])[kbw];//[kbnw ];// +  c1over216;(D.f[DIR_MPM ])[kbw];//kbnw
 			////////////////////////////////////////////////////////////////////////////////////
 			real drho = ((((mfccc+mfaaa) + (mfaca+mfcac)) + ((mfacc+mfcaa) + (mfaac+mfcca))) + 
 							(((mfbac+mfbca) + (mfbaa+mfbcc)) + ((mfabc+mfcba) + (mfaba+mfcbc)) + ((mfacb+mfcab) + (mfaab+mfccb))) +
@@ -603,9 +604,9 @@ extern "C" __global__ void LB_Kernel_Kum_AA2016_Comp_Bulk_SP_27(real omega,
 			//4.
 			//////////////////////////////////////////////////////////////////////////
 			//mit limiter
-			real A = ( c4o1 * omega * omega + c2o1 * omega * OxxPyyPzz * ( omega - c6o1 ) + OxxPyyPzz * OxxPyyPzz * ( omega * ( c10o1 - c3o1 * omega ) - c4o1 )) /
+			real factorA = ( c4o1 * omega * omega + c2o1 * omega * OxxPyyPzz * ( omega - c6o1 ) + OxxPyyPzz * OxxPyyPzz * ( omega * ( c10o1 - c3o1 * omega ) - c4o1 )) /
 				        ( ( omega - OxxPyyPzz ) * ( OxxPyyPzz * ( c2o1 + c3o1 * omega ) - c8o1 * omega ) );
-			real B = ( c4o1 * omega * OxxPyyPzz * ( c9o1 * omega - c16o1 ) - c4o1 * omega * omega - c2o1 * OxxPyyPzz * OxxPyyPzz * ( c2o1 + c9o1 * omega * ( omega - c2o1 ))) /
+			real factorB = ( c4o1 * omega * OxxPyyPzz * ( c9o1 * omega - c16o1 ) - c4o1 * omega * omega - c2o1 * OxxPyyPzz * OxxPyyPzz * ( c2o1 + c9o1 * omega * ( omega - c2o1 ))) /
 				        ( c3o1 * ( omega - OxxPyyPzz ) * ( OxxPyyPzz * ( c2o1 + c3o1 * omega ) - c8o1 * omega ) );
 			//////////////////////////////////////////////////////////////////////////
 			//ohne limiter
@@ -623,12 +624,12 @@ extern "C" __global__ void LB_Kernel_Kum_AA2016_Comp_Bulk_SP_27(real omega,
 			//CUMbcb = -O4*(one/omega-c1o2)*Dxz*c1o3 *(four+twentyeight*omega-fourteen*omega*omega)/(six-twentyone*omega+fiveteen*omega*omega)+(one-O4) * (CUMbcb);
 			//CUMcbb = -O4*(one/omega-c1o2)*Dyz*c1o3 *(four+twentyeight*omega-fourteen*omega*omega)/(six-twentyone*omega+fiveteen*omega*omega)+(one-O4) * (CUMcbb);
 			//with bulk viscosity 
-			CUMacc = -O4 * (c1o1 / omega - c1o2) * (dyuy + dzuz) * c2o3 * A + (c1o1 - O4) * (CUMacc);
-			CUMcac = -O4 * (c1o1 / omega - c1o2) * (dxux + dzuz) * c2o3 * A + (c1o1 - O4) * (CUMcac);
-			CUMcca = -O4 * (c1o1 / omega - c1o2) * (dyuy + dxux) * c2o3 * A + (c1o1 - O4) * (CUMcca);
-			CUMbbc = -O4 * (c1o1 / omega - c1o2) * Dxy           * c1o3 * B + (c1o1 - O4) * (CUMbbc);
-			CUMbcb = -O4 * (c1o1 / omega - c1o2) * Dxz           * c1o3 * B + (c1o1 - O4) * (CUMbcb);
-			CUMcbb = -O4 * (c1o1 / omega - c1o2) * Dyz           * c1o3 * B + (c1o1 - O4) * (CUMcbb);
+			CUMacc = -O4 * (c1o1 / omega - c1o2) * (dyuy + dzuz) * c2o3 * factorA + (c1o1 - O4) * (CUMacc);
+			CUMcac = -O4 * (c1o1 / omega - c1o2) * (dxux + dzuz) * c2o3 * factorA + (c1o1 - O4) * (CUMcac);
+			CUMcca = -O4 * (c1o1 / omega - c1o2) * (dyuy + dxux) * c2o3 * factorA + (c1o1 - O4) * (CUMcca);
+			CUMbbc = -O4 * (c1o1 / omega - c1o2) * Dxy           * c1o3 * factorB + (c1o1 - O4) * (CUMbbc);
+			CUMbcb = -O4 * (c1o1 / omega - c1o2) * Dxz           * c1o3 * factorB + (c1o1 - O4) * (CUMbcb);
+			CUMcbb = -O4 * (c1o1 / omega - c1o2) * Dyz           * c1o3 * factorB + (c1o1 - O4) * (CUMcbb);
 
 
 			//////////////////////////////////////////////////////////////////////////
@@ -893,33 +894,33 @@ extern "C" __global__ void LB_Kernel_Kum_AA2016_Comp_Bulk_SP_27(real omega,
 			////////////////////////////////////////////////////////////////////////////////////
 
 			////////////////////////////////////////////////////////////////////////////////////
-			(D.f[ dirE   ])[k   ] = mfabb;//(D.f[ dirE   ])[ke   ] = mfabb;// -  c2over27 ;  (D.f[ dirE   ])[k   ]                                                                     
-			(D.f[ dirW   ])[kw  ] = mfcbb;//(D.f[ dirW   ])[kw   ] = mfcbb;// -  c2over27 ;  (D.f[ dirW   ])[kw  ]                                                                   
-			(D.f[ dirN   ])[k   ] = mfbab;//(D.f[ dirN   ])[kn   ] = mfbab;// -  c2over27 ;	 (D.f[ dirN   ])[k   ]
-			(D.f[ dirS   ])[ks  ] = mfbcb;//(D.f[ dirS   ])[ks   ] = mfbcb;// -  c2over27 ;	 (D.f[ dirS   ])[ks  ]
-			(D.f[ dirT   ])[k   ] = mfbba;//(D.f[ dirT   ])[kt   ] = mfbba;// -  c2over27 ;	 (D.f[ dirT   ])[k   ]
-			(D.f[ dirB   ])[kb  ] = mfbbc;//(D.f[ dirB   ])[kb   ] = mfbbc;// -  c2over27 ;	 (D.f[ dirB   ])[kb  ]
-			(D.f[ dirNE  ])[k   ] = mfaab;//(D.f[ dirNE  ])[kne  ] = mfaab;// -  c1over54 ;	 (D.f[ dirNE  ])[k   ]
-			(D.f[ dirSW  ])[ksw ] = mfccb;//(D.f[ dirSW  ])[ksw  ] = mfccb;// -  c1over54 ;	 (D.f[ dirSW  ])[ksw ]
-			(D.f[ dirSE  ])[ks  ] = mfacb;//(D.f[ dirSE  ])[kse  ] = mfacb;// -  c1over54 ;	 (D.f[ dirSE  ])[ks  ]
-			(D.f[ dirNW  ])[kw  ] = mfcab;//(D.f[ dirNW  ])[knw  ] = mfcab;// -  c1over54 ;	 (D.f[ dirNW  ])[kw  ]
-			(D.f[ dirTE  ])[k   ] = mfaba;//(D.f[ dirTE  ])[kte  ] = mfaba;// -  c1over54 ;	 (D.f[ dirTE  ])[k   ]
-			(D.f[ dirBW  ])[kbw ] = mfcbc;//(D.f[ dirBW  ])[kbw  ] = mfcbc;// -  c1over54 ;	 (D.f[ dirBW  ])[kbw ]
-			(D.f[ dirBE  ])[kb  ] = mfabc;//(D.f[ dirBE  ])[kbe  ] = mfabc;// -  c1over54 ;	 (D.f[ dirBE  ])[kb  ]
-			(D.f[ dirTW  ])[kw  ] = mfcba;//(D.f[ dirTW  ])[ktw  ] = mfcba;// -  c1over54 ;	 (D.f[ dirTW  ])[kw  ]
-			(D.f[ dirTN  ])[k   ] = mfbaa;//(D.f[ dirTN  ])[ktn  ] = mfbaa;// -  c1over54 ;	 (D.f[ dirTN  ])[k   ]
-			(D.f[ dirBS  ])[kbs ] = mfbcc;//(D.f[ dirBS  ])[kbs  ] = mfbcc;// -  c1over54 ;	 (D.f[ dirBS  ])[kbs ]
-			(D.f[ dirBN  ])[kb  ] = mfbac;//(D.f[ dirBN  ])[kbn  ] = mfbac;// -  c1over54 ;	 (D.f[ dirBN  ])[kb  ]
-			(D.f[ dirTS  ])[ks  ] = mfbca;//(D.f[ dirTS  ])[kts  ] = mfbca;// -  c1over54 ;	 (D.f[ dirTS  ])[ks  ]
-			(D.f[ dirZERO])[k   ] = mfbbb;//(D.f[ dirZERO])[kzero] = mfbbb;// -  c8over27 ;	 (D.f[ dirZERO])[k   ]
-			(D.f[ dirTNE ])[k   ] = mfaaa;//(D.f[ dirTNE ])[ktne ] = mfaaa;// -  c1over216;	 (D.f[ dirTNE ])[k   ]
-			(D.f[ dirTSE ])[ks  ] = mfaca;//(D.f[ dirTSE ])[ktse ] = mfaca;// -  c1over216;	 (D.f[ dirTSE ])[ks  ]
-			(D.f[ dirBNE ])[kb  ] = mfaac;//(D.f[ dirBNE ])[kbne ] = mfaac;// -  c1over216;	 (D.f[ dirBNE ])[kb  ]
-			(D.f[ dirBSE ])[kbs ] = mfacc;//(D.f[ dirBSE ])[kbse ] = mfacc;// -  c1over216;	 (D.f[ dirBSE ])[kbs ]
-			(D.f[ dirTNW ])[kw  ] = mfcaa;//(D.f[ dirTNW ])[ktnw ] = mfcaa;// -  c1over216;	 (D.f[ dirTNW ])[kw  ]
-			(D.f[ dirTSW ])[ksw ] = mfcca;//(D.f[ dirTSW ])[ktsw ] = mfcca;// -  c1over216;	 (D.f[ dirTSW ])[ksw ]
-			(D.f[ dirBNW ])[kbw ] = mfcac;//(D.f[ dirBNW ])[kbnw ] = mfcac;// -  c1over216;	 (D.f[ dirBNW ])[kbw ]
-			(D.f[ dirBSW ])[kbsw] = mfccc;//(D.f[ dirBSW ])[kbsw ] = mfccc;// -  c1over216;	 (D.f[ dirBSW ])[kbsw]
+			(D.f[ DIR_P00   ])[k   ] = mfabb;//(D.f[ DIR_P00   ])[ke   ] = mfabb;// -  c2over27 ;  (D.f[ DIR_P00   ])[k   ]                                                                     
+			(D.f[ DIR_M00   ])[kw  ] = mfcbb;//(D.f[ DIR_M00   ])[kw   ] = mfcbb;// -  c2over27 ;  (D.f[ DIR_M00   ])[kw  ]                                                                   
+			(D.f[ DIR_0P0   ])[k   ] = mfbab;//(D.f[ DIR_0P0   ])[kn   ] = mfbab;// -  c2over27 ;	 (D.f[ DIR_0P0   ])[k   ]
+			(D.f[ DIR_0M0   ])[ks  ] = mfbcb;//(D.f[ DIR_0M0   ])[ks   ] = mfbcb;// -  c2over27 ;	 (D.f[ DIR_0M0   ])[ks  ]
+			(D.f[ DIR_00P   ])[k   ] = mfbba;//(D.f[ DIR_00P   ])[kt   ] = mfbba;// -  c2over27 ;	 (D.f[ DIR_00P   ])[k   ]
+			(D.f[ DIR_00M   ])[kb  ] = mfbbc;//(D.f[ DIR_00M   ])[kb   ] = mfbbc;// -  c2over27 ;	 (D.f[ DIR_00M   ])[kb  ]
+			(D.f[ DIR_PP0  ])[k   ] = mfaab;//(D.f[ DIR_PP0  ])[kne  ] = mfaab;// -  c1over54 ;	 (D.f[ DIR_PP0  ])[k   ]
+			(D.f[ DIR_MM0  ])[ksw ] = mfccb;//(D.f[ DIR_MM0  ])[ksw  ] = mfccb;// -  c1over54 ;	 (D.f[ DIR_MM0  ])[ksw ]
+			(D.f[ DIR_PM0  ])[ks  ] = mfacb;//(D.f[ DIR_PM0  ])[kse  ] = mfacb;// -  c1over54 ;	 (D.f[ DIR_PM0  ])[ks  ]
+			(D.f[ DIR_MP0  ])[kw  ] = mfcab;//(D.f[ DIR_MP0  ])[knw  ] = mfcab;// -  c1over54 ;	 (D.f[ DIR_MP0  ])[kw  ]
+			(D.f[ DIR_P0P  ])[k   ] = mfaba;//(D.f[ DIR_P0P  ])[kte  ] = mfaba;// -  c1over54 ;	 (D.f[ DIR_P0P  ])[k   ]
+			(D.f[ DIR_M0M  ])[kbw ] = mfcbc;//(D.f[ DIR_M0M  ])[kbw  ] = mfcbc;// -  c1over54 ;	 (D.f[ DIR_M0M  ])[kbw ]
+			(D.f[ DIR_P0M  ])[kb  ] = mfabc;//(D.f[ DIR_P0M  ])[kbe  ] = mfabc;// -  c1over54 ;	 (D.f[ DIR_P0M  ])[kb  ]
+			(D.f[ DIR_M0P  ])[kw  ] = mfcba;//(D.f[ DIR_M0P  ])[ktw  ] = mfcba;// -  c1over54 ;	 (D.f[ DIR_M0P  ])[kw  ]
+			(D.f[ DIR_0PP  ])[k   ] = mfbaa;//(D.f[ DIR_0PP  ])[ktn  ] = mfbaa;// -  c1over54 ;	 (D.f[ DIR_0PP  ])[k   ]
+			(D.f[ DIR_0MM  ])[kbs ] = mfbcc;//(D.f[ DIR_0MM  ])[kbs  ] = mfbcc;// -  c1over54 ;	 (D.f[ DIR_0MM  ])[kbs ]
+			(D.f[ DIR_0PM  ])[kb  ] = mfbac;//(D.f[ DIR_0PM  ])[kbn  ] = mfbac;// -  c1over54 ;	 (D.f[ DIR_0PM  ])[kb  ]
+			(D.f[ DIR_0MP  ])[ks  ] = mfbca;//(D.f[ DIR_0MP  ])[kts  ] = mfbca;// -  c1over54 ;	 (D.f[ DIR_0MP  ])[ks  ]
+			(D.f[ DIR_000])[k   ] = mfbbb;//(D.f[ DIR_000])[kzero] = mfbbb;// -  c8over27 ;	 (D.f[ DIR_000])[k   ]
+			(D.f[ DIR_PPP ])[k   ] = mfaaa;//(D.f[ DIR_PPP ])[ktne ] = mfaaa;// -  c1over216;	 (D.f[ DIR_PPP ])[k   ]
+			(D.f[ DIR_PMP ])[ks  ] = mfaca;//(D.f[ DIR_PMP ])[ktse ] = mfaca;// -  c1over216;	 (D.f[ DIR_PMP ])[ks  ]
+			(D.f[ DIR_PPM ])[kb  ] = mfaac;//(D.f[ DIR_PPM ])[kbne ] = mfaac;// -  c1over216;	 (D.f[ DIR_PPM ])[kb  ]
+			(D.f[ DIR_PMM ])[kbs ] = mfacc;//(D.f[ DIR_PMM ])[kbse ] = mfacc;// -  c1over216;	 (D.f[ DIR_PMM ])[kbs ]
+			(D.f[ DIR_MPP ])[kw  ] = mfcaa;//(D.f[ DIR_MPP ])[ktnw ] = mfcaa;// -  c1over216;	 (D.f[ DIR_MPP ])[kw  ]
+			(D.f[ DIR_MMP ])[ksw ] = mfcca;//(D.f[ DIR_MMP ])[ktsw ] = mfcca;// -  c1over216;	 (D.f[ DIR_MMP ])[ksw ]
+			(D.f[ DIR_MPM ])[kbw ] = mfcac;//(D.f[ DIR_MPM ])[kbnw ] = mfcac;// -  c1over216;	 (D.f[ DIR_MPM ])[kbw ]
+			(D.f[ DIR_MMM ])[kbsw] = mfccc;//(D.f[ DIR_MMM ])[kbsw ] = mfccc;// -  c1over216;	 (D.f[ DIR_MMM ])[kbsw]
 			////////////////////////////////////////////////////////////////////////////////////
 		}                                                                                                                    
 	}
@@ -965,7 +966,7 @@ extern "C" __global__ void LB_Kernel_Kum_AA2016_Comp_Bulk_SP_27(real omega,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_Kum_IsoTest_SP_27( real omega,
+__global__ void LB_Kernel_Kum_IsoTest_SP_27( real omega,
 														unsigned int* bcMatD,
 														unsigned int* neighborX,
 														unsigned int* neighborY,
@@ -999,63 +1000,63 @@ extern "C" __global__ void LB_Kernel_Kum_IsoTest_SP_27( real omega,
 			Distributions27 D;
 			if (EvenOrOdd==true)
 			{
-				D.f[dirE   ] = &DDStart[dirE   *size_Mat];
-				D.f[dirW   ] = &DDStart[dirW   *size_Mat];
-				D.f[dirN   ] = &DDStart[dirN   *size_Mat];
-				D.f[dirS   ] = &DDStart[dirS   *size_Mat];
-				D.f[dirT   ] = &DDStart[dirT   *size_Mat];
-				D.f[dirB   ] = &DDStart[dirB   *size_Mat];
-				D.f[dirNE  ] = &DDStart[dirNE  *size_Mat];
-				D.f[dirSW  ] = &DDStart[dirSW  *size_Mat];
-				D.f[dirSE  ] = &DDStart[dirSE  *size_Mat];
-				D.f[dirNW  ] = &DDStart[dirNW  *size_Mat];
-				D.f[dirTE  ] = &DDStart[dirTE  *size_Mat];
-				D.f[dirBW  ] = &DDStart[dirBW  *size_Mat];
-				D.f[dirBE  ] = &DDStart[dirBE  *size_Mat];
-				D.f[dirTW  ] = &DDStart[dirTW  *size_Mat];
-				D.f[dirTN  ] = &DDStart[dirTN  *size_Mat];
-				D.f[dirBS  ] = &DDStart[dirBS  *size_Mat];
-				D.f[dirBN  ] = &DDStart[dirBN  *size_Mat];
-				D.f[dirTS  ] = &DDStart[dirTS  *size_Mat];
-				D.f[dirZERO] = &DDStart[dirZERO*size_Mat];
-				D.f[dirTNE ] = &DDStart[dirTNE *size_Mat];
-				D.f[dirTSW ] = &DDStart[dirTSW *size_Mat];
-				D.f[dirTSE ] = &DDStart[dirTSE *size_Mat];
-				D.f[dirTNW ] = &DDStart[dirTNW *size_Mat];
-				D.f[dirBNE ] = &DDStart[dirBNE *size_Mat];
-				D.f[dirBSW ] = &DDStart[dirBSW *size_Mat];
-				D.f[dirBSE ] = &DDStart[dirBSE *size_Mat];
-				D.f[dirBNW ] = &DDStart[dirBNW *size_Mat];
+				D.f[DIR_P00   ] = &DDStart[DIR_P00   *size_Mat];
+				D.f[DIR_M00   ] = &DDStart[DIR_M00   *size_Mat];
+				D.f[DIR_0P0   ] = &DDStart[DIR_0P0   *size_Mat];
+				D.f[DIR_0M0   ] = &DDStart[DIR_0M0   *size_Mat];
+				D.f[DIR_00P   ] = &DDStart[DIR_00P   *size_Mat];
+				D.f[DIR_00M   ] = &DDStart[DIR_00M   *size_Mat];
+				D.f[DIR_PP0  ] = &DDStart[DIR_PP0  *size_Mat];
+				D.f[DIR_MM0  ] = &DDStart[DIR_MM0  *size_Mat];
+				D.f[DIR_PM0  ] = &DDStart[DIR_PM0  *size_Mat];
+				D.f[DIR_MP0  ] = &DDStart[DIR_MP0  *size_Mat];
+				D.f[DIR_P0P  ] = &DDStart[DIR_P0P  *size_Mat];
+				D.f[DIR_M0M  ] = &DDStart[DIR_M0M  *size_Mat];
+				D.f[DIR_P0M  ] = &DDStart[DIR_P0M  *size_Mat];
+				D.f[DIR_M0P  ] = &DDStart[DIR_M0P  *size_Mat];
+				D.f[DIR_0PP  ] = &DDStart[DIR_0PP  *size_Mat];
+				D.f[DIR_0MM  ] = &DDStart[DIR_0MM  *size_Mat];
+				D.f[DIR_0PM  ] = &DDStart[DIR_0PM  *size_Mat];
+				D.f[DIR_0MP  ] = &DDStart[DIR_0MP  *size_Mat];
+				D.f[DIR_000] = &DDStart[DIR_000*size_Mat];
+				D.f[DIR_PPP ] = &DDStart[DIR_PPP *size_Mat];
+				D.f[DIR_MMP ] = &DDStart[DIR_MMP *size_Mat];
+				D.f[DIR_PMP ] = &DDStart[DIR_PMP *size_Mat];
+				D.f[DIR_MPP ] = &DDStart[DIR_MPP *size_Mat];
+				D.f[DIR_PPM ] = &DDStart[DIR_PPM *size_Mat];
+				D.f[DIR_MMM ] = &DDStart[DIR_MMM *size_Mat];
+				D.f[DIR_PMM ] = &DDStart[DIR_PMM *size_Mat];
+				D.f[DIR_MPM ] = &DDStart[DIR_MPM *size_Mat];
 			}
 			else
 			{
-				D.f[dirW   ] = &DDStart[dirE   *size_Mat];
-				D.f[dirE   ] = &DDStart[dirW   *size_Mat];
-				D.f[dirS   ] = &DDStart[dirN   *size_Mat];
-				D.f[dirN   ] = &DDStart[dirS   *size_Mat];
-				D.f[dirB   ] = &DDStart[dirT   *size_Mat];
-				D.f[dirT   ] = &DDStart[dirB   *size_Mat];
-				D.f[dirSW  ] = &DDStart[dirNE  *size_Mat];
-				D.f[dirNE  ] = &DDStart[dirSW  *size_Mat];
-				D.f[dirNW  ] = &DDStart[dirSE  *size_Mat];
-				D.f[dirSE  ] = &DDStart[dirNW  *size_Mat];
-				D.f[dirBW  ] = &DDStart[dirTE  *size_Mat];
-				D.f[dirTE  ] = &DDStart[dirBW  *size_Mat];
-				D.f[dirTW  ] = &DDStart[dirBE  *size_Mat];
-				D.f[dirBE  ] = &DDStart[dirTW  *size_Mat];
-				D.f[dirBS  ] = &DDStart[dirTN  *size_Mat];
-				D.f[dirTN  ] = &DDStart[dirBS  *size_Mat];
-				D.f[dirTS  ] = &DDStart[dirBN  *size_Mat];
-				D.f[dirBN  ] = &DDStart[dirTS  *size_Mat];
-				D.f[dirZERO] = &DDStart[dirZERO*size_Mat];
-				D.f[dirBSW ] = &DDStart[dirTNE *size_Mat];
-				D.f[dirBNE ] = &DDStart[dirTSW *size_Mat];
-				D.f[dirBNW ] = &DDStart[dirTSE *size_Mat];
-				D.f[dirBSE ] = &DDStart[dirTNW *size_Mat];
-				D.f[dirTSW ] = &DDStart[dirBNE *size_Mat];
-				D.f[dirTNE ] = &DDStart[dirBSW *size_Mat];
-				D.f[dirTNW ] = &DDStart[dirBSE *size_Mat];
-				D.f[dirTSE ] = &DDStart[dirBNW *size_Mat];
+				D.f[DIR_M00   ] = &DDStart[DIR_P00   *size_Mat];
+				D.f[DIR_P00   ] = &DDStart[DIR_M00   *size_Mat];
+				D.f[DIR_0M0   ] = &DDStart[DIR_0P0   *size_Mat];
+				D.f[DIR_0P0   ] = &DDStart[DIR_0M0   *size_Mat];
+				D.f[DIR_00M   ] = &DDStart[DIR_00P   *size_Mat];
+				D.f[DIR_00P   ] = &DDStart[DIR_00M   *size_Mat];
+				D.f[DIR_MM0  ] = &DDStart[DIR_PP0  *size_Mat];
+				D.f[DIR_PP0  ] = &DDStart[DIR_MM0  *size_Mat];
+				D.f[DIR_MP0  ] = &DDStart[DIR_PM0  *size_Mat];
+				D.f[DIR_PM0  ] = &DDStart[DIR_MP0  *size_Mat];
+				D.f[DIR_M0M  ] = &DDStart[DIR_P0P  *size_Mat];
+				D.f[DIR_P0P  ] = &DDStart[DIR_M0M  *size_Mat];
+				D.f[DIR_M0P  ] = &DDStart[DIR_P0M  *size_Mat];
+				D.f[DIR_P0M  ] = &DDStart[DIR_M0P  *size_Mat];
+				D.f[DIR_0MM  ] = &DDStart[DIR_0PP  *size_Mat];
+				D.f[DIR_0PP  ] = &DDStart[DIR_0MM  *size_Mat];
+				D.f[DIR_0MP  ] = &DDStart[DIR_0PM  *size_Mat];
+				D.f[DIR_0PM  ] = &DDStart[DIR_0MP  *size_Mat];
+				D.f[DIR_000] = &DDStart[DIR_000*size_Mat];
+				D.f[DIR_MMM ] = &DDStart[DIR_PPP *size_Mat];
+				D.f[DIR_PPM ] = &DDStart[DIR_MMP *size_Mat];
+				D.f[DIR_MPM ] = &DDStart[DIR_PMP *size_Mat];
+				D.f[DIR_PMM ] = &DDStart[DIR_MPP *size_Mat];
+				D.f[DIR_MMP ] = &DDStart[DIR_PPM *size_Mat];
+				D.f[DIR_PPP ] = &DDStart[DIR_MMM *size_Mat];
+				D.f[DIR_MPP ] = &DDStart[DIR_PMM *size_Mat];
+				D.f[DIR_PMP ] = &DDStart[DIR_MPM *size_Mat];
 			}
 
 			////////////////////////////////////////////////////////////////////////////////
@@ -1088,33 +1089,33 @@ extern "C" __global__ void LB_Kernel_Kum_IsoTest_SP_27( real omega,
 			//unsigned int ktne = k;
 			unsigned int kbsw = neighborZ[ksw];
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			real mfcbb = (D.f[dirE   ])[k  ];//[ke   ];// +  c2over27 ;(D.f[dirE   ])[k  ];//ke
-			real mfabb = (D.f[dirW   ])[kw ];//[kw   ];// +  c2over27 ;(D.f[dirW   ])[kw ];
-			real mfbcb = (D.f[dirN   ])[k  ];//[kn   ];// +  c2over27 ;(D.f[dirN   ])[k  ];//kn
-			real mfbab = (D.f[dirS   ])[ks ];//[ks   ];// +  c2over27 ;(D.f[dirS   ])[ks ];
-			real mfbbc = (D.f[dirT   ])[k  ];//[kt   ];// +  c2over27 ;(D.f[dirT   ])[k  ];//kt
-			real mfbba = (D.f[dirB   ])[kb ];//[kb   ];// +  c2over27 ;(D.f[dirB   ])[kb ];
-			real mfccb = (D.f[dirNE  ])[k  ];//[kne  ];// +  c1over54 ;(D.f[dirNE  ])[k  ];//kne
-			real mfaab = (D.f[dirSW  ])[ksw];//[ksw  ];// +  c1over54 ;(D.f[dirSW  ])[ksw];
-			real mfcab = (D.f[dirSE  ])[ks ];//[kse  ];// +  c1over54 ;(D.f[dirSE  ])[ks ];//kse
-			real mfacb = (D.f[dirNW  ])[kw ];//[knw  ];// +  c1over54 ;(D.f[dirNW  ])[kw ];//knw
-			real mfcbc = (D.f[dirTE  ])[k  ];//[kte  ];// +  c1over54 ;(D.f[dirTE  ])[k  ];//kte
-			real mfaba = (D.f[dirBW  ])[kbw];//[kbw  ];// +  c1over54 ;(D.f[dirBW  ])[kbw];
-			real mfcba = (D.f[dirBE  ])[kb ];//[kbe  ];// +  c1over54 ;(D.f[dirBE  ])[kb ];//kbe
-			real mfabc = (D.f[dirTW  ])[kw ];//[ktw  ];// +  c1over54 ;(D.f[dirTW  ])[kw ];//ktw
-			real mfbcc = (D.f[dirTN  ])[k  ];//[ktn  ];// +  c1over54 ;(D.f[dirTN  ])[k  ];//ktn
-			real mfbaa = (D.f[dirBS  ])[kbs];//[kbs  ];// +  c1over54 ;(D.f[dirBS  ])[kbs];
-			real mfbca = (D.f[dirBN  ])[kb ];//[kbn  ];// +  c1over54 ;(D.f[dirBN  ])[kb ];//kbn
-			real mfbac = (D.f[dirTS  ])[ks ];//[kts  ];// +  c1over54 ;(D.f[dirTS  ])[ks ];//kts
-			real mfbbb = (D.f[dirZERO])[k  ];//[kzero];// +  c8over27 ;(D.f[dirZERO])[k  ];//kzero
-			real mfccc = (D.f[dirTNE ])[k  ];//[ktne ];// +  c1over216;(D.f[dirTNE ])[k  ];//ktne
-			real mfaac = (D.f[dirTSW ])[ksw];//[ktsw ];// +  c1over216;(D.f[dirTSW ])[ksw];//ktsw
-			real mfcac = (D.f[dirTSE ])[ks ];//[ktse ];// +  c1over216;(D.f[dirTSE ])[ks ];//ktse
-			real mfacc = (D.f[dirTNW ])[kw ];//[ktnw ];// +  c1over216;(D.f[dirTNW ])[kw ];//ktnw
-			real mfcca = (D.f[dirBNE ])[kb ];//[kbne ];// +  c1over216;(D.f[dirBNE ])[kb ];//kbne
-			real mfaaa = (D.f[dirBSW ])[kbsw];//[kbsw ];// +  c1over216;(D.f[dirBSW ])[kbsw];
-			real mfcaa = (D.f[dirBSE ])[kbs];//[kbse ];// +  c1over216;(D.f[dirBSE ])[kbs];//kbse
-			real mfaca = (D.f[dirBNW ])[kbw];//[kbnw ];// +  c1over216;(D.f[dirBNW ])[kbw];//kbnw
+			real mfcbb = (D.f[DIR_P00   ])[k  ];//[ke   ];// +  c2over27 ;(D.f[DIR_P00   ])[k  ];//ke
+			real mfabb = (D.f[DIR_M00   ])[kw ];//[kw   ];// +  c2over27 ;(D.f[DIR_M00   ])[kw ];
+			real mfbcb = (D.f[DIR_0P0   ])[k  ];//[kn   ];// +  c2over27 ;(D.f[DIR_0P0   ])[k  ];//kn
+			real mfbab = (D.f[DIR_0M0   ])[ks ];//[ks   ];// +  c2over27 ;(D.f[DIR_0M0   ])[ks ];
+			real mfbbc = (D.f[DIR_00P   ])[k  ];//[kt   ];// +  c2over27 ;(D.f[DIR_00P   ])[k  ];//kt
+			real mfbba = (D.f[DIR_00M   ])[kb ];//[kb   ];// +  c2over27 ;(D.f[DIR_00M   ])[kb ];
+			real mfccb = (D.f[DIR_PP0  ])[k  ];//[kne  ];// +  c1over54 ;(D.f[DIR_PP0  ])[k  ];//kne
+			real mfaab = (D.f[DIR_MM0  ])[ksw];//[ksw  ];// +  c1over54 ;(D.f[DIR_MM0  ])[ksw];
+			real mfcab = (D.f[DIR_PM0  ])[ks ];//[kse  ];// +  c1over54 ;(D.f[DIR_PM0  ])[ks ];//kse
+			real mfacb = (D.f[DIR_MP0  ])[kw ];//[knw  ];// +  c1over54 ;(D.f[DIR_MP0  ])[kw ];//knw
+			real mfcbc = (D.f[DIR_P0P  ])[k  ];//[kte  ];// +  c1over54 ;(D.f[DIR_P0P  ])[k  ];//kte
+			real mfaba = (D.f[DIR_M0M  ])[kbw];//[kbw  ];// +  c1over54 ;(D.f[DIR_M0M  ])[kbw];
+			real mfcba = (D.f[DIR_P0M  ])[kb ];//[kbe  ];// +  c1over54 ;(D.f[DIR_P0M  ])[kb ];//kbe
+			real mfabc = (D.f[DIR_M0P  ])[kw ];//[ktw  ];// +  c1over54 ;(D.f[DIR_M0P  ])[kw ];//ktw
+			real mfbcc = (D.f[DIR_0PP  ])[k  ];//[ktn  ];// +  c1over54 ;(D.f[DIR_0PP  ])[k  ];//ktn
+			real mfbaa = (D.f[DIR_0MM  ])[kbs];//[kbs  ];// +  c1over54 ;(D.f[DIR_0MM  ])[kbs];
+			real mfbca = (D.f[DIR_0PM  ])[kb ];//[kbn  ];// +  c1over54 ;(D.f[DIR_0PM  ])[kb ];//kbn
+			real mfbac = (D.f[DIR_0MP  ])[ks ];//[kts  ];// +  c1over54 ;(D.f[DIR_0MP  ])[ks ];//kts
+			real mfbbb = (D.f[DIR_000])[k  ];//[kzero];// +  c8over27 ;(D.f[DIR_000])[k  ];//kzero
+			real mfccc = (D.f[DIR_PPP ])[k  ];//[ktne ];// +  c1over216;(D.f[DIR_PPP ])[k  ];//ktne
+			real mfaac = (D.f[DIR_MMP ])[ksw];//[ktsw ];// +  c1over216;(D.f[DIR_MMP ])[ksw];//ktsw
+			real mfcac = (D.f[DIR_PMP ])[ks ];//[ktse ];// +  c1over216;(D.f[DIR_PMP ])[ks ];//ktse
+			real mfacc = (D.f[DIR_MPP ])[kw ];//[ktnw ];// +  c1over216;(D.f[DIR_MPP ])[kw ];//ktnw
+			real mfcca = (D.f[DIR_PPM ])[kb ];//[kbne ];// +  c1over216;(D.f[DIR_PPM ])[kb ];//kbne
+			real mfaaa = (D.f[DIR_MMM ])[kbsw];//[kbsw ];// +  c1over216;(D.f[DIR_MMM ])[kbsw];
+			real mfcaa = (D.f[DIR_PMM ])[kbs];//[kbse ];// +  c1over216;(D.f[DIR_PMM ])[kbs];//kbse
+			real mfaca = (D.f[DIR_MPM ])[kbw];//[kbnw ];// +  c1over216;(D.f[DIR_MPM ])[kbw];//kbnw
 			////////////////////////////////////////////////////////////////////////////////////
 			//slow
 			//real oMdrho = one - ((((mfccc+mfaaa) + (mfaca+mfcac)) + ((mfacc+mfcaa) + (mfaac+mfcca))) + 
@@ -1932,33 +1933,33 @@ extern "C" __global__ void LB_Kernel_Kum_IsoTest_SP_27( real omega,
 
 
 			////////////////////////////////////////////////////////////////////////////////////
-			(D.f[ dirE   ])[k   ] = mfabb;//(D.f[ dirE   ])[ke   ] = mfabb;// -  c2over27 ;  (D.f[ dirE   ])[k   ]                                                                     
-			(D.f[ dirW   ])[kw  ] = mfcbb;//(D.f[ dirW   ])[kw   ] = mfcbb;// -  c2over27 ;  (D.f[ dirW   ])[kw  ]                                                                   
-			(D.f[ dirN   ])[k   ] = mfbab;//(D.f[ dirN   ])[kn   ] = mfbab;// -  c2over27 ;	 (D.f[ dirN   ])[k   ]
-			(D.f[ dirS   ])[ks  ] = mfbcb;//(D.f[ dirS   ])[ks   ] = mfbcb;// -  c2over27 ;	 (D.f[ dirS   ])[ks  ]
-			(D.f[ dirT   ])[k   ] = mfbba;//(D.f[ dirT   ])[kt   ] = mfbba;// -  c2over27 ;	 (D.f[ dirT   ])[k   ]
-			(D.f[ dirB   ])[kb  ] = mfbbc;//(D.f[ dirB   ])[kb   ] = mfbbc;// -  c2over27 ;	 (D.f[ dirB   ])[kb  ]
-			(D.f[ dirNE  ])[k   ] = mfaab;//(D.f[ dirNE  ])[kne  ] = mfaab;// -  c1over54 ;	 (D.f[ dirNE  ])[k   ]
-			(D.f[ dirSW  ])[ksw ] = mfccb;//(D.f[ dirSW  ])[ksw  ] = mfccb;// -  c1over54 ;	 (D.f[ dirSW  ])[ksw ]
-			(D.f[ dirSE  ])[ks  ] = mfacb;//(D.f[ dirSE  ])[kse  ] = mfacb;// -  c1over54 ;	 (D.f[ dirSE  ])[ks  ]
-			(D.f[ dirNW  ])[kw  ] = mfcab;//(D.f[ dirNW  ])[knw  ] = mfcab;// -  c1over54 ;	 (D.f[ dirNW  ])[kw  ]
-			(D.f[ dirTE  ])[k   ] = mfaba;//(D.f[ dirTE  ])[kte  ] = mfaba;// -  c1over54 ;	 (D.f[ dirTE  ])[k   ]
-			(D.f[ dirBW  ])[kbw ] = mfcbc;//(D.f[ dirBW  ])[kbw  ] = mfcbc;// -  c1over54 ;	 (D.f[ dirBW  ])[kbw ]
-			(D.f[ dirBE  ])[kb  ] = mfabc;//(D.f[ dirBE  ])[kbe  ] = mfabc;// -  c1over54 ;	 (D.f[ dirBE  ])[kb  ]
-			(D.f[ dirTW  ])[kw  ] = mfcba;//(D.f[ dirTW  ])[ktw  ] = mfcba;// -  c1over54 ;	 (D.f[ dirTW  ])[kw  ]
-			(D.f[ dirTN  ])[k   ] = mfbaa;//(D.f[ dirTN  ])[ktn  ] = mfbaa;// -  c1over54 ;	 (D.f[ dirTN  ])[k   ]
-			(D.f[ dirBS  ])[kbs ] = mfbcc;//(D.f[ dirBS  ])[kbs  ] = mfbcc;// -  c1over54 ;	 (D.f[ dirBS  ])[kbs ]
-			(D.f[ dirBN  ])[kb  ] = mfbac;//(D.f[ dirBN  ])[kbn  ] = mfbac;// -  c1over54 ;	 (D.f[ dirBN  ])[kb  ]
-			(D.f[ dirTS  ])[ks  ] = mfbca;//(D.f[ dirTS  ])[kts  ] = mfbca;// -  c1over54 ;	 (D.f[ dirTS  ])[ks  ]
-			(D.f[ dirZERO])[k   ] = mfbbb;//(D.f[ dirZERO])[kzero] = mfbbb;// -  c8over27 ;	 (D.f[ dirZERO])[k   ]
-			(D.f[ dirTNE ])[k   ] = mfaaa;//(D.f[ dirTNE ])[ktne ] = mfaaa;// -  c1over216;	 (D.f[ dirTNE ])[k   ]
-			(D.f[ dirTSE ])[ks  ] = mfaca;//(D.f[ dirTSE ])[ktse ] = mfaca;// -  c1over216;	 (D.f[ dirTSE ])[ks  ]
-			(D.f[ dirBNE ])[kb  ] = mfaac;//(D.f[ dirBNE ])[kbne ] = mfaac;// -  c1over216;	 (D.f[ dirBNE ])[kb  ]
-			(D.f[ dirBSE ])[kbs ] = mfacc;//(D.f[ dirBSE ])[kbse ] = mfacc;// -  c1over216;	 (D.f[ dirBSE ])[kbs ]
-			(D.f[ dirTNW ])[kw  ] = mfcaa;//(D.f[ dirTNW ])[ktnw ] = mfcaa;// -  c1over216;	 (D.f[ dirTNW ])[kw  ]
-			(D.f[ dirTSW ])[ksw ] = mfcca;//(D.f[ dirTSW ])[ktsw ] = mfcca;// -  c1over216;	 (D.f[ dirTSW ])[ksw ]
-			(D.f[ dirBNW ])[kbw ] = mfcac;//(D.f[ dirBNW ])[kbnw ] = mfcac;// -  c1over216;	 (D.f[ dirBNW ])[kbw ]
-			(D.f[ dirBSW ])[kbsw] = mfccc;//(D.f[ dirBSW ])[kbsw ] = mfccc;// -  c1over216;	 (D.f[ dirBSW ])[kbsw]
+			(D.f[ DIR_P00   ])[k   ] = mfabb;//(D.f[ DIR_P00   ])[ke   ] = mfabb;// -  c2over27 ;  (D.f[ DIR_P00   ])[k   ]                                                                     
+			(D.f[ DIR_M00   ])[kw  ] = mfcbb;//(D.f[ DIR_M00   ])[kw   ] = mfcbb;// -  c2over27 ;  (D.f[ DIR_M00   ])[kw  ]                                                                   
+			(D.f[ DIR_0P0   ])[k   ] = mfbab;//(D.f[ DIR_0P0   ])[kn   ] = mfbab;// -  c2over27 ;	 (D.f[ DIR_0P0   ])[k   ]
+			(D.f[ DIR_0M0   ])[ks  ] = mfbcb;//(D.f[ DIR_0M0   ])[ks   ] = mfbcb;// -  c2over27 ;	 (D.f[ DIR_0M0   ])[ks  ]
+			(D.f[ DIR_00P   ])[k   ] = mfbba;//(D.f[ DIR_00P   ])[kt   ] = mfbba;// -  c2over27 ;	 (D.f[ DIR_00P   ])[k   ]
+			(D.f[ DIR_00M   ])[kb  ] = mfbbc;//(D.f[ DIR_00M   ])[kb   ] = mfbbc;// -  c2over27 ;	 (D.f[ DIR_00M   ])[kb  ]
+			(D.f[ DIR_PP0  ])[k   ] = mfaab;//(D.f[ DIR_PP0  ])[kne  ] = mfaab;// -  c1over54 ;	 (D.f[ DIR_PP0  ])[k   ]
+			(D.f[ DIR_MM0  ])[ksw ] = mfccb;//(D.f[ DIR_MM0  ])[ksw  ] = mfccb;// -  c1over54 ;	 (D.f[ DIR_MM0  ])[ksw ]
+			(D.f[ DIR_PM0  ])[ks  ] = mfacb;//(D.f[ DIR_PM0  ])[kse  ] = mfacb;// -  c1over54 ;	 (D.f[ DIR_PM0  ])[ks  ]
+			(D.f[ DIR_MP0  ])[kw  ] = mfcab;//(D.f[ DIR_MP0  ])[knw  ] = mfcab;// -  c1over54 ;	 (D.f[ DIR_MP0  ])[kw  ]
+			(D.f[ DIR_P0P  ])[k   ] = mfaba;//(D.f[ DIR_P0P  ])[kte  ] = mfaba;// -  c1over54 ;	 (D.f[ DIR_P0P  ])[k   ]
+			(D.f[ DIR_M0M  ])[kbw ] = mfcbc;//(D.f[ DIR_M0M  ])[kbw  ] = mfcbc;// -  c1over54 ;	 (D.f[ DIR_M0M  ])[kbw ]
+			(D.f[ DIR_P0M  ])[kb  ] = mfabc;//(D.f[ DIR_P0M  ])[kbe  ] = mfabc;// -  c1over54 ;	 (D.f[ DIR_P0M  ])[kb  ]
+			(D.f[ DIR_M0P  ])[kw  ] = mfcba;//(D.f[ DIR_M0P  ])[ktw  ] = mfcba;// -  c1over54 ;	 (D.f[ DIR_M0P  ])[kw  ]
+			(D.f[ DIR_0PP  ])[k   ] = mfbaa;//(D.f[ DIR_0PP  ])[ktn  ] = mfbaa;// -  c1over54 ;	 (D.f[ DIR_0PP  ])[k   ]
+			(D.f[ DIR_0MM  ])[kbs ] = mfbcc;//(D.f[ DIR_0MM  ])[kbs  ] = mfbcc;// -  c1over54 ;	 (D.f[ DIR_0MM  ])[kbs ]
+			(D.f[ DIR_0PM  ])[kb  ] = mfbac;//(D.f[ DIR_0PM  ])[kbn  ] = mfbac;// -  c1over54 ;	 (D.f[ DIR_0PM  ])[kb  ]
+			(D.f[ DIR_0MP  ])[ks  ] = mfbca;//(D.f[ DIR_0MP  ])[kts  ] = mfbca;// -  c1over54 ;	 (D.f[ DIR_0MP  ])[ks  ]
+			(D.f[ DIR_000])[k   ] = mfbbb;//(D.f[ DIR_000])[kzero] = mfbbb;// -  c8over27 ;	 (D.f[ DIR_000])[k   ]
+			(D.f[ DIR_PPP ])[k   ] = mfaaa;//(D.f[ DIR_PPP ])[ktne ] = mfaaa;// -  c1over216;	 (D.f[ DIR_PPP ])[k   ]
+			(D.f[ DIR_PMP ])[ks  ] = mfaca;//(D.f[ DIR_PMP ])[ktse ] = mfaca;// -  c1over216;	 (D.f[ DIR_PMP ])[ks  ]
+			(D.f[ DIR_PPM ])[kb  ] = mfaac;//(D.f[ DIR_PPM ])[kbne ] = mfaac;// -  c1over216;	 (D.f[ DIR_PPM ])[kb  ]
+			(D.f[ DIR_PMM ])[kbs ] = mfacc;//(D.f[ DIR_PMM ])[kbse ] = mfacc;// -  c1over216;	 (D.f[ DIR_PMM ])[kbs ]
+			(D.f[ DIR_MPP ])[kw  ] = mfcaa;//(D.f[ DIR_MPP ])[ktnw ] = mfcaa;// -  c1over216;	 (D.f[ DIR_MPP ])[kw  ]
+			(D.f[ DIR_MMP ])[ksw ] = mfcca;//(D.f[ DIR_MMP ])[ktsw ] = mfcca;// -  c1over216;	 (D.f[ DIR_MMP ])[ksw ]
+			(D.f[ DIR_MPM ])[kbw ] = mfcac;//(D.f[ DIR_MPM ])[kbnw ] = mfcac;// -  c1over216;	 (D.f[ DIR_MPM ])[kbw ]
+			(D.f[ DIR_MMM ])[kbsw] = mfccc;//(D.f[ DIR_MMM ])[kbsw ] = mfccc;// -  c1over216;	 (D.f[ DIR_MMM ])[kbsw]
 			////////////////////////////////////////////////////////////////////////////////////
 		}                                                                                                                    
 	}
@@ -2004,7 +2005,7 @@ extern "C" __global__ void LB_Kernel_Kum_IsoTest_SP_27( real omega,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_Kum_1h_SP_27(  real omega,
+__global__ void LB_Kernel_Kum_1h_SP_27(  real omega,
 													real deltaPhi,
 													real angularVelocity,
 													unsigned int* bcMatD,
@@ -2040,63 +2041,63 @@ extern "C" __global__ void LB_Kernel_Kum_1h_SP_27(  real omega,
 			Distributions27 D;
 			if (EvenOrOdd==true)
 			{
-				D.f[dirE   ] = &DDStart[dirE   *size_Mat];
-				D.f[dirW   ] = &DDStart[dirW   *size_Mat];
-				D.f[dirN   ] = &DDStart[dirN   *size_Mat];
-				D.f[dirS   ] = &DDStart[dirS   *size_Mat];
-				D.f[dirT   ] = &DDStart[dirT   *size_Mat];
-				D.f[dirB   ] = &DDStart[dirB   *size_Mat];
-				D.f[dirNE  ] = &DDStart[dirNE  *size_Mat];
-				D.f[dirSW  ] = &DDStart[dirSW  *size_Mat];
-				D.f[dirSE  ] = &DDStart[dirSE  *size_Mat];
-				D.f[dirNW  ] = &DDStart[dirNW  *size_Mat];
-				D.f[dirTE  ] = &DDStart[dirTE  *size_Mat];
-				D.f[dirBW  ] = &DDStart[dirBW  *size_Mat];
-				D.f[dirBE  ] = &DDStart[dirBE  *size_Mat];
-				D.f[dirTW  ] = &DDStart[dirTW  *size_Mat];
-				D.f[dirTN  ] = &DDStart[dirTN  *size_Mat];
-				D.f[dirBS  ] = &DDStart[dirBS  *size_Mat];
-				D.f[dirBN  ] = &DDStart[dirBN  *size_Mat];
-				D.f[dirTS  ] = &DDStart[dirTS  *size_Mat];
-				D.f[dirZERO] = &DDStart[dirZERO*size_Mat];
-				D.f[dirTNE ] = &DDStart[dirTNE *size_Mat];
-				D.f[dirTSW ] = &DDStart[dirTSW *size_Mat];
-				D.f[dirTSE ] = &DDStart[dirTSE *size_Mat];
-				D.f[dirTNW ] = &DDStart[dirTNW *size_Mat];
-				D.f[dirBNE ] = &DDStart[dirBNE *size_Mat];
-				D.f[dirBSW ] = &DDStart[dirBSW *size_Mat];
-				D.f[dirBSE ] = &DDStart[dirBSE *size_Mat];
-				D.f[dirBNW ] = &DDStart[dirBNW *size_Mat];
+				D.f[DIR_P00   ] = &DDStart[DIR_P00   *size_Mat];
+				D.f[DIR_M00   ] = &DDStart[DIR_M00   *size_Mat];
+				D.f[DIR_0P0   ] = &DDStart[DIR_0P0   *size_Mat];
+				D.f[DIR_0M0   ] = &DDStart[DIR_0M0   *size_Mat];
+				D.f[DIR_00P   ] = &DDStart[DIR_00P   *size_Mat];
+				D.f[DIR_00M   ] = &DDStart[DIR_00M   *size_Mat];
+				D.f[DIR_PP0  ] = &DDStart[DIR_PP0  *size_Mat];
+				D.f[DIR_MM0  ] = &DDStart[DIR_MM0  *size_Mat];
+				D.f[DIR_PM0  ] = &DDStart[DIR_PM0  *size_Mat];
+				D.f[DIR_MP0  ] = &DDStart[DIR_MP0  *size_Mat];
+				D.f[DIR_P0P  ] = &DDStart[DIR_P0P  *size_Mat];
+				D.f[DIR_M0M  ] = &DDStart[DIR_M0M  *size_Mat];
+				D.f[DIR_P0M  ] = &DDStart[DIR_P0M  *size_Mat];
+				D.f[DIR_M0P  ] = &DDStart[DIR_M0P  *size_Mat];
+				D.f[DIR_0PP  ] = &DDStart[DIR_0PP  *size_Mat];
+				D.f[DIR_0MM  ] = &DDStart[DIR_0MM  *size_Mat];
+				D.f[DIR_0PM  ] = &DDStart[DIR_0PM  *size_Mat];
+				D.f[DIR_0MP  ] = &DDStart[DIR_0MP  *size_Mat];
+				D.f[DIR_000] = &DDStart[DIR_000*size_Mat];
+				D.f[DIR_PPP ] = &DDStart[DIR_PPP *size_Mat];
+				D.f[DIR_MMP ] = &DDStart[DIR_MMP *size_Mat];
+				D.f[DIR_PMP ] = &DDStart[DIR_PMP *size_Mat];
+				D.f[DIR_MPP ] = &DDStart[DIR_MPP *size_Mat];
+				D.f[DIR_PPM ] = &DDStart[DIR_PPM *size_Mat];
+				D.f[DIR_MMM ] = &DDStart[DIR_MMM *size_Mat];
+				D.f[DIR_PMM ] = &DDStart[DIR_PMM *size_Mat];
+				D.f[DIR_MPM ] = &DDStart[DIR_MPM *size_Mat];
 			}
 			else
 			{
-				D.f[dirW   ] = &DDStart[dirE   *size_Mat];
-				D.f[dirE   ] = &DDStart[dirW   *size_Mat];
-				D.f[dirS   ] = &DDStart[dirN   *size_Mat];
-				D.f[dirN   ] = &DDStart[dirS   *size_Mat];
-				D.f[dirB   ] = &DDStart[dirT   *size_Mat];
-				D.f[dirT   ] = &DDStart[dirB   *size_Mat];
-				D.f[dirSW  ] = &DDStart[dirNE  *size_Mat];
-				D.f[dirNE  ] = &DDStart[dirSW  *size_Mat];
-				D.f[dirNW  ] = &DDStart[dirSE  *size_Mat];
-				D.f[dirSE  ] = &DDStart[dirNW  *size_Mat];
-				D.f[dirBW  ] = &DDStart[dirTE  *size_Mat];
-				D.f[dirTE  ] = &DDStart[dirBW  *size_Mat];
-				D.f[dirTW  ] = &DDStart[dirBE  *size_Mat];
-				D.f[dirBE  ] = &DDStart[dirTW  *size_Mat];
-				D.f[dirBS  ] = &DDStart[dirTN  *size_Mat];
-				D.f[dirTN  ] = &DDStart[dirBS  *size_Mat];
-				D.f[dirTS  ] = &DDStart[dirBN  *size_Mat];
-				D.f[dirBN  ] = &DDStart[dirTS  *size_Mat];
-				D.f[dirZERO] = &DDStart[dirZERO*size_Mat];
-				D.f[dirBSW ] = &DDStart[dirTNE *size_Mat];
-				D.f[dirBNE ] = &DDStart[dirTSW *size_Mat];
-				D.f[dirBNW ] = &DDStart[dirTSE *size_Mat];
-				D.f[dirBSE ] = &DDStart[dirTNW *size_Mat];
-				D.f[dirTSW ] = &DDStart[dirBNE *size_Mat];
-				D.f[dirTNE ] = &DDStart[dirBSW *size_Mat];
-				D.f[dirTNW ] = &DDStart[dirBSE *size_Mat];
-				D.f[dirTSE ] = &DDStart[dirBNW *size_Mat];
+				D.f[DIR_M00   ] = &DDStart[DIR_P00   *size_Mat];
+				D.f[DIR_P00   ] = &DDStart[DIR_M00   *size_Mat];
+				D.f[DIR_0M0   ] = &DDStart[DIR_0P0   *size_Mat];
+				D.f[DIR_0P0   ] = &DDStart[DIR_0M0   *size_Mat];
+				D.f[DIR_00M   ] = &DDStart[DIR_00P   *size_Mat];
+				D.f[DIR_00P   ] = &DDStart[DIR_00M   *size_Mat];
+				D.f[DIR_MM0  ] = &DDStart[DIR_PP0  *size_Mat];
+				D.f[DIR_PP0  ] = &DDStart[DIR_MM0  *size_Mat];
+				D.f[DIR_MP0  ] = &DDStart[DIR_PM0  *size_Mat];
+				D.f[DIR_PM0  ] = &DDStart[DIR_MP0  *size_Mat];
+				D.f[DIR_M0M  ] = &DDStart[DIR_P0P  *size_Mat];
+				D.f[DIR_P0P  ] = &DDStart[DIR_M0M  *size_Mat];
+				D.f[DIR_M0P  ] = &DDStart[DIR_P0M  *size_Mat];
+				D.f[DIR_P0M  ] = &DDStart[DIR_M0P  *size_Mat];
+				D.f[DIR_0MM  ] = &DDStart[DIR_0PP  *size_Mat];
+				D.f[DIR_0PP  ] = &DDStart[DIR_0MM  *size_Mat];
+				D.f[DIR_0MP  ] = &DDStart[DIR_0PM  *size_Mat];
+				D.f[DIR_0PM  ] = &DDStart[DIR_0MP  *size_Mat];
+				D.f[DIR_000] = &DDStart[DIR_000*size_Mat];
+				D.f[DIR_MMM ] = &DDStart[DIR_PPP *size_Mat];
+				D.f[DIR_PPM ] = &DDStart[DIR_MMP *size_Mat];
+				D.f[DIR_MPM ] = &DDStart[DIR_PMP *size_Mat];
+				D.f[DIR_PMM ] = &DDStart[DIR_MPP *size_Mat];
+				D.f[DIR_MMP ] = &DDStart[DIR_PPM *size_Mat];
+				D.f[DIR_PPP ] = &DDStart[DIR_MMM *size_Mat];
+				D.f[DIR_MPP ] = &DDStart[DIR_PMM *size_Mat];
+				D.f[DIR_PMP ] = &DDStart[DIR_MPM *size_Mat];
 			}
 
 			////////////////////////////////////////////////////////////////////////////////
@@ -2157,33 +2158,33 @@ extern "C" __global__ void LB_Kernel_Kum_1h_SP_27(  real omega,
 			//unsigned int ktne = k;
 			//unsigned int kbsw = neighborZ[ksw];
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			real mfcbb = (D.f[dirE   ])[k  ];//[ke   ];// +  c2over27 ;(D.f[dirE   ])[k  ];//ke
-			real mfabb = (D.f[dirW   ])[kw ];//[kw   ];// +  c2over27 ;(D.f[dirW   ])[kw ];
-			real mfbcb = (D.f[dirN   ])[k  ];//[kn   ];// +  c2over27 ;(D.f[dirN   ])[k  ];//kn
-			real mfbab = (D.f[dirS   ])[ks ];//[ks   ];// +  c2over27 ;(D.f[dirS   ])[ks ];
-			real mfbbc = (D.f[dirT   ])[k  ];//[kt   ];// +  c2over27 ;(D.f[dirT   ])[k  ];//kt
-			real mfbba = (D.f[dirB   ])[kb ];//[kb   ];// +  c2over27 ;(D.f[dirB   ])[kb ];
-			real mfccb = (D.f[dirNE  ])[k  ];//[kne  ];// +  c1over54 ;(D.f[dirNE  ])[k  ];//kne
-			real mfaab = (D.f[dirSW  ])[ksw];//[ksw  ];// +  c1over54 ;(D.f[dirSW  ])[ksw];
-			real mfcab = (D.f[dirSE  ])[ks ];//[kse  ];// +  c1over54 ;(D.f[dirSE  ])[ks ];//kse
-			real mfacb = (D.f[dirNW  ])[kw ];//[knw  ];// +  c1over54 ;(D.f[dirNW  ])[kw ];//knw
-			real mfcbc = (D.f[dirTE  ])[k  ];//[kte  ];// +  c1over54 ;(D.f[dirTE  ])[k  ];//kte
-			real mfaba = (D.f[dirBW  ])[kbw];//[kbw  ];// +  c1over54 ;(D.f[dirBW  ])[kbw];
-			real mfcba = (D.f[dirBE  ])[kb ];//[kbe  ];// +  c1over54 ;(D.f[dirBE  ])[kb ];//kbe
-			real mfabc = (D.f[dirTW  ])[kw ];//[ktw  ];// +  c1over54 ;(D.f[dirTW  ])[kw ];//ktw
-			real mfbcc = (D.f[dirTN  ])[k  ];//[ktn  ];// +  c1over54 ;(D.f[dirTN  ])[k  ];//ktn
-			real mfbaa = (D.f[dirBS  ])[kbs];//[kbs  ];// +  c1over54 ;(D.f[dirBS  ])[kbs];
-			real mfbca = (D.f[dirBN  ])[kb ];//[kbn  ];// +  c1over54 ;(D.f[dirBN  ])[kb ];//kbn
-			real mfbac = (D.f[dirTS  ])[ks ];//[kts  ];// +  c1over54 ;(D.f[dirTS  ])[ks ];//kts
-			real mfbbb = (D.f[dirZERO])[k  ];//[kzero];// +  c8over27 ;(D.f[dirZERO])[k  ];//kzero
-			real mfccc = (D.f[dirTNE ])[k  ];//[ktne ];// +  c1over216;(D.f[dirTNE ])[k  ];//ktne
-			real mfaac = (D.f[dirTSW ])[ksw];//[ktsw ];// +  c1over216;(D.f[dirTSW ])[ksw];//ktsw
-			real mfcac = (D.f[dirTSE ])[ks ];//[ktse ];// +  c1over216;(D.f[dirTSE ])[ks ];//ktse
-			real mfacc = (D.f[dirTNW ])[kw ];//[ktnw ];// +  c1over216;(D.f[dirTNW ])[kw ];//ktnw
-			real mfcca = (D.f[dirBNE ])[kb ];//[kbne ];// +  c1over216;(D.f[dirBNE ])[kb ];//kbne
-			real mfaaa = (D.f[dirBSW ])[kbsw];//[kbsw ];// +  c1over216;(D.f[dirBSW ])[kbsw];
-			real mfcaa = (D.f[dirBSE ])[kbs];//[kbse ];// +  c1over216;(D.f[dirBSE ])[kbs];//kbse
-			real mfaca = (D.f[dirBNW ])[kbw];//[kbnw ];// +  c1over216;(D.f[dirBNW ])[kbw];//kbnw
+			real mfcbb = (D.f[DIR_P00   ])[k  ];//[ke   ];// +  c2over27 ;(D.f[DIR_P00   ])[k  ];//ke
+			real mfabb = (D.f[DIR_M00   ])[kw ];//[kw   ];// +  c2over27 ;(D.f[DIR_M00   ])[kw ];
+			real mfbcb = (D.f[DIR_0P0   ])[k  ];//[kn   ];// +  c2over27 ;(D.f[DIR_0P0   ])[k  ];//kn
+			real mfbab = (D.f[DIR_0M0   ])[ks ];//[ks   ];// +  c2over27 ;(D.f[DIR_0M0   ])[ks ];
+			real mfbbc = (D.f[DIR_00P   ])[k  ];//[kt   ];// +  c2over27 ;(D.f[DIR_00P   ])[k  ];//kt
+			real mfbba = (D.f[DIR_00M   ])[kb ];//[kb   ];// +  c2over27 ;(D.f[DIR_00M   ])[kb ];
+			real mfccb = (D.f[DIR_PP0  ])[k  ];//[kne  ];// +  c1over54 ;(D.f[DIR_PP0  ])[k  ];//kne
+			real mfaab = (D.f[DIR_MM0  ])[ksw];//[ksw  ];// +  c1over54 ;(D.f[DIR_MM0  ])[ksw];
+			real mfcab = (D.f[DIR_PM0  ])[ks ];//[kse  ];// +  c1over54 ;(D.f[DIR_PM0  ])[ks ];//kse
+			real mfacb = (D.f[DIR_MP0  ])[kw ];//[knw  ];// +  c1over54 ;(D.f[DIR_MP0  ])[kw ];//knw
+			real mfcbc = (D.f[DIR_P0P  ])[k  ];//[kte  ];// +  c1over54 ;(D.f[DIR_P0P  ])[k  ];//kte
+			real mfaba = (D.f[DIR_M0M  ])[kbw];//[kbw  ];// +  c1over54 ;(D.f[DIR_M0M  ])[kbw];
+			real mfcba = (D.f[DIR_P0M  ])[kb ];//[kbe  ];// +  c1over54 ;(D.f[DIR_P0M  ])[kb ];//kbe
+			real mfabc = (D.f[DIR_M0P  ])[kw ];//[ktw  ];// +  c1over54 ;(D.f[DIR_M0P  ])[kw ];//ktw
+			real mfbcc = (D.f[DIR_0PP  ])[k  ];//[ktn  ];// +  c1over54 ;(D.f[DIR_0PP  ])[k  ];//ktn
+			real mfbaa = (D.f[DIR_0MM  ])[kbs];//[kbs  ];// +  c1over54 ;(D.f[DIR_0MM  ])[kbs];
+			real mfbca = (D.f[DIR_0PM  ])[kb ];//[kbn  ];// +  c1over54 ;(D.f[DIR_0PM  ])[kb ];//kbn
+			real mfbac = (D.f[DIR_0MP  ])[ks ];//[kts  ];// +  c1over54 ;(D.f[DIR_0MP  ])[ks ];//kts
+			real mfbbb = (D.f[DIR_000])[k  ];//[kzero];// +  c8over27 ;(D.f[DIR_000])[k  ];//kzero
+			real mfccc = (D.f[DIR_PPP ])[k  ];//[ktne ];// +  c1over216;(D.f[DIR_PPP ])[k  ];//ktne
+			real mfaac = (D.f[DIR_MMP ])[ksw];//[ktsw ];// +  c1over216;(D.f[DIR_MMP ])[ksw];//ktsw
+			real mfcac = (D.f[DIR_PMP ])[ks ];//[ktse ];// +  c1over216;(D.f[DIR_PMP ])[ks ];//ktse
+			real mfacc = (D.f[DIR_MPP ])[kw ];//[ktnw ];// +  c1over216;(D.f[DIR_MPP ])[kw ];//ktnw
+			real mfcca = (D.f[DIR_PPM ])[kb ];//[kbne ];// +  c1over216;(D.f[DIR_PPM ])[kb ];//kbne
+			real mfaaa = (D.f[DIR_MMM ])[kbsw];//[kbsw ];// +  c1over216;(D.f[DIR_MMM ])[kbsw];
+			real mfcaa = (D.f[DIR_PMM ])[kbs];//[kbse ];// +  c1over216;(D.f[DIR_PMM ])[kbs];//kbse
+			real mfaca = (D.f[DIR_MPM ])[kbw];//[kbnw ];// +  c1over216;(D.f[DIR_MPM ])[kbw];//kbnw
 			////////////////////////////////////////////////////////////////////////////////////
 			//Ship
 			real coord0X = 281.125f;//7.5f;
@@ -3159,33 +3160,33 @@ extern "C" __global__ void LB_Kernel_Kum_1h_SP_27(  real omega,
 
 
 			////////////////////////////////////////////////////////////////////////////////////
-			(D.f[ dirE   ])[k   ] = mfabb;//(D.f[ dirE   ])[ke   ] = mfabb;// -  c2over27 ;  (D.f[ dirE   ])[k   ]                                                                     
-			(D.f[ dirW   ])[kw  ] = mfcbb;//(D.f[ dirW   ])[kw   ] = mfcbb;// -  c2over27 ;  (D.f[ dirW   ])[kw  ]                                                                   
-			(D.f[ dirN   ])[k   ] = mfbab;//(D.f[ dirN   ])[kn   ] = mfbab;// -  c2over27 ;	 (D.f[ dirN   ])[k   ]
-			(D.f[ dirS   ])[ks  ] = mfbcb;//(D.f[ dirS   ])[ks   ] = mfbcb;// -  c2over27 ;	 (D.f[ dirS   ])[ks  ]
-			(D.f[ dirT   ])[k   ] = mfbba;//(D.f[ dirT   ])[kt   ] = mfbba;// -  c2over27 ;	 (D.f[ dirT   ])[k   ]
-			(D.f[ dirB   ])[kb  ] = mfbbc;//(D.f[ dirB   ])[kb   ] = mfbbc;// -  c2over27 ;	 (D.f[ dirB   ])[kb  ]
-			(D.f[ dirNE  ])[k   ] = mfaab;//(D.f[ dirNE  ])[kne  ] = mfaab;// -  c1over54 ;	 (D.f[ dirNE  ])[k   ]
-			(D.f[ dirSW  ])[ksw ] = mfccb;//(D.f[ dirSW  ])[ksw  ] = mfccb;// -  c1over54 ;	 (D.f[ dirSW  ])[ksw ]
-			(D.f[ dirSE  ])[ks  ] = mfacb;//(D.f[ dirSE  ])[kse  ] = mfacb;// -  c1over54 ;	 (D.f[ dirSE  ])[ks  ]
-			(D.f[ dirNW  ])[kw  ] = mfcab;//(D.f[ dirNW  ])[knw  ] = mfcab;// -  c1over54 ;	 (D.f[ dirNW  ])[kw  ]
-			(D.f[ dirTE  ])[k   ] = mfaba;//(D.f[ dirTE  ])[kte  ] = mfaba;// -  c1over54 ;	 (D.f[ dirTE  ])[k   ]
-			(D.f[ dirBW  ])[kbw ] = mfcbc;//(D.f[ dirBW  ])[kbw  ] = mfcbc;// -  c1over54 ;	 (D.f[ dirBW  ])[kbw ]
-			(D.f[ dirBE  ])[kb  ] = mfabc;//(D.f[ dirBE  ])[kbe  ] = mfabc;// -  c1over54 ;	 (D.f[ dirBE  ])[kb  ]
-			(D.f[ dirTW  ])[kw  ] = mfcba;//(D.f[ dirTW  ])[ktw  ] = mfcba;// -  c1over54 ;	 (D.f[ dirTW  ])[kw  ]
-			(D.f[ dirTN  ])[k   ] = mfbaa;//(D.f[ dirTN  ])[ktn  ] = mfbaa;// -  c1over54 ;	 (D.f[ dirTN  ])[k   ]
-			(D.f[ dirBS  ])[kbs ] = mfbcc;//(D.f[ dirBS  ])[kbs  ] = mfbcc;// -  c1over54 ;	 (D.f[ dirBS  ])[kbs ]
-			(D.f[ dirBN  ])[kb  ] = mfbac;//(D.f[ dirBN  ])[kbn  ] = mfbac;// -  c1over54 ;	 (D.f[ dirBN  ])[kb  ]
-			(D.f[ dirTS  ])[ks  ] = mfbca;//(D.f[ dirTS  ])[kts  ] = mfbca;// -  c1over54 ;	 (D.f[ dirTS  ])[ks  ]
-			(D.f[ dirZERO])[k   ] = mfbbb;//(D.f[ dirZERO])[kzero] = mfbbb;// -  c8over27 ;	 (D.f[ dirZERO])[k   ]
-			(D.f[ dirTNE ])[k   ] = mfaaa;//(D.f[ dirTNE ])[ktne ] = mfaaa;// -  c1over216;	 (D.f[ dirTNE ])[k   ]
-			(D.f[ dirTSE ])[ks  ] = mfaca;//(D.f[ dirTSE ])[ktse ] = mfaca;// -  c1over216;	 (D.f[ dirTSE ])[ks  ]
-			(D.f[ dirBNE ])[kb  ] = mfaac;//(D.f[ dirBNE ])[kbne ] = mfaac;// -  c1over216;	 (D.f[ dirBNE ])[kb  ]
-			(D.f[ dirBSE ])[kbs ] = mfacc;//(D.f[ dirBSE ])[kbse ] = mfacc;// -  c1over216;	 (D.f[ dirBSE ])[kbs ]
-			(D.f[ dirTNW ])[kw  ] = mfcaa;//(D.f[ dirTNW ])[ktnw ] = mfcaa;// -  c1over216;	 (D.f[ dirTNW ])[kw  ]
-			(D.f[ dirTSW ])[ksw ] = mfcca;//(D.f[ dirTSW ])[ktsw ] = mfcca;// -  c1over216;	 (D.f[ dirTSW ])[ksw ]
-			(D.f[ dirBNW ])[kbw ] = mfcac;//(D.f[ dirBNW ])[kbnw ] = mfcac;// -  c1over216;	 (D.f[ dirBNW ])[kbw ]
-			(D.f[ dirBSW ])[kbsw] = mfccc;//(D.f[ dirBSW ])[kbsw ] = mfccc;// -  c1over216;	 (D.f[ dirBSW ])[kbsw]
+			(D.f[ DIR_P00   ])[k   ] = mfabb;//(D.f[ DIR_P00   ])[ke   ] = mfabb;// -  c2over27 ;  (D.f[ DIR_P00   ])[k   ]                                                                     
+			(D.f[ DIR_M00   ])[kw  ] = mfcbb;//(D.f[ DIR_M00   ])[kw   ] = mfcbb;// -  c2over27 ;  (D.f[ DIR_M00   ])[kw  ]                                                                   
+			(D.f[ DIR_0P0   ])[k   ] = mfbab;//(D.f[ DIR_0P0   ])[kn   ] = mfbab;// -  c2over27 ;	 (D.f[ DIR_0P0   ])[k   ]
+			(D.f[ DIR_0M0   ])[ks  ] = mfbcb;//(D.f[ DIR_0M0   ])[ks   ] = mfbcb;// -  c2over27 ;	 (D.f[ DIR_0M0   ])[ks  ]
+			(D.f[ DIR_00P   ])[k   ] = mfbba;//(D.f[ DIR_00P   ])[kt   ] = mfbba;// -  c2over27 ;	 (D.f[ DIR_00P   ])[k   ]
+			(D.f[ DIR_00M   ])[kb  ] = mfbbc;//(D.f[ DIR_00M   ])[kb   ] = mfbbc;// -  c2over27 ;	 (D.f[ DIR_00M   ])[kb  ]
+			(D.f[ DIR_PP0  ])[k   ] = mfaab;//(D.f[ DIR_PP0  ])[kne  ] = mfaab;// -  c1over54 ;	 (D.f[ DIR_PP0  ])[k   ]
+			(D.f[ DIR_MM0  ])[ksw ] = mfccb;//(D.f[ DIR_MM0  ])[ksw  ] = mfccb;// -  c1over54 ;	 (D.f[ DIR_MM0  ])[ksw ]
+			(D.f[ DIR_PM0  ])[ks  ] = mfacb;//(D.f[ DIR_PM0  ])[kse  ] = mfacb;// -  c1over54 ;	 (D.f[ DIR_PM0  ])[ks  ]
+			(D.f[ DIR_MP0  ])[kw  ] = mfcab;//(D.f[ DIR_MP0  ])[knw  ] = mfcab;// -  c1over54 ;	 (D.f[ DIR_MP0  ])[kw  ]
+			(D.f[ DIR_P0P  ])[k   ] = mfaba;//(D.f[ DIR_P0P  ])[kte  ] = mfaba;// -  c1over54 ;	 (D.f[ DIR_P0P  ])[k   ]
+			(D.f[ DIR_M0M  ])[kbw ] = mfcbc;//(D.f[ DIR_M0M  ])[kbw  ] = mfcbc;// -  c1over54 ;	 (D.f[ DIR_M0M  ])[kbw ]
+			(D.f[ DIR_P0M  ])[kb  ] = mfabc;//(D.f[ DIR_P0M  ])[kbe  ] = mfabc;// -  c1over54 ;	 (D.f[ DIR_P0M  ])[kb  ]
+			(D.f[ DIR_M0P  ])[kw  ] = mfcba;//(D.f[ DIR_M0P  ])[ktw  ] = mfcba;// -  c1over54 ;	 (D.f[ DIR_M0P  ])[kw  ]
+			(D.f[ DIR_0PP  ])[k   ] = mfbaa;//(D.f[ DIR_0PP  ])[ktn  ] = mfbaa;// -  c1over54 ;	 (D.f[ DIR_0PP  ])[k   ]
+			(D.f[ DIR_0MM  ])[kbs ] = mfbcc;//(D.f[ DIR_0MM  ])[kbs  ] = mfbcc;// -  c1over54 ;	 (D.f[ DIR_0MM  ])[kbs ]
+			(D.f[ DIR_0PM  ])[kb  ] = mfbac;//(D.f[ DIR_0PM  ])[kbn  ] = mfbac;// -  c1over54 ;	 (D.f[ DIR_0PM  ])[kb  ]
+			(D.f[ DIR_0MP  ])[ks  ] = mfbca;//(D.f[ DIR_0MP  ])[kts  ] = mfbca;// -  c1over54 ;	 (D.f[ DIR_0MP  ])[ks  ]
+			(D.f[ DIR_000])[k   ] = mfbbb;//(D.f[ DIR_000])[kzero] = mfbbb;// -  c8over27 ;	 (D.f[ DIR_000])[k   ]
+			(D.f[ DIR_PPP ])[k   ] = mfaaa;//(D.f[ DIR_PPP ])[ktne ] = mfaaa;// -  c1over216;	 (D.f[ DIR_PPP ])[k   ]
+			(D.f[ DIR_PMP ])[ks  ] = mfaca;//(D.f[ DIR_PMP ])[ktse ] = mfaca;// -  c1over216;	 (D.f[ DIR_PMP ])[ks  ]
+			(D.f[ DIR_PPM ])[kb  ] = mfaac;//(D.f[ DIR_PPM ])[kbne ] = mfaac;// -  c1over216;	 (D.f[ DIR_PPM ])[kb  ]
+			(D.f[ DIR_PMM ])[kbs ] = mfacc;//(D.f[ DIR_PMM ])[kbse ] = mfacc;// -  c1over216;	 (D.f[ DIR_PMM ])[kbs ]
+			(D.f[ DIR_MPP ])[kw  ] = mfcaa;//(D.f[ DIR_MPP ])[ktnw ] = mfcaa;// -  c1over216;	 (D.f[ DIR_MPP ])[kw  ]
+			(D.f[ DIR_MMP ])[ksw ] = mfcca;//(D.f[ DIR_MMP ])[ktsw ] = mfcca;// -  c1over216;	 (D.f[ DIR_MMP ])[ksw ]
+			(D.f[ DIR_MPM ])[kbw ] = mfcac;//(D.f[ DIR_MPM ])[kbnw ] = mfcac;// -  c1over216;	 (D.f[ DIR_MPM ])[kbw ]
+			(D.f[ DIR_MMM ])[kbsw] = mfccc;//(D.f[ DIR_MMM ])[kbsw ] = mfccc;// -  c1over216;	 (D.f[ DIR_MMM ])[kbsw]
 			////////////////////////////////////////////////////////////////////////////////////
 		}                                                                                                                    
 	}
@@ -3231,7 +3232,7 @@ extern "C" __global__ void LB_Kernel_Kum_1h_SP_27(  real omega,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_Kum_New_SP_27(     real omega,
+__global__ void LB_Kernel_Kum_New_SP_27(     real omega,
 														unsigned int* bcMatD,
 														unsigned int* neighborX,
 														unsigned int* neighborY,
@@ -3262,63 +3263,63 @@ extern "C" __global__ void LB_Kernel_Kum_New_SP_27(     real omega,
 			Distributions27 D;
 			if (EvenOrOdd==true)
 			{
-				D.f[dirE   ] = &DDStart[dirE   *size_Mat];
-				D.f[dirW   ] = &DDStart[dirW   *size_Mat];
-				D.f[dirN   ] = &DDStart[dirN   *size_Mat];
-				D.f[dirS   ] = &DDStart[dirS   *size_Mat];
-				D.f[dirT   ] = &DDStart[dirT   *size_Mat];
-				D.f[dirB   ] = &DDStart[dirB   *size_Mat];
-				D.f[dirNE  ] = &DDStart[dirNE  *size_Mat];
-				D.f[dirSW  ] = &DDStart[dirSW  *size_Mat];
-				D.f[dirSE  ] = &DDStart[dirSE  *size_Mat];
-				D.f[dirNW  ] = &DDStart[dirNW  *size_Mat];
-				D.f[dirTE  ] = &DDStart[dirTE  *size_Mat];
-				D.f[dirBW  ] = &DDStart[dirBW  *size_Mat];
-				D.f[dirBE  ] = &DDStart[dirBE  *size_Mat];
-				D.f[dirTW  ] = &DDStart[dirTW  *size_Mat];
-				D.f[dirTN  ] = &DDStart[dirTN  *size_Mat];
-				D.f[dirBS  ] = &DDStart[dirBS  *size_Mat];
-				D.f[dirBN  ] = &DDStart[dirBN  *size_Mat];
-				D.f[dirTS  ] = &DDStart[dirTS  *size_Mat];
-				D.f[dirZERO] = &DDStart[dirZERO*size_Mat];
-				D.f[dirTNE ] = &DDStart[dirTNE *size_Mat];
-				D.f[dirTSW ] = &DDStart[dirTSW *size_Mat];
-				D.f[dirTSE ] = &DDStart[dirTSE *size_Mat];
-				D.f[dirTNW ] = &DDStart[dirTNW *size_Mat];
-				D.f[dirBNE ] = &DDStart[dirBNE *size_Mat];
-				D.f[dirBSW ] = &DDStart[dirBSW *size_Mat];
-				D.f[dirBSE ] = &DDStart[dirBSE *size_Mat];
-				D.f[dirBNW ] = &DDStart[dirBNW *size_Mat];
+				D.f[DIR_P00   ] = &DDStart[DIR_P00   *size_Mat];
+				D.f[DIR_M00   ] = &DDStart[DIR_M00   *size_Mat];
+				D.f[DIR_0P0   ] = &DDStart[DIR_0P0   *size_Mat];
+				D.f[DIR_0M0   ] = &DDStart[DIR_0M0   *size_Mat];
+				D.f[DIR_00P   ] = &DDStart[DIR_00P   *size_Mat];
+				D.f[DIR_00M   ] = &DDStart[DIR_00M   *size_Mat];
+				D.f[DIR_PP0  ] = &DDStart[DIR_PP0  *size_Mat];
+				D.f[DIR_MM0  ] = &DDStart[DIR_MM0  *size_Mat];
+				D.f[DIR_PM0  ] = &DDStart[DIR_PM0  *size_Mat];
+				D.f[DIR_MP0  ] = &DDStart[DIR_MP0  *size_Mat];
+				D.f[DIR_P0P  ] = &DDStart[DIR_P0P  *size_Mat];
+				D.f[DIR_M0M  ] = &DDStart[DIR_M0M  *size_Mat];
+				D.f[DIR_P0M  ] = &DDStart[DIR_P0M  *size_Mat];
+				D.f[DIR_M0P  ] = &DDStart[DIR_M0P  *size_Mat];
+				D.f[DIR_0PP  ] = &DDStart[DIR_0PP  *size_Mat];
+				D.f[DIR_0MM  ] = &DDStart[DIR_0MM  *size_Mat];
+				D.f[DIR_0PM  ] = &DDStart[DIR_0PM  *size_Mat];
+				D.f[DIR_0MP  ] = &DDStart[DIR_0MP  *size_Mat];
+				D.f[DIR_000] = &DDStart[DIR_000*size_Mat];
+				D.f[DIR_PPP ] = &DDStart[DIR_PPP *size_Mat];
+				D.f[DIR_MMP ] = &DDStart[DIR_MMP *size_Mat];
+				D.f[DIR_PMP ] = &DDStart[DIR_PMP *size_Mat];
+				D.f[DIR_MPP ] = &DDStart[DIR_MPP *size_Mat];
+				D.f[DIR_PPM ] = &DDStart[DIR_PPM *size_Mat];
+				D.f[DIR_MMM ] = &DDStart[DIR_MMM *size_Mat];
+				D.f[DIR_PMM ] = &DDStart[DIR_PMM *size_Mat];
+				D.f[DIR_MPM ] = &DDStart[DIR_MPM *size_Mat];
 			}
 			else
 			{
-				D.f[dirW   ] = &DDStart[dirE   *size_Mat];
-				D.f[dirE   ] = &DDStart[dirW   *size_Mat];
-				D.f[dirS   ] = &DDStart[dirN   *size_Mat];
-				D.f[dirN   ] = &DDStart[dirS   *size_Mat];
-				D.f[dirB   ] = &DDStart[dirT   *size_Mat];
-				D.f[dirT   ] = &DDStart[dirB   *size_Mat];
-				D.f[dirSW  ] = &DDStart[dirNE  *size_Mat];
-				D.f[dirNE  ] = &DDStart[dirSW  *size_Mat];
-				D.f[dirNW  ] = &DDStart[dirSE  *size_Mat];
-				D.f[dirSE  ] = &DDStart[dirNW  *size_Mat];
-				D.f[dirBW  ] = &DDStart[dirTE  *size_Mat];
-				D.f[dirTE  ] = &DDStart[dirBW  *size_Mat];
-				D.f[dirTW  ] = &DDStart[dirBE  *size_Mat];
-				D.f[dirBE  ] = &DDStart[dirTW  *size_Mat];
-				D.f[dirBS  ] = &DDStart[dirTN  *size_Mat];
-				D.f[dirTN  ] = &DDStart[dirBS  *size_Mat];
-				D.f[dirTS  ] = &DDStart[dirBN  *size_Mat];
-				D.f[dirBN  ] = &DDStart[dirTS  *size_Mat];
-				D.f[dirZERO] = &DDStart[dirZERO*size_Mat];
-				D.f[dirBSW ] = &DDStart[dirTNE *size_Mat];
-				D.f[dirBNE ] = &DDStart[dirTSW *size_Mat];
-				D.f[dirBNW ] = &DDStart[dirTSE *size_Mat];
-				D.f[dirBSE ] = &DDStart[dirTNW *size_Mat];
-				D.f[dirTSW ] = &DDStart[dirBNE *size_Mat];
-				D.f[dirTNE ] = &DDStart[dirBSW *size_Mat];
-				D.f[dirTNW ] = &DDStart[dirBSE *size_Mat];
-				D.f[dirTSE ] = &DDStart[dirBNW *size_Mat];
+				D.f[DIR_M00   ] = &DDStart[DIR_P00   *size_Mat];
+				D.f[DIR_P00   ] = &DDStart[DIR_M00   *size_Mat];
+				D.f[DIR_0M0   ] = &DDStart[DIR_0P0   *size_Mat];
+				D.f[DIR_0P0   ] = &DDStart[DIR_0M0   *size_Mat];
+				D.f[DIR_00M   ] = &DDStart[DIR_00P   *size_Mat];
+				D.f[DIR_00P   ] = &DDStart[DIR_00M   *size_Mat];
+				D.f[DIR_MM0  ] = &DDStart[DIR_PP0  *size_Mat];
+				D.f[DIR_PP0  ] = &DDStart[DIR_MM0  *size_Mat];
+				D.f[DIR_MP0  ] = &DDStart[DIR_PM0  *size_Mat];
+				D.f[DIR_PM0  ] = &DDStart[DIR_MP0  *size_Mat];
+				D.f[DIR_M0M  ] = &DDStart[DIR_P0P  *size_Mat];
+				D.f[DIR_P0P  ] = &DDStart[DIR_M0M  *size_Mat];
+				D.f[DIR_M0P  ] = &DDStart[DIR_P0M  *size_Mat];
+				D.f[DIR_P0M  ] = &DDStart[DIR_M0P  *size_Mat];
+				D.f[DIR_0MM  ] = &DDStart[DIR_0PP  *size_Mat];
+				D.f[DIR_0PP  ] = &DDStart[DIR_0MM  *size_Mat];
+				D.f[DIR_0MP  ] = &DDStart[DIR_0PM  *size_Mat];
+				D.f[DIR_0PM  ] = &DDStart[DIR_0MP  *size_Mat];
+				D.f[DIR_000] = &DDStart[DIR_000*size_Mat];
+				D.f[DIR_MMM ] = &DDStart[DIR_PPP *size_Mat];
+				D.f[DIR_PPM ] = &DDStart[DIR_MMP *size_Mat];
+				D.f[DIR_MPM ] = &DDStart[DIR_PMP *size_Mat];
+				D.f[DIR_PMM ] = &DDStart[DIR_MPP *size_Mat];
+				D.f[DIR_MMP ] = &DDStart[DIR_PPM *size_Mat];
+				D.f[DIR_PPP ] = &DDStart[DIR_MMM *size_Mat];
+				D.f[DIR_MPP ] = &DDStart[DIR_PMM *size_Mat];
+				D.f[DIR_PMP ] = &DDStart[DIR_MPM *size_Mat];
 			}
 
 			////////////////////////////////////////////////////////////////////////////////
@@ -3379,33 +3380,33 @@ extern "C" __global__ void LB_Kernel_Kum_New_SP_27(     real omega,
 			//unsigned int ktne = k;
 			//unsigned int kbsw = neighborZ[ksw];
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			real mfcbb = (D.f[dirE   ])[k  ];//[ke   ];// +  c2over27 ;(D.f[dirE   ])[k  ];//ke
-			real mfabb = (D.f[dirW   ])[kw ];//[kw   ];// +  c2over27 ;(D.f[dirW   ])[kw ];
-			real mfbcb = (D.f[dirN   ])[k  ];//[kn   ];// +  c2over27 ;(D.f[dirN   ])[k  ];//kn
-			real mfbab = (D.f[dirS   ])[ks ];//[ks   ];// +  c2over27 ;(D.f[dirS   ])[ks ];
-			real mfbbc = (D.f[dirT   ])[k  ];//[kt   ];// +  c2over27 ;(D.f[dirT   ])[k  ];//kt
-			real mfbba = (D.f[dirB   ])[kb ];//[kb   ];// +  c2over27 ;(D.f[dirB   ])[kb ];
-			real mfccb = (D.f[dirNE  ])[k  ];//[kne  ];// +  c1over54 ;(D.f[dirNE  ])[k  ];//kne
-			real mfaab = (D.f[dirSW  ])[ksw];//[ksw  ];// +  c1over54 ;(D.f[dirSW  ])[ksw];
-			real mfcab = (D.f[dirSE  ])[ks ];//[kse  ];// +  c1over54 ;(D.f[dirSE  ])[ks ];//kse
-			real mfacb = (D.f[dirNW  ])[kw ];//[knw  ];// +  c1over54 ;(D.f[dirNW  ])[kw ];//knw
-			real mfcbc = (D.f[dirTE  ])[k  ];//[kte  ];// +  c1over54 ;(D.f[dirTE  ])[k  ];//kte
-			real mfaba = (D.f[dirBW  ])[kbw];//[kbw  ];// +  c1over54 ;(D.f[dirBW  ])[kbw];
-			real mfcba = (D.f[dirBE  ])[kb ];//[kbe  ];// +  c1over54 ;(D.f[dirBE  ])[kb ];//kbe
-			real mfabc = (D.f[dirTW  ])[kw ];//[ktw  ];// +  c1over54 ;(D.f[dirTW  ])[kw ];//ktw
-			real mfbcc = (D.f[dirTN  ])[k  ];//[ktn  ];// +  c1over54 ;(D.f[dirTN  ])[k  ];//ktn
-			real mfbaa = (D.f[dirBS  ])[kbs];//[kbs  ];// +  c1over54 ;(D.f[dirBS  ])[kbs];
-			real mfbca = (D.f[dirBN  ])[kb ];//[kbn  ];// +  c1over54 ;(D.f[dirBN  ])[kb ];//kbn
-			real mfbac = (D.f[dirTS  ])[ks ];//[kts  ];// +  c1over54 ;(D.f[dirTS  ])[ks ];//kts
-			real mfbbb = (D.f[dirZERO])[k  ];//[kzero];// +  c8over27 ;(D.f[dirZERO])[k  ];//kzero
-			real mfccc = (D.f[dirTNE ])[k  ];//[ktne ];// +  c1over216;(D.f[dirTNE ])[k  ];//ktne
-			real mfaac = (D.f[dirTSW ])[ksw];//[ktsw ];// +  c1over216;(D.f[dirTSW ])[ksw];//ktsw
-			real mfcac = (D.f[dirTSE ])[ks ];//[ktse ];// +  c1over216;(D.f[dirTSE ])[ks ];//ktse
-			real mfacc = (D.f[dirTNW ])[kw ];//[ktnw ];// +  c1over216;(D.f[dirTNW ])[kw ];//ktnw
-			real mfcca = (D.f[dirBNE ])[kb ];//[kbne ];// +  c1over216;(D.f[dirBNE ])[kb ];//kbne
-			real mfaaa = (D.f[dirBSW ])[kbsw];//[kbsw ];// +  c1over216;(D.f[dirBSW ])[kbsw];
-			real mfcaa = (D.f[dirBSE ])[kbs];//[kbse ];// +  c1over216;(D.f[dirBSE ])[kbs];//kbse
-			real mfaca = (D.f[dirBNW ])[kbw];//[kbnw ];// +  c1over216;(D.f[dirBNW ])[kbw];//kbnw
+			real mfcbb = (D.f[DIR_P00   ])[k  ];//[ke   ];// +  c2over27 ;(D.f[DIR_P00   ])[k  ];//ke
+			real mfabb = (D.f[DIR_M00   ])[kw ];//[kw   ];// +  c2over27 ;(D.f[DIR_M00   ])[kw ];
+			real mfbcb = (D.f[DIR_0P0   ])[k  ];//[kn   ];// +  c2over27 ;(D.f[DIR_0P0   ])[k  ];//kn
+			real mfbab = (D.f[DIR_0M0   ])[ks ];//[ks   ];// +  c2over27 ;(D.f[DIR_0M0   ])[ks ];
+			real mfbbc = (D.f[DIR_00P   ])[k  ];//[kt   ];// +  c2over27 ;(D.f[DIR_00P   ])[k  ];//kt
+			real mfbba = (D.f[DIR_00M   ])[kb ];//[kb   ];// +  c2over27 ;(D.f[DIR_00M   ])[kb ];
+			real mfccb = (D.f[DIR_PP0  ])[k  ];//[kne  ];// +  c1over54 ;(D.f[DIR_PP0  ])[k  ];//kne
+			real mfaab = (D.f[DIR_MM0  ])[ksw];//[ksw  ];// +  c1over54 ;(D.f[DIR_MM0  ])[ksw];
+			real mfcab = (D.f[DIR_PM0  ])[ks ];//[kse  ];// +  c1over54 ;(D.f[DIR_PM0  ])[ks ];//kse
+			real mfacb = (D.f[DIR_MP0  ])[kw ];//[knw  ];// +  c1over54 ;(D.f[DIR_MP0  ])[kw ];//knw
+			real mfcbc = (D.f[DIR_P0P  ])[k  ];//[kte  ];// +  c1over54 ;(D.f[DIR_P0P  ])[k  ];//kte
+			real mfaba = (D.f[DIR_M0M  ])[kbw];//[kbw  ];// +  c1over54 ;(D.f[DIR_M0M  ])[kbw];
+			real mfcba = (D.f[DIR_P0M  ])[kb ];//[kbe  ];// +  c1over54 ;(D.f[DIR_P0M  ])[kb ];//kbe
+			real mfabc = (D.f[DIR_M0P  ])[kw ];//[ktw  ];// +  c1over54 ;(D.f[DIR_M0P  ])[kw ];//ktw
+			real mfbcc = (D.f[DIR_0PP  ])[k  ];//[ktn  ];// +  c1over54 ;(D.f[DIR_0PP  ])[k  ];//ktn
+			real mfbaa = (D.f[DIR_0MM  ])[kbs];//[kbs  ];// +  c1over54 ;(D.f[DIR_0MM  ])[kbs];
+			real mfbca = (D.f[DIR_0PM  ])[kb ];//[kbn  ];// +  c1over54 ;(D.f[DIR_0PM  ])[kb ];//kbn
+			real mfbac = (D.f[DIR_0MP  ])[ks ];//[kts  ];// +  c1over54 ;(D.f[DIR_0MP  ])[ks ];//kts
+			real mfbbb = (D.f[DIR_000])[k  ];//[kzero];// +  c8over27 ;(D.f[DIR_000])[k  ];//kzero
+			real mfccc = (D.f[DIR_PPP ])[k  ];//[ktne ];// +  c1over216;(D.f[DIR_PPP ])[k  ];//ktne
+			real mfaac = (D.f[DIR_MMP ])[ksw];//[ktsw ];// +  c1over216;(D.f[DIR_MMP ])[ksw];//ktsw
+			real mfcac = (D.f[DIR_PMP ])[ks ];//[ktse ];// +  c1over216;(D.f[DIR_PMP ])[ks ];//ktse
+			real mfacc = (D.f[DIR_MPP ])[kw ];//[ktnw ];// +  c1over216;(D.f[DIR_MPP ])[kw ];//ktnw
+			real mfcca = (D.f[DIR_PPM ])[kb ];//[kbne ];// +  c1over216;(D.f[DIR_PPM ])[kb ];//kbne
+			real mfaaa = (D.f[DIR_MMM ])[kbsw];//[kbsw ];// +  c1over216;(D.f[DIR_MMM ])[kbsw];
+			real mfcaa = (D.f[DIR_PMM ])[kbs];//[kbse ];// +  c1over216;(D.f[DIR_PMM ])[kbs];//kbse
+			real mfaca = (D.f[DIR_MPM ])[kbw];//[kbnw ];// +  c1over216;(D.f[DIR_MPM ])[kbw];//kbnw
 			////////////////////////////////////////////////////////////////////////////////////
 			//slow
 			//real oMdrho = one - ((((mfccc+mfaaa) + (mfaca+mfcac)) + ((mfacc+mfcaa) + (mfaac+mfcca))) + 
@@ -4431,33 +4432,33 @@ extern "C" __global__ void LB_Kernel_Kum_New_SP_27(     real omega,
 
 
 			////////////////////////////////////////////////////////////////////////////////////
-			(D.f[ dirE   ])[k   ] = mfabb;//(D.f[ dirE   ])[ke   ] = mfabb;// -  c2over27 ;  (D.f[ dirE   ])[k   ]                                                                     
-			(D.f[ dirW   ])[kw  ] = mfcbb;//(D.f[ dirW   ])[kw   ] = mfcbb;// -  c2over27 ;  (D.f[ dirW   ])[kw  ]                                                                   
-			(D.f[ dirN   ])[k   ] = mfbab;//(D.f[ dirN   ])[kn   ] = mfbab;// -  c2over27 ;	 (D.f[ dirN   ])[k   ]
-			(D.f[ dirS   ])[ks  ] = mfbcb;//(D.f[ dirS   ])[ks   ] = mfbcb;// -  c2over27 ;	 (D.f[ dirS   ])[ks  ]
-			(D.f[ dirT   ])[k   ] = mfbba;//(D.f[ dirT   ])[kt   ] = mfbba;// -  c2over27 ;	 (D.f[ dirT   ])[k   ]
-			(D.f[ dirB   ])[kb  ] = mfbbc;//(D.f[ dirB   ])[kb   ] = mfbbc;// -  c2over27 ;	 (D.f[ dirB   ])[kb  ]
-			(D.f[ dirNE  ])[k   ] = mfaab;//(D.f[ dirNE  ])[kne  ] = mfaab;// -  c1over54 ;	 (D.f[ dirNE  ])[k   ]
-			(D.f[ dirSW  ])[ksw ] = mfccb;//(D.f[ dirSW  ])[ksw  ] = mfccb;// -  c1over54 ;	 (D.f[ dirSW  ])[ksw ]
-			(D.f[ dirSE  ])[ks  ] = mfacb;//(D.f[ dirSE  ])[kse  ] = mfacb;// -  c1over54 ;	 (D.f[ dirSE  ])[ks  ]
-			(D.f[ dirNW  ])[kw  ] = mfcab;//(D.f[ dirNW  ])[knw  ] = mfcab;// -  c1over54 ;	 (D.f[ dirNW  ])[kw  ]
-			(D.f[ dirTE  ])[k   ] = mfaba;//(D.f[ dirTE  ])[kte  ] = mfaba;// -  c1over54 ;	 (D.f[ dirTE  ])[k   ]
-			(D.f[ dirBW  ])[kbw ] = mfcbc;//(D.f[ dirBW  ])[kbw  ] = mfcbc;// -  c1over54 ;	 (D.f[ dirBW  ])[kbw ]
-			(D.f[ dirBE  ])[kb  ] = mfabc;//(D.f[ dirBE  ])[kbe  ] = mfabc;// -  c1over54 ;	 (D.f[ dirBE  ])[kb  ]
-			(D.f[ dirTW  ])[kw  ] = mfcba;//(D.f[ dirTW  ])[ktw  ] = mfcba;// -  c1over54 ;	 (D.f[ dirTW  ])[kw  ]
-			(D.f[ dirTN  ])[k   ] = mfbaa;//(D.f[ dirTN  ])[ktn  ] = mfbaa;// -  c1over54 ;	 (D.f[ dirTN  ])[k   ]
-			(D.f[ dirBS  ])[kbs ] = mfbcc;//(D.f[ dirBS  ])[kbs  ] = mfbcc;// -  c1over54 ;	 (D.f[ dirBS  ])[kbs ]
-			(D.f[ dirBN  ])[kb  ] = mfbac;//(D.f[ dirBN  ])[kbn  ] = mfbac;// -  c1over54 ;	 (D.f[ dirBN  ])[kb  ]
-			(D.f[ dirTS  ])[ks  ] = mfbca;//(D.f[ dirTS  ])[kts  ] = mfbca;// -  c1over54 ;	 (D.f[ dirTS  ])[ks  ]
-			(D.f[ dirZERO])[k   ] = mfbbb;//(D.f[ dirZERO])[kzero] = mfbbb;// -  c8over27 ;	 (D.f[ dirZERO])[k   ]
-			(D.f[ dirTNE ])[k   ] = mfaaa;//(D.f[ dirTNE ])[ktne ] = mfaaa;// -  c1over216;	 (D.f[ dirTNE ])[k   ]
-			(D.f[ dirTSE ])[ks  ] = mfaca;//(D.f[ dirTSE ])[ktse ] = mfaca;// -  c1over216;	 (D.f[ dirTSE ])[ks  ]
-			(D.f[ dirBNE ])[kb  ] = mfaac;//(D.f[ dirBNE ])[kbne ] = mfaac;// -  c1over216;	 (D.f[ dirBNE ])[kb  ]
-			(D.f[ dirBSE ])[kbs ] = mfacc;//(D.f[ dirBSE ])[kbse ] = mfacc;// -  c1over216;	 (D.f[ dirBSE ])[kbs ]
-			(D.f[ dirTNW ])[kw  ] = mfcaa;//(D.f[ dirTNW ])[ktnw ] = mfcaa;// -  c1over216;	 (D.f[ dirTNW ])[kw  ]
-			(D.f[ dirTSW ])[ksw ] = mfcca;//(D.f[ dirTSW ])[ktsw ] = mfcca;// -  c1over216;	 (D.f[ dirTSW ])[ksw ]
-			(D.f[ dirBNW ])[kbw ] = mfcac;//(D.f[ dirBNW ])[kbnw ] = mfcac;// -  c1over216;	 (D.f[ dirBNW ])[kbw ]
-			(D.f[ dirBSW ])[kbsw] = mfccc;//(D.f[ dirBSW ])[kbsw ] = mfccc;// -  c1over216;	 (D.f[ dirBSW ])[kbsw]
+			(D.f[ DIR_P00   ])[k   ] = mfabb;//(D.f[ DIR_P00   ])[ke   ] = mfabb;// -  c2over27 ;  (D.f[ DIR_P00   ])[k   ]                                                                     
+			(D.f[ DIR_M00   ])[kw  ] = mfcbb;//(D.f[ DIR_M00   ])[kw   ] = mfcbb;// -  c2over27 ;  (D.f[ DIR_M00   ])[kw  ]                                                                   
+			(D.f[ DIR_0P0   ])[k   ] = mfbab;//(D.f[ DIR_0P0   ])[kn   ] = mfbab;// -  c2over27 ;	 (D.f[ DIR_0P0   ])[k   ]
+			(D.f[ DIR_0M0   ])[ks  ] = mfbcb;//(D.f[ DIR_0M0   ])[ks   ] = mfbcb;// -  c2over27 ;	 (D.f[ DIR_0M0   ])[ks  ]
+			(D.f[ DIR_00P   ])[k   ] = mfbba;//(D.f[ DIR_00P   ])[kt   ] = mfbba;// -  c2over27 ;	 (D.f[ DIR_00P   ])[k   ]
+			(D.f[ DIR_00M   ])[kb  ] = mfbbc;//(D.f[ DIR_00M   ])[kb   ] = mfbbc;// -  c2over27 ;	 (D.f[ DIR_00M   ])[kb  ]
+			(D.f[ DIR_PP0  ])[k   ] = mfaab;//(D.f[ DIR_PP0  ])[kne  ] = mfaab;// -  c1over54 ;	 (D.f[ DIR_PP0  ])[k   ]
+			(D.f[ DIR_MM0  ])[ksw ] = mfccb;//(D.f[ DIR_MM0  ])[ksw  ] = mfccb;// -  c1over54 ;	 (D.f[ DIR_MM0  ])[ksw ]
+			(D.f[ DIR_PM0  ])[ks  ] = mfacb;//(D.f[ DIR_PM0  ])[kse  ] = mfacb;// -  c1over54 ;	 (D.f[ DIR_PM0  ])[ks  ]
+			(D.f[ DIR_MP0  ])[kw  ] = mfcab;//(D.f[ DIR_MP0  ])[knw  ] = mfcab;// -  c1over54 ;	 (D.f[ DIR_MP0  ])[kw  ]
+			(D.f[ DIR_P0P  ])[k   ] = mfaba;//(D.f[ DIR_P0P  ])[kte  ] = mfaba;// -  c1over54 ;	 (D.f[ DIR_P0P  ])[k   ]
+			(D.f[ DIR_M0M  ])[kbw ] = mfcbc;//(D.f[ DIR_M0M  ])[kbw  ] = mfcbc;// -  c1over54 ;	 (D.f[ DIR_M0M  ])[kbw ]
+			(D.f[ DIR_P0M  ])[kb  ] = mfabc;//(D.f[ DIR_P0M  ])[kbe  ] = mfabc;// -  c1over54 ;	 (D.f[ DIR_P0M  ])[kb  ]
+			(D.f[ DIR_M0P  ])[kw  ] = mfcba;//(D.f[ DIR_M0P  ])[ktw  ] = mfcba;// -  c1over54 ;	 (D.f[ DIR_M0P  ])[kw  ]
+			(D.f[ DIR_0PP  ])[k   ] = mfbaa;//(D.f[ DIR_0PP  ])[ktn  ] = mfbaa;// -  c1over54 ;	 (D.f[ DIR_0PP  ])[k   ]
+			(D.f[ DIR_0MM  ])[kbs ] = mfbcc;//(D.f[ DIR_0MM  ])[kbs  ] = mfbcc;// -  c1over54 ;	 (D.f[ DIR_0MM  ])[kbs ]
+			(D.f[ DIR_0PM  ])[kb  ] = mfbac;//(D.f[ DIR_0PM  ])[kbn  ] = mfbac;// -  c1over54 ;	 (D.f[ DIR_0PM  ])[kb  ]
+			(D.f[ DIR_0MP  ])[ks  ] = mfbca;//(D.f[ DIR_0MP  ])[kts  ] = mfbca;// -  c1over54 ;	 (D.f[ DIR_0MP  ])[ks  ]
+			(D.f[ DIR_000])[k   ] = mfbbb;//(D.f[ DIR_000])[kzero] = mfbbb;// -  c8over27 ;	 (D.f[ DIR_000])[k   ]
+			(D.f[ DIR_PPP ])[k   ] = mfaaa;//(D.f[ DIR_PPP ])[ktne ] = mfaaa;// -  c1over216;	 (D.f[ DIR_PPP ])[k   ]
+			(D.f[ DIR_PMP ])[ks  ] = mfaca;//(D.f[ DIR_PMP ])[ktse ] = mfaca;// -  c1over216;	 (D.f[ DIR_PMP ])[ks  ]
+			(D.f[ DIR_PPM ])[kb  ] = mfaac;//(D.f[ DIR_PPM ])[kbne ] = mfaac;// -  c1over216;	 (D.f[ DIR_PPM ])[kb  ]
+			(D.f[ DIR_PMM ])[kbs ] = mfacc;//(D.f[ DIR_PMM ])[kbse ] = mfacc;// -  c1over216;	 (D.f[ DIR_PMM ])[kbs ]
+			(D.f[ DIR_MPP ])[kw  ] = mfcaa;//(D.f[ DIR_MPP ])[ktnw ] = mfcaa;// -  c1over216;	 (D.f[ DIR_MPP ])[kw  ]
+			(D.f[ DIR_MMP ])[ksw ] = mfcca;//(D.f[ DIR_MMP ])[ktsw ] = mfcca;// -  c1over216;	 (D.f[ DIR_MMP ])[ksw ]
+			(D.f[ DIR_MPM ])[kbw ] = mfcac;//(D.f[ DIR_MPM ])[kbnw ] = mfcac;// -  c1over216;	 (D.f[ DIR_MPM ])[kbw ]
+			(D.f[ DIR_MMM ])[kbsw] = mfccc;//(D.f[ DIR_MMM ])[kbsw ] = mfccc;// -  c1over216;	 (D.f[ DIR_MMM ])[kbsw]
 			////////////////////////////////////////////////////////////////////////////////////
 		}                                                                                                                    
 	}
@@ -4503,7 +4504,7 @@ extern "C" __global__ void LB_Kernel_Kum_New_SP_27(     real omega,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_Kum_Comp_SP_27(    real omega,
+__global__ void LB_Kernel_Kum_Comp_SP_27(    real omega,
 														unsigned int* bcMatD,
 														unsigned int* neighborX,
 														unsigned int* neighborY,
@@ -4534,63 +4535,63 @@ extern "C" __global__ void LB_Kernel_Kum_Comp_SP_27(    real omega,
 			Distributions27 D;
 			if (EvenOrOdd==true)
 			{
-				D.f[dirE   ] = &DDStart[dirE   *size_Mat];
-				D.f[dirW   ] = &DDStart[dirW   *size_Mat];
-				D.f[dirN   ] = &DDStart[dirN   *size_Mat];
-				D.f[dirS   ] = &DDStart[dirS   *size_Mat];
-				D.f[dirT   ] = &DDStart[dirT   *size_Mat];
-				D.f[dirB   ] = &DDStart[dirB   *size_Mat];
-				D.f[dirNE  ] = &DDStart[dirNE  *size_Mat];
-				D.f[dirSW  ] = &DDStart[dirSW  *size_Mat];
-				D.f[dirSE  ] = &DDStart[dirSE  *size_Mat];
-				D.f[dirNW  ] = &DDStart[dirNW  *size_Mat];
-				D.f[dirTE  ] = &DDStart[dirTE  *size_Mat];
-				D.f[dirBW  ] = &DDStart[dirBW  *size_Mat];
-				D.f[dirBE  ] = &DDStart[dirBE  *size_Mat];
-				D.f[dirTW  ] = &DDStart[dirTW  *size_Mat];
-				D.f[dirTN  ] = &DDStart[dirTN  *size_Mat];
-				D.f[dirBS  ] = &DDStart[dirBS  *size_Mat];
-				D.f[dirBN  ] = &DDStart[dirBN  *size_Mat];
-				D.f[dirTS  ] = &DDStart[dirTS  *size_Mat];
-				D.f[dirZERO] = &DDStart[dirZERO*size_Mat];
-				D.f[dirTNE ] = &DDStart[dirTNE *size_Mat];
-				D.f[dirTSW ] = &DDStart[dirTSW *size_Mat];
-				D.f[dirTSE ] = &DDStart[dirTSE *size_Mat];
-				D.f[dirTNW ] = &DDStart[dirTNW *size_Mat];
-				D.f[dirBNE ] = &DDStart[dirBNE *size_Mat];
-				D.f[dirBSW ] = &DDStart[dirBSW *size_Mat];
-				D.f[dirBSE ] = &DDStart[dirBSE *size_Mat];
-				D.f[dirBNW ] = &DDStart[dirBNW *size_Mat];
+				D.f[DIR_P00   ] = &DDStart[DIR_P00   *size_Mat];
+				D.f[DIR_M00   ] = &DDStart[DIR_M00   *size_Mat];
+				D.f[DIR_0P0   ] = &DDStart[DIR_0P0   *size_Mat];
+				D.f[DIR_0M0   ] = &DDStart[DIR_0M0   *size_Mat];
+				D.f[DIR_00P   ] = &DDStart[DIR_00P   *size_Mat];
+				D.f[DIR_00M   ] = &DDStart[DIR_00M   *size_Mat];
+				D.f[DIR_PP0  ] = &DDStart[DIR_PP0  *size_Mat];
+				D.f[DIR_MM0  ] = &DDStart[DIR_MM0  *size_Mat];
+				D.f[DIR_PM0  ] = &DDStart[DIR_PM0  *size_Mat];
+				D.f[DIR_MP0  ] = &DDStart[DIR_MP0  *size_Mat];
+				D.f[DIR_P0P  ] = &DDStart[DIR_P0P  *size_Mat];
+				D.f[DIR_M0M  ] = &DDStart[DIR_M0M  *size_Mat];
+				D.f[DIR_P0M  ] = &DDStart[DIR_P0M  *size_Mat];
+				D.f[DIR_M0P  ] = &DDStart[DIR_M0P  *size_Mat];
+				D.f[DIR_0PP  ] = &DDStart[DIR_0PP  *size_Mat];
+				D.f[DIR_0MM  ] = &DDStart[DIR_0MM  *size_Mat];
+				D.f[DIR_0PM  ] = &DDStart[DIR_0PM  *size_Mat];
+				D.f[DIR_0MP  ] = &DDStart[DIR_0MP  *size_Mat];
+				D.f[DIR_000] = &DDStart[DIR_000*size_Mat];
+				D.f[DIR_PPP ] = &DDStart[DIR_PPP *size_Mat];
+				D.f[DIR_MMP ] = &DDStart[DIR_MMP *size_Mat];
+				D.f[DIR_PMP ] = &DDStart[DIR_PMP *size_Mat];
+				D.f[DIR_MPP ] = &DDStart[DIR_MPP *size_Mat];
+				D.f[DIR_PPM ] = &DDStart[DIR_PPM *size_Mat];
+				D.f[DIR_MMM ] = &DDStart[DIR_MMM *size_Mat];
+				D.f[DIR_PMM ] = &DDStart[DIR_PMM *size_Mat];
+				D.f[DIR_MPM ] = &DDStart[DIR_MPM *size_Mat];
 			}
 			else
 			{
-				D.f[dirW   ] = &DDStart[dirE   *size_Mat];
-				D.f[dirE   ] = &DDStart[dirW   *size_Mat];
-				D.f[dirS   ] = &DDStart[dirN   *size_Mat];
-				D.f[dirN   ] = &DDStart[dirS   *size_Mat];
-				D.f[dirB   ] = &DDStart[dirT   *size_Mat];
-				D.f[dirT   ] = &DDStart[dirB   *size_Mat];
-				D.f[dirSW  ] = &DDStart[dirNE  *size_Mat];
-				D.f[dirNE  ] = &DDStart[dirSW  *size_Mat];
-				D.f[dirNW  ] = &DDStart[dirSE  *size_Mat];
-				D.f[dirSE  ] = &DDStart[dirNW  *size_Mat];
-				D.f[dirBW  ] = &DDStart[dirTE  *size_Mat];
-				D.f[dirTE  ] = &DDStart[dirBW  *size_Mat];
-				D.f[dirTW  ] = &DDStart[dirBE  *size_Mat];
-				D.f[dirBE  ] = &DDStart[dirTW  *size_Mat];
-				D.f[dirBS  ] = &DDStart[dirTN  *size_Mat];
-				D.f[dirTN  ] = &DDStart[dirBS  *size_Mat];
-				D.f[dirTS  ] = &DDStart[dirBN  *size_Mat];
-				D.f[dirBN  ] = &DDStart[dirTS  *size_Mat];
-				D.f[dirZERO] = &DDStart[dirZERO*size_Mat];
-				D.f[dirBSW ] = &DDStart[dirTNE *size_Mat];
-				D.f[dirBNE ] = &DDStart[dirTSW *size_Mat];
-				D.f[dirBNW ] = &DDStart[dirTSE *size_Mat];
-				D.f[dirBSE ] = &DDStart[dirTNW *size_Mat];
-				D.f[dirTSW ] = &DDStart[dirBNE *size_Mat];
-				D.f[dirTNE ] = &DDStart[dirBSW *size_Mat];
-				D.f[dirTNW ] = &DDStart[dirBSE *size_Mat];
-				D.f[dirTSE ] = &DDStart[dirBNW *size_Mat];
+				D.f[DIR_M00   ] = &DDStart[DIR_P00   *size_Mat];
+				D.f[DIR_P00   ] = &DDStart[DIR_M00   *size_Mat];
+				D.f[DIR_0M0   ] = &DDStart[DIR_0P0   *size_Mat];
+				D.f[DIR_0P0   ] = &DDStart[DIR_0M0   *size_Mat];
+				D.f[DIR_00M   ] = &DDStart[DIR_00P   *size_Mat];
+				D.f[DIR_00P   ] = &DDStart[DIR_00M   *size_Mat];
+				D.f[DIR_MM0  ] = &DDStart[DIR_PP0  *size_Mat];
+				D.f[DIR_PP0  ] = &DDStart[DIR_MM0  *size_Mat];
+				D.f[DIR_MP0  ] = &DDStart[DIR_PM0  *size_Mat];
+				D.f[DIR_PM0  ] = &DDStart[DIR_MP0  *size_Mat];
+				D.f[DIR_M0M  ] = &DDStart[DIR_P0P  *size_Mat];
+				D.f[DIR_P0P  ] = &DDStart[DIR_M0M  *size_Mat];
+				D.f[DIR_M0P  ] = &DDStart[DIR_P0M  *size_Mat];
+				D.f[DIR_P0M  ] = &DDStart[DIR_M0P  *size_Mat];
+				D.f[DIR_0MM  ] = &DDStart[DIR_0PP  *size_Mat];
+				D.f[DIR_0PP  ] = &DDStart[DIR_0MM  *size_Mat];
+				D.f[DIR_0MP  ] = &DDStart[DIR_0PM  *size_Mat];
+				D.f[DIR_0PM  ] = &DDStart[DIR_0MP  *size_Mat];
+				D.f[DIR_000] = &DDStart[DIR_000*size_Mat];
+				D.f[DIR_MMM ] = &DDStart[DIR_PPP *size_Mat];
+				D.f[DIR_PPM ] = &DDStart[DIR_MMP *size_Mat];
+				D.f[DIR_MPM ] = &DDStart[DIR_PMP *size_Mat];
+				D.f[DIR_PMM ] = &DDStart[DIR_MPP *size_Mat];
+				D.f[DIR_MMP ] = &DDStart[DIR_PPM *size_Mat];
+				D.f[DIR_PPP ] = &DDStart[DIR_MMM *size_Mat];
+				D.f[DIR_MPP ] = &DDStart[DIR_PMM *size_Mat];
+				D.f[DIR_PMP ] = &DDStart[DIR_MPM *size_Mat];
 			}
 
 			////////////////////////////////////////////////////////////////////////////////
@@ -4623,42 +4624,42 @@ extern "C" __global__ void LB_Kernel_Kum_Comp_SP_27(    real omega,
 			unsigned int ktne = k;
 			unsigned int kbsw = neighborZ[ksw];
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			real E     = (D.f[dirE   ])[ke   ];// +  c2over27 ;
-			real W     = (D.f[dirW   ])[kw   ];// +  c2over27 ;
-			real N     = (D.f[dirN   ])[kn   ];// +  c2over27 ;
-			real S     = (D.f[dirS   ])[ks   ];// +  c2over27 ;
-			real F     = (D.f[dirT   ])[kt   ];// +  c2over27 ;
-			real B     = (D.f[dirB   ])[kb   ];// +  c2over27 ;
-			real Ne    = (D.f[dirNE  ])[kne  ];// +  c1over54 ;
-			real Sw    = (D.f[dirSW  ])[ksw  ];// +  c1over54 ;
-			real Se    = (D.f[dirSE  ])[kse  ];// +  c1over54 ;
-			real Nw    = (D.f[dirNW  ])[knw  ];// +  c1over54 ;
-			real Ef    = (D.f[dirTE  ])[kte  ];// +  c1over54 ;
-			real Wb    = (D.f[dirBW  ])[kbw  ];// +  c1over54 ;
-			real Eb    = (D.f[dirBE  ])[kbe  ];// +  c1over54 ;
-			real Wf    = (D.f[dirTW  ])[ktw  ];// +  c1over54 ;
-			real Nf    = (D.f[dirTN  ])[ktn  ];// +  c1over54 ;
-			real Sb    = (D.f[dirBS  ])[kbs  ];// +  c1over54 ;
-			real Nb    = (D.f[dirBN  ])[kbn  ];// +  c1over54 ;
-			real Sf    = (D.f[dirTS  ])[kts  ];// +  c1over54 ;
-			real R     = (D.f[dirZERO])[kzero];// +  c8over27 ;
-			real Nef   = (D.f[dirTNE ])[ktne ];// +  c1over216;
-			real Swf   = (D.f[dirTSW ])[ktsw ];// +  c1over216;
-			real Sef   = (D.f[dirTSE ])[ktse ];// +  c1over216;
-			real Nwf   = (D.f[dirTNW ])[ktnw ];// +  c1over216;
-			real Neb   = (D.f[dirBNE ])[kbne ];// +  c1over216;
-			real Swb   = (D.f[dirBSW ])[kbsw ];// +  c1over216;
-			real Seb   = (D.f[dirBSE ])[kbse ];// +  c1over216;
-			real Nwb   = (D.f[dirBNW ])[kbnw ];// +  c1over216;
+			real f_E     = (D.f[DIR_P00   ])[ke   ];// +  c2over27 ;
+			real f_W     = (D.f[DIR_M00   ])[kw   ];// +  c2over27 ;
+			real f_N     = (D.f[DIR_0P0   ])[kn   ];// +  c2over27 ;
+			real f_S     = (D.f[DIR_0M0   ])[ks   ];// +  c2over27 ;
+			real f_T     = (D.f[DIR_00P   ])[kt   ];// +  c2over27 ;
+			real f_B     = (D.f[DIR_00M   ])[kb   ];// +  c2over27 ;
+			real f_NE    = (D.f[DIR_PP0  ])[kne  ];// +  c1over54 ;
+			real f_SW    = (D.f[DIR_MM0  ])[ksw  ];// +  c1over54 ;
+			real f_SE    = (D.f[DIR_PM0  ])[kse  ];// +  c1over54 ;
+			real f_NW    = (D.f[DIR_MP0  ])[knw  ];// +  c1over54 ;
+			real f_TE    = (D.f[DIR_P0P  ])[kte  ];// +  c1over54 ;
+			real f_BW    = (D.f[DIR_M0M  ])[kbw  ];// +  c1over54 ;
+			real f_BE    = (D.f[DIR_P0M  ])[kbe  ];// +  c1over54 ;
+			real f_TW    = (D.f[DIR_M0P  ])[ktw  ];// +  c1over54 ;
+			real f_TN    = (D.f[DIR_0PP  ])[ktn  ];// +  c1over54 ;
+			real f_BS    = (D.f[DIR_0MM  ])[kbs  ];// +  c1over54 ;
+			real f_BN    = (D.f[DIR_0PM  ])[kbn  ];// +  c1over54 ;
+			real f_TS    = (D.f[DIR_0MP  ])[kts  ];// +  c1over54 ;
+			real f_R     = (D.f[DIR_000])[kzero];// +  c8over27 ;
+			real f_TNE   = (D.f[DIR_PPP ])[ktne ];// +  c1over216;
+			real f_TSW   = (D.f[DIR_MMP ])[ktsw ];// +  c1over216;
+			real f_TSE   = (D.f[DIR_PMP ])[ktse ];// +  c1over216;
+			real f_TNW   = (D.f[DIR_MPP ])[ktnw ];// +  c1over216;
+			real f_BNE   = (D.f[DIR_PPM ])[kbne ];// +  c1over216;
+			real f_BSW   = (D.f[DIR_MMM ])[kbsw ];// +  c1over216;
+			real f_BSE   = (D.f[DIR_PMM ])[kbse ];// +  c1over216;
+			real f_BNW   = (D.f[DIR_MPM ])[kbnw ];// +  c1over216;
 			////////////////////////////////////////////////////////////////////////////////////
 			real fx = c0o1;
 			real fy = c0o1;
 			real fz = c0o1;
 			////////////////////////////////////////////////////////////////////////////////////
-			real rho=Nw+W+Sw+S+Se+E+Ne+N+R+Nf+Nb+Sf+Sb+Ef+Eb+Wf+Wb+Nwf+Nwb+Nef+Neb+Swf+Swb+Sef+Seb+F+B+c1o1;// ACHTUNG ne EINS !!!!!!!!
-			real pix=(Ne+E+Se+Ef+Eb-Nw-W-Sw-Wf-Wb+Nef+Neb+Sef+Seb-Nwf-Nwb-Swf-Swb);
-			real piy=(Ne+N+Nw+Nf+Nb-Se-S-Sw-Sf-Sb+Nef+Neb+Nwf+Nwb-Sef-Seb-Swf-Swb);
-			real piz=(Nf+Sf+Wf+Ef+F-Nb-Sb-Wb-Eb-B+Nef+Nwf+Sef+Swf-Neb-Nwb-Seb-Swb);
+			real rho=f_NW+f_W+f_SW+f_S+f_SE+f_E+f_NE+f_N+f_R+f_TN+f_BN+f_TS+f_BS+f_TE+f_BE+f_TW+f_BW+f_TNW+f_BNW+f_TNE+f_BNE+f_TSW+f_BSW+f_TSE+f_BSE+f_T+f_B+c1o1;// ACHTUNG ne EINS !!!!!!!!
+			real pix=(f_NE+f_E+f_SE+f_TE+f_BE-f_NW-f_W-f_SW-f_TW-f_BW+f_TNE+f_BNE+f_TSE+f_BSE-f_TNW-f_BNW-f_TSW-f_BSW);
+			real piy=(f_NE+f_N+f_NW+f_TN+f_BN-f_SE-f_S-f_SW-f_TS-f_BS+f_TNE+f_BNE+f_TNW+f_BNW-f_TSE-f_BSE-f_TSW-f_BSW);
+			real piz=(f_TN+f_TS+f_TW+f_TE+f_T-f_BN-f_BS-f_BW-f_BE-f_B+f_TNE+f_TNW+f_TSE+f_TSW-f_BNE-f_BNW-f_BSE-f_BSW);
 			real vvx=pix/rho + fx;
 			real vvy=piy/rho + fy;
 			real vvz=piz/rho + fz;
@@ -4666,33 +4667,33 @@ extern "C" __global__ void LB_Kernel_Kum_Comp_SP_27(    real omega,
 			real vy2=vvy*vvy;
 			real vz2=vvz*vvz;
 			////////////////////////////////////////////////////////////////////////////////////
-			real mfaaa = Swb;
-			real mfaab = Sw;
-			real mfaac = Swf;
-			real mfaba = Wb;
-			real mfabb = W;
-			real mfabc = Wf;
-			real mfbaa = Sb;
-			real mfbab = S;
-			real mfbac = Sf;
-			real mfbba = B;
-			real mfbbb = R;
-			real mfbbc = F;
-			real mfaca = Nwb;
-			real mfacb = Nw;
-			real mfacc = Nwf;
-			real mfcaa = Seb;
-			real mfcab = Se;
-			real mfcac = Sef;
-			real mfcca = Neb;
-			real mfccb = Ne;
-			real mfccc = Nef;
-			real mfbca = Nb;
-			real mfbcb = N;
-			real mfbcc = Nf;
-			real mfcba = Eb;
-			real mfcbb = E;
-			real mfcbc = Ef;
+			real mfaaa = f_BSW;
+			real mfaab = f_SW;
+			real mfaac = f_TSW;
+			real mfaba = f_BW;
+			real mfabb = f_W;
+			real mfabc = f_TW;
+			real mfbaa = f_BS;
+			real mfbab = f_S;
+			real mfbac = f_TS;
+			real mfbba = f_B;
+			real mfbbb = f_R;
+			real mfbbc = f_T;
+			real mfaca = f_BNW;
+			real mfacb = f_NW;
+			real mfacc = f_TNW;
+			real mfcaa = f_BSE;
+			real mfcab = f_SE;
+			real mfcac = f_TSE;
+			real mfcca = f_BNE;
+			real mfccb = f_NE;
+			real mfccc = f_TNE;
+			real mfbca = f_BN;
+			real mfbcb = f_N;
+			real mfbcc = f_TN;
+			real mfcba = f_BE;
+			real mfcbb = f_E;
+			real mfcbc = f_TE;
 			real m0, m1, m2;
 			real wadjust;
 			real qudricLimit = c1o100;
@@ -5371,33 +5372,33 @@ extern "C" __global__ void LB_Kernel_Kum_Comp_SP_27(    real omega,
 
 
 			////////////////////////////////////////////////////////////////////////////////////
-			(D.f[ dirE   ])[ke   ] = mfabb;// -  c2over27 ;//                                                                     
-			(D.f[ dirW   ])[kw   ] = mfcbb;// -  c2over27 ;                                                                     
-			(D.f[ dirN   ])[kn   ] = mfbab;// -  c2over27 ;
-			(D.f[ dirS   ])[ks   ] = mfbcb;// -  c2over27 ;
-			(D.f[ dirT   ])[kt   ] = mfbba;// -  c2over27 ;
-			(D.f[ dirB   ])[kb   ] = mfbbc;// -  c2over27 ;
-			(D.f[ dirNE  ])[kne  ] = mfaab;// -  c1over54 ;
-			(D.f[ dirSW  ])[ksw  ] = mfccb;// -  c1over54 ;
-			(D.f[ dirSE  ])[kse  ] = mfacb;// -  c1over54 ;
-			(D.f[ dirNW  ])[knw  ] = mfcab;// -  c1over54 ;
-			(D.f[ dirTE  ])[kte  ] = mfaba;// -  c1over54 ;
-			(D.f[ dirBW  ])[kbw  ] = mfcbc;// -  c1over54 ;
-			(D.f[ dirBE  ])[kbe  ] = mfabc;// -  c1over54 ;
-			(D.f[ dirTW  ])[ktw  ] = mfcba;// -  c1over54 ;
-			(D.f[ dirTN  ])[ktn  ] = mfbaa;// -  c1over54 ;
-			(D.f[ dirBS  ])[kbs  ] = mfbcc;// -  c1over54 ;
-			(D.f[ dirBN  ])[kbn  ] = mfbac;// -  c1over54 ;
-			(D.f[ dirTS  ])[kts  ] = mfbca;// -  c1over54 ;
-			(D.f[ dirZERO])[kzero] = mfbbb;// -  c8over27 ;
-			(D.f[ dirTNE ])[ktne ] = mfaaa;// -  c1over216;
-			(D.f[ dirTSE ])[ktse ] = mfaca;// -  c1over216;
-			(D.f[ dirBNE ])[kbne ] = mfaac;// -  c1over216;
-			(D.f[ dirBSE ])[kbse ] = mfacc;// -  c1over216;
-			(D.f[ dirTNW ])[ktnw ] = mfcaa;// -  c1over216;
-			(D.f[ dirTSW ])[ktsw ] = mfcca;// -  c1over216;
-			(D.f[ dirBNW ])[kbnw ] = mfcac;// -  c1over216;
-			(D.f[ dirBSW ])[kbsw ] = mfccc;// -  c1over216;
+			(D.f[ DIR_P00   ])[ke   ] = mfabb;// -  c2over27 ;//                                                                     
+			(D.f[ DIR_M00   ])[kw   ] = mfcbb;// -  c2over27 ;                                                                     
+			(D.f[ DIR_0P0   ])[kn   ] = mfbab;// -  c2over27 ;
+			(D.f[ DIR_0M0   ])[ks   ] = mfbcb;// -  c2over27 ;
+			(D.f[ DIR_00P   ])[kt   ] = mfbba;// -  c2over27 ;
+			(D.f[ DIR_00M   ])[kb   ] = mfbbc;// -  c2over27 ;
+			(D.f[ DIR_PP0  ])[kne  ] = mfaab;// -  c1over54 ;
+			(D.f[ DIR_MM0  ])[ksw  ] = mfccb;// -  c1over54 ;
+			(D.f[ DIR_PM0  ])[kse  ] = mfacb;// -  c1over54 ;
+			(D.f[ DIR_MP0  ])[knw  ] = mfcab;// -  c1over54 ;
+			(D.f[ DIR_P0P  ])[kte  ] = mfaba;// -  c1over54 ;
+			(D.f[ DIR_M0M  ])[kbw  ] = mfcbc;// -  c1over54 ;
+			(D.f[ DIR_P0M  ])[kbe  ] = mfabc;// -  c1over54 ;
+			(D.f[ DIR_M0P  ])[ktw  ] = mfcba;// -  c1over54 ;
+			(D.f[ DIR_0PP  ])[ktn  ] = mfbaa;// -  c1over54 ;
+			(D.f[ DIR_0MM  ])[kbs  ] = mfbcc;// -  c1over54 ;
+			(D.f[ DIR_0PM  ])[kbn  ] = mfbac;// -  c1over54 ;
+			(D.f[ DIR_0MP  ])[kts  ] = mfbca;// -  c1over54 ;
+			(D.f[ DIR_000])[kzero] = mfbbb;// -  c8over27 ;
+			(D.f[ DIR_PPP ])[ktne ] = mfaaa;// -  c1over216;
+			(D.f[ DIR_PMP ])[ktse ] = mfaca;// -  c1over216;
+			(D.f[ DIR_PPM ])[kbne ] = mfaac;// -  c1over216;
+			(D.f[ DIR_PMM ])[kbse ] = mfacc;// -  c1over216;
+			(D.f[ DIR_MPP ])[ktnw ] = mfcaa;// -  c1over216;
+			(D.f[ DIR_MMP ])[ktsw ] = mfcca;// -  c1over216;
+			(D.f[ DIR_MPM ])[kbnw ] = mfcac;// -  c1over216;
+			(D.f[ DIR_MMM ])[kbsw ] = mfccc;// -  c1over216;
 			////////////////////////////////////////////////////////////////////////////////////
 		}                                                                                                                    
 	}
@@ -5443,7 +5444,7 @@ extern "C" __global__ void LB_Kernel_Kum_Comp_SP_27(    real omega,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_Kum_New_Comp_SRT_SP_27(
+__global__ void LB_Kernel_Kum_New_Comp_SRT_SP_27(
 	real omega,
 	unsigned int* bcMatD,
 	unsigned int* neighborX,
@@ -5477,63 +5478,63 @@ extern "C" __global__ void LB_Kernel_Kum_New_Comp_SRT_SP_27(
 			Distributions27 D;
 			if (EvenOrOdd == true)
 			{
-				D.f[dirE] = &DDStart[dirE   *size_Mat];
-				D.f[dirW] = &DDStart[dirW   *size_Mat];
-				D.f[dirN] = &DDStart[dirN   *size_Mat];
-				D.f[dirS] = &DDStart[dirS   *size_Mat];
-				D.f[dirT] = &DDStart[dirT   *size_Mat];
-				D.f[dirB] = &DDStart[dirB   *size_Mat];
-				D.f[dirNE] = &DDStart[dirNE  *size_Mat];
-				D.f[dirSW] = &DDStart[dirSW  *size_Mat];
-				D.f[dirSE] = &DDStart[dirSE  *size_Mat];
-				D.f[dirNW] = &DDStart[dirNW  *size_Mat];
-				D.f[dirTE] = &DDStart[dirTE  *size_Mat];
-				D.f[dirBW] = &DDStart[dirBW  *size_Mat];
-				D.f[dirBE] = &DDStart[dirBE  *size_Mat];
-				D.f[dirTW] = &DDStart[dirTW  *size_Mat];
-				D.f[dirTN] = &DDStart[dirTN  *size_Mat];
-				D.f[dirBS] = &DDStart[dirBS  *size_Mat];
-				D.f[dirBN] = &DDStart[dirBN  *size_Mat];
-				D.f[dirTS] = &DDStart[dirTS  *size_Mat];
-				D.f[dirZERO] = &DDStart[dirZERO*size_Mat];
-				D.f[dirTNE] = &DDStart[dirTNE *size_Mat];
-				D.f[dirTSW] = &DDStart[dirTSW *size_Mat];
-				D.f[dirTSE] = &DDStart[dirTSE *size_Mat];
-				D.f[dirTNW] = &DDStart[dirTNW *size_Mat];
-				D.f[dirBNE] = &DDStart[dirBNE *size_Mat];
-				D.f[dirBSW] = &DDStart[dirBSW *size_Mat];
-				D.f[dirBSE] = &DDStart[dirBSE *size_Mat];
-				D.f[dirBNW] = &DDStart[dirBNW *size_Mat];
+				D.f[DIR_P00] = &DDStart[DIR_P00   *size_Mat];
+				D.f[DIR_M00] = &DDStart[DIR_M00   *size_Mat];
+				D.f[DIR_0P0] = &DDStart[DIR_0P0   *size_Mat];
+				D.f[DIR_0M0] = &DDStart[DIR_0M0   *size_Mat];
+				D.f[DIR_00P] = &DDStart[DIR_00P   *size_Mat];
+				D.f[DIR_00M] = &DDStart[DIR_00M   *size_Mat];
+				D.f[DIR_PP0] = &DDStart[DIR_PP0  *size_Mat];
+				D.f[DIR_MM0] = &DDStart[DIR_MM0  *size_Mat];
+				D.f[DIR_PM0] = &DDStart[DIR_PM0  *size_Mat];
+				D.f[DIR_MP0] = &DDStart[DIR_MP0  *size_Mat];
+				D.f[DIR_P0P] = &DDStart[DIR_P0P  *size_Mat];
+				D.f[DIR_M0M] = &DDStart[DIR_M0M  *size_Mat];
+				D.f[DIR_P0M] = &DDStart[DIR_P0M  *size_Mat];
+				D.f[DIR_M0P] = &DDStart[DIR_M0P  *size_Mat];
+				D.f[DIR_0PP] = &DDStart[DIR_0PP  *size_Mat];
+				D.f[DIR_0MM] = &DDStart[DIR_0MM  *size_Mat];
+				D.f[DIR_0PM] = &DDStart[DIR_0PM  *size_Mat];
+				D.f[DIR_0MP] = &DDStart[DIR_0MP  *size_Mat];
+				D.f[DIR_000] = &DDStart[DIR_000*size_Mat];
+				D.f[DIR_PPP] = &DDStart[DIR_PPP *size_Mat];
+				D.f[DIR_MMP] = &DDStart[DIR_MMP *size_Mat];
+				D.f[DIR_PMP] = &DDStart[DIR_PMP *size_Mat];
+				D.f[DIR_MPP] = &DDStart[DIR_MPP *size_Mat];
+				D.f[DIR_PPM] = &DDStart[DIR_PPM *size_Mat];
+				D.f[DIR_MMM] = &DDStart[DIR_MMM *size_Mat];
+				D.f[DIR_PMM] = &DDStart[DIR_PMM *size_Mat];
+				D.f[DIR_MPM] = &DDStart[DIR_MPM *size_Mat];
 			}
 			else
 			{
-				D.f[dirW] = &DDStart[dirE   *size_Mat];
-				D.f[dirE] = &DDStart[dirW   *size_Mat];
-				D.f[dirS] = &DDStart[dirN   *size_Mat];
-				D.f[dirN] = &DDStart[dirS   *size_Mat];
-				D.f[dirB] = &DDStart[dirT   *size_Mat];
-				D.f[dirT] = &DDStart[dirB   *size_Mat];
-				D.f[dirSW] = &DDStart[dirNE  *size_Mat];
-				D.f[dirNE] = &DDStart[dirSW  *size_Mat];
-				D.f[dirNW] = &DDStart[dirSE  *size_Mat];
-				D.f[dirSE] = &DDStart[dirNW  *size_Mat];
-				D.f[dirBW] = &DDStart[dirTE  *size_Mat];
-				D.f[dirTE] = &DDStart[dirBW  *size_Mat];
-				D.f[dirTW] = &DDStart[dirBE  *size_Mat];
-				D.f[dirBE] = &DDStart[dirTW  *size_Mat];
-				D.f[dirBS] = &DDStart[dirTN  *size_Mat];
-				D.f[dirTN] = &DDStart[dirBS  *size_Mat];
-				D.f[dirTS] = &DDStart[dirBN  *size_Mat];
-				D.f[dirBN] = &DDStart[dirTS  *size_Mat];
-				D.f[dirZERO] = &DDStart[dirZERO*size_Mat];
-				D.f[dirBSW] = &DDStart[dirTNE *size_Mat];
-				D.f[dirBNE] = &DDStart[dirTSW *size_Mat];
-				D.f[dirBNW] = &DDStart[dirTSE *size_Mat];
-				D.f[dirBSE] = &DDStart[dirTNW *size_Mat];
-				D.f[dirTSW] = &DDStart[dirBNE *size_Mat];
-				D.f[dirTNE] = &DDStart[dirBSW *size_Mat];
-				D.f[dirTNW] = &DDStart[dirBSE *size_Mat];
-				D.f[dirTSE] = &DDStart[dirBNW *size_Mat];
+				D.f[DIR_M00] = &DDStart[DIR_P00   *size_Mat];
+				D.f[DIR_P00] = &DDStart[DIR_M00   *size_Mat];
+				D.f[DIR_0M0] = &DDStart[DIR_0P0   *size_Mat];
+				D.f[DIR_0P0] = &DDStart[DIR_0M0   *size_Mat];
+				D.f[DIR_00M] = &DDStart[DIR_00P   *size_Mat];
+				D.f[DIR_00P] = &DDStart[DIR_00M   *size_Mat];
+				D.f[DIR_MM0] = &DDStart[DIR_PP0  *size_Mat];
+				D.f[DIR_PP0] = &DDStart[DIR_MM0  *size_Mat];
+				D.f[DIR_MP0] = &DDStart[DIR_PM0  *size_Mat];
+				D.f[DIR_PM0] = &DDStart[DIR_MP0  *size_Mat];
+				D.f[DIR_M0M] = &DDStart[DIR_P0P  *size_Mat];
+				D.f[DIR_P0P] = &DDStart[DIR_M0M  *size_Mat];
+				D.f[DIR_M0P] = &DDStart[DIR_P0M  *size_Mat];
+				D.f[DIR_P0M] = &DDStart[DIR_M0P  *size_Mat];
+				D.f[DIR_0MM] = &DDStart[DIR_0PP  *size_Mat];
+				D.f[DIR_0PP] = &DDStart[DIR_0MM  *size_Mat];
+				D.f[DIR_0MP] = &DDStart[DIR_0PM  *size_Mat];
+				D.f[DIR_0PM] = &DDStart[DIR_0MP  *size_Mat];
+				D.f[DIR_000] = &DDStart[DIR_000*size_Mat];
+				D.f[DIR_MMM] = &DDStart[DIR_PPP *size_Mat];
+				D.f[DIR_PPM] = &DDStart[DIR_MMP *size_Mat];
+				D.f[DIR_MPM] = &DDStart[DIR_PMP *size_Mat];
+				D.f[DIR_PMM] = &DDStart[DIR_MPP *size_Mat];
+				D.f[DIR_MMP] = &DDStart[DIR_PPM *size_Mat];
+				D.f[DIR_PPP] = &DDStart[DIR_MMM *size_Mat];
+				D.f[DIR_MPP] = &DDStart[DIR_PMM *size_Mat];
+				D.f[DIR_PMP] = &DDStart[DIR_MPM *size_Mat];
 			}
 
 			////////////////////////////////////////////////////////////////////////////////
@@ -5567,33 +5568,33 @@ extern "C" __global__ void LB_Kernel_Kum_New_Comp_SRT_SP_27(
 			unsigned int kbsw = neighborZ[ksw];
 
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			real mfcbb = (D.f[dirE   ])[k   ];
-			real mfabb = (D.f[dirW   ])[kw  ];
-			real mfbcb = (D.f[dirN   ])[k   ];
-			real mfbab = (D.f[dirS   ])[ks  ];
-			real mfbbc = (D.f[dirT   ])[k   ];
-			real mfbba = (D.f[dirB   ])[kb  ];
-			real mfccb = (D.f[dirNE  ])[k   ];
-			real mfaab = (D.f[dirSW  ])[ksw ];
-			real mfcab = (D.f[dirSE  ])[ks  ];
-			real mfacb = (D.f[dirNW  ])[kw  ];
-			real mfcbc = (D.f[dirTE  ])[k   ];
-			real mfaba = (D.f[dirBW  ])[kbw ];
-			real mfcba = (D.f[dirBE  ])[kb  ];
-			real mfabc = (D.f[dirTW  ])[kw  ];
-			real mfbcc = (D.f[dirTN  ])[k   ];
-			real mfbaa = (D.f[dirBS  ])[kbs ];
-			real mfbca = (D.f[dirBN  ])[kb  ];
-			real mfbac = (D.f[dirTS  ])[ks  ];
-			real mfbbb = (D.f[dirZERO])[k   ];
-			real mfccc = (D.f[dirTNE ])[k   ];
-			real mfaac = (D.f[dirTSW ])[ksw ];
-			real mfcac = (D.f[dirTSE ])[ks  ];
-			real mfacc = (D.f[dirTNW ])[kw  ];
-			real mfcca = (D.f[dirBNE ])[kb  ];
-			real mfaaa = (D.f[dirBSW ])[kbsw];
-			real mfcaa = (D.f[dirBSE ])[kbs ];
-			real mfaca = (D.f[dirBNW ])[kbw ];
+			real mfcbb = (D.f[DIR_P00   ])[k   ];
+			real mfabb = (D.f[DIR_M00   ])[kw  ];
+			real mfbcb = (D.f[DIR_0P0   ])[k   ];
+			real mfbab = (D.f[DIR_0M0   ])[ks  ];
+			real mfbbc = (D.f[DIR_00P   ])[k   ];
+			real mfbba = (D.f[DIR_00M   ])[kb  ];
+			real mfccb = (D.f[DIR_PP0  ])[k   ];
+			real mfaab = (D.f[DIR_MM0  ])[ksw ];
+			real mfcab = (D.f[DIR_PM0  ])[ks  ];
+			real mfacb = (D.f[DIR_MP0  ])[kw  ];
+			real mfcbc = (D.f[DIR_P0P  ])[k   ];
+			real mfaba = (D.f[DIR_M0M  ])[kbw ];
+			real mfcba = (D.f[DIR_P0M  ])[kb  ];
+			real mfabc = (D.f[DIR_M0P  ])[kw  ];
+			real mfbcc = (D.f[DIR_0PP  ])[k   ];
+			real mfbaa = (D.f[DIR_0MM  ])[kbs ];
+			real mfbca = (D.f[DIR_0PM  ])[kb  ];
+			real mfbac = (D.f[DIR_0MP  ])[ks  ];
+			real mfbbb = (D.f[DIR_000])[k   ];
+			real mfccc = (D.f[DIR_PPP ])[k   ];
+			real mfaac = (D.f[DIR_MMP ])[ksw ];
+			real mfcac = (D.f[DIR_PMP ])[ks  ];
+			real mfacc = (D.f[DIR_MPP ])[kw  ];
+			real mfcca = (D.f[DIR_PPM ])[kb  ];
+			real mfaaa = (D.f[DIR_MMM ])[kbsw];
+			real mfcaa = (D.f[DIR_PMM ])[kbs ];
+			real mfaca = (D.f[DIR_MPM ])[kbw ];
 			////////////////////////////////////////////////////////////////////////////////////
 			real drho = ((((mfccc + mfaaa) + (mfaca + mfcac)) + ((mfacc + mfcaa) + (mfaac + mfcca))) +
 				(((mfbac + mfbca) + (mfbaa + mfbcc)) + ((mfabc + mfcba) + (mfaba + mfcbc)) + ((mfacb + mfcab) + (mfaab + mfccb))) +
@@ -6348,33 +6349,33 @@ extern "C" __global__ void LB_Kernel_Kum_New_Comp_SRT_SP_27(
 					((mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc))) + mfbbb;
 			mfbbb += drho - drhoPost;
 			////////////////////////////////////////////////////////////////////////////////////
-			(D.f[dirE   ])[k   ] = mfabb;                                                                   
-			(D.f[dirW   ])[kw  ] = mfcbb;                                                                 
-			(D.f[dirN   ])[k   ] = mfbab;
-			(D.f[dirS   ])[ks  ] = mfbcb;
-			(D.f[dirT   ])[k   ] = mfbba;
-			(D.f[dirB   ])[kb  ] = mfbbc;
-			(D.f[dirNE  ])[k   ] = mfaab;
-			(D.f[dirSW  ])[ksw ] = mfccb;
-			(D.f[dirSE  ])[ks  ] = mfacb;
-			(D.f[dirNW  ])[kw  ] = mfcab;
-			(D.f[dirTE  ])[k   ] = mfaba;
-			(D.f[dirBW  ])[kbw ] = mfcbc;
-			(D.f[dirBE  ])[kb  ] = mfabc;
-			(D.f[dirTW  ])[kw  ] = mfcba;
-			(D.f[dirTN  ])[k   ] = mfbaa;
-			(D.f[dirBS  ])[kbs ] = mfbcc;
-			(D.f[dirBN  ])[kb  ] = mfbac;
-			(D.f[dirTS  ])[ks  ] = mfbca;
-			(D.f[dirZERO])[k   ] = mfbbb;
-			(D.f[dirTNE ])[k   ] = mfaaa;
-			(D.f[dirTSE ])[ks  ] = mfaca;
-			(D.f[dirBNE ])[kb  ] = mfaac;
-			(D.f[dirBSE ])[kbs ] = mfacc;
-			(D.f[dirTNW ])[kw  ] = mfcaa;
-			(D.f[dirTSW ])[ksw ] = mfcca;
-			(D.f[dirBNW ])[kbw ] = mfcac;
-			(D.f[dirBSW ])[kbsw] = mfccc;
+			(D.f[DIR_P00   ])[k   ] = mfabb;                                                                   
+			(D.f[DIR_M00   ])[kw  ] = mfcbb;                                                                 
+			(D.f[DIR_0P0   ])[k   ] = mfbab;
+			(D.f[DIR_0M0   ])[ks  ] = mfbcb;
+			(D.f[DIR_00P   ])[k   ] = mfbba;
+			(D.f[DIR_00M   ])[kb  ] = mfbbc;
+			(D.f[DIR_PP0  ])[k   ] = mfaab;
+			(D.f[DIR_MM0  ])[ksw ] = mfccb;
+			(D.f[DIR_PM0  ])[ks  ] = mfacb;
+			(D.f[DIR_MP0  ])[kw  ] = mfcab;
+			(D.f[DIR_P0P  ])[k   ] = mfaba;
+			(D.f[DIR_M0M  ])[kbw ] = mfcbc;
+			(D.f[DIR_P0M  ])[kb  ] = mfabc;
+			(D.f[DIR_M0P  ])[kw  ] = mfcba;
+			(D.f[DIR_0PP  ])[k   ] = mfbaa;
+			(D.f[DIR_0MM  ])[kbs ] = mfbcc;
+			(D.f[DIR_0PM  ])[kb  ] = mfbac;
+			(D.f[DIR_0MP  ])[ks  ] = mfbca;
+			(D.f[DIR_000])[k   ] = mfbbb;
+			(D.f[DIR_PPP ])[k   ] = mfaaa;
+			(D.f[DIR_PMP ])[ks  ] = mfaca;
+			(D.f[DIR_PPM ])[kb  ] = mfaac;
+			(D.f[DIR_PMM ])[kbs ] = mfacc;
+			(D.f[DIR_MPP ])[kw  ] = mfcaa;
+			(D.f[DIR_MMP ])[ksw ] = mfcca;
+			(D.f[DIR_MPM ])[kbw ] = mfcac;
+			(D.f[DIR_MMM ])[kbsw] = mfccc;
 		}
 	}
 }

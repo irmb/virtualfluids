@@ -33,9 +33,7 @@
 #ifndef NodeValues_H
 #define NodeValues_H
 
-namespace vf
-{
-namespace gpu
+namespace vf::gpu
 {
 
 static constexpr char FLUID = 0;
@@ -56,6 +54,7 @@ static constexpr char BC_SOLID    = 22;
 static constexpr char BC_SLIP    = 23;
 static constexpr char BC_NOSLIP  = 24;
 static constexpr char BC_OUTFLOW = 25;
+static constexpr char BC_STRESS   = 26;
 
 static constexpr char STOPPER_OUT_OF_GRID          = 30;
 static constexpr char STOPPER_COARSE_UNDER_FINE    = 31;
@@ -72,7 +71,6 @@ static constexpr char Q_DEPRECATED              = 52;
 
 static constexpr char OVERLAP_TMP = 60;
 
-} // namespace gpu
-} // namespace vf
+}
 
 #endif

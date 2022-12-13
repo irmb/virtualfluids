@@ -1,25 +1,28 @@
 # AUTHORS
 VF has been developed essentially over the last fifteen years by various researchers at IRMB including (in alphabetical order):
 
+
+Damilola Adekanye, M.Sc.
 Dr. Benjamin Ahrenholz
-M. Sc. Hussein Alihussein
+Dr. Hussein Alihussein
 Dr. Sebastian Bindick
-B. Sc. Aileen Brendel
+Aileen Brendel, B.Sc.
 J.Prof. Dr. Martin Geier
 Dr. Sebastian Geller
 Dr. Ehsan Goraki Fard
 Dr. Jan Hegewald
 Dr. Christian Janßen
-M. Sc. Konstantin Kutscher
-M. Sc. Stephan Lenz
+Prof. Dr.-Ing. habil. Manfred Krafczyk
+Dr. Konstantin Kutscher
+Dr. Stephan Lenz
 Dr. Jan Linxweiler
-B. Sc. Lennard Lux
-B. Sc. Sven Marcus
-M. Sc. Sören Peters
+Lennard Lux, B.Sc.
+Sören Peters, M.Sc.
+Sven Marcus, M.Sc.
 Dr. Hesameddin Safari
 Dr. Martin Schönherr
 Dipl.-Ing. Maik Stiebler
 Dr. Sören Textor (aka Freudiger)
 PD Dr. Jonas Tölke
 Dr. Sonja Uphoff
-B. Sc. Anna Wellmann
+Anna Wellmann, M.Sc.

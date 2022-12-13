@@ -11,7 +11,7 @@ std::shared_ptr<PreProcessorStrategy> InitF3::getNewInstance(std::shared_ptr<Par
 void InitF3::init(int level)
 {
 	int numberOfThreads = para->getParD(level)->numberofthreads;
-	int size_Mat = para->getParD(level)->size_Mat_SP;
+	int size_Mat = para->getParD(level)->numberOfNodes;
 
 	int Grid = (size_Mat / numberOfThreads) + 1;
 	int Grid1, Grid2;
@@ -28,17 +28,17 @@ void InitF3::init(int level)
 	dim3 grid(Grid1, Grid2);
 	dim3 threads(numberOfThreads, 1, 1);
 
-	LB_Init_F3 << < grid, threads >> >(	para->getParD(level)->neighborX_SP,
-										para->getParD(level)->neighborY_SP,
-										para->getParD(level)->neighborZ_SP,
-										para->getParD(level)->geoSP,
-										para->getParD(level)->rho_SP,
-										para->getParD(level)->vx_SP,
-										para->getParD(level)->vy_SP,
-										para->getParD(level)->vz_SP,
-										para->getParD(level)->size_Mat_SP,
+	LB_Init_F3 << < grid, threads >> >(	para->getParD(level)->neighborX,
+										para->getParD(level)->neighborY,
+										para->getParD(level)->neighborZ,
+										para->getParD(level)->typeOfGridNode,
+										para->getParD(level)->rho,
+										para->getParD(level)->velocityX,
+										para->getParD(level)->velocityY,
+										para->getParD(level)->velocityZ,
+										para->getParD(level)->numberOfNodes,
 										para->getParD(level)->g6.g[0],
-										para->getParD(level)->evenOrOdd);
+										para->getParD(level)->isEvenTimestep);
 	getLastCudaError("LBInitF3 execution failed");
 }
 

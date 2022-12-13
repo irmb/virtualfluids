@@ -1,12 +1,13 @@
 #include "LBM/LB.h" 
-#include "LBM/D3Q27.h"
+#include "lbm/constants/D3Q27.h"
 #include <lbm/constants/NumericConstants.h>
 
 using namespace vf::lbm::constant;
+using namespace vf::lbm::dir;
 #include "math.h"
 
 
-extern "C" __global__ void LB_Kernel_BGK_Comp_SP_27(	real omega,
+__global__ void LB_Kernel_BGK_Comp_SP_27(	real omega,
 														unsigned int* bcMatD,
 														unsigned int* neighborX,
 														unsigned int* neighborY,
@@ -37,63 +38,63 @@ extern "C" __global__ void LB_Kernel_BGK_Comp_SP_27(	real omega,
 			Distributions27 D;
 			if (EvenOrOdd == true)
 			{
-				D.f[dirE] = &DDStart[dirE   *size_Mat];
-				D.f[dirW] = &DDStart[dirW   *size_Mat];
-				D.f[dirN] = &DDStart[dirN   *size_Mat];
-				D.f[dirS] = &DDStart[dirS   *size_Mat];
-				D.f[dirT] = &DDStart[dirT   *size_Mat];
-				D.f[dirB] = &DDStart[dirB   *size_Mat];
-				D.f[dirNE] = &DDStart[dirNE  *size_Mat];
-				D.f[dirSW] = &DDStart[dirSW  *size_Mat];
-				D.f[dirSE] = &DDStart[dirSE  *size_Mat];
-				D.f[dirNW] = &DDStart[dirNW  *size_Mat];
-				D.f[dirTE] = &DDStart[dirTE  *size_Mat];
-				D.f[dirBW] = &DDStart[dirBW  *size_Mat];
-				D.f[dirBE] = &DDStart[dirBE  *size_Mat];
-				D.f[dirTW] = &DDStart[dirTW  *size_Mat];
-				D.f[dirTN] = &DDStart[dirTN  *size_Mat];
-				D.f[dirBS] = &DDStart[dirBS  *size_Mat];
-				D.f[dirBN] = &DDStart[dirBN  *size_Mat];
-				D.f[dirTS] = &DDStart[dirTS  *size_Mat];
-				D.f[dirZERO] = &DDStart[dirZERO*size_Mat];
-				D.f[dirTNE] = &DDStart[dirTNE *size_Mat];
-				D.f[dirTSW] = &DDStart[dirTSW *size_Mat];
-				D.f[dirTSE] = &DDStart[dirTSE *size_Mat];
-				D.f[dirTNW] = &DDStart[dirTNW *size_Mat];
-				D.f[dirBNE] = &DDStart[dirBNE *size_Mat];
-				D.f[dirBSW] = &DDStart[dirBSW *size_Mat];
-				D.f[dirBSE] = &DDStart[dirBSE *size_Mat];
-				D.f[dirBNW] = &DDStart[dirBNW *size_Mat];
+				D.f[DIR_P00] = &DDStart[DIR_P00   *size_Mat];
+				D.f[DIR_M00] = &DDStart[DIR_M00   *size_Mat];
+				D.f[DIR_0P0] = &DDStart[DIR_0P0   *size_Mat];
+				D.f[DIR_0M0] = &DDStart[DIR_0M0   *size_Mat];
+				D.f[DIR_00P] = &DDStart[DIR_00P   *size_Mat];
+				D.f[DIR_00M] = &DDStart[DIR_00M   *size_Mat];
+				D.f[DIR_PP0] = &DDStart[DIR_PP0  *size_Mat];
+				D.f[DIR_MM0] = &DDStart[DIR_MM0  *size_Mat];
+				D.f[DIR_PM0] = &DDStart[DIR_PM0  *size_Mat];
+				D.f[DIR_MP0] = &DDStart[DIR_MP0  *size_Mat];
+				D.f[DIR_P0P] = &DDStart[DIR_P0P  *size_Mat];
+				D.f[DIR_M0M] = &DDStart[DIR_M0M  *size_Mat];
+				D.f[DIR_P0M] = &DDStart[DIR_P0M  *size_Mat];
+				D.f[DIR_M0P] = &DDStart[DIR_M0P  *size_Mat];
+				D.f[DIR_0PP] = &DDStart[DIR_0PP  *size_Mat];
+				D.f[DIR_0MM] = &DDStart[DIR_0MM  *size_Mat];
+				D.f[DIR_0PM] = &DDStart[DIR_0PM  *size_Mat];
+				D.f[DIR_0MP] = &DDStart[DIR_0MP  *size_Mat];
+				D.f[DIR_000] = &DDStart[DIR_000*size_Mat];
+				D.f[DIR_PPP] = &DDStart[DIR_PPP *size_Mat];
+				D.f[DIR_MMP] = &DDStart[DIR_MMP *size_Mat];
+				D.f[DIR_PMP] = &DDStart[DIR_PMP *size_Mat];
+				D.f[DIR_MPP] = &DDStart[DIR_MPP *size_Mat];
+				D.f[DIR_PPM] = &DDStart[DIR_PPM *size_Mat];
+				D.f[DIR_MMM] = &DDStart[DIR_MMM *size_Mat];
+				D.f[DIR_PMM] = &DDStart[DIR_PMM *size_Mat];
+				D.f[DIR_MPM] = &DDStart[DIR_MPM *size_Mat];
 			}
 			else
 			{
-				D.f[dirW] = &DDStart[dirE   *size_Mat];
-				D.f[dirE] = &DDStart[dirW   *size_Mat];
-				D.f[dirS] = &DDStart[dirN   *size_Mat];
-				D.f[dirN] = &DDStart[dirS   *size_Mat];
-				D.f[dirB] = &DDStart[dirT   *size_Mat];
-				D.f[dirT] = &DDStart[dirB   *size_Mat];
-				D.f[dirSW] = &DDStart[dirNE  *size_Mat];
-				D.f[dirNE] = &DDStart[dirSW  *size_Mat];
-				D.f[dirNW] = &DDStart[dirSE  *size_Mat];
-				D.f[dirSE] = &DDStart[dirNW  *size_Mat];
-				D.f[dirBW] = &DDStart[dirTE  *size_Mat];
-				D.f[dirTE] = &DDStart[dirBW  *size_Mat];
-				D.f[dirTW] = &DDStart[dirBE  *size_Mat];
-				D.f[dirBE] = &DDStart[dirTW  *size_Mat];
-				D.f[dirBS] = &DDStart[dirTN  *size_Mat];
-				D.f[dirTN] = &DDStart[dirBS  *size_Mat];
-				D.f[dirTS] = &DDStart[dirBN  *size_Mat];
-				D.f[dirBN] = &DDStart[dirTS  *size_Mat];
-				D.f[dirZERO] = &DDStart[dirZERO*size_Mat];
-				D.f[dirBSW] = &DDStart[dirTNE *size_Mat];
-				D.f[dirBNE] = &DDStart[dirTSW *size_Mat];
-				D.f[dirBNW] = &DDStart[dirTSE *size_Mat];
-				D.f[dirBSE] = &DDStart[dirTNW *size_Mat];
-				D.f[dirTSW] = &DDStart[dirBNE *size_Mat];
-				D.f[dirTNE] = &DDStart[dirBSW *size_Mat];
-				D.f[dirTNW] = &DDStart[dirBSE *size_Mat];
-				D.f[dirTSE] = &DDStart[dirBNW *size_Mat];
+				D.f[DIR_M00] = &DDStart[DIR_P00   *size_Mat];
+				D.f[DIR_P00] = &DDStart[DIR_M00   *size_Mat];
+				D.f[DIR_0M0] = &DDStart[DIR_0P0   *size_Mat];
+				D.f[DIR_0P0] = &DDStart[DIR_0M0   *size_Mat];
+				D.f[DIR_00M] = &DDStart[DIR_00P   *size_Mat];
+				D.f[DIR_00P] = &DDStart[DIR_00M   *size_Mat];
+				D.f[DIR_MM0] = &DDStart[DIR_PP0  *size_Mat];
+				D.f[DIR_PP0] = &DDStart[DIR_MM0  *size_Mat];
+				D.f[DIR_MP0] = &DDStart[DIR_PM0  *size_Mat];
+				D.f[DIR_PM0] = &DDStart[DIR_MP0  *size_Mat];
+				D.f[DIR_M0M] = &DDStart[DIR_P0P  *size_Mat];
+				D.f[DIR_P0P] = &DDStart[DIR_M0M  *size_Mat];
+				D.f[DIR_M0P] = &DDStart[DIR_P0M  *size_Mat];
+				D.f[DIR_P0M] = &DDStart[DIR_M0P  *size_Mat];
+				D.f[DIR_0MM] = &DDStart[DIR_0PP  *size_Mat];
+				D.f[DIR_0PP] = &DDStart[DIR_0MM  *size_Mat];
+				D.f[DIR_0MP] = &DDStart[DIR_0PM  *size_Mat];
+				D.f[DIR_0PM] = &DDStart[DIR_0MP  *size_Mat];
+				D.f[DIR_000] = &DDStart[DIR_000*size_Mat];
+				D.f[DIR_MMM] = &DDStart[DIR_PPP *size_Mat];
+				D.f[DIR_PPM] = &DDStart[DIR_MMP *size_Mat];
+				D.f[DIR_MPM] = &DDStart[DIR_PMP *size_Mat];
+				D.f[DIR_PMM] = &DDStart[DIR_MPP *size_Mat];
+				D.f[DIR_MMP] = &DDStart[DIR_PPM *size_Mat];
+				D.f[DIR_PPP] = &DDStart[DIR_MMM *size_Mat];
+				D.f[DIR_MPP] = &DDStart[DIR_PMM *size_Mat];
+				D.f[DIR_PMP] = &DDStart[DIR_MPM *size_Mat];
 			}
 
 			////////////////////////////////////////////////////////////////////////////////
@@ -126,33 +127,33 @@ extern "C" __global__ void LB_Kernel_BGK_Comp_SP_27(	real omega,
 			//unsigned int ktne = k;
 			unsigned int kbsw = neighborZ[ksw];
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			real fE = (D.f[dirE])[k];//ke
-			real fW = (D.f[dirW])[kw];
-			real fN = (D.f[dirN])[k];//kn
-			real fS = (D.f[dirS])[ks];
-			real fT = (D.f[dirT])[k];//kt
-			real fB = (D.f[dirB])[kb];
-			real fNE = (D.f[dirNE])[k];//kne
-			real fSW = (D.f[dirSW])[ksw];
-			real fSE = (D.f[dirSE])[ks];//kse
-			real fNW = (D.f[dirNW])[kw];//knw
-			real fTE = (D.f[dirTE])[k];//kte
-			real fBW = (D.f[dirBW])[kbw];
-			real fBE = (D.f[dirBE])[kb];//kbe
-			real fTW = (D.f[dirTW])[kw];//ktw
-			real fTN = (D.f[dirTN])[k];//ktn
-			real fBS = (D.f[dirBS])[kbs];
-			real fBN = (D.f[dirBN])[kb];//kbn
-			real fTS = (D.f[dirTS])[ks];//kts
-			real fZERO = (D.f[dirZERO])[k];//kzero
-			real fTNE = (D.f[dirTNE])[k];//ktne
-			real fTSW = (D.f[dirTSW])[ksw];//ktsw
-			real fTSE = (D.f[dirTSE])[ks];//ktse
-			real fTNW = (D.f[dirTNW])[kw];//ktnw
-			real fBNE = (D.f[dirBNE])[kb];//kbne
-			real fBSW = (D.f[dirBSW])[kbsw];
-			real fBSE = (D.f[dirBSE])[kbs];//kbse
-			real fBNW = (D.f[dirBNW])[kbw];//kbnw
+			real fE = (D.f[DIR_P00])[k];//ke
+			real fW = (D.f[DIR_M00])[kw];
+			real fN = (D.f[DIR_0P0])[k];//kn
+			real fS = (D.f[DIR_0M0])[ks];
+			real fT = (D.f[DIR_00P])[k];//kt
+			real fB = (D.f[DIR_00M])[kb];
+			real fNE = (D.f[DIR_PP0])[k];//kne
+			real fSW = (D.f[DIR_MM0])[ksw];
+			real fSE = (D.f[DIR_PM0])[ks];//kse
+			real fNW = (D.f[DIR_MP0])[kw];//knw
+			real fTE = (D.f[DIR_P0P])[k];//kte
+			real fBW = (D.f[DIR_M0M])[kbw];
+			real fBE = (D.f[DIR_P0M])[kb];//kbe
+			real fTW = (D.f[DIR_M0P])[kw];//ktw
+			real fTN = (D.f[DIR_0PP])[k];//ktn
+			real fBS = (D.f[DIR_0MM])[kbs];
+			real fBN = (D.f[DIR_0PM])[kb];//kbn
+			real fTS = (D.f[DIR_0MP])[ks];//kts
+			real fZERO = (D.f[DIR_000])[k];//kzero
+			real fTNE = (D.f[DIR_PPP])[k];//ktne
+			real fTSW = (D.f[DIR_MMP])[ksw];//ktsw
+			real fTSE = (D.f[DIR_PMP])[ks];//ktse
+			real fTNW = (D.f[DIR_MPP])[kw];//ktnw
+			real fBNE = (D.f[DIR_PPM])[kb];//kbne
+			real fBSW = (D.f[DIR_MMM])[kbsw];
+			real fBSE = (D.f[DIR_PMM])[kbs];//kbse
+			real fBNW = (D.f[DIR_MPM])[kbw];//kbnw
 										   ////////////////////////////////////////////////////////////////////////////////
 			real drho = (fTNE + fBSW) + (fTSW + fBNE) + (fTSE + fBNW) + (fTNW + fBSE) + (fNE + fSW) + (fNW + fSE) + (fTE + fBW) + (fBE + fTW) + (fTN + fBS) + (fBN + fTS) + (fE + fW) + (fN + fS) + (fT + fB) + fZERO;
 			real rho = drho + c1o1;
@@ -209,33 +210,33 @@ extern "C" __global__ void LB_Kernel_BGK_Comp_SP_27(	real omega,
 
 
 			//////////////////////////////////////////////////////////////////////////                            
-			(D.f[dirE])[k] = fW;
-			(D.f[dirW])[kw] = fE;
-			(D.f[dirN])[k] = fS;
-			(D.f[dirS])[ks] = fN;
-			(D.f[dirT])[k] = fB;
-			(D.f[dirB])[kb] = fT;
-			(D.f[dirNE])[k] = fSW;
-			(D.f[dirSW])[ksw] = fNE;
-			(D.f[dirSE])[ks] = fNW;
-			(D.f[dirNW])[kw] = fSE;
-			(D.f[dirTE])[k] = fBW;
-			(D.f[dirBW])[kbw] = fTE;
-			(D.f[dirBE])[kb] = fTW;
-			(D.f[dirTW])[kw] = fBE;
-			(D.f[dirTN])[k] = fBS;
-			(D.f[dirBS])[kbs] = fTN;
-			(D.f[dirBN])[kb] = fTS;
-			(D.f[dirTS])[ks] = fBN;
-			(D.f[dirZERO])[k] = fZERO;
-			(D.f[dirTNE])[k] = fBSW;
-			(D.f[dirTSE])[ks] = fBNW;
-			(D.f[dirBNE])[kb] = fTSW;
-			(D.f[dirBSE])[kbs] = fTNW;
-			(D.f[dirTNW])[kw] = fBSE;
-			(D.f[dirTSW])[ksw] = fBNE;
-			(D.f[dirBNW])[kbw] = fTSE;
-			(D.f[dirBSW])[kbsw] = fTNE;
+			(D.f[DIR_P00])[k] = fW;
+			(D.f[DIR_M00])[kw] = fE;
+			(D.f[DIR_0P0])[k] = fS;
+			(D.f[DIR_0M0])[ks] = fN;
+			(D.f[DIR_00P])[k] = fB;
+			(D.f[DIR_00M])[kb] = fT;
+			(D.f[DIR_PP0])[k] = fSW;
+			(D.f[DIR_MM0])[ksw] = fNE;
+			(D.f[DIR_PM0])[ks] = fNW;
+			(D.f[DIR_MP0])[kw] = fSE;
+			(D.f[DIR_P0P])[k] = fBW;
+			(D.f[DIR_M0M])[kbw] = fTE;
+			(D.f[DIR_P0M])[kb] = fTW;
+			(D.f[DIR_M0P])[kw] = fBE;
+			(D.f[DIR_0PP])[k] = fBS;
+			(D.f[DIR_0MM])[kbs] = fTN;
+			(D.f[DIR_0PM])[kb] = fTS;
+			(D.f[DIR_0MP])[ks] = fBN;
+			(D.f[DIR_000])[k] = fZERO;
+			(D.f[DIR_PPP])[k] = fBSW;
+			(D.f[DIR_PMP])[ks] = fBNW;
+			(D.f[DIR_PPM])[kb] = fTSW;
+			(D.f[DIR_PMM])[kbs] = fTNW;
+			(D.f[DIR_MPP])[kw] = fBSE;
+			(D.f[DIR_MMP])[ksw] = fBNE;
+			(D.f[DIR_MPM])[kbw] = fTSE;
+			(D.f[DIR_MMM])[kbsw] = fTNE;
 			//////////////////////////////////////////////////////////////////////////                            
 		}
 	}

@@ -1,7 +1,7 @@
 ###############################################################################
 ##                       VirtualFluids CI Pipeline                           ##
 ###############################################################################
-image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
+image: git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu20_04:1.3
 
 stages:
   - build
@@ -19,8 +19,6 @@ stages:
 ###############################################################################
 .gnu_build_template:
   stage: build
-
-  image: irmb/virtualfluids-deps-ubuntu20.04
 
   tags:
     - gpu
@@ -104,11 +102,6 @@ msvc_16:
     - cmake .. --preset=all_msvc -DCMAKE_CUDA_ARCHITECTURES=61 -DBUILD_WARNINGS_AS_ERRORS=ON
     - MSBuild.exe VirtualFluids.sln /property:Configuration=$env:BUILD_CONFIGURATION /verbosity:minimal /maxcpucount:4
 
-  cache:
-    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
-    paths:
-      - $CI_PROJECT_DIR/$env:BUILD_FOLDER/
-
   artifacts:
     expire_in: 1 hrs
     paths:
@@ -120,8 +113,6 @@ msvc_16:
 ###############################################################################
 gcc_9_python:
   stage: build_python
-
-  image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
 
   needs: ["gcc_9"]
 
@@ -149,8 +140,6 @@ gcc_9_python:
 build_singularity_image:
   stage: container_upload
 
-  image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
-
   needs:
     - gcc_9_python
 
@@ -170,8 +159,6 @@ build_singularity_image:
 ###############################################################################
 gcc_9_unit_tests:
   stage: test
-
-  image: irmb/virtualfluids-deps-ubuntu20.04:latest
 
   needs: ["gcc_9"]
 
@@ -203,8 +190,6 @@ msvc_16_unit_tests:
 gcc_9_python_bindings_test:
   stage: test
 
-  image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
-
   needs: ["gcc_9_python"]
 
   before_script:
@@ -216,48 +201,6 @@ gcc_9_python_bindings_test:
   script:
     - python3 -m unittest discover -s Python -v
 
-###############################################################################
-gcc_9_python_slurm_test:
-  stage: test
-
-  image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
-
-  needs: ["gcc_9_python"]
-
-  rules:
-    - if: $PHOENIX_PRIVATE_KEY
-
-  tags:
-    - linux
-    - privileged
-
-  variables:
-    SSH_KEY: "$PHOENIX_PRIVATE_KEY"
-    HOST: "$PHOENIX_HOSTNAME"
-    USER: "$PHOENIX_USER"
-
-  before_script:
-    - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
-    - apt-get install -y rsync
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - eval $(ssh-agent -s)
-    - echo "$SSH_KEY" | tr -d '\r' | ssh-add -
-    - echo $SSH_KEY >> ansible/private_key
-    - ssh-keyscan -t rsa $HOST >> ~/.ssh/known_hosts
-    - ssh $USER@$HOST "rm -rf output-*"
-    - ssh $USER@$HOST "rm -f *.out"
-    - pip3 install git+git://github.com/SvenMarcus/ssh-slurm-runner
-
-  script:
-    - singularity build PoiseuilleTestContainer.sif Python/SlurmTests/poiseuille/PoiseuilleTestContainer.def
-    - scp PoiseuilleTestContainer.sif $USER@$HOST:PoiseuilleTestContainer.sif
-    - scp Python/SlurmTests/poiseuille/slurm.job $USER@$HOST:slurm.job
-    - python3 -m ssh_slurm_runner slurm.job --host $HOST --user $USER --keyfile ansible/private_key
-    - ssh $USER@$HOST "rm -rf output-*"
-    - ssh $USER@$HOST "rm -f *.out"
-    - ssh $USER@$HOST "rm PoiseuilleTestContainer.sif"
-    - ssh $USER@$HOST "rm slurm.job"
 
 ###############################################################################
 ##                            Benchmark                                      ##
@@ -281,9 +224,13 @@ nvidia_test:
 gpu_numerical_tests:
   stage: benchmark
 
-  image: irmb/virtualfluids-deps-ubuntu20.04
-
-  when: manual
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: always
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - when: manual
+      allow_failure: true
 
   needs: []
 
@@ -309,7 +256,8 @@ gpu_numerical_tests:
 
   script:
     - cd $CI_PROJECT_DIR
-    - ./build/bin/NumericalTests $CI_PROJECT_DIR/apps/gpu/tests/NumericalTests/configK15_nu10tm2.txt 2>&1 | tee -a numerical_tests_gpu_results.txt
+    # - ./build/bin/NumericalTests $CI_PROJECT_DIR/apps/gpu/tests/NumericalTests/configK15_nu10tm2.txt 2>&1 | tee -a numerical_tests_gpu_results.txt
+    - ./build/bin/NumericalTests $CI_PROJECT_DIR/apps/gpu/tests/NumericalTests/configK17chim_nu10tm3.txt 2>&1 | tee -a numerical_tests_gpu_results.txt
 
   cache:
     key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
@@ -321,14 +269,36 @@ gpu_numerical_tests:
     paths:
       - $CI_PROJECT_DIR/numerical_tests_gpu_results.txt
 
+###############################################################################
+run-regression-tests:
+  stage: test
+
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: always
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - when: manual
+      allow_failure: true
+
+  needs: []
+
+  tags:
+    - gpu
+    - linux
+
+  before_script:
+    - apt-get update && apt-get -y install python3.8-venv
+    - chmod +x ./regression-tests/*
+
+  script:
+    - ./regression-tests/regression-tests.sh
 
 ###############################################################################
 ##                        Code analysis                                      ##
 ###############################################################################
 clang_build_analyzer_clang_10:
   stage: analyze
-
-  image: irmb/virtualfluids-deps-ubuntu20.04
 
   only: ["schedules"]
 
@@ -362,8 +332,6 @@ clang_build_analyzer_clang_10:
 include_what_you_use_clang_10:
   stage: analyze
 
-  image: irmb/virtualfluids-deps-ubuntu20.04
-
   only: ["schedules"]
 
   needs: []
@@ -391,24 +359,28 @@ include_what_you_use_clang_10:
     - make
 
 ###############################################################################
+.analyze_template:
+
+  rules: # dont create MR pipeline, run always on irmb/develop and manual in all other cases
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: '$CI_PROJECT_NAMESPACE == "irmb" && $CI_COMMIT_BRANCH == "develop"'
+      when: always
+    - when: manual
+      allow_failure: true
+
 cppcheck:
   stage: analyze
 
-  image: irmb/virtualfluids-deps-ubuntu20.04
-
-  only:
-    - develop@irmb/VirtualFluids_dev
+  extends: .analyze_template
 
   needs: []
 
   before_script:
-    - export DEBIAN_FRONTEND=noninteractive
-    - apt-get update
-    - apt-get install -y cppcheck
+    - cppcheck --version
 
   script:
     - cd $CI_PROJECT_DIR
-    - cppcheck --version
     - cppcheck src --enable=all --xml 2> cppcheck.xml
 
   artifacts:
@@ -422,10 +394,7 @@ cppcheck:
 lizard:
   stage: analyze
 
-  image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
-
-  only:
-    - develop@irmb/VirtualFluids_dev
+  extends: .analyze_template
 
   needs: []
 
@@ -450,17 +419,11 @@ lizard:
 gcov_gcc_9:
   stage: analyze
 
-  image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
-
-  only:
-    - develop@irmb/VirtualFluids_dev
+  extends: .analyze_template
 
   needs: []
 
   before_script:
-    - export DEBIAN_FRONTEND=noninteractive
-    - apt-get update
-    - pip3 install gcovr
     - gcovr --version
 
   script:
@@ -482,7 +445,9 @@ gcov_gcc_9:
       - coverage/
 
     reports:
-      cobertura: coverage/coverage.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/coverage.xml
 
   cache:
     key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
@@ -494,10 +459,7 @@ gcov_gcc_9:
 clang-tidy:
   stage: analyze
 
-  image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
-
-  only:
-    - develop@irmb/VirtualFluids_dev
+  extends: .analyze_template
 
   needs: []
 
@@ -510,7 +472,6 @@ clang-tidy:
     - mkdir -p $CI_PROJECT_DIR/build
     - cd $CI_PROJECT_DIR/build
     - cmake ..
-      -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
       -DBUILD_VF_CPU=ON
       -DBUILD_VF_GPU=OFF
     - python3 ../utilities/filterCompileCommands.py compile_commands.json
@@ -553,7 +514,7 @@ pages:
 .deploy_template:
   stage: deploy
 
-  image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
+
 
   before_script:
     - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
@@ -615,8 +576,6 @@ vf_wheel_to_jupyterhub:
 # This job only run on the development branch of the parent repository, not on forks!
 sonar-scanner:
   stage: deploy
-
-  image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
 
   tags:
     - linux

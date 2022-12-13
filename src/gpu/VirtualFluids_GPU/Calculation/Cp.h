@@ -6,23 +6,23 @@
 #include "Parameter/Parameter.h"
 #include "GPU/CudaMemoryManager.h"
 
-extern "C" void calcCp(Parameter* para, CudaMemoryManager* cudaManager, int lev);
-extern "C" void printCpTopIntermediateStep(Parameter* para, unsigned int t, int lev);
-extern "C" void printCpTop(Parameter* para, CudaMemoryManager* cudaManager, int lev);
-extern "C" void printCpBottom(Parameter* para, CudaMemoryManager* cudaManager);
-extern "C" void printCpBottom2(Parameter* para, CudaMemoryManager* cudaManager);
+void calcCp(Parameter* para, CudaMemoryManager* cudaMemoryManager, int lev);
+void printCpTopIntermediateStep(Parameter* para, unsigned int t, int lev);
+void printCpTop(Parameter* para, CudaMemoryManager* cudaMemoryManager, int lev);
+void printCpBottom(Parameter* para, CudaMemoryManager* cudaMemoryManager);
+void printCpBottom2(Parameter* para, CudaMemoryManager* cudaMemoryManager);
 
 
 
-extern "C" void excludeGridInterfaceNodesForMirror(Parameter* para, int lev);
-extern "C" void calcPressForMirror(Parameter* para, CudaMemoryManager* cudaManager, int lev);
+void excludeGridInterfaceNodesForMirror(Parameter* para, int lev);
+void calcPressForMirror(Parameter* para, CudaMemoryManager* cudaMemoryManager, int lev);
 //Ensight Gold
-extern "C" void printCaseFile(Parameter* para);
-extern "C" void printGeoFile(Parameter* para, bool fileFormat);
-extern "C" void printScalars(Parameter* para, bool fileFormat);
+void printCaseFile(Parameter* para);
+void printGeoFile(Parameter* para, bool fileFormat);
+void printScalars(Parameter* para, bool fileFormat);
 //functions to write binary files
-extern "C" void writeIntToFile(const int &i, std::ofstream &ofile);
-extern "C" void writeFloatToFile(const float &f, std::ofstream &ofile);
-extern "C" void writeStringToFile(const std::string &s, std::ofstream &ofile);
+void writeIntToFile(const int &i, std::ofstream &ofile);
+void writeFloatToFile(const float &f, std::ofstream &ofile);
+void writeStringToFile(const std::string &s, std::ofstream &ofile);
 
 #endif

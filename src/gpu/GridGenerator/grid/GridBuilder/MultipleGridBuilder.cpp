@@ -28,7 +28,7 @@
 //
 //! \file MultipleGridBuilder.cpp
 //! \ingroup grid
-//! \author Soeren Peters, Stephan Lenz, Martin Schönherr
+//! \author Soeren Peters, Stephan Lenz, Martin Schï¿½nherr
 //=======================================================================================
 #include "MultipleGridBuilder.h"
 
@@ -49,14 +49,14 @@
 #include "io/GridVTKWriter/GridVTKWriter.h"
 #include "io/STLReaderWriter/STLWriter.h"
 
-MultipleGridBuilder::MultipleGridBuilder() : LevelGridBuilder(), numberOfLayersFine(12), numberOfLayersBetweenLevels(8), subDomainBox(nullptr)
+MultipleGridBuilder::MultipleGridBuilder(SPtr<GridFactory> gridFactory) : LevelGridBuilder(), gridFactory(gridFactory), numberOfLayersFine(12), numberOfLayersBetweenLevels(8), subDomainBox(nullptr)
 {
 
 }
 
-SPtr<MultipleGridBuilder> MultipleGridBuilder::makeShared()
+SPtr<MultipleGridBuilder> MultipleGridBuilder::makeShared(SPtr<GridFactory> gridFactory)
 {
-    return SPtr<MultipleGridBuilder>(new MultipleGridBuilder());
+    return SPtr<MultipleGridBuilder>(new MultipleGridBuilder(gridFactory));
 }
 
 void MultipleGridBuilder::addCoarseGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta)
@@ -195,7 +195,7 @@ void MultipleGridBuilder::addGridToListIfValid(SPtr<Grid> grid)
 
 SPtr<Grid> MultipleGridBuilder::makeGrid(Object* gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, uint level) const
 {
-    return GridImp::makeShared(gridShape, startX, startY, startZ, endX, endY, endZ, delta, "D3Q27", level);
+    return gridFactory->makeGrid(gridShape, startX, startY, startZ, endX, endY, endZ, delta, level);
 }
 
 bool MultipleGridBuilder::coarseGridExists() const

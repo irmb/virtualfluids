@@ -14,12 +14,14 @@ class KernelImp : public Kernel
 {
 public:
     virtual void run() = 0;
+    virtual void runOnIndices(const unsigned int *indices, unsigned int size_indices, int stream = -1);
 
     bool checkParameter();
     std::vector<PreProcessorType> getPreProcessorTypes();
     KernelGroup getKernelGroup();
 
     void setCheckParameterStrategy(std::shared_ptr<CheckParameterStrategy> strategy);
+    bool getKernelUsesFluidNodeIndices();
 
 protected:
     KernelImp(std::shared_ptr<Parameter> para, int level);
@@ -32,6 +34,8 @@ protected:
     KernelGroup myKernelGroup;
 
     vf::cuda::CudaGrid cudaGrid;
+
+    bool kernelUsesFluidNodeIndices = false;
 };
 
 #endif

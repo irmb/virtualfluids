@@ -1,7 +1,7 @@
 //  _    ___      __              __________      _     __        ______________   __
 // | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____   /  ___/ __  / /  / /
 // | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/  / /___/ /_/ / /  / /
-// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )  / /_) / ____/ /__/ / 
+// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )  / /_) / ____/ /__/ /
 // |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/   \____/_/    \_____/
 //
 //////////////////////////////////////////////////////////////////////////
@@ -50,6 +50,19 @@
 #include <string>
 #include <vector>
 
+//! \brief An enumeration for selecting a turbulence model
+enum class TurbulenceModel {
+   //! - Smagorinsky
+    Smagorinsky,
+    //! - AMD (Anisotropic Minimum Dissipation) model, see e.g. Rozema et al., Phys. Fluids 27, 085107 (2015), https://doi.org/10.1063/1.4928700
+    AMD,
+    //! - QR model by Verstappen 
+    QR,
+    //! - TODO: move the WALE model here from the old kernels
+    //WALE
+    //! - No turbulence model
+    None
+};
 
 struct InitCondition
 {
@@ -61,7 +74,7 @@ struct InitCondition
    real RealX {1.0};
    real RealY {1.0};
    int numprocs {1};
-   int myid {0};
+   int myProcessId {0};
    int maxdev {1};
    uint tDoCheckPoint {0};
    uint tDoRestart {0};
@@ -74,12 +87,14 @@ struct InitCondition
    uint PressOutID {0};
    uint PressInZ {1};
    uint PressOutZ {2};
-   std::vector<uint> devices {1, 0}; // one device with ID = 0
+   std::vector<uint> devices {0, 1}; // one device with ID = 0
    std::vector<int> GridX, GridY, GridZ, DistX, DistY, DistZ;
    std::vector<real> scaleLBMtoSI, translateLBMtoSI;
    std::vector<real> minCoordX, minCoordY, minCoordZ, maxCoordX, maxCoordY, maxCoordZ;
-   std::string fname, oPath;
-   std::string oPrefix {"MyFile"};
+   std::string fname {"output/simulation"};
+   std::string oPath {"output/"};
+   std::string gridPath {"grid/"};
+   std::string oPrefix {"simulation"};
    std::string geometryFileC, geometryFileM, geometryFileF;
    std::string kFull, geoFull, geoVec, coordX, coordY, coordZ, neighborX, neighborY, neighborZ, neighborWSB, scaleCFC, scaleCFF, scaleFCC, scaleFCF, scaleOffsetCF, scaleOffsetFC;
    std::string noSlipBcPos, noSlipBcQs, noSlipBcValue;
@@ -120,9 +135,13 @@ struct InitCondition
    bool calcMedian {false};
    bool isConc {false};
    bool isWale {false};
+   TurbulenceModel turbulenceModel {TurbulenceModel::None};
+   bool isTurbulentViscosity {false};
+   real SGSConstant {0.0};
    bool isMeasurePoints {false};
    bool isInitNeq {false};
    bool isGeoNormal, isInflowNormal, isOutflowNormal;
+   bool hasWallModelMonitor {false};
    bool simulatePorousMedia {false};
    bool streetVelocityFile {false};
 };
@@ -173,7 +192,13 @@ typedef struct  Distri27{
    real* f[27];
 } Distributions27, DistributionReferences27;
 
+// Subgrid distances q 27
+typedef struct SubgridDist27{
+   real* q[27];
+} SubgridDistances27;
+
 //Q for second order BCs
+//! \struct to manage sub-grid-distances (q) for second order Boundary Conditions (BCs)
 typedef struct QforBC{
    int* k;
    int* kN;
@@ -181,9 +206,12 @@ typedef struct QforBC{
    real* qread;
    real* q27[27];
    real* q19[19];
-   int kQ=0;
+   unsigned int numberOfBCnodes=0;
    int kArray;
-   real *Vx, *Vy, *Vz, *deltaVz, *RhoBC;
+   real *Vx,      *Vy,      *Vz;
+   real *Vx1,     *Vy1,     *Vz1;
+   real *deltaVz, *RhoBC;
+   real *normalX, *normalY, *normalZ;
 }QforBoundaryConditions;
 
 //BCTemp
@@ -209,6 +237,17 @@ typedef struct TempPressforBC{
    real* velo;
    int kTemp=0;
 }TempPressforBoundaryConditions;
+
+// Settings for wall model used in StressBC
+typedef struct WMparas{
+   real* z0;
+   int* samplingOffset;
+   bool hasMonitor;
+   real* u_star;
+   real* Fx;
+   real* Fy;
+   real* Fz;
+}WallModelParameters;
 
 //measurePoints
 typedef struct MeasP{
@@ -258,6 +297,8 @@ typedef struct PLP{
 	uint numberOfParticles, numberOfTimestepsParticles;
 	uint memSizeID, memSizeTimestep, memSizerealAll, memSizereal, memSizeBool, memSizeBoolBC;
 }PathLineParticles;
+
+
 
 //////////////////////////////////////////////////////////////////////////
 inline int vectorPosition(int i, int j, int k, int Lx, int Ly )

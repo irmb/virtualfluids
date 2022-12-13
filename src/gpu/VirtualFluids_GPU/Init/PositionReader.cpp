@@ -3,7 +3,7 @@
 #include "Parameter/Parameter.h"
 
 #include <basics/utilities/UbFileInputASCII.h>
-
+using namespace vf::lbm::dir;
 
 //////////////////////////////////////////////////////////////////////////
 void PositionReader::readFilePropellerCylinderForAlloc(Parameter* para)
@@ -15,15 +15,15 @@ void PositionReader::readFilePropellerCylinderForAlloc(Parameter* para)
 
 	for (int level = 0; level < maxlevel; level++)
 	{
-		para->getParH(level)->QPropeller.kQ = in.readInteger();
-		para->getParD(level)->QPropeller.kQ = para->getParH(level)->QPropeller.kQ;
+		para->getParH(level)->propellerBC.numberOfBCnodes = in.readInteger();
+		para->getParD(level)->propellerBC.numberOfBCnodes = para->getParH(level)->propellerBC.numberOfBCnodes;
 		in.readLine();
 		if (level == para->getFine())
 		{
-			for(int u=0; u<para->getParH(level)->QPropeller.kQ; u++)
+			for(uint u=0; u<para->getParH(level)->propellerBC.numberOfBCnodes; u++)
 			{
 				test = in.readInteger();
-				if (para->getParH(level)->geoSP[test] == GEO_FLUID)
+				if (para->getParH(level)->typeOfGridNode[test] == GEO_FLUID)
 				{
 					count++;
 				}
@@ -55,7 +55,7 @@ void PositionReader::readFilePropellerCylinderForAlloc(Parameter* para)
 		}
 		else
 		{
-			for(int u=0; u<para->getParH(level)->QPropeller.kQ; u++)
+			for(uint u=0; u<para->getParH(level)->propellerBC.numberOfBCnodes; u++)
 			{
 				in.readInteger();
 				in.readDouble();
@@ -64,8 +64,8 @@ void PositionReader::readFilePropellerCylinderForAlloc(Parameter* para)
 				in.readLine();
 			}
 		}
-		para->getParH(level)->QPropeller.kQ = count;
-		para->getParD(level)->QPropeller.kQ = para->getParH(level)->QPropeller.kQ;
+		para->getParH(level)->propellerBC.numberOfBCnodes = count;
+		para->getParD(level)->propellerBC.numberOfBCnodes = para->getParH(level)->propellerBC.numberOfBCnodes;
 	}
 }
 //////////////////////////////////////////////////////////////////////////
@@ -89,13 +89,13 @@ void PositionReader::readFilePropellerCylinder(Parameter* para)
 			{
 				test = in.readInteger();
 				////////////////////////////////////////////////////////////////////////
-				if (para->getParH(level)->geoSP[test] == GEO_FLUID)
+				if (para->getParH(level)->typeOfGridNode[test] == GEO_FLUID)
 				{
-					para->getParH(level)->QPropeller.k[count] = test; 
-					para->getParH(level)->QPropeller.Vx[count] = (real)in.readDouble();
-					para->getParH(level)->QPropeller.Vy[count] = (real)in.readDouble();
-					para->getParH(level)->QPropeller.Vz[count] = (real)in.readDouble();
-					para->getParH(level)->QPropeller.RhoBC[count] = 0.0f;									
+					para->getParH(level)->propellerBC.k[count] = test; 
+					para->getParH(level)->propellerBC.Vx[count] = (real)in.readDouble();
+					para->getParH(level)->propellerBC.Vy[count] = (real)in.readDouble();
+					para->getParH(level)->propellerBC.Vz[count] = (real)in.readDouble();
+					para->getParH(level)->propellerBC.RhoBC[count] = 0.0f;									
 					count++;
 				}
 				else
@@ -104,13 +104,13 @@ void PositionReader::readFilePropellerCylinder(Parameter* para)
 					in.readDouble();
 					in.readDouble();
 				}
-				//para->getParH(level)->QPropeller.k[count] = test; 
-				//para->getParH(level)->QPropeller.Vx[count] = (real)in.readDouble();
-				//para->getParH(level)->QPropeller.Vy[count] = (real)in.readDouble();
-				//para->getParH(level)->QPropeller.Vz[count] = (real)in.readDouble();
-				//para->getParH(level)->QPropeller.Vx[count]	  = 0.07f;
-				//para->getParH(level)->QPropeller.Vy[count]	  = 0.0f;
-				//para->getParH(level)->QPropeller.Vz[count]	  = 0.0f;
+				//para->getParH(level)->propellerBC.k[count] = test; 
+				//para->getParH(level)->propellerBC.Vx[count] = (real)in.readDouble();
+				//para->getParH(level)->propellerBC.Vy[count] = (real)in.readDouble();
+				//para->getParH(level)->propellerBC.Vz[count] = (real)in.readDouble();
+				//para->getParH(level)->propellerBC.Vx[count]	  = 0.07f;
+				//para->getParH(level)->propellerBC.Vy[count]	  = 0.0f;
+				//para->getParH(level)->propellerBC.Vz[count]	  = 0.0f;
 				in.readLine();
 			}
 		} 
@@ -136,44 +136,44 @@ void PositionReader::definePropellerQs(Parameter* para)
 {
 	//////////////////////////////////////////////////////////////////
 	//preprocessing
-	real* QQ                  = para->getParH(para->getFine())->QPropeller.q27[0]; 
-	unsigned int sizeQ           = para->getParH(para->getFine())->QPropeller.kQ; 
+	real* QQ                  = para->getParH(para->getFine())->propellerBC.q27[0]; 
+	unsigned int sizeQ           = para->getParH(para->getFine())->propellerBC.numberOfBCnodes; 
 	QforBoundaryConditions Q;
-	Q.q27[dirE   ] = &QQ[dirE   *sizeQ];
-	Q.q27[dirW   ] = &QQ[dirW   *sizeQ];
-	Q.q27[dirN   ] = &QQ[dirN   *sizeQ];
-	Q.q27[dirS   ] = &QQ[dirS   *sizeQ];
-	Q.q27[dirT   ] = &QQ[dirT   *sizeQ];
-	Q.q27[dirB   ] = &QQ[dirB   *sizeQ];
-	Q.q27[dirNE  ] = &QQ[dirNE  *sizeQ];
-	Q.q27[dirSW  ] = &QQ[dirSW  *sizeQ];
-	Q.q27[dirSE  ] = &QQ[dirSE  *sizeQ];
-	Q.q27[dirNW  ] = &QQ[dirNW  *sizeQ];
-	Q.q27[dirTE  ] = &QQ[dirTE  *sizeQ];
-	Q.q27[dirBW  ] = &QQ[dirBW  *sizeQ];
-	Q.q27[dirBE  ] = &QQ[dirBE  *sizeQ];
-	Q.q27[dirTW  ] = &QQ[dirTW  *sizeQ];
-	Q.q27[dirTN  ] = &QQ[dirTN  *sizeQ];
-	Q.q27[dirBS  ] = &QQ[dirBS  *sizeQ];
-	Q.q27[dirBN  ] = &QQ[dirBN  *sizeQ];
-	Q.q27[dirTS  ] = &QQ[dirTS  *sizeQ];
-	Q.q27[dirZERO] = &QQ[dirZERO*sizeQ];
-	Q.q27[dirTNE ] = &QQ[dirTNE *sizeQ];
-	Q.q27[dirTSW ] = &QQ[dirTSW *sizeQ];
-	Q.q27[dirTSE ] = &QQ[dirTSE *sizeQ];
-	Q.q27[dirTNW ] = &QQ[dirTNW *sizeQ];
-	Q.q27[dirBNE ] = &QQ[dirBNE *sizeQ];
-	Q.q27[dirBSW ] = &QQ[dirBSW *sizeQ];
-	Q.q27[dirBSE ] = &QQ[dirBSE *sizeQ];
-	Q.q27[dirBNW ] = &QQ[dirBNW *sizeQ];
+	Q.q27[DIR_P00   ] = &QQ[DIR_P00   *sizeQ];
+	Q.q27[DIR_M00   ] = &QQ[DIR_M00   *sizeQ];
+	Q.q27[DIR_0P0   ] = &QQ[DIR_0P0   *sizeQ];
+	Q.q27[DIR_0M0   ] = &QQ[DIR_0M0   *sizeQ];
+	Q.q27[DIR_00P   ] = &QQ[DIR_00P   *sizeQ];
+	Q.q27[DIR_00M   ] = &QQ[DIR_00M   *sizeQ];
+	Q.q27[DIR_PP0  ] = &QQ[DIR_PP0  *sizeQ];
+	Q.q27[DIR_MM0  ] = &QQ[DIR_MM0  *sizeQ];
+	Q.q27[DIR_PM0  ] = &QQ[DIR_PM0  *sizeQ];
+	Q.q27[DIR_MP0  ] = &QQ[DIR_MP0  *sizeQ];
+	Q.q27[DIR_P0P  ] = &QQ[DIR_P0P  *sizeQ];
+	Q.q27[DIR_M0M  ] = &QQ[DIR_M0M  *sizeQ];
+	Q.q27[DIR_P0M  ] = &QQ[DIR_P0M  *sizeQ];
+	Q.q27[DIR_M0P  ] = &QQ[DIR_M0P  *sizeQ];
+	Q.q27[DIR_0PP  ] = &QQ[DIR_0PP  *sizeQ];
+	Q.q27[DIR_0MM  ] = &QQ[DIR_0MM  *sizeQ];
+	Q.q27[DIR_0PM  ] = &QQ[DIR_0PM  *sizeQ];
+	Q.q27[DIR_0MP  ] = &QQ[DIR_0MP  *sizeQ];
+	Q.q27[DIR_000] = &QQ[DIR_000*sizeQ];
+	Q.q27[DIR_PPP ] = &QQ[DIR_PPP *sizeQ];
+	Q.q27[DIR_MMP ] = &QQ[DIR_MMP *sizeQ];
+	Q.q27[DIR_PMP ] = &QQ[DIR_PMP *sizeQ];
+	Q.q27[DIR_MPP ] = &QQ[DIR_MPP *sizeQ];
+	Q.q27[DIR_PPM ] = &QQ[DIR_PPM *sizeQ];
+	Q.q27[DIR_MMM ] = &QQ[DIR_MMM *sizeQ];
+	Q.q27[DIR_PMM ] = &QQ[DIR_PMM *sizeQ];
+	Q.q27[DIR_MPM ] = &QQ[DIR_MPM *sizeQ];
 	//////////////////////////////////////////////////////////////////
-	for(int u=0; u<para->getParH(para->getFine())->QPropeller.kQ; u++)
+	for(uint u=0; u<para->getParH(para->getFine())->propellerBC.numberOfBCnodes; u++)
 	{
-		for (int dir = dirE; dir<=dirBSW; dir++)
+		for (int dir = DIR_P00; dir<=DIR_MMM; dir++)
 		{
-			if ((dir==dirE)  || 
-				(dir==dirNE) || (dir==dirSE) || (dir==dirTE) || (dir==dirBE) ||
-				(dir==dirTNE)|| (dir==dirBNE)|| (dir==dirTSE)|| (dir==dirBSE))
+			if ((dir==DIR_P00)  || 
+				(dir==DIR_PP0) || (dir==DIR_PM0) || (dir==DIR_P0P) || (dir==DIR_P0M) ||
+				(dir==DIR_PPP)|| (dir==DIR_PPM)|| (dir==DIR_PMP)|| (dir==DIR_PMM))
 			{
 				Q.q27[dir][u] = 1.0f;
 			} 
