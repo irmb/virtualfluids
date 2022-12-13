@@ -530,7 +530,7 @@ void CudaMemoryManager::cudaCopyProcessNeighborXIndex(int lev, unsigned int proc
 void CudaMemoryManager::cudaCopyProcessNeighborXFsHD(int lev, unsigned int processNeighbor,
                                                      const unsigned int &memsizeFsRecv)
 {
-    if (!parameter->getStreamManager()->streamIsRegistered(CudaStreamIndex::Border))
+    if (!parameter->getStreamManager()->streamIsRegistered(CudaStreamIndex::SubDomainBorder))
         checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->recvProcessNeighborX[processNeighbor].f[0],
 						 parameter->getParH(lev)->recvProcessNeighborX[processNeighbor].f[0],
 						 parameter->getD3Qxx() * memsizeFsRecv,
@@ -540,12 +540,12 @@ void CudaMemoryManager::cudaCopyProcessNeighborXFsHD(int lev, unsigned int proce
                                          parameter->getParH(lev)->recvProcessNeighborX[processNeighbor].f[0],
                                          parameter->getD3Qxx() * memsizeFsRecv,
                                          cudaMemcpyHostToDevice,
-                                         parameter->getStreamManager()->getStream(CudaStreamIndex::Border)));
+                                         parameter->getStreamManager()->getStream(CudaStreamIndex::SubDomainBorder)));
 }
 void CudaMemoryManager::cudaCopyProcessNeighborXFsDH(int lev, unsigned int processNeighbor,
                                                      const unsigned int &memsizeFsSend)
 {  
-    if (!parameter->getStreamManager()->streamIsRegistered(CudaStreamIndex::Border))
+    if (!parameter->getStreamManager()->streamIsRegistered(CudaStreamIndex::SubDomainBorder))
     	checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->sendProcessNeighborX[processNeighbor].f[0],
     								parameter->getParD(lev)->sendProcessNeighborX[processNeighbor].f[0],
     								parameter->getD3Qxx() * memsizeFsSend,
@@ -555,7 +555,7 @@ void CudaMemoryManager::cudaCopyProcessNeighborXFsDH(int lev, unsigned int proce
     								     parameter->getParD(lev)->sendProcessNeighborX[processNeighbor].f[0],
     								     parameter->getD3Qxx() * memsizeFsSend,
     								     cudaMemcpyDeviceToHost,
-                                         parameter->getStreamManager()->getStream(CudaStreamIndex::Border)));
+                                         parameter->getStreamManager()->getStream(CudaStreamIndex::SubDomainBorder)));
 }
 void CudaMemoryManager::cudaFreeProcessNeighborX(int lev, unsigned int processNeighbor)
 {
@@ -600,7 +600,7 @@ void CudaMemoryManager::cudaCopyProcessNeighborYIndex(int lev, unsigned int proc
 }
 void CudaMemoryManager::cudaCopyProcessNeighborYFsHD(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsRecv)
 {
-    if (!parameter->getStreamManager()->streamIsRegistered(CudaStreamIndex::Border))
+    if (!parameter->getStreamManager()->streamIsRegistered(CudaStreamIndex::SubDomainBorder))
 	    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->recvProcessNeighborY[processNeighbor].f[0],
 								    parameter->getParH(lev)->recvProcessNeighborY[processNeighbor].f[0],
 								    parameter->getD3Qxx() * memsizeFsRecv,
@@ -610,11 +610,11 @@ void CudaMemoryManager::cudaCopyProcessNeighborYFsHD(int lev, unsigned int proce
                                          parameter->getParH(lev)->recvProcessNeighborY[processNeighbor].f[0],
                                          parameter->getD3Qxx() * memsizeFsRecv,
                                          cudaMemcpyHostToDevice,
-                                         parameter->getStreamManager()->getStream(CudaStreamIndex::Border)));
+                                         parameter->getStreamManager()->getStream(CudaStreamIndex::SubDomainBorder)));
 }
 void CudaMemoryManager::cudaCopyProcessNeighborYFsDH(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsSend)
 {
-    if (!parameter->getStreamManager()->streamIsRegistered(CudaStreamIndex::Border))
+    if (!parameter->getStreamManager()->streamIsRegistered(CudaStreamIndex::SubDomainBorder))
 	    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->sendProcessNeighborY[processNeighbor].f[0],
 	    							parameter->getParD(lev)->sendProcessNeighborY[processNeighbor].f[0],
 	    							parameter->getD3Qxx() * memsizeFsSend,
@@ -624,7 +624,7 @@ void CudaMemoryManager::cudaCopyProcessNeighborYFsDH(int lev, unsigned int proce
                                          parameter->getParD(lev)->sendProcessNeighborY[processNeighbor].f[0],
                                          parameter->getD3Qxx() * memsizeFsSend,
                                          cudaMemcpyDeviceToHost, 
-                                         parameter->getStreamManager()->getStream(CudaStreamIndex::Border)));
+                                         parameter->getStreamManager()->getStream(CudaStreamIndex::SubDomainBorder)));
 }
 void CudaMemoryManager::cudaFreeProcessNeighborY(int lev, unsigned int processNeighbor)
 {
@@ -670,7 +670,7 @@ void CudaMemoryManager::cudaCopyProcessNeighborZIndex(int lev, unsigned int proc
 void CudaMemoryManager::cudaCopyProcessNeighborZFsHD(int lev, unsigned int processNeighbor,
                                                      const unsigned int &memsizeFsRecv)
 {
-    if (!parameter->getStreamManager()->streamIsRegistered(CudaStreamIndex::Border))
+    if (!parameter->getStreamManager()->streamIsRegistered(CudaStreamIndex::SubDomainBorder))
 	    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->recvProcessNeighborZ[processNeighbor].f[0],
 	    							parameter->getParH(lev)->recvProcessNeighborZ[processNeighbor].f[0],
 	    							parameter->getD3Qxx() * memsizeFsRecv,
@@ -680,12 +680,12 @@ void CudaMemoryManager::cudaCopyProcessNeighborZFsHD(int lev, unsigned int proce
 	    				                 parameter->getParH(lev)->recvProcessNeighborZ[processNeighbor].f[0],
 	    				                 parameter->getD3Qxx() * memsizeFsRecv,
 	    				                 cudaMemcpyHostToDevice,
-                                         parameter->getStreamManager()->getStream(CudaStreamIndex::Border)));
+                                         parameter->getStreamManager()->getStream(CudaStreamIndex::SubDomainBorder)));
 }
 void CudaMemoryManager::cudaCopyProcessNeighborZFsDH(int lev, unsigned int processNeighbor,
                                                      const unsigned int &memsizeFsSend)
 {
-    if (!parameter->getStreamManager()->streamIsRegistered(CudaStreamIndex::Border))
+    if (!parameter->getStreamManager()->streamIsRegistered(CudaStreamIndex::SubDomainBorder))
         checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->sendProcessNeighborZ[processNeighbor].f[0],
 	        					    parameter->getParD(lev)->sendProcessNeighborZ[processNeighbor].f[0],
 	        					    parameter->getD3Qxx() * memsizeFsSend,
@@ -695,7 +695,7 @@ void CudaMemoryManager::cudaCopyProcessNeighborZFsDH(int lev, unsigned int proce
 	        						     parameter->getParD(lev)->sendProcessNeighborZ[processNeighbor].f[0],
 	        						     parameter->getD3Qxx() * memsizeFsSend,
 	        						     cudaMemcpyDeviceToHost,
-                                         parameter->getStreamManager()->getStream(CudaStreamIndex::Border)));
+                                         parameter->getStreamManager()->getStream(CudaStreamIndex::SubDomainBorder)));
 }
 void CudaMemoryManager::cudaFreeProcessNeighborZ(int lev, unsigned int processNeighbor)
 {

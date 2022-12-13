@@ -120,11 +120,11 @@ void GridGenerator::allocArrays_taggedFluidNodes() {
                     if(para->getParH(level)->numberOfTaggedFluidNodes[tag]>0)
                         para->getParH(level)->allocatedBulkFluidNodeTags.push_back(tag);
                     break;
-                case CollisionTemplate::Border:
-                    this->setNumberOfTaggedFluidNodes(builder->getNumberOfFluidNodesBorder(level), CollisionTemplate::Border, level);
-                    cudaMemoryManager->cudaAllocTaggedFluidNodeIndices(CollisionTemplate::Border, level);
-                    builder->getFluidNodeIndicesBorder(para->getParH(level)->taggedFluidNodeIndices[CollisionTemplate::Border], level);
-                    cudaMemoryManager->cudaCopyTaggedFluidNodeIndices(CollisionTemplate::Border, level);
+                case CollisionTemplate::SubDomainBorder:
+                    this->setNumberOfTaggedFluidNodes(builder->getNumberOfFluidNodesBorder(level), CollisionTemplate::SubDomainBorder, level);
+                    cudaMemoryManager->cudaAllocTaggedFluidNodeIndices(CollisionTemplate::SubDomainBorder, level);
+                    builder->getFluidNodeIndicesBorder(para->getParH(level)->taggedFluidNodeIndices[CollisionTemplate::SubDomainBorder], level);
+                    cudaMemoryManager->cudaCopyTaggedFluidNodeIndices(CollisionTemplate::SubDomainBorder, level);
                     break;
                 case CollisionTemplate::WriteMacroVars:
                     this->setNumberOfTaggedFluidNodes(builder->getNumberOfFluidNodesMacroVars(level), CollisionTemplate::WriteMacroVars, level);
@@ -157,7 +157,7 @@ void GridGenerator::allocArrays_taggedFluidNodes() {
         VF_LOG_INFO("Number of tagged nodes on level {}:", level);
         VF_LOG_INFO("Default: {}, Border: {}, WriteMacroVars: {}, ApplyBodyForce: {}, AllFeatures: {}", 
                     para->getParH(level)->numberOfTaggedFluidNodes[CollisionTemplate::Default],
-                    para->getParH(level)->numberOfTaggedFluidNodes[CollisionTemplate::Border],
+                    para->getParH(level)->numberOfTaggedFluidNodes[CollisionTemplate::SubDomainBorder],
                     para->getParH(level)->numberOfTaggedFluidNodes[CollisionTemplate::WriteMacroVars],
                     para->getParH(level)->numberOfTaggedFluidNodes[CollisionTemplate::ApplyBodyForce],
                     para->getParH(level)->numberOfTaggedFluidNodes[CollisionTemplate::AllFeatures]    );        
@@ -177,8 +177,8 @@ void GridGenerator::tagFluidNodeIndices(std::vector<uint> taggedFluidNodeIndices
             builder->addFluidNodeIndicesAllFeatures( taggedFluidNodeIndices, level );
             break;
         case CollisionTemplate::Default:
-        case CollisionTemplate::Border:
-            throw std::runtime_error("Cannot tag fluid nodes as Default or Border!");
+        case CollisionTemplate::SubDomainBorder:
+            throw std::runtime_error("Cannot tag fluid nodes as Default or SubDomainBorder!");
         default:
             throw std::runtime_error("Tagging fluid nodes with invald tag!");
             break;
