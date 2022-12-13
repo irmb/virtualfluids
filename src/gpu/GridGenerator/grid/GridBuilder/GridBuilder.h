@@ -153,12 +153,12 @@ public:
     virtual void sortFluidNodeIndicesMacroVars(uint level) = 0;
     virtual void sortFluidNodeIndicesApplyBodyForce(uint level) = 0;
     virtual void sortFluidNodeIndicesAllFeatures(uint level) = 0;
-    virtual uint getNumberOfFluidNodesMacroVars(unsigned int level) const = 0;
-    virtual void getFluidNodeIndicesMacroVars(uint *fluidNodeIndicesMacroVars, const int level) const = 0;
-    virtual uint getNumberOfFluidNodesApplyBodyForce(unsigned int level) const = 0;
-    virtual void getFluidNodeIndicesApplyBodyForce(uint *fluidNodeIndicesApplyBodyForce, const int level) const = 0;
-    virtual uint getNumberOfFluidNodesAllFeatures(unsigned int level) const = 0;
-    virtual void getFluidNodeIndicesAllFeatures(uint *fluidNodeIndicesAllFeatures, const int level) const = 0;
+    virtual uint getNumberOfFluidNodesMacroVars(uint level) const = 0;
+    virtual void getFluidNodeIndicesMacroVars(uint *fluidNodeIndicesMacroVars, int level) const = 0;
+    virtual uint getNumberOfFluidNodesApplyBodyForce(uint level) const = 0;
+    virtual void getFluidNodeIndicesApplyBodyForce(uint *fluidNodeIndicesApplyBodyForce, int level) const = 0;
+    virtual uint getNumberOfFluidNodesAllFeatures(uint level) const = 0;
+    virtual void getFluidNodeIndicesAllFeatures(uint *fluidNodeIndicesAllFeatures, int level) const = 0;
 
 
 };
