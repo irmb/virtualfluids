@@ -75,7 +75,7 @@ void run()
 
       SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
 
-      int baseLevel = 0;
+      //int baseLevel = 0;
       int refineLevel = 1;
 
       //bounding box
