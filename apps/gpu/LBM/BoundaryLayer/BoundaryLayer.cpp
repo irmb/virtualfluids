@@ -235,14 +235,19 @@ void multipleLevel(const std::string& configPath)
     bool isLastSubDomain  = (procID == nProcs-1 && nProcs > 1)?                    true: false;
     bool isMidSubDomain   = (!isFirstSubDomain && !isLastSubDomain && nProcs > 1)? true: false;
     
-    if(isFirstSubDomain || isMidSubDomain)
+    if(isFirstSubDomain)
     {
         xGridMax += overlap;
-        // xGridMin -= overlap;
+        if(!readPrecursor) xGridMin -= overlap;
     }
-    if(isLastSubDomain || isMidSubDomain)
+    if(isLastSubDomain)
     {
-        // xGridMax += overlap;
+        xGridMin -= overlap;
+        if(!readPrecursor) xGridMax += overlap;
+    }
+    if(isMidSubDomain)
+    {
+        xGridMax += overlap;
         xGridMin -= overlap;
     }
 
@@ -252,8 +257,7 @@ void multipleLevel(const std::string& configPath)
     {
         gridBuilder->setNumberOfLayers(4,0);
         real xMaxRefinement = readPrecursor? xGridMax-H: xGridMax;   //Stop refinement some distance before outlet if domain ist not periodic
-        // gridBuilder->addGrid( new Cuboid( xGridMin+dx, 0.f, 0.f, xMaxRefinement, L_y,  0.5*L_z) , 1 );
-        gridBuilder->addGrid( new Cuboid( 0.f, 0.f, 0.f, 5000.0, L_y,  0.5*L_z) , 1 );
+        gridBuilder->addGrid( new Cuboid( xGridMin, 0.f, 0.f, xMaxRefinement, L_y,  0.5*L_z) , 1 );
         para->setMaxLevel(2);
         scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
     }
