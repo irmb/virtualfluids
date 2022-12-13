@@ -72,27 +72,28 @@ void run(string configname)
       noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
 
       SPtr<BCAdapter> denBCAdapter(new DensityBCAdapter(rhoLB));
-      //denBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonReflectingOutflowBCAlgorithm()));
-      denBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonEqDensityBCAlgorithm()));
+      denBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonReflectingOutflowBCAlgorithm()));
+      //denBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonEqDensityBCAlgorithm()));
 
-      double startTime = 5;
+      //double startTime = 5;
       mu::Parser fct1;
       fct1.SetExpr("U");
-      fct1.DefineConst("U", 0.00001);
-      SPtr<BCAdapter> velBCAdapter1(new VelocityBCAdapter(true, false, false, fct1, 0, startTime));
-      velBCAdapter1->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
+      fct1.DefineConst("U", uLB);
+      SPtr<BCAdapter> velBCAdapter1(new VelocityBCAdapter(true, false, false, fct1, 0, BCFunction::INFCONST));
+      //velBCAdapter1->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
+      velBCAdapter1->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityWithDensityBCAlgorithm()));
 
-      mu::Parser fct2;
-      fct2.SetExpr("U");
-      fct2.DefineConst("U", uLB);
-      SPtr<BCAdapter> velBCAdapter2(new VelocityBCAdapter(true, false, false, fct2, startTime, BCFunction::INFCONST));
+      //mu::Parser fct2;
+      //fct2.SetExpr("U");
+      //fct2.DefineConst("U", uLB);
+      //SPtr<BCAdapter> velBCAdapter2(new VelocityBCAdapter(true, false, false, fct2, startTime, BCFunction::INFCONST));
 
       //////////////////////////////////////////////////////////////////////////////////
       //BS visitor
       BoundaryConditionsBlockVisitor bcVisitor;
       bcVisitor.addBC(noSlipBCAdapter);
       bcVisitor.addBC(denBCAdapter);
-      //bcVisitor.addBC(velBCAdapter);
+      //bcVisitor.addBC(velBCAdapter1);
 
       SPtr<Grid3D> grid(new Grid3D(comm));
 
@@ -107,11 +108,16 @@ void run(string configname)
       kernel->setBCProcessor(bcProc);
 
       //////////////////////////////////////////////////////////////////////////
+      SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::DIR_00M));
       //restart
       SPtr<UbScheduler> mSch(new UbScheduler(cpStep, cpStart));
-      SPtr<MPIIOMigrationCoProcessor> migCoProcessor(new MPIIOMigrationCoProcessor(grid, mSch, pathname + "/mig", comm));
+      //SPtr<MPIIOMigrationCoProcessor> migCoProcessor(new MPIIOMigrationCoProcessor(grid, mSch, metisVisitor, pathname + "/mig", comm));
+      SPtr<MPIIOMigrationBECoProcessor> migCoProcessor(new MPIIOMigrationBECoProcessor(grid, mSch, metisVisitor, pathname + "/mig", comm));
       migCoProcessor->setLBMKernel(kernel);
       migCoProcessor->setBCProcessor(bcProc);
+      migCoProcessor->setNu(nuLB);
+      migCoProcessor->setNuLG(0.01, 0.01);
+      migCoProcessor->setDensityRatio(1);
       //////////////////////////////////////////////////////////////////////////
 
       SPtr<D3Q27Interactor> inflowInt;
@@ -157,7 +163,7 @@ void run(string configname)
          grid->setBlockNX(blocknx[0], blocknx[1], blocknx[2]);
 
          grid->setPeriodicX1(false);
-         grid->setPeriodicX2(true);
+         grid->setPeriodicX2(false);
          grid->setPeriodicX3(false);
 
          if (myid == 0) GbSystem3D::writeGeoObject(gridCube.get(), pathname + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
@@ -208,13 +214,13 @@ void run(string configname)
          //velBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityWithDensityBCAlgorithm()));
          
          inflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow, grid, velBCAdapter1, Interactor3D::SOLID));
-         inflowInt->addBCAdapter(velBCAdapter2);
+         //inflowInt->addBCAdapter(velBCAdapter2);
 
 
          //outflow
          SPtr<D3Q27Interactor> outflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow, grid, denBCAdapter, Interactor3D::SOLID));
 
-         SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B));
+         //SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::DIR_00M));
          InteractorsHelper intHelper(grid, metisVisitor);
          intHelper.addInteractor(cylinderInt);
          intHelper.addInteractor(inflowInt);
@@ -313,9 +319,9 @@ void run(string configname)
       SPtr<UbScheduler> nupsSch(new UbScheduler(100, 100, 100000000));
       SPtr<CoProcessor> npr(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
 
-      SPtr<UbScheduler> timeBCSch(new UbScheduler(1, startTime, startTime));
-      auto timeDepBC = make_shared<TimeDependentBCCoProcessor>(TimeDependentBCCoProcessor(grid, timeBCSch));
-      timeDepBC->addInteractor(inflowInt);
+      //SPtr<UbScheduler> timeBCSch(new UbScheduler(1, startTime, startTime));
+      //auto timeDepBC = make_shared<TimeDependentBCCoProcessor>(TimeDependentBCCoProcessor(grid, timeBCSch));
+      //timeDepBC->addInteractor(inflowInt);
 
       omp_set_num_threads(numOfThreads);
       numOfThreads = 1;
@@ -324,7 +330,7 @@ void run(string configname)
       calculator->addCoProcessor(npr);
       calculator->addCoProcessor(pp);
       calculator->addCoProcessor(migCoProcessor);
-      calculator->addCoProcessor(timeDepBC);
+      //calculator->addCoProcessor(timeDepBC);
 
       if (myid == 0) VF_LOG_INFO("Simulation-start");
       calculator->calculate();

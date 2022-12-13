@@ -9,6 +9,16 @@ add_subdirectory(${APPS_ROOT_CPU}/sphere)
 add_subdirectory(${APPS_ROOT_CPU}/FlowAroundCylinder)
 add_subdirectory(${APPS_ROOT_CPU}/LaminarTubeFlow)
 add_subdirectory(${APPS_ROOT_CPU}/MultiphaseDropletTest)
+add_subdirectory(${APPS_ROOT_CPU}/RisingBubble2D)
+add_subdirectory(${APPS_ROOT_CPU}/JetBreakup)
+
+add_subdirectory(${APPS_ROOT_CPU}/ConvectionOfVortex)
+
+IF(${USE_LIGGGHTS})
+	add_subdirectory(${APPS_ROOT_CPU}/LiggghtsApp)
+	add_subdirectory(${APPS_ROOT_CPU}/FallingSphere)
+	add_subdirectory(${APPS_ROOT_CPU}/Nozzle)
+ENDIF()
 
 #add_subdirectory(tests)
 #add_subdirectory(Applications/gridRf)

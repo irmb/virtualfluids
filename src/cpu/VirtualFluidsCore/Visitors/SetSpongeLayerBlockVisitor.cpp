@@ -1,5 +1,5 @@
 #include "SetSpongeLayerBlockVisitor.h"
-#include "Grid3DSystem.h"
+#include "D3Q27System.h"
 #include "LBMSystem.h"
 
 #include "Block3D.h"
@@ -7,7 +7,7 @@
 #include "LBMKernel.h"
 
 SetSpongeLayerBlockVisitor::SetSpongeLayerBlockVisitor(const mu::Parser &spongeLayer)
-    : Block3DVisitor(0, Grid3DSystem::MAXLEVEL), spongeLayer(spongeLayer)
+    : Block3DVisitor(0, D3Q27System::MAXLEVEL), spongeLayer(spongeLayer)
 {
 }
 //////////////////////////////////////////////////////////////////////////

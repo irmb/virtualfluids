@@ -142,16 +142,23 @@ void MPICommunicator::allGather(std::vector<T> &svalues, std::vector<T> &rvalues
 
     rvalues.resize(displs[numprocs - 1] + rcounts[numprocs - 1]);
 
-    if (rvalues.size() == 0) {
-        rvalues.resize(1);
-        rvalues[0] = 999;
-    }
-    if (scount == 0) {
-        svalues.resize(1);
-        svalues[0] = 999;
+    T* sval = NULL;
+    T* rval = NULL;
+
+    if (svalues.size() > 0) {
+        //svalues.resize(1);
+        //svalues[0] = 999;
+        sval = &svalues[0];
     }
 
-    MPI_Allgatherv(&svalues[0], scount, mpiDataType, &rvalues[0], &rcounts[0], &displs[0], mpiDataType, comm);
+    if (rvalues.size() > 0) {
+        //rvalues.resize(1);
+        //rvalues[0] = 999;
+        rval = &rvalues[0];
+    }
+
+    //MPI_Allgatherv(&svalues[0], scount, mpiDataType, &rvalues[0], &rcounts[0], &displs[0], mpiDataType, comm);
+    MPI_Allgatherv(sval, scount, mpiDataType, rval, &rcounts[0], &displs[0], mpiDataType, comm);
 }
 //////////////////////////////////////////////////////////////////////////
 template <class T>

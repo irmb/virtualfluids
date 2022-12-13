@@ -12,6 +12,7 @@ class UbScheduler;
 namespace vf::mpi {class Communicator;}
 class BCProcessor;
 class LBMKernel;
+class Grid3DVisitor;
 
 //! \class MPIWriteBlocksCoProcessor
 //! \brief Writes the grid each timestep into the files and reads the grip from the files before regenerating
@@ -26,10 +27,11 @@ public:
         ShearStressVal      = 5,
         RelaxationFactor = 6,
         PhaseField1 = 7,
-        PhaseField2 = 8
+        PhaseField2 = 8,
+        PressureField = 9
     };
 
-    MPIIOMigrationCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, std::shared_ptr<vf::mpi::Communicator> comm);
+    MPIIOMigrationCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<Grid3DVisitor> mV, const std::string &path, std::shared_ptr<vf::mpi::Communicator> comm);
     ~MPIIOMigrationCoProcessor() override;
     //! Each timestep writes the grid into the files
     void process(double step) override;
@@ -71,10 +73,6 @@ public:
     void clearAllFiles(int step);
     // void setNu(double nu);
 
-protected:
-    // std::string path;
-    // std::shared_ptr<vf::mpi::Communicator> comm;
-
 private:
     // MPI_Datatype gridParamType, block3dType;
     MPI_Datatype dataSetType, dataSetSmallType, dataSetDoubleType;
@@ -83,7 +81,7 @@ private:
     MPIIODataStructures::boundCondParam boundCondParamStr;
     SPtr<LBMKernel> lbmKernel;
     SPtr<BCProcessor> bcProcessor;
-    // double nue;
+    SPtr<Grid3DVisitor> metisVisitor;
 };
 
 #endif

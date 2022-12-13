@@ -56,7 +56,7 @@ void run()
       //LBMReal nuLB = 8.66025e-6*4.0;
       //double yFactor = 4.0;
 
-      string  pathname = "d:/temp/ConvectionOfVortex_0.00075_moments";
+      //string  pathname = "d:/temp/ConvectionOfVortex_0.00075_moments";
       //double  endTime = 160;
       //double  outTime = 160;
       //LBMReal dx =  0.00075;
@@ -75,7 +75,7 @@ void run()
 
       SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
 
-      int baseLevel = 0;
+      //int baseLevel = 0;
       int refineLevel = 1;
 
       //bounding box
@@ -150,7 +150,7 @@ void run()
       if (myid==0) GbSystem3D::writeGeoObject(geoOutflow4.get(), pathname+"/geo/geoOutflow4", WbWriterVtkXmlASCII::getInstance());
       SPtr<D3Q27Interactor> outflowIntr4 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow4, grid, outflowBCAdapter, Interactor3D::SOLID));
 
-      SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B));
+      SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::DIR_00M));
       InteractorsHelper intHelper(grid, metisVisitor);
       //intHelper.addInteractor(outflowIntr1);
       //intHelper.addInteractor(outflowIntr2);
@@ -163,10 +163,16 @@ void run()
 
       //set connectors  
       //SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetInterpolationProcessor());
-      SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
+      //SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
       //dynamicPointerCast<CompressibleOffsetMomentsInterpolationProcessor>(iProcessor)->setBulkOmegaToOmega(true);
       //SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetSquarePressureInterpolationProcessor());
-      SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
+
+      OneDistributionSetConnectorsBlockVisitor setConnsVisitor(comm);
+      grid->accept(setConnsVisitor);
+
+      SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
+      SetInterpolationConnectorsBlockVisitor setInterConnsVisitor(comm, nuLB, iProcessor);
+      grid->accept(setInterConnsVisitor);
 
       UBLOG(logINFO, "SetConnectorsBlockVisitor:start");
       grid->accept(setConnsVisitor);

@@ -182,13 +182,13 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
     int maxX2 = (int)(distributions->getNX2());
     int maxX3 = (int)(distributions->getNX3());
 
-    // int minX1 = 1;
-    // int minX2 = 1;
-    // int minX3 = 1;
+     //int minX1 = 1;
+     //int minX2 = 1;
+     //int minX3 = 1;
 
-    // int maxX1 = (int)(distributions->getNX1());
-    // int maxX2 = (int)(distributions->getNX2());
-    // int maxX3 = (int)(distributions->getNX3());
+     //int maxX1 = (int)(distributions->getNX1());
+     //int maxX2 = (int)(distributions->getNX2());
+     //int maxX3 = (int)(distributions->getNX3());
 
     // nummern vergeben und node vector erstellen + daten sammeln
     CbArray3D<int> nodeNumbers((int)maxX1, (int)maxX2, (int)maxX3, -1);
@@ -202,7 +202,7 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
     for (int ix3 = minX3; ix3 <= maxX3; ix3++) {
         for (int ix2 = minX2; ix2 <= maxX2; ix2++) {
             for (int ix1 = minX1; ix1 <= maxX1; ix1++) {
-                if (!bcArray->isUndefined(ix1, ix2, ix3) && !bcArray->isSolid(ix1, ix2, ix3)) {
+                if (/* !bcArray->isUndefined(ix1, ix2, ix3) &&*/ !bcArray->isSolid(ix1, ix2, ix3)) {
                     int index                  = 0;
                     nodeNumbers(ix1, ix2, ix3) = nr++;
                     Vector3D worldCoordinates  = grid->getNodeCoordinates(block, ix1, ix2, ix3);

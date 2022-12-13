@@ -38,10 +38,10 @@
 #include "DataSet3D.h"
 #include "EsoTwist3D.h"
 #include "Grid3D.h"
-#include "Grid3DSystem.h"
+#include "D3Q27System.h"
 #include "LBMKernel.h"
 
-InitDistributionsBlockVisitor::InitDistributionsBlockVisitor() : Block3DVisitor(0, Grid3DSystem::MAXLEVEL)
+InitDistributionsBlockVisitor::InitDistributionsBlockVisitor() : Block3DVisitor(0, D3Q27System::MAXLEVEL)
 {
     this->setVx1(0.0);
     this->setVx2(0.0);
@@ -247,33 +247,33 @@ void InitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D>
                double f_TNW  = - eps_new *((bz + cy)/(36.*o)) - f_TNE;
 
 
-               f[E]    = f_E    + feq[E];
-               f[W]    = f_E    + feq[W];
-               f[N]    = f_N    + feq[N];
-               f[S]    = f_N    + feq[S];
-               f[T]    = f_T    + feq[T];
-               f[B]    = f_T    + feq[B];
-               f[NE]   = f_NE   + feq[NE];
-               f[SW]   = f_NE   + feq[SW];
-               f[SE]   = f_SE   + feq[SE];
-               f[NW]   = f_SE   + feq[NW];
-               f[TE]   = f_TE   + feq[TE];
-               f[BW]   = f_TE   + feq[BW];
-               f[BE]   = f_BE   + feq[BE];
-               f[TW]   = f_BE   + feq[TW];
-               f[TN]   = f_TN   + feq[TN];
-               f[BS]   = f_TN   + feq[BS];
-               f[BN]   = f_BN   + feq[BN];
-               f[TS]   = f_BN   + feq[TS];
-               f[TNE]  = f_TNE  + feq[TNE];
-               f[TNW]  = f_TNW  + feq[TNW];
-               f[TSE]  = f_TSE  + feq[TSE];
-               f[TSW]  = f_TSW  + feq[TSW];
-               f[BNE]  = f_TSW  + feq[BNE];
-               f[BNW]  = f_TSE  + feq[BNW];
-               f[BSE]  = f_TNW  + feq[BSE];
-               f[BSW]  = f_TNE  + feq[BSW];
-               f[REST] = f_ZERO + feq[REST];
+               f[DIR_P00]    = f_E    + feq[DIR_P00];
+               f[DIR_M00]    = f_E    + feq[DIR_M00];
+               f[DIR_0P0]    = f_N    + feq[DIR_0P0];
+               f[DIR_0M0]    = f_N    + feq[DIR_0M0];
+               f[DIR_00P]    = f_T    + feq[DIR_00P];
+               f[DIR_00M]    = f_T    + feq[DIR_00M];
+               f[DIR_PP0]   = f_NE   + feq[DIR_PP0];
+               f[DIR_MM0]   = f_NE   + feq[DIR_MM0];
+               f[DIR_PM0]   = f_SE   + feq[DIR_PM0];
+               f[DIR_MP0]   = f_SE   + feq[DIR_MP0];
+               f[DIR_P0P]   = f_TE   + feq[DIR_P0P];
+               f[DIR_M0M]   = f_TE   + feq[DIR_M0M];
+               f[DIR_P0M]   = f_BE   + feq[DIR_P0M];
+               f[DIR_M0P]   = f_BE   + feq[DIR_M0P];
+               f[DIR_0PP]   = f_TN   + feq[DIR_0PP];
+               f[DIR_0MM]   = f_TN   + feq[DIR_0MM];
+               f[DIR_0PM]   = f_BN   + feq[DIR_0PM];
+               f[DIR_0MP]   = f_BN   + feq[DIR_0MP];
+               f[DIR_PPP]  = f_TNE  + feq[DIR_PPP];
+               f[DIR_MPP]  = f_TNW  + feq[DIR_MPP];
+               f[DIR_PMP]  = f_TSE  + feq[DIR_PMP];
+               f[DIR_MMP]  = f_TSW  + feq[DIR_MMP];
+               f[DIR_PPM]  = f_TSW  + feq[DIR_PPM];
+               f[DIR_MPM]  = f_TSE  + feq[DIR_MPM];
+               f[DIR_PMM]  = f_TNW  + feq[DIR_PMM];
+               f[DIR_MMM]  = f_TNE  + feq[DIR_MMM];
+               f[DIR_000] = f_ZERO + feq[DIR_000];
 
                //calcFeqsFct(f,rho,vx1,vx2,vx3);
                distributions->setDistribution(f, ix1, ix2, ix3);

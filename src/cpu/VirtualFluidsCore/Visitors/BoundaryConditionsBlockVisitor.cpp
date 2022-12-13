@@ -39,7 +39,7 @@
 #include "D3Q27EsoTwist3DSplittedVector.h"
 #include "DataSet3D.h"
 #include "Grid3D.h"
-#include "Grid3DSystem.h"
+#include "D3Q27System.h"
 #include "BCAdapter.h"
 #include "Block3D.h"
 #include "BCArray3D.h"
@@ -52,7 +52,9 @@
 #include "ThixotropyVelocityWithDensityBCAlgorithm.h"
 
 
-BoundaryConditionsBlockVisitor::BoundaryConditionsBlockVisitor() : Block3DVisitor(0, Grid3DSystem::MAXLEVEL) {}
+BoundaryConditionsBlockVisitor::BoundaryConditionsBlockVisitor() : Block3DVisitor(0, D3Q27System::MAXLEVEL)
+{
+}
 //////////////////////////////////////////////////////////////////////////
 BoundaryConditionsBlockVisitor::~BoundaryConditionsBlockVisitor() = default;
 //////////////////////////////////////////////////////////////////////////

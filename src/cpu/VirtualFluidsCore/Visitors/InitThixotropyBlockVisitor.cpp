@@ -34,7 +34,7 @@
 #include "InitThixotropyBlockVisitor.h"
 #include "LBMKernel.h"
 #include "BCProcessor.h"
-#include "Grid3DSystem.h"
+#include "D3Q27System.h"
 #include "DataSet3D.h"
 #include "EsoTwist3D.h"
 #include "Grid3D.h"
@@ -42,7 +42,7 @@
 #include "BCArray3D.h"
 
 InitThixotropyBlockVisitor::InitThixotropyBlockVisitor()
-   : Block3DVisitor(0, Grid3DSystem::MAXLEVEL)
+   : Block3DVisitor(0, D3Q27System::MAXLEVEL)
 {
    //this->setVx1(0.0);
    //this->setVx2(0.0);
@@ -56,7 +56,7 @@ InitThixotropyBlockVisitor::InitThixotropyBlockVisitor()
 }
 //////////////////////////////////////////////////////////////////////////
 //InitThixotropyBlockVisitor::InitThixotropyBlockVisitor(LBMReal lambda /*LBMReal nu, LBMReal D, LBMReal rho, LBMReal vx1, LBMReal vx2, LBMReal vx3, LBMReal c, LBMReal f1, LBMReal f2, LBMReal f3*/)
-//	: Block3DVisitor(0, Grid3DSystem::MAXLEVEL)
+//	: Block3DVisitor(0, D3Q27System::MAXLEVEL)
 //{
 //	//this->setVx1(vx1);
 //	//this->setVx2(vx2);
@@ -426,7 +426,7 @@ void InitThixotropyBlockVisitor::checkFunction(mu::Parser fct)
 //   double f_TNW = -eps_new * ((bz + cy) / (36. * o)) - f_TNE;
 //
 //
-//   f[E] = f_E + feq[E];
+//   f[DIR_P00] = f_E + feq[DIR_P00];
 //   f[W] = f_E + feq[W];
 //   f[N] = f_N + feq[N];
 //   f[S] = f_N + feq[S];
