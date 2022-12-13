@@ -15,23 +15,21 @@ std::shared_ptr< CumulantK17<turbulenceModel> > CumulantK17<turbulenceModel>::ge
 template<TurbulenceModel turbulenceModel>
 void CumulantK17<turbulenceModel>::run()
 {
-	LB_Kernel_CumulantK17 < turbulenceModel, false, false  > <<< cudaGrid.grid, cudaGrid.threads >>>(   para->getParD(level)->omega, 	
-																												para->getParD(level)->typeOfGridNode, 										
-																												para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ,	
-																												para->getParD(level)->distributions.f[0],	
-																												para->getParD(level)->rho,		
-																												para->getParD(level)->velocityX, para->getParD(level)->velocityY, para->getParD(level)->velocityZ,	
-																												para->getParD(level)->turbViscosity,
-																												para->getSGSConstant(),
-																												(unsigned long)para->getParD(level)->numberOfNodes,	
-																												level,				
-																												para->getIsBodyForce(),				
-																												para->getForcesDev(),				
-																												para->getParD(level)->forceX_SP, para->getParD(level)->forceY_SP, para->getParD(level)->forceZ_SP,
-																												para->getQuadricLimitersDev(),			
-																												para->getParD(level)->isEvenTimestep,
-																												para->getParD(level)->taggedFluidNodeIndices[CollisionTemplate::Default],
-        																										para->getParD(level)->numberOfTaggedFluidNodes[CollisionTemplate::Default]);
+	LB_Kernel_CumulantK17 < turbulenceModel, false, false  > <<< cudaGrid.grid, cudaGrid.threads >>>(   para->getParD(level)->omega,										
+																										para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ,	
+																										para->getParD(level)->distributions.f[0],	
+																										para->getParD(level)->rho,		
+																										para->getParD(level)->velocityX, para->getParD(level)->velocityY, para->getParD(level)->velocityZ,	
+																										para->getParD(level)->turbViscosity,
+																										para->getSGSConstant(),
+																										(unsigned long)para->getParD(level)->numberOfNodes,	
+																										level,			
+																										para->getForcesDev(),				
+																										para->getParD(level)->forceX_SP, para->getParD(level)->forceY_SP, para->getParD(level)->forceZ_SP,
+																										para->getQuadricLimitersDev(),			
+																										para->getParD(level)->isEvenTimestep,
+																										para->getParD(level)->taggedFluidNodeIndices[CollisionTemplate::Default],
+																										para->getParD(level)->numberOfTaggedFluidNodes[CollisionTemplate::Default]);
 
 	getLastCudaError("LB_Kernel_CumulantK17 execution failed");
 }
@@ -44,89 +42,75 @@ void CumulantK17<turbulenceModel>::runOnIndices( const unsigned int *indices, un
 	switch (collisionTemplate)
 	{
 		case CollisionTemplate::Default:
-			LB_Kernel_CumulantK17 < turbulenceModel, false, false  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>(   
-																																	para->getParD(level)->omega, 	
-																																	para->getParD(level)->typeOfGridNode, 										
-																																	para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ,	
-																																	para->getParD(level)->distributions.f[0],	
-																																	para->getParD(level)->rho,		
-																																	para->getParD(level)->velocityX, para->getParD(level)->velocityY, para->getParD(level)->velocityZ,	
-																																	para->getParD(level)->turbViscosity,
-																																	para->getSGSConstant(),
-																																	(unsigned long)para->getParD(level)->numberOfNodes,	
-																																	level,				
-																																	para->getIsBodyForce(),				
-																																	para->getForcesDev(),				
-																																	para->getParD(level)->forceX_SP, para->getParD(level)->forceY_SP, para->getParD(level)->forceZ_SP,
-																																	para->getQuadricLimitersDev(),			
-																																	para->getParD(level)->isEvenTimestep,
-																																	indices,
-																																	size_indices);
+			LB_Kernel_CumulantK17 < turbulenceModel, false, false  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>(para->getParD(level)->omega,								
+																														para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ,	
+																														para->getParD(level)->distributions.f[0],	
+																														para->getParD(level)->rho,		
+																														para->getParD(level)->velocityX, para->getParD(level)->velocityY, para->getParD(level)->velocityZ,	
+																														para->getParD(level)->turbViscosity,
+																														para->getSGSConstant(),
+																														(unsigned long)para->getParD(level)->numberOfNodes,	
+																														level,			
+																														para->getForcesDev(),				
+																														para->getParD(level)->forceX_SP, para->getParD(level)->forceY_SP, para->getParD(level)->forceZ_SP,
+																														para->getQuadricLimitersDev(),			
+																														para->getParD(level)->isEvenTimestep,
+																														indices,
+																														size_indices);
 			break;
 		
 		case CollisionTemplate::WriteMacroVars:
-			LB_Kernel_CumulantK17 < turbulenceModel, true, false  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>( 
-																																para->getParD(level)->omega, 	
-																																para->getParD(level)->typeOfGridNode, 										
-																																para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ,	
-																																para->getParD(level)->distributions.f[0],	
-																																para->getParD(level)->rho,		
-																																para->getParD(level)->velocityX, para->getParD(level)->velocityY, para->getParD(level)->velocityZ,	
-																																para->getParD(level)->turbViscosity,
-																																para->getSGSConstant(),
-																																(unsigned long)para->getParD(level)->numberOfNodes,	
-																																level,				
-																																para->getIsBodyForce(),				
-																																para->getForcesDev(),				
-																																para->getParD(level)->forceX_SP, para->getParD(level)->forceY_SP, para->getParD(level)->forceZ_SP,
-																																para->getQuadricLimitersDev(),			
-																																para->getParD(level)->isEvenTimestep,
-																																indices,
-																																size_indices);
+			LB_Kernel_CumulantK17 < turbulenceModel, true, false  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>( para->getParD(level)->omega,										
+																														para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ,	
+																														para->getParD(level)->distributions.f[0],	
+																														para->getParD(level)->rho,		
+																														para->getParD(level)->velocityX, para->getParD(level)->velocityY, para->getParD(level)->velocityZ,	
+																														para->getParD(level)->turbViscosity,
+																														para->getSGSConstant(),
+																														(unsigned long)para->getParD(level)->numberOfNodes,	
+																														level,			
+																														para->getForcesDev(),				
+																														para->getParD(level)->forceX_SP, para->getParD(level)->forceY_SP, para->getParD(level)->forceZ_SP,
+																														para->getQuadricLimitersDev(),			
+																														para->getParD(level)->isEvenTimestep,
+																														indices,
+																														size_indices);
 			break;
 		
 		case CollisionTemplate::SubDomainBorder:
 		case CollisionTemplate::AllFeatures:
-			LB_Kernel_CumulantK17 < turbulenceModel, true, true  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>(  
-																																para->getParD(level)->omega, 	
-																																para->getParD(level)->typeOfGridNode, 										
-																																para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ,	
-																																para->getParD(level)->distributions.f[0],	
-																																para->getParD(level)->rho,		
-																																para->getParD(level)->velocityX, para->getParD(level)->velocityY, para->getParD(level)->velocityZ,	
-																																para->getParD(level)->turbViscosity,
-																																para->getSGSConstant(),
-																																(unsigned long)para->getParD(level)->numberOfNodes,	
-																																level,				
-																																para->getIsBodyForce(),				
-																																para->getForcesDev(),				
-																																para->getParD(level)->forceX_SP, para->getParD(level)->forceY_SP, para->getParD(level)->forceZ_SP,
-																																para->getQuadricLimitersDev(),			
-																																para->getParD(level)->isEvenTimestep,
-																																indices,
-																																size_indices);
-			break;
-		case CollisionTemplate::ApplyBodyForce:
-			LB_Kernel_CumulantK17 < turbulenceModel, false, true  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>( 
-																																para->getParD(level)->omega, 	
-																																para->getParD(level)->typeOfGridNode, 										
-																																para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ,	
-																																para->getParD(level)->distributions.f[0],	
-																																para->getParD(level)->rho,		
-																																para->getParD(level)->velocityX, para->getParD(level)->velocityY, para->getParD(level)->velocityZ,	
-																																para->getParD(level)->turbViscosity,
-																																para->getSGSConstant(),
-																																(unsigned long)para->getParD(level)->numberOfNodes,	
-																																level,				
-																																para->getIsBodyForce(),				
-																																para->getForcesDev(),				
-																																para->getParD(level)->forceX_SP, para->getParD(level)->forceY_SP, para->getParD(level)->forceZ_SP,
-																																para->getQuadricLimitersDev(),			
-																																para->getParD(level)->isEvenTimestep,
-																																indices,
-																																size_indices);
-			break;
-		default:
+			LB_Kernel_CumulantK17 < turbulenceModel, true, true  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>(  para->getParD(level)->omega,
+																														para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ,	
+																														para->getParD(level)->distributions.f[0],	
+																														para->getParD(level)->rho,		
+																														para->getParD(level)->velocityX, para->getParD(level)->velocityY, para->getParD(level)->velocityZ,	
+																														para->getParD(level)->turbViscosity,
+																														para->getSGSConstant(),
+																														(unsigned long)para->getParD(level)->numberOfNodes,	
+																														level,			
+																														para->getForcesDev(),				
+																														para->getParD(level)->forceX_SP, para->getParD(level)->forceY_SP, para->getParD(level)->forceZ_SP,
+																														para->getQuadricLimitersDev(),			
+																														para->getParD(level)->isEvenTimestep,
+																														indices,
+																														size_indices);
+			break;	case CollisionTemplate::ApplyBodyForce:
+			LB_Kernel_CumulantK17 < turbulenceModel, false, true  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>( para->getParD(level)->omega,									
+																														para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ,	
+																														para->getParD(level)->distributions.f[0],	
+																														para->getParD(level)->rho,		
+																														para->getParD(level)->velocityX, para->getParD(level)->velocityY, para->getParD(level)->velocityZ,	
+																														para->getParD(level)->turbViscosity,
+																														para->getSGSConstant(),
+																														(unsigned long)para->getParD(level)->numberOfNodes,	
+																														level,			
+																														para->getForcesDev(),				
+																														para->getParD(level)->forceX_SP, para->getParD(level)->forceY_SP, para->getParD(level)->forceZ_SP,
+																														para->getQuadricLimitersDev(),			
+																														para->getParD(level)->isEvenTimestep,
+																														indices,
+																														size_indices);
+			break;	default:
 			throw std::runtime_error("Invalid CollisionTemplate in CumulantK17::runOnIndices()");
 			break;
 	}
