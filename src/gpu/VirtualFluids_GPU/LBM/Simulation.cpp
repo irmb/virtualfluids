@@ -461,6 +461,10 @@ void Simulation::run()
     ////////////////////////////////////////////////////////////////////////////////
     // Time loop
     ////////////////////////////////////////////////////////////////////////////////
+
+    puts("\n\n\n\n\n\n");
+    VF_LOG_INFO("Start Simulation \n");
+
     for(timestep=para->getTimestepStart();timestep<=para->getTimestepEnd();timestep++)
     {
         this->updateGrid27->updateGrid(0, timestep);

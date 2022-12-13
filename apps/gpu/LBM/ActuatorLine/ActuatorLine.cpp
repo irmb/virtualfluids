@@ -8,6 +8,7 @@
 #include <fstream>
 #include <exception>
 #include <memory>
+#include <filesystem>
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -83,6 +84,8 @@ void multipleLevel(const std::string& configPath)
     logging::Logger::timeStamp(logging::Logger::ENABLE);
     logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
 
+    VF_LOG_INFO("Start Preprocessing");
+
     vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();
 
     auto gridFactory = GridFactory::make();
@@ -96,7 +99,7 @@ void multipleLevel(const std::string& configPath)
     const real velocity = config.getValue<real>("Velocity");
 
 
-    const real L_x = 24*reference_diameter;
+    const real L_x = 20*reference_diameter;
     const real L_y = 6*reference_diameter;
     const real L_z = 6*reference_diameter;
 
@@ -109,11 +112,11 @@ void multipleLevel(const std::string& configPath)
     const float tOut        = config.getValue<real>("tOut");
     const float tEnd        = config.getValue<real>("tEnd"); // total time of simulation
 
-    const float tStartAveraging     =  config.getValue<real>("tStartAveraging");
-    const float tStartTmpAveraging  =  config.getValue<real>("tStartTmpAveraging");
-    const float tAveraging          =  config.getValue<real>("tAveraging");
-    const float tStartOutProbe      =  config.getValue<real>("tStartOutProbe");
-    const float tOutProbe           =  config.getValue<real>("tOutProbe");
+    // const float tStartAveraging     =  config.getValue<real>("tStartAveraging");
+    // const float tStartTmpAveraging  =  config.getValue<real>("tStartTmpAveraging");
+    // const float tAveraging          =  config.getValue<real>("tAveraging");
+    // const float tStartOutProbe      =  config.getValue<real>("tStartOutProbe");
+    // const float tOutProbe           =  config.getValue<real>("tOutProbe");
         
     SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNummberOfProcess(), communicator.getPID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
@@ -121,12 +124,12 @@ void multipleLevel(const std::string& configPath)
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	const real dx = reference_diameter/real(nodes_per_diameter);
+    const real dx = reference_diameter/real(nodes_per_diameter);
 
     real turbPos[3] = {3*reference_diameter, 3*reference_diameter, 3*reference_diameter};
 
-	gridBuilder->addCoarseGrid(0.0, 0.0, 0.0,
-							   L_x,  L_y,  L_z, dx);
+    gridBuilder->addCoarseGrid(0.0, 0.0, 0.0,
+                               L_x,  L_y,  L_z, dx);
 
     gridBuilder->setNumberOfLayers(4,0);
     gridBuilder->addGrid( new Cuboid(   turbPos[0]-1.5*reference_diameter,  turbPos[1]-1.5*reference_diameter,  turbPos[2]-1.5*reference_diameter, 
@@ -134,11 +137,11 @@ void multipleLevel(const std::string& configPath)
     para->setMaxLevel(2);
     scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
-	gridBuilder->setPeriodicBoundaryCondition(false, false, false);
+    gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
-	gridBuilder->buildGrids(lbmOrGks, false); // buildGrids() has to be called before setting the BCs!!!!
+    gridBuilder->buildGrids(lbmOrGks, false); // buildGrids() has to be called before setting the BCs!!!!
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     const real dt = dx * mach / (sqrt(3) * velocity);
 
@@ -243,11 +246,20 @@ int main( int argc, char* argv[])
     {
         try
         {
-            vf::logging::Logger::initalizeLogger();
+            //////////////////////////////////////////////////////////////////////////
+            // assuming that a config files is stored parallel to this file.
+            std::filesystem::path configPath = __FILE__;
 
-            if( argc > 1){ path = argv[1]; }
+            // the config file's default name can be replaced by passing a command line argument
+            std::string configName("configActuatorLine.txt");
+            if (argc == 2) {
+                configName = argv[1];
+                std::cout << "Using configFile command line argument: " << configName << std::endl;
+            }
 
-            multipleLevel(path + "/configActuatorLine.txt");
+            configPath.replace_filename(configName);
+
+            multipleLevel(configPath);
         }
         catch (const spdlog::spdlog_ex &ex) {
             std::cout << "Log initialization failed: " << ex.what() << std::endl;
