@@ -46,7 +46,7 @@ void run(string configname)
         double cpStart     = config.getValue<double>("cpStart");
         double cpStep      = config.getValue<double>("cpStep");
         bool newStart      = config.getValue<bool>("newStart");
-        double rStep = config.getValue<double>("rStep");
+        //double rStep = config.getValue<double>("rStep");
 
         std::shared_ptr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
         int myid                = comm->getProcessID();
@@ -100,13 +100,13 @@ void run(string configname)
         //density of heavy fluid
         LBMReal rho_h = 1.0;
         //density of light fluid
-        LBMReal rho_l = rho_h / r_rho;
+        //LBMReal rho_l = rho_h / r_rho;
 
         //kinimatic viscosity
         LBMReal nu_h = nuL;
         //LBMReal nu_l = nuG;
         //#dynamic viscosity
-        LBMReal mu_h = rho_h * nu_h;
+        //LBMReal mu_h = rho_h * nu_h;
         
         //gravity
         LBMReal g_y = Re * Re * nu_h * nu_h / (D*D*D);

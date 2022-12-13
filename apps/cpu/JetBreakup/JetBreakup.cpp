@@ -81,7 +81,7 @@ void run(string configname)
 
         // Sleep(30000);
 
-        double rho_h, rho_l, r_rho, mu_h, mu_l, Uo, D, sigma;
+        double rho_h=0, rho_l=0, r_rho=0, mu_h=0, /*mu_l,*/ Uo=0, D=0, sigma=0;
 
         switch (caseN) {
             case 1: 
@@ -94,7 +94,7 @@ void run(string configname)
                 //dynamic viscosity of heavy fluid (Pa � s)
                 mu_h = 2.87e-3;
                 //dynamic viscosity of light fluid (Pa � s)
-                mu_l = 1.97e-5;
+                //mu_l = 1.97e-5;
                 //velocity (m/s)
                 Uo = 100;
                 //diameter of jet (m)
@@ -112,7 +112,7 @@ void run(string configname)
                 // dynamic viscosity of heavy fluid (Pa � s)
                 mu_h = 2.87e-3;
                 // dynamic viscosity of light fluid (Pa � s)
-                mu_l = 1.84e-5;
+                //mu_l = 1.84e-5;
                 // velocity (m/s)
                 Uo = 200;
                 // diameter of jet (m)
@@ -130,7 +130,7 @@ void run(string configname)
                 // dynamic viscosity of heavy fluid (Pa � s)
                 mu_h = 2.87e-3;
                 // dynamic viscosity of light fluid (Pa � s)
-                mu_l = 1.84e-5;
+                //mu_l = 1.84e-5;
                 // velocity (m/s)
                 Uo = 200;
                 // diameter of jet (m)
