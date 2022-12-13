@@ -33,6 +33,7 @@ SPtr<TransientBCInputFileReader> createReaderForCollection(SPtr<FileCollection> 
             return nullptr;
     }
 }
+
 template<typename T>
 std::vector<T> readStringToVector(std::string s)
 {
@@ -45,6 +46,7 @@ std::vector<T> readStringToVector(std::string s)
     }
     return out;
 }
+
 std::string readElement(std::string line)
 {
     size_t elemStart = line.find("<")+1;
