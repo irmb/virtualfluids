@@ -153,7 +153,7 @@ void run(string configname)
 
         // LBMReal dLB = 0; // = length[1] / dx;
         LBMReal rhoLB = 0.0;
-        LBMReal nuLB = nu_l; //(uLB*dLB) / Re;
+        //LBMReal nuLB = nu_l; //(uLB*dLB) / Re;
 
         double beta = 12.0 * sigma_LB / interfaceWidth;
         double kappa = 1.5 * interfaceWidth * sigma_LB;
