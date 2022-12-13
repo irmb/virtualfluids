@@ -147,9 +147,9 @@ public:
 
     virtual void findFluidNodes(bool splitDomain) = 0;
 
-    virtual void addFluidNodeIndicesMacroVars(std::vector<uint> fluidNodeIndicesMacroVars, uint level)           = 0;
-    virtual void addFluidNodeIndicesApplyBodyForce(std::vector<uint> fluidNodeIndicesApplyBodyForce, uint level) = 0;
-    virtual void addFluidNodeIndicesAllFeatures(std::vector<uint> fluidNodeIndicesAllFeatures, uint level)       = 0;
+    virtual void addFluidNodeIndicesMacroVars(const std::vector<uint>& fluidNodeIndicesMacroVars, uint level)           = 0;
+    virtual void addFluidNodeIndicesApplyBodyForce(const std::vector<uint>& fluidNodeIndicesApplyBodyForce, uint level) = 0;
+    virtual void addFluidNodeIndicesAllFeatures(const std::vector<uint>& fluidNodeIndicesAllFeatures, uint level)       = 0;
     virtual void sortFluidNodeIndicesMacroVars(uint level) = 0;
     virtual void sortFluidNodeIndicesApplyBodyForce(uint level) = 0;
     virtual void sortFluidNodeIndicesAllFeatures(uint level) = 0;

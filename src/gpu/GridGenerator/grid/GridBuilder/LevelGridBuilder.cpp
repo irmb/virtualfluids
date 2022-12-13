@@ -798,17 +798,17 @@ void LevelGridBuilder::findFluidNodes(bool splitDomain)
 }
 
 
-void LevelGridBuilder::addFluidNodeIndicesMacroVars(std::vector<uint> fluidNodeIndicesMacroVars, uint level) 
+void LevelGridBuilder::addFluidNodeIndicesMacroVars(const std::vector<uint>& fluidNodeIndicesMacroVars, uint level) 
 {
     grids[level]->addFluidNodeIndicesMacroVars(fluidNodeIndicesMacroVars);
 }
 
-void LevelGridBuilder::addFluidNodeIndicesApplyBodyForce(std::vector<uint> fluidNodeIndicesApplyBodyForce, uint level)
+void LevelGridBuilder::addFluidNodeIndicesApplyBodyForce(const std::vector<uint>& fluidNodeIndicesApplyBodyForce, uint level)
 {
     grids[level]->addFluidNodeIndicesApplyBodyForce(fluidNodeIndicesApplyBodyForce);
 }
 
-void LevelGridBuilder::addFluidNodeIndicesAllFeatures(std::vector<uint> fluidNodeIndicesAllFeatures, uint level)
+void LevelGridBuilder::addFluidNodeIndicesAllFeatures(const std::vector<uint>& fluidNodeIndicesAllFeatures, uint level)
 {
     grids[level]->addFluidNodeIndicesAllFeatures(fluidNodeIndicesAllFeatures);
 }
