@@ -237,7 +237,7 @@ typedef struct QforPrecursorBC{
    int sizeQ;
    int numberOfPrecursorNodes=0;
    uint nPrecursorReads=0;
-   uint nTRead;
+   uint timeStepsBetweenReads;
    size_t numberOfQuantities;
    real* q27[27];
    uint* planeNeighborNT, *planeNeighborNB, *planeNeighborST, *planeNeighborSB;

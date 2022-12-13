@@ -150,10 +150,10 @@ void multipleLevel(const std::string& configPath)
     }
 
     const bool readPrecursor = config.getValue("readPrecursor", false);
-    int nTReadPrecursor;
+    int timestepsBetweenReadsPrecursor;
     if(readPrecursor)
     {
-        nTReadPrecursor = config.getValue<int>("nTimestepsReadPrecursor");
+        timestepsBetweenReadsPrecursor = config.getValue<int>("nTimestepsReadPrecursor");
         precursorDirectory = config.getValue<std::string>("precursorDirectory");
         useDistributions     = config.getValue<bool>("useDistributions", false);
     }
@@ -302,9 +302,9 @@ void multipleLevel(const std::string& configPath)
     {
         if(isFirstSubDomain || nProcs == 1)
         {   
-            // auto precursor = createFileCollection(precursorDirectory + "/precursor", FileType::VTK);
-            // gridBuilder->setPrecursorBoundaryCondition(SideType::MX, precursor, nTReadPrecursor);
-            gridBuilder->setVelocityBoundaryCondition(SideType::MX, velocityLB, 0.0, 0.0);
+            auto precursor = createFileCollection(precursorDirectory + "/precursor", FileType::VTK);
+            gridBuilder->setPrecursorBoundaryCondition(SideType::MX, precursor, timestepsBetweenReadsPrecursor);
+            // gridBuilder->setVelocityBoundaryCondition(SideType::MX, velocityLB, 0.0, 0.0);
         }
 
         if(isLastSubDomain || nProcs == 1)

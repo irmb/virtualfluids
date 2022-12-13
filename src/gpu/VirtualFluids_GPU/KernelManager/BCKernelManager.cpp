@@ -398,16 +398,16 @@ void BCKernelManager::runPrecursorBCKernelPost(int level, uint t, CudaMemoryMana
 
     uint t_level = para->getTimeStep(level, t, true);
 
-    uint lastTime =    (para->getParD(level)->precursorBC.nPrecursorReads-2)*para->getParD(level)->precursorBC.nTRead; // timestep currently loaded into last arrays
-    uint currentTime = (para->getParD(level)->precursorBC.nPrecursorReads-1)*para->getParD(level)->precursorBC.nTRead; // timestep currently loaded into current arrays
-    uint nextTime =     para->getParD(level)->precursorBC.nPrecursorReads   *para->getParD(level)->precursorBC.nTRead; // timestep currently loaded into next arrays
+    uint lastTime =    (para->getParD(level)->precursorBC.nPrecursorReads-2)*para->getParD(level)->precursorBC.timeStepsBetweenReads; // timestep currently loaded into last arrays
+    uint currentTime = (para->getParD(level)->precursorBC.nPrecursorReads-1)*para->getParD(level)->precursorBC.timeStepsBetweenReads; // timestep currently loaded into current arrays
+    uint nextTime =     para->getParD(level)->precursorBC.nPrecursorReads   *para->getParD(level)->precursorBC.timeStepsBetweenReads; // timestep currently loaded into next arrays
     
     if(t_level>=currentTime)
     {
         //cycle time
         lastTime = currentTime;
         currentTime = nextTime;
-        nextTime += para->getParD(level)->precursorBC.nTRead;
+        nextTime += para->getParD(level)->precursorBC.timeStepsBetweenReads;
 
         //cycle pointers
         real* tmp = para->getParD(level)->precursorBC.last;
@@ -426,6 +426,6 @@ void BCKernelManager::runPrecursorBCKernelPost(int level, uint t, CudaMemoryMana
         para->getParH(level)->precursorBC.nPrecursorReads++;  
     }
     
-    real tRatio = real(t_level-lastTime)/para->getParD(level)->precursorBC.nTRead;
+    real tRatio = real(t_level-lastTime)/para->getParD(level)->precursorBC.timeStepsBetweenReads;
     precursorBoundaryConditionPost(para->getParD(level).get(), &para->getParD(level)->precursorBC, tRatio, para->getVelocityRatio());
 }

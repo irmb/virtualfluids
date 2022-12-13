@@ -347,13 +347,13 @@ void GridGenerator::allocArrays_BoundaryValues()
                     para->getParH(level)->precursorBC.weightsNT, para->getParH(level)->precursorBC.weightsNB, 
                     para->getParH(level)->precursorBC.weightsST, para->getParH(level)->precursorBC.weightsSB, 
                     para->getParH(level)->precursorBC.k, para->getParH(level)->transientBCInputFileReader, para->getParH(level)->precursorBC.numberOfPrecursorNodes, 
-                    para->getParH(level)->precursorBC.numberOfQuantities, para->getParH(level)->precursorBC.nTRead, 
+                    para->getParH(level)->precursorBC.numberOfQuantities, para->getParH(level)->precursorBC.timeStepsBetweenReads, 
                     para->getParH(level)->precursorBC.velocityX, para->getParH(level)->precursorBC.velocityY, para->getParH(level)->precursorBC.velocityZ,
                     level);
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             para->getParD(level)->precursorBC.numberOfPrecursorNodes = para->getParH(level)->precursorBC.numberOfPrecursorNodes;
             para->getParD(level)->precursorBC.numberOfQuantities = para->getParH(level)->precursorBC.numberOfQuantities;
-            para->getParD(level)->precursorBC.nTRead = para->getParH(level)->precursorBC.nTRead;
+            para->getParD(level)->precursorBC.timeStepsBetweenReads = para->getParH(level)->precursorBC.timeStepsBetweenReads;
             para->getParD(level)->precursorBC.velocityX = para->getParH(level)->precursorBC.velocityX;
             para->getParD(level)->precursorBC.velocityY = para->getParH(level)->precursorBC.velocityY;
             para->getParD(level)->precursorBC.velocityZ = para->getParH(level)->precursorBC.velocityZ;
@@ -380,7 +380,7 @@ void GridGenerator::allocArrays_BoundaryValues()
             para->getParD(level)->precursorBC.next = tmp;
 
             //read second timestep of precursor into next and copy next to device
-            real nextTime = para->getParD(level)->precursorBC.nTRead*pow(2,-((real)level))*para->getTimeRatio();
+            real nextTime = para->getParD(level)->precursorBC.timeStepsBetweenReads*pow(2,-((real)level))*para->getTimeRatio();
             for(auto reader : para->getParH(level)->transientBCInputFileReader)
             {   
                 reader->getNextData(para->getParH(level)->precursorBC.next, para->getParH(level)->precursorBC.numberOfPrecursorNodes, nextTime);
