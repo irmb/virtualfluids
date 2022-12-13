@@ -32,7 +32,7 @@ __global__ void QPrecursorDeviceCompZeroPress( 	int* subgridDistanceIndices,
                                                 real velocityX,
                                                 real velocityY,
                                                 real velocityZ,
-                                                real tRatio,
+                                                real timeRatio,
                                                 real velocityRatio,
                                                 unsigned long long numberOfLBnodes,
                                                 bool isEvenTimestep)
@@ -89,9 +89,9 @@ __global__ void QPrecursorDeviceCompZeroPress( 	int* subgridDistanceIndices,
     }
 
     // if(k==16300)s printf("%f %f %f\n", vxLastInterpd, vyLastInterpd, vzLastInterpd);
-    real VeloX = (velocityX + (1.f-tRatio)*vxLastInterpd + tRatio*vxNextInterpd)/velocityRatio;
-    real VeloY = (velocityY + (1.f-tRatio)*vyLastInterpd + tRatio*vyNextInterpd)/velocityRatio; 
-    real VeloZ = (velocityZ + (1.f-tRatio)*vzLastInterpd + tRatio*vzNextInterpd)/velocityRatio;
+    real VeloX = (velocityX + (1.f-timeRatio)*vxLastInterpd + timeRatio*vxNextInterpd)/velocityRatio;
+    real VeloY = (velocityY + (1.f-timeRatio)*vyLastInterpd + timeRatio*vyNextInterpd)/velocityRatio; 
+    real VeloZ = (velocityZ + (1.f-timeRatio)*vzLastInterpd + timeRatio*vzNextInterpd)/velocityRatio;
     // From here on just a copy of QVelDeviceCompZeroPress
     ////////////////////////////////////////////////////////////////////////////////
 
@@ -445,7 +445,7 @@ __global__ void PrecursorDeviceEQ27( 	int* subgridDistanceIndices,
                                         real velocityX,
                                         real velocityY,
                                         real velocityZ,
-                                        real tRatio,
+                                        real timeRatio,
                                         real velocityRatio,
                                         unsigned long long numberOfLBnodes,
                                         bool isEvenTimestep)
@@ -502,9 +502,9 @@ __global__ void PrecursorDeviceEQ27( 	int* subgridDistanceIndices,
     }
 
     // if(k==16300) printf("%f %f %f\n", vxLastInterpd, vyLastInterpd, vzLastInterpd);
-    real VeloX = (velocityX + (1.f-tRatio)*vxLastInterpd + tRatio*vxNextInterpd)/velocityRatio;
-    real VeloY = (velocityY + (1.f-tRatio)*vyLastInterpd + tRatio*vyNextInterpd)/velocityRatio; 
-    real VeloZ = (velocityZ + (1.f-tRatio)*vzLastInterpd + tRatio*vzNextInterpd)/velocityRatio;
+    real VeloX = (velocityX + (1.f-timeRatio)*vxLastInterpd + timeRatio*vxNextInterpd)/velocityRatio;
+    real VeloY = (velocityY + (1.f-timeRatio)*vyLastInterpd + timeRatio*vyNextInterpd)/velocityRatio; 
+    real VeloZ = (velocityZ + (1.f-timeRatio)*vzLastInterpd + timeRatio*vzNextInterpd)/velocityRatio;
     // From here on just a copy of QVelDeviceCompZeroPress
     ////////////////////////////////////////////////////////////////////////////////
 
@@ -666,7 +666,7 @@ __global__ void PrecursorDeviceDistributions( 	int* subgridDistanceIndices,
 												real* weightsSB,
 												real* fsLast, 
 												real* fsNext,
-												real tRatio,
+												real timeRatio,
 												unsigned long long numberOfLBnodes,
 												bool isEvenTimestep)
 {
@@ -793,15 +793,15 @@ __global__ void PrecursorDeviceDistributions( 	int* subgridDistanceIndices,
     unsigned int ktne = KQK;
     // unsigned int kbsw = neighborZ[ksw];
 
-    dist.f[DIR_P00][ke]   = f0LastInterp*(1.f-tRatio) + f0NextInterp*tRatio;
-    dist.f[DIR_PP0][kne]  = f1LastInterp*(1.f-tRatio) + f1NextInterp*tRatio;
-    dist.f[DIR_PM0][kse]  = f2LastInterp*(1.f-tRatio) + f2NextInterp*tRatio;
-    dist.f[DIR_P0P][kte]  = f3LastInterp*(1.f-tRatio) + f3NextInterp*tRatio;
-    dist.f[DIR_P0M][kbe]  = f4LastInterp*(1.f-tRatio) + f4NextInterp*tRatio;
-    dist.f[DIR_PPP][ktne] = f5LastInterp*(1.f-tRatio) + f5NextInterp*tRatio;
-    dist.f[DIR_PMP][ktse] = f6LastInterp*(1.f-tRatio) + f6NextInterp*tRatio;
-    dist.f[DIR_PPM][kbne] = f7LastInterp*(1.f-tRatio) + f7NextInterp*tRatio;
-    dist.f[DIR_PMM][kbse] = f8LastInterp*(1.f-tRatio) + f8NextInterp*tRatio;
+    dist.f[DIR_P00][ke]   = f0LastInterp*(1.f-timeRatio) + f0NextInterp*timeRatio;
+    dist.f[DIR_PP0][kne]  = f1LastInterp*(1.f-timeRatio) + f1NextInterp*timeRatio;
+    dist.f[DIR_PM0][kse]  = f2LastInterp*(1.f-timeRatio) + f2NextInterp*timeRatio;
+    dist.f[DIR_P0P][kte]  = f3LastInterp*(1.f-timeRatio) + f3NextInterp*timeRatio;
+    dist.f[DIR_P0M][kbe]  = f4LastInterp*(1.f-timeRatio) + f4NextInterp*timeRatio;
+    dist.f[DIR_PPP][ktne] = f5LastInterp*(1.f-timeRatio) + f5NextInterp*timeRatio;
+    dist.f[DIR_PMP][ktse] = f6LastInterp*(1.f-timeRatio) + f6NextInterp*timeRatio;
+    dist.f[DIR_PPM][kbne] = f7LastInterp*(1.f-timeRatio) + f7NextInterp*timeRatio;
+    dist.f[DIR_PMM][kbse] = f8LastInterp*(1.f-timeRatio) + f8NextInterp*timeRatio;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -825,7 +825,7 @@ __global__ void QPrecursorDeviceDistributions( 	int* subgridDistanceIndices,
 												real* weightsSB,
 												real* fsLast, 
 												real* fsNext,
-												real tRatio,
+												real timeRatio,
 												unsigned long long numberOfLBnodes,
 												bool isEvenTimestep)
 {
@@ -955,15 +955,15 @@ __global__ void QPrecursorDeviceDistributions( 	int* subgridDistanceIndices,
     getPointersToSubgridDistances(qs, subgridDistances, sizeQ);
 
     real q;
-    q = qs.q[DIR_P00][k]; if(q>= c0o1 && q <= c1o1) dist.f[DIR_P00][ke]   = f0LastInterp*(1.f-tRatio) + f0NextInterp*tRatio;
-    q = qs.q[DIR_PP0][k]; if(q>= c0o1 && q <= c1o1) dist.f[DIR_PP0][kne]  = f1LastInterp*(1.f-tRatio) + f1NextInterp*tRatio;
-    q = qs.q[DIR_PM0][k]; if(q>= c0o1 && q <= c1o1) dist.f[DIR_PM0][kse]  = f2LastInterp*(1.f-tRatio) + f2NextInterp*tRatio;
-    q = qs.q[DIR_P0P][k]; if(q>= c0o1 && q <= c1o1) dist.f[DIR_P0P][kte]  = f3LastInterp*(1.f-tRatio) + f3NextInterp*tRatio;
-    q = qs.q[DIR_P0M][k]; if(q>= c0o1 && q <= c1o1) dist.f[DIR_P0M][kbe]  = f4LastInterp*(1.f-tRatio) + f4NextInterp*tRatio;
-    q = qs.q[DIR_PPP][k]; if(q>= c0o1 && q <= c1o1) dist.f[DIR_PPP][ktne] = f5LastInterp*(1.f-tRatio) + f5NextInterp*tRatio;
-    q = qs.q[DIR_PMP][k]; if(q>= c0o1 && q <= c1o1) dist.f[DIR_PMP][ktse] = f6LastInterp*(1.f-tRatio) + f6NextInterp*tRatio;
-    q = qs.q[DIR_PPM][k]; if(q>= c0o1 && q <= c1o1) dist.f[DIR_PPM][kbne] = f7LastInterp*(1.f-tRatio) + f7NextInterp*tRatio;
-    q = qs.q[DIR_PMM][k]; if(q>= c0o1 && q <= c1o1) dist.f[DIR_PMM][kbse] = f8LastInterp*(1.f-tRatio) + f8NextInterp*tRatio;
+    q = qs.q[DIR_P00][k]; if(q>= c0o1 && q <= c1o1) dist.f[DIR_P00][ke]   = f0LastInterp*(1.f-timeRatio) + f0NextInterp*timeRatio;
+    q = qs.q[DIR_PP0][k]; if(q>= c0o1 && q <= c1o1) dist.f[DIR_PP0][kne]  = f1LastInterp*(1.f-timeRatio) + f1NextInterp*timeRatio;
+    q = qs.q[DIR_PM0][k]; if(q>= c0o1 && q <= c1o1) dist.f[DIR_PM0][kse]  = f2LastInterp*(1.f-timeRatio) + f2NextInterp*timeRatio;
+    q = qs.q[DIR_P0P][k]; if(q>= c0o1 && q <= c1o1) dist.f[DIR_P0P][kte]  = f3LastInterp*(1.f-timeRatio) + f3NextInterp*timeRatio;
+    q = qs.q[DIR_P0M][k]; if(q>= c0o1 && q <= c1o1) dist.f[DIR_P0M][kbe]  = f4LastInterp*(1.f-timeRatio) + f4NextInterp*timeRatio;
+    q = qs.q[DIR_PPP][k]; if(q>= c0o1 && q <= c1o1) dist.f[DIR_PPP][ktne] = f5LastInterp*(1.f-timeRatio) + f5NextInterp*timeRatio;
+    q = qs.q[DIR_PMP][k]; if(q>= c0o1 && q <= c1o1) dist.f[DIR_PMP][ktse] = f6LastInterp*(1.f-timeRatio) + f6NextInterp*timeRatio;
+    q = qs.q[DIR_PPM][k]; if(q>= c0o1 && q <= c1o1) dist.f[DIR_PPM][kbne] = f7LastInterp*(1.f-timeRatio) + f7NextInterp*timeRatio;
+    q = qs.q[DIR_PMM][k]; if(q>= c0o1 && q <= c1o1) dist.f[DIR_PMM][kbse] = f8LastInterp*(1.f-timeRatio) + f8NextInterp*timeRatio;
 
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
