@@ -785,33 +785,33 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedNodeCF(LBM
    mfccc = m2;
    ////////////////////////////////////////////////////////////////////////////////////
 
-   f[DIR_P00]    = mfcbb;
-   f[DIR_M00]    = mfabb;
-   f[DIR_0P0]    = mfbcb;
-   f[DIR_0M0]    = mfbab;
-   f[DIR_00P]    = mfbbc;
-   f[DIR_00M]    = mfbba;
-   f[DIR_PP0]   = mfccb;
-   f[DIR_MM0]   = mfaab;
-   f[DIR_PM0]   = mfcab;
-   f[DIR_MP0]   = mfacb;
-   f[DIR_P0P]   = mfcbc;
-   f[DIR_M0M]   = mfaba;
-   f[DIR_P0M]   = mfcba;
-   f[DIR_M0P]   = mfabc;
-   f[DIR_0PP]   = mfbcc;
-   f[DIR_0MM]   = mfbaa;
-   f[DIR_0PM]   = mfbca;
-   f[DIR_0MP]   = mfbac;
+   f[DIR_P00] = mfcbb;
+   f[DIR_M00] = mfabb;
+   f[DIR_0P0] = mfbcb;
+   f[DIR_0M0] = mfbab;
+   f[DIR_00P] = mfbbc;
+   f[DIR_00M] = mfbba;
+   f[DIR_PP0] = mfccb;
+   f[DIR_MM0] = mfaab;
+   f[DIR_PM0] = mfcab;
+   f[DIR_MP0] = mfacb;
+   f[DIR_P0P] = mfcbc;
+   f[DIR_M0M] = mfaba;
+   f[DIR_P0M] = mfcba;
+   f[DIR_M0P] = mfabc;
+   f[DIR_0PP] = mfbcc;
+   f[DIR_0MM] = mfbaa;
+   f[DIR_0PM] = mfbca;
+   f[DIR_0MP] = mfbac;
    f[DIR_000] = mfbbb;
-   f[DIR_PPP]  = mfccc;
-   f[DIR_PMP]  = mfcac;
-   f[DIR_PPM]  = mfcca;
-   f[DIR_PMM]  = mfcaa;
-   f[DIR_MPP]  = mfacc;
-   f[DIR_MMP]  = mfaac;
-   f[DIR_MPM]  = mfaca;
-   f[DIR_MMM]  = mfaaa;
+   f[DIR_PPP] = mfccc;
+   f[DIR_PMP] = mfcac;
+   f[DIR_PPM] = mfcca;
+   f[DIR_PMM] = mfcaa;
+   f[DIR_MPP] = mfacc;
+   f[DIR_MMP] = mfaac;
+   f[DIR_MPM] = mfaca;
+   f[DIR_MMM] = mfaaa;
 }
 //////////////////////////////////////////////////////////////////////////
 //Position SWB -0.25, -0.25, -0.25
@@ -1004,7 +1004,7 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedNodeFC(LBM
    LBMReal mxxyMyzz = zeroReal;
    LBMReal mxxzPyyz = zeroReal;
    LBMReal mxxzMyyz = zeroReal;
-   LBMReal mxyyPxzz =  zeroReal;
+   LBMReal mxyyPxzz = zeroReal;
    LBMReal mxyyMxzz = zeroReal;
 
    // linear combinations back
@@ -1233,33 +1233,33 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedNodeFC(LBM
    mfccc = m2;
    ////////////////////////////////////////////////////////////////////////////////////
 
-   f[DIR_P00]    = mfcbb;
-   f[DIR_M00]    = mfabb;
-   f[DIR_0P0]    = mfbcb;
-   f[DIR_0M0]    = mfbab;
-   f[DIR_00P]    = mfbbc;
-   f[DIR_00M]    = mfbba;
-   f[DIR_PP0]   = mfccb;
-   f[DIR_MM0]   = mfaab;
-   f[DIR_PM0]   = mfcab;
-   f[DIR_MP0]   = mfacb;
-   f[DIR_P0P]   = mfcbc;
-   f[DIR_M0M]   = mfaba;
-   f[DIR_P0M]   = mfcba;
-   f[DIR_M0P]   = mfabc;
-   f[DIR_0PP]   = mfbcc;
-   f[DIR_0MM]   = mfbaa;
-   f[DIR_0PM]   = mfbca;
-   f[DIR_0MP]   = mfbac;
+   f[DIR_P00] = mfcbb;
+   f[DIR_M00] = mfabb;
+   f[DIR_0P0] = mfbcb;
+   f[DIR_0M0] = mfbab;
+   f[DIR_00P] = mfbbc;
+   f[DIR_00M] = mfbba;
+   f[DIR_PP0] = mfccb;
+   f[DIR_MM0] = mfaab;
+   f[DIR_PM0] = mfcab;
+   f[DIR_MP0] = mfacb;
+   f[DIR_P0P] = mfcbc;
+   f[DIR_M0M] = mfaba;
+   f[DIR_P0M] = mfcba;
+   f[DIR_M0P] = mfabc;
+   f[DIR_0PP] = mfbcc;
+   f[DIR_0MM] = mfbaa;
+   f[DIR_0PM] = mfbca;
+   f[DIR_0MP] = mfbac;
    f[DIR_000] = mfbbb;
-   f[DIR_PPP]  = mfccc;
-   f[DIR_PMP]  = mfcac;
-   f[DIR_PPM]  = mfcca;
-   f[DIR_PMM]  = mfcaa;
-   f[DIR_MPP]  = mfacc;
-   f[DIR_MMP]  = mfaac;
-   f[DIR_MPM]  = mfaca;
-   f[DIR_MMM]  = mfaaa;
+   f[DIR_PPP] = mfccc;
+   f[DIR_PMP] = mfcac;
+   f[DIR_PPM] = mfcca;
+   f[DIR_PMM] = mfcaa;
+   f[DIR_MPP] = mfacc;
+   f[DIR_MMP] = mfaac;
+   f[DIR_MPM] = mfaca;
+   f[DIR_MMM] = mfaaa;
 }
 //////////////////////////////////////////////////////////////////////////
 void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedVelocity(LBMReal x, LBMReal y, LBMReal z, LBMReal& vx1, LBMReal& vx2, LBMReal& vx3)

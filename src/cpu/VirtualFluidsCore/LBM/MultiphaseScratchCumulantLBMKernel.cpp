@@ -610,7 +610,7 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 			   uy2 = vvyF * vvyF;
 			   uz2 = vvzF * vvzF;
 			   LBMReal forcingTerm[D3Q27System::ENDF + 1];
-			   for (int dir = STARTF; dir <= (FENDDIR); dir++) {
+			   for (int dir = FSTARTDIR; dir <= FENDDIR; dir++) {
 				   LBMReal velProd = DX1[dir] * vvxF + DX2[dir] * vvyF + DX3[dir] * vvzF;
 				   LBMReal velSq1 = velProd * velProd;
 				   LBMReal gamma = WEIGTH[dir] * (1.0 + 3 * velProd + (4.5 * velSq1 - 1.5 * (ux2 + uy2 + uz2)));

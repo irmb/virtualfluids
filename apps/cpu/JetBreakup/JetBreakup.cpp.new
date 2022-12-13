@@ -88,7 +88,7 @@ void run(string configname)
                 //density of heavy fluid (kg/m^3)
                 rho_h = 848; 
                 //density of light fluid (kg/m^3)
-                rho_l = 34.5;
+                rho_l =  34.5;
                 //density ratio
                 r_rho = rho_h / rho_l;
                 //dynamic viscosity of heavy fluid (Pa � s)
@@ -137,7 +137,7 @@ void run(string configname)
                 D = 0.0001;
                 // surface tension (N/m)
                 sigma = 0.03;
-                break;                
+                break;
         }
 
         double Re = rho_h * Uo * D / mu_h;
@@ -185,8 +185,9 @@ void run(string configname)
         // kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsCumulantLBMKernel());
         // kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel());
         // kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsPressureFilterLBMKernel());
-        //kernel = SPtr<LBMKernel>(new MultiphasePressureFilterLBMKernel());
         kernel = SPtr<LBMKernel>(new MultiphaseSimpleVelocityBaseExternalPressureLBMKernel());
+        //kernel = SPtr<LBMKernel>(new MultiphaseVelocityBaseSplitDistributionLBMKernel());
+        //kernel = SPtr<LBMKernel>(new MultiphasePressureFilterLBMKernel());
 
         kernel->setWithForcing(true);
         kernel->setForcingX1(0.0);
@@ -219,7 +220,7 @@ void run(string configname)
         grid->setGhostLayerWidth(2);
 
         SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(
-            comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::DIR_MMM, MetisPartitioner::RECURSIVE));
+            comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::RECURSIVE));
 
         //////////////////////////////////////////////////////////////////////////
         // restart
@@ -236,6 +237,24 @@ void run(string configname)
         //////////////////////////////////////////////////////////////////////////
         // BC Adapter
         //////////////////////////////////////////////////////////////////////////////
+            // bounding box
+        double g_minX1 = 0;
+        double g_minX2 = 0;
+        double g_minX3 = 0;
+
+        double g_maxX1 = 8.0 * D;//8.0 * D;
+        double g_maxX2 = 5.0 * D;
+        double g_maxX3 = 5.0 * D;
+
+        //double g_maxX1 = 1.0 * D; // 8.0 * D;
+        //double g_maxX2 = 2.0 * D;
+        //double g_maxX3 = 2.0 * D;
+
+
+        LBMReal x1c = 0;  // (g_maxX1 - g_minX1-1)/2; //
+        LBMReal x2c = (g_maxX2 - g_minX2) / 2;
+        LBMReal x3c = (g_maxX3 - g_minX3) / 2;
+        
         mu::Parser fctF1;
         // fctF1.SetExpr("vy1*(1-((x1-x0)^2+(x3-z0)^2)/(R^2))");
         // fctF1.SetExpr("vy1*(1-(sqrt((x1-x0)^2+(x3-z0)^2)/R))^0.1");
@@ -248,8 +267,13 @@ void run(string configname)
         //    new MultiphaseVelocityBCAdapter(false, true, false, fctF1, phiH, 0.0, BCFunction::INFCONST));
 
         mu::Parser fctF2;
-        fctF2.SetExpr("vy1");
+        fctF2.SetExpr("vy1");//*(1-(sqrt((x2-x2c)*(x2-x2c)+(x3-x3c)*(x3-x3c))/R))");
         fctF2.DefineConst("vy1", U_LB);
+        fctF2.DefineConst("R", D*0.5);
+        fctF2.DefineConst("x1c", x1c);
+        fctF2.DefineConst("x2c", x2c);
+        fctF2.DefineConst("x3c", x3c);
+
 
         double startTime = 1;
         SPtr<BCAdapter> velBCAdapterF1(
@@ -292,18 +316,9 @@ void run(string configname)
 
             //  if (newStart) {
 
-            // bounding box
-            double g_minX1 = 0;
-            double g_minX2 = 0;
-            double g_minX3 = 0;
 
-            //double g_maxX1 = 8.0*D;
-            //double g_maxX2 = 2.5*D;
-            //double g_maxX3 = 2.5*D;
 
-             double g_maxX1 = 1.0 * D; // 8.0 * D;
-             double g_maxX2 = 2.0 * D;
-             double g_maxX3 = 2.0 * D;
+
 
             // geometry
             SPtr<GbObject3D> gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
@@ -471,7 +486,7 @@ void run(string configname)
                 UBLOG(logINFO, "Available memory per process = " << availMem << " bytes");
             }
 
-            MultiphaseSetKernelBlockVisitor kernelVisitor(kernel, nu_h, nu_l, availMem, needMem);
+            MultiphaseSetKernelBlockVisitor kernelVisitor(kernel, nu_h, nu_l,0,0,0,0, availMem, needMem);
 
             grid->accept(kernelVisitor);
 
@@ -486,12 +501,9 @@ void run(string configname)
             //mu::Parser fct1;
             //fct1.SetExpr("phiL");
             //fct1.DefineConst("phiL", phiL);
-            LBMReal x1c = 0;  // (g_maxX1 - g_minX1-1)/2; //
-            LBMReal x2c = (g_maxX2 - g_minX2)/2;
-            LBMReal x3c = (g_maxX3 - g_minX3)/2;
             
             mu::Parser fct1;
-            fct1.SetExpr("0.5-0.5*tanh(2*(sqrt((x1-x1c)^2+(x2-x2c)^2+(x3-x3c)^2)-radius)/interfaceThickness)");
+            fct1.SetExpr(" 0.5 - 0.5 * tanh(2 * (sqrt((x1 - x1c) ^ 2 + (x2 - x2c) ^ 2 + (x3 - x3c) ^ 2) - radius) / interfaceThickness)");
             fct1.DefineConst("x1c", x1c);
             fct1.DefineConst("x2c", x2c);
             fct1.DefineConst("x3c", x3c);
@@ -569,7 +581,7 @@ void run(string configname)
 
         grid->accept(bcVisitor);
 
-        ThreeDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
+         ThreeDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
         //TwoDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
         grid->accept(setConnsVisitor);
 

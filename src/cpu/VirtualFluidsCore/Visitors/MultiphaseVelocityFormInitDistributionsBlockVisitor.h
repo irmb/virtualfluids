@@ -65,12 +65,14 @@ public:
 	void setVx3( const mu::Parser& parser);
 	void setRho( const mu::Parser& parser);
 	void setPhi( const mu::Parser& parser);
+	void setPressure(const mu::Parser& parser);
 
 	void setVx1( const std::string& muParserString);
 	void setVx2( const std::string& muParserString);
 	void setVx3( const std::string& muParserString);
 	void setRho( const std::string& muParserString);
 	void setPhi( const std::string& muParserString);
+	void setPressure(const std::string& muParserString);
 
 	//////////////////////////////////////////////////////////////////////////
 	void setVx1( LBMReal vx1 );
@@ -79,6 +81,7 @@ public:
 	void setRho( LBMReal rho );
 	void setPhi( LBMReal rho );
 	void setNu( LBMReal nu );
+	void setPressure(LBMReal pres);
 
 	void visit(SPtr<Grid3D> grid, SPtr<Block3D> block);
 
@@ -91,6 +94,7 @@ private:
 	mu::Parser muVx3;
 	mu::Parser muRho;
 	mu::Parser muPhi;
+	mu::Parser muPressure;
 
 	LBMReal nu;
 };

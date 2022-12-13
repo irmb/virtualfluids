@@ -632,7 +632,6 @@ SPtr<Block3D> Grid3D::getNeighborBlock(int dir, SPtr<Block3D> block) const
 void Grid3D::getAllNeighbors(int ix1, int ix2, int ix3, int level, int levelDepth, std::vector<SPtr<Block3D>> &blocks)
 {
     for (int dir = D3Q27System::STARTDIR; dir <= D3Q27System::ENDDIR; dir++)
-    // for (int dir = D3Q27System::STARTDIR; dir<=D3Q27System::DIR_0MP; dir++)
     {
         this->getNeighborBlocksForDirection(dir, ix1, ix2, ix3, level, levelDepth, blocks);
     }

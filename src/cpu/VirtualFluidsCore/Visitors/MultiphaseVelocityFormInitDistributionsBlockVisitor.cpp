@@ -48,6 +48,7 @@ MultiphaseVelocityFormInitDistributionsBlockVisitor::MultiphaseVelocityFormInitD
 	this->setVx2(0.0);
 	this->setVx3(0.0);
 	this->setRho(0.0);
+	this->setPressure(0.0);
 }
 //////////////////////////////////////////////////////////////////////////
 void MultiphaseVelocityFormInitDistributionsBlockVisitor::setVx1( const mu::Parser& parser)  
@@ -79,6 +80,11 @@ void MultiphaseVelocityFormInitDistributionsBlockVisitor::setPhi( const mu::Pars
 	this->checkFunction(parser); 
 	this->muPhi = parser;  
 }
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::setPressure(const mu::Parser& parser)
+{
+	this->checkFunction(parser);
+	this->muPressure = parser;
+}
 //////////////////////////////////////////////////////////////////////////
 void MultiphaseVelocityFormInitDistributionsBlockVisitor::setVx1( const std::string& muParserString)  
 { 
@@ -108,6 +114,11 @@ void MultiphaseVelocityFormInitDistributionsBlockVisitor::setPhi( const std::str
 { 
 	this->muPhi.SetExpr(muParserString); 
 	this->checkFunction(muPhi); 
+}
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::setPressure(const std::string& muParserString)
+{
+	this->muPressure.SetExpr(muParserString);
+	this->checkFunction(muPressure);
 }
 //////////////////////////////////////////////////////////////////////////
 void MultiphaseVelocityFormInitDistributionsBlockVisitor::setVx1( LBMReal vx1 ) 
@@ -153,6 +164,7 @@ void MultiphaseVelocityFormInitDistributionsBlockVisitor::visit(const SPtr<Grid3
 	this->muVx3.DefineVar("x1",&x1); this->muVx3.DefineVar("x2",&x2); this->muVx3.DefineVar("x3",&x3);
 	this->muRho.DefineVar("x1",&x1); this->muRho.DefineVar("x2",&x2); this->muRho.DefineVar("x3",&x3);
 	this->muPhi.DefineVar("x1",&x1); this->muPhi.DefineVar("x2",&x2); this->muPhi.DefineVar("x3",&x3);
+	this->muPressure.DefineVar("x1", &x1); this->muPressure.DefineVar("x2", &x2); this->muPressure.DefineVar("x3", &x3);
 
 	
 
@@ -169,6 +181,8 @@ void MultiphaseVelocityFormInitDistributionsBlockVisitor::visit(const SPtr<Grid3
         SPtr<EsoTwist3D> distributionsF = dynamicPointerCast<EsoTwist3D>(kernel->getDataSet()->getFdistributions()); 
 		SPtr<EsoTwist3D> distributionsH = dynamicPointerCast<EsoTwist3D>(kernel->getDataSet()->getHdistributions());
         SPtr<EsoTwist3D> distributionsH2 = dynamicPointerCast<EsoTwist3D>(kernel->getDataSet()->getH2distributions());
+		SPtr<PhaseFieldArray3D> pressure = dynamicPointerCast<PhaseFieldArray3D>(kernel->getDataSet()->getPressureField());
+
 
 		//LBMReal phiL = kernel->getPhiL();
 		//LBMReal phiH = kernel->getPhiH();
@@ -184,13 +198,16 @@ void MultiphaseVelocityFormInitDistributionsBlockVisitor::visit(const SPtr<Grid3
                     x2              = coords[1];
                     x3              = coords[2];
 
-					LBMReal vx1 = 0, vx2 = 0, vx3 = 0, p1 = 0, phi = 0;
-					p1  = 0.0;
-					//p1 = muRho.Eval();
+					LBMReal vx1 = 0, vx2 = 0, vx3 = 0, p1 = 0, phi = 0,pres=0;
+					//p1  = 0.0;
+					p1 = muRho.Eval();
 					vx1 = muVx1.Eval();
 					vx2 = muVx2.Eval();
 					vx3 = muVx3.Eval();
 					phi = muPhi.Eval();
+					pres = muPressure.Eval();
+					(*pressure)(ix1, ix2, ix3) = pres;
+
 					
 					//rho = phi*1.0 + (1.0-phi)/densityRatio;
 					//LBMReal rhoH = 1.0;
@@ -250,66 +267,68 @@ void MultiphaseVelocityFormInitDistributionsBlockVisitor::visit(const SPtr<Grid3
 					distributionsF->setDistribution(f, ix1, ix2, ix3);
 					distributionsF->setDistributionInv(f, ix1, ix2, ix3);
 
-					f[DIR_P00]    =  phi * feq[DIR_P00]    ;// / rho;
-					f[DIR_M00]    =  phi * feq[DIR_M00]    ;// / rho;
-					f[DIR_0P0]    =  phi * feq[DIR_0P0]    ;// / rho;
-					f[DIR_0M0]    =  phi * feq[DIR_0M0]    ;// / rho;
-					f[DIR_00P]    =  phi * feq[DIR_00P]    ;// / rho;
-					f[DIR_00M]    =  phi * feq[DIR_00M]    ;// / rho;
-					f[DIR_PP0]   =  phi * feq[DIR_PP0]   ;// / rho;
-					f[DIR_MM0]   =  phi * feq[DIR_MM0]   ;// / rho;
-					f[DIR_PM0]   =  phi * feq[DIR_PM0]   ;// / rho;
-					f[DIR_MP0]   =  phi * feq[DIR_MP0]   ;// / rho;
-					f[DIR_P0P]   =  phi * feq[DIR_P0P]   ;// / rho;
-					f[DIR_M0M]   =  phi * feq[DIR_M0M]   ;// / rho;
-					f[DIR_P0M]   =  phi * feq[DIR_P0M]   ;// / rho;
-					f[DIR_M0P]   =  phi * feq[DIR_M0P]   ;// / rho;
-					f[DIR_0PP]   =  phi * feq[DIR_0PP]   ;// / rho;
-					f[DIR_0MM]   =  phi * feq[DIR_0MM]   ;// / rho;
-					f[DIR_0PM]   =  phi * feq[DIR_0PM]   ;// / rho;
-					f[DIR_0MP]   =  phi * feq[DIR_0MP]   ;// / rho;
-					f[DIR_PPP]  =  phi * feq[DIR_PPP]  ;// / rho;
-					f[DIR_MPP]  =  phi * feq[DIR_MPP]  ;// / rho;
-					f[DIR_PMP]  =  phi * feq[DIR_PMP]  ;// / rho;
-					f[DIR_MMP]  =  phi * feq[DIR_MMP]  ;// / rho;
-					f[DIR_PPM]  =  phi * feq[DIR_PPM]  ;// / rho;
-					f[DIR_MPM]  =  phi * feq[DIR_MPM]  ;// / rho;
-					f[DIR_PMM]  =  phi * feq[DIR_PMM]  ;// / rho;
-					f[DIR_MMM]  =  phi * feq[DIR_MMM]  ;// / rho;
-					f[DIR_000] =  phi * feq[DIR_000] ;// / rho;
+					f[DIR_000] = phi * feq[DIR_000];        // / rho;
+					f[DIR_P00] = phi * feq[DIR_P00]    ;// / rho;
+					f[DIR_M00] = phi * feq[DIR_M00]    ;// / rho;
+					f[DIR_0P0] = phi * feq[DIR_0P0]    ;// / rho;
+					f[DIR_0M0] = phi * feq[DIR_0M0]    ;// / rho;
+					f[DIR_00P] = phi * feq[DIR_00P]    ;// / rho;
+					f[DIR_00M] = phi * feq[DIR_00M]    ;// / rho;
+					f[DIR_PP0] = phi * feq[DIR_PP0]   ;// / rho;
+					f[DIR_MM0] = phi * feq[DIR_MM0]   ;// / rho;
+					f[DIR_PM0] = phi * feq[DIR_PM0]   ;// / rho;
+					f[DIR_MP0] = phi * feq[DIR_MP0]   ;// / rho;
+					f[DIR_P0P] = phi * feq[DIR_P0P]   ;// / rho;
+					f[DIR_M0M] = phi * feq[DIR_M0M]   ;// / rho;
+					f[DIR_P0M] = phi * feq[DIR_P0M]   ;// / rho;
+					f[DIR_M0P] = phi * feq[DIR_M0P]   ;// / rho;
+					f[DIR_0PP] = phi * feq[DIR_0PP]   ;// / rho;
+					f[DIR_0MM] = phi * feq[DIR_0MM]   ;// / rho;
+					f[DIR_0PM] = phi * feq[DIR_0PM]   ;// / rho;
+					f[DIR_0MP] = phi * feq[DIR_0MP]   ;// / rho;
+					f[DIR_PPP] = phi * feq[DIR_PPP]  ;// / rho;
+					f[DIR_MPP] = phi * feq[DIR_MPP]  ;// / rho;
+					f[DIR_PMP] = phi * feq[DIR_PMP]  ;// / rho;
+					f[DIR_MMP] = phi * feq[DIR_MMP]  ;// / rho;
+					f[DIR_PPM] = phi * feq[DIR_PPM]  ;// / rho;
+					f[DIR_MPM] = phi * feq[DIR_MPM]  ;// / rho;
+					f[DIR_PMM] = phi * feq[DIR_PMM]  ;// / rho;
+					f[DIR_MMM] =  phi * feq[DIR_MMM]  ;// / rho;
+					
 
 					distributionsH->setDistribution(f, ix1, ix2, ix3);
 					distributionsH->setDistributionInv(f, ix1, ix2, ix3);
 
 					if (distributionsH2) {
 
-						f[DIR_P00]    = (1.-phi) * feq[DIR_P00]   ;// / rho;
-						f[DIR_M00]    = (1.-phi) * feq[DIR_M00]   ;// / rho;
-						f[DIR_0P0]    = (1.-phi) * feq[DIR_0P0]   ;// / rho;
-						f[DIR_0M0]    = (1.-phi) * feq[DIR_0M0]   ;// / rho;
-						f[DIR_00P]    = (1.-phi) * feq[DIR_00P]   ;// / rho;
-						f[DIR_00M]    = (1.-phi) * feq[DIR_00M]   ;// / rho;
-						f[DIR_PP0]   = (1.-phi) * feq[DIR_PP0]  ;// / rho;
-						f[DIR_MM0]   = (1.-phi) * feq[DIR_MM0]  ;// / rho;
-						f[DIR_PM0]   = (1.-phi) * feq[DIR_PM0]  ;// / rho;
-						f[DIR_MP0]   = (1.-phi) * feq[DIR_MP0]  ;// / rho;
-						f[DIR_P0P]   = (1.-phi) * feq[DIR_P0P]  ;// / rho;
-						f[DIR_M0M]   = (1.-phi) * feq[DIR_M0M]  ;// / rho;
-						f[DIR_P0M]   = (1.-phi) * feq[DIR_P0M]  ;// / rho;
-						f[DIR_M0P]   = (1.-phi) * feq[DIR_M0P]  ;// / rho;
-						f[DIR_0PP]   = (1.-phi) * feq[DIR_0PP]  ;// / rho;
-						f[DIR_0MM]   = (1.-phi) * feq[DIR_0MM]  ;// / rho;
-						f[DIR_0PM]   = (1.-phi) * feq[DIR_0PM]  ;// / rho;
-						f[DIR_0MP]   = (1.-phi) * feq[DIR_0MP]  ;// / rho;
-						f[DIR_PPP]  = (1.-phi) * feq[DIR_PPP] ;// / rho;
-						f[DIR_MPP]  = (1.-phi) * feq[DIR_MPP] ;// / rho;
-						f[DIR_PMP]  = (1.-phi) * feq[DIR_PMP] ;// / rho;
-						f[DIR_MMP]  = (1.-phi) * feq[DIR_MMP] ;// / rho;
-						f[DIR_PPM]  = (1.-phi) * feq[DIR_PPM] ;// / rho;
-						f[DIR_MPM]  = (1.-phi) * feq[DIR_MPM] ;// / rho;
-						f[DIR_PMM]  = (1.-phi) * feq[DIR_PMM] ;// / rho;
-						f[DIR_MMM]  = (1.-phi) * feq[DIR_MMM] ;// / rho;
-						f[DIR_000] = (1.-phi) * feq[DIR_000];//  / rho;
+						f[DIR_000] = 0;//(1. - phi) * feq[DIR_000]; //  / rho;
+						f[DIR_P00] = 0;//(1.-phi) * feq[DIR_P00]   ;// / rho;
+						f[DIR_M00] = 0;//(1.-phi) * feq[DIR_M00]   ;// / rho;
+						f[DIR_0P0] = 0;//(1.-phi) * feq[DIR_0P0]   ;// / rho;
+						f[DIR_0M0] = 0;//(1.-phi) * feq[DIR_0M0]   ;// / rho;
+						f[DIR_00P] = 0;//(1.-phi) * feq[DIR_00P]   ;// / rho;
+						f[DIR_00M] = 0;//(1.-phi) * feq[DIR_00M]   ;// / rho;
+						f[DIR_PP0] = 0;//(1.-phi) * feq[DIR_PP0]  ;// / rho;
+						f[DIR_MM0] = 0;//(1.-phi) * feq[DIR_MM0]  ;// / rho;
+						f[DIR_PM0] = 0;//(1.-phi) * feq[DIR_PM0]  ;// / rho;
+						f[DIR_MP0] = 0;//(1.-phi) * feq[DIR_MP0]  ;// / rho;
+						f[DIR_P0P] = 0;//(1.-phi) * feq[DIR_P0P]  ;// / rho;
+						f[DIR_M0M] = 0;//(1.-phi) * feq[DIR_M0M]  ;// / rho;
+						f[DIR_P0M] = 0;//(1.-phi) * feq[DIR_P0M]  ;// / rho;
+						f[DIR_M0P] = 0;//(1.-phi) * feq[DIR_M0P]  ;// / rho;
+						f[DIR_0PP] = 0;//(1.-phi) * feq[DIR_0PP]  ;// / rho;
+						f[DIR_0MM] = 0;//(1.-phi) * feq[DIR_0MM]  ;// / rho;
+						f[DIR_0PM] = 0;//(1.-phi) * feq[DIR_0PM]  ;// / rho;
+						f[DIR_0MP] = 0;//(1.-phi) * feq[DIR_0MP]  ;// / rho;
+						f[DIR_PPP] = 0;//(1.-phi) * feq[DIR_PPP] ;// / rho;
+						f[DIR_MPP] = 0;//(1.-phi) * feq[DIR_MPP] ;// / rho;
+						f[DIR_PMP] = 0;//(1.-phi) * feq[DIR_PMP] ;// / rho;
+						f[DIR_MMP] = 0;//(1.-phi) * feq[DIR_MMP] ;// / rho;
+						f[DIR_PPM] = 0;//(1.-phi) * feq[DIR_PPM] ;// / rho;
+						f[DIR_MPM] = 0;//(1.-phi) * feq[DIR_MPM] ;// / rho;
+						f[DIR_PMM] = 0;//(1.-phi) * feq[DIR_PMM] ;// / rho;
+						f[DIR_MMM] = 0;//(1.-phi) * feq[DIR_MMM] ;// / rho;
+						
 
                         distributionsH2->setDistribution(f, ix1, ix2, ix3);
                         distributionsH2->setDistributionInv(f, ix1, ix2, ix3);                    
@@ -347,5 +366,12 @@ void MultiphaseVelocityFormInitDistributionsBlockVisitor::checkFunction(mu::Pars
 void MultiphaseVelocityFormInitDistributionsBlockVisitor::setNu( LBMReal nu )
 {
 	this->nu = nu;
+}
+
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::setPressure(LBMReal pres)
+{
+	this->muPressure.SetExpr(UbSystem::toString(pres, D3Q27RealLim::digits10));
+	this->checkFunction(muPressure);
+
 }
 

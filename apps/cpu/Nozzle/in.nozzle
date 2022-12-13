@@ -76,13 +76,15 @@ region bc cylinder z -1.3013105 0.388582 0.01275005 0.18055 0.20105 units box
        # nparticles 6000 massrate 0.1 insert_every 1000 overlapcheck yes all_in no vel constant 0.0 0.0 -1.0 &
        # insertion_face inface 
        
-# fix    ins nve_group insert/stream seed 32452867 distributiontemplate pdd1 &
-       # nparticles 6000 massrate 0.1 insert_every ones overlapcheck yes all_in no vel constant 0.0 0.0 -1.0 &
-       # insertion_face inface 
+ # fix    ins nve_group insert/stream seed 32452867 distributiontemplate pdd1 &
+        # nparticles 6000 massrate 0.1 insert_every ones overlapcheck yes all_in no vel constant 0.0 0.0 -1.0 &
+        # insertion_face inface 
 
-fix ins nve_group insert/pack seed 32452867 distributiontemplate pdd1 insert_every 1000 &
-                        overlapcheck yes volumefraction_region 0.1 region bc ntry_mc 1001
-   
+#working setup
+# fix ins nve_group insert/pack seed 32452867 distributiontemplate pdd1 insert_every 1000 &
+                       # overlapcheck yes vel constant 0.0 0.0 -1.0 volumefraction_region 0.1 region bc ntry_mc 1001
+fix ins nve_group insert/pack seed 32452867 distributiontemplate pdd1 insert_every 10 &
+                       overlapcheck yes vel constant 0.0 0.0 -1.0 volumefraction_region 0.1 region bc ntry_mc 1001   
        
 # fix    ins all insert/stream seed 32452867 distributiontemplate pdd1 &
        # nparticles INF massrate 0.1 overlapcheck yes all_in yes vel constant 0.0 0.0 -1.0 &

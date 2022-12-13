@@ -55,7 +55,7 @@ static const int STARTF = 0;
 static const int ENDF   = 26; // D3Q27
 
 static const int STARTDIR = 1; //0
-static const int ENDDIR   = 27;//26 // all geometric directions
+static const int ENDDIR   = 26;//26 // all geometric directions
 
 extern const int DX1[ENDDIR + 1];
 extern const int DX2[ENDDIR + 1];
@@ -851,15 +851,15 @@ static std::vector<int> getEX(const int &exn)
     ex.resize(ENDDIR + 1);
     switch (exn) {
         case 1:
-            for (int dir = STARTDIR; dir < ENDDIR; ++dir)
+            for (int dir = STARTDIR; dir <= ENDDIR; ++dir)
                 ex[dir] = DX1[dir];
             break;
         case 2:
-            for (int dir = STARTDIR; dir < ENDDIR; ++dir)
+            for (int dir = STARTDIR; dir <= ENDDIR; ++dir)
                 ex[dir] = DX2[dir];
             break;
         case 3:
-            for (int dir = STARTDIR; dir < ENDDIR; ++dir)
+            for (int dir = STARTDIR; dir <= ENDDIR; ++dir)
                 ex[dir] = DX3[dir];
             break;
     }
