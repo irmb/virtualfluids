@@ -116,7 +116,7 @@ private:
     int *sparseIndices;
 
     std::vector<uint> fluidNodeIndices;                 // run on CollisionTemplate::Default
-    std::vector<uint> fluidNodeIndicesBorder;           // run on border nodes
+    std::vector<uint> fluidNodeIndicesBorder;           // run on subdomain border nodes (CollisionTemplate::Border)
     std::vector<uint> fluidNodeIndicesMacroVars;        // run on CollisionTemplate::MacroVars
     std::vector<uint> fluidNodeIndicesApplyBodyForce;   // run on CollisionTemplate::ApplyBodyForce
     std::vector<uint> fluidNodeIndicesAllFeatures;      // run on CollisionTemplate::AllFeatures
