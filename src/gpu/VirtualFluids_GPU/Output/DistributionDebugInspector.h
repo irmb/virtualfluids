@@ -1,5 +1,5 @@
-#ifndef FILE_WRITER_H
-#define FILE_WRITER_H
+#ifndef DISTRIBUTION_INSPECTOR_H
+#define DISTRIBUTION_INSPECTOR_H
 
 #include "Parameter/Parameter.h"
 
