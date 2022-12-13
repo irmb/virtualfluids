@@ -778,6 +778,8 @@ public:
     real getScaledDensityRatio(int level);
     //! \returns the pressure ratio in SI/LB units scaled to the respective level
     real getScaledPressureRatio(int level);
+    //! \returns the stress ratio in SI/LB units scaled to the respective level
+    real getScaledStressRatio(int level)
     //! \returns the time ratio in SI/LB units scaled to the respective level
     real getScaledTimeRatio(int level);
     //! \returns the length ratio in SI/LB units scaled to the respective level

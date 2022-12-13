@@ -187,7 +187,7 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
     this->velocityRatio      = std::bind(&Parameter::getScaledVelocityRatio,        para, _1); 
     this->densityRatio       = std::bind(&Parameter::getScaledDensityRatio,         para, _1);
     this->forceRatio         = std::bind(&Parameter::getScaledForceRatio,           para, _1);
-    this->stressRatio        = std::bind(&Parameter::getScaledPressureRatio,        para, _1);
+    this->stressRatio        = std::bind(&Parameter::getScaledStressRatio,          para, _1);
     this->viscosityRatio     = std::bind(&Parameter::getScaledViscosityRatio,       para, _1);
     this->nondimensional     = std::bind(&Probe::getNondimensionalConversionFactor, this, _1);
 
