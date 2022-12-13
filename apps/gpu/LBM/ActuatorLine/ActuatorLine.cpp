@@ -99,8 +99,8 @@ void multipleLevel(const std::string& configPath)
     const real velocity = config.getValue<real>("Velocity");
 
 
-    const real L_x = 20*reference_diameter;
-    const real L_y = 6*reference_diameter;
+    const real L_x = 12*reference_diameter;
+    const real L_y = 5*reference_diameter;
     const real L_z = 6*reference_diameter;
 
     const real viscosity = 1.56e-5;
@@ -126,14 +126,14 @@ void multipleLevel(const std::string& configPath)
 
     const real dx = reference_diameter/real(nodes_per_diameter);
 
-    real turbPos[3] = {3*reference_diameter, 3*reference_diameter, 3*reference_diameter};
+    real turbPos[3] = {2*reference_diameter, 2*reference_diameter, 3*reference_diameter};
 
     gridBuilder->addCoarseGrid(0.0, 0.0, 0.0,
                                L_x,  L_y,  L_z, dx);
 
     gridBuilder->setNumberOfLayers(4,0);
-    gridBuilder->addGrid( new Cuboid(   turbPos[0]-1.5*reference_diameter,  turbPos[1]-1.5*reference_diameter,  turbPos[2]-1.5*reference_diameter, 
-                                        turbPos[0]+10.0*reference_diameter, turbPos[1]+1.5*reference_diameter,  turbPos[2]+1.5*reference_diameter) , 1 );
+    gridBuilder->addGrid( new Cuboid(   turbPos[0]-1.0*reference_diameter,  turbPos[1]-1.5*reference_diameter,  turbPos[2]-1.5*reference_diameter, 
+                                        turbPos[0]+6.0*reference_diameter,  turbPos[1]+1.5*reference_diameter,  turbPos[2]+1.5*reference_diameter) , 1 );
     para->setMaxLevel(2);
     scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
@@ -182,12 +182,11 @@ void multipleLevel(const std::string& configPath)
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    gridBuilder->setVelocityBoundaryCondition(SideType::MX,  velocityLB,  0.0, 0.0);
-
-    gridBuilder->setVelocityBoundaryCondition(SideType::MY,  velocityLB,  0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SideType::PY,  velocityLB,  0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SideType::MZ,  velocityLB,  0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SideType::PZ,  velocityLB,  0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::MX,  velocityLB, 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::MY,  0.0       , 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::PY,  velocityLB, 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::MZ,  velocityLB, 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::PZ,  velocityLB, 0.0, 0.0);
     gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
 
     bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityAndPressureCompressible);
