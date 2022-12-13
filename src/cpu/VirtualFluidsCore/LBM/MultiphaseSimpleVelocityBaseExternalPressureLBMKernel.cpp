@@ -303,7 +303,7 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 
 					//Mathematica
 
-					LBMReal rho = ((*pressure)(x1, x2, x3) - (*phaseField)(x1, x2, x3) * (*pressure)(x1, x2, x3) + c1o3 * (rhoH + ((*phaseField)(x1, x2, x3) - phiH) * rhoToPhi)) / (c1o3 + c1o3 * drho * (-1 + (*phaseField)(x1, x2, x3)));
+					//LBMReal rho = ((*pressure)(x1, x2, x3) - (*phaseField)(x1, x2, x3) * (*pressure)(x1, x2, x3) + c1o3 * (rhoH + ((*phaseField)(x1, x2, x3) - phiH) * rhoToPhi)) / (c1o3 + c1o3 * drho * (-1 + (*phaseField)(x1, x2, x3)));
 					(*pressureOld)(x1, x2, x3) = ((*pressure)(x1, x2, x3) + c1o3 * drho * (rhoH + ((*phaseField)(x1, x2, x3) - phiH) * rhoToPhi)) / (1 + drho * (-1 + (*phaseField)(x1, x2, x3)));
 /////Full Filter
 					//LBMReal rho = rhoH + rhoToPhi * ((*phaseField)(x1, x2, x3) - phiH)+(one- (*phaseField)(x1, x2, x3))*three* (*pressure)(x1, x2, x3); //explicit Compressible
@@ -563,15 +563,15 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 					//	}
 					//}
 
-					LBMReal gradPx = ((((arrayP[2][0][0] - arrayP[0][2][2]) + (arrayP[2][2][0] - arrayP[0][0][2])) + ((arrayP[2][2][2] - arrayP[0][0][0]) + (arrayP[2][0][2] - arrayP[0][2][0]))) * c1o72
-						+ (((arrayP[2][1][0] - arrayP[0][1][2]) + (arrayP[2][2][1] - arrayP[0][0][1])) + ((arrayP[2][0][1] - arrayP[0][2][1]) + (arrayP[2][1][2] - arrayP[0][1][0]))) * c1o18)
-						+ (arrayP[2][1][1] - arrayP[0][1][1]) * c2o9;
-					LBMReal gradPy = ((((arrayP[0][2][0] - arrayP[2][0][2]) + (arrayP[2][2][0] - arrayP[0][0][2])) + ((arrayP[2][2][2] - arrayP[0][0][0]) + (arrayP[0][2][2] - arrayP[2][0][0]))) * c1o72
-						+ (((arrayP[1][2][0] - arrayP[1][0][2]) + (arrayP[2][2][1] - arrayP[0][0][1])) + ((arrayP[0][2][1] - arrayP[2][0][1]) + (arrayP[1][2][2] - arrayP[1][0][0]))) * c1o18)
-						+ (arrayP[1][2][1] - arrayP[1][0][1]) * c2o9;
-					LBMReal gradPz = ((((arrayP[0][0][2] - arrayP[2][2][0]) + (arrayP[0][2][2] - arrayP[2][0][0])) + ((arrayP[2][2][2] - arrayP[0][0][0]) + (arrayP[2][0][2] - arrayP[0][2][0]))) * c1o72
-						+ (((arrayP[0][1][2] - arrayP[2][1][0]) + (arrayP[1][2][2] - arrayP[1][0][0])) + ((arrayP[1][0][2] - arrayP[1][2][0]) + (arrayP[2][1][2] - arrayP[0][1][0]))) * c1o18)
-						+ (arrayP[1][1][2] - arrayP[1][1][0]) * c2o9;
+					//LBMReal gradPx = ((((arrayP[2][0][0] - arrayP[0][2][2]) + (arrayP[2][2][0] - arrayP[0][0][2])) + ((arrayP[2][2][2] - arrayP[0][0][0]) + (arrayP[2][0][2] - arrayP[0][2][0]))) * c1o72
+					//	+ (((arrayP[2][1][0] - arrayP[0][1][2]) + (arrayP[2][2][1] - arrayP[0][0][1])) + ((arrayP[2][0][1] - arrayP[0][2][1]) + (arrayP[2][1][2] - arrayP[0][1][0]))) * c1o18)
+					//	+ (arrayP[2][1][1] - arrayP[0][1][1]) * c2o9;
+					//LBMReal gradPy = ((((arrayP[0][2][0] - arrayP[2][0][2]) + (arrayP[2][2][0] - arrayP[0][0][2])) + ((arrayP[2][2][2] - arrayP[0][0][0]) + (arrayP[0][2][2] - arrayP[2][0][0]))) * c1o72
+					//	+ (((arrayP[1][2][0] - arrayP[1][0][2]) + (arrayP[2][2][1] - arrayP[0][0][1])) + ((arrayP[0][2][1] - arrayP[2][0][1]) + (arrayP[1][2][2] - arrayP[1][0][0]))) * c1o18)
+					//	+ (arrayP[1][2][1] - arrayP[1][0][1]) * c2o9;
+					//LBMReal gradPz = ((((arrayP[0][0][2] - arrayP[2][2][0]) + (arrayP[0][2][2] - arrayP[2][0][0])) + ((arrayP[2][2][2] - arrayP[0][0][0]) + (arrayP[2][0][2] - arrayP[0][2][0]))) * c1o72
+					//	+ (((arrayP[0][1][2] - arrayP[2][1][0]) + (arrayP[1][2][2] - arrayP[1][0][0])) + ((arrayP[1][0][2] - arrayP[1][2][0]) + (arrayP[2][1][2] - arrayP[0][1][0]))) * c1o18)
+					//	+ (arrayP[1][1][2] - arrayP[1][1][0]) * c2o9;
 
 					//gradPx *=c1 - (*pressure)(x1, x2, x3)+pressureHere;
 					//gradPy *=c1 - (*pressure)(x1, x2, x3) + pressureHere;
@@ -797,13 +797,13 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 						+ (((mfaab + mfccb) + (mfacb + mfcab)) + ((mfaba + mfcbc) + (mfabc + mfcba)) + ((mfbaa + mfbcc) + (mfbac + mfbca))))
 						+ ((mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc))) + mfbbb) * c1o3;
 					//22.09.22 not yet in balance, repaire here
-					LBMReal ppStar = ((((((mfhaaa + mfhccc) + (mfhaac + mfhcca)) + ((mfhcac + mfhaca) + (mfhcaa + mfhacc)))*c3
-						+ (((mfhaab + mfhccb) + (mfhacb + mfhcab)) + ((mfhaba + mfhcbc) + (mfhabc + mfhcba)) + ((mfhbaa + mfhbcc) + (mfhbac + mfhbca))))*c2
-						+ ((mfhabb + mfhcbb) + (mfhbab + mfhbcb) + (mfhbba + mfhbbc))) ) * c1o3/rho;
+					//LBMReal ppStar = ((((((mfhaaa + mfhccc) + (mfhaac + mfhcca)) + ((mfhcac + mfhaca) + (mfhcaa + mfhacc)))*c3
+					//	+ (((mfhaab + mfhccb) + (mfhacb + mfhcab)) + ((mfhaba + mfhcbc) + (mfhabc + mfhcba)) + ((mfhbaa + mfhbcc) + (mfhbac + mfhbca))))*c2
+					//	+ ((mfhabb + mfhcbb) + (mfhbab + mfhbcb) + (mfhbba + mfhbbc))) ) * c1o3/rho;
 	
-					ppStar = ((((((mfaaa + mfccc) + (mfaac + mfcca)) + ((mfcac + mfaca) + (mfcaa + mfacc))) * c3
-						+ (((mfaab + mfccb) + (mfacb + mfcab)) + ((mfaba + mfcbc) + (mfabc + mfcba)) + ((mfbaa + mfbcc) + (mfbac + mfbca)))) * c2
-						+ ((mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc)))) * c1o3 ;
+					//ppStar = ((((((mfaaa + mfccc) + (mfaac + mfcca)) + ((mfcac + mfaca) + (mfcaa + mfacc))) * c3
+					//	+ (((mfaab + mfccb) + (mfacb + mfcab)) + ((mfaba + mfcbc) + (mfabc + mfcba)) + ((mfbaa + mfbcc) + (mfbac + mfbca)))) * c2
+					//	+ ((mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc)))) * c1o3 ;
 
 					//(*phaseFieldOld)(x1, x2, x3) = ((*phaseFieldOld)(x1, x2, x3) > 99.0) ? phi[DIR_000] : (*phaseFieldOld)(x1, x2, x3);
 					//LBMReal dtPhi = phi[DIR_000] - (*phaseFieldOld)(x1, x2, x3);
@@ -906,9 +906,9 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 					//mfcac += (forcingX1 - forcingX2 + forcingX3) * c1o72;
 					//mfaac += (-forcingX1 - forcingX2 + forcingX3) * c1o72;
 
-					LBMReal saveForceX1 = forcingX1;
-					LBMReal saveForceX2 = forcingX2;
-					LBMReal saveForceX3 = forcingX3;
+					//LBMReal saveForceX1 = forcingX1;
+					//LBMReal saveForceX2 = forcingX2;
+					//LBMReal saveForceX3 = forcingX3;
 
 					 vvx = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
 						(((mfcba - mfabc) + (mfcbc - mfaba)) + ((mfcab - mfacb) + (mfccb - mfaab))) +
@@ -921,15 +921,15 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 						(mfbbc - mfbba)) / rhoRef;
 
 
-					 LBMReal dRhoInvX = -(((((mfhccc - mfhaaa) + (mfhcac - mfhaca)) + ((mfhcaa - mfhacc) + (mfhcca - mfhaac))) +
-						 (((mfhcba - mfhabc) + (mfhcbc - mfhaba)) + ((mfhcab - mfhacb) + (mfhccb - mfhaab))) +
-						 (mfhcbb - mfhabb)));
-					 LBMReal dRhoInvY = -(((((mfhccc - mfhaaa) + (mfhaca - mfhcac)) + ((mfhacc - mfhcaa) + (mfhcca - mfhaac))) +
-						 (((mfhbca - mfhbac) + (mfhbcc - mfhbaa)) + ((mfhacb - mfhcab) + (mfhccb - mfhaab))) +
-						 (mfhbcb - mfhbab)));
-					 LBMReal dRhoInvZ = -(((((mfhccc - mfhaaa) + (mfhcac - mfhaca)) + ((mfhacc - mfhcaa) + (mfhaac - mfhcca))) +
-						 (((mfhbac - mfhbca) + (mfhbcc - mfhbaa)) + ((mfhabc - mfhcba) + (mfhcbc - mfhaba))) +
-						 (mfhbbc - mfhbba)));
+					 //LBMReal dRhoInvX = -(((((mfhccc - mfhaaa) + (mfhcac - mfhaca)) + ((mfhcaa - mfhacc) + (mfhcca - mfhaac))) +
+						// (((mfhcba - mfhabc) + (mfhcbc - mfhaba)) + ((mfhcab - mfhacb) + (mfhccb - mfhaab))) +
+						// (mfhcbb - mfhabb)));
+					 //LBMReal dRhoInvY = -(((((mfhccc - mfhaaa) + (mfhaca - mfhcac)) + ((mfhacc - mfhcaa) + (mfhcca - mfhaac))) +
+						// (((mfhbca - mfhbac) + (mfhbcc - mfhbaa)) + ((mfhacb - mfhcab) + (mfhccb - mfhaab))) +
+						// (mfhbcb - mfhbab)));
+					 //LBMReal dRhoInvZ = -(((((mfhccc - mfhaaa) + (mfhcac - mfhaca)) + ((mfhacc - mfhcaa) + (mfhaac - mfhcca))) +
+						// (((mfhbac - mfhbca) + (mfhbcc - mfhbaa)) + ((mfhabc - mfhcba) + (mfhcbc - mfhaba))) +
+						// (mfhbbc - mfhbba)));
 
 
 					 forcingX1 = 0.0;
@@ -946,9 +946,9 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 					//forcingX1 = (-pStar * dX1_phi * rhoToPhi / rho + pStar * dX1_rhoInv * rho) *c1o2;
 					//forcingX2 = (-pStar * dX2_phi * rhoToPhi / rho + pStar * dX2_rhoInv * rho) *c1o2;
 					//forcingX3 = (-pStar * dX3_phi * rhoToPhi / rho + pStar * dX3_rhoInv * rho) *c1o2;
-					 LBMReal FdX1_phi = normX1 * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * oneOverInterfaceScale;
-					 LBMReal FdX2_phi = normX2 * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * oneOverInterfaceScale;
-					 LBMReal FdX3_phi = normX3 * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * oneOverInterfaceScale;
+					 //LBMReal FdX1_phi = normX1 * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * oneOverInterfaceScale;
+					 //LBMReal FdX2_phi = normX2 * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * oneOverInterfaceScale;
+					 //LBMReal FdX3_phi = normX3 * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * oneOverInterfaceScale;
 
 
 					//forcingX1 = (-pStar * dX1_phi * rhoToPhi / rho ) ;
@@ -989,7 +989,7 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 
 					 ///Experimental interface sharpening force 20.06.2022
 
-					 LBMReal scaleSharpener = 1.0;
+					 //LBMReal scaleSharpener = 1.0;
 					 //forcingX1 += scaleSharpener * (FdX1_phi - dX1_phi) * fabsf(FdX1_phi - dX1_phi)  / rho;
 					 //forcingX2 += scaleSharpener * (FdX2_phi - dX2_phi) * fabsf(FdX2_phi - dX2_phi)  / rho;
 					 //forcingX3 += scaleSharpener * (FdX3_phi - dX3_phi) * fabsf(FdX3_phi - dX3_phi)  / rho;
@@ -998,7 +998,7 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 					forcingX2 += mu * dX2_phi/rho;
 					forcingX3 += mu * dX3_phi/rho;
 
-					LBMReal forcingBIAS = 0.5;
+					//LBMReal forcingBIAS = 0.5;
 					forcingX1 += muForcingX1.Eval() / rho;//*phi[DIR_000];
 					forcingX2 += muForcingX2.Eval() / rho;// * phi[DIR_000];
 					forcingX3 += muForcingX3.Eval() / rho;// * phi[DIR_000];
@@ -1027,31 +1027,31 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 
 
 					//Abbas
-					LBMReal M200 = ((((((mfaaa + mfccc) + (mfaac + mfcca)) + ((mfcac + mfaca) + (mfcaa + mfacc)))
-						+ (((mfaab + mfccb) + (mfacb + mfcab)) + ((mfaba + mfcbc) + (mfabc + mfcba)) ))
-						+ ((mfabb + mfcbb))) );
-					LBMReal M020 = ((((((mfaaa + mfccc) + (mfaac + mfcca)) + ((mfcac + mfaca) + (mfcaa + mfacc)))
-						+ (((mfaab + mfccb) + (mfacb + mfcab))  + ((mfbaa + mfbcc) + (mfbac + mfbca))))
-						+ ( (mfbab + mfbcb) )) );
-					LBMReal M002 = ((((((mfaaa + mfccc) + (mfaac + mfcca)) + ((mfcac + mfaca) + (mfcaa + mfacc)))
-						+ ( + ((mfaba + mfcbc) + (mfabc + mfcba)) + ((mfbaa + mfbcc) + (mfbac + mfbca))))
-						+ ( (mfbba + mfbbc))));
+					//LBMReal M200 = ((((((mfaaa + mfccc) + (mfaac + mfcca)) + ((mfcac + mfaca) + (mfcaa + mfacc)))
+					//	+ (((mfaab + mfccb) + (mfacb + mfcab)) + ((mfaba + mfcbc) + (mfabc + mfcba)) ))
+					//	+ ((mfabb + mfcbb))) );
+					//LBMReal M020 = ((((((mfaaa + mfccc) + (mfaac + mfcca)) + ((mfcac + mfaca) + (mfcaa + mfacc)))
+					//	+ (((mfaab + mfccb) + (mfacb + mfcab))  + ((mfbaa + mfbcc) + (mfbac + mfbca))))
+					//	+ ( (mfbab + mfbcb) )) );
+					//LBMReal M002 = ((((((mfaaa + mfccc) + (mfaac + mfcca)) + ((mfcac + mfaca) + (mfcaa + mfacc)))
+					//	+ ( + ((mfaba + mfcbc) + (mfabc + mfcba)) + ((mfbaa + mfbcc) + (mfbac + mfbca))))
+					//	+ ( (mfbba + mfbbc))));
 
-					LBMReal M110 = ((((((mfaaa + mfccc) + (-mfcac - mfaca)) + ((mfaac + mfcca) + (-mfcaa -mfacc)))
-						+ (((mfaab + mfccb) + (-mfacb - mfcab))   ))
-						) );
-					LBMReal M101 = ((((((mfaaa + mfccc) - (mfaac + mfcca)) + ((mfcac + mfaca) - (mfcaa + mfacc)))
-						+ (((mfaba + mfcbc) + (-mfabc - mfcba))))
-						));
-					LBMReal M011 = ((((((mfaaa + mfccc) - (mfaac + mfcca)) + ( (mfcaa + mfacc)- (mfcac + mfaca)))
-						+ (((mfbaa + mfbcc) + (-mfbac - mfbca))))
-						));
+					//LBMReal M110 = ((((((mfaaa + mfccc) + (-mfcac - mfaca)) + ((mfaac + mfcca) + (-mfcaa -mfacc)))
+					//	+ (((mfaab + mfccb) + (-mfacb - mfcab))   ))
+					//	) );
+					//LBMReal M101 = ((((((mfaaa + mfccc) - (mfaac + mfcca)) + ((mfcac + mfaca) - (mfcaa + mfacc)))
+					//	+ (((mfaba + mfcbc) + (-mfabc - mfcba))))
+					//	));
+					//LBMReal M011 = ((((((mfaaa + mfccc) - (mfaac + mfcca)) + ( (mfcaa + mfacc)- (mfcac + mfaca)))
+					//	+ (((mfbaa + mfbcc) + (-mfbac - mfbca))))
+					//	));
 					LBMReal vvxI = vvx;
 					LBMReal vvyI = vvy;
 					LBMReal vvzI = vvz;
 
-					LBMReal collFactorStore=collFactorM;
-					LBMReal stress;
+					//LBMReal collFactorStore=collFactorM;
+					//LBMReal stress;
 					//for(int iter=0;iter<5;iter++)
 				 //{
 					//	LBMReal OxxPyyPzz = 1.0;
@@ -1484,7 +1484,7 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 					//FIXME:  warning C4459: declaration of 'B' hides global declaration (message : see declaration of 'D3Q27System::B' )
 					LBMReal BB = (4.0 * collFactorM * OxxPyyPzz * (9.0 * collFactorM - 16.0) - 4.0 * collFactorM * collFactorM - 2.0 * OxxPyyPzz * OxxPyyPzz * (2.0 + 9.0 * collFactorM * (collFactorM - 2.0))) / (3.0 * (collFactorM - OxxPyyPzz) * (OxxPyyPzz * (2.0 + 3.0 * collFactorM) - 8.0 * collFactorM));
 					//LBMReal stress = 1.0;// stress / (stress + 1.0e-10);
-					stress = 1.0;
+					//stress = 1.0;
 					//OxyyPxzz += stress*(1.0-OxyyPxzz);
 					//OxyyPxzz = c3 * (collFactorM - c2) / (collFactorM - c3);
 					//OxyyMxzz += stress*(1.0-OxyyMxzz);

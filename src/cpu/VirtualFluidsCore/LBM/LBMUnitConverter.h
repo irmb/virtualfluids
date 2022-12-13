@@ -126,7 +126,7 @@ public:
     double getFactorForceWToLb() { return 1.0 / this->getFactorForceLbToW(); }
 
     double getFactorTorqueLbToW() { return factorMassLbToW * factorLengthLbToW * factorLengthLbToW / (factorTimeLbToW * factorTimeLbToW);}
-    double getFactorTorqueWToLb() { return 1.0 / this->getFactorTorqueWToLb(); }
+    double getFactorTorqueWToLb() { return 1.0 / this->getFactorTorqueLbToW(); }
 
     double getFactorAccLbToW() { return factorLengthLbToW / (factorTimeLbToW * factorTimeLbToW); }
     double getFactorAccWToLb() { return 1.0 / this->getFactorAccLbToW(); }

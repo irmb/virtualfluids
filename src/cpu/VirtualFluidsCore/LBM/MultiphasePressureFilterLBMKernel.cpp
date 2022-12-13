@@ -510,8 +510,8 @@ void MultiphasePressureFilterLBMKernel::calculate(int step)
 					LBMReal vvyI = vvy;
 					LBMReal vvzI = vvz;
 
-					LBMReal collFactorStore = collFactorM;
-					LBMReal stress;
+					//LBMReal collFactorStore = collFactorM;
+					//LBMReal stress;
 					for (int iter = 0; iter < 1; iter++) {
 						LBMReal OxxPyyPzz = 1.0;
 						LBMReal mxxPyyPzz = (M200 - vvxI * vvxI) + (M020 - vvyI * vvyI) + (M002 - vvzI * vvzI);
