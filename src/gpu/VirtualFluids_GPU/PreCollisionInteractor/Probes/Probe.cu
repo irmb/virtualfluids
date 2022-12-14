@@ -379,9 +379,10 @@ void Probe::writeParallelFile(Parameter* para, int t)
     int t_write = this->fileNameLU ? t: t/this->tOut; 
     std::string filename = this->outputPath + "/" + this->makeParallelFileName(para->getMyProcessID(), t_write);
 
+    std::vector<std::string> nodedatanames = this->getVarNames();
     std::vector<std::string> cellNames;
 
-    getWriter()->writeParallelFile(filename, fileNamesForCollectionFile, varNames, cellNames);
+    getWriter()->writeParallelFile(filename, fileNamesForCollectionFile, nodedatanames, cellNames);
 
     this->fileNamesForCollectionFile.clear();
 }
