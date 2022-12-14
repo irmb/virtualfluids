@@ -342,6 +342,24 @@ __global__ void LB_Kernel_CumulantK17Sponge(
     //!
     real omega = omega_in;
     if(turbulenceModel != TurbulenceModel::None){ omega /= (c1o1 + c3o1*omega_in*turbulentViscosity[k_000]); }
+    ////////////////////////////////////////////////////////////////////////////////////
+    // Calculate modified omega for sponge layer
+    // sponge layer inflow
+    real startXsponge = 1507.0f;
+    real endXsponge = 1537.0f;
+    real sizeSponge = endXsponge - startXsponge;
+
+    if (coordX[k_000] > startXsponge) {
+        real spongeFactor = (((endXsponge - coordX[k_000]) / sizeSponge) * c1o2) + c1o2;
+        omega = spongeFactor * omega;
+    }
+    //sponge layer outflow
+    endXsponge = 30.0f;
+    if (coordX[k_000] < endXsponge) {
+        real spongeFactor = (((coordX[k_000]) / endXsponge) * c1o2) + c1o2;
+        omega = spongeFactor * omega;
+    }
+
     ////////////////////////////////////////////////////////////
     // 2.
     real OxxPyyPzz = c1o1;
