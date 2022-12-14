@@ -149,6 +149,8 @@ void multipleLevel(const std::string& configPath)
 
     const real viscosityLB = viscosity * dt / (dx * dx); // LB units
 
+    VF_LOG_INFO("Knoten pro Turbinendurchmesser     = {}", reference_diameter/dx);
+    VF_LOG_INFO("velocity  [m/s] = {}", velocity);
     VF_LOG_INFO("velocity  [dx/dt] = {}", velocityLB);
     VF_LOG_INFO("viscosity [10^8 dx^2/dt] = {}", viscosityLB*1e8);
 
@@ -174,9 +176,13 @@ void multipleLevel(const std::string& configPath)
         vz  = (real)0.0;
     });
 
-    para->setTimestepStartOut( uint(tStartOut/dt) );
-    para->setTimestepOut( uint(tOut/dt) );
-    para->setTimestepEnd( uint(tEnd/dt) );
+    para->setTimestepStartOut( uint(tStartOut) );
+    para->setTimestepOut( uint(tOut) );
+    para->setTimestepEnd( uint(tEnd) );
+
+    // para->setTimestepStartOut( uint(tStartOut/dt) );
+    // para->setTimestepOut( uint(tOut/dt) );
+    // para->setTimestepEnd( uint(tEnd/dt) );
 
     para->setIsBodyForce( true );
     para->setUseStreams( true );
@@ -184,7 +190,7 @@ void multipleLevel(const std::string& configPath)
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     gridBuilder->setVelocityBoundaryCondition(SideType::MX,  velocityLB, 0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SideType::MY,  0.0       , 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::MY,  velocityLB, 0.0, 0.0);
     gridBuilder->setVelocityBoundaryCondition(SideType::PY,  velocityLB, 0.0, 0.0);
     gridBuilder->setVelocityBoundaryCondition(SideType::MZ,  velocityLB, 0.0, 0.0);
     gridBuilder->setVelocityBoundaryCondition(SideType::PZ,  velocityLB, 0.0, 0.0);
@@ -213,7 +219,6 @@ void multipleLevel(const std::string& configPath)
     for(uint node=0; node<nBladeNodes; node++){ bladeRadii.emplace_back(dr*(node+1)); }
     actuator_farm->addTurbine(turbPos[0], turbPos[1], turbPos[2], reference_diameter, omega, 0, 0, bladeRadii);
     para->addActuator( actuator_farm );
-
 
     // SPtr<PointProbe> pointProbe = std::make_shared<PointProbe>("pointProbe", para->getOutputPath(), 100, 1, 500, 100);
     // std::vector<real> probeCoordsX = {reference_diameter,2*reference_diameter,5*reference_diameter};
