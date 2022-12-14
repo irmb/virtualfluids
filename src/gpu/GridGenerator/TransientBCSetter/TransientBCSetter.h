@@ -40,7 +40,7 @@ public:
         // printFileInfo();
     };
 
-    void getData(real* data, uint numberOfNodes, std::vector<uint> readIndeces, std::vector<uint> writeIndices, uint offsetRead, uint offsetWrite);
+    void getData(real* data, uint numberOfNodes, const std::vector<uint>& readIndices, const std::vector<uint>& writeIndices, uint offsetRead, uint offsetWrite);
     bool markNANs(std::vector<uint> readIndices);
     bool inBoundingBox(real posX, real posY, real posZ){return  inXBounds(posX) && inYBounds(posY) && inZBounds(posZ); };
     bool inXBounds(real posX){ return posX<=maxX && posX>=minX; };

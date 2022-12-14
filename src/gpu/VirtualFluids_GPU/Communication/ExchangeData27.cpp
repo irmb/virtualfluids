@@ -240,7 +240,7 @@ void exchangeCollDataYGPU27(Parameter *para, vf::gpu::Communicator &comm, CudaMe
                             std::vector<ProcessNeighbor27> *sendProcessNeighborHost,
                             std::vector<ProcessNeighbor27> *recvProcessNeighborHost)
 {
-    cudaStream_t stream = para->getStreamManager()->getStream(CudaStreamIndex::Border);
+    cudaStream_t stream = para->getStreamManager()->getStream(CudaStreamIndex::SubDomainBorder);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // copy Device to Host
     for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)

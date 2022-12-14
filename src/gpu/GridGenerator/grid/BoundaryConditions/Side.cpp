@@ -85,25 +85,6 @@ void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition
 
                 boundaryCondition->patches.push_back(0);
             }
-            // else if(boundaryCondition->getType()==vf::gpu::BC_STRESS && (index != INVALID_INDEX) && (   grid->getFieldEntry(index) == vf::gpu::FLUID
-            //                                 ||  grid->getFieldEntry(index) == vf::gpu::FLUID_CFC
-            //                                 ||  grid->getFieldEntry(index) == vf::gpu::FLUID_CFF
-            //                                 ||  grid->getFieldEntry(index) == vf::gpu::FLUID_FCC
-            //                                 ||  grid->getFieldEntry(index) == vf::gpu::FLUID_FCF 
-            //                                 ||  grid->getFieldEntry(index) == vf::gpu::FLUID_FCF
-            //                                 ||  grid->getFieldEntry(index)  == vf::gpu::BC_PRESSURE
-            //                                 ))
-            // {
-            //     grid->setFieldEntry(index, boundaryCondition->getType());
-            //     boundaryCondition->indices.push_back(index);
-            //     setPressureNeighborIndices(boundaryCondition, grid, index);
-            //     setStressSamplingIndices(boundaryCondition, grid, index);
-
-            //     setQs(grid, boundaryCondition, index);
-
-            //     boundaryCondition->patches.push_back(0);
-            // }
-
         }
     }
 }

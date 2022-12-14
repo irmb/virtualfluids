@@ -156,7 +156,7 @@ void VTKFile::unloadFile()
     this->loaded = false;
 }
 
-void VTKFile::getData(real* data, uint numberOfNodes, std::vector<uint> readIndeces, std::vector<uint> writeIndices, uint offsetRead, uint offsetWrite)
+void VTKFile::getData(real* data, uint numberOfNodes, const std::vector<uint>& readIndices, const std::vector<uint>& writeIndices, uint offsetRead, uint offsetWrite)
 {
     if(!this->loaded) loadFile();
 
@@ -167,7 +167,7 @@ void VTKFile::getData(real* data, uint numberOfNodes, std::vector<uint> readInde
         real* quant = &data[j*numberOfNodes];
         for(size_t i=0; i<nPoints; i++)
         {
-            quant[offsetWrite+writeIndices[i]] = this->quantities[j].values[readIndeces[i]+offsetRead];
+            quant[offsetWrite+writeIndices[i]] = this->quantities[j].values[readIndices[i]+offsetRead];
         }
     }
 }

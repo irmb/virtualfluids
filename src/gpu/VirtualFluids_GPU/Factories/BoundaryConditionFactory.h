@@ -48,7 +48,7 @@ class Parameter;
 
 using boundaryCondition = std::function<void(LBMSimulationParameter *, QforBoundaryConditions *)>;
 using boundaryConditionWithParameter = std::function<void(Parameter *, QforBoundaryConditions *, const int level)>;
-using precursorBoundaryConditionFunc = std::function<void(LBMSimulationParameter *, QforPrecursorBoundaryConditions *, real tRatio, real velocityRatio)>;
+using precursorBoundaryConditionFunc = std::function<void(LBMSimulationParameter *, QforPrecursorBoundaryConditions *, real timeRatio, real velocityRatio)>;
 
 class BoundaryConditionFactory
 {
