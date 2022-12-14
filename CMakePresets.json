@@ -1,15 +1,14 @@
 {
-    "version": 2,
+    "version": 5,
     "cmakeMinimumRequired": {
         "major": 3,
-        "minor": 20,
+        "minor": 24,
         "patch": 0
     },
     "configurePresets": [
         {
             "name": "default",
             "hidden": true,
-            "binaryDir": "${sourceDir}/build/",
             "cacheVariables": {
                 "BUILD_VF_UNIT_TESTS": "ON"
             }
