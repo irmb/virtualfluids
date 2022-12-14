@@ -6,7 +6,6 @@
 
 template< TurbulenceModel turbulenceModel, bool writeMacroscopicVariables, bool applyBodyForce > __global__ void LB_Kernel_CumulantK17Sponge(
 	real omega_in,
-	uint* typeOfGridNode,
 	uint* neighborX,
 	uint* neighborY,
 	uint* neighborZ,
@@ -19,7 +18,6 @@ template< TurbulenceModel turbulenceModel, bool writeMacroscopicVariables, bool 
 	real SGSconstant,
 	unsigned long numberOfLBnodes,
 	int level,
-	bool bodyForce,
 	real* forces,
 	real* bodyForceX,
 	real* bodyForceY,
