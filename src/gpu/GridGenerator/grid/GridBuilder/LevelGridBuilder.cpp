@@ -131,8 +131,7 @@ void LevelGridBuilder::setStressBoundaryCondition(  SideType sideType,
 {
     for (uint level = 0; level < getNumberOfGridLevels(); level++)
     {
-        SPtr<StressBoundaryCondition> stressBoundaryCondition = StressBoundaryCondition::make(nomalX, normalY, normalZ, samplingOffset, z0/(dx*(level+1)));
-
+        SPtr<StressBoundaryCondition> stressBoundaryCondition = StressBoundaryCondition::make(nomalX, normalY, normalZ, samplingOffset, z0*pow(2.0f,level)/dx);
         auto side = SideFactory::make(sideType);
 
         stressBoundaryCondition->side = side;
