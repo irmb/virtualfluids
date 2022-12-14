@@ -12,8 +12,8 @@ NodesPerDiameter=20
 Velocity=9
 ##################################################
 tStartOut=0
-tOut=50
-tEnd=500
+tOut=10000
+tEnd=100000
 ##################################################
 
 # tStartTmpAveraging=100
