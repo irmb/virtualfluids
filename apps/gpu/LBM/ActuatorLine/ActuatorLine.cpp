@@ -30,6 +30,8 @@
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
 #include "GridGenerator/grid/BoundaryConditions/Side.h"
 #include "GridGenerator/grid/BoundaryConditions/BoundaryCondition.h"
+#include "GridGenerator/geometries/TriangularMesh/TriangularMesh.h"
+
 
 #include "GridGenerator/grid/GridFactory.h"
 
@@ -103,7 +105,7 @@ void multipleLevel(const std::string& configPath)
 
     const real viscosity = 1.56e-5;
 
-    const real mach = 0.1;
+    const real mach = 0.2;
 
 
     const float tStartOut   = config.getValue<real>("tStartOut");
@@ -135,6 +137,12 @@ void multipleLevel(const std::string& configPath)
     para->setMaxLevel(2);
     scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
+    std::string stlPath = "./apps/gpu/LBM/ActuatorLine/Pole.stl";
+
+    Object *sphere = TriangularMesh::make(stlPath);
+
+    gridBuilder->addGeometry(sphere);
+
     gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
     gridBuilder->buildGrids(lbmOrGks, false); // buildGrids() has to be called before setting the BCs!!!!
@@ -147,11 +155,16 @@ void multipleLevel(const std::string& configPath)
 
     const real viscosityLB = viscosity * dt / (dx * dx); // LB units
 
-    VF_LOG_INFO("Knoten pro Turbinendurchmesser     = {}", reference_diameter/dx);
-    VF_LOG_INFO("dx = {}", dx);
+    VF_LOG_INFO("dx (coarse grid) [m] = {}", dx);
+    VF_LOG_INFO("dt [s] = {}", dt);
+    VF_LOG_INFO("Lx [m] = {}", L_x);
+    VF_LOG_INFO("Ly [m] = {}", L_y);
+    VF_LOG_INFO("Lz [m] = {}", L_z);
     VF_LOG_INFO("velocity  [m/s] = {}", velocity);
     VF_LOG_INFO("velocity  [dx/dt] = {}", velocityLB);
     VF_LOG_INFO("viscosity [10^8 dx^2/dt] = {}", viscosityLB*1e8);
+    VF_LOG_INFO("nodes/turbine diameter = {}", reference_diameter/dx);
+    VF_LOG_INFO("1000 timesteps are {} s", 1000 * dt);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -194,6 +207,9 @@ void multipleLevel(const std::string& configPath)
     gridBuilder->setVelocityBoundaryCondition(SideType::MZ,  velocityLB, 0.0, 0.0);
     gridBuilder->setVelocityBoundaryCondition(SideType::PZ,  velocityLB, 0.0, 0.0);
     gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
+
+    gridBuilder->setNoSlipBoundaryCondition(SideType::GEOMETRY);
+    bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipCompressible);
 
     bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityAndPressureCompressible);
     bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflective);

@@ -8,7 +8,7 @@
 GridPath=.
 ##################################################
 ReferenceDiameter=126
-NodesPerDiameter=20
+NodesPerDiameter=32 #20=800mb # 32=3200mb
 Velocity=9
 ##################################################
 tStartOut=0
@@ -25,7 +25,7 @@ tEnd=100000
 
 ##################################################
 TurbulenceModel = None
-#SGSconstant = 0.3333333
+# SGSconstant = 0.3333333
 #
 #QuadricLimiterP = 100000.0
 #QuadricLimiterM = 100000.0

@@ -1,0 +1,142 @@
+solid Visualization Toolkit generated SLA File
+ facet normal 0.866025 0 -0.5
+  outer loop
+   vertex 214 256 378
+   vertex 214 -4 378
+   vertex 209 256 369.34
+  endloop
+ endfacet
+ facet normal -0.866025 0 0.5
+  outer loop
+   vertex 209 -4 369.34
+   vertex 209 256 369.34
+   vertex 214 -4 378
+  endloop
+ endfacet
+ facet normal 0.866025 0 -0.5
+  outer loop
+   vertex 209 256 369.34
+   vertex 209 -4 369.34
+   vertex 199 256 369.34
+  endloop
+ endfacet
+ facet normal -0.866025 0 0.5
+  outer loop
+   vertex 199 -4 369.34
+   vertex 199 256 369.34
+   vertex 209 -4 369.34
+  endloop
+ endfacet
+ facet normal 0.866025 0 -0.5
+  outer loop
+   vertex 199 256 369.34
+   vertex 199 -4 369.34
+   vertex 194 256 378
+  endloop
+ endfacet
+ facet normal -0.866025 0 0.5
+  outer loop
+   vertex 194 -4 378
+   vertex 194 256 378
+   vertex 199 -4 369.34
+  endloop
+ endfacet
+ facet normal 0.866025 0 -0.5
+  outer loop
+   vertex 194 256 378
+   vertex 194 -4 378
+   vertex 199 256 386.66
+  endloop
+ endfacet
+ facet normal -0.866025 0 0.5
+  outer loop
+   vertex 199 -4 386.66
+   vertex 199 256 386.66
+   vertex 194 -4 378
+  endloop
+ endfacet
+ facet normal 0.866025 0 -0.5
+  outer loop
+   vertex 199 256 386.66
+   vertex 199 -4 386.66
+   vertex 209 256 386.66
+  endloop
+ endfacet
+ facet normal -0.866025 0 0.5
+  outer loop
+   vertex 209 -4 386.66
+   vertex 209 256 386.66
+   vertex 199 -4 386.66
+  endloop
+ endfacet
+ facet normal 0.866025 0 -0.5
+  outer loop
+   vertex 209 256 386.66
+   vertex 209 -4 386.66
+   vertex 214 256 378
+  endloop
+ endfacet
+ facet normal -0.866025 0 0.5
+  outer loop
+   vertex 214 -4 378
+   vertex 214 256 378
+   vertex 209 -4 386.66
+  endloop
+ endfacet
+ facet normal 0.5 0 -0.866026
+  outer loop
+   vertex 214 256 378
+   vertex 209 256 369.34
+   vertex 209 256 386.66
+  endloop
+ endfacet
+ facet normal -0.5 0 0.866026
+  outer loop
+   vertex 209 256 386.66
+   vertex 209 256 369.34
+   vertex 199 256 386.66
+  endloop
+ endfacet
+ facet normal 0 0.0332902 0.999446
+  outer loop
+   vertex 209 256 369.34
+   vertex 199 256 369.34
+   vertex 199 256 386.66
+  endloop
+ endfacet
+ facet normal 0 0 -1
+  outer loop
+   vertex 194 256 378
+   vertex 199 256 386.66
+   vertex 199 256 369.34
+  endloop
+ endfacet
+ facet normal -0.866025 0 0.5
+  outer loop
+   vertex 194 -4 378
+   vertex 199 -4 369.34
+   vertex 199 -4 386.66
+  endloop
+ endfacet
+ facet normal 0.866025 0 -0.5
+  outer loop
+   vertex 199 -4 386.66
+   vertex 199 -4 369.34
+   vertex 209 -4 386.66
+  endloop
+ endfacet
+ facet normal 0.499907 0.0192272 -0.865865
+  outer loop
+   vertex 199 -4 369.34
+   vertex 209 -4 369.34
+   vertex 209 -4 386.66
+  endloop
+ endfacet
+ facet normal -0.5 0 0.866026
+  outer loop
+   vertex 214 -4 378
+   vertex 209 -4 386.66
+   vertex 209 -4 369.34
+  endloop
+ endfacet
+endsolid
