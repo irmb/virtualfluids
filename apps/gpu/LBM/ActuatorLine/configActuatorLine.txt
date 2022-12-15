@@ -8,7 +8,7 @@
 GridPath=.
 ##################################################
 ReferenceDiameter=126
-NodesPerDiameter=32 #20=800mb # 32=3200mb
+NodesPerDiameter=40 #20=800mb # 32=3200mb
 Velocity=9
 ##################################################
 tStartOut=0
