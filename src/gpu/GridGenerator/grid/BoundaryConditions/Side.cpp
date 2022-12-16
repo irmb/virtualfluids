@@ -73,8 +73,7 @@ void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition
                                             ||  grid->getFieldEntry(index)  == vf::gpu::BC_VELOCITY 
                                             ||  grid->getFieldEntry(index)  == vf::gpu::BC_NOSLIP   
                                             ||  grid->getFieldEntry(index)  == vf::gpu::BC_SLIP     
-                                            ||  grid->getFieldEntry(index)  == vf::gpu::BC_STRESS )
-                                            /*&& boundaryCondition->getType()!=vf::gpu::BC_STRESS*/ )
+                                            ||  grid->getFieldEntry(index)  == vf::gpu::BC_STRESS ))
             {
                 grid->setFieldEntry(index, boundaryCondition->getType());
                 boundaryCondition->indices.push_back(index);
