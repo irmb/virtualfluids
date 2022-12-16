@@ -1189,7 +1189,7 @@ void Calc3rdMomentsCompSP27( real* CUMbbb,
 										unsigned int size_Mat,
 										unsigned int numberOfThreads,
 										real* DD,
-										bool isEvenTimestep):
+										bool isEvenTimestep)
 {
 	vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
