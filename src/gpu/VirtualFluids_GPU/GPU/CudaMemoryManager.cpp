@@ -1669,28 +1669,28 @@ void CudaMemoryManager::cudaAllocPrecursorBC(int lev)
     checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->precursorBC.q27[0], parameter->getD3Qxx()*memSizeQReal));
     
 
-    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->precursorBC.planeNeighborNT, memSizeQUint));
-    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->precursorBC.planeNeighborNB, memSizeQUint));
-    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->precursorBC.planeNeighborST, memSizeQUint));
-    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->precursorBC.planeNeighborSB, memSizeQUint));
+    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->precursorBC.planeNeighbor0PP, memSizeQUint));
+    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->precursorBC.planeNeighbor0PM, memSizeQUint));
+    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->precursorBC.planeNeighbor0MP, memSizeQUint));
+    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->precursorBC.planeNeighbor0MM, memSizeQUint));
 
-    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->precursorBC.weightsNT, memSizeQReal));
-    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->precursorBC.weightsNB, memSizeQReal));
-    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->precursorBC.weightsST, memSizeQReal));
-    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->precursorBC.weightsSB, memSizeQReal));
+    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->precursorBC.weights0PP, memSizeQReal));
+    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->precursorBC.weights0PM, memSizeQReal));
+    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->precursorBC.weights0MP, memSizeQReal));
+    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->precursorBC.weights0MM, memSizeQReal));
 
     checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->precursorBC.k, memSizeQInt));
     checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->precursorBC.q27[0], parameter->getD3Qxx()*memSizeQReal));
 
-    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->precursorBC.planeNeighborNT, memSizeQUint));
-    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->precursorBC.planeNeighborNB, memSizeQUint));
-    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->precursorBC.planeNeighborST, memSizeQUint));
-    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->precursorBC.planeNeighborSB, memSizeQUint));
+    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->precursorBC.planeNeighbor0PP, memSizeQUint));
+    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->precursorBC.planeNeighbor0PM, memSizeQUint));
+    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->precursorBC.planeNeighbor0MP, memSizeQUint));
+    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->precursorBC.planeNeighbor0MM, memSizeQUint));
 
-    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->precursorBC.weightsNT, memSizeQReal));
-    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->precursorBC.weightsNB, memSizeQReal));
-    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->precursorBC.weightsST, memSizeQReal));
-    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->precursorBC.weightsSB, memSizeQReal));
+    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->precursorBC.weights0PP, memSizeQReal));
+    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->precursorBC.weights0PM, memSizeQReal));
+    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->precursorBC.weights0MP, memSizeQReal));
+    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->precursorBC.weights0MM, memSizeQReal));
 
     real memSize = memSizeQInt+4*memSizeQUint+(4+parameter->getD3Qxx())*memSizeQReal;
     setMemsizeGPU(memSize, false);
@@ -1723,15 +1723,15 @@ void CudaMemoryManager::cudaCopyPrecursorBC(int lev)
 
     checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->precursorBC.q27[0], parameter->getParH(lev)->precursorBC.q27[0], memSizeQReal*parameter->getD3Qxx(), cudaMemcpyHostToDevice));
 
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->precursorBC.planeNeighborNT, parameter->getParH(lev)->precursorBC.planeNeighborNT, memSizeQUint, cudaMemcpyHostToDevice));
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->precursorBC.planeNeighborNB, parameter->getParH(lev)->precursorBC.planeNeighborNB, memSizeQUint, cudaMemcpyHostToDevice));
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->precursorBC.planeNeighborST, parameter->getParH(lev)->precursorBC.planeNeighborST, memSizeQUint, cudaMemcpyHostToDevice));
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->precursorBC.planeNeighborSB, parameter->getParH(lev)->precursorBC.planeNeighborSB, memSizeQUint, cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->precursorBC.planeNeighbor0PP, parameter->getParH(lev)->precursorBC.planeNeighbor0PP, memSizeQUint, cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->precursorBC.planeNeighbor0PM, parameter->getParH(lev)->precursorBC.planeNeighbor0PM, memSizeQUint, cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->precursorBC.planeNeighbor0MP, parameter->getParH(lev)->precursorBC.planeNeighbor0MP, memSizeQUint, cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->precursorBC.planeNeighbor0MM, parameter->getParH(lev)->precursorBC.planeNeighbor0MM, memSizeQUint, cudaMemcpyHostToDevice));
 
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->precursorBC.weightsNT, parameter->getParH(lev)->precursorBC.weightsNT, memSizeQReal, cudaMemcpyHostToDevice));
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->precursorBC.weightsNB, parameter->getParH(lev)->precursorBC.weightsNB, memSizeQReal, cudaMemcpyHostToDevice));
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->precursorBC.weightsST, parameter->getParH(lev)->precursorBC.weightsST, memSizeQReal, cudaMemcpyHostToDevice));
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->precursorBC.weightsSB, parameter->getParH(lev)->precursorBC.weightsSB, memSizeQReal, cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->precursorBC.weights0PP, parameter->getParH(lev)->precursorBC.weights0PP, memSizeQReal, cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->precursorBC.weights0PM, parameter->getParH(lev)->precursorBC.weights0PM, memSizeQReal, cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->precursorBC.weights0MP, parameter->getParH(lev)->precursorBC.weights0MP, memSizeQReal, cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->precursorBC.weights0MM, parameter->getParH(lev)->precursorBC.weights0MM, memSizeQReal, cudaMemcpyHostToDevice));
 }
 void CudaMemoryManager::cudaCopyPrecursorData(int lev)
 {
@@ -1749,29 +1749,29 @@ void CudaMemoryManager::cudaFreePrecursorBC(int lev)
 
     checkCudaErrors( cudaFreeHost( parameter->getParH(lev)->precursorBC.q27[0]));
 
-    checkCudaErrors( cudaFreeHost( parameter->getParH(lev)->precursorBC.planeNeighborNT));
-    checkCudaErrors( cudaFreeHost( parameter->getParH(lev)->precursorBC.planeNeighborNB));
-    checkCudaErrors( cudaFreeHost( parameter->getParH(lev)->precursorBC.planeNeighborST));
-    checkCudaErrors( cudaFreeHost( parameter->getParH(lev)->precursorBC.planeNeighborSB));
+    checkCudaErrors( cudaFreeHost( parameter->getParH(lev)->precursorBC.planeNeighbor0PP));
+    checkCudaErrors( cudaFreeHost( parameter->getParH(lev)->precursorBC.planeNeighbor0PM));
+    checkCudaErrors( cudaFreeHost( parameter->getParH(lev)->precursorBC.planeNeighbor0MP));
+    checkCudaErrors( cudaFreeHost( parameter->getParH(lev)->precursorBC.planeNeighbor0MM));
 
-    checkCudaErrors( cudaFreeHost( parameter->getParH(lev)->precursorBC.weightsNT));
-    checkCudaErrors( cudaFreeHost( parameter->getParH(lev)->precursorBC.weightsNB));
-    checkCudaErrors( cudaFreeHost( parameter->getParH(lev)->precursorBC.weightsST));
-    checkCudaErrors( cudaFreeHost( parameter->getParH(lev)->precursorBC.weightsSB));
+    checkCudaErrors( cudaFreeHost( parameter->getParH(lev)->precursorBC.weights0PP));
+    checkCudaErrors( cudaFreeHost( parameter->getParH(lev)->precursorBC.weights0PM));
+    checkCudaErrors( cudaFreeHost( parameter->getParH(lev)->precursorBC.weights0MP));
+    checkCudaErrors( cudaFreeHost( parameter->getParH(lev)->precursorBC.weights0MM));
 
     checkCudaErrors( cudaFree( parameter->getParD(lev)->precursorBC.k));
 
     checkCudaErrors( cudaFree( parameter->getParD(lev)->precursorBC.q27[0]));
 
-    checkCudaErrors( cudaFree( parameter->getParD(lev)->precursorBC.planeNeighborNT));
-    checkCudaErrors( cudaFree( parameter->getParD(lev)->precursorBC.planeNeighborNB));
-    checkCudaErrors( cudaFree( parameter->getParD(lev)->precursorBC.planeNeighborST));
-    checkCudaErrors( cudaFree( parameter->getParD(lev)->precursorBC.planeNeighborSB));
+    checkCudaErrors( cudaFree( parameter->getParD(lev)->precursorBC.planeNeighbor0PP));
+    checkCudaErrors( cudaFree( parameter->getParD(lev)->precursorBC.planeNeighbor0PM));
+    checkCudaErrors( cudaFree( parameter->getParD(lev)->precursorBC.planeNeighbor0MP));
+    checkCudaErrors( cudaFree( parameter->getParD(lev)->precursorBC.planeNeighbor0MM));
 
-    checkCudaErrors( cudaFree( parameter->getParD(lev)->precursorBC.weightsNT));
-    checkCudaErrors( cudaFree( parameter->getParD(lev)->precursorBC.weightsNB));
-    checkCudaErrors( cudaFree( parameter->getParD(lev)->precursorBC.weightsST));
-    checkCudaErrors( cudaFree( parameter->getParD(lev)->precursorBC.weightsSB));
+    checkCudaErrors( cudaFree( parameter->getParD(lev)->precursorBC.weights0PP));
+    checkCudaErrors( cudaFree( parameter->getParD(lev)->precursorBC.weights0PM));
+    checkCudaErrors( cudaFree( parameter->getParD(lev)->precursorBC.weights0MP));
+    checkCudaErrors( cudaFree( parameter->getParD(lev)->precursorBC.weights0MM));
 }
 
 void CudaMemoryManager::cudaFreePrecursorData(int lev)

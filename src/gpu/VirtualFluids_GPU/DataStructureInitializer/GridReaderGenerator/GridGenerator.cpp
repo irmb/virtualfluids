@@ -342,10 +342,10 @@ void GridGenerator::allocArrays_BoundaryValues()
             cudaMemoryManager->cudaAllocPrecursorBC(level);
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             builder->getPrecursorValues(
-                    para->getParH(level)->precursorBC.planeNeighborNT, para->getParH(level)->precursorBC.planeNeighborNB, 
-                    para->getParH(level)->precursorBC.planeNeighborST, para->getParH(level)->precursorBC.planeNeighborSB, 
-                    para->getParH(level)->precursorBC.weightsNT, para->getParH(level)->precursorBC.weightsNB, 
-                    para->getParH(level)->precursorBC.weightsST, para->getParH(level)->precursorBC.weightsSB, 
+                    para->getParH(level)->precursorBC.planeNeighbor0PP, para->getParH(level)->precursorBC.planeNeighbor0PM, 
+                    para->getParH(level)->precursorBC.planeNeighbor0MP, para->getParH(level)->precursorBC.planeNeighbor0MM, 
+                    para->getParH(level)->precursorBC.weights0PP, para->getParH(level)->precursorBC.weights0PM, 
+                    para->getParH(level)->precursorBC.weights0MP, para->getParH(level)->precursorBC.weights0MM, 
                     para->getParH(level)->precursorBC.k, para->getParH(level)->transientBCInputFileReader, para->getParH(level)->precursorBC.numberOfPrecursorNodes, 
                     para->getParH(level)->precursorBC.numberOfQuantities, para->getParH(level)->precursorBC.timeStepsBetweenReads, 
                     para->getParH(level)->precursorBC.velocityX, para->getParH(level)->precursorBC.velocityY, para->getParH(level)->precursorBC.velocityZ,
