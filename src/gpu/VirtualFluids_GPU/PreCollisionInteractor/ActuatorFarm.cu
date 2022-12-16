@@ -292,8 +292,8 @@ void ActuatorFarm::interact(Parameter* para, CudaMemoryManager* cudaMemoryManage
         para->getParD(this->level)->coordinateX, para->getParD(this->level)->coordinateY, para->getParD(this->level)->coordinateZ,        
         para->getParD(this->level)->neighborX, para->getParD(this->level)->neighborY, para->getParD(this->level)->neighborZ, para->getParD(this->level)->neighborInverse,
         para->getParD(this->level)->velocityX, para->getParD(this->level)->velocityY, para->getParD(this->level)->velocityZ,
-        this->bladeCoordsXDNew, this->bladeCoordsYDNew, this->bladeCoordsZDNew,  
-        this->bladeVelocitiesXDNew, this->bladeVelocitiesYDNew, this->bladeVelocitiesZDNew,  
+        this->bladeCoordsXDCurrentTimestep, this->bladeCoordsYDCurrentTimestep, this->bladeCoordsZDCurrentTimestep,  
+        this->bladeVelocitiesXDCurrentTimestep, this->bladeVelocitiesYDCurrentTimestep, this->bladeVelocitiesZDCurrentTimestep,  
         this->numberOfTurbines, this->numberOfBlades, this->numberOfBladeNodes,
         this->azimuthsD, this->yawsD, this->omegasD, 
         this->turbinePosXD, this->turbinePosYD, this->turbinePosZD,
@@ -311,8 +311,8 @@ void ActuatorFarm::interact(Parameter* para, CudaMemoryManager* cudaMemoryManage
     applyBodyForces<<<sphereGrid.grid, sphereGrid.threads, 0, stream>>>(
         para->getParD(this->level)->coordinateX, para->getParD(this->level)->coordinateY, para->getParD(this->level)->coordinateZ,        
         para->getParD(this->level)->forceX_SP, para->getParD(this->level)->forceY_SP, para->getParD(this->level)->forceZ_SP,        
-        this->bladeCoordsXDNew, this->bladeCoordsYDNew, this->bladeCoordsZDNew,  
-        this->bladeForcesXDNew, this->bladeForcesYDNew, this->bladeForcesZDNew,
+        this->bladeCoordsXDCurrentTimestep, this->bladeCoordsYDCurrentTimestep, this->bladeCoordsZDCurrentTimestep,  
+        this->bladeForcesXDCurrentTimestep, this->bladeForcesYDCurrentTimestep, this->bladeForcesZDCurrentTimestep,
         this->numberOfTurbines, this->numberOfBlades, this->numberOfBladeNodes,
         this->azimuthsD, this->yawsD, this->diametersD,
         this->turbinePosXD, this->turbinePosYD, this->turbinePosZD,
@@ -434,9 +434,9 @@ void ActuatorFarm::initBladeCoords(CudaMemoryManager* cudaMemoryManager)
         }
     }
     cudaMemoryManager->cudaCopyBladeCoordsHtoD(this);
-    swapArrays(this->bladeCoordsXDNew, this->bladeCoordsXDOld);
-    swapArrays(this->bladeCoordsYDNew, this->bladeCoordsYDOld);
-    swapArrays(this->bladeCoordsZDNew, this->bladeCoordsZDOld);
+    swapArrays(this->bladeCoordsXDCurrentTimestep, this->bladeCoordsXDPreviousTimestep);
+    swapArrays(this->bladeCoordsYDCurrentTimestep, this->bladeCoordsYDPreviousTimestep);
+    swapArrays(this->bladeCoordsZDCurrentTimestep, this->bladeCoordsZDPreviousTimestep);
     cudaMemoryManager->cudaCopyBladeCoordsHtoD(this);
 }
 
@@ -449,9 +449,9 @@ void ActuatorFarm::initBladeVelocities(CudaMemoryManager* cudaMemoryManager)
     std::fill_n(this->bladeVelocitiesZH, this->numberOfNodes, c0o1);
 
     cudaMemoryManager->cudaCopyBladeVelocitiesHtoD(this);
-    swapArrays(this->bladeVelocitiesXDNew, this->bladeVelocitiesXDOld);
-    swapArrays(this->bladeVelocitiesYDNew, this->bladeVelocitiesYDOld);
-    swapArrays(this->bladeVelocitiesZDNew, this->bladeVelocitiesZDOld);
+    swapArrays(this->bladeVelocitiesXDCurrentTimestep, this->bladeVelocitiesXDPreviousTimestep);
+    swapArrays(this->bladeVelocitiesYDCurrentTimestep, this->bladeVelocitiesYDPreviousTimestep);
+    swapArrays(this->bladeVelocitiesZDCurrentTimestep, this->bladeVelocitiesZDPreviousTimestep);
     cudaMemoryManager->cudaCopyBladeVelocitiesHtoD(this);
 }
 
@@ -464,9 +464,9 @@ void ActuatorFarm::initBladeForces(CudaMemoryManager* cudaMemoryManager)
     std::fill_n(this->bladeForcesZH, this->numberOfNodes, c0o1);
 
     cudaMemoryManager->cudaCopyBladeForcesHtoD(this);
-    swapArrays(this->bladeForcesXDNew, this->bladeForcesXDOld);
-    swapArrays(this->bladeForcesYDNew, this->bladeForcesYDOld);
-    swapArrays(this->bladeForcesZDNew, this->bladeForcesZDOld);
+    swapArrays(this->bladeForcesXDCurrentTimestep, this->bladeForcesXDPreviousTimestep);
+    swapArrays(this->bladeForcesYDCurrentTimestep, this->bladeForcesYDPreviousTimestep);
+    swapArrays(this->bladeForcesZDCurrentTimestep, this->bladeForcesZDPreviousTimestep);
     cudaMemoryManager->cudaCopyBladeForcesHtoD(this);
 }
 
@@ -580,15 +580,15 @@ void ActuatorFarm::setTurbineBladeForces(uint turbine, real* _bladeForcesX, real
 
 void ActuatorFarm::swapDeviceArrays()
 {
-    swapArrays(this->bladeCoordsXDOld, this->bladeCoordsXDNew);
-    swapArrays(this->bladeCoordsYDOld, this->bladeCoordsYDNew);
-    swapArrays(this->bladeCoordsZDOld, this->bladeCoordsZDNew);
+    swapArrays(this->bladeCoordsXDPreviousTimestep, this->bladeCoordsXDCurrentTimestep);
+    swapArrays(this->bladeCoordsYDPreviousTimestep, this->bladeCoordsYDCurrentTimestep);
+    swapArrays(this->bladeCoordsZDPreviousTimestep, this->bladeCoordsZDCurrentTimestep);
 
-    swapArrays(this->bladeVelocitiesXDOld, this->bladeVelocitiesXDNew);
-    swapArrays(this->bladeVelocitiesYDOld, this->bladeVelocitiesYDNew);
-    swapArrays(this->bladeVelocitiesZDOld, this->bladeVelocitiesZDNew);
+    swapArrays(this->bladeVelocitiesXDPreviousTimestep, this->bladeVelocitiesXDCurrentTimestep);
+    swapArrays(this->bladeVelocitiesYDPreviousTimestep, this->bladeVelocitiesYDCurrentTimestep);
+    swapArrays(this->bladeVelocitiesZDPreviousTimestep, this->bladeVelocitiesZDCurrentTimestep);
 
-    swapArrays(this->bladeForcesXDOld, this->bladeForcesXDNew);
-    swapArrays(this->bladeForcesYDOld, this->bladeForcesYDNew);
-    swapArrays(this->bladeForcesZDOld, this->bladeForcesZDNew);
+    swapArrays(this->bladeForcesXDPreviousTimestep, this->bladeForcesXDCurrentTimestep);
+    swapArrays(this->bladeForcesYDPreviousTimestep, this->bladeForcesYDCurrentTimestep);
+    swapArrays(this->bladeForcesZDPreviousTimestep, this->bladeForcesZDCurrentTimestep);
 }
