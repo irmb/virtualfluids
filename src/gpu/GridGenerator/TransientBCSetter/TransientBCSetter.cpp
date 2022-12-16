@@ -289,7 +289,7 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
 
             // y in simulation is x in precursor/file, z in simulation is y in precursor/file 
             // simulation -> file: N -> E, S -> W, T -> N, B -> S
-            int idx = file.findNeighborWSB(posY, posZ, 0.f);                            //!> index of nearest WSB neighbor on precursor file
+            int idx = file.findNeighborMMM(posY, posZ, 0.f);                            //!> index of nearest WSB neighbor on precursor file
             
             if(idx!=-1)
             {
@@ -325,7 +325,7 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
             
             if(!foundNT) //NT in simulation is EN in precursor
             {
-                int idx = file.findNeighborENB(posY, posZ, 0.f);
+                int idx = file.findNeighborPPM(posY, posZ, 0.f);
                 if(idx!=-1)
                 {
                     foundNT = true;
@@ -338,7 +338,7 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
 
             if(!foundNB) //NB in simulation is ES in precursor
             {
-                int idx = file.findNeighborESB(posY, posZ, 0.f);
+                int idx = file.findNeighborPMM(posY, posZ, 0.f);
                 if(idx!=-1)
                 {
                     foundNB = true;
@@ -351,7 +351,7 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
 
             if(!foundST) //ST in simulation is WN in precursor
             {
-                int idx = file.findNeighborWNB(posY, posZ, 0.f);
+                int idx = file.findNeighborMPM(posY, posZ, 0.f);
                 if(idx!=-1)
                 {
                     foundST = true;
