@@ -471,6 +471,7 @@ clang-tidy:
     - cd $CI_PROJECT_DIR/build
     - cmake ..
       -DBUILD_VF_CPU=ON
+      -DBUILD_VF_DOUBLE_ACCURACY=ON
       -DBUILD_VF_GPU=OFF
     - python3 ../utilities/filterCompileCommands.py compile_commands.json
     - run-clang-tidy -quiet > clangtidy.txt
