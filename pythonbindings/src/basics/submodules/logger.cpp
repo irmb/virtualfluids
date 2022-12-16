@@ -17,7 +17,7 @@ namespace logger
         })
         .def_static("set_debug_level", &logging::Logger::setDebugLevel)
         .def_static("time_stamp", &logging::Logger::timeStamp, py::arg("time_stamp"))
-        .def_static("enable_printed_rank_numbers", &logging::Logger::enablePrintedRankNumbers);
+        .def_static("enable_printed_rank_numbers", &logging::Logger::enablePrintedRankNumbers, py::arg("print"));
 
         loggerModule.attr("log") = logging::out;
         py::enum_<logging::Logger::Level>(loggerModule, "Level")
