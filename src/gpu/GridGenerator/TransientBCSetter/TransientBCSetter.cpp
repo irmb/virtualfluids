@@ -406,35 +406,35 @@ void VTKReader::getNextData(real* data, uint numberOfNodes, real time)
         uint level = this->readLevel;
         for(size_t id=0; id<this->fileCollection->files[level].size(); id++)
         {
-            size_t nF = this->nFile[level][id];
+            size_t numberOfFiles = this->nFile[level][id];
 
 
-            if(!this->fileCollection->files[level][id][nF].inZBounds(time))
+            if(!this->fileCollection->files[level][id][numberOfFiles].inZBounds(time))
             {
-                nF++;
+                numberOfFiles++;
 
-                printf("switching to precursor file no. %zd\n", nF);
-                if(nF == this->fileCollection->files[level][id].size())
+                printf("switching to precursor file no. %zd\n", numberOfFiles);
+                if(numberOfFiles == this->fileCollection->files[level][id].size())
                     throw std::runtime_error("Not enough Precursor Files to read");
 
-                this->fileCollection->files[level][id][nF-1].unloadFile();
-                if(nF+1<this->fileCollection->files[level][id].size())
+                this->fileCollection->files[level][id][numberOfFiles-1].unloadFile();
+                if(numberOfFiles+1<this->fileCollection->files[level][id].size())
                 {
-                    VTKFile* nextFile = &this->fileCollection->files[level][id][nF+1];
+                    VTKFile* nextFile = &this->fileCollection->files[level][id][numberOfFiles+1];
                     if(! nextFile->isLoaded())
                     {
                         read.wait();
-                        read = std::async(std::launch::async, [](VTKFile* file){ file->loadFile(); }, &this->fileCollection->files[level][id][nF+1]);
+                        read = std::async(std::launch::async, [](VTKFile* file){ file->loadFile(); }, &this->fileCollection->files[level][id][numberOfFiles+1]);
                     }
                 }
             }
         
 
-            VTKFile* file = &this->fileCollection->files[level][id][nF];
+            VTKFile* file = &this->fileCollection->files[level][id][numberOfFiles];
 
             int off = file->getClosestIdxZ(time)*file->getNumberOfPointsInXYPlane();
             file->getData(data, numberOfNodes, this->readIndices[level][id], this->writeIndices[level][id], off, this->writingOffset);
-            this->nFile[level][id] = nF;
+            this->nFile[level][id] = numberOfFiles;
         }
     // }
 }
