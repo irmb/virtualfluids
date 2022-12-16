@@ -240,8 +240,8 @@ typedef struct QforPrecursorBC{
    uint timeStepsBetweenReads;
    size_t numberOfQuantities;
    real* q27[27];
-   uint* planeNeighborNT, *planeNeighborNB, *planeNeighborST, *planeNeighborSB;
-   real* weightsNT, *weightsNB, *weightsST,  *weightsSB;
+   uint* planeNeighbor0PP, *planeNeighbor0PM, *planeNeighbor0MP, *planeNeighbor0MM;
+   real* weights0PP, *weights0PM, *weights0MP,  *weights0MM;
    real* last, *current, *next;
    real velocityX, velocityY, velocityZ;
 }QforPrecursorBoundaryConditions;

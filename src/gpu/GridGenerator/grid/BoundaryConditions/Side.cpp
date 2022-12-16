@@ -73,8 +73,7 @@ void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition
                                             ||  grid->getFieldEntry(index)  == vf::gpu::BC_VELOCITY 
                                             ||  grid->getFieldEntry(index)  == vf::gpu::BC_NOSLIP   
                                             ||  grid->getFieldEntry(index)  == vf::gpu::BC_SLIP     
-                                            ||  grid->getFieldEntry(index)  == vf::gpu::BC_STRESS )
-                                            /*&& boundaryCondition->getType()!=vf::gpu::BC_STRESS*/ )
+                                            ||  grid->getFieldEntry(index)  == vf::gpu::BC_STRESS ))
             {
                 grid->setFieldEntry(index, boundaryCondition->getType());
                 boundaryCondition->indices.push_back(index);
@@ -177,13 +176,6 @@ void Side::setQs(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uin
                                   this->getNormal()[1]*grid->getDirection()[dir * DIMENSION + 1]+
                                   this->getNormal()[2]*grid->getDirection()[dir * DIMENSION + 2] ) > 0;
         
-        // if(boundaryCondition->getType()==vf::gpu::BC_VELOCITY && z < 8.0 )
-        // {
-        //     alignedWithNormal = true;
-        //     printf("XYZ: %f \t %f \t %f \n", x,y,z);
-        //     printf("dir: %d \t %d \t %d \n\n", grid->getDirection()[dir * DIMENSION + 0], grid->getDirection()[dir * DIMENSION + 1], grid->getDirection()[dir * DIMENSION + 2]);
-        // }
-
         uint neighborIndex = grid->transCoordToIndex( neighborX, neighborY, neighborZ );
         if((grid->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_OUT_OF_GRID_BOUNDARY ||
             grid->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_OUT_OF_GRID          ||

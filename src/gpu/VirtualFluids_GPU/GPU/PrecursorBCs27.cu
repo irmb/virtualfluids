@@ -23,10 +23,10 @@ __global__ void QPrecursorDeviceCompZeroPress( 	int* subgridDistanceIndices,
                                                 uint* neighborsNB,
                                                 uint* neighborsST,
                                                 uint* neighborsSB,
-                                                real* weightsNT, 
-                                                real* weightsNB,
-                                                real* weightsST,
-                                                real* weightsSB,
+                                                real* weights0PP, 
+                                                real* weights0PM,
+                                                real* weights0MP,
+                                                real* weights0MM,
                                                 real* vLast, 
                                                 real* vCurrent,
                                                 real velocityX,
@@ -47,7 +47,7 @@ __global__ void QPrecursorDeviceCompZeroPress( 	int* subgridDistanceIndices,
     real vxNextInterpd, vyNextInterpd, vzNextInterpd; 
 
     uint kNT = neighborsNT[k];
-    real dNT = weightsNT[k];
+    real dNT = weights0PP[k];
 
     real* vxLast = vLast;
     real* vyLast = &vLast[numberOfPrecursorNodes];
@@ -63,9 +63,9 @@ __global__ void QPrecursorDeviceCompZeroPress( 	int* subgridDistanceIndices,
         uint kST = neighborsST[k];
         uint kSB = neighborsSB[k];
 
-        real dNB = weightsNB[k];
-        real dST = weightsST[k];
-        real dSB = weightsSB[k];
+        real dNB = weights0PM[k];
+        real dST = weights0MP[k];
+        real dSB = weights0MM[k];
 
         real invWeightSum = 1.f/(dNT+dNB+dST+dSB);
 
@@ -436,10 +436,10 @@ __global__ void PrecursorDeviceEQ27( 	int* subgridDistanceIndices,
                                         uint* neighborsNB,
                                         uint* neighborsST,
                                         uint* neighborsSB,
-                                        real* weightsNT, 
-                                        real* weightsNB,
-                                        real* weightsST,
-                                        real* weightsSB,
+                                        real* weights0PP, 
+                                        real* weights0PM,
+                                        real* weights0MP,
+                                        real* weights0MM,
                                         real* vLast, 
                                         real* vCurrent,
                                         real velocityX,
@@ -460,7 +460,7 @@ __global__ void PrecursorDeviceEQ27( 	int* subgridDistanceIndices,
     real vxNextInterpd, vyNextInterpd, vzNextInterpd; 
 
     uint kNT = neighborsNT[k];
-    real dNT = weightsNT[k];
+    real dNT = weights0PP[k];
 
     real* vxLast = vLast;
     real* vyLast = &vLast[numberOfPrecursorNodes];
@@ -476,9 +476,9 @@ __global__ void PrecursorDeviceEQ27( 	int* subgridDistanceIndices,
         uint kST = neighborsST[k];
         uint kSB = neighborsSB[k];
 
-        real dNB = weightsNB[k];
-        real dST = weightsST[k];
-        real dSB = weightsSB[k];
+        real dNB = weights0PM[k];
+        real dST = weights0MP[k];
+        real dSB = weights0MM[k];
 
         real invWeightSum = 1.f/(dNT+dNB+dST+dSB);
 
@@ -660,10 +660,10 @@ __global__ void PrecursorDeviceDistributions( 	int* subgridDistanceIndices,
 												uint* neighborsNB,
 												uint* neighborsST,
 												uint* neighborsSB,
-												real* weightsNT, 
-												real* weightsNB,
-												real* weightsST,
-												real* weightsSB,
+												real* weights0PP, 
+												real* weights0PM,
+												real* weights0MP,
+												real* weights0MM,
 												real* fsLast, 
 												real* fsNext,
 												real timeRatio,
@@ -675,7 +675,7 @@ __global__ void PrecursorDeviceDistributions( 	int* subgridDistanceIndices,
     if(k>=numberOfBCnodes) return;
 
     uint kNT = neighborsNT[k];
-    real dNT = weightsNT[k];
+    real dNT = weights0PP[k];
 
     real f0LastInterp, f1LastInterp, f2LastInterp, f3LastInterp, f4LastInterp, f5LastInterp, f6LastInterp, f7LastInterp, f8LastInterp;
     real f0NextInterp, f1NextInterp, f2NextInterp, f3NextInterp, f4NextInterp, f5NextInterp, f6NextInterp, f7NextInterp, f8NextInterp;
@@ -707,9 +707,9 @@ __global__ void PrecursorDeviceDistributions( 	int* subgridDistanceIndices,
         uint kST = neighborsST[k];
         uint kSB = neighborsSB[k];
 
-        real dNB = weightsNB[k];
-        real dST = weightsST[k];
-        real dSB = weightsSB[k];
+        real dNB = weights0PM[k];
+        real dST = weights0MP[k];
+        real dSB = weights0MM[k];
 
         real invWeightSum = 1.f/(dNT+dNB+dST+dSB);
 
@@ -819,10 +819,10 @@ __global__ void QPrecursorDeviceDistributions( 	int* subgridDistanceIndices,
 												uint* neighborsNB,
 												uint* neighborsST,
 												uint* neighborsSB,
-												real* weightsNT, 
-												real* weightsNB,
-												real* weightsST,
-												real* weightsSB,
+												real* weights0PP, 
+												real* weights0PM,
+												real* weights0MP,
+												real* weights0MM,
 												real* fsLast, 
 												real* fsNext,
 												real timeRatio,
@@ -834,7 +834,7 @@ __global__ void QPrecursorDeviceDistributions( 	int* subgridDistanceIndices,
     if(k>=numberOfBCnodes) return;
 
     uint kNT = neighborsNT[k];
-    real dNT = weightsNT[k];
+    real dNT = weights0PP[k];
 
     real f0LastInterp, f1LastInterp, f2LastInterp, f3LastInterp, f4LastInterp, f5LastInterp, f6LastInterp, f7LastInterp, f8LastInterp;
     real f0NextInterp, f1NextInterp, f2NextInterp, f3NextInterp, f4NextInterp, f5NextInterp, f6NextInterp, f7NextInterp, f8NextInterp;
@@ -866,9 +866,9 @@ __global__ void QPrecursorDeviceDistributions( 	int* subgridDistanceIndices,
         uint kST = neighborsST[k];
         uint kSB = neighborsSB[k];
 
-        real dNB = weightsNB[k];
-        real dST = weightsST[k];
-        real dSB = weightsSB[k];
+        real dNB = weights0PM[k];
+        real dST = weights0MP[k];
+        real dSB = weights0MM[k];
 
         real invWeightSum = 1.f/(dNT+dNB+dST+dSB);
 

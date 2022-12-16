@@ -3216,8 +3216,8 @@ void QPrecursorDevCompZeroPress(LBMSimulationParameter* parameterDevice, QforPre
 	QPrecursorDeviceCompZeroPress<<< grid.grid, grid.threads >>>(boundaryCondition->k, boundaryCondition->numberOfBCnodes, boundaryCondition->numberOfPrecursorNodes, boundaryCondition->sizeQ, parameterDevice->omega, 
 		parameterDevice->distributions.f[0], boundaryCondition->q27[0],
 		parameterDevice->neighborX, parameterDevice->neighborY, parameterDevice->neighborZ,
-		boundaryCondition->planeNeighborNT, boundaryCondition->planeNeighborNB, boundaryCondition->planeNeighborST, boundaryCondition->planeNeighborSB,
-		boundaryCondition->weightsNT, boundaryCondition->weightsNB, boundaryCondition->weightsST, boundaryCondition->weightsSB,
+		boundaryCondition->planeNeighbor0PP, boundaryCondition->planeNeighbor0PM, boundaryCondition->planeNeighbor0MP, boundaryCondition->planeNeighbor0MM,
+		boundaryCondition->weights0PP, boundaryCondition->weights0PM, boundaryCondition->weights0MP, boundaryCondition->weights0MM,
 		boundaryCondition->last, boundaryCondition->current,
 		boundaryCondition->velocityX, boundaryCondition->velocityY, boundaryCondition->velocityZ, 
 		timeRatio, velocityRatio, parameterDevice->numberOfNodes, parameterDevice->isEvenTimestep);
@@ -3232,8 +3232,8 @@ void PrecursorDevEQ27( LBMSimulationParameter* parameterDevice, QforPrecursorBou
 
 	PrecursorDeviceEQ27<<< grid.grid, grid.threads >>>(boundaryCondition->k, boundaryCondition->numberOfBCnodes, boundaryCondition->numberOfPrecursorNodes, parameterDevice->omega, parameterDevice->distributions.f[0], 
 		parameterDevice->neighborX, parameterDevice->neighborX, parameterDevice->neighborX,
-		boundaryCondition->planeNeighborNT, boundaryCondition->planeNeighborNB, boundaryCondition->planeNeighborST, boundaryCondition->planeNeighborSB,
-		boundaryCondition->weightsNT, boundaryCondition->weightsNB, boundaryCondition->weightsST, boundaryCondition->weightsSB,
+		boundaryCondition->planeNeighbor0PP, boundaryCondition->planeNeighbor0PM, boundaryCondition->planeNeighbor0MP, boundaryCondition->planeNeighbor0MM,
+		boundaryCondition->weights0PP, boundaryCondition->weights0PM, boundaryCondition->weights0MP, boundaryCondition->weights0MM,
 		boundaryCondition->last, boundaryCondition->current,
 		boundaryCondition->velocityX, boundaryCondition->velocityY, boundaryCondition->velocityZ, 
 		timeRatio, velocityRatio, parameterDevice->numberOfNodes, parameterDevice->isEvenTimestep);
@@ -3248,8 +3248,8 @@ void PrecursorDevDistributions( LBMSimulationParameter* parameterDevice, QforPre
 
 	PrecursorDeviceDistributions<<< grid.grid, grid.threads >>>(boundaryCondition->k, boundaryCondition->numberOfBCnodes, boundaryCondition->numberOfPrecursorNodes, parameterDevice->distributions.f[0],
 		parameterDevice->neighborX, parameterDevice->neighborY, parameterDevice->neighborZ,
-		boundaryCondition->planeNeighborNT, boundaryCondition->planeNeighborNB, boundaryCondition->planeNeighborST, boundaryCondition->planeNeighborSB,
-		boundaryCondition->weightsNT, boundaryCondition->weightsNB, boundaryCondition->weightsST, boundaryCondition->weightsSB,
+		boundaryCondition->planeNeighbor0PP, boundaryCondition->planeNeighbor0PM, boundaryCondition->planeNeighbor0MP, boundaryCondition->planeNeighbor0MM,
+		boundaryCondition->weights0PP, boundaryCondition->weights0PM, boundaryCondition->weights0MP, boundaryCondition->weights0MM,
 		boundaryCondition->last, boundaryCondition->current,
 		timeRatio, parameterDevice->numberOfNodes, parameterDevice->isEvenTimestep);
 	getLastCudaError("QPrecursorDeviceCompZeroPress execution failed"); 
@@ -3264,8 +3264,8 @@ void QPrecursorDevDistributions( LBMSimulationParameter* parameterDevice, QforPr
 
 	QPrecursorDeviceDistributions<<< grid.grid, grid.threads >>>(boundaryCondition->k, boundaryCondition->q27[0], boundaryCondition->sizeQ, boundaryCondition->numberOfBCnodes, boundaryCondition->numberOfPrecursorNodes, parameterDevice->distributions.f[0],
 		parameterDevice->neighborX, parameterDevice->neighborY, parameterDevice->neighborZ,
-		boundaryCondition->planeNeighborNT, boundaryCondition->planeNeighborNB, boundaryCondition->planeNeighborST, boundaryCondition->planeNeighborSB,
-		boundaryCondition->weightsNT, boundaryCondition->weightsNB, boundaryCondition->weightsST, boundaryCondition->weightsSB,
+		boundaryCondition->planeNeighbor0PP, boundaryCondition->planeNeighbor0PM, boundaryCondition->planeNeighbor0MP, boundaryCondition->planeNeighbor0MM,
+		boundaryCondition->weights0PP, boundaryCondition->weights0PM, boundaryCondition->weights0MP, boundaryCondition->weights0MM,
 		boundaryCondition->last, boundaryCondition->current,
 		timeRatio, parameterDevice->numberOfNodes, parameterDevice->isEvenTimestep);
 	getLastCudaError("QPrecursorDeviceCompZeroPress execution failed"); 

@@ -38,12 +38,16 @@
 #include <memory>
 #include <array>
 
+#include <lbm/constants/NumericConstants.h>
+
 #include "gpu/GridGenerator/global.h"
 
 #include "gpu/GridGenerator/grid/GridBuilder/GridBuilder.h"
 #include "gpu/GridGenerator/grid/Grid.h"
 #include "gpu/GridGenerator/grid/GridInterface.h"
 #include "gpu/GridGenerator/grid/NodeValues.h"
+
+using namespace vf::lbm::constant;
 
 struct Vertex;
 class  Grid;
@@ -64,8 +68,6 @@ enum class SideType;
 class TransientBCInputFileReader;
 class FileCollection;
 
-
-
 class LevelGridBuilder : public GridBuilder
 {
 protected:
@@ -85,7 +87,7 @@ public:
     GRIDGENERATOR_EXPORT void setPeriodicBoundaryCondition(bool periodic_X, bool periodic_Y, bool periodic_Z);
     GRIDGENERATOR_EXPORT void setNoSlipBoundaryCondition(SideType sideType);
     GRIDGENERATOR_EXPORT void setPrecursorBoundaryCondition(SideType sideType, SPtr<FileCollection> fileCollection, int timeStepsBetweenReads, 
-                                                            real velocityX=0.0f, real velocityY=0.0f, real velocityZ=0.0f,     
+                                                            real velocityX=c0o1, real velocityY=c0o1, real velocityZ=c0o1,     
                                                             std::vector<uint> fileLevelToGridLevelMap = {});
 
     GRIDGENERATOR_EXPORT void setEnableFixRefinementIntoTheWall(bool enableFixRefinementIntoTheWall);
@@ -129,8 +131,8 @@ public:
     GRIDGENERATOR_EXPORT virtual void getPressureQs(real* qs[27], int level) const override;
 
     GRIDGENERATOR_EXPORT uint getPrecursorSize(int level) const override;
-    GRIDGENERATOR_EXPORT void getPrecursorValues(   uint* neighborNT, uint* neighborNB, uint* neighborST, uint* neighborSB, 
-                                                    real* weightsNT, real* weightsNB, real* weightsST, real* weightsSB, 
+    GRIDGENERATOR_EXPORT void getPrecursorValues(   uint* neighbor0PP, uint* neighbor0PM, uint* neighbor0MP, uint* neighbor0MM, 
+                                                    real* weights0PP, real* weights0PM, real* weights0MP, real* weights0MM, 
                                                     int* indices, std::vector<SPtr<TransientBCInputFileReader>>& reader, 
                                                     int& numberOfPrecursorNodes, size_t& numberOfQuantities, uint& timeStepsBetweenReads,
                                                     real& velocityX, real& velocityY, real& velocityZ, int level) const override;
