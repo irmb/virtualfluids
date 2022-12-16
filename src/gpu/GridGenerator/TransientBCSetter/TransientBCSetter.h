@@ -156,12 +156,12 @@ public:
     uint getNPointsRead(){return nPointsRead; };
     size_t getNumberOfQuantities(){ return nQuantities; };
     void setWritingOffset(uint offset){ this->writingOffset = offset; }
-    void getNeighbors(uint* neighborNT, uint* neighborNB, uint* neighborST, uint* neighborSN);
-    void getWeights(real* _weightsNT, real* _weightsNB, real* _weightsST, real* _weightsSB);
+    void getNeighbors(uint* neighbor0PP, uint* neighbor0PM, uint* neighbor0MP, uint* neighbor0MM);
+    void getWeights(real* _weights0PP, real* _weights0PM, real* _weights0MP, real* _weights0MM);
 
 public:
-    std::vector<uint> planeNeighborNT,  planeNeighborNB, planeNeighborST, planeNeighborSB;
-    std::vector<real> weightsNT, weightsNB, weightsST,  weightsSB;
+    std::vector<uint> planeNeighbor0PP,  planeNeighbor0PM, planeNeighbor0MP, planeNeighbor0MM;
+    std::vector<real> weights0PP, weights0PM, weights0MP,  weights0MM;
 
 protected:
     uint nPoints, nPointsRead, writingOffset;

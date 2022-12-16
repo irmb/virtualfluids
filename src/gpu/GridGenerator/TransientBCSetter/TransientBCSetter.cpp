@@ -225,20 +225,20 @@ void VTKFileCollection::findFiles()
         VF_LOG_CRITICAL("VTKFileCollection found no files!"); 
 }
     
-void TransientBCInputFileReader::getNeighbors(uint* neighborNT, uint* neighborNB, uint* neighborST, uint* neighborSB)
+void TransientBCInputFileReader::getNeighbors(uint* neighbor0PP, uint* neighbor0PM, uint* neighbor0MP, uint* neighbor0MM)
 {
-    std::copy(planeNeighborNT.begin(), planeNeighborNT.end(), &neighborNT[writingOffset]);
-    std::copy(planeNeighborNB.begin(), planeNeighborNB.end(), &neighborNB[writingOffset]);
-    std::copy(planeNeighborST.begin(), planeNeighborST.end(), &neighborST[writingOffset]);
-    std::copy(planeNeighborSB.begin(), planeNeighborSB.end(), &neighborSB[writingOffset]);
+    std::copy(planeNeighbor0PP.begin(), planeNeighbor0PP.end(), &neighbor0PP[writingOffset]);
+    std::copy(planeNeighbor0PM.begin(), planeNeighbor0PM.end(), &neighbor0PM[writingOffset]);
+    std::copy(planeNeighbor0MP.begin(), planeNeighbor0MP.end(), &neighbor0MP[writingOffset]);
+    std::copy(planeNeighbor0MM.begin(), planeNeighbor0MM.end(), &neighbor0MM[writingOffset]);
 }
 
-void TransientBCInputFileReader::getWeights(real* _weightsNT, real* _weightsNB, real* _weightsST, real* _weightsSB)
+void TransientBCInputFileReader::getWeights(real* _weights0PP, real* _weights0PM, real* _weights0MP, real* _weights0MM)
 {
-    std::copy(weightsNT.begin(), weightsNT.end(), &_weightsNT[writingOffset]);
-    std::copy(weightsNB.begin(), weightsNB.end(), &_weightsNB[writingOffset]);
-    std::copy(weightsST.begin(), weightsST.end(), &_weightsST[writingOffset]);
-    std::copy(weightsSB.begin(), weightsSB.end(), &_weightsSB[writingOffset]);
+    std::copy(weights0PP.begin(), weights0PP.end(), &_weights0PP[writingOffset]);
+    std::copy(weights0PM.begin(), weights0PM.end(), &_weights0PM[writingOffset]);
+    std::copy(weights0MP.begin(), weights0MP.end(), &_weights0MP[writingOffset]);
+    std::copy(weights0MM.begin(), weights0MM.end(), &_weights0MM[writingOffset]);
 }
 
 
@@ -263,22 +263,22 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
     real eps = 1e-7; // small number to avoid division by zero
     bool perfect_match = true;
 
-    this->weightsNT.reserve(this->nPoints);
-    this->weightsNB.reserve(this->nPoints);
-    this->weightsST.reserve(this->nPoints);
-    this->weightsSB.reserve(this->nPoints);
+    this->weights0PP.reserve(this->nPoints);
+    this->weights0PM.reserve(this->nPoints);
+    this->weights0MP.reserve(this->nPoints);
+    this->weights0MM.reserve(this->nPoints);
 
-    this->planeNeighborNT.reserve(this->nPoints);
-    this->planeNeighborNB.reserve(this->nPoints);
-    this->planeNeighborST.reserve(this->nPoints);
-    this->planeNeighborSB.reserve(this->nPoints);
+    this->planeNeighbor0PP.reserve(this->nPoints);
+    this->planeNeighbor0PM.reserve(this->nPoints);
+    this->planeNeighbor0MP.reserve(this->nPoints);
+    this->planeNeighbor0MM.reserve(this->nPoints);
 
     for(uint i=0; i<nPoints; i++)
     {
 
         real posY = coordsY[i];
         real posZ = coordsZ[i];
-        bool foundNT = false, foundNB = false, foundST = false, foundSB = false, foundAll = false;
+        bool found0PP = false, found0PM = false, found0MP = false, found0MM = false, foundAll = false;
 
         uint level = this->readLevel;
 
@@ -296,73 +296,73 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
                 // Filter for exact matches
                 if(abs(posY-file.getX(idx)) < max_diff && abs(posZ-file.getY(idx)) < max_diff) 
                 {
-                    this->weightsNT.emplace_back(1e6f);
-                    this->weightsNB.emplace_back(0.f);
-                    this->weightsST.emplace_back(0.f);
-                    this->weightsSB.emplace_back(0.f);
+                    this->weights0PP.emplace_back(1e6f);
+                    this->weights0PM.emplace_back(0.f);
+                    this->weights0MP.emplace_back(0.f);
+                    this->weights0MM.emplace_back(0.f);
                     uint writeIdx = this->getWriteIndex(level, fileId, idx);            //!> writeIdx: index on host/device array where precursor value will be written to after loading from file
-                    this->planeNeighborNT.push_back(writeIdx);                          //!> neighbor lists mapping where BC kernel should read from on host/device array
-                    this->planeNeighborNB.push_back(writeIdx);
-                    this->planeNeighborST.push_back(writeIdx);
-                    this->planeNeighborSB.push_back(writeIdx);
-                    foundNT = true; foundNB = true; foundSB = true; foundST = true;
+                    this->planeNeighbor0PP.push_back(writeIdx);                          //!> neighbor lists mapping where BC kernel should read from on host/device array
+                    this->planeNeighbor0PM.push_back(writeIdx);
+                    this->planeNeighbor0MP.push_back(writeIdx);
+                    this->planeNeighbor0MM.push_back(writeIdx);
+                    found0PP = true; found0PM = true; found0MM = true; found0MP = true;
                 } 
                 else
                 {
                     perfect_match = false;
                 }
 
-                if(!foundSB)
+                if(!found0MM)
                 {
-                    foundSB = true;
+                    found0MM = true;
                     real dy = file.getX(idx)-posY;
                     real dz = file.getY(idx)-posZ;
-                    this->weightsSB.emplace_back(1.f/(dy*dy+dz*dz+eps));
-                    this->planeNeighborSB.emplace_back(getWriteIndex(level, fileId, idx));
+                    this->weights0MM.emplace_back(1.f/(dy*dy+dz*dz+eps));
+                    this->planeNeighbor0MM.emplace_back(getWriteIndex(level, fileId, idx));
                 }
                 
             } 
             
-            if(!foundNT) //NT in simulation is EN in precursor
+            if(!found0PP) //NT in simulation is EN in precursor
             {
                 int idx = file.findNeighborPPM(posY, posZ, 0.f);
                 if(idx!=-1)
                 {
-                    foundNT = true;
+                    found0PP = true;
                     real dy = file.getX(idx)-posY;
                     real dz = file.getY(idx)-posZ;
-                    this->weightsNT.emplace_back(1.f/(dy*dy+dz*dz+eps));
-                    this->planeNeighborNT.emplace_back(getWriteIndex(level, fileId, idx));
+                    this->weights0PP.emplace_back(1.f/(dy*dy+dz*dz+eps));
+                    this->planeNeighbor0PP.emplace_back(getWriteIndex(level, fileId, idx));
                 }
             }
 
-            if(!foundNB) //NB in simulation is ES in precursor
+            if(!found0PM) //NB in simulation is ES in precursor
             {
                 int idx = file.findNeighborPMM(posY, posZ, 0.f);
                 if(idx!=-1)
                 {
-                    foundNB = true;
+                    found0PM = true;
                     real dy = file.getX(idx)-posY;
                     real dz = file.getY(idx)-posZ;
-                    this->weightsNB.emplace_back(1.f/(dy*dy+dz*dz+eps));
-                    this->planeNeighborNT.emplace_back(getWriteIndex(level, fileId, idx));
+                    this->weights0PM.emplace_back(1.f/(dy*dy+dz*dz+eps));
+                    this->planeNeighbor0PP.emplace_back(getWriteIndex(level, fileId, idx));
                 }
             }
 
-            if(!foundST) //ST in simulation is WN in precursor
+            if(!found0MP) //ST in simulation is WN in precursor
             {
                 int idx = file.findNeighborMPM(posY, posZ, 0.f);
                 if(idx!=-1)
                 {
-                    foundST = true;
+                    found0MP = true;
                     real dy = file.getX(idx)-posY;
                     real dz = file.getY(idx)-posZ;
-                    this->weightsST.emplace_back(1.f/(dy*dy+dz*dz+eps));
-                    this->planeNeighborST.emplace_back(getWriteIndex(level, fileId, idx));
+                    this->weights0MP.emplace_back(1.f/(dy*dy+dz*dz+eps));
+                    this->planeNeighbor0MP.emplace_back(getWriteIndex(level, fileId, idx));
                 }
             }
 
-            foundAll = foundNT && foundNB && foundST && foundSB;
+            foundAll = found0PP && found0PM && found0MP && found0MM;
 
             if(foundAll) break;
         }
