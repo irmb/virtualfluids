@@ -95,9 +95,9 @@ void multipleLevel(const std::string& configPath)
     const real velocity = config.getValue<real>("Velocity");
 
 
-    const real L_x = 6*reference_diameter;
-    const real L_y = 3*reference_diameter;
-    const real L_z = 4*reference_diameter;
+    const real L_x = 4*reference_diameter;
+    const real L_y = 2.5*reference_diameter;
+    const real L_z = 3*reference_diameter;
 
     const real viscosity = 1.56e-5;
 
@@ -122,14 +122,14 @@ void multipleLevel(const std::string& configPath)
 
     const real dx = reference_diameter/real(nodes_per_diameter);
 
-    real turbPos[3] = {1*reference_diameter, reference_diameter, 2*reference_diameter};
+    real turbPos[3] = {0.7f*reference_diameter, reference_diameter, 1.5f*reference_diameter};
 
     gridBuilder->addCoarseGrid(0.0, 0.0, 0.0,
                                L_x,  L_y,  L_z, dx);
 
     gridBuilder->setNumberOfLayers(4,0);
-    gridBuilder->addGrid( new Cuboid(   turbPos[0]-0.4*reference_diameter,  turbPos[1]-1*reference_diameter,  turbPos[2]-0.8*reference_diameter,
-                                        turbPos[0]+3.0*reference_diameter,  turbPos[1]+0.8*reference_diameter,  turbPos[2]+0.8*reference_diameter) , 1 );
+    gridBuilder->addGrid( new Cuboid(   turbPos[0]-0.3*reference_diameter,  turbPos[1]-1*reference_diameter,  turbPos[2]-0.7*reference_diameter,
+                                        turbPos[0]+2.0*reference_diameter,  turbPos[1]+0.7*reference_diameter,  turbPos[2]+0.7*reference_diameter) , 1 );
     para->setMaxLevel(2);
     scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
@@ -159,7 +159,6 @@ void multipleLevel(const std::string& configPath)
     VF_LOG_INFO("velocity  [dx/dt] = {}", velocityLB);
     VF_LOG_INFO("viscosity [10^8 dx^2/dt] = {}", viscosityLB*1e8);
     VF_LOG_INFO("nodes/turbine diameter = {}", reference_diameter/dx);
-    VF_LOG_INFO("1000 timesteps are {} s", 1000 * dt);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -197,7 +196,7 @@ void multipleLevel(const std::string& configPath)
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     gridBuilder->setVelocityBoundaryCondition(SideType::MX,  velocityLB, 0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SideType::MY,  velocityLB, 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::MY,  0.0, 0.0, 0.0);
     gridBuilder->setVelocityBoundaryCondition(SideType::PY,  velocityLB, 0.0, 0.0);
     gridBuilder->setVelocityBoundaryCondition(SideType::MZ,  velocityLB, 0.0, 0.0);
     gridBuilder->setVelocityBoundaryCondition(SideType::PZ,  velocityLB, 0.0, 0.0);
