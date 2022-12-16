@@ -131,8 +131,8 @@ public:
     GRIDGENERATOR_EXPORT virtual void getPressureQs(real* qs[27], int level) const override;
 
     GRIDGENERATOR_EXPORT uint getPrecursorSize(int level) const override;
-    GRIDGENERATOR_EXPORT void getPrecursorValues(   uint* neighborNT, uint* neighborNB, uint* neighborST, uint* neighborSB, 
-                                                    real* weightsNT, real* weightsNB, real* weightsST, real* weightsSB, 
+    GRIDGENERATOR_EXPORT void getPrecursorValues(   uint* neighbor0PP, uint* neighbor0PM, uint* neighbor0MP, uint* neighbor0MM, 
+                                                    real* weights0PP, real* weights0PM, real* weights0MP, real* weights0MM, 
                                                     int* indices, std::vector<SPtr<TransientBCInputFileReader>>& reader, 
                                                     int& numberOfPrecursorNodes, size_t& numberOfQuantities, uint& timeStepsBetweenReads,
                                                     real& velocityX, real& velocityY, real& velocityZ, int level) const override;
