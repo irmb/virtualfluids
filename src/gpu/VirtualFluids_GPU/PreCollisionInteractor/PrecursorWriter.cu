@@ -276,7 +276,7 @@ void PrecursorWriter::write(Parameter* para, int level, uint numberOfTimestepsBu
 
     UbTupleInt6 extent = makeUbTuple(   val<1>(precursorStructs[level]->extent),    val<2>(precursorStructs[level]->extent), 
                                         val<3>(precursorStructs[level]->extent),    val<4>(precursorStructs[level]->extent), 
-                                        startTime,                          startTime+(int)timestepsBuffered-1);
+                                        startTime,                          startTime+(int)numberOfTimestepsBuffered-1);
 
     UbTupleFloat3 origin = makeUbTuple( val<1>(precursorStructs[level]->origin), val<2>(precursorStructs[level]->origin), 0.f);
 
