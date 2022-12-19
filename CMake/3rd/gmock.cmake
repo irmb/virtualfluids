@@ -5,7 +5,7 @@
 
 function (linkGMOCK)
     vf_get_library_test_name(library_name)
-    target_link_libraries(${library_name} PRIVATE gtest gmock gmock_main)
+    target_link_libraries(${library_name} PRIVATE GTest::gmock_main)
 
     if(BUILD_SHARED_LIBS)
         # add compile option according to

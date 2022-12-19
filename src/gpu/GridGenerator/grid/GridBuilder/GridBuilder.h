@@ -54,7 +54,7 @@ class GridWrapper;
 class Transformator;
 class ArrowTransformator;
 class PolyDataWriterWrapper;
-class VelocityReader;
+class TransientBCInputFileReader;
 
 class BoundingBox;
 class Grid;
@@ -115,10 +115,10 @@ public:
     virtual void getPressureQs(real *qs[27], int level) const                                      = 0;
 
     virtual uint getPrecursorSize(int level) const              = 0;
-    virtual void getPrecursorValues(uint* neighborNT, uint* neighborNB, uint* neighborST, uint* neighborSB, 
-                                    real* weightsNT, real* weightsNB, real* weightsST, real* weightsSB, 
-                                    int* indices, std::vector<SPtr<VelocityReader>>& reader, 
-                                    int& numberOfPrecursorNodes, size_t& numberOfQuantities, uint& nTRead, 
+    virtual void getPrecursorValues(uint* neighbor0PP, uint* neighbor0PM, uint* neighbor0MP, uint* neighbor0MM, 
+                                    real* weights0PP, real* weights0PM, real* weights0MP, real* weights0MM, 
+                                    int* indices, std::vector<SPtr<TransientBCInputFileReader>>& reader, 
+                                    int& numberOfPrecursorNodes, size_t& numberOfQuantities, uint& timeStepsBetweenReads, 
                                     real& velocityX, real& velocityY, real& velocityZ, int level) const = 0;
 
     virtual void getPrecursorQs(real* qs[27], int level) const  = 0;
@@ -147,18 +147,18 @@ public:
 
     virtual void findFluidNodes(bool splitDomain) = 0;
 
-    virtual void addFluidNodeIndicesMacroVars(std::vector<uint> fluidNodeIndicesMacroVars, uint level)           = 0;
-    virtual void addFluidNodeIndicesApplyBodyForce(std::vector<uint> fluidNodeIndicesApplyBodyForce, uint level) = 0;
-    virtual void addFluidNodeIndicesAllFeatures(std::vector<uint> fluidNodeIndicesAllFeatures, uint level)       = 0;
+    virtual void addFluidNodeIndicesMacroVars(const std::vector<uint>& fluidNodeIndicesMacroVars, uint level)           = 0;
+    virtual void addFluidNodeIndicesApplyBodyForce(const std::vector<uint>& fluidNodeIndicesApplyBodyForce, uint level) = 0;
+    virtual void addFluidNodeIndicesAllFeatures(const std::vector<uint>& fluidNodeIndicesAllFeatures, uint level)       = 0;
     virtual void sortFluidNodeIndicesMacroVars(uint level) = 0;
     virtual void sortFluidNodeIndicesApplyBodyForce(uint level) = 0;
     virtual void sortFluidNodeIndicesAllFeatures(uint level) = 0;
-    virtual uint getNumberOfFluidNodesMacroVars(unsigned int level) const = 0;
-    virtual void getFluidNodeIndicesMacroVars(uint *fluidNodeIndicesMacroVars, const int level) const = 0;
-    virtual uint getNumberOfFluidNodesApplyBodyForce(unsigned int level) const = 0;
-    virtual void getFluidNodeIndicesApplyBodyForce(uint *fluidNodeIndicesApplyBodyForce, const int level) const = 0;
-    virtual uint getNumberOfFluidNodesAllFeatures(unsigned int level) const = 0;
-    virtual void getFluidNodeIndicesAllFeatures(uint *fluidNodeIndicesAllFeatures, const int level) const = 0;
+    virtual uint getNumberOfFluidNodesMacroVars(uint level) const = 0;
+    virtual void getFluidNodeIndicesMacroVars(uint *fluidNodeIndicesMacroVars, int level) const = 0;
+    virtual uint getNumberOfFluidNodesApplyBodyForce(uint level) const = 0;
+    virtual void getFluidNodeIndicesApplyBodyForce(uint *fluidNodeIndicesApplyBodyForce, int level) const = 0;
+    virtual uint getNumberOfFluidNodesAllFeatures(uint level) const = 0;
+    virtual void getFluidNodeIndicesAllFeatures(uint *fluidNodeIndicesAllFeatures, int level) const = 0;
 
 
 };

@@ -4,6 +4,9 @@
 #include "PreCollisionInteractor.h"
 #include "PointerDefinitions.h"
 #include "lbm/constants/NumericConstants.h"
+#include <stdexcept>
+
+using namespace vf::lbm::constant;
 
 class Parameter;
 class GridProvider;
@@ -36,6 +39,9 @@ public:
         this->deltaX = _deltaX*exp2(-this->level);
         this->invEpsilonSqrd = 1/(epsilon*epsilon);
         this->invDeltaX = c1o1/this->deltaX;
+     
+        if(this->epsilon<this->deltaX)
+            throw std::runtime_error("ActuatorFarm::ActuatorFarm: epsilon needs to be larger than dx!");
     }
 
     virtual  ~ActuatorFarm()
@@ -100,26 +106,26 @@ public:
     real* getTurbineBladeForcesZ(uint turbine){ return &this->bladeForcesZH[turbine*numberOfBladeNodes*numberOfBlades]; };
 
     real* getAllBladeRadiiDevice(){ return this->bladeRadiiD; };
-    real* getAllBladeCoordsXDevice(){ return this->bladeCoordsXDNew; };
-    real* getAllBladeCoordsYDevice(){ return this->bladeCoordsYDNew; };
-    real* getAllBladeCoordsZDevice(){ return this->bladeCoordsZDNew; };
-    real* getAllBladeVelocitiesXDevice(){ return this->bladeVelocitiesXDNew; };
-    real* getAllBladeVelocitiesYDevice(){ return this->bladeVelocitiesYDNew; };
-    real* getAllBladeVelocitiesZDevice(){ return this->bladeVelocitiesZDNew; };
-    real* getAllBladeForcesXDevice(){ return this->bladeForcesXDNew; };
-    real* getAllBladeForcesYDevice(){ return this->bladeForcesYDNew; };
-    real* getAllBladeForcesZDevice(){ return this->bladeForcesZDNew; };
+    real* getAllBladeCoordsXDevice(){ return this->bladeCoordsXDCurrentTimestep; };
+    real* getAllBladeCoordsYDevice(){ return this->bladeCoordsYDCurrentTimestep; };
+    real* getAllBladeCoordsZDevice(){ return this->bladeCoordsZDCurrentTimestep; };
+    real* getAllBladeVelocitiesXDevice(){ return this->bladeVelocitiesXDCurrentTimestep; };
+    real* getAllBladeVelocitiesYDevice(){ return this->bladeVelocitiesYDCurrentTimestep; };
+    real* getAllBladeVelocitiesZDevice(){ return this->bladeVelocitiesZDCurrentTimestep; };
+    real* getAllBladeForcesXDevice(){ return this->bladeForcesXDCurrentTimestep; };
+    real* getAllBladeForcesYDevice(){ return this->bladeForcesYDCurrentTimestep; };
+    real* getAllBladeForcesZDevice(){ return this->bladeForcesZDCurrentTimestep; };
 
     real* getTurbineBladeRadiiDevice(uint turbine){ return &this->bladeRadiiD[turbine*numberOfBladeNodes]; };
-    real* getTurbineBladeCoordsXDevice(uint turbine){ return &this->bladeCoordsXDNew[turbine*numberOfBladeNodes*numberOfBlades]; };
-    real* getTurbineBladeCoordsYDevice(uint turbine){ return &this->bladeCoordsYDNew[turbine*numberOfBladeNodes*numberOfBlades]; };
-    real* getTurbineBladeCoordsZDevice(uint turbine){ return &this->bladeCoordsZDNew[turbine*numberOfBladeNodes*numberOfBlades]; };
-    real* getTurbineBladeVelocitiesXDevice(uint turbine){ return &this->bladeVelocitiesXDNew[turbine*numberOfBladeNodes*numberOfBlades]; };
-    real* getTurbineBladeVelocitiesYDevice(uint turbine){ return &this->bladeVelocitiesYDNew[turbine*numberOfBladeNodes*numberOfBlades]; };
-    real* getTurbineBladeVelocitiesZDevice(uint turbine){ return &this->bladeVelocitiesZDNew[turbine*numberOfBladeNodes*numberOfBlades]; };
-    real* getTurbineBladeForcesXDevice(uint turbine){ return &this->bladeForcesXDNew[turbine*numberOfBladeNodes*numberOfBlades]; };
-    real* getTurbineBladeForcesYDevice(uint turbine){ return &this->bladeForcesYDNew[turbine*numberOfBladeNodes*numberOfBlades]; };
-    real* getTurbineBladeForcesZDevice(uint turbine){ return &this->bladeForcesZDNew[turbine*numberOfBladeNodes*numberOfBlades]; };
+    real* getTurbineBladeCoordsXDevice(uint turbine){ return &this->bladeCoordsXDCurrentTimestep[turbine*numberOfBladeNodes*numberOfBlades]; };
+    real* getTurbineBladeCoordsYDevice(uint turbine){ return &this->bladeCoordsYDCurrentTimestep[turbine*numberOfBladeNodes*numberOfBlades]; };
+    real* getTurbineBladeCoordsZDevice(uint turbine){ return &this->bladeCoordsZDCurrentTimestep[turbine*numberOfBladeNodes*numberOfBlades]; };
+    real* getTurbineBladeVelocitiesXDevice(uint turbine){ return &this->bladeVelocitiesXDCurrentTimestep[turbine*numberOfBladeNodes*numberOfBlades]; };
+    real* getTurbineBladeVelocitiesYDevice(uint turbine){ return &this->bladeVelocitiesYDCurrentTimestep[turbine*numberOfBladeNodes*numberOfBlades]; };
+    real* getTurbineBladeVelocitiesZDevice(uint turbine){ return &this->bladeVelocitiesZDCurrentTimestep[turbine*numberOfBladeNodes*numberOfBlades]; };
+    real* getTurbineBladeForcesXDevice(uint turbine){ return &this->bladeForcesXDCurrentTimestep[turbine*numberOfBladeNodes*numberOfBlades]; };
+    real* getTurbineBladeForcesYDevice(uint turbine){ return &this->bladeForcesYDCurrentTimestep[turbine*numberOfBladeNodes*numberOfBlades]; };
+    real* getTurbineBladeForcesZDevice(uint turbine){ return &this->bladeForcesZDCurrentTimestep[turbine*numberOfBladeNodes*numberOfBlades]; };
 
     void setAllAzimuths(real* _azimuth);
     void setAllOmegas(real* _omegas);
@@ -141,7 +147,7 @@ public:
 
 private:
     void initTurbineGeometries(CudaMemoryManager* cudaManager);
-    void initBoundingSphere(Parameter* para, CudaMemoryManager* cudaManager);
+    void initBoundingSpheres(Parameter* para, CudaMemoryManager* cudaManager);
     void initBladeCoords(CudaMemoryManager* cudaManager);
     void initBladeVelocities(CudaMemoryManager* cudaManager);
     void initBladeForces(CudaMemoryManager* cudaManager);
@@ -160,14 +166,14 @@ public:
     real* bladeRadiiH;
     real* bladeRadiiD;
     real* bladeCoordsXH, * bladeCoordsYH, * bladeCoordsZH;
-    real* bladeCoordsXDNew, * bladeCoordsYDNew, * bladeCoordsZDNew;    
-    real* bladeCoordsXDOld, * bladeCoordsYDOld, * bladeCoordsZDOld;
+    real* bladeCoordsXDPreviousTimestep, * bladeCoordsYDPreviousTimestep, * bladeCoordsZDPreviousTimestep;
+    real* bladeCoordsXDCurrentTimestep, * bladeCoordsYDCurrentTimestep, * bladeCoordsZDCurrentTimestep;    
     real* bladeVelocitiesXH, * bladeVelocitiesYH, * bladeVelocitiesZH;
-    real* bladeVelocitiesXDOld, * bladeVelocitiesYDOld, * bladeVelocitiesZDOld;
-    real* bladeVelocitiesXDNew, * bladeVelocitiesYDNew, * bladeVelocitiesZDNew;
+    real* bladeVelocitiesXDPreviousTimestep, * bladeVelocitiesYDPreviousTimestep, * bladeVelocitiesZDPreviousTimestep;
+    real* bladeVelocitiesXDCurrentTimestep, * bladeVelocitiesYDCurrentTimestep, * bladeVelocitiesZDCurrentTimestep;
     real* bladeForcesXH, * bladeForcesYH, * bladeForcesZH;
-    real* bladeForcesXDOld, * bladeForcesYDOld, * bladeForcesZDOld;
-    real* bladeForcesXDNew, * bladeForcesYDNew, * bladeForcesZDNew;
+    real* bladeForcesXDPreviousTimestep, * bladeForcesYDPreviousTimestep, * bladeForcesZDPreviousTimestep;
+    real* bladeForcesXDCurrentTimestep, * bladeForcesYDCurrentTimestep, * bladeForcesZDCurrentTimestep;
     uint* bladeIndicesH;
     uint* bladeIndicesD; 
     uint* boundingSphereIndicesH;

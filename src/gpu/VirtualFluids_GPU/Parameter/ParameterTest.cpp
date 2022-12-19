@@ -1,4 +1,5 @@
 #include <gmock/gmock.h>
+#include "basics/tests/testUtilities.h"
 
 #include <filesystem>
 #include <iostream>
@@ -7,13 +8,6 @@
 #include "Parameter.h"
 #include "basics/config/ConfigurationFile.h"
 
-auto RealEq = [](auto value) {
-#ifdef VF_DOUBLE_ACCURACY
-    return testing::DoubleEq(value);
-#else
-    return testing::FloatEq(value);
-#endif
-};
 
 TEST(ParameterTest, passingEmptyFileWithoutPath_ShouldNotThrow)
 {

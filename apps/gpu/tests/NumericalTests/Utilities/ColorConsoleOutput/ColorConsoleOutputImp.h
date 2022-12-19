@@ -4,17 +4,8 @@
 #include "ColorConsoleOutput.h"
 
 #include <iostream>
+#include <string>
 
-#include <gtest/gtest.h>
-
-// https://stackoverflow.com/questions/16491675/how-to-send-custom-message-in-google-c-testing-framework/29155677#29155677
-namespace testing
-{
-	namespace internal
-	{
-		extern void ColoredPrintf(GTestColor color, const char* fmt, ...);
-	}
-}
 
 class ColorConsoleOutputImp : public ColorConsoleOutput
 {
@@ -40,6 +31,7 @@ private:
 	void printGreen(std::string output);
 	void printGreenHashLine();
 
-	testing::internal::GTestColor color;
+    // not used at the moment
+    std::string color;
 };
-#endif 
+#endif

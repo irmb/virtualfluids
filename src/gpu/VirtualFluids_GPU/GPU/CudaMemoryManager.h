@@ -27,6 +27,7 @@ class VIRTUALFLUIDS_GPU_EXPORT CudaMemoryManager
 {
 public:
     CudaMemoryManager(std::shared_ptr<Parameter> parameter);
+    virtual ~CudaMemoryManager() = default;
 
     void setMemsizeGPU(double admem, bool reset);
     double getMemsizeGPU();
@@ -92,22 +93,22 @@ public:
 
     //////////////////////////////////////////////////////////////////////////
     //3D domain decomposition
-    void cudaAllocProcessNeighborX(int lev, unsigned int processNeighbor);
+    virtual void cudaAllocProcessNeighborX(int lev, unsigned int processNeighbor);
     void cudaCopyProcessNeighborXFsHD(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsRecv);
     void cudaCopyProcessNeighborXFsDH(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsSend);
-    void cudaCopyProcessNeighborXIndex(int lev, unsigned int processNeighbor);
+    virtual void cudaCopyProcessNeighborXIndex(int lev, unsigned int processNeighbor);
     void cudaFreeProcessNeighborX(int lev, unsigned int processNeighbor);
     //
-    void cudaAllocProcessNeighborY(int lev, unsigned int processNeighbor);
+    virtual void cudaAllocProcessNeighborY(int lev, unsigned int processNeighbor);
     void cudaCopyProcessNeighborYFsHD(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsRecv);
     void cudaCopyProcessNeighborYFsDH(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsSend);
-    void cudaCopyProcessNeighborYIndex(int lev, unsigned int processNeighbor);
+    virtual void cudaCopyProcessNeighborYIndex(int lev, unsigned int processNeighbor);
     void cudaFreeProcessNeighborY(int lev, unsigned int processNeighbor);
     //
-    void cudaAllocProcessNeighborZ(int lev, unsigned int processNeighbor);
+    virtual void cudaAllocProcessNeighborZ(int lev, unsigned int processNeighbor);
     void cudaCopyProcessNeighborZFsHD(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsRecv);
     void cudaCopyProcessNeighborZFsDH(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsSend);
-    void cudaCopyProcessNeighborZIndex(int lev, unsigned int processNeighbor);
+    virtual void cudaCopyProcessNeighborZIndex(int lev, unsigned int processNeighbor);
     void cudaFreeProcessNeighborZ(int lev, unsigned int processNeighbor);
 
     //////////////////////////////////////////////////////////////////////////

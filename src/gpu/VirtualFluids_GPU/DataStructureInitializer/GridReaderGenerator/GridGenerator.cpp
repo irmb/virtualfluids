@@ -5,13 +5,13 @@
 #include "GridGenerator/grid/GridBuilder/GridBuilder.h"
 #include "GPU/CudaMemoryManager.h"
 #include "IndexRearrangementForStreams.h"
+#include "InterpolationCellGrouper.h"
 
-#include <sstream>
 #include <iostream>
 #include <algorithm>
 #include "utilities/math/Math.h"
 #include "Output/QDebugWriter.hpp"
-#include "GridGenerator/VelocitySetter/VelocitySetter.h"
+#include "GridGenerator/TransientBCSetter/TransientBCSetter.h"
 
 #include "utilities/communication.h"
 #include "Communication/Communicator.h"
@@ -26,9 +26,15 @@ GridGenerator::GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_p
     this->para = para;
     this->cudaMemoryManager = cudaMemoryManager;
     this->indexRearrangement = std::make_unique<IndexRearrangementForStreams>(para, builder, communicator);
+    this->interpolationGrouper = std::make_unique<InterpolationCellGrouper>(para->getParHallLevels(), para->getParDallLevels(), builder);
 }
 
 GridGenerator::~GridGenerator() = default;
+
+void GridGenerator::setIndexRearrangementForStreams(std::unique_ptr<IndexRearrangementForStreams> &&indexRearrangement)
+{
+    this->indexRearrangement = std::move(indexRearrangement);
+}
 
 void GridGenerator::initalGridInformations()
 {
@@ -114,11 +120,11 @@ void GridGenerator::allocArrays_taggedFluidNodes() {
                     if(para->getParH(level)->numberOfTaggedFluidNodes[tag]>0)
                         para->getParH(level)->allocatedBulkFluidNodeTags.push_back(tag);
                     break;
-                case CollisionTemplate::Border:
-                    this->setNumberOfTaggedFluidNodes(builder->getNumberOfFluidNodesBorder(level), CollisionTemplate::Border, level);
-                    cudaMemoryManager->cudaAllocTaggedFluidNodeIndices(CollisionTemplate::Border, level);
-                    builder->getFluidNodeIndicesBorder(para->getParH(level)->taggedFluidNodeIndices[CollisionTemplate::Border], level);
-                    cudaMemoryManager->cudaCopyTaggedFluidNodeIndices(CollisionTemplate::Border, level);
+                case CollisionTemplate::SubDomainBorder:
+                    this->setNumberOfTaggedFluidNodes(builder->getNumberOfFluidNodesBorder(level), CollisionTemplate::SubDomainBorder, level);
+                    cudaMemoryManager->cudaAllocTaggedFluidNodeIndices(CollisionTemplate::SubDomainBorder, level);
+                    builder->getFluidNodeIndicesBorder(para->getParH(level)->taggedFluidNodeIndices[CollisionTemplate::SubDomainBorder], level);
+                    cudaMemoryManager->cudaCopyTaggedFluidNodeIndices(CollisionTemplate::SubDomainBorder, level);
                     break;
                 case CollisionTemplate::WriteMacroVars:
                     this->setNumberOfTaggedFluidNodes(builder->getNumberOfFluidNodesMacroVars(level), CollisionTemplate::WriteMacroVars, level);
@@ -151,7 +157,7 @@ void GridGenerator::allocArrays_taggedFluidNodes() {
         VF_LOG_INFO("Number of tagged nodes on level {}:", level);
         VF_LOG_INFO("Default: {}, Border: {}, WriteMacroVars: {}, ApplyBodyForce: {}, AllFeatures: {}", 
                     para->getParH(level)->numberOfTaggedFluidNodes[CollisionTemplate::Default],
-                    para->getParH(level)->numberOfTaggedFluidNodes[CollisionTemplate::Border],
+                    para->getParH(level)->numberOfTaggedFluidNodes[CollisionTemplate::SubDomainBorder],
                     para->getParH(level)->numberOfTaggedFluidNodes[CollisionTemplate::WriteMacroVars],
                     para->getParH(level)->numberOfTaggedFluidNodes[CollisionTemplate::ApplyBodyForce],
                     para->getParH(level)->numberOfTaggedFluidNodes[CollisionTemplate::AllFeatures]    );        
@@ -171,8 +177,8 @@ void GridGenerator::tagFluidNodeIndices(std::vector<uint> taggedFluidNodeIndices
             builder->addFluidNodeIndicesAllFeatures( taggedFluidNodeIndices, level );
             break;
         case CollisionTemplate::Default:
-        case CollisionTemplate::Border:
-            throw std::runtime_error("Cannot tag fluid nodes as Default or Border!");
+        case CollisionTemplate::SubDomainBorder:
+            throw std::runtime_error("Cannot tag fluid nodes as Default or SubDomainBorder!");
         default:
             throw std::runtime_error("Tagging fluid nodes with invald tag!");
             break;
@@ -336,23 +342,23 @@ void GridGenerator::allocArrays_BoundaryValues()
             cudaMemoryManager->cudaAllocPrecursorBC(level);
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             builder->getPrecursorValues(
-                    para->getParH(level)->precursorBC.planeNeighborNT, para->getParH(level)->precursorBC.planeNeighborNB, 
-                    para->getParH(level)->precursorBC.planeNeighborST, para->getParH(level)->precursorBC.planeNeighborSB, 
-                    para->getParH(level)->precursorBC.weightsNT, para->getParH(level)->precursorBC.weightsNB, 
-                    para->getParH(level)->precursorBC.weightsST, para->getParH(level)->precursorBC.weightsSB, 
-                    para->getParH(level)->precursorBC.k, para->getParH(level)->velocityReader, para->getParH(level)->precursorBC.numberOfPrecursorNodes, 
-                    para->getParH(level)->precursorBC.numberOfQuantities, para->getParH(level)->precursorBC.nTRead, 
+                    para->getParH(level)->precursorBC.planeNeighbor0PP, para->getParH(level)->precursorBC.planeNeighbor0PM, 
+                    para->getParH(level)->precursorBC.planeNeighbor0MP, para->getParH(level)->precursorBC.planeNeighbor0MM, 
+                    para->getParH(level)->precursorBC.weights0PP, para->getParH(level)->precursorBC.weights0PM, 
+                    para->getParH(level)->precursorBC.weights0MP, para->getParH(level)->precursorBC.weights0MM, 
+                    para->getParH(level)->precursorBC.k, para->getParH(level)->transientBCInputFileReader, para->getParH(level)->precursorBC.numberOfPrecursorNodes, 
+                    para->getParH(level)->precursorBC.numberOfQuantities, para->getParH(level)->precursorBC.timeStepsBetweenReads, 
                     para->getParH(level)->precursorBC.velocityX, para->getParH(level)->precursorBC.velocityY, para->getParH(level)->precursorBC.velocityZ,
                     level);
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             para->getParD(level)->precursorBC.numberOfPrecursorNodes = para->getParH(level)->precursorBC.numberOfPrecursorNodes;
             para->getParD(level)->precursorBC.numberOfQuantities = para->getParH(level)->precursorBC.numberOfQuantities;
-            para->getParD(level)->precursorBC.nTRead = para->getParH(level)->precursorBC.nTRead;
+            para->getParD(level)->precursorBC.timeStepsBetweenReads = para->getParH(level)->precursorBC.timeStepsBetweenReads;
             para->getParD(level)->precursorBC.velocityX = para->getParH(level)->precursorBC.velocityX;
             para->getParD(level)->precursorBC.velocityY = para->getParH(level)->precursorBC.velocityY;
             para->getParD(level)->precursorBC.velocityZ = para->getParH(level)->precursorBC.velocityZ;
 
-            for(auto reader : para->getParH(level)->velocityReader)
+            for(auto reader : para->getParH(level)->transientBCInputFileReader)
             {
                 if(reader->getNumberOfQuantities() != para->getParD(level)->precursorBC.numberOfQuantities) throw std::runtime_error("Number of quantities in reader and number of quantities needed for precursor don't match!");
             }
@@ -361,7 +367,7 @@ void GridGenerator::allocArrays_BoundaryValues()
             cudaMemoryManager->cudaAllocPrecursorData(level);
 
             // read first timestep of precursor into next and copy to next on device
-            for(auto reader : para->getParH(level)->velocityReader)
+            for(auto reader : para->getParH(level)->transientBCInputFileReader)
             {   
                 reader->getNextData(para->getParH(level)->precursorBC.next, para->getParH(level)->precursorBC.numberOfPrecursorNodes, 0);
             }
@@ -374,8 +380,8 @@ void GridGenerator::allocArrays_BoundaryValues()
             para->getParD(level)->precursorBC.next = tmp;
 
             //read second timestep of precursor into next and copy next to device
-            real nextTime = para->getParD(level)->precursorBC.nTRead*pow(2,-((real)level))*para->getTimeRatio();
-            for(auto reader : para->getParH(level)->velocityReader)
+            real nextTime = para->getParD(level)->precursorBC.timeStepsBetweenReads*pow(2,-((real)level))*para->getTimeRatio();
+            for(auto reader : para->getParH(level)->transientBCInputFileReader)
             {   
                 reader->getNextData(para->getParH(level)->precursorBC.next, para->getParH(level)->precursorBC.numberOfPrecursorNodes, nextTime);
             }
@@ -391,7 +397,7 @@ void GridGenerator::allocArrays_BoundaryValues()
             para->getParD(level)->precursorBC.next = tmp;
 
             //start usual cycle of loading, i.e. read velocities of timestep after current and copy asynchronously to device
-            for(auto reader : para->getParH(level)->velocityReader)
+            for(auto reader : para->getParH(level)->transientBCInputFileReader)
             {   
                 reader->getNextData(para->getParH(level)->precursorBC.next, para->getParH(level)->precursorBC.numberOfPrecursorNodes, 2*nextTime);
             }
@@ -1201,9 +1207,9 @@ void GridGenerator::allocArrays_OffsetScale()
         
         if (para->getUseStreams() || para->getNumprocs() > 1) {
             // split fine-to-coarse indices into border and bulk
-            indexRearrangement->splitFineToCoarseIntoBorderAndBulk(level);
+            interpolationGrouper->splitFineToCoarseIntoBorderAndBulk(level);
             // split coarse-to-fine indices into border and bulk
-            indexRearrangement->splitCoarseToFineIntoBorderAndBulk(level);
+            interpolationGrouper->splitCoarseToFineIntoBorderAndBulk(level);
         }
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //copy

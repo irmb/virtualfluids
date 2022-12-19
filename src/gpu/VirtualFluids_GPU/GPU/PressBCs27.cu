@@ -2945,135 +2945,6 @@ __global__ void QPressNoRhoDevice27( real* rhoBC,
    f[DIR_MPM] = (dist.f[DIR_MPM])[kbnw ];
    //////////////////////////////////////////////////////////////////////////
 
-   //real vx1, vx2, vx3, drho;
-   //real vx1, vx2, vx3, drho, drho1;
-   //////////////////////////////////////////////////////////////////////////
-   ////Dichte
-   //   drho1  =  f1_TSE + f1_TNW + f1_TNE + f1_TSW + f1_BSE + f1_BNW + f1_BNE + f1_BSW +
-   //             f1_BN + f1_TS + f1_TN + f1_BS + f1_BE + f1_TW + f1_TE + f1_BW + f1_SE + f1_NW + f1_NE + f1_SW + 
-   //             f1_T + f1_B + f1_N + f1_S + f1_E + f1_W + ((D.f[DIR_000])[k1zero]); 
-   //   drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
-   //             f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-   //             f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[DIR_000])[kzero]); 
-
-   //////////////////////////////////////////////////////////////////////////
-   ////Ux
-
-   //vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
-   //               ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
-   //               (f_E - f_W)) /(one + drho); 
-
-
-   //vx2    =   ((-(f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
-   //               ((f_BN - f_TS)   + (f_TN - f_BS))    + (-(f_SE - f_NW)  + (f_NE - f_SW)) +
-   //               (f_N - f_S)) /(one + drho); 
-
-   //vx3    =   (((f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) + (f_TSW - f_BNE)) +
-   //               (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
-   //               (f_T - f_B)) /(one + drho); 
-
-
-   //real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
-
-   //////////////////////////////////////////////////////////////////////////
-	////real omega = om1;
-   //   real cusq  = c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
-   //   //////////////////////////////////////////////////////////////////////////
-   ////T�st MK
-   ////if(vx1 < zero) vx1 = zero;
-   //   //////////////////////////////////////////////////////////////////////////
-   //   real fZERO = c8over27*  (drho1-(one + drho1)*(cusq))                                                           ;
-   //   real fE    = c2over27*  (drho1+(one + drho1)*(three*( vx1        )+c9over2*( vx1        )*( vx1        )-cusq));
-   //   real fW    = c2over27*  (drho1+(one + drho1)*(three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cusq));
-   //   real fN    = c2over27*  (drho1+(one + drho1)*(three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cusq));
-   //   real fS    = c2over27*  (drho1+(one + drho1)*(three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cusq));
-   //   real fT    = c2over27*  (drho1+(one + drho1)*(three*(         vx3)+c9over2*(         vx3)*(         vx3)-cusq));
-   //   real fB    = c2over27*  (drho1+(one + drho1)*(three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cusq));
-   //   real fNE   = c1over54*  (drho1+(one + drho1)*(three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cusq));
-   //   real fSW   = c1over54*  (drho1+(one + drho1)*(three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cusq));
-   //   real fSE   = c1over54*  (drho1+(one + drho1)*(three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cusq));
-   //   real fNW   = c1over54*  (drho1+(one + drho1)*(three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cusq));
-   //   real fTE	  /////////////////////////////////////////////////////////////
-   //with velocity
-   //if(true){//vx1 >= zero){
-      // real csMvx = one / sqrtf(three) - vx1;
-      // //real csMvy = one / sqrtf(three) - vx2;
-      // ///////////////////////////////////////////
-      // // X
-      // f_W   = f1_W   * csMvx + (one - csMvx) * f_W   ;//- c2over27  * ((drho + drho1)*c1o2-((drho + drho1)*c1o2 )*three*vx1);
-      // f_NW  = f1_NW  * csMvx + (one - csMvx) * f_NW  ;//- c1over54  * ((drho + drho1)*c1o2-((drho + drho1)*c1o2 )*three*vx1);
-      // f_SW  = f1_SW  * csMvx + (one - csMvx) * f_SW  ;//- c1over54  * ((drho + drho1)*c1o2-((drho + drho1)*c1o2 )*three*vx1);
-      // f_TW  = f1_TW  * csMvx + (one - csMvx) * f_TW  ;//- c1over54  * ((drho + drho1)*c1o2-((drho + drho1)*c1o2 )*three*vx1);
-      // f_BW  = f1_BW  * csMvx + (one - csMvx) * f_BW  ;//- c1over54  * ((drho + drho1)*c1o2-((drho + drho1)*c1o2 )*three*vx1);
-      // f_TNW = f1_TNW * csMvx + (one - csMvx) * f_TNW ;//- c1over216 * ((drho + drho1)*c1o2-((drho + drho1)*c1o2 )*three*vx1);
-      // f_TSW = f1_TSW * csMvx + (one - csMvx) * f_TSW ;//- c1over216 * ((drho + drho1)*c1o2-((drho + drho1)*c1o2 )*three*vx1);
-      // f_BNW = f1_BNW * csMvx + (one - csMvx) * f_BNW ;//- c1over216 * ((drho + drho1)*c1o2-((drho + drho1)*c1o2 )*three*vx1);
-      // f_BSW = f1_BSW * csMvx + (one - csMvx) * f_BSW ;//- c1over216 * ((drho + drho1)*c1o2-((drho + drho1)*c1o2 )*three*vx1);
-      // ///////////////////////////////////////////
-      // // Y
-      // //f_S   = f1_S   * csMvy + (one - csMvy) * f_S   ;//- c2over27  * ((drho + drho1)*c1o2-((drho + drho1)*c1o2 )*three*vx2);
-      // //f_SE  = f1_SE  * csMvy + (one - csMvy) * f_SE  ;//- c1over54  * ((drho + drho1)*c1o2-((drho + drho1)*c1o2 )*three*vx2);
-      // //f_SW  = f1_SW  * csMvy + (one - csMvy) * f_SW  ;//- c1over54  * ((drho + drho1)*c1o2-((drho + drho1)*c1o2 )*three*vx2);
-      // //f_TS  = f1_TS  * csMvy + (one - csMvy) * f_TS  ;//- c1over54  * ((drho + drho1)*c1o2-((drho + drho1)*c1o2 )*three*vx2);
-      // //f_BS  = f1_BS  * csMvy + (one - csMvy) * f_BS  ;//- c1over54  * ((drho + drho1)*c1o2-((drho + drho1)*c1o2 )*three*vx2);
-      // //f_TSE = f1_TSE * csMvy + (one - csMvy) * f_TSE ;//- c1over216 * ((drho + drho1)*c1o2-((drho + drho1)*c1o2 )*three*vx2);
-      // //f_TSW = f1_TSW * csMvy + (one - csMvy) * f_TSW ;//- c1over216 * ((drho + drho1)*c1o2-((drho + drho1)*c1o2 )*three*vx2);
-      // //f_BSE = f1_BSE * csMvy + (one - csMvy) * f_BSE ;//- c1over216 * ((drho + drho1)*c1o2-((drho + drho1)*c1o2 )*three*vx2);
-      // //f_BSW = f1_BSW * csMvy + (one - csMvy) * f_BSW ;//- c1over216 * ((drho + drho1)*c1o2-((drho + drho1)*c1o2 )*three*vx2);
-      // //f_S   = f1_S   * csMvy + (one - csMvy) * f_S;
-      // //f_SE  = f1_SE  * csMvy + (one - csMvy) * f_SE;
-      // //f_SW  = f1_SW  * csMvy + (one - csMvy) * f_SW;
-      // //f_TS  = f1_TS  * csMvy + (one - csMvy) * f_TS;
-      // //f_BS  = f1_BS  * csMvy + (one - csMvy) * f_BS;
-      // //f_TSE = f1_TSE * csMvy + (one - csMvy) * f_TSE;
-      // //f_TSW = f1_TSW * csMvy + (one - csMvy) * f_TSW;
-      // //f_BSE = f1_BSE * csMvy + (one - csMvy) * f_BSE;
-      // //f_BSW = f1_BSW * csMvy + (one - csMvy) * f_BSW;
-      // //////////////////////////////////////////////////////////////////////////
-   //}
-   //else
-   //{
-      // ///////////////////////////////////////////
-      // // X
-      // vx1   = vx1 * 0.9;
-      // f_W   = f_E   - six * c2over27  * ( vx1        );
-      // f_NW  = f_SE  - six * c1over54  * ( vx1-vx2    );
-      // f_SW  = f_NE  - six * c1over54  * ( vx1+vx2    );
-      // f_TW  = f_BE  - six * c1over54  * ( vx1    -vx3);
-      // f_BW  = f_TE  - six * c1over54  * ( vx1    +vx3);
-      // f_TNW = f_BSE - six * c1over216 * ( vx1-vx2-vx3);
-      // f_TSW = f_BNE - six * c1over216 * ( vx1+vx2-vx3);
-      // f_BNW = f_TSE - six * c1over216 * ( vx1-vx2+vx3);
-      // f_BSW = f_TNE - six * c1over216 * ( vx1+vx2+vx3);
-      // ///////////////////////////////////////////
-      // // Y
-      // //vx2   = vx2 * 0.9;
-      // //f_S   = f_N   - six * c2over27  * (     vx2    );
-      // //f_SE  = f_NW  - six * c1over54  * (-vx1+vx2    );
-      // //f_SW  = f_NE  - six * c1over54  * ( vx1+vx2    );
-      // //f_TS  = f_BN  - six * c1over54  * (     vx2-vx3);
-      // //f_BS  = f_TN  - six * c1over54  * (     vx2+vx3);
-      // //f_TSE = f_BNW - six * c1over216 * (-vx1+vx2-vx3);
-      // //f_TSW = f_BNE - six * c1over216 * ( vx1+vx2-vx3);
-      // //f_BSE = f_TNW - six * c1over216 * (-vx1+vx2+vx3);
-      // //f_BSW = f_TNE - six * c1over216 * ( vx1+vx2+vx3);
-      // ///////////////////////////////////////////
-   //}
-   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-   //   = c1over54*  (drho1+(one + drho1)*(three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cusq));
-   //   real fTN   = c1over54*  (drho1+(one + drho1)*(three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cusq));
-   //   real fBS   = c1over54*  (drho1+(one + drho1)*(three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cusq));
-   //   real fBN   = c1over54*  (drho1+(one + drho1)*(three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cusq));
-   //   real fTS   = c1over54*  (drho1+(one + drho1)*(three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cusq));
-   //   real fTNE  = c1over216* (drho1+(one + drho1)*(three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cusq));
-   //   real fBSW  = c1over216* (drho1+(one + drho1)*(three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cusq));
-   //   real fBNE  = c1over216* (drho1+(one + drho1)*(three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cusq));
-   //   real fTSW  = c1over216* (drho1+(one + drho1)*(three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cusq));
-   //   real fTSE  = c1over216* (drho1+(one + drho1)*(three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cusq));
-   //   real fBNW  = c1over216* (drho1+(one + drho1)*(three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cusq));
-   //   real fBSE  = c1over216* (drho1+(one + drho1)*(three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cusq));
-   //   real fTNW  = c1over216* (drho1+(one + drho1)*(three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cusq));
 
    real cs = c1o1 / sqrtf(c3o1);
 
@@ -3186,124 +3057,86 @@ __global__ void QPressZeroRhoOutflowDevice27(  real* rhoBC,
    if(k>=numberOfBCnodes) return;
    ////////////////////////////////////////////////////////////////////////////////
    //index
-   unsigned int KQK  = k_Q[k];
-   unsigned int kzero= KQK;
-   unsigned int ke   = KQK;
-   unsigned int kw   = neighborX[KQK];
-   unsigned int kn   = KQK;
-   unsigned int ks   = neighborY[KQK];
-   unsigned int kt   = KQK;
-   unsigned int kb   = neighborZ[KQK];
-   unsigned int ksw  = neighborY[kw];
-   unsigned int kne  = KQK;
-   unsigned int kse  = ks;
-   unsigned int knw  = kw;
-   unsigned int kbw  = neighborZ[kw];
-   unsigned int kte  = KQK;
-   unsigned int kbe  = kb;
-   unsigned int ktw  = kw;
-   unsigned int kbs  = neighborZ[ks];
-   unsigned int ktn  = KQK;
-   unsigned int kbn  = kb;
-   unsigned int kts  = ks;
-   unsigned int ktse = ks;
-   unsigned int kbnw = kbw;
-   unsigned int ktnw = kw;
-   unsigned int kbse = kbs;
-   unsigned int ktsw = ksw;
-   unsigned int kbne = kb;
-   unsigned int ktne = KQK;
-   unsigned int kbsw = neighborZ[ksw];
+
+   uint k_000 = k_Q[k];
+   uint k_M00 = neighborX[k_000];
+   uint k_0M0 = neighborY[k_000];
+   uint k_00M = neighborZ[k_000];
+   uint k_MM0 = neighborY[k_M00];
+   uint k_M0M = neighborZ[k_M00];
+   uint k_0MM = neighborZ[k_0M0];
+   uint k_MMM = neighborZ[k_MM0];
+
    ////////////////////////////////////////////////////////////////////////////////
-   //index1
-   unsigned int K1QK  = k_N[k];
-   // unsigned int k1zero= K1QK;
-   unsigned int k1e   = K1QK;
-   unsigned int k1w   = neighborX[K1QK];
-   unsigned int k1n   = K1QK;
-   unsigned int k1s   = neighborY[K1QK];
-   unsigned int k1t   = K1QK;
-   unsigned int k1b   = neighborZ[K1QK];
-   unsigned int k1sw  = neighborY[k1w];
-   unsigned int k1ne  = K1QK;
-   unsigned int k1se  = k1s;
-   unsigned int k1nw  = k1w;
-   unsigned int k1bw  = neighborZ[k1w];
-   unsigned int k1te  = K1QK;
-   unsigned int k1be  = k1b;
-   unsigned int k1tw  = k1w;
-   unsigned int k1bs  = neighborZ[k1s];
-   unsigned int k1tn  = K1QK;
-   unsigned int k1bn  = k1b;
-   unsigned int k1ts  = k1s;
-   unsigned int k1tse = k1s;
-   unsigned int k1bnw = k1bw;
-   unsigned int k1tnw = k1w;
-   unsigned int k1bse = k1bs;
-   unsigned int k1tsw = k1sw;
-   unsigned int k1bne = k1b;
-   unsigned int k1tne = K1QK;
-   unsigned int k1bsw = neighborZ[k1sw];
+   //index of neighbor
+   uint kN_000 = k_N[k];
+   uint kN_M00 = neighborX[k_000];
+   uint kN_0M0 = neighborY[k_000];
+   uint kN_00M = neighborZ[k_000];
+   uint kN_MM0 = neighborY[k_M00];
+   uint kN_M0M = neighborZ[k_M00];
+   uint kN_0MM = neighborZ[k_0M0];
+   uint kN_MMM = neighborZ[k_MM0];
    ////////////////////////////////////////////////////////////////////////////////
    Distributions27 dist;
    getPointersToDistributions(dist, distributions, numberOfLBnodes, isEvenTimestep);   
-   real f1[27], f[27];   
+   real f[27], fN[27];   
    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   f1[DIR_P00] = (dist.f[DIR_P00])[k1e   ];
-   f1[DIR_M00] = (dist.f[DIR_M00])[k1w   ];
-   f1[DIR_0P0] = (dist.f[DIR_0P0])[k1n   ];
-   f1[DIR_0M0] = (dist.f[DIR_0M0])[k1s   ];
-   f1[DIR_00P] = (dist.f[DIR_00P])[k1t   ];
-   f1[DIR_00M] = (dist.f[DIR_00M])[k1b   ];
-   f1[DIR_PP0] = (dist.f[DIR_PP0])[k1ne  ];
-   f1[DIR_MM0] = (dist.f[DIR_MM0])[k1sw  ];
-   f1[DIR_PM0] = (dist.f[DIR_PM0])[k1se  ];
-   f1[DIR_MP0] = (dist.f[DIR_MP0])[k1nw  ];
-   f1[DIR_P0P] = (dist.f[DIR_P0P])[k1te  ];
-   f1[DIR_M0M] = (dist.f[DIR_M0M])[k1bw  ];
-   f1[DIR_P0M] = (dist.f[DIR_P0M])[k1be  ];
-   f1[DIR_M0P] = (dist.f[DIR_M0P])[k1tw  ];
-   f1[DIR_0PP] = (dist.f[DIR_0PP])[k1tn  ];
-   f1[DIR_0MM] = (dist.f[DIR_0MM])[k1bs  ];
-   f1[DIR_0PM] = (dist.f[DIR_0PM])[k1bn  ];
-   f1[DIR_0MP] = (dist.f[DIR_0MP])[k1ts  ];
-   // f1[DIR_000] = (dist.f[DIR_000])[k1zero];
-   f1[DIR_PPP] = (dist.f[DIR_PPP])[k1tne ];
-   f1[DIR_MMP] = (dist.f[DIR_MMP])[k1tsw ];
-   f1[DIR_PMP] = (dist.f[DIR_PMP])[k1tse ];
-   f1[DIR_MPP] = (dist.f[DIR_MPP])[k1tnw ];
-   f1[DIR_PPM] = (dist.f[DIR_PPM])[k1bne ];
-   f1[DIR_MMM] = (dist.f[DIR_MMM])[k1bsw ];
-   f1[DIR_PMM] = (dist.f[DIR_PMM])[k1bse ];
-   f1[DIR_MPM] = (dist.f[DIR_MPM])[k1bnw ];
+   f[DIR_000] = (dist.f[DIR_000])[k_000];
+   f[DIR_P00] = (dist.f[DIR_P00])[k_000];
+   f[DIR_M00] = (dist.f[DIR_M00])[k_M00];
+   f[DIR_0P0] = (dist.f[DIR_0P0])[k_000];
+   f[DIR_0M0] = (dist.f[DIR_0M0])[k_0M0];
+   f[DIR_00P] = (dist.f[DIR_00P])[k_000];
+   f[DIR_00M] = (dist.f[DIR_00M])[k_00M];
+   f[DIR_PP0] = (dist.f[DIR_PP0])[k_000];
+   f[DIR_MM0] = (dist.f[DIR_MM0])[k_MM0];
+   f[DIR_PM0] = (dist.f[DIR_PM0])[k_0M0];
+   f[DIR_MP0] = (dist.f[DIR_MP0])[k_M00];
+   f[DIR_P0P] = (dist.f[DIR_P0P])[k_000];
+   f[DIR_M0M] = (dist.f[DIR_M0M])[k_M0M];
+   f[DIR_P0M] = (dist.f[DIR_P0M])[k_00M];
+   f[DIR_M0P] = (dist.f[DIR_M0P])[k_M00];
+   f[DIR_0PP] = (dist.f[DIR_0PP])[k_000];
+   f[DIR_0MM] = (dist.f[DIR_0MM])[k_0MM];
+   f[DIR_0PM] = (dist.f[DIR_0PM])[k_00M];
+   f[DIR_0MP] = (dist.f[DIR_0MP])[k_0M0];
+   f[DIR_PPP] = (dist.f[DIR_PPP])[k_000];
+   f[DIR_MPP] = (dist.f[DIR_MPP])[k_M00];
+   f[DIR_PMP] = (dist.f[DIR_PMP])[k_0M0];
+   f[DIR_MMP] = (dist.f[DIR_MMP])[k_MM0];
+   f[DIR_PPM] = (dist.f[DIR_PPM])[k_00M];
+   f[DIR_MPM] = (dist.f[DIR_MPM])[k_M0M];
+   f[DIR_PMM] = (dist.f[DIR_PMM])[k_0MM];
+   f[DIR_MMM] = (dist.f[DIR_MMM])[k_MMM];
    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   f[DIR_P00] = (dist.f[DIR_P00])[ke   ];
-   f[DIR_M00] = (dist.f[DIR_M00])[kw   ];
-   f[DIR_0P0] = (dist.f[DIR_0P0])[kn   ];
-   f[DIR_0M0] = (dist.f[DIR_0M0])[ks   ];
-   f[DIR_00P] = (dist.f[DIR_00P])[kt   ];
-   f[DIR_00M] = (dist.f[DIR_00M])[kb   ];
-   f[DIR_PP0] = (dist.f[DIR_PP0])[kne  ];
-   f[DIR_MM0] = (dist.f[DIR_MM0])[ksw  ];
-   f[DIR_PM0] = (dist.f[DIR_PM0])[kse  ];
-   f[DIR_MP0] = (dist.f[DIR_MP0])[knw  ];
-   f[DIR_P0P] = (dist.f[DIR_P0P])[kte  ];
-   f[DIR_M0M] = (dist.f[DIR_M0M])[kbw  ];
-   f[DIR_P0M] = (dist.f[DIR_P0M])[kbe  ];
-   f[DIR_M0P] = (dist.f[DIR_M0P])[ktw  ];
-   f[DIR_0PP] = (dist.f[DIR_0PP])[ktn  ];
-   f[DIR_0MM] = (dist.f[DIR_0MM])[kbs  ];
-   f[DIR_0PM] = (dist.f[DIR_0PM])[kbn  ];
-   f[DIR_0MP] = (dist.f[DIR_0MP])[kts  ];
-   f[DIR_000] = (dist.f[DIR_000])[kzero];
-   f[DIR_PPP] = (dist.f[DIR_PPP])[ktne ];
-   f[DIR_MMP] = (dist.f[DIR_MMP])[ktsw ];
-   f[DIR_PMP] = (dist.f[DIR_PMP])[ktse ];
-   f[DIR_MPP] = (dist.f[DIR_MPP])[ktnw ];
-   f[DIR_PPM] = (dist.f[DIR_PPM])[kbne ];
-   f[DIR_MMM] = (dist.f[DIR_MMM])[kbsw ];
-   f[DIR_PMM] = (dist.f[DIR_PMM])[kbse ];
-   f[DIR_MPM] = (dist.f[DIR_MPM])[kbnw ];
+   fN[DIR_000] = (dist.f[DIR_000])[kN_000];
+   fN[DIR_P00] = (dist.f[DIR_P00])[kN_000];
+   fN[DIR_M00] = (dist.f[DIR_M00])[kN_M00];
+   fN[DIR_0P0] = (dist.f[DIR_0P0])[kN_000];
+   fN[DIR_0M0] = (dist.f[DIR_0M0])[kN_0M0];
+   fN[DIR_00P] = (dist.f[DIR_00P])[kN_000];
+   fN[DIR_00M] = (dist.f[DIR_00M])[kN_00M];
+   fN[DIR_PP0] = (dist.f[DIR_PP0])[kN_000];
+   fN[DIR_MM0] = (dist.f[DIR_MM0])[kN_MM0];
+   fN[DIR_PM0] = (dist.f[DIR_PM0])[kN_0M0];
+   fN[DIR_MP0] = (dist.f[DIR_MP0])[kN_M00];
+   fN[DIR_P0P] = (dist.f[DIR_P0P])[kN_000];
+   fN[DIR_M0M] = (dist.f[DIR_M0M])[kN_M0M];
+   fN[DIR_P0M] = (dist.f[DIR_P0M])[kN_00M];
+   fN[DIR_M0P] = (dist.f[DIR_M0P])[kN_M00];
+   fN[DIR_0PP] = (dist.f[DIR_0PP])[kN_000];
+   fN[DIR_0MM] = (dist.f[DIR_0MM])[kN_0MM];
+   fN[DIR_0PM] = (dist.f[DIR_0PM])[kN_00M];
+   fN[DIR_0MP] = (dist.f[DIR_0MP])[kN_0M0];
+   fN[DIR_PPP] = (dist.f[DIR_PPP])[kN_000];
+   fN[DIR_MPP] = (dist.f[DIR_MPP])[kN_M00];
+   fN[DIR_PMP] = (dist.f[DIR_PMP])[kN_0M0];
+   fN[DIR_MMP] = (dist.f[DIR_MMP])[kN_MM0];
+   fN[DIR_PPM] = (dist.f[DIR_PPM])[kN_00M];
+   fN[DIR_MPM] = (dist.f[DIR_MPM])[kN_M0M];
+   fN[DIR_PMM] = (dist.f[DIR_PMM])[kN_0MM];
+   fN[DIR_MMM] = (dist.f[DIR_MMM])[kN_MMM];
    //////////////////////////////////////////////////////////////////////////
    real drho = vf::lbm::getDensity(f);
    
@@ -3316,75 +3149,75 @@ __global__ void QPressZeroRhoOutflowDevice27(  real* rhoBC,
    switch(direction)
    {
       case MZZ:
-         (dist.f[DIR_P00])[ke   ] = computeOutflowDistribution(f, f1, DIR_P00  , rhoCorrection, cs, c2o27);
-         (dist.f[DIR_PM0])[kse  ] = computeOutflowDistribution(f, f1, DIR_PM0, rhoCorrection, cs, c1o54);
-         (dist.f[DIR_PP0])[kne  ] = computeOutflowDistribution(f, f1, DIR_PP0, rhoCorrection, cs, c1o54);
-         (dist.f[DIR_P0M])[kbe  ] = computeOutflowDistribution(f, f1, DIR_P0M, rhoCorrection, cs, c1o54);
-         (dist.f[DIR_P0P])[kte  ] = computeOutflowDistribution(f, f1, DIR_P0P, rhoCorrection, cs, c1o54);
-         (dist.f[DIR_PMP])[ktse ] = computeOutflowDistribution(f, f1, DIR_PMP, rhoCorrection, cs, c1o216);
-         (dist.f[DIR_PPP])[ktne ] = computeOutflowDistribution(f, f1, DIR_PPP, rhoCorrection, cs, c1o216);
-         (dist.f[DIR_PMM])[kbse ] = computeOutflowDistribution(f, f1, DIR_PMM, rhoCorrection, cs, c1o216);
-         (dist.f[DIR_PPM])[kbne ] = computeOutflowDistribution(f, f1, DIR_PPM, rhoCorrection, cs, c1o216);
+         (dist.f[DIR_P00])[k_000] = computeOutflowDistribution(f, fN, DIR_P00  , rhoCorrection, cs, c2o27);
+         (dist.f[DIR_PM0])[k_0M0] = computeOutflowDistribution(f, fN, DIR_PM0, rhoCorrection, cs, c1o54);
+         (dist.f[DIR_PP0])[k_000] = computeOutflowDistribution(f, fN, DIR_PP0, rhoCorrection, cs, c1o54);
+         (dist.f[DIR_P0M])[k_00M] = computeOutflowDistribution(f, fN, DIR_P0M, rhoCorrection, cs, c1o54);
+         (dist.f[DIR_P0P])[k_000] = computeOutflowDistribution(f, fN, DIR_P0P, rhoCorrection, cs, c1o54);
+         (dist.f[DIR_PMP])[k_0M0] = computeOutflowDistribution(f, fN, DIR_PMP, rhoCorrection, cs, c1o216);
+         (dist.f[DIR_PPP])[k_000] = computeOutflowDistribution(f, fN, DIR_PPP, rhoCorrection, cs, c1o216);
+         (dist.f[DIR_PMM])[k_0MM] = computeOutflowDistribution(f, fN, DIR_PMM, rhoCorrection, cs, c1o216);
+         (dist.f[DIR_PPM])[k_00M] = computeOutflowDistribution(f, fN, DIR_PPM, rhoCorrection, cs, c1o216);
          break;
 
       case PZZ:
-         (dist.f[DIR_M00])[kw   ] = computeOutflowDistribution(f, f1, DIR_M00, rhoCorrection, cs, c2o27);
-         (dist.f[DIR_MM0])[ksw  ] = computeOutflowDistribution(f, f1, DIR_MM0, rhoCorrection, cs, c1o54);
-         (dist.f[DIR_MP0])[knw  ] = computeOutflowDistribution(f, f1, DIR_MP0, rhoCorrection, cs, c1o54);
-         (dist.f[DIR_M0M])[kbw  ] = computeOutflowDistribution(f, f1, DIR_M0M, rhoCorrection, cs, c1o54);
-         (dist.f[DIR_M0P])[ktw  ] = computeOutflowDistribution(f, f1, DIR_M0P, rhoCorrection, cs, c1o54);
-         (dist.f[DIR_MMP])[ktsw ] = computeOutflowDistribution(f, f1, DIR_MMP, rhoCorrection, cs, c1o216);
-         (dist.f[DIR_MPP])[ktnw ] = computeOutflowDistribution(f, f1, DIR_MPP, rhoCorrection, cs, c1o216);
-         (dist.f[DIR_MMM])[kbsw ] = computeOutflowDistribution(f, f1, DIR_MMM, rhoCorrection, cs, c1o216);
-         (dist.f[DIR_MPM])[kbnw ] = computeOutflowDistribution(f, f1, DIR_MPM, rhoCorrection, cs, c1o216);
+         (dist.f[DIR_M00])[k_M00] = computeOutflowDistribution(f, fN, DIR_M00, rhoCorrection, cs, c2o27);
+         (dist.f[DIR_MM0])[k_MM0] = computeOutflowDistribution(f, fN, DIR_MM0, rhoCorrection, cs, c1o54);
+         (dist.f[DIR_MP0])[k_M00] = computeOutflowDistribution(f, fN, DIR_MP0, rhoCorrection, cs, c1o54);
+         (dist.f[DIR_M0M])[k_M0M] = computeOutflowDistribution(f, fN, DIR_M0M, rhoCorrection, cs, c1o54);
+         (dist.f[DIR_M0P])[k_M00] = computeOutflowDistribution(f, fN, DIR_M0P, rhoCorrection, cs, c1o54);
+         (dist.f[DIR_MMP])[k_MM0] = computeOutflowDistribution(f, fN, DIR_MMP, rhoCorrection, cs, c1o216);
+         (dist.f[DIR_MPP])[k_M00] = computeOutflowDistribution(f, fN, DIR_MPP, rhoCorrection, cs, c1o216);
+         (dist.f[DIR_MMM])[k_MMM] = computeOutflowDistribution(f, fN, DIR_MMM, rhoCorrection, cs, c1o216);
+         (dist.f[DIR_MPM])[k_M0M] = computeOutflowDistribution(f, fN, DIR_MPM, rhoCorrection, cs, c1o216);
          break;
 
       case ZMZ:
-         (dist.f[DIR_0P0])[kn   ] = computeOutflowDistribution(f, f1, DIR_0P0, rhoCorrection, cs, c2o27);
-         (dist.f[DIR_PP0])[kne  ] = computeOutflowDistribution(f, f1, DIR_PP0, rhoCorrection, cs, c1o54);
-         (dist.f[DIR_MP0])[knw  ] = computeOutflowDistribution(f, f1, DIR_MP0, rhoCorrection, cs, c1o54);
-         (dist.f[DIR_0PP])[ktn  ] = computeOutflowDistribution(f, f1, DIR_0PP, rhoCorrection, cs, c1o54);
-         (dist.f[DIR_0PM])[kbn  ] = computeOutflowDistribution(f, f1, DIR_0PM, rhoCorrection, cs, c1o54);
-         (dist.f[DIR_PPP])[ktne ] = computeOutflowDistribution(f, f1, DIR_PPP, rhoCorrection, cs, c1o216);
-         (dist.f[DIR_MPP])[ktnw ] = computeOutflowDistribution(f, f1, DIR_MPP, rhoCorrection, cs, c1o216);
-         (dist.f[DIR_PPM])[kbne ] = computeOutflowDistribution(f, f1, DIR_PPM, rhoCorrection, cs, c1o216);
-         (dist.f[DIR_MPM])[kbnw ] = computeOutflowDistribution(f, f1, DIR_MPM, rhoCorrection, cs, c1o216);
+         (dist.f[DIR_0P0])[k_000] = computeOutflowDistribution(f, fN, DIR_0P0, rhoCorrection, cs, c2o27);
+         (dist.f[DIR_PP0])[k_000] = computeOutflowDistribution(f, fN, DIR_PP0, rhoCorrection, cs, c1o54);
+         (dist.f[DIR_MP0])[k_M00] = computeOutflowDistribution(f, fN, DIR_MP0, rhoCorrection, cs, c1o54);
+         (dist.f[DIR_0PP])[k_000] = computeOutflowDistribution(f, fN, DIR_0PP, rhoCorrection, cs, c1o54);
+         (dist.f[DIR_0PM])[k_00M] = computeOutflowDistribution(f, fN, DIR_0PM, rhoCorrection, cs, c1o54);
+         (dist.f[DIR_PPP])[k_000] = computeOutflowDistribution(f, fN, DIR_PPP, rhoCorrection, cs, c1o216);
+         (dist.f[DIR_MPP])[k_M00] = computeOutflowDistribution(f, fN, DIR_MPP, rhoCorrection, cs, c1o216);
+         (dist.f[DIR_PPM])[k_00M] = computeOutflowDistribution(f, fN, DIR_PPM, rhoCorrection, cs, c1o216);
+         (dist.f[DIR_MPM])[k_M0M] = computeOutflowDistribution(f, fN, DIR_MPM, rhoCorrection, cs, c1o216);
          break;  
 
       case ZPZ:   
-         (dist.f[DIR_0M0])[ks   ] =computeOutflowDistribution(f, f1, DIR_0M0, rhoCorrection, cs, c2o27);
-         (dist.f[DIR_PM0])[kse  ] =computeOutflowDistribution(f, f1, DIR_PM0, rhoCorrection, cs, c1o54);
-         (dist.f[DIR_MM0])[ksw  ] =computeOutflowDistribution(f, f1, DIR_MM0, rhoCorrection, cs, c1o54);
-         (dist.f[DIR_0MP])[kts  ] =computeOutflowDistribution(f, f1, DIR_0MP, rhoCorrection, cs, c1o54);
-         (dist.f[DIR_0MM])[kbs  ] =computeOutflowDistribution(f, f1, DIR_0MM, rhoCorrection, cs, c1o54);
-         (dist.f[DIR_PMP])[ktse ] =computeOutflowDistribution(f, f1, DIR_PMP, rhoCorrection, cs, c1o216);
-         (dist.f[DIR_MMP])[ktsw ] =computeOutflowDistribution(f, f1, DIR_MMP, rhoCorrection, cs, c1o216);
-         (dist.f[DIR_PMM])[kbse ] =computeOutflowDistribution(f, f1, DIR_PMM, rhoCorrection, cs, c1o216);
-         (dist.f[DIR_MMM])[kbsw ] =computeOutflowDistribution(f, f1, DIR_MMM, rhoCorrection, cs, c1o216);
+         (dist.f[DIR_0M0])[k_0M0] =computeOutflowDistribution(f, fN, DIR_0M0, rhoCorrection, cs, c2o27);
+         (dist.f[DIR_PM0])[k_0M0] =computeOutflowDistribution(f, fN, DIR_PM0, rhoCorrection, cs, c1o54);
+         (dist.f[DIR_MM0])[k_MM0] =computeOutflowDistribution(f, fN, DIR_MM0, rhoCorrection, cs, c1o54);
+         (dist.f[DIR_0MP])[k_0M0] =computeOutflowDistribution(f, fN, DIR_0MP, rhoCorrection, cs, c1o54);
+         (dist.f[DIR_0MM])[k_0MM] =computeOutflowDistribution(f, fN, DIR_0MM, rhoCorrection, cs, c1o54);
+         (dist.f[DIR_PMP])[k_0M0] =computeOutflowDistribution(f, fN, DIR_PMP, rhoCorrection, cs, c1o216);
+         (dist.f[DIR_MMP])[k_MM0] =computeOutflowDistribution(f, fN, DIR_MMP, rhoCorrection, cs, c1o216);
+         (dist.f[DIR_PMM])[k_0MM] =computeOutflowDistribution(f, fN, DIR_PMM, rhoCorrection, cs, c1o216);
+         (dist.f[DIR_MMM])[k_MMM] =computeOutflowDistribution(f, fN, DIR_MMM, rhoCorrection, cs, c1o216);
          break;
 
       case ZZM:
-         (dist.f[DIR_00P])[kt   ] = computeOutflowDistribution(f, f1, DIR_00P, rhoCorrection, cs, c2o27);
-         (dist.f[DIR_P0P])[kte  ] = computeOutflowDistribution(f, f1, DIR_P0P, rhoCorrection, cs, c1o54);
-         (dist.f[DIR_M0P])[ktw  ] = computeOutflowDistribution(f, f1, DIR_M0P, rhoCorrection, cs, c1o54);
-         (dist.f[DIR_0PP])[ktn  ] = computeOutflowDistribution(f, f1, DIR_0PP, rhoCorrection, cs, c1o54);
-         (dist.f[DIR_0MP])[kts  ] = computeOutflowDistribution(f, f1, DIR_0MP, rhoCorrection, cs, c1o54);
-         (dist.f[DIR_PPP])[ktne ] = computeOutflowDistribution(f, f1, DIR_PPP, rhoCorrection, cs, c1o216);
-         (dist.f[DIR_MPP])[ktnw ] = computeOutflowDistribution(f, f1, DIR_MPP, rhoCorrection, cs, c1o216);
-         (dist.f[DIR_PMP])[ktse ] = computeOutflowDistribution(f, f1, DIR_PMP, rhoCorrection, cs, c1o216);
-         (dist.f[DIR_MMP])[ktsw ] = computeOutflowDistribution(f, f1, DIR_MMP, rhoCorrection, cs, c1o216); 
+         (dist.f[DIR_00P])[k_000] = computeOutflowDistribution(f, fN, DIR_00P, rhoCorrection, cs, c2o27);
+         (dist.f[DIR_P0P])[k_000] = computeOutflowDistribution(f, fN, DIR_P0P, rhoCorrection, cs, c1o54);
+         (dist.f[DIR_M0P])[k_M00] = computeOutflowDistribution(f, fN, DIR_M0P, rhoCorrection, cs, c1o54);
+         (dist.f[DIR_0PP])[k_000] = computeOutflowDistribution(f, fN, DIR_0PP, rhoCorrection, cs, c1o54);
+         (dist.f[DIR_0MP])[k_0M0] = computeOutflowDistribution(f, fN, DIR_0MP, rhoCorrection, cs, c1o54);
+         (dist.f[DIR_PPP])[k_000] = computeOutflowDistribution(f, fN, DIR_PPP, rhoCorrection, cs, c1o216);
+         (dist.f[DIR_MPP])[k_M00] = computeOutflowDistribution(f, fN, DIR_MPP, rhoCorrection, cs, c1o216);
+         (dist.f[DIR_PMP])[k_0M0] = computeOutflowDistribution(f, fN, DIR_PMP, rhoCorrection, cs, c1o216);
+         (dist.f[DIR_MMP])[k_MM0] = computeOutflowDistribution(f, fN, DIR_MMP, rhoCorrection, cs, c1o216); 
          break;
 
       case ZZP:
-         (dist.f[DIR_00M])[kb   ] = computeOutflowDistribution(f, f1, DIR_00M, rhoCorrection, cs, c2o27);
-         (dist.f[DIR_P0M])[kbe  ] = computeOutflowDistribution(f, f1, DIR_P0M, rhoCorrection, cs, c1o54);
-         (dist.f[DIR_M0M])[kbw  ] = computeOutflowDistribution(f, f1, DIR_M0M, rhoCorrection, cs, c1o54);
-         (dist.f[DIR_0PM])[kbn  ] = computeOutflowDistribution(f, f1, DIR_0PM, rhoCorrection, cs, c1o54);
-         (dist.f[DIR_0MM])[kbs  ] = computeOutflowDistribution(f, f1, DIR_0MM, rhoCorrection, cs, c1o54);
-         (dist.f[DIR_PPM])[kbne ] = computeOutflowDistribution(f, f1, DIR_PPM, rhoCorrection, cs, c1o216);
-         (dist.f[DIR_MPM])[kbnw ] = computeOutflowDistribution(f, f1, DIR_MPM, rhoCorrection, cs, c1o216);
-         (dist.f[DIR_PMM])[kbse ] = computeOutflowDistribution(f, f1, DIR_PMM, rhoCorrection, cs, c1o216);
-         (dist.f[DIR_MMM])[kbsw ] = computeOutflowDistribution(f, f1, DIR_MMM, rhoCorrection, cs, c1o216);     
+         (dist.f[DIR_00M])[k_00M] = computeOutflowDistribution(f, fN, DIR_00M, rhoCorrection, cs, c2o27);
+         (dist.f[DIR_P0M])[k_00M] = computeOutflowDistribution(f, fN, DIR_P0M, rhoCorrection, cs, c1o54);
+         (dist.f[DIR_M0M])[k_M0M] = computeOutflowDistribution(f, fN, DIR_M0M, rhoCorrection, cs, c1o54);
+         (dist.f[DIR_0PM])[k_00M] = computeOutflowDistribution(f, fN, DIR_0PM, rhoCorrection, cs, c1o54);
+         (dist.f[DIR_0MM])[k_0MM] = computeOutflowDistribution(f, fN, DIR_0MM, rhoCorrection, cs, c1o54);
+         (dist.f[DIR_PPM])[k_00M] = computeOutflowDistribution(f, fN, DIR_PPM, rhoCorrection, cs, c1o216);
+         (dist.f[DIR_MPM])[k_M0M] = computeOutflowDistribution(f, fN, DIR_MPM, rhoCorrection, cs, c1o216);
+         (dist.f[DIR_PMM])[k_0MM] = computeOutflowDistribution(f, fN, DIR_PMM, rhoCorrection, cs, c1o216);
+         (dist.f[DIR_MMM])[k_MMM] = computeOutflowDistribution(f, fN, DIR_MMM, rhoCorrection, cs, c1o216);     
          break;
       default:
          break;

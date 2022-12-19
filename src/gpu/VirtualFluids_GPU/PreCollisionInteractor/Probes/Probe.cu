@@ -199,7 +199,7 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
     this->velocityRatio      = std::bind(&Parameter::getScaledVelocityRatio,        para, _1); 
     this->densityRatio       = std::bind(&Parameter::getScaledDensityRatio,         para, _1);
     this->forceRatio         = std::bind(&Parameter::getScaledForceRatio,           para, _1);
-    this->stressRatio        = std::bind(&Parameter::getScaledPressureRatio,        para, _1);
+    this->stressRatio        = std::bind(&Parameter::getScaledStressRatio,          para, _1);
     this->viscosityRatio     = std::bind(&Parameter::getScaledViscosityRatio,       para, _1);
     this->nondimensional     = std::bind(&Probe::getNondimensionalConversionFactor, this, _1);
 
@@ -407,9 +407,10 @@ void Probe::writeParallelFile(Parameter* para, int t)
     int t_write = this->fileNameLU ? t: t/this->tOut; 
     std::string filename = this->outputPath + "/" + this->makeParallelFileName(para->getMyProcessID(), t_write);
 
+    std::vector<std::string> nodedatanames = this->getVarNames();
     std::vector<std::string> cellNames;
 
-    getWriter()->writeParallelFile(filename, fileNamesForCollectionFile, varNames, cellNames);
+    getWriter()->writeParallelFile(filename, fileNamesForCollectionFile, nodedatanames, cellNames);
 
     this->fileNamesForCollectionFile.clear();
 }

@@ -1,3 +1,37 @@
+r"""
+=======================================================================================
+ ____          ____    __    ______     __________   __      __       __        __
+ \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+      \    \  |    |   ________________________________________________________________
+       \    \ |    |  |  ______________________________________________________________|
+        \    \|    |  |  |         __          __     __     __     ______      _______
+         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+
+  This file is part of VirtualFluids. VirtualFluids is free software: you can
+  redistribute it and/or modify it under the terms of the GNU General Public
+  License as published by the Free Software Foundation, either version 3 of
+  the License, or (at your option) any later version.
+
+  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+  for more details.
+
+  You should have received a copy of the GNU General Public License along
+  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+
+! \file actuator_line.py
+! \ingroup actuator_line
+! \author Henry Korb, Henrik Asmuth
+=======================================================================================
+"""
 #%%
 import numpy as np
 from pathlib import Path
@@ -98,7 +132,7 @@ para.set_velocity_ratio(dx/dt)
 para.set_viscosity_ratio(dx*dx/dt)
 para.set_density_ratio(1.0)
 
-para.set_main_kernel("TurbulentViscosityCumulantK17CompChim")
+para.set_main_kernel("CumulantK17")
 
 para.set_timestep_start_out(int(t_start_out/dt))
 para.set_timestep_out(int(t_out/dt))
@@ -108,8 +142,8 @@ para.set_is_body_force(True)
 tm_factory = gpu.TurbulenceModelFactory(para)
 tm_factory.read_config_file(config)
 #%%
-grid_scaling_factory = gpu.GridScalingFactor()
-grid_scaling_factory.set_grid_scaling_factory(gpu.GridScaling.ScaleCompressible)
+grid_scaling_factory = gpu.GridScalingFactory()
+grid_scaling_factory.set_scaling_factory(gpu.GridScaling.ScaleCompressible)
 
 grid_builder.add_coarse_grid(0.0, 0.0, 0.0, *length, dx)
 grid_builder.set_periodic_boundary_condition(not read_precursor, True, False)
@@ -120,7 +154,7 @@ if read_precursor:
     precursor = gpu.create_file_collection(precursor_directory + "/precursor", gpu.FileType.VTK)
     grid_builder.set_precursor_boundary_condition(gpu.SideType.MX, precursor, nTReadPrecursor, 0, 0, 0)
 
-grid_builder.set_stress_boundary_condition(gpu.SideType.MZ, 0, 0, 1, sampling_offset, z0/dx)
+grid_builder.set_stress_boundary_condition(gpu.SideType.MZ, 0, 0, 1, sampling_offset, z0, dx)
 para.set_has_wall_model_monitor(True)
 grid_builder.set_slip_boundary_condition(gpu.SideType.PZ, 0, 0, -1)
 
@@ -146,12 +180,15 @@ para.set_initial_condition_perturbed_log_law(u_star, z0, length[0], length[2], b
 
 #%%
 turb_pos = np.array([3,3,3])*turbine_diameter
-epsilon = 5
+epsilon = 1.5*dx
 density = 1.225
 level = 0
 n_blades = 3
 n_blade_nodes = 32
-alm = gpu.ActuatorLine(n_blades, density, n_blade_nodes, epsilon, *turb_pos, turbine_diameter, level, dt, dx, True)
+omega = 1
+blade_radii = np.arange(n_blade_nodes, dtype=np.float32)/(0.5*turbine_diameter)
+alm = gpu.ActuatorFarm(n_blades, density, n_blade_nodes, epsilon, level, dt, dx, True)
+alm.add_turbine(turb_pos[0],turb_pos[1],turb_pos[2], turbine_diameter, omega, 0, 0, blade_radii)
 para.add_actuator(alm)
 #%%
 planar_average_probe = gpu.probes.PlanarAverageProbe("horizontalPlanes", para.get_output_path(), 0, int(t_start_tmp_averaging/dt), int(t_averaging/dt) , int(t_start_out_probe/dt), int(t_out_probe/dt), 'z')
@@ -180,7 +217,7 @@ cuda_memory_manager = gpu.CudaMemoryManager(para)
 grid_generator = gpu.GridProvider.make_grid_generator(grid_builder, para, cuda_memory_manager, communicator)
 #%%
 #%%
-sim = gpu.Simulation(para, cuda_memory_manager, communicator, grid_generator, bc_factory, tm_factory)
+sim = gpu.Simulation(para, cuda_memory_manager, communicator, grid_generator, bc_factory, tm_factory, grid_scaling_factory)
 #%%
 sim.run()
 MPI.Finalize()

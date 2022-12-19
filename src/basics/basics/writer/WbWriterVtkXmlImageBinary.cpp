@@ -28,7 +28,7 @@
 //
 //! \file WbWriterVtkXmlImageBinary.cpp
 //! \ingroup writer
-//! \author Soeren Freudiger, Sebastian Geller
+//! \author Soeren Freudiger, Sebastian Geller, Henry Korb, Henrik Asmuth
 //=======================================================================================
 #include <basics/utilities/UbLogger.h>
 #include <basics/writer/WbWriterVtkXmlImageBinary.h>

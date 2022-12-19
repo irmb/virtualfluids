@@ -76,6 +76,7 @@ protected:
 
 public:
     static SPtr<GridImp> makeShared(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, std::string d3Qxx, uint level);
+    virtual ~GridImp() = default;
 
 private:
     void initalNumberOfNodesAndSize();
@@ -115,7 +116,7 @@ private:
     int *sparseIndices;
 
     std::vector<uint> fluidNodeIndices;                 // run on CollisionTemplate::Default
-    std::vector<uint> fluidNodeIndicesBorder;           // run on border nodes
+    std::vector<uint> fluidNodeIndicesBorder;           // run on subdomain border nodes (CollisionTemplate::SubDomainBorder)
     std::vector<uint> fluidNodeIndicesMacroVars;        // run on CollisionTemplate::MacroVars
     std::vector<uint> fluidNodeIndicesApplyBodyForce;   // run on CollisionTemplate::ApplyBodyForce
     std::vector<uint> fluidNodeIndicesAllFeatures;      // run on CollisionTemplate::AllFeatures

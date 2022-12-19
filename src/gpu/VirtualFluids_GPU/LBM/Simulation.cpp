@@ -139,7 +139,7 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     //////////////////////////////////////////////////////////////////////////
     // CUDA streams
     if (para->getUseStreams()) {
-        para->getStreamManager()->registerStream(CudaStreamIndex::Border);
+        para->getStreamManager()->registerStream(CudaStreamIndex::SubDomainBorder);
         para->getStreamManager()->registerStream(CudaStreamIndex::Bulk);
         para->getStreamManager()->launchStreams();
         para->getStreamManager()->createCudaEvents();

@@ -861,6 +861,10 @@ real Parameter::getScaledForceRatio(int level)
 {
     return this->getForceRatio()*(level+1);
 }
+real Parameter::getScaledStressRatio(int level)
+{
+    return this->getVelocityRatio()*this->getVelocityRatio();
+}
 void Parameter::setRealX(real RealX)
 {
     ic.RealX = RealX;
@@ -1712,6 +1716,16 @@ std::shared_ptr<LBMSimulationParameter> Parameter::getParH(int level)
 {
     return parH[level];
 }
+
+const std::vector<std::shared_ptr<LBMSimulationParameter>> &Parameter::getParHallLevels()
+{
+    return parH;
+}
+const std::vector<std::shared_ptr<LBMSimulationParameter>> &Parameter::getParDallLevels()
+{
+    return parD;
+}
+
 unsigned int Parameter::getSizeMat(int level)
 {
     return parH[level]->size_Mat;

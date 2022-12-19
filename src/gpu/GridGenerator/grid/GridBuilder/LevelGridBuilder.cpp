@@ -52,7 +52,7 @@
 #include "io/QLineWriter.h"
 #include "io/SimulationFileWriter/SimulationFileWriter.h"
 
-#include "VelocitySetter/VelocitySetter.h"
+#include "TransientBCSetter/TransientBCSetter.h"
 
 #include "utilities/communication.h"
 #include "utilities/transformator/ArrowTransformator.h"
@@ -122,7 +122,7 @@ void LevelGridBuilder::setSlipGeometryBoundaryCondition(real normalX, real norma
 //=======================================================================================
 //! \brief Set stress boundary concdition using iMEM
 //! \param samplingOffset number of grid points above boundary where velocity for wall model is sampled
-//! \param z0 roghness length [m]
+//! \param z0 roughness length [m]
 //! \param dx dx of level 0 [m] 
 //!
 void LevelGridBuilder::setStressBoundaryCondition(  SideType sideType, 
@@ -131,8 +131,7 @@ void LevelGridBuilder::setStressBoundaryCondition(  SideType sideType,
 {
     for (uint level = 0; level < getNumberOfGridLevels(); level++)
     {
-        SPtr<StressBoundaryCondition> stressBoundaryCondition = StressBoundaryCondition::make(nomalX, normalY, normalZ, samplingOffset, z0/(dx*(level+1)));
-
+        SPtr<StressBoundaryCondition> stressBoundaryCondition = StressBoundaryCondition::make(nomalX, normalY, normalZ, samplingOffset, z0*pow(2.0f,level)/dx);
         auto side = SideFactory::make(sideType);
 
         stressBoundaryCondition->side = side;
@@ -251,7 +250,7 @@ void LevelGridBuilder::setNoSlipGeometryBoundaryCondition()
     }
 }
 
-void LevelGridBuilder::setPrecursorBoundaryCondition(SideType sideType, SPtr<VelocityFileCollection> fileCollection, int nTRead, 
+void LevelGridBuilder::setPrecursorBoundaryCondition(SideType sideType, SPtr<FileCollection> fileCollection, int timeStepsBetweenReads, 
                                                         real velocityX, real velocityY, real velocityZ, std::vector<uint> fileLevelToGridLevelMap)
 {
     if(fileLevelToGridLevelMap.empty())                         
@@ -271,7 +270,7 @@ void LevelGridBuilder::setPrecursorBoundaryCondition(SideType sideType, SPtr<Vel
     for (uint level = 0; level < getNumberOfGridLevels(); level++)
     {
         auto reader = createReaderForCollection(fileCollection, fileLevelToGridLevelMap[level]);
-        SPtr<PrecursorBoundaryCondition> precursorBoundaryCondition = PrecursorBoundaryCondition::make( reader, nTRead, velocityX, velocityY, velocityZ);
+        SPtr<PrecursorBoundaryCondition> precursorBoundaryCondition = PrecursorBoundaryCondition::make( reader, timeStepsBetweenReads, velocityX, velocityY, velocityZ);
 
         auto side = SideFactory::make(sideType);
 
@@ -645,23 +644,23 @@ uint LevelGridBuilder::getPrecursorSize(int level) const
     return size;
 }
 
-void LevelGridBuilder::getPrecursorValues(  uint* neighborNT, uint* neighborNB, uint* neighborST, uint* neighborSB, 
-                                            real* weightsNT, real* weightsNB, real* weightsST, real* weightsSB, 
-                                            int* indices, std::vector<SPtr<VelocityReader>>& reader, 
-                                            int& numberOfPrecursorNodes, size_t& numberOfQuantities, uint& nTRead, 
+void LevelGridBuilder::getPrecursorValues(  uint* neighbor0PP, uint* neighbor0PM, uint* neighbor0MP, uint* neighbor0MM, 
+                                            real* weights0PP, real* weights0PM, real* weights0MP, real* weights0MM,
+                                            int* indices, std::vector<SPtr<TransientBCInputFileReader>>& reader, 
+                                            int& numberOfPrecursorNodes, size_t& numberOfQuantities, uint& timeStepsBetweenReads, 
                                             real& velocityX, real& velocityY, real& velocityZ, int level) const
 {
     int allIndicesCounter = 0;
     int allNodesCounter = 0;
-    uint tmpNTRead = 0;
-    size_t tmpNQuantities = 0;
+    uint tmpTimeStepsBetweenReads = 0;
+    size_t tmpNumberOfQuantities = 0;
     
     for (auto boundaryCondition : boundaryConditions[level]->precursorBoundaryConditions)
     {
-        if( tmpNTRead == 0 )
-            tmpNTRead = boundaryCondition->nTRead;
-        if( tmpNTRead != boundaryCondition->nTRead )
-            throw std::runtime_error("All precursor boundary conditions must have the same NTRead value");
+        if( tmpTimeStepsBetweenReads == 0 )
+            tmpTimeStepsBetweenReads = boundaryCondition->timeStepsBetweenReads;
+        if( tmpTimeStepsBetweenReads != boundaryCondition->timeStepsBetweenReads )
+            throw std::runtime_error("All precursor boundary conditions must have the same timeStepsBetweenReads value");
         auto BCreader = boundaryCondition->getReader();
         BCreader->setWritingOffset(allIndicesCounter);
         reader.push_back(BCreader);
@@ -677,11 +676,11 @@ void LevelGridBuilder::getPrecursorValues(  uint* neighborNT, uint* neighborNB, 
             allIndicesCounter++;
         }
         BCreader->fillArrays(y, z);
-        BCreader->getNeighbors(neighborNT, neighborNB, neighborST, neighborSB);
-        BCreader->getWeights(weightsNT, weightsNB, weightsST, weightsSB);
-        if(tmpNQuantities == 0)
-            tmpNQuantities = BCreader->getNumberOfQuantities();
-        if(tmpNQuantities != BCreader->getNumberOfQuantities()) 
+        BCreader->getNeighbors(neighbor0PP, neighbor0PM, neighbor0MP, neighbor0MM);
+        BCreader->getWeights(weights0PP, weights0PM, weights0MP, weights0MM);
+        if(tmpNumberOfQuantities == 0)
+            tmpNumberOfQuantities = BCreader->getNumberOfQuantities();
+        if(tmpNumberOfQuantities != BCreader->getNumberOfQuantities()) 
             throw std::runtime_error("All precursor files must have the same quantities.");
         allNodesCounter += BCreader->getNPointsRead();
         velocityX = boundaryCondition->getVelocityX();
@@ -690,13 +689,13 @@ void LevelGridBuilder::getPrecursorValues(  uint* neighborNT, uint* neighborNB, 
     }
     numberOfPrecursorNodes = allNodesCounter;
 
-    if (tmpNTRead == 0)
-        throw std::runtime_error("NTRead of precursor needs to be larger than 0.");
-    nTRead = tmpNTRead;
+    if (tmpTimeStepsBetweenReads == 0)
+        throw std::runtime_error("timeStepsBetweenReads of precursor needs to be larger than 0.");
+    timeStepsBetweenReads = tmpTimeStepsBetweenReads;
     
-    if (tmpNQuantities == 0)
+    if (tmpNumberOfQuantities == 0)
         throw std::runtime_error("Number of quantities in precursor needs to be larger than 0.");
-    numberOfQuantities = tmpNQuantities;
+    numberOfQuantities = tmpNumberOfQuantities;
 }
 
 void LevelGridBuilder::getPrecursorQs(real* qs[27], int level) const
@@ -798,17 +797,17 @@ void LevelGridBuilder::findFluidNodes(bool splitDomain)
 }
 
 
-void LevelGridBuilder::addFluidNodeIndicesMacroVars(std::vector<uint> fluidNodeIndicesMacroVars, uint level) 
+void LevelGridBuilder::addFluidNodeIndicesMacroVars(const std::vector<uint>& fluidNodeIndicesMacroVars, uint level) 
 {
     grids[level]->addFluidNodeIndicesMacroVars(fluidNodeIndicesMacroVars);
 }
 
-void LevelGridBuilder::addFluidNodeIndicesApplyBodyForce(std::vector<uint> fluidNodeIndicesApplyBodyForce, uint level)
+void LevelGridBuilder::addFluidNodeIndicesApplyBodyForce(const std::vector<uint>& fluidNodeIndicesApplyBodyForce, uint level)
 {
     grids[level]->addFluidNodeIndicesApplyBodyForce(fluidNodeIndicesApplyBodyForce);
 }
 
-void LevelGridBuilder::addFluidNodeIndicesAllFeatures(std::vector<uint> fluidNodeIndicesAllFeatures, uint level)
+void LevelGridBuilder::addFluidNodeIndicesAllFeatures(const std::vector<uint>& fluidNodeIndicesAllFeatures, uint level)
 {
     grids[level]->addFluidNodeIndicesAllFeatures(fluidNodeIndicesAllFeatures);
 }

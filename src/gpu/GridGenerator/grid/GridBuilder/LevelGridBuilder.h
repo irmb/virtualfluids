@@ -38,12 +38,16 @@
 #include <memory>
 #include <array>
 
+#include <lbm/constants/NumericConstants.h>
+
 #include "gpu/GridGenerator/global.h"
 
 #include "gpu/GridGenerator/grid/GridBuilder/GridBuilder.h"
 #include "gpu/GridGenerator/grid/Grid.h"
 #include "gpu/GridGenerator/grid/GridInterface.h"
 #include "gpu/GridGenerator/grid/NodeValues.h"
+
+using namespace vf::lbm::constant;
 
 struct Vertex;
 class  Grid;
@@ -61,10 +65,8 @@ class GeometryBoundaryCondition;
 class PrecursorBoundaryCondition;
 enum class SideType;
 
-class VelocityReader;
-class VelocityFileCollection;
-
-
+class TransientBCInputFileReader;
+class FileCollection;
 
 class LevelGridBuilder : public GridBuilder
 {
@@ -76,7 +78,7 @@ public:
 
     GRIDGENERATOR_EXPORT SPtr<Grid> getGrid(uint level) override;
 
-    GRIDGENERATOR_EXPORT virtual ~LevelGridBuilder();
+    GRIDGENERATOR_EXPORT  ~LevelGridBuilder() override;
 
     GRIDGENERATOR_EXPORT void setSlipBoundaryCondition(SideType sideType, real nomalX, real normalY, real normalZ);
     GRIDGENERATOR_EXPORT void setStressBoundaryCondition(SideType sideType, real nomalX, real normalY, real normalZ, uint samplingOffset, real z0, real dx);
@@ -84,16 +86,17 @@ public:
     GRIDGENERATOR_EXPORT void setPressureBoundaryCondition(SideType sideType, real rho);
     GRIDGENERATOR_EXPORT void setPeriodicBoundaryCondition(bool periodic_X, bool periodic_Y, bool periodic_Z);
     GRIDGENERATOR_EXPORT void setNoSlipBoundaryCondition(SideType sideType);
-    GRIDGENERATOR_EXPORT void setPrecursorBoundaryCondition(SideType sideType, SPtr<VelocityFileCollection> fileCollection, int nTRead, real velocityX=0.0f, real velocityY=0.0f, real velocityZ=0.0f,          
-                                                                std::vector<uint> fileLevelToGridLevelMap = {});
+    GRIDGENERATOR_EXPORT void setPrecursorBoundaryCondition(SideType sideType, SPtr<FileCollection> fileCollection, int timeStepsBetweenReads, 
+                                                            real velocityX=c0o1, real velocityY=c0o1, real velocityZ=c0o1,     
+                                                            std::vector<uint> fileLevelToGridLevelMap = {});
 
     GRIDGENERATOR_EXPORT void setEnableFixRefinementIntoTheWall(bool enableFixRefinementIntoTheWall);
 
     GRIDGENERATOR_EXPORT void setCommunicationProcess(int direction, uint process);
 
-    GRIDGENERATOR_EXPORT uint getCommunicationProcess(int direction) override;
+    GRIDGENERATOR_EXPORT virtual uint getCommunicationProcess(int direction) override;
 
-    GRIDGENERATOR_EXPORT virtual std::shared_ptr<Grid> getGrid(int level, int box);
+    GRIDGENERATOR_EXPORT std::shared_ptr<Grid> getGrid(int level, int box);
 
     GRIDGENERATOR_EXPORT virtual unsigned int getNumberOfNodes(unsigned int level) const override;
 
@@ -128,10 +131,10 @@ public:
     GRIDGENERATOR_EXPORT virtual void getPressureQs(real* qs[27], int level) const override;
 
     GRIDGENERATOR_EXPORT uint getPrecursorSize(int level) const override;
-    GRIDGENERATOR_EXPORT void getPrecursorValues(   uint* neighborNT, uint* neighborNB, uint* neighborST, uint* neighborSB, 
-                                                    real* weightsNT, real* weightsNB, real* weightsST, real* weightsSB, 
-                                                    int* indices, std::vector<SPtr<VelocityReader>>& reader, 
-                                                    int& numberOfPrecursorNodes, size_t& numberOfQuantities, uint& nTRead,
+    GRIDGENERATOR_EXPORT void getPrecursorValues(   uint* neighbor0PP, uint* neighbor0PM, uint* neighbor0MP, uint* neighbor0MM, 
+                                                    real* weights0PP, real* weights0PM, real* weights0MP, real* weights0MM, 
+                                                    int* indices, std::vector<SPtr<TransientBCInputFileReader>>& reader, 
+                                                    int& numberOfPrecursorNodes, size_t& numberOfQuantities, uint& timeStepsBetweenReads,
                                                     real& velocityX, real& velocityY, real& velocityZ, int level) const override;
     GRIDGENERATOR_EXPORT virtual void getPrecursorQs(real* qs[27], int level) const override;
 
@@ -151,7 +154,7 @@ protected:
 
     struct BoundaryConditions
     {
-		BoundaryConditions() {}
+		BoundaryConditions() = default;
 
         std::vector<SPtr<SlipBoundaryCondition>> slipBoundaryConditions;
 
@@ -192,7 +195,7 @@ public:
     GRIDGENERATOR_EXPORT void getGridInformations(std::vector<int>& gridX, std::vector<int>& gridY,
                                        std::vector<int>& gridZ, std::vector<int>& distX, std::vector<int>& distY,
                                        std::vector<int>& distZ) override;
-    GRIDGENERATOR_EXPORT uint getNumberOfGridLevels() const override;
+    GRIDGENERATOR_EXPORT virtual uint getNumberOfGridLevels() const override;
 
     GRIDGENERATOR_EXPORT uint getNumberOfNodesCF(int level) override;
     GRIDGENERATOR_EXPORT uint getNumberOfNodesFC(int level) override;
@@ -202,18 +205,18 @@ public:
     GRIDGENERATOR_EXPORT void getOffsetFC(real* xOffCf, real* yOffCf, real* zOffCf, int level) override;
     GRIDGENERATOR_EXPORT void getOffsetCF(real* xOffFc, real* yOffFc, real* zOffFc, int level) override;
 
-    GRIDGENERATOR_EXPORT uint getNumberOfSendIndices(int direction, uint level) override;
-    GRIDGENERATOR_EXPORT uint getNumberOfReceiveIndices(int direction, uint level) override;
-    GRIDGENERATOR_EXPORT void getSendIndices(int *sendIndices, int direction, int level) override;
-    GRIDGENERATOR_EXPORT void getReceiveIndices(int *sendIndices, int direction, int level) override;
+    GRIDGENERATOR_EXPORT virtual uint getNumberOfSendIndices(int direction, uint level) override;
+    GRIDGENERATOR_EXPORT virtual uint getNumberOfReceiveIndices(int direction, uint level) override;
+    GRIDGENERATOR_EXPORT virtual void getSendIndices(int *sendIndices, int direction, int level) override;
+    GRIDGENERATOR_EXPORT virtual void getReceiveIndices(int *sendIndices, int direction, int level) override;
 
 
     // needed for CUDA Streams MultiGPU (Communication Hiding)
     void findFluidNodes(bool splitDomain) override;
 
-    void addFluidNodeIndicesMacroVars(std::vector<uint> fluidNodeIndicesMacroVars, uint level) override;
-    void addFluidNodeIndicesApplyBodyForce(std::vector<uint> fluidNodeIndicesApplyBodyForce, uint level) override;
-    void addFluidNodeIndicesAllFeatures(std::vector<uint> fluidNodeIndicesAllFeatures, uint level) override;
+    void addFluidNodeIndicesMacroVars(const std::vector<uint>& fluidNodeIndicesMacroVars, uint level) override;
+    void addFluidNodeIndicesApplyBodyForce(const std::vector<uint>& fluidNodeIndicesApplyBodyForce, uint level) override;
+    void addFluidNodeIndicesAllFeatures(const std::vector<uint>& fluidNodeIndicesAllFeatures, uint level) override;
     
     void sortFluidNodeIndicesMacroVars(uint level) override;
     void sortFluidNodeIndicesApplyBodyForce(uint level) override;

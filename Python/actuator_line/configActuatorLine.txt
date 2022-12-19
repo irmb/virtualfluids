@@ -32,7 +32,7 @@ QuadricLimiterD = 100000.0
 
 ##################################################
 readPrecursor = false
-nTimestepsReadPrecursor = 10
+nTimestepsReadPrecursor = 1
 precursorFile = precursor/Precursor
 
 ##################################################

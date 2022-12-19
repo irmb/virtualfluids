@@ -5,7 +5,6 @@
 #include "lbm/constants/D3Q27.h"
 #include "Parameter/Parameter.h"
 
-
 void findQ(Parameter* para, int lev);
 
 void findKforQ(Parameter* para, int lev);

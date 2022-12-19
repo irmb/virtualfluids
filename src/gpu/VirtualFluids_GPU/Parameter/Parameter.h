@@ -54,7 +54,7 @@ class ConfigurationFile;
 }
 class CudaStreamManager;
 
-class VelocityReader;
+class TransientBCInputFileReader;
 
 //! \struct LBMSimulationParameter
 //! \brief struct holds and manages the LB-parameter of the simulation
@@ -237,7 +237,7 @@ struct LBMSimulationParameter {
     unsigned int kInletQread, kOutletQread;  // DEPRECATED
 
     WallModelParameters wallModel;
-    std::vector<SPtr<VelocityReader>> velocityReader;
+    std::vector<SPtr<TransientBCInputFileReader>> transientBCInputFileReader;
     real outflowPressureCorrectionFactor;
 
     // testRoundoffError
@@ -372,12 +372,12 @@ struct LBMSimulationParameter {
 
     ///////////////////////////////////////////////////////
     std::map<CollisionTemplate, uint*>    taggedFluidNodeIndices = {{CollisionTemplate::Default,        nullptr},
-                                                                    {CollisionTemplate::Border,         nullptr},
+                                                                    {CollisionTemplate::SubDomainBorder,nullptr},
                                                                     {CollisionTemplate::WriteMacroVars, nullptr},
                                                                     {CollisionTemplate::ApplyBodyForce, nullptr},
                                                                     {CollisionTemplate::AllFeatures,    nullptr}};
     std::map<CollisionTemplate, uint >  numberOfTaggedFluidNodes = {{CollisionTemplate::Default,        0},
-                                                                    {CollisionTemplate::Border,         0},
+                                                                    {CollisionTemplate::SubDomainBorder,0},
                                                                     {CollisionTemplate::WriteMacroVars, 0},
                                                                     {CollisionTemplate::ApplyBodyForce, 0},
                                                                     {CollisionTemplate::AllFeatures,    0}};
@@ -402,6 +402,9 @@ public:
     std::shared_ptr<LBMSimulationParameter> getParH(int level);
     //! \brief Pointer to instance of LBMSimulationParameter - stored on Device (GPU)
     std::shared_ptr<LBMSimulationParameter> getParD(int level);
+
+    const std::vector<std::shared_ptr<LBMSimulationParameter>>& getParHallLevels();
+    const std::vector<std::shared_ptr<LBMSimulationParameter>>& getParDallLevels();
 
     void copyMeasurePointsArrayToVector(int lev);
 
@@ -775,6 +778,8 @@ public:
     real getScaledDensityRatio(int level);
     //! \returns the pressure ratio in SI/LB units scaled to the respective level
     real getScaledPressureRatio(int level);
+    //! \returns the stress ratio in SI/LB units scaled to the respective level
+    real getScaledStressRatio(int level);
     //! \returns the time ratio in SI/LB units scaled to the respective level
     real getScaledTimeRatio(int level);
     //! \returns the length ratio in SI/LB units scaled to the respective level

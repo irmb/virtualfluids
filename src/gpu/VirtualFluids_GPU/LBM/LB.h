@@ -75,9 +75,9 @@ enum class CollisionTemplate {
    //! - AllFeatures: collision \w write out macroscopic variables AND read and apply body force
    AllFeatures,
    //! - Border: collision on border nodes
-   Border
+   SubDomainBorder
 };
-constexpr std::initializer_list<CollisionTemplate> all_CollisionTemplate  = { CollisionTemplate::Default, CollisionTemplate::WriteMacroVars, CollisionTemplate::ApplyBodyForce, CollisionTemplate::AllFeatures, CollisionTemplate::Border};
+constexpr std::initializer_list<CollisionTemplate> all_CollisionTemplate  = { CollisionTemplate::Default, CollisionTemplate::WriteMacroVars, CollisionTemplate::ApplyBodyForce, CollisionTemplate::AllFeatures, CollisionTemplate::SubDomainBorder};
 constexpr std::initializer_list<CollisionTemplate> bulk_CollisionTemplate = { CollisionTemplate::Default, CollisionTemplate::WriteMacroVars, CollisionTemplate::ApplyBodyForce, CollisionTemplate::AllFeatures};
 
 struct InitCondition
@@ -237,11 +237,11 @@ typedef struct QforPrecursorBC{
    int sizeQ;
    int numberOfPrecursorNodes=0;
    uint nPrecursorReads=0;
-   uint nTRead;
+   uint timeStepsBetweenReads;
    size_t numberOfQuantities;
    real* q27[27];
-   uint* planeNeighborNT, *planeNeighborNB, *planeNeighborST, *planeNeighborSB;
-   real* weightsNT, *weightsNB, *weightsST,  *weightsSB;
+   uint* planeNeighbor0PP, *planeNeighbor0PM, *planeNeighbor0MP, *planeNeighbor0MM;
+   real* weights0PP, *weights0PM, *weights0MP,  *weights0MM;
    real* last, *current, *next;
    real velocityX, velocityY, velocityZ;
 }QforPrecursorBoundaryConditions;
