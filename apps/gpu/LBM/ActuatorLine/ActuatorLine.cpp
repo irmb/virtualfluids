@@ -101,7 +101,7 @@ void multipleLevel(const std::string& configPath)
 
     const real viscosity = 1.56e-5;
 
-    const real mach = 0.2;
+    const real mach = 0.1;
 
 
     const float tStartOut   = config.getValue<real>("tStartOut");
@@ -133,10 +133,9 @@ void multipleLevel(const std::string& configPath)
     para->setMaxLevel(2);
     scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
-    std::string stlPath = "./VirtualFluids_dev/apps/gpu/LBM/ActuatorLine/Pole.stl";
-
-    Object *sphere = TriangularMesh::make(stlPath);
-    gridBuilder->addGeometry(sphere);
+    // std::string stlPath = "./VirtualFluids_dev/apps/gpu/LBM/ActuatorLine/Pole.stl";
+    // Object *sphere = TriangularMesh::make(stlPath);
+    // gridBuilder->addGeometry(sphere);
 
     gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
@@ -158,6 +157,7 @@ void multipleLevel(const std::string& configPath)
     VF_LOG_INFO("velocity  [m/s] = {}", velocity);
     VF_LOG_INFO("velocity  [dx/dt] = {}", velocityLB);
     VF_LOG_INFO("viscosity [10^8 dx^2/dt] = {}", viscosityLB*1e8);
+    VF_LOG_INFO("Ma = {}", mach);
     VF_LOG_INFO("nodes/turbine diameter = {}", reference_diameter/dx);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -196,15 +196,16 @@ void multipleLevel(const std::string& configPath)
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     gridBuilder->setVelocityBoundaryCondition(SideType::MX,  velocityLB, 0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SideType::MY,  0.0, 0.0, 0.0);
+    gridBuilder->setSlipBoundaryCondition(SideType::MY,0.0, 0.0, 0.0 );
     gridBuilder->setVelocityBoundaryCondition(SideType::PY,  velocityLB, 0.0, 0.0);
     gridBuilder->setVelocityBoundaryCondition(SideType::MZ,  velocityLB, 0.0, 0.0);
     gridBuilder->setVelocityBoundaryCondition(SideType::PZ,  velocityLB, 0.0, 0.0);
     gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
 
-    gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
-    bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipCompressible);
+    // gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
+    // bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipCompressible);
 
+    bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipCompressible);
     bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityAndPressureCompressible);
     bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflective);
 
@@ -216,10 +217,11 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     int level = 1; // grid level at which the turbine samples velocities and distributes forces
-    const real epsilon = dx*exp2(-level)*1.5; // width of gaussian smearing
+    const real epsilon = dx*exp2(-level)*2.0; // width of gaussian smearing
     const real density = 1.225f;
     const uint nBlades = 3;
-    const uint nBladeNodes = 401; // passt zu auflösung von 105 Knoten
+    const uint nBladeNodes = 404; // passt zu auflösung von 105 Knoten
+    VF_LOG_INFO("number of blade nodes ALM = {}", nBladeNodes);
     const real tipspeed_ratio = 7.5f; // tipspeed ratio = angular vel * radius / inflow vel
     const real omega = 2*tipspeed_ratio*velocity/reference_diameter;
 
