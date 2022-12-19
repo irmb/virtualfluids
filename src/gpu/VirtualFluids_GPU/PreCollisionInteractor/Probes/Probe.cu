@@ -479,35 +479,28 @@ File Layout:
 TimeseriesOutput
 Quantities: Quant1 Quant2 Quant3
 Positions:
-x: point1.x point2.x ...
-y: point1.y point2.y ...
-z: point1.z point2.z ... 
+point1.x, point1.y, point1.z
+point2.x, point2.y, point2.z
+...
 t0 point1.quant1 point2.quant1 ... point1.quant2 point2.quant2 ...
 t1 point1.quant1 point2.quant1 ... point1.quant2 point2.quant2 ...
 */
-    std::string fname = this->outputPath + "/" + this->makeTimeseriesFileName(level, para->getMyProcessID());
     auto probeStruct = this->getProbeStruct(level);
+    std::string fname = this->outputPath + "/" + this->makeTimeseriesFileName(level, para->getMyProcessID());
     std::ofstream out(fname.c_str(), std::ios::out | std::ios::binary);
 
     if(!out.is_open()) throw std::runtime_error("Could not open timeseries file!");
+
     out << "TimeseriesOutput \n";
     out << "Quantities: ";
     for(std::string name : getVarNames())
         out << name << ", ";
     out << "\n";
-    out << "Positions: \n";
-
-    out << "x: ";
-    for(uint i=0;i<probeStruct->nPoints-1;i++) out << probeStruct->pointCoordsX[i] << ", ";   
-    out << probeStruct->pointCoordsX[probeStruct->nPoints-1] << "\n"; 
-
-    out << "y: ";
-    for(uint i=0;i<probeStruct->nPoints-1;i++) out << probeStruct->pointCoordsY[i] << ", ";  
-    out << probeStruct->pointCoordsY[probeStruct->nPoints-1] << "\n"; 
-
-    out << "z: ";
-    for(uint i=0;i<probeStruct->nPoints-1;i++) out << probeStruct->pointCoordsZ[i] << ", ";
-    out << probeStruct->pointCoordsZ[probeStruct->nPoints-1] << "\n"; 
+    out << "Number of points in this file: \n";
+    out << probeStruct->nPoints << "\n";
+    out << "Positions: x, y, z\n";
+    for( int i=0; i<probeStruct->nPoints;i++)
+        out << probeStruct->pointCoordsX[i] << ", " << probeStruct->pointCoordsY[i] << ", " << probeStruct->pointCoordsZ[i] << "\n";
 
     out.close();
 
@@ -555,9 +548,6 @@ void Probe::appendTimeseriesFile(Parameter* para, int level, int t)
             }
             
         }
-        // for(int i=0; i<val; i++)
-        //     printf("%f, ", timestep_array[i]);
-        // printf("\n");
 
         out.write((char*) timestep_array, sizeof(real)*vals_per_timestep);
     }
