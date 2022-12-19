@@ -95,7 +95,7 @@ void multipleLevel(const std::string& configPath)
     const real velocity = config.getValue<real>("Velocity");
 
 
-    const real L_x = 4*reference_diameter;
+    const real L_x = 3.5*reference_diameter;
     const real L_y = 2.5*reference_diameter;
     const real L_z = 3*reference_diameter;
 
@@ -219,7 +219,7 @@ void multipleLevel(const std::string& configPath)
     const real epsilon = dx*exp2(-level)*1.5; // width of gaussian smearing
     const real density = 1.225f;
     const uint nBlades = 3;
-    const uint nBladeNodes = 32;
+    const uint nBladeNodes = 401; // passt zu auflösung von 105 Knoten
     const real tipspeed_ratio = 7.5f; // tipspeed ratio = angular vel * radius / inflow vel
     const real omega = 2*tipspeed_ratio*velocity/reference_diameter;
 

@@ -1,14 +1,14 @@
 ##################################################
 #informations for Writing
 ##################################################
-Path = /work/y0078217/Results/ActuatorLine
+Path = /work/y0078217/Results/ActuatorLine105
 ##################################################
 #informations for reading
 ##################################################
 GridPath=.
 ##################################################
 ReferenceDiameter=126
-NodesPerDiameter=100
+NodesPerDiameter=105
 Velocity=9
 ##################################################
 tStartOut=0
