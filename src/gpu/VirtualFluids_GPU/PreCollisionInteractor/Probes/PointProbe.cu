@@ -110,6 +110,13 @@ void PointProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* p
                                                 probeStruct->quantitiesD, probeStruct->arrayOffsetsD, probeStruct->quantitiesArrayD, this->outputTimeSeries);
 }
 
+void PointProbe::addProbePoint(real pointCoordX, real pointCoordY, real pointCoordZ)
+{
+    this->pointCoordsX.push_back(pointCoordX);
+    this->pointCoordsY.push_back(pointCoordY);
+    this->pointCoordsZ.push_back(pointCoordZ);
+}
+
 void PointProbe::addProbePointsFromList(std::vector<real>& _pointCoordsX, std::vector<real>& _pointCoordsY, std::vector<real>& _pointCoordsZ)
 {
     bool isSameLength = ( (_pointCoordsX.size()==_pointCoordsY.size()) && (_pointCoordsY.size()==_pointCoordsZ.size()));

@@ -51,7 +51,7 @@ public:
         uint _tAvg,
         uint _tStartOut,
         uint _tOut,
-        bool _outputTimeseries
+        bool _outputTimeseries = false
     ): Probe(_probeName, 
              _outputPath,
              _tStartAvg, 
@@ -63,6 +63,7 @@ public:
              _outputTimeseries)
     {}
 
+    void addProbePoint(real pointCoordX, real pointCoordY, real pointCoordZ);
     void addProbePointsFromList(std::vector<real>& _pointCoordsX, std::vector<real>& _pointCoordsY, std::vector<real>& _pointCoordsZ);
     void addProbePointsFromXNormalPlane(real pos_x, real pos0_y, real pos0_z, real pos1_y, real pos1_z, uint n_y, uint n_z);
     void getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider) override;
