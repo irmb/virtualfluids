@@ -30,19 +30,19 @@ void index2d(int idx, int& y, int& z, int ny, int nz)
     y = idx-ny*z;
 }
 
-__inline__ __host__ __device__ uint lIndex(const uint component, const uint node, const uint timestep, const uint nComponents, const uint nNodes)
+__inline__ __host__ __device__ uint linearIdx(const uint component, const uint node, const uint timestep, const uint numberOfComponents, const uint numberOfNodes)
 {
-    return node+nNodes*(component+timestep*nComponents);
+    return node+numberOfNodes*(component+numberOfComponents*timestep);
 }
 
-__inline__ __host__ __device__ uint lIndex(const uint component, const uint node, const uint nNodes)
+__inline__ __host__ __device__ uint linearIdx(const uint component, const uint node, const uint numberOfNodes)
 {
-    return node+component*nNodes;
+    return node+component*numberOfNodes;
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-__global__ void fillArrayVelocities(const uint nNodes, 
+__global__ void fillArrayVelocities(const uint numberOfPrecursorNodes, 
                                     uint* indices, 
                                     real *precursorData,
                                     real *vx,
@@ -54,16 +54,17 @@ __global__ void fillArrayVelocities(const uint nNodes,
 {
     const uint node = vf::gpu::getNodeIndex();
 
-    if(node>=nNodes) return;
+    if(node>=numberOfPrecursorNodes) return;
 
-    precursorData[lIndex(0u, node, nNodes)] = vx[indices[node]]*velocityRatio;
-    precursorData[lIndex(1u, node, nNodes)] = vy[indices[node]]*velocityRatio;
-    precursorData[lIndex(2u, node, nNodes)] = vz[indices[node]]*velocityRatio;
+    precursorData[linearIdx(0u, node, numberOfPrecursorNodes)] = vx[indices[node]]*velocityRatio;
+    precursorData[linearIdx(1u, node, numberOfPrecursorNodes)] = vy[indices[node]]*velocityRatio;
+    precursorData[linearIdx(2u, node, numberOfPrecursorNodes)] = vz[indices[node]]*velocityRatio;
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-__global__ void fillArrayDistributions( uint nNodes, uint* indices, 
+__global__ void fillArrayDistributions( uint numberOfPrecursorNodes, 
+                                        uint* indices, 
                                         real* precursorData,
                                         real* distributions,
                                         uint* neighborX, uint* neighborY, uint* neighborZ,
@@ -72,7 +73,7 @@ __global__ void fillArrayDistributions( uint nNodes, uint* indices,
 {
     const uint node = vf::gpu::getNodeIndex();
 
-    if(node>=nNodes) return;
+    if(node>=numberOfPrecursorNodes) return;
 
     Distributions27 dist = vf::gpu::getDistributionReferences27(distributions, numberOfLBnodes, isEvenTimestep);
     
@@ -90,15 +91,15 @@ __global__ void fillArrayDistributions( uint nNodes, uint* indices,
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Get local distributions in PX directions
     //!
-    precursorData[lIndex(PrecP00, node, nNodes)] = (dist.f[DIR_P00])[k_000];
-    precursorData[lIndex(PrecPP0, node, nNodes)] = (dist.f[DIR_PP0])[k_000];
-    precursorData[lIndex(PrecPM0, node, nNodes)] = (dist.f[DIR_PM0])[k_0M0];
-    precursorData[lIndex(PrecP0P, node, nNodes)] = (dist.f[DIR_P0P])[k_000];
-    precursorData[lIndex(PrecP0M, node, nNodes)] = (dist.f[DIR_P0M])[k_00M];
-    precursorData[lIndex(PrecPPP, node, nNodes)] = (dist.f[DIR_PPP])[k_000];
-    precursorData[lIndex(PrecPMP, node, nNodes)] = (dist.f[DIR_PMP])[k_0M0];
-    precursorData[lIndex(PrecPPM, node, nNodes)] = (dist.f[DIR_PPM])[k_00M];
-    precursorData[lIndex(PrecPMM, node, nNodes)] = (dist.f[DIR_PMM])[k_0MM];
+    precursorData[linearIdx(PrecP00, node, numberOfPrecursorNodes)] = (dist.f[DIR_P00])[k_000];
+    precursorData[linearIdx(PrecPP0, node, numberOfPrecursorNodes)] = (dist.f[DIR_PP0])[k_000];
+    precursorData[linearIdx(PrecPM0, node, numberOfPrecursorNodes)] = (dist.f[DIR_PM0])[k_0M0];
+    precursorData[linearIdx(PrecP0P, node, numberOfPrecursorNodes)] = (dist.f[DIR_P0P])[k_000];
+    precursorData[linearIdx(PrecP0M, node, numberOfPrecursorNodes)] = (dist.f[DIR_P0M])[k_00M];
+    precursorData[linearIdx(PrecPPP, node, numberOfPrecursorNodes)] = (dist.f[DIR_PPP])[k_000];
+    precursorData[linearIdx(PrecPMP, node, numberOfPrecursorNodes)] = (dist.f[DIR_PMP])[k_0M0];
+    precursorData[linearIdx(PrecPPM, node, numberOfPrecursorNodes)] = (dist.f[DIR_PPM])[k_00M];
+    precursorData[linearIdx(PrecPMM, node, numberOfPrecursorNodes)] = (dist.f[DIR_PMM])[k_0MM];
 }
 
 
@@ -163,23 +164,23 @@ void PrecursorWriter::init(Parameter* para, GridProvider* gridProvider, CudaMemo
         }
 
         precursorStructs[level] = SPtr<PrecursorStruct>(new PrecursorStruct);
-        precursorStructs[level]->nPoints = (uint)indicesOnGrid.size();
-        precursorStructs[level]->indicesOnPlane = (int*) malloc(precursorStructs[level]->nPoints*sizeof(int));
+        precursorStructs[level]->numberOfPointsInBC = (uint)indicesOnGrid.size();
+        precursorStructs[level]->indicesOnPlane = (int*) malloc(precursorStructs[level]->numberOfPointsInBC*sizeof(int));
         precursorStructs[level]->spacing = makeUbTuple(dx, dx, tSave*para->getTimeRatio()*pow(2,-level));
         precursorStructs[level]->origin = makeUbTuple(lowestY, lowestZ);
         precursorStructs[level]->extent = makeUbTuple(0, ny-1, 0, nz-1);
-        precursorStructs[level]->nPointsInPlane = ny*nz;
-        precursorStructs[level]->timestepsPerFile = min(para->getlimitOfNodesForVTK()/(ny*nz), maxtimestepsPerFile);
-        precursorStructs[level]->filesWritten = 0;
-        precursorStructs[level]->timestepsBuffered = 0;
+        precursorStructs[level]->numberOfPointsInData = ny*nz;
+        precursorStructs[level]->numberOfTimestepsPerFile = min(para->getlimitOfNodesForVTK()/(ny*nz), maxtimestepsPerFile);
+        precursorStructs[level]->numberOfFilesWritten = 0;
+        precursorStructs[level]->numberOfTimestepsBuffered = 0;
         
         switch (outputVariable)
         {
         case OutputVariable::Velocities:
-            precursorStructs[level]->nQuantities = 3;
+            precursorStructs[level]->numberOfQuantities = 3;
             break;
         case OutputVariable::Distributions:
-            precursorStructs[level]->nQuantities = 9;
+            precursorStructs[level]->numberOfQuantities = 9;
             break;
         
         default:
@@ -193,7 +194,7 @@ void PrecursorWriter::init(Parameter* para, GridProvider* gridProvider, CudaMemo
 
         cudaManager->cudaCopyPrecursorWriterIndicesHtoD(this, level);
 
-        VF_LOG_INFO("Found {} points in precursor plane on level {}", precursorStructs[level]->nPoints, level);
+        VF_LOG_INFO("Found {} points in precursor plane on level {}", precursorStructs[level]->numberOfPointsInBC, level);
     }
     VF_LOG_INFO("PrecursorWriter: Done initializing.");
 }
@@ -207,11 +208,11 @@ void PrecursorWriter::interact(Parameter* para, CudaMemoryManager* cudaManager, 
 
     if(t_level>tStartOut_level && ((t_level-tStartOut_level) % tSave)==0)
     {
-        vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, precursorStructs[level]->nPoints);
+        vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, precursorStructs[level]->numberOfPointsInBC);
 
         if(this->outputVariable==OutputVariable::Velocities)
         {
-            fillArrayVelocities<<<grid.grid, grid.threads>>>(   precursorStructs[level]->nPoints, precursorStructs[level]->indicesD, 
+            fillArrayVelocities<<<grid.grid, grid.threads>>>(   precursorStructs[level]->numberOfPointsInBC, precursorStructs[level]->indicesD, 
                                                                 precursorStructs[level]->bufferD, 
                                                                 para->getParD(level)->velocityX, para->getParD(level)->velocityY, para->getParD(level)->velocityZ,
                                                                 para->getVelocityRatio());
@@ -219,7 +220,7 @@ void PrecursorWriter::interact(Parameter* para, CudaMemoryManager* cudaManager, 
         }
         else if(this->outputVariable==OutputVariable::Distributions)
         {
-            fillArrayDistributions<<<grid.grid, grid.threads>>>(precursorStructs[level]->nPoints, precursorStructs[level]->indicesD, 
+            fillArrayDistributions<<<grid.grid, grid.threads>>>(precursorStructs[level]->numberOfPointsInBC, precursorStructs[level]->indicesD, 
                                                                 precursorStructs[level]->bufferD,
                                                                 para->getParD(level)->distributions.f[0],
                                                                 para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ,
@@ -233,9 +234,9 @@ void PrecursorWriter::interact(Parameter* para, CudaMemoryManager* cudaManager, 
         precursorStructs[level]->bufferD = precursorStructs[level]->dataD;
         precursorStructs[level]->dataD = tmp;
 
-        precursorStructs[level]->timestepsBuffered++;
+        precursorStructs[level]->numberOfTimestepsBuffered++;
 
-        if(precursorStructs[level]->timestepsBuffered >= precursorStructs[level]->timestepsPerFile || t == para->getTimestepEnd())
+        if(precursorStructs[level]->numberOfTimestepsBuffered >= precursorStructs[level]->numberOfTimestepsPerFile || t == para->getTimestepEnd())
         {
         // switch host buffer and data pointer so precursor data is copied in buffer and written from data
 
@@ -244,8 +245,8 @@ void PrecursorWriter::interact(Parameter* para, CudaMemoryManager* cudaManager, 
             precursorStructs[level]->dataH = tmp;
 
             writeFuture.wait();
-            writeFuture = std::async(std::launch::async, [this](Parameter* para, uint level, uint timesteps){ this->write(para, level, timesteps); }, para, level, precursorStructs[level]->timestepsBuffered);
-            precursorStructs[level]->timestepsBuffered = 0;
+            writeFuture = std::async(std::launch::async, [this](Parameter* para, uint level, uint timesteps){ this->write(para, level, timesteps); }, para, level, precursorStructs[level]->numberOfTimestepsBuffered);
+            precursorStructs[level]->numberOfTimestepsBuffered = 0;
         }
     }
 }
@@ -256,22 +257,22 @@ void PrecursorWriter::free(Parameter* para, CudaMemoryManager* cudaManager)
     writeFuture.wait();
     for(int level=0; level<=para->getMaxLevel(); level++)
     {
-        if(getPrecursorStruct(level)->timestepsBuffered>0)
-            write(para, level, getPrecursorStruct(level)->timestepsBuffered);
+        if(getPrecursorStruct(level)->numberOfTimestepsBuffered>0)
+            write(para, level, getPrecursorStruct(level)->numberOfTimestepsBuffered);
 
         cudaManager->cudaFreePrecursorWriter(this, level);
     }
 }
 
 
-void PrecursorWriter::write(Parameter* para, int level, uint timestepsBuffered)
+void PrecursorWriter::write(Parameter* para, int level, uint numberOfTimestepsBuffered)
 {
-    std::string fname = this->makeFileName(fileName, level, para->getMyProcessID(), precursorStructs[level]->filesWritten) + getWriter()->getFileExtension();
+    std::string fname = this->makeFileName(fileName, level, para->getMyProcessID(), precursorStructs[level]->numberOfFilesWritten) + getWriter()->getFileExtension();
     std::string wholeName = outputPath + "/" + fname;
 
-    uint nPointsInPlane = precursorStructs[level]->nPointsInPlane;
+    uint numberOfPointsInData = precursorStructs[level]->numberOfPointsInData;
 
-    int startTime = precursorStructs[level]->filesWritten*precursorStructs[level]->timestepsPerFile;
+    int startTime = precursorStructs[level]->numberOfFilesWritten*precursorStructs[level]->numberOfTimestepsPerFile;
 
     UbTupleInt6 extent = makeUbTuple(   val<1>(precursorStructs[level]->extent),    val<2>(precursorStructs[level]->extent), 
                                         val<3>(precursorStructs[level]->extent),    val<4>(precursorStructs[level]->extent), 
@@ -281,15 +282,15 @@ void PrecursorWriter::write(Parameter* para, int level, uint timestepsBuffered)
 
     std::vector<std::vector<double>> nodedata;
     
-    for(uint quant=0; quant<precursorStructs[level]->nQuantities; quant++)
+    for(uint quant=0; quant<precursorStructs[level]->numberOfQuantities; quant++)
     {
-        std::vector<double> doubleArr(nPointsInPlane*timestepsBuffered, NAN);
-        for( uint timestep=0; timestep<timestepsBuffered; timestep++)
+        std::vector<double> doubleArr(numberOfPointsInData*numberOfTimestepsBuffered, NAN);
+        for( uint timestep=0; timestep<numberOfTimestepsBuffered; timestep++)
         {
-            for (uint pos=0; pos < precursorStructs[level]->nPoints; pos++)
+            for (uint pos=0; pos < precursorStructs[level]->numberOfPointsInBC; pos++)
             {
-                int indexOnPlane = precursorStructs[level]->indicesOnPlane[pos]+timestep*nPointsInPlane;
-                doubleArr[indexOnPlane] = double(precursorStructs[level]->dataH[lIndex(quant, pos, timestep, precursorStructs[level]->nQuantities, precursorStructs[level]->nPoints)]);
+                int indexOnPlane = precursorStructs[level]->indicesOnPlane[pos]+timestep*numberOfPointsInData;
+                doubleArr[indexOnPlane] = double(precursorStructs[level]->dataH[linearIdx(quant, pos, timestep, precursorStructs[level]->numberOfQuantities, precursorStructs[level]->numberOfPointsInBC)]);
             }
         }
         nodedata.push_back(doubleArr);
@@ -297,14 +298,14 @@ void PrecursorWriter::write(Parameter* para, int level, uint timestepsBuffered)
 
     std::vector<std::vector<double>> celldata;
     getWriter()->writeData(wholeName, nodedatanames, celldatanames, nodedata, celldata, extent, origin, precursorStructs[level]->spacing, extent, this->writePrecision);
-    precursorStructs[level]->filesWritten++;
+    precursorStructs[level]->numberOfFilesWritten++;
 }
 
-std::string PrecursorWriter::makeFileName(std::string fileName, int level, int id, uint filesWritten)
+std::string PrecursorWriter::makeFileName(std::string fileName, int level, int id, uint numberOfFilesWritten)
 {
     return fileName + "_lev_" + StringUtil::toString<int>(level)
                     + "_ID_" + StringUtil::toString<int>(id)
-                    + "_File_" + StringUtil::toString<int>(filesWritten);
+                    + "_File_" + StringUtil::toString<int>(numberOfFilesWritten);
 }
 
 void PrecursorWriter::getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider)
@@ -313,7 +314,7 @@ void PrecursorWriter::getTaggedFluidNodes(Parameter *para, GridProvider* gridPro
     {
         if(outputVariable==OutputVariable::Velocities)
         {
-            std::vector<uint> indices(precursorStructs[level]->indicesH, precursorStructs[level]->indicesH+precursorStructs[level]->nPoints);
+            std::vector<uint> indices(precursorStructs[level]->indicesH, precursorStructs[level]->indicesH+precursorStructs[level]->numberOfPointsInBC);
             gridProvider->tagFluidNodeIndices(indices, CollisionTemplate::WriteMacroVars, level);
         }
     }

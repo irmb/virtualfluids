@@ -3472,15 +3472,15 @@ void CudaMemoryManager::cudaFreeProbeQuantitiesAndOffsets(Probe* probe, int leve
 void CudaMemoryManager::cudaAllocPrecursorWriter(PrecursorWriter* writer, int level)
 {
     auto prec =  writer->getPrecursorStruct(level);
-    size_t indSize = prec->nPoints*sizeof(uint);
+    size_t indSize = prec->numberOfPointsInBC*sizeof(uint);
 
     checkCudaErrors( cudaStreamCreate(&prec->stream) );
 
     checkCudaErrors( cudaMallocHost((void**) &prec->indicesH, indSize));
     checkCudaErrors( cudaMalloc((void**) &prec->indicesD, indSize));
 
-    size_t dataSize  = prec->nPoints*sizeof(real)*prec->nQuantities;
-    size_t dataSizeH = dataSize * prec->timestepsPerFile;
+    size_t dataSize  = prec->numberOfPointsInBC*sizeof(real)*prec->numberOfQuantities;
+    size_t dataSizeH = dataSize * prec->numberOfTimestepsPerFile;
     
     checkCudaErrors( cudaMallocHost((void**) &prec->dataH, dataSizeH));
     checkCudaErrors( cudaMallocHost((void**) &prec->bufferH, dataSizeH));
@@ -3492,16 +3492,16 @@ void CudaMemoryManager::cudaAllocPrecursorWriter(PrecursorWriter* writer, int le
 
 void CudaMemoryManager::cudaCopyPrecursorWriterIndicesHtoD(PrecursorWriter* writer, int level)
 {
-    checkCudaErrors( cudaMemcpy(writer->getPrecursorStruct(level)->indicesD, writer->getPrecursorStruct(level)->indicesH, writer->getPrecursorStruct(level)->nPoints*sizeof(uint), cudaMemcpyHostToDevice) );
+    checkCudaErrors( cudaMemcpy(writer->getPrecursorStruct(level)->indicesD, writer->getPrecursorStruct(level)->indicesH, writer->getPrecursorStruct(level)->numberOfPointsInBC*sizeof(uint), cudaMemcpyHostToDevice) );
 }
 
 void CudaMemoryManager::cudaCopyPrecursorWriterOutputVariablesDtoH(PrecursorWriter* writer, int level)
 {
     auto prec =  writer->getPrecursorStruct(level);
-    int sizeTimestep = prec->nPoints*prec->nQuantities;
+    int sizeTimestep = prec->numberOfPointsInBC*prec->numberOfQuantities;
 
     checkCudaErrors( cudaStreamSynchronize(prec->stream) );
-    checkCudaErrors( cudaMemcpyAsync( &prec->bufferH[prec->timestepsBuffered*sizeTimestep], prec->bufferD, sizeof(real)*sizeTimestep, cudaMemcpyDeviceToHost, prec->stream));
+    checkCudaErrors( cudaMemcpyAsync( &prec->bufferH[prec->numberOfTimestepsBuffered*sizeTimestep], prec->bufferD, sizeof(real)*sizeTimestep, cudaMemcpyDeviceToHost, prec->stream));
 }
 
 void CudaMemoryManager::cudaFreePrecursorWriter(PrecursorWriter* writer, int level)

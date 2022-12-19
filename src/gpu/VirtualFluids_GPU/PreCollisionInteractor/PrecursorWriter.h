@@ -71,11 +71,11 @@ static constexpr uint PrecPMM = 8;
 
 struct PrecursorStruct
 {
-    uint nPoints, nPointsInPlane, timestepsPerFile, filesWritten, timestepsBuffered;
+    uint numberOfPointsInBC, numberOfPointsInData, numberOfTimestepsPerFile, numberOfFilesWritten, numberOfTimestepsBuffered;
     uint *indicesH, *indicesD;
     real *dataH, *dataD;
     real *bufferH, *bufferD;
-    uint nQuantities;
+    uint numberOfQuantities;
     UbTupleInt4 extent;
     UbTupleFloat2 origin;
     UbTupleFloat3 spacing;
@@ -127,7 +127,7 @@ public:
     
 private:
     WbWriterVtkXmlImageBinary* getWriter(){ return WbWriterVtkXmlImageBinary::getInstance(); };
-    void write(Parameter* para, int level, uint timestepsBuffered);
+    void write(Parameter* para, int level, uint numberOfTimestepsBuffered);
 
     std::vector<std::string> determineNodeDataNames()
     {
