@@ -126,13 +126,14 @@ gcc_9_python:
     paths:
       - build/
       - dist/
+      - _skbuild/
 
   before_script:
     - export CCACHE_BASEDIR=$CI_PROJECT_DIR
     - export CCACHE_DIR=$CI_PROJECT_DIR/cache
 
   script:
-    - python3 setup.py bdist_wheel build_ext --build-temp=build
+    - python3 setup.py bdist_wheel build_ext --build-temp=_skbuild -- -DBUILD_VF_CPU=ON -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_CUDA_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache
 
 ###############################################################################
 ##                            Container Upload                               ##

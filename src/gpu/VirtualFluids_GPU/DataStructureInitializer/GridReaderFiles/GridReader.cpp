@@ -218,16 +218,20 @@ void GridReader::allocArrays_OffsetScale()
     std::cout << "-----Ende OffsetScale------" << std::endl;
 }
 
-void GridReader::allocArrays_fluidNodeIndices() {
+void GridReader::allocArrays_taggedFluidNodes() {
     std::cout << "GridReader::allocArrays_fluidNodeIndices not implemented" << std::endl;
 	// TODO
 }
 
-void GridReader::allocArrays_fluidNodeIndicesBorder() {
-    std::cout << "GridReader::allocArrays_fluidNodeIndicesBorder not implemented" << std::endl;
+void GridReader::tagFluidNodeIndices(std::vector<uint> taggedFluidNodeIndices, CollisionTemplate tag, uint level){
+	std::cout << "GridReader::tagFluidNodeIndices not implemented" << std::endl;
     // TODO
 }
 
+void GridReader::sortFluidNodeTags(){
+	std::cout << "GridReader::sortFluidNodeTags not implemented" << std::endl;
+    // TODO
+}
 
 void GridReader::setPressureValues(int channelSide) const
 {

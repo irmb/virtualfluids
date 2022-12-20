@@ -1,137 +1,72 @@
-import os
-import re
 import sys
-import platform
-import subprocess
+from pathlib import Path
+from typing import List
 
-from setuptools import setup, Extension
-from setuptools.command.build_ext import build_ext
-from setuptools.command.install import install
-from setuptools.command.develop import develop
-from distutils.version import LooseVersion
+import skbuild
 
 """
-Install python wrapper of virtual fluids
-Install GPU backend with option --GPU
-(pass to pip via --install-option="--GPU")
+Install python wrapper of Virtual Fluids
+install via python:
+    python setup.py install
+    set CMAKE Flags via -DBUILD_VF_GPU:BOOL=ON
+    CMAKE flags have to be separated by -- 
+    example: python setup.py install -- -DBUILD_VF_CPU:BOOL=ON
+or install via pip:
+    pip install .
+    for pip>21:
+        set CMAKE Flags via --config-settings "-DBUILD_VF_GPU=ON"
+        example: pip install . --config-settings="-DBUILD_VF_GPU=ON"
+        each option has to be passed in individually i.e --config-settings="-DOPT1=ON" --config-settings="-DOPT2=OFF"
+    for pip <21:
+        set CMAKE Flags via --global-option ="-DBUILD_VF_GPU=ON"
+        example: pip install . --global-option="-DBUILD_VF_GPU=ON"
 """
 
-vf_cmake_args = [
-    "-DBUILD_VF_PYTHON_BINDINGS=ON",
-    "-DCMAKE_CXX_COMPILER_LAUNCHER=ccache",
-    "-DCMAKE_CUDA_COMPILER_LAUNCHER=ccache",
-    "-DCMAKE_C_COMPILER_LAUNCHER=ccache",
-    "-DBUILD_SHARED_LIBS=OFF",
-    "-DBUILD_WARNINGS_AS_ERRORS=OFF"
-]
+package_name = "pyfluids"
+target = "python_bindings"
+src_dir = "pythonbindings"
+stub_package = package_name+"-stubs"
 
-vf_cpu_cmake_args = [
-    "-DBUILD_VF_DOUBLE_ACCURACY=ON",
-    "-DBUILD_VF_CPU:BOOL=ON",
-    "-DBUILD_VF_UNIT_TESTS:BOOL=ON",
-    "-DUSE_METIS=ON",
-    "-DUSE_MPI=ON"
-]
+stub_dir = Path(src_dir)/stub_package
 
-vf_gpu_cmake_args = [
-    "-DBUILD_VF_DOUBLE_ACCURACY=OFF",
-    "-DBUILD_VF_GPU:BOOL=ON",
-    "-DBUILD_VF_UNIT_TESTS:BOOL=OFF",
-]
 
-GPU = False
+def add_subfiles(dir_path: Path, suffix: str, root_dir: Path) -> List[str]:
+    files = []
+    for f in dir_path.iterdir():
+        if f.is_dir():
+            files.extend(add_subfiles(f, suffix, root_dir))
+        if f.is_file():
+            if f.suffix != suffix:
+                continue
+            files.append(str(f.relative_to(root_dir)))
+    return files
 
-class CommandMixin:
-    user_options = [
-        ('GPU', None, 'compile pyfluids with GPU backend'),
+def add_directory(dir_path: Path, suffix: str):
+    return add_subfiles(dir_path, suffix, dir_path)
+
+stub_files = add_directory(stub_dir, ".pyi")
+
+# hack to get config-args for installation with pip>21
+cmake_args = []
+if "config_args" in locals():
+    cmake_args.extend([f"{k}={v}" for k, v in locals()["config_args"].items()])
+
+cmake_args += [
+        f"-DPython3_ROOT_DIR={Path(sys.prefix)}",
+        "-DBUILD_VF_PYTHON_BINDINGS=ON",
+        "-DBUILD_SHARED_LIBS=OFF",
+        "-DBUILD_VF_DOUBLE_ACCURACY=OFF",
+        "-DBUILD_VF_UNIT_TESTS:BOOL=OFF",
+        "-DBUILD_WARNINGS_AS_ERRORS=OFF",
     ]
 
-    def initialize_options(self):
-        super().initialize_options()
-        self.GPU = False
-
-    def finalize_options(self):
-        super().finalize_options()
-
-    def run(self):
-        global GPU
-        GPU = GPU or self.GPU
-        super().run()
-
-
-class InstallCommand(CommandMixin, install):
-    user_options = getattr(install, 'user_options', []) + CommandMixin.user_options
-
-
-class DevelopCommand(CommandMixin, develop):
-    user_options = getattr(develop, 'user_options', []) + CommandMixin.user_options
-
-
-class CMakeExtension(Extension):
-    def __init__(self, name, sourcedir=''):
-        Extension.__init__(self, name, sources=[])
-        self.sourcedir = os.path.abspath(sourcedir)
-
-
-class CMakeBuild(CommandMixin, build_ext):
-    user_options = getattr(build_ext, 'user_options', []) + CommandMixin.user_options
-
-    def run(self):
-        super().run()
-        try:
-            out = subprocess.check_output(['cmake', '--version'])
-        except OSError:
-            raise RuntimeError("CMake must be installed to build the following extensions: " +
-                               ", ".join(e.name for e in self.extensions))
-
-        if platform.system() == "Windows":
-            cmake_version = LooseVersion(re.search(r'version\s*([\d.]+)', out.decode()).group(1))
-            if cmake_version < '3.1.0':
-                raise RuntimeError("CMake >= 3.1.0 is required on Windows")
-
-        for ext in self.extensions:
-            self.build_extension(ext)
-
-    def build_extension(self, ext):
-        extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
-        # required for auto-detection of auxiliary "native" libs
-        if not extdir.endswith(os.path.sep):
-            extdir += os.path.sep
-
-        cmake_args = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
-                      '-DPYTHON_EXECUTABLE=' + sys.executable]
-
-        cfg = 'Debug' if self.debug else 'Release'
-        build_args = ['--config', cfg]
-
-        if platform.system() == "Windows":
-            cmake_args += ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}'.format(cfg.upper(), extdir)]
-            if sys.maxsize > 2**32:
-                cmake_args += ['-A', 'x64']
-            build_args += ['--', '/m']
-        else:
-            cmake_args += ['-DCMAKE_BUILD_TYPE=' + cfg]
-            build_args += ['--', '-j2']
-
-        cmake_args.extend(vf_cmake_args)
-        cmake_args.extend(vf_gpu_cmake_args if GPU else vf_cpu_cmake_args)
-
-        env = os.environ.copy()
-        env['CXXFLAGS'] = '{} -DVERSION_INFO=\\"{}\\"'.format(env.get('CXXFLAGS', ''),
-                                                              self.distribution.get_version())
-        if not os.path.exists(self.build_temp):
-            os.makedirs(self.build_temp)
-        cmake_cache_file = self.build_temp+"/CMakeCache.txt"
-        if os.path.exists(cmake_cache_file):
-            os.remove(cmake_cache_file)
-        subprocess.check_call(['cmake', ext.sourcedir] + cmake_args, cwd=self.build_temp, env=env)
-        subprocess.check_call(['cmake', '--build', '.'] + build_args, cwd=self.build_temp)
-
-
-setup(
-    name='pyfluids',
-    version='0.0.1',
-    ext_modules=[CMakeExtension('pyfluids')],
-    cmdclass={"install": InstallCommand, "develop": DevelopCommand, "build_ext": CMakeBuild},
-    zip_safe=False,
+skbuild.setup(
+    name=package_name,
+    packages=[package_name, "pymuparser", "pyfluids-stubs"],
+    package_dir={"": src_dir},
+    cmake_args=cmake_args,
+    cmake_install_target=target,
+    package_data={  "pyfluids": ["py.typed"],
+                    "pyfluids-stubs": stub_files},
+    include_package_data=True,
 )

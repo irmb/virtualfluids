@@ -36,12 +36,12 @@
 
 #include "grid/BoundaryConditions/Side.h"
 #include "grid/Grid.h"
+#include "GridGenerator/TransientBCSetter/TransientBCSetter.h"
 
 bool gg::BoundaryCondition::isSide( SideType side ) const
 {
     return this->side->whoAmI() == side;
 }
-
 //////////////////////////////////////////////////////////////////////////
 
 void VelocityBoundaryCondition::setVelocityProfile(
@@ -125,4 +125,3 @@ void StressBoundaryCondition::fillSamplingIndices(std::vector<SPtr<Grid> > grid,
     }
     
 }
-

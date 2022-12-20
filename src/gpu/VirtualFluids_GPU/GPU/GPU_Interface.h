@@ -900,6 +900,8 @@ void QPressDevDirDepBot27(unsigned int numberOfThreads,
 
 void QPressNoRhoDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
+void QPressZeroRhoOutflowDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
+
 void QInflowScaleByPressDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
 void QPressDevOld27(unsigned int numberOfThreads,
@@ -1006,6 +1008,14 @@ void VelSchlaffer27(  unsigned int numberOfThreads,
                                  unsigned int* neighborZ,
                                  unsigned int size_Mat, 
                                  bool isEvenTimestep);
+
+void QPrecursorDevCompZeroPress(LBMSimulationParameter* parameterDevice, QforPrecursorBoundaryConditions* boundaryCondition, real tRatio, real velocityRatio);
+
+void PrecursorDevEQ27(LBMSimulationParameter* parameterDevice, QforPrecursorBoundaryConditions* boundaryCondition, real tRatio, real velocityRatio);
+
+void PrecursorDevDistributions(LBMSimulationParameter* parameterDevice, QforPrecursorBoundaryConditions* boundaryCondition, real tRatio, real velocityRatio);
+
+void QPrecursorDevDistributions(LBMSimulationParameter* parameterDevice, QforPrecursorBoundaryConditions* boundaryCondition, real tRatio, real velocityRatio);
 
 void QADDev7(unsigned int numberOfThreads,
                         real* DD, 

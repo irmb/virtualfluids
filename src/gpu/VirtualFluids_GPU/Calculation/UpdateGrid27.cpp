@@ -23,12 +23,16 @@ void UpdateGrid27::updateGrid(int level, unsigned int t)
     }
 
     //////////////////////////////////////////////////////////////////////////
+    
+    interactWithProbes(level, t);
+
+    //////////////////////////////////////////////////////////////////////////
 
     collision(this, para.get(), level, t);
 
     //////////////////////////////////////////////////////////////////////////
 
-    postCollisionBC(level);
+    postCollisionBC(level, t);
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -47,13 +51,14 @@ void UpdateGrid27::updateGrid(int level, unsigned int t)
 
     //////////////////////////////////////////////////////////////////////////
     if( level != para->getFine() )
-    {
+    {   
         refinement(this, para.get(), level);
     }
 
+    //////////////////////////////////////////////////////////////////////////
+    
     interactWithActuators(level, t);
 
-    interactWithProbes(level, t);
 }
 
 void UpdateGrid27::collisionAllNodes(int level, unsigned int t)
@@ -71,15 +76,16 @@ void UpdateGrid27::collisionAllNodes(int level, unsigned int t)
         collisionAdvectionDiffusion(level);
 }
 
-void UpdateGrid27::collisionUsingIndices(int level, unsigned int t, uint *fluidNodeIndices, uint numberOfFluidNodes, int stream)
+void UpdateGrid27::collisionUsingIndices(int level, unsigned int t, uint *taggedFluidNodeIndices, uint numberOfTaggedFluidNodes, CollisionTemplate collisionTemplate, CudaStreamIndex stream)
 {
-    if (fluidNodeIndices != nullptr && numberOfFluidNodes != 0)
-        kernels.at(level)->runOnIndices(fluidNodeIndices, numberOfFluidNodes, stream);
+    if (taggedFluidNodeIndices != nullptr && numberOfTaggedFluidNodes != 0)
+        kernels.at(level)->runOnIndices(taggedFluidNodeIndices, numberOfTaggedFluidNodes, collisionTemplate, stream);
     else
-        std::cout << "In collision: fluidNodeIndices or numberOfFluidNodes not definded"
+        std::cout << "In collision: fluidNodeIndices or numberOfFluidNodes not defined"
                       << std::endl;
 
     //////////////////////////////////////////////////////////////////////////
+    //! \todo: AD collision and porousMedia should be called separately, not in collisionUsingIndices
 
     if (para->getSimulatePorousMedia())
         collisionPorousMedia(level);
@@ -118,21 +124,21 @@ void UpdateGrid27::collisionAdvectionDiffusion(int level)
     this->adKernelManager->runADcollisionKernel(level);
 }
 
-void UpdateGrid27::prepareExchangeMultiGPU(int level, int streamIndex)
+void UpdateGrid27::prepareExchangeMultiGPU(int level, CudaStreamIndex streamIndex)
 {
     prepareExchangeCollDataXGPU27AllNodes(para.get(), level, streamIndex);
     prepareExchangeCollDataYGPU27AllNodes(para.get(), level, streamIndex);
     prepareExchangeCollDataZGPU27AllNodes(para.get(), level, streamIndex);
 }
 
-void UpdateGrid27::prepareExchangeMultiGPUAfterFtoC(int level, int streamIndex)
+void UpdateGrid27::prepareExchangeMultiGPUAfterFtoC(int level, CudaStreamIndex streamIndex)
 {
     prepareExchangeCollDataXGPU27AfterFtoC(para.get(), level, streamIndex);
     prepareExchangeCollDataYGPU27AfterFtoC(para.get(), level, streamIndex);
     prepareExchangeCollDataZGPU27AfterFtoC(para.get(), level, streamIndex);
 }
 
-void UpdateGrid27::exchangeMultiGPU(int level, int streamIndex)
+void UpdateGrid27::exchangeMultiGPU(int level, CudaStreamIndex streamIndex)
 {
     //////////////////////////////////////////////////////////////////////////
     // 3D domain decomposition
@@ -168,30 +174,30 @@ void UpdateGrid27::exchangeMultiGPU_noStreams_withPrepare(int level, bool useRed
     // 3D domain decomposition
     if (useReducedComm) {
         // X
-        prepareExchangeCollDataXGPU27AfterFtoC(para.get(), level, -1);
-        exchangeCollDataXGPU27AfterFtoC(para.get(), comm, cudaMemoryManager.get(), level, -1);
-        scatterNodesFromRecvBufferXGPU27AfterFtoC(para.get(), level, -1);
+        prepareExchangeCollDataXGPU27AfterFtoC(para.get(), level, CudaStreamIndex::Legacy);
+        exchangeCollDataXGPU27AfterFtoC(para.get(), comm, cudaMemoryManager.get(), level, CudaStreamIndex::Legacy);
+        scatterNodesFromRecvBufferXGPU27AfterFtoC(para.get(), level, CudaStreamIndex::Legacy);
         // Y
-        prepareExchangeCollDataYGPU27AfterFtoC(para.get(), level, -1);
-        exchangeCollDataYGPU27AfterFtoC(para.get(), comm, cudaMemoryManager.get(), level, -1);
-        scatterNodesFromRecvBufferYGPU27AfterFtoC(para.get(), level, -1);
+        prepareExchangeCollDataYGPU27AfterFtoC(para.get(), level, CudaStreamIndex::Legacy);
+        exchangeCollDataYGPU27AfterFtoC(para.get(), comm, cudaMemoryManager.get(), level, CudaStreamIndex::Legacy);
+        scatterNodesFromRecvBufferYGPU27AfterFtoC(para.get(), level, CudaStreamIndex::Legacy);
         // Z
-        prepareExchangeCollDataZGPU27AfterFtoC(para.get(), level, -1);
-        exchangeCollDataZGPU27AfterFtoC(para.get(), comm, cudaMemoryManager.get(), level, -1);
-        scatterNodesFromRecvBufferZGPU27AfterFtoC(para.get(), level, -1);
+        prepareExchangeCollDataZGPU27AfterFtoC(para.get(), level, CudaStreamIndex::Legacy);
+        exchangeCollDataZGPU27AfterFtoC(para.get(), comm, cudaMemoryManager.get(), level, CudaStreamIndex::Legacy);
+        scatterNodesFromRecvBufferZGPU27AfterFtoC(para.get(), level, CudaStreamIndex::Legacy);
     } else {
         // X
-        prepareExchangeCollDataXGPU27AllNodes(para.get(), level, -1);
-        exchangeCollDataXGPU27AllNodes(para.get(), comm, cudaMemoryManager.get(), level, -1);
-        scatterNodesFromRecvBufferXGPU27AllNodes(para.get(), level, -1);
+        prepareExchangeCollDataXGPU27AllNodes(para.get(), level, CudaStreamIndex::Legacy);
+        exchangeCollDataXGPU27AllNodes(para.get(), comm, cudaMemoryManager.get(), level, CudaStreamIndex::Legacy);
+        scatterNodesFromRecvBufferXGPU27AllNodes(para.get(), level, CudaStreamIndex::Legacy);
         // Y
-        prepareExchangeCollDataYGPU27AllNodes(para.get(), level, -1);
-        exchangeCollDataYGPU27AllNodes(para.get(), comm, cudaMemoryManager.get(), level, -1);
-        scatterNodesFromRecvBufferYGPU27AllNodes(para.get(), level, -1);
+        prepareExchangeCollDataYGPU27AllNodes(para.get(), level, CudaStreamIndex::Legacy);
+        exchangeCollDataYGPU27AllNodes(para.get(), comm, cudaMemoryManager.get(), level, CudaStreamIndex::Legacy);
+        scatterNodesFromRecvBufferYGPU27AllNodes(para.get(), level, CudaStreamIndex::Legacy);
         // Z
-        prepareExchangeCollDataZGPU27AllNodes(para.get(), level, -1);
-        exchangeCollDataZGPU27AllNodes(para.get(), comm, cudaMemoryManager.get(), level, -1);
-        scatterNodesFromRecvBufferZGPU27AllNodes(para.get(), level, -1);
+        prepareExchangeCollDataZGPU27AllNodes(para.get(), level, CudaStreamIndex::Legacy);
+        exchangeCollDataZGPU27AllNodes(para.get(), comm, cudaMemoryManager.get(), level, CudaStreamIndex::Legacy);
+        scatterNodesFromRecvBufferZGPU27AllNodes(para.get(), level, CudaStreamIndex::Legacy);
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -204,7 +210,7 @@ void UpdateGrid27::exchangeMultiGPU_noStreams_withPrepare(int level, bool useRed
         exchangePostCollDataADZGPU27(para.get(), comm, cudaMemoryManager.get(), level);
     }
 }
-void UpdateGrid27::exchangeMultiGPUAfterFtoC(int level, int streamIndex)
+void UpdateGrid27::exchangeMultiGPUAfterFtoC(int level, CudaStreamIndex streamIndex)
 {
     //////////////////////////////////////////////////////////////////////////
     // 3D domain decomposition
@@ -227,9 +233,10 @@ void UpdateGrid27::exchangeMultiGPUAfterFtoC(int level, int streamIndex)
     }
 }
 
-void UpdateGrid27::postCollisionBC(int level)
+void UpdateGrid27::postCollisionBC(int level, uint t)
 {
     //////////////////////////////////////////////////////////////////////////
+    // G E O M E T R Y
     // V E L O C I T Y (I N F L O W)
     this->bcKernelManager->runVelocityBCKernelPost(level);
 
@@ -256,6 +263,10 @@ void UpdateGrid27::postCollisionBC(int level)
     //////////////////////////////////////////////////////////////////////////
     // P R E S S U R E
     this->bcKernelManager->runPressureBCKernelPost(level);
+
+    //////////////////////////////////////////////////////////////////////////
+    // P R E C U R S O R
+    this->bcKernelManager->runPrecursorBCKernelPost(level, t, cudaMemoryManager.get());
 
     //////////////////////////////////////////////////////////////////////////
     // A D V E C T I O N    D I F F U S I O N
@@ -317,13 +328,12 @@ void UpdateGrid27::preCollisionBC(int level, unsigned int t)
     //////////////////////////////////////////////////////////////////////////////////
 }
 
-void UpdateGrid27::fineToCoarse(int level, InterpolationCellFC* icellFC, OffFC &offFC,
-                                int streamIndex)
+void UpdateGrid27::fineToCoarse(int level, InterpolationCellFC* icellFC, OffFC &offFC, CudaStreamIndex streamIndex)
 {
     gridScalingKernelManager->runFineToCoarseKernelLB(level, icellFC, offFC, streamIndex);
 
     if (para->getDiffOn()) {
-        if (streamIndex != -1) {
+        if (para->getStreamManager()->streamIsRegistered(streamIndex)) {
             printf("fineToCoarse Advection Diffusion not implemented"); // TODO
             return;
         }
@@ -331,14 +341,13 @@ void UpdateGrid27::fineToCoarse(int level, InterpolationCellFC* icellFC, OffFC &
     }
 }
 
-void UpdateGrid27::coarseToFine(int level, InterpolationCellCF* icellCF, OffCF &offCF,
-                                int streamIndex)
+void UpdateGrid27::coarseToFine(int level, InterpolationCellCF* icellCF, OffCF &offCF, CudaStreamIndex streamIndex)
 {
     this->gridScalingKernelManager->runCoarseToFineKernelLB(level, icellCF, offCF, streamIndex);
 
     if (para->getDiffOn())
     {
-        if (streamIndex != -1){
+        if(para->getStreamManager()->streamIsRegistered(streamIndex)){
             printf("CoarseToFineWithStream Advection Diffusion not implemented"); // TODO
             return;
         }
