@@ -1,35 +1,65 @@
-from pyfluids.cpu import Simulation
-from pyfluids.cpu.boundaryconditions import NoSlipBoundaryCondition
-from pyfluids.cpu.geometry import GbCuboid3D, State
-from pyfluids.cpu.kernel import LBMKernel, KernelType
-from pyfluids.cpu.parameters import RuntimeParameters, GridParameters, PhysicalParameters
-from pyfluids.cpu.writer import Writer, OutputFormat
+r"""
+=======================================================================================
+ ____          ____    __    ______     __________   __      __       __        __
+ \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+      \    \  |    |   ________________________________________________________________
+       \    \ |    |  |  ______________________________________________________________|
+        \    \|    |  |  |         __          __     __     __     ______      _______
+         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
 
-default_grid_params = GridParameters()
+  This file is part of VirtualFluids. VirtualFluids is free software: you can
+  redistribute it and/or modify it under the terms of the GNU General Public
+  License as published by the Free Software Foundation, either version 3 of
+  the License, or (at your option) any later version.
+
+  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+  for more details.
+
+  You should have received a copy of the GNU General Public License along
+  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+
+! \file simulation.py
+! \ingroup poiseuille
+! \author Sven Marcus, Henry Korb
+=======================================================================================
+"""
+from pyfluids import cpu
+
+
+default_grid_params = cpu.parameters.GridParameters()
 default_grid_params.node_distance = 10 / 32
 default_grid_params.number_of_nodes_per_direction = [8, 8, 32]
 default_grid_params.blocks_per_direction = [1, 1, 4]
 default_grid_params.periodic_boundary_in_x1 = True
 default_grid_params.periodic_boundary_in_x2 = True
 
-default_physical_params = PhysicalParameters()
+default_physical_params = cpu.parameters.PhysicalParameters()
 default_physical_params.lattice_viscosity = 0.005
 
-default_runtime_params = RuntimeParameters()
+default_runtime_params = cpu.parameters.RuntimeParameters()
 default_runtime_params.number_of_threads = 4
 default_runtime_params.number_of_timesteps = 10000
 default_runtime_params.timestep_log_interval = 1000
 
-default_kernel = LBMKernel(KernelType.CompressibleCumulantFourthOrderViscosity)
+default_kernel = cpu.kernel.LBMKernel(cpu.kernel.KernelType.CompressibleCumulantFourthOrderViscosity)
 default_kernel.use_forcing = True
 default_kernel.forcing_in_x1 = 1e-8
 
-default_writer = Writer()
+default_writer = cpu.writer.Writer()
 default_writer.output_path = "./output"
-default_writer.output_format = OutputFormat.BINARY
+default_writer.output_format = cpu.writer.OutputFormat.BINARY
 
 
-default_kernel = LBMKernel(KernelType.CompressibleCumulantFourthOrderViscosity)
+default_kernel = cpu.kernel.LBMKernel(cpu.kernel.KernelType.CompressibleCumulantFourthOrderViscosity)
 default_kernel.use_forcing = True
 default_kernel.forcing_in_x1 = 1e-8
 
@@ -39,7 +69,7 @@ def run_simulation(physical_params=default_physical_params,
                    runtime_params=default_runtime_params,
                    kernel=default_kernel,
                    writer=default_writer):
-    simulation = Simulation()
+    simulation = cpu.Simulation()
 
     simulation.set_kernel_config(kernel)
     simulation.set_physical_parameters(physical_params)
@@ -47,11 +77,11 @@ def run_simulation(physical_params=default_physical_params,
     simulation.set_runtime_parameters(runtime_params)
     simulation.set_writer(writer)
 
-    no_slip_bc = NoSlipBoundaryCondition()
+    no_slip_bc = cpu.boundaryconditions.NoSlipBoundaryCondition()
 
     block_thickness = 3 * grid_params.node_distance
     simulation.add_object(
-        GbCuboid3D(
+        cpu.geometry.GbCuboid3D(
             grid_params.bounding_box.min_x1 - block_thickness,
             grid_params.bounding_box.min_x2 - block_thickness,
             grid_params.bounding_box.min_x3 - block_thickness,
@@ -59,10 +89,10 @@ def run_simulation(physical_params=default_physical_params,
             grid_params.bounding_box.max_x2 + block_thickness,
             grid_params.bounding_box.min_x3),
         no_slip_bc,
-        State.SOLID, "/geo/addWallZMin")
+        cpu.geometry.State.SOLID, "/geo/addWallZMin")
 
     simulation.add_object(
-        GbCuboid3D(
+        cpu.geometry.GbCuboid3D(
             grid_params.bounding_box.min_x1 - block_thickness,
             grid_params.bounding_box.min_x2 - block_thickness,
             grid_params.bounding_box.max_x3,
@@ -70,7 +100,7 @@ def run_simulation(physical_params=default_physical_params,
             grid_params.bounding_box.max_x2 + block_thickness,
             grid_params.bounding_box.max_x3 + block_thickness),
         no_slip_bc,
-        State.SOLID, "/geo/addWallZMax")
+        cpu.geometry.State.SOLID, "/geo/addWallZMax")
 
     simulation.run_simulation()
 

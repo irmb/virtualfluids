@@ -8,8 +8,10 @@ run/
 _skbuild/
 dist/
 *.egg-info/
-__pycache__/
+**/__pycache__/
 .venv/
+pythonbindings/pyfluids/bindings*
+pythonbindings/pymuparser/bindings*
 
 # IDE
 .vscode/

@@ -1,6 +1,40 @@
+r"""
+=======================================================================================
+ ____          ____    __    ______     __________   __      __       __        __
+ \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+      \    \  |    |   ________________________________________________________________
+       \    \ |    |  |  ______________________________________________________________|
+        \    \|    |  |  |         __          __     __     __     ______      _______
+         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+
+  This file is part of VirtualFluids. VirtualFluids is free software: you can
+  redistribute it and/or modify it under the terms of the GNU General Public
+  License as published by the Free Software Foundation, either version 3 of
+  the License, or (at your option) any later version.
+
+  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+  for more details.
+
+  You should have received a copy of the GNU General Public License along
+  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+
+! \file test_geometry.py
+! \ingroup tests
+! \author Sven Marcus, Henry Korb
+=======================================================================================
+"""
 import unittest
 
-from pyfluids.cpu.geometry import *
+from pyfluids import cpu
 
 
 class TestGeometry(unittest.TestCase):
@@ -9,7 +43,7 @@ class TestGeometry(unittest.TestCase):
         """
         WHEN setting point coordinates in constructor THEN point should have coordinates
         """
-        sut = GbPoint3D(4, 8, 3)
+        sut = cpu.geometry.GbPoint3D(4, 8, 3)
 
         self.assertEqual(sut.x1, 4)
         self.assertEqual(sut.x2, 8)
@@ -19,7 +53,7 @@ class TestGeometry(unittest.TestCase):
         """
         WHEN setting point coordinates THEN point should have coordinates
         """
-        sut = GbPoint3D()
+        sut = cpu.geometry.GbPoint3D()
 
         sut.x1 = 4
         sut.x2 = 8
@@ -33,10 +67,10 @@ class TestGeometry(unittest.TestCase):
         """
         WHEN setting line points THEN line should have points
         """
-        sut = GbLine3D()
+        sut = cpu.geometry.GbLine3D()
 
-        point1 = GbPoint3D()
-        point2 = GbPoint3D()
+        point1 = cpu.geometry.GbPoint3D()
+        point2 = cpu.geometry.GbPoint3D()
         sut.point1 = point1
         sut.point2 = point2
 

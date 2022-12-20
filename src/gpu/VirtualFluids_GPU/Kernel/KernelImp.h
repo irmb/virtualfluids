@@ -1,6 +1,8 @@
 #ifndef KERNEL_IMP_H
 #define KERNEL_IMP_H
 
+#include "LBM/LB.h" 
+
 #include "Kernel.h"
 
 #include <memory>
@@ -9,12 +11,12 @@
 
 class CheckParameterStrategy;
 class Parameter;
-
+class CudaStreamManager; 
 class KernelImp : public Kernel
 {
 public:
     virtual void run() = 0;
-    virtual void runOnIndices(const unsigned int *indices, unsigned int size_indices, int stream = -1);
+    virtual void runOnIndices(const unsigned int *indices, unsigned int size_indices, CollisionTemplate collisionTemplate, CudaStreamIndex streamIndex=CudaStreamIndex::Legacy);
 
     bool checkParameter();
     std::vector<PreProcessorType> getPreProcessorTypes();

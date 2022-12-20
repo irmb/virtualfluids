@@ -38,12 +38,16 @@
 #include <memory>
 #include <array>
 
+#include <lbm/constants/NumericConstants.h>
+
 #include "gpu/GridGenerator/global.h"
 
 #include "gpu/GridGenerator/grid/GridBuilder/GridBuilder.h"
 #include "gpu/GridGenerator/grid/Grid.h"
 #include "gpu/GridGenerator/grid/GridInterface.h"
 #include "gpu/GridGenerator/grid/NodeValues.h"
+
+using namespace vf::lbm::constant;
 
 struct Vertex;
 class  Grid;
@@ -58,9 +62,11 @@ class SlipBoundaryCondition;
 class StressBoundaryCondition;
 class PressureBoundaryCondition;
 class GeometryBoundaryCondition;
+class PrecursorBoundaryCondition;
 enum class SideType;
 
-
+class TransientBCInputFileReader;
+class FileCollection;
 
 class LevelGridBuilder : public GridBuilder
 {
@@ -75,11 +81,14 @@ public:
     GRIDGENERATOR_EXPORT  ~LevelGridBuilder() override;
 
     GRIDGENERATOR_EXPORT void setSlipBoundaryCondition(SideType sideType, real nomalX, real normalY, real normalZ);
-    GRIDGENERATOR_EXPORT void setStressBoundaryCondition(SideType sideType, real nomalX, real normalY, real normalZ, uint samplingOffset, real z0);
+    GRIDGENERATOR_EXPORT void setStressBoundaryCondition(SideType sideType, real nomalX, real normalY, real normalZ, uint samplingOffset, real z0, real dx);
     GRIDGENERATOR_EXPORT void setVelocityBoundaryCondition(SideType sideType, real vx, real vy, real vz);
     GRIDGENERATOR_EXPORT void setPressureBoundaryCondition(SideType sideType, real rho);
     GRIDGENERATOR_EXPORT void setPeriodicBoundaryCondition(bool periodic_X, bool periodic_Y, bool periodic_Z);
     GRIDGENERATOR_EXPORT void setNoSlipBoundaryCondition(SideType sideType);
+    GRIDGENERATOR_EXPORT void setPrecursorBoundaryCondition(SideType sideType, SPtr<FileCollection> fileCollection, int timeStepsBetweenReads, 
+                                                            real velocityX=c0o1, real velocityY=c0o1, real velocityZ=c0o1,     
+                                                            std::vector<uint> fileLevelToGridLevelMap = {});
 
     GRIDGENERATOR_EXPORT void setEnableFixRefinementIntoTheWall(bool enableFixRefinementIntoTheWall);
 
@@ -121,6 +130,14 @@ public:
     GRIDGENERATOR_EXPORT void getPressureValues(real* rho, int* indices, int* neighborIndices, int level) const override;
     GRIDGENERATOR_EXPORT virtual void getPressureQs(real* qs[27], int level) const override;
 
+    GRIDGENERATOR_EXPORT uint getPrecursorSize(int level) const override;
+    GRIDGENERATOR_EXPORT void getPrecursorValues(   uint* neighbor0PP, uint* neighbor0PM, uint* neighbor0MP, uint* neighbor0MM, 
+                                                    real* weights0PP, real* weights0PM, real* weights0MP, real* weights0MM, 
+                                                    int* indices, std::vector<SPtr<TransientBCInputFileReader>>& reader, 
+                                                    int& numberOfPrecursorNodes, size_t& numberOfQuantities, uint& timeStepsBetweenReads,
+                                                    real& velocityX, real& velocityY, real& velocityZ, int level) const override;
+    GRIDGENERATOR_EXPORT virtual void getPrecursorQs(real* qs[27], int level) const override;
+
     GRIDGENERATOR_EXPORT virtual void getGeometryQs(real *qs[27], int level) const override;
     GRIDGENERATOR_EXPORT virtual uint getGeometrySize(int level) const override;
     GRIDGENERATOR_EXPORT virtual void getGeometryIndices(int *indices, int level) const override;
@@ -148,6 +165,8 @@ protected:
         std::vector<SPtr<PressureBoundaryCondition>> pressureBoundaryConditions;
 
         std::vector<SPtr<VelocityBoundaryCondition>> noSlipBoundaryConditions;
+
+        std::vector<SPtr<PrecursorBoundaryCondition>> precursorBoundaryConditions;
 
         SPtr<GeometryBoundaryCondition> geometryBoundaryCondition;
     };
@@ -194,6 +213,21 @@ public:
 
     // needed for CUDA Streams MultiGPU (Communication Hiding)
     void findFluidNodes(bool splitDomain) override;
+
+    void addFluidNodeIndicesMacroVars(const std::vector<uint>& fluidNodeIndicesMacroVars, uint level) override;
+    void addFluidNodeIndicesApplyBodyForce(const std::vector<uint>& fluidNodeIndicesApplyBodyForce, uint level) override;
+    void addFluidNodeIndicesAllFeatures(const std::vector<uint>& fluidNodeIndicesAllFeatures, uint level) override;
+    
+    void sortFluidNodeIndicesMacroVars(uint level) override;
+    void sortFluidNodeIndicesApplyBodyForce(uint level) override;
+    void sortFluidNodeIndicesAllFeatures(uint level) override;
+
+    uint getNumberOfFluidNodesMacroVars(unsigned int level) const override;
+    void getFluidNodeIndicesMacroVars(uint *fluidNodeIndicesMacroVars, const int level) const override;
+    uint getNumberOfFluidNodesApplyBodyForce(unsigned int level) const override;
+    void getFluidNodeIndicesApplyBodyForce(uint *fluidNodeIndicesApplyBodyForce, const int level) const override;
+    uint getNumberOfFluidNodesAllFeatures(unsigned int level) const override;
+    void getFluidNodeIndicesAllFeatures(uint *fluidNodeIndicesAllFeatures, const int level) const override;
 };
 
 #endif

@@ -40,6 +40,18 @@
 
 using namespace gg;
 
+std::vector<real> Side::getNormal()
+{
+    std::vector<real> normal;
+    if(this->getCoordinate()==X_INDEX)
+        normal = {(real)this->getDirection(), 0.0, 0.0};
+    if(this->getCoordinate()==Y_INDEX)
+        normal = {0.0, (real)this->getDirection(), 0.0};
+    if(this->getCoordinate()==Z_INDEX)
+        normal = {0.0, 0.0, (real)this->getDirection()};
+    return normal;
+}
+
 void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, std::string coord, real constant,
                       real startInner, real endInner, real startOuter, real endOuter)
 {
@@ -49,11 +61,19 @@ void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition
         {
             const uint index = getIndex(grid, coord, constant, v1, v2);
 
-            if ((index != INVALID_INDEX) && (  grid->getFieldEntry(index) == vf::gpu::FLUID
-                                            || grid->getFieldEntry(index) == vf::gpu::FLUID_CFC
-                                            || grid->getFieldEntry(index) == vf::gpu::FLUID_CFF
-                                            || grid->getFieldEntry(index) == vf::gpu::FLUID_FCC
-                                            || grid->getFieldEntry(index) == vf::gpu::FLUID_FCF ))
+            if ((index != INVALID_INDEX) && (   grid->getFieldEntry(index) == vf::gpu::FLUID
+                                            ||  grid->getFieldEntry(index) == vf::gpu::FLUID_CFC
+                                            ||  grid->getFieldEntry(index) == vf::gpu::FLUID_CFF
+                                            ||  grid->getFieldEntry(index) == vf::gpu::FLUID_FCC
+                                            ||  grid->getFieldEntry(index) == vf::gpu::FLUID_FCF 
+                                            ||  grid->getFieldEntry(index) == vf::gpu::FLUID_FCF
+                                            
+                                            //! Enforce overlap of BCs on edge nodes
+                                            ||  grid->getFieldEntry(index)  == vf::gpu::BC_PRESSURE
+                                            ||  grid->getFieldEntry(index)  == vf::gpu::BC_VELOCITY 
+                                            ||  grid->getFieldEntry(index)  == vf::gpu::BC_NOSLIP   
+                                            ||  grid->getFieldEntry(index)  == vf::gpu::BC_SLIP     
+                                            ||  grid->getFieldEntry(index)  == vf::gpu::BC_STRESS ))
             {
                 grid->setFieldEntry(index, boundaryCondition->getType());
                 boundaryCondition->indices.push_back(index);
@@ -64,7 +84,6 @@ void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition
 
                 boundaryCondition->patches.push_back(0);
             }
-
         }
     }
 }
@@ -152,16 +171,21 @@ void Side::setQs(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uin
             else                neighborZ = grid->getLastFluidNode ( coords, 2, grid->getEndZ() );
         }
 
+        //! Only seting q's that partially point in the Side-normal direction
+        bool alignedWithNormal = (this->getNormal()[0]*grid->getDirection()[dir * DIMENSION + 0]+
+                                  this->getNormal()[1]*grid->getDirection()[dir * DIMENSION + 1]+
+                                  this->getNormal()[2]*grid->getDirection()[dir * DIMENSION + 2] ) > 0;
+        
         uint neighborIndex = grid->transCoordToIndex( neighborX, neighborY, neighborZ );
-        if( grid->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_OUT_OF_GRID_BOUNDARY ||
-            grid->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_OUT_OF_GRID ||
-            grid->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_SOLID )
+        if((grid->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_OUT_OF_GRID_BOUNDARY ||
+            grid->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_OUT_OF_GRID          ||
+            grid->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_SOLID)               &&
+            alignedWithNormal )
             qNode[dir] = 0.5;
         else
             qNode[dir] = -1.0;
-
     }
-
+    
     boundaryCondition->qs.push_back(qNode);
 }
 
@@ -260,7 +284,7 @@ void MY::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCond
     real coordinateNormal = grid[level]->getStartY() + grid[level]->getDelta();
 
     if( coordinateNormal > grid[0]->getStartY() + grid[0]->getDelta() ) return;
-
+    
     Side::addIndices(grid[level], boundaryCondition, "y", coordinateNormal, startInner, endInner, startOuter, endOuter);
 }
 
