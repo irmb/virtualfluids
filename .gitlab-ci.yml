@@ -133,27 +133,37 @@ gcc_9_python:
     - export CCACHE_DIR=$CI_PROJECT_DIR/cache
 
   script:
-    - python3 setup.py bdist_wheel build_ext --build-temp=_skbuild -- -DBUILD_VF_CPU=ON -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_CUDA_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache
+    - python3 setup.py bdist_wheel build_ext --build-temp=_skbuild -- -DBUILD_VF_CPU=ON -DBUILD_VF_DOUBLE_ACCURACY=ON -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_CUDA_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache
 
 ###############################################################################
 ##                            Container Upload                               ##
 ###############################################################################
-build_singularity_image:
+build_poiseuille_test_container:
+  image: 
+    name: quay.io/singularity/singularity:v3.10.2
+    entrypoint: [""]
+
   stage: container_upload
 
-  needs:
-    - gcc_9_python
+  rules:
+    - if: $REMOTE_USER && $REMOTE_HOST && $PRIVATE_KEY && $CI_PIPELINE_SOURCE == "schedule"
+      when: always
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - when: manual
+      allow_failure: true
 
   tags:
     - linux
     - privileged
 
-  rules:
-    - if: $CI_COMMIT_TAG
+  artifacts:
+    expire_in: 1 hrs
+    paths:
+      - Containers/PoiseuilleTestContainer.sif
 
   script:
-    - singularity build Containers/VirtualFluidsPython.sif Containers/VirtualFluidsPython.def
-    - singularity push --docker-username "${CI_REGISTRY_USER}" --docker-password "${CI_REGISTRY_PASSWORD}" Containers/VirtualFluidsPython.sif oras://"$CI_REGISTRY_IMAGE"/"$CI_PROJECT_NAME":"$CI_COMMIT_TAG"
+    - singularity build "Containers/PoiseuilleTestContainer.sif" "Python/SlurmTests/poiseuille/PoiseuilleTestContainer.def"
 
 ###############################################################################
 ##                                Tests                                      ##
@@ -201,6 +211,28 @@ gcc_9_python_bindings_test:
 
   script:
     - python3 -m unittest discover -s Python -v
+
+
+###############################################################################
+gcc_9_python_hpc_test:
+  image: python:latest
+  stage: test
+
+  needs: ["build_poiseuille_test_container"]
+
+  rules:
+    - if: $REMOTE_USER && $REMOTE_HOST && $PRIVATE_KEY && $CI_PIPELINE_SOURCE == "schedule"
+      when: always
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - when: manual
+      allow_failure: true
+
+  before_script:
+    - pip install hpc-rocket
+
+  script:
+    - hpc-rocket launch --watch Python/SlurmTests/poiseuille/rocket.yml
 
 
 ###############################################################################
@@ -604,26 +636,3 @@ sonar-scanner:
   script:
     - cd $CI_PROJECT_DIR
     - sonar-scanner -X -Dsonar.verbose=true -Dsonar.login=$SONAR_SECURITY_TOKEN
-
-###############################################################################
-##                              Release                                      ##
-###############################################################################
-create_release:
-  stage: release
-
-  image: registry.gitlab.com/gitlab-org/release-cli:latest
-
-  needs: ["build_singularity_image"]
-
-  rules:
-    - if: $CI_COMMIT_TAG
-
-  script:
-    - echo "Creating release with tag $CI_COMMIT_TAG"
-    - release-cli create --name "VirtualFluids $CI_COMMIT_TAG" \
-      --description "VirtualFluids CFD Simulator" \
-      --tag-name "$CI_COMMIT_TAG" \
-      --ref "$CI_COMMIT_SHA" \
-      --job-token "$CI_JOB_TOKEN" \
-      --assets-link="{'name':'VirtualFluidsSingularityImage_OpenMPI','url':'','type':'other','filepath':'Containers/VirtualFluidsOpenMPI.sif'}"
-    - build/bin/basicsTests

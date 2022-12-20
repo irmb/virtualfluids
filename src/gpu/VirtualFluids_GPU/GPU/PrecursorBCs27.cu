@@ -1,4 +1,4 @@
-#include "LBM/LB.h" 
+#include "LBM/LB.h"
 #include <lbm/constants/NumericConstants.h>
 #include <lbm/constants/D3Q27.h>
 #include <lbm/MacroscopicQuantities.h>
@@ -16,18 +16,18 @@ __global__ void QPrecursorDeviceCompZeroPress( 	int* subgridDistanceIndices,
                                                 real omega,
                                                 real* distributions,
                                                 real* subgridDistances,
-                                                uint* neighborX, 
-                                                uint* neighborY, 
+                                                uint* neighborX,
+                                                uint* neighborY,
                                                 uint* neighborZ,
-                                                uint* neighbors0PP, 
+                                                uint* neighbors0PP,
                                                 uint* neighbors0PM,
                                                 uint* neighbors0MP,
                                                 uint* neighbors0MM,
-                                                real* weights0PP, 
+                                                real* weights0PP,
                                                 real* weights0PM,
                                                 real* weights0MP,
                                                 real* weights0MM,
-                                                real* vLast, 
+                                                real* vLast,
                                                 real* vCurrent,
                                                 real velocityX,
                                                 real velocityY,
@@ -43,8 +43,8 @@ __global__ void QPrecursorDeviceCompZeroPress( 	int* subgridDistanceIndices,
 
     ////////////////////////////////////////////////////////////////////////////////
     // interpolation of velocity
-    real vxLastInterpd, vyLastInterpd, vzLastInterpd; 
-    real vxNextInterpd, vyNextInterpd, vzNextInterpd; 
+    real vxLastInterpd, vyLastInterpd, vzLastInterpd;
+    real vxNextInterpd, vyNextInterpd, vzNextInterpd;
 
     uint kNeighbor0PP = neighbors0PP[k];
     real d0PP = weights0PP[k];
@@ -90,7 +90,7 @@ __global__ void QPrecursorDeviceCompZeroPress( 	int* subgridDistanceIndices,
 
     // if(k==16300)s printf("%f %f %f\n", vxLastInterpd, vyLastInterpd, vzLastInterpd);
     real VeloX = (velocityX + (1.f-timeRatio)*vxLastInterpd + timeRatio*vxNextInterpd)/velocityRatio;
-    real VeloY = (velocityY + (1.f-timeRatio)*vyLastInterpd + timeRatio*vyNextInterpd)/velocityRatio; 
+    real VeloY = (velocityY + (1.f-timeRatio)*vyLastInterpd + timeRatio*vyNextInterpd)/velocityRatio;
     real VeloZ = (velocityZ + (1.f-timeRatio)*vzLastInterpd + timeRatio*vzNextInterpd)/velocityRatio;
     // From here on just a copy of QVelDeviceCompZeroPress
     ////////////////////////////////////////////////////////////////////////////////
@@ -156,29 +156,29 @@ __global__ void QPrecursorDeviceCompZeroPress( 	int* subgridDistanceIndices,
     real f_PPP = (dist.f[DIR_MMM])[kMMM];
     real f_MPP = (dist.f[DIR_PMM])[kPMM];
     real f_PMP = (dist.f[DIR_MPM])[kMPM];
-    
+
     SubgridDistances27 subgridD;
     getPointersToSubgridDistances(subgridD, subgridDistances, numberOfBCnodes);
-    
+
     ////////////////////////////////////////////////////////////////////////////////
       real drho   =  f_PMP + f_MPP + f_PPP + f_MMP + f_PMM + f_MPM + f_PPM + f_MMM +
-                     f_0PM + f_0PP + f_0MP + f_0MM + f_P0M + f_M0P + f_P0P + f_M0M + f_PM0 + f_MP0 + f_PP0 + f_MM0 + 
-                     f_00P + f_00M + f_0P0 + f_0M0 + f_P00 + f_M00 + ((dist.f[DIR_000])[k000]); 
+                     f_0PM + f_0PP + f_0MP + f_0MM + f_P0M + f_M0P + f_P0P + f_M0M + f_PM0 + f_MP0 + f_PP0 + f_MM0 +
+                     f_00P + f_00M + f_0P0 + f_0M0 + f_P00 + f_M00 + ((dist.f[DIR_000])[k000]);
 
       real vx1 =  (((f_PMP - f_MPM) - (f_MPP - f_PMM)) + ((f_PPP - f_MMM) - (f_MMP - f_PPM)) +
                       ((f_P0M - f_M0P)   + (f_P0P - f_M0M))   + ((f_PM0 - f_MP0)   + (f_PP0 - f_MM0)) +
-                      (f_P00 - f_M00)) / (c1o1 + drho); 
-         
+                      (f_P00 - f_M00)) / (c1o1 + drho);
+
 
       real vx2 =   ((-(f_PMP - f_MPM) + (f_MPP - f_PMM)) + ((f_PPP - f_MMM) - (f_MMP - f_PPM)) +
                        ((f_0PM - f_0MP)   + (f_0PP - f_0MM))    + (-(f_PM0 - f_MP0)  + (f_PP0 - f_MM0)) +
-                       (f_0P0 - f_0M0)) / (c1o1 + drho); 
+                       (f_0P0 - f_0M0)) / (c1o1 + drho);
 
       real vx3 =   (((f_PMP - f_MPM) + (f_MPP - f_PMM)) + ((f_PPP - f_MMM) + (f_MMP - f_PPM)) +
                        (-(f_0PM - f_0MP)  + (f_0PP - f_0MM))   + ((f_P0P - f_M0M)   - (f_P0M - f_M0P)) +
-                       (f_00P - f_00M)) / (c1o1 + drho); 
+                       (f_00P - f_00M)) / (c1o1 + drho);
 
-    
+
     // if(k==16383 || k==0) printf("k %d kQ %d drho = %f u %f v %f w %f\n",k, KQK, drho, vx1, vx2, vx3);
       real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (c1o1 + drho);
     //////////////////////////////////////////////////////////////////////////
@@ -429,18 +429,18 @@ __global__ void PrecursorDeviceEQ27( 	int* subgridDistanceIndices,
                                         int numberOfPrecursorNodes,
                                         real omega,
                                         real* distributions,
-                                        uint* neighborX, 
-                                        uint* neighborY, 
+                                        uint* neighborX,
+                                        uint* neighborY,
                                         uint* neighborZ,
-                                        uint* neighbors0PP, 
+                                        uint* neighbors0PP,
                                         uint* neighbors0PM,
                                         uint* neighbors0MP,
                                         uint* neighbors0MM,
-                                        real* weights0PP, 
+                                        real* weights0PP,
                                         real* weights0PM,
                                         real* weights0MP,
                                         real* weights0MM,
-                                        real* vLast, 
+                                        real* vLast,
                                         real* vCurrent,
                                         real velocityX,
                                         real velocityY,
@@ -456,8 +456,8 @@ __global__ void PrecursorDeviceEQ27( 	int* subgridDistanceIndices,
 
     ////////////////////////////////////////////////////////////////////////////////
     // interpolation of velocity
-    real vxLastInterpd, vyLastInterpd, vzLastInterpd; 
-    real vxNextInterpd, vyNextInterpd, vzNextInterpd; 
+    real vxLastInterpd, vyLastInterpd, vzLastInterpd;
+    real vxNextInterpd, vyNextInterpd, vzNextInterpd;
 
     uint kNeighbor0PP = neighbors0PP[k];
     real d0PP = weights0PP[k];
@@ -503,7 +503,7 @@ __global__ void PrecursorDeviceEQ27( 	int* subgridDistanceIndices,
 
     // if(k==16300) printf("%f %f %f\n", vxLastInterpd, vyLastInterpd, vzLastInterpd);
     real VeloX = (velocityX + (1.f-timeRatio)*vxLastInterpd + timeRatio*vxNextInterpd)/velocityRatio;
-    real VeloY = (velocityY + (1.f-timeRatio)*vyLastInterpd + timeRatio*vyNextInterpd)/velocityRatio; 
+    real VeloY = (velocityY + (1.f-timeRatio)*vyLastInterpd + timeRatio*vyNextInterpd)/velocityRatio;
     real VeloZ = (velocityZ + (1.f-timeRatio)*vzLastInterpd + timeRatio*vzNextInterpd)/velocityRatio;
     // From here on just a copy of QVelDeviceCompZeroPress
     ////////////////////////////////////////////////////////////////////////////////
@@ -511,26 +511,26 @@ __global__ void PrecursorDeviceEQ27( 	int* subgridDistanceIndices,
     Distributions27 dist;
     getPointersToDistributions(dist, distributions, numberOfLBnodes, !isEvenTimestep);
 
-    unsigned int KQK  = subgridDistanceIndices[k]; //QK 
+    unsigned int KQK  = subgridDistanceIndices[k]; //QK
     unsigned int k000 = KQK; //000
     unsigned int kP00 = KQK; //P00
     unsigned int kM00 = neighborX[KQK]; //M00
-    unsigned int k0P0   = KQK; //n  
-    unsigned int k0M0   = neighborY[KQK]; //s  
-    unsigned int k00P   = KQK; //t  
-    unsigned int k00M   = neighborZ[KQK]; //b  
-    unsigned int kMM0  = neighborY[kM00]; //sw 
-    unsigned int kPP0  = KQK; //ne 
-    unsigned int kPM0  = k0M0; //se 
-    unsigned int kMP0  = kM00; //nw 
-    unsigned int kM0M  = neighborZ[kM00]; //bw 
-    unsigned int kP0P  = KQK; //te 
-    unsigned int kP0M  = k00M; //be 
-    unsigned int k0PP  = KQK; //tn 
-    unsigned int k0MM  = neighborZ[k0M0]; //bs 
-    unsigned int kM0P  = kM00; //tw 
-    unsigned int k0PM  = k00M; //bn 
-    unsigned int k0MP  = k0M0; //ts 
+    unsigned int k0P0   = KQK; //n
+    unsigned int k0M0   = neighborY[KQK]; //s
+    unsigned int k00P   = KQK; //t
+    unsigned int k00M   = neighborZ[KQK]; //b
+    unsigned int kMM0  = neighborY[kM00]; //sw
+    unsigned int kPP0  = KQK; //ne
+    unsigned int kPM0  = k0M0; //se
+    unsigned int kMP0  = kM00; //nw
+    unsigned int kM0M  = neighborZ[kM00]; //bw
+    unsigned int kP0P  = KQK; //te
+    unsigned int kP0M  = k00M; //be
+    unsigned int k0PP  = KQK; //tn
+    unsigned int k0MM  = neighborZ[k0M0]; //bs
+    unsigned int kM0P  = kM00; //tw
+    unsigned int k0PM  = k00M; //bn
+    unsigned int k0MP  = k0M0; //ts
     unsigned int kPMP = k0M0; //tse
     unsigned int kMPM = kM0M; //bnw
     unsigned int kMPP = kM00; //tnw
@@ -576,11 +576,11 @@ __global__ void PrecursorDeviceEQ27( 	int* subgridDistanceIndices,
       //!
       real drho = c0o1;
 
-      real vx1  = VeloX;          
+      real vx1  = VeloX;
 
-      real vx2  = VeloY; 
+      real vx2  = VeloY;
 
-      real vx3  = VeloZ; 
+      real vx3  = VeloZ;
 
       real cusq = c3o2 * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3);
 
@@ -625,7 +625,7 @@ __global__ void PrecursorDeviceEQ27( 	int* subgridDistanceIndices,
       (dist.f[DIR_PPM])[kPPM] = f_MMP;
       (dist.f[DIR_PPP])[kPPP] = f_MMM;
       (dist.f[DIR_PMM])[kPMM] = f_MPP;
-      
+
       (dist.f[DIR_M00])[kM00] = f_P00;
       (dist.f[DIR_MM0])[kMM0] = f_PP0;
       (dist.f[DIR_M0M])[kM0M] = f_P0P;
@@ -650,25 +650,25 @@ __global__ void PrecursorDeviceEQ27( 	int* subgridDistanceIndices,
 
 
 __global__ void PrecursorDeviceDistributions( 	int* subgridDistanceIndices,
-												int numberOfBCnodes,
+                                                int numberOfBCnodes,
                                                 int numberOfPrecursorNodes,
-												real* distributions,
-												uint* neighborX, 
-												uint* neighborY, 
-												uint* neighborZ,
-												uint* neighbors0PP, 
-												uint* neighbors0PM,
-												uint* neighbors0MP,
-												uint* neighbors0MM,
-												real* weights0PP, 
-												real* weights0PM,
-												real* weights0MP,
-												real* weights0MM,
-												real* fsLast, 
-												real* fsNext,
-												real timeRatio,
-												unsigned long long numberOfLBnodes,
-												bool isEvenTimestep)
+                                                real* distributions,
+                                                uint* neighborX,
+                                                uint* neighborY,
+                                                uint* neighborZ,
+                                                uint* neighbors0PP,
+                                                uint* neighbors0PM,
+                                                uint* neighbors0MP,
+                                                uint* neighbors0MM,
+                                                real* weights0PP,
+                                                real* weights0PM,
+                                                real* weights0MP,
+                                                real* weights0MM,
+                                                real* fsLast,
+                                                real* fsNext,
+                                                real timeRatio,
+                                                unsigned long long numberOfLBnodes,
+                                                bool isEvenTimestep)
 {
     const unsigned k = vf::gpu::getNodeIndex();
 
@@ -715,31 +715,31 @@ __global__ void PrecursorDeviceDistributions( 	int* subgridDistanceIndices,
 
         f0LastInterp = (f0Last[kNeighbor0PP]*d0PP + f0Last[kNeighbor0PM]*d0PM + f0Last[kNeighbor0MP]*d0MP + f0Last[kNeighbor0MM]*d0MM)*invWeightSum;
         f0NextInterp = (f0Next[kNeighbor0PP]*d0PP + f0Next[kNeighbor0PM]*d0PM + f0Next[kNeighbor0MP]*d0MP + f0Next[kNeighbor0MM]*d0MM)*invWeightSum;
-        
+
         f1LastInterp = (f1Last[kNeighbor0PP]*d0PP + f1Last[kNeighbor0PM]*d0PM + f1Last[kNeighbor0MP]*d0MP + f1Last[kNeighbor0MM]*d0MM)*invWeightSum;
         f1NextInterp = (f1Next[kNeighbor0PP]*d0PP + f1Next[kNeighbor0PM]*d0PM + f1Next[kNeighbor0MP]*d0MP + f1Next[kNeighbor0MM]*d0MM)*invWeightSum;
-        
+
         f2LastInterp = (f2Last[kNeighbor0PP]*d0PP + f2Last[kNeighbor0PM]*d0PM + f2Last[kNeighbor0MP]*d0MP + f2Last[kNeighbor0MM]*d0MM)*invWeightSum;
         f2NextInterp = (f2Next[kNeighbor0PP]*d0PP + f2Next[kNeighbor0PM]*d0PM + f2Next[kNeighbor0MP]*d0MP + f2Next[kNeighbor0MM]*d0MM)*invWeightSum;
-        
+
         f3LastInterp = (f3Last[kNeighbor0PP]*d0PP + f3Last[kNeighbor0PM]*d0PM + f3Last[kNeighbor0MP]*d0MP + f3Last[kNeighbor0MM]*d0MM)*invWeightSum;
         f3NextInterp = (f3Next[kNeighbor0PP]*d0PP + f3Next[kNeighbor0PM]*d0PM + f3Next[kNeighbor0MP]*d0MP + f3Next[kNeighbor0MM]*d0MM)*invWeightSum;
-        
+
         f4LastInterp = (f4Last[kNeighbor0PP]*d0PP + f4Last[kNeighbor0PM]*d0PM + f4Last[kNeighbor0MP]*d0MP + f4Last[kNeighbor0MM]*d0MM)*invWeightSum;
         f4NextInterp = (f4Next[kNeighbor0PP]*d0PP + f4Next[kNeighbor0PM]*d0PM + f4Next[kNeighbor0MP]*d0MP + f4Next[kNeighbor0MM]*d0MM)*invWeightSum;
-        
+
         f5LastInterp = (f5Last[kNeighbor0PP]*d0PP + f5Last[kNeighbor0PM]*d0PM + f5Last[kNeighbor0MP]*d0MP + f5Last[kNeighbor0MM]*d0MM)*invWeightSum;
         f5NextInterp = (f5Next[kNeighbor0PP]*d0PP + f5Next[kNeighbor0PM]*d0PM + f5Next[kNeighbor0MP]*d0MP + f5Next[kNeighbor0MM]*d0MM)*invWeightSum;
-        
+
         f6LastInterp = (f6Last[kNeighbor0PP]*d0PP + f6Last[kNeighbor0PM]*d0PM + f6Last[kNeighbor0MP]*d0MP + f6Last[kNeighbor0MM]*d0MM)*invWeightSum;
         f6NextInterp = (f6Next[kNeighbor0PP]*d0PP + f6Next[kNeighbor0PM]*d0PM + f6Next[kNeighbor0MP]*d0MP + f6Next[kNeighbor0MM]*d0MM)*invWeightSum;
-        
+
         f7LastInterp = (f7Last[kNeighbor0PP]*d0PP + f7Last[kNeighbor0PM]*d0PM + f7Last[kNeighbor0MP]*d0MP + f7Last[kNeighbor0MM]*d0MM)*invWeightSum;
         f7NextInterp = (f7Next[kNeighbor0PP]*d0PP + f7Next[kNeighbor0PM]*d0PM + f7Next[kNeighbor0MP]*d0MP + f7Next[kNeighbor0MM]*d0MM)*invWeightSum;
-        
+
         f8LastInterp = (f8Last[kNeighbor0PP]*d0PP + f8Last[kNeighbor0PM]*d0PM + f8Last[kNeighbor0MP]*d0MP + f8Last[kNeighbor0MM]*d0MM)*invWeightSum;
         f8NextInterp = (f8Next[kNeighbor0PP]*d0PP + f8Next[kNeighbor0PM]*d0PM + f8Next[kNeighbor0MP]*d0MP + f8Next[kNeighbor0MM]*d0MM)*invWeightSum;
-    
+
     } else {
         f0LastInterp = f0Last[kNeighbor0PP];
         f1LastInterp = f1Last[kNeighbor0PP];
@@ -808,25 +808,25 @@ __global__ void PrecursorDeviceDistributions( 	int* subgridDistanceIndices,
 __global__ void QPrecursorDeviceDistributions( 	int* subgridDistanceIndices,
                                                 real* subgridDistances,
                                                 int sizeQ,
-												int numberOfBCnodes,
+                                                int numberOfBCnodes,
                                                 int numberOfPrecursorNodes,
-												real* distributions,
-												uint* neighborX, 
-												uint* neighborY, 
-												uint* neighborZ,
-												uint* neighbors0PP, 
-												uint* neighbors0PM,
-												uint* neighbors0MP,
-												uint* neighbors0MM,
-												real* weights0PP, 
-												real* weights0PM,
-												real* weights0MP,
-												real* weights0MM,
-												real* fsLast, 
-												real* fsNext,
-												real timeRatio,
-												unsigned long long numberOfLBnodes,
-												bool isEvenTimestep)
+                                                real* distributions,
+                                                uint* neighborX,
+                                                uint* neighborY,
+                                                uint* neighborZ,
+                                                uint* neighbors0PP,
+                                                uint* neighbors0PM,
+                                                uint* neighbors0MP,
+                                                uint* neighbors0MM,
+                                                real* weights0PP,
+                                                real* weights0PM,
+                                                real* weights0MP,
+                                                real* weights0MM,
+                                                real* fsLast,
+                                                real* fsNext,
+                                                real timeRatio,
+                                                unsigned long long numberOfLBnodes,
+                                                bool isEvenTimestep)
 {
     const unsigned k = vf::gpu::getNodeIndex();
 
@@ -873,31 +873,31 @@ __global__ void QPrecursorDeviceDistributions( 	int* subgridDistanceIndices,
 
         f0LastInterp = (f0Last[kNeighbor0PP]*d0PP + f0Last[kNeighbor0PM]*d0PM + f0Last[kNeighbor0MP]*d0MP + f0Last[kNeighbor0MM]*d0MM)*invWeightSum;
         f0NextInterp = (f0Next[kNeighbor0PP]*d0PP + f0Next[kNeighbor0PM]*d0PM + f0Next[kNeighbor0MP]*d0MP + f0Next[kNeighbor0MM]*d0MM)*invWeightSum;
-        
+
         f1LastInterp = (f1Last[kNeighbor0PP]*d0PP + f1Last[kNeighbor0PM]*d0PM + f1Last[kNeighbor0MP]*d0MP + f1Last[kNeighbor0MM]*d0MM)*invWeightSum;
         f1NextInterp = (f1Next[kNeighbor0PP]*d0PP + f1Next[kNeighbor0PM]*d0PM + f1Next[kNeighbor0MP]*d0MP + f1Next[kNeighbor0MM]*d0MM)*invWeightSum;
-        
+
         f2LastInterp = (f2Last[kNeighbor0PP]*d0PP + f2Last[kNeighbor0PM]*d0PM + f2Last[kNeighbor0MP]*d0MP + f2Last[kNeighbor0MM]*d0MM)*invWeightSum;
         f2NextInterp = (f2Next[kNeighbor0PP]*d0PP + f2Next[kNeighbor0PM]*d0PM + f2Next[kNeighbor0MP]*d0MP + f2Next[kNeighbor0MM]*d0MM)*invWeightSum;
-        
+
         f3LastInterp = (f3Last[kNeighbor0PP]*d0PP + f3Last[kNeighbor0PM]*d0PM + f3Last[kNeighbor0MP]*d0MP + f3Last[kNeighbor0MM]*d0MM)*invWeightSum;
         f3NextInterp = (f3Next[kNeighbor0PP]*d0PP + f3Next[kNeighbor0PM]*d0PM + f3Next[kNeighbor0MP]*d0MP + f3Next[kNeighbor0MM]*d0MM)*invWeightSum;
-        
+
         f4LastInterp = (f4Last[kNeighbor0PP]*d0PP + f4Last[kNeighbor0PM]*d0PM + f4Last[kNeighbor0MP]*d0MP + f4Last[kNeighbor0MM]*d0MM)*invWeightSum;
         f4NextInterp = (f4Next[kNeighbor0PP]*d0PP + f4Next[kNeighbor0PM]*d0PM + f4Next[kNeighbor0MP]*d0MP + f4Next[kNeighbor0MM]*d0MM)*invWeightSum;
-        
+
         f5LastInterp = (f5Last[kNeighbor0PP]*d0PP + f5Last[kNeighbor0PM]*d0PM + f5Last[kNeighbor0MP]*d0MP + f5Last[kNeighbor0MM]*d0MM)*invWeightSum;
         f5NextInterp = (f5Next[kNeighbor0PP]*d0PP + f5Next[kNeighbor0PM]*d0PM + f5Next[kNeighbor0MP]*d0MP + f5Next[kNeighbor0MM]*d0MM)*invWeightSum;
-        
+
         f6LastInterp = (f6Last[kNeighbor0PP]*d0PP + f6Last[kNeighbor0PM]*d0PM + f6Last[kNeighbor0MP]*d0MP + f6Last[kNeighbor0MM]*d0MM)*invWeightSum;
         f6NextInterp = (f6Next[kNeighbor0PP]*d0PP + f6Next[kNeighbor0PM]*d0PM + f6Next[kNeighbor0MP]*d0MP + f6Next[kNeighbor0MM]*d0MM)*invWeightSum;
-        
+
         f7LastInterp = (f7Last[kNeighbor0PP]*d0PP + f7Last[kNeighbor0PM]*d0PM + f7Last[kNeighbor0MP]*d0MP + f7Last[kNeighbor0MM]*d0MM)*invWeightSum;
         f7NextInterp = (f7Next[kNeighbor0PP]*d0PP + f7Next[kNeighbor0PM]*d0PM + f7Next[kNeighbor0MP]*d0MP + f7Next[kNeighbor0MM]*d0MM)*invWeightSum;
-        
+
         f8LastInterp = (f8Last[kNeighbor0PP]*d0PP + f8Last[kNeighbor0PM]*d0PM + f8Last[kNeighbor0MP]*d0MP + f8Last[kNeighbor0MM]*d0MM)*invWeightSum;
         f8NextInterp = (f8Next[kNeighbor0PP]*d0PP + f8Next[kNeighbor0PM]*d0PM + f8Next[kNeighbor0MP]*d0MP + f8Next[kNeighbor0MM]*d0MM)*invWeightSum;
-    
+
     } else {
         f0LastInterp = f0Last[kNeighbor0PP];
         f1LastInterp = f1Last[kNeighbor0PP];

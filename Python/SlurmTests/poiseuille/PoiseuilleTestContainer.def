@@ -1,11 +1,13 @@
 BootStrap: docker
 From: ubuntu:20.04
+Stage: build
 
 %files
     3rdParty 3rdParty
     apps apps
     CMake CMake
     Python Python
+    pythonbindings pythonbindings
     src src
     CMakeLists.txt CMakeLists.txt
     cpu.cmake cpu.cmake
@@ -19,7 +21,8 @@ From: ubuntu:20.04
     apt-get update &&          \
     apt-get install -y         \
     build-essential            \
-    cmake=3.16.3-1ubuntu1      \
+    ccache                     \
+    git                        \
     python3                    \
     python3-dev                \
     python3-pip                \
@@ -27,10 +30,31 @@ From: ubuntu:20.04
     libomp-dev                 \
     libgl1
 
-    pip3 install setuptools wheel numpy scipy pyvista
+    pip3 install setuptools wheel cmake numpy scipy pyvista
 
     export PYTHONPATH=Python
-    python3 /setup.py install
+    python3 /setup.py bdist_wheel build_ext --build-temp=build
+    pip3 install $(find dist/*.whl)
+
+
+BootStrap: docker
+From: ubuntu:20.04
+Stage: runtime
+
+%files from build
+    Python Python
+    dist dist
+
+%post
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get update &&          \
+    apt-get install -y         \
+    python3                    \
+    python3-pip                \
+    mpich                      \
+    libgl1
+
+    pip3 install $(find dist/*.whl)
 
 %environment
     export PYTHONPATH=/Python

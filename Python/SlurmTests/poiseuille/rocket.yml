@@ -1,0 +1,23 @@
+host: $REMOTE_HOST
+user: $REMOTE_USER
+private_keyfile: $PRIVATE_KEY
+
+copy:
+  - from: Python/SlurmTests/poiseuille/slurm.job
+    to: poiseuille_test/slurm.job
+    overwrite: true
+
+  - from: Containers/PoiseuilleTestContainer.sif
+    to: poiseuille_test/PoiseuilleTestContainer.sif
+    overwrite: true
+
+collect:
+  - from: poiseuille_test/POISEUILLE_TEST.out
+    to: POISEUILLE_TEST.out
+    overwrite: true
+
+clean:
+  - poiseuille_test/*
+
+sbatch: poiseuille_test/slurm.job
+continue_if_job_fails: true

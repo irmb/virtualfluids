@@ -47,13 +47,13 @@ struct GKSGPU_EXPORT BoundaryCondition : virtual public BoundaryConditionStruct,
     virtual bool isWall() = 0;
 
     virtual bool isFluxBC();
-    
+
     virtual bool isInsulated();
 
     virtual bool secondCellsNeeded();
 
     virtual void runBoundaryConditionKernel( const SPtr<DataBase> dataBase,
-                                             const Parameters parameters, 
+                                             const Parameters parameters,
                                              const uint level ) = 0;
 
     BoundaryConditionStruct toStruct()
