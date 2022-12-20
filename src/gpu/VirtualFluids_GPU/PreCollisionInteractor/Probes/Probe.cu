@@ -120,7 +120,7 @@ __global__ void calcQuantitiesKernel(   uint* pointIndices,
                                     bool* quantities,
                                     uint* quantityArrayOffsets, real* quantityArray,
                                     bool timeseries
-                                )
+                                    )
 {
     const uint x = threadIdx.x; 
     const uint y = blockIdx.x;
@@ -297,7 +297,7 @@ void Probe::interact(Parameter* para, CudaMemoryManager* cudaMemoryManager, int 
     //! if tAvg==1 the probe will be evaluated in every sub-timestep of each respective level
     //! else, the probe will only be evaluated in each synchronous time step tAvg
 
-    uint tAvg_level = this->tAvg==1? this->tAvg: this->tAvg*exp2(level);          
+    uint tAvg_level = this->tAvg==1 ? this->tAvg: this->tAvg*exp2(level);  
 
     if(max(int(t_level) - int(this->tStartAvg*exp2(level)), -1) % tAvg_level==0)
     {
