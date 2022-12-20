@@ -1,4 +1,11 @@
-project(VirtualFluidsPython LANGUAGES CUDA CXX)
+set(PYFLUIDS_LANGUAGES CXX)
+
+if(BUILD_VF_GPU)
+    set(PYFLUIDS_LANGUAGES CUDA CXX)
+endif()
+
+project(VirtualFluidsPython LANGUAGES ${PYFLUIDS_LANGUAGES})
+
 pybind11_add_module(python_bindings MODULE src/VirtualFluids.cpp)
 
 set_target_properties(  python_bindings PROPERTIES
