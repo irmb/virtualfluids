@@ -40,7 +40,7 @@ using namespace std;
 const std::string WbWriterVtkXmlImageBinary::pvdEndTag = "   </Collection>\n</VTKFile>";
 /*===============================================================================*/
 string WbWriterVtkXmlImageBinary::writeCollection(const string &filename, const vector<string> &filenames,
-                                             const double &timeStep, const bool &sepGroups)
+                                                  const double &timeStep, const bool &sepGroups)
 {
     string vtkfilename = filename + ".pvd";
     ofstream out(vtkfilename.c_str());
@@ -79,7 +79,7 @@ string WbWriterVtkXmlImageBinary::writeCollection(const string &filename, const 
 }
 /*===============================================================================*/
 string WbWriterVtkXmlImageBinary::addFilesToCollection(const string &filename, const vector<string> &filenames,
-                                                  const double &timeStep, const bool &sepGroups)
+                                                       const double &timeStep, const bool &sepGroups)
 {
     string vtkfilename = filename;
     fstream test(vtkfilename.c_str(), ios::in);
@@ -106,9 +106,10 @@ string WbWriterVtkXmlImageBinary::addFilesToCollection(const string &filename, c
     return vtkfilename;
 }
 /*===============================================================================*/
-string WbWriterVtkXmlImageBinary::writeParallelFile(const string &filename, const UbTupleInt6 &wholeExtent, const UbTupleFloat3 &origin, const UbTupleFloat3 &spacing, 
-                                                vector<string> &pieceSources, vector<UbTupleInt6> &pieceExtents,
-                                                vector<string> &pointDataNames, vector<string> &cellDataNames)
+string WbWriterVtkXmlImageBinary::writeParallelFile(const string &filename, const UbTupleInt6 &wholeExtent,
+                                                    const UbTupleFloat3 &origin, const UbTupleFloat3 &spacing,
+                                                    vector<string> &pieceSources, vector<UbTupleInt6> &pieceExtents,
+                                                    vector<string> &pointDataNames, vector<string> &cellDataNames)
 {
     string vtkfilename = filename + ".pvti";
     UBLOG(logDEBUG1, "WbWriterVtkXmlImageBinary::writeParallelFile to " << vtkfilename << " - start");
@@ -170,8 +171,8 @@ string WbWriterVtkXmlImageBinary::writeParallelFile(const string &filename, cons
 }
 /*===============================================================================*/
 string WbWriterVtkXmlImageBinary::writeOctsWithCellData(const string &filename, vector<UbTupleFloat3> &nodes,
-                                                   vector<UbTupleInt8> &cells, vector<string> &datanames,
-                                                   vector<vector<double>> &celldata)
+                                                        vector<UbTupleInt8> & /*cells*/, vector<string> &datanames,
+                                                        vector<vector<double>> &celldata)
 {
     string vtkfilename = filename + getFileExtension();
     UBLOG(logDEBUG1, "WbWriterVtkXmlImageBinary::writeOctsWithCellData to " << vtkfilename << " - start");
@@ -191,8 +192,8 @@ string WbWriterVtkXmlImageBinary::writeOctsWithCellData(const string &filename, 
 }
 /*===============================================================================*/
 string WbWriterVtkXmlImageBinary::writeOctsWithNodeData(const string &filename, vector<UbTupleFloat3> &nodes,
-                                                   vector<UbTupleUInt8> &cells, vector<string> &datanames,
-                                                   vector<vector<double>> &nodedata)
+                                                        vector<UbTupleUInt8> & /*cells*/, vector<string> &datanames,
+                                                        vector<vector<double>> &nodedata)
 {
     string vtkfilename = filename + getFileExtension();
     UBLOG(logDEBUG1, "WbWriterVtkXmlImageBinary::writeOctsWithNodeData to " << vtkfilename << " - start");
@@ -213,8 +214,7 @@ string WbWriterVtkXmlImageBinary::writeOctsWithNodeData(const string &filename, 
 }
 /*===============================================================================*/
 string WbWriterVtkXmlImageBinary::writeNodesWithNodeData(const string &filename, vector<UbTupleFloat3> &nodes,
-                                                    vector<string> &datanames,
-                                                    vector<vector<double>> &nodedata)
+                                                         vector<string> &datanames, vector<vector<double>> &nodedata)
 {
     string vtkfilename = filename + getFileExtension();
     UBLOG(logDEBUG1, "WbWriterVtkXmlImageBinary::writeNodesWithNodeData to " << vtkfilename << " - start");
@@ -231,7 +231,8 @@ string WbWriterVtkXmlImageBinary::writeNodesWithNodeData(const string &filename,
     return vtkfilename;
 }
 
-void WbWriterVtkXmlImageBinary::getMetaDataOfImage(vector<UbTupleFloat3> &nodes, UbTupleFloat3& origin, UbTupleFloat3& spacing, UbTupleInt6& extent)
+void WbWriterVtkXmlImageBinary::getMetaDataOfImage(vector<UbTupleFloat3> &nodes, UbTupleFloat3 &origin,
+                                                   UbTupleFloat3 &spacing, UbTupleInt6 &extent)
 {
     int nofNodes = (int)nodes.size();
     val<1>(origin) = val<1>(nodes[0]);
@@ -247,17 +248,17 @@ void WbWriterVtkXmlImageBinary::getMetaDataOfImage(vector<UbTupleFloat3> &nodes,
     int ny = (l_y) / val<2>(spacing);
     val<3>(spacing) = val<3>(nodes[nx*ny])-val<3>(nodes[0]);
 
-    val<1>(extent) = val<1>(origin)/val<1>(spacing); val<2>(extent) = val<1>(nodes[nofNodes-1])/val<1>(spacing);    
-    val<3>(extent) = val<2>(origin)/val<2>(spacing); val<4>(extent) = val<2>(nodes[nofNodes-1])/val<2>(spacing);    
-    val<5>(extent) = val<3>(origin)/val<3>(spacing); val<6>(extent) = val<3>(nodes[nofNodes-1])/val<3>(spacing);    
+    val<1>(extent) = val<1>(origin) / val<1>(spacing); val<2>(extent) = val<1>(nodes[nofNodes - 1]) / val<1>(spacing);    
+    val<3>(extent) = val<2>(origin) / val<2>(spacing); val<4>(extent) = val<2>(nodes[nofNodes - 1]) / val<2>(spacing);    
+    val<5>(extent) = val<3>(origin) / val<3>(spacing); val<6>(extent) = val<3>(nodes[nofNodes - 1]) / val<3>(spacing);    
 
 }
 
-void WbWriterVtkXmlImageBinary::writeData(const string &vtkfilename,
-                                            vector<string> &pointDataNames, vector<string> &cellDataNames,
-                                            vector<vector<double>> &nodedata, vector<vector<double>> &celldata,
-                                            UbTupleInt6& wholeExtent,
-                                            UbTupleFloat3& origin, UbTupleFloat3& spacing, UbTupleInt6& extent, unsigned int precision)
+void WbWriterVtkXmlImageBinary::writeData(const string &vtkfilename, vector<string> &pointDataNames,
+                                          vector<string> &cellDataNames, vector<vector<double>> &nodedata,
+                                          vector<vector<double>> &celldata, UbTupleInt6 &wholeExtent,
+                                          UbTupleFloat3 &origin, UbTupleFloat3 &spacing, UbTupleInt6 &extent,
+                                          unsigned int precision)
 {
     ofstream out(vtkfilename.c_str(), ios::out | ios::binary);
     out.precision(precision);
@@ -273,14 +274,14 @@ void WbWriterVtkXmlImageBinary::writeData(const string &vtkfilename,
             throw UbException(UB_EXARGS, "couldn't open file " + vtkfilename);
     }
 
-    size_t nPoints = pointDataNames.size()>0 ? nodedata[0].size() : celldata[0].size();
+    size_t nPoints = pointDataNames.size() > 0 ? nodedata[0].size() : celldata[0].size();
 
-    int bytesPerByteVal      = 4; //==sizeof(int)
+    int bytesPerByteVal = 4; //==sizeof(int)
 
-    int bytesScalarData      = 1 /*scalar         */ * (int)nPoints * sizeof(double);
+    int bytesScalarData = 1 /*scalar         */ * (int)nPoints * sizeof(double);
 
     int offset = 0;
-    
+
     // VTK FILE
     out << "<?xml version=\"1.0\"?>\n";
     out << "<VTKFile type=\"ImageData\" version=\"0.1\" byte_order=\"LittleEndian\" >"
@@ -307,23 +308,21 @@ void WbWriterVtkXmlImageBinary::writeData(const string &vtkfilename,
                                     << val<6>(extent) << "\">\n";
 
     // DATA SECTION
-    if (pointDataNames.size()>0)
-    {
+    if (pointDataNames.size() > 0) {
         out << "         <PointData>\n";
         for (size_t s = 0; s < pointDataNames.size(); ++s) {
-            out << "            <DataArray type=\"Float64\" Name=\"" << pointDataNames[s] << "\" format=\"appended\" offset=\""
-                << offset << "\" /> \n";
+            out << "            <DataArray type=\"Float64\" Name=\"" << pointDataNames[s]
+                << "\" format=\"appended\" offset=\"" << offset << "\" /> \n";
             offset += (bytesPerByteVal + bytesScalarData);
         }
         out << "         </PointData>\n";
     }
 
-    if (cellDataNames.size()>0)
-    {
+    if (cellDataNames.size() > 0) {
         out << "         <CellData>\n";
         for (size_t s = 0; s < cellDataNames.size(); ++s) {
-            out << "            <DataArray type=\"Float64\" Name=\"" << cellDataNames[s] << "\" format=\"appended\" offset=\""
-                << offset << "\" /> \n";
+            out << "            <DataArray type=\"Float64\" Name=\"" << cellDataNames[s]
+                << "\" format=\"appended\" offset=\"" << offset << "\" /> \n";
             offset += (bytesPerByteVal + bytesScalarData);
         }
         out << "         </CellData>\n";
@@ -335,7 +334,6 @@ void WbWriterVtkXmlImageBinary::writeData(const string &vtkfilename,
     // AppendedData SECTION
     out << "   <AppendedData encoding=\"raw\">\n";
     out << "_";
-
 
     // DATA SECTION
     // pointData

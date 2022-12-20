@@ -44,10 +44,7 @@ public:
             throw std::runtime_error("ActuatorFarm::ActuatorFarm: epsilon needs to be larger than dx!");
     }
 
-    virtual  ~ActuatorFarm()
-    {
-        
-    }
+    ~ActuatorFarm() override = default;
     void addTurbine(real turbinePosX, real turbinePosY, real turbinePosZ, real diameter, real omega, real azimuth, real yaw, std::vector<real> bladeRadii);
     void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager) override;
     void interact(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t) override;

@@ -78,7 +78,7 @@ public:
     void allocArrays_OffsetScale() override;
     void allocArrays_taggedFluidNodes() override;
 
-    void tagFluidNodeIndices(std::vector<uint> taggedFluidNodeIndices, CollisionTemplate tag, uint level) override;
+    void tagFluidNodeIndices(const std::vector<uint>& taggedFluidNodeIndices, CollisionTemplate tag, uint level) override;
     void sortFluidNodeTags() override;
 
     virtual void setDimensions() override;
