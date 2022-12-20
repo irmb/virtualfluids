@@ -156,7 +156,8 @@ void VTKFile::unloadFile()
     this->loaded = false;
 }
 
-void VTKFile::getData(real* data, uint numberOfNodes, const std::vector<uint>& readIndices, const std::vector<uint>& writeIndices, uint offsetRead, uint offsetWrite)
+void VTKFile::getData(real *data, uint numberOfNodes, const std::vector<uint> &readIndices,
+                      const std::vector<uint> &writeIndices, uint offsetRead, uint offsetWrite)
 {
     if(!this->loaded) loadFile();
 
@@ -305,7 +306,10 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
                     this->planeNeighbor0PM.push_back(writeIdx);
                     this->planeNeighbor0MP.push_back(writeIdx);
                     this->planeNeighbor0MM.push_back(writeIdx);
-                    found0PP = true; found0PM = true; found0MM = true; found0MP = true;
+                    found0PP = true;
+                    found0PM = true;
+                    found0MM = true;
+                    found0MP = true;
                 } 
                 else
                 {
@@ -325,40 +329,40 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
             
             if(!found0PP) //NT in simulation is EN in precursor
             {
-                int idx = file.findNeighborPPM(posY, posZ, 0.f);
-                if(idx!=-1)
+                int index = file.findNeighborPPM(posY, posZ, 0.f);
+                if(index!=-1)
                 {
                     found0PP = true;
-                    real dy = file.getX(idx)-posY;
-                    real dz = file.getY(idx)-posZ;
+                    real dy = file.getX(index)-posY;
+                    real dz = file.getY(index)-posZ;
                     this->weights0PP.emplace_back(1.f/(dy*dy+dz*dz+eps));
-                    this->planeNeighbor0PP.emplace_back(getWriteIndex(level, fileId, idx));
+                    this->planeNeighbor0PP.emplace_back(getWriteIndex(level, fileId, index));
                 }
             }
 
             if(!found0PM) //NB in simulation is ES in precursor
             {
-                int idx = file.findNeighborPMM(posY, posZ, 0.f);
-                if(idx!=-1)
+                int index = file.findNeighborPMM(posY, posZ, 0.f);
+                if(index!=-1)
                 {
                     found0PM = true;
-                    real dy = file.getX(idx)-posY;
-                    real dz = file.getY(idx)-posZ;
+                    real dy = file.getX(index)-posY;
+                    real dz = file.getY(index)-posZ;
                     this->weights0PM.emplace_back(1.f/(dy*dy+dz*dz+eps));
-                    this->planeNeighbor0PP.emplace_back(getWriteIndex(level, fileId, idx));
+                    this->planeNeighbor0PP.emplace_back(getWriteIndex(level, fileId, index));
                 }
             }
 
             if(!found0MP) //ST in simulation is WN in precursor
             {
-                int idx = file.findNeighborMPM(posY, posZ, 0.f);
-                if(idx!=-1)
+                int index = file.findNeighborMPM(posY, posZ, 0.f);
+                if(index!=-1)
                 {
                     found0MP = true;
-                    real dy = file.getX(idx)-posY;
-                    real dz = file.getY(idx)-posZ;
+                    real dy = file.getX(index)-posY;
+                    real dz = file.getY(index)-posZ;
                     this->weights0MP.emplace_back(1.f/(dy*dy+dz*dz+eps));
-                    this->planeNeighbor0MP.emplace_back(getWriteIndex(level, fileId, idx));
+                    this->planeNeighbor0MP.emplace_back(getWriteIndex(level, fileId, index));
                 }
             }
 
@@ -413,7 +417,7 @@ void VTKReader::getNextData(real* data, uint numberOfNodes, real time)
             {
                 numberOfFiles++;
 
-                printf("switching to precursor file no. %zd\n", numberOfFiles);
+                printf("switching to precursor file no. %zu\n", numberOfFiles);
                 if(numberOfFiles == this->fileCollection->files[level][id].size())
                     throw std::runtime_error("Not enough Precursor Files to read");
 
