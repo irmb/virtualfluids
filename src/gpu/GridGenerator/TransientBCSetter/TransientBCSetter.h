@@ -32,7 +32,7 @@ struct Quantity
 class VTKFile
 {
 public: 
-    VTKFile(std::string _fileName): 
+    explicit VTKFile(std::string _fileName): 
     fileName(_fileName)
     {
         readHeader();
@@ -100,9 +100,9 @@ public:
 
     virtual ~FileCollection() = default;
 
-    virtual size_t getNumberOfQuantities()=0;
+    virtual size_t getNumberOfQuantities() = 0;
 
-    virtual FileType getFileType()=0;
+    virtual FileType getFileType() = 0;
 
 protected:
     std::string prefix;
@@ -118,8 +118,8 @@ public:
         findFiles();
     };
 
-    FileType getFileType(){ return FileType::VTK; };
-    size_t getNumberOfQuantities(){ return files[0][0][0].getNumberOfQuantities(); }
+    FileType getFileType() override{ return FileType::VTK; };
+    size_t getNumberOfQuantities() override{ return files[0][0][0].getNumberOfQuantities(); }
     
 
 private:
