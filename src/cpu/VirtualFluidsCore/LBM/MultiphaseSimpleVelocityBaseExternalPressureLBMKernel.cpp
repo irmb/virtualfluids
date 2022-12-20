@@ -2958,6 +2958,9 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::findNeighbors(CbArra
 	SPtr<BCArray3D> bcArray = this->getBCProcessor()->getBCArray();
 
 	phi[DIR_000] = (*ph)(x1, x2, x3);
+    if (phi[DIR_000] < 0) {
+        phi[DIR_000] = UbMath::zeroReal;
+    }
 
 
 	for (int k = FSTARTDIR; k <= FENDDIR; k++) {

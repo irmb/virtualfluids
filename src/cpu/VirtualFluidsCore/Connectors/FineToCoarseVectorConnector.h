@@ -104,6 +104,7 @@ public:
     void receiveVectorsX1() override {}
     void receiveVectorsX2() override {}
     void receiveVectorsX3() override {}
+    void getLocalMinMax(int &minX1, int &minX2, int &minX3, int &maxX1, int &maxX2, int &maxX3);
 
 protected:
     WPtr<Block3D> block; // dieser nvd sendet daten und die empfangenen werden diesem nvd zugeordnet
@@ -116,7 +117,7 @@ protected:
 
     void writeICellCtoData(vector_type &data, int &index, LBMReal *icellC);
     void writeNodeToVector(vector_type &data, int &index, LBMReal *inode);
-    void getLocalMinMax(int &minX1, int &minX2, int &minX3, int &maxX1, int &maxX2, int &maxX3);
+    //void getLocalMinMax(int &minX1, int &minX2, int &minX3, int &maxX1, int &maxX2, int &maxX3);
     void getLocalMinMax(int &minX1, int &minX2, int &minX3, int &maxX1, int &maxX2, int &maxX3,
                         CFconnectorType connType);
     void getLocalMinMaxCF(int gMax, int &lMin, int &lMax);

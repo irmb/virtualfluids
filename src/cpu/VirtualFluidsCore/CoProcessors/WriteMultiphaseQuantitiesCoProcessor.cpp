@@ -45,6 +45,7 @@
 #include "LBMUnitConverter.h"
 #include "UbScheduler.h"
 #include "basics/writer/WbWriterVtkXmlASCII.h"
+#include <logger/Logger.h>
 
 WriteMultiphaseQuantitiesCoProcessor::WriteMultiphaseQuantitiesCoProcessor() = default;
 //////////////////////////////////////////////////////////////////////////
@@ -77,7 +78,8 @@ void WriteMultiphaseQuantitiesCoProcessor::process(double step)
     if (scheduler->isDue(step))
         collectData(step);
 
-    UBLOG(logDEBUG3, "WriteMultiphaseQuantitiesCoProcessor::update:" << step);
+    //UBLOG(logDEBUG3, "WriteMultiphaseQuantitiesCoProcessor::update:" << step);
+    VF_LOG_DEBUG("WriteMultiphaseQuantitiesCoProcessor::update:: {}", step);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -125,7 +127,8 @@ void WriteMultiphaseQuantitiesCoProcessor::collectData(double step)
         {
             WbWriterVtkXmlASCII::getInstance()->addFilesToCollection(cfilePath, filenames, istep, false);
         }
-        UBLOG(logINFO, "WriteMultiphaseQuantitiesCoProcessor step: " << istep);
+        //UBLOG(logINFO, "WriteMultiphaseQuantitiesCoProcessor step: " << istep);
+        VF_LOG_INFO("WriteMultiphaseQuantitiesCoProcessor step: {}", istep);
     }
 
     clearData();

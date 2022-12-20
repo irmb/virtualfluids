@@ -3,6 +3,7 @@ build/
 bin/
 cmake-build-debug/
 run/
+buildGCC
 
 # Python
 _skbuild/

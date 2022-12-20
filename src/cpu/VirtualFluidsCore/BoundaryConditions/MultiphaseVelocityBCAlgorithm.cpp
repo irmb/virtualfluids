@@ -136,7 +136,7 @@ void MultiphaseVelocityBCAlgorithm::applyBC()
         // distributions->setDistributionForDirection(fReturn, x1+D3Q27System::DX1[invDir], x2+D3Q27System::DX2[invDir], x3+D3Q27System::DX3[invDir], fdir);//no delay BB
          distributions->setDistributionForDirection(fReturn, x1, x2, x3, invDir);//delay BB  
 
-         LBMReal hReturn = htemp[invDir]+h[invDir] - heq[invDir];
+         LBMReal hReturn = htemp[invDir] + h[invDir] - heq[invDir] - velocity*phi;
          distributionsH->setDistributionForDirection(hReturn, x1, x2, x3, invDir);//delay BB  
          if (distributionsH2) {
              fReturn = h2[invDir] ;
