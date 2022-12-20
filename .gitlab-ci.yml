@@ -147,7 +147,9 @@ build_poiseuille_test_container:
 
   rules:
     - if: $REMOTE_USER && $REMOTE_HOST && $PRIVATE_KEY && $CI_PIPELINE_SOURCE == "schedule"
+      when: always
     - when: manual
+      allow_failure: true
 
   tags:
     - linux
@@ -218,7 +220,9 @@ gcc_9_python_hpc_test:
 
   rules:
     - if: $REMOTE_USER && $REMOTE_HOST && $PRIVATE_KEY && $CI_PIPELINE_SOURCE == "schedule"
+      when: always
     - when: manual
+      allow_failure: true
 
   before_script:
     - pip install hpc-rocket
