@@ -18,7 +18,7 @@
 namespace indexRearrangementTests
 {
 template <typename T>
-bool vectorsAreEqual(const T *vector1, const std::vector<T> vectorExpected)
+bool vectorsAreEqual(const T *vector1, const std::vector<T>& vectorExpected)
 {
     for (uint i = 0; i < vectorExpected.size(); i++) {
         if (vector1[i] != vectorExpected[i])
@@ -179,7 +179,7 @@ public:
         return 0;
     }
 
-    void setReceivedIndices(std::vector<uint> receivedIndices)
+    void setReceivedIndices(const std::vector<uint>& receivedIndices)
     {
         this->receivedIndices = receivedIndices;
     }
@@ -283,15 +283,29 @@ TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, threeR
 
 TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, sixRecvIndicesX)
 {
+    // this test shows the limits of the current approach. The last index is always deleted
     CommunicationRoutineDouble communicator;
-    std::vector<uint> expected = { 10, 20, 30, 40, 50, 60 };
-    std::vector<uint> receivedIndicesByComm(expected.size(), 0);
+    std::vector<uint> expected = { 10, 20, 30, 40, 50 };
+    std::vector<uint> receivedIndicesByComm = { 10, 20, 30, 40, 50, 60 };
+    communicator.setReceivedIndices(receivedIndicesByComm);
+    createTestSubject(communicator);
+
+    std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(5));
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
+}
+
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, recvIndicesXContainZero)
+{
+    CommunicationRoutineDouble communicator;
+    std::vector<uint> expected = { 0, 20, 30, 40 };
+    std::vector<uint> receivedIndicesByComm(6, 0);
     std::copy(expected.begin(), expected.end(), receivedIndicesByComm.begin());
     communicator.setReceivedIndices(receivedIndicesByComm);
     createTestSubject(communicator);
 
     std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
-    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(6));
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(4));
     EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
 }
 
@@ -390,15 +404,29 @@ TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY, threeR
 
 TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY, sixRecvIndicesY)
 {
+    // this test shows the limits of the current approach. The last index is always deleted
     CommunicationRoutineDouble communicator;
-    std::vector<uint> expected = { 10, 20, 30, 40, 50, 60 };
-    std::vector<uint> receivedIndicesByComm(expected.size(), 0);
+    std::vector<uint> expected = { 10, 20, 30, 40, 50 };
+    std::vector<uint> receivedIndicesByComm = { 10, 20, 30, 40, 50, 60 };
+    communicator.setReceivedIndices(receivedIndicesByComm);
+    createTestSubject(communicator);
+
+    std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(5));
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
+}
+
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY, recvIndicesYContainZero)
+{
+    CommunicationRoutineDouble communicator;
+    std::vector<uint> expected = { 0, 20, 30, 40 };
+    std::vector<uint> receivedIndicesByComm(6, 0);
     std::copy(expected.begin(), expected.end(), receivedIndicesByComm.begin());
     communicator.setReceivedIndices(receivedIndicesByComm);
     createTestSubject(communicator);
 
     std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
-    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(6));
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(4));
     EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
 }
 
@@ -495,16 +523,30 @@ TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ, threeR
     EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
 }
 
-TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ, sixRecvIndicesZ)
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ, sixRecvIndicesYZ)
 {
+    // this test shows the limits of the current approach. The last index is always deleted
     CommunicationRoutineDouble communicator;
-    std::vector<uint> expected = { 10, 20, 30, 40, 50, 60 };
-    std::vector<uint> receivedIndicesBZComm(expected.size(), 0);
-    std::copy(expected.begin(), expected.end(), receivedIndicesBZComm.begin());
-    communicator.setReceivedIndices(receivedIndicesBZComm);
+    std::vector<uint> expected = { 10, 20, 30, 40, 50 };
+    std::vector<uint> receivedIndicesByComm = { 10, 20, 30, 40, 50, 60 };
+    communicator.setReceivedIndices(receivedIndicesByComm);
     createTestSubject(communicator);
 
     std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
-    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(6));
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(5));
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
+}
+
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ, recvIndicesZContainZero)
+{
+    CommunicationRoutineDouble communicator;
+    std::vector<uint> expected = { 0, 20, 30, 40 };
+    std::vector<uint> receivedIndicesByComm(6, 0);
+    std::copy(expected.begin(), expected.end(), receivedIndicesByComm.begin());
+    communicator.setReceivedIndices(receivedIndicesByComm);
+    createTestSubject(communicator);
+
+    std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
+    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(4));
     EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
 }

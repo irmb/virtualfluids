@@ -38,7 +38,7 @@
 #include "Block3D.h"
 #include "DataSet3D.h"
 #include "Grid3D.h"
-#include "Grid3DSystem.h"
+#include "D3Q27System.h"
 #include "LBMKernel.h"
 #include "LBMSystem.h"
 #include <utility>
@@ -46,16 +46,16 @@
 //////////////////////////////////////////////////////////////////////////
 SetKernelBlockVisitor::SetKernelBlockVisitor(SPtr<LBMKernel> kernel, LBMReal nue, double availMem, double needMem,
                                              SetKernelBlockVisitor::Action action)
-    : Block3DVisitor(0, Grid3DSystem::MAXLEVEL), kernel(std::move(kernel)), nue(nue), action(action), dataSetFlag(true)
+    : Block3DVisitor(0, D3Q27System::MAXLEVEL), kernel(std::move(kernel)), nue(nue), action(action), dataSetFlag(true)
 {
     if (needMem > availMem) {
         throw UbException(UB_EXARGS, "SetKernelBlockVisitor: Not enough memory!!!");
     }
 }
 
-SetKernelBlockVisitor::SetKernelBlockVisitor(SPtr<LBMKernel> kernel, LBMReal nue, int &numberOfProcesses,
+SetKernelBlockVisitor::SetKernelBlockVisitor(SPtr<LBMKernel> kernel, LBMReal nue, int numberOfProcesses,
                                              SetKernelBlockVisitor::Action action)
-    : Block3DVisitor(0, Grid3DSystem::MAXLEVEL), kernel(std::move(kernel)), nue(nue), action(action), dataSetFlag(true),
+    : Block3DVisitor(0, D3Q27System::MAXLEVEL), kernel(std::move(kernel)), nue(nue), action(action), dataSetFlag(true),
       numberOfProcesses(numberOfProcesses)
 {
 }
@@ -127,7 +127,7 @@ double SetKernelBlockVisitor::getRequiredPhysicalMemory(const SPtr<Grid3D> &grid
     unsigned long long numberOfNodesPerBlockWithGhostLayer;
     auto numberOfBlocks = (unsigned long long)grid->getNumberOfBlocks();
     auto blockNx        = grid->getBlockNX();
-    int ghostLayer      = 3;
+    int ghostLayer      = grid->getGhostLayerWidth() * 2 + 1;
 
     numberOfNodesPerBlockWithGhostLayer = numberOfBlocks * (val<1>(blockNx) + ghostLayer) *
                                           (val<2>(blockNx) + ghostLayer) * (val<3>(blockNx) + ghostLayer);

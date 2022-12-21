@@ -65,6 +65,8 @@ Parameter::Parameter(int numberOfProcesses, int myId, std::optional<const vf::ba
     initGridPaths();
     initGridBasePoints();
     initDefaultLBMkernelAllLevels();
+
+    this->cudaStreamManager = std::make_unique<CudaStreamManager>();
 }
 
 Parameter::~Parameter() = default;
@@ -829,7 +831,7 @@ real Parameter::getLengthRatio()
 }
 real Parameter::getForceRatio()
 {
-    return this->getDensityRatio() * this->getVelocityRatio()/this->getTimeRatio();
+    return (this->getDensityRatio()+1.0) * this->getVelocityRatio()/this->getTimeRatio();
 }
 real Parameter::getScaledViscosityRatio(int level)
 {
@@ -859,6 +861,10 @@ real Parameter::getScaledForceRatio(int level)
 {
     return this->getForceRatio()*(level+1);
 }
+real Parameter::getScaledStressRatio(int level)
+{
+    return this->getVelocityRatio()*this->getVelocityRatio();
+}
 void Parameter::setRealX(real RealX)
 {
     ic.RealX = RealX;
@@ -882,6 +888,10 @@ void Parameter::setPressInZ(unsigned int PressInZ)
 void Parameter::setPressOutZ(unsigned int PressOutZ)
 {
     ic.PressOutZ = PressOutZ;
+}
+void Parameter::setOutflowPressureCorrectionFactor(real pressBCrhoCorrectionFactor)
+{
+    ic.outflowPressureCorrectionFactor = pressBCrhoCorrectionFactor;
 }
 void Parameter::setMaxDev(int maxdev)
 {
@@ -1607,7 +1617,7 @@ void Parameter::setOutflowBoundaryNormalZ(std::string outflowNormalZ)
 void Parameter::setMainKernel(std::string kernel)
 {
     this->mainKernel = kernel;
-    if (kernel.find("Stream") != std::string::npos || kernel.find("Redesigned") != std::string::npos)
+    if ( kernel.find("CumulantK17") != std::string::npos )
         this->kernelNeedsFluidNodeIndicesToRun = true;
 }
 void Parameter::setMultiKernelOn(bool isOn)
@@ -1915,6 +1925,10 @@ unsigned int Parameter::getPressInZ()
 unsigned int Parameter::getPressOutZ()
 {
     return ic.PressOutZ;
+}
+real Parameter::getOutflowPressureCorrectionFactor()
+{
+    return ic.outflowPressureCorrectionFactor;
 }
 int Parameter::getMaxDev()
 {
@@ -2657,8 +2671,7 @@ void Parameter::setUseStreams(bool useStreams)
     if (useStreams) {
         if (this->getNumprocs() != 1) {
             this->useStreams = useStreams;
-            this->cudaStreamManager = std::make_unique<CudaStreamManager>();
-            return;
+            return; 
         } else {
             std::cout << "Can't use streams with only one process!" << std::endl;
         }

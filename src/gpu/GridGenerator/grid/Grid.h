@@ -178,6 +178,21 @@ public:
     virtual void findFluidNodeIndicesBorder() = 0;
     virtual uint getNumberOfFluidNodesBorder() const = 0;
     virtual void getFluidNodeIndicesBorder(uint *fluidNodeIndicesBorder) const = 0;
+
+    virtual void addFluidNodeIndicesMacroVars(std::vector<uint> _fluidNodeIndicesMacroVars) = 0;
+    virtual void addFluidNodeIndicesApplyBodyForce(std::vector<uint> _fluidNodeIndicesApplyBodyForce) = 0;
+    virtual void addFluidNodeIndicesAllFeatures(std::vector<uint> _fluidNodeIndicesAllFeatures) = 0;
+    virtual void sortFluidNodeIndicesMacroVars() = 0;
+    virtual void sortFluidNodeIndicesApplyBodyForce() = 0;
+    virtual void sortFluidNodeIndicesAllFeatures() = 0;
+
+    virtual uint getNumberOfFluidNodeIndicesMacroVars() const = 0;
+    virtual uint getNumberOfFluidNodeIndicesApplyBodyForce() const = 0;
+    virtual uint getNumberOfFluidNodeIndicesAllFeatures() const = 0; 
+    virtual void getFluidNodeIndicesMacroVars(uint *fluidNodeIndicesMacroVars) const = 0;
+    virtual void getFluidNodeIndicesApplyBodyForce(uint *fluidNodeIndicesApplyBodyForce) const = 0;
+    virtual void getFluidNodeIndicesAllFeatures(uint *fluidNodeIndicesAllFeatures) const = 0;
+
 };
 
 #endif

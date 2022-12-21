@@ -111,12 +111,13 @@ void LBMKernel::setForcingX3(const std::string &muParserString)
 //////////////////////////////////////////////////////////////////////////
 void LBMKernel::checkFunction(mu::Parser fct)
 {
-    double x1 = 1.0, x2 = 1.0, x3 = 1.0, dt = 1.0, nue = 1.0;
+    double x1 = 1.0, x2 = 1.0, x3 = 1.0, dt = 1.0, nue = 1.0, rho = 1.0;
     fct.DefineVar("x1", &x1);
     fct.DefineVar("x2", &x2);
     fct.DefineVar("x3", &x3);
     fct.DefineVar("dt", &dt);
     fct.DefineVar("nue", &nue);
+    fct.DefineVar("rho", &rho);
 
     try {
         fct.Eval();
@@ -230,4 +231,6 @@ void LBMKernel::setPhaseFieldRelaxation(double tauH) { this->tauH = tauH; }
 double LBMKernel::getPhaseFieldRelaxation() const { return tauH; }
 //////////////////////////////////////////////////////////////////////////
 void LBMKernel::setMobility(double mob) { this->mob = mob; }
+//////////////////////////////////////////////////////////////////////////
+void LBMKernel::setInterfaceWidth(double w) { this->interfaceWidth = w; }
 //////////////////////////////////////////////////////////////////////////

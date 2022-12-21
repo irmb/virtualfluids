@@ -40,6 +40,7 @@
 
 #include "LBM/LB.h"
 
+
 class Parameter;
 class GridBuilder;
 class IndexRearrangementForStreams;
@@ -58,12 +59,15 @@ private:
 
     std::shared_ptr<GridBuilder> builder;
     std::unique_ptr<const IndexRearrangementForStreams> indexRearrangement;
-    std::unique_ptr<InterpolationCellGrouper> interpolationGrouper;
+    std::unique_ptr<const InterpolationCellGrouper> interpolationGrouper;
     const uint mpiProcessID;
 
 public:
     VIRTUALFLUIDS_GPU_EXPORT GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::gpu::Communicator& communicator);
     VIRTUALFLUIDS_GPU_EXPORT ~GridGenerator() override;
+
+    //! \brief overwrites the default IndexRearrangementForStreams
+    void setIndexRearrangementForStreams(std::unique_ptr<IndexRearrangementForStreams>&& indexRearrangement);
 
     //! \brief allocates and initialized the data structures for Coordinates and node types
     void allocArrays_CoordNeighborGeo() override;
@@ -72,8 +76,10 @@ public:
     //! \brief allocates and initialized the sub-grid distances at the boundary conditions
     void allocArrays_BoundaryQs() override;
     void allocArrays_OffsetScale() override;
-    void allocArrays_fluidNodeIndices() override;
-    void allocArrays_fluidNodeIndicesBorder() override;
+    void allocArrays_taggedFluidNodes() override;
+
+    void tagFluidNodeIndices(const std::vector<uint>& taggedFluidNodeIndices, CollisionTemplate tag, uint level) override;
+    void sortFluidNodeTags() override;
 
     virtual void setDimensions() override;
     virtual void setBoundingBox() override;
@@ -103,7 +109,7 @@ private:
     void setSizeGeoQs(unsigned int level) const;
     void setQ27Size(QforBoundaryConditions &Q, real* QQ, unsigned int sizeQ) const;
     bool hasQs(int channelSide, unsigned int level) const;
-    
+
     void initalValuesDomainDecompostion();
 public:
     void initalGridInformations() override;
@@ -130,6 +136,9 @@ private:
     //! \param subgridDistances is a pointer to an array containing the subgrid distances
     //! \param numberOfBCnodes is the number of lattice nodes in the boundary condition
     static void getPointersToBoundaryConditions(QforBoundaryConditions& boundaryConditionStruct, real* subgridDistances, const unsigned int numberOfBCnodes);
+
+private:
+    friend class GridGeneratorTests_initalValuesDomainDecompostion;
 };
 
 #endif

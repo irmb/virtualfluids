@@ -64,6 +64,10 @@ public:
    template<class T>
    T getValue(const std::string& key) const;
 
+   //! get value with key and default value
+   template<class T>
+   T getValue(const std::string& key, T defaultValue) const;
+
 private:
    //! the container
    std::map<std::string, std::string> data;
@@ -136,6 +140,19 @@ T ConfigurationFile::getValue(const std::string& key) const
    }
 
    return x;
+}
+
+template<class T>
+T ConfigurationFile::getValue(const std::string& key, T defaultValue) const
+{
+   if (contains(key))
+   {
+      return getValue<T>(key);
+   }
+   else
+   {
+      return defaultValue;
+   }
 }
 
 }

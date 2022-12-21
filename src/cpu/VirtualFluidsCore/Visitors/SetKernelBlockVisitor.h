@@ -52,7 +52,7 @@ public:
     SetKernelBlockVisitor(SPtr<LBMKernel> kernel, LBMReal nue, double availMem, double needMem,
                           SetKernelBlockVisitor::Action action = SetKernelBlockVisitor::NewKernel);
 
-    SetKernelBlockVisitor(SPtr<LBMKernel> kernel, LBMReal nue, int &numberOfProcesses,
+    SetKernelBlockVisitor(SPtr<LBMKernel> kernel, LBMReal nue, int numberOfProcesses,
                           SetKernelBlockVisitor::Action action = SetKernelBlockVisitor::NewKernel);
 
     ~SetKernelBlockVisitor() override = default;

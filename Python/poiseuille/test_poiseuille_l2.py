@@ -1,3 +1,37 @@
+r"""
+=======================================================================================
+ ____          ____    __    ______     __________   __      __       __        __
+ \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+      \    \  |    |   ________________________________________________________________
+       \    \ |    |  |  ______________________________________________________________|
+        \    \|    |  |  |         __          __     __     __     ______      _______
+         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+
+  This file is part of VirtualFluids. VirtualFluids is free software: you can
+  redistribute it and/or modify it under the terms of the GNU General Public
+  License as published by the Free Software Foundation, either version 3 of
+  the License, or (at your option) any later version.
+
+  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+  for more details.
+
+  You should have received a copy of the GNU General Public License along
+  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+
+! \file test_poiseuille_l2.py
+! \ingroup poiseuille
+! \author Sven Marcus, Henry Korb
+=======================================================================================
+"""
 import os
 import shutil
 import unittest
@@ -5,8 +39,7 @@ import unittest
 import matplotlib.pyplot as plt
 import numpy as np
 import pyvista as pv
-from pyfluids.cpu.kernel import LBMKernel, KernelType
-from pyfluids.cpu.parameters import GridParameters, PhysicalParameters, RuntimeParameters
+from pyfluids import cpu
 from scipy import stats
 
 from errors import normalized_l2_error
@@ -33,13 +66,13 @@ class TestPoiseuilleFlow(unittest.TestCase):
         self.skipTest("This test is not implemented correctly yet")
         plt.ion()
 
-        physical_params = PhysicalParameters()
+        physical_params = cpu.parameters.PhysicalParameters()
 
-        runtime_params = RuntimeParameters()
+        runtime_params = cpu.parameters.RuntimeParameters()
         runtime_params.number_of_threads = os.cpu_count()
         runtime_params.timestep_log_interval = 10000
 
-        kernel = LBMKernel(KernelType.CompressibleCumulantFourthOrderViscosity)
+        kernel = cpu.kernel.LBMKernel(cpu.kernel.KernelType.CompressibleCumulantFourthOrderViscosity)
         kernel.use_forcing = True
 
         normalized_l2_errors = []
@@ -140,7 +173,7 @@ def get_heights_from_indices(mesh, indices):
 
 
 def create_grid_params_with_nodes_in_column(nodes_in_column, delta_x):
-    grid_params = GridParameters()
+    grid_params = cpu.parameters.GridParameters()
     grid_params.node_distance = delta_x
     grid_params.number_of_nodes_per_direction = [1, 1, nodes_in_column]
     grid_params.blocks_per_direction = [1, 1, 8]

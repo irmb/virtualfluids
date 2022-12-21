@@ -45,6 +45,8 @@ class Grid;
 class Side;
 enum class SideType;
 
+class TransientBCInputFileReader;
+
 namespace gg
 {
 class BoundaryCondition
@@ -63,6 +65,8 @@ public:
     bool isSide(SideType side) const;
 
     real getQ(uint index, uint dir) { return this->qs[index][dir]; }
+
+    void getCoords( SPtr<Grid> grid, std::vector<real>& x, std::vector<real>& y, std::vector<real>& z);
 };
 
 }
@@ -246,6 +250,7 @@ public:
     real getVy(uint index) { return this->vyList[index]; }
     real getVz(uint index) { return this->vzList[index]; }
 
+
     void setVelocityProfile( SPtr<Grid> grid, std::function<void(real,real,real,real&,real&,real&)> velocityProfile );
 };
 
@@ -329,5 +334,32 @@ public:
     real getNormalz(uint index) { return this->normalZList[index]; }
 };
 
+class PrecursorBoundaryCondition : public gg::BoundaryCondition
+{
+public:
+    static SPtr<PrecursorBoundaryCondition> make(SPtr<TransientBCInputFileReader> reader, int timeStepsBetweenReads, real velocityX, real velocityY, real velocityZ)
+    {
+        return SPtr<PrecursorBoundaryCondition>(new PrecursorBoundaryCondition(reader, timeStepsBetweenReads, velocityX, velocityY, velocityZ));
+    }
 
+    SPtr<TransientBCInputFileReader> getReader(){ return reader; }
+    real getVelocityX() { return velocityX; }
+    real getVelocityY() { return velocityY; }
+    real getVelocityZ() { return velocityZ; }
+
+private:
+    PrecursorBoundaryCondition(SPtr<TransientBCInputFileReader> _reader, uint _timeStepsBetweenReads, real vx, real vy, real vz) : reader(_reader), timeStepsBetweenReads(_timeStepsBetweenReads), velocityX(vx), velocityY(vy), velocityZ(vz) { };
+    virtual char getType() const override
+    {
+        return vf::gpu::BC_VELOCITY;
+    }
+public:
+    uint timeStepsBetweenReads; //!> read data every nth timestep
+
+private:
+    real velocityX = 0.0;
+    real velocityY = 0.0;
+    real velocityZ = 0.0;
+    SPtr<TransientBCInputFileReader> reader;
+};
 #endif

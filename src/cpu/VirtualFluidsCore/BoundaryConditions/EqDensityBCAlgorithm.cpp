@@ -63,17 +63,17 @@ void EqDensityBCAlgorithm::applyBC()
     int nx3 = x3;
 
     // flag points in direction of fluid
-    if (bcPtr->hasDensityBoundaryFlag(D3Q27System::E)) {
+    if (bcPtr->hasDensityBoundaryFlag(D3Q27System::DIR_P00)) {
         nx1 -= 1;
-    } else if (bcPtr->hasDensityBoundaryFlag(D3Q27System::W)) {
+    } else if (bcPtr->hasDensityBoundaryFlag(D3Q27System::DIR_M00)) {
         nx1 += 1;
-    } else if (bcPtr->hasDensityBoundaryFlag(D3Q27System::N)) {
+    } else if (bcPtr->hasDensityBoundaryFlag(D3Q27System::DIR_0P0)) {
         nx2 -= 1;
-    } else if (bcPtr->hasDensityBoundaryFlag(D3Q27System::S)) {
+    } else if (bcPtr->hasDensityBoundaryFlag(D3Q27System::DIR_0M0)) {
         nx2 += 1;
-    } else if (bcPtr->hasDensityBoundaryFlag(D3Q27System::T)) {
+    } else if (bcPtr->hasDensityBoundaryFlag(D3Q27System::DIR_00P)) {
         nx3 -= 1;
-    } else if (bcPtr->hasDensityBoundaryFlag(D3Q27System::B)) {
+    } else if (bcPtr->hasDensityBoundaryFlag(D3Q27System::DIR_00M)) {
         nx3 += 1;
     } else
         UB_THROW(UbException(UB_EXARGS, "Danger...no orthogonal BC-Flag on density boundary..."));

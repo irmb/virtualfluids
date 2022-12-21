@@ -42,11 +42,13 @@
 #include "Parameter/Parameter.h"
 #include "gpu/GridGenerator/grid/BoundaryConditions/Side.h"
 
+
 struct LBMSimulationParameter;
 class Parameter;
 
 using boundaryCondition = std::function<void(LBMSimulationParameter *, QforBoundaryConditions *)>;
 using boundaryConditionWithParameter = std::function<void(Parameter *, QforBoundaryConditions *, const int level)>;
+using precursorBoundaryConditionFunc = std::function<void(LBMSimulationParameter *, QforPrecursorBoundaryConditions *, real timeRatio, real velocityRatio)>;
 
 class BoundaryConditionFactory
 {
@@ -109,6 +111,8 @@ public:
         PressureNonEquilibriumCompressible,
         //! - OutflowNonReflective = outflow boundary condition, should be combined with VelocityAndPressureCompressible
         OutflowNonReflective,
+        //! - OutflowNonreflectivePressureCorrection = like OutflowNonReflective, but also reduces pressure overshoot
+        OutflowNonReflectivePressureCorrection,
         //! - NotSpecified =  the user did not set a boundary condition
         NotSpecified
     };
@@ -128,11 +132,21 @@ public:
     // enum class OutflowBoundaryCondition {};  // TODO:
     // https://git.rz.tu-bs.de/m.schoenherr/VirtualFluids_dev/-/issues/16
 
+    enum class PrecursorBC {
+        //! - VelocityPrecursor
+        VelocityPrecursor,
+        //! - DisitributionsPrecursor
+        DistributionsPrecursor,
+        //! - NotSpecified =  the user did not set a boundary condition
+        NotSpecified
+    };
+
     void setVelocityBoundaryCondition(const BoundaryConditionFactory::VelocityBC boundaryConditionType);
     void setNoSlipBoundaryCondition(const BoundaryConditionFactory::NoSlipBC boundaryConditionType);
     void setSlipBoundaryCondition(const BoundaryConditionFactory::SlipBC boundaryConditionType);
     void setPressureBoundaryCondition(const BoundaryConditionFactory::PressureBC boundaryConditionType);
     void setStressBoundaryCondition(const BoundaryConditionFactory::StressBC boundaryConditionType);
+    void setPrecursorBoundaryCondition(const BoundaryConditionFactory::PrecursorBC boundaryConditionType);
     //! \brief set a boundary condition for the geometry
     //! param boundaryConditionType: a velocity, no-slip or slip boundary condition
     //! \details suggestions for boundaryConditionType:
@@ -152,6 +166,8 @@ public:
     [[nodiscard]] boundaryCondition getSlipBoundaryConditionPost(bool isGeometryBC = false) const;
     [[nodiscard]] boundaryCondition getPressureBoundaryConditionPre() const;
     [[nodiscard]] boundaryCondition getGeometryBoundaryConditionPost() const;
+    [[nodiscard]] precursorBoundaryConditionFunc getPrecursorBoundaryConditionPost() const;
+
 
     [[nodiscard]] boundaryConditionWithParameter getStressBoundaryConditionPost() const;
 
@@ -162,6 +178,7 @@ private:
     PressureBC pressureBoundaryCondition = PressureBC::NotSpecified;
     std::variant<VelocityBC, NoSlipBC, SlipBC> geometryBoundaryCondition = NoSlipBC::NoSlipImplicitBounceBack;
     StressBC stressBoundaryCondition = StressBC::NotSpecified;
+    PrecursorBC precursorBoundaryCondition = PrecursorBC::NotSpecified;
 
     // OutflowBoundaryConditon outflowBC // TODO: https://git.rz.tu-bs.de/m.schoenherr/VirtualFluids_dev/-/issues/16
 };

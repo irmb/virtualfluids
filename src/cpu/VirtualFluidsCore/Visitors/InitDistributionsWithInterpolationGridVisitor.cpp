@@ -7,7 +7,7 @@
 #include "D3Q27EsoTwist3DSplittedVector.h"
 #include "DataSet3D.h"
 #include "Grid3D.h"
-#include "Grid3DSystem.h"
+#include "D3Q27System.h"
 #include "InterpolationProcessor.h"
 #include "LBMKernel.h"
 #include <CbArray2D.h>

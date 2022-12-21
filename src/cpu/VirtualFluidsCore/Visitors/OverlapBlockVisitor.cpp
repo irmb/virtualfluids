@@ -1,10 +1,10 @@
 #include "OverlapBlockVisitor.h"
 #include "Block3D.h"
 #include "Grid3D.h"
-#include "Grid3DSystem.h"
+#include "D3Q27System.h"
 
 OverlapBlockVisitor::OverlapBlockVisitor(int levelDepth /*shut be maxGridLevel*/, bool includeNotActiveBlocks)
-    : Block3DVisitor(0, Grid3DSystem::MAXLEVEL), levelDepth(levelDepth), includeNotActiveBlocks(includeNotActiveBlocks)
+    : Block3DVisitor(0, D3Q27System::MAXLEVEL), levelDepth(levelDepth), includeNotActiveBlocks(includeNotActiveBlocks)
 {
 }
 //////////////////////////////////////////////////////////////////////////

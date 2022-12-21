@@ -60,7 +60,7 @@ void FullDirectConnector::sendVectors()
 void FullDirectConnector::exchangeData()
 {
     // EAST
-    if (sendDir == D3Q27System::E) {
+    if (sendDir == D3Q27System::DIR_P00) {
         for (int x3 = 1; x3 < maxX3; x3++) {
             for (int x2 = 1; x2 < maxX2; x2++) {
                 exchangeData(maxX1 - 1, x2, x3, 0, x2, x3);
@@ -68,7 +68,7 @@ void FullDirectConnector::exchangeData()
         }
     }
     // WEST
-    else if (sendDir == D3Q27System::W) {
+    else if (sendDir == D3Q27System::DIR_M00) {
         for (int x3 = 1; x3 < maxX3; x3++) {
             for (int x2 = 1; x2 < maxX2; x2++) {
                 exchangeData(1, x2, x3, maxX1, x2, x3);
@@ -76,7 +76,7 @@ void FullDirectConnector::exchangeData()
         }
     }
     // NORTH
-    else if (sendDir == D3Q27System::N) {
+    else if (sendDir == D3Q27System::DIR_0P0) {
         for (int x3 = 1; x3 < maxX3; x3++) {
             for (int x1 = 1; x1 < maxX1; x1++) {
                 exchangeData(x1, maxX2 - 1, x3, x1, 0, x3);
@@ -84,7 +84,7 @@ void FullDirectConnector::exchangeData()
         }
     }
     // SOUTH
-    else if (sendDir == D3Q27System::S) {
+    else if (sendDir == D3Q27System::DIR_0M0) {
         for (int x3 = 1; x3 < maxX3; x3++) {
             for (int x1 = 1; x1 < maxX1; x1++) {
                 exchangeData(x1, 1, x3, x1, maxX2, x3);
@@ -93,7 +93,7 @@ void FullDirectConnector::exchangeData()
     }
 
     // TOP
-    else if (sendDir == D3Q27System::T) {
+    else if (sendDir == D3Q27System::DIR_00P) {
         for (int x2 = 1; x2 < maxX2; x2++) {
             for (int x1 = 1; x1 < maxX1; x1++) {
                 exchangeData(x1, x2, maxX3 - 1, x1, x2, 0);
@@ -101,7 +101,7 @@ void FullDirectConnector::exchangeData()
         }
     }
     // BOTTOM
-    else if (sendDir == D3Q27System::B) {
+    else if (sendDir == D3Q27System::DIR_00M) {
         for (int x2 = 1; x2 < maxX2; x2++) {
             for (int x1 = 1; x1 < maxX1; x1++) {
                 exchangeData(x1, x2, 1, x1, x2, maxX3);
@@ -109,77 +109,77 @@ void FullDirectConnector::exchangeData()
         }
     }
     // NORTHEAST
-    else if (sendDir == D3Q27System::NE) {
+    else if (sendDir == D3Q27System::DIR_PP0) {
         for (int x3 = 1; x3 < maxX3; x3++) {
             exchangeData(maxX1 - 1, maxX2 - 1, x3, 0, 0, x3);
         }
     }
     // NORTHWEST
-    else if (sendDir == D3Q27System::NW) {
+    else if (sendDir == D3Q27System::DIR_MP0) {
         for (int x3 = 1; x3 < maxX3; x3++) {
             exchangeData(1, maxX2 - 1, x3, maxX1, 0, x3);
         }
     }
     // SOUTHWEST
-    else if (sendDir == D3Q27System::SW) {
+    else if (sendDir == D3Q27System::DIR_MM0) {
         for (int x3 = 1; x3 < maxX3; x3++) {
             exchangeData(1, 1, x3, maxX1, maxX2, x3);
         }
     }
     // SOUTHEAST
-    else if (sendDir == D3Q27System::SE) {
+    else if (sendDir == D3Q27System::DIR_PM0) {
         for (int x3 = 1; x3 < maxX3; x3++) {
             exchangeData(maxX1 - 1, 1, x3, 0, maxX2, x3);
         }
-    } else if (sendDir == D3Q27System::TE)
+    } else if (sendDir == D3Q27System::DIR_P0P)
         for (int x2 = 1; x2 < maxX2; x2++) {
             exchangeData(maxX1 - 1, x2, maxX3 - 1, 0, x2, 0);
         }
-    else if (sendDir == D3Q27System::BW)
+    else if (sendDir == D3Q27System::DIR_M0M)
         for (int x2 = 1; x2 < maxX2; x2++) {
             exchangeData(1, x2, 1, maxX1, x2, maxX3);
         }
-    else if (sendDir == D3Q27System::BE)
+    else if (sendDir == D3Q27System::DIR_P0M)
         for (int x2 = 1; x2 < maxX2; x2++) {
             exchangeData(maxX1 - 1, x2, 1, 0, x2, maxX3);
         }
-    else if (sendDir == D3Q27System::TW)
+    else if (sendDir == D3Q27System::DIR_M0P)
         for (int x2 = 1; x2 < maxX2; x2++) {
             exchangeData(1, x2, maxX3 - 1, maxX1, x2, 0);
         }
-    else if (sendDir == D3Q27System::TN)
+    else if (sendDir == D3Q27System::DIR_0PP)
         for (int x1 = 1; x1 < maxX1; x1++) {
             exchangeData(x1, maxX2 - 1, maxX3 - 1, x1, 0, 0);
         }
-    else if (sendDir == D3Q27System::BS)
+    else if (sendDir == D3Q27System::DIR_0MM)
         for (int x1 = 1; x1 < maxX1; x1++) {
             exchangeData(x1, 1, 1, x1, maxX2, maxX3);
         }
-    else if (sendDir == D3Q27System::BN)
+    else if (sendDir == D3Q27System::DIR_0PM)
         for (int x1 = 1; x1 < maxX1; x1++) {
             exchangeData(x1, maxX2 - 1, 1, x1, 0, maxX3);
         }
 
-    else if (sendDir == D3Q27System::TS)
+    else if (sendDir == D3Q27System::DIR_0MP)
         for (int x1 = 1; x1 < maxX1; x1++) {
             exchangeData(x1, 1, maxX3 - 1, x1, maxX2, 0);
         }
 
-    else if (sendDir == D3Q27System::TSW) {
+    else if (sendDir == D3Q27System::DIR_MMP) {
         exchangeData(1, 1, maxX3 - 1, maxX1, maxX2, 0);
-    } else if (sendDir == D3Q27System::TSE) {
+    } else if (sendDir == D3Q27System::DIR_PMP) {
         exchangeData(maxX1 - 1, 1, maxX3 - 1, 0, maxX2, 0);
-    } else if (sendDir == D3Q27System::TNW) {
+    } else if (sendDir == D3Q27System::DIR_MPP) {
         exchangeData(1, maxX2 - 1, maxX3 - 1, maxX1, 0, 0);
-    } else if (sendDir == D3Q27System::TNE) {
+    } else if (sendDir == D3Q27System::DIR_PPP) {
         exchangeData(maxX1 - 1, maxX2 - 1, maxX3 - 1, 0, 0, 0);
-    } else if (sendDir == D3Q27System::BSW) {
+    } else if (sendDir == D3Q27System::DIR_MMM) {
         exchangeData(1, 1, 1, maxX1, maxX2, maxX3);
-    } else if (sendDir == D3Q27System::BSE) {
+    } else if (sendDir == D3Q27System::DIR_PMM) {
         exchangeData(maxX1 - 1, 1, 1, 0, maxX2, maxX3);
-    } else if (sendDir == D3Q27System::BNW) {
+    } else if (sendDir == D3Q27System::DIR_MPM) {
         exchangeData(1, maxX2 - 1, 1, maxX1, 0, maxX3);
-    } else if (sendDir == D3Q27System::BNE) {
+    } else if (sendDir == D3Q27System::DIR_PPM) {
         exchangeData(maxX1 - 1, maxX2 - 1, 1, 0, 0, maxX3);
     } else
         UB_THROW(UbException(UB_EXARGS, "unknown dir"));
