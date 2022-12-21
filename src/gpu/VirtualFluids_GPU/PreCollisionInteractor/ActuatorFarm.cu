@@ -508,11 +508,11 @@ void ActuatorFarm::initBoundingSpheres(Parameter* para, CudaMemoryManager* cudaM
             }
         }
 
-        if(nodesInThisSphere<minimumNumberOfNodesPerSphere)
-        {
-            VF_LOG_CRITICAL("Found only {} nodes in bounding sphere of turbine no. {}, expected at least {}!", nodesInThisSphere, turbine, minimumNumberOfNodesPerSphere);
-            throw std::runtime_error("ActuatorFarm::initBoundingSpheres: Turbine bounding sphere partially out of domain.");
-        }
+        // if(nodesInThisSphere<minimumNumberOfNodesPerSphere)
+        // {
+        //     VF_LOG_CRITICAL("Found only {} nodes in bounding sphere of turbine no. {}, expected at least {}!", nodesInThisSphere, turbine, minimumNumberOfNodesPerSphere);
+        //     throw std::runtime_error("ActuatorFarm::initBoundingSpheres: Turbine bounding sphere partially out of domain.");
+        // }
     }
 
     this->numberOfIndices = uint(nodesInSpheres.size());
