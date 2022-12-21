@@ -358,8 +358,8 @@ __global__ void LB_Kernel_CumulantK17Sponge(
     // 3.
     
     // Calculate modified omega for sponge bob layer
-    real startXsponge = 504.0f;
-    real endXsponge = 454.0f;
+    real startXsponge = 441.0f;
+    real endXsponge = 381.0f;
     real sizeSponge = endXsponge - startXsponge;
 
     real OxyyPxzz = c8o1 * (-c2o1 + omega) * (c1o1 + c2o1 * omega) / (-c8o1 - c14o1 * omega + c7o1 * omega * omega);
