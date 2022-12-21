@@ -16,8 +16,8 @@ collect:
     to: POISEUILLE_TEST.out
     overwrite: true
 
-clean:
-  - poiseuille_test/*
+#clean:
+#  - poiseuille_test/PoiseuilleTestContainer.sif
 
 sbatch: poiseuille_test/slurm.job
 continue_if_job_fails: true
