@@ -17,7 +17,6 @@ void CumulantK17Sponge<turbulenceModel>::run()
 {
 	LB_Kernel_CumulantK17Sponge < turbulenceModel, false, false  > <<< cudaGrid.grid, cudaGrid.threads >>>(
 		para->getParD(level)->omega,
-		para->getParD(level)->typeOfGridNode,
 		para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ,
 		para->getParD(level)->distributions.f[0],
 		para->getParD(level)->rho,
@@ -26,7 +25,6 @@ void CumulantK17Sponge<turbulenceModel>::run()
 		para->getSGSConstant(),
 		(unsigned long)para->getParD(level)->numberOfNodes,
 		level,
-		para->getIsBodyForce(),
 		para->getForcesDev(),
 		para->getParD(level)->forceX_SP, para->getParD(level)->forceY_SP, para->getParD(level)->forceZ_SP,
 		para->getParD(level)->coordinateX, para->getParD(level)->coordinateY, para->getParD(level)->coordinateZ,
@@ -48,7 +46,6 @@ void CumulantK17Sponge<turbulenceModel>::runOnIndices( const unsigned int *indic
 		case CollisionTemplate::Default:
 			LB_Kernel_CumulantK17Sponge < turbulenceModel, false, false  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>(
 				para->getParD(level)->omega,
-				para->getParD(level)->typeOfGridNode,
 				para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ,
 				para->getParD(level)->distributions.f[0],
 				para->getParD(level)->rho,
@@ -57,7 +54,6 @@ void CumulantK17Sponge<turbulenceModel>::runOnIndices( const unsigned int *indic
 				para->getSGSConstant(),
 				(unsigned long)para->getParD(level)->numberOfNodes,
 				level,
-				para->getIsBodyForce(),
 				para->getForcesDev(),
 				para->getParD(level)->forceX_SP, para->getParD(level)->forceY_SP, para->getParD(level)->forceZ_SP,
 				para->getParD(level)->coordinateX, para->getParD(level)->coordinateY, para->getParD(level)->coordinateZ,
@@ -70,7 +66,6 @@ void CumulantK17Sponge<turbulenceModel>::runOnIndices( const unsigned int *indic
 		case CollisionTemplate::WriteMacroVars:
 			LB_Kernel_CumulantK17Sponge < turbulenceModel, true, false  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>(
 				para->getParD(level)->omega,
-				para->getParD(level)->typeOfGridNode,
 				para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ,
 				para->getParD(level)->distributions.f[0],
 				para->getParD(level)->rho,
@@ -79,7 +74,6 @@ void CumulantK17Sponge<turbulenceModel>::runOnIndices( const unsigned int *indic
 				para->getSGSConstant(),
 				(unsigned long)para->getParD(level)->numberOfNodes,
 				level,
-				para->getIsBodyForce(),
 				para->getForcesDev(),
 				para->getParD(level)->forceX_SP, para->getParD(level)->forceY_SP, para->getParD(level)->forceZ_SP,
 				para->getParD(level)->coordinateX, para->getParD(level)->coordinateY, para->getParD(level)->coordinateZ,
@@ -93,7 +87,6 @@ void CumulantK17Sponge<turbulenceModel>::runOnIndices( const unsigned int *indic
 		case CollisionTemplate::AllFeatures:
 			LB_Kernel_CumulantK17Sponge < turbulenceModel, true, true  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>(
 				para->getParD(level)->omega,
-				para->getParD(level)->typeOfGridNode,
 				para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ,
 				para->getParD(level)->distributions.f[0],
 				para->getParD(level)->rho,
@@ -102,7 +95,6 @@ void CumulantK17Sponge<turbulenceModel>::runOnIndices( const unsigned int *indic
 				para->getSGSConstant(),
 				(unsigned long)para->getParD(level)->numberOfNodes,
 				level,
-				para->getIsBodyForce(),
 				para->getForcesDev(),
 				para->getParD(level)->forceX_SP, para->getParD(level)->forceY_SP, para->getParD(level)->forceZ_SP,
 				para->getParD(level)->coordinateX, para->getParD(level)->coordinateY, para->getParD(level)->coordinateZ,
@@ -114,7 +106,6 @@ void CumulantK17Sponge<turbulenceModel>::runOnIndices( const unsigned int *indic
 		case CollisionTemplate::ApplyBodyForce:
 			LB_Kernel_CumulantK17Sponge < turbulenceModel, false, true  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>(
 				para->getParD(level)->omega,
-				para->getParD(level)->typeOfGridNode,
 				para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ,
 				para->getParD(level)->distributions.f[0],
 				para->getParD(level)->rho,
@@ -123,7 +114,6 @@ void CumulantK17Sponge<turbulenceModel>::runOnIndices( const unsigned int *indic
 				para->getSGSConstant(),
 				(unsigned long)para->getParD(level)->numberOfNodes,
 				level,
-				para->getIsBodyForce(),
 				para->getForcesDev(),
 				para->getParD(level)->forceX_SP, para->getParD(level)->forceY_SP, para->getParD(level)->forceZ_SP,
 				para->getParD(level)->coordinateX, para->getParD(level)->coordinateY, para->getParD(level)->coordinateZ,
