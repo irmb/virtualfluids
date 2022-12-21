@@ -342,43 +342,6 @@ __global__ void LB_Kernel_CumulantK17Sponge(
     //!
     real omega = omega_in;
     if(turbulenceModel != TurbulenceModel::None){ omega /= (c1o1 + c3o1*omega_in*turbulentViscosity[k_000]); }
-    ////////////////////////////////////////////////////////////////////////////////////
-    // Calculate modified omega for sponge layer
-    // sponge layer inflow
-    real startXsponge = 1507.0f;
-    real endXsponge = 1537.0f;
-    real sizeSponge = endXsponge - startXsponge;
-
-    if (coordX[k_000] > startXsponge) {
-        real spongeFactor = (((endXsponge - coordX[k_000]) / sizeSponge) * c1o2) + c1o2;
-        omega = spongeFactor * omega;
-    }
-    //sponge layer outflow
-    endXsponge = 30.0f;
-    if (coordX[k_000] < endXsponge) {
-        real spongeFactor = (((coordX[k_000]) / endXsponge) * c1o2) + c1o2;
-        omega = spongeFactor * omega;
-    }
-
-    ////////////////////////////////////////////////////////////
-    // 2.
-    real OxxPyyPzz = c1o1;
-    ////////////////////////////////////////////////////////////
-    // 3.
-    real OxyyPxzz = c8o1 * (-c2o1 + omega) * (c1o1 + c2o1 * omega) / (-c8o1 - c14o1 * omega + c7o1 * omega * omega);
-    real OxyyMxzz =
-        c8o1 * (-c2o1 + omega) * (-c7o1 + c4o1 * omega) / (c56o1 - c50o1 * omega + c9o1 * omega * omega);
-    real Oxyz = c24o1 * (-c2o1 + omega) * (-c2o1 - c7o1 * omega + c3o1 * omega * omega) /
-                (c48o1 + c152o1 * omega - c130o1 * omega * omega + c29o1 * omega * omega * omega);
-    ////////////////////////////////////////////////////////////
-    // 4.
-    real O4 = c1o1;
-    ////////////////////////////////////////////////////////////
-    // 5.
-    real O5 = c1o1;
-    ////////////////////////////////////////////////////////////
-    // 6.
-    real O6 = c1o1;
 
     ////////////////////////////////////////////////////////////////////////////////////
     //! - A and DIR_00M: parameters for fourth order convergence of the diffusion term according to Eq. (115) and (116)
@@ -388,6 +351,49 @@ __global__ void LB_Kernel_CumulantK17Sponge(
     //!
     real factorA = (c4o1 + c2o1 * omega - c3o1 * omega * omega) / (c2o1 - c7o1 * omega + c5o1 * omega * omega);
     real factorB = (c4o1 + c28o1 * omega - c14o1 * omega * omega) / (c6o1 - c21o1 * omega + c15o1 * omega * omega);
+
+    ////////////////////////////////////////////////////////////
+    // 2.
+    real OxxPyyPzz = c1o1;
+    
+    ////////////////////////////////////////////////////////////
+    // 3.
+    
+    // Calculate modified omega for sponge bob layer
+    real startXsponge = 1300.0f;
+    real endXsponge = 1500.0f;
+    real sizeSponge = endXsponge - startXsponge;
+
+    real OxyyPxzz = c8o1 * (-c2o1 + omega) * (c1o1 + c2o1 * omega) / (-c8o1 - c14o1 * omega + c7o1 * omega * omega);
+    real OxyyMxzz =
+        c8o1 * (-c2o1 + omega) * (-c7o1 + c4o1 * omega) / (c56o1 - c50o1 * omega + c9o1 * omega * omega);
+    real Oxyz = c24o1 * (-c2o1 + omega) * (-c2o1 - c7o1 * omega + c3o1 * omega * omega) /
+                (c48o1 + c152o1 * omega - c130o1 * omega * omega + c29o1 * omega * omega * omega);
+
+    if (coordX[k_000] > startXsponge) {
+        real spongeFactor = (((endXsponge - coordX[k_000]) / sizeSponge) * c1o2) + c1o2;
+        omega = spongeFactor * omega;
+
+        OxyyPxzz = c1o1;
+        OxyyMxzz = c1o1;
+        Oxyz = c1o1;
+
+        quadricLimitM = c1o100;
+        quadricLimitP = c1o100;
+        quadricLimitD = c1o100;
+
+        factorA = c0o1;
+        factorB = c0o1;
+    }
+    ////////////////////////////////////////////////////////////
+    // 4.
+    real O4 = c1o1;
+    ////////////////////////////////////////////////////////////
+    // 5.
+    real O5 = c1o1;
+    ////////////////////////////////////////////////////////////
+    // 6.
+    real O6 = c1o1;
 
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Compute cumulants from central moments according to Eq. (20)-(23) in
