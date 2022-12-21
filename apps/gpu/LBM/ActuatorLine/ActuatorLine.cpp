@@ -195,7 +195,8 @@ void multipleLevel(const std::string& configPath)
     para->setViscosityLB(viscosityLB);
     para->setVelocityRatio( dx / dt );
     para->setViscosityRatio( dx*dx/dt );
-    para->setMainKernel("CumulantK17");
+    para->setDensityRatio( 1.0 );
+    para->setMainKernel("CumulantK17Sponge");
 
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)0.0;
