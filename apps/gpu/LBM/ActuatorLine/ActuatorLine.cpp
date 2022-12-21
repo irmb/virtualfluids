@@ -164,7 +164,7 @@ void multipleLevel(const std::string& configPath)
     para->setMaxLevel(2);
     scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
-    std::string stlPath = "./apps/gpu/LBM/ActuatorLine/Pole.stl";
+    std::string stlPath = "./VirtualFluids_dev/apps/gpu/LBM/ActuatorLine/Pole.stl";
 
     Object *sphere = TriangularMesh::make(stlPath);
     gridBuilder->addGeometry(sphere);

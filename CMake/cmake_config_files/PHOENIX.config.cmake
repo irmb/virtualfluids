@@ -31,4 +31,5 @@ list(APPEND USER_APPS
     # "${GPU_APP}DrivenCavityMultiGPU"
     # "${GPU_APP}SphereScaling"
     # "${GPU_APP}MusselOyster"
+    "${GPU_APP}ActuatorLine"
     )
