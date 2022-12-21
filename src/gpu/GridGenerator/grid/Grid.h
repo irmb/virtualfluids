@@ -175,7 +175,6 @@ public:
     virtual uint getNumberOfFluidNodes() const = 0;
     virtual void getFluidNodeIndices(uint *fluidNodeIndices) const = 0;
 
-    virtual void findFluidNodeIndicesBorder() = 0;
     virtual uint getNumberOfFluidNodesBorder() const = 0;
     virtual void getFluidNodeIndicesBorder(uint *fluidNodeIndicesBorder) const = 0;
 
