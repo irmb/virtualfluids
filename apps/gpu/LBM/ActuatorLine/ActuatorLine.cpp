@@ -99,10 +99,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 void multipleLevel(const std::string& configPath)
 {
 
@@ -131,7 +127,7 @@ void multipleLevel(const std::string& configPath)
 
 
     const real L_x = 6*reference_diameter;
-    const real L_y = 4*reference_diameter;
+    const real L_y = 3*reference_diameter;
     const real L_z = 4*reference_diameter;
 
     const real viscosity = 1.56e-5;
@@ -157,21 +153,21 @@ void multipleLevel(const std::string& configPath)
 
     const real dx = reference_diameter/real(nodes_per_diameter);
 
-    real turbPos[3] = {1*reference_diameter, 2*reference_diameter, 2*reference_diameter};
+    real turbPos[3] = {1*reference_diameter, reference_diameter, 2*reference_diameter};
 
     gridBuilder->addCoarseGrid(0.0, 0.0, 0.0,
                                L_x,  L_y,  L_z, dx);
 
     gridBuilder->setNumberOfLayers(4,0);
-    gridBuilder->addGrid( new Cuboid(   turbPos[0]-0.4*reference_diameter,  turbPos[1]-0.8*reference_diameter,  turbPos[2]-0.8*reference_diameter,
+    gridBuilder->addGrid( new Cuboid(   turbPos[0]-0.4*reference_diameter,  turbPos[1]-1*reference_diameter,  turbPos[2]-0.8*reference_diameter,
                                         turbPos[0]+3.0*reference_diameter,  turbPos[1]+0.8*reference_diameter,  turbPos[2]+0.8*reference_diameter) , 1 );
     para->setMaxLevel(2);
     scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
     std::string stlPath = "./apps/gpu/LBM/ActuatorLine/Pole.stl";
 
-    // Object *sphere = TriangularMesh::make(stlPath);
-    // gridBuilder->addGeometry(sphere);
+    Object *sphere = TriangularMesh::make(stlPath);
+    gridBuilder->addGeometry(sphere);
 
     gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
@@ -238,14 +234,16 @@ void multipleLevel(const std::string& configPath)
     gridBuilder->setVelocityBoundaryCondition(SideType::PZ,  velocityLB, 0.0, 0.0);
     gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
 
-    // gridBuilder->setNoSlipBoundaryCondition(SideType::GEOMETRY);
-    // bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipCompressible);
+    gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
+    bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipCompressible);
 
     bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityAndPressureCompressible);
     bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflective);
 
     SPtr<TurbulenceModelFactory> tmFactory = std::make_shared<TurbulenceModelFactory>(para);
     tmFactory->readConfigFile(config);
+
+    // gridBuilder->writeGridsToVtk(para->getOutputPath() + "Grid" + "_");
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
