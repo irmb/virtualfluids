@@ -97,18 +97,16 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-LbmOrGks lbmOrGks = LBM;
-
-std::string path(".");
-
-std::string simulationName("ActuatorLine");
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void multipleLevel(const std::string& configPath)
 {
+
+    const LbmOrGks lbmOrGks = LBM;
+    const std::string path(".");
+    const std::string simulationName("ActuatorLine");
 
     logging::Logger::addStream(&std::cout);
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
@@ -130,7 +128,7 @@ void multipleLevel(const std::string& configPath)
     const real velocity = config.getValue<real>("Velocity");
 
 
-    const real L_x = 12*reference_diameter;
+    const real L_x = 10*reference_diameter;
     const real L_y = 5*reference_diameter;
     const real L_z = 6*reference_diameter;
 
@@ -148,7 +146,7 @@ void multipleLevel(const std::string& configPath)
     // const float tAveraging          =  config.getValue<real>("tAveraging");
     // const float tStartOutProbe      =  config.getValue<real>("tStartOutProbe");
     // const float tOutProbe           =  config.getValue<real>("tOutProbe");
-        
+
     SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNummberOfProcess(), communicator.getPID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
     GridScalingFactory scalingFactory  = GridScalingFactory();
@@ -157,14 +155,14 @@ void multipleLevel(const std::string& configPath)
 
     const real dx = reference_diameter/real(nodes_per_diameter);
 
-    real turbPos[3] = {2*reference_diameter, 2*reference_diameter, 3*reference_diameter};
+    real turbPos[3] = {static_cast<real>(1.5*reference_diameter), 2*reference_diameter, 3*reference_diameter};
 
     gridBuilder->addCoarseGrid(0.0, 0.0, 0.0,
                                L_x,  L_y,  L_z, dx);
 
     gridBuilder->setNumberOfLayers(4,0);
-    gridBuilder->addGrid( new Cuboid(   turbPos[0]-1.0*reference_diameter,  turbPos[1]-1.5*reference_diameter,  turbPos[2]-1.5*reference_diameter, 
-                                        turbPos[0]+6.0*reference_diameter,  turbPos[1]+1.5*reference_diameter,  turbPos[2]+1.5*reference_diameter) , 1 );
+    gridBuilder->addGrid( new Cuboid(   turbPos[0]-1.0*reference_diameter,  turbPos[1]-1.1*reference_diameter,  turbPos[2]-1.1*reference_diameter,
+                                        turbPos[0]+5.0*reference_diameter,  turbPos[1]+1.1*reference_diameter,  turbPos[2]+1.1*reference_diameter) , 1 );
     para->setMaxLevel(2);
     scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
@@ -181,6 +179,7 @@ void multipleLevel(const std::string& configPath)
     const real viscosityLB = viscosity * dt / (dx * dx); // LB units
 
     VF_LOG_INFO("Knoten pro Turbinendurchmesser     = {}", reference_diameter/dx);
+    VF_LOG_INFO("dx = {}", dx);
     VF_LOG_INFO("velocity  [m/s] = {}", velocity);
     VF_LOG_INFO("velocity  [dx/dt] = {}", velocityLB);
     VF_LOG_INFO("viscosity [10^8 dx^2/dt] = {}", viscosityLB*1e8);
@@ -242,7 +241,6 @@ void multipleLevel(const std::string& configPath)
     const uint nBladeNodes = 32;
     const real tipspeed_ratio = 7.5f; // tipspeed ratio = angular vel * radius / inflow vel
     const real omega = 2*tipspeed_ratio*velocity/reference_diameter;
-    
 
     SPtr<ActuatorFarm> actuator_farm = std::make_shared<ActuatorFarm>(nBlades, density, nBladeNodes, epsilon, level, dt, dx, true);
     std::vector<real> bladeRadii;
