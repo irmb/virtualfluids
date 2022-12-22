@@ -16,16 +16,16 @@
 #include "lbm/constants/NumericConstants.h"
 
 
-void CudaMemoryManager::cudaAllocFull(int lev)
-{
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->geo      ), parameter->getParH(lev)->mem_size_int  ));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->k        ), parameter->getParH(lev)->mem_size_int  ));
-}
-void CudaMemoryManager::cudaFreeFull(int lev)
-{
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->geo   ));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->k     ));
-}
+//void CudaMemoryManager::cudaAllocFull(int lev)
+//{
+//    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->geo      ), parameter->getParH(lev)->mem_size_int  ));
+//    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->k        ), parameter->getParH(lev)->mem_size_int  ));
+//}
+//void CudaMemoryManager::cudaFreeFull(int lev)
+//{
+//    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->geo   ));
+//    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->k     ));
+//}
 void CudaMemoryManager::cudaCopyPrint(int lev)
 {
     checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->velocityX   , parameter->getParD(lev)->velocityX   , parameter->getParH(lev)->mem_size_real_SP , cudaMemcpyDeviceToHost));
