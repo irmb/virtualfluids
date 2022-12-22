@@ -54,22 +54,9 @@ void KernelCasSP27( unsigned int numberOfThreads,
                                int size_Mat,
                                bool EvenOrOdd)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LB_Kernel_Casc_SP_27<<< grid, threads >>>(s9,
+      LB_Kernel_Casc_SP_27<<< grid.grid, grid.threads >>>(s9,
                                                 bcMatD,
                                                 neighborX,
                                                 neighborY,
@@ -90,22 +77,9 @@ void KernelCasSPMS27( unsigned int numberOfThreads,
                                  int size_Mat,
                                  bool EvenOrOdd)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LB_Kernel_Casc_SP_MS_27<<< grid, threads >>>(s9,
+      LB_Kernel_Casc_SP_MS_27<<< grid.grid, grid.threads >>>(s9,
                                                    bcMatD,
                                                    neighborX,
                                                    neighborY,
@@ -126,22 +100,9 @@ void KernelCasSPMSOHM27( unsigned int numberOfThreads,
                                     int size_Mat,
                                     bool EvenOrOdd)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LB_Kernel_Casc_SP_MS_OHM_27<<< grid, threads >>>(  s9,
+      LB_Kernel_Casc_SP_MS_OHM_27<<< grid.grid, grid.threads >>>(  s9,
                                                          bcMatD,
                                                          neighborX,
                                                          neighborY,
@@ -153,603 +114,429 @@ void KernelCasSPMSOHM27( unsigned int numberOfThreads,
 }
 //////////////////////////////////////////////////////////////////////////
 void KernelKumCompSRTSP27(
-	unsigned int numberOfThreads,
-	real omega,
-	unsigned int* bcMatD,
-	unsigned int* neighborX,
-	unsigned int* neighborY,
-	unsigned int* neighborZ,
-	real* DDStart,
-	int size_Mat,
-	int level,
-	real* forces,
-	bool EvenOrOdd)
+    unsigned int numberOfThreads,
+    real omega,
+    unsigned int* bcMatD,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    real* DDStart,
+    int size_Mat,
+    int level,
+    real* forces,
+    bool EvenOrOdd)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-   LB_Kernel_Kum_New_Comp_SRT_SP_27 <<< grid, threads >>>(
-	   omega,
-	   bcMatD,
-	   neighborX,
-	   neighborY,
-	   neighborZ,
-	   DDStart,
-	   size_Mat,
-	   level,
-	   forces,
-	   EvenOrOdd);
+   LB_Kernel_Kum_New_Comp_SRT_SP_27 <<< grid.grid, grid.threads >>>(
+       omega,
+       bcMatD,
+       neighborX,
+       neighborY,
+       neighborZ,
+       DDStart,
+       size_Mat,
+       level,
+       forces,
+       EvenOrOdd);
       getLastCudaError("LB_Kernel_Kum_New_Comp_SRT_SP_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void KernelKum1hSP27(    unsigned int numberOfThreads,
-									real omega,
-									real deltaPhi,
-									real angularVelocity,
-									unsigned int* bcMatD,
-									unsigned int* neighborX,
-									unsigned int* neighborY,
-									unsigned int* neighborZ,
-									real* coordX,
-									real* coordY,
-									real* coordZ,
-									real* DDStart,
-									int size_Mat,
-									bool EvenOrOdd)
+                                    real omega,
+                                    real deltaPhi,
+                                    real angularVelocity,
+                                    unsigned int* bcMatD,
+                                    unsigned int* neighborX,
+                                    unsigned int* neighborY,
+                                    unsigned int* neighborZ,
+                                    real* coordX,
+                                    real* coordY,
+                                    real* coordZ,
+                                    real* DDStart,
+                                    int size_Mat,
+                                    bool EvenOrOdd)
 {
-	int Grid = (size_Mat / numberOfThreads)+1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid/Grid1)+1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-		LB_Kernel_Kum_1h_SP_27<<< grid, threads >>>(omega,
-													deltaPhi,
-													angularVelocity,
-													bcMatD,
-													neighborX,
-													neighborY,
-													neighborZ,
-													coordX,
-													coordY,
-													coordZ,
-													DDStart,
-													size_Mat,
-													EvenOrOdd);
-		getLastCudaError("LB_Kernel_Kum_New_SP_27 execution failed");
+        LB_Kernel_Kum_1h_SP_27<<< grid.grid, grid.threads >>>(omega,
+                                                    deltaPhi,
+                                                    angularVelocity,
+                                                    bcMatD,
+                                                    neighborX,
+                                                    neighborY,
+                                                    neighborZ,
+                                                    coordX,
+                                                    coordY,
+                                                    coordZ,
+                                                    DDStart,
+                                                    size_Mat,
+                                                    EvenOrOdd);
+        getLastCudaError("LB_Kernel_Kum_New_SP_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void KernelCascadeSP27(  unsigned int numberOfThreads,
-									real s9,
-									unsigned int* bcMatD,
-									unsigned int* neighborX,
-									unsigned int* neighborY,
-									unsigned int* neighborZ,
-									real* DD,
-									int size_Mat,
-									bool EvenOrOdd)
+                                    real s9,
+                                    unsigned int* bcMatD,
+                                    unsigned int* neighborX,
+                                    unsigned int* neighborY,
+                                    unsigned int* neighborZ,
+                                    real* DD,
+                                    int size_Mat,
+                                    bool EvenOrOdd)
 {
-	int Grid = (size_Mat / numberOfThreads)+1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid/Grid1)+1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-		LB_Kernel_Cascade_SP_27<<< grid, threads >>>(s9,
-													bcMatD,
-													neighborX,
-													neighborY,
-													neighborZ,
-													DD,
-													size_Mat,
-													EvenOrOdd);
-		getLastCudaError("LB_Kernel_Cascade_SP_27 execution failed");
+        LB_Kernel_Cascade_SP_27<<< grid.grid, grid.threads >>>(s9,
+                                                    bcMatD,
+                                                    neighborX,
+                                                    neighborY,
+                                                    neighborZ,
+                                                    DD,
+                                                    size_Mat,
+                                                    EvenOrOdd);
+        getLastCudaError("LB_Kernel_Cascade_SP_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void KernelKumNewSP27(   unsigned int numberOfThreads,
-									real s9,
-									unsigned int* bcMatD,
-									unsigned int* neighborX,
-									unsigned int* neighborY,
-									unsigned int* neighborZ,
-									real* DD,
-									int size_Mat,
-									bool EvenOrOdd)
+                                    real s9,
+                                    unsigned int* bcMatD,
+                                    unsigned int* neighborX,
+                                    unsigned int* neighborY,
+                                    unsigned int* neighborZ,
+                                    real* DD,
+                                    int size_Mat,
+                                    bool EvenOrOdd)
 {
-	int Grid = (size_Mat / numberOfThreads)+1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid/Grid1)+1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-		LB_Kernel_Kum_New_SP_27<<< grid, threads >>>(s9,
-													bcMatD,
-													neighborX,
-													neighborY,
-													neighborZ,
-													DD,
-													size_Mat,
-													EvenOrOdd);
-		getLastCudaError("LB_Kernel_Kum_New_SP_27 execution failed");
+
+        LB_Kernel_Kum_New_SP_27<<< grid.grid, grid.threads >>>(s9,
+                                                    bcMatD,
+                                                    neighborX,
+                                                    neighborY,
+                                                    neighborZ,
+                                                    DD,
+                                                    size_Mat,
+                                                    EvenOrOdd);
+        getLastCudaError("LB_Kernel_Kum_New_SP_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void KernelKumNewCompSP27(unsigned int numberOfThreads,
-									real s9,
-									unsigned int* bcMatD,
-									unsigned int* neighborX,
-									unsigned int* neighborY,
-									unsigned int* neighborZ,
-									real* DD,
-									int size_Mat,
-									int size_Array,
-									int level,
-									real* forces,
-									bool EvenOrOdd)
+                                    real s9,
+                                    unsigned int* bcMatD,
+                                    unsigned int* neighborX,
+                                    unsigned int* neighborY,
+                                    unsigned int* neighborZ,
+                                    real* DD,
+                                    int size_Mat,
+                                    int size_Array,
+                                    int level,
+                                    real* forces,
+                                    bool EvenOrOdd)
 {
-	//int Grid = size_Array / numberOfThreads;
-	//dim3 grid(Grid, 1, 1);
-	//dim3 threads(numberOfThreads, 1, 1 );
+    //int Grid = size_Array / numberOfThreads;
+    //dim3 grid(Grid, 1, 1);
+    //dim3 threads(numberOfThreads, 1, 1 );
 
-	int Grid = (size_Mat / numberOfThreads) + 1;
-	int Grid1, Grid2;
-	if (Grid > 512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid / Grid1) + 1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2, 1);
-	dim3 threads(numberOfThreads, 1, 1);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-		//LB_Kernel_Kum_New_Comp_SP_27<<< grid, threads >>>(	s9,
-		//													bcMatD,
-		//													neighborX,
-		//													neighborY,
-		//													neighborZ,
-		//													DD,
-		//													size_Mat,
-		//													level,
-		//													forces,
-		//													EvenOrOdd);
-		//getLastCudaError("LB_Kernel_Kum_New_Comp_SP_27 execution failed");
+        //LB_Kernel_Kum_New_Comp_SP_27<<< grid.grid, grid.threads >>>(	s9,
+        //													bcMatD,
+        //													neighborX,
+        //													neighborY,
+        //													neighborZ,
+        //													DD,
+        //													size_Mat,
+        //													level,
+        //													forces,
+        //													EvenOrOdd);
+        //getLastCudaError("LB_Kernel_Kum_New_Comp_SP_27 execution failed");
 }
 
 //////////////////////////////////////////////////////////////////////////
 void CumulantOnePreconditionedErrorDiffusionChimCompSP27(unsigned int numberOfThreads,
-																	real s9,
-																	unsigned int* bcMatD,
-																	unsigned int* neighborX,
-																	unsigned int* neighborY,
-																	unsigned int* neighborZ,
-																	real* DD,
-																	int size_Mat,
-																	int size_Array,
-																	int level,
-																	real* forces,
-																	bool EvenOrOdd)
+                                                                    real s9,
+                                                                    unsigned int* bcMatD,
+                                                                    unsigned int* neighborX,
+                                                                    unsigned int* neighborY,
+                                                                    unsigned int* neighborZ,
+                                                                    real* DD,
+                                                                    int size_Mat,
+                                                                    int size_Array,
+                                                                    int level,
+                                                                    real* forces,
+                                                                    bool EvenOrOdd)
 {
-	//int Grid = size_Array / numberOfThreads;
-	//dim3 grid(Grid, 1, 1);
-	//dim3 threads(numberOfThreads, 1, 1 );
+    //int Grid = size_Array / numberOfThreads;
+    //dim3 grid(Grid, 1, 1);
+    //dim3 threads(numberOfThreads, 1, 1 );
 
-	int Grid = (size_Mat / numberOfThreads) + 1;
-	int Grid1, Grid2;
-	if (Grid > 512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid / Grid1) + 1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2, 1);
-	dim3 threads(numberOfThreads, 1, 1);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-	Cumulant_One_preconditioned_errorDiffusion_chim_Comp_SP_27 <<< grid, threads >>>(	s9,
-																						bcMatD,
-																						neighborX,
-																						neighborY,
-																						neighborZ,
-																						DD,
-																						size_Mat,
-																						level,
-																						forces,
-																						EvenOrOdd);
-		getLastCudaError("Cumulant_One_preconditioned_chim_Comp_SP_27 execution failed");
+
+    Cumulant_One_preconditioned_errorDiffusion_chim_Comp_SP_27 <<< grid.grid, grid.threads >>>(	s9,
+                                                                                        bcMatD,
+                                                                                        neighborX,
+                                                                                        neighborY,
+                                                                                        neighborZ,
+                                                                                        DD,
+                                                                                        size_Mat,
+                                                                                        level,
+                                                                                        forces,
+                                                                                        EvenOrOdd);
+        getLastCudaError("Cumulant_One_preconditioned_chim_Comp_SP_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void CumulantOnePreconditionedChimCompSP27(  unsigned int numberOfThreads,
-														real s9,
-														unsigned int* bcMatD,
-														unsigned int* neighborX,
-														unsigned int* neighborY,
-														unsigned int* neighborZ,
-														real* DD,
-														int size_Mat,
-														int size_Array,
-														int level,
-														real* forces,
-														bool EvenOrOdd)
+                                                        real s9,
+                                                        unsigned int* bcMatD,
+                                                        unsigned int* neighborX,
+                                                        unsigned int* neighborY,
+                                                        unsigned int* neighborZ,
+                                                        real* DD,
+                                                        int size_Mat,
+                                                        int size_Array,
+                                                        int level,
+                                                        real* forces,
+                                                        bool EvenOrOdd)
 {
-	//int Grid = size_Array / numberOfThreads;
-	//dim3 grid(Grid, 1, 1);
-	//dim3 threads(numberOfThreads, 1, 1 );
+    //int Grid = size_Array / numberOfThreads;
+    //dim3 grid(Grid, 1, 1);
+    //dim3 threads(numberOfThreads, 1, 1 );
 
-	int Grid = (size_Mat / numberOfThreads) + 1;
-	int Grid1, Grid2;
-	if (Grid > 512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid / Grid1) + 1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2, 1);
-	dim3 threads(numberOfThreads, 1, 1);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-	Cumulant_One_preconditioned_chim_Comp_SP_27 <<< grid, threads >>>(	s9,
-																		bcMatD,
-																		neighborX,
-																		neighborY,
-																		neighborZ,
-																		DD,
-																		size_Mat,
-																		level,
-																		forces,
-																		EvenOrOdd);
-		getLastCudaError("Cumulant_One_preconditioned_chim_Comp_SP_27 execution failed");
+
+    Cumulant_One_preconditioned_chim_Comp_SP_27 <<< grid.grid, grid.threads >>>(	s9,
+                                                                        bcMatD,
+                                                                        neighborX,
+                                                                        neighborY,
+                                                                        neighborZ,
+                                                                        DD,
+                                                                        size_Mat,
+                                                                        level,
+                                                                        forces,
+                                                                        EvenOrOdd);
+        getLastCudaError("Cumulant_One_preconditioned_chim_Comp_SP_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void CumulantOneChimCompSP27(unsigned int numberOfThreads,
-										real s9,
-										unsigned int* bcMatD,
-										unsigned int* neighborX,
-										unsigned int* neighborY,
-										unsigned int* neighborZ,
-										real* DD,
-										int size_Mat,
-										int size_Array,
-										int level,
-										real* forces,
-										bool EvenOrOdd)
+                                        real s9,
+                                        unsigned int* bcMatD,
+                                        unsigned int* neighborX,
+                                        unsigned int* neighborY,
+                                        unsigned int* neighborZ,
+                                        real* DD,
+                                        int size_Mat,
+                                        int size_Array,
+                                        int level,
+                                        real* forces,
+                                        bool EvenOrOdd)
 {
-	//int Grid = size_Array / numberOfThreads;
-	//dim3 grid(Grid, 1, 1);
-	//dim3 threads(numberOfThreads, 1, 1 );
+    //int Grid = size_Array / numberOfThreads;
+    //dim3 grid(Grid, 1, 1);
+    //dim3 threads(numberOfThreads, 1, 1 );
 
-	int Grid = (size_Mat / numberOfThreads) + 1;
-	int Grid1, Grid2;
-	if (Grid > 512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid / Grid1) + 1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2, 1);
-	dim3 threads(numberOfThreads, 1, 1);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-	Cumulant_One_chim_Comp_SP_27 <<< grid, threads >>>(	s9,
-														bcMatD,
-														neighborX,
-														neighborY,
-														neighborZ,
-														DD,
-														size_Mat,
-														level,
-														forces,
-														EvenOrOdd);
-		getLastCudaError("Cumulant_One_chim_Comp_SP_27 execution failed");
+
+    Cumulant_One_chim_Comp_SP_27 <<< grid.grid, grid.threads >>>(	s9,
+                                                        bcMatD,
+                                                        neighborX,
+                                                        neighborY,
+                                                        neighborZ,
+                                                        DD,
+                                                        size_Mat,
+                                                        level,
+                                                        forces,
+                                                        EvenOrOdd);
+        getLastCudaError("Cumulant_One_chim_Comp_SP_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void KernelKumIsoTestSP27(unsigned int numberOfThreads,
-									 real s9,
-									 unsigned int* bcMatD,
-									 unsigned int* neighborX,
-									 unsigned int* neighborY,
-									 unsigned int* neighborZ,
-									 real* DD,
-									 real* dxxUx,
-									 real* dyyUy,
-									 real* dzzUz,
-									 int size_Mat,
-									 bool EvenOrOdd)
+                                     real s9,
+                                     unsigned int* bcMatD,
+                                     unsigned int* neighborX,
+                                     unsigned int* neighborY,
+                                     unsigned int* neighborZ,
+                                     real* DD,
+                                     real* dxxUx,
+                                     real* dyyUy,
+                                     real* dzzUz,
+                                     int size_Mat,
+                                     bool EvenOrOdd)
 {
-	int Grid = (size_Mat / numberOfThreads)+1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid/Grid1)+1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-	LB_Kernel_Kum_IsoTest_SP_27<<< grid, threads >>>(s9,
-													bcMatD,
-													neighborX,
-													neighborY,
-													neighborZ,
-													DD,
-													dxxUx,
-													dyyUy,
-													dzzUz,
-													size_Mat,
-													EvenOrOdd);
-	getLastCudaError("LB_Kernel_Kum_IsoTest_SP_27 execution failed");
+
+    LB_Kernel_Kum_IsoTest_SP_27<<< grid.grid, grid.threads >>>(s9,
+                                                    bcMatD,
+                                                    neighborX,
+                                                    neighborY,
+                                                    neighborZ,
+                                                    DD,
+                                                    dxxUx,
+                                                    dyyUy,
+                                                    dzzUz,
+                                                    size_Mat,
+                                                    EvenOrOdd);
+    getLastCudaError("LB_Kernel_Kum_IsoTest_SP_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void KernelKumCompSP27(  unsigned int numberOfThreads,
-									real s9,
-									unsigned int* bcMatD,
-									unsigned int* neighborX,
-									unsigned int* neighborY,
-									unsigned int* neighborZ,
-									real* DD,
-									int size_Mat,
-									bool EvenOrOdd)
+                                    real s9,
+                                    unsigned int* bcMatD,
+                                    unsigned int* neighborX,
+                                    unsigned int* neighborY,
+                                    unsigned int* neighborZ,
+                                    real* DD,
+                                    int size_Mat,
+                                    bool EvenOrOdd)
 {
-	int Grid = (size_Mat / numberOfThreads)+1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid/Grid1)+1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-		LB_Kernel_Kum_Comp_SP_27<<< grid, threads >>>(s9,
-													bcMatD,
-													neighborX,
-													neighborY,
-													neighborZ,
-													DD,
-													size_Mat,
-													EvenOrOdd);
-		getLastCudaError("LB_Kernel_Kum_Comp_SP_27 execution failed");
+
+        LB_Kernel_Kum_Comp_SP_27<<< grid.grid, grid.threads >>>(s9,
+                                                    bcMatD,
+                                                    neighborX,
+                                                    neighborY,
+                                                    neighborZ,
+                                                    DD,
+                                                    size_Mat,
+                                                    EvenOrOdd);
+        getLastCudaError("LB_Kernel_Kum_Comp_SP_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void KernelPMCumOneCompSP27(unsigned int numberOfThreads,
-									   real omega,
-									   unsigned int* neighborX,
-									   unsigned int* neighborY,
-									   unsigned int* neighborZ,
-									   real* DD,
-									   int size_Mat,
-									   int level,
-									   real* forces,
-									   real porosity,
-									   real darcy,
-									   real forchheimer,
-									   unsigned int sizeOfPorousMedia,
-									   unsigned int* nodeIdsPorousMedia,
-									   bool EvenOrOdd)
+                                       real omega,
+                                       unsigned int* neighborX,
+                                       unsigned int* neighborY,
+                                       unsigned int* neighborZ,
+                                       real* DD,
+                                       int size_Mat,
+                                       int level,
+                                       real* forces,
+                                       real porosity,
+                                       real darcy,
+                                       real forchheimer,
+                                       unsigned int sizeOfPorousMedia,
+                                       unsigned int* nodeIdsPorousMedia,
+                                       bool EvenOrOdd)
 {
-	int Grid = (size_Mat / numberOfThreads) + 1;
-	int Grid1, Grid2;
-	if (Grid > 512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid / Grid1) + 1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2, 1);
-	dim3 threads(numberOfThreads, 1, 1);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-	LB_Kernel_PM_Cum_One_Comp_SP_27 <<< grid, threads >>>(omega,
-														  neighborX,
-														  neighborY,
-														  neighborZ,
-														  DD,
-														  size_Mat,
-														  level,
-														  forces,
-														  porosity,
-														  darcy,
-														  forchheimer,
-														  sizeOfPorousMedia,
-														  nodeIdsPorousMedia,
-														  EvenOrOdd);
-	getLastCudaError("LB_Kernel_PM_Cum_One_Comp_SP_27 execution failed");
+
+    LB_Kernel_PM_Cum_One_Comp_SP_27 <<< grid.grid, grid.threads >>>(omega,
+                                                          neighborX,
+                                                          neighborY,
+                                                          neighborZ,
+                                                          DD,
+                                                          size_Mat,
+                                                          level,
+                                                          forces,
+                                                          porosity,
+                                                          darcy,
+                                                          forchheimer,
+                                                          sizeOfPorousMedia,
+                                                          nodeIdsPorousMedia,
+                                                          EvenOrOdd);
+    getLastCudaError("LB_Kernel_PM_Cum_One_Comp_SP_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void KernelWaleBySoniMalavCumAA2016CompSP27(
-	unsigned int numberOfThreads,
-	real s9,
-	unsigned int* bcMatD,
-	unsigned int* neighborX,
-	unsigned int* neighborY,
-	unsigned int* neighborZ,
-	unsigned int* neighborWSB,
-	real* veloX,
-	real* veloY,
-	real* veloZ,
-	real* DD,
-	real* turbulentViscosity,
-	int size_Mat,
-	int size_Array,
-	int level,
-	real* forces,
-	bool EvenOrOdd)
+    unsigned int numberOfThreads,
+    real s9,
+    unsigned int* bcMatD,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned int* neighborWSB,
+    real* veloX,
+    real* veloY,
+    real* veloZ,
+    real* DD,
+    real* turbulentViscosity,
+    int size_Mat,
+    int size_Array,
+    int level,
+    real* forces,
+    bool EvenOrOdd)
 {
-	//int Grid = size_Array / numberOfThreads;
-	//dim3 grid(Grid, 1, 1);
-	//dim3 threads(numberOfThreads, 1, 1 );
+    //int Grid = size_Array / numberOfThreads;
+    //dim3 grid(Grid, 1, 1);
+    //dim3 threads(numberOfThreads, 1, 1 );
 
-	int Grid = (size_Mat / numberOfThreads) + 1;
-	int Grid1, Grid2;
-	if (Grid > 512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid / Grid1) + 1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2, 1);
-	dim3 threads(numberOfThreads, 1, 1);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-	LB_Kernel_WaleBySoniMalav_Cum_AA2016_Comp_SP_27 << < grid, threads >> >(
-		s9,
-		bcMatD,
-		neighborX,
-		neighborY,
-		neighborZ,
-		neighborWSB,
-		veloX,
-		veloY,
-		veloZ,
-		DD,
-		turbulentViscosity,
-		size_Mat,
-		level,
-		forces,
-		EvenOrOdd);
-	getLastCudaError("LB_Kernel_WaleBySoniMalav_Cum_AA2016_Comp_SP_27 execution failed");
+
+    LB_Kernel_WaleBySoniMalav_Cum_AA2016_Comp_SP_27 << < grid.grid, grid.threads >> >(
+        s9,
+        bcMatD,
+        neighborX,
+        neighborY,
+        neighborZ,
+        neighborWSB,
+        veloX,
+        veloY,
+        veloZ,
+        DD,
+        turbulentViscosity,
+        size_Mat,
+        level,
+        forces,
+        EvenOrOdd);
+    getLastCudaError("LB_Kernel_WaleBySoniMalav_Cum_AA2016_Comp_SP_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void KernelADincomp7(   unsigned int numberOfThreads,
-								   real diffusivity,
-								   unsigned int* bcMatD,
-								   unsigned int* neighborX,
-								   unsigned int* neighborY,
-								   unsigned int* neighborZ,
-								   real* DD,
-								   real* DD7,
-								   int size_Mat,
-								   bool EvenOrOdd)
+                                   real diffusivity,
+                                   unsigned int* bcMatD,
+                                   unsigned int* neighborX,
+                                   unsigned int* neighborY,
+                                   unsigned int* neighborZ,
+                                   real* DD,
+                                   real* DD7,
+                                   int size_Mat,
+                                   bool EvenOrOdd)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LB_Kernel_AD_Incomp_7<<< grid, threads >>>( diffusivity,
-												  bcMatD,
-												  neighborX,
-												  neighborY,
-												  neighborZ,
-												  DD,
-												  DD7,
-												  size_Mat,
-												  EvenOrOdd);
+      LB_Kernel_AD_Incomp_7<<< grid.grid, grid.threads >>>( diffusivity,
+                                                  bcMatD,
+                                                  neighborX,
+                                                  neighborY,
+                                                  neighborZ,
+                                                  DD,
+                                                  DD7,
+                                                  size_Mat,
+                                                  EvenOrOdd);
       getLastCudaError("LB_Kernel_AD_Incomp_7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void KernelADincomp27( unsigned int numberOfThreads,
-								  real diffusivity,
-								  unsigned int* bcMatD,
-								  unsigned int* neighborX,
-								  unsigned int* neighborY,
-								  unsigned int* neighborZ,
-								  real* DD,
-								  real* DD27,
-								  int size_Mat,
-								  bool EvenOrOdd)
+                                  real diffusivity,
+                                  unsigned int* bcMatD,
+                                  unsigned int* neighborX,
+                                  unsigned int* neighborY,
+                                  unsigned int* neighborZ,
+                                  real* DD,
+                                  real* DD27,
+                                  int size_Mat,
+                                  bool EvenOrOdd)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LB_Kernel_AD_Incomp_27<<< grid, threads >>>( diffusivity,
-													bcMatD,
-													neighborX,
-													neighborY,
-													neighborZ,
-													DD,
-													DD27,
-													size_Mat,
-													EvenOrOdd);
-      getLastCudaError("LB_Kernel_AD_Incomp_27 execution failed");
+    LB_Kernel_AD_Incomp_27<<< grid.grid, grid.threads >>>( diffusivity,
+                                                    bcMatD,
+                                                    neighborX,
+                                                    neighborY,
+                                                    neighborZ,
+                                                    DD,
+                                                    DD27,
+                                                    size_Mat,
+                                                    EvenOrOdd);
+    getLastCudaError("LB_Kernel_AD_Incomp_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void Init27( int myid,
@@ -771,7 +558,7 @@ void Init27( int myid,
    dim3 threads       ( grid_nx, 1, 1 );
    dim3 grid          ( grid_ny, grid_nz );   // Gitter fuer Kollision und Propagation
 
-      LBInit27<<< grid, threads >>> (  myid,
+    LBInit27<<< grid, threads >>> (  myid,
                                        numprocs,
                                        u0,
                                        geoD,
@@ -786,7 +573,7 @@ void Init27( int myid,
                                        DD,
                                        level,
                                        maxlevel);
-      getLastCudaError("LBInit27 execution failed");
+    getLastCudaError("LBInit27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void InitNonEqPartSP27( unsigned int numberOfThreads,
@@ -804,22 +591,9 @@ void InitNonEqPartSP27( unsigned int numberOfThreads,
                                    real omega,
                                    bool EvenOrOdd)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LBInitNonEqPartSP27<<< grid, threads >>>( neighborX,
+    LBInitNonEqPartSP27<<< grid.grid, grid.threads >>>( neighborX,
                                                 neighborY,
                                                 neighborZ,
                                                 neighborWSB,
@@ -832,7 +606,7 @@ void InitNonEqPartSP27( unsigned int numberOfThreads,
                                                 DD,
                                                 omega,
                                                 EvenOrOdd);
-      getLastCudaError("LBInitNonEqPartSP27 execution failed");
+    getLastCudaError("LBInitNonEqPartSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void InitThS7(     unsigned int numberOfThreads,
@@ -848,22 +622,9 @@ void InitThS7(     unsigned int numberOfThreads,
                               real* DD7,
                               bool EvenOrOdd)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      InitAD7<<< grid, threads >>>( neighborX,
+    InitAD7<<< grid.grid, grid.threads >>>( neighborX,
                                        neighborY,
                                        neighborZ,
                                        geoD,
@@ -874,7 +635,7 @@ void InitThS7(     unsigned int numberOfThreads,
                                        size_Mat,
                                        DD7,
                                        EvenOrOdd);
-      getLastCudaError("InitAD7 execution failed");
+    getLastCudaError("InitAD7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void InitADDev27( unsigned int numberOfThreads,
@@ -890,22 +651,9 @@ void InitADDev27( unsigned int numberOfThreads,
                            real* DD27,
                            bool EvenOrOdd)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      InitAD27<<< grid, threads >>>(neighborX,
+    InitAD27<<< grid.grid, grid.threads >>>(neighborX,
                                        neighborY,
                                        neighborZ,
                                        geoD,
@@ -916,58 +664,45 @@ void InitADDev27( unsigned int numberOfThreads,
                                        size_Mat,
                                        DD27,
                                        EvenOrOdd);
-      getLastCudaError("InitAD27 execution failed");
+    getLastCudaError("InitAD27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void PostProcessorF3_2018Fehlberg(
-	unsigned int numberOfThreads,
-	real omega,
-	unsigned int* bcMatD,
-	unsigned int* neighborX,
-	unsigned int* neighborY,
-	unsigned int* neighborZ,
-	real* rhoOut,
-	real* vxOut,
-	real* vyOut,
-	real* vzOut,
-	real* DDStart,
-	real* G6,
-	int size_Mat,
-	int level,
-	real* forces,
-	bool EvenOrOdd)
+    unsigned int numberOfThreads,
+    real omega,
+    unsigned int* bcMatD,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    real* rhoOut,
+    real* vxOut,
+    real* vyOut,
+    real* vzOut,
+    real* DDStart,
+    real* G6,
+    int size_Mat,
+    int level,
+    real* forces,
+    bool EvenOrOdd)
 {
-	int Grid = (size_Mat / numberOfThreads) + 1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid / Grid1) + 1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1);
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-	  LB_PostProcessor_F3_2018_Fehlberg <<< grid, threads >>> (   omega,
-																  bcMatD,
-																  neighborX,
-																  neighborY,
-																  neighborZ,
-																  rhoOut,
-																  vxOut,
-																  vyOut,
-																  vzOut,
-																  DDStart,
-																  G6,
-																  size_Mat,
-																  level,
-																  forces,
-																  EvenOrOdd);
-      getLastCudaError("LB_PostProcessor_F3_2018_Fehlberg execution failed");
+    LB_PostProcessor_F3_2018_Fehlberg <<< grid.grid, grid.threads >>> (   omega,
+                                                                  bcMatD,
+                                                                  neighborX,
+                                                                  neighborY,
+                                                                  neighborZ,
+                                                                  rhoOut,
+                                                                  vxOut,
+                                                                  vyOut,
+                                                                  vzOut,
+                                                                  DDStart,
+                                                                  G6,
+                                                                  size_Mat,
+                                                                  level,
+                                                                  forces,
+                                                                  EvenOrOdd);
+    getLastCudaError("LB_PostProcessor_F3_2018_Fehlberg execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void CalcMac27( real* vxD,
@@ -988,7 +723,7 @@ void CalcMac27( real* vxD,
    dim3 threads       ( grid_nx, 1, 1 );
    dim3 grid          ( grid_ny, grid_nz );
 
-      LBCalcMac27<<< grid, threads >>> (  vxD,
+    LBCalcMac27<<< grid, threads >>> (  vxD,
                                           vyD,
                                           vzD,
                                           rhoD,
@@ -999,7 +734,7 @@ void CalcMac27( real* vxD,
                                           size_Mat,
                                           DD,
                                           isEvenTimestep);
-      getLastCudaError("LBCalcMac27 execution failed");
+    getLastCudaError("LBCalcMac27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void CalcMacSP27( real* vxD,
@@ -1016,22 +751,9 @@ void CalcMacSP27( real* vxD,
                              real* DD,
                              bool isEvenTimestep)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LBCalcMacSP27<<< grid, threads >>> (   vxD,
+    LBCalcMacSP27<<< grid.grid, grid.threads >>> (   vxD,
                                              vyD,
                                              vzD,
                                              rhoD,
@@ -1043,51 +765,38 @@ void CalcMacSP27( real* vxD,
                                              size_Mat,
                                              DD,
                                              isEvenTimestep);
-      getLastCudaError("LBCalcMacSP27 execution failed");
+    getLastCudaError("LBCalcMacSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void CalcMacCompSP27( real* vxD,
-								 real* vyD,
-								 real* vzD,
-								 real* rhoD,
-								 real* pressD,
-								 unsigned int* geoD,
-								 unsigned int* neighborX,
-								 unsigned int* neighborY,
-								 unsigned int* neighborZ,
-								 unsigned int size_Mat,
-								 unsigned int numberOfThreads,
-								 real* DD,
-								 bool isEvenTimestep)
+                                 real* vyD,
+                                 real* vzD,
+                                 real* rhoD,
+                                 real* pressD,
+                                 unsigned int* geoD,
+                                 unsigned int* neighborX,
+                                 unsigned int* neighborY,
+                                 unsigned int* neighborZ,
+                                 unsigned int size_Mat,
+                                 unsigned int numberOfThreads,
+                                 real* DD,
+                                 bool isEvenTimestep)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LBCalcMacCompSP27<<< grid, threads >>> (   vxD,
-												 vyD,
-												 vzD,
-												 rhoD,
-												 pressD,
-												 geoD,
-												 neighborX,
-												 neighborY,
-												 neighborZ,
-												 size_Mat,
-												 DD,
-												 isEvenTimestep);
-      getLastCudaError("LBCalcMacSP27 execution failed");
+    LBCalcMacCompSP27<<< grid.grid, grid.threads >>> (   vxD,
+                                                 vyD,
+                                                 vzD,
+                                                 rhoD,
+                                                 pressD,
+                                                 geoD,
+                                                 neighborX,
+                                                 neighborY,
+                                                 neighborZ,
+                                                 size_Mat,
+                                                 DD,
+                                                 isEvenTimestep);
+    getLastCudaError("LBCalcMacSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void CalcMacThS7(  real* Conc,
@@ -1100,22 +809,9 @@ void CalcMacThS7(  real* Conc,
                               real* DD7,
                               bool isEvenTimestep)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      CalcConc7<<< grid, threads >>> (Conc,
+    CalcConc7<<< grid.grid, grid.threads >>> (Conc,
                                           geoD,
                                           neighborX,
                                           neighborY,
@@ -1123,87 +819,61 @@ void CalcMacThS7(  real* Conc,
                                           size_Mat,
                                           DD7,
                                           isEvenTimestep);
-      getLastCudaError("CalcConc7 execution failed");
+    getLastCudaError("CalcConc7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void PlaneConcThS7(real* Conc,
-							  int* kPC,
-							  unsigned int numberOfPointskPC,
-							  unsigned int* geoD,
-							  unsigned int* neighborX,
-							  unsigned int* neighborY,
-							  unsigned int* neighborZ,
-							  unsigned int size_Mat,
+                              int* kPC,
+                              unsigned int numberOfPointskPC,
+                              unsigned int* geoD,
+                              unsigned int* neighborX,
+                              unsigned int* neighborY,
+                              unsigned int* neighborZ,
+                              unsigned int size_Mat,
                               unsigned int numberOfThreads,
-							  real* DD7,
-							  bool isEvenTimestep)
+                              real* DD7,
+                              bool isEvenTimestep)
 {
-   int Grid = (numberOfPointskPC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfPointskPC);
 
-      GetPlaneConc7<<< grid, threads >>> (	Conc,
-												kPC,
-												numberOfPointskPC,
-												geoD,
-												neighborX,
-												neighborY,
-												neighborZ,
-												size_Mat,
-												DD7,
-												isEvenTimestep);
-      getLastCudaError("GetPlaneConc7 execution failed");
+    GetPlaneConc7<<< grid.grid, grid.threads >>> (	Conc,
+                                                kPC,
+                                                numberOfPointskPC,
+                                                geoD,
+                                                neighborX,
+                                                neighborY,
+                                                neighborZ,
+                                                size_Mat,
+                                                DD7,
+                                                isEvenTimestep);
+    getLastCudaError("GetPlaneConc7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void PlaneConcThS27(real* Conc,
-							   int* kPC,
-							   unsigned int numberOfPointskPC,
-							   unsigned int* geoD,
-							   unsigned int* neighborX,
-							   unsigned int* neighborY,
-							   unsigned int* neighborZ,
-							   unsigned int size_Mat,
+                               int* kPC,
+                               unsigned int numberOfPointskPC,
+                               unsigned int* geoD,
+                               unsigned int* neighborX,
+                               unsigned int* neighborY,
+                               unsigned int* neighborZ,
+                               unsigned int size_Mat,
                                unsigned int numberOfThreads,
-							   real* DD27,
-							   bool isEvenTimestep)
+                               real* DD27,
+                               bool isEvenTimestep)
 {
-   int Grid = (numberOfPointskPC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfPointskPC);
 
-      GetPlaneConc27<<< grid, threads >>> (	Conc,
-												kPC,
-												numberOfPointskPC,
-												geoD,
-												neighborX,
-												neighborY,
-												neighborZ,
-												size_Mat,
-												DD27,
-												isEvenTimestep);
-      getLastCudaError("GetPlaneConc27 execution failed");
+    GetPlaneConc27<<< grid.grid, grid.threads >>> (	Conc,
+                                                kPC,
+                                                numberOfPointskPC,
+                                                geoD,
+                                                neighborX,
+                                                neighborY,
+                                                neighborZ,
+                                                size_Mat,
+                                                DD27,
+                                                isEvenTimestep);
+    getLastCudaError("GetPlaneConc27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void CalcConcentration27( unsigned int numberOfThreads,
@@ -1216,22 +886,9 @@ void CalcConcentration27( unsigned int numberOfThreads,
                                      real* DD27,
                                      bool isEvenTimestep)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      CalcConc27<<< grid, threads >>> (  Conc,
+    CalcConc27<<< grid.grid, grid.threads >>> (  Conc,
                                              geoD,
                                              neighborX,
                                              neighborY,
@@ -1239,7 +896,7 @@ void CalcConcentration27( unsigned int numberOfThreads,
                                              size_Mat,
                                              DD27,
                                              isEvenTimestep);
-      getLastCudaError("CalcConc27 execution failed");
+    getLastCudaError("CalcConc27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void CalcMedSP27(  real* vxD,
@@ -1256,22 +913,9 @@ void CalcMedSP27(  real* vxD,
                               real* DD,
                               bool isEvenTimestep)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LBCalcMedSP27<<< grid, threads >>> (   vxD,
+    LBCalcMedSP27<<< grid.grid, grid.threads >>> (   vxD,
                                              vyD,
                                              vzD,
                                              rhoD,
@@ -1283,101 +927,75 @@ void CalcMedSP27(  real* vxD,
                                              size_Mat,
                                              DD,
                                              isEvenTimestep);
-      getLastCudaError("LBCalcMedSP27 execution failed");
+    getLastCudaError("LBCalcMedSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void CalcMedCompSP27(  real* vxD,
-								  real* vyD,
-								  real* vzD,
-								  real* rhoD,
-								  real* pressD,
-								  unsigned int* geoD,
-								  unsigned int* neighborX,
-								  unsigned int* neighborY,
-								  unsigned int* neighborZ,
-								  unsigned int size_Mat,
-								  unsigned int numberOfThreads,
-								  real* DD,
-								  bool isEvenTimestep)
+                                  real* vyD,
+                                  real* vzD,
+                                  real* rhoD,
+                                  real* pressD,
+                                  unsigned int* geoD,
+                                  unsigned int* neighborX,
+                                  unsigned int* neighborY,
+                                  unsigned int* neighborZ,
+                                  unsigned int size_Mat,
+                                  unsigned int numberOfThreads,
+                                  real* DD,
+                                  bool isEvenTimestep)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LBCalcMedCompSP27<<< grid, threads >>> (   vxD,
-												 vyD,
-												 vzD,
-												 rhoD,
-												 pressD,
-												 geoD,
-												 neighborX,
-												 neighborY,
-												 neighborZ,
-												 size_Mat,
-												 DD,
-												 isEvenTimestep);
-      getLastCudaError("LBCalcMedSP27 execution failed");
+    LBCalcMedCompSP27<<< grid.grid, grid.threads >>> (   vxD,
+                                                 vyD,
+                                                 vzD,
+                                                 rhoD,
+                                                 pressD,
+                                                 geoD,
+                                                 neighborX,
+                                                 neighborY,
+                                                 neighborZ,
+                                                 size_Mat,
+                                                 DD,
+                                                 isEvenTimestep);
+    getLastCudaError("LBCalcMedSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void CalcMedCompAD27(
-	real* vxD,
-	real* vyD,
-	real* vzD,
-	real* rhoD,
-	real* pressD,
-	real* concD,
-	unsigned int* geoD,
-	unsigned int* neighborX,
-	unsigned int* neighborY,
-	unsigned int* neighborZ,
-	unsigned int size_Mat,
-	unsigned int numberOfThreads,
-	real* DD,
-	real* DD_AD,
-	bool isEvenTimestep)
+    real* vxD,
+    real* vyD,
+    real* vzD,
+    real* rhoD,
+    real* pressD,
+    real* concD,
+    unsigned int* geoD,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned int size_Mat,
+    unsigned int numberOfThreads,
+    real* DD,
+    real* DD_AD,
+    bool isEvenTimestep)
 {
-	int Grid = (size_Mat / numberOfThreads) + 1;
-	int Grid1, Grid2;
-	if (Grid > 512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid / Grid1) + 1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1);
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-	LBCalcMedCompAD27 <<< grid, threads >>> (
-		vxD,
-		vyD,
-		vzD,
-		rhoD,
-		pressD,
-		concD,
-		geoD,
-		neighborX,
-		neighborY,
-		neighborZ,
-		size_Mat,
-		DD,
-		DD_AD,
-		isEvenTimestep);
-	getLastCudaError("LBCalcMedAD27 execution failed");
+    LBCalcMedCompAD27 <<< grid.grid, grid.threads >>> (
+        vxD,
+        vyD,
+        vzD,
+        rhoD,
+        pressD,
+        concD,
+        geoD,
+        neighborX,
+        neighborY,
+        neighborZ,
+        size_Mat,
+        DD,
+        DD_AD,
+        isEvenTimestep);
+    getLastCudaError("LBCalcMedAD27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void CalcMacMedSP27(  real* vxD,
@@ -1394,22 +1012,9 @@ void CalcMacMedSP27(  real* vxD,
                                  unsigned int numberOfThreads,
                                  bool isEvenTimestep)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LBCalcMacMedSP27<<< grid, threads >>> (   vxD,
+    LBCalcMacMedSP27<<< grid.grid, grid.threads >>> (   vxD,
                                                 vyD,
                                                 vzD,
                                                 rhoD,
@@ -1421,373 +1026,270 @@ void CalcMacMedSP27(  real* vxD,
                                                 tdiff,
                                                 size_Mat,
                                                 isEvenTimestep);
-      getLastCudaError("LBCalcMacMedSP27 execution failed");
+    getLastCudaError("LBCalcMacMedSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void ResetMedianValuesSP27(
-	real* vxD,
-	real* vyD,
-	real* vzD,
-	real* rhoD,
-	real* pressD,
-	unsigned int size_Mat,
-	unsigned int numberOfThreads,
-	bool isEvenTimestep)
+    real* vxD,
+    real* vyD,
+    real* vzD,
+    real* rhoD,
+    real* pressD,
+    unsigned int size_Mat,
+    unsigned int numberOfThreads,
+    bool isEvenTimestep)
 {
-	int Grid = (size_Mat / numberOfThreads) + 1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid / Grid1) + 1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-	LBResetMedianValuesSP27 << < grid, threads >> > (
-		vxD,
-		vyD,
-		vzD,
-		rhoD,
-		pressD,
-		size_Mat,
-		isEvenTimestep);
-	getLastCudaError("LBResetMedianValuesSP27 execution failed");
+
+    LBResetMedianValuesSP27 << < grid.grid, grid.threads >> > (
+        vxD,
+        vyD,
+        vzD,
+        rhoD,
+        pressD,
+        size_Mat,
+        isEvenTimestep);
+    getLastCudaError("LBResetMedianValuesSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void ResetMedianValuesAD27(
-	real* vxD,
-	real* vyD,
-	real* vzD,
-	real* rhoD,
-	real* pressD,
-	real* concD,
-	unsigned int size_Mat,
-	unsigned int numberOfThreads,
-	bool isEvenTimestep)
+    real* vxD,
+    real* vyD,
+    real* vzD,
+    real* rhoD,
+    real* pressD,
+    real* concD,
+    unsigned int size_Mat,
+    unsigned int numberOfThreads,
+    bool isEvenTimestep)
 {
-	int Grid = (size_Mat / numberOfThreads) + 1;
-	int Grid1, Grid2;
-	if (Grid > 512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid / Grid1) + 1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1);
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-	LBResetMedianValuesAD27 << < grid, threads >> > (
-		vxD,
-		vyD,
-		vzD,
-		rhoD,
-		pressD,
-		concD,
-		size_Mat,
-		isEvenTimestep);
-	getLastCudaError("LBResetMedianValuesAD27 execution failed");
+    LBResetMedianValuesAD27 << < grid.grid, grid.threads >> > (
+        vxD,
+        vyD,
+        vzD,
+        rhoD,
+        pressD,
+        concD,
+        size_Mat,
+        isEvenTimestep);
+    getLastCudaError("LBResetMedianValuesAD27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void Calc2ndMomentsIncompSP27(real* kxyFromfcNEQ,
-										 real* kyzFromfcNEQ,
-										 real* kxzFromfcNEQ,
-										 real* kxxMyyFromfcNEQ,
-										 real* kxxMzzFromfcNEQ,
-										 unsigned int* geoD,
-										 unsigned int* neighborX,
-										 unsigned int* neighborY,
-										 unsigned int* neighborZ,
-										 unsigned int size_Mat,
-										 unsigned int numberOfThreads,
-										 real* DD,
-										 bool isEvenTimestep)
+                                         real* kyzFromfcNEQ,
+                                         real* kxzFromfcNEQ,
+                                         real* kxxMyyFromfcNEQ,
+                                         real* kxxMzzFromfcNEQ,
+                                         unsigned int* geoD,
+                                         unsigned int* neighborX,
+                                         unsigned int* neighborY,
+                                         unsigned int* neighborZ,
+                                         unsigned int size_Mat,
+                                         unsigned int numberOfThreads,
+                                         real* DD,
+                                         bool isEvenTimestep)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LBCalc2ndMomentsIncompSP27<<< grid, threads >>> (  kxyFromfcNEQ,
-														 kyzFromfcNEQ,
-														 kxzFromfcNEQ,
-														 kxxMyyFromfcNEQ,
-														 kxxMzzFromfcNEQ,
-														 geoD,
-														 neighborX,
-														 neighborY,
-														 neighborZ,
-														 size_Mat,
-														 DD,
-														 isEvenTimestep);
-      getLastCudaError("LBCalc2ndMomentsIncompSP27 execution failed");
+    LBCalc2ndMomentsIncompSP27<<< grid.grid, grid.threads >>> (  kxyFromfcNEQ,
+                                                         kyzFromfcNEQ,
+                                                         kxzFromfcNEQ,
+                                                         kxxMyyFromfcNEQ,
+                                                         kxxMzzFromfcNEQ,
+                                                         geoD,
+                                                         neighborX,
+                                                         neighborY,
+                                                         neighborZ,
+                                                         size_Mat,
+                                                         DD,
+                                                         isEvenTimestep);
+    getLastCudaError("LBCalc2ndMomentsIncompSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void Calc2ndMomentsCompSP27( real* kxyFromfcNEQ,
-										real* kyzFromfcNEQ,
-										real* kxzFromfcNEQ,
-										real* kxxMyyFromfcNEQ,
-										real* kxxMzzFromfcNEQ,
-										unsigned int* geoD,
-										unsigned int* neighborX,
-										unsigned int* neighborY,
-										unsigned int* neighborZ,
-										unsigned int size_Mat,
-										unsigned int numberOfThreads,
-										real* DD,
-										bool isEvenTimestep)
+                                        real* kyzFromfcNEQ,
+                                        real* kxzFromfcNEQ,
+                                        real* kxxMyyFromfcNEQ,
+                                        real* kxxMzzFromfcNEQ,
+                                        unsigned int* geoD,
+                                        unsigned int* neighborX,
+                                        unsigned int* neighborY,
+                                        unsigned int* neighborZ,
+                                        unsigned int size_Mat,
+                                        unsigned int numberOfThreads,
+                                        real* DD,
+                                        bool isEvenTimestep)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LBCalc2ndMomentsCompSP27<<< grid, threads >>> (kxyFromfcNEQ,
-													 kyzFromfcNEQ,
-													 kxzFromfcNEQ,
-													 kxxMyyFromfcNEQ,
-													 kxxMzzFromfcNEQ,
-													 geoD,
-													 neighborX,
-													 neighborY,
-													 neighborZ,
-													 size_Mat,
-													 DD,
-													 isEvenTimestep);
-      getLastCudaError("LBCalc2ndMomentsCompSP27 execution failed");
+    LBCalc2ndMomentsCompSP27<<< grid.grid, grid.threads >>> (kxyFromfcNEQ,
+                                                     kyzFromfcNEQ,
+                                                     kxzFromfcNEQ,
+                                                     kxxMyyFromfcNEQ,
+                                                     kxxMzzFromfcNEQ,
+                                                     geoD,
+                                                     neighborX,
+                                                     neighborY,
+                                                     neighborZ,
+                                                     size_Mat,
+                                                     DD,
+                                                     isEvenTimestep);
+    getLastCudaError("LBCalc2ndMomentsCompSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void Calc3rdMomentsIncompSP27(real* CUMbbb,
-										 real* CUMabc,
-										 real* CUMbac,
-										 real* CUMbca,
-										 real* CUMcba,
-										 real* CUMacb,
-										 real* CUMcab,
-										 unsigned int* geoD,
-										 unsigned int* neighborX,
-										 unsigned int* neighborY,
-										 unsigned int* neighborZ,
-										 unsigned int size_Mat,
-										 unsigned int numberOfThreads,
-										 real* DD,
-										 bool isEvenTimestep)
+                                         real* CUMabc,
+                                         real* CUMbac,
+                                         real* CUMbca,
+                                         real* CUMcba,
+                                         real* CUMacb,
+                                         real* CUMcab,
+                                         unsigned int* geoD,
+                                         unsigned int* neighborX,
+                                         unsigned int* neighborY,
+                                         unsigned int* neighborZ,
+                                         unsigned int size_Mat,
+                                         unsigned int numberOfThreads,
+                                         real* DD,
+                                         bool isEvenTimestep)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LBCalc3rdMomentsIncompSP27<<< grid, threads >>> (  CUMbbb,
-														 CUMabc,
-														 CUMbac,
-														 CUMbca,
-														 CUMcba,
-														 CUMacb,
-														 CUMcab,
-														 geoD,
-														 neighborX,
-														 neighborY,
-														 neighborZ,
-														 DD,
-														 size_Mat,
-														 isEvenTimestep);
-      getLastCudaError("LBCalc3rdMomentsIncompSP27 execution failed");
+    LBCalc3rdMomentsIncompSP27<<< grid.grid, grid.threads >>> (  CUMbbb,
+                                                         CUMabc,
+                                                         CUMbac,
+                                                         CUMbca,
+                                                         CUMcba,
+                                                         CUMacb,
+                                                         CUMcab,
+                                                         geoD,
+                                                         neighborX,
+                                                         neighborY,
+                                                         neighborZ,
+                                                         DD,
+                                                         size_Mat,
+                                                         isEvenTimestep);
+    getLastCudaError("LBCalc3rdMomentsIncompSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void Calc3rdMomentsCompSP27( real* CUMbbb,
-										real* CUMabc,
-										real* CUMbac,
-										real* CUMbca,
-										real* CUMcba,
-										real* CUMacb,
-										real* CUMcab,
-										unsigned int* geoD,
-										unsigned int* neighborX,
-										unsigned int* neighborY,
-										unsigned int* neighborZ,
-										unsigned int size_Mat,
-										unsigned int numberOfThreads,
-										real* DD,
-										bool isEvenTimestep)
+                                        real* CUMabc,
+                                        real* CUMbac,
+                                        real* CUMbca,
+                                        real* CUMcba,
+                                        real* CUMacb,
+                                        real* CUMcab,
+                                        unsigned int* geoD,
+                                        unsigned int* neighborX,
+                                        unsigned int* neighborY,
+                                        unsigned int* neighborZ,
+                                        unsigned int size_Mat,
+                                        unsigned int numberOfThreads,
+                                        real* DD,
+                                        bool isEvenTimestep)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LBCalc3rdMomentsCompSP27<<< grid, threads >>> (CUMbbb,
-													 CUMabc,
-													 CUMbac,
-													 CUMbca,
-													 CUMcba,
-													 CUMacb,
-													 CUMcab,
-													 geoD,
-													 neighborX,
-													 neighborY,
-													 neighborZ,
-													 DD,
-													 size_Mat,
-													 isEvenTimestep);
-      getLastCudaError("LBCalc3rdMomentsCompSP27 execution failed");
+    LBCalc3rdMomentsCompSP27<<< grid.grid, grid.threads >>> (CUMbbb,
+                                                     CUMabc,
+                                                     CUMbac,
+                                                     CUMbca,
+                                                     CUMcba,
+                                                     CUMacb,
+                                                     CUMcab,
+                                                     geoD,
+                                                     neighborX,
+                                                     neighborY,
+                                                     neighborZ,
+                                                     DD,
+                                                     size_Mat,
+                                                     isEvenTimestep);
+    getLastCudaError("LBCalc3rdMomentsCompSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void CalcHigherMomentsIncompSP27(real* CUMcbb,
-											real* CUMbcb,
-											real* CUMbbc,
-											real* CUMcca,
-											real* CUMcac,
-											real* CUMacc,
-											real* CUMbcc,
-											real* CUMcbc,
-											real* CUMccb,
-											real* CUMccc,
-											unsigned int* geoD,
-											unsigned int* neighborX,
-											unsigned int* neighborY,
-											unsigned int* neighborZ,
-											unsigned int size_Mat,
-											unsigned int numberOfThreads,
-											real* DD,
-											bool isEvenTimestep)
+                                            real* CUMbcb,
+                                            real* CUMbbc,
+                                            real* CUMcca,
+                                            real* CUMcac,
+                                            real* CUMacc,
+                                            real* CUMbcc,
+                                            real* CUMcbc,
+                                            real* CUMccb,
+                                            real* CUMccc,
+                                            unsigned int* geoD,
+                                            unsigned int* neighborX,
+                                            unsigned int* neighborY,
+                                            unsigned int* neighborZ,
+                                            unsigned int size_Mat,
+                                            unsigned int numberOfThreads,
+                                            real* DD,
+                                            bool isEvenTimestep)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LBCalcHigherMomentsIncompSP27<<< grid, threads >>> (CUMcbb,
-														  CUMbcb,
-														  CUMbbc,
-														  CUMcca,
-														  CUMcac,
-														  CUMacc,
-														  CUMbcc,
-														  CUMcbc,
-														  CUMccb,
-														  CUMccc,
-														  geoD,
-														  neighborX,
-														  neighborY,
-														  neighborZ,
-														  DD,
-														  size_Mat,
-														  isEvenTimestep);
-      getLastCudaError("LBCalcHigherMomentsIncompSP27 execution failed");
+    LBCalcHigherMomentsIncompSP27<<< grid.grid, grid.threads >>> (CUMcbb,
+                                                          CUMbcb,
+                                                          CUMbbc,
+                                                          CUMcca,
+                                                          CUMcac,
+                                                          CUMacc,
+                                                          CUMbcc,
+                                                          CUMcbc,
+                                                          CUMccb,
+                                                          CUMccc,
+                                                          geoD,
+                                                          neighborX,
+                                                          neighborY,
+                                                          neighborZ,
+                                                          DD,
+                                                          size_Mat,
+                                                          isEvenTimestep);
+    getLastCudaError("LBCalcHigherMomentsIncompSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void CalcHigherMomentsCompSP27(  real* CUMcbb,
-											real* CUMbcb,
-											real* CUMbbc,
-											real* CUMcca,
-											real* CUMcac,
-											real* CUMacc,
-											real* CUMbcc,
-											real* CUMcbc,
-											real* CUMccb,
-											real* CUMccc,
-											unsigned int* geoD,
-											unsigned int* neighborX,
-											unsigned int* neighborY,
-											unsigned int* neighborZ,
-											unsigned int size_Mat,
-											unsigned int numberOfThreads,
-											real* DD,
-											bool isEvenTimestep)
+                                            real* CUMbcb,
+                                            real* CUMbbc,
+                                            real* CUMcca,
+                                            real* CUMcac,
+                                            real* CUMacc,
+                                            real* CUMbcc,
+                                            real* CUMcbc,
+                                            real* CUMccb,
+                                            real* CUMccc,
+                                            unsigned int* geoD,
+                                            unsigned int* neighborX,
+                                            unsigned int* neighborY,
+                                            unsigned int* neighborZ,
+                                            unsigned int size_Mat,
+                                            unsigned int numberOfThreads,
+                                            real* DD,
+                                            bool isEvenTimestep)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
 
-      LBCalcHigherMomentsCompSP27<<< grid, threads >>> (  CUMcbb,
-														  CUMbcb,
-														  CUMbbc,
-														  CUMcca,
-														  CUMcac,
-														  CUMacc,
-														  CUMbcc,
-														  CUMcbc,
-														  CUMccb,
-														  CUMccc,
-														  geoD,
-														  neighborX,
-														  neighborY,
-														  neighborZ,
-														  DD,
-														  size_Mat,
-														  isEvenTimestep);
-      getLastCudaError("LBCalcHigherMomentsCompSP27 execution failed");
+    LBCalcHigherMomentsCompSP27<<< grid.grid, grid.threads >>> (  CUMcbb,
+                                                          CUMbcb,
+                                                          CUMbbc,
+                                                          CUMcca,
+                                                          CUMcac,
+                                                          CUMacc,
+                                                          CUMbcc,
+                                                          CUMcbc,
+                                                          CUMccb,
+                                                          CUMccc,
+                                                          geoD,
+                                                          neighborX,
+                                                          neighborY,
+                                                          neighborZ,
+                                                          DD,
+                                                          size_Mat,
+                                                          isEvenTimestep);
+    getLastCudaError("LBCalcHigherMomentsCompSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void LBCalcMeasurePoints27(real* vxMP,
@@ -1807,22 +1309,9 @@ void LBCalcMeasurePoints27(real* vxMP,
                                       unsigned int numberOfThreads,
                                       bool isEvenTimestep)
 {
-   int Grid = (numberOfPointskMP / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfPointskMP);
 
-      LBCalcMeasurePoints<<< grid, threads >>> (vxMP,
+    LBCalcMeasurePoints<<< grid.grid, grid.threads >>> (vxMP,
                                                 vyMP,
                                                 vzMP,
                                                 rhoMP,
@@ -1837,7 +1326,7 @@ void LBCalcMeasurePoints27(real* vxMP,
                                                 size_Mat,
                                                 DD,
                                                 isEvenTimestep);
-      getLastCudaError("LBCalcMeasurePoints execution failed");
+    getLastCudaError("LBCalcMeasurePoints execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void BcPress27( int nx,
@@ -1853,10 +1342,10 @@ void BcPress27( int nx,
                            unsigned int size_Mat,
                            bool isEvenTimestep)
 {
-   dim3 threads       ( grid_nx, 1, 1 );
-   dim3 grid          ( grid_ny, 1 );
+    dim3 threads       ( grid_nx, 1, 1 );
+    dim3 grid          ( grid_ny, 1 );
 
-      LB_BC_Press_East27<<< grid, threads >>> ( nx,
+    LB_BC_Press_East27<<< grid, threads >>> ( nx,
                                                 ny,
                                                 tz,
                                                 bcMatD,
@@ -1866,7 +1355,7 @@ void BcPress27( int nx,
                                                 DD,
                                                 size_Mat,
                                                 isEvenTimestep);
-      getLastCudaError("LB_BC_Press_East27 execution failed");
+    getLastCudaError("LB_BC_Press_East27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void BcVel27(int nx,
@@ -1885,10 +1374,10 @@ void BcVel27(int nx,
                         real u0x,
                         real om)
 {
-   dim3 threads       ( grid_nx, 1, 1 );
-   dim3 grid          ( grid_ny, 1 );
+    dim3 threads       ( grid_nx, 1, 1 );
+    dim3 grid          ( grid_ny, 1 );
 
-      LB_BC_Vel_West_27<<< grid, threads >>> (  nx,
+    LB_BC_Vel_West_27<<< grid, threads >>> (  nx,
                                                 ny,
                                                 nz,
                                                 itz,
@@ -1903,7 +1392,7 @@ void BcVel27(int nx,
                                                 grid_nx,
                                                 grid_ny,
                                                 om);
-      getLastCudaError("LB_BC_Vel_West_27 execution failed");
+    getLastCudaError("LB_BC_Vel_West_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void QADPressDev7( unsigned int numberOfThreads,
@@ -1922,22 +1411,9 @@ void QADPressDev7( unsigned int numberOfThreads,
                               unsigned int size_Mat,
                               bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QADPress7<<< gridQ, threads >>>( DD,
+      QADPress7<<< grid.grid, grid.threads >>>( DD,
                                        DD7,
                                        temp,
                                        velo,
@@ -1951,7 +1427,7 @@ void QADPressDev7( unsigned int numberOfThreads,
                                        neighborZ,
                                        size_Mat,
                                        isEvenTimestep);
-      getLastCudaError("QADPress7 execution failed");
+    getLastCudaError("QADPress7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void QADPressDev27(unsigned int numberOfThreads,
@@ -1970,22 +1446,9 @@ void QADPressDev27(unsigned int numberOfThreads,
                               unsigned int size_Mat,
                               bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QADPress27<<< gridQ, threads >>>(   DD,
+      QADPress27<<< grid.grid, grid.threads >>>(   DD,
                                           DD27,
                                           temp,
                                           velo,
@@ -1999,52 +1462,39 @@ void QADPressDev27(unsigned int numberOfThreads,
                                           neighborZ,
                                           size_Mat,
                                           isEvenTimestep);
-      getLastCudaError("QADPress27 execution failed");
+    getLastCudaError("QADPress27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void QADPressNEQNeighborDev27(
-											unsigned int numberOfThreads,
-											real* DD,
-											real* DD27,
-											int* k_Q,
-											int* k_N,
-											int numberOfBCnodes,
-											unsigned int* neighborX,
-											unsigned int* neighborY,
-											unsigned int* neighborZ,
-											unsigned int size_Mat,
-											bool isEvenTimestep
-										)
+                                            unsigned int numberOfThreads,
+                                            real* DD,
+                                            real* DD27,
+                                            int* k_Q,
+                                            int* k_N,
+                                            int numberOfBCnodes,
+                                            unsigned int* neighborX,
+                                            unsigned int* neighborY,
+                                            unsigned int* neighborZ,
+                                            unsigned int size_Mat,
+                                            bool isEvenTimestep
+                                        )
 {
 
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-   QADPressNEQNeighbor27<<< gridQ, threads >>>(
-												DD,
-												DD27,
-												k_Q,
-												k_N,
-												numberOfBCnodes,
-												neighborX,
-												neighborY,
-												neighborZ,
-												size_Mat,
-												isEvenTimestep
-											  );
-   getLastCudaError("QADPressNEQNeighbor27 execution failed");
+    QADPressNEQNeighbor27<<< grid.grid, grid.threads >>>(
+                                                DD,
+                                                DD27,
+                                                k_Q,
+                                                k_N,
+                                                numberOfBCnodes,
+                                                neighborX,
+                                                neighborY,
+                                                neighborZ,
+                                                size_Mat,
+                                                isEvenTimestep
+                                              );
+       getLastCudaError("QADPressNEQNeighbor27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void QADVelDev7(unsigned int numberOfThreads,
@@ -2063,22 +1513,9 @@ void QADVelDev7(unsigned int numberOfThreads,
                            unsigned int size_Mat,
                            bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QADVel7<<< gridQ, threads >>> (  
+      QADVel7<<< grid.grid, grid.threads >>> (
                                        DD,
                                        DD7,
                                        temp,
@@ -2093,7 +1530,7 @@ void QADVelDev7(unsigned int numberOfThreads,
                                        neighborZ,
                                        size_Mat,
                                        isEvenTimestep);
-      getLastCudaError("QADVel7 execution failed");
+    getLastCudaError("QADVel7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void QADVelDev27(  unsigned int numberOfThreads,
@@ -2112,22 +1549,9 @@ void QADVelDev27(  unsigned int numberOfThreads,
                               unsigned int size_Mat,
                               bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QADVel27<<< gridQ, threads >>> ( DD,
+      QADVel27<<< grid.grid, grid.threads >>> ( DD,
                                       DD27,
                                       temp,
                                       velo,
@@ -2159,22 +1583,9 @@ void QADDev7(unsigned int numberOfThreads,
                         unsigned int size_Mat,
                         bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QAD7<<< gridQ, threads >>> (     DD,
+      QAD7<<< grid.grid, grid.threads >>> (     DD,
                                        DD7,
                                        temp,
                                        diffusivity,
@@ -2226,89 +1637,74 @@ void FactorizedCentralMomentsAdvectionDiffusionDeviceKernel(
 
 //////////////////////////////////////////////////////////////////////////
 void ADSlipVelDevComp(
-	uint numberOfThreads,
-	real * normalX,
-	real * normalY,
-	real * normalZ,
-	real * distributions,
-	real * distributionsAD,
-	int* QindexArray,
-	real * Qarrays,
-	uint numberOfBCnodes,
-	real omegaDiffusivity,
-	uint * neighborX,
-	uint * neighborY,
-	uint * neighborZ,
-	uint size_Mat,
-	bool isEvenTimestep)
+    uint numberOfThreads,
+    real * normalX,
+    real * normalY,
+    real * normalZ,
+    real * distributions,
+    real * distributionsAD,
+    int* QindexArray,
+    real * Qarrays,
+    uint numberOfBCnodes,
+    real omegaDiffusivity,
+    uint * neighborX,
+    uint * neighborY,
+    uint * neighborZ,
+    uint size_Mat,
+    bool isEvenTimestep)
 {
-	int Grid = (numberOfBCnodes / numberOfThreads) + 1;
-	dim3 gridQ(Grid, 1, 1);
-	dim3 threads(numberOfThreads, 1, 1);
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-	AD_SlipVelDeviceComp << < gridQ, threads >> > (
-		normalX,
-		normalY,
-		normalZ,
-		distributions,
-		distributionsAD,
-		QindexArray,
-		Qarrays,
-		numberOfBCnodes,
-		omegaDiffusivity,
-		neighborX,
-		neighborY,
-		neighborZ,
-		size_Mat,
-		isEvenTimestep);
-	getLastCudaError("AD_SlipVelDeviceComp execution failed");
+    AD_SlipVelDeviceComp << < grid.grid, grid.threads >> > (
+        normalX,
+        normalY,
+        normalZ,
+        distributions,
+        distributionsAD,
+        QindexArray,
+        Qarrays,
+        numberOfBCnodes,
+        omegaDiffusivity,
+        neighborX,
+        neighborY,
+        neighborZ,
+        size_Mat,
+        isEvenTimestep);
+    getLastCudaError("AD_SlipVelDeviceComp execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 
 void QADDirichletDev27( unsigned int numberOfThreads,
-								   real* DD,
-								   real* DD27,
-								   real* temp,
-								   real diffusivity,
-								   int* k_Q,
-								   real* QQ,
-								   unsigned int numberOfBCnodes,
-								   real om1,
-								   unsigned int* neighborX,
-								   unsigned int* neighborY,
-								   unsigned int* neighborZ,
-								   unsigned int size_Mat,
-								   bool isEvenTimestep)
+                                   real* DD,
+                                   real* DD27,
+                                   real* temp,
+                                   real diffusivity,
+                                   int* k_Q,
+                                   real* QQ,
+                                   unsigned int numberOfBCnodes,
+                                   real om1,
+                                   unsigned int* neighborX,
+                                   unsigned int* neighborY,
+                                   unsigned int* neighborZ,
+                                   unsigned int size_Mat,
+                                   bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QADDirichlet27<<< gridQ, threads >>> (
-											   DD,
-											   DD27,
-											   temp,
-											   diffusivity,
-											   k_Q,
-											   QQ,
-											   numberOfBCnodes,
-											   om1,
-											   neighborX,
-											   neighborY,
-											   neighborZ,
-											   size_Mat,
-											   isEvenTimestep);
+      QADDirichlet27<<< grid.grid, grid.threads >>> (
+                                               DD,
+                                               DD27,
+                                               temp,
+                                               diffusivity,
+                                               k_Q,
+                                               QQ,
+                                               numberOfBCnodes,
+                                               om1,
+                                               neighborX,
+                                               neighborY,
+                                               neighborZ,
+                                               size_Mat,
+                                               isEvenTimestep);
       getLastCudaError("QADDirichletDev27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -2327,22 +1723,9 @@ void QADBBDev27(unsigned int numberOfThreads,
                            unsigned int size_Mat,
                            bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QADBB27<<< gridQ, threads >>> (  DD,
+      QADBB27<<< grid.grid, grid.threads >>> (  DD,
                                        DD27,
                                        temp,
                                        diffusivity,
@@ -2359,292 +1742,212 @@ void QADBBDev27(unsigned int numberOfThreads,
 }
 //////////////////////////////////////////////////////////////////////////
 void QNoSlipADincompDev7(unsigned int numberOfThreads,
-									real* DD,
-									real* DD7,
-									real* temp,
-									real diffusivity,
-									int* k_Q,
-									real* QQ,
-									unsigned int numberOfBCnodes,
-									real om1,
-									unsigned int* neighborX,
-									unsigned int* neighborY,
-									unsigned int* neighborZ,
-									unsigned int size_Mat,
-									bool isEvenTimestep)
+                                    real* DD,
+                                    real* DD7,
+                                    real* temp,
+                                    real diffusivity,
+                                    int* k_Q,
+                                    real* QQ,
+                                    unsigned int numberOfBCnodes,
+                                    real om1,
+                                    unsigned int* neighborX,
+                                    unsigned int* neighborY,
+                                    unsigned int* neighborZ,
+                                    unsigned int size_Mat,
+                                    bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QNoSlipADincomp7<<< gridQ, threads >>> (
-											   DD,
-											   DD7,
-											   temp,
-											   diffusivity,
-											   k_Q,
-											   QQ,
-											   numberOfBCnodes,
-											   om1,
-											   neighborX,
-											   neighborY,
-											   neighborZ,
-											   size_Mat,
-											   isEvenTimestep);
+      QNoSlipADincomp7<<< grid.grid, grid.threads >>> (
+                                               DD,
+                                               DD7,
+                                               temp,
+                                               diffusivity,
+                                               k_Q,
+                                               QQ,
+                                               numberOfBCnodes,
+                                               om1,
+                                               neighborX,
+                                               neighborY,
+                                               neighborZ,
+                                               size_Mat,
+                                               isEvenTimestep);
       getLastCudaError("QNoSlipADincomp7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void QNoSlipADincompDev27(  unsigned int numberOfThreads,
-									   real* DD,
-									   real* DD27,
-									   real* temp,
-									   real diffusivity,
-									   int* k_Q,
-									   real* QQ,
-									   unsigned int numberOfBCnodes,
-									   real om1,
-									   unsigned int* neighborX,
-									   unsigned int* neighborY,
-									   unsigned int* neighborZ,
-									   unsigned int size_Mat,
-									   bool isEvenTimestep)
+                                       real* DD,
+                                       real* DD27,
+                                       real* temp,
+                                       real diffusivity,
+                                       int* k_Q,
+                                       real* QQ,
+                                       unsigned int numberOfBCnodes,
+                                       real om1,
+                                       unsigned int* neighborX,
+                                       unsigned int* neighborY,
+                                       unsigned int* neighborZ,
+                                       unsigned int size_Mat,
+                                       bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QNoSlipADincomp27<<< gridQ, threads >>> (
-											   DD,
-											   DD27,
-											   temp,
-											   diffusivity,
-											   k_Q,
-											   QQ,
-											   numberOfBCnodes,
-											   om1,
-											   neighborX,
-											   neighborY,
-											   neighborZ,
-											   size_Mat,
-											   isEvenTimestep);
+      QNoSlipADincomp27<<< grid.grid, grid.threads >>> (
+                                               DD,
+                                               DD27,
+                                               temp,
+                                               diffusivity,
+                                               k_Q,
+                                               QQ,
+                                               numberOfBCnodes,
+                                               om1,
+                                               neighborX,
+                                               neighborY,
+                                               neighborZ,
+                                               size_Mat,
+                                               isEvenTimestep);
       getLastCudaError("QNoSlipADincomp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void QADVeloIncompDev7( unsigned int numberOfThreads,
-								   real* DD,
-								   real* DD7,
-								   real* temp,
-								   real* velo,
-								   real diffusivity,
-								   int* k_Q,
-								   real* QQ,
-								   unsigned int numberOfBCnodes,
-								   real om1,
-								   unsigned int* neighborX,
-								   unsigned int* neighborY,
-								   unsigned int* neighborZ,
-								   unsigned int size_Mat,
-								   bool isEvenTimestep)
+                                   real* DD,
+                                   real* DD7,
+                                   real* temp,
+                                   real* velo,
+                                   real diffusivity,
+                                   int* k_Q,
+                                   real* QQ,
+                                   unsigned int numberOfBCnodes,
+                                   real om1,
+                                   unsigned int* neighborX,
+                                   unsigned int* neighborY,
+                                   unsigned int* neighborZ,
+                                   unsigned int size_Mat,
+                                   bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QADVeloIncomp7<<< gridQ, threads >>> ( 
-											   DD,
-											   DD7,
-											   temp,
-											   velo,
-											   diffusivity,
-											   k_Q,
-											   QQ,
-											   numberOfBCnodes,
-											   om1,
-											   neighborX,
-											   neighborY,
-											   neighborZ,
-											   size_Mat,
-											   isEvenTimestep);
+      QADVeloIncomp7<<< grid.grid, grid.threads >>> ( DD,
+                                                 DD7,
+                                               temp,
+                                               velo,
+                                               diffusivity,
+                                               k_Q,
+                                               QQ,
+                                               numberOfBCnodes,
+                                               om1,
+                                               neighborX,
+                                               neighborY,
+                                               neighborZ,
+                                               size_Mat,
+                                               isEvenTimestep);
       getLastCudaError("QADVeloIncomp7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void QADVeloIncompDev27(   unsigned int numberOfThreads,
-									  real* DD,
-									  real* DD27,
-									  real* temp,
-									  real* velo,
-									  real diffusivity,
-									  int* k_Q,
-									  real* QQ,
-									  unsigned int numberOfBCnodes,
-									  real om1,
-									  unsigned int* neighborX,
-									  unsigned int* neighborY,
-									  unsigned int* neighborZ,
-									  unsigned int size_Mat,
-									  bool isEvenTimestep)
+                                      real* DD,
+                                      real* DD27,
+                                      real* temp,
+                                      real* velo,
+                                      real diffusivity,
+                                      int* k_Q,
+                                      real* QQ,
+                                      unsigned int numberOfBCnodes,
+                                      real om1,
+                                      unsigned int* neighborX,
+                                      unsigned int* neighborY,
+                                      unsigned int* neighborZ,
+                                      unsigned int size_Mat,
+                                      bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QADVeloIncomp27<<< gridQ, threads >>> (
-											  DD,
-											  DD27,
-											  temp,
-											  velo,
-											  diffusivity,
-											  k_Q,
-											  QQ,
-											  numberOfBCnodes,
-											  om1,
-											  neighborX,
-											  neighborY,
-											  neighborZ,
-											  size_Mat,
-											  isEvenTimestep);
+      QADVeloIncomp27<<< grid.grid, grid.threads >>> (
+                                              DD,
+                                              DD27,
+                                              temp,
+                                              velo,
+                                              diffusivity,
+                                              k_Q,
+                                              QQ,
+                                              numberOfBCnodes,
+                                              om1,
+                                              neighborX,
+                                              neighborY,
+                                              neighborZ,
+                                              size_Mat,
+                                              isEvenTimestep);
       getLastCudaError("QADVeloIncomp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void QADPressIncompDev7( unsigned int numberOfThreads,
-									  real* DD,
-									  real* DD7,
-									  real* temp,
-									  real* velo,
-									  real diffusivity,
-									  int* k_Q,
-									  real* QQ,
-									  unsigned int numberOfBCnodes,
-									  real om1,
-									  unsigned int* neighborX,
-									  unsigned int* neighborY,
-									  unsigned int* neighborZ,
-									  unsigned int size_Mat,
-									  bool isEvenTimestep)
+                                      real* DD,
+                                      real* DD7,
+                                      real* temp,
+                                      real* velo,
+                                      real diffusivity,
+                                      int* k_Q,
+                                      real* QQ,
+                                      unsigned int numberOfBCnodes,
+                                      real om1,
+                                      unsigned int* neighborX,
+                                      unsigned int* neighborY,
+                                      unsigned int* neighborZ,
+                                      unsigned int size_Mat,
+                                      bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QADPressIncomp7<<< gridQ, threads >>>(
-											   DD,
-											   DD7,
-											   temp,
-											   velo,
-											   diffusivity,
-											   k_Q,
-											   QQ,
-											   numberOfBCnodes,
-											   om1,
-											   neighborX,
-											   neighborY,
-											   neighborZ,
-											   size_Mat,
-											   isEvenTimestep);
+      QADPressIncomp7<<< grid.grid, grid.threads >>>(
+                                               DD,
+                                               DD7,
+                                               temp,
+                                               velo,
+                                               diffusivity,
+                                               k_Q,
+                                               QQ,
+                                               numberOfBCnodes,
+                                               om1,
+                                               neighborX,
+                                               neighborY,
+                                               neighborZ,
+                                               size_Mat,
+                                               isEvenTimestep);
       getLastCudaError("QADPressIncomp7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void QADPressIncompDev27(  unsigned int numberOfThreads,
-									  real* DD,
-									  real* DD27,
-									  real* temp,
-									  real* velo,
-									  real diffusivity,
-									  int* k_Q,
-									  real* QQ,
-									  unsigned int numberOfBCnodes,
-									  real om1,
-									  unsigned int* neighborX,
-									  unsigned int* neighborY,
-									  unsigned int* neighborZ,
-									  unsigned int size_Mat,
-									  bool isEvenTimestep)
+                                      real* DD,
+                                      real* DD27,
+                                      real* temp,
+                                      real* velo,
+                                      real diffusivity,
+                                      int* k_Q,
+                                      real* QQ,
+                                      unsigned int numberOfBCnodes,
+                                      real om1,
+                                      unsigned int* neighborX,
+                                      unsigned int* neighborY,
+                                      unsigned int* neighborZ,
+                                      unsigned int size_Mat,
+                                      bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QADPressIncomp27<<< gridQ, threads >>>(
-											  DD,
-											  DD27,
-											  temp,
-											  velo,
-											  diffusivity,
-											  k_Q,
-											  QQ,
-											  numberOfBCnodes,
-											  om1,
-											  neighborX,
-											  neighborY,
-											  neighborZ,
-											  size_Mat,
-											  isEvenTimestep);
+      QADPressIncomp27<<< grid.grid, grid.threads >>>(DD,
+                                                DD27,
+                                              temp,
+                                              velo,
+                                              diffusivity,
+                                              k_Q,
+                                              QQ,
+                                              numberOfBCnodes,
+                                              om1,
+                                              neighborX,
+                                              neighborY,
+                                              neighborZ,
+                                              size_Mat,
+                                              isEvenTimestep);
       getLastCudaError("QADPressIncomp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -2688,57 +1991,44 @@ void QDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions*
 }
 //////////////////////////////////////////////////////////////////////////
 void QDevCompThinWalls27(unsigned int numberOfThreads,
-									real* DD,
-									int* k_Q,
-									real* QQ,
-									unsigned int numberOfBCnodes,
-									real om1,
-									unsigned int* geom,
-									unsigned int* neighborX,
-									unsigned int* neighborY,
-									unsigned int* neighborZ,
-									unsigned int* neighborWSB,
-									unsigned int size_Mat,
-									bool isEvenTimestep)
+                                    real* DD,
+                                    int* k_Q,
+                                    real* QQ,
+                                    unsigned int numberOfBCnodes,
+                                    real om1,
+                                    unsigned int* geom,
+                                    unsigned int* neighborX,
+                                    unsigned int* neighborY,
+                                    unsigned int* neighborZ,
+                                    unsigned int* neighborWSB,
+                                    unsigned int size_Mat,
+                                    bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-   QDeviceCompThinWallsPartOne27 <<< gridQ, threads >>> (DD,
-														 k_Q,
-														 QQ,
-														 numberOfBCnodes,
-														 om1,
-														 neighborX,
-														 neighborY,
-														 neighborZ,
-														 size_Mat,
-														 isEvenTimestep);
+   QDeviceCompThinWallsPartOne27 <<< grid.grid, grid.threads >>> (DD,
+                                                         k_Q,
+                                                         QQ,
+                                                         numberOfBCnodes,
+                                                         om1,
+                                                         neighborX,
+                                                         neighborY,
+                                                         neighborZ,
+                                                         size_Mat,
+                                                         isEvenTimestep);
    getLastCudaError("QDeviceCompThinWallsPartOne27 execution failed");
 
-   QThinWallsPartTwo27 <<< gridQ, threads >>> ( DD,
-												k_Q,
-												QQ,
-												numberOfBCnodes,
-												geom,
-												neighborX,
-												neighborY,
-												neighborZ,
-												neighborWSB,
-												size_Mat,
-												isEvenTimestep);
+   QThinWallsPartTwo27 <<< grid.grid, grid.threads >>> ( DD,
+                                                k_Q,
+                                                QQ,
+                                                numberOfBCnodes,
+                                                geom,
+                                                neighborX,
+                                                neighborY,
+                                                neighborZ,
+                                                neighborWSB,
+                                                size_Mat,
+                                                isEvenTimestep);
    getLastCudaError("QThinWallsPartTwo27 execution failed");
 
 }
@@ -2763,84 +2053,58 @@ void QDev3rdMomentsComp27(LBMSimulationParameter* parameterDevice, QforBoundaryC
 }
 //////////////////////////////////////////////////////////////////////////
 void QDevIncompHighNu27( unsigned int numberOfThreads,
-									real* DD,
-									int* k_Q,
-									real* QQ,
-									unsigned int numberOfBCnodes,
-									real om1,
-									unsigned int* neighborX,
-									unsigned int* neighborY,
-									unsigned int* neighborZ,
-									unsigned int size_Mat,
-									bool isEvenTimestep)
+                                    real* DD,
+                                    int* k_Q,
+                                    real* QQ,
+                                    unsigned int numberOfBCnodes,
+                                    real om1,
+                                    unsigned int* neighborX,
+                                    unsigned int* neighborY,
+                                    unsigned int* neighborZ,
+                                    unsigned int size_Mat,
+                                    bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QDeviceIncompHighNu27<<< gridQ, threads >>> (
-												   DD,
-												   k_Q,
-												   QQ,
-												   numberOfBCnodes,
-												   om1,
-												   neighborX,
-												   neighborY,
-												   neighborZ,
-												   size_Mat,
-												   isEvenTimestep);
+      QDeviceIncompHighNu27<<< grid.grid, grid.threads >>> (
+                                                   DD,
+                                                   k_Q,
+                                                   QQ,
+                                                   numberOfBCnodes,
+                                                   om1,
+                                                   neighborX,
+                                                   neighborY,
+                                                   neighborZ,
+                                                   size_Mat,
+                                                   isEvenTimestep);
       getLastCudaError("QDeviceIncompHighNu27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void QDevCompHighNu27(   unsigned int numberOfThreads,
-									real* DD,
-									int* k_Q,
-									real* QQ,
-									unsigned int numberOfBCnodes,
-									real om1,
-									unsigned int* neighborX,
-									unsigned int* neighborY,
-									unsigned int* neighborZ,
-									unsigned int size_Mat,
-									bool isEvenTimestep)
+                                    real* DD,
+                                    int* k_Q,
+                                    real* QQ,
+                                    unsigned int numberOfBCnodes,
+                                    real om1,
+                                    unsigned int* neighborX,
+                                    unsigned int* neighborY,
+                                    unsigned int* neighborZ,
+                                    unsigned int size_Mat,
+                                    bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QDeviceCompHighNu27<<< gridQ, threads >>> (
-												   DD,
-												   k_Q,
-												   QQ,
-												   numberOfBCnodes,
-												   om1,
-												   neighborX,
-												   neighborY,
-												   neighborZ,
-												   size_Mat,
-												   isEvenTimestep);
+      QDeviceCompHighNu27<<< grid.grid, grid.threads >>> (
+                                                   DD,
+                                                   k_Q,
+                                                   QQ,
+                                                   numberOfBCnodes,
+                                                   om1,
+                                                   neighborX,
+                                                   neighborY,
+                                                   neighborZ,
+                                                   size_Mat,
+                                                   isEvenTimestep);
       getLastCudaError("QDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -2866,89 +2130,63 @@ void QVelDevicePlainBB27(LBMSimulationParameter* parameterDevice, QforBoundaryCo
 }
 //////////////////////////////////////////////////////////////////////////
 void QVelDeviceCouette27(unsigned int numberOfThreads,
-									real* vx,
-									real* vy,
-									real* vz,
-									real* DD,
-									int* k_Q,
-									real* QQ,
-									unsigned int numberOfBCnodes,
-									real om1,
-									unsigned int* neighborX,
-									unsigned int* neighborY,
-									unsigned int* neighborZ,
-									unsigned int size_Mat,
-									bool isEvenTimestep)
+                                    real* vx,
+                                    real* vy,
+                                    real* vz,
+                                    real* DD,
+                                    int* k_Q,
+                                    real* QQ,
+                                    unsigned int numberOfBCnodes,
+                                    real om1,
+                                    unsigned int* neighborX,
+                                    unsigned int* neighborY,
+                                    unsigned int* neighborZ,
+                                    unsigned int size_Mat,
+                                    bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QVelDevCouette27<<< gridQ, threads >>> ( vx,
-												vy,
-												vz,
-												DD,
-												k_Q,
-												QQ,
-												numberOfBCnodes,
-												om1,
-												neighborX,
-												neighborY,
-												neighborZ,
-												size_Mat,
-												isEvenTimestep);
+      QVelDevCouette27<<< grid.grid, grid.threads >>> ( vx,
+                                                vy,
+                                                vz,
+                                                DD,
+                                                k_Q,
+                                                QQ,
+                                                numberOfBCnodes,
+                                                om1,
+                                                neighborX,
+                                                neighborY,
+                                                neighborZ,
+                                                size_Mat,
+                                                isEvenTimestep);
       getLastCudaError("QVelDevicePlainBB27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void QVelDevice1h27(   unsigned int numberOfThreads,
-								  int nx,
-								  int ny,
-								  real* vx,
-								  real* vy,
-								  real* vz,
-								  real* DD,
-								  int* k_Q,
-								  real* QQ,
-								  unsigned int numberOfBCnodes,
-								  real om1,
-								  real Phi,
-								  real angularVelocity,
-								  unsigned int* neighborX,
-								  unsigned int* neighborY,
-								  unsigned int* neighborZ,
-								  real* coordX,
-								  real* coordY,
-								  real* coordZ,
-								  unsigned int size_Mat,
-								  bool isEvenTimestep)
+                                  int nx,
+                                  int ny,
+                                  real* vx,
+                                  real* vy,
+                                  real* vz,
+                                  real* DD,
+                                  int* k_Q,
+                                  real* QQ,
+                                  unsigned int numberOfBCnodes,
+                                  real om1,
+                                  real Phi,
+                                  real angularVelocity,
+                                  unsigned int* neighborX,
+                                  unsigned int* neighborY,
+                                  unsigned int* neighborZ,
+                                  real* coordX,
+                                  real* coordY,
+                                  real* coordZ,
+                                  unsigned int size_Mat,
+                                  bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QVelDev1h27<<< gridQ, threads >>> (nx,
+   QVelDev1h27<<< grid.grid, grid.threads >>> (nx,
                                           ny,
                                           vx,
                                           vy,
@@ -2958,14 +2196,14 @@ void QVelDevice1h27(   unsigned int numberOfThreads,
                                           QQ,
                                           numberOfBCnodes,
                                           om1,
-										  Phi,
-										  angularVelocity,
+                                          Phi,
+                                          angularVelocity,
                                           neighborX,
                                           neighborY,
                                           neighborZ,
-										  coordX,
-										  coordY,
-										  coordZ,
+                                          coordX,
+                                          coordY,
+                                          coordZ,
                                           size_Mat,
                                           isEvenTimestep);
       getLastCudaError("QVelDevice27 execution failed");
@@ -2996,49 +2234,36 @@ void QVelDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* 
 }
 //////////////////////////////////////////////////////////////////////////
 void QVelDevCompPlusSlip27(unsigned int numberOfThreads,
-									  real* vx,
-									  real* vy,
-									  real* vz,
-									  real* DD,
-									  int* k_Q,
-									  real* QQ,
-									  unsigned int numberOfBCnodes,
-									  real om1,
-									  unsigned int* neighborX,
-									  unsigned int* neighborY,
-									  unsigned int* neighborZ,
-									  unsigned int size_Mat,
-									  bool isEvenTimestep)
+                                      real* vx,
+                                      real* vy,
+                                      real* vz,
+                                      real* DD,
+                                      int* k_Q,
+                                      real* QQ,
+                                      unsigned int numberOfBCnodes,
+                                      real om1,
+                                      unsigned int* neighborX,
+                                      unsigned int* neighborY,
+                                      unsigned int* neighborZ,
+                                      unsigned int size_Mat,
+                                      bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QVelDeviceCompPlusSlip27<<< gridQ, threads >>> (
-													  vx,
-													  vy,
-													  vz,
-													  DD,
-													  k_Q,
-													  QQ,
-													  numberOfBCnodes,
-													  om1,
-													  neighborX,
-													  neighborY,
-													  neighborZ,
-													  size_Mat,
-													  isEvenTimestep);
+      QVelDeviceCompPlusSlip27<<< grid.grid, grid.threads >>> (
+                                                      vx,
+                                                      vy,
+                                                      vz,
+                                                      DD,
+                                                      k_Q,
+                                                      QQ,
+                                                      numberOfBCnodes,
+                                                      om1,
+                                                      neighborX,
+                                                      neighborY,
+                                                      neighborZ,
+                                                      size_Mat,
+                                                      isEvenTimestep);
       getLastCudaError("QVelDeviceCompPlusSlip27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -3052,7 +2277,7 @@ void QVelDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditio
             boundaryCondition->Vy,
             boundaryCondition->Vz,
             parameterDevice->distributions.f[0],
-            boundaryCondition->k,        
+            boundaryCondition->k,
             boundaryCondition->q27[0],
             boundaryCondition->numberOfBCnodes,
             parameterDevice->omega,
@@ -3065,53 +2290,40 @@ void QVelDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditio
 }
 //////////////////////////////////////////////////////////////////////////
 void QVelDevCompThinWalls27(unsigned int numberOfThreads,
-							           real* vx,
-							           real* vy,
-							           real* vz,
-							           real* DD,
-							           int* k_Q,
-							           real* QQ,
-							           unsigned int numberOfBCnodes,
-							           real om1,
-									     unsigned int* geom,
-							           unsigned int* neighborX,
-							           unsigned int* neighborY,
-							           unsigned int* neighborZ,
-									     unsigned int* neighborWSB,
-							           unsigned int size_Mat,
-							           bool isEvenTimestep)
+                                       real* vx,
+                                       real* vy,
+                                       real* vz,
+                                       real* DD,
+                                       int* k_Q,
+                                       real* QQ,
+                                       unsigned int numberOfBCnodes,
+                                       real om1,
+                                         unsigned int* geom,
+                                       unsigned int* neighborX,
+                                       unsigned int* neighborY,
+                                       unsigned int* neighborZ,
+                                         unsigned int* neighborWSB,
+                                       unsigned int size_Mat,
+                                       bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-   QVelDeviceCompThinWallsPartOne27<<< gridQ, threads >>> (vx,
-											                  vy,
-											                  vz,
-											                  DD,
-											                  k_Q,
-											                  QQ,
-											                  numberOfBCnodes,
-											                  om1,
-											                  neighborX,
-											                  neighborY,
-											                  neighborZ,
-											                  size_Mat,
-											                  isEvenTimestep);
+   QVelDeviceCompThinWallsPartOne27<<< grid.grid, grid.threads >>> (vx,
+                                                              vy,
+                                                              vz,
+                                                              DD,
+                                                              k_Q,
+                                                              QQ,
+                                                              numberOfBCnodes,
+                                                              om1,
+                                                              neighborX,
+                                                              neighborY,
+                                                              neighborZ,
+                                                              size_Mat,
+                                                              isEvenTimestep);
    getLastCudaError("QVelDeviceCompThinWallsPartOne27 execution failed");
 
-	QThinWallsPartTwo27 <<< gridQ, threads >>> (
+    QThinWallsPartTwo27 <<< grid.grid, grid.threads >>> (
        DD,
        k_Q,
        QQ,
@@ -3149,187 +2361,135 @@ void QVelDevCompZeroPress27(LBMSimulationParameter* parameterDevice, QforBoundar
 }
 //////////////////////////////////////////////////////////////////////////
 void QVelDevIncompHighNu27(unsigned int numberOfThreads,
-									  real* vx,
-									  real* vy,
-									  real* vz,
-									  real* DD,
-									  int* k_Q,
-									  real* QQ,
-									  unsigned int numberOfBCnodes,
-									  real om1,
-									  unsigned int* neighborX,
-									  unsigned int* neighborY,
-									  unsigned int* neighborZ,
-									  unsigned int size_Mat,
-									  bool isEvenTimestep)
+                                      real* vx,
+                                      real* vy,
+                                      real* vz,
+                                      real* DD,
+                                      int* k_Q,
+                                      real* QQ,
+                                      unsigned int numberOfBCnodes,
+                                      real om1,
+                                      unsigned int* neighborX,
+                                      unsigned int* neighborY,
+                                      unsigned int* neighborZ,
+                                      unsigned int size_Mat,
+                                      bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QVelDeviceIncompHighNu27<<< gridQ, threads >>> (
-													  vx,
-													  vy,
-													  vz,
-													  DD,
-													  k_Q,
-													  QQ,
-													  numberOfBCnodes,
-													  om1,
-													  neighborX,
-													  neighborY,
-													  neighborZ,
-													  size_Mat,
-													  isEvenTimestep);
+      QVelDeviceIncompHighNu27<<< grid.grid, grid.threads >>> (
+                                                      vx,
+                                                      vy,
+                                                      vz,
+                                                      DD,
+                                                      k_Q,
+                                                      QQ,
+                                                      numberOfBCnodes,
+                                                      om1,
+                                                      neighborX,
+                                                      neighborY,
+                                                      neighborZ,
+                                                      size_Mat,
+                                                      isEvenTimestep);
       getLastCudaError("QVelDeviceIncompHighNu27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void QVelDevCompHighNu27(  unsigned int numberOfThreads,
-									  real* vx,
-									  real* vy,
-									  real* vz,
-									  real* DD,
-									  int* k_Q,
-									  real* QQ,
-									  unsigned int numberOfBCnodes,
-									  real om1,
-									  unsigned int* neighborX,
-									  unsigned int* neighborY,
-									  unsigned int* neighborZ,
-									  unsigned int size_Mat,
-									  bool isEvenTimestep)
+                                      real* vx,
+                                      real* vy,
+                                      real* vz,
+                                      real* DD,
+                                      int* k_Q,
+                                      real* QQ,
+                                      unsigned int numberOfBCnodes,
+                                      real om1,
+                                      unsigned int* neighborX,
+                                      unsigned int* neighborY,
+                                      unsigned int* neighborZ,
+                                      unsigned int size_Mat,
+                                      bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QVelDeviceCompHighNu27<<< gridQ, threads >>> (
-													  vx,
-													  vy,
-													  vz,
-													  DD,
-													  k_Q,
-													  QQ,
-													  numberOfBCnodes,
-													  om1,
-													  neighborX,
-													  neighborY,
-													  neighborZ,
-													  size_Mat,
-													  isEvenTimestep);
+      QVelDeviceCompHighNu27<<< grid.grid, grid.threads >>> (
+                                                      vx,
+                                                      vy,
+                                                      vz,
+                                                      DD,
+                                                      k_Q,
+                                                      QQ,
+                                                      numberOfBCnodes,
+                                                      om1,
+                                                      neighborX,
+                                                      neighborY,
+                                                      neighborZ,
+                                                      size_Mat,
+                                                      isEvenTimestep);
       getLastCudaError("QVelDeviceComp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void QVeloDevEQ27(unsigned int numberOfThreads,
-							 real* VeloX,
-							 real* VeloY,
-							 real* VeloZ,
-							 real* DD,
-							 int* k_Q,
-							 int numberOfBCnodes,
-							 real om1,
-							 unsigned int* neighborX,
-							 unsigned int* neighborY,
-							 unsigned int* neighborZ,
-							 unsigned int size_Mat,
-							 bool isEvenTimestep)
+                             real* VeloX,
+                             real* VeloY,
+                             real* VeloZ,
+                             real* DD,
+                             int* k_Q,
+                             int numberOfBCnodes,
+                             real om1,
+                             unsigned int* neighborX,
+                             unsigned int* neighborY,
+                             unsigned int* neighborZ,
+                             unsigned int size_Mat,
+                             bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QVeloDeviceEQ27<<< gridQ, threads >>> (VeloX,
-											 VeloY,
-											 VeloZ,
-											 DD,
-											 k_Q,
-											 numberOfBCnodes,
-											 om1,
-											 neighborX,
-											 neighborY,
-											 neighborZ,
-											 size_Mat,
-											 isEvenTimestep);
+   QVeloDeviceEQ27<<< grid.grid, grid.threads >>> (VeloX,
+                                             VeloY,
+                                             VeloZ,
+                                             DD,
+                                             k_Q,
+                                             numberOfBCnodes,
+                                             om1,
+                                             neighborX,
+                                             neighborY,
+                                             neighborZ,
+                                             size_Mat,
+                                             isEvenTimestep);
       getLastCudaError("QVeloDeviceEQ27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void QVeloStreetDevEQ27(
-	uint  numberOfThreads,
-	real* veloXfraction,
-	real* veloYfraction,
-	int*  naschVelo,
-	real* DD,
-	int*  naschIndex,
-	int   numberOfStreetNodes,
-	real  velocityRatio,
-	uint* neighborX,
-	uint* neighborY,
-	uint* neighborZ,
-	uint  size_Mat,
-	bool  isEvenTimestep)
+    uint  numberOfThreads,
+    real* veloXfraction,
+    real* veloYfraction,
+    int*  naschVelo,
+    real* DD,
+    int*  naschIndex,
+    int   numberOfStreetNodes,
+    real  velocityRatio,
+    uint* neighborX,
+    uint* neighborY,
+    uint* neighborZ,
+    uint  size_Mat,
+    bool  isEvenTimestep)
 {
-	int Grid = (numberOfStreetNodes / numberOfThreads) + 1;
-	int Grid1, Grid2;
-	if (Grid > 512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid / Grid1) + 1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 gridQ(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfStreetNodes);
 
-	QVeloStreetDeviceEQ27 << < gridQ, threads >> > (
-		veloXfraction,
-		veloYfraction,
-		naschVelo,
-		DD,
-		naschIndex,
-		numberOfStreetNodes,
-		velocityRatio,
-		neighborX,
-		neighborY,
-		neighborZ,
-		size_Mat,
-		isEvenTimestep);
-	getLastCudaError("QVeloStreetDeviceEQ27 execution failed");
+    QVeloStreetDeviceEQ27 << < grid.grid, grid.threads >> > (
+        veloXfraction,
+        veloYfraction,
+        naschVelo,
+        DD,
+        naschIndex,
+        numberOfStreetNodes,
+        velocityRatio,
+        neighborX,
+        neighborY,
+        neighborZ,
+        size_Mat,
+        isEvenTimestep);
+    getLastCudaError("QVeloStreetDeviceEQ27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void QSlipDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
@@ -3430,94 +2590,68 @@ void BBSlipDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryCondit
 }
 //////////////////////////////////////////////////////////////////////////
 void QSlipGeomDevComp27(unsigned int numberOfThreads,
-								   real* DD,
-								   int* k_Q,
-								   real* QQ,
-								   unsigned int numberOfBCnodes,
-								   real om1,
-								   real* NormalX,
-								   real* NormalY,
-								   real* NormalZ,
-								   unsigned int* neighborX,
-								   unsigned int* neighborY,
-								   unsigned int* neighborZ,
-								   unsigned int size_Mat,
-								   bool isEvenTimestep)
+                                   real* DD,
+                                   int* k_Q,
+                                   real* QQ,
+                                   unsigned int numberOfBCnodes,
+                                   real om1,
+                                   real* NormalX,
+                                   real* NormalY,
+                                   real* NormalZ,
+                                   unsigned int* neighborX,
+                                   unsigned int* neighborY,
+                                   unsigned int* neighborZ,
+                                   unsigned int size_Mat,
+                                   bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+    vf::cuda::CudaGrid grid(numberOfThreads, numberOfBCnodes);
 
-      QSlipGeomDeviceComp27<<< gridQ, threads >>> (DD,
-												   k_Q,
-												   QQ,
-												   numberOfBCnodes,
-												   om1,
-												   NormalX,
-												   NormalY,
-												   NormalZ,
-												   neighborX,
-												   neighborY,
-												   neighborZ,
-												   size_Mat,
-												   isEvenTimestep);
-      getLastCudaError("QSlipGeomDeviceComp27 execution failed");
+   QSlipGeomDeviceComp27<<< grid.grid, grid.threads >>> (DD,
+                                                   k_Q,
+                                                   QQ,
+                                                   numberOfBCnodes,
+                                                   om1,
+                                                   NormalX,
+                                                   NormalY,
+                                                   NormalZ,
+                                                   neighborX,
+                                                   neighborY,
+                                                   neighborZ,
+                                                   size_Mat,
+                                                   isEvenTimestep);
+   getLastCudaError("QSlipGeomDeviceComp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void QSlipNormDevComp27(unsigned int numberOfThreads,
-								   real* DD,
-								   int* k_Q,
-								   real* QQ,
-								   unsigned int numberOfBCnodes,
-								   real om1,
-								   real* NormalX,
-								   real* NormalY,
-								   real* NormalZ,
-								   unsigned int* neighborX,
-								   unsigned int* neighborY,
-								   unsigned int* neighborZ,
-								   unsigned int size_Mat,
-								   bool isEvenTimestep)
+                                   real* DD,
+                                   int* k_Q,
+                                   real* QQ,
+                                   unsigned int numberOfBCnodes,
+                                   real om1,
+                                   real* NormalX,
+                                   real* NormalY,
+                                   real* NormalZ,
+                                   unsigned int* neighborX,
+                                   unsigned int* neighborY,
+                                   unsigned int* neighborZ,
+                                   unsigned int size_Mat,
+                                   bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QSlipNormDeviceComp27<<< gridQ, threads >>> (DD,
-												   k_Q,
-												   QQ,
-												   numberOfBCnodes,
-												   om1,
-												   NormalX,
-												   NormalY,
-												   NormalZ,
-												   neighborX,
-												   neighborY,
-												   neighborZ,
-												   size_Mat,
-												   isEvenTimestep);
+   QSlipNormDeviceComp27<<< grid.grid, grid.threads >>> (DD,
+                                                   k_Q,
+                                                   QQ,
+                                                   numberOfBCnodes,
+                                                   om1,
+                                                   NormalX,
+                                                   NormalY,
+                                                   NormalZ,
+                                                   neighborX,
+                                                   neighborY,
+                                                   neighborZ,
+                                                   size_Mat,
+                                                   isEvenTimestep);
       getLastCudaError("QSlipGeomDeviceComp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -3662,50 +2796,37 @@ void QPressDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions
 //////////////////////////////////////////////////////////////////////////
 void QPressDevAntiBB27(  unsigned int numberOfThreads,
                                     real* rhoBC,
-									real* vx,
-									real* vy,
-									real* vz,
-									real* DD,
-									int* k_Q,
-									real* QQ,
-									int numberOfBCnodes,
-									real om1,
-									unsigned int* neighborX,
-									unsigned int* neighborY,
-									unsigned int* neighborZ,
-									unsigned int size_Mat,
-									bool isEvenTimestep)
+                                    real* vx,
+                                    real* vy,
+                                    real* vz,
+                                    real* DD,
+                                    int* k_Q,
+                                    real* QQ,
+                                    int numberOfBCnodes,
+                                    real om1,
+                                    unsigned int* neighborX,
+                                    unsigned int* neighborY,
+                                    unsigned int* neighborZ,
+                                    unsigned int size_Mat,
+                                    bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-    QPressDeviceAntiBB27<<< gridQ, threads >>>( rhoBC,
-												vx,
-												vy,
-												vz,
-												DD,
-												k_Q,
-												QQ,
-												numberOfBCnodes,
-												om1,
-												neighborX,
-												neighborY,
-												neighborZ,
-												size_Mat,
-												isEvenTimestep);
-    getLastCudaError("QPressDeviceAntiBB27 execution failed");
+   QPressDeviceAntiBB27<<< grid.grid, grid.threads >>>( rhoBC,
+                                                vx,
+                                                vy,
+                                                vz,
+                                                DD,
+                                                k_Q,
+                                                QQ,
+                                                numberOfBCnodes,
+                                                om1,
+                                                neighborX,
+                                                neighborY,
+                                                neighborZ,
+                                                size_Mat,
+                                                isEvenTimestep);
+   getLastCudaError("QPressDeviceAntiBB27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void QPressDevFixBackflow27( unsigned int numberOfThreads,
@@ -3720,22 +2841,9 @@ void QPressDevFixBackflow27( unsigned int numberOfThreads,
                                         unsigned int size_Mat,
                                         bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QPressDeviceFixBackflow27<<< gridQ, threads >>> (  rhoBC,
+   QPressDeviceFixBackflow27<<< grid.grid, grid.threads >>> (  rhoBC,
                                                          DD,
                                                          k_Q,
                                                          numberOfBCnodes,
@@ -3745,7 +2853,7 @@ void QPressDevFixBackflow27( unsigned int numberOfThreads,
                                                          neighborZ,
                                                          size_Mat,
                                                          isEvenTimestep);
-      getLastCudaError("QPressDeviceFixBackflow27 execution failed");
+   getLastCudaError("QPressDeviceFixBackflow27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void QPressDevDirDepBot27(  unsigned int numberOfThreads,
@@ -3760,22 +2868,9 @@ void QPressDevDirDepBot27(  unsigned int numberOfThreads,
                                        unsigned int size_Mat,
                                        bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QPressDeviceDirDepBot27<<< gridQ, threads >>> ( rhoBC,
+   QPressDeviceDirDepBot27<<< grid.grid, grid.threads >>> ( rhoBC,
                                                       DD,
                                                       k_Q,
                                                       numberOfBCnodes,
@@ -3785,7 +2880,7 @@ void QPressDevDirDepBot27(  unsigned int numberOfThreads,
                                                       neighborZ,
                                                       size_Mat,
                                                       isEvenTimestep);
-      getLastCudaError("QPressDeviceDirDepBot27 execution failed");
+   getLastCudaError("QPressDeviceDirDepBot27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void QPressNoRhoDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
@@ -3804,8 +2899,31 @@ void QPressNoRhoDev27(LBMSimulationParameter* parameterDevice, QforBoundaryCondi
          parameterDevice->neighborY,
          parameterDevice->neighborZ,
          parameterDevice->numberOfNodes,
-         parameterDevice->isEvenTimestep);
+         parameterDevice->isEvenTimestep,
+         vf::lbm::dir::DIR_P00);
    getLastCudaError("QPressNoRhoDevice27 execution failed");
+}
+//////////////////////////////////////////////////////////////////////////
+void QPressZeroRhoOutflowDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
+{
+   dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
+   dim3 threads(parameterDevice->numberofthreads, 1, 1 );
+
+   QPressZeroRhoOutflowDevice27<<< grid, threads >>> (
+         boundaryCondition->RhoBC,
+         parameterDevice->distributions.f[0],
+         boundaryCondition->k,
+         boundaryCondition->kN,
+         boundaryCondition->numberOfBCnodes,
+         parameterDevice->omega,
+         parameterDevice->neighborX,
+         parameterDevice->neighborY,
+         parameterDevice->neighborZ,
+         parameterDevice->numberOfNodes,
+         parameterDevice->isEvenTimestep,
+         vf::lbm::dir::DIR_P00,
+         parameterDevice->outflowPressureCorrectionFactor);
+   getLastCudaError("QPressZeroRhoOutflowDev27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void QInflowScaleByPressDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
@@ -3841,22 +2959,9 @@ void QPressDevOld27(  unsigned int numberOfThreads,
                                      unsigned int size_Mat,
                                      bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QPressDeviceOld27<<< gridQ, threads >>> ( rhoBC,
+   QPressDeviceOld27<<< grid.grid, grid.threads >>> ( rhoBC,
                                                 DD,
                                                 k_Q,
                                                 k_N,
@@ -3867,7 +2972,7 @@ void QPressDevOld27(  unsigned int numberOfThreads,
                                                 neighborZ,
                                                 size_Mat,
                                                 isEvenTimestep);
-      getLastCudaError("QPressDeviceOld27 execution failed");
+   getLastCudaError("QPressDeviceOld27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void QPressDevIncompNEQ27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
@@ -3941,22 +3046,9 @@ void QPressDevZero27(unsigned int numberOfThreads,
                                 unsigned int size_Mat,
                                 bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QPressDeviceZero27<<< gridQ, threads >>> (DD,
+   QPressDeviceZero27<<< grid.grid, grid.threads >>> (DD,
                                                 k_Q,
                                                 numberOfBCnodes,
                                                 neighborX,
@@ -3964,7 +3056,7 @@ void QPressDevZero27(unsigned int numberOfThreads,
                                                 neighborZ,
                                                 size_Mat,
                                                 isEvenTimestep);
-      getLastCudaError("QPressDeviceOld27 execution failed");
+   getLastCudaError("QPressDeviceOld27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void QPressDevFake27(     unsigned int numberOfThreads,
@@ -3980,22 +3072,10 @@ void QPressDevFake27(     unsigned int numberOfThreads,
                                      unsigned int size_Mat,
                                      bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      QPressDeviceFake27<<< gridQ, threads >>> (rhoBC,
+
+      QPressDeviceFake27<<< grid.grid, grid.threads >>> (rhoBC,
                                                 DD,
                                                 k_Q,
                                                 k_N,
@@ -4028,45 +3108,32 @@ void BBDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* bo
 }
 //////////////////////////////////////////////////////////////////////////
 void QPressDev27_IntBB(  unsigned int numberOfThreads,
-									real* rho,
-									real* DD,
-									int* k_Q,
-									real* QQ,
-									unsigned int numberOfBCnodes,
-									real om1,
-									unsigned int* neighborX,
-									unsigned int* neighborY,
-									unsigned int* neighborZ,
-									unsigned int size_Mat,
-									bool isEvenTimestep)
+                                    real* rho,
+                                    real* DD,
+                                    int* k_Q,
+                                    real* QQ,
+                                    unsigned int numberOfBCnodes,
+                                    real om1,
+                                    unsigned int* neighborX,
+                                    unsigned int* neighborY,
+                                    unsigned int* neighborZ,
+                                    unsigned int size_Mat,
+                                    bool isEvenTimestep)
 {
-	int Grid = (numberOfBCnodes / numberOfThreads)+1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid/Grid1)+1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 gridQ(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-		QPressDevice27_IntBB<<< gridQ, threads >>> (rho,
-													DD,
-													k_Q,
-													QQ,
-													numberOfBCnodes,
-													om1,
-													neighborX,
-													neighborY,
-													neighborZ,
-													size_Mat,
-													isEvenTimestep);
-		getLastCudaError("QPressDevice27_IntBB execution failed");
+    QPressDevice27_IntBB<<< grid.grid, grid.threads >>> (rho,
+                                                    DD,
+                                                    k_Q,
+                                                    QQ,
+                                                    numberOfBCnodes,
+                                                    om1,
+                                                    neighborX,
+                                                    neighborY,
+                                                    neighborZ,
+                                                    size_Mat,
+                                                    isEvenTimestep);
+    getLastCudaError("QPressDevice27_IntBB execution failed");
 }
 // TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
 //////////////////////////////////////////////////////////////////////////
@@ -4087,22 +3154,9 @@ void PressSchlaffer27(unsigned int numberOfThreads,
                                  unsigned int size_Mat,
                                  bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      PressSchlaff27<<< gridQ, threads >>>(  rhoBC,
+   PressSchlaff27<<< grid.grid, grid.threads >>>(  rhoBC,
                                              DD,
                                              vx0,
                                              vy0,
@@ -4117,7 +3171,7 @@ void PressSchlaffer27(unsigned int numberOfThreads,
                                              neighborZ,
                                              size_Mat,
                                              isEvenTimestep);
-      getLastCudaError("PressSchlaff27 execution failed");
+   getLastCudaError("PressSchlaff27 execution failed");
 }
 // TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
 //////////////////////////////////////////////////////////////////////////
@@ -4136,22 +3190,9 @@ void VelSchlaffer27(  unsigned int numberOfThreads,
                                  unsigned int size_Mat,
                                  bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      VelSchlaff27<<< gridQ, threads >>>( t,
+   VelSchlaff27<<< grid.grid, grid.threads >>>( t,
                                           DD,
                                           vz0,
                                           deltaVz0,
@@ -4167,7 +3208,150 @@ void VelSchlaffer27(  unsigned int numberOfThreads,
       getLastCudaError("VelSchlaff27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-void PropVelo(   unsigned int numberOfThreads,
+void QPrecursorDevCompZeroPress(LBMSimulationParameter* parameterDevice,
+                                QforPrecursorBoundaryConditions* boundaryCondition,
+                                real timeRatio,
+                                real velocityRatio)
+{
+
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
+
+    QPrecursorDeviceCompZeroPress<<< grid.grid, grid.threads >>>(boundaryCondition->k,
+                                                                boundaryCondition->numberOfBCnodes,
+                                                                boundaryCondition->numberOfPrecursorNodes,
+                                                                boundaryCondition->sizeQ,
+                                                                parameterDevice->omega,
+                                                                parameterDevice->distributions.f[0],
+                                                                boundaryCondition->q27[0],
+                                                                parameterDevice->neighborX,
+                                                                parameterDevice->neighborY,
+                                                                parameterDevice->neighborZ,
+                                                                boundaryCondition->planeNeighbor0PP,
+                                                                boundaryCondition->planeNeighbor0PM,
+                                                                boundaryCondition->planeNeighbor0MP,
+                                                                boundaryCondition->planeNeighbor0MM,
+                                                                boundaryCondition->weights0PP,
+                                                                boundaryCondition->weights0PM,
+                                                                boundaryCondition->weights0MP,
+                                                                boundaryCondition->weights0MM,
+                                                                boundaryCondition->last,
+                                                                boundaryCondition->current,
+                                                                boundaryCondition->velocityX,
+                                                                boundaryCondition->velocityY,
+                                                                boundaryCondition->velocityZ,
+                                                                timeRatio,
+                                                                velocityRatio,
+                                                                parameterDevice->numberOfNodes,
+                                                                parameterDevice->isEvenTimestep);
+    getLastCudaError("QPrecursorDeviceCompZeroPress execution failed");
+
+}
+//////////////////////////////////////////////////////////////////////////
+void PrecursorDevEQ27( LBMSimulationParameter* parameterDevice,
+                        QforPrecursorBoundaryConditions* boundaryCondition,
+                        real timeRatio,
+                        real velocityRatio)
+{
+
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
+
+    PrecursorDeviceEQ27<<< grid.grid, grid.threads >>>(boundaryCondition->k,
+                                                    boundaryCondition->numberOfBCnodes,
+                                                    boundaryCondition->numberOfPrecursorNodes,
+                                                    parameterDevice->omega,
+                                                    parameterDevice->distributions.f[0],
+                                                    parameterDevice->neighborX,
+                                                    parameterDevice->neighborX,
+                                                    parameterDevice->neighborX,
+                                                    boundaryCondition->planeNeighbor0PP,
+                                                    boundaryCondition->planeNeighbor0PM,
+                                                    boundaryCondition->planeNeighbor0MP,
+                                                    boundaryCondition->planeNeighbor0MM,
+                                                    boundaryCondition->weights0PP,
+                                                    boundaryCondition->weights0PM,
+                                                    boundaryCondition->weights0MP,
+                                                    boundaryCondition->weights0MM,
+                                                    boundaryCondition->last,
+                                                    boundaryCondition->current,
+                                                    boundaryCondition->velocityX,
+                                                    boundaryCondition->velocityY,
+                                                    boundaryCondition->velocityZ,
+                                                    timeRatio,
+                                                    velocityRatio,
+                                                    parameterDevice->numberOfNodes,
+                                                    parameterDevice->isEvenTimestep);
+    getLastCudaError("PrecursorDeviceEQ27 execution failed");
+
+}
+//////////////////////////////////////////////////////////////////////////
+void PrecursorDevDistributions( LBMSimulationParameter* parameterDevice,
+                                QforPrecursorBoundaryConditions* boundaryCondition,
+                                real timeRatio,
+                                real velocityRatio)
+{
+
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
+
+    PrecursorDeviceDistributions<<< grid.grid, grid.threads >>>(boundaryCondition->k,
+                                                            boundaryCondition->numberOfBCnodes,
+                                                            boundaryCondition->numberOfPrecursorNodes,
+                                                            parameterDevice->distributions.f[0],
+                                                            parameterDevice->neighborX,
+                                                            parameterDevice->neighborY,
+                                                            parameterDevice->neighborZ,
+                                                            boundaryCondition->planeNeighbor0PP,
+                                                            boundaryCondition->planeNeighbor0PM,
+                                                            boundaryCondition->planeNeighbor0MP,
+                                                            boundaryCondition->planeNeighbor0MM,
+                                                            boundaryCondition->weights0PP,
+                                                            boundaryCondition->weights0PM,
+                                                            boundaryCondition->weights0MP,
+                                                            boundaryCondition->weights0MM,
+                                                            boundaryCondition->last,
+                                                            boundaryCondition->current,
+                                                            timeRatio,
+                                                            parameterDevice->numberOfNodes,
+                                                            parameterDevice->isEvenTimestep);
+    getLastCudaError("QPrecursorDeviceCompZeroPress execution failed");
+
+}
+
+//////////////////////////////////////////////////////////////////////////
+void QPrecursorDevDistributions( LBMSimulationParameter* parameterDevice,
+                                QforPrecursorBoundaryConditions* boundaryCondition,
+                                real timeRatio,
+                                real velocityRatio)
+{
+
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
+
+    QPrecursorDeviceDistributions<<< grid.grid, grid.threads >>>(boundaryCondition->k,
+                                                                boundaryCondition->q27[0],
+                                                                boundaryCondition->sizeQ,
+                                                                boundaryCondition->numberOfBCnodes,
+                                                                boundaryCondition->numberOfPrecursorNodes,
+                                                                parameterDevice->distributions.f[0],
+                                                                parameterDevice->neighborX,
+                                                                parameterDevice->neighborY,
+                                                                parameterDevice->neighborZ,
+                                                                boundaryCondition->planeNeighbor0PP,
+                                                                boundaryCondition->planeNeighbor0PM,
+                                                                boundaryCondition->planeNeighbor0MP,
+                                                                boundaryCondition->planeNeighbor0MM,
+                                                                boundaryCondition->weights0PP,
+                                                                boundaryCondition->weights0PM,
+                                                                boundaryCondition->weights0MP,
+                                                                boundaryCondition->weights0MM,
+                                                                boundaryCondition->last,
+                                                                boundaryCondition->current,
+                                                                timeRatio,
+                                                                parameterDevice->numberOfNodes,
+                                                                parameterDevice->isEvenTimestep);
+    getLastCudaError("QPrecursorDeviceCompZeroPress execution failed");
+
+}
+//////////////////////////////////////////////////////////////////////////
+extern "C" void PropVelo(   unsigned int numberOfThreads,
                             unsigned int* neighborX,
                             unsigned int* neighborY,
                             unsigned int* neighborZ,
@@ -4176,38 +3360,25 @@ void PropVelo(   unsigned int numberOfThreads,
                             real* uy,
                             real* uz,
                             int* k_Q,
-							unsigned int size_Prop,
+                            unsigned int size_Prop,
                             unsigned int size_Mat,
                             unsigned int* bcMatD,
                             real* DD,
                             bool EvenOrOdd)
 {
-   int Grid = (size_Prop / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 grid(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Prop);
 
-      PropellerBC<<< grid, threads >>>(neighborX,
+      PropellerBC<<< grid.grid, grid.threads >>>(neighborX,
                                        neighborY,
                                        neighborZ,
                                        rho,
                                        ux,
                                        uy,
                                        uz,
-									   k_Q,
-									   size_Prop,
+                                       k_Q,
+                                       size_Prop,
                                        size_Mat,
-									   bcMatD,
+                                       bcMatD,
                                        DD,
                                        EvenOrOdd);
       getLastCudaError("PropellerBC execution failed");
@@ -4236,22 +3407,9 @@ void ScaleCF27( real* DC,
                         unsigned int nyF,
                         unsigned int numberOfThreads)
 {
-   int Grid = (kCF / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_CF(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
-      scaleCF27<<< gridINT_CF, threads >>> ( DC,
+      scaleCF27<<< grid.grid, grid.threads >>> ( DC,
                                              DF,
                                              neighborCX,
                                              neighborCY,
@@ -4299,22 +3457,9 @@ void ScaleCFEff27(real* DC,
                              unsigned int numberOfThreads,
                              OffCF offCF)
 {
-   int Grid = (kCF / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_CF(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
-      scaleCFEff27<<< gridINT_CF, threads >>> ( DC,
+      scaleCFEff27<<< grid.grid, grid.threads >>> ( DC,
                                                 DF,
                                                 neighborCX,
                                                 neighborCY,
@@ -4363,22 +3508,9 @@ void ScaleCFLast27(real* DC,
                               unsigned int numberOfThreads,
                               OffCF offCF)
 {
-   int Grid = (kCF / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_CF(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
-      scaleCFLast27<<< gridINT_CF, threads >>> (DC,
+      scaleCFLast27<<< grid.grid, grid.threads >>> (DC,
                                                 DF,
                                                 neighborCX,
                                                 neighborCY,
@@ -4427,22 +3559,9 @@ void ScaleCFpress27(  real* DC,
                                  unsigned int numberOfThreads,
                                  OffCF offCF)
 {
-   int Grid = (kCF / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_CF(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
-      scaleCFpress27<<< gridINT_CF, threads >>>(DC,
+      scaleCFpress27<<< grid.grid, grid.threads >>>(DC,
                                                 DF,
                                                 neighborCX,
                                                 neighborCY,
@@ -4491,22 +3610,9 @@ void ScaleCF_Fix_27(  real* DC,
                                  unsigned int numberOfThreads,
                                  OffCF offCF)
 {
-   int Grid = (kCF / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_CF(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
-      scaleCF_Fix_27<<< gridINT_CF, threads >>>(DC,
+      scaleCF_Fix_27<<< grid.grid, grid.threads >>>(DC,
                                                 DF,
                                                 neighborCX,
                                                 neighborCY,
@@ -4532,328 +3638,263 @@ void ScaleCF_Fix_27(  real* DC,
 }
 //////////////////////////////////////////////////////////////////////////
 void ScaleCF_Fix_comp_27( real* DC,
-									 real* DF,
-									 unsigned int* neighborCX,
-									 unsigned int* neighborCY,
-									 unsigned int* neighborCZ,
-									 unsigned int* neighborFX,
-									 unsigned int* neighborFY,
-									 unsigned int* neighborFZ,
-									 unsigned int size_MatC,
-									 unsigned int size_MatF,
-									 bool isEvenTimestep,
-									 unsigned int* posCSWB,
-									 unsigned int* posFSWB,
-									 unsigned int kCF,
-									 real omCoarse,
-									 real omFine,
-									 real nu,
-									 unsigned int nxC,
-									 unsigned int nyC,
-									 unsigned int nxF,
-									 unsigned int nyF,
-									 unsigned int numberOfThreads,
-									 OffCF offCF)
+                                     real* DF,
+                                     unsigned int* neighborCX,
+                                     unsigned int* neighborCY,
+                                     unsigned int* neighborCZ,
+                                     unsigned int* neighborFX,
+                                     unsigned int* neighborFY,
+                                     unsigned int* neighborFZ,
+                                     unsigned int size_MatC,
+                                     unsigned int size_MatF,
+                                     bool isEvenTimestep,
+                                     unsigned int* posCSWB,
+                                     unsigned int* posFSWB,
+                                     unsigned int kCF,
+                                     real omCoarse,
+                                     real omFine,
+                                     real nu,
+                                     unsigned int nxC,
+                                     unsigned int nyC,
+                                     unsigned int nxF,
+                                     unsigned int nyF,
+                                     unsigned int numberOfThreads,
+                                     OffCF offCF)
 {
-   int Grid = (kCF / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_CF(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
-      scaleCF_Fix_comp_27<<< gridINT_CF, threads >>>(   DC,
-														DF,
-														neighborCX,
-														neighborCY,
-														neighborCZ,
-														neighborFX,
-														neighborFY,
-														neighborFZ,
-														size_MatC,
-														size_MatF,
-														isEvenTimestep,
-														posCSWB,
-														posFSWB,
-														kCF,
-														omCoarse,
-														omFine,
-														nu,
-														nxC,
-														nyC,
-														nxF,
-														nyF,
-														offCF);
+      scaleCF_Fix_comp_27<<< grid.grid, grid.threads >>>(   DC,
+                                                        DF,
+                                                        neighborCX,
+                                                        neighborCY,
+                                                        neighborCZ,
+                                                        neighborFX,
+                                                        neighborFY,
+                                                        neighborFZ,
+                                                        size_MatC,
+                                                        size_MatF,
+                                                        isEvenTimestep,
+                                                        posCSWB,
+                                                        posFSWB,
+                                                        kCF,
+                                                        omCoarse,
+                                                        omFine,
+                                                        nu,
+                                                        nxC,
+                                                        nyC,
+                                                        nxF,
+                                                        nyF,
+                                                        offCF);
       getLastCudaError("scaleCF_Fix_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void ScaleCF_0817_comp_27(real* DC,
-									 real* DF,
-									 unsigned int* neighborCX,
-									 unsigned int* neighborCY,
-									 unsigned int* neighborCZ,
-									 unsigned int* neighborFX,
-									 unsigned int* neighborFY,
-									 unsigned int* neighborFZ,
-									 unsigned int size_MatC,
-									 unsigned int size_MatF,
-									 bool isEvenTimestep,
-									 unsigned int* posCSWB,
-									 unsigned int* posFSWB,
-									 unsigned int kCF,
-									 real omCoarse,
-									 real omFine,
-									 real nu,
-									 unsigned int nxC,
-									 unsigned int nyC,
-									 unsigned int nxF,
-									 unsigned int nyF,
-									 unsigned int numberOfThreads,
-									 OffCF offCF,
+                                     real* DF,
+                                     unsigned int* neighborCX,
+                                     unsigned int* neighborCY,
+                                     unsigned int* neighborCZ,
+                                     unsigned int* neighborFX,
+                                     unsigned int* neighborFY,
+                                     unsigned int* neighborFZ,
+                                     unsigned int size_MatC,
+                                     unsigned int size_MatF,
+                                     bool isEvenTimestep,
+                                     unsigned int* posCSWB,
+                                     unsigned int* posFSWB,
+                                     unsigned int kCF,
+                                     real omCoarse,
+                                     real omFine,
+                                     real nu,
+                                     unsigned int nxC,
+                                     unsigned int nyC,
+                                     unsigned int nxF,
+                                     unsigned int nyF,
+                                     unsigned int numberOfThreads,
+                                     OffCF offCF,
                             CUstream_st *stream)
 {
-   int Grid = (kCF / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_CF(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
-      scaleCF_0817_comp_27<<< gridINT_CF, threads, 0, stream >>>(  DC,
-														DF,
-														neighborCX,
-														neighborCY,
-														neighborCZ,
-														neighborFX,
-														neighborFY,
-														neighborFZ,
-														size_MatC,
-														size_MatF,
-														isEvenTimestep,
-														posCSWB,
-														posFSWB,
-														kCF,
-														omCoarse,
-														omFine,
-														nu,
-														nxC,
-														nyC,
-														nxF,
-														nyF,
-														offCF);
+      scaleCF_0817_comp_27<<< grid.grid, grid.threads, 0, stream >>>(  DC,
+                                                        DF,
+                                                        neighborCX,
+                                                        neighborCY,
+                                                        neighborCZ,
+                                                        neighborFX,
+                                                        neighborFY,
+                                                        neighborFZ,
+                                                        size_MatC,
+                                                        size_MatF,
+                                                        isEvenTimestep,
+                                                        posCSWB,
+                                                        posFSWB,
+                                                        kCF,
+                                                        omCoarse,
+                                                        omFine,
+                                                        nu,
+                                                        nxC,
+                                                        nyC,
+                                                        nxF,
+                                                        nyF,
+                                                        offCF);
       getLastCudaError("scaleCF_0817_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void ScaleCF_comp_D3Q27F3_2018(real* DC,
-										  real* DF,
-										  real* G6,
-										  unsigned int* neighborCX,
-										  unsigned int* neighborCY,
-										  unsigned int* neighborCZ,
-										  unsigned int* neighborFX,
-										  unsigned int* neighborFY,
-										  unsigned int* neighborFZ,
-										  unsigned int size_MatC,
-										  unsigned int size_MatF,
-										  bool isEvenTimestep,
-										  unsigned int* posCSWB,
-										  unsigned int* posFSWB,
-										  unsigned int kCF,
-										  real omCoarse,
-										  real omFine,
-										  real nu,
-										  unsigned int nxC,
-										  unsigned int nyC,
-										  unsigned int nxF,
-										  unsigned int nyF,
-										  unsigned int numberOfThreads,
-										  OffCF offCF)
+                                          real* DF,
+                                          real* G6,
+                                          unsigned int* neighborCX,
+                                          unsigned int* neighborCY,
+                                          unsigned int* neighborCZ,
+                                          unsigned int* neighborFX,
+                                          unsigned int* neighborFY,
+                                          unsigned int* neighborFZ,
+                                          unsigned int size_MatC,
+                                          unsigned int size_MatF,
+                                          bool isEvenTimestep,
+                                          unsigned int* posCSWB,
+                                          unsigned int* posFSWB,
+                                          unsigned int kCF,
+                                          real omCoarse,
+                                          real omFine,
+                                          real nu,
+                                          unsigned int nxC,
+                                          unsigned int nyC,
+                                          unsigned int nxF,
+                                          unsigned int nyF,
+                                          unsigned int numberOfThreads,
+                                          OffCF offCF)
 {
-   int Grid = (kCF / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_CF(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
-      scaleCF_comp_D3Q27F3_2018 <<< gridINT_CF, threads >>>(DC,
-															DF,
-															G6,
-															neighborCX,
-															neighborCY,
-															neighborCZ,
-															neighborFX,
-															neighborFY,
-															neighborFZ,
-															size_MatC,
-															size_MatF,
-															isEvenTimestep,
-															posCSWB,
-															posFSWB,
-															kCF,
-															omCoarse,
-															omFine,
-															nu,
-															nxC,
-															nyC,
-															nxF,
-															nyF,
-															offCF);
+      scaleCF_comp_D3Q27F3_2018 <<< grid.grid, grid.threads >>>(DC,
+                                                            DF,
+                                                            G6,
+                                                            neighborCX,
+                                                            neighborCY,
+                                                            neighborCZ,
+                                                            neighborFX,
+                                                            neighborFY,
+                                                            neighborFZ,
+                                                            size_MatC,
+                                                            size_MatF,
+                                                            isEvenTimestep,
+                                                            posCSWB,
+                                                            posFSWB,
+                                                            kCF,
+                                                            omCoarse,
+                                                            omFine,
+                                                            nu,
+                                                            nxC,
+                                                            nyC,
+                                                            nxF,
+                                                            nyF,
+                                                            offCF);
       getLastCudaError("scaleCF_comp_D3Q27F3_2018 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void ScaleCF_comp_D3Q27F3(real* DC,
-									 real* DF,
-									 real* G6,
-									 unsigned int* neighborCX,
-									 unsigned int* neighborCY,
-									 unsigned int* neighborCZ,
-									 unsigned int* neighborFX,
-									 unsigned int* neighborFY,
-									 unsigned int* neighborFZ,
-									 unsigned int size_MatC,
-									 unsigned int size_MatF,
-									 bool isEvenTimestep,
-									 unsigned int* posCSWB,
-									 unsigned int* posFSWB,
-									 unsigned int kCF,
-									 real omCoarse,
-									 real omFine,
-									 real nu,
-									 unsigned int nxC,
-									 unsigned int nyC,
-									 unsigned int nxF,
-									 unsigned int nyF,
-									 unsigned int numberOfThreads,
-									 OffCF offCF,
+                                     real* DF,
+                                     real* G6,
+                                     unsigned int* neighborCX,
+                                     unsigned int* neighborCY,
+                                     unsigned int* neighborCZ,
+                                     unsigned int* neighborFX,
+                                     unsigned int* neighborFY,
+                                     unsigned int* neighborFZ,
+                                     unsigned int size_MatC,
+                                     unsigned int size_MatF,
+                                     bool isEvenTimestep,
+                                     unsigned int* posCSWB,
+                                     unsigned int* posFSWB,
+                                     unsigned int kCF,
+                                     real omCoarse,
+                                     real omFine,
+                                     real nu,
+                                     unsigned int nxC,
+                                     unsigned int nyC,
+                                     unsigned int nxF,
+                                     unsigned int nyF,
+                                     unsigned int numberOfThreads,
+                                     OffCF offCF,
                             CUstream_st *stream)
 {
-   int Grid = (kCF / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_CF(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
-      scaleCF_comp_D3Q27F3 <<< gridINT_CF, threads, 0, stream >>>( DC,
-														DF,
-														G6,
-														neighborCX,
-														neighborCY,
-														neighborCZ,
-														neighborFX,
-														neighborFY,
-														neighborFZ,
-														size_MatC,
-														size_MatF,
-														isEvenTimestep,
-														posCSWB,
-														posFSWB,
-														kCF,
-														omCoarse,
-														omFine,
-														nu,
-														nxC,
-														nyC,
-														nxF,
-														nyF,
-														offCF);
+      scaleCF_comp_D3Q27F3 <<< grid.grid, grid.threads, 0, stream >>>( DC,
+                                                        DF,
+                                                        G6,
+                                                        neighborCX,
+                                                        neighborCY,
+                                                        neighborCZ,
+                                                        neighborFX,
+                                                        neighborFY,
+                                                        neighborFZ,
+                                                        size_MatC,
+                                                        size_MatF,
+                                                        isEvenTimestep,
+                                                        posCSWB,
+                                                        posFSWB,
+                                                        kCF,
+                                                        omCoarse,
+                                                        omFine,
+                                                        nu,
+                                                        nxC,
+                                                        nyC,
+                                                        nxF,
+                                                        nyF,
+                                                        offCF);
       getLastCudaError("scaleCF_comp_D3Q27F3 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void ScaleCF_staggered_time_comp_27(  real* DC,
-												 real* DF,
-												 unsigned int* neighborCX,
-												 unsigned int* neighborCY,
-												 unsigned int* neighborCZ,
-												 unsigned int* neighborFX,
-												 unsigned int* neighborFY,
-												 unsigned int* neighborFZ,
-												 unsigned int size_MatC,
-												 unsigned int size_MatF,
-												 bool isEvenTimestep,
-												 unsigned int* posCSWB,
-												 unsigned int* posFSWB,
-												 unsigned int kCF,
-												 real omCoarse,
-												 real omFine,
-												 real nu,
-												 unsigned int nxC,
-												 unsigned int nyC,
-												 unsigned int nxF,
-												 unsigned int nyF,
-												 unsigned int numberOfThreads,
-												 OffCF offCF)
+                                                 real* DF,
+                                                 unsigned int* neighborCX,
+                                                 unsigned int* neighborCY,
+                                                 unsigned int* neighborCZ,
+                                                 unsigned int* neighborFX,
+                                                 unsigned int* neighborFY,
+                                                 unsigned int* neighborFZ,
+                                                 unsigned int size_MatC,
+                                                 unsigned int size_MatF,
+                                                 bool isEvenTimestep,
+                                                 unsigned int* posCSWB,
+                                                 unsigned int* posFSWB,
+                                                 unsigned int kCF,
+                                                 real omCoarse,
+                                                 real omFine,
+                                                 real nu,
+                                                 unsigned int nxC,
+                                                 unsigned int nyC,
+                                                 unsigned int nxF,
+                                                 unsigned int nyF,
+                                                 unsigned int numberOfThreads,
+                                                 OffCF offCF)
 {
-   int Grid = (kCF / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_CF(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
-      scaleCF_staggered_time_comp_27<<< gridINT_CF, threads >>>(    DC,
-																	DF,
-																	neighborCX,
-																	neighborCY,
-																	neighborCZ,
-																	neighborFX,
-																	neighborFY,
-																	neighborFZ,
-																	size_MatC,
-																	size_MatF,
-																	isEvenTimestep,
-																	posCSWB,
-																	posFSWB,
-																	kCF,
-																	omCoarse,
-																	omFine,
-																	nu,
-																	nxC,
-																	nyC,
-																	nxF,
-																	nyF,
-																	offCF);
+      scaleCF_staggered_time_comp_27<<< grid.grid, grid.threads >>>(    DC,
+                                                                    DF,
+                                                                    neighborCX,
+                                                                    neighborCY,
+                                                                    neighborCZ,
+                                                                    neighborFX,
+                                                                    neighborFY,
+                                                                    neighborFZ,
+                                                                    size_MatC,
+                                                                    size_MatF,
+                                                                    isEvenTimestep,
+                                                                    posCSWB,
+                                                                    posFSWB,
+                                                                    kCF,
+                                                                    omCoarse,
+                                                                    omFine,
+                                                                    nu,
+                                                                    nxC,
+                                                                    nyC,
+                                                                    nxF,
+                                                                    nyF,
+                                                                    offCF);
       getLastCudaError("scaleCF_Fix_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -4911,201 +3952,163 @@ void ScaleCF_compressible(LBMSimulationParameter * parameterDeviceC, LBMSimulati
       parameterDeviceC->omega,
       parameterDeviceF->omega,
       offsetCF);
+
    getLastCudaError("scaleCF_compressible execution failed");
 }
 
 //////////////////////////////////////////////////////////////////////////
 void ScaleCF_RhoSq_3rdMom_comp_27(real* DC,
-											 real* DF,
-											 unsigned int* neighborCX,
-											 unsigned int* neighborCY,
-											 unsigned int* neighborCZ,
-											 unsigned int* neighborFX,
-											 unsigned int* neighborFY,
-											 unsigned int* neighborFZ,
-											 unsigned int size_MatC,
-											 unsigned int size_MatF,
-											 bool isEvenTimestep,
-											 unsigned int* posCSWB,
-											 unsigned int* posFSWB,
-											 unsigned int kCF,
-											 real omCoarse,
-											 real omFine,
-											 real nu,
-											 unsigned int nxC,
-											 unsigned int nyC,
-											 unsigned int nxF,
-											 unsigned int nyF,
-											 unsigned int numberOfThreads,
-											 OffCF offCF,
+                                             real* DF,
+                                             unsigned int* neighborCX,
+                                             unsigned int* neighborCY,
+                                             unsigned int* neighborCZ,
+                                             unsigned int* neighborFX,
+                                             unsigned int* neighborFY,
+                                             unsigned int* neighborFZ,
+                                             unsigned int size_MatC,
+                                             unsigned int size_MatF,
+                                             bool isEvenTimestep,
+                                             unsigned int* posCSWB,
+                                             unsigned int* posFSWB,
+                                             unsigned int kCF,
+                                             real omCoarse,
+                                             real omFine,
+                                             real nu,
+                                             unsigned int nxC,
+                                             unsigned int nyC,
+                                             unsigned int nxF,
+                                             unsigned int nyF,
+                                             unsigned int numberOfThreads,
+                                             OffCF offCF,
                                   CUstream_st *stream)
 {
-   int Grid = (kCF / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_CF(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
-      scaleCF_RhoSq_3rdMom_comp_27<<< gridINT_CF, threads, 0, stream >>>(  DC,
-																DF,
-																neighborCX,
-																neighborCY,
-																neighborCZ,
-																neighborFX,
-																neighborFY,
-																neighborFZ,
-																size_MatC,
-																size_MatF,
-																isEvenTimestep,
-																posCSWB,
-																posFSWB,
-																kCF,
-																omCoarse,
-																omFine,
-																nu,
-																nxC,
-																nyC,
-																nxF,
-																nyF,
-																offCF);
+      scaleCF_RhoSq_3rdMom_comp_27<<< grid.grid, grid.threads, 0, stream >>>(  DC,
+                                                                DF,
+                                                                neighborCX,
+                                                                neighborCY,
+                                                                neighborCZ,
+                                                                neighborFX,
+                                                                neighborFY,
+                                                                neighborFZ,
+                                                                size_MatC,
+                                                                size_MatF,
+                                                                isEvenTimestep,
+                                                                posCSWB,
+                                                                posFSWB,
+                                                                kCF,
+                                                                omCoarse,
+                                                                omFine,
+                                                                nu,
+                                                                nxC,
+                                                                nyC,
+                                                                nxF,
+                                                                nyF,
+                                                                offCF);
       getLastCudaError("scaleCF_RhoSq_3rdMom_comp_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void ScaleCF_AA2016_comp_27(real* DC,
-									   real* DF,
-									   unsigned int* neighborCX,
-									   unsigned int* neighborCY,
-									   unsigned int* neighborCZ,
-									   unsigned int* neighborFX,
-									   unsigned int* neighborFY,
-									   unsigned int* neighborFZ,
-									   unsigned int size_MatC,
-									   unsigned int size_MatF,
-									   bool isEvenTimestep,
-									   unsigned int* posCSWB,
-									   unsigned int* posFSWB,
-									   unsigned int kCF,
-									   real omCoarse,
-									   real omFine,
-									   real nu,
-									   unsigned int nxC,
-									   unsigned int nyC,
-									   unsigned int nxF,
-									   unsigned int nyF,
-									   unsigned int numberOfThreads,
-									   OffCF offCF,
+                                       real* DF,
+                                       unsigned int* neighborCX,
+                                       unsigned int* neighborCY,
+                                       unsigned int* neighborCZ,
+                                       unsigned int* neighborFX,
+                                       unsigned int* neighborFY,
+                                       unsigned int* neighborFZ,
+                                       unsigned int size_MatC,
+                                       unsigned int size_MatF,
+                                       bool isEvenTimestep,
+                                       unsigned int* posCSWB,
+                                       unsigned int* posFSWB,
+                                       unsigned int kCF,
+                                       real omCoarse,
+                                       real omFine,
+                                       real nu,
+                                       unsigned int nxC,
+                                       unsigned int nyC,
+                                       unsigned int nxF,
+                                       unsigned int nyF,
+                                       unsigned int numberOfThreads,
+                                       OffCF offCF,
                               CUstream_st *stream)
 {
-   int Grid = (kCF / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_CF(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
-      scaleCF_AA2016_comp_27<<< gridINT_CF, threads, 0, stream >>>(DC,
-														DF,
-														neighborCX,
-														neighborCY,
-														neighborCZ,
-														neighborFX,
-														neighborFY,
-														neighborFZ,
-														size_MatC,
-														size_MatF,
-														isEvenTimestep,
-														posCSWB,
-														posFSWB,
-														kCF,
-														omCoarse,
-														omFine,
-														nu,
-														nxC,
-														nyC,
-														nxF,
-														nyF,
-														offCF);
+      scaleCF_AA2016_comp_27<<< grid.grid, grid.threads, 0, stream >>>(DC,
+                                                        DF,
+                                                        neighborCX,
+                                                        neighborCY,
+                                                        neighborCZ,
+                                                        neighborFX,
+                                                        neighborFY,
+                                                        neighborFZ,
+                                                        size_MatC,
+                                                        size_MatF,
+                                                        isEvenTimestep,
+                                                        posCSWB,
+                                                        posFSWB,
+                                                        kCF,
+                                                        omCoarse,
+                                                        omFine,
+                                                        nu,
+                                                        nxC,
+                                                        nyC,
+                                                        nxF,
+                                                        nyF,
+                                                        offCF);
       getLastCudaError("scaleCF_AA2016_comp_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void ScaleCF_NSPress_27(  real* DC,
-									 real* DF,
-									 unsigned int* neighborCX,
-									 unsigned int* neighborCY,
-									 unsigned int* neighborCZ,
-									 unsigned int* neighborFX,
-									 unsigned int* neighborFY,
-									 unsigned int* neighborFZ,
-									 unsigned int size_MatC,
-									 unsigned int size_MatF,
-									 bool isEvenTimestep,
-									 unsigned int* posCSWB,
-									 unsigned int* posFSWB,
-									 unsigned int kCF,
-									 real omCoarse,
-									 real omFine,
-									 real nu,
-									 unsigned int nxC,
-									 unsigned int nyC,
-									 unsigned int nxF,
-									 unsigned int nyF,
-									 unsigned int numberOfThreads,
-									 OffCF offCF)
+                                     real* DF,
+                                     unsigned int* neighborCX,
+                                     unsigned int* neighborCY,
+                                     unsigned int* neighborCZ,
+                                     unsigned int* neighborFX,
+                                     unsigned int* neighborFY,
+                                     unsigned int* neighborFZ,
+                                     unsigned int size_MatC,
+                                     unsigned int size_MatF,
+                                     bool isEvenTimestep,
+                                     unsigned int* posCSWB,
+                                     unsigned int* posFSWB,
+                                     unsigned int kCF,
+                                     real omCoarse,
+                                     real omFine,
+                                     real nu,
+                                     unsigned int nxC,
+                                     unsigned int nyC,
+                                     unsigned int nxF,
+                                     unsigned int nyF,
+                                     unsigned int numberOfThreads,
+                                     OffCF offCF)
 {
-   int Grid = (kCF / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_CF(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
-      scaleCF_NSPress_27<<< gridINT_CF, threads >>>(DC,
-													DF,
-													neighborCX,
-													neighborCY,
-													neighborCZ,
-													neighborFX,
-													neighborFY,
-													neighborFZ,
-													size_MatC,
-													size_MatF,
-													isEvenTimestep,
-													posCSWB,
-													posFSWB,
-													kCF,
-													omCoarse,
-													omFine,
-													nu,
-													nxC,
-													nyC,
-													nxF,
-													nyF,
-													offCF);
+      scaleCF_NSPress_27<<< grid.grid, grid.threads >>>(DC,
+                                                    DF,
+                                                    neighborCX,
+                                                    neighborCY,
+                                                    neighborCZ,
+                                                    neighborFX,
+                                                    neighborFY,
+                                                    neighborFZ,
+                                                    size_MatC,
+                                                    size_MatF,
+                                                    isEvenTimestep,
+                                                    posCSWB,
+                                                    posFSWB,
+                                                    kCF,
+                                                    omCoarse,
+                                                    omFine,
+                                                    nu,
+                                                    nxC,
+                                                    nyC,
+                                                    nxF,
+                                                    nyF,
+                                                    offCF);
       getLastCudaError("scaleCF_Fix_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -5130,22 +4133,9 @@ void ScaleCFThSMG7(   real* DC,
                                  unsigned int numberOfThreads,
                                  OffCF offCF)
 {
-   int Grid = (kCF / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_CF(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
-      scaleCFThSMG7<<< gridINT_CF, threads >>> (DC,
+      scaleCFThSMG7<<< grid.grid, grid.threads >>> (DC,
                                                 DF,
                                                 DD7C,
                                                 DD7F,
@@ -5187,22 +4177,9 @@ void ScaleCFThS7(  real* DC,
                               real diffusivity_fine,
                               unsigned int numberOfThreads)
 {
-   int Grid = (kCF / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_CF(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
-      scaleCFThS7<<< gridINT_CF, threads >>> (  DC,
+      scaleCFThS7<<< grid.grid, grid.threads >>> (  DC,
                                                 DF,
                                                 DD7C,
                                                 DD7F,
@@ -5242,24 +4219,11 @@ void ScaleCFThS27( real* DC,
                               real nu,
                               real diffusivity_fine,
                               unsigned int numberOfThreads,
-							  OffCF offCF)
+                              OffCF offCF)
 {
-   int Grid = (kCF / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_CF(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
-      scaleCFThS27<<< gridINT_CF, threads >>> ( DC,
+      scaleCFThS27<<< grid.grid, grid.threads >>> ( DC,
                                                 DF,
                                                 DD27C,
                                                 DD27F,
@@ -5277,7 +4241,7 @@ void ScaleCFThS27( real* DC,
                                                 kCF,
                                                 nu,
                                                 diffusivity_fine,
-										        offCF);
+                                                offCF);
       getLastCudaError("scaleCFThS27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -5304,22 +4268,10 @@ void ScaleFC27( real* DC,
                            unsigned int nyF,
                            unsigned int numberOfThreads)
 {
-   int Grid = (kFC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_FC(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
 
-      scaleFC27<<< gridINT_FC, threads >>> ( DC,
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
+
+      scaleFC27<<< grid.grid, grid.threads >>> ( DC,
                                              DF,
                                              neighborCX,
                                              neighborCY,
@@ -5367,22 +4319,9 @@ void ScaleFCEff27(real* DC,
                              unsigned int numberOfThreads,
                              OffFC offFC)
 {
-   int Grid = (kFC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_FC(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
-      scaleFCEff27<<< gridINT_FC, threads >>> ( DC,
+      scaleFCEff27<<< grid.grid, grid.threads >>> ( DC,
                                                 DF,
                                                 neighborCX,
                                                 neighborCY,
@@ -5431,22 +4370,9 @@ void ScaleFCLast27(real* DC,
                               unsigned int numberOfThreads,
                               OffFC offFC)
 {
-   int Grid = (kFC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_FC(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
-      scaleFCLast27<<< gridINT_FC, threads >>> (DC,
+      scaleFCLast27<<< grid.grid, grid.threads >>> (DC,
                                                 DF,
                                                 neighborCX,
                                                 neighborCY,
@@ -5495,22 +4421,9 @@ void ScaleFCpress27(real* DC,
                               unsigned int numberOfThreads,
                               OffFC offFC)
 {
-   int Grid = (kFC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_FC(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
-      scaleFCpress27<<< gridINT_FC, threads >>> (  DC,
+      scaleFCpress27<<< grid.grid, grid.threads >>> (  DC,
                                                    DF,
                                                    neighborCX,
                                                    neighborCY,
@@ -5559,22 +4472,9 @@ void ScaleFC_Fix_27(real* DC,
                               unsigned int numberOfThreads,
                               OffFC offFC)
 {
-   int Grid = (kFC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_FC(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
-      scaleFC_Fix_27<<< gridINT_FC, threads >>> (  DC,
+      scaleFC_Fix_27<<< grid.grid, grid.threads >>> (  DC,
                                                    DF,
                                                    neighborCX,
                                                    neighborCY,
@@ -5600,328 +4500,263 @@ void ScaleFC_Fix_27(real* DC,
 }
 //////////////////////////////////////////////////////////////////////////
 void ScaleFC_Fix_comp_27(  real* DC,
-									  real* DF,
-									  unsigned int* neighborCX,
-									  unsigned int* neighborCY,
-									  unsigned int* neighborCZ,
-									  unsigned int* neighborFX,
-									  unsigned int* neighborFY,
-									  unsigned int* neighborFZ,
-									  unsigned int size_MatC,
-									  unsigned int size_MatF,
-									  bool isEvenTimestep,
-									  unsigned int* posC,
-									  unsigned int* posFSWB,
-									  unsigned int kFC,
-									  real omCoarse,
-									  real omFine,
-									  real nu,
-									  unsigned int nxC,
-									  unsigned int nyC,
-									  unsigned int nxF,
-									  unsigned int nyF,
-									  unsigned int numberOfThreads,
-									  OffFC offFC)
+                                      real* DF,
+                                      unsigned int* neighborCX,
+                                      unsigned int* neighborCY,
+                                      unsigned int* neighborCZ,
+                                      unsigned int* neighborFX,
+                                      unsigned int* neighborFY,
+                                      unsigned int* neighborFZ,
+                                      unsigned int size_MatC,
+                                      unsigned int size_MatF,
+                                      bool isEvenTimestep,
+                                      unsigned int* posC,
+                                      unsigned int* posFSWB,
+                                      unsigned int kFC,
+                                      real omCoarse,
+                                      real omFine,
+                                      real nu,
+                                      unsigned int nxC,
+                                      unsigned int nyC,
+                                      unsigned int nxF,
+                                      unsigned int nyF,
+                                      unsigned int numberOfThreads,
+                                      OffFC offFC)
 {
-   int Grid = (kFC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_FC(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
-      scaleFC_Fix_comp_27<<< gridINT_FC, threads >>> ( DC,
-													   DF,
-													   neighborCX,
-													   neighborCY,
-													   neighborCZ,
-													   neighborFX,
-													   neighborFY,
-													   neighborFZ,
-													   size_MatC,
-													   size_MatF,
-													   isEvenTimestep,
-													   posC,
-													   posFSWB,
-													   kFC,
-													   omCoarse,
-													   omFine,
-													   nu,
-													   nxC,
-													   nyC,
-													   nxF,
-													   nyF,
-													   offFC);
+      scaleFC_Fix_comp_27<<< grid.grid, grid.threads >>> ( DC,
+                                                       DF,
+                                                       neighborCX,
+                                                       neighborCY,
+                                                       neighborCZ,
+                                                       neighborFX,
+                                                       neighborFY,
+                                                       neighborFZ,
+                                                       size_MatC,
+                                                       size_MatF,
+                                                       isEvenTimestep,
+                                                       posC,
+                                                       posFSWB,
+                                                       kFC,
+                                                       omCoarse,
+                                                       omFine,
+                                                       nu,
+                                                       nxC,
+                                                       nyC,
+                                                       nxF,
+                                                       nyF,
+                                                       offFC);
       getLastCudaError("scaleFC_Fix_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void ScaleFC_0817_comp_27( real* DC,
-									  real* DF,
-									  unsigned int* neighborCX,
-									  unsigned int* neighborCY,
-									  unsigned int* neighborCZ,
-									  unsigned int* neighborFX,
-									  unsigned int* neighborFY,
-									  unsigned int* neighborFZ,
-									  unsigned int size_MatC,
-									  unsigned int size_MatF,
-									  bool isEvenTimestep,
-									  unsigned int* posC,
-									  unsigned int* posFSWB,
-									  unsigned int kFC,
-									  real omCoarse,
-									  real omFine,
-									  real nu,
-									  unsigned int nxC,
-									  unsigned int nyC,
-									  unsigned int nxF,
-									  unsigned int nyF,
-									  unsigned int numberOfThreads,
-									  OffFC offFC,
+                                      real* DF,
+                                      unsigned int* neighborCX,
+                                      unsigned int* neighborCY,
+                                      unsigned int* neighborCZ,
+                                      unsigned int* neighborFX,
+                                      unsigned int* neighborFY,
+                                      unsigned int* neighborFZ,
+                                      unsigned int size_MatC,
+                                      unsigned int size_MatF,
+                                      bool isEvenTimestep,
+                                      unsigned int* posC,
+                                      unsigned int* posFSWB,
+                                      unsigned int kFC,
+                                      real omCoarse,
+                                      real omFine,
+                                      real nu,
+                                      unsigned int nxC,
+                                      unsigned int nyC,
+                                      unsigned int nxF,
+                                      unsigned int nyF,
+                                      unsigned int numberOfThreads,
+                                      OffFC offFC,
                              CUstream_st *stream)
 {
-   int Grid = (kFC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_FC(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
-      scaleFC_0817_comp_27<<< gridINT_FC, threads, 0, stream >>> (DC,
-													   DF,
-													   neighborCX,
-													   neighborCY,
-													   neighborCZ,
-													   neighborFX,
-													   neighborFY,
-													   neighborFZ,
-													   size_MatC,
-													   size_MatF,
-													   isEvenTimestep,
-													   posC,
-													   posFSWB,
-													   kFC,
-													   omCoarse,
-													   omFine,
-													   nu,
-													   nxC,
-													   nyC,
-													   nxF,
-													   nyF,
-													   offFC);
+      scaleFC_0817_comp_27<<< grid.grid, grid.threads, 0, stream >>> (DC,
+                                                       DF,
+                                                       neighborCX,
+                                                       neighborCY,
+                                                       neighborCZ,
+                                                       neighborFX,
+                                                       neighborFY,
+                                                       neighborFZ,
+                                                       size_MatC,
+                                                       size_MatF,
+                                                       isEvenTimestep,
+                                                       posC,
+                                                       posFSWB,
+                                                       kFC,
+                                                       omCoarse,
+                                                       omFine,
+                                                       nu,
+                                                       nxC,
+                                                       nyC,
+                                                       nxF,
+                                                       nyF,
+                                                       offFC);
       getLastCudaError("scaleFC_0817_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void ScaleFC_comp_D3Q27F3_2018( real* DC,
-										   real* DF,
-										   real* G6,
-										   unsigned int* neighborCX,
-										   unsigned int* neighborCY,
-										   unsigned int* neighborCZ,
-										   unsigned int* neighborFX,
-										   unsigned int* neighborFY,
-										   unsigned int* neighborFZ,
-										   unsigned int size_MatC,
-										   unsigned int size_MatF,
-										   bool isEvenTimestep,
-										   unsigned int* posC,
-										   unsigned int* posFSWB,
-										   unsigned int kFC,
-										   real omCoarse,
-										   real omFine,
-										   real nu,
-										   unsigned int nxC,
-										   unsigned int nyC,
-										   unsigned int nxF,
-										   unsigned int nyF,
-										   unsigned int numberOfThreads,
-										   OffFC offFC)
+                                           real* DF,
+                                           real* G6,
+                                           unsigned int* neighborCX,
+                                           unsigned int* neighborCY,
+                                           unsigned int* neighborCZ,
+                                           unsigned int* neighborFX,
+                                           unsigned int* neighborFY,
+                                           unsigned int* neighborFZ,
+                                           unsigned int size_MatC,
+                                           unsigned int size_MatF,
+                                           bool isEvenTimestep,
+                                           unsigned int* posC,
+                                           unsigned int* posFSWB,
+                                           unsigned int kFC,
+                                           real omCoarse,
+                                           real omFine,
+                                           real nu,
+                                           unsigned int nxC,
+                                           unsigned int nyC,
+                                           unsigned int nxF,
+                                           unsigned int nyF,
+                                           unsigned int numberOfThreads,
+                                           OffFC offFC)
 {
-   int Grid = (kFC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_FC(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
-     scaleFC_comp_D3Q27F3_2018 <<< gridINT_FC, threads >>> (DC,
-															DF,
-															G6,
-															neighborCX,
-															neighborCY,
-															neighborCZ,
-															neighborFX,
-															neighborFY,
-															neighborFZ,
-															size_MatC,
-															size_MatF,
-															isEvenTimestep,
-															posC,
-															posFSWB,
-															kFC,
-															omCoarse,
-															omFine,
-															nu,
-															nxC,
-															nyC,
-															nxF,
-															nyF,
-															offFC);
+     scaleFC_comp_D3Q27F3_2018 <<< grid.grid, grid.threads >>> (DC,
+                                                            DF,
+                                                            G6,
+                                                            neighborCX,
+                                                            neighborCY,
+                                                            neighborCZ,
+                                                            neighborFX,
+                                                            neighborFY,
+                                                            neighborFZ,
+                                                            size_MatC,
+                                                            size_MatF,
+                                                            isEvenTimestep,
+                                                            posC,
+                                                            posFSWB,
+                                                            kFC,
+                                                            omCoarse,
+                                                            omFine,
+                                                            nu,
+                                                            nxC,
+                                                            nyC,
+                                                            nxF,
+                                                            nyF,
+                                                            offFC);
       getLastCudaError("scaleFC_comp_D3Q27F3_2018 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void ScaleFC_comp_D3Q27F3( real* DC,
-									  real* DF,
-									  real* G6,
-									  unsigned int* neighborCX,
-									  unsigned int* neighborCY,
-									  unsigned int* neighborCZ,
-									  unsigned int* neighborFX,
-									  unsigned int* neighborFY,
-									  unsigned int* neighborFZ,
-									  unsigned int size_MatC,
-									  unsigned int size_MatF,
-									  bool isEvenTimestep,
-									  unsigned int* posC,
-									  unsigned int* posFSWB,
-									  unsigned int kFC,
-									  real omCoarse,
-									  real omFine,
-									  real nu,
-									  unsigned int nxC,
-									  unsigned int nyC,
-									  unsigned int nxF,
-									  unsigned int nyF,
-									  unsigned int numberOfThreads,
-									  OffFC offFC,
+                                      real* DF,
+                                      real* G6,
+                                      unsigned int* neighborCX,
+                                      unsigned int* neighborCY,
+                                      unsigned int* neighborCZ,
+                                      unsigned int* neighborFX,
+                                      unsigned int* neighborFY,
+                                      unsigned int* neighborFZ,
+                                      unsigned int size_MatC,
+                                      unsigned int size_MatF,
+                                      bool isEvenTimestep,
+                                      unsigned int* posC,
+                                      unsigned int* posFSWB,
+                                      unsigned int kFC,
+                                      real omCoarse,
+                                      real omFine,
+                                      real nu,
+                                      unsigned int nxC,
+                                      unsigned int nyC,
+                                      unsigned int nxF,
+                                      unsigned int nyF,
+                                      unsigned int numberOfThreads,
+                                      OffFC offFC,
                              CUstream_st *stream)
 {
-   int Grid = (kFC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_FC(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
-     scaleFC_comp_D3Q27F3 <<< gridINT_FC, threads, 0, stream >>> (DC,
-													   DF,
-													   G6,
-													   neighborCX,
-													   neighborCY,
-													   neighborCZ,
-													   neighborFX,
-													   neighborFY,
-													   neighborFZ,
-													   size_MatC,
-													   size_MatF,
-													   isEvenTimestep,
-													   posC,
-													   posFSWB,
-													   kFC,
-													   omCoarse,
-													   omFine,
-													   nu,
-													   nxC,
-													   nyC,
-													   nxF,
-													   nyF,
-													   offFC);
+     scaleFC_comp_D3Q27F3 <<< grid.grid, grid.threads, 0, stream >>> (DC,
+                                                       DF,
+                                                       G6,
+                                                       neighborCX,
+                                                       neighborCY,
+                                                       neighborCZ,
+                                                       neighborFX,
+                                                       neighborFY,
+                                                       neighborFZ,
+                                                       size_MatC,
+                                                       size_MatF,
+                                                       isEvenTimestep,
+                                                       posC,
+                                                       posFSWB,
+                                                       kFC,
+                                                       omCoarse,
+                                                       omFine,
+                                                       nu,
+                                                       nxC,
+                                                       nyC,
+                                                       nxF,
+                                                       nyF,
+                                                       offFC);
       getLastCudaError("scaleFC_0817_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void ScaleFC_staggered_time_comp_27(   real* DC,
-												  real* DF,
-												  unsigned int* neighborCX,
-												  unsigned int* neighborCY,
-												  unsigned int* neighborCZ,
-												  unsigned int* neighborFX,
-												  unsigned int* neighborFY,
-												  unsigned int* neighborFZ,
-												  unsigned int size_MatC,
-												  unsigned int size_MatF,
-												  bool isEvenTimestep,
-												  unsigned int* posC,
-												  unsigned int* posFSWB,
-												  unsigned int kFC,
-												  real omCoarse,
-												  real omFine,
-												  real nu,
-												  unsigned int nxC,
-												  unsigned int nyC,
-												  unsigned int nxF,
-												  unsigned int nyF,
-												  unsigned int numberOfThreads,
-												  OffFC offFC)
+                                                  real* DF,
+                                                  unsigned int* neighborCX,
+                                                  unsigned int* neighborCY,
+                                                  unsigned int* neighborCZ,
+                                                  unsigned int* neighborFX,
+                                                  unsigned int* neighborFY,
+                                                  unsigned int* neighborFZ,
+                                                  unsigned int size_MatC,
+                                                  unsigned int size_MatF,
+                                                  bool isEvenTimestep,
+                                                  unsigned int* posC,
+                                                  unsigned int* posFSWB,
+                                                  unsigned int kFC,
+                                                  real omCoarse,
+                                                  real omFine,
+                                                  real nu,
+                                                  unsigned int nxC,
+                                                  unsigned int nyC,
+                                                  unsigned int nxF,
+                                                  unsigned int nyF,
+                                                  unsigned int numberOfThreads,
+                                                  OffFC offFC)
 {
-   int Grid = (kFC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_FC(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
-      scaleFC_staggered_time_comp_27<<< gridINT_FC, threads >>> (  DC,
-																   DF,
-																   neighborCX,
-																   neighborCY,
-																   neighborCZ,
-																   neighborFX,
-																   neighborFY,
-																   neighborFZ,
-																   size_MatC,
-																   size_MatF,
-																   isEvenTimestep,
-																   posC,
-																   posFSWB,
-																   kFC,
-																   omCoarse,
-																   omFine,
-																   nu,
-																   nxC,
-																   nyC,
-																   nxF,
-																   nyF,
-																   offFC);
+      scaleFC_staggered_time_comp_27<<< grid.grid, grid.threads >>> (  DC,
+                                                                   DF,
+                                                                   neighborCX,
+                                                                   neighborCY,
+                                                                   neighborCZ,
+                                                                   neighborFX,
+                                                                   neighborFY,
+                                                                   neighborFZ,
+                                                                   size_MatC,
+                                                                   size_MatF,
+                                                                   isEvenTimestep,
+                                                                   posC,
+                                                                   posFSWB,
+                                                                   kFC,
+                                                                   omCoarse,
+                                                                   omFine,
+                                                                   nu,
+                                                                   nxC,
+                                                                   nyC,
+                                                                   nxF,
+                                                                   nyF,
+                                                                   offFC);
       getLastCudaError("scaleFC_Fix_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -5983,196 +4818,157 @@ void ScaleFC_compressible(LBMSimulationParameter * parameterDeviceC, LBMSimulati
 }
 //////////////////////////////////////////////////////////////////////////
 void ScaleFC_RhoSq_3rdMom_comp_27( real* DC,
-											  real* DF,
-											  unsigned int* neighborCX,
-											  unsigned int* neighborCY,
-											  unsigned int* neighborCZ,
-											  unsigned int* neighborFX,
-											  unsigned int* neighborFY,
-											  unsigned int* neighborFZ,
-											  unsigned int size_MatC,
-											  unsigned int size_MatF,
-											  bool isEvenTimestep,
-											  unsigned int* posC,
-											  unsigned int* posFSWB,
-											  unsigned int kFC,
-											  real omCoarse,
-											  real omFine,
-											  real nu,
-											  unsigned int nxC,
-											  unsigned int nyC,
-											  unsigned int nxF,
-											  unsigned int nyF,
-											  unsigned int numberOfThreads,
-											  OffFC offFC,
+                                              real* DF,
+                                              unsigned int* neighborCX,
+                                              unsigned int* neighborCY,
+                                              unsigned int* neighborCZ,
+                                              unsigned int* neighborFX,
+                                              unsigned int* neighborFY,
+                                              unsigned int* neighborFZ,
+                                              unsigned int size_MatC,
+                                              unsigned int size_MatF,
+                                              bool isEvenTimestep,
+                                              unsigned int* posC,
+                                              unsigned int* posFSWB,
+                                              unsigned int kFC,
+                                              real omCoarse,
+                                              real omFine,
+                                              real nu,
+                                              unsigned int nxC,
+                                              unsigned int nyC,
+                                              unsigned int nxF,
+                                              unsigned int nyF,
+                                              unsigned int numberOfThreads,
+                                              OffFC offFC,
                                    CUstream_st *stream)
 {
-   int Grid = (kFC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_FC(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
-      scaleFC_RhoSq_3rdMom_comp_27<<< gridINT_FC, threads, 0, stream >>>(DC,
-															  DF,
-															  neighborCX,
-															  neighborCY,
-															  neighborCZ,
-															  neighborFX,
-															  neighborFY,
-															  neighborFZ,
-															  size_MatC,
-															  size_MatF,
-															  isEvenTimestep,
-															  posC,
-															  posFSWB,
-															  kFC,
-															  omCoarse,
-															  omFine,
-															  nu,
-															  nxC,
-															  nyC,
-															  nxF,
-															  nyF,
-															  offFC);
+      scaleFC_RhoSq_3rdMom_comp_27<<< grid.grid, grid.threads, 0, stream >>>(DC,
+                                                              DF,
+                                                              neighborCX,
+                                                              neighborCY,
+                                                              neighborCZ,
+                                                              neighborFX,
+                                                              neighborFY,
+                                                              neighborFZ,
+                                                              size_MatC,
+                                                              size_MatF,
+                                                              isEvenTimestep,
+                                                              posC,
+                                                              posFSWB,
+                                                              kFC,
+                                                              omCoarse,
+                                                              omFine,
+                                                              nu,
+                                                              nxC,
+                                                              nyC,
+                                                              nxF,
+                                                              nyF,
+                                                              offFC);
       getLastCudaError("scaleFC_RhoSq_3rdMom_comp_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void ScaleFC_AA2016_comp_27( real* DC,
-										real* DF,
-										unsigned int* neighborCX,
-										unsigned int* neighborCY,
-										unsigned int* neighborCZ,
-										unsigned int* neighborFX,
-										unsigned int* neighborFY,
-										unsigned int* neighborFZ,
-										unsigned int size_MatC,
-										unsigned int size_MatF,
-										bool isEvenTimestep,
-										unsigned int* posC,
-										unsigned int* posFSWB,
-										unsigned int kFC,
-										real omCoarse,
-										real omFine,
-										real nu,
-										unsigned int nxC,
-										unsigned int nyC,
-										unsigned int nxF,
-										unsigned int nyF,
-										unsigned int numberOfThreads,
-										OffFC offFC,
+                                        real* DF,
+                                        unsigned int* neighborCX,
+                                        unsigned int* neighborCY,
+                                        unsigned int* neighborCZ,
+                                        unsigned int* neighborFX,
+                                        unsigned int* neighborFY,
+                                        unsigned int* neighborFZ,
+                                        unsigned int size_MatC,
+                                        unsigned int size_MatF,
+                                        bool isEvenTimestep,
+                                        unsigned int* posC,
+                                        unsigned int* posFSWB,
+                                        unsigned int kFC,
+                                        real omCoarse,
+                                        real omFine,
+                                        real nu,
+                                        unsigned int nxC,
+                                        unsigned int nyC,
+                                        unsigned int nxF,
+                                        unsigned int nyF,
+                                        unsigned int numberOfThreads,
+                                        OffFC offFC,
                               CUstream_st *stream)
 {
-   int Grid = (kFC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_FC(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
-      scaleFC_AA2016_comp_27<<< gridINT_FC, threads, 0, stream >>>(DC,
-														DF,
-														neighborCX,
-														neighborCY,
-														neighborCZ,
-														neighborFX,
-														neighborFY,
-														neighborFZ,
-														size_MatC,
-														size_MatF,
-														isEvenTimestep,
-														posC,
-														posFSWB,
-														kFC,
-														omCoarse,
-														omFine,
-														nu,
-														nxC,
-														nyC,
-														nxF,
-														nyF,
-														offFC);
+      scaleFC_AA2016_comp_27<<< grid.grid, grid.threads, 0, stream >>>(DC,
+                                                        DF,
+                                                        neighborCX,
+                                                        neighborCY,
+                                                        neighborCZ,
+                                                        neighborFX,
+                                                        neighborFY,
+                                                        neighborFZ,
+                                                        size_MatC,
+                                                        size_MatF,
+                                                        isEvenTimestep,
+                                                        posC,
+                                                        posFSWB,
+                                                        kFC,
+                                                        omCoarse,
+                                                        omFine,
+                                                        nu,
+                                                        nxC,
+                                                        nyC,
+                                                        nxF,
+                                                        nyF,
+                                                        offFC);
       getLastCudaError("scaleFC_AA2016_comp_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void ScaleFC_NSPress_27(real* DC,
-								  real* DF,
-								  unsigned int* neighborCX,
-								  unsigned int* neighborCY,
-								  unsigned int* neighborCZ,
-								  unsigned int* neighborFX,
-								  unsigned int* neighborFY,
-								  unsigned int* neighborFZ,
-								  unsigned int size_MatC,
-								  unsigned int size_MatF,
-								  bool isEvenTimestep,
-								  unsigned int* posC,
-								  unsigned int* posFSWB,
-								  unsigned int kFC,
-								  real omCoarse,
-								  real omFine,
-								  real nu,
-								  unsigned int nxC,
-								  unsigned int nyC,
-								  unsigned int nxF,
-								  unsigned int nyF,
-								  unsigned int numberOfThreads,
-								  OffFC offFC)
+                                  real* DF,
+                                  unsigned int* neighborCX,
+                                  unsigned int* neighborCY,
+                                  unsigned int* neighborCZ,
+                                  unsigned int* neighborFX,
+                                  unsigned int* neighborFY,
+                                  unsigned int* neighborFZ,
+                                  unsigned int size_MatC,
+                                  unsigned int size_MatF,
+                                  bool isEvenTimestep,
+                                  unsigned int* posC,
+                                  unsigned int* posFSWB,
+                                  unsigned int kFC,
+                                  real omCoarse,
+                                  real omFine,
+                                  real nu,
+                                  unsigned int nxC,
+                                  unsigned int nyC,
+                                  unsigned int nxF,
+                                  unsigned int nyF,
+                                  unsigned int numberOfThreads,
+                                  OffFC offFC)
 {
-   int Grid = (kFC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_FC(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
-      scaleFC_NSPress_27<<< gridINT_FC, threads >>> (  DC,
-													   DF,
-													   neighborCX,
-													   neighborCY,
-													   neighborCZ,
-													   neighborFX,
-													   neighborFY,
-													   neighborFZ,
-													   size_MatC,
-													   size_MatF,
-													   isEvenTimestep,
-													   posC,
-													   posFSWB,
-													   kFC,
-													   omCoarse,
-													   omFine,
-													   nu,
-													   nxC,
-													   nyC,
-													   nxF,
-													   nyF,
-													   offFC);
+      scaleFC_NSPress_27<<< grid.grid, grid.threads >>> (  DC,
+                                                       DF,
+                                                       neighborCX,
+                                                       neighborCY,
+                                                       neighborCZ,
+                                                       neighborFX,
+                                                       neighborFY,
+                                                       neighborFZ,
+                                                       size_MatC,
+                                                       size_MatF,
+                                                       isEvenTimestep,
+                                                       posC,
+                                                       posFSWB,
+                                                       kFC,
+                                                       omCoarse,
+                                                       omFine,
+                                                       nu,
+                                                       nxC,
+                                                       nyC,
+                                                       nxF,
+                                                       nyF,
+                                                       offFC);
       getLastCudaError("scaleFC_Fix_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -6197,22 +4993,9 @@ void ScaleFCThSMG7(real* DC,
                               unsigned int numberOfThreads,
                               OffFC offFC)
 {
-   int Grid = (kFC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_FC(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
-      scaleFCThSMG7<<< gridINT_FC, threads >>>( DC,
+      scaleFCThSMG7<<< grid.grid, grid.threads >>>( DC,
                                                 DF,
                                                 DD7C,
                                                 DD7F,
@@ -6254,22 +5037,9 @@ void ScaleFCThS7(  real* DC,
                               real diffusivity_coarse,
                               unsigned int numberOfThreads)
 {
-   int Grid = (kFC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_FC(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
-      scaleFCThS7<<< gridINT_FC, threads >>>(DC,
+      scaleFCThS7<<< grid.grid, grid.threads >>>(DC,
                                              DF,
                                              DD7C,
                                              DD7F,
@@ -6309,24 +5079,11 @@ void ScaleFCThS27( real* DC,
                               real nu,
                               real diffusivity_coarse,
                               unsigned int numberOfThreads,
-							  OffFC offFC)
+                              OffFC offFC)
 {
-   int Grid = (kFC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridINT_FC(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
-      scaleFCThS27<<< gridINT_FC, threads >>>(  DC,
+      scaleFCThS27<<< grid.grid, grid.threads >>>(  DC,
                                                 DF,
                                                 DD27C,
                                                 DD27F,
@@ -6344,737 +5101,514 @@ void ScaleFCThS27( real* DC,
                                                 kFC,
                                                 nu,
                                                 diffusivity_coarse,
-												offFC);
+                                                offFC);
       getLastCudaError("scaleFCThS27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void DragLiftPostD27(real* DD,
-								int* k_Q,
-								real* QQ,
-								int numberOfBCnodes,
-								double *DragX,
-								double *DragY,
-								double *DragZ,
-								unsigned int* neighborX,
-								unsigned int* neighborY,
-								unsigned int* neighborZ,
-								unsigned int size_Mat,
-								bool isEvenTimestep,
-								unsigned int numberOfThreads)
+                                int* k_Q,
+                                real* QQ,
+                                int numberOfBCnodes,
+                                double *DragX,
+                                double *DragY,
+                                double *DragZ,
+                                unsigned int* neighborX,
+                                unsigned int* neighborY,
+                                unsigned int* neighborZ,
+                                unsigned int size_Mat,
+                                bool isEvenTimestep,
+                                unsigned int numberOfThreads)
 {
-	int Grid = (numberOfBCnodes / numberOfThreads)+1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid/Grid1)+1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-	DragLiftPost27<<< grid, threads >>>(DD,
-										k_Q,
-										QQ,
-										numberOfBCnodes,
-										DragX,
-										DragY,
-										DragZ,
-										neighborX,
-										neighborY,
-										neighborZ,
-										size_Mat,
-										isEvenTimestep);
-	getLastCudaError("DragLift27 execution failed");
+    DragLiftPost27<<< grid.grid, grid.threads >>>(DD,
+                                        k_Q,
+                                        QQ,
+                                        numberOfBCnodes,
+                                        DragX,
+                                        DragY,
+                                        DragZ,
+                                        neighborX,
+                                        neighborY,
+                                        neighborZ,
+                                        size_Mat,
+                                        isEvenTimestep);
+    getLastCudaError("DragLift27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void DragLiftPreD27( real* DD,
-								int* k_Q,
-								real* QQ,
-								int numberOfBCnodes,
-								double *DragX,
-								double *DragY,
-								double *DragZ,
-								unsigned int* neighborX,
-								unsigned int* neighborY,
-								unsigned int* neighborZ,
-								unsigned int size_Mat,
-								bool isEvenTimestep,
-								unsigned int numberOfThreads)
+                                int* k_Q,
+                                real* QQ,
+                                int numberOfBCnodes,
+                                double *DragX,
+                                double *DragY,
+                                double *DragZ,
+                                unsigned int* neighborX,
+                                unsigned int* neighborY,
+                                unsigned int* neighborZ,
+                                unsigned int size_Mat,
+                                bool isEvenTimestep,
+                                unsigned int numberOfThreads)
 {
-	int Grid = (numberOfBCnodes / numberOfThreads)+1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid/Grid1)+1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1 );
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-	DragLiftPre27<<< grid, threads >>>( DD,
-										k_Q,
-										QQ,
-										numberOfBCnodes,
-										DragX,
-										DragY,
-										DragZ,
-										neighborX,
-										neighborY,
-										neighborZ,
-										size_Mat,
-										isEvenTimestep);
-	getLastCudaError("DragLift27 execution failed");
+    DragLiftPre27<<< grid.grid, grid.threads >>>( DD,
+                                        k_Q,
+                                        QQ,
+                                        numberOfBCnodes,
+                                        DragX,
+                                        DragY,
+                                        DragZ,
+                                        neighborX,
+                                        neighborY,
+                                        neighborZ,
+                                        size_Mat,
+                                        isEvenTimestep);
+    getLastCudaError("DragLift27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void CalcCPtop27(real* DD,
-							int* cpIndex,
-							int nonCp,
-							double *cpPress,
-							unsigned int* neighborX,
-							unsigned int* neighborY,
-							unsigned int* neighborZ,
-							unsigned int size_Mat,
-							bool isEvenTimestep,
-							unsigned int numberOfThreads)
+                            int* cpIndex,
+                            int nonCp,
+                            double *cpPress,
+                            unsigned int* neighborX,
+                            unsigned int* neighborY,
+                            unsigned int* neighborZ,
+                            unsigned int size_Mat,
+                            bool isEvenTimestep,
+                            unsigned int numberOfThreads)
 {
-	int Grid = (nonCp / numberOfThreads)+1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid/Grid1)+1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1 );
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, nonCp);
 
-	CalcCP27<<< grid, threads >>>(DD,
-								  cpIndex,
-								  nonCp,
-								  cpPress,
-								  neighborX,
-								  neighborY,
-								  neighborZ,
-								  size_Mat,
-								  isEvenTimestep);
-	getLastCudaError("CalcCP27 execution failed");
+    CalcCP27<<< grid.grid, grid.threads >>>(DD,
+                                  cpIndex,
+                                  nonCp,
+                                  cpPress,
+                                  neighborX,
+                                  neighborY,
+                                  neighborZ,
+                                  size_Mat,
+                                  isEvenTimestep);
+    getLastCudaError("CalcCP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void CalcCPbottom27( real* DD,
-								int* cpIndex,
-								int nonCp,
-								double *cpPress,
-								unsigned int* neighborX,
-								unsigned int* neighborY,
-								unsigned int* neighborZ,
-								unsigned int size_Mat,
-								bool isEvenTimestep,
-								unsigned int numberOfThreads)
+                                int* cpIndex,
+                                int nonCp,
+                                double *cpPress,
+                                unsigned int* neighborX,
+                                unsigned int* neighborY,
+                                unsigned int* neighborZ,
+                                unsigned int size_Mat,
+                                bool isEvenTimestep,
+                                unsigned int numberOfThreads)
 {
-	int Grid = (nonCp / numberOfThreads)+1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid/Grid1)+1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1 );
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, nonCp);
 
-	CalcCP27<<< grid, threads >>>(DD,
-								  cpIndex,
-								  nonCp,
-								  cpPress,
-								  neighborX,
-								  neighborY,
-								  neighborZ,
-								  size_Mat,
-								  isEvenTimestep);
-	getLastCudaError("CalcCP27 execution failed");
+    CalcCP27<<< grid.grid, grid.threads >>>(DD,
+                                  cpIndex,
+                                  nonCp,
+                                  cpPress,
+                                  neighborX,
+                                  neighborY,
+                                  neighborZ,
+                                  size_Mat,
+                                  isEvenTimestep);
+    getLastCudaError("CalcCP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void GetSendFsPreDev27(real* DD,
-								  real* bufferFs,
-								  int* sendIndex,
-								  int buffmax,
-								  unsigned int* neighborX,
-								  unsigned int* neighborY,
-								  unsigned int* neighborZ,
-								  unsigned int size_Mat,
-								  bool isEvenTimestep,
-								  unsigned int numberOfThreads,
-								  cudaStream_t stream)
+                                  real* bufferFs,
+                                  int* sendIndex,
+                                  int buffmax,
+                                  unsigned int* neighborX,
+                                  unsigned int* neighborY,
+                                  unsigned int* neighborZ,
+                                  unsigned int size_Mat,
+                                  bool isEvenTimestep,
+                                  unsigned int numberOfThreads,
+                                  cudaStream_t stream)
 {
-	int Grid = (buffmax / numberOfThreads)+1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid/Grid1)+1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1 );
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, buffmax);
 
-	getSendFsPre27<<< grid, threads, 0, stream >>>(DD,
-										bufferFs,
-										sendIndex,
-										buffmax,
-										neighborX,
-										neighborY,
-										neighborZ,
-										size_Mat,
-										isEvenTimestep);
-	getLastCudaError("getSendFsPre27 execution failed");
+    getSendFsPre27<<< grid.grid, grid.threads, 0, stream >>>(DD,
+                                        bufferFs,
+                                        sendIndex,
+                                        buffmax,
+                                        neighborX,
+                                        neighborY,
+                                        neighborZ,
+                                        size_Mat,
+                                        isEvenTimestep);
+    getLastCudaError("getSendFsPre27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void GetSendFsPostDev27(real* DD,
-								   real* bufferFs,
-								   int* sendIndex,
-								   int buffmax,
-								   unsigned int* neighborX,
-								   unsigned int* neighborY,
-								   unsigned int* neighborZ,
-								   unsigned int size_Mat,
-								   bool isEvenTimestep,
-								   unsigned int numberOfThreads,
-								   cudaStream_t stream)
+                                   real* bufferFs,
+                                   int* sendIndex,
+                                   int buffmax,
+                                   unsigned int* neighborX,
+                                   unsigned int* neighborY,
+                                   unsigned int* neighborZ,
+                                   unsigned int size_Mat,
+                                   bool isEvenTimestep,
+                                   unsigned int numberOfThreads,
+                                   cudaStream_t stream)
 {
-	int Grid = (buffmax / numberOfThreads)+1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid/Grid1)+1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1 );
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, buffmax);
 
-	getSendFsPost27<<< grid, threads, 0, stream >>>(DD,
-										 bufferFs,
-										 sendIndex,
-										 buffmax,
-										 neighborX,
-										 neighborY,
-										 neighborZ,
-										 size_Mat,
-										 isEvenTimestep);
-	getLastCudaError("getSendFsPost27 execution failed");
+    getSendFsPost27<<< grid.grid, grid.threads, 0, stream >>>(DD,
+                                         bufferFs,
+                                         sendIndex,
+                                         buffmax,
+                                         neighborX,
+                                         neighborY,
+                                         neighborZ,
+                                         size_Mat,
+                                         isEvenTimestep);
+    getLastCudaError("getSendFsPost27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void SetRecvFsPreDev27(real* DD,
-								  real* bufferFs,
-								  int* recvIndex,
-								  int buffmax,
-								  unsigned int* neighborX,
-								  unsigned int* neighborY,
-								  unsigned int* neighborZ,
-								  unsigned int size_Mat,
-								  bool isEvenTimestep,
-								  unsigned int numberOfThreads,
-	                              cudaStream_t stream)
+                                  real* bufferFs,
+                                  int* recvIndex,
+                                  int buffmax,
+                                  unsigned int* neighborX,
+                                  unsigned int* neighborY,
+                                  unsigned int* neighborZ,
+                                  unsigned int size_Mat,
+                                  bool isEvenTimestep,
+                                  unsigned int numberOfThreads,
+                                  cudaStream_t stream)
 {
-	int Grid = (buffmax / numberOfThreads)+1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid/Grid1)+1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1 );
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, buffmax);
 
-	setRecvFsPre27<<< grid, threads, 0, stream >>>(DD,
-										bufferFs,
-										recvIndex,
-										buffmax,
-										neighborX,
-										neighborY,
-										neighborZ,
-										size_Mat,
-										isEvenTimestep);
-	getLastCudaError("setRecvFsPre27 execution failed");
+    setRecvFsPre27<<< grid.grid, grid.threads, 0, stream >>>(DD,
+                                        bufferFs,
+                                        recvIndex,
+                                        buffmax,
+                                        neighborX,
+                                        neighborY,
+                                        neighborZ,
+                                        size_Mat,
+                                        isEvenTimestep);
+    getLastCudaError("setRecvFsPre27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void SetRecvFsPostDev27(real* DD,
-								   real* bufferFs,
-								   int* recvIndex,
-								   int buffmax,
-								   unsigned int* neighborX,
-								   unsigned int* neighborY,
-								   unsigned int* neighborZ,
-								   unsigned int size_Mat,
-								   bool isEvenTimestep,
-	                               unsigned int numberOfThreads,
-	                               cudaStream_t stream)
+                                   real* bufferFs,
+                                   int* recvIndex,
+                                   int buffmax,
+                                   unsigned int* neighborX,
+                                   unsigned int* neighborY,
+                                   unsigned int* neighborZ,
+                                   unsigned int size_Mat,
+                                   bool isEvenTimestep,
+                                   unsigned int numberOfThreads,
+                                   cudaStream_t stream)
 {
-	int Grid = (buffmax / numberOfThreads)+1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid/Grid1)+1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1 );
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, buffmax);
 
-	setRecvFsPost27<<< grid, threads, 0, stream >>>(DD,
-										 bufferFs,
-										 recvIndex,
-										 buffmax,
-										 neighborX,
-										 neighborY,
-										 neighborZ,
-										 size_Mat,
-										 isEvenTimestep);
-	getLastCudaError("setRecvFsPost27 execution failed");
+    setRecvFsPost27<<< grid.grid, grid.threads, 0, stream >>>(DD,
+                                         bufferFs,
+                                         recvIndex,
+                                         buffmax,
+                                         neighborX,
+                                         neighborY,
+                                         neighborZ,
+                                         size_Mat,
+                                         isEvenTimestep);
+    getLastCudaError("setRecvFsPost27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void getSendGsDevF3(
-	real* G6,
-	real* bufferGs,
-	int* sendIndex,
-	int buffmax,
-	unsigned int* neighborX,
-	unsigned int* neighborY,
-	unsigned int* neighborZ,
-	unsigned int size_Mat,
-	bool isEvenTimestep,
-	unsigned int numberOfThreads)
+    real* G6,
+    real* bufferGs,
+    int* sendIndex,
+    int buffmax,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned int size_Mat,
+    bool isEvenTimestep,
+    unsigned int numberOfThreads)
 {
-	int Grid = (buffmax / numberOfThreads) + 1;
-	int Grid1, Grid2;
-	if (Grid > 512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid / Grid1) + 1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1);
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, buffmax);
 
-	getSendGsF3 <<< grid, threads >>> (
-		G6,
-		bufferGs,
-		sendIndex,
-		buffmax,
-		neighborX,
-		neighborY,
-		neighborZ,
-		size_Mat,
-		isEvenTimestep);
-	getLastCudaError("getSendGsF3 execution failed");
+    getSendGsF3 <<< grid.grid, grid.threads >>> (
+        G6,
+        bufferGs,
+        sendIndex,
+        buffmax,
+        neighborX,
+        neighborY,
+        neighborZ,
+        size_Mat,
+        isEvenTimestep);
+    getLastCudaError("getSendGsF3 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void setRecvGsDevF3(
-	real* G6,
-	real* bufferGs,
-	int* recvIndex,
-	int buffmax,
-	unsigned int* neighborX,
-	unsigned int* neighborY,
-	unsigned int* neighborZ,
-	unsigned int size_Mat,
-	bool isEvenTimestep,
-	unsigned int numberOfThreads)
+    real* G6,
+    real* bufferGs,
+    int* recvIndex,
+    int buffmax,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned int size_Mat,
+    bool isEvenTimestep,
+    unsigned int numberOfThreads)
 {
-	int Grid = (buffmax / numberOfThreads) + 1;
-	int Grid1, Grid2;
-	if (Grid > 512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid / Grid1) + 1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1);
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, buffmax);
 
-	setRecvGsF3 <<< grid, threads >>> (
-		G6,
-		bufferGs,
-		recvIndex,
-		buffmax,
-		neighborX,
-		neighborY,
-		neighborZ,
-		size_Mat,
-		isEvenTimestep);
-	getLastCudaError("setRecvGsF3 execution failed");
+    setRecvGsF3 <<< grid.grid, grid.threads >>> (
+        G6,
+        bufferGs,
+        recvIndex,
+        buffmax,
+        neighborX,
+        neighborY,
+        neighborZ,
+        size_Mat,
+        isEvenTimestep);
+    getLastCudaError("setRecvGsF3 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void WallFuncDev27(unsigned int numberOfThreads,
-							  real* vx,
-							  real* vy,
-							  real* vz,
-							  real* DD,
-							  int* k_Q,
-							  real* QQ,
-							  unsigned int numberOfBCnodes,
-							  real om1,
-							  unsigned int* neighborX,
-							  unsigned int* neighborY,
-							  unsigned int* neighborZ,
-							  unsigned int size_Mat,
-							  bool isEvenTimestep)
+                              real* vx,
+                              real* vy,
+                              real* vz,
+                              real* DD,
+                              int* k_Q,
+                              real* QQ,
+                              unsigned int numberOfBCnodes,
+                              real om1,
+                              unsigned int* neighborX,
+                              unsigned int* neighborY,
+                              unsigned int* neighborZ,
+                              unsigned int size_Mat,
+                              bool isEvenTimestep)
 {
-   int Grid = (numberOfBCnodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-      WallFunction27<<< gridQ, threads >>> (
-											  vx,
-											  vy,
-											  vz,
-											  DD,
-											  k_Q,
-											  QQ,
-											  numberOfBCnodes,
-											  om1,
-											  neighborX,
-											  neighborY,
-											  neighborZ,
-											  size_Mat,
-											  isEvenTimestep);
+      WallFunction27<<< grid.grid, grid.threads >>> (
+                                              vx,
+                                              vy,
+                                              vz,
+                                              DD,
+                                              k_Q,
+                                              QQ,
+                                              numberOfBCnodes,
+                                              om1,
+                                              neighborX,
+                                              neighborY,
+                                              neighborZ,
+                                              size_Mat,
+                                              isEvenTimestep);
       getLastCudaError("WallFunction27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void SetOutputWallVelocitySP27(unsigned int numberOfThreads,
-										  real* vxD,
-										  real* vyD,
-										  real* vzD,
-										  real* vxWall,
-										  real* vyWall,
-										  real* vzWall,
-										  int numberOfWallNodes,
-										  int* kWallNodes,
-										  real* rhoD,
-										  real* pressD,
-										  unsigned int* geoD,
-										  unsigned int* neighborX,
-										  unsigned int* neighborY,
-										  unsigned int* neighborZ,
-										  unsigned int size_Mat,
-										  real* DD,
-										  bool isEvenTimestep)
+                                          real* vxD,
+                                          real* vyD,
+                                          real* vzD,
+                                          real* vxWall,
+                                          real* vyWall,
+                                          real* vzWall,
+                                          int numberOfWallNodes,
+                                          int* kWallNodes,
+                                          real* rhoD,
+                                          real* pressD,
+                                          unsigned int* geoD,
+                                          unsigned int* neighborX,
+                                          unsigned int* neighborY,
+                                          unsigned int* neighborZ,
+                                          unsigned int size_Mat,
+                                          real* DD,
+                                          bool isEvenTimestep)
 {
-   int Grid = (numberOfWallNodes / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfWallNodes);
 
-      LBSetOutputWallVelocitySP27<<< gridQ, threads >>> (	vxD,
-															vyD,
-															vzD,
-															vxWall,
-															vyWall,
-															vzWall,
-															numberOfWallNodes,
-															kWallNodes,
-															rhoD,
-															pressD,
-															geoD,
-															neighborX,
-															neighborY,
-															neighborZ,
-															size_Mat,
-															DD,
-															isEvenTimestep);
+      LBSetOutputWallVelocitySP27<<< grid.grid, grid.threads >>> (	vxD,
+                                                            vyD,
+                                                            vzD,
+                                                            vxWall,
+                                                            vyWall,
+                                                            vzWall,
+                                                            numberOfWallNodes,
+                                                            kWallNodes,
+                                                            rhoD,
+                                                            pressD,
+                                                            geoD,
+                                                            neighborX,
+                                                            neighborY,
+                                                            neighborZ,
+                                                            size_Mat,
+                                                            DD,
+                                                            isEvenTimestep);
       getLastCudaError("LBSetOutputWallVelocitySP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void GetVelotoForce27(unsigned int numberOfThreads,
-								 real* DD,
-								 int* bcIndex,
-								 int nonAtBC,
-								 real* Vx,
-								 real* Vy,
-								 real* Vz,
-								 unsigned int* neighborX,
-								 unsigned int* neighborY,
-								 unsigned int* neighborZ,
-								 unsigned int size_Mat,
-								 bool isEvenTimestep)
+                                 real* DD,
+                                 int* bcIndex,
+                                 int nonAtBC,
+                                 real* Vx,
+                                 real* Vy,
+                                 real* Vz,
+                                 unsigned int* neighborX,
+                                 unsigned int* neighborY,
+                                 unsigned int* neighborZ,
+                                 unsigned int size_Mat,
+                                 bool isEvenTimestep)
 {
-   int Grid = (nonAtBC / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, nonAtBC);
 
-      GetVeloforForcing27<<< gridQ, threads >>> (DD,
-												bcIndex,
-												nonAtBC,
-												Vx,
-												Vy,
-												Vz,
-												neighborX,
-												neighborY,
-												neighborZ,
-												size_Mat,
-												isEvenTimestep);
+      GetVeloforForcing27<<< grid.grid, grid.threads >>> (DD,
+                                                bcIndex,
+                                                nonAtBC,
+                                                Vx,
+                                                Vy,
+                                                Vz,
+                                                neighborX,
+                                                neighborY,
+                                                neighborZ,
+                                                size_Mat,
+                                                isEvenTimestep);
       getLastCudaError("GetVeloforForcing27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void InitParticlesDevice(real* coordX,
-									real* coordY,
-									real* coordZ,
-									real* coordParticleXlocal,
-									real* coordParticleYlocal,
-									real* coordParticleZlocal,
-									real* coordParticleXglobal,
-									real* coordParticleYglobal,
-									real* coordParticleZglobal,
-									real* veloParticleX,
-									real* veloParticleY,
-									real* veloParticleZ,
-									real* randArray,
-									unsigned int* particleID,
-									unsigned int* cellBaseID,
-									unsigned int* bcMatD,
-									unsigned int* neighborX,
-									unsigned int* neighborY,
-									unsigned int* neighborZ,
-									unsigned int* neighborWSB,
-							        int level,
-									unsigned int numberOfParticles,
-									unsigned int size_Mat,
-									unsigned int numberOfThreads)
+                                    real* coordY,
+                                    real* coordZ,
+                                    real* coordParticleXlocal,
+                                    real* coordParticleYlocal,
+                                    real* coordParticleZlocal,
+                                    real* coordParticleXglobal,
+                                    real* coordParticleYglobal,
+                                    real* coordParticleZglobal,
+                                    real* veloParticleX,
+                                    real* veloParticleY,
+                                    real* veloParticleZ,
+                                    real* randArray,
+                                    unsigned int* particleID,
+                                    unsigned int* cellBaseID,
+                                    unsigned int* bcMatD,
+                                    unsigned int* neighborX,
+                                    unsigned int* neighborY,
+                                    unsigned int* neighborZ,
+                                    unsigned int* neighborWSB,
+                                    int level,
+                                    unsigned int numberOfParticles,
+                                    unsigned int size_Mat,
+                                    unsigned int numberOfThreads)
 {
-   int Grid = (numberOfParticles / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfParticles);
 
-   InitParticles<<< gridQ, threads >>> (coordX,
-										coordY,
-										coordZ,
-										coordParticleXlocal,
-										coordParticleYlocal,
-										coordParticleZlocal,
-										coordParticleXglobal,
-										coordParticleYglobal,
-										coordParticleZglobal,
-										veloParticleX,
-										veloParticleY,
-										veloParticleZ,
-										randArray,
-										particleID,
-										cellBaseID,
-										bcMatD,
-										neighborX,
-										neighborY,
-										neighborZ,
-										neighborWSB,
-										level,
-										numberOfParticles,
-										size_Mat);
+   InitParticles<<< grid.grid, grid.threads >>> (coordX,
+                                        coordY,
+                                        coordZ,
+                                        coordParticleXlocal,
+                                        coordParticleYlocal,
+                                        coordParticleZlocal,
+                                        coordParticleXglobal,
+                                        coordParticleYglobal,
+                                        coordParticleZglobal,
+                                        veloParticleX,
+                                        veloParticleY,
+                                        veloParticleZ,
+                                        randArray,
+                                        particleID,
+                                        cellBaseID,
+                                        bcMatD,
+                                        neighborX,
+                                        neighborY,
+                                        neighborZ,
+                                        neighborWSB,
+                                        level,
+                                        numberOfParticles,
+                                        size_Mat);
       getLastCudaError("InitParticles execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void MoveParticlesDevice(real* coordX,
-									real* coordY,
-									real* coordZ,
-									real* coordParticleXlocal,
-									real* coordParticleYlocal,
-									real* coordParticleZlocal,
-									real* coordParticleXglobal,
-									real* coordParticleYglobal,
-									real* coordParticleZglobal,
-									real* veloParticleX,
-									real* veloParticleY,
-									real* veloParticleZ,
-									real* DD,
-									real  omega,
-									unsigned int* particleID,
-									unsigned int* cellBaseID,
-									unsigned int* bcMatD,
-									unsigned int* neighborX,
-									unsigned int* neighborY,
-									unsigned int* neighborZ,
-									unsigned int* neighborWSB,
-							        int level,
-									unsigned int timestep,
-									unsigned int numberOfTimesteps,
-									unsigned int numberOfParticles,
-									unsigned int size_Mat,
-									unsigned int numberOfThreads,
-									bool isEvenTimestep)
+                                    real* coordY,
+                                    real* coordZ,
+                                    real* coordParticleXlocal,
+                                    real* coordParticleYlocal,
+                                    real* coordParticleZlocal,
+                                    real* coordParticleXglobal,
+                                    real* coordParticleYglobal,
+                                    real* coordParticleZglobal,
+                                    real* veloParticleX,
+                                    real* veloParticleY,
+                                    real* veloParticleZ,
+                                    real* DD,
+                                    real  omega,
+                                    unsigned int* particleID,
+                                    unsigned int* cellBaseID,
+                                    unsigned int* bcMatD,
+                                    unsigned int* neighborX,
+                                    unsigned int* neighborY,
+                                    unsigned int* neighborZ,
+                                    unsigned int* neighborWSB,
+                                    int level,
+                                    unsigned int timestep,
+                                    unsigned int numberOfTimesteps,
+                                    unsigned int numberOfParticles,
+                                    unsigned int size_Mat,
+                                    unsigned int numberOfThreads,
+                                    bool isEvenTimestep)
 {
-   int Grid = (numberOfParticles / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfParticles);
 
-   MoveParticles<<< gridQ, threads >>> (coordX,
-										coordY,
-										coordZ,
-										coordParticleXlocal,
-										coordParticleYlocal,
-										coordParticleZlocal,
-										coordParticleXglobal,
-										coordParticleYglobal,
-										coordParticleZglobal,
-										veloParticleX,
-										veloParticleY,
-										veloParticleZ,
-										DD,
-										omega,
-										particleID,
-										cellBaseID,
-										bcMatD,
-										neighborX,
-										neighborY,
-										neighborZ,
-										neighborWSB,
-										level,
-										timestep,
-										numberOfTimesteps,
-										numberOfParticles,
-										size_Mat,
-										isEvenTimestep);
+   MoveParticles<<< grid.grid, grid.threads >>> (coordX,
+                                        coordY,
+                                        coordZ,
+                                        coordParticleXlocal,
+                                        coordParticleYlocal,
+                                        coordParticleZlocal,
+                                        coordParticleXglobal,
+                                        coordParticleYglobal,
+                                        coordParticleZglobal,
+                                        veloParticleX,
+                                        veloParticleY,
+                                        veloParticleZ,
+                                        DD,
+                                        omega,
+                                        particleID,
+                                        cellBaseID,
+                                        bcMatD,
+                                        neighborX,
+                                        neighborY,
+                                        neighborZ,
+                                        neighborWSB,
+                                        level,
+                                        timestep,
+                                        numberOfTimesteps,
+                                        numberOfParticles,
+                                        size_Mat,
+                                        isEvenTimestep);
       getLastCudaError("MoveParticles execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void initRandomDevice(curandState* state,
-								 unsigned int size_Mat,
-								 unsigned int numberOfThreads)
+                                 unsigned int size_Mat,
+                                 unsigned int numberOfThreads)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
-
-   initRandom<<< gridQ, threads >>> (state);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   initRandom<<< grid.grid, grid.threads >>> (state);
    getLastCudaError("initRandom execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void generateRandomValuesDevice( curandState* state,
-											unsigned int size_Mat,
-											real* randArray,
-											unsigned int numberOfThreads)
+                                            unsigned int size_Mat,
+                                            real* randArray,
+                                            unsigned int numberOfThreads)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
-
-   generateRandomValues<<< gridQ, threads >>> (state,randArray);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   generateRandomValues<<< grid.grid, grid.threads >>> (state,randArray);
    getLastCudaError("generateRandomValues execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -7097,26 +5631,12 @@ void CalcTurbulenceIntensityDevice(
    bool isEvenTimestep,
    uint numberOfThreads)
 {
-   int Grid = (size_Mat / numberOfThreads)+1;
-   int Grid1, Grid2;
-   if (Grid>512)
-   {
-      Grid1 = 512;
-      Grid2 = (Grid/Grid1)+1;
-   }
-   else
-   {
-      Grid1 = 1;
-      Grid2 = Grid;
-   }
-   dim3 gridQ(Grid1, Grid2);
-   dim3 threads(numberOfThreads, 1, 1 );
-
-   CalcTurbulenceIntensity<<<gridQ, threads>>>(
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   CalcTurbulenceIntensity<<<grid.grid, grid.threads>>>(
      vxx,
      vyy,
      vzz,
-	 vxy,
+     vxy,
      vxz,
      vyz,
      vx_mean,
@@ -7132,16 +5652,3 @@ void CalcTurbulenceIntensityDevice(
 
    getLastCudaError("CalcTurbulenceIntensity execution failed");
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

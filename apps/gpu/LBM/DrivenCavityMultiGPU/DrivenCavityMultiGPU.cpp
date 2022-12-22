@@ -50,6 +50,7 @@
 #include "VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
 #include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
 #include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
+#include "VirtualFluids_GPU/Factories/GridScalingFactory.h"
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 
@@ -92,7 +93,7 @@ void multipleLevel(std::filesystem::path& configPath)
     config.load(configPath.string());
     SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNummberOfProcess(), communicator.getPID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
-
+    GridScalingFactory scalingFactory = GridScalingFactory();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -112,7 +113,7 @@ void multipleLevel(std::filesystem::path& configPath)
     const real Re       = 1000.0; // 1000
     const real velocity = 1.0;
     const real dt       = (real)1.0e-3; // 0.5e-3;
-    const uint nx       = 64;
+    const uint nx       = 128;
     std::string simulationName("DrivenCavityChimMultiGPU");
 
     // para->setTimestepOut(10000);   // set in config
@@ -149,6 +150,7 @@ void multipleLevel(std::filesystem::path& configPath)
 
     // para->setMainKernel("CumulantK17CompChim");
     para->setMainKernel("CumulantK17CompChimStream");
+    scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleRhoSq);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -534,7 +536,7 @@ void multipleLevel(std::filesystem::path& configPath)
         gridGenerator = GridProvider::makeGridReader(FILEFORMAT::BINARY, para, cudaMemoryManager);
     }
 
-    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory);
+    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory, &scalingFactory);
     sim.run();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

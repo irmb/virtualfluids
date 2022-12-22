@@ -10,7 +10,7 @@
 #include "DataSet3D.h"
 #include "Grid3D.h"
 #include "LBMKernel.h"
-#include "MetisPartitioningGridVisitor.h"
+#include "Grid3DVisitor.h"
 #include "PointerDefinitions.h"
 #include "RenumberGridVisitor.h"
 #include "UbFileInputASCII.h"
@@ -25,10 +25,11 @@ using namespace MPIIODataStructures;
 #define MESSAGE_TAG 80
 #define SEND_BLOCK_SIZE 100000
 
-MPIIOMigrationBECoProcessor::MPIIOMigrationBECoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, std::shared_ptr<vf::mpi::Communicator> comm)
+MPIIOMigrationBECoProcessor::MPIIOMigrationBECoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<Grid3DVisitor> mV, const std::string &path, std::shared_ptr<vf::mpi::Communicator> comm)
     : MPIIOCoProcessor(grid, s, path, comm), nue(-999.999), nuL(-999.999), nuG(-999.999), densityRatio(-999.999)
 {
     memset(&boundCondParamStr, 0, sizeof(boundCondParamStr));
+    metisVisitor = mV;
 
     //-------------------------   define MPI types  ---------------------------------
 
@@ -116,7 +117,7 @@ void MPIIOMigrationBECoProcessor::writeDataSet(int step)
     int firstGlobalID {0};
     std::vector<double> doubleValuesArrayF; // double-values (arrays of f's) in all blocks  Fdistribution
     std::vector<double> doubleValuesArrayH1; // double-values (arrays of f's) in all blocks  H1distribution
-    // std::vector<double> doubleValuesArrayH2; // double-values (arrays of f's) in all blocks  H2distribution
+    std::vector<double> doubleValuesArrayH2; // double-values (arrays of f's) in all blocks  H2distribution
 
     if (comm->isRoot()) 
     {
@@ -124,7 +125,8 @@ void MPIIOMigrationBECoProcessor::writeDataSet(int step)
         UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
-    bool multiPhase = false;
+    bool multiPhase1 = false;
+    bool multiPhase2 = false;
     DSArraysPresence arrPresence;
     bool firstBlock        = true;
     int doubleCountInBlock = 0;
@@ -146,19 +148,20 @@ void MPIIOMigrationBECoProcessor::writeDataSet(int step)
             D3Q27EsoTwist3DSplittedVectorPtrH1 = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(block->getKernel()->getDataSet()->getHdistributions());
             if (D3Q27EsoTwist3DSplittedVectorPtrH1 != 0)
             {
-                multiPhase = true;
+                multiPhase1 = true;
                 localDistributionsH1 = D3Q27EsoTwist3DSplittedVectorPtrH1->getLocalDistributions();
                 nonLocalDistributionsH1 = D3Q27EsoTwist3DSplittedVectorPtrH1->getNonLocalDistributions();
                 zeroDistributionsH1 = D3Q27EsoTwist3DSplittedVectorPtrH1->getZeroDistributions();
             }
 
-            /*D3Q27EsoTwist3DSplittedVectorPtrH2 = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(block->getKernel()->getDataSet()->getH2distributions());
+            D3Q27EsoTwist3DSplittedVectorPtrH2 = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(block->getKernel()->getDataSet()->getH2distributions());
             if (D3Q27EsoTwist3DSplittedVectorPtrH2 != 0)
             {
+                multiPhase2 = true;
                 localDistributionsH2 = D3Q27EsoTwist3DSplittedVectorPtrH2->getLocalDistributions();
                 nonLocalDistributionsH2 = D3Q27EsoTwist3DSplittedVectorPtrH2->getNonLocalDistributions();
                 zeroDistributionsH2 = D3Q27EsoTwist3DSplittedVectorPtrH2->getZeroDistributions();
-            }*/
+            }
 
 
             if (firstBlock) // && block->getKernel()) // when first (any) valid block...
@@ -242,6 +245,11 @@ void MPIIOMigrationBECoProcessor::writeDataSet(int step)
                 else
                     arrPresence.isPhaseField2Present = false;
 
+                SPtr<CbArray3D<LBMReal, IndexerX3X2X1>> pressureFieldPtr = block->getKernel()->getDataSet()->getPressureField();
+                if (pressureFieldPtr)
+                    arrPresence.isPressureFieldPresent = true;
+                else
+                    arrPresence.isPressureFieldPresent = false;
 
                 firstBlock = false;
             }
@@ -253,7 +261,7 @@ void MPIIOMigrationBECoProcessor::writeDataSet(int step)
             if (zeroDistributionsF && (dataSetParamStr3.nx[0] > 0) && (dataSetParamStr3.nx[1] > 0) && (dataSetParamStr3.nx[2] > 0))
                 doubleValuesArrayF.insert(doubleValuesArrayF.end(), zeroDistributionsF->getDataVector().begin(), zeroDistributionsF->getDataVector().end());
 
-            if (multiPhase)
+            if (multiPhase1)
             {
                 if (localDistributionsH1 && (dataSetParamStr1.nx[0] > 0) && (dataSetParamStr1.nx[1] > 0) && (dataSetParamStr1.nx[2] > 0) && (dataSetParamStr1.nx[3] > 0))
                     doubleValuesArrayH1.insert(doubleValuesArrayH1.end(), localDistributionsH1->getDataVector().begin(), localDistributionsH1->getDataVector().end());
@@ -263,7 +271,7 @@ void MPIIOMigrationBECoProcessor::writeDataSet(int step)
                     doubleValuesArrayH1.insert(doubleValuesArrayH1.end(), zeroDistributionsH1->getDataVector().begin(), zeroDistributionsH1->getDataVector().end());
             }
 
-            /*if (D3Q27EsoTwist3DSplittedVectorPtrH2 != 0)
+            if (multiPhase2)
             {
                 if (localDistributionsH2 && (dataSetParamStr1.nx[0] > 0) && (dataSetParamStr1.nx[1] > 0) && (dataSetParamStr1.nx[2] > 0) && (dataSetParamStr1.nx[3] > 0))
                 doubleValuesArrayH2.insert(doubleValuesArrayH2.end(), localDistributionsH2->getDataVector().begin(), localDistributionsH2->getDataVector().end());
@@ -271,7 +279,7 @@ void MPIIOMigrationBECoProcessor::writeDataSet(int step)
                 doubleValuesArrayH2.insert(doubleValuesArrayH2.end(), nonLocalDistributionsH2->getDataVector().begin(), nonLocalDistributionsH2->getDataVector().end());
                 if (zeroDistributionsH2 && (dataSetParamStr3.nx[0] > 0) && (dataSetParamStr3.nx[1] > 0) && (dataSetParamStr3.nx[2] > 0))
                 doubleValuesArrayH2.insert(doubleValuesArrayH2.end(), zeroDistributionsH2->getDataVector().begin(), zeroDistributionsH2->getDataVector().end());
-            }*/
+            }
 
             ic++;
         }
@@ -318,7 +326,7 @@ void MPIIOMigrationBECoProcessor::writeDataSet(int step)
     MPI_File_close(&file_handler);
 
     //-------------------------------- H1 ------------------------------------------------
-    if (multiPhase)
+    if (multiPhase1)
     {
         filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSetH1.bin";
         rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
@@ -333,7 +341,7 @@ void MPIIOMigrationBECoProcessor::writeDataSet(int step)
     }
 
     //-------------------------------- H2 --------------------------------------------------
-    /*if (D3Q27EsoTwist3DSplittedVectorPtr2 != 0)
+    if (multiPhase2)
     {
         filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSetH2.bin";
         rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
@@ -345,7 +353,7 @@ void MPIIOMigrationBECoProcessor::writeDataSet(int step)
 
         MPI_File_sync(file_handler);
         MPI_File_close(&file_handler);
-    }    */
+    }
 
     //--------------------------------
 
@@ -395,6 +403,10 @@ void MPIIOMigrationBECoProcessor::writeDataSet(int step)
 
     if (arrPresence.isPhaseField2Present)
         write3DArray(step, PhaseField2, std::string("/cpPhaseField2.bin"));
+
+    if (arrPresence.isPressureFieldPresent)
+        write3DArray(step, PressureField, std::string("/cpPressureField.bin"));
+
     }
 
 void MPIIOMigrationBECoProcessor::write4DArray(int step, Arrays arrayType, std::string fname)
@@ -562,6 +574,9 @@ void MPIIOMigrationBECoProcessor::write3DArray(int step, Arrays arrayType, std::
                 case PhaseField2:
                     ___Array = block->getKernel()->getDataSet()->getPhaseField2();
                     break;
+                case PressureField:
+                    ___Array = block->getKernel()->getDataSet()->getPressureField();
+                    break;
                 default:
                     UB_THROW(UbException(UB_EXARGS,
                     "MPIIOMigrationBECoProcessor::write3DArray : 3D array type does not exist!"));
@@ -695,11 +710,7 @@ void MPIIOMigrationBECoProcessor::writeBoundaryConds(int step)
                     bouCond->bcVelocityX2           = (float)bcArr->bcvector[bc]->getBoundaryVelocityX2();
                     bouCond->bcVelocityX3           = (float)bcArr->bcvector[bc]->getBoundaryVelocityX3();
                     bouCond->bcDensity              = (float)bcArr->bcvector[bc]->getBoundaryDensity();
-                    bouCond->bcLodiDensity          = (float)bcArr->bcvector[bc]->getDensityLodiDensity();
-                    bouCond->bcLodiVelocityX1       = (float)bcArr->bcvector[bc]->getDensityLodiVelocityX1();
-                    bouCond->bcLodiVelocityX2       = (float)bcArr->bcvector[bc]->getDensityLodiVelocityX2();
-                    bouCond->bcLodiVelocityX3       = (float)bcArr->bcvector[bc]->getDensityLodiVelocityX3();
-                    bouCond->bcLodiLentgh           = (float)bcArr->bcvector[bc]->getDensityLodiLength();
+                    bouCond->bcPhaseField           = (float)bcArr->bcvector[bc]->getBoundaryPhaseField();
                     bouCond->nx1                    = (float)bcArr->bcvector[bc]->nx1;
                     bouCond->nx2                    = (float)bcArr->bcvector[bc]->nx2;
                     bouCond->nx3                    = (float)bcArr->bcvector[bc]->nx3;
@@ -842,8 +853,7 @@ void MPIIOMigrationBECoProcessor::restart(int step)
         UBLOG(logINFO, "Load check point - start");
 
     readBlocks(step);
-    SPtr<Grid3DVisitor> newMetisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::KWAY));
-    grid->accept(newMetisVisitor);
+    grid->accept(metisVisitor);
 
     readDataSet(step);
     readBoundaryConds(step);
@@ -980,6 +990,8 @@ void MPIIOMigrationBECoProcessor::blocksExchange(int tagN, int ind1, int ind2, i
 
     MPI_Waitall(requestCount, &requests[0], MPI_STATUSES_IGNORE);
 
+    MPI_Type_free(&sendBlockDoubleType);
+
     delete[] blocksCounterSend;
     delete[] blocksCounterRec;
     delete[] rawDataSend;
@@ -1011,7 +1023,8 @@ void MPIIOMigrationBECoProcessor::readDataSet(int step)
         UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
-    bool multiPhase = false;
+    bool multiPhase1 = false;
+    bool multiPhase2 = false;
     dataSetParam dataSetParamStr1, dataSetParamStr2, dataSetParamStr3;
 
     int blocksCountAll   = grid->getNumberOfBlocks(); // quantity of all blocks in the grid
@@ -1047,7 +1060,7 @@ void MPIIOMigrationBECoProcessor::readDataSet(int step)
         dataSetParamStr3.nx[0] * dataSetParamStr3.nx[1] * dataSetParamStr3.nx[2] * dataSetParamStr3.nx[3];
     std::vector<double> doubleValuesArrayF(size_t(myBlocksCount * doubleCountInBlock)); // double-values in all blocks  Fdistributions
     std::vector<double> doubleValuesArrayH1; // double-values in all blocks  H1distributions
-    //std::vector<double> doubleValuesArrayH2; // double-values in all blocks  H2distributions
+    std::vector<double> doubleValuesArrayH2; // double-values in all blocks  H2distributions
 
     MPI_Type_contiguous(int(doubleCountInBlock), MPI_DOUBLE, &dataSetDoubleType);
     MPI_Type_commit(&dataSetDoubleType);
@@ -1067,11 +1080,27 @@ void MPIIOMigrationBECoProcessor::readDataSet(int step)
     MPI_File_get_size(file_handler, &fsize);
     if (fsize > 0)
     {
-        multiPhase = true;
+        multiPhase1 = true;
         doubleValuesArrayH1.resize(myBlocksCount * doubleCountInBlock);
 
         read_offset = (MPI_Offset)(indexB * doubleCountInBlock * sizeof(double)) ;
         MPI_File_read_at(file_handler, read_offset, &doubleValuesArrayH1[0], int(myBlocksCount), dataSetDoubleType, MPI_STATUS_IGNORE);
+    }
+    MPI_File_close(&file_handler);
+
+    //--------------------------------- H2 ---------------------------------------------------------
+    filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSetH2.bin";
+    rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler);
+    if (rc != MPI_SUCCESS)
+        throw UbException(UB_EXARGS, "couldn't open file " + filename);
+    MPI_File_get_size(file_handler, &fsize);
+    if (fsize > 0)
+    {
+        multiPhase2 = true;
+        doubleValuesArrayH2.resize(myBlocksCount * doubleCountInBlock);
+
+        read_offset = (MPI_Offset)(indexB * doubleCountInBlock * sizeof(double));
+        MPI_File_read_at(file_handler, read_offset, &doubleValuesArrayH2[0], int(myBlocksCount), dataSetDoubleType, MPI_STATUS_IGNORE);
     }
     MPI_File_close(&file_handler);
 
@@ -1089,16 +1118,23 @@ void MPIIOMigrationBECoProcessor::readDataSet(int step)
     for (int r = 0; r < size; r++)
         rawDataReceiveF[r].resize(0);
     blocksExchange(MESSAGE_TAG, indexB, indexE, int(doubleCountInBlock), doubleValuesArrayF, rawDataReceiveF);
+    
 
     std::vector<double>* rawDataReceiveH1 = new std::vector<double>[size];
-    for (int r = 0; r < size; r++)
-        rawDataReceiveH1[r].resize(0);
-    blocksExchange(MESSAGE_TAG, indexB, indexE, int(doubleCountInBlock), doubleValuesArrayH1, rawDataReceiveH1);
+    if (multiPhase1)
+    {
+        for (int r = 0; r < size; r++)
+            rawDataReceiveH1[r].resize(0);
+        blocksExchange(MESSAGE_TAG, indexB, indexE, int(doubleCountInBlock), doubleValuesArrayH1, rawDataReceiveH1);
+    }
 
-    /*    std::vector<double>* rawDataReceiveH2 = new std::vector<double>[size];
+    std::vector<double>* rawDataReceiveH2 = new std::vector<double>[size];
+    if (multiPhase2)
+    {
         for (int r = 0; r < size; r++)
             rawDataReceiveH2[r].resize(0);
-        blocksExchange(MESSAGE_TAG, indexB, indexE, int(doubleCountInBlock), doubleValuesArrayH2, rawDataReceiveH2);*/
+        blocksExchange(MESSAGE_TAG, indexB, indexE, int(doubleCountInBlock), doubleValuesArrayH2, rawDataReceiveH2);
+    }
 
     if (comm->isRoot())
     {
@@ -1110,9 +1146,9 @@ void MPIIOMigrationBECoProcessor::readDataSet(int step)
     
     //-------------------------------------- restore blocks ---------------------------------
     int blockID;
-    std::vector<LBMReal> vectorsOfValuesF1, vectorsOfValuesF2, vectorsOfValuesF3;
-    std::vector<LBMReal> vectorsOfValuesH11, vectorsOfValuesH12, vectorsOfValuesH13;
-    //std::vector<LBMReal> vectorsOfValuesH21, vectorsOfValuesH22, vectorsOfValuesH23;
+    std::vector<double> vectorsOfValuesF1, vectorsOfValuesF2, vectorsOfValuesF3;
+    std::vector<double> vectorsOfValuesH11, vectorsOfValuesH12, vectorsOfValuesH13;
+    std::vector<double> vectorsOfValuesH21, vectorsOfValuesH22, vectorsOfValuesH23;
 
     size_t vectorSize1 = dataSetParamStr1.nx[0] * dataSetParamStr1.nx[1] * dataSetParamStr1.nx[2] * dataSetParamStr1.nx[3];
     size_t vectorSize2 = dataSetParamStr2.nx[0] * dataSetParamStr2.nx[1] * dataSetParamStr2.nx[2] * dataSetParamStr2.nx[3];
@@ -1128,21 +1164,24 @@ void MPIIOMigrationBECoProcessor::readDataSet(int step)
             index += 1;
 
             vectorsOfValuesF1.assign(rawDataReceiveF[r].data() + index, rawDataReceiveF[r].data() + index + vectorSize1);
-            if(multiPhase)
+            if(multiPhase1)
                 vectorsOfValuesH11.assign(rawDataReceiveH1[r].data() + index, rawDataReceiveH1[r].data() + index + vectorSize1);
-            //vectorsOfValuesH21.assign(rawDataReceiveH2[r].data() + index, rawDataReceiveH2[r].data() + index + vectorSize1);
+            if (multiPhase2)
+                vectorsOfValuesH21.assign(rawDataReceiveH2[r].data() + index, rawDataReceiveH2[r].data() + index + vectorSize1);
             index += vectorSize1;
 
             vectorsOfValuesF2.assign(rawDataReceiveF[r].data() + index, rawDataReceiveF[r].data() + index + vectorSize2);
-            if (multiPhase)
-                vectorsOfValuesH12.assign(rawDataReceiveH1[r].data() + index, rawDataReceiveH1[r].data() + index + vectorSize1);
-            //vectorsOfValuesH22.assign(rawDataReceiveH2[r].data() + index, rawDataReceiveH2[r].data() + index + vectorSize1);
+            if (multiPhase1)
+                vectorsOfValuesH12.assign(rawDataReceiveH1[r].data() + index, rawDataReceiveH1[r].data() + index + vectorSize2);
+            if (multiPhase2)
+                vectorsOfValuesH22.assign(rawDataReceiveH2[r].data() + index, rawDataReceiveH2[r].data() + index + vectorSize2);
             index += vectorSize2;
 
             vectorsOfValuesF3.assign(rawDataReceiveF[r].data() + index, rawDataReceiveF[r].data() + index + vectorSize3);
-            if (multiPhase)
-                vectorsOfValuesH13.assign(rawDataReceiveH1[r].data() + index, rawDataReceiveH1[r].data() + index + vectorSize1);
-                //vectorsOfValuesH23.assign(rawDataReceiveH2[r].data() + index, rawDataReceiveH2[r].data() + index + vectorSize1);
+            if (multiPhase1)
+                vectorsOfValuesH13.assign(rawDataReceiveH1[r].data() + index, rawDataReceiveH1[r].data() + index + vectorSize3);
+            if (multiPhase2)
+                vectorsOfValuesH23.assign(rawDataReceiveH2[r].data() + index, rawDataReceiveH2[r].data() + index + vectorSize3);
             index += vectorSize3;
 
             SPtr<DistributionArray3D> mFdistributions(new D3Q27EsoTwist3DSplittedVector());
@@ -1158,7 +1197,7 @@ void MPIIOMigrationBECoProcessor::readDataSet(int step)
             dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mFdistributions)->setNX3(dataSetParamStr1.nx3);
 
             SPtr<DistributionArray3D> mH1distributions(new D3Q27EsoTwist3DSplittedVector());
-            if (multiPhase)
+            if (multiPhase1)
             {
                 dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mH1distributions)->setLocalDistributions(CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(
                     new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValuesH11, dataSetParamStr1.nx[0], dataSetParamStr1.nx[1], dataSetParamStr1.nx[2], dataSetParamStr1.nx[3])));
@@ -1172,22 +1211,25 @@ void MPIIOMigrationBECoProcessor::readDataSet(int step)
                 dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mH1distributions)->setNX3(dataSetParamStr1.nx3);
             }
 
-            /*SPtr<DistributionArray3D> mH2distributions(new D3Q27EsoTwist3DSplittedVector());
-            dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mH2distributions)->setLocalDistributions(CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(
+            SPtr<DistributionArray3D> mH2distributions(new D3Q27EsoTwist3DSplittedVector());
+            if (multiPhase2)
+            {
+                dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mH2distributions)->setLocalDistributions(CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(
                     new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValuesH21, dataSetParamStr1.nx[0], dataSetParamStr1.nx[1], dataSetParamStr1.nx[2], dataSetParamStr1.nx[3])));
-            dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mH2distributions)->setNonLocalDistributions(CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(
-                    new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValuesH22, dataSetParamStr2.nx[0], dataSetParamStr2.nx[1], dataSetParamStr2.nx[2], dataSetParamStr2.nx[3])));
-            dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mH2distributions)->setZeroDistributions(CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(
-                    vectorsOfValuesH23, dataSetParamStr3.nx[0], dataSetParamStr3.nx[1], dataSetParamStr3.nx[2])));
+                dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mH2distributions)->setNonLocalDistributions(CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(
+                        new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValuesH22, dataSetParamStr2.nx[0], dataSetParamStr2.nx[1], dataSetParamStr2.nx[2], dataSetParamStr2.nx[3])));
+                dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mH2distributions)->setZeroDistributions(CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(
+                        vectorsOfValuesH23, dataSetParamStr3.nx[0], dataSetParamStr3.nx[1], dataSetParamStr3.nx[2])));
 
-            dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mH2distributions)->setNX1(dataSetParamStr1.nx1);
-            dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mH2distributions)->setNX2(dataSetParamStr1.nx2);
-            dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mH2distributions)->setNX3(dataSetParamStr1.nx3);*/
-
+                dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mH2distributions)->setNX1(dataSetParamStr1.nx1);
+                dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mH2distributions)->setNX2(dataSetParamStr1.nx2);
+                dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mH2distributions)->setNX3(dataSetParamStr1.nx3);
+            }
 
             // find the nesessary block and fill it
             SPtr<Block3D> block = grid->getBlock(blockID);
             this->lbmKernel->setBlock(block);
+            this->lbmKernel->setNX(std::array<int, 3>{ {dataSetParamStr1.nx1, dataSetParamStr1.nx2, dataSetParamStr1.nx3}});
             SPtr<LBMKernel> kernel = this->lbmKernel->clone();
             LBMReal collFactor = LBMSystem::calcCollisionFactor(this->nue, block->getLevel());
             LBMReal collFactorL = LBMSystem::calcCollisionFactor(this->nuL, block->getLevel());
@@ -1199,14 +1241,16 @@ void MPIIOMigrationBECoProcessor::readDataSet(int step)
             kernel->setDensityRatio(this->densityRatio);
             SPtr<DataSet3D> dataSetPtr = SPtr<DataSet3D>(new DataSet3D());
             dataSetPtr->setFdistributions(mFdistributions);
-            if (multiPhase)
+            if (multiPhase1)
                 dataSetPtr->setHdistributions(mH1distributions);
-//            dataSetPtr->setHdistributions(mH2distributions);
+            if (multiPhase2)
+                dataSetPtr->setH2distributions(mH2distributions);
             kernel->setDataSet(dataSetPtr);
             block->setKernel(kernel);
         }
     }
-    //if (comm->isRoot()) 
+
+    if (comm->isRoot()) 
     {
         UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readDataSet end of restore of data, rank = " << rank);
         UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
@@ -1254,9 +1298,12 @@ void MPIIOMigrationBECoProcessor::readDataSet(int step)
     if (arrPresence.isPhaseField2Present)
         readArray(step, PhaseField2, std::string("/cpPhaseField2.bin"));
 
+    if (arrPresence.isPressureFieldPresent)
+        readArray(step, PressureField, std::string("/cpPressureField.bin"));
+
     delete[] rawDataReceiveF;
-//    delete[] rawDataReceiveH1;
-//    delete[] rawDataReceiveH2;
+    delete[] rawDataReceiveH1;
+    delete[] rawDataReceiveH2;
 }
 
 void MPIIOMigrationBECoProcessor::readArray(int step, Arrays arrType, std::string fname)
@@ -1337,7 +1384,7 @@ void MPIIOMigrationBECoProcessor::readArray(int step, Arrays arrType, std::strin
 
     //----------------------------- restore data ---------------------------------
     int blockID;
-    std::vector<LBMReal> vectorsOfValues;
+    std::vector<double> vectorsOfValues;
     size_t index;
     size_t nextVectorSize = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
 
@@ -1398,6 +1445,11 @@ void MPIIOMigrationBECoProcessor::readArray(int step, Arrays arrType, std::strin
                     ___3DArray = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(
                         vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2]));
                     block->getKernel()->getDataSet()->setPhaseField2(___3DArray);
+                    break;
+                case PressureField:
+                    ___3DArray = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(
+                        vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2]));
+                    block->getKernel()->getDataSet()->setPressureField(___3DArray);
                     break;
                 default:
                     UB_THROW(UbException(UB_EXARGS, "MPIIOMigrationBECoProcessor::readArray : array type does not exist!"));
@@ -1622,11 +1674,7 @@ void MPIIOMigrationBECoProcessor::readBoundaryConds(int step)
                     bc->bcVelocityX2           = bcArray[ibc].bcVelocityX2;
                     bc->bcVelocityX3           = bcArray[ibc].bcVelocityX3;
                     bc->bcDensity              = bcArray[ibc].bcDensity;
-                    bc->bcLodiDensity          = bcArray[ibc].bcLodiDensity;
-                    bc->bcLodiVelocityX1       = bcArray[ibc].bcLodiVelocityX1;
-                    bc->bcLodiVelocityX2       = bcArray[ibc].bcLodiVelocityX2;
-                    bc->bcLodiVelocityX3       = bcArray[ibc].bcLodiVelocityX3;
-                    bc->bcLodiLentgh           = bcArray[ibc].bcLodiLentgh;
+                    bc->bcPhaseField           = bcArray[ibc].bcPhaseField;
 
                     bc->nx1 = bcArray[ibc].nx1;
                     bc->nx2 = bcArray[ibc].nx2;

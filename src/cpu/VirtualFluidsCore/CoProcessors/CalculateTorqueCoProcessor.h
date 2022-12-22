@@ -40,13 +40,9 @@ private:
    std::string path;
    std::shared_ptr<vf::mpi::Communicator> comm;
    std::vector<SPtr<D3Q27Interactor> > interactors;
-   double forceX1global;
-   double forceX2global;
-   double forceX3global;
-
-   typedef void(*CalcMacrosFct)(const LBMReal* const& /*f[27]*/, LBMReal& /*rho*/, LBMReal& /*vx1*/, LBMReal& /*vx2*/, LBMReal& /*vx3*/);
-   CalcMacrosFct    calcMacrosFct;
-   LBMReal compressibleFactor;
+   double torqueX1global;
+   double torqueX2global;
+   double torqueX3global;
 };
 
 

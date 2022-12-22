@@ -5,24 +5,27 @@
 #include <math.h>
 
 #include <Parameter/Parameter.h>
+
 #include "Parameter/CudaStreamManager.h"
-#include "PreCollisionInteractor/ActuatorLine.h"
+#include "PreCollisionInteractor/ActuatorFarm.h"
 #include "PreCollisionInteractor/Probes/Probe.h"
+#include <PreCollisionInteractor/PrecursorWriter.h>
 
 #include "Calculation/PorousMedia.h"
 
 #include "lbm/constants/NumericConstants.h"
 
-//void CudaMemoryManager::cudaAllocFull(int lev) //DEPRECATED: related to full matrix
-//{
-//    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->geo      ), parameter->getParH(lev)->mem_size_int  ));
-//    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->k        ), parameter->getParH(lev)->mem_size_int  ));
-//}
-//void CudaMemoryManager::cudaFreeFull(int lev) //DEPRECATED: related to full matrix
-//{
-//    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->geo   ));
-//    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->k     ));
-//}
+
+void CudaMemoryManager::cudaAllocFull(int lev)
+{
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->geo      ), parameter->getParH(lev)->mem_size_int  ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->k        ), parameter->getParH(lev)->mem_size_int  ));
+}
+void CudaMemoryManager::cudaFreeFull(int lev)
+{
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->geo   ));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->k     ));
+}
 void CudaMemoryManager::cudaCopyPrint(int lev)
 {
     checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->velocityX   , parameter->getParD(lev)->velocityX   , parameter->getParH(lev)->mem_size_real_SP , cudaMemcpyDeviceToHost));
@@ -239,6 +242,7 @@ void CudaMemoryManager::cudaCopyVeloBC(int lev)
 	checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->velocityBC.deltaVz, parameter->getParH(lev)->velocityBC.deltaVz,            mem_size_inflow_Q_q,  cudaMemcpyHostToDevice));
 
 }
+
 void CudaMemoryManager::cudaFreeVeloBC(int lev)
 {
 	checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->velocityBC.q27[0] ));
@@ -524,24 +528,24 @@ void CudaMemoryManager::cudaCopyProcessNeighborXIndex(int lev, unsigned int proc
 								cudaMemcpyHostToDevice));
 }
 void CudaMemoryManager::cudaCopyProcessNeighborXFsHD(int lev, unsigned int processNeighbor,
-                                                     const unsigned int &memsizeFsRecv, int streamIndex)
+                                                     const unsigned int &memsizeFsRecv)
 {
-    if (streamIndex == -1)
+    if (!parameter->getStreamManager()->streamIsRegistered(CudaStreamIndex::SubDomainBorder))
         checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->recvProcessNeighborX[processNeighbor].f[0],
 						 parameter->getParH(lev)->recvProcessNeighborX[processNeighbor].f[0],
 						 parameter->getD3Qxx() * memsizeFsRecv,
 						 cudaMemcpyHostToDevice));
     else
         checkCudaErrors( cudaMemcpyAsync(parameter->getParD(lev)->recvProcessNeighborX[processNeighbor].f[0],
-                         parameter->getParH(lev)->recvProcessNeighborX[processNeighbor].f[0],
-                         parameter->getD3Qxx() * memsizeFsRecv,
-                         cudaMemcpyHostToDevice,
-                         parameter->getStreamManager()->getStream(streamIndex)));
+                                         parameter->getParH(lev)->recvProcessNeighborX[processNeighbor].f[0],
+                                         parameter->getD3Qxx() * memsizeFsRecv,
+                                         cudaMemcpyHostToDevice,
+                                         parameter->getStreamManager()->getStream(CudaStreamIndex::SubDomainBorder)));
 }
 void CudaMemoryManager::cudaCopyProcessNeighborXFsDH(int lev, unsigned int processNeighbor,
-                                                     const unsigned int &memsizeFsSend, int streamIndex)
-{
-    if (streamIndex == -1)
+                                                     const unsigned int &memsizeFsSend)
+{  
+    if (!parameter->getStreamManager()->streamIsRegistered(CudaStreamIndex::SubDomainBorder))
     	checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->sendProcessNeighborX[processNeighbor].f[0],
     								parameter->getParD(lev)->sendProcessNeighborX[processNeighbor].f[0],
     								parameter->getD3Qxx() * memsizeFsSend,
@@ -551,7 +555,7 @@ void CudaMemoryManager::cudaCopyProcessNeighborXFsDH(int lev, unsigned int proce
     								     parameter->getParD(lev)->sendProcessNeighborX[processNeighbor].f[0],
     								     parameter->getD3Qxx() * memsizeFsSend,
     								     cudaMemcpyDeviceToHost,
-                                         parameter->getStreamManager()->getStream(streamIndex)));
+                                         parameter->getStreamManager()->getStream(CudaStreamIndex::SubDomainBorder)));
 }
 void CudaMemoryManager::cudaFreeProcessNeighborX(int lev, unsigned int processNeighbor)
 {
@@ -594,35 +598,33 @@ void CudaMemoryManager::cudaCopyProcessNeighborYIndex(int lev, unsigned int proc
 								parameter->getParH(lev)->recvProcessNeighborY[processNeighbor].memsizeIndex,
 								cudaMemcpyHostToDevice));
 }
-void CudaMemoryManager::cudaCopyProcessNeighborYFsHD(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsRecv,
-                                                     int streamIndex)
+void CudaMemoryManager::cudaCopyProcessNeighborYFsHD(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsRecv)
 {
-    if (streamIndex == -1)
+    if (!parameter->getStreamManager()->streamIsRegistered(CudaStreamIndex::SubDomainBorder))
 	    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->recvProcessNeighborY[processNeighbor].f[0],
 								    parameter->getParH(lev)->recvProcessNeighborY[processNeighbor].f[0],
 								    parameter->getD3Qxx() * memsizeFsRecv,
 								    cudaMemcpyHostToDevice));
     else
-        checkCudaErrors(cudaMemcpyAsync(parameter->getParD(lev)->recvProcessNeighborY[processNeighbor].f[0],
-                        parameter->getParH(lev)->recvProcessNeighborY[processNeighbor].f[0],
-                        parameter->getD3Qxx() * memsizeFsRecv,
-                        cudaMemcpyHostToDevice,
-                        parameter->getStreamManager()->getStream(streamIndex)));
+        checkCudaErrors( cudaMemcpyAsync(parameter->getParD(lev)->recvProcessNeighborY[processNeighbor].f[0],
+                                         parameter->getParH(lev)->recvProcessNeighborY[processNeighbor].f[0],
+                                         parameter->getD3Qxx() * memsizeFsRecv,
+                                         cudaMemcpyHostToDevice,
+                                         parameter->getStreamManager()->getStream(CudaStreamIndex::SubDomainBorder)));
 }
-void CudaMemoryManager::cudaCopyProcessNeighborYFsDH(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsSend,
-                                                     int streamIndex)
+void CudaMemoryManager::cudaCopyProcessNeighborYFsDH(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsSend)
 {
-    if (streamIndex == -1)
+    if (!parameter->getStreamManager()->streamIsRegistered(CudaStreamIndex::SubDomainBorder))
 	    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->sendProcessNeighborY[processNeighbor].f[0],
 	    							parameter->getParD(lev)->sendProcessNeighborY[processNeighbor].f[0],
 	    							parameter->getD3Qxx() * memsizeFsSend,
 	    							cudaMemcpyDeviceToHost));
     else
-        checkCudaErrors(
-            cudaMemcpyAsync(parameter->getParH(lev)->sendProcessNeighborY[processNeighbor].f[0],
-                            parameter->getParD(lev)->sendProcessNeighborY[processNeighbor].f[0],
-                            parameter->getD3Qxx() * memsizeFsSend,
-                            cudaMemcpyDeviceToHost, parameter->getStreamManager()->getStream(streamIndex)));
+        checkCudaErrors( cudaMemcpyAsync(parameter->getParH(lev)->sendProcessNeighborY[processNeighbor].f[0],
+                                         parameter->getParD(lev)->sendProcessNeighborY[processNeighbor].f[0],
+                                         parameter->getD3Qxx() * memsizeFsSend,
+                                         cudaMemcpyDeviceToHost, 
+                                         parameter->getStreamManager()->getStream(CudaStreamIndex::SubDomainBorder)));
 }
 void CudaMemoryManager::cudaFreeProcessNeighborY(int lev, unsigned int processNeighbor)
 {
@@ -666,9 +668,9 @@ void CudaMemoryManager::cudaCopyProcessNeighborZIndex(int lev, unsigned int proc
 								cudaMemcpyHostToDevice));
 }
 void CudaMemoryManager::cudaCopyProcessNeighborZFsHD(int lev, unsigned int processNeighbor,
-                                                     const unsigned int &memsizeFsRecv, int streamIndex)
+                                                     const unsigned int &memsizeFsRecv)
 {
-    if (streamIndex == -1)
+    if (!parameter->getStreamManager()->streamIsRegistered(CudaStreamIndex::SubDomainBorder))
 	    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->recvProcessNeighborZ[processNeighbor].f[0],
 	    							parameter->getParH(lev)->recvProcessNeighborZ[processNeighbor].f[0],
 	    							parameter->getD3Qxx() * memsizeFsRecv,
@@ -678,12 +680,12 @@ void CudaMemoryManager::cudaCopyProcessNeighborZFsHD(int lev, unsigned int proce
 	    				                 parameter->getParH(lev)->recvProcessNeighborZ[processNeighbor].f[0],
 	    				                 parameter->getD3Qxx() * memsizeFsRecv,
 	    				                 cudaMemcpyHostToDevice,
-                                         parameter->getStreamManager()->getStream(streamIndex)));
+                                         parameter->getStreamManager()->getStream(CudaStreamIndex::SubDomainBorder)));
 }
 void CudaMemoryManager::cudaCopyProcessNeighborZFsDH(int lev, unsigned int processNeighbor,
-                                                     const unsigned int &memsizeFsSend, int streamIndex)
+                                                     const unsigned int &memsizeFsSend)
 {
-    if (streamIndex == -1)
+    if (!parameter->getStreamManager()->streamIsRegistered(CudaStreamIndex::SubDomainBorder))
         checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->sendProcessNeighborZ[processNeighbor].f[0],
 	        					    parameter->getParD(lev)->sendProcessNeighborZ[processNeighbor].f[0],
 	        					    parameter->getD3Qxx() * memsizeFsSend,
@@ -693,7 +695,7 @@ void CudaMemoryManager::cudaCopyProcessNeighborZFsDH(int lev, unsigned int proce
 	        						     parameter->getParD(lev)->sendProcessNeighborZ[processNeighbor].f[0],
 	        						     parameter->getD3Qxx() * memsizeFsSend,
 	        						     cudaMemcpyDeviceToHost,
-                                         parameter->getStreamManager()->getStream(streamIndex)));
+                                         parameter->getStreamManager()->getStream(CudaStreamIndex::SubDomainBorder)));
 }
 void CudaMemoryManager::cudaFreeProcessNeighborZ(int lev, unsigned int processNeighbor)
 {
@@ -1655,6 +1657,133 @@ void CudaMemoryManager::cudaFreeWallModel(int lev, bool hasWallModelMonitor)
     }
 }
 
+
+//Precursor BC
+void CudaMemoryManager::cudaAllocPrecursorBC(int lev)
+{   
+    uint memSizeQInt = parameter->getParH(lev)->precursorBC.numberOfBCnodes*sizeof(int);
+    uint memSizeQUint = parameter->getParH(lev)->precursorBC.numberOfBCnodes*sizeof(uint);
+    uint memSizeQReal = parameter->getParH(lev)->precursorBC.numberOfBCnodes*sizeof(real);
+
+    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->precursorBC.k, memSizeQInt));
+    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->precursorBC.q27[0], parameter->getD3Qxx()*memSizeQReal));
+    
+
+    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->precursorBC.planeNeighbor0PP, memSizeQUint));
+    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->precursorBC.planeNeighbor0PM, memSizeQUint));
+    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->precursorBC.planeNeighbor0MP, memSizeQUint));
+    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->precursorBC.planeNeighbor0MM, memSizeQUint));
+
+    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->precursorBC.weights0PP, memSizeQReal));
+    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->precursorBC.weights0PM, memSizeQReal));
+    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->precursorBC.weights0MP, memSizeQReal));
+    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->precursorBC.weights0MM, memSizeQReal));
+
+    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->precursorBC.k, memSizeQInt));
+    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->precursorBC.q27[0], parameter->getD3Qxx()*memSizeQReal));
+
+    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->precursorBC.planeNeighbor0PP, memSizeQUint));
+    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->precursorBC.planeNeighbor0PM, memSizeQUint));
+    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->precursorBC.planeNeighbor0MP, memSizeQUint));
+    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->precursorBC.planeNeighbor0MM, memSizeQUint));
+
+    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->precursorBC.weights0PP, memSizeQReal));
+    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->precursorBC.weights0PM, memSizeQReal));
+    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->precursorBC.weights0MP, memSizeQReal));
+    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->precursorBC.weights0MM, memSizeQReal));
+
+    real memSize = memSizeQInt+4*memSizeQUint+(4+parameter->getD3Qxx())*memSizeQReal;
+    setMemsizeGPU(memSize, false);
+
+}
+
+
+void CudaMemoryManager::cudaAllocPrecursorData(int lev)
+{
+    size_t size = parameter->getParH(lev)->precursorBC.numberOfPrecursorNodes*sizeof(real)*parameter->getParH(lev)->precursorBC.numberOfQuantities;
+
+    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->precursorBC.last, size));
+    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->precursorBC.current, size));
+    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->precursorBC.next, size));
+
+    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->precursorBC.last, size));
+    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->precursorBC.current, size));
+    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->precursorBC.next, size));
+    setMemsizeGPU(3*size, false);
+}
+
+
+void CudaMemoryManager::cudaCopyPrecursorBC(int lev)
+{
+    uint memSizeQInt = parameter->getParH(lev)->precursorBC.numberOfBCnodes*sizeof(int);
+    uint memSizeQUint = parameter->getParH(lev)->precursorBC.numberOfBCnodes*sizeof(uint);
+    uint memSizeQReal = parameter->getParH(lev)->precursorBC.numberOfBCnodes*sizeof(real);
+
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->precursorBC.k, parameter->getParH(lev)->precursorBC.k, memSizeQInt, cudaMemcpyHostToDevice));
+
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->precursorBC.q27[0], parameter->getParH(lev)->precursorBC.q27[0], memSizeQReal*parameter->getD3Qxx(), cudaMemcpyHostToDevice));
+
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->precursorBC.planeNeighbor0PP, parameter->getParH(lev)->precursorBC.planeNeighbor0PP, memSizeQUint, cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->precursorBC.planeNeighbor0PM, parameter->getParH(lev)->precursorBC.planeNeighbor0PM, memSizeQUint, cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->precursorBC.planeNeighbor0MP, parameter->getParH(lev)->precursorBC.planeNeighbor0MP, memSizeQUint, cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->precursorBC.planeNeighbor0MM, parameter->getParH(lev)->precursorBC.planeNeighbor0MM, memSizeQUint, cudaMemcpyHostToDevice));
+
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->precursorBC.weights0PP, parameter->getParH(lev)->precursorBC.weights0PP, memSizeQReal, cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->precursorBC.weights0PM, parameter->getParH(lev)->precursorBC.weights0PM, memSizeQReal, cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->precursorBC.weights0MP, parameter->getParH(lev)->precursorBC.weights0MP, memSizeQReal, cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->precursorBC.weights0MM, parameter->getParH(lev)->precursorBC.weights0MM, memSizeQReal, cudaMemcpyHostToDevice));
+}
+void CudaMemoryManager::cudaCopyPrecursorData(int lev)
+{
+    auto prec = &parameter->getParH(lev)->precursorBC;
+    auto precStream = parameter->getStreamManager()->getStream(CudaStreamIndex::Precursor);
+    size_t memSize = prec->numberOfPrecursorNodes*sizeof(real)*prec->numberOfQuantities;
+    checkCudaErrors( cudaStreamSynchronize(precStream) );
+    checkCudaErrors( cudaMemcpyAsync(parameter->getParD(lev)->precursorBC.next, prec->next, memSize, cudaMemcpyHostToDevice, precStream) );
+}
+
+
+void CudaMemoryManager::cudaFreePrecursorBC(int lev)
+{
+    checkCudaErrors( cudaFreeHost( parameter->getParH(lev)->precursorBC.k));
+
+    checkCudaErrors( cudaFreeHost( parameter->getParH(lev)->precursorBC.q27[0]));
+
+    checkCudaErrors( cudaFreeHost( parameter->getParH(lev)->precursorBC.planeNeighbor0PP));
+    checkCudaErrors( cudaFreeHost( parameter->getParH(lev)->precursorBC.planeNeighbor0PM));
+    checkCudaErrors( cudaFreeHost( parameter->getParH(lev)->precursorBC.planeNeighbor0MP));
+    checkCudaErrors( cudaFreeHost( parameter->getParH(lev)->precursorBC.planeNeighbor0MM));
+
+    checkCudaErrors( cudaFreeHost( parameter->getParH(lev)->precursorBC.weights0PP));
+    checkCudaErrors( cudaFreeHost( parameter->getParH(lev)->precursorBC.weights0PM));
+    checkCudaErrors( cudaFreeHost( parameter->getParH(lev)->precursorBC.weights0MP));
+    checkCudaErrors( cudaFreeHost( parameter->getParH(lev)->precursorBC.weights0MM));
+
+    checkCudaErrors( cudaFree( parameter->getParD(lev)->precursorBC.k));
+
+    checkCudaErrors( cudaFree( parameter->getParD(lev)->precursorBC.q27[0]));
+
+    checkCudaErrors( cudaFree( parameter->getParD(lev)->precursorBC.planeNeighbor0PP));
+    checkCudaErrors( cudaFree( parameter->getParD(lev)->precursorBC.planeNeighbor0PM));
+    checkCudaErrors( cudaFree( parameter->getParD(lev)->precursorBC.planeNeighbor0MP));
+    checkCudaErrors( cudaFree( parameter->getParD(lev)->precursorBC.planeNeighbor0MM));
+
+    checkCudaErrors( cudaFree( parameter->getParD(lev)->precursorBC.weights0PP));
+    checkCudaErrors( cudaFree( parameter->getParD(lev)->precursorBC.weights0PM));
+    checkCudaErrors( cudaFree( parameter->getParD(lev)->precursorBC.weights0MP));
+    checkCudaErrors( cudaFree( parameter->getParD(lev)->precursorBC.weights0MM));
+}
+
+void CudaMemoryManager::cudaFreePrecursorData(int lev)
+{
+    checkCudaErrors( cudaFreeHost( parameter->getParH(lev)->precursorBC.last));
+    checkCudaErrors( cudaFreeHost( parameter->getParH(lev)->precursorBC.current));
+    checkCudaErrors( cudaFreeHost( parameter->getParH(lev)->precursorBC.next));
+
+    checkCudaErrors( cudaFree( parameter->getParD(lev)->precursorBC.last));
+    checkCudaErrors( cudaFree( parameter->getParD(lev)->precursorBC.current));
+    checkCudaErrors( cudaFree( parameter->getParD(lev)->precursorBC.next));
+}
 //Test roundoff error
 void CudaMemoryManager::cudaAllocTestRE(int lev, unsigned int size)
 {
@@ -2921,231 +3050,297 @@ void CudaMemoryManager::cudaFree2ndOrderDerivitivesIsoTest(int lev)
 
 }
 
-void CudaMemoryManager::cudaAllocFluidNodeIndices(int lev) {
-    uint mem_size_geo_fluid_nodes = sizeof(uint) * parameter->getParH(lev)->numberOfFluidNodes;
+void CudaMemoryManager::cudaAllocTaggedFluidNodeIndices(CollisionTemplate tag, int lev) {
+    uint mem_size_tagged_fluid_nodes = sizeof(uint) * parameter->getParH(lev)->numberOfTaggedFluidNodes[tag];
     // Host
-    checkCudaErrors(cudaMallocHost((void **)&(parameter->getParH(lev)->fluidNodeIndices), mem_size_geo_fluid_nodes));
+    checkCudaErrors(cudaMallocHost((void **)&(parameter->getParH(lev)->taggedFluidNodeIndices[tag]), mem_size_tagged_fluid_nodes));
     // Device
-    checkCudaErrors(cudaMalloc((void **)&(parameter->getParD(lev)->fluidNodeIndices), mem_size_geo_fluid_nodes));
+    checkCudaErrors(cudaMalloc((void **)&(parameter->getParD(lev)->taggedFluidNodeIndices[tag]), mem_size_tagged_fluid_nodes));
     //////////////////////////////////////////////////////////////////////////
-    setMemsizeGPU((double)mem_size_geo_fluid_nodes, false);
+    setMemsizeGPU((double)mem_size_tagged_fluid_nodes, false);
 }
 
-void CudaMemoryManager::cudaCopyFluidNodeIndices(int lev) {
-    uint mem_size_geo_fluid_nodes = sizeof(uint) * parameter->getParH(lev)->numberOfFluidNodes;
-    checkCudaErrors(cudaMemcpy(parameter->getParD(lev)->fluidNodeIndices,
-                               parameter->getParH(lev)->fluidNodeIndices,
-                               mem_size_geo_fluid_nodes, cudaMemcpyHostToDevice));
+void CudaMemoryManager::cudaCopyTaggedFluidNodeIndices(CollisionTemplate tag, int lev) {
+    uint mem_size_tagged_fluid_nodes = sizeof(uint) * parameter->getParH(lev)->numberOfTaggedFluidNodes[tag];
+    checkCudaErrors(cudaMemcpy(parameter->getParD(lev)->taggedFluidNodeIndices[tag],
+                               parameter->getParH(lev)->taggedFluidNodeIndices[tag],
+                               mem_size_tagged_fluid_nodes, cudaMemcpyHostToDevice));
 }
 
-void CudaMemoryManager::cudaFreeFluidNodeIndices(int lev) {
-    checkCudaErrors(cudaFreeHost(parameter->getParH(lev)->fluidNodeIndices));
-}
-
-void CudaMemoryManager::cudaAllocFluidNodeIndicesBorder(int lev) {
-    uint mem_size_fluid_nodes_border = sizeof(uint) * parameter->getParH(lev)->numberOfFluidNodesBorder;
-    // Host
-    checkCudaErrors(
-        cudaMallocHost((void **)&(parameter->getParH(lev)->fluidNodeIndicesBorder), mem_size_fluid_nodes_border));
-    // Device
-    checkCudaErrors(
-        cudaMalloc((void **)&(parameter->getParD(lev)->fluidNodeIndicesBorder), mem_size_fluid_nodes_border));
-    //////////////////////////////////////////////////////////////////////////
-    setMemsizeGPU((double)mem_size_fluid_nodes_border, false);
-}
-
-void CudaMemoryManager::cudaCopyFluidNodeIndicesBorder(int lev) {
-    uint mem_size_fluid_nodes_border = sizeof(uint) * parameter->getParH(lev)->numberOfFluidNodesBorder;
-    checkCudaErrors(cudaMemcpy(parameter->getParD(lev)->fluidNodeIndicesBorder,
-                               parameter->getParH(lev)->fluidNodeIndicesBorder,
-                               mem_size_fluid_nodes_border, cudaMemcpyHostToDevice));
-}
-
-void CudaMemoryManager::cudaFreeFluidNodeIndicesBorder(int lev) {
-    checkCudaErrors(cudaFreeHost(parameter->getParH(lev)->fluidNodeIndicesBorder));
+void CudaMemoryManager::cudaFreeTaggedFluidNodeIndices(CollisionTemplate tag, int lev) {
+    checkCudaErrors(cudaFreeHost(parameter->getParH(lev)->taggedFluidNodeIndices[tag]));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
-//  ActuatorLine
+//  ActuatorFarm
 ///////////////////////////////////////////////////////////////////////////////
-
-void CudaMemoryManager::cudaAllocBladeRadii(ActuatorLine* actuatorLine)
+void CudaMemoryManager::cudaAllocBladeGeometries(ActuatorFarm* actuatorFarm)
 {
-    checkCudaErrors( cudaMallocHost((void**) &actuatorLine->bladeRadiiH, sizeof(real)*actuatorLine->getNBladeNodes()) );
+    uint sizeRealTurbine = sizeof(real)*actuatorFarm->getNumberOfTurbines();
+    checkCudaErrors( cudaMallocHost((void**) &actuatorFarm->bladeRadiiH, sizeRealTurbine*actuatorFarm->getNumberOfNodesPerBlade()) );
+    checkCudaErrors( cudaMallocHost((void**) &actuatorFarm->diametersH, sizeRealTurbine) );
+    checkCudaErrors( cudaMallocHost((void**) &actuatorFarm->turbinePosXH, sizeRealTurbine) );
+    checkCudaErrors( cudaMallocHost((void**) &actuatorFarm->turbinePosYH, sizeRealTurbine) );
+    checkCudaErrors( cudaMallocHost((void**) &actuatorFarm->turbinePosZH, sizeRealTurbine) );
 
-    checkCudaErrors( cudaMalloc((void**) &actuatorLine->bladeRadiiD, sizeof(real)*actuatorLine->getNBladeNodes()) );
+    checkCudaErrors( cudaMalloc((void**) &actuatorFarm->bladeRadiiD, sizeRealTurbine*actuatorFarm->getNumberOfNodesPerBlade()) );
+    checkCudaErrors( cudaMalloc((void**) &actuatorFarm->diametersD, sizeRealTurbine) );
+    checkCudaErrors( cudaMalloc((void**) &actuatorFarm->turbinePosXD, sizeRealTurbine) );
+    checkCudaErrors( cudaMalloc((void**) &actuatorFarm->turbinePosYD, sizeRealTurbine) );
+    checkCudaErrors( cudaMalloc((void**) &actuatorFarm->turbinePosZD, sizeRealTurbine) );
+    setMemsizeGPU(sizeof(real)*(actuatorFarm->getNumberOfNodesPerBlade()+4)*actuatorFarm->getNumberOfTurbines(), false);
 
-    setMemsizeGPU(sizeof(real)*actuatorLine->getNBladeNodes(), false);
+}
+void CudaMemoryManager::cudaCopyBladeGeometriesHtoD(ActuatorFarm* actuatorFarm)
+{
+    uint sizeRealTurbine = sizeof(real)*actuatorFarm->getNumberOfTurbines();
+    checkCudaErrors( cudaMemcpy(actuatorFarm->bladeRadiiD, actuatorFarm->bladeRadiiH, sizeRealTurbine*actuatorFarm->getNumberOfNodesPerBlade(), cudaMemcpyHostToDevice) );
+    checkCudaErrors( cudaMemcpy(actuatorFarm->diametersD, actuatorFarm->diametersH, sizeRealTurbine, cudaMemcpyHostToDevice) );
+    checkCudaErrors( cudaMemcpy(actuatorFarm->turbinePosXD, actuatorFarm->turbinePosXH, sizeRealTurbine, cudaMemcpyHostToDevice) );
+    checkCudaErrors( cudaMemcpy(actuatorFarm->turbinePosYD, actuatorFarm->turbinePosYH, sizeRealTurbine, cudaMemcpyHostToDevice) );
+    checkCudaErrors( cudaMemcpy(actuatorFarm->turbinePosZD, actuatorFarm->turbinePosZH, sizeRealTurbine, cudaMemcpyHostToDevice) );
+
+}
+void CudaMemoryManager::cudaCopyBladeGeometriesDtoH(ActuatorFarm* actuatorFarm)
+{
+    uint sizeRealTurbine = sizeof(real)*actuatorFarm->getNumberOfTurbines();
+    checkCudaErrors( cudaMemcpy(actuatorFarm->bladeRadiiH, actuatorFarm->bladeRadiiD, sizeRealTurbine*actuatorFarm->getNumberOfNodesPerBlade(), cudaMemcpyDeviceToHost) );
+    checkCudaErrors( cudaMemcpy(actuatorFarm->diametersH, actuatorFarm->diametersD, sizeRealTurbine, cudaMemcpyDeviceToHost) );
+    checkCudaErrors( cudaMemcpy(actuatorFarm->turbinePosXH, actuatorFarm->turbinePosXD, sizeRealTurbine, cudaMemcpyDeviceToHost) );
+    checkCudaErrors( cudaMemcpy(actuatorFarm->turbinePosYH, actuatorFarm->turbinePosYD, sizeRealTurbine, cudaMemcpyDeviceToHost) );
+    checkCudaErrors( cudaMemcpy(actuatorFarm->turbinePosZH, actuatorFarm->turbinePosZD, sizeRealTurbine, cudaMemcpyDeviceToHost) );
+
+}
+void CudaMemoryManager::cudaFreeBladeGeometries(ActuatorFarm* actuatorFarm)
+{
+    checkCudaErrors( cudaFree(actuatorFarm->bladeRadiiD) );
+    checkCudaErrors( cudaFree(actuatorFarm->diametersD) );
+    checkCudaErrors( cudaFree(actuatorFarm->turbinePosXD) );
+    checkCudaErrors( cudaFree(actuatorFarm->turbinePosYD) );
+    checkCudaErrors( cudaFree(actuatorFarm->turbinePosZD) );    
+    
+    checkCudaErrors( cudaFreeHost(actuatorFarm->bladeRadiiH) );
+    checkCudaErrors( cudaFreeHost(actuatorFarm->diametersH) );
+    checkCudaErrors( cudaFreeHost(actuatorFarm->turbinePosXH) );
+    checkCudaErrors( cudaFreeHost(actuatorFarm->turbinePosYH) );
+    checkCudaErrors( cudaFreeHost(actuatorFarm->turbinePosZH) );
 }
 
-void CudaMemoryManager::cudaCopyBladeRadiiHtoD(ActuatorLine* actuatorLine)
+void CudaMemoryManager::cudaAllocBladeOrientations(ActuatorFarm* actuatorFarm)
 {
-    checkCudaErrors( cudaMemcpy(actuatorLine->bladeRadiiD, actuatorLine->bladeRadiiH, sizeof(real)*actuatorLine->getNBladeNodes(), cudaMemcpyHostToDevice) );
+    uint sizeRealTurbine = sizeof(real)*actuatorFarm->getNumberOfTurbines();
+    checkCudaErrors( cudaMallocHost((void**) &actuatorFarm->omegasH, sizeRealTurbine) );
+    checkCudaErrors( cudaMallocHost((void**) &actuatorFarm->azimuthsH, sizeRealTurbine) );
+    checkCudaErrors( cudaMallocHost((void**) &actuatorFarm->yawsH, sizeRealTurbine) );
+
+    checkCudaErrors( cudaMalloc((void**) &actuatorFarm->omegasD, sizeRealTurbine) );
+    checkCudaErrors( cudaMalloc((void**) &actuatorFarm->azimuthsD, sizeRealTurbine) );
+    checkCudaErrors( cudaMalloc((void**) &actuatorFarm->yawsD, sizeRealTurbine) );
+
+    setMemsizeGPU(3*sizeRealTurbine, false);
+
+}
+void CudaMemoryManager::cudaCopyBladeOrientationsHtoD(ActuatorFarm* actuatorFarm)
+{
+    uint sizeRealTurbine = sizeof(real)*actuatorFarm->getNumberOfTurbines();
+    checkCudaErrors( cudaMemcpy(actuatorFarm->omegasD, actuatorFarm->omegasH, sizeRealTurbine, cudaMemcpyHostToDevice) );
+    checkCudaErrors( cudaMemcpy(actuatorFarm->azimuthsD, actuatorFarm->azimuthsH, sizeRealTurbine, cudaMemcpyHostToDevice) );
+    checkCudaErrors( cudaMemcpy(actuatorFarm->yawsD, actuatorFarm->yawsH, sizeRealTurbine, cudaMemcpyHostToDevice) );
+
+}
+void CudaMemoryManager::cudaCopyBladeOrientationsDtoH(ActuatorFarm* actuatorFarm)
+{
+    uint sizeRealTurbine = sizeof(real)*actuatorFarm->getNumberOfTurbines();
+    checkCudaErrors( cudaMemcpy(actuatorFarm->omegasH, actuatorFarm->omegasD, sizeRealTurbine, cudaMemcpyDeviceToHost) );
+    checkCudaErrors( cudaMemcpy(actuatorFarm->azimuthsH, actuatorFarm->azimuthsD, sizeRealTurbine, cudaMemcpyDeviceToHost) );
+    checkCudaErrors( cudaMemcpy(actuatorFarm->yawsH, actuatorFarm->yawsD, sizeRealTurbine, cudaMemcpyDeviceToHost) );
+}
+void CudaMemoryManager::cudaFreeBladeOrientations(ActuatorFarm* actuatorFarm)
+{
+    checkCudaErrors( cudaFree((void**) &actuatorFarm->omegasD) );
+    checkCudaErrors( cudaFree((void**) &actuatorFarm->azimuthsD) );
+    checkCudaErrors( cudaFree((void**) &actuatorFarm->yawsD) );
+
+    checkCudaErrors( cudaFreeHost((void**) &actuatorFarm->omegasH) );
+    checkCudaErrors( cudaFreeHost((void**) &actuatorFarm->azimuthsH) );
+    checkCudaErrors( cudaFreeHost((void**) &actuatorFarm->yawsH) );
 }
 
-void CudaMemoryManager::cudaCopyBladeRadiiDtoH(ActuatorLine* actuatorLine)
+void CudaMemoryManager::cudaAllocBladeCoords(ActuatorFarm* actuatorFarm)
 {
-    checkCudaErrors( cudaMemcpy(actuatorLine->bladeRadiiH, actuatorLine->bladeRadiiD, sizeof(real)*actuatorLine->getNBladeNodes(), cudaMemcpyDeviceToHost) );
+    checkCudaErrors( cudaMallocHost((void**) &actuatorFarm->bladeCoordsXH, sizeof(real)*actuatorFarm->getNumberOfNodes()) );
+    checkCudaErrors( cudaMallocHost((void**) &actuatorFarm->bladeCoordsYH, sizeof(real)*actuatorFarm->getNumberOfNodes()) );
+    checkCudaErrors( cudaMallocHost((void**) &actuatorFarm->bladeCoordsZH, sizeof(real)*actuatorFarm->getNumberOfNodes()) );
+
+    checkCudaErrors( cudaMalloc((void**) &actuatorFarm->bladeCoordsXDCurrentTimestep, sizeof(real)*actuatorFarm->getNumberOfNodes()) );
+    checkCudaErrors( cudaMalloc((void**) &actuatorFarm->bladeCoordsYDCurrentTimestep, sizeof(real)*actuatorFarm->getNumberOfNodes()) );
+    checkCudaErrors( cudaMalloc((void**) &actuatorFarm->bladeCoordsZDCurrentTimestep, sizeof(real)*actuatorFarm->getNumberOfNodes()) );    
+    
+    checkCudaErrors( cudaMalloc((void**) &actuatorFarm->bladeCoordsXDPreviousTimestep, sizeof(real)*actuatorFarm->getNumberOfNodes()) );
+    checkCudaErrors( cudaMalloc((void**) &actuatorFarm->bladeCoordsYDPreviousTimestep, sizeof(real)*actuatorFarm->getNumberOfNodes()) );
+    checkCudaErrors( cudaMalloc((void**) &actuatorFarm->bladeCoordsZDPreviousTimestep, sizeof(real)*actuatorFarm->getNumberOfNodes()) );
+
+    setMemsizeGPU(6.f*actuatorFarm->getNumberOfNodes(), false);
 }
 
-void CudaMemoryManager::cudaFreeBladeRadii(ActuatorLine* actuatorLine)
+void CudaMemoryManager::cudaCopyBladeCoordsHtoD(ActuatorFarm* actuatorFarm)
 {
-    checkCudaErrors( cudaFree(actuatorLine->bladeRadiiD) );
-
-    checkCudaErrors( cudaFreeHost(actuatorLine->bladeRadiiH) );
+    checkCudaErrors( cudaMemcpy(actuatorFarm->bladeCoordsXDCurrentTimestep, actuatorFarm->bladeCoordsXH, sizeof(real)*actuatorFarm->getNumberOfNodes(), cudaMemcpyHostToDevice) );
+    checkCudaErrors( cudaMemcpy(actuatorFarm->bladeCoordsYDCurrentTimestep, actuatorFarm->bladeCoordsYH, sizeof(real)*actuatorFarm->getNumberOfNodes(), cudaMemcpyHostToDevice) );
+    checkCudaErrors( cudaMemcpy(actuatorFarm->bladeCoordsZDCurrentTimestep, actuatorFarm->bladeCoordsZH, sizeof(real)*actuatorFarm->getNumberOfNodes(), cudaMemcpyHostToDevice) );
 }
 
-void CudaMemoryManager::cudaAllocBladeCoords(ActuatorLine* actuatorLine)
+void CudaMemoryManager::cudaCopyBladeCoordsDtoH(ActuatorFarm* actuatorFarm)
 {
-    checkCudaErrors( cudaMallocHost((void**) &actuatorLine->bladeCoordsXH, sizeof(real)*actuatorLine->getNNodes()) );
-    checkCudaErrors( cudaMallocHost((void**) &actuatorLine->bladeCoordsYH, sizeof(real)*actuatorLine->getNNodes()) );
-    checkCudaErrors( cudaMallocHost((void**) &actuatorLine->bladeCoordsZH, sizeof(real)*actuatorLine->getNNodes()) );
-
-    checkCudaErrors( cudaMalloc((void**) &actuatorLine->bladeCoordsXD, sizeof(real)*actuatorLine->getNNodes()) );
-    checkCudaErrors( cudaMalloc((void**) &actuatorLine->bladeCoordsYD, sizeof(real)*actuatorLine->getNNodes()) );
-    checkCudaErrors( cudaMalloc((void**) &actuatorLine->bladeCoordsZD, sizeof(real)*actuatorLine->getNNodes()) );
-
-    setMemsizeGPU(3.f*actuatorLine->getNNodes(), false);
+    checkCudaErrors( cudaMemcpy(actuatorFarm->bladeCoordsXH, actuatorFarm->bladeCoordsXDCurrentTimestep, sizeof(real)*actuatorFarm->getNumberOfNodes(), cudaMemcpyDeviceToHost) );
+    checkCudaErrors( cudaMemcpy(actuatorFarm->bladeCoordsYH, actuatorFarm->bladeCoordsYDCurrentTimestep, sizeof(real)*actuatorFarm->getNumberOfNodes(), cudaMemcpyDeviceToHost) );
+    checkCudaErrors( cudaMemcpy(actuatorFarm->bladeCoordsZH, actuatorFarm->bladeCoordsZDCurrentTimestep, sizeof(real)*actuatorFarm->getNumberOfNodes(), cudaMemcpyDeviceToHost) );
 }
 
-void CudaMemoryManager::cudaCopyBladeCoordsHtoD(ActuatorLine* actuatorLine)
+void CudaMemoryManager::cudaFreeBladeCoords(ActuatorFarm* actuatorFarm)
 {
-    checkCudaErrors( cudaMemcpy(actuatorLine->bladeCoordsXD, actuatorLine->bladeCoordsXH, sizeof(real)*actuatorLine->getNNodes(), cudaMemcpyHostToDevice) );
-    checkCudaErrors( cudaMemcpy(actuatorLine->bladeCoordsYD, actuatorLine->bladeCoordsYH, sizeof(real)*actuatorLine->getNNodes(), cudaMemcpyHostToDevice) );
-    checkCudaErrors( cudaMemcpy(actuatorLine->bladeCoordsZD, actuatorLine->bladeCoordsZH, sizeof(real)*actuatorLine->getNNodes(), cudaMemcpyHostToDevice) );
+    checkCudaErrors( cudaFree(actuatorFarm->bladeCoordsXDCurrentTimestep) );
+    checkCudaErrors( cudaFree(actuatorFarm->bladeCoordsYDCurrentTimestep) );
+    checkCudaErrors( cudaFree(actuatorFarm->bladeCoordsZDCurrentTimestep) );
+
+    checkCudaErrors( cudaFree(actuatorFarm->bladeCoordsXDPreviousTimestep) );
+    checkCudaErrors( cudaFree(actuatorFarm->bladeCoordsYDPreviousTimestep) );
+    checkCudaErrors( cudaFree(actuatorFarm->bladeCoordsZDPreviousTimestep) );
+
+    checkCudaErrors( cudaFreeHost(actuatorFarm->bladeCoordsXH) );
+    checkCudaErrors( cudaFreeHost(actuatorFarm->bladeCoordsYH) );
+    checkCudaErrors( cudaFreeHost(actuatorFarm->bladeCoordsZH) );
 }
 
-void CudaMemoryManager::cudaCopyBladeCoordsDtoH(ActuatorLine* actuatorLine)
+void CudaMemoryManager::cudaAllocBladeIndices(ActuatorFarm* actuatorFarm)
 {
-    checkCudaErrors( cudaMemcpy(actuatorLine->bladeCoordsXH, actuatorLine->bladeCoordsXD, sizeof(real)*actuatorLine->getNNodes(), cudaMemcpyDeviceToHost) );
-    checkCudaErrors( cudaMemcpy(actuatorLine->bladeCoordsYH, actuatorLine->bladeCoordsYD, sizeof(real)*actuatorLine->getNNodes(), cudaMemcpyDeviceToHost) );
-    checkCudaErrors( cudaMemcpy(actuatorLine->bladeCoordsZH, actuatorLine->bladeCoordsZD, sizeof(real)*actuatorLine->getNNodes(), cudaMemcpyDeviceToHost) );
+    checkCudaErrors( cudaMallocHost((void**) &actuatorFarm->bladeIndicesH, sizeof(uint)*actuatorFarm->getNumberOfNodes()) );
+
+    checkCudaErrors( cudaMalloc((void**) &actuatorFarm->bladeIndicesD, sizeof(uint)*actuatorFarm->getNumberOfNodes()) );
+
+    setMemsizeGPU(sizeof(uint)*actuatorFarm->getNumberOfNodes(), false);
 }
 
-void CudaMemoryManager::cudaFreeBladeCoords(ActuatorLine* actuatorLine)
+void CudaMemoryManager::cudaCopyBladeIndicesHtoD(ActuatorFarm* actuatorFarm)
 {
-    checkCudaErrors( cudaFree(actuatorLine->bladeCoordsXD) );
-    checkCudaErrors( cudaFree(actuatorLine->bladeCoordsYD) );
-    checkCudaErrors( cudaFree(actuatorLine->bladeCoordsZD) );
-
-    checkCudaErrors( cudaFreeHost(actuatorLine->bladeCoordsXH) );
-    checkCudaErrors( cudaFreeHost(actuatorLine->bladeCoordsYH) );
-    checkCudaErrors( cudaFreeHost(actuatorLine->bladeCoordsZH) );
+    checkCudaErrors( cudaMemcpy(actuatorFarm->bladeIndicesD, actuatorFarm->bladeIndicesH, sizeof(uint)*actuatorFarm->getNumberOfNodes(), cudaMemcpyHostToDevice) );
 }
 
-void CudaMemoryManager::cudaAllocBladeIndices(ActuatorLine* actuatorLine)
+void CudaMemoryManager::cudaFreeBladeIndices(ActuatorFarm* actuatorFarm)
 {
-    checkCudaErrors( cudaMallocHost((void**) &actuatorLine->bladeIndicesH, sizeof(uint)*actuatorLine->getNNodes()) );
+    checkCudaErrors( cudaFree(actuatorFarm->bladeIndicesD) );
 
-    checkCudaErrors( cudaMalloc((void**) &actuatorLine->bladeIndicesD, sizeof(uint)*actuatorLine->getNNodes()) );
-
-    setMemsizeGPU(sizeof(uint)*actuatorLine->getNNodes(), false);
+    checkCudaErrors( cudaFreeHost(actuatorFarm->bladeIndicesH) );
 }
 
-void CudaMemoryManager::cudaCopyBladeIndicesHtoD(ActuatorLine* actuatorLine)
+void CudaMemoryManager::cudaAllocBladeVelocities(ActuatorFarm* actuatorFarm)
 {
-    checkCudaErrors( cudaMemcpy(actuatorLine->bladeIndicesD, actuatorLine->bladeIndicesH, sizeof(uint)*actuatorLine->getNNodes(), cudaMemcpyHostToDevice) );
+    checkCudaErrors( cudaMallocHost((void**) &actuatorFarm->bladeVelocitiesXH, sizeof(real)*actuatorFarm->getNumberOfNodes()) );
+    checkCudaErrors( cudaMallocHost((void**) &actuatorFarm->bladeVelocitiesYH, sizeof(real)*actuatorFarm->getNumberOfNodes()) );
+    checkCudaErrors( cudaMallocHost((void**) &actuatorFarm->bladeVelocitiesZH, sizeof(real)*actuatorFarm->getNumberOfNodes()) );
+
+    checkCudaErrors( cudaMalloc((void**) &actuatorFarm->bladeVelocitiesXDCurrentTimestep, sizeof(real)*actuatorFarm->getNumberOfNodes()) );
+    checkCudaErrors( cudaMalloc((void**) &actuatorFarm->bladeVelocitiesYDCurrentTimestep, sizeof(real)*actuatorFarm->getNumberOfNodes()) );
+    checkCudaErrors( cudaMalloc((void**) &actuatorFarm->bladeVelocitiesZDCurrentTimestep, sizeof(real)*actuatorFarm->getNumberOfNodes()) );
+
+    checkCudaErrors( cudaMalloc((void**) &actuatorFarm->bladeVelocitiesXDPreviousTimestep, sizeof(real)*actuatorFarm->getNumberOfNodes()) );
+    checkCudaErrors( cudaMalloc((void**) &actuatorFarm->bladeVelocitiesYDPreviousTimestep, sizeof(real)*actuatorFarm->getNumberOfNodes()) );
+    checkCudaErrors( cudaMalloc((void**) &actuatorFarm->bladeVelocitiesZDPreviousTimestep, sizeof(real)*actuatorFarm->getNumberOfNodes()) );
+
+    setMemsizeGPU(3.*sizeof(real)*actuatorFarm->getNumberOfNodes(), false);
 }
 
-void CudaMemoryManager::cudaFreeBladeIndices(ActuatorLine* actuatorLine)
+void CudaMemoryManager::cudaCopyBladeVelocitiesHtoD(ActuatorFarm* actuatorFarm)
 {
-    checkCudaErrors( cudaFree(actuatorLine->bladeIndicesD) );
-
-    checkCudaErrors( cudaFreeHost(actuatorLine->bladeIndicesH) );
+    checkCudaErrors( cudaMemcpy(actuatorFarm->bladeVelocitiesXDCurrentTimestep, actuatorFarm->bladeVelocitiesXH, sizeof(real)*actuatorFarm->getNumberOfNodes(), cudaMemcpyHostToDevice) );
+    checkCudaErrors( cudaMemcpy(actuatorFarm->bladeVelocitiesYDCurrentTimestep, actuatorFarm->bladeVelocitiesYH, sizeof(real)*actuatorFarm->getNumberOfNodes(), cudaMemcpyHostToDevice) );
+    checkCudaErrors( cudaMemcpy(actuatorFarm->bladeVelocitiesZDCurrentTimestep, actuatorFarm->bladeVelocitiesZH, sizeof(real)*actuatorFarm->getNumberOfNodes(), cudaMemcpyHostToDevice) );
 }
 
-void CudaMemoryManager::cudaAllocBladeVelocities(ActuatorLine* actuatorLine)
+void CudaMemoryManager::cudaCopyBladeVelocitiesDtoH(ActuatorFarm* actuatorFarm)
 {
-    checkCudaErrors( cudaMallocHost((void**) &actuatorLine->bladeVelocitiesXH, sizeof(real)*actuatorLine->getNNodes()) );
-    checkCudaErrors( cudaMallocHost((void**) &actuatorLine->bladeVelocitiesYH, sizeof(real)*actuatorLine->getNNodes()) );
-    checkCudaErrors( cudaMallocHost((void**) &actuatorLine->bladeVelocitiesZH, sizeof(real)*actuatorLine->getNNodes()) );
-
-    checkCudaErrors( cudaMalloc((void**) &actuatorLine->bladeVelocitiesXD, sizeof(real)*actuatorLine->getNNodes()) );
-    checkCudaErrors( cudaMalloc((void**) &actuatorLine->bladeVelocitiesYD, sizeof(real)*actuatorLine->getNNodes()) );
-    checkCudaErrors( cudaMalloc((void**) &actuatorLine->bladeVelocitiesZD, sizeof(real)*actuatorLine->getNNodes()) );
-
-    setMemsizeGPU(3.*sizeof(real)*actuatorLine->getNNodes(), false);
+    checkCudaErrors( cudaMemcpy(actuatorFarm->bladeVelocitiesXH, actuatorFarm->bladeVelocitiesXDCurrentTimestep, sizeof(real)*actuatorFarm->getNumberOfNodes(), cudaMemcpyDeviceToHost) );
+    checkCudaErrors( cudaMemcpy(actuatorFarm->bladeVelocitiesYH, actuatorFarm->bladeVelocitiesYDCurrentTimestep, sizeof(real)*actuatorFarm->getNumberOfNodes(), cudaMemcpyDeviceToHost) );
+    checkCudaErrors( cudaMemcpy(actuatorFarm->bladeVelocitiesZH, actuatorFarm->bladeVelocitiesZDCurrentTimestep, sizeof(real)*actuatorFarm->getNumberOfNodes(), cudaMemcpyDeviceToHost) );
 }
 
-void CudaMemoryManager::cudaCopyBladeVelocitiesHtoD(ActuatorLine* actuatorLine)
+void CudaMemoryManager::cudaFreeBladeVelocities(ActuatorFarm* actuatorFarm)
 {
-    checkCudaErrors( cudaMemcpy(actuatorLine->bladeVelocitiesXD, actuatorLine->bladeVelocitiesXH, sizeof(real)*actuatorLine->getNNodes(), cudaMemcpyHostToDevice) );
-    checkCudaErrors( cudaMemcpy(actuatorLine->bladeVelocitiesYD, actuatorLine->bladeVelocitiesYH, sizeof(real)*actuatorLine->getNNodes(), cudaMemcpyHostToDevice) );
-    checkCudaErrors( cudaMemcpy(actuatorLine->bladeVelocitiesZD, actuatorLine->bladeVelocitiesZH, sizeof(real)*actuatorLine->getNNodes(), cudaMemcpyHostToDevice) );
+    checkCudaErrors( cudaFree(actuatorFarm->bladeVelocitiesXDCurrentTimestep) );
+    checkCudaErrors( cudaFree(actuatorFarm->bladeVelocitiesYDCurrentTimestep) );
+    checkCudaErrors( cudaFree(actuatorFarm->bladeVelocitiesZDCurrentTimestep) );    
+    
+    checkCudaErrors( cudaFree(actuatorFarm->bladeVelocitiesXDPreviousTimestep) );
+    checkCudaErrors( cudaFree(actuatorFarm->bladeVelocitiesYDPreviousTimestep) );
+    checkCudaErrors( cudaFree(actuatorFarm->bladeVelocitiesZDPreviousTimestep) );
+
+    checkCudaErrors( cudaFreeHost(actuatorFarm->bladeVelocitiesXH) );
+    checkCudaErrors( cudaFreeHost(actuatorFarm->bladeVelocitiesYH) );
+    checkCudaErrors( cudaFreeHost(actuatorFarm->bladeVelocitiesZH) );
 }
 
-void CudaMemoryManager::cudaCopyBladeVelocitiesDtoH(ActuatorLine* actuatorLine)
+void CudaMemoryManager::cudaAllocBladeForces(ActuatorFarm* actuatorFarm)
 {
-    checkCudaErrors( cudaMemcpy(actuatorLine->bladeVelocitiesXH, actuatorLine->bladeVelocitiesXD, sizeof(real)*actuatorLine->getNNodes(), cudaMemcpyDeviceToHost) );
-    checkCudaErrors( cudaMemcpy(actuatorLine->bladeVelocitiesYH, actuatorLine->bladeVelocitiesYD, sizeof(real)*actuatorLine->getNNodes(), cudaMemcpyDeviceToHost) );
-    checkCudaErrors( cudaMemcpy(actuatorLine->bladeVelocitiesZH, actuatorLine->bladeVelocitiesZD, sizeof(real)*actuatorLine->getNNodes(), cudaMemcpyDeviceToHost) );
+    checkCudaErrors( cudaMallocHost((void**) &actuatorFarm->bladeForcesXH, sizeof(real)*actuatorFarm->getNumberOfNodes()) );
+    checkCudaErrors( cudaMallocHost((void**) &actuatorFarm->bladeForcesYH, sizeof(real)*actuatorFarm->getNumberOfNodes()) );
+    checkCudaErrors( cudaMallocHost((void**) &actuatorFarm->bladeForcesZH, sizeof(real)*actuatorFarm->getNumberOfNodes()) );
+
+    checkCudaErrors( cudaMalloc((void**) &actuatorFarm->bladeForcesXDCurrentTimestep, sizeof(real)*actuatorFarm->getNumberOfNodes()) );
+    checkCudaErrors( cudaMalloc((void**) &actuatorFarm->bladeForcesYDCurrentTimestep, sizeof(real)*actuatorFarm->getNumberOfNodes()) );
+    checkCudaErrors( cudaMalloc((void**) &actuatorFarm->bladeForcesZDCurrentTimestep, sizeof(real)*actuatorFarm->getNumberOfNodes()) );
+
+    checkCudaErrors( cudaMalloc((void**) &actuatorFarm->bladeForcesXDPreviousTimestep, sizeof(real)*actuatorFarm->getNumberOfNodes()) );
+    checkCudaErrors( cudaMalloc((void**) &actuatorFarm->bladeForcesYDPreviousTimestep, sizeof(real)*actuatorFarm->getNumberOfNodes()) );
+    checkCudaErrors( cudaMalloc((void**) &actuatorFarm->bladeForcesZDPreviousTimestep, sizeof(real)*actuatorFarm->getNumberOfNodes()) );
+
+    setMemsizeGPU(3.*sizeof(real)*actuatorFarm->getNumberOfNodes(), false);
 }
 
-void CudaMemoryManager::cudaFreeBladeVelocities(ActuatorLine* actuatorLine)
+void CudaMemoryManager::cudaCopyBladeForcesHtoD(ActuatorFarm* actuatorFarm)
 {
-    checkCudaErrors( cudaFree(actuatorLine->bladeVelocitiesXD) );
-    checkCudaErrors( cudaFree(actuatorLine->bladeVelocitiesYD) );
-    checkCudaErrors( cudaFree(actuatorLine->bladeVelocitiesZD) );
-
-    checkCudaErrors( cudaFreeHost(actuatorLine->bladeVelocitiesXH) );
-    checkCudaErrors( cudaFreeHost(actuatorLine->bladeVelocitiesYH) );
-    checkCudaErrors( cudaFreeHost(actuatorLine->bladeVelocitiesZH) );
+    checkCudaErrors( cudaMemcpy(actuatorFarm->bladeForcesXDCurrentTimestep, actuatorFarm->bladeForcesXH, sizeof(real)*actuatorFarm->getNumberOfNodes(), cudaMemcpyHostToDevice) );
+    checkCudaErrors( cudaMemcpy(actuatorFarm->bladeForcesYDCurrentTimestep, actuatorFarm->bladeForcesYH, sizeof(real)*actuatorFarm->getNumberOfNodes(), cudaMemcpyHostToDevice) );
+    checkCudaErrors( cudaMemcpy(actuatorFarm->bladeForcesZDCurrentTimestep, actuatorFarm->bladeForcesZH, sizeof(real)*actuatorFarm->getNumberOfNodes(), cudaMemcpyHostToDevice) );
 }
 
-void CudaMemoryManager::cudaAllocBladeForces(ActuatorLine* actuatorLine)
+void CudaMemoryManager::cudaCopyBladeForcesDtoH(ActuatorFarm* actuatorFarm)
 {
-    checkCudaErrors( cudaMallocHost((void**) &actuatorLine->bladeForcesXH, sizeof(real)*actuatorLine->getNNodes()) );
-    checkCudaErrors( cudaMallocHost((void**) &actuatorLine->bladeForcesYH, sizeof(real)*actuatorLine->getNNodes()) );
-    checkCudaErrors( cudaMallocHost((void**) &actuatorLine->bladeForcesZH, sizeof(real)*actuatorLine->getNNodes()) );
-
-    checkCudaErrors( cudaMalloc((void**) &actuatorLine->bladeForcesXD, sizeof(real)*actuatorLine->getNNodes()) );
-    checkCudaErrors( cudaMalloc((void**) &actuatorLine->bladeForcesYD, sizeof(real)*actuatorLine->getNNodes()) );
-    checkCudaErrors( cudaMalloc((void**) &actuatorLine->bladeForcesZD, sizeof(real)*actuatorLine->getNNodes()) );
-
-    setMemsizeGPU(3.*sizeof(real)*actuatorLine->getNNodes(), false);
+    checkCudaErrors( cudaMemcpy(actuatorFarm->bladeForcesXH, actuatorFarm->bladeForcesXDCurrentTimestep, sizeof(real)*actuatorFarm->getNumberOfNodes(), cudaMemcpyDeviceToHost) );
+    checkCudaErrors( cudaMemcpy(actuatorFarm->bladeForcesYH, actuatorFarm->bladeForcesYDCurrentTimestep, sizeof(real)*actuatorFarm->getNumberOfNodes(), cudaMemcpyDeviceToHost) );
+    checkCudaErrors( cudaMemcpy(actuatorFarm->bladeForcesZH, actuatorFarm->bladeForcesZDCurrentTimestep, sizeof(real)*actuatorFarm->getNumberOfNodes(), cudaMemcpyDeviceToHost) );
 }
 
-void CudaMemoryManager::cudaCopyBladeForcesHtoD(ActuatorLine* actuatorLine)
+void CudaMemoryManager::cudaFreeBladeForces(ActuatorFarm* actuatorFarm)
 {
-    checkCudaErrors( cudaMemcpy(actuatorLine->bladeForcesXD, actuatorLine->bladeForcesXH, sizeof(real)*actuatorLine->getNNodes(), cudaMemcpyHostToDevice) );
-    checkCudaErrors( cudaMemcpy(actuatorLine->bladeForcesYD, actuatorLine->bladeForcesYH, sizeof(real)*actuatorLine->getNNodes(), cudaMemcpyHostToDevice) );
-    checkCudaErrors( cudaMemcpy(actuatorLine->bladeForcesZD, actuatorLine->bladeForcesZH, sizeof(real)*actuatorLine->getNNodes(), cudaMemcpyHostToDevice) );
+    checkCudaErrors( cudaFree(actuatorFarm->bladeForcesXDCurrentTimestep) );
+    checkCudaErrors( cudaFree(actuatorFarm->bladeForcesYDCurrentTimestep) );
+    checkCudaErrors( cudaFree(actuatorFarm->bladeForcesZDCurrentTimestep) );
+
+    checkCudaErrors( cudaFree(actuatorFarm->bladeForcesXDPreviousTimestep) );
+    checkCudaErrors( cudaFree(actuatorFarm->bladeForcesYDPreviousTimestep) );
+    checkCudaErrors( cudaFree(actuatorFarm->bladeForcesZDPreviousTimestep) );
+
+    checkCudaErrors( cudaFreeHost(actuatorFarm->bladeForcesXH) );
+    checkCudaErrors( cudaFreeHost(actuatorFarm->bladeForcesYH) );
+    checkCudaErrors( cudaFreeHost(actuatorFarm->bladeForcesZH) );
 }
 
-void CudaMemoryManager::cudaCopyBladeForcesDtoH(ActuatorLine* actuatorLine)
+void CudaMemoryManager::cudaAllocSphereIndices(ActuatorFarm* actuatorFarm)
 {
-    checkCudaErrors( cudaMemcpy(actuatorLine->bladeForcesXH, actuatorLine->bladeForcesXD, sizeof(real)*actuatorLine->getNNodes(), cudaMemcpyDeviceToHost) );
-    checkCudaErrors( cudaMemcpy(actuatorLine->bladeForcesYH, actuatorLine->bladeForcesYD, sizeof(real)*actuatorLine->getNNodes(), cudaMemcpyDeviceToHost) );
-    checkCudaErrors( cudaMemcpy(actuatorLine->bladeForcesZH, actuatorLine->bladeForcesZD, sizeof(real)*actuatorLine->getNNodes(), cudaMemcpyDeviceToHost) );
+    checkCudaErrors( cudaMallocHost((void**) &(actuatorFarm->boundingSphereIndicesH), sizeof(int)*actuatorFarm->getNumberOfIndices()));
+    checkCudaErrors( cudaMalloc((void**) &(actuatorFarm->boundingSphereIndicesD), sizeof(int)*actuatorFarm->getNumberOfIndices()));
+    setMemsizeGPU(sizeof(int)*actuatorFarm->getNumberOfIndices(), false);
 }
 
-void CudaMemoryManager::cudaFreeBladeForces(ActuatorLine* actuatorLine)
+void CudaMemoryManager::cudaCopySphereIndicesHtoD(ActuatorFarm* actuatorFarm)
 {
-    checkCudaErrors( cudaFree(actuatorLine->bladeForcesXD) );
-    checkCudaErrors( cudaFree(actuatorLine->bladeForcesYD) );
-    checkCudaErrors( cudaFree(actuatorLine->bladeForcesZD) );
-
-    checkCudaErrors( cudaFreeHost(actuatorLine->bladeForcesXH) );
-    checkCudaErrors( cudaFreeHost(actuatorLine->bladeForcesYH) );
-    checkCudaErrors( cudaFreeHost(actuatorLine->bladeForcesZH) );
+    checkCudaErrors( cudaMemcpy(actuatorFarm->boundingSphereIndicesD, actuatorFarm->boundingSphereIndicesH, sizeof(int)*actuatorFarm->getNumberOfIndices(), cudaMemcpyHostToDevice) );
 }
 
-void CudaMemoryManager::cudaAllocSphereIndices(ActuatorLine* actuatorLine)
+void CudaMemoryManager::cudaFreeSphereIndices(ActuatorFarm* actuatorFarm)
 {
-    checkCudaErrors( cudaMallocHost((void**) &(actuatorLine->boundingSphereIndicesH), sizeof(int)*actuatorLine->getNIndices()));
-    checkCudaErrors( cudaMalloc((void**) &(actuatorLine->boundingSphereIndicesD), sizeof(int)*actuatorLine->getNIndices()));
-    setMemsizeGPU(sizeof(int)*actuatorLine->getNIndices(), false);
-}
-
-void CudaMemoryManager::cudaCopySphereIndicesHtoD(ActuatorLine* actuatorLine)
-{
-    checkCudaErrors( cudaMemcpy(actuatorLine->boundingSphereIndicesD, actuatorLine->boundingSphereIndicesH, sizeof(int)*actuatorLine->getNIndices(), cudaMemcpyHostToDevice) );
-}
-
-void CudaMemoryManager::cudaFreeSphereIndices(ActuatorLine* actuatorLine)
-{
-    checkCudaErrors( cudaFreeHost(actuatorLine->boundingSphereIndicesH) );
-    checkCudaErrors( cudaFree(actuatorLine->boundingSphereIndicesD) );
+    checkCudaErrors( cudaFreeHost(actuatorFarm->boundingSphereIndicesH) );
+    checkCudaErrors( cudaFree(actuatorFarm->boundingSphereIndicesD) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -3231,8 +3426,11 @@ void CudaMemoryManager::cudaCopyProbeQuantityArrayHtoD(Probe* probe, int level)
 }
 void CudaMemoryManager::cudaCopyProbeQuantityArrayDtoH(Probe* probe, int level)
 {
-    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->quantitiesArrayH, probe->getProbeStruct(level)->quantitiesArrayD, probe->getProbeStruct(level)->nArrays*sizeof(real)*probe->getProbeStruct(level)->nPoints, cudaMemcpyDeviceToHost) );
+    auto probeStruct = probe->getProbeStruct(level);
+
+    checkCudaErrors( cudaMemcpy(probeStruct->quantitiesArrayH, probeStruct->quantitiesArrayD, probeStruct->nArrays*sizeof(real)*probeStruct->nPoints, cudaMemcpyDeviceToHost) );
 }
+
 void CudaMemoryManager::cudaFreeProbeQuantityArray(Probe* probe, int level)
 {
     checkCudaErrors( cudaFreeHost(probe->getProbeStruct(level)->quantitiesArrayH) );
@@ -3262,6 +3460,7 @@ void CudaMemoryManager::cudaCopyProbeQuantitiesAndOffsetsDtoH(Probe* probe, int 
     checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->quantitiesH, probe->getProbeStruct(level)->quantitiesD, int(Statistic::LAST)*sizeof(bool), cudaMemcpyDeviceToHost) );
     checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->arrayOffsetsH, probe->getProbeStruct(level)->arrayOffsetsD, int(Statistic::LAST)*sizeof(int), cudaMemcpyDeviceToHost) );
 }
+
 void CudaMemoryManager::cudaFreeProbeQuantitiesAndOffsets(Probe* probe, int level)
 {
     checkCudaErrors( cudaFreeHost(probe->getProbeStruct(level)->quantitiesH) );
@@ -3270,23 +3469,51 @@ void CudaMemoryManager::cudaFreeProbeQuantitiesAndOffsets(Probe* probe, int leve
     checkCudaErrors( cudaFree    (probe->getProbeStruct(level)->arrayOffsetsD) );
 }
 
+void CudaMemoryManager::cudaAllocPrecursorWriter(PrecursorWriter* writer, int level)
+{
+    auto prec =  writer->getPrecursorStruct(level);
+    size_t indSize = prec->numberOfPointsInBC*sizeof(uint);
 
+    checkCudaErrors( cudaStreamCreate(&prec->stream) );
 
+    checkCudaErrors( cudaMallocHost((void**) &prec->indicesH, indSize));
+    checkCudaErrors( cudaMalloc((void**) &prec->indicesD, indSize));
 
+    size_t dataSize  = prec->numberOfPointsInBC*sizeof(real)*prec->numberOfQuantities;
+    size_t dataSizeH = dataSize * prec->numberOfTimestepsPerFile;
+    
+    checkCudaErrors( cudaMallocHost((void**) &prec->dataH, dataSizeH));
+    checkCudaErrors( cudaMallocHost((void**) &prec->bufferH, dataSizeH));
+    checkCudaErrors( cudaMalloc((void**) &prec->dataD, dataSize));
+    checkCudaErrors( cudaMalloc((void**) &prec->bufferD, dataSize));
 
+    setMemsizeGPU(indSize+2*dataSize, false);
+}
 
+void CudaMemoryManager::cudaCopyPrecursorWriterIndicesHtoD(PrecursorWriter* writer, int level)
+{
+    checkCudaErrors( cudaMemcpy(writer->getPrecursorStruct(level)->indicesD, writer->getPrecursorStruct(level)->indicesH, writer->getPrecursorStruct(level)->numberOfPointsInBC*sizeof(uint), cudaMemcpyHostToDevice) );
+}
 
+void CudaMemoryManager::cudaCopyPrecursorWriterOutputVariablesDtoH(PrecursorWriter* writer, int level)
+{
+    auto prec =  writer->getPrecursorStruct(level);
+    int sizeTimestep = prec->numberOfPointsInBC*prec->numberOfQuantities;
 
+    checkCudaErrors( cudaStreamSynchronize(prec->stream) );
+    checkCudaErrors( cudaMemcpyAsync( &prec->bufferH[prec->numberOfTimestepsBuffered*sizeTimestep], prec->bufferD, sizeof(real)*sizeTimestep, cudaMemcpyDeviceToHost, prec->stream));
+}
 
+void CudaMemoryManager::cudaFreePrecursorWriter(PrecursorWriter* writer, int level)
+{
+    checkCudaErrors( cudaFreeHost(writer->getPrecursorStruct(level)->indicesH));
+    checkCudaErrors( cudaFree(writer->getPrecursorStruct(level)->indicesD));
 
-
-
-
-
-
-
-
-
+    checkCudaErrors( cudaFreeHost(writer->getPrecursorStruct(level)->dataH));
+    checkCudaErrors( cudaFreeHost(writer->getPrecursorStruct(level)->bufferH));
+    checkCudaErrors( cudaFree(writer->getPrecursorStruct(level)->dataD));
+    checkCudaErrors( cudaFree(writer->getPrecursorStruct(level)->bufferD));
+}
 
 
 CudaMemoryManager::CudaMemoryManager(std::shared_ptr<Parameter> parameter) : parameter(parameter)

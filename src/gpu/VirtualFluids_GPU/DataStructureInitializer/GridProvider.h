@@ -5,7 +5,7 @@
 #include <vector>
 #include <memory>
 
-
+#include "LBM/LB.h"
 #include "PointerDefinitions.h"
 #include "VirtualFluids_GPU_export.h"
 #include "gpu/GridGenerator/io/SimulationFileWriter/SimulationFileWriter.h"
@@ -28,8 +28,10 @@ public:
 	virtual void allocArrays_BoundaryValues() = 0;
 	virtual void allocArrays_BoundaryQs() = 0;
     virtual void allocArrays_OffsetScale() = 0;
-    virtual void allocArrays_fluidNodeIndices() = 0;
-    virtual void allocArrays_fluidNodeIndicesBorder() = 0;
+    virtual void allocArrays_taggedFluidNodes() = 0;
+
+    virtual void tagFluidNodeIndices(const std::vector<uint>& taggedFluidNodeIndices, CollisionTemplate tag, uint level) = 0;
+    virtual void sortFluidNodeTags() = 0;
 
 	virtual void setDimensions() = 0;
 	virtual void setBoundingBox() = 0;
@@ -45,8 +47,7 @@ public:
 
 protected:
 	void setNumberOfNodes(const int numberOfNodes, const int level) const;
-    void setNumberOfFluidNodes(const int numberOfNodes, const int level) const;
-    void setNumberOfFluidNodesBorder(const int numberOfNodes, const int level) const;
+    void setNumberOfTaggedFluidNodes(const int numberOfNodes, CollisionTemplate tag, const int level) const;
     virtual void setInitalNodeValues(const int numberOfNodes, const int level) const;
 
 	void setPressSizePerLevel(int level, int sizePerLevel) const;

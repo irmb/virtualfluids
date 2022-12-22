@@ -4,6 +4,7 @@
 #include "LBM/LB.h"
 #include "GPU/GPU_Interface.h"
 #include "Parameter/Parameter.h"
+#include "Parameter/CudaStreamManager.h"
 #include "GPU/CudaMemoryManager.h"
 #include "Communication/Communicator.h"
 #include "Calculation/PorousMedia.h"
@@ -15,7 +16,6 @@ class Kernel;
 class BoundaryConditionFactory;
 class GridScalingFactory;
 class TurbulenceModelFactory;
-
 class UpdateGrid27;
 using CollisionStrategy = std::function<void (UpdateGrid27* updateGrid, Parameter* para, int level, unsigned int t)>;
 using RefinementStrategy = std::function<void (UpdateGrid27* updateGrid, Parameter* para, int level)>;
@@ -31,21 +31,21 @@ public:
 
 private:
     void collisionAllNodes(int level, unsigned int t);
-    void collisionUsingIndices(int level, unsigned int t, uint *fluidNodeIndices = nullptr, uint numberOfFluidNodes = 0, int stream = -1);
+    void collisionUsingIndices(int level, unsigned int t, uint *taggedFluidNodeIndices = nullptr, uint numberOfTaggedFluidNodes = 0, CollisionTemplate collisionTemplate = CollisionTemplate::Default, CudaStreamIndex streamIndex=CudaStreamIndex::Legacy);
     void collisionAdvectionDiffusion(int level);
 
-    void postCollisionBC(int level);
+    void postCollisionBC(int level, unsigned int t);
     void preCollisionBC(int level, unsigned int t);
     void collisionPorousMedia(int level);
 
-    void fineToCoarse(int level, InterpolationCellFC* icellFC, OffFC &offFC, int streamIndex);
-    void coarseToFine(int level, InterpolationCellCF* icellCF, OffCF &offCF, int streamIndex);
+    void fineToCoarse(int level, InterpolationCellFC* icellFC, OffFC &offFC, CudaStreamIndex streamIndex);
+    void coarseToFine(int level, InterpolationCellCF* icellCF, OffCF &offCF, CudaStreamIndex streamIndex);
 
-    void prepareExchangeMultiGPU(int level, int streamIndex);
-    void prepareExchangeMultiGPUAfterFtoC(int level, int streamIndex);
+    void prepareExchangeMultiGPU(int level, CudaStreamIndex streamIndex);
+    void prepareExchangeMultiGPUAfterFtoC(int level, CudaStreamIndex streamIndex);
 
-    void exchangeMultiGPU(int level, int streamIndex);
-    void exchangeMultiGPUAfterFtoC(int level, int streamIndex);
+    void exchangeMultiGPU(int level, CudaStreamIndex streamIndex);
+    void exchangeMultiGPUAfterFtoC(int level, CudaStreamIndex streamIndex);
     void exchangeMultiGPU_noStreams_withPrepare(int level, bool useReducedComm);
 
     void swapBetweenEvenAndOddTimestep(int level);
@@ -60,6 +60,7 @@ private:
     friend class CollisionAndExchange_noStreams_indexKernel;
     friend class CollisionAndExchange_noStreams_oldKernel;
     friend class CollisionAndExchange_streams;
+    friend class CollisionAndExchange_noStreams_withReadWriteFlags;
 
     RefinementStrategy refinement;
     friend class RefinementAndExchange_streams_exchangeInterface;

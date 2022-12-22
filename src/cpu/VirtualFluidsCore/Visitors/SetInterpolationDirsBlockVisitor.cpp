@@ -1,11 +1,11 @@
 #include "SetInterpolationDirsBlockVisitor.h"
 #include "Block3D.h"
 #include "Grid3D.h"
-#include "Grid3DSystem.h"
+#include "D3Q27System.h"
 #include <D3Q27System.h>
 
 SetInterpolationDirsBlockVisitor::SetInterpolationDirsBlockVisitor(std::vector<int> &dirs)
-    : Block3DVisitor(0, Grid3DSystem::MAXLEVEL), dirs(dirs)
+    : Block3DVisitor(0, D3Q27System::MAXLEVEL), dirs(dirs)
 {
 }
 //////////////////////////////////////////////////////////////////////////
@@ -32,103 +32,103 @@ void SetInterpolationDirsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> bl
             if (p_nblock) {
                 bool flagDir;
                 switch (dir) {
-                    case NE:
-                        checkFlagDir(grid, E, N, flagDir, ix1, ix2, ix3, level);
+                    case DIR_PP0:
+                        checkFlagDir(grid, DIR_P00, DIR_0P0, flagDir, ix1, ix2, ix3, level);
                         if (!flagDir)
                             continue;
                         break;
-                    case SW:
-                        checkFlagDir(grid, W, S, flagDir, ix1, ix2, ix3, level);
+                    case DIR_MM0:
+                        checkFlagDir(grid, DIR_M00, DIR_0M0, flagDir, ix1, ix2, ix3, level);
                         if (!flagDir)
                             continue;
                         break;
-                    case SE:
-                        checkFlagDir(grid, E, S, flagDir, ix1, ix2, ix3, level);
+                    case DIR_PM0:
+                        checkFlagDir(grid, DIR_P00, DIR_0M0, flagDir, ix1, ix2, ix3, level);
                         if (!flagDir)
                             continue;
                         break;
-                    case NW:
-                        checkFlagDir(grid, W, N, flagDir, ix1, ix2, ix3, level);
+                    case DIR_MP0:
+                        checkFlagDir(grid, DIR_M00, DIR_0P0, flagDir, ix1, ix2, ix3, level);
                         if (!flagDir)
                             continue;
                         break;
-                    case TE:
-                        checkFlagDir(grid, E, T, flagDir, ix1, ix2, ix3, level);
+                    case DIR_P0P:
+                        checkFlagDir(grid, DIR_P00, DIR_00P, flagDir, ix1, ix2, ix3, level);
                         if (!flagDir)
                             continue;
                         break;
-                    case BW:
-                        checkFlagDir(grid, W, B, flagDir, ix1, ix2, ix3, level);
+                    case DIR_M0M:
+                        checkFlagDir(grid, DIR_M00, DIR_00M, flagDir, ix1, ix2, ix3, level);
                         if (!flagDir)
                             continue;
                         break;
-                    case BE:
-                        checkFlagDir(grid, E, B, flagDir, ix1, ix2, ix3, level);
+                    case DIR_P0M:
+                        checkFlagDir(grid, DIR_P00, DIR_00M, flagDir, ix1, ix2, ix3, level);
                         if (!flagDir)
                             continue;
                         break;
-                    case TW:
-                        checkFlagDir(grid, W, T, flagDir, ix1, ix2, ix3, level);
+                    case DIR_M0P:
+                        checkFlagDir(grid, DIR_M00, DIR_00P, flagDir, ix1, ix2, ix3, level);
                         if (!flagDir)
                             continue;
                         break;
-                    case TN:
-                        checkFlagDir(grid, N, T, flagDir, ix1, ix2, ix3, level);
+                    case DIR_0PP:
+                        checkFlagDir(grid, DIR_0P0, DIR_00P, flagDir, ix1, ix2, ix3, level);
                         if (!flagDir)
                             continue;
                         break;
-                    case BS:
-                        checkFlagDir(grid, S, B, flagDir, ix1, ix2, ix3, level);
+                    case DIR_0MM:
+                        checkFlagDir(grid, DIR_0M0, DIR_00M, flagDir, ix1, ix2, ix3, level);
                         if (!flagDir)
                             continue;
                         break;
-                    case BN:
-                        checkFlagDir(grid, N, B, flagDir, ix1, ix2, ix3, level);
+                    case DIR_0PM:
+                        checkFlagDir(grid, DIR_0P0, DIR_00M, flagDir, ix1, ix2, ix3, level);
                         if (!flagDir)
                             continue;
                         break;
-                    case TS:
-                        checkFlagDir(grid, S, T, flagDir, ix1, ix2, ix3, level);
+                    case DIR_0MP:
+                        checkFlagDir(grid, DIR_0M0, DIR_00P, flagDir, ix1, ix2, ix3, level);
                         if (!flagDir)
                             continue;
                         break;
-                    case TNE:
-                        checkFlagDir(grid, E, N, T, flagDir, ix1, ix2, ix3, level);
+                    case DIR_PPP:
+                        checkFlagDir(grid, DIR_P00, DIR_0P0, DIR_00P, flagDir, ix1, ix2, ix3, level);
                         if (!flagDir)
                             continue;
                         break;
-                    case TSW:
-                        checkFlagDir(grid, W, S, T, flagDir, ix1, ix2, ix3, level);
+                    case DIR_MMP:
+                        checkFlagDir(grid, DIR_M00, DIR_0M0, DIR_00P, flagDir, ix1, ix2, ix3, level);
                         if (!flagDir)
                             continue;
                         break;
-                    case TSE:
-                        checkFlagDir(grid, E, S, T, flagDir, ix1, ix2, ix3, level);
+                    case DIR_PMP:
+                        checkFlagDir(grid, DIR_P00, DIR_0M0, DIR_00P, flagDir, ix1, ix2, ix3, level);
                         if (!flagDir)
                             continue;
                         break;
-                    case TNW:
-                        checkFlagDir(grid, W, N, T, flagDir, ix1, ix2, ix3, level);
+                    case DIR_MPP:
+                        checkFlagDir(grid, DIR_M00, DIR_0P0, DIR_00P, flagDir, ix1, ix2, ix3, level);
                         if (!flagDir)
                             continue;
                         break;
-                    case BNE:
-                        checkFlagDir(grid, E, N, B, flagDir, ix1, ix2, ix3, level);
+                    case DIR_PPM:
+                        checkFlagDir(grid, DIR_P00, DIR_0P0, DIR_00M, flagDir, ix1, ix2, ix3, level);
                         if (!flagDir)
                             continue;
                         break;
-                    case BSW:
-                        checkFlagDir(grid, W, S, B, flagDir, ix1, ix2, ix3, level);
+                    case DIR_MMM:
+                        checkFlagDir(grid, DIR_M00, DIR_0M0, DIR_00M, flagDir, ix1, ix2, ix3, level);
                         if (!flagDir)
                             continue;
                         break;
-                    case BSE:
-                        checkFlagDir(grid, E, S, B, flagDir, ix1, ix2, ix3, level);
+                    case DIR_PMM:
+                        checkFlagDir(grid, DIR_P00, DIR_0M0, DIR_00M, flagDir, ix1, ix2, ix3, level);
                         if (!flagDir)
                             continue;
                         break;
-                    case BNW:
-                        checkFlagDir(grid, W, N, B, flagDir, ix1, ix2, ix3, level);
+                    case DIR_MPM:
+                        checkFlagDir(grid, DIR_M00, DIR_0P0, DIR_00M, flagDir, ix1, ix2, ix3, level);
                         if (!flagDir)
                             continue;
                         break;

@@ -1,7 +1,7 @@
 #include "RenumberGridVisitor.h"
 #include "Block3D.h"
 #include "Grid3D.h"
-#include "Grid3DSystem.h"
+#include "D3Q27System.h"
 //#include <mpi.h>
 
 RenumberGridVisitor::RenumberGridVisitor(std::shared_ptr<vf::mpi::Communicator> com) : comm(com) {}

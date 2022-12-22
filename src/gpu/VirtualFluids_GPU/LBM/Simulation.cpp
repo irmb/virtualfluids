@@ -97,11 +97,7 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
 
     gridProvider.allocAndCopyForcing();
     gridProvider.allocAndCopyQuadricLimiters();
-    if (para->getKernelNeedsFluidNodeIndicesToRun()) {
-        gridProvider.allocArrays_fluidNodeIndices();
-        gridProvider.allocArrays_fluidNodeIndicesBorder();
-    }
-
+        
     gridProvider.setDimensions();
     gridProvider.setBoundingBox();
 
@@ -113,12 +109,7 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
         para->setStartTurn((unsigned int)0); // 100000
 
     restart_object = std::make_shared<ASCIIRestartObject>();
-    //////////////////////////////////////////////////////////////////////////
-    // CUDA streams
-    if (para->getUseStreams()) {
-        para->getStreamManager()->launchStreams(2u);
-        para->getStreamManager()->createCudaEvents();
-    }
+
     //////////////////////////////////////////////////////////////////////////
     VF_LOG_INFO("LB_Modell:       D3Q{}", para->getD3Qxx());
     VF_LOG_INFO("Re:              {}", para->getRe());
@@ -134,14 +125,32 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     //////////////////////////////////////////////////////////////////////////
     allocNeighborsOffsetsScalesAndBoundaries(gridProvider);
 
+    //! Get tagged fluid nodes with corresponding value for CollisionTemplate from interactors
     for (SPtr<PreCollisionInteractor> actuator : para->getActuators()) {
         actuator->init(para.get(), &gridProvider, cudaMemoryManager.get());
+        actuator->getTaggedFluidNodes( para.get(), &gridProvider );
     }
 
     for (SPtr<PreCollisionInteractor> probe : para->getProbes()) {
         probe->init(para.get(), &gridProvider, cudaMemoryManager.get());
+        probe->getTaggedFluidNodes( para.get(), &gridProvider );
     }
 
+    //////////////////////////////////////////////////////////////////////////
+    // CUDA streams
+    if (para->getUseStreams()) {
+        para->getStreamManager()->registerStream(CudaStreamIndex::SubDomainBorder);
+        para->getStreamManager()->registerStream(CudaStreamIndex::Bulk);
+        para->getStreamManager()->launchStreams();
+        para->getStreamManager()->createCudaEvents();
+    }
+    //////////////////////////////////////////////////////////////////////////
+    
+    if (para->getKernelNeedsFluidNodeIndicesToRun())
+    {
+        gridProvider.sortFluidNodeTags();
+        gridProvider.allocArrays_taggedFluidNodes();
+    }
     //////////////////////////////////////////////////////////////////////////
     // Kernel init
     //////////////////////////////////////////////////////////////////////////

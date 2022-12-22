@@ -1,0 +1,143 @@
+
+#include "DistributionDebugInspector.h"
+
+#include "Parameter/Parameter.h"
+#include "LBM/LB.h" 
+#include "lbm/constants/D3Q27.h"
+#include <lbm/constants/NumericConstants.h>
+#include "Kernel/Utilities/DistributionHelper.cuh"
+
+#include <cuda/CudaGrid.h>
+#include <cuda.h>
+
+#include <iostream>
+
+using namespace vf::lbm::constant;
+using namespace vf::lbm::dir;
+
+__global__ void printFs(  real* distributions,
+                        bool isEvenTimestep,
+                        unsigned long numberOfFluidNodes,
+                        uint* neighborX,
+                        uint* neighborY,
+                        uint* neighborZ,
+                        uint* typeOfGridNode,
+                        real* coordX,
+                        real* coordY,
+                        real* coordZ,
+                        real minX,
+                        real maxX,
+                        real minY,
+                        real maxY,
+                        real minZ,
+                        real maxZ)
+                        {
+                            const unsigned k_000 = vf::gpu::getNodeIndex();
+
+                            if (k_000 >= numberOfFluidNodes || typeOfGridNode[k_000]!=GEO_FLUID ) 
+                                return;
+
+                            real coordNodeX = coordX[k_000];
+                            real coordNodeY = coordY[k_000];
+                            real coordNodeZ = coordZ[k_000];
+
+                            if( coordNodeX>=minX && coordNodeX<=maxX &&
+                                coordNodeY>=minY && coordNodeY<=maxY &&
+                                coordNodeZ>=minZ && coordNodeZ<=maxZ    )
+                                {
+                                    Distributions27 dist = vf::gpu::getDistributionReferences27(distributions, numberOfFluidNodes, isEvenTimestep);
+                                    ////////////////////////////////////////////////////////////////////////////////
+                                    //! - Set neighbor indices (necessary for indirect addressing)
+                                    uint k_M00 = neighborX[k_000];
+                                    uint k_0M0 = neighborY[k_000];
+                                    uint k_00M = neighborZ[k_000];
+                                    uint k_MM0 = neighborY[k_M00];
+                                    uint k_M0M = neighborZ[k_M00];
+                                    uint k_0MM = neighborZ[k_0M0];
+                                    uint k_MMM = neighborZ[k_MM0];
+                                    ////////////////////////////////////////////////////////////////////////////////////
+                                    //! - Set local distributions
+                                    //!
+                                    real f_000 = (dist.f[DIR_000])[k_000];
+                                    real f_P00 = (dist.f[DIR_P00])[k_000];
+                                    real f_M00 = (dist.f[DIR_M00])[k_M00];
+                                    real f_0P0 = (dist.f[DIR_0P0])[k_000];
+                                    real f_0M0 = (dist.f[DIR_0M0])[k_0M0];
+                                    real f_00P = (dist.f[DIR_00P])[k_000];
+                                    real f_00M = (dist.f[DIR_00M])[k_00M];
+                                    real f_PP0 = (dist.f[DIR_PP0])[k_000];
+                                    real f_MM0 = (dist.f[DIR_MM0])[k_MM0];
+                                    real f_PM0 = (dist.f[DIR_PM0])[k_0M0];
+                                    real f_MP0 = (dist.f[DIR_MP0])[k_M00];
+                                    real f_P0P = (dist.f[DIR_P0P])[k_000];
+                                    real f_M0M = (dist.f[DIR_M0M])[k_M0M];
+                                    real f_P0M = (dist.f[DIR_P0M])[k_00M];
+                                    real f_M0P = (dist.f[DIR_M0P])[k_M00];
+                                    real f_0PP = (dist.f[DIR_0PP])[k_000];
+                                    real f_0MM = (dist.f[DIR_0MM])[k_0MM];
+                                    real f_0PM = (dist.f[DIR_0PM])[k_00M];
+                                    real f_0MP = (dist.f[DIR_0MP])[k_0M0];
+                                    real f_PPP = (dist.f[DIR_PPP])[k_000];
+                                    real f_MPP = (dist.f[DIR_MPP])[k_M00];
+                                    real f_PMP = (dist.f[DIR_PMP])[k_0M0];
+                                    real f_MMP = (dist.f[DIR_MMP])[k_MM0];
+                                    real f_PPM = (dist.f[DIR_PPM])[k_00M];
+                                    real f_MPM = (dist.f[DIR_MPM])[k_M0M];
+                                    real f_PMM = (dist.f[DIR_PMM])[k_0MM];
+                                    real f_MMM = (dist.f[DIR_MMM])[k_MMM];
+
+                                    real drho = ((((f_PPP + f_MMM) + (f_MPM + f_PMP)) + ((f_MPP + f_PMM) + (f_MMP + f_PPM))) +
+                                                (((f_0MP + f_0PM) + (f_0MM + f_0PP)) + ((f_M0P + f_P0M) + (f_M0M + f_P0P)) +
+                                                ((f_MP0 + f_PM0) + (f_MM0 + f_PP0))) +
+                                                ((f_M00 + f_P00) + (f_0M0 + f_0P0) + (f_00M + f_00P))) +
+                                                    f_000;
+
+                                    real oneOverRho = c1o1 / (c1o1 + drho);
+
+                                    real vvx = ((((f_PPP - f_MMM) + (f_PMP - f_MPM)) + ((f_PMM - f_MPP) + (f_PPM - f_MMP))) +
+                                                (((f_P0M - f_M0P) + (f_P0P - f_M0M)) + ((f_PM0 - f_MP0) + (f_PP0 - f_MM0))) + (f_P00 - f_M00)) *
+                                            oneOverRho;
+                                    real vvy = ((((f_PPP - f_MMM) + (f_MPM - f_PMP)) + ((f_MPP - f_PMM) + (f_PPM - f_MMP))) +
+                                                (((f_0PM - f_0MP) + (f_0PP - f_0MM)) + ((f_MP0 - f_PM0) + (f_PP0 - f_MM0))) + (f_0P0 - f_0M0)) *
+                                            oneOverRho;
+                                    real vvz = ((((f_PPP - f_MMM) + (f_PMP - f_MPM)) + ((f_MPP - f_PMM) + (f_MMP - f_PPM))) +
+                                                (((f_0MP - f_0PM) + (f_0PP - f_0MM)) + ((f_M0P - f_P0M) + (f_P0P - f_M0M))) + (f_00P - f_00M)) *
+                                            oneOverRho;
+
+                                    printf("Node %u \t (%f\t%f\t%f)\n rho: %f\t velo: %f\t %f \t %f\n\n" , k_000, coordNodeX, coordNodeY, coordNodeZ, drho, vvx, vvy, vvz);
+                                    printf("Node %u \t (%f\t%f\t%f)\n f_M00\t%f\t f_000\t%f\t f_P00\t%f\n f_MP0\t%f\t f_0P0\t%f\t f_PP0\t%f\n f_MM0\t%f\t f_0M0\t%f\t f_PM0\t%f\n f_M0P\t%f\t f_00P\t%f\t f_P0P\t%f\n f_M0M\t%f\t f_00M\t%f\t f_P0M\t%f\n f_MPP\t%f\t f_0PP\t%f\t f_PPP\t%f\n f_MPM\t%f\t f_0PM\t%f\t f_PPM\t%f\n f_MMP\t%f\t f_0MP\t%f\t f_PMP\t%f\n f_MMM\t%f\t f_0MM\t%f\t f_PMM\t%f\n\n\n" , k_000, coordNodeX, coordNodeY, coordNodeZ, f_M00, f_000, f_P00,f_MP0, f_0P0, f_PP0, f_MM0, f_0M0, f_PM0, f_M0P, f_00P, f_P0P, f_M0M, f_00M, f_P0M, f_MPP, f_0PP, f_PPP, f_MPM, f_0PM, f_PPM, f_MMP, f_0MP, f_PMP, f_MMM, f_0MM, f_PMM);
+
+                                }
+
+                        }
+
+
+
+
+void DistributionDebugInspector::inspect(std::shared_ptr<Parameter> para, uint level, uint t){
+    
+    if(this->inspectionLevel!=level)
+        return;
+
+    std::cout << tag << ": distributions on level " << level << " at t " << t <<  std::endl;
+
+    vf::cuda::CudaGrid cudaGrid = vf::cuda::CudaGrid(para->getParD(level)->numberofthreads, para->getParD(level)->numberOfNodes);
+
+    printFs <<< cudaGrid.grid, cudaGrid.threads >>>(    para->getParD(level)->distributions.f[0],
+                                                        para->getParD(level)->isEvenTimestep,
+                                                        (unsigned long)para->getParD(level)->numberOfNodes,
+                                                        para->getParD(level)->neighborX,
+                                                        para->getParD(level)->neighborY,
+                                                        para->getParD(level)->neighborZ,
+                                                        para->getParD(level)->typeOfGridNode,
+                                                        para->getParD(level)->coordinateX,
+                                                        para->getParD(level)->coordinateY,
+                                                        para->getParD(level)->coordinateZ,
+                                                        minX,
+                                                        maxX,
+                                                        minY,
+                                                        maxY,
+                                                        minZ,
+                                                        maxZ);
+
+}

@@ -35,7 +35,7 @@
 #include "Block3D.h"
 #include "CoordinateTransformation3D.h"
 #include "Grid3D.h"
-#include "Grid3DSystem.h"
+#include "D3Q27System.h"
 
 #include <geometry3d/GbObject3D.h>
 

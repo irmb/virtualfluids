@@ -15,9 +15,9 @@
 
 //////////////////////////
 //porous media
-#define GEO_PM_0		 5
-#define GEO_PM_1		 6
-#define GEO_PM_2		 7
+#define GEO_PM_0         5
+#define GEO_PM_1         6
+#define GEO_PM_2         7
 //////////////////////////
 
 #define GEO_SOLID       15
@@ -53,16 +53,32 @@
 //! \brief An enumeration for selecting a turbulence model
 enum class TurbulenceModel {
    //! - Smagorinsky
-    Smagorinsky,
+   Smagorinsky,
     //! - AMD (Anisotropic Minimum Dissipation) model, see e.g. Rozema et al., Phys. Fluids 27, 085107 (2015), https://doi.org/10.1063/1.4928700
-    AMD,
+   AMD,
     //! - QR model by Verstappen 
-    QR,
+   QR,
     //! - TODO: move the WALE model here from the old kernels
     //WALE
     //! - No turbulence model
-    None
+   None
 };
+
+//! \brief An enumeration for selecting a template of the collision kernel (CumulantK17)
+enum class CollisionTemplate {
+   //! - Default: plain collision without additional read/write
+   Default,
+   //!  - WriteMacroVars: collision \w write out macroscopic variables
+   WriteMacroVars,
+   //! - ApplyBodyForce: collision \w read and apply body force in the collision kernel
+   ApplyBodyForce,
+   //! - AllFeatures: collision \w write out macroscopic variables AND read and apply body force
+   AllFeatures,
+   //! - Border: collision on border nodes
+   SubDomainBorder
+};
+constexpr std::initializer_list<CollisionTemplate> all_CollisionTemplate  = { CollisionTemplate::Default, CollisionTemplate::WriteMacroVars, CollisionTemplate::ApplyBodyForce, CollisionTemplate::AllFeatures, CollisionTemplate::SubDomainBorder};
+constexpr std::initializer_list<CollisionTemplate> bulk_CollisionTemplate = { CollisionTemplate::Default, CollisionTemplate::WriteMacroVars, CollisionTemplate::ApplyBodyForce, CollisionTemplate::AllFeatures};
 
 struct InitCondition
 {
@@ -144,6 +160,7 @@ struct InitCondition
    bool hasWallModelMonitor {false};
    bool simulatePorousMedia {false};
    bool streetVelocityFile {false};
+   real outflowPressureCorrectionFactor {0.0};
 };
 
 //Interface Cells
@@ -174,7 +191,7 @@ typedef struct OffFC{
 
 // Distribution functions g 6
 typedef struct  Distri6 {
-	real* g[6];
+   real* g[6];
 } Distributions6;
 
 // Distribution functions f 7
@@ -214,6 +231,21 @@ typedef struct QforBC{
    real *normalX, *normalY, *normalZ;
 }QforBoundaryConditions;
 
+typedef struct QforPrecursorBC{
+   int* k;
+   int numberOfBCnodes=0;
+   int sizeQ;
+   int numberOfPrecursorNodes=0;
+   uint nPrecursorReads=0;
+   uint timeStepsBetweenReads;
+   size_t numberOfQuantities;
+   real* q27[27];
+   uint* planeNeighbor0PP, *planeNeighbor0PM, *planeNeighbor0MP, *planeNeighbor0MM;
+   real* weights0PP, *weights0PM, *weights0MP,  *weights0MM;
+   real* last, *current, *next;
+   real velocityX, velocityY, velocityZ;
+}QforPrecursorBoundaryConditions;
+
 //BCTemp
 typedef struct TempforBC{
    int* k;
@@ -249,56 +281,55 @@ typedef struct WMparas{
    real* Fz;
 }WallModelParameters;
 
+
 //measurePoints
 typedef struct MeasP{
-	std::string name;
-	uint k;
-	std::vector<real> Vx;
-	std::vector<real> Vy;
-	std::vector<real> Vz;
-	std::vector<real> Rho;
-	//real* Vx;
-	//real* Vy;
-	//real* Vz;
-	//real* Rho;
+   std::string name;
+   uint k;
+   std::vector<real> Vx;
+   std::vector<real> Vy;
+   std::vector<real> Vz;
+   std::vector<real> Rho;
+   //real* Vx;
+   //real* Vy;
+   //real* Vz;
+   //real* Rho;
 }MeasurePoints;
 
 //Process Neighbors
 typedef struct PN27{
-	real* f[27];
-	uint memsizeFs;
-	int* index;
-	uint memsizeIndex;
-	uint rankNeighbor;
-	int numberOfNodes;
-	int numberOfFs;
+   real* f[27];
+   uint memsizeFs;
+   int* index;
+   uint memsizeIndex;
+   uint rankNeighbor;
+   int numberOfNodes;
+   int numberOfFs;
 }ProcessNeighbor27;
 
 typedef struct PN_F3 {
-	real* g[6];
-	uint memsizeGs;
-	int* index;
-	uint memsizeIndex;
-	uint rankNeighbor;
-	int numberOfNodes;
-	int numberOfGs;
+   real* g[6];
+   uint memsizeGs;
+   int* index;
+   uint memsizeIndex;
+   uint rankNeighbor;
+   int numberOfNodes;
+   int numberOfGs;
 }ProcessNeighborF3;
 
 //path line particles
 typedef struct PLP{
-	bool *stuck, *hot;
-	real *coordXabsolut, *coordYabsolut, *coordZabsolut;
-	real *coordXlocal,   *coordYlocal,   *coordZlocal;
-	real *veloX,         *veloY,         *veloZ;
-	real *randomLocationInit;
-	uint *timestep;
-	uint *ID;
-	uint *cellBaseID;
-	uint numberOfParticles, numberOfTimestepsParticles;
-	uint memSizeID, memSizeTimestep, memSizerealAll, memSizereal, memSizeBool, memSizeBoolBC;
+   bool *stuck, *hot;
+   real *coordXabsolut, *coordYabsolut, *coordZabsolut;
+   real *coordXlocal,   *coordYlocal,   *coordZlocal;
+   real *veloX,         *veloY,         *veloZ;
+   real *randomLocationInit;
+   uint *timestep;
+   uint *ID;
+   uint *cellBaseID;
+   uint numberOfParticles, numberOfTimestepsParticles;
+   uint memSizeID, memSizeTimestep, memSizerealAll, memSizereal, memSizeBool, memSizeBoolBC;
 }PathLineParticles;
-
-
 
 //////////////////////////////////////////////////////////////////////////
 inline int vectorPosition(int i, int j, int k, int Lx, int Ly )
@@ -308,7 +339,4 @@ inline int vectorPosition(int i, int j, int k, int Lx, int Ly )
 }
 //////////////////////////////////////////////////////////////////////////
 
-
 #endif
-
-

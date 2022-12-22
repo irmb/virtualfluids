@@ -55,14 +55,17 @@ public:
         uint _tStartOut,
         uint _tOut
     ):  Probe(_probeName, 
-             _outputPath,
-             _tStartAvg,
-             _tStartTmpAvg,
-             _tAvg,
-             _tStartOut, 
-             _tOut,
-             false,
-             true){}
+            _outputPath,
+            _tStartAvg,
+            _tStartTmpAvg,
+            _tAvg,
+            _tStartOut, 
+            _tOut,
+            false,
+            true)
+    {
+        if (_tStartTmpAvg<_tStartAvg)   throw std::runtime_error("Probe: tStartTmpAvg must be larger than tStartAvg!");
+    }
 
 
     void setForceOutputToStress(bool _outputStress){ this->outputStress = _outputStress; }

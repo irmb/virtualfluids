@@ -5,7 +5,7 @@ from poiseuille.simulation import run_simulation
 from pyfluids.cpu.writer import Writer, OutputFormat
 
 
-scale_level = int(os.environ["PYFLUIDS_SCALE_LEVEL"])
+scale_level = int(os.environ.get("PYFLUIDS_SCALE_LEVEL", 1))
 grid_params, physical_params, runtime_params, kernel = Scaling.configuration_for_scale_level(scale_level)
 
 writer = Writer()
