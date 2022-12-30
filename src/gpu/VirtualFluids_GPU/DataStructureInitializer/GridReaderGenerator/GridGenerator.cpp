@@ -1283,7 +1283,7 @@ std::string GridGenerator::verifyNeighborIndices(int level) const
     int stopperNodes = 0;
 
     for (size_t index = 0; index < para->getParH(level)->numberOfNodes; index++)
-        oss << verifyNeighborIndex(level, index, invalidNodes, stopperNodes, wrongNeighbors);
+        oss << verifyNeighborIndex(level, (int)index, invalidNodes, stopperNodes, wrongNeighbors);
 
 
     oss << "invalid nodes found: " << invalidNodes << "\n";

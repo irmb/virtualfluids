@@ -31,7 +31,7 @@ inline void writeNeighborLinkLines(Parameter *para, const int level, const unsig
         const double x2 = para->getParH(level)->coordinateY[position];
         const double x3 = para->getParH(level)->coordinateZ[position];
 
-        const uint positionNeighbor = getNeighborIndex(para->getParH(level).get(), position, direction);
+        const uint positionNeighbor = getNeighborIndex(para->getParH(level).get(), (uint)position, direction);
 
         const double x1Neighbor = para->getParH(level)->coordinateX[positionNeighbor];
         const double x2Neighbor = para->getParH(level)->coordinateY[positionNeighbor];
