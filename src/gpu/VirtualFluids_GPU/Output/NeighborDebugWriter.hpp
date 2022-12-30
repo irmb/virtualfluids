@@ -48,7 +48,7 @@ inline void writeNeighborLinkLines(Parameter *para, const int level, const unsig
 inline void writeNeighborLinkLinesDebug(Parameter *para)
 {
     for (int level = 0; level <= para->getMaxLevel(); level++) {
-        for (int direction = vf::lbm::dir::STARTDIR; direction <= vf::lbm::dir::ENDDIR; direction++) {
+        for (size_t direction = vf::lbm::dir::STARTDIR; direction <= vf::lbm::dir::ENDDIR; direction++) {
             const std::string fileName = para->getFName() + "_" + StringUtil::toString<int>(level) + "_Link_" +
                                          std::to_string(direction) + "_Debug.vtk";
             writeNeighborLinkLines(para, level, para->getParH(level)->numberOfNodes, direction, fileName);

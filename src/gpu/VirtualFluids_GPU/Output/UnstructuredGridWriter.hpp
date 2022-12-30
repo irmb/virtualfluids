@@ -2319,7 +2319,7 @@ namespace UnstructuredGridWriter
 			wallX3 = 0.0;
 			q      = 0.0;
 			//////////////////////////////////////////////////////////////////////////
-			for (unsigned int typeOfQ = STARTDIR; typeOfQ <= ENDDIR; typeOfQ++)
+            for (size_t typeOfQ = vf::lbm::dir::STARTDIR; typeOfQ <= vf::lbm::dir::ENDDIR; typeOfQ++)
 			{
 				QQ = para->getParH(level)->geometryBC.q27[0];
 				Q.q27[typeOfQ] = &QQ[typeOfQ*sizeOfNodes];
@@ -2423,7 +2423,7 @@ namespace UnstructuredGridWriter
 			wallX3 = 0.0;
 			q      = 0.0;
 			//////////////////////////////////////////////////////////////////////////
-			for (unsigned int typeOfQ = STARTDIR; typeOfQ <= ENDDIR; typeOfQ++)
+            for (size_t typeOfQ = vf::lbm::dir::STARTDIR; typeOfQ <= vf::lbm::dir::ENDDIR; typeOfQ++)
 			{
 				QQ = para->getParH(level)->velocityBC.q27[0];
 				Q.q27[typeOfQ] = &QQ[typeOfQ*sizeOfNodes];
@@ -2528,7 +2528,7 @@ namespace UnstructuredGridWriter
 			wallX3 = 0.0;
 			q      = 0.0;
 			//////////////////////////////////////////////////////////////////////////
-			for (unsigned int typeOfQ = STARTDIR; typeOfQ <= ENDDIR; typeOfQ++)
+            for (size_t typeOfQ = vf::lbm::dir::STARTDIR; typeOfQ <= vf::lbm::dir::ENDDIR; typeOfQ++)
 			{
 				QQ = para->getParH(level)->pressureBC.q27[0];
 				Q.q27[typeOfQ] = &QQ[typeOfQ*sizeOfNodes];
