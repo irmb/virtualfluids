@@ -251,16 +251,16 @@ void PlanarAverageProbe::findPoints(Parameter* para, GridProvider* gridProvider,
     std::sort(pointCoordsNormal->begin(), pointCoordsNormal->end());
     
     // Find all pointCoords in the first plane 
-    for(size_t j = 1; j < para->getParH(level)->numberOfNodes; j++ )
+    for(size_t pos = 1; pos < para->getParH(level)->numberOfNodes; pos++ )
     {
-        if( para->getParH(level)->typeOfGridNode[j] == GEO_FLUID && pointCoordsNormal_par[j] == pointCoordsNormal->at(0)) 
+        if( para->getParH(level)->typeOfGridNode[pos] == GEO_FLUID && pointCoordsNormal_par[pos] == pointCoordsNormal->at(0)) 
         {
             //not needed in current state, might become relevant for two-point correlations
             // pointCoordsNormal->push_back( pointCoordsNormal_par[j] ); 
             // pointCoordsInplane1->push_back( pointCoordsInplane1_par[j] );
             // pointCoordsInplane2->push_back( pointCoordsInplane2_par[j] );
 
-            probeIndices_level.push_back(j);
+            probeIndices_level.push_back((int)pos);
         }
     }
 }
