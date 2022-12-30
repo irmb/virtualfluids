@@ -46,9 +46,9 @@ public:
     virtual void initalGridInformations() = 0;
 
 protected:
-	void setNumberOfNodes(const int numberOfNodes, const int level) const;
-    void setNumberOfTaggedFluidNodes(const int numberOfNodes, CollisionTemplate tag, const int level) const;
-    virtual void setInitalNodeValues(const int numberOfNodes, const int level) const;
+	void setNumberOfNodes(const uint numberOfNodes, const int level) const;
+    void setNumberOfTaggedFluidNodes(const uint numberOfNodes, CollisionTemplate tag, const int level) const;
+    virtual void setInitalNodeValues(const uint numberOfNodes, const int level) const;
 
 	void setPressSizePerLevel(int level, int sizePerLevel) const;
 	void setVelocitySizePerLevel(int level, int sizePerLevel) const;

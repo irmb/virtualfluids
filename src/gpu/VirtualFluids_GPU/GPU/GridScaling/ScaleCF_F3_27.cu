@@ -23,8 +23,8 @@ __global__ void scaleCF_comp_D3Q27F3_2018(real* DC,
 													 unsigned int* neighborFX,
 													 unsigned int* neighborFY,
 													 unsigned int* neighborFZ,
-													 unsigned int size_MatC, 
-													 unsigned int size_MatF, 
+													 unsigned long long numberOfLBnodesCoarse, 
+													 unsigned long long numberOfLBnodesFine, 
 													 bool isEvenTimestep,
 													 unsigned int* posCSWB, 
 													 unsigned int* posFSWB, 
@@ -44,33 +44,33 @@ __global__ void scaleCF_comp_D3Q27F3_2018(real* DC,
 		*f000dest, *fMMMdest, *fMMPdest, *fMPPdest, *fMPMdest, *fPPMdest, *fPPPdest, *fPMPdest, *fPMMdest;
 
 
-	fP00dest = &DF[DIR_P00   *size_MatF];
-	fM00dest = &DF[DIR_M00   *size_MatF];
-	f0P0dest = &DF[DIR_0P0   *size_MatF];
-	f0M0dest = &DF[DIR_0M0   *size_MatF];
-	f00Pdest = &DF[DIR_00P   *size_MatF];
-	f00Mdest = &DF[DIR_00M   *size_MatF];
-	fPP0dest = &DF[DIR_PP0  *size_MatF];
-	fMM0dest = &DF[DIR_MM0  *size_MatF];
-	fPM0dest = &DF[DIR_PM0  *size_MatF];
-	fMP0dest = &DF[DIR_MP0  *size_MatF];
-	fP0Pdest = &DF[DIR_P0P  *size_MatF];
-	fM0Mdest = &DF[DIR_M0M  *size_MatF];
-	fP0Mdest = &DF[DIR_P0M  *size_MatF];
-	fM0Pdest = &DF[DIR_M0P  *size_MatF];
-	f0PPdest = &DF[DIR_0PP  *size_MatF];
-	f0MMdest = &DF[DIR_0MM  *size_MatF];
-	f0PMdest = &DF[DIR_0PM  *size_MatF];
-	f0MPdest = &DF[DIR_0MP  *size_MatF];
-	f000dest = &DF[DIR_000*size_MatF];
-	fMMMdest = &DF[DIR_MMM *size_MatF];
-	fMMPdest = &DF[DIR_MMP *size_MatF];
-	fMPPdest = &DF[DIR_MPP *size_MatF];
-	fMPMdest = &DF[DIR_MPM *size_MatF];
-	fPPMdest = &DF[DIR_PPM *size_MatF];
-	fPPPdest = &DF[DIR_PPP *size_MatF];
-	fPMPdest = &DF[DIR_PMP *size_MatF];
-	fPMMdest = &DF[DIR_PMM *size_MatF];
+	fP00dest = &DF[DIR_P00   *numberOfLBnodesFine];
+	fM00dest = &DF[DIR_M00   *numberOfLBnodesFine];
+	f0P0dest = &DF[DIR_0P0   *numberOfLBnodesFine];
+	f0M0dest = &DF[DIR_0M0   *numberOfLBnodesFine];
+	f00Pdest = &DF[DIR_00P   *numberOfLBnodesFine];
+	f00Mdest = &DF[DIR_00M   *numberOfLBnodesFine];
+	fPP0dest = &DF[DIR_PP0  *numberOfLBnodesFine];
+	fMM0dest = &DF[DIR_MM0  *numberOfLBnodesFine];
+	fPM0dest = &DF[DIR_PM0  *numberOfLBnodesFine];
+	fMP0dest = &DF[DIR_MP0  *numberOfLBnodesFine];
+	fP0Pdest = &DF[DIR_P0P  *numberOfLBnodesFine];
+	fM0Mdest = &DF[DIR_M0M  *numberOfLBnodesFine];
+	fP0Mdest = &DF[DIR_P0M  *numberOfLBnodesFine];
+	fM0Pdest = &DF[DIR_M0P  *numberOfLBnodesFine];
+	f0PPdest = &DF[DIR_0PP  *numberOfLBnodesFine];
+	f0MMdest = &DF[DIR_0MM  *numberOfLBnodesFine];
+	f0PMdest = &DF[DIR_0PM  *numberOfLBnodesFine];
+	f0MPdest = &DF[DIR_0MP  *numberOfLBnodesFine];
+	f000dest = &DF[DIR_000*numberOfLBnodesFine];
+	fMMMdest = &DF[DIR_MMM *numberOfLBnodesFine];
+	fMMPdest = &DF[DIR_MMP *numberOfLBnodesFine];
+	fMPPdest = &DF[DIR_MPP *numberOfLBnodesFine];
+	fMPMdest = &DF[DIR_MPM *numberOfLBnodesFine];
+	fPPMdest = &DF[DIR_PPM *numberOfLBnodesFine];
+	fPPPdest = &DF[DIR_PPP *numberOfLBnodesFine];
+	fPMPdest = &DF[DIR_PMP *numberOfLBnodesFine];
+	fPMMdest = &DF[DIR_PMM *numberOfLBnodesFine];
 
 	real
 		*fP00source, *fM00source, *f0P0source, *f0M0source, *f00Psource, *f00Msource, *fPP0source, *fMM0source, *fPM0source,
@@ -79,72 +79,72 @@ __global__ void scaleCF_comp_D3Q27F3_2018(real* DC,
 
 	if (isEvenTimestep == true)
 	{
-		fP00source = &DC[DIR_P00   *size_MatC];
-		fM00source = &DC[DIR_M00   *size_MatC];
-		f0P0source = &DC[DIR_0P0   *size_MatC];
-		f0M0source = &DC[DIR_0M0   *size_MatC];
-		f00Psource = &DC[DIR_00P   *size_MatC];
-		f00Msource = &DC[DIR_00M   *size_MatC];
-		fPP0source = &DC[DIR_PP0  *size_MatC];
-		fMM0source = &DC[DIR_MM0  *size_MatC];
-		fPM0source = &DC[DIR_PM0  *size_MatC];
-		fMP0source = &DC[DIR_MP0  *size_MatC];
-		fP0Psource = &DC[DIR_P0P  *size_MatC];
-		fM0Msource = &DC[DIR_M0M  *size_MatC];
-		fP0Msource = &DC[DIR_P0M  *size_MatC];
-		fM0Psource = &DC[DIR_M0P  *size_MatC];
-		f0PPsource = &DC[DIR_0PP  *size_MatC];
-		f0MMsource = &DC[DIR_0MM  *size_MatC];
-		f0PMsource = &DC[DIR_0PM  *size_MatC];
-		f0MPsource = &DC[DIR_0MP  *size_MatC];
-		f000source = &DC[DIR_000*size_MatC];
-		fMMMsource = &DC[DIR_MMM *size_MatC];
-		fMMPsource = &DC[DIR_MMP *size_MatC];
-		fMPPsource = &DC[DIR_MPP *size_MatC];
-		fMPMsource = &DC[DIR_MPM *size_MatC];
-		fPPMsource = &DC[DIR_PPM *size_MatC];
-		fPPPsource = &DC[DIR_PPP *size_MatC];
-		fPMPsource = &DC[DIR_PMP *size_MatC];
-		fPMMsource = &DC[DIR_PMM *size_MatC];
+		fP00source = &DC[DIR_P00   *numberOfLBnodesCoarse];
+		fM00source = &DC[DIR_M00   *numberOfLBnodesCoarse];
+		f0P0source = &DC[DIR_0P0   *numberOfLBnodesCoarse];
+		f0M0source = &DC[DIR_0M0   *numberOfLBnodesCoarse];
+		f00Psource = &DC[DIR_00P   *numberOfLBnodesCoarse];
+		f00Msource = &DC[DIR_00M   *numberOfLBnodesCoarse];
+		fPP0source = &DC[DIR_PP0  *numberOfLBnodesCoarse];
+		fMM0source = &DC[DIR_MM0  *numberOfLBnodesCoarse];
+		fPM0source = &DC[DIR_PM0  *numberOfLBnodesCoarse];
+		fMP0source = &DC[DIR_MP0  *numberOfLBnodesCoarse];
+		fP0Psource = &DC[DIR_P0P  *numberOfLBnodesCoarse];
+		fM0Msource = &DC[DIR_M0M  *numberOfLBnodesCoarse];
+		fP0Msource = &DC[DIR_P0M  *numberOfLBnodesCoarse];
+		fM0Psource = &DC[DIR_M0P  *numberOfLBnodesCoarse];
+		f0PPsource = &DC[DIR_0PP  *numberOfLBnodesCoarse];
+		f0MMsource = &DC[DIR_0MM  *numberOfLBnodesCoarse];
+		f0PMsource = &DC[DIR_0PM  *numberOfLBnodesCoarse];
+		f0MPsource = &DC[DIR_0MP  *numberOfLBnodesCoarse];
+		f000source = &DC[DIR_000*numberOfLBnodesCoarse];
+		fMMMsource = &DC[DIR_MMM *numberOfLBnodesCoarse];
+		fMMPsource = &DC[DIR_MMP *numberOfLBnodesCoarse];
+		fMPPsource = &DC[DIR_MPP *numberOfLBnodesCoarse];
+		fMPMsource = &DC[DIR_MPM *numberOfLBnodesCoarse];
+		fPPMsource = &DC[DIR_PPM *numberOfLBnodesCoarse];
+		fPPPsource = &DC[DIR_PPP *numberOfLBnodesCoarse];
+		fPMPsource = &DC[DIR_PMP *numberOfLBnodesCoarse];
+		fPMMsource = &DC[DIR_PMM *numberOfLBnodesCoarse];
 	}
 	else
 	{
-		fP00source = &DC[DIR_M00   *size_MatC];
-		fM00source = &DC[DIR_P00   *size_MatC];
-		f0P0source = &DC[DIR_0M0   *size_MatC];
-		f0M0source = &DC[DIR_0P0   *size_MatC];
-		f00Psource = &DC[DIR_00M   *size_MatC];
-		f00Msource = &DC[DIR_00P   *size_MatC];
-		fPP0source = &DC[DIR_MM0  *size_MatC];
-		fMM0source = &DC[DIR_PP0  *size_MatC];
-		fPM0source = &DC[DIR_MP0  *size_MatC];
-		fMP0source = &DC[DIR_PM0  *size_MatC];
-		fP0Psource = &DC[DIR_M0M  *size_MatC];
-		fM0Msource = &DC[DIR_P0P  *size_MatC];
-		fP0Msource = &DC[DIR_M0P  *size_MatC];
-		fM0Psource = &DC[DIR_P0M  *size_MatC];
-		f0PPsource = &DC[DIR_0MM  *size_MatC];
-		f0MMsource = &DC[DIR_0PP  *size_MatC];
-		f0PMsource = &DC[DIR_0MP  *size_MatC];
-		f0MPsource = &DC[DIR_0PM  *size_MatC];
-		f000source = &DC[DIR_000*size_MatC];
-		fMMMsource = &DC[DIR_PPP *size_MatC];
-		fMMPsource = &DC[DIR_PPM *size_MatC];
-		fMPPsource = &DC[DIR_PMM *size_MatC];
-		fMPMsource = &DC[DIR_PMP *size_MatC];
-		fPPMsource = &DC[DIR_MMP *size_MatC];
-		fPPPsource = &DC[DIR_MMM *size_MatC];
-		fPMPsource = &DC[DIR_MPM *size_MatC];
-		fPMMsource = &DC[DIR_MPP *size_MatC];
+		fP00source = &DC[DIR_M00   *numberOfLBnodesCoarse];
+		fM00source = &DC[DIR_P00   *numberOfLBnodesCoarse];
+		f0P0source = &DC[DIR_0M0   *numberOfLBnodesCoarse];
+		f0M0source = &DC[DIR_0P0   *numberOfLBnodesCoarse];
+		f00Psource = &DC[DIR_00M   *numberOfLBnodesCoarse];
+		f00Msource = &DC[DIR_00P   *numberOfLBnodesCoarse];
+		fPP0source = &DC[DIR_MM0  *numberOfLBnodesCoarse];
+		fMM0source = &DC[DIR_PP0  *numberOfLBnodesCoarse];
+		fPM0source = &DC[DIR_MP0  *numberOfLBnodesCoarse];
+		fMP0source = &DC[DIR_PM0  *numberOfLBnodesCoarse];
+		fP0Psource = &DC[DIR_M0M  *numberOfLBnodesCoarse];
+		fM0Msource = &DC[DIR_P0P  *numberOfLBnodesCoarse];
+		fP0Msource = &DC[DIR_M0P  *numberOfLBnodesCoarse];
+		fM0Psource = &DC[DIR_P0M  *numberOfLBnodesCoarse];
+		f0PPsource = &DC[DIR_0MM  *numberOfLBnodesCoarse];
+		f0MMsource = &DC[DIR_0PP  *numberOfLBnodesCoarse];
+		f0PMsource = &DC[DIR_0MP  *numberOfLBnodesCoarse];
+		f0MPsource = &DC[DIR_0PM  *numberOfLBnodesCoarse];
+		f000source = &DC[DIR_000*numberOfLBnodesCoarse];
+		fMMMsource = &DC[DIR_PPP *numberOfLBnodesCoarse];
+		fMMPsource = &DC[DIR_PPM *numberOfLBnodesCoarse];
+		fMPPsource = &DC[DIR_PMM *numberOfLBnodesCoarse];
+		fMPMsource = &DC[DIR_PMP *numberOfLBnodesCoarse];
+		fPPMsource = &DC[DIR_MMP *numberOfLBnodesCoarse];
+		fPPPsource = &DC[DIR_MMM *numberOfLBnodesCoarse];
+		fPMPsource = &DC[DIR_MPM *numberOfLBnodesCoarse];
+		fPMMsource = &DC[DIR_MPP *numberOfLBnodesCoarse];
 	}
 
 	Distributions6 G;
-	G.g[DIR_P00] = &G6[DIR_P00   *size_MatF];
-	G.g[DIR_M00] = &G6[DIR_M00   *size_MatF];
-	G.g[DIR_0P0] = &G6[DIR_0P0   *size_MatF];
-	G.g[DIR_0M0] = &G6[DIR_0M0   *size_MatF];
-	G.g[DIR_00P] = &G6[DIR_00P   *size_MatF];
-	G.g[DIR_00M] = &G6[DIR_00M   *size_MatF];
+	G.g[DIR_P00] = &G6[DIR_P00   *numberOfLBnodesFine];
+	G.g[DIR_M00] = &G6[DIR_M00   *numberOfLBnodesFine];
+	G.g[DIR_0P0] = &G6[DIR_0P0   *numberOfLBnodesFine];
+	G.g[DIR_0M0] = &G6[DIR_0M0   *numberOfLBnodesFine];
+	G.g[DIR_00P] = &G6[DIR_00P   *numberOfLBnodesFine];
+	G.g[DIR_00M] = &G6[DIR_00M   *numberOfLBnodesFine];
 
 	////////////////////////////////////////////////////////////////////////////////
    const unsigned  ix = threadIdx.x;  // Globaler x-Index 
@@ -4370,8 +4370,8 @@ __global__ void scaleCF_comp_D3Q27F3( real* DC,
 												 unsigned int* neighborFX,
 												 unsigned int* neighborFY,
 												 unsigned int* neighborFZ,
-												 unsigned int size_MatC, 
-												 unsigned int size_MatF, 
+												 unsigned long long numberOfLBnodesCoarse, 
+												 unsigned long long numberOfLBnodesFine, 
 												 bool isEvenTimestep,
 												 unsigned int* posCSWB, 
 												 unsigned int* posFSWB, 
@@ -4391,33 +4391,33 @@ __global__ void scaleCF_comp_D3Q27F3( real* DC,
 		*f000dest, *fMMMdest, *fMMPdest, *fMPPdest, *fMPMdest, *fPPMdest, *fPPPdest, *fPMPdest, *fPMMdest;
 
 
-	fP00dest = &DF[DIR_P00   *size_MatF];
-	fM00dest = &DF[DIR_M00   *size_MatF];
-	f0P0dest = &DF[DIR_0P0   *size_MatF];
-	f0M0dest = &DF[DIR_0M0   *size_MatF];
-	f00Pdest = &DF[DIR_00P   *size_MatF];
-	f00Mdest = &DF[DIR_00M   *size_MatF];
-	fPP0dest = &DF[DIR_PP0  *size_MatF];
-	fMM0dest = &DF[DIR_MM0  *size_MatF];
-	fPM0dest = &DF[DIR_PM0  *size_MatF];
-	fMP0dest = &DF[DIR_MP0  *size_MatF];
-	fP0Pdest = &DF[DIR_P0P  *size_MatF];
-	fM0Mdest = &DF[DIR_M0M  *size_MatF];
-	fP0Mdest = &DF[DIR_P0M  *size_MatF];
-	fM0Pdest = &DF[DIR_M0P  *size_MatF];
-	f0PPdest = &DF[DIR_0PP  *size_MatF];
-	f0MMdest = &DF[DIR_0MM  *size_MatF];
-	f0PMdest = &DF[DIR_0PM  *size_MatF];
-	f0MPdest = &DF[DIR_0MP  *size_MatF];
-	f000dest = &DF[DIR_000*size_MatF];
-	fMMMdest = &DF[DIR_MMM *size_MatF];
-	fMMPdest = &DF[DIR_MMP *size_MatF];
-	fMPPdest = &DF[DIR_MPP *size_MatF];
-	fMPMdest = &DF[DIR_MPM *size_MatF];
-	fPPMdest = &DF[DIR_PPM *size_MatF];
-	fPPPdest = &DF[DIR_PPP *size_MatF];
-	fPMPdest = &DF[DIR_PMP *size_MatF];
-	fPMMdest = &DF[DIR_PMM *size_MatF];
+	fP00dest = &DF[DIR_P00   *numberOfLBnodesFine];
+	fM00dest = &DF[DIR_M00   *numberOfLBnodesFine];
+	f0P0dest = &DF[DIR_0P0   *numberOfLBnodesFine];
+	f0M0dest = &DF[DIR_0M0   *numberOfLBnodesFine];
+	f00Pdest = &DF[DIR_00P   *numberOfLBnodesFine];
+	f00Mdest = &DF[DIR_00M   *numberOfLBnodesFine];
+	fPP0dest = &DF[DIR_PP0  *numberOfLBnodesFine];
+	fMM0dest = &DF[DIR_MM0  *numberOfLBnodesFine];
+	fPM0dest = &DF[DIR_PM0  *numberOfLBnodesFine];
+	fMP0dest = &DF[DIR_MP0  *numberOfLBnodesFine];
+	fP0Pdest = &DF[DIR_P0P  *numberOfLBnodesFine];
+	fM0Mdest = &DF[DIR_M0M  *numberOfLBnodesFine];
+	fP0Mdest = &DF[DIR_P0M  *numberOfLBnodesFine];
+	fM0Pdest = &DF[DIR_M0P  *numberOfLBnodesFine];
+	f0PPdest = &DF[DIR_0PP  *numberOfLBnodesFine];
+	f0MMdest = &DF[DIR_0MM  *numberOfLBnodesFine];
+	f0PMdest = &DF[DIR_0PM  *numberOfLBnodesFine];
+	f0MPdest = &DF[DIR_0MP  *numberOfLBnodesFine];
+	f000dest = &DF[DIR_000*numberOfLBnodesFine];
+	fMMMdest = &DF[DIR_MMM *numberOfLBnodesFine];
+	fMMPdest = &DF[DIR_MMP *numberOfLBnodesFine];
+	fMPPdest = &DF[DIR_MPP *numberOfLBnodesFine];
+	fMPMdest = &DF[DIR_MPM *numberOfLBnodesFine];
+	fPPMdest = &DF[DIR_PPM *numberOfLBnodesFine];
+	fPPPdest = &DF[DIR_PPP *numberOfLBnodesFine];
+	fPMPdest = &DF[DIR_PMP *numberOfLBnodesFine];
+	fPMMdest = &DF[DIR_PMM *numberOfLBnodesFine];
 
 	real
 		*fP00source, *fM00source, *f0P0source, *f0M0source, *f00Psource, *f00Msource, *fPP0source, *fMM0source, *fPM0source,
@@ -4426,72 +4426,72 @@ __global__ void scaleCF_comp_D3Q27F3( real* DC,
 
 	if (isEvenTimestep == true)
 	{
-		fP00source = &DC[DIR_P00   *size_MatC];
-		fM00source = &DC[DIR_M00   *size_MatC];
-		f0P0source = &DC[DIR_0P0   *size_MatC];
-		f0M0source = &DC[DIR_0M0   *size_MatC];
-		f00Psource = &DC[DIR_00P   *size_MatC];
-		f00Msource = &DC[DIR_00M   *size_MatC];
-		fPP0source = &DC[DIR_PP0  *size_MatC];
-		fMM0source = &DC[DIR_MM0  *size_MatC];
-		fPM0source = &DC[DIR_PM0  *size_MatC];
-		fMP0source = &DC[DIR_MP0  *size_MatC];
-		fP0Psource = &DC[DIR_P0P  *size_MatC];
-		fM0Msource = &DC[DIR_M0M  *size_MatC];
-		fP0Msource = &DC[DIR_P0M  *size_MatC];
-		fM0Psource = &DC[DIR_M0P  *size_MatC];
-		f0PPsource = &DC[DIR_0PP  *size_MatC];
-		f0MMsource = &DC[DIR_0MM  *size_MatC];
-		f0PMsource = &DC[DIR_0PM  *size_MatC];
-		f0MPsource = &DC[DIR_0MP  *size_MatC];
-		f000source = &DC[DIR_000*size_MatC];
-		fMMMsource = &DC[DIR_MMM *size_MatC];
-		fMMPsource = &DC[DIR_MMP *size_MatC];
-		fMPPsource = &DC[DIR_MPP *size_MatC];
-		fMPMsource = &DC[DIR_MPM *size_MatC];
-		fPPMsource = &DC[DIR_PPM *size_MatC];
-		fPPPsource = &DC[DIR_PPP *size_MatC];
-		fPMPsource = &DC[DIR_PMP *size_MatC];
-		fPMMsource = &DC[DIR_PMM *size_MatC];
+		fP00source = &DC[DIR_P00   *numberOfLBnodesCoarse];
+		fM00source = &DC[DIR_M00   *numberOfLBnodesCoarse];
+		f0P0source = &DC[DIR_0P0   *numberOfLBnodesCoarse];
+		f0M0source = &DC[DIR_0M0   *numberOfLBnodesCoarse];
+		f00Psource = &DC[DIR_00P   *numberOfLBnodesCoarse];
+		f00Msource = &DC[DIR_00M   *numberOfLBnodesCoarse];
+		fPP0source = &DC[DIR_PP0  *numberOfLBnodesCoarse];
+		fMM0source = &DC[DIR_MM0  *numberOfLBnodesCoarse];
+		fPM0source = &DC[DIR_PM0  *numberOfLBnodesCoarse];
+		fMP0source = &DC[DIR_MP0  *numberOfLBnodesCoarse];
+		fP0Psource = &DC[DIR_P0P  *numberOfLBnodesCoarse];
+		fM0Msource = &DC[DIR_M0M  *numberOfLBnodesCoarse];
+		fP0Msource = &DC[DIR_P0M  *numberOfLBnodesCoarse];
+		fM0Psource = &DC[DIR_M0P  *numberOfLBnodesCoarse];
+		f0PPsource = &DC[DIR_0PP  *numberOfLBnodesCoarse];
+		f0MMsource = &DC[DIR_0MM  *numberOfLBnodesCoarse];
+		f0PMsource = &DC[DIR_0PM  *numberOfLBnodesCoarse];
+		f0MPsource = &DC[DIR_0MP  *numberOfLBnodesCoarse];
+		f000source = &DC[DIR_000*numberOfLBnodesCoarse];
+		fMMMsource = &DC[DIR_MMM *numberOfLBnodesCoarse];
+		fMMPsource = &DC[DIR_MMP *numberOfLBnodesCoarse];
+		fMPPsource = &DC[DIR_MPP *numberOfLBnodesCoarse];
+		fMPMsource = &DC[DIR_MPM *numberOfLBnodesCoarse];
+		fPPMsource = &DC[DIR_PPM *numberOfLBnodesCoarse];
+		fPPPsource = &DC[DIR_PPP *numberOfLBnodesCoarse];
+		fPMPsource = &DC[DIR_PMP *numberOfLBnodesCoarse];
+		fPMMsource = &DC[DIR_PMM *numberOfLBnodesCoarse];
 	}
 	else
 	{
-		fP00source = &DC[DIR_M00   *size_MatC];
-		fM00source = &DC[DIR_P00   *size_MatC];
-		f0P0source = &DC[DIR_0M0   *size_MatC];
-		f0M0source = &DC[DIR_0P0   *size_MatC];
-		f00Psource = &DC[DIR_00M   *size_MatC];
-		f00Msource = &DC[DIR_00P   *size_MatC];
-		fPP0source = &DC[DIR_MM0  *size_MatC];
-		fMM0source = &DC[DIR_PP0  *size_MatC];
-		fPM0source = &DC[DIR_MP0  *size_MatC];
-		fMP0source = &DC[DIR_PM0  *size_MatC];
-		fP0Psource = &DC[DIR_M0M  *size_MatC];
-		fM0Msource = &DC[DIR_P0P  *size_MatC];
-		fP0Msource = &DC[DIR_M0P  *size_MatC];
-		fM0Psource = &DC[DIR_P0M  *size_MatC];
-		f0PPsource = &DC[DIR_0MM  *size_MatC];
-		f0MMsource = &DC[DIR_0PP  *size_MatC];
-		f0PMsource = &DC[DIR_0MP  *size_MatC];
-		f0MPsource = &DC[DIR_0PM  *size_MatC];
-		f000source = &DC[DIR_000*size_MatC];
-		fMMMsource = &DC[DIR_PPP *size_MatC];
-		fMMPsource = &DC[DIR_PPM *size_MatC];
-		fMPPsource = &DC[DIR_PMM *size_MatC];
-		fMPMsource = &DC[DIR_PMP *size_MatC];
-		fPPMsource = &DC[DIR_MMP *size_MatC];
-		fPPPsource = &DC[DIR_MMM *size_MatC];
-		fPMPsource = &DC[DIR_MPM *size_MatC];
-		fPMMsource = &DC[DIR_MPP *size_MatC];
+		fP00source = &DC[DIR_M00   *numberOfLBnodesCoarse];
+		fM00source = &DC[DIR_P00   *numberOfLBnodesCoarse];
+		f0P0source = &DC[DIR_0M0   *numberOfLBnodesCoarse];
+		f0M0source = &DC[DIR_0P0   *numberOfLBnodesCoarse];
+		f00Psource = &DC[DIR_00M   *numberOfLBnodesCoarse];
+		f00Msource = &DC[DIR_00P   *numberOfLBnodesCoarse];
+		fPP0source = &DC[DIR_MM0  *numberOfLBnodesCoarse];
+		fMM0source = &DC[DIR_PP0  *numberOfLBnodesCoarse];
+		fPM0source = &DC[DIR_MP0  *numberOfLBnodesCoarse];
+		fMP0source = &DC[DIR_PM0  *numberOfLBnodesCoarse];
+		fP0Psource = &DC[DIR_M0M  *numberOfLBnodesCoarse];
+		fM0Msource = &DC[DIR_P0P  *numberOfLBnodesCoarse];
+		fP0Msource = &DC[DIR_M0P  *numberOfLBnodesCoarse];
+		fM0Psource = &DC[DIR_P0M  *numberOfLBnodesCoarse];
+		f0PPsource = &DC[DIR_0MM  *numberOfLBnodesCoarse];
+		f0MMsource = &DC[DIR_0PP  *numberOfLBnodesCoarse];
+		f0PMsource = &DC[DIR_0MP  *numberOfLBnodesCoarse];
+		f0MPsource = &DC[DIR_0PM  *numberOfLBnodesCoarse];
+		f000source = &DC[DIR_000*numberOfLBnodesCoarse];
+		fMMMsource = &DC[DIR_PPP *numberOfLBnodesCoarse];
+		fMMPsource = &DC[DIR_PPM *numberOfLBnodesCoarse];
+		fMPPsource = &DC[DIR_PMM *numberOfLBnodesCoarse];
+		fMPMsource = &DC[DIR_PMP *numberOfLBnodesCoarse];
+		fPPMsource = &DC[DIR_MMP *numberOfLBnodesCoarse];
+		fPPPsource = &DC[DIR_MMM *numberOfLBnodesCoarse];
+		fPMPsource = &DC[DIR_MPM *numberOfLBnodesCoarse];
+		fPMMsource = &DC[DIR_MPP *numberOfLBnodesCoarse];
 	}
 
 	Distributions6 G;
-	G.g[DIR_P00] = &G6[DIR_P00   *size_MatF];
-	G.g[DIR_M00] = &G6[DIR_M00   *size_MatF];
-	G.g[DIR_0P0] = &G6[DIR_0P0   *size_MatF];
-	G.g[DIR_0M0] = &G6[DIR_0M0   *size_MatF];
-	G.g[DIR_00P] = &G6[DIR_00P   *size_MatF];
-	G.g[DIR_00M] = &G6[DIR_00M   *size_MatF];
+	G.g[DIR_P00] = &G6[DIR_P00   *numberOfLBnodesFine];
+	G.g[DIR_M00] = &G6[DIR_M00   *numberOfLBnodesFine];
+	G.g[DIR_0P0] = &G6[DIR_0P0   *numberOfLBnodesFine];
+	G.g[DIR_0M0] = &G6[DIR_0M0   *numberOfLBnodesFine];
+	G.g[DIR_00P] = &G6[DIR_00P   *numberOfLBnodesFine];
+	G.g[DIR_00M] = &G6[DIR_00M   *numberOfLBnodesFine];
 
 	////////////////////////////////////////////////////////////////////////////////
    const unsigned  ix = threadIdx.x;  // Globaler x-Index 

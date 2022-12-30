@@ -225,7 +225,7 @@ void SimulationFileWriter::writeLevel(uint numberOfLevels)
     //}
 }
 
-void SimulationFileWriter::writeLevelSize(uint numberOfNodes, FILEFORMAT format)
+void SimulationFileWriter::writeLevelSize(const uint numberOfNodes, FILEFORMAT format)
 {
     const std::string zeroIndex = "0 ";
     const std::string zeroGeo = "16 ";
@@ -428,7 +428,7 @@ void SimulationFileWriter::writeGridInterfaceToFile(const uint numberOfNodes, st
     fineFile << "\n";
 }
 
-void SimulationFileWriter::writeGridInterfaceOffsetToFile(uint numberOfNodes, std::ofstream & offsetFile, real* offset_X, real* offset_Y, real* offset_Z)
+void SimulationFileWriter::writeGridInterfaceOffsetToFile(const uint numberOfNodes, std::ofstream & offsetFile, real* offset_X, real* offset_Y, real* offset_Z)
 {
     for (uint index = 0; index < numberOfNodes; index++)
     {

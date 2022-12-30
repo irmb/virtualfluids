@@ -16,14 +16,14 @@
 namespace NeighborDebugWriter
 {
 
-inline void writeNeighborLinkLines(Parameter *para, const int level, const uint numberOfNodes, const int direction,
+inline void writeNeighborLinkLines(Parameter *para, const int level, const unsigned long long numberOfNodes, const int direction,
                                    const std::string &name)
 {
     VF_LOG_INFO("Write node links in direction {}.", direction);
     std::vector<UbTupleFloat3> nodes(numberOfNodes * 2);
     std::vector<UbTupleInt2> cells(numberOfNodes);
 
-    for (uint position = 0; position < numberOfNodes; position++) {
+    for (size_t position = 0; position < numberOfNodes; position++) {
         if (para->getParH(level)->typeOfGridNode[position] != GEO_FLUID)
             continue;
 

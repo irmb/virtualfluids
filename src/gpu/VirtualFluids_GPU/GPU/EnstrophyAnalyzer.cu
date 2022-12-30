@@ -33,7 +33,7 @@ bool EnstrophyAnalyzer::run(uint iter)
     if( iter % this->analyzeIter != 0 ) return false;
 
 	int lev = 0;
-	int size_Mat = this->para->getParD(lev)->numberOfNodes;
+	int size_Mat = (int)this->para->getParD(lev)->numberOfNodes;
 	
 	thrust::device_vector<real> enstrophy( size_Mat, c0o1 );
     thrust::device_vector<uint> isFluid  ( size_Mat, 0);

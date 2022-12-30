@@ -47,7 +47,7 @@ bool GridReader::getBinaer()
 
 void rearrangeGeometry(Parameter* para, int lev)
 {
-    for (uint index = 0; index < para->getParH(lev)->numberOfNodes; index++)
+    for (size_t index = 0; index < para->getParH(lev)->numberOfNodes; index++)
     {
         if (para->getParH(lev)->typeOfGridNode[index] == GEO_FLUID_OLD)
         {
@@ -76,7 +76,7 @@ void GridReader::allocArrays_CoordNeighborGeo()
 
     for (uint level = 0; level <= maxLevel; level++)
     {
-        int numberOfNodesPerLevel = coordX.getSize(level) + 1;
+        const uint numberOfNodesPerLevel = coordX.getSize(level) + 1;
         numberOfNodesGlobal += numberOfNodesPerLevel;
         std::cout << "Level " << level << " = " << numberOfNodesPerLevel << " Nodes" << std::endl;
 

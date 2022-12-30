@@ -40,7 +40,7 @@
 using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
 
-__inline__ __device__ void getPointersToDistributions(Distributions27 &dist, real *distributionArray, const uint numberOfLBnodes, const bool isEvenTimestep)
+__inline__ __device__ void getPointersToDistributions(Distributions27 &dist, real *distributionArray, const unsigned long long numberOfLBnodes, const bool isEvenTimestep)
 {
     if (isEvenTimestep)
     {

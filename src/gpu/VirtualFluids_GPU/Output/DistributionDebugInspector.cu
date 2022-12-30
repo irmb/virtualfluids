@@ -17,7 +17,7 @@ using namespace vf::lbm::dir;
 
 __global__ void printFs(  real* distributions,
                         bool isEvenTimestep,
-                        unsigned long numberOfFluidNodes,
+                        unsigned long long numberOfFluidNodes,
                         uint* neighborX,
                         uint* neighborY,
                         uint* neighborZ,
@@ -125,7 +125,7 @@ void DistributionDebugInspector::inspect(std::shared_ptr<Parameter> para, uint l
 
     printFs <<< cudaGrid.grid, cudaGrid.threads >>>(    para->getParD(level)->distributions.f[0],
                                                         para->getParD(level)->isEvenTimestep,
-                                                        (unsigned long)para->getParD(level)->numberOfNodes,
+                                                        para->getParD(level)->numberOfNodes,
                                                         para->getParD(level)->neighborX,
                                                         para->getParD(level)->neighborY,
                                                         para->getParD(level)->neighborZ,

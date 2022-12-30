@@ -11,7 +11,7 @@ std::shared_ptr<PreProcessorStrategy> InitCompSP27::getNewInstance(std::shared_p
 void InitCompSP27::init(int level)
 {
 	int numberOfThreads = para->getParD(level)->numberofthreads;
-	int size_Mat = para->getParD(level)->numberOfNodes;
+	int size_Mat = (int)para->getParD(level)->numberOfNodes;
 
 	int Grid = (size_Mat / numberOfThreads) + 1;
 	int Grid1, Grid2;
@@ -30,7 +30,8 @@ void InitCompSP27::init(int level)
 
     if( ! para->getUseInitNeq() )
     {
-        LB_Init_Comp_SP_27 <<< grid, threads >>> (para->getParD(level)->neighborX,
+        LB_Init_Comp_SP_27 <<< grid, threads >>> (
+            para->getParD(level)->neighborX,
             para->getParD(level)->neighborY,
             para->getParD(level)->neighborZ,
             para->getParD(level)->typeOfGridNode,
@@ -41,11 +42,12 @@ void InitCompSP27::init(int level)
             para->getParD(level)->numberOfNodes,
             para->getParD(level)->distributions.f[0],
             para->getParD(level)->isEvenTimestep);
-        getLastCudaError("LBInitSP27 execution failed");
+        getLastCudaError("LB_Init_Comp_SP_27 execution failed");
     }
     else
     {
-        LB_Init_Comp_Neq_SP_27 <<< grid, threads >>> (para->getParD(level)->neighborX,
+        LB_Init_Comp_Neq_SP_27 <<< grid, threads >>> (
+            para->getParD(level)->neighborX,
             para->getParD(level)->neighborY,
             para->getParD(level)->neighborZ,
             para->getParD(level)->neighborInverse,
@@ -59,7 +61,7 @@ void InitCompSP27::init(int level)
             para->getParD(level)->omega,
             para->getParD(level)->isEvenTimestep);
         cudaDeviceSynchronize();
-        getLastCudaError("LBInitNeqSP27 execution failed");
+        getLastCudaError("LB_Init_Comp_Neq_SP_27 execution failed");
     }
 
 

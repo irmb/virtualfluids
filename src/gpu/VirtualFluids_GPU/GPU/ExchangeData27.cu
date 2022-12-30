@@ -14,7 +14,7 @@ __global__ void getSendFsPost27(real* DD,
                                            unsigned int* neighborX,
                                            unsigned int* neighborY,
                                            unsigned int* neighborZ,
-                                           unsigned int size_Mat, 
+                                           unsigned long long numberOfLBnodes, 
                                            bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
@@ -65,63 +65,63 @@ __global__ void getSendFsPost27(real* DD,
       Distributions27 D;
       if (isEvenTimestep==true)
       {
-         D.f[DIR_P00   ] = &DD[DIR_P00   *size_Mat];
-         D.f[DIR_M00   ] = &DD[DIR_M00   *size_Mat];
-         D.f[DIR_0P0   ] = &DD[DIR_0P0   *size_Mat];
-         D.f[DIR_0M0   ] = &DD[DIR_0M0   *size_Mat];
-         D.f[DIR_00P   ] = &DD[DIR_00P   *size_Mat];
-         D.f[DIR_00M   ] = &DD[DIR_00M   *size_Mat];
-         D.f[DIR_PP0  ] = &DD[DIR_PP0  *size_Mat];
-         D.f[DIR_MM0  ] = &DD[DIR_MM0  *size_Mat];
-         D.f[DIR_PM0  ] = &DD[DIR_PM0  *size_Mat];
-         D.f[DIR_MP0  ] = &DD[DIR_MP0  *size_Mat];
-         D.f[DIR_P0P  ] = &DD[DIR_P0P  *size_Mat];
-         D.f[DIR_M0M  ] = &DD[DIR_M0M  *size_Mat];
-         D.f[DIR_P0M  ] = &DD[DIR_P0M  *size_Mat];
-         D.f[DIR_M0P  ] = &DD[DIR_M0P  *size_Mat];
-         D.f[DIR_0PP  ] = &DD[DIR_0PP  *size_Mat];
-         D.f[DIR_0MM  ] = &DD[DIR_0MM  *size_Mat];
-         D.f[DIR_0PM  ] = &DD[DIR_0PM  *size_Mat];
-         D.f[DIR_0MP  ] = &DD[DIR_0MP  *size_Mat];
-         D.f[DIR_000] = &DD[DIR_000*size_Mat];
-         D.f[DIR_PPP ] = &DD[DIR_PPP *size_Mat];
-         D.f[DIR_MMP ] = &DD[DIR_MMP *size_Mat];
-         D.f[DIR_PMP ] = &DD[DIR_PMP *size_Mat];
-         D.f[DIR_MPP ] = &DD[DIR_MPP *size_Mat];
-         D.f[DIR_PPM ] = &DD[DIR_PPM *size_Mat];
-         D.f[DIR_MMM ] = &DD[DIR_MMM *size_Mat];
-         D.f[DIR_PMM ] = &DD[DIR_PMM *size_Mat];
-         D.f[DIR_MPM ] = &DD[DIR_MPM *size_Mat];
+         D.f[DIR_P00   ] = &DD[DIR_P00   *numberOfLBnodes];
+         D.f[DIR_M00   ] = &DD[DIR_M00   *numberOfLBnodes];
+         D.f[DIR_0P0   ] = &DD[DIR_0P0   *numberOfLBnodes];
+         D.f[DIR_0M0   ] = &DD[DIR_0M0   *numberOfLBnodes];
+         D.f[DIR_00P   ] = &DD[DIR_00P   *numberOfLBnodes];
+         D.f[DIR_00M   ] = &DD[DIR_00M   *numberOfLBnodes];
+         D.f[DIR_PP0  ] = &DD[DIR_PP0  *numberOfLBnodes];
+         D.f[DIR_MM0  ] = &DD[DIR_MM0  *numberOfLBnodes];
+         D.f[DIR_PM0  ] = &DD[DIR_PM0  *numberOfLBnodes];
+         D.f[DIR_MP0  ] = &DD[DIR_MP0  *numberOfLBnodes];
+         D.f[DIR_P0P  ] = &DD[DIR_P0P  *numberOfLBnodes];
+         D.f[DIR_M0M  ] = &DD[DIR_M0M  *numberOfLBnodes];
+         D.f[DIR_P0M  ] = &DD[DIR_P0M  *numberOfLBnodes];
+         D.f[DIR_M0P  ] = &DD[DIR_M0P  *numberOfLBnodes];
+         D.f[DIR_0PP  ] = &DD[DIR_0PP  *numberOfLBnodes];
+         D.f[DIR_0MM  ] = &DD[DIR_0MM  *numberOfLBnodes];
+         D.f[DIR_0PM  ] = &DD[DIR_0PM  *numberOfLBnodes];
+         D.f[DIR_0MP  ] = &DD[DIR_0MP  *numberOfLBnodes];
+         D.f[DIR_000] = &DD[DIR_000*numberOfLBnodes];
+         D.f[DIR_PPP ] = &DD[DIR_PPP *numberOfLBnodes];
+         D.f[DIR_MMP ] = &DD[DIR_MMP *numberOfLBnodes];
+         D.f[DIR_PMP ] = &DD[DIR_PMP *numberOfLBnodes];
+         D.f[DIR_MPP ] = &DD[DIR_MPP *numberOfLBnodes];
+         D.f[DIR_PPM ] = &DD[DIR_PPM *numberOfLBnodes];
+         D.f[DIR_MMM ] = &DD[DIR_MMM *numberOfLBnodes];
+         D.f[DIR_PMM ] = &DD[DIR_PMM *numberOfLBnodes];
+         D.f[DIR_MPM ] = &DD[DIR_MPM *numberOfLBnodes];
       } 
       else
       {
-         D.f[DIR_M00   ] = &DD[DIR_P00   *size_Mat];
-         D.f[DIR_P00   ] = &DD[DIR_M00   *size_Mat];
-         D.f[DIR_0M0   ] = &DD[DIR_0P0   *size_Mat];
-         D.f[DIR_0P0   ] = &DD[DIR_0M0   *size_Mat];
-         D.f[DIR_00M   ] = &DD[DIR_00P   *size_Mat];
-         D.f[DIR_00P   ] = &DD[DIR_00M   *size_Mat];
-         D.f[DIR_MM0  ] = &DD[DIR_PP0  *size_Mat];
-         D.f[DIR_PP0  ] = &DD[DIR_MM0  *size_Mat];
-         D.f[DIR_MP0  ] = &DD[DIR_PM0  *size_Mat];
-         D.f[DIR_PM0  ] = &DD[DIR_MP0  *size_Mat];
-         D.f[DIR_M0M  ] = &DD[DIR_P0P  *size_Mat];
-         D.f[DIR_P0P  ] = &DD[DIR_M0M  *size_Mat];
-         D.f[DIR_M0P  ] = &DD[DIR_P0M  *size_Mat];
-         D.f[DIR_P0M  ] = &DD[DIR_M0P  *size_Mat];
-         D.f[DIR_0MM  ] = &DD[DIR_0PP  *size_Mat];
-         D.f[DIR_0PP  ] = &DD[DIR_0MM  *size_Mat];
-         D.f[DIR_0MP  ] = &DD[DIR_0PM  *size_Mat];
-         D.f[DIR_0PM  ] = &DD[DIR_0MP  *size_Mat];
-         D.f[DIR_000] = &DD[DIR_000*size_Mat];
-         D.f[DIR_PPP ] = &DD[DIR_MMM *size_Mat];
-         D.f[DIR_MMP ] = &DD[DIR_PPM *size_Mat];
-         D.f[DIR_PMP ] = &DD[DIR_MPM *size_Mat];
-         D.f[DIR_MPP ] = &DD[DIR_PMM *size_Mat];
-         D.f[DIR_PPM ] = &DD[DIR_MMP *size_Mat];
-         D.f[DIR_MMM ] = &DD[DIR_PPP *size_Mat];
-         D.f[DIR_PMM ] = &DD[DIR_MPP *size_Mat];
-         D.f[DIR_MPM ] = &DD[DIR_PMP *size_Mat];
+         D.f[DIR_M00   ] = &DD[DIR_P00   *numberOfLBnodes];
+         D.f[DIR_P00   ] = &DD[DIR_M00   *numberOfLBnodes];
+         D.f[DIR_0M0   ] = &DD[DIR_0P0   *numberOfLBnodes];
+         D.f[DIR_0P0   ] = &DD[DIR_0M0   *numberOfLBnodes];
+         D.f[DIR_00M   ] = &DD[DIR_00P   *numberOfLBnodes];
+         D.f[DIR_00P   ] = &DD[DIR_00M   *numberOfLBnodes];
+         D.f[DIR_MM0  ] = &DD[DIR_PP0  *numberOfLBnodes];
+         D.f[DIR_PP0  ] = &DD[DIR_MM0  *numberOfLBnodes];
+         D.f[DIR_MP0  ] = &DD[DIR_PM0  *numberOfLBnodes];
+         D.f[DIR_PM0  ] = &DD[DIR_MP0  *numberOfLBnodes];
+         D.f[DIR_M0M  ] = &DD[DIR_P0P  *numberOfLBnodes];
+         D.f[DIR_P0P  ] = &DD[DIR_M0M  *numberOfLBnodes];
+         D.f[DIR_M0P  ] = &DD[DIR_P0M  *numberOfLBnodes];
+         D.f[DIR_P0M  ] = &DD[DIR_M0P  *numberOfLBnodes];
+         D.f[DIR_0MM  ] = &DD[DIR_0PP  *numberOfLBnodes];
+         D.f[DIR_0PP  ] = &DD[DIR_0MM  *numberOfLBnodes];
+         D.f[DIR_0MP  ] = &DD[DIR_0PM  *numberOfLBnodes];
+         D.f[DIR_0PM  ] = &DD[DIR_0MP  *numberOfLBnodes];
+         D.f[DIR_000] = &DD[DIR_000*numberOfLBnodes];
+         D.f[DIR_PPP ] = &DD[DIR_MMM *numberOfLBnodes];
+         D.f[DIR_MMP ] = &DD[DIR_PPM *numberOfLBnodes];
+         D.f[DIR_PMP ] = &DD[DIR_MPM *numberOfLBnodes];
+         D.f[DIR_MPP ] = &DD[DIR_PMM *numberOfLBnodes];
+         D.f[DIR_PPM ] = &DD[DIR_MMP *numberOfLBnodes];
+         D.f[DIR_MMM ] = &DD[DIR_PPP *numberOfLBnodes];
+         D.f[DIR_PMM ] = &DD[DIR_MPP *numberOfLBnodes];
+         D.f[DIR_MPM ] = &DD[DIR_PMP *numberOfLBnodes];
       }
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //set Pointer for Buffer Fs
@@ -250,7 +250,7 @@ __global__ void setRecvFsPost27(real* DD,
                                            unsigned int* neighborX,
                                            unsigned int* neighborY,
                                            unsigned int* neighborZ,
-                                           unsigned int size_Mat, 
+                                           unsigned long long numberOfLBnodes, 
                                            bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
@@ -301,63 +301,63 @@ __global__ void setRecvFsPost27(real* DD,
       Distributions27 D;
       if (isEvenTimestep==true)
       {
-         D.f[DIR_P00   ] = &DD[DIR_P00   *size_Mat];
-         D.f[DIR_M00   ] = &DD[DIR_M00   *size_Mat];
-         D.f[DIR_0P0   ] = &DD[DIR_0P0   *size_Mat];
-         D.f[DIR_0M0   ] = &DD[DIR_0M0   *size_Mat];
-         D.f[DIR_00P   ] = &DD[DIR_00P   *size_Mat];
-         D.f[DIR_00M   ] = &DD[DIR_00M   *size_Mat];
-         D.f[DIR_PP0  ] = &DD[DIR_PP0  *size_Mat];
-         D.f[DIR_MM0  ] = &DD[DIR_MM0  *size_Mat];
-         D.f[DIR_PM0  ] = &DD[DIR_PM0  *size_Mat];
-         D.f[DIR_MP0  ] = &DD[DIR_MP0  *size_Mat];
-         D.f[DIR_P0P  ] = &DD[DIR_P0P  *size_Mat];
-         D.f[DIR_M0M  ] = &DD[DIR_M0M  *size_Mat];
-         D.f[DIR_P0M  ] = &DD[DIR_P0M  *size_Mat];
-         D.f[DIR_M0P  ] = &DD[DIR_M0P  *size_Mat];
-         D.f[DIR_0PP  ] = &DD[DIR_0PP  *size_Mat];
-         D.f[DIR_0MM  ] = &DD[DIR_0MM  *size_Mat];
-         D.f[DIR_0PM  ] = &DD[DIR_0PM  *size_Mat];
-         D.f[DIR_0MP  ] = &DD[DIR_0MP  *size_Mat];
-         D.f[DIR_000] = &DD[DIR_000*size_Mat];
-         D.f[DIR_PPP ] = &DD[DIR_PPP *size_Mat];
-         D.f[DIR_MMP ] = &DD[DIR_MMP *size_Mat];
-         D.f[DIR_PMP ] = &DD[DIR_PMP *size_Mat];
-         D.f[DIR_MPP ] = &DD[DIR_MPP *size_Mat];
-         D.f[DIR_PPM ] = &DD[DIR_PPM *size_Mat];
-         D.f[DIR_MMM ] = &DD[DIR_MMM *size_Mat];
-         D.f[DIR_PMM ] = &DD[DIR_PMM *size_Mat];
-         D.f[DIR_MPM ] = &DD[DIR_MPM *size_Mat];
+         D.f[DIR_P00   ] = &DD[DIR_P00   *numberOfLBnodes];
+         D.f[DIR_M00   ] = &DD[DIR_M00   *numberOfLBnodes];
+         D.f[DIR_0P0   ] = &DD[DIR_0P0   *numberOfLBnodes];
+         D.f[DIR_0M0   ] = &DD[DIR_0M0   *numberOfLBnodes];
+         D.f[DIR_00P   ] = &DD[DIR_00P   *numberOfLBnodes];
+         D.f[DIR_00M   ] = &DD[DIR_00M   *numberOfLBnodes];
+         D.f[DIR_PP0  ] = &DD[DIR_PP0  *numberOfLBnodes];
+         D.f[DIR_MM0  ] = &DD[DIR_MM0  *numberOfLBnodes];
+         D.f[DIR_PM0  ] = &DD[DIR_PM0  *numberOfLBnodes];
+         D.f[DIR_MP0  ] = &DD[DIR_MP0  *numberOfLBnodes];
+         D.f[DIR_P0P  ] = &DD[DIR_P0P  *numberOfLBnodes];
+         D.f[DIR_M0M  ] = &DD[DIR_M0M  *numberOfLBnodes];
+         D.f[DIR_P0M  ] = &DD[DIR_P0M  *numberOfLBnodes];
+         D.f[DIR_M0P  ] = &DD[DIR_M0P  *numberOfLBnodes];
+         D.f[DIR_0PP  ] = &DD[DIR_0PP  *numberOfLBnodes];
+         D.f[DIR_0MM  ] = &DD[DIR_0MM  *numberOfLBnodes];
+         D.f[DIR_0PM  ] = &DD[DIR_0PM  *numberOfLBnodes];
+         D.f[DIR_0MP  ] = &DD[DIR_0MP  *numberOfLBnodes];
+         D.f[DIR_000] = &DD[DIR_000*numberOfLBnodes];
+         D.f[DIR_PPP ] = &DD[DIR_PPP *numberOfLBnodes];
+         D.f[DIR_MMP ] = &DD[DIR_MMP *numberOfLBnodes];
+         D.f[DIR_PMP ] = &DD[DIR_PMP *numberOfLBnodes];
+         D.f[DIR_MPP ] = &DD[DIR_MPP *numberOfLBnodes];
+         D.f[DIR_PPM ] = &DD[DIR_PPM *numberOfLBnodes];
+         D.f[DIR_MMM ] = &DD[DIR_MMM *numberOfLBnodes];
+         D.f[DIR_PMM ] = &DD[DIR_PMM *numberOfLBnodes];
+         D.f[DIR_MPM ] = &DD[DIR_MPM *numberOfLBnodes];
       } 
       else
       {
-         D.f[DIR_M00   ] = &DD[DIR_P00   *size_Mat];
-         D.f[DIR_P00   ] = &DD[DIR_M00   *size_Mat];
-         D.f[DIR_0M0   ] = &DD[DIR_0P0   *size_Mat];
-         D.f[DIR_0P0   ] = &DD[DIR_0M0   *size_Mat];
-         D.f[DIR_00M   ] = &DD[DIR_00P   *size_Mat];
-         D.f[DIR_00P   ] = &DD[DIR_00M   *size_Mat];
-         D.f[DIR_MM0  ] = &DD[DIR_PP0  *size_Mat];
-         D.f[DIR_PP0  ] = &DD[DIR_MM0  *size_Mat];
-         D.f[DIR_MP0  ] = &DD[DIR_PM0  *size_Mat];
-         D.f[DIR_PM0  ] = &DD[DIR_MP0  *size_Mat];
-         D.f[DIR_M0M  ] = &DD[DIR_P0P  *size_Mat];
-         D.f[DIR_P0P  ] = &DD[DIR_M0M  *size_Mat];
-         D.f[DIR_M0P  ] = &DD[DIR_P0M  *size_Mat];
-         D.f[DIR_P0M  ] = &DD[DIR_M0P  *size_Mat];
-         D.f[DIR_0MM  ] = &DD[DIR_0PP  *size_Mat];
-         D.f[DIR_0PP  ] = &DD[DIR_0MM  *size_Mat];
-         D.f[DIR_0MP  ] = &DD[DIR_0PM  *size_Mat];
-         D.f[DIR_0PM  ] = &DD[DIR_0MP  *size_Mat];
-         D.f[DIR_000] = &DD[DIR_000*size_Mat];
-         D.f[DIR_PPP ] = &DD[DIR_MMM *size_Mat];
-         D.f[DIR_MMP ] = &DD[DIR_PPM *size_Mat];
-         D.f[DIR_PMP ] = &DD[DIR_MPM *size_Mat];
-         D.f[DIR_MPP ] = &DD[DIR_PMM *size_Mat];
-         D.f[DIR_PPM ] = &DD[DIR_MMP *size_Mat];
-         D.f[DIR_MMM ] = &DD[DIR_PPP *size_Mat];
-         D.f[DIR_PMM ] = &DD[DIR_MPP *size_Mat];
-         D.f[DIR_MPM ] = &DD[DIR_PMP *size_Mat];
+         D.f[DIR_M00   ] = &DD[DIR_P00   *numberOfLBnodes];
+         D.f[DIR_P00   ] = &DD[DIR_M00   *numberOfLBnodes];
+         D.f[DIR_0M0   ] = &DD[DIR_0P0   *numberOfLBnodes];
+         D.f[DIR_0P0   ] = &DD[DIR_0M0   *numberOfLBnodes];
+         D.f[DIR_00M   ] = &DD[DIR_00P   *numberOfLBnodes];
+         D.f[DIR_00P   ] = &DD[DIR_00M   *numberOfLBnodes];
+         D.f[DIR_MM0  ] = &DD[DIR_PP0  *numberOfLBnodes];
+         D.f[DIR_PP0  ] = &DD[DIR_MM0  *numberOfLBnodes];
+         D.f[DIR_MP0  ] = &DD[DIR_PM0  *numberOfLBnodes];
+         D.f[DIR_PM0  ] = &DD[DIR_MP0  *numberOfLBnodes];
+         D.f[DIR_M0M  ] = &DD[DIR_P0P  *numberOfLBnodes];
+         D.f[DIR_P0P  ] = &DD[DIR_M0M  *numberOfLBnodes];
+         D.f[DIR_M0P  ] = &DD[DIR_P0M  *numberOfLBnodes];
+         D.f[DIR_P0M  ] = &DD[DIR_M0P  *numberOfLBnodes];
+         D.f[DIR_0MM  ] = &DD[DIR_0PP  *numberOfLBnodes];
+         D.f[DIR_0PP  ] = &DD[DIR_0MM  *numberOfLBnodes];
+         D.f[DIR_0MP  ] = &DD[DIR_0PM  *numberOfLBnodes];
+         D.f[DIR_0PM  ] = &DD[DIR_0MP  *numberOfLBnodes];
+         D.f[DIR_000] = &DD[DIR_000*numberOfLBnodes];
+         D.f[DIR_PPP ] = &DD[DIR_MMM *numberOfLBnodes];
+         D.f[DIR_MMP ] = &DD[DIR_PPM *numberOfLBnodes];
+         D.f[DIR_PMP ] = &DD[DIR_MPM *numberOfLBnodes];
+         D.f[DIR_MPP ] = &DD[DIR_PMM *numberOfLBnodes];
+         D.f[DIR_PPM ] = &DD[DIR_MMP *numberOfLBnodes];
+         D.f[DIR_MMM ] = &DD[DIR_PPP *numberOfLBnodes];
+         D.f[DIR_PMM ] = &DD[DIR_MPP *numberOfLBnodes];
+         D.f[DIR_MPM ] = &DD[DIR_PMP *numberOfLBnodes];
       }
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //set Pointer for Buffer Fs
@@ -485,7 +485,7 @@ __global__ void getSendFsPre27(real* DD,
                                           unsigned int* neighborX,
                                           unsigned int* neighborY,
                                           unsigned int* neighborZ,
-                                          unsigned int size_Mat, 
+                                          unsigned long long numberOfLBnodes, 
                                           bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
@@ -536,63 +536,63 @@ __global__ void getSendFsPre27(real* DD,
       Distributions27 D;
       if (isEvenTimestep==true)
       {
-         D.f[DIR_P00   ] = &DD[DIR_P00   *size_Mat];
-         D.f[DIR_M00   ] = &DD[DIR_M00   *size_Mat];
-         D.f[DIR_0P0   ] = &DD[DIR_0P0   *size_Mat];
-         D.f[DIR_0M0   ] = &DD[DIR_0M0   *size_Mat];
-         D.f[DIR_00P   ] = &DD[DIR_00P   *size_Mat];
-         D.f[DIR_00M   ] = &DD[DIR_00M   *size_Mat];
-         D.f[DIR_PP0  ] = &DD[DIR_PP0  *size_Mat];
-         D.f[DIR_MM0  ] = &DD[DIR_MM0  *size_Mat];
-         D.f[DIR_PM0  ] = &DD[DIR_PM0  *size_Mat];
-         D.f[DIR_MP0  ] = &DD[DIR_MP0  *size_Mat];
-         D.f[DIR_P0P  ] = &DD[DIR_P0P  *size_Mat];
-         D.f[DIR_M0M  ] = &DD[DIR_M0M  *size_Mat];
-         D.f[DIR_P0M  ] = &DD[DIR_P0M  *size_Mat];
-         D.f[DIR_M0P  ] = &DD[DIR_M0P  *size_Mat];
-         D.f[DIR_0PP  ] = &DD[DIR_0PP  *size_Mat];
-         D.f[DIR_0MM  ] = &DD[DIR_0MM  *size_Mat];
-         D.f[DIR_0PM  ] = &DD[DIR_0PM  *size_Mat];
-         D.f[DIR_0MP  ] = &DD[DIR_0MP  *size_Mat];
-         D.f[DIR_000] = &DD[DIR_000*size_Mat];
-         D.f[DIR_PPP ] = &DD[DIR_PPP *size_Mat];
-         D.f[DIR_MMP ] = &DD[DIR_MMP *size_Mat];
-         D.f[DIR_PMP ] = &DD[DIR_PMP *size_Mat];
-         D.f[DIR_MPP ] = &DD[DIR_MPP *size_Mat];
-         D.f[DIR_PPM ] = &DD[DIR_PPM *size_Mat];
-         D.f[DIR_MMM ] = &DD[DIR_MMM *size_Mat];
-         D.f[DIR_PMM ] = &DD[DIR_PMM *size_Mat];
-         D.f[DIR_MPM ] = &DD[DIR_MPM *size_Mat];
+         D.f[DIR_P00   ] = &DD[DIR_P00   *numberOfLBnodes];
+         D.f[DIR_M00   ] = &DD[DIR_M00   *numberOfLBnodes];
+         D.f[DIR_0P0   ] = &DD[DIR_0P0   *numberOfLBnodes];
+         D.f[DIR_0M0   ] = &DD[DIR_0M0   *numberOfLBnodes];
+         D.f[DIR_00P   ] = &DD[DIR_00P   *numberOfLBnodes];
+         D.f[DIR_00M   ] = &DD[DIR_00M   *numberOfLBnodes];
+         D.f[DIR_PP0  ] = &DD[DIR_PP0  *numberOfLBnodes];
+         D.f[DIR_MM0  ] = &DD[DIR_MM0  *numberOfLBnodes];
+         D.f[DIR_PM0  ] = &DD[DIR_PM0  *numberOfLBnodes];
+         D.f[DIR_MP0  ] = &DD[DIR_MP0  *numberOfLBnodes];
+         D.f[DIR_P0P  ] = &DD[DIR_P0P  *numberOfLBnodes];
+         D.f[DIR_M0M  ] = &DD[DIR_M0M  *numberOfLBnodes];
+         D.f[DIR_P0M  ] = &DD[DIR_P0M  *numberOfLBnodes];
+         D.f[DIR_M0P  ] = &DD[DIR_M0P  *numberOfLBnodes];
+         D.f[DIR_0PP  ] = &DD[DIR_0PP  *numberOfLBnodes];
+         D.f[DIR_0MM  ] = &DD[DIR_0MM  *numberOfLBnodes];
+         D.f[DIR_0PM  ] = &DD[DIR_0PM  *numberOfLBnodes];
+         D.f[DIR_0MP  ] = &DD[DIR_0MP  *numberOfLBnodes];
+         D.f[DIR_000] = &DD[DIR_000*numberOfLBnodes];
+         D.f[DIR_PPP ] = &DD[DIR_PPP *numberOfLBnodes];
+         D.f[DIR_MMP ] = &DD[DIR_MMP *numberOfLBnodes];
+         D.f[DIR_PMP ] = &DD[DIR_PMP *numberOfLBnodes];
+         D.f[DIR_MPP ] = &DD[DIR_MPP *numberOfLBnodes];
+         D.f[DIR_PPM ] = &DD[DIR_PPM *numberOfLBnodes];
+         D.f[DIR_MMM ] = &DD[DIR_MMM *numberOfLBnodes];
+         D.f[DIR_PMM ] = &DD[DIR_PMM *numberOfLBnodes];
+         D.f[DIR_MPM ] = &DD[DIR_MPM *numberOfLBnodes];
       } 
       else
       {
-         D.f[DIR_M00   ] = &DD[DIR_P00   *size_Mat];
-         D.f[DIR_P00   ] = &DD[DIR_M00   *size_Mat];
-         D.f[DIR_0M0   ] = &DD[DIR_0P0   *size_Mat];
-         D.f[DIR_0P0   ] = &DD[DIR_0M0   *size_Mat];
-         D.f[DIR_00M   ] = &DD[DIR_00P   *size_Mat];
-         D.f[DIR_00P   ] = &DD[DIR_00M   *size_Mat];
-         D.f[DIR_MM0  ] = &DD[DIR_PP0  *size_Mat];
-         D.f[DIR_PP0  ] = &DD[DIR_MM0  *size_Mat];
-         D.f[DIR_MP0  ] = &DD[DIR_PM0  *size_Mat];
-         D.f[DIR_PM0  ] = &DD[DIR_MP0  *size_Mat];
-         D.f[DIR_M0M  ] = &DD[DIR_P0P  *size_Mat];
-         D.f[DIR_P0P  ] = &DD[DIR_M0M  *size_Mat];
-         D.f[DIR_M0P  ] = &DD[DIR_P0M  *size_Mat];
-         D.f[DIR_P0M  ] = &DD[DIR_M0P  *size_Mat];
-         D.f[DIR_0MM  ] = &DD[DIR_0PP  *size_Mat];
-         D.f[DIR_0PP  ] = &DD[DIR_0MM  *size_Mat];
-         D.f[DIR_0MP  ] = &DD[DIR_0PM  *size_Mat];
-         D.f[DIR_0PM  ] = &DD[DIR_0MP  *size_Mat];
-         D.f[DIR_000] = &DD[DIR_000*size_Mat];
-         D.f[DIR_PPP ] = &DD[DIR_MMM *size_Mat];
-         D.f[DIR_MMP ] = &DD[DIR_PPM *size_Mat];
-         D.f[DIR_PMP ] = &DD[DIR_MPM *size_Mat];
-         D.f[DIR_MPP ] = &DD[DIR_PMM *size_Mat];
-         D.f[DIR_PPM ] = &DD[DIR_MMP *size_Mat];
-         D.f[DIR_MMM ] = &DD[DIR_PPP *size_Mat];
-         D.f[DIR_PMM ] = &DD[DIR_MPP *size_Mat];
-         D.f[DIR_MPM ] = &DD[DIR_PMP *size_Mat];
+         D.f[DIR_M00   ] = &DD[DIR_P00   *numberOfLBnodes];
+         D.f[DIR_P00   ] = &DD[DIR_M00   *numberOfLBnodes];
+         D.f[DIR_0M0   ] = &DD[DIR_0P0   *numberOfLBnodes];
+         D.f[DIR_0P0   ] = &DD[DIR_0M0   *numberOfLBnodes];
+         D.f[DIR_00M   ] = &DD[DIR_00P   *numberOfLBnodes];
+         D.f[DIR_00P   ] = &DD[DIR_00M   *numberOfLBnodes];
+         D.f[DIR_MM0  ] = &DD[DIR_PP0  *numberOfLBnodes];
+         D.f[DIR_PP0  ] = &DD[DIR_MM0  *numberOfLBnodes];
+         D.f[DIR_MP0  ] = &DD[DIR_PM0  *numberOfLBnodes];
+         D.f[DIR_PM0  ] = &DD[DIR_MP0  *numberOfLBnodes];
+         D.f[DIR_M0M  ] = &DD[DIR_P0P  *numberOfLBnodes];
+         D.f[DIR_P0P  ] = &DD[DIR_M0M  *numberOfLBnodes];
+         D.f[DIR_M0P  ] = &DD[DIR_P0M  *numberOfLBnodes];
+         D.f[DIR_P0M  ] = &DD[DIR_M0P  *numberOfLBnodes];
+         D.f[DIR_0MM  ] = &DD[DIR_0PP  *numberOfLBnodes];
+         D.f[DIR_0PP  ] = &DD[DIR_0MM  *numberOfLBnodes];
+         D.f[DIR_0MP  ] = &DD[DIR_0PM  *numberOfLBnodes];
+         D.f[DIR_0PM  ] = &DD[DIR_0MP  *numberOfLBnodes];
+         D.f[DIR_000] = &DD[DIR_000*numberOfLBnodes];
+         D.f[DIR_PPP ] = &DD[DIR_MMM *numberOfLBnodes];
+         D.f[DIR_MMP ] = &DD[DIR_PPM *numberOfLBnodes];
+         D.f[DIR_PMP ] = &DD[DIR_MPM *numberOfLBnodes];
+         D.f[DIR_MPP ] = &DD[DIR_PMM *numberOfLBnodes];
+         D.f[DIR_PPM ] = &DD[DIR_MMP *numberOfLBnodes];
+         D.f[DIR_MMM ] = &DD[DIR_PPP *numberOfLBnodes];
+         D.f[DIR_PMM ] = &DD[DIR_MPP *numberOfLBnodes];
+         D.f[DIR_MPM ] = &DD[DIR_PMP *numberOfLBnodes];
       }
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //set Pointer for Buffer Fs
@@ -694,7 +694,7 @@ __global__ void setRecvFsPre27(real* DD,
                                           unsigned int* neighborX,
                                           unsigned int* neighborY,
                                           unsigned int* neighborZ,
-                                          unsigned int size_Mat, 
+                                          unsigned long long numberOfLBnodes, 
                                           bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
@@ -745,63 +745,63 @@ __global__ void setRecvFsPre27(real* DD,
       Distributions27 D;
       if (isEvenTimestep==true)
       {
-         D.f[DIR_P00   ] = &DD[DIR_P00   *size_Mat];
-         D.f[DIR_M00   ] = &DD[DIR_M00   *size_Mat];
-         D.f[DIR_0P0   ] = &DD[DIR_0P0   *size_Mat];
-         D.f[DIR_0M0   ] = &DD[DIR_0M0   *size_Mat];
-         D.f[DIR_00P   ] = &DD[DIR_00P   *size_Mat];
-         D.f[DIR_00M   ] = &DD[DIR_00M   *size_Mat];
-         D.f[DIR_PP0  ] = &DD[DIR_PP0  *size_Mat];
-         D.f[DIR_MM0  ] = &DD[DIR_MM0  *size_Mat];
-         D.f[DIR_PM0  ] = &DD[DIR_PM0  *size_Mat];
-         D.f[DIR_MP0  ] = &DD[DIR_MP0  *size_Mat];
-         D.f[DIR_P0P  ] = &DD[DIR_P0P  *size_Mat];
-         D.f[DIR_M0M  ] = &DD[DIR_M0M  *size_Mat];
-         D.f[DIR_P0M  ] = &DD[DIR_P0M  *size_Mat];
-         D.f[DIR_M0P  ] = &DD[DIR_M0P  *size_Mat];
-         D.f[DIR_0PP  ] = &DD[DIR_0PP  *size_Mat];
-         D.f[DIR_0MM  ] = &DD[DIR_0MM  *size_Mat];
-         D.f[DIR_0PM  ] = &DD[DIR_0PM  *size_Mat];
-         D.f[DIR_0MP  ] = &DD[DIR_0MP  *size_Mat];
-         D.f[DIR_000] = &DD[DIR_000*size_Mat];
-         D.f[DIR_PPP ] = &DD[DIR_PPP *size_Mat];
-         D.f[DIR_MMP ] = &DD[DIR_MMP *size_Mat];
-         D.f[DIR_PMP ] = &DD[DIR_PMP *size_Mat];
-         D.f[DIR_MPP ] = &DD[DIR_MPP *size_Mat];
-         D.f[DIR_PPM ] = &DD[DIR_PPM *size_Mat];
-         D.f[DIR_MMM ] = &DD[DIR_MMM *size_Mat];
-         D.f[DIR_PMM ] = &DD[DIR_PMM *size_Mat];
-         D.f[DIR_MPM ] = &DD[DIR_MPM *size_Mat];
+         D.f[DIR_P00   ] = &DD[DIR_P00   *numberOfLBnodes];
+         D.f[DIR_M00   ] = &DD[DIR_M00   *numberOfLBnodes];
+         D.f[DIR_0P0   ] = &DD[DIR_0P0   *numberOfLBnodes];
+         D.f[DIR_0M0   ] = &DD[DIR_0M0   *numberOfLBnodes];
+         D.f[DIR_00P   ] = &DD[DIR_00P   *numberOfLBnodes];
+         D.f[DIR_00M   ] = &DD[DIR_00M   *numberOfLBnodes];
+         D.f[DIR_PP0  ] = &DD[DIR_PP0  *numberOfLBnodes];
+         D.f[DIR_MM0  ] = &DD[DIR_MM0  *numberOfLBnodes];
+         D.f[DIR_PM0  ] = &DD[DIR_PM0  *numberOfLBnodes];
+         D.f[DIR_MP0  ] = &DD[DIR_MP0  *numberOfLBnodes];
+         D.f[DIR_P0P  ] = &DD[DIR_P0P  *numberOfLBnodes];
+         D.f[DIR_M0M  ] = &DD[DIR_M0M  *numberOfLBnodes];
+         D.f[DIR_P0M  ] = &DD[DIR_P0M  *numberOfLBnodes];
+         D.f[DIR_M0P  ] = &DD[DIR_M0P  *numberOfLBnodes];
+         D.f[DIR_0PP  ] = &DD[DIR_0PP  *numberOfLBnodes];
+         D.f[DIR_0MM  ] = &DD[DIR_0MM  *numberOfLBnodes];
+         D.f[DIR_0PM  ] = &DD[DIR_0PM  *numberOfLBnodes];
+         D.f[DIR_0MP  ] = &DD[DIR_0MP  *numberOfLBnodes];
+         D.f[DIR_000] = &DD[DIR_000*numberOfLBnodes];
+         D.f[DIR_PPP ] = &DD[DIR_PPP *numberOfLBnodes];
+         D.f[DIR_MMP ] = &DD[DIR_MMP *numberOfLBnodes];
+         D.f[DIR_PMP ] = &DD[DIR_PMP *numberOfLBnodes];
+         D.f[DIR_MPP ] = &DD[DIR_MPP *numberOfLBnodes];
+         D.f[DIR_PPM ] = &DD[DIR_PPM *numberOfLBnodes];
+         D.f[DIR_MMM ] = &DD[DIR_MMM *numberOfLBnodes];
+         D.f[DIR_PMM ] = &DD[DIR_PMM *numberOfLBnodes];
+         D.f[DIR_MPM ] = &DD[DIR_MPM *numberOfLBnodes];
       } 
       else
       {
-         D.f[DIR_M00   ] = &DD[DIR_P00   *size_Mat];
-         D.f[DIR_P00   ] = &DD[DIR_M00   *size_Mat];
-         D.f[DIR_0M0   ] = &DD[DIR_0P0   *size_Mat];
-         D.f[DIR_0P0   ] = &DD[DIR_0M0   *size_Mat];
-         D.f[DIR_00M   ] = &DD[DIR_00P   *size_Mat];
-         D.f[DIR_00P   ] = &DD[DIR_00M   *size_Mat];
-         D.f[DIR_MM0  ] = &DD[DIR_PP0  *size_Mat];
-         D.f[DIR_PP0  ] = &DD[DIR_MM0  *size_Mat];
-         D.f[DIR_MP0  ] = &DD[DIR_PM0  *size_Mat];
-         D.f[DIR_PM0  ] = &DD[DIR_MP0  *size_Mat];
-         D.f[DIR_M0M  ] = &DD[DIR_P0P  *size_Mat];
-         D.f[DIR_P0P  ] = &DD[DIR_M0M  *size_Mat];
-         D.f[DIR_M0P  ] = &DD[DIR_P0M  *size_Mat];
-         D.f[DIR_P0M  ] = &DD[DIR_M0P  *size_Mat];
-         D.f[DIR_0MM  ] = &DD[DIR_0PP  *size_Mat];
-         D.f[DIR_0PP  ] = &DD[DIR_0MM  *size_Mat];
-         D.f[DIR_0MP  ] = &DD[DIR_0PM  *size_Mat];
-         D.f[DIR_0PM  ] = &DD[DIR_0MP  *size_Mat];
-         D.f[DIR_000] = &DD[DIR_000*size_Mat];
-         D.f[DIR_PPP ] = &DD[DIR_MMM *size_Mat];
-         D.f[DIR_MMP ] = &DD[DIR_PPM *size_Mat];
-         D.f[DIR_PMP ] = &DD[DIR_MPM *size_Mat];
-         D.f[DIR_MPP ] = &DD[DIR_PMM *size_Mat];
-         D.f[DIR_PPM ] = &DD[DIR_MMP *size_Mat];
-         D.f[DIR_MMM ] = &DD[DIR_PPP *size_Mat];
-         D.f[DIR_PMM ] = &DD[DIR_MPP *size_Mat];
-         D.f[DIR_MPM ] = &DD[DIR_PMP *size_Mat];
+         D.f[DIR_M00   ] = &DD[DIR_P00   *numberOfLBnodes];
+         D.f[DIR_P00   ] = &DD[DIR_M00   *numberOfLBnodes];
+         D.f[DIR_0M0   ] = &DD[DIR_0P0   *numberOfLBnodes];
+         D.f[DIR_0P0   ] = &DD[DIR_0M0   *numberOfLBnodes];
+         D.f[DIR_00M   ] = &DD[DIR_00P   *numberOfLBnodes];
+         D.f[DIR_00P   ] = &DD[DIR_00M   *numberOfLBnodes];
+         D.f[DIR_MM0  ] = &DD[DIR_PP0  *numberOfLBnodes];
+         D.f[DIR_PP0  ] = &DD[DIR_MM0  *numberOfLBnodes];
+         D.f[DIR_MP0  ] = &DD[DIR_PM0  *numberOfLBnodes];
+         D.f[DIR_PM0  ] = &DD[DIR_MP0  *numberOfLBnodes];
+         D.f[DIR_M0M  ] = &DD[DIR_P0P  *numberOfLBnodes];
+         D.f[DIR_P0P  ] = &DD[DIR_M0M  *numberOfLBnodes];
+         D.f[DIR_M0P  ] = &DD[DIR_P0M  *numberOfLBnodes];
+         D.f[DIR_P0M  ] = &DD[DIR_M0P  *numberOfLBnodes];
+         D.f[DIR_0MM  ] = &DD[DIR_0PP  *numberOfLBnodes];
+         D.f[DIR_0PP  ] = &DD[DIR_0MM  *numberOfLBnodes];
+         D.f[DIR_0MP  ] = &DD[DIR_0PM  *numberOfLBnodes];
+         D.f[DIR_0PM  ] = &DD[DIR_0MP  *numberOfLBnodes];
+         D.f[DIR_000] = &DD[DIR_000*numberOfLBnodes];
+         D.f[DIR_PPP ] = &DD[DIR_MMM *numberOfLBnodes];
+         D.f[DIR_MMP ] = &DD[DIR_PPM *numberOfLBnodes];
+         D.f[DIR_PMP ] = &DD[DIR_MPM *numberOfLBnodes];
+         D.f[DIR_MPP ] = &DD[DIR_PMM *numberOfLBnodes];
+         D.f[DIR_PPM ] = &DD[DIR_MMP *numberOfLBnodes];
+         D.f[DIR_MMM ] = &DD[DIR_PPP *numberOfLBnodes];
+         D.f[DIR_PMM ] = &DD[DIR_MPP *numberOfLBnodes];
+         D.f[DIR_MPM ] = &DD[DIR_PMP *numberOfLBnodes];
       }
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //set Pointer for Buffer Fs
@@ -903,7 +903,7 @@ __global__ void getSendGsF3(
 	unsigned int* neighborX,
 	unsigned int* neighborY,
 	unsigned int* neighborZ,
-	unsigned int size_Mat,
+	unsigned long long numberOfLBnodes,
 	bool isEvenTimestep)
 {
 	////////////////////////////////////////////////////////////////////////////////
@@ -931,21 +931,21 @@ __global__ void getSendGsF3(
 		Distributions6 G;
 		if (isEvenTimestep)
 		{
-			G.g[DIR_P00] = &G6[DIR_P00   *size_Mat];
-			G.g[DIR_M00] = &G6[DIR_M00   *size_Mat];
-			G.g[DIR_0P0] = &G6[DIR_0P0   *size_Mat];
-			G.g[DIR_0M0] = &G6[DIR_0M0   *size_Mat];
-			G.g[DIR_00P] = &G6[DIR_00P   *size_Mat];
-			G.g[DIR_00M] = &G6[DIR_00M   *size_Mat];
+			G.g[DIR_P00] = &G6[DIR_P00   *numberOfLBnodes];
+			G.g[DIR_M00] = &G6[DIR_M00   *numberOfLBnodes];
+			G.g[DIR_0P0] = &G6[DIR_0P0   *numberOfLBnodes];
+			G.g[DIR_0M0] = &G6[DIR_0M0   *numberOfLBnodes];
+			G.g[DIR_00P] = &G6[DIR_00P   *numberOfLBnodes];
+			G.g[DIR_00M] = &G6[DIR_00M   *numberOfLBnodes];
 		}
 		else
 		{
-			G.g[DIR_M00] = &G6[DIR_P00   *size_Mat];
-			G.g[DIR_P00] = &G6[DIR_M00   *size_Mat];
-			G.g[DIR_0M0] = &G6[DIR_0P0   *size_Mat];
-			G.g[DIR_0P0] = &G6[DIR_0M0   *size_Mat];
-			G.g[DIR_00M] = &G6[DIR_00P   *size_Mat];
-			G.g[DIR_00P] = &G6[DIR_00M   *size_Mat];
+			G.g[DIR_M00] = &G6[DIR_P00   *numberOfLBnodes];
+			G.g[DIR_P00] = &G6[DIR_M00   *numberOfLBnodes];
+			G.g[DIR_0M0] = &G6[DIR_0P0   *numberOfLBnodes];
+			G.g[DIR_0P0] = &G6[DIR_0M0   *numberOfLBnodes];
+			G.g[DIR_00M] = &G6[DIR_00P   *numberOfLBnodes];
+			G.g[DIR_00P] = &G6[DIR_00M   *numberOfLBnodes];
 		}
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		//set Pointer for Buffer Gs
@@ -1006,7 +1006,7 @@ __global__ void setRecvGsF3(
 	unsigned int* neighborX,
 	unsigned int* neighborY,
 	unsigned int* neighborZ,
-	unsigned int size_Mat,
+	unsigned long long numberOfLBnodes,
 	bool isEvenTimestep)
 {
 	////////////////////////////////////////////////////////////////////////////////
@@ -1034,21 +1034,21 @@ __global__ void setRecvGsF3(
 		Distributions6 G;
 		if (isEvenTimestep)
 		{
-			G.g[DIR_P00] = &G6[DIR_P00   *size_Mat];
-			G.g[DIR_M00] = &G6[DIR_M00   *size_Mat];
-			G.g[DIR_0P0] = &G6[DIR_0P0   *size_Mat];
-			G.g[DIR_0M0] = &G6[DIR_0M0   *size_Mat];
-			G.g[DIR_00P] = &G6[DIR_00P   *size_Mat];
-			G.g[DIR_00M] = &G6[DIR_00M   *size_Mat];
+			G.g[DIR_P00] = &G6[DIR_P00   *numberOfLBnodes];
+			G.g[DIR_M00] = &G6[DIR_M00   *numberOfLBnodes];
+			G.g[DIR_0P0] = &G6[DIR_0P0   *numberOfLBnodes];
+			G.g[DIR_0M0] = &G6[DIR_0M0   *numberOfLBnodes];
+			G.g[DIR_00P] = &G6[DIR_00P   *numberOfLBnodes];
+			G.g[DIR_00M] = &G6[DIR_00M   *numberOfLBnodes];
 		}
 		else
 		{
-			G.g[DIR_M00] = &G6[DIR_P00   *size_Mat];
-			G.g[DIR_P00] = &G6[DIR_M00   *size_Mat];
-			G.g[DIR_0M0] = &G6[DIR_0P0   *size_Mat];
-			G.g[DIR_0P0] = &G6[DIR_0M0   *size_Mat];
-			G.g[DIR_00M] = &G6[DIR_00P   *size_Mat];
-			G.g[DIR_00P] = &G6[DIR_00M   *size_Mat];
+			G.g[DIR_M00] = &G6[DIR_P00   *numberOfLBnodes];
+			G.g[DIR_P00] = &G6[DIR_M00   *numberOfLBnodes];
+			G.g[DIR_0M0] = &G6[DIR_0P0   *numberOfLBnodes];
+			G.g[DIR_0P0] = &G6[DIR_0M0   *numberOfLBnodes];
+			G.g[DIR_00M] = &G6[DIR_00P   *numberOfLBnodes];
+			G.g[DIR_00P] = &G6[DIR_00M   *numberOfLBnodes];
 		}
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		//set Pointer for Buffer Gs

@@ -171,7 +171,7 @@ void WallModelProbe::findPoints(Parameter* para, GridProvider* gridProvider, std
     {
         if (!para->getIsBodyForce()) throw std::runtime_error("WallModelProbe::findPoints(): bodyforce not allocated!");
         // Find all fluid nodes
-        for(uint j=1; j<para->getParH(level)->numberOfNodes; j++ )
+        for(size_t j = 1; j < para->getParH(level)->numberOfNodes; j++ )
         {
             if( para->getParH(level)->typeOfGridNode[j] == GEO_FLUID) 
             {

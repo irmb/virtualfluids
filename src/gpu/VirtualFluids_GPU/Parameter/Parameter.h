@@ -87,9 +87,9 @@ struct LBMSimulationParameter {
     real omega;
     //////////////////////////////////////////////////////////////////////////
     //! \brief stores the number of nodes (based on indirect addressing scheme)
-    unsigned int numberOfNodes;
+    unsigned long long numberOfNodes;
     //! \brief stores the size of the memory consumption for real/int values of the arrays (e.g. coordinates, velocity)
-    uint mem_size_real_SP, mem_size_int_SP;
+    unsigned long long memSizeRealLBnodes, memSizeLonglongLBnodes;
 
 
 

@@ -10,7 +10,7 @@ std::shared_ptr<CumulantIsoIncompSP27> CumulantIsoIncompSP27::getNewInstance(std
 
 void CumulantIsoIncompSP27::run()
 {
-	int size_Mat = para->getParD(level)->numberOfNodes;
+	int size_Mat = (int)para->getParD(level)->numberOfNodes;
 	int numberOfThreads = para->getParD(level)->numberofthreads;
 
 	int Grid = (size_Mat / numberOfThreads) + 1;
@@ -28,7 +28,8 @@ void CumulantIsoIncompSP27::run()
 	dim3 grid(Grid1, Grid2);
 	dim3 threads(numberOfThreads, 1, 1);
 
-	LB_Kernel_Cum_IsoTest_Incomp_SP_27 << < grid, threads >> >(para->getParD(level)->omega,
+	LB_Kernel_Cum_IsoTest_Incomp_SP_27 <<< grid, threads >>>(
+		para->getParD(level)->omega,
 		para->getParD(level)->typeOfGridNode,
 		para->getParD(level)->neighborX,
 		para->getParD(level)->neighborY,
@@ -39,7 +40,7 @@ void CumulantIsoIncompSP27::run()
 		para->getParD(level)->dzzUz,
 		para->getParD(level)->numberOfNodes,
 		para->getParD(level)->isEvenTimestep);
-	getLastCudaError("LB_Kernel_Kum_IsoTest_SP_27 execution failed");
+	getLastCudaError("LB_Kernel_Cum_IsoTest_Incomp_SP_27 execution failed");
 }
 
 CumulantIsoIncompSP27::CumulantIsoIncompSP27(std::shared_ptr<Parameter> para, int level)

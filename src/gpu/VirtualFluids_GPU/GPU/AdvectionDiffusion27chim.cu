@@ -74,7 +74,7 @@ __global__ void Factorized_Central_Moments_Advection_Diffusion_Device_Kernel(
 	uint* neighborZ,
 	real* distributions,
 	real* distributionsAD,
-	int size_Mat,
+	unsigned long long numberOfLBnodes,
 	real* forces,
 	bool isEvenTimestep)
 {
@@ -100,7 +100,7 @@ __global__ void Factorized_Central_Moments_Advection_Diffusion_Device_Kernel(
 
 	//////////////////////////////////////////////////////////////////////////
 	// run for all indices in size_Mat and fluid nodes
-	if ((k < size_Mat) && (typeOfGridNode[k] == GEO_FLUID))
+	if ((k < numberOfLBnodes) && (typeOfGridNode[k] == GEO_FLUID))
 	{
 		//////////////////////////////////////////////////////////////////////////
 		//! - Read distributions: style of reading and writing the distributions from/to stored arrays dependent on timestep is based on the esoteric twist algorithm \ref
@@ -109,125 +109,125 @@ __global__ void Factorized_Central_Moments_Advection_Diffusion_Device_Kernel(
 		Distributions27 dist;
 		if (isEvenTimestep)
 		{
-			dist.f[DIR_P00   ] = &distributions[DIR_P00   *size_Mat];
-			dist.f[DIR_M00   ] = &distributions[DIR_M00   *size_Mat];
-			dist.f[DIR_0P0   ] = &distributions[DIR_0P0   *size_Mat];
-			dist.f[DIR_0M0   ] = &distributions[DIR_0M0   *size_Mat];
-			dist.f[DIR_00P   ] = &distributions[DIR_00P   *size_Mat];
-			dist.f[DIR_00M   ] = &distributions[DIR_00M   *size_Mat];
-			dist.f[DIR_PP0  ] = &distributions[DIR_PP0  *size_Mat];
-			dist.f[DIR_MM0  ] = &distributions[DIR_MM0  *size_Mat];
-			dist.f[DIR_PM0  ] = &distributions[DIR_PM0  *size_Mat];
-			dist.f[DIR_MP0  ] = &distributions[DIR_MP0  *size_Mat];
-			dist.f[DIR_P0P  ] = &distributions[DIR_P0P  *size_Mat];
-			dist.f[DIR_M0M  ] = &distributions[DIR_M0M  *size_Mat];
-			dist.f[DIR_P0M  ] = &distributions[DIR_P0M  *size_Mat];
-			dist.f[DIR_M0P  ] = &distributions[DIR_M0P  *size_Mat];
-			dist.f[DIR_0PP  ] = &distributions[DIR_0PP  *size_Mat];
-			dist.f[DIR_0MM  ] = &distributions[DIR_0MM  *size_Mat];
-			dist.f[DIR_0PM  ] = &distributions[DIR_0PM  *size_Mat];
-			dist.f[DIR_0MP  ] = &distributions[DIR_0MP  *size_Mat];
-			dist.f[DIR_000] = &distributions[DIR_000*size_Mat];
-			dist.f[DIR_PPP ] = &distributions[DIR_PPP *size_Mat];
-			dist.f[DIR_MMP ] = &distributions[DIR_MMP *size_Mat];
-			dist.f[DIR_PMP ] = &distributions[DIR_PMP *size_Mat];
-			dist.f[DIR_MPP ] = &distributions[DIR_MPP *size_Mat];
-			dist.f[DIR_PPM ] = &distributions[DIR_PPM *size_Mat];
-			dist.f[DIR_MMM ] = &distributions[DIR_MMM *size_Mat];
-			dist.f[DIR_PMM ] = &distributions[DIR_PMM *size_Mat];
-			dist.f[DIR_MPM ] = &distributions[DIR_MPM *size_Mat];
+			dist.f[DIR_P00   ] = &distributions[DIR_P00   *numberOfLBnodes];
+			dist.f[DIR_M00   ] = &distributions[DIR_M00   *numberOfLBnodes];
+			dist.f[DIR_0P0   ] = &distributions[DIR_0P0   *numberOfLBnodes];
+			dist.f[DIR_0M0   ] = &distributions[DIR_0M0   *numberOfLBnodes];
+			dist.f[DIR_00P   ] = &distributions[DIR_00P   *numberOfLBnodes];
+			dist.f[DIR_00M   ] = &distributions[DIR_00M   *numberOfLBnodes];
+			dist.f[DIR_PP0  ] = &distributions[DIR_PP0  *numberOfLBnodes];
+			dist.f[DIR_MM0  ] = &distributions[DIR_MM0  *numberOfLBnodes];
+			dist.f[DIR_PM0  ] = &distributions[DIR_PM0  *numberOfLBnodes];
+			dist.f[DIR_MP0  ] = &distributions[DIR_MP0  *numberOfLBnodes];
+			dist.f[DIR_P0P  ] = &distributions[DIR_P0P  *numberOfLBnodes];
+			dist.f[DIR_M0M  ] = &distributions[DIR_M0M  *numberOfLBnodes];
+			dist.f[DIR_P0M  ] = &distributions[DIR_P0M  *numberOfLBnodes];
+			dist.f[DIR_M0P  ] = &distributions[DIR_M0P  *numberOfLBnodes];
+			dist.f[DIR_0PP  ] = &distributions[DIR_0PP  *numberOfLBnodes];
+			dist.f[DIR_0MM  ] = &distributions[DIR_0MM  *numberOfLBnodes];
+			dist.f[DIR_0PM  ] = &distributions[DIR_0PM  *numberOfLBnodes];
+			dist.f[DIR_0MP  ] = &distributions[DIR_0MP  *numberOfLBnodes];
+			dist.f[DIR_000] = &distributions[DIR_000*numberOfLBnodes];
+			dist.f[DIR_PPP ] = &distributions[DIR_PPP *numberOfLBnodes];
+			dist.f[DIR_MMP ] = &distributions[DIR_MMP *numberOfLBnodes];
+			dist.f[DIR_PMP ] = &distributions[DIR_PMP *numberOfLBnodes];
+			dist.f[DIR_MPP ] = &distributions[DIR_MPP *numberOfLBnodes];
+			dist.f[DIR_PPM ] = &distributions[DIR_PPM *numberOfLBnodes];
+			dist.f[DIR_MMM ] = &distributions[DIR_MMM *numberOfLBnodes];
+			dist.f[DIR_PMM ] = &distributions[DIR_PMM *numberOfLBnodes];
+			dist.f[DIR_MPM ] = &distributions[DIR_MPM *numberOfLBnodes];
 		}
 		else
 		{
-			dist.f[DIR_M00   ] = &distributions[DIR_P00   *size_Mat];
-			dist.f[DIR_P00   ] = &distributions[DIR_M00   *size_Mat];
-			dist.f[DIR_0M0   ] = &distributions[DIR_0P0   *size_Mat];
-			dist.f[DIR_0P0   ] = &distributions[DIR_0M0   *size_Mat];
-			dist.f[DIR_00M   ] = &distributions[DIR_00P   *size_Mat];
-			dist.f[DIR_00P   ] = &distributions[DIR_00M   *size_Mat];
-			dist.f[DIR_MM0  ] = &distributions[DIR_PP0  *size_Mat];
-			dist.f[DIR_PP0  ] = &distributions[DIR_MM0  *size_Mat];
-			dist.f[DIR_MP0  ] = &distributions[DIR_PM0  *size_Mat];
-			dist.f[DIR_PM0  ] = &distributions[DIR_MP0  *size_Mat];
-			dist.f[DIR_M0M  ] = &distributions[DIR_P0P  *size_Mat];
-			dist.f[DIR_P0P  ] = &distributions[DIR_M0M  *size_Mat];
-			dist.f[DIR_M0P  ] = &distributions[DIR_P0M  *size_Mat];
-			dist.f[DIR_P0M  ] = &distributions[DIR_M0P  *size_Mat];
-			dist.f[DIR_0MM  ] = &distributions[DIR_0PP  *size_Mat];
-			dist.f[DIR_0PP  ] = &distributions[DIR_0MM  *size_Mat];
-			dist.f[DIR_0MP  ] = &distributions[DIR_0PM  *size_Mat];
-			dist.f[DIR_0PM  ] = &distributions[DIR_0MP  *size_Mat];
-			dist.f[DIR_000] = &distributions[DIR_000*size_Mat];
-			dist.f[DIR_MMM ] = &distributions[DIR_PPP *size_Mat];
-			dist.f[DIR_PPM ] = &distributions[DIR_MMP *size_Mat];
-			dist.f[DIR_MPM ] = &distributions[DIR_PMP *size_Mat];
-			dist.f[DIR_PMM ] = &distributions[DIR_MPP *size_Mat];
-			dist.f[DIR_MMP ] = &distributions[DIR_PPM *size_Mat];
-			dist.f[DIR_PPP ] = &distributions[DIR_MMM *size_Mat];
-			dist.f[DIR_MPP ] = &distributions[DIR_PMM *size_Mat];
-			dist.f[DIR_PMP ] = &distributions[DIR_MPM *size_Mat];
+			dist.f[DIR_M00   ] = &distributions[DIR_P00   *numberOfLBnodes];
+			dist.f[DIR_P00   ] = &distributions[DIR_M00   *numberOfLBnodes];
+			dist.f[DIR_0M0   ] = &distributions[DIR_0P0   *numberOfLBnodes];
+			dist.f[DIR_0P0   ] = &distributions[DIR_0M0   *numberOfLBnodes];
+			dist.f[DIR_00M   ] = &distributions[DIR_00P   *numberOfLBnodes];
+			dist.f[DIR_00P   ] = &distributions[DIR_00M   *numberOfLBnodes];
+			dist.f[DIR_MM0  ] = &distributions[DIR_PP0  *numberOfLBnodes];
+			dist.f[DIR_PP0  ] = &distributions[DIR_MM0  *numberOfLBnodes];
+			dist.f[DIR_MP0  ] = &distributions[DIR_PM0  *numberOfLBnodes];
+			dist.f[DIR_PM0  ] = &distributions[DIR_MP0  *numberOfLBnodes];
+			dist.f[DIR_M0M  ] = &distributions[DIR_P0P  *numberOfLBnodes];
+			dist.f[DIR_P0P  ] = &distributions[DIR_M0M  *numberOfLBnodes];
+			dist.f[DIR_M0P  ] = &distributions[DIR_P0M  *numberOfLBnodes];
+			dist.f[DIR_P0M  ] = &distributions[DIR_M0P  *numberOfLBnodes];
+			dist.f[DIR_0MM  ] = &distributions[DIR_0PP  *numberOfLBnodes];
+			dist.f[DIR_0PP  ] = &distributions[DIR_0MM  *numberOfLBnodes];
+			dist.f[DIR_0MP  ] = &distributions[DIR_0PM  *numberOfLBnodes];
+			dist.f[DIR_0PM  ] = &distributions[DIR_0MP  *numberOfLBnodes];
+			dist.f[DIR_000] = &distributions[DIR_000*numberOfLBnodes];
+			dist.f[DIR_MMM ] = &distributions[DIR_PPP *numberOfLBnodes];
+			dist.f[DIR_PPM ] = &distributions[DIR_MMP *numberOfLBnodes];
+			dist.f[DIR_MPM ] = &distributions[DIR_PMP *numberOfLBnodes];
+			dist.f[DIR_PMM ] = &distributions[DIR_MPP *numberOfLBnodes];
+			dist.f[DIR_MMP ] = &distributions[DIR_PPM *numberOfLBnodes];
+			dist.f[DIR_PPP ] = &distributions[DIR_MMM *numberOfLBnodes];
+			dist.f[DIR_MPP ] = &distributions[DIR_PMM *numberOfLBnodes];
+			dist.f[DIR_PMP ] = &distributions[DIR_MPM *numberOfLBnodes];
 		}
 		////////////////////////////////////////////////////////////////////////////////
 		Distributions27 distAD;
 		if (isEvenTimestep)
 		{
-			distAD.f[DIR_P00   ] = &distributionsAD[DIR_P00   *size_Mat];
-			distAD.f[DIR_M00   ] = &distributionsAD[DIR_M00   *size_Mat];
-			distAD.f[DIR_0P0   ] = &distributionsAD[DIR_0P0   *size_Mat];
-			distAD.f[DIR_0M0   ] = &distributionsAD[DIR_0M0   *size_Mat];
-			distAD.f[DIR_00P   ] = &distributionsAD[DIR_00P   *size_Mat];
-			distAD.f[DIR_00M   ] = &distributionsAD[DIR_00M   *size_Mat];
-			distAD.f[DIR_PP0  ] = &distributionsAD[DIR_PP0  *size_Mat];
-			distAD.f[DIR_MM0  ] = &distributionsAD[DIR_MM0  *size_Mat];
-			distAD.f[DIR_PM0  ] = &distributionsAD[DIR_PM0  *size_Mat];
-			distAD.f[DIR_MP0  ] = &distributionsAD[DIR_MP0  *size_Mat];
-			distAD.f[DIR_P0P  ] = &distributionsAD[DIR_P0P  *size_Mat];
-			distAD.f[DIR_M0M  ] = &distributionsAD[DIR_M0M  *size_Mat];
-			distAD.f[DIR_P0M  ] = &distributionsAD[DIR_P0M  *size_Mat];
-			distAD.f[DIR_M0P  ] = &distributionsAD[DIR_M0P  *size_Mat];
-			distAD.f[DIR_0PP  ] = &distributionsAD[DIR_0PP  *size_Mat];
-			distAD.f[DIR_0MM  ] = &distributionsAD[DIR_0MM  *size_Mat];
-			distAD.f[DIR_0PM  ] = &distributionsAD[DIR_0PM  *size_Mat];
-			distAD.f[DIR_0MP  ] = &distributionsAD[DIR_0MP  *size_Mat];
-			distAD.f[DIR_000] = &distributionsAD[DIR_000*size_Mat];
-			distAD.f[DIR_PPP ] = &distributionsAD[DIR_PPP *size_Mat];
-			distAD.f[DIR_MMP ] = &distributionsAD[DIR_MMP *size_Mat];
-			distAD.f[DIR_PMP ] = &distributionsAD[DIR_PMP *size_Mat];
-			distAD.f[DIR_MPP ] = &distributionsAD[DIR_MPP *size_Mat];
-			distAD.f[DIR_PPM ] = &distributionsAD[DIR_PPM *size_Mat];
-			distAD.f[DIR_MMM ] = &distributionsAD[DIR_MMM *size_Mat];
-			distAD.f[DIR_PMM ] = &distributionsAD[DIR_PMM *size_Mat];
-			distAD.f[DIR_MPM ] = &distributionsAD[DIR_MPM *size_Mat];
+			distAD.f[DIR_P00   ] = &distributionsAD[DIR_P00   *numberOfLBnodes];
+			distAD.f[DIR_M00   ] = &distributionsAD[DIR_M00   *numberOfLBnodes];
+			distAD.f[DIR_0P0   ] = &distributionsAD[DIR_0P0   *numberOfLBnodes];
+			distAD.f[DIR_0M0   ] = &distributionsAD[DIR_0M0   *numberOfLBnodes];
+			distAD.f[DIR_00P   ] = &distributionsAD[DIR_00P   *numberOfLBnodes];
+			distAD.f[DIR_00M   ] = &distributionsAD[DIR_00M   *numberOfLBnodes];
+			distAD.f[DIR_PP0  ] = &distributionsAD[DIR_PP0  *numberOfLBnodes];
+			distAD.f[DIR_MM0  ] = &distributionsAD[DIR_MM0  *numberOfLBnodes];
+			distAD.f[DIR_PM0  ] = &distributionsAD[DIR_PM0  *numberOfLBnodes];
+			distAD.f[DIR_MP0  ] = &distributionsAD[DIR_MP0  *numberOfLBnodes];
+			distAD.f[DIR_P0P  ] = &distributionsAD[DIR_P0P  *numberOfLBnodes];
+			distAD.f[DIR_M0M  ] = &distributionsAD[DIR_M0M  *numberOfLBnodes];
+			distAD.f[DIR_P0M  ] = &distributionsAD[DIR_P0M  *numberOfLBnodes];
+			distAD.f[DIR_M0P  ] = &distributionsAD[DIR_M0P  *numberOfLBnodes];
+			distAD.f[DIR_0PP  ] = &distributionsAD[DIR_0PP  *numberOfLBnodes];
+			distAD.f[DIR_0MM  ] = &distributionsAD[DIR_0MM  *numberOfLBnodes];
+			distAD.f[DIR_0PM  ] = &distributionsAD[DIR_0PM  *numberOfLBnodes];
+			distAD.f[DIR_0MP  ] = &distributionsAD[DIR_0MP  *numberOfLBnodes];
+			distAD.f[DIR_000] = &distributionsAD[DIR_000*numberOfLBnodes];
+			distAD.f[DIR_PPP ] = &distributionsAD[DIR_PPP *numberOfLBnodes];
+			distAD.f[DIR_MMP ] = &distributionsAD[DIR_MMP *numberOfLBnodes];
+			distAD.f[DIR_PMP ] = &distributionsAD[DIR_PMP *numberOfLBnodes];
+			distAD.f[DIR_MPP ] = &distributionsAD[DIR_MPP *numberOfLBnodes];
+			distAD.f[DIR_PPM ] = &distributionsAD[DIR_PPM *numberOfLBnodes];
+			distAD.f[DIR_MMM ] = &distributionsAD[DIR_MMM *numberOfLBnodes];
+			distAD.f[DIR_PMM ] = &distributionsAD[DIR_PMM *numberOfLBnodes];
+			distAD.f[DIR_MPM ] = &distributionsAD[DIR_MPM *numberOfLBnodes];
 		}
 		else
 		{
-			distAD.f[DIR_M00   ] = &distributionsAD[DIR_P00   *size_Mat];
-			distAD.f[DIR_P00   ] = &distributionsAD[DIR_M00   *size_Mat];
-			distAD.f[DIR_0M0   ] = &distributionsAD[DIR_0P0   *size_Mat];
-			distAD.f[DIR_0P0   ] = &distributionsAD[DIR_0M0   *size_Mat];
-			distAD.f[DIR_00M   ] = &distributionsAD[DIR_00P   *size_Mat];
-			distAD.f[DIR_00P   ] = &distributionsAD[DIR_00M   *size_Mat];
-			distAD.f[DIR_MM0  ] = &distributionsAD[DIR_PP0  *size_Mat];
-			distAD.f[DIR_PP0  ] = &distributionsAD[DIR_MM0  *size_Mat];
-			distAD.f[DIR_MP0  ] = &distributionsAD[DIR_PM0  *size_Mat];
-			distAD.f[DIR_PM0  ] = &distributionsAD[DIR_MP0  *size_Mat];
-			distAD.f[DIR_M0M  ] = &distributionsAD[DIR_P0P  *size_Mat];
-			distAD.f[DIR_P0P  ] = &distributionsAD[DIR_M0M  *size_Mat];
-			distAD.f[DIR_M0P  ] = &distributionsAD[DIR_P0M  *size_Mat];
-			distAD.f[DIR_P0M  ] = &distributionsAD[DIR_M0P  *size_Mat];
-			distAD.f[DIR_0MM  ] = &distributionsAD[DIR_0PP  *size_Mat];
-			distAD.f[DIR_0PP  ] = &distributionsAD[DIR_0MM  *size_Mat];
-			distAD.f[DIR_0MP  ] = &distributionsAD[DIR_0PM  *size_Mat];
-			distAD.f[DIR_0PM  ] = &distributionsAD[DIR_0MP  *size_Mat];
-			distAD.f[DIR_000] = &distributionsAD[DIR_000*size_Mat];
-			distAD.f[DIR_MMM ] = &distributionsAD[DIR_PPP *size_Mat];
-			distAD.f[DIR_PPM ] = &distributionsAD[DIR_MMP *size_Mat];
-			distAD.f[DIR_MPM ] = &distributionsAD[DIR_PMP *size_Mat];
-			distAD.f[DIR_PMM ] = &distributionsAD[DIR_MPP *size_Mat];
-			distAD.f[DIR_MMP ] = &distributionsAD[DIR_PPM *size_Mat];
-			distAD.f[DIR_PPP ] = &distributionsAD[DIR_MMM *size_Mat];
-			distAD.f[DIR_MPP ] = &distributionsAD[DIR_PMM *size_Mat];
-			distAD.f[DIR_PMP ] = &distributionsAD[DIR_MPM *size_Mat];
+			distAD.f[DIR_M00   ] = &distributionsAD[DIR_P00   *numberOfLBnodes];
+			distAD.f[DIR_P00   ] = &distributionsAD[DIR_M00   *numberOfLBnodes];
+			distAD.f[DIR_0M0   ] = &distributionsAD[DIR_0P0   *numberOfLBnodes];
+			distAD.f[DIR_0P0   ] = &distributionsAD[DIR_0M0   *numberOfLBnodes];
+			distAD.f[DIR_00M   ] = &distributionsAD[DIR_00P   *numberOfLBnodes];
+			distAD.f[DIR_00P   ] = &distributionsAD[DIR_00M   *numberOfLBnodes];
+			distAD.f[DIR_MM0  ] = &distributionsAD[DIR_PP0  *numberOfLBnodes];
+			distAD.f[DIR_PP0  ] = &distributionsAD[DIR_MM0  *numberOfLBnodes];
+			distAD.f[DIR_MP0  ] = &distributionsAD[DIR_PM0  *numberOfLBnodes];
+			distAD.f[DIR_PM0  ] = &distributionsAD[DIR_MP0  *numberOfLBnodes];
+			distAD.f[DIR_M0M  ] = &distributionsAD[DIR_P0P  *numberOfLBnodes];
+			distAD.f[DIR_P0P  ] = &distributionsAD[DIR_M0M  *numberOfLBnodes];
+			distAD.f[DIR_M0P  ] = &distributionsAD[DIR_P0M  *numberOfLBnodes];
+			distAD.f[DIR_P0M  ] = &distributionsAD[DIR_M0P  *numberOfLBnodes];
+			distAD.f[DIR_0MM  ] = &distributionsAD[DIR_0PP  *numberOfLBnodes];
+			distAD.f[DIR_0PP  ] = &distributionsAD[DIR_0MM  *numberOfLBnodes];
+			distAD.f[DIR_0MP  ] = &distributionsAD[DIR_0PM  *numberOfLBnodes];
+			distAD.f[DIR_0PM  ] = &distributionsAD[DIR_0MP  *numberOfLBnodes];
+			distAD.f[DIR_000] = &distributionsAD[DIR_000*numberOfLBnodes];
+			distAD.f[DIR_MMM ] = &distributionsAD[DIR_PPP *numberOfLBnodes];
+			distAD.f[DIR_PPM ] = &distributionsAD[DIR_MMP *numberOfLBnodes];
+			distAD.f[DIR_MPM ] = &distributionsAD[DIR_PMP *numberOfLBnodes];
+			distAD.f[DIR_PMM ] = &distributionsAD[DIR_MPP *numberOfLBnodes];
+			distAD.f[DIR_MMP ] = &distributionsAD[DIR_PPM *numberOfLBnodes];
+			distAD.f[DIR_PPP ] = &distributionsAD[DIR_MMM *numberOfLBnodes];
+			distAD.f[DIR_MPP ] = &distributionsAD[DIR_PMM *numberOfLBnodes];
+			distAD.f[DIR_PMP ] = &distributionsAD[DIR_MPM *numberOfLBnodes];
 		}
 		////////////////////////////////////////////////////////////////////////////////
 		//! - Set neighbor indices (necessary for indirect addressing)

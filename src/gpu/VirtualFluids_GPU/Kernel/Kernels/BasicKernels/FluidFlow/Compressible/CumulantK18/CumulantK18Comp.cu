@@ -12,7 +12,7 @@ std::shared_ptr<CumulantK18Comp> CumulantK18Comp::getNewInstance(std::shared_ptr
 void CumulantK18Comp::run()
 {
 	int numberOfThreads = para->getParD(level)->numberofthreads;
-	int size_Mat = para->getParD(level)->numberOfNodes;
+	int size_Mat = (int)para->getParD(level)->numberOfNodes;
 
 	int Grid = (size_Mat / numberOfThreads) + 1;
 	int Grid1, Grid2;
@@ -29,18 +29,19 @@ void CumulantK18Comp::run()
 	dim3 grid(Grid1, Grid2);
 	dim3 threads(numberOfThreads, 1, 1);
 
-	LB_Kernel_CumulantK18Comp << < grid, threads >> >(	para->getParD(level)->omega,
-														para->getParD(level)->typeOfGridNode,
-														para->getParD(level)->neighborX,
-														para->getParD(level)->neighborY,
-														para->getParD(level)->neighborZ,
-														para->getParD(level)->distributions.f[0],
-														para->getParD(level)->g6.g[0],
-														para->getParD(level)->numberOfNodes,
-														level,
-														para->getForcesDev(),
-                                                        para->getQuadricLimitersDev(),
-														para->getParD(level)->isEvenTimestep);
+	LB_Kernel_CumulantK18Comp <<< grid, threads >>>(
+		para->getParD(level)->omega,
+		para->getParD(level)->typeOfGridNode,
+		para->getParD(level)->neighborX,
+		para->getParD(level)->neighborY,
+		para->getParD(level)->neighborZ,
+		para->getParD(level)->distributions.f[0],
+		para->getParD(level)->g6.g[0],
+		para->getParD(level)->numberOfNodes,
+		level,
+		para->getForcesDev(),
+        para->getQuadricLimitersDev(),
+		para->getParD(level)->isEvenTimestep);
 	getLastCudaError("LB_Kernel_CumulantK18Comp execution failed");
 }
 

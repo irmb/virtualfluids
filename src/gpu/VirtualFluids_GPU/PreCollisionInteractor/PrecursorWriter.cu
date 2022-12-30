@@ -128,7 +128,7 @@ void PrecursorWriter::init(Parameter* para, GridProvider* gridProvider, CudaMemo
         std::vector<int> indicesOnPlane;
         std::vector<real> coordY, coordZ;
 
-        for(uint j=1; j<para->getParH(level)->numberOfNodes; j++ )
+        for(size_t j = 1; j < para->getParH(level)->numberOfNodes; j++ )
         {
             real pointCoordX = para->getParH(level)->coordinateX[j];
             real pointCoordY = para->getParH(level)->coordinateY[j];

@@ -75,7 +75,7 @@ void PointProbe::findPoints(Parameter* para, GridProvider* gridProvider, std::ve
 {
 
     real dx = abs(para->getParH(level)->coordinateX[1]-para->getParH(level)->coordinateX[para->getParH(level)->neighborX[1]]);
-    for(uint j=1; j<para->getParH(level)->numberOfNodes; j++ )
+    for(size_t j = 1; j < para->getParH(level)->numberOfNodes; j++ )
     {    
         for(uint point=0; point<this->pointCoordsX.size(); point++)
         {

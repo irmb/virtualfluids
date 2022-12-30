@@ -76,7 +76,7 @@ void PlaneProbe::findPoints(Parameter* para, GridProvider* gridProvider, std::ve
                             int level)
 {
     real dx = abs(para->getParH(level)->coordinateX[1]-para->getParH(level)->coordinateX[para->getParH(level)->neighborX[1]]);
-    for(uint j=1; j<para->getParH(level)->numberOfNodes; j++ )
+    for(size_t j = 1; j < para->getParH(level)->numberOfNodes; j++ )
     {
         real pointCoordX = para->getParH(level)->coordinateX[j];
         real pointCoordY = para->getParH(level)->coordinateY[j];

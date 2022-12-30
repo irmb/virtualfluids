@@ -27,7 +27,7 @@ void KernelCas27( unsigned int grid_nx,
                              unsigned int* neighborY,
                              unsigned int* neighborZ,
                              real* DD,
-                             int size_Mat,
+                             unsigned long long numberOfLBnodes,
                              bool EvenOrOdd)
 {
    dim3 threads       ( grid_nx, 1, 1 );
@@ -39,7 +39,7 @@ void KernelCas27( unsigned int grid_nx,
                                              neighborY,
                                              neighborZ,
                                              DD,
-                                             size_Mat,
+                                             numberOfLBnodes,
                                              EvenOrOdd);
      getLastCudaError("LB_Kernel_Casc27 execution failed");
 }
@@ -51,10 +51,10 @@ void KernelCasSP27( unsigned int numberOfThreads,
                                unsigned int* neighborY,
                                unsigned int* neighborZ,
                                real* DD,
-                               int size_Mat,
+                               unsigned long long numberOfLBnodes,
                                bool EvenOrOdd)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
       LB_Kernel_Casc_SP_27<<< grid.grid, grid.threads >>>(s9,
                                                 bcMatD,
@@ -62,7 +62,7 @@ void KernelCasSP27( unsigned int numberOfThreads,
                                                 neighborY,
                                                 neighborZ,
                                                 DD,
-                                                size_Mat,
+                                                numberOfLBnodes,
                                                 EvenOrOdd);
       getLastCudaError("LB_Kernel_Casc_SP_27 execution failed");
 }
@@ -74,10 +74,10 @@ void KernelCasSPMS27( unsigned int numberOfThreads,
                                  unsigned int* neighborY,
                                  unsigned int* neighborZ,
                                  real* DD,
-                                 int size_Mat,
+                                 unsigned long long numberOfLBnodes,
                                  bool EvenOrOdd)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
       LB_Kernel_Casc_SP_MS_27<<< grid.grid, grid.threads >>>(s9,
                                                    bcMatD,
@@ -85,7 +85,7 @@ void KernelCasSPMS27( unsigned int numberOfThreads,
                                                    neighborY,
                                                    neighborZ,
                                                    DD,
-                                                   size_Mat,
+                                                   numberOfLBnodes,
                                                    EvenOrOdd);
       getLastCudaError("LB_Kernel_Casc_SP_MS_27 execution failed");
 }
@@ -97,10 +97,10 @@ void KernelCasSPMSOHM27( unsigned int numberOfThreads,
                                     unsigned int* neighborY,
                                     unsigned int* neighborZ,
                                     real* DD,
-                                    int size_Mat,
+                                    unsigned long long numberOfLBnodes,
                                     bool EvenOrOdd)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
       LB_Kernel_Casc_SP_MS_OHM_27<<< grid.grid, grid.threads >>>(  s9,
                                                          bcMatD,
@@ -108,7 +108,7 @@ void KernelCasSPMSOHM27( unsigned int numberOfThreads,
                                                          neighborY,
                                                          neighborZ,
                                                          DD,
-                                                         size_Mat,
+                                                         numberOfLBnodes,
                                                          EvenOrOdd);
       getLastCudaError("LB_Kernel_Casc_SP_MS_OHM_27 execution failed");
 }
@@ -121,12 +121,12 @@ void KernelKumCompSRTSP27(
     unsigned int* neighborY,
     unsigned int* neighborZ,
     real* DDStart,
-    int size_Mat,
+    unsigned long long numberOfLBnodes,
     int level,
     real* forces,
     bool EvenOrOdd)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
    LB_Kernel_Kum_New_Comp_SRT_SP_27 <<< grid.grid, grid.threads >>>(
        omega,
@@ -135,7 +135,7 @@ void KernelKumCompSRTSP27(
        neighborY,
        neighborZ,
        DDStart,
-       size_Mat,
+       numberOfLBnodes,
        level,
        forces,
        EvenOrOdd);
@@ -154,10 +154,10 @@ void KernelKum1hSP27(    unsigned int numberOfThreads,
                                     real* coordY,
                                     real* coordZ,
                                     real* DDStart,
-                                    int size_Mat,
+                                    unsigned long long numberOfLBnodes,
                                     bool EvenOrOdd)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
         LB_Kernel_Kum_1h_SP_27<<< grid.grid, grid.threads >>>(omega,
                                                     deltaPhi,
@@ -170,7 +170,7 @@ void KernelKum1hSP27(    unsigned int numberOfThreads,
                                                     coordY,
                                                     coordZ,
                                                     DDStart,
-                                                    size_Mat,
+                                                    numberOfLBnodes,
                                                     EvenOrOdd);
         getLastCudaError("LB_Kernel_Kum_New_SP_27 execution failed");
 }
@@ -182,10 +182,10 @@ void KernelCascadeSP27(  unsigned int numberOfThreads,
                                     unsigned int* neighborY,
                                     unsigned int* neighborZ,
                                     real* DD,
-                                    int size_Mat,
+                                    unsigned long long numberOfLBnodes,
                                     bool EvenOrOdd)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
         LB_Kernel_Cascade_SP_27<<< grid.grid, grid.threads >>>(s9,
                                                     bcMatD,
@@ -193,7 +193,7 @@ void KernelCascadeSP27(  unsigned int numberOfThreads,
                                                     neighborY,
                                                     neighborZ,
                                                     DD,
-                                                    size_Mat,
+                                                    numberOfLBnodes,
                                                     EvenOrOdd);
         getLastCudaError("LB_Kernel_Cascade_SP_27 execution failed");
 }
@@ -205,10 +205,10 @@ void KernelKumNewSP27(   unsigned int numberOfThreads,
                                     unsigned int* neighborY,
                                     unsigned int* neighborZ,
                                     real* DD,
-                                    int size_Mat,
+                                    unsigned long long numberOfLBnodes,
                                     bool EvenOrOdd)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
 
         LB_Kernel_Kum_New_SP_27<<< grid.grid, grid.threads >>>(s9,
@@ -217,7 +217,7 @@ void KernelKumNewSP27(   unsigned int numberOfThreads,
                                                     neighborY,
                                                     neighborZ,
                                                     DD,
-                                                    size_Mat,
+                                                    numberOfLBnodes,
                                                     EvenOrOdd);
         getLastCudaError("LB_Kernel_Kum_New_SP_27 execution failed");
 }
@@ -229,7 +229,7 @@ void KernelKumNewCompSP27(unsigned int numberOfThreads,
                                     unsigned int* neighborY,
                                     unsigned int* neighborZ,
                                     real* DD,
-                                    int size_Mat,
+                                    unsigned long long numberOfLBnodes,
                                     int size_Array,
                                     int level,
                                     real* forces,
@@ -239,7 +239,7 @@ void KernelKumNewCompSP27(unsigned int numberOfThreads,
     //dim3 grid(Grid, 1, 1);
     //dim3 threads(numberOfThreads, 1, 1 );
 
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
         //LB_Kernel_Kum_New_Comp_SP_27<<< grid.grid, grid.threads >>>(	s9,
         //													bcMatD,
@@ -247,7 +247,7 @@ void KernelKumNewCompSP27(unsigned int numberOfThreads,
         //													neighborY,
         //													neighborZ,
         //													DD,
-        //													size_Mat,
+        //													numberOfLBnodes,
         //													level,
         //													forces,
         //													EvenOrOdd);
@@ -262,7 +262,7 @@ void CumulantOnePreconditionedErrorDiffusionChimCompSP27(unsigned int numberOfTh
                                                                     unsigned int* neighborY,
                                                                     unsigned int* neighborZ,
                                                                     real* DD,
-                                                                    int size_Mat,
+                                                                    unsigned long long numberOfLBnodes,
                                                                     int size_Array,
                                                                     int level,
                                                                     real* forces,
@@ -272,7 +272,7 @@ void CumulantOnePreconditionedErrorDiffusionChimCompSP27(unsigned int numberOfTh
     //dim3 grid(Grid, 1, 1);
     //dim3 threads(numberOfThreads, 1, 1 );
 
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
 
     Cumulant_One_preconditioned_errorDiffusion_chim_Comp_SP_27 <<< grid.grid, grid.threads >>>(	s9,
@@ -281,7 +281,7 @@ void CumulantOnePreconditionedErrorDiffusionChimCompSP27(unsigned int numberOfTh
                                                                                         neighborY,
                                                                                         neighborZ,
                                                                                         DD,
-                                                                                        size_Mat,
+                                                                                        numberOfLBnodes,
                                                                                         level,
                                                                                         forces,
                                                                                         EvenOrOdd);
@@ -295,7 +295,7 @@ void CumulantOnePreconditionedChimCompSP27(  unsigned int numberOfThreads,
                                                         unsigned int* neighborY,
                                                         unsigned int* neighborZ,
                                                         real* DD,
-                                                        int size_Mat,
+                                                        unsigned long long numberOfLBnodes,
                                                         int size_Array,
                                                         int level,
                                                         real* forces,
@@ -305,7 +305,7 @@ void CumulantOnePreconditionedChimCompSP27(  unsigned int numberOfThreads,
     //dim3 grid(Grid, 1, 1);
     //dim3 threads(numberOfThreads, 1, 1 );
 
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
 
     Cumulant_One_preconditioned_chim_Comp_SP_27 <<< grid.grid, grid.threads >>>(	s9,
@@ -314,7 +314,7 @@ void CumulantOnePreconditionedChimCompSP27(  unsigned int numberOfThreads,
                                                                         neighborY,
                                                                         neighborZ,
                                                                         DD,
-                                                                        size_Mat,
+                                                                        numberOfLBnodes,
                                                                         level,
                                                                         forces,
                                                                         EvenOrOdd);
@@ -328,7 +328,7 @@ void CumulantOneChimCompSP27(unsigned int numberOfThreads,
                                         unsigned int* neighborY,
                                         unsigned int* neighborZ,
                                         real* DD,
-                                        int size_Mat,
+                                        unsigned long long numberOfLBnodes,
                                         int size_Array,
                                         int level,
                                         real* forces,
@@ -338,7 +338,7 @@ void CumulantOneChimCompSP27(unsigned int numberOfThreads,
     //dim3 grid(Grid, 1, 1);
     //dim3 threads(numberOfThreads, 1, 1 );
 
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
 
     Cumulant_One_chim_Comp_SP_27 <<< grid.grid, grid.threads >>>(	s9,
@@ -347,7 +347,7 @@ void CumulantOneChimCompSP27(unsigned int numberOfThreads,
                                                         neighborY,
                                                         neighborZ,
                                                         DD,
-                                                        size_Mat,
+                                                        numberOfLBnodes,
                                                         level,
                                                         forces,
                                                         EvenOrOdd);
@@ -364,10 +364,10 @@ void KernelKumIsoTestSP27(unsigned int numberOfThreads,
                                      real* dxxUx,
                                      real* dyyUy,
                                      real* dzzUz,
-                                     int size_Mat,
+                                     unsigned long long numberOfLBnodes,
                                      bool EvenOrOdd)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
 
     LB_Kernel_Kum_IsoTest_SP_27<<< grid.grid, grid.threads >>>(s9,
@@ -379,7 +379,7 @@ void KernelKumIsoTestSP27(unsigned int numberOfThreads,
                                                     dxxUx,
                                                     dyyUy,
                                                     dzzUz,
-                                                    size_Mat,
+                                                    numberOfLBnodes,
                                                     EvenOrOdd);
     getLastCudaError("LB_Kernel_Kum_IsoTest_SP_27 execution failed");
 }
@@ -391,10 +391,10 @@ void KernelKumCompSP27(  unsigned int numberOfThreads,
                                     unsigned int* neighborY,
                                     unsigned int* neighborZ,
                                     real* DD,
-                                    int size_Mat,
+                                    unsigned long long numberOfLBnodes,
                                     bool EvenOrOdd)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
 
         LB_Kernel_Kum_Comp_SP_27<<< grid.grid, grid.threads >>>(s9,
@@ -403,7 +403,7 @@ void KernelKumCompSP27(  unsigned int numberOfThreads,
                                                     neighborY,
                                                     neighborZ,
                                                     DD,
-                                                    size_Mat,
+                                                    numberOfLBnodes,
                                                     EvenOrOdd);
         getLastCudaError("LB_Kernel_Kum_Comp_SP_27 execution failed");
 }
@@ -414,7 +414,7 @@ void KernelPMCumOneCompSP27(unsigned int numberOfThreads,
                                        unsigned int* neighborY,
                                        unsigned int* neighborZ,
                                        real* DD,
-                                       int size_Mat,
+                                       unsigned long long numberOfLBnodes,
                                        int level,
                                        real* forces,
                                        real porosity,
@@ -424,7 +424,7 @@ void KernelPMCumOneCompSP27(unsigned int numberOfThreads,
                                        unsigned int* nodeIdsPorousMedia,
                                        bool EvenOrOdd)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
 
     LB_Kernel_PM_Cum_One_Comp_SP_27 <<< grid.grid, grid.threads >>>(omega,
@@ -432,7 +432,7 @@ void KernelPMCumOneCompSP27(unsigned int numberOfThreads,
                                                           neighborY,
                                                           neighborZ,
                                                           DD,
-                                                          size_Mat,
+                                                          numberOfLBnodes,
                                                           level,
                                                           forces,
                                                           porosity,
@@ -457,7 +457,7 @@ void KernelWaleBySoniMalavCumAA2016CompSP27(
     real* veloZ,
     real* DD,
     real* turbulentViscosity,
-    int size_Mat,
+    unsigned long long numberOfLBnodes,
     int size_Array,
     int level,
     real* forces,
@@ -467,7 +467,7 @@ void KernelWaleBySoniMalavCumAA2016CompSP27(
     //dim3 grid(Grid, 1, 1);
     //dim3 threads(numberOfThreads, 1, 1 );
 
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
 
     LB_Kernel_WaleBySoniMalav_Cum_AA2016_Comp_SP_27 << < grid.grid, grid.threads >> >(
@@ -482,7 +482,7 @@ void KernelWaleBySoniMalavCumAA2016CompSP27(
         veloZ,
         DD,
         turbulentViscosity,
-        size_Mat,
+        numberOfLBnodes,
         level,
         forces,
         EvenOrOdd);
@@ -497,10 +497,10 @@ void KernelADincomp7(   unsigned int numberOfThreads,
                                    unsigned int* neighborZ,
                                    real* DD,
                                    real* DD7,
-                                   int size_Mat,
+                                   unsigned long long numberOfLBnodes,
                                    bool EvenOrOdd)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
       LB_Kernel_AD_Incomp_7<<< grid.grid, grid.threads >>>( diffusivity,
                                                   bcMatD,
@@ -509,7 +509,7 @@ void KernelADincomp7(   unsigned int numberOfThreads,
                                                   neighborZ,
                                                   DD,
                                                   DD7,
-                                                  size_Mat,
+                                                  numberOfLBnodes,
                                                   EvenOrOdd);
       getLastCudaError("LB_Kernel_AD_Incomp_7 execution failed");
 }
@@ -522,10 +522,10 @@ void KernelADincomp27( unsigned int numberOfThreads,
                                   unsigned int* neighborZ,
                                   real* DD,
                                   real* DD27,
-                                  int size_Mat,
+                                  unsigned long long numberOfLBnodes,
                                   bool EvenOrOdd)
 {
-       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
     LB_Kernel_AD_Incomp_27<<< grid.grid, grid.threads >>>( diffusivity,
                                                     bcMatD,
@@ -534,7 +534,7 @@ void KernelADincomp27( unsigned int numberOfThreads,
                                                     neighborZ,
                                                     DD,
                                                     DD27,
-                                                    size_Mat,
+                                                    numberOfLBnodes,
                                                     EvenOrOdd);
     getLastCudaError("LB_Kernel_AD_Incomp_27 execution failed");
 }
@@ -547,7 +547,7 @@ void Init27( int myid,
                         unsigned int* neighborY,
                         unsigned int* neighborZ,
                         real* vParab,
-                        unsigned int size_Mat,
+                        unsigned long long numberOfLBnodes,
                         unsigned int grid_nx,
                         unsigned int grid_ny,
                         unsigned int grid_nz,
@@ -566,7 +566,7 @@ void Init27( int myid,
                                        neighborY,
                                        neighborZ,
                                        vParab,
-                                       size_Mat,
+                                       numberOfLBnodes,
                                        grid_nx,
                                        grid_ny,
                                        grid_nz,
@@ -586,12 +586,12 @@ void InitNonEqPartSP27( unsigned int numberOfThreads,
                                    real* ux,
                                    real* uy,
                                    real* uz,
-                                   unsigned int size_Mat,
+                                   unsigned long long numberOfLBnodes,
                                    real* DD,
                                    real omega,
                                    bool EvenOrOdd)
 {
-       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
     LBInitNonEqPartSP27<<< grid.grid, grid.threads >>>( neighborX,
                                                 neighborY,
@@ -602,7 +602,7 @@ void InitNonEqPartSP27( unsigned int numberOfThreads,
                                                 ux,
                                                 uy,
                                                 uz,
-                                                size_Mat,
+                                                numberOfLBnodes,
                                                 DD,
                                                 omega,
                                                 EvenOrOdd);
@@ -618,11 +618,11 @@ void InitThS7(     unsigned int numberOfThreads,
                               real* ux,
                               real* uy,
                               real* uz,
-                              unsigned int size_Mat,
+                              unsigned long long numberOfLBnodes,
                               real* DD7,
                               bool EvenOrOdd)
 {
-       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
     InitAD7<<< grid.grid, grid.threads >>>( neighborX,
                                        neighborY,
@@ -632,7 +632,7 @@ void InitThS7(     unsigned int numberOfThreads,
                                        ux,
                                        uy,
                                        uz,
-                                       size_Mat,
+                                       numberOfLBnodes,
                                        DD7,
                                        EvenOrOdd);
     getLastCudaError("InitAD7 execution failed");
@@ -647,11 +647,11 @@ void InitADDev27( unsigned int numberOfThreads,
                            real* ux,
                            real* uy,
                            real* uz,
-                           unsigned int size_Mat,
+                           unsigned long long numberOfLBnodes,
                            real* DD27,
                            bool EvenOrOdd)
 {
-       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
     InitAD27<<< grid.grid, grid.threads >>>(neighborX,
                                        neighborY,
@@ -661,7 +661,7 @@ void InitADDev27( unsigned int numberOfThreads,
                                        ux,
                                        uy,
                                        uz,
-                                       size_Mat,
+                                       numberOfLBnodes,
                                        DD27,
                                        EvenOrOdd);
     getLastCudaError("InitAD27 execution failed");
@@ -680,12 +680,12 @@ void PostProcessorF3_2018Fehlberg(
     real* vzOut,
     real* DDStart,
     real* G6,
-    int size_Mat,
+    unsigned long long numberOfLBnodes,
     int level,
     real* forces,
     bool EvenOrOdd)
 {
-       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
     LB_PostProcessor_F3_2018_Fehlberg <<< grid.grid, grid.threads >>> (   omega,
                                                                   bcMatD,
@@ -698,7 +698,7 @@ void PostProcessorF3_2018Fehlberg(
                                                                   vzOut,
                                                                   DDStart,
                                                                   G6,
-                                                                  size_Mat,
+                                                                  numberOfLBnodes,
                                                                   level,
                                                                   forces,
                                                                   EvenOrOdd);
@@ -713,7 +713,7 @@ void CalcMac27( real* vxD,
                            unsigned int* neighborX,
                            unsigned int* neighborY,
                            unsigned int* neighborZ,
-                           unsigned int size_Mat,
+                           unsigned long long numberOfLBnodes,
                            unsigned int grid_nx,
                            unsigned int grid_ny,
                            unsigned int grid_nz,
@@ -731,7 +731,7 @@ void CalcMac27( real* vxD,
                                           neighborX,
                                           neighborY,
                                           neighborZ,
-                                          size_Mat,
+                                          numberOfLBnodes,
                                           DD,
                                           isEvenTimestep);
     getLastCudaError("LBCalcMac27 execution failed");
@@ -746,12 +746,12 @@ void CalcMacSP27( real* vxD,
                              unsigned int* neighborX,
                              unsigned int* neighborY,
                              unsigned int* neighborZ,
-                             unsigned int size_Mat,
+                             unsigned long long numberOfLBnodes,
                              unsigned int numberOfThreads,
                              real* DD,
                              bool isEvenTimestep)
 {
-       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
     LBCalcMacSP27<<< grid.grid, grid.threads >>> (   vxD,
                                              vyD,
@@ -762,7 +762,7 @@ void CalcMacSP27( real* vxD,
                                              neighborX,
                                              neighborY,
                                              neighborZ,
-                                             size_Mat,
+                                             numberOfLBnodes,
                                              DD,
                                              isEvenTimestep);
     getLastCudaError("LBCalcMacSP27 execution failed");
@@ -777,12 +777,12 @@ void CalcMacCompSP27( real* vxD,
                                  unsigned int* neighborX,
                                  unsigned int* neighborY,
                                  unsigned int* neighborZ,
-                                 unsigned int size_Mat,
+                                 unsigned long long numberOfLBnodes,
                                  unsigned int numberOfThreads,
                                  real* DD,
                                  bool isEvenTimestep)
 {
-       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
     LBCalcMacCompSP27<<< grid.grid, grid.threads >>> (   vxD,
                                                  vyD,
@@ -793,7 +793,7 @@ void CalcMacCompSP27( real* vxD,
                                                  neighborX,
                                                  neighborY,
                                                  neighborZ,
-                                                 size_Mat,
+                                                 numberOfLBnodes,
                                                  DD,
                                                  isEvenTimestep);
     getLastCudaError("LBCalcMacSP27 execution failed");
@@ -804,19 +804,19 @@ void CalcMacThS7(  real* Conc,
                               unsigned int* neighborX,
                               unsigned int* neighborY,
                               unsigned int* neighborZ,
-                              unsigned int size_Mat,
+                              unsigned long long numberOfLBnodes,
                               unsigned int numberOfThreads,
                               real* DD7,
                               bool isEvenTimestep)
 {
-       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
     CalcConc7<<< grid.grid, grid.threads >>> (Conc,
                                           geoD,
                                           neighborX,
                                           neighborY,
                                           neighborZ,
-                                          size_Mat,
+                                          numberOfLBnodes,
                                           DD7,
                                           isEvenTimestep);
     getLastCudaError("CalcConc7 execution failed");
@@ -829,7 +829,7 @@ void PlaneConcThS7(real* Conc,
                               unsigned int* neighborX,
                               unsigned int* neighborY,
                               unsigned int* neighborZ,
-                              unsigned int size_Mat,
+                              unsigned long long numberOfLBnodes,
                               unsigned int numberOfThreads,
                               real* DD7,
                               bool isEvenTimestep)
@@ -843,7 +843,7 @@ void PlaneConcThS7(real* Conc,
                                                 neighborX,
                                                 neighborY,
                                                 neighborZ,
-                                                size_Mat,
+                                                numberOfLBnodes,
                                                 DD7,
                                                 isEvenTimestep);
     getLastCudaError("GetPlaneConc7 execution failed");
@@ -856,7 +856,7 @@ void PlaneConcThS27(real* Conc,
                                unsigned int* neighborX,
                                unsigned int* neighborY,
                                unsigned int* neighborZ,
-                               unsigned int size_Mat,
+                               unsigned long long numberOfLBnodes,
                                unsigned int numberOfThreads,
                                real* DD27,
                                bool isEvenTimestep)
@@ -870,7 +870,7 @@ void PlaneConcThS27(real* Conc,
                                                 neighborX,
                                                 neighborY,
                                                 neighborZ,
-                                                size_Mat,
+                                                numberOfLBnodes,
                                                 DD27,
                                                 isEvenTimestep);
     getLastCudaError("GetPlaneConc27 execution failed");
@@ -882,18 +882,18 @@ void CalcConcentration27( unsigned int numberOfThreads,
                                      unsigned int* neighborX,
                                      unsigned int* neighborY,
                                      unsigned int* neighborZ,
-                                     unsigned int size_Mat,
+                                     unsigned long long numberOfLBnodes,
                                      real* DD27,
                                      bool isEvenTimestep)
 {
-       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
     CalcConc27<<< grid.grid, grid.threads >>> (  Conc,
                                              geoD,
                                              neighborX,
                                              neighborY,
                                              neighborZ,
-                                             size_Mat,
+                                             numberOfLBnodes,
                                              DD27,
                                              isEvenTimestep);
     getLastCudaError("CalcConc27 execution failed");
@@ -908,12 +908,12 @@ void CalcMedSP27(  real* vxD,
                               unsigned int* neighborX,
                               unsigned int* neighborY,
                               unsigned int* neighborZ,
-                              unsigned int size_Mat,
+                              unsigned long long numberOfLBnodes,
                               unsigned int numberOfThreads,
                               real* DD,
                               bool isEvenTimestep)
 {
-       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
     LBCalcMedSP27<<< grid.grid, grid.threads >>> (   vxD,
                                              vyD,
@@ -924,7 +924,7 @@ void CalcMedSP27(  real* vxD,
                                              neighborX,
                                              neighborY,
                                              neighborZ,
-                                             size_Mat,
+                                             numberOfLBnodes,
                                              DD,
                                              isEvenTimestep);
     getLastCudaError("LBCalcMedSP27 execution failed");
@@ -939,12 +939,12 @@ void CalcMedCompSP27(  real* vxD,
                                   unsigned int* neighborX,
                                   unsigned int* neighborY,
                                   unsigned int* neighborZ,
-                                  unsigned int size_Mat,
+                                  unsigned long long numberOfLBnodes,
                                   unsigned int numberOfThreads,
                                   real* DD,
                                   bool isEvenTimestep)
 {
-       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
     LBCalcMedCompSP27<<< grid.grid, grid.threads >>> (   vxD,
                                                  vyD,
@@ -955,7 +955,7 @@ void CalcMedCompSP27(  real* vxD,
                                                  neighborX,
                                                  neighborY,
                                                  neighborZ,
-                                                 size_Mat,
+                                                 numberOfLBnodes,
                                                  DD,
                                                  isEvenTimestep);
     getLastCudaError("LBCalcMedSP27 execution failed");
@@ -972,13 +972,13 @@ void CalcMedCompAD27(
     unsigned int* neighborX,
     unsigned int* neighborY,
     unsigned int* neighborZ,
-    unsigned int size_Mat,
+    unsigned long long numberOfLBnodes,
     unsigned int numberOfThreads,
     real* DD,
     real* DD_AD,
     bool isEvenTimestep)
 {
-       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
     LBCalcMedCompAD27 <<< grid.grid, grid.threads >>> (
         vxD,
@@ -991,7 +991,7 @@ void CalcMedCompAD27(
         neighborX,
         neighborY,
         neighborZ,
-        size_Mat,
+        numberOfLBnodes,
         DD,
         DD_AD,
         isEvenTimestep);
@@ -1008,11 +1008,11 @@ void CalcMacMedSP27(  real* vxD,
                                  unsigned int* neighborY,
                                  unsigned int* neighborZ,
                                  unsigned int tdiff,
-                                 unsigned int size_Mat,
+                                 unsigned long long numberOfLBnodes,
                                  unsigned int numberOfThreads,
                                  bool isEvenTimestep)
 {
-       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
     LBCalcMacMedSP27<<< grid.grid, grid.threads >>> (   vxD,
                                                 vyD,
@@ -1024,7 +1024,7 @@ void CalcMacMedSP27(  real* vxD,
                                                 neighborY,
                                                 neighborZ,
                                                 tdiff,
-                                                size_Mat,
+                                                numberOfLBnodes,
                                                 isEvenTimestep);
     getLastCudaError("LBCalcMacMedSP27 execution failed");
 }
@@ -1035,11 +1035,11 @@ void ResetMedianValuesSP27(
     real* vzD,
     real* rhoD,
     real* pressD,
-    unsigned int size_Mat,
+    unsigned long long numberOfLBnodes,
     unsigned int numberOfThreads,
     bool isEvenTimestep)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
 
     LBResetMedianValuesSP27 << < grid.grid, grid.threads >> > (
@@ -1048,7 +1048,7 @@ void ResetMedianValuesSP27(
         vzD,
         rhoD,
         pressD,
-        size_Mat,
+        numberOfLBnodes,
         isEvenTimestep);
     getLastCudaError("LBResetMedianValuesSP27 execution failed");
 }
@@ -1060,11 +1060,11 @@ void ResetMedianValuesAD27(
     real* rhoD,
     real* pressD,
     real* concD,
-    unsigned int size_Mat,
+    unsigned long long numberOfLBnodes,
     unsigned int numberOfThreads,
     bool isEvenTimestep)
 {
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
     LBResetMedianValuesAD27 << < grid.grid, grid.threads >> > (
         vxD,
@@ -1073,7 +1073,7 @@ void ResetMedianValuesAD27(
         rhoD,
         pressD,
         concD,
-        size_Mat,
+        numberOfLBnodes,
         isEvenTimestep);
     getLastCudaError("LBResetMedianValuesAD27 execution failed");
 }
@@ -1087,12 +1087,12 @@ void Calc2ndMomentsIncompSP27(real* kxyFromfcNEQ,
                                          unsigned int* neighborX,
                                          unsigned int* neighborY,
                                          unsigned int* neighborZ,
-                                         unsigned int size_Mat,
+                                         unsigned long long numberOfLBnodes,
                                          unsigned int numberOfThreads,
                                          real* DD,
                                          bool isEvenTimestep)
 {
-       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
     LBCalc2ndMomentsIncompSP27<<< grid.grid, grid.threads >>> (  kxyFromfcNEQ,
                                                          kyzFromfcNEQ,
@@ -1103,7 +1103,7 @@ void Calc2ndMomentsIncompSP27(real* kxyFromfcNEQ,
                                                          neighborX,
                                                          neighborY,
                                                          neighborZ,
-                                                         size_Mat,
+                                                         numberOfLBnodes,
                                                          DD,
                                                          isEvenTimestep);
     getLastCudaError("LBCalc2ndMomentsIncompSP27 execution failed");
@@ -1118,12 +1118,12 @@ void Calc2ndMomentsCompSP27( real* kxyFromfcNEQ,
                                         unsigned int* neighborX,
                                         unsigned int* neighborY,
                                         unsigned int* neighborZ,
-                                        unsigned int size_Mat,
+                                        unsigned long long numberOfLBnodes,
                                         unsigned int numberOfThreads,
                                         real* DD,
                                         bool isEvenTimestep)
 {
-       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
     LBCalc2ndMomentsCompSP27<<< grid.grid, grid.threads >>> (kxyFromfcNEQ,
                                                      kyzFromfcNEQ,
@@ -1134,7 +1134,7 @@ void Calc2ndMomentsCompSP27( real* kxyFromfcNEQ,
                                                      neighborX,
                                                      neighborY,
                                                      neighborZ,
-                                                     size_Mat,
+                                                     numberOfLBnodes,
                                                      DD,
                                                      isEvenTimestep);
     getLastCudaError("LBCalc2ndMomentsCompSP27 execution failed");
@@ -1151,12 +1151,12 @@ void Calc3rdMomentsIncompSP27(real* CUMbbb,
                                          unsigned int* neighborX,
                                          unsigned int* neighborY,
                                          unsigned int* neighborZ,
-                                         unsigned int size_Mat,
+                                         unsigned long long numberOfLBnodes,
                                          unsigned int numberOfThreads,
                                          real* DD,
                                          bool isEvenTimestep)
 {
-       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
     LBCalc3rdMomentsIncompSP27<<< grid.grid, grid.threads >>> (  CUMbbb,
                                                          CUMabc,
@@ -1170,7 +1170,7 @@ void Calc3rdMomentsIncompSP27(real* CUMbbb,
                                                          neighborY,
                                                          neighborZ,
                                                          DD,
-                                                         size_Mat,
+                                                         numberOfLBnodes,
                                                          isEvenTimestep);
     getLastCudaError("LBCalc3rdMomentsIncompSP27 execution failed");
 }
@@ -1186,12 +1186,12 @@ void Calc3rdMomentsCompSP27( real* CUMbbb,
                                         unsigned int* neighborX,
                                         unsigned int* neighborY,
                                         unsigned int* neighborZ,
-                                        unsigned int size_Mat,
+                                        unsigned long long numberOfLBnodes,
                                         unsigned int numberOfThreads,
                                         real* DD,
                                         bool isEvenTimestep)
 {
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
     LBCalc3rdMomentsCompSP27<<< grid.grid, grid.threads >>> (CUMbbb,
                                                      CUMabc,
@@ -1205,7 +1205,7 @@ void Calc3rdMomentsCompSP27( real* CUMbbb,
                                                      neighborY,
                                                      neighborZ,
                                                      DD,
-                                                     size_Mat,
+                                                     numberOfLBnodes,
                                                      isEvenTimestep);
     getLastCudaError("LBCalc3rdMomentsCompSP27 execution failed");
 }
@@ -1224,12 +1224,12 @@ void CalcHigherMomentsIncompSP27(real* CUMcbb,
                                             unsigned int* neighborX,
                                             unsigned int* neighborY,
                                             unsigned int* neighborZ,
-                                            unsigned int size_Mat,
+                                            unsigned long long numberOfLBnodes,
                                             unsigned int numberOfThreads,
                                             real* DD,
                                             bool isEvenTimestep)
 {
-       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
     LBCalcHigherMomentsIncompSP27<<< grid.grid, grid.threads >>> (CUMcbb,
                                                           CUMbcb,
@@ -1246,7 +1246,7 @@ void CalcHigherMomentsIncompSP27(real* CUMcbb,
                                                           neighborY,
                                                           neighborZ,
                                                           DD,
-                                                          size_Mat,
+                                                          numberOfLBnodes,
                                                           isEvenTimestep);
     getLastCudaError("LBCalcHigherMomentsIncompSP27 execution failed");
 }
@@ -1265,12 +1265,12 @@ void CalcHigherMomentsCompSP27(  real* CUMcbb,
                                             unsigned int* neighborX,
                                             unsigned int* neighborY,
                                             unsigned int* neighborZ,
-                                            unsigned int size_Mat,
+                                            unsigned long long numberOfLBnodes,
                                             unsigned int numberOfThreads,
                                             real* DD,
                                             bool isEvenTimestep)
 {
-       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+       vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
     LBCalcHigherMomentsCompSP27<<< grid.grid, grid.threads >>> (  CUMcbb,
                                                           CUMbcb,
@@ -1287,7 +1287,7 @@ void CalcHigherMomentsCompSP27(  real* CUMcbb,
                                                           neighborY,
                                                           neighborZ,
                                                           DD,
-                                                          size_Mat,
+                                                          numberOfLBnodes,
                                                           isEvenTimestep);
     getLastCudaError("LBCalcHigherMomentsCompSP27 execution failed");
 }
@@ -1304,7 +1304,7 @@ void LBCalcMeasurePoints27(real* vxMP,
                                       unsigned int* neighborX,
                                       unsigned int* neighborY,
                                       unsigned int* neighborZ,
-                                      unsigned int size_Mat,
+                                      unsigned long long numberOfLBnodes,
                                       real* DD,
                                       unsigned int numberOfThreads,
                                       bool isEvenTimestep)
@@ -1323,7 +1323,7 @@ void LBCalcMeasurePoints27(real* vxMP,
                                                 neighborX,
                                                 neighborY,
                                                 neighborZ,
-                                                size_Mat,
+                                                numberOfLBnodes,
                                                 DD,
                                                 isEvenTimestep);
     getLastCudaError("LBCalcMeasurePoints execution failed");
@@ -1339,7 +1339,7 @@ void BcPress27( int nx,
                            unsigned int* neighborY,
                            unsigned int* neighborZ,
                            real* DD,
-                           unsigned int size_Mat,
+                           unsigned long long numberOfLBnodes,
                            bool isEvenTimestep)
 {
     dim3 threads       ( grid_nx, 1, 1 );
@@ -1353,7 +1353,7 @@ void BcPress27( int nx,
                                                 neighborY,
                                                 neighborZ,
                                                 DD,
-                                                size_Mat,
+                                                numberOfLBnodes,
                                                 isEvenTimestep);
     getLastCudaError("LB_BC_Press_East27 execution failed");
 }
@@ -1369,7 +1369,7 @@ void BcVel27(int nx,
                         unsigned int* neighborY,
                         unsigned int* neighborZ,
                         real* DD,
-                        unsigned int size_Mat,
+                        unsigned long long numberOfLBnodes,
                         bool isEvenTimestep,
                         real u0x,
                         real om)
@@ -1386,7 +1386,7 @@ void BcVel27(int nx,
                                                 neighborY,
                                                 neighborZ,
                                                 DD,
-                                                size_Mat,
+                                                numberOfLBnodes,
                                                 isEvenTimestep,
                                                 u0x,
                                                 grid_nx,
@@ -1408,7 +1408,7 @@ void QADPressDev7( unsigned int numberOfThreads,
                               unsigned int* neighborX,
                               unsigned int* neighborY,
                               unsigned int* neighborZ,
-                              unsigned int size_Mat,
+                              unsigned long long numberOfLBnodes,
                               bool isEvenTimestep)
 {
        vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
@@ -1425,7 +1425,7 @@ void QADPressDev7( unsigned int numberOfThreads,
                                        neighborX,
                                        neighborY,
                                        neighborZ,
-                                       size_Mat,
+                                       numberOfLBnodes,
                                        isEvenTimestep);
     getLastCudaError("QADPress7 execution failed");
 }
@@ -1443,7 +1443,7 @@ void QADPressDev27(unsigned int numberOfThreads,
                               unsigned int* neighborX,
                               unsigned int* neighborY,
                               unsigned int* neighborZ,
-                              unsigned int size_Mat,
+                              unsigned long long numberOfLBnodes,
                               bool isEvenTimestep)
 {
        vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
@@ -1460,7 +1460,7 @@ void QADPressDev27(unsigned int numberOfThreads,
                                           neighborX,
                                           neighborY,
                                           neighborZ,
-                                          size_Mat,
+                                          numberOfLBnodes,
                                           isEvenTimestep);
     getLastCudaError("QADPress27 execution failed");
 }
@@ -1475,7 +1475,7 @@ void QADPressNEQNeighborDev27(
                                             unsigned int* neighborX,
                                             unsigned int* neighborY,
                                             unsigned int* neighborZ,
-                                            unsigned int size_Mat,
+                                            unsigned long long numberOfLBnodes,
                                             bool isEvenTimestep
                                         )
 {
@@ -1491,7 +1491,7 @@ void QADPressNEQNeighborDev27(
                                                 neighborX,
                                                 neighborY,
                                                 neighborZ,
-                                                size_Mat,
+                                                numberOfLBnodes,
                                                 isEvenTimestep
                                               );
        getLastCudaError("QADPressNEQNeighbor27 execution failed");
@@ -1510,7 +1510,7 @@ void QADVelDev7(unsigned int numberOfThreads,
                            unsigned int* neighborX,
                            unsigned int* neighborY,
                            unsigned int* neighborZ,
-                           unsigned int size_Mat,
+                           unsigned long long numberOfLBnodes,
                            bool isEvenTimestep)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
@@ -1528,7 +1528,7 @@ void QADVelDev7(unsigned int numberOfThreads,
                                        neighborX,
                                        neighborY,
                                        neighborZ,
-                                       size_Mat,
+                                       numberOfLBnodes,
                                        isEvenTimestep);
     getLastCudaError("QADVel7 execution failed");
 }
@@ -1546,7 +1546,7 @@ void QADVelDev27(  unsigned int numberOfThreads,
                               unsigned int* neighborX,
                               unsigned int* neighborY,
                               unsigned int* neighborZ,
-                              unsigned int size_Mat,
+                              unsigned long long numberOfLBnodes,
                               bool isEvenTimestep)
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
@@ -1563,7 +1563,7 @@ void QADVelDev27(  unsigned int numberOfThreads,
                                       neighborX,
                                       neighborY,
                                       neighborZ,
-                                      size_Mat,
+                                      numberOfLBnodes,
                                       isEvenTimestep);
       getLastCudaError("QADVel27 execution failed");
 }
@@ -1580,7 +1580,7 @@ void QADDev7(unsigned int numberOfThreads,
                         unsigned int* neighborX,
                         unsigned int* neighborY,
                         unsigned int* neighborZ,
-                        unsigned int size_Mat,
+                        unsigned long long numberOfLBnodes,
                         bool isEvenTimestep)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
@@ -1596,7 +1596,7 @@ void QADDev7(unsigned int numberOfThreads,
                                        neighborX,
                                        neighborY,
                                        neighborZ,
-                                       size_Mat,
+                                       numberOfLBnodes,
                                        isEvenTimestep);
       getLastCudaError("QAD7 execution failed");
 }
@@ -1613,11 +1613,11 @@ void FactorizedCentralMomentsAdvectionDiffusionDeviceKernel(
    uint* neighborZ,
    real* distributions,
    real* distributionsAD,
-   int size_Mat,
+   unsigned long long numberOfLBnodes,
    real* forces,
    bool isEvenTimestep)
 {
-   int Grid = (size_Mat / numberOfThreads) + 1;
+      int Grid = (numberOfLBnodes / numberOfThreads) + 1;
    dim3 grid(Grid, 1, 1);
    dim3 threads(numberOfThreads, 1, 1);
 
@@ -1629,7 +1629,7 @@ void FactorizedCentralMomentsAdvectionDiffusionDeviceKernel(
       neighborZ,
       distributions,
       distributionsAD,
-      size_Mat,
+      numberOfLBnodes,
       forces,
       isEvenTimestep);
    getLastCudaError("Factorized_Central_Moments_Advection_Diffusion_Device_Kernel execution failed");
@@ -1650,7 +1650,7 @@ void ADSlipVelDevComp(
     uint * neighborX,
     uint * neighborY,
     uint * neighborZ,
-    uint size_Mat,
+    unsigned long long numberOfLBnodes,
     bool isEvenTimestep)
 {
        vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
@@ -1668,7 +1668,7 @@ void ADSlipVelDevComp(
         neighborX,
         neighborY,
         neighborZ,
-        size_Mat,
+        numberOfLBnodes,
         isEvenTimestep);
     getLastCudaError("AD_SlipVelDeviceComp execution failed");
 }
@@ -1686,7 +1686,7 @@ void QADDirichletDev27( unsigned int numberOfThreads,
                                    unsigned int* neighborX,
                                    unsigned int* neighborY,
                                    unsigned int* neighborZ,
-                                   unsigned int size_Mat,
+                                   unsigned long long numberOfLBnodes,
                                    bool isEvenTimestep)
 {
        vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
@@ -1703,7 +1703,7 @@ void QADDirichletDev27( unsigned int numberOfThreads,
                                                neighborX,
                                                neighborY,
                                                neighborZ,
-                                               size_Mat,
+                                               numberOfLBnodes,
                                                isEvenTimestep);
       getLastCudaError("QADDirichletDev27 execution failed");
 }
@@ -1720,7 +1720,7 @@ void QADBBDev27(unsigned int numberOfThreads,
                            unsigned int* neighborX,
                            unsigned int* neighborY,
                            unsigned int* neighborZ,
-                           unsigned int size_Mat,
+                           unsigned long long numberOfLBnodes,
                            bool isEvenTimestep)
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
@@ -1736,7 +1736,7 @@ void QADBBDev27(unsigned int numberOfThreads,
                                        neighborX,
                                        neighborY,
                                        neighborZ,
-                                       size_Mat,
+                                       numberOfLBnodes,
                                        isEvenTimestep);
       getLastCudaError("QADBB27 execution failed");
 }
@@ -1753,7 +1753,7 @@ void QNoSlipADincompDev7(unsigned int numberOfThreads,
                                     unsigned int* neighborX,
                                     unsigned int* neighborY,
                                     unsigned int* neighborZ,
-                                    unsigned int size_Mat,
+                                    unsigned long long numberOfLBnodes,
                                     bool isEvenTimestep)
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
@@ -1770,7 +1770,7 @@ void QNoSlipADincompDev7(unsigned int numberOfThreads,
                                                neighborX,
                                                neighborY,
                                                neighborZ,
-                                               size_Mat,
+                                               numberOfLBnodes,
                                                isEvenTimestep);
       getLastCudaError("QNoSlipADincomp7 execution failed");
 }
@@ -1787,7 +1787,7 @@ void QNoSlipADincompDev27(  unsigned int numberOfThreads,
                                        unsigned int* neighborX,
                                        unsigned int* neighborY,
                                        unsigned int* neighborZ,
-                                       unsigned int size_Mat,
+                                       unsigned long long numberOfLBnodes,
                                        bool isEvenTimestep)
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
@@ -1804,7 +1804,7 @@ void QNoSlipADincompDev27(  unsigned int numberOfThreads,
                                                neighborX,
                                                neighborY,
                                                neighborZ,
-                                               size_Mat,
+                                               numberOfLBnodes,
                                                isEvenTimestep);
       getLastCudaError("QNoSlipADincomp27 execution failed");
 }
@@ -1822,7 +1822,7 @@ void QADVeloIncompDev7( unsigned int numberOfThreads,
                                    unsigned int* neighborX,
                                    unsigned int* neighborY,
                                    unsigned int* neighborZ,
-                                   unsigned int size_Mat,
+                                   unsigned long long numberOfLBnodes,
                                    bool isEvenTimestep)
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
@@ -1839,7 +1839,7 @@ void QADVeloIncompDev7( unsigned int numberOfThreads,
                                                neighborX,
                                                neighborY,
                                                neighborZ,
-                                               size_Mat,
+                                               numberOfLBnodes,
                                                isEvenTimestep);
       getLastCudaError("QADVeloIncomp7 execution failed");
 }
@@ -1857,7 +1857,7 @@ void QADVeloIncompDev27(   unsigned int numberOfThreads,
                                       unsigned int* neighborX,
                                       unsigned int* neighborY,
                                       unsigned int* neighborZ,
-                                      unsigned int size_Mat,
+                                      unsigned long long numberOfLBnodes,
                                       bool isEvenTimestep)
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
@@ -1875,7 +1875,7 @@ void QADVeloIncompDev27(   unsigned int numberOfThreads,
                                               neighborX,
                                               neighborY,
                                               neighborZ,
-                                              size_Mat,
+                                              numberOfLBnodes,
                                               isEvenTimestep);
       getLastCudaError("QADVeloIncomp27 execution failed");
 }
@@ -1893,7 +1893,7 @@ void QADPressIncompDev7( unsigned int numberOfThreads,
                                       unsigned int* neighborX,
                                       unsigned int* neighborY,
                                       unsigned int* neighborZ,
-                                      unsigned int size_Mat,
+                                      unsigned long long numberOfLBnodes,
                                       bool isEvenTimestep)
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
@@ -1911,7 +1911,7 @@ void QADPressIncompDev7( unsigned int numberOfThreads,
                                                neighborX,
                                                neighborY,
                                                neighborZ,
-                                               size_Mat,
+                                               numberOfLBnodes,
                                                isEvenTimestep);
       getLastCudaError("QADPressIncomp7 execution failed");
 }
@@ -1929,7 +1929,7 @@ void QADPressIncompDev27(  unsigned int numberOfThreads,
                                       unsigned int* neighborX,
                                       unsigned int* neighborY,
                                       unsigned int* neighborZ,
-                                      unsigned int size_Mat,
+                                      unsigned long long numberOfLBnodes,
                                       bool isEvenTimestep)
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
@@ -1946,7 +1946,7 @@ void QADPressIncompDev27(  unsigned int numberOfThreads,
                                               neighborX,
                                               neighborY,
                                               neighborZ,
-                                              size_Mat,
+                                              numberOfLBnodes,
                                               isEvenTimestep);
       getLastCudaError("QADPressIncomp27 execution failed");
 }
@@ -2001,7 +2001,7 @@ void QDevCompThinWalls27(unsigned int numberOfThreads,
                                     unsigned int* neighborY,
                                     unsigned int* neighborZ,
                                     unsigned int* neighborWSB,
-                                    unsigned int size_Mat,
+                                    unsigned long long numberOfLBnodes,
                                     bool isEvenTimestep)
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
@@ -2014,7 +2014,7 @@ void QDevCompThinWalls27(unsigned int numberOfThreads,
                                                          neighborX,
                                                          neighborY,
                                                          neighborZ,
-                                                         size_Mat,
+                                                         numberOfLBnodes,
                                                          isEvenTimestep);
    getLastCudaError("QDeviceCompThinWallsPartOne27 execution failed");
 
@@ -2027,7 +2027,7 @@ void QDevCompThinWalls27(unsigned int numberOfThreads,
                                                 neighborY,
                                                 neighborZ,
                                                 neighborWSB,
-                                                size_Mat,
+                                                numberOfLBnodes,
                                                 isEvenTimestep);
    getLastCudaError("QThinWallsPartTwo27 execution failed");
 
@@ -2061,7 +2061,7 @@ void QDevIncompHighNu27( unsigned int numberOfThreads,
                                     unsigned int* neighborX,
                                     unsigned int* neighborY,
                                     unsigned int* neighborZ,
-                                    unsigned int size_Mat,
+                                    unsigned long long numberOfLBnodes,
                                     bool isEvenTimestep)
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
@@ -2075,7 +2075,7 @@ void QDevIncompHighNu27( unsigned int numberOfThreads,
                                                    neighborX,
                                                    neighborY,
                                                    neighborZ,
-                                                   size_Mat,
+                                                   numberOfLBnodes,
                                                    isEvenTimestep);
       getLastCudaError("QDeviceIncompHighNu27 execution failed");
 }
@@ -2089,7 +2089,7 @@ void QDevCompHighNu27(   unsigned int numberOfThreads,
                                     unsigned int* neighborX,
                                     unsigned int* neighborY,
                                     unsigned int* neighborZ,
-                                    unsigned int size_Mat,
+                                    unsigned long long numberOfLBnodes,
                                     bool isEvenTimestep)
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
@@ -2103,9 +2103,9 @@ void QDevCompHighNu27(   unsigned int numberOfThreads,
                                                    neighborX,
                                                    neighborY,
                                                    neighborZ,
-                                                   size_Mat,
+                                                   numberOfLBnodes,
                                                    isEvenTimestep);
-      getLastCudaError("QDevice27 execution failed");
+      getLastCudaError("QDeviceCompHighNu27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void QVelDevicePlainBB27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
@@ -2141,7 +2141,7 @@ void QVelDeviceCouette27(unsigned int numberOfThreads,
                                     unsigned int* neighborX,
                                     unsigned int* neighborY,
                                     unsigned int* neighborZ,
-                                    unsigned int size_Mat,
+                                    unsigned long long numberOfLBnodes,
                                     bool isEvenTimestep)
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
@@ -2157,7 +2157,7 @@ void QVelDeviceCouette27(unsigned int numberOfThreads,
                                                 neighborX,
                                                 neighborY,
                                                 neighborZ,
-                                                size_Mat,
+                                                numberOfLBnodes,
                                                 isEvenTimestep);
       getLastCudaError("QVelDevicePlainBB27 execution failed");
 }
@@ -2181,7 +2181,7 @@ void QVelDevice1h27(   unsigned int numberOfThreads,
                                   real* coordX,
                                   real* coordY,
                                   real* coordZ,
-                                  unsigned int size_Mat,
+                                  unsigned long long numberOfLBnodes,
                                   bool isEvenTimestep)
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
@@ -2204,7 +2204,7 @@ void QVelDevice1h27(   unsigned int numberOfThreads,
                                           coordX,
                                           coordY,
                                           coordZ,
-                                          size_Mat,
+                                          numberOfLBnodes,
                                           isEvenTimestep);
       getLastCudaError("QVelDevice27 execution failed");
 }
@@ -2245,7 +2245,7 @@ void QVelDevCompPlusSlip27(unsigned int numberOfThreads,
                                       unsigned int* neighborX,
                                       unsigned int* neighborY,
                                       unsigned int* neighborZ,
-                                      unsigned int size_Mat,
+                                      unsigned long long numberOfLBnodes,
                                       bool isEvenTimestep)
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
@@ -2262,7 +2262,7 @@ void QVelDevCompPlusSlip27(unsigned int numberOfThreads,
                                                       neighborX,
                                                       neighborY,
                                                       neighborZ,
-                                                      size_Mat,
+                                                      numberOfLBnodes,
                                                       isEvenTimestep);
       getLastCudaError("QVelDeviceCompPlusSlip27 execution failed");
 }
@@ -2303,7 +2303,7 @@ void QVelDevCompThinWalls27(unsigned int numberOfThreads,
                                        unsigned int* neighborY,
                                        unsigned int* neighborZ,
                                          unsigned int* neighborWSB,
-                                       unsigned int size_Mat,
+                                       unsigned long long numberOfLBnodes,
                                        bool isEvenTimestep)
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
@@ -2319,7 +2319,7 @@ void QVelDevCompThinWalls27(unsigned int numberOfThreads,
                                                               neighborX,
                                                               neighborY,
                                                               neighborZ,
-                                                              size_Mat,
+                                                              numberOfLBnodes,
                                                               isEvenTimestep);
    getLastCudaError("QVelDeviceCompThinWallsPartOne27 execution failed");
 
@@ -2333,7 +2333,7 @@ void QVelDevCompThinWalls27(unsigned int numberOfThreads,
        neighborY,
        neighborZ,
        neighborWSB,
-       size_Mat,
+       numberOfLBnodes,
        isEvenTimestep);
    getLastCudaError("QThinWallsPartTwo27 execution failed");
 }
@@ -2372,7 +2372,7 @@ void QVelDevIncompHighNu27(unsigned int numberOfThreads,
                                       unsigned int* neighborX,
                                       unsigned int* neighborY,
                                       unsigned int* neighborZ,
-                                      unsigned int size_Mat,
+                                      unsigned long long numberOfLBnodes,
                                       bool isEvenTimestep)
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
@@ -2389,7 +2389,7 @@ void QVelDevIncompHighNu27(unsigned int numberOfThreads,
                                                       neighborX,
                                                       neighborY,
                                                       neighborZ,
-                                                      size_Mat,
+                                                      numberOfLBnodes,
                                                       isEvenTimestep);
       getLastCudaError("QVelDeviceIncompHighNu27 execution failed");
 }
@@ -2406,7 +2406,7 @@ void QVelDevCompHighNu27(  unsigned int numberOfThreads,
                                       unsigned int* neighborX,
                                       unsigned int* neighborY,
                                       unsigned int* neighborZ,
-                                      unsigned int size_Mat,
+                                      unsigned long long numberOfLBnodes,
                                       bool isEvenTimestep)
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
@@ -2423,7 +2423,7 @@ void QVelDevCompHighNu27(  unsigned int numberOfThreads,
                                                       neighborX,
                                                       neighborY,
                                                       neighborZ,
-                                                      size_Mat,
+                                                      numberOfLBnodes,
                                                       isEvenTimestep);
       getLastCudaError("QVelDeviceComp27 execution failed");
 }
@@ -2439,7 +2439,7 @@ void QVeloDevEQ27(unsigned int numberOfThreads,
                              unsigned int* neighborX,
                              unsigned int* neighborY,
                              unsigned int* neighborZ,
-                             unsigned int size_Mat,
+                             unsigned long long numberOfLBnodes,
                              bool isEvenTimestep)
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
@@ -2454,7 +2454,7 @@ void QVeloDevEQ27(unsigned int numberOfThreads,
                                              neighborX,
                                              neighborY,
                                              neighborZ,
-                                             size_Mat,
+                                             numberOfLBnodes,
                                              isEvenTimestep);
       getLastCudaError("QVeloDeviceEQ27 execution failed");
 }
@@ -2471,7 +2471,7 @@ void QVeloStreetDevEQ27(
     uint* neighborX,
     uint* neighborY,
     uint* neighborZ,
-    uint  size_Mat,
+    uint  numberOfLBnodes,
     bool  isEvenTimestep)
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfStreetNodes);
@@ -2487,7 +2487,7 @@ void QVeloStreetDevEQ27(
         neighborX,
         neighborY,
         neighborZ,
-        size_Mat,
+        numberOfLBnodes,
         isEvenTimestep);
     getLastCudaError("QVeloStreetDeviceEQ27 execution failed");
 }
@@ -2601,7 +2601,7 @@ void QSlipGeomDevComp27(unsigned int numberOfThreads,
                                    unsigned int* neighborX,
                                    unsigned int* neighborY,
                                    unsigned int* neighborZ,
-                                   unsigned int size_Mat,
+                                   unsigned long long numberOfLBnodes,
                                    bool isEvenTimestep)
 {
     vf::cuda::CudaGrid grid(numberOfThreads, numberOfBCnodes);
@@ -2617,7 +2617,7 @@ void QSlipGeomDevComp27(unsigned int numberOfThreads,
                                                    neighborX,
                                                    neighborY,
                                                    neighborZ,
-                                                   size_Mat,
+                                                   numberOfLBnodes,
                                                    isEvenTimestep);
    getLastCudaError("QSlipGeomDeviceComp27 execution failed");
 }
@@ -2634,7 +2634,7 @@ void QSlipNormDevComp27(unsigned int numberOfThreads,
                                    unsigned int* neighborX,
                                    unsigned int* neighborY,
                                    unsigned int* neighborZ,
-                                   unsigned int size_Mat,
+                                   unsigned long long numberOfLBnodes,
                                    bool isEvenTimestep)
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
@@ -2650,7 +2650,7 @@ void QSlipNormDevComp27(unsigned int numberOfThreads,
                                                    neighborX,
                                                    neighborY,
                                                    neighborZ,
-                                                   size_Mat,
+                                                   numberOfLBnodes,
                                                    isEvenTimestep);
       getLastCudaError("QSlipGeomDeviceComp27 execution failed");
 }
@@ -2807,7 +2807,7 @@ void QPressDevAntiBB27(  unsigned int numberOfThreads,
                                     unsigned int* neighborX,
                                     unsigned int* neighborY,
                                     unsigned int* neighborZ,
-                                    unsigned int size_Mat,
+                                    unsigned long long numberOfLBnodes,
                                     bool isEvenTimestep)
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
@@ -2824,7 +2824,7 @@ void QPressDevAntiBB27(  unsigned int numberOfThreads,
                                                 neighborX,
                                                 neighborY,
                                                 neighborZ,
-                                                size_Mat,
+                                                numberOfLBnodes,
                                                 isEvenTimestep);
    getLastCudaError("QPressDeviceAntiBB27 execution failed");
 }
@@ -2838,7 +2838,7 @@ void QPressDevFixBackflow27( unsigned int numberOfThreads,
                                         unsigned int* neighborX,
                                         unsigned int* neighborY,
                                         unsigned int* neighborZ,
-                                        unsigned int size_Mat,
+                                        unsigned long long numberOfLBnodes,
                                         bool isEvenTimestep)
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
@@ -2851,7 +2851,7 @@ void QPressDevFixBackflow27( unsigned int numberOfThreads,
                                                          neighborX,
                                                          neighborY,
                                                          neighborZ,
-                                                         size_Mat,
+                                                         numberOfLBnodes,
                                                          isEvenTimestep);
    getLastCudaError("QPressDeviceFixBackflow27 execution failed");
 }
@@ -2865,7 +2865,7 @@ void QPressDevDirDepBot27(  unsigned int numberOfThreads,
                                        unsigned int* neighborX,
                                        unsigned int* neighborY,
                                        unsigned int* neighborZ,
-                                       unsigned int size_Mat,
+                                       unsigned long long numberOfLBnodes,
                                        bool isEvenTimestep)
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
@@ -2878,7 +2878,7 @@ void QPressDevDirDepBot27(  unsigned int numberOfThreads,
                                                       neighborX,
                                                       neighborY,
                                                       neighborZ,
-                                                      size_Mat,
+                                                      numberOfLBnodes,
                                                       isEvenTimestep);
    getLastCudaError("QPressDeviceDirDepBot27 execution failed");
 }
@@ -2956,7 +2956,7 @@ void QPressDevOld27(  unsigned int numberOfThreads,
                                      unsigned int* neighborX,
                                      unsigned int* neighborY,
                                      unsigned int* neighborZ,
-                                     unsigned int size_Mat,
+                                     unsigned long long numberOfLBnodes,
                                      bool isEvenTimestep)
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
@@ -2970,7 +2970,7 @@ void QPressDevOld27(  unsigned int numberOfThreads,
                                                 neighborX,
                                                 neighborY,
                                                 neighborZ,
-                                                size_Mat,
+                                                numberOfLBnodes,
                                                 isEvenTimestep);
    getLastCudaError("QPressDeviceOld27 execution failed");
 }
@@ -3043,7 +3043,7 @@ void QPressDevZero27(unsigned int numberOfThreads,
                                 unsigned int* neighborX,
                                 unsigned int* neighborY,
                                 unsigned int* neighborZ,
-                                unsigned int size_Mat,
+                                unsigned long long numberOfLBnodes,
                                 bool isEvenTimestep)
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
@@ -3054,7 +3054,7 @@ void QPressDevZero27(unsigned int numberOfThreads,
                                                 neighborX,
                                                 neighborY,
                                                 neighborZ,
-                                                size_Mat,
+                                                numberOfLBnodes,
                                                 isEvenTimestep);
    getLastCudaError("QPressDeviceOld27 execution failed");
 }
@@ -3069,7 +3069,7 @@ void QPressDevFake27(     unsigned int numberOfThreads,
                                      unsigned int* neighborX,
                                      unsigned int* neighborY,
                                      unsigned int* neighborZ,
-                                     unsigned int size_Mat,
+                                     unsigned long long numberOfLBnodes,
                                      bool isEvenTimestep)
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
@@ -3084,7 +3084,7 @@ void QPressDevFake27(     unsigned int numberOfThreads,
                                                 neighborX,
                                                 neighborY,
                                                 neighborZ,
-                                                size_Mat,
+                                                numberOfLBnodes,
                                                 isEvenTimestep);
       getLastCudaError("QPressDeviceFake27 execution failed");
 }
@@ -3117,7 +3117,7 @@ void QPressDev27_IntBB(  unsigned int numberOfThreads,
                                     unsigned int* neighborX,
                                     unsigned int* neighborY,
                                     unsigned int* neighborZ,
-                                    unsigned int size_Mat,
+                                    unsigned long long numberOfLBnodes,
                                     bool isEvenTimestep)
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
@@ -3131,7 +3131,7 @@ void QPressDev27_IntBB(  unsigned int numberOfThreads,
                                                     neighborX,
                                                     neighborY,
                                                     neighborZ,
-                                                    size_Mat,
+                                                    numberOfLBnodes,
                                                     isEvenTimestep);
     getLastCudaError("QPressDevice27_IntBB execution failed");
 }
@@ -3151,7 +3151,7 @@ void PressSchlaffer27(unsigned int numberOfThreads,
                                  unsigned int* neighborX,
                                  unsigned int* neighborY,
                                  unsigned int* neighborZ,
-                                 unsigned int size_Mat,
+                                 unsigned long long numberOfLBnodes,
                                  bool isEvenTimestep)
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
@@ -3169,7 +3169,7 @@ void PressSchlaffer27(unsigned int numberOfThreads,
                                              neighborX,
                                              neighborY,
                                              neighborZ,
-                                             size_Mat,
+                                             numberOfLBnodes,
                                              isEvenTimestep);
    getLastCudaError("PressSchlaff27 execution failed");
 }
@@ -3187,7 +3187,7 @@ void VelSchlaffer27(  unsigned int numberOfThreads,
                                  unsigned int* neighborX,
                                  unsigned int* neighborY,
                                  unsigned int* neighborZ,
-                                 unsigned int size_Mat,
+                                 unsigned long long numberOfLBnodes,
                                  bool isEvenTimestep)
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
@@ -3203,7 +3203,7 @@ void VelSchlaffer27(  unsigned int numberOfThreads,
                                           neighborX,
                                           neighborY,
                                           neighborZ,
-                                          size_Mat,
+                                          numberOfLBnodes,
                                           isEvenTimestep);
       getLastCudaError("VelSchlaff27 execution failed");
 }
@@ -3361,7 +3361,7 @@ extern "C" void PropVelo(   unsigned int numberOfThreads,
                             real* uz,
                             int* k_Q,
                             unsigned int size_Prop,
-                            unsigned int size_Mat,
+                            unsigned long long numberOfLBnodes,
                             unsigned int* bcMatD,
                             real* DD,
                             bool EvenOrOdd)
@@ -3377,7 +3377,7 @@ extern "C" void PropVelo(   unsigned int numberOfThreads,
                                        uz,
                                        k_Q,
                                        size_Prop,
-                                       size_Mat,
+                                       numberOfLBnodes,
                                        bcMatD,
                                        DD,
                                        EvenOrOdd);
@@ -3392,8 +3392,8 @@ void ScaleCF27( real* DC,
                         unsigned int* neighborFX,
                         unsigned int* neighborFY,
                         unsigned int* neighborFZ,
-                        unsigned int size_MatC,
-                        unsigned int size_MatF,
+                        unsigned long long numberOfLBnodesC,
+                        unsigned long long numberOfLBnodesF,
                         bool isEvenTimestep,
                         unsigned int* posCSWB,
                         unsigned int* posFSWB,
@@ -3417,8 +3417,8 @@ void ScaleCF27( real* DC,
                                              neighborFX,
                                              neighborFY,
                                              neighborFZ,
-                                             size_MatC,
-                                             size_MatF,
+                                             numberOfLBnodesC,
+                                             numberOfLBnodesF,
                                              isEvenTimestep,
                                              posCSWB,
                                              posFSWB,
@@ -3441,8 +3441,8 @@ void ScaleCFEff27(real* DC,
                              unsigned int* neighborFX,
                              unsigned int* neighborFY,
                              unsigned int* neighborFZ,
-                             unsigned int size_MatC,
-                             unsigned int size_MatF,
+                             unsigned long long numberOfLBnodesC,
+                             unsigned long long numberOfLBnodesF,
                              bool isEvenTimestep,
                              unsigned int* posCSWB,
                              unsigned int* posFSWB,
@@ -3467,8 +3467,8 @@ void ScaleCFEff27(real* DC,
                                                 neighborFX,
                                                 neighborFY,
                                                 neighborFZ,
-                                                size_MatC,
-                                                size_MatF,
+                                                numberOfLBnodesC,
+                                                numberOfLBnodesF,
                                                 isEvenTimestep,
                                                 posCSWB,
                                                 posFSWB,
@@ -3492,8 +3492,8 @@ void ScaleCFLast27(real* DC,
                               unsigned int* neighborFX,
                               unsigned int* neighborFY,
                               unsigned int* neighborFZ,
-                              unsigned int size_MatC,
-                              unsigned int size_MatF,
+                              unsigned long long numberOfLBnodesC,
+                              unsigned long long numberOfLBnodesF,
                               bool isEvenTimestep,
                               unsigned int* posCSWB,
                               unsigned int* posFSWB,
@@ -3518,8 +3518,8 @@ void ScaleCFLast27(real* DC,
                                                 neighborFX,
                                                 neighborFY,
                                                 neighborFZ,
-                                                size_MatC,
-                                                size_MatF,
+                                                numberOfLBnodesC,
+                                                numberOfLBnodesF,
                                                 isEvenTimestep,
                                                 posCSWB,
                                                 posFSWB,
@@ -3543,8 +3543,8 @@ void ScaleCFpress27(  real* DC,
                                  unsigned int* neighborFX,
                                  unsigned int* neighborFY,
                                  unsigned int* neighborFZ,
-                                 unsigned int size_MatC,
-                                 unsigned int size_MatF,
+                                 unsigned long long numberOfLBnodesC,
+                                 unsigned long long numberOfLBnodesF,
                                  bool isEvenTimestep,
                                  unsigned int* posCSWB,
                                  unsigned int* posFSWB,
@@ -3569,8 +3569,8 @@ void ScaleCFpress27(  real* DC,
                                                 neighborFX,
                                                 neighborFY,
                                                 neighborFZ,
-                                                size_MatC,
-                                                size_MatF,
+                                                numberOfLBnodesC,
+                                                numberOfLBnodesF,
                                                 isEvenTimestep,
                                                 posCSWB,
                                                 posFSWB,
@@ -3594,8 +3594,8 @@ void ScaleCF_Fix_27(  real* DC,
                                  unsigned int* neighborFX,
                                  unsigned int* neighborFY,
                                  unsigned int* neighborFZ,
-                                 unsigned int size_MatC,
-                                 unsigned int size_MatF,
+                                 unsigned long long numberOfLBnodesC,
+                                 unsigned long long numberOfLBnodesF,
                                  bool isEvenTimestep,
                                  unsigned int* posCSWB,
                                  unsigned int* posFSWB,
@@ -3620,8 +3620,8 @@ void ScaleCF_Fix_27(  real* DC,
                                                 neighborFX,
                                                 neighborFY,
                                                 neighborFZ,
-                                                size_MatC,
-                                                size_MatF,
+                                                numberOfLBnodesC,
+                                                numberOfLBnodesF,
                                                 isEvenTimestep,
                                                 posCSWB,
                                                 posFSWB,
@@ -3645,8 +3645,8 @@ void ScaleCF_Fix_comp_27( real* DC,
                                      unsigned int* neighborFX,
                                      unsigned int* neighborFY,
                                      unsigned int* neighborFZ,
-                                     unsigned int size_MatC,
-                                     unsigned int size_MatF,
+                                     unsigned long long numberOfLBnodesC,
+                                     unsigned long long numberOfLBnodesF,
                                      bool isEvenTimestep,
                                      unsigned int* posCSWB,
                                      unsigned int* posFSWB,
@@ -3671,8 +3671,8 @@ void ScaleCF_Fix_comp_27( real* DC,
                                                         neighborFX,
                                                         neighborFY,
                                                         neighborFZ,
-                                                        size_MatC,
-                                                        size_MatF,
+                                                        numberOfLBnodesC,
+                                                        numberOfLBnodesF,
                                                         isEvenTimestep,
                                                         posCSWB,
                                                         posFSWB,
@@ -3696,8 +3696,8 @@ void ScaleCF_0817_comp_27(real* DC,
                                      unsigned int* neighborFX,
                                      unsigned int* neighborFY,
                                      unsigned int* neighborFZ,
-                                     unsigned int size_MatC,
-                                     unsigned int size_MatF,
+                                     unsigned long long numberOfLBnodesC,
+                                     unsigned long long numberOfLBnodesF,
                                      bool isEvenTimestep,
                                      unsigned int* posCSWB,
                                      unsigned int* posFSWB,
@@ -3723,8 +3723,8 @@ void ScaleCF_0817_comp_27(real* DC,
                                                         neighborFX,
                                                         neighborFY,
                                                         neighborFZ,
-                                                        size_MatC,
-                                                        size_MatF,
+                                                        numberOfLBnodesC,
+                                                        numberOfLBnodesF,
                                                         isEvenTimestep,
                                                         posCSWB,
                                                         posFSWB,
@@ -3749,8 +3749,8 @@ void ScaleCF_comp_D3Q27F3_2018(real* DC,
                                           unsigned int* neighborFX,
                                           unsigned int* neighborFY,
                                           unsigned int* neighborFZ,
-                                          unsigned int size_MatC,
-                                          unsigned int size_MatF,
+                                          unsigned long long numberOfLBnodesC,
+                                          unsigned long long numberOfLBnodesF,
                                           bool isEvenTimestep,
                                           unsigned int* posCSWB,
                                           unsigned int* posFSWB,
@@ -3776,8 +3776,8 @@ void ScaleCF_comp_D3Q27F3_2018(real* DC,
                                                             neighborFX,
                                                             neighborFY,
                                                             neighborFZ,
-                                                            size_MatC,
-                                                            size_MatF,
+                                                            numberOfLBnodesC,
+                                                            numberOfLBnodesF,
                                                             isEvenTimestep,
                                                             posCSWB,
                                                             posFSWB,
@@ -3802,8 +3802,8 @@ void ScaleCF_comp_D3Q27F3(real* DC,
                                      unsigned int* neighborFX,
                                      unsigned int* neighborFY,
                                      unsigned int* neighborFZ,
-                                     unsigned int size_MatC,
-                                     unsigned int size_MatF,
+                                     unsigned long long numberOfLBnodesC,
+                                     unsigned long long numberOfLBnodesF,
                                      bool isEvenTimestep,
                                      unsigned int* posCSWB,
                                      unsigned int* posFSWB,
@@ -3830,8 +3830,8 @@ void ScaleCF_comp_D3Q27F3(real* DC,
                                                         neighborFX,
                                                         neighborFY,
                                                         neighborFZ,
-                                                        size_MatC,
-                                                        size_MatF,
+                                                        numberOfLBnodesC,
+                                                        numberOfLBnodesF,
                                                         isEvenTimestep,
                                                         posCSWB,
                                                         posFSWB,
@@ -3855,8 +3855,8 @@ void ScaleCF_staggered_time_comp_27(  real* DC,
                                                  unsigned int* neighborFX,
                                                  unsigned int* neighborFY,
                                                  unsigned int* neighborFZ,
-                                                 unsigned int size_MatC,
-                                                 unsigned int size_MatF,
+                                                 unsigned long long numberOfLBnodesC,
+                                                 unsigned long long numberOfLBnodesF,
                                                  bool isEvenTimestep,
                                                  unsigned int* posCSWB,
                                                  unsigned int* posFSWB,
@@ -3881,8 +3881,8 @@ void ScaleCF_staggered_time_comp_27(  real* DC,
                                                                     neighborFX,
                                                                     neighborFY,
                                                                     neighborFZ,
-                                                                    size_MatC,
-                                                                    size_MatF,
+                                                                    numberOfLBnodesC,
+                                                                    numberOfLBnodesF,
                                                                     isEvenTimestep,
                                                                     posCSWB,
                                                                     posFSWB,
@@ -3965,8 +3965,8 @@ void ScaleCF_RhoSq_3rdMom_comp_27(real* DC,
                                              unsigned int* neighborFX,
                                              unsigned int* neighborFY,
                                              unsigned int* neighborFZ,
-                                             unsigned int size_MatC,
-                                             unsigned int size_MatF,
+                                             unsigned long long numberOfLBnodesC,
+                                             unsigned long long numberOfLBnodesF,
                                              bool isEvenTimestep,
                                              unsigned int* posCSWB,
                                              unsigned int* posFSWB,
@@ -3992,8 +3992,8 @@ void ScaleCF_RhoSq_3rdMom_comp_27(real* DC,
                                                                 neighborFX,
                                                                 neighborFY,
                                                                 neighborFZ,
-                                                                size_MatC,
-                                                                size_MatF,
+                                                                numberOfLBnodesC,
+                                                                numberOfLBnodesF,
                                                                 isEvenTimestep,
                                                                 posCSWB,
                                                                 posFSWB,
@@ -4017,8 +4017,8 @@ void ScaleCF_AA2016_comp_27(real* DC,
                                        unsigned int* neighborFX,
                                        unsigned int* neighborFY,
                                        unsigned int* neighborFZ,
-                                       unsigned int size_MatC,
-                                       unsigned int size_MatF,
+                                       unsigned long long numberOfLBnodesC,
+                                       unsigned long long numberOfLBnodesF,
                                        bool isEvenTimestep,
                                        unsigned int* posCSWB,
                                        unsigned int* posFSWB,
@@ -4044,8 +4044,8 @@ void ScaleCF_AA2016_comp_27(real* DC,
                                                         neighborFX,
                                                         neighborFY,
                                                         neighborFZ,
-                                                        size_MatC,
-                                                        size_MatF,
+                                                        numberOfLBnodesC,
+                                                        numberOfLBnodesF,
                                                         isEvenTimestep,
                                                         posCSWB,
                                                         posFSWB,
@@ -4069,8 +4069,8 @@ void ScaleCF_NSPress_27(  real* DC,
                                      unsigned int* neighborFX,
                                      unsigned int* neighborFY,
                                      unsigned int* neighborFZ,
-                                     unsigned int size_MatC,
-                                     unsigned int size_MatF,
+                                     unsigned long long numberOfLBnodesC,
+                                     unsigned long long numberOfLBnodesF,
                                      bool isEvenTimestep,
                                      unsigned int* posCSWB,
                                      unsigned int* posFSWB,
@@ -4095,8 +4095,8 @@ void ScaleCF_NSPress_27(  real* DC,
                                                     neighborFX,
                                                     neighborFY,
                                                     neighborFZ,
-                                                    size_MatC,
-                                                    size_MatF,
+                                                    numberOfLBnodesC,
+                                                    numberOfLBnodesF,
                                                     isEvenTimestep,
                                                     posCSWB,
                                                     posFSWB,
@@ -4122,8 +4122,8 @@ void ScaleCFThSMG7(   real* DC,
                                  unsigned int* neighborFX,
                                  unsigned int* neighborFY,
                                  unsigned int* neighborFZ,
-                                 unsigned int size_MatC,
-                                 unsigned int size_MatF,
+                                 unsigned long long numberOfLBnodesC,
+                                 unsigned long long numberOfLBnodesF,
                                  bool isEvenTimestep,
                                  unsigned int* posCSWB,
                                  unsigned int* posFSWB,
@@ -4145,8 +4145,8 @@ void ScaleCFThSMG7(   real* DC,
                                                 neighborFX,
                                                 neighborFY,
                                                 neighborFZ,
-                                                size_MatC,
-                                                size_MatF,
+                                                numberOfLBnodesC,
+                                                numberOfLBnodesF,
                                                 isEvenTimestep,
                                                 posCSWB,
                                                 posFSWB,
@@ -4167,8 +4167,8 @@ void ScaleCFThS7(  real* DC,
                               unsigned int* neighborFX,
                               unsigned int* neighborFY,
                               unsigned int* neighborFZ,
-                              unsigned int size_MatC,
-                              unsigned int size_MatF,
+                              unsigned long long numberOfLBnodesC,
+                              unsigned long long numberOfLBnodesF,
                               bool isEvenTimestep,
                               unsigned int* posCSWB,
                               unsigned int* posFSWB,
@@ -4189,8 +4189,8 @@ void ScaleCFThS7(  real* DC,
                                                 neighborFX,
                                                 neighborFY,
                                                 neighborFZ,
-                                                size_MatC,
-                                                size_MatF,
+                                                numberOfLBnodesC,
+                                                numberOfLBnodesF,
                                                 isEvenTimestep,
                                                 posCSWB,
                                                 posFSWB,
@@ -4210,8 +4210,8 @@ void ScaleCFThS27( real* DC,
                               unsigned int* neighborFX,
                               unsigned int* neighborFY,
                               unsigned int* neighborFZ,
-                              unsigned int size_MatC,
-                              unsigned int size_MatF,
+                              unsigned long long numberOfLBnodesC,
+                              unsigned long long numberOfLBnodesF,
                               bool isEvenTimestep,
                               unsigned int* posCSWB,
                               unsigned int* posFSWB,
@@ -4233,8 +4233,8 @@ void ScaleCFThS27( real* DC,
                                                 neighborFX,
                                                 neighborFY,
                                                 neighborFZ,
-                                                size_MatC,
-                                                size_MatF,
+                                                numberOfLBnodesC,
+                                                numberOfLBnodesF,
                                                 isEvenTimestep,
                                                 posCSWB,
                                                 posFSWB,
@@ -4253,8 +4253,8 @@ void ScaleFC27( real* DC,
                            unsigned int* neighborFX,
                            unsigned int* neighborFY,
                            unsigned int* neighborFZ,
-                           unsigned int size_MatC,
-                           unsigned int size_MatF,
+                           unsigned long long numberOfLBnodesC,
+                           unsigned long long numberOfLBnodesF,
                            bool isEvenTimestep,
                            unsigned int* posC,
                            unsigned int* posFSWB,
@@ -4279,8 +4279,8 @@ void ScaleFC27( real* DC,
                                              neighborFX,
                                              neighborFY,
                                              neighborFZ,
-                                             size_MatC,
-                                             size_MatF,
+                                             numberOfLBnodesC,
+                                             numberOfLBnodesF,
                                              isEvenTimestep,
                                              posC,
                                              posFSWB,
@@ -4303,8 +4303,8 @@ void ScaleFCEff27(real* DC,
                              unsigned int* neighborFX,
                              unsigned int* neighborFY,
                              unsigned int* neighborFZ,
-                             unsigned int size_MatC,
-                             unsigned int size_MatF,
+                             unsigned long long numberOfLBnodesC,
+                             unsigned long long numberOfLBnodesF,
                              bool isEvenTimestep,
                              unsigned int* posC,
                              unsigned int* posFSWB,
@@ -4329,8 +4329,8 @@ void ScaleFCEff27(real* DC,
                                                 neighborFX,
                                                 neighborFY,
                                                 neighborFZ,
-                                                size_MatC,
-                                                size_MatF,
+                                                numberOfLBnodesC,
+                                                numberOfLBnodesF,
                                                 isEvenTimestep,
                                                 posC,
                                                 posFSWB,
@@ -4354,8 +4354,8 @@ void ScaleFCLast27(real* DC,
                               unsigned int* neighborFX,
                               unsigned int* neighborFY,
                               unsigned int* neighborFZ,
-                              unsigned int size_MatC,
-                              unsigned int size_MatF,
+                              unsigned long long numberOfLBnodesC,
+                              unsigned long long numberOfLBnodesF,
                               bool isEvenTimestep,
                               unsigned int* posC,
                               unsigned int* posFSWB,
@@ -4380,8 +4380,8 @@ void ScaleFCLast27(real* DC,
                                                 neighborFX,
                                                 neighborFY,
                                                 neighborFZ,
-                                                size_MatC,
-                                                size_MatF,
+                                                numberOfLBnodesC,
+                                                numberOfLBnodesF,
                                                 isEvenTimestep,
                                                 posC,
                                                 posFSWB,
@@ -4405,8 +4405,8 @@ void ScaleFCpress27(real* DC,
                               unsigned int* neighborFX,
                               unsigned int* neighborFY,
                               unsigned int* neighborFZ,
-                              unsigned int size_MatC,
-                              unsigned int size_MatF,
+                              unsigned long long numberOfLBnodesC,
+                              unsigned long long numberOfLBnodesF,
                               bool isEvenTimestep,
                               unsigned int* posC,
                               unsigned int* posFSWB,
@@ -4431,8 +4431,8 @@ void ScaleFCpress27(real* DC,
                                                    neighborFX,
                                                    neighborFY,
                                                    neighborFZ,
-                                                   size_MatC,
-                                                   size_MatF,
+                                                   numberOfLBnodesC,
+                                                   numberOfLBnodesF,
                                                    isEvenTimestep,
                                                    posC,
                                                    posFSWB,
@@ -4456,8 +4456,8 @@ void ScaleFC_Fix_27(real* DC,
                               unsigned int* neighborFX,
                               unsigned int* neighborFY,
                               unsigned int* neighborFZ,
-                              unsigned int size_MatC,
-                              unsigned int size_MatF,
+                              unsigned long long numberOfLBnodesC,
+                              unsigned long long numberOfLBnodesF,
                               bool isEvenTimestep,
                               unsigned int* posC,
                               unsigned int* posFSWB,
@@ -4482,8 +4482,8 @@ void ScaleFC_Fix_27(real* DC,
                                                    neighborFX,
                                                    neighborFY,
                                                    neighborFZ,
-                                                   size_MatC,
-                                                   size_MatF,
+                                                   numberOfLBnodesC,
+                                                   numberOfLBnodesF,
                                                    isEvenTimestep,
                                                    posC,
                                                    posFSWB,
@@ -4507,8 +4507,8 @@ void ScaleFC_Fix_comp_27(  real* DC,
                                       unsigned int* neighborFX,
                                       unsigned int* neighborFY,
                                       unsigned int* neighborFZ,
-                                      unsigned int size_MatC,
-                                      unsigned int size_MatF,
+                                      unsigned long long numberOfLBnodesC,
+                                      unsigned long long numberOfLBnodesF,
                                       bool isEvenTimestep,
                                       unsigned int* posC,
                                       unsigned int* posFSWB,
@@ -4533,8 +4533,8 @@ void ScaleFC_Fix_comp_27(  real* DC,
                                                        neighborFX,
                                                        neighborFY,
                                                        neighborFZ,
-                                                       size_MatC,
-                                                       size_MatF,
+                                                       numberOfLBnodesC,
+                                                       numberOfLBnodesF,
                                                        isEvenTimestep,
                                                        posC,
                                                        posFSWB,
@@ -4558,8 +4558,8 @@ void ScaleFC_0817_comp_27( real* DC,
                                       unsigned int* neighborFX,
                                       unsigned int* neighborFY,
                                       unsigned int* neighborFZ,
-                                      unsigned int size_MatC,
-                                      unsigned int size_MatF,
+                                      unsigned long long numberOfLBnodesC,
+                                      unsigned long long numberOfLBnodesF,
                                       bool isEvenTimestep,
                                       unsigned int* posC,
                                       unsigned int* posFSWB,
@@ -4585,8 +4585,8 @@ void ScaleFC_0817_comp_27( real* DC,
                                                        neighborFX,
                                                        neighborFY,
                                                        neighborFZ,
-                                                       size_MatC,
-                                                       size_MatF,
+                                                       numberOfLBnodesC,
+                                                       numberOfLBnodesF,
                                                        isEvenTimestep,
                                                        posC,
                                                        posFSWB,
@@ -4611,8 +4611,8 @@ void ScaleFC_comp_D3Q27F3_2018( real* DC,
                                            unsigned int* neighborFX,
                                            unsigned int* neighborFY,
                                            unsigned int* neighborFZ,
-                                           unsigned int size_MatC,
-                                           unsigned int size_MatF,
+                                           unsigned long long numberOfLBnodesC,
+                                           unsigned long long numberOfLBnodesF,
                                            bool isEvenTimestep,
                                            unsigned int* posC,
                                            unsigned int* posFSWB,
@@ -4638,8 +4638,8 @@ void ScaleFC_comp_D3Q27F3_2018( real* DC,
                                                             neighborFX,
                                                             neighborFY,
                                                             neighborFZ,
-                                                            size_MatC,
-                                                            size_MatF,
+                                                            numberOfLBnodesC,
+                                                            numberOfLBnodesF,
                                                             isEvenTimestep,
                                                             posC,
                                                             posFSWB,
@@ -4664,8 +4664,8 @@ void ScaleFC_comp_D3Q27F3( real* DC,
                                       unsigned int* neighborFX,
                                       unsigned int* neighborFY,
                                       unsigned int* neighborFZ,
-                                      unsigned int size_MatC,
-                                      unsigned int size_MatF,
+                                      unsigned long long numberOfLBnodesC,
+                                      unsigned long long numberOfLBnodesF,
                                       bool isEvenTimestep,
                                       unsigned int* posC,
                                       unsigned int* posFSWB,
@@ -4692,8 +4692,8 @@ void ScaleFC_comp_D3Q27F3( real* DC,
                                                        neighborFX,
                                                        neighborFY,
                                                        neighborFZ,
-                                                       size_MatC,
-                                                       size_MatF,
+                                                       numberOfLBnodesC,
+                                                       numberOfLBnodesF,
                                                        isEvenTimestep,
                                                        posC,
                                                        posFSWB,
@@ -4717,8 +4717,8 @@ void ScaleFC_staggered_time_comp_27(   real* DC,
                                                   unsigned int* neighborFX,
                                                   unsigned int* neighborFY,
                                                   unsigned int* neighborFZ,
-                                                  unsigned int size_MatC,
-                                                  unsigned int size_MatF,
+                                                  unsigned long long numberOfLBnodesC,
+                                                  unsigned long long numberOfLBnodesF,
                                                   bool isEvenTimestep,
                                                   unsigned int* posC,
                                                   unsigned int* posFSWB,
@@ -4743,8 +4743,8 @@ void ScaleFC_staggered_time_comp_27(   real* DC,
                                                                    neighborFX,
                                                                    neighborFY,
                                                                    neighborFZ,
-                                                                   size_MatC,
-                                                                   size_MatF,
+                                                                   numberOfLBnodesC,
+                                                                   numberOfLBnodesF,
                                                                    isEvenTimestep,
                                                                    posC,
                                                                    posFSWB,
@@ -4825,8 +4825,8 @@ void ScaleFC_RhoSq_3rdMom_comp_27( real* DC,
                                               unsigned int* neighborFX,
                                               unsigned int* neighborFY,
                                               unsigned int* neighborFZ,
-                                              unsigned int size_MatC,
-                                              unsigned int size_MatF,
+                                              unsigned long long numberOfLBnodesC,
+                                              unsigned long long numberOfLBnodesF,
                                               bool isEvenTimestep,
                                               unsigned int* posC,
                                               unsigned int* posFSWB,
@@ -4852,8 +4852,8 @@ void ScaleFC_RhoSq_3rdMom_comp_27( real* DC,
                                                               neighborFX,
                                                               neighborFY,
                                                               neighborFZ,
-                                                              size_MatC,
-                                                              size_MatF,
+                                                              numberOfLBnodesC,
+                                                              numberOfLBnodesF,
                                                               isEvenTimestep,
                                                               posC,
                                                               posFSWB,
@@ -4877,8 +4877,8 @@ void ScaleFC_AA2016_comp_27( real* DC,
                                         unsigned int* neighborFX,
                                         unsigned int* neighborFY,
                                         unsigned int* neighborFZ,
-                                        unsigned int size_MatC,
-                                        unsigned int size_MatF,
+                                        unsigned long long numberOfLBnodesC,
+                                        unsigned long long numberOfLBnodesF,
                                         bool isEvenTimestep,
                                         unsigned int* posC,
                                         unsigned int* posFSWB,
@@ -4904,8 +4904,8 @@ void ScaleFC_AA2016_comp_27( real* DC,
                                                         neighborFX,
                                                         neighborFY,
                                                         neighborFZ,
-                                                        size_MatC,
-                                                        size_MatF,
+                                                        numberOfLBnodesC,
+                                                        numberOfLBnodesF,
                                                         isEvenTimestep,
                                                         posC,
                                                         posFSWB,
@@ -4929,8 +4929,8 @@ void ScaleFC_NSPress_27(real* DC,
                                   unsigned int* neighborFX,
                                   unsigned int* neighborFY,
                                   unsigned int* neighborFZ,
-                                  unsigned int size_MatC,
-                                  unsigned int size_MatF,
+                                  unsigned long long numberOfLBnodesC,
+                                  unsigned long long numberOfLBnodesF,
                                   bool isEvenTimestep,
                                   unsigned int* posC,
                                   unsigned int* posFSWB,
@@ -4955,8 +4955,8 @@ void ScaleFC_NSPress_27(real* DC,
                                                        neighborFX,
                                                        neighborFY,
                                                        neighborFZ,
-                                                       size_MatC,
-                                                       size_MatF,
+                                                       numberOfLBnodesC,
+                                                       numberOfLBnodesF,
                                                        isEvenTimestep,
                                                        posC,
                                                        posFSWB,
@@ -4982,8 +4982,8 @@ void ScaleFCThSMG7(real* DC,
                               unsigned int* neighborFX,
                               unsigned int* neighborFY,
                               unsigned int* neighborFZ,
-                              unsigned int size_MatC,
-                              unsigned int size_MatF,
+                              unsigned long long numberOfLBnodesC,
+                              unsigned long long numberOfLBnodesF,
                               bool isEvenTimestep,
                               unsigned int* posC,
                               unsigned int* posFSWB,
@@ -5005,8 +5005,8 @@ void ScaleFCThSMG7(real* DC,
                                                 neighborFX,
                                                 neighborFY,
                                                 neighborFZ,
-                                                size_MatC,
-                                                size_MatF,
+                                                numberOfLBnodesC,
+                                                numberOfLBnodesF,
                                                 isEvenTimestep,
                                                 posC,
                                                 posFSWB,
@@ -5027,8 +5027,8 @@ void ScaleFCThS7(  real* DC,
                               unsigned int* neighborFX,
                               unsigned int* neighborFY,
                               unsigned int* neighborFZ,
-                              unsigned int size_MatC,
-                              unsigned int size_MatF,
+                              unsigned long long numberOfLBnodesC,
+                              unsigned long long numberOfLBnodesF,
                               bool isEvenTimestep,
                               unsigned int* posC,
                               unsigned int* posFSWB,
@@ -5049,8 +5049,8 @@ void ScaleFCThS7(  real* DC,
                                              neighborFX,
                                              neighborFY,
                                              neighborFZ,
-                                             size_MatC,
-                                             size_MatF,
+                                             numberOfLBnodesC,
+                                             numberOfLBnodesF,
                                              isEvenTimestep,
                                              posC,
                                              posFSWB,
@@ -5070,8 +5070,8 @@ void ScaleFCThS27( real* DC,
                               unsigned int* neighborFX,
                               unsigned int* neighborFY,
                               unsigned int* neighborFZ,
-                              unsigned int size_MatC,
-                              unsigned int size_MatF,
+                              unsigned long long numberOfLBnodesC,
+                              unsigned long long numberOfLBnodesF,
                               bool isEvenTimestep,
                               unsigned int* posC,
                               unsigned int* posFSWB,
@@ -5093,8 +5093,8 @@ void ScaleFCThS27( real* DC,
                                                 neighborFX,
                                                 neighborFY,
                                                 neighborFZ,
-                                                size_MatC,
-                                                size_MatF,
+                                                numberOfLBnodesC,
+                                                numberOfLBnodesF,
                                                 isEvenTimestep,
                                                 posC,
                                                 posFSWB,
@@ -5115,7 +5115,7 @@ void DragLiftPostD27(real* DD,
                                 unsigned int* neighborX,
                                 unsigned int* neighborY,
                                 unsigned int* neighborZ,
-                                unsigned int size_Mat,
+                                unsigned long long numberOfLBnodes,
                                 bool isEvenTimestep,
                                 unsigned int numberOfThreads)
 {
@@ -5131,7 +5131,7 @@ void DragLiftPostD27(real* DD,
                                         neighborX,
                                         neighborY,
                                         neighborZ,
-                                        size_Mat,
+                                        numberOfLBnodes,
                                         isEvenTimestep);
     getLastCudaError("DragLift27 execution failed");
 }
@@ -5146,7 +5146,7 @@ void DragLiftPreD27( real* DD,
                                 unsigned int* neighborX,
                                 unsigned int* neighborY,
                                 unsigned int* neighborZ,
-                                unsigned int size_Mat,
+                                unsigned long long numberOfLBnodes,
                                 bool isEvenTimestep,
                                 unsigned int numberOfThreads)
 {
@@ -5162,7 +5162,7 @@ void DragLiftPreD27( real* DD,
                                         neighborX,
                                         neighborY,
                                         neighborZ,
-                                        size_Mat,
+                                        numberOfLBnodes,
                                         isEvenTimestep);
     getLastCudaError("DragLift27 execution failed");
 }
@@ -5174,7 +5174,7 @@ void CalcCPtop27(real* DD,
                             unsigned int* neighborX,
                             unsigned int* neighborY,
                             unsigned int* neighborZ,
-                            unsigned int size_Mat,
+                            unsigned long long numberOfLBnodes,
                             bool isEvenTimestep,
                             unsigned int numberOfThreads)
 {
@@ -5187,7 +5187,7 @@ void CalcCPtop27(real* DD,
                                   neighborX,
                                   neighborY,
                                   neighborZ,
-                                  size_Mat,
+                                  numberOfLBnodes,
                                   isEvenTimestep);
     getLastCudaError("CalcCP27 execution failed");
 }
@@ -5199,7 +5199,7 @@ void CalcCPbottom27( real* DD,
                                 unsigned int* neighborX,
                                 unsigned int* neighborY,
                                 unsigned int* neighborZ,
-                                unsigned int size_Mat,
+                                unsigned long long numberOfLBnodes,
                                 bool isEvenTimestep,
                                 unsigned int numberOfThreads)
 {
@@ -5212,7 +5212,7 @@ void CalcCPbottom27( real* DD,
                                   neighborX,
                                   neighborY,
                                   neighborZ,
-                                  size_Mat,
+                                  numberOfLBnodes,
                                   isEvenTimestep);
     getLastCudaError("CalcCP27 execution failed");
 }
@@ -5224,7 +5224,7 @@ void GetSendFsPreDev27(real* DD,
                                   unsigned int* neighborX,
                                   unsigned int* neighborY,
                                   unsigned int* neighborZ,
-                                  unsigned int size_Mat,
+                                  unsigned long long numberOfLBnodes,
                                   bool isEvenTimestep,
                                   unsigned int numberOfThreads,
                                   cudaStream_t stream)
@@ -5238,7 +5238,7 @@ void GetSendFsPreDev27(real* DD,
                                         neighborX,
                                         neighborY,
                                         neighborZ,
-                                        size_Mat,
+                                        numberOfLBnodes,
                                         isEvenTimestep);
     getLastCudaError("getSendFsPre27 execution failed");
 }
@@ -5250,7 +5250,7 @@ void GetSendFsPostDev27(real* DD,
                                    unsigned int* neighborX,
                                    unsigned int* neighborY,
                                    unsigned int* neighborZ,
-                                   unsigned int size_Mat,
+                                   unsigned long long numberOfLBnodes,
                                    bool isEvenTimestep,
                                    unsigned int numberOfThreads,
                                    cudaStream_t stream)
@@ -5264,7 +5264,7 @@ void GetSendFsPostDev27(real* DD,
                                          neighborX,
                                          neighborY,
                                          neighborZ,
-                                         size_Mat,
+                                         numberOfLBnodes,
                                          isEvenTimestep);
     getLastCudaError("getSendFsPost27 execution failed");
 }
@@ -5276,7 +5276,7 @@ void SetRecvFsPreDev27(real* DD,
                                   unsigned int* neighborX,
                                   unsigned int* neighborY,
                                   unsigned int* neighborZ,
-                                  unsigned int size_Mat,
+                                  unsigned long long numberOfLBnodes,
                                   bool isEvenTimestep,
                                   unsigned int numberOfThreads,
                                   cudaStream_t stream)
@@ -5290,7 +5290,7 @@ void SetRecvFsPreDev27(real* DD,
                                         neighborX,
                                         neighborY,
                                         neighborZ,
-                                        size_Mat,
+                                        numberOfLBnodes,
                                         isEvenTimestep);
     getLastCudaError("setRecvFsPre27 execution failed");
 }
@@ -5302,7 +5302,7 @@ void SetRecvFsPostDev27(real* DD,
                                    unsigned int* neighborX,
                                    unsigned int* neighborY,
                                    unsigned int* neighborZ,
-                                   unsigned int size_Mat,
+                                   unsigned long long numberOfLBnodes,
                                    bool isEvenTimestep,
                                    unsigned int numberOfThreads,
                                    cudaStream_t stream)
@@ -5316,7 +5316,7 @@ void SetRecvFsPostDev27(real* DD,
                                          neighborX,
                                          neighborY,
                                          neighborZ,
-                                         size_Mat,
+                                         numberOfLBnodes,
                                          isEvenTimestep);
     getLastCudaError("setRecvFsPost27 execution failed");
 }
@@ -5329,7 +5329,7 @@ void getSendGsDevF3(
     unsigned int* neighborX,
     unsigned int* neighborY,
     unsigned int* neighborZ,
-    unsigned int size_Mat,
+    unsigned long long numberOfLBnodes,
     bool isEvenTimestep,
     unsigned int numberOfThreads)
 {
@@ -5343,7 +5343,7 @@ void getSendGsDevF3(
         neighborX,
         neighborY,
         neighborZ,
-        size_Mat,
+        numberOfLBnodes,
         isEvenTimestep);
     getLastCudaError("getSendGsF3 execution failed");
 }
@@ -5356,7 +5356,7 @@ void setRecvGsDevF3(
     unsigned int* neighborX,
     unsigned int* neighborY,
     unsigned int* neighborZ,
-    unsigned int size_Mat,
+    unsigned long long numberOfLBnodes,
     bool isEvenTimestep,
     unsigned int numberOfThreads)
 {
@@ -5370,7 +5370,7 @@ void setRecvGsDevF3(
         neighborX,
         neighborY,
         neighborZ,
-        size_Mat,
+        numberOfLBnodes,
         isEvenTimestep);
     getLastCudaError("setRecvGsF3 execution failed");
 }
@@ -5387,7 +5387,7 @@ void WallFuncDev27(unsigned int numberOfThreads,
                               unsigned int* neighborX,
                               unsigned int* neighborY,
                               unsigned int* neighborZ,
-                              unsigned int size_Mat,
+                              unsigned long long numberOfLBnodes,
                               bool isEvenTimestep)
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
@@ -5404,7 +5404,7 @@ void WallFuncDev27(unsigned int numberOfThreads,
                                               neighborX,
                                               neighborY,
                                               neighborZ,
-                                              size_Mat,
+                                              numberOfLBnodes,
                                               isEvenTimestep);
       getLastCudaError("WallFunction27 execution failed");
 }
@@ -5424,7 +5424,7 @@ void SetOutputWallVelocitySP27(unsigned int numberOfThreads,
                                           unsigned int* neighborX,
                                           unsigned int* neighborY,
                                           unsigned int* neighborZ,
-                                          unsigned int size_Mat,
+                                          unsigned long long numberOfLBnodes,
                                           real* DD,
                                           bool isEvenTimestep)
 {
@@ -5444,7 +5444,7 @@ void SetOutputWallVelocitySP27(unsigned int numberOfThreads,
                                                             neighborX,
                                                             neighborY,
                                                             neighborZ,
-                                                            size_Mat,
+                                                            numberOfLBnodes,
                                                             DD,
                                                             isEvenTimestep);
       getLastCudaError("LBSetOutputWallVelocitySP27 execution failed");
@@ -5460,7 +5460,7 @@ void GetVelotoForce27(unsigned int numberOfThreads,
                                  unsigned int* neighborX,
                                  unsigned int* neighborY,
                                  unsigned int* neighborZ,
-                                 unsigned int size_Mat,
+                                 unsigned long long numberOfLBnodes,
                                  bool isEvenTimestep)
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, nonAtBC);
@@ -5474,7 +5474,7 @@ void GetVelotoForce27(unsigned int numberOfThreads,
                                                 neighborX,
                                                 neighborY,
                                                 neighborZ,
-                                                size_Mat,
+                                                numberOfLBnodes,
                                                 isEvenTimestep);
       getLastCudaError("GetVeloforForcing27 execution failed");
 }
@@ -5501,7 +5501,7 @@ void InitParticlesDevice(real* coordX,
                                     unsigned int* neighborWSB,
                                     int level,
                                     unsigned int numberOfParticles,
-                                    unsigned int size_Mat,
+                                    unsigned long long numberOfLBnodes,
                                     unsigned int numberOfThreads)
 {
    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfParticles);
@@ -5528,7 +5528,7 @@ void InitParticlesDevice(real* coordX,
                                         neighborWSB,
                                         level,
                                         numberOfParticles,
-                                        size_Mat);
+                                        numberOfLBnodes);
       getLastCudaError("InitParticles execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -5557,7 +5557,7 @@ void MoveParticlesDevice(real* coordX,
                                     unsigned int timestep,
                                     unsigned int numberOfTimesteps,
                                     unsigned int numberOfParticles,
-                                    unsigned int size_Mat,
+                                    unsigned long long numberOfLBnodes,
                                     unsigned int numberOfThreads,
                                     bool isEvenTimestep)
 {
@@ -5588,26 +5588,26 @@ void MoveParticlesDevice(real* coordX,
                                         timestep,
                                         numberOfTimesteps,
                                         numberOfParticles,
-                                        size_Mat,
+                                        numberOfLBnodes,
                                         isEvenTimestep);
       getLastCudaError("MoveParticles execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void initRandomDevice(curandState* state,
-                                 unsigned int size_Mat,
+                                 unsigned long long numberOfLBnodes,
                                  unsigned int numberOfThreads)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
    initRandom<<< grid.grid, grid.threads >>> (state);
    getLastCudaError("initRandom execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void generateRandomValuesDevice( curandState* state,
-                                            unsigned int size_Mat,
+                                            unsigned long long numberOfLBnodes,
                                             real* randArray,
                                             unsigned int numberOfThreads)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
    generateRandomValues<<< grid.grid, grid.threads >>> (state,randArray);
    getLastCudaError("generateRandomValues execution failed");
 }
@@ -5627,11 +5627,11 @@ void CalcTurbulenceIntensityDevice(
    unsigned int* neighborX,
    unsigned int* neighborY,
    unsigned int* neighborZ,
-   unsigned int size_Mat,
+   unsigned long long numberOfLBnodes,
    bool isEvenTimestep,
    uint numberOfThreads)
 {
-   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Mat);
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
    CalcTurbulenceIntensity<<<grid.grid, grid.threads>>>(
      vxx,
      vyy,
@@ -5647,7 +5647,7 @@ void CalcTurbulenceIntensityDevice(
      neighborX,
      neighborY,
      neighborZ,
-     size_Mat,
+     numberOfLBnodes,
      isEvenTimestep);
 
    getLastCudaError("CalcTurbulenceIntensity execution failed");

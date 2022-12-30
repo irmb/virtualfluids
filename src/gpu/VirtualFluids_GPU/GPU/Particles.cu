@@ -29,7 +29,7 @@ __global__ void InitParticles( real* coordX,
 										  unsigned int* neighborWSB,
 										  int level,
 									      unsigned int numberOfParticles, 
-										  unsigned int size_Mat)
+										  unsigned long long numberOfLBnodes)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -72,12 +72,12 @@ __global__ void InitParticles( real* coordX,
 
 		////////////////////////////////////////////////////////////////////////////////
 		//find random node of the fluid domain
-		unsigned int cbID = (unsigned int)(randArray[k]*size_Mat);
-		for(int i = 0; i < size_Mat;i++)
+		unsigned int cbID = (unsigned int)(randArray[k]*numberOfLBnodes);
+		for(int i = 0; i < numberOfLBnodes;i++)
 		{
 			//if (coordX[cbID] < 15 && coordX[cbID] > 5 && coordY[cbID] < 15 && coordY[cbID] > 5 && coordZ[cbID] < 15 && coordZ[cbID] > 5)	break;
 			if (coordX[cbID] < 5 && coordX[cbID] > 2)	break;
-			cbID = (unsigned int)(randArray[k]*(size_Mat - i)); 
+			cbID = (unsigned int)(randArray[k]*(numberOfLBnodes - i)); 
 		}
 	   
 		real coordinateX;
@@ -183,7 +183,7 @@ __global__ void MoveParticles( real* coordX,
 										  unsigned int timestep, 
 										  unsigned int numberOfTimesteps, 
 									      unsigned int numberOfParticles, 
-										  unsigned int size_Mat,
+										  unsigned long long numberOfLBnodes,
 										  bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
@@ -248,63 +248,63 @@ __global__ void MoveParticles( real* coordX,
 		{
 		   if (isEvenTimestep==true)
 		   {
-			  feC    = &DD[DIR_P00   *size_Mat];
-			  fwC    = &DD[DIR_M00   *size_Mat];
-			  fnC    = &DD[DIR_0P0   *size_Mat];
-			  fsC    = &DD[DIR_0M0   *size_Mat];
-			  ftC    = &DD[DIR_00P   *size_Mat];
-			  fbC    = &DD[DIR_00M   *size_Mat];
-			  fneC   = &DD[DIR_PP0  *size_Mat];
-			  fswC   = &DD[DIR_MM0  *size_Mat];
-			  fseC   = &DD[DIR_PM0  *size_Mat];
-			  fnwC   = &DD[DIR_MP0  *size_Mat];
-			  fteC   = &DD[DIR_P0P  *size_Mat];
-			  fbwC   = &DD[DIR_M0M  *size_Mat];
-			  fbeC   = &DD[DIR_P0M  *size_Mat];
-			  ftwC   = &DD[DIR_M0P  *size_Mat];
-			  ftnC   = &DD[DIR_0PP  *size_Mat];
-			  fbsC   = &DD[DIR_0MM  *size_Mat];
-			  fbnC   = &DD[DIR_0PM  *size_Mat];
-			  ftsC   = &DD[DIR_0MP  *size_Mat];
-			  fzeroC = &DD[DIR_000*size_Mat];
-			  ftneC  = &DD[DIR_PPP *size_Mat];
-			  ftswC  = &DD[DIR_MMP *size_Mat];
-			  ftseC  = &DD[DIR_PMP *size_Mat];
-			  ftnwC  = &DD[DIR_MPP *size_Mat];
-			  fbneC  = &DD[DIR_PPM *size_Mat];
-			  fbswC  = &DD[DIR_MMM *size_Mat];
-			  fbseC  = &DD[DIR_PMM *size_Mat];
-			  fbnwC  = &DD[DIR_MPM *size_Mat];
+			  feC    = &DD[DIR_P00   *numberOfLBnodes];
+			  fwC    = &DD[DIR_M00   *numberOfLBnodes];
+			  fnC    = &DD[DIR_0P0   *numberOfLBnodes];
+			  fsC    = &DD[DIR_0M0   *numberOfLBnodes];
+			  ftC    = &DD[DIR_00P   *numberOfLBnodes];
+			  fbC    = &DD[DIR_00M   *numberOfLBnodes];
+			  fneC   = &DD[DIR_PP0  *numberOfLBnodes];
+			  fswC   = &DD[DIR_MM0  *numberOfLBnodes];
+			  fseC   = &DD[DIR_PM0  *numberOfLBnodes];
+			  fnwC   = &DD[DIR_MP0  *numberOfLBnodes];
+			  fteC   = &DD[DIR_P0P  *numberOfLBnodes];
+			  fbwC   = &DD[DIR_M0M  *numberOfLBnodes];
+			  fbeC   = &DD[DIR_P0M  *numberOfLBnodes];
+			  ftwC   = &DD[DIR_M0P  *numberOfLBnodes];
+			  ftnC   = &DD[DIR_0PP  *numberOfLBnodes];
+			  fbsC   = &DD[DIR_0MM  *numberOfLBnodes];
+			  fbnC   = &DD[DIR_0PM  *numberOfLBnodes];
+			  ftsC   = &DD[DIR_0MP  *numberOfLBnodes];
+			  fzeroC = &DD[DIR_000*numberOfLBnodes];
+			  ftneC  = &DD[DIR_PPP *numberOfLBnodes];
+			  ftswC  = &DD[DIR_MMP *numberOfLBnodes];
+			  ftseC  = &DD[DIR_PMP *numberOfLBnodes];
+			  ftnwC  = &DD[DIR_MPP *numberOfLBnodes];
+			  fbneC  = &DD[DIR_PPM *numberOfLBnodes];
+			  fbswC  = &DD[DIR_MMM *numberOfLBnodes];
+			  fbseC  = &DD[DIR_PMM *numberOfLBnodes];
+			  fbnwC  = &DD[DIR_MPM *numberOfLBnodes];
 		   } 			 
 		   else			 
 		   {			 
-			  fwC    = &DD[DIR_P00   *size_Mat];
-			  feC    = &DD[DIR_M00   *size_Mat];
-			  fsC    = &DD[DIR_0P0   *size_Mat];
-			  fnC    = &DD[DIR_0M0   *size_Mat];
-			  fbC    = &DD[DIR_00P   *size_Mat];
-			  ftC    = &DD[DIR_00M   *size_Mat];
-			  fswC   = &DD[DIR_PP0  *size_Mat];
-			  fneC   = &DD[DIR_MM0  *size_Mat];
-			  fnwC   = &DD[DIR_PM0  *size_Mat];
-			  fseC   = &DD[DIR_MP0  *size_Mat];
-			  fbwC   = &DD[DIR_P0P  *size_Mat];
-			  fteC   = &DD[DIR_M0M  *size_Mat];
-			  ftwC   = &DD[DIR_P0M  *size_Mat];
-			  fbeC   = &DD[DIR_M0P  *size_Mat];
-			  fbsC   = &DD[DIR_0PP  *size_Mat];
-			  ftnC   = &DD[DIR_0MM  *size_Mat];
-			  ftsC   = &DD[DIR_0PM  *size_Mat];
-			  fbnC   = &DD[DIR_0MP  *size_Mat];
-			  fzeroC = &DD[DIR_000*size_Mat];
-			  fbswC  = &DD[DIR_PPP *size_Mat];
-			  fbneC  = &DD[DIR_MMP *size_Mat];
-			  fbnwC  = &DD[DIR_PMP *size_Mat];
-			  fbseC  = &DD[DIR_MPP *size_Mat];
-			  ftswC  = &DD[DIR_PPM *size_Mat];
-			  ftneC  = &DD[DIR_MMM *size_Mat];
-			  ftnwC  = &DD[DIR_PMM *size_Mat];
-			  ftseC  = &DD[DIR_MPM *size_Mat];
+			  fwC    = &DD[DIR_P00   *numberOfLBnodes];
+			  feC    = &DD[DIR_M00   *numberOfLBnodes];
+			  fsC    = &DD[DIR_0P0   *numberOfLBnodes];
+			  fnC    = &DD[DIR_0M0   *numberOfLBnodes];
+			  fbC    = &DD[DIR_00P   *numberOfLBnodes];
+			  ftC    = &DD[DIR_00M   *numberOfLBnodes];
+			  fswC   = &DD[DIR_PP0  *numberOfLBnodes];
+			  fneC   = &DD[DIR_MM0  *numberOfLBnodes];
+			  fnwC   = &DD[DIR_PM0  *numberOfLBnodes];
+			  fseC   = &DD[DIR_MP0  *numberOfLBnodes];
+			  fbwC   = &DD[DIR_P0P  *numberOfLBnodes];
+			  fteC   = &DD[DIR_M0M  *numberOfLBnodes];
+			  ftwC   = &DD[DIR_P0M  *numberOfLBnodes];
+			  fbeC   = &DD[DIR_M0P  *numberOfLBnodes];
+			  fbsC   = &DD[DIR_0PP  *numberOfLBnodes];
+			  ftnC   = &DD[DIR_0MM  *numberOfLBnodes];
+			  ftsC   = &DD[DIR_0PM  *numberOfLBnodes];
+			  fbnC   = &DD[DIR_0MP  *numberOfLBnodes];
+			  fzeroC = &DD[DIR_000*numberOfLBnodes];
+			  fbswC  = &DD[DIR_PPP *numberOfLBnodes];
+			  fbneC  = &DD[DIR_MMP *numberOfLBnodes];
+			  fbnwC  = &DD[DIR_PMP *numberOfLBnodes];
+			  fbseC  = &DD[DIR_MPP *numberOfLBnodes];
+			  ftswC  = &DD[DIR_PPM *numberOfLBnodes];
+			  ftneC  = &DD[DIR_MMM *numberOfLBnodes];
+			  ftnwC  = &DD[DIR_PMM *numberOfLBnodes];
+			  ftseC  = &DD[DIR_MPM *numberOfLBnodes];
 		   }
 
 			  //////////////////////////////////////////////////////////////////////////
@@ -1055,7 +1055,7 @@ __global__ void MoveParticlesWithoutBCs(   real* coordX,
 													  unsigned int timestep, 
 													  unsigned int numberOfTimesteps, 
 													  unsigned int numberOfParticles, 
-													  unsigned int size_Mat,
+													  unsigned long long numberOfLBnodes,
 													  bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
@@ -1114,63 +1114,63 @@ __global__ void MoveParticlesWithoutBCs(   real* coordX,
 		{
 		   if (isEvenTimestep==true)
 		   {
-			  feC    = &DD[DIR_P00   *size_Mat];
-			  fwC    = &DD[DIR_M00   *size_Mat];
-			  fnC    = &DD[DIR_0P0   *size_Mat];
-			  fsC    = &DD[DIR_0M0   *size_Mat];
-			  ftC    = &DD[DIR_00P   *size_Mat];
-			  fbC    = &DD[DIR_00M   *size_Mat];
-			  fneC   = &DD[DIR_PP0  *size_Mat];
-			  fswC   = &DD[DIR_MM0  *size_Mat];
-			  fseC   = &DD[DIR_PM0  *size_Mat];
-			  fnwC   = &DD[DIR_MP0  *size_Mat];
-			  fteC   = &DD[DIR_P0P  *size_Mat];
-			  fbwC   = &DD[DIR_M0M  *size_Mat];
-			  fbeC   = &DD[DIR_P0M  *size_Mat];
-			  ftwC   = &DD[DIR_M0P  *size_Mat];
-			  ftnC   = &DD[DIR_0PP  *size_Mat];
-			  fbsC   = &DD[DIR_0MM  *size_Mat];
-			  fbnC   = &DD[DIR_0PM  *size_Mat];
-			  ftsC   = &DD[DIR_0MP  *size_Mat];
-			  fzeroC = &DD[DIR_000*size_Mat];
-			  ftneC  = &DD[DIR_PPP *size_Mat];
-			  ftswC  = &DD[DIR_MMP *size_Mat];
-			  ftseC  = &DD[DIR_PMP *size_Mat];
-			  ftnwC  = &DD[DIR_MPP *size_Mat];
-			  fbneC  = &DD[DIR_PPM *size_Mat];
-			  fbswC  = &DD[DIR_MMM *size_Mat];
-			  fbseC  = &DD[DIR_PMM *size_Mat];
-			  fbnwC  = &DD[DIR_MPM *size_Mat];
+			  feC    = &DD[DIR_P00   *numberOfLBnodes];
+			  fwC    = &DD[DIR_M00   *numberOfLBnodes];
+			  fnC    = &DD[DIR_0P0   *numberOfLBnodes];
+			  fsC    = &DD[DIR_0M0   *numberOfLBnodes];
+			  ftC    = &DD[DIR_00P   *numberOfLBnodes];
+			  fbC    = &DD[DIR_00M   *numberOfLBnodes];
+			  fneC   = &DD[DIR_PP0  *numberOfLBnodes];
+			  fswC   = &DD[DIR_MM0  *numberOfLBnodes];
+			  fseC   = &DD[DIR_PM0  *numberOfLBnodes];
+			  fnwC   = &DD[DIR_MP0  *numberOfLBnodes];
+			  fteC   = &DD[DIR_P0P  *numberOfLBnodes];
+			  fbwC   = &DD[DIR_M0M  *numberOfLBnodes];
+			  fbeC   = &DD[DIR_P0M  *numberOfLBnodes];
+			  ftwC   = &DD[DIR_M0P  *numberOfLBnodes];
+			  ftnC   = &DD[DIR_0PP  *numberOfLBnodes];
+			  fbsC   = &DD[DIR_0MM  *numberOfLBnodes];
+			  fbnC   = &DD[DIR_0PM  *numberOfLBnodes];
+			  ftsC   = &DD[DIR_0MP  *numberOfLBnodes];
+			  fzeroC = &DD[DIR_000*numberOfLBnodes];
+			  ftneC  = &DD[DIR_PPP *numberOfLBnodes];
+			  ftswC  = &DD[DIR_MMP *numberOfLBnodes];
+			  ftseC  = &DD[DIR_PMP *numberOfLBnodes];
+			  ftnwC  = &DD[DIR_MPP *numberOfLBnodes];
+			  fbneC  = &DD[DIR_PPM *numberOfLBnodes];
+			  fbswC  = &DD[DIR_MMM *numberOfLBnodes];
+			  fbseC  = &DD[DIR_PMM *numberOfLBnodes];
+			  fbnwC  = &DD[DIR_MPM *numberOfLBnodes];
 		   } 			 
 		   else			 
 		   {			 
-			  fwC    = &DD[DIR_P00   *size_Mat];
-			  feC    = &DD[DIR_M00   *size_Mat];
-			  fsC    = &DD[DIR_0P0   *size_Mat];
-			  fnC    = &DD[DIR_0M0   *size_Mat];
-			  fbC    = &DD[DIR_00P   *size_Mat];
-			  ftC    = &DD[DIR_00M   *size_Mat];
-			  fswC   = &DD[DIR_PP0  *size_Mat];
-			  fneC   = &DD[DIR_MM0  *size_Mat];
-			  fnwC   = &DD[DIR_PM0  *size_Mat];
-			  fseC   = &DD[DIR_MP0  *size_Mat];
-			  fbwC   = &DD[DIR_P0P  *size_Mat];
-			  fteC   = &DD[DIR_M0M  *size_Mat];
-			  ftwC   = &DD[DIR_P0M  *size_Mat];
-			  fbeC   = &DD[DIR_M0P  *size_Mat];
-			  fbsC   = &DD[DIR_0PP  *size_Mat];
-			  ftnC   = &DD[DIR_0MM  *size_Mat];
-			  ftsC   = &DD[DIR_0PM  *size_Mat];
-			  fbnC   = &DD[DIR_0MP  *size_Mat];
-			  fzeroC = &DD[DIR_000*size_Mat];
-			  fbswC  = &DD[DIR_PPP *size_Mat];
-			  fbneC  = &DD[DIR_MMP *size_Mat];
-			  fbnwC  = &DD[DIR_PMP *size_Mat];
-			  fbseC  = &DD[DIR_MPP *size_Mat];
-			  ftswC  = &DD[DIR_PPM *size_Mat];
-			  ftneC  = &DD[DIR_MMM *size_Mat];
-			  ftnwC  = &DD[DIR_PMM *size_Mat];
-			  ftseC  = &DD[DIR_MPM *size_Mat];
+			  fwC    = &DD[DIR_P00   *numberOfLBnodes];
+			  feC    = &DD[DIR_M00   *numberOfLBnodes];
+			  fsC    = &DD[DIR_0P0   *numberOfLBnodes];
+			  fnC    = &DD[DIR_0M0   *numberOfLBnodes];
+			  fbC    = &DD[DIR_00P   *numberOfLBnodes];
+			  ftC    = &DD[DIR_00M   *numberOfLBnodes];
+			  fswC   = &DD[DIR_PP0  *numberOfLBnodes];
+			  fneC   = &DD[DIR_MM0  *numberOfLBnodes];
+			  fnwC   = &DD[DIR_PM0  *numberOfLBnodes];
+			  fseC   = &DD[DIR_MP0  *numberOfLBnodes];
+			  fbwC   = &DD[DIR_P0P  *numberOfLBnodes];
+			  fteC   = &DD[DIR_M0M  *numberOfLBnodes];
+			  ftwC   = &DD[DIR_P0M  *numberOfLBnodes];
+			  fbeC   = &DD[DIR_M0P  *numberOfLBnodes];
+			  fbsC   = &DD[DIR_0PP  *numberOfLBnodes];
+			  ftnC   = &DD[DIR_0MM  *numberOfLBnodes];
+			  ftsC   = &DD[DIR_0PM  *numberOfLBnodes];
+			  fbnC   = &DD[DIR_0MP  *numberOfLBnodes];
+			  fzeroC = &DD[DIR_000*numberOfLBnodes];
+			  fbswC  = &DD[DIR_PPP *numberOfLBnodes];
+			  fbneC  = &DD[DIR_MMP *numberOfLBnodes];
+			  fbnwC  = &DD[DIR_PMP *numberOfLBnodes];
+			  fbseC  = &DD[DIR_MPP *numberOfLBnodes];
+			  ftswC  = &DD[DIR_PPM *numberOfLBnodes];
+			  ftneC  = &DD[DIR_MMM *numberOfLBnodes];
+			  ftnwC  = &DD[DIR_PMM *numberOfLBnodes];
+			  ftseC  = &DD[DIR_MPM *numberOfLBnodes];
 		   }
 
 			  //////////////////////////////////////////////////////////////////////////
@@ -1928,7 +1928,7 @@ __global__ void ParticleNoSlipDeviceComp27(real* coordX,
 													  real* NormalX,
 													  real* NormalY,
 													  real* NormalZ,
-													  unsigned int size_Mat, 
+													  unsigned long long numberOfLBnodes, 
 													  bool isEvenTimestep)
 {
 
