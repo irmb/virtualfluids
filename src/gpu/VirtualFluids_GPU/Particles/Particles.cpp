@@ -146,7 +146,7 @@ void initParticles(Parameter* para)
 				if ((para->getParH(lev)->coordinateX[index] <= para->getParH(lev)->plp.coordXabsolut[i]) &&
 					((para->getParH(lev)->plp.coordXabsolut[i] - para->getParH(lev)->coordinateX[index]) <= dx))
 				{
-					tempID.push_back(index);
+					tempID.push_back((int)index);
 				}
 			}
 
