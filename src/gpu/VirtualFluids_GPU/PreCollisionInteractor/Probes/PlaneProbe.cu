@@ -76,11 +76,11 @@ void PlaneProbe::findPoints(Parameter* para, GridProvider* gridProvider, std::ve
                             int level)
 {
     real dx = abs(para->getParH(level)->coordinateX[1]-para->getParH(level)->coordinateX[para->getParH(level)->neighborX[1]]);
-    for(size_t j = 1; j < para->getParH(level)->numberOfNodes; j++ )
+    for(size_t pos = 1; pos < para->getParH(level)->numberOfNodes; pos++ )
     {
-        real pointCoordX = para->getParH(level)->coordinateX[j];
-        real pointCoordY = para->getParH(level)->coordinateY[j];
-        real pointCoordZ = para->getParH(level)->coordinateZ[j];
+        real pointCoordX = para->getParH(level)->coordinateX[pos];
+        real pointCoordY = para->getParH(level)->coordinateY[pos];
+        real pointCoordZ = para->getParH(level)->coordinateZ[pos];
         real distX = pointCoordX - this->posX;
         real distY = pointCoordY - this->posY;
         real distZ = pointCoordZ - this->posZ;
@@ -88,7 +88,7 @@ void PlaneProbe::findPoints(Parameter* para, GridProvider* gridProvider, std::ve
         if( distX <= this->deltaX && distY <= this->deltaY && distZ <= this->deltaZ &&
             distX >=0.f && distY >=0.f && distZ >=0.f)
         {
-            probeIndices_level.push_back(j);
+            probeIndices_level.push_back((int)pos);
             distX_level.push_back( distX/dx );
             distY_level.push_back( distY/dx );
             distZ_level.push_back( distZ/dx );

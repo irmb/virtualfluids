@@ -496,14 +496,14 @@ void ActuatorFarm::initBoundingSpheres(Parameter* para, CudaMemoryManager* cudaM
         uint minimumNumberOfNodesPerSphere = (uint)(c4o3*cPi*pow(sphereRadius-this->deltaX, c3o1)/pow(this->deltaX, c3o1));
         uint nodesInThisSphere = 0;
 
-        for (size_t j = 1; j <= para->getParH(this->level)->numberOfNodes; j++)
+        for (size_t pos = 1; pos <= para->getParH(this->level)->numberOfNodes; pos++)
         {
-            const real distX = para->getParH(this->level)->coordinateX[j]-posX;
-            const real distY = para->getParH(this->level)->coordinateY[j]-posY;
-            const real distZ = para->getParH(this->level)->coordinateZ[j]-posZ;
+            const real distX = para->getParH(this->level)->coordinateX[pos]-posX;
+            const real distY = para->getParH(this->level)->coordinateY[pos]-posY;
+            const real distZ = para->getParH(this->level)->coordinateZ[pos]-posZ;
             if(distSqrd(distX,distY,distZ) < sphereRadiusSqrd) 
             {
-                nodesInSpheres.push_back(j);
+                nodesInSpheres.push_back((int)pos);
                 nodesInThisSphere++;
             }
         }
