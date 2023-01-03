@@ -19,7 +19,7 @@ std::shared_ptr<GridProvider> GridProvider::makeGridReader(FILEFORMAT format, st
     return std::shared_ptr<GridProvider>(new GridReader(format, para, cudaMemoryManager));
 }
 
-void GridProvider::setNumberOfNodes(const uint numberOfNodes, const int level) const
+void GridProvider::setNumberOfNodes(uint numberOfNodes, int level) const
 {
     para->getParH(level)->numberOfNodes          = (unsigned long long)numberOfNodes;
     para->getParD(level)->numberOfNodes          = (unsigned long long)numberOfNodes;
@@ -29,13 +29,13 @@ void GridProvider::setNumberOfNodes(const uint numberOfNodes, const int level) c
     para->getParD(level)->memSizeLonglongLBnodes = sizeof(unsigned long long) * para->getParD(level)->numberOfNodes;
 }
 
-void GridProvider::setNumberOfTaggedFluidNodes(const uint numberOfNodes, CollisionTemplate tag, const int level) const
+void GridProvider::setNumberOfTaggedFluidNodes(uint numberOfNodes, CollisionTemplate tag, int level) const
 {
     para->getParH(level)->numberOfTaggedFluidNodes[tag] = numberOfNodes;
     para->getParD(level)->numberOfTaggedFluidNodes[tag] = numberOfNodes;
 }
 
-void GridProvider::setInitalNodeValues(const uint numberOfNodes, const int level) const
+void GridProvider::setInitalNodeValues(uint numberOfNodes, int level) const
 {
     for (uint pos = 1; pos <= numberOfNodes; pos++)
     {
