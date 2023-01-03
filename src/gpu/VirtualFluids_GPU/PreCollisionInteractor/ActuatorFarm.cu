@@ -14,6 +14,9 @@
 #include "GPU/CudaMemoryManager.h"
 #include <lbm/constants/NumericConstants.h>
 #include <logger/Logger.h>
+#include <ostream>
+
+#include "Output/Timer.h"
 
 using namespace vf::lbm::constant;
 
@@ -267,26 +270,38 @@ void ActuatorFarm::addTurbine(real posX, real posY, real posZ, real diameter, re
 
 void ActuatorFarm::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaMemoryManager)
 {
-    if(!para->getIsBodyForce()) throw std::runtime_error("try to allocate ActuatorFarm but BodyForce is not set in Parameter.");
+    if (!para->getIsBodyForce())
+        throw std::runtime_error("try to allocate ActuatorFarm but BodyForce is not set in Parameter.");
     this->forceRatio = para->getForceRatio();
     this->initTurbineGeometries(cudaMemoryManager);
-    this->initBladeCoords(cudaMemoryManager);    
+    this->initBladeCoords(cudaMemoryManager);
     this->initBladeIndices(para, cudaMemoryManager);
     this->initBladeVelocities(cudaMemoryManager);
-    this->initBladeForces(cudaMemoryManager);    
-    this->initBoundingSpheres(para, cudaMemoryManager);  
+    this->initBladeForces(cudaMemoryManager);
+    this->initBoundingSpheres(para, cudaMemoryManager);
     this->streamIndex = 0;
+
+    bladeTimer = new Timer("ALM blade performance");
+    bladeTimer->initTimer();
 }
 
-void ActuatorFarm::interact(Parameter* para, CudaMemoryManager* cudaMemoryManager, int level, unsigned int t)
+void ActuatorFarm::interact(Parameter* para, CudaMemoryManager* cudaMemoryManager, int currentLevel, unsigned int t)
 {
-    if (level != this->level) return;
+    if (currentLevel != this->level) return;
+    bool useTimer = false;
 
     cudaStream_t stream = para->getStreamManager()->getStream(CudaStreamIndex::ActuatorFarm, this->streamIndex);
 
+    if (useTimer)
+    std::cout << "ActuatorFarm::interact: level = " << currentLevel << ", t = " << t << " useHostArrays = " << useHostArrays <<std::endl;
+    bladeTimer->startTimer();
+
     if(useHostArrays) cudaMemoryManager->cudaCopyBladeCoordsHtoD(this);
 
-    vf::cuda::CudaGrid bladeGrid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, this->numberOfNodes);
+    vf::cuda::CudaGrid bladeGrid = vf::cuda::CudaGrid(para->getParH(currentLevel)->numberofthreads, this->numberOfNodes);
+
+    if (useTimer)
+    std::cout << " cudaCopyBladeCoordsHtoD, " << bladeTimer->startStopGetElapsed() << std::endl;
 
     interpolateVelocities<<< bladeGrid.grid, bladeGrid.threads, 0, stream >>>(
         para->getParD(this->level)->coordinateX, para->getParD(this->level)->coordinateY, para->getParD(this->level)->coordinateZ,        
@@ -299,14 +314,28 @@ void ActuatorFarm::interact(Parameter* para, CudaMemoryManager* cudaMemoryManage
         this->turbinePosXD, this->turbinePosYD, this->turbinePosZD,
         this->bladeIndicesD, para->getVelocityRatio(), this->invDeltaX);
 
+    if (useTimer)
+    std::cout << " interpolateVelocities, " << bladeTimer->startStopGetElapsed() << std::endl;
+
     cudaStreamSynchronize(stream);
     if(useHostArrays) cudaMemoryManager->cudaCopyBladeVelocitiesDtoH(this);
+
+    if (useTimer)
+    std::cout << " cudaCopyBladeVelocitiesDtoH, " << bladeTimer->startStopGetElapsed() << std::endl;
+
     this->calcBladeForces();
+    
+    if (useTimer)
+    std::cout << " calcBladeForces, " << bladeTimer->startStopGetElapsed() << std::endl;
+
     this->swapDeviceArrays();
 
     if(useHostArrays) cudaMemoryManager->cudaCopyBladeForcesHtoD(this);
 
-    vf::cuda::CudaGrid sphereGrid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, this->numberOfIndices);
+    if (useTimer)
+    std::cout << " cudaCopyBladeForcesHtoD, " << bladeTimer->startStopGetElapsed() << std::endl;
+
+    vf::cuda::CudaGrid sphereGrid = vf::cuda::CudaGrid(para->getParH(currentLevel)->numberofthreads, this->numberOfIndices);
 
     applyBodyForces<<<sphereGrid.grid, sphereGrid.threads, 0, stream>>>(
         para->getParD(this->level)->coordinateX, para->getParD(this->level)->coordinateY, para->getParD(this->level)->coordinateZ,        
@@ -318,12 +347,25 @@ void ActuatorFarm::interact(Parameter* para, CudaMemoryManager* cudaMemoryManage
         this->turbinePosXD, this->turbinePosYD, this->turbinePosZD,
         this->boundingSphereIndicesD, this->numberOfIndices,
         this->invEpsilonSqrd, this->factorGaussian);
+
+    if (useTimer)
+    std::cout << " applyBodyForces, " << bladeTimer->startStopGetElapsed() << std::endl;
+
     cudaMemoryManager->cudaCopyBladeOrientationsHtoD(this);
+
+        if (useTimer)
+    std::cout << " cudaCopyBladeOrientationsHtoD, " << bladeTimer->startStopGetElapsed()  << std::endl;
+    if (useTimer)
+    std::cout << "total time, " << bladeTimer->getTotalElapsedTime() << std::endl;
+                                    bladeTimer->resetTimer();
+
     cudaStreamSynchronize(stream);
+
+
 }
 
 
-void ActuatorFarm::free(Parameter* para, CudaMemoryManager* cudaMemoryManager)
+void ActuatorFarm::free(Parameter*  /*para*/, CudaMemoryManager* cudaMemoryManager)
 {
     cudaMemoryManager->cudaFreeBladeGeometries(this);
     cudaMemoryManager->cudaFreeBladeOrientations(this);

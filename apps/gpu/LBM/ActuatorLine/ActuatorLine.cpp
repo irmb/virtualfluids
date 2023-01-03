@@ -251,7 +251,7 @@ void multipleLevel(const std::string& configPath)
     const real epsilon = dx*exp2(-level)*2.0; // width of gaussian smearing
     const real density = 1.225f;
     const uint nBlades = 3;
-    const uint nBladeNodes = 404; // passt zu auflösung von 105 Knoten
+    const uint nBladeNodes = reference_diameter * 4 + 3; // passt zu auflösung von 105 Knoten
     VF_LOG_INFO("number of blade nodes ALM = {}", nBladeNodes);
     const real tipspeed_ratio = 7.5f; // tipspeed ratio = angular vel * radius / inflow vel
     const real omega = 2*tipspeed_ratio*velocity/reference_diameter;
