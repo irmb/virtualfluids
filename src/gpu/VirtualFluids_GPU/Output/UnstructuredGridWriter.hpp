@@ -33,7 +33,7 @@ namespace UnstructuredGridWriter
 
 		bool neighborsFluid;
 
-		unsigned int allnodes = (uint)para->getParH(level)->numberOfNodes * 8;
+		unsigned long long allnodes = para->getParH(level)->numberOfNodes * 8;
 
 		nodes.resize(allnodes);
 		nodedata[0].resize(allnodes);
