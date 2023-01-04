@@ -13,7 +13,7 @@
 
 #include <iomanip>
 
-//#include "Core/Logger/Logger.h"
+#include "cuda/CudaGrid.h"
 
 #include "Parameter/Parameter.h"
 // includes, kernels
@@ -22,7 +22,7 @@
 
 using namespace vf::lbm::constant;
 
-__global__                 void enstrophyKernel  ( real* veloX, real* veloY, real* veloZ, real* rho, uint* neighborX, uint* neighborY, uint* neighborZ, uint* neighborWSB, uint* geo, real* enstrophy, uint* isFluid, uint size_Mat );
+__global__                 void enstrophyKernel  ( real* veloX, real* veloY, real* veloZ, real* rho, uint* neighborX, uint* neighborY, uint* neighborZ, uint* neighborWSB, uint* geo, real* enstrophy, uint* isFluid, unsigned long long numberOfLBnodes );
 
 __host__ __device__ inline void enstrophyFunction( real* veloX, real* veloY, real* veloZ, real* rho, uint* neighborX, uint* neighborY, uint* neighborZ, uint* neighborWSB, uint* geo, real* enstrophy, uint* isFluid, uint index );
 
@@ -32,55 +32,40 @@ bool EnstrophyAnalyzer::run(uint iter)
 {
     if( iter % this->analyzeIter != 0 ) return false;
 
-	int lev = 0;
-	int size_Mat = (int)this->para->getParD(lev)->numberOfNodes;
-	
-	thrust::device_vector<real> enstrophy( size_Mat, c0o1 );
-    thrust::device_vector<uint> isFluid  ( size_Mat, 0);
+    int lev = 0;
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParD(lev)->numberofthreads, para->getParD(lev)->numberOfNodes);
 
-	unsigned int numberOfThreads = 128;
-    int Grid = (size_Mat / numberOfThreads)+1;
-    int Grid1, Grid2;
-    if (Grid>512)
-    {
-       Grid1 = 512;
-       Grid2 = (Grid/Grid1)+1;
-    } 
-    else
-    {
-       Grid1 = 1;
-       Grid2 = Grid;
-    }
-    dim3 grid(Grid1, Grid2);
-    dim3 threads(numberOfThreads, 1, 1 );
+    thrust::device_vector<real> enstrophy( this->para->getParD(lev)->numberOfNodes, c0o1);
+    thrust::device_vector<uint> isFluid  ( this->para->getParD(lev)->numberOfNodes, 0);
 
-    LBCalcMacCompSP27<<< grid, threads >>> (para->getParD(lev)->velocityX,
-										    para->getParD(lev)->velocityY,
-										    para->getParD(lev)->velocityZ,
-										    para->getParD(lev)->rho,
-										    para->getParD(lev)->pressure,
-										    para->getParD(lev)->typeOfGridNode,
-										    para->getParD(lev)->neighborX,
-										    para->getParD(lev)->neighborY,
-										    para->getParD(lev)->neighborZ,
-										    para->getParD(lev)->numberOfNodes,
-										    para->getParD(lev)->distributions.f[0],
-										    para->getParD(lev)->isEvenTimestep); 
-	//cudaDeviceSynchronize();
-	getLastCudaError("LBCalcMacSP27 execution failed"); 
+    LBCalcMacCompSP27<<< grid.grid, grid.threads >>>(
+        para->getParD(lev)->velocityX,
+        para->getParD(lev)->velocityY,
+        para->getParD(lev)->velocityZ,
+        para->getParD(lev)->rho,
+        para->getParD(lev)->pressure,
+        para->getParD(lev)->typeOfGridNode,
+        para->getParD(lev)->neighborX,
+        para->getParD(lev)->neighborY,
+        para->getParD(lev)->neighborZ,
+        para->getParD(lev)->numberOfNodes,
+        para->getParD(lev)->distributions.f[0],
+        para->getParD(lev)->isEvenTimestep); 
+    getLastCudaError("LBCalcMacCompSP27 execution failed");
 
-	enstrophyKernel <<< grid, threads >>> ( para->getParD(lev)->velocityX,
-											para->getParD(lev)->velocityY, 
-											para->getParD(lev)->velocityZ, 
-											para->getParD(lev)->rho, 
-											para->getParD(lev)->neighborX,
-											para->getParD(lev)->neighborY,
-											para->getParD(lev)->neighborZ,
-											para->getParD(lev)->neighborInverse,
-											para->getParD(lev)->typeOfGridNode,
-											enstrophy.data().get(), 
-                                            isFluid.data().get(),
-											size_Mat);
+    enstrophyKernel<<< grid.grid, grid.threads >>>(
+        para->getParD(lev)->velocityX,
+        para->getParD(lev)->velocityY, 
+        para->getParD(lev)->velocityZ, 
+        para->getParD(lev)->rho, 
+        para->getParD(lev)->neighborX,
+        para->getParD(lev)->neighborY,
+        para->getParD(lev)->neighborZ,
+        para->getParD(lev)->neighborInverse,
+        para->getParD(lev)->typeOfGridNode,
+        enstrophy.data().get(), 
+        isFluid.data().get(),
+        para->getParD(lev)->numberOfNodes);
 	cudaDeviceSynchronize(); 
 	getLastCudaError("enstrophyKernel execution failed");
 
@@ -97,7 +82,7 @@ bool EnstrophyAnalyzer::run(uint iter)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-__global__ void enstrophyKernel(real* veloX, real* veloY, real* veloZ, real* rho, uint* neighborX, uint* neighborY, uint* neighborZ, uint* neighborWSB, uint* geo, real* enstrophy, uint* isFluid, uint size_Mat)
+__global__ void enstrophyKernel(real* veloX, real* veloY, real* veloZ, real* rho, uint* neighborX, uint* neighborY, uint* neighborZ, uint* neighborWSB, uint* geo, real* enstrophy, uint* isFluid, unsigned long long numberOfLBnodes)
 {
     //////////////////////////////////////////////////////////////////////////
     const uint x = threadIdx.x;  // Globaler x-Index 
@@ -113,7 +98,7 @@ __global__ void enstrophyKernel(real* veloX, real* veloY, real* veloZ, real* rho
 
     //if( index % 34 == 0 || index % 34 == 33 ) return;
 
-    if( index >= size_Mat) return;
+    if( index >= (uint)numberOfLBnodes) return;
 
 	unsigned int BC;
 	BC = geo[index];
