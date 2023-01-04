@@ -290,10 +290,10 @@ void writeNeighborXPointsDebug(Parameter *para)
     nodesVec.resize(nodeNumberVec);
     int nodeCount2 = 0;
     for (int level = 0; level <= para->getMaxLevel(); level++) {
-        for (unsigned int u = 0; u < para->getParH(level)->numberOfNodes; u++) {
-            real x1 = para->getParH(level)->coordinateX[para->getParH(level)->neighborX[u]];
-            real x2 = para->getParH(level)->coordinateY[para->getParH(level)->neighborX[u]];
-            real x3 = para->getParH(level)->coordinateZ[para->getParH(level)->neighborX[u]];
+        for (size_t index = 0; index < para->getParH(level)->numberOfNodes; index++) {
+            real x1 = para->getParH(level)->coordinateX[para->getParH(level)->neighborX[index]];
+            real x2 = para->getParH(level)->coordinateY[para->getParH(level)->neighborX[index]];
+            real x3 = para->getParH(level)->coordinateZ[para->getParH(level)->neighborX[index]];
 
             nodesVec[nodeCount2++] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
         }
@@ -317,18 +317,18 @@ void writeNeighborXLinesDebug(Parameter *para)
     nodesVec.resize(nodeNumberVec * 2);
     int nodeCount = 0;
     for (int level = 0; level < para->getMaxLevel(); level++) {
-        for (unsigned int u = 0; u < para->getParH(level)->numberOfNodes; u++) {
-            real x1  = para->getParH(level)->coordinateX[u];
-            real x2  = para->getParH(level)->coordinateY[u];
-            real x3  = para->getParH(level)->coordinateZ[u];
-            real x1N = para->getParH(level)->coordinateX[para->getParH(level)->neighborX[u]];
-            real x2N = para->getParH(level)->coordinateY[para->getParH(level)->neighborX[u]];
-            real x3N = para->getParH(level)->coordinateZ[para->getParH(level)->neighborX[u]];
+        for (size_t index = 0; index < para->getParH(level)->numberOfNodes; index++) {
+            real x1  = para->getParH(level)->coordinateX[index];
+            real x2  = para->getParH(level)->coordinateY[index];
+            real x3  = para->getParH(level)->coordinateZ[index];
+            real x1N = para->getParH(level)->coordinateX[para->getParH(level)->neighborX[index]];
+            real x2N = para->getParH(level)->coordinateY[para->getParH(level)->neighborX[index]];
+            real x3N = para->getParH(level)->coordinateZ[para->getParH(level)->neighborX[index]];
 
             nodesVec[nodeCount++] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
             nodesVec[nodeCount++] = (makeUbTuple((float)(x1N), (float)(x2N), (float)(x3N)));
 
-            if (para->getParH(level)->typeOfGridNode[u] == GEO_FLUID) {
+            if (para->getParH(level)->typeOfGridNode[index] == GEO_FLUID) {
                 cellsVec.push_back(makeUbTuple(nodeCount - 2, nodeCount - 1));
             }
         }
@@ -350,10 +350,10 @@ void writeNeighborYPointsDebug(Parameter *para)
     nodesVec.resize(nodeNumberVec);
     int nodeCount2 = 0;
     for (int level = 0; level <= para->getMaxLevel(); level++) {
-        for (unsigned int u = 0; u < para->getParH(level)->numberOfNodes; u++) {
-            real x1 = para->getParH(level)->coordinateX[para->getParH(level)->neighborY[u]];
-            real x2 = para->getParH(level)->coordinateY[para->getParH(level)->neighborY[u]];
-            real x3 = para->getParH(level)->coordinateZ[para->getParH(level)->neighborY[u]];
+        for (size_t index = 0; index < para->getParH(level)->numberOfNodes; index++) {
+            real x1 = para->getParH(level)->coordinateX[para->getParH(level)->neighborY[index]];
+            real x2 = para->getParH(level)->coordinateY[para->getParH(level)->neighborY[index]];
+            real x3 = para->getParH(level)->coordinateZ[para->getParH(level)->neighborY[index]];
 
             nodesVec[nodeCount2++] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
         }
@@ -377,18 +377,18 @@ void writeNeighborYLinesDebug(Parameter *para)
     nodesVec.resize(nodeNumberVec * 2);
     int nodeCount = 0;
     for (int level = 0; level < para->getMaxLevel(); level++) {
-        for (unsigned int u = 0; u < para->getParH(level)->numberOfNodes; u++) {
-            real x1  = para->getParH(level)->coordinateX[u];
-            real x2  = para->getParH(level)->coordinateY[u];
-            real x3  = para->getParH(level)->coordinateZ[u];
-            real x1N = para->getParH(level)->coordinateX[para->getParH(level)->neighborY[u]];
-            real x2N = para->getParH(level)->coordinateY[para->getParH(level)->neighborY[u]];
-            real x3N = para->getParH(level)->coordinateZ[para->getParH(level)->neighborY[u]];
+        for (size_t index = 0; index < para->getParH(level)->numberOfNodes; index++) {
+            real x1  = para->getParH(level)->coordinateX[index];
+            real x2  = para->getParH(level)->coordinateY[index];
+            real x3  = para->getParH(level)->coordinateZ[index];
+            real x1N = para->getParH(level)->coordinateX[para->getParH(level)->neighborY[index]];
+            real x2N = para->getParH(level)->coordinateY[para->getParH(level)->neighborY[index]];
+            real x3N = para->getParH(level)->coordinateZ[para->getParH(level)->neighborY[index]];
 
             nodesVec[nodeCount++] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
             nodesVec[nodeCount++] = (makeUbTuple((float)(x1N), (float)(x2N), (float)(x3N)));
 
-            if (para->getParH(level)->typeOfGridNode[u] == GEO_FLUID) {
+            if (para->getParH(level)->typeOfGridNode[index] == GEO_FLUID) {
                 cellsVec.push_back(makeUbTuple(nodeCount - 2, nodeCount - 1));
             }
         }
@@ -410,10 +410,10 @@ void writeNeighborZPointsDebug(Parameter *para)
     nodesVec.resize(nodeNumberVec);
     int nodeCount2 = 0;
     for (int level = 0; level <= para->getMaxLevel(); level++) {
-        for (unsigned int u = 0; u < para->getParH(level)->numberOfNodes; u++) {
-            real x1 = para->getParH(level)->coordinateX[para->getParH(level)->neighborZ[u]];
-            real x2 = para->getParH(level)->coordinateY[para->getParH(level)->neighborZ[u]];
-            real x3 = para->getParH(level)->coordinateZ[para->getParH(level)->neighborZ[u]];
+        for (size_t index = 0; index < para->getParH(level)->numberOfNodes; index++) {
+            real x1 = para->getParH(level)->coordinateX[para->getParH(level)->neighborZ[index]];
+            real x2 = para->getParH(level)->coordinateY[para->getParH(level)->neighborZ[index]];
+            real x3 = para->getParH(level)->coordinateZ[para->getParH(level)->neighborZ[index]];
 
             nodesVec[nodeCount2++] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
         }
@@ -437,18 +437,18 @@ void writeNeighborZLinesDebug(Parameter *para)
     nodesVec.resize(nodeNumberVec * 2);
     int nodeCount = 0;
     for (int level = 0; level < para->getMaxLevel(); level++) {
-        for (unsigned int u = 0; u < para->getParH(level)->numberOfNodes; u++) {
-            real x1  = para->getParH(level)->coordinateX[u];
-            real x2  = para->getParH(level)->coordinateY[u];
-            real x3  = para->getParH(level)->coordinateZ[u];
-            real x1N = para->getParH(level)->coordinateX[para->getParH(level)->neighborZ[u]];
-            real x2N = para->getParH(level)->coordinateY[para->getParH(level)->neighborZ[u]];
-            real x3N = para->getParH(level)->coordinateZ[para->getParH(level)->neighborZ[u]];
+        for (size_t index = 0; index < para->getParH(level)->numberOfNodes; index++) {
+            real x1  = para->getParH(level)->coordinateX[index];
+            real x2  = para->getParH(level)->coordinateY[index];
+            real x3  = para->getParH(level)->coordinateZ[index];
+            real x1N = para->getParH(level)->coordinateX[para->getParH(level)->neighborZ[index]];
+            real x2N = para->getParH(level)->coordinateY[para->getParH(level)->neighborZ[index]];
+            real x3N = para->getParH(level)->coordinateZ[para->getParH(level)->neighborZ[index]];
 
             nodesVec[nodeCount++] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
             nodesVec[nodeCount++] = (makeUbTuple((float)(x1N), (float)(x2N), (float)(x3N)));
 
-            if (para->getParH(level)->typeOfGridNode[u] == GEO_FLUID) {
+            if (para->getParH(level)->typeOfGridNode[index] == GEO_FLUID) {
                 cellsVec.push_back(makeUbTuple(nodeCount - 2, nodeCount - 1));
             }
         }

@@ -15,7 +15,7 @@ __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 														unsigned int* neighborY,
 														unsigned int* neighborZ,
 														real* DDStart,
-														int size_Mat,
+														unsigned long long numberOfLBnodes,
 														bool EvenOrOdd)
 {
 	////////////////////////////////////////////////////////////////////////////////
@@ -29,7 +29,7 @@ __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 	const unsigned k = nx*(ny*z + y) + x;
 	//////////////////////////////////////////////////////////////////////////
 
-	if(k<size_Mat)
+	if(k<numberOfLBnodes)
 	{
 		////////////////////////////////////////////////////////////////////////////////
 		unsigned int BC;
@@ -40,63 +40,63 @@ __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			Distributions27 D;
 			if (EvenOrOdd==true)
 			{
-				D.f[DIR_P00   ] = &DDStart[DIR_P00   *size_Mat];
-				D.f[DIR_M00   ] = &DDStart[DIR_M00   *size_Mat];
-				D.f[DIR_0P0   ] = &DDStart[DIR_0P0   *size_Mat];
-				D.f[DIR_0M0   ] = &DDStart[DIR_0M0   *size_Mat];
-				D.f[DIR_00P   ] = &DDStart[DIR_00P   *size_Mat];
-				D.f[DIR_00M   ] = &DDStart[DIR_00M   *size_Mat];
-				D.f[DIR_PP0  ] = &DDStart[DIR_PP0  *size_Mat];
-				D.f[DIR_MM0  ] = &DDStart[DIR_MM0  *size_Mat];
-				D.f[DIR_PM0  ] = &DDStart[DIR_PM0  *size_Mat];
-				D.f[DIR_MP0  ] = &DDStart[DIR_MP0  *size_Mat];
-				D.f[DIR_P0P  ] = &DDStart[DIR_P0P  *size_Mat];
-				D.f[DIR_M0M  ] = &DDStart[DIR_M0M  *size_Mat];
-				D.f[DIR_P0M  ] = &DDStart[DIR_P0M  *size_Mat];
-				D.f[DIR_M0P  ] = &DDStart[DIR_M0P  *size_Mat];
-				D.f[DIR_0PP  ] = &DDStart[DIR_0PP  *size_Mat];
-				D.f[DIR_0MM  ] = &DDStart[DIR_0MM  *size_Mat];
-				D.f[DIR_0PM  ] = &DDStart[DIR_0PM  *size_Mat];
-				D.f[DIR_0MP  ] = &DDStart[DIR_0MP  *size_Mat];
-				D.f[DIR_000] = &DDStart[DIR_000*size_Mat];
-				D.f[DIR_PPP ] = &DDStart[DIR_PPP *size_Mat];
-				D.f[DIR_MMP ] = &DDStart[DIR_MMP *size_Mat];
-				D.f[DIR_PMP ] = &DDStart[DIR_PMP *size_Mat];
-				D.f[DIR_MPP ] = &DDStart[DIR_MPP *size_Mat];
-				D.f[DIR_PPM ] = &DDStart[DIR_PPM *size_Mat];
-				D.f[DIR_MMM ] = &DDStart[DIR_MMM *size_Mat];
-				D.f[DIR_PMM ] = &DDStart[DIR_PMM *size_Mat];
-				D.f[DIR_MPM ] = &DDStart[DIR_MPM *size_Mat];
+				D.f[DIR_P00] = &DDStart[DIR_P00 * numberOfLBnodes];
+				D.f[DIR_M00] = &DDStart[DIR_M00 * numberOfLBnodes];
+				D.f[DIR_0P0] = &DDStart[DIR_0P0 * numberOfLBnodes];
+				D.f[DIR_0M0] = &DDStart[DIR_0M0 * numberOfLBnodes];
+				D.f[DIR_00P] = &DDStart[DIR_00P * numberOfLBnodes];
+				D.f[DIR_00M] = &DDStart[DIR_00M * numberOfLBnodes];
+				D.f[DIR_PP0] = &DDStart[DIR_PP0 * numberOfLBnodes];
+				D.f[DIR_MM0] = &DDStart[DIR_MM0 * numberOfLBnodes];
+				D.f[DIR_PM0] = &DDStart[DIR_PM0 * numberOfLBnodes];
+				D.f[DIR_MP0] = &DDStart[DIR_MP0 * numberOfLBnodes];
+				D.f[DIR_P0P] = &DDStart[DIR_P0P * numberOfLBnodes];
+				D.f[DIR_M0M] = &DDStart[DIR_M0M * numberOfLBnodes];
+				D.f[DIR_P0M] = &DDStart[DIR_P0M * numberOfLBnodes];
+				D.f[DIR_M0P] = &DDStart[DIR_M0P * numberOfLBnodes];
+				D.f[DIR_0PP] = &DDStart[DIR_0PP * numberOfLBnodes];
+				D.f[DIR_0MM] = &DDStart[DIR_0MM * numberOfLBnodes];
+				D.f[DIR_0PM] = &DDStart[DIR_0PM * numberOfLBnodes];
+				D.f[DIR_0MP] = &DDStart[DIR_0MP * numberOfLBnodes];
+				D.f[DIR_000] = &DDStart[DIR_000 * numberOfLBnodes];
+				D.f[DIR_PPP] = &DDStart[DIR_PPP * numberOfLBnodes];
+				D.f[DIR_MMP] = &DDStart[DIR_MMP * numberOfLBnodes];
+				D.f[DIR_PMP] = &DDStart[DIR_PMP * numberOfLBnodes];
+				D.f[DIR_MPP] = &DDStart[DIR_MPP * numberOfLBnodes];
+				D.f[DIR_PPM] = &DDStart[DIR_PPM * numberOfLBnodes];
+				D.f[DIR_MMM] = &DDStart[DIR_MMM * numberOfLBnodes];
+				D.f[DIR_PMM] = &DDStart[DIR_PMM * numberOfLBnodes];
+				D.f[DIR_MPM] = &DDStart[DIR_MPM * numberOfLBnodes];
 			}
 			else
 			{
-				D.f[DIR_M00   ] = &DDStart[DIR_P00   *size_Mat];
-				D.f[DIR_P00   ] = &DDStart[DIR_M00   *size_Mat];
-				D.f[DIR_0M0   ] = &DDStart[DIR_0P0   *size_Mat];
-				D.f[DIR_0P0   ] = &DDStart[DIR_0M0   *size_Mat];
-				D.f[DIR_00M   ] = &DDStart[DIR_00P   *size_Mat];
-				D.f[DIR_00P   ] = &DDStart[DIR_00M   *size_Mat];
-				D.f[DIR_MM0  ] = &DDStart[DIR_PP0  *size_Mat];
-				D.f[DIR_PP0  ] = &DDStart[DIR_MM0  *size_Mat];
-				D.f[DIR_MP0  ] = &DDStart[DIR_PM0  *size_Mat];
-				D.f[DIR_PM0  ] = &DDStart[DIR_MP0  *size_Mat];
-				D.f[DIR_M0M  ] = &DDStart[DIR_P0P  *size_Mat];
-				D.f[DIR_P0P  ] = &DDStart[DIR_M0M  *size_Mat];
-				D.f[DIR_M0P  ] = &DDStart[DIR_P0M  *size_Mat];
-				D.f[DIR_P0M  ] = &DDStart[DIR_M0P  *size_Mat];
-				D.f[DIR_0MM  ] = &DDStart[DIR_0PP  *size_Mat];
-				D.f[DIR_0PP  ] = &DDStart[DIR_0MM  *size_Mat];
-				D.f[DIR_0MP  ] = &DDStart[DIR_0PM  *size_Mat];
-				D.f[DIR_0PM  ] = &DDStart[DIR_0MP  *size_Mat];
-				D.f[DIR_000] = &DDStart[DIR_000*size_Mat];
-				D.f[DIR_MMM ] = &DDStart[DIR_PPP *size_Mat];
-				D.f[DIR_PPM ] = &DDStart[DIR_MMP *size_Mat];
-				D.f[DIR_MPM ] = &DDStart[DIR_PMP *size_Mat];
-				D.f[DIR_PMM ] = &DDStart[DIR_MPP *size_Mat];
-				D.f[DIR_MMP ] = &DDStart[DIR_PPM *size_Mat];
-				D.f[DIR_PPP ] = &DDStart[DIR_MMM *size_Mat];
-				D.f[DIR_MPP ] = &DDStart[DIR_PMM *size_Mat];
-				D.f[DIR_PMP ] = &DDStart[DIR_MPM *size_Mat];
+				D.f[DIR_M00] = &DDStart[DIR_P00 * numberOfLBnodes];
+				D.f[DIR_P00] = &DDStart[DIR_M00 * numberOfLBnodes];
+				D.f[DIR_0M0] = &DDStart[DIR_0P0 * numberOfLBnodes];
+				D.f[DIR_0P0] = &DDStart[DIR_0M0 * numberOfLBnodes];
+				D.f[DIR_00M] = &DDStart[DIR_00P * numberOfLBnodes];
+				D.f[DIR_00P] = &DDStart[DIR_00M * numberOfLBnodes];
+				D.f[DIR_MM0] = &DDStart[DIR_PP0 * numberOfLBnodes];
+				D.f[DIR_PP0] = &DDStart[DIR_MM0 * numberOfLBnodes];
+				D.f[DIR_MP0] = &DDStart[DIR_PM0 * numberOfLBnodes];
+				D.f[DIR_PM0] = &DDStart[DIR_MP0 * numberOfLBnodes];
+				D.f[DIR_M0M] = &DDStart[DIR_P0P * numberOfLBnodes];
+				D.f[DIR_P0P] = &DDStart[DIR_M0M * numberOfLBnodes];
+				D.f[DIR_M0P] = &DDStart[DIR_P0M * numberOfLBnodes];
+				D.f[DIR_P0M] = &DDStart[DIR_M0P * numberOfLBnodes];
+				D.f[DIR_0MM] = &DDStart[DIR_0PP * numberOfLBnodes];
+				D.f[DIR_0PP] = &DDStart[DIR_0MM * numberOfLBnodes];
+				D.f[DIR_0MP] = &DDStart[DIR_0PM * numberOfLBnodes];
+				D.f[DIR_0PM] = &DDStart[DIR_0MP * numberOfLBnodes];
+				D.f[DIR_000] = &DDStart[DIR_000 * numberOfLBnodes];
+				D.f[DIR_MMM] = &DDStart[DIR_PPP * numberOfLBnodes];
+				D.f[DIR_PPM] = &DDStart[DIR_MMP * numberOfLBnodes];
+				D.f[DIR_MPM] = &DDStart[DIR_PMP * numberOfLBnodes];
+				D.f[DIR_PMM] = &DDStart[DIR_MPP * numberOfLBnodes];
+				D.f[DIR_MMP] = &DDStart[DIR_PPM * numberOfLBnodes];
+				D.f[DIR_PPP] = &DDStart[DIR_MMM * numberOfLBnodes];
+				D.f[DIR_MPP] = &DDStart[DIR_PMM * numberOfLBnodes];
+				D.f[DIR_PMP] = &DDStart[DIR_MPM * numberOfLBnodes];
 			}
 
 			////////////////////////////////////////////////////////////////////////////////
@@ -129,33 +129,33 @@ __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			//unsigned int ktne = k;
 			unsigned int kbsw = neighborZ[ksw];
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			real mfcbb = (D.f[DIR_P00   ])[k  ];//[ke   ];// +  c2over27 ;(D.f[DIR_P00   ])[k  ];//ke
-			real mfabb = (D.f[DIR_M00   ])[kw ];//[kw   ];// +  c2over27 ;(D.f[DIR_M00   ])[kw ];
-			real mfbcb = (D.f[DIR_0P0   ])[k  ];//[kn   ];// +  c2over27 ;(D.f[DIR_0P0   ])[k  ];//kn
-			real mfbab = (D.f[DIR_0M0   ])[ks ];//[ks   ];// +  c2over27 ;(D.f[DIR_0M0   ])[ks ];
-			real mfbbc = (D.f[DIR_00P   ])[k  ];//[kt   ];// +  c2over27 ;(D.f[DIR_00P   ])[k  ];//kt
-			real mfbba = (D.f[DIR_00M   ])[kb ];//[kb   ];// +  c2over27 ;(D.f[DIR_00M   ])[kb ];
-			real mfccb = (D.f[DIR_PP0  ])[k  ];//[kne  ];// +  c1over54 ;(D.f[DIR_PP0  ])[k  ];//kne
-			real mfaab = (D.f[DIR_MM0  ])[ksw];//[ksw  ];// +  c1over54 ;(D.f[DIR_MM0  ])[ksw];
-			real mfcab = (D.f[DIR_PM0  ])[ks ];//[kse  ];// +  c1over54 ;(D.f[DIR_PM0  ])[ks ];//kse
-			real mfacb = (D.f[DIR_MP0  ])[kw ];//[knw  ];// +  c1over54 ;(D.f[DIR_MP0  ])[kw ];//knw
-			real mfcbc = (D.f[DIR_P0P  ])[k  ];//[kte  ];// +  c1over54 ;(D.f[DIR_P0P  ])[k  ];//kte
-			real mfaba = (D.f[DIR_M0M  ])[kbw];//[kbw  ];// +  c1over54 ;(D.f[DIR_M0M  ])[kbw];
-			real mfcba = (D.f[DIR_P0M  ])[kb ];//[kbe  ];// +  c1over54 ;(D.f[DIR_P0M  ])[kb ];//kbe
-			real mfabc = (D.f[DIR_M0P  ])[kw ];//[ktw  ];// +  c1over54 ;(D.f[DIR_M0P  ])[kw ];//ktw
-			real mfbcc = (D.f[DIR_0PP  ])[k  ];//[ktn  ];// +  c1over54 ;(D.f[DIR_0PP  ])[k  ];//ktn
-			real mfbaa = (D.f[DIR_0MM  ])[kbs];//[kbs  ];// +  c1over54 ;(D.f[DIR_0MM  ])[kbs];
-			real mfbca = (D.f[DIR_0PM  ])[kb ];//[kbn  ];// +  c1over54 ;(D.f[DIR_0PM  ])[kb ];//kbn
-			real mfbac = (D.f[DIR_0MP  ])[ks ];//[kts  ];// +  c1over54 ;(D.f[DIR_0MP  ])[ks ];//kts
+			real mfcbb = (D.f[DIR_P00])[k  ];//[ke   ];// +  c2over27 ;(D.f[DIR_P00])[k  ];//ke
+			real mfabb = (D.f[DIR_M00])[kw ];//[kw   ];// +  c2over27 ;(D.f[DIR_M00])[kw ];
+			real mfbcb = (D.f[DIR_0P0])[k  ];//[kn   ];// +  c2over27 ;(D.f[DIR_0P0])[k  ];//kn
+			real mfbab = (D.f[DIR_0M0])[ks ];//[ks   ];// +  c2over27 ;(D.f[DIR_0M0])[ks ];
+			real mfbbc = (D.f[DIR_00P])[k  ];//[kt   ];// +  c2over27 ;(D.f[DIR_00P])[k  ];//kt
+			real mfbba = (D.f[DIR_00M])[kb ];//[kb   ];// +  c2over27 ;(D.f[DIR_00M])[kb ];
+			real mfccb = (D.f[DIR_PP0])[k  ];//[kne  ];// +  c1over54 ;(D.f[DIR_PP0])[k  ];//kne
+			real mfaab = (D.f[DIR_MM0])[ksw];//[ksw  ];// +  c1over54 ;(D.f[DIR_MM0])[ksw];
+			real mfcab = (D.f[DIR_PM0])[ks ];//[kse  ];// +  c1over54 ;(D.f[DIR_PM0])[ks ];//kse
+			real mfacb = (D.f[DIR_MP0])[kw ];//[knw  ];// +  c1over54 ;(D.f[DIR_MP0])[kw ];//knw
+			real mfcbc = (D.f[DIR_P0P])[k  ];//[kte  ];// +  c1over54 ;(D.f[DIR_P0P])[k  ];//kte
+			real mfaba = (D.f[DIR_M0M])[kbw];//[kbw  ];// +  c1over54 ;(D.f[DIR_M0M])[kbw];
+			real mfcba = (D.f[DIR_P0M])[kb ];//[kbe  ];// +  c1over54 ;(D.f[DIR_P0M])[kb ];//kbe
+			real mfabc = (D.f[DIR_M0P])[kw ];//[ktw  ];// +  c1over54 ;(D.f[DIR_M0P])[kw ];//ktw
+			real mfbcc = (D.f[DIR_0PP])[k  ];//[ktn  ];// +  c1over54 ;(D.f[DIR_0PP])[k  ];//ktn
+			real mfbaa = (D.f[DIR_0MM])[kbs];//[kbs  ];// +  c1over54 ;(D.f[DIR_0MM])[kbs];
+			real mfbca = (D.f[DIR_0PM])[kb ];//[kbn  ];// +  c1over54 ;(D.f[DIR_0PM])[kb ];//kbn
+			real mfbac = (D.f[DIR_0MP])[ks ];//[kts  ];// +  c1over54 ;(D.f[DIR_0MP])[ks ];//kts
 			real mfbbb = (D.f[DIR_000])[k  ];//[kzero];// +  c8over27 ;(D.f[DIR_000])[k  ];//kzero
-			real mfccc = (D.f[DIR_PPP ])[k  ];//[ktne ];// +  c1over216;(D.f[DIR_PPP ])[k  ];//ktne
-			real mfaac = (D.f[DIR_MMP ])[ksw];//[ktsw ];// +  c1over216;(D.f[DIR_MMP ])[ksw];//ktsw
-			real mfcac = (D.f[DIR_PMP ])[ks ];//[ktse ];// +  c1over216;(D.f[DIR_PMP ])[ks ];//ktse
-			real mfacc = (D.f[DIR_MPP ])[kw ];//[ktnw ];// +  c1over216;(D.f[DIR_MPP ])[kw ];//ktnw
-			real mfcca = (D.f[DIR_PPM ])[kb ];//[kbne ];// +  c1over216;(D.f[DIR_PPM ])[kb ];//kbne
-			real mfaaa = (D.f[DIR_MMM ])[kbsw];//[kbsw ];// +  c1over216;(D.f[DIR_MMM ])[kbsw];
-			real mfcaa = (D.f[DIR_PMM ])[kbs];//[kbse ];// +  c1over216;(D.f[DIR_PMM ])[kbs];//kbse
-			real mfaca = (D.f[DIR_MPM ])[kbw];//[kbnw ];// +  c1over216;(D.f[DIR_MPM ])[kbw];//kbnw
+			real mfccc = (D.f[DIR_PPP])[k  ];//[ktne ];// +  c1over216;(D.f[DIR_PPP])[k  ];//ktne
+			real mfaac = (D.f[DIR_MMP])[ksw];//[ktsw ];// +  c1over216;(D.f[DIR_MMP])[ksw];//ktsw
+			real mfcac = (D.f[DIR_PMP])[ks ];//[ktse ];// +  c1over216;(D.f[DIR_PMP])[ks ];//ktse
+			real mfacc = (D.f[DIR_MPP])[kw ];//[ktnw ];// +  c1over216;(D.f[DIR_MPP])[kw ];//ktnw
+			real mfcca = (D.f[DIR_PPM])[kb ];//[kbne ];// +  c1over216;(D.f[DIR_PPM])[kb ];//kbne
+			real mfaaa = (D.f[DIR_MMM])[kbsw];//[kbsw ];// +  c1over216;(D.f[DIR_MMM])[kbsw];
+			real mfcaa = (D.f[DIR_PMM])[kbs];//[kbse ];// +  c1over216;(D.f[DIR_PMM])[kbs];//kbse
+			real mfaca = (D.f[DIR_MPM])[kbw];//[kbnw ];// +  c1over216;(D.f[DIR_MPM])[kbw];//kbnw
 			////////////////////////////////////////////////////////////////////////////////////
 			//slow
 			//real oMdrho = one - ((((mfccc+mfaaa) + (mfaca+mfcac)) + ((mfacc+mfcaa) + (mfaac+mfcca))) + 
@@ -842,7 +842,7 @@ __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 														   unsigned int* neighborY,
 														   unsigned int* neighborZ,
 														   real* DDStart,
-														   int size_Mat,
+														   unsigned long long numberOfLBnodes,
 														   bool EvenOrOdd)
 {
    ////////////////////////////////////////////////////////////////////////////////
@@ -856,7 +856,7 @@ __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<size_Mat)
+   if(k<numberOfLBnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       unsigned int BC;
@@ -867,63 +867,63 @@ __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
          Distributions27 D;
          if (EvenOrOdd==true)
          {
-            D.f[DIR_P00   ] = &DDStart[DIR_P00   *size_Mat];
-            D.f[DIR_M00   ] = &DDStart[DIR_M00   *size_Mat];
-            D.f[DIR_0P0   ] = &DDStart[DIR_0P0   *size_Mat];
-            D.f[DIR_0M0   ] = &DDStart[DIR_0M0   *size_Mat];
-            D.f[DIR_00P   ] = &DDStart[DIR_00P   *size_Mat];
-            D.f[DIR_00M   ] = &DDStart[DIR_00M   *size_Mat];
-            D.f[DIR_PP0  ] = &DDStart[DIR_PP0  *size_Mat];
-            D.f[DIR_MM0  ] = &DDStart[DIR_MM0  *size_Mat];
-            D.f[DIR_PM0  ] = &DDStart[DIR_PM0  *size_Mat];
-            D.f[DIR_MP0  ] = &DDStart[DIR_MP0  *size_Mat];
-            D.f[DIR_P0P  ] = &DDStart[DIR_P0P  *size_Mat];
-            D.f[DIR_M0M  ] = &DDStart[DIR_M0M  *size_Mat];
-            D.f[DIR_P0M  ] = &DDStart[DIR_P0M  *size_Mat];
-            D.f[DIR_M0P  ] = &DDStart[DIR_M0P  *size_Mat];
-            D.f[DIR_0PP  ] = &DDStart[DIR_0PP  *size_Mat];
-            D.f[DIR_0MM  ] = &DDStart[DIR_0MM  *size_Mat];
-            D.f[DIR_0PM  ] = &DDStart[DIR_0PM  *size_Mat];
-            D.f[DIR_0MP  ] = &DDStart[DIR_0MP  *size_Mat];
-            D.f[DIR_000] = &DDStart[DIR_000*size_Mat];
-            D.f[DIR_PPP ] = &DDStart[DIR_PPP *size_Mat];
-            D.f[DIR_MMP ] = &DDStart[DIR_MMP *size_Mat];
-            D.f[DIR_PMP ] = &DDStart[DIR_PMP *size_Mat];
-            D.f[DIR_MPP ] = &DDStart[DIR_MPP *size_Mat];
-            D.f[DIR_PPM ] = &DDStart[DIR_PPM *size_Mat];
-            D.f[DIR_MMM ] = &DDStart[DIR_MMM *size_Mat];
-            D.f[DIR_PMM ] = &DDStart[DIR_PMM *size_Mat];
-            D.f[DIR_MPM ] = &DDStart[DIR_MPM *size_Mat];
+            D.f[DIR_P00] = &DDStart[DIR_P00 * numberOfLBnodes];
+            D.f[DIR_M00] = &DDStart[DIR_M00 * numberOfLBnodes];
+            D.f[DIR_0P0] = &DDStart[DIR_0P0 * numberOfLBnodes];
+            D.f[DIR_0M0] = &DDStart[DIR_0M0 * numberOfLBnodes];
+            D.f[DIR_00P] = &DDStart[DIR_00P * numberOfLBnodes];
+            D.f[DIR_00M] = &DDStart[DIR_00M * numberOfLBnodes];
+            D.f[DIR_PP0] = &DDStart[DIR_PP0 * numberOfLBnodes];
+            D.f[DIR_MM0] = &DDStart[DIR_MM0 * numberOfLBnodes];
+            D.f[DIR_PM0] = &DDStart[DIR_PM0 * numberOfLBnodes];
+            D.f[DIR_MP0] = &DDStart[DIR_MP0 * numberOfLBnodes];
+            D.f[DIR_P0P] = &DDStart[DIR_P0P * numberOfLBnodes];
+            D.f[DIR_M0M] = &DDStart[DIR_M0M * numberOfLBnodes];
+            D.f[DIR_P0M] = &DDStart[DIR_P0M * numberOfLBnodes];
+            D.f[DIR_M0P] = &DDStart[DIR_M0P * numberOfLBnodes];
+            D.f[DIR_0PP] = &DDStart[DIR_0PP * numberOfLBnodes];
+            D.f[DIR_0MM] = &DDStart[DIR_0MM * numberOfLBnodes];
+            D.f[DIR_0PM] = &DDStart[DIR_0PM * numberOfLBnodes];
+            D.f[DIR_0MP] = &DDStart[DIR_0MP * numberOfLBnodes];
+            D.f[DIR_000] = &DDStart[DIR_000 * numberOfLBnodes];
+            D.f[DIR_PPP] = &DDStart[DIR_PPP * numberOfLBnodes];
+            D.f[DIR_MMP] = &DDStart[DIR_MMP * numberOfLBnodes];
+            D.f[DIR_PMP] = &DDStart[DIR_PMP * numberOfLBnodes];
+            D.f[DIR_MPP] = &DDStart[DIR_MPP * numberOfLBnodes];
+            D.f[DIR_PPM] = &DDStart[DIR_PPM * numberOfLBnodes];
+            D.f[DIR_MMM] = &DDStart[DIR_MMM * numberOfLBnodes];
+            D.f[DIR_PMM] = &DDStart[DIR_PMM * numberOfLBnodes];
+            D.f[DIR_MPM] = &DDStart[DIR_MPM * numberOfLBnodes];
          }
          else
          {
-            D.f[DIR_M00   ] = &DDStart[DIR_P00   *size_Mat];
-            D.f[DIR_P00   ] = &DDStart[DIR_M00   *size_Mat];
-            D.f[DIR_0M0   ] = &DDStart[DIR_0P0   *size_Mat];
-            D.f[DIR_0P0   ] = &DDStart[DIR_0M0   *size_Mat];
-            D.f[DIR_00M   ] = &DDStart[DIR_00P   *size_Mat];
-            D.f[DIR_00P   ] = &DDStart[DIR_00M   *size_Mat];
-            D.f[DIR_MM0  ] = &DDStart[DIR_PP0  *size_Mat];
-            D.f[DIR_PP0  ] = &DDStart[DIR_MM0  *size_Mat];
-            D.f[DIR_MP0  ] = &DDStart[DIR_PM0  *size_Mat];
-            D.f[DIR_PM0  ] = &DDStart[DIR_MP0  *size_Mat];
-            D.f[DIR_M0M  ] = &DDStart[DIR_P0P  *size_Mat];
-            D.f[DIR_P0P  ] = &DDStart[DIR_M0M  *size_Mat];
-            D.f[DIR_M0P  ] = &DDStart[DIR_P0M  *size_Mat];
-            D.f[DIR_P0M  ] = &DDStart[DIR_M0P  *size_Mat];
-            D.f[DIR_0MM  ] = &DDStart[DIR_0PP  *size_Mat];
-            D.f[DIR_0PP  ] = &DDStart[DIR_0MM  *size_Mat];
-            D.f[DIR_0MP  ] = &DDStart[DIR_0PM  *size_Mat];
-            D.f[DIR_0PM  ] = &DDStart[DIR_0MP  *size_Mat];
-            D.f[DIR_000] = &DDStart[DIR_000*size_Mat];
-            D.f[DIR_MMM ] = &DDStart[DIR_PPP *size_Mat];
-            D.f[DIR_PPM ] = &DDStart[DIR_MMP *size_Mat];
-            D.f[DIR_MPM ] = &DDStart[DIR_PMP *size_Mat];
-            D.f[DIR_PMM ] = &DDStart[DIR_MPP *size_Mat];
-            D.f[DIR_MMP ] = &DDStart[DIR_PPM *size_Mat];
-            D.f[DIR_PPP ] = &DDStart[DIR_MMM *size_Mat];
-            D.f[DIR_MPP ] = &DDStart[DIR_PMM *size_Mat];
-            D.f[DIR_PMP ] = &DDStart[DIR_MPM *size_Mat];
+            D.f[DIR_M00] = &DDStart[DIR_P00 * numberOfLBnodes];
+            D.f[DIR_P00] = &DDStart[DIR_M00 * numberOfLBnodes];
+            D.f[DIR_0M0] = &DDStart[DIR_0P0 * numberOfLBnodes];
+            D.f[DIR_0P0] = &DDStart[DIR_0M0 * numberOfLBnodes];
+            D.f[DIR_00M] = &DDStart[DIR_00P * numberOfLBnodes];
+            D.f[DIR_00P] = &DDStart[DIR_00M * numberOfLBnodes];
+            D.f[DIR_MM0] = &DDStart[DIR_PP0 * numberOfLBnodes];
+            D.f[DIR_PP0] = &DDStart[DIR_MM0 * numberOfLBnodes];
+            D.f[DIR_MP0] = &DDStart[DIR_PM0 * numberOfLBnodes];
+            D.f[DIR_PM0] = &DDStart[DIR_MP0 * numberOfLBnodes];
+            D.f[DIR_M0M] = &DDStart[DIR_P0P * numberOfLBnodes];
+            D.f[DIR_P0P] = &DDStart[DIR_M0M * numberOfLBnodes];
+            D.f[DIR_M0P] = &DDStart[DIR_P0M * numberOfLBnodes];
+            D.f[DIR_P0M] = &DDStart[DIR_M0P * numberOfLBnodes];
+            D.f[DIR_0MM] = &DDStart[DIR_0PP * numberOfLBnodes];
+            D.f[DIR_0PP] = &DDStart[DIR_0MM * numberOfLBnodes];
+            D.f[DIR_0MP] = &DDStart[DIR_0PM * numberOfLBnodes];
+            D.f[DIR_0PM] = &DDStart[DIR_0MP * numberOfLBnodes];
+            D.f[DIR_000] = &DDStart[DIR_000 * numberOfLBnodes];
+            D.f[DIR_MMM] = &DDStart[DIR_PPP * numberOfLBnodes];
+            D.f[DIR_PPM] = &DDStart[DIR_MMP * numberOfLBnodes];
+            D.f[DIR_MPM] = &DDStart[DIR_PMP * numberOfLBnodes];
+            D.f[DIR_PMM] = &DDStart[DIR_MPP * numberOfLBnodes];
+            D.f[DIR_MMP] = &DDStart[DIR_PPM * numberOfLBnodes];
+            D.f[DIR_PPP] = &DDStart[DIR_MMM * numberOfLBnodes];
+            D.f[DIR_MPP] = &DDStart[DIR_PMM * numberOfLBnodes];
+            D.f[DIR_PMP] = &DDStart[DIR_MPM * numberOfLBnodes];
          }
 
          ////////////////////////////////////////////////////////////////////////////////
@@ -956,33 +956,33 @@ __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
          unsigned int ktne = k;
          unsigned int kbsw = neighborZ[ksw];
          //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-         real f_E     = (D.f[DIR_P00   ])[ke   ];// +  c2over27 ;
-         real f_W     = (D.f[DIR_M00   ])[kw   ];// +  c2over27 ;
-         real f_N     = (D.f[DIR_0P0   ])[kn   ];// +  c2over27 ;
-         real f_S     = (D.f[DIR_0M0   ])[ks   ];// +  c2over27 ;
-         real f_F     = (D.f[DIR_00P   ])[kt   ];// +  c2over27 ;
-         real f_B     = (D.f[DIR_00M   ])[kb   ];// +  c2over27 ;
-         real f_NE    = (D.f[DIR_PP0  ])[kne  ];// +  c1over54 ;
-         real f_SW    = (D.f[DIR_MM0  ])[ksw  ];// +  c1over54 ;
-         real f_SE    = (D.f[DIR_PM0  ])[kse  ];// +  c1over54 ;
-         real f_NW    = (D.f[DIR_MP0  ])[knw  ];// +  c1over54 ;
-         real f_Ef    = (D.f[DIR_P0P  ])[kte  ];// +  c1over54 ;
-         real f_Wb    = (D.f[DIR_M0M  ])[kbw  ];// +  c1over54 ;
-         real f_Eb    = (D.f[DIR_P0M  ])[kbe  ];// +  c1over54 ;
-         real f_Wf    = (D.f[DIR_M0P  ])[ktw  ];// +  c1over54 ;
-         real f_Nf    = (D.f[DIR_0PP  ])[ktn  ];// +  c1over54 ;
-         real f_Sb    = (D.f[DIR_0MM  ])[kbs  ];// +  c1over54 ;
-         real f_Nb    = (D.f[DIR_0PM  ])[kbn  ];// +  c1over54 ;
-         real f_Sf    = (D.f[DIR_0MP  ])[kts  ];// +  c1over54 ;
+         real f_E     = (D.f[DIR_P00])[ke   ];// +  c2over27 ;
+         real f_W     = (D.f[DIR_M00])[kw   ];// +  c2over27 ;
+         real f_N     = (D.f[DIR_0P0])[kn   ];// +  c2over27 ;
+         real f_S     = (D.f[DIR_0M0])[ks   ];// +  c2over27 ;
+         real f_F     = (D.f[DIR_00P])[kt   ];// +  c2over27 ;
+         real f_B     = (D.f[DIR_00M])[kb   ];// +  c2over27 ;
+         real f_NE    = (D.f[DIR_PP0])[kne  ];// +  c1over54 ;
+         real f_SW    = (D.f[DIR_MM0])[ksw  ];// +  c1over54 ;
+         real f_SE    = (D.f[DIR_PM0])[kse  ];// +  c1over54 ;
+         real f_NW    = (D.f[DIR_MP0])[knw  ];// +  c1over54 ;
+         real f_Ef    = (D.f[DIR_P0P])[kte  ];// +  c1over54 ;
+         real f_Wb    = (D.f[DIR_M0M])[kbw  ];// +  c1over54 ;
+         real f_Eb    = (D.f[DIR_P0M])[kbe  ];// +  c1over54 ;
+         real f_Wf    = (D.f[DIR_M0P])[ktw  ];// +  c1over54 ;
+         real f_Nf    = (D.f[DIR_0PP])[ktn  ];// +  c1over54 ;
+         real f_Sb    = (D.f[DIR_0MM])[kbs  ];// +  c1over54 ;
+         real f_Nb    = (D.f[DIR_0PM])[kbn  ];// +  c1over54 ;
+         real f_Sf    = (D.f[DIR_0MP])[kts  ];// +  c1over54 ;
          real f_R     = (D.f[DIR_000])[kzero];// +  c8over27 ;
-         real f_Nef   = (D.f[DIR_PPP ])[ktne ];// +  c1over216;
-         real f_Swf   = (D.f[DIR_MMP ])[ktsw ];// +  c1over216;
-         real f_Sef   = (D.f[DIR_PMP ])[ktse ];// +  c1over216;
-         real f_Nwf   = (D.f[DIR_MPP ])[ktnw ];// +  c1over216;
-         real f_Neb   = (D.f[DIR_PPM ])[kbne ];// +  c1over216;
-         real f_Swb   = (D.f[DIR_MMM ])[kbsw ];// +  c1over216;
-         real f_Seb   = (D.f[DIR_PMM ])[kbse ];// +  c1over216;
-         real f_Nwb   = (D.f[DIR_MPM ])[kbnw ];// +  c1over216;
+         real f_Nef   = (D.f[DIR_PPP])[ktne ];// +  c1over216;
+         real f_Swf   = (D.f[DIR_MMP])[ktsw ];// +  c1over216;
+         real f_Sef   = (D.f[DIR_PMP])[ktse ];// +  c1over216;
+         real f_Nwf   = (D.f[DIR_MPP])[ktnw ];// +  c1over216;
+         real f_Neb   = (D.f[DIR_PPM])[kbne ];// +  c1over216;
+         real f_Swb   = (D.f[DIR_MMM])[kbsw ];// +  c1over216;
+         real f_Seb   = (D.f[DIR_PMM])[kbse ];// +  c1over216;
+         real f_Nwb   = (D.f[DIR_MPM])[kbnw ];// +  c1over216;
          ////////////////////////////////////////////////////////////////////////////////////
 		 real rho=f_NW+f_W+f_SW+f_S+f_SE+f_E+f_NE+f_N+f_R+f_Nf+f_Nb+f_Sf+f_Sb+f_Ef+f_Eb+f_Wf+f_Wb+f_Nwf+f_Nwb+f_Nef+f_Neb+f_Swf+f_Swb+f_Sef+f_Seb+f_F+f_B+c1o1;// ACHTUNG ne EINS !!!!!!!!
 		 real pix=(f_NE+f_E+f_SE+f_Ef+f_Eb-f_NW-f_W-f_SW-f_Wf-f_Wb+f_Nef+f_Neb+f_Sef+f_Seb-f_Nwf-f_Nwb-f_Swf-f_Swb);
@@ -1689,7 +1689,7 @@ __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  real omega,
                                                          unsigned int* neighborY,
                                                          unsigned int* neighborZ,
                                                          real* DDStart,
-                                                         int size_Mat,
+                                                         unsigned long long numberOfLBnodes,
                                                          bool EvenOrOdd)
 {
    ////////////////////////////////////////////////////////////////////////////////
@@ -1703,7 +1703,7 @@ __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  real omega,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<size_Mat)
+   if(k<numberOfLBnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       unsigned int BC;
@@ -1714,63 +1714,63 @@ __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  real omega,
          Distributions27 D;
          if (EvenOrOdd==true)
          {
-            D.f[DIR_P00   ] = &DDStart[DIR_P00   *size_Mat];
-            D.f[DIR_M00   ] = &DDStart[DIR_M00   *size_Mat];
-            D.f[DIR_0P0   ] = &DDStart[DIR_0P0   *size_Mat];
-            D.f[DIR_0M0   ] = &DDStart[DIR_0M0   *size_Mat];
-            D.f[DIR_00P   ] = &DDStart[DIR_00P   *size_Mat];
-            D.f[DIR_00M   ] = &DDStart[DIR_00M   *size_Mat];
-            D.f[DIR_PP0  ] = &DDStart[DIR_PP0  *size_Mat];
-            D.f[DIR_MM0  ] = &DDStart[DIR_MM0  *size_Mat];
-            D.f[DIR_PM0  ] = &DDStart[DIR_PM0  *size_Mat];
-            D.f[DIR_MP0  ] = &DDStart[DIR_MP0  *size_Mat];
-            D.f[DIR_P0P  ] = &DDStart[DIR_P0P  *size_Mat];
-            D.f[DIR_M0M  ] = &DDStart[DIR_M0M  *size_Mat];
-            D.f[DIR_P0M  ] = &DDStart[DIR_P0M  *size_Mat];
-            D.f[DIR_M0P  ] = &DDStart[DIR_M0P  *size_Mat];
-            D.f[DIR_0PP  ] = &DDStart[DIR_0PP  *size_Mat];
-            D.f[DIR_0MM  ] = &DDStart[DIR_0MM  *size_Mat];
-            D.f[DIR_0PM  ] = &DDStart[DIR_0PM  *size_Mat];
-            D.f[DIR_0MP  ] = &DDStart[DIR_0MP  *size_Mat];
-            D.f[DIR_000] = &DDStart[DIR_000*size_Mat];
-            D.f[DIR_PPP ] = &DDStart[DIR_PPP *size_Mat];
-            D.f[DIR_MMP ] = &DDStart[DIR_MMP *size_Mat];
-            D.f[DIR_PMP ] = &DDStart[DIR_PMP *size_Mat];
-            D.f[DIR_MPP ] = &DDStart[DIR_MPP *size_Mat];
-            D.f[DIR_PPM ] = &DDStart[DIR_PPM *size_Mat];
-            D.f[DIR_MMM ] = &DDStart[DIR_MMM *size_Mat];
-            D.f[DIR_PMM ] = &DDStart[DIR_PMM *size_Mat];
-            D.f[DIR_MPM ] = &DDStart[DIR_MPM *size_Mat];
+            D.f[DIR_P00] = &DDStart[DIR_P00 * numberOfLBnodes];
+            D.f[DIR_M00] = &DDStart[DIR_M00 * numberOfLBnodes];
+            D.f[DIR_0P0] = &DDStart[DIR_0P0 * numberOfLBnodes];
+            D.f[DIR_0M0] = &DDStart[DIR_0M0 * numberOfLBnodes];
+            D.f[DIR_00P] = &DDStart[DIR_00P * numberOfLBnodes];
+            D.f[DIR_00M] = &DDStart[DIR_00M * numberOfLBnodes];
+            D.f[DIR_PP0] = &DDStart[DIR_PP0 * numberOfLBnodes];
+            D.f[DIR_MM0] = &DDStart[DIR_MM0 * numberOfLBnodes];
+            D.f[DIR_PM0] = &DDStart[DIR_PM0 * numberOfLBnodes];
+            D.f[DIR_MP0] = &DDStart[DIR_MP0 * numberOfLBnodes];
+            D.f[DIR_P0P] = &DDStart[DIR_P0P * numberOfLBnodes];
+            D.f[DIR_M0M] = &DDStart[DIR_M0M * numberOfLBnodes];
+            D.f[DIR_P0M] = &DDStart[DIR_P0M * numberOfLBnodes];
+            D.f[DIR_M0P] = &DDStart[DIR_M0P * numberOfLBnodes];
+            D.f[DIR_0PP] = &DDStart[DIR_0PP * numberOfLBnodes];
+            D.f[DIR_0MM] = &DDStart[DIR_0MM * numberOfLBnodes];
+            D.f[DIR_0PM] = &DDStart[DIR_0PM * numberOfLBnodes];
+            D.f[DIR_0MP] = &DDStart[DIR_0MP * numberOfLBnodes];
+            D.f[DIR_000] = &DDStart[DIR_000 * numberOfLBnodes];
+            D.f[DIR_PPP] = &DDStart[DIR_PPP * numberOfLBnodes];
+            D.f[DIR_MMP] = &DDStart[DIR_MMP * numberOfLBnodes];
+            D.f[DIR_PMP] = &DDStart[DIR_PMP * numberOfLBnodes];
+            D.f[DIR_MPP] = &DDStart[DIR_MPP * numberOfLBnodes];
+            D.f[DIR_PPM] = &DDStart[DIR_PPM * numberOfLBnodes];
+            D.f[DIR_MMM] = &DDStart[DIR_MMM * numberOfLBnodes];
+            D.f[DIR_PMM] = &DDStart[DIR_PMM * numberOfLBnodes];
+            D.f[DIR_MPM] = &DDStart[DIR_MPM * numberOfLBnodes];
          }
          else
          {
-            D.f[DIR_M00   ] = &DDStart[DIR_P00   *size_Mat];
-            D.f[DIR_P00   ] = &DDStart[DIR_M00   *size_Mat];
-            D.f[DIR_0M0   ] = &DDStart[DIR_0P0   *size_Mat];
-            D.f[DIR_0P0   ] = &DDStart[DIR_0M0   *size_Mat];
-            D.f[DIR_00M   ] = &DDStart[DIR_00P   *size_Mat];
-            D.f[DIR_00P   ] = &DDStart[DIR_00M   *size_Mat];
-            D.f[DIR_MM0  ] = &DDStart[DIR_PP0  *size_Mat];
-            D.f[DIR_PP0  ] = &DDStart[DIR_MM0  *size_Mat];
-            D.f[DIR_MP0  ] = &DDStart[DIR_PM0  *size_Mat];
-            D.f[DIR_PM0  ] = &DDStart[DIR_MP0  *size_Mat];
-            D.f[DIR_M0M  ] = &DDStart[DIR_P0P  *size_Mat];
-            D.f[DIR_P0P  ] = &DDStart[DIR_M0M  *size_Mat];
-            D.f[DIR_M0P  ] = &DDStart[DIR_P0M  *size_Mat];
-            D.f[DIR_P0M  ] = &DDStart[DIR_M0P  *size_Mat];
-            D.f[DIR_0MM  ] = &DDStart[DIR_0PP  *size_Mat];
-            D.f[DIR_0PP  ] = &DDStart[DIR_0MM  *size_Mat];
-            D.f[DIR_0MP  ] = &DDStart[DIR_0PM  *size_Mat];
-            D.f[DIR_0PM  ] = &DDStart[DIR_0MP  *size_Mat];
-            D.f[DIR_000] = &DDStart[DIR_000*size_Mat];
-            D.f[DIR_MMM ] = &DDStart[DIR_PPP *size_Mat];
-            D.f[DIR_PPM ] = &DDStart[DIR_MMP *size_Mat];
-            D.f[DIR_MPM ] = &DDStart[DIR_PMP *size_Mat];
-            D.f[DIR_PMM ] = &DDStart[DIR_MPP *size_Mat];
-            D.f[DIR_MMP ] = &DDStart[DIR_PPM *size_Mat];
-            D.f[DIR_PPP ] = &DDStart[DIR_MMM *size_Mat];
-            D.f[DIR_MPP ] = &DDStart[DIR_PMM *size_Mat];
-            D.f[DIR_PMP ] = &DDStart[DIR_MPM *size_Mat];
+            D.f[DIR_M00] = &DDStart[DIR_P00 * numberOfLBnodes];
+            D.f[DIR_P00] = &DDStart[DIR_M00 * numberOfLBnodes];
+            D.f[DIR_0M0] = &DDStart[DIR_0P0 * numberOfLBnodes];
+            D.f[DIR_0P0] = &DDStart[DIR_0M0 * numberOfLBnodes];
+            D.f[DIR_00M] = &DDStart[DIR_00P * numberOfLBnodes];
+            D.f[DIR_00P] = &DDStart[DIR_00M * numberOfLBnodes];
+            D.f[DIR_MM0] = &DDStart[DIR_PP0 * numberOfLBnodes];
+            D.f[DIR_PP0] = &DDStart[DIR_MM0 * numberOfLBnodes];
+            D.f[DIR_MP0] = &DDStart[DIR_PM0 * numberOfLBnodes];
+            D.f[DIR_PM0] = &DDStart[DIR_MP0 * numberOfLBnodes];
+            D.f[DIR_M0M] = &DDStart[DIR_P0P * numberOfLBnodes];
+            D.f[DIR_P0P] = &DDStart[DIR_M0M * numberOfLBnodes];
+            D.f[DIR_M0P] = &DDStart[DIR_P0M * numberOfLBnodes];
+            D.f[DIR_P0M] = &DDStart[DIR_M0P * numberOfLBnodes];
+            D.f[DIR_0MM] = &DDStart[DIR_0PP * numberOfLBnodes];
+            D.f[DIR_0PP] = &DDStart[DIR_0MM * numberOfLBnodes];
+            D.f[DIR_0MP] = &DDStart[DIR_0PM * numberOfLBnodes];
+            D.f[DIR_0PM] = &DDStart[DIR_0MP * numberOfLBnodes];
+            D.f[DIR_000] = &DDStart[DIR_000 * numberOfLBnodes];
+            D.f[DIR_MMM] = &DDStart[DIR_PPP * numberOfLBnodes];
+            D.f[DIR_PPM] = &DDStart[DIR_MMP * numberOfLBnodes];
+            D.f[DIR_MPM] = &DDStart[DIR_PMP * numberOfLBnodes];
+            D.f[DIR_PMM] = &DDStart[DIR_MPP * numberOfLBnodes];
+            D.f[DIR_MMP] = &DDStart[DIR_PPM * numberOfLBnodes];
+            D.f[DIR_PPP] = &DDStart[DIR_MMM * numberOfLBnodes];
+            D.f[DIR_MPP] = &DDStart[DIR_PMM * numberOfLBnodes];
+            D.f[DIR_PMP] = &DDStart[DIR_MPM * numberOfLBnodes];
          }
 
          ////////////////////////////////////////////////////////////////////////////////
@@ -1803,33 +1803,33 @@ __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  real omega,
          //unsigned int ktne = k;
          unsigned int kbsw = neighborZ[ksw];
          //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-         real fE    =  (D.f[DIR_P00   ])[k  ];//ke
-         real fW    =  (D.f[DIR_M00   ])[kw ];
-         real fN    =  (D.f[DIR_0P0   ])[k  ];//kn
-         real fS    =  (D.f[DIR_0M0   ])[ks ];
-         real fT    =  (D.f[DIR_00P   ])[k  ];//kt
-         real fB    =  (D.f[DIR_00M   ])[kb ];
-         real fNE   =  (D.f[DIR_PP0  ])[k  ];//kne
-         real fSW   =  (D.f[DIR_MM0  ])[ksw];
-         real fSE   =  (D.f[DIR_PM0  ])[ks ];//kse
-         real fNW   =  (D.f[DIR_MP0  ])[kw ];//knw
-         real fTE   =  (D.f[DIR_P0P  ])[k  ];//kte
-         real fBW   =  (D.f[DIR_M0M  ])[kbw];
-         real fBE   =  (D.f[DIR_P0M  ])[kb ];//kbe
-         real fTW   =  (D.f[DIR_M0P  ])[kw ];//ktw
-         real fTN   =  (D.f[DIR_0PP  ])[k  ];//ktn
-         real fBS   =  (D.f[DIR_0MM  ])[kbs];
-         real fBN   =  (D.f[DIR_0PM  ])[kb ];//kbn
-         real fTS   =  (D.f[DIR_0MP  ])[ks ];//kts
+         real fE    =  (D.f[DIR_P00])[k  ];//ke
+         real fW    =  (D.f[DIR_M00])[kw ];
+         real fN    =  (D.f[DIR_0P0])[k  ];//kn
+         real fS    =  (D.f[DIR_0M0])[ks ];
+         real fT    =  (D.f[DIR_00P])[k  ];//kt
+         real fB    =  (D.f[DIR_00M])[kb ];
+         real fNE   =  (D.f[DIR_PP0])[k  ];//kne
+         real fSW   =  (D.f[DIR_MM0])[ksw];
+         real fSE   =  (D.f[DIR_PM0])[ks ];//kse
+         real fNW   =  (D.f[DIR_MP0])[kw ];//knw
+         real fTE   =  (D.f[DIR_P0P])[k  ];//kte
+         real fBW   =  (D.f[DIR_M0M])[kbw];
+         real fBE   =  (D.f[DIR_P0M])[kb ];//kbe
+         real fTW   =  (D.f[DIR_M0P])[kw ];//ktw
+         real fTN   =  (D.f[DIR_0PP])[k  ];//ktn
+         real fBS   =  (D.f[DIR_0MM])[kbs];
+         real fBN   =  (D.f[DIR_0PM])[kb ];//kbn
+         real fTS   =  (D.f[DIR_0MP])[ks ];//kts
          real fZERO =  (D.f[DIR_000])[k  ];//kzero
-         real fTNE   = (D.f[DIR_PPP ])[k  ];//ktne
-         real fTSW   = (D.f[DIR_MMP ])[ksw];//ktsw
-         real fTSE   = (D.f[DIR_PMP ])[ks ];//ktse
-         real fTNW   = (D.f[DIR_MPP ])[kw ];//ktnw
-         real fBNE   = (D.f[DIR_PPM ])[kb ];//kbne
-         real fBSW   = (D.f[DIR_MMM ])[kbsw];
-         real fBSE   = (D.f[DIR_PMM ])[kbs];//kbse
-         real fBNW   = (D.f[DIR_MPM ])[kbw];//kbnw
+         real fTNE   = (D.f[DIR_PPP])[k  ];//ktne
+         real fTSW   = (D.f[DIR_MMP])[ksw];//ktsw
+         real fTSE   = (D.f[DIR_PMP])[ks ];//ktse
+         real fTNW   = (D.f[DIR_MPP])[kw ];//ktnw
+         real fBNE   = (D.f[DIR_PPM])[kb ];//kbne
+         real fBSW   = (D.f[DIR_MMM])[kbsw];
+         real fBSE   = (D.f[DIR_PMM])[kbs];//kbse
+         real fBNW   = (D.f[DIR_MPM])[kbw];//kbnw
          ////////////////////////////////////////////////////////////////////////////////
          real rho0   =  (fTNE+fBSW)+(fTSW+fBNE)+(fTSE+fBNW)+(fTNW+fBSE)+(fNE+fSW)+(fNW+fSE)+(fTE+fBW)+(fBE+fTW)+(fTN+fBS)+(fBN+fTS)+(fE+fW)+(fN+fS)+(fT+fB)+fZERO;
          real rho    =  rho0 + c1o1;
@@ -2321,7 +2321,7 @@ __global__ void LB_Kernel_Casc_SP_MS_27(   real omega,
                                                       unsigned int* neighborY,
                                                       unsigned int* neighborZ,
                                                       real* DDStart,
-                                                      int size_Mat,
+                                                      unsigned long long numberOfLBnodes,
                                                       bool EvenOrOdd)
 {
    ////////////////////////////////////////////////////////////////////////////////
@@ -2335,7 +2335,7 @@ __global__ void LB_Kernel_Casc_SP_MS_27(   real omega,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<size_Mat)
+   if(k<numberOfLBnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       unsigned int BC;
@@ -2346,63 +2346,63 @@ __global__ void LB_Kernel_Casc_SP_MS_27(   real omega,
          Distributions27 D;
          if (EvenOrOdd==true)
          {
-            D.f[DIR_P00   ] = &DDStart[DIR_P00   *size_Mat];
-            D.f[DIR_M00   ] = &DDStart[DIR_M00   *size_Mat];
-            D.f[DIR_0P0   ] = &DDStart[DIR_0P0   *size_Mat];
-            D.f[DIR_0M0   ] = &DDStart[DIR_0M0   *size_Mat];
-            D.f[DIR_00P   ] = &DDStart[DIR_00P   *size_Mat];
-            D.f[DIR_00M   ] = &DDStart[DIR_00M   *size_Mat];
-            D.f[DIR_PP0  ] = &DDStart[DIR_PP0  *size_Mat];
-            D.f[DIR_MM0  ] = &DDStart[DIR_MM0  *size_Mat];
-            D.f[DIR_PM0  ] = &DDStart[DIR_PM0  *size_Mat];
-            D.f[DIR_MP0  ] = &DDStart[DIR_MP0  *size_Mat];
-            D.f[DIR_P0P  ] = &DDStart[DIR_P0P  *size_Mat];
-            D.f[DIR_M0M  ] = &DDStart[DIR_M0M  *size_Mat];
-            D.f[DIR_P0M  ] = &DDStart[DIR_P0M  *size_Mat];
-            D.f[DIR_M0P  ] = &DDStart[DIR_M0P  *size_Mat];
-            D.f[DIR_0PP  ] = &DDStart[DIR_0PP  *size_Mat];
-            D.f[DIR_0MM  ] = &DDStart[DIR_0MM  *size_Mat];
-            D.f[DIR_0PM  ] = &DDStart[DIR_0PM  *size_Mat];
-            D.f[DIR_0MP  ] = &DDStart[DIR_0MP  *size_Mat];
-            D.f[DIR_000] = &DDStart[DIR_000*size_Mat];
-            D.f[DIR_PPP ] = &DDStart[DIR_PPP *size_Mat];
-            D.f[DIR_MMP ] = &DDStart[DIR_MMP *size_Mat];
-            D.f[DIR_PMP ] = &DDStart[DIR_PMP *size_Mat];
-            D.f[DIR_MPP ] = &DDStart[DIR_MPP *size_Mat];
-            D.f[DIR_PPM ] = &DDStart[DIR_PPM *size_Mat];
-            D.f[DIR_MMM ] = &DDStart[DIR_MMM *size_Mat];
-            D.f[DIR_PMM ] = &DDStart[DIR_PMM *size_Mat];
-            D.f[DIR_MPM ] = &DDStart[DIR_MPM *size_Mat];
+            D.f[DIR_P00] = &DDStart[DIR_P00 * numberOfLBnodes];
+            D.f[DIR_M00] = &DDStart[DIR_M00 * numberOfLBnodes];
+            D.f[DIR_0P0] = &DDStart[DIR_0P0 * numberOfLBnodes];
+            D.f[DIR_0M0] = &DDStart[DIR_0M0 * numberOfLBnodes];
+            D.f[DIR_00P] = &DDStart[DIR_00P * numberOfLBnodes];
+            D.f[DIR_00M] = &DDStart[DIR_00M * numberOfLBnodes];
+            D.f[DIR_PP0] = &DDStart[DIR_PP0 * numberOfLBnodes];
+            D.f[DIR_MM0] = &DDStart[DIR_MM0 * numberOfLBnodes];
+            D.f[DIR_PM0] = &DDStart[DIR_PM0 * numberOfLBnodes];
+            D.f[DIR_MP0] = &DDStart[DIR_MP0 * numberOfLBnodes];
+            D.f[DIR_P0P] = &DDStart[DIR_P0P * numberOfLBnodes];
+            D.f[DIR_M0M] = &DDStart[DIR_M0M * numberOfLBnodes];
+            D.f[DIR_P0M] = &DDStart[DIR_P0M * numberOfLBnodes];
+            D.f[DIR_M0P] = &DDStart[DIR_M0P * numberOfLBnodes];
+            D.f[DIR_0PP] = &DDStart[DIR_0PP * numberOfLBnodes];
+            D.f[DIR_0MM] = &DDStart[DIR_0MM * numberOfLBnodes];
+            D.f[DIR_0PM] = &DDStart[DIR_0PM * numberOfLBnodes];
+            D.f[DIR_0MP] = &DDStart[DIR_0MP * numberOfLBnodes];
+            D.f[DIR_000] = &DDStart[DIR_000 * numberOfLBnodes];
+            D.f[DIR_PPP] = &DDStart[DIR_PPP * numberOfLBnodes];
+            D.f[DIR_MMP] = &DDStart[DIR_MMP * numberOfLBnodes];
+            D.f[DIR_PMP] = &DDStart[DIR_PMP * numberOfLBnodes];
+            D.f[DIR_MPP] = &DDStart[DIR_MPP * numberOfLBnodes];
+            D.f[DIR_PPM] = &DDStart[DIR_PPM * numberOfLBnodes];
+            D.f[DIR_MMM] = &DDStart[DIR_MMM * numberOfLBnodes];
+            D.f[DIR_PMM] = &DDStart[DIR_PMM * numberOfLBnodes];
+            D.f[DIR_MPM] = &DDStart[DIR_MPM * numberOfLBnodes];
          }
          else
          {
-            D.f[DIR_M00   ] = &DDStart[DIR_P00   *size_Mat];
-            D.f[DIR_P00   ] = &DDStart[DIR_M00   *size_Mat];
-            D.f[DIR_0M0   ] = &DDStart[DIR_0P0   *size_Mat];
-            D.f[DIR_0P0   ] = &DDStart[DIR_0M0   *size_Mat];
-            D.f[DIR_00M   ] = &DDStart[DIR_00P   *size_Mat];
-            D.f[DIR_00P   ] = &DDStart[DIR_00M   *size_Mat];
-            D.f[DIR_MM0  ] = &DDStart[DIR_PP0  *size_Mat];
-            D.f[DIR_PP0  ] = &DDStart[DIR_MM0  *size_Mat];
-            D.f[DIR_MP0  ] = &DDStart[DIR_PM0  *size_Mat];
-            D.f[DIR_PM0  ] = &DDStart[DIR_MP0  *size_Mat];
-            D.f[DIR_M0M  ] = &DDStart[DIR_P0P  *size_Mat];
-            D.f[DIR_P0P  ] = &DDStart[DIR_M0M  *size_Mat];
-            D.f[DIR_M0P  ] = &DDStart[DIR_P0M  *size_Mat];
-            D.f[DIR_P0M  ] = &DDStart[DIR_M0P  *size_Mat];
-            D.f[DIR_0MM  ] = &DDStart[DIR_0PP  *size_Mat];
-            D.f[DIR_0PP  ] = &DDStart[DIR_0MM  *size_Mat];
-            D.f[DIR_0MP  ] = &DDStart[DIR_0PM  *size_Mat];
-            D.f[DIR_0PM  ] = &DDStart[DIR_0MP  *size_Mat];
-            D.f[DIR_000] = &DDStart[DIR_000*size_Mat];
-            D.f[DIR_MMM ] = &DDStart[DIR_PPP *size_Mat];
-            D.f[DIR_PPM ] = &DDStart[DIR_MMP *size_Mat];
-            D.f[DIR_MPM ] = &DDStart[DIR_PMP *size_Mat];
-            D.f[DIR_PMM ] = &DDStart[DIR_MPP *size_Mat];
-            D.f[DIR_MMP ] = &DDStart[DIR_PPM *size_Mat];
-            D.f[DIR_PPP ] = &DDStart[DIR_MMM *size_Mat];
-            D.f[DIR_MPP ] = &DDStart[DIR_PMM *size_Mat];
-            D.f[DIR_PMP ] = &DDStart[DIR_MPM *size_Mat];
+            D.f[DIR_M00] = &DDStart[DIR_P00 * numberOfLBnodes];
+            D.f[DIR_P00] = &DDStart[DIR_M00 * numberOfLBnodes];
+            D.f[DIR_0M0] = &DDStart[DIR_0P0 * numberOfLBnodes];
+            D.f[DIR_0P0] = &DDStart[DIR_0M0 * numberOfLBnodes];
+            D.f[DIR_00M] = &DDStart[DIR_00P * numberOfLBnodes];
+            D.f[DIR_00P] = &DDStart[DIR_00M * numberOfLBnodes];
+            D.f[DIR_MM0] = &DDStart[DIR_PP0 * numberOfLBnodes];
+            D.f[DIR_PP0] = &DDStart[DIR_MM0 * numberOfLBnodes];
+            D.f[DIR_MP0] = &DDStart[DIR_PM0 * numberOfLBnodes];
+            D.f[DIR_PM0] = &DDStart[DIR_MP0 * numberOfLBnodes];
+            D.f[DIR_M0M] = &DDStart[DIR_P0P * numberOfLBnodes];
+            D.f[DIR_P0P] = &DDStart[DIR_M0M * numberOfLBnodes];
+            D.f[DIR_M0P] = &DDStart[DIR_P0M * numberOfLBnodes];
+            D.f[DIR_P0M] = &DDStart[DIR_M0P * numberOfLBnodes];
+            D.f[DIR_0MM] = &DDStart[DIR_0PP * numberOfLBnodes];
+            D.f[DIR_0PP] = &DDStart[DIR_0MM * numberOfLBnodes];
+            D.f[DIR_0MP] = &DDStart[DIR_0PM * numberOfLBnodes];
+            D.f[DIR_0PM] = &DDStart[DIR_0MP * numberOfLBnodes];
+            D.f[DIR_000] = &DDStart[DIR_000 * numberOfLBnodes];
+            D.f[DIR_MMM] = &DDStart[DIR_PPP * numberOfLBnodes];
+            D.f[DIR_PPM] = &DDStart[DIR_MMP * numberOfLBnodes];
+            D.f[DIR_MPM] = &DDStart[DIR_PMP * numberOfLBnodes];
+            D.f[DIR_PMM] = &DDStart[DIR_MPP * numberOfLBnodes];
+            D.f[DIR_MMP] = &DDStart[DIR_PPM * numberOfLBnodes];
+            D.f[DIR_PPP] = &DDStart[DIR_MMM * numberOfLBnodes];
+            D.f[DIR_MPP] = &DDStart[DIR_PMM * numberOfLBnodes];
+            D.f[DIR_PMP] = &DDStart[DIR_MPM * numberOfLBnodes];
          }
 
          ////////////////////////////////////////////////////////////////////////////////
@@ -2435,33 +2435,33 @@ __global__ void LB_Kernel_Casc_SP_MS_27(   real omega,
          //unsigned int ktne = k;
          unsigned int kbsw = neighborZ[ksw];
          //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-         real fE    =  (D.f[DIR_P00   ])[k  ];//ke
-         real fW    =  (D.f[DIR_M00   ])[kw ];
-         real fN    =  (D.f[DIR_0P0   ])[k  ];//kn
-         real fS    =  (D.f[DIR_0M0   ])[ks ];
-         real fT    =  (D.f[DIR_00P   ])[k  ];//kt
-         real fB    =  (D.f[DIR_00M   ])[kb ];
-         real fNE   =  (D.f[DIR_PP0  ])[k  ];//kne
-         real fSW   =  (D.f[DIR_MM0  ])[ksw];
-         real fSE   =  (D.f[DIR_PM0  ])[ks ];//kse
-         real fNW   =  (D.f[DIR_MP0  ])[kw ];//knw
-         real fTE   =  (D.f[DIR_P0P  ])[k  ];//kte
-         real fBW   =  (D.f[DIR_M0M  ])[kbw];
-         real fBE   =  (D.f[DIR_P0M  ])[kb ];//kbe
-         real fTW   =  (D.f[DIR_M0P  ])[kw ];//ktw
-         real fTN   =  (D.f[DIR_0PP  ])[k  ];//ktn
-         real fBS   =  (D.f[DIR_0MM  ])[kbs];
-         real fBN   =  (D.f[DIR_0PM  ])[kb ];//kbn
-         real fTS   =  (D.f[DIR_0MP  ])[ks ];//kts
+         real fE    =  (D.f[DIR_P00])[k  ];//ke
+         real fW    =  (D.f[DIR_M00])[kw ];
+         real fN    =  (D.f[DIR_0P0])[k  ];//kn
+         real fS    =  (D.f[DIR_0M0])[ks ];
+         real fT    =  (D.f[DIR_00P])[k  ];//kt
+         real fB    =  (D.f[DIR_00M])[kb ];
+         real fNE   =  (D.f[DIR_PP0])[k  ];//kne
+         real fSW   =  (D.f[DIR_MM0])[ksw];
+         real fSE   =  (D.f[DIR_PM0])[ks ];//kse
+         real fNW   =  (D.f[DIR_MP0])[kw ];//knw
+         real fTE   =  (D.f[DIR_P0P])[k  ];//kte
+         real fBW   =  (D.f[DIR_M0M])[kbw];
+         real fBE   =  (D.f[DIR_P0M])[kb ];//kbe
+         real fTW   =  (D.f[DIR_M0P])[kw ];//ktw
+         real fTN   =  (D.f[DIR_0PP])[k  ];//ktn
+         real fBS   =  (D.f[DIR_0MM])[kbs];
+         real fBN   =  (D.f[DIR_0PM])[kb ];//kbn
+         real fTS   =  (D.f[DIR_0MP])[ks ];//kts
          real fZERO =  (D.f[DIR_000])[k  ];//kzero
-         real fTNE   = (D.f[DIR_PPP ])[k  ];//ktne
-         real fTSW   = (D.f[DIR_MMP ])[ksw];//ktsw
-         real fTSE   = (D.f[DIR_PMP ])[ks ];//ktse
-         real fTNW   = (D.f[DIR_MPP ])[kw ];//ktnw
-         real fBNE   = (D.f[DIR_PPM ])[kb ];//kbne
-         real fBSW   = (D.f[DIR_MMM ])[kbsw];
-         real fBSE   = (D.f[DIR_PMM ])[kbs];//kbse
-         real fBNW   = (D.f[DIR_MPM ])[kbw];//kbnw
+         real fTNE   = (D.f[DIR_PPP])[k  ];//ktne
+         real fTSW   = (D.f[DIR_MMP])[ksw];//ktsw
+         real fTSE   = (D.f[DIR_PMP])[ks ];//ktse
+         real fTNW   = (D.f[DIR_MPP])[kw ];//ktnw
+         real fBNE   = (D.f[DIR_PPM])[kb ];//kbne
+         real fBSW   = (D.f[DIR_MMM])[kbsw];
+         real fBSE   = (D.f[DIR_PMM])[kbs];//kbse
+         real fBNW   = (D.f[DIR_MPM])[kbw];//kbnw
          ////////////////////////////////////////////////////////////////////////////////
          real rho0   =  fZERO+fE+fW+fN+fS+fT+fB+fNE+fSW+fSE+fNW+fTE+fBW+fBE+fTW+fTN+fBS+fBN+fTS+fTNE+fTSW+fTSE+fTNW+fBNE+fBSW+fBSE+fBNW;
          real rho    =  rho0 + c1o1;
@@ -2846,7 +2846,7 @@ __global__ void LB_Kernel_Casc_SP_MS_Diff_27(real omega,
                                                         unsigned int* neighborY,
                                                         unsigned int* neighborZ,
                                                         real* DDStart,
-                                                        int size_Mat,
+                                                        unsigned long long numberOfLBnodes,
                                                         bool EvenOrOdd)
 {
    ////////////////////////////////////////////////////////////////////////////////
@@ -2860,7 +2860,7 @@ __global__ void LB_Kernel_Casc_SP_MS_Diff_27(real omega,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<size_Mat)
+   if(k<numberOfLBnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       unsigned int BC;
@@ -2871,63 +2871,63 @@ __global__ void LB_Kernel_Casc_SP_MS_Diff_27(real omega,
          Distributions27 D;
          if (EvenOrOdd==true)
          {
-            D.f[DIR_P00   ] = &DDStart[DIR_P00   *size_Mat];
-            D.f[DIR_M00   ] = &DDStart[DIR_M00   *size_Mat];
-            D.f[DIR_0P0   ] = &DDStart[DIR_0P0   *size_Mat];
-            D.f[DIR_0M0   ] = &DDStart[DIR_0M0   *size_Mat];
-            D.f[DIR_00P   ] = &DDStart[DIR_00P   *size_Mat];
-            D.f[DIR_00M   ] = &DDStart[DIR_00M   *size_Mat];
-            D.f[DIR_PP0  ] = &DDStart[DIR_PP0  *size_Mat];
-            D.f[DIR_MM0  ] = &DDStart[DIR_MM0  *size_Mat];
-            D.f[DIR_PM0  ] = &DDStart[DIR_PM0  *size_Mat];
-            D.f[DIR_MP0  ] = &DDStart[DIR_MP0  *size_Mat];
-            D.f[DIR_P0P  ] = &DDStart[DIR_P0P  *size_Mat];
-            D.f[DIR_M0M  ] = &DDStart[DIR_M0M  *size_Mat];
-            D.f[DIR_P0M  ] = &DDStart[DIR_P0M  *size_Mat];
-            D.f[DIR_M0P  ] = &DDStart[DIR_M0P  *size_Mat];
-            D.f[DIR_0PP  ] = &DDStart[DIR_0PP  *size_Mat];
-            D.f[DIR_0MM  ] = &DDStart[DIR_0MM  *size_Mat];
-            D.f[DIR_0PM  ] = &DDStart[DIR_0PM  *size_Mat];
-            D.f[DIR_0MP  ] = &DDStart[DIR_0MP  *size_Mat];
-            D.f[DIR_000] = &DDStart[DIR_000*size_Mat];
-            D.f[DIR_PPP ] = &DDStart[DIR_PPP *size_Mat];
-            D.f[DIR_MMP ] = &DDStart[DIR_MMP *size_Mat];
-            D.f[DIR_PMP ] = &DDStart[DIR_PMP *size_Mat];
-            D.f[DIR_MPP ] = &DDStart[DIR_MPP *size_Mat];
-            D.f[DIR_PPM ] = &DDStart[DIR_PPM *size_Mat];
-            D.f[DIR_MMM ] = &DDStart[DIR_MMM *size_Mat];
-            D.f[DIR_PMM ] = &DDStart[DIR_PMM *size_Mat];
-            D.f[DIR_MPM ] = &DDStart[DIR_MPM *size_Mat];
+            D.f[DIR_P00] = &DDStart[DIR_P00 * numberOfLBnodes];
+            D.f[DIR_M00] = &DDStart[DIR_M00 * numberOfLBnodes];
+            D.f[DIR_0P0] = &DDStart[DIR_0P0 * numberOfLBnodes];
+            D.f[DIR_0M0] = &DDStart[DIR_0M0 * numberOfLBnodes];
+            D.f[DIR_00P] = &DDStart[DIR_00P * numberOfLBnodes];
+            D.f[DIR_00M] = &DDStart[DIR_00M * numberOfLBnodes];
+            D.f[DIR_PP0] = &DDStart[DIR_PP0 * numberOfLBnodes];
+            D.f[DIR_MM0] = &DDStart[DIR_MM0 * numberOfLBnodes];
+            D.f[DIR_PM0] = &DDStart[DIR_PM0 * numberOfLBnodes];
+            D.f[DIR_MP0] = &DDStart[DIR_MP0 * numberOfLBnodes];
+            D.f[DIR_P0P] = &DDStart[DIR_P0P * numberOfLBnodes];
+            D.f[DIR_M0M] = &DDStart[DIR_M0M * numberOfLBnodes];
+            D.f[DIR_P0M] = &DDStart[DIR_P0M * numberOfLBnodes];
+            D.f[DIR_M0P] = &DDStart[DIR_M0P * numberOfLBnodes];
+            D.f[DIR_0PP] = &DDStart[DIR_0PP * numberOfLBnodes];
+            D.f[DIR_0MM] = &DDStart[DIR_0MM * numberOfLBnodes];
+            D.f[DIR_0PM] = &DDStart[DIR_0PM * numberOfLBnodes];
+            D.f[DIR_0MP] = &DDStart[DIR_0MP * numberOfLBnodes];
+            D.f[DIR_000] = &DDStart[DIR_000 * numberOfLBnodes];
+            D.f[DIR_PPP] = &DDStart[DIR_PPP * numberOfLBnodes];
+            D.f[DIR_MMP] = &DDStart[DIR_MMP * numberOfLBnodes];
+            D.f[DIR_PMP] = &DDStart[DIR_PMP * numberOfLBnodes];
+            D.f[DIR_MPP] = &DDStart[DIR_MPP * numberOfLBnodes];
+            D.f[DIR_PPM] = &DDStart[DIR_PPM * numberOfLBnodes];
+            D.f[DIR_MMM] = &DDStart[DIR_MMM * numberOfLBnodes];
+            D.f[DIR_PMM] = &DDStart[DIR_PMM * numberOfLBnodes];
+            D.f[DIR_MPM] = &DDStart[DIR_MPM * numberOfLBnodes];
          }
          else
          {
-            D.f[DIR_M00   ] = &DDStart[DIR_P00   *size_Mat];
-            D.f[DIR_P00   ] = &DDStart[DIR_M00   *size_Mat];
-            D.f[DIR_0M0   ] = &DDStart[DIR_0P0   *size_Mat];
-            D.f[DIR_0P0   ] = &DDStart[DIR_0M0   *size_Mat];
-            D.f[DIR_00M   ] = &DDStart[DIR_00P   *size_Mat];
-            D.f[DIR_00P   ] = &DDStart[DIR_00M   *size_Mat];
-            D.f[DIR_MM0  ] = &DDStart[DIR_PP0  *size_Mat];
-            D.f[DIR_PP0  ] = &DDStart[DIR_MM0  *size_Mat];
-            D.f[DIR_MP0  ] = &DDStart[DIR_PM0  *size_Mat];
-            D.f[DIR_PM0  ] = &DDStart[DIR_MP0  *size_Mat];
-            D.f[DIR_M0M  ] = &DDStart[DIR_P0P  *size_Mat];
-            D.f[DIR_P0P  ] = &DDStart[DIR_M0M  *size_Mat];
-            D.f[DIR_M0P  ] = &DDStart[DIR_P0M  *size_Mat];
-            D.f[DIR_P0M  ] = &DDStart[DIR_M0P  *size_Mat];
-            D.f[DIR_0MM  ] = &DDStart[DIR_0PP  *size_Mat];
-            D.f[DIR_0PP  ] = &DDStart[DIR_0MM  *size_Mat];
-            D.f[DIR_0MP  ] = &DDStart[DIR_0PM  *size_Mat];
-            D.f[DIR_0PM  ] = &DDStart[DIR_0MP  *size_Mat];
-            D.f[DIR_000] = &DDStart[DIR_000*size_Mat];
-            D.f[DIR_MMM ] = &DDStart[DIR_PPP *size_Mat];
-            D.f[DIR_PPM ] = &DDStart[DIR_MMP *size_Mat];
-            D.f[DIR_MPM ] = &DDStart[DIR_PMP *size_Mat];
-            D.f[DIR_PMM ] = &DDStart[DIR_MPP *size_Mat];
-            D.f[DIR_MMP ] = &DDStart[DIR_PPM *size_Mat];
-            D.f[DIR_PPP ] = &DDStart[DIR_MMM *size_Mat];
-            D.f[DIR_MPP ] = &DDStart[DIR_PMM *size_Mat];
-            D.f[DIR_PMP ] = &DDStart[DIR_MPM *size_Mat];
+            D.f[DIR_M00] = &DDStart[DIR_P00 * numberOfLBnodes];
+            D.f[DIR_P00] = &DDStart[DIR_M00 * numberOfLBnodes];
+            D.f[DIR_0M0] = &DDStart[DIR_0P0 * numberOfLBnodes];
+            D.f[DIR_0P0] = &DDStart[DIR_0M0 * numberOfLBnodes];
+            D.f[DIR_00M] = &DDStart[DIR_00P * numberOfLBnodes];
+            D.f[DIR_00P] = &DDStart[DIR_00M * numberOfLBnodes];
+            D.f[DIR_MM0] = &DDStart[DIR_PP0 * numberOfLBnodes];
+            D.f[DIR_PP0] = &DDStart[DIR_MM0 * numberOfLBnodes];
+            D.f[DIR_MP0] = &DDStart[DIR_PM0 * numberOfLBnodes];
+            D.f[DIR_PM0] = &DDStart[DIR_MP0 * numberOfLBnodes];
+            D.f[DIR_M0M] = &DDStart[DIR_P0P * numberOfLBnodes];
+            D.f[DIR_P0P] = &DDStart[DIR_M0M * numberOfLBnodes];
+            D.f[DIR_M0P] = &DDStart[DIR_P0M * numberOfLBnodes];
+            D.f[DIR_P0M] = &DDStart[DIR_M0P * numberOfLBnodes];
+            D.f[DIR_0MM] = &DDStart[DIR_0PP * numberOfLBnodes];
+            D.f[DIR_0PP] = &DDStart[DIR_0MM * numberOfLBnodes];
+            D.f[DIR_0MP] = &DDStart[DIR_0PM * numberOfLBnodes];
+            D.f[DIR_0PM] = &DDStart[DIR_0MP * numberOfLBnodes];
+            D.f[DIR_000] = &DDStart[DIR_000 * numberOfLBnodes];
+            D.f[DIR_MMM] = &DDStart[DIR_PPP * numberOfLBnodes];
+            D.f[DIR_PPM] = &DDStart[DIR_MMP * numberOfLBnodes];
+            D.f[DIR_MPM] = &DDStart[DIR_PMP * numberOfLBnodes];
+            D.f[DIR_PMM] = &DDStart[DIR_MPP * numberOfLBnodes];
+            D.f[DIR_MMP] = &DDStart[DIR_PPM * numberOfLBnodes];
+            D.f[DIR_PPP] = &DDStart[DIR_MMM * numberOfLBnodes];
+            D.f[DIR_MPP] = &DDStart[DIR_PMM * numberOfLBnodes];
+            D.f[DIR_PMP] = &DDStart[DIR_MPM * numberOfLBnodes];
          }
 
          ////////////////////////////////////////////////////////////////////////////////
@@ -2960,33 +2960,33 @@ __global__ void LB_Kernel_Casc_SP_MS_Diff_27(real omega,
          //unsigned int ktne = k;
          unsigned int kbsw = neighborZ[ksw];
          //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-         real fE    =  (D.f[DIR_P00   ])[k  ];//ke
-         real fW    =  (D.f[DIR_M00   ])[kw ];
-         real fN    =  (D.f[DIR_0P0   ])[k  ];//kn
-         real fS    =  (D.f[DIR_0M0   ])[ks ];
-         real fT    =  (D.f[DIR_00P   ])[k  ];//kt
-         real fB    =  (D.f[DIR_00M   ])[kb ];
-         real fNE   =  (D.f[DIR_PP0  ])[k  ];//kne
-         real fSW   =  (D.f[DIR_MM0  ])[ksw];
-         real fSE   =  (D.f[DIR_PM0  ])[ks ];//kse
-         real fNW   =  (D.f[DIR_MP0  ])[kw ];//knw
-         real fTE   =  (D.f[DIR_P0P  ])[k  ];//kte
-         real fBW   =  (D.f[DIR_M0M  ])[kbw];
-         real fBE   =  (D.f[DIR_P0M  ])[kb ];//kbe
-         real fTW   =  (D.f[DIR_M0P  ])[kw ];//ktw
-         real fTN   =  (D.f[DIR_0PP  ])[k  ];//ktn
-         real fBS   =  (D.f[DIR_0MM  ])[kbs];
-         real fBN   =  (D.f[DIR_0PM  ])[kb ];//kbn
-         real fTS   =  (D.f[DIR_0MP  ])[ks ];//kts
+         real fE    =  (D.f[DIR_P00])[k  ];//ke
+         real fW    =  (D.f[DIR_M00])[kw ];
+         real fN    =  (D.f[DIR_0P0])[k  ];//kn
+         real fS    =  (D.f[DIR_0M0])[ks ];
+         real fT    =  (D.f[DIR_00P])[k  ];//kt
+         real fB    =  (D.f[DIR_00M])[kb ];
+         real fNE   =  (D.f[DIR_PP0])[k  ];//kne
+         real fSW   =  (D.f[DIR_MM0])[ksw];
+         real fSE   =  (D.f[DIR_PM0])[ks ];//kse
+         real fNW   =  (D.f[DIR_MP0])[kw ];//knw
+         real fTE   =  (D.f[DIR_P0P])[k  ];//kte
+         real fBW   =  (D.f[DIR_M0M])[kbw];
+         real fBE   =  (D.f[DIR_P0M])[kb ];//kbe
+         real fTW   =  (D.f[DIR_M0P])[kw ];//ktw
+         real fTN   =  (D.f[DIR_0PP])[k  ];//ktn
+         real fBS   =  (D.f[DIR_0MM])[kbs];
+         real fBN   =  (D.f[DIR_0PM])[kb ];//kbn
+         real fTS   =  (D.f[DIR_0MP])[ks ];//kts
          real fZERO =  (D.f[DIR_000])[k  ];//kzero
-         real fTNE   = (D.f[DIR_PPP ])[k  ];//ktne
-         real fTSW   = (D.f[DIR_MMP ])[ksw];//ktsw
-         real fTSE   = (D.f[DIR_PMP ])[ks ];//ktse
-         real fTNW   = (D.f[DIR_MPP ])[kw ];//ktnw
-         real fBNE   = (D.f[DIR_PPM ])[kb ];//kbne
-         real fBSW   = (D.f[DIR_MMM ])[kbsw];
-         real fBSE   = (D.f[DIR_PMM ])[kbs];//kbse
-         real fBNW   = (D.f[DIR_MPM ])[kbw];//kbnw
+         real fTNE   = (D.f[DIR_PPP])[k  ];//ktne
+         real fTSW   = (D.f[DIR_MMP])[ksw];//ktsw
+         real fTSE   = (D.f[DIR_PMP])[ks ];//ktse
+         real fTNW   = (D.f[DIR_MPP])[kw ];//ktnw
+         real fBNE   = (D.f[DIR_PPM])[kb ];//kbne
+         real fBSW   = (D.f[DIR_MMM])[kbsw];
+         real fBSE   = (D.f[DIR_PMM])[kbs];//kbse
+         real fBNW   = (D.f[DIR_MPM])[kbw];//kbnw
          ////////////////////////////////////////////////////////////////////////////////
          real rho0   =  fZERO+fE+fW+fN+fS+fT+fB+fNE+fSW+fSE+fNW+fTE+fBW+fBE+fTW+fTN+fBS+fBN+fTS+fTNE+fTSW+fTSE+fTNW+fBNE+fBSW+fBSE+fBNW;
          real rho    =  rho0 + c1o1;
@@ -3368,7 +3368,7 @@ __global__ void LB_Kernel_Casc_SP_27(  real omega,
                                                   unsigned int* neighborY,
                                                   unsigned int* neighborZ,
                                                   real* DDStart,
-                                                  int size_Mat,
+                                                  unsigned long long numberOfLBnodes,
                                                   bool EvenOrOdd)
 {
    ////////////////////////////////////////////////////////////////////////////////
@@ -3382,7 +3382,7 @@ __global__ void LB_Kernel_Casc_SP_27(  real omega,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<size_Mat)
+   if(k<numberOfLBnodes)
    {
       ////////////////////////////////////////////////////////////////////////////////
       unsigned int BC;
@@ -3393,63 +3393,63 @@ __global__ void LB_Kernel_Casc_SP_27(  real omega,
        Distributions27 D;
        if (EvenOrOdd==true)
        {
-          D.f[DIR_P00   ] = &DDStart[DIR_P00   *size_Mat];
-          D.f[DIR_M00   ] = &DDStart[DIR_M00   *size_Mat];
-          D.f[DIR_0P0   ] = &DDStart[DIR_0P0   *size_Mat];
-          D.f[DIR_0M0   ] = &DDStart[DIR_0M0   *size_Mat];
-          D.f[DIR_00P   ] = &DDStart[DIR_00P   *size_Mat];
-          D.f[DIR_00M   ] = &DDStart[DIR_00M   *size_Mat];
-          D.f[DIR_PP0  ] = &DDStart[DIR_PP0  *size_Mat];
-          D.f[DIR_MM0  ] = &DDStart[DIR_MM0  *size_Mat];
-          D.f[DIR_PM0  ] = &DDStart[DIR_PM0  *size_Mat];
-          D.f[DIR_MP0  ] = &DDStart[DIR_MP0  *size_Mat];
-          D.f[DIR_P0P  ] = &DDStart[DIR_P0P  *size_Mat];
-          D.f[DIR_M0M  ] = &DDStart[DIR_M0M  *size_Mat];
-          D.f[DIR_P0M  ] = &DDStart[DIR_P0M  *size_Mat];
-          D.f[DIR_M0P  ] = &DDStart[DIR_M0P  *size_Mat];
-          D.f[DIR_0PP  ] = &DDStart[DIR_0PP  *size_Mat];
-          D.f[DIR_0MM  ] = &DDStart[DIR_0MM  *size_Mat];
-          D.f[DIR_0PM  ] = &DDStart[DIR_0PM  *size_Mat];
-          D.f[DIR_0MP  ] = &DDStart[DIR_0MP  *size_Mat];
-          D.f[DIR_000] = &DDStart[DIR_000*size_Mat];
-          D.f[DIR_PPP ] = &DDStart[DIR_PPP *size_Mat];
-          D.f[DIR_MMP ] = &DDStart[DIR_MMP *size_Mat];
-          D.f[DIR_PMP ] = &DDStart[DIR_PMP *size_Mat];
-          D.f[DIR_MPP ] = &DDStart[DIR_MPP *size_Mat];
-          D.f[DIR_PPM ] = &DDStart[DIR_PPM *size_Mat];
-          D.f[DIR_MMM ] = &DDStart[DIR_MMM *size_Mat];
-          D.f[DIR_PMM ] = &DDStart[DIR_PMM *size_Mat];
-          D.f[DIR_MPM ] = &DDStart[DIR_MPM *size_Mat];
+          D.f[DIR_P00] = &DDStart[DIR_P00 * numberOfLBnodes];
+          D.f[DIR_M00] = &DDStart[DIR_M00 * numberOfLBnodes];
+          D.f[DIR_0P0] = &DDStart[DIR_0P0 * numberOfLBnodes];
+          D.f[DIR_0M0] = &DDStart[DIR_0M0 * numberOfLBnodes];
+          D.f[DIR_00P] = &DDStart[DIR_00P * numberOfLBnodes];
+          D.f[DIR_00M] = &DDStart[DIR_00M * numberOfLBnodes];
+          D.f[DIR_PP0] = &DDStart[DIR_PP0 * numberOfLBnodes];
+          D.f[DIR_MM0] = &DDStart[DIR_MM0 * numberOfLBnodes];
+          D.f[DIR_PM0] = &DDStart[DIR_PM0 * numberOfLBnodes];
+          D.f[DIR_MP0] = &DDStart[DIR_MP0 * numberOfLBnodes];
+          D.f[DIR_P0P] = &DDStart[DIR_P0P * numberOfLBnodes];
+          D.f[DIR_M0M] = &DDStart[DIR_M0M * numberOfLBnodes];
+          D.f[DIR_P0M] = &DDStart[DIR_P0M * numberOfLBnodes];
+          D.f[DIR_M0P] = &DDStart[DIR_M0P * numberOfLBnodes];
+          D.f[DIR_0PP] = &DDStart[DIR_0PP * numberOfLBnodes];
+          D.f[DIR_0MM] = &DDStart[DIR_0MM * numberOfLBnodes];
+          D.f[DIR_0PM] = &DDStart[DIR_0PM * numberOfLBnodes];
+          D.f[DIR_0MP] = &DDStart[DIR_0MP * numberOfLBnodes];
+          D.f[DIR_000] = &DDStart[DIR_000 * numberOfLBnodes];
+          D.f[DIR_PPP] = &DDStart[DIR_PPP * numberOfLBnodes];
+          D.f[DIR_MMP] = &DDStart[DIR_MMP * numberOfLBnodes];
+          D.f[DIR_PMP] = &DDStart[DIR_PMP * numberOfLBnodes];
+          D.f[DIR_MPP] = &DDStart[DIR_MPP * numberOfLBnodes];
+          D.f[DIR_PPM] = &DDStart[DIR_PPM * numberOfLBnodes];
+          D.f[DIR_MMM] = &DDStart[DIR_MMM * numberOfLBnodes];
+          D.f[DIR_PMM] = &DDStart[DIR_PMM * numberOfLBnodes];
+          D.f[DIR_MPM] = &DDStart[DIR_MPM * numberOfLBnodes];
        }
        else
        {
-          D.f[DIR_M00   ] = &DDStart[DIR_P00   *size_Mat];
-          D.f[DIR_P00   ] = &DDStart[DIR_M00   *size_Mat];
-          D.f[DIR_0M0   ] = &DDStart[DIR_0P0   *size_Mat];
-          D.f[DIR_0P0   ] = &DDStart[DIR_0M0   *size_Mat];
-          D.f[DIR_00M   ] = &DDStart[DIR_00P   *size_Mat];
-          D.f[DIR_00P   ] = &DDStart[DIR_00M   *size_Mat];
-          D.f[DIR_MM0  ] = &DDStart[DIR_PP0  *size_Mat];
-          D.f[DIR_PP0  ] = &DDStart[DIR_MM0  *size_Mat];
-          D.f[DIR_MP0  ] = &DDStart[DIR_PM0  *size_Mat];
-          D.f[DIR_PM0  ] = &DDStart[DIR_MP0  *size_Mat];
-          D.f[DIR_M0M  ] = &DDStart[DIR_P0P  *size_Mat];
-          D.f[DIR_P0P  ] = &DDStart[DIR_M0M  *size_Mat];
-          D.f[DIR_M0P  ] = &DDStart[DIR_P0M  *size_Mat];
-          D.f[DIR_P0M  ] = &DDStart[DIR_M0P  *size_Mat];
-          D.f[DIR_0MM  ] = &DDStart[DIR_0PP  *size_Mat];
-          D.f[DIR_0PP  ] = &DDStart[DIR_0MM  *size_Mat];
-          D.f[DIR_0MP  ] = &DDStart[DIR_0PM  *size_Mat];
-          D.f[DIR_0PM  ] = &DDStart[DIR_0MP  *size_Mat];
-          D.f[DIR_000] = &DDStart[DIR_000*size_Mat];
-          D.f[DIR_MMM ] = &DDStart[DIR_PPP *size_Mat];
-          D.f[DIR_PPM ] = &DDStart[DIR_MMP *size_Mat];
-          D.f[DIR_MPM ] = &DDStart[DIR_PMP *size_Mat];
-          D.f[DIR_PMM ] = &DDStart[DIR_MPP *size_Mat];
-          D.f[DIR_MMP ] = &DDStart[DIR_PPM *size_Mat];
-          D.f[DIR_PPP ] = &DDStart[DIR_MMM *size_Mat];
-          D.f[DIR_MPP ] = &DDStart[DIR_PMM *size_Mat];
-          D.f[DIR_PMP ] = &DDStart[DIR_MPM *size_Mat];
+          D.f[DIR_M00] = &DDStart[DIR_P00 * numberOfLBnodes];
+          D.f[DIR_P00] = &DDStart[DIR_M00 * numberOfLBnodes];
+          D.f[DIR_0M0] = &DDStart[DIR_0P0 * numberOfLBnodes];
+          D.f[DIR_0P0] = &DDStart[DIR_0M0 * numberOfLBnodes];
+          D.f[DIR_00M] = &DDStart[DIR_00P * numberOfLBnodes];
+          D.f[DIR_00P] = &DDStart[DIR_00M * numberOfLBnodes];
+          D.f[DIR_MM0] = &DDStart[DIR_PP0 * numberOfLBnodes];
+          D.f[DIR_PP0] = &DDStart[DIR_MM0 * numberOfLBnodes];
+          D.f[DIR_MP0] = &DDStart[DIR_PM0 * numberOfLBnodes];
+          D.f[DIR_PM0] = &DDStart[DIR_MP0 * numberOfLBnodes];
+          D.f[DIR_M0M] = &DDStart[DIR_P0P * numberOfLBnodes];
+          D.f[DIR_P0P] = &DDStart[DIR_M0M * numberOfLBnodes];
+          D.f[DIR_M0P] = &DDStart[DIR_P0M * numberOfLBnodes];
+          D.f[DIR_P0M] = &DDStart[DIR_M0P * numberOfLBnodes];
+          D.f[DIR_0MM] = &DDStart[DIR_0PP * numberOfLBnodes];
+          D.f[DIR_0PP] = &DDStart[DIR_0MM * numberOfLBnodes];
+          D.f[DIR_0MP] = &DDStart[DIR_0PM * numberOfLBnodes];
+          D.f[DIR_0PM] = &DDStart[DIR_0MP * numberOfLBnodes];
+          D.f[DIR_000] = &DDStart[DIR_000 * numberOfLBnodes];
+          D.f[DIR_MMM] = &DDStart[DIR_PPP * numberOfLBnodes];
+          D.f[DIR_PPM] = &DDStart[DIR_MMP * numberOfLBnodes];
+          D.f[DIR_MPM] = &DDStart[DIR_PMP * numberOfLBnodes];
+          D.f[DIR_PMM] = &DDStart[DIR_MPP * numberOfLBnodes];
+          D.f[DIR_MMP] = &DDStart[DIR_PPM * numberOfLBnodes];
+          D.f[DIR_PPP] = &DDStart[DIR_MMM * numberOfLBnodes];
+          D.f[DIR_MPP] = &DDStart[DIR_PMM * numberOfLBnodes];
+          D.f[DIR_PMP] = &DDStart[DIR_MPM * numberOfLBnodes];
        }
 
        ////////////////////////////////////////////////////////////////////////////////
@@ -3512,33 +3512,33 @@ __global__ void LB_Kernel_Casc_SP_27(  real omega,
        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
        real f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO, f_TNE,f_TNW,f_TSE,f_TSW, f_BNE,f_BNW,f_BSE,f_BSW;
        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-       f_E    =  (D.f[DIR_P00   ])[ke]+c2o27;
-       f_W    =  (D.f[DIR_M00   ])[kw]+c2o27;
-       f_N    =  (D.f[DIR_0P0   ])[kn]+c2o27;
-       f_S    =  (D.f[DIR_0M0   ])[ks]+c2o27;
-       f_T    =  (D.f[DIR_00P   ])[kt]+c2o27;
-       f_B    =  (D.f[DIR_00M   ])[kb]+c2o27;
-       f_NE   =  (D.f[DIR_PP0  ])[kne]+c1o54;
-       f_SW   =  (D.f[DIR_MM0  ])[ksw]+c1o54;
-       f_SE   =  (D.f[DIR_PM0  ])[kse]+c1o54;
-       f_NW   =  (D.f[DIR_MP0  ])[knw]+c1o54;
-       f_TE   =  (D.f[DIR_P0P  ])[kte]+c1o54;
-       f_BW   =  (D.f[DIR_M0M  ])[kbw]+c1o54;
-       f_BE   =  (D.f[DIR_P0M  ])[kbe]+c1o54;
-       f_TW   =  (D.f[DIR_M0P  ])[ktw]+c1o54;
-       f_TN   =  (D.f[DIR_0PP  ])[ktn]+c1o54;
-       f_BS   =  (D.f[DIR_0MM  ])[kbs]+c1o54;
-       f_BN   =  (D.f[DIR_0PM  ])[kbn]+c1o54;
-       f_TS   =  (D.f[DIR_0MP  ])[kts]+c1o54;
+       f_E    =  (D.f[DIR_P00])[ke]+c2o27;
+       f_W    =  (D.f[DIR_M00])[kw]+c2o27;
+       f_N    =  (D.f[DIR_0P0])[kn]+c2o27;
+       f_S    =  (D.f[DIR_0M0])[ks]+c2o27;
+       f_T    =  (D.f[DIR_00P])[kt]+c2o27;
+       f_B    =  (D.f[DIR_00M])[kb]+c2o27;
+       f_NE   =  (D.f[DIR_PP0])[kne]+c1o54;
+       f_SW   =  (D.f[DIR_MM0])[ksw]+c1o54;
+       f_SE   =  (D.f[DIR_PM0])[kse]+c1o54;
+       f_NW   =  (D.f[DIR_MP0])[knw]+c1o54;
+       f_TE   =  (D.f[DIR_P0P])[kte]+c1o54;
+       f_BW   =  (D.f[DIR_M0M])[kbw]+c1o54;
+       f_BE   =  (D.f[DIR_P0M])[kbe]+c1o54;
+       f_TW   =  (D.f[DIR_M0P])[ktw]+c1o54;
+       f_TN   =  (D.f[DIR_0PP])[ktn]+c1o54;
+       f_BS   =  (D.f[DIR_0MM])[kbs]+c1o54;
+       f_BN   =  (D.f[DIR_0PM])[kbn]+c1o54;
+       f_TS   =  (D.f[DIR_0MP])[kts]+c1o54;
        f_ZERO =  (D.f[DIR_000])[kzero]+c8o27;
-       f_TNE   = (D.f[DIR_PPP ])[ktne]+c1o216;
-       f_TSW   = (D.f[DIR_MMP ])[ktsw]+c1o216;
-       f_TSE   = (D.f[DIR_PMP ])[ktse]+c1o216;
-       f_TNW   = (D.f[DIR_MPP ])[ktnw]+c1o216;
-       f_BNE   = (D.f[DIR_PPM ])[kbne]+c1o216;
-       f_BSW   = (D.f[DIR_MMM ])[kbsw]+c1o216;
-       f_BSE   = (D.f[DIR_PMM ])[kbse]+c1o216;
-       f_BNW   = (D.f[DIR_MPM ])[kbnw]+c1o216;
+       f_TNE   = (D.f[DIR_PPP])[ktne]+c1o216;
+       f_TSW   = (D.f[DIR_MMP])[ktsw]+c1o216;
+       f_TSE   = (D.f[DIR_PMP])[ktse]+c1o216;
+       f_TNW   = (D.f[DIR_MPP])[ktnw]+c1o216;
+       f_BNE   = (D.f[DIR_PPM])[kbne]+c1o216;
+       f_BSW   = (D.f[DIR_MMM])[kbsw]+c1o216;
+       f_BSE   = (D.f[DIR_PMM])[kbse]+c1o216;
+       f_BNW   = (D.f[DIR_MPM])[kbnw]+c1o216;
        ////////////////////////////////////////////////////////////////////////////////
 
        if( BC == GEO_FLUID || BC == GEO_VELO)
@@ -4060,7 +4060,7 @@ __global__ void LB_Kernel_Casc27(real omega,
                                             unsigned int* neighborY,
                                             unsigned int* neighborZ,
                                             real* DDStart,
-                                            int size_Mat,
+                                            unsigned long long numberOfLBnodes,
                                             bool EvenOrOdd)
 {
    ////////////////////////////////////////////////////////////////////////////////
@@ -4089,63 +4089,63 @@ __global__ void LB_Kernel_Casc27(real omega,
       Distributions27 D;
       if (EvenOrOdd==true)
       {
-         D.f[DIR_P00   ] = &DDStart[DIR_P00   *size_Mat];
-         D.f[DIR_M00   ] = &DDStart[DIR_M00   *size_Mat];
-         D.f[DIR_0P0   ] = &DDStart[DIR_0P0   *size_Mat];
-         D.f[DIR_0M0   ] = &DDStart[DIR_0M0   *size_Mat];
-         D.f[DIR_00P   ] = &DDStart[DIR_00P   *size_Mat];
-         D.f[DIR_00M   ] = &DDStart[DIR_00M   *size_Mat];
-         D.f[DIR_PP0  ] = &DDStart[DIR_PP0  *size_Mat];
-         D.f[DIR_MM0  ] = &DDStart[DIR_MM0  *size_Mat];
-         D.f[DIR_PM0  ] = &DDStart[DIR_PM0  *size_Mat];
-         D.f[DIR_MP0  ] = &DDStart[DIR_MP0  *size_Mat];
-         D.f[DIR_P0P  ] = &DDStart[DIR_P0P  *size_Mat];
-         D.f[DIR_M0M  ] = &DDStart[DIR_M0M  *size_Mat];
-         D.f[DIR_P0M  ] = &DDStart[DIR_P0M  *size_Mat];
-         D.f[DIR_M0P  ] = &DDStart[DIR_M0P  *size_Mat];
-         D.f[DIR_0PP  ] = &DDStart[DIR_0PP  *size_Mat];
-         D.f[DIR_0MM  ] = &DDStart[DIR_0MM  *size_Mat];
-         D.f[DIR_0PM  ] = &DDStart[DIR_0PM  *size_Mat];
-         D.f[DIR_0MP  ] = &DDStart[DIR_0MP  *size_Mat];
-         D.f[DIR_000] = &DDStart[DIR_000*size_Mat];
-         D.f[DIR_PPP ] = &DDStart[DIR_PPP *size_Mat];
-         D.f[DIR_MMP ] = &DDStart[DIR_MMP *size_Mat];
-         D.f[DIR_PMP ] = &DDStart[DIR_PMP *size_Mat];
-         D.f[DIR_MPP ] = &DDStart[DIR_MPP *size_Mat];
-         D.f[DIR_PPM ] = &DDStart[DIR_PPM *size_Mat];
-         D.f[DIR_MMM ] = &DDStart[DIR_MMM *size_Mat];
-         D.f[DIR_PMM ] = &DDStart[DIR_PMM *size_Mat];
-         D.f[DIR_MPM ] = &DDStart[DIR_MPM *size_Mat];
+         D.f[DIR_P00] = &DDStart[DIR_P00 * numberOfLBnodes];
+         D.f[DIR_M00] = &DDStart[DIR_M00 * numberOfLBnodes];
+         D.f[DIR_0P0] = &DDStart[DIR_0P0 * numberOfLBnodes];
+         D.f[DIR_0M0] = &DDStart[DIR_0M0 * numberOfLBnodes];
+         D.f[DIR_00P] = &DDStart[DIR_00P * numberOfLBnodes];
+         D.f[DIR_00M] = &DDStart[DIR_00M * numberOfLBnodes];
+         D.f[DIR_PP0] = &DDStart[DIR_PP0 * numberOfLBnodes];
+         D.f[DIR_MM0] = &DDStart[DIR_MM0 * numberOfLBnodes];
+         D.f[DIR_PM0] = &DDStart[DIR_PM0 * numberOfLBnodes];
+         D.f[DIR_MP0] = &DDStart[DIR_MP0 * numberOfLBnodes];
+         D.f[DIR_P0P] = &DDStart[DIR_P0P * numberOfLBnodes];
+         D.f[DIR_M0M] = &DDStart[DIR_M0M * numberOfLBnodes];
+         D.f[DIR_P0M] = &DDStart[DIR_P0M * numberOfLBnodes];
+         D.f[DIR_M0P] = &DDStart[DIR_M0P * numberOfLBnodes];
+         D.f[DIR_0PP] = &DDStart[DIR_0PP * numberOfLBnodes];
+         D.f[DIR_0MM] = &DDStart[DIR_0MM * numberOfLBnodes];
+         D.f[DIR_0PM] = &DDStart[DIR_0PM * numberOfLBnodes];
+         D.f[DIR_0MP] = &DDStart[DIR_0MP * numberOfLBnodes];
+         D.f[DIR_000] = &DDStart[DIR_000 * numberOfLBnodes];
+         D.f[DIR_PPP] = &DDStart[DIR_PPP * numberOfLBnodes];
+         D.f[DIR_MMP] = &DDStart[DIR_MMP * numberOfLBnodes];
+         D.f[DIR_PMP] = &DDStart[DIR_PMP * numberOfLBnodes];
+         D.f[DIR_MPP] = &DDStart[DIR_MPP * numberOfLBnodes];
+         D.f[DIR_PPM] = &DDStart[DIR_PPM * numberOfLBnodes];
+         D.f[DIR_MMM] = &DDStart[DIR_MMM * numberOfLBnodes];
+         D.f[DIR_PMM] = &DDStart[DIR_PMM * numberOfLBnodes];
+         D.f[DIR_MPM] = &DDStart[DIR_MPM * numberOfLBnodes];
       }
       else
       {
-         D.f[DIR_M00   ] = &DDStart[DIR_P00   *size_Mat];
-         D.f[DIR_P00   ] = &DDStart[DIR_M00   *size_Mat];
-         D.f[DIR_0M0   ] = &DDStart[DIR_0P0   *size_Mat];
-         D.f[DIR_0P0   ] = &DDStart[DIR_0M0   *size_Mat];
-         D.f[DIR_00M   ] = &DDStart[DIR_00P   *size_Mat];
-         D.f[DIR_00P   ] = &DDStart[DIR_00M   *size_Mat];
-         D.f[DIR_MM0  ] = &DDStart[DIR_PP0  *size_Mat];
-         D.f[DIR_PP0  ] = &DDStart[DIR_MM0  *size_Mat];
-         D.f[DIR_MP0  ] = &DDStart[DIR_PM0  *size_Mat];
-         D.f[DIR_PM0  ] = &DDStart[DIR_MP0  *size_Mat];
-         D.f[DIR_M0M  ] = &DDStart[DIR_P0P  *size_Mat];
-         D.f[DIR_P0P  ] = &DDStart[DIR_M0M  *size_Mat];
-         D.f[DIR_M0P  ] = &DDStart[DIR_P0M  *size_Mat];
-         D.f[DIR_P0M  ] = &DDStart[DIR_M0P  *size_Mat];
-         D.f[DIR_0MM  ] = &DDStart[DIR_0PP  *size_Mat];
-         D.f[DIR_0PP  ] = &DDStart[DIR_0MM  *size_Mat];
-         D.f[DIR_0MP  ] = &DDStart[DIR_0PM  *size_Mat];
-         D.f[DIR_0PM  ] = &DDStart[DIR_0MP  *size_Mat];
-         D.f[DIR_000] = &DDStart[DIR_000*size_Mat];
-         D.f[DIR_MMM ] = &DDStart[DIR_PPP *size_Mat];
-         D.f[DIR_PPM ] = &DDStart[DIR_MMP *size_Mat];
-         D.f[DIR_MPM ] = &DDStart[DIR_PMP *size_Mat];
-         D.f[DIR_PMM ] = &DDStart[DIR_MPP *size_Mat];
-         D.f[DIR_MMP ] = &DDStart[DIR_PPM *size_Mat];
-         D.f[DIR_PPP ] = &DDStart[DIR_MMM *size_Mat];
-         D.f[DIR_MPP ] = &DDStart[DIR_PMM *size_Mat];
-         D.f[DIR_PMP ] = &DDStart[DIR_MPM *size_Mat];
+         D.f[DIR_M00] = &DDStart[DIR_P00 * numberOfLBnodes];
+         D.f[DIR_P00] = &DDStart[DIR_M00 * numberOfLBnodes];
+         D.f[DIR_0M0] = &DDStart[DIR_0P0 * numberOfLBnodes];
+         D.f[DIR_0P0] = &DDStart[DIR_0M0 * numberOfLBnodes];
+         D.f[DIR_00M] = &DDStart[DIR_00P * numberOfLBnodes];
+         D.f[DIR_00P] = &DDStart[DIR_00M * numberOfLBnodes];
+         D.f[DIR_MM0] = &DDStart[DIR_PP0 * numberOfLBnodes];
+         D.f[DIR_PP0] = &DDStart[DIR_MM0 * numberOfLBnodes];
+         D.f[DIR_MP0] = &DDStart[DIR_PM0 * numberOfLBnodes];
+         D.f[DIR_PM0] = &DDStart[DIR_MP0 * numberOfLBnodes];
+         D.f[DIR_M0M] = &DDStart[DIR_P0P * numberOfLBnodes];
+         D.f[DIR_P0P] = &DDStart[DIR_M0M * numberOfLBnodes];
+         D.f[DIR_M0P] = &DDStart[DIR_P0M * numberOfLBnodes];
+         D.f[DIR_P0M] = &DDStart[DIR_M0P * numberOfLBnodes];
+         D.f[DIR_0MM] = &DDStart[DIR_0PP * numberOfLBnodes];
+         D.f[DIR_0PP] = &DDStart[DIR_0MM * numberOfLBnodes];
+         D.f[DIR_0MP] = &DDStart[DIR_0PM * numberOfLBnodes];
+         D.f[DIR_0PM] = &DDStart[DIR_0MP * numberOfLBnodes];
+         D.f[DIR_000] = &DDStart[DIR_000 * numberOfLBnodes];
+         D.f[DIR_MMM] = &DDStart[DIR_PPP * numberOfLBnodes];
+         D.f[DIR_PPM] = &DDStart[DIR_MMP * numberOfLBnodes];
+         D.f[DIR_MPM] = &DDStart[DIR_PMP * numberOfLBnodes];
+         D.f[DIR_PMM] = &DDStart[DIR_MPP * numberOfLBnodes];
+         D.f[DIR_MMP] = &DDStart[DIR_PPM * numberOfLBnodes];
+         D.f[DIR_PPP] = &DDStart[DIR_MMM * numberOfLBnodes];
+         D.f[DIR_MPP] = &DDStart[DIR_PMM * numberOfLBnodes];
+         D.f[DIR_PMP] = &DDStart[DIR_MPM * numberOfLBnodes];
       }
 
       ////////////////////////////////////////////////////////////////////////////////
@@ -4208,33 +4208,33 @@ __global__ void LB_Kernel_Casc27(real omega,
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       real f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO, f_TNE,f_TNW,f_TSE,f_TSW, f_BNE,f_BNW,f_BSE,f_BSW;
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      f_E    =  (D.f[DIR_P00   ])[ke]+c2o27;
-      f_W    =  (D.f[DIR_M00   ])[kw]+c2o27;
-      f_N    =  (D.f[DIR_0P0   ])[kn]+c2o27;
-      f_S    =  (D.f[DIR_0M0   ])[ks]+c2o27;
-      f_T    =  (D.f[DIR_00P   ])[kt]+c2o27;
-      f_B    =  (D.f[DIR_00M   ])[kb]+c2o27;
-      f_NE   =  (D.f[DIR_PP0  ])[kne]+c1o54;
-      f_SW   =  (D.f[DIR_MM0  ])[ksw]+c1o54;
-      f_SE   =  (D.f[DIR_PM0  ])[kse]+c1o54;
-      f_NW   =  (D.f[DIR_MP0  ])[knw]+c1o54;
-      f_TE   =  (D.f[DIR_P0P  ])[kte]+c1o54;
-      f_BW   =  (D.f[DIR_M0M  ])[kbw]+c1o54;
-      f_BE   =  (D.f[DIR_P0M  ])[kbe]+c1o54;
-      f_TW   =  (D.f[DIR_M0P  ])[ktw]+c1o54;
-      f_TN   =  (D.f[DIR_0PP  ])[ktn]+c1o54;
-      f_BS   =  (D.f[DIR_0MM  ])[kbs]+c1o54;
-      f_BN   =  (D.f[DIR_0PM  ])[kbn]+c1o54;
-      f_TS   =  (D.f[DIR_0MP  ])[kts]+c1o54;
+      f_E    =  (D.f[DIR_P00])[ke]+c2o27;
+      f_W    =  (D.f[DIR_M00])[kw]+c2o27;
+      f_N    =  (D.f[DIR_0P0])[kn]+c2o27;
+      f_S    =  (D.f[DIR_0M0])[ks]+c2o27;
+      f_T    =  (D.f[DIR_00P])[kt]+c2o27;
+      f_B    =  (D.f[DIR_00M])[kb]+c2o27;
+      f_NE   =  (D.f[DIR_PP0])[kne]+c1o54;
+      f_SW   =  (D.f[DIR_MM0])[ksw]+c1o54;
+      f_SE   =  (D.f[DIR_PM0])[kse]+c1o54;
+      f_NW   =  (D.f[DIR_MP0])[knw]+c1o54;
+      f_TE   =  (D.f[DIR_P0P])[kte]+c1o54;
+      f_BW   =  (D.f[DIR_M0M])[kbw]+c1o54;
+      f_BE   =  (D.f[DIR_P0M])[kbe]+c1o54;
+      f_TW   =  (D.f[DIR_M0P])[ktw]+c1o54;
+      f_TN   =  (D.f[DIR_0PP])[ktn]+c1o54;
+      f_BS   =  (D.f[DIR_0MM])[kbs]+c1o54;
+      f_BN   =  (D.f[DIR_0PM])[kbn]+c1o54;
+      f_TS   =  (D.f[DIR_0MP])[kts]+c1o54;
       f_ZERO =  (D.f[DIR_000])[kzero]+c8o27;
-      f_TNE   = (D.f[DIR_PPP ])[ktne]+c1o216;
-      f_TSW   = (D.f[DIR_MMP ])[ktsw]+c1o216;
-      f_TSE   = (D.f[DIR_PMP ])[ktse]+c1o216;
-      f_TNW   = (D.f[DIR_MPP ])[ktnw]+c1o216;
-      f_BNE   = (D.f[DIR_PPM ])[kbne]+c1o216;
-      f_BSW   = (D.f[DIR_MMM ])[kbsw]+c1o216;
-      f_BSE   = (D.f[DIR_PMM ])[kbse]+c1o216;
-      f_BNW   = (D.f[DIR_MPM ])[kbnw]+c1o216;
+      f_TNE   = (D.f[DIR_PPP])[ktne]+c1o216;
+      f_TSW   = (D.f[DIR_MMP])[ktsw]+c1o216;
+      f_TSE   = (D.f[DIR_PMP])[ktse]+c1o216;
+      f_TNW   = (D.f[DIR_MPP])[ktnw]+c1o216;
+      f_BNE   = (D.f[DIR_PPM])[kbne]+c1o216;
+      f_BSW   = (D.f[DIR_MMM])[kbsw]+c1o216;
+      f_BSE   = (D.f[DIR_PMM])[kbse]+c1o216;
+      f_BNW   = (D.f[DIR_MPM])[kbnw]+c1o216;
       ////////////////////////////////////////////////////////////////////////////////
 
       if( BC == GEO_FLUID || BC == GEO_VELO)

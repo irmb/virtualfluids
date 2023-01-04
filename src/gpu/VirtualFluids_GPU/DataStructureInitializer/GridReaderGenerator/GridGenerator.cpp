@@ -64,7 +64,7 @@ void GridGenerator::allocArrays_CoordNeighborGeo()
 
     for (uint level = 0; level < numberOfLevels; level++)
     {
-        const int numberOfNodesPerLevel = builder->getNumberOfNodes(level) + 1;
+        const uint numberOfNodesPerLevel = builder->getNumberOfNodes(level) + 1;
         numberOfNodesGlobal += numberOfNodesPerLevel;
         std::cout << "Level " << level << " = " << numberOfNodesPerLevel << " Nodes" << std::endl;
 
@@ -1282,8 +1282,8 @@ std::string GridGenerator::verifyNeighborIndices(int level) const
     int wrongNeighbors = 0;
     int stopperNodes = 0;
 
-    for (uint index = 0; index < para->getParH(level)->numberOfNodes; index++)
-        oss << verifyNeighborIndex(level, index, invalidNodes, stopperNodes, wrongNeighbors);
+    for (size_t index = 0; index < para->getParH(level)->numberOfNodes; index++)
+        oss << verifyNeighborIndex(level, (int)index, invalidNodes, stopperNodes, wrongNeighbors);
 
 
     oss << "invalid nodes found: " << invalidNodes << "\n";

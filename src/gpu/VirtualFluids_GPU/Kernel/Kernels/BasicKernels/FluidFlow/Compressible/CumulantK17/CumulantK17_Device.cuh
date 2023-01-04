@@ -16,7 +16,7 @@ template< TurbulenceModel turbulenceModel, bool writeMacroscopicVariables, bool 
     real* vz,
     real* turbulentViscosity,
     real SGSconstant,
-    unsigned long numberOfLBnodes,
+    unsigned long long numberOfLBnodes,
     int level,
     real* forces,
     real* bodyForceX,

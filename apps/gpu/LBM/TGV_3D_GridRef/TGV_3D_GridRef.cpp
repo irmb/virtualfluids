@@ -73,6 +73,7 @@
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
 #include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
+#include "VirtualFluids_GPU/Factories/GridScalingFactory.h"
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 #include "VirtualFluids_GPU/LBM/Simulation.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
@@ -116,7 +117,7 @@ bool cmdOptionExists(char** begin, char** end, const std::string& option)
 //////////////////////////////////////////////////////////////////////////
 real Re =  1600.0;
 
-uint dtPerL = 250;
+uint dtPerL = 500;
 
 uint nx = 64;
 uint gpuIndex = 0;
@@ -124,28 +125,21 @@ uint gpuIndex = 0;
 bool useLimiter = false;
 bool useWale = false;
 
-std::string kernel( "CumulantK17Comp" );
+std::string kernel( "CumulantK17CompChimRedesigned" );
 
-//std::string path("F:/Work/Computations/out/TaylorGreen3DNew/"); //LEGOLAS
-std::string path("D:/out/TGV_3D/"); //TESLA03
+std::string path("D:/out/TGV_3D/"); //MOLLOK
 
-std::string simulationName("TGV_3D");
+std::string simulationName("TGV_3D_Gridref_noSqPress");
 //////////////////////////////////////////////////////////////////////////
 
 void multipleLevel(const std::string& configPath)
 {
-    //std::ofstream logFile( "F:/Work/Computations/gridGenerator/grid/gridGeneratorLog.txt" );
-    //std::ofstream logFile( "grid/gridGeneratorLog.txt" );
-    //logging::Logger::addStream(&logFile);
-
     logging::Logger::addStream(&std::cout);
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
     logging::Logger::timeStamp(logging::Logger::ENABLE);
     logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
 
     vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();
-
-    //UbLog::reportingLevel() = UbLog::logLevelFromString("DEBUG5");
 
     auto gridFactory = GridFactory::make();
     //gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::RAYCASTING);
@@ -158,6 +152,7 @@ void multipleLevel(const std::string& configPath)
     config.load(configPath);
     SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNummberOfProcess(), communicator.getPID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
+    GridScalingFactory scalingFactory = GridScalingFactory();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -182,6 +177,13 @@ void multipleLevel(const std::string& configPath)
 	gridBuilder->addCoarseGrid(-PI, -PI, -PI,
 								PI,  PI,  PI, dx);
 
+    gridBuilder->setNumberOfLayers(0, 0);
+
+    auto fineGrid = new Cuboid(-PI * 0.5, -PI * 0.5, -PI * 0.5, 
+                                     0.0,  PI * 0.5,       0.0);
+
+    gridBuilder->addGrid(fineGrid, 1);
+
 	gridBuilder->setPeriodicBoundaryCondition(true, true, true);
 
 	gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
@@ -189,6 +191,8 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
 	//std::stringstream _path;
  //   std::stringstream _prefix;
@@ -244,14 +248,20 @@ void multipleLevel(const std::string& configPath)
 
     para->setPrintFiles(true);
 
-    para->setTimestepEnd( 40 * lround(L/velocity) );
-	para->setTimestepOut(  5 * lround(L/velocity) );
+    para->setTimestepEnd(40 * lround(L / velocity));
+    para->setTimestepOut(5 * lround(L / velocity));
+    //para->setTimestepOut(lround(L / velocity));
+ //   para->setTimestepEnd(2048);
+	//para->setTimestepOut(512);
+ //   para->setTimestepStartOut(500);
 
     para->setVelocityLB( velocity );
 
     para->setViscosityLB( viscosity );
 
     para->setVelocityRatio( 1.0 / velocity );
+
+    para->setDensityRatio(1.0);
 
     para->setInitialCondition( [&]( real coordX, real coordY, real coordZ, real& rho, real& vx, real& vy, real& vz){
 
@@ -285,13 +295,13 @@ void multipleLevel(const std::string& configPath)
     //SPtr<GridProvider> gridGenerator = GridProvider::makeGridReader(FILEFORMAT::BINARY, para, cudaMemoryManager);
 
     SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
-    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory);
+    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory, &scalingFactory);
     sim.run();
 
-    sim.addKineticEnergyAnalyzer( 10 );
-    sim.addEnstrophyAnalyzer( 10 );
+    //sim.addKineticEnergyAnalyzer( 10 );
+    //sim.addEnstrophyAnalyzer( 10 );
 
-    sim.run();
+    //sim.run();
 }
 
 

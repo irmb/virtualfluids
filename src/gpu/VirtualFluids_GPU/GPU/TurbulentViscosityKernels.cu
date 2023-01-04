@@ -62,11 +62,11 @@ __global__ void calcAMD(real* vx,
                         uint* neighborZ,
                         uint* neighborWSB,
                         uint* typeOfGridNode,
-                        uint size_Mat,
+                        unsigned long long numberOfLBnodes,
                         real SGSConstant)
 {
     const uint k = vf::gpu::getNodeIndex();
-    if(k >= size_Mat) return;
+    if(k >= numberOfLBnodes) return;
     if(typeOfGridNode[k] != GEO_FLUID) return;
 
     uint kPx = neighborX[k];

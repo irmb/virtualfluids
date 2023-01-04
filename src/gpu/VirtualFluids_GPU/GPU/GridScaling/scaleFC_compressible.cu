@@ -54,8 +54,8 @@ __global__ void scaleFC_compressible(
     unsigned int *neighborXfine,
     unsigned int *neighborYfine,
     unsigned int *neighborZfine,
-    unsigned int numberOfLBnodesCoarse,
-    unsigned int numberOfLBnodesFine,
+    unsigned long long numberOfLBnodesCoarse,
+    unsigned long long numberOfLBnodesFine,
     bool isEvenTimestep,
     unsigned int *indicesCoarse000,
     unsigned int *indicesFineMMM,
@@ -540,8 +540,8 @@ __global__ void scaleFC_compressible(
     //! 
     real LaplaceRho = 
         ((xoff != c0o1) || (yoff != c0o1) || (zoff != c0o1))
-        ? c0o1
-        : -c3o1 * (a_100 * a_100 + b_010 * b_010 + c_001 * c_001) - c6o1 * (b_100 * a_010 + c_100 * a_001 + c_010 * b_001);
+        ? c0o1 : c0o1;
+//        : -c3o1 * (a_100 * a_100 + b_010 * b_010 + c_001 * c_001) - c6o1 * (b_100 * a_010 + c_100 * a_001 + c_010 * b_001);
     // d_000 = ( drho_PPM + drho_PPP + drho_MPM + drho_MPP + drho_PMM + drho_PMP + drho_MMM + drho_MMP - c2o1 * LaplaceRho) * c1o8;
     d_000 =  c1o8 * ((((drho_PPP + drho_MMM) + (drho_PPM + drho_MMP)) + ((drho_PMM + drho_MPP) + (drho_PMP + drho_MPM))) - c2o1 * LaplaceRho);
 
