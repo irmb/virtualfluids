@@ -154,7 +154,7 @@ int main()
         para->setTimestepOut(timeStepOut);
         para->setTimestepEnd(timeStepEnd);
 
-        para->setMainKernel("CumulantK17CompChimRedesigned");
+        para->setMainKernel("CumulantK17");
 
         //////////////////////////////////////////////////////////////////////////
         // set boundary conditions
