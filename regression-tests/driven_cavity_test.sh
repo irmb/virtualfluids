@@ -21,4 +21,4 @@ PATH_TO_DIR=output/DrivenCavity
 PATH_TO_REFERENCE_DIR=regression-tests/reference_data/regression_tests/gpu/DrivenCavity_2Levels
 
 # execute fieldcompare (A more comprehensive manual can be found here https://gitlab.com/dglaeser/fieldcompare)
-fieldcompare dir $PATH_TO_DIR --reference $PATH_TO_REFERENCE_DIR --include-files "*.vtu"
+fieldcompare dir $PATH_TO_DIR $PATH_TO_REFERENCE_DIR --include-files "*.vtu"
