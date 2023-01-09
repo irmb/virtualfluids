@@ -52,13 +52,13 @@ __host__ __device__ int calcArrayIndex(int node, int nNodes, int timestep, int n
     return node+nNodes*(timestep+nTimesteps*array);
 }
 
-__device__ void calculatePointwiseQuantities(uint timestep, uint nTimesteps, real* quantityArray, bool* quantities, uint* quantityArrayOffsets, uint nPoints, uint node, real vx, real vy, real vz, real rho, bool timeseries)
+__device__ void calculatePointwiseQuantities(uint timestepInTimeseries, uint timestepInAverage, uint nTimesteps, real* quantityArray, bool* quantities, uint* quantityArrayOffsets, uint nPoints, uint node, real vx, real vy, real vz, real rho, bool timeseries)
 {
     //"https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm"
     // also has extensions for higher order and covariances
-    int old_value = timeseries ? max(timestep-1, 0) : 0;
-    int new_value = timeseries ? timestep : 0;
-    int n = timestep+1;
+    int old_value = timeseries ? max(timestepInTimeseries-1, 0) : 0;
+    int new_value = timeseries ? timestepInTimeseries : 0;
+    int n = timestepInAverage+1;
     real inv_n = 1/real(n);
 
 
@@ -114,7 +114,7 @@ __device__ void calculatePointwiseQuantities(uint timestep, uint nTimesteps, rea
 }
 
 __global__ void calcQuantitiesKernel(   uint* pointIndices,
-                                    uint nPoints, uint timestep, uint nTimesteps,
+                                    uint nPoints, uint timestepInTimeseries, uint timestepInAverage, uint nTimesteps,
                                     real* vx, real* vy, real* vz, real* rho,            
                                     uint* neighborX, uint* neighborY, uint* neighborZ,
                                     bool* quantities,
@@ -143,12 +143,12 @@ __global__ void calcQuantitiesKernel(   uint* pointIndices,
     u_interpZ = vz[k];
     rho_interp = rho[k];
 
-    calculatePointwiseQuantities(timestep, nTimesteps, quantityArray, quantities, quantityArrayOffsets, nPoints, node, u_interpX, u_interpY, u_interpZ, rho_interp, timeseries);
+    calculatePointwiseQuantities(timestepInTimeseries, timestepInAverage, nTimesteps, quantityArray, quantities, quantityArrayOffsets, nPoints, node, u_interpX, u_interpY, u_interpZ, rho_interp, timeseries);
 
 }
 
 __global__ void interpAndCalcQuantitiesKernel(   uint* pointIndices,
-                                    uint nPoints, uint timestep, uint nTimesteps,
+                                    uint nPoints, uint timestepInTimeseries, uint timestepInAverage, uint nTimesteps,
                                     real* distX, real* distY, real* distZ,
                                     real* vx, real* vy, real* vz, real* rho,            
                                     uint* neighborX, uint* neighborY, uint* neighborZ,
@@ -185,7 +185,7 @@ __global__ void interpAndCalcQuantitiesKernel(   uint* pointIndices,
     u_interpZ  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vz );
     rho_interp = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, rho );
 
-    calculatePointwiseQuantities(timestep, nTimesteps, quantityArray, quantities, quantityArrayOffsets, nPoints, node, u_interpX, u_interpY, u_interpZ, rho_interp, timeseries);
+    calculatePointwiseQuantities(timestepInTimeseries, timestepInAverage, nTimesteps, quantityArray, quantities, quantityArrayOffsets, nPoints, node, u_interpX, u_interpY, u_interpZ, rho_interp, timeseries);
 
 }
 

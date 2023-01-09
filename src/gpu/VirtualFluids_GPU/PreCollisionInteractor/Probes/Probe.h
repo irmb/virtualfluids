@@ -115,7 +115,7 @@ struct ProbeStruct{
 };
 
 __global__ void calcQuantitiesKernel(   uint* pointIndices,
-                                    uint nPoints, uint timestep, uint nTimesteps,
+                                    uint nPoints, uint timestepInTimeseries, uint timestepInAverage, uint nTimesteps,
                                     real* vx, real* vy, real* vz, real* rho,            
                                     uint* neighborX, uint* neighborY, uint* neighborZ,
                                     bool* quantities,
@@ -123,7 +123,7 @@ __global__ void calcQuantitiesKernel(   uint* pointIndices,
                                 );
 
 __global__ void interpAndCalcQuantitiesKernel(   uint* pointIndices,
-                                    uint nPoints, uint timestep, uint nTimesteps,
+                                    uint nPoints, uint timestepInTimeseries, uint timestepInAverage, uint nTimesteps,
                                     real* distX, real* distY, real* distZ,
                                     real* vx, real* vy, real* vz, real* rho,            
                                     uint* neighborX, uint* neighborY, uint* neighborZ,
