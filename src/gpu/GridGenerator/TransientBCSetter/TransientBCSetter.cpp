@@ -413,7 +413,7 @@ void VTKReader::getNextData(real* data, uint numberOfNodes, real time)
             {
                 numberOfFiles++;
 
-                printf("switching to precursor file no. %zd\n", numberOfFiles);
+                VF_LOG_INFO("PrecursorBC on level {}: switching to precursor file no. %zd\n", level, numberOfFiles);
                 if(numberOfFiles == this->fileCollection->files[level][id].size())
                     throw std::runtime_error("Not enough Precursor Files to read");
 
