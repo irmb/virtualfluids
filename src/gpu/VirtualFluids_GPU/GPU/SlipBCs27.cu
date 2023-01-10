@@ -20,7 +20,7 @@ __global__ void QSlipDevice27(real* DD,
                                          unsigned long long numberOfLBnodes, 
                                          bool isEvenTimestep)
 {
-   Distributions27 D = vf::gpu::getDistributionReferences27(DD, size_Mat, isEvenTimestep);
+   Distributions27 D = vf::gpu::getDistributionReferences27(DD, numberOfLBnodes, isEvenTimestep);
 
    // Distributions27 D;
    // if (isEvenTimestep==true)
@@ -208,7 +208,7 @@ __global__ void QSlipDevice27(real* DD,
 
       //////////////////////////////////////////////////////////////////////////
 
-      D = vf::gpu::getDistributionReferences27(DD, size_Mat, !isEvenTimestep);
+      D = vf::gpu::getDistributionReferences27(DD, numberOfLBnodes, !isEvenTimestep);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //Test
       //(D.f[DIR_000])[k]=c1o10;
@@ -1235,7 +1235,7 @@ __global__ void BBSlipDeviceComp27(
                    (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
                    (f_T - f_B)) / (c1o1 + drho);
 
-      real cu_sq = c3o2 * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3) * (c1o1 + drho);
+      // real cu_sq = c3o2 * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3) * (c1o1 + drho);
 
       ////////////////////////////////////////////////////////////////////////////////
       //! - change the pointer to write the results in the correct array

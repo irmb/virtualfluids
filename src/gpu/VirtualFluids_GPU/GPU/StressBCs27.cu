@@ -170,7 +170,7 @@ __global__ void QStressDeviceComp27(real* DD,
                                     bool isEvenTimestep)
 {
 
-   Distributions27 D = vf::gpu::getDistributionReferences27(DD, size_Mat, isEvenTimestep);
+   Distributions27 D = vf::gpu::getDistributionReferences27(DD, numberOfLBnodes, isEvenTimestep);
 
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index
@@ -302,7 +302,7 @@ __global__ void QStressDeviceComp27(real* DD,
       real om_turb = om1 / (c1o1 + c3o1*om1*max(c0o1, turbViscosity[k_Q[k]]));
       //////////////////////////////////////////////////////////////////////////
 
-      D = vf::gpu::getDistributionReferences27(DD, size_Mat, !isEvenTimestep);
+      D = vf::gpu::getDistributionReferences27(DD, numberOfLBnodes, !isEvenTimestep);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //Compute incoming f's with zero wall velocity
       ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -856,7 +856,7 @@ __global__ void BBStressDevice27( real* DD,
                                              bool isEvenTimestep)
 {
 
-   Distributions27 D = vf::gpu::getDistributionReferences27(DD, size_Mat, isEvenTimestep);
+   Distributions27 D = vf::gpu::getDistributionReferences27(DD, numberOfLBnodes, isEvenTimestep);
 
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index
@@ -986,7 +986,7 @@ __global__ void BBStressDevice27( real* DD,
 
       //////////////////////////////////////////////////////////////////////////
 
-      D = vf::gpu::getDistributionReferences27(DD, size_Mat, !isEvenTimestep);
+      D = vf::gpu::getDistributionReferences27(DD, numberOfLBnodes, !isEvenTimestep);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       real f_E_in,  f_W_in,  f_N_in,  f_S_in,  f_T_in,  f_B_in,   f_NE_in,  f_SW_in,  f_SE_in,  f_NW_in,  f_TE_in,  f_BW_in,  f_BE_in,
          f_TW_in, f_TN_in, f_BS_in, f_BN_in, f_TS_in, f_TNE_in, f_TSW_in, f_TSE_in, f_TNW_in, f_BNE_in, f_BSW_in, f_BSE_in, f_BNW_in;
@@ -1486,7 +1486,7 @@ __global__ void BBStressPressureDevice27( real* DD,
                                              unsigned long long numberOfLBnodes,
                                              bool isEvenTimestep)
 {
-   Distributions27 D = vf::gpu::getDistributionReferences27(DD, size_Mat, isEvenTimestep);
+   Distributions27 D = vf::gpu::getDistributionReferences27(DD, numberOfLBnodes, isEvenTimestep);
 
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index
@@ -1615,7 +1615,7 @@ __global__ void BBStressPressureDevice27( real* DD,
                  (f_T - f_B)) / (c1o1 + drho);
 
       //////////////////////////////////////////////////////////////////////////
-      D = vf::gpu::getDistributionReferences27(DD, size_Mat, !isEvenTimestep);
+      D = vf::gpu::getDistributionReferences27(DD, numberOfLBnodes, !isEvenTimestep);
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       real f_E_in,  f_W_in,  f_N_in,  f_S_in,  f_T_in,  f_B_in,   f_NE_in,  f_SW_in,  f_SE_in,  f_NW_in,  f_TE_in,  f_BW_in,  f_BE_in,
