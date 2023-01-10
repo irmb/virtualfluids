@@ -1,28 +1,28 @@
 //=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
 //           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
 //
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
 //  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
+//  License as published by the Free Software Foundation, either version 3 of
 //  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 //  for more details.
-//  
+//
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
@@ -65,14 +65,14 @@ void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition
                                             ||  grid->getFieldEntry(index) == vf::gpu::FLUID_CFC
                                             ||  grid->getFieldEntry(index) == vf::gpu::FLUID_CFF
                                             ||  grid->getFieldEntry(index) == vf::gpu::FLUID_FCC
-                                            ||  grid->getFieldEntry(index) == vf::gpu::FLUID_FCF 
                                             ||  grid->getFieldEntry(index) == vf::gpu::FLUID_FCF
-                                            
+                                            ||  grid->getFieldEntry(index) == vf::gpu::FLUID_FCF
+
                                             //! Enforce overlap of BCs on edge nodes
                                             ||  grid->getFieldEntry(index)  == vf::gpu::BC_PRESSURE
-                                            ||  grid->getFieldEntry(index)  == vf::gpu::BC_VELOCITY 
-                                            ||  grid->getFieldEntry(index)  == vf::gpu::BC_NOSLIP   
-                                            ||  grid->getFieldEntry(index)  == vf::gpu::BC_SLIP     
+                                            ||  grid->getFieldEntry(index)  == vf::gpu::BC_VELOCITY
+                                            ||  grid->getFieldEntry(index)  == vf::gpu::BC_NOSLIP
+                                            ||  grid->getFieldEntry(index)  == vf::gpu::BC_SLIP
                                             ||  grid->getFieldEntry(index)  == vf::gpu::BC_STRESS ))
             {
                 grid->setFieldEntry(index, boundaryCondition->getType());
@@ -175,7 +175,7 @@ void Side::setQs(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uin
         bool alignedWithNormal = (this->getNormal()[0]*grid->getDirection()[dir * DIMENSION + 0]+
                                   this->getNormal()[1]*grid->getDirection()[dir * DIMENSION + 1]+
                                   this->getNormal()[2]*grid->getDirection()[dir * DIMENSION + 2] ) > 0;
-        
+
         uint neighborIndex = grid->transCoordToIndex( neighborX, neighborY, neighborZ );
         if((grid->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_OUT_OF_GRID_BOUNDARY ||
             grid->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_OUT_OF_GRID          ||
@@ -185,7 +185,7 @@ void Side::setQs(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uin
         else
             qNode[dir] = -1.0;
     }
-    
+
     boundaryCondition->qs.push_back(qNode);
 }
 
@@ -214,7 +214,7 @@ void Geometry::addIndices(std::vector<SPtr<Grid> > grids, uint level, SPtr<Bound
 
         for (int dir = 0; dir <= grids[level]->getEndDirection(); dir++)
         {
-			const real q = grids[level]->getQValue(index, dir);
+            const real q = grids[level]->getQValue(index, dir);
 
             qNode[dir] = q;
 
@@ -284,7 +284,7 @@ void MY::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCond
     real coordinateNormal = grid[level]->getStartY() + grid[level]->getDelta();
 
     if( coordinateNormal > grid[0]->getStartY() + grid[0]->getDelta() ) return;
-    
+
     Side::addIndices(grid[level], boundaryCondition, "y", coordinateNormal, startInner, endInner, startOuter, endOuter);
 }
 
@@ -331,6 +331,6 @@ void PZ::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCond
     real coordinateNormal = grid[level]->getEndZ() - grid[level]->getDelta();
 
     if( coordinateNormal < grid[0]->getEndZ() - grid[0]->getDelta() ) return;
-    
+
     Side::addIndices(grid[level], boundaryCondition, "z", coordinateNormal, startInner, endInner, startOuter, endOuter);
 }

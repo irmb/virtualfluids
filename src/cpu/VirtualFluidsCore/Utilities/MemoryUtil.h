@@ -60,6 +60,13 @@
 #if defined(__CYGWIN__)
 #define MEMORYUTIL_CYGWIN
 #endif
+
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include "Grid3D.h"
+
 //////////////////////////////////////////////////////////////////////////
 // MemoryUtil
 //////////////////////////////////////////////////////////////////////////
@@ -158,6 +165,43 @@ static long long getPhysMemUsedByMe()
     return (long long)physMemUsedByMe;
 }
 //////////////////////////////////////////////////////////////////////////
+
+static std::string toString(SPtr<Grid3D> grid, int numberOfProcesses)
+{
+    unsigned long long numberOfBlocks = (unsigned long long)grid->getNumberOfBlocks();
+    int ghostLayer = grid->getGhostLayerWidth()*2+1;
+    UbTupleInt3 blockNx = grid->getBlockNX();
+
+    unsigned long long numberOfNodesPerBlock = (unsigned long long)(val<1>(blockNx)) *
+                                               (unsigned long long)(val<2>(blockNx)) *
+                                               (unsigned long long)(val<3>(blockNx));
+    unsigned long long numberOfNodes = numberOfBlocks * numberOfNodesPerBlock;
+    unsigned long long numberOfNodesPerBlockWithGhostLayer = numberOfBlocks * (val<1>(blockNx) + ghostLayer) *
+                                                             (val<2>(blockNx) + ghostLayer) *
+                                                             (val<3>(blockNx) + ghostLayer);
+    double needMemAll = double(numberOfNodesPerBlockWithGhostLayer*(27*sizeof(double)+sizeof(int)+sizeof(float)*4));
+    double needMem = needMemAll / double(numberOfProcesses);
+    
+    std::ostringstream out;
+    out << "Grid information:" << std::endl;
+    out << "###################################################" << std::endl;
+    out << "# Number of blocks = " << numberOfBlocks << std::endl;
+    out << "# Number of nodes  = " << numberOfNodes << std::endl;
+    int minInitLevel = grid->getCoarsestInitializedLevel();
+    int maxInitLevel = grid->getFinestInitializedLevel();
+    for (int level = minInitLevel; level<=maxInitLevel; level++)
+    {
+        int nobl = grid->getNumberOfBlocks(level);
+        out << "# Number of blocks for level " << level << " = " << nobl << std::endl;
+        out << "# Number of nodes for level " << level << " = " << nobl * numberOfNodesPerBlock << std::endl;
+    }
+    out << "# Necessary memory  = " << needMemAll << " bytes" << std::endl;
+    out << "# Necessary memory per process = " << needMem << " bytes" << std::endl;
+    out << "# Available memory per process = " << (double)getTotalPhysMem() << " bytes" << std::endl;
+    out << "###################################################" << std::endl;
+
+    return out.str();
+}
 
 } // namespace Utilities
 

@@ -33,7 +33,7 @@ namespace UnstructuredGridWriter
 
 		bool neighborsFluid;
 
-		unsigned int allnodes = para->getParH(level)->numberOfNodes * 8;
+		unsigned long long allnodes = para->getParH(level)->numberOfNodes * 8;
 
 		nodes.resize(allnodes);
 		nodedata[0].resize(allnodes);
@@ -45,7 +45,7 @@ namespace UnstructuredGridWriter
 		unsigned int nodeCount = 0;
 		double nodeDeltaLevel = para->getParH(level)->dx;
 
-		for (unsigned int pos=0;pos<para->getParH(level)->numberOfNodes;pos++)
+		for (size_t pos = 0; pos < para->getParH(level)->numberOfNodes; pos++)
 		{
 			if (para->getParH(level)->typeOfGridNode[pos] == GEO_FLUID /*!= GEO_VOID*/)
 			{
@@ -197,9 +197,9 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-			if ( ((part+1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->numberOfNodes)
+			if ( ((part+1)*para->getlimitOfNodesForVTK()) > (uint)para->getParH(level)->numberOfNodes)
 			{
-				sizeOfNodes = para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
+                sizeOfNodes = (uint)para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
 			}
 			else
 			{
@@ -340,9 +340,9 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-			if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->numberOfNodes)
+            if (((part + 1) * para->getlimitOfNodesForVTK()) > (uint)para->getParH(level)->numberOfNodes)
 			{
-				sizeOfNodes = para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
+                sizeOfNodes = (uint)para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
 			}
 			else
 			{
@@ -479,9 +479,9 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-			if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->numberOfNodes)
+            if (((part + 1) * para->getlimitOfNodesForVTK()) > (uint)para->getParH(level)->numberOfNodes)
 			{
-				sizeOfNodes = para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
+                sizeOfNodes = (uint)para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
 			}
 			else
 			{
@@ -628,9 +628,9 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-			if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->numberOfNodes)
+            if (((part + 1) * para->getlimitOfNodesForVTK()) > (uint)para->getParH(level)->numberOfNodes)
 			{
-				sizeOfNodes = para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
+                sizeOfNodes = (uint)para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
 			}
 			else
 			{
@@ -771,9 +771,9 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-			if ( ((part+1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->numberOfNodes)
+            if (((part + 1) * para->getlimitOfNodesForVTK()) > (uint)para->getParH(level)->numberOfNodes)
 			{
-				sizeOfNodes = para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
+                sizeOfNodes = (uint)para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
 			}
 			else
 			{
@@ -896,10 +896,10 @@ namespace UnstructuredGridWriter
 		vector< vector< double > > nodedata(nodedatanames.size());
 
 		//printf("\n test for if... \n");
-		if (para->getParH(level)->numberOfNodes > limitOfNodes)
+        if ((uint)para->getParH(level)->numberOfNodes > limitOfNodes)
 		{
 			//printf("\n test in if I... \n");
-			unsigned int restOfNodes = para->getParH(level)->numberOfNodes - limitOfNodes;
+            unsigned int restOfNodes = (uint)para->getParH(level)->numberOfNodes - limitOfNodes;
 			//////////////////////////////////////////////////////////////////////////
 			//PART I
 			nodes.resize(limitOfNodes);
@@ -984,7 +984,7 @@ namespace UnstructuredGridWriter
 			nodedata[5].resize(restOfNodes);
 			//printf("\n test in if IV... \n");
 
-			for (unsigned int pos=limitOfNodes;pos<para->getParH(level)->numberOfNodes;pos++)
+			for (size_t pos = limitOfNodes; pos < para->getParH(level)->numberOfNodes; pos++)
 			{
 				if (para->getParH(level)->typeOfGridNode[pos] == GEO_FLUID)
 				{
@@ -1055,7 +1055,7 @@ namespace UnstructuredGridWriter
 			nodedata[5].resize(para->getParH(level)->numberOfNodes);
 
 			//printf("\n test in else II... \n");
-			for (unsigned int pos=0;pos<para->getParH(level)->numberOfNodes;pos++)
+			for (size_t pos = 0; pos < para->getParH(level)->numberOfNodes; pos++)
 			{
 				if (para->getParH(level)->typeOfGridNode[pos] == GEO_FLUID)
 				{
@@ -1148,7 +1148,7 @@ namespace UnstructuredGridWriter
 		unsigned int number1,number2,number3,number4,number5,number6,number7,number8;
 		bool neighborsFluid;
 		double vxmax = 0;
-		vector< vector< double > > nodedata(nodedatanames.size());
+		vector<vector<double>> nodedata(nodedatanames.size());
 
 		nodes.resize(para->getParH(level)->numberOfNodes);
 		nodedata[0].resize(para->getParH(level)->numberOfNodes);
@@ -1158,7 +1158,7 @@ namespace UnstructuredGridWriter
 		nodedata[4].resize(para->getParH(level)->numberOfNodes);
 		nodedata[5].resize(para->getParH(level)->numberOfNodes);
 
-		for (unsigned int pos=0;pos<para->getParH(level)->numberOfNodes;pos++)
+		for (size_t pos = 0; pos < para->getParH(level)->numberOfNodes; pos++)
 		{
 			if (para->getParH(level)->typeOfGridNode[pos] == GEO_FLUID)
 			{
@@ -1244,7 +1244,7 @@ namespace UnstructuredGridWriter
 		nodedata[4].resize(para->getParH(level)->numberOfNodes);
 		nodedata[5].resize(para->getParH(level)->numberOfNodes);
 
-		for (unsigned int pos=0;pos<para->getParH(level)->numberOfNodes;pos++)
+		for (size_t pos = 0; pos < para->getParH(level)->numberOfNodes; pos++)
 		{
 			if (para->getParH(level)->typeOfGridNode[pos] == GEO_FLUID)
 			{
@@ -1342,9 +1342,9 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-			if ( ((part+1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->numberOfNodes)
+			if ( ((part+1)*para->getlimitOfNodesForVTK()) > (uint)para->getParH(level)->numberOfNodes)
 			{
-				sizeOfNodes = para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
+                sizeOfNodes = (uint)para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
 			}
 			else
 			{
@@ -1364,7 +1364,7 @@ namespace UnstructuredGridWriter
 			nodedata[5].resize(sizeOfNodes);
 			//////////////////////////////////////////////////////////////////////////
 			//printf("\n test in if II... \n");
-			for (unsigned int pos=startpos;pos<endpos;pos++)
+			for (size_t pos = startpos; pos < endpos; pos++)
 			{
 				if (para->getParH(level)->typeOfGridNode[pos] == GEO_FLUID)
 				{
@@ -1465,9 +1465,9 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-			if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->numberOfNodes)
+            if (((part + 1) * para->getlimitOfNodesForVTK()) > (uint)para->getParH(level)->numberOfNodes)
 			{
-				sizeOfNodes = para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
+                sizeOfNodes = (uint)para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
 			}
 			else
 			{
@@ -1595,9 +1595,9 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-			if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->numberOfNodes)
+            if (((part + 1) * para->getlimitOfNodesForVTK()) > (uint)para->getParH(level)->numberOfNodes)
 			{
-				sizeOfNodes = para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
+                sizeOfNodes = (uint)para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
 			}
 			else
 			{
@@ -1728,7 +1728,7 @@ namespace UnstructuredGridWriter
 		nodedatanames.push_back("geo");
 		unsigned int number1,number2,number3,number4,number5,number6,number7,number8;
 		bool neighborsFluid;
-		vector< vector< double > > nodedata(nodedatanames.size());
+		vector< vector<double>> nodedata(nodedatanames.size());
 
 		nodes.resize(para->getParH(level)->numberOfNodes);
 		nodedata[0].resize(para->getParH(level)->numberOfNodes);
@@ -1738,7 +1738,7 @@ namespace UnstructuredGridWriter
 		nodedata[4].resize(para->getParH(level)->numberOfNodes);
 		nodedata[5].resize(para->getParH(level)->numberOfNodes);
 
-		for (unsigned int pos=0;pos<para->getParH(level)->numberOfNodes;pos++)
+		for (size_t pos = 0; pos < para->getParH(level)->numberOfNodes; pos++)
 		{
 			if (para->getParH(level)->typeOfGridNode[pos] == GEO_FLUID)
 			{
@@ -1825,7 +1825,7 @@ namespace UnstructuredGridWriter
 		nodedata[4].resize(para->getParH(level)->numberOfNodes);
 		nodedata[5].resize(para->getParH(level)->numberOfNodes);
 
-		for (unsigned int pos=0;pos<para->getParH(level)->numberOfNodes;pos++)
+		for (size_t pos = 0; pos < para->getParH(level)->numberOfNodes; pos++)
 		{
 			if (para->getParH(level)->typeOfGridNode[pos] == GEO_FLUID)
 			{
@@ -1975,9 +1975,9 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-			if ( ((part+1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->numberOfNodes)
+            if (((part + 1) * para->getlimitOfNodesForVTK()) > (uint)para->getParH(level)->numberOfNodes)
 			{
-				sizeOfNodes = para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
+                sizeOfNodes = (uint)para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
 			}
 			else
 			{
@@ -2080,9 +2080,9 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-			if ( ((part+1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->numberOfNodes)
+            if (((part + 1) * para->getlimitOfNodesForVTK()) > (uint)para->getParH(level)->numberOfNodes)
 			{
-				sizeOfNodes = para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
+                sizeOfNodes = (uint)para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
 			}
 			else
 			{
@@ -2192,9 +2192,9 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-			if ( ((part+1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->numberOfNodes)
+            if (((part + 1) * para->getlimitOfNodesForVTK()) > (uint)para->getParH(level)->numberOfNodes)
 			{
-				sizeOfNodes = para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
+                sizeOfNodes = (uint)para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
 			}
 			else
 			{
@@ -2319,7 +2319,7 @@ namespace UnstructuredGridWriter
 			wallX3 = 0.0;
 			q      = 0.0;
 			//////////////////////////////////////////////////////////////////////////
-			for (unsigned int typeOfQ = STARTDIR; typeOfQ <= ENDDIR; typeOfQ++)
+            for (size_t typeOfQ = vf::lbm::dir::STARTDIR; typeOfQ <= vf::lbm::dir::ENDDIR; typeOfQ++)
 			{
 				QQ = para->getParH(level)->geometryBC.q27[0];
 				Q.q27[typeOfQ] = &QQ[typeOfQ*sizeOfNodes];
@@ -2423,7 +2423,7 @@ namespace UnstructuredGridWriter
 			wallX3 = 0.0;
 			q      = 0.0;
 			//////////////////////////////////////////////////////////////////////////
-			for (unsigned int typeOfQ = STARTDIR; typeOfQ <= ENDDIR; typeOfQ++)
+            for (size_t typeOfQ = vf::lbm::dir::STARTDIR; typeOfQ <= vf::lbm::dir::ENDDIR; typeOfQ++)
 			{
 				QQ = para->getParH(level)->velocityBC.q27[0];
 				Q.q27[typeOfQ] = &QQ[typeOfQ*sizeOfNodes];
@@ -2528,7 +2528,7 @@ namespace UnstructuredGridWriter
 			wallX3 = 0.0;
 			q      = 0.0;
 			//////////////////////////////////////////////////////////////////////////
-			for (unsigned int typeOfQ = STARTDIR; typeOfQ <= ENDDIR; typeOfQ++)
+            for (size_t typeOfQ = vf::lbm::dir::STARTDIR; typeOfQ <= vf::lbm::dir::ENDDIR; typeOfQ++)
 			{
 				QQ = para->getParH(level)->pressureBC.q27[0];
 				Q.q27[typeOfQ] = &QQ[typeOfQ*sizeOfNodes];

@@ -128,12 +128,12 @@ void PrecursorWriter::init(Parameter* para, GridProvider* gridProvider, CudaMemo
         std::vector<int> indicesOnPlane;
         std::vector<real> coordY, coordZ;
 
-        for(uint j=1; j<para->getParH(level)->numberOfNodes; j++ )
+        for(size_t pos = 1; pos < para->getParH(level)->numberOfNodes; pos++ )
         {
-            real pointCoordX = para->getParH(level)->coordinateX[j];
-            real pointCoordY = para->getParH(level)->coordinateY[j];
-            real pointCoordZ = para->getParH(level)->coordinateZ[j];
-            if( para->getParH(level)->typeOfGridNode[j] == GEO_FLUID &&
+            real pointCoordX = para->getParH(level)->coordinateX[pos];
+            real pointCoordY = para->getParH(level)->coordinateY[pos];
+            real pointCoordZ = para->getParH(level)->coordinateZ[pos];
+            if( para->getParH(level)->typeOfGridNode[pos] == GEO_FLUID &&
                 pointCoordX < (dx+xPos) && pointCoordX >= xPos       &&
                 pointCoordY<=yMax && pointCoordY>=yMin               && 
                 pointCoordZ<=zMax && pointCoordZ>=zMin)
@@ -143,7 +143,7 @@ void PrecursorWriter::init(Parameter* para, GridProvider* gridProvider, CudaMemo
 
                 lowestY = min(lowestY, pointCoordY);
                 lowestZ = min(lowestZ, pointCoordZ);
-                indicesOnGrid.push_back(j);    
+                indicesOnGrid.push_back((uint)pos);    
                 coordY.push_back(pointCoordY);            
                 coordZ.push_back(pointCoordZ);    
             }

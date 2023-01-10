@@ -90,10 +90,10 @@ void ADKernelManager::initAD(const int level) const
 ////////////////////////////////////////////////////////////////////////////////
 void ADKernelManager::setInitialNodeValuesAD(const int level, SPtr<CudaMemoryManager> cudaMemoryManager) const
 {
-    for (uint j = 1; j <= para->getParH(level)->numberOfNodes; j++) {
-        const real coordX = para->getParH(level)->coordinateX[j];
-        const real coordY = para->getParH(level)->coordinateY[j];
-        const real coordZ = para->getParH(level)->coordinateZ[j];
+    for (size_t index = 1; index <= para->getParH(level)->numberOfNodes; index++) {
+        const real coordX = para->getParH(level)->coordinateX[index];
+        const real coordY = para->getParH(level)->coordinateY[index];
+        const real coordZ = para->getParH(level)->coordinateZ[index];
 
         real concentration;
 
@@ -104,7 +104,7 @@ void ADKernelManager::setInitialNodeValuesAD(const int level, SPtr<CudaMemoryMan
             concentration = real(0.0);
         }
 
-        para->getParH(level)->concentration[j] = concentration;
+        para->getParH(level)->concentration[index] = concentration;
     }
 
     cudaMemoryManager->cudaCopyConcentrationHostToDevice(level);

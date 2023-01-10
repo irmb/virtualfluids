@@ -43,7 +43,7 @@ using namespace vf::lbm::dir;
 namespace vf::gpu
 {
 
-__inline__ __device__ __host__ void getPointersToDistributions(Distributions27 &dist, real *distributionArray, const uint numberOfLBnodes, const bool isEvenTimestep)
+__inline__ __device__ __host__ void getPointersToDistributions(Distributions27 &dist, real *distributionArray, const unsigned long long numberOfLBnodes, const bool isEvenTimestep)
 {
     if (isEvenTimestep)
     {
@@ -114,7 +114,7 @@ __inline__ __device__ __host__ void getPointersToDistributions(Distributions27 &
 *  @params isEvenTimestep: stored data dependent on timestep is based on the esoteric twist algorithm
 *  @return a data struct containing the addresses to the 27 directions within the 1D distribution array
 */
-__inline__ __device__ __host__ DistributionReferences27 getDistributionReferences27(real* distributions, unsigned int numberOfLBnodes, bool isEvenTimestep){
+__inline__ __device__ __host__ DistributionReferences27 getDistributionReferences27(real* distributions, const unsigned long long numberOfLBnodes, const bool isEvenTimestep){
     DistributionReferences27 distribution_references;
     getPointersToDistributions(distribution_references, distributions, numberOfLBnodes, isEvenTimestep);
     return distribution_references;

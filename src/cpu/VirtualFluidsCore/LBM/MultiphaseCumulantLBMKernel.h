@@ -91,6 +91,7 @@ protected:
    mu::value_type muX1,muX2,muX3;
    mu::value_type muDeltaT;
    mu::value_type muNu;
+   mu::value_type muRho;
    LBMReal forcingX1;
    LBMReal forcingX2;
    LBMReal forcingX3;

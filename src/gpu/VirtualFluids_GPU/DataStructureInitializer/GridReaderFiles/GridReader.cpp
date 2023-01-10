@@ -47,7 +47,7 @@ bool GridReader::getBinaer()
 
 void rearrangeGeometry(Parameter* para, int lev)
 {
-    for (uint index = 0; index < para->getParH(lev)->numberOfNodes; index++)
+    for (size_t index = 0; index < para->getParH(lev)->numberOfNodes; index++)
     {
         if (para->getParH(lev)->typeOfGridNode[index] == GEO_FLUID_OLD)
         {
@@ -74,11 +74,11 @@ void GridReader::allocArrays_CoordNeighborGeo()
 	uint numberOfNodesGlobal = 0;
 	std::cout << "Number of Nodes: " << std::endl;
 
-	for (uint level = 0; level <= maxLevel; level++) 
-	{		
-		int numberOfNodesPerLevel = coordX.getSize(level) + 1;
-		numberOfNodesGlobal += numberOfNodesPerLevel;
-		std::cout << "Level " << level << " = " << numberOfNodesPerLevel << " Nodes" << std::endl;
+    for (uint level = 0; level <= maxLevel; level++)
+    {
+        const uint numberOfNodesPerLevel = coordX.getSize(level) + 1;
+        numberOfNodesGlobal += numberOfNodesPerLevel;
+        std::cout << "Level " << level << " = " << numberOfNodesPerLevel << " Nodes" << std::endl;
 
 		setNumberOfNodes(numberOfNodesPerLevel, level);
 
@@ -130,9 +130,9 @@ void GridReader::allocArrays_BoundaryValues()
 
     for (uint i = 0; i < channelBoundaryConditions.size(); i++)
     {
-        if (     this->channelBoundaryConditions[i] == "velocity") { fillVelocityVectors(i); } 
-		else if (this->channelBoundaryConditions[i] == "pressure") { setPressureValues(i); } 
-		else if (this->channelBoundaryConditions[i] == "outflow")  { setOutflowValues(i);  }
+        if (     this->channelBoundaryConditions[i] == "velocity") { fillVelocityVectors(i); }
+        else if (this->channelBoundaryConditions[i] == "pressure") { setPressureValues(i); }
+        else if (this->channelBoundaryConditions[i] == "outflow")  { setOutflowValues(i);  }
     }
 
 	setVelocityValues();
@@ -223,13 +223,13 @@ void GridReader::allocArrays_taggedFluidNodes() {
 	// TODO
 }
 
-void GridReader::tagFluidNodeIndices(std::vector<uint> taggedFluidNodeIndices, CollisionTemplate tag, uint level){
-	std::cout << "GridReader::tagFluidNodeIndices not implemented" << std::endl;
+void GridReader::tagFluidNodeIndices(const std::vector<uint>& taggedFluidNodeIndices, CollisionTemplate tag, uint level){
+    std::cout << "GridReader::tagFluidNodeIndices not implemented" << std::endl;
     // TODO
 }
 
 void GridReader::sortFluidNodeTags(){
-	std::cout << "GridReader::sortFluidNodeTags not implemented" << std::endl;
+    std::cout << "GridReader::sortFluidNodeTags not implemented" << std::endl;
     // TODO
 }
 
@@ -285,23 +285,23 @@ void GridReader::fillVelocityVectors(int channelSide)
 			delete[] veloX_ValuesPerSide;
             delete[] veloY_ValuesPerSide;
             delete[] veloZ_ValuesPerSide;
-        }        
-	}
+        }
+    }
 
 
 }
 
-void GridReader::setVelocityValues() { 
+void GridReader::setVelocityValues() {
     for (int level = 0; level < (int)(velocityX_BCvalues.size()); level++) {
-        
-		int sizePerLevel = (int) velocityX_BCvalues[level].size();
+
+        int sizePerLevel = (int) velocityX_BCvalues[level].size();
         std::cout << "complete size velocity level " << level << " : " << sizePerLevel << std::endl;
         setVelocitySizePerLevel(level, sizePerLevel);
-        
-		if (sizePerLevel > 1) {
+
+        if (sizePerLevel > 1) {
             cudaMemoryManager->cudaAllocVeloBC(level);
             setVelocity(level, sizePerLevel);
-			cudaMemoryManager->cudaCopyVeloBC(level);
+            cudaMemoryManager->cudaCopyVeloBC(level);
         }
     }
 }
@@ -672,8 +672,8 @@ void GridReader::modifyQElement(std::shared_ptr<BoundaryQs> boundaryQ, unsigned 
 /*------------------------------------------------------------------------------------------------*/
 /*---------------------------------------private q methods----------------------------------------*/
 /*------------------------------------------------------------------------------------------------*/
-void GridReader::initalVectorForQStruct(std::vector<std::vector<std::vector<real>>> &Qs, std::vector<std::vector<int>> &index, 
-										std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const
+void GridReader::initalVectorForQStruct(std::vector<std::vector<std::vector<real>>> &Qs, std::vector<std::vector<int>> &index,
+                                        std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const
 {
     boundaryQ->setValuesInVector(Qs, level);
     boundaryQ->setIndexInVector(index, level);
@@ -689,7 +689,7 @@ void GridReader::copyVectorsToQStruct(std::vector<std::vector<real>> &Qs,
 
 	for (int direction = 0; direction < para->getD3Qxx(); direction++) {
         for (size_t indexQ = 0; indexQ < sizeOfValues; indexQ++) {
-            qTemp.q27[direction][indexQ] = Qs[direction][indexQ]; 
+            qTemp.q27[direction][indexQ] = Qs[direction][indexQ];
         }
     }
 
@@ -851,46 +851,46 @@ void GridReader::setBoundingBox()
 
 void GridReader::initPeriodicNeigh(std::vector<std::vector<std::vector<unsigned int> > > periodV, std::vector<std::vector<unsigned int> > periodIndex,  std::string boundaryCondition)
 {
-	std::vector<unsigned int>neighVec;
-	std::vector<unsigned int>indexVec;
-	
-	int counter = 0;
+    std::vector<unsigned int>neighVec;
+    std::vector<unsigned int>indexVec;
 
-	for(unsigned int i=0; i<neighX->getLevel();i++) {
-		if(boundaryCondition =="periodic_y"){
-			neighVec = neighY->getVec(i);
-		} 
-		else if(boundaryCondition =="periodic_x"){
-			neighVec = neighX->getVec(i);
-		}
-		else if(boundaryCondition =="periodic_z"){
-			neighVec = neighZ->getVec(i);
-		}
-		else {
-			std::cout << "wrong String in periodicValue" << std::endl;
-			exit(1);
-		}
+    int counter = 0;
 
-		for (std::vector<unsigned int>::iterator it = periodIndex[i].begin(); it != periodIndex[i].end(); it++) {
-			if(periodV[i][0][counter] != 0) {
-				neighVec[*it]=periodV[i][0][counter];
-			}
+    for(unsigned int i=0; i<neighX->getLevel();i++) {
+        if(boundaryCondition =="periodic_y"){
+            neighVec = neighY->getVec(i);
+        }
+        else if(boundaryCondition =="periodic_x"){
+            neighVec = neighX->getVec(i);
+        }
+        else if(boundaryCondition =="periodic_z"){
+            neighVec = neighZ->getVec(i);
+        }
+        else {
+            std::cout << "wrong String in periodicValue" << std::endl;
+            exit(1);
+        }
 
-			counter++;
-		}
+        for (std::vector<unsigned int>::iterator it = periodIndex[i].begin(); it != periodIndex[i].end(); it++) {
+            if(periodV[i][0][counter] != 0) {
+                neighVec[*it]=periodV[i][0][counter];
+            }
+
+            counter++;
+        }
 
 
-		if(boundaryCondition =="periodic_y"){
-			neighY->setVec(i, neighVec);
-		} 
-		else if(boundaryCondition =="periodic_x"){
-			neighX->setVec(i, neighVec);
-		}
-		else if(boundaryCondition =="periodic_z"){
-			neighZ->setVec(i, neighVec);
-		}
+        if(boundaryCondition =="periodic_y"){
+            neighY->setVec(i, neighVec);
+        }
+        else if(boundaryCondition =="periodic_x"){
+            neighX->setVec(i, neighVec);
+        }
+        else if(boundaryCondition =="periodic_z"){
+            neighZ->setVec(i, neighVec);
+        }
 
-	}
+    }
 }
 
 void GridReader::makeReader(std::shared_ptr<Parameter> para)
@@ -921,9 +921,9 @@ void GridReader::makeReader(std::vector<std::shared_ptr<BoundaryQs> > &BC_Qs, st
 
 void GridReader::setChannelBoundaryCondition()
 {
-	for (std::size_t i = 0; i < channelDirections.size(); i++)
-	{
-		this->channelBoundaryConditions[i] = BC_Values[i]->getBoundaryCondition();
-		std::cout << this->channelDirections[i] << " Boundary: " << channelBoundaryConditions[i] << std::endl;
-	}
+    for (std::size_t i = 0; i < channelDirections.size(); i++)
+    {
+        this->channelBoundaryConditions[i] = BC_Values[i]->getBoundaryCondition();
+        std::cout << this->channelDirections[i] << " Boundary: " << channelBoundaryConditions[i] << std::endl;
+    }
 }

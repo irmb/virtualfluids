@@ -80,18 +80,23 @@ protected:
    LBMReal h2[D3Q27System::ENDF + 1];
    LBMReal g  [D3Q27System::ENDF+1];
    LBMReal phi[D3Q27System::ENDF+1];
+   LBMReal phi2[D3Q27System::ENDF + 1];
    LBMReal pr1[D3Q27System::ENDF+1];
    LBMReal phi_cutoff[D3Q27System::ENDF+1];
 
    LBMReal gradX1_phi();
    LBMReal gradX2_phi();
    LBMReal gradX3_phi();
+   LBMReal gradX1_phi2();
+   LBMReal gradX2_phi2();
+   LBMReal gradX3_phi2();
    //LBMReal gradX1_pr1();
    //LBMReal gradX2_pr1();
    //LBMReal gradX3_pr1();
    //LBMReal dirgradC_phi(int n, int k);
    void computePhasefield();
    void findNeighbors(CbArray3D<LBMReal,IndexerX3X2X1>::CbArray3DPtr ph /*Phase-Field*/, int x1, int x2, int x3);
+   void findNeighbors2(CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr ph, int x1, int x2, int x3);
    //void findNeighbors(CbArray3D<LBMReal,IndexerX3X2X1>::CbArray3DPtr ph /*Phase-Field*/, CbArray3D<LBMReal,IndexerX3X2X1>::CbArray3DPtr pf /*Pressure-Field*/, int x1, int x2, int x3);
    //void pressureFiltering(CbArray3D<LBMReal,IndexerX3X2X1>::CbArray3DPtr pf /*Pressure-Field*/, CbArray3D<LBMReal,IndexerX3X2X1>::CbArray3DPtr pf_filtered /*Pressure-Field*/);
 

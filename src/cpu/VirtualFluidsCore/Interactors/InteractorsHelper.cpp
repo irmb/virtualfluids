@@ -80,7 +80,7 @@ void InteractorsHelper::deleteSolidBlocks()
         }
     }
 
-    if (deleteBlocks)
+    if (interactors.size() > 0 && deleteBlocks)
         updateGrid();
 }
 //////////////////////////////////////////////////////////////////////////

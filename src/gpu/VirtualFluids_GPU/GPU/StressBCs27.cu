@@ -166,7 +166,7 @@ __global__ void QStressDeviceComp27(real* DD,
 											   unsigned int* neighborX,
                                     unsigned int* neighborY,
                                     unsigned int* neighborZ,
-                                    unsigned int size_Mat,
+                                    unsigned long long numberOfLBnodes,
                                     bool isEvenTimestep)
 {
 
@@ -191,24 +191,24 @@ __global__ void QStressDeviceComp27(real* DD,
             *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
             *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
             *q_dirBSE, *q_dirBNW;
-      q_dirE   = &QQ[DIR_P00   * numberOfBCnodes];
-      q_dirW   = &QQ[DIR_M00   * numberOfBCnodes];
-      q_dirN   = &QQ[DIR_0P0   * numberOfBCnodes];
-      q_dirS   = &QQ[DIR_0M0   * numberOfBCnodes];
-      q_dirT   = &QQ[DIR_00P   * numberOfBCnodes];
-      q_dirB   = &QQ[DIR_00M   * numberOfBCnodes];
-      q_dirNE  = &QQ[DIR_PP0  * numberOfBCnodes];
-      q_dirSW  = &QQ[DIR_MM0  * numberOfBCnodes];
-      q_dirSE  = &QQ[DIR_PM0  * numberOfBCnodes];
-      q_dirNW  = &QQ[DIR_MP0  * numberOfBCnodes];
-      q_dirTE  = &QQ[DIR_P0P  * numberOfBCnodes];
-      q_dirBW  = &QQ[DIR_M0M  * numberOfBCnodes];
-      q_dirBE  = &QQ[DIR_P0M  * numberOfBCnodes];
-      q_dirTW  = &QQ[DIR_M0P  * numberOfBCnodes];
-      q_dirTN  = &QQ[DIR_0PP  * numberOfBCnodes];
-      q_dirBS  = &QQ[DIR_0MM  * numberOfBCnodes];
-      q_dirBN  = &QQ[DIR_0PM  * numberOfBCnodes];
-      q_dirTS  = &QQ[DIR_0MP  * numberOfBCnodes];
+      q_dirE   = &QQ[DIR_P00 * numberOfBCnodes];
+      q_dirW   = &QQ[DIR_M00 * numberOfBCnodes];
+      q_dirN   = &QQ[DIR_0P0 * numberOfBCnodes];
+      q_dirS   = &QQ[DIR_0M0 * numberOfBCnodes];
+      q_dirT   = &QQ[DIR_00P * numberOfBCnodes];
+      q_dirB   = &QQ[DIR_00M * numberOfBCnodes];
+      q_dirNE  = &QQ[DIR_PP0 * numberOfBCnodes];
+      q_dirSW  = &QQ[DIR_MM0 * numberOfBCnodes];
+      q_dirSE  = &QQ[DIR_PM0 * numberOfBCnodes];
+      q_dirNW  = &QQ[DIR_MP0 * numberOfBCnodes];
+      q_dirTE  = &QQ[DIR_P0P * numberOfBCnodes];
+      q_dirBW  = &QQ[DIR_M0M * numberOfBCnodes];
+      q_dirBE  = &QQ[DIR_P0M * numberOfBCnodes];
+      q_dirTW  = &QQ[DIR_M0P * numberOfBCnodes];
+      q_dirTN  = &QQ[DIR_0PP * numberOfBCnodes];
+      q_dirBS  = &QQ[DIR_0MM * numberOfBCnodes];
+      q_dirBN  = &QQ[DIR_0PM * numberOfBCnodes];
+      q_dirTS  = &QQ[DIR_0MP * numberOfBCnodes];
       q_dirTNE = &QQ[DIR_PPP * numberOfBCnodes];
       q_dirTSW = &QQ[DIR_MMP * numberOfBCnodes];
       q_dirTSE = &QQ[DIR_PMP * numberOfBCnodes];
@@ -251,32 +251,32 @@ __global__ void QStressDeviceComp27(real* DD,
       real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
          f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
-      f_W    = (D.f[DIR_P00   ])[ke   ];     //post-coll f's
-      f_E    = (D.f[DIR_M00   ])[kw   ];
-      f_S    = (D.f[DIR_0P0   ])[kn   ];
-      f_N    = (D.f[DIR_0M0   ])[ks   ];
-      f_B    = (D.f[DIR_00P   ])[kt   ];
-      f_T    = (D.f[DIR_00M   ])[kb   ];
-      f_SW   = (D.f[DIR_PP0  ])[kne  ];
-      f_NE   = (D.f[DIR_MM0  ])[ksw  ];
-      f_NW   = (D.f[DIR_PM0  ])[kse  ];
-      f_SE   = (D.f[DIR_MP0  ])[knw  ];
-      f_BW   = (D.f[DIR_P0P  ])[kte  ];
-      f_TE   = (D.f[DIR_M0M  ])[kbw  ];
-      f_TW   = (D.f[DIR_P0M  ])[kbe  ];
-      f_BE   = (D.f[DIR_M0P  ])[ktw  ];
-      f_BS   = (D.f[DIR_0PP  ])[ktn  ];
-      f_TN   = (D.f[DIR_0MM  ])[kbs  ];
-      f_TS   = (D.f[DIR_0PM  ])[kbn  ];
-      f_BN   = (D.f[DIR_0MP  ])[kts  ];
-      f_BSW  = (D.f[DIR_PPP ])[ktne ];
-      f_BNE  = (D.f[DIR_MMP ])[ktsw ];
-      f_BNW  = (D.f[DIR_PMP ])[ktse ];
-      f_BSE  = (D.f[DIR_MPP ])[ktnw ];
-      f_TSW  = (D.f[DIR_PPM ])[kbne ];
-      f_TNE  = (D.f[DIR_MMM ])[kbsw ];
-      f_TNW  = (D.f[DIR_PMM ])[kbse ];
-      f_TSE  = (D.f[DIR_MPM ])[kbnw ];
+      f_W    = (D.f[DIR_P00])[ke   ];     //post-coll f's
+      f_E    = (D.f[DIR_M00])[kw   ];
+      f_S    = (D.f[DIR_0P0])[kn   ];
+      f_N    = (D.f[DIR_0M0])[ks   ];
+      f_B    = (D.f[DIR_00P])[kt   ];
+      f_T    = (D.f[DIR_00M])[kb   ];
+      f_SW   = (D.f[DIR_PP0])[kne  ];
+      f_NE   = (D.f[DIR_MM0])[ksw  ];
+      f_NW   = (D.f[DIR_PM0])[kse  ];
+      f_SE   = (D.f[DIR_MP0])[knw  ];
+      f_BW   = (D.f[DIR_P0P])[kte  ];
+      f_TE   = (D.f[DIR_M0M])[kbw  ];
+      f_TW   = (D.f[DIR_P0M])[kbe  ];
+      f_BE   = (D.f[DIR_M0P])[ktw  ];
+      f_BS   = (D.f[DIR_0PP])[ktn  ];
+      f_TN   = (D.f[DIR_0MM])[kbs  ];
+      f_TS   = (D.f[DIR_0PM])[kbn  ];
+      f_BN   = (D.f[DIR_0MP])[kts  ];
+      f_BSW  = (D.f[DIR_PPP])[ktne ];
+      f_BNE  = (D.f[DIR_MMP])[ktsw ];
+      f_BNW  = (D.f[DIR_PMP])[ktse ];
+      f_BSE  = (D.f[DIR_MPP])[ktnw ];
+      f_TSW  = (D.f[DIR_PPM])[kbne ];
+      f_TNE  = (D.f[DIR_MMM])[kbsw ];
+      f_TNW  = (D.f[DIR_PMM])[kbse ];
+      f_TSE  = (D.f[DIR_MPM])[kbnw ];
 
       ////////////////////////////////////////////////////////////////////////////////
       real vx1, vx2, vx3, drho, feq, q;
@@ -852,7 +852,7 @@ __global__ void BBStressDevice27( real* DD,
                                              unsigned int* neighborX,
                                              unsigned int* neighborY,
                                              unsigned int* neighborZ,
-                                             unsigned int size_Mat,
+                                             unsigned long long numberOfLBnodes,
                                              bool isEvenTimestep)
 {
 
@@ -877,24 +877,24 @@ __global__ void BBStressDevice27( real* DD,
          *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
          *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
          *q_dirBSE, *q_dirBNW;
-      q_dirE   = &QQ[DIR_P00   * numberOfBCnodes];
-      q_dirW   = &QQ[DIR_M00   * numberOfBCnodes];
-      q_dirN   = &QQ[DIR_0P0   * numberOfBCnodes];
-      q_dirS   = &QQ[DIR_0M0   * numberOfBCnodes];
-      q_dirT   = &QQ[DIR_00P   * numberOfBCnodes];
-      q_dirB   = &QQ[DIR_00M   * numberOfBCnodes];
-      q_dirNE  = &QQ[DIR_PP0  * numberOfBCnodes];
-      q_dirSW  = &QQ[DIR_MM0  * numberOfBCnodes];
-      q_dirSE  = &QQ[DIR_PM0  * numberOfBCnodes];
-      q_dirNW  = &QQ[DIR_MP0  * numberOfBCnodes];
-      q_dirTE  = &QQ[DIR_P0P  * numberOfBCnodes];
-      q_dirBW  = &QQ[DIR_M0M  * numberOfBCnodes];
-      q_dirBE  = &QQ[DIR_P0M  * numberOfBCnodes];
-      q_dirTW  = &QQ[DIR_M0P  * numberOfBCnodes];
-      q_dirTN  = &QQ[DIR_0PP  * numberOfBCnodes];
-      q_dirBS  = &QQ[DIR_0MM  * numberOfBCnodes];
-      q_dirBN  = &QQ[DIR_0PM  * numberOfBCnodes];
-      q_dirTS  = &QQ[DIR_0MP  * numberOfBCnodes];
+      q_dirE   = &QQ[DIR_P00 * numberOfBCnodes];
+      q_dirW   = &QQ[DIR_M00 * numberOfBCnodes];
+      q_dirN   = &QQ[DIR_0P0 * numberOfBCnodes];
+      q_dirS   = &QQ[DIR_0M0 * numberOfBCnodes];
+      q_dirT   = &QQ[DIR_00P * numberOfBCnodes];
+      q_dirB   = &QQ[DIR_00M * numberOfBCnodes];
+      q_dirNE  = &QQ[DIR_PP0 * numberOfBCnodes];
+      q_dirSW  = &QQ[DIR_MM0 * numberOfBCnodes];
+      q_dirSE  = &QQ[DIR_PM0 * numberOfBCnodes];
+      q_dirNW  = &QQ[DIR_MP0 * numberOfBCnodes];
+      q_dirTE  = &QQ[DIR_P0P * numberOfBCnodes];
+      q_dirBW  = &QQ[DIR_M0M * numberOfBCnodes];
+      q_dirBE  = &QQ[DIR_P0M * numberOfBCnodes];
+      q_dirTW  = &QQ[DIR_M0P * numberOfBCnodes];
+      q_dirTN  = &QQ[DIR_0PP * numberOfBCnodes];
+      q_dirBS  = &QQ[DIR_0MM * numberOfBCnodes];
+      q_dirBN  = &QQ[DIR_0PM * numberOfBCnodes];
+      q_dirTS  = &QQ[DIR_0MP * numberOfBCnodes];
       q_dirTNE = &QQ[DIR_PPP * numberOfBCnodes];
       q_dirTSW = &QQ[DIR_MMP * numberOfBCnodes];
       q_dirTSE = &QQ[DIR_PMP * numberOfBCnodes];
@@ -938,32 +938,32 @@ __global__ void BBStressDevice27( real* DD,
       real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
          f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
-      f_W    = (D.f[DIR_P00   ])[ke   ];
-      f_E    = (D.f[DIR_M00   ])[kw   ];
-      f_S    = (D.f[DIR_0P0   ])[kn   ];
-      f_N    = (D.f[DIR_0M0   ])[ks   ];
-      f_B    = (D.f[DIR_00P   ])[kt   ];
-      f_T    = (D.f[DIR_00M   ])[kb   ];
-      f_SW   = (D.f[DIR_PP0  ])[kne  ];
-      f_NE   = (D.f[DIR_MM0  ])[ksw  ];
-      f_NW   = (D.f[DIR_PM0  ])[kse  ];
-      f_SE   = (D.f[DIR_MP0  ])[knw  ];
-      f_BW   = (D.f[DIR_P0P  ])[kte  ];
-      f_TE   = (D.f[DIR_M0M  ])[kbw  ];
-      f_TW   = (D.f[DIR_P0M  ])[kbe  ];
-      f_BE   = (D.f[DIR_M0P  ])[ktw  ];
-      f_BS   = (D.f[DIR_0PP  ])[ktn  ];
-      f_TN   = (D.f[DIR_0MM  ])[kbs  ];
-      f_TS   = (D.f[DIR_0PM  ])[kbn  ];
-      f_BN   = (D.f[DIR_0MP  ])[kts  ];
-      f_BSW  = (D.f[DIR_PPP ])[ktne ];
-      f_BNE  = (D.f[DIR_MMP ])[ktsw ];
-      f_BNW  = (D.f[DIR_PMP ])[ktse ];
-      f_BSE  = (D.f[DIR_MPP ])[ktnw ];
-      f_TSW  = (D.f[DIR_PPM ])[kbne ];
-      f_TNE  = (D.f[DIR_MMM ])[kbsw ];
-      f_TNW  = (D.f[DIR_PMM ])[kbse ];
-      f_TSE  = (D.f[DIR_MPM ])[kbnw ];
+      f_W    = (D.f[DIR_P00])[ke   ];
+      f_E    = (D.f[DIR_M00])[kw   ];
+      f_S    = (D.f[DIR_0P0])[kn   ];
+      f_N    = (D.f[DIR_0M0])[ks   ];
+      f_B    = (D.f[DIR_00P])[kt   ];
+      f_T    = (D.f[DIR_00M])[kb   ];
+      f_SW   = (D.f[DIR_PP0])[kne  ];
+      f_NE   = (D.f[DIR_MM0])[ksw  ];
+      f_NW   = (D.f[DIR_PM0])[kse  ];
+      f_SE   = (D.f[DIR_MP0])[knw  ];
+      f_BW   = (D.f[DIR_P0P])[kte  ];
+      f_TE   = (D.f[DIR_M0M])[kbw  ];
+      f_TW   = (D.f[DIR_P0M])[kbe  ];
+      f_BE   = (D.f[DIR_M0P])[ktw  ];
+      f_BS   = (D.f[DIR_0PP])[ktn  ];
+      f_TN   = (D.f[DIR_0MM])[kbs  ];
+      f_TS   = (D.f[DIR_0PM])[kbn  ];
+      f_BN   = (D.f[DIR_0MP])[kts  ];
+      f_BSW  = (D.f[DIR_PPP])[ktne ];
+      f_BNE  = (D.f[DIR_MMP])[ktsw ];
+      f_BNW  = (D.f[DIR_PMP])[ktse ];
+      f_BSE  = (D.f[DIR_MPP])[ktnw ];
+      f_TSW  = (D.f[DIR_PPM])[kbne ];
+      f_TNE  = (D.f[DIR_MMM])[kbsw ];
+      f_TNW  = (D.f[DIR_PMM])[kbse ];
+      f_TSE  = (D.f[DIR_MPM])[kbnw ];
 
       ////////////////////////////////////////////////////////////////////////////////
       real vx1, vx2, vx3, drho;
@@ -1483,7 +1483,7 @@ __global__ void BBStressPressureDevice27( real* DD,
                                              unsigned int* neighborX,
                                              unsigned int* neighborY,
                                              unsigned int* neighborZ,
-                                             unsigned int size_Mat,
+                                             unsigned long long numberOfLBnodes,
                                              bool isEvenTimestep)
 {
    Distributions27 D = vf::gpu::getDistributionReferences27(DD, size_Mat, isEvenTimestep);
@@ -1507,24 +1507,24 @@ __global__ void BBStressPressureDevice27( real* DD,
          *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
          *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
          *q_dirBSE, *q_dirBNW;
-      q_dirE   = &QQ[DIR_P00   * numberOfBCnodes];
-      q_dirW   = &QQ[DIR_M00   * numberOfBCnodes];
-      q_dirN   = &QQ[DIR_0P0   * numberOfBCnodes];
-      q_dirS   = &QQ[DIR_0M0   * numberOfBCnodes];
-      q_dirT   = &QQ[DIR_00P   * numberOfBCnodes];
-      q_dirB   = &QQ[DIR_00M   * numberOfBCnodes];
-      q_dirNE  = &QQ[DIR_PP0  * numberOfBCnodes];
-      q_dirSW  = &QQ[DIR_MM0  * numberOfBCnodes];
-      q_dirSE  = &QQ[DIR_PM0  * numberOfBCnodes];
-      q_dirNW  = &QQ[DIR_MP0  * numberOfBCnodes];
-      q_dirTE  = &QQ[DIR_P0P  * numberOfBCnodes];
-      q_dirBW  = &QQ[DIR_M0M  * numberOfBCnodes];
-      q_dirBE  = &QQ[DIR_P0M  * numberOfBCnodes];
-      q_dirTW  = &QQ[DIR_M0P  * numberOfBCnodes];
-      q_dirTN  = &QQ[DIR_0PP  * numberOfBCnodes];
-      q_dirBS  = &QQ[DIR_0MM  * numberOfBCnodes];
-      q_dirBN  = &QQ[DIR_0PM  * numberOfBCnodes];
-      q_dirTS  = &QQ[DIR_0MP  * numberOfBCnodes];
+      q_dirE   = &QQ[DIR_P00 * numberOfBCnodes];
+      q_dirW   = &QQ[DIR_M00 * numberOfBCnodes];
+      q_dirN   = &QQ[DIR_0P0 * numberOfBCnodes];
+      q_dirS   = &QQ[DIR_0M0 * numberOfBCnodes];
+      q_dirT   = &QQ[DIR_00P * numberOfBCnodes];
+      q_dirB   = &QQ[DIR_00M * numberOfBCnodes];
+      q_dirNE  = &QQ[DIR_PP0 * numberOfBCnodes];
+      q_dirSW  = &QQ[DIR_MM0 * numberOfBCnodes];
+      q_dirSE  = &QQ[DIR_PM0 * numberOfBCnodes];
+      q_dirNW  = &QQ[DIR_MP0 * numberOfBCnodes];
+      q_dirTE  = &QQ[DIR_P0P * numberOfBCnodes];
+      q_dirBW  = &QQ[DIR_M0M * numberOfBCnodes];
+      q_dirBE  = &QQ[DIR_P0M * numberOfBCnodes];
+      q_dirTW  = &QQ[DIR_M0P * numberOfBCnodes];
+      q_dirTN  = &QQ[DIR_0PP * numberOfBCnodes];
+      q_dirBS  = &QQ[DIR_0MM * numberOfBCnodes];
+      q_dirBN  = &QQ[DIR_0PM * numberOfBCnodes];
+      q_dirTS  = &QQ[DIR_0MP * numberOfBCnodes];
       q_dirTNE = &QQ[DIR_PPP * numberOfBCnodes];
       q_dirTSW = &QQ[DIR_MMP * numberOfBCnodes];
       q_dirTSE = &QQ[DIR_PMP * numberOfBCnodes];
@@ -1568,32 +1568,32 @@ __global__ void BBStressPressureDevice27( real* DD,
       real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
          f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
-      f_W    = (D.f[DIR_P00   ])[ke   ];
-      f_E    = (D.f[DIR_M00   ])[kw   ];
-      f_S    = (D.f[DIR_0P0   ])[kn   ];
-      f_N    = (D.f[DIR_0M0   ])[ks   ];
-      f_B    = (D.f[DIR_00P   ])[kt   ];
-      f_T    = (D.f[DIR_00M   ])[kb   ];
-      f_SW   = (D.f[DIR_PP0  ])[kne  ];
-      f_NE   = (D.f[DIR_MM0  ])[ksw  ];
-      f_NW   = (D.f[DIR_PM0  ])[kse  ];
-      f_SE   = (D.f[DIR_MP0  ])[knw  ];
-      f_BW   = (D.f[DIR_P0P  ])[kte  ];
-      f_TE   = (D.f[DIR_M0M  ])[kbw  ];
-      f_TW   = (D.f[DIR_P0M  ])[kbe  ];
-      f_BE   = (D.f[DIR_M0P  ])[ktw  ];
-      f_BS   = (D.f[DIR_0PP  ])[ktn  ];
-      f_TN   = (D.f[DIR_0MM  ])[kbs  ];
-      f_TS   = (D.f[DIR_0PM  ])[kbn  ];
-      f_BN   = (D.f[DIR_0MP  ])[kts  ];
-      f_BSW  = (D.f[DIR_PPP ])[ktne ];
-      f_BNE  = (D.f[DIR_MMP ])[ktsw ];
-      f_BNW  = (D.f[DIR_PMP ])[ktse ];
-      f_BSE  = (D.f[DIR_MPP ])[ktnw ];
-      f_TSW  = (D.f[DIR_PPM ])[kbne ];
-      f_TNE  = (D.f[DIR_MMM ])[kbsw ];
-      f_TNW  = (D.f[DIR_PMM ])[kbse ];
-      f_TSE  = (D.f[DIR_MPM ])[kbnw ];
+      f_W    = (D.f[DIR_P00])[ke   ];
+      f_E    = (D.f[DIR_M00])[kw   ];
+      f_S    = (D.f[DIR_0P0])[kn   ];
+      f_N    = (D.f[DIR_0M0])[ks   ];
+      f_B    = (D.f[DIR_00P])[kt   ];
+      f_T    = (D.f[DIR_00M])[kb   ];
+      f_SW   = (D.f[DIR_PP0])[kne  ];
+      f_NE   = (D.f[DIR_MM0])[ksw  ];
+      f_NW   = (D.f[DIR_PM0])[kse  ];
+      f_SE   = (D.f[DIR_MP0])[knw  ];
+      f_BW   = (D.f[DIR_P0P])[kte  ];
+      f_TE   = (D.f[DIR_M0M])[kbw  ];
+      f_TW   = (D.f[DIR_P0M])[kbe  ];
+      f_BE   = (D.f[DIR_M0P])[ktw  ];
+      f_BS   = (D.f[DIR_0PP])[ktn  ];
+      f_TN   = (D.f[DIR_0MM])[kbs  ];
+      f_TS   = (D.f[DIR_0PM])[kbn  ];
+      f_BN   = (D.f[DIR_0MP])[kts  ];
+      f_BSW  = (D.f[DIR_PPP])[ktne ];
+      f_BNE  = (D.f[DIR_MMP])[ktsw ];
+      f_BNW  = (D.f[DIR_PMP])[ktse ];
+      f_BSE  = (D.f[DIR_MPP])[ktnw ];
+      f_TSW  = (D.f[DIR_PPM])[kbne ];
+      f_TNE  = (D.f[DIR_MMM])[kbsw ];
+      f_TNW  = (D.f[DIR_PMM])[kbse ];
+      f_TSE  = (D.f[DIR_MPM])[kbnw ];
 
       ////////////////////////////////////////////////////////////////////////////////
       real vx1, vx2, vx3, drho;

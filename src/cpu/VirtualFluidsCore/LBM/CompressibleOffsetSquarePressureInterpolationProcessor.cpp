@@ -85,11 +85,11 @@ void CompressibleOffsetSquarePressureInterpolationProcessor::calcMoments(const L
    
    press = drho; //interpolate rho!
 
-   kxy   = -3.*omega*((((f[TSW]+f[BNE])-(f[TNW]+f[BSE]))+((f[BSW]+f[TNE])-(f[BNW]+f[TSE])))+((f[SW]+f[NE])-(f[NW]+f[SE]))/(one + drho)-(vx1*vx2));// might not be optimal MG 25.2.13
-   kyz   = -3.*omega*((((f[BSW]+f[TNE])-(f[TSE]+f[BNW]))+((f[BSE]+f[TNW])-(f[TSW]+f[BNE])))+((f[BS]+f[TN])-(f[TS]+f[BN]))/(one + drho)-(vx2*vx3));
-   kxz   = -3.*omega*((((f[BNW]+f[TSE])-(f[TSW]+f[BNE]))+((f[BSW]+f[TNE])-(f[BSE]+f[TNW])))+((f[BW]+f[TE])-(f[TW]+f[BE]))/(one + drho)-(vx1*vx3));
-   kxxMyy = -3./2.*omega*((((f[BW]+f[TE])-(f[BS]+f[TN]))+((f[TW]+f[BE])-(f[TS]+f[BN])))+((f[W]+f[E])-(f[S]+f[N]))/(one + drho)-(vx1*vx1-vx2*vx2));
-   kxxMzz = -3./2.*omega*((((f[NW]+f[SE])-(f[BS]+f[TN]))+((f[SW]+f[NE])-(f[TS]+f[BN])))+((f[W]+f[E])-(f[B]+f[T]))/(one + drho)-(vx1*vx1-vx3*vx3));
+   kxy   = -3.*omega*((((f[DIR_MMP]+f[DIR_PPM])-(f[DIR_MPP]+f[DIR_PMM]))+((f[DIR_MMM]+f[DIR_PPP])-(f[DIR_MPM]+f[DIR_PMP])))+((f[DIR_MM0]+f[DIR_PP0])-(f[DIR_MP0]+f[DIR_PM0]))/(one + drho)-(vx1*vx2));// might not be optimal MG 25.2.13
+   kyz   = -3.*omega*((((f[DIR_MMM]+f[DIR_PPP])-(f[DIR_PMP]+f[DIR_MPM]))+((f[DIR_PMM]+f[DIR_MPP])-(f[DIR_MMP]+f[DIR_PPM])))+((f[DIR_0MM]+f[DIR_0PP])-(f[DIR_0MP]+f[DIR_0PM]))/(one + drho)-(vx2*vx3));
+   kxz   = -3.*omega*((((f[DIR_MPM]+f[DIR_PMP])-(f[DIR_MMP]+f[DIR_PPM]))+((f[DIR_MMM]+f[DIR_PPP])-(f[DIR_PMM]+f[DIR_MPP])))+((f[DIR_M0M]+f[DIR_P0P])-(f[DIR_M0P]+f[DIR_P0M]))/(one + drho)-(vx1*vx3));
+   kxxMyy = -3./2.*omega*((((f[DIR_M0M]+f[DIR_P0P])-(f[DIR_0MM]+f[DIR_0PP]))+((f[DIR_M0P]+f[DIR_P0M])-(f[DIR_0MP]+f[DIR_0PM])))+((f[DIR_M00]+f[DIR_P00])-(f[DIR_0M0]+f[DIR_0P0]))/(one + drho)-(vx1*vx1-vx2*vx2));
+   kxxMzz = -3./2.*omega*((((f[DIR_MP0]+f[DIR_PM0])-(f[DIR_0MM]+f[DIR_0PP]))+((f[DIR_MM0]+f[DIR_PP0])-(f[DIR_0MP]+f[DIR_0PM])))+((f[DIR_M00]+f[DIR_P00])-(f[DIR_00M]+f[DIR_00P]))/(one + drho)-(vx1*vx1-vx3*vx3));
 }
 //////////////////////////////////////////////////////////////////////////
 void CompressibleOffsetSquarePressureInterpolationProcessor::calcInterpolatedCoefficiets(const D3Q27ICell& icell, LBMReal omega, LBMReal eps_new)
@@ -780,33 +780,33 @@ void CompressibleOffsetSquarePressureInterpolationProcessor::calcInterpolatedNod
    mfccc = m2;
    ////////////////////////////////////////////////////////////////////////////////////
 
-   f[E]    = mfcbb;
-   f[W]    = mfabb;
-   f[N]    = mfbcb;
-   f[S]    = mfbab;
-   f[T]    = mfbbc;
-   f[B]    = mfbba;
-   f[NE]   = mfccb;
-   f[SW]   = mfaab;
-   f[SE]   = mfcab;
-   f[NW]   = mfacb;
-   f[TE]   = mfcbc;
-   f[BW]   = mfaba;
-   f[BE]   = mfcba;
-   f[TW]   = mfabc;
-   f[TN]   = mfbcc;
-   f[BS]   = mfbaa;
-   f[BN]   = mfbca;
-   f[TS]   = mfbac;
-   f[REST] = mfbbb;
-   f[TNE]  = mfccc;
-   f[TSE]  = mfcac;
-   f[BNE]  = mfcca;
-   f[BSE]  = mfcaa;
-   f[TNW]  = mfacc;
-   f[TSW]  = mfaac;
-   f[BNW]  = mfaca;
-   f[BSW]  = mfaaa;
+   f[DIR_P00]    = mfcbb;
+   f[DIR_M00]    = mfabb;
+   f[DIR_0P0]    = mfbcb;
+   f[DIR_0M0]    = mfbab;
+   f[DIR_00P]    = mfbbc;
+   f[DIR_00M]    = mfbba;
+   f[DIR_PP0]   = mfccb;
+   f[DIR_MM0]   = mfaab;
+   f[DIR_PM0]   = mfcab;
+   f[DIR_MP0]   = mfacb;
+   f[DIR_P0P]   = mfcbc;
+   f[DIR_M0M]   = mfaba;
+   f[DIR_P0M]   = mfcba;
+   f[DIR_M0P]   = mfabc;
+   f[DIR_0PP]   = mfbcc;
+   f[DIR_0MM]   = mfbaa;
+   f[DIR_0PM]   = mfbca;
+   f[DIR_0MP]   = mfbac;
+   f[DIR_000] = mfbbb;
+   f[DIR_PPP]  = mfccc;
+   f[DIR_PMP]  = mfcac;
+   f[DIR_PPM]  = mfcca;
+   f[DIR_PMM]  = mfcaa;
+   f[DIR_MPP]  = mfacc;
+   f[DIR_MMP]  = mfaac;
+   f[DIR_MPM]  = mfaca;
+   f[DIR_MMM]  = mfaaa;
 }
 //////////////////////////////////////////////////////////////////////////
 //Position SWB -0.25, -0.25, -0.25
@@ -1233,33 +1233,33 @@ void CompressibleOffsetSquarePressureInterpolationProcessor::calcInterpolatedNod
    mfccc = m2;
    ////////////////////////////////////////////////////////////////////////////////////
 
-   f[E]    = mfcbb;
-   f[W]    = mfabb;
-   f[N]    = mfbcb;
-   f[S]    = mfbab;
-   f[T]    = mfbbc;
-   f[B]    = mfbba;
-   f[NE]   = mfccb;
-   f[SW]   = mfaab;
-   f[SE]   = mfcab;
-   f[NW]   = mfacb;
-   f[TE]   = mfcbc;
-   f[BW]   = mfaba;
-   f[BE]   = mfcba;
-   f[TW]   = mfabc;
-   f[TN]   = mfbcc;
-   f[BS]   = mfbaa;
-   f[BN]   = mfbca;
-   f[TS]   = mfbac;
-   f[REST] = mfbbb;
-   f[TNE]  = mfccc;
-   f[TSE]  = mfcac;
-   f[BNE]  = mfcca;
-   f[BSE]  = mfcaa;
-   f[TNW]  = mfacc;
-   f[TSW]  = mfaac;
-   f[BNW]  = mfaca;
-   f[BSW]  = mfaaa;
+   f[DIR_P00]    = mfcbb;
+   f[DIR_M00]    = mfabb;
+   f[DIR_0P0]    = mfbcb;
+   f[DIR_0M0]    = mfbab;
+   f[DIR_00P]    = mfbbc;
+   f[DIR_00M]    = mfbba;
+   f[DIR_PP0]   = mfccb;
+   f[DIR_MM0]   = mfaab;
+   f[DIR_PM0]   = mfcab;
+   f[DIR_MP0]   = mfacb;
+   f[DIR_P0P]   = mfcbc;
+   f[DIR_M0M]   = mfaba;
+   f[DIR_P0M]   = mfcba;
+   f[DIR_M0P]   = mfabc;
+   f[DIR_0PP]   = mfbcc;
+   f[DIR_0MM]   = mfbaa;
+   f[DIR_0PM]   = mfbca;
+   f[DIR_0MP]   = mfbac;
+   f[DIR_000] = mfbbb;
+   f[DIR_PPP]  = mfccc;
+   f[DIR_PMP]  = mfcac;
+   f[DIR_PPM]  = mfcca;
+   f[DIR_PMM]  = mfcaa;
+   f[DIR_MPP]  = mfacc;
+   f[DIR_MMP]  = mfaac;
+   f[DIR_MPM]  = mfaca;
+   f[DIR_MMM]  = mfaaa;
 }
 //////////////////////////////////////////////////////////////////////////
 void CompressibleOffsetSquarePressureInterpolationProcessor::calcInterpolatedVelocity(LBMReal x, LBMReal y, LBMReal z, LBMReal& vx1, LBMReal& vx2, LBMReal& vx3)

@@ -123,7 +123,7 @@ void WriteBlocksCoProcessor::collectData(double step)
                 // for (std::size_t i = 0; i<connectors.size(); i++)
                 //   if (connectors[i])
                 //   {
-                //      if (connectors[i]->getSendDir() == D3Q27System::BS)
+                //      if (connectors[i]->getSendDir() == D3Q27System::DIR_0MM)
                 //      {
 
                 //         flag = true;
@@ -146,7 +146,7 @@ void WriteBlocksCoProcessor::collectData(double step)
                 // for (std::size_t i = 0; i<connectors.size(); i++)
                 //   if (connectors[i])
                 //   {
-                //      if (connectors[i]->getSendDir() == D3Q27System::BS)
+                //      if (connectors[i]->getSendDir() == D3Q27System::DIR_0MM)
                 //      {
 
                 //         flag = true;
