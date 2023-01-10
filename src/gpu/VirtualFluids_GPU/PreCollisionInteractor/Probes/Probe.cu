@@ -499,7 +499,7 @@ t1 point1.quant1 point2.quant1 ... point1.quant2 point2.quant2 ...
     out << "Number of points in this file: \n";
     out << probeStruct->nPoints << "\n";
     out << "Positions: x, y, z\n";
-    for( int i=0; i<probeStruct->nPoints;i++)
+    for( uint i=0; i<probeStruct->nPoints; i++)
         out << probeStruct->pointCoordsX[i] << ", " << probeStruct->pointCoordsY[i] << ", " << probeStruct->pointCoordsZ[i] << "\n";
 
     out.close();
