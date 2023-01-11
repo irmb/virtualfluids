@@ -1,35 +1,59 @@
-//  _    ___      __              __________      _     __        ______________   __
-// | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____   /  ___/ __  / /  / /
-// | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/  / /___/ /_/ / /  / /
-// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )  / /_) / ____/ /__/ / 
-// |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/   \____/_/    \_____/
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
 //
-//////////////////////////////////////////////////////////////////////////
-
-/* Device code */
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file VelocityBCs27.cu
+//! \ingroup GPU
+//! \author Martin Schoenherr, Anna Wellmann
+//======================================================================================
 #include "LBM/LB.h" 
 #include "lbm/constants/D3Q27.h"
 #include "lbm/constants/NumericConstants.h"
-#include "KernelUtilities.h"
+#include "LBM/GPUHelperFunctions/KernelUtilities.h"
 
 using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
+using namespace vf::gpu;
 
 //////////////////////////////////////////////////////////////////////////////
 __global__ void QVelDeviceCompPlusSlip27(
-													real* vx,
-													real* vy,
-													real* vz,
-													real* DD, 
-													int* k_Q, 
-													real* QQ,
-													unsigned int numberOfBCnodes, 
-													real om1, 
-													unsigned int* neighborX,
-													unsigned int* neighborY,
-													unsigned int* neighborZ,
-													unsigned long long numberOfLBnodes, 
-													bool isEvenTimestep)
+    real* vx,
+    real* vy,
+    real* vz,
+    real* DD, 
+    int* k_Q, 
+    real* QQ,
+    unsigned int numberOfBCnodes, 
+    real om1, 
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes, 
+    bool isEvenTimestep)
 {
    Distributions27 D;
    if (isEvenTimestep==true)
@@ -553,18 +577,19 @@ __global__ void QVelDeviceCompPlusSlip27(
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-__global__ void QVeloDeviceEQ27(real* VeloX,
-										   real* VeloY,
-										   real* VeloZ,
-                                           real* DD, 
-                                           int* k_Q, 
-                                           int numberOfBCnodes, 
-                                           real om1, 
-                                           unsigned int* neighborX,
-                                           unsigned int* neighborY,
-                                           unsigned int* neighborZ,
-                                           unsigned long long numberOfLBnodes, 
-                                           bool isEvenTimestep)
+__global__ void QVeloDeviceEQ27(
+    real* VeloX,
+    real* VeloY,
+    real* VeloZ,
+    real* DD, 
+    int* k_Q, 
+    int numberOfBCnodes, 
+    real om1, 
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes, 
+    bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -834,18 +859,18 @@ __global__ void QVeloDeviceEQ27(real* VeloX,
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 __global__ void QVeloStreetDeviceEQ27(
-	real* veloXfraction,
-	real* veloYfraction,
-	int*  naschVelo,
-	real* DD,
-	int*  naschIndex,
-	int   numberOfStreetNodes,
-	real  velocityRatio,
-	uint* neighborX,
-	uint* neighborY,
-	uint* neighborZ,
-	unsigned long long numberOfLBnodes,
-	bool  isEvenTimestep)
+    real* veloXfraction,
+    real* veloYfraction,
+    int*  naschVelo,
+    real* DD,
+    int*  naschIndex,
+    int   numberOfStreetNodes,
+    real  velocityRatio,
+    uint* neighborX,
+    uint* neighborY,
+    uint* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool  isEvenTimestep)
 {
 	////////////////////////////////////////////////////////////////////////////////
 	const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -1120,19 +1145,19 @@ __global__ void QVeloStreetDeviceEQ27(
 
 //////////////////////////////////////////////////////////////////////////////
 __global__ void QVelDeviceIncompHighNu27(
-													real* vx,
-													real* vy,
-													real* vz,
-													real* DD, 
-													int* k_Q, 
-													real* QQ,
-													unsigned int numberOfBCnodes, 
-													real om1, 
-													unsigned int* neighborX,
-													unsigned int* neighborY,
-													unsigned int* neighborZ,
-													unsigned long long numberOfLBnodes, 
-													bool isEvenTimestep)
+    real* vx,
+    real* vy,
+    real* vz,
+    real* DD, 
+    int* k_Q, 
+    real* QQ,
+    unsigned int numberOfBCnodes, 
+    real om1, 
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes, 
+    bool isEvenTimestep)
 {
    Distributions27 D;
    if (isEvenTimestep==true)
@@ -1618,19 +1643,19 @@ __global__ void QVelDeviceIncompHighNu27(
 
 //////////////////////////////////////////////////////////////////////////////
 __global__ void QVelDeviceCompHighNu27(
-													real* vx,
-													real* vy,
-													real* vz,
-													real* DD,
-													int* k_Q,
-													real* QQ,
-													unsigned int numberOfBCnodes, 
-													real om1,
-													unsigned int* neighborX,
-													unsigned int* neighborY,
-													unsigned int* neighborZ,
-													unsigned long long numberOfLBnodes, 
-													bool isEvenTimestep)
+    real* vx,
+    real* vy,
+    real* vz,
+    real* DD,
+    int* k_Q,
+    real* QQ,
+    unsigned int numberOfBCnodes, 
+    real om1,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes, 
+    bool isEvenTimestep)
 {
    Distributions27 D;
    if (isEvenTimestep==true)
@@ -2194,39 +2219,32 @@ __global__ void QVelDeviceCompHighNu27(
 
 //////////////////////////////////////////////////////////////////////////////
 __global__ void QVelDeviceCompZeroPress27(
-														real* velocityX,
-														real* velocityY,
-														real* velocityZ,
-														real* distribution, 
-														int* subgridDistanceIndices, 
-														real* subgridDistances,
-														unsigned int numberOfBCnodes, 
-														real omega, 
-														unsigned int* neighborX,
-														unsigned int* neighborY,
-														unsigned int* neighborZ,
-														unsigned long long numberOfLBnodes, 
-														bool isEvenTimestep)
+    real* velocityX,
+    real* velocityY,
+    real* velocityZ,
+    real* distribution, 
+    int* subgridDistanceIndices, 
+    real* subgridDistances,
+    unsigned int numberOfBCnodes, 
+    real omega, 
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes, 
+    bool isEvenTimestep)
 {
    //////////////////////////////////////////////////////////////////////////
-	//! The velocity boundary condition is executed in the following steps
-	//!
-	////////////////////////////////////////////////////////////////////////////////
-	//! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
-	//!
-   const unsigned  x = threadIdx.x;  // global x-index 
-   const unsigned  y = blockIdx.x;   // global y-index 
-   const unsigned  z = blockIdx.y;   // global z-index 
-
-   const unsigned nx = blockDim.x;
-   const unsigned ny = gridDim.x;
-
-   const unsigned k = nx*(ny*z + y) + x;
+   //! The velocity boundary condition is executed in the following steps
+   //!
+   ////////////////////////////////////////////////////////////////////////////////
+   //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
+   //!
+   const unsigned nodeIndex = getNodeIndex();
 
    //////////////////////////////////////////////////////////////////////////
    //! - Run for all indices in size of boundary condition (numberOfBCnodes)
    //!
-   if(k < numberOfBCnodes)
+   if(nodeIndex < numberOfBCnodes)
    {
 
       //////////////////////////////////////////////////////////////////////////
@@ -2239,9 +2257,9 @@ __global__ void QVelDeviceCompZeroPress27(
       ////////////////////////////////////////////////////////////////////////////////
       //! - Set local velocities
       //!
-      real VeloX = velocityX[k];
-      real VeloY = velocityY[k];
-      real VeloZ = velocityZ[k];
+      real VeloX = velocityX[nodeIndex];
+      real VeloY = velocityY[nodeIndex];
+      real VeloZ = velocityZ[nodeIndex];
 
 
       ////////////////////////////////////////////////////////////////////////////////
@@ -2253,7 +2271,7 @@ __global__ void QVelDeviceCompZeroPress27(
       ////////////////////////////////////////////////////////////////////////////////
       //! - Set neighbor indices (necessary for indirect addressing)
       //!
-      unsigned int KQK  = subgridDistanceIndices[k];
+      unsigned int KQK  = subgridDistanceIndices[nodeIndex];
       unsigned int kzero= KQK;
       unsigned int ke   = KQK;
       unsigned int kw   = neighborX[KQK];
@@ -2342,7 +2360,7 @@ __global__ void QVelDeviceCompZeroPress27(
       ////////////////////////////////////////////////////////////////////////////////
       //! - Update distributions with subgrid distance (q) between zero and one
       real feq, q, velocityLB, velocityBC;
-      q = (subgridD.q[DIR_P00])[k];
+      q = (subgridD.q[DIR_P00])[nodeIndex];
       if (q>=c0o1 && q<=c1o1) // only update distribution for q between zero and one
       {
          velocityLB = vx1;
@@ -2351,7 +2369,7 @@ __global__ void QVelDeviceCompZeroPress27(
          (dist.f[DIR_M00])[kw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_E, f_W, feq, omega, drho, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_M00])[k];
+      q = (subgridD.q[DIR_M00])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = -vx1;
@@ -2360,7 +2378,7 @@ __global__ void QVelDeviceCompZeroPress27(
          (dist.f[DIR_P00])[ke] = getInterpolatedDistributionForVeloWithPressureBC(q, f_W, f_E, feq, omega, drho, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_0P0])[k];
+      q = (subgridD.q[DIR_0P0])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = vx2;
@@ -2369,7 +2387,7 @@ __global__ void QVelDeviceCompZeroPress27(
          (dist.f[DIR_0M0])[ks] = getInterpolatedDistributionForVeloWithPressureBC(q, f_N, f_S, feq, omega, drho, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_0M0])[k];
+      q = (subgridD.q[DIR_0M0])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = -vx2;
@@ -2378,7 +2396,7 @@ __global__ void QVelDeviceCompZeroPress27(
          (dist.f[DIR_0P0])[kn] = getInterpolatedDistributionForVeloWithPressureBC(q, f_S, f_N, feq, omega, drho, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_00P])[k];
+      q = (subgridD.q[DIR_00P])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = vx3;
@@ -2387,7 +2405,7 @@ __global__ void QVelDeviceCompZeroPress27(
          (dist.f[DIR_00M])[kb] = getInterpolatedDistributionForVeloWithPressureBC(q, f_T, f_B, feq, omega, drho, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_00M])[k];
+      q = (subgridD.q[DIR_00M])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = -vx3;
@@ -2396,7 +2414,7 @@ __global__ void QVelDeviceCompZeroPress27(
          (dist.f[DIR_00P])[kt] = getInterpolatedDistributionForVeloWithPressureBC(q, f_B, f_T, feq, omega, drho, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_PP0])[k];
+      q = (subgridD.q[DIR_PP0])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = vx1 + vx2;
@@ -2405,7 +2423,7 @@ __global__ void QVelDeviceCompZeroPress27(
          (dist.f[DIR_MM0])[ksw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_NE, f_SW, feq, omega, drho, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_MM0])[k];
+      q = (subgridD.q[DIR_MM0])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = -vx1 - vx2;
@@ -2414,7 +2432,7 @@ __global__ void QVelDeviceCompZeroPress27(
          (dist.f[DIR_PP0])[kne] = getInterpolatedDistributionForVeloWithPressureBC(q, f_SW, f_NE, feq, omega, drho, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_PM0])[k];
+      q = (subgridD.q[DIR_PM0])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = vx1 - vx2;
@@ -2423,7 +2441,7 @@ __global__ void QVelDeviceCompZeroPress27(
          (dist.f[DIR_MP0])[knw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_SE, f_NW, feq, omega, drho, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_MP0])[k];
+      q = (subgridD.q[DIR_MP0])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = -vx1 + vx2;
@@ -2432,7 +2450,7 @@ __global__ void QVelDeviceCompZeroPress27(
          (dist.f[DIR_PM0])[kse] = getInterpolatedDistributionForVeloWithPressureBC(q, f_NW, f_SE, feq, omega, drho, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_P0P])[k];
+      q = (subgridD.q[DIR_P0P])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = vx1 + vx3;
@@ -2441,7 +2459,7 @@ __global__ void QVelDeviceCompZeroPress27(
          (dist.f[DIR_M0M])[kbw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_TE, f_BW, feq, omega, drho, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_M0M])[k];
+      q = (subgridD.q[DIR_M0M])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = -vx1 - vx3;
@@ -2450,7 +2468,7 @@ __global__ void QVelDeviceCompZeroPress27(
          (dist.f[DIR_P0P])[kte] = getInterpolatedDistributionForVeloWithPressureBC(q, f_BW, f_TE, feq, omega, drho, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_P0M])[k];
+      q = (subgridD.q[DIR_P0M])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = vx1 - vx3;
@@ -2459,7 +2477,7 @@ __global__ void QVelDeviceCompZeroPress27(
          (dist.f[DIR_M0P])[ktw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_BE, f_TW, feq, omega, drho, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_M0P])[k];
+      q = (subgridD.q[DIR_M0P])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = -vx1 + vx3;
@@ -2468,7 +2486,7 @@ __global__ void QVelDeviceCompZeroPress27(
          (dist.f[DIR_P0M])[kbe] = getInterpolatedDistributionForVeloWithPressureBC(q, f_TW, f_BE, feq, omega, drho, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_0PP])[k];
+      q = (subgridD.q[DIR_0PP])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = vx2 + vx3;
@@ -2477,7 +2495,7 @@ __global__ void QVelDeviceCompZeroPress27(
          (dist.f[DIR_0MM])[kbs] = getInterpolatedDistributionForVeloWithPressureBC(q, f_TN, f_BS, feq, omega, drho, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_0MM])[k];
+      q = (subgridD.q[DIR_0MM])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = -vx2 - vx3;
@@ -2486,7 +2504,7 @@ __global__ void QVelDeviceCompZeroPress27(
          (dist.f[DIR_0PP])[ktn] = getInterpolatedDistributionForVeloWithPressureBC(q, f_BS, f_TN, feq, omega, drho, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_0PM])[k];
+      q = (subgridD.q[DIR_0PM])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = vx2 - vx3;
@@ -2495,7 +2513,7 @@ __global__ void QVelDeviceCompZeroPress27(
          (dist.f[DIR_0MP])[kts] = getInterpolatedDistributionForVeloWithPressureBC(q, f_BN, f_TS, feq, omega, drho, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_0MP])[k];
+      q = (subgridD.q[DIR_0MP])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = -vx2 + vx3;
@@ -2504,7 +2522,7 @@ __global__ void QVelDeviceCompZeroPress27(
          (dist.f[DIR_0PM])[kbn] = getInterpolatedDistributionForVeloWithPressureBC(q, f_TS, f_BN, feq, omega, drho, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_PPP])[k];
+      q = (subgridD.q[DIR_PPP])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = vx1 + vx2 + vx3;
@@ -2513,7 +2531,7 @@ __global__ void QVelDeviceCompZeroPress27(
          (dist.f[DIR_MMM])[kbsw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_TNE, f_BSW, feq, omega, drho, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_MMM])[k];
+      q = (subgridD.q[DIR_MMM])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = -vx1 - vx2 - vx3;
@@ -2522,7 +2540,7 @@ __global__ void QVelDeviceCompZeroPress27(
          (dist.f[DIR_PPP])[ktne] = getInterpolatedDistributionForVeloWithPressureBC(q, f_BSW, f_TNE, feq, omega, drho, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_PPM])[k];
+      q = (subgridD.q[DIR_PPM])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = vx1 + vx2 - vx3;
@@ -2531,7 +2549,7 @@ __global__ void QVelDeviceCompZeroPress27(
          (dist.f[DIR_MMP])[ktsw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_BNE, f_TSW, feq, omega, drho, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_MMP])[k];
+      q = (subgridD.q[DIR_MMP])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = -vx1 - vx2 + vx3;
@@ -2540,7 +2558,7 @@ __global__ void QVelDeviceCompZeroPress27(
          (dist.f[DIR_PPM])[kbne] = getInterpolatedDistributionForVeloWithPressureBC(q, f_TSW, f_BNE, feq, omega, drho, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_PMP])[k];
+      q = (subgridD.q[DIR_PMP])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = vx1 - vx2 + vx3;
@@ -2549,7 +2567,7 @@ __global__ void QVelDeviceCompZeroPress27(
          (dist.f[DIR_MPM])[kbnw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_TSE, f_BNW, feq, omega, drho, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_MPM])[k];
+      q = (subgridD.q[DIR_MPM])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = -vx1 + vx2 - vx3;
@@ -2558,7 +2576,7 @@ __global__ void QVelDeviceCompZeroPress27(
          (dist.f[DIR_PMP])[ktse] = getInterpolatedDistributionForVeloWithPressureBC(q, f_BNW, f_TSE, feq, omega, drho, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_PMM])[k];
+      q = (subgridD.q[DIR_PMM])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = vx1 - vx2 - vx3;
@@ -2567,7 +2585,7 @@ __global__ void QVelDeviceCompZeroPress27(
          (dist.f[DIR_MPP])[ktnw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_BSE, f_TNW, feq, omega, drho, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_MPP])[k];
+      q = (subgridD.q[DIR_MPP])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = -vx1 + vx2 + vx3;
@@ -2619,26 +2637,27 @@ __global__ void QVelDeviceCompZeroPress27(
 
 
 //////////////////////////////////////////////////////////////////////////////
-__global__ void QVelDeviceCompZeroPress1h27( int inx,
-														int iny,
-														real* vx,
-														real* vy,
-														real* vz,
-														real* DD, 
-														int* k_Q, 
-														real* QQ,
-														unsigned int numberOfBCnodes,
-														real om1, 
-														real Phi,
-														real angularVelocity,
-														unsigned int* neighborX,
-														unsigned int* neighborY,
-														unsigned int* neighborZ,
-														real* coordX,
-														real* coordY,
-														real* coordZ,
-														unsigned long long numberOfLBnodes, 
-														bool isEvenTimestep)
+__global__ void QVelDeviceCompZeroPress1h27(
+    int inx,
+    int iny,
+    real* vx,
+    real* vy,
+    real* vz,
+    real* DD, 
+    int* k_Q, 
+    real* QQ,
+    unsigned int numberOfBCnodes,
+    real om1, 
+    real Phi,
+    real angularVelocity,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    real* coordX,
+    real* coordY,
+    real* coordZ,
+    unsigned long long numberOfLBnodes, 
+    bool isEvenTimestep)
 {
    Distributions27 D;
    if (isEvenTimestep==true)
@@ -3090,21 +3109,22 @@ __global__ void QVelDeviceCompZeroPress1h27( int inx,
 
 
 //////////////////////////////////////////////////////////////////////////////
-__global__ void LB_BC_Vel_West_27( int nx, 
-                                              int ny, 
-                                              int nz, 
-                                              int itz, 
-                                              unsigned int* bcMatD, 
-                                              unsigned int* neighborX,
-                                              unsigned int* neighborY,
-                                              unsigned int* neighborZ,
-                                              real* DD, 
-                                              unsigned long long numberOfLBnodes, 
-                                              bool isEvenTimestep, 
-                                              real u0x, 
-                                              unsigned int grid_nx, 
-                                              unsigned int grid_ny, 
-                                              real om) 
+__global__ void LB_BC_Vel_West_27(
+    int nx, 
+    int ny, 
+    int nz, 
+    int itz, 
+    unsigned int* bcMatD, 
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    real* DD, 
+    unsigned long long numberOfLBnodes, 
+    bool isEvenTimestep, 
+    real u0x, 
+    unsigned int grid_nx, 
+    unsigned int grid_ny, 
+    real om) 
 {
    //thread-index
    unsigned int ity = blockIdx.x;
@@ -3414,18 +3434,18 @@ __global__ void LB_BC_Vel_West_27( int nx,
 
 //////////////////////////////////////////////////////////////////////////////
 __global__ void QVelDevPlainBB27(
-   real* velocityX,
-   real* velocityY,
-   real* velocityZ,
-   real* distributions,
-   int* subgridDistanceIndices,
-   real* subgridDistances,
-   uint numberOfBCnodes,
-   uint* neighborX,
-   uint* neighborY,
-   uint* neighborZ,
-   unsigned long long numberOfLBnodes,
-   bool isEvenTimestep)
+    real* velocityX,
+    real* velocityY,
+    real* velocityZ,
+    real* distributions,
+    int* subgridDistanceIndices,
+    real* subgridDistances,
+    uint numberOfBCnodes,
+    uint* neighborX,
+    uint* neighborY,
+    uint* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep)
 {
    //////////////////////////////////////////////////////////////////////////
    //! The velocity boundary condition is executed in the following steps
@@ -3433,18 +3453,11 @@ __global__ void QVelDevPlainBB27(
    ////////////////////////////////////////////////////////////////////////////////
    //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
    //!
-   const unsigned  x = threadIdx.x;   // global x-index
-   const unsigned  y = blockIdx.x;    // global y-index
-   const unsigned  z = blockIdx.y;    // global z-index
-
-   const unsigned nx = blockDim.x;
-   const unsigned ny = gridDim.x;
-
-   const unsigned k = nx*(ny*z + y) + x;
+   const unsigned nodeIndex = getNodeIndex();
 
    //////////////////////////////////////////////////////////////////////////
    // run for all indices in size of boundary condition (numberOfBCnodes)
-   if(k < numberOfBCnodes)
+   if(nodeIndex < numberOfBCnodes)
    {
        //////////////////////////////////////////////////////////////////////////
        //! - Read distributions: style of reading and writing the distributions from/to stored arrays dependent on timestep is based on the esoteric twist algorithm \ref
@@ -3456,9 +3469,9 @@ __global__ void QVelDevPlainBB27(
       ////////////////////////////////////////////////////////////////////////////////
       //! - Set local velocities
       //!
-      real VeloX = velocityX[k];
-      real VeloY = velocityY[k];
-      real VeloZ = velocityZ[k];
+      real VeloX = velocityX[nodeIndex];
+      real VeloY = velocityY[nodeIndex];
+      real VeloZ = velocityZ[nodeIndex];
 
       ////////////////////////////////////////////////////////////////////////////////
       //! - Set local subgrid distances (q's)
@@ -3469,7 +3482,7 @@ __global__ void QVelDevPlainBB27(
       ////////////////////////////////////////////////////////////////////////////////
       //! - Set neighbor indices (necessary for indirect addressing)
       //!
-      uint indexOfBCnode = subgridDistanceIndices[k];
+      uint indexOfBCnode = subgridDistanceIndices[nodeIndex];
       uint ke   = indexOfBCnode;
       uint kw   = neighborX[indexOfBCnode];
       uint kn   = indexOfBCnode;
@@ -3535,32 +3548,32 @@ __global__ void QVelDevPlainBB27(
       ////////////////////////////////////////////////////////////////////////////////
       //! - rewrite distributions if there is a sub-grid distance (q) in same direction
       real q;
-      q = (subgridD.q[DIR_P00])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_M00])[kw  ]=f_E   + c4o9  * (-VeloX);
-      q = (subgridD.q[DIR_M00])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_P00])[ke  ]=f_W   + c4o9  * ( VeloX);
-      q = (subgridD.q[DIR_0P0])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_0M0])[ks  ]=f_N   + c4o9  * (-VeloY);
-      q = (subgridD.q[DIR_0M0])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_0P0])[kn  ]=f_S   + c4o9  * ( VeloY);
-      q = (subgridD.q[DIR_00P])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_00M])[kb  ]=f_T   + c4o9  * (-VeloZ);
-      q = (subgridD.q[DIR_00M])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_00P])[kt  ]=f_B   + c4o9  * ( VeloZ);
-      q = (subgridD.q[DIR_PP0])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_MM0])[ksw ]=f_NE  + c1o9  * (-VeloX - VeloY);
-      q = (subgridD.q[DIR_MM0])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_PP0])[kne ]=f_SW  + c1o9  * ( VeloX + VeloY);
-      q = (subgridD.q[DIR_PM0])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_MP0])[knw ]=f_SE  + c1o9  * (-VeloX + VeloY);
-      q = (subgridD.q[DIR_MP0])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_PM0])[kse ]=f_NW  + c1o9  * ( VeloX - VeloY);
-      q = (subgridD.q[DIR_P0P])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_M0M])[kbw ]=f_TE  + c1o9  * (-VeloX - VeloZ);
-      q = (subgridD.q[DIR_M0M])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_P0P])[kte ]=f_BW  + c1o9  * ( VeloX + VeloZ);
-      q = (subgridD.q[DIR_P0M])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_M0P])[ktw ]=f_BE  + c1o9  * (-VeloX + VeloZ);
-      q = (subgridD.q[DIR_M0P])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_P0M])[kbe ]=f_TW  + c1o9  * ( VeloX - VeloZ);
-      q = (subgridD.q[DIR_0PP])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_0MM])[kbs ]=f_TN  + c1o9  * (-VeloY - VeloZ);
-      q = (subgridD.q[DIR_0MM])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_0PP])[ktn ]=f_BS  + c1o9  * ( VeloY + VeloZ);
-      q = (subgridD.q[DIR_0PM])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_0MP])[kts ]=f_BN  + c1o9  * (-VeloY + VeloZ);
-      q = (subgridD.q[DIR_0MP])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_0PM])[kbn ]=f_TS  + c1o9  * ( VeloY - VeloZ);
-      q = (subgridD.q[DIR_PPP])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_MMM])[kbsw]=f_TNE + c1o36 * (-VeloX - VeloY - VeloZ);
-      q = (subgridD.q[DIR_MMM])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_PPP])[ktne]=f_BSW + c1o36 * ( VeloX + VeloY + VeloZ);
-      q = (subgridD.q[DIR_PPM])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_MMP])[ktsw]=f_BNE + c1o36 * (-VeloX - VeloY + VeloZ);
-      q = (subgridD.q[DIR_MMP])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_PPM])[kbne]=f_TSW + c1o36 * ( VeloX + VeloY - VeloZ);
-      q = (subgridD.q[DIR_PMP])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_MPM])[kbnw]=f_TSE + c1o36 * (-VeloX + VeloY - VeloZ);
-      q = (subgridD.q[DIR_MPM])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_PMP])[ktse]=f_BNW + c1o36 * ( VeloX - VeloY + VeloZ);
-      q = (subgridD.q[DIR_PMM])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_MPP])[ktnw]=f_BSE + c1o36 * (-VeloX + VeloY + VeloZ);
-      q = (subgridD.q[DIR_MPP])[k];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_PMM])[kbse]=f_TNW + c1o36 * ( VeloX - VeloY - VeloZ);
+      q = (subgridD.q[DIR_P00])[nodeIndex];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_M00])[kw  ]=f_E   + c4o9  * (-VeloX);
+      q = (subgridD.q[DIR_M00])[nodeIndex];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_P00])[ke  ]=f_W   + c4o9  * ( VeloX);
+      q = (subgridD.q[DIR_0P0])[nodeIndex];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_0M0])[ks  ]=f_N   + c4o9  * (-VeloY);
+      q = (subgridD.q[DIR_0M0])[nodeIndex];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_0P0])[kn  ]=f_S   + c4o9  * ( VeloY);
+      q = (subgridD.q[DIR_00P])[nodeIndex];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_00M])[kb  ]=f_T   + c4o9  * (-VeloZ);
+      q = (subgridD.q[DIR_00M])[nodeIndex];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_00P])[kt  ]=f_B   + c4o9  * ( VeloZ);
+      q = (subgridD.q[DIR_PP0])[nodeIndex];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_MM0])[ksw ]=f_NE  + c1o9  * (-VeloX - VeloY);
+      q = (subgridD.q[DIR_MM0])[nodeIndex];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_PP0])[kne ]=f_SW  + c1o9  * ( VeloX + VeloY);
+      q = (subgridD.q[DIR_PM0])[nodeIndex];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_MP0])[knw ]=f_SE  + c1o9  * (-VeloX + VeloY);
+      q = (subgridD.q[DIR_MP0])[nodeIndex];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_PM0])[kse ]=f_NW  + c1o9  * ( VeloX - VeloY);
+      q = (subgridD.q[DIR_P0P])[nodeIndex];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_M0M])[kbw ]=f_TE  + c1o9  * (-VeloX - VeloZ);
+      q = (subgridD.q[DIR_M0M])[nodeIndex];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_P0P])[kte ]=f_BW  + c1o9  * ( VeloX + VeloZ);
+      q = (subgridD.q[DIR_P0M])[nodeIndex];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_M0P])[ktw ]=f_BE  + c1o9  * (-VeloX + VeloZ);
+      q = (subgridD.q[DIR_M0P])[nodeIndex];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_P0M])[kbe ]=f_TW  + c1o9  * ( VeloX - VeloZ);
+      q = (subgridD.q[DIR_0PP])[nodeIndex];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_0MM])[kbs ]=f_TN  + c1o9  * (-VeloY - VeloZ);
+      q = (subgridD.q[DIR_0MM])[nodeIndex];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_0PP])[ktn ]=f_BS  + c1o9  * ( VeloY + VeloZ);
+      q = (subgridD.q[DIR_0PM])[nodeIndex];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_0MP])[kts ]=f_BN  + c1o9  * (-VeloY + VeloZ);
+      q = (subgridD.q[DIR_0MP])[nodeIndex];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_0PM])[kbn ]=f_TS  + c1o9  * ( VeloY - VeloZ);
+      q = (subgridD.q[DIR_PPP])[nodeIndex];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_MMM])[kbsw]=f_TNE + c1o36 * (-VeloX - VeloY - VeloZ);
+      q = (subgridD.q[DIR_MMM])[nodeIndex];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_PPP])[ktne]=f_BSW + c1o36 * ( VeloX + VeloY + VeloZ);
+      q = (subgridD.q[DIR_PPM])[nodeIndex];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_MMP])[ktsw]=f_BNE + c1o36 * (-VeloX - VeloY + VeloZ);
+      q = (subgridD.q[DIR_MMP])[nodeIndex];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_PPM])[kbne]=f_TSW + c1o36 * ( VeloX + VeloY - VeloZ);
+      q = (subgridD.q[DIR_PMP])[nodeIndex];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_MPM])[kbnw]=f_TSE + c1o36 * (-VeloX + VeloY - VeloZ);
+      q = (subgridD.q[DIR_MPM])[nodeIndex];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_PMP])[ktse]=f_BNW + c1o36 * ( VeloX - VeloY + VeloZ);
+      q = (subgridD.q[DIR_PMM])[nodeIndex];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_MPP])[ktnw]=f_BSE + c1o36 * (-VeloX + VeloY + VeloZ);
+      q = (subgridD.q[DIR_MPP])[nodeIndex];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_PMM])[kbse]=f_TNW + c1o36 * ( VeloX - VeloY - VeloZ);
    }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3604,19 +3617,20 @@ __global__ void QVelDevPlainBB27(
 
 
 //////////////////////////////////////////////////////////////////////////////
-__global__ void QVelDevCouette27(real* vx,
-											real* vy,
-	 										real* vz,
-											real* DD,
-											int* k_Q, 
-											real* QQ,
-											unsigned int numberOfBCnodes, 
-											real om1, 
-											unsigned int* neighborX,
-											unsigned int* neighborY,
-											unsigned int* neighborZ,
-											unsigned long long numberOfLBnodes, 
-											bool isEvenTimestep)
+__global__ void QVelDevCouette27(
+    real* vx,
+    real* vy,
+    real* vz,
+    real* DD,
+    int* k_Q, 
+    real* QQ,
+    unsigned int numberOfBCnodes, 
+    real om1, 
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes, 
+    bool isEvenTimestep)
 {
    Distributions27 D;
    if (isEvenTimestep==true)
@@ -3964,26 +3978,27 @@ __global__ void QVelDevCouette27(real* vx,
 
 
 //////////////////////////////////////////////////////////////////////////////
-__global__ void QVelDev1h27( int inx,
-										int iny,
-										real* vx,
-										real* vy,
-										real* vz,
-										real* DD, 
-										int* k_Q, 
-										real* QQ,
-										unsigned int numberOfBCnodes, 
-										real om1,
-										real Phi,
-										real angularVelocity,
-										unsigned int* neighborX,
-										unsigned int* neighborY,
-										unsigned int* neighborZ,
-										real* coordX,
-										real* coordY,
-										real* coordZ,
-										unsigned long long numberOfLBnodes, 
-										bool isEvenTimestep)
+__global__ void QVelDev1h27(
+    int inx,
+    int iny,
+    real* vx,
+    real* vy,
+    real* vz,
+    real* DD, 
+    int* k_Q, 
+    real* QQ,
+    unsigned int numberOfBCnodes, 
+    real om1,
+    real Phi,
+    real angularVelocity,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    real* coordX,
+    real* coordY,
+    real* coordZ,
+    unsigned long long numberOfLBnodes, 
+    bool isEvenTimestep)
 {
 	Distributions27 D;
 	if (isEvenTimestep==true)
@@ -4748,39 +4763,32 @@ __global__ void QVelDev1h27( int inx,
 
 //////////////////////////////////////////////////////////////////////////////
 __global__ void QVelDeviceComp27(
-											real* velocityX,
-											real* velocityY,
-											real* velocityZ,
-											real* distributions,
-											int* subgridDistanceIndices,
-											real* subgridDistances,
-											unsigned int numberOfBCnodes,
-											real omega,
-											unsigned int* neighborX,
-											unsigned int* neighborY,
-											unsigned int* neighborZ,
-											unsigned long long numberOfLBnodes,
-											bool isEvenTimestep)
+    real* velocityX,
+    real* velocityY,
+    real* velocityZ,
+    real* distributions,
+    int* subgridDistanceIndices,
+    real* subgridDistances,
+    unsigned int numberOfBCnodes,
+    real omega,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep)
 {
    //////////////////////////////////////////////////////////////////////////
    //! The velocity boundary condition is executed in the following steps
    //!
-   ////////////////////////////////////////////////////////////////////////////////
-   //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
-   //!
-   const unsigned  x = threadIdx.x;  // global x-index 
-   const unsigned  y = blockIdx.x;   // global y-index 
-   const unsigned  z = blockIdx.y;   // global z-index 
-
-   const unsigned nx = blockDim.x;
-   const unsigned ny = gridDim.x;
-
-   const unsigned k = nx*(ny*z + y) + x;
+    ////////////////////////////////////////////////////////////////////////////////
+    //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
+    //!
+    const unsigned nodeIndex = getNodeIndex();
 
    //////////////////////////////////////////////////////////////////////////
    //! - Run for all indices in size of boundary condition (numberOfBCnodes)
    //!
-   if(k < numberOfBCnodes)
+   if(nodeIndex < numberOfBCnodes)
    {
       //////////////////////////////////////////////////////////////////////////
       //! - Read distributions: style of reading and writing the distributions from/to stored arrays dependent on timestep is based on the esoteric twist algorithm \ref
@@ -4792,9 +4800,9 @@ __global__ void QVelDeviceComp27(
       ////////////////////////////////////////////////////////////////////////////////
       //! - Set local velocities
       //!
-      real VeloX = velocityX[k];
-      real VeloY = velocityY[k];
-      real VeloZ = velocityZ[k];
+      real VeloX = velocityX[nodeIndex];
+      real VeloY = velocityY[nodeIndex];
+      real VeloZ = velocityZ[nodeIndex];
 
       ////////////////////////////////////////////////////////////////////////////////
       //! - Set local subgrid distances (q's)
@@ -4805,7 +4813,7 @@ __global__ void QVelDeviceComp27(
       ////////////////////////////////////////////////////////////////////////////////
       //! - Set neighbor indices (necessary for indirect addressing)
       //!
-      unsigned int indexOfBCnode  = subgridDistanceIndices[k];
+      unsigned int indexOfBCnode  = subgridDistanceIndices[nodeIndex];
       unsigned int kzero= indexOfBCnode;
       unsigned int ke   = indexOfBCnode;
       unsigned int kw   = neighborX[indexOfBCnode];
@@ -4894,7 +4902,7 @@ __global__ void QVelDeviceComp27(
       //! - Update distributions with subgrid distance (q) between zero and one
       //!
       real feq, q, velocityLB, velocityBC;
-      q = (subgridD.q[DIR_P00])[k];
+      q = (subgridD.q[DIR_P00])[nodeIndex];
       if (q>=c0o1 && q<=c1o1) // only update distribution for q between zero and one
       {
          velocityLB = vx1;
@@ -4903,7 +4911,7 @@ __global__ void QVelDeviceComp27(
          (dist.f[DIR_M00])[kw] = getInterpolatedDistributionForVeloBC(q, f_E, f_W, feq, omega, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_M00])[k];
+      q = (subgridD.q[DIR_M00])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = -vx1;
@@ -4912,7 +4920,7 @@ __global__ void QVelDeviceComp27(
          (dist.f[DIR_P00])[ke] = getInterpolatedDistributionForVeloBC(q, f_W, f_E, feq, omega, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_0P0])[k];
+      q = (subgridD.q[DIR_0P0])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = vx2;
@@ -4921,7 +4929,7 @@ __global__ void QVelDeviceComp27(
          (dist.f[DIR_0M0])[ks] = getInterpolatedDistributionForVeloBC(q, f_N, f_S, feq, omega, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_0M0])[k];
+      q = (subgridD.q[DIR_0M0])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = -vx2;
@@ -4930,7 +4938,7 @@ __global__ void QVelDeviceComp27(
          (dist.f[DIR_0P0])[kn] = getInterpolatedDistributionForVeloBC(q, f_S, f_N, feq, omega, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_00P])[k];
+      q = (subgridD.q[DIR_00P])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = vx3;
@@ -4939,7 +4947,7 @@ __global__ void QVelDeviceComp27(
          (dist.f[DIR_00M])[kb] = getInterpolatedDistributionForVeloBC(q, f_T, f_B, feq, omega, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_00M])[k];
+      q = (subgridD.q[DIR_00M])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = -vx3;
@@ -4948,7 +4956,7 @@ __global__ void QVelDeviceComp27(
          (dist.f[DIR_00P])[kt] = getInterpolatedDistributionForVeloBC(q, f_B, f_T, feq, omega, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_PP0])[k];
+      q = (subgridD.q[DIR_PP0])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = vx1 + vx2;
@@ -4957,7 +4965,7 @@ __global__ void QVelDeviceComp27(
          (dist.f[DIR_MM0])[ksw] = getInterpolatedDistributionForVeloBC(q, f_NE, f_SW, feq, omega, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_MM0])[k];
+      q = (subgridD.q[DIR_MM0])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = -vx1 - vx2;
@@ -4966,7 +4974,7 @@ __global__ void QVelDeviceComp27(
          (dist.f[DIR_PP0])[kne] = getInterpolatedDistributionForVeloBC(q, f_SW, f_NE, feq, omega, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_PM0])[k];
+      q = (subgridD.q[DIR_PM0])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = vx1 - vx2;
@@ -4975,7 +4983,7 @@ __global__ void QVelDeviceComp27(
          (dist.f[DIR_MP0])[knw] = getInterpolatedDistributionForVeloBC(q, f_SE, f_NW, feq, omega, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_MP0])[k];
+      q = (subgridD.q[DIR_MP0])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = -vx1 + vx2;
@@ -4984,7 +4992,7 @@ __global__ void QVelDeviceComp27(
          (dist.f[DIR_PM0])[kse] = getInterpolatedDistributionForVeloBC(q, f_NW, f_SE, feq, omega, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_P0P])[k];
+      q = (subgridD.q[DIR_P0P])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = vx1 + vx3;
@@ -4993,7 +5001,7 @@ __global__ void QVelDeviceComp27(
          (dist.f[DIR_M0M])[kbw] = getInterpolatedDistributionForVeloBC(q, f_TE, f_BW, feq, omega, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_M0M])[k];
+      q = (subgridD.q[DIR_M0M])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = -vx1 - vx3;
@@ -5002,7 +5010,7 @@ __global__ void QVelDeviceComp27(
          (dist.f[DIR_P0P])[kte] = getInterpolatedDistributionForVeloBC(q, f_BW, f_TE, feq, omega, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_P0M])[k];
+      q = (subgridD.q[DIR_P0M])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = vx1 - vx3;
@@ -5011,7 +5019,7 @@ __global__ void QVelDeviceComp27(
          (dist.f[DIR_M0P])[ktw] = getInterpolatedDistributionForVeloBC(q, f_BE, f_TW, feq, omega, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_M0P])[k];
+      q = (subgridD.q[DIR_M0P])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = -vx1 + vx3;
@@ -5020,7 +5028,7 @@ __global__ void QVelDeviceComp27(
          (dist.f[DIR_P0M])[kbe] = getInterpolatedDistributionForVeloBC(q, f_TW, f_BE, feq, omega, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_0PP])[k];
+      q = (subgridD.q[DIR_0PP])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = vx2 + vx3;
@@ -5029,7 +5037,7 @@ __global__ void QVelDeviceComp27(
          (dist.f[DIR_0MM])[kbs] = getInterpolatedDistributionForVeloBC(q, f_TN, f_BS, feq, omega, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_0MM])[k];
+      q = (subgridD.q[DIR_0MM])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = -vx2 - vx3;
@@ -5038,7 +5046,7 @@ __global__ void QVelDeviceComp27(
          (dist.f[DIR_0PP])[ktn] = getInterpolatedDistributionForVeloBC(q, f_BS, f_TN, feq, omega, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_0PM])[k];
+      q = (subgridD.q[DIR_0PM])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = vx2 - vx3;
@@ -5047,7 +5055,7 @@ __global__ void QVelDeviceComp27(
          (dist.f[DIR_0MP])[kts] = getInterpolatedDistributionForVeloBC(q, f_BN, f_TS, feq, omega, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_0MP])[k];
+      q = (subgridD.q[DIR_0MP])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = -vx2 + vx3;
@@ -5056,7 +5064,7 @@ __global__ void QVelDeviceComp27(
          (dist.f[DIR_0PM])[kbn] = getInterpolatedDistributionForVeloBC(q, f_TS, f_BN, feq, omega, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_PPP])[k];
+      q = (subgridD.q[DIR_PPP])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = vx1 + vx2 + vx3;
@@ -5065,7 +5073,7 @@ __global__ void QVelDeviceComp27(
          (dist.f[DIR_MMM])[kbsw] = getInterpolatedDistributionForVeloBC(q, f_TNE, f_BSW, feq, omega, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_MMM])[k];
+      q = (subgridD.q[DIR_MMM])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = -vx1 - vx2 - vx3;
@@ -5074,7 +5082,7 @@ __global__ void QVelDeviceComp27(
          (dist.f[DIR_PPP])[ktne] = getInterpolatedDistributionForVeloBC(q, f_BSW, f_TNE, feq, omega, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_PPM])[k];
+      q = (subgridD.q[DIR_PPM])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = vx1 + vx2 - vx3;
@@ -5083,7 +5091,7 @@ __global__ void QVelDeviceComp27(
          (dist.f[DIR_MMP])[ktsw] = getInterpolatedDistributionForVeloBC(q, f_BNE, f_TSW, feq, omega, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_MMP])[k];
+      q = (subgridD.q[DIR_MMP])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = -vx1 - vx2 + vx3;
@@ -5092,7 +5100,7 @@ __global__ void QVelDeviceComp27(
          (dist.f[DIR_PPM])[kbne] = getInterpolatedDistributionForVeloBC(q, f_TSW, f_BNE, feq, omega, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_PMP])[k];
+      q = (subgridD.q[DIR_PMP])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = vx1 - vx2 + vx3;
@@ -5101,7 +5109,7 @@ __global__ void QVelDeviceComp27(
          (dist.f[DIR_MPM])[kbnw] = getInterpolatedDistributionForVeloBC(q, f_TSE, f_BNW, feq, omega, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_MPM])[k];
+      q = (subgridD.q[DIR_MPM])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = -vx1 + vx2 - vx3;
@@ -5110,7 +5118,7 @@ __global__ void QVelDeviceComp27(
          (dist.f[DIR_PMP])[ktse] = getInterpolatedDistributionForVeloBC(q, f_BNW, f_TSE, feq, omega, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_PMM])[k];
+      q = (subgridD.q[DIR_PMM])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = vx1 - vx2 - vx3;
@@ -5119,7 +5127,7 @@ __global__ void QVelDeviceComp27(
          (dist.f[DIR_MPP])[ktnw] = getInterpolatedDistributionForVeloBC(q, f_BSE, f_TNW, feq, omega, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_MPP])[k];
+      q = (subgridD.q[DIR_MPP])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = -vx1 + vx2 + vx3;
@@ -5170,21 +5178,22 @@ __global__ void QVelDeviceComp27(
 
 
 //////////////////////////////////////////////////////////////////////////////
-__global__ void QVelDevice27(int inx,
-                                        int iny,
-                                        real* vx,
-                                        real* vy,
-                                        real* vz,
-                                        real* DD, 
-                                        int* k_Q, 
-                                        real* QQ,
-                                        unsigned int numberOfBCnodes, 
-                                        real om1, 
-                                        unsigned int* neighborX,
-                                        unsigned int* neighborY,
-                                        unsigned int* neighborZ,
-                                        unsigned long long numberOfLBnodes, 
-                                        bool isEvenTimestep)
+__global__ void QVelDevice27(
+    int inx,
+    int iny,
+    real* vx,
+    real* vy,
+    real* vz,
+    real* DD, 
+    int* k_Q, 
+    real* QQ,
+    unsigned int numberOfBCnodes, 
+    real om1, 
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes, 
+    bool isEvenTimestep)
 {
    Distributions27 D;
    if (isEvenTimestep==true)
@@ -5723,19 +5732,20 @@ __global__ void QVelDevice27(int inx,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-__global__ void PropellerBC(unsigned int* neighborX,
-                                       unsigned int* neighborY,
-                                       unsigned int* neighborZ,
-                                       real* rho,
-                                       real* ux,
-                                       real* uy,
-                                       real* uz,
-                                       int* k_Q, 
-									   unsigned int size_Prop,
-                                       unsigned long long numberOfLBnodes,
-                                       unsigned int* bcMatD,
-                                       real* DD,
-                                       bool EvenOrOdd)
+__global__ void PropellerBC(
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    real* rho,
+    real* ux,
+    real* uy,
+    real* uz,
+    int* k_Q, 
+    unsigned int size_Prop,
+    unsigned long long numberOfLBnodes,
+    unsigned int* bcMatD,
+    real* DD,
+    bool EvenOrOdd)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 

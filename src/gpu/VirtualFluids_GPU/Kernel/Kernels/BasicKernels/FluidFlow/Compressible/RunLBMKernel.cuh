@@ -5,7 +5,7 @@
 #include <DataTypes.h>
 #include <cuda_runtime.h>
 
-#include <lbm/KernelParameter.h>
+#include "lbm/KernelParameter.h"
 
 #include "Kernel/Utilities/DistributionHelper.cuh"
 
@@ -23,7 +23,7 @@ struct GPUKernelParameter
     unsigned int* neighborY;
     unsigned int* neighborZ;
     real* distributions;
-    int size_Mat;
+    int numberOfLBnodes;
     real* forces;
     bool isEvenTimestep;
 };
@@ -31,19 +31,22 @@ struct GPUKernelParameter
 template<typename KernelFunctor>
 __global__ void runKernel(KernelFunctor kernel, GPUKernelParameter kernelParameter)
 {
-    const uint k = getNodeIndex();
+    ////////////////////////////////////////////////////////////////////////////////
+    //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
+    //!
+    const unsigned nodeIndex = getNodeIndex();
 
-    if(k >= kernelParameter.size_Mat)
+    if(nodeIndex >= kernelParameter.numberOfLBnodes)
         return;
 
-    if (!isValidFluidNode(kernelParameter.typeOfGridNode[k]))
+    if (!isValidFluidNode(kernelParameter.typeOfGridNode[nodeIndex]))
         return;
 
     DistributionWrapper distributionWrapper {
         kernelParameter.distributions,
-        (unsigned int)kernelParameter.size_Mat,
+        (unsigned int)kernelParameter.numberOfLBnodes,
         kernelParameter.isEvenTimestep,
-        k,
+        nodeIndex,
         kernelParameter.neighborX,
         kernelParameter.neighborY,
         kernelParameter.neighborZ

@@ -27,23 +27,27 @@
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
 //! \file KernelUtilities.h
-//! \ingroup GPU
-//! \author Martin Schoenherr, Anna Wellmann
-//======================================================================================
-#ifndef KERNELUTILS_H
-#define KERNELUTILS_H
+//! \ingroup LBM/GPUHelperFunctions
+//! \author Martin Schoenherr, Anna Wellmann, Soeren Peters
+//=======================================================================================
+#ifndef KERNEL_UTILITIES_H
+#define KERNEL_UTILITIES_H
 
-#include "LBM/LB.h"
+#include "LBM/LB.h" 
 #include "lbm/constants/D3Q27.h"
 #include "lbm/constants/NumericConstants.h"
 
 using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
 
-__inline__ __device__ void getPointersToDistributions(Distributions27 &dist, real *distributionArray, const unsigned long long numberOfLBnodes, const bool isEvenTimestep)
+namespace vf::gpu
+{
+
+__inline__ __device__ __host__ void getPointersToDistributions(Distributions27 &dist, real *distributionArray, const unsigned long long numberOfLBnodes, const bool isEvenTimestep)
 {
     if (isEvenTimestep)
     {
+        dist.f[DIR_000] = &distributionArray[DIR_000 * numberOfLBnodes];
         dist.f[DIR_P00] = &distributionArray[DIR_P00 * numberOfLBnodes];
         dist.f[DIR_M00] = &distributionArray[DIR_M00 * numberOfLBnodes];
         dist.f[DIR_0P0] = &distributionArray[DIR_0P0 * numberOfLBnodes];
@@ -62,7 +66,6 @@ __inline__ __device__ void getPointersToDistributions(Distributions27 &dist, rea
         dist.f[DIR_0MM] = &distributionArray[DIR_0MM * numberOfLBnodes];
         dist.f[DIR_0PM] = &distributionArray[DIR_0PM * numberOfLBnodes];
         dist.f[DIR_0MP] = &distributionArray[DIR_0MP * numberOfLBnodes];
-        dist.f[DIR_000] = &distributionArray[DIR_000 * numberOfLBnodes];
         dist.f[DIR_PPP] = &distributionArray[DIR_PPP * numberOfLBnodes];
         dist.f[DIR_MMP] = &distributionArray[DIR_MMP * numberOfLBnodes];
         dist.f[DIR_PMP] = &distributionArray[DIR_PMP * numberOfLBnodes];
@@ -172,6 +175,24 @@ __inline__ __device__ real getInterpolatedDistributionForVeloWithPressureBC(cons
            + (q * (f + fInverse) - c6o1 * weight * velocity) / (c1o1 + q) - weight * drho;
 }
 
+__inline__ __device__ unsigned int getNodeIndex()
+{
+    const unsigned x = threadIdx.x;
+    const unsigned y = blockIdx.x;
+    const unsigned z = blockIdx.y;
 
+    const unsigned nx = blockDim.x;
+    const unsigned ny = gridDim.x;
+
+    return nx * (ny * z + y) + x;
+}
+
+__inline__ __device__ bool isValidFluidNode(uint nodeType)
+{
+    return (nodeType == GEO_FLUID || nodeType == GEO_PM_0 || nodeType == GEO_PM_1 || nodeType == GEO_PM_2);
+}
+
+
+}
 
 #endif
