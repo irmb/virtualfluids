@@ -180,14 +180,14 @@ gcc_9_unit_tests:
     - ctest
 
 ###############################################################################
-msvc_16_unit_tests:
+msvc_17_unit_tests:
   stage: test
 
   tags:
     - win
     - gpu
 
-  needs: ["msvc_16"]
+  needs: ["msvc_17"]
 
   before_script:
     - $env:Path += ";C:\Program Files\CMake\bin\"
