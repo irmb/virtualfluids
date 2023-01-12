@@ -301,7 +301,7 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
         neighborInplane2 = para->getParD(level)->neighborY;
     }
 
-    bool doTmpAveraging = t_level>=(this->getTStartTmpAveraging()*pow(2,level));
+    bool doTmpAveraging = t_level>=(this->getTStartTmpAveraging()*exp2(level));
 
     // Pointer casts to use device arrays in thrust reductions
     thrust::device_ptr<uint> indices_thrust = thrust::device_pointer_cast(probeStruct->pointIndicesD);
@@ -311,7 +311,7 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
     thrust::device_ptr<real> nut_thrust = thrust::device_pointer_cast(para->getParD(level)->turbViscosity);
 
     real N = (real)probeStruct->nIndices;
-    real invNumberOfTimestepsInTmpAvg = c1o1/real(probeStruct->timestepInTimeAverage);
+    real invNumberOfTimestepsInTmpAvg = c1o1/real(probeStruct->timestepInTimeAverage+1);
     uint nPoints = probeStruct->nPoints;
     // Permutation iterators for direct iteration over the velocities of the planes
     typedef thrust::device_vector<real>::iterator valIterator;

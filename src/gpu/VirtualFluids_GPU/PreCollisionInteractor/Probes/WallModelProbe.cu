@@ -162,12 +162,9 @@ void WallModelProbe::findPoints(Parameter* para, GridProvider* gridProvider, std
     real dt = para->getTimeRatio();
     uint nt = uint((para->getTimestepEnd()-this->tStartAvg)/this->tAvg);
     
-    for(uint t=0; t<nt; t++)
-    {
-        pointCoordsX_level.push_back(dt*(t*this->tAvg)+this->tStartAvg); // x coord will serve as time in this probe
+        pointCoordsX_level.push_back(0); 
         pointCoordsY_level.push_back(0);
         pointCoordsZ_level.push_back(0);
-    }
 
     if(this->evaluatePressureGradient)
     {
@@ -191,7 +188,7 @@ void WallModelProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Paramete
     real N = para->getParD(level)->stressBC.numberOfBCnodes;
     if(N<1) return; //Skipping levels without StressBC
     uint timestep = probeStruct->timestepInTimeseries;
-    real inv_n = c1o1/real(probeStruct->timestepInTimeAverage);
+    real inv_n = c1o1/real(probeStruct->timestepInTimeAverage+1);
     int nPoints = probeStruct->nPoints;
 
     // Pointer casts to use device arrays in thrust reductions
@@ -262,16 +259,34 @@ void WallModelProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Paramete
         if(probeStruct->quantitiesH[int(Statistic::SpatioTemporalMeans)] && doTmpAveraging)
         {
             uint arrOff = probeStruct->arrayOffsetsH[int(Statistic::SpatioTemporalMeans)];
-            real spatMean_u_el_old      = probeStruct->quantitiesArrayH[(arrOff+0)*nPoints+timestep-1];
-            real spatMean_v_el_old      = probeStruct->quantitiesArrayH[(arrOff+1)*nPoints+timestep-1];
-            real spatMean_w_el_old      = probeStruct->quantitiesArrayH[(arrOff+2)*nPoints+timestep-1];
-            real spatMean_u1_old        = probeStruct->quantitiesArrayH[(arrOff+3)*nPoints+timestep-1];
-            real spatMean_v1_old        = probeStruct->quantitiesArrayH[(arrOff+4)*nPoints+timestep-1];
-            real spatMean_w1_old        = probeStruct->quantitiesArrayH[(arrOff+5)*nPoints+timestep-1];
-            real spatMean_u_star_old    = probeStruct->quantitiesArrayH[(arrOff+6)*nPoints+timestep-1];
-            real spatMean_Fx_old        = probeStruct->quantitiesArrayH[(arrOff+7)*nPoints+timestep-1];
-            real spatMean_Fy_old        = probeStruct->quantitiesArrayH[(arrOff+8)*nPoints+timestep-1];
-            real spatMean_Fz_old        = probeStruct->quantitiesArrayH[(arrOff+9)*nPoints+timestep-1];
+            real spatMean_u_el_old, spatMean_v_el_old, spatMean_w_el_old, spatMean_u1_old, spatMean_v1_old, spatMean_w1_old, spatMean_u_star_old, spatMean_Fx_old, spatMean_Fy_old, spatMean_Fz_old;
+            if(timestep > 0)
+            {
+                spatMean_u_el_old      = probeStruct->quantitiesArrayH[(arrOff+0)*nPoints+timestep-1];
+                spatMean_v_el_old      = probeStruct->quantitiesArrayH[(arrOff+1)*nPoints+timestep-1];
+                spatMean_w_el_old      = probeStruct->quantitiesArrayH[(arrOff+2)*nPoints+timestep-1];
+                spatMean_u1_old        = probeStruct->quantitiesArrayH[(arrOff+3)*nPoints+timestep-1];
+                spatMean_v1_old        = probeStruct->quantitiesArrayH[(arrOff+4)*nPoints+timestep-1];
+                spatMean_w1_old        = probeStruct->quantitiesArrayH[(arrOff+5)*nPoints+timestep-1];
+                spatMean_u_star_old    = probeStruct->quantitiesArrayH[(arrOff+6)*nPoints+timestep-1];
+                spatMean_Fx_old        = probeStruct->quantitiesArrayH[(arrOff+7)*nPoints+timestep-1];
+                spatMean_Fy_old        = probeStruct->quantitiesArrayH[(arrOff+8)*nPoints+timestep-1];
+                spatMean_Fz_old        = probeStruct->quantitiesArrayH[(arrOff+9)*nPoints+timestep-1];
+            } 
+            else 
+            {
+                spatMean_u_el_old   = c0o1;
+                spatMean_v_el_old   = c0o1;
+                spatMean_w_el_old   = c0o1;
+                spatMean_u1_old     = c0o1;
+                spatMean_v1_old     = c0o1;
+                spatMean_w1_old     = c0o1;
+                spatMean_u_star_old = c0o1;
+                spatMean_Fx_old     = c0o1;
+                spatMean_Fy_old     = c0o1;
+                spatMean_Fz_old     = c0o1;
+            }
+
 
             probeStruct->quantitiesArrayH[(arrOff+0)*nPoints+timestep] = spatMean_u_el_old + (spatMean_u_el-spatMean_u_el_old)*inv_n;
             probeStruct->quantitiesArrayH[(arrOff+1)*nPoints+timestep] = spatMean_v_el_old + (spatMean_v_el-spatMean_v_el_old)*inv_n;
@@ -286,9 +301,20 @@ void WallModelProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Paramete
 
             if(this->evaluatePressureGradient)
             {
-            real spatMean_dpdx_old     = probeStruct->quantitiesArrayH[(arrOff+10)*nPoints+timestep-1];
-            real spatMean_dpdy_old     = probeStruct->quantitiesArrayH[(arrOff+11)*nPoints+timestep-1];
-            real spatMean_dpdz_old     = probeStruct->quantitiesArrayH[(arrOff+12)*nPoints+timestep-1];
+                real spatMean_dpdx_old, spatMean_dpdy_old, spatMean_dpdz_old;
+                if(timestep>0)
+                {
+                    spatMean_dpdx_old = probeStruct->quantitiesArrayH[(arrOff+10)*nPoints+timestep-1];
+                    spatMean_dpdy_old = probeStruct->quantitiesArrayH[(arrOff+11)*nPoints+timestep-1];
+                    spatMean_dpdz_old = probeStruct->quantitiesArrayH[(arrOff+12)*nPoints+timestep-1];
+                }
+                else
+                {
+                    spatMean_dpdx_old = c0o1;
+                    spatMean_dpdy_old = c0o1;
+                    spatMean_dpdz_old = c0o1;
+                }
+
             probeStruct->quantitiesArrayH[(arrOff+10)*nPoints+timestep] = spatMean_dpdx_old + (spatMean_dpdx-spatMean_dpdx_old)*inv_n;
             probeStruct->quantitiesArrayH[(arrOff+11)*nPoints+timestep] = spatMean_dpdy_old + (spatMean_dpdy-spatMean_dpdy_old)*inv_n;
             probeStruct->quantitiesArrayH[(arrOff+12)*nPoints+timestep] = spatMean_dpdz_old + (spatMean_dpdz-spatMean_dpdz_old)*inv_n;
