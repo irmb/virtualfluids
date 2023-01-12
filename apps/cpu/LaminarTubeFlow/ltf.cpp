@@ -9,6 +9,8 @@ using namespace std;
 
 void run(string configname)
 {
+    using namespace vf::lbm::dir;
+
    try
    {
       vf::basics::ConfigurationFile   config;
@@ -108,7 +110,7 @@ void run(string configname)
       kernel->setBCProcessor(bcProc);
 
       //////////////////////////////////////////////////////////////////////////
-      SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::DIR_00M));
+      SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, DIR_00M));
       //restart
       SPtr<UbScheduler> mSch(new UbScheduler(cpStep, cpStart));
       //SPtr<MPIIOMigrationCoProcessor> migCoProcessor(new MPIIOMigrationCoProcessor(grid, mSch, metisVisitor, pathname + "/mig", comm));

@@ -57,6 +57,8 @@ void NonReflectingOutflowBCAlgorithm::addDistributions(SPtr<DistributionArray3D>
 //////////////////////////////////////////////////////////////////////////
 void NonReflectingOutflowBCAlgorithm::applyBC()
 {
+    using namespace vf::lbm::dir;
+
     using namespace D3Q27System;
     using namespace UbMath;
 

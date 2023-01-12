@@ -192,60 +192,62 @@ public:
     float getBoundaryVelocityX3() { return this->bcVelocityX3; }
     float getBoundaryVelocity(const int &direction)
     {
+        using namespace vf::lbm::dir;
+
         switch (direction) {
-            case D3Q27System::DIR_P00:
+            case DIR_P00:
                 return (float)(UbMath::c4o9 *
                                (+bcVelocityX1)); //(2/cs^2)(=6)*rho_0(=1 bei inkompr)*wi*u*ei mit cs=1/sqrt(3)
-            case D3Q27System::DIR_M00:
+            case DIR_M00:
                 return (float)(UbMath::c4o9 *
                                (-bcVelocityX1)); // z.B. aus paper manfred MRT LB models in three dimensions (2002)
-            case D3Q27System::DIR_0P0:
+            case DIR_0P0:
                 return (float)(UbMath::c4o9 * (+bcVelocityX2));
-            case D3Q27System::DIR_0M0:
+            case DIR_0M0:
                 return (float)(UbMath::c4o9 * (-bcVelocityX2));
-            case D3Q27System::DIR_00P:
+            case DIR_00P:
                 return (float)(UbMath::c4o9 * (+bcVelocityX3));
-            case D3Q27System::DIR_00M:
+            case DIR_00M:
                 return (float)(UbMath::c4o9 * (-bcVelocityX3));
-            case D3Q27System::DIR_PP0:
+            case DIR_PP0:
                 return (float)(UbMath::c1o9 * (+bcVelocityX1 + bcVelocityX2));
-            case D3Q27System::DIR_MM0:
+            case DIR_MM0:
                 return (float)(UbMath::c1o9 * (-bcVelocityX1 - bcVelocityX2));
-            case D3Q27System::DIR_PM0:
+            case DIR_PM0:
                 return (float)(UbMath::c1o9 * (+bcVelocityX1 - bcVelocityX2));
-            case D3Q27System::DIR_MP0:
+            case DIR_MP0:
                 return (float)(UbMath::c1o9 * (-bcVelocityX1 + bcVelocityX2));
-            case D3Q27System::DIR_P0P:
+            case DIR_P0P:
                 return (float)(UbMath::c1o9 * (+bcVelocityX1 + bcVelocityX3));
-            case D3Q27System::DIR_M0M:
+            case DIR_M0M:
                 return (float)(UbMath::c1o9 * (-bcVelocityX1 - bcVelocityX3));
-            case D3Q27System::DIR_P0M:
+            case DIR_P0M:
                 return (float)(UbMath::c1o9 * (+bcVelocityX1 - bcVelocityX3));
-            case D3Q27System::DIR_M0P:
+            case DIR_M0P:
                 return (float)(UbMath::c1o9 * (-bcVelocityX1 + bcVelocityX3));
-            case D3Q27System::DIR_0PP:
+            case DIR_0PP:
                 return (float)(UbMath::c1o9 * (+bcVelocityX2 + bcVelocityX3));
-            case D3Q27System::DIR_0MM:
+            case DIR_0MM:
                 return (float)(UbMath::c1o9 * (-bcVelocityX2 - bcVelocityX3));
-            case D3Q27System::DIR_0PM:
+            case DIR_0PM:
                 return (float)(UbMath::c1o9 * (+bcVelocityX2 - bcVelocityX3));
-            case D3Q27System::DIR_0MP:
+            case DIR_0MP:
                 return (float)(UbMath::c1o9 * (-bcVelocityX2 + bcVelocityX3));
-            case D3Q27System::DIR_PPP:
+            case DIR_PPP:
                 return (float)(UbMath::c1o36 * (+bcVelocityX1 + bcVelocityX2 + bcVelocityX3));
-            case D3Q27System::DIR_MMM:
+            case DIR_MMM:
                 return (float)(UbMath::c1o36 * (-bcVelocityX1 - bcVelocityX2 - bcVelocityX3));
-            case D3Q27System::DIR_PPM:
+            case DIR_PPM:
                 return (float)(UbMath::c1o36 * (+bcVelocityX1 + bcVelocityX2 - bcVelocityX3));
-            case D3Q27System::DIR_MMP:
+            case DIR_MMP:
                 return (float)(UbMath::c1o36 * (-bcVelocityX1 - bcVelocityX2 + bcVelocityX3));
-            case D3Q27System::DIR_PMP:
+            case DIR_PMP:
                 return (float)(UbMath::c1o36 * (+bcVelocityX1 - bcVelocityX2 + bcVelocityX3));
-            case D3Q27System::DIR_MPM:
+            case DIR_MPM:
                 return (float)(UbMath::c1o36 * (-bcVelocityX1 + bcVelocityX2 - bcVelocityX3));
-            case D3Q27System::DIR_PMM:
+            case DIR_PMM:
                 return (float)(UbMath::c1o36 * (+bcVelocityX1 - bcVelocityX2 - bcVelocityX3));
-            case D3Q27System::DIR_MPP:
+            case DIR_MPP:
                 return (float)(UbMath::c1o36 * (-bcVelocityX1 + bcVelocityX2 + bcVelocityX3));
             default:
                 throw UbException(UB_EXARGS, "unknown error");

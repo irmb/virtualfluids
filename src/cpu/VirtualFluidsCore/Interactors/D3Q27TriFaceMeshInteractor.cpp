@@ -122,6 +122,8 @@ bool D3Q27TriFaceMeshInteractor::setDifferencesToGbObject3D(const SPtr<Block3D> 
 // E.F. /4/16/2013
 void D3Q27TriFaceMeshInteractor::setQs(const double &timeStep)
 {
+    using namespace vf::lbm::dir;
+
     UBLOGML(logDEBUG1, "\nLBMTriFaceMeshInteractor - setQs start ");
     if (!this->grid.lock())
         throw UbException(UB_EXARGS, "ups, no grid.lock()!!");
@@ -364,9 +366,9 @@ void D3Q27TriFaceMeshInteractor::setQs(const double &timeStep)
                 //            tmpSolidNodesFromOtherInteractors[block];
                 double q, distance;
 
-                double &nodeDx1 = nodeDeltaToNeigh[level][D3Q27System::DIR_P00];
-                double &nodeDx2 = nodeDeltaToNeigh[level][D3Q27System::DIR_0P0];
-                double &nodeDx3 = nodeDeltaToNeigh[level][D3Q27System::DIR_00P];
+                double &nodeDx1 = nodeDeltaToNeigh[level][DIR_P00];
+                double &nodeDx2 = nodeDeltaToNeigh[level][DIR_0P0];
+                double &nodeDx3 = nodeDeltaToNeigh[level][DIR_00P];
 
                 // fuer OBB-Test
                 double qEinflussDelta = 1.1 * sqrt(nodeDx1 * nodeDx1 + nodeDx2 * nodeDx2 + nodeDx3 * nodeDx3);
@@ -593,6 +595,8 @@ void D3Q27TriFaceMeshInteractor::setQs(const double &timeStep)
 //  2. fuer markiertre Bloecke wird ein rekursiver Fuellalgorithmus durchgefuehrt
 void D3Q27TriFaceMeshInteractor::initInteractor2(const double &timeStep)
 {
+    using namespace vf::lbm::dir;
+
     UBLOGML(logDEBUG1, "\nLBMTriFaceMeshInteractor - initInteractor start ");
     if (!this->grid.lock())
         throw UbException(UB_EXARGS, "ups, no grid.lock()!!");
@@ -880,9 +884,9 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double &timeStep)
                 std::set<std::vector<int>> &solidsFromOtherInteractors = tmpSolidNodesFromOtherInteractors[block];
                 double q, internX1, internX2, internX3, distance;
 
-                double &nodeDx1 = nodeDeltaToNeigh[level][D3Q27System::DIR_P00];
-                double &nodeDx2 = nodeDeltaToNeigh[level][D3Q27System::DIR_0P0];
-                double &nodeDx3 = nodeDeltaToNeigh[level][D3Q27System::DIR_00P];
+                double &nodeDx1 = nodeDeltaToNeigh[level][DIR_P00];
+                double &nodeDx2 = nodeDeltaToNeigh[level][DIR_0P0];
+                double &nodeDx3 = nodeDeltaToNeigh[level][DIR_00P];
 
                 // fuer OBB-Test
                 double qEinflussDelta = 1.1 * sqrt(nodeDx1 * nodeDx1 + nodeDx2 * nodeDx2 + nodeDx3 * nodeDx3);
@@ -1181,9 +1185,9 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double &timeStep)
 
                 std::set<UbTupleInt3> &solidNodeIndices = this->solidNodeIndicesMap[block];
 
-                float nodeDeltaX1 = (float)nodeDeltaToNeigh[level][D3Q27System::DIR_P00];
-                float nodeDeltaX2 = (float)nodeDeltaToNeigh[level][D3Q27System::DIR_0P0];
-                float nodeDeltaX3 = (float)nodeDeltaToNeigh[level][D3Q27System::DIR_00P];
+                float nodeDeltaX1 = (float)nodeDeltaToNeigh[level][DIR_P00];
+                float nodeDeltaX2 = (float)nodeDeltaToNeigh[level][DIR_0P0];
+                float nodeDeltaX3 = (float)nodeDeltaToNeigh[level][DIR_00P];
 
                 // flagfield matrix initialisieren
                 CbArray3D<FLAGS> flagField(blocknx1, blocknx2, blocknx3, UNDEF_FLAG);

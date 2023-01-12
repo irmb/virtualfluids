@@ -72,7 +72,8 @@ void ThixotropyDensityBCAlgorithm::addDistributionsH(SPtr<DistributionArray3D> d
 //////////////////////////////////////////////////////////////////////////
 void ThixotropyDensityBCAlgorithm::applyBC()
 {
-   using namespace D3Q27System;
+	using namespace vf::lbm::dir;
+    using namespace D3Q27System;
 
 	LBMReal f[D3Q27System::ENDF + 1];
 	LBMReal feq[D3Q27System::ENDF + 1];
@@ -95,12 +96,12 @@ void ThixotropyDensityBCAlgorithm::applyBC()
 	int nx3 = x3;
 
 	//flag points in direction of fluid
-	if (bcPtr->hasDensityBoundaryFlag(D3Q27System::DIR_P00)) { nx1 -= 1; }
-	else if (bcPtr->hasDensityBoundaryFlag(D3Q27System::DIR_M00)) { nx1 += 1; }
-	else if (bcPtr->hasDensityBoundaryFlag(D3Q27System::DIR_0P0)) { nx2 -= 1; }
-	else if (bcPtr->hasDensityBoundaryFlag(D3Q27System::DIR_0M0)) { nx2 += 1; }
-	else if (bcPtr->hasDensityBoundaryFlag(D3Q27System::DIR_00P)) { nx3 -= 1; }
-	else if (bcPtr->hasDensityBoundaryFlag(D3Q27System::DIR_00M)) { nx3 += 1; }
+	if (bcPtr->hasDensityBoundaryFlag(DIR_P00)) { nx1 -= 1; }
+	else if (bcPtr->hasDensityBoundaryFlag(DIR_M00)) { nx1 += 1; }
+	else if (bcPtr->hasDensityBoundaryFlag(DIR_0P0)) { nx2 -= 1; }
+	else if (bcPtr->hasDensityBoundaryFlag(DIR_0M0)) { nx2 += 1; }
+	else if (bcPtr->hasDensityBoundaryFlag(DIR_00P)) { nx3 -= 1; }
+	else if (bcPtr->hasDensityBoundaryFlag(DIR_00M)) { nx3 += 1; }
 	else	 UB_THROW(UbException(UB_EXARGS, "Danger...no orthogonal BC-Flag on density boundary..."));
 
 	LBMReal rhoBC = bcPtr->getBoundaryDensity();

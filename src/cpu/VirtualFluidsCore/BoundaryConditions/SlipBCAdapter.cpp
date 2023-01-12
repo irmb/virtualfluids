@@ -49,6 +49,8 @@
 void SlipBCAdapter::adaptBC(const D3Q27Interactor &interactor, SPtr<BoundaryConditions> bc, const double & /*worldX1*/,
                             const double & /*worldX2*/, const double & /*worldX3*/, const double & /*time*/)
 {
+    using namespace vf::lbm::dir;
+
     //////////////////////////////////////////////////////////////////////////
     //>>> nur workaround! -> Hendrick nach normalen berechnung aus qs fragen
 
@@ -56,17 +58,17 @@ void SlipBCAdapter::adaptBC(const D3Q27Interactor &interactor, SPtr<BoundaryCond
     if (!geo)
         throw UbException(UB_EXARGS, "derzeit nur fuer Cubes valide");
 
-    if (bc->hasSlipBoundaryFlag(D3Q27System::DIR_P00))
+    if (bc->hasSlipBoundaryFlag(DIR_P00))
         bc->setNormalVector(1.0, 0.0, 0.0);
-    else if (bc->hasSlipBoundaryFlag(D3Q27System::DIR_M00))
+    else if (bc->hasSlipBoundaryFlag(DIR_M00))
         bc->setNormalVector(-1.0, 0.0, 0.0);
-    else if (bc->hasSlipBoundaryFlag(D3Q27System::DIR_0P0))
+    else if (bc->hasSlipBoundaryFlag(DIR_0P0))
         bc->setNormalVector(0.0, 1.0, 0.0);
-    else if (bc->hasSlipBoundaryFlag(D3Q27System::DIR_0M0))
+    else if (bc->hasSlipBoundaryFlag(DIR_0M0))
         bc->setNormalVector(0.0, -1.0, 0.0);
-    else if (bc->hasSlipBoundaryFlag(D3Q27System::DIR_00P))
+    else if (bc->hasSlipBoundaryFlag(DIR_00P))
         bc->setNormalVector(0.0, 0.0, 1.0);
-    else if (bc->hasSlipBoundaryFlag(D3Q27System::DIR_00M))
+    else if (bc->hasSlipBoundaryFlag(DIR_00M))
         bc->setNormalVector(0.0, 0.0, -1.0);
 
     bc->setBcAlgorithmType(algorithmType);

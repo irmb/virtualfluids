@@ -69,7 +69,9 @@ void ThixotropyNonReflectingOutflowBCAlgorithm::addDistributionsH(SPtr<Distribut
 //////////////////////////////////////////////////////////////////////////
 void ThixotropyNonReflectingOutflowBCAlgorithm::applyBC()
 {
+   using namespace vf::lbm::dir;
    using namespace D3Q27System;
+
    LBMReal f[ENDF + 1];
    LBMReal ftemp[ENDF + 1];
 

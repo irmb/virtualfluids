@@ -148,6 +148,8 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 {
     using namespace D3Q27System;
     using namespace UbMath;
+    using namespace vf::lbm::dir;
+
     SPtr<LBMKernel> kernel = dynamicPointerCast<LBMKernel>(block->getKernel());
     //double level   = (double)block->getLevel();
 
@@ -502,6 +504,8 @@ LBMReal WriteMultiphaseQuantitiesCoProcessor::gradX3_phi(const LBMReal *const &h
 
 LBMReal WriteMultiphaseQuantitiesCoProcessor::nabla2_phi(const LBMReal *const &h)
 {
+    using namespace vf::lbm::dir;
+
     using namespace D3Q27System;
     LBMReal sum = 0.0;
     for (int k = FSTARTDIR; k <= FENDDIR; k++) {

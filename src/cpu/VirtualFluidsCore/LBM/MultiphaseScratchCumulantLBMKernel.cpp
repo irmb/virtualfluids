@@ -129,6 +129,7 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 {
     using namespace D3Q27System;
     using namespace UbMath;
+	using namespace vf::lbm::dir;
 
     forcingX1 = 0.0;
     forcingX2 = 0.0;
@@ -2920,7 +2921,9 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 
 LBMReal MultiphaseScratchCumulantLBMKernel::gradX1_phi()
 {
+	using namespace vf::lbm::dir;
     using namespace D3Q27System;
+
 	return 3.0* ((WEIGTH[DIR_PPP] * (((phi[DIR_PPP] - phi[DIR_MMM]) + (phi[DIR_PMM] - phi[DIR_MPP])) + ((phi[DIR_PMP] - phi[DIR_MPM]) + (phi[DIR_PPM] - phi[DIR_MMP])))
 		+ WEIGTH[DIR_PP0] * (((phi[DIR_P0P] - phi[DIR_M0M]) + (phi[DIR_P0M] - phi[DIR_M0P])) + ((phi[DIR_PM0] - phi[DIR_MP0]) + (phi[DIR_PP0] - phi[DIR_MM0])))) +
 		+WEIGTH[DIR_0P0] * (phi[DIR_P00] - phi[DIR_M00]));
@@ -2933,7 +2936,9 @@ LBMReal MultiphaseScratchCumulantLBMKernel::gradX1_phi()
 
 LBMReal MultiphaseScratchCumulantLBMKernel::gradX2_phi()
 {
+	using namespace vf::lbm::dir;
     using namespace D3Q27System;
+
 	return 3.0 * ((WEIGTH[DIR_PPP] * (((phi[DIR_PPP] - phi[DIR_MMM]) - (phi[DIR_PMM] - phi[DIR_MPP])) + ((phi[DIR_PPM] - phi[DIR_MMP])- (phi[DIR_PMP] - phi[DIR_MPM])))
 		+ WEIGTH[DIR_PP0] * (((phi[DIR_0PP] - phi[DIR_0MM]) + (phi[DIR_0PM] - phi[DIR_0MP])) + ((phi[DIR_PP0] - phi[DIR_MM0])- (phi[DIR_PM0] - phi[DIR_MP0])))) +
 		+WEIGTH[DIR_0P0] * (phi[DIR_0P0] - phi[DIR_0M0]));
@@ -2946,7 +2951,9 @@ LBMReal MultiphaseScratchCumulantLBMKernel::gradX2_phi()
 
 LBMReal MultiphaseScratchCumulantLBMKernel::gradX3_phi()
 {
-    using namespace D3Q27System;
+	using namespace vf::lbm::dir;
+	using namespace D3Q27System;
+
 	return 3.0 * ((WEIGTH[DIR_PPP] * (((phi[DIR_PPP] - phi[DIR_MMM]) - (phi[DIR_PMM] - phi[DIR_MPP])) + ((phi[DIR_PMP] - phi[DIR_MPM]) - (phi[DIR_PPM] - phi[DIR_MMP])))
 		+ WEIGTH[DIR_PP0] * (((phi[DIR_P0P] - phi[DIR_M0M]) - (phi[DIR_P0M] - phi[DIR_M0P])) + ((phi[DIR_0MP] - phi[DIR_0PM]) + (phi[DIR_0PP] - phi[DIR_0MM])))) +
 		+WEIGTH[DIR_0P0] * (phi[DIR_00P] - phi[DIR_00M]));
@@ -2960,6 +2967,8 @@ LBMReal MultiphaseScratchCumulantLBMKernel::gradX3_phi()
 LBMReal MultiphaseScratchCumulantLBMKernel::nabla2_phi()
 {
     using namespace D3Q27System;
+	using namespace vf::lbm::dir;
+
     LBMReal sum = 0.0;
 	sum += WEIGTH[DIR_PPP] * ((((phi[DIR_PPP] - phi[DIR_000]) + (phi[DIR_MMM] - phi[DIR_000])) + ((phi[DIR_MMP] - phi[DIR_000]) + (phi[DIR_PPM] - phi[DIR_000])))
 		+ (((phi[DIR_MPP] - phi[DIR_000]) + (phi[DIR_PMM] - phi[DIR_000])) + ((phi[DIR_PMP] - phi[DIR_000]) + (phi[DIR_MPM] - phi[DIR_000]))));
@@ -2982,6 +2991,8 @@ LBMReal MultiphaseScratchCumulantLBMKernel::nabla2_phi()
 void MultiphaseScratchCumulantLBMKernel::computePhasefield()
 {
     using namespace D3Q27System;
+	using namespace vf::lbm::dir;
+
     SPtr<DistributionArray3D> distributionsH = dataSet->getHdistributions();
 
     int minX1 = ghostLayerWidth;
@@ -3040,6 +3051,7 @@ void MultiphaseScratchCumulantLBMKernel::findNeighbors(CbArray3D<LBMReal, Indexe
                                                 int x3)
 {
     using namespace D3Q27System;
+	using namespace vf::lbm::dir;
 
     SPtr<BCArray3D> bcArray = this->getBCProcessor()->getBCArray();
 

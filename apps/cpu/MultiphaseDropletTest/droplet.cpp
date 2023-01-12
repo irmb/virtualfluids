@@ -13,6 +13,8 @@ using namespace std;
 
 void run(string configname)
 {
+    using namespace vf::lbm::dir;
+
     try {
         vf::basics::ConfigurationFile config;
         config.load(configname);
@@ -187,7 +189,7 @@ void run(string configname)
         grid->setPeriodicX3(true);
         grid->setGhostLayerWidth(2);
 
-        SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::DIR_MMM, MetisPartitioner::RECURSIVE));
+        SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, DIR_MMM, MetisPartitioner::RECURSIVE));
 
         //////////////////////////////////////////////////////////////////////////
         // restart

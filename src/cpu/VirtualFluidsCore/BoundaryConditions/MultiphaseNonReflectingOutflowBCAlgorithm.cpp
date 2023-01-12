@@ -71,6 +71,8 @@ void MultiphaseNonReflectingOutflowBCAlgorithm::applyBC()
 {
     using namespace D3Q27System;
     using namespace UbMath;
+    using namespace vf::lbm::dir;
+
     LBMReal f[ENDF + 1];
     LBMReal ftemp[ENDF + 1];
     LBMReal h[D3Q27System::ENDF + 1];

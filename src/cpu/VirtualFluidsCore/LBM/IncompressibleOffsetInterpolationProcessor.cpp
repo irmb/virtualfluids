@@ -60,9 +60,10 @@ void IncompressibleOffsetInterpolationProcessor::calcMoments(const LBMReal* cons
                                                     LBMReal& kxy, LBMReal& kyz, LBMReal& kxz, LBMReal& kxxMyy, LBMReal& kxxMzz)
 {
    using namespace D3Q27System;
+   using namespace vf::lbm::dir;
 
    //UBLOG(logINFO,"D3Q27System::DIR_M0M  = " << D3Q27System::DIR_M0M);
-   //UBLOG(logINFO,"BW  = " << BW);
+   //UBLOG(logINFO,"BW  = " << BW);;
 
    LBMReal rho = 0.0;
    D3Q27System::calcIncompMacroscopicValues(f,rho,vx1,vx2,vx3);
@@ -85,7 +86,7 @@ void IncompressibleOffsetInterpolationProcessor::calcMoments(const LBMReal* cons
    kxy   = -3.*omega*((((f[DIR_MMP]+f[DIR_PPM])-(f[DIR_MPP]+f[DIR_PMM]))+((f[DIR_MMM]+f[DIR_PPP])-(f[DIR_MPM]+f[DIR_PMP])))+((f[DIR_MM0]+f[DIR_PP0])-(f[DIR_MP0]+f[DIR_PM0]))-(vx1*vx2));// might not be optimal MG 25.2.13
    kyz   = -3.*omega*((((f[DIR_MMM]+f[DIR_PPP])-(f[DIR_PMP]+f[DIR_MPM]))+((f[DIR_PMM]+f[DIR_MPP])-(f[DIR_MMP]+f[DIR_PPM])))+((f[DIR_0MM]+f[DIR_0PP])-(f[DIR_0MP]+f[DIR_0PM]))-(vx2*vx3));
    kxz   = -3.*omega*((((f[DIR_MPM]+f[DIR_PMP])-(f[DIR_MMP]+f[DIR_PPM]))+((f[DIR_MMM]+f[DIR_PPP])-(f[DIR_PMM]+f[DIR_MPP])))+((f[DIR_M0M]+f[DIR_P0P])-(f[DIR_M0P]+f[DIR_P0M]))-(vx1*vx3));
-   kxxMyy = -3./2.*omega*((((f[D3Q27System::DIR_M0M]+f[DIR_P0P])-(f[DIR_0MM]+f[DIR_0PP]))+((f[DIR_M0P]+f[DIR_P0M])-(f[DIR_0MP]+f[DIR_0PM])))+((f[DIR_M00]+f[DIR_P00])-(f[DIR_0M0]+f[DIR_0P0]))-(vx1*vx1-vx2*vx2));
+   kxxMyy = -3./2.*omega*((((f[DIR_M0M]+f[DIR_P0P])-(f[DIR_0MM]+f[DIR_0PP]))+((f[DIR_M0P]+f[DIR_P0M])-(f[DIR_0MP]+f[DIR_0PM])))+((f[DIR_M00]+f[DIR_P00])-(f[DIR_0M0]+f[DIR_0P0]))-(vx1*vx1-vx2*vx2));
    kxxMzz = -3./2.*omega*((((f[DIR_MP0]+f[DIR_PM0])-(f[DIR_0MM]+f[DIR_0PP]))+((f[DIR_MM0]+f[DIR_PP0])-(f[DIR_0MP]+f[DIR_0PM])))+((f[DIR_M00]+f[DIR_P00])-(f[DIR_00M]+f[DIR_00P]))-(vx1*vx1-vx3*vx3));
    //kxxMzz = -3./2.*omega*(((((f[NW]+f[SE])-(f[BS]+f[TN]))+((f[SW]+f[NE])-(f[17]+f[BN])))+((f[W]+f[DIR_P00])-(f[B]+f[T])))-(vx1*vx1-vx3*vx3));
 
@@ -529,6 +530,7 @@ void IncompressibleOffsetInterpolationProcessor::calcInterpolatedCoefficiets(con
 void IncompressibleOffsetInterpolationProcessor::calcInterpolatedNode(LBMReal* f, LBMReal  /*omega*/, LBMReal  /*x*/, LBMReal  /*y*/, LBMReal  /*z*/, LBMReal press, LBMReal xs, LBMReal ys, LBMReal zs)
 {
    using namespace D3Q27System;
+   using namespace vf::lbm::dir;
 
    LBMReal rho  = press ;//+ (2.*axx*x+axy*y+axz*z+axyz*y*z+ax + 2.*byy*y+bxy*x+byz*z+bxyz*x*z+by + 2.*czz*z+cxz*x+cyz*y+cxyz*x*y+cz)/3.;
    LBMReal vx1  = a0 + 0.25*( xs*ax + ys*ay + zs*az) + 0.0625*(axx + xs*ys*axy + xs*zs*axz + ayy + ys*zs*ayz + azz) + 0.015625*(xs*ys*zs*axyz);
@@ -680,6 +682,7 @@ LBMReal IncompressibleOffsetInterpolationProcessor::calcPressBNE()
 void IncompressibleOffsetInterpolationProcessor::calcInterpolatedNodeFC(LBMReal* f, LBMReal omega)
 {
    using namespace D3Q27System;
+   using namespace vf::lbm::dir;
 
    LBMReal press  =  press_NET * (0.125 - 0.25 * xoff - 0.25 * yoff - 0.25 * zoff) +
       press_NWT * (0.125 + 0.25 * xoff - 0.25 * yoff - 0.25 * zoff) +

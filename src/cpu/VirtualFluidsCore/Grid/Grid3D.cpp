@@ -631,8 +631,9 @@ SPtr<Block3D> Grid3D::getNeighborBlock(int dir, SPtr<Block3D> block) const
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getAllNeighbors(int ix1, int ix2, int ix3, int level, int levelDepth, std::vector<SPtr<Block3D>> &blocks)
 {
-    for (int dir = D3Q27System::STARTDIR; dir <= D3Q27System::ENDDIR; dir++)
-    {
+   // for (int dir = D3Q27System::STARTDIR; dir <= D3Q27System::ENDDIR; dir++)FSTARTDIR
+   for (int dir = D3Q27System::FSTARTDIR; dir <= D3Q27System::FENDDIR; dir++)
+   {
         this->getNeighborBlocksForDirection(dir, ix1, ix2, ix3, level, levelDepth, blocks);
     }
 }
@@ -1098,83 +1099,85 @@ void Grid3D::getNeighborsBottomSouthWest(int ix1, int ix2, int ix3, int level, i
 void Grid3D::getNeighborBlocksForDirection(int dir, int ix1, int ix2, int ix3, int level, int levelDepth,
                                            std::vector<SPtr<Block3D>> &blocks)
 {
+    using namespace vf::lbm::dir;
+
     switch (dir) {
-        case D3Q27System::DIR_P00:
+        case DIR_P00:
             this->getNeighborsEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_M00:
+        case DIR_M00:
             this->getNeighborsWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_0P0:
+        case DIR_0P0:
             this->getNeighborsNorth(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_0M0:
+        case DIR_0M0:
             this->getNeighborsSouth(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_00P:
+        case DIR_00P:
             this->getNeighborsTop(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_00M:
+        case DIR_00M:
             this->getNeighborsBottom(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_PP0:
+        case DIR_PP0:
             this->getNeighborsNorthEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_MM0:
+        case DIR_MM0:
             this->getNeighborsSouthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_PM0:
+        case DIR_PM0:
             this->getNeighborsSouthEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_MP0:
+        case DIR_MP0:
             this->getNeighborsNorthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_P0P:
+        case DIR_P0P:
             this->getNeighborsTopEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_M0M:
+        case DIR_M0M:
             this->getNeighborsBottomWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_P0M:
+        case DIR_P0M:
             this->getNeighborsBottomEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_M0P:
+        case DIR_M0P:
             this->getNeighborsTopWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_0PP:
+        case DIR_0PP:
             this->getNeighborsTopNorth(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_0MM:
+        case DIR_0MM:
             this->getNeighborsBottomSouth(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_0PM:
+        case DIR_0PM:
             this->getNeighborsBottomNorth(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_0MP:
+        case DIR_0MP:
             this->getNeighborsTopSouth(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_PPP:
+        case DIR_PPP:
             this->getNeighborsTopNorthEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_MPP:
+        case DIR_MPP:
             this->getNeighborsTopNorthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_PMP:
+        case DIR_PMP:
             this->getNeighborsTopSouthEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_MMP:
+        case DIR_MMP:
             this->getNeighborsTopSouthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_PPM:
+        case DIR_PPM:
             this->getNeighborsBottomNorthEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_MPM:
+        case DIR_MPM:
             this->getNeighborsBottomNorthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_PMM:
+        case DIR_PMM:
             this->getNeighborsBottomSouthEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_MMM:
+        case DIR_MMM:
             this->getNeighborsBottomSouthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
         default:
@@ -1261,86 +1264,88 @@ void Grid3D::getSubBlocksZero(int ix1, int ix2, int ix3, int level, vector<SPtr<
 void Grid3D::getNeighborBlocksForDirectionWithREST(int dir, int ix1, int ix2, int ix3, int level, int levelDepth,
                                                       std::vector<SPtr<Block3D>> &blocks)
 {
+    using namespace vf::lbm::dir;
+
     switch (dir) {
-        case D3Q27System::DIR_P00:
+        case DIR_P00:
             this->getNeighborsEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_M00:
+        case DIR_M00:
             this->getNeighborsWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_0P0:
+        case DIR_0P0:
             this->getNeighborsNorth(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_0M0:
+        case DIR_0M0:
             this->getNeighborsSouth(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_00P:
+        case DIR_00P:
             this->getNeighborsTop(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_00M:
+        case DIR_00M:
             this->getNeighborsBottom(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_PP0:
+        case DIR_PP0:
             this->getNeighborsNorthEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_MM0:
+        case DIR_MM0:
             this->getNeighborsSouthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_PM0:
+        case DIR_PM0:
             this->getNeighborsSouthEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_MP0:
+        case DIR_MP0:
             this->getNeighborsNorthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_P0P:
+        case DIR_P0P:
             this->getNeighborsTopEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_M0M:
+        case DIR_M0M:
             this->getNeighborsBottomWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_P0M:
+        case DIR_P0M:
             this->getNeighborsBottomEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_M0P:
+        case DIR_M0P:
             this->getNeighborsTopWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_0PP:
+        case DIR_0PP:
             this->getNeighborsTopNorth(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_0MM:
+        case DIR_0MM:
             this->getNeighborsBottomSouth(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_0PM:
+        case DIR_0PM:
             this->getNeighborsBottomNorth(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_0MP:
+        case DIR_0MP:
             this->getNeighborsTopSouth(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_PPP:
+        case DIR_PPP:
             this->getNeighborsTopNorthEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_MPP:
+        case DIR_MPP:
             this->getNeighborsTopNorthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_PMP:
+        case DIR_PMP:
             this->getNeighborsTopSouthEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_MMP:
+        case DIR_MMP:
             this->getNeighborsTopSouthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_PPM:
+        case DIR_PPM:
             this->getNeighborsBottomNorthEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_MPM:
+        case DIR_MPM:
             this->getNeighborsBottomNorthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_PMM:
+        case DIR_PMM:
             this->getNeighborsBottomSouthEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_MMM:
+        case DIR_MMM:
             this->getNeighborsBottomSouthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case D3Q27System::DIR_000:
+        case DIR_000:
             this->getNeighborsZero(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
         default:

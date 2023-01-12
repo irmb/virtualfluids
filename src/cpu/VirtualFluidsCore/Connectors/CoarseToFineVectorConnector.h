@@ -156,15 +156,17 @@ CoarseToFineVectorConnector<VectorTransmitter>::CoarseToFineVectorConnector(
       receiverEvenOddNW(receiverEvenOddNW), receiverOddEvenSE(receiverOddEvenSE), receiverOddOddNE(receiverOddOddNE),
       iprocessor(iprocessor)
 {
-    if (!(sendDir == D3Q27System::DIR_P00 || sendDir == D3Q27System::DIR_M00 || sendDir == D3Q27System::DIR_0P0 ||
-          sendDir == D3Q27System::DIR_0M0 || sendDir == D3Q27System::DIR_00P || sendDir == D3Q27System::DIR_00M ||
-          sendDir == D3Q27System::DIR_PP0 || sendDir == D3Q27System::DIR_MM0 || sendDir == D3Q27System::DIR_PM0 ||
-          sendDir == D3Q27System::DIR_MP0 || sendDir == D3Q27System::DIR_P0P || sendDir == D3Q27System::DIR_M0M ||
-          sendDir == D3Q27System::DIR_P0M || sendDir == D3Q27System::DIR_M0P || sendDir == D3Q27System::DIR_0PP ||
-          sendDir == D3Q27System::DIR_0MM || sendDir == D3Q27System::DIR_0PM || sendDir == D3Q27System::DIR_0MP ||
-          sendDir == D3Q27System::DIR_PPP || sendDir == D3Q27System::DIR_MPP || sendDir == D3Q27System::DIR_PMP ||
-          sendDir == D3Q27System::DIR_MMP || sendDir == D3Q27System::DIR_PPM || sendDir == D3Q27System::DIR_MPM ||
-          sendDir == D3Q27System::DIR_PMM || sendDir == D3Q27System::DIR_MMM)) {
+    using namespace vf::lbm::dir;
+
+    if (!(sendDir == DIR_P00 || sendDir == DIR_M00 || sendDir == DIR_0P0 ||
+          sendDir == DIR_0M0 || sendDir == DIR_00P || sendDir == DIR_00M ||
+          sendDir == DIR_PP0 || sendDir == DIR_MM0 || sendDir == DIR_PM0 ||
+          sendDir == DIR_MP0 || sendDir == DIR_P0P || sendDir == DIR_M0M ||
+          sendDir == DIR_P0M || sendDir == DIR_M0P || sendDir == DIR_0PP ||
+          sendDir == DIR_0MM || sendDir == DIR_0PM || sendDir == DIR_0MP ||
+          sendDir == DIR_PPP || sendDir == DIR_MPP || sendDir == DIR_PMP ||
+          sendDir == DIR_MMP || sendDir == DIR_PPM || sendDir == DIR_MPM ||
+          sendDir == DIR_PMM || sendDir == DIR_MMM)) {
         throw UbException(UB_EXARGS, "invalid constructor for this direction");
     }
 }
@@ -298,6 +300,7 @@ template <typename VectorTransmitter>
 void CoarseToFineVectorConnector<VectorTransmitter>::init()
 {
     using namespace D3Q27System;
+    using namespace vf::lbm::dir;
 
     bMaxX1 = (int)block.lock()->getKernel()->getDataSet()->getFdistributions()->getNX1();
     bMaxX2 = (int)block.lock()->getKernel()->getDataSet()->getFdistributions()->getNX2();
@@ -386,6 +389,7 @@ template <typename VectorTransmitter>
 void CoarseToFineVectorConnector<VectorTransmitter>::fillSendVectors()
 {
     using namespace D3Q27System;
+    using namespace vf::lbm::dir;
 
     SPtr<DistributionArray3D> fFrom = block.lock()->getKernel()->getDataSet()->getFdistributions();
     int maxX1                       = (int)fFrom->getNX1();
@@ -889,6 +893,7 @@ template <typename VectorTransmitter>
 void CoarseToFineVectorConnector<VectorTransmitter>::distributeReceiveVectors()
 {
     using namespace D3Q27System;
+    using namespace vf::lbm::dir;
 
     SPtr<DistributionArray3D> fTo = block.lock()->getKernel()->getDataSet()->getFdistributions();
     int maxX1                     = (int)fTo->getNX1();
@@ -1627,6 +1632,8 @@ void CoarseToFineVectorConnector<VectorTransmitter>::getLocalMinMax(int &minX1, 
                                                                     int &maxX2, int &maxX3)
 {
     using namespace D3Q27System;
+    using namespace vf::lbm::dir;
+
     int TminX1 = minX1;
     int TminX2 = minX2;
     int TminX3 = minX3;
@@ -1767,6 +1774,8 @@ void CoarseToFineVectorConnector<VectorTransmitter>::getLocalMinMax(int &minX1, 
                                                                     CFconnectorType /*connType*/)
 {
     using namespace D3Q27System;
+    using namespace vf::lbm::dir;
+
     int TminX1 = minX1;
     int TminX2 = minX2;
     int TminX3 = minX3;
@@ -1923,6 +1932,8 @@ void CoarseToFineVectorConnector<VectorTransmitter>::findCFnodes()
     int lMinX1, lMinX2, lMinX3, lMaxX1, lMaxX2, lMaxX3;
 
     using namespace D3Q27System;
+    using namespace vf::lbm::dir;
+
     if (block.lock()->hasInterpolationFlagCF(DIR_M00)) {
         lMinX1 = 1;
         lMaxX1 = lMinX1 + 1;

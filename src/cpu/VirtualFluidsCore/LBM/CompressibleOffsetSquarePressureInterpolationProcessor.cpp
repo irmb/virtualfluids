@@ -79,6 +79,7 @@ void CompressibleOffsetSquarePressureInterpolationProcessor::calcMoments(const L
                                                     LBMReal& kxy, LBMReal& kyz, LBMReal& kxz, LBMReal& kxxMyy, LBMReal& kxxMzz)
 {
    using namespace D3Q27System;
+   using namespace vf::lbm::dir;
 
    LBMReal drho = 0.0;
    D3Q27System::calcCompMacroscopicValues(f,drho,vx1,vx2,vx3);
@@ -476,6 +477,7 @@ void CompressibleOffsetSquarePressureInterpolationProcessor::calcInterpolatedCoe
 void CompressibleOffsetSquarePressureInterpolationProcessor::calcInterpolatedNodeCF(LBMReal* f, LBMReal omega, LBMReal x, LBMReal y, LBMReal z, LBMReal press, LBMReal xs, LBMReal ys, LBMReal zs)
 {
    using namespace D3Q27System;
+   using namespace vf::lbm::dir;
 
    LBMReal eps_new = 0.5;
    LBMReal o = omega;
@@ -917,6 +919,7 @@ LBMReal CompressibleOffsetSquarePressureInterpolationProcessor::calcPressBNE()
 void CompressibleOffsetSquarePressureInterpolationProcessor::calcInterpolatedNodeFC(LBMReal* f, LBMReal omega)
 {
    using namespace D3Q27System;
+   using namespace vf::lbm::dir;
 
    LBMReal press  =  press_NET * (0.125 - 0.25 * xoff - 0.25 * yoff - 0.25 * zoff) +
       press_NWT * (0.125 + 0.25 * xoff - 0.25 * yoff - 0.25 * zoff) +

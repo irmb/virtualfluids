@@ -111,6 +111,7 @@ void RheologyInterpolationProcessor::interpolateFineToCoarse(D3Q27ICell& icellF,
 void RheologyInterpolationProcessor::calcMoments(const LBMReal* const f, LBMReal omegaInf, LBMReal& press, LBMReal& vx1, LBMReal& vx2, LBMReal& vx3, LBMReal& kxy, LBMReal& kyz, LBMReal& kxz, LBMReal& kxxMyy, LBMReal& kxxMzz)
 {
    using namespace D3Q27System;
+   using namespace vf::lbm::dir;
 
    rho = 0.0;
    D3Q27System::calcIncompMacroscopicValues(f,rho,vx1,vx2,vx3);
@@ -124,7 +125,7 @@ void RheologyInterpolationProcessor::calcMoments(const LBMReal* const f, LBMReal
    kxy   = -3.*omega*((((f[DIR_MMP]+f[DIR_PPM])-(f[DIR_MPP]+f[DIR_PMM]))+((f[DIR_MMM]+f[DIR_PPP])-(f[DIR_MPM]+f[DIR_PMP])))+((f[DIR_MM0]+f[DIR_PP0])-(f[DIR_MP0]+f[DIR_PM0]))-(vx1*vx2));// might not be optimal MG 25.2.13
    kyz   = -3.*omega*((((f[DIR_MMM]+f[DIR_PPP])-(f[DIR_PMP]+f[DIR_MPM]))+((f[DIR_PMM]+f[DIR_MPP])-(f[DIR_MMP]+f[DIR_PPM])))+((f[DIR_0MM]+f[DIR_0PP])-(f[DIR_0MP]+f[DIR_0PM]))-(vx2*vx3));
    kxz   = -3.*omega*((((f[DIR_MPM]+f[DIR_PMP])-(f[DIR_MMP]+f[DIR_PPM]))+((f[DIR_MMM]+f[DIR_PPP])-(f[DIR_PMM]+f[DIR_MPP])))+((f[DIR_M0M]+f[DIR_P0P])-(f[DIR_M0P]+f[DIR_P0M]))-(vx1*vx3));
-   kxxMyy = -3./2.*omega*((((f[D3Q27System::DIR_M0M]+f[DIR_P0P])-(f[DIR_0MM]+f[DIR_0PP]))+((f[DIR_M0P]+f[DIR_P0M])-(f[DIR_0MP]+f[DIR_0PM])))+((f[DIR_M00]+f[DIR_P00])-(f[DIR_0M0]+f[DIR_0P0]))-(vx1*vx1-vx2*vx2));
+   kxxMyy = -3./2.*omega*((((f[DIR_M0M]+f[DIR_P0P])-(f[DIR_0MM]+f[DIR_0PP]))+((f[DIR_M0P]+f[DIR_P0M])-(f[DIR_0MP]+f[DIR_0PM])))+((f[DIR_M00]+f[DIR_P00])-(f[DIR_0M0]+f[DIR_0P0]))-(vx1*vx1-vx2*vx2));
    kxxMzz = -3./2.*omega*((((f[DIR_MP0]+f[DIR_PM0])-(f[DIR_0MM]+f[DIR_0PP]))+((f[DIR_MM0]+f[DIR_PP0])-(f[DIR_0MP]+f[DIR_0PM])))+((f[DIR_M00]+f[DIR_P00])-(f[DIR_00M]+f[DIR_00P]))-(vx1*vx1-vx3*vx3));
 }
 //////////////////////////////////////////////////////////////////////////
@@ -434,6 +435,7 @@ void RheologyInterpolationProcessor::calcInterpolatedCoefficiets_intern(const D3
 void RheologyInterpolationProcessor::calcInterpolatedNode(LBMReal* f, /*LBMReal omega,*/ LBMReal x, LBMReal y, LBMReal z, LBMReal press, LBMReal xs, LBMReal ys, LBMReal zs)
 {
    using namespace D3Q27System;
+   using namespace vf::lbm::dir;
 
    LBMReal rho  = press ;
    LBMReal vx1  = a0 + 0.25*( xs*ax + ys*ay + zs*az) + 0.0625*(axx + xs*ys*axy + xs*zs*axz + ayy + ys*zs*ayz + azz) + 0.015625*(xs*ys*zs*axyz);
@@ -580,6 +582,7 @@ LBMReal RheologyInterpolationProcessor::calcPressBNE()
 void RheologyInterpolationProcessor::calcInterpolatedNodeFC(LBMReal* f, LBMReal omega)
 {
    using namespace D3Q27System;
+   using namespace vf::lbm::dir;
 
    LBMReal press  =  press_NET * (0.125 - 0.25 * xoff - 0.25 * yoff - 0.25 * zoff) +
       press_NWT * (0.125 + 0.25 * xoff - 0.25 * yoff - 0.25 * zoff) +

@@ -181,6 +181,7 @@ void TurbulenceIntensityCoProcessor::addData(const SPtr<Block3D> block)
 //////////////////////////////////////////////////////////////////////////
 void TurbulenceIntensityCoProcessor::calculateAverageValues(double timeStep)
 {
+    using namespace vf::lbm::dir;
     using namespace D3Q27System;
 
     int minInitLevel = this->grid->getCoarsestInitializedLevel();

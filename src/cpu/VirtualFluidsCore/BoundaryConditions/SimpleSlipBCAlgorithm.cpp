@@ -58,6 +58,8 @@ void SimpleSlipBCAlgorithm::addDistributions(SPtr<DistributionArray3D> distribut
 //////////////////////////////////////////////////////////////////////////
 void SimpleSlipBCAlgorithm::applyBC()
 {
+    using namespace vf::lbm::dir;
+
    LBMReal f[D3Q27System::ENDF+1];
    LBMReal feq[D3Q27System::ENDF+1];
    distributions->getDistributionInv(f, x1, x2, x3);
@@ -83,32 +85,32 @@ void SimpleSlipBCAlgorithm::applyBC()
          LBMReal velocity = 0.0;
          switch (invDir)
          {
-         case D3Q27System::DIR_P00: velocity = (UbMath::c4o9*(+vx1)); break;      //(2/cs^2)(=6)*rho_0(=1 bei imkompr)*wi*u*ei mit cs=1/sqrt(3)
-         case D3Q27System::DIR_M00: velocity = (UbMath::c4o9*(-vx1)); break;      //z.B. aus paper manfred MRT LB models in three dimensions (2002)   
-         case D3Q27System::DIR_0P0: velocity = (UbMath::c4o9*(+vx2)); break;
-         case D3Q27System::DIR_0M0: velocity = (UbMath::c4o9*(-vx2)); break;
-         case D3Q27System::DIR_00P: velocity = (UbMath::c4o9*(+vx3)); break;
-         case D3Q27System::DIR_00M: velocity = (UbMath::c4o9*(-vx3)); break;
-         case D3Q27System::DIR_PP0: velocity = (UbMath::c1o9*(+vx1+vx2)); break;
-         case D3Q27System::DIR_MM0: velocity = (UbMath::c1o9*(-vx1-vx2)); break;
-         case D3Q27System::DIR_PM0: velocity = (UbMath::c1o9*(+vx1-vx2)); break;
-         case D3Q27System::DIR_MP0: velocity = (UbMath::c1o9*(-vx1+vx2)); break;
-         case D3Q27System::DIR_P0P: velocity = (UbMath::c1o9*(+vx1+vx3)); break;
-         case D3Q27System::DIR_M0M: velocity = (UbMath::c1o9*(-vx1-vx3)); break;
-         case D3Q27System::DIR_P0M: velocity = (UbMath::c1o9*(+vx1-vx3)); break;
-         case D3Q27System::DIR_M0P: velocity = (UbMath::c1o9*(-vx1+vx3)); break;
-         case D3Q27System::DIR_0PP: velocity = (UbMath::c1o9*(+vx2+vx3)); break;
-         case D3Q27System::DIR_0MM: velocity = (UbMath::c1o9*(-vx2-vx3)); break;
-         case D3Q27System::DIR_0PM: velocity = (UbMath::c1o9*(+vx2-vx3)); break;
-         case D3Q27System::DIR_0MP: velocity = (UbMath::c1o9*(-vx2+vx3)); break;
-         case D3Q27System::DIR_PPP: velocity = (UbMath::c1o36*(+vx1+vx2+vx3)); break;
-         case D3Q27System::DIR_MMM: velocity = (UbMath::c1o36*(-vx1-vx2-vx3)); break;
-         case D3Q27System::DIR_PPM: velocity = (UbMath::c1o36*(+vx1+vx2-vx3)); break;
-         case D3Q27System::DIR_MMP: velocity = (UbMath::c1o36*(-vx1-vx2+vx3)); break;
-         case D3Q27System::DIR_PMP: velocity = (UbMath::c1o36*(+vx1-vx2+vx3)); break;
-         case D3Q27System::DIR_MPM: velocity = (UbMath::c1o36*(-vx1+vx2-vx3)); break;
-         case D3Q27System::DIR_PMM: velocity = (UbMath::c1o36*(+vx1-vx2-vx3)); break;
-         case D3Q27System::DIR_MPP: velocity = (UbMath::c1o36*(-vx1+vx2+vx3)); break;
+         case DIR_P00: velocity = (UbMath::c4o9*(+vx1)); break;      //(2/cs^2)(=6)*rho_0(=1 bei imkompr)*wi*u*ei mit cs=1/sqrt(3)
+         case DIR_M00: velocity = (UbMath::c4o9*(-vx1)); break;      //z.B. aus paper manfred MRT LB models in three dimensions (2002)   
+         case DIR_0P0: velocity = (UbMath::c4o9*(+vx2)); break;
+         case DIR_0M0: velocity = (UbMath::c4o9*(-vx2)); break;
+         case DIR_00P: velocity = (UbMath::c4o9*(+vx3)); break;
+         case DIR_00M: velocity = (UbMath::c4o9*(-vx3)); break;
+         case DIR_PP0: velocity = (UbMath::c1o9*(+vx1+vx2)); break;
+         case DIR_MM0: velocity = (UbMath::c1o9*(-vx1-vx2)); break;
+         case DIR_PM0: velocity = (UbMath::c1o9*(+vx1-vx2)); break;
+         case DIR_MP0: velocity = (UbMath::c1o9*(-vx1+vx2)); break;
+         case DIR_P0P: velocity = (UbMath::c1o9*(+vx1+vx3)); break;
+         case DIR_M0M: velocity = (UbMath::c1o9*(-vx1-vx3)); break;
+         case DIR_P0M: velocity = (UbMath::c1o9*(+vx1-vx3)); break;
+         case DIR_M0P: velocity = (UbMath::c1o9*(-vx1+vx3)); break;
+         case DIR_0PP: velocity = (UbMath::c1o9*(+vx2+vx3)); break;
+         case DIR_0MM: velocity = (UbMath::c1o9*(-vx2-vx3)); break;
+         case DIR_0PM: velocity = (UbMath::c1o9*(+vx2-vx3)); break;
+         case DIR_0MP: velocity = (UbMath::c1o9*(-vx2+vx3)); break;
+         case DIR_PPP: velocity = (UbMath::c1o36*(+vx1+vx2+vx3)); break;
+         case DIR_MMM: velocity = (UbMath::c1o36*(-vx1-vx2-vx3)); break;
+         case DIR_PPM: velocity = (UbMath::c1o36*(+vx1+vx2-vx3)); break;
+         case DIR_MMP: velocity = (UbMath::c1o36*(-vx1-vx2+vx3)); break;
+         case DIR_PMP: velocity = (UbMath::c1o36*(+vx1-vx2+vx3)); break;
+         case DIR_MPM: velocity = (UbMath::c1o36*(-vx1+vx2-vx3)); break;
+         case DIR_PMM: velocity = (UbMath::c1o36*(+vx1-vx2-vx3)); break;
+         case DIR_MPP: velocity = (UbMath::c1o36*(-vx1+vx2+vx3)); break;
          default: throw UbException(UB_EXARGS, "unknown error");
          }
          LBMReal fReturn = f[invDir] - velocity * rho;

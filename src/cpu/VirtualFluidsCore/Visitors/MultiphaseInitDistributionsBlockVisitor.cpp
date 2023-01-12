@@ -151,6 +151,7 @@ void MultiphaseInitDistributionsBlockVisitor::setPhi( LBMReal phi )
 void MultiphaseInitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D> block) 
 {
 	using namespace D3Q27System;
+	using namespace vf::lbm::dir;
 
 	if(!block) UB_THROW( UbException(UB_EXARGS,"block is not exist") );
 

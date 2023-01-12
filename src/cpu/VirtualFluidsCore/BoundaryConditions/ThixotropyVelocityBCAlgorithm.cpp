@@ -71,6 +71,8 @@ void ThixotropyVelocityBCAlgorithm::addDistributionsH(SPtr<DistributionArray3D> 
 //////////////////////////////////////////////////////////////////////////
 void ThixotropyVelocityBCAlgorithm::applyBC()
 {
+	using namespace vf::lbm::dir;
+
 	LBMReal f[D3Q27System::ENDF + 1];
 	LBMReal feq[D3Q27System::ENDF + 1];
 	LBMReal h[D3Q27System::ENDF + 1];
@@ -92,12 +94,12 @@ void ThixotropyVelocityBCAlgorithm::applyBC()
 	int nx3 = x3;
 
 	//flag points in direction of fluid
-	if (bcPtr->hasVelocityBoundaryFlag(D3Q27System::DIR_P00)) { nx1 -= 1; }
-	else if (bcPtr->hasVelocityBoundaryFlag(D3Q27System::DIR_M00)) { nx1 += 1; }
-	else if (bcPtr->hasVelocityBoundaryFlag(D3Q27System::DIR_0P0)) { nx2 -= 1; }
-	else if (bcPtr->hasVelocityBoundaryFlag(D3Q27System::DIR_0M0)) { nx2 += 1; }
-	else if (bcPtr->hasVelocityBoundaryFlag(D3Q27System::DIR_00P)) { nx3 -= 1; }
-	else if (bcPtr->hasVelocityBoundaryFlag(D3Q27System::DIR_00M)) { nx3 += 1; }
+	if (bcPtr->hasVelocityBoundaryFlag(DIR_P00)) { nx1 -= 1; }
+	else if (bcPtr->hasVelocityBoundaryFlag(DIR_M00)) { nx1 += 1; }
+	else if (bcPtr->hasVelocityBoundaryFlag(DIR_0P0)) { nx2 -= 1; }
+	else if (bcPtr->hasVelocityBoundaryFlag(DIR_0M0)) { nx2 += 1; }
+	else if (bcPtr->hasVelocityBoundaryFlag(DIR_00P)) { nx3 -= 1; }
+	else if (bcPtr->hasVelocityBoundaryFlag(DIR_00M)) { nx3 += 1; }
 	else	 UB_THROW(UbException(UB_EXARGS, "Danger...no orthogonal BC-Flag on velocity boundary..."));
 
 	//lambdaBC = bcPtr->getBoundaryThixotropy();

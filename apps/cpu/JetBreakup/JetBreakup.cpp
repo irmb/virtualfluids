@@ -13,6 +13,8 @@ void setInflowBC(double x1, double x2, double x3, double radius, int dir)
 
 void run(string configname)
 {
+    using namespace vf::lbm::dir;
+
     try {
 
         // Sleep(30000);
@@ -219,7 +221,7 @@ void run(string configname)
         grid->setGhostLayerWidth(2);
 
         SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(
-            comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::DIR_MMM, MetisPartitioner::RECURSIVE));
+            comm, MetisPartitioningGridVisitor::LevelBased, DIR_MMM, MetisPartitioner::RECURSIVE));
 
         //////////////////////////////////////////////////////////////////////////
         // restart

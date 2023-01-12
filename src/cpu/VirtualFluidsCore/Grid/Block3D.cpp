@@ -257,6 +257,8 @@ int Block3D::getNumberOfRemoteConnectors()
 //////////////////////////////////////////////////////////////////////////
 int Block3D::getNumberOfLocalConnectorsForSurfaces()
 {
+    using namespace vf::lbm::dir;
+
     int count = 0;
 
     if (connectors.size() < 6)
@@ -264,7 +266,7 @@ int Block3D::getNumberOfLocalConnectorsForSurfaces()
 
     for (SPtr<Block3DConnector> c : connectors) {
         if (c) {
-            if (c->getSendDir() >= D3Q27System::DIR_P00 && c->getSendDir() <= D3Q27System ::DIR_00M && c->isLocalConnector())
+            if (c->getSendDir() >= DIR_P00 && c->getSendDir() <= DIR_00M && c->isLocalConnector())
                 count++;
         }
     }
@@ -274,11 +276,13 @@ int Block3D::getNumberOfLocalConnectorsForSurfaces()
 //////////////////////////////////////////////////////////////////////////
 int Block3D::getNumberOfRemoteConnectorsForSurfaces()
 {
+    using namespace vf::lbm::dir;
+
     int count = 0;
 
     for (SPtr<Block3DConnector> c : connectors) {
         if (c) {
-            if (c->getSendDir() >= D3Q27System::DIR_P00 && c->getSendDir() <= D3Q27System ::DIR_00M && c->isRemoteConnector())
+            if (c->getSendDir() >= DIR_P00 && c->getSendDir() <= DIR_00M && c->isRemoteConnector())
                 count++;
         }
     }
