@@ -4055,31 +4055,62 @@ void ScaleCF_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulat
     getLastCudaError("scaleCF_RhoSq_27 execution failed");
 }
 
-void ScaleCF_compressible(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellCF * icellCF, OffCF& offsetCF, CUstream_st *stream)
+template<bool hasTurbulentViscosity> void ScaleCF_compressible(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellCF * icellCF, OffCF& offsetCF, CUstream_st *stream)
 {
     dim3 grid = vf::cuda::getCudaGrid(parameterDeviceC->numberofthreads,  icellCF->kCF);
     dim3 threads(parameterDeviceC->numberofthreads, 1, 1 );
 
-    scaleCF_compressible<<<grid, threads, 0, stream>>>(
-        parameterDeviceC->distributions.f[0],
-        parameterDeviceF->distributions.f[0],
-        parameterDeviceC->neighborX,
-        parameterDeviceC->neighborY,
-        parameterDeviceC->neighborZ,
-        parameterDeviceF->neighborX,
-        parameterDeviceF->neighborY,
-        parameterDeviceF->neighborZ,
-        parameterDeviceC->numberOfNodes,
-        parameterDeviceF->numberOfNodes,
-        parameterDeviceC->isEvenTimestep,
-        icellCF->ICellCFC,
-        icellCF->ICellCFF,
-        icellCF->kCF,
-        parameterDeviceC->omega,
-        parameterDeviceF->omega,
-        offsetCF);
+    if(hasTurbulentViscosity)
+    {
+        scaleCF_compressible<true><<<grid, threads, 0, stream>>>(
+            parameterDeviceC->distributions.f[0],
+            parameterDeviceF->distributions.f[0],
+            parameterDeviceC->neighborX,
+            parameterDeviceC->neighborY,
+            parameterDeviceC->neighborZ,
+            parameterDeviceF->neighborX,
+            parameterDeviceF->neighborY,
+            parameterDeviceF->neighborZ,
+            parameterDeviceC->numberOfNodes,
+            parameterDeviceF->numberOfNodes,
+            parameterDeviceC->isEvenTimestep,
+            icellCF->ICellCFC,
+            icellCF->ICellCFF,
+            icellCF->kCF,
+            parameterDeviceC->omega,
+            parameterDeviceF->omega,
+            parameterDeviceC->turbViscosity,
+            parameterDeviceF->turbViscosity,
+            offsetCF);
+    }
+    else
+    {
+        scaleCF_compressible<false><<<grid, threads, 0, stream>>>(
+            parameterDeviceC->distributions.f[0],
+            parameterDeviceF->distributions.f[0],
+            parameterDeviceC->neighborX,
+            parameterDeviceC->neighborY,
+            parameterDeviceC->neighborZ,
+            parameterDeviceF->neighborX,
+            parameterDeviceF->neighborY,
+            parameterDeviceF->neighborZ,
+            parameterDeviceC->numberOfNodes,
+            parameterDeviceF->numberOfNodes,
+            parameterDeviceC->isEvenTimestep,
+            icellCF->ICellCFC,
+            icellCF->ICellCFF,
+            icellCF->kCF,
+            parameterDeviceC->omega,
+            parameterDeviceF->omega,
+            parameterDeviceC->turbViscosity,
+            parameterDeviceF->turbViscosity,
+            offsetCF);
+    }
+
     getLastCudaError("scaleCF_compressible execution failed");
 }
+template void ScaleCF_compressible<true>(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellCF * icellCF, OffCF& offsetCF, CUstream_st *stream);
+template void ScaleCF_compressible<false>(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellCF * icellCF, OffCF& offsetCF, CUstream_st *stream);
 
 //////////////////////////////////////////////////////////////////////////
 void ScaleCF_RhoSq_3rdMom_comp_27(
@@ -4947,31 +4978,62 @@ void ScaleFC_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulat
     getLastCudaError("scaleFC_RhoSq_comp_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-void ScaleFC_compressible(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellFC * icellFC, OffFC &offsetFC, CUstream_st *stream)
+template<bool hasTurbulentViscosity> void ScaleFC_compressible(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellFC * icellFC, OffFC &offsetFC, CUstream_st *stream)
 {
     dim3 grid = vf::cuda::getCudaGrid(parameterDeviceC->numberofthreads,  icellFC->kFC);
     dim3 threads(parameterDeviceC->numberofthreads, 1, 1 );
 
-    scaleFC_compressible<<<grid, threads, 0, stream>>>(
-        parameterDeviceC->distributions.f[0],
-        parameterDeviceF->distributions.f[0],
-        parameterDeviceC->neighborX,
-        parameterDeviceC->neighborY,
-        parameterDeviceC->neighborZ,
-        parameterDeviceF->neighborX,
-        parameterDeviceF->neighborY,
-        parameterDeviceF->neighborZ,
-        parameterDeviceC->numberOfNodes,
-        parameterDeviceF->numberOfNodes,
-        parameterDeviceC->isEvenTimestep,
-        icellFC->ICellFCC,
-        icellFC->ICellFCF,
-        icellFC->kFC,
-        parameterDeviceC->omega,
-        parameterDeviceF->omega,
-        offsetFC);
+    if(hasTurbulentViscosity)
+    {
+        scaleFC_compressible<true><<<grid, threads, 0, stream>>>(
+            parameterDeviceC->distributions.f[0],
+            parameterDeviceF->distributions.f[0],
+            parameterDeviceC->neighborX,
+            parameterDeviceC->neighborY,
+            parameterDeviceC->neighborZ,
+            parameterDeviceF->neighborX,
+            parameterDeviceF->neighborY,
+            parameterDeviceF->neighborZ,
+            parameterDeviceC->numberOfNodes,
+            parameterDeviceF->numberOfNodes,
+            parameterDeviceC->isEvenTimestep,
+            icellFC->ICellFCC,
+            icellFC->ICellFCF,
+            icellFC->kFC,
+            parameterDeviceC->omega,
+            parameterDeviceF->omega,
+            parameterDeviceC->turbViscosity,
+            parameterDeviceF->turbViscosity,
+            offsetFC);
+    }
+    else
+    {
+        scaleFC_compressible<false><<<grid, threads, 0, stream>>>(
+            parameterDeviceC->distributions.f[0],
+            parameterDeviceF->distributions.f[0],
+            parameterDeviceC->neighborX,
+            parameterDeviceC->neighborY,
+            parameterDeviceC->neighborZ,
+            parameterDeviceF->neighborX,
+            parameterDeviceF->neighborY,
+            parameterDeviceF->neighborZ,
+            parameterDeviceC->numberOfNodes,
+            parameterDeviceF->numberOfNodes,
+            parameterDeviceC->isEvenTimestep,
+            icellFC->ICellFCC,
+            icellFC->ICellFCF,
+            icellFC->kFC,
+            parameterDeviceC->omega,
+            parameterDeviceF->omega,
+            parameterDeviceC->turbViscosity,
+            parameterDeviceF->turbViscosity,
+            offsetFC);
+    }
     getLastCudaError("scaleFC_compressible execution failed");
 }
+template void ScaleFC_compressible<true>(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellFC * icellFC, OffFC &offsetFC, CUstream_st *stream);
+template void ScaleFC_compressible<false>(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellFC * icellFC, OffFC &offsetFC, CUstream_st *stream);
+
 //////////////////////////////////////////////////////////////////////////
 void ScaleFC_RhoSq_3rdMom_comp_27(
     real* DC,

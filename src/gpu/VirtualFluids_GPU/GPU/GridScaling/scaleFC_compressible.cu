@@ -45,7 +45,7 @@ using namespace vf::lbm::dir;
 //!
 
 // based on scaleFC_RhoSq_comp_27
-__global__ void scaleFC_compressible(
+template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
     real *distributionsCoarse,
     real *distributionsFine,
     unsigned int *neighborXcoarse,
@@ -62,6 +62,8 @@ __global__ void scaleFC_compressible(
     unsigned int numberOfInterfaceNodes,
     real omegaCoarse,
     real omegaFine,
+    real* turbulentViscosityCoarse,
+    real* turbulentViscosityFine,
     OffFC offsetFC)
 {
     ////////////////////////////////////////////////////////////////////////////////
@@ -136,6 +138,8 @@ __global__ void scaleFC_compressible(
     unsigned int k_0MM = k_base_0MM;
     unsigned int k_MMM = k_base_MMM;
 
+    if(hasTurbulentViscosity) omegaF = omegaFine/ (c1o1 + c3o1*omegaFine*turbulentViscosityFine[k_000]);
+
     calculateMomentsOnSourceNodes( distFine, omegaF,
         k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_MMM, vx1_MMM, vx2_MMM, vx3_MMM,
         kxyFromfcNEQ_MMM, kyzFromfcNEQ_MMM, kxzFromfcNEQ_MMM, kxxMyyFromfcNEQ_MMM, kxxMzzFromfcNEQ_MMM);
@@ -152,6 +156,8 @@ __global__ void scaleFC_compressible(
     k_M0M = neighborZfine[k_M0M];
     k_0MM = neighborZfine[k_0MM];
     k_MMM = neighborZfine[k_MMM];
+
+    if(hasTurbulentViscosity) omegaF = omegaFine/ (c1o1 + c3o1*omegaFine*turbulentViscosityFine[k_000]);
 
     calculateMomentsOnSourceNodes( distFine, omegaF,
         k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_MMP, vx1_MMP, vx2_MMP, vx3_MMP,
@@ -170,6 +176,8 @@ __global__ void scaleFC_compressible(
     k_0MM = k_MMM;
     k_MMM = neighborXfine[k_MMM];
 
+    if(hasTurbulentViscosity) omegaF = omegaFine/ (c1o1 + c3o1*omegaFine*turbulentViscosityFine[k_000]);
+
     calculateMomentsOnSourceNodes( distFine, omegaF,
         k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_PMP, vx1_PMP, vx2_PMP, vx3_PMP,
         kxyFromfcNEQ_PMP, kyzFromfcNEQ_PMP, kxzFromfcNEQ_PMP, kxxMyyFromfcNEQ_PMP, kxxMzzFromfcNEQ_PMP);
@@ -186,6 +194,8 @@ __global__ void scaleFC_compressible(
     k_M00 = neighborXfine[k_base_M00];
     k_0M0 = k_base_MM0;
     k_MM0 = neighborXfine[k_base_MM0];
+
+    if(hasTurbulentViscosity) omegaF = omegaFine/ (c1o1 + c3o1*omegaFine*turbulentViscosityFine[k_000]);
 
     calculateMomentsOnSourceNodes( distFine, omegaF,
         k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_PMM, vx1_PMM, vx2_PMM, vx3_PMM,
@@ -214,6 +224,8 @@ __global__ void scaleFC_compressible(
     k_0MM = k_base_0MM;
     k_MMM = k_base_MMM;
 
+    if(hasTurbulentViscosity) omegaF = omegaFine/ (c1o1 + c3o1*omegaFine*turbulentViscosityFine[k_000]);
+
     calculateMomentsOnSourceNodes( distFine, omegaF,
         k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_MPM, vx1_MPM, vx2_MPM, vx3_MPM,
         kxyFromfcNEQ_MPM, kyzFromfcNEQ_MPM, kxzFromfcNEQ_MPM, kxxMyyFromfcNEQ_MPM, kxxMzzFromfcNEQ_MPM);
@@ -230,6 +242,8 @@ __global__ void scaleFC_compressible(
     k_M0M = neighborZfine[k_M0M];
     k_0MM = neighborZfine[k_0MM];
     k_MMM = neighborZfine[k_MMM];
+
+    if(hasTurbulentViscosity) omegaF = omegaFine/ (c1o1 + c3o1*omegaFine*turbulentViscosityFine[k_000]);
     
     calculateMomentsOnSourceNodes( distFine, omegaF,
         k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_MPP, vx1_MPP, vx2_MPP, vx3_MPP,
@@ -248,6 +262,8 @@ __global__ void scaleFC_compressible(
     k_0MM = k_MMM;
     k_MMM = neighborXfine[k_MMM];
 
+    if(hasTurbulentViscosity) omegaF = omegaFine/ (c1o1 + c3o1*omegaFine*turbulentViscosityFine[k_000]);
+
     calculateMomentsOnSourceNodes( distFine, omegaF,
         k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_PPP, vx1_PPP, vx2_PPP, vx3_PPP,
         kxyFromfcNEQ_PPP, kyzFromfcNEQ_PPP, kxzFromfcNEQ_PPP, kxxMyyFromfcNEQ_PPP, kxxMzzFromfcNEQ_PPP);
@@ -265,6 +281,8 @@ __global__ void scaleFC_compressible(
     k_0M0 = k_base_MM0;
     k_MM0 = neighborXfine[k_base_MM0];
     
+    if(hasTurbulentViscosity) omegaF = omegaFine/ (c1o1 + c3o1*omegaFine*turbulentViscosityFine[k_000]);
+
     calculateMomentsOnSourceNodes( distFine, omegaF,
         k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_PPM, vx1_PPM, vx2_PPM, vx3_PPM,
         kxyFromfcNEQ_PPM, kyzFromfcNEQ_PPM, kxzFromfcNEQ_PPM, kxxMyyFromfcNEQ_PPM, kxxMzzFromfcNEQ_PPM);
@@ -675,6 +693,18 @@ __global__ void scaleFC_compressible(
     // y = 0.;
     // z = 0.;
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // index of the destination node and its neighbors
+    k_000 = indicesCoarse000[k_thread];
+    k_M00 = neighborXcoarse [k_000];
+    k_0M0 = neighborYcoarse [k_000];
+    k_00M = neighborZcoarse [k_000];
+    k_MM0 = neighborYcoarse [k_M00];
+    k_M0M = neighborZcoarse [k_M00];
+    k_0MM = neighborZcoarse [k_0M0];
+    k_MMM = neighborZcoarse [k_MM0];
+    ////////////////////////////////////////////////////////////////////////////////////
+
+    if(hasTurbulentViscosity) omegaC = omegaCoarse / (c1o1 + c3o1*omegaCoarse*turbulentViscosityCoarse[k_000]);
 
     ////////////////////////////////////////////////////////////////////////////////
     //! - Set macroscopic values on destination node (zeroth and first order moments)
@@ -777,19 +807,6 @@ __global__ void scaleFC_compressible(
     backwardInverseChimeraWithK(m_210, m_211, m_212, vvz, vz_sq, c9o1,  c1o9);
     backwardInverseChimeraWithK(m_220, m_221, m_222, vvz, vz_sq, c36o1, c1o36);
 
-
-    ////////////////////////////////////////////////////////////////////////////////////
-    // index of the destination node and its neighbors
-    k_000 = indicesCoarse000[k_thread];
-    k_M00 = neighborXcoarse [k_000];
-    k_0M0 = neighborYcoarse [k_000];
-    k_00M = neighborZcoarse [k_000];
-    k_MM0 = neighborYcoarse [k_M00];
-    k_M0M = neighborZcoarse [k_M00];
-    k_0MM = neighborZcoarse [k_0M0];
-    k_MMM = neighborZcoarse [k_MM0];
-    ////////////////////////////////////////////////////////////////////////////////////
-
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Write distributions: style of reading and writing the distributions from/to
     //! stored arrays dependent on timestep is based on the esoteric twist algorithm
@@ -825,3 +842,7 @@ __global__ void scaleFC_compressible(
     (distCoarse.f[DIR_MMM])[k_MMM] = f_MMM;
     ////////////////////////////////////////////////////////////////////////////////////
 }
+
+template __global__ void scaleFC_compressible<true>( real *distributionsCoarse, real *distributionsFine, unsigned int *neighborXcoarse, unsigned int *neighborYcoarse, unsigned int *neighborZcoarse, unsigned int *neighborXfine, unsigned int *neighborYfine, unsigned int *neighborZfine, unsigned long long numberOfLBnodesCoarse, unsigned long long numberOfLBnodesFine, bool isEvenTimestep, unsigned int *indicesCoarse000, unsigned int *indicesFineMMM, unsigned int numberOfInterfaceNodes, real omegaCoarse, real omegaFine, real* turbulentViscosityCoarse, real* turbulentViscosityFine, OffFC offsetFC);
+
+template __global__ void scaleFC_compressible<false>( real *distributionsCoarse, real *distributionsFine, unsigned int *neighborXcoarse, unsigned int *neighborYcoarse, unsigned int *neighborZcoarse, unsigned int *neighborXfine, unsigned int *neighborYfine, unsigned int *neighborZfine, unsigned long long numberOfLBnodesCoarse, unsigned long long numberOfLBnodesFine, bool isEvenTimestep, unsigned int *indicesCoarse000, unsigned int *indicesFineMMM, unsigned int numberOfInterfaceNodes, real omegaCoarse, real omegaFine, real* turbulentViscosityCoarse, real* turbulentViscosityFine, OffFC offsetFC);

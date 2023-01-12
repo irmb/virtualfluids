@@ -6,7 +6,7 @@ void GridScalingFactory::setScalingFactory(const GridScalingFactory::GridScaling
     this->gridScaling = gridScalingType;
 }
 
-gridScalingFC GridScalingFactory::getGridScalingFC() const
+gridScalingFC GridScalingFactory::getGridScalingFC(bool hasTurbulentViscosity) const
 {
     // for descriptions of the scaling types refer to the header
     switch (gridScaling) {
@@ -14,14 +14,15 @@ gridScalingFC GridScalingFactory::getGridScalingFC() const
             return ScaleFC_RhoSq_comp_27;
             break;
         case GridScaling::ScaleCompressible:
-            return ScaleFC_compressible;
+            if(hasTurbulentViscosity)   return ScaleFC_compressible<true>;
+            else                        return ScaleFC_compressible<false>;
             break;
         default:
             return nullptr;
     }
 }
 
-gridScalingCF GridScalingFactory::getGridScalingCF() const
+gridScalingCF GridScalingFactory::getGridScalingCF(bool hasTurbulentViscosity) const
 {
     // for descriptions of the scaling types refer to the header
     switch (gridScaling) {
@@ -29,8 +30,11 @@ gridScalingCF GridScalingFactory::getGridScalingCF() const
             return ScaleCF_RhoSq_comp_27;
             break;
         case GridScaling::ScaleCompressible:
-            return ScaleCF_compressible;
-            break;
+            {
+                if(hasTurbulentViscosity)   return ScaleCF_compressible<true>;
+                else                        return ScaleCF_compressible<false>;
+                break;
+            }
         default:
             return nullptr;
     }
