@@ -186,7 +186,6 @@ void WallModelProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Paramete
         uint arrOff = probeStruct->arrayOffsetsH[int(Statistic::SpatialMeans)];
         // Compute the instantaneous spatial means of the velocity moments 
         real spatMean_u_el      = compute_and_save_mean(para->getParD(level)->stressBC.Vx     , numberOfStressBCPoints, probeStruct->quantitiesArrayH, timestep, probeStruct->nTimesteps, arrOff+0);
-        printf("spatMean %f \n", spatMean_u_el);
         real spatMean_v_el      = compute_and_save_mean(para->getParD(level)->stressBC.Vy     , numberOfStressBCPoints, probeStruct->quantitiesArrayH, timestep, probeStruct->nTimesteps, arrOff+1);
         real spatMean_w_el      = compute_and_save_mean(para->getParD(level)->stressBC.Vz     , numberOfStressBCPoints, probeStruct->quantitiesArrayH, timestep, probeStruct->nTimesteps, arrOff+2);
         real spatMean_u1        = compute_and_save_mean(para->getParD(level)->stressBC.Vx1    , numberOfStressBCPoints, probeStruct->quantitiesArrayH, timestep, probeStruct->nTimesteps, arrOff+3);
