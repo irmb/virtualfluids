@@ -2109,16 +2109,22 @@ void GridImp::sortFluidNodeIndicesMacroVars()
         if(this->fluidNodeIndicesAllFeatures.size()>0)
         {
             this->fluidNodeIndicesMacroVars.erase(   std::remove_if(   this->fluidNodeIndicesMacroVars.begin(), this->fluidNodeIndicesMacroVars.end(),
-                                                        [&](auto x){return binary_search(fluidNodeIndicesAllFeatures.begin(),fluidNodeIndicesAllFeatures.end(),x);} ),
-                                            this->fluidNodeIndicesMacroVars.end()
-                                        );
+                                                    [&](auto x){return binary_search(fluidNodeIndicesAllFeatures.begin(),fluidNodeIndicesAllFeatures.end(),x);} ),
+                                                    this->fluidNodeIndicesMacroVars.end() );
+        }
+
+        // Remove all indices in fluidNodeIndicesBorder from fluidNodeIndicesApplyBodyForce
+        if(this->fluidNodeIndicesBorder.size()>0)
+        {
+            this->fluidNodeIndicesMacroVars.erase(  std::remove_if(   this->fluidNodeIndicesMacroVars.begin(), this->fluidNodeIndicesMacroVars.end(),
+                                                    [&](auto x){return binary_search(fluidNodeIndicesBorder.begin(),fluidNodeIndicesBorder.end(),x);} ),
+                                                    this->fluidNodeIndicesMacroVars.end() );
         }
 
         // Remove indices of fluidNodeIndicesMacroVars from fluidNodeIndices
         this->fluidNodeIndices.erase(   std::remove_if(   this->fluidNodeIndices.begin(), this->fluidNodeIndices.end(),
                                                         [&](auto x){return binary_search(fluidNodeIndicesMacroVars.begin(),fluidNodeIndicesMacroVars.end(),x);} ),
-                                        this->fluidNodeIndices.end()
-                                    );
+                                        this->fluidNodeIndices.end() );
     }
 }
 
@@ -2130,20 +2136,26 @@ void GridImp::sortFluidNodeIndicesApplyBodyForce()
         // Remove duplicates
         this->fluidNodeIndicesApplyBodyForce.erase( unique( this->fluidNodeIndicesApplyBodyForce.begin(), this->fluidNodeIndicesApplyBodyForce.end() ), this->fluidNodeIndicesApplyBodyForce.end() );
 
-         // Remove indices of fluidNodeIndicesAllFeatures from fluidNodeIndicesMacroVars
+         // Remove indices of fluidNodeIndicesAllFeatures from fluidNodeIndicesApplyBodyForce
         if(this->fluidNodeIndicesAllFeatures.size()>0)
         {
-            this->fluidNodeIndicesApplyBodyForce.erase(   std::remove_if(   this->fluidNodeIndicesApplyBodyForce.begin(), this->fluidNodeIndicesApplyBodyForce.end(),
+            this->fluidNodeIndicesApplyBodyForce.erase( std::remove_if(   this->fluidNodeIndicesApplyBodyForce.begin(), this->fluidNodeIndicesApplyBodyForce.end(),
                                                         [&](auto x){return binary_search(fluidNodeIndicesAllFeatures.begin(),fluidNodeIndicesAllFeatures.end(),x);} ),
-                                            this->fluidNodeIndicesApplyBodyForce.end()
-                                        );
+                                                        this->fluidNodeIndicesApplyBodyForce.end() );
+        }
+
+        // Remove all indices in fluidNodeIndicesBorder from fluidNodeIndicesApplyBodyForce
+        if(this->fluidNodeIndicesBorder.size()>0)
+        {
+            this->fluidNodeIndicesApplyBodyForce.erase( std::remove_if(   this->fluidNodeIndicesApplyBodyForce.begin(), this->fluidNodeIndicesApplyBodyForce.end(),
+                                                        [&](auto x){return binary_search(fluidNodeIndicesBorder.begin(),fluidNodeIndicesBorder.end(),x);} ),
+                                                        this->fluidNodeIndicesApplyBodyForce.end() );
         }
 
         // Remove indices of fluidNodeIndicesMacroVars from fluidNodeIndices
         this->fluidNodeIndices.erase(   std::remove_if(   this->fluidNodeIndices.begin(), this->fluidNodeIndices.end(),
-                                                        [&](auto x){return binary_search(fluidNodeIndicesApplyBodyForce.begin(),fluidNodeIndicesApplyBodyForce.end(),x);} ),
-                                        this->fluidNodeIndices.end()
-                                    );
+                                        [&](auto x){return binary_search(fluidNodeIndicesApplyBodyForce.begin(),fluidNodeIndicesApplyBodyForce.end(),x);} ),
+                                        this->fluidNodeIndices.end() );
     }
 }
 
@@ -2154,11 +2166,19 @@ void GridImp::sortFluidNodeIndicesAllFeatures()
         sort(this->fluidNodeIndicesAllFeatures.begin(), this->fluidNodeIndicesAllFeatures.end());
         // Remove duplicates
         this->fluidNodeIndicesAllFeatures.erase( unique( this->fluidNodeIndicesAllFeatures.begin(), this->fluidNodeIndicesAllFeatures.end() ), this->fluidNodeIndicesAllFeatures.end() );
-        // Remove indices of fluidNodeIndicesMacroVars from fluidNodeIndices
+
+        // Remove all indices in fluidNodeIndicesBorder from fluidNodeIndicesAllFeatures
+        if(this->fluidNodeIndicesBorder.size()>0)
+        {
+            this->fluidNodeIndicesAllFeatures.erase(    std::remove_if(   this->fluidNodeIndicesAllFeatures.begin(), this->fluidNodeIndicesAllFeatures.end(),
+                                                        [&](auto x){return binary_search(fluidNodeIndicesBorder.begin(),fluidNodeIndicesBorder.end(),x);} ),
+                                                        this->fluidNodeIndicesAllFeatures.end() );
+        }
+
+        // Remove indices of fluidNodeIndicesAllFeatures from fluidNodeIndices
         this->fluidNodeIndices.erase(   std::remove_if(   this->fluidNodeIndices.begin(), this->fluidNodeIndices.end(),
                                                         [&](auto x){return binary_search(fluidNodeIndicesAllFeatures.begin(),fluidNodeIndicesAllFeatures.end(),x);} ),
-                                        this->fluidNodeIndices.end()
-                                    );
+                                        this->fluidNodeIndices.end() );
     }
 }
 

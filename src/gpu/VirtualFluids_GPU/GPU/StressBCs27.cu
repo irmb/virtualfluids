@@ -106,7 +106,7 @@ __host__ __device__ __forceinline__ void iMEM(uint k, uint kN,
       real _vz_w = vz_w_inst-vDotN_w*wallNormalZ;
 
       //Compute wall shear stress tau_w via MOST
-      real z = (real)samplingOffset[k] + 0.5; //assuming q=0.5, could be replaced by wall distance via wall normal
+      real z = (real)samplingOffset[k] + q; //assuming q=0.5, could be replaced by wall distance via wall normal
       real kappa = 0.4;
       real u_star = vMag_el*kappa/(log(z/z0[k]));
       if(hasWallModelMonitor) u_star_monitor[k] = u_star;
@@ -135,6 +135,7 @@ __host__ __device__ __forceinline__ void iMEM(uint k, uint kN,
       wallVelocityY = clipVy > -clipVy? min(clipVy, max(-clipVy, -3.0*F_y*forceFactor)): max(clipVy, min(-clipVy, -3.0*F_y*forceFactor));
       wallVelocityZ = clipVz > -clipVz? min(clipVz, max(-clipVz, -3.0*F_z*forceFactor)): max(clipVz, min(-clipVz, -3.0*F_z*forceFactor));
 }
+
 
 //////////////////////////////////////////////////////////////////////////////
 __global__ void QStressDeviceComp27(real* DD,
