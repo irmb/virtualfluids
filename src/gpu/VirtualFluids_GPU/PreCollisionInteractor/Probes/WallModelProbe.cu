@@ -17,7 +17,8 @@
 #include "lbm/constants/NumericConstants.h"
 
 using namespace vf::lbm::constant;
-
+typedef thrust::device_vector<real>::iterator valIterator;
+typedef thrust::device_vector<uint>::iterator indIterator;
 ///////////////////////////////////////////////////////////////////////////////////
 bool WallModelProbe::isAvailableStatistic(Statistic _variable)
 {
@@ -135,8 +136,6 @@ T spatial_mean(T* device_pointer, uint numberOfPoints)
     return thrust::reduce(thrust_pointer, thrust_pointer+numberOfPoints)/real(numberOfPoints);
 }
 
-typedef thrust::device_vector<real>::iterator valIterator;
-typedef thrust::device_vector<uint>::iterator indIterator;
 template<typename T>
 T index_based_spatial_mean(T* device_pointer, thrust::device_ptr<uint> indeces_ptr, uint numberOfIndeces)
 {

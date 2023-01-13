@@ -569,15 +569,12 @@ void Probe::appendTimeseriesFile(Parameter* para, int level, int t)
                 real coeff = postProcessingVariables[arr].conversionFactor(level);
                 for(uint point=0; point<probeStruct->nPoints; point++)
                 {
-                    real v = probeStruct->quantitiesArrayH[calcArrayIndex(point, probeStruct->nPoints, timestep, probeStruct->nTimesteps, arrOff+arr)]*coeff;
-                    if(val==1) printf("writing %f \n", v);
-                    timestep_array[val] = v;
+                    timestep_array[val] = probeStruct->quantitiesArrayH[calcArrayIndex(point, probeStruct->nPoints, timestep, probeStruct->nTimesteps, arrOff+arr)]*coeff;
                     val++;
                 }
             }
             
         }
-        printf("u: %f \n", timestep_array[1]);
         out.write((char*) timestep_array, sizeof(real)*vals_per_timestep);
     }
     out.close();
