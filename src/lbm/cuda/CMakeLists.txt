@@ -1,11 +1,8 @@
-project(lbmCuda LANGUAGES CUDA CXX)
+project(lbm_cuda LANGUAGES CUDA CXX)
 
+vf_add_library(NAME lbm_cuda BUILDTYPE static PUBLIC_LINK basics FOLDER "${CMAKE_SOURCE_DIR}/src/lbm;${CMAKE_SOURCE_DIR}/src/lbm/constants" MODULEFOLDER "lbm")
 
-vf_add_library(NAME lbmCuda BUILDTYPE static PUBLIC_LINK basics FOLDER ../../lbm)
-
-
-set_target_properties(lbmCuda PROPERTIES CUDA_SEPARABLE_COMPILATION ON POSITION_INDEPENDENT_CODE ON)
-
+set_target_properties(lbm_cuda PROPERTIES CUDA_SEPARABLE_COMPILATION ON POSITION_INDEPENDENT_CODE ON)
 
 set_source_files_properties(../KernelParameter.cpp PROPERTIES LANGUAGE CUDA)
 set_source_files_properties(../CumulantChimera.cpp PROPERTIES LANGUAGE CUDA)
