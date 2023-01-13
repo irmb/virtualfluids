@@ -105,7 +105,7 @@ function(vf_add_library)
 
     set( options )
     set( oneValueArgs NAME BUILDTYPE)
-    set( multiValueArgs PUBLIC_LINK PRIVATE_LINK FILES FOLDER EXCLUDE)
+    set( multiValueArgs PUBLIC_LINK PRIVATE_LINK FILES FOLDER EXCLUDE MODULEFOLDER)
     cmake_parse_arguments( ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
     if(DEFINED ARG_NAME) 
@@ -123,10 +123,19 @@ function(vf_add_library)
         endif()
     endif()
 
+    if(DEFINED ARG_MODULEFOLDER)
+        set(folder_name ${ARG_MODULEFOLDER})
+    endif()
+
     status("Configuring the target: ${library_name} (type=${ARG_BUILDTYPE})...")
 
 
     collectFiles(sourceFiles "${ARG_FILES}" "${ARG_FOLDER}" "${ARG_EXCLUDE}")
+
+    message(STATUS "library_name=${library_name}")
+    message(STATUS "folder_name=${folder_name}")
+    message(STATUS "sourceFiles=${sourceFiles}")
+
 
     includeProductionFiles (${folder_name} ${library_name} "${sourceFiles}")
 
