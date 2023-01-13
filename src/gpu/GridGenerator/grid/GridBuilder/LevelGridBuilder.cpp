@@ -127,7 +127,7 @@ void LevelGridBuilder::setSlipGeometryBoundaryCondition(real normalX, real norma
 //!
 void LevelGridBuilder::setStressBoundaryCondition(  SideType sideType,
                                                     real nomalX, real normalY, real normalZ,
-                                                    uint samplingOffset, real z0, real dx)
+                                                    uint samplingOffset, real z0, real dx, real q)
 {
     for (uint level = 0; level < getNumberOfGridLevels(); level++)
     {
@@ -135,7 +135,7 @@ void LevelGridBuilder::setStressBoundaryCondition(  SideType sideType,
         auto side = SideFactory::make(sideType);
 
         stressBoundaryCondition->side = side;
-        stressBoundaryCondition->side->addIndices(grids, level, stressBoundaryCondition);
+        stressBoundaryCondition->side->addIndices(grids, level, stressBoundaryCondition, q);
 
         stressBoundaryCondition->fillStressNormalLists();
         stressBoundaryCondition->fillSamplingOffsetLists();
