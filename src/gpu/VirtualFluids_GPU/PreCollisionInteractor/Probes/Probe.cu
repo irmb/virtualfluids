@@ -315,22 +315,22 @@ void Probe::interact(Parameter* para, CudaMemoryManager* cudaMemoryManager, int 
 
     uint tAvg_level = this->tAvg==1 ? this->tAvg: this->tAvg*level_coefficient;
     uint tOut_level = this->tOut*level_coefficient;
-    int tStartOut_level = int(this->tStartOut*level_coefficient);
-    int tStartAvg_level = int(this->tStartAvg*level_coefficient);
-    int tStartTmpAvg_level = int(this->tStartTmpAveraging*level_coefficient);
-    int tAfterStartAvg = int(t_level) - int(tStartAvg_level);
-    int tAfterStartOut = int(t_level) - int(tStartOut_level);
+    uint tStartOut_level = this->tStartOut*level_coefficient;
+    uint tStartAvg_level = this->tStartAvg*level_coefficient;
 
-    if( (tAfterStartAvg >= 0) && (tAfterStartAvg % tAvg_level == 0))
+    uint tAfterStartAvg = t_level - tStartAvg_level;
+    uint tAfterStartOut = t_level - tStartOut_level;
+
+    if( (t > this->tStartAvg) && (tAfterStartAvg % tAvg_level == 0))
     {
         this->calculateQuantities(probeStruct, para, t_level, level);
 
-        if(t_level >= tStartTmpAvg_level) probeStruct->timestepInTimeAverage++;
+        if(t > this->tStartTmpAveraging) probeStruct->timestepInTimeAverage++;
         if(this->outputTimeSeries && (t_level >= tStartOut_level)) probeStruct->timestepInTimeseries++;
     }
 
     //! output only in synchronous timesteps
-    if( (tAfterStartOut >= 0) && (tAfterStartOut % tOut_level == 0) )
+    if( (t > this->tStartOut) && (tAfterStartOut % tOut_level == 0) )
     {   
         if(this->hasDeviceQuantityArray)
             cudaMemoryManager->cudaCopyProbeQuantityArrayDtoH(this, level);
