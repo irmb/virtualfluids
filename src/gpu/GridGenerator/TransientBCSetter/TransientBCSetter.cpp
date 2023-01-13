@@ -222,7 +222,7 @@ void VTKFileCollection::findFiles()
     }
 
     if(files.empty())
-        VF_LOG_CRITICAL("VTKFileCollection found no files!"); 
+        throw std::runtime_error("VTKFileCollection found no files!");
 }
     
 void TransientBCInputFileReader::getNeighbors(uint* neighbor0PP, uint* neighbor0PM, uint* neighbor0MP, uint* neighbor0MM)
