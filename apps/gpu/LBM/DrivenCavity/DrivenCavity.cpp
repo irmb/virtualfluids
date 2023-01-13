@@ -79,7 +79,7 @@ int main()
         //////////////////////////////////////////////////////////////////////////
         // Simulation parameters
         //////////////////////////////////////////////////////////////////////////
-        std::string path("./output/DrivenCavity_uniform");
+        std::string path("./output/DrivenCavity");
         std::string simulationName("LidDrivenCavity");
 
         const real L = 1.0;
@@ -116,7 +116,7 @@ int main()
 
         gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L, 0.5 * L, 0.5 * L, 0.5 * L, dx);
 
-        // gridBuilder->addGrid(new Cuboid(-0.25, -0.25, -0.25, 0.25, 0.25, 0.25), 1); // add fine grid
+        gridBuilder->addGrid(new Cuboid(-0.25, -0.25, -0.25, 0.25, 0.25, 0.25), 1); // add fine grid
         GridScalingFactory scalingFactory = GridScalingFactory();
         scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
