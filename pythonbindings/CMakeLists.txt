@@ -20,7 +20,7 @@ IF(BUILD_VF_GPU)
     target_include_directories(python_bindings PRIVATE ${VF_THIRD_DIR}/cuda_samples/)
     target_compile_definitions(python_bindings PRIVATE VF_GPU_PYTHONBINDINGS)
 
-    target_link_libraries(python_bindings PRIVATE GridGenerator VirtualFluids_GPU lbmCuda)
+    target_link_libraries(python_bindings PRIVATE GridGenerator VirtualFluids_GPU lbm_cuda)
 ENDIF()
 
 IF(BUILD_VF_CPU)
