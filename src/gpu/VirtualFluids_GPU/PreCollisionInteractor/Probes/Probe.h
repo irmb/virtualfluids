@@ -104,6 +104,7 @@ struct ProbeStruct{
     uint nTimesteps=1;
     uint timestepInTimeseries=0;
     uint timestepInTimeAverage=0;
+    uint lastTimestepInOldTimeseries=0;
     uint *pointIndicesH, *pointIndicesD;
     real *pointCoordsX, *pointCoordsY, *pointCoordsZ;
     bool hasDistances=false;
@@ -113,24 +114,26 @@ struct ProbeStruct{
     uint *arrayOffsetsH, *arrayOffsetsD;
     bool isEvenTAvg = true;
 };
+__host__ __device__ int calcArrayIndex(int node, int nNodes, int timestep, int nTimesteps, int array);
 
 __global__ void calcQuantitiesKernel(   uint* pointIndices,
-                                    uint nPoints, uint timestepInTimeseries, uint timestepInAverage, uint nTimesteps,
+                                    uint nPoints, uint oldTimestepInTimeseries, uint timestepInTimeseries, uint timestepInAverage, uint nTimesteps,
                                     real* vx, real* vy, real* vz, real* rho,            
                                     uint* neighborX, uint* neighborY, uint* neighborZ,
                                     bool* quantities,
-                                    uint* quantityArrayOffsets, real* quantityArray, bool timeseries
+                                    uint* quantityArrayOffsets, real* quantityArray
                                 );
 
 __global__ void interpAndCalcQuantitiesKernel(   uint* pointIndices,
-                                    uint nPoints, uint timestepInTimeseries, uint timestepInAverage, uint nTimesteps,
+                                    uint nPoints, uint oldTimestepInTimeseries, uint timestepInTimeseries, uint timestepInAverage, uint nTimesteps,
                                     real* distX, real* distY, real* distZ,
                                     real* vx, real* vy, real* vz, real* rho,            
                                     uint* neighborX, uint* neighborY, uint* neighborZ,
                                     bool* quantities,
-                                    uint* quantityArrayOffsets, real* quantityArray, bool timeseries
+                                    uint* quantityArrayOffsets, real* quantityArray
                                 );
 
+uint calcOldTimestep(uint currentTimestep, uint lastTimestepInOldSeries);
 
 class Probe : public PreCollisionInteractor 
 {
