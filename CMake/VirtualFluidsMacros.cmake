@@ -132,7 +132,6 @@ function(vf_add_library)
 
     collectFiles(sourceFiles "${ARG_FILES}" "${ARG_FOLDER}" "${ARG_EXCLUDE}")
 
-
     includeProductionFiles (${folder_name} ${library_name} "${sourceFiles}")
 
     #################################################################
