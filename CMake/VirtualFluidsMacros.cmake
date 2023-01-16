@@ -132,10 +132,6 @@ function(vf_add_library)
 
     collectFiles(sourceFiles "${ARG_FILES}" "${ARG_FOLDER}" "${ARG_EXCLUDE}")
 
-    message(STATUS "library_name=${library_name}")
-    message(STATUS "folder_name=${folder_name}")
-    message(STATUS "sourceFiles=${sourceFiles}")
-
 
     includeProductionFiles (${folder_name} ${library_name} "${sourceFiles}")
 
