@@ -58,9 +58,9 @@ __global__ void LBCalcMac27(
     const unsigned int tx = threadIdx.x;    // Thread index = lokaler i index
     const unsigned int by = blockIdx.x;     // Block index x
     const unsigned int bz = blockIdx.y;     // Block index y
-    const unsigned int x = tx + STARTOFFX;  // Globaler x-Index 
-    const unsigned int y = by + STARTOFFY;  // Globaler y-Index 
-    const unsigned int z = bz + STARTOFFZ;  // Globaler z-Index 
+    const unsigned int x = tx + STARTOFFX;  // Globaler x-Index
+    const unsigned int y = by + STARTOFFY;  // Globaler y-Index
+    const unsigned int z = bz + STARTOFFZ;  // Globaler z-Index
  
     const unsigned nx = blockDim.x + 2 * STARTOFFX;
     const unsigned ny = gridDim.x + 2 * STARTOFFY;

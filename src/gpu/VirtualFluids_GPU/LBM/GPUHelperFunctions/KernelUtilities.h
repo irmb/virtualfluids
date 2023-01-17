@@ -33,7 +33,7 @@
 #ifndef KERNEL_UTILITIES_H
 #define KERNEL_UTILITIES_H
 
-#include "LBM/LB.h" 
+#include "LBM/LB.h"
 #include "lbm/constants/D3Q27.h"
 #include "lbm/constants/NumericConstants.h"
 
@@ -143,35 +143,35 @@ __inline__ __device__ real getEquilibriumForBC(const real& drho, const real& vel
     return weight * (drho + c9o2 * velocity * velocity * (c1o1 + drho) - cu_sq);
 }
 
-__inline__ __device__ real getInterpolatedDistributionForVeloBC(const real& q, const real& f, const real& fInverse, const real& feq, 
+__inline__ __device__ real getInterpolatedDistributionForVeloBC(const real& q, const real& f, const real& fInverse, const real& feq,
                                                                 const real& omega, const real& velocity, const real weight)
 {
 
-    return (c1o1-q) / (c1o1+q) * (f - fInverse + (f + fInverse - c2o1 * feq * omega) / (c1o1 - omega)) * c1o2 
+    return (c1o1-q) / (c1o1+q) * (f - fInverse + (f + fInverse - c2o1 * feq * omega) / (c1o1 - omega)) * c1o2
            + (q * (f + fInverse) - c6o1 * weight * velocity) / (c1o1 + q);
 }
 
-__inline__ __device__ real getBounceBackDistributionForVeloBC(  const real& f, 
+__inline__ __device__ real getBounceBackDistributionForVeloBC(  const real& f,
                                                                 const real& velocity, const real weight)
 {
 
     return f - (c6o1 * weight * velocity);
 }
 
-__inline__ __device__ real getInterpolatedDistributionForNoSlipBC(const real& q, const real& f, const real& fInverse, const real& feq, 
+__inline__ __device__ real getInterpolatedDistributionForNoSlipBC(const real& q, const real& f, const real& fInverse, const real& feq,
                                                                   const real& omega)
 {
 
-    return (c1o1-q) / (c1o1+q) * (f - fInverse + (f + fInverse - c2o1 * feq * omega) / (c1o1 - omega)) * c1o2 
+    return (c1o1-q) / (c1o1+q) * (f - fInverse + (f + fInverse - c2o1 * feq * omega) / (c1o1 - omega)) * c1o2
            + (q * (f + fInverse)) / (c1o1 + q);
 }
 
 
-__inline__ __device__ real getInterpolatedDistributionForVeloWithPressureBC(const real& q, const real& f, const real& fInverse, const real& feq, 
+__inline__ __device__ real getInterpolatedDistributionForVeloWithPressureBC(const real& q, const real& f, const real& fInverse, const real& feq,
                                                                             const real& omega, const real& drho, const real& velocity, const real weight)
 {
 
-    return (c1o1-q) / (c1o1+q) * (f - fInverse + (f + fInverse - c2o1 * feq * omega) / (c1o1 - omega)) * c1o2 
+    return (c1o1-q) / (c1o1+q) * (f - fInverse + (f + fInverse - c2o1 * feq * omega) / (c1o1 - omega)) * c1o2
            + (q * (f + fInverse) - c6o1 * weight * velocity) / (c1o1 + q) - weight * drho;
 }
 

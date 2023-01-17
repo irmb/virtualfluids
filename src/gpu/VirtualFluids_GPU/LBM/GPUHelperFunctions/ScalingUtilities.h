@@ -111,23 +111,23 @@ __device__ __inline__ void calculateMomentsOnSourceNodes(Distributions27 &dist, 
     // example: kxxMzz: moment, second derivative in x direction minus the second derivative in z direction
     kxyFromfcNEQ = -c3o1 * omega *
                    ((f_MM0 + f_MMM + f_MMP - f_MP0 - f_MPM - f_MPP - f_PM0 - f_PMM - f_PMP + f_PP0 + f_PPM + f_PPP) /
-                        (c1o1 + drho) -
+                    (c1o1 + drho) -
                     ((velocityX * velocityY)));
     kyzFromfcNEQ = -c3o1 * omega *
                    ((f_0MM + f_PMM + f_MMM - f_0MP - f_PMP - f_MMP - f_0PM - f_PPM - f_MPM + f_0PP + f_PPP + f_MPP) /
-                        (c1o1 + drho) -
+                    (c1o1 + drho) -
                     ((velocityY * velocityZ)));
     kxzFromfcNEQ = -c3o1 * omega *
                    ((f_M0M + f_MMM + f_MPM - f_M0P - f_MMP - f_MPP - f_P0M - f_PMM - f_PPM + f_P0P + f_PMP + f_PPP) /
-                        (c1o1 + drho) -
+                    (c1o1 + drho) -
                     ((velocityX * velocityZ)));
     kxxMyyFromfcNEQ = -c3o2 * omega *
                       ((f_M0M + f_M00 + f_M0P - f_0MM - f_0M0 - f_0MP - f_0PM - f_0P0 - f_0PP + f_P0M + f_P00 + f_P0P) /
-                           (c1o1 + drho) -
+                       (c1o1 + drho) -
                        ((velocityX * velocityX - velocityY * velocityY)));
     kxxMzzFromfcNEQ = -c3o2 * omega *
                       ((f_MM0 + f_M00 + f_MP0 - f_0MM - f_0MP - f_00M - f_00P - f_0PM - f_0PP + f_PM0 + f_P00 + f_PP0) /
-                           (c1o1 + drho) -
+                       (c1o1 + drho) -
                        ((velocityX * velocityX - velocityZ * velocityZ)));
 }
 
