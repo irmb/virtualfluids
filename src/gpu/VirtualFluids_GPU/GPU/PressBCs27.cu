@@ -853,27 +853,15 @@ __global__ void QPressDeviceNEQ27(
     bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
+   //! The pressure boundary condition is executed in the following steps
+   //!
+
+   ////////////////////////////////////////////////////////////////////////////////
    //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
    //!
    const unsigned nodeIndex = getNodeIndex();
 
-    
-   // //////////////////////////////////////////////////////////////////////////
-   ////! The pressure boundary condition is executed in the following steps
-   ////!
-   //////////////////////////////////////////////////////////////////////////////////
-   ////! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
-   ////!
-   //const unsigned x = threadIdx.x;    // global x-index
-   //const unsigned y = blockIdx.x;     // global y-index
-   //const unsigned z = blockIdx.y;     // global z-index
-
-   //const unsigned nx = blockDim.x;
-   //const unsigned ny = gridDim.x;
-
-   //const unsigned kThread = nx*(ny*z + y) + x;
-
-   //////////////////////////////////////////////////////////////////////////
+   ////////////////////////////////////////////////////////////////////////////////
    //! - Run for all indices in size of boundary condition (numberOfBCnodes)
    //!
    if(nodeIndex < numberOfBCnodes)

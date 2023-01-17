@@ -703,6 +703,9 @@ __global__ void QSlipDeviceComp27(
     unsigned long long numberOfLBnodes, 
     bool isEvenTimestep)
 {
+   //! The slip boundary condition is executed in the following steps
+   //!
+
    ////////////////////////////////////////////////////////////////////////////////
    //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
    //!
@@ -1232,6 +1235,9 @@ __global__ void BBSlipDeviceComp27(
     unsigned long long numberOfLBnodes, 
     bool isEvenTimestep)
 {
+   //! The slip boundary condition is executed in the following steps
+   //!
+
    ////////////////////////////////////////////////////////////////////////////////
    //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
    //!
@@ -1719,6 +1725,9 @@ __global__ void QSlipDeviceComp27TurbViscosity(
     unsigned long long numberOfLBnodes, 
     bool isEvenTimestep)
 {
+   //! The slip boundary condition is executed in the following steps
+   //!
+
    ////////////////////////////////////////////////////////////////////////////////
    //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
    //!
@@ -2257,6 +2266,8 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
     unsigned long long numberOfLBnodes, 
     bool isEvenTimestep)
 {
+   //! The slip boundary condition is executed in the following steps
+   //!
    ////////////////////////////////////////////////////////////////////////////////
    //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
    //!
