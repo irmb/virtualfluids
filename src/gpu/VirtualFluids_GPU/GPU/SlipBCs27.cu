@@ -1228,7 +1228,6 @@ __global__ void BBSlipDeviceComp27(
     int* subgridDistanceIndices, 
     real* subgridDistances,
     unsigned int numberOfBCnodes,
-    real omega, 
     unsigned int* neighborX,
     unsigned int* neighborY,
     unsigned int* neighborZ,
