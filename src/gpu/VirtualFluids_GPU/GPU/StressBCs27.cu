@@ -319,7 +319,8 @@ __global__ void QStressDeviceComp27(real* DD,
       {
          velocityLB = vx1;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
-         f_W_in = getInterpolatedDistributionForNoSlipBC(q, f_E, f_W, feq, om_turb);
+         // f_W_in = getInterpolatedDistributionForNoSlipBC(q, f_E, f_W, feq, om_turb);
+         f_W_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_E, f_W, feq, om_turb, drho, c2o27);
          wallMomentumX += f_E+f_W_in;
       }
 
@@ -328,7 +329,8 @@ __global__ void QStressDeviceComp27(real* DD,
       {
          velocityLB = -vx1;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
-         f_E_in = getInterpolatedDistributionForNoSlipBC(q, f_W, f_E, feq, om_turb);
+         // f_E_in = getInterpolatedDistributionForNoSlipBC(q, f_W, f_E, feq, om_turb);
+         f_E_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_W, f_E, feq, om_turb, drho, c2o27);
          wallMomentumX -= f_W+f_E_in;
       }
 
@@ -337,7 +339,8 @@ __global__ void QStressDeviceComp27(real* DD,
       {
          velocityLB = vx2;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
-         f_S_in = getInterpolatedDistributionForNoSlipBC(q, f_N, f_S, feq, om_turb);
+         // f_S_in = getInterpolatedDistributionForNoSlipBC(q, f_N, f_S, feq, om_turb);
+         f_S_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_N, f_S, feq, om_turb, drho, c2o27);
          wallMomentumY += f_N+f_S_in;
       }
 
@@ -346,7 +349,8 @@ __global__ void QStressDeviceComp27(real* DD,
       {
          velocityLB = -vx2;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
-         f_N_in = getInterpolatedDistributionForNoSlipBC(q, f_S, f_N, feq, om_turb);
+         // f_N_in = getInterpolatedDistributionForNoSlipBC(q, f_S, f_N, feq, om_turb);
+         f_N_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_S, f_N, feq, om_turb, drho, c2o27);
          wallMomentumY -= f_S+f_N_in;
       }
 
@@ -355,7 +359,8 @@ __global__ void QStressDeviceComp27(real* DD,
       {
          velocityLB = vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
-         f_B_in = getInterpolatedDistributionForNoSlipBC(q, f_T, f_B, feq, om_turb);
+         // f_B_in = getInterpolatedDistributionForNoSlipBC(q, f_T, f_B, feq, om_turb);
+         f_B_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_T, f_B, feq, om_turb, drho, c2o27);
          wallMomentumZ += f_T+f_B_in;
       }
 
@@ -364,7 +369,8 @@ __global__ void QStressDeviceComp27(real* DD,
       {
          velocityLB = -vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
-         f_T_in = getInterpolatedDistributionForNoSlipBC(q, f_B, f_T, feq, om_turb);
+         // f_T_in = getInterpolatedDistributionForNoSlipBC(q, f_B, f_T, feq, om_turb);
+         f_T_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_B, f_T, feq, om_turb, drho, c2o27);
          wallMomentumZ -= f_B+f_T_in;
       }
 
@@ -373,7 +379,8 @@ __global__ void QStressDeviceComp27(real* DD,
       {
          velocityLB = vx1 + vx2;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
-         f_SW_in = getInterpolatedDistributionForNoSlipBC(q, f_NE, f_SW, feq, om_turb);
+         // f_SW_in = getInterpolatedDistributionForNoSlipBC(q, f_NE, f_SW, feq, om_turb);
+         f_SW_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_NE, f_SW, feq, om_turb, drho, c2o27);
          wallMomentumX += f_NE+f_SW_in;
          wallMomentumY += f_NE+f_SW_in;
       }
@@ -383,7 +390,8 @@ __global__ void QStressDeviceComp27(real* DD,
       {
          velocityLB = -vx1 - vx2;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
-         f_NE_in = getInterpolatedDistributionForNoSlipBC(q, f_SW, f_NE, feq, om_turb);
+         // f_NE_in = getInterpolatedDistributionForNoSlipBC(q, f_SW, f_NE, feq, om_turb);
+         f_NE_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_SW, f_NE, feq, om_turb, drho, c1o54);
          wallMomentumX -= f_SW+f_NE_in;
          wallMomentumY -= f_SW+f_NE_in;
       }
@@ -393,7 +401,8 @@ __global__ void QStressDeviceComp27(real* DD,
       {
          velocityLB = vx1 - vx2;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
-         f_NW_in = getInterpolatedDistributionForNoSlipBC(q, f_SE, f_NW, feq, om_turb);
+         // f_NW_in = getInterpolatedDistributionForNoSlipBC(q, f_SE, f_NW, feq, om_turb);
+         f_NW_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_SE, f_NW, feq, om_turb, drho, c1o54);
          wallMomentumX += f_SE+f_NW_in;
          wallMomentumY -= f_SE+f_NW_in;
       }
@@ -403,7 +412,8 @@ __global__ void QStressDeviceComp27(real* DD,
       {
          velocityLB = -vx1 + vx2;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
-         f_SE_in = getInterpolatedDistributionForNoSlipBC(q, f_NW, f_SE, feq, om_turb);
+         // f_SE_in = getInterpolatedDistributionForNoSlipBC(q, f_NW, f_SE, feq, om_turb);
+         f_SE_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_NW, f_SE, feq, om_turb, drho, c1o54);
          wallMomentumX -= f_NW+f_SE_in;
          wallMomentumY += f_NW+f_SE_in;
       }
@@ -413,7 +423,8 @@ __global__ void QStressDeviceComp27(real* DD,
       {
          velocityLB = vx1 + vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
-         f_BW_in = getInterpolatedDistributionForNoSlipBC(q, f_TE, f_BW, feq, om_turb);
+         // f_BW_in = getInterpolatedDistributionForNoSlipBC(q, f_TE, f_BW, feq, om_turb);
+         f_BW_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_TE, f_BW, feq, om_turb, drho, c1o54);
          wallMomentumX += f_TE+f_BW_in;
          wallMomentumZ += f_TE+f_BW_in;
       }
@@ -423,7 +434,8 @@ __global__ void QStressDeviceComp27(real* DD,
       {
          velocityLB = -vx1 - vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
-         f_TE_in = getInterpolatedDistributionForNoSlipBC(q, f_BW, f_TE, feq, om_turb);
+         // f_TE_in = getInterpolatedDistributionForNoSlipBC(q, f_BW, f_TE, feq, om_turb);
+         f_TE_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_BW, f_TE, feq, om_turb, drho, c1o54);
          wallMomentumX -= f_BW+f_TE_in;
          wallMomentumZ -= f_BW+f_TE_in;
       }
@@ -433,7 +445,8 @@ __global__ void QStressDeviceComp27(real* DD,
       {
          velocityLB = vx1 - vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
-         f_TW_in = getInterpolatedDistributionForNoSlipBC(q, f_BE, f_TW, feq, om_turb);
+         // f_TW_in = getInterpolatedDistributionForNoSlipBC(q, f_BE, f_TW, feq, om_turb);
+         f_TW_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_BE, f_TW, feq, om_turb, drho, c1o54);
          wallMomentumX += f_BE+f_TW_in;
          wallMomentumZ -= f_BE+f_TW_in;
       }
@@ -443,7 +456,8 @@ __global__ void QStressDeviceComp27(real* DD,
       {
          velocityLB = -vx1 + vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
-         f_BE_in = getInterpolatedDistributionForNoSlipBC(q, f_TW, f_BE, feq, om_turb);
+         // f_BE_in = getInterpolatedDistributionForNoSlipBC(q, f_TW, f_BE, feq, om_turb);
+         f_BE_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_TW, f_BE, feq, om_turb, drho, c1o54);
          wallMomentumX -= f_TW+f_BE_in;
          wallMomentumZ += f_TW+f_BE_in;
       }
@@ -453,7 +467,8 @@ __global__ void QStressDeviceComp27(real* DD,
       {
          velocityLB = vx2 + vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
-         f_BS_in = getInterpolatedDistributionForNoSlipBC(q, f_TN, f_BS, feq, om_turb);
+         // f_BS_in = getInterpolatedDistributionForNoSlipBC(q, f_TN, f_BS, feq, om_turb);
+         f_BS_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_TN, f_BS, feq, om_turb, drho, c1o54);
          wallMomentumY += f_TN+f_BS_in;
          wallMomentumZ += f_TN+f_BS_in;
       }
@@ -463,7 +478,8 @@ __global__ void QStressDeviceComp27(real* DD,
       {
          velocityLB = -vx2 - vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
-         f_TN_in = getInterpolatedDistributionForNoSlipBC(q, f_BS, f_TN, feq, om_turb);
+         // f_TN_in = getInterpolatedDistributionForNoSlipBC(q, f_BS, f_TN, feq, om_turb);
+         f_TN_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_BS, f_TN, feq, om_turb, drho, c1o54);
          wallMomentumY -= f_BS+f_TN_in;
          wallMomentumZ -= f_BS+f_TN_in;
       }
@@ -473,7 +489,8 @@ __global__ void QStressDeviceComp27(real* DD,
       {
          velocityLB = vx2 - vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
-         f_TS_in = getInterpolatedDistributionForNoSlipBC(q, f_BN, f_TS, feq, om_turb);
+         // f_TS_in = getInterpolatedDistributionForNoSlipBC(q, f_BN, f_TS, feq, om_turb);
+         f_TS_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_BN, f_TS, feq, om_turb, drho, c1o54);
          wallMomentumY += f_BN+f_TS_in;
          wallMomentumZ -= f_BN+f_TS_in;
       }
@@ -483,7 +500,8 @@ __global__ void QStressDeviceComp27(real* DD,
       {
          velocityLB = -vx2 + vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
-         f_BN_in = getInterpolatedDistributionForNoSlipBC(q, f_TS, f_BN, feq, om_turb);
+         // f_BN_in = getInterpolatedDistributionForNoSlipBC(q, f_TS, f_BN, feq, om_turb);
+         f_BN_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_TS, f_BN, feq, om_turb, drho, c1o54);
          wallMomentumY -= f_TS+f_BN_in;
          wallMomentumZ += f_TS+f_BN_in;
       }
@@ -493,7 +511,8 @@ __global__ void QStressDeviceComp27(real* DD,
       {
          velocityLB = vx1 + vx2 + vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
-         f_BSW_in = getInterpolatedDistributionForNoSlipBC(q, f_TNE, f_BSW, feq, om_turb);
+         // f_BSW_in = getInterpolatedDistributionForNoSlipBC(q, f_TNE, f_BSW, feq, om_turb);
+         f_BSW_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_TNE, f_BSW, feq, om_turb, drho, c1o216);
          wallMomentumX += f_TNE+f_BSW_in;
          wallMomentumY += f_TNE+f_BSW_in;
          wallMomentumZ += f_TNE+f_BSW_in;
@@ -504,7 +523,8 @@ __global__ void QStressDeviceComp27(real* DD,
       {
          velocityLB = -vx1 - vx2 - vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
-         f_TNE_in = getInterpolatedDistributionForNoSlipBC(q, f_BSW, f_TNE, feq, om_turb);
+         // f_TNE_in = getInterpolatedDistributionForNoSlipBC(q, f_BSW, f_TNE, feq, om_turb);
+         f_TNE_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_BSW, f_TNE, feq, om_turb, drho, c1o216);
          wallMomentumX -= f_BSW+f_TNE_in;
          wallMomentumY -= f_BSW+f_TNE_in;
          wallMomentumZ -= f_BSW+f_TNE_in;
@@ -515,7 +535,8 @@ __global__ void QStressDeviceComp27(real* DD,
       {
          velocityLB = vx1 + vx2 - vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
-         f_TSW_in = getInterpolatedDistributionForNoSlipBC(q, f_BNE, f_TSW, feq, om_turb);
+         // f_TSW_in = getInterpolatedDistributionForNoSlipBC(q, f_BNE, f_TSW, feq, om_turb);
+         f_TSW_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_BNE, f_TSW, feq, om_turb, drho, c1o216);
          wallMomentumX += f_BNE+f_TSW_in;
          wallMomentumY += f_BNE+f_TSW_in;
          wallMomentumZ -= f_BNE+f_TSW_in;
@@ -526,7 +547,8 @@ __global__ void QStressDeviceComp27(real* DD,
       {
          velocityLB = -vx1 - vx2 + vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
-         f_BNE_in = getInterpolatedDistributionForNoSlipBC(q, f_TSW, f_BNE, feq, om_turb);
+         // f_BNE_in = getInterpolatedDistributionForNoSlipBC(q, f_TSW, f_BNE, feq, om_turb);
+         f_BNE_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_TSW, f_BNE, feq, om_turb, drho, c1o216);
          wallMomentumX -= f_TSW+f_BNE_in;
          wallMomentumY -= f_TSW+f_BNE_in;
          wallMomentumZ += f_TSW+f_BNE_in;
@@ -537,7 +559,8 @@ __global__ void QStressDeviceComp27(real* DD,
       {
          velocityLB = vx1 - vx2 + vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
-         f_BNW_in = getInterpolatedDistributionForNoSlipBC(q, f_TSE, f_BNW, feq, om_turb);
+         // f_BNW_in = getInterpolatedDistributionForNoSlipBC(q, f_TSE, f_BNW, feq, om_turb);
+         f_BNW_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_TSE, f_BNW, feq, om_turb, drho, c1o216);
          wallMomentumX += f_TSE+f_BNW_in;
          wallMomentumY -= f_TSE+f_BNW_in;
          wallMomentumZ += f_TSE+f_BNW_in;
@@ -548,7 +571,8 @@ __global__ void QStressDeviceComp27(real* DD,
       {
          velocityLB = -vx1 + vx2 - vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
-         f_TSE_in = getInterpolatedDistributionForNoSlipBC(q, f_BNW, f_TSE, feq, om_turb);
+         // f_TSE_in = getInterpolatedDistributionForNoSlipBC(q, f_BNW, f_TSE, feq, om_turb);
+         f_TSE_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_BNW, f_TSE, feq, om_turb, drho, c1o216);
          wallMomentumX -= f_BNW+f_TSE_in;
          wallMomentumY += f_BNW+f_TSE_in;
          wallMomentumZ -= f_BNW+f_TSE_in;
@@ -559,7 +583,8 @@ __global__ void QStressDeviceComp27(real* DD,
       {
          velocityLB = vx1 - vx2 - vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
-         f_TNW_in = getInterpolatedDistributionForNoSlipBC(q, f_BSE, f_TNW, feq, om_turb);
+         // f_TNW_in = getInterpolatedDistributionForNoSlipBC(q, f_BSE, f_TNW, feq, om_turb);
+         f_TNW_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_BSE, f_TNW, feq, om_turb, drho, c1o216);
          wallMomentumX += f_BSE+f_TNW_in;
          wallMomentumY -= f_BSE+f_TNW_in;
          wallMomentumZ -= f_BSE+f_TNW_in;
@@ -570,7 +595,8 @@ __global__ void QStressDeviceComp27(real* DD,
       {
          velocityLB = -vx1 + vx2 + vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
-         f_BSE_in = getInterpolatedDistributionForNoSlipBC(q, f_TNW, f_BSE, feq, om_turb);
+         // f_BSE_in = getInterpolatedDistributionForNoSlipBC(q, f_TNW, f_BSE, feq, om_turb);
+         f_BSE_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_TNW, f_BSE, feq, om_turb, drho, c1o216);
          wallMomentumX -= f_TNW+f_BSE_in;
          wallMomentumY += f_TNW+f_BSE_in;
          wallMomentumZ += f_TNW+f_BSE_in;
@@ -581,7 +607,7 @@ __global__ void QStressDeviceComp27(real* DD,
       // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       real VeloX=0.0, VeloY=0.0, VeloZ=0.0;
 
-      q = 0.5f;
+      q = q_dirB[k];
       real eps = 0.001f;
 
       iMEM( k, k_N[k],
