@@ -64,7 +64,7 @@ void bflow(string configname)
       double Omega = 2 * UbMath::PI / 60.0 * N; //rad/s
       //double mu    = 5; //Pa s
       double R     = 0.165 / 2.0; //m
-      double rho   = 970; //kg/m^3
+      double rho = 2150;//  970; //kg/m^3
       double Re    = Omega * R * R * rho / mu;
 
       //double nuLB = OmegaLB * R * 1e3 * R * 1e3 / Re;
@@ -420,7 +420,7 @@ void bflow(string configname)
       SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
       //writeMQCoProcessor->process(100);
 
-      SPtr<UbScheduler> forceSch(new UbScheduler(1000));
+      SPtr<UbScheduler> forceSch(new UbScheduler(100));
       SPtr<CalculateTorqueCoProcessor> fp = make_shared<CalculateTorqueCoProcessor>(grid, forceSch, outputPath + "/torque/TorqueRotor.csv", comm);
       fp->addInteractor(rotorInt);
       SPtr<CalculateTorqueCoProcessor> fp2 = make_shared<CalculateTorqueCoProcessor>(grid, forceSch, outputPath + "/torque/TorqueStator.csv", comm);
