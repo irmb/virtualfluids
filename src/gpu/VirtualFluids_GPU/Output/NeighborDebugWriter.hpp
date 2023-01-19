@@ -5,25 +5,27 @@
 #include "Logger.h"
 #include "Parameter/Parameter.h"
 #include "basics/utilities/UbSystem.h"
-#include "grid/NodeValues.h"
+#include "gpu/GridGenerator/grid/NodeValues.h"
 #include "lbm/constants/D3Q27.h"
 #include <basics/writer/WbWriterVtkXmlBinary.h>
 
-#include "Utilities/FindNeighbors.h"
-#include "VirtualFluids_GPU/Communication/Communicator.h"
 #include "Core/StringUtilities/StringUtil.h"
+#include "Utilities/FindNeighbors.h"
+#include "gpu/VirtualFluids_GPU/Communication/Communicator.h"
 
 namespace NeighborDebugWriter
 {
 
-inline void writeNeighborLinkLines(Parameter *para, const int level, const unsigned long long numberOfNodes, const int direction,
-                                   const std::string &name)
+inline void writeNeighborLinkLines(Parameter *para, int level, int direction, const std::string &name,
+                                   WbWriter *writer)
 {
     VF_LOG_INFO("Write node links in direction {}.", direction);
-    std::vector<UbTupleFloat3> nodes(numberOfNodes * 2);
-    std::vector<UbTupleInt2> cells(numberOfNodes);
+    std::vector<UbTupleFloat3> nodes;
+    nodes.reserve(para->getParH(level)->numberOfNodes);
+    std::vector<UbTupleInt2> cells;
+    cells.reserve(para->getParH(level)->numberOfNodes/2);
 
-    for (size_t position = 0; position < numberOfNodes; position++) {
+    for (size_t position = 0; position < para->getParH(level)->numberOfNodes; position++) {
         if (para->getParH(level)->typeOfGridNode[position] != GEO_FLUID)
             continue;
 
@@ -42,7 +44,7 @@ inline void writeNeighborLinkLines(Parameter *para, const int level, const unsig
 
         cells.emplace_back((int)nodes.size() - 2, (int)nodes.size() - 1);
     }
-    WbWriterVtkXmlBinary::getInstance()->writeLines(name, nodes, cells);
+    writer->writeLines(name, nodes, cells);
 }
 
 inline void writeNeighborLinkLinesDebug(Parameter *para)
@@ -51,7 +53,7 @@ inline void writeNeighborLinkLinesDebug(Parameter *para)
         for (size_t direction = vf::lbm::dir::STARTDIR; direction <= vf::lbm::dir::ENDDIR; direction++) {
             const std::string fileName = para->getFName() + "_" + StringUtil::toString<int>(level) + "_Link_" +
                                          std::to_string(direction) + "_Debug.vtk";
-            writeNeighborLinkLines(para, level, para->getParH(level)->numberOfNodes, (int)direction, fileName);
+            writeNeighborLinkLines(para, level, (int)direction, fileName, WbWriterVtkXmlBinary::getInstance());
         }
     }
 }
