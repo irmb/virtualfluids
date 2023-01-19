@@ -85,7 +85,7 @@ int main()
         const real L = 1.0;
         const real Re = 1000.0;
         const real velocity = 1.0;
-        const real dt = (real)0.5e-3;
+        const real velocityLB = 0.05; // LB units
         const uint nx = 64;
 
         const uint timeStepOut = 1000;
@@ -128,7 +128,7 @@ int main()
         // compute parameters in lattice units
         //////////////////////////////////////////////////////////////////////////
 
-        const real velocityLB = velocity * dt / dx; // LB units
+        const real dt  = velocityLB / velocity * dx;
 
         const real vxLB = velocityLB / sqrt(2.0); // LB units
         const real vyLB = velocityLB / sqrt(2.0); // LB units
