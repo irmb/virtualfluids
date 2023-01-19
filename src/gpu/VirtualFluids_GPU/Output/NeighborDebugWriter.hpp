@@ -20,12 +20,14 @@ inline void writeNeighborLinkLines(Parameter *para, int level, int direction, co
                                    WbWriter *writer)
 {
     VF_LOG_INFO("Write node links in direction {}.", direction);
-    std::vector<UbTupleFloat3> nodes;
-    nodes.reserve(para->getParH(level)->numberOfNodes);
-    std::vector<UbTupleInt2> cells;
-    cells.reserve(para->getParH(level)->numberOfNodes/2);
 
-    for (size_t position = 0; position < para->getParH(level)->numberOfNodes; position++) {
+    const unsigned long long numberOfNodes = para->getParH(level)->numberOfNodes;
+    std::vector<UbTupleFloat3> nodes;
+    nodes.reserve(numberOfNodes);
+    std::vector<UbTupleInt2> cells;
+    cells.reserve(numberOfNodes/2);
+
+    for (size_t position = 0; position < numberOfNodes; position++) {
         if (para->getParH(level)->typeOfGridNode[position] != GEO_FLUID)
             continue;
 
