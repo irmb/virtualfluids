@@ -200,3 +200,88 @@ TEST(ParameterTest, userMissedSlashMultiGPU)
     EXPECT_THAT(para.getGridPath(), testing::Eq("gridPathTest/0/"));
     EXPECT_THAT(para.getConcentration(), testing::Eq("gridPathTest/0/conc.dat"));
 }
+
+TEST(ParameterTest, CumulantK17_VelocityIsTooHigh_expectWarning)
+{
+    testing::internal::CaptureStdout();
+
+    Parameter para;
+    para.setVelocityLB(0.11);
+    para.setMainKernel("CumulantK17");
+
+    para.initLBMSimulationParameter();
+
+    std::string output = testing::internal::GetCapturedStdout();
+    EXPECT_FALSE(output.find("warning") == std::string::npos);
+}
+
+TEST(ParameterTest, CumulantK17_VelocityIsOk_expectNoWarning)
+{
+    testing::internal::CaptureStdout();
+
+    Parameter para;
+    para.setVelocityLB(0.09);
+    para.setMainKernel("CumulantK17");
+
+    para.initLBMSimulationParameter();
+
+    std::string output = testing::internal::GetCapturedStdout();
+    EXPECT_TRUE(output.find("warning") == std::string::npos);
+}
+
+TEST(ParameterTest, NotCumulantK17_VelocityIsTooHigh_expectNoWarning)
+{
+    testing::internal::CaptureStdout();
+
+    Parameter para;
+    para.setVelocityLB(42);
+    para.setMainKernel("K");
+
+    para.initLBMSimulationParameter();
+
+    std::string output = testing::internal::GetCapturedStdout();
+    EXPECT_TRUE(output.find("warning") == std::string::npos);
+}
+
+
+TEST(ParameterTest, CumulantK17_ViscosityIsTooHigh_expectWarning)
+{
+    testing::internal::CaptureStdout();
+
+    Parameter para;
+    para.setViscosityLB(0.024);
+    para.setMainKernel("CumulantK17");
+
+    para.initLBMSimulationParameter();
+
+    std::string output = testing::internal::GetCapturedStdout();
+    EXPECT_FALSE(output.find("warning") == std::string::npos);
+}
+
+TEST(ParameterTest, CumulantK17_ViscosityIsOk_expectNoWarning)
+{
+    testing::internal::CaptureStdout();
+
+    Parameter para;
+    para.setViscosityLB(0.023);
+    para.setMainKernel("CumulantK17");
+
+    para.initLBMSimulationParameter();
+
+    std::string output = testing::internal::GetCapturedStdout();
+    EXPECT_TRUE(output.find("warning") == std::string::npos);
+}
+
+TEST(ParameterTest, NotCumulantK17_ViscosityIsTooHigh_expectNoWarning)
+{
+    testing::internal::CaptureStdout();
+
+    Parameter para;
+    para.setViscosityLB(10);
+    para.setMainKernel("K");
+
+    para.initLBMSimulationParameter();
+
+    std::string output = testing::internal::GetCapturedStdout();
+    EXPECT_TRUE(output.find("warning") == std::string::npos);
+}

@@ -938,6 +938,8 @@ private:
 
     void setPathAndFilename(std::string fname);
 
+    void checkParameterValidityCumulantK17();
+
 private:
     bool compOn{ false };
     bool diffOn{ false };
