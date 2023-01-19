@@ -1,15 +1,6 @@
-#include "NeighborDebugWriter.hpp"
-#include "LBM/LB.h"
-#include "PreCollisionInteractor/PreCollisionInteractor.h"
-#include "UbTuple.h"
-#include "gpu/VirtualFluids_GPU/Utilities/testUtilitiesGPU.h"
-#include "lbm/constants/D3Q27.h"
 #include <gmock/gmock.h>
-#include <gtest/gtest.h>
-#include <iostream>
-#include <iterator>
-#include <memory>
-#include <vector>
+#include "NeighborDebugWriter.hpp"
+#include "gpu/VirtualFluids_GPU/Utilities/testUtilitiesGPU.h"
 
 class WbWriterSpy : public WbWriter
 {
