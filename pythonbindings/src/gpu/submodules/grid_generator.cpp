@@ -42,6 +42,10 @@
 #include "gpu/GridGenerator/grid/GridBuilder/GridBuilder.h"
 #include "gpu/GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "gpu/GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
+#include "lbm/constants/NumericConstants.h"
+
+using namespace vf::lbm::constant;
+
 
 namespace grid_generator
 {
@@ -91,8 +95,8 @@ namespace grid_generator
         .def("set_pressure_boundary_condition", &LevelGridBuilder::setPressureBoundaryCondition, py::arg("side_type"), py::arg("rho"))
         .def("set_periodic_boundary_condition", &LevelGridBuilder::setPeriodicBoundaryCondition, py::arg("periodic_x"), py::arg("periodic_y"), py::arg("periodic_z"))
         .def("set_no_slip_boundary_condition", &LevelGridBuilder::setNoSlipBoundaryCondition, py::arg("side_type"))
-        .def("set_precursor_boundary_condition", &LevelGridBuilder::setPrecursorBoundaryCondition, py::arg("side_type"), py::arg("file_collection"), py::arg("n_t_read"), py::arg("velocity_x")=0.0f, py::arg("velocity_y")=0.0f, py::arg("velocity_z")=0.0f, py::arg("file_level_to_grid_level_map")=std::vector<uint>())
-        .def("set_stress_boundary_condition", &LevelGridBuilder::setStressBoundaryCondition, py::arg("side_type"), py::arg("normal_x"), py::arg("normal_y"), py::arg("normal_z"), py::arg("sampling_offset"), py::arg("z0"), py::arg("dx"), py::arg("q"));
+        .def("set_precursor_boundary_condition", &LevelGridBuilder::setPrecursorBoundaryCondition, py::arg("side_type"), py::arg("file_collection"), py::arg("n_t_read"), py::arg("velocity_x")=c0o1, py::arg("velocity_y")=c0o1, py::arg("velocity_z")=c0o1, py::arg("file_level_to_grid_level_map")=std::vector<uint>())
+        .def("set_stress_boundary_condition", &LevelGridBuilder::setStressBoundaryCondition, py::arg("side_type"), py::arg("normal_x"), py::arg("normal_y"), py::arg("normal_z"), py::arg("sampling_offset"), py::arg("z0"), py::arg("dx"), py::arg("q")=c1o2);
 
         py::class_<MultipleGridBuilder, LevelGridBuilder, std::shared_ptr<MultipleGridBuilder>>(gridGeneratorModule, "MultipleGridBuilder")
         .def_static("make_shared", &MultipleGridBuilder::makeShared, py::return_value_policy::reference, py::arg("grid_factory"))
