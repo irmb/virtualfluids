@@ -117,12 +117,7 @@ struct BoundaryCondition {
     float bcVelocityX2;
     float bcVelocityX3;
     float bcDensity;
-
-    float bcLodiDensity;
-    float bcLodiVelocityX1;
-    float bcLodiVelocityX2;
-    float bcLodiVelocityX3;
-    float bcLodiLentgh;
+    float bcPhaseField;
 
     float nx1, nx2, nx3;
     float q[26];
@@ -172,6 +167,7 @@ struct DSArraysPresence {
     bool isRelaxationFactorPresent;
     bool isPhaseField1Present;
     bool isPhaseField2Present;
+    bool isPressureFieldPresent;
 };
 } // namespace MPIIODataStructures
 #endif

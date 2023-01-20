@@ -31,15 +31,16 @@ CumulantK17Unified::CumulantK17Unified(std::shared_ptr<Parameter> para, int leve
 
 void CumulantK17Unified::run()
 {
-    GPUKernelParameter kernelParameter{ para->getParD(level)->omega,
-                                                 para->getParD(level)->typeOfGridNode,
-                                                 para->getParD(level)->neighborX,
-                                                 para->getParD(level)->neighborY,
-                                                 para->getParD(level)->neighborZ,
-                                                 para->getParD(level)->distributions.f[0],
-                                                 (int)para->getParD(level)->numberOfNodes,
-                                                 para->getParD(level)->forcing,
-                                                 para->getParD(level)->isEvenTimestep };
+    GPUKernelParameter kernelParameter{
+        para->getParD(level)->omega,
+        para->getParD(level)->typeOfGridNode,
+        para->getParD(level)->neighborX,
+        para->getParD(level)->neighborY,
+        para->getParD(level)->neighborZ,
+        para->getParD(level)->distributions.f[0],
+        (int)para->getParD(level)->numberOfNodes,
+        para->getParD(level)->forcing,
+        para->getParD(level)->isEvenTimestep };
 
     auto lambda = [] __device__(lbm::KernelParameter parameter) {
         return lbm::cumulantChimera(parameter, lbm::setRelaxationRatesK17);

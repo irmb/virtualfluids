@@ -1,28 +1,28 @@
 
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
 //           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
 //
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
 //  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
+//  License as published by the Free Software Foundation, either version 3 of
 //  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 //  for more details.
-//  
+//
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
@@ -32,17 +32,17 @@
 //! \brief Kernel for CumulantK17 including different turbulence models and options for local body forces and writing macroscopic variables
 //!
 //! CumulantK17 kernel using chimera transformations and quartic limiters as present in Geier et al. (2017). Additional options are three different
-//! eddy-viscosity turbulence models (Smagorinsky, AMD, QR) that can be set via the template parameter turbulenceModel (with default 
-//! TurbulenceModel::None). 
+//! eddy-viscosity turbulence models (Smagorinsky, AMD, QR) that can be set via the template parameter turbulenceModel (with default
+//! TurbulenceModel::None).
 //! The kernel is executed separately for each subset of fluid node indices with a different tag CollisionTemplate. For each subset, only the locally
-//! required options are switched on ( \param writeMacroscopicVariables and/or \param applyBodyForce) in order to minimize memory accesses. The default 
-//! refers to the plain cumlant kernel (CollisionTemplate::Default). 
-//! Nodes are added to subsets (taggedFluidNodes) in Simulation::init using a corresponding tag with different values of CollisionTemplate. These subsets 
+//! required options are switched on ( \param writeMacroscopicVariables and/or \param applyBodyForce) in order to minimize memory accesses. The default
+//! refers to the plain cumlant kernel (CollisionTemplate::Default).
+//! Nodes are added to subsets (taggedFluidNodes) in Simulation::init using a corresponding tag with different values of CollisionTemplate. These subsets
 //! are provided by the utilized PostCollisionInteractiors depending on they specifc requirements (e.g. writeMacroscopicVariables for probes).
 
 //=======================================================================================
 /* Device code */
-#include "LBM/LB.h" 
+#include "LBM/LB.h"
 #include "lbm/constants/D3Q27.h"
 #include <lbm/constants/NumericConstants.h>
 #include "Kernel/Utilities/DistributionHelper.cuh"
@@ -57,25 +57,25 @@ using namespace vf::lbm::dir;
 ////////////////////////////////////////////////////////////////////////////////
 template<TurbulenceModel turbulenceModel, bool writeMacroscopicVariables, bool applyBodyForce>
 __global__ void LB_Kernel_CumulantK17(
-	real omega_in,
-	uint* neighborX,
-	uint* neighborY,
-	uint* neighborZ,
-	real* distributions,
+    real omega_in,
+    uint* neighborX,
+    uint* neighborY,
+    uint* neighborZ,
+    real* distributions,
     real* rho,
     real* vx,
     real* vy,
     real* vz,
     real* turbulentViscosity,
     real SGSconstant,
-	unsigned long numberOfLBnodes,
-	int level,
-	real* forces,
+    unsigned long long numberOfLBnodes,
+    int level,
+    real* forces,
     real* bodyForceX,
     real* bodyForceY,
     real* bodyForceZ,
-	real* quadricLimiters,
-	bool isEvenTimestep,
+    real* quadricLimiters,
+    bool isEvenTimestep,
     const uint *fluidNodeIndices,
     uint numberOfFluidNodes)
 {
@@ -91,10 +91,10 @@ __global__ void LB_Kernel_CumulantK17(
     //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
     //!
     const unsigned kThread = vf::gpu::getNodeIndex();
-    
+
     //////////////////////////////////////////////////////////////////////////
     // run for all indices in size_Mat and fluid nodes
-    if (kThread >= numberOfFluidNodes) 
+    if (kThread >= numberOfFluidNodes)
         return;
     ////////////////////////////////////////////////////////////////////////////////
     //! - Get the node index from the array containing all indices of fluid nodes
@@ -202,7 +202,7 @@ __global__ void LB_Kernel_CumulantK17(
     real vvz = ((((f_PPP - f_MMM) + (f_PMP - f_MPM)) + ((f_MPP - f_PMM) + (f_MMP - f_PPM))) +
                 (((f_0MP - f_0PM) + (f_0PP - f_0MM)) + ((f_M0P - f_P0M) + (f_P0P - f_M0M))) + (f_00P - f_00M)) *
             oneOverRho;
-    
+
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Add half of the acceleration (body force) to the velocity as in Eq. (42) \ref
     //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015),
@@ -212,13 +212,13 @@ __global__ void LB_Kernel_CumulantK17(
     for (size_t i = 1; i <= level; i++) {
         factor *= c2o1;
     }
-    
+
     real fx = forces[0];
     real fy = forces[1];
     real fz = forces[2];
 
     if( applyBodyForce ){
-        fx += bodyForceX[k_000]; 
+        fx += bodyForceX[k_000];
         fy += bodyForceY[k_000];
         fz += bodyForceZ[k_000];
 
@@ -232,7 +232,7 @@ __global__ void LB_Kernel_CumulantK17(
         vvx += acc_x;
         vvy += acc_y;
         vvz += acc_z;
-        
+
         // Reset body force. To be used when not using round-off correction.
         bodyForceX[k_000] = 0.0f;
         bodyForceY[k_000] = 0.0f;
@@ -243,9 +243,9 @@ __global__ void LB_Kernel_CumulantK17(
         //!
         //!> Similar to Kahan summation algorithm (https://en.wikipedia.org/wiki/Kahan_summation_algorithm)
         //!> Essentially computes the round-off error of the applied force and adds it in the next time step as a compensation.
-        //!> Seems to be necesseary at very high Re boundary layers, where the forcing and velocity can  
+        //!> Seems to be necesseary at very high Re boundary layers, where the forcing and velocity can
         //!> differ by several orders of magnitude.
-        //!> \note 16/05/2022: Testing, still ongoing! 
+        //!> \note 16/05/2022: Testing, still ongoing!
         //!
         // bodyForceX[k_000] = (acc_x-(vvx-vx))*factor*c2o1;
         // bodyForceY[k_000] = (acc_y-(vvy-vy))*factor*c2o1;
@@ -256,7 +256,7 @@ __global__ void LB_Kernel_CumulantK17(
         vvy += fy * c1o2 / factor;
         vvz += fz * c1o2 / factor;
     }
-    
+
 
     ////////////////////////////////////////////////////////////////////////////////////
     // calculate the square of velocities for this lattice node
@@ -607,7 +607,7 @@ __global__ void LB_Kernel_CumulantK17(
     m_001 = -m_001;
 
     //Write to array here to distribute read/write
-    if(writeMacroscopicVariables)
+    if(writeMacroscopicVariables || turbulenceModel==TurbulenceModel::AMD)
     {
         rho[k_000] = drho;
         vx[k_000] = vvx;
@@ -664,63 +664,63 @@ __global__ void LB_Kernel_CumulantK17(
     //! <a href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017),
     //! DOI:10.3390/computation5020019 ]</b></a>
     //!
-    (dist.f[DIR_P00])[k_000]    = f_M00;
-    (dist.f[DIR_M00])[k_M00]    = f_P00;
-    (dist.f[DIR_0P0])[k_000]    = f_0M0;
-    (dist.f[DIR_0M0])[k_0M0]    = f_0P0;
-    (dist.f[DIR_00P])[k_000]    = f_00M;
-    (dist.f[DIR_00M])[k_00M]    = f_00P;
-    (dist.f[DIR_PP0])[k_000]   = f_MM0;
-    (dist.f[DIR_MM0])[k_MM0]   = f_PP0;
-    (dist.f[DIR_PM0])[k_0M0]   = f_MP0;
-    (dist.f[DIR_MP0])[k_M00]   = f_PM0;
-    (dist.f[DIR_P0P])[k_000]   = f_M0M;
-    (dist.f[DIR_M0M])[k_M0M]   = f_P0P;
-    (dist.f[DIR_P0M])[k_00M]   = f_M0P;
-    (dist.f[DIR_M0P])[k_M00]   = f_P0M;
-    (dist.f[DIR_0PP])[k_000]   = f_0MM;
-    (dist.f[DIR_0MM])[k_0MM]   = f_0PP;
-    (dist.f[DIR_0PM])[k_00M]   = f_0MP;
-    (dist.f[DIR_0MP])[k_0M0]   = f_0PM;
+    (dist.f[DIR_P00])[k_000] = f_M00;
+    (dist.f[DIR_M00])[k_M00] = f_P00;
+    (dist.f[DIR_0P0])[k_000] = f_0M0;
+    (dist.f[DIR_0M0])[k_0M0] = f_0P0;
+    (dist.f[DIR_00P])[k_000] = f_00M;
+    (dist.f[DIR_00M])[k_00M] = f_00P;
+    (dist.f[DIR_PP0])[k_000] = f_MM0;
+    (dist.f[DIR_MM0])[k_MM0] = f_PP0;
+    (dist.f[DIR_PM0])[k_0M0] = f_MP0;
+    (dist.f[DIR_MP0])[k_M00] = f_PM0;
+    (dist.f[DIR_P0P])[k_000] = f_M0M;
+    (dist.f[DIR_M0M])[k_M0M] = f_P0P;
+    (dist.f[DIR_P0M])[k_00M] = f_M0P;
+    (dist.f[DIR_M0P])[k_M00] = f_P0M;
+    (dist.f[DIR_0PP])[k_000] = f_0MM;
+    (dist.f[DIR_0MM])[k_0MM] = f_0PP;
+    (dist.f[DIR_0PM])[k_00M] = f_0MP;
+    (dist.f[DIR_0MP])[k_0M0] = f_0PM;
     (dist.f[DIR_000])[k_000] = f_000;
-    (dist.f[DIR_PPP])[k_000]  = f_MMM;
-    (dist.f[DIR_PMP])[k_0M0]  = f_MPM;
-    (dist.f[DIR_PPM])[k_00M]  = f_MMP;
-    (dist.f[DIR_PMM])[k_0MM]  = f_MPP;
-    (dist.f[DIR_MPP])[k_M00]  = f_PMM;
-    (dist.f[DIR_MMP])[k_MM0]  = f_PPM;
-    (dist.f[DIR_MPM])[k_M0M]  = f_PMP;
-    (dist.f[DIR_MMM])[k_MMM]  = f_PPP;
+    (dist.f[DIR_PPP])[k_000] = f_MMM;
+    (dist.f[DIR_PMP])[k_0M0] = f_MPM;
+    (dist.f[DIR_PPM])[k_00M] = f_MMP;
+    (dist.f[DIR_PMM])[k_0MM] = f_MPP;
+    (dist.f[DIR_MPP])[k_M00] = f_PMM;
+    (dist.f[DIR_MMP])[k_MM0] = f_PPM;
+    (dist.f[DIR_MPM])[k_M0M] = f_PMP;
+    (dist.f[DIR_MMM])[k_MMM] = f_PPP;
 }
 
-template __global__ void LB_Kernel_CumulantK17 < TurbulenceModel::AMD, true, true > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+template __global__ void LB_Kernel_CumulantK17 < TurbulenceModel::AMD, true, true > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long long numberOfLBnodes, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
 
-template __global__ void LB_Kernel_CumulantK17 < TurbulenceModel::Smagorinsky, true, true > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+template __global__ void LB_Kernel_CumulantK17 < TurbulenceModel::Smagorinsky, true, true > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long long numberOfLBnodes, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
 
-template __global__ void LB_Kernel_CumulantK17 < TurbulenceModel::QR, true, true > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+template __global__ void LB_Kernel_CumulantK17 < TurbulenceModel::QR, true, true > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long long numberOfLBnodes, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
 
-template __global__ void LB_Kernel_CumulantK17 < TurbulenceModel::None, true, true > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+template __global__ void LB_Kernel_CumulantK17 < TurbulenceModel::None, true, true > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long long numberOfLBnodes, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
 
-template __global__ void LB_Kernel_CumulantK17 < TurbulenceModel::AMD, true, false > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+template __global__ void LB_Kernel_CumulantK17 < TurbulenceModel::AMD, true, false > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long long numberOfLBnodes, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
 
-template __global__ void LB_Kernel_CumulantK17 < TurbulenceModel::Smagorinsky, true, false > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+template __global__ void LB_Kernel_CumulantK17 < TurbulenceModel::Smagorinsky, true, false > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long long numberOfLBnodes, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
 
-template __global__ void LB_Kernel_CumulantK17 < TurbulenceModel::QR, true, false > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+template __global__ void LB_Kernel_CumulantK17 < TurbulenceModel::QR, true, false > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long long numberOfLBnodes, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
 
-template __global__ void LB_Kernel_CumulantK17 < TurbulenceModel::None, true, false > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+template __global__ void LB_Kernel_CumulantK17 < TurbulenceModel::None, true, false > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long long numberOfLBnodes, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
 
-template __global__ void LB_Kernel_CumulantK17 < TurbulenceModel::AMD, false, true > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+template __global__ void LB_Kernel_CumulantK17 < TurbulenceModel::AMD, false, true > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long long numberOfLBnodes, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
 
-template __global__ void LB_Kernel_CumulantK17 < TurbulenceModel::Smagorinsky, false, true > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+template __global__ void LB_Kernel_CumulantK17 < TurbulenceModel::Smagorinsky, false, true > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long long numberOfLBnodes, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
 
-template __global__ void LB_Kernel_CumulantK17 < TurbulenceModel::QR, false, true > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+template __global__ void LB_Kernel_CumulantK17 < TurbulenceModel::QR, false, true > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long long numberOfLBnodes, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
 
-template __global__ void LB_Kernel_CumulantK17 < TurbulenceModel::None, false, true > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+template __global__ void LB_Kernel_CumulantK17 < TurbulenceModel::None, false, true > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long long numberOfLBnodes, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
 
-template __global__ void LB_Kernel_CumulantK17 < TurbulenceModel::AMD, false, false > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+template __global__ void LB_Kernel_CumulantK17 < TurbulenceModel::AMD, false, false > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long long numberOfLBnodes, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
 
-template __global__ void LB_Kernel_CumulantK17 < TurbulenceModel::Smagorinsky, false, false > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+template __global__ void LB_Kernel_CumulantK17 < TurbulenceModel::Smagorinsky, false, false > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long long numberOfLBnodes, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
 
-template __global__ void LB_Kernel_CumulantK17 < TurbulenceModel::QR, false, false > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+template __global__ void LB_Kernel_CumulantK17 < TurbulenceModel::QR, false, false > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long long numberOfLBnodes, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
 
-template __global__ void LB_Kernel_CumulantK17 < TurbulenceModel::None, false, false > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long size_Mat, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+template __global__ void LB_Kernel_CumulantK17 < TurbulenceModel::None, false, false > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long long numberOfLBnodes, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);

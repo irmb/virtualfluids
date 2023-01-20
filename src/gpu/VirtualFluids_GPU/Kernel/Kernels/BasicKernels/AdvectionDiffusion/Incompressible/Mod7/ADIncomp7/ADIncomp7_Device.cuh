@@ -11,7 +11,7 @@ __global__ void LB_Kernel_AD_Incomp_7(real diffusivity,
 	unsigned int* neighborZ,
 	real* DDStart,
 	real* DD7,
-	int size_Mat,
+	unsigned long long numberOfLBnodes,
 	bool EvenOrOdd);
 
 #endif

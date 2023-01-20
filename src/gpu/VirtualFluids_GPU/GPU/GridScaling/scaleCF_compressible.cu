@@ -217,7 +217,7 @@ __device__ __inline__ void interpolateDistributions(
 //!
 
 // based on scaleCF_RhoSq_comp_27
-__global__ void scaleCF_compressible(
+template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
     real* distributionsCoarse, 
     real* distributionsFine, 
     unsigned int* neighborXcoarse,
@@ -226,14 +226,16 @@ __global__ void scaleCF_compressible(
     unsigned int* neighborXfine,
     unsigned int* neighborYfine,
     unsigned int* neighborZfine,
-    unsigned int numberOfLBnodesCoarse, 
-    unsigned int numberOfLBnodesFine, 
+    unsigned long long numberOfLBnodesCoarse, 
+    unsigned long long numberOfLBnodesFine, 
     bool isEvenTimestep,
     unsigned int* indicesCoarseMMM, 
     unsigned int* indicesFineMMM, 
     unsigned int numberOfInterfaceNodes, 
     real omegaCoarse, 
     real omegaFine, 
+    real* turbulentViscosityCoarse,
+    real* turbulentViscosityFine,
     OffCF offsetCF)
 {
     ////////////////////////////////////////////////////////////////////////////////
@@ -308,6 +310,8 @@ __global__ void scaleCF_compressible(
     unsigned int k_0MM = k_base_0MM;
     unsigned int k_MMM = k_base_MMM;
 
+    if(hasTurbulentViscosity) omegaC = omegaCoarse / (c1o1 + c3o1*omegaCoarse*turbulentViscosityCoarse[k_000]);
+
     calculateMomentsOnSourceNodes( distCoarse, omegaC,
         k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_MMM, vx1_MMM, vx2_MMM, vx3_MMM,
         kxyFromfcNEQ_MMM, kyzFromfcNEQ_MMM, kxzFromfcNEQ_MMM, kxxMyyFromfcNEQ_MMM, kxxMzzFromfcNEQ_MMM);
@@ -324,6 +328,8 @@ __global__ void scaleCF_compressible(
     k_M0M = neighborZcoarse[k_M0M];
     k_0MM = neighborZcoarse[k_0MM];
     k_MMM = neighborZcoarse[k_MMM];
+
+    if(hasTurbulentViscosity) omegaC = omegaCoarse / (c1o1 + c3o1*omegaCoarse*turbulentViscosityCoarse[k_000]);
 
     calculateMomentsOnSourceNodes( distCoarse, omegaC,
         k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_MMP, vx1_MMP, vx2_MMP, vx3_MMP,
@@ -342,6 +348,8 @@ __global__ void scaleCF_compressible(
     k_0MM = k_MMM;
     k_MMM = neighborXcoarse[k_MMM];
 
+    if(hasTurbulentViscosity) omegaC = omegaCoarse / (c1o1 + c3o1*omegaCoarse*turbulentViscosityCoarse[k_000]);
+
     calculateMomentsOnSourceNodes( distCoarse, omegaC,
         k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_PMP, vx1_PMP, vx2_PMP, vx3_PMP,
         kxyFromfcNEQ_PMP, kyzFromfcNEQ_PMP, kxzFromfcNEQ_PMP, kxxMyyFromfcNEQ_PMP, kxxMzzFromfcNEQ_PMP);
@@ -358,6 +366,8 @@ __global__ void scaleCF_compressible(
     k_M00 = neighborXcoarse[k_base_M00];
     k_0M0 = k_base_MM0;
     k_MM0 = neighborXcoarse[k_base_MM0];
+
+    if(hasTurbulentViscosity) omegaC = omegaCoarse / (c1o1 + c3o1*omegaCoarse*turbulentViscosityCoarse[k_000]);
 
     calculateMomentsOnSourceNodes( distCoarse, omegaC,
         k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_PMM, vx1_PMM, vx2_PMM, vx3_PMM,
@@ -386,6 +396,8 @@ __global__ void scaleCF_compressible(
     k_0MM = k_base_0MM;
     k_MMM = k_base_MMM;
 
+    if(hasTurbulentViscosity) omegaC = omegaCoarse / (c1o1 + c3o1*omegaCoarse*turbulentViscosityCoarse[k_000]);
+
     calculateMomentsOnSourceNodes( distCoarse, omegaC,
         k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_MPM, vx1_MPM, vx2_MPM, vx3_MPM,
         kxyFromfcNEQ_MPM, kyzFromfcNEQ_MPM, kxzFromfcNEQ_MPM, kxxMyyFromfcNEQ_MPM, kxxMzzFromfcNEQ_MPM);
@@ -402,6 +414,8 @@ __global__ void scaleCF_compressible(
     k_M0M = neighborZcoarse[k_M0M];
     k_0MM = neighborZcoarse[k_0MM];
     k_MMM = neighborZcoarse[k_MMM];
+
+    if(hasTurbulentViscosity) omegaC = omegaCoarse / (c1o1 + c3o1*omegaCoarse*turbulentViscosityCoarse[k_000]);
     
     calculateMomentsOnSourceNodes( distCoarse, omegaC,
         k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_MPP, vx1_MPP, vx2_MPP, vx3_MPP,
@@ -421,10 +435,11 @@ __global__ void scaleCF_compressible(
     k_0MM = k_MMM;
     k_MMM = neighborXcoarse[k_MMM];
 
+    if(hasTurbulentViscosity) omegaC = omegaCoarse / (c1o1 + c3o1*omegaCoarse*turbulentViscosityCoarse[k_000]);
+
     calculateMomentsOnSourceNodes( distCoarse, omegaC,
         k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_PPP, vx1_PPP, vx2_PPP, vx3_PPP,
         kxyFromfcNEQ_PPP, kyzFromfcNEQ_PPP, kxzFromfcNEQ_PPP, kxxMyyFromfcNEQ_PPP, kxxMzzFromfcNEQ_PPP);
-
 
     //////////////////////////////////////////////////////////////////////////
     // source node BNE = PPM
@@ -438,6 +453,8 @@ __global__ void scaleCF_compressible(
     k_M00 = neighborXcoarse[k_base_M00];
     k_0M0 = k_base_MM0;
     k_MM0 = neighborXcoarse[k_base_MM0];
+
+    if(hasTurbulentViscosity) omegaC = omegaCoarse / (c1o1 + c3o1*omegaCoarse*turbulentViscosityCoarse[k_000]);
     
     calculateMomentsOnSourceNodes( distCoarse, omegaC,
         k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_PPM, vx1_PPM, vx2_PPM, vx3_PPM,
@@ -452,119 +469,240 @@ __global__ void scaleCF_compressible(
     real c_000, c_100, c_010, c_001, c_200, c_020, c_002, c_110, c_101, c_011, c_111;
     real d_000, d_100, d_010, d_001, d_110, d_101, d_011, d_111;
 
-    a_000 = (-kxxMyyFromfcNEQ_PPM - kxxMyyFromfcNEQ_PPP + kxxMyyFromfcNEQ_MPM + kxxMyyFromfcNEQ_MPP -
-            kxxMyyFromfcNEQ_PMM - kxxMyyFromfcNEQ_PMP + kxxMyyFromfcNEQ_MMM + kxxMyyFromfcNEQ_MMP -
-            kxxMzzFromfcNEQ_PPM - kxxMzzFromfcNEQ_PPP + kxxMzzFromfcNEQ_MPM + kxxMzzFromfcNEQ_MPP -
-            kxxMzzFromfcNEQ_PMM - kxxMzzFromfcNEQ_PMP + kxxMzzFromfcNEQ_MMM + kxxMzzFromfcNEQ_MMP -
-            c2o1 * kxyFromfcNEQ_PPM - c2o1 * kxyFromfcNEQ_PPP - c2o1 * kxyFromfcNEQ_MPM - c2o1 * kxyFromfcNEQ_MPP +
-            c2o1 * kxyFromfcNEQ_PMM + c2o1 * kxyFromfcNEQ_PMP + c2o1 * kxyFromfcNEQ_MMM + c2o1 * kxyFromfcNEQ_MMP +
-            c2o1 * kxzFromfcNEQ_PPM - c2o1 * kxzFromfcNEQ_PPP + c2o1 * kxzFromfcNEQ_MPM - c2o1 * kxzFromfcNEQ_MPP +
-            c2o1 * kxzFromfcNEQ_PMM - c2o1 * kxzFromfcNEQ_PMP + c2o1 * kxzFromfcNEQ_MMM - c2o1 * kxzFromfcNEQ_MMP +
-            c8o1 * vx1_PPM + c8o1 * vx1_PPP + c8o1 * vx1_MPM + c8o1 * vx1_MPP + c8o1 * vx1_PMM + c8o1 * vx1_PMP +
-            c8o1 * vx1_MMM + c8o1 * vx1_MMP + c2o1 * vx2_PPM + c2o1 * vx2_PPP - c2o1 * vx2_MPM - c2o1 * vx2_MPP -
-            c2o1 * vx2_PMM - c2o1 * vx2_PMP + c2o1 * vx2_MMM + c2o1 * vx2_MMP - c2o1 * vx3_PPM + c2o1 * vx3_PPP +
-            c2o1 * vx3_MPM - c2o1 * vx3_MPP - c2o1 * vx3_PMM + c2o1 * vx3_PMP + c2o1 * vx3_MMM - c2o1 * vx3_MMP) /
-            c64o1;
-    b_000 = (c2o1 * kxxMyyFromfcNEQ_PPM + c2o1 * kxxMyyFromfcNEQ_PPP + c2o1 * kxxMyyFromfcNEQ_MPM +
-            c2o1 * kxxMyyFromfcNEQ_MPP - c2o1 * kxxMyyFromfcNEQ_PMM - c2o1 * kxxMyyFromfcNEQ_PMP -
-            c2o1 * kxxMyyFromfcNEQ_MMM - c2o1 * kxxMyyFromfcNEQ_MMP - kxxMzzFromfcNEQ_PPM - kxxMzzFromfcNEQ_PPP -
-            kxxMzzFromfcNEQ_MPM - kxxMzzFromfcNEQ_MPP + kxxMzzFromfcNEQ_PMM + kxxMzzFromfcNEQ_PMP +
-            kxxMzzFromfcNEQ_MMM + kxxMzzFromfcNEQ_MMP - c2o1 * kxyFromfcNEQ_PPM - c2o1 * kxyFromfcNEQ_PPP +
-            c2o1 * kxyFromfcNEQ_MPM + c2o1 * kxyFromfcNEQ_MPP - c2o1 * kxyFromfcNEQ_PMM - c2o1 * kxyFromfcNEQ_PMP +
-            c2o1 * kxyFromfcNEQ_MMM + c2o1 * kxyFromfcNEQ_MMP + c2o1 * kyzFromfcNEQ_PPM - c2o1 * kyzFromfcNEQ_PPP +
-            c2o1 * kyzFromfcNEQ_MPM - c2o1 * kyzFromfcNEQ_MPP + c2o1 * kyzFromfcNEQ_PMM - c2o1 * kyzFromfcNEQ_PMP +
-            c2o1 * kyzFromfcNEQ_MMM - c2o1 * kyzFromfcNEQ_MMP + c2o1 * vx1_PPM + c2o1 * vx1_PPP - c2o1 * vx1_MPM -
-            c2o1 * vx1_MPP - c2o1 * vx1_PMM - c2o1 * vx1_PMP + c2o1 * vx1_MMM + c2o1 * vx1_MMP + c8o1 * vx2_PPM +
-            c8o1 * vx2_PPP + c8o1 * vx2_MPM + c8o1 * vx2_MPP + c8o1 * vx2_PMM + c8o1 * vx2_PMP + c8o1 * vx2_MMM +
-            c8o1 * vx2_MMP - c2o1 * vx3_PPM + c2o1 * vx3_PPP - c2o1 * vx3_MPM + c2o1 * vx3_MPP + c2o1 * vx3_PMM -
-            c2o1 * vx3_PMP + c2o1 * vx3_MMM - c2o1 * vx3_MMP) /
-            c64o1;
-    c_000 = (kxxMyyFromfcNEQ_PPM - kxxMyyFromfcNEQ_PPP + kxxMyyFromfcNEQ_MPM - kxxMyyFromfcNEQ_MPP +
-            kxxMyyFromfcNEQ_PMM - kxxMyyFromfcNEQ_PMP + kxxMyyFromfcNEQ_MMM - kxxMyyFromfcNEQ_MMP -
-            c2o1 * kxxMzzFromfcNEQ_PPM + c2o1 * kxxMzzFromfcNEQ_PPP - c2o1 * kxxMzzFromfcNEQ_MPM +
-            c2o1 * kxxMzzFromfcNEQ_MPP - c2o1 * kxxMzzFromfcNEQ_PMM + c2o1 * kxxMzzFromfcNEQ_PMP -
-            c2o1 * kxxMzzFromfcNEQ_MMM + c2o1 * kxxMzzFromfcNEQ_MMP - c2o1 * kxzFromfcNEQ_PPM -
-            c2o1 * kxzFromfcNEQ_PPP + c2o1 * kxzFromfcNEQ_MPM + c2o1 * kxzFromfcNEQ_MPP - c2o1 * kxzFromfcNEQ_PMM -
-            c2o1 * kxzFromfcNEQ_PMP + c2o1 * kxzFromfcNEQ_MMM + c2o1 * kxzFromfcNEQ_MMP - c2o1 * kyzFromfcNEQ_PPM -
-            c2o1 * kyzFromfcNEQ_PPP - c2o1 * kyzFromfcNEQ_MPM - c2o1 * kyzFromfcNEQ_MPP + c2o1 * kyzFromfcNEQ_PMM +
-            c2o1 * kyzFromfcNEQ_PMP + c2o1 * kyzFromfcNEQ_MMM + c2o1 * kyzFromfcNEQ_MMP - c2o1 * vx1_PPM +
-            c2o1 * vx1_PPP + c2o1 * vx1_MPM - c2o1 * vx1_MPP - c2o1 * vx1_PMM + c2o1 * vx1_PMP + c2o1 * vx1_MMM -
-            c2o1 * vx1_MMP - c2o1 * vx2_PPM + c2o1 * vx2_PPP - c2o1 * vx2_MPM + c2o1 * vx2_MPP + c2o1 * vx2_PMM -
-            c2o1 * vx2_PMP + c2o1 * vx2_MMM - c2o1 * vx2_MMP + c8o1 * vx3_PPM + c8o1 * vx3_PPP + c8o1 * vx3_MPM +
-            c8o1 * vx3_MPP + c8o1 * vx3_PMM + c8o1 * vx3_PMP + c8o1 * vx3_MMM + c8o1 * vx3_MMP) /
-            c64o1;
-    a_100  = (vx1_PPM + vx1_PPP - vx1_MPM - vx1_MPP + vx1_PMM + vx1_PMP - vx1_MMM - vx1_MMP) / c4o1;
-    b_100  = (vx2_PPM + vx2_PPP - vx2_MPM - vx2_MPP + vx2_PMM + vx2_PMP - vx2_MMM - vx2_MMP) / c4o1;
-    c_100  = (vx3_PPM + vx3_PPP - vx3_MPM - vx3_MPP + vx3_PMM + vx3_PMP - vx3_MMM - vx3_MMP) / c4o1;
-    a_200 = (kxxMyyFromfcNEQ_PPM + kxxMyyFromfcNEQ_PPP - kxxMyyFromfcNEQ_MPM - kxxMyyFromfcNEQ_MPP +
-            kxxMyyFromfcNEQ_PMM + kxxMyyFromfcNEQ_PMP - kxxMyyFromfcNEQ_MMM - kxxMyyFromfcNEQ_MMP +
-            kxxMzzFromfcNEQ_PPM + kxxMzzFromfcNEQ_PPP - kxxMzzFromfcNEQ_MPM - kxxMzzFromfcNEQ_MPP +
-            kxxMzzFromfcNEQ_PMM + kxxMzzFromfcNEQ_PMP - kxxMzzFromfcNEQ_MMM - kxxMzzFromfcNEQ_MMP + c2o1 * vx2_PPM +
-            c2o1 * vx2_PPP - c2o1 * vx2_MPM - c2o1 * vx2_MPP - c2o1 * vx2_PMM - c2o1 * vx2_PMP + c2o1 * vx2_MMM +
-            c2o1 * vx2_MMP - c2o1 * vx3_PPM + c2o1 * vx3_PPP + c2o1 * vx3_MPM - c2o1 * vx3_MPP - c2o1 * vx3_PMM +
-            c2o1 * vx3_PMP + c2o1 * vx3_MMM - c2o1 * vx3_MMP) /
-            c16o1;
-    b_200 = (kxyFromfcNEQ_PPM + kxyFromfcNEQ_PPP - kxyFromfcNEQ_MPM - kxyFromfcNEQ_MPP + kxyFromfcNEQ_PMM +
-            kxyFromfcNEQ_PMP - kxyFromfcNEQ_MMM - kxyFromfcNEQ_MMP - c2o1 * vx1_PPM - c2o1 * vx1_PPP +
-            c2o1 * vx1_MPM + c2o1 * vx1_MPP + c2o1 * vx1_PMM + c2o1 * vx1_PMP - c2o1 * vx1_MMM - c2o1 * vx1_MMP) /
-            c8o1;
-    c_200 = (kxzFromfcNEQ_PPM + kxzFromfcNEQ_PPP - kxzFromfcNEQ_MPM - kxzFromfcNEQ_MPP + kxzFromfcNEQ_PMM +
-            kxzFromfcNEQ_PMP - kxzFromfcNEQ_MMM - kxzFromfcNEQ_MMP + c2o1 * vx1_PPM - c2o1 * vx1_PPP -
-            c2o1 * vx1_MPM + c2o1 * vx1_MPP + c2o1 * vx1_PMM - c2o1 * vx1_PMP - c2o1 * vx1_MMM + c2o1 * vx1_MMP) /
-            c8o1;
-    a_010  = (vx1_PPM + vx1_PPP + vx1_MPM + vx1_MPP - vx1_PMM - vx1_PMP - vx1_MMM - vx1_MMP) / c4o1;
-    b_010  = (vx2_PPM + vx2_PPP + vx2_MPM + vx2_MPP - vx2_PMM - vx2_PMP - vx2_MMM - vx2_MMP) / c4o1;
-    c_010  = (vx3_PPM + vx3_PPP + vx3_MPM + vx3_MPP - vx3_PMM - vx3_PMP - vx3_MMM - vx3_MMP) / c4o1;
-    a_020 = (kxyFromfcNEQ_PPM + kxyFromfcNEQ_PPP + kxyFromfcNEQ_MPM + kxyFromfcNEQ_MPP - kxyFromfcNEQ_PMM -
-            kxyFromfcNEQ_PMP - kxyFromfcNEQ_MMM - kxyFromfcNEQ_MMP - c2o1 * vx2_PPM - c2o1 * vx2_PPP +
-            c2o1 * vx2_MPM + c2o1 * vx2_MPP + c2o1 * vx2_PMM + c2o1 * vx2_PMP - c2o1 * vx2_MMM - c2o1 * vx2_MMP) /
-            c8o1;
-    b_020 = (-c2o1 * kxxMyyFromfcNEQ_PPM - c2o1 * kxxMyyFromfcNEQ_PPP - c2o1 * kxxMyyFromfcNEQ_MPM -
-            c2o1 * kxxMyyFromfcNEQ_MPP + c2o1 * kxxMyyFromfcNEQ_PMM + c2o1 * kxxMyyFromfcNEQ_PMP +
-            c2o1 * kxxMyyFromfcNEQ_MMM + c2o1 * kxxMyyFromfcNEQ_MMP + kxxMzzFromfcNEQ_PPM + kxxMzzFromfcNEQ_PPP +
-            kxxMzzFromfcNEQ_MPM + kxxMzzFromfcNEQ_MPP - kxxMzzFromfcNEQ_PMM - kxxMzzFromfcNEQ_PMP -
-            kxxMzzFromfcNEQ_MMM - kxxMzzFromfcNEQ_MMP + c2o1 * vx1_PPM + c2o1 * vx1_PPP - c2o1 * vx1_MPM -
-            c2o1 * vx1_MPP - c2o1 * vx1_PMM - c2o1 * vx1_PMP + c2o1 * vx1_MMM + c2o1 * vx1_MMP - c2o1 * vx3_PPM +
-            c2o1 * vx3_PPP - c2o1 * vx3_MPM + c2o1 * vx3_MPP + c2o1 * vx3_PMM - c2o1 * vx3_PMP + c2o1 * vx3_MMM -
-            c2o1 * vx3_MMP) /
-            c16o1;
-    c_020 = (kyzFromfcNEQ_PPM + kyzFromfcNEQ_PPP + kyzFromfcNEQ_MPM + kyzFromfcNEQ_MPP - kyzFromfcNEQ_PMM -
-            kyzFromfcNEQ_PMP - kyzFromfcNEQ_MMM - kyzFromfcNEQ_MMP + c2o1 * vx2_PPM - c2o1 * vx2_PPP +
-            c2o1 * vx2_MPM - c2o1 * vx2_MPP - c2o1 * vx2_PMM + c2o1 * vx2_PMP - c2o1 * vx2_MMM + c2o1 * vx2_MMP) /
-            c8o1;
-    a_001  = (-vx1_PPM + vx1_PPP - vx1_MPM + vx1_MPP - vx1_PMM + vx1_PMP - vx1_MMM + vx1_MMP) / c4o1;
-    b_001  = (-vx2_PPM + vx2_PPP - vx2_MPM + vx2_MPP - vx2_PMM + vx2_PMP - vx2_MMM + vx2_MMP) / c4o1;
-    c_001  = (-vx3_PPM + vx3_PPP - vx3_MPM + vx3_MPP - vx3_PMM + vx3_PMP - vx3_MMM + vx3_MMP) / c4o1;
-    a_002 = (-kxzFromfcNEQ_PPM + kxzFromfcNEQ_PPP - kxzFromfcNEQ_MPM + kxzFromfcNEQ_MPP - kxzFromfcNEQ_PMM +
-            kxzFromfcNEQ_PMP - kxzFromfcNEQ_MMM + kxzFromfcNEQ_MMP + c2o1 * vx3_PPM - c2o1 * vx3_PPP -
-            c2o1 * vx3_MPM + c2o1 * vx3_MPP + c2o1 * vx3_PMM - c2o1 * vx3_PMP - c2o1 * vx3_MMM + c2o1 * vx3_MMP) /
-            c8o1;
-    b_002 = (-kyzFromfcNEQ_PPM + kyzFromfcNEQ_PPP - kyzFromfcNEQ_MPM + kyzFromfcNEQ_MPP - kyzFromfcNEQ_PMM +
-            kyzFromfcNEQ_PMP - kyzFromfcNEQ_MMM + kyzFromfcNEQ_MMP + c2o1 * vx3_PPM - c2o1 * vx3_PPP +
-            c2o1 * vx3_MPM - c2o1 * vx3_MPP - c2o1 * vx3_PMM + c2o1 * vx3_PMP - c2o1 * vx3_MMM + c2o1 * vx3_MMP) /
-            c8o1;
-    c_002 = (-kxxMyyFromfcNEQ_PPM + kxxMyyFromfcNEQ_PPP - kxxMyyFromfcNEQ_MPM + kxxMyyFromfcNEQ_MPP -
-            kxxMyyFromfcNEQ_PMM + kxxMyyFromfcNEQ_PMP - kxxMyyFromfcNEQ_MMM + kxxMyyFromfcNEQ_MMP +
-            c2o1 * kxxMzzFromfcNEQ_PPM - c2o1 * kxxMzzFromfcNEQ_PPP + c2o1 * kxxMzzFromfcNEQ_MPM -
-            c2o1 * kxxMzzFromfcNEQ_MPP + c2o1 * kxxMzzFromfcNEQ_PMM - c2o1 * kxxMzzFromfcNEQ_PMP +
-            c2o1 * kxxMzzFromfcNEQ_MMM - c2o1 * kxxMzzFromfcNEQ_MMP - c2o1 * vx1_PPM + c2o1 * vx1_PPP +
-            c2o1 * vx1_MPM - c2o1 * vx1_MPP - c2o1 * vx1_PMM + c2o1 * vx1_PMP + c2o1 * vx1_MMM - c2o1 * vx1_MMP -
-            c2o1 * vx2_PPM + c2o1 * vx2_PPP - c2o1 * vx2_MPM + c2o1 * vx2_MPP + c2o1 * vx2_PMM - c2o1 * vx2_PMP +
-            c2o1 * vx2_MMM - c2o1 * vx2_MMP) /
-            c16o1;
-    a_110 = (vx1_PPM + vx1_PPP - vx1_MPM - vx1_MPP - vx1_PMM - vx1_PMP + vx1_MMM + vx1_MMP) / c2o1;
-    b_110 = (vx2_PPM + vx2_PPP - vx2_MPM - vx2_MPP - vx2_PMM - vx2_PMP + vx2_MMM + vx2_MMP) / c2o1;
-    c_110 = (vx3_PPM + vx3_PPP - vx3_MPM - vx3_MPP - vx3_PMM - vx3_PMP + vx3_MMM + vx3_MMP) / c2o1;
-    a_101 = (-vx1_PPM + vx1_PPP + vx1_MPM - vx1_MPP - vx1_PMM + vx1_PMP + vx1_MMM - vx1_MMP) / c2o1;
-    b_101 = (-vx2_PPM + vx2_PPP + vx2_MPM - vx2_MPP - vx2_PMM + vx2_PMP + vx2_MMM - vx2_MMP) / c2o1;
-    c_101 = (-vx3_PPM + vx3_PPP + vx3_MPM - vx3_MPP - vx3_PMM + vx3_PMP + vx3_MMM - vx3_MMP) / c2o1;
-    a_011 = (-vx1_PPM + vx1_PPP - vx1_MPM + vx1_MPP + vx1_PMM - vx1_PMP + vx1_MMM - vx1_MMP) / c2o1;
-    b_011 = (-vx2_PPM + vx2_PPP - vx2_MPM + vx2_MPP + vx2_PMM - vx2_PMP + vx2_MMM - vx2_MMP) / c2o1;
-    c_011 = (-vx3_PPM + vx3_PPP - vx3_MPM + vx3_MPP + vx3_PMM - vx3_PMP + vx3_MMM - vx3_MMP) / c2o1;
+    // a_000 = (-kxxMyyFromfcNEQ_PPM - kxxMyyFromfcNEQ_PPP + kxxMyyFromfcNEQ_MPM + kxxMyyFromfcNEQ_MPP -
+    //         kxxMyyFromfcNEQ_PMM - kxxMyyFromfcNEQ_PMP + kxxMyyFromfcNEQ_MMM + kxxMyyFromfcNEQ_MMP -
+    //         kxxMzzFromfcNEQ_PPM - kxxMzzFromfcNEQ_PPP + kxxMzzFromfcNEQ_MPM + kxxMzzFromfcNEQ_MPP -
+    //         kxxMzzFromfcNEQ_PMM - kxxMzzFromfcNEQ_PMP + kxxMzzFromfcNEQ_MMM + kxxMzzFromfcNEQ_MMP -
+    //         c2o1 * kxyFromfcNEQ_PPM - c2o1 * kxyFromfcNEQ_PPP - c2o1 * kxyFromfcNEQ_MPM - c2o1 * kxyFromfcNEQ_MPP +
+    //         c2o1 * kxyFromfcNEQ_PMM + c2o1 * kxyFromfcNEQ_PMP + c2o1 * kxyFromfcNEQ_MMM + c2o1 * kxyFromfcNEQ_MMP +
+    //         c2o1 * kxzFromfcNEQ_PPM - c2o1 * kxzFromfcNEQ_PPP + c2o1 * kxzFromfcNEQ_MPM - c2o1 * kxzFromfcNEQ_MPP +
+    //         c2o1 * kxzFromfcNEQ_PMM - c2o1 * kxzFromfcNEQ_PMP + c2o1 * kxzFromfcNEQ_MMM - c2o1 * kxzFromfcNEQ_MMP +
+    //         c8o1 * vx1_PPM + c8o1 * vx1_PPP + c8o1 * vx1_MPM + c8o1 * vx1_MPP + c8o1 * vx1_PMM + c8o1 * vx1_PMP +
+    //         c8o1 * vx1_MMM + c8o1 * vx1_MMP + c2o1 * vx2_PPM + c2o1 * vx2_PPP - c2o1 * vx2_MPM - c2o1 * vx2_MPP -
+    //         c2o1 * vx2_PMM - c2o1 * vx2_PMP + c2o1 * vx2_MMM + c2o1 * vx2_MMP - c2o1 * vx3_PPM + c2o1 * vx3_PPP +
+    //         c2o1 * vx3_MPM - c2o1 * vx3_MPP - c2o1 * vx3_PMM + c2o1 * vx3_PMP + c2o1 * vx3_MMM - c2o1 * vx3_MMP) /
+    //         c64o1;
+    a_000 =
+        c1o64 * (c2o1 * (((kxyFromfcNEQ_MMM - kxyFromfcNEQ_PPP) + (kxyFromfcNEQ_MMP - kxyFromfcNEQ_PPM)) +
+                         ((kxyFromfcNEQ_PMM - kxyFromfcNEQ_MPP) + (kxyFromfcNEQ_PMP - kxyFromfcNEQ_MPM)) +
+                         ((kxzFromfcNEQ_MMM - kxzFromfcNEQ_PPP) + (kxzFromfcNEQ_PPM - kxzFromfcNEQ_MMP)) +
+                         ((kxzFromfcNEQ_PMM - kxzFromfcNEQ_MPP) + (kxzFromfcNEQ_MPM - kxzFromfcNEQ_PMP)) +
+                         ((vx2_PPP + vx2_MMM) + (vx2_PPM + vx2_MMP)) - ((vx2_MPP + vx2_PMM) + (vx2_MPM + vx2_PMP)) +
+                         ((vx3_PPP + vx3_MMM) - (vx3_PPM + vx3_MMP)) + ((vx3_PMP + vx3_MPM) - (vx3_MPP + vx3_PMM))) +
+                 c8o1 * (((vx1_PPP + vx1_MMM) + (vx1_PPM + vx1_MMP)) + ((vx1_MPP + vx1_PMM) + (vx1_PMP + vx1_MPM))) +
+                 ((kxxMyyFromfcNEQ_MMM - kxxMyyFromfcNEQ_PPP) + (kxxMyyFromfcNEQ_MMP - kxxMyyFromfcNEQ_PPM)) +
+                 ((kxxMyyFromfcNEQ_MPP - kxxMyyFromfcNEQ_PMM) + (kxxMyyFromfcNEQ_MPM - kxxMyyFromfcNEQ_PMP)) +
+                 ((kxxMzzFromfcNEQ_MMM - kxxMzzFromfcNEQ_PPP) + (kxxMzzFromfcNEQ_MMP - kxxMzzFromfcNEQ_PPM)) +
+                 ((kxxMzzFromfcNEQ_MPP - kxxMzzFromfcNEQ_PMM) + (kxxMzzFromfcNEQ_MPM - kxxMzzFromfcNEQ_PMP)));
 
-    a_111 = -vx1_PPM + vx1_PPP + vx1_MPM - vx1_MPP + vx1_PMM - vx1_PMP - vx1_MMM + vx1_MMP;
-    b_111 = -vx2_PPM + vx2_PPP + vx2_MPM - vx2_MPP + vx2_PMM - vx2_PMP - vx2_MMM + vx2_MMP;
-    c_111 = -vx3_PPM + vx3_PPP + vx3_MPM - vx3_MPP + vx3_PMM - vx3_PMP - vx3_MMM + vx3_MMP;
+    // b_000 = (c2o1 * kxxMyyFromfcNEQ_PPM + c2o1 * kxxMyyFromfcNEQ_PPP + c2o1 * kxxMyyFromfcNEQ_MPM +
+    //         c2o1 * kxxMyyFromfcNEQ_MPP - c2o1 * kxxMyyFromfcNEQ_PMM - c2o1 * kxxMyyFromfcNEQ_PMP -
+    //         c2o1 * kxxMyyFromfcNEQ_MMM - c2o1 * kxxMyyFromfcNEQ_MMP - kxxMzzFromfcNEQ_PPM - kxxMzzFromfcNEQ_PPP -
+    //         kxxMzzFromfcNEQ_MPM - kxxMzzFromfcNEQ_MPP + kxxMzzFromfcNEQ_PMM + kxxMzzFromfcNEQ_PMP +
+    //         kxxMzzFromfcNEQ_MMM + kxxMzzFromfcNEQ_MMP - c2o1 * kxyFromfcNEQ_PPM - c2o1 * kxyFromfcNEQ_PPP +
+    //         c2o1 * kxyFromfcNEQ_MPM + c2o1 * kxyFromfcNEQ_MPP - c2o1 * kxyFromfcNEQ_PMM - c2o1 * kxyFromfcNEQ_PMP +
+    //         c2o1 * kxyFromfcNEQ_MMM + c2o1 * kxyFromfcNEQ_MMP + c2o1 * kyzFromfcNEQ_PPM - c2o1 * kyzFromfcNEQ_PPP +
+    //         c2o1 * kyzFromfcNEQ_MPM - c2o1 * kyzFromfcNEQ_MPP + c2o1 * kyzFromfcNEQ_PMM - c2o1 * kyzFromfcNEQ_PMP +
+    //         c2o1 * kyzFromfcNEQ_MMM - c2o1 * kyzFromfcNEQ_MMP + c2o1 * vx1_PPM + c2o1 * vx1_PPP - c2o1 * vx1_MPM -
+    //         c2o1 * vx1_MPP - c2o1 * vx1_PMM - c2o1 * vx1_PMP + c2o1 * vx1_MMM + c2o1 * vx1_MMP + c8o1 * vx2_PPM +
+    //         c8o1 * vx2_PPP + c8o1 * vx2_MPM + c8o1 * vx2_MPP + c8o1 * vx2_PMM + c8o1 * vx2_PMP + c8o1 * vx2_MMM +
+    //         c8o1 * vx2_MMP - c2o1 * vx3_PPM + c2o1 * vx3_PPP - c2o1 * vx3_MPM + c2o1 * vx3_MPP + c2o1 * vx3_PMM -
+    //         c2o1 * vx3_PMP + c2o1 * vx3_MMM - c2o1 * vx3_MMP) /
+    //         c64o1;
+    b_000 =
+        c1o64 * (c2o1 * (((kxxMyyFromfcNEQ_PPP - kxxMyyFromfcNEQ_MMM) + (kxxMyyFromfcNEQ_PPM - kxxMyyFromfcNEQ_MMP)) +
+                         ((kxxMyyFromfcNEQ_MPP - kxxMyyFromfcNEQ_PMM) + (kxxMyyFromfcNEQ_MPM - kxxMyyFromfcNEQ_PMP)) +
+                         ((kxyFromfcNEQ_MMM - kxyFromfcNEQ_PPP) + (kxyFromfcNEQ_MMP - kxyFromfcNEQ_PPM)) +
+                         ((kxyFromfcNEQ_MPP - kxyFromfcNEQ_PMM) + (kxyFromfcNEQ_MPM - kxyFromfcNEQ_PMP)) +
+                         ((kyzFromfcNEQ_MMM - kyzFromfcNEQ_PPP) + (kyzFromfcNEQ_PPM - kyzFromfcNEQ_MMP)) +
+                         ((kyzFromfcNEQ_PMM - kyzFromfcNEQ_MPP) + (kyzFromfcNEQ_MPM - kyzFromfcNEQ_PMP)) +
+                         ((vx1_PPP + vx1_MMM) + (vx1_PPM + vx1_MMP)) - ((vx1_MPM + vx1_MPP) + (vx1_PMM + vx1_PMP)) +
+                         ((vx3_PPP + vx3_MMM) - (vx3_PPM + vx3_MMP)) + ((vx3_MPP + vx3_PMM) - (vx3_MPM + vx3_PMP))) +
+                 c8o1 * (((vx2_PPP + vx2_MMM) + (vx2_PPM + vx2_MMP)) + ((vx2_MPP + vx2_PMM) + (vx2_MPM + vx2_PMP))) +
+                 ((kxxMzzFromfcNEQ_MMM - kxxMzzFromfcNEQ_PPP) + (kxxMzzFromfcNEQ_MMP - kxxMzzFromfcNEQ_PPM)) +
+                 ((kxxMzzFromfcNEQ_PMM - kxxMzzFromfcNEQ_MPP) + (kxxMzzFromfcNEQ_PMP - kxxMzzFromfcNEQ_MPM)));
+
+    // c_000 = (kxxMyyFromfcNEQ_PPM - kxxMyyFromfcNEQ_PPP + kxxMyyFromfcNEQ_MPM - kxxMyyFromfcNEQ_MPP +
+    //         kxxMyyFromfcNEQ_PMM - kxxMyyFromfcNEQ_PMP + kxxMyyFromfcNEQ_MMM - kxxMyyFromfcNEQ_MMP -
+    //         c2o1 * kxxMzzFromfcNEQ_PPM + c2o1 * kxxMzzFromfcNEQ_PPP - c2o1 * kxxMzzFromfcNEQ_MPM +
+    //         c2o1 * kxxMzzFromfcNEQ_MPP - c2o1 * kxxMzzFromfcNEQ_PMM + c2o1 * kxxMzzFromfcNEQ_PMP -
+    //         c2o1 * kxxMzzFromfcNEQ_MMM + c2o1 * kxxMzzFromfcNEQ_MMP - c2o1 * kxzFromfcNEQ_PPM -
+    //         c2o1 * kxzFromfcNEQ_PPP + c2o1 * kxzFromfcNEQ_MPM + c2o1 * kxzFromfcNEQ_MPP - c2o1 * kxzFromfcNEQ_PMM -
+    //         c2o1 * kxzFromfcNEQ_PMP + c2o1 * kxzFromfcNEQ_MMM + c2o1 * kxzFromfcNEQ_MMP - c2o1 * kyzFromfcNEQ_PPM -
+    //         c2o1 * kyzFromfcNEQ_PPP - c2o1 * kyzFromfcNEQ_MPM - c2o1 * kyzFromfcNEQ_MPP + c2o1 * kyzFromfcNEQ_PMM +
+    //         c2o1 * kyzFromfcNEQ_PMP + c2o1 * kyzFromfcNEQ_MMM + c2o1 * kyzFromfcNEQ_MMP - c2o1 * vx1_PPM +
+    //         c2o1 * vx1_PPP + c2o1 * vx1_MPM - c2o1 * vx1_MPP - c2o1 * vx1_PMM + c2o1 * vx1_PMP + c2o1 * vx1_MMM -
+    //         c2o1 * vx1_MMP - c2o1 * vx2_PPM + c2o1 * vx2_PPP - c2o1 * vx2_MPM + c2o1 * vx2_MPP + c2o1 * vx2_PMM -
+    //         c2o1 * vx2_PMP + c2o1 * vx2_MMM - c2o1 * vx2_MMP + c8o1 * vx3_PPM + c8o1 * vx3_PPP + c8o1 * vx3_MPM +
+    //         c8o1 * vx3_MPP + c8o1 * vx3_PMM + c8o1 * vx3_PMP + c8o1 * vx3_MMM + c8o1 * vx3_MMP) /
+    //         c64o1;
+    c_000 =
+        c1o64 * (c2o1 * (((kxxMzzFromfcNEQ_PPP - kxxMzzFromfcNEQ_MMM) + (kxxMzzFromfcNEQ_MMP - kxxMzzFromfcNEQ_PPM)) +
+                         ((kxxMzzFromfcNEQ_MPP - kxxMzzFromfcNEQ_PMM) + (kxxMzzFromfcNEQ_PMP - kxxMzzFromfcNEQ_MPM)) +
+                         ((kxzFromfcNEQ_MMM - kxzFromfcNEQ_PPP) + (kxzFromfcNEQ_MMP - kxzFromfcNEQ_PPM)) +
+                         ((kxzFromfcNEQ_MPP - kxzFromfcNEQ_PMM) + (kxzFromfcNEQ_MPM - kxzFromfcNEQ_PMP)) +
+                         ((kyzFromfcNEQ_MMM - kyzFromfcNEQ_PPP) + (kyzFromfcNEQ_MMP - kyzFromfcNEQ_PPM)) +
+                         ((kyzFromfcNEQ_PMM - kyzFromfcNEQ_MPP) + (kyzFromfcNEQ_PMP - kyzFromfcNEQ_MPM)) +
+                         ((vx1_PPP + vx1_MMM) - (vx1_MMP + vx1_PPM)) + ((vx1_MPM + vx1_PMP) - (vx1_MPP + vx1_PMM)) +
+                         ((vx2_PPP + vx2_MMM) - (vx2_MMP + vx2_PPM)) + ((vx2_MPP + vx2_PMM) - (vx2_MPM + vx2_PMP))) +
+                 c8o1 * (((vx3_PPP + vx3_MMM) + (vx3_PPM + vx3_MMP)) + ((vx3_PMM + vx3_MPP) + (vx3_PMP + vx3_MPM))) +
+                 ((kxxMyyFromfcNEQ_MMM - kxxMyyFromfcNEQ_PPP) + (kxxMyyFromfcNEQ_PPM - kxxMyyFromfcNEQ_MMP)) +
+                 ((kxxMyyFromfcNEQ_PMM - kxxMyyFromfcNEQ_MPP) + (kxxMyyFromfcNEQ_MPM - kxxMyyFromfcNEQ_PMP)));
+
+    // a_100  = (vx1_PPM + vx1_PPP - vx1_MPM - vx1_MPP + vx1_PMM + vx1_PMP - vx1_MMM - vx1_MMP) / c4o1;
+    a_100 = c1o4 * (((vx1_PPP - vx1_MMM) + (vx1_PPM - vx1_MMP)) + ((vx1_PMM - vx1_MPP) + (vx1_PMP - vx1_MPM)));
+
+    // b_100  = (vx2_PPM + vx2_PPP - vx2_MPM - vx2_MPP + vx2_PMM + vx2_PMP - vx2_MMM - vx2_MMP) / c4o1;
+    b_100 = c1o4 * (((vx2_PPP - vx2_MMM) + (vx2_PPM - vx2_MMP)) + ((vx2_PMM - vx2_MPP) + (vx2_PMP - vx2_MPM)));
+
+    // c_100  = (vx3_PPM + vx3_PPP - vx3_MPM - vx3_MPP + vx3_PMM + vx3_PMP - vx3_MMM - vx3_MMP) / c4o1;
+    c_100 = c1o4 * (((vx3_PPP - vx3_MMM) + (vx3_PPM - vx3_MMP)) + ((vx3_PMM - vx3_MPP) + (vx3_PMP - vx3_MPM)));
+
+    // a_200 = (kxxMyyFromfcNEQ_PPM + kxxMyyFromfcNEQ_PPP - kxxMyyFromfcNEQ_MPM - kxxMyyFromfcNEQ_MPP +
+    //         kxxMyyFromfcNEQ_PMM + kxxMyyFromfcNEQ_PMP - kxxMyyFromfcNEQ_MMM - kxxMyyFromfcNEQ_MMP +
+    //         kxxMzzFromfcNEQ_PPM + kxxMzzFromfcNEQ_PPP - kxxMzzFromfcNEQ_MPM - kxxMzzFromfcNEQ_MPP +
+    //         kxxMzzFromfcNEQ_PMM + kxxMzzFromfcNEQ_PMP - kxxMzzFromfcNEQ_MMM - kxxMzzFromfcNEQ_MMP + c2o1 * vx2_PPM +
+    //         c2o1 * vx2_PPP - c2o1 * vx2_MPM - c2o1 * vx2_MPP - c2o1 * vx2_PMM - c2o1 * vx2_PMP + c2o1 * vx2_MMM +
+    //         c2o1 * vx2_MMP - c2o1 * vx3_PPM + c2o1 * vx3_PPP + c2o1 * vx3_MPM - c2o1 * vx3_MPP - c2o1 * vx3_PMM +
+    //         c2o1 * vx3_PMP + c2o1 * vx3_MMM - c2o1 * vx3_MMP) /
+    //         c16o1;
+    a_200 =
+        c1o16 * (c2o1 * (((vx2_PPP + vx2_MMM) + (vx2_PPM - vx2_MPP)) + ((vx2_MMP - vx2_PMM) - (vx2_MPM + vx2_PMP)) +
+                         ((vx3_PPP + vx3_MMM) - (vx3_PPM + vx3_MPP)) + ((vx3_MPM + vx3_PMP) - (vx3_MMP + vx3_PMM))) +
+                 ((kxxMyyFromfcNEQ_PPP - kxxMyyFromfcNEQ_MMM) + (kxxMyyFromfcNEQ_PPM - kxxMyyFromfcNEQ_MMP)) +
+                 ((kxxMyyFromfcNEQ_PMM - kxxMyyFromfcNEQ_MPP) + (kxxMyyFromfcNEQ_PMP - kxxMyyFromfcNEQ_MPM)) +
+                 ((kxxMzzFromfcNEQ_PPP - kxxMzzFromfcNEQ_MMM) + (kxxMzzFromfcNEQ_PPM - kxxMzzFromfcNEQ_MMP)) +
+                 ((kxxMzzFromfcNEQ_PMM - kxxMzzFromfcNEQ_MPP) + (kxxMzzFromfcNEQ_PMP - kxxMzzFromfcNEQ_MPM)));
+
+    // b_200 = (kxyFromfcNEQ_PPM + kxyFromfcNEQ_PPP - kxyFromfcNEQ_MPM - kxyFromfcNEQ_MPP + kxyFromfcNEQ_PMM +
+    //         kxyFromfcNEQ_PMP - kxyFromfcNEQ_MMM - kxyFromfcNEQ_MMP - c2o1 * vx1_PPM - c2o1 * vx1_PPP +
+    //         c2o1 * vx1_MPM + c2o1 * vx1_MPP + c2o1 * vx1_PMM + c2o1 * vx1_PMP - c2o1 * vx1_MMM - c2o1 * vx1_MMP) /
+    //         c8o1;
+    b_200 =
+        c1o8 * (c2o1 * (-((vx1_PPP + vx1_MMM) + (vx1_PPM + vx1_MMP)) + ((vx1_MPP + vx1_PMM) + (vx1_MPM + vx1_PMP))) +
+                ((kxyFromfcNEQ_PPP - kxyFromfcNEQ_MMM) + (kxyFromfcNEQ_PPM - kxyFromfcNEQ_MMP)) +
+                ((kxyFromfcNEQ_PMM - kxyFromfcNEQ_MPP) + (kxyFromfcNEQ_PMP - kxyFromfcNEQ_MPM)));
+
+    // c_200 = (kxzFromfcNEQ_PPM + kxzFromfcNEQ_PPP - kxzFromfcNEQ_MPM - kxzFromfcNEQ_MPP + kxzFromfcNEQ_PMM +
+    //          kxzFromfcNEQ_PMP - kxzFromfcNEQ_MMM - kxzFromfcNEQ_MMP + c2o1 * vx1_PPM - c2o1 * vx1_PPP - c2o1 *
+    //          vx1_MPM + c2o1 * vx1_MPP + c2o1 * vx1_PMM - c2o1 * vx1_PMP - c2o1 * vx1_MMM + c2o1 * vx1_MMP) /
+    //         c8o1;
+    c_200 = c1o8 * (c2o1 * (((vx1_PPM + vx1_MMP) - (vx1_PPP + vx1_MMM)) + ((vx1_MPP + vx1_PMM) - (vx1_MPM + vx1_PMP))) +
+                    ((kxzFromfcNEQ_PPP - kxzFromfcNEQ_MMM) + (kxzFromfcNEQ_PPM - kxzFromfcNEQ_MMP)) +
+                    ((kxzFromfcNEQ_PMM - kxzFromfcNEQ_MPP) + (kxzFromfcNEQ_PMP - kxzFromfcNEQ_MPM)));
+
+    // a_010 = (vx1_PPM + vx1_PPP + vx1_MPM + vx1_MPP - vx1_PMM - vx1_PMP - vx1_MMM - vx1_MMP) / c4o1;
+    a_010 = c1o4 * (((vx1_PPP - vx1_MMM) + (vx1_PPM - vx1_MMP)) + ((vx1_MPP - vx1_PMM) + (vx1_MPM - vx1_PMP)));
+
+    // b_010 = (vx2_PPM + vx2_PPP + vx2_MPM + vx2_MPP - vx2_PMM - vx2_PMP - vx2_MMM - vx2_MMP) / c4o1;
+    b_010 = c1o4 * (((vx2_PPP - vx2_MMM) + (vx2_PPM - vx2_MMP)) + ((vx2_MPP - vx2_PMM) + (vx2_MPM - vx2_PMP)));
+
+    // c_010 = (vx3_PPM + vx3_PPP + vx3_MPM + vx3_MPP - vx3_PMM - vx3_PMP - vx3_MMM - vx3_MMP) / c4o1;
+    c_010 = c1o4 * (((vx3_PPP - vx3_MMM) + (vx3_PPM - vx3_MMP)) + ((vx3_MPP - vx3_PMM) + (vx3_MPM - vx3_PMP)));
+
+    // a_020 = (kxyFromfcNEQ_PPM + kxyFromfcNEQ_PPP + kxyFromfcNEQ_MPM + kxyFromfcNEQ_MPP - kxyFromfcNEQ_PMM -
+    //         kxyFromfcNEQ_PMP - kxyFromfcNEQ_MMM - kxyFromfcNEQ_MMP - c2o1 * vx2_PPM - c2o1 * vx2_PPP +
+    //         c2o1 * vx2_MPM + c2o1 * vx2_MPP + c2o1 * vx2_PMM + c2o1 * vx2_PMP - c2o1 * vx2_MMM - c2o1 * vx2_MMP) /
+    //         c8o1;
+    a_020 =
+        c1o8 * (c2o1 * (-((vx2_PPP + vx2_MMM) + (vx2_MMP + vx2_PPM)) + ((vx2_MPP + vx2_PMM) + (vx2_MPM + vx2_PMP))) +
+                ((kxyFromfcNEQ_PPP - kxyFromfcNEQ_MMM) + (kxyFromfcNEQ_PPM - kxyFromfcNEQ_MMP)) +
+                ((kxyFromfcNEQ_MPP - kxyFromfcNEQ_PMM) + (kxyFromfcNEQ_MPM - kxyFromfcNEQ_PMP)));
+
+    // b_020 = (-c2o1 * kxxMyyFromfcNEQ_PPM - c2o1 * kxxMyyFromfcNEQ_PPP - c2o1 * kxxMyyFromfcNEQ_MPM -
+    //         c2o1 * kxxMyyFromfcNEQ_MPP + c2o1 * kxxMyyFromfcNEQ_PMM + c2o1 * kxxMyyFromfcNEQ_PMP +
+    //         c2o1 * kxxMyyFromfcNEQ_MMM + c2o1 * kxxMyyFromfcNEQ_MMP + kxxMzzFromfcNEQ_PPM + kxxMzzFromfcNEQ_PPP +
+    //         kxxMzzFromfcNEQ_MPM + kxxMzzFromfcNEQ_MPP - kxxMzzFromfcNEQ_PMM - kxxMzzFromfcNEQ_PMP -
+    //         kxxMzzFromfcNEQ_MMM - kxxMzzFromfcNEQ_MMP + c2o1 * vx1_PPM + c2o1 * vx1_PPP - c2o1 * vx1_MPM -
+    //         c2o1 * vx1_MPP - c2o1 * vx1_PMM - c2o1 * vx1_PMP + c2o1 * vx1_MMM + c2o1 * vx1_MMP - c2o1 * vx3_PPM +
+    //         c2o1 * vx3_PPP - c2o1 * vx3_MPM + c2o1 * vx3_MPP + c2o1 * vx3_PMM - c2o1 * vx3_PMP + c2o1 * vx3_MMM -
+    //         c2o1 * vx3_MMP) /
+    //         c16o1;
+    b_020 =
+        c1o16 * (c2o1 * (((kxxMyyFromfcNEQ_MMM - kxxMyyFromfcNEQ_PPP) + (kxxMyyFromfcNEQ_MMP - kxxMyyFromfcNEQ_PPM)) +
+                         ((kxxMyyFromfcNEQ_PMM - kxxMyyFromfcNEQ_MPP) + (kxxMyyFromfcNEQ_PMP - kxxMyyFromfcNEQ_MPM)) +
+                         ((vx1_PPP + vx1_MMM) + (vx1_PPM + vx1_MMP)) - ((vx1_MPP + vx1_PMM) + (vx1_PMP + vx1_MPM)) +
+                         ((vx3_PPP + vx3_MMM) - (vx3_PPM + vx3_MMP)) + ((vx3_MPP + vx3_PMM) - (vx3_MPM + vx3_PMP))) +
+                 ((kxxMzzFromfcNEQ_PPP - kxxMzzFromfcNEQ_MMM) + (kxxMzzFromfcNEQ_PPM - kxxMzzFromfcNEQ_MMP)) +
+                 ((kxxMzzFromfcNEQ_MPP - kxxMzzFromfcNEQ_PMM) + (kxxMzzFromfcNEQ_MPM - kxxMzzFromfcNEQ_PMP)));
+
+    // c_020 = (kyzFromfcNEQ_PPM + kyzFromfcNEQ_PPP + kyzFromfcNEQ_MPM + kyzFromfcNEQ_MPP - kyzFromfcNEQ_PMM -
+    //          kyzFromfcNEQ_PMP - kyzFromfcNEQ_MMM - kyzFromfcNEQ_MMP + c2o1 * vx2_PPM - c2o1 * vx2_PPP + c2o1 *
+    //          vx2_MPM - c2o1 * vx2_MPP - c2o1 * vx2_PMM + c2o1 * vx2_PMP - c2o1 * vx2_MMM + c2o1 * vx2_MMP) /
+    //         c8o1;
+    c_020 = c1o8 * (c2o1 * (((vx2_MMP + vx2_PPM) - (vx2_PPP + vx2_MMM)) + ((vx2_PMP + vx2_MPM) - (vx2_MPP + vx2_PMM))) +
+                    ((kyzFromfcNEQ_PPP - kyzFromfcNEQ_MMM) + (kyzFromfcNEQ_PPM - kyzFromfcNEQ_MMP)) +
+                    ((kyzFromfcNEQ_MPP - kyzFromfcNEQ_PMM) + (kyzFromfcNEQ_MPM - kyzFromfcNEQ_PMP)));
+
+    // a_001  = (-vx1_PPM + vx1_PPP - vx1_MPM + vx1_MPP - vx1_PMM + vx1_PMP - vx1_MMM + vx1_MMP) / c4o1;
+    a_001 = c1o4 * (((vx1_PPP - vx1_MMM) + (vx1_MMP - vx1_PPM)) + ((vx1_MPP - vx1_PMM) + (vx1_PMP - vx1_MPM)));
+
+    // b_001  = (-vx2_PPM + vx2_PPP - vx2_MPM + vx2_MPP - vx2_PMM + vx2_PMP - vx2_MMM + vx2_MMP) / c4o1;
+    b_001 = c1o4 * (((vx2_PPP - vx2_MMM) + (vx2_MMP - vx2_PPM)) + ((vx2_MPP - vx2_PMM) + (vx2_PMP - vx2_MPM)));
+
+    // c_001  = (-vx3_PPM + vx3_PPP - vx3_MPM + vx3_MPP - vx3_PMM + vx3_PMP - vx3_MMM + vx3_MMP) / c4o1;
+    c_001 = c1o4 * (((vx3_PPP - vx3_MMM) + (vx3_MMP - vx3_PPM)) + ((vx3_MPP - vx3_PMM) + (vx3_PMP - vx3_MPM)));
+
+    // a_002 = (-kxzFromfcNEQ_PPM + kxzFromfcNEQ_PPP - kxzFromfcNEQ_MPM + kxzFromfcNEQ_MPP - kxzFromfcNEQ_PMM +
+    //         kxzFromfcNEQ_PMP - kxzFromfcNEQ_MMM + kxzFromfcNEQ_MMP + c2o1 * vx3_PPM - c2o1 * vx3_PPP -
+    //         c2o1 * vx3_MPM + c2o1 * vx3_MPP + c2o1 * vx3_PMM - c2o1 * vx3_PMP - c2o1 * vx3_MMM + c2o1 * vx3_MMP) /
+    //         c8o1;
+    a_002 = c1o8 * (c2o1 * (((vx3_PPM + vx3_MMP) - (vx3_PPP + vx3_MMM)) + ((vx3_MPP + vx3_PMM) - (vx3_PMP + vx3_MPM))) +
+                    ((kxzFromfcNEQ_PPP - kxzFromfcNEQ_MMM) + (kxzFromfcNEQ_MMP - kxzFromfcNEQ_PPM)) +
+                    ((kxzFromfcNEQ_PMP - kxzFromfcNEQ_MPM) + (kxzFromfcNEQ_MPP - kxzFromfcNEQ_PMM)));
+
+    // b_002 = (-kyzFromfcNEQ_PPM + kyzFromfcNEQ_PPP - kyzFromfcNEQ_MPM + kyzFromfcNEQ_MPP - kyzFromfcNEQ_PMM +
+    //          kyzFromfcNEQ_PMP - kyzFromfcNEQ_MMM + kyzFromfcNEQ_MMP + c2o1 * vx3_PPM - c2o1 * vx3_PPP + c2o1 *
+    //          vx3_MPM - c2o1 * vx3_MPP - c2o1 * vx3_PMM + c2o1 * vx3_PMP - c2o1 * vx3_MMM + c2o1 * vx3_MMP) /
+    //         c8o1;
+    b_002 = c1o8 * (c2o1 * (((vx3_PPM + vx3_MMP) - (vx3_PPP + vx3_MMM)) + ((vx3_MPM + vx3_PMP) - (vx3_PMM + vx3_MPP))) +
+                    ((kyzFromfcNEQ_PPP - kyzFromfcNEQ_MMM) + (kyzFromfcNEQ_MMP - kyzFromfcNEQ_PPM)) +
+                    ((kyzFromfcNEQ_PMP - kyzFromfcNEQ_MPM) + (kyzFromfcNEQ_MPP - kyzFromfcNEQ_PMM)));
+
+    // c_002 = (-kxxMyyFromfcNEQ_PPM + kxxMyyFromfcNEQ_PPP - kxxMyyFromfcNEQ_MPM + kxxMyyFromfcNEQ_MPP -
+    //         kxxMyyFromfcNEQ_PMM + kxxMyyFromfcNEQ_PMP - kxxMyyFromfcNEQ_MMM + kxxMyyFromfcNEQ_MMP +
+    //         c2o1 * kxxMzzFromfcNEQ_PPM - c2o1 * kxxMzzFromfcNEQ_PPP + c2o1 * kxxMzzFromfcNEQ_MPM -
+    //         c2o1 * kxxMzzFromfcNEQ_MPP + c2o1 * kxxMzzFromfcNEQ_PMM - c2o1 * kxxMzzFromfcNEQ_PMP +
+    //         c2o1 * kxxMzzFromfcNEQ_MMM - c2o1 * kxxMzzFromfcNEQ_MMP - c2o1 * vx1_PPM + c2o1 * vx1_PPP +
+    //         c2o1 * vx1_MPM - c2o1 * vx1_MPP - c2o1 * vx1_PMM + c2o1 * vx1_PMP + c2o1 * vx1_MMM - c2o1 * vx1_MMP -
+    //         c2o1 * vx2_PPM + c2o1 * vx2_PPP - c2o1 * vx2_MPM + c2o1 * vx2_MPP + c2o1 * vx2_PMM - c2o1 * vx2_PMP +
+    //         c2o1 * vx2_MMM - c2o1 * vx2_MMP) /
+    //         c16o1;
+    c_002 =
+        c1o16 * (c2o1 * (((kxxMzzFromfcNEQ_MMM - kxxMzzFromfcNEQ_PPP) + (kxxMzzFromfcNEQ_PPM - kxxMzzFromfcNEQ_MMP)) +
+                         ((kxxMzzFromfcNEQ_MPM - kxxMzzFromfcNEQ_PMP) + (kxxMzzFromfcNEQ_PMM - kxxMzzFromfcNEQ_MPP)) +
+                         ((vx1_PPP + vx1_MMM) - (vx1_MMP + vx1_PPM)) + ((vx1_MPM + vx1_PMP) - (vx1_PMM + vx1_MPP)) +
+                         ((vx2_PPP + vx2_MMM) - (vx2_MMP + vx2_PPM)) + ((vx2_PMM + vx2_MPP) - (vx2_MPM + vx2_PMP))) +
+                 ((kxxMyyFromfcNEQ_PPP - kxxMyyFromfcNEQ_MMM) + (kxxMyyFromfcNEQ_MMP - kxxMyyFromfcNEQ_PPM)) +
+                 ((kxxMyyFromfcNEQ_PMP - kxxMyyFromfcNEQ_MPM) + (kxxMyyFromfcNEQ_MPP - kxxMyyFromfcNEQ_PMM)));
+
+    // a_110 = (vx1_PPM + vx1_PPP - vx1_MPM - vx1_MPP - vx1_PMM - vx1_PMP + vx1_MMM + vx1_MMP) / c2o1;
+    // b_110 = (vx2_PPM + vx2_PPP - vx2_MPM - vx2_MPP - vx2_PMM - vx2_PMP + vx2_MMM + vx2_MMP) / c2o1;
+    // c_110 = (vx3_PPM + vx3_PPP - vx3_MPM - vx3_MPP - vx3_PMM - vx3_PMP + vx3_MMM + vx3_MMP) / c2o1;
+    a_110 = c1o2 * (((vx1_PPP + vx1_MMM) + (vx1_MMP + vx1_PPM)) - ((vx1_MPM + vx1_PMP) + (vx1_PMM + vx1_MPP)));
+    b_110 = c1o2 * (((vx2_PPP + vx2_MMM) + (vx2_MMP + vx2_PPM)) - ((vx2_MPM + vx2_PMP) + (vx2_PMM + vx2_MPP)));
+    c_110 = c1o2 * (((vx3_PPP + vx3_MMM) + (vx3_MMP + vx3_PPM)) - ((vx3_MPM + vx3_PMP) + (vx3_PMM + vx3_MPP)));
+
+    // a_101 = (-vx1_PPM + vx1_PPP + vx1_MPM - vx1_MPP - vx1_PMM + vx1_PMP + vx1_MMM - vx1_MMP) / c2o1;
+    // b_101 = (-vx2_PPM + vx2_PPP + vx2_MPM - vx2_MPP - vx2_PMM + vx2_PMP + vx2_MMM - vx2_MMP) / c2o1;
+    // c_101 = (-vx3_PPM + vx3_PPP + vx3_MPM - vx3_MPP - vx3_PMM + vx3_PMP + vx3_MMM - vx3_MMP) / c2o1;
+    a_101 = c1o2 * (((vx1_PPP + vx1_MMM) - (vx1_MMP + vx1_PPM)) + ((vx1_MPM + vx1_PMP) - (vx1_PMM + vx1_MPP)));
+    b_101 = c1o2 * (((vx2_PPP + vx2_MMM) - (vx2_MMP + vx2_PPM)) + ((vx2_MPM + vx2_PMP) - (vx2_PMM + vx2_MPP)));
+    c_101 = c1o2 * (((vx3_PPP + vx3_MMM) - (vx3_MMP + vx3_PPM)) + ((vx3_MPM + vx3_PMP) - (vx3_PMM + vx3_MPP)));
+
+    // a_011 = (-vx1_PPM + vx1_PPP - vx1_MPM + vx1_MPP + vx1_PMM - vx1_PMP + vx1_MMM - vx1_MMP) / c2o1;
+    // b_011 = (-vx2_PPM + vx2_PPP - vx2_MPM + vx2_MPP + vx2_PMM - vx2_PMP + vx2_MMM - vx2_MMP) / c2o1;
+    // c_011 = (-vx3_PPM + vx3_PPP - vx3_MPM + vx3_MPP + vx3_PMM - vx3_PMP + vx3_MMM - vx3_MMP) / c2o1;
+    a_011 = c1o2 * (((vx1_PPP + vx1_MMM) - (vx1_MMP + vx1_PPM)) + ((vx1_PMM + vx1_MPP) - (vx1_MPM + vx1_PMP)));
+    b_011 = c1o2 * (((vx2_PPP + vx2_MMM) - (vx2_MMP + vx2_PPM)) + ((vx2_PMM + vx2_MPP) - (vx2_MPM + vx2_PMP)));
+    c_011 = c1o2 * (((vx3_PPP + vx3_MMM) - (vx3_MMP + vx3_PPM)) + ((vx3_PMM + vx3_MPP) - (vx3_MPM + vx3_PMP)));
+
+    // a_111 = -vx1_PPM + vx1_PPP + vx1_MPM - vx1_MPP + vx1_PMM - vx1_PMP - vx1_MMM + vx1_MMP;
+    // b_111 = -vx2_PPM + vx2_PPP + vx2_MPM - vx2_MPP + vx2_PMM - vx2_PMP - vx2_MMM + vx2_MMP;
+    // c_111 = -vx3_PPM + vx3_PPP + vx3_MPM - vx3_MPP + vx3_PMM - vx3_PMP - vx3_MMM + vx3_MMP;
+    a_111 = ((vx1_PPP - vx1_MMM) + (vx1_MMP - vx1_PPM)) + ((vx1_MPM - vx1_PMP) + (vx1_PMM - vx1_MPP));
+    b_111 = ((vx2_PPP - vx2_MMM) + (vx2_MMP - vx2_PPM)) + ((vx2_MPM - vx2_PMP) + (vx2_PMM - vx2_MPP));
+    c_111 = ((vx3_PPP - vx3_MMM) + (vx3_MMP - vx3_PPM)) + ((vx3_MPM - vx3_PMP) + (vx3_PMM - vx3_MPP));
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -632,14 +770,29 @@ __global__ void scaleCF_compressible(
         ((xoff != c0o1) || (yoff != c0o1) || (zoff != c0o1))
         ? c0o1
         : -c3o1 * (a_100 * a_100 + b_010 * b_010 + c_001 * c_001) - c6o1 * (b_100 * a_010 + c_100 * a_001 + c_010 * b_001);
-    d_000 = ( drho_PPM + drho_PPP + drho_MPM + drho_MPP + drho_PMM + drho_PMP + drho_MMM + drho_MMP) * c1o8;
-    d_100 = ( drho_PPM + drho_PPP - drho_MPM - drho_MPP + drho_PMM + drho_PMP - drho_MMM - drho_MMP) * c1o4;
-    d_010 = ( drho_PPM + drho_PPP + drho_MPM + drho_MPP - drho_PMM - drho_PMP - drho_MMM - drho_MMP) * c1o4;
-    d_001 = (-drho_PPM + drho_PPP - drho_MPM + drho_MPP - drho_PMM + drho_PMP - drho_MMM + drho_MMP) * c1o4;
-    d_110 = ( drho_PPM + drho_PPP - drho_MPM - drho_MPP - drho_PMM - drho_PMP + drho_MMM + drho_MMP) * c1o2;
-    d_101 = (-drho_PPM + drho_PPP + drho_MPM - drho_MPP - drho_PMM + drho_PMP + drho_MMM - drho_MMP) * c1o2;
-    d_011 = (-drho_PPM + drho_PPP - drho_MPM + drho_MPP + drho_PMM - drho_PMP + drho_MMM - drho_MMP) * c1o2;
-    d_111 =  -drho_PPM + drho_PPP + drho_MPM - drho_MPP + drho_PMM - drho_PMP - drho_MMM + drho_MMP;
+    // d_000 = ( drho_PPM + drho_PPP + drho_MPM + drho_MPP + drho_PMM + drho_PMP + drho_MMM + drho_MMP) * c1o8;
+    d_000 = c1o8 * (((drho_PPP + drho_MMM) + (drho_PPM + drho_MMP)) + ((drho_PMM + drho_MPP) + (drho_PMP + drho_MPM)));
+
+    // d_100 = ( drho_PPM + drho_PPP - drho_MPM - drho_MPP + drho_PMM + drho_PMP - drho_MMM - drho_MMP) * c1o4;
+    d_100 = c1o4 * (((drho_PPP - drho_MMM) + (drho_PPM - drho_MMP)) + ((drho_PMM - drho_MPP) + (drho_PMP - drho_MPM)));
+
+    // d_010 = ( drho_PPM + drho_PPP + drho_MPM + drho_MPP - drho_PMM - drho_PMP - drho_MMM - drho_MMP) * c1o4;
+    d_010 = c1o4 * (((drho_PPP - drho_MMM) + (drho_PPM - drho_MMP)) + ((drho_MPP - drho_PMM) + (drho_MPM - drho_PMP)));
+
+    // d_001 = (-drho_PPM + drho_PPP - drho_MPM + drho_MPP - drho_PMM + drho_PMP - drho_MMM + drho_MMP) * c1o4;
+    d_001 = c1o4 * (((drho_PPP - drho_MMM) + (drho_MMP - drho_PPM)) + ((drho_MPP - drho_PMM) + (drho_PMP - drho_MPM)));
+
+    // d_110 = ( drho_PPM + drho_PPP - drho_MPM - drho_MPP - drho_PMM - drho_PMP + drho_MMM + drho_MMP) * c1o2;
+    d_110 = c1o2 * (((drho_PPP + drho_MMM) + (drho_PPM + drho_MMP)) - ((drho_PMM + drho_MPP) + (drho_PMP + drho_MPM)));
+
+    // d_101 = (-drho_PPM + drho_PPP + drho_MPM - drho_MPP - drho_PMM + drho_PMP + drho_MMM - drho_MMP) * c1o2;
+    d_101 = c1o2 * (((drho_PPP + drho_MMM) - (drho_PPM + drho_MMP)) + ((drho_PMP + drho_MPM) - (drho_PMM + drho_MPP)));
+
+    // d_011 = (-drho_PPM + drho_PPP - drho_MPM + drho_MPP + drho_PMM - drho_PMP + drho_MMM - drho_MMP) * c1o2;
+    d_011 = c1o2 * (((drho_PPP + drho_MMM) - (drho_PPM + drho_MMP)) + ((drho_PMM + drho_MPP) - (drho_PMP + drho_MPM)));
+
+    // d_111 =  -drho_PPM + drho_PPP + drho_MPM - drho_MPP + drho_PMM - drho_PMP - drho_MMM + drho_MMP;
+    d_111 = (((drho_PPP - drho_MMM) + (drho_MMP - drho_PPM)) + ((drho_PMM - drho_MPP) + (drho_MPM - drho_PMP)));
 
     //////////////////////////////////////////////////////////////////////////
     //! - Extrapolation for refinement in to the wall (polynomial coefficients)
@@ -745,28 +898,6 @@ __global__ void scaleCF_compressible(
     real y = -c1o4;
     real z = -c1o4;
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    ////////////////////////////////////////////////////////////////////////////////
-    //! - Set moments (zeroth to sixth order) on destination node
-    //!
-    interpolateDistributions(
-        x, y, z,
-        m_000, 
-        m_100, m_010, m_001,
-        m_011, m_101, m_110, m_200, m_020, m_002,
-        m_111, m_210, m_012, m_201, m_021, m_120, m_102,
-        m_022, m_202, m_220, m_211, m_121, m_112,
-        m_122, m_212, m_221,
-        m_222,
-        a_000, a_100, a_010, a_001, a_200, a_020, a_002, a_110,  a_101, a_011, a_111,
-        b_000, b_100, b_010, b_001, b_200, b_020, b_002, b_110,  b_101, b_011, b_111,
-        c_000, c_100, c_010, c_001, c_200, c_020, c_002, c_110,  c_101, c_011, c_111,
-        d_000, d_100, d_010, d_001, d_110, d_101, d_011, d_111,
-        LaplaceRho, eps_new, omegaF, 
-        kxxMyyAverage, kxxMzzAverage, kyzAverage, kxzAverage, kxyAverage
-    );
-
-    //////////////////////////////////////////////////////////////////////////
     // index of the base node and its neighbors
     k_base_000 = indicesFineMMM[k_thread];
     k_base_M00 = neighborXfine [k_base_000];
@@ -786,6 +917,28 @@ __global__ void scaleCF_compressible(
     k_M0M = k_base_M0M;
     k_0MM = k_base_0MM;
     k_MMM = k_base_MMM;
+    ////////////////////////////////////////////////////////////////////////////////
+    //! - Set moments (zeroth to sixth order) on destination node
+    //!
+
+    if(hasTurbulentViscosity) omegaF = omegaFine/ (c1o1 + c3o1*omegaFine*turbulentViscosityFine[k_000]);
+
+    interpolateDistributions(
+        x, y, z,
+        m_000, 
+        m_100, m_010, m_001,
+        m_011, m_101, m_110, m_200, m_020, m_002,
+        m_111, m_210, m_012, m_201, m_021, m_120, m_102,
+        m_022, m_202, m_220, m_211, m_121, m_112,
+        m_122, m_212, m_221,
+        m_222,
+        a_000, a_100, a_010, a_001, a_200, a_020, a_002, a_110,  a_101, a_011, a_111,
+        b_000, b_100, b_010, b_001, b_200, b_020, b_002, b_110,  b_101, b_011, b_111,
+        c_000, c_100, c_010, c_001, c_200, c_020, c_002, c_110,  c_101, c_011, c_111,
+        d_000, d_100, d_010, d_001, d_110, d_101, d_011, d_111,
+        LaplaceRho, eps_new, omegaF, 
+        kxxMyyAverage, kxxMzzAverage, kyzAverage, kxzAverage, kxyAverage
+    );
 
     //////////////////////////////////////////////////////////////////////////
     //! - Write distributions: style of reading and writing the distributions from/to
@@ -830,9 +983,22 @@ __global__ void scaleCF_compressible(
     x = -c1o4;
     y = -c1o4;
     z =  c1o4;
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Set neighbor indices
+    k_000 = k_00M;
+    k_M00 = k_M0M;
+    k_0M0 = k_0MM;
+    k_00M = neighborZfine[k_00M];
+    k_MM0 = k_MMM;
+    k_M0M = neighborZfine[k_M0M];
+    k_0MM = neighborZfine[k_0MM];
+    k_MMM = neighborZfine[k_MMM];
 
     ////////////////////////////////////////////////////////////////////////////////
     // Set moments (zeroth to sixth orders) on destination node
+
+    if(hasTurbulentViscosity) omegaF = omegaFine/ (c1o1 + c3o1*omegaFine*turbulentViscosityFine[k_000]);
+
     interpolateDistributions(
         x, y, z,
         m_000, 
@@ -849,17 +1015,6 @@ __global__ void scaleCF_compressible(
         LaplaceRho, eps_new, omegaF, 
         kxxMyyAverage, kxxMzzAverage, kyzAverage, kxzAverage, kxyAverage
     );
-
-    ////////////////////////////////////////////////////////////////////////////////////
-    // Set neighbor indices
-    k_000 = k_00M;
-    k_M00 = k_M0M;
-    k_0M0 = k_0MM;
-    k_00M = neighborZfine[k_00M];
-    k_MM0 = k_MMM;
-    k_M0M = neighborZfine[k_M0M];
-    k_0MM = neighborZfine[k_0MM];
-    k_MMM = neighborZfine[k_MMM];
 
     //////////////////////////////////////////////////////////////////////////
     // Write distributions
@@ -900,9 +1055,21 @@ __global__ void scaleCF_compressible(
     y = -c1o4;
     z =  c1o4;
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Set neighbor indices
+    k_000 = k_M00;
+    k_M00 = neighborXfine[k_M00];
+    k_0M0 = k_MM0;
+    k_00M = k_M0M;
+    k_MM0 = neighborXfine[k_MM0];
+    k_M0M = neighborXfine[k_M0M];
+    k_0MM = k_MMM;
+    k_MMM = neighborXfine[k_MMM];
 
     ////////////////////////////////////////////////////////////////////////////////
     // Set moments (zeroth to sixth orders) on destination node
+
+    if(hasTurbulentViscosity) omegaF = omegaFine/ (c1o1 + c3o1*omegaFine*turbulentViscosityFine[k_000]);
+
     interpolateDistributions(
         x, y, z,
         m_000, 
@@ -919,17 +1086,6 @@ __global__ void scaleCF_compressible(
         LaplaceRho, eps_new, omegaF, 
         kxxMyyAverage, kxxMzzAverage, kyzAverage, kxzAverage, kxyAverage
     );
-
-    ////////////////////////////////////////////////////////////////////////////////////
-    // Set neighbor indices
-    k_000 = k_M00;
-    k_M00 = neighborXfine[k_M00];
-    k_0M0 = k_MM0;
-    k_00M = k_M0M;
-    k_MM0 = neighborXfine[k_MM0];
-    k_M0M = neighborXfine[k_M0M];
-    k_0MM = k_MMM;
-    k_MMM = neighborXfine[k_MMM];
 
     //////////////////////////////////////////////////////////////////////////
     // Write distributions
@@ -969,9 +1125,22 @@ __global__ void scaleCF_compressible(
     x =  c1o4;
     y = -c1o4;
     z = -c1o4;
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Set neighbor indices
+    k_00M = k_000;
+    k_M0M = k_M00;
+    k_0MM = k_0M0;
+    k_MMM = k_MM0;
+    k_000 = k_base_M00;
+    k_M00 = neighborXfine[k_base_M00];
+    k_0M0 = k_base_MM0;
+    k_MM0 = neighborXfine[k_base_MM0];
 
     ////////////////////////////////////////////////////////////////////////////////
     // Set moments (zeroth to sixth orders) on destination node
+
+    if(hasTurbulentViscosity) omegaF = omegaFine/ (c1o1 + c3o1*omegaFine*turbulentViscosityFine[k_000]);
+
     interpolateDistributions(
         x, y, z,
         m_000, 
@@ -988,17 +1157,6 @@ __global__ void scaleCF_compressible(
         LaplaceRho, eps_new, omegaF, 
         kxxMyyAverage, kxxMzzAverage, kyzAverage, kxzAverage, kxyAverage
     );
-
-    ////////////////////////////////////////////////////////////////////////////////////
-    // Set neighbor indices
-    k_00M = k_000;
-    k_M0M = k_M00;
-    k_0MM = k_0M0;
-    k_MMM = k_MM0;
-    k_000 = k_base_M00;
-    k_M00 = neighborXfine[k_base_M00];
-    k_0M0 = k_base_MM0;
-    k_MM0 = neighborXfine[k_base_MM0];
 
     //////////////////////////////////////////////////////////////////////////
     // Write distributions
@@ -1039,25 +1197,6 @@ __global__ void scaleCF_compressible(
     y =  c1o4;
     z = -c1o4;
     
-    ////////////////////////////////////////////////////////////////////////////////
-    // Set moments (zeroth to sixth orders) on destination node
-    interpolateDistributions(
-        x, y, z,
-        m_000, 
-        m_100, m_010, m_001,
-        m_011, m_101, m_110, m_200, m_020, m_002,
-        m_111, m_210, m_012, m_201, m_021, m_120, m_102,
-        m_022, m_202, m_220, m_211, m_121, m_112,
-        m_122, m_212, m_221,
-        m_222,
-        a_000, a_100, a_010, a_001, a_200, a_020, a_002, a_110,  a_101, a_011, a_111,
-        b_000, b_100, b_010, b_001, b_200, b_020, b_002, b_110,  b_101, b_011, b_111,
-        c_000, c_100, c_010, c_001, c_200, c_020, c_002, c_110,  c_101, c_011, c_111,
-        d_000, d_100, d_010, d_001, d_110, d_101, d_011, d_111,
-        LaplaceRho, eps_new, omegaF, 
-        kxxMyyAverage, kxxMzzAverage, kyzAverage, kxzAverage, kxyAverage
-    );
-
     //////////////////////////////////////////////////////////////////////////
     // index of the base node and its neighbors
     k_base_000 = k_base_0M0;
@@ -1079,6 +1218,28 @@ __global__ void scaleCF_compressible(
     k_M0M = k_base_M0M;
     k_0MM = k_base_0MM;
     k_MMM = k_base_MMM;
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // Set moments (zeroth to sixth orders) on destination node
+
+    if(hasTurbulentViscosity) omegaF = omegaFine/ (c1o1 + c3o1*omegaFine*turbulentViscosityFine[k_000]);
+
+    interpolateDistributions(
+        x, y, z,
+        m_000, 
+        m_100, m_010, m_001,
+        m_011, m_101, m_110, m_200, m_020, m_002,
+        m_111, m_210, m_012, m_201, m_021, m_120, m_102,
+        m_022, m_202, m_220, m_211, m_121, m_112,
+        m_122, m_212, m_221,
+        m_222,
+        a_000, a_100, a_010, a_001, a_200, a_020, a_002, a_110,  a_101, a_011, a_111,
+        b_000, b_100, b_010, b_001, b_200, b_020, b_002, b_110,  b_101, b_011, b_111,
+        c_000, c_100, c_010, c_001, c_200, c_020, c_002, c_110,  c_101, c_011, c_111,
+        d_000, d_100, d_010, d_001, d_110, d_101, d_011, d_111,
+        LaplaceRho, eps_new, omegaF, 
+        kxxMyyAverage, kxxMzzAverage, kyzAverage, kxzAverage, kxyAverage
+    );
 
     //////////////////////////////////////////////////////////////////////////
     // Write distributions
@@ -1118,9 +1279,22 @@ __global__ void scaleCF_compressible(
     x = -c1o4;
     y =  c1o4;
     z =  c1o4;
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Set neighbor indices
+    k_000 = k_00M;
+    k_M00 = k_M0M;
+    k_0M0 = k_0MM;
+    k_00M = neighborZfine[k_00M];
+    k_MM0 = k_MMM;
+    k_M0M = neighborZfine[k_M0M];
+    k_0MM = neighborZfine[k_0MM];
+    k_MMM = neighborZfine[k_MMM];
 
     ////////////////////////////////////////////////////////////////////////////////
     // Set moments (zeroth to sixth orders) on destination node
+
+    if(hasTurbulentViscosity) omegaF = omegaFine/ (c1o1 + c3o1*omegaFine*turbulentViscosityFine[k_000]);
+
     interpolateDistributions(
         x, y, z,
         m_000, 
@@ -1137,17 +1311,6 @@ __global__ void scaleCF_compressible(
         LaplaceRho, eps_new, omegaF, 
         kxxMyyAverage, kxxMzzAverage, kyzAverage, kxzAverage, kxyAverage
     );
-
-    ////////////////////////////////////////////////////////////////////////////////////
-    // Set neighbor indices
-    k_000 = k_00M;
-    k_M00 = k_M0M;
-    k_0M0 = k_0MM;
-    k_00M = neighborZfine[k_00M];
-    k_MM0 = k_MMM;
-    k_M0M = neighborZfine[k_M0M];
-    k_0MM = neighborZfine[k_0MM];
-    k_MMM = neighborZfine[k_MMM];
 
     //////////////////////////////////////////////////////////////////////////
     // Write distributions
@@ -1187,9 +1350,22 @@ __global__ void scaleCF_compressible(
     x = c1o4;
     y = c1o4;
     z = c1o4;
+    ////////////////////////////////////////////////////////////////////////////////////
+    // Set neighbor indices
+    k_000 = k_M00;
+    k_M00 = neighborXfine[k_M00];
+    k_0M0 = k_MM0;
+    k_00M = k_M0M;
+    k_MM0 = neighborXfine[k_MM0];
+    k_M0M = neighborXfine[k_M0M];
+    k_0MM = k_MMM;
+    k_MMM = neighborXfine[k_MMM];
 
     ////////////////////////////////////////////////////////////////////////////////
     // Set moments (zeroth to sixth orders) on destination node
+
+    if(hasTurbulentViscosity) omegaF = omegaFine/ (c1o1 + c3o1*omegaFine*turbulentViscosityFine[k_000]);
+
     interpolateDistributions(
         x, y, z,
         m_000, 
@@ -1206,17 +1382,6 @@ __global__ void scaleCF_compressible(
         LaplaceRho, eps_new, omegaF, 
         kxxMyyAverage, kxxMzzAverage, kyzAverage, kxzAverage, kxyAverage
     );
-
-    ////////////////////////////////////////////////////////////////////////////////////
-    // Set neighbor indices
-    k_000 = k_M00;
-    k_M00 = neighborXfine[k_M00];
-    k_0M0 = k_MM0;
-    k_00M = k_M0M;
-    k_MM0 = neighborXfine[k_MM0];
-    k_M0M = neighborXfine[k_M0M];
-    k_0MM = k_MMM;
-    k_MMM = neighborXfine[k_MMM];
 
     //////////////////////////////////////////////////////////////////////////
     // Write distributions
@@ -1256,9 +1421,22 @@ __global__ void scaleCF_compressible(
     x =  c1o4;
     y =  c1o4;
     z = -c1o4;
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Set neighbor indices
+    k_00M = k_000;
+    k_M0M = k_M00;
+    k_0MM = k_0M0;
+    k_MMM = k_MM0;
+    k_000 = k_base_M00;
+    k_M00 = neighborXfine[k_base_M00];
+    k_0M0 = k_base_MM0;
+    k_MM0 = neighborXfine[k_base_MM0];
 
     ////////////////////////////////////////////////////////////////////////////////
     // Set moments (zeroth to sixth orders) on destination node
+
+    if(hasTurbulentViscosity) omegaF = omegaFine/ (c1o1 + c3o1*omegaFine*turbulentViscosityFine[k_000]);
+
     interpolateDistributions(
         x, y, z,
         m_000, 
@@ -1275,17 +1453,6 @@ __global__ void scaleCF_compressible(
         LaplaceRho, eps_new, omegaF, 
         kxxMyyAverage, kxxMzzAverage, kyzAverage, kxzAverage, kxyAverage
     );
-
-    ////////////////////////////////////////////////////////////////////////////////////
-    // Set neighbor indices
-    k_00M = k_000;
-    k_M0M = k_M00;
-    k_0MM = k_0M0;
-    k_MMM = k_MM0;
-    k_000 = k_base_M00;
-    k_M00 = neighborXfine[k_base_M00];
-    k_0M0 = k_base_MM0;
-    k_MM0 = neighborXfine[k_base_MM0];
 
     //////////////////////////////////////////////////////////////////////////
     // Write distributions
@@ -1317,3 +1484,7 @@ __global__ void scaleCF_compressible(
     (distFine.f[DIR_PMM])[k_0MM] = f_PMM;
     (distFine.f[DIR_MMM])[k_MMM] = f_MMM;
 }
+
+template __global__ void scaleCF_compressible<true>( real* distributionsCoarse, real* distributionsFine, unsigned int* neighborXcoarse, unsigned int* neighborYcoarse, unsigned int* neighborZcoarse, unsigned int* neighborXfine, unsigned int* neighborYfine, unsigned int* neighborZfine, unsigned long long numberOfLBnodesCoarse, unsigned long long numberOfLBnodesFine, bool isEvenTimestep, unsigned int* indicesCoarseMMM, unsigned int* indicesFineMMM, unsigned int numberOfInterfaceNodes, real omegaCoarse, real omegaFine, real* turbulentViscosityCoarse, real* turbulentViscosityFine, OffCF offsetCF);
+
+template __global__ void scaleCF_compressible<false>( real* distributionsCoarse, real* distributionsFine, unsigned int* neighborXcoarse, unsigned int* neighborYcoarse, unsigned int* neighborZcoarse, unsigned int* neighborXfine, unsigned int* neighborYfine, unsigned int* neighborZfine, unsigned long long numberOfLBnodesCoarse, unsigned long long numberOfLBnodesFine, bool isEvenTimestep, unsigned int* indicesCoarseMMM, unsigned int* indicesFineMMM, unsigned int numberOfInterfaceNodes, real omegaCoarse, real omegaFine, real* turbulentViscosityCoarse, real* turbulentViscosityFine, OffCF offsetCF);

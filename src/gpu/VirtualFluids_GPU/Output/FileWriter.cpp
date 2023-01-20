@@ -81,7 +81,7 @@ void FileWriter::writeTimestep(std::shared_ptr<Parameter> para, unsigned int tim
 
 void FileWriter::writeTimestep(std::shared_ptr<Parameter> para, unsigned int timestep, int level)
 {
-    const unsigned int numberOfParts = para->getParH(level)->numberOfNodes / para->getlimitOfNodesForVTK() + 1;
+    const unsigned int numberOfParts = (uint)para->getParH(level)->numberOfNodes / para->getlimitOfNodesForVTK() + 1;
     std::vector<std::string> fnames;
     std::vector<std::string> fnamesMed;
 
@@ -222,8 +222,8 @@ std::vector<std::string> FileWriter::writeUnstrucuredGridLT(std::shared_ptr<Para
 
     for (unsigned int part = 0; part < fname.size(); part++)
     {
-        if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->numberOfNodes)
-            sizeOfNodes = para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
+        if (((part + 1)*para->getlimitOfNodesForVTK()) > (uint)para->getParH(level)->numberOfNodes)
+            sizeOfNodes = (uint)para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
         else
             sizeOfNodes = para->getlimitOfNodesForVTK();
 
@@ -351,9 +351,9 @@ std::vector<std::string> FileWriter::writeUnstrucuredGridMedianLT(std::shared_pt
     {
         //printf("\n test in if I... \n");
         //////////////////////////////////////////////////////////////////////////
-        if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->numberOfNodes)
+        if (((part + 1) * para->getlimitOfNodesForVTK()) > (uint)para->getParH(level)->numberOfNodes)
         {
-            sizeOfNodes = para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
+            sizeOfNodes = (uint)para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
         }
         else
         {

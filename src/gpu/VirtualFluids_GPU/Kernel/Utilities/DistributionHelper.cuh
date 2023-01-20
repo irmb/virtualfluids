@@ -43,67 +43,67 @@ using namespace vf::lbm::dir;
 namespace vf::gpu
 {
 
-__inline__ __device__ __host__ void getPointersToDistributions(Distributions27 &dist, real *distributionArray, const uint numberOfLBnodes, const bool isEvenTimestep)
+__inline__ __device__ __host__ void getPointersToDistributions(Distributions27 &dist, real *distributionArray, const unsigned long long numberOfLBnodes, const bool isEvenTimestep)
 {
     if (isEvenTimestep)
     {
-        dist.f[DIR_000] = &distributionArray[(unsigned long long)(DIR_000) * (unsigned long long)(numberOfLBnodes)];
-        dist.f[DIR_P00] = &distributionArray[(unsigned long long)(DIR_P00) * (unsigned long long)(numberOfLBnodes)];
-        dist.f[DIR_M00] = &distributionArray[(unsigned long long)(DIR_M00) * (unsigned long long)(numberOfLBnodes)];
-        dist.f[DIR_0P0] = &distributionArray[(unsigned long long)(DIR_0P0) * (unsigned long long)(numberOfLBnodes)];
-        dist.f[DIR_0M0] = &distributionArray[(unsigned long long)(DIR_0M0) * (unsigned long long)(numberOfLBnodes)];
-        dist.f[DIR_00P] = &distributionArray[(unsigned long long)(DIR_00P) * (unsigned long long)(numberOfLBnodes)];
-        dist.f[DIR_00M] = &distributionArray[(unsigned long long)(DIR_00M) * (unsigned long long)(numberOfLBnodes)];
-        dist.f[DIR_PP0] = &distributionArray[(unsigned long long)(DIR_PP0) * (unsigned long long)(numberOfLBnodes)];
-        dist.f[DIR_MM0] = &distributionArray[(unsigned long long)(DIR_MM0) * (unsigned long long)(numberOfLBnodes)];
-        dist.f[DIR_PM0] = &distributionArray[(unsigned long long)(DIR_PM0) * (unsigned long long)(numberOfLBnodes)];
-        dist.f[DIR_MP0] = &distributionArray[(unsigned long long)(DIR_MP0) * (unsigned long long)(numberOfLBnodes)];
-        dist.f[DIR_P0P] = &distributionArray[(unsigned long long)(DIR_P0P) * (unsigned long long)(numberOfLBnodes)];
-        dist.f[DIR_M0M] = &distributionArray[(unsigned long long)(DIR_M0M) * (unsigned long long)(numberOfLBnodes)];
-        dist.f[DIR_P0M] = &distributionArray[(unsigned long long)(DIR_P0M) * (unsigned long long)(numberOfLBnodes)];
-        dist.f[DIR_M0P] = &distributionArray[(unsigned long long)(DIR_M0P) * (unsigned long long)(numberOfLBnodes)];
-        dist.f[DIR_0PP] = &distributionArray[(unsigned long long)(DIR_0PP) * (unsigned long long)(numberOfLBnodes)];
-        dist.f[DIR_0MM] = &distributionArray[(unsigned long long)(DIR_0MM) * (unsigned long long)(numberOfLBnodes)];
-        dist.f[DIR_0PM] = &distributionArray[(unsigned long long)(DIR_0PM) * (unsigned long long)(numberOfLBnodes)];
-        dist.f[DIR_0MP] = &distributionArray[(unsigned long long)(DIR_0MP) * (unsigned long long)(numberOfLBnodes)];
-        dist.f[DIR_PPP] = &distributionArray[(unsigned long long)(DIR_PPP) * (unsigned long long)(numberOfLBnodes)];
-        dist.f[DIR_MMP] = &distributionArray[(unsigned long long)(DIR_MMP) * (unsigned long long)(numberOfLBnodes)];
-        dist.f[DIR_PMP] = &distributionArray[(unsigned long long)(DIR_PMP) * (unsigned long long)(numberOfLBnodes)];
-        dist.f[DIR_MPP] = &distributionArray[(unsigned long long)(DIR_MPP) * (unsigned long long)(numberOfLBnodes)];
-        dist.f[DIR_PPM] = &distributionArray[(unsigned long long)(DIR_PPM) * (unsigned long long)(numberOfLBnodes)];
-        dist.f[DIR_MMM] = &distributionArray[(unsigned long long)(DIR_MMM) * (unsigned long long)(numberOfLBnodes)];
-        dist.f[DIR_PMM] = &distributionArray[(unsigned long long)(DIR_PMM) * (unsigned long long)(numberOfLBnodes)];
-        dist.f[DIR_MPM] = &distributionArray[(unsigned long long)(DIR_MPM) * (unsigned long long)(numberOfLBnodes)];
+        dist.f[DIR_000] = &distributionArray[DIR_000 * numberOfLBnodes];
+        dist.f[DIR_P00] = &distributionArray[DIR_P00 * numberOfLBnodes];
+        dist.f[DIR_M00] = &distributionArray[DIR_M00 * numberOfLBnodes];
+        dist.f[DIR_0P0] = &distributionArray[DIR_0P0 * numberOfLBnodes];
+        dist.f[DIR_0M0] = &distributionArray[DIR_0M0 * numberOfLBnodes];
+        dist.f[DIR_00P] = &distributionArray[DIR_00P * numberOfLBnodes];
+        dist.f[DIR_00M] = &distributionArray[DIR_00M * numberOfLBnodes];
+        dist.f[DIR_PP0] = &distributionArray[DIR_PP0 * numberOfLBnodes];
+        dist.f[DIR_MM0] = &distributionArray[DIR_MM0 * numberOfLBnodes];
+        dist.f[DIR_PM0] = &distributionArray[DIR_PM0 * numberOfLBnodes];
+        dist.f[DIR_MP0] = &distributionArray[DIR_MP0 * numberOfLBnodes];
+        dist.f[DIR_P0P] = &distributionArray[DIR_P0P * numberOfLBnodes];
+        dist.f[DIR_M0M] = &distributionArray[DIR_M0M * numberOfLBnodes];
+        dist.f[DIR_P0M] = &distributionArray[DIR_P0M * numberOfLBnodes];
+        dist.f[DIR_M0P] = &distributionArray[DIR_M0P * numberOfLBnodes];
+        dist.f[DIR_0PP] = &distributionArray[DIR_0PP * numberOfLBnodes];
+        dist.f[DIR_0MM] = &distributionArray[DIR_0MM * numberOfLBnodes];
+        dist.f[DIR_0PM] = &distributionArray[DIR_0PM * numberOfLBnodes];
+        dist.f[DIR_0MP] = &distributionArray[DIR_0MP * numberOfLBnodes];
+        dist.f[DIR_PPP] = &distributionArray[DIR_PPP * numberOfLBnodes];
+        dist.f[DIR_MMP] = &distributionArray[DIR_MMP * numberOfLBnodes];
+        dist.f[DIR_PMP] = &distributionArray[DIR_PMP * numberOfLBnodes];
+        dist.f[DIR_MPP] = &distributionArray[DIR_MPP * numberOfLBnodes];
+        dist.f[DIR_PPM] = &distributionArray[DIR_PPM * numberOfLBnodes];
+        dist.f[DIR_MMM] = &distributionArray[DIR_MMM * numberOfLBnodes];
+        dist.f[DIR_PMM] = &distributionArray[DIR_PMM * numberOfLBnodes];
+        dist.f[DIR_MPM] = &distributionArray[DIR_MPM * numberOfLBnodes];
     }
     else
     {
-         dist.f[DIR_M00] = &distributionArray[(unsigned long long)(DIR_P00) * (unsigned long long)(numberOfLBnodes)];
-         dist.f[DIR_P00] = &distributionArray[(unsigned long long)(DIR_M00) * (unsigned long long)(numberOfLBnodes)];
-         dist.f[DIR_0M0] = &distributionArray[(unsigned long long)(DIR_0P0) * (unsigned long long)(numberOfLBnodes)];
-         dist.f[DIR_0P0] = &distributionArray[(unsigned long long)(DIR_0M0) * (unsigned long long)(numberOfLBnodes)];
-         dist.f[DIR_00M] = &distributionArray[(unsigned long long)(DIR_00P) * (unsigned long long)(numberOfLBnodes)];
-         dist.f[DIR_00P] = &distributionArray[(unsigned long long)(DIR_00M) * (unsigned long long)(numberOfLBnodes)];
-         dist.f[DIR_MM0] = &distributionArray[(unsigned long long)(DIR_PP0) * (unsigned long long)(numberOfLBnodes)];
-         dist.f[DIR_PP0] = &distributionArray[(unsigned long long)(DIR_MM0) * (unsigned long long)(numberOfLBnodes)];
-         dist.f[DIR_MP0] = &distributionArray[(unsigned long long)(DIR_PM0) * (unsigned long long)(numberOfLBnodes)];
-         dist.f[DIR_PM0] = &distributionArray[(unsigned long long)(DIR_MP0) * (unsigned long long)(numberOfLBnodes)];
-         dist.f[DIR_M0M] = &distributionArray[(unsigned long long)(DIR_P0P) * (unsigned long long)(numberOfLBnodes)];
-         dist.f[DIR_P0P] = &distributionArray[(unsigned long long)(DIR_M0M) * (unsigned long long)(numberOfLBnodes)];
-         dist.f[DIR_M0P] = &distributionArray[(unsigned long long)(DIR_P0M) * (unsigned long long)(numberOfLBnodes)];
-         dist.f[DIR_P0M] = &distributionArray[(unsigned long long)(DIR_M0P) * (unsigned long long)(numberOfLBnodes)];
-         dist.f[DIR_0MM] = &distributionArray[(unsigned long long)(DIR_0PP) * (unsigned long long)(numberOfLBnodes)];
-         dist.f[DIR_0PP] = &distributionArray[(unsigned long long)(DIR_0MM) * (unsigned long long)(numberOfLBnodes)];
-         dist.f[DIR_0MP] = &distributionArray[(unsigned long long)(DIR_0PM) * (unsigned long long)(numberOfLBnodes)];
-         dist.f[DIR_0PM] = &distributionArray[(unsigned long long)(DIR_0MP) * (unsigned long long)(numberOfLBnodes)];
-         dist.f[DIR_000] = &distributionArray[(unsigned long long)(DIR_000) * (unsigned long long)(numberOfLBnodes)];
-         dist.f[DIR_PPP] = &distributionArray[(unsigned long long)(DIR_MMM) * (unsigned long long)(numberOfLBnodes)];
-         dist.f[DIR_MMP] = &distributionArray[(unsigned long long)(DIR_PPM) * (unsigned long long)(numberOfLBnodes)];
-         dist.f[DIR_PMP] = &distributionArray[(unsigned long long)(DIR_MPM) * (unsigned long long)(numberOfLBnodes)];
-         dist.f[DIR_MPP] = &distributionArray[(unsigned long long)(DIR_PMM) * (unsigned long long)(numberOfLBnodes)];
-         dist.f[DIR_PPM] = &distributionArray[(unsigned long long)(DIR_MMP) * (unsigned long long)(numberOfLBnodes)];
-         dist.f[DIR_MMM] = &distributionArray[(unsigned long long)(DIR_PPP) * (unsigned long long)(numberOfLBnodes)];
-         dist.f[DIR_PMM] = &distributionArray[(unsigned long long)(DIR_MPP) * (unsigned long long)(numberOfLBnodes)];
-         dist.f[DIR_MPM] = &distributionArray[(unsigned long long)(DIR_PMP) * (unsigned long long)(numberOfLBnodes)];
+         dist.f[DIR_M00] = &distributionArray[DIR_P00 * numberOfLBnodes];
+         dist.f[DIR_P00] = &distributionArray[DIR_M00 * numberOfLBnodes];
+         dist.f[DIR_0M0] = &distributionArray[DIR_0P0 * numberOfLBnodes];
+         dist.f[DIR_0P0] = &distributionArray[DIR_0M0 * numberOfLBnodes];
+         dist.f[DIR_00M] = &distributionArray[DIR_00P * numberOfLBnodes];
+         dist.f[DIR_00P] = &distributionArray[DIR_00M * numberOfLBnodes];
+         dist.f[DIR_MM0] = &distributionArray[DIR_PP0 * numberOfLBnodes];
+         dist.f[DIR_PP0] = &distributionArray[DIR_MM0 * numberOfLBnodes];
+         dist.f[DIR_MP0] = &distributionArray[DIR_PM0 * numberOfLBnodes];
+         dist.f[DIR_PM0] = &distributionArray[DIR_MP0 * numberOfLBnodes];
+         dist.f[DIR_M0M] = &distributionArray[DIR_P0P * numberOfLBnodes];
+         dist.f[DIR_P0P] = &distributionArray[DIR_M0M * numberOfLBnodes];
+         dist.f[DIR_M0P] = &distributionArray[DIR_P0M * numberOfLBnodes];
+         dist.f[DIR_P0M] = &distributionArray[DIR_M0P * numberOfLBnodes];
+         dist.f[DIR_0MM] = &distributionArray[DIR_0PP * numberOfLBnodes];
+         dist.f[DIR_0PP] = &distributionArray[DIR_0MM * numberOfLBnodes];
+         dist.f[DIR_0MP] = &distributionArray[DIR_0PM * numberOfLBnodes];
+         dist.f[DIR_0PM] = &distributionArray[DIR_0MP * numberOfLBnodes];
+         dist.f[DIR_000] = &distributionArray[DIR_000 * numberOfLBnodes];
+         dist.f[DIR_PPP] = &distributionArray[DIR_MMM * numberOfLBnodes];
+         dist.f[DIR_MMP] = &distributionArray[DIR_PPM * numberOfLBnodes];
+         dist.f[DIR_PMP] = &distributionArray[DIR_MPM * numberOfLBnodes];
+         dist.f[DIR_MPP] = &distributionArray[DIR_PMM * numberOfLBnodes];
+         dist.f[DIR_PPM] = &distributionArray[DIR_MMP * numberOfLBnodes];
+         dist.f[DIR_MMM] = &distributionArray[DIR_PPP * numberOfLBnodes];
+         dist.f[DIR_PMM] = &distributionArray[DIR_MPP * numberOfLBnodes];
+         dist.f[DIR_MPM] = &distributionArray[DIR_PMP * numberOfLBnodes];
     }
 }
 
@@ -114,7 +114,7 @@ __inline__ __device__ __host__ void getPointersToDistributions(Distributions27 &
 *  @params isEvenTimestep: stored data dependent on timestep is based on the esoteric twist algorithm
 *  @return a data struct containing the addresses to the 27 directions within the 1D distribution array
 */
-__inline__ __device__ __host__ DistributionReferences27 getDistributionReferences27(real* distributions, unsigned int numberOfLBnodes, bool isEvenTimestep){
+__inline__ __device__ __host__ DistributionReferences27 getDistributionReferences27(real* distributions, const unsigned long long numberOfLBnodes, const bool isEvenTimestep){
     DistributionReferences27 distribution_references;
     getPointersToDistributions(distribution_references, distributions, numberOfLBnodes, isEvenTimestep);
     return distribution_references;

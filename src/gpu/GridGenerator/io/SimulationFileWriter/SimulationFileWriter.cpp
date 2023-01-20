@@ -417,10 +417,10 @@ void SimulationFileWriter::writeGridInterfaceToFile(SPtr<GridBuilder> builder, u
     }
 }
 
-void SimulationFileWriter::writeGridInterfaceToFile(const uint numberOfNodes, std::ofstream& coarseFile, uint* coarse, std::ofstream& fineFile, uint* fine)
+void SimulationFileWriter::writeGridInterfaceToFile(uint numberOfNodes, std::ofstream &coarseFile, uint *coarse,
+                                                    std::ofstream &fineFile, uint *fine)
 {
-    for (uint index = 0; index < numberOfNodes; index++)
-    {
+    for (uint index = 0; index < numberOfNodes; index++) {
         coarseFile << coarse[index] << " \n";
         fineFile << fine[index] << " \n";
     }
@@ -428,16 +428,14 @@ void SimulationFileWriter::writeGridInterfaceToFile(const uint numberOfNodes, st
     fineFile << "\n";
 }
 
-void SimulationFileWriter::writeGridInterfaceOffsetToFile(uint numberOfNodes, std::ofstream & offsetFile, real* offset_X, real* offset_Y, real* offset_Z)
+void SimulationFileWriter::writeGridInterfaceOffsetToFile(uint numberOfNodes, std::ofstream &offsetFile, real *offset_X,
+                                                          real *offset_Y, real *offset_Z)
 {
-    for (uint index = 0; index < numberOfNodes; index++)
-    {
+    for (uint index = 0; index < numberOfNodes; index++) {
         offsetFile << offset_X[index] << " " << offset_Y[index] << " " << offset_Z[index] << " \n";
     }
     offsetFile << "\n";
 }
-
-
 
 /*#################################################################################*/
 /*---------------------------------private methods---------------------------------*/

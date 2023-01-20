@@ -1,28 +1,28 @@
 //=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
 //           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
 //
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
 //  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
+//  License as published by the Free Software Foundation, either version 3 of
 //  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 //  for more details.
-//  
+//
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
@@ -105,17 +105,17 @@ void LevelGridBuilder::setSlipGeometryBoundaryCondition(real normalX, real norma
 
     for (uint level = 0; level < getNumberOfGridLevels(); level++)
     {
-		if (boundaryConditions[level]->geometryBoundaryCondition != nullptr)
-		{
-			boundaryConditions[level]->geometryBoundaryCondition->normalX = normalX;
-			boundaryConditions[level]->geometryBoundaryCondition->normalY = normalY;
-			boundaryConditions[level]->geometryBoundaryCondition->normalZ = normalZ;
-			boundaryConditions[level]->geometryBoundaryCondition->side->addIndices(grids, level, boundaryConditions[level]->geometryBoundaryCondition);
+        if (boundaryConditions[level]->geometryBoundaryCondition != nullptr)
+        {
+            boundaryConditions[level]->geometryBoundaryCondition->normalX = normalX;
+            boundaryConditions[level]->geometryBoundaryCondition->normalY = normalY;
+            boundaryConditions[level]->geometryBoundaryCondition->normalZ = normalZ;
+            boundaryConditions[level]->geometryBoundaryCondition->side->addIndices(grids, level, boundaryConditions[level]->geometryBoundaryCondition);
 
             boundaryConditions[level]->geometryBoundaryCondition->fillSlipNormalLists();
 
             *logging::out << logging::Logger::INFO_INTERMEDIATE << "Set Geometry Slip BC on level " << level << " with " << (int)boundaryConditions[level]->geometryBoundaryCondition->indices.size() <<"\n";
-		}
+        }
     }
 }
 
@@ -123,11 +123,11 @@ void LevelGridBuilder::setSlipGeometryBoundaryCondition(real normalX, real norma
 //! \brief Set stress boundary concdition using iMEM
 //! \param samplingOffset number of grid points above boundary where velocity for wall model is sampled
 //! \param z0 roughness length [m]
-//! \param dx dx of level 0 [m] 
+//! \param dx dx of level 0 [m]
 //!
-void LevelGridBuilder::setStressBoundaryCondition(  SideType sideType, 
-                                                    real nomalX, real normalY, real normalZ, 
-                                                    uint samplingOffset, real z0, real dx)
+void LevelGridBuilder::setStressBoundaryCondition(  SideType sideType,
+                                                    real nomalX, real normalY, real normalZ,
+                                                    uint samplingOffset, real z0, real dx, real q)
 {
     for (uint level = 0; level < getNumberOfGridLevels(); level++)
     {
@@ -135,7 +135,7 @@ void LevelGridBuilder::setStressBoundaryCondition(  SideType sideType,
         auto side = SideFactory::make(sideType);
 
         stressBoundaryCondition->side = side;
-        stressBoundaryCondition->side->addIndices(grids, level, stressBoundaryCondition);
+        stressBoundaryCondition->side->addIndices(grids, level, stressBoundaryCondition, q);
 
         stressBoundaryCondition->fillStressNormalLists();
         stressBoundaryCondition->fillSamplingOffsetLists();
@@ -178,17 +178,17 @@ void LevelGridBuilder::setVelocityGeometryBoundaryCondition(real vx, real vy, re
 
     for (uint level = 0; level < getNumberOfGridLevels(); level++)
     {
-		if (boundaryConditions[level]->geometryBoundaryCondition != nullptr)
-		{
-			boundaryConditions[level]->geometryBoundaryCondition->vx = vx;
-			boundaryConditions[level]->geometryBoundaryCondition->vy = vy;
-			boundaryConditions[level]->geometryBoundaryCondition->vz = vz;
-			boundaryConditions[level]->geometryBoundaryCondition->side->addIndices(grids, level, boundaryConditions[level]->geometryBoundaryCondition);
+        if (boundaryConditions[level]->geometryBoundaryCondition != nullptr)
+        {
+            boundaryConditions[level]->geometryBoundaryCondition->vx = vx;
+            boundaryConditions[level]->geometryBoundaryCondition->vy = vy;
+            boundaryConditions[level]->geometryBoundaryCondition->vz = vz;
+            boundaryConditions[level]->geometryBoundaryCondition->side->addIndices(grids, level, boundaryConditions[level]->geometryBoundaryCondition);
 
             boundaryConditions[level]->geometryBoundaryCondition->fillVelocityLists();
 
             *logging::out << logging::Logger::INFO_INTERMEDIATE << "Set Geometry Velocity BC on level " << level << " with " << (int)boundaryConditions[level]->geometryBoundaryCondition->indices.size() <<"\n";
-		}
+        }
     }
 }
 
@@ -230,7 +230,7 @@ void LevelGridBuilder::setNoSlipBoundaryCondition(SideType sideType)
             noSlipBoundaryCondition->fillVelocityLists();
 
             // now effectively just a wrapper for velocityBC with zero velocity. No distinction in Gridgenerator.
-            boundaryConditions[level]->velocityBoundaryConditions.push_back(noSlipBoundaryCondition); 
+            boundaryConditions[level]->velocityBoundaryConditions.push_back(noSlipBoundaryCondition);
         }
     }
 }
@@ -241,23 +241,23 @@ void LevelGridBuilder::setNoSlipGeometryBoundaryCondition()
 
     for (uint level = 0; level < getNumberOfGridLevels(); level++)
     {
-		if (boundaryConditions[level]->geometryBoundaryCondition != nullptr)
-		{
-			boundaryConditions[level]->geometryBoundaryCondition->side->addIndices(grids, level, boundaryConditions[level]->geometryBoundaryCondition);
+        if (boundaryConditions[level]->geometryBoundaryCondition != nullptr)
+        {
+            boundaryConditions[level]->geometryBoundaryCondition->side->addIndices(grids, level, boundaryConditions[level]->geometryBoundaryCondition);
 
             *logging::out << logging::Logger::INFO_INTERMEDIATE << "Set Geometry No-Slip BC on level " << level << " with " << (int)boundaryConditions[level]->geometryBoundaryCondition->indices.size() <<"\n";
-		}
+        }
     }
 }
 
-void LevelGridBuilder::setPrecursorBoundaryCondition(SideType sideType, SPtr<FileCollection> fileCollection, int timeStepsBetweenReads, 
+void LevelGridBuilder::setPrecursorBoundaryCondition(SideType sideType, SPtr<FileCollection> fileCollection, int timeStepsBetweenReads,
                                                         real velocityX, real velocityY, real velocityZ, std::vector<uint> fileLevelToGridLevelMap)
 {
-    if(fileLevelToGridLevelMap.empty())                         
+    if(fileLevelToGridLevelMap.empty())
     {
         *logging::out << logging::Logger::INFO_INTERMEDIATE << "Mapping precursor file levels to the corresponding grid levels" << "\n";
 
-        for (uint level = 0; level < getNumberOfGridLevels(); level++)  
+        for (uint level = 0; level < getNumberOfGridLevels(); level++)
             fileLevelToGridLevelMap.push_back(level);
     }
     else
@@ -413,9 +413,9 @@ std::shared_ptr<Grid> LevelGridBuilder::getGrid(int level, int box)
 void LevelGridBuilder::checkLevel(int level)
 {
     if (level >= (int)grids.size())
-    { 
+    {
         std::cout << "wrong level input... return to caller\n";
-        return; 
+        return;
     }
 }
 
@@ -426,16 +426,16 @@ void LevelGridBuilder::getDimensions(int &nx, int &ny, int &nz, const int level)
     nz = grids[level]->getNumberOfNodesZ();
 }
 
-void LevelGridBuilder::getNodeValues(real *xCoords, real *yCoords, real *zCoords, 
-                                     uint *neighborX, uint *neighborY, uint *neighborZ, uint *neighborNegative, 
+void LevelGridBuilder::getNodeValues(real *xCoords, real *yCoords, real *zCoords,
+                                     uint *neighborX, uint *neighborY, uint *neighborZ, uint *neighborNegative,
                                      uint *geo, const int level) const
 {
     grids[level]->getNodeValues(xCoords, yCoords, zCoords, neighborX, neighborY, neighborZ, neighborNegative, geo);
 }
 
 
-GRIDGENERATOR_EXPORT void LevelGridBuilder::getFluidNodeIndices(uint *fluidNodeIndices, const int level) const 
-{ 
+GRIDGENERATOR_EXPORT void LevelGridBuilder::getFluidNodeIndices(uint *fluidNodeIndices, const int level) const
+{
     grids[level]->getFluidNodeIndices(fluidNodeIndices);
 }
 
@@ -444,9 +444,9 @@ GRIDGENERATOR_EXPORT void LevelGridBuilder::getFluidNodeIndicesBorder(uint *flui
     grids[level]->getFluidNodeIndicesBorder(fluidNodeIndices);
 }
 
-uint LevelGridBuilder::getNumberOfFluidNodes(unsigned int level) const 
+uint LevelGridBuilder::getNumberOfFluidNodes(unsigned int level) const
 {
-    return grids[level]->getNumberOfFluidNodes(); 
+    return grids[level]->getNumberOfFluidNodes();
 }
 
 GRIDGENERATOR_EXPORT uint LevelGridBuilder::getNumberOfFluidNodesBorder(unsigned int level) const
@@ -472,7 +472,7 @@ void LevelGridBuilder::getSlipValues(real* normalX, real* normalY, real* normalZ
         for (uint index = 0; index < boundaryCondition->indices.size(); index++)
         {
             indices[allIndicesCounter] = grids[level]->getSparseIndex(boundaryCondition->indices[index]) + 1;
-            
+
             normalX[allIndicesCounter] = boundaryCondition->getNormalx(index);
             normalY[allIndicesCounter] = boundaryCondition->getNormaly(index);
             normalZ[allIndicesCounter] = boundaryCondition->getNormalz(index);
@@ -507,9 +507,9 @@ uint LevelGridBuilder::getStressSize(int level) const
     return size;
 }
 
-void LevelGridBuilder::getStressValues( real* normalX, real* normalY, real* normalZ, 
-                                        real* vx,      real* vy,      real* vz, 
-                                        real* vx1,     real* vy1,     real* vz1, 
+void LevelGridBuilder::getStressValues( real* normalX, real* normalY, real* normalZ,
+                                        real* vx,      real* vy,      real* vz,
+                                        real* vx1,     real* vy1,     real* vz1,
                                         int* indices, int* samplingIndices, int* samplingOffset, real* z0, int level) const
 {
 
@@ -565,7 +565,7 @@ void LevelGridBuilder::getVelocityValues(real* vx, real* vy, real* vz, int* indi
     {
         for (uint i = 0; i < (uint)boundaryCondition->indices.size(); i++)
         {
-            indices[allIndicesCounter] = grids[level]->getSparseIndex(boundaryCondition->indices[i]) +1;  
+            indices[allIndicesCounter] = grids[level]->getSparseIndex(boundaryCondition->indices[i]) +1;
 
             vx[allIndicesCounter] = boundaryCondition->getVx(i);
             vy[allIndicesCounter] = boundaryCondition->getVy(i);
@@ -644,17 +644,17 @@ uint LevelGridBuilder::getPrecursorSize(int level) const
     return size;
 }
 
-void LevelGridBuilder::getPrecursorValues(  uint* neighbor0PP, uint* neighbor0PM, uint* neighbor0MP, uint* neighbor0MM, 
+void LevelGridBuilder::getPrecursorValues(  uint* neighbor0PP, uint* neighbor0PM, uint* neighbor0MP, uint* neighbor0MM,
                                             real* weights0PP, real* weights0PM, real* weights0MP, real* weights0MM,
-                                            int* indices, std::vector<SPtr<TransientBCInputFileReader>>& reader, 
-                                            int& numberOfPrecursorNodes, size_t& numberOfQuantities, uint& timeStepsBetweenReads, 
+                                            int* indices, std::vector<SPtr<TransientBCInputFileReader>>& reader,
+                                            int& numberOfPrecursorNodes, size_t& numberOfQuantities, uint& timeStepsBetweenReads,
                                             real& velocityX, real& velocityY, real& velocityZ, int level) const
 {
     int allIndicesCounter = 0;
     int allNodesCounter = 0;
     uint tmpTimeStepsBetweenReads = 0;
     size_t tmpNumberOfQuantities = 0;
-    
+
     for (auto boundaryCondition : boundaryConditions[level]->precursorBoundaryConditions)
     {
         if( tmpTimeStepsBetweenReads == 0 )
@@ -680,7 +680,7 @@ void LevelGridBuilder::getPrecursorValues(  uint* neighbor0PP, uint* neighbor0PM
         BCreader->getWeights(weights0PP, weights0PM, weights0MP, weights0MM);
         if(tmpNumberOfQuantities == 0)
             tmpNumberOfQuantities = BCreader->getNumberOfQuantities();
-        if(tmpNumberOfQuantities != BCreader->getNumberOfQuantities()) 
+        if(tmpNumberOfQuantities != BCreader->getNumberOfQuantities())
             throw std::runtime_error("All precursor files must have the same quantities.");
         allNodesCounter += BCreader->getNPointsRead();
         velocityX = boundaryCondition->getVelocityX();
@@ -692,7 +692,7 @@ void LevelGridBuilder::getPrecursorValues(  uint* neighbor0PP, uint* neighbor0PM
     if (tmpTimeStepsBetweenReads == 0)
         throw std::runtime_error("timeStepsBetweenReads of precursor needs to be larger than 0.");
     timeStepsBetweenReads = tmpTimeStepsBetweenReads;
-    
+
     if (tmpNumberOfQuantities == 0)
         throw std::runtime_error("Number of quantities in precursor needs to be larger than 0.");
     numberOfQuantities = tmpNumberOfQuantities;
@@ -718,7 +718,7 @@ uint LevelGridBuilder::getGeometrySize(int level) const
 {
     if (boundaryConditions[level]->geometryBoundaryCondition)
         return  (uint)boundaryConditions[level]->geometryBoundaryCondition->indices.size();
-    
+
     return 0;
 }
 
@@ -739,9 +739,9 @@ void LevelGridBuilder::getGeometryValues(real* vx, real* vy, real* vz, int level
 {
     for (uint i = 0; i < boundaryConditions[level]->geometryBoundaryCondition->indices.size(); i++)
     {
-		vx[i] = boundaryConditions[level]->geometryBoundaryCondition->getVx(i);
-		vy[i] = boundaryConditions[level]->geometryBoundaryCondition->getVy(i);
-		vz[i] = boundaryConditions[level]->geometryBoundaryCondition->getVz(i);
+        vx[i] = boundaryConditions[level]->geometryBoundaryCondition->getVx(i);
+        vy[i] = boundaryConditions[level]->geometryBoundaryCondition->getVy(i);
+        vz[i] = boundaryConditions[level]->geometryBoundaryCondition->getVz(i);
     }
 }
 
@@ -756,7 +756,7 @@ void LevelGridBuilder::getGeometryQs(real* qs[27], int level) const
     }
 }
 
-void LevelGridBuilder::writeArrows(std::string fileName) const 
+void LevelGridBuilder::writeArrows(std::string fileName) const
 {
     QLineWriter::writeArrows(fileName, boundaryConditions[getNumberOfGridLevels() - 1]->geometryBoundaryCondition, grids[getNumberOfGridLevels() - 1]);
 }
@@ -797,7 +797,7 @@ void LevelGridBuilder::findFluidNodes(bool splitDomain)
 }
 
 
-void LevelGridBuilder::addFluidNodeIndicesMacroVars(const std::vector<uint>& fluidNodeIndicesMacroVars, uint level) 
+void LevelGridBuilder::addFluidNodeIndicesMacroVars(const std::vector<uint>& fluidNodeIndicesMacroVars, uint level)
 {
     grids[level]->addFluidNodeIndicesMacroVars(fluidNodeIndicesMacroVars);
 }
@@ -827,17 +827,17 @@ void LevelGridBuilder::sortFluidNodeIndicesAllFeatures(uint level)
     grids[level]->sortFluidNodeIndicesAllFeatures();
 }
 
-uint LevelGridBuilder::getNumberOfFluidNodesMacroVars(unsigned int level) const 
+uint LevelGridBuilder::getNumberOfFluidNodesMacroVars(unsigned int level) const
 {
     return grids[level]->getNumberOfFluidNodeIndicesMacroVars();
 }
 
-void LevelGridBuilder::getFluidNodeIndicesMacroVars(uint *fluidNodeIndicesMacroVars, const int level) const 
+void LevelGridBuilder::getFluidNodeIndicesMacroVars(uint *fluidNodeIndicesMacroVars, const int level) const
 {
     grids[level]->getFluidNodeIndicesMacroVars(fluidNodeIndicesMacroVars);
 }
 
-uint LevelGridBuilder::getNumberOfFluidNodesApplyBodyForce(unsigned int level) const 
+uint LevelGridBuilder::getNumberOfFluidNodesApplyBodyForce(unsigned int level) const
 {
     return grids[level]->getNumberOfFluidNodeIndicesApplyBodyForce();
 }

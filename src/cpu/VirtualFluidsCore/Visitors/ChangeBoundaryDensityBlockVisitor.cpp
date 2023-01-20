@@ -4,11 +4,11 @@
 #include "Block3D.h"
 #include "BoundaryConditions.h"
 #include "Grid3D.h"
-#include "Grid3DSystem.h"
+#include "D3Q27System.h"
 #include "LBMKernel.h"
 
 ChangeBoundaryDensityBlockVisitor::ChangeBoundaryDensityBlockVisitor(float oldBoundaryDensity, float newBoundaryDensity)
-    : Block3DVisitor(0, Grid3DSystem::MAXLEVEL), oldBoundaryDensity(oldBoundaryDensity),
+    : Block3DVisitor(0, D3Q27System::MAXLEVEL), oldBoundaryDensity(oldBoundaryDensity),
       newBoundaryDensity(newBoundaryDensity)
 {
 }

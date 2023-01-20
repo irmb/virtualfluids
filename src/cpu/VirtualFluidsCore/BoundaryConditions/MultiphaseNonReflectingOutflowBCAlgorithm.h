@@ -39,11 +39,12 @@
 class MultiphaseNonReflectingOutflowBCAlgorithm : public BCAlgorithm
 {
 public:
-   MultiphaseNonReflectingOutflowBCAlgorithm();
-   ~MultiphaseNonReflectingOutflowBCAlgorithm();
-   SPtr<BCAlgorithm> clone();
-   void addDistributions(SPtr<DistributionArray3D> distributions);
-   void addDistributionsH(SPtr<DistributionArray3D> distributionsH);
-   void applyBC();
+    MultiphaseNonReflectingOutflowBCAlgorithm();
+    ~MultiphaseNonReflectingOutflowBCAlgorithm();
+    SPtr<BCAlgorithm> clone();
+    void addDistributions(SPtr<DistributionArray3D> distributions);
+    void addDistributionsH(SPtr<DistributionArray3D> distributionsH);
+    void addDistributionsH2(SPtr<DistributionArray3D> distributionsH2);
+    void applyBC();
 };
 #endif // MultiphaseNonReflectingOutflowBCAlgorithm_h__

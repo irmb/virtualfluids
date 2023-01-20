@@ -62,6 +62,11 @@ void MultiphaseNonReflectingOutflowBCAlgorithm::addDistributionsH(SPtr<Distribut
 	this->distributionsH = distributionsH;
 }
 //////////////////////////////////////////////////////////////////////////
+void MultiphaseNonReflectingOutflowBCAlgorithm::addDistributionsH2(SPtr<DistributionArray3D> distributionsH2)
+{
+    this->distributionsH2 = distributionsH2;
+}
+//////////////////////////////////////////////////////////////////////////
 void MultiphaseNonReflectingOutflowBCAlgorithm::applyBC()
 {
    using namespace D3Q27System;
@@ -70,6 +75,8 @@ void MultiphaseNonReflectingOutflowBCAlgorithm::applyBC()
    LBMReal ftemp[ENDF+1];
    LBMReal h[D3Q27System::ENDF+1];
    LBMReal htemp[ENDF+1];
+   LBMReal h2[D3Q27System::ENDF + 1];
+   LBMReal h2temp[ENDF + 1];
 
    int nx1 = x1;
    int nx2 = x2;
@@ -77,277 +84,462 @@ void MultiphaseNonReflectingOutflowBCAlgorithm::applyBC()
    int direction = -1;
 
    //flag points in direction of fluid
-   if      (bcPtr->hasDensityBoundaryFlag(E)) { nx1 += 1; direction = E; }
-   else if (bcPtr->hasDensityBoundaryFlag(W)) { nx1 -= 1; direction = W; }
-   else if (bcPtr->hasDensityBoundaryFlag(N)) { nx2 += 1; direction = N; }
-   else if (bcPtr->hasDensityBoundaryFlag(S)) { nx2 -= 1; direction = S; }
-   else if (bcPtr->hasDensityBoundaryFlag(T)) { nx3 += 1; direction = T; }
-   else if (bcPtr->hasDensityBoundaryFlag(B)) { nx3 -= 1; direction = B; }
+   if      (bcPtr->hasDensityBoundaryFlag(DIR_P00)) { nx1 += 1; direction = DIR_P00; }
+   else if (bcPtr->hasDensityBoundaryFlag(DIR_M00)) { nx1 -= 1; direction = DIR_M00; }
+   else if (bcPtr->hasDensityBoundaryFlag(DIR_0P0)) { nx2 += 1; direction = DIR_0P0; }
+   else if (bcPtr->hasDensityBoundaryFlag(DIR_0M0)) { nx2 -= 1; direction = DIR_0M0; }
+   else if (bcPtr->hasDensityBoundaryFlag(DIR_00P)) { nx3 += 1; direction = DIR_00P; }
+   else if (bcPtr->hasDensityBoundaryFlag(DIR_00M)) { nx3 -= 1; direction = DIR_00M; }
    else UB_THROW(UbException(UB_EXARGS, "Danger...no orthogonal BC-Flag on density boundary..."));
 
    distributions->getDistribution(f, x1, x2, x3);
    distributions->getDistribution(ftemp, nx1, nx2, nx3);
    distributionsH->getDistribution(h, x1, x2, x3);
    distributionsH->getDistribution(htemp, nx1, nx2, nx3);
+   distributionsH2->getDistribution(h2, x1, x2, x3);
+   distributionsH2->getDistribution(h2temp, nx1, nx2, nx3);
 
-   LBMReal phi, p1, vx1, vx2, vx3;
+   LBMReal /* phi,*/ p1, vx1, vx2, vx3;
    
-   D3Q27System::calcDensity(h, phi);
+   //D3Q27System::calcDensity(h, phi);
    
    calcMacrosFct(f, p1, vx1, vx2, vx3);
 
    switch (direction)
    {
-   case E:
-      f[E]   = ftemp[E]   * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1)*f[E]   ;
-      f[NE]  = ftemp[NE]  * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1)*f[NE]  ;
-      f[SE]  = ftemp[SE]  * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1)*f[SE]  ;
-      f[TE]  = ftemp[TE]  * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1)*f[TE]  ;
-      f[BE]  = ftemp[BE]  * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1)*f[BE]  ;
-      f[TNE] = ftemp[TNE] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1)*f[TNE] ;
-      f[TSE] = ftemp[TSE] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1)*f[TSE] ;
-      f[BNE] = ftemp[BNE] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1)*f[BNE] ;
-      f[BSE] = ftemp[BSE] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1)*f[BSE] ;
+   case DIR_P00:
+      f[DIR_P00]   = ftemp[DIR_P00]   * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1)*f[DIR_P00]   ;
+      f[DIR_PP0]  = ftemp[DIR_PP0]  * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1)*f[DIR_PP0]  ;
+      f[DIR_PM0]  = ftemp[DIR_PM0]  * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1)*f[DIR_PM0]  ;
+      f[DIR_P0P]  = ftemp[DIR_P0P]  * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1)*f[DIR_P0P]  ;
+      f[DIR_P0M]  = ftemp[DIR_P0M]  * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1)*f[DIR_P0M]  ;
+      f[DIR_PPP] = ftemp[DIR_PPP] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1)*f[DIR_PPP] ;
+      f[DIR_PMP] = ftemp[DIR_PMP] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1)*f[DIR_PMP] ;
+      f[DIR_PPM] = ftemp[DIR_PPM] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1)*f[DIR_PPM] ;
+      f[DIR_PMM] = ftemp[DIR_PMM] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1)*f[DIR_PMM] ;
 
-      distributions->setDistributionInvForDirection(f[E],   x1+DX1[W],   x2+DX2[W],   x3+DX3[W],   W);
-      distributions->setDistributionInvForDirection(f[NE],  x1+DX1[SW],  x2+DX2[SW],  x3+DX3[SW],  SW);
-      distributions->setDistributionInvForDirection(f[SE],  x1+DX1[NW],  x2+DX2[NW],  x3+DX3[NW],  NW);
-      distributions->setDistributionInvForDirection(f[TE],  x1+DX1[BW],  x2+DX2[BW],  x3+DX3[BW],  BW);
-      distributions->setDistributionInvForDirection(f[BE],  x1+DX1[TW],  x2+DX2[TW],  x3+DX3[TW],  TW);
-      distributions->setDistributionInvForDirection(f[TNE], x1+DX1[BSW], x2+DX2[BSW], x3+DX3[BSW], BSW);
-      distributions->setDistributionInvForDirection(f[TSE], x1+DX1[BNW], x2+DX2[BNW], x3+DX3[BNW], BNW);
-      distributions->setDistributionInvForDirection(f[BNE], x1+DX1[TSW], x2+DX2[TSW], x3+DX3[TSW], TSW);
-      distributions->setDistributionInvForDirection(f[BSE], x1+DX1[TNW], x2+DX2[TNW], x3+DX3[TNW], TNW);
+      distributions->setDistributionInvForDirection(f[DIR_P00],   x1+DX1[DIR_M00],   x2+DX2[DIR_M00],   x3+DX3[DIR_M00],   DIR_M00);
+      distributions->setDistributionInvForDirection(f[DIR_PP0],  x1+DX1[DIR_MM0],  x2+DX2[DIR_MM0],  x3+DX3[DIR_MM0],  DIR_MM0);
+      distributions->setDistributionInvForDirection(f[DIR_PM0],  x1+DX1[DIR_MP0],  x2+DX2[DIR_MP0],  x3+DX3[DIR_MP0],  DIR_MP0);
+      distributions->setDistributionInvForDirection(f[DIR_P0P],  x1+DX1[DIR_M0M],  x2+DX2[DIR_M0M],  x3+DX3[DIR_M0M],  DIR_M0M);
+      distributions->setDistributionInvForDirection(f[DIR_P0M],  x1+DX1[DIR_M0P],  x2+DX2[DIR_M0P],  x3+DX3[DIR_M0P],  DIR_M0P);
+      distributions->setDistributionInvForDirection(f[DIR_PPP], x1+DX1[DIR_MMM], x2+DX2[DIR_MMM], x3+DX3[DIR_MMM], DIR_MMM);
+      distributions->setDistributionInvForDirection(f[DIR_PMP], x1+DX1[DIR_MPM], x2+DX2[DIR_MPM], x3+DX3[DIR_MPM], DIR_MPM);
+      distributions->setDistributionInvForDirection(f[DIR_PPM], x1+DX1[DIR_MMP], x2+DX2[DIR_MMP], x3+DX3[DIR_MMP], DIR_MMP);
+      distributions->setDistributionInvForDirection(f[DIR_PMM], x1+DX1[DIR_MPP], x2+DX2[DIR_MPP], x3+DX3[DIR_MPP], DIR_MPP);
       
-	  h[E]   = htemp[E]   * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1)*h[E]   ;
-	  h[NE]  = htemp[NE]  * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1)*h[NE]  ;
-	  h[SE]  = htemp[SE]  * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1)*h[SE]  ;
-	  h[TE]  = htemp[TE]  * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1)*h[TE]  ;
-	  h[BE]  = htemp[BE]  * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1)*h[BE]  ;
-	  h[TNE] = htemp[TNE] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1)*h[TNE] ;
-	  h[TSE] = htemp[TSE] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1)*h[TSE] ;
-	  h[BNE] = htemp[BNE] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1)*h[BNE] ;
-	  h[BSE] = htemp[BSE] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1)*h[BSE] ;
+	  h[DIR_P00]   = htemp[DIR_P00]   * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1)*h[DIR_P00]   ;
+	  h[DIR_PP0]  = htemp[DIR_PP0]  * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1)*h[DIR_PP0]  ;
+	  h[DIR_PM0]  = htemp[DIR_PM0]  * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1)*h[DIR_PM0]  ;
+	  h[DIR_P0P]  = htemp[DIR_P0P]  * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1)*h[DIR_P0P]  ;
+	  h[DIR_P0M]  = htemp[DIR_P0M]  * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1)*h[DIR_P0M]  ;
+	  h[DIR_PPP] = htemp[DIR_PPP] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1)*h[DIR_PPP] ;
+	  h[DIR_PMP] = htemp[DIR_PMP] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1)*h[DIR_PMP] ;
+	  h[DIR_PPM] = htemp[DIR_PPM] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1)*h[DIR_PPM] ;
+	  h[DIR_PMM] = htemp[DIR_PMM] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1)*h[DIR_PMM] ;
 
-	  distributionsH->setDistributionInvForDirection(h[E],   x1+DX1[W],   x2+DX2[W],   x3+DX3[W],   W);
-	  distributionsH->setDistributionInvForDirection(h[NE],  x1+DX1[SW],  x2+DX2[SW],  x3+DX3[SW],  SW);
-	  distributionsH->setDistributionInvForDirection(h[SE],  x1+DX1[NW],  x2+DX2[NW],  x3+DX3[NW],  NW);
-	  distributionsH->setDistributionInvForDirection(h[TE],  x1+DX1[BW],  x2+DX2[BW],  x3+DX3[BW],  BW);
-	  distributionsH->setDistributionInvForDirection(h[BE],  x1+DX1[TW],  x2+DX2[TW],  x3+DX3[TW],  TW);
-	  distributionsH->setDistributionInvForDirection(h[TNE], x1+DX1[BSW], x2+DX2[BSW], x3+DX3[BSW], BSW);
-	  distributionsH->setDistributionInvForDirection(h[TSE], x1+DX1[BNW], x2+DX2[BNW], x3+DX3[BNW], BNW);
-	  distributionsH->setDistributionInvForDirection(h[BNE], x1+DX1[TSW], x2+DX2[TSW], x3+DX3[TSW], TSW);
-	  distributionsH->setDistributionInvForDirection(h[BSE], x1+DX1[TNW], x2+DX2[TNW], x3+DX3[TNW], TNW);
+	  distributionsH->setDistributionInvForDirection(h[DIR_P00],   x1+DX1[DIR_M00],   x2+DX2[DIR_M00],   x3+DX3[DIR_M00],   DIR_M00);
+	  distributionsH->setDistributionInvForDirection(h[DIR_PP0],  x1+DX1[DIR_MM0],  x2+DX2[DIR_MM0],  x3+DX3[DIR_MM0],  DIR_MM0);
+	  distributionsH->setDistributionInvForDirection(h[DIR_PM0],  x1+DX1[DIR_MP0],  x2+DX2[DIR_MP0],  x3+DX3[DIR_MP0],  DIR_MP0);
+	  distributionsH->setDistributionInvForDirection(h[DIR_P0P],  x1+DX1[DIR_M0M],  x2+DX2[DIR_M0M],  x3+DX3[DIR_M0M],  DIR_M0M);
+	  distributionsH->setDistributionInvForDirection(h[DIR_P0M],  x1+DX1[DIR_M0P],  x2+DX2[DIR_M0P],  x3+DX3[DIR_M0P],  DIR_M0P);
+	  distributionsH->setDistributionInvForDirection(h[DIR_PPP], x1+DX1[DIR_MMM], x2+DX2[DIR_MMM], x3+DX3[DIR_MMM], DIR_MMM);
+	  distributionsH->setDistributionInvForDirection(h[DIR_PMP], x1+DX1[DIR_MPM], x2+DX2[DIR_MPM], x3+DX3[DIR_MPM], DIR_MPM);
+	  distributionsH->setDistributionInvForDirection(h[DIR_PPM], x1+DX1[DIR_MMP], x2+DX2[DIR_MMP], x3+DX3[DIR_MMP], DIR_MMP);
+	  distributionsH->setDistributionInvForDirection(h[DIR_PMM], x1+DX1[DIR_MPP], x2+DX2[DIR_MPP], x3+DX3[DIR_MPP], DIR_MPP);
+
+	  h2[DIR_P00] = h2temp[DIR_P00] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * h2[DIR_P00];
+      h2[DIR_PP0] = h2temp[DIR_PP0] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * h2[DIR_PP0];
+      h2[DIR_PM0] = h2temp[DIR_PM0] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * h2[DIR_PM0];
+      h2[DIR_P0P] = h2temp[DIR_P0P] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * h2[DIR_P0P];
+      h2[DIR_P0M] = h2temp[DIR_P0M] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * h2[DIR_P0M];
+      h2[DIR_PPP] = h2temp[DIR_PPP] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * h2[DIR_PPP];
+      h2[DIR_PMP] = h2temp[DIR_PMP] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * h2[DIR_PMP];
+      h2[DIR_PPM] = h2temp[DIR_PPM] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * h2[DIR_PPM];
+      h2[DIR_PMM] = h2temp[DIR_PMM] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * h2[DIR_PMM];
+
+      distributionsH2->setDistributionInvForDirection(h2[DIR_P00], x1 + DX1[DIR_M00], x2 + DX2[DIR_M00], x3 + DX3[DIR_M00], DIR_M00);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_PP0], x1 + DX1[DIR_MM0], x2 + DX2[DIR_MM0], x3 + DX3[DIR_MM0], DIR_MM0);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_PM0], x1 + DX1[DIR_MP0], x2 + DX2[DIR_MP0], x3 + DX3[DIR_MP0], DIR_MP0);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_P0P], x1 + DX1[DIR_M0M], x2 + DX2[DIR_M0M], x3 + DX3[DIR_M0M], DIR_M0M);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_P0M], x1 + DX1[DIR_M0P], x2 + DX2[DIR_M0P], x3 + DX3[DIR_M0P], DIR_M0P);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_PPP], x1 + DX1[DIR_MMM], x2 + DX2[DIR_MMM], x3 + DX3[DIR_MMM], DIR_MMM);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_PMP], x1 + DX1[DIR_MPM], x2 + DX2[DIR_MPM], x3 + DX3[DIR_MPM], DIR_MPM);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_PPM], x1 + DX1[DIR_MMP], x2 + DX2[DIR_MMP], x3 + DX3[DIR_MMP], DIR_MMP);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_PMM], x1 + DX1[DIR_MPP], x2 + DX2[DIR_MPP], x3 + DX3[DIR_MPP], DIR_MPP);
 	  
 	  break;
-   case W:
-      f[W]   = ftemp[W]   * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1)*f[W]  ;
-      f[NW]  = ftemp[NW]  * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1)*f[NW] ;
-      f[SW]  = ftemp[SW]  * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1)*f[SW] ;
-      f[TW]  = ftemp[TW]  * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1)*f[TW] ;
-      f[BW]  = ftemp[BW]  * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1)*f[BW] ;
-      f[TNW] = ftemp[TNW] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1)*f[TNW];
-      f[TSW] = ftemp[TSW] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1)*f[TSW];
-      f[BNW] = ftemp[BNW] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1)*f[BNW];
-      f[BSW] = ftemp[BSW] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1)*f[BSW];
+   case DIR_M00:
+      if (false /* vx1 >= 0*/) {
 
-      distributions->setDistributionInvForDirection(f[W],   x1+DX1[E],   x2+DX2[E],   x3+DX3[E],     E);
-      distributions->setDistributionInvForDirection(f[NW],  x1+DX1[SE],  x2+DX2[SE],  x3+DX3[SE],   SE);
-      distributions->setDistributionInvForDirection(f[SW],  x1+DX1[NE],  x2+DX2[NE],  x3+DX3[NE],   NE);
-      distributions->setDistributionInvForDirection(f[TW],  x1+DX1[BE],  x2+DX2[BE],  x3+DX3[BE],   BE);
-      distributions->setDistributionInvForDirection(f[BW],  x1+DX1[TE],  x2+DX2[TE],  x3+DX3[TE],   TE);
-      distributions->setDistributionInvForDirection(f[TNW], x1+DX1[BSE], x2+DX2[BSE], x3+DX3[BSE], BSE);
-      distributions->setDistributionInvForDirection(f[TSW], x1+DX1[BNE], x2+DX2[BNE], x3+DX3[BNE], BNE);
-      distributions->setDistributionInvForDirection(f[BNW], x1+DX1[TSE], x2+DX2[TSE], x3+DX3[TSE], TSE);
-      distributions->setDistributionInvForDirection(f[BSW], x1+DX1[TNE], x2+DX2[TNE], x3+DX3[TNE], TNE);
+          f[DIR_M00] = ftemp[DIR_M00] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * f[DIR_M00];
+          f[DIR_MP0] = ftemp[DIR_MP0] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * f[DIR_MP0];
+          f[DIR_MM0] = ftemp[DIR_MM0] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * f[DIR_MM0];
+          f[DIR_M0P] = ftemp[DIR_M0P] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * f[DIR_M0P];
+          f[DIR_M0M] = ftemp[DIR_M0M] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * f[DIR_M0M];
+          f[DIR_MPP] = ftemp[DIR_MPP] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * f[DIR_MPP];
+          f[DIR_MMP] = ftemp[DIR_MMP] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * f[DIR_MMP];
+          f[DIR_MPM] = ftemp[DIR_MPM] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * f[DIR_MPM];
+          f[DIR_MMM] = ftemp[DIR_MMM] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * f[DIR_MMM];
 
-	  h[W]   = htemp[W]  * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1)*h[W]  ;
-	  h[NW]  = htemp[NW] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1)*h[NW] ;
-	  h[SW]  = htemp[SW] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1)*h[SW] ;
-	  h[TW]  = htemp[TW] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1)*h[TW] ;
-	  h[BW]  = htemp[BW] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1)*h[BW] ;
-	  h[TNW] = htemp[TNW]* (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1)*h[TNW];
-	  h[TSW] = htemp[TSW]* (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1)*h[TSW];
-	  h[BNW] = htemp[BNW]* (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1)*h[BNW];
-	  h[BSW] = htemp[BSW]* (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1)*h[BSW];
+          distributions->setDistributionInvForDirection(f[DIR_M00], x1 + DX1[DIR_P00], x2 + DX2[DIR_P00], x3 + DX3[DIR_P00], DIR_P00);
+          distributions->setDistributionInvForDirection(f[DIR_MP0], x1 + DX1[DIR_PM0], x2 + DX2[DIR_PM0], x3 + DX3[DIR_PM0], DIR_PM0);
+          distributions->setDistributionInvForDirection(f[DIR_MM0], x1 + DX1[DIR_PP0], x2 + DX2[DIR_PP0], x3 + DX3[DIR_PP0], DIR_PP0);
+          distributions->setDistributionInvForDirection(f[DIR_M0P], x1 + DX1[DIR_P0M], x2 + DX2[DIR_P0M], x3 + DX3[DIR_P0M], DIR_P0M);
+          distributions->setDistributionInvForDirection(f[DIR_M0M], x1 + DX1[DIR_P0P], x2 + DX2[DIR_P0P], x3 + DX3[DIR_P0P], DIR_P0P);
+          distributions->setDistributionInvForDirection(f[DIR_MPP], x1 + DX1[DIR_PMM], x2 + DX2[DIR_PMM], x3 + DX3[DIR_PMM], DIR_PMM);
+          distributions->setDistributionInvForDirection(f[DIR_MMP], x1 + DX1[DIR_PPM], x2 + DX2[DIR_PPM], x3 + DX3[DIR_PPM], DIR_PPM);
+          distributions->setDistributionInvForDirection(f[DIR_MPM], x1 + DX1[DIR_PMP], x2 + DX2[DIR_PMP], x3 + DX3[DIR_PMP], DIR_PMP);
+          distributions->setDistributionInvForDirection(f[DIR_MMM], x1 + DX1[DIR_PPP], x2 + DX2[DIR_PPP], x3 + DX3[DIR_PPP], DIR_PPP);
 
-	  distributionsH->setDistributionInvForDirection(h[W],   x1+DX1[E],   x2+DX2[E],   x3+DX3[E],     E);
-	  distributionsH->setDistributionInvForDirection(h[NW],  x1+DX1[SE],  x2+DX2[SE],  x3+DX3[SE],   SE);
-	  distributionsH->setDistributionInvForDirection(h[SW],  x1+DX1[NE],  x2+DX2[NE],  x3+DX3[NE],   NE);
-	  distributionsH->setDistributionInvForDirection(h[TW],  x1+DX1[BE],  x2+DX2[BE],  x3+DX3[BE],   BE);
-	  distributionsH->setDistributionInvForDirection(h[BW],  x1+DX1[TE],  x2+DX2[TE],  x3+DX3[TE],   TE);
-	  distributionsH->setDistributionInvForDirection(h[TNW], x1+DX1[BSE], x2+DX2[BSE], x3+DX3[BSE], BSE);
-	  distributionsH->setDistributionInvForDirection(h[TSW], x1+DX1[BNE], x2+DX2[BNE], x3+DX3[BNE], BNE);
-	  distributionsH->setDistributionInvForDirection(h[BNW], x1+DX1[TSE], x2+DX2[TSE], x3+DX3[TSE], TSE);
-	  distributionsH->setDistributionInvForDirection(h[BSW], x1+DX1[TNE], x2+DX2[TNE], x3+DX3[TNE], TNE);
+          h[DIR_M00] = htemp[DIR_M00] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h[DIR_M00];
+          h[DIR_MP0] = htemp[DIR_MP0] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h[DIR_MP0];
+          h[DIR_MM0] = htemp[DIR_MM0] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h[DIR_MM0];
+          h[DIR_M0P] = htemp[DIR_M0P] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h[DIR_M0P];
+          h[DIR_M0M] = htemp[DIR_M0M] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h[DIR_M0M];
+          h[DIR_MPP] = htemp[DIR_MPP] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h[DIR_MPP];
+          h[DIR_MMP] = htemp[DIR_MMP] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h[DIR_MMP];
+          h[DIR_MPM] = htemp[DIR_MPM] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h[DIR_MPM];
+          h[DIR_MMM] = htemp[DIR_MMM] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h[DIR_MMM];
+
+          distributionsH->setDistributionInvForDirection(h[DIR_M00], x1 + DX1[DIR_P00], x2 + DX2[DIR_P00], x3 + DX3[DIR_P00], DIR_P00);
+          distributionsH->setDistributionInvForDirection(h[DIR_MP0], x1 + DX1[DIR_PM0], x2 + DX2[DIR_PM0], x3 + DX3[DIR_PM0], DIR_PM0);
+          distributionsH->setDistributionInvForDirection(h[DIR_MM0], x1 + DX1[DIR_PP0], x2 + DX2[DIR_PP0], x3 + DX3[DIR_PP0], DIR_PP0);
+          distributionsH->setDistributionInvForDirection(h[DIR_M0P], x1 + DX1[DIR_P0M], x2 + DX2[DIR_P0M], x3 + DX3[DIR_P0M], DIR_P0M);
+          distributionsH->setDistributionInvForDirection(h[DIR_M0M], x1 + DX1[DIR_P0P], x2 + DX2[DIR_P0P], x3 + DX3[DIR_P0P], DIR_P0P);
+          distributionsH->setDistributionInvForDirection(h[DIR_MPP], x1 + DX1[DIR_PMM], x2 + DX2[DIR_PMM], x3 + DX3[DIR_PMM], DIR_PMM);
+          distributionsH->setDistributionInvForDirection(h[DIR_MMP], x1 + DX1[DIR_PPM], x2 + DX2[DIR_PPM], x3 + DX3[DIR_PPM], DIR_PPM);
+          distributionsH->setDistributionInvForDirection(h[DIR_MPM], x1 + DX1[DIR_PMP], x2 + DX2[DIR_PMP], x3 + DX3[DIR_PMP], DIR_PMP);
+          distributionsH->setDistributionInvForDirection(h[DIR_MMM], x1 + DX1[DIR_PPP], x2 + DX2[DIR_PPP], x3 + DX3[DIR_PPP], DIR_PPP);
+
+          h2[DIR_M00] = htemp[DIR_M00] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h2[DIR_M00];
+          h2[DIR_MP0] = htemp[DIR_MP0] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h2[DIR_MP0];
+          h2[DIR_MM0] = htemp[DIR_MM0] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h2[DIR_MM0];
+          h2[DIR_M0P] = htemp[DIR_M0P] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h2[DIR_M0P];
+          h2[DIR_M0M] = htemp[DIR_M0M] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h2[DIR_M0M];
+          h2[DIR_MPP] = htemp[DIR_MPP] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h2[DIR_MPP];
+          h2[DIR_MMP] = htemp[DIR_MMP] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h2[DIR_MMP];
+          h2[DIR_MPM] = htemp[DIR_MPM] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h2[DIR_MPM];
+          h2[DIR_MMM] = htemp[DIR_MMM] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h2[DIR_MMM];
+
+          distributionsH2->setDistributionInvForDirection(h2[DIR_M00], x1 + DX1[DIR_P00], x2 + DX2[DIR_P00], x3 + DX3[DIR_P00], DIR_P00);
+          distributionsH2->setDistributionInvForDirection(h2[DIR_MP0], x1 + DX1[DIR_PM0], x2 + DX2[DIR_PM0], x3 + DX3[DIR_PM0], DIR_PM0);
+          distributionsH2->setDistributionInvForDirection(h2[DIR_MM0], x1 + DX1[DIR_PP0], x2 + DX2[DIR_PP0], x3 + DX3[DIR_PP0], DIR_PP0);
+          distributionsH2->setDistributionInvForDirection(h2[DIR_M0P], x1 + DX1[DIR_P0M], x2 + DX2[DIR_P0M], x3 + DX3[DIR_P0M], DIR_P0M);
+          distributionsH2->setDistributionInvForDirection(h2[DIR_M0M], x1 + DX1[DIR_P0P], x2 + DX2[DIR_P0P], x3 + DX3[DIR_P0P], DIR_P0P);
+          distributionsH2->setDistributionInvForDirection(h2[DIR_MPP], x1 + DX1[DIR_PMM], x2 + DX2[DIR_PMM], x3 + DX3[DIR_PMM], DIR_PMM);
+          distributionsH2->setDistributionInvForDirection(h2[DIR_MMP], x1 + DX1[DIR_PPM], x2 + DX2[DIR_PPM], x3 + DX3[DIR_PPM], DIR_PPM);
+          distributionsH2->setDistributionInvForDirection(h2[DIR_MPM], x1 + DX1[DIR_PMP], x2 + DX2[DIR_PMP], x3 + DX3[DIR_PMP], DIR_PMP);
+          distributionsH2->setDistributionInvForDirection(h2[DIR_MMM], x1 + DX1[DIR_PPP], x2 + DX2[DIR_PPP], x3 + DX3[DIR_PPP], DIR_PPP);
+      } else {
+
+          f[DIR_M00]   = ftemp[DIR_M00] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * f[DIR_M00];
+          f[DIR_MP0]  = ftemp[DIR_MP0] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * f[DIR_MP0];
+          f[DIR_MM0]  = ftemp[DIR_MM0] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * f[DIR_MM0];
+          f[DIR_M0P]  = ftemp[DIR_M0P] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * f[DIR_M0P];
+          f[DIR_M0M]  = ftemp[DIR_M0M] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * f[DIR_M0M];
+          f[DIR_MPP] = ftemp[DIR_MPP] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * f[DIR_MPP];
+          f[DIR_MMP] = ftemp[DIR_MMP] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * f[DIR_MMP];
+          f[DIR_MPM] = ftemp[DIR_MPM] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * f[DIR_MPM];
+          f[DIR_MMM] = ftemp[DIR_MMM] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * f[DIR_MMM];
+
+          distributions->setDistributionInvForDirection(f[DIR_M00], x1 + DX1[DIR_P00], x2 + DX2[DIR_P00], x3 + DX3[DIR_P00], DIR_P00);
+          distributions->setDistributionInvForDirection(f[DIR_MP0], x1 + DX1[DIR_PM0], x2 + DX2[DIR_PM0], x3 + DX3[DIR_PM0], DIR_PM0);
+          distributions->setDistributionInvForDirection(f[DIR_MM0], x1 + DX1[DIR_PP0], x2 + DX2[DIR_PP0], x3 + DX3[DIR_PP0], DIR_PP0);
+          distributions->setDistributionInvForDirection(f[DIR_M0P], x1 + DX1[DIR_P0M], x2 + DX2[DIR_P0M], x3 + DX3[DIR_P0M], DIR_P0M);
+          distributions->setDistributionInvForDirection(f[DIR_M0M], x1 + DX1[DIR_P0P], x2 + DX2[DIR_P0P], x3 + DX3[DIR_P0P], DIR_P0P);
+          distributions->setDistributionInvForDirection(f[DIR_MPP], x1 + DX1[DIR_PMM], x2 + DX2[DIR_PMM], x3 + DX3[DIR_PMM], DIR_PMM);
+          distributions->setDistributionInvForDirection(f[DIR_MMP], x1 + DX1[DIR_PPM], x2 + DX2[DIR_PPM], x3 + DX3[DIR_PPM], DIR_PPM);
+          distributions->setDistributionInvForDirection(f[DIR_MPM], x1 + DX1[DIR_PMP], x2 + DX2[DIR_PMP], x3 + DX3[DIR_PMP], DIR_PMP);
+          distributions->setDistributionInvForDirection(f[DIR_MMM], x1 + DX1[DIR_PPP], x2 + DX2[DIR_PPP], x3 + DX3[DIR_PPP], DIR_PPP);
+
+          h[DIR_M00]   = htemp[DIR_M00] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h[DIR_M00];
+          h[DIR_MP0]  = htemp[DIR_MP0] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h[DIR_MP0];
+          h[DIR_MM0]  = htemp[DIR_MM0] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h[DIR_MM0];
+          h[DIR_M0P]  = htemp[DIR_M0P] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h[DIR_M0P];
+          h[DIR_M0M]  = htemp[DIR_M0M] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h[DIR_M0M];
+          h[DIR_MPP] = htemp[DIR_MPP] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h[DIR_MPP];
+          h[DIR_MMP] = htemp[DIR_MMP] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h[DIR_MMP];
+          h[DIR_MPM] = htemp[DIR_MPM] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h[DIR_MPM];
+          h[DIR_MMM] = htemp[DIR_MMM] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h[DIR_MMM];
+
+          distributionsH->setDistributionInvForDirection(h[DIR_M00], x1 + DX1[DIR_P00], x2 + DX2[DIR_P00], x3 + DX3[DIR_P00], DIR_P00);
+          distributionsH->setDistributionInvForDirection(h[DIR_MP0], x1 + DX1[DIR_PM0], x2 + DX2[DIR_PM0], x3 + DX3[DIR_PM0], DIR_PM0);
+          distributionsH->setDistributionInvForDirection(h[DIR_MM0], x1 + DX1[DIR_PP0], x2 + DX2[DIR_PP0], x3 + DX3[DIR_PP0], DIR_PP0);
+          distributionsH->setDistributionInvForDirection(h[DIR_M0P], x1 + DX1[DIR_P0M], x2 + DX2[DIR_P0M], x3 + DX3[DIR_P0M], DIR_P0M);
+          distributionsH->setDistributionInvForDirection(h[DIR_M0M], x1 + DX1[DIR_P0P], x2 + DX2[DIR_P0P], x3 + DX3[DIR_P0P], DIR_P0P);
+          distributionsH->setDistributionInvForDirection(h[DIR_MPP], x1 + DX1[DIR_PMM], x2 + DX2[DIR_PMM], x3 + DX3[DIR_PMM], DIR_PMM);
+          distributionsH->setDistributionInvForDirection(h[DIR_MMP], x1 + DX1[DIR_PPM], x2 + DX2[DIR_PPM], x3 + DX3[DIR_PPM], DIR_PPM);
+          distributionsH->setDistributionInvForDirection(h[DIR_MPM], x1 + DX1[DIR_PMP], x2 + DX2[DIR_PMP], x3 + DX3[DIR_PMP], DIR_PMP);
+          distributionsH->setDistributionInvForDirection(h[DIR_MMM], x1 + DX1[DIR_PPP], x2 + DX2[DIR_PPP], x3 + DX3[DIR_PPP], DIR_PPP);
+
+          h2[DIR_M00]   = 0.5 * (htemp[DIR_M00] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1)   * h2[DIR_M00]);
+          h2[DIR_MP0]  = 0.5 * (htemp[DIR_MP0] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1)  * h2[DIR_MP0]);
+          h2[DIR_MM0]  = 0.5 * (htemp[DIR_MM0] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1)  * h2[DIR_MM0]);
+          h2[DIR_M0P]  = 0.5 * (htemp[DIR_M0P] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1)  * h2[DIR_M0P]);
+          h2[DIR_M0M]  = 0.5 * (htemp[DIR_M0M] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1)  * h2[DIR_M0M]);
+          h2[DIR_MPP] = 0.5 * (htemp[DIR_MPP] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h2[DIR_MPP]);
+          h2[DIR_MMP] = 0.5 * (htemp[DIR_MMP] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h2[DIR_MMP]);
+          h2[DIR_MPM] = 0.5 * (htemp[DIR_MPM] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h2[DIR_MPM]);
+          h2[DIR_MMM] = 0.5 * (htemp[DIR_MMM] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h2[DIR_MMM]);
+
+          distributionsH2->setDistributionInvForDirection(h2[DIR_M00], x1 + DX1[DIR_P00], x2 + DX2[DIR_P00], x3 + DX3[DIR_P00], DIR_P00);
+          distributionsH2->setDistributionInvForDirection(h2[DIR_MP0], x1 + DX1[DIR_PM0], x2 + DX2[DIR_PM0], x3 + DX3[DIR_PM0], DIR_PM0);
+          distributionsH2->setDistributionInvForDirection(h2[DIR_MM0], x1 + DX1[DIR_PP0], x2 + DX2[DIR_PP0], x3 + DX3[DIR_PP0], DIR_PP0);
+          distributionsH2->setDistributionInvForDirection(h2[DIR_M0P], x1 + DX1[DIR_P0M], x2 + DX2[DIR_P0M], x3 + DX3[DIR_P0M], DIR_P0M);
+          distributionsH2->setDistributionInvForDirection(h2[DIR_M0M], x1 + DX1[DIR_P0P], x2 + DX2[DIR_P0P], x3 + DX3[DIR_P0P], DIR_P0P);
+          distributionsH2->setDistributionInvForDirection(h2[DIR_MPP], x1 + DX1[DIR_PMM], x2 + DX2[DIR_PMM], x3 + DX3[DIR_PMM], DIR_PMM);
+          distributionsH2->setDistributionInvForDirection(h2[DIR_MMP], x1 + DX1[DIR_PPM], x2 + DX2[DIR_PPM], x3 + DX3[DIR_PPM], DIR_PPM);
+          distributionsH2->setDistributionInvForDirection(h2[DIR_MPM], x1 + DX1[DIR_PMP], x2 + DX2[DIR_PMP], x3 + DX3[DIR_PMP], DIR_PMP);
+          distributionsH2->setDistributionInvForDirection(h2[DIR_MMM], x1 + DX1[DIR_PPP], x2 + DX2[DIR_PPP], x3 + DX3[DIR_PPP], DIR_PPP);      
+      }
+      break;
+   case DIR_0P0:
+      f[DIR_0P0]   = ftemp[DIR_0P0]   * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*f[DIR_0P0]   ;
+      f[DIR_PP0]  = ftemp[DIR_PP0]  * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*f[DIR_PP0]  ;
+      f[DIR_MP0]  = ftemp[DIR_MP0]  * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*f[DIR_MP0]  ;
+      f[DIR_0PP]  = ftemp[DIR_0PP]  * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*f[DIR_0PP]  ;
+      f[DIR_0PM]  = ftemp[DIR_0PM]  * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*f[DIR_0PM]  ;
+      f[DIR_PPP] = ftemp[DIR_PPP] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*f[DIR_PPP] ;
+      f[DIR_MPP] = ftemp[DIR_MPP] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*f[DIR_MPP] ;
+      f[DIR_PPM] = ftemp[DIR_PPM] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*f[DIR_PPM] ;
+      f[DIR_MPM] = ftemp[DIR_MPM] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*f[DIR_MPM] ;
+
+      distributions->setDistributionInvForDirection(f[DIR_0P0],   x1+DX1[DIR_0M0],   x2+DX2[DIR_0M0],   x3+DX3[DIR_0M0],     DIR_0M0);
+      distributions->setDistributionInvForDirection(f[DIR_PP0],  x1+DX1[DIR_MM0],  x2+DX2[DIR_MM0],  x3+DX3[DIR_MM0],   DIR_MM0);
+      distributions->setDistributionInvForDirection(f[DIR_MP0],  x1+DX1[DIR_PM0],  x2+DX2[DIR_PM0],  x3+DX3[DIR_PM0],   DIR_PM0);
+      distributions->setDistributionInvForDirection(f[DIR_0PP],  x1+DX1[DIR_0MM],  x2+DX2[DIR_0MM],  x3+DX3[DIR_0MM],   DIR_0MM);
+      distributions->setDistributionInvForDirection(f[DIR_0PM],  x1+DX1[DIR_0MP],  x2+DX2[DIR_0MP],  x3+DX3[DIR_0MP],   DIR_0MP);
+      distributions->setDistributionInvForDirection(f[DIR_PPP], x1+DX1[DIR_MMM], x2+DX2[DIR_MMM], x3+DX3[DIR_MMM], DIR_MMM);
+      distributions->setDistributionInvForDirection(f[DIR_MPP], x1+DX1[DIR_PMM], x2+DX2[DIR_PMM], x3+DX3[DIR_PMM], DIR_PMM);
+      distributions->setDistributionInvForDirection(f[DIR_PPM], x1+DX1[DIR_MMP], x2+DX2[DIR_MMP], x3+DX3[DIR_MMP], DIR_MMP);
+      distributions->setDistributionInvForDirection(f[DIR_MPM], x1+DX1[DIR_PMP], x2+DX2[DIR_PMP], x3+DX3[DIR_PMP], DIR_PMP);
+
+	  h[DIR_0P0]   = htemp[DIR_0P0]   * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*h[DIR_0P0]   ;
+	  h[DIR_PP0]  = htemp[DIR_PP0]  * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*h[DIR_PP0]  ;
+	  h[DIR_MP0]  = htemp[DIR_MP0]  * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*h[DIR_MP0]  ;
+	  h[DIR_0PP]  = htemp[DIR_0PP]  * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*h[DIR_0PP]  ;
+	  h[DIR_0PM]  = htemp[DIR_0PM]  * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*h[DIR_0PM]  ;
+	  h[DIR_PPP] = htemp[DIR_PPP] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*h[DIR_PPP] ;
+	  h[DIR_MPP] = htemp[DIR_MPP] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*h[DIR_MPP] ;
+	  h[DIR_PPM] = htemp[DIR_PPM] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*h[DIR_PPM] ;
+	  h[DIR_MPM] = htemp[DIR_MPM] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*h[DIR_MPM] ;
+
+	  distributionsH->setDistributionInvForDirection(h[DIR_0P0],   x1+DX1[DIR_0M0],   x2+DX2[DIR_0M0],   x3+DX3[DIR_0M0],     DIR_0M0);
+	  distributionsH->setDistributionInvForDirection(h[DIR_PP0],  x1+DX1[DIR_MM0],  x2+DX2[DIR_MM0],  x3+DX3[DIR_MM0],   DIR_MM0);
+	  distributionsH->setDistributionInvForDirection(h[DIR_MP0],  x1+DX1[DIR_PM0],  x2+DX2[DIR_PM0],  x3+DX3[DIR_PM0],   DIR_PM0);
+	  distributionsH->setDistributionInvForDirection(h[DIR_0PP],  x1+DX1[DIR_0MM],  x2+DX2[DIR_0MM],  x3+DX3[DIR_0MM],   DIR_0MM);
+	  distributionsH->setDistributionInvForDirection(h[DIR_0PM],  x1+DX1[DIR_0MP],  x2+DX2[DIR_0MP],  x3+DX3[DIR_0MP],   DIR_0MP);
+	  distributionsH->setDistributionInvForDirection(h[DIR_PPP], x1+DX1[DIR_MMM], x2+DX2[DIR_MMM], x3+DX3[DIR_MMM], DIR_MMM);
+	  distributionsH->setDistributionInvForDirection(h[DIR_MPP], x1+DX1[DIR_PMM], x2+DX2[DIR_PMM], x3+DX3[DIR_PMM], DIR_PMM);
+	  distributionsH->setDistributionInvForDirection(h[DIR_PPM], x1+DX1[DIR_MMP], x2+DX2[DIR_MMP], x3+DX3[DIR_MMP], DIR_MMP);
+	  distributionsH->setDistributionInvForDirection(h[DIR_MPM], x1+DX1[DIR_PMP], x2+DX2[DIR_PMP], x3+DX3[DIR_PMP], DIR_PMP);
+
+	  h2[DIR_0P0] = htemp[DIR_0P0] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2) * h2[DIR_0P0];
+      h2[DIR_PP0] = htemp[DIR_PP0] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2) * h2[DIR_PP0];
+      h2[DIR_MP0] = htemp[DIR_MP0] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2) * h2[DIR_MP0];
+      h2[DIR_0PP] = htemp[DIR_0PP] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2) * h2[DIR_0PP];
+      h2[DIR_0PM] = htemp[DIR_0PM] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2) * h2[DIR_0PM];
+      h2[DIR_PPP] = htemp[DIR_PPP] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2) * h2[DIR_PPP];
+      h2[DIR_MPP] = htemp[DIR_MPP] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2) * h2[DIR_MPP];
+      h2[DIR_PPM] = htemp[DIR_PPM] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2) * h2[DIR_PPM];
+      h2[DIR_MPM] = htemp[DIR_MPM] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2) * h2[DIR_MPM];
+
+      distributionsH2->setDistributionInvForDirection(h2[DIR_0P0], x1 + DX1[DIR_0M0], x2 + DX2[DIR_0M0], x3 + DX3[DIR_0M0], DIR_0M0);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_PP0], x1 + DX1[DIR_MM0], x2 + DX2[DIR_MM0], x3 + DX3[DIR_MM0], DIR_MM0);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_MP0], x1 + DX1[DIR_PM0], x2 + DX2[DIR_PM0], x3 + DX3[DIR_PM0], DIR_PM0);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_0PP], x1 + DX1[DIR_0MM], x2 + DX2[DIR_0MM], x3 + DX3[DIR_0MM], DIR_0MM);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_0PM], x1 + DX1[DIR_0MP], x2 + DX2[DIR_0MP], x3 + DX3[DIR_0MP], DIR_0MP);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_PPP], x1 + DX1[DIR_MMM], x2 + DX2[DIR_MMM], x3 + DX3[DIR_MMM], DIR_MMM);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_MPP], x1 + DX1[DIR_PMM], x2 + DX2[DIR_PMM], x3 + DX3[DIR_PMM], DIR_PMM);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_PPM], x1 + DX1[DIR_MMP], x2 + DX2[DIR_MMP], x3 + DX3[DIR_MMP], DIR_MMP);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_MPM], x1 + DX1[DIR_PMP], x2 + DX2[DIR_PMP], x3 + DX3[DIR_PMP], DIR_PMP);
 
       break;
-   case N:
-      f[N]   = ftemp[N]   * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*f[N]   ;
-      f[NE]  = ftemp[NE]  * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*f[NE]  ;
-      f[NW]  = ftemp[NW]  * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*f[NW]  ;
-      f[TN]  = ftemp[TN]  * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*f[TN]  ;
-      f[BN]  = ftemp[BN]  * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*f[BN]  ;
-      f[TNE] = ftemp[TNE] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*f[TNE] ;
-      f[TNW] = ftemp[TNW] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*f[TNW] ;
-      f[BNE] = ftemp[BNE] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*f[BNE] ;
-      f[BNW] = ftemp[BNW] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*f[BNW] ;
+   case DIR_0M0:
+      f[DIR_0M0]   = ftemp[DIR_0M0]   * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*f[DIR_0M0]   ;
+      f[DIR_PM0]  = ftemp[DIR_PM0]  * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*f[DIR_PM0]  ;
+      f[DIR_MM0]  = ftemp[DIR_MM0]  * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*f[DIR_MM0]  ;
+      f[DIR_0MP]  = ftemp[DIR_0MP]  * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*f[DIR_0MP]  ;
+      f[DIR_0MM]  = ftemp[DIR_0MM]  * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*f[DIR_0MM]  ;
+      f[DIR_PMP] = ftemp[DIR_PMP] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*f[DIR_PMP] ;
+      f[DIR_MMP] = ftemp[DIR_MMP] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*f[DIR_MMP] ;
+      f[DIR_PMM] = ftemp[DIR_PMM] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*f[DIR_PMM] ;
+      f[DIR_MMM] = ftemp[DIR_MMM] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*f[DIR_MMM] ;
 
-      distributions->setDistributionInvForDirection(f[N],   x1+DX1[S],   x2+DX2[S],   x3+DX3[S],     S);
-      distributions->setDistributionInvForDirection(f[NE],  x1+DX1[SW],  x2+DX2[SW],  x3+DX3[SW],   SW);
-      distributions->setDistributionInvForDirection(f[NW],  x1+DX1[SE],  x2+DX2[SE],  x3+DX3[SE],   SE);
-      distributions->setDistributionInvForDirection(f[TN],  x1+DX1[BS],  x2+DX2[BS],  x3+DX3[BS],   BS);
-      distributions->setDistributionInvForDirection(f[BN],  x1+DX1[TS],  x2+DX2[TS],  x3+DX3[TS],   TS);
-      distributions->setDistributionInvForDirection(f[TNE], x1+DX1[BSW], x2+DX2[BSW], x3+DX3[BSW], BSW);
-      distributions->setDistributionInvForDirection(f[TNW], x1+DX1[BSE], x2+DX2[BSE], x3+DX3[BSE], BSE);
-      distributions->setDistributionInvForDirection(f[BNE], x1+DX1[TSW], x2+DX2[TSW], x3+DX3[TSW], TSW);
-      distributions->setDistributionInvForDirection(f[BNW], x1+DX1[TSE], x2+DX2[TSE], x3+DX3[TSE], TSE);
+      distributions->setDistributionInvForDirection(f[DIR_0M0],   x1+DX1[DIR_0P0],   x2+DX2[DIR_0P0],   x3+DX3[DIR_0P0],     DIR_0P0);
+      distributions->setDistributionInvForDirection(f[DIR_PM0],  x1+DX1[DIR_MP0],  x2+DX2[DIR_MP0],  x3+DX3[DIR_MP0],   DIR_MP0);
+      distributions->setDistributionInvForDirection(f[DIR_MM0],  x1+DX1[DIR_PP0],  x2+DX2[DIR_PP0],  x3+DX3[DIR_PP0],   DIR_PP0);
+      distributions->setDistributionInvForDirection(f[DIR_0MP],  x1+DX1[DIR_0PM],  x2+DX2[DIR_0PM],  x3+DX3[DIR_0PM],   DIR_0PM);
+      distributions->setDistributionInvForDirection(f[DIR_0MM],  x1+DX1[DIR_0PP],  x2+DX2[DIR_0PP],  x3+DX3[DIR_0PP],   DIR_0PP);
+      distributions->setDistributionInvForDirection(f[DIR_PMP], x1+DX1[DIR_MPM], x2+DX2[DIR_MPM], x3+DX3[DIR_MPM], DIR_MPM);
+      distributions->setDistributionInvForDirection(f[DIR_MMP], x1+DX1[DIR_PPM], x2+DX2[DIR_PPM], x3+DX3[DIR_PPM], DIR_PPM);
+      distributions->setDistributionInvForDirection(f[DIR_PMM], x1+DX1[DIR_MPP], x2+DX2[DIR_MPP], x3+DX3[DIR_MPP], DIR_MPP);
+      distributions->setDistributionInvForDirection(f[DIR_MMM], x1+DX1[DIR_PPP], x2+DX2[DIR_PPP], x3+DX3[DIR_PPP], DIR_PPP);
 
-	  h[N]   = htemp[N]   * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*h[N]   ;
-	  h[NE]  = htemp[NE]  * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*h[NE]  ;
-	  h[NW]  = htemp[NW]  * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*h[NW]  ;
-	  h[TN]  = htemp[TN]  * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*h[TN]  ;
-	  h[BN]  = htemp[BN]  * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*h[BN]  ;
-	  h[TNE] = htemp[TNE] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*h[TNE] ;
-	  h[TNW] = htemp[TNW] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*h[TNW] ;
-	  h[BNE] = htemp[BNE] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*h[BNE] ;
-	  h[BNW] = htemp[BNW] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2)*h[BNW] ;
+	  h[DIR_0M0]   = htemp[DIR_0M0]   * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*h[DIR_0M0]   ;
+	  h[DIR_PM0]  = htemp[DIR_PM0]  * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*h[DIR_PM0]  ;
+	  h[DIR_MM0]  = htemp[DIR_MM0]  * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*h[DIR_MM0]  ;
+	  h[DIR_0MP]  = htemp[DIR_0MP]  * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*h[DIR_0MP]  ;
+	  h[DIR_0MM]  = htemp[DIR_0MM]  * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*h[DIR_0MM]  ;
+	  h[DIR_PMP] = htemp[DIR_PMP] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*h[DIR_PMP] ;
+	  h[DIR_MMP] = htemp[DIR_MMP] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*h[DIR_MMP] ;
+	  h[DIR_PMM] = htemp[DIR_PMM] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*h[DIR_PMM] ;
+	  h[DIR_MMM] = htemp[DIR_MMM] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*h[DIR_MMM] ;
 
-	  distributionsH->setDistributionInvForDirection(h[N],   x1+DX1[S],   x2+DX2[S],   x3+DX3[S],     S);
-	  distributionsH->setDistributionInvForDirection(h[NE],  x1+DX1[SW],  x2+DX2[SW],  x3+DX3[SW],   SW);
-	  distributionsH->setDistributionInvForDirection(h[NW],  x1+DX1[SE],  x2+DX2[SE],  x3+DX3[SE],   SE);
-	  distributionsH->setDistributionInvForDirection(h[TN],  x1+DX1[BS],  x2+DX2[BS],  x3+DX3[BS],   BS);
-	  distributionsH->setDistributionInvForDirection(h[BN],  x1+DX1[TS],  x2+DX2[TS],  x3+DX3[TS],   TS);
-	  distributionsH->setDistributionInvForDirection(h[TNE], x1+DX1[BSW], x2+DX2[BSW], x3+DX3[BSW], BSW);
-	  distributionsH->setDistributionInvForDirection(h[TNW], x1+DX1[BSE], x2+DX2[BSE], x3+DX3[BSE], BSE);
-	  distributionsH->setDistributionInvForDirection(h[BNE], x1+DX1[TSW], x2+DX2[TSW], x3+DX3[TSW], TSW);
-	  distributionsH->setDistributionInvForDirection(h[BNW], x1+DX1[TSE], x2+DX2[TSE], x3+DX3[TSE], TSE);
+	  distributionsH->setDistributionInvForDirection(h[DIR_0M0],   x1+DX1[DIR_0P0],   x2+DX2[DIR_0P0],   x3+DX3[DIR_0P0],     DIR_0P0);
+	  distributionsH->setDistributionInvForDirection(h[DIR_PM0],  x1+DX1[DIR_MP0],  x2+DX2[DIR_MP0],  x3+DX3[DIR_MP0],   DIR_MP0);
+	  distributionsH->setDistributionInvForDirection(h[DIR_MM0],  x1+DX1[DIR_PP0],  x2+DX2[DIR_PP0],  x3+DX3[DIR_PP0],   DIR_PP0);
+	  distributionsH->setDistributionInvForDirection(h[DIR_0MP],  x1+DX1[DIR_0PM],  x2+DX2[DIR_0PM],  x3+DX3[DIR_0PM],   DIR_0PM);
+	  distributionsH->setDistributionInvForDirection(h[DIR_0MM],  x1+DX1[DIR_0PP],  x2+DX2[DIR_0PP],  x3+DX3[DIR_0PP],   DIR_0PP);
+	  distributionsH->setDistributionInvForDirection(h[DIR_PMP], x1+DX1[DIR_MPM], x2+DX2[DIR_MPM], x3+DX3[DIR_MPM], DIR_MPM);
+	  distributionsH->setDistributionInvForDirection(h[DIR_MMP], x1+DX1[DIR_PPM], x2+DX2[DIR_PPM], x3+DX3[DIR_PPM], DIR_PPM);
+	  distributionsH->setDistributionInvForDirection(h[DIR_PMM], x1+DX1[DIR_MPP], x2+DX2[DIR_MPP], x3+DX3[DIR_MPP], DIR_MPP);
+	  distributionsH->setDistributionInvForDirection(h[DIR_MMM], x1+DX1[DIR_PPP], x2+DX2[DIR_PPP], x3+DX3[DIR_PPP], DIR_PPP);
 
-      break;
-   case S:
-      f[S]   = ftemp[S]   * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*f[S]   ;
-      f[SE]  = ftemp[SE]  * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*f[SE]  ;
-      f[SW]  = ftemp[SW]  * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*f[SW]  ;
-      f[TS]  = ftemp[TS]  * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*f[TS]  ;
-      f[BS]  = ftemp[BS]  * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*f[BS]  ;
-      f[TSE] = ftemp[TSE] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*f[TSE] ;
-      f[TSW] = ftemp[TSW] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*f[TSW] ;
-      f[BSE] = ftemp[BSE] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*f[BSE] ;
-      f[BSW] = ftemp[BSW] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*f[BSW] ;
+	  h2[DIR_0M0] = htemp[DIR_0M0] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2) * h2[DIR_0M0];
+      h2[DIR_PM0] = htemp[DIR_PM0] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2) * h2[DIR_PM0];
+      h2[DIR_MM0] = htemp[DIR_MM0] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2) * h2[DIR_MM0];
+      h2[DIR_0MP] = htemp[DIR_0MP] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2) * h2[DIR_0MP];
+      h2[DIR_0MM] = htemp[DIR_0MM] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2) * h2[DIR_0MM];
+      h2[DIR_PMP] = htemp[DIR_PMP] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2) * h2[DIR_PMP];
+      h2[DIR_MMP] = htemp[DIR_MMP] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2) * h2[DIR_MMP];
+      h2[DIR_PMM] = htemp[DIR_PMM] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2) * h2[DIR_PMM];
+      h2[DIR_MMM] = htemp[DIR_MMM] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2) * h2[DIR_MMM];
 
-      distributions->setDistributionInvForDirection(f[S],   x1+DX1[N],   x2+DX2[N],   x3+DX3[N],     N);
-      distributions->setDistributionInvForDirection(f[SE],  x1+DX1[NW],  x2+DX2[NW],  x3+DX3[NW],   NW);
-      distributions->setDistributionInvForDirection(f[SW],  x1+DX1[NE],  x2+DX2[NE],  x3+DX3[NE],   NE);
-      distributions->setDistributionInvForDirection(f[TS],  x1+DX1[BN],  x2+DX2[BN],  x3+DX3[BN],   BN);
-      distributions->setDistributionInvForDirection(f[BS],  x1+DX1[TN],  x2+DX2[TN],  x3+DX3[TN],   TN);
-      distributions->setDistributionInvForDirection(f[TSE], x1+DX1[BNW], x2+DX2[BNW], x3+DX3[BNW], BNW);
-      distributions->setDistributionInvForDirection(f[TSW], x1+DX1[BNE], x2+DX2[BNE], x3+DX3[BNE], BNE);
-      distributions->setDistributionInvForDirection(f[BSE], x1+DX1[TNW], x2+DX2[TNW], x3+DX3[TNW], TNW);
-      distributions->setDistributionInvForDirection(f[BSW], x1+DX1[TNE], x2+DX2[TNE], x3+DX3[TNE], TNE);
-
-	  h[S]   = htemp[S]   * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*h[S]   ;
-	  h[SE]  = htemp[SE]  * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*h[SE]  ;
-	  h[SW]  = htemp[SW]  * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*h[SW]  ;
-	  h[TS]  = htemp[TS]  * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*h[TS]  ;
-	  h[BS]  = htemp[BS]  * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*h[BS]  ;
-	  h[TSE] = htemp[TSE] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*h[TSE] ;
-	  h[TSW] = htemp[TSW] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*h[TSW] ;
-	  h[BSE] = htemp[BSE] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*h[BSE] ;
-	  h[BSW] = htemp[BSW] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2)*h[BSW] ;
-
-	  distributionsH->setDistributionInvForDirection(h[S],   x1+DX1[N],   x2+DX2[N],   x3+DX3[N],     N);
-	  distributionsH->setDistributionInvForDirection(h[SE],  x1+DX1[NW],  x2+DX2[NW],  x3+DX3[NW],   NW);
-	  distributionsH->setDistributionInvForDirection(h[SW],  x1+DX1[NE],  x2+DX2[NE],  x3+DX3[NE],   NE);
-	  distributionsH->setDistributionInvForDirection(h[TS],  x1+DX1[BN],  x2+DX2[BN],  x3+DX3[BN],   BN);
-	  distributionsH->setDistributionInvForDirection(h[BS],  x1+DX1[TN],  x2+DX2[TN],  x3+DX3[TN],   TN);
-	  distributionsH->setDistributionInvForDirection(h[TSE], x1+DX1[BNW], x2+DX2[BNW], x3+DX3[BNW], BNW);
-	  distributionsH->setDistributionInvForDirection(h[TSW], x1+DX1[BNE], x2+DX2[BNE], x3+DX3[BNE], BNE);
-	  distributionsH->setDistributionInvForDirection(h[BSE], x1+DX1[TNW], x2+DX2[TNW], x3+DX3[TNW], TNW);
-	  distributionsH->setDistributionInvForDirection(h[BSW], x1+DX1[TNE], x2+DX2[TNE], x3+DX3[TNE], TNE);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_0M0], x1 + DX1[DIR_0P0], x2 + DX2[DIR_0P0], x3 + DX3[DIR_0P0], DIR_0P0);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_PM0], x1 + DX1[DIR_MP0], x2 + DX2[DIR_MP0], x3 + DX3[DIR_MP0], DIR_MP0);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_MM0], x1 + DX1[DIR_PP0], x2 + DX2[DIR_PP0], x3 + DX3[DIR_PP0], DIR_PP0);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_0MP], x1 + DX1[DIR_0PM], x2 + DX2[DIR_0PM], x3 + DX3[DIR_0PM], DIR_0PM);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_0MM], x1 + DX1[DIR_0PP], x2 + DX2[DIR_0PP], x3 + DX3[DIR_0PP], DIR_0PP);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_PMP], x1 + DX1[DIR_MPM], x2 + DX2[DIR_MPM], x3 + DX3[DIR_MPM], DIR_MPM);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_MMP], x1 + DX1[DIR_PPM], x2 + DX2[DIR_PPM], x3 + DX3[DIR_PPM], DIR_PPM);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_PMM], x1 + DX1[DIR_MPP], x2 + DX2[DIR_MPP], x3 + DX3[DIR_MPP], DIR_MPP);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_MMM], x1 + DX1[DIR_PPP], x2 + DX2[DIR_PPP], x3 + DX3[DIR_PPP], DIR_PPP);
 
       break;
-   case T:
-      f[T]   = ftemp[T]   * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*f[T]   ;
-      f[TE]  = ftemp[TE]  * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*f[TE]  ;
-      f[TW]  = ftemp[TW]  * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*f[TW]  ;
-      f[TN]  = ftemp[TN]  * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*f[TN]  ;
-      f[TS]  = ftemp[TS]  * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*f[TS]  ;
-      f[TNE] = ftemp[TNE] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*f[TNE] ;
-      f[TNW] = ftemp[TNW] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*f[TNW] ;
-      f[TSE] = ftemp[TSE] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*f[TSE] ;
-      f[TSW] = ftemp[TSW] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*f[TSW] ;
+   case DIR_00P:
+      f[DIR_00P]   = ftemp[DIR_00P]   * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*f[DIR_00P]   ;
+      f[DIR_P0P]  = ftemp[DIR_P0P]  * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*f[DIR_P0P]  ;
+      f[DIR_M0P]  = ftemp[DIR_M0P]  * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*f[DIR_M0P]  ;
+      f[DIR_0PP]  = ftemp[DIR_0PP]  * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*f[DIR_0PP]  ;
+      f[DIR_0MP]  = ftemp[DIR_0MP]  * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*f[DIR_0MP]  ;
+      f[DIR_PPP] = ftemp[DIR_PPP] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*f[DIR_PPP] ;
+      f[DIR_MPP] = ftemp[DIR_MPP] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*f[DIR_MPP] ;
+      f[DIR_PMP] = ftemp[DIR_PMP] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*f[DIR_PMP] ;
+      f[DIR_MMP] = ftemp[DIR_MMP] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*f[DIR_MMP] ;
 
-      distributions->setDistributionInvForDirection(f[T],   x1+DX1[B],   x2+DX2[B],   x3+DX3[B],     B);
-      distributions->setDistributionInvForDirection(f[TE],  x1+DX1[BW],  x2+DX2[BW],  x3+DX3[BW],   BW);
-      distributions->setDistributionInvForDirection(f[TW],  x1+DX1[BE],  x2+DX2[BE],  x3+DX3[BE],   BE);
-      distributions->setDistributionInvForDirection(f[TN],  x1+DX1[BS],  x2+DX2[BS],  x3+DX3[BS],   BS);
-      distributions->setDistributionInvForDirection(f[TS],  x1+DX1[BN],  x2+DX2[BN],  x3+DX3[BN],   BN);
-      distributions->setDistributionInvForDirection(f[TNE], x1+DX1[BSW], x2+DX2[BSW], x3+DX3[BSW], BSW);
-      distributions->setDistributionInvForDirection(f[TNW], x1+DX1[BSE], x2+DX2[BSE], x3+DX3[BSE], BSE);
-      distributions->setDistributionInvForDirection(f[TSE], x1+DX1[BNW], x2+DX2[BNW], x3+DX3[BNW], BNW);
-      distributions->setDistributionInvForDirection(f[TSW], x1+DX1[BNE], x2+DX2[BNE], x3+DX3[BNE], BNE);
+      distributions->setDistributionInvForDirection(f[DIR_00P],   x1+DX1[DIR_00M],   x2+DX2[DIR_00M],   x3+DX3[DIR_00M],     DIR_00M);
+      distributions->setDistributionInvForDirection(f[DIR_P0P],  x1+DX1[DIR_M0M],  x2+DX2[DIR_M0M],  x3+DX3[DIR_M0M],   DIR_M0M);
+      distributions->setDistributionInvForDirection(f[DIR_M0P],  x1+DX1[DIR_P0M],  x2+DX2[DIR_P0M],  x3+DX3[DIR_P0M],   DIR_P0M);
+      distributions->setDistributionInvForDirection(f[DIR_0PP],  x1+DX1[DIR_0MM],  x2+DX2[DIR_0MM],  x3+DX3[DIR_0MM],   DIR_0MM);
+      distributions->setDistributionInvForDirection(f[DIR_0MP],  x1+DX1[DIR_0PM],  x2+DX2[DIR_0PM],  x3+DX3[DIR_0PM],   DIR_0PM);
+      distributions->setDistributionInvForDirection(f[DIR_PPP], x1+DX1[DIR_MMM], x2+DX2[DIR_MMM], x3+DX3[DIR_MMM], DIR_MMM);
+      distributions->setDistributionInvForDirection(f[DIR_MPP], x1+DX1[DIR_PMM], x2+DX2[DIR_PMM], x3+DX3[DIR_PMM], DIR_PMM);
+      distributions->setDistributionInvForDirection(f[DIR_PMP], x1+DX1[DIR_MPM], x2+DX2[DIR_MPM], x3+DX3[DIR_MPM], DIR_MPM);
+      distributions->setDistributionInvForDirection(f[DIR_MMP], x1+DX1[DIR_PPM], x2+DX2[DIR_PPM], x3+DX3[DIR_PPM], DIR_PPM);
 
-	  h[T]   = htemp[T]   * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*h[T]   ;
-	  h[TE]  = htemp[TE]  * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*h[TE]  ;
-	  h[TW]  = htemp[TW]  * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*h[TW]  ;
-	  h[TN]  = htemp[TN]  * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*h[TN]  ;
-	  h[TS]  = htemp[TS]  * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*h[TS]  ;
-	  h[TNE] = htemp[TNE] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*h[TNE] ;
-	  h[TNW] = htemp[TNW] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*h[TNW] ;
-	  h[TSE] = htemp[TSE] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*h[TSE] ;
-	  h[TSW] = htemp[TSW] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*h[TSW] ;
+	  h[DIR_00P]   = htemp[DIR_00P]   * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*h[DIR_00P]   ;
+	  h[DIR_P0P]  = htemp[DIR_P0P]  * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*h[DIR_P0P]  ;
+	  h[DIR_M0P]  = htemp[DIR_M0P]  * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*h[DIR_M0P]  ;
+	  h[DIR_0PP]  = htemp[DIR_0PP]  * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*h[DIR_0PP]  ;
+	  h[DIR_0MP]  = htemp[DIR_0MP]  * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*h[DIR_0MP]  ;
+	  h[DIR_PPP] = htemp[DIR_PPP] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*h[DIR_PPP] ;
+	  h[DIR_MPP] = htemp[DIR_MPP] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*h[DIR_MPP] ;
+	  h[DIR_PMP] = htemp[DIR_PMP] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*h[DIR_PMP] ;
+	  h[DIR_MMP] = htemp[DIR_MMP] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3)*h[DIR_MMP] ;
 
-	  distributionsH->setDistributionInvForDirection(h[T],   x1+DX1[B],   x2+DX2[B],   x3+DX3[B],     B);
-	  distributionsH->setDistributionInvForDirection(h[TE],  x1+DX1[BW],  x2+DX2[BW],  x3+DX3[BW],   BW);
-	  distributionsH->setDistributionInvForDirection(h[TW],  x1+DX1[BE],  x2+DX2[BE],  x3+DX3[BE],   BE);
-	  distributionsH->setDistributionInvForDirection(h[TN],  x1+DX1[BS],  x2+DX2[BS],  x3+DX3[BS],   BS);
-	  distributionsH->setDistributionInvForDirection(h[TS],  x1+DX1[BN],  x2+DX2[BN],  x3+DX3[BN],   BN);
-	  distributionsH->setDistributionInvForDirection(h[TNE], x1+DX1[BSW], x2+DX2[BSW], x3+DX3[BSW], BSW);
-	  distributionsH->setDistributionInvForDirection(h[TNW], x1+DX1[BSE], x2+DX2[BSE], x3+DX3[BSE], BSE);
-	  distributionsH->setDistributionInvForDirection(h[TSE], x1+DX1[BNW], x2+DX2[BNW], x3+DX3[BNW], BNW);
-	  distributionsH->setDistributionInvForDirection(h[TSW], x1+DX1[BNE], x2+DX2[BNE], x3+DX3[BNE], BNE);
+	  distributionsH->setDistributionInvForDirection(h[DIR_00P],   x1+DX1[DIR_00M],   x2+DX2[DIR_00M],   x3+DX3[DIR_00M],     DIR_00M);
+	  distributionsH->setDistributionInvForDirection(h[DIR_P0P],  x1+DX1[DIR_M0M],  x2+DX2[DIR_M0M],  x3+DX3[DIR_M0M],   DIR_M0M);
+	  distributionsH->setDistributionInvForDirection(h[DIR_M0P],  x1+DX1[DIR_P0M],  x2+DX2[DIR_P0M],  x3+DX3[DIR_P0M],   DIR_P0M);
+	  distributionsH->setDistributionInvForDirection(h[DIR_0PP],  x1+DX1[DIR_0MM],  x2+DX2[DIR_0MM],  x3+DX3[DIR_0MM],   DIR_0MM);
+	  distributionsH->setDistributionInvForDirection(h[DIR_0MP],  x1+DX1[DIR_0PM],  x2+DX2[DIR_0PM],  x3+DX3[DIR_0PM],   DIR_0PM);
+	  distributionsH->setDistributionInvForDirection(h[DIR_PPP], x1+DX1[DIR_MMM], x2+DX2[DIR_MMM], x3+DX3[DIR_MMM], DIR_MMM);
+	  distributionsH->setDistributionInvForDirection(h[DIR_MPP], x1+DX1[DIR_PMM], x2+DX2[DIR_PMM], x3+DX3[DIR_PMM], DIR_PMM);
+	  distributionsH->setDistributionInvForDirection(h[DIR_PMP], x1+DX1[DIR_MPM], x2+DX2[DIR_MPM], x3+DX3[DIR_MPM], DIR_MPM);
+	  distributionsH->setDistributionInvForDirection(h[DIR_MMP], x1+DX1[DIR_PPM], x2+DX2[DIR_PPM], x3+DX3[DIR_PPM], DIR_PPM);
+
+	  h2[DIR_00P] = htemp[DIR_00P] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3) * h2[DIR_00P];
+      h2[DIR_P0P] = htemp[DIR_P0P] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3) * h2[DIR_P0P];
+      h2[DIR_M0P] = htemp[DIR_M0P] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3) * h2[DIR_M0P];
+      h2[DIR_0PP] = htemp[DIR_0PP] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3) * h2[DIR_0PP];
+      h2[DIR_0MP] = htemp[DIR_0MP] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3) * h2[DIR_0MP];
+      h2[DIR_PPP] = htemp[DIR_PPP] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3) * h2[DIR_PPP];
+      h2[DIR_MPP] = htemp[DIR_MPP] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3) * h2[DIR_MPP];
+      h2[DIR_PMP] = htemp[DIR_PMP] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3) * h2[DIR_PMP];
+      h2[DIR_MMP] = htemp[DIR_MMP] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3) * h2[DIR_MMP];
+
+      distributionsH2->setDistributionInvForDirection(h2[DIR_00P], x1 + DX1[DIR_00M], x2 + DX2[DIR_00M], x3 + DX3[DIR_00M], DIR_00M);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_P0P], x1 + DX1[DIR_M0M], x2 + DX2[DIR_M0M], x3 + DX3[DIR_M0M], DIR_M0M);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_M0P], x1 + DX1[DIR_P0M], x2 + DX2[DIR_P0M], x3 + DX3[DIR_P0M], DIR_P0M);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_0PP], x1 + DX1[DIR_0MM], x2 + DX2[DIR_0MM], x3 + DX3[DIR_0MM], DIR_0MM);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_0MP], x1 + DX1[DIR_0PM], x2 + DX2[DIR_0PM], x3 + DX3[DIR_0PM], DIR_0PM);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_PPP], x1 + DX1[DIR_MMM], x2 + DX2[DIR_MMM], x3 + DX3[DIR_MMM], DIR_MMM);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_MPP], x1 + DX1[DIR_PMM], x2 + DX2[DIR_PMM], x3 + DX3[DIR_PMM], DIR_PMM);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_PMP], x1 + DX1[DIR_MPM], x2 + DX2[DIR_MPM], x3 + DX3[DIR_MPM], DIR_MPM);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_MMP], x1 + DX1[DIR_PPM], x2 + DX2[DIR_PPM], x3 + DX3[DIR_PPM], DIR_PPM);
 
       break;
-   case B:
-      f[B]   = ftemp[B]   * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*f[B]   ;
-      f[BE]  = ftemp[BE]  * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*f[BE]  ;
-      f[BW]  = ftemp[BW]  * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*f[BW]  ;
-      f[BN]  = ftemp[BN]  * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*f[BN]  ;
-      f[BS]  = ftemp[BS]  * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*f[BS]  ;
-      f[BNE] = ftemp[BNE] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*f[BNE] ;
-      f[BNW] = ftemp[BNW] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*f[BNW] ;
-      f[BSE] = ftemp[BSE] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*f[BSE] ;
-      f[BSW] = ftemp[BSW] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*f[BSW] ;
+   case DIR_00M:
+      f[DIR_00M]   = ftemp[DIR_00M]   * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*f[DIR_00M]   ;
+      f[DIR_P0M]  = ftemp[DIR_P0M]  * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*f[DIR_P0M]  ;
+      f[DIR_M0M]  = ftemp[DIR_M0M]  * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*f[DIR_M0M]  ;
+      f[DIR_0PM]  = ftemp[DIR_0PM]  * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*f[DIR_0PM]  ;
+      f[DIR_0MM]  = ftemp[DIR_0MM]  * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*f[DIR_0MM]  ;
+      f[DIR_PPM] = ftemp[DIR_PPM] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*f[DIR_PPM] ;
+      f[DIR_MPM] = ftemp[DIR_MPM] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*f[DIR_MPM] ;
+      f[DIR_PMM] = ftemp[DIR_PMM] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*f[DIR_PMM] ;
+      f[DIR_MMM] = ftemp[DIR_MMM] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*f[DIR_MMM] ;
 
-      distributions->setDistributionInvForDirection(f[B],   x1+DX1[T],   x2+DX2[T],   x3+DX3[T],     T);
-      distributions->setDistributionInvForDirection(f[BE],  x1+DX1[TW],  x2+DX2[TW],  x3+DX3[TW],   TW);
-      distributions->setDistributionInvForDirection(f[BW],  x1+DX1[TE],  x2+DX2[TE],  x3+DX3[TE],   TE);
-      distributions->setDistributionInvForDirection(f[BN],  x1+DX1[TS],  x2+DX2[TS],  x3+DX3[TS],   TS);
-      distributions->setDistributionInvForDirection(f[BS],  x1+DX1[TN],  x2+DX2[TN],  x3+DX3[TN],   TN);
-      distributions->setDistributionInvForDirection(f[BNE], x1+DX1[TSW], x2+DX2[TSW], x3+DX3[TSW], TSW);
-      distributions->setDistributionInvForDirection(f[BNW], x1+DX1[TSE], x2+DX2[TSE], x3+DX3[TSE], TSE);
-      distributions->setDistributionInvForDirection(f[BSE], x1+DX1[TNW], x2+DX2[TNW], x3+DX3[TNW], TNW);
-      distributions->setDistributionInvForDirection(f[BSW], x1+DX1[TNE], x2+DX2[TNE], x3+DX3[TNE], TNE);
+      distributions->setDistributionInvForDirection(f[DIR_00M],   x1+DX1[DIR_00P],   x2+DX2[DIR_00P],   x3+DX3[DIR_00P],     DIR_00P);
+      distributions->setDistributionInvForDirection(f[DIR_P0M],  x1+DX1[DIR_M0P],  x2+DX2[DIR_M0P],  x3+DX3[DIR_M0P],   DIR_M0P);
+      distributions->setDistributionInvForDirection(f[DIR_M0M],  x1+DX1[DIR_P0P],  x2+DX2[DIR_P0P],  x3+DX3[DIR_P0P],   DIR_P0P);
+      distributions->setDistributionInvForDirection(f[DIR_0PM],  x1+DX1[DIR_0MP],  x2+DX2[DIR_0MP],  x3+DX3[DIR_0MP],   DIR_0MP);
+      distributions->setDistributionInvForDirection(f[DIR_0MM],  x1+DX1[DIR_0PP],  x2+DX2[DIR_0PP],  x3+DX3[DIR_0PP],   DIR_0PP);
+      distributions->setDistributionInvForDirection(f[DIR_PPM], x1+DX1[DIR_MMP], x2+DX2[DIR_MMP], x3+DX3[DIR_MMP], DIR_MMP);
+      distributions->setDistributionInvForDirection(f[DIR_MPM], x1+DX1[DIR_PMP], x2+DX2[DIR_PMP], x3+DX3[DIR_PMP], DIR_PMP);
+      distributions->setDistributionInvForDirection(f[DIR_PMM], x1+DX1[DIR_MPP], x2+DX2[DIR_MPP], x3+DX3[DIR_MPP], DIR_MPP);
+      distributions->setDistributionInvForDirection(f[DIR_MMM], x1+DX1[DIR_PPP], x2+DX2[DIR_PPP], x3+DX3[DIR_PPP], DIR_PPP);
 
-	  h[B]   = htemp[B]   * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*h[B]   ;
-	  h[BE]  = htemp[BE]  * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*h[BE]  ;
-	  h[BW]  = htemp[BW]  * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*h[BW]  ;
-	  h[BN]  = htemp[BN]  * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*h[BN]  ;
-	  h[BS]  = htemp[BS]  * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*h[BS]  ;
-	  h[BNE] = htemp[BNE] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*h[BNE] ;
-	  h[BNW] = htemp[BNW] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*h[BNW] ;
-	  h[BSE] = htemp[BSE] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*h[BSE] ;
-	  h[BSW] = htemp[BSW] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*h[BSW] ;
+	  h[DIR_00M]   = htemp[DIR_00M]   * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*h[DIR_00M]   ;
+	  h[DIR_P0M]  = htemp[DIR_P0M]  * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*h[DIR_P0M]  ;
+	  h[DIR_M0M]  = htemp[DIR_M0M]  * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*h[DIR_M0M]  ;
+	  h[DIR_0PM]  = htemp[DIR_0PM]  * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*h[DIR_0PM]  ;
+	  h[DIR_0MM]  = htemp[DIR_0MM]  * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*h[DIR_0MM]  ;
+	  h[DIR_PPM] = htemp[DIR_PPM] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*h[DIR_PPM] ;
+	  h[DIR_MPM] = htemp[DIR_MPM] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*h[DIR_MPM] ;
+	  h[DIR_PMM] = htemp[DIR_PMM] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*h[DIR_PMM] ;
+	  h[DIR_MMM] = htemp[DIR_MMM] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3)*h[DIR_MMM] ;
 
-	  distributionsH->setDistributionInvForDirection(h[B],   x1+DX1[T],   x2+DX2[T],   x3+DX3[T],     T);
-	  distributionsH->setDistributionInvForDirection(h[BE],  x1+DX1[TW],  x2+DX2[TW],  x3+DX3[TW],   TW);
-	  distributionsH->setDistributionInvForDirection(h[BW],  x1+DX1[TE],  x2+DX2[TE],  x3+DX3[TE],   TE);
-	  distributionsH->setDistributionInvForDirection(h[BN],  x1+DX1[TS],  x2+DX2[TS],  x3+DX3[TS],   TS);
-	  distributionsH->setDistributionInvForDirection(h[BS],  x1+DX1[TN],  x2+DX2[TN],  x3+DX3[TN],   TN);
-	  distributionsH->setDistributionInvForDirection(h[BNE], x1+DX1[TSW], x2+DX2[TSW], x3+DX3[TSW], TSW);
-	  distributionsH->setDistributionInvForDirection(h[BNW], x1+DX1[TSE], x2+DX2[TSE], x3+DX3[TSE], TSE);
-	  distributionsH->setDistributionInvForDirection(h[BSE], x1+DX1[TNW], x2+DX2[TNW], x3+DX3[TNW], TNW);
-	  distributionsH->setDistributionInvForDirection(h[BSW], x1+DX1[TNE], x2+DX2[TNE], x3+DX3[TNE], TNE);
+	  distributionsH->setDistributionInvForDirection(h[DIR_00M],   x1+DX1[DIR_00P],   x2+DX2[DIR_00P],   x3+DX3[DIR_00P],     DIR_00P);
+	  distributionsH->setDistributionInvForDirection(h[DIR_P0M],  x1+DX1[DIR_M0P],  x2+DX2[DIR_M0P],  x3+DX3[DIR_M0P],   DIR_M0P);
+	  distributionsH->setDistributionInvForDirection(h[DIR_M0M],  x1+DX1[DIR_P0P],  x2+DX2[DIR_P0P],  x3+DX3[DIR_P0P],   DIR_P0P);
+	  distributionsH->setDistributionInvForDirection(h[DIR_0PM],  x1+DX1[DIR_0MP],  x2+DX2[DIR_0MP],  x3+DX3[DIR_0MP],   DIR_0MP);
+	  distributionsH->setDistributionInvForDirection(h[DIR_0MM],  x1+DX1[DIR_0PP],  x2+DX2[DIR_0PP],  x3+DX3[DIR_0PP],   DIR_0PP);
+	  distributionsH->setDistributionInvForDirection(h[DIR_PPM], x1+DX1[DIR_MMP], x2+DX2[DIR_MMP], x3+DX3[DIR_MMP], DIR_MMP);
+	  distributionsH->setDistributionInvForDirection(h[DIR_MPM], x1+DX1[DIR_PMP], x2+DX2[DIR_PMP], x3+DX3[DIR_PMP], DIR_PMP);
+	  distributionsH->setDistributionInvForDirection(h[DIR_PMM], x1+DX1[DIR_MPP], x2+DX2[DIR_MPP], x3+DX3[DIR_MPP], DIR_MPP);
+	  distributionsH->setDistributionInvForDirection(h[DIR_MMM], x1+DX1[DIR_PPP], x2+DX2[DIR_PPP], x3+DX3[DIR_PPP], DIR_PPP);
+
+	  h2[DIR_00M] = htemp[DIR_00M] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3) * h2[DIR_00M];
+      h2[DIR_P0M] = htemp[DIR_P0M] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3) * h2[DIR_P0M];
+      h2[DIR_M0M] = htemp[DIR_M0M] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3) * h2[DIR_M0M];
+      h2[DIR_0PM] = htemp[DIR_0PM] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3) * h2[DIR_0PM];
+      h2[DIR_0MM] = htemp[DIR_0MM] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3) * h2[DIR_0MM];
+      h2[DIR_PPM] = htemp[DIR_PPM] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3) * h2[DIR_PPM];
+      h2[DIR_MPM] = htemp[DIR_MPM] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3) * h2[DIR_MPM];
+      h2[DIR_PMM] = htemp[DIR_PMM] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3) * h2[DIR_PMM];
+      h2[DIR_MMM] = htemp[DIR_MMM] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3) * h2[DIR_MMM];
+
+      distributionsH2->setDistributionInvForDirection(h2[DIR_00M], x1 + DX1[DIR_00P], x2 + DX2[DIR_00P], x3 + DX3[DIR_00P], DIR_00P);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_P0M], x1 + DX1[DIR_M0P], x2 + DX2[DIR_M0P], x3 + DX3[DIR_M0P], DIR_M0P);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_M0M], x1 + DX1[DIR_P0P], x2 + DX2[DIR_P0P], x3 + DX3[DIR_P0P], DIR_P0P);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_0PM], x1 + DX1[DIR_0MP], x2 + DX2[DIR_0MP], x3 + DX3[DIR_0MP], DIR_0MP);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_0MM], x1 + DX1[DIR_0PP], x2 + DX2[DIR_0PP], x3 + DX3[DIR_0PP], DIR_0PP);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_PPM], x1 + DX1[DIR_MMP], x2 + DX2[DIR_MMP], x3 + DX3[DIR_MMP], DIR_MMP);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_MPM], x1 + DX1[DIR_PMP], x2 + DX2[DIR_PMP], x3 + DX3[DIR_PMP], DIR_PMP);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_PMM], x1 + DX1[DIR_MPP], x2 + DX2[DIR_MPP], x3 + DX3[DIR_MPP], DIR_MPP);
+      distributionsH2->setDistributionInvForDirection(h2[DIR_MMM], x1 + DX1[DIR_PPP], x2 + DX2[DIR_PPP], x3 + DX3[DIR_PPP], DIR_PPP);
 
       break;
    default:

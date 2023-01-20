@@ -59,8 +59,8 @@ public:
 
     void setScalingFactory(const GridScalingFactory::GridScaling gridScalingType);
 
-    [[nodiscard]] gridScalingFC getGridScalingFC() const;
-    [[nodiscard]] gridScalingCF getGridScalingCF() const;
+    [[nodiscard]] gridScalingFC getGridScalingFC(bool hasTurbulentViscosity) const;
+    [[nodiscard]] gridScalingCF getGridScalingCF(bool hasTurbulentViscosity) const;
 
 private:
     GridScaling gridScaling = GridScaling::NotSpecified;

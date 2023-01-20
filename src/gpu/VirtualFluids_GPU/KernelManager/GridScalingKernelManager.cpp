@@ -47,10 +47,10 @@ GridScalingKernelManager::GridScalingKernelManager(SPtr<Parameter> parameter, Gr
         if(!gridScalingFactory){
             throw std::runtime_error("There is more than one level, but no scalingFactory was provided.");
         }
-        checkScalingFunction(gridScalingFactory->getGridScalingFC(), this->para->getParD(0)->intFC, "scalingFineToCoarse");
-        checkScalingFunction(gridScalingFactory->getGridScalingCF(), this->para->getParD(0)->intCF, "scalingCoarseToFine");
-        this->scalingFineToCoarse = gridScalingFactory->getGridScalingFC();
-        this->scalingCoarseToFine = gridScalingFactory->getGridScalingCF();
+        checkScalingFunction(gridScalingFactory->getGridScalingFC(parameter->getUseTurbulentViscosity()), this->para->getParD(0)->intFC, "scalingFineToCoarse");
+        checkScalingFunction(gridScalingFactory->getGridScalingCF(parameter->getUseTurbulentViscosity()), this->para->getParD(0)->intCF, "scalingCoarseToFine");
+        this->scalingFineToCoarse = gridScalingFactory->getGridScalingFC(parameter->getUseTurbulentViscosity());
+        this->scalingCoarseToFine = gridScalingFactory->getGridScalingCF(parameter->getUseTurbulentViscosity());
     }
     
     if(this->scalingFineToCoarse == nullptr)

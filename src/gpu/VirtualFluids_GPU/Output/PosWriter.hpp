@@ -33,9 +33,9 @@ public:
 			{
 				out.writeInteger(para->getParH(level)->numberOfNodes);
 				out.writeLine();
-				for(unsigned int u=0; u<para->getParH(level)->numberOfNodes; u++)
+				for(size_t index = 0; index < para->getParH(level)->numberOfNodes; index++)
 				{
-					out.writeInteger(para->getParH(level)->typeOfGridNode[u]);
+					out.writeInteger(para->getParH(level)->typeOfGridNode[index]);
 				}
 				out.writeLine();
 			} //end levelloop
@@ -46,9 +46,9 @@ public:
 			{
 				out.writeInteger(para->getParH(level)->numberOfNodes);
 				out.writeLine();
-				for(unsigned int u=0; u<para->getParH(level)->numberOfNodes; u++)
+                for (size_t index = 0; index < para->getParH(level)->numberOfNodes; index++)
 				{
-					out.writeInteger(para->getParH(level)->neighborX[u]);
+					out.writeInteger(para->getParH(level)->neighborX[index]);
 				}
 				out.writeLine();
 			} //end levelloop
@@ -59,9 +59,9 @@ public:
 			{
 				out.writeInteger(para->getParH(level)->numberOfNodes);
 				out.writeLine();
-				for(unsigned int u=0; u<para->getParH(level)->numberOfNodes; u++)
+                for (size_t index = 0; index < para->getParH(level)->numberOfNodes; index++)
 				{
-					out.writeInteger(para->getParH(level)->neighborY[u]);
+					out.writeInteger(para->getParH(level)->neighborY[index]);
 				}
 				out.writeLine();
 			} //end levelloop
@@ -72,9 +72,9 @@ public:
 			{
 				out.writeInteger(para->getParH(level)->numberOfNodes);
 				out.writeLine();
-				for(unsigned int u=0; u<para->getParH(level)->numberOfNodes; u++)
+                for (size_t index = 0; index < para->getParH(level)->numberOfNodes; index++)
 				{
-					out.writeInteger(para->getParH(level)->neighborZ[u]);
+					out.writeInteger(para->getParH(level)->neighborZ[index]);
 				}
 				out.writeLine();
 			} //end levelloop
