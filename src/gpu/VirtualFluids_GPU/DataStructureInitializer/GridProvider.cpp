@@ -35,7 +35,7 @@ void GridProvider::setNumberOfTaggedFluidNodes(uint numberOfNodes, CollisionTemp
     para->getParD(level)->numberOfTaggedFluidNodes[tag] = numberOfNodes;
 }
 
-void GridProvider::setInitalNodeValues(uint numberOfNodes, int level) const
+void GridProvider::setInitialNodeValues(uint numberOfNodes, int level) const
 {
     for (uint pos = 1; pos <= numberOfNodes; pos++)
     {
