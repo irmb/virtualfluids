@@ -412,12 +412,11 @@ void VTKReader::getNextData(real* data, uint numberOfNodes, real time)
         {
             size_t numberOfFiles = this->nFile[level][id];
 
-
             if(!this->fileCollection->files[level][id][numberOfFiles].inZBounds(time))
             {
                 numberOfFiles++;
 
-                VF_LOG_INFO("PrecursorBC on level {}: switching to file no. {}\n", level, numberOfFiles);
+                VF_LOG_INFO("PrecursorBC on level {}: switching to file no. {}", level, numberOfFiles);
                 if(numberOfFiles == this->fileCollection->files[level][id].size())
                     throw std::runtime_error("Not enough Precursor Files to read");
 
@@ -433,7 +432,6 @@ void VTKReader::getNextData(real* data, uint numberOfNodes, real time)
                 }
             }
         
-
             VTKFile* file = &this->fileCollection->files[level][id][numberOfFiles];
 
             int off = file->getClosestIdxZ(time)*file->getNumberOfPointsInXYPlane();
