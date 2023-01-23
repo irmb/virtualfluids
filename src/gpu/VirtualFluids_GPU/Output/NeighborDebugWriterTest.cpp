@@ -46,7 +46,7 @@ protected:
     std::vector<real> coordinates;
 };
 
-TEST_F(NeighborDebugWriterTest, writeNeighborLinkLinesOnlyFLuidNodes)
+TEST_F(NeighborDebugWriterTest, writeNeighborLinkLines_onlyFLuidNodes_writesAllNodes)
 {
     UbTupleFloat3 oneCoord(1.0, 1.0, 1.0);
     UbTupleFloat3 threeCoord(3.0, 3.0, 3.0);
@@ -61,7 +61,7 @@ TEST_F(NeighborDebugWriterTest, writeNeighborLinkLinesOnlyFLuidNodes)
     EXPECT_THAT(writerSpy.lines, testing::Eq(expectedLines));
 }
 
-TEST_F(NeighborDebugWriterTest, writeNeighborLinkLinesOneSolidNode)
+TEST_F(NeighborDebugWriterTest, writeNeighborLinkLines_fluidAndSolidNodes_writesOnlyFluidNodes)
 {
     typeOfGridNode[2] = GEO_SOLID;
     
