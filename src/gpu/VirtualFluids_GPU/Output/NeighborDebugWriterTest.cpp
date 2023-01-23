@@ -28,19 +28,18 @@ protected:
         coordinates = std::vector<real>(numberOfNodes, 1.0);
         coordinates[2] = 3.0;
 
-        para = testingVF::createParameterForLevel(0);
-        para->getParH(level)->numberOfNodes = numberOfNodes;
-        para->getParH(level)->coordinateX = coordinates.data();
-        para->getParH(level)->coordinateY = coordinates.data();
-        para->getParH(level)->coordinateZ = coordinates.data();
-        para->getParH(level)->neighborX = neighbors.data();
-        para->getParH(level)->typeOfGridNode = typeOfGridNode.data();
+        parH->numberOfNodes = numberOfNodes;
+        parH->coordinateX = coordinates.data();
+        parH->coordinateY = coordinates.data();
+        parH->coordinateZ = coordinates.data();
+        parH->neighborX = neighbors.data();
+        parH->typeOfGridNode = typeOfGridNode.data();
     }
 
     const int level = 0;
     const unsigned long long numberOfNodes = 3;
     const uint direction = vf::lbm::dir::DIR_P00; // x
-    std::shared_ptr<Parameter> para;
+    std::unique_ptr<LBMSimulationParameter> parH = std::make_unique<LBMSimulationParameter>();
     WbWriterSpy writerSpy;
     std::vector<uint> typeOfGridNode;
     std::vector<uint> neighbors;
@@ -54,7 +53,7 @@ TEST_F(NeighborDebugWriterTest, writeNeighborLinkLinesOnlyFLuidNodes)
     std::vector<UbTupleFloat3> expectedNodes = { oneCoord, threeCoord, oneCoord, threeCoord, threeCoord, threeCoord };
     std::vector<UbTupleInt2> expectedLines = { UbTupleInt2(0, 1), UbTupleInt2(2, 3), UbTupleInt2(4, 5) };
 
-    NeighborDebugWriter::writeNeighborLinkLines(para->getParH(level).get(), direction, "name", &writerSpy);
+    NeighborDebugWriter::writeNeighborLinkLines(parH.get(), direction, "name", &writerSpy);
 
     EXPECT_THAT(writerSpy.nodes.size(), testing::Eq(numberOfNodes * 2));
     EXPECT_THAT(writerSpy.lines.size(), testing::Eq(numberOfNodes));
@@ -71,7 +70,7 @@ TEST_F(NeighborDebugWriterTest, writeNeighborLinkLinesOneSolidNode)
     std::vector<UbTupleFloat3> expectedNodes = { oneCoord, threeCoord, oneCoord, threeCoord};
     std::vector<UbTupleInt2> expectedLines = { UbTupleInt2(0, 1), UbTupleInt2(2, 3)};
 
-    NeighborDebugWriter::writeNeighborLinkLines(para->getParH(level).get(), direction, "name", &writerSpy);
+    NeighborDebugWriter::writeNeighborLinkLines(parH.get(), direction, "name", &writerSpy);
 
     EXPECT_THAT(writerSpy.nodes.size(), testing::Eq((numberOfNodes-1) * 2));
     EXPECT_THAT(writerSpy.lines.size(), testing::Eq(numberOfNodes-1));
