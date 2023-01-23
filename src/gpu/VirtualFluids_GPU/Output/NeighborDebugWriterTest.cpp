@@ -54,7 +54,7 @@ TEST_F(NeighborDebugWriterTest, writeNeighborLinkLinesOnlyFLuidNodes)
     std::vector<UbTupleFloat3> expectedNodes = { oneCoord, threeCoord, oneCoord, threeCoord, threeCoord, threeCoord };
     std::vector<UbTupleInt2> expectedLines = { UbTupleInt2(0, 1), UbTupleInt2(2, 3), UbTupleInt2(4, 5) };
 
-    NeighborDebugWriter::writeNeighborLinkLines(para.get(), level, direction, "name", &writerSpy);
+    NeighborDebugWriter::writeNeighborLinkLines(para->getParH(level).get(), direction, "name", &writerSpy);
 
     EXPECT_THAT(writerSpy.nodes.size(), testing::Eq(numberOfNodes * 2));
     EXPECT_THAT(writerSpy.lines.size(), testing::Eq(numberOfNodes));
@@ -71,7 +71,7 @@ TEST_F(NeighborDebugWriterTest, writeNeighborLinkLinesOneSolidNode)
     std::vector<UbTupleFloat3> expectedNodes = { oneCoord, threeCoord, oneCoord, threeCoord};
     std::vector<UbTupleInt2> expectedLines = { UbTupleInt2(0, 1), UbTupleInt2(2, 3)};
 
-    NeighborDebugWriter::writeNeighborLinkLines(para.get(), level, direction, "name", &writerSpy);
+    NeighborDebugWriter::writeNeighborLinkLines(para->getParH(level).get(), direction, "name", &writerSpy);
 
     EXPECT_THAT(writerSpy.nodes.size(), testing::Eq((numberOfNodes-1) * 2));
     EXPECT_THAT(writerSpy.lines.size(), testing::Eq(numberOfNodes-1));
