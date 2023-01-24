@@ -51,7 +51,7 @@ public:
       return bc;
    }
 protected:
-   LBMReal getRheologyCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho) const override
+   real getRheologyCollFactor(real omegaInf, real shearRate, real drho) const override
    {
       return Rheology::getHerschelBulkleyCollFactor(omegaInf, shearRate, drho);
    }

@@ -61,8 +61,8 @@ public:
     double getTSx3() { return sTSx3; }
     double getTSx1x3() { return sTSx1x3; }
 
-    LBMReal getNumberOfFluidsNodes();
-    LBMReal getNumberOfSolidNodes();
+    real getNumberOfFluidsNodes();
+    real getNumberOfSolidNodes();
     GbCuboid3DPtr getBoundingBox();
     std::vector<CalcNodes> getCNodes();
 

@@ -105,20 +105,20 @@ void CompressibleCumulant4thOrderViscosityLBMKernel::calculate(int step)
    int maxX2 = bcArrayMaxX2-ghostLayerWidth;
    int maxX3 = bcArrayMaxX3-ghostLayerWidth;
 
-   LBMReal omega = collFactor;
+   real omega = collFactor;
    //LBMReal OxyyPxzz  = eight*(-two+omega)*(one+two*omega)/(-eight-fourteen*omega+seven*omega*omega);//one;
    //LBMReal OxyyMxzz  = eight*(-two+omega)*(-seven+four*omega)/(fiftysix-fifty*omega+nine*omega*omega);//one;
    //LBMReal Oxyz      = twentyfour*(-two+omega)*(-two-seven*omega+three*omega*omega)/(fourtyeight+c152*omega-c130*omega*omega+twentynine*omega*omega*omega);
-   LBMReal OxyyPxzz  = 8.0*(omega-2.0)*(OxxPyyPzz*(3.0*omega-1.0)-5.0*omega)/(8.0*(5.0-2.0*omega)*omega+OxxPyyPzz*(8.0+omega*(9.0*omega-26.0)));
-   LBMReal OxyyMxzz  = 8.0*(omega-2.0)*(omega+OxxPyyPzz*(3.0*omega-7.0))/(OxxPyyPzz*(56.0-42.0*omega+9.0*omega*omega)-8.0*omega);
-   LBMReal Oxyz      = 24.0*(omega-2.0)*(4.0*omega*omega+omega*OxxPyyPzz*(18.0-13.0*omega)+OxxPyyPzz*OxxPyyPzz*(2.0+omega*(6.0*omega-11.0)))/(16.0*omega*omega*(omega-6.0)-2.0*omega*OxxPyyPzz*(216.0+5.0*omega*(9.0*omega-46.0))+OxxPyyPzz*OxxPyyPzz*(omega*(3.0*omega-10.0)*(15.0*omega-28.0)-48.0));
+   real OxyyPxzz  = 8.0*(omega-2.0)*(OxxPyyPzz*(3.0*omega-1.0)-5.0*omega)/(8.0*(5.0-2.0*omega)*omega+OxxPyyPzz*(8.0+omega*(9.0*omega-26.0)));
+   real OxyyMxzz  = 8.0*(omega-2.0)*(omega+OxxPyyPzz*(3.0*omega-7.0))/(OxxPyyPzz*(56.0-42.0*omega+9.0*omega*omega)-8.0*omega);
+   real Oxyz      = 24.0*(omega-2.0)*(4.0*omega*omega+omega*OxxPyyPzz*(18.0-13.0*omega)+OxxPyyPzz*OxxPyyPzz*(2.0+omega*(6.0*omega-11.0)))/(16.0*omega*omega*(omega-6.0)-2.0*omega*OxxPyyPzz*(216.0+5.0*omega*(9.0*omega-46.0))+OxxPyyPzz*OxxPyyPzz*(omega*(3.0*omega-10.0)*(15.0*omega-28.0)-48.0));
 
    //LBMReal A = (four + two*omega - three*omega*omega) / (two - seven*omega + five*omega*omega);
    //LBMReal B = (four + twentyeight*omega - fourteen*omega*omega) / (six - twentyone*omega + fiveteen*omega*omega);
 
-   LBMReal A = (4.0*omega*omega+2.0*omega*OxxPyyPzz*(omega-6.0)+OxxPyyPzz*OxxPyyPzz*(omega*(10.0-3.0*omega)-4.0))/((omega-OxxPyyPzz)*(OxxPyyPzz*(2.0+3.0*omega)-8.0*omega));
+   real A = (4.0*omega*omega+2.0*omega*OxxPyyPzz*(omega-6.0)+OxxPyyPzz*OxxPyyPzz*(omega*(10.0-3.0*omega)-4.0))/((omega-OxxPyyPzz)*(OxxPyyPzz*(2.0+3.0*omega)-8.0*omega));
    //FIXME:  warning C4459: declaration of 'B' hides global declaration (message : see declaration of 'D3Q27System::DIR_00M' )
-   LBMReal B = (4.0*omega*OxxPyyPzz*(9.0*omega-16.0)-4.0*omega*omega-2.0*OxxPyyPzz*OxxPyyPzz*(2.0+9.0*omega*(omega-2.0)))/(3.0*(omega-OxxPyyPzz)*(OxxPyyPzz*(2.0+3.0*omega)-8.0*omega));
+   real B = (4.0*omega*OxxPyyPzz*(9.0*omega-16.0)-4.0*omega*omega-2.0*OxxPyyPzz*OxxPyyPzz*(2.0+9.0*omega*(omega-2.0)))/(3.0*(omega-OxxPyyPzz)*(OxxPyyPzz*(2.0+3.0*omega)-8.0*omega));
 
    for (int x3 = minX3; x3 < maxX3; x3++)
    {
@@ -152,50 +152,50 @@ void CompressibleCumulant4thOrderViscosityLBMKernel::calculate(int step)
                // a b c
                //-1 0 1
 
-               LBMReal mfcbb = (*this->localDistributions)(D3Q27System::ET_E, x1, x2, x3);
-               LBMReal mfbcb = (*this->localDistributions)(D3Q27System::ET_N, x1, x2, x3);
-               LBMReal mfbbc = (*this->localDistributions)(D3Q27System::ET_T, x1, x2, x3);
-               LBMReal mfccb = (*this->localDistributions)(D3Q27System::ET_NE, x1, x2, x3);
-               LBMReal mfacb = (*this->localDistributions)(D3Q27System::ET_NW, x1p, x2, x3);
-               LBMReal mfcbc = (*this->localDistributions)(D3Q27System::ET_TE, x1, x2, x3);
-               LBMReal mfabc = (*this->localDistributions)(D3Q27System::ET_TW, x1p, x2, x3);
-               LBMReal mfbcc = (*this->localDistributions)(D3Q27System::ET_TN, x1, x2, x3);
-               LBMReal mfbac = (*this->localDistributions)(D3Q27System::ET_TS, x1, x2p, x3);
-               LBMReal mfccc = (*this->localDistributions)(D3Q27System::ET_TNE, x1, x2, x3);
-               LBMReal mfacc = (*this->localDistributions)(D3Q27System::ET_TNW, x1p, x2, x3);
-               LBMReal mfcac = (*this->localDistributions)(D3Q27System::ET_TSE, x1, x2p, x3);
-               LBMReal mfaac = (*this->localDistributions)(D3Q27System::ET_TSW, x1p, x2p, x3);
+               real mfcbb = (*this->localDistributions)(D3Q27System::ET_E, x1, x2, x3);
+               real mfbcb = (*this->localDistributions)(D3Q27System::ET_N, x1, x2, x3);
+               real mfbbc = (*this->localDistributions)(D3Q27System::ET_T, x1, x2, x3);
+               real mfccb = (*this->localDistributions)(D3Q27System::ET_NE, x1, x2, x3);
+               real mfacb = (*this->localDistributions)(D3Q27System::ET_NW, x1p, x2, x3);
+               real mfcbc = (*this->localDistributions)(D3Q27System::ET_TE, x1, x2, x3);
+               real mfabc = (*this->localDistributions)(D3Q27System::ET_TW, x1p, x2, x3);
+               real mfbcc = (*this->localDistributions)(D3Q27System::ET_TN, x1, x2, x3);
+               real mfbac = (*this->localDistributions)(D3Q27System::ET_TS, x1, x2p, x3);
+               real mfccc = (*this->localDistributions)(D3Q27System::ET_TNE, x1, x2, x3);
+               real mfacc = (*this->localDistributions)(D3Q27System::ET_TNW, x1p, x2, x3);
+               real mfcac = (*this->localDistributions)(D3Q27System::ET_TSE, x1, x2p, x3);
+               real mfaac = (*this->localDistributions)(D3Q27System::ET_TSW, x1p, x2p, x3);
 
-               LBMReal mfabb = (*this->nonLocalDistributions)(D3Q27System::ET_W, x1p, x2, x3);
-               LBMReal mfbab = (*this->nonLocalDistributions)(D3Q27System::ET_S, x1, x2p, x3);
-               LBMReal mfbba = (*this->nonLocalDistributions)(D3Q27System::ET_B, x1, x2, x3p);
-               LBMReal mfaab = (*this->nonLocalDistributions)(D3Q27System::ET_SW, x1p, x2p, x3);
-               LBMReal mfcab = (*this->nonLocalDistributions)(D3Q27System::ET_SE, x1, x2p, x3);
-               LBMReal mfaba = (*this->nonLocalDistributions)(D3Q27System::ET_BW, x1p, x2, x3p);
-               LBMReal mfcba = (*this->nonLocalDistributions)(D3Q27System::ET_BE, x1, x2, x3p);
-               LBMReal mfbaa = (*this->nonLocalDistributions)(D3Q27System::ET_BS, x1, x2p, x3p);
-               LBMReal mfbca = (*this->nonLocalDistributions)(D3Q27System::ET_BN, x1, x2, x3p);
-               LBMReal mfaaa = (*this->nonLocalDistributions)(D3Q27System::ET_BSW, x1p, x2p, x3p);
-               LBMReal mfcaa = (*this->nonLocalDistributions)(D3Q27System::ET_BSE, x1, x2p, x3p);
-               LBMReal mfaca = (*this->nonLocalDistributions)(D3Q27System::ET_BNW, x1p, x2, x3p);
-               LBMReal mfcca = (*this->nonLocalDistributions)(D3Q27System::ET_BNE, x1, x2, x3p);
+               real mfabb = (*this->nonLocalDistributions)(D3Q27System::ET_W, x1p, x2, x3);
+               real mfbab = (*this->nonLocalDistributions)(D3Q27System::ET_S, x1, x2p, x3);
+               real mfbba = (*this->nonLocalDistributions)(D3Q27System::ET_B, x1, x2, x3p);
+               real mfaab = (*this->nonLocalDistributions)(D3Q27System::ET_SW, x1p, x2p, x3);
+               real mfcab = (*this->nonLocalDistributions)(D3Q27System::ET_SE, x1, x2p, x3);
+               real mfaba = (*this->nonLocalDistributions)(D3Q27System::ET_BW, x1p, x2, x3p);
+               real mfcba = (*this->nonLocalDistributions)(D3Q27System::ET_BE, x1, x2, x3p);
+               real mfbaa = (*this->nonLocalDistributions)(D3Q27System::ET_BS, x1, x2p, x3p);
+               real mfbca = (*this->nonLocalDistributions)(D3Q27System::ET_BN, x1, x2, x3p);
+               real mfaaa = (*this->nonLocalDistributions)(D3Q27System::ET_BSW, x1p, x2p, x3p);
+               real mfcaa = (*this->nonLocalDistributions)(D3Q27System::ET_BSE, x1, x2p, x3p);
+               real mfaca = (*this->nonLocalDistributions)(D3Q27System::ET_BNW, x1p, x2, x3p);
+               real mfcca = (*this->nonLocalDistributions)(D3Q27System::ET_BNE, x1, x2, x3p);
 
-               LBMReal mfbbb = (*this->zeroDistributions)(x1, x2, x3);
+               real mfbbb = (*this->zeroDistributions)(x1, x2, x3);
 
                ////////////////////////////////////////////////////////////////////////////////////
-               LBMReal drho = ((((mfccc+mfaaa)+(mfaca+mfcac))+((mfacc+mfcaa)+(mfaac+mfcca)))+
+               real drho = ((((mfccc+mfaaa)+(mfaca+mfcac))+((mfacc+mfcaa)+(mfaac+mfcca)))+
                   (((mfbac+mfbca)+(mfbaa+mfbcc))+((mfabc+mfcba)+(mfaba+mfcbc))+((mfacb+mfcab)+(mfaab+mfccb)))+
                   ((mfabb+mfcbb)+(mfbab+mfbcb))+(mfbba+mfbbc))+mfbbb;
 
-               LBMReal rho = one+drho;
+               real rho = one+drho;
                ////////////////////////////////////////////////////////////////////////////////////
-               LBMReal vvx = ((((mfccc-mfaaa)+(mfcac-mfaca))+((mfcaa-mfacc)+(mfcca-mfaac)))+
+               real vvx = ((((mfccc-mfaaa)+(mfcac-mfaca))+((mfcaa-mfacc)+(mfcca-mfaac)))+
                   (((mfcba-mfabc)+(mfcbc-mfaba))+((mfcab-mfacb)+(mfccb-mfaab)))+
                   (mfcbb-mfabb))/rho;
-               LBMReal vvy = ((((mfccc-mfaaa)+(mfaca-mfcac))+((mfacc-mfcaa)+(mfcca-mfaac)))+
+               real vvy = ((((mfccc-mfaaa)+(mfaca-mfcac))+((mfacc-mfcaa)+(mfcca-mfaac)))+
                   (((mfbca-mfbac)+(mfbcc-mfbaa))+((mfacb-mfcab)+(mfccb-mfaab)))+
                   (mfbcb-mfbab))/rho;
-               LBMReal vvz = ((((mfccc-mfaaa)+(mfcac-mfaca))+((mfacc-mfcaa)+(mfaac-mfcca)))+
+               real vvz = ((((mfccc-mfaaa)+(mfcac-mfaca))+((mfacc-mfcaa)+(mfaac-mfcca)))+
                   (((mfbac-mfbca)+(mfbcc-mfbaa))+((mfabc-mfcba)+(mfcbc-mfaba)))+
                   (mfbbc-mfbba))/rho;
                ////////////////////////////////////////////////////////////////////////////////////
@@ -218,20 +218,20 @@ void CompressibleCumulant4thOrderViscosityLBMKernel::calculate(int step)
                }
                ///////////////////////////////////////////////////////////////////////////////////////////               
          ////////////////////////////////////////////////////////////////////////////////////
-               LBMReal oMdrho = one; // comp special
+               real oMdrho = one; // comp special
                ////////////////////////////////////////////////////////////////////////////////////
-               LBMReal m0, m1, m2;
-               LBMReal vx2;
-               LBMReal vy2;
-               LBMReal vz2;
+               real m0, m1, m2;
+               real vx2;
+               real vy2;
+               real vz2;
                vx2 = vvx*vvx;
                vy2 = vvy*vvy;
                vz2 = vvz*vvz;
                ////////////////////////////////////////////////////////////////////////////////////
-               LBMReal wadjust;
-               LBMReal qudricLimitP = 0.01;// * 0.0001f;
-               LBMReal qudricLimitM = 0.01;// * 0.0001f;
-               LBMReal qudricLimitD = 0.01;// * 0.001f;
+               real wadjust;
+               real qudricLimitP = 0.01;// * 0.0001f;
+               real qudricLimitM = 0.01;// * 0.0001f;
+               real qudricLimitD = 0.01;// * 0.001f;
                //LBMReal s9 = minusomega;
                //test
                //s9 = 0.;
@@ -505,38 +505,38 @@ void CompressibleCumulant4thOrderViscosityLBMKernel::calculate(int step)
                ////////////////////////////////////////////////////////////
                //4.
                //////////////////////////////
-               LBMReal O4 = one;
+               real O4 = one;
                //////////////////////////////
-               //LBMReal O4        = omega;//TRT
+               //real O4        = omega;//TRT
                ////////////////////////////////////////////////////////////
                //5.
                //////////////////////////////
-               LBMReal O5 = one;
+               real O5 = one;
                ////////////////////////////////////////////////////////////
                //6.
                //////////////////////////////
-               LBMReal O6 = one;
+               real O6 = one;
                ////////////////////////////////////////////////////////////
 
 
                //central moments to cumulants
                //4.
-               LBMReal CUMcbb = mfcbb-((mfcaa+c1o3) * mfabb+two * mfbba * mfbab)/rho;	//ab 15.05.2015 verwendet
-               LBMReal CUMbcb = mfbcb-((mfaca+c1o3) * mfbab+two * mfbba * mfabb)/rho; //ab 15.05.2015 verwendet
-               LBMReal CUMbbc = mfbbc-((mfaac+c1o3) * mfbba+two * mfbab * mfabb)/rho; //ab 15.05.2015 verwendet
+               real CUMcbb = mfcbb-((mfcaa+c1o3) * mfabb+two * mfbba * mfbab)/rho;	//ab 15.05.2015 verwendet
+               real CUMbcb = mfbcb-((mfaca+c1o3) * mfbab+two * mfbba * mfabb)/rho; //ab 15.05.2015 verwendet
+               real CUMbbc = mfbbc-((mfaac+c1o3) * mfbba+two * mfbab * mfabb)/rho; //ab 15.05.2015 verwendet
 
-               LBMReal CUMcca = mfcca-(((mfcaa * mfaca+two * mfbba * mfbba)+c1o3 * (mfcaa+mfaca))/rho-c1o9*(drho/rho));
-               LBMReal CUMcac = mfcac-(((mfcaa * mfaac+two * mfbab * mfbab)+c1o3 * (mfcaa+mfaac))/rho-c1o9*(drho/rho));
-               LBMReal CUMacc = mfacc-(((mfaac * mfaca+two * mfabb * mfabb)+c1o3 * (mfaac+mfaca))/rho-c1o9*(drho/rho));
+               real CUMcca = mfcca-(((mfcaa * mfaca+two * mfbba * mfbba)+c1o3 * (mfcaa+mfaca))/rho-c1o9*(drho/rho));
+               real CUMcac = mfcac-(((mfcaa * mfaac+two * mfbab * mfbab)+c1o3 * (mfcaa+mfaac))/rho-c1o9*(drho/rho));
+               real CUMacc = mfacc-(((mfaac * mfaca+two * mfabb * mfabb)+c1o3 * (mfaac+mfaca))/rho-c1o9*(drho/rho));
 
                //5.
-               LBMReal CUMbcc = mfbcc-((mfaac * mfbca+mfaca * mfbac+four * mfabb * mfbbb+two * (mfbab * mfacb+mfbba * mfabc))+c1o3 * (mfbca+mfbac))/rho;
-               LBMReal CUMcbc = mfcbc-((mfaac * mfcba+mfcaa * mfabc+four * mfbab * mfbbb+two * (mfabb * mfcab+mfbba * mfbac))+c1o3 * (mfcba+mfabc))/rho;
-               LBMReal CUMccb = mfccb-((mfcaa * mfacb+mfaca * mfcab+four * mfbba * mfbbb+two * (mfbab * mfbca+mfabb * mfcba))+c1o3 * (mfacb+mfcab))/rho;
+               real CUMbcc = mfbcc-((mfaac * mfbca+mfaca * mfbac+four * mfabb * mfbbb+two * (mfbab * mfacb+mfbba * mfabc))+c1o3 * (mfbca+mfbac))/rho;
+               real CUMcbc = mfcbc-((mfaac * mfcba+mfcaa * mfabc+four * mfbab * mfbbb+two * (mfabb * mfcab+mfbba * mfbac))+c1o3 * (mfcba+mfabc))/rho;
+               real CUMccb = mfccb-((mfcaa * mfacb+mfaca * mfcab+four * mfbba * mfbbb+two * (mfbab * mfbca+mfabb * mfcba))+c1o3 * (mfacb+mfcab))/rho;
 
                //6.
 
-               LBMReal CUMccc = mfccc+((-four *  mfbbb * mfbbb
+               real CUMccc = mfccc+((-four *  mfbbb * mfbbb
                   -(mfcaa * mfacc+mfaca * mfcac+mfaac * mfcca)
                   -four * (mfabb * mfcbb+mfbab * mfbcb+mfbba * mfbbc)
                   -two * (mfbca * mfbac+mfcba * mfabc+mfcab * mfacb))/rho
@@ -555,9 +555,9 @@ void CompressibleCumulant4thOrderViscosityLBMKernel::calculate(int step)
 
    //2.
    // linear combinations
-               LBMReal mxxPyyPzz = mfcaa+mfaca+mfaac;
-               LBMReal mxxMyy = mfcaa-mfaca;
-               LBMReal mxxMzz = mfcaa-mfaac;
+               real mxxPyyPzz = mfcaa+mfaca+mfaac;
+               real mxxMyy = mfcaa-mfaca;
+               real mxxMzz = mfcaa-mfaac;
 
                //////////////////////////////////////////////////////////////////////////
       // 			LBMReal magicBulk=(CUMacc+CUMcac+CUMcca)*(one/OxxPyyPzz-c1o2)*c3o2*8.;
@@ -597,13 +597,13 @@ void CompressibleCumulant4thOrderViscosityLBMKernel::calculate(int step)
                ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                //incl. correction		(hat noch nicht so gut funktioniert...Optimierungsbedarf??)
 
-               LBMReal dxux = c1o2 * (-omega) *(mxxMyy+mxxMzz)+c1o2 *  OxxPyyPzz * (mfaaa-mxxPyyPzz);
-               LBMReal dyuy = dxux+omega * c3o2 * mxxMyy;
-               LBMReal dzuz = dxux+omega * c3o2 * mxxMzz;
+               real dxux = c1o2 * (-omega) *(mxxMyy+mxxMzz)+c1o2 *  OxxPyyPzz * (mfaaa-mxxPyyPzz);
+               real dyuy = dxux+omega * c3o2 * mxxMyy;
+               real dzuz = dxux+omega * c3o2 * mxxMzz;
 
-               LBMReal Dxy =-three*omega*mfbba;
-               LBMReal Dxz =-three*omega*mfbab;
-               LBMReal Dyz =-three*omega*mfabb;
+               real Dxy =-three*omega*mfbba;
+               real Dxz =-three*omega*mfbab;
+               real Dyz =-three*omega*mfabb;
 
 
 
@@ -650,14 +650,14 @@ void CompressibleCumulant4thOrderViscosityLBMKernel::calculate(int step)
                //3.
                // linear combinations
 
-               LBMReal mxxyPyzz = mfcba+mfabc;
-               LBMReal mxxyMyzz = mfcba-mfabc;
+               real mxxyPyzz = mfcba+mfabc;
+               real mxxyMyzz = mfcba-mfabc;
 
-               LBMReal mxxzPyyz = mfcab+mfacb;
-               LBMReal mxxzMyyz = mfcab-mfacb;
+               real mxxzPyyz = mfcab+mfacb;
+               real mxxzMyyz = mfcab-mfacb;
 
-               LBMReal mxyyPxzz = mfbca+mfbac;
-               LBMReal mxyyMxzz = mfbca-mfbac;
+               real mxyyPxzz = mfbca+mfbac;
+               real mxyyMxzz = mfbca-mfbac;
 
                //relax
                //////////////////////////////////////////////////////////////////////////
@@ -994,11 +994,11 @@ void CompressibleCumulant4thOrderViscosityLBMKernel::calculate(int step)
                //proof correctness
                //////////////////////////////////////////////////////////////////////////
 #ifdef  PROOF_CORRECTNESS
-               LBMReal drho_post = (mfaaa+mfaac+mfaca+mfcaa+mfacc+mfcac+mfccc+mfcca)
+               real drho_post = (mfaaa+mfaac+mfaca+mfcaa+mfacc+mfcac+mfccc+mfcca)
                   +(mfaab+mfacb+mfcab+mfccb)+(mfaba+mfabc+mfcba+mfcbc)+(mfbaa+mfbac+mfbca+mfbcc)
                   +(mfabb+mfcbb)+(mfbab+mfbcb)+(mfbba+mfbbc)+mfbbb;
                //LBMReal dif = fabs(rho - rho_post);
-               LBMReal dif = drho - drho_post;
+               real dif = drho - drho_post;
 #ifdef SINGLEPRECISION
                if (dif > 10.0E-7 || dif < -10.0E-7)
 #else
@@ -1058,7 +1058,7 @@ double CompressibleCumulant4thOrderViscosityLBMKernel::getCalculationTime()
    return timer.getTotalTime();
 }
 //////////////////////////////////////////////////////////////////////////
-void CompressibleCumulant4thOrderViscosityLBMKernel::setBulkViscosity(LBMReal value)
+void CompressibleCumulant4thOrderViscosityLBMKernel::setBulkViscosity(real value)
 {
    bulkViscosity = value;
 }

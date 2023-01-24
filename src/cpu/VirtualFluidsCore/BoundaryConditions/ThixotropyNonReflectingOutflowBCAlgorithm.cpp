@@ -72,8 +72,8 @@ void ThixotropyNonReflectingOutflowBCAlgorithm::applyBC()
    using namespace vf::lbm::dir;
    using namespace D3Q27System;
 
-   LBMReal f[ENDF + 1];
-   LBMReal ftemp[ENDF + 1];
+   real f[ENDF + 1];
+   real ftemp[ENDF + 1];
 
    int nx1 = x1;
    int nx2 = x2;
@@ -92,7 +92,7 @@ void ThixotropyNonReflectingOutflowBCAlgorithm::applyBC()
    distributions->getDistribution(f, x1, x2, x3);
    distributions->getDistribution(ftemp, nx1, nx2, nx3);
 
-   LBMReal rho, vx1, vx2, vx3;
+   real rho, vx1, vx2, vx3;
    calcMacrosFct(f, rho, vx1, vx2, vx3);
 
    switch (direction)
@@ -226,8 +226,8 @@ void ThixotropyNonReflectingOutflowBCAlgorithm::applyBC()
    default:
       UB_THROW(UbException(UB_EXARGS, "It isn't implemented non reflecting density boundary for this direction!"));
    }
-   LBMReal h[D3Q27System::ENDF + 1];
-   LBMReal htemp[ENDF + 1];
+   real h[D3Q27System::ENDF + 1];
+   real htemp[ENDF + 1];
 
    distributionsH->getDistribution(h, x1, x2, x3);
    distributionsH->getDistribution(htemp, nx1, nx2, nx3);

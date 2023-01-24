@@ -127,8 +127,8 @@ void ShearStressCoProcessor::calculateShearStress(double timeStep)
     using namespace vf::lbm::dir;
     using namespace D3Q27System;
 
-    LBMReal f[27];
-    LBMReal vx, vy, vz, sxx, syy, szz, sxy, syz, sxz;
+    real f[27];
+    real vx, vy, vz, sxx, syy, szz, sxy, syz, sxz;
 
     for (SPtr<D3Q27Interactor> interactor : interactors) {
         typedef std::map<SPtr<Block3D>, std::set<std::vector<int>>> TransNodeIndicesMap;
@@ -142,7 +142,7 @@ void ShearStressCoProcessor::calculateShearStress(double timeStep)
             SPtr<ShearStressValuesArray3D> ssv      = kernel->getDataSet()->getShearStressValues();
 
             int ghostLayer     = kernel->getGhostLayerWidth();
-            LBMReal collFactor = kernel->getCollisionFactor();
+            real collFactor = kernel->getCollisionFactor();
 
             int minX1 = ghostLayer;
             int maxX1 = (int)bcArray->getNX1() - 1 - ghostLayer;
@@ -194,11 +194,11 @@ void ShearStressCoProcessor::calculateShearStress(double timeStep)
                           (((f[DIR_PPP] + f[DIR_MMM]) - (f[DIR_PMP] + f[DIR_MPM])) + ((f[DIR_PMM] + f[DIR_MPP]) - (f[DIR_MMP] + f[DIR_PPM])) +
                            (-(f[DIR_0PM] + f[DIR_0MP]) + (f[DIR_0PP] + f[DIR_0MM])) - vy * vz);
 
-                    LBMReal dxxMyy = 3.0 / 2.0 * collFactor / (collFactor - 1.0) *
+                    real dxxMyy = 3.0 / 2.0 * collFactor / (collFactor - 1.0) *
                                      (((f[DIR_P0P] + f[DIR_M0M]) + (f[DIR_P0M] + f[DIR_M0P])) - ((f[DIR_0PM] + f[DIR_0MP]) + (f[DIR_0PP] + f[DIR_0MM])) +
                                       ((f[DIR_P00] + f[DIR_M00]) - (f[DIR_0P0] + f[DIR_0M0])) - vx * vx + vy * vy);
 
-                    LBMReal dxxMzz = 3.0 / 2.0 * collFactor / (collFactor - 1.0) *
+                    real dxxMzz = 3.0 / 2.0 * collFactor / (collFactor - 1.0) *
                                      ((((f[DIR_PP0] + f[DIR_MM0]) + (f[DIR_PM0] + f[DIR_MP0])) - ((f[DIR_0PM] + f[DIR_0MP]) + (f[DIR_0PP] + f[DIR_0MM]))) +
                                       ((f[DIR_P00] + f[DIR_M00]) - (f[DIR_00P] + f[DIR_00M])) - vx * vx + vz * vz);
 
@@ -258,7 +258,7 @@ void ShearStressCoProcessor::addData()
             SPtr<ShearStressValuesArray3D> ssv      = kernel->getDataSet()->getShearStressValues();
 
             int ghostLayer     = kernel->getGhostLayerWidth();
-            LBMReal collFactor = kernel->getCollisionFactor();
+            real collFactor = kernel->getCollisionFactor();
 
             int minX1 = ghostLayer;
             int maxX1 = (int)bcArray->getNX1() - 1 - ghostLayer;
@@ -609,7 +609,7 @@ void ShearStressCoProcessor::findPlane(int ix1, int ix2, int ix3, SPtr<Grid3D> g
                         if (bcPtrIn) {
                             for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
                                 if (ii <= 2) {
-                                    LBMReal q = bcPtrIn->getQ(fdir);
+                                    real q = bcPtrIn->getQ(fdir);
                                     if (q != 999.00000) {
                                         if (fdir == DIR_P00) {
                                             // if(!bcArray->isSolid(i, j, k))continue;
@@ -857,7 +857,7 @@ void ShearStressCoProcessor::initDistance()
             SPtr<ShearStressValuesArray3D> ssv      = kernel->getDataSet()->getShearStressValues();
 
             int ghostLayer = kernel->getGhostLayerWidth();
-            //         LBMReal collFactor = kernel->getCollisionFactor();
+            //         real collFactor = kernel->getCollisionFactor();
 
             int minX1 = ghostLayer;
             int maxX1 = (int)bcArray->getNX1() - 1 - ghostLayer;

@@ -22,31 +22,31 @@ void run(string configname)
         string pathname            = config.getValue<string>("pathname");
         int numOfThreads           = config.getValue<int>("numOfThreads");
         vector<int> blocknx        = config.getVector<int>("blocknx");
-        vector<double> boundingBox = config.getVector<double>("boundingBox");
-        double uLB             = config.getValue<double>("uLB");
-        double nuL             = config.getValue<double>("nuL");
-        double nuG             = config.getValue<double>("nuG");
-        double densityRatio    = config.getValue<double>("densityRatio");
-        double sigma           = config.getValue<double>("sigma");
+        vector<real> boundingBox = config.getVector<real>("boundingBox");
+        real uLB             = config.getValue<real>("uLB");
+        real nuL             = config.getValue<real>("nuL");
+        real nuG             = config.getValue<real>("nuG");
+        real densityRatio    = config.getValue<real>("densityRatio");
+        real sigma           = config.getValue<real>("sigma");
         int interfaceThickness = config.getValue<int>("interfaceThickness");
-        double radius          = config.getValue<double>("radius");
-        double theta           = config.getValue<double>("contactAngle");
+        real radius          = config.getValue<real>("radius");
+        real theta           = config.getValue<real>("contactAngle");
         //double gr              = config.getValue<double>("gravity");
-        double phiL            = config.getValue<double>("phi_L");
-        double phiH            = config.getValue<double>("phi_H");
-        double tauH            = config.getValue<double>("Phase-field Relaxation");
-        double mob             = config.getValue<double>("Mobility");
+        real phiL            = config.getValue<real>("phi_L");
+        real phiH            = config.getValue<real>("phi_H");
+        real tauH            = config.getValue<real>("Phase-field Relaxation");
+        real mob             = config.getValue<real>("Mobility");
 
-        double endTime     = config.getValue<double>("endTime");
-        double outTime     = config.getValue<double>("outTime");
-        double availMem    = config.getValue<double>("availMem");
+        real endTime     = config.getValue<real>("endTime");
+        real outTime     = config.getValue<real>("outTime");
+        real availMem    = config.getValue<real>("availMem");
         int refineLevel    = config.getValue<int>("refineLevel");
-        double Re          = config.getValue<double>("Re");
-        double dx          = config.getValue<double>("dx");
+        real Re          = config.getValue<real>("Re");
+        real dx          = config.getValue<real>("dx");
         bool logToFile     = config.getValue<bool>("logToFile");
-        double restartStep = config.getValue<double>("restartStep");
-        double cpStart     = config.getValue<double>("cpStart");
-        double cpStep      = config.getValue<double>("cpStep");
+        real restartStep = config.getValue<real>("restartStep");
+        real cpStart     = config.getValue<real>("cpStart");
+        real cpStep      = config.getValue<real>("cpStep");
         bool newStart      = config.getValue<bool>("newStart");
         //double rStep = config.getValue<double>("rStep");
 
@@ -90,37 +90,37 @@ void run(string configname)
         //Sleep(30000);
 
         // LBMReal dLB = 0; // = length[1] / dx;
-        LBMReal rhoLB = 0.0;
-        LBMReal nuLB  = nuL; //(uLB*dLB) / Re;
+        real rhoLB = 0.0;
+        real nuLB  = nuL; //(uLB*dLB) / Re;
 
         //diameter of circular droplet
-        LBMReal D  = 2.0*radius;
+        real D  = 2.0*radius;
 
         //density retio
-        LBMReal r_rho = densityRatio;
+        real r_rho = densityRatio;
 
         //density of heavy fluid
-        LBMReal rho_h = 1.0;
+        real rho_h = 1.0;
         //density of light fluid
-        LBMReal rho_l = rho_h / r_rho;
+        real rho_l = rho_h / r_rho;
 
         //kinimatic viscosity
-        LBMReal nu_h = nuL;
+        real nu_h = nuL;
         //LBMReal nu_l = nuG;
         //#dynamic viscosity
-        LBMReal mu_h = rho_h * nu_h;
+        real mu_h = rho_h * nu_h;
         
         //gravity
-        LBMReal g_y = Re* Re* mu_h* mu_h / (rho_h * (rho_h - rho_l) * D * D * D);
+        real g_y = Re* Re* mu_h* mu_h / (rho_h * (rho_h - rho_l) * D * D * D);
         //Eotvos number
-        LBMReal Eo = 100;
+        real Eo = 100;
         //surface tension
         sigma = rho_h* g_y* D* D / Eo;
 
         //g_y = 0;
 
-        double beta  = 12.0 * sigma / interfaceThickness;
-        double kappa = 1.5 * interfaceThickness * sigma;
+        real beta  = 12.0 * sigma / interfaceThickness;
+        real kappa = 1.5 * interfaceThickness * sigma;
 
         if (myid == 0) {
                 //UBLOG(logINFO, "uLb = " << uLB);
@@ -208,13 +208,13 @@ void run(string configname)
         if (newStart) {
 
             // bounding box
-            double g_minX1 = boundingBox[0];
-            double g_minX2 = boundingBox[2];
-            double g_minX3 = boundingBox[4];
+            real g_minX1 = boundingBox[0];
+            real g_minX2 = boundingBox[2];
+            real g_minX3 = boundingBox[4];
 
-            double g_maxX1 = boundingBox[1];
-            double g_maxX2 = boundingBox[3];
-            double g_maxX3 = boundingBox[5];
+            real g_maxX1 = boundingBox[1];
+            real g_maxX2 = boundingBox[3];
+            real g_maxX3 = boundingBox[5];
 
             // geometry
             SPtr<GbObject3D> gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
@@ -227,7 +227,7 @@ void run(string configname)
             GenBlocksGridVisitor genBlocks(gridCube);
             grid->accept(genBlocks);
 
-            double dx2 = 2.0 * dx;
+            real dx2 = 2.0 * dx;
             GbCuboid3DPtr wallYmin(new GbCuboid3D(g_minX1 - dx2, g_minX2 - dx2, g_minX3 - dx2, g_maxX1 + dx2, g_minX2, g_maxX3 + dx2));
             GbSystem3D::writeGeoObject(wallYmin.get(), pathname + "/geo/wallYmin", WbWriterVtkXmlASCII::getInstance());
             GbCuboid3DPtr wallYmax(new GbCuboid3D(g_minX1 - dx2, g_maxX2, g_minX3 - dx2, g_maxX1 + dx2, g_maxX2 + dx2, g_maxX3 + dx2));
@@ -254,9 +254,9 @@ void run(string configname)
             unsigned long long numberOfNodes = numberOfBlocks * numberOfNodesPerBlock;
             unsigned long long numberOfNodesPerBlockWithGhostLayer =
                 numberOfBlocks * (blocknx[0] + ghostLayer) * (blocknx[1] + ghostLayer) * (blocknx[2] + ghostLayer);
-            double needMemAll =
-                double(numberOfNodesPerBlockWithGhostLayer * (27 * sizeof(double) + sizeof(int) + sizeof(float) * 4));
-            double needMem = needMemAll / double(comm->getNumberOfProcesses());
+            real needMemAll =
+                real(numberOfNodesPerBlockWithGhostLayer * (27 * sizeof(real) + sizeof(int) + sizeof(float) * 4));
+            real needMem = needMemAll / real(comm->getNumberOfProcesses());
 
             if (myid == 0) {
                 UBLOG(logINFO, "Number of blocks = " << numberOfBlocks);
@@ -286,9 +286,9 @@ void run(string configname)
             intHelper.setBC();
 
             // initialization of distributions
-            LBMReal x1c = 2.5 * D; // (g_maxX1 - g_minX1-1)/2; //
-            LBMReal x2c = 12.5 * D; //(g_maxX2 - g_minX2-1)/2;
-            LBMReal x3c = 1.5; //2.5 * D; //(g_maxX3 - g_minX3-1)/2;
+            real x1c = 2.5 * D; // (g_maxX1 - g_minX1-1)/2; //
+            real x2c = 12.5 * D; //(g_maxX2 - g_minX2-1)/2;
+            real x3c = 1.5; //2.5 * D; //(g_maxX3 - g_minX3-1)/2;
             //LBMReal x3c = 2.5 * D;
             mu::Parser fct1;
             fct1.SetExpr("0.5-0.5*tanh(2*(sqrt((x1-x1c)^2+(x2-x2c)^2+(x3-x3c)^2)-radius)/interfaceThickness)");
@@ -357,7 +357,7 @@ void run(string configname)
         grid->accept(setConnsVisitor);
 
         SPtr<UbScheduler> visSch(new UbScheduler(outTime));
-        double t_ast, t;
+        real t_ast, t;
         t_ast = 2;
         t = (int)(t_ast/std::sqrt(g_y/D));
         visSch->addSchedule(t,t,t); //t=2

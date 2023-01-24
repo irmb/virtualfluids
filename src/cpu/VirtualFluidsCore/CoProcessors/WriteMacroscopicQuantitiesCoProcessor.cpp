@@ -162,8 +162,8 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
     SPtr<ILBMKernel> kernel                 = block->getKernel();
     SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
     SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
-    LBMReal f[D3Q27System::ENDF + 1];
-    LBMReal vx1, vx2, vx3, rho;
+    real f[D3Q27System::ENDF + 1];
+    real vx1, vx2, vx3, rho;
 
     // knotennummerierung faengt immer bei 0 an!
     int SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;

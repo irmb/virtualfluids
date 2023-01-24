@@ -4,7 +4,7 @@
 #include "D3Q27System.h"
 #include "LBMSystem.h"
 
-SetForcingBlockVisitor::SetForcingBlockVisitor(LBMReal forcingX1, LBMReal forcingX2, LBMReal forcingX3)
+SetForcingBlockVisitor::SetForcingBlockVisitor(real forcingX1, real forcingX2, real forcingX3)
     : Block3DVisitor(0, D3Q27System::MAXLEVEL), forcingX1(forcingX1), forcingX2(forcingX2), forcingX3(forcingX3)
 {
     ftype = 0;

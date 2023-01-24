@@ -36,25 +36,25 @@
 
 D3Q27EsoTwist3DSplittedVector::D3Q27EsoTwist3DSplittedVector() = default;
 //////////////////////////////////////////////////////////////////////////
-D3Q27EsoTwist3DSplittedVector::D3Q27EsoTwist3DSplittedVector(size_t nx1, size_t nx2, size_t nx3, LBMReal value)
+D3Q27EsoTwist3DSplittedVector::D3Q27EsoTwist3DSplittedVector(size_t nx1, size_t nx2, size_t nx3, real value)
 {
     this->NX1 = nx1;
     this->NX2 = nx2;
     this->NX3 = nx3;
 
     this->localDistributions =
-        std::make_shared<CbArray4D<LBMReal, IndexerX4X3X2X1>>(13, nx1 + 1, nx2 + 1, nx3 + 1, value);
+        std::make_shared<CbArray4D<real, IndexerX4X3X2X1>>(13, nx1 + 1, nx2 + 1, nx3 + 1, value);
     this->nonLocalDistributions =
-        std::make_shared<CbArray4D<LBMReal, IndexerX4X3X2X1>>(13, nx1 + 1, nx2 + 1, nx3 + 1, value);
+        std::make_shared<CbArray4D<real, IndexerX4X3X2X1>>(13, nx1 + 1, nx2 + 1, nx3 + 1, value);
 
-    this->zeroDistributions = std::make_shared<CbArray3D<LBMReal, IndexerX3X2X1>>(nx1, nx2, nx3, value);
+    this->zeroDistributions = std::make_shared<CbArray3D<real, IndexerX3X2X1>>(nx1, nx2, nx3, value);
 }
 //////////////////////////////////////////////////////////////////////////
 D3Q27EsoTwist3DSplittedVector::~D3Q27EsoTwist3DSplittedVector() = default;
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSplittedVector::swap() { std::swap(this->localDistributions, this->nonLocalDistributions); }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27EsoTwist3DSplittedVector::getDistribution(LBMReal *const f, size_t x1, size_t x2, size_t x3)
+void D3Q27EsoTwist3DSplittedVector::getDistribution(real *const f, size_t x1, size_t x2, size_t x3)
 {
     using namespace vf::lbm::dir;
 
@@ -89,7 +89,7 @@ void D3Q27EsoTwist3DSplittedVector::getDistribution(LBMReal *const f, size_t x1,
     f[DIR_000] = (*this->zeroDistributions)(x1, x2, x3);
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27EsoTwist3DSplittedVector::setDistribution(const LBMReal *const f, size_t x1, size_t x2, size_t x3)
+void D3Q27EsoTwist3DSplittedVector::setDistribution(const real *const f, size_t x1, size_t x2, size_t x3)
 {
     using namespace vf::lbm::dir;
 
@@ -124,7 +124,7 @@ void D3Q27EsoTwist3DSplittedVector::setDistribution(const LBMReal *const f, size
     (*this->zeroDistributions)(x1, x2, x3) = f[DIR_000];
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27EsoTwist3DSplittedVector::getDistributionInv(LBMReal *const f, size_t x1, size_t x2, size_t x3)
+void D3Q27EsoTwist3DSplittedVector::getDistributionInv(real *const f, size_t x1, size_t x2, size_t x3)
 {
     using namespace vf::lbm::dir;
 
@@ -159,7 +159,7 @@ void D3Q27EsoTwist3DSplittedVector::getDistributionInv(LBMReal *const f, size_t 
     f[DIR_000] = (*this->zeroDistributions)(x1, x2, x3);
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27EsoTwist3DSplittedVector::setDistributionInv(const LBMReal *const f, size_t x1, size_t x2, size_t x3)
+void D3Q27EsoTwist3DSplittedVector::setDistributionInv(const real *const f, size_t x1, size_t x2, size_t x3)
 {
     using namespace vf::lbm::dir;
 
@@ -194,7 +194,7 @@ void D3Q27EsoTwist3DSplittedVector::setDistributionInv(const LBMReal *const f, s
     (*this->zeroDistributions)(x1, x2, x3) = f[DIR_000];
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27EsoTwist3DSplittedVector::setDistributionForDirection(const LBMReal *const f, size_t x1, size_t x2, size_t x3,
+void D3Q27EsoTwist3DSplittedVector::setDistributionForDirection(const real *const f, size_t x1, size_t x2, size_t x3,
                                                                 unsigned long int direction)
 {
     using namespace vf::lbm::dir;
@@ -255,7 +255,7 @@ void D3Q27EsoTwist3DSplittedVector::setDistributionForDirection(const LBMReal *c
         (*this->zeroDistributions)(x1, x2, x3) = f[DIR_000];
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27EsoTwist3DSplittedVector::setDistributionForDirection(LBMReal f, size_t x1, size_t x2, size_t x3,
+void D3Q27EsoTwist3DSplittedVector::setDistributionForDirection(real f, size_t x1, size_t x2, size_t x3,
                                                                 int direction)
 {
     using namespace vf::lbm::dir;
@@ -347,7 +347,7 @@ void D3Q27EsoTwist3DSplittedVector::setDistributionForDirection(LBMReal f, size_
     }
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27EsoTwist3DSplittedVector::setDistributionInvForDirection(const LBMReal *const f, size_t x1, size_t x2,
+void D3Q27EsoTwist3DSplittedVector::setDistributionInvForDirection(const real *const f, size_t x1, size_t x2,
                                                                    size_t x3, unsigned long int direction)
 {
     using namespace vf::lbm::dir;
@@ -408,7 +408,7 @@ void D3Q27EsoTwist3DSplittedVector::setDistributionInvForDirection(const LBMReal
         (*this->zeroDistributions)(x1, x2, x3) = f[DIR_000];
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27EsoTwist3DSplittedVector::setDistributionInvForDirection(LBMReal f, size_t x1, size_t x2, size_t x3,
+void D3Q27EsoTwist3DSplittedVector::setDistributionInvForDirection(real f, size_t x1, size_t x2, size_t x3,
                                                                    unsigned long int direction)
 {
     using namespace vf::lbm::dir;
@@ -500,7 +500,7 @@ void D3Q27EsoTwist3DSplittedVector::setDistributionInvForDirection(LBMReal f, si
     }
 }
 //////////////////////////////////////////////////////////////////////////
-LBMReal D3Q27EsoTwist3DSplittedVector::getDistributionForDirection(size_t x1, size_t x2, size_t x3, int direction)
+real D3Q27EsoTwist3DSplittedVector::getDistributionForDirection(size_t x1, size_t x2, size_t x3, int direction)
 {
     using namespace vf::lbm::dir;
 
@@ -564,7 +564,7 @@ LBMReal D3Q27EsoTwist3DSplittedVector::getDistributionForDirection(size_t x1, si
     }
 }
 //////////////////////////////////////////////////////////////////////////
-LBMReal D3Q27EsoTwist3DSplittedVector::getDistributionInvForDirection(size_t x1, size_t x2, size_t x3, int direction)
+real D3Q27EsoTwist3DSplittedVector::getDistributionInvForDirection(size_t x1, size_t x2, size_t x3, int direction)
 {
     using namespace vf::lbm::dir;
 
@@ -634,17 +634,17 @@ size_t D3Q27EsoTwist3DSplittedVector::getNX2() const { return NX2; }
 //////////////////////////////////////////////////////////////////////////
 size_t D3Q27EsoTwist3DSplittedVector::getNX3() const { return NX3; }
 //////////////////////////////////////////////////////////////////////////
-CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr D3Q27EsoTwist3DSplittedVector::getLocalDistributions()
+CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr D3Q27EsoTwist3DSplittedVector::getLocalDistributions()
 {
     return this->localDistributions;
 }
 //////////////////////////////////////////////////////////////////////////
-CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr D3Q27EsoTwist3DSplittedVector::getNonLocalDistributions()
+CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr D3Q27EsoTwist3DSplittedVector::getNonLocalDistributions()
 {
     return this->nonLocalDistributions;
 }
 //////////////////////////////////////////////////////////////////////////
-CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr D3Q27EsoTwist3DSplittedVector::getZeroDistributions()
+CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr D3Q27EsoTwist3DSplittedVector::getZeroDistributions()
 {
     return this->zeroDistributions;
 }
@@ -655,17 +655,17 @@ void D3Q27EsoTwist3DSplittedVector::setNX2(size_t newNX2) { NX2 = newNX2; }
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSplittedVector::setNX3(size_t newNX3) { NX3 = newNX3; }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27EsoTwist3DSplittedVector::setLocalDistributions(CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr array)
+void D3Q27EsoTwist3DSplittedVector::setLocalDistributions(CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr array)
 {
     localDistributions = array;
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27EsoTwist3DSplittedVector::setNonLocalDistributions(CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr array)
+void D3Q27EsoTwist3DSplittedVector::setNonLocalDistributions(CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr array)
 {
     nonLocalDistributions = array;
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27EsoTwist3DSplittedVector::setZeroDistributions(CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr array)
+void D3Q27EsoTwist3DSplittedVector::setZeroDistributions(CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr array)
 {
     zeroDistributions = array;
 }

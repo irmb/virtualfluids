@@ -60,17 +60,17 @@ void SimpleSlipBCAlgorithm::applyBC()
 {
     using namespace vf::lbm::dir;
 
-   LBMReal f[D3Q27System::ENDF+1];
-   LBMReal feq[D3Q27System::ENDF+1];
+   real f[D3Q27System::ENDF+1];
+   real feq[D3Q27System::ENDF+1];
    distributions->getDistributionInv(f, x1, x2, x3);
-   LBMReal vx1, vx2, vx3, drho, rho;
+   real vx1, vx2, vx3, drho, rho;
    calcMacrosFct(f, drho, vx1, vx2, vx3);
    calcFeqFct(feq, drho, vx1, vx2, vx3);
 
    rho = 1.0 + drho * compressibleFactor;
 
    UbTupleFloat3 normale = bcPtr->getNormalVector();
-   LBMReal amp = vx1*val<1>(normale)+vx2*val<2>(normale)+vx3*val<3>(normale);
+   real amp = vx1*val<1>(normale)+vx2*val<2>(normale)+vx3*val<3>(normale);
 
    vx1 = vx1 - amp * val<1>(normale); //normale zeigt von struktur weg!
    vx2 = vx2 - amp * val<2>(normale); //normale zeigt von struktur weg!
@@ -82,7 +82,7 @@ void SimpleSlipBCAlgorithm::applyBC()
       {
          //quadratic bounce back
          const int invDir = D3Q27System::INVDIR[fdir];
-         LBMReal velocity = 0.0;
+         real velocity = 0.0;
          switch (invDir)
          {
          case DIR_P00: velocity = (UbMath::c4o9*(+vx1)); break;      //(2/cs^2)(=6)*rho_0(=1 bei imkompr)*wi*u*ei mit cs=1/sqrt(3)
@@ -113,7 +113,7 @@ void SimpleSlipBCAlgorithm::applyBC()
          case DIR_MPP: velocity = (UbMath::c1o36*(-vx1+vx2+vx3)); break;
          default: throw UbException(UB_EXARGS, "unknown error");
          }
-         LBMReal fReturn = f[invDir] - velocity * rho;
+         real fReturn = f[invDir] - velocity * rho;
          distributions->setDistributionForDirection(fReturn, x1+D3Q27System::DX1[invDir], x2+D3Q27System::DX2[invDir], x3+D3Q27System::DX3[invDir], fdir);
       }
    }

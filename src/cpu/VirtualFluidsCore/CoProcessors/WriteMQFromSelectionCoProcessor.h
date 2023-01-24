@@ -50,7 +50,7 @@ private:
     std::shared_ptr<vf::mpi::Communicator> comm;
     SPtr<GbObject3D> gbObject;
 
-    using CalcMacrosFct = void (*)(const LBMReal *const &, LBMReal &, LBMReal &, LBMReal &, LBMReal &);
+    using CalcMacrosFct = void (*)(const real *const &, real &, real &, real &, real &);
     CalcMacrosFct calcMacros;
 };
 

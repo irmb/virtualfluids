@@ -6,7 +6,7 @@
 
 namespace vf::lbm::dir
 {
-
+    //real, double und float auf real
 static constexpr int STARTDIR = 0;
 static constexpr int ENDDIR   = 26;
 

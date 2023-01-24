@@ -172,20 +172,20 @@ void IntegrateValuesHelper::calculateAV()
 //////////////////////////////////////////////////////////////////////////
 void IntegrateValuesHelper::calculateMQ()
 {
-    LBMReal f[D3Q27System::ENDF + 1];
-    LBMReal vx1, vx2, vx3, rho;
+    real f[D3Q27System::ENDF + 1];
+    real vx1, vx2, vx3, rho;
     clearData();
 
     // Funktionszeiger
-    typedef void (*CalcMacrosFct)(const LBMReal *const & /*feq[27]*/, LBMReal & /*(d)rho*/, LBMReal & /*vx1*/,
-                                  LBMReal & /*vx2*/, LBMReal & /*vx3*/);
+    typedef void (*CalcMacrosFct)(const real *const & /*feq[27]*/, real & /*(d)rho*/, real & /*vx1*/,
+                                  real & /*vx2*/, real & /*vx3*/);
 
     CalcMacrosFct calcMacros = NULL;
 
     for (CalcNodes cn : cnodes) {
         SPtr<ILBMKernel> kernel = cn.block->getKernel();
-        LBMReal dx              = 1.0 / (LBMReal)(1 << cn.block->getLevel());
-        LBMReal cellVolume      = dx * dx * dx;
+        real dx              = 1.0 / (real)(1 << cn.block->getLevel());
+        real cellVolume      = dx * dx * dx;
 
         if (kernel->getCompressible()) {
             calcMacros = &D3Q27System::calcCompMacroscopicValues;
@@ -247,9 +247,9 @@ void IntegrateValuesHelper::clearData()
     sTSx1x3 = 0.0;
 }
 //////////////////////////////////////////////////////////////////////////
-LBMReal IntegrateValuesHelper::getNumberOfFluidsNodes() { return this->numberOfFluidsNodes; }
+real IntegrateValuesHelper::getNumberOfFluidsNodes() { return this->numberOfFluidsNodes; }
 //////////////////////////////////////////////////////////////////////////
-LBMReal IntegrateValuesHelper::getNumberOfSolidNodes() { return this->numberOfSolidNodes; }
+real IntegrateValuesHelper::getNumberOfSolidNodes() { return this->numberOfSolidNodes; }
 //////////////////////////////////////////////////////////////////////////
 GbCuboid3DPtr IntegrateValuesHelper::getBoundingBox() { return this->boundingBox; }
 //////////////////////////////////////////////////////////////////////////

@@ -59,7 +59,7 @@ public:
     virtual void setCollisionFactor(double collFactor)                               = 0;
     virtual bool isInsideOfDomain(const int &x1, const int &x2, const int &x3) const = 0;
     virtual int getGhostLayerWidth() const                                           = 0;
-    virtual LBMReal getDeltaT() const                                                = 0;
+    virtual real getDeltaT() const                                                = 0;
     virtual bool getWithForcing() const                                              = 0;
 };
 

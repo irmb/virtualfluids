@@ -31,9 +31,9 @@ protected:
     inline void distributeData(vector_type &rdata, int &index, int x1, int x2, int x3) override;
 
 private:
-    CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions;
-    CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions;
-    CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr zeroDistributions;
+    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributions;
+    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions;
+    CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributions;
 
     SPtr<EsoTwist3D> fDis;
 };

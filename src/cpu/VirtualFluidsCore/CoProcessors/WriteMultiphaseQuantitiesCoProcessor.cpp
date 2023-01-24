@@ -175,15 +175,15 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
     SPtr<PressureFieldArray3D> pressure;
     if (kernel->getDataSet()->getPressureField()) pressure = kernel->getDataSet()->getPressureField();
 
-    LBMReal f[D3Q27System::ENDF + 1];
-    LBMReal phi[D3Q27System::ENDF + 1];
-    LBMReal phi2[D3Q27System::ENDF + 1];
-    LBMReal vx1, vx2, vx3, rho, p1, beta, kappa;
-    LBMReal densityRatio = kernel->getDensityRatio();
+    real f[D3Q27System::ENDF + 1];
+    real phi[D3Q27System::ENDF + 1];
+    real phi2[D3Q27System::ENDF + 1];
+    real vx1, vx2, vx3, rho, p1, beta, kappa;
+    real densityRatio = kernel->getDensityRatio();
 
     kernel->getMultiphaseModelParameters(beta, kappa);
-    LBMReal phiL = kernel->getPhiL();
-    LBMReal phiH = kernel->getPhiH();
+    real phiL = kernel->getPhiL();
+    real phiH = kernel->getPhiH();
 
     // knotennummerierung faengt immer bei 0 an!
     int SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;
@@ -219,10 +219,10 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 
     // nummern vergeben und node vector erstellen + daten sammeln
     CbArray3D<int> nodeNumbers((int)maxX1, (int)maxX2, (int)maxX3, -1);
-    CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr phaseField(
-        new CbArray3D<LBMReal, IndexerX3X2X1>(maxX1, maxX2, maxX3, -999.0));
-    CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr phaseField2(
-        new CbArray3D<LBMReal, IndexerX3X2X1>(maxX1, maxX2, maxX3, -999.0));
+    CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr phaseField(
+        new CbArray3D<real, IndexerX3X2X1>(maxX1, maxX2, maxX3, -999.0));
+    CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr phaseField2(
+        new CbArray3D<real, IndexerX3X2X1>(maxX1, maxX2, maxX3, -999.0));
 
     for (int ix3 = minX3; ix3 < maxX3; ix3++) {
         for (int ix2 = minX2; ix2 < maxX2; ix2++) {
@@ -263,10 +263,10 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
     }
 
     int nr = (int)nodes.size();
-    LBMReal dX1_phi;
-    LBMReal dX2_phi;
-    LBMReal dX3_phi;
-    LBMReal mu;
+    real dX1_phi;
+    real dX2_phi;
+    real dX3_phi;
+    real mu;
 
     for (int ix3 = minX3; ix3 <= maxX3; ix3++) {
         for (int ix2 = minX2; ix2 <= maxX2; ix2++) {
@@ -355,12 +355,12 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
                     }
 
                     distributionsF->getDistribution(f, ix1, ix2, ix3);
-                    //LBMReal dU = (*divU)(ix1, ix2, ix3);
+                    //real dU = (*divU)(ix1, ix2, ix3);
 
-                    LBMReal rhoH = 1.0;
-                    LBMReal rhoL = 1.0 / densityRatio;
+                    real rhoH = 1.0;
+                    real rhoL = 1.0 / densityRatio;
                     // LBMReal rhoToPhi = (1.0 - 1.0/densityRatio);
-                    LBMReal rhoToPhi = (rhoH - rhoL) / (phiH - phiL);
+                    real rhoToPhi = (rhoH - rhoL) / (phiH - phiL);
 
                     // rho = phi[ZERO] + (1.0 - phi[ZERO])*1.0/densityRatio;
                     rho = rhoH + rhoToPhi * (phi[DIR_000] - phiH);
@@ -473,41 +473,41 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
     }
 }
 
-LBMReal WriteMultiphaseQuantitiesCoProcessor::gradX1_phi(const LBMReal *const &h)
+real WriteMultiphaseQuantitiesCoProcessor::gradX1_phi(const real *const &h)
 {
     using namespace D3Q27System;
-    LBMReal sum = 0.0;
+    real sum = 0.0;
     for (int k = FSTARTDIR; k <= FENDDIR; k++) {
         sum += WEIGTH[k] * DX1[k] * h[k];
     }
     return 3.0 * sum;
 }
-LBMReal WriteMultiphaseQuantitiesCoProcessor::gradX2_phi(const LBMReal *const &h)
+real WriteMultiphaseQuantitiesCoProcessor::gradX2_phi(const real *const &h)
 {
     using namespace D3Q27System;
-    LBMReal sum = 0.0;
+    real sum = 0.0;
     for (int k = FSTARTDIR; k <= FENDDIR; k++) {
         sum += WEIGTH[k] * DX2[k] * h[k];
     }
     return 3.0 * sum;
 }
 
-LBMReal WriteMultiphaseQuantitiesCoProcessor::gradX3_phi(const LBMReal *const &h)
+real WriteMultiphaseQuantitiesCoProcessor::gradX3_phi(const real *const &h)
 {
     using namespace D3Q27System;
-    LBMReal sum = 0.0;
+    real sum = 0.0;
     for (int k = FSTARTDIR; k <= FENDDIR; k++) {
         sum += WEIGTH[k] * DX3[k] * h[k];
     }
     return 3.0 * sum;
 }
 
-LBMReal WriteMultiphaseQuantitiesCoProcessor::nabla2_phi(const LBMReal *const &h)
+real WriteMultiphaseQuantitiesCoProcessor::nabla2_phi(const real *const &h)
 {
     using namespace vf::lbm::dir;
 
     using namespace D3Q27System;
-    LBMReal sum = 0.0;
+    real sum = 0.0;
     for (int k = FSTARTDIR; k <= FENDDIR; k++) {
         sum += WEIGTH[k] * (h[k] - h[DIR_000]);
     }

@@ -11,13 +11,13 @@ class InterpolationHelper
 public:
     InterpolationHelper(InterpolationProcessorPtr iProcessor);
     ~InterpolationHelper();
-    void interpolate8to1(D3Q27ICell &icellF, LBMReal *icellC, double x1, double x2, double x3, LBMReal omega);
-    void interpolate8to1WithVelocity(D3Q27ICell &icellF, double x1, double x2, double x3, LBMReal omega, LBMReal &vx1,
-                                     LBMReal &vx2, LBMReal &vx3);
-    void interpolate8to1WithVelocityWithShearStress(D3Q27ICell &icellF, double x1, double x2, double x3, LBMReal omega,
-                                                    LBMReal &vx1, LBMReal &vx2, LBMReal &vx3, LBMReal &tauxx,
-                                                    LBMReal &tauyy, LBMReal &tauzz, LBMReal &tauxy, LBMReal &tauxz,
-                                                    LBMReal &tauyz);
+    void interpolate8to1(D3Q27ICell &icellF, real *icellC, double x1, double x2, double x3, real omega);
+    void interpolate8to1WithVelocity(D3Q27ICell &icellF, double x1, double x2, double x3, real omega, real &vx1,
+                                     real &vx2, real &vx3);
+    void interpolate8to1WithVelocityWithShearStress(D3Q27ICell &icellF, double x1, double x2, double x3, real omega,
+                                                    real &vx1, real &vx2, real &vx3, real &tauxx,
+                                                    real &tauyy, real &tauzz, real &tauxy, real &tauxz,
+                                                    real &tauyz);
 
 protected:
 private:

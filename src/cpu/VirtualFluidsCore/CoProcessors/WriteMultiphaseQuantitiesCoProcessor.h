@@ -92,12 +92,12 @@ private:
     int gridRank;
     std::shared_ptr<vf::mpi::Communicator> comm;
 
-    LBMReal gradX1_phi(const LBMReal *const &);
-    LBMReal gradX2_phi(const LBMReal *const &);
-    LBMReal gradX3_phi(const LBMReal *const &);
-    LBMReal nabla2_phi(const LBMReal *const &);
+    real gradX1_phi(const real *const &);
+    real gradX2_phi(const real *const &);
+    real gradX3_phi(const real *const &);
+    real nabla2_phi(const real *const &);
 
-    using CalcMacrosFct = void (*)(const LBMReal *const &, LBMReal &, LBMReal &, LBMReal &, LBMReal &);
+    using CalcMacrosFct = void (*)(const real *const &, real &, real &, real &, real &);
     CalcMacrosFct calcMacros;
 };
 

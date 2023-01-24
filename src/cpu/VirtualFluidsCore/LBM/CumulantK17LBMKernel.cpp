@@ -127,7 +127,7 @@ void CumulantK17LBMKernel::calculate(int step)
     int maxX2 = bcArrayMaxX2 - ghostLayerWidth;
     int maxX3 = bcArrayMaxX3 - ghostLayerWidth;
 
-    LBMReal omega = collFactor;
+    real omega = collFactor;
 
     for (int x3 = minX3; x3 < maxX3; x3++)
     {
@@ -164,54 +164,54 @@ void CumulantK17LBMKernel::calculate(int step)
                     // a b c
                     //-1 0 1
 
-                    LBMReal mfcbb = (*this->localDistributions)(D3Q27System::ET_E, x1, x2, x3);
-                    LBMReal mfbcb = (*this->localDistributions)(D3Q27System::ET_N, x1, x2, x3);
-                    LBMReal mfbbc = (*this->localDistributions)(D3Q27System::ET_T, x1, x2, x3);
-                    LBMReal mfccb = (*this->localDistributions)(D3Q27System::ET_NE, x1, x2, x3);
-                    LBMReal mfacb = (*this->localDistributions)(D3Q27System::ET_NW, x1p, x2, x3);
-                    LBMReal mfcbc = (*this->localDistributions)(D3Q27System::ET_TE, x1, x2, x3);
-                    LBMReal mfabc = (*this->localDistributions)(D3Q27System::ET_TW, x1p, x2, x3);
-                    LBMReal mfbcc = (*this->localDistributions)(D3Q27System::ET_TN, x1, x2, x3);
-                    LBMReal mfbac = (*this->localDistributions)(D3Q27System::ET_TS, x1, x2p, x3);
-                    LBMReal mfccc = (*this->localDistributions)(D3Q27System::ET_TNE, x1, x2, x3);
-                    LBMReal mfacc = (*this->localDistributions)(D3Q27System::ET_TNW, x1p, x2, x3);
-                    LBMReal mfcac = (*this->localDistributions)(D3Q27System::ET_TSE, x1, x2p, x3);
-                    LBMReal mfaac = (*this->localDistributions)(D3Q27System::ET_TSW, x1p, x2p, x3);
+                    real mfcbb = (*this->localDistributions)(D3Q27System::ET_E, x1, x2, x3);
+                    real mfbcb = (*this->localDistributions)(D3Q27System::ET_N, x1, x2, x3);
+                    real mfbbc = (*this->localDistributions)(D3Q27System::ET_T, x1, x2, x3);
+                    real mfccb = (*this->localDistributions)(D3Q27System::ET_NE, x1, x2, x3);
+                    real mfacb = (*this->localDistributions)(D3Q27System::ET_NW, x1p, x2, x3);
+                    real mfcbc = (*this->localDistributions)(D3Q27System::ET_TE, x1, x2, x3);
+                    real mfabc = (*this->localDistributions)(D3Q27System::ET_TW, x1p, x2, x3);
+                    real mfbcc = (*this->localDistributions)(D3Q27System::ET_TN, x1, x2, x3);
+                    real mfbac = (*this->localDistributions)(D3Q27System::ET_TS, x1, x2p, x3);
+                    real mfccc = (*this->localDistributions)(D3Q27System::ET_TNE, x1, x2, x3);
+                    real mfacc = (*this->localDistributions)(D3Q27System::ET_TNW, x1p, x2, x3);
+                    real mfcac = (*this->localDistributions)(D3Q27System::ET_TSE, x1, x2p, x3);
+                    real mfaac = (*this->localDistributions)(D3Q27System::ET_TSW, x1p, x2p, x3);
 
-                    LBMReal mfabb = (*this->nonLocalDistributions)(D3Q27System::ET_W, x1p, x2, x3);
-                    LBMReal mfbab = (*this->nonLocalDistributions)(D3Q27System::ET_S, x1, x2p, x3);
-                    LBMReal mfbba = (*this->nonLocalDistributions)(D3Q27System::ET_B, x1, x2, x3p);
-                    LBMReal mfaab = (*this->nonLocalDistributions)(D3Q27System::ET_SW, x1p, x2p, x3);
-                    LBMReal mfcab = (*this->nonLocalDistributions)(D3Q27System::ET_SE, x1, x2p, x3);
-                    LBMReal mfaba = (*this->nonLocalDistributions)(D3Q27System::ET_BW, x1p, x2, x3p);
-                    LBMReal mfcba = (*this->nonLocalDistributions)(D3Q27System::ET_BE, x1, x2, x3p);
-                    LBMReal mfbaa = (*this->nonLocalDistributions)(D3Q27System::ET_BS, x1, x2p, x3p);
-                    LBMReal mfbca = (*this->nonLocalDistributions)(D3Q27System::ET_BN, x1, x2, x3p);
-                    LBMReal mfaaa = (*this->nonLocalDistributions)(D3Q27System::ET_BSW, x1p, x2p, x3p);
-                    LBMReal mfcaa = (*this->nonLocalDistributions)(D3Q27System::ET_BSE, x1, x2p, x3p);
-                    LBMReal mfaca = (*this->nonLocalDistributions)(D3Q27System::ET_BNW, x1p, x2, x3p);
-                    LBMReal mfcca = (*this->nonLocalDistributions)(D3Q27System::ET_BNE, x1, x2, x3p);
+                    real mfabb = (*this->nonLocalDistributions)(D3Q27System::ET_W, x1p, x2, x3);
+                    real mfbab = (*this->nonLocalDistributions)(D3Q27System::ET_S, x1, x2p, x3);
+                    real mfbba = (*this->nonLocalDistributions)(D3Q27System::ET_B, x1, x2, x3p);
+                    real mfaab = (*this->nonLocalDistributions)(D3Q27System::ET_SW, x1p, x2p, x3);
+                    real mfcab = (*this->nonLocalDistributions)(D3Q27System::ET_SE, x1, x2p, x3);
+                    real mfaba = (*this->nonLocalDistributions)(D3Q27System::ET_BW, x1p, x2, x3p);
+                    real mfcba = (*this->nonLocalDistributions)(D3Q27System::ET_BE, x1, x2, x3p);
+                    real mfbaa = (*this->nonLocalDistributions)(D3Q27System::ET_BS, x1, x2p, x3p);
+                    real mfbca = (*this->nonLocalDistributions)(D3Q27System::ET_BN, x1, x2, x3p);
+                    real mfaaa = (*this->nonLocalDistributions)(D3Q27System::ET_BSW, x1p, x2p, x3p);
+                    real mfcaa = (*this->nonLocalDistributions)(D3Q27System::ET_BSE, x1, x2p, x3p);
+                    real mfaca = (*this->nonLocalDistributions)(D3Q27System::ET_BNW, x1p, x2, x3p);
+                    real mfcca = (*this->nonLocalDistributions)(D3Q27System::ET_BNE, x1, x2, x3p);
 
-                    LBMReal mfbbb = (*this->restDistributions)(x1, x2, x3);
+                    real mfbbb = (*this->restDistributions)(x1, x2, x3);
 
                     ////////////////////////////////////////////////////////////////////////////////////
                     //! - Calculate density and velocity using pyramid summation for low round-off errors as in Eq. (J1)-(J3)
                     //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015), DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
                     //!
-                    LBMReal drho = ((((mfccc + mfaaa) + (mfaca + mfcac)) + ((mfacc + mfcaa) + (mfaac + mfcca))) +
+                    real drho = ((((mfccc + mfaaa) + (mfaca + mfcac)) + ((mfacc + mfcaa) + (mfaac + mfcca))) +
                                     (((mfbac + mfbca) + (mfbaa + mfbcc)) + ((mfabc + mfcba) + (mfaba + mfcbc)) + ((mfacb + mfcab) + (mfaab + mfccb))) +
                                     ((mfabb + mfcbb) + (mfbab + mfbcb)) + (mfbba + mfbbc)) + mfbbb;
 
-                    LBMReal rho = c1 + drho;
-                    LBMReal OOrho = c1 / rho;
+                    real rho = c1 + drho;
+                    real OOrho = c1 / rho;
                     ////////////////////////////////////////////////////////////////////////////////////
-                    LBMReal vvx = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
+                    real vvx = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
                                    (((mfcba - mfabc) + (mfcbc - mfaba)) + ((mfcab - mfacb) + (mfccb - mfaab))) +
                                    (mfcbb - mfabb)) / rho;
-                    LBMReal vvy = ((((mfccc - mfaaa) + (mfaca - mfcac)) + ((mfacc - mfcaa) + (mfcca - mfaac))) +
+                    real vvy = ((((mfccc - mfaaa) + (mfaca - mfcac)) + ((mfacc - mfcaa) + (mfcca - mfaac))) +
                                    (((mfbca - mfbac) + (mfbcc - mfbaa)) + ((mfacb - mfcab) + (mfccb - mfaab))) +
                                    (mfbcb - mfbab)) / rho;
-                    LBMReal vvz = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfacc - mfcaa) + (mfaac - mfcca))) +
+                    real vvz = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfacc - mfcaa) + (mfaac - mfcca))) +
                                    (((mfbac - mfbca) + (mfbcc - mfbaa)) + ((mfabc - mfcba) + (mfcbc - mfaba))) +
                                    (mfbbc - mfbba)) / rho;
                     ////////////////////////////////////////////////////////////////////////////////////
@@ -237,17 +237,17 @@ void CumulantK17LBMKernel::calculate(int step)
                     }
                     ////////////////////////////////////////////////////////////////////////////////////
                     // calculate the square of velocities for this lattice node
-                    LBMReal vx2 = vvx * vvx;
-                    LBMReal vy2 = vvy * vvy;
-                    LBMReal vz2 = vvz * vvz;
+                    real vx2 = vvx * vvx;
+                    real vy2 = vvy * vvy;
+                    real vz2 = vvz * vvz;
                     ////////////////////////////////////////////////////////////////////////////////////
                     //! - Set relaxation limiters for third order cumulants to default value \f$ \lambda=0.001 \f$ according to section 6 in
                     //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05.040 ]</b></a>
                     //!
-                    LBMReal wadjust;
-                    LBMReal qudricLimitP = c1o100;
-                    LBMReal qudricLimitM = c1o100;
-                    LBMReal qudricLimitD = c1o100;
+                    real wadjust;
+                    real qudricLimitP = c1o100;
+                    real qudricLimitM = c1o100;
+                    real qudricLimitD = c1o100;
                     ////////////////////////////////////////////////////////////////////////////////////
                     //! - Chimera transform from well conditioned distributions to central moments as defined in Appendix J in
                     //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015), DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
@@ -304,29 +304,29 @@ void CumulantK17LBMKernel::calculate(int step)
                     //!
                     ////////////////////////////////////////////////////////////
                     //2.
-                    LBMReal OxxPyyPzz = c1;
+                    real OxxPyyPzz = c1;
                     ////////////////////////////////////////////////////////////
                     //3.
-                    LBMReal OxyyPxzz = c8  * (-c2 + omega) * ( c1 + c2*omega) / (-c8 - c14*omega + c7*omega*omega);
-                    LBMReal OxyyMxzz = c8  * (-c2 + omega) * (-c7 + c4*omega) / (c56 - c50*omega + c9*omega*omega);
-                    LBMReal Oxyz     = c24 * (-c2 + omega) * (-c2 - c7*omega + c3*omega*omega) / (c48 + c152*omega - c130*omega*omega + c29*omega*omega*omega);
+                    real OxyyPxzz = c8  * (-c2 + omega) * ( c1 + c2*omega) / (-c8 - c14*omega + c7*omega*omega);
+                    real OxyyMxzz = c8  * (-c2 + omega) * (-c7 + c4*omega) / (c56 - c50*omega + c9*omega*omega);
+                    real Oxyz     = c24 * (-c2 + omega) * (-c2 - c7*omega + c3*omega*omega) / (c48 + c152*omega - c130*omega*omega + c29*omega*omega*omega);
                     ////////////////////////////////////////////////////////////
                     //4.
-                    LBMReal O4 = c1;
+                    real O4 = c1;
                     ////////////////////////////////////////////////////////////
                     //5.
-                    LBMReal O5 = c1;
+                    real O5 = c1;
                     ////////////////////////////////////////////////////////////
                     //6.
-                    LBMReal O6 = c1;
+                    real O6 = c1;
 
                     ////////////////////////////////////////////////////////////////////////////////////
                     //! - A and B: parameters for fourth order convergence of the diffusion term according to Eq. (115) and (116)
                     //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05.040 ]</b></a>
                     //! with simplifications assuming \f$\omega_2 = 1.0\f$ (modify for different bulk viscosity).
                     //!
-                    LBMReal A = (c4 + c2*omega - c3*omega*omega) / (c2 - c7*omega + c5*omega*omega);
-                    LBMReal B = (c4 + c28*omega - c14*omega*omega) / (c6 - c21*omega + c15*omega*omega);
+                    real A = (c4 + c2*omega - c3*omega*omega) / (c2 - c7*omega + c5*omega*omega);
+                    real B = (c4 + c28*omega - c14*omega*omega) / (c6 - c21*omega + c15*omega*omega);
 
                     ////////////////////////////////////////////////////////////////////////////////////
                     //! - Compute cumulants from central moments according to Eq. (20)-(23) in
@@ -334,21 +334,21 @@ void CumulantK17LBMKernel::calculate(int step)
                     //!
                     ////////////////////////////////////////////////////////////
                     //4.
-                    LBMReal CUMcbb = mfcbb - ((mfcaa + c1o3) * mfabb + c2 * mfbba * mfbab) * OOrho;
-                    LBMReal CUMbcb = mfbcb - ((mfaca + c1o3) * mfbab + c2 * mfbba * mfabb) * OOrho;
-                    LBMReal CUMbbc = mfbbc - ((mfaac + c1o3) * mfbba + c2 * mfbab * mfabb) * OOrho;
+                    real CUMcbb = mfcbb - ((mfcaa + c1o3) * mfabb + c2 * mfbba * mfbab) * OOrho;
+                    real CUMbcb = mfbcb - ((mfaca + c1o3) * mfbab + c2 * mfbba * mfabb) * OOrho;
+                    real CUMbbc = mfbbc - ((mfaac + c1o3) * mfbba + c2 * mfbab * mfabb) * OOrho;
 
-                    LBMReal CUMcca = mfcca - (((mfcaa * mfaca + c2 * mfbba * mfbba) + c1o3 * (mfcaa + mfaca)) * OOrho - c1o9 * (drho * OOrho));
-                    LBMReal CUMcac = mfcac - (((mfcaa * mfaac + c2 * mfbab * mfbab) + c1o3 * (mfcaa + mfaac)) * OOrho - c1o9 * (drho * OOrho));
-                    LBMReal CUMacc = mfacc - (((mfaac * mfaca + c2 * mfabb * mfabb) + c1o3 * (mfaac + mfaca)) * OOrho - c1o9 * (drho * OOrho));
+                    real CUMcca = mfcca - (((mfcaa * mfaca + c2 * mfbba * mfbba) + c1o3 * (mfcaa + mfaca)) * OOrho - c1o9 * (drho * OOrho));
+                    real CUMcac = mfcac - (((mfcaa * mfaac + c2 * mfbab * mfbab) + c1o3 * (mfcaa + mfaac)) * OOrho - c1o9 * (drho * OOrho));
+                    real CUMacc = mfacc - (((mfaac * mfaca + c2 * mfabb * mfabb) + c1o3 * (mfaac + mfaca)) * OOrho - c1o9 * (drho * OOrho));
                     ////////////////////////////////////////////////////////////
                     //5.
-                    LBMReal CUMbcc = mfbcc - ((mfaac * mfbca + mfaca * mfbac + c4 * mfabb * mfbbb + c2 * (mfbab * mfacb + mfbba * mfabc)) + c1o3 * (mfbca + mfbac)) * OOrho;
-                    LBMReal CUMcbc = mfcbc - ((mfaac * mfcba + mfcaa * mfabc + c4 * mfbab * mfbbb + c2 * (mfabb * mfcab + mfbba * mfbac)) + c1o3 * (mfcba + mfabc)) * OOrho;
-                    LBMReal CUMccb = mfccb - ((mfcaa * mfacb + mfaca * mfcab + c4 * mfbba * mfbbb + c2 * (mfbab * mfbca + mfabb * mfcba)) + c1o3 * (mfacb + mfcab)) * OOrho;
+                    real CUMbcc = mfbcc - ((mfaac * mfbca + mfaca * mfbac + c4 * mfabb * mfbbb + c2 * (mfbab * mfacb + mfbba * mfabc)) + c1o3 * (mfbca + mfbac)) * OOrho;
+                    real CUMcbc = mfcbc - ((mfaac * mfcba + mfcaa * mfabc + c4 * mfbab * mfbbb + c2 * (mfabb * mfcab + mfbba * mfbac)) + c1o3 * (mfcba + mfabc)) * OOrho;
+                    real CUMccb = mfccb - ((mfcaa * mfacb + mfaca * mfcab + c4 * mfbba * mfbbb + c2 * (mfbab * mfbca + mfabb * mfcba)) + c1o3 * (mfacb + mfcab)) * OOrho;
                     ////////////////////////////////////////////////////////////
                     //6.
-                    LBMReal CUMccc = mfccc + ((-c4 * mfbbb * mfbbb
+                    real CUMccc = mfccc + ((-c4 * mfbbb * mfbbb
                                                - (mfcaa * mfacc + mfaca * mfcac + mfaac * mfcca)
                                                - c4 * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
                                                - c2 * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb)) * OOrho
@@ -366,19 +366,19 @@ void CumulantK17LBMKernel::calculate(int step)
                     //!
                     ////////////////////////////////////////////////////////////
                     //2.
-                    LBMReal mxxPyyPzz = mfcaa + mfaca + mfaac;
-                    LBMReal mxxMyy = mfcaa - mfaca;
-                    LBMReal mxxMzz = mfcaa - mfaac;
+                    real mxxPyyPzz = mfcaa + mfaca + mfaac;
+                    real mxxMyy = mfcaa - mfaca;
+                    real mxxMzz = mfcaa - mfaac;
                     ////////////////////////////////////////////////////////////
                     //3.
-                    LBMReal mxxyPyzz = mfcba + mfabc;
-                    LBMReal mxxyMyzz = mfcba - mfabc;
+                    real mxxyPyzz = mfcba + mfabc;
+                    real mxxyMyzz = mfcba - mfabc;
 
-                    LBMReal mxxzPyyz = mfcab + mfacb;
-                    LBMReal mxxzMyyz = mfcab - mfacb;
+                    real mxxzPyyz = mfcab + mfacb;
+                    real mxxzMyyz = mfcab - mfacb;
 
-                    LBMReal mxyyPxzz = mfbca + mfbac;
-                    LBMReal mxyyMxzz = mfbca - mfbac;
+                    real mxyyPxzz = mfbca + mfbac;
+                    real mxyyMxzz = mfbca - mfbac;
 
                     ////////////////////////////////////////////////////////////////////////////////////
                     //incl. correction
@@ -389,12 +389,12 @@ void CumulantK17LBMKernel::calculate(int step)
                     //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015), DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
                     //! Note that the division by rho is omitted here as we need rho times the gradients later.
                     //!
-                    LBMReal Dxy = -c3 * omega * mfbba;
-                    LBMReal Dxz = -c3 * omega * mfbab;
-                    LBMReal Dyz = -c3 * omega * mfabb;
-                    LBMReal dxux = c1o2 * (-omega) * (mxxMyy + mxxMzz) + c1o2 * OxxPyyPzz * (mfaaa - mxxPyyPzz);
-                    LBMReal dyuy = dxux + omega * c3o2 * mxxMyy;
-                    LBMReal dzuz = dxux + omega * c3o2 * mxxMzz;
+                    real Dxy = -c3 * omega * mfbba;
+                    real Dxz = -c3 * omega * mfbab;
+                    real Dyz = -c3 * omega * mfabb;
+                    real dxux = c1o2 * (-omega) * (mxxMyy + mxxMzz) + c1o2 * OxxPyyPzz * (mfaaa - mxxPyyPzz);
+                    real dyuy = dxux + omega * c3o2 * mxxMyy;
+                    real dzuz = dxux + omega * c3o2 * mxxMzz;
                     ////////////////////////////////////////////////////////////
                     //! - Relaxation of second order cumulants with correction terms according to Eq. (33)-(35) in
                     //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05.040 ]</b></a>
@@ -575,10 +575,10 @@ void CumulantK17LBMKernel::calculate(int step)
                     //proof correctness
                     //////////////////////////////////////////////////////////////////////////
 #ifdef  PROOF_CORRECTNESS
-                    LBMReal drho_post = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca)
+                    real drho_post = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca)
                                         + (mfaab + mfacb + mfcab + mfccb) + (mfaba + mfabc + mfcba + mfcbc) + (mfbaa + mfbac + mfbca + mfbcc)
                                         + (mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc) + mfbbb;
-                    LBMReal dif = drho - drho_post;
+                    real dif = drho - drho_post;
 #ifdef SINGLEPRECISION
                     if (dif > 10.0E-7 || dif < -10.0E-7)
 #else

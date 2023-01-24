@@ -135,36 +135,36 @@ void QCriterionCoProcessor::addData(const SPtr<Block3D> block)
 
                     /////////////////////////////
                     // Geschwindigkeitsvektoren
-                    LBMReal vE[3];
-                    LBMReal vW[3];
-                    LBMReal vN[3];
-                    LBMReal vS[3];
-                    LBMReal vT[3];
-                    LBMReal vB[3];
+                    real vE[3];
+                    real vW[3];
+                    real vN[3];
+                    real vS[3];
+                    real vT[3];
+                    real vB[3];
                     // hole geschwindigkeiten an nachbarknoten
                     getNeighborVelocities(1, 0, 0, ix1, ix2, ix3, block, vE, vW);
                     getNeighborVelocities(0, 1, 0, ix1, ix2, ix3, block, vN, vS);
                     getNeighborVelocities(0, 0, 1, ix1, ix2, ix3, block, vT, vB);
                     //////////////////////////////////
                     // derivatives
-                    LBMReal duxdy = (vN[xdir] - vS[xdir]) * 0.5;
-                    LBMReal duydx = (vE[ydir] - vW[ydir]) * 0.5;
-                    LBMReal duxdz = (vT[xdir] - vB[xdir]) * 0.5;
-                    LBMReal duzdx = (vE[zdir] - vW[zdir]) * 0.5;
-                    LBMReal duydz = (vT[ydir] - vB[ydir]) * 0.5;
-                    LBMReal duzdy = (vN[zdir] - vS[zdir]) * 0.5;
+                    real duxdy = (vN[xdir] - vS[xdir]) * 0.5;
+                    real duydx = (vE[ydir] - vW[ydir]) * 0.5;
+                    real duxdz = (vT[xdir] - vB[xdir]) * 0.5;
+                    real duzdx = (vE[zdir] - vW[zdir]) * 0.5;
+                    real duydz = (vT[ydir] - vB[ydir]) * 0.5;
+                    real duzdy = (vN[zdir] - vS[zdir]) * 0.5;
 
-                    LBMReal duxdx = (vE[xdir] - vW[xdir]) * 0.5;
-                    LBMReal duydy = (vN[ydir] - vS[ydir]) * 0.5;
-                    LBMReal duzdz = (vT[zdir] - vB[zdir]) * 0.5;
+                    real duxdx = (vE[xdir] - vW[xdir]) * 0.5;
+                    real duydy = (vN[ydir] - vS[ydir]) * 0.5;
+                    real duzdz = (vT[zdir] - vB[zdir]) * 0.5;
 
-                    LBMReal scaleFactor =
+                    real scaleFactor =
                         (double)(1
                                  << (currentLevel -
                                      minInitLevel)); // pow(2.0,(double)(currentLevel-minInitLevel));//finer grid ->
                                                      // current level higher. coarsest grid: currentLevel=minInitLevel=0
                     // Q=-0.5*(S_ij S_ij - Omega_ij Omega_ij) => regions where vorticity is larger than strain rate
-                    LBMReal q = -(duxdy * duydx + duxdz * duzdx + duydz * duzdy + duxdx * duxdx + duydy * duydy +
+                    real q = -(duxdy * duydx + duxdz * duzdx + duydz * duzdy + duxdx * duxdx + duydy * duydy +
                                   duzdz * duzdz) *
                                 scaleFactor;
 
@@ -201,7 +201,7 @@ void QCriterionCoProcessor::addData(const SPtr<Block3D> block)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, int ix1, int ix2, int ix3,
-                                                  const SPtr<Block3D> block, LBMReal *vE, LBMReal *vW)
+                                                  const SPtr<Block3D> block, real *vE, real *vW)
 {
     SPtr<ILBMKernel> kernel                 = block->getKernel();
     SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
@@ -282,12 +282,12 @@ void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, 
             SPtr<ILBMKernel> kernelW                 = blockNeighW->getKernel();
             SPtr<BCArray3D> bcArrayW                 = kernelW->getBCProcessor()->getBCArray();
             SPtr<DistributionArray3D> distributionsW = kernelW->getDataSet()->getFdistributions();
-            LBMReal fW2[27];
-            LBMReal fW[27];
-            LBMReal f0[27];
-            LBMReal fE[27];
-            LBMReal v0[3];
-            LBMReal vW2[3];
+            real fW2[27];
+            real fW[27];
+            real f0[27];
+            real fE[27];
+            real v0[3];
+            real vW2[3];
             // distributionsW->getDistribution(fW2, std::max(ix1+2*offx,1), std::max(ix2+2*offy,1),
             // std::max(ix3+2*offz,1)); distributionsW->getDistribution(fW, std::max(ix1+offx,1), std::max(ix2+offy,1),
             // std::max(ix3+offz,1)); distributionsW->getDistribution(f0, std::max(ix1    ,1), std::max(ix2    ,1),
@@ -314,7 +314,7 @@ void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, 
             SPtr<ILBMKernel> kernelW                 = blockNeighW->getKernel();
             SPtr<BCArray3D> bcArrayW                 = kernelW->getBCProcessor()->getBCArray();
             SPtr<DistributionArray3D> distributionsW = kernelW->getDataSet()->getFdistributions();
-            LBMReal fW[27];
+            real fW[27];
 
             if (offx == 1) {
                 distributionsW->getDistribution(fW, (distributions->getNX1()) - 1, ix2,
@@ -330,20 +330,20 @@ void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, 
 
     } else {
         // data available in current block:
-        LBMReal fW[27];
+        real fW[27];
         distributions->getDistribution(fW, ix1 - offx, ix2 - offy, ix3 - offz);
         computeVelocity(fW, vW, compressible);
     }
     if (checkInterpolation) {
         // in plus-direction data is available in current block because of ghost layers
-        LBMReal fE[27];
+        real fE[27];
         distributions->getDistribution(fE, ix1 + offx, ix2 + offy, ix3 + offz); // E:= plus 1
         computeVelocity(fE, vE, compressible);
     }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void QCriterionCoProcessor::computeVelocity(LBMReal *f, LBMReal *v, bool compressible)
+void QCriterionCoProcessor::computeVelocity(real *f, real *v, bool compressible)
 {
     //////////////////////////////////////////////////////////////////////////
     // compute x,y,z-velocity components from distribution

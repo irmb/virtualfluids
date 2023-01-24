@@ -272,20 +272,20 @@ void AverageValuesCoProcessor::addData(const SPtr<Block3D> block)
                                                 float(val<2>(org) - val<2>(nodeOffset) + ix2 * dx),
                                                 float(val<3>(org) - val<3>(nodeOffset) + ix3 * dx)));
 
-                    LBMReal vx = (*av)(AvVx, ix1, ix2, ix3);
-                    LBMReal vy = (*av)(AvVy, ix1, ix2, ix3);
-                    LBMReal vz = (*av)(AvVz, ix1, ix2, ix3);
+                    real vx = (*av)(AvVx, ix1, ix2, ix3);
+                    real vy = (*av)(AvVy, ix1, ix2, ix3);
+                    real vz = (*av)(AvVz, ix1, ix2, ix3);
 
-                    LBMReal vxx = (*av)(AvVxx, ix1, ix2, ix3);
-                    LBMReal vyy = (*av)(AvVyy, ix1, ix2, ix3);
-                    LBMReal vzz = (*av)(AvVzz, ix1, ix2, ix3);
+                    real vxx = (*av)(AvVxx, ix1, ix2, ix3);
+                    real vyy = (*av)(AvVyy, ix1, ix2, ix3);
+                    real vzz = (*av)(AvVzz, ix1, ix2, ix3);
 
-                    LBMReal vxy = (*av)(AvVxy, ix1, ix2, ix3);
-                    LBMReal vxz = (*av)(AvVxz, ix1, ix2, ix3);
-                    LBMReal vyz = (*av)(AvVyz, ix1, ix2, ix3);
+                    real vxy = (*av)(AvVxy, ix1, ix2, ix3);
+                    real vxz = (*av)(AvVxz, ix1, ix2, ix3);
+                    real vyz = (*av)(AvVyz, ix1, ix2, ix3);
 
-                    LBMReal vp    = (*av)(AvP, ix1, ix2, ix3);
-                    LBMReal vprms = (*av)(AvPrms, ix1, ix2, ix3);
+                    real vp    = (*av)(AvP, ix1, ix2, ix3);
+                    real vprms = (*av)(AvPrms, ix1, ix2, ix3);
 
                     data[index++].push_back(vx);
                     data[index++].push_back(vy);
@@ -342,7 +342,7 @@ void AverageValuesCoProcessor::calculateAverageValues(double timeStep)
         calcMacros = &calcIncompMacroscopicValues;
     }
 
-    LBMReal f[27];
+    real f[27];
 
     for (int level = minInitLevel; level <= maxInitLevel; level++) {
         for (SPtr<Block3D> block : blockVector[level]) {
@@ -375,7 +375,7 @@ void AverageValuesCoProcessor::calculateAverageValues(double timeStep)
                                 //////////////////////////////////////////////////////////////////////////
                                 // compute velocity
                                 //////////////////////////////////////////////////////////////////////////
-                                LBMReal vx, vy, vz, rho;
+                                real vx, vy, vz, rho;
                                 calcMacros(f, rho, vx, vy, vz);
                                 double press = D3Q27System::calcPress(f, rho, vx, vy, vz);
 
@@ -383,9 +383,9 @@ void AverageValuesCoProcessor::calculateAverageValues(double timeStep)
                                 // compute average values
                                 //////////////////////////////////////////////////////////////////////////
 
-                                LBMReal timeStepAfterResetRMS =
+                                real timeStepAfterResetRMS =
                                     (double)(timeStep - resetStepRMS) / ((double)averageInterval);
-                                LBMReal timeStepAfterResetMeans =
+                                real timeStepAfterResetMeans =
                                     (double)(timeStep - resetStepMeans) / ((double)averageInterval);
 
                                 // mean velocity

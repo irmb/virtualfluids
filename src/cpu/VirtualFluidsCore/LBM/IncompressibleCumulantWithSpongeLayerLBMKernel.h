@@ -32,7 +32,7 @@ public:
    void setRelaxFactorParam(int vdir, double vL1, double vdx, double vSP);
 protected:
   void initDataSet() override;
-  LBMReal OxyyMxzz;
+  real OxyyMxzz;
   int direction;
   double L1;
   double dx;

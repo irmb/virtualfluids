@@ -63,31 +63,31 @@ public:
     //////////////////////////////////////////////////////////////////////////
     void swap() override = 0;
     //////////////////////////////////////////////////////////////////////////
-    void getDistribution(LBMReal *const f, size_t x1, size_t x2, size_t x3) override = 0;
+    void getDistribution(real *const f, size_t x1, size_t x2, size_t x3) override = 0;
     //////////////////////////////////////////////////////////////////////////
-    void setDistribution(const LBMReal *const f, size_t x1, size_t x2, size_t x3) override = 0;
+    void setDistribution(const real *const f, size_t x1, size_t x2, size_t x3) override = 0;
     ////////////////////////////////////////////////////////////////////////
-    void getDistributionInv(LBMReal *const f, size_t x1, size_t x2, size_t x3) override = 0;
+    void getDistributionInv(real *const f, size_t x1, size_t x2, size_t x3) override = 0;
     //////////////////////////////////////////////////////////////////////////
-    void setDistributionInv(const LBMReal *const f, size_t x1, size_t x2, size_t x3) override = 0;
+    void setDistributionInv(const real *const f, size_t x1, size_t x2, size_t x3) override = 0;
     //////////////////////////////////////////////////////////////////////////
-    void setDistributionForDirection(const LBMReal *const f, size_t x1, size_t x2, size_t x3,
+    void setDistributionForDirection(const real *const f, size_t x1, size_t x2, size_t x3,
                                      unsigned long int direction) override = 0;
     //////////////////////////////////////////////////////////////////////////
-    void setDistributionForDirection(LBMReal f, size_t x1, size_t x2, size_t x3, int direction) override = 0;
+    void setDistributionForDirection(real f, size_t x1, size_t x2, size_t x3, int direction) override = 0;
     //////////////////////////////////////////////////////////////////////////
-    // virtual void getDistributionInvForDirection(LBMReal* const& f, const size_t& x1, const size_t& x2, const size_t&
+    // virtual void getDistributionInvForDirection(real* const& f, const size_t& x1, const size_t& x2, const size_t&
     // x3, const unsigned long int& direction) = 0;
     //////////////////////////////////////////////////////////////////////////
-    LBMReal getDistributionInvForDirection(size_t x1, size_t x2, size_t x3, int direction) override = 0;
+    real getDistributionInvForDirection(size_t x1, size_t x2, size_t x3, int direction) override = 0;
     //////////////////////////////////////////////////////////////////////////
-    void setDistributionInvForDirection(const LBMReal *const f, size_t x1, size_t x2, size_t x3,
+    void setDistributionInvForDirection(const real *const f, size_t x1, size_t x2, size_t x3,
                                         unsigned long int direction) override = 0;
     //////////////////////////////////////////////////////////////////////////
-    void setDistributionInvForDirection(LBMReal f, size_t x1, size_t x2, size_t x3,
+    void setDistributionInvForDirection(real f, size_t x1, size_t x2, size_t x3,
                                         unsigned long int direction) override = 0;
     //////////////////////////////////////////////////////////////////////////
-    LBMReal getDistributionForDirection(size_t x1, size_t x2, size_t x3, int direction) override = 0;
+    real getDistributionForDirection(size_t x1, size_t x2, size_t x3, int direction) override = 0;
     //////////////////////////////////////////////////////////////////////////
     size_t getNX1() const override = 0;
     //////////////////////////////////////////////////////////////////////////

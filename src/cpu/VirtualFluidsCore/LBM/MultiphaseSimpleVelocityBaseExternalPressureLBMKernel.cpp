@@ -53,19 +53,19 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::initDataSet()
 	SPtr<DistributionArray3D> h(new D3Q27EsoTwist3DSplittedVector( nx[0] + 4, nx[1] + 4, nx[2] + 4, -999.9)); // For phase-field
 	SPtr<DistributionArray3D> h2(new D3Q27EsoTwist3DSplittedVector(nx[0] + 4, nx[1] + 4, nx[2] + 4, -999.9));
 	SPtr<PhaseFieldArray3D> divU1(new PhaseFieldArray3D(            nx[0] + 4, nx[1] + 4, nx[2] + 4, 0.0));
-	CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr pressure(new  CbArray3D<LBMReal, IndexerX3X2X1>(    nx[0] + 4, nx[1] + 4, nx[2] + 4, 0.0));
-	pressureOld = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new  CbArray3D<LBMReal, IndexerX3X2X1>(nx[0] + 4, nx[1] + 4, nx[2] + 4, 0.0));
-	p1Old = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new  CbArray3D<LBMReal, IndexerX3X2X1>(nx[0] + 4, nx[1] + 4, nx[2] + 4, 0.0));
+	CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr pressure(new  CbArray3D<real, IndexerX3X2X1>(    nx[0] + 4, nx[1] + 4, nx[2] + 4, 0.0));
+	pressureOld = CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(new  CbArray3D<real, IndexerX3X2X1>(nx[0] + 4, nx[1] + 4, nx[2] + 4, 0.0));
+	p1Old = CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(new  CbArray3D<real, IndexerX3X2X1>(nx[0] + 4, nx[1] + 4, nx[2] + 4, 0.0));
 	dataSet->setFdistributions(f);
 	dataSet->setHdistributions(h); // For phase-field
 	dataSet->setH2distributions(h2);
 	dataSet->setPhaseField(divU1);
 	dataSet->setPressureField(pressure);
 
-	phaseField = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(nx[0] + 4, nx[1] + 4, nx[2] + 4, -999.0));
-	phaseFieldOld = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(nx[0] + 4, nx[1] + 4, nx[2] + 4, 999.0));
+	phaseField = CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<real, IndexerX3X2X1>(nx[0] + 4, nx[1] + 4, nx[2] + 4, -999.0));
+	phaseFieldOld = CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<real, IndexerX3X2X1>(nx[0] + 4, nx[1] + 4, nx[2] + 4, 999.0));
 
-	divU = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(nx[0] + 4, nx[1] + 4, nx[2] + 4, 0.0));
+	divU = CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<real, IndexerX3X2X1>(nx[0] + 4, nx[1] + 4, nx[2] + 4, 0.0));
 }
 //////////////////////////////////////////////////////////////////////////
 SPtr<LBMKernel> MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::clone()
@@ -96,11 +96,11 @@ SPtr<LBMKernel> MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::clone()
 	return kernel;
 }
 //////////////////////////////////////////////////////////////////////////
-void  MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::forwardInverseChimeraWithKincompressible(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2, LBMReal Kinverse, LBMReal K, LBMReal oneMinusRho) {
+void  MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::forwardInverseChimeraWithKincompressible(real& mfa, real& mfb, real& mfc, real vv, real v2, real Kinverse, real K, real oneMinusRho) {
 	using namespace UbMath;
-	LBMReal m2 = mfa + mfc;
-	LBMReal m1 = mfc - mfa;
-	LBMReal m0 = m2 + mfb;
+	real m2 = mfa + mfc;
+	real m1 = mfc - mfa;
+	real m0 = m2 + mfb;
 	mfa = m0;
 	m0 *= Kinverse;
 	m0 += oneMinusRho;
@@ -109,10 +109,10 @@ void  MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::forwardInverseChime
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void  MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::backwardInverseChimeraWithKincompressible(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2, LBMReal Kinverse, LBMReal K, LBMReal oneMinusRho) {
+void  MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::backwardInverseChimeraWithKincompressible(real& mfa, real& mfb, real& mfc, real vv, real v2, real Kinverse, real K, real oneMinusRho) {
 	using namespace UbMath;
-	LBMReal m0 = (((mfc - mfb) * c1o2 + mfb * vv) * Kinverse + (mfa * Kinverse + oneMinusRho) * (v2 - vv) * c1o2) * K;
-	LBMReal m1 = (((mfa - mfc) - c2 * mfb * vv) * Kinverse + (mfa * Kinverse + oneMinusRho) * (-v2)) * K;
+	real m0 = (((mfc - mfb) * c1o2 + mfb * vv) * Kinverse + (mfa * Kinverse + oneMinusRho) * (v2 - vv) * c1o2) * K;
+	real m1 = (((mfa - mfc) - c2 * mfb * vv) * Kinverse + (mfa * Kinverse + oneMinusRho) * (-v2)) * K;
 	mfc = (((mfc + mfb) * c1o2 + mfb * vv) * Kinverse + (mfa * Kinverse + oneMinusRho) * (v2 + vv) * c1o2) * K;
 	mfa = m0;
 	mfb = m1;
@@ -120,20 +120,20 @@ void  MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::backwardInverseChim
 
 
 ////////////////////////////////////////////////////////////////////////////////
-void  MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::forwardChimera(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2) {
+void  MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::forwardChimera(real& mfa, real& mfb, real& mfc, real vv, real v2) {
 	using namespace UbMath;
-	LBMReal m1 = (mfa + mfc) + mfb;
-	LBMReal m2 = mfc - mfa;
+	real m1 = (mfa + mfc) + mfb;
+	real m2 = mfc - mfa;
 	mfc = (mfc + mfa) + (v2 * m1 - c2 * vv * m2);
 	mfb = m2 - vv * m1;
 	mfa = m1;
 }
 
 
-void  MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::backwardChimera(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2) {
+void  MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::backwardChimera(real& mfa, real& mfb, real& mfc, real vv, real v2) {
 	using namespace UbMath;
-	LBMReal ma = (mfc + mfa * (v2 - vv)) * c1o2 + mfb * (vv - c1o2);
-	LBMReal mb = ((mfa - mfc) - mfa * v2) - c2 * mfb * vv;
+	real ma = (mfc + mfa * (v2 - vv)) * c1o2 + mfb * (vv - c1o2);
+	real mb = ((mfa - mfc) - mfa * v2) - c2 * mfb * vv;
 	mfc = (mfc + mfa * (v2 + vv)) * c1o2 + mfb * (vv + c1o2);
 	mfb = mb;
 	mfa = ma;
@@ -150,7 +150,7 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 	forcingX2 = 0.0;
 	forcingX3 = 0.0;
 
-	LBMReal oneOverInterfaceScale = c4 / interfaceWidth; //1.0;//1.5;
+	real oneOverInterfaceScale = c4 / interfaceWidth; //1.0;//1.5;
 														 /////////////////////////////////////
 
 	localDistributionsF    = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getLocalDistributions();
@@ -166,7 +166,7 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 	zeroDistributionsH2     = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getH2distributions())->getZeroDistributions();
 
 
-	CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr pressure = dataSet->getPressureField();
+	CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr pressure = dataSet->getPressureField();
 
 	SPtr<BCArray3D> bcArray = this->getBCProcessor()->getBCArray();
 
@@ -180,7 +180,7 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 	int maxX1 = bcArrayMaxX1 - ghostLayerWidth;
 	int maxX2 = bcArrayMaxX2 - ghostLayerWidth;
 	int maxX3 = bcArrayMaxX3 - ghostLayerWidth;
-	LBMReal omegaDRho = 1.0;// 1.25;// 1.3;
+	real omegaDRho = 1.0;// 1.25;// 1.3;
 
 	for (int x3 = minX3-ghostLayerWidth; x3 < maxX3+ghostLayerWidth; x3++) {
 		for (int x2 = minX2-ghostLayerWidth; x2 < maxX2+ghostLayerWidth; x2++) {
@@ -190,34 +190,34 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 					int x2p = x2 + 1;
 					int x3p = x3 + 1;
 
-					LBMReal mfcbb = (*this->localDistributionsH1)(D3Q27System::ET_E, x1, x2, x3);
-					LBMReal mfbcb = (*this->localDistributionsH1)(D3Q27System::ET_N, x1, x2, x3);
-					LBMReal mfbbc = (*this->localDistributionsH1)(D3Q27System::ET_T, x1, x2, x3);
-					LBMReal mfccb = (*this->localDistributionsH1)(D3Q27System::ET_NE, x1, x2, x3);
-					LBMReal mfacb = (*this->localDistributionsH1)(D3Q27System::ET_NW, x1p, x2, x3);
-					LBMReal mfcbc = (*this->localDistributionsH1)(D3Q27System::ET_TE, x1, x2, x3);
-					LBMReal mfabc = (*this->localDistributionsH1)(D3Q27System::ET_TW, x1p, x2, x3);
-					LBMReal mfbcc = (*this->localDistributionsH1)(D3Q27System::ET_TN, x1, x2, x3);
-					LBMReal mfbac = (*this->localDistributionsH1)(D3Q27System::ET_TS, x1, x2p, x3);
-					LBMReal mfccc = (*this->localDistributionsH1)(D3Q27System::ET_TNE, x1, x2, x3);
-					LBMReal mfacc = (*this->localDistributionsH1)(D3Q27System::ET_TNW, x1p, x2, x3);
-					LBMReal mfcac = (*this->localDistributionsH1)(D3Q27System::ET_TSE, x1, x2p, x3);
-					LBMReal mfaac = (*this->localDistributionsH1)(D3Q27System::ET_TSW, x1p, x2p, x3);
-					LBMReal mfabb = (*this->nonLocalDistributionsH1)(D3Q27System::ET_W, x1p, x2, x3);
-					LBMReal mfbab = (*this->nonLocalDistributionsH1)(D3Q27System::ET_S, x1, x2p, x3);
-					LBMReal mfbba = (*this->nonLocalDistributionsH1)(D3Q27System::ET_B, x1, x2, x3p);
-					LBMReal mfaab = (*this->nonLocalDistributionsH1)(D3Q27System::ET_SW, x1p, x2p, x3);
-					LBMReal mfcab = (*this->nonLocalDistributionsH1)(D3Q27System::ET_SE, x1, x2p, x3);
-					LBMReal mfaba = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BW, x1p, x2, x3p);
-					LBMReal mfcba = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BE, x1, x2, x3p);
-					LBMReal mfbaa = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BS, x1, x2p, x3p);
-					LBMReal mfbca = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BN, x1, x2, x3p);
-					LBMReal mfaaa = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BSW, x1p, x2p, x3p);
-					LBMReal mfcaa = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BSE, x1, x2p, x3p);
-					LBMReal mfaca = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNW, x1p, x2, x3p);
-					LBMReal mfcca = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNE, x1, x2, x3p);
+					real mfcbb = (*this->localDistributionsH1)(D3Q27System::ET_E, x1, x2, x3);
+					real mfbcb = (*this->localDistributionsH1)(D3Q27System::ET_N, x1, x2, x3);
+					real mfbbc = (*this->localDistributionsH1)(D3Q27System::ET_T, x1, x2, x3);
+					real mfccb = (*this->localDistributionsH1)(D3Q27System::ET_NE, x1, x2, x3);
+					real mfacb = (*this->localDistributionsH1)(D3Q27System::ET_NW, x1p, x2, x3);
+					real mfcbc = (*this->localDistributionsH1)(D3Q27System::ET_TE, x1, x2, x3);
+					real mfabc = (*this->localDistributionsH1)(D3Q27System::ET_TW, x1p, x2, x3);
+					real mfbcc = (*this->localDistributionsH1)(D3Q27System::ET_TN, x1, x2, x3);
+					real mfbac = (*this->localDistributionsH1)(D3Q27System::ET_TS, x1, x2p, x3);
+					real mfccc = (*this->localDistributionsH1)(D3Q27System::ET_TNE, x1, x2, x3);
+					real mfacc = (*this->localDistributionsH1)(D3Q27System::ET_TNW, x1p, x2, x3);
+					real mfcac = (*this->localDistributionsH1)(D3Q27System::ET_TSE, x1, x2p, x3);
+					real mfaac = (*this->localDistributionsH1)(D3Q27System::ET_TSW, x1p, x2p, x3);
+					real mfabb = (*this->nonLocalDistributionsH1)(D3Q27System::ET_W, x1p, x2, x3);
+					real mfbab = (*this->nonLocalDistributionsH1)(D3Q27System::ET_S, x1, x2p, x3);
+					real mfbba = (*this->nonLocalDistributionsH1)(D3Q27System::ET_B, x1, x2, x3p);
+					real mfaab = (*this->nonLocalDistributionsH1)(D3Q27System::ET_SW, x1p, x2p, x3);
+					real mfcab = (*this->nonLocalDistributionsH1)(D3Q27System::ET_SE, x1, x2p, x3);
+					real mfaba = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BW, x1p, x2, x3p);
+					real mfcba = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BE, x1, x2, x3p);
+					real mfbaa = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BS, x1, x2p, x3p);
+					real mfbca = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BN, x1, x2, x3p);
+					real mfaaa = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BSW, x1p, x2p, x3p);
+					real mfcaa = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BSE, x1, x2p, x3p);
+					real mfaca = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNW, x1p, x2, x3p);
+					real mfcca = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNE, x1, x2, x3p);
 
-					LBMReal mfbbb = (*this->zeroDistributionsH1)(x1, x2, x3);
+					real mfbbb = (*this->zeroDistributionsH1)(x1, x2, x3);
 					(*phaseField)(x1, x2, x3) = (((mfaaa + mfccc) + (mfaca + mfcac)) + ((mfaac + mfcca)  + (mfcaa + mfacc))  ) +
 						(((mfaab + mfacb) + (mfcab + mfccb)) + ((mfaba + mfabc) + (mfcba + mfcbc)) +
 							((mfbaa + mfbac) + (mfbca + mfbcc))) + ((mfabb + mfcbb) +
@@ -263,18 +263,18 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 					//LBMReal rhoH = 1.0;
 					//LBMReal rhoL = 1.0 / densityRatio;
 
-					LBMReal rhoH = 1.0*densityRatio;
-					LBMReal rhoL = 1.0;
+					real rhoH = 1.0*densityRatio;
+					real rhoL = 1.0;
 
-					LBMReal rhoToPhi = (rhoH - rhoL) / (phiH - phiL);
+					real rhoToPhi = (rhoH - rhoL) / (phiH - phiL);
 
-					LBMReal drho = (((((mfaaa + mfccc) + (mfaac + mfcca)) + ((mfcac + mfaca) + (mfcaa + mfacc))   )
+					real drho = (((((mfaaa + mfccc) + (mfaac + mfcca)) + ((mfcac + mfaca) + (mfcaa + mfacc))   )
 						+ (((mfaab + mfccb) + (mfacb + mfcab) ) + ((mfaba + mfcbc) + (mfabc + mfcba) ) + ((mfbaa + mfbcc) + (mfbac + mfbca) )))
 						+ ((mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc))) + mfbbb;
 				
 					omegaDRho = 2.0;// 1.5;
 					drho *= omegaDRho;
-					LBMReal keepDrho = drho;
+					real keepDrho = drho;
 					drho = ((*p1Old)(x1, x2, x3) + drho) * c1o2;
 				//	drho = ((*p1Old)(x1, x2, x3)*c2o3 + drho*c1o3) ;
 					(*p1Old)(x1, x2, x3) = keepDrho;
@@ -323,7 +323,7 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 		}
 	}
 
-	LBMReal collFactorM;
+	real collFactorM;
 
 	////Periodic Filter
 	//for (int x3 = minX3-1; x3 <= maxX3; x3++) {
@@ -395,92 +395,92 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 
 					findNeighbors(phaseField, x1, x2, x3);
 
-					LBMReal mfcbb = (*this->localDistributionsF)(D3Q27System::ET_E, x1, x2, x3);
-					LBMReal mfbcb = (*this->localDistributionsF)(D3Q27System::ET_N, x1, x2, x3);
-					LBMReal mfbbc = (*this->localDistributionsF)(D3Q27System::ET_T, x1, x2, x3);
-					LBMReal mfccb = (*this->localDistributionsF)(D3Q27System::ET_NE, x1, x2, x3);
-					LBMReal mfacb = (*this->localDistributionsF)(D3Q27System::ET_NW, x1p, x2, x3);
-					LBMReal mfcbc = (*this->localDistributionsF)(D3Q27System::ET_TE, x1, x2, x3);
-					LBMReal mfabc = (*this->localDistributionsF)(D3Q27System::ET_TW, x1p, x2, x3);
-					LBMReal mfbcc = (*this->localDistributionsF)(D3Q27System::ET_TN, x1, x2, x3);
-					LBMReal mfbac = (*this->localDistributionsF)(D3Q27System::ET_TS, x1, x2p, x3);
-					LBMReal mfccc = (*this->localDistributionsF)(D3Q27System::ET_TNE, x1, x2, x3);
-					LBMReal mfacc = (*this->localDistributionsF)(D3Q27System::ET_TNW, x1p, x2, x3);
-					LBMReal mfcac = (*this->localDistributionsF)(D3Q27System::ET_TSE, x1, x2p, x3);
-					LBMReal mfaac = (*this->localDistributionsF)(D3Q27System::ET_TSW, x1p, x2p, x3);
-					LBMReal mfabb = (*this->nonLocalDistributionsF)(D3Q27System::ET_W, x1p, x2, x3);
-					LBMReal mfbab = (*this->nonLocalDistributionsF)(D3Q27System::ET_S, x1, x2p, x3);
-					LBMReal mfbba = (*this->nonLocalDistributionsF)(D3Q27System::ET_B, x1, x2, x3p);
-					LBMReal mfaab = (*this->nonLocalDistributionsF)(D3Q27System::ET_SW, x1p, x2p, x3);
-					LBMReal mfcab = (*this->nonLocalDistributionsF)(D3Q27System::ET_SE, x1, x2p, x3);
-					LBMReal mfaba = (*this->nonLocalDistributionsF)(D3Q27System::ET_BW, x1p, x2, x3p);
-					LBMReal mfcba = (*this->nonLocalDistributionsF)(D3Q27System::ET_BE, x1, x2, x3p);
-					LBMReal mfbaa = (*this->nonLocalDistributionsF)(D3Q27System::ET_BS, x1, x2p, x3p);
-					LBMReal mfbca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BN, x1, x2, x3p);
-					LBMReal mfaaa = (*this->nonLocalDistributionsF)(D3Q27System::ET_BSW, x1p, x2p, x3p);
-					LBMReal mfcaa = (*this->nonLocalDistributionsF)(D3Q27System::ET_BSE, x1, x2p, x3p);
-					LBMReal mfaca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BNW, x1p, x2, x3p);
-					LBMReal mfcca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BNE, x1, x2, x3p);
+					real mfcbb = (*this->localDistributionsF)(D3Q27System::ET_E, x1, x2, x3);
+					real mfbcb = (*this->localDistributionsF)(D3Q27System::ET_N, x1, x2, x3);
+					real mfbbc = (*this->localDistributionsF)(D3Q27System::ET_T, x1, x2, x3);
+					real mfccb = (*this->localDistributionsF)(D3Q27System::ET_NE, x1, x2, x3);
+					real mfacb = (*this->localDistributionsF)(D3Q27System::ET_NW, x1p, x2, x3);
+					real mfcbc = (*this->localDistributionsF)(D3Q27System::ET_TE, x1, x2, x3);
+					real mfabc = (*this->localDistributionsF)(D3Q27System::ET_TW, x1p, x2, x3);
+					real mfbcc = (*this->localDistributionsF)(D3Q27System::ET_TN, x1, x2, x3);
+					real mfbac = (*this->localDistributionsF)(D3Q27System::ET_TS, x1, x2p, x3);
+					real mfccc = (*this->localDistributionsF)(D3Q27System::ET_TNE, x1, x2, x3);
+					real mfacc = (*this->localDistributionsF)(D3Q27System::ET_TNW, x1p, x2, x3);
+					real mfcac = (*this->localDistributionsF)(D3Q27System::ET_TSE, x1, x2p, x3);
+					real mfaac = (*this->localDistributionsF)(D3Q27System::ET_TSW, x1p, x2p, x3);
+					real mfabb = (*this->nonLocalDistributionsF)(D3Q27System::ET_W, x1p, x2, x3);
+					real mfbab = (*this->nonLocalDistributionsF)(D3Q27System::ET_S, x1, x2p, x3);
+					real mfbba = (*this->nonLocalDistributionsF)(D3Q27System::ET_B, x1, x2, x3p);
+					real mfaab = (*this->nonLocalDistributionsF)(D3Q27System::ET_SW, x1p, x2p, x3);
+					real mfcab = (*this->nonLocalDistributionsF)(D3Q27System::ET_SE, x1, x2p, x3);
+					real mfaba = (*this->nonLocalDistributionsF)(D3Q27System::ET_BW, x1p, x2, x3p);
+					real mfcba = (*this->nonLocalDistributionsF)(D3Q27System::ET_BE, x1, x2, x3p);
+					real mfbaa = (*this->nonLocalDistributionsF)(D3Q27System::ET_BS, x1, x2p, x3p);
+					real mfbca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BN, x1, x2, x3p);
+					real mfaaa = (*this->nonLocalDistributionsF)(D3Q27System::ET_BSW, x1p, x2p, x3p);
+					real mfcaa = (*this->nonLocalDistributionsF)(D3Q27System::ET_BSE, x1, x2p, x3p);
+					real mfaca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BNW, x1p, x2, x3p);
+					real mfcca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BNE, x1, x2, x3p);
 
-					LBMReal mfbbb = (*this->zeroDistributionsF)(x1, x2, x3);
+					real mfbbb = (*this->zeroDistributionsF)(x1, x2, x3);
 
 
-					LBMReal mfhcbb = (*this->localDistributionsH2)(D3Q27System::ET_E, x1, x2, x3);
-					LBMReal mfhbcb = (*this->localDistributionsH2)(D3Q27System::ET_N, x1, x2, x3);
-					LBMReal mfhbbc = (*this->localDistributionsH2)(D3Q27System::ET_T, x1, x2, x3);
-					LBMReal mfhccb = (*this->localDistributionsH2)(D3Q27System::ET_NE, x1, x2, x3);
-					LBMReal mfhacb = (*this->localDistributionsH2)(D3Q27System::ET_NW, x1p, x2, x3);
-					LBMReal mfhcbc = (*this->localDistributionsH2)(D3Q27System::ET_TE, x1, x2, x3);
-					LBMReal mfhabc = (*this->localDistributionsH2)(D3Q27System::ET_TW, x1p, x2, x3);
-					LBMReal mfhbcc = (*this->localDistributionsH2)(D3Q27System::ET_TN, x1, x2, x3);
-					LBMReal mfhbac = (*this->localDistributionsH2)(D3Q27System::ET_TS, x1, x2p, x3);
-					LBMReal mfhccc = (*this->localDistributionsH2)(D3Q27System::ET_TNE, x1, x2, x3);
-					LBMReal mfhacc = (*this->localDistributionsH2)(D3Q27System::ET_TNW, x1p, x2, x3);
-					LBMReal mfhcac = (*this->localDistributionsH2)(D3Q27System::ET_TSE, x1, x2p, x3);
-					LBMReal mfhaac = (*this->localDistributionsH2)(D3Q27System::ET_TSW, x1p, x2p, x3);
-					LBMReal mfhabb = (*this->nonLocalDistributionsH2)(D3Q27System::ET_W, x1p, x2, x3);
-					LBMReal mfhbab = (*this->nonLocalDistributionsH2)(D3Q27System::ET_S, x1, x2p, x3);
-					LBMReal mfhbba = (*this->nonLocalDistributionsH2)(D3Q27System::ET_B, x1, x2, x3p);
-					LBMReal mfhaab = (*this->nonLocalDistributionsH2)(D3Q27System::ET_SW, x1p, x2p, x3);
-					LBMReal mfhcab = (*this->nonLocalDistributionsH2)(D3Q27System::ET_SE, x1, x2p, x3);
-					LBMReal mfhaba = (*this->nonLocalDistributionsH2)(D3Q27System::ET_BW, x1p, x2, x3p);
-					LBMReal mfhcba = (*this->nonLocalDistributionsH2)(D3Q27System::ET_BE, x1, x2, x3p);
-					LBMReal mfhbaa = (*this->nonLocalDistributionsH2)(D3Q27System::ET_BS, x1, x2p, x3p);
-					LBMReal mfhbca = (*this->nonLocalDistributionsH2)(D3Q27System::ET_BN, x1, x2, x3p);
-					LBMReal mfhaaa = (*this->nonLocalDistributionsH2)(D3Q27System::ET_BSW, x1p, x2p, x3p);
-					LBMReal mfhcaa = (*this->nonLocalDistributionsH2)(D3Q27System::ET_BSE, x1, x2p, x3p);
-					LBMReal mfhaca = (*this->nonLocalDistributionsH2)(D3Q27System::ET_BNW, x1p, x2, x3p);
-					LBMReal mfhcca = (*this->nonLocalDistributionsH2)(D3Q27System::ET_BNE, x1, x2, x3p);
+					real mfhcbb = (*this->localDistributionsH2)(D3Q27System::ET_E, x1, x2, x3);
+					real mfhbcb = (*this->localDistributionsH2)(D3Q27System::ET_N, x1, x2, x3);
+					real mfhbbc = (*this->localDistributionsH2)(D3Q27System::ET_T, x1, x2, x3);
+					real mfhccb = (*this->localDistributionsH2)(D3Q27System::ET_NE, x1, x2, x3);
+					real mfhacb = (*this->localDistributionsH2)(D3Q27System::ET_NW, x1p, x2, x3);
+					real mfhcbc = (*this->localDistributionsH2)(D3Q27System::ET_TE, x1, x2, x3);
+					real mfhabc = (*this->localDistributionsH2)(D3Q27System::ET_TW, x1p, x2, x3);
+					real mfhbcc = (*this->localDistributionsH2)(D3Q27System::ET_TN, x1, x2, x3);
+					real mfhbac = (*this->localDistributionsH2)(D3Q27System::ET_TS, x1, x2p, x3);
+					real mfhccc = (*this->localDistributionsH2)(D3Q27System::ET_TNE, x1, x2, x3);
+					real mfhacc = (*this->localDistributionsH2)(D3Q27System::ET_TNW, x1p, x2, x3);
+					real mfhcac = (*this->localDistributionsH2)(D3Q27System::ET_TSE, x1, x2p, x3);
+					real mfhaac = (*this->localDistributionsH2)(D3Q27System::ET_TSW, x1p, x2p, x3);
+					real mfhabb = (*this->nonLocalDistributionsH2)(D3Q27System::ET_W, x1p, x2, x3);
+					real mfhbab = (*this->nonLocalDistributionsH2)(D3Q27System::ET_S, x1, x2p, x3);
+					real mfhbba = (*this->nonLocalDistributionsH2)(D3Q27System::ET_B, x1, x2, x3p);
+					real mfhaab = (*this->nonLocalDistributionsH2)(D3Q27System::ET_SW, x1p, x2p, x3);
+					real mfhcab = (*this->nonLocalDistributionsH2)(D3Q27System::ET_SE, x1, x2p, x3);
+					real mfhaba = (*this->nonLocalDistributionsH2)(D3Q27System::ET_BW, x1p, x2, x3p);
+					real mfhcba = (*this->nonLocalDistributionsH2)(D3Q27System::ET_BE, x1, x2, x3p);
+					real mfhbaa = (*this->nonLocalDistributionsH2)(D3Q27System::ET_BS, x1, x2p, x3p);
+					real mfhbca = (*this->nonLocalDistributionsH2)(D3Q27System::ET_BN, x1, x2, x3p);
+					real mfhaaa = (*this->nonLocalDistributionsH2)(D3Q27System::ET_BSW, x1p, x2p, x3p);
+					real mfhcaa = (*this->nonLocalDistributionsH2)(D3Q27System::ET_BSE, x1, x2p, x3p);
+					real mfhaca = (*this->nonLocalDistributionsH2)(D3Q27System::ET_BNW, x1p, x2, x3p);
+					real mfhcca = (*this->nonLocalDistributionsH2)(D3Q27System::ET_BNE, x1, x2, x3p);
 
-					LBMReal mfhbbb = (*this->zeroDistributionsH2)(x1, x2, x3);
+					real mfhbbb = (*this->zeroDistributionsH2)(x1, x2, x3);
 
 					//LBMReal rhoH = 1.0;
 					//LBMReal rhoL = 1.0 / densityRatio;
 
-					LBMReal rhoH = 1.0;
-					LBMReal rhoL = 1.0/ densityRatio;
+					real rhoH = 1.0;
+					real rhoL = 1.0/ densityRatio;
 
-					LBMReal rhoToPhi = (rhoH - rhoL) / (phiH - phiL);
+					real rhoToPhi = (rhoH - rhoL) / (phiH - phiL);
 
-					LBMReal dX1_phi = gradX1_phi();
-					LBMReal dX2_phi = gradX2_phi();
-					LBMReal dX3_phi = gradX3_phi();
+					real dX1_phi = gradX1_phi();
+					real dX2_phi = gradX2_phi();
+					real dX3_phi = gradX3_phi();
 
-					LBMReal denom = sqrt(dX1_phi * dX1_phi + dX2_phi * dX2_phi + dX3_phi * dX3_phi) + 1e-9+1e-3;
+					real denom = sqrt(dX1_phi * dX1_phi + dX2_phi * dX2_phi + dX3_phi * dX3_phi) + 1e-9+1e-3;
 					// 01.09.2022: unclear what value we have to add to the normal: lager values better cut of in gas phase?
-					LBMReal normX1 = dX1_phi / denom;
-					LBMReal normX2 = dX2_phi / denom;
-					LBMReal normX3 = dX3_phi / denom;
+					real normX1 = dX1_phi / denom;
+					real normX2 = dX2_phi / denom;
+					real normX3 = dX3_phi / denom;
 
 
 
 					collFactorM = collFactorL + (collFactorL - collFactorG) * (phi[DIR_000] - phiH) / (phiH - phiL);
 
 
-					LBMReal mu = 2 * beta * phi[DIR_000] * (phi[DIR_000] - 1) * (2 * phi[DIR_000] - 1) - kappa * nabla2_phi();
+					real mu = 2 * beta * phi[DIR_000] * (phi[DIR_000] - 1) * (2 * phi[DIR_000] - 1) - kappa * nabla2_phi();
 
 					//----------- Calculating Macroscopic Values -------------
-					LBMReal rho = rhoH + rhoToPhi * (phi[DIR_000] - phiH); //Incompressible
+					real rho = rhoH + rhoToPhi * (phi[DIR_000] - phiH); //Incompressible
 
 																		///scaled phase field
 					//LBMReal rho = rhoH + rhoToPhi * ((*phaseField)(x1, x2, x3) * (*phaseField)(x1, x2, x3) / ((*phaseField)(x1, x2, x3) * (*phaseField)(x1, x2, x3) + (c1 - (*phaseField)(x1, x2, x3)) * (c1 - (*phaseField)(x1, x2, x3))) - phiH);
@@ -489,23 +489,23 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 					//LBMReal rho = rhoH + rhoToPhi * (phi[DIR_000] - phiH)+(one-phi[DIR_000])* (*pressure)(x1, x2, x3)*three; //compressible
 					//LBMReal rho = rhoL + (rhoH - rhoL) * phi[DIR_000] + (one - phi[DIR_000]) * (*pressure)(x1, x2, x3) * three; //compressible
 
-					LBMReal m0, m1, m2;
-					LBMReal rhoRef=c1;
+					real m0, m1, m2;
+					real rhoRef=c1;
 
-					LBMReal vvx = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
+					real vvx = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
 						(((mfcba - mfabc) + (mfcbc - mfaba)) + ((mfcab - mfacb) + (mfccb - mfaab))) +
 						(mfcbb - mfabb))/rhoRef;
-					LBMReal vvy = ((((mfccc - mfaaa) + (mfaca - mfcac)) + ((mfacc - mfcaa) + (mfcca - mfaac))) +
+					real vvy = ((((mfccc - mfaaa) + (mfaca - mfcac)) + ((mfacc - mfcaa) + (mfcca - mfaac))) +
 						(((mfbca - mfbac) + (mfbcc - mfbaa)) + ((mfacb - mfcab) + (mfccb - mfaab))) +
 						(mfbcb - mfbab))/rhoRef;
-					LBMReal vvz = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfacc - mfcaa) + (mfaac - mfcca))) +
+					real vvz = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfacc - mfcaa) + (mfaac - mfcca))) +
 						(((mfbac - mfbca) + (mfbcc - mfbaa)) + ((mfabc - mfcba) + (mfcbc - mfaba))) +
 						(mfbbc - mfbba))/rhoRef;
 					////Filter&Gradient merged
-					LBMReal pressureHere = (*pressureOld)(x1, x2, x3);
+					real pressureHere = (*pressureOld)(x1, x2, x3);
 					//LBMReal pressureHere = (*pressure)(x1, x2, x3);
 
-					LBMReal arrayP[3][3][3] = { {{pressureHere,pressureHere,pressureHere},{pressureHere,pressureHere,pressureHere},{pressureHere,pressureHere,pressureHere}},
+					real arrayP[3][3][3] = { {{pressureHere,pressureHere,pressureHere},{pressureHere,pressureHere,pressureHere},{pressureHere,pressureHere,pressureHere}},
 												{{pressureHere,pressureHere,pressureHere},{pressureHere,pressureHere,pressureHere},{pressureHere,pressureHere,pressureHere}},
 												{ {pressureHere,pressureHere,pressureHere},{pressureHere,pressureHere,pressureHere},{pressureHere,pressureHere,pressureHere}} };
 					//LBMReal LaplaceP = 0.0;
@@ -687,7 +687,7 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 
 					///////////////////////////////////////////////
 
-					LBMReal pStarStart = ((((((mfaaa + mfccc) + (mfaac + mfcca)) + ((mfcac + mfaca) + (mfcaa + mfacc)))
+					real pStarStart = ((((((mfaaa + mfccc) + (mfaac + mfcca)) + ((mfcac + mfaca) + (mfcaa + mfacc)))
 						+ (((mfaab + mfccb) + (mfacb + mfcab)) + ((mfaba + mfcbc) + (mfabc + mfcba)) + ((mfbaa + mfbcc) + (mfbac + mfbca))))
 						+ ((mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc))) + mfbbb) * c1o3;
 
@@ -794,7 +794,7 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 
 
 					//Abbas
-					LBMReal pStar = ((((((mfaaa + mfccc) + (mfaac + mfcca)) + ((mfcac + mfaca) + (mfcaa + mfacc)))
+					real pStar = ((((((mfaaa + mfccc) + (mfaac + mfcca)) + ((mfcac + mfaca) + (mfcaa + mfacc)))
 						+ (((mfaab + mfccb) + (mfacb + mfcab)) + ((mfaba + mfcbc) + (mfabc + mfcba)) + ((mfbaa + mfbcc) + (mfbac + mfbca))))
 						+ ((mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc))) + mfbbb) * c1o3;
 					//22.09.22 not yet in balance, repaire here
@@ -1047,9 +1047,9 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 					//LBMReal M011 = ((((((mfaaa + mfccc) - (mfaac + mfcca)) + ( (mfcaa + mfacc)- (mfcac + mfaca)))
 					//	+ (((mfbaa + mfbcc) + (-mfbac - mfbca))))
 					//	));
-					LBMReal vvxI = vvx;
-					LBMReal vvyI = vvy;
-					LBMReal vvzI = vvz;
+					real vvxI = vvx;
+					real vvyI = vvy;
+					real vvzI = vvz;
 
 					//LBMReal collFactorStore=collFactorM;
 					//LBMReal stress;
@@ -1165,16 +1165,16 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 
 					//!Abbas
 
-					LBMReal vx2;
-					LBMReal vy2;
-					LBMReal vz2;
+					real vx2;
+					real vy2;
+					real vz2;
 					vx2 = vvx * vvx;
 					vy2 = vvy * vvy;
 					vz2 = vvz * vvz;
 					//pStar =ppStar- (vx2 + vy2 + vz2)*pStar;
 				//	pStar = (pStar + ppStar)*c1o2;
 					///////////////////////////////////////////////////////////////////////////////////////////               
-					LBMReal oMdrho;
+					real oMdrho;
 					///////////////
 						//mfabb -= pStar * c2o9;
 						//mfbab -= pStar * c2o9;
@@ -1232,8 +1232,8 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 					oMdrho = (rhoRef - (oMdrho + m0))/rhoRef;// 12.03.21 check derivation!!!!
 
 															 ////////////////////////////////////////////////////////////////////////////////////
-					LBMReal wadjust;
-					LBMReal qudricLimit = 0.01 / (c1 + 1.0e4 * phi[DIR_000] * (c1 - phi[DIR_000])); //LBMReal qudricLimit = 0.01;
+					real wadjust;
+					real qudricLimit = 0.01 / (c1 + 1.0e4 * phi[DIR_000] * (c1 - phi[DIR_000])); //real qudricLimit = 0.01;
 					////////////////////////////////////////////////////////////////////////////////////
 					//Hin
 					////////////////////////////////////////////////////////////////////////////////////
@@ -1466,24 +1466,24 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 					////////////////////////////////////////////////////////////////////////////////////
 
 					// mfaaa = 0.0;
-					LBMReal OxxPyyPzz = 1.0; //omega2 or bulk viscosity
+					real OxxPyyPzz = 1.0; //omega2 or bulk viscosity
 											//  LBMReal OxyyPxzz = 1.;//-s9;//2+s9;//
 											//  LBMReal OxyyMxzz  = 1.;//2+s9;//
-					LBMReal O4 = 1.;
-					LBMReal O5 = 1.;
-					LBMReal O6 = 1.;
+					real O4 = 1.;
+					real O5 = 1.;
+					real O6 = 1.;
 
 					//collFactorM+= (1.7 - collFactorM) * fabs(mfaaa) / (fabs(mfaaa) + 0.001f);
 
 
 					/////fourth order parameters; here only for test. Move out of loop!
 
-					LBMReal OxyyPxzz = 8.0 * (collFactorM - 2.0) * (OxxPyyPzz * (3.0 * collFactorM - 1.0) - 5.0 * collFactorM) / (8.0 * (5.0 - 2.0 * collFactorM) * collFactorM + OxxPyyPzz * (8.0 + collFactorM * (9.0 * collFactorM - 26.0)));
-					LBMReal OxyyMxzz = 8.0 * (collFactorM - 2.0) * (collFactorM + OxxPyyPzz * (3.0 * collFactorM - 7.0)) / (OxxPyyPzz * (56.0 - 42.0 * collFactorM + 9.0 * collFactorM * collFactorM) - 8.0 * collFactorM);
-				    LBMReal Oxyz = 24.0 * (collFactorM - 2.0) * (4.0 * collFactorM * collFactorM + collFactorM * OxxPyyPzz * (18.0 - 13.0 * collFactorM) + OxxPyyPzz * OxxPyyPzz * (2.0 + collFactorM * (6.0 * collFactorM - 11.0))) / (16.0 * collFactorM * collFactorM * (collFactorM - 6.0) - 2.0 * collFactorM * OxxPyyPzz * (216.0 + 5.0 * collFactorM * (9.0 * collFactorM - 46.0)) + OxxPyyPzz * OxxPyyPzz * (collFactorM * (3.0 * collFactorM - 10.0) * (15.0 * collFactorM - 28.0) - 48.0));
-					LBMReal A = (4.0 * collFactorM * collFactorM + 2.0 * collFactorM * OxxPyyPzz * (collFactorM - 6.0) + OxxPyyPzz * OxxPyyPzz * (collFactorM * (10.0 - 3.0 * collFactorM) - 4.0)) / ((collFactorM - OxxPyyPzz) * (OxxPyyPzz * (2.0 + 3.0 * collFactorM) - 8.0 * collFactorM));
+					real OxyyPxzz = 8.0 * (collFactorM - 2.0) * (OxxPyyPzz * (3.0 * collFactorM - 1.0) - 5.0 * collFactorM) / (8.0 * (5.0 - 2.0 * collFactorM) * collFactorM + OxxPyyPzz * (8.0 + collFactorM * (9.0 * collFactorM - 26.0)));
+					real OxyyMxzz = 8.0 * (collFactorM - 2.0) * (collFactorM + OxxPyyPzz * (3.0 * collFactorM - 7.0)) / (OxxPyyPzz * (56.0 - 42.0 * collFactorM + 9.0 * collFactorM * collFactorM) - 8.0 * collFactorM);
+				    real Oxyz = 24.0 * (collFactorM - 2.0) * (4.0 * collFactorM * collFactorM + collFactorM * OxxPyyPzz * (18.0 - 13.0 * collFactorM) + OxxPyyPzz * OxxPyyPzz * (2.0 + collFactorM * (6.0 * collFactorM - 11.0))) / (16.0 * collFactorM * collFactorM * (collFactorM - 6.0) - 2.0 * collFactorM * OxxPyyPzz * (216.0 + 5.0 * collFactorM * (9.0 * collFactorM - 46.0)) + OxxPyyPzz * OxxPyyPzz * (collFactorM * (3.0 * collFactorM - 10.0) * (15.0 * collFactorM - 28.0) - 48.0));
+					real A = (4.0 * collFactorM * collFactorM + 2.0 * collFactorM * OxxPyyPzz * (collFactorM - 6.0) + OxxPyyPzz * OxxPyyPzz * (collFactorM * (10.0 - 3.0 * collFactorM) - 4.0)) / ((collFactorM - OxxPyyPzz) * (OxxPyyPzz * (2.0 + 3.0 * collFactorM) - 8.0 * collFactorM));
 					//FIXME:  warning C4459: declaration of 'B' hides global declaration (message : see declaration of 'D3Q27System::B' )
-					LBMReal BB = (4.0 * collFactorM * OxxPyyPzz * (9.0 * collFactorM - 16.0) - 4.0 * collFactorM * collFactorM - 2.0 * OxxPyyPzz * OxxPyyPzz * (2.0 + 9.0 * collFactorM * (collFactorM - 2.0))) / (3.0 * (collFactorM - OxxPyyPzz) * (OxxPyyPzz * (2.0 + 3.0 * collFactorM) - 8.0 * collFactorM));
+					real BB = (4.0 * collFactorM * OxxPyyPzz * (9.0 * collFactorM - 16.0) - 4.0 * collFactorM * collFactorM - 2.0 * OxxPyyPzz * OxxPyyPzz * (2.0 + 9.0 * collFactorM * (collFactorM - 2.0))) / (3.0 * (collFactorM - OxxPyyPzz) * (OxxPyyPzz * (2.0 + 3.0 * collFactorM) - 8.0 * collFactorM));
 					//LBMReal stress = 1.0;// stress / (stress + 1.0e-10);
 					//stress = 1.0;
 					//OxyyPxzz += stress*(1.0-OxyyPxzz);
@@ -1498,21 +1498,21 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 					//LBMReal CUMbcb = mfbcb - ((mfaca + c1o3 * oMdrho) * mfbab + 2. * mfbba * mfabb); // till 18.05.2015
 					//LBMReal CUMbbc = mfbbc - ((mfaac + c1o3 * oMdrho) * mfbba + 2. * mfbab * mfabb); // till 18.05.2015
 
-					LBMReal CUMcbb = mfcbb - ((mfcaa + c1o3) * mfabb + 2. * mfbba * mfbab);
-					LBMReal CUMbcb = mfbcb - ((mfaca + c1o3) * mfbab + 2. * mfbba * mfabb);
-					LBMReal CUMbbc = mfbbc - ((mfaac + c1o3) * mfbba + 2. * mfbab * mfabb);
+					real CUMcbb = mfcbb - ((mfcaa + c1o3) * mfabb + 2. * mfbba * mfbab);
+					real CUMbcb = mfbcb - ((mfaca + c1o3) * mfbab + 2. * mfbba * mfabb);
+					real CUMbbc = mfbbc - ((mfaac + c1o3) * mfbba + 2. * mfbab * mfabb);
 
-					LBMReal CUMcca = mfcca - ((mfcaa * mfaca + 2. * mfbba * mfbba) + c1o3 * (mfcaa + mfaca) * oMdrho + c1o9 * (oMdrho - c1) * oMdrho);
-					LBMReal CUMcac = mfcac - ((mfcaa * mfaac + 2. * mfbab * mfbab) + c1o3 * (mfcaa + mfaac) * oMdrho + c1o9 * (oMdrho - c1) * oMdrho);
-					LBMReal CUMacc = mfacc - ((mfaac * mfaca + 2. * mfabb * mfabb) + c1o3 * (mfaac + mfaca) * oMdrho + c1o9 * (oMdrho - c1) * oMdrho);
+					real CUMcca = mfcca - ((mfcaa * mfaca + 2. * mfbba * mfbba) + c1o3 * (mfcaa + mfaca) * oMdrho + c1o9 * (oMdrho - c1) * oMdrho);
+					real CUMcac = mfcac - ((mfcaa * mfaac + 2. * mfbab * mfbab) + c1o3 * (mfcaa + mfaac) * oMdrho + c1o9 * (oMdrho - c1) * oMdrho);
+					real CUMacc = mfacc - ((mfaac * mfaca + 2. * mfabb * mfabb) + c1o3 * (mfaac + mfaca) * oMdrho + c1o9 * (oMdrho - c1) * oMdrho);
 
 					//Cum 5.
-					LBMReal CUMbcc = mfbcc - (mfaac * mfbca + mfaca * mfbac + 4. * mfabb * mfbbb + 2. * (mfbab * mfacb + mfbba * mfabc)) - c1o3 * (mfbca + mfbac) * oMdrho;
-					LBMReal CUMcbc = mfcbc - (mfaac * mfcba + mfcaa * mfabc + 4. * mfbab * mfbbb + 2. * (mfabb * mfcab + mfbba * mfbac)) - c1o3 * (mfcba + mfabc) * oMdrho;
-					LBMReal CUMccb = mfccb - (mfcaa * mfacb + mfaca * mfcab + 4. * mfbba * mfbbb + 2. * (mfbab * mfbca + mfabb * mfcba)) - c1o3 * (mfacb + mfcab) * oMdrho;
+					real CUMbcc = mfbcc - (mfaac * mfbca + mfaca * mfbac + 4. * mfabb * mfbbb + 2. * (mfbab * mfacb + mfbba * mfabc)) - c1o3 * (mfbca + mfbac) * oMdrho;
+					real CUMcbc = mfcbc - (mfaac * mfcba + mfcaa * mfabc + 4. * mfbab * mfbbb + 2. * (mfabb * mfcab + mfbba * mfbac)) - c1o3 * (mfcba + mfabc) * oMdrho;
+					real CUMccb = mfccb - (mfcaa * mfacb + mfaca * mfcab + 4. * mfbba * mfbbb + 2. * (mfbab * mfbca + mfabb * mfcba)) - c1o3 * (mfacb + mfcab) * oMdrho;
 
 					//Cum 6.
-					LBMReal CUMccc = mfccc + ((-4. * mfbbb * mfbbb
+					real CUMccc = mfccc + ((-4. * mfbbb * mfbbb
 						- (mfcaa * mfacc + mfaca * mfcac + mfaac * mfcca)
 						- 4. * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
 						- 2. * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb))
@@ -1526,7 +1526,7 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 
 					//2.
 					// linear combinations
-					LBMReal mxxPyyPzz = mfcaa + mfaca + mfaac;
+					real mxxPyyPzz = mfcaa + mfaca + mfaac;
 					//pStar = (mxxPyyPzz+vx2+vy2+vz2) * c1o3;//does not work
 					//pStar = (mxxPyyPzz) * c1o3;
 					//pStar = pStar + 1.5 * (mxxPyyPzz * c1o3 - pStar);
@@ -1534,25 +1534,25 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 					//  LBMReal mfaaaS = (mfaaa * (-4 - 3 * OxxPyyPzz * (-1 + rho)) + 6 * mxxPyyPzz * OxxPyyPzz * (-1 + rho)) / (-4 + 3 * OxxPyyPzz * (-1 + rho));
 					mxxPyyPzz -= mfaaa ;//12.03.21 shifted by mfaaa
 										//mxxPyyPzz-=(mfaaa+mfaaaS)*c1o2;//12.03.21 shifted by mfaaa
-					LBMReal mxxMyy = mfcaa - mfaca;
-					LBMReal mxxMzz = mfcaa - mfaac;
+					real mxxMyy = mfcaa - mfaca;
+					real mxxMzz = mfcaa - mfaac;
 
 					///
-					LBMReal mmfcaa = c1o3 * (mxxMyy + mxxMzz + mxxPyyPzz);
-					LBMReal mmfaca = c1o3 * (-2. * mxxMyy + mxxMzz + mxxPyyPzz);
-					LBMReal mmfaac = c1o3 * (mxxMyy - 2. * mxxMzz + mxxPyyPzz);
-					LBMReal mmfabb = mfabb;
-					LBMReal mmfbab = mfbab;
-					LBMReal mmfbba = mfbba;
+					real mmfcaa = c1o3 * (mxxMyy + mxxMzz + mxxPyyPzz);
+					real mmfaca = c1o3 * (-2. * mxxMyy + mxxMzz + mxxPyyPzz);
+					real mmfaac = c1o3 * (mxxMyy - 2. * mxxMzz + mxxPyyPzz);
+					real mmfabb = mfabb;
+					real mmfbab = mfbab;
+					real mmfbba = mfbba;
 					///
 
-					LBMReal dxux =  -c1o2 * collFactorM * (mxxMyy + mxxMzz) + c1o2 * OxxPyyPzz * (/*mfaaa*/ -mxxPyyPzz)*0;
+					real dxux =  -c1o2 * collFactorM * (mxxMyy + mxxMzz) + c1o2 * OxxPyyPzz * (/*mfaaa*/ -mxxPyyPzz)*0;
 					//LBMReal dxux = -c1o2 * (mxxMyy + mxxMzz) * collFactorM - mfaaa * c1o3* omegaDRho;
-					LBMReal dyuy =  dxux + collFactorM * c3o2 * mxxMyy;
-					LBMReal dzuz =  dxux + collFactorM * c3o2 * mxxMzz;
-					LBMReal Dxy = -three * collFactorM * mfbba;
-					LBMReal Dxz = -three * collFactorM * mfbab;
-					LBMReal Dyz = -three * collFactorM * mfabb;
+					real dyuy =  dxux + collFactorM * c3o2 * mxxMyy;
+					real dzuz =  dxux + collFactorM * c3o2 * mxxMzz;
+					real Dxy = -three * collFactorM * mfbba;
+					real Dxz = -three * collFactorM * mfbab;
+					real Dyz = -three * collFactorM * mfabb;
 //					// attempt to improve implicit  stress computation by fixed iteration
 //					LBMReal dX2_rho = (rhoToPhi)*dX2_phi;
 //					LBMReal dX1_rho = (rhoToPhi)*dX1_phi;
@@ -1600,14 +1600,14 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 
 					//3.
 					// linear combinations
-					LBMReal mxxyPyzz = mfcba + mfabc;
-					LBMReal mxxyMyzz = mfcba - mfabc;
+					real mxxyPyzz = mfcba + mfabc;
+					real mxxyMyzz = mfcba - mfabc;
 
-					LBMReal mxxzPyyz = mfcab + mfacb;
-					LBMReal mxxzMyyz = mfcab - mfacb;
+					real mxxzPyyz = mfcab + mfacb;
+					real mxxzMyyz = mfcab - mfacb;
 
-					LBMReal mxyyPxzz = mfbca + mfbac;
-					LBMReal mxyyMxzz = mfbca - mfbac;
+					real mxyyPxzz = mfbca + mfbac;
+					real mxyyMxzz = mfbca - mfbac;
 
 					 mmfcaa += c1o3 * (mxxMyy + mxxMzz + mxxPyyPzz- mfaaa);
 					 mmfaca += c1o3 * (-2. * mxxMyy + mxxMzz + mxxPyyPzz- mfaaa);
@@ -2443,7 +2443,7 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 					//proof correctness
 					//////////////////////////////////////////////////////////////////////////
 					//#ifdef  PROOF_CORRECTNESS
-					LBMReal rho_post = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca)
+					real rho_post = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca)
 						+ (mfaab + mfacb + mfcab + mfccb) + (mfaba + mfabc + mfcba + mfcbc) + (mfbaa + mfbac + mfbca + mfbcc)
 						+ (mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc) + mfbbb;
 					//			   //LBMReal dif = fabs(drho - rho_post);
@@ -2533,7 +2533,7 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 /////////////////////  P H A S E - F I E L D   S O L V E R
 ////////////////////////////////////////////
 /////CUMULANT PHASE-FIELD
-					LBMReal omegaD =1.0/( 3.0 * mob + 0.5);
+					real omegaD =1.0/( 3.0 * mob + 0.5);
 					{
 						mfcbb = (*this->localDistributionsH1)(D3Q27System::ET_E, x1, x2, x3);
 						mfbcb = (*this->localDistributionsH1)(D3Q27System::ET_N, x1, x2, x3);
@@ -2570,31 +2570,31 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 						//!
 						////////////////////////////////////////////////////////////////////////////////////
 						// second component
-						LBMReal concentration =
+						real concentration =
 							((((mfccc + mfaaa) + (mfaca + mfcac)) + ((mfacc + mfcaa) + (mfaac + mfcca))) +
 								(((mfbac + mfbca) + (mfbaa + mfbcc)) + ((mfabc + mfcba) + (mfaba + mfcbc)) + ((mfacb + mfcab) + (mfaab + mfccb))) +
 								((mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc))) + mfbbb;
 						////////////////////////////////////////////////////////////////////////////////////
-						LBMReal oneMinusRho = c1- concentration;
+						real oneMinusRho = c1- concentration;
 
-						LBMReal cx =
+						real cx =
 							((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
 								(((mfcba - mfabc) + (mfcbc - mfaba)) + ((mfcab - mfacb) + (mfccb - mfaab))) +
 								(mfcbb - mfabb));
-						LBMReal cy =
+						real cy =
 							((((mfccc - mfaaa) + (mfaca - mfcac)) + ((mfacc - mfcaa) + (mfcca - mfaac))) +
 								(((mfbca - mfbac) + (mfbcc - mfbaa)) + ((mfacb - mfcab) + (mfccb - mfaab))) +
 								(mfbcb - mfbab));
-						LBMReal cz =
+						real cz =
 							((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfacc - mfcaa) + (mfaac - mfcca))) +
 								(((mfbac - mfbca) + (mfbcc - mfbaa)) + ((mfabc - mfcba) + (mfcbc - mfaba))) +
 								(mfbbc - mfbba));
 
 						////////////////////////////////////////////////////////////////////////////////////
 						// calculate the square of velocities for this lattice node
-						LBMReal cx2 = cx * cx;
-						LBMReal cy2 = cy * cy;
-						LBMReal cz2 = cz * cz;
+						real cx2 = cx * cx;
+						real cy2 = cy * cy;
+						real cz2 = cz * cz;
 						////////////////////////////////////////////////////////////////////////////////////
 						//! - Chimera transform from well conditioned distributions to central moments as defined in Appendix J in \ref
 						//! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015), DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
@@ -2642,16 +2642,16 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 						//!
 
 						// linearized orthogonalization of 3rd order central moments
-						LBMReal Mabc = mfabc - mfaba * c1o3;
-						LBMReal Mbca = mfbca - mfbaa * c1o3;
-						LBMReal Macb = mfacb - mfaab * c1o3;
-						LBMReal Mcba = mfcba - mfaba * c1o3;
-						LBMReal Mcab = mfcab - mfaab * c1o3;
-						LBMReal Mbac = mfbac - mfbaa * c1o3;
+						real Mabc = mfabc - mfaba * c1o3;
+						real Mbca = mfbca - mfbaa * c1o3;
+						real Macb = mfacb - mfaab * c1o3;
+						real Mcba = mfcba - mfaba * c1o3;
+						real Mcab = mfcab - mfaab * c1o3;
+						real Mbac = mfbac - mfbaa * c1o3;
 						// linearized orthogonalization of 5th order central moments
-						LBMReal Mcbc = mfcbc - mfaba * c1o9;
-						LBMReal Mbcc = mfbcc - mfbaa * c1o9;
-						LBMReal Mccb = mfccb - mfaab * c1o9;
+						real Mcbc = mfcbc - mfaba * c1o9;
+						real Mbcc = mfbcc - mfbaa * c1o9;
+						real Mccb = mfccb - mfaab * c1o9;
 
 						//31.05.2022 addaptive mobility
 						//omegaD = c1 + (sqrt((cx - vvx * concentration) * (cx - vvx * concentration) + (cy - vvy * concentration) * (cy - vvy * concentration) + (cz - vvz * concentration) * (cz - vvz * concentration))) / (sqrt((cx - vvx * concentration) * (cx - vvx * concentration) + (cy - vvy * concentration) * (cy - vvy * concentration) + (cz - vvz * concentration) * (cz - vvz * concentration)) + fabs((1.0 - concentration) * (concentration)) * c1o6 * oneOverInterfaceScale+1.0e-200);
@@ -2801,7 +2801,7 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 }
 //////////////////////////////////////////////////////////////////////////
 
-LBMReal MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::gradX1_phi()
+real MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::gradX1_phi()
 {
 	using namespace vf::lbm::dir;
 	using namespace D3Q27System;
@@ -2811,7 +2811,7 @@ LBMReal MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::gradX1_phi()
 		+WEIGTH[DIR_0P0] * (phi[DIR_P00] - phi[DIR_M00]));
 }
 
-LBMReal MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::gradX2_phi()
+real MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::gradX2_phi()
 {
 	using namespace D3Q27System;
 	using namespace vf::lbm::dir;
@@ -2821,7 +2821,7 @@ LBMReal MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::gradX2_phi()
 		+WEIGTH[DIR_0P0] * (phi[DIR_0P0] - phi[DIR_0M0]));
 }
 
-LBMReal MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::gradX3_phi()
+real MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::gradX3_phi()
 {
 	using namespace D3Q27System;
 	using namespace vf::lbm::dir;
@@ -2831,7 +2831,7 @@ LBMReal MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::gradX3_phi()
 		+WEIGTH[DIR_0P0] * (phi[DIR_00P] - phi[DIR_00M]));
 }
 
-LBMReal MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::gradX1_rhoInv(LBMReal rhoL,LBMReal rhoDIV)
+real MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::gradX1_rhoInv(real rhoL,real rhoDIV)
 {
 	using namespace D3Q27System;
 	using namespace vf::lbm::dir;
@@ -2841,7 +2841,7 @@ LBMReal MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::gradX1_rhoInv(LBM
 		+WEIGTH[DIR_0P0] * (1.0 / (rhoL + rhoDIV * phi[DIR_P00]) - 1.0 / (rhoL + rhoDIV * phi[DIR_M00])));
 }
 
-LBMReal MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::gradX2_rhoInv(LBMReal rhoL,LBMReal rhoDIV)
+real MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::gradX2_rhoInv(real rhoL,real rhoDIV)
 {
 	using namespace D3Q27System;
 	using namespace vf::lbm::dir;
@@ -2851,7 +2851,7 @@ LBMReal MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::gradX2_rhoInv(LBM
 		+WEIGTH[DIR_0P0] * (1.0 / (rhoL + rhoDIV * phi[DIR_0P0]) - 1.0 / (rhoL + rhoDIV * phi[DIR_0M0])));
 }
 
-LBMReal MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::gradX3_rhoInv(LBMReal rhoL, LBMReal rhoDIV)
+real MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::gradX3_rhoInv(real rhoL, real rhoDIV)
 {
 	using namespace D3Q27System;
 	using namespace vf::lbm::dir;
@@ -2861,7 +2861,7 @@ LBMReal MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::gradX3_rhoInv(LBM
 		+WEIGTH[DIR_0P0] * (1.0 / (rhoL + rhoDIV * phi[DIR_00P]) - 1.0 / (rhoL + rhoDIV * phi[DIR_00M])));
 }
 
-LBMReal MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::gradX1_phi2()
+real MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::gradX1_phi2()
 {
 	using namespace D3Q27System;
 	using namespace vf::lbm::dir;
@@ -2871,7 +2871,7 @@ LBMReal MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::gradX1_phi2()
 		+WEIGTH[DIR_0P0] * (phi2[DIR_P00] - phi2[DIR_M00]));
 }
 
-LBMReal MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::gradX2_phi2()
+real MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::gradX2_phi2()
 {
 	using namespace D3Q27System;
 	using namespace vf::lbm::dir;
@@ -2881,7 +2881,7 @@ LBMReal MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::gradX2_phi2()
 		+WEIGTH[DIR_0P0] * (phi2[DIR_0P0] - phi2[DIR_0M0]));
 }
 
-LBMReal MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::gradX3_phi2()
+real MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::gradX3_phi2()
 {
 	using namespace D3Q27System;
 	using namespace vf::lbm::dir;
@@ -2891,12 +2891,12 @@ LBMReal MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::gradX3_phi2()
 		+WEIGTH[DIR_0P0] * (phi2[DIR_00P] - phi2[DIR_00M]));
 }
 
-LBMReal MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::nabla2_phi()
+real MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::nabla2_phi()
 {
 	using namespace D3Q27System;
 	using namespace vf::lbm::dir;
 
-	LBMReal sum = 0.0;
+	real sum = 0.0;
 	sum += WEIGTH[DIR_PPP] * ((((phi[DIR_PPP] - phi[DIR_000]) + (phi[DIR_MMM] - phi[DIR_000])) + ((phi[DIR_MMP] - phi[DIR_000]) + (phi[DIR_PPM] - phi[DIR_000])))
 		+ (((phi[DIR_MPP] - phi[DIR_000]) + (phi[DIR_PMM] - phi[DIR_000])) + ((phi[DIR_PMP] - phi[DIR_000]) + (phi[DIR_MPM] - phi[DIR_000]))));
 	sum += WEIGTH[DIR_0PP] * (
@@ -2973,7 +2973,7 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::computePhasefield()
 	}
 }
 
-void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::findNeighbors(CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr ph, int x1, int x2,
+void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::findNeighbors(CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr ph, int x1, int x2,
 	int x3)
 {
 	using namespace D3Q27System;
@@ -2998,7 +2998,7 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::findNeighbors(CbArra
 	}
 }
 
-void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::findNeighbors2(CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr ph, int x1, int x2,
+void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::findNeighbors2(CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr ph, int x1, int x2,
 	int x3)
 {
 	using namespace D3Q27System;

@@ -39,33 +39,33 @@ public:
 
 protected:
 	virtual void initDataSet();
-	LBMReal f[D3Q27System::ENDF + 1];
+	real f[D3Q27System::ENDF + 1];
 
 	UbTimer timer;
 
-	LBMReal OxyyMxzz;
+	real OxyyMxzz;
 	Parameter parameter;
 
-	CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributionsF;
-	CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsF;
-	CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr   zeroDistributionsF;
+	CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributionsF;
+	CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsF;
+	CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr   zeroDistributionsF;
 
-	CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributionsH;
-	CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsH;
-	CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr   zeroDistributionsH;
+	CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributionsH;
+	CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsH;
+	CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr   zeroDistributionsH;
 
 	mu::value_type muX1, muX2, muX3;
 	mu::value_type muDeltaT;
 	mu::value_type muNu;
-	LBMReal forcingX1;
-	LBMReal forcingX2;
-	LBMReal forcingX3;
+	real forcingX1;
+	real forcingX2;
+	real forcingX3;
 
-	LBMReal collFactorF;
-   LBMReal collFactorH;
+	real collFactorF;
+   real collFactorH;
 
-	LBMReal theta;
-	LBMReal alpha;
+	real theta;
+	real alpha;
 };
 
 #endif

@@ -28,28 +28,28 @@ protected:
    void initData() override;
    void nodeCollision(int step, int x1, int x2, int x3) override;
    void initDataSet();
-   LBMReal f[D3Q27System::ENDF + 1];
+   real f[D3Q27System::ENDF + 1];
 
    UbTimer timer;
 
-   LBMReal OxyyMxzz;
+   real OxyyMxzz;
    Parameter parameter;
 
-   CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions;
-   CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions;
-   CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr   zeroDistributions;
+   CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributions;
+   CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions;
+   CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr   zeroDistributions;
 
    mu::value_type muX1, muX2, muX3;
    mu::value_type muDeltaT;
    mu::value_type muNu;
-   LBMReal forcingX1;
-   LBMReal forcingX2;
-   LBMReal forcingX3;
+   real forcingX1;
+   real forcingX2;
+   real forcingX3;
 
    // bulk viscosity
    bool bulkOmegaToOmega;
-   LBMReal OxxPyyPzz;
+   real OxxPyyPzz;
 
-   LBMReal omega;
+   real omega;
 };
 #endif // CumulantLBMKernel_h__

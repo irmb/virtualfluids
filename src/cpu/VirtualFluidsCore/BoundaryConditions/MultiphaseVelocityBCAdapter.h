@@ -92,9 +92,9 @@ public:
    
    MultiphaseVelocityBCAdapter(const bool& vx1, const bool& vx2, const bool& vx3, const BCFunction& velVxBC );
 
-   MultiphaseVelocityBCAdapter(const bool& vx1, const bool& vx2, const bool& vx3, const mu::Parser& function, const LBMReal& phiBC, const double& startTime, const double& endTime  );
+   MultiphaseVelocityBCAdapter(const bool& vx1, const bool& vx2, const bool& vx3, const mu::Parser& function, const real& phiBC, const double& startTime, const double& endTime  );
 
-   MultiphaseVelocityBCAdapter(const bool& vx1, const bool& vx2, const bool& vx3, const mu::Parser& function1, const mu::Parser& function2, const mu::Parser& function3, const LBMReal& phiBC, const double& startTime, const double& endTime );
+   MultiphaseVelocityBCAdapter(const bool& vx1, const bool& vx2, const bool& vx3, const mu::Parser& function1, const mu::Parser& function2, const mu::Parser& function3, const real& phiBC, const double& startTime, const double& endTime );
    
    MultiphaseVelocityBCAdapter(const bool& vx1, const bool& vx2, const bool& vx3, const std::string& functionstring, const double& startTime, const double& endTime );
 
@@ -163,7 +163,7 @@ private:
    std::vector<BCFunction> vx2BCs;
    std::vector<BCFunction> vx3BCs;
 
-   LBMReal phiBC;
+   real phiBC;
 };
 
 #endif

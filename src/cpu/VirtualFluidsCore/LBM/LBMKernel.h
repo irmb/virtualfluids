@@ -49,7 +49,7 @@ class Block3D;
 class LBMKernel : public ILBMKernel, public enableSharedFromThis<LBMKernel>
 {
 public:
-    using LBMRealLim = std::numeric_limits<LBMReal>;
+    using LBMRealLim = std::numeric_limits<real>;
 
 public:
     LBMKernel();
@@ -71,9 +71,9 @@ public:
     void setDataSet(SPtr<DataSet3D> dataSet);
     SPtr<DataSet3D> getDataSet() const override;
 
-    void setForcingX1(LBMReal forcingX1);
-    void setForcingX2(LBMReal forcingX2);
-    void setForcingX3(LBMReal forcingX3);
+    void setForcingX1(real forcingX1);
+    void setForcingX2(real forcingX2);
+    void setForcingX3(real forcingX3);
 
     void setForcingX1(const mu::Parser &parser);
     void setForcingX2(const mu::Parser &parser);
@@ -85,8 +85,8 @@ public:
 
     void setIndex(int x1, int x2, int x3);
 
-    LBMReal getDeltaT() const override;
-    void setDeltaT(LBMReal dt);
+    real getDeltaT() const override;
+    void setDeltaT(real dt);
 
     bool getCompressible() const override;
     void setCompressible(bool val);
@@ -117,8 +117,8 @@ public:
     double getCollisionFactorG() const;
     void setDensityRatio(double densityRatio);
     double getDensityRatio() const;
-    void setMultiphaseModelParameters(LBMReal beta, LBMReal kappa);
-    void getMultiphaseModelParameters(LBMReal &beta, LBMReal &kappa);
+    void setMultiphaseModelParameters(real beta, real kappa);
+    void getMultiphaseModelParameters(real &beta, real &kappa);
     void setContactAngle(double contactAngle);
     double getContactAngle() const;
     void setPhiL(double phiL);
@@ -133,7 +133,7 @@ public:
 protected:
     SPtr<DataSet3D> dataSet;
     SPtr<BCProcessor> bcProcessor;
-    LBMReal collFactor;
+    real collFactor;
     int ghostLayerWidth{ 1 };
     bool compressible{ false };
 
@@ -143,7 +143,7 @@ protected:
     mu::Parser muForcingX2;
     mu::Parser muForcingX3;
     int ix1, ix2, ix3;
-    LBMReal deltaT{ 1.0 };
+    real deltaT{ 1.0 };
 
     // sponge layer
     bool withSpongeLayer{ false };
@@ -154,17 +154,17 @@ protected:
     std::array<int, 3> nx;
 
     // Multiphase model
-    LBMReal collFactorL;
-    LBMReal collFactorG;
-    LBMReal densityRatio;
-    LBMReal beta;
-    LBMReal kappa;
-    LBMReal contactAngle;
-    LBMReal phiL;
-    LBMReal phiH;
-    LBMReal tauH;
-    LBMReal mob;
-    LBMReal interfaceWidth { 4.0 };
+    real collFactorL;
+    real collFactorG;
+    real densityRatio;
+    real beta;
+    real kappa;
+    real contactAngle;
+    real phiL;
+    real phiH;
+    real tauH;
+    real mob;
+    real interfaceWidth { 4.0 };
 
 private:
     void checkFunction(mu::Parser fct);

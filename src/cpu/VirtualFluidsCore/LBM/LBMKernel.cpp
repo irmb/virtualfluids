@@ -57,18 +57,18 @@ void LBMKernel::setCollisionFactor(double collFactor) { this->collFactor = collF
 //////////////////////////////////////////////////////////////////////////
 double LBMKernel::getCollisionFactor() const { return collFactor; }
 //////////////////////////////////////////////////////////////////////////
-void LBMKernel::setForcingX1(LBMReal forcingX1)
+void LBMKernel::setForcingX1(real forcingX1)
 {
     this->muForcingX1.SetExpr(UbSystem::toString(forcingX1, LBMRealLim::digits10));
     this->checkFunction(muForcingX1);
 }
 //////////////////////////////////////////////////////////////////////////
-void LBMKernel::setForcingX2(LBMReal forcingX2)
+void LBMKernel::setForcingX2(real forcingX2)
 {
     this->muForcingX2.SetExpr(UbSystem::toString(forcingX2, LBMRealLim::digits10));
     this->checkFunction(muForcingX2);
 }
-void LBMKernel::setForcingX3(LBMReal forcingX3)
+void LBMKernel::setForcingX3(real forcingX3)
 {
     this->muForcingX3.SetExpr(UbSystem::toString(forcingX3, LBMRealLim::digits10));
     this->checkFunction(muForcingX3);
@@ -141,9 +141,9 @@ void LBMKernel::setIndex(int x1, int x2, int x3)
 //////////////////////////////////////////////////////////////////////////
 SPtr<DataSet3D> LBMKernel::getDataSet() const { return this->dataSet; }
 //////////////////////////////////////////////////////////////////////////
-LBMReal LBMKernel::getDeltaT() const { return this->deltaT; }
+real LBMKernel::getDeltaT() const { return this->deltaT; }
 //////////////////////////////////////////////////////////////////////////
-void LBMKernel::setDeltaT(LBMReal dt) { deltaT = dt; }
+void LBMKernel::setDeltaT(real dt) { deltaT = dt; }
 //////////////////////////////////////////////////////////////////////////
 bool LBMKernel::getCompressible() const { return compressible; }
 //////////////////////////////////////////////////////////////////////////
@@ -202,13 +202,13 @@ void LBMKernel::setDensityRatio(double densityRatio) { this->densityRatio = dens
 //////////////////////////////////////////////////////////////////////////
 double LBMKernel::getDensityRatio() const { return densityRatio; }
 //////////////////////////////////////////////////////////////////////////
-void LBMKernel::setMultiphaseModelParameters(LBMReal beta, LBMReal kappa)
+void LBMKernel::setMultiphaseModelParameters(real beta, real kappa)
 {
     this->beta  = beta;
     this->kappa = kappa;
 }
 //////////////////////////////////////////////////////////////////////////
-void LBMKernel::getMultiphaseModelParameters(LBMReal &beta, LBMReal &kappa)
+void LBMKernel::getMultiphaseModelParameters(real &beta, real &kappa)
 {
     beta  = this->beta;
     kappa = this->kappa;

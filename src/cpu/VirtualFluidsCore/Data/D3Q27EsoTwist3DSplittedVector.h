@@ -49,34 +49,34 @@ public:
     //! \param nx2 number of nodes in x2 direction
     //! \param nx3 number of nodes in x3 direction
     //! \param value initialisation value
-    D3Q27EsoTwist3DSplittedVector(size_t nx1, size_t nx2, size_t nx3, LBMReal value);
+    D3Q27EsoTwist3DSplittedVector(size_t nx1, size_t nx2, size_t nx3, real value);
     //////////////////////////////////////////////////////////////////////////
     ~D3Q27EsoTwist3DSplittedVector() override;
     //////////////////////////////////////////////////////////////////////////
     void swap() override;
     //////////////////////////////////////////////////////////////////////////
-    void getDistribution(LBMReal *const f, size_t x1, size_t x2, size_t x3) override;
+    void getDistribution(real *const f, size_t x1, size_t x2, size_t x3) override;
     //////////////////////////////////////////////////////////////////////////
-    void setDistribution(const LBMReal *const f, size_t x1, size_t x2, size_t x3) override;
+    void setDistribution(const real *const f, size_t x1, size_t x2, size_t x3) override;
     ////////////////////////////////////////////////////////////////////////
-    void getDistributionInv(LBMReal *const f, size_t x1, size_t x2, size_t x3) override;
+    void getDistributionInv(real *const f, size_t x1, size_t x2, size_t x3) override;
     //////////////////////////////////////////////////////////////////////////
-    void setDistributionInv(const LBMReal *const f, size_t x1, size_t x2, size_t x3) override;
+    void setDistributionInv(const real *const f, size_t x1, size_t x2, size_t x3) override;
     //////////////////////////////////////////////////////////////////////////
-    void setDistributionForDirection(const LBMReal *const f, size_t x1, size_t x2, size_t x3,
+    void setDistributionForDirection(const real *const f, size_t x1, size_t x2, size_t x3,
                                      unsigned long int direction) override;
     //////////////////////////////////////////////////////////////////////////
-    void setDistributionForDirection(LBMReal f, size_t x1, size_t x2, size_t x3, int direction) override;
+    void setDistributionForDirection(real f, size_t x1, size_t x2, size_t x3, int direction) override;
     //////////////////////////////////////////////////////////////////////////
-    LBMReal getDistributionInvForDirection(size_t x1, size_t x2, size_t x3, int direction) override;
+    real getDistributionInvForDirection(size_t x1, size_t x2, size_t x3, int direction) override;
     //////////////////////////////////////////////////////////////////////////
-    void setDistributionInvForDirection(const LBMReal *const f, size_t x1, size_t x2, size_t x3,
+    void setDistributionInvForDirection(const real *const f, size_t x1, size_t x2, size_t x3,
                                         unsigned long int direction) override;
     //////////////////////////////////////////////////////////////////////////
-    void setDistributionInvForDirection(LBMReal f, size_t x1, size_t x2, size_t x3,
+    void setDistributionInvForDirection(real f, size_t x1, size_t x2, size_t x3,
                                         unsigned long int direction) override;
     //////////////////////////////////////////////////////////////////////////
-    LBMReal getDistributionForDirection(size_t x1, size_t x2, size_t x3, int direction) override;
+    real getDistributionForDirection(size_t x1, size_t x2, size_t x3, int direction) override;
     //////////////////////////////////////////////////////////////////////////
     size_t getNX1() const override;
     //////////////////////////////////////////////////////////////////////////
@@ -84,23 +84,23 @@ public:
     //////////////////////////////////////////////////////////////////////////
     size_t getNX3() const override;
     //////////////////////////////////////////////////////////////////////////
-    CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr getLocalDistributions();
+    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr getLocalDistributions();
     //////////////////////////////////////////////////////////////////////////
-    CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr getNonLocalDistributions();
+    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr getNonLocalDistributions();
     //////////////////////////////////////////////////////////////////////////
-    CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr getZeroDistributions();
+    CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr getZeroDistributions();
     //////////////////////////////////////////////////////////////////////////
     void setNX1(size_t newNX1);
     void setNX2(size_t newNX2);
     void setNX3(size_t newNX3);
-    void setLocalDistributions(CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr array);
-    void setNonLocalDistributions(CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr array);
-    void setZeroDistributions(CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr array);
+    void setLocalDistributions(CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr array);
+    void setNonLocalDistributions(CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr array);
+    void setZeroDistributions(CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr array);
 
 protected:
-    CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions;
-    CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions;
-    CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr zeroDistributions;
+    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributions;
+    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions;
+    CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributions;
     size_t NX1, NX2, NX3;
 
     friend class MPIIORestartCoProcessor;

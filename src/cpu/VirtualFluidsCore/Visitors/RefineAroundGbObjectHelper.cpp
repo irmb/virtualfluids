@@ -10,7 +10,7 @@
 
 RefineAroundGbObjectHelper::RefineAroundGbObjectHelper(SPtr<Grid3D> grid, int refineLevel,
                                                        SPtr<D3Q27TriFaceMeshInteractor> objectIter,
-                                                       double startDistance, double stopDistance,
+                                                       real startDistance, real stopDistance,
                                                        std::shared_ptr<vf::mpi::Communicator> comm)
     : grid(grid), refineLevel(refineLevel), objectIter(objectIter), startDistance(startDistance),
       stopDistance(stopDistance), comm(comm)

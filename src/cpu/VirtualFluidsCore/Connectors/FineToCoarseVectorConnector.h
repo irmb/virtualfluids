@@ -115,8 +115,8 @@ protected:
 
     CFconnectorType connType;
 
-    void writeICellCtoData(vector_type &data, int &index, LBMReal *icellC);
-    void writeNodeToVector(vector_type &data, int &index, LBMReal *inode);
+    void writeICellCtoData(vector_type &data, int &index, real *icellC);
+    void writeNodeToVector(vector_type &data, int &index, real *inode);
     //void getLocalMinMax(int &minX1, int &minX2, int &minX3, int &maxX1, int &maxX2, int &maxX3);
     void getLocalMinMax(int &minX1, int &minX2, int &minX3, int &maxX1, int &maxX2, int &maxX3,
                         CFconnectorType connType);
@@ -128,7 +128,7 @@ protected:
                                  const int &lMaxX1, const int &lMaxX2, const int &lMaxX3, vector_type &data,
                                  int &index);
     void readICellFfromData(vector_type &data, int &index, D3Q27ICell &icellF);
-    void readNodeFromVector(vector_type &data, int &index, LBMReal *inode);
+    void readNodeFromVector(vector_type &data, int &index, real *inode);
     void getLocalOffsets(const int &gMax, int &oMin);
     void getLocalMins(int &minX1, int &minX2, int &minX3, const int &oMinX1, const int &oMinX2, const int &oMinX3);
 
@@ -233,7 +233,7 @@ void FineToCoarseVectorConnector<VectorTransmitter>::init()
     bMaxX3 = (int)block.lock()->getKernel()->getDataSet()->getFdistributions()->getNX3();
 
     int sendSize      = 0;
-    LBMReal initValue = -999.0;
+    real initValue = -999.0;
 
     int sendDataPerNode = 27 /*f*/;
     int iCellSize       = 1; // size of interpolation cell
@@ -794,13 +794,13 @@ void FineToCoarseVectorConnector<VectorTransmitter>::fillSendVector(SPtr<Distrib
                                                                     const int &lMaxX3, vector_type &data, int &index)
 {
     int ix1, ix2, ix3;
-    LBMReal xoff, yoff, zoff;
+    real xoff, yoff, zoff;
     SPtr<BCArray3D> bcArray = block.lock()->getKernel()->getBCProcessor()->getBCArray();
 
     for (ix3 = lMinX3; ix3 < lMaxX3; ix3 += 2) {
         for (ix2 = lMinX2; ix2 < lMaxX2; ix2 += 2) {
             for (ix1 = lMinX1; ix1 < lMaxX1; ix1 += 2) {
-                LBMReal icellC[27];
+                real icellC[27];
                 D3Q27ICell icellF;
 
                 int howManySolids = iprocessor->iCellHowManySolids(bcArray, ix1, ix2, ix3);
@@ -831,7 +831,7 @@ void FineToCoarseVectorConnector<VectorTransmitter>::fillSendVector(SPtr<Distrib
 }
 //////////////////////////////////////////////////////////////////////////
 template <typename VectorTransmitter>
-void FineToCoarseVectorConnector<VectorTransmitter>::writeICellCtoData(vector_type &data, int &index, LBMReal *icellC)
+void FineToCoarseVectorConnector<VectorTransmitter>::writeICellCtoData(vector_type &data, int &index, real *icellC)
 {
     for (int i = D3Q27System::STARTF; i < D3Q27System::ENDF + 1; i++) {
         data[index++] = icellC[i];
@@ -1150,7 +1150,7 @@ void FineToCoarseVectorConnector<VectorTransmitter>::readICellFfromData(vector_t
 }
 //////////////////////////////////////////////////////////////////////////
 template <typename VectorTransmitter>
-void FineToCoarseVectorConnector<VectorTransmitter>::readNodeFromVector(vector_type &data, int &index, LBMReal *inode)
+void FineToCoarseVectorConnector<VectorTransmitter>::readNodeFromVector(vector_type &data, int &index, real *inode)
 {
     for (int i = D3Q27System::STARTF; i < D3Q27System::ENDF + 1; i++) {
         inode[i] = data[index++];

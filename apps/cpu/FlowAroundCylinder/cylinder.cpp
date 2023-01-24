@@ -20,20 +20,20 @@ void run(string configname)
       config.load(configname);
 
       string          pathOut = config.getValue<string>("pathOut");
-      double          uLB = config.getValue<double>("uLB");
-      double          restartStep = config.getValue<double>("restartStep");
-      double          cpStart = config.getValue<double>("cpStart");
-      double          cpStep = config.getValue<double>("cpStep");
-      double          endTime = config.getValue<double>("endTime");
-      double          outTime = config.getValue<double>("outTime");
-      double          availMem = config.getValue<double>("availMem");
+      real          uLB = config.getValue<real>("uLB");
+      real          restartStep = config.getValue<real>("restartStep");
+      real          cpStart = config.getValue<real>("cpStart");
+      real          cpStep = config.getValue<real>("cpStep");
+      real          endTime = config.getValue<real>("endTime");
+      real          outTime = config.getValue<real>("outTime");
+      real          availMem = config.getValue<real>("availMem");
       int             refineLevel = config.getValue<int>("refineLevel");
       bool            logToFile = config.getValue<bool>("logToFile");
-      vector<double>  nupsStep = config.getVector<double>("nupsStep");
+      vector<real>  nupsStep = config.getVector<real>("nupsStep");
       bool            newStart = config.getValue<bool>("newStart");
       int             numOfThreads = config.getValue<int>("numOfThreads");
       vector<int>     blockNx = config.getVector<int>("blockNx");
-      double          dx = config.getValue<double>("dx");
+      real          dx = config.getValue<real>("dx");
 
       SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
@@ -60,18 +60,18 @@ void run(string configname)
 
       
 
-      double L1 = 2.5;
-      double L2, L3, H;
+      real L1 = 2.5;
+      real L2, L3, H;
       L2 = L3 = H = 0.41;
 
-      LBMReal Re = 20.0;
-      LBMReal radius = 0.05;
-      LBMReal rhoReal = 1.0; //kg/m^3
-      LBMReal uReal = 0.45;//m/s
-      LBMReal nueReal = (uReal*radius*2.0)/Re;
+      real Re = 20.0;
+      real radius = 0.05;
+      real rhoReal = 1.0; //kg/m^3
+      real uReal = 0.45;//m/s
+      real nueReal = (uReal*radius*2.0)/Re;
       
-      LBMReal rhoLB = 0.0;
-      LBMReal nueLB = (((4.0/9.0)*uLB)*2.0*(radius/dx))/Re;
+      real rhoLB = 0.0;
+      real nueLB = (((4.0/9.0)*uLB)*2.0*(radius/dx))/Re;
 
       SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
 
@@ -137,13 +137,13 @@ void run(string configname)
          GbSystem3D::writeGeoObject(refCylinder.get(), pathOut+"/geo/refCylinder", WbWriterVtkXmlBinary::getInstance());
 
          //bounding box
-         double g_minX1 = 0.0;
-         double g_minX2 = 0.0;
-         double g_minX3 = 0.0;
+         real g_minX1 = 0.0;
+         real g_minX2 = 0.0;
+         real g_minX3 = 0.0;
 
-         double g_maxX1 = L1;
-         double g_maxX2 = L2;
-         double g_maxX3 = L3;
+         real g_maxX1 = L1;
+         real g_maxX2 = L2;
+         real g_maxX3 = L3;
 
          SPtr<GbObject3D> gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
          if (myid==0) GbSystem3D::writeGeoObject(gridCube.get(), pathOut+"/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
@@ -152,7 +152,7 @@ void run(string configname)
          const int blocknx2 = blockNx[1];
          const int blocknx3 = blockNx[2];
 
-         double blockLength = blocknx1*dx;
+         real blockLength = blocknx1*dx;
 
          grid->setDeltaX(dx);
          grid->setBlockNX(blocknx1, blocknx2, blocknx3);
@@ -225,8 +225,8 @@ void run(string configname)
          unsigned long long numberOfNodesPerBlock = (unsigned long long)(blockNx[0])* (unsigned long long)(blockNx[1])* (unsigned long long)(blockNx[2]);
          unsigned long long numberOfNodes = numberOfBlocks * numberOfNodesPerBlock;
          unsigned long long numberOfNodesPerBlockWithGhostLayer = numberOfBlocks * (blockNx[0]+ghostLayer) * (blockNx[1]+ghostLayer) * (blockNx[2]+ghostLayer);
-         double needMemAll = double(numberOfNodesPerBlockWithGhostLayer*(27*sizeof(double)+sizeof(int)+sizeof(float)*4));
-         double needMem = needMemAll/double(comm->getNumberOfProcesses());
+         real needMemAll = real(numberOfNodesPerBlockWithGhostLayer*(27*sizeof(real)+sizeof(int)+sizeof(float)*4));
+         real needMem = needMemAll/real(comm->getNumberOfProcesses());
 
          if (myid==0)
          {
@@ -304,8 +304,8 @@ void run(string configname)
 
 	  SPtr<CoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, stepSch, pathOut, WbWriterVtkXmlBinary::getInstance(), conv, comm));
 
-      double area = (2.0*radius*H)/(dx*dx);
-      double v    = 4.0*uLB/9.0;
+      real area = (2.0*radius*H)/(dx*dx);
+      real v    = 4.0*uLB/9.0;
       SPtr<UbScheduler> forceSch(new UbScheduler(100));
       SPtr<CalculateForcesCoProcessor> fp = make_shared<CalculateForcesCoProcessor>(grid, forceSch, pathOut + "/results/forces.txt", comm, v, area);
       fp->addInteractor(cylinderInt);

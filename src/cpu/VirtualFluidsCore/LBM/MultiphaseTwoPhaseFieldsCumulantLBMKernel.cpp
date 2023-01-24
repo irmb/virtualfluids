@@ -82,11 +82,11 @@ SPtr<LBMKernel> MultiphaseTwoPhaseFieldsCumulantLBMKernel::clone()
     return kernel;
 }
 //////////////////////////////////////////////////////////////////////////
- void  MultiphaseTwoPhaseFieldsCumulantLBMKernel::forwardInverseChimeraWithKincompressible(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2, LBMReal Kinverse, LBMReal K, LBMReal oneMinusRho) {
+ void  MultiphaseTwoPhaseFieldsCumulantLBMKernel::forwardInverseChimeraWithKincompressible(real& mfa, real& mfb, real& mfc, real vv, real v2, real Kinverse, real K, real oneMinusRho) {
 	using namespace UbMath;
-    LBMReal m2 = mfa + mfc;
-	LBMReal m1 = mfc - mfa;
-	LBMReal m0 = m2 + mfb;
+    real m2 = mfa + mfc;
+	real m1 = mfc - mfa;
+	real m0 = m2 + mfb;
 	mfa = m0;
 	m0 *= Kinverse;
 	m0 += oneMinusRho;
@@ -95,10 +95,10 @@ SPtr<LBMKernel> MultiphaseTwoPhaseFieldsCumulantLBMKernel::clone()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
- void  MultiphaseTwoPhaseFieldsCumulantLBMKernel::backwardInverseChimeraWithKincompressible(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2, LBMReal Kinverse, LBMReal K, LBMReal oneMinusRho) {
+ void  MultiphaseTwoPhaseFieldsCumulantLBMKernel::backwardInverseChimeraWithKincompressible(real& mfa, real& mfb, real& mfc, real vv, real v2, real Kinverse, real K, real oneMinusRho) {
 	using namespace UbMath;
-    LBMReal m0 = (((mfc - mfb) * c1o2 + mfb * vv) * Kinverse + (mfa * Kinverse + oneMinusRho) * (v2 - vv) * c1o2) * K;
-	LBMReal m1 = (((mfa - mfc) - c2 * mfb * vv) * Kinverse + (mfa * Kinverse + oneMinusRho) * (-v2)) * K;
+    real m0 = (((mfc - mfb) * c1o2 + mfb * vv) * Kinverse + (mfa * Kinverse + oneMinusRho) * (v2 - vv) * c1o2) * K;
+	real m1 = (((mfa - mfc) - c2 * mfb * vv) * Kinverse + (mfa * Kinverse + oneMinusRho) * (-v2)) * K;
 	mfc = (((mfc + mfb) * c1o2 + mfb * vv) * Kinverse + (mfa * Kinverse + oneMinusRho) * (v2 + vv) * c1o2) * K;
 	mfa = m0;
 	mfb = m1;
@@ -106,20 +106,20 @@ SPtr<LBMKernel> MultiphaseTwoPhaseFieldsCumulantLBMKernel::clone()
 
 
 ////////////////////////////////////////////////////////////////////////////////
- void  MultiphaseTwoPhaseFieldsCumulantLBMKernel::forwardChimera(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2) {
+ void  MultiphaseTwoPhaseFieldsCumulantLBMKernel::forwardChimera(real& mfa, real& mfb, real& mfc, real vv, real v2) {
 	using namespace UbMath;
-    LBMReal m1 = (mfa + mfc) + mfb;
-	LBMReal m2 = mfc - mfa;
+    real m1 = (mfa + mfc) + mfb;
+	real m2 = mfc - mfa;
 	mfc = (mfc + mfa) + (v2 * m1 - c2 * vv * m2);
 	mfb = m2 - vv * m1;
 	mfa = m1;
 }
 
 
- void  MultiphaseTwoPhaseFieldsCumulantLBMKernel::backwardChimera(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2) {
+ void  MultiphaseTwoPhaseFieldsCumulantLBMKernel::backwardChimera(real& mfa, real& mfb, real& mfc, real vv, real v2) {
 	using namespace UbMath;
-    LBMReal ma = (mfc + mfa * (v2 - vv)) * c1o2 + mfb * (vv - c1o2);
-	LBMReal mb = ((mfa - mfc) - mfa * v2) - c2 * mfb * vv;
+    real ma = (mfc + mfa * (v2 - vv)) * c1o2 + mfb * (vv - c1o2);
+	real mb = ((mfa - mfc) - mfa * v2) - c2 * mfb * vv;
 	mfc = (mfc + mfa * (v2 + vv)) * c1o2 + mfb * (vv + c1o2);
 	mfb = mb;
 	mfa = ma;
@@ -136,7 +136,7 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
     forcingX2 = 0.0;
     forcingX3 = 0.0;
 
-	LBMReal oneOverInterfaceScale = 1.0;
+	real oneOverInterfaceScale = 1.0;
     /////////////////////////////////////
 
     localDistributionsF    = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getLocalDistributions();
@@ -166,12 +166,12 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
 
     //TODO
 	//very expensive !!!!!
-	CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr phaseField(
-            new CbArray3D<LBMReal, IndexerX3X2X1>(bcArrayMaxX1, bcArrayMaxX2, bcArrayMaxX3, -999.0));
-    CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr phaseField2(
-        new CbArray3D<LBMReal, IndexerX3X2X1>(bcArrayMaxX1, bcArrayMaxX2, bcArrayMaxX3, -999.0));
-        CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr divU(
-            new CbArray3D<LBMReal, IndexerX3X2X1>(bcArrayMaxX1, bcArrayMaxX2, bcArrayMaxX3, 0.0));
+	CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr phaseField(
+            new CbArray3D<real, IndexerX3X2X1>(bcArrayMaxX1, bcArrayMaxX2, bcArrayMaxX3, -999.0));
+    CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr phaseField2(
+        new CbArray3D<real, IndexerX3X2X1>(bcArrayMaxX1, bcArrayMaxX2, bcArrayMaxX3, -999.0));
+        CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr divU(
+            new CbArray3D<real, IndexerX3X2X1>(bcArrayMaxX1, bcArrayMaxX2, bcArrayMaxX3, 0.0));
 
 
         for (int x3 = 0; x3 <= maxX3; x3++) {
@@ -182,34 +182,34 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
                         int x2p = x2 + 1;
                         int x3p = x3 + 1;
 
-                        LBMReal mfcbb = (*this->localDistributionsH1)(D3Q27System::ET_E, x1, x2, x3);
-                        LBMReal mfbcb = (*this->localDistributionsH1)(D3Q27System::ET_N, x1, x2, x3);
-                        LBMReal mfbbc = (*this->localDistributionsH1)(D3Q27System::ET_T, x1, x2, x3);
-                        LBMReal mfccb = (*this->localDistributionsH1)(D3Q27System::ET_NE, x1, x2, x3);
-                        LBMReal mfacb = (*this->localDistributionsH1)(D3Q27System::ET_NW, x1p, x2, x3);
-                        LBMReal mfcbc = (*this->localDistributionsH1)(D3Q27System::ET_TE, x1, x2, x3);
-                        LBMReal mfabc = (*this->localDistributionsH1)(D3Q27System::ET_TW, x1p, x2, x3);
-                        LBMReal mfbcc = (*this->localDistributionsH1)(D3Q27System::ET_TN, x1, x2, x3);
-                        LBMReal mfbac = (*this->localDistributionsH1)(D3Q27System::ET_TS, x1, x2p, x3);
-                        LBMReal mfccc = (*this->localDistributionsH1)(D3Q27System::ET_TNE, x1, x2, x3);
-                        LBMReal mfacc = (*this->localDistributionsH1)(D3Q27System::ET_TNW, x1p, x2, x3);
-                        LBMReal mfcac = (*this->localDistributionsH1)(D3Q27System::ET_TSE, x1, x2p, x3);
-                        LBMReal mfaac = (*this->localDistributionsH1)(D3Q27System::ET_TSW, x1p, x2p, x3);
-                        LBMReal mfabb = (*this->nonLocalDistributionsH1)(D3Q27System::ET_W, x1p, x2, x3);
-                        LBMReal mfbab = (*this->nonLocalDistributionsH1)(D3Q27System::ET_S, x1, x2p, x3);
-                        LBMReal mfbba = (*this->nonLocalDistributionsH1)(D3Q27System::ET_B, x1, x2, x3p);
-                        LBMReal mfaab = (*this->nonLocalDistributionsH1)(D3Q27System::ET_SW, x1p, x2p, x3);
-                        LBMReal mfcab = (*this->nonLocalDistributionsH1)(D3Q27System::ET_SE, x1, x2p, x3);
-                        LBMReal mfaba = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BW, x1p, x2, x3p);
-                        LBMReal mfcba = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BE, x1, x2, x3p);
-                        LBMReal mfbaa = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BS, x1, x2p, x3p);
-                        LBMReal mfbca = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BN, x1, x2, x3p);
-                        LBMReal mfaaa = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BSW, x1p, x2p, x3p);
-                        LBMReal mfcaa = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BSE, x1, x2p, x3p);
-                        LBMReal mfaca = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNW, x1p, x2, x3p);
-                        LBMReal mfcca = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNE, x1, x2, x3p);
+                        real mfcbb = (*this->localDistributionsH1)(D3Q27System::ET_E, x1, x2, x3);
+                        real mfbcb = (*this->localDistributionsH1)(D3Q27System::ET_N, x1, x2, x3);
+                        real mfbbc = (*this->localDistributionsH1)(D3Q27System::ET_T, x1, x2, x3);
+                        real mfccb = (*this->localDistributionsH1)(D3Q27System::ET_NE, x1, x2, x3);
+                        real mfacb = (*this->localDistributionsH1)(D3Q27System::ET_NW, x1p, x2, x3);
+                        real mfcbc = (*this->localDistributionsH1)(D3Q27System::ET_TE, x1, x2, x3);
+                        real mfabc = (*this->localDistributionsH1)(D3Q27System::ET_TW, x1p, x2, x3);
+                        real mfbcc = (*this->localDistributionsH1)(D3Q27System::ET_TN, x1, x2, x3);
+                        real mfbac = (*this->localDistributionsH1)(D3Q27System::ET_TS, x1, x2p, x3);
+                        real mfccc = (*this->localDistributionsH1)(D3Q27System::ET_TNE, x1, x2, x3);
+                        real mfacc = (*this->localDistributionsH1)(D3Q27System::ET_TNW, x1p, x2, x3);
+                        real mfcac = (*this->localDistributionsH1)(D3Q27System::ET_TSE, x1, x2p, x3);
+                        real mfaac = (*this->localDistributionsH1)(D3Q27System::ET_TSW, x1p, x2p, x3);
+                        real mfabb = (*this->nonLocalDistributionsH1)(D3Q27System::ET_W, x1p, x2, x3);
+                        real mfbab = (*this->nonLocalDistributionsH1)(D3Q27System::ET_S, x1, x2p, x3);
+                        real mfbba = (*this->nonLocalDistributionsH1)(D3Q27System::ET_B, x1, x2, x3p);
+                        real mfaab = (*this->nonLocalDistributionsH1)(D3Q27System::ET_SW, x1p, x2p, x3);
+                        real mfcab = (*this->nonLocalDistributionsH1)(D3Q27System::ET_SE, x1, x2p, x3);
+                        real mfaba = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BW, x1p, x2, x3p);
+                        real mfcba = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BE, x1, x2, x3p);
+                        real mfbaa = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BS, x1, x2p, x3p);
+                        real mfbca = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BN, x1, x2, x3p);
+                        real mfaaa = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BSW, x1p, x2p, x3p);
+                        real mfcaa = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BSE, x1, x2p, x3p);
+                        real mfaca = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNW, x1p, x2, x3p);
+                        real mfcca = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNE, x1, x2, x3p);
 
-                        LBMReal mfbbb = (*this->zeroDistributionsH1)(x1, x2, x3);
+                        real mfbbb = (*this->zeroDistributionsH1)(x1, x2, x3);
                         (*phaseField)(x1, x2, x3) = (((mfaaa + mfccc) + (mfaca + mfcac)) + ((mfaac + mfcca)  + (mfcaa + mfacc))  ) +
                                                     (((mfaab + mfacb) + (mfcab + mfccb)) + ((mfaba + mfabc) + (mfcba + mfcbc)) +
                                                     ((mfbaa + mfbac) + (mfbca + mfbcc))) + ((mfabb + mfcbb) +
@@ -257,7 +257,7 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
             }
         }
 
-        LBMReal collFactorM;
+        real collFactorM;
         //LBMReal forcingTerm[D3Q27System::ENDF + 1];
 
         for (int x3 = minX3; x3 < maxX3; x3++) {
@@ -292,53 +292,53 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
                         findNeighbors(phaseField, x1, x2, x3);
 						findNeighbors2(phaseField2, x1, x2, x3);
 
-                        LBMReal mfcbb = (*this->localDistributionsF)(D3Q27System::ET_E, x1, x2, x3);
-                        LBMReal mfbcb = (*this->localDistributionsF)(D3Q27System::ET_N, x1, x2, x3);
-                        LBMReal mfbbc = (*this->localDistributionsF)(D3Q27System::ET_T, x1, x2, x3);
-                        LBMReal mfccb = (*this->localDistributionsF)(D3Q27System::ET_NE, x1, x2, x3);
-                        LBMReal mfacb = (*this->localDistributionsF)(D3Q27System::ET_NW, x1p, x2, x3);
-                        LBMReal mfcbc = (*this->localDistributionsF)(D3Q27System::ET_TE, x1, x2, x3);
-                        LBMReal mfabc = (*this->localDistributionsF)(D3Q27System::ET_TW, x1p, x2, x3);
-                        LBMReal mfbcc = (*this->localDistributionsF)(D3Q27System::ET_TN, x1, x2, x3);
-                        LBMReal mfbac = (*this->localDistributionsF)(D3Q27System::ET_TS, x1, x2p, x3);
-                        LBMReal mfccc = (*this->localDistributionsF)(D3Q27System::ET_TNE, x1, x2, x3);
-                        LBMReal mfacc = (*this->localDistributionsF)(D3Q27System::ET_TNW, x1p, x2, x3);
-                        LBMReal mfcac = (*this->localDistributionsF)(D3Q27System::ET_TSE, x1, x2p, x3);
-                        LBMReal mfaac = (*this->localDistributionsF)(D3Q27System::ET_TSW, x1p, x2p, x3);
-                        LBMReal mfabb = (*this->nonLocalDistributionsF)(D3Q27System::ET_W, x1p, x2, x3);
-                        LBMReal mfbab = (*this->nonLocalDistributionsF)(D3Q27System::ET_S, x1, x2p, x3);
-                        LBMReal mfbba = (*this->nonLocalDistributionsF)(D3Q27System::ET_B, x1, x2, x3p);
-                        LBMReal mfaab = (*this->nonLocalDistributionsF)(D3Q27System::ET_SW, x1p, x2p, x3);
-                        LBMReal mfcab = (*this->nonLocalDistributionsF)(D3Q27System::ET_SE, x1, x2p, x3);
-                        LBMReal mfaba = (*this->nonLocalDistributionsF)(D3Q27System::ET_BW, x1p, x2, x3p);
-                        LBMReal mfcba = (*this->nonLocalDistributionsF)(D3Q27System::ET_BE, x1, x2, x3p);
-                        LBMReal mfbaa = (*this->nonLocalDistributionsF)(D3Q27System::ET_BS, x1, x2p, x3p);
-                        LBMReal mfbca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BN, x1, x2, x3p);
-                        LBMReal mfaaa = (*this->nonLocalDistributionsF)(D3Q27System::ET_BSW, x1p, x2p, x3p);
-                        LBMReal mfcaa = (*this->nonLocalDistributionsF)(D3Q27System::ET_BSE, x1, x2p, x3p);
-                        LBMReal mfaca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BNW, x1p, x2, x3p);
-                        LBMReal mfcca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BNE, x1, x2, x3p);
+                        real mfcbb = (*this->localDistributionsF)(D3Q27System::ET_E, x1, x2, x3);
+                        real mfbcb = (*this->localDistributionsF)(D3Q27System::ET_N, x1, x2, x3);
+                        real mfbbc = (*this->localDistributionsF)(D3Q27System::ET_T, x1, x2, x3);
+                        real mfccb = (*this->localDistributionsF)(D3Q27System::ET_NE, x1, x2, x3);
+                        real mfacb = (*this->localDistributionsF)(D3Q27System::ET_NW, x1p, x2, x3);
+                        real mfcbc = (*this->localDistributionsF)(D3Q27System::ET_TE, x1, x2, x3);
+                        real mfabc = (*this->localDistributionsF)(D3Q27System::ET_TW, x1p, x2, x3);
+                        real mfbcc = (*this->localDistributionsF)(D3Q27System::ET_TN, x1, x2, x3);
+                        real mfbac = (*this->localDistributionsF)(D3Q27System::ET_TS, x1, x2p, x3);
+                        real mfccc = (*this->localDistributionsF)(D3Q27System::ET_TNE, x1, x2, x3);
+                        real mfacc = (*this->localDistributionsF)(D3Q27System::ET_TNW, x1p, x2, x3);
+                        real mfcac = (*this->localDistributionsF)(D3Q27System::ET_TSE, x1, x2p, x3);
+                        real mfaac = (*this->localDistributionsF)(D3Q27System::ET_TSW, x1p, x2p, x3);
+                        real mfabb = (*this->nonLocalDistributionsF)(D3Q27System::ET_W, x1p, x2, x3);
+                        real mfbab = (*this->nonLocalDistributionsF)(D3Q27System::ET_S, x1, x2p, x3);
+                        real mfbba = (*this->nonLocalDistributionsF)(D3Q27System::ET_B, x1, x2, x3p);
+                        real mfaab = (*this->nonLocalDistributionsF)(D3Q27System::ET_SW, x1p, x2p, x3);
+                        real mfcab = (*this->nonLocalDistributionsF)(D3Q27System::ET_SE, x1, x2p, x3);
+                        real mfaba = (*this->nonLocalDistributionsF)(D3Q27System::ET_BW, x1p, x2, x3p);
+                        real mfcba = (*this->nonLocalDistributionsF)(D3Q27System::ET_BE, x1, x2, x3p);
+                        real mfbaa = (*this->nonLocalDistributionsF)(D3Q27System::ET_BS, x1, x2p, x3p);
+                        real mfbca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BN, x1, x2, x3p);
+                        real mfaaa = (*this->nonLocalDistributionsF)(D3Q27System::ET_BSW, x1p, x2p, x3p);
+                        real mfcaa = (*this->nonLocalDistributionsF)(D3Q27System::ET_BSE, x1, x2p, x3p);
+                        real mfaca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BNW, x1p, x2, x3p);
+                        real mfcca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BNE, x1, x2, x3p);
 
-                        LBMReal mfbbb = (*this->zeroDistributionsF)(x1, x2, x3);
+                        real mfbbb = (*this->zeroDistributionsF)(x1, x2, x3);
 
-                        LBMReal rhoH = 1.0;
-                        LBMReal rhoL = 1.0 / densityRatio;
+                        real rhoH = 1.0;
+                        real rhoL = 1.0 / densityRatio;
 
-                        LBMReal rhoToPhi = (rhoH - rhoL) / (phiH - phiL);
+                        real rhoToPhi = (rhoH - rhoL) / (phiH - phiL);
 
-                        LBMReal dX1_phi = gradX1_phi();
-                        LBMReal dX2_phi = gradX2_phi();
-                        LBMReal dX3_phi = gradX3_phi();
+                        real dX1_phi = gradX1_phi();
+                        real dX2_phi = gradX2_phi();
+                        real dX3_phi = gradX3_phi();
 
-						LBMReal dX1_phi2 = gradX1_phi2();
-						LBMReal dX2_phi2 = gradX2_phi2();
-						LBMReal dX3_phi2 = gradX3_phi2();
+						real dX1_phi2 = gradX1_phi2();
+						real dX2_phi2 = gradX2_phi2();
+						real dX3_phi2 = gradX3_phi2();
 
 
-                        LBMReal denom2 = sqrt(dX1_phi * dX1_phi+ dX1_phi2 * dX1_phi2 + dX2_phi * dX2_phi + dX2_phi2 * dX2_phi2 + dX3_phi * dX3_phi+ dX3_phi2 * dX3_phi2) + 1e-9;
-                        LBMReal normX1 = (dX1_phi-dX1_phi2)/denom2;
-						LBMReal normX2 = (dX2_phi-dX2_phi2)/denom2;
-						LBMReal normX3 = (dX3_phi-dX3_phi2)/denom2;
+                        real denom2 = sqrt(dX1_phi * dX1_phi+ dX1_phi2 * dX1_phi2 + dX2_phi * dX2_phi + dX2_phi2 * dX2_phi2 + dX3_phi * dX3_phi+ dX3_phi2 * dX3_phi2) + 1e-9;
+                        real normX1 = (dX1_phi-dX1_phi2)/denom2;
+						real normX2 = (dX2_phi-dX2_phi2)/denom2;
+						real normX3 = (dX3_phi-dX3_phi2)/denom2;
 
 						//LBMReal denom = sqrt(dX1_phi * dX1_phi + dX2_phi * dX2_phi + dX3_phi * dX3_phi) + 1e-9;
 						//LBMReal normX1 = dX1_phi / denom;
@@ -350,10 +350,10 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
 						collFactorM = collFactorL + (collFactorL - collFactorG) * (phi[DIR_000] - phiH) / (phiH - phiL);
 
 
-                        LBMReal mu = 2 * beta * phi[DIR_000] * (phi[DIR_000] - 1) * (2 * phi[DIR_000] - 1) - kappa * nabla2_phi();
+                        real mu = 2 * beta * phi[DIR_000] * (phi[DIR_000] - 1) * (2 * phi[DIR_000] - 1) - kappa * nabla2_phi();
 
                         //----------- Calculating Macroscopic Values -------------
-                        LBMReal rho = rhoH + rhoToPhi * (phi[DIR_000] - phiH);
+                        real rho = rhoH + rhoToPhi * (phi[DIR_000] - phiH);
 
                             			   ////Incompressible Kernal
 
@@ -388,21 +388,21 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
 						mfbbb = (*this->zeroDistributionsF)(x1, x2, x3) / rho * c3;
 
 
-			   LBMReal m0, m1, m2;
-			   LBMReal rhoRef=c1;
+			   real m0, m1, m2;
+			   real rhoRef=c1;
 
 			  //LBMReal 
 			//    LBMReal drho = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca)
 			// 	   + (mfaab + mfacb + mfcab + mfccb) + (mfaba + mfabc + mfcba + mfcbc) + (mfbaa + mfbac + mfbca + mfbcc)
 			// 	   + (mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc) + mfbbb;
 
-			   LBMReal vvx = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
+			   real vvx = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
 				   (((mfcba - mfabc) + (mfcbc - mfaba)) + ((mfcab - mfacb) + (mfccb - mfaab))) +
 				   (mfcbb - mfabb))/rhoRef;
-			   LBMReal vvy = ((((mfccc - mfaaa) + (mfaca - mfcac)) + ((mfacc - mfcaa) + (mfcca - mfaac))) +
+			   real vvy = ((((mfccc - mfaaa) + (mfaca - mfcac)) + ((mfacc - mfcaa) + (mfcca - mfaac))) +
 				   (((mfbca - mfbac) + (mfbcc - mfbaa)) + ((mfacb - mfcab) + (mfccb - mfaab))) +
 				   (mfbcb - mfbab))/rhoRef;
-			   LBMReal vvz = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfacc - mfcaa) + (mfaac - mfcca))) +
+			   real vvz = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfacc - mfcaa) + (mfaac - mfcca))) +
 				   (((mfbac - mfbca) + (mfbcc - mfbaa)) + ((mfabc - mfcba) + (mfcbc - mfaba))) +
 				   (mfbbc - mfbba))/rhoRef;
 
@@ -435,7 +435,7 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
 			   //////classic source term
 			   ///----Classic source term 8.4.2021
 
-			   LBMReal vvxF, vvyF, vvzF;
+			   real vvxF, vvyF, vvzF;
 			   vvxF = vvx;//-2*c1o24 * lap_vx;// 
 			   vvyF = vvy;//-2*c1o24 * lap_vy;// 
 			   vvzF = vvz;//-2*c1o24 * lap_vz;// 
@@ -446,10 +446,10 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
 			   //if (vvxF != vvx) {
 				  // vvxF = vvxF;
 			   //}
-			   LBMReal weightGrad = 1.0;// -denom * denom / (denom * denom + 0.0001 * 0.001);
-			   LBMReal dX1_phiF = dX1_phi * weightGrad + (1.0 - weightGrad) * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * normX1;
-			   LBMReal dX2_phiF = dX2_phi * weightGrad + (1.0 - weightGrad) * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * normX2;
-			   LBMReal dX3_phiF = dX3_phi * weightGrad + (1.0 - weightGrad) * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * normX3;
+			   real weightGrad = 1.0;// -denom * denom / (denom * denom + 0.0001 * 0.001);
+			   real dX1_phiF = dX1_phi * weightGrad + (1.0 - weightGrad) * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * normX1;
+			   real dX2_phiF = dX2_phi * weightGrad + (1.0 - weightGrad) * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * normX2;
+			   real dX3_phiF = dX3_phi * weightGrad + (1.0 - weightGrad) * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * normX3;
 
 			   //dX1_phiF *= 1.2;
 			   //dX2_phiF *= 1.2;
@@ -462,17 +462,17 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
 				  // dX2_phiF = gradPhi * normX2;
 				  // dX3_phiF = gradPhi * normX3;
 
-			   LBMReal ux2;
-			   LBMReal uy2;
-			   LBMReal uz2;
+			   real ux2;
+			   real uy2;
+			   real uz2;
 			   ux2 = vvxF * vvxF;
 			   uy2 = vvyF * vvyF;
 			   uz2 = vvzF * vvzF;
-			   LBMReal forcingTerm[D3Q27System::ENDF + 1];
+			   real forcingTerm[D3Q27System::ENDF + 1];
 			   for (int dir = FSTARTDIR; dir <= FENDDIR; dir++) {
-				   LBMReal velProd = DX1[dir] * vvxF + DX2[dir] * vvyF + DX3[dir] * vvzF;
-				   LBMReal velSq1 = velProd * velProd;
-				   LBMReal gamma = WEIGTH[dir] * (1.0 + 3 * velProd + (4.5 * velSq1 - 1.5 * (ux2 + uy2 + uz2)));
+				   real velProd = DX1[dir] * vvxF + DX2[dir] * vvyF + DX3[dir] * vvzF;
+				   real velSq1 = velProd * velProd;
+				   real gamma = WEIGTH[dir] * (1.0 + 3 * velProd + (4.5 * velSq1 - 1.5 * (ux2 + uy2 + uz2)));
 
 				   //LBMReal fac1 = (gamma - WEIGTH[dir]) * c1o3 * rhoToPhi;
 
@@ -485,7 +485,7 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
 					  // (DX3[dir]) * (fac1 * dX3_phiF);
 
 
-				   LBMReal fac1 = (gamma - WEIGTH[dir]) * c1o3 ;
+				   real fac1 = (gamma - WEIGTH[dir]) * c1o3 ;
 
 				   forcingTerm[dir] =
 					   (-vvxF) * (fac1 * (dX1_phiF * rhoH + dX2_phi2 * rhoL)) +
@@ -499,8 +499,8 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
 
 			   }
 
-			   LBMReal gamma = WEIGTH[DIR_000] * (1.0 - 1.5 * (ux2 + uy2 + uz2));
-			   LBMReal fac1 = (gamma - WEIGTH[DIR_000]) * c1o3 * rhoToPhi;
+			   real gamma = WEIGTH[DIR_000] * (1.0 - 1.5 * (ux2 + uy2 + uz2));
+			   real fac1 = (gamma - WEIGTH[DIR_000]) * c1o3 * rhoToPhi;
 			   forcingTerm[DIR_000] =	 (-vvxF) * (fac1 * (dX1_phiF * rhoH + dX2_phi2 * rhoL)) +
 				   (-vvyF) * (fac1 * (dX2_phiF * rhoH + dX2_phi2 * rhoL)) +
 				   (-vvzF) * (fac1 * (dX3_phiF * rhoH + dX3_phi2 * rhoL));
@@ -657,14 +657,14 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
 				   //vvz += forcingX3 * deltaT * 0.5; // Z
 			   }
 
-			   LBMReal vx2;
-               LBMReal vy2;
-               LBMReal vz2;
+			   real vx2;
+               real vy2;
+               real vz2;
                vx2 = vvx * vvx;
                vy2 = vvy * vvy;
                vz2 = vvz * vvz;
 			   ///////////////////////////////////////////////////////////////////////////////////////////               
-			   LBMReal oMdrho;
+			   real oMdrho;
 
 
 			   oMdrho = mfccc + mfaaa;
@@ -694,8 +694,8 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
 			   oMdrho = (rhoRef - (oMdrho + m0))/rhoRef;// 12.03.21 check derivation!!!!
 
 			   ////////////////////////////////////////////////////////////////////////////////////
-			   LBMReal wadjust;
-			   LBMReal qudricLimit = 0.01;
+			   real wadjust;
+			   real qudricLimit = 0.01;
 			   ////////////////////////////////////////////////////////////////////////////////////
 			   //Hin
 			   ////////////////////////////////////////////////////////////////////////////////////
@@ -926,23 +926,23 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
 			   ////////////////////////////////////////////////////////////////////////////////////
 			   // Cumulants
 			   ////////////////////////////////////////////////////////////////////////////////////
-			   LBMReal OxxPyyPzz = 1.; //omega2 or bulk viscosity
+			   real OxxPyyPzz = 1.; //omega2 or bulk viscosity
 			 //  LBMReal OxyyPxzz = 1.;//-s9;//2+s9;//
 			 //  LBMReal OxyyMxzz  = 1.;//2+s9;//
-			   LBMReal O4 = 1.;
-			   LBMReal O5 = 1.;
-			   LBMReal O6 = 1.;
+			   real O4 = 1.;
+			   real O5 = 1.;
+			   real O6 = 1.;
 
 
 
 			   /////fourth order parameters; here only for test. Move out of loop!
 
-			   LBMReal OxyyPxzz = 8.0 * (collFactorM - 2.0) * (OxxPyyPzz * (3.0 * collFactorM - 1.0) - 5.0 * collFactorM) / (8.0 * (5.0 - 2.0 * collFactorM) * collFactorM + OxxPyyPzz * (8.0 + collFactorM * (9.0 * collFactorM - 26.0)));
-			   LBMReal OxyyMxzz = 8.0 * (collFactorM - 2.0) * (collFactorM + OxxPyyPzz * (3.0 * collFactorM - 7.0)) / (OxxPyyPzz * (56.0 - 42.0 * collFactorM + 9.0 * collFactorM * collFactorM) - 8.0 * collFactorM);
+			   real OxyyPxzz = 8.0 * (collFactorM - 2.0) * (OxxPyyPzz * (3.0 * collFactorM - 1.0) - 5.0 * collFactorM) / (8.0 * (5.0 - 2.0 * collFactorM) * collFactorM + OxxPyyPzz * (8.0 + collFactorM * (9.0 * collFactorM - 26.0)));
+			   real OxyyMxzz = 8.0 * (collFactorM - 2.0) * (collFactorM + OxxPyyPzz * (3.0 * collFactorM - 7.0)) / (OxxPyyPzz * (56.0 - 42.0 * collFactorM + 9.0 * collFactorM * collFactorM) - 8.0 * collFactorM);
 			//    LBMReal Oxyz = 24.0 * (collFactorM - 2.0) * (4.0 * collFactorM * collFactorM + collFactorM * OxxPyyPzz * (18.0 - 13.0 * collFactorM) + OxxPyyPzz * OxxPyyPzz * (2.0 + collFactorM * (6.0 * collFactorM - 11.0))) / (16.0 * collFactorM * collFactorM * (collFactorM - 6.0) - 2.0 * collFactorM * OxxPyyPzz * (216.0 + 5.0 * collFactorM * (9.0 * collFactorM - 46.0)) + OxxPyyPzz * OxxPyyPzz * (collFactorM * (3.0 * collFactorM - 10.0) * (15.0 * collFactorM - 28.0) - 48.0));
-			   LBMReal A = (4.0 * collFactorM * collFactorM + 2.0 * collFactorM * OxxPyyPzz * (collFactorM - 6.0) + OxxPyyPzz * OxxPyyPzz * (collFactorM * (10.0 - 3.0 * collFactorM) - 4.0)) / ((collFactorM - OxxPyyPzz) * (OxxPyyPzz * (2.0 + 3.0 * collFactorM) - 8.0 * collFactorM));
+			   real A = (4.0 * collFactorM * collFactorM + 2.0 * collFactorM * OxxPyyPzz * (collFactorM - 6.0) + OxxPyyPzz * OxxPyyPzz * (collFactorM * (10.0 - 3.0 * collFactorM) - 4.0)) / ((collFactorM - OxxPyyPzz) * (OxxPyyPzz * (2.0 + 3.0 * collFactorM) - 8.0 * collFactorM));
 			   //FIXME:  warning C4459: declaration of 'B' hides global declaration (message : see declaration of 'D3Q27System::DIR_00M' )
-			   LBMReal BB = (4.0 * collFactorM * OxxPyyPzz * (9.0 * collFactorM - 16.0) - 4.0 * collFactorM * collFactorM - 2.0 * OxxPyyPzz * OxxPyyPzz * (2.0 + 9.0 * collFactorM * (collFactorM - 2.0))) / (3.0 * (collFactorM - OxxPyyPzz) * (OxxPyyPzz * (2.0 + 3.0 * collFactorM) - 8.0 * collFactorM));
+			   real BB = (4.0 * collFactorM * OxxPyyPzz * (9.0 * collFactorM - 16.0) - 4.0 * collFactorM * collFactorM - 2.0 * OxxPyyPzz * OxxPyyPzz * (2.0 + 9.0 * collFactorM * (collFactorM - 2.0))) / (3.0 * (collFactorM - OxxPyyPzz) * (OxxPyyPzz * (2.0 + 3.0 * collFactorM) - 8.0 * collFactorM));
 
 
 			   //Cum 4.
@@ -950,21 +950,21 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
 			   //LBMReal CUMbcb = mfbcb - ((mfaca + c1o3 * oMdrho) * mfbab + 2. * mfbba * mfabb); // till 18.05.2015
 			   //LBMReal CUMbbc = mfbbc - ((mfaac + c1o3 * oMdrho) * mfbba + 2. * mfbab * mfabb); // till 18.05.2015
 
-			   LBMReal CUMcbb = mfcbb - ((mfcaa + c1o3) * mfabb + 2. * mfbba * mfbab);
-			   LBMReal CUMbcb = mfbcb - ((mfaca + c1o3) * mfbab + 2. * mfbba * mfabb);
-			   LBMReal CUMbbc = mfbbc - ((mfaac + c1o3) * mfbba + 2. * mfbab * mfabb);
+			   real CUMcbb = mfcbb - ((mfcaa + c1o3) * mfabb + 2. * mfbba * mfbab);
+			   real CUMbcb = mfbcb - ((mfaca + c1o3) * mfbab + 2. * mfbba * mfabb);
+			   real CUMbbc = mfbbc - ((mfaac + c1o3) * mfbba + 2. * mfbab * mfabb);
 
-			   LBMReal CUMcca = mfcca - ((mfcaa * mfaca + 2. * mfbba * mfbba) + c1o3 * (mfcaa + mfaca) * oMdrho + c1o9 * (oMdrho - c1) * oMdrho);
-			   LBMReal CUMcac = mfcac - ((mfcaa * mfaac + 2. * mfbab * mfbab) + c1o3 * (mfcaa + mfaac) * oMdrho + c1o9 * (oMdrho - c1) * oMdrho);
-			   LBMReal CUMacc = mfacc - ((mfaac * mfaca + 2. * mfabb * mfabb) + c1o3 * (mfaac + mfaca) * oMdrho + c1o9 * (oMdrho - c1) * oMdrho);
+			   real CUMcca = mfcca - ((mfcaa * mfaca + 2. * mfbba * mfbba) + c1o3 * (mfcaa + mfaca) * oMdrho + c1o9 * (oMdrho - c1) * oMdrho);
+			   real CUMcac = mfcac - ((mfcaa * mfaac + 2. * mfbab * mfbab) + c1o3 * (mfcaa + mfaac) * oMdrho + c1o9 * (oMdrho - c1) * oMdrho);
+			   real CUMacc = mfacc - ((mfaac * mfaca + 2. * mfabb * mfabb) + c1o3 * (mfaac + mfaca) * oMdrho + c1o9 * (oMdrho - c1) * oMdrho);
 
 			   //Cum 5.
-			   LBMReal CUMbcc = mfbcc - (mfaac * mfbca + mfaca * mfbac + 4. * mfabb * mfbbb + 2. * (mfbab * mfacb + mfbba * mfabc)) - c1o3 * (mfbca + mfbac) * oMdrho;
-			   LBMReal CUMcbc = mfcbc - (mfaac * mfcba + mfcaa * mfabc + 4. * mfbab * mfbbb + 2. * (mfabb * mfcab + mfbba * mfbac)) - c1o3 * (mfcba + mfabc) * oMdrho;
-			   LBMReal CUMccb = mfccb - (mfcaa * mfacb + mfaca * mfcab + 4. * mfbba * mfbbb + 2. * (mfbab * mfbca + mfabb * mfcba)) - c1o3 * (mfacb + mfcab) * oMdrho;
+			   real CUMbcc = mfbcc - (mfaac * mfbca + mfaca * mfbac + 4. * mfabb * mfbbb + 2. * (mfbab * mfacb + mfbba * mfabc)) - c1o3 * (mfbca + mfbac) * oMdrho;
+			   real CUMcbc = mfcbc - (mfaac * mfcba + mfcaa * mfabc + 4. * mfbab * mfbbb + 2. * (mfabb * mfcab + mfbba * mfbac)) - c1o3 * (mfcba + mfabc) * oMdrho;
+			   real CUMccb = mfccb - (mfcaa * mfacb + mfaca * mfcab + 4. * mfbba * mfbbb + 2. * (mfbab * mfbca + mfabb * mfcba)) - c1o3 * (mfacb + mfcab) * oMdrho;
 
 			   //Cum 6.
-			   LBMReal CUMccc = mfccc + ((-4. * mfbbb * mfbbb
+			   real CUMccc = mfccc + ((-4. * mfbbb * mfbbb
 				   - (mfcaa * mfacc + mfaca * mfcac + mfaac * mfcca)
 				   - 4. * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
 				   - 2. * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb))
@@ -978,10 +978,10 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
 
 			   //2.
 			   // linear combinations
-			   LBMReal mxxPyyPzz = mfcaa + mfaca + mfaac;
+			   real mxxPyyPzz = mfcaa + mfaca + mfaac;
 				mxxPyyPzz-=mfaaa;//12.03.21 shifted by mfaaa
-			   LBMReal mxxMyy = mfcaa - mfaca;
-			   LBMReal mxxMzz = mfcaa - mfaac;
+			   real mxxMyy = mfcaa - mfaca;
+			   real mxxMzz = mfcaa - mfaac;
 
 			   //applying phase field gradients first part:
 			  // mxxPyyPzz += c2o3 * rhoToPhi * (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz);
@@ -996,13 +996,13 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
                //mfbab += c1o6 * (dX1_phi * vvz + dX3_phi * vvx) * correctionScaling;
                //mfbba += c1o6 * (dX1_phi * vvy + dX2_phi * vvx) * correctionScaling;
 
-			   LBMReal dxux =  -c1o2 * collFactorM * (mxxMyy + mxxMzz) + c1o2 * OxxPyyPzz * (/*mfaaa*/ -mxxPyyPzz);
-			   LBMReal dyuy =  dxux + collFactorM * c3o2 * mxxMyy;
-			   LBMReal dzuz =  dxux + collFactorM * c3o2 * mxxMzz;
+			   real dxux =  -c1o2 * collFactorM * (mxxMyy + mxxMzz) + c1o2 * OxxPyyPzz * (/*mfaaa*/ -mxxPyyPzz);
+			   real dyuy =  dxux + collFactorM * c3o2 * mxxMyy;
+			   real dzuz =  dxux + collFactorM * c3o2 * mxxMzz;
 
-			   LBMReal Dxy = -three * collFactorM * mfbba;
-			   LBMReal Dxz = -three * collFactorM * mfbab;
-			   LBMReal Dyz = -three * collFactorM * mfabb;
+			   real Dxy = -three * collFactorM * mfbba;
+			   real Dxz = -three * collFactorM * mfbab;
+			   real Dyz = -three * collFactorM * mfabb;
 
 
 			   //relax
@@ -1035,14 +1035,14 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
 
 			   //3.
 			   // linear combinations
-			   LBMReal mxxyPyzz = mfcba + mfabc;
-			   LBMReal mxxyMyzz = mfcba - mfabc;
+			   real mxxyPyzz = mfcba + mfabc;
+			   real mxxyMyzz = mfcba - mfabc;
 
-			   LBMReal mxxzPyyz = mfcab + mfacb;
-			   LBMReal mxxzMyyz = mfcab - mfacb;
+			   real mxxzPyyz = mfcab + mfacb;
+			   real mxxzMyyz = mfcab - mfacb;
 
-			   LBMReal mxyyPxzz = mfbca + mfbac;
-			   LBMReal mxyyMxzz = mfbca - mfbac;
+			   real mxyyPxzz = mfbca + mfbac;
+			   real mxyyMxzz = mfbca - mfbac;
 
 			   //relax
 			   wadjust = OxyyMxzz + (1. - OxyyMxzz) * fabs(mfbbb) / (fabs(mfbbb) + qudricLimit);
@@ -2261,7 +2261,7 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
                         /////////////////////  P H A S E - F I E L D   S O L V E R
                         ////////////////////////////////////////////
 		/////CUMULANT PHASE-FIELD
-				LBMReal omegaD =1.0/( 3.0 * mob + 0.5);
+				real omegaD =1.0/( 3.0 * mob + 0.5);
 				{
 			   mfcbb = (*this->localDistributionsH1)(D3Q27System::ET_E, x1, x2, x3);
 			   mfbcb = (*this->localDistributionsH1)(D3Q27System::ET_N, x1, x2, x3);
@@ -2325,7 +2325,7 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
 			 //  LBMReal vvz = uz;
 			   ////////////////////////////////////////////////////////////////////////////////////
 			   // second component
-			   LBMReal concentration =
+			   real concentration =
 				   ((((mfccc + mfaaa) + (mfaca + mfcac)) + ((mfacc + mfcaa) + (mfaac + mfcca))) +
 				   (((mfbac + mfbca) + (mfbaa + mfbcc)) + ((mfabc + mfcba) + (mfaba + mfcbc)) + ((mfacb + mfcab) + (mfaab + mfccb))) +
 					   ((mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc))) + mfbbb;
@@ -2340,26 +2340,26 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
 			  // vvy += fy * c1o2;
 			  // vvz += fz * c1o2;
 			   ////////////////////////////////////////////////////////////////////////////////////
-			   LBMReal oneMinusRho = c1- concentration;
+			   real oneMinusRho = c1- concentration;
 
-			   LBMReal cx =
+			   real cx =
 				   ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
 				   (((mfcba - mfabc) + (mfcbc - mfaba)) + ((mfcab - mfacb) + (mfccb - mfaab))) +
 					   (mfcbb - mfabb));
-			   LBMReal cy =
+			   real cy =
 				   ((((mfccc - mfaaa) + (mfaca - mfcac)) + ((mfacc - mfcaa) + (mfcca - mfaac))) +
 				   (((mfbca - mfbac) + (mfbcc - mfbaa)) + ((mfacb - mfcab) + (mfccb - mfaab))) +
 					   (mfbcb - mfbab));
-			   LBMReal cz =
+			   real cz =
 				   ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfacc - mfcaa) + (mfaac - mfcca))) +
 				   (((mfbac - mfbca) + (mfbcc - mfbaa)) + ((mfabc - mfcba) + (mfcbc - mfaba))) +
 					   (mfbbc - mfbba));
 
 			   ////////////////////////////////////////////////////////////////////////////////////
 			   // calculate the square of velocities for this lattice node
-			   LBMReal cx2 = cx * cx;
-			   LBMReal cy2 = cy * cy;
-			   LBMReal cz2 = cz * cz;
+			   real cx2 = cx * cx;
+			   real cy2 = cy * cy;
+			   real cz2 = cz * cz;
 			   ////////////////////////////////////////////////////////////////////////////////////
 			   //! - Chimera transform from well conditioned distributions to central moments as defined in Appendix J in \ref
 			   //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015), DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
@@ -2407,16 +2407,16 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
 			   //!
 
 			   // linearized orthogonalization of 3rd order central moments
-			   LBMReal Mabc = mfabc - mfaba * c1o3;
-			   LBMReal Mbca = mfbca - mfbaa * c1o3;
-			   LBMReal Macb = mfacb - mfaab * c1o3;
-			   LBMReal Mcba = mfcba - mfaba * c1o3;
-			   LBMReal Mcab = mfcab - mfaab * c1o3;
-			   LBMReal Mbac = mfbac - mfbaa * c1o3;
+			   real Mabc = mfabc - mfaba * c1o3;
+			   real Mbca = mfbca - mfbaa * c1o3;
+			   real Macb = mfacb - mfaab * c1o3;
+			   real Mcba = mfcba - mfaba * c1o3;
+			   real Mcab = mfcab - mfaab * c1o3;
+			   real Mbac = mfbac - mfbaa * c1o3;
 			   // linearized orthogonalization of 5th order central moments
-			   LBMReal Mcbc = mfcbc - mfaba * c1o9;
-			   LBMReal Mbcc = mfbcc - mfbaa * c1o9;
-			   LBMReal Mccb = mfccb - mfaab * c1o9;
+			   real Mcbc = mfcbc - mfaba * c1o9;
+			   real Mbcc = mfbcc - mfbaa * c1o9;
+			   real Mccb = mfccb - mfaab * c1o9;
 
 			   // collision of 1st order moments
 			  // LBMReal ccx, ccy, ccz;
@@ -2641,7 +2641,7 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
 	 //  LBMReal vvz = uz;
 	   ////////////////////////////////////////////////////////////////////////////////////
 	   // second component
-   LBMReal concentration =
+   real concentration =
 	   ((((mfccc + mfaaa) + (mfaca + mfcac)) + ((mfacc + mfcaa) + (mfaac + mfcca))) +
 	   (((mfbac + mfbca) + (mfbaa + mfbcc)) + ((mfabc + mfcba) + (mfaba + mfcbc)) + ((mfacb + mfcab) + (mfaab + mfccb))) +
 		   ((mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc))) + mfbbb;
@@ -2656,26 +2656,26 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
   // vvy += fy * c1o2;
   // vvz += fz * c1o2;
    ////////////////////////////////////////////////////////////////////////////////////
-   LBMReal oneMinusRho = c1 - concentration;
+   real oneMinusRho = c1 - concentration;
 
-   LBMReal cx =
+   real cx =
 	   ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
 	   (((mfcba - mfabc) + (mfcbc - mfaba)) + ((mfcab - mfacb) + (mfccb - mfaab))) +
 		   (mfcbb - mfabb));
-   LBMReal cy =
+   real cy =
 	   ((((mfccc - mfaaa) + (mfaca - mfcac)) + ((mfacc - mfcaa) + (mfcca - mfaac))) +
 	   (((mfbca - mfbac) + (mfbcc - mfbaa)) + ((mfacb - mfcab) + (mfccb - mfaab))) +
 		   (mfbcb - mfbab));
-   LBMReal cz =
+   real cz =
 	   ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfacc - mfcaa) + (mfaac - mfcca))) +
 	   (((mfbac - mfbca) + (mfbcc - mfbaa)) + ((mfabc - mfcba) + (mfcbc - mfaba))) +
 		   (mfbbc - mfbba));
 
    ////////////////////////////////////////////////////////////////////////////////////
    // calculate the square of velocities for this lattice node
-   LBMReal cx2 = cx * cx;
-   LBMReal cy2 = cy * cy;
-   LBMReal cz2 = cz * cz;
+   real cx2 = cx * cx;
+   real cy2 = cy * cy;
+   real cz2 = cz * cz;
    ////////////////////////////////////////////////////////////////////////////////////
    //! - Chimera transform from well conditioned distributions to central moments as defined in Appendix J in \ref
    //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015), DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
@@ -2723,16 +2723,16 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
    //!
 
    // linearized orthogonalization of 3rd order central moments
-   LBMReal Mabc = mfabc - mfaba * c1o3;
-   LBMReal Mbca = mfbca - mfbaa * c1o3;
-   LBMReal Macb = mfacb - mfaab * c1o3;
-   LBMReal Mcba = mfcba - mfaba * c1o3;
-   LBMReal Mcab = mfcab - mfaab * c1o3;
-   LBMReal Mbac = mfbac - mfbaa * c1o3;
+   real Mabc = mfabc - mfaba * c1o3;
+   real Mbca = mfbca - mfbaa * c1o3;
+   real Macb = mfacb - mfaab * c1o3;
+   real Mcba = mfcba - mfaba * c1o3;
+   real Mcab = mfcab - mfaab * c1o3;
+   real Mbac = mfbac - mfbaa * c1o3;
    // linearized orthogonalization of 5th order central moments
-   LBMReal Mcbc = mfcbc - mfaba * c1o9;
-   LBMReal Mbcc = mfbcc - mfbaa * c1o9;
-   LBMReal Mccb = mfccb - mfaab * c1o9;
+   real Mcbc = mfcbc - mfaba * c1o9;
+   real Mbcc = mfbcc - mfbaa * c1o9;
+   real Mccb = mfccb - mfaab * c1o9;
 
    // collision of 1st order moments
    cx = cx * (c1 - omegaD) + omegaD * vvx * concentration +
@@ -2982,7 +2982,7 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
 }
 //////////////////////////////////////////////////////////////////////////
 
-LBMReal MultiphaseTwoPhaseFieldsCumulantLBMKernel::gradX1_phi()
+real MultiphaseTwoPhaseFieldsCumulantLBMKernel::gradX1_phi()
 {
     using namespace D3Q27System;
 	using namespace vf::lbm::dir;
@@ -2997,7 +2997,7 @@ LBMReal MultiphaseTwoPhaseFieldsCumulantLBMKernel::gradX1_phi()
     //return 3.0 * sum;
 }
 
-LBMReal MultiphaseTwoPhaseFieldsCumulantLBMKernel::gradX2_phi()
+real MultiphaseTwoPhaseFieldsCumulantLBMKernel::gradX2_phi()
 {
     using namespace D3Q27System;
 	using namespace vf::lbm::dir;
@@ -3012,7 +3012,7 @@ LBMReal MultiphaseTwoPhaseFieldsCumulantLBMKernel::gradX2_phi()
     //return 3.0 * sum;
 }
 
-LBMReal MultiphaseTwoPhaseFieldsCumulantLBMKernel::gradX3_phi()
+real MultiphaseTwoPhaseFieldsCumulantLBMKernel::gradX3_phi()
 {
     using namespace D3Q27System;
 	using namespace vf::lbm::dir;
@@ -3027,7 +3027,7 @@ LBMReal MultiphaseTwoPhaseFieldsCumulantLBMKernel::gradX3_phi()
     //return 3.0 * sum;
 }
 
-LBMReal MultiphaseTwoPhaseFieldsCumulantLBMKernel::gradX1_phi2()
+real MultiphaseTwoPhaseFieldsCumulantLBMKernel::gradX1_phi2()
 {
 	using namespace D3Q27System;
 	using namespace vf::lbm::dir;
@@ -3042,7 +3042,7 @@ LBMReal MultiphaseTwoPhaseFieldsCumulantLBMKernel::gradX1_phi2()
 	//return 3.0 * sum;
 }
 
-LBMReal MultiphaseTwoPhaseFieldsCumulantLBMKernel::gradX2_phi2()
+real MultiphaseTwoPhaseFieldsCumulantLBMKernel::gradX2_phi2()
 {
 	using namespace D3Q27System;
 	using namespace vf::lbm::dir;
@@ -3057,7 +3057,7 @@ LBMReal MultiphaseTwoPhaseFieldsCumulantLBMKernel::gradX2_phi2()
 	//return 3.0 * sum;
 }
 
-LBMReal MultiphaseTwoPhaseFieldsCumulantLBMKernel::gradX3_phi2()
+real MultiphaseTwoPhaseFieldsCumulantLBMKernel::gradX3_phi2()
 {
 	using namespace D3Q27System;
 	using namespace vf::lbm::dir;
@@ -3076,12 +3076,12 @@ LBMReal MultiphaseTwoPhaseFieldsCumulantLBMKernel::gradX3_phi2()
 
 
 
-LBMReal MultiphaseTwoPhaseFieldsCumulantLBMKernel::nabla2_phi()
+real MultiphaseTwoPhaseFieldsCumulantLBMKernel::nabla2_phi()
 {
     using namespace D3Q27System;
 	using namespace vf::lbm::dir;
 
-    LBMReal sum = 0.0;
+    real sum = 0.0;
 	sum += WEIGTH[DIR_PPP] * ((((phi[DIR_PPP] - phi[DIR_000]) + (phi[DIR_MMM] - phi[DIR_000])) + ((phi[DIR_MMP] - phi[DIR_000]) + (phi[DIR_PPM] - phi[DIR_000])))
 		+ (((phi[DIR_MPP] - phi[DIR_000]) + (phi[DIR_PMM] - phi[DIR_000])) + ((phi[DIR_PMP] - phi[DIR_000]) + (phi[DIR_MPM] - phi[DIR_000]))));
 	sum += WEIGTH[DIR_0PP] * (
@@ -3159,7 +3159,7 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::computePhasefield()
     }
 }
 
-void MultiphaseTwoPhaseFieldsCumulantLBMKernel::findNeighbors(CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr ph, int x1, int x2,
+void MultiphaseTwoPhaseFieldsCumulantLBMKernel::findNeighbors(CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr ph, int x1, int x2,
                                                 int x3)
 {
 	using namespace D3Q27System;
@@ -3180,7 +3180,7 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::findNeighbors(CbArray3D<LBMReal,
     }
 }
 
-void MultiphaseTwoPhaseFieldsCumulantLBMKernel::findNeighbors2(CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr ph, int x1, int x2,
+void MultiphaseTwoPhaseFieldsCumulantLBMKernel::findNeighbors2(CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr ph, int x1, int x2,
 	int x3)
 {
 	using namespace D3Q27System;

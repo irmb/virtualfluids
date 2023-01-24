@@ -61,9 +61,9 @@ void LBMKernelETD3Q27BGK::calculate(int  /*step*/)
    zeroDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getZeroDistributions();
 
    SPtr<BCArray3D> bcArray = this->getBCProcessor()->getBCArray();
-   LBMReal f[D3Q27System::ENDF+1];
-   LBMReal feq[D3Q27System::ENDF+1];
-   LBMReal drho,vx1,vx2,vx3;
+   real f[D3Q27System::ENDF+1];
+   real feq[D3Q27System::ENDF+1];
+   real drho,vx1,vx2,vx3;
    const int bcArrayMaxX1 = (int)bcArray->getNX1();
    const int bcArrayMaxX2 = (int)bcArray->getNX2();
    const int bcArrayMaxX3 = (int)bcArray->getNX3();
@@ -137,7 +137,7 @@ void LBMKernelETD3Q27BGK::calculate(int  /*step*/)
                + f[DIR_0MP] + f[DIR_PPP] + f[DIR_MMP] + f[DIR_PMP] + f[DIR_MPP] - f[DIR_PPM] - f[DIR_MMM] - f[DIR_PMM] 
                - f[DIR_MPM];
 
-               LBMReal cu_sq=1.5*(vx1*vx1+vx2*vx2+vx3*vx3);
+               real cu_sq=1.5*(vx1*vx1+vx2*vx2+vx3*vx3);
 
                feq[DIR_000] =  c8o27*(drho-cu_sq);
                feq[DIR_P00] =  c2o27*(drho+3.0*( vx1   )+c9o2*( vx1   )*( vx1   )-cu_sq);
@@ -239,11 +239,11 @@ void LBMKernelETD3Q27BGK::calculate(int  /*step*/)
                }
                //////////////////////////////////////////////////////////////////////////
 #ifdef  PROOF_CORRECTNESS
-               LBMReal rho_post = f[REST] + f[DIR_P00] + f[W] + f[N] + f[S] + f[T] + f[B] 
+               real rho_post = f[REST] + f[DIR_P00] + f[W] + f[N] + f[S] + f[T] + f[B] 
                + f[NE] + f[SW] + f[SE] + f[NW] + f[TE] + f[BW] + f[BE]
                + f[TW] + f[TN] + f[BS] + f[BN] + f[TS] + f[TNE] + f[TSW]
                + f[TSE] + f[TNW] + f[BNE] + f[BSW] + f[BSE] + f[BNW];
-               LBMReal dif = drho - rho_post;
+               real dif = drho - rho_post;
 #ifdef SINGLEPRECISION
                if(dif > 10.0E-7 || dif < -10.0E-7)
 #else

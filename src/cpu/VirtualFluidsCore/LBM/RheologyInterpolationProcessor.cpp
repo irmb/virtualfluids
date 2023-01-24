@@ -42,7 +42,7 @@ RheologyInterpolationProcessor::RheologyInterpolationProcessor()
 
 }
 //////////////////////////////////////////////////////////////////////////
-RheologyInterpolationProcessor::RheologyInterpolationProcessor(LBMReal omegaC, LBMReal omegaF, LBMReal omegaMin)
+RheologyInterpolationProcessor::RheologyInterpolationProcessor(real omegaC, real omegaF, real omegaMin)
    : omegaC(omegaC), omegaF(omegaF), omegaMin(omegaMin)
 {
 
@@ -59,18 +59,18 @@ InterpolationProcessorPtr RheologyInterpolationProcessor::clone()
    return iproc;
 }
 //////////////////////////////////////////////////////////////////////////
-void RheologyInterpolationProcessor::setOmegas( LBMReal omegaC, LBMReal omegaF )
+void RheologyInterpolationProcessor::setOmegas( real omegaC, real omegaF )
 {
    this->omegaC = omegaC;
    this->omegaF = omegaF;
 }
 //////////////////////////////////////////////////////////////////////////
-void RheologyInterpolationProcessor::setOmegaMin( LBMReal omegaMin )
+void RheologyInterpolationProcessor::setOmegaMin( real omegaMin )
 {
    this->omegaMin = omegaMin;
 }
 //////////////////////////////////////////////////////////////////////////
-void RheologyInterpolationProcessor::setOffsets(LBMReal xoff, LBMReal yoff, LBMReal zoff)
+void RheologyInterpolationProcessor::setOffsets(real xoff, real yoff, real zoff)
 {
    this->xoff = xoff;
    this->yoff = yoff;
@@ -80,7 +80,7 @@ void RheologyInterpolationProcessor::setOffsets(LBMReal xoff, LBMReal yoff, LBMR
    this->zoff_sq = zoff * zoff;
 }
 //////////////////////////////////////////////////////////////////////////
-void RheologyInterpolationProcessor::interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF, LBMReal xoff, LBMReal yoff, LBMReal zoff)
+void RheologyInterpolationProcessor::interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF, real xoff, real yoff, real zoff)
 {
     setOffsets(xoff, yoff, zoff);
     calcInterpolatedCoefficiets_intern(icellC, omegaC, 0.5, 0.25, -0.25, -0.25, -1, -1, -1);
@@ -101,14 +101,14 @@ void RheologyInterpolationProcessor::interpolateCoarseToFine(D3Q27ICell& icellC,
     calcInterpolatedNode(icellF.TNE, /*omegaF,*/  0.25,  0.25,  0.25, calcPressTNE(),  1,  1,  1);
 }
 //////////////////////////////////////////////////////////////////////////
-void RheologyInterpolationProcessor::interpolateFineToCoarse(D3Q27ICell& icellF, LBMReal* icellC, LBMReal xoff, LBMReal yoff, LBMReal zoff)
+void RheologyInterpolationProcessor::interpolateFineToCoarse(D3Q27ICell& icellF, real* icellC, real xoff, real yoff, real zoff)
 {
    setOffsets(xoff, yoff, zoff);
     calcInterpolatedCoefficiets_intern(icellF, omegaF, 2.0, 0, 0, 0, 0, 0, 0);
    calcInterpolatedNodeFC(icellC, omegaC);
 }
 //////////////////////////////////////////////////////////////////////////
-void RheologyInterpolationProcessor::calcMoments(const LBMReal* const f, LBMReal omegaInf, LBMReal& press, LBMReal& vx1, LBMReal& vx2, LBMReal& vx3, LBMReal& kxy, LBMReal& kyz, LBMReal& kxz, LBMReal& kxxMyy, LBMReal& kxxMzz)
+void RheologyInterpolationProcessor::calcMoments(const real* const f, real omegaInf, real& press, real& vx1, real& vx2, real& vx3, real& kxy, real& kyz, real& kxz, real& kxxMyy, real& kxxMzz)
 {
    using namespace D3Q27System;
    using namespace vf::lbm::dir;
@@ -118,7 +118,7 @@ void RheologyInterpolationProcessor::calcMoments(const LBMReal* const f, LBMReal
 
    shearRate = D3Q27System::getShearRate(f, omegaInf);
 
-   LBMReal omega = Rheology::getHerschelBulkleyCollFactor(omegaInf, shearRate, rho);
+   real omega = Rheology::getHerschelBulkleyCollFactor(omegaInf, shearRate, rho);
 
    press = rho; //interpolate rho!
 
@@ -130,32 +130,32 @@ void RheologyInterpolationProcessor::calcMoments(const LBMReal* const f, LBMReal
 }
 //////////////////////////////////////////////////////////////////////////
 void RheologyInterpolationProcessor::calcInterpolatedCoefficiets_intern(const D3Q27ICell& icell,
-                                                                          LBMReal omega,
-                                                                          LBMReal eps_new,
-                                                                          LBMReal x,
-                                                                          LBMReal y,
-                                                                          LBMReal z,
-                                                                          LBMReal xs,
-                                                                          LBMReal ys,
-                                                                          LBMReal zs)
+                                                                          real omega,
+                                                                          real eps_new,
+                                                                          real x,
+                                                                          real y,
+                                                                          real z,
+                                                                          real xs,
+                                                                          real ys,
+                                                                          real zs)
 {
-   LBMReal        vx1_SWT,vx2_SWT,vx3_SWT;
-   LBMReal        vx1_NWT,vx2_NWT,vx3_NWT;
-   LBMReal        vx1_NET,vx2_NET,vx3_NET;
-   LBMReal        vx1_SET,vx2_SET,vx3_SET;
-   LBMReal        vx1_SWB,vx2_SWB,vx3_SWB;
-   LBMReal        vx1_NWB,vx2_NWB,vx3_NWB;
-   LBMReal        vx1_NEB,vx2_NEB,vx3_NEB;
-   LBMReal        vx1_SEB,vx2_SEB,vx3_SEB;
+   real        vx1_SWT,vx2_SWT,vx3_SWT;
+   real        vx1_NWT,vx2_NWT,vx3_NWT;
+   real        vx1_NET,vx2_NET,vx3_NET;
+   real        vx1_SET,vx2_SET,vx3_SET;
+   real        vx1_SWB,vx2_SWB,vx3_SWB;
+   real        vx1_NWB,vx2_NWB,vx3_NWB;
+   real        vx1_NEB,vx2_NEB,vx3_NEB;
+   real        vx1_SEB,vx2_SEB,vx3_SEB;
 
-   LBMReal        kxyFromfcNEQ_SWT, kyzFromfcNEQ_SWT, kxzFromfcNEQ_SWT, kxxMyyFromfcNEQ_SWT, kxxMzzFromfcNEQ_SWT;
-   LBMReal        kxyFromfcNEQ_NWT, kyzFromfcNEQ_NWT, kxzFromfcNEQ_NWT, kxxMyyFromfcNEQ_NWT, kxxMzzFromfcNEQ_NWT;
-   LBMReal        kxyFromfcNEQ_NET, kyzFromfcNEQ_NET, kxzFromfcNEQ_NET, kxxMyyFromfcNEQ_NET, kxxMzzFromfcNEQ_NET;
-   LBMReal        kxyFromfcNEQ_SET, kyzFromfcNEQ_SET, kxzFromfcNEQ_SET, kxxMyyFromfcNEQ_SET, kxxMzzFromfcNEQ_SET;
-   LBMReal        kxyFromfcNEQ_SWB, kyzFromfcNEQ_SWB, kxzFromfcNEQ_SWB, kxxMyyFromfcNEQ_SWB, kxxMzzFromfcNEQ_SWB;
-   LBMReal        kxyFromfcNEQ_NWB, kyzFromfcNEQ_NWB, kxzFromfcNEQ_NWB, kxxMyyFromfcNEQ_NWB, kxxMzzFromfcNEQ_NWB;
-   LBMReal        kxyFromfcNEQ_NEB, kyzFromfcNEQ_NEB, kxzFromfcNEQ_NEB, kxxMyyFromfcNEQ_NEB, kxxMzzFromfcNEQ_NEB;
-   LBMReal        kxyFromfcNEQ_SEB, kyzFromfcNEQ_SEB, kxzFromfcNEQ_SEB, kxxMyyFromfcNEQ_SEB, kxxMzzFromfcNEQ_SEB;
+   real        kxyFromfcNEQ_SWT, kyzFromfcNEQ_SWT, kxzFromfcNEQ_SWT, kxxMyyFromfcNEQ_SWT, kxxMzzFromfcNEQ_SWT;
+   real        kxyFromfcNEQ_NWT, kyzFromfcNEQ_NWT, kxzFromfcNEQ_NWT, kxxMyyFromfcNEQ_NWT, kxxMzzFromfcNEQ_NWT;
+   real        kxyFromfcNEQ_NET, kyzFromfcNEQ_NET, kxzFromfcNEQ_NET, kxxMyyFromfcNEQ_NET, kxxMzzFromfcNEQ_NET;
+   real        kxyFromfcNEQ_SET, kyzFromfcNEQ_SET, kxzFromfcNEQ_SET, kxxMyyFromfcNEQ_SET, kxxMzzFromfcNEQ_SET;
+   real        kxyFromfcNEQ_SWB, kyzFromfcNEQ_SWB, kxzFromfcNEQ_SWB, kxxMyyFromfcNEQ_SWB, kxxMzzFromfcNEQ_SWB;
+   real        kxyFromfcNEQ_NWB, kyzFromfcNEQ_NWB, kxzFromfcNEQ_NWB, kxxMyyFromfcNEQ_NWB, kxxMzzFromfcNEQ_NWB;
+   real        kxyFromfcNEQ_NEB, kyzFromfcNEQ_NEB, kxzFromfcNEQ_NEB, kxxMyyFromfcNEQ_NEB, kxxMzzFromfcNEQ_NEB;
+   real        kxyFromfcNEQ_SEB, kyzFromfcNEQ_SEB, kxzFromfcNEQ_SEB, kxxMyyFromfcNEQ_SEB, kxxMzzFromfcNEQ_SEB;
 
    calcMoments(icell.TSW,omega,press_SWT,vx1_SWT,vx2_SWT,vx3_SWT, kxyFromfcNEQ_SWT, kyzFromfcNEQ_SWT, kxzFromfcNEQ_SWT, kxxMyyFromfcNEQ_SWT, kxxMzzFromfcNEQ_SWT);
    calcMoments(icell.TNW,omega,press_NWT,vx1_NWT,vx2_NWT,vx3_NWT, kxyFromfcNEQ_NWT, kyzFromfcNEQ_NWT, kxzFromfcNEQ_NWT, kxxMyyFromfcNEQ_NWT, kxxMzzFromfcNEQ_NWT);
@@ -310,18 +310,18 @@ void RheologyInterpolationProcessor::calcInterpolatedCoefficiets_intern(const D3
    cyz= cyz + xoff*cxyz;
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-   LBMReal dxux = ax + 0.5*axx*xs+ 0.25*(axy*ys+axz*zs)+0.0625*axyz*ys*zs;
-   LBMReal dyuy = by + 0.5 * byy * ys + 0.25 * (bxy * xs + byz * zs) + 0.0625 * bxyz * xs * zs;
-   LBMReal dzuz = cz + 0.5 * czz * zs + 0.25 * (cxz * xs + cyz * ys) + 0.0625 * cxyz * xs * ys;
+   real dxux = ax + 0.5*axx*xs+ 0.25*(axy*ys+axz*zs)+0.0625*axyz*ys*zs;
+   real dyuy = by + 0.5 * byy * ys + 0.25 * (bxy * xs + byz * zs) + 0.0625 * bxyz * xs * zs;
+   real dzuz = cz + 0.5 * czz * zs + 0.25 * (cxz * xs + cyz * ys) + 0.0625 * cxyz * xs * ys;
 
-   LBMReal Dxy = bx + 0.5 * bxx * xs + 0.25 * (bxy * ys + bxz * zs) + 0.0625 * bxyz * ys * zs + ay + 0.5 * ayy * ys + 0.25 * (axy * xs + ayz * zs) + 0.0625 * axyz * xs * zs;
-   LBMReal Dxz = cx + 0.5 * cxx * xs + 0.25 * (cxy * ys + cxz * zs) + 0.0625 * cxyz * ys * zs + az + 0.5 * azz * zs + 0.25 * (axz * xs + ayz * ys) + 0.0625 * axyz * xs * ys;
-   LBMReal Dyz = cy + 0.5 * cyy * ys + 0.25 * (cxy * xs + cyz * zs) + 0.0625 * cxyz * xs * zs + bz + 0.5 * bzz * zs + 0.25 * (bxz * xs + byz * ys) + 0.0625 * bxyz * xs * ys;
+   real Dxy = bx + 0.5 * bxx * xs + 0.25 * (bxy * ys + bxz * zs) + 0.0625 * bxyz * ys * zs + ay + 0.5 * ayy * ys + 0.25 * (axy * xs + ayz * zs) + 0.0625 * axyz * xs * zs;
+   real Dxz = cx + 0.5 * cxx * xs + 0.25 * (cxy * ys + cxz * zs) + 0.0625 * cxyz * ys * zs + az + 0.5 * azz * zs + 0.25 * (axz * xs + ayz * ys) + 0.0625 * axyz * xs * ys;
+   real Dyz = cy + 0.5 * cyy * ys + 0.25 * (cxy * xs + cyz * zs) + 0.0625 * cxyz * xs * zs + bz + 0.5 * bzz * zs + 0.25 * (bxz * xs + byz * ys) + 0.0625 * bxyz * xs * ys;
 
    shearRate = sqrt(dxux * dxux + dyuy * dyuy + dzuz * dzuz + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz);
 
 
-   LBMReal o = Rheology::getHerschelBulkleyCollFactorBackward(shearRate, rho); //omega;
+   real o = Rheology::getHerschelBulkleyCollFactorBackward(shearRate, rho); //omega;
 
    if (o < omegaMin)
       o = omegaMin;
@@ -432,17 +432,17 @@ void RheologyInterpolationProcessor::calcInterpolatedCoefficiets_intern(const D3
    yz_TNW =   0.0625*eps_new *((                bxyz +     cxyz)/(72.*o));
 }
 //////////////////////////////////////////////////////////////////////////
-void RheologyInterpolationProcessor::calcInterpolatedNode(LBMReal* f, /*LBMReal omega,*/ LBMReal x, LBMReal y, LBMReal z, LBMReal press, LBMReal xs, LBMReal ys, LBMReal zs)
+void RheologyInterpolationProcessor::calcInterpolatedNode(real* f, /*real omega,*/ real x, real y, real z, real press, real xs, real ys, real zs)
 {
    using namespace D3Q27System;
    using namespace vf::lbm::dir;
 
-   LBMReal rho  = press ;
-   LBMReal vx1  = a0 + 0.25*( xs*ax + ys*ay + zs*az) + 0.0625*(axx + xs*ys*axy + xs*zs*axz + ayy + ys*zs*ayz + azz) + 0.015625*(xs*ys*zs*axyz);
-   LBMReal vx2  = b0 + 0.25*( xs*bx + ys*by + zs*bz) + 0.0625*(bxx + xs*ys*bxy + xs*zs*bxz + byy + ys*zs*byz + bzz) + 0.015625*(xs*ys*zs*bxyz);
-   LBMReal vx3  = c0 + 0.25*( xs*cx + ys*cy + zs*cz) + 0.0625*(cxx + xs*ys*cxy + xs*zs*cxz + cyy + ys*zs*cyz + czz) + 0.015625*(xs*ys*zs*cxyz);
+   real rho  = press ;
+   real vx1  = a0 + 0.25*( xs*ax + ys*ay + zs*az) + 0.0625*(axx + xs*ys*axy + xs*zs*axz + ayy + ys*zs*ayz + azz) + 0.015625*(xs*ys*zs*axyz);
+   real vx2  = b0 + 0.25*( xs*bx + ys*by + zs*bz) + 0.0625*(bxx + xs*ys*bxy + xs*zs*bxz + byy + ys*zs*byz + bzz) + 0.015625*(xs*ys*zs*bxyz);
+   real vx3  = c0 + 0.25*( xs*cx + ys*cy + zs*cz) + 0.0625*(cxx + xs*ys*cxy + xs*zs*cxz + cyy + ys*zs*cyz + czz) + 0.015625*(xs*ys*zs*cxyz);
 
-   LBMReal feq[ENDF+1];
+   real feq[ENDF+1];
    D3Q27System::calcIncompFeq(feq,rho,vx1,vx2,vx3);
 
    f[DIR_P00]    = f_E    + xs*x_E    + ys*y_E    + zs*z_E    + xs*ys*xy_E    + xs*zs*xz_E    + ys*zs*yz_E    + feq[DIR_P00];
@@ -475,7 +475,7 @@ void RheologyInterpolationProcessor::calcInterpolatedNode(LBMReal* f, /*LBMReal 
 }
 //////////////////////////////////////////////////////////////////////////
 //Position SWB -0.25, -0.25, -0.25
-LBMReal RheologyInterpolationProcessor::calcPressBSW()
+real RheologyInterpolationProcessor::calcPressBSW()
 {
    return   press_SWT * (0.140625 + 0.1875 * xoff + 0.1875 * yoff - 0.5625 * zoff) +
       press_NWT * (0.046875 + 0.0625 * xoff - 0.1875 * yoff - 0.1875 * zoff) +
@@ -488,7 +488,7 @@ LBMReal RheologyInterpolationProcessor::calcPressBSW()
 }
 //////////////////////////////////////////////////////////////////////////
 //Position SWT -0.25, -0.25, 0.25
-LBMReal RheologyInterpolationProcessor::calcPressTSW()
+real RheologyInterpolationProcessor::calcPressTSW()
 {
    return   press_SWT * (0.421875 + 0.5625 * xoff + 0.5625 * yoff - 0.5625 * zoff) +
       press_NWT * (0.140625 + 0.1875 * xoff - 0.5625 * yoff - 0.1875 * zoff) +
@@ -501,7 +501,7 @@ LBMReal RheologyInterpolationProcessor::calcPressTSW()
 }
 //////////////////////////////////////////////////////////////////////////
 //Position SET 0.25, -0.25, 0.25
-LBMReal RheologyInterpolationProcessor::calcPressTSE()
+real RheologyInterpolationProcessor::calcPressTSE()
 {
    return   press_SET * (0.421875 - 0.5625 * xoff + 0.5625 * yoff - 0.5625 * zoff) +
       press_NET * (0.140625 - 0.1875 * xoff - 0.5625 * yoff - 0.1875 * zoff) +
@@ -514,7 +514,7 @@ LBMReal RheologyInterpolationProcessor::calcPressTSE()
 }
 //////////////////////////////////////////////////////////////////////////
 //Position SEB 0.25, -0.25, -0.25
-LBMReal RheologyInterpolationProcessor::calcPressBSE()
+real RheologyInterpolationProcessor::calcPressBSE()
 {
    return   press_SET * (0.140625 - 0.1875 * xoff + 0.1875 * yoff - 0.5625 * zoff) +
       press_NET * (0.046875 - 0.0625 * xoff - 0.1875 * yoff - 0.1875 * zoff) +
@@ -527,7 +527,7 @@ LBMReal RheologyInterpolationProcessor::calcPressBSE()
 }
 //////////////////////////////////////////////////////////////////////////
 //Position NWB -0.25, 0.25, -0.25
-LBMReal RheologyInterpolationProcessor::calcPressBNW()
+real RheologyInterpolationProcessor::calcPressBNW()
 {
    return   press_NWT * (0.140625 + 0.1875 * xoff - 0.1875 * yoff - 0.5625 * zoff) +
       press_NET * (0.046875 - 0.1875 * xoff - 0.0625 * yoff - 0.1875 * zoff) +
@@ -540,7 +540,7 @@ LBMReal RheologyInterpolationProcessor::calcPressBNW()
 }
 //////////////////////////////////////////////////////////////////////////
 //Position NWT -0.25, 0.25, 0.25
-LBMReal RheologyInterpolationProcessor::calcPressTNW()
+real RheologyInterpolationProcessor::calcPressTNW()
 {
    return   press_NWT * (0.421875 + 0.5625 * xoff - 0.5625 * yoff - 0.5625 * zoff) +
       press_NET * (0.140625 - 0.5625 * xoff - 0.1875 * yoff - 0.1875 * zoff) +
@@ -553,7 +553,7 @@ LBMReal RheologyInterpolationProcessor::calcPressTNW()
 }
 //////////////////////////////////////////////////////////////////////////
 //Position NET 0.25, 0.25, 0.25
-LBMReal RheologyInterpolationProcessor::calcPressTNE()
+real RheologyInterpolationProcessor::calcPressTNE()
 {
    return   press_NET * (0.421875 - 0.5625 * xoff - 0.5625 * yoff - 0.5625 * zoff) +
       press_NWT * (0.140625 + 0.5625 * xoff - 0.1875 * yoff - 0.1875 * zoff) +
@@ -566,7 +566,7 @@ LBMReal RheologyInterpolationProcessor::calcPressTNE()
 }
 //////////////////////////////////////////////////////////////////////////
 //Position NEB 0.25, 0.25, -0.25
-LBMReal RheologyInterpolationProcessor::calcPressBNE()
+real RheologyInterpolationProcessor::calcPressBNE()
 {
    return   press_NET * (0.140625 - 0.1875 * xoff - 0.1875 * yoff - 0.5625 * zoff) +
       press_NWT * (0.046875 + 0.1875 * xoff - 0.0625 * yoff - 0.1875 * zoff) +
@@ -579,12 +579,12 @@ LBMReal RheologyInterpolationProcessor::calcPressBNE()
 }
 //////////////////////////////////////////////////////////////////////////
 //Position C 0.0, 0.0, 0.0
-void RheologyInterpolationProcessor::calcInterpolatedNodeFC(LBMReal* f, LBMReal omega)
+void RheologyInterpolationProcessor::calcInterpolatedNodeFC(real* f, real omega)
 {
    using namespace D3Q27System;
    using namespace vf::lbm::dir;
 
-   LBMReal press  =  press_NET * (0.125 - 0.25 * xoff - 0.25 * yoff - 0.25 * zoff) +
+   real press  =  press_NET * (0.125 - 0.25 * xoff - 0.25 * yoff - 0.25 * zoff) +
       press_NWT * (0.125 + 0.25 * xoff - 0.25 * yoff - 0.25 * zoff) +
       press_SET * (0.125 - 0.25 * xoff + 0.25 * yoff - 0.25 * zoff) +
       press_SWT * (0.125 + 0.25 * xoff + 0.25 * yoff - 0.25 * zoff) +
@@ -592,30 +592,30 @@ void RheologyInterpolationProcessor::calcInterpolatedNodeFC(LBMReal* f, LBMReal 
       press_NWB * (0.125 + 0.25 * xoff - 0.25 * yoff + 0.25 * zoff) +
       press_SEB * (0.125 - 0.25 * xoff + 0.25 * yoff + 0.25 * zoff) +
       press_SWB * (0.125 + 0.25 * xoff + 0.25 * yoff + 0.25 * zoff);
-   LBMReal vx1  = a0;
-   LBMReal vx2  = b0;
-   LBMReal vx3  = c0;
+   real vx1  = a0;
+   real vx2  = b0;
+   real vx3  = c0;
 
-   LBMReal rho = press ;
+   real rho = press ;
 
-   LBMReal feq[ENDF+1];
+   real feq[ENDF+1];
    D3Q27System::calcIncompFeq(feq,rho,vx1,vx2,vx3);
 
-   LBMReal eps_new = 2.;
+   real eps_new = 2.;
    
 
-   LBMReal dxux = ax;
-   LBMReal dyuy = by;
-   LBMReal dzuz = cz;
+   real dxux = ax;
+   real dyuy = by;
+   real dzuz = cz;
 
-   LBMReal Dxy = bx + ay;
-   LBMReal Dxz = cx + az;
-   LBMReal Dyz = cy + bz;
+   real Dxy = bx + ay;
+   real Dxz = cx + az;
+   real Dyz = cy + bz;
 
    shearRate = sqrt(dxux * dxux + dyuy * dyuy + dzuz * dzuz + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz);
 
 
-   LBMReal o = Rheology::getHerschelBulkleyCollFactorBackward(shearRate, rho); //omega;
+   real o = Rheology::getHerschelBulkleyCollFactorBackward(shearRate, rho); //omega;
 
    if (o < omegaMin)
       o = omegaMin;
@@ -664,14 +664,14 @@ void RheologyInterpolationProcessor::calcInterpolatedNodeFC(LBMReal* f, LBMReal 
    f[DIR_000] = f_ZERO + feq[DIR_000];
 }
 //////////////////////////////////////////////////////////////////////////
-void RheologyInterpolationProcessor::calcInterpolatedVelocity(LBMReal x, LBMReal y, LBMReal z, LBMReal& vx1, LBMReal& vx2, LBMReal& vx3)
+void RheologyInterpolationProcessor::calcInterpolatedVelocity(real x, real y, real z, real& vx1, real& vx2, real& vx3)
 {
 	vx1  = a0 + ax*x + ay*y + az*z + axx*x*x + ayy*y*y + azz*z*z + axy*x*y + axz*x*z + ayz*y*z+axyz*x*y*z;
 	vx2  = b0 + bx*x + by*y + bz*z + bxx*x*x + byy*y*y + bzz*z*z + bxy*x*y + bxz*x*z + byz*y*z+bxyz*x*y*z;
 	vx3  = c0 + cx*x + cy*y + cz*z + cxx*x*x + cyy*y*y + czz*z*z + cxy*x*y + cxz*x*z + cyz*y*z+cxyz*x*y*z;
 }
 //////////////////////////////////////////////////////////////////////////
-void RheologyInterpolationProcessor::calcInterpolatedShearStress(LBMReal x, LBMReal y, LBMReal z,LBMReal& tauxx, LBMReal& tauyy, LBMReal& tauzz,LBMReal& tauxy, LBMReal& tauxz, LBMReal& tauyz)
+void RheologyInterpolationProcessor::calcInterpolatedShearStress(real x, real y, real z,real& tauxx, real& tauyy, real& tauzz,real& tauxy, real& tauxz, real& tauyz)
 {
 	tauxx=ax+2*axx*x+axy*y+axz*z+axyz*y*z;
 	tauyy=by+2*byy*y+bxy*x+byz*z+bxyz*x*z;

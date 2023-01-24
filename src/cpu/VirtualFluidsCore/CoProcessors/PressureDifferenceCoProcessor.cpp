@@ -17,8 +17,8 @@
 
 PressureDifferenceCoProcessor::PressureDifferenceCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
                                                              const std::string &path, SPtr<IntegrateValuesHelper> h1,
-                                                             SPtr<IntegrateValuesHelper> h2, LBMReal rhoReal,
-                                                             LBMReal uReal, LBMReal uLB, std::shared_ptr<vf::mpi::Communicator> comm)
+                                                             SPtr<IntegrateValuesHelper> h2, real rhoReal,
+                                                             real uReal, real uLB, std::shared_ptr<vf::mpi::Communicator> comm)
 
     : CoProcessor(grid, s), path(path), h1(h1), h2(h2), comm(comm)
 {

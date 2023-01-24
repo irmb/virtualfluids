@@ -39,7 +39,7 @@ SPtr<LBMKernel> InitDensityLBMKernel::clone()
    return kernel;
 }
 
-void InitDensityLBMKernel::setVelocity(int x1, int x2, int x3, LBMReal vvx, LBMReal vvy, LBMReal vvz)
+void InitDensityLBMKernel::setVelocity(int x1, int x2, int x3, real vvx, real vvy, real vvz)
 {
    v(0, x1, x2, x3) = vvx;
    v(1, x1, x2, x3) = vvy;
@@ -864,9 +864,9 @@ void InitDensityLBMKernel::calculate(int  /*step*/)
 
    SPtr<BCArray3D> bcArray = this->getBCProcessor()->getBCArray();
    SPtr<BoundaryConditions> bcPtr;
-   LBMReal f[D3Q27System::ENDF+1];
-   LBMReal feq[D3Q27System::ENDF+1];
-   LBMReal drho, vx1, vx2, vx3;
+   real f[D3Q27System::ENDF+1];
+   real feq[D3Q27System::ENDF+1];
+   real drho, vx1, vx2, vx3;
    const int bcArrayMaxX1 = (int)bcArray->getNX1();
    const int bcArrayMaxX2 = (int)bcArray->getNX2();
    const int bcArrayMaxX3 = (int)bcArray->getNX3();
@@ -955,7 +955,7 @@ void InitDensityLBMKernel::calculate(int  /*step*/)
                //vx2 = vx2+(vvy-vx2);
                //vx3 = vx3+(vvz-vx3);
 
-               LBMReal cu_sq = 1.5*(vx1*vx1+vx2*vx2+vx3*vx3);
+               real cu_sq = 1.5*(vx1*vx1+vx2*vx2+vx3*vx3);
 
                feq[DIR_000] = c8o27*(drho-cu_sq);
                feq[DIR_P00] = c2o27*(drho+3.0*(vx1)+c9o2*(vx1)*(vx1)-cu_sq);
@@ -1017,11 +1017,11 @@ void InitDensityLBMKernel::calculate(int  /*step*/)
 
                //////////////////////////////////////////////////////////////////////////
 #ifdef  PROOF_CORRECTNESS
-               LBMReal rho_post = f[REST]+f[DIR_P00]+f[W]+f[N]+f[S]+f[T]+f[B]
+               real rho_post = f[REST]+f[DIR_P00]+f[W]+f[N]+f[S]+f[T]+f[B]
                   +f[NE]+f[SW]+f[SE]+f[NW]+f[TE]+f[BW]+f[BE]
                   +f[TW]+f[TN]+f[BS]+f[BN]+f[TS]+f[TNE]+f[TSW]
                   +f[TSE]+f[TNW]+f[BNE]+f[BSW]+f[BSE]+f[BNW];
-               LBMReal dif = drho-rho_post;
+               real dif = drho-rho_post;
 #ifdef SINGLEPRECISION
                if (dif>10.0E-7||dif<-10.0E-7)
 #else

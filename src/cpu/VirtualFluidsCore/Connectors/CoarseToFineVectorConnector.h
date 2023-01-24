@@ -123,7 +123,7 @@ protected:
     InterpolationProcessorPtr iprocessor;
 
     void writeICellFtoData(vector_type &data, int &index, D3Q27ICell &icellF);
-    void writeNodeToVector(vector_type &data, int &index, LBMReal *inode);
+    void writeNodeToVector(vector_type &data, int &index, real *inode);
     void getLocalMinMax(const int &gMin, const int &gMax, const bool &even, int &lMin, int &lMax,
                         const bool &dataDistribution);
     void getLocalMinMax(int &minX1, int &minX2, int &minX3, int &maxX1, int &maxX2, int &maxX3);
@@ -135,7 +135,7 @@ protected:
     void distributeReceiveVector(SPtr<DistributionArray3D> fTo, const int &lMinX1, const int &lMinX2, const int &lMinX3,
                                  const int &lMaxX1, const int &lMaxX2, const int &lMaxX3, vector_type &data,
                                  int &index);
-    void readICellCfromData(vector_type &data, int &index, LBMReal *icellC);
+    void readICellCfromData(vector_type &data, int &index, real *icellC);
 
     void findCFnodes();
     void findCFnodes(SPtr<DistributionArray3D> fFrom, const int &lMinX1, const int &lMinX2, const int &lMinX3,
@@ -307,7 +307,7 @@ void CoarseToFineVectorConnector<VectorTransmitter>::init()
     bMaxX3 = (int)block.lock()->getKernel()->getDataSet()->getFdistributions()->getNX3();
 
     int sendSize      = 0;
-    LBMReal initValue = -999.0;
+    real initValue = -999.0;
 
     int sendDataPerNode = 27 /*f*/;
     int iCellSize       = 8; // size of interpolation cell
@@ -359,28 +359,28 @@ void CoarseToFineVectorConnector<VectorTransmitter>::init()
     if (senderEvenEvenSW)
         senderEvenEvenSW->getData().resize(sendSize, initValue);
     else
-        senderEvenEvenSW = VectorTransmitterPtr(new TbLocalTransmitter<CbVector<LBMReal>>());
+        senderEvenEvenSW = VectorTransmitterPtr(new TbLocalTransmitter<CbVector<real>>());
     if (senderEvenOddNW)
         senderEvenOddNW->getData().resize(sendSize, initValue);
     else
-        senderEvenOddNW = VectorTransmitterPtr(new TbLocalTransmitter<CbVector<LBMReal>>());
+        senderEvenOddNW = VectorTransmitterPtr(new TbLocalTransmitter<CbVector<real>>());
     if (senderOddEvenSE)
         senderOddEvenSE->getData().resize(sendSize, initValue);
     else
-        senderOddEvenSE = VectorTransmitterPtr(new TbLocalTransmitter<CbVector<LBMReal>>());
+        senderOddEvenSE = VectorTransmitterPtr(new TbLocalTransmitter<CbVector<real>>());
     if (senderOddOddNE)
         senderOddOddNE->getData().resize(sendSize, initValue);
     else
-        senderOddOddNE = VectorTransmitterPtr(new TbLocalTransmitter<CbVector<LBMReal>>());
+        senderOddOddNE = VectorTransmitterPtr(new TbLocalTransmitter<CbVector<real>>());
 
     if (!receiverEvenEvenSW)
-        receiverEvenEvenSW = VectorTransmitterPtr(new TbLocalTransmitter<CbVector<LBMReal>>());
+        receiverEvenEvenSW = VectorTransmitterPtr(new TbLocalTransmitter<CbVector<real>>());
     if (!receiverEvenOddNW)
-        receiverEvenOddNW = VectorTransmitterPtr(new TbLocalTransmitter<CbVector<LBMReal>>());
+        receiverEvenOddNW = VectorTransmitterPtr(new TbLocalTransmitter<CbVector<real>>());
     if (!receiverOddEvenSE)
-        receiverOddEvenSE = VectorTransmitterPtr(new TbLocalTransmitter<CbVector<LBMReal>>());
+        receiverOddEvenSE = VectorTransmitterPtr(new TbLocalTransmitter<CbVector<real>>());
     if (!receiverOddOddNE)
-        receiverOddOddNE = VectorTransmitterPtr(new TbLocalTransmitter<CbVector<LBMReal>>());
+        receiverOddOddNE = VectorTransmitterPtr(new TbLocalTransmitter<CbVector<real>>());
 
     // findCFnodes();
 }
@@ -832,7 +832,7 @@ void CoarseToFineVectorConnector<VectorTransmitter>::fillSendVectorExt(SPtr<Dist
     if (data.size() == 0)
         return;
     int ix1, ix2, ix3;
-    LBMReal xoff, yoff, zoff;
+    real xoff, yoff, zoff;
     SPtr<BCArray3D> bcArray = block.lock()->getKernel()->getBCProcessor()->getBCArray();
 
     for (ix3 = lMinX3; ix3 < lMaxX3; ix3++) {
@@ -882,7 +882,7 @@ void CoarseToFineVectorConnector<VectorTransmitter>::writeICellFtoData(vector_ty
 }
 //////////////////////////////////////////////////////////////////////////
 template <typename VectorTransmitter>
-void CoarseToFineVectorConnector<VectorTransmitter>::writeNodeToVector(vector_type &data, int &index, LBMReal *inode)
+void CoarseToFineVectorConnector<VectorTransmitter>::writeNodeToVector(vector_type &data, int &index, real *inode)
 {
     for (int i = D3Q27System::STARTF; i < D3Q27System::ENDF + 1; i++) {
         data[index++] = inode[i];
@@ -1611,7 +1611,7 @@ void CoarseToFineVectorConnector<VectorTransmitter>::distributeReceiveVector(SPt
     for (ix3 = lMinX3; ix3 < lMaxX3; ix3++) {
         for (ix2 = lMinX2; ix2 < lMaxX2; ix2++) {
             for (ix1 = lMinX1; ix1 < lMaxX1; ix1++) {
-                LBMReal icellC[27];
+                real icellC[27];
                 this->readICellCfromData(data, index, icellC);
                 iprocessor->writeINodeInv(fTo, icellC, ix1, ix2, ix3);
             }
@@ -1620,7 +1620,7 @@ void CoarseToFineVectorConnector<VectorTransmitter>::distributeReceiveVector(SPt
 }
 //////////////////////////////////////////////////////////////////////////
 template <typename VectorTransmitter>
-void CoarseToFineVectorConnector<VectorTransmitter>::readICellCfromData(vector_type &data, int &index, LBMReal *icellC)
+void CoarseToFineVectorConnector<VectorTransmitter>::readICellCfromData(vector_type &data, int &index, real *icellC)
 {
     for (int i = D3Q27System::STARTF; i < D3Q27System::ENDF + 1; i++) {
         icellC[i] = data[index++];
@@ -1978,7 +1978,7 @@ void CoarseToFineVectorConnector<VectorTransmitter>::findCFnodes(SPtr<Distributi
     if (data.size() == 0)
         return;
     int ix1, ix2, ix3;
-    LBMReal xoff, yoff, zoff;
+    real xoff, yoff, zoff;
     SPtr<BCArray3D> bcArray = block.lock()->getKernel()->getBCProcessor()->getBCArray();
 
     for (ix3 = lMinX3; ix3 < lMaxX3; ix3++) {

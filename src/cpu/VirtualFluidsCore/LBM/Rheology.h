@@ -45,53 +45,53 @@ public:
 	Rheology(Rheology const&) = delete;
 	Rheology& operator=(Rheology const&) = delete;
 	static SPtr<Rheology> getInstance();
-	void setYieldStress(LBMReal tau0);
-	LBMReal getYieldStress() const;
+	void setYieldStress(real tau0);
+	real getYieldStress() const;
 	
-	void setViscosityParameter(LBMReal k);
-	LBMReal getViscosityParameter() const;
+	void setViscosityParameter(real k);
+	real getViscosityParameter() const;
 
-	void setPowerIndex(LBMReal n);
-	LBMReal getPowerIndex() const;
+	void setPowerIndex(real n);
+	real getPowerIndex() const;
 
-	void setOmegaMin(LBMReal omegaMin);
-	LBMReal getOmegaMin() const;
+	void setOmegaMin(real omegaMin);
+	real getOmegaMin() const;
 
-	void setBeta(LBMReal PowellEyringBeta);
-	LBMReal getBeta() const;
+	void setBeta(real PowellEyringBeta);
+	real getBeta() const;
 
-	void setC(LBMReal PowellEyringC);
-	LBMReal getC() const;
+	void setC(real PowellEyringC);
+	real getC() const;
 
-	void setMu0(LBMReal mu);
-	LBMReal getMu0() const;
+	void setMu0(real mu);
+	real getMu0() const;
 
-	static LBMReal getBinghamCollFactorOld(LBMReal omegaInf, LBMReal shearRate, LBMReal drho);
-	static LBMReal getBinghamCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho);
-	static LBMReal getHerschelBulkleyCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho);
-	static LBMReal getHerschelBulkleyCollFactorBackward(LBMReal shearRate, LBMReal drho);
-	static LBMReal getPowellEyringCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho);
+	static real getBinghamCollFactorOld(real omegaInf, real shearRate, real drho);
+	static real getBinghamCollFactor(real omegaInf, real shearRate, real drho);
+	static real getHerschelBulkleyCollFactor(real omegaInf, real shearRate, real drho);
+	static real getHerschelBulkleyCollFactorBackward(real shearRate, real drho);
+	static real getPowellEyringCollFactor(real omegaInf, real shearRate, real drho);
 private:
 	Rheology();
 	
 	static SPtr<Rheology> instance;
 
-	static LBMReal tau0;
-	static LBMReal k;
-	static LBMReal n;
-	static LBMReal omegaMin;
-	static LBMReal beta;
-	static LBMReal c;
-	static LBMReal mu0;
+	static real tau0;
+	static real k;
+	static real n;
+	static real omegaMin;
+	static real beta;
+	static real c;
+	static real mu0;
 };
 
 //////////////////////////////////////////////////////////////////////////
-inline LBMReal Rheology::getBinghamCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho)
+inline real Rheology::getBinghamCollFactor(real omegaInf, real shearRate, real drho)
 {
-	LBMReal cs2 = UbMath::one_over_sqrt3 * UbMath::one_over_sqrt3;
-	LBMReal rho = UbMath::one + drho;
+	real cs2 = UbMath::one_over_sqrt3 * UbMath::one_over_sqrt3;
+	real rho = UbMath::one + drho;
 	//analytical solution
-	LBMReal omega = omegaInf * (UbMath::one - (omegaInf * tau0) / (shearRate * cs2 * rho + UbMath::Epsilon<LBMReal>::val()));
+	real omega = omegaInf * (UbMath::one - (omegaInf * tau0) / (shearRate * cs2 * rho + UbMath::Epsilon<real>::val()));
 	
 	//LBMReal omega = cs2 * cs2 * shearRate * shearRate * omegaInf * rho * rho / (cs2 * cs2 * shearRate * shearRate * rho * rho + cs2 * shearRate * omegaInf * rho * tau0+omegaInf*omegaInf*tau0*tau0);
 	
@@ -117,10 +117,10 @@ inline LBMReal Rheology::getBinghamCollFactor(LBMReal omegaInf, LBMReal shearRat
 	return omega;
 }
 
-inline LBMReal Rheology::getBinghamCollFactorOld(LBMReal omegaInf, LBMReal shearRate, LBMReal drho)
+inline real Rheology::getBinghamCollFactorOld(real omegaInf, real shearRate, real drho)
 {
-	const LBMReal cs2 = UbMath::c1o3; // UbMath::one_over_sqrt3* UbMath::one_over_sqrt3;
-	LBMReal rho = UbMath::one + drho;
+	const real cs2 = UbMath::c1o3; // UbMath::one_over_sqrt3* UbMath::one_over_sqrt3;
+	real rho = UbMath::one + drho;
 
 	if (rho * cs2 * (UbMath::c1 / omegaInf - UbMath::c1o2) * shearRate < tau0)
 		return 0.0;
@@ -128,19 +128,19 @@ inline LBMReal Rheology::getBinghamCollFactorOld(LBMReal omegaInf, LBMReal shear
 		return omegaInf;
 }
 //////////////////////////////////////////////////////////////////////////
-inline LBMReal Rheology::getHerschelBulkleyCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho)
+inline real Rheology::getHerschelBulkleyCollFactor(real omegaInf, real shearRate, real drho)
 {
-	LBMReal cs2 = UbMath::one_over_sqrt3 * UbMath::one_over_sqrt3;
-	LBMReal rho = UbMath::one + drho;
-	LBMReal gammaDot = shearRate;
-	LBMReal omega = omegaInf;
-	LBMReal epsilon = 1;
-	LBMReal gammaDotPowN = std::pow(gammaDot, n);
+	real cs2 = UbMath::one_over_sqrt3 * UbMath::one_over_sqrt3;
+	real rho = UbMath::one + drho;
+	real gammaDot = shearRate;
+	real omega = omegaInf;
+	real epsilon = 1;
+	real gammaDotPowN = std::pow(gammaDot, n);
 
 	while (epsilon > 1e-10)
 	{
-		LBMReal omegaOld = omega;
-		LBMReal omegaByOmegaInfPowN = std::pow(omega / omegaInf, n);/*
+		real omegaOld = omega;
+		real omegaByOmegaInfPowN = std::pow(omega / omegaInf, n);/*
 		LBMReal gammaDotPowOneMinusN = std::pow(gammaDot,1- n);
 		LBMReal omegaByOmegaInfPowOneMinusN = std::pow(omega / omegaInf, 1-n);
 		LBMReal numeratorA = (2.0* k *  omegaInf + cs2 * gammaDotPowOneMinusN * omegaByOmegaInfPowOneMinusN *omegaInf* rho );
@@ -148,8 +148,8 @@ inline LBMReal Rheology::getHerschelBulkleyCollFactor(LBMReal omegaInf, LBMReal 
 		LBMReal denominatorA = (2.0 * k * n * omegaInf + cs2 * gammaDot * rho * omegaInf* gammaDotPowOneMinusN * omegaByOmegaInfPowOneMinusN) + UbMath::Epsilon<LBMReal>::val();
 		LBMReal denominatorB = (2.0 * k * n * gammaDotPowN * omegaByOmegaInfPowN * omegaInf + cs2 * gammaDot * rho * omega) + UbMath::Epsilon<LBMReal>::val();
 		omega = omega - omega *( numeratorA / denominatorA+ numeratorB / denominatorB);*/
-		LBMReal numerator = (2.0 * gammaDotPowN * k * omegaByOmegaInfPowN * omegaInf + cs2 * gammaDot * (omega - 2.0) * rho + 2.0 * omegaInf * tau0);
-		LBMReal denominator = (2.0 * k * n * gammaDotPowN * omegaByOmegaInfPowN * omegaInf + cs2 * gammaDot * rho * omega) + UbMath::Epsilon<LBMReal>::val();
+		real numerator = (2.0 * gammaDotPowN * k * omegaByOmegaInfPowN * omegaInf + cs2 * gammaDot * (omega - 2.0) * rho + 2.0 * omegaInf * tau0);
+		real denominator = (2.0 * k * n * gammaDotPowN * omegaByOmegaInfPowN * omegaInf + cs2 * gammaDot * rho * omega) + UbMath::Epsilon<real>::val();
 		omega = omega - omega * numerator / denominator;
 		omega = (omega < UbMath::zeroReal) ? UbMath::c1o2 * omegaOld : omega;
         //omega = (omega < omegaMin) ? UbMath::c1o2 * (omegaOld-omegaMin)+omegaMin : omega;
@@ -159,32 +159,32 @@ inline LBMReal Rheology::getHerschelBulkleyCollFactor(LBMReal omegaInf, LBMReal 
 	return omega;
 }
 //////////////////////////////////////////////////////////////////////////
-inline LBMReal Rheology::getHerschelBulkleyCollFactorBackward(LBMReal shearRate, LBMReal drho)
+inline real Rheology::getHerschelBulkleyCollFactorBackward(real shearRate, real drho)
 {
-	LBMReal rho = UbMath::one + drho;
-	LBMReal gamma = shearRate + UbMath::Epsilon<LBMReal>::val();
-	LBMReal cs2 = UbMath::one_over_sqrt3 * UbMath::one_over_sqrt3;
+	real rho = UbMath::one + drho;
+	real gamma = shearRate + UbMath::Epsilon<real>::val();
+	real cs2 = UbMath::one_over_sqrt3 * UbMath::one_over_sqrt3;
 
 	return 1.0 / ((tau0 + k * std::pow(gamma, n)) / (cs2 * rho * gamma) + UbMath::c1o2);
 }
 //////////////////////////////////////////////////////////////////////////
-inline LBMReal Rheology::getPowellEyringCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho)
+inline real Rheology::getPowellEyringCollFactor(real omegaInf, real shearRate, real drho)
 {
 	using namespace UbMath;
-	LBMReal cs2 = c1o3; // UbMath::one_over_sqrt3* UbMath::one_over_sqrt3;
-	LBMReal rho = c1 + drho;
-	LBMReal gammaDot = shearRate;
-	LBMReal omega = omegaInf;
-	LBMReal epsilon = 1;
+	real cs2 = c1o3; // UbMath::one_over_sqrt3* UbMath::one_over_sqrt3;
+	real rho = c1 + drho;
+	real gammaDot = shearRate;
+	real omega = omegaInf;
+	real epsilon = 1;
 
 	while (epsilon > 1e-10)
 	{
-		LBMReal omegaOld = omega;
+		real omegaOld = omega;
 		epsilon = std::abs(omega - omegaOld);
 
-		LBMReal numerator = c*sqrt(c1+(gammaDot*gammaDot*omega*omega)/(c*c*omegaInf*omegaInf))*(beta*(c2*gammaDot*mu0*omega+cs2*gammaDot*(omega-c2)*rho+c2*omegaInf*tau0)+c2*omegaInf*(asinh((gammaDot*omega)/(c*omegaInf))));
+		real numerator = c*sqrt(c1+(gammaDot*gammaDot*omega*omega)/(c*c*omegaInf*omegaInf))*(beta*(c2*gammaDot*mu0*omega+cs2*gammaDot*(omega-c2)*rho+c2*omegaInf*tau0)+c2*omegaInf*(asinh((gammaDot*omega)/(c*omegaInf))));
 
-		LBMReal denominator = gammaDot*(c2+beta*c*sqrt(c1+(gammaDot*gammaDot*omega*omega)/(c*c*omegaInf*omegaInf))*(c2*mu0+cs2*rho)) + UbMath::Epsilon<LBMReal>::val();
+		real denominator = gammaDot*(c2+beta*c*sqrt(c1+(gammaDot*gammaDot*omega*omega)/(c*c*omegaInf*omegaInf))*(c2*mu0+cs2*rho)) + UbMath::Epsilon<real>::val();
 
 		omega = omega - numerator / denominator;
 

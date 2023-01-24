@@ -24,8 +24,8 @@ class PressureDifferenceCoProcessor : public CoProcessor
 {
 public:
     PressureDifferenceCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
-                                  SPtr<IntegrateValuesHelper> h1, SPtr<IntegrateValuesHelper> h2, LBMReal rhoReal,
-                                  LBMReal uReal, LBMReal uLB,
+                                  SPtr<IntegrateValuesHelper> h1, SPtr<IntegrateValuesHelper> h2, real rhoReal,
+                                  real uReal, real uLB,
                                   /*const SPtr<LBMUnitConverter> conv,*/ std::shared_ptr<vf::mpi::Communicator> comm);
     ~PressureDifferenceCoProcessor() override;
 
@@ -37,9 +37,9 @@ protected:
     SPtr<LBMUnitConverter> conv;
     void collectData(double step);
     std::shared_ptr<vf::mpi::Communicator> comm;
-    LBMReal factor1; //= (1/3)*rhoReal*(uReal/uLB)^2 for calculation pReal = rhoLB * (1/3)*rhoReal*(uReal/uLB)^2,
+    real factor1; //= (1/3)*rhoReal*(uReal/uLB)^2 for calculation pReal = rhoLB * (1/3)*rhoReal*(uReal/uLB)^2,
                      //rhoReal and uReal in SI
-    LBMReal factor2; //= rhoReal*(uReal/uLB)^2       for calculation pReal = press * rhoReal*(uReal/uLB)^2, rhoReal and
+    real factor2; //= rhoReal*(uReal/uLB)^2       for calculation pReal = press * rhoReal*(uReal/uLB)^2, rhoReal and
                      //uReal in SI
 };
 

@@ -50,7 +50,7 @@ class InterpolationProcessor;
 class SetInterpolationConnectorsBlockVisitor : public Block3DVisitor
 {
 public:
-    SetInterpolationConnectorsBlockVisitor(std::shared_ptr<vf::mpi::Communicator> comm, LBMReal nue, SPtr<InterpolationProcessor> iProcessor);
+    SetInterpolationConnectorsBlockVisitor(std::shared_ptr<vf::mpi::Communicator> comm, real nue, SPtr<InterpolationProcessor> iProcessor);
     ~SetInterpolationConnectorsBlockVisitor() override;
     void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
     //////////////////////////////////////////////////////////////////////////
@@ -65,7 +65,7 @@ protected:
                             CreateTransmittersHelper::TransmitterPtr &receiverFC);
     std::shared_ptr<vf::mpi::Communicator> comm;
     int gridRank;
-    LBMReal nue;
+    real nue;
     SPtr<InterpolationProcessor> iProcessor;
 };
 

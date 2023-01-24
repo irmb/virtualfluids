@@ -50,7 +50,7 @@ MultiphaseInitDistributionsBlockVisitor::MultiphaseInitDistributionsBlockVisitor
 	this->setRho(0.0);
 }
 //////////////////////////////////////////////////////////////////////////
-MultiphaseInitDistributionsBlockVisitor::MultiphaseInitDistributionsBlockVisitor( LBMReal densityRatio, LBMReal vx1, LBMReal vx2, LBMReal vx3, LBMReal rho)
+MultiphaseInitDistributionsBlockVisitor::MultiphaseInitDistributionsBlockVisitor( real densityRatio, real vx1, real vx2, real vx3, real rho)
 	: Block3DVisitor(0, D3Q27System::MAXLEVEL), densityRatio(densityRatio) 
 {
 	this->setVx1(vx1);
@@ -118,31 +118,31 @@ void MultiphaseInitDistributionsBlockVisitor::setPhi( const std::string& muParse
 	this->checkFunction(muPhi); 
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitor::setVx1( LBMReal vx1 ) 
+void MultiphaseInitDistributionsBlockVisitor::setVx1( real vx1 ) 
 { 
 	this->muVx1.SetExpr( UbSystem::toString(vx1,D3Q27RealLim::digits10) );  
 	this->checkFunction(muVx1); 
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitor::setVx2( LBMReal vx2 ) 
+void MultiphaseInitDistributionsBlockVisitor::setVx2( real vx2 ) 
 { 
 	this->muVx2.SetExpr( UbSystem::toString(vx2,D3Q27RealLim::digits10) );  
 	this->checkFunction(muVx2); 
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitor::setVx3( LBMReal vx3 ) 
+void MultiphaseInitDistributionsBlockVisitor::setVx3( real vx3 ) 
 { 
 	this->muVx3.SetExpr( UbSystem::toString(vx3,D3Q27RealLim::digits10) );  
 	this->checkFunction(muVx3); 
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitor::setRho( LBMReal rho ) 
+void MultiphaseInitDistributionsBlockVisitor::setRho( real rho ) 
 { 
 	this->muRho.SetExpr( UbSystem::toString(rho,D3Q27RealLim::digits10) );  
 	this->checkFunction(muRho); 
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitor::setPhi( LBMReal phi ) 
+void MultiphaseInitDistributionsBlockVisitor::setPhi( real phi ) 
 { 
 	this->muPhi.SetExpr( UbSystem::toString(phi,D3Q27RealLim::digits10) );  
 	this->checkFunction(muPhi); 
@@ -163,7 +163,7 @@ void MultiphaseInitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPt
 	this->muRho.DefineVar("x1",&x1); this->muRho.DefineVar("x2",&x2); this->muRho.DefineVar("x3",&x3);
 	this->muPhi.DefineVar("x1",&x1); this->muPhi.DefineVar("x2",&x2); this->muPhi.DefineVar("x3",&x3);
 
-	LBMReal vx1, vx2, vx3, rho, /*p1,*/ phi;
+	real vx1, vx2, vx3, rho, /*p1,*/ phi;
 
 	int gridRank = grid->getRank();
 	int blockRank = block->getRank();
@@ -179,10 +179,10 @@ void MultiphaseInitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPt
 		SPtr<EsoTwist3D> distributionsH = dynamicPointerCast<EsoTwist3D>(kernel->getDataSet()->getHdistributions());
         SPtr<EsoTwist3D> distributionsH2 = dynamicPointerCast<EsoTwist3D>(kernel->getDataSet()->getH2distributions());
 
-		LBMReal phiL = kernel->getPhiL();
-		LBMReal phiH = kernel->getPhiH();
+		real phiL = kernel->getPhiL();
+		real phiH = kernel->getPhiH();
 
-		LBMReal f[D3Q27System::ENDF+1];
+		real f[D3Q27System::ENDF+1];
 
 		for(int ix3=0; ix3<(int)bcArray->getNX3(); ix3++)
             for (int ix2 = 0; ix2 < (int)bcArray->getNX2(); ix2++)
@@ -202,23 +202,23 @@ void MultiphaseInitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPt
 					phi = muPhi.Eval();
 					
 					//rho = phi*1.0 + (1.0-phi)/densityRatio;
-					LBMReal rhoH = 1.0;
-					LBMReal rhoL = 1.0/densityRatio;
+					real rhoH = 1.0;
+					real rhoL = 1.0/densityRatio;
 					rho = rhoH + (rhoH - rhoL)*(phi - phiH)/(phiH - phiL);
 
 			
-					LBMReal feq[27];
-					LBMReal geq[27];
+					real feq[27];
+					real geq[27];
 
 					//calcFeqsFct(feq,rho,vx1,vx2,vx3);
-					LBMReal vx1Sq = vx1*vx1;
-					LBMReal vx2Sq = vx2*vx2;
-					LBMReal vx3Sq = vx3*vx3;
+					real vx1Sq = vx1*vx1;
+					real vx2Sq = vx2*vx2;
+					real vx3Sq = vx3*vx3;
 					for (int dir = STARTF; dir < (ENDF+1); dir++)
 					{
-						LBMReal velProd = DX1[dir]*vx1 + DX2[dir]*vx2 + DX3[dir]*vx3;
-						LBMReal velSq1 = velProd*velProd;
-						LBMReal gamma = WEIGTH[dir]*(3*velProd + 4.5*velSq1 - 1.5*(vx1Sq+vx2Sq+vx3Sq));
+						real velProd = DX1[dir]*vx1 + DX2[dir]*vx2 + DX3[dir]*vx3;
+						real velSq1 = velProd*velProd;
+						real gamma = WEIGTH[dir]*(3*velProd + 4.5*velSq1 - 1.5*(vx1Sq+vx2Sq+vx3Sq));
 
 						feq[dir] = rho*WEIGTH[dir]*(1 + 3*velProd + 4.5*velSq1 - 1.5*(vx1Sq+vx2Sq+vx3Sq));
 						//geq[dir] = p1*WEIGTH[dir] + gamma;
@@ -336,7 +336,7 @@ void MultiphaseInitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPt
 //////////////////////////////////////////////////////////////////////////
 void MultiphaseInitDistributionsBlockVisitor::checkFunction(mu::Parser fct)
 {
-	double x1=1.0,x2=1.0,x3=1.0;
+	real x1=1.0,x2=1.0,x3=1.0;
 	fct.DefineVar("x1",&x1); 
 	fct.DefineVar("x2",&x2); 
 	fct.DefineVar("x3",&x3);
@@ -353,7 +353,7 @@ void MultiphaseInitDistributionsBlockVisitor::checkFunction(mu::Parser fct)
 	}
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitor::setNu( LBMReal nu )
+void MultiphaseInitDistributionsBlockVisitor::setNu( real nu )
 {
 	this->nu = nu;
 }

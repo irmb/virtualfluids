@@ -174,7 +174,7 @@ UbTupleDouble3 CalculateTorqueCoProcessor::getForces(int x1, int x2, int x3,  SP
 {
    UbTupleDouble3 force(0.0,0.0,0.0);
 
-   LBMReal fs[D3Q27System::ENDF + 1];
+   real fs[D3Q27System::ENDF + 1];
    distributions->getDistributionInv(fs, x1, x2, x3);
    
    if(bc)

@@ -88,8 +88,8 @@ void LineTimeSeriesCoProcessor::writeLine(const std::string &path)
 //////////////////////////////////////////////////////////////////////////
 void LineTimeSeriesCoProcessor::collectData()
 {
-    LBMReal f[27];
-    LBMReal vx1, vx2, vx3, rho;
+    real f[27];
+    real vx1, vx2, vx3, rho;
     MPI_Status status;
     std::vector<double> v1(length, 0);
     std::vector<double> v2(length, 0);

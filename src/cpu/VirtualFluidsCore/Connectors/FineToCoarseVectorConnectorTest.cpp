@@ -32,7 +32,7 @@ TEST_F(FineToCoarseVectorConnectorTest, getLocalMinMax)
     //FineToCoarseVectorConnector(SPtr<Block3D> block, VectorTransmitterPtr sender, VectorTransmitterPtr receiver,
                                 //int sendDir, InterpolationProcessorPtr iprocessor, CFconnectorType connType);
     InterpolationProcessorPtr iprocessor;
-    auto sut = FineToCoarseVectorConnector<TbTransmitter<CbVector<LBMReal>>>(block, senderFCevenEvenSW, receiverFCevenEvenSW, sendDir, iprocessor, EvenOddNW);
+    auto sut = FineToCoarseVectorConnector<TbTransmitter<CbVector<real>>>(block, senderFCevenEvenSW, receiverFCevenEvenSW, sendDir, iprocessor, EvenOddNW);
 
 
     //(int &minX1, int &minX2, int &minX3, int &maxX1, int &maxX2, int &maxX3);

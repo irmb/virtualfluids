@@ -47,7 +47,7 @@ MultiphaseVelocityBCAdapter::MultiphaseVelocityBCAdapter(const bool& vx1, const 
    this->init();
 }
 /*==========================================================*/
-MultiphaseVelocityBCAdapter::MultiphaseVelocityBCAdapter(const bool& vx1, const bool& vx2, const bool& vx3, const mu::Parser& function, const LBMReal& phiBC, const double& startTime, const double& endTime )
+MultiphaseVelocityBCAdapter::MultiphaseVelocityBCAdapter(const bool& vx1, const bool& vx2, const bool& vx3, const mu::Parser& function, const real& phiBC, const double& startTime, const double& endTime )
 {
    if(vx1) this->vx1BCs.push_back(BCFunction(function,startTime,endTime));
    if(vx2) this->vx2BCs.push_back(BCFunction(function,startTime,endTime));
@@ -58,7 +58,7 @@ MultiphaseVelocityBCAdapter::MultiphaseVelocityBCAdapter(const bool& vx1, const 
 
 }
 /*==========================================================*/
-MultiphaseVelocityBCAdapter::MultiphaseVelocityBCAdapter(const bool& vx1, const bool& vx2, const bool& vx3, const mu::Parser& function1, const mu::Parser& function2, const mu::Parser& function3, const LBMReal& phiBC, const double& startTime, const double& endTime )
+MultiphaseVelocityBCAdapter::MultiphaseVelocityBCAdapter(const bool& vx1, const bool& vx2, const bool& vx3, const mu::Parser& function1, const mu::Parser& function2, const mu::Parser& function3, const real& phiBC, const double& startTime, const double& endTime )
 {
    if(vx1) this->vx1BCs.push_back(BCFunction(function1,startTime,endTime));
    if(vx2) this->vx2BCs.push_back(BCFunction(function2,startTime,endTime));

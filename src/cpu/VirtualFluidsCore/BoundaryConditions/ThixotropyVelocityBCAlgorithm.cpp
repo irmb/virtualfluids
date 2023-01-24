@@ -73,21 +73,21 @@ void ThixotropyVelocityBCAlgorithm::applyBC()
 {
 	using namespace vf::lbm::dir;
 
-	LBMReal f[D3Q27System::ENDF + 1];
-	LBMReal feq[D3Q27System::ENDF + 1];
-	LBMReal h[D3Q27System::ENDF + 1];
+	real f[D3Q27System::ENDF + 1];
+	real feq[D3Q27System::ENDF + 1];
+	real h[D3Q27System::ENDF + 1];
 
 	distributions->getDistributionInv(f, x1, x2, x3);
 	distributionsH->getDistributionInv(h, x1, x2, x3);
 	
-	LBMReal rho, vx1, vx2, vx3, drho;
+	real rho, vx1, vx2, vx3, drho;
 	calcMacrosFct(f, drho, vx1, vx2, vx3);
 	calcFeqFct(feq, drho, vx1, vx2, vx3);
 
 	rho = 1.0 + drho * compressibleFactor;
 
 	//calcDiffusionMacrosFctPost(h, concentration, fl1, fl2, fl3, m100, collFactor);
-	LBMReal lambda = D3Q27System::getDensity(h);
+	real lambda = D3Q27System::getDensity(h);
 
 	int nx1 = x1;
 	int nx2 = x2;
@@ -125,12 +125,12 @@ void ThixotropyVelocityBCAlgorithm::applyBC()
 		if (bcPtr->hasVelocityBoundaryFlag(fdir))
 		{
 			const int invDir = D3Q27System::INVDIR[fdir];
-			LBMReal q = bcPtr->getQ(invDir);// m+m q=0 stabiler
-			LBMReal velocity = bcPtr->getBoundaryVelocity(invDir);
-			LBMReal fReturn = ((1.0 - q) / (1.0 + q)) * ((f[invDir] - feq[invDir]) / (1.0 - collFactor) + feq[invDir]) + ((q * (f[invDir] + f[fdir]) - velocity * rho) / (1.0 + q));
+			real q = bcPtr->getQ(invDir);// m+m q=0 stabiler
+			real velocity = bcPtr->getBoundaryVelocity(invDir);
+			real fReturn = ((1.0 - q) / (1.0 + q)) * ((f[invDir] - feq[invDir]) / (1.0 - collFactor) + feq[invDir]) + ((q * (f[invDir] + f[fdir]) - velocity * rho) / (1.0 + q));
 			distributions->setDistributionForDirection(fReturn, x1 + D3Q27System::DX1[invDir], x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir], fdir);
 
-			LBMReal htemp = D3Q27System::getCompFeqForDirection(fdir, lambda, vx1, vx2, vx3);
+			real htemp = D3Q27System::getCompFeqForDirection(fdir, lambda, vx1, vx2, vx3);
 			htemp = D3Q27System::getCompFeqForDirection(fdir, lambdaBC, vx1, vx2, vx3) + h[fdir] - htemp;
 			distributionsH->setDistributionForDirection(htemp, nx1, nx2, nx3, fdir);
 		}

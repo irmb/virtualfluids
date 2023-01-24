@@ -318,11 +318,11 @@ void VelocityBCAdapter::setNodeVelocity(const D3Q27Interactor & /*interactor*/, 
         this->timeStep = timestep;
 
         if (tmpVx1Function)
-            bc->setBoundaryVelocityX1((LBMReal)tmpVx1Function->Eval());
+            bc->setBoundaryVelocityX1((real)tmpVx1Function->Eval());
         if (tmpVx2Function)
-            bc->setBoundaryVelocityX2((LBMReal)tmpVx2Function->Eval());
+            bc->setBoundaryVelocityX2((real)tmpVx2Function->Eval());
         if (tmpVx3Function)
-            bc->setBoundaryVelocityX3((LBMReal)tmpVx3Function->Eval());
+            bc->setBoundaryVelocityX3((real)tmpVx3Function->Eval());
     } catch (mu::Parser::exception_type &e) {
         stringstream error;
         error << "mu::parser exception occurs, message(" << e.GetMsg() << "), formula("

@@ -267,8 +267,8 @@ void TimeAveragedValuesCoProcessor::addData(const SPtr<Block3D> block)
     maxX2 -= 2;
     maxX3 -= 2;
 
-    LBMReal f[D3Q27System::ENDF + 1];
-    LBMReal vx1, vx2, vx3, rho;
+    real f[D3Q27System::ENDF + 1];
+    real vx1, vx2, vx3, rho;
 
     // D3Q27BoundaryConditionPtr bcPtr;
 
@@ -384,7 +384,7 @@ void TimeAveragedValuesCoProcessor::calculateAverageValues(double timeSteps)
                 maxX2 -= 2;
                 maxX3 -= 2;
 
-                LBMReal rho {0.}, ux {0.}, uy {0.}, uz {0.}, uxx {0.}, uzz {0.}, uyy {0.}, uxy {0.}, uxz {0.}, uyz {0.}, rhof {0.};
+                real rho {0.}, ux {0.}, uy {0.}, uz {0.}, uxx {0.}, uzz {0.}, uyy {0.}, uxy {0.}, uxz {0.}, uyz {0.}, rhof {0.};
 
                 for (int ix3 = minX3; ix3 <= maxX3; ix3++) {
                     for (int ix2 = minX2; ix2 <= maxX2; ix2++) {
@@ -470,7 +470,7 @@ void TimeAveragedValuesCoProcessor::calculateSubtotal(double step)
         // DEBUG/////////////////////
         // UBLOG(logINFO, "calculateSubtotal::step = " << step);
         ////////////////////////////
-        LBMReal f[27];
+        real f[27];
 
         //#ifdef _OPENMP
         //#pragma omp parallel private (f)
@@ -518,7 +518,7 @@ void TimeAveragedValuesCoProcessor::calculateSubtotal(double step)
                                         //////////////////////////////////////////////////////////////////////////
                                         // compute velocity
                                         //////////////////////////////////////////////////////////////////////////
-                                        LBMReal vx, vy, vz, rho;
+                                        real vx, vy, vz, rho;
                                         calcMacros(f, rho, vx, vy, vz);
                                         // double press = D3Q27System::calcPress(f, rho, vx, vy, vz);
 

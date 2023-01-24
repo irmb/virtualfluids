@@ -92,11 +92,11 @@ bool MicrophoneArrayCoProcessor::addMicrophone(Vector3D coords)
 void MicrophoneArrayCoProcessor::collectData(double step)
 {
     for (std::size_t i = 0; i < microphones.size(); i++) {
-        LBMReal f[D3Q27System::ENDF + 1];
+        real f[D3Q27System::ENDF + 1];
         microphones[i]->distridution->getDistribution(f, val<1>(microphones[i]->nodeIndexes),
                                                       val<2>(microphones[i]->nodeIndexes),
                                                       val<3>(microphones[i]->nodeIndexes));
-        LBMReal vx1, vx2, vx3, rho;
+        real vx1, vx2, vx3, rho;
         calcMacros(f, rho, vx1, vx2, vx3);
         *strVector[i] << step << ';' << rho << '\n';
     }

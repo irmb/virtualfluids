@@ -42,7 +42,7 @@
 #include <mpi/Communicator.h>
 #include "InterpolationProcessor.h"
 
-SetInterpolationConnectorsBlockVisitor::SetInterpolationConnectorsBlockVisitor(std::shared_ptr<vf::mpi::Communicator> comm, LBMReal nue, SPtr<InterpolationProcessor> iProcessor) :
+SetInterpolationConnectorsBlockVisitor::SetInterpolationConnectorsBlockVisitor(std::shared_ptr<vf::mpi::Communicator> comm, real nue, SPtr<InterpolationProcessor> iProcessor) :
 Block3DVisitor(0, D3Q27System::MAXLEVEL), 
 	comm(comm),
 	nue(nue),
@@ -345,12 +345,12 @@ void SetInterpolationConnectorsBlockVisitor::setInterpolationConnectors(SPtr<Blo
 	if(fBlockNE) fBlockNERank = fBlockNE->getRank();
 	int cBlockRank   = cBlock->getRank();
 
-	LBMReal omegaF {0.0};
+	real omegaF {0.0};
 	if(fBlockSW) omegaF =LBMSystem::calcCollisionFactor(nue, fBlockSW->getLevel());
 	if(fBlockNW) omegaF =LBMSystem::calcCollisionFactor(nue, fBlockNW->getLevel());
 	if(fBlockSE) omegaF =LBMSystem::calcCollisionFactor(nue, fBlockSE->getLevel());
 	if(fBlockNE) omegaF =LBMSystem::calcCollisionFactor(nue, fBlockNE->getLevel());
-	LBMReal omegaC = LBMSystem::calcCollisionFactor(nue, cBlock->getLevel());
+	real omegaC = LBMSystem::calcCollisionFactor(nue, cBlock->getLevel());
 	iProcessor->setOmegas(omegaC, omegaF);
 
 	InterpolationProcessorPtr cIProcessor(iProcessor->clone());
@@ -375,7 +375,7 @@ void SetInterpolationConnectorsBlockVisitor::setInterpolationConnectors(SPtr<Blo
 
 	if(cBlockRank == gridRank)
 	{
-      SPtr<Block3DConnector> connector(new CoarseToFineVectorConnector< TbTransmitter< CbVector< LBMReal > > >(cBlock,
+      SPtr<Block3DConnector> connector(new CoarseToFineVectorConnector< TbTransmitter< CbVector< real > > >(cBlock,
 			senderCFevenEvenSW, receiverCFevenEvenSW, senderCFevenOddNW,  receiverCFevenOddNW, 
 			senderCFoddEvenSE,  receiverCFoddEvenSE,  senderCFoddOddNE,   receiverCFoddOddNE, 
 			dir, cIProcessor) );
@@ -383,25 +383,25 @@ void SetInterpolationConnectorsBlockVisitor::setInterpolationConnectors(SPtr<Blo
 	}
 	if(fBlockSW && fBlockSWRank == gridRank)
 	{
-		SPtr<Block3DConnector> connector( new FineToCoarseVectorConnector< TbTransmitter< CbVector< LBMReal > > >(fBlockSW, 
+		SPtr<Block3DConnector> connector( new FineToCoarseVectorConnector< TbTransmitter< CbVector< real > > >(fBlockSW, 
 			senderFCevenEvenSW, receiverFCevenEvenSW, dir, fIProcessorSW, EvenEvenSW) );
 		fBlockSW->setConnector(connector);
 	}
 	if(fBlockNW && fBlockNWRank == gridRank)
 	{
-		SPtr<Block3DConnector> connector( new FineToCoarseVectorConnector< TbTransmitter< CbVector< LBMReal > > >(fBlockNW, 
+		SPtr<Block3DConnector> connector( new FineToCoarseVectorConnector< TbTransmitter< CbVector< real > > >(fBlockNW, 
 			senderFCevenOddNW, receiverFCevenOddNW, dir, fIProcessorNW, EvenOddNW) );
 		fBlockNW->setConnector(connector);
 	}
 	if(fBlockSE && fBlockSERank == gridRank)
 	{
-		SPtr<Block3DConnector> connector( new FineToCoarseVectorConnector< TbTransmitter< CbVector< LBMReal > > >(fBlockSE, 
+		SPtr<Block3DConnector> connector( new FineToCoarseVectorConnector< TbTransmitter< CbVector< real > > >(fBlockSE, 
 			senderFCoddEvenSE, receiverFCoddEvenSE, dir, fIProcessorSE, OddEvenSE) );
 		fBlockSE->setConnector(connector);
 	}
 	if(fBlockNE && fBlockNERank == gridRank)
 	{
-		SPtr<Block3DConnector> connector( new FineToCoarseVectorConnector< TbTransmitter< CbVector< LBMReal > > >(fBlockNE, 
+		SPtr<Block3DConnector> connector( new FineToCoarseVectorConnector< TbTransmitter< CbVector< real > > >(fBlockNE, 
 			senderFCoddOddNE, receiverFCoddOddNE, dir, fIProcessorNE, OddOddNE) );
 		fBlockNE->setConnector(connector);
 	}
@@ -421,8 +421,8 @@ void SetInterpolationConnectorsBlockVisitor::createTransmitters(SPtr<Block3D> cB
 	int cBlockRank = cBlock->getRank();
 	if(fBlockRank == cBlockRank && fBlockRank == gridRank)
 	{
-		senderCF = receiverFC = CreateTransmittersHelper::TransmitterPtr( new TbLocalTransmitter< CbVector< LBMReal > >());
-		senderFC = receiverCF = CreateTransmittersHelper::TransmitterPtr( new TbLocalTransmitter< CbVector< LBMReal > >());
+		senderCF = receiverFC = CreateTransmittersHelper::TransmitterPtr( new TbLocalTransmitter< CbVector< real > >());
+		senderFC = receiverCF = CreateTransmittersHelper::TransmitterPtr( new TbLocalTransmitter< CbVector< real > >());
 	}
 	else if(cBlockRank == gridRank)
 	{

@@ -68,9 +68,9 @@ void BGKLBMKernel::calculate(int step)
         std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getZeroDistributions();
 
     SPtr<BCArray3D> bcArray = this->getBCProcessor()->getBCArray();
-    LBMReal f[D3Q27System::ENDF + 1];
-    LBMReal feq[D3Q27System::ENDF + 1];
-    LBMReal drho, vx1, vx2, vx3;
+    real f[D3Q27System::ENDF + 1];
+    real feq[D3Q27System::ENDF + 1];
+    real drho, vx1, vx2, vx3;
     const int bcArrayMaxX1 = (int)bcArray->getNX1();
     const int bcArrayMaxX2 = (int)bcArray->getNX2();
     const int bcArrayMaxX3 = (int)bcArray->getNX3();
@@ -136,7 +136,7 @@ void BGKLBMKernel::calculate(int step)
                     vx3 = f[DIR_00P] - f[DIR_00M] + f[DIR_P0P] - f[DIR_M0M] - f[DIR_P0M] + f[DIR_M0P] + f[DIR_0PP] - f[DIR_0MM] - f[DIR_0PM] + f[DIR_0MP] + f[DIR_PPP] +
                           f[DIR_MMP] + f[DIR_PMP] + f[DIR_MPP] - f[DIR_PPM] - f[DIR_MMM] - f[DIR_PMM] - f[DIR_MPM];
 
-                    LBMReal cu_sq = 1.5 * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3);
+                    real cu_sq = 1.5 * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3);
 
                     feq[DIR_000] = c8o27 * (drho - cu_sq);
                     feq[DIR_P00]    = c2o27 * (drho + 3.0 * (vx1) + c9o2 * (vx1) * (vx1)-cu_sq);
@@ -245,10 +245,10 @@ void BGKLBMKernel::calculate(int step)
                     }
                     //////////////////////////////////////////////////////////////////////////
 #ifdef PROOF_CORRECTNESS
-                    LBMReal rho_post = f[DIR_000] + f[DIR_P00] + f[DIR_M00] + f[DIR_0P0] + f[DIR_0M0] + f[DIR_00P] + f[DIR_00M] + f[DIR_PP0] + f[DIR_MM0] + f[DIR_PM0] +
+                    real rho_post = f[DIR_000] + f[DIR_P00] + f[DIR_M00] + f[DIR_0P0] + f[DIR_0M0] + f[DIR_00P] + f[DIR_00M] + f[DIR_PP0] + f[DIR_MM0] + f[DIR_PM0] +
                                        f[DIR_MP0] + f[DIR_P0P] + f[DIR_M0M] + f[DIR_P0M] + f[DIR_M0P] + f[DIR_0PP] + f[DIR_0MM] + f[DIR_0PM] + f[DIR_0MP] + f[DIR_PPP] +
                                        f[DIR_MMP] + f[DIR_PMP] + f[DIR_MPP] + f[DIR_PPM] + f[DIR_MMM] + f[DIR_PMM] + f[DIR_MPM];
-                    LBMReal dif = drho - rho_post;
+                    real dif = drho - rho_post;
 #ifdef SINGLEPRECISION
                     if (dif > 10.0E-7 || dif < -10.0E-7)
 #else

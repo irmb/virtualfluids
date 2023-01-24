@@ -75,19 +75,19 @@ void ThixotropyDensityBCAlgorithm::applyBC()
 	using namespace vf::lbm::dir;
     using namespace D3Q27System;
 
-	LBMReal f[D3Q27System::ENDF + 1];
-	LBMReal feq[D3Q27System::ENDF + 1];
-	LBMReal h[D3Q27System::ENDF + 1];
-	LBMReal heq[D3Q27System::ENDF + 1];
+	real f[D3Q27System::ENDF + 1];
+	real feq[D3Q27System::ENDF + 1];
+	real h[D3Q27System::ENDF + 1];
+	real heq[D3Q27System::ENDF + 1];
 	distributions->getDistributionInv(f, x1, x2, x3);
 	distributionsH->getDistributionInv(h, x1, x2, x3);
 	
-	LBMReal rho, vx1, vx2, vx3;
+	real rho, vx1, vx2, vx3;
 	
 	calcMacrosFct(f, rho, vx1, vx2, vx3);
 	calcFeqFct(feq, rho, vx1, vx2, vx3);
 
-	LBMReal lambda = D3Q27System::getDensity(h);
+	real lambda = D3Q27System::getDensity(h);
 	D3Q27System::calcCompFeq(heq, lambda, vx1, vx2, vx3);
 
 
@@ -104,17 +104,17 @@ void ThixotropyDensityBCAlgorithm::applyBC()
 	else if (bcPtr->hasDensityBoundaryFlag(DIR_00M)) { nx3 += 1; }
 	else	 UB_THROW(UbException(UB_EXARGS, "Danger...no orthogonal BC-Flag on density boundary..."));
 
-	LBMReal rhoBC = bcPtr->getBoundaryDensity();
+	real rhoBC = bcPtr->getBoundaryDensity();
 
 	for (int fdir = D3Q27System::STARTF; fdir <= D3Q27System::ENDF; fdir++)
 	{
 		if (bcPtr->hasDensityBoundaryFlag(fdir))
 		{
-			LBMReal ftemp = calcFeqsForDirFct(fdir, rho, vx1, vx2, vx3);
+			real ftemp = calcFeqsForDirFct(fdir, rho, vx1, vx2, vx3);
 			ftemp = calcFeqsForDirFct(fdir, rhoBC, vx1, vx2, vx3) + f[fdir] - ftemp;
 			distributions->setDistributionForDirection(ftemp, nx1, nx2, nx3, fdir);
 
-			LBMReal htemp = D3Q27System::getCompFeqForDirection(fdir, lambda, vx1, vx2, vx3);
+			real htemp = D3Q27System::getCompFeqForDirection(fdir, lambda, vx1, vx2, vx3);
 			htemp = D3Q27System::getCompFeqForDirection(fdir,lambdaBC, vx1, vx2, vx3) + h[fdir] - htemp;
 			distributionsH->setDistributionForDirection(htemp, nx1, nx2, nx3, fdir);
 		}

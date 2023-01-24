@@ -73,12 +73,12 @@ void MultiphaseNonReflectingOutflowBCAlgorithm::applyBC()
     using namespace UbMath;
     using namespace vf::lbm::dir;
 
-    LBMReal f[ENDF + 1];
-    LBMReal ftemp[ENDF + 1];
-    LBMReal h[D3Q27System::ENDF + 1];
-    LBMReal htemp[ENDF + 1];
-    LBMReal h2[D3Q27System::ENDF + 1];
-    LBMReal h2temp[ENDF + 1];
+    real f[ENDF + 1];
+    real ftemp[ENDF + 1];
+    real h[D3Q27System::ENDF + 1];
+    real htemp[ENDF + 1];
+    real h2[D3Q27System::ENDF + 1];
+    real h2temp[ENDF + 1];
 
     int nx1 = x1;
     int nx2 = x2;
@@ -114,7 +114,7 @@ void MultiphaseNonReflectingOutflowBCAlgorithm::applyBC()
     distributionsH2->getDistribution(h2, x1, x2, x3);
     distributionsH2->getDistribution(h2temp, nx1, nx2, nx3);
 
-    LBMReal /* phi,*/ p1, vx1, vx2, vx3;
+    real /* phi,*/ p1, vx1, vx2, vx3;
 
     // D3Q27System::calcDensity(h, phi);
 

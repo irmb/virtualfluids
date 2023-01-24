@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void setInflowBC(double x1, double x2, double x3, double radius, int dir)
+void setInflowBC(real x1, real x2, real x3, real radius, int dir)
 {
 
 }
@@ -29,7 +29,7 @@ void run(string configname)
         vector<int> blocknx = config.getVector<int>("blocknx");
         //vector<double> boundingBox = config.getVector<double>("boundingBox");
         // vector<double>  length = config.getVector<double>("length");
-        double U_LB = config.getValue<double>("U_LB");
+        real U_LB = config.getValue<real>("U_LB");
         // double uF2                         = config.getValue<double>("uF2");
         //double nuL = config.getValue<double>("nuL");
         //double nuG = config.getValue<double>("nuG");
@@ -37,23 +37,23 @@ void run(string configname)
         //double sigma = config.getValue<double>("sigma");
         int interfaceWidth = config.getValue<int>("interfaceWidth");
         //double D          = config.getValue<double>("D");
-        double theta = config.getValue<double>("contactAngle");
-        double D_LB = config.getValue<double>("D_LB");
-        double phiL = config.getValue<double>("phi_L");
-        double phiH = config.getValue<double>("phi_H");
-        double tauH = config.getValue<double>("Phase-field Relaxation");
-        double mob = config.getValue<double>("Mobility");
+        real theta = config.getValue<real>("contactAngle");
+        real D_LB = config.getValue<real>("D_LB");
+        real phiL = config.getValue<real>("phi_L");
+        real phiH = config.getValue<real>("phi_H");
+        real tauH = config.getValue<real>("Phase-field Relaxation");
+        real mob = config.getValue<real>("Mobility");
 
-        double endTime = config.getValue<double>("endTime");
-        double outTime = config.getValue<double>("outTime");
-        double availMem = config.getValue<double>("availMem");
+        real endTime = config.getValue<real>("endTime");
+        real outTime = config.getValue<real>("outTime");
+        real availMem = config.getValue<real>("availMem");
         //int refineLevel = config.getValue<int>("refineLevel");
         //double Re = config.getValue<double>("Re");
         
         bool logToFile = config.getValue<bool>("logToFile");
-        double restartStep = config.getValue<double>("restartStep");
-        double cpStart = config.getValue<double>("cpStart");
-        double cpStep = config.getValue<double>("cpStep");
+        real restartStep = config.getValue<real>("restartStep");
+        real cpStart = config.getValue<real>("cpStart");
+        real cpStep = config.getValue<real>("cpStep");
         bool newStart = config.getValue<bool>("newStart");
 
 
@@ -83,7 +83,7 @@ void run(string configname)
 
         // Sleep(30000);
 
-        double rho_h=0, rho_l=0, r_rho=0, mu_h=0, /*mu_l,*/ Uo=0, D=0, sigma=0;
+        real rho_h=0, rho_l=0, r_rho=0, mu_h=0, /*mu_l,*/ Uo=0, D=0, sigma=0;
 
         switch (caseN) {
             case 1: 
@@ -142,23 +142,23 @@ void run(string configname)
                 break;                
         }
 
-        double Re = rho_h * Uo * D / mu_h;
-        double We = rho_h * Uo * Uo * D / sigma;
+        real Re = rho_h * Uo * D / mu_h;
+        real We = rho_h * Uo * Uo * D / sigma;
 
-        double dx = D / D_LB;
-        double nu_h = U_LB * D_LB / Re;
-        double nu_l = nu_h;
+        real dx = D / D_LB;
+        real nu_h = U_LB * D_LB / Re;
+        real nu_l = nu_h;
 
-        double rho_h_LB = 1;
+        real rho_h_LB = 1;
         //surface tension
-        double sigma_LB = rho_h_LB * U_LB * U_LB * D_LB / We;
+        real sigma_LB = rho_h_LB * U_LB * U_LB * D_LB / We;
 
         // LBMReal dLB = 0; // = length[1] / dx;
-        LBMReal rhoLB = 0.0;
+        real rhoLB = 0.0;
         //LBMReal nuLB = nu_l; //(uLB*dLB) / Re;
 
-        double beta = 12.0 * sigma_LB / interfaceWidth;
-        double kappa = 1.5 * interfaceWidth * sigma_LB;
+        real beta = 12.0 * sigma_LB / interfaceWidth;
+        real kappa = 1.5 * interfaceWidth * sigma_LB;
 
         if (myid == 0) {
             UBLOG(logINFO, "Parameters:");
@@ -253,7 +253,7 @@ void run(string configname)
         fctF2.SetExpr("vy1");
         fctF2.DefineConst("vy1", U_LB);
 
-        double startTime = 1;
+        real startTime = 1;
         SPtr<BCAdapter> velBCAdapterF1(
             new MultiphaseVelocityBCAdapter(true, false, false, fctF1, phiH, 0.0, startTime));
         SPtr<BCAdapter> velBCAdapterF2(
@@ -295,17 +295,17 @@ void run(string configname)
             //  if (newStart) {
 
             // bounding box
-            double g_minX1 = 0;
-            double g_minX2 = 0;
-            double g_minX3 = 0;
+            real g_minX1 = 0;
+            real g_minX2 = 0;
+            real g_minX3 = 0;
 
             //double g_maxX1 = 8.0*D;
             //double g_maxX2 = 2.5*D;
             //double g_maxX3 = 2.5*D;
 
-             double g_maxX1 = 1.0 * D; // 8.0 * D;
-             double g_maxX2 = 2.0 * D;
-             double g_maxX3 = 2.0 * D;
+             real g_maxX1 = 1.0 * D; // 8.0 * D;
+             real g_maxX2 = 2.0 * D;
+             real g_maxX3 = 2.0 * D;
 
             // geometry
             SPtr<GbObject3D> gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
@@ -454,9 +454,9 @@ void run(string configname)
             unsigned long long numberOfNodes = numberOfBlocks * numberOfNodesPerBlock;
             unsigned long long numberOfNodesPerBlockWithGhostLayer =
                 numberOfBlocks * (blocknx[0] + ghostLayer) * (blocknx[1] + ghostLayer) * (blocknx[2] + ghostLayer);
-            double needMemAll =
-                double(numberOfNodesPerBlockWithGhostLayer * (27 * sizeof(double) + sizeof(int) + sizeof(float) * 4));
-            double needMem = needMemAll / double(comm->getNumberOfProcesses());
+            real needMemAll =
+                real(numberOfNodesPerBlockWithGhostLayer * (27 * sizeof(real) + sizeof(int) + sizeof(float) * 4));
+            real needMem = needMemAll / real(comm->getNumberOfProcesses());
 
             if (myid == 0) {
                 UBLOG(logINFO, "Number of blocks = " << numberOfBlocks);
@@ -488,9 +488,9 @@ void run(string configname)
             //mu::Parser fct1;
             //fct1.SetExpr("phiL");
             //fct1.DefineConst("phiL", phiL);
-            LBMReal x1c = 0;  // (g_maxX1 - g_minX1-1)/2; //
-            LBMReal x2c = (g_maxX2 - g_minX2)/2;
-            LBMReal x3c = (g_maxX3 - g_minX3)/2;
+            real x1c = 0;  // (g_maxX1 - g_minX1-1)/2; //
+            real x2c = (g_maxX2 - g_minX2)/2;
+            real x3c = (g_maxX3 - g_minX3)/2;
             
             mu::Parser fct1;
             fct1.SetExpr("0.5-0.5*tanh(2*(sqrt((x1-x1c)^2+(x2-x2c)^2+(x3-x3c)^2)-radius)/interfaceThickness)");
@@ -576,7 +576,7 @@ void run(string configname)
         grid->accept(setConnsVisitor);
 
         SPtr<UbScheduler> visSch(new UbScheduler(outTime));
-        double t_ast, t;
+        real t_ast, t;
         t_ast = 7.19;
         t = (int)(t_ast/(U_LB/(D_LB)));
         visSch->addSchedule(t,t,t); //t=7.19

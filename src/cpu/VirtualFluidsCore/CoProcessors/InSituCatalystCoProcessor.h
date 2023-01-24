@@ -47,8 +47,8 @@ private:
     std::vector<double> rhoArray;
     int index;
     int numOfPoints;
-    typedef void (*CalcMacrosFct)(const LBMReal *const & /*feq[27]*/, LBMReal & /*(d)rho*/, LBMReal & /*vx1*/,
-                                  LBMReal & /*vx2*/, LBMReal & /*vx3*/);
+    typedef void (*CalcMacrosFct)(const real *const & /*feq[27]*/, real & /*(d)rho*/, real & /*vx1*/,
+                                  real & /*vx2*/, real & /*vx3*/);
     CalcMacrosFct calcMacros;
 };
 #endif // InSituCatalystCoProcessor_h__

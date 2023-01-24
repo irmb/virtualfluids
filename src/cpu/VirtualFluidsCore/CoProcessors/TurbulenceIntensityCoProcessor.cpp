@@ -143,7 +143,7 @@ void TurbulenceIntensityCoProcessor::addData(const SPtr<Block3D> block)
                                                            (*av)(ix1, ix2, ix3, AvVy) * (*av)(ix1, ix2, ix3, AvVy) +
                                                            (*av)(ix1, ix2, ix3, AvVz) * (*av)(ix1, ix2, ix3, AvVz));
 
-                    LBMReal ti = sqrt(temp);
+                    real ti = sqrt(temp);
 
                     if (UbMath::isNaN(ti))
                         UB_THROW(
@@ -186,8 +186,8 @@ void TurbulenceIntensityCoProcessor::calculateAverageValues(double timeStep)
 
     int minInitLevel = this->grid->getCoarsestInitializedLevel();
     int maxInitLevel = this->grid->getFinestInitializedLevel();
-    LBMReal f[27];
-    LBMReal vx, vy, vz;
+    real f[27];
+    real vx, vy, vz;
 
     for (int level = minInitLevel; level <= maxInitLevel; level++) {
         for (SPtr<Block3D> block : blockVector[level]) {
