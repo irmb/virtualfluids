@@ -21,7 +21,7 @@ public:
    virtual ~CumulantLBMKernel() = default;
    //virtual void calculate(int step);
    SPtr<LBMKernel> clone() override;
-   double getCalculationTime() override;
+   real getCalculationTime() override;
    void setBulkOmegaToOmega(bool value);
    void setRelaxationParameter(Parameter p);
 protected:

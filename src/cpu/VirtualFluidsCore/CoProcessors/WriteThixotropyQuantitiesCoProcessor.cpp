@@ -71,7 +71,7 @@ void WriteThixotropyQuantitiesCoProcessor::init()
 
 }
 //////////////////////////////////////////////////////////////////////////
-void WriteThixotropyQuantitiesCoProcessor::process(double step)
+void WriteThixotropyQuantitiesCoProcessor::process(real step)
 {
 	if (scheduler->isDue(step))
 		collectData(step);
@@ -79,7 +79,7 @@ void WriteThixotropyQuantitiesCoProcessor::process(double step)
 	UBLOG(logDEBUG3, "WriteThixotropyQuantitiesCoProcessor::update:" << step);
 }
 //////////////////////////////////////////////////////////////////////////
-void WriteThixotropyQuantitiesCoProcessor::collectData(double step)
+void WriteThixotropyQuantitiesCoProcessor::collectData(real step)
 {
 	int istep = static_cast<int>(step);
 	//ConcentrationSum = 0;
@@ -144,7 +144,7 @@ void WriteThixotropyQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 {
 	UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);;
 	UbTupleDouble3 nodeOffset = grid->getNodeOffset(block);
-	double         dx = grid->getDeltaX(block);
+	real         dx = grid->getDeltaX(block);
 
 	//double level = (double)block->getLevel();
 	//double blockID = (double)block->getGlobalID();

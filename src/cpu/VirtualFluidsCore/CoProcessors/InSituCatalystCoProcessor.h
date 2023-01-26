@@ -6,6 +6,7 @@
 #include <CoProcessor.h>
 #include <Grid3D.h>
 #include <LBMUnitConverter.h>
+#include "lbm/constants/D3Q27.h"
 
 #include <string>
 
@@ -24,10 +25,10 @@ public:
     InSituCatalystCoProcessor();
     InSituCatalystCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, std::string script);
     virtual ~InSituCatalystCoProcessor();
-    void process(double step);
+    void process(real step);
 
 protected:
-    void collectData(double step);
+    void collectData(real step);
     void addData(SPtr<Block3D> block);
     void buildVTKGrid();
     void addVTKGridData(SPtr<Block3D> block);
@@ -41,10 +42,10 @@ private:
     vtkSmartPointer<vtkUnstructuredGrid> unstructuredGrid;
     vtkSmartPointer<vtkPoints> points;
     vtkSmartPointer<vtkDoubleArray> arrays[4];
-    std::vector<double> vx1Array;
-    std::vector<double> vx2Array;
-    std::vector<double> vx3Array;
-    std::vector<double> rhoArray;
+    std::vector<real> vx1Array;
+    std::vector<real> vx2Array;
+    std::vector<real> vx3Array;
+    std::vector<real> rhoArray;
     int index;
     int numOfPoints;
     typedef void (*CalcMacrosFct)(const real *const & /*feq[27]*/, real & /*(d)rho*/, real & /*vx1*/,

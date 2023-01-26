@@ -38,7 +38,7 @@ ShearStressCoProcessor::ShearStressCoProcessor(SPtr<Grid3D> grid, const std::str
 //////////////////////////////////////////////////////////////////////////
 ShearStressCoProcessor::~ShearStressCoProcessor() = default;
 //////////////////////////////////////////////////////////////////////////
-void ShearStressCoProcessor::process(double step)
+void ShearStressCoProcessor::process(real step)
 {
     if (step == 0) {
         initDistance();
@@ -49,7 +49,7 @@ void ShearStressCoProcessor::process(double step)
     UBLOG(logDEBUG3, "D3Q27ShearStressCoProcessor::update:" << step);
 }
 //////////////////////////////////////////////////////////////////////////
-void ShearStressCoProcessor::collectData(double step)
+void ShearStressCoProcessor::collectData(real step)
 {
     using namespace std;
 
@@ -122,7 +122,7 @@ void ShearStressCoProcessor::clearData()
     data.clear();
 }
 //////////////////////////////////////////////////////////////////////////
-void ShearStressCoProcessor::calculateShearStress(double timeStep)
+void ShearStressCoProcessor::calculateShearStress(real timeStep)
 {
     using namespace vf::lbm::dir;
     using namespace D3Q27System;
@@ -161,8 +161,8 @@ void ShearStressCoProcessor::calculateShearStress(double timeStep)
                     continue;
 
                 if (bcArray->isFluid(ix1, ix2, ix3)) {
-                    double q        = (*ssv)(normalq, ix1, ix2, ix3);
-                    double numPoint = (*ssv)(numberOfPoint, ix1, ix2, ix3);
+                    real q        = (*ssv)(normalq, ix1, ix2, ix3);
+                    real numPoint = (*ssv)(numberOfPoint, ix1, ix2, ix3);
                     if (q == 0 || numPoint != 3)
                         continue;
                     // if (q==0)continue;
@@ -250,7 +250,7 @@ void ShearStressCoProcessor::addData()
             UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);
             //         UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
             UbTupleDouble3 nodeOffset = grid->getNodeOffset(block);
-            double dx                 = grid->getDeltaX(block);
+            real dx                 = grid->getDeltaX(block);
 
             SPtr<ILBMKernel> kernel                 = block->getKernel();
             SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
@@ -282,8 +282,8 @@ void ShearStressCoProcessor::addData()
                     continue;
 
                 if (bcArray->isFluid(ix1, ix2, ix3)) {
-                    double q        = (*ssv)(normalq, ix1, ix2, ix3);
-                    double numPoint = (*ssv)(numberOfPoint, ix1, ix2, ix3);
+                    real q        = (*ssv)(normalq, ix1, ix2, ix3);
+                    real numPoint = (*ssv)(numberOfPoint, ix1, ix2, ix3);
                     if (q == 0 || numPoint != 3)
                         continue;
                     // if (q==0)continue;
@@ -294,7 +294,7 @@ void ShearStressCoProcessor::addData()
                                                 float(val<3>(org) - val<3>(nodeOffset) + ix3 * dx)));
 
                     //////get normal and distance//////
-                    double A, B, C;
+                    real A, B, C;
                     A = (*ssv)(normalX1, ix1, ix2, ix3);
                     B = (*ssv)(normalX2, ix1, ix2, ix3);
                     C = (*ssv)(normalX3, ix1, ix2, ix3);
@@ -307,35 +307,35 @@ void ShearStressCoProcessor::addData()
                     // vtySonja = (*av)(ix1,ix2,ix3,AvVy)-normals[1]*temp;
                     // vtzSonja = (*av)(ix1,ix2,ix3,AvVz)-normals[2]*temp;
 
-                    double vtx = (B * B * (*ssv)(AvVx, ix1, ix2, ix3) + C * C * (*ssv)(AvVx, ix1, ix2, ix3) -
+                    real vtx = (B * B * (*ssv)(AvVx, ix1, ix2, ix3) + C * C * (*ssv)(AvVx, ix1, ix2, ix3) -
                                   A * B * (*ssv)(AvVy, ix1, ix2, ix3) - A * C * (*ssv)(AvVy, ix1, ix2, ix3)) /
                                  (A * A + B * B + C * C);
-                    double vty = (-(A * B * (*ssv)(AvVx, ix1, ix2, ix3)) + A * A * (*ssv)(AvVy, ix1, ix2, ix3) +
+                    real vty = (-(A * B * (*ssv)(AvVx, ix1, ix2, ix3)) + A * A * (*ssv)(AvVy, ix1, ix2, ix3) +
                                   C * C * (*ssv)(AvVy, ix1, ix2, ix3) - B * C * (*ssv)(AvVz, ix1, ix2, ix3)) /
                                  (A * A + B * B + C * C);
-                    double vtz = (-(A * C * (*ssv)(AvVx, ix1, ix2, ix3)) - B * C * (*ssv)(AvVy, ix1, ix2, ix3) +
+                    real vtz = (-(A * C * (*ssv)(AvVx, ix1, ix2, ix3)) - B * C * (*ssv)(AvVy, ix1, ix2, ix3) +
                                   A * A * (*ssv)(AvVz, ix1, ix2, ix3) + B * B * (*ssv)(AvVz, ix1, ix2, ix3)) /
                                  (A * A + B * B + C * C);
 
-                    double normVt = sqrt(vtx * vtx + vty * vty + vtz * vtz) + 1e-100;
-                    double nvtx   = vtx / normVt;
-                    double nvty   = vty / normVt;
-                    double nvtz   = vtz / normVt;
+                    real normVt = sqrt(vtx * vtx + vty * vty + vtz * vtz) + 1e-100;
+                    real nvtx   = vtx / normVt;
+                    real nvty   = vty / normVt;
+                    real nvtz   = vtz / normVt;
 
-                    double sx   = 0.5 * ((*ssv)(AvSxx, ix1, ix2, ix3) * nvtx + (*ssv)(AvSxy, ix1, ix2, ix3) * nvty +
+                    real sx   = 0.5 * ((*ssv)(AvSxx, ix1, ix2, ix3) * nvtx + (*ssv)(AvSxy, ix1, ix2, ix3) * nvty +
                                        (*ssv)(AvSxz, ix1, ix2, ix3) * nvtz);
-                    double sy   = 0.5 * ((*ssv)(AvSxy, ix1, ix2, ix3) * nvtx + (*ssv)(AvSyy, ix1, ix2, ix3) * nvty +
+                    real sy   = 0.5 * ((*ssv)(AvSxy, ix1, ix2, ix3) * nvtx + (*ssv)(AvSyy, ix1, ix2, ix3) * nvty +
                                        (*ssv)(AvSyz, ix1, ix2, ix3) * nvtz);
-                    double sz   = 0.5 * ((*ssv)(AvSxz, ix1, ix2, ix3) * nvtx + (*ssv)(AvSyz, ix1, ix2, ix3) * nvty +
+                    real sz   = 0.5 * ((*ssv)(AvSxz, ix1, ix2, ix3) * nvtx + (*ssv)(AvSyz, ix1, ix2, ix3) * nvty +
                                        (*ssv)(AvSzz, ix1, ix2, ix3) * nvtz);
-                    double sabs = sqrt(sx * sx + sy * sy + sz * sz);
+                    real sabs = sqrt(sx * sx + sy * sy + sz * sz);
 
-                    double viscosity = (1.0 / 3.0) * (1.0 / collFactor - 0.5);
-                    double rho       = 1.0;
-                    double utau      = sqrt(viscosity / rho * sabs);
+                    real viscosity = (1.0 / 3.0) * (1.0 / collFactor - 0.5);
+                    real rho       = 1.0;
+                    real utau      = sqrt(viscosity / rho * sabs);
 
                     // double q=(*av)(ix1,ix2,ix3,normalq) ;
-                    double yPlus = (utau * q) / viscosity;
+                    real yPlus = (utau * q) / viscosity;
 
                     data[index++].push_back(yPlus);
                     data[index++].push_back(utau);
@@ -345,7 +345,7 @@ void ShearStressCoProcessor::addData()
     }
 }
 //////////////////////////////////////////////////////////////////////////
-void ShearStressCoProcessor::reset(double step)
+void ShearStressCoProcessor::reset(real step)
 {
     if (Resetscheduler->isDue(step))
         resetData(step);
@@ -353,7 +353,7 @@ void ShearStressCoProcessor::reset(double step)
     UBLOG(logDEBUG3, "resetCoProcessor::update:" << step);
 }
 //////////////////////////////////////////////////////////////////////////
-void ShearStressCoProcessor::resetData(double /*step*/)
+void ShearStressCoProcessor::resetData(real /*step*/)
 {
     for (int level = minInitLevel; level <= maxInitLevel; level++) {
         for (const auto &block : blockVector[level]) {
@@ -405,16 +405,16 @@ void ShearStressCoProcessor::resetData(double /*step*/)
 //////////////////////////////////////////////////////////////////////////
 void ShearStressCoProcessor::addInteractor(SPtr<D3Q27Interactor> interactor) { interactors.push_back(interactor); }
 //////////////////////////////////////////////////////////////////////////
-void ShearStressCoProcessor::findPlane(int ix1, int ix2, int ix3, SPtr<Grid3D> grid, SPtr<Block3D> block, double &A,
-                                       double &B, double &C, double &D, double &ii)
+void ShearStressCoProcessor::findPlane(int ix1, int ix2, int ix3, SPtr<Grid3D> grid, SPtr<Block3D> block, real &A,
+                                       real &B, real &C, real &D, real &ii)
 {
     using namespace vf::lbm::dir;
 
-    double x1plane = 0.0, y1plane = 0.0, z1plane = 0.0;
-    double x2plane = 0.0, y2plane = 0.0, z2plane = 0.0;
-    double x3plane = 0.0, y3plane = 0.0, z3plane = 0.0;
+    real x1plane = 0.0, y1plane = 0.0, z1plane = 0.0;
+    real x2plane = 0.0, y2plane = 0.0, z2plane = 0.0;
+    real x3plane = 0.0, y3plane = 0.0, z3plane = 0.0;
     SPtr<BoundaryConditions> bcPtr;
-    double dx                               = grid->getDeltaX(block);
+    real dx                               = grid->getDeltaX(block);
     SPtr<ILBMKernel> kernel                 = block->getKernel();
     SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
     SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
@@ -600,9 +600,9 @@ void ShearStressCoProcessor::findPlane(int ix1, int ix2, int ix3, SPtr<Grid3D> g
                 for (int k = z; k <= z + 1; k++) {
                     Vector3D pointplane1 = grid->getNodeCoordinates(block, i, j, k);
 
-                    double iph = pointplane1[0];
-                    double jph = pointplane1[1];
-                    double kph = pointplane1[2];
+                    real iph = pointplane1[0];
+                    real jph = pointplane1[1];
+                    real kph = pointplane1[2];
 
                     if (!bcArray->isSolid(i, j, k)) {
                         SPtr<BoundaryConditions> bcPtrIn = bcArray->getBC(i, j, k);
@@ -906,17 +906,17 @@ void ShearStressCoProcessor::initDistance()
                         continue;
 
                     //////get normal and distance//////
-                    double A, B, C, D, ii = 0.0;
+                    real A, B, C, D, ii = 0.0;
                     findPlane(ix1, ix2, ix3, grid, block, A, B, C, D, ii);
                     Vector3D pointplane1 = grid->getNodeCoordinates(block, ix1, ix2, ix3);
-                    double ix1ph         = pointplane1[0];
-                    double ix2ph         = pointplane1[1];
-                    double ix3ph         = pointplane1[2];
-                    double normalDis;
+                    real ix1ph         = pointplane1[0];
+                    real ix2ph         = pointplane1[1];
+                    real ix3ph         = pointplane1[2];
+                    real normalDis;
                     if (ii != 3) {
                         UB_THROW(UbException(UB_EXARGS, "not enough points to create plane" + UbSystem::toString(ii)));
                     } else {
-                        double s = A * ix1ph + B * ix2ph + C * ix3ph +
+                        real s = A * ix1ph + B * ix2ph + C * ix3ph +
                                    D; // The sign of s = Ax + By + Cz + D determines which side the point (x,y,z) lies
                                       // with respect to the plane. If s > 0 then the point lies on the same side as the
                                       // normal (A,B,C). If s < 0 then it lies on the opposite side, if s = 0 then the

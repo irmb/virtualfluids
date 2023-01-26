@@ -25,7 +25,7 @@ AverageValuesCoProcessor::AverageValuesCoProcessor(SPtr<Grid3D> grid, const std:
 {
     resetStepMeans  = (int)rsMeans->getMinBegin();
     resetStepRMS    = (int)rsRMS->getMinBegin();
-    averageInterval = (double)Avs->getMinStep();
+    averageInterval = (real)Avs->getMinStep();
 
     gridRank     = grid->getRank();
     minInitLevel = this->grid->getCoarsestInitializedLevel();
@@ -54,7 +54,7 @@ AverageValuesCoProcessor::AverageValuesCoProcessor(SPtr<Grid3D> grid, const std:
     // restartStep = 0.0;
 }
 //////////////////////////////////////////////////////////////////////////
-void AverageValuesCoProcessor::process(double step)
+void AverageValuesCoProcessor::process(real step)
 {
     // resetRMS(step);
     if (resetSchedulerRMS->isDue(step))
@@ -76,7 +76,7 @@ void AverageValuesCoProcessor::process(double step)
     UBLOG(logDEBUG3, "AverageValuesCoProcessor::update:" << step);
 }
 
-void AverageValuesCoProcessor::resetDataRMS(double step)
+void AverageValuesCoProcessor::resetDataRMS(real step)
 {
     resetStepRMS = (int)step;
 
@@ -120,7 +120,7 @@ void AverageValuesCoProcessor::resetDataRMS(double step)
     }
 }
 //////////////////////////////////////////////////////////////////////////
-void AverageValuesCoProcessor::resetDataMeans(double step)
+void AverageValuesCoProcessor::resetDataMeans(real step)
 {
     resetStepMeans = (int)step;
 
@@ -161,7 +161,7 @@ void AverageValuesCoProcessor::resetDataMeans(double step)
     }
 }
 //////////////////////////////////////////////////////////////////////////
-void AverageValuesCoProcessor::collectData(double step)
+void AverageValuesCoProcessor::collectData(real step)
 {
     int istep = int(step);
 
@@ -219,7 +219,7 @@ void AverageValuesCoProcessor::addData(const SPtr<Block3D> block)
     UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);
     //	UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
     UbTupleDouble3 nodeOffset = grid->getNodeOffset(block);
-    double dx                 = grid->getDeltaX(block);
+    real dx                 = grid->getDeltaX(block);
 
     // Diese Daten werden geschrieben:
     datanames.resize(0);
@@ -330,7 +330,7 @@ void AverageValuesCoProcessor::addData(const SPtr<Block3D> block)
     }
 }
 //////////////////////////////////////////////////////////////////////////
-void AverageValuesCoProcessor::calculateAverageValues(double timeStep)
+void AverageValuesCoProcessor::calculateAverageValues(real timeStep)
 {
     using namespace D3Q27System;
 
@@ -377,16 +377,16 @@ void AverageValuesCoProcessor::calculateAverageValues(double timeStep)
                                 //////////////////////////////////////////////////////////////////////////
                                 real vx, vy, vz, rho;
                                 calcMacros(f, rho, vx, vy, vz);
-                                double press = D3Q27System::calcPress(f, rho, vx, vy, vz);
+                                real press = D3Q27System::calcPress(f, rho, vx, vy, vz);
 
                                 //////////////////////////////////////////////////////////////////////////
                                 // compute average values
                                 //////////////////////////////////////////////////////////////////////////
 
                                 real timeStepAfterResetRMS =
-                                    (double)(timeStep - resetStepRMS) / ((double)averageInterval);
+                                    (real)(timeStep - resetStepRMS) / ((real)averageInterval);
                                 real timeStepAfterResetMeans =
-                                    (double)(timeStep - resetStepMeans) / ((double)averageInterval);
+                                    (real)(timeStep - resetStepMeans) / ((real)averageInterval);
 
                                 // mean velocity
                                 (*av)(AvVx, ix1, ix2, ix3) =

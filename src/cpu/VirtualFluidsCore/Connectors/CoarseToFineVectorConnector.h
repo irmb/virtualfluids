@@ -97,7 +97,7 @@ public:
     bool isInterpolationConnectorCF() override { return true; }
     bool isInterpolationConnectorFC() override { return false; }
 
-    double getSendRecieveTime();
+    real getSendRecieveTime();
 
     void prepareForSendX1() override {}
     void prepareForSendX2() override {}
@@ -2025,7 +2025,7 @@ void CoarseToFineVectorConnector<VectorTransmitter>::findCFnodes(SPtr<Distributi
 }
 //////////////////////////////////////////////////////////////////////////
 template <typename VectorTransmitter>
-double CoarseToFineVectorConnector<VectorTransmitter>::getSendRecieveTime()
+real CoarseToFineVectorConnector<VectorTransmitter>::getSendRecieveTime()
 {
     return 0;
 }

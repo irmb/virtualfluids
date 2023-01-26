@@ -203,9 +203,9 @@ void CumulantK17LBMKernelUnified::calculate(int step)
                     real forces[3] = {0., 0., 0.};
                     if (withForcing)
                     {
-                        muX1 = static_cast<double>(x1 - 1 + ix1 * maxX1);
-                        muX2 = static_cast<double>(x2 - 1 + ix2 * maxX2);
-                        muX3 = static_cast<double>(x3 - 1 + ix3 * maxX3);
+                        muX1 = static_cast<real>(x1 - 1 + ix1 * maxX1);
+                        muX2 = static_cast<real>(x2 - 1 + ix2 * maxX2);
+                        muX3 = static_cast<real>(x3 - 1 + ix3 * maxX3);
 
                         forcingX1 = muForcingX1.Eval();
                         forcingX2 = muForcingX2.Eval();

@@ -23,7 +23,7 @@ public:
    ~IncompressibleCumulantLBMKernel() override;
    void calculate(int step) override;
    SPtr<LBMKernel> clone() override;
-   double getCalculationTime() override;
+   real getCalculationTime() override;
    void setRelaxationParameter(Parameter p);
 protected:
    virtual void initDataSet();

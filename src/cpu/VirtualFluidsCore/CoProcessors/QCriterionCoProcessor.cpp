@@ -32,7 +32,7 @@ void QCriterionCoProcessor::init()
     }
 }
 //////////////////////////////////////////////////////////////////////////
-void QCriterionCoProcessor::process(double step)
+void QCriterionCoProcessor::process(real step)
 {
     if (scheduler->isDue(step))
         collectData(step);
@@ -40,7 +40,7 @@ void QCriterionCoProcessor::process(double step)
     UBLOG(logDEBUG3, "QCriterionCoProcessor::update:" << step);
 }
 //////////////////////////////////////////////////////////////////////////
-void QCriterionCoProcessor::collectData(double step)
+void QCriterionCoProcessor::collectData(real step)
 {
     int istep = static_cast<int>(step);
 
@@ -92,7 +92,7 @@ void QCriterionCoProcessor::addData(const SPtr<Block3D> block)
     UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);
     //	UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
     UbTupleDouble3 nodeOffset = grid->getNodeOffset(block);
-    double dx                 = grid->getDeltaX(block);
+    real dx                 = grid->getDeltaX(block);
 
     // Diese Daten werden geschrieben:
     datanames.resize(0);
@@ -159,7 +159,7 @@ void QCriterionCoProcessor::addData(const SPtr<Block3D> block)
                     real duzdz = (vT[zdir] - vB[zdir]) * 0.5;
 
                     real scaleFactor =
-                        (double)(1
+                        (real)(1
                                  << (currentLevel -
                                      minInitLevel)); // pow(2.0,(double)(currentLevel-minInitLevel));//finer grid ->
                                                      // current level higher. coarsest grid: currentLevel=minInitLevel=0
@@ -234,9 +234,9 @@ void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, 
     if ((ix1 == 0 && offx == 1) || (ix2 == 0 && offy == 1) || (ix3 == 0 && offz == 1)) {
         int RankNeighborW;
         Vector3D orgNodeRW = grid->getNodeCoordinates(block, ix1, ix2, ix3);
-        double xp000       = orgNodeRW[0];
-        double yp000       = orgNodeRW[1];
-        double zp000       = orgNodeRW[2];
+        real xp000       = orgNodeRW[0];
+        real yp000       = orgNodeRW[1];
+        real zp000       = orgNodeRW[2];
 
         int currentLevel         = block->getLevel();
         UbTupleInt3 blockIndexes = grid->getBlockIndexes(xp000, yp000, zp000, currentLevel);

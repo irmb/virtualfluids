@@ -55,7 +55,7 @@ public:
     ~CumulantK17LBMKernel() = default;
     void calculate(int step) override;
     SPtr<LBMKernel> clone() override;
-    double getCalculationTime() override { return .0; }
+    real getCalculationTime() override { return .0; }
 
 protected:
     inline void forwardInverseChimeraWithK(real& mfa, real& mfb, real& mfc, real vv, real v2, real Kinverse, real K);

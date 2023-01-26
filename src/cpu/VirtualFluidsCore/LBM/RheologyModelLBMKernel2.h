@@ -19,7 +19,7 @@ public:
 	virtual ~RheologyModelLBMKernel2();
 	void calculate(int step);
 	virtual SPtr<LBMKernel> clone() { UB_THROW(UbException("SPtr<LBMKernel> clone() - belongs in the derived class")); };
-	double getCalculationTime();
+	real getCalculationTime();
 
 	void swapDistributions();
 

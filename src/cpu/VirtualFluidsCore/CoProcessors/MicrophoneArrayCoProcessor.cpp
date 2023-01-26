@@ -22,7 +22,7 @@ MicrophoneArrayCoProcessor::MicrophoneArrayCoProcessor(SPtr<Grid3D> grid, SPtr<U
 
 MicrophoneArrayCoProcessor::~MicrophoneArrayCoProcessor() = default;
 
-void MicrophoneArrayCoProcessor::process(double step)
+void MicrophoneArrayCoProcessor::process(real step)
 {
     if (microphones.size() > 0) {
         collectData(step);
@@ -89,7 +89,7 @@ bool MicrophoneArrayCoProcessor::addMicrophone(Vector3D coords)
     return false;
 }
 
-void MicrophoneArrayCoProcessor::collectData(double step)
+void MicrophoneArrayCoProcessor::collectData(real step)
 {
     for (std::size_t i = 0; i < microphones.size(); i++) {
         real f[D3Q27System::ENDF + 1];
@@ -102,7 +102,7 @@ void MicrophoneArrayCoProcessor::collectData(double step)
     }
 }
 
-void MicrophoneArrayCoProcessor::writeFile(double /*step*/)
+void MicrophoneArrayCoProcessor::writeFile(real /*step*/)
 {
     for (std::size_t i = 0; i < microphones.size(); i++) {
         std::string fname = path + "/mic/mic_" + UbSystem::toString(microphones[i]->id) + ".csv";

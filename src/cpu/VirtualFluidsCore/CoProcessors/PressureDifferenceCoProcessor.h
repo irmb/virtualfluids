@@ -29,13 +29,13 @@ public:
                                   /*const SPtr<LBMUnitConverter> conv,*/ std::shared_ptr<vf::mpi::Communicator> comm);
     ~PressureDifferenceCoProcessor() override;
 
-    void process(double step) override;
+    void process(real step) override;
 
 protected:
     SPtr<IntegrateValuesHelper> h1, h2;
     std::string path;
     SPtr<LBMUnitConverter> conv;
-    void collectData(double step);
+    void collectData(real step);
     std::shared_ptr<vf::mpi::Communicator> comm;
     real factor1; //= (1/3)*rhoReal*(uReal/uLB)^2 for calculation pReal = rhoLB * (1/3)*rhoReal*(uReal/uLB)^2,
                      //rhoReal and uReal in SI

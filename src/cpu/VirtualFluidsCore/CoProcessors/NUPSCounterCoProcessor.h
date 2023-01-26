@@ -57,19 +57,19 @@ public:
     NUPSCounterCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, int numOfThreads, std::shared_ptr<vf::mpi::Communicator> comm);
     ~NUPSCounterCoProcessor() override;
 
-    void process(double step) override;
+    void process(real step) override;
 
 protected:
     //! Collect data for calculation of NUPS
     //! \param step is a time step
-    void collectData(double step);
+    void collectData(real step);
     UbTimer timer;
     int numOfThreads;
-    double numberOfNodes;
-    double numberOfBlocks;
-    double nup;
-    double nup_t;
-    double nupsStep;
+    real numberOfNodes;
+    real numberOfBlocks;
+    real nup;
+    real nup_t;
+    real nupsStep;
     std::shared_ptr<vf::mpi::Communicator> comm;
 };
 

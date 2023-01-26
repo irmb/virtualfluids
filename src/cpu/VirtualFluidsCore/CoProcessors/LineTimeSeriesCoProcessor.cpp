@@ -23,12 +23,12 @@ LineTimeSeriesCoProcessor::LineTimeSeriesCoProcessor(SPtr<Grid3D> grid, SPtr<UbS
     numOfProc = comm->getNumberOfProcesses();
     gridRank  = comm->getProcessID();
 
-    double dx = CoProcessor::grid->getDeltaX(level);
+    real dx = CoProcessor::grid->getDeltaX(level);
 
     SPtr<CoordinateTransformation3D> trafo = grid->getCoordinateTransformator();
-    double orgX1                           = trafo->getX1CoordinateOffset();
-    double orgX2                           = trafo->getX2CoordinateOffset();
-    double orgX3                           = trafo->getX3CoordinateOffset();
+    real orgX1                           = trafo->getX1CoordinateOffset();
+    real orgX2                           = trafo->getX2CoordinateOffset();
+    real orgX3                           = trafo->getX3CoordinateOffset();
 
     int x1min = (int)((line->getX1Minimum() - orgX1) / dx);
     int x1max = (int)((line->getX1Maximum() - orgX1) / dx);
@@ -61,7 +61,7 @@ LineTimeSeriesCoProcessor::LineTimeSeriesCoProcessor(SPtr<Grid3D> grid, SPtr<UbS
     ix3 = x3min % val<3>(blockNx) + 1;
 }
 //////////////////////////////////////////////////////////////////////////
-void LineTimeSeriesCoProcessor::process(double step)
+void LineTimeSeriesCoProcessor::process(real step)
 {
     if (scheduler->isDue(step)) {
         collectData();
@@ -74,12 +74,12 @@ void LineTimeSeriesCoProcessor::writeLine(const std::string &path)
 {
     std::vector<UbTupleFloat3> nodes(2);
     std::vector<UbTupleInt2> lines(1);
-    val<1>(nodes[0])            = (float)line->getX1Minimum();
-    val<2>(nodes[0])            = (float)line->getX2Minimum();
-    val<3>(nodes[0])            = (float)line->getX3Minimum();
-    val<1>(nodes[1])            = (float)line->getX1Maximum();
-    val<2>(nodes[1])            = (float)line->getX2Maximum();
-    val<3>(nodes[1])            = (float)line->getX3Maximum();
+    val<1>(nodes[0])            = (real)line->getX1Minimum();
+    val<2>(nodes[0])            = (real)line->getX2Minimum();
+    val<3>(nodes[0])            = (real)line->getX3Minimum();
+    val<1>(nodes[1])            = (real)line->getX1Maximum();
+    val<2>(nodes[1])            = (real)line->getX2Maximum();
+    val<3>(nodes[1])            = (real)line->getX3Maximum();
     val<1>(lines[0])            = 0;
     val<1>(lines[0])            = 1;
     WbWriterVtkXmlASCII *writer = WbWriterVtkXmlASCII::getInstance();
@@ -91,10 +91,10 @@ void LineTimeSeriesCoProcessor::collectData()
     real f[27];
     real vx1, vx2, vx3, rho;
     MPI_Status status;
-    std::vector<double> v1(length, 0);
-    std::vector<double> v2(length, 0);
-    std::vector<double> v3(length, 0);
-    std::vector<double> p(length, 0);
+    std::vector<real> v1(length, 0);
+    std::vector<real> v2(length, 0);
+    std::vector<real> v3(length, 0);
+    std::vector<real> p(length, 0);
     for (int x = 0; x < length; x += blocknx) {
         if (dir == X1) {
             blockix1 = x / blocknx;
@@ -137,10 +137,10 @@ void LineTimeSeriesCoProcessor::collectData()
 
     if (root) {
         for (int i = 1; i < numOfProc; i++) {
-            std::vector<double> v1temp(length, 0);
-            std::vector<double> v2temp(length, 0);
-            std::vector<double> v3temp(length, 0);
-            std::vector<double> ptemp(length, 0);
+            std::vector<real> v1temp(length, 0);
+            std::vector<real> v2temp(length, 0);
+            std::vector<real> v3temp(length, 0);
+            std::vector<real> ptemp(length, 0);
             MPI_Recv(&v1temp[0], length, MPI_DOUBLE, i, 1, mpi_comm, &status);
             MPI_Recv(&v2temp[0], length, MPI_DOUBLE, i, 2, mpi_comm, &status);
             MPI_Recv(&v3temp[0], length, MPI_DOUBLE, i, 3, mpi_comm, &status);

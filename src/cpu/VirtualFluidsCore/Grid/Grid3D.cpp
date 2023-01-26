@@ -66,8 +66,8 @@ Grid3D::Grid3D(std::shared_ptr<vf::mpi::Communicator> comm, int blockNx1, int bl
     levelSet.resize(D3Q27System::MAXLEVEL + 1);
     bundle = comm->getBundleID();
     rank  = comm->getProcessID();
-    trafo = std::make_shared<CoordinateTransformation3D>(0.0, 0.0, 0.0, (double)blockNx1, (double)blockNx2,
-                                                         (double)blockNx3);
+    trafo = std::make_shared<CoordinateTransformation3D>(0.0, 0.0, 0.0, (real)blockNx1, (real)blockNx2,
+                                                         (real)blockNx3);
     UbTupleInt3 minInd(0, 0, 0);
     UbTupleInt3 maxInd(gridNx1, gridNx2, gridNx3);
     this->fillExtentWithBlocks(minInd, maxInd);
@@ -75,7 +75,7 @@ Grid3D::Grid3D(std::shared_ptr<vf::mpi::Communicator> comm, int blockNx1, int bl
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::addInteractor(SPtr<Interactor3D> interactor) { interactors.push_back(interactor); }
 //////////////////////////////////////////////////////////////////////////
-void Grid3D::addAndInitInteractor(SPtr<Interactor3D> interactor, double timestep)
+void Grid3D::addAndInitInteractor(SPtr<Interactor3D> interactor, real timestep)
 {
     interactors.push_back(interactor);
     interactor->initInteractor(timestep);
@@ -432,7 +432,7 @@ void Grid3D::setPeriodicX2(bool value) { this->periodicX2 = value; }
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::setPeriodicX3(bool value) { this->periodicX3 = value; }
 //////////////////////////////////////////////////////////////////////////
-UbTupleInt3 Grid3D::getBlockIndexes(double blockX1Coord, double blockX2Coord, double blockX3Coord) const
+UbTupleInt3 Grid3D::getBlockIndexes(real blockX1Coord, real blockX2Coord, real blockX3Coord) const
 {
     if (!trafo) {
         return makeUbTuple((int)blockX1Coord, (int)blockX2Coord, (int)blockX3Coord);
@@ -443,14 +443,14 @@ UbTupleInt3 Grid3D::getBlockIndexes(double blockX1Coord, double blockX2Coord, do
                        (int)trafo->transformForwardToX3Coordinate(blockX1Coord, blockX2Coord, blockX3Coord));
 }
 //////////////////////////////////////////////////////////////////////////
-UbTupleInt3 Grid3D::getBlockIndexes(double blockX1Coord, double blockX2Coord, double blockX3Coord, int level) const
+UbTupleInt3 Grid3D::getBlockIndexes(real blockX1Coord, real blockX2Coord, real blockX3Coord, int level) const
 {
     if (!trafo) {
         return makeUbTuple((int)blockX1Coord, (int)blockX2Coord, (int)blockX3Coord);
     }
 
-    double dx = getDeltaX(level);
-    double blockLentghX1, blockLentghX2, blockLentghX3;
+    real dx = getDeltaX(level);
+    real blockLentghX1, blockLentghX2, blockLentghX3;
     blockLentghX1      = blockNx1 * dx;
     blockLentghX2      = blockNx2 * dx;
     blockLentghX3      = blockNx3 * dx;
@@ -471,10 +471,10 @@ UbTupleInt3 Grid3D::getBlockIndexes(double blockX1Coord, double blockX2Coord, do
 UbTupleDouble3 Grid3D::getBlockLengths(const SPtr<Block3D> block) const
 {
     int level    = block->getLevel();
-    double delta = 1.0 / (double)(1 << level);
+    real delta = 1.0 / (real)(1 << level);
 
     if (!trafo)
-        makeUbTuple<double, double, double>(delta, delta, delta);
+        makeUbTuple<real, real, real>(delta, delta, delta);
 
     return makeUbTuple(trafo->getX1CoordinateScaling() * delta, trafo->getX2CoordinateScaling() * delta,
                        trafo->getX3CoordinateScaling() * delta);
@@ -486,21 +486,21 @@ void Grid3D::setCoordinateTransformator(SPtr<CoordinateTransformation3D> trafo) 
 //////////////////////////////////////////////////////////////////////////
 const SPtr<CoordinateTransformation3D> Grid3D::getCoordinateTransformator() const { return this->trafo; }
 //////////////////////////////////////////////////////////////////////////
-void Grid3D::setDeltaX(double dx) { this->orgDeltaX = dx; }
+void Grid3D::setDeltaX(real dx) { this->orgDeltaX = dx; }
 //////////////////////////////////////////////////////////////////////////
-void Grid3D::setDeltaX(double worldUnit, double gridUnit) { this->orgDeltaX = worldUnit / gridUnit; }
+void Grid3D::setDeltaX(real worldUnit, real gridUnit) { this->orgDeltaX = worldUnit / gridUnit; }
 //////////////////////////////////////////////////////////////////////////
-double Grid3D::getDeltaX(int level) const
+real Grid3D::getDeltaX(int level) const
 {
-    double delta = this->orgDeltaX / (double)(1 << level);
+    real delta = this->orgDeltaX / (real)(1 << level);
     return delta;
 }
 //////////////////////////////////////////////////////////////////////////
-double Grid3D::getDeltaX(SPtr<Block3D> block) const { return getDeltaX(block->getLevel()); }
+real Grid3D::getDeltaX(SPtr<Block3D> block) const { return getDeltaX(block->getLevel()); }
 //////////////////////////////////////////////////////////////////////////
 UbTupleDouble3 Grid3D::getNodeOffset(SPtr<Block3D> block) const
 {
-    double delta = this->getDeltaX(block);
+    real delta = this->getDeltaX(block);
     return makeUbTuple(offset * delta, offset * delta, offset * delta);
 }
 ////////////////////////////////////////////////////////////////////////////
@@ -508,26 +508,26 @@ Vector3D Grid3D::getNodeCoordinates(SPtr<Block3D> block, int ix1, int ix2, int i
 {
     UbTupleDouble3 org        = this->getBlockWorldCoordinates(block);
     UbTupleDouble3 nodeOffset = this->getNodeOffset(block);
-    double deltaX             = getDeltaX(block);
+    real deltaX             = getDeltaX(block);
 
-    double x1 = val<1>(org) - val<1>(nodeOffset) + (double)ix1 * deltaX;
-    double x2 = val<2>(org) - val<2>(nodeOffset) + (double)ix2 * deltaX;
-    double x3 = val<3>(org) - val<3>(nodeOffset) + (double)ix3 * deltaX;
+    real x1 = val<1>(org) - val<1>(nodeOffset) + (real)ix1 * deltaX;
+    real x2 = val<2>(org) - val<2>(nodeOffset) + (real)ix2 * deltaX;
+    real x3 = val<3>(org) - val<3>(nodeOffset) + (real)ix3 * deltaX;
 
     return Vector3D(x1, x2, x3);
 }
 ////////////////////////////////////////////////////////////////////////////
-UbTupleInt3 Grid3D::getNodeIndexes(SPtr<Block3D> block, double nodeX1Coord, double nodeX2Coord,
-                                   double nodeX3Coord) const
+UbTupleInt3 Grid3D::getNodeIndexes(SPtr<Block3D> block, real nodeX1Coord, real nodeX2Coord,
+                                   real nodeX3Coord) const
 {
     UbTupleDouble3 org        = this->getBlockWorldCoordinates(block);
     UbTupleDouble3 nodeOffset = this->getNodeOffset(block);
-    double deltaX             = getDeltaX(block);
+    real deltaX             = getDeltaX(block);
 
     int ix1, ix2, ix3;
-    double ixx1 = (abs(nodeX1Coord - val<1>(org) + val<1>(nodeOffset)) / deltaX);
-    double ixx2 = (abs(nodeX2Coord - val<2>(org) + val<2>(nodeOffset)) / deltaX);
-    double ixx3 = (abs(nodeX3Coord - val<3>(org) + val<3>(nodeOffset)) / deltaX);
+    real ixx1 = (abs(nodeX1Coord - val<1>(org) + val<1>(nodeOffset)) / deltaX);
+    real ixx2 = (abs(nodeX2Coord - val<2>(org) + val<2>(nodeOffset)) / deltaX);
+    real ixx3 = (abs(nodeX3Coord - val<3>(org) + val<3>(nodeOffset)) / deltaX);
     if (ixx1 - (int)ixx1 > .9999999999)
         ix1 = (int)ixx1 + 1;
     else
@@ -560,10 +560,10 @@ UbTupleDouble3 Grid3D::getBlockWorldCoordinates(SPtr<Block3D> block) const
 //////////////////////////////////////////////////////////////////////////
 UbTupleDouble3 Grid3D::getBlockWorldCoordinates(int blockX1Index, int blockX2Index, int blockX3Index, int level) const
 {
-    double c1oShiftedLevel = 1.0 / (double)(1 << level);
-    double x1              = (double)blockX1Index * c1oShiftedLevel;
-    double x2              = (double)blockX2Index * c1oShiftedLevel;
-    double x3              = (double)blockX3Index * c1oShiftedLevel;
+    real c1oShiftedLevel = 1.0 / (real)(1 << level);
+    real x1              = (real)blockX1Index * c1oShiftedLevel;
+    real x2              = (real)blockX2Index * c1oShiftedLevel;
+    real x3              = (real)blockX3Index * c1oShiftedLevel;
 
     if (!trafo)
         return { x1, x2, x3 };
@@ -2030,7 +2030,7 @@ int Grid3D::getNumberOfBlocks()
 //////////////////////////////////////////////////////////////////////////
 int Grid3D::getNumberOfBlocks(int level) { return (int)levelSet[level].size(); }
 //////////////////////////////////////////////////////////////////////////
-void Grid3D::getBlocksByCuboid(double minX1, double minX2, double minX3, double maxX1, double maxX2, double maxX3,
+void Grid3D::getBlocksByCuboid(real minX1, real minX2, real minX3, real maxX1, real maxX2, real maxX3,
                                std::vector<SPtr<Block3D>> &blocks)
 {
     int coarsestLevel = this->getCoarsestInitializedLevel();
@@ -2040,9 +2040,9 @@ void Grid3D::getBlocksByCuboid(double minX1, double minX2, double minX3, double 
     // MINIMALE BLOCK-INDIZES BESTIMMEN
     //
     // min:
-    double dMinX1 = trafo->transformForwardToX1Coordinate(minX1, minX2, minX3) * (1 << finestLevel);
-    double dMinX2 = trafo->transformForwardToX2Coordinate(minX1, minX2, minX3) * (1 << finestLevel);
-    double dMinX3 = trafo->transformForwardToX3Coordinate(minX1, minX2, minX3) * (1 << finestLevel);
+    real dMinX1 = trafo->transformForwardToX1Coordinate(minX1, minX2, minX3) * (1 << finestLevel);
+    real dMinX2 = trafo->transformForwardToX2Coordinate(minX1, minX2, minX3) * (1 << finestLevel);
+    real dMinX3 = trafo->transformForwardToX3Coordinate(minX1, minX2, minX3) * (1 << finestLevel);
 
     // Achtung, wenn minX1 genau auf grenze zwischen zwei bloecken -> der "kleinere" muss genommen werden,
     // da beim Transformieren der "groessere" Index rauskommt
@@ -2067,9 +2067,9 @@ void Grid3D::getBlocksByCuboid(double minX1, double minX2, double minX3, double 
     std::set<SPtr<Block3D>> blockset;
     for (int level = coarsestLevel; level <= finestLevel; level++) {
         // damit bei negativen werten auch der "kleinere" genommen wird -> floor!
-        int minx1 = (int)std::floor((double)iMinX1 / (1 << (finestLevel - level)));
-        int minx2 = (int)std::floor((double)iMinX2 / (1 << (finestLevel - level)));
-        int minx3 = (int)std::floor((double)iMinX3 / (1 << (finestLevel - level)));
+        int minx1 = (int)std::floor((real)iMinX1 / (1 << (finestLevel - level)));
+        int minx2 = (int)std::floor((real)iMinX2 / (1 << (finestLevel - level)));
+        int minx3 = (int)std::floor((real)iMinX3 / (1 << (finestLevel - level)));
 
         int maxx1 = iMaxX1 / (1 << (finestLevel - level));
         int maxx2 = iMaxX2 / (1 << (finestLevel - level));
@@ -2089,16 +2089,16 @@ void Grid3D::getBlocksByCuboid(double minX1, double minX2, double minX3, double 
     std::copy(blockset.begin(), blockset.end(), blocks.begin());
 }
 //////////////////////////////////////////////////////////////////////////
-void Grid3D::getBlocksByCuboid(int level, double minX1, double minX2, double minX3, double maxX1, double maxX2,
-                               double maxX3, std::vector<SPtr<Block3D>> &blocks)
+void Grid3D::getBlocksByCuboid(int level, real minX1, real minX2, real minX3, real maxX1, real maxX2,
+                               real maxX3, std::vector<SPtr<Block3D>> &blocks)
 {
     //////////////////////////////////////////////////////////////////////////
     // MINIMALE BLOCK-INDIZES BESTIMMEN
     //
     // min:
-    double dMinX1 = trafo->transformForwardToX1Coordinate(minX1, minX2, minX3) * (1 << level);
-    double dMinX2 = trafo->transformForwardToX2Coordinate(minX1, minX2, minX3) * (1 << level);
-    double dMinX3 = trafo->transformForwardToX3Coordinate(minX1, minX2, minX3) * (1 << level);
+    real dMinX1 = trafo->transformForwardToX1Coordinate(minX1, minX2, minX3) * (1 << level);
+    real dMinX2 = trafo->transformForwardToX2Coordinate(minX1, minX2, minX3) * (1 << level);
+    real dMinX3 = trafo->transformForwardToX3Coordinate(minX1, minX2, minX3) * (1 << level);
 
     // Achtung, wenn minX1 genau auf grenze zwischen zwei bloecken -> der "kleinere" muss genommen werden:
     int iMinX1 = (int)dMinX1;
@@ -2133,7 +2133,7 @@ void Grid3D::getBlocksByCuboid(int level, double minX1, double minX2, double min
     std::copy(blockset.begin(), blockset.end(), blocks.begin());
 }
 //////////////////////////////////////////////////////////////////////////
-void Grid3D::getAllBlocksByCuboid(double minX1, double minX2, double minX3, double maxX1, double maxX2, double maxX3,
+void Grid3D::getAllBlocksByCuboid(real minX1, real minX2, real minX3, real maxX1, real maxX2, real maxX3,
                                   std::vector<SPtr<Block3D>> &blocks)
 {
     int coarsestLevel = this->getCoarsestInitializedLevel();
@@ -2143,9 +2143,9 @@ void Grid3D::getAllBlocksByCuboid(double minX1, double minX2, double minX3, doub
     // MINIMALE BLOCK-INDIZES BESTIMMEN
     //
     // min:
-    double dMinX1 = trafo->transformForwardToX1Coordinate(minX1, minX2, minX3) * (1 << finestLevel);
-    double dMinX2 = trafo->transformForwardToX2Coordinate(minX1, minX2, minX3) * (1 << finestLevel);
-    double dMinX3 = trafo->transformForwardToX3Coordinate(minX1, minX2, minX3) * (1 << finestLevel);
+    real dMinX1 = trafo->transformForwardToX1Coordinate(minX1, minX2, minX3) * (1 << finestLevel);
+    real dMinX2 = trafo->transformForwardToX2Coordinate(minX1, minX2, minX3) * (1 << finestLevel);
+    real dMinX3 = trafo->transformForwardToX3Coordinate(minX1, minX2, minX3) * (1 << finestLevel);
 
     // Achtung, wenn minX1 genau auf grenze zwischen zwei bloecken -> der "kleinere" muss genommen werden,
     // da beim Transformieren der "groessere" Index rauskommt
@@ -2170,9 +2170,9 @@ void Grid3D::getAllBlocksByCuboid(double minX1, double minX2, double minX3, doub
     std::set<SPtr<Block3D>> blockset;
     for (int level = coarsestLevel; level <= finestLevel; level++) {
         // damit bei negativen werten auch der "kleinere" genommen wird -> floor!
-        int minx1 = (int)std::floor((double)iMinX1 / (1 << (finestLevel - level)));
-        int minx2 = (int)std::floor((double)iMinX2 / (1 << (finestLevel - level)));
-        int minx3 = (int)std::floor((double)iMinX3 / (1 << (finestLevel - level)));
+        int minx1 = (int)std::floor((real)iMinX1 / (1 << (finestLevel - level)));
+        int minx2 = (int)std::floor((real)iMinX2 / (1 << (finestLevel - level)));
+        int minx3 = (int)std::floor((real)iMinX3 / (1 << (finestLevel - level)));
 
         int maxx1 = iMaxX1 / (1 << (finestLevel - level));
         int maxx2 = iMaxX2 / (1 << (finestLevel - level));
@@ -2192,25 +2192,25 @@ void Grid3D::getAllBlocksByCuboid(double minX1, double minX2, double minX3, doub
     std::copy(blockset.begin(), blockset.end(), blocks.begin());
 }
 //////////////////////////////////////////////////////////////////////////
-void Grid3D::calcStartCoordinatesAndDelta(SPtr<Block3D> block, double &worldX1, double &worldX2, double &worldX3,
-                                          double &deltaX)
+void Grid3D::calcStartCoordinatesAndDelta(SPtr<Block3D> block, real &worldX1, real &worldX2, real &worldX3,
+                                          real &deltaX)
 {
     int blocklevel = block->getLevel();
     worldX1        = block->getX1() / (float)(1 << blocklevel);
     worldX2        = block->getX2() / (float)(1 << blocklevel);
     worldX3        = block->getX3() / (float)(1 << blocklevel);
-    deltaX         = (double)1.0 / (double)(this->blockNx1 * (double)(1 << blocklevel));
+    deltaX         = (real)1.0 / (real)(this->blockNx1 * (real)(1 << blocklevel));
 
     if (this->trafo) {
-        double x1tmp = worldX1, x2tmp = worldX2, x3tmp = worldX3;
+        real x1tmp = worldX1, x2tmp = worldX2, x3tmp = worldX3;
         worldX1 = this->trafo->transformBackwardToX1Coordinate(x1tmp, x2tmp, x3tmp);
         worldX2 = this->trafo->transformBackwardToX2Coordinate(x1tmp, x2tmp, x3tmp);
         worldX3 = this->trafo->transformBackwardToX3Coordinate(x1tmp, x2tmp, x3tmp);
-        deltaX  = this->trafo->getX1CoordinateScaling() / (double)(this->blockNx1 * (double)(1 << blocklevel));
+        deltaX  = this->trafo->getX1CoordinateScaling() / (real)(this->blockNx1 * (real)(1 << blocklevel));
     }
 }
 //////////////////////////////////////////////////////////////////////////
-void Grid3D::calcStartCoordinatesWithOutOverlap(SPtr<Block3D> block, double &worldX1, double &worldX2, double &worldX3)
+void Grid3D::calcStartCoordinatesWithOutOverlap(SPtr<Block3D> block, real &worldX1, real &worldX2, real &worldX3)
 {
     int blocklevel = block->getLevel();
     worldX1        = block->getX1() / (float)(1 << blocklevel);
@@ -2218,7 +2218,7 @@ void Grid3D::calcStartCoordinatesWithOutOverlap(SPtr<Block3D> block, double &wor
     worldX3        = block->getX3() / (float)(1 << blocklevel);
 
     if (this->trafo) {
-        double x1tmp = worldX1, x2tmp = worldX2, x3tmp = worldX3;
+        real x1tmp = worldX1, x2tmp = worldX2, x3tmp = worldX3;
         worldX1 = this->trafo->transformBackwardToX1Coordinate(x1tmp, x2tmp, x3tmp);
         worldX2 = this->trafo->transformBackwardToX2Coordinate(x1tmp, x2tmp, x3tmp);
         worldX3 = this->trafo->transformBackwardToX3Coordinate(x1tmp, x2tmp, x3tmp);
@@ -2232,12 +2232,12 @@ int Grid3D::getGhostLayerWidth() const
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::setGhostLayerWidth(int ghostLayerWidth)
 {
-    this->offset = static_cast<double>(ghostLayerWidth) - 0.5;
+    this->offset = static_cast<real>(ghostLayerWidth) - 0.5;
 }
 //////////////////////////////////////////////////////////////////////////
-void Grid3D::setTimeStep(double step) { timeStep = step; }
+void Grid3D::setTimeStep(real step) { timeStep = step; }
 //////////////////////////////////////////////////////////////////////////
-double Grid3D::getTimeStep() const { return timeStep; }
+real Grid3D::getTimeStep() const { return timeStep; }
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::fillExtentWithBlocks(UbTupleInt3 minInd, UbTupleInt3 maxInd)
 {

@@ -46,12 +46,12 @@ public:
 protected:
     static int get_number_of_vertices(void *data, int *ierr);
     static void get_vertex_list(void *data, int sizeGID, int sizeLID, ZOLTAN_ID_PTR globalID, ZOLTAN_ID_PTR localID,
-                                int wgt_dim, float *obj_wgts, int *ierr);
+                                int wgt_dim, real *obj_wgts, int *ierr);
     static void get_num_edges_list(void *data, int sizeGID, int sizeLID, int num_obj, ZOLTAN_ID_PTR globalID,
                                    ZOLTAN_ID_PTR localID, int *numEdges, int *ierr);
     static void get_edge_list(void *data, int sizeGID, int sizeLID, int num_obj, ZOLTAN_ID_PTR globalID,
                               ZOLTAN_ID_PTR localID, int *num_edges, ZOLTAN_ID_PTR nborGID, int *nborProc, int wgt_dim,
-                              float *ewgts, int *ierr);
+                              real *ewgts, int *ierr);
 
 private:
     MPI_Comm comm;

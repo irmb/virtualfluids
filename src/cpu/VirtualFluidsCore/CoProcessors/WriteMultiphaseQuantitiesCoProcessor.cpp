@@ -73,7 +73,7 @@ void WriteMultiphaseQuantitiesCoProcessor::init()
 {}
 
 //////////////////////////////////////////////////////////////////////////
-void WriteMultiphaseQuantitiesCoProcessor::process(double step)
+void WriteMultiphaseQuantitiesCoProcessor::process(real step)
 {
     if (scheduler->isDue(step))
         collectData(step);
@@ -83,7 +83,7 @@ void WriteMultiphaseQuantitiesCoProcessor::process(double step)
 }
 
 //////////////////////////////////////////////////////////////////////////
-void WriteMultiphaseQuantitiesCoProcessor::collectData(double step)
+void WriteMultiphaseQuantitiesCoProcessor::collectData(real step)
 {
     int istep = static_cast<int>(step);
 

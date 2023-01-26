@@ -44,29 +44,29 @@ public:
                                   SPtr<UbScheduler> s, std::shared_ptr<vf::mpi::Communicator> comm, int options);
     TimeAveragedValuesCoProcessor(SPtr<Grid3D> grid, const std::string &path, WbWriter *const writer,
                                   SPtr<UbScheduler> s, std::shared_ptr<vf::mpi::Communicator> comm, int options, std::vector<int> levels,
-                                  std::vector<double> &levelCoords, std::vector<double> &bounds,
+                                  std::vector<real> &levelCoords, std::vector<real> &bounds,
                                   bool timeAveraging = true);
     //! Make update
-    void process(double step) override;
+    void process(real step) override;
     //! Computes subtotal of velocity , fluctuations and triple correlations
-    void calculateSubtotal(double step);
-    void addLevelCoordinate(double c);
+    void calculateSubtotal(real step);
+    void addLevelCoordinate(real c);
     void reset();
     void setWithGhostLayer(bool val);
     bool getWithGhostLayer();
 
 protected:
     //! Prepare data and write in .vtk file
-    void collectData(double step);
+    void collectData(real step);
     //! prepare data
     void addData(const SPtr<Block3D> block);
     void clearData();
     //! Computes average values of velocity , fluctuations and triple correlations
-    void calculateAverageValues(double timeStep);
+    void calculateAverageValues(real timeStep);
 
     void init();
     void initData();
-    void planarAverage(double step);
+    void planarAverage(real step);
     void calculateAverageValuesForPlane(std::vector<IntegrateValuesHelper::CalcNodes> &cnodes);
 
 private:
@@ -74,7 +74,7 @@ private:
     std::vector<UbTupleFloat3> nodes;
     std::vector<UbTupleUInt8> cells;
     std::vector<std::string> datanames;
-    std::vector<std::vector<double>> data;
+    std::vector<std::vector<real>> data;
     std::vector<std::vector<SPtr<Block3D>>> blockVector;
     bool root;
     int minInitLevel; // min init level
@@ -82,7 +82,7 @@ private:
     int gridRank;
     int resetStepRMS;
     int resetStepMeans;
-    double averageInterval;
+    real averageInterval;
     std::string path;
     WbWriter *writer;
     bool restart, compressible;
@@ -96,15 +96,15 @@ private:
     enum Fluctuations { Vxx, Vyy, Vzz, Vxy, Vxz, Vyz };
     enum Triplecorrelations { Vxxx, Vxxy, Vxxz, Vyyy, Vyyx, Vyyz, Vzzz, Vzzx, Vzzy, Vxyz };
 
-    double saRho, saRhoF;
-    double saVx, saVy, saVz;
-    double saVxx, saVyy, saVzz, saVxy, saVxz, saVyz;
-    double saVxxx, saVxxy, saVxxz, saVyyy, saVyyx, saVyyz, saVzzz, saVzzx, saVzzy, saVxyz;
+    real saRho, saRhoF;
+    real saVx, saVy, saVz;
+    real saVxx, saVyy, saVzz, saVxy, saVxz, saVyz;
+    real saVxxx, saVxxy, saVxxz, saVyyy, saVyyx, saVyyz, saVzzz, saVzzx, saVzzy, saVxyz;
 
     int options;
-    double numberOfSteps;
-    double minStep;
-    double maxStep;
+    real numberOfSteps;
+    real minStep;
+    real maxStep;
 
     int iMinX1, iMinX2, iMinX3;
     // int iMaxX1, iMaxX2, iMaxX3;
@@ -116,9 +116,9 @@ private:
 
     bool planarAveraging;
     bool timeAveraging;
-    std::vector<double> levelCoords;
+    std::vector<real> levelCoords;
     std::vector<int> levels;
-    std::vector<double> bounds;
+    std::vector<real> bounds;
 
     bool withGhostLayer;
 };

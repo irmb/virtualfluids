@@ -15,7 +15,7 @@ public:
    void calculate(int step) override;
    SPtr<LBMKernel> clone() override;
    void setVelocity(int x1, int x2, int x3, real vvx, real vvy, real vvz);
-   double getCalculationTime() override;
+   real getCalculationTime() override;
 protected:
    void initDataSet();
 private:

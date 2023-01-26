@@ -46,8 +46,8 @@
 //   return D3Q27SlipBCAdapterCreator::getInstance();
 //}
 //*==========================================================*/
-void SlipBCAdapter::adaptBC(const D3Q27Interactor &interactor, SPtr<BoundaryConditions> bc, const double & /*worldX1*/,
-                            const double & /*worldX2*/, const double & /*worldX3*/, const double & /*time*/)
+void SlipBCAdapter::adaptBC(const D3Q27Interactor &interactor, SPtr<BoundaryConditions> bc, const real & /*worldX1*/,
+                            const real & /*worldX2*/, const real & /*worldX3*/, const real & /*time*/)
 {
     using namespace vf::lbm::dir;
 

@@ -793,64 +793,64 @@ static void calcIncompFeq(real *const &feq /*[27]*/, const real &drho, const rea
                (drho + 3.0 * (-vx1 + vx2 + vx3) + UbMath::c9o2 * (-vx1 + vx2 + vx3) * (-vx1 + vx2 + vx3) - cu_sq);
 }
 //////////////////////////////////////////////////////////////////////////
-static inline float getBoundaryVelocityForDirection(const int &direction, const float &bcVelocityX1,
-                                                    const float &bcVelocityX2, const float &bcVelocityX3)
+static inline real getBoundaryVelocityForDirection(const int &direction, const real &bcVelocityX1,
+                                                    const real &bcVelocityX2, const real &bcVelocityX3)
 {
     using namespace vf::lbm::dir;
  
     switch (direction) {
         case DIR_P00:
-            return (float)(UbMath::c4o9 * (+bcVelocityX1));
+            return (real)(UbMath::c4o9 * (+bcVelocityX1));
         case DIR_M00:
-            return (float)(UbMath::c4o9 * (-bcVelocityX1));
+            return (real)(UbMath::c4o9 * (-bcVelocityX1));
         case DIR_0P0:
-            return (float)(UbMath::c4o9 * (+bcVelocityX2));
+            return (real)(UbMath::c4o9 * (+bcVelocityX2));
         case DIR_0M0:
-            return (float)(UbMath::c4o9 * (-bcVelocityX2));
+            return (real)(UbMath::c4o9 * (-bcVelocityX2));
         case DIR_00P:
-            return (float)(UbMath::c4o9 * (+bcVelocityX3));
+            return (real)(UbMath::c4o9 * (+bcVelocityX3));
         case DIR_00M:
-            return (float)(UbMath::c4o9 * (-bcVelocityX3));
+            return (real)(UbMath::c4o9 * (-bcVelocityX3));
         case DIR_PP0:
-            return (float)(UbMath::c1o9 * (+bcVelocityX1 + bcVelocityX2));
+            return (real)(UbMath::c1o9 * (+bcVelocityX1 + bcVelocityX2));
         case DIR_MM0:
-            return (float)(UbMath::c1o9 * (-bcVelocityX1 - bcVelocityX2));
+            return (real)(UbMath::c1o9 * (-bcVelocityX1 - bcVelocityX2));
         case DIR_PM0:
-            return (float)(UbMath::c1o9 * (+bcVelocityX1 - bcVelocityX2));
+            return (real)(UbMath::c1o9 * (+bcVelocityX1 - bcVelocityX2));
         case DIR_MP0:
-            return (float)(UbMath::c1o9 * (-bcVelocityX1 + bcVelocityX2));
+            return (real)(UbMath::c1o9 * (-bcVelocityX1 + bcVelocityX2));
         case DIR_P0P:
-            return (float)(UbMath::c1o9 * (+bcVelocityX1 + bcVelocityX3));
+            return (real)(UbMath::c1o9 * (+bcVelocityX1 + bcVelocityX3));
         case DIR_M0M:
-            return (float)(UbMath::c1o9 * (-bcVelocityX1 - bcVelocityX3));
+            return (real)(UbMath::c1o9 * (-bcVelocityX1 - bcVelocityX3));
         case DIR_P0M:
-            return (float)(UbMath::c1o9 * (+bcVelocityX1 - bcVelocityX3));
+            return (real)(UbMath::c1o9 * (+bcVelocityX1 - bcVelocityX3));
         case DIR_M0P:
-            return (float)(UbMath::c1o9 * (-bcVelocityX1 + bcVelocityX3));
+            return (real)(UbMath::c1o9 * (-bcVelocityX1 + bcVelocityX3));
         case DIR_0PP:
-            return (float)(UbMath::c1o9 * (+bcVelocityX2 + bcVelocityX3));
+            return (real)(UbMath::c1o9 * (+bcVelocityX2 + bcVelocityX3));
         case DIR_0MM:
-            return (float)(UbMath::c1o9 * (-bcVelocityX2 - bcVelocityX3));
+            return (real)(UbMath::c1o9 * (-bcVelocityX2 - bcVelocityX3));
         case DIR_0PM:
-            return (float)(UbMath::c1o9 * (+bcVelocityX2 - bcVelocityX3));
+            return (real)(UbMath::c1o9 * (+bcVelocityX2 - bcVelocityX3));
         case DIR_0MP:
-            return (float)(UbMath::c1o9 * (-bcVelocityX2 + bcVelocityX3));
+            return (real)(UbMath::c1o9 * (-bcVelocityX2 + bcVelocityX3));
         case DIR_PPP:
-            return (float)(UbMath::c1o36 * (+bcVelocityX1 + bcVelocityX2 + bcVelocityX3));
+            return (real)(UbMath::c1o36 * (+bcVelocityX1 + bcVelocityX2 + bcVelocityX3));
         case DIR_MMM:
-            return (float)(UbMath::c1o36 * (-bcVelocityX1 - bcVelocityX2 - bcVelocityX3));
+            return (real)(UbMath::c1o36 * (-bcVelocityX1 - bcVelocityX2 - bcVelocityX3));
         case DIR_PPM:
-            return (float)(UbMath::c1o36 * (+bcVelocityX1 + bcVelocityX2 - bcVelocityX3));
+            return (real)(UbMath::c1o36 * (+bcVelocityX1 + bcVelocityX2 - bcVelocityX3));
         case DIR_MMP:
-            return (float)(UbMath::c1o36 * (-bcVelocityX1 - bcVelocityX2 + bcVelocityX3));
+            return (real)(UbMath::c1o36 * (-bcVelocityX1 - bcVelocityX2 + bcVelocityX3));
         case DIR_PMP:
-            return (float)(UbMath::c1o36 * (+bcVelocityX1 - bcVelocityX2 + bcVelocityX3));
+            return (real)(UbMath::c1o36 * (+bcVelocityX1 - bcVelocityX2 + bcVelocityX3));
         case DIR_MPM:
-            return (float)(UbMath::c1o36 * (-bcVelocityX1 + bcVelocityX2 - bcVelocityX3));
+            return (real)(UbMath::c1o36 * (-bcVelocityX1 + bcVelocityX2 - bcVelocityX3));
         case DIR_PMM:
-            return (float)(UbMath::c1o36 * (+bcVelocityX1 - bcVelocityX2 - bcVelocityX3));
+            return (real)(UbMath::c1o36 * (+bcVelocityX1 - bcVelocityX2 - bcVelocityX3));
         case DIR_MPP:
-            return (float)(UbMath::c1o36 * (-bcVelocityX1 + bcVelocityX2 + bcVelocityX3));
+            return (real)(UbMath::c1o36 * (-bcVelocityX1 + bcVelocityX2 + bcVelocityX3));
         default:
             throw UbException(UB_EXARGS, "unknown direction");
     }

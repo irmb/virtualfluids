@@ -300,4 +300,4 @@ void BGKLBMKernel::calculate(int step)
     }
 }
 //////////////////////////////////////////////////////////////////////////
-double BGKLBMKernel::getCalculationTime() { return 0.0; }
+real BGKLBMKernel::getCalculationTime() { return 0.0; }

@@ -31,11 +31,11 @@ public:
     QCriterionCoProcessor(SPtr<Grid3D> grid, const std::string &path, WbWriter *const writer, SPtr<UbScheduler> s,
                           std::shared_ptr<vf::mpi::Communicator> comm);
     //! Make update if timestep is write-timestep specified in SPtr<UbScheduler> s
-    void process(double step) override;
+    void process(real step) override;
 
 protected:
     //! Prepare data and write in .vtk file
-    void collectData(double step);
+    void collectData(real step);
     //! Q is computed for all points in a block. Data for writing is added to data and cell vectors.
     void addData(const SPtr<Block3D> block);
     //! After writing to .vtk-file, all vectors are reset
@@ -51,7 +51,7 @@ private:
     std::vector<UbTupleFloat3> nodes;
     std::vector<UbTupleUInt8> cells;
     std::vector<std::string> datanames; // only one entry for QKrit-CoProcessor: Q
-    std::vector<std::vector<double>> data;
+    std::vector<std::vector<real>> data;
     std::vector<std::vector<SPtr<Block3D>>> blockVector;
     int minInitLevel; // go through all levels for block vector of current process from minInitLevel to maxInitLevel
     int maxInitLevel;

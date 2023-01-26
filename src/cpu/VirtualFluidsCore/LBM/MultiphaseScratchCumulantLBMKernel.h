@@ -56,7 +56,7 @@ public:
    void forwardChimera(real& mfa, real& mfb, real& mfc, real vv, real v2);
    void backwardChimera(real& mfa, real& mfb, real& mfc, real vv, real v2);
 
-   double getCalculationTime() override { return .0; }
+   real getCalculationTime() override { return .0; }
 protected:
    virtual void initDataSet();
    void swapDistributions() override;

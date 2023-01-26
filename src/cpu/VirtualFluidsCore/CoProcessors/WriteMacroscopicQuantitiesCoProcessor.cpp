@@ -72,7 +72,7 @@ void WriteMacroscopicQuantitiesCoProcessor::init()
 {}
 
 //////////////////////////////////////////////////////////////////////////
-void WriteMacroscopicQuantitiesCoProcessor::process(double step)
+void WriteMacroscopicQuantitiesCoProcessor::process(real step)
 {
     if (scheduler->isDue(step))
         collectData(step);
@@ -81,7 +81,7 @@ void WriteMacroscopicQuantitiesCoProcessor::process(double step)
 }
 
 //////////////////////////////////////////////////////////////////////////
-void WriteMacroscopicQuantitiesCoProcessor::collectData(double step)
+void WriteMacroscopicQuantitiesCoProcessor::collectData(real step)
 {
     int istep = static_cast<int>(step);
 
@@ -143,7 +143,7 @@ void WriteMacroscopicQuantitiesCoProcessor::clearData()
 //////////////////////////////////////////////////////////////////////////
 void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 {
-    double level   = (double)block->getLevel();
+    real level   = (real)block->getLevel();
 
     // Diese Daten werden geschrieben:
     datanames.resize(0);
@@ -206,8 +206,8 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
                     int index                  = 0;
                     nodeNumbers(ix1, ix2, ix3) = nr++;
                     Vector3D worldCoordinates  = grid->getNodeCoordinates(block, ix1, ix2, ix3);
-                    nodes.push_back(UbTupleFloat3(float(worldCoordinates[0]), float(worldCoordinates[1]),
-                                                  float(worldCoordinates[2])));
+                    nodes.push_back(UbTupleFloat3(real(worldCoordinates[0]), real(worldCoordinates[1]),
+                                                  real(worldCoordinates[2])));
 
                     distributions->getDistribution(f, ix1, ix2, ix3);
                     calcMacros(f, rho, vx1, vx2, vx3);

@@ -26,13 +26,13 @@ DecreaseViscosityCoProcessor::DecreaseViscosityCoProcessor(SPtr<Grid3D> grid, SP
 //////////////////////////////////////////////////////////////////////////
 DecreaseViscosityCoProcessor::~DecreaseViscosityCoProcessor() = default;
 //////////////////////////////////////////////////////////////////////////
-void DecreaseViscosityCoProcessor::process(double step)
+void DecreaseViscosityCoProcessor::process(real step)
 {
     if (scheduler->isDue(step))
         setViscosity(step);
 }
 //////////////////////////////////////////////////////////////////////////
-void DecreaseViscosityCoProcessor::setViscosity(double step)
+void DecreaseViscosityCoProcessor::setViscosity(real step)
 {
 
     UBLOG(logDEBUG3, "DecreaseViscosityCoProcessor::update:" << step);
@@ -53,7 +53,7 @@ void DecreaseViscosityCoProcessor::setViscosity(double step)
         int istep      = static_cast<int>(step);
         this->timeStep = istep;
         nueFunc->DefineVar("t", &this->timeStep);
-        double nue = nueFunc->Eval();
+        real nue = nueFunc->Eval();
 
         for (int level = minInitLevel; level <= maxInitLevel; level++) {
             std::vector<SPtr<Block3D>> blockVector;

@@ -46,7 +46,7 @@ void InitDensityLBMKernel::setVelocity(int x1, int x2, int x3, real vvx, real vv
    v(2, x1, x2, x3) = vvz;
 }
 
-double InitDensityLBMKernel::getCalculationTime()
+real InitDensityLBMKernel::getCalculationTime()
 {
    return 0;
 }

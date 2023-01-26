@@ -22,18 +22,18 @@ public:
 	virtual ~ThixotropyExpLBMKernel(void);
 	virtual void calculate(int step);
 	virtual SPtr<LBMKernel> clone();
-	double getCalculationTime();
+	real getCalculationTime();
  
-	void setCollisionFactorF(double collFactor);
-   void setCollisionFactorH(double collFactor);
-   double getCollisionFactorF() const;
-   double getCollisionFactorH() const;
+	void setCollisionFactorF(real collFactor);
+   void setCollisionFactorH(real collFactor);
+   real getCollisionFactorF() const;
+   real getCollisionFactorH() const;
 
-	void setAlpha(double alpha);
-	double getAlpha() const;
+	void setAlpha(real alpha);
+	real getAlpha() const;
 
-	void setTheta(double theta);
-	double getTheta() const;
+	void setTheta(real theta);
+	real getTheta() const;
 
 	void swapDistributions();
 

@@ -240,9 +240,9 @@ void ThixotropyExpLBMKernel::calculate(int step)
 						///////////////////////////////////////////////////////////////////////////////////////////
 						if (withForcing)
 						{
-							muX1 = static_cast<double>(x1 - 1 + ix1*maxX1);
-							muX2 = static_cast<double>(x2 - 1 + ix2*maxX2);
-							muX3 = static_cast<double>(x3 - 1 + ix3*maxX3);
+							muX1 = static_cast<real>(x1 - 1 + ix1*maxX1);
+							muX2 = static_cast<real>(x2 - 1 + ix2*maxX2);
+							muX3 = static_cast<real>(x3 - 1 + ix3*maxX3);
 
 							forcingX1 = muForcingX1.Eval();
 							forcingX2 = muForcingX2.Eval();
@@ -1821,46 +1821,46 @@ void ThixotropyExpLBMKernel::calculate(int step)
 	}
 }
 //////////////////////////////////////////////////////////////////////////
-double ThixotropyExpLBMKernel::getCalculationTime()
+real ThixotropyExpLBMKernel::getCalculationTime()
 {
 	//return timer.getDuration();
 	return timer.getTotalTime();
 }
 //////////////////////////////////////////////////////////////////////////
-void ThixotropyExpLBMKernel::setCollisionFactorF(double collFactor)
+void ThixotropyExpLBMKernel::setCollisionFactorF(real collFactor)
 {
 	setCollisionFactor(collFactor);
 	this->collFactorF = collFactor;
 
 }
 //////////////////////////////////////////////////////////////////////////
-void ThixotropyExpLBMKernel::setCollisionFactorH(double collFactor)
+void ThixotropyExpLBMKernel::setCollisionFactorH(real collFactor)
 {
 	this->collFactorH = collFactor;
 }
 //////////////////////////////////////////////////////////////////////////
-double ThixotropyExpLBMKernel::getCollisionFactorF() const
+real ThixotropyExpLBMKernel::getCollisionFactorF() const
 {
 	return this->collFactorF;
 }
 //////////////////////////////////////////////////////////////////////////
-double ThixotropyExpLBMKernel::getCollisionFactorH() const
+real ThixotropyExpLBMKernel::getCollisionFactorH() const
 {
 	return this->collFactorH;
 }
-void ThixotropyExpLBMKernel::setAlpha(double alpha)
+void ThixotropyExpLBMKernel::setAlpha(real alpha)
 {
 	this->alpha = alpha;
 }
-double ThixotropyExpLBMKernel::getAlpha() const
+real ThixotropyExpLBMKernel::getAlpha() const
 {
 	return this->alpha;
 }
-void ThixotropyExpLBMKernel::setTheta(double theta)
+void ThixotropyExpLBMKernel::setTheta(real theta)
 {
 	this->theta = theta;
 }
-double ThixotropyExpLBMKernel::getTheta() const
+real ThixotropyExpLBMKernel::getTheta() const
 {
 	return this->theta;
 }

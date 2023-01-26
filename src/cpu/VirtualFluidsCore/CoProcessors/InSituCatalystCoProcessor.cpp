@@ -42,7 +42,7 @@ InSituCatalystCoProcessor::InSituCatalystCoProcessor(SPtr<Grid3D> grid, SPtr<UbS
 //////////////////////////////////////////////////////////////////////////
 InSituCatalystCoProcessor::~InSituCatalystCoProcessor() {}
 //////////////////////////////////////////////////////////////////////////
-void InSituCatalystCoProcessor::process(double step)
+void InSituCatalystCoProcessor::process(real step)
 {
     if (scheduler->isDue(step))
         collectData(step);
@@ -50,7 +50,7 @@ void InSituCatalystCoProcessor::process(double step)
     UBLOG(logDEBUG3, "InSituCatalystCoProcessor::update:" << step);
 }
 //////////////////////////////////////////////////////////////////////////
-void InSituCatalystCoProcessor::collectData(double step)
+void InSituCatalystCoProcessor::collectData(real step)
 {
     unsigned int istep = static_cast<int>(step);
 
@@ -94,7 +94,7 @@ void InSituCatalystCoProcessor::addData(SPtr<Block3D> block)
     UbTupleDouble3 org          = grid->getBlockWorldCoordinates(block);
     UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
     UbTupleDouble3 nodeOffset   = grid->getNodeOffset(block);
-    double dx                   = grid->getDeltaX(block);
+    real dx                   = grid->getDeltaX(block);
 
     SPtr<LBMKernel> kernel                  = block->getKernel();
     SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
@@ -122,7 +122,7 @@ void InSituCatalystCoProcessor::addData(SPtr<Block3D> block)
                 if (!bcArray->isUndefined(ix1, ix2, ix3) && !bcArray->isSolid(ix1, ix2, ix3)) {
                     distributions->getDistribution(f, ix1, ix2, ix3);
                     calcMacros(f, rho, vx1, vx2, vx3);
-                    double press = D3Q27System::calcPress(f, rho, vx1, vx2, vx3);
+                    real press = D3Q27System::calcPress(f, rho, vx1, vx2, vx3);
 
                     if (UbMath::isNaN(rho) || UbMath::isInfinity(rho))
                         UB_THROW(UbException(
@@ -211,7 +211,7 @@ void InSituCatalystCoProcessor::addVTKGridData(SPtr<Block3D> block)
     UbTupleDouble3 org          = grid->getBlockWorldCoordinates(block);
     UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
     UbTupleDouble3 nodeOffset   = grid->getNodeOffset(block);
-    double dx                   = grid->getDeltaX(block);
+    real dx                   = grid->getDeltaX(block);
 
     SPtr<LBMKernel> kernel                  = block->getKernel();
     SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
@@ -251,15 +251,15 @@ void InSituCatalystCoProcessor::addVTKGridData(SPtr<Block3D> block)
     SPtr<BoundaryConditions> bcPtr;
     int nr = points->GetNumberOfPoints();
 
-    double x[3];
+    real x[3];
 
     for (size_t ix3 = minX3; ix3 <= maxX3; ix3++) {
         for (size_t ix2 = minX2; ix2 <= maxX2; ix2++) {
             for (size_t ix1 = minX1; ix1 <= maxX1; ix1++) {
                 if (!bcArray->isUndefined(ix1, ix2, ix3) && !bcArray->isSolid(ix1, ix2, ix3)) {
-                    x[0] = double(val<1>(org) - val<1>(nodeOffset) + ix1 * dx);
-                    x[1] = double(val<2>(org) - val<2>(nodeOffset) + ix2 * dx);
-                    x[2] = double(val<3>(org) - val<3>(nodeOffset) + ix3 * dx);
+                    x[0] = real(val<1>(org) - val<1>(nodeOffset) + ix1 * dx);
+                    x[1] = real(val<2>(org) - val<2>(nodeOffset) + ix2 * dx);
+                    x[2] = real(val<3>(org) - val<3>(nodeOffset) + ix3 * dx);
 
                     points->InsertPoint((vtkIdType)nr, x);
 
@@ -267,7 +267,7 @@ void InSituCatalystCoProcessor::addVTKGridData(SPtr<Block3D> block)
 
                     distributions->getDistribution(f, ix1, ix2, ix3);
                     calcMacros(f, rho, vx1, vx2, vx3);
-                    double press = D3Q27System::calcPress(f, rho, vx1, vx2, vx3);
+                    real press = D3Q27System::calcPress(f, rho, vx1, vx2, vx3);
 
                     if (UbMath::isNaN(rho) || UbMath::isInfinity(rho))
                         UB_THROW(UbException(

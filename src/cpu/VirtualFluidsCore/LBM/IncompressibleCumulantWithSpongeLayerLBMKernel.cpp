@@ -23,7 +23,7 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::initDataSet()
    dataSet->setFdistributions(d);
 }
 //////////////////////////////////////////////////////////////////////////
-void IncompressibleCumulantWithSpongeLayerLBMKernel::setRelaxFactorParam(int vdir, double vL1, double vdx, double vSP)
+void IncompressibleCumulantWithSpongeLayerLBMKernel::setRelaxFactorParam(int vdir, real vL1, real vdx, real vSP)
 {
    direction = vdir;
    L1 = vL1;
@@ -31,7 +31,7 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::setRelaxFactorParam(int vdi
    SP = vSP;
 }
 //////////////////////////////////////////////////////////////////////////
-void IncompressibleCumulantWithSpongeLayerLBMKernel::initRelaxFactor(int vdir, double vL1, double vdx, double vSP)
+void IncompressibleCumulantWithSpongeLayerLBMKernel::initRelaxFactor(int vdir, real vL1, real vdx, real vSP)
 {
     using namespace vf::lbm::dir;
 
@@ -40,9 +40,9 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::initRelaxFactor(int vdir, d
    dx = vdx;
    SP = vSP;
 
-   double sizeX = L1 / dx;
-   double sizeSP = SP / dx;
-   double muX1, muX2, muX3;
+   real sizeX = L1 / dx;
+   real sizeSP = SP / dx;
+   real muX1, muX2, muX3;
 
    real spongeFactor;
 
@@ -71,37 +71,37 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::initRelaxFactor(int vdir, d
             switch (direction)
             {
             case DIR_P00:
-               muX1 = (double)(x1 + ix1 * maxX1);
+               muX1 = (real)(x1 + ix1 * maxX1);
                if (muX1 >= (sizeX - sizeSP) / deltaT)
                   spongeFactor = (sizeX - (muX1 * deltaT + 1)) / sizeSP / 2.0 + 0.5;
                else spongeFactor = 1.0;
                break;
             case DIR_M00:
-               muX1 = (double)(x1 + ix1 * maxX1);
+               muX1 = (real)(x1 + ix1 * maxX1);
                if (muX1 <= sizeSP / deltaT)
                   spongeFactor = (sizeSP - (muX1 * deltaT + 1)) / sizeSP / 2.0 + 0.5;
                else spongeFactor = 1.0;
                break;
             case DIR_0P0:
-               muX2 = (double)(x2 + ix2 * maxX2);
+               muX2 = (real)(x2 + ix2 * maxX2);
                if (muX2 >= (sizeX - sizeSP) / deltaT)
                   spongeFactor = (sizeX - (muX2 * deltaT + 1)) / sizeSP / 2.0 + 0.5;
                else spongeFactor = 1.0;
                break;
             case DIR_0M0:
-               muX2 = (double)(x2 + ix2 * maxX2);
+               muX2 = (real)(x2 + ix2 * maxX2);
                if (muX2 <= sizeSP / deltaT)
                   spongeFactor = (sizeSP - (muX2 * deltaT + 1)) / sizeSP / 2.0 + 0.5;
                else spongeFactor = 1.0;
                break;
             case DIR_00P:
-               muX3 = (double)(x3 + ix3 * maxX3);
+               muX3 = (real)(x3 + ix3 * maxX3);
                if (muX3 >= (sizeX - sizeSP) / deltaT)
                   spongeFactor = (sizeX - (muX3 * deltaT + 1)) / sizeSP / 2.0 + 0.5;
                else spongeFactor = 1.0;
                break;
             case DIR_00M:
-               muX3 = (double)(x3 + ix3 * maxX3);
+               muX3 = (real)(x3 + ix3 * maxX3);
                if (muX3 <= sizeSP / deltaT)
                   spongeFactor = (sizeSP - (muX3 * deltaT + 1)) / sizeSP / 2.0 + 0.5;
                else spongeFactor = 1.0;

@@ -321,10 +321,10 @@ void Block3D::deleteInterpolationFlag()
     interpolationFlagCF = 0;
 }
 //////////////////////////////////////////////////////////////////////////
-double Block3D::getWorkLoad()
+real Block3D::getWorkLoad()
 {
-    double l = kernel->getCalculationTime();
-    l *= static_cast<double>(1 << level);
+    real l = kernel->getCalculationTime();
+    l *= static_cast<real>(1 << level);
     return l;
 }
 //////////////////////////////////////////////////////////////////////////

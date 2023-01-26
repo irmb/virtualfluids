@@ -303,7 +303,7 @@ void InitThixotropyBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 //////////////////////////////////////////////////////////////////////////
 void InitThixotropyBlockVisitor::checkFunction(mu::Parser fct)
 {
-   double x1 = 1.0, x2 = 1.0, x3 = 1.0;
+   real x1 = 1.0, x2 = 1.0, x3 = 1.0;
    fct.DefineVar("x1", &x1);
    fct.DefineVar("x2", &x2);
    fct.DefineVar("x3", &x3);

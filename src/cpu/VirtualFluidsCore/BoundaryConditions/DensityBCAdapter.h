@@ -62,25 +62,25 @@ class DensityBCAdapter : public BCAdapter
 public:
     // constructors
     DensityBCAdapter() { this->init(); }
-    DensityBCAdapter(const double &dens, const double &startTime = 0.0, const double &endTime = BCFunction::INFCONST);
+    DensityBCAdapter(const real &dens, const real &startTime = 0.0, const real &endTime = BCFunction::INFCONST);
     DensityBCAdapter(const BCFunction &densBC);
     DensityBCAdapter(const std::vector<BCFunction> &densBCs);
-    DensityBCAdapter(const mu::Parser &function, const double &startTime = 0.0,
-                     const double &endTime = BCFunction::INFCONST);
+    DensityBCAdapter(const mu::Parser &function, const real &startTime = 0.0,
+                     const real &endTime = BCFunction::INFCONST);
 
     //------------- implements D3Q27BoundaryConditionAdapter ----- start
     std::string toString();
 
-    void init(const D3Q27Interactor *const &interactor, const double &time = 0) override;
-    void update(const D3Q27Interactor *const &interactor, const double &time = 0) override;
+    void init(const D3Q27Interactor *const &interactor, const real &time = 0) override;
+    void update(const D3Q27Interactor *const &interactor, const real &time = 0) override;
 
-    void adaptBCForDirection(const D3Q27Interactor &interactor, SPtr<BoundaryConditions> bc, const double &worldX1,
-                             const double &worldX2, const double &worldX3, const double &q, const int &fdirection,
-                             const double &time = 0) override;
-    void adaptBC(const D3Q27Interactor &interactor, SPtr<BoundaryConditions> bc, const double &worldX1,
-                 const double &worldX2, const double &worldX3, const double &time = 0) override;
+    void adaptBCForDirection(const D3Q27Interactor &interactor, SPtr<BoundaryConditions> bc, const real &worldX1,
+                             const real &worldX2, const real &worldX3, const real &q, const int &fdirection,
+                             const real &time = 0) override;
+    void adaptBC(const D3Q27Interactor &interactor, SPtr<BoundaryConditions> bc, const real &worldX1,
+                 const real &worldX2, const real &worldX3, const real &time = 0) override;
 
-    double getDensity(const double &x1, const double &x2, const double &x3, const double &timeStep);
+    real getDensity(const real &x1, const real &x2, const real &x3, const real &timeStep);
 
     //------------- implements D3Q27BoundaryConditionAdapter ----- end
 
@@ -92,8 +92,8 @@ protected:
     void unsetTimeDependent() { (this->type &= ~TIMEDEPENDENT); }
 
     void clear() { densBCs.clear(); }
-    void setNodeDensity(const D3Q27Interactor &interactor, SPtr<BoundaryConditions> bc, const double &worldX1,
-                        const double &worldX2, const double &worldX3, const double &timestep);
+    void setNodeDensity(const D3Q27Interactor &interactor, SPtr<BoundaryConditions> bc, const real &worldX1,
+                        const real &worldX2, const real &worldX3, const real &timestep);
 
 private:
     mu::value_type x1, x2, x3; // brauch man nicht serialisieren!

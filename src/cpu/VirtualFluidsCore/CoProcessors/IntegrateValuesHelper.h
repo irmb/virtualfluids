@@ -36,30 +36,30 @@ public:
     };
 
 public:
-    IntegrateValuesHelper(SPtr<Grid3D> grid, std::shared_ptr<vf::mpi::Communicator> comm, double minX1, double minX2, double minX3,
-                          double maxX1, double maxX2, double maxX3);
-    IntegrateValuesHelper(SPtr<Grid3D> grid, std::shared_ptr<vf::mpi::Communicator> comm, double minX1, double minX2, double minX3,
-                          double maxX1, double maxX2, double maxX3, int level);
+    IntegrateValuesHelper(SPtr<Grid3D> grid, std::shared_ptr<vf::mpi::Communicator> comm, real minX1, real minX2, real minX3,
+                          real maxX1, real maxX2, real maxX3);
+    IntegrateValuesHelper(SPtr<Grid3D> grid, std::shared_ptr<vf::mpi::Communicator> comm, real minX1, real minX2, real minX3,
+                          real maxX1, real maxX2, real maxX3, int level);
     virtual ~IntegrateValuesHelper();
 
     void calculateMQ();
     void calculateAV();
     void clearData();
 
-    double getRho() { return sRho; }
-    double getVx1() { return sVx1; }
-    double getVx2() { return sVx2; }
-    double getVx3() { return sVx3; }
-    double getCellsVolume() { return sCellVolume; }
+    real getRho() { return sRho; }
+    real getVx1() { return sVx1; }
+    real getVx2() { return sVx2; }
+    real getVx3() { return sVx3; }
+    real getCellsVolume() { return sCellVolume; }
     //  LBMReal getVm() { return sVm; }
     // LBMReal getPress() {return sPress;}
-    double getAvVx1() { return sAvVx1; }
-    double getAvVx2() { return sAvVx2; }
-    double getAvVx3() { return sAvVx3; }
-    double getTSx1() { return sTSx1; }
-    double getTSx2() { return sTSx2; }
-    double getTSx3() { return sTSx3; }
-    double getTSx1x3() { return sTSx1x3; }
+    real getAvVx1() { return sAvVx1; }
+    real getAvVx2() { return sAvVx2; }
+    real getAvVx3() { return sAvVx3; }
+    real getTSx1() { return sTSx1; }
+    real getTSx2() { return sTSx2; }
+    real getTSx3() { return sTSx3; }
+    real getTSx1x3() { return sTSx1x3; }
 
     real getNumberOfFluidsNodes();
     real getNumberOfSolidNodes();
@@ -72,9 +72,9 @@ private:
 
     bool root;
     SPtr<Grid3D> grid;
-    double sVx1, sVx2, sVx3, sRho, sCellVolume; // sPress, sVm;
-    double numberOfFluidsNodes, numberOfSolidNodes;
-    double sAvVx1, sAvVx2, sAvVx3, sTSx1, sTSx2, sTSx3, sTSx1x3;
+    real sVx1, sVx2, sVx3, sRho, sCellVolume; // sPress, sVm;
+    real numberOfFluidsNodes, numberOfSolidNodes;
+    real sAvVx1, sAvVx2, sAvVx3, sTSx1, sTSx2, sTSx3, sTSx1x3;
     std::vector<CalcNodes> cnodes;
     GbCuboid3DPtr boundingBox;
     std::shared_ptr<vf::mpi::Communicator> comm;

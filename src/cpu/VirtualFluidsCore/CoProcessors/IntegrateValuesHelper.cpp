@@ -10,8 +10,8 @@
 #include "LBMKernel.h"
 
 //////////////////////////////////////////////////////////////////////////
-IntegrateValuesHelper::IntegrateValuesHelper(SPtr<Grid3D> grid, std::shared_ptr<vf::mpi::Communicator> comm, double minX1, double minX2,
-                                             double minX3, double maxX1, double maxX2, double maxX3)
+IntegrateValuesHelper::IntegrateValuesHelper(SPtr<Grid3D> grid, std::shared_ptr<vf::mpi::Communicator> comm, real minX1, real minX2,
+                                             real minX3, real maxX1, real maxX2, real maxX3)
     :
 
       grid(grid), comm(comm), sVx1(0.0), sVx2(0.0), sVx3(0.0), sRho(0.0), sCellVolume(0.0), numberOfFluidsNodes(0),
@@ -21,8 +21,8 @@ IntegrateValuesHelper::IntegrateValuesHelper(SPtr<Grid3D> grid, std::shared_ptr<
     init(-1);
 }
 //////////////////////////////////////////////////////////////////////////
-IntegrateValuesHelper::IntegrateValuesHelper(SPtr<Grid3D> grid, std::shared_ptr<vf::mpi::Communicator> comm, double minX1, double minX2,
-                                             double minX3, double maxX1, double maxX2, double maxX3, int level)
+IntegrateValuesHelper::IntegrateValuesHelper(SPtr<Grid3D> grid, std::shared_ptr<vf::mpi::Communicator> comm, real minX1, real minX2,
+                                             real minX3, real maxX1, real maxX2, real maxX3, int level)
     :
 
       grid(grid), comm(comm), sVx1(0.0), sVx2(0.0), sVx3(0.0), sRho(0.0), sCellVolume(0.0), numberOfFluidsNodes(0),
@@ -38,7 +38,7 @@ void IntegrateValuesHelper::init(int level)
 {
     root = comm->isRoot();
 
-    double orgX1, orgX2, orgX3;
+    real orgX1, orgX2, orgX3;
     int gridRank = grid->getRank();
     int minInitLevel, maxInitLevel;
     if (level < 0) {
@@ -49,8 +49,8 @@ void IntegrateValuesHelper::init(int level)
         maxInitLevel = level;
     }
 
-    double numSolids = 0.0;
-    double numFluids = 0.0;
+    real numSolids = 0.0;
+    real numFluids = 0.0;
     for (int level_it = minInitLevel; level_it <= maxInitLevel; level_it++) {
         std::vector<SPtr<Block3D>> blockVector;
         grid->getBlocks(level_it, gridRank, blockVector);
@@ -68,9 +68,9 @@ void IntegrateValuesHelper::init(int level)
             SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
             int ghostLayerWitdh                     = kernel->getGhostLayerWidth();
             SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
-            double internX1, internX2, internX3;
+            real internX1, internX2, internX3;
 
-            double dx               = grid->getDeltaX(block);
+            real dx               = grid->getDeltaX(block);
             UbTupleDouble3 orgDelta = grid->getNodeOffset(block);
 
             for (int ix3 = ghostLayerWitdh; ix3 < (int)distributions->getNX3() - ghostLayerWitdh; ix3++) {
@@ -94,8 +94,8 @@ void IntegrateValuesHelper::init(int level)
                 cnodes.push_back(cn);
         }
     }
-    std::vector<double> rvalues;
-    std::vector<double> values;
+    std::vector<real> rvalues;
+    std::vector<real> values;
     values.push_back(numSolids);
     values.push_back(numFluids);
     rvalues = comm->gather(values);
@@ -122,15 +122,15 @@ void IntegrateValuesHelper::calculateAV()
         SPtr<AverageValuesArray3D> averagedValues = kernel->getDataSet()->getAverageValues();
 
         for (UbTupleInt3 node : cn.nodes) {
-            double Avx = (*averagedValues)(val<1>(node), val<2>(node), val<3>(node), AvVx);
-            double Avy = (*averagedValues)(val<1>(node), val<2>(node), val<3>(node), AvVy);
-            double Avz = (*averagedValues)(val<1>(node), val<2>(node), val<3>(node), AvVz);
+            real Avx = (*averagedValues)(val<1>(node), val<2>(node), val<3>(node), AvVx);
+            real Avy = (*averagedValues)(val<1>(node), val<2>(node), val<3>(node), AvVy);
+            real Avz = (*averagedValues)(val<1>(node), val<2>(node), val<3>(node), AvVz);
 
-            double Avxx = (*averagedValues)(val<1>(node), val<2>(node), val<3>(node), AvVxx);
-            double Avyy = (*averagedValues)(val<1>(node), val<2>(node), val<3>(node), AvVyy);
-            double Avzz = (*averagedValues)(val<1>(node), val<2>(node), val<3>(node), AvVzz);
+            real Avxx = (*averagedValues)(val<1>(node), val<2>(node), val<3>(node), AvVxx);
+            real Avyy = (*averagedValues)(val<1>(node), val<2>(node), val<3>(node), AvVyy);
+            real Avzz = (*averagedValues)(val<1>(node), val<2>(node), val<3>(node), AvVzz);
 
-            double Avxz = (*averagedValues)(val<1>(node), val<2>(node), val<3>(node), AvVxz);
+            real Avxz = (*averagedValues)(val<1>(node), val<2>(node), val<3>(node), AvVxz);
             sAvVx1 += std::abs(Avx);
             sAvVx2 += std::abs(Avy);
             sAvVx3 += std::abs(Avz);
@@ -143,8 +143,8 @@ void IntegrateValuesHelper::calculateAV()
             numberOfFluidsNodes++;
         }
     }
-    std::vector<double> values;
-    std::vector<double> rvalues;
+    std::vector<real> values;
+    std::vector<real> rvalues;
     values.push_back(sAvVx1);
     values.push_back(sAvVx2);
     values.push_back(sAvVx3);
@@ -205,8 +205,8 @@ void IntegrateValuesHelper::calculateMQ()
             sCellVolume += cellVolume;
         }
     }
-    std::vector<double> values(5);
-    std::vector<double> rvalues;
+    std::vector<real> values(5);
+    std::vector<real> rvalues;
     values[0] = sRho;
     values[1] = sVx1;
     values[2] = sVx2;

@@ -57,13 +57,13 @@ public:
     virtual SPtr<LBMKernel> clone() = 0;
 
     void calculate(int step) override    = 0;
-    double getCalculationTime() override = 0;
+    real getCalculationTime() override = 0;
 
     void setBCProcessor(SPtr<BCProcessor> bcp) override;
     SPtr<BCProcessor> getBCProcessor() const override;
 
-    void setCollisionFactor(double collFactor) override;
-    double getCollisionFactor() const override;
+    void setCollisionFactor(real collFactor) override;
+    real getCollisionFactor() const override;
 
     void setGhostLayerWidth(int witdh);
     int getGhostLayerWidth() const override;
@@ -112,23 +112,23 @@ public:
 
     ///////// Extra methods for the multiphase kernel ////////////
 
-    void setCollisionFactorMultiphase(double collFactorL, double collFactorG);
-    double getCollisionFactorL() const;
-    double getCollisionFactorG() const;
-    void setDensityRatio(double densityRatio);
-    double getDensityRatio() const;
+    void setCollisionFactorMultiphase(real collFactorL, real collFactorG);
+    real getCollisionFactorL() const;
+    real getCollisionFactorG() const;
+    void setDensityRatio(real densityRatio);
+    real getDensityRatio() const;
     void setMultiphaseModelParameters(real beta, real kappa);
     void getMultiphaseModelParameters(real &beta, real &kappa);
-    void setContactAngle(double contactAngle);
-    double getContactAngle() const;
-    void setPhiL(double phiL);
-    void setPhiH(double phiH);
-    double getPhiL() const;
-    double getPhiH() const;
-    void setPhaseFieldRelaxation(double tauH);
-    double getPhaseFieldRelaxation() const;
-    void setMobility(double mob);
-    void setInterfaceWidth(double w);
+    void setContactAngle(real contactAngle);
+    real getContactAngle() const;
+    void setPhiL(real phiL);
+    void setPhiH(real phiH);
+    real getPhiL() const;
+    real getPhiH() const;
+    void setPhaseFieldRelaxation(real tauH);
+    real getPhaseFieldRelaxation() const;
+    void setMobility(real mob);
+    void setInterfaceWidth(real w);
 
 protected:
     SPtr<DataSet3D> dataSet;

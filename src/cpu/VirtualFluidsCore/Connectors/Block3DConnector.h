@@ -75,7 +75,7 @@ public:
     // grid refinement
     virtual int getSendDir() const { return sendDir; }
 
-    // virtual double getSendRecieveTime() = 0;
+    // virtual real getSendRecieveTime() = 0;
 
     virtual void prepareForSendX1() = 0;
     virtual void prepareForSendX2() = 0;

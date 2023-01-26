@@ -69,7 +69,7 @@ MPIIOMigrationCoProcessor::~MPIIOMigrationCoProcessor()
 }
 
 //////////////////////////////////////////////////////////////////////////
-void MPIIOMigrationCoProcessor::process(double step)
+void MPIIOMigrationCoProcessor::process(real step)
 {
     if (scheduler->isDue(step)) 
     {
@@ -133,9 +133,9 @@ void MPIIOMigrationCoProcessor::writeDataSet(int step)
 
     dataSetParam dataSetParamStr1, dataSetParamStr2, dataSetParamStr3;
     DataSetMigration *dataSetArray = new DataSetMigration[blocksCount];
-    std::vector<double> doubleValuesArrayF; // double-values (arrays of f's) in all blocks  Fdistribution
-    std::vector<double> doubleValuesArrayH1; // double-values (arrays of f's) in all blocks  H1distribution
-    std::vector<double> doubleValuesArrayH2; // double-values (arrays of f's) in all blocks  H2distribution
+    std::vector<real> doubleValuesArrayF; // real-values (arrays of f's) in all blocks  Fdistribution
+    std::vector<real> doubleValuesArrayH1; // real-values (arrays of f's) in all blocks  H1distribution
+    std::vector<real> doubleValuesArrayH2; // real-values (arrays of f's) in all blocks  H2distribution
 
     if (comm->isRoot()) 
     {
@@ -328,8 +328,8 @@ void MPIIOMigrationCoProcessor::writeDataSet(int step)
         UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
-    double start {0.};
-    double finish {0.};
+    real start {0.};
+    real finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -352,7 +352,7 @@ void MPIIOMigrationCoProcessor::writeDataSet(int step)
     MPI_File_write_at(file_handler, (MPI_Offset)(2 * sizeof(dataSetParam)), &dataSetParamStr3, 1, dataSetParamType, MPI_STATUS_IGNORE);
     
     MPI_Offset write_offset;
-    size_t sizeofOneDataSet = sizeof(DataSetMigration) + doubleCountInBlock * sizeof(double);
+    size_t sizeofOneDataSet = sizeof(DataSetMigration) + doubleCountInBlock * sizeof(real);
 
     for (int nb = 0; nb < blocksCount; nb++) 
     {
@@ -372,7 +372,7 @@ void MPIIOMigrationCoProcessor::writeDataSet(int step)
         if (rc != MPI_SUCCESS)
             throw UbException(UB_EXARGS, "couldn't open file " + filename);
 
-        sizeofOneDataSet = doubleCountInBlock * sizeof(double);
+        sizeofOneDataSet = doubleCountInBlock * sizeof(real);
 
         for (int nb = 0; nb < blocksCount; nb++) 
         {
@@ -392,7 +392,7 @@ void MPIIOMigrationCoProcessor::writeDataSet(int step)
         if (rc != MPI_SUCCESS)
             throw UbException(UB_EXARGS, "couldn't open file " + filename);
 
-        sizeofOneDataSet = doubleCountInBlock * sizeof(double);
+        sizeofOneDataSet = doubleCountInBlock * sizeof(real);
 
         for (int nb = 0; nb < blocksCount; nb++) 
         {
@@ -471,7 +471,7 @@ void MPIIOMigrationCoProcessor::write4DArray(int step, Arrays arrayType, std::st
     }
 
     DataSetSmallMigration *dataSetSmallArray = new DataSetSmallMigration[blocksCount];
-    std::vector<double> doubleValuesArray; // double-values of the AverageDensityArray in all blocks
+    std::vector<real> doubleValuesArray; // real-values of the AverageDensityArray in all blocks
     dataSetParam dataSetParamStr;
 
     if (comm->isRoot()) 
@@ -543,8 +543,8 @@ void MPIIOMigrationCoProcessor::write4DArray(int step, Arrays arrayType, std::st
     }
 
     
-    double start {0.};
-    double finish {0.};
+    real start {0.};
+    real finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -560,7 +560,7 @@ void MPIIOMigrationCoProcessor::write4DArray(int step, Arrays arrayType, std::st
     MPI_File_write_at(file_handler, 0, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
 
     MPI_Offset write_offset;
-    size_t sizeofOneDataSet = sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(double);
+    size_t sizeofOneDataSet = sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(real);
 
     for (int nb = 0; nb < blocksCount; nb++) 
     {
@@ -601,7 +601,7 @@ void MPIIOMigrationCoProcessor::write3DArray(int step, Arrays arrayType, std::st
     }
 
     DataSetSmallMigration *dataSetSmallArray = new DataSetSmallMigration[blocksCount];
-    std::vector<double> doubleValuesArray; // double-values (arrays of f's) in all blocks
+    std::vector<real> doubleValuesArray; // real-values (arrays of f's) in all blocks
     dataSetParam dataSetParamStr;
 
     if (comm->isRoot()) 
@@ -670,8 +670,8 @@ void MPIIOMigrationCoProcessor::write3DArray(int step, Arrays arrayType, std::st
     }
 
     
-    double start {0.};
-    double finish {0.};
+    real start {0.};
+    real finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -692,7 +692,7 @@ void MPIIOMigrationCoProcessor::write3DArray(int step, Arrays arrayType, std::st
     // each process writes common parameters of a dataSet
     MPI_File_write_at(file_handler, 0, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
 
-    size_t sizeofOneDataSet = sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(double);
+    size_t sizeofOneDataSet = sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(real);
 
     MPI_Offset write_offset;
     for (int nb = 0; nb < blocksCount; nb++) 
@@ -778,16 +778,16 @@ void MPIIOMigrationCoProcessor::writeBoundaryConds(int step)
                     bouCond->velocityBoundaryFlags  = bcArr->bcvector[bc]->getVelocityBoundary();
                     bouCond->densityBoundaryFlags   = bcArr->bcvector[bc]->getDensityBoundary();
                     bouCond->wallModelBoundaryFlags = bcArr->bcvector[bc]->getWallModelBoundary();
-                    bouCond->bcVelocityX1           = (float)bcArr->bcvector[bc]->getBoundaryVelocityX1();
-                    bouCond->bcVelocityX2           = (float)bcArr->bcvector[bc]->getBoundaryVelocityX2();
-                    bouCond->bcVelocityX3           = (float)bcArr->bcvector[bc]->getBoundaryVelocityX3();
-                    bouCond->bcDensity              = (float)bcArr->bcvector[bc]->getBoundaryDensity();
-                    bouCond->bcPhaseField           = (float)bcArr->bcvector[bc]->getBoundaryPhaseField();
-                    bouCond->nx1                    = (float)bcArr->bcvector[bc]->nx1;
-                    bouCond->nx2                    = (float)bcArr->bcvector[bc]->nx2;
-                    bouCond->nx3                    = (float)bcArr->bcvector[bc]->nx3;
+                    bouCond->bcVelocityX1           = (real)bcArr->bcvector[bc]->getBoundaryVelocityX1();
+                    bouCond->bcVelocityX2           = (real)bcArr->bcvector[bc]->getBoundaryVelocityX2();
+                    bouCond->bcVelocityX3           = (real)bcArr->bcvector[bc]->getBoundaryVelocityX3();
+                    bouCond->bcDensity              = (real)bcArr->bcvector[bc]->getBoundaryDensity();
+                    bouCond->bcPhaseField           = (real)bcArr->bcvector[bc]->getBoundaryPhaseField();
+                    bouCond->nx1                    = (real)bcArr->bcvector[bc]->nx1;
+                    bouCond->nx2                    = (real)bcArr->bcvector[bc]->nx2;
+                    bouCond->nx3                    = (real)bcArr->bcvector[bc]->nx3;
                     for (int iq = 0; iq < 26; iq++)
-                        bouCond->q[iq] = (float)bcArr->bcvector[bc]->getQ(iq);
+                        bouCond->q[iq] = (real)bcArr->bcvector[bc]->getQ(iq);
                     bouCond->algorithmType = bcArr->bcvector[bc]->getBcAlgorithmType();
                 }
 
@@ -829,8 +829,8 @@ void MPIIOMigrationCoProcessor::writeBoundaryConds(int step)
     }
 
     
-    double start {0.};
-    double finish {0.};
+    real start {0.};
+    real finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -942,8 +942,8 @@ void MPIIOMigrationCoProcessor::readDataSet(int step)
         UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
     
-    double start {0.};
-    double finish {0.};
+    real start {0.};
+    real finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -977,9 +977,9 @@ void MPIIOMigrationCoProcessor::readDataSet(int step)
     size_t doubleCountInBlock = dataSetParamStr1.nx[0] * dataSetParamStr1.nx[1] * dataSetParamStr1.nx[2] * dataSetParamStr1.nx[3] +
         dataSetParamStr2.nx[0] * dataSetParamStr2.nx[1] * dataSetParamStr2.nx[2] * dataSetParamStr2.nx[3] +
         dataSetParamStr3.nx[0] * dataSetParamStr3.nx[1] * dataSetParamStr3.nx[2] * dataSetParamStr3.nx[3];
-    std::vector<double> doubleValuesArrayF(size_t(blocksCount * doubleCountInBlock)); // double-values in all blocks  Fdistributions
-    std::vector<double> doubleValuesArrayH1; // double-values in all blocks  H1distributions
-    std::vector<double> doubleValuesArrayH2; // double-values in all blocks  H2distributions
+    std::vector<real> doubleValuesArrayF(size_t(blocksCount * doubleCountInBlock)); // real-values in all blocks  Fdistributions
+    std::vector<real> doubleValuesArrayH1; // real-values in all blocks  H1distributions
+    std::vector<real> doubleValuesArrayH2; // real-values in all blocks  H2distributions
 
     // define MPI_types depending on the block-specific information
     MPI_Type_contiguous(int(doubleCountInBlock), MPI_DOUBLE, &dataSetDoubleType);
@@ -987,7 +987,7 @@ void MPIIOMigrationCoProcessor::readDataSet(int step)
 
     size_t ic = 0;
     MPI_Offset read_offset;
-    size_t sizeofOneDataSet = size_t(sizeof(DataSetMigration) + doubleCountInBlock * sizeof(double));
+    size_t sizeofOneDataSet = size_t(sizeof(DataSetMigration) + doubleCountInBlock * sizeof(real));
 
     for (int level = minInitLevel; level <= maxInitLevel; level++) 
     {
@@ -1016,7 +1016,7 @@ void MPIIOMigrationCoProcessor::readDataSet(int step)
         multiPhase1 = true;
         doubleValuesArrayH1.resize(blocksCount * doubleCountInBlock);
 
-        sizeofOneDataSet = size_t(doubleCountInBlock * sizeof(double));
+        sizeofOneDataSet = size_t(doubleCountInBlock * sizeof(real));
 
         for (int level = minInitLevel; level <= maxInitLevel; level++)
         {
@@ -1043,7 +1043,7 @@ void MPIIOMigrationCoProcessor::readDataSet(int step)
         multiPhase2 = true;
         doubleValuesArrayH2.resize(blocksCount * doubleCountInBlock);
 
-        sizeofOneDataSet = size_t(doubleCountInBlock * sizeof(double));
+        sizeofOneDataSet = size_t(doubleCountInBlock * sizeof(real));
 
         for (int level = minInitLevel; level <= maxInitLevel; level++)
         {
@@ -1069,9 +1069,9 @@ void MPIIOMigrationCoProcessor::readDataSet(int step)
     }
 
     size_t index = 0;
-    std::vector<double> vectorsOfValuesF1, vectorsOfValuesF2, vectorsOfValuesF3;
-    std::vector<double> vectorsOfValuesH11, vectorsOfValuesH12, vectorsOfValuesH13;
-    std::vector<double> vectorsOfValuesH21, vectorsOfValuesH22, vectorsOfValuesH23;
+    std::vector<real> vectorsOfValuesF1, vectorsOfValuesF2, vectorsOfValuesF3;
+    std::vector<real> vectorsOfValuesH11, vectorsOfValuesH12, vectorsOfValuesH13;
+    std::vector<real> vectorsOfValuesH21, vectorsOfValuesH22, vectorsOfValuesH23;
 
     size_t vectorSize1 = dataSetParamStr1.nx[0] * dataSetParamStr1.nx[1] * dataSetParamStr1.nx[2] * dataSetParamStr1.nx[3];
     size_t vectorSize2 = dataSetParamStr2.nx[0] * dataSetParamStr2.nx[1] * dataSetParamStr2.nx[2] * dataSetParamStr2.nx[3];
@@ -1228,8 +1228,8 @@ void MPIIOMigrationCoProcessor::readArray(int step, Arrays arrType, std::string 
         UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
     
-    double start {0.};
-    double finish {0.};
+    real start {0.};
+    real finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -1257,7 +1257,7 @@ void MPIIOMigrationCoProcessor::readArray(int step, Arrays arrType, std::string 
 
     DataSetSmallMigration *dataSetSmallArray = new DataSetSmallMigration[blocksCount];
     size_t doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-    std::vector<double> doubleValuesArray(blocksCount * doubleCountInBlock); // double-values in all blocks
+    std::vector<real> doubleValuesArray(blocksCount * doubleCountInBlock); // real-values in all blocks
 
     // define MPI_types depending on the block-specific information
     MPI_Type_contiguous(int(doubleCountInBlock), MPI_DOUBLE, &dataSetDoubleType);
@@ -1265,7 +1265,7 @@ void MPIIOMigrationCoProcessor::readArray(int step, Arrays arrType, std::string 
 
     size_t ic = 0;
     MPI_Offset read_offset;
-    size_t sizeofOneDataSet = size_t(sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(double));
+    size_t sizeofOneDataSet = size_t(sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(real));
 
     for (int level = minInitLevel; level <= maxInitLevel; level++) 
     {
@@ -1293,7 +1293,7 @@ void MPIIOMigrationCoProcessor::readArray(int step, Arrays arrType, std::string 
     //----------------------------- restore data ---------------------------------
     size_t index = 0;
     size_t nextVectorSize = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-    std::vector<double> vectorsOfValues;
+    std::vector<real> vectorsOfValues;
     SPtr<CbArray4D<real, IndexerX4X3X2X1>> ___4DArray;
     SPtr<CbArray3D<real, IndexerX3X2X1>> ___3DArray;
 
@@ -1380,8 +1380,8 @@ void MPIIOMigrationCoProcessor::readBoundaryConds(int step)
     }
 
     
-    double start {0.};
-    double finish {0.};
+    real start {0.};
+    real finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 

@@ -57,7 +57,7 @@ public:
     //CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr pressure;
 
 
-    double getCalculationTime() override { return .0; }
+    real getCalculationTime() override { return .0; }
 protected:
     virtual void initDataSet();
     void swapDistributions() override;

@@ -294,7 +294,7 @@ void LBMKernelETD3Q27BGK::calculate(int  /*step*/)
    }
 }
 //////////////////////////////////////////////////////////////////////////
-double LBMKernelETD3Q27BGK::getCalculationTime()
+real LBMKernelETD3Q27BGK::getCalculationTime()
 {
    return 0.0;
 }

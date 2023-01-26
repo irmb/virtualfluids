@@ -92,11 +92,11 @@ public:
    
    MultiphaseVelocityBCAdapter(const bool& vx1, const bool& vx2, const bool& vx3, const BCFunction& velVxBC );
 
-   MultiphaseVelocityBCAdapter(const bool& vx1, const bool& vx2, const bool& vx3, const mu::Parser& function, const real& phiBC, const double& startTime, const double& endTime  );
+   MultiphaseVelocityBCAdapter(const bool& vx1, const bool& vx2, const bool& vx3, const mu::Parser& function, const real& phiBC, const real& startTime, const real& endTime  );
 
-   MultiphaseVelocityBCAdapter(const bool& vx1, const bool& vx2, const bool& vx3, const mu::Parser& function1, const mu::Parser& function2, const mu::Parser& function3, const real& phiBC, const double& startTime, const double& endTime );
+   MultiphaseVelocityBCAdapter(const bool& vx1, const bool& vx2, const bool& vx3, const mu::Parser& function1, const mu::Parser& function2, const mu::Parser& function3, const real& phiBC, const real& startTime, const real& endTime );
    
-   MultiphaseVelocityBCAdapter(const bool& vx1, const bool& vx2, const bool& vx3, const std::string& functionstring, const double& startTime, const double& endTime );
+   MultiphaseVelocityBCAdapter(const bool& vx1, const bool& vx2, const bool& vx3, const std::string& functionstring, const real& startTime, const real& endTime );
 
    MultiphaseVelocityBCAdapter(const BCFunction& velBC, bool x1Dir, bool x2Dir, bool x3Dir);
 
@@ -104,13 +104,13 @@ public:
 
    MultiphaseVelocityBCAdapter(const std::vector< BCFunction >& velVx1BCs, const std::vector< BCFunction >& velVx2BCs, const std::vector< BCFunction >& velVx3BCs);
 
-   MultiphaseVelocityBCAdapter(const double& vx1, const double& vx1StartTime, const double& vx1EndTime,
-                          const double& vx2, const double& vx2StartTime, const double& vx2EndTime,
-                          const double& vx3, const double& vx3StartTime, const double& vx3EndTime);
+   MultiphaseVelocityBCAdapter(const real& vx1, const real& vx1StartTime, const real& vx1EndTime,
+                          const real& vx2, const real& vx2StartTime, const real& vx2EndTime,
+                          const real& vx3, const real& vx3StartTime, const real& vx3EndTime);
 
-   MultiphaseVelocityBCAdapter(const std::string& vx1Function, const double& vx1StartTime, const double& vx1EndTime,
-                          const std::string& vx2Function, const double& vx2StartTime, const double& vx2EndTime,
-                          const std::string& vx3Function, const double& vx3StartTime, const double& vx3EndTime ); 
+   MultiphaseVelocityBCAdapter(const std::string& vx1Function, const real& vx1StartTime, const real& vx1EndTime,
+                          const std::string& vx2Function, const real& vx2StartTime, const real& vx2EndTime,
+                          const std::string& vx3Function, const real& vx3StartTime, const real& vx3EndTime ); 
 
    //methods
    void setTimePeriodic()    { (this->type |=   TIMEPERIODIC); }
@@ -118,26 +118,26 @@ public:
    bool isTimePeriodic()     { return ((this->type & TIMEPERIODIC) ==  TIMEPERIODIC); }
 
    //folgendes ist fuer moving objects gedadacht... 
-   void setNewVelocities(const double& vx1, const double& vx1StartTime, const double& vx1EndTime,
-                         const double& vx2, const double& vx2StartTime, const double& vx2EndTime,
-                         const double& vx3, const double& vx3StartTime, const double& vx3EndTime);
+   void setNewVelocities(const real& vx1, const real& vx1StartTime, const real& vx1EndTime,
+                         const real& vx2, const real& vx2StartTime, const real& vx2EndTime,
+                         const real& vx3, const real& vx3StartTime, const real& vx3EndTime);
 
       
    //------------- implements D3Q27BoundaryConditionAdapter ----- start
    std::string toString();
    
-   void init(const D3Q27Interactor* const& interactor, const double& time=0);
-   void update(const D3Q27Interactor* const& interactor, const double& time=0);
+   void init(const D3Q27Interactor* const& interactor, const real& time=0);
+   void update(const D3Q27Interactor* const& interactor, const real& time=0);
 
-   void adaptBCForDirection(const D3Q27Interactor &interactor, SPtr<BoundaryConditions> bc, const double &worldX1,
-                            const double &worldX2, const double &worldX3, const double &q, const int &fdirection,
-                            const double &time = 0);
-   void adaptBC(const D3Q27Interactor &interactor, SPtr<BoundaryConditions> bc, const double &worldX1,
-                const double &worldX2, const double &worldX3, const double &time = 0);
+   void adaptBCForDirection(const D3Q27Interactor &interactor, SPtr<BoundaryConditions> bc, const real &worldX1,
+                            const real &worldX2, const real &worldX3, const real &q, const int &fdirection,
+                            const real &time = 0);
+   void adaptBC(const D3Q27Interactor &interactor, SPtr<BoundaryConditions> bc, const real &worldX1,
+                const real &worldX2, const real &worldX3, const real &time = 0);
 
    //------------- implements D3Q27BoundaryConditionAdapter ----- end
 
-   UbTupleDouble3 getVelocity(const double& x1, const double& x2, const double& x3, const double& timeStep) const;
+   UbTupleDouble3 getVelocity(const real& x1, const real& x2, const real& x3, const real& timeStep) const;
 
 
 protected:
@@ -149,7 +149,7 @@ protected:
    void unsetTimeDependent() { (this->type &=  ~TIMEDEPENDENT); }
 
    void clear() { vx1BCs.clear(); vx2BCs.clear();  vx3BCs.clear(); this->init(); }
-   void setNodeVelocity(const D3Q27Interactor& interactor, SPtr<BoundaryConditions> bc, const double& worldX1, const double& worldX2, const double& worldX3, const double& timestep);
+   void setNodeVelocity(const D3Q27Interactor& interactor, SPtr<BoundaryConditions> bc, const real& worldX1, const real& worldX2, const real& worldX3, const real& timestep);
 
 private:
    mutable mu::value_type x1, x2, x3;

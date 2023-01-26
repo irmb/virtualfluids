@@ -24,19 +24,19 @@ public:
    ~IncompressibleCumulantWithSpongeLayerLBMKernel() override;
    SPtr<LBMKernel> clone() override;
    void calculate(int step) override;
-   void initRelaxFactor(int vdir, double vL1, double vdx, double vSP);
+   void initRelaxFactor(int vdir, real vL1, real vdx, real vSP);
    //! \param vdir where the sponge layer is placed
    //! \param vL1 length of simulation domain
    //! \param vdx subgrid space 
    //! \param vSP length of sponge layer
-   void setRelaxFactorParam(int vdir, double vL1, double vdx, double vSP);
+   void setRelaxFactorParam(int vdir, real vL1, real vdx, real vSP);
 protected:
   void initDataSet() override;
   real OxyyMxzz;
   int direction;
-  double L1;
-  double dx;
-  double SP;
+  real L1;
+  real dx;
+  real SP;
 };
 
 #endif

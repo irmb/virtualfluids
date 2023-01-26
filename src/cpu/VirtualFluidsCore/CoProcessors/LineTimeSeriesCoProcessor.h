@@ -30,7 +30,7 @@ public:
                               int level, std::shared_ptr<vf::mpi::Communicator> comm);
     ~LineTimeSeriesCoProcessor() override = default;
 
-    void process(double step) override;
+    void process(real step) override;
     void writeLine(const std::string &path);
 
 protected:

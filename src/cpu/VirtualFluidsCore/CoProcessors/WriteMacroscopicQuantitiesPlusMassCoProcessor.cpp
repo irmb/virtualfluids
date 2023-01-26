@@ -72,7 +72,7 @@ void WriteMacroscopicQuantitiesPlusMassCoProcessor::init()
 {}
 
 //////////////////////////////////////////////////////////////////////////
-void WriteMacroscopicQuantitiesPlusMassCoProcessor::process(double step)
+void WriteMacroscopicQuantitiesPlusMassCoProcessor::process(real step)
 {
     if (scheduler->isDue(step))
         collectData(step);
@@ -81,7 +81,7 @@ void WriteMacroscopicQuantitiesPlusMassCoProcessor::process(double step)
 }
 
 //////////////////////////////////////////////////////////////////////////
-void WriteMacroscopicQuantitiesPlusMassCoProcessor::collectData(double step)
+void WriteMacroscopicQuantitiesPlusMassCoProcessor::collectData(real step)
 {
     int istep = static_cast<int>(step);
 
@@ -143,7 +143,7 @@ void WriteMacroscopicQuantitiesPlusMassCoProcessor::clearData()
 //////////////////////////////////////////////////////////////////////////
 void WriteMacroscopicQuantitiesPlusMassCoProcessor::addDataMQ(SPtr<Block3D> block)
 {
-    double level   = (double)block->getLevel();
+    real level   = (real)block->getLevel();
 
     // Diese Daten werden geschrieben:
     datanames.resize(0);

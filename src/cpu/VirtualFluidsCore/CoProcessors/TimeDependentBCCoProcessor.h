@@ -18,7 +18,7 @@ public:
     TimeDependentBCCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s);
     ~TimeDependentBCCoProcessor() override;
 
-    void process(double step) override;
+    void process(real step) override;
 
     //! add interactors to CoProcessor
     void addInteractor(SPtr<Interactor3D> interactor);

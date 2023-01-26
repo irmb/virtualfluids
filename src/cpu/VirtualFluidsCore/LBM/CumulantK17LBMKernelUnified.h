@@ -55,7 +55,7 @@ public:
     ~CumulantK17LBMKernelUnified() = default;
     void calculate(int step) override;
     SPtr<LBMKernel> clone() override;
-    double getCalculationTime() override { return .0; }
+    real getCalculationTime() override { return .0; }
 
 protected:
     virtual void initDataSet();

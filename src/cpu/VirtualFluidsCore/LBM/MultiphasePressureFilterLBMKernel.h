@@ -51,7 +51,7 @@ public:
     virtual ~MultiphasePressureFilterLBMKernel(void) = default;
     void calculate(int step) override;
     SPtr<LBMKernel> clone() override;
-    double getCalculationTime() override { return .0; }
+    real getCalculationTime() override { return .0; }
 
     void setPhaseFieldBC(real bc)
     {

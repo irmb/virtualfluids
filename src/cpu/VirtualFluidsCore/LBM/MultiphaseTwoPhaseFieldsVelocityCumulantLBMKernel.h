@@ -60,7 +60,7 @@ public:
    CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr pressure;
    CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr pressureOld;
 
-   double getCalculationTime() override { return .0; }
+   real getCalculationTime() override { return .0; }
 protected:
    virtual void initDataSet();
    void swapDistributions() override;

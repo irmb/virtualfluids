@@ -87,7 +87,7 @@ public:
     bool isInterpolationConnectorCF() override { return false; }
     bool isInterpolationConnectorFC() override { return true; }
 
-    double getSendRecieveTime();
+    real getSendRecieveTime();
 
     void prepareForSendX1() override {}
     void prepareForSendX2() override {}
@@ -1555,7 +1555,7 @@ void FineToCoarseVectorConnector<VectorTransmitter>::getLocalMins(int &minX1, in
 }
 //////////////////////////////////////////////////////////////////////////
 template <typename VectorTransmitter>
-double FineToCoarseVectorConnector<VectorTransmitter>::getSendRecieveTime()
+real FineToCoarseVectorConnector<VectorTransmitter>::getSendRecieveTime()
 {
     return 0;
 }
