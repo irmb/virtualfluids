@@ -199,7 +199,7 @@ TEST(ParameterTest, userMissedSlashMultiGPU)
     EXPECT_THAT(para.getConcentration(), testing::Eq("gridPathTest/0/conc.dat"));
 }
 
-class ParameterTestCumulatnK17 : public testing::Test
+class ParameterTestCumulantK17 : public testing::Test
 {
 protected:
     void SetUp() override
@@ -215,7 +215,7 @@ protected:
     Parameter para;
 };
 
-TEST_F(ParameterTestCumulatnK17, CumulantK17_VelocityIsTooHigh_expectWarning)
+TEST_F(ParameterTestCumulantK17, CumulantK17_VelocityIsTooHigh_expectWarning)
 {
 
     para.setVelocityLB(0.11);
@@ -227,7 +227,7 @@ TEST_F(ParameterTestCumulatnK17, CumulantK17_VelocityIsTooHigh_expectWarning)
     EXPECT_TRUE(stdoutContainsWarning());
 }
 
-TEST_F(ParameterTestCumulatnK17, CumulantK17_VelocityIsOk_expectNoWarning)
+TEST_F(ParameterTestCumulantK17, CumulantK17_VelocityIsOk_expectNoWarning)
 {
     para.setVelocityLB(0.09);
     para.setMainKernel("CumulantK17");
@@ -238,7 +238,7 @@ TEST_F(ParameterTestCumulatnK17, CumulantK17_VelocityIsOk_expectNoWarning)
     EXPECT_FALSE(stdoutContainsWarning());
 }
 
-TEST_F(ParameterTestCumulatnK17, NotCumulantK17_VelocityIsTooHigh_expectNoWarning)
+TEST_F(ParameterTestCumulantK17, NotCumulantK17_VelocityIsTooHigh_expectNoWarning)
 {
     para.setVelocityLB(42);
     para.setMainKernel("K");
@@ -249,7 +249,7 @@ TEST_F(ParameterTestCumulatnK17, NotCumulantK17_VelocityIsTooHigh_expectNoWarnin
     EXPECT_FALSE(stdoutContainsWarning());
 }
 
-TEST_F(ParameterTestCumulatnK17, CumulantK17_ViscosityIsTooHigh_expectWarning)
+TEST_F(ParameterTestCumulantK17, CumulantK17_ViscosityIsTooHigh_expectWarning)
 {
     para.setViscosityLB(0.024);
     para.setMainKernel("CumulantK17");
@@ -260,7 +260,7 @@ TEST_F(ParameterTestCumulatnK17, CumulantK17_ViscosityIsTooHigh_expectWarning)
     EXPECT_TRUE(stdoutContainsWarning());
 }
 
-TEST_F(ParameterTestCumulatnK17, CumulantK17_ViscosityIsOk_expectNoWarning)
+TEST_F(ParameterTestCumulantK17, CumulantK17_ViscosityIsOk_expectNoWarning)
 {
     para.setViscosityLB(0.023);
     para.setMainKernel("CumulantK17");
@@ -271,7 +271,7 @@ TEST_F(ParameterTestCumulatnK17, CumulantK17_ViscosityIsOk_expectNoWarning)
     EXPECT_FALSE(stdoutContainsWarning());
 }
 
-TEST_F(ParameterTestCumulatnK17, NotCumulantK17_ViscosityIsTooHigh_expectNoWarning)
+TEST_F(ParameterTestCumulantK17, NotCumulantK17_ViscosityIsTooHigh_expectNoWarning)
 {
     para.setViscosityLB(10);
     para.setMainKernel("K");
