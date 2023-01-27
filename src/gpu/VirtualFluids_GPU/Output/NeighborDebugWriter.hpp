@@ -16,14 +16,14 @@
 namespace NeighborDebugWriter
 {
 
-inline void writeNeighborLinkLines(Parameter *para, const int level, const uint numberOfNodes, const int direction,
+inline void writeNeighborLinkLines(Parameter *para, const int level, const unsigned long long numberOfNodes, const int direction,
                                    const std::string &name)
 {
     VF_LOG_INFO("Write node links in direction {}.", direction);
     std::vector<UbTupleFloat3> nodes(numberOfNodes * 2);
     std::vector<UbTupleInt2> cells(numberOfNodes);
 
-    for (uint position = 0; position < numberOfNodes; position++) {
+    for (size_t position = 0; position < numberOfNodes; position++) {
         if (para->getParH(level)->typeOfGridNode[position] != GEO_FLUID)
             continue;
 
@@ -31,7 +31,7 @@ inline void writeNeighborLinkLines(Parameter *para, const int level, const uint 
         const double x2 = para->getParH(level)->coordinateY[position];
         const double x3 = para->getParH(level)->coordinateZ[position];
 
-        const uint positionNeighbor = getNeighborIndex(para->getParH(level).get(), position, direction);
+        const uint positionNeighbor = getNeighborIndex(para->getParH(level).get(), (uint)position, direction);
 
         const double x1Neighbor = para->getParH(level)->coordinateX[positionNeighbor];
         const double x2Neighbor = para->getParH(level)->coordinateY[positionNeighbor];
@@ -48,10 +48,10 @@ inline void writeNeighborLinkLines(Parameter *para, const int level, const uint 
 inline void writeNeighborLinkLinesDebug(Parameter *para)
 {
     for (int level = 0; level <= para->getMaxLevel(); level++) {
-        for (int direction = vf::lbm::dir::STARTDIR; direction <= vf::lbm::dir::ENDDIR; direction++) {
+        for (size_t direction = vf::lbm::dir::STARTDIR; direction <= vf::lbm::dir::ENDDIR; direction++) {
             const std::string fileName = para->getFName() + "_" + StringUtil::toString<int>(level) + "_Link_" +
                                          std::to_string(direction) + "_Debug.vtk";
-            writeNeighborLinkLines(para, level, para->getParH(level)->numberOfNodes, direction, fileName);
+            writeNeighborLinkLines(para, level, para->getParH(level)->numberOfNodes, (int)direction, fileName);
         }
     }
 }

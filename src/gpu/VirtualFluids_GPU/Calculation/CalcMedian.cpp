@@ -11,16 +11,16 @@
 
 void allocMedian(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
-	for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
+	for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
 	{
 		cudaMemoryManager->cudaAllocMedianOut(lev);
-		for (unsigned int i = 0; i < para->getParH(lev)->numberOfNodes; i++)
+		for (size_t pos = 0; pos < para->getParH(lev)->numberOfNodes; pos++)
 		{
-			para->getParH(lev)->vx_SP_Med_Out[i]    = (real)0.0;
-			para->getParH(lev)->vy_SP_Med_Out[i]    = (real)0.0;
-			para->getParH(lev)->vz_SP_Med_Out[i]    = (real)0.0;
-			para->getParH(lev)->rho_SP_Med_Out[i]   = (real)0.0;
-			para->getParH(lev)->press_SP_Med_Out[i] = (real)0.0;
+			para->getParH(lev)->vx_SP_Med_Out[pos]    = (real)0.0;
+			para->getParH(lev)->vy_SP_Med_Out[pos]    = (real)0.0;
+			para->getParH(lev)->vz_SP_Med_Out[pos]    = (real)0.0;
+			para->getParH(lev)->rho_SP_Med_Out[pos]   = (real)0.0;
+			para->getParH(lev)->press_SP_Med_Out[pos] = (real)0.0;
 		}
 	}
 }
@@ -31,15 +31,15 @@ void allocMedian(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 
 void calcMedian(Parameter* para, uint tdiff)
 {
-	for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
+	for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
 	{
-		for (uint i = 0; i < para->getParH(lev)->numberOfNodes; i++)
+        for (size_t pos = 0; pos < para->getParH(lev)->numberOfNodes; pos++)
 		{
-			para->getParH(lev)->vx_SP_Med_Out[i]    = para->getParH(lev)->vx_SP_Med[i]   / (real)tdiff;
-			para->getParH(lev)->vy_SP_Med_Out[i]    = para->getParH(lev)->vy_SP_Med[i]   / (real)tdiff;
-			para->getParH(lev)->vz_SP_Med_Out[i]    = para->getParH(lev)->vz_SP_Med[i]   / (real)tdiff;
-			para->getParH(lev)->rho_SP_Med_Out[i]   = para->getParH(lev)->rho_SP_Med[i]  / (real)tdiff;
-			para->getParH(lev)->press_SP_Med_Out[i] = para->getParH(lev)->press_SP_Med[i]/ (real)tdiff;
+			para->getParH(lev)->vx_SP_Med_Out[pos]    = para->getParH(lev)->vx_SP_Med[pos]   / (real)tdiff;
+			para->getParH(lev)->vy_SP_Med_Out[pos]    = para->getParH(lev)->vy_SP_Med[pos]   / (real)tdiff;
+			para->getParH(lev)->vz_SP_Med_Out[pos]    = para->getParH(lev)->vz_SP_Med[pos]   / (real)tdiff;
+			para->getParH(lev)->rho_SP_Med_Out[pos]   = para->getParH(lev)->rho_SP_Med[pos]  / (real)tdiff;
+			para->getParH(lev)->press_SP_Med_Out[pos] = para->getParH(lev)->press_SP_Med[pos]/ (real)tdiff;
 		}
 	}
 }
@@ -75,14 +75,14 @@ void allocMedianAD(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 	for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
 	{
         cudaMemoryManager->cudaAllocMedianOutAD(lev);
-		for (unsigned int i = 0; i < para->getParH(lev)->numberOfNodes; i++)
+		for (size_t pos = 0; pos < para->getParH(lev)->numberOfNodes; pos++)
 		{
-			para->getParH(lev)->vx_SP_Med_Out[i]    = (real)0.0;
-			para->getParH(lev)->vy_SP_Med_Out[i]    = (real)0.0;
-			para->getParH(lev)->vz_SP_Med_Out[i]    = (real)0.0;
-			para->getParH(lev)->rho_SP_Med_Out[i]   = (real)0.0;
-			para->getParH(lev)->press_SP_Med_Out[i] = (real)0.0;
-			para->getParH(lev)->Conc_Med_Out[i]     = (real)0.0;
+			para->getParH(lev)->vx_SP_Med_Out[pos]    = (real)0.0;
+			para->getParH(lev)->vy_SP_Med_Out[pos]    = (real)0.0;
+			para->getParH(lev)->vz_SP_Med_Out[pos]    = (real)0.0;
+			para->getParH(lev)->rho_SP_Med_Out[pos]   = (real)0.0;
+			para->getParH(lev)->press_SP_Med_Out[pos] = (real)0.0;
+			para->getParH(lev)->Conc_Med_Out[pos]     = (real)0.0;
 		}
 	}
 }
@@ -95,14 +95,14 @@ void calcMedianAD(Parameter* para, uint tdiff)
 {
 	for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
 	{
-		for (uint i = 0; i < para->getParH(lev)->numberOfNodes; i++)
+		for (size_t pos = 0; pos < para->getParH(lev)->numberOfNodes; pos++)
 		{
-			para->getParH(lev)->vx_SP_Med_Out[i]    = para->getParH(lev)->vx_SP_Med[i]    / (real)tdiff;
-			para->getParH(lev)->vy_SP_Med_Out[i]    = para->getParH(lev)->vy_SP_Med[i]    / (real)tdiff;
-			para->getParH(lev)->vz_SP_Med_Out[i]    = para->getParH(lev)->vz_SP_Med[i]    / (real)tdiff;
-			para->getParH(lev)->rho_SP_Med_Out[i]   = para->getParH(lev)->rho_SP_Med[i]   / (real)tdiff;
-			para->getParH(lev)->press_SP_Med_Out[i] = para->getParH(lev)->press_SP_Med[i] / (real)tdiff;
-			para->getParH(lev)->Conc_Med_Out[i]     = para->getParH(lev)->Conc_Med[i]     / (real)tdiff;
+			para->getParH(lev)->vx_SP_Med_Out[pos]    = para->getParH(lev)->vx_SP_Med[pos]    / (real)tdiff;
+			para->getParH(lev)->vy_SP_Med_Out[pos]    = para->getParH(lev)->vy_SP_Med[pos]    / (real)tdiff;
+			para->getParH(lev)->vz_SP_Med_Out[pos]    = para->getParH(lev)->vz_SP_Med[pos]    / (real)tdiff;
+			para->getParH(lev)->rho_SP_Med_Out[pos]   = para->getParH(lev)->rho_SP_Med[pos]   / (real)tdiff;
+			para->getParH(lev)->press_SP_Med_Out[pos] = para->getParH(lev)->press_SP_Med[pos] / (real)tdiff;
+			para->getParH(lev)->Conc_Med_Out[pos]     = para->getParH(lev)->Conc_Med[pos]     / (real)tdiff;
 		}
 	}
 }

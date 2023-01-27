@@ -9,12 +9,12 @@ void RestartObject::deserialize(const std::string &filename, std::shared_ptr<Par
 {
     deserialize_internal(filename);
 
-    for (int j = para->getCoarse(); j <= para->getFine(); j++) {
+    for (int index1 = para->getCoarse(); index1 <= para->getFine(); index1++) {
         std::vector<real> vec;
         fs.push_back(vec);
 
-        for (unsigned int i = 0; i < (para->getD3Qxx() * para->getParH(j)->numberOfNodes); i++) {
-            para->getParH(j)->distributions.f[0][i] = fs[j][i];
+        for (size_t index2 = 0; index2 < (para->getD3Qxx() * para->getParH(index1)->numberOfNodes); index2++) {
+            para->getParH(index1)->distributions.f[0][index2] = fs[index1][index2];
         }
     }
 }
@@ -24,15 +24,15 @@ void RestartObject::serialize(const std::string &filename, const std::shared_ptr
     if (fs.size() > 0) {
         clear(para);
     }
-    for (int j = para->getCoarse(); j <= para->getFine(); j++) {
+    for (int index1 = para->getCoarse(); index1 <= para->getFine(); index1++) {
         std::vector<real> vec;
         fs.push_back(vec);
 
-        for (unsigned int i = 0; i < (para->getD3Qxx() * para->getParH(j)->numberOfNodes); i++) {
-            if (UbMath::isNaN(para->getParH(j)->distributions.f[0][i])) {
-                fs[j].push_back((real)0.0);
+        for (size_t index2 = 0; index2 < (para->getD3Qxx() * para->getParH(index1)->numberOfNodes); index2++) {
+            if (UbMath::isNaN(para->getParH(index1)->distributions.f[0][index2])) {
+                fs[index1].push_back((real)0.0);
             } else {
-                fs[j].push_back(para->getParH(j)->distributions.f[0][i]);
+                fs[index1].push_back(para->getParH(index1)->distributions.f[0][index2]);
             }
         }
     }

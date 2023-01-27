@@ -34,18 +34,18 @@ __global__ void CalcTurbulenceIntensity(
    unsigned int* neighborX,
    unsigned int* neighborY,
    unsigned int* neighborZ,
-   unsigned int size_Mat, 
+   unsigned long long numberOfLBnodes, 
    bool isEvenTimestep)
 {
    const unsigned k = vf::gpu::getNodeIndex();
 
-   if (k >= size_Mat)
+   if (k >= numberOfLBnodes)
        return;
 
    if (!vf::gpu::isValidFluidNode(typeOfGridNode[k]))
        return;
 
-   vf::gpu::DistributionWrapper distr_wrapper(distributions, size_Mat, isEvenTimestep, k, neighborX, neighborY,
+   vf::gpu::DistributionWrapper distr_wrapper(distributions, numberOfLBnodes, isEvenTimestep, k, neighborX, neighborY,
                                               neighborZ);
    const auto &distribution = distr_wrapper.distribution;
 
