@@ -593,7 +593,7 @@ void Parameter::initLBMSimulationParameter()
     checkParameterValidityCumulantK17();
 }
 
-void Parameter::checkParameterValidityCumulantK17()
+void Parameter::checkParameterValidityCumulantK17() const
 {
     if (this->mainKernel != "CumulantK17")
         return;
