@@ -1,4 +1,35 @@
-
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file BoundaryLayer.cpp
+//! \ingroup BoundaryLayer
+//! \author Henry Korb, Henrik Asmuth
+//=======================================================================================
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <string>
@@ -150,10 +181,10 @@ void multipleLevel(const std::string& configPath)
     }
 
     const bool readPrecursor = config.getValue("readPrecursor", false);
-    int nTReadPrecursor;
+    int timestepsBetweenReadsPrecursor;
     if(readPrecursor)
     {
-        nTReadPrecursor = config.getValue<int>("nTimestepsReadPrecursor");
+        timestepsBetweenReadsPrecursor = config.getValue<int>("nTimestepsReadPrecursor");
         precursorDirectory = config.getValue<std::string>("precursorDirectory");
         useDistributions     = config.getValue<bool>("useDistributions", false);
     }
@@ -235,12 +266,17 @@ void multipleLevel(const std::string& configPath)
     bool isLastSubDomain  = (procID == nProcs-1 && nProcs > 1)?                    true: false;
     bool isMidSubDomain   = (!isFirstSubDomain && !isLastSubDomain && nProcs > 1)? true: false;
     
-    if(isFirstSubDomain || isMidSubDomain)
+    if(isFirstSubDomain)
     {
         xGridMax += overlap;
-        xGridMin -= overlap;
+        if(!readPrecursor) xGridMin -= overlap;
     }
-    if(isLastSubDomain || isMidSubDomain)
+    if(isLastSubDomain)
+    {
+        xGridMin -= overlap;
+        if(!readPrecursor) xGridMax += overlap;
+    }
+    if(isMidSubDomain)
     {
         xGridMax += overlap;
         xGridMin -= overlap;
@@ -252,8 +288,7 @@ void multipleLevel(const std::string& configPath)
     {
         gridBuilder->setNumberOfLayers(4,0);
         real xMaxRefinement = readPrecursor? xGridMax-H: xGridMax;   //Stop refinement some distance before outlet if domain ist not periodic
-        gridBuilder->addGrid( new Cuboid( xGridMin+dx, 0.f, 0.f, xMaxRefinement, L_y,  0.5*L_z) , 1 );
-
+        gridBuilder->addGrid( new Cuboid( xGridMin, 0.f, 0.f, xMaxRefinement, L_y,  0.5*L_z) , 1 );
         para->setMaxLevel(2);
         scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
     }
@@ -303,7 +338,8 @@ void multipleLevel(const std::string& configPath)
         if(isFirstSubDomain || nProcs == 1)
         {   
             auto precursor = createFileCollection(precursorDirectory + "/precursor", FileType::VTK);
-            gridBuilder->setPrecursorBoundaryCondition(SideType::MX, precursor, nTReadPrecursor);
+            gridBuilder->setPrecursorBoundaryCondition(SideType::MX, precursor, timestepsBetweenReadsPrecursor);
+            // gridBuilder->setVelocityBoundaryCondition(SideType::MX, velocityLB, 0.0, 0.0);
         }
 
         if(isLastSubDomain || nProcs == 1)

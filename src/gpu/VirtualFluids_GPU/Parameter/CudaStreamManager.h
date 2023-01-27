@@ -39,7 +39,7 @@ enum class CudaStreamIndex
     {
         Legacy,
         Bulk,
-        Border,
+        SubDomainBorder,
         Precursor,
         ActuatorFarm
     };

@@ -68,37 +68,37 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::initRelaxFactor(int vdir, d
          {
             switch (direction)
             {
-            case D3Q27System::E:
+            case D3Q27System::DIR_P00:
                muX1 = (double)(x1 + ix1 * maxX1);
                if (muX1 >= (sizeX - sizeSP) / deltaT)
                   spongeFactor = (sizeX - (muX1 * deltaT + 1)) / sizeSP / 2.0 + 0.5;
                else spongeFactor = 1.0;
                break;
-            case D3Q27System::W:
+            case D3Q27System::DIR_M00:
                muX1 = (double)(x1 + ix1 * maxX1);
                if (muX1 <= sizeSP / deltaT)
                   spongeFactor = (sizeSP - (muX1 * deltaT + 1)) / sizeSP / 2.0 + 0.5;
                else spongeFactor = 1.0;
                break;
-            case D3Q27System::N:
+            case D3Q27System::DIR_0P0:
                muX2 = (double)(x2 + ix2 * maxX2);
                if (muX2 >= (sizeX - sizeSP) / deltaT)
                   spongeFactor = (sizeX - (muX2 * deltaT + 1)) / sizeSP / 2.0 + 0.5;
                else spongeFactor = 1.0;
                break;
-            case D3Q27System::S:
+            case D3Q27System::DIR_0M0:
                muX2 = (double)(x2 + ix2 * maxX2);
                if (muX2 <= sizeSP / deltaT)
                   spongeFactor = (sizeSP - (muX2 * deltaT + 1)) / sizeSP / 2.0 + 0.5;
                else spongeFactor = 1.0;
                break;
-            case D3Q27System::T:
+            case D3Q27System::DIR_00P:
                muX3 = (double)(x3 + ix3 * maxX3);
                if (muX3 >= (sizeX - sizeSP) / deltaT)
                   spongeFactor = (sizeX - (muX3 * deltaT + 1)) / sizeSP / 2.0 + 0.5;
                else spongeFactor = 1.0;
                break;
-            case D3Q27System::B:
+            case D3Q27System::DIR_00M:
                muX3 = (double)(x3 + ix3 * maxX3);
                if (muX3 <= sizeSP / deltaT)
                   spongeFactor = (sizeSP - (muX3 * deltaT + 1)) / sizeSP / 2.0 + 0.5;

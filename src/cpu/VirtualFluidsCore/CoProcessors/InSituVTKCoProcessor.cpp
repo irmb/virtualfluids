@@ -226,11 +226,11 @@ void InSituVTKCoProcessor::addData(SPtr<Block3D> block)
                                            UbSystem::toString(ix2) + "," + UbSystem::toString(ix3)));
                     // vx3=999.0;
 
-                    arrays[0]->InsertNextValue(rho * conv->getFactorDensityLbToW2());
-                    arrays[1]->InsertNextValue(vx1 * conv->getFactorVelocityLbToW2());
-                    arrays[2]->InsertNextValue(vx2 * conv->getFactorVelocityLbToW2());
-                    arrays[3]->InsertNextValue(vx3 * conv->getFactorVelocityLbToW2());
-                    arrays[4]->InsertNextValue(press * conv->getFactorPressureLbToW2());
+                    arrays[0]->InsertNextValue(rho * conv->getFactorDensityLbToW());
+                    arrays[1]->InsertNextValue(vx1 * conv->getFactorVelocityLbToW());
+                    arrays[2]->InsertNextValue(vx2 * conv->getFactorVelocityLbToW());
+                    arrays[3]->InsertNextValue(vx3 * conv->getFactorVelocityLbToW());
+                    arrays[4]->InsertNextValue(press * conv->getFactorPressureLbToW());
                 }
             }
         }

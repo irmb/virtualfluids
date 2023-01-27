@@ -289,6 +289,7 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
                         //-1 0 1
 
                         findNeighbors(phaseField, x1, x2, x3);
+						findNeighbors2(phaseField2, x1, x2, x3);
 
                         LBMReal mfcbb = (*this->localDistributionsF)(D3Q27System::ET_E, x1, x2, x3);
                         LBMReal mfbcb = (*this->localDistributionsF)(D3Q27System::ET_N, x1, x2, x3);
@@ -328,72 +329,71 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
                         LBMReal dX2_phi = gradX2_phi();
                         LBMReal dX3_phi = gradX3_phi();
 
-                        LBMReal denom = sqrt(dX1_phi * dX1_phi + dX2_phi * dX2_phi + dX3_phi * dX3_phi) + 1e-9;
-                        LBMReal normX1 = dX1_phi/denom;
-						LBMReal normX2 = dX2_phi/denom;
-						LBMReal normX3 = dX3_phi/denom;
-
-						collFactorM = collFactorL + (collFactorL - collFactorG) * (phi[REST] - phiH) / (phiH - phiL);
+						LBMReal dX1_phi2 = gradX1_phi2();
+						LBMReal dX2_phi2 = gradX2_phi2();
+						LBMReal dX3_phi2 = gradX3_phi2();
 
 
-                        LBMReal mu = 2 * beta * phi[REST] * (phi[REST] - 1) * (2 * phi[REST] - 1) - kappa * nabla2_phi();
+                        LBMReal denom2 = sqrt(dX1_phi * dX1_phi+ dX1_phi2 * dX1_phi2 + dX2_phi * dX2_phi + dX2_phi2 * dX2_phi2 + dX3_phi * dX3_phi+ dX3_phi2 * dX3_phi2) + 1e-9;
+                        LBMReal normX1 = (dX1_phi-dX1_phi2)/denom2;
+						LBMReal normX2 = (dX2_phi-dX2_phi2)/denom2;
+						LBMReal normX3 = (dX3_phi-dX3_phi2)/denom2;
+
+						//LBMReal denom = sqrt(dX1_phi * dX1_phi + dX2_phi * dX2_phi + dX3_phi * dX3_phi) + 1e-9;
+						//LBMReal normX1 = dX1_phi / denom;
+						//LBMReal normX2 = dX2_phi / denom;
+						//LBMReal normX3 = dX3_phi / denom;
+
+
+
+						collFactorM = collFactorL + (collFactorL - collFactorG) * (phi[DIR_000] - phiH) / (phiH - phiL);
+
+
+                        LBMReal mu = 2 * beta * phi[DIR_000] * (phi[DIR_000] - 1) * (2 * phi[DIR_000] - 1) - kappa * nabla2_phi();
 
                         //----------- Calculating Macroscopic Values -------------
-                        LBMReal rho = rhoH + rhoToPhi * (phi[REST] - phiH);
-
-                        if (withForcing) {
-                            // muX1 = static_cast<double>(x1-1+ix1*maxX1);
-                            // muX2 = static_cast<double>(x2-1+ix2*maxX2);
-                            // muX3 = static_cast<double>(x3-1+ix3*maxX3);
-
-                            forcingX1 = muForcingX1.Eval();
-                            forcingX2 = muForcingX2.Eval();
-                            forcingX3 = muForcingX3.Eval();
-
-                            LBMReal rho_m = 1.0 / densityRatio;
-                            forcingX1     = forcingX1 * (rho - rho_m);
-                            forcingX2     = forcingX2 * (rho - rho_m);
-                            forcingX3     = forcingX3 * (rho - rho_m);
+                        LBMReal rho = rhoH + rhoToPhi * (phi[DIR_000] - phiH);
 
                             			   ////Incompressible Kernal
 
-			    mfbbc = (*this->localDistributionsF)(D3Q27System::ET_T, x1, x2, x3)/rho;
-			    mfbcb = (*this->localDistributionsF)(D3Q27System::ET_N, x1, x2, x3) / rho;
-			    mfccb = (*this->localDistributionsF)(D3Q27System::ET_NE, x1, x2, x3) / rho;
-			    mfacb = (*this->localDistributionsF)(D3Q27System::ET_NW, x1p, x2, x3) / rho;
-			    mfcbb = (*this->localDistributionsF)(D3Q27System::ET_E, x1, x2, x3) / rho;
-			    mfcbc = (*this->localDistributionsF)(D3Q27System::ET_TE, x1, x2, x3) / rho;
-			    mfabc = (*this->localDistributionsF)(D3Q27System::ET_TW, x1p, x2, x3) / rho;
-			    mfbcc = (*this->localDistributionsF)(D3Q27System::ET_TN, x1, x2, x3) / rho;
-			    mfbac = (*this->localDistributionsF)(D3Q27System::ET_TS, x1, x2p, x3) / rho;
-			    mfccc = (*this->localDistributionsF)(D3Q27System::ET_TNE, x1, x2, x3) / rho;
-			    mfacc = (*this->localDistributionsF)(D3Q27System::ET_TNW, x1p, x2, x3) / rho;
-			    mfcac = (*this->localDistributionsF)(D3Q27System::ET_TSE, x1, x2p, x3) / rho;
-			    mfaac = (*this->localDistributionsF)(D3Q27System::ET_TSW, x1p, x2p, x3) / rho;
+						mfbbc = (*this->localDistributionsF)(D3Q27System::ET_T, x1, x2, x3) / rho * c3;
+						mfbcb = (*this->localDistributionsF)(D3Q27System::ET_N, x1, x2, x3) / rho * c3;
+						mfccb = (*this->localDistributionsF)(D3Q27System::ET_NE, x1, x2, x3) / rho * c3;
+						mfacb = (*this->localDistributionsF)(D3Q27System::ET_NW, x1p, x2, x3) / rho * c3;
+						mfcbb = (*this->localDistributionsF)(D3Q27System::ET_E, x1, x2, x3) / rho * c3;
+						mfcbc = (*this->localDistributionsF)(D3Q27System::ET_TE, x1, x2, x3) / rho * c3;
+						mfabc = (*this->localDistributionsF)(D3Q27System::ET_TW, x1p, x2, x3) / rho * c3;
+						mfbcc = (*this->localDistributionsF)(D3Q27System::ET_TN, x1, x2, x3) / rho * c3;
+						mfbac = (*this->localDistributionsF)(D3Q27System::ET_TS, x1, x2p, x3) / rho * c3;
+						mfccc = (*this->localDistributionsF)(D3Q27System::ET_TNE, x1, x2, x3) / rho * c3;
+						mfacc = (*this->localDistributionsF)(D3Q27System::ET_TNW, x1p, x2, x3) / rho * c3;
+						mfcac = (*this->localDistributionsF)(D3Q27System::ET_TSE, x1, x2p, x3) / rho * c3;
+						mfaac = (*this->localDistributionsF)(D3Q27System::ET_TSW, x1p, x2p, x3) / rho * c3;
 
-			    mfabb = (*this->nonLocalDistributionsF)(D3Q27System::ET_W, x1p, x2, x3) / rho;
-			    mfbab = (*this->nonLocalDistributionsF)(D3Q27System::ET_S, x1, x2p, x3) / rho;
-			    mfbba = (*this->nonLocalDistributionsF)(D3Q27System::ET_B, x1, x2, x3p) / rho;
-			    mfaab = (*this->nonLocalDistributionsF)(D3Q27System::ET_SW, x1p, x2p, x3) / rho;
-			    mfcab = (*this->nonLocalDistributionsF)(D3Q27System::ET_SE, x1, x2p, x3) / rho;
-			    mfaba = (*this->nonLocalDistributionsF)(D3Q27System::ET_BW, x1p, x2, x3p) / rho;
-			    mfcba = (*this->nonLocalDistributionsF)(D3Q27System::ET_BE, x1, x2, x3p) / rho;
-			    mfbaa = (*this->nonLocalDistributionsF)(D3Q27System::ET_BS, x1, x2p, x3p) / rho;
-			    mfbca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BN, x1, x2, x3p) / rho;
-			    mfaaa = (*this->nonLocalDistributionsF)(D3Q27System::ET_BSW, x1p, x2p, x3p) / rho;
-			    mfcaa = (*this->nonLocalDistributionsF)(D3Q27System::ET_BSE, x1, x2p, x3p) / rho;
-			    mfaca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BNW, x1p, x2, x3p) / rho;
-			    mfcca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BNE, x1, x2, x3p) / rho;
+						mfabb = (*this->nonLocalDistributionsF)(D3Q27System::ET_W, x1p, x2, x3) / rho * c3;
+						mfbab = (*this->nonLocalDistributionsF)(D3Q27System::ET_S, x1, x2p, x3) / rho * c3;
+						mfbba = (*this->nonLocalDistributionsF)(D3Q27System::ET_B, x1, x2, x3p) / rho * c3;
+						mfaab = (*this->nonLocalDistributionsF)(D3Q27System::ET_SW, x1p, x2p, x3) / rho * c3;
+						mfcab = (*this->nonLocalDistributionsF)(D3Q27System::ET_SE, x1, x2p, x3) / rho * c3;
+						mfaba = (*this->nonLocalDistributionsF)(D3Q27System::ET_BW, x1p, x2, x3p) / rho * c3;
+						mfcba = (*this->nonLocalDistributionsF)(D3Q27System::ET_BE, x1, x2, x3p) / rho * c3;
+						mfbaa = (*this->nonLocalDistributionsF)(D3Q27System::ET_BS, x1, x2p, x3p) / rho * c3;
+						mfbca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BN, x1, x2, x3p) / rho * c3;
+						mfaaa = (*this->nonLocalDistributionsF)(D3Q27System::ET_BSW, x1p, x2p, x3p) / rho * c3;
+						mfcaa = (*this->nonLocalDistributionsF)(D3Q27System::ET_BSE, x1, x2p, x3p) / rho * c3;
+						mfaca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BNW, x1p, x2, x3p) / rho * c3;
+						mfcca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BNE, x1, x2, x3p) / rho * c3;
 
-			    mfbbb = (*this->zeroDistributionsF)(x1, x2, x3) / rho;
+						mfbbb = (*this->zeroDistributionsF)(x1, x2, x3) / rho * c3;
+
 
 			   LBMReal m0, m1, m2;
 			   LBMReal rhoRef=c1;
 
 			  //LBMReal 
-			   LBMReal drho = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca)
-				   + (mfaab + mfacb + mfcab + mfccb) + (mfaba + mfabc + mfcba + mfcbc) + (mfbaa + mfbac + mfbca + mfbcc)
-				   + (mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc) + mfbbb;
+			//    LBMReal drho = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca)
+			// 	   + (mfaab + mfacb + mfcab + mfccb) + (mfaba + mfabc + mfcba + mfcbc) + (mfbaa + mfbac + mfbca + mfbcc)
+			// 	   + (mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc) + mfbbb;
 
 			   LBMReal vvx = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
 				   (((mfcba - mfabc) + (mfcbc - mfaba)) + ((mfcab - mfacb) + (mfccb - mfaab))) +
@@ -405,10 +405,239 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
 				   (((mfbac - mfbca) + (mfbcc - mfbaa)) + ((mfabc - mfcba) + (mfcbc - mfaba))) +
 				   (mfbbc - mfbba))/rhoRef;
 
+
+			   if (withForcing) {
+				   // muX1 = static_cast<double>(x1-1+ix1*maxX1);
+				   // muX2 = static_cast<double>(x2-1+ix2*maxX2);
+				   // muX3 = static_cast<double>(x3-1+ix3*maxX3);
+
+				   forcingX1 = muForcingX1.Eval();
+				   forcingX2 = muForcingX2.Eval();
+				   forcingX3 = muForcingX3.Eval();
+
+				   //LBMReal rho_m = 1.0 / densityRatio;
+				   //forcingX1 = forcingX1 * (rho - rho_m);
+				   //forcingX2 = forcingX2 * (rho - rho_m);
+				   //forcingX3 = forcingX3 * (rho - rho_m);
+				   vvx += forcingX1 * deltaT * 0.5; // X
+				   vvy += forcingX2 * deltaT * 0.5; // Y
+				   vvz += forcingX3 * deltaT * 0.5; // Z
+
+			   }
+
+
 			   ///surface tension force
 			   vvx += mu * dX1_phi*c1o2;
-			   vvy += mu * dX2_phi * c1o2;
+			   vvy += mu * dX2_phi * c1o2 ;
 			   vvz += mu * dX3_phi * c1o2;
+
+			   //////classic source term
+			   ///----Classic source term 8.4.2021
+
+			   LBMReal vvxF, vvyF, vvzF;
+			   vvxF = vvx;//-2*c1o24 * lap_vx;// 
+			   vvyF = vvy;//-2*c1o24 * lap_vy;// 
+			   vvzF = vvz;//-2*c1o24 * lap_vz;// 
+
+//			   vvxF = 1.2* vvx- 0.2*0.5 * ((*velocityX)(x1 - 1, x2, x3) + (*velocityX)(x1 + 1, x2, x3));
+//			   vvyF = 1.2 *vvy- 0.2*0.5* ((*velocityY)(x1 , x2-1, x3) + (*velocityY)(x1 , x2+1, x3));
+//			   vvzF = 1.2 *vvz-0.2*0.5* ((*velocityZ)(x1 , x2, x3-1) + (*velocityZ)(x1 , x2, x3+1));
+			   //if (vvxF != vvx) {
+				  // vvxF = vvxF;
+			   //}
+			   LBMReal weightGrad = 1.0;// -denom * denom / (denom * denom + 0.0001 * 0.001);
+			   LBMReal dX1_phiF = dX1_phi * weightGrad + (1.0 - weightGrad) * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * normX1;
+			   LBMReal dX2_phiF = dX2_phi * weightGrad + (1.0 - weightGrad) * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * normX2;
+			   LBMReal dX3_phiF = dX3_phi * weightGrad + (1.0 - weightGrad) * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * normX3;
+
+			   //dX1_phiF *= 1.2;
+			   //dX2_phiF *= 1.2;
+			   //dX3_phiF *= 1.2;
+
+			   //LBMReal gradFD = sqrt(dX1_phi * dX1_phi + dX2_phi * dX2_phi + dX3_phi * dX3_phi);
+			   //LBMReal gradPhi = (1.0 - phi[REST]) * (phi[REST]);
+			   //gradPhi = (gradPhi > gradFD) ? gradPhi : gradFD;
+			   //dX1_phiF = gradPhi * normX1;
+				  // dX2_phiF = gradPhi * normX2;
+				  // dX3_phiF = gradPhi * normX3;
+
+			   LBMReal ux2;
+			   LBMReal uy2;
+			   LBMReal uz2;
+			   ux2 = vvxF * vvxF;
+			   uy2 = vvyF * vvyF;
+			   uz2 = vvzF * vvzF;
+			   LBMReal forcingTerm[D3Q27System::ENDF + 1];
+			   for (int dir = FSTARTDIR; dir <= FENDDIR; dir++) {
+				   LBMReal velProd = DX1[dir] * vvxF + DX2[dir] * vvyF + DX3[dir] * vvzF;
+				   LBMReal velSq1 = velProd * velProd;
+				   LBMReal gamma = WEIGTH[dir] * (1.0 + 3 * velProd + (4.5 * velSq1 - 1.5 * (ux2 + uy2 + uz2)));
+
+				   //LBMReal fac1 = (gamma - WEIGTH[dir]) * c1o3 * rhoToPhi;
+
+				   //forcingTerm[dir] =
+					  // (-vvxF) * (fac1 * dX1_phiF) +
+					  // (-vvyF) * (fac1 * dX2_phiF) +
+					  // (-vvzF) * (fac1 * dX3_phiF) +
+					  // (DX1[dir]) * (fac1 * dX1_phiF) +
+					  // (DX2[dir]) * (fac1 * dX2_phiF) +
+					  // (DX3[dir]) * (fac1 * dX3_phiF);
+
+
+				   LBMReal fac1 = (gamma - WEIGTH[dir]) * c1o3 ;
+
+				   forcingTerm[dir] =
+					   (-vvxF) * (fac1 * (dX1_phiF * rhoH + dX2_phi2 * rhoL)) +
+					   (-vvyF) * (fac1 * (dX2_phiF * rhoH + dX2_phi2 * rhoL)) +
+					   (-vvzF) * (fac1 * (dX3_phiF * rhoH + dX3_phi2 * rhoL)) +
+					   (DX1[dir]) * (fac1 * (dX1_phiF * rhoH + dX2_phi2 * rhoL)) +
+					   (DX2[dir]) * (fac1 * (dX2_phiF * rhoH + dX2_phi2 * rhoL)) +
+					   (DX3[dir]) * (fac1 * (dX3_phiF * rhoH + dX3_phi2 * rhoL));
+
+
+
+			   }
+
+			   LBMReal gamma = WEIGTH[DIR_000] * (1.0 - 1.5 * (ux2 + uy2 + uz2));
+			   LBMReal fac1 = (gamma - WEIGTH[DIR_000]) * c1o3 * rhoToPhi;
+			   forcingTerm[DIR_000] =	 (-vvxF) * (fac1 * (dX1_phiF * rhoH + dX2_phi2 * rhoL)) +
+				   (-vvyF) * (fac1 * (dX2_phiF * rhoH + dX2_phi2 * rhoL)) +
+				   (-vvzF) * (fac1 * (dX3_phiF * rhoH + dX3_phi2 * rhoL));
+
+			   ////////
+			  // LBMReal divAfterSource=
+			  //( mfcbb + 3.0 * (0.5 * forcingTerm[DIR_P00]) / rho	) *((vvxF-1)*(vvxF-1)+(vvyF)  *(vvyF)  +(vvzF)  *(vvzF)-1)+
+			  //( mfbcb + 3.0 * (0.5 * forcingTerm[N]) / rho	) *((vvxF)  *(vvxF)  +(vvyF-1)*(vvyF-1)+(vvzF)  *(vvzF)-1)+
+			  //( mfbbc + 3.0 * (0.5 * forcingTerm[T]) / rho	) *((vvxF)  *(vvxF)  +(vvyF)  *(vvyF)  +(vvzF-1)*(vvzF-1)-1)+
+			  //( mfccb + 3.0 * (0.5 * forcingTerm[NE]) / rho	) *((vvxF-1)*(vvxF-1)+(vvyF-1)*(vvyF-1)+(vvzF)  *(vvzF)-1)+
+			  //( mfacb + 3.0 * (0.5 * forcingTerm[NW]) / rho	) *((vvxF+1)*(vvxF+1)+(vvyF-1)*(vvyF-1)+(vvzF)  *(vvzF)-1)+
+			  //( mfcbc + 3.0 * (0.5 * forcingTerm[TE]) / rho	) *((vvxF-1)*(vvxF-1)+(vvyF)  *(vvyF)  +(vvzF-1)*(vvzF-1)-1)+
+			  //( mfabc + 3.0 * (0.5 * forcingTerm[TW]) / rho	) *((vvxF+1)*(vvxF+1)+(vvyF)  *(vvyF)  +(vvzF-1)*(vvzF-1)-1)+
+			  //( mfbcc + 3.0 * (0.5 * forcingTerm[TN]) / rho	) *((vvxF)  *(vvxF)  +(vvyF-1)*(vvyF-1)+(vvzF-1)*(vvzF-1)-1)+
+			  //( mfbac + 3.0 * (0.5 * forcingTerm[TS]) / rho	) *((vvxF)  *(vvxF)  +(vvyF+1)*(vvyF+1)+(vvzF-1)*(vvzF-1)-1)+
+			  //( mfccc + 3.0 * (0.5 * forcingTerm[TNE]) / rho) *((vvxF-1)*(vvxF-1)+(vvyF-1)*(vvyF-1)+(vvzF-1)*(vvzF-1)-1)+
+			  //( mfacc + 3.0 * (0.5 * forcingTerm[TNW]) / rho) *((vvxF+1)*(vvxF+1)+(vvyF-1)*(vvyF-1)+(vvzF-1)*(vvzF-1)-1)+
+			  //( mfcac + 3.0 * (0.5 * forcingTerm[TSE]) / rho) *((vvxF-1)*(vvxF-1)+(vvyF+1)*(vvyF+1)+(vvzF-1)*(vvzF-1)-1)+
+			  //( mfaac + 3.0 * (0.5 * forcingTerm[TSW]) / rho) *((vvxF+1)*(vvxF+1)+(vvyF+1)*(vvyF+1)+(vvzF-1)*(vvzF-1)-1)+
+			  //( mfabb + 3.0 * (0.5 * forcingTerm[W]) / rho	) *((vvxF+1)*(vvxF+1)+(vvyF)  *(vvyF)  +(vvzF)  *(vvzF)-1)+
+			  //( mfbab + 3.0 * (0.5 * forcingTerm[S]) / rho	) *((vvxF)  *(vvxF)  +(vvyF+1)*(vvyF+1)+(vvzF)  *(vvzF)-1)+
+			  //( mfbba + 3.0 * (0.5 * forcingTerm[B]) / rho	) *((vvxF)  *(vvxF)  +(vvyF)  *(vvyF)  +(vvzF+1)*(vvzF+1)-1)+
+			  //( mfaab + 3.0 * (0.5 * forcingTerm[SW]) / rho	) *((vvxF+1)*(vvxF+1)+(vvyF+1)*(vvyF+1)+(vvzF)  *(vvzF)-1)+
+			  //( mfcab + 3.0 * (0.5 * forcingTerm[SE]) / rho	) *((vvxF-1)*(vvxF-1)+(vvyF+1)*(vvyF+1)+(vvzF)  *(vvzF)-1)+
+			  //( mfaba + 3.0 * (0.5 * forcingTerm[BW]) / rho	) *((vvxF+1)*(vvxF+1)+(vvyF)  *(vvyF)  +(vvzF+1)*(vvzF+1)-1)+
+			  //( mfcba + 3.0 * (0.5 * forcingTerm[BE]) / rho	) *((vvxF-1)*(vvxF-1)+(vvyF)  *(vvyF)  +(vvzF+1)*(vvzF+1)-1)+
+			  //( mfbaa + 3.0 * (0.5 * forcingTerm[BS]) / rho	) *((vvxF)  *(vvxF)  +(vvyF+1)*(vvyF+1)+(vvzF+1)*(vvzF+1)-1)+
+			  //( mfbca + 3.0 * (0.5 * forcingTerm[BN]) / rho	) *((vvxF)  *(vvxF)  +(vvyF-1)*(vvyF-1)+(vvzF+1)*(vvzF+1)-1)+
+			  //( mfaaa + 3.0 * (0.5 * forcingTerm[BSW]) / rho) *((vvxF+1)*(vvxF+1)+(vvyF+1)*(vvyF+1)+(vvzF+1)*(vvzF+1)-1)+
+			  //( mfcaa + 3.0 * (0.5 * forcingTerm[BSE]) / rho) *((vvxF-1)*(vvxF-1)+(vvyF+1)*(vvyF+1)+(vvzF+1)*(vvzF+1)-1)+
+			  //( mfaca + 3.0 * (0.5 * forcingTerm[BNW]) / rho) *((vvxF+1)*(vvxF+1)+(vvyF-1)*(vvyF-1)+(vvzF+1)*(vvzF+1)-1)+
+			  //( mfcca + 3.0 * (0.5 * forcingTerm[BNE]) / rho) *((vvxF-1)*(vvxF-1)+(vvyF-1)*(vvyF-1)+(vvzF+1)*(vvzF+1)-1)+
+			  //( mfbbb + 3.0 * (0.5 * forcingTerm[REST]) / rho)*((vvxF)*(vvxF)+(vvyF)*(vvyF)+(vvzF)*(vvzF)-1);
+
+			  // LBMReal divBeforeSource =
+				 //  (mfcbb)    * ((vvxF - 1) * (vvxF - 1) + (vvyF) * (vvyF)+(vvzF) * (vvzF)-1) +
+				 //  (mfbcb)    * ((vvxF) * (vvxF)+(vvyF - 1) * (vvyF - 1) + (vvzF) * (vvzF)-1) +
+				 //  (mfbbc)    * ((vvxF) * (vvxF)+(vvyF) * (vvyF)+(vvzF - 1) * (vvzF - 1)-1) +
+				 //  (mfccb)   * ((vvxF - 1) * (vvxF - 1) + (vvyF - 1) * (vvyF - 1) + (vvzF) * (vvzF)-1) +
+				 //  (mfacb)   * ((vvxF + 1) * (vvxF + 1) + (vvyF - 1) * (vvyF - 1) + (vvzF) * (vvzF)-1) +
+				 //  (mfcbc)   * ((vvxF - 1) * (vvxF - 1) + (vvyF) * (vvyF)+(vvzF - 1) * (vvzF - 1)-1) +
+				 //  (mfabc)   * ((vvxF + 1) * (vvxF + 1) + (vvyF) * (vvyF)+(vvzF - 1) * (vvzF - 1)-1) +
+				 //  (mfbcc)   * ((vvxF) * (vvxF)+(vvyF - 1) * (vvyF - 1) + (vvzF - 1) * (vvzF - 1)-1) +
+				 //  (mfbac)   * ((vvxF) * (vvxF)+(vvyF + 1) * (vvyF + 1) + (vvzF - 1) * (vvzF - 1)-1) +
+				 //  (mfccc)  * ((vvxF - 1) * (vvxF - 1) + (vvyF - 1) * (vvyF - 1) + (vvzF - 1) * (vvzF - 1)-1) +
+				 //  (mfacc)  * ((vvxF + 1) * (vvxF + 1) + (vvyF - 1) * (vvyF - 1) + (vvzF - 1) * (vvzF - 1)-1) +
+				 //  (mfcac)  * ((vvxF - 1) * (vvxF - 1) + (vvyF + 1) * (vvyF + 1) + (vvzF - 1) * (vvzF - 1)-1) +
+				 //  (mfaac)  * ((vvxF + 1) * (vvxF + 1) + (vvyF + 1) * (vvyF + 1) + (vvzF - 1) * (vvzF - 1)-1) +
+				 //  (mfabb)    * ((vvxF + 1) * (vvxF + 1) + (vvyF) * (vvyF)+(vvzF) * (vvzF)-1) +
+				 //  (mfbab)    * ((vvxF) * (vvxF)+(vvyF + 1) * (vvyF + 1) + (vvzF) * (vvzF)-1) +
+				 //  (mfbba)    * ((vvxF) * (vvxF)+(vvyF) * (vvyF)+(vvzF + 1) * (vvzF + 1)-1) +
+				 //  (mfaab)   * ((vvxF + 1) * (vvxF + 1) + (vvyF + 1) * (vvyF + 1) + (vvzF) * (vvzF)-1) +
+				 //  (mfcab)   * ((vvxF - 1) * (vvxF - 1) + (vvyF + 1) * (vvyF + 1) + (vvzF) * (vvzF)-1) +
+				 //  (mfaba)   * ((vvxF + 1) * (vvxF + 1) + (vvyF) * (vvyF)+(vvzF + 1) * (vvzF + 1)-1) +
+				 //  (mfcba)   * ((vvxF - 1) * (vvxF - 1) + (vvyF) * (vvyF)+(vvzF + 1) * (vvzF + 1)-1) +
+				 //  (mfbaa)   * ((vvxF) * (vvxF)+(vvyF + 1) * (vvyF + 1) + (vvzF + 1) * (vvzF + 1)-1) +
+				 //  (mfbca)   * ((vvxF) * (vvxF)+(vvyF - 1) * (vvyF - 1) + (vvzF + 1) * (vvzF + 1)-1) +
+				 //  (mfaaa)  * ((vvxF + 1) * (vvxF + 1) + (vvyF + 1) * (vvyF + 1) + (vvzF + 1) * (vvzF + 1)-1) +
+				 //  (mfcaa)  * ((vvxF - 1) * (vvxF - 1) + (vvyF + 1) * (vvyF + 1) + (vvzF + 1) * (vvzF + 1)-1) +
+				 //  (mfaca)  * ((vvxF + 1) * (vvxF + 1) + (vvyF - 1) * (vvyF - 1) + (vvzF + 1) * (vvzF + 1)-1) +
+				 //  (mfcca)  * ((vvxF - 1) * (vvxF - 1) + (vvyF - 1) * (vvyF - 1) + (vvzF + 1) * (vvzF + 1)-1) +
+				 //  (mfbbb) * ((vvxF) * (vvxF)+(vvyF) * (vvyF)+(vvzF) * (vvzF)-1);
+			   //if (divAfterSource - divBeforeSource != 0 && phi[REST]>0.0001 && phi[REST]<0.999) {
+				  // std::cout << phi[REST]<<" "<< divAfterSource << " " << divBeforeSource <<" "<< divAfterSource/ divBeforeSource << std::endl;
+			   //}
+
+			   //if (fabs(divAfterSource - divBeforeSource)/(fabs(divAfterSource) + fabs(divBeforeSource)+1e-10) > 1e-5) {
+				  // LBMReal scaleDiv =0.95+(1-0.95)* (divBeforeSource) / (divBeforeSource - divAfterSource);
+
+				  // forcingTerm[DIR_P00]	 *=scaleDiv;
+				  // forcingTerm[N]	 *=scaleDiv;
+				  // forcingTerm[T]	 *=scaleDiv;
+				  // forcingTerm[NE]	 *=scaleDiv;
+				  // forcingTerm[NW]	 *=scaleDiv;
+				  // forcingTerm[TE]	 *=scaleDiv;
+				  // forcingTerm[TW]	 *=scaleDiv;
+				  // forcingTerm[TN]	 *=scaleDiv;
+				  // forcingTerm[TS]	 *=scaleDiv;
+				  // forcingTerm[TNE]	 *=scaleDiv;
+				  // forcingTerm[TNW]	 *=scaleDiv;
+				  // forcingTerm[TSE]	 *=scaleDiv;
+				  // forcingTerm[TSW]	 *=scaleDiv;
+				  // forcingTerm[W]	 *=scaleDiv;
+				  // forcingTerm[S]	 *=scaleDiv;
+				  // forcingTerm[B]	 *=scaleDiv;
+				  // forcingTerm[SW]	 *=scaleDiv;
+				  // forcingTerm[SE]	 *=scaleDiv;
+				  // forcingTerm[BW]	 *=scaleDiv;
+				  // forcingTerm[BE]	 *=scaleDiv;
+				  // forcingTerm[BS]	 *=scaleDiv;
+				  // forcingTerm[BN]	 *=scaleDiv;
+				  // forcingTerm[BSW]	 *=scaleDiv;
+				  // forcingTerm[BSE]	 *=scaleDiv;
+				  // forcingTerm[BNW]	 *=scaleDiv;
+				  // forcingTerm[BNE]	 *=scaleDiv;
+				  // forcingTerm[REST] *=scaleDiv;
+			   //}
+			   ////////
+
+
+			   mfcbb += 3.0 * (0.5 * forcingTerm[DIR_P00]) / rho;    //-(3.0*p1 - rho)*WEIGTH[E  ];
+			   mfbcb += 3.0 * (0.5 * forcingTerm[DIR_0P0]) / rho;    //-(3.0*p1 - rho)*WEIGTH[N  ];
+			   mfbbc += 3.0 * (0.5 * forcingTerm[DIR_00P]) / rho;    //-(3.0*p1 - rho)*WEIGTH[T  ];
+			   mfccb += 3.0 * (0.5 * forcingTerm[DIR_PP0]) / rho;   //-(3.0*p1 - rho)*WEIGTH[NE ];
+			   mfacb += 3.0 * (0.5 * forcingTerm[DIR_MP0]) / rho;   //-(3.0*p1 - rho)*WEIGTH[NW ];
+			   mfcbc += 3.0 * (0.5 * forcingTerm[DIR_P0P]) / rho;   //-(3.0*p1 - rho)*WEIGTH[TE ];
+			   mfabc += 3.0 * (0.5 * forcingTerm[DIR_M0P]) / rho;   //-(3.0*p1 - rho)*WEIGTH[TW ];
+			   mfbcc += 3.0 * (0.5 * forcingTerm[DIR_0PP]) / rho;   //-(3.0*p1 - rho)*WEIGTH[TN ];
+			   mfbac += 3.0 * (0.5 * forcingTerm[DIR_0MP]) / rho;   //-(3.0*p1 - rho)*WEIGTH[TS ];
+			   mfccc += 3.0 * (0.5 * forcingTerm[DIR_PPP]) / rho;  //-(3.0*p1 - rho)*WEIGTH[TNE];
+			   mfacc += 3.0 * (0.5 * forcingTerm[DIR_MPP]) / rho;  //-(3.0*p1 - rho)*WEIGTH[TNW];
+			   mfcac += 3.0 * (0.5 * forcingTerm[DIR_PMP]) / rho;  //-(3.0*p1 - rho)*WEIGTH[TSE];
+			   mfaac += 3.0 * (0.5 * forcingTerm[DIR_MMP]) / rho;  //-(3.0*p1 - rho)*WEIGTH[TSW];
+			   mfabb += 3.0 * (0.5 * forcingTerm[DIR_M00]) / rho;    //-(3.0*p1 - rho)*WEIGTH[W  ];
+			   mfbab += 3.0 * (0.5 * forcingTerm[DIR_0M0]) / rho;    //-(3.0*p1 - rho)*WEIGTH[S  ];
+			   mfbba += 3.0 * (0.5 * forcingTerm[DIR_00M]) / rho;    //-(3.0*p1 - rho)*WEIGTH[B  ];
+			   mfaab += 3.0 * (0.5 * forcingTerm[DIR_MM0]) / rho;   //-(3.0*p1 - rho)*WEIGTH[SW ];
+			   mfcab += 3.0 * (0.5 * forcingTerm[DIR_PM0]) / rho;   //-(3.0*p1 - rho)*WEIGTH[SE ];
+			   mfaba += 3.0 * (0.5 * forcingTerm[DIR_M0M]) / rho;   //-(3.0*p1 - rho)*WEIGTH[BW ];
+			   mfcba += 3.0 * (0.5 * forcingTerm[DIR_P0M]) / rho;   //-(3.0*p1 - rho)*WEIGTH[BE ];
+			   mfbaa += 3.0 * (0.5 * forcingTerm[DIR_0MM]) / rho;   //-(3.0*p1 - rho)*WEIGTH[BS ];
+			   mfbca += 3.0 * (0.5 * forcingTerm[DIR_0PM]) / rho;   //-(3.0*p1 - rho)*WEIGTH[BN ];
+			   mfaaa += 3.0 * (0.5 * forcingTerm[DIR_MMM]) / rho;  //-(3.0*p1 - rho)*WEIGTH[BSW];
+			   mfcaa += 3.0 * (0.5 * forcingTerm[DIR_PMM]) / rho;  //-(3.0*p1 - rho)*WEIGTH[BSE];
+			   mfaca += 3.0 * (0.5 * forcingTerm[DIR_MPM]) / rho;  //-(3.0*p1 - rho)*WEIGTH[BNW];
+			   mfcca += 3.0 * (0.5 * forcingTerm[DIR_PPM]) / rho;  //-(3.0*p1 - rho)*WEIGTH[BNE];
+			   mfbbb += 3.0 * (0.5 * forcingTerm[DIR_000]) / rho; //- (3.0*p1 - rho)*WEIGTH[REST]
+
+			   //--------------------------------------------------------
+
+
+
+
+
+			   //////end classic source term
+
+
+
 
 			   //forcing 
 			   ///////////////////////////////////////////////////////////////////////////////////////////
@@ -418,13 +647,13 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
 				   muX2 = static_cast<double>(x2 - 1 + ix2 * maxX2);
 				   muX3 = static_cast<double>(x3 - 1 + ix3 * maxX3);
 
-				   forcingX1 = muForcingX1.Eval();
-				   forcingX2 = muForcingX2.Eval();
-				   forcingX3 = muForcingX3.Eval();
+				   //forcingX1 = muForcingX1.Eval();
+				   //forcingX2 = muForcingX2.Eval();
+				   //forcingX3 = muForcingX3.Eval();
 
-				   vvx += forcingX1 * deltaT * 0.5; // X
-				   vvy += forcingX2 * deltaT * 0.5; // Y
-				   vvz += forcingX3 * deltaT * 0.5; // Z
+				   //vvx += forcingX1 * deltaT * 0.5; // X
+				   //vvy += forcingX2 * deltaT * 0.5; // Y
+				   //vvz += forcingX3 * deltaT * 0.5; // Z
 			   }
 
 			   LBMReal vx2;
@@ -697,11 +926,23 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
 			   // Cumulants
 			   ////////////////////////////////////////////////////////////////////////////////////
 			   LBMReal OxxPyyPzz = 1.; //omega2 or bulk viscosity
-			   LBMReal OxyyPxzz = 1.;//-s9;//2+s9;//
-			   LBMReal OxyyMxzz  = 1.;//2+s9;//
+			 //  LBMReal OxyyPxzz = 1.;//-s9;//2+s9;//
+			 //  LBMReal OxyyMxzz  = 1.;//2+s9;//
 			   LBMReal O4 = 1.;
 			   LBMReal O5 = 1.;
 			   LBMReal O6 = 1.;
+
+
+
+			   /////fourth order parameters; here only for test. Move out of loop!
+
+			   LBMReal OxyyPxzz = 8.0 * (collFactorM - 2.0) * (OxxPyyPzz * (3.0 * collFactorM - 1.0) - 5.0 * collFactorM) / (8.0 * (5.0 - 2.0 * collFactorM) * collFactorM + OxxPyyPzz * (8.0 + collFactorM * (9.0 * collFactorM - 26.0)));
+			   LBMReal OxyyMxzz = 8.0 * (collFactorM - 2.0) * (collFactorM + OxxPyyPzz * (3.0 * collFactorM - 7.0)) / (OxxPyyPzz * (56.0 - 42.0 * collFactorM + 9.0 * collFactorM * collFactorM) - 8.0 * collFactorM);
+			//    LBMReal Oxyz = 24.0 * (collFactorM - 2.0) * (4.0 * collFactorM * collFactorM + collFactorM * OxxPyyPzz * (18.0 - 13.0 * collFactorM) + OxxPyyPzz * OxxPyyPzz * (2.0 + collFactorM * (6.0 * collFactorM - 11.0))) / (16.0 * collFactorM * collFactorM * (collFactorM - 6.0) - 2.0 * collFactorM * OxxPyyPzz * (216.0 + 5.0 * collFactorM * (9.0 * collFactorM - 46.0)) + OxxPyyPzz * OxxPyyPzz * (collFactorM * (3.0 * collFactorM - 10.0) * (15.0 * collFactorM - 28.0) - 48.0));
+			   LBMReal A = (4.0 * collFactorM * collFactorM + 2.0 * collFactorM * OxxPyyPzz * (collFactorM - 6.0) + OxxPyyPzz * OxxPyyPzz * (collFactorM * (10.0 - 3.0 * collFactorM) - 4.0)) / ((collFactorM - OxxPyyPzz) * (OxxPyyPzz * (2.0 + 3.0 * collFactorM) - 8.0 * collFactorM));
+			   //FIXME:  warning C4459: declaration of 'B' hides global declaration (message : see declaration of 'D3Q27System::DIR_00M' )
+			   LBMReal BB = (4.0 * collFactorM * OxxPyyPzz * (9.0 * collFactorM - 16.0) - 4.0 * collFactorM * collFactorM - 2.0 * OxxPyyPzz * OxxPyyPzz * (2.0 + 9.0 * collFactorM * (collFactorM - 2.0))) / (3.0 * (collFactorM - OxxPyyPzz) * (OxxPyyPzz * (2.0 + 3.0 * collFactorM) - 8.0 * collFactorM));
+
 
 			   //Cum 4.
 			   //LBMReal CUMcbb = mfcbb - ((mfcaa + c1o3 * oMdrho) * mfabb + 2. * mfbba * mfbab); // till 18.05.2015
@@ -744,19 +985,24 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
 			   //applying phase field gradients first part:
 			  // mxxPyyPzz += c2o3 * rhoToPhi * (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz);
                // 17.03.2021 attempt for statililization by assymptotically vanishing bias
-               LBMReal correctionScaling =
-                   rhoToPhi / rho; // +0.5;// (vx2 + vy2 + vz2) * 100;// +0.5;//(vx2 + vy2 + vz2)*1000;
-               mxxPyyPzz += (1.0 / 6.0) * (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz) *
-                            correctionScaling; // As in Hesam's code
-               mxxMyy += c1o3 * (dX1_phi * vvx - dX2_phi * vvy) * correctionScaling;
-               mxxMzz += c1o3 * (dX1_phi * vvx - dX3_phi * vvz) * correctionScaling;
-               mfabb += c1o6 * (dX2_phi * vvz + dX3_phi * vvy) * correctionScaling;
-               mfbab += c1o6 * (dX1_phi * vvz + dX3_phi * vvx) * correctionScaling;
-               mfbba += c1o6 * (dX1_phi * vvy + dX2_phi * vvx) * correctionScaling;
+               //LBMReal correctionScaling =
+               //    rhoToPhi / rho; // +0.5;// (vx2 + vy2 + vz2) * 100;// +0.5;//(vx2 + vy2 + vz2)*1000;
+               //mxxPyyPzz += (1.0 / 6.0) * (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz) *
+               //             correctionScaling; // As in Hesam's code
+               //mxxMyy += c1o3 * (dX1_phi * vvx - dX2_phi * vvy) * correctionScaling;
+               //mxxMzz += c1o3 * (dX1_phi * vvx - dX3_phi * vvz) * correctionScaling;
+               //mfabb += c1o6 * (dX2_phi * vvz + dX3_phi * vvy) * correctionScaling;
+               //mfbab += c1o6 * (dX1_phi * vvz + dX3_phi * vvx) * correctionScaling;
+               //mfbba += c1o6 * (dX1_phi * vvy + dX2_phi * vvx) * correctionScaling;
 
-			   LBMReal dxux = 0.0;// -c1o2 * collFactorM * (mxxMyy + mxxMzz) + c1o2 * OxxPyyPzz * (/*mfaaa*/ -mxxPyyPzz);
-			   LBMReal dyuy = 0.0;// dxux + collFactorM * c3o2 * mxxMyy;
-			   LBMReal dzuz = 0.0;// dxux + collFactorM * c3o2 * mxxMzz;
+			   LBMReal dxux =  -c1o2 * collFactorM * (mxxMyy + mxxMzz) + c1o2 * OxxPyyPzz * (/*mfaaa*/ -mxxPyyPzz);
+			   LBMReal dyuy =  dxux + collFactorM * c3o2 * mxxMyy;
+			   LBMReal dzuz =  dxux + collFactorM * c3o2 * mxxMzz;
+
+			   LBMReal Dxy = -three * collFactorM * mfbba;
+			   LBMReal Dxz = -three * collFactorM * mfbab;
+			   LBMReal Dyz = -three * collFactorM * mfabb;
+
 
 			   //relax
 			   mxxPyyPzz += OxxPyyPzz * (/*mfaaa*/ - mxxPyyPzz) - 3. * (1. - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
@@ -769,16 +1015,16 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
 
 			   //applying phase field gradients second part:
 			   //mxxPyyPzz += c2o3 * rhoToPhi * (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz);
-               mxxPyyPzz += (1.0 / 6.0) * (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz) *
-                            correctionScaling; // As in Hesam's code
-               mxxMyy += c1o3 * (dX1_phi * vvx - dX2_phi * vvy) * correctionScaling;
-               mxxMzz += c1o3 * (dX1_phi * vvx - dX3_phi * vvz) * correctionScaling;
-               mfabb += c1o6 * (dX2_phi * vvz + dX3_phi * vvy) * correctionScaling;
-               mfbab += c1o6 * (dX1_phi * vvz + dX3_phi * vvx) * correctionScaling;
-               mfbba += c1o6 * (dX1_phi * vvy + dX2_phi * vvx) * correctionScaling;
+               //mxxPyyPzz += (1.0 / 6.0) * (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz) *
+               //             correctionScaling; // As in Hesam's code
+               //mxxMyy += c1o3 * (dX1_phi * vvx - dX2_phi * vvy) * correctionScaling;
+               //mxxMzz += c1o3 * (dX1_phi * vvx - dX3_phi * vvz) * correctionScaling;
+               //mfabb += c1o6 * (dX2_phi * vvz + dX3_phi * vvy) * correctionScaling;
+               //mfbab += c1o6 * (dX1_phi * vvz + dX3_phi * vvx) * correctionScaling;
+               //mfbba += c1o6 * (dX1_phi * vvy + dX2_phi * vvx) * correctionScaling;
 
                ////updated pressure
-               mfaaa += (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz) * correctionScaling;
+               //mfaaa += (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz) * correctionScaling;
 
                mxxPyyPzz += mfaaa; // 12.03.21 shifted by mfaaa
 			   // linear combinations back
@@ -822,13 +1068,19 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
 			   mfbac = (-mxyyMxzz + mxyyPxzz) * c1o2;
 
 			   //4.
-			   CUMacc += O4 * (-CUMacc);
-			   CUMcac += O4 * (-CUMcac);
-			   CUMcca += O4 * (-CUMcca);
+			   //CUMacc += O4 * (-CUMacc);
+			   //CUMcac += O4 * (-CUMcac);
+			   //CUMcca += O4 * (-CUMcca);
 
-			   CUMbbc += O4 * (-CUMbbc);
-			   CUMbcb += O4 * (-CUMbcb);
-			   CUMcbb += O4 * (-CUMcbb);
+			   //CUMbbc += O4 * (-CUMbbc);
+			   //CUMbcb += O4 * (-CUMbcb);
+			   //CUMcbb += O4 * (-CUMcbb);
+			   CUMacc = -O4 * (one / collFactorM - c1o2) * (dyuy + dzuz) * c2o3 * A + (one - O4) * (CUMacc);
+			   CUMcac = -O4 * (one / collFactorM - c1o2) * (dxux + dzuz) * c2o3 * A + (one - O4) * (CUMcac);
+			   CUMcca = -O4 * (one / collFactorM - c1o2) * (dyuy + dxux) * c2o3 * A + (one - O4) * (CUMcca);
+			   CUMbbc = -O4 * (one / collFactorM - c1o2) * Dxy * c1o3 * BB + (one - O4) * (CUMbbc);
+			   CUMbcb = -O4 * (one / collFactorM - c1o2) * Dxz * c1o3 * BB + (one - O4) * (CUMbcb);
+			   CUMcbb = -O4 * (one / collFactorM - c1o2) * Dyz * c1o3 * BB + (one - O4) * (CUMcbb);
 
 			   //5.
 			   CUMbcc += O5 * (-CUMbcc);
@@ -1090,60 +1342,92 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
 			   mfbcc = m1;
 			   mfccc = m2;
 
+			   /////classical source term 8.4.2021
+
+			   mfcbb += 3.0 * (0.5 * forcingTerm[DIR_P00]) / rho;    //-(3.0*p1 - rho)*WEIGTH[E  ];
+			   mfbcb += 3.0 * (0.5 * forcingTerm[DIR_0P0]) / rho;    //-(3.0*p1 - rho)*WEIGTH[N  ];
+			   mfbbc += 3.0 * (0.5 * forcingTerm[DIR_00P]) / rho;    //-(3.0*p1 - rho)*WEIGTH[T  ];
+			   mfccb += 3.0 * (0.5 * forcingTerm[DIR_PP0]) / rho;   //-(3.0*p1 - rho)*WEIGTH[NE ];
+			   mfacb += 3.0 * (0.5 * forcingTerm[DIR_MP0]) / rho;   //-(3.0*p1 - rho)*WEIGTH[NW ];
+			   mfcbc += 3.0 * (0.5 * forcingTerm[DIR_P0P]) / rho;   //-(3.0*p1 - rho)*WEIGTH[TE ];
+			   mfabc += 3.0 * (0.5 * forcingTerm[DIR_M0P]) / rho;   //-(3.0*p1 - rho)*WEIGTH[TW ];
+			   mfbcc += 3.0 * (0.5 * forcingTerm[DIR_0PP]) / rho;   //-(3.0*p1 - rho)*WEIGTH[TN ];
+			   mfbac += 3.0 * (0.5 * forcingTerm[DIR_0MP]) / rho;   //-(3.0*p1 - rho)*WEIGTH[TS ];
+			   mfccc += 3.0 * (0.5 * forcingTerm[DIR_PPP]) / rho;  //-(3.0*p1 - rho)*WEIGTH[TNE];
+			   mfacc += 3.0 * (0.5 * forcingTerm[DIR_MPP]) / rho;  //-(3.0*p1 - rho)*WEIGTH[TNW];
+			   mfcac += 3.0 * (0.5 * forcingTerm[DIR_PMP]) / rho;  //-(3.0*p1 - rho)*WEIGTH[TSE];
+			   mfaac += 3.0 * (0.5 * forcingTerm[DIR_MMP]) / rho;  //-(3.0*p1 - rho)*WEIGTH[TSW];
+			   mfabb += 3.0 * (0.5 * forcingTerm[DIR_M00]) / rho;    //-(3.0*p1 - rho)*WEIGTH[W  ];
+			   mfbab += 3.0 * (0.5 * forcingTerm[DIR_0M0]) / rho;    //-(3.0*p1 - rho)*WEIGTH[S  ];
+			   mfbba += 3.0 * (0.5 * forcingTerm[DIR_00M]) / rho;    //-(3.0*p1 - rho)*WEIGTH[B  ];
+			   mfaab += 3.0 * (0.5 * forcingTerm[DIR_MM0]) / rho;   //-(3.0*p1 - rho)*WEIGTH[SW ];
+			   mfcab += 3.0 * (0.5 * forcingTerm[DIR_PM0]) / rho;   //-(3.0*p1 - rho)*WEIGTH[SE ];
+			   mfaba += 3.0 * (0.5 * forcingTerm[DIR_M0M]) / rho;   //-(3.0*p1 - rho)*WEIGTH[BW ];
+			   mfcba += 3.0 * (0.5 * forcingTerm[DIR_P0M]) / rho;   //-(3.0*p1 - rho)*WEIGTH[BE ];
+			   mfbaa += 3.0 * (0.5 * forcingTerm[DIR_0MM]) / rho;   //-(3.0*p1 - rho)*WEIGTH[BS ];
+			   mfbca += 3.0 * (0.5 * forcingTerm[DIR_0PM]) / rho;   //-(3.0*p1 - rho)*WEIGTH[BN ];
+			   mfaaa += 3.0 * (0.5 * forcingTerm[DIR_MMM]) / rho;  //-(3.0*p1 - rho)*WEIGTH[BSW];
+			   mfcaa += 3.0 * (0.5 * forcingTerm[DIR_PMM]) / rho;  //-(3.0*p1 - rho)*WEIGTH[BSE];
+			   mfaca += 3.0 * (0.5 * forcingTerm[DIR_MPM]) / rho;  //-(3.0*p1 - rho)*WEIGTH[BNW];
+			   mfcca += 3.0 * (0.5 * forcingTerm[DIR_PPM]) / rho;  //-(3.0*p1 - rho)*WEIGTH[BNE];
+			   mfbbb += 3.0 * (0.5 * forcingTerm[DIR_000]) / rho; //- (3.0*p1 - rho)*WEIGTH[REST]
+
+
+
 			   //////////////////////////////////////////////////////////////////////////
 			   //proof correctness
 			   //////////////////////////////////////////////////////////////////////////
-#ifdef  PROOF_CORRECTNESS
-			   LBMReal rho_post = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca)
-				   + (mfaab + mfacb + mfcab + mfccb) + (mfaba + mfabc + mfcba + mfcbc) + (mfbaa + mfbac + mfbca + mfbcc)
-				   + (mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc) + mfbbb;
-			   //LBMReal dif = fabs(drho - rho_post);
-               LBMReal dif = drho + (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz) * correctionScaling - rho_post;
-#ifdef SINGLEPRECISION
-			   if (dif > 10.0E-7 || dif < -10.0E-7)
-#else
-			   if (dif > 10.0E-15 || dif < -10.0E-15)
-#endif
-			   {
-				   UB_THROW(UbException(UB_EXARGS, "drho=" + UbSystem::toString(drho) + ", rho_post=" + UbSystem::toString(rho_post)
-					   + " dif=" + UbSystem::toString(dif)
-					   + " drho is not correct for node " + UbSystem::toString(x1) + "," + UbSystem::toString(x2) + "," + UbSystem::toString(x3)));
-				   //UBLOG(logERROR,"LBMKernelETD3Q27CCLB::collideAll(): drho is not correct for node "+UbSystem::toString(x1)+","+UbSystem::toString(x2)+","+UbSystem::toString(x3));
-				   //exit(EXIT_FAILURE);
-			   }
-#endif
+//#ifdef  PROOF_CORRECTNESS
+//			   LBMReal rho_post = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca)
+//				   + (mfaab + mfacb + mfcab + mfccb) + (mfaba + mfabc + mfcba + mfcbc) + (mfbaa + mfbac + mfbca + mfbcc)
+//				   + (mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc) + mfbbb;
+//			   //LBMReal dif = fabs(drho - rho_post);
+//               LBMReal dif = drho + (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz) * correctionScaling - rho_post;
+//#ifdef SINGLEPRECISION
+//			   if (dif > 10.0E-7 || dif < -10.0E-7)
+//#else
+//			   if (dif > 10.0E-15 || dif < -10.0E-15)
+//#endif
+//			   {
+//				   UB_THROW(UbException(UB_EXARGS, "drho=" + UbSystem::toString(drho) + ", rho_post=" + UbSystem::toString(rho_post)
+//					   + " dif=" + UbSystem::toString(dif)
+//					   + " drho is not correct for node " + UbSystem::toString(x1) + "," + UbSystem::toString(x2) + "," + UbSystem::toString(x3)));
+//				   //UBLOG(logERROR,"LBMKernelETD3Q27CCLB::collideAll(): drho is not correct for node "+UbSystem::toString(x1)+","+UbSystem::toString(x2)+","+UbSystem::toString(x3));
+//				   //exit(EXIT_FAILURE);
+//			   }
+//#endif
 			   //////////////////////////////////////////////////////////////////////////
 			   //write distribution
 			   //////////////////////////////////////////////////////////////////////////
-			   (*this->localDistributionsF)(D3Q27System::ET_E, x1, x2, x3) = mfabb * rho;
-			   (*this->localDistributionsF)(D3Q27System::ET_N, x1, x2, x3) = mfbab * rho;
-			   (*this->localDistributionsF)(D3Q27System::ET_T, x1, x2, x3) = mfbba * rho;
-			   (*this->localDistributionsF)(D3Q27System::ET_NE, x1, x2, x3) = mfaab * rho;
-			   (*this->localDistributionsF)(D3Q27System::ET_NW, x1p, x2, x3) = mfcab * rho;
-			   (*this->localDistributionsF)(D3Q27System::ET_TE, x1, x2, x3) = mfaba * rho;
-			   (*this->localDistributionsF)(D3Q27System::ET_TW, x1p, x2, x3) = mfcba * rho;
-			   (*this->localDistributionsF)(D3Q27System::ET_TN, x1, x2, x3) = mfbaa * rho;
-			   (*this->localDistributionsF)(D3Q27System::ET_TS, x1, x2p, x3) = mfbca * rho;
-			   (*this->localDistributionsF)(D3Q27System::ET_TNE, x1, x2, x3) = mfaaa * rho;
-			   (*this->localDistributionsF)(D3Q27System::ET_TNW, x1p, x2, x3) = mfcaa * rho;
-			   (*this->localDistributionsF)(D3Q27System::ET_TSE, x1, x2p, x3) = mfaca * rho;
-			   (*this->localDistributionsF)(D3Q27System::ET_TSW, x1p, x2p, x3) = mfcca * rho;
+			   (*this->localDistributionsF)(D3Q27System::ET_E, x1, x2, x3) = mfabb * rho * c1o3;
+			   (*this->localDistributionsF)(D3Q27System::ET_N, x1, x2, x3) = mfbab * rho * c1o3;
+			   (*this->localDistributionsF)(D3Q27System::ET_T, x1, x2, x3) = mfbba * rho * c1o3;
+			   (*this->localDistributionsF)(D3Q27System::ET_NE, x1, x2, x3) = mfaab * rho * c1o3;
+			   (*this->localDistributionsF)(D3Q27System::ET_NW, x1p, x2, x3) = mfcab * rho * c1o3;
+			   (*this->localDistributionsF)(D3Q27System::ET_TE, x1, x2, x3) = mfaba * rho * c1o3;
+			   (*this->localDistributionsF)(D3Q27System::ET_TW, x1p, x2, x3) = mfcba * rho * c1o3;
+			   (*this->localDistributionsF)(D3Q27System::ET_TN, x1, x2, x3) = mfbaa * rho * c1o3;
+			   (*this->localDistributionsF)(D3Q27System::ET_TS, x1, x2p, x3) = mfbca * rho * c1o3;
+			   (*this->localDistributionsF)(D3Q27System::ET_TNE, x1, x2, x3) = mfaaa * rho * c1o3;
+			   (*this->localDistributionsF)(D3Q27System::ET_TNW, x1p, x2, x3) = mfcaa * rho * c1o3;
+			   (*this->localDistributionsF)(D3Q27System::ET_TSE, x1, x2p, x3) = mfaca * rho * c1o3;
+			   (*this->localDistributionsF)(D3Q27System::ET_TSW, x1p, x2p, x3) = mfcca * rho * c1o3;
 
-			   (*this->nonLocalDistributionsF)(D3Q27System::ET_W, x1p, x2, x3) = mfcbb * rho;
-			   (*this->nonLocalDistributionsF)(D3Q27System::ET_S, x1, x2p, x3) = mfbcb * rho;
-			   (*this->nonLocalDistributionsF)(D3Q27System::ET_B, x1, x2, x3p) = mfbbc * rho;
-			   (*this->nonLocalDistributionsF)(D3Q27System::ET_SW, x1p, x2p, x3) = mfccb * rho;
-			   (*this->nonLocalDistributionsF)(D3Q27System::ET_SE, x1, x2p, x3) = mfacb * rho;
-			   (*this->nonLocalDistributionsF)(D3Q27System::ET_BW, x1p, x2, x3p) = mfcbc * rho;
-			   (*this->nonLocalDistributionsF)(D3Q27System::ET_BE, x1, x2, x3p) = mfabc * rho;
-			   (*this->nonLocalDistributionsF)(D3Q27System::ET_BS, x1, x2p, x3p) = mfbcc * rho;
-			   (*this->nonLocalDistributionsF)(D3Q27System::ET_BN, x1, x2, x3p) = mfbac * rho;
-			   (*this->nonLocalDistributionsF)(D3Q27System::ET_BSW, x1p, x2p, x3p) = mfccc * rho;
-			   (*this->nonLocalDistributionsF)(D3Q27System::ET_BSE, x1, x2p, x3p) = mfacc * rho;
-			   (*this->nonLocalDistributionsF)(D3Q27System::ET_BNW, x1p, x2, x3p) = mfcac * rho;
-			   (*this->nonLocalDistributionsF)(D3Q27System::ET_BNE, x1, x2, x3p) = mfaac * rho;
+			   (*this->nonLocalDistributionsF)(D3Q27System::ET_W, x1p, x2, x3) = mfcbb * rho * c1o3;
+			   (*this->nonLocalDistributionsF)(D3Q27System::ET_S, x1, x2p, x3) = mfbcb * rho * c1o3;
+			   (*this->nonLocalDistributionsF)(D3Q27System::ET_B, x1, x2, x3p) = mfbbc * rho * c1o3;
+			   (*this->nonLocalDistributionsF)(D3Q27System::ET_SW, x1p, x2p, x3) = mfccb * rho * c1o3;
+			   (*this->nonLocalDistributionsF)(D3Q27System::ET_SE, x1, x2p, x3) = mfacb * rho * c1o3;
+			   (*this->nonLocalDistributionsF)(D3Q27System::ET_BW, x1p, x2, x3p) = mfcbc * rho * c1o3;
+			   (*this->nonLocalDistributionsF)(D3Q27System::ET_BE, x1, x2, x3p) = mfabc * rho * c1o3;
+			   (*this->nonLocalDistributionsF)(D3Q27System::ET_BS, x1, x2p, x3p) = mfbcc * rho * c1o3;
+			   (*this->nonLocalDistributionsF)(D3Q27System::ET_BN, x1, x2, x3p) = mfbac * rho * c1o3;
+			   (*this->nonLocalDistributionsF)(D3Q27System::ET_BSW, x1p, x2p, x3p) = mfccc * rho * c1o3;
+			   (*this->nonLocalDistributionsF)(D3Q27System::ET_BSE, x1, x2p, x3p) = mfacc * rho * c1o3;
+			   (*this->nonLocalDistributionsF)(D3Q27System::ET_BNW, x1p, x2, x3p) = mfcac * rho * c1o3;
+			   (*this->nonLocalDistributionsF)(D3Q27System::ET_BNE, x1, x2, x3p) = mfaac * rho * c1o3;
 
-			   (*this->zeroDistributionsF)(x1, x2, x3) = mfbbb * rho;
+			   (*this->zeroDistributionsF)(x1, x2, x3) = mfbbb * rho * c1o3;
 			   //////////////////////////////////////////////////////////////////////////
 
 			   ////!Incompressible Kernal
@@ -1203,7 +1487,7 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
 //
 //                        //--------------------------------------------------------
 //
-//                        mfcbb = 3.0 * (mfcbb + 0.5 * forcingTerm[E]) / rho;    //-(3.0*p1 - rho)*WEIGTH[E  ];
+//                        mfcbb = 3.0 * (mfcbb + 0.5 * forcingTerm[DIR_P00]) / rho;    //-(3.0*p1 - rho)*WEIGTH[E  ];
 //                        mfbcb = 3.0 * (mfbcb + 0.5 * forcingTerm[N]) / rho;    //-(3.0*p1 - rho)*WEIGTH[N  ];
 //                        mfbbc = 3.0 * (mfbbc + 0.5 * forcingTerm[T]) / rho;    //-(3.0*p1 - rho)*WEIGTH[T  ];
 //                        mfccb = 3.0 * (mfccb + 0.5 * forcingTerm[NE]) / rho;   //-(3.0*p1 - rho)*WEIGTH[NE ];
@@ -1911,7 +2195,7 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
 //                        }
 //#endif
 //
-//                        mfcbb = rho * c1o3 * (mfcbb) + 0.5 * forcingTerm[E];
+//                        mfcbb = rho * c1o3 * (mfcbb) + 0.5 * forcingTerm[DIR_P00];
 //                        mfbcb = rho * c1o3 * (mfbcb) + 0.5 * forcingTerm[N];
 //                        mfbbc = rho * c1o3 * (mfbbc) + 0.5 * forcingTerm[T];
 //                        mfccb = rho * c1o3 * (mfccb) + 0.5 * forcingTerm[NE];
@@ -1977,7 +2261,7 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
                         ////////////////////////////////////////////
 		/////CUMULANT PHASE-FIELD
 				LBMReal omegaD =1.0/( 3.0 * mob + 0.5);
-
+				{
 			   mfcbb = (*this->localDistributionsH1)(D3Q27System::ET_E, x1, x2, x3);
 			   mfbcb = (*this->localDistributionsH1)(D3Q27System::ET_N, x1, x2, x3);
 			   mfbbc = (*this->localDistributionsH1)(D3Q27System::ET_T, x1, x2, x3);
@@ -2134,12 +2418,15 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
 			   LBMReal Mccb = mfccb - mfaab * c1o9;
 
 			   // collision of 1st order moments
+			  // LBMReal ccx, ccy, ccz;
+			   
+
                cx = cx * (c1 - omegaD) + omegaD * vvx * concentration +
-                    normX1 * (c1 - 0.5 * omegaD) * (1.0 - phi[REST]) * (phi[REST]) * c1o3 * oneOverInterfaceScale;
+                    normX1 * (c1 - 0.5 * omegaD) * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * c1o3 * oneOverInterfaceScale;
                cy = cy * (c1 - omegaD) + omegaD * vvy * concentration +
-                    normX2 * (c1 - 0.5 * omegaD) * (1.0 - phi[REST]) * (phi[REST]) * c1o3 * oneOverInterfaceScale;
+                    normX2 * (c1 - 0.5 * omegaD) * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * c1o3 * oneOverInterfaceScale;
                cz = cz * (c1 - omegaD) + omegaD * vvz * concentration +
-                    normX3 * (c1 - 0.5 * omegaD) * (1.0 - phi[REST]) * (phi[REST]) * c1o3 * oneOverInterfaceScale;
+                    normX3 * (c1 - 0.5 * omegaD) * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * c1o3 * oneOverInterfaceScale;
 
 			   //mhx = (ux * phi[REST] + normX1 * (tauH - 0.5) * (1.0 - phi[REST]) * (phi[REST])) / tauH + (1.0 - 1.0 / tauH) * mhx;
 			   //mhy = (uy * phi[REST] + normX2 * (tauH - 0.5) * (1.0 - phi[REST]) * (phi[REST])) / tauH + (1.0 - 1.0 / tauH) * mhy;
@@ -2281,6 +2568,323 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
    (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNE, x1,  x2,  x3p) = mfaac;
 
    (*this->zeroDistributionsH1)(x1,x2,x3) = mfbbb;
+   }
+
+   ////Phasefield 2:
+
+   {
+
+   normX1 *= -1;
+   normX2 *= -1;
+   normX3 *= -1;
+
+   mfcbb = (*this->localDistributionsH2)(D3Q27System::ET_E, x1, x2, x3);
+   mfbcb = (*this->localDistributionsH2)(D3Q27System::ET_N, x1, x2, x3);
+   mfbbc = (*this->localDistributionsH2)(D3Q27System::ET_T, x1, x2, x3);
+   mfccb = (*this->localDistributionsH2)(D3Q27System::ET_NE, x1, x2, x3);
+   mfacb = (*this->localDistributionsH2)(D3Q27System::ET_NW, x1p, x2, x3);
+   mfcbc = (*this->localDistributionsH2)(D3Q27System::ET_TE, x1, x2, x3);
+   mfabc = (*this->localDistributionsH2)(D3Q27System::ET_TW, x1p, x2, x3);
+   mfbcc = (*this->localDistributionsH2)(D3Q27System::ET_TN, x1, x2, x3);
+   mfbac = (*this->localDistributionsH2)(D3Q27System::ET_TS, x1, x2p, x3);
+   mfccc = (*this->localDistributionsH2)(D3Q27System::ET_TNE, x1, x2, x3);
+   mfacc = (*this->localDistributionsH2)(D3Q27System::ET_TNW, x1p, x2, x3);
+   mfcac = (*this->localDistributionsH2)(D3Q27System::ET_TSE, x1, x2p, x3);
+   mfaac = (*this->localDistributionsH2)(D3Q27System::ET_TSW, x1p, x2p, x3);
+   mfabb = (*this->nonLocalDistributionsH2)(D3Q27System::ET_W, x1p, x2, x3);
+   mfbab = (*this->nonLocalDistributionsH2)(D3Q27System::ET_S, x1, x2p, x3);
+   mfbba = (*this->nonLocalDistributionsH2)(D3Q27System::ET_B, x1, x2, x3p);
+   mfaab = (*this->nonLocalDistributionsH2)(D3Q27System::ET_SW, x1p, x2p, x3);
+   mfcab = (*this->nonLocalDistributionsH2)(D3Q27System::ET_SE, x1, x2p, x3);
+   mfaba = (*this->nonLocalDistributionsH2)(D3Q27System::ET_BW, x1p, x2, x3p);
+   mfcba = (*this->nonLocalDistributionsH2)(D3Q27System::ET_BE, x1, x2, x3p);
+   mfbaa = (*this->nonLocalDistributionsH2)(D3Q27System::ET_BS, x1, x2p, x3p);
+   mfbca = (*this->nonLocalDistributionsH2)(D3Q27System::ET_BN, x1, x2, x3p);
+   mfaaa = (*this->nonLocalDistributionsH2)(D3Q27System::ET_BSW, x1p, x2p, x3p);
+   mfcaa = (*this->nonLocalDistributionsH2)(D3Q27System::ET_BSE, x1, x2p, x3p);
+   mfaca = (*this->nonLocalDistributionsH2)(D3Q27System::ET_BNW, x1p, x2, x3p);
+   mfcca = (*this->nonLocalDistributionsH2)(D3Q27System::ET_BNE, x1, x2, x3p);
+   mfbbb = (*this->zeroDistributionsH2)(x1, x2, x3);
+
+
+   ////////////////////////////////////////////////////////////////////////////////////
+//! - Calculate density and velocity using pyramid summation for low round-off errors as in Eq. (J1)-(J3) \ref
+//! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015), DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
+//!
+////////////////////////////////////////////////////////////////////////////////////
+// fluid component
+	   //LBMReal drhoFluid =
+		  // ((((fccc + faaa) + (faca + fcac)) + ((facc + fcaa) + (faac + fcca))) +
+		  // (((fbac + fbca) + (fbaa + fbcc)) + ((fabc + fcba) + (faba + fcbc)) + ((facb + fcab) + (faab + fccb))) +
+			 //  ((fabb + fcbb) + (fbab + fbcb) + (fbba + fbbc))) + fbbb;
+
+	   //LBMReal rhoFluid = c1 + drhoFluid;
+	   //LBMReal OOrhoFluid = c1 / rhoFluid;
+
+
+	   //LBMReal vvx =
+		  // ((((fccc - faaa) + (fcac - faca)) + ((fcaa - facc) + (fcca - faac))) +
+		  // (((fcba - fabc) + (fcbc - faba)) + ((fcab - facb) + (fccb - faab))) +
+			 //  (fcbb - fabb)) * OOrhoFluid;
+	   //LBMReal vvy =
+		  // ((((fccc - faaa) + (faca - fcac)) + ((facc - fcaa) + (fcca - faac))) +
+		  // (((fbca - fbac) + (fbcc - fbaa)) + ((facb - fcab) + (fccb - faab))) +
+			 //  (fbcb - fbab)) * OOrhoFluid;
+	   //LBMReal vvz =
+		  // ((((fccc - faaa) + (fcac - faca)) + ((facc - fcaa) + (faac - fcca))) +
+		  // (((fbac - fbca) + (fbcc - fbaa)) + ((fabc - fcba) + (fcbc - faba))) +
+			 //  (fbbc - fbba)) * OOrhoFluid;
+
+	 //  LBMReal vvx = ux;
+	 //  LBMReal vvy = uy;
+	 //  LBMReal vvz = uz;
+	   ////////////////////////////////////////////////////////////////////////////////////
+	   // second component
+   LBMReal concentration =
+	   ((((mfccc + mfaaa) + (mfaca + mfcac)) + ((mfacc + mfcaa) + (mfaac + mfcca))) +
+	   (((mfbac + mfbca) + (mfbaa + mfbcc)) + ((mfabc + mfcba) + (mfaba + mfcbc)) + ((mfacb + mfcab) + (mfaab + mfccb))) +
+		   ((mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc))) + mfbbb;
+   ////////////////////////////////////////////////////////////////////////////////////
+   //! - Add half of the acceleration (body force) to the velocity as in Eq. (42) \ref
+   //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015), DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
+   //!
+  // LBMReal fx = forces[0];
+  // LBMReal fy = forces[1];
+  // LBMReal fz = -concentration * forces[2];
+  // vvx += fx * c1o2;
+  // vvy += fy * c1o2;
+  // vvz += fz * c1o2;
+   ////////////////////////////////////////////////////////////////////////////////////
+   LBMReal oneMinusRho = c1 - concentration;
+
+   LBMReal cx =
+	   ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
+	   (((mfcba - mfabc) + (mfcbc - mfaba)) + ((mfcab - mfacb) + (mfccb - mfaab))) +
+		   (mfcbb - mfabb));
+   LBMReal cy =
+	   ((((mfccc - mfaaa) + (mfaca - mfcac)) + ((mfacc - mfcaa) + (mfcca - mfaac))) +
+	   (((mfbca - mfbac) + (mfbcc - mfbaa)) + ((mfacb - mfcab) + (mfccb - mfaab))) +
+		   (mfbcb - mfbab));
+   LBMReal cz =
+	   ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfacc - mfcaa) + (mfaac - mfcca))) +
+	   (((mfbac - mfbca) + (mfbcc - mfbaa)) + ((mfabc - mfcba) + (mfcbc - mfaba))) +
+		   (mfbbc - mfbba));
+
+   ////////////////////////////////////////////////////////////////////////////////////
+   // calculate the square of velocities for this lattice node
+   LBMReal cx2 = cx * cx;
+   LBMReal cy2 = cy * cy;
+   LBMReal cz2 = cz * cz;
+   ////////////////////////////////////////////////////////////////////////////////////
+   //! - Chimera transform from well conditioned distributions to central moments as defined in Appendix J in \ref
+   //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015), DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
+   //! see also Eq. (6)-(14) in \ref
+   //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05.040 ]</b></a>
+   //!
+   ////////////////////////////////////////////////////////////////////////////////////
+   // Z - Dir
+   forwardInverseChimeraWithKincompressible(mfaaa, mfaab, mfaac, cz, cz2, c36, c1o36, oneMinusRho);
+   forwardInverseChimeraWithKincompressible(mfaba, mfabb, mfabc, cz, cz2, c9, c1o9, oneMinusRho);
+   forwardInverseChimeraWithKincompressible(mfaca, mfacb, mfacc, cz, cz2, c36, c1o36, oneMinusRho);
+   forwardInverseChimeraWithKincompressible(mfbaa, mfbab, mfbac, cz, cz2, c9, c1o9, oneMinusRho);
+   forwardInverseChimeraWithKincompressible(mfbba, mfbbb, mfbbc, cz, cz2, c9o4, c4o9, oneMinusRho);
+   forwardInverseChimeraWithKincompressible(mfbca, mfbcb, mfbcc, cz, cz2, c9, c1o9, oneMinusRho);
+   forwardInverseChimeraWithKincompressible(mfcaa, mfcab, mfcac, cz, cz2, c36, c1o36, oneMinusRho);
+   forwardInverseChimeraWithKincompressible(mfcba, mfcbb, mfcbc, cz, cz2, c9, c1o9, oneMinusRho);
+   forwardInverseChimeraWithKincompressible(mfcca, mfccb, mfccc, cz, cz2, c36, c1o36, oneMinusRho);
+
+   ////////////////////////////////////////////////////////////////////////////////////
+   // Y - Dir
+   forwardInverseChimeraWithKincompressible(mfaaa, mfaba, mfaca, cy, cy2, c6, c1o6, oneMinusRho);
+   forwardChimera(mfaab, mfabb, mfacb, cy, cy2);
+   forwardInverseChimeraWithKincompressible(mfaac, mfabc, mfacc, cy, cy2, c18, c1o18, oneMinusRho);
+   forwardInverseChimeraWithKincompressible(mfbaa, mfbba, mfbca, cy, cy2, c3o2, c2o3, oneMinusRho);
+   forwardChimera(mfbab, mfbbb, mfbcb, cy, cy2);
+   forwardInverseChimeraWithKincompressible(mfbac, mfbbc, mfbcc, cy, cy2, c9o2, c2o9, oneMinusRho);
+   forwardInverseChimeraWithKincompressible(mfcaa, mfcba, mfcca, cy, cy2, c6, c1o6, oneMinusRho);
+   forwardChimera(mfcab, mfcbb, mfccb, cy, cy2);
+   forwardInverseChimeraWithKincompressible(mfcac, mfcbc, mfccc, cy, cy2, c18, c1o18, oneMinusRho);
+
+   ////////////////////////////////////////////////////////////////////////////////////
+   // X - Dir
+   forwardInverseChimeraWithKincompressible(mfaaa, mfbaa, mfcaa, cx, cx2, c1, c1, oneMinusRho);
+   forwardChimera(mfaba, mfbba, mfcba, cx, cx2);
+   forwardInverseChimeraWithKincompressible(mfaca, mfbca, mfcca, cx, cx2, c3, c1o3, oneMinusRho);
+   forwardChimera(mfaab, mfbab, mfcab, cx, cx2);
+   forwardChimera(mfabb, mfbbb, mfcbb, cx, cx2);
+   forwardChimera(mfacb, mfbcb, mfccb, cx, cx2);
+   forwardInverseChimeraWithKincompressible(mfaac, mfbac, mfcac, cx, cx2, c3, c1o3, oneMinusRho);
+   forwardChimera(mfabc, mfbbc, mfcbc, cx, cx2);
+   forwardInverseChimeraWithKincompressible(mfacc, mfbcc, mfccc, cx, cx2, c3, c1o9, oneMinusRho);
+
+   ////////////////////////////////////////////////////////////////////////////////////
+   //! - experimental Cumulant ... to be published ... hopefully
+   //!
+
+   // linearized orthogonalization of 3rd order central moments
+   LBMReal Mabc = mfabc - mfaba * c1o3;
+   LBMReal Mbca = mfbca - mfbaa * c1o3;
+   LBMReal Macb = mfacb - mfaab * c1o3;
+   LBMReal Mcba = mfcba - mfaba * c1o3;
+   LBMReal Mcab = mfcab - mfaab * c1o3;
+   LBMReal Mbac = mfbac - mfbaa * c1o3;
+   // linearized orthogonalization of 5th order central moments
+   LBMReal Mcbc = mfcbc - mfaba * c1o9;
+   LBMReal Mbcc = mfbcc - mfbaa * c1o9;
+   LBMReal Mccb = mfccb - mfaab * c1o9;
+
+   // collision of 1st order moments
+   cx = cx * (c1 - omegaD) + omegaD * vvx * concentration +
+	   normX1 * (c1 - 0.5 * omegaD) * ( phi[DIR_000]) * (phi2[DIR_000]) * c1o3 * oneOverInterfaceScale;
+   cy = cy * (c1 - omegaD) + omegaD * vvy * concentration +
+	   normX2 * (c1 - 0.5 * omegaD) * ( phi[DIR_000]) * (phi2[DIR_000]) * c1o3 * oneOverInterfaceScale;
+   cz = cz * (c1 - omegaD) + omegaD * vvz * concentration +
+	   normX3 * (c1 - 0.5 * omegaD) * ( phi[DIR_000]) * (phi2[DIR_000]) * c1o3 * oneOverInterfaceScale;
+
+   //mhx = (ux * phi[REST] + normX1 * (tauH - 0.5) * (1.0 - phi[REST]) * (phi[REST])) / tauH + (1.0 - 1.0 / tauH) * mhx;
+   //mhy = (uy * phi[REST] + normX2 * (tauH - 0.5) * (1.0 - phi[REST]) * (phi[REST])) / tauH + (1.0 - 1.0 / tauH) * mhy;
+//mhz = (uz * phi[REST] + normX3 * (tauH - 0.5) * (1.0 - phi[REST]) * (phi[REST])) / tauH + (1.0 - 1.0 / tauH) * mhz;
+
+
+   cx2 = cx * cx;
+   cy2 = cy * cy;
+   cz2 = cz * cz;
+
+   // equilibration of 2nd order moments
+   mfbba = zeroReal;
+   mfbab = zeroReal;
+   mfabb = zeroReal;
+
+   mfcaa = c1o3 * concentration;
+   mfaca = c1o3 * concentration;
+   mfaac = c1o3 * concentration;
+
+
+   //LBMReal omega2 = 1.0f;// omegaD;
+   //mfbba *= (c1 - omega2);
+   //mfbab *= (c1 - omega2);
+   //mfabb *= (c1 - omega2);
+
+   //mfcaa = mfcaa*(c1 - omega2) + omega2*c1o3 * concentration;
+   //mfaca = mfaca*(c1 - omega2) + omega2*c1o3 * concentration;
+   //mfaac = mfaac*(c1 - omega2) + omega2*c1o3 * concentration;
+
+   // equilibration of 3rd order moments
+   Mabc = zeroReal;
+   Mbca = zeroReal;
+   Macb = zeroReal;
+   Mcba = zeroReal;
+   Mcab = zeroReal;
+   Mbac = zeroReal;
+   mfbbb = zeroReal;
+
+   // from linearized orthogonalization 3rd order central moments to central moments
+   mfabc = Mabc + mfaba * c1o3;
+   mfbca = Mbca + mfbaa * c1o3;
+   mfacb = Macb + mfaab * c1o3;
+   mfcba = Mcba + mfaba * c1o3;
+   mfcab = Mcab + mfaab * c1o3;
+   mfbac = Mbac + mfbaa * c1o3;
+
+   // equilibration of 4th order moments
+   mfacc = c1o9 * concentration;
+   mfcac = c1o9 * concentration;
+   mfcca = c1o9 * concentration;
+
+   mfcbb = zeroReal;
+   mfbcb = zeroReal;
+   mfbbc = zeroReal;
+
+   // equilibration of 5th order moments
+   Mcbc = zeroReal;
+   Mbcc = zeroReal;
+   Mccb = zeroReal;
+
+   // from linearized orthogonalization 5th order central moments to central moments
+   mfcbc = Mcbc + mfaba * c1o9;
+   mfbcc = Mbcc + mfbaa * c1o9;
+   mfccb = Mccb + mfaab * c1o9;
+
+   // equilibration of 6th order moment
+   mfccc = c1o27 * concentration;
+
+   ////////////////////////////////////////////////////////////////////////////////////
+   //! - Chimera transform from central moments to well conditioned distributions as defined in Appendix J in
+   //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015), DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
+   //! see also Eq. (88)-(96) in
+   //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05.040 ]</b></a>
+   //!
+   ////////////////////////////////////////////////////////////////////////////////////
+   // X - Dir
+   backwardInverseChimeraWithKincompressible(mfaaa, mfbaa, mfcaa, cx, cx2, c1, c1, oneMinusRho);
+   backwardChimera(mfaba, mfbba, mfcba, cx, cx2);
+   backwardInverseChimeraWithKincompressible(mfaca, mfbca, mfcca, cx, cx2, c3, c1o3, oneMinusRho);
+   backwardChimera(mfaab, mfbab, mfcab, cx, cx2);
+   backwardChimera(mfabb, mfbbb, mfcbb, cx, cx2);
+   backwardChimera(mfacb, mfbcb, mfccb, cx, cx2);
+   backwardInverseChimeraWithKincompressible(mfaac, mfbac, mfcac, cx, cx2, c3, c1o3, oneMinusRho);
+   backwardChimera(mfabc, mfbbc, mfcbc, cx, cx2);
+   backwardInverseChimeraWithKincompressible(mfacc, mfbcc, mfccc, cx, cx2, c9, c1o9, oneMinusRho);
+
+   ////////////////////////////////////////////////////////////////////////////////////
+   // Y - Dir
+   backwardInverseChimeraWithKincompressible(mfaaa, mfaba, mfaca, cy, cy2, c6, c1o6, oneMinusRho);
+   backwardChimera(mfaab, mfabb, mfacb, cy, cy2);
+   backwardInverseChimeraWithKincompressible(mfaac, mfabc, mfacc, cy, cy2, c18, c1o18, oneMinusRho);
+   backwardInverseChimeraWithKincompressible(mfbaa, mfbba, mfbca, cy, cy2, c3o2, c2o3, oneMinusRho);
+   backwardChimera(mfbab, mfbbb, mfbcb, cy, cy2);
+   backwardInverseChimeraWithKincompressible(mfbac, mfbbc, mfbcc, cy, cy2, c9o2, c2o9, oneMinusRho);
+   backwardInverseChimeraWithKincompressible(mfcaa, mfcba, mfcca, cy, cy2, c6, c1o6, oneMinusRho);
+   backwardChimera(mfcab, mfcbb, mfccb, cy, cy2);
+   backwardInverseChimeraWithKincompressible(mfcac, mfcbc, mfccc, cy, cy2, c18, c1o18, oneMinusRho);
+
+   ////////////////////////////////////////////////////////////////////////////////////
+   // Z - Dir
+   backwardInverseChimeraWithKincompressible(mfaaa, mfaab, mfaac, cz, cz2, c36, c1o36, oneMinusRho);
+   backwardInverseChimeraWithKincompressible(mfaba, mfabb, mfabc, cz, cz2, c9, c1o9, oneMinusRho);
+   backwardInverseChimeraWithKincompressible(mfaca, mfacb, mfacc, cz, cz2, c36, c1o36, oneMinusRho);
+   backwardInverseChimeraWithKincompressible(mfbaa, mfbab, mfbac, cz, cz2, c9, c1o9, oneMinusRho);
+   backwardInverseChimeraWithKincompressible(mfbba, mfbbb, mfbbc, cz, cz2, c9o4, c4o9, oneMinusRho);
+   backwardInverseChimeraWithKincompressible(mfbca, mfbcb, mfbcc, cz, cz2, c9, c1o9, oneMinusRho);
+   backwardInverseChimeraWithKincompressible(mfcaa, mfcab, mfcac, cz, cz2, c36, c1o36, oneMinusRho);
+   backwardInverseChimeraWithKincompressible(mfcba, mfcbb, mfcbc, cz, cz2, c9, c1o9, oneMinusRho);
+   backwardInverseChimeraWithKincompressible(mfcca, mfccb, mfccc, cz, cz2, c36, c1o36, oneMinusRho);
+
+
+
+   (*this->localDistributionsH2)(D3Q27System::ET_E, x1, x2, x3) = mfabb;
+   (*this->localDistributionsH2)(D3Q27System::ET_N, x1, x2, x3) = mfbab;
+   (*this->localDistributionsH2)(D3Q27System::ET_T, x1, x2, x3) = mfbba;
+   (*this->localDistributionsH2)(D3Q27System::ET_NE, x1, x2, x3) = mfaab;
+   (*this->localDistributionsH2)(D3Q27System::ET_NW, x1p, x2, x3) = mfcab;
+   (*this->localDistributionsH2)(D3Q27System::ET_TE, x1, x2, x3) = mfaba;
+   (*this->localDistributionsH2)(D3Q27System::ET_TW, x1p, x2, x3) = mfcba;
+   (*this->localDistributionsH2)(D3Q27System::ET_TN, x1, x2, x3) = mfbaa;
+   (*this->localDistributionsH2)(D3Q27System::ET_TS, x1, x2p, x3) = mfbca;
+   (*this->localDistributionsH2)(D3Q27System::ET_TNE, x1, x2, x3) = mfaaa;
+   (*this->localDistributionsH2)(D3Q27System::ET_TNW, x1p, x2, x3) = mfcaa;
+   (*this->localDistributionsH2)(D3Q27System::ET_TSE, x1, x2p, x3) = mfaca;
+   (*this->localDistributionsH2)(D3Q27System::ET_TSW, x1p, x2p, x3) = mfcca;
+
+   (*this->nonLocalDistributionsH2)(D3Q27System::ET_W, x1p, x2, x3) = mfcbb;
+   (*this->nonLocalDistributionsH2)(D3Q27System::ET_S, x1, x2p, x3) = mfbcb;
+   (*this->nonLocalDistributionsH2)(D3Q27System::ET_B, x1, x2, x3p) = mfbbc;
+   (*this->nonLocalDistributionsH2)(D3Q27System::ET_SW, x1p, x2p, x3) = mfccb;
+   (*this->nonLocalDistributionsH2)(D3Q27System::ET_SE, x1, x2p, x3) = mfacb;
+   (*this->nonLocalDistributionsH2)(D3Q27System::ET_BW, x1p, x2, x3p) = mfcbc;
+   (*this->nonLocalDistributionsH2)(D3Q27System::ET_BE, x1, x2, x3p) = mfabc;
+   (*this->nonLocalDistributionsH2)(D3Q27System::ET_BS, x1, x2p, x3p) = mfbcc;
+   (*this->nonLocalDistributionsH2)(D3Q27System::ET_BN, x1, x2, x3p) = mfbac;
+   (*this->nonLocalDistributionsH2)(D3Q27System::ET_BSW, x1p, x2p, x3p) = mfccc;
+   (*this->nonLocalDistributionsH2)(D3Q27System::ET_BSE, x1, x2p, x3p) = mfacc;
+   (*this->nonLocalDistributionsH2)(D3Q27System::ET_BNW, x1p, x2, x3p) = mfcac;
+   (*this->nonLocalDistributionsH2)(D3Q27System::ET_BNE, x1, x2, x3p) = mfaac;
+
+   (*this->zeroDistributionsH2)(x1, x2, x3) = mfbbb;
+
+   }
+
+
 
 		/////!CUMULANT PHASE-FIELD
 
@@ -2288,7 +2892,7 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
 
                         /////////////////////   PHASE-FIELD BGK SOLVER ///////////////////////////////
 
-                        //h[E]   = (*this->localDistributionsH)(D3Q27System::ET_E, x1, x2, x3);
+                        //h[DIR_P00]   = (*this->localDistributionsH)(D3Q27System::ET_E, x1, x2, x3);
                         //h[N]   = (*this->localDistributionsH)(D3Q27System::ET_N, x1, x2, x3);
                         //h[T]   = (*this->localDistributionsH)(D3Q27System::ET_T, x1, x2, x3);
                         //h[NE]  = (*this->localDistributionsH)(D3Q27System::ET_NE, x1, x2, x3);
@@ -2371,8 +2975,8 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
                     }
                 }
             }
-        }
-        dataSet->setPhaseField(divU);
+        
+       // dataSet->setPhaseField(divU);
 		}
 }
 //////////////////////////////////////////////////////////////////////////
@@ -2380,9 +2984,9 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
 LBMReal MultiphaseTwoPhaseFieldsCumulantLBMKernel::gradX1_phi()
 {
     using namespace D3Q27System;
-	return 3.0* ((WEIGTH[TNE] * (((phi[TNE] - phi[BSW]) + (phi[BSE] - phi[TNW])) + ((phi[TSE] - phi[BNW]) + (phi[BNE] - phi[TSW])))
-		+ WEIGTH[NE] * (((phi[TE] - phi[BW]) + (phi[BE] - phi[TW])) + ((phi[SE] - phi[NW]) + (phi[NE] - phi[SW])))) +
-		+WEIGTH[N] * (phi[E] - phi[W]));
+	return 3.0* ((WEIGTH[DIR_PPP] * (((phi[DIR_PPP] - phi[DIR_MMM]) + (phi[DIR_PMM] - phi[DIR_MPP])) + ((phi[DIR_PMP] - phi[DIR_MPM]) + (phi[DIR_PPM] - phi[DIR_MMP])))
+		+ WEIGTH[DIR_PP0] * (((phi[DIR_P0P] - phi[DIR_M0M]) + (phi[DIR_P0M] - phi[DIR_M0P])) + ((phi[DIR_PM0] - phi[DIR_MP0]) + (phi[DIR_PP0] - phi[DIR_MM0])))) +
+		+WEIGTH[DIR_0P0] * (phi[DIR_P00] - phi[DIR_M00]));
     //LBMReal sum = 0.0;
     //for (int k = FSTARTDIR; k <= FENDDIR; k++) {
     //    sum += WEIGTH[k] * DX1[k] * phi[k];
@@ -2393,9 +2997,9 @@ LBMReal MultiphaseTwoPhaseFieldsCumulantLBMKernel::gradX1_phi()
 LBMReal MultiphaseTwoPhaseFieldsCumulantLBMKernel::gradX2_phi()
 {
     using namespace D3Q27System;
-	return 3.0 * ((WEIGTH[TNE] * (((phi[TNE] - phi[BSW]) - (phi[BSE] - phi[TNW])) + ((phi[BNE] - phi[TSW])- (phi[TSE] - phi[BNW])))
-		+ WEIGTH[NE] * (((phi[TN] - phi[BS]) + (phi[BN] - phi[TS])) + ((phi[NE] - phi[SW])- (phi[SE] - phi[NW])))) +
-		+WEIGTH[N] * (phi[N] - phi[S]));
+	return 3.0 * ((WEIGTH[DIR_PPP] * (((phi[DIR_PPP] - phi[DIR_MMM]) - (phi[DIR_PMM] - phi[DIR_MPP])) + ((phi[DIR_PPM] - phi[DIR_MMP])- (phi[DIR_PMP] - phi[DIR_MPM])))
+		+ WEIGTH[DIR_PP0] * (((phi[DIR_0PP] - phi[DIR_0MM]) + (phi[DIR_0PM] - phi[DIR_0MP])) + ((phi[DIR_PP0] - phi[DIR_MM0])- (phi[DIR_PM0] - phi[DIR_MP0])))) +
+		+WEIGTH[DIR_0P0] * (phi[DIR_0P0] - phi[DIR_0M0]));
     //LBMReal sum = 0.0;
     //for (int k = FSTARTDIR; k <= FENDDIR; k++) {
     //    sum += WEIGTH[k] * DX2[k] * phi[k];
@@ -2406,9 +3010,9 @@ LBMReal MultiphaseTwoPhaseFieldsCumulantLBMKernel::gradX2_phi()
 LBMReal MultiphaseTwoPhaseFieldsCumulantLBMKernel::gradX3_phi()
 {
     using namespace D3Q27System;
-	return 3.0 * ((WEIGTH[TNE] * (((phi[TNE] - phi[BSW]) - (phi[BSE] - phi[TNW])) + ((phi[TSE] - phi[BNW]) - (phi[BNE] - phi[TSW])))
-		+ WEIGTH[NE] * (((phi[TE] - phi[BW]) - (phi[BE] - phi[TW])) + ((phi[TS] - phi[BN]) + (phi[TN] - phi[BS])))) +
-		+WEIGTH[N] * (phi[T] - phi[B]));
+	return 3.0 * ((WEIGTH[DIR_PPP] * (((phi[DIR_PPP] - phi[DIR_MMM]) - (phi[DIR_PMM] - phi[DIR_MPP])) + ((phi[DIR_PMP] - phi[DIR_MPM]) - (phi[DIR_PPM] - phi[DIR_MMP])))
+		+ WEIGTH[DIR_PP0] * (((phi[DIR_P0P] - phi[DIR_M0M]) - (phi[DIR_P0M] - phi[DIR_M0P])) + ((phi[DIR_0MP] - phi[DIR_0PM]) + (phi[DIR_0PP] - phi[DIR_0MM])))) +
+		+WEIGTH[DIR_0P0] * (phi[DIR_00P] - phi[DIR_00M]));
     //LBMReal sum = 0.0;
     //for (int k = FSTARTDIR; k <= FENDDIR; k++) {
     //    sum += WEIGTH[k] * DX3[k] * phi[k];
@@ -2416,21 +3020,64 @@ LBMReal MultiphaseTwoPhaseFieldsCumulantLBMKernel::gradX3_phi()
     //return 3.0 * sum;
 }
 
+LBMReal MultiphaseTwoPhaseFieldsCumulantLBMKernel::gradX1_phi2()
+{
+	using namespace D3Q27System;
+	return 3.0 * ((WEIGTH[DIR_PPP] * (((phi2[DIR_PPP] - phi2[DIR_MMM]) + (phi2[DIR_PMM] - phi2[DIR_MPP])) + ((phi2[DIR_PMP] - phi2[DIR_MPM]) + (phi2[DIR_PPM] - phi2[DIR_MMP])))
+		+ WEIGTH[DIR_PP0] * (((phi2[DIR_P0P] - phi2[DIR_M0M]) + (phi2[DIR_P0M] - phi2[DIR_M0P])) + ((phi2[DIR_PM0] - phi2[DIR_MP0]) + (phi2[DIR_PP0] - phi2[DIR_MM0])))) +
+		+WEIGTH[DIR_0P0] * (phi2[DIR_P00] - phi2[DIR_M00]));
+	//LBMReal sum = 0.0;
+	//for (int k = FSTARTDIR; k <= FENDDIR; k++) {
+	//    sum += WEIGTH[k] * DX1[k] * phi2[k];
+	//}
+	//return 3.0 * sum;
+}
+
+LBMReal MultiphaseTwoPhaseFieldsCumulantLBMKernel::gradX2_phi2()
+{
+	using namespace D3Q27System;
+	return 3.0 * ((WEIGTH[DIR_PPP] * (((phi2[DIR_PPP] - phi2[DIR_MMM]) - (phi2[DIR_PMM] - phi2[DIR_MPP])) + ((phi2[DIR_PPM] - phi2[DIR_MMP]) - (phi2[DIR_PMP] - phi2[DIR_MPM])))
+		+ WEIGTH[DIR_PP0] * (((phi2[DIR_0PP] - phi2[DIR_0MM]) + (phi2[DIR_0PM] - phi2[DIR_0MP])) + ((phi2[DIR_PP0] - phi2[DIR_MM0]) - (phi2[DIR_PM0] - phi2[DIR_MP0])))) +
+		+WEIGTH[DIR_0P0] * (phi2[DIR_0P0] - phi2[DIR_0M0]));
+	//LBMReal sum = 0.0;
+	//for (int k = FSTARTDIR; k <= FENDDIR; k++) {
+	//    sum += WEIGTH[k] * DX2[k] * phi2[k];
+	//}
+	//return 3.0 * sum;
+}
+
+LBMReal MultiphaseTwoPhaseFieldsCumulantLBMKernel::gradX3_phi2()
+{
+	using namespace D3Q27System;
+	return 3.0 * ((WEIGTH[DIR_PPP] * (((phi2[DIR_PPP] - phi2[DIR_MMM]) - (phi2[DIR_PMM] - phi2[DIR_MPP])) + ((phi2[DIR_PMP] - phi2[DIR_MPM]) - (phi2[DIR_PPM] - phi2[DIR_MMP])))
+		+ WEIGTH[DIR_PP0] * (((phi2[DIR_P0P] - phi2[DIR_M0M]) - (phi2[DIR_P0M] - phi2[DIR_M0P])) + ((phi2[DIR_0MP] - phi2[DIR_0PM]) + (phi2[DIR_0PP] - phi2[DIR_0MM])))) +
+		+WEIGTH[DIR_0P0] * (phi2[DIR_00P] - phi2[DIR_00M]));
+	//LBMReal sum = 0.0;
+	//for (int k = FSTARTDIR; k <= FENDDIR; k++) {
+	//    sum += WEIGTH[k] * DX3[k] * phi2[k];
+	//}
+	//return 3.0 * sum;
+}
+
+
+
+
+
 LBMReal MultiphaseTwoPhaseFieldsCumulantLBMKernel::nabla2_phi()
 {
     using namespace D3Q27System;
     LBMReal sum = 0.0;
-	sum += WEIGTH[TNE] * ((((phi[TNE] - phi[REST]) + (phi[BSW] - phi[REST])) + ((phi[TSW] - phi[REST]) + (phi[BNE] - phi[REST])))
-		+ (((phi[TNW] - phi[REST]) + (phi[BSE] - phi[REST])) + ((phi[TSE] - phi[REST]) + (phi[BNW] - phi[REST]))));
-	sum += WEIGTH[TN] * (
-			(((phi[TN] - phi[REST]) + (phi[BS] - phi[REST])) + ((phi[TS] - phi[REST]) + (phi[BN] - phi[REST])))
-		+	(((phi[TE] - phi[REST]) + (phi[BW] - phi[REST])) + ((phi[TW] - phi[REST]) + (phi[BE] - phi[REST])))
-		+	(((phi[NE] - phi[REST]) + (phi[SW] - phi[REST])) + ((phi[NW] - phi[REST]) + (phi[SE] - phi[REST])))
+	sum += WEIGTH[DIR_PPP] * ((((phi[DIR_PPP] - phi[DIR_000]) + (phi[DIR_MMM] - phi[DIR_000])) + ((phi[DIR_MMP] - phi[DIR_000]) + (phi[DIR_PPM] - phi[DIR_000])))
+		+ (((phi[DIR_MPP] - phi[DIR_000]) + (phi[DIR_PMM] - phi[DIR_000])) + ((phi[DIR_PMP] - phi[DIR_000]) + (phi[DIR_MPM] - phi[DIR_000]))));
+	sum += WEIGTH[DIR_0PP] * (
+			(((phi[DIR_0PP] - phi[DIR_000]) + (phi[DIR_0MM] - phi[DIR_000])) + ((phi[DIR_0MP] - phi[DIR_000]) + (phi[DIR_0PM] - phi[DIR_000])))
+		+	(((phi[DIR_P0P] - phi[DIR_000]) + (phi[DIR_M0M] - phi[DIR_000])) + ((phi[DIR_M0P] - phi[DIR_000]) + (phi[DIR_P0M] - phi[DIR_000])))
+		+	(((phi[DIR_PP0] - phi[DIR_000]) + (phi[DIR_MM0] - phi[DIR_000])) + ((phi[DIR_MP0] - phi[DIR_000]) + (phi[DIR_PM0] - phi[DIR_000])))
 		);
-	sum += WEIGTH[T] * (
-			((phi[T] - phi[REST]) + (phi[B] - phi[REST]))
-		+	((phi[N] - phi[REST]) + (phi[S] - phi[REST]))
-		+	((phi[E] - phi[REST]) + (phi[W] - phi[REST]))
+	sum += WEIGTH[DIR_00P] * (
+			((phi[DIR_00P] - phi[DIR_000]) + (phi[DIR_00M] - phi[DIR_000]))
+		+	((phi[DIR_0P0] - phi[DIR_000]) + (phi[DIR_0M0] - phi[DIR_000]))
+		+	((phi[DIR_P00] - phi[DIR_000]) + (phi[DIR_M00] - phi[DIR_000]))
 		);
     //for (int k = FSTARTDIR; k <= FENDDIR; k++) {
     //    sum += WEIGTH[k] * (phi[k] - phi[REST]);
@@ -2460,35 +3107,35 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::computePhasefield()
                     int x2p = x2 + 1;
                     int x3p = x3 + 1;
 
-                    h[E]   = (*this->localDistributionsH1)(D3Q27System::ET_E, x1, x2, x3);
-                    h[N]   = (*this->localDistributionsH1)(D3Q27System::ET_N, x1, x2, x3);
-                    h[T]   = (*this->localDistributionsH1)(D3Q27System::ET_T, x1, x2, x3);
-                    h[NE]  = (*this->localDistributionsH1)(D3Q27System::ET_NE, x1, x2, x3);
-                    h[NW]  = (*this->localDistributionsH1)(D3Q27System::ET_NW, x1p, x2, x3);
-                    h[TE]  = (*this->localDistributionsH1)(D3Q27System::ET_TE, x1, x2, x3);
-                    h[TW]  = (*this->localDistributionsH1)(D3Q27System::ET_TW, x1p, x2, x3);
-                    h[TN]  = (*this->localDistributionsH1)(D3Q27System::ET_TN, x1, x2, x3);
-                    h[TS]  = (*this->localDistributionsH1)(D3Q27System::ET_TS, x1, x2p, x3);
-                    h[TNE] = (*this->localDistributionsH1)(D3Q27System::ET_TNE, x1, x2, x3);
-                    h[TNW] = (*this->localDistributionsH1)(D3Q27System::ET_TNW, x1p, x2, x3);
-                    h[TSE] = (*this->localDistributionsH1)(D3Q27System::ET_TSE, x1, x2p, x3);
-                    h[TSW] = (*this->localDistributionsH1)(D3Q27System::ET_TSW, x1p, x2p, x3);
+                    h[DIR_P00]   = (*this->localDistributionsH1)(D3Q27System::ET_E, x1, x2, x3);
+                    h[DIR_0P0]   = (*this->localDistributionsH1)(D3Q27System::ET_N, x1, x2, x3);
+                    h[DIR_00P]   = (*this->localDistributionsH1)(D3Q27System::ET_T, x1, x2, x3);
+                    h[DIR_PP0]  = (*this->localDistributionsH1)(D3Q27System::ET_NE, x1, x2, x3);
+                    h[DIR_MP0]  = (*this->localDistributionsH1)(D3Q27System::ET_NW, x1p, x2, x3);
+                    h[DIR_P0P]  = (*this->localDistributionsH1)(D3Q27System::ET_TE, x1, x2, x3);
+                    h[DIR_M0P]  = (*this->localDistributionsH1)(D3Q27System::ET_TW, x1p, x2, x3);
+                    h[DIR_0PP]  = (*this->localDistributionsH1)(D3Q27System::ET_TN, x1, x2, x3);
+                    h[DIR_0MP]  = (*this->localDistributionsH1)(D3Q27System::ET_TS, x1, x2p, x3);
+                    h[DIR_PPP] = (*this->localDistributionsH1)(D3Q27System::ET_TNE, x1, x2, x3);
+                    h[DIR_MPP] = (*this->localDistributionsH1)(D3Q27System::ET_TNW, x1p, x2, x3);
+                    h[DIR_PMP] = (*this->localDistributionsH1)(D3Q27System::ET_TSE, x1, x2p, x3);
+                    h[DIR_MMP] = (*this->localDistributionsH1)(D3Q27System::ET_TSW, x1p, x2p, x3);
 
-                    h[W]   = (*this->nonLocalDistributionsH1)(D3Q27System::ET_W, x1p, x2, x3);
-                    h[S]   = (*this->nonLocalDistributionsH1)(D3Q27System::ET_S, x1, x2p, x3);
-                    h[B]   = (*this->nonLocalDistributionsH1)(D3Q27System::ET_B, x1, x2, x3p);
-                    h[SW]  = (*this->nonLocalDistributionsH1)(D3Q27System::ET_SW, x1p, x2p, x3);
-                    h[SE]  = (*this->nonLocalDistributionsH1)(D3Q27System::ET_SE, x1, x2p, x3);
-                    h[BW]  = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BW, x1p, x2, x3p);
-                    h[BE]  = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BE, x1, x2, x3p);
-                    h[BS]  = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BS, x1, x2p, x3p);
-                    h[BN]  = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BN, x1, x2, x3p);
-                    h[BSW] = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BSW, x1p, x2p, x3p);
-                    h[BSE] = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BSE, x1, x2p, x3p);
-                    h[BNW] = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNW, x1p, x2, x3p);
-                    h[BNE] = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNE, x1, x2, x3p);
+                    h[DIR_M00]   = (*this->nonLocalDistributionsH1)(D3Q27System::ET_W, x1p, x2, x3);
+                    h[DIR_0M0]   = (*this->nonLocalDistributionsH1)(D3Q27System::ET_S, x1, x2p, x3);
+                    h[DIR_00M]   = (*this->nonLocalDistributionsH1)(D3Q27System::ET_B, x1, x2, x3p);
+                    h[DIR_MM0]  = (*this->nonLocalDistributionsH1)(D3Q27System::ET_SW, x1p, x2p, x3);
+                    h[DIR_PM0]  = (*this->nonLocalDistributionsH1)(D3Q27System::ET_SE, x1, x2p, x3);
+                    h[DIR_M0M]  = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BW, x1p, x2, x3p);
+                    h[DIR_P0M]  = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BE, x1, x2, x3p);
+                    h[DIR_0MM]  = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BS, x1, x2p, x3p);
+                    h[DIR_0PM]  = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BN, x1, x2, x3p);
+                    h[DIR_MMM] = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BSW, x1p, x2p, x3p);
+                    h[DIR_PMM] = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BSE, x1, x2p, x3p);
+                    h[DIR_MPM] = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNW, x1p, x2, x3p);
+                    h[DIR_PPM] = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNE, x1, x2, x3p);
 
-                    h[REST] = (*this->zeroDistributionsH1)(x1, x2, x3);
+                    h[DIR_000] = (*this->zeroDistributionsH1)(x1, x2, x3);
                 }
             }
         }
@@ -2502,7 +3149,8 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::findNeighbors(CbArray3D<LBMReal,
 
     SPtr<BCArray3D> bcArray = this->getBCProcessor()->getBCArray();
 
-    phi[REST] = (*ph)(x1, x2, x3);
+    phi[DIR_000] = (*ph)(x1, x2, x3);
+
 
     for (int k = FSTARTDIR; k <= FENDDIR; k++) {
 
@@ -2514,8 +3162,30 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::findNeighbors(CbArray3D<LBMReal,
     }
 }
 
+void MultiphaseTwoPhaseFieldsCumulantLBMKernel::findNeighbors2(CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr ph, int x1, int x2,
+	int x3)
+{
+	using namespace D3Q27System;
+
+	SPtr<BCArray3D> bcArray = this->getBCProcessor()->getBCArray();
+
+	phi2[DIR_000] = (*ph)(x1, x2, x3);
+
+
+	for (int k = FSTARTDIR; k <= FENDDIR; k++) {
+
+		if (!bcArray->isSolid(x1 + DX1[k], x2 + DX2[k], x3 + DX3[k])) {
+			phi2[k] = (*ph)(x1 + DX1[k], x2 + DX2[k], x3 + DX3[k]);
+		}
+		else {
+			phi2[k] = 0.0;
+		}
+	}
+}
+
 void MultiphaseTwoPhaseFieldsCumulantLBMKernel::swapDistributions()
 {
     LBMKernel::swapDistributions();
     dataSet->getHdistributions()->swap();
+	dataSet->getH2distributions()->swap();
 }

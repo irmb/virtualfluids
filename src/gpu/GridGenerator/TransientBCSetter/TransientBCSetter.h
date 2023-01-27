@@ -32,7 +32,7 @@ struct Quantity
 class VTKFile
 {
 public: 
-    VTKFile(std::string _fileName): 
+    explicit VTKFile(std::string _fileName): 
     fileName(_fileName)
     {
         readHeader();
@@ -40,29 +40,29 @@ public:
         // printFileInfo();
     };
 
-    void getData(real* data, uint numberOfNodes, std::vector<uint> readIndeces, std::vector<uint> writeIndices, uint offsetRead, uint offsetWrite);
+    void getData(real* data, uint numberOfNodes, const std::vector<uint>& readIndices, const std::vector<uint>& writeIndices, uint offsetRead, uint offsetWrite);
     bool markNANs(std::vector<uint> readIndices);
     bool inBoundingBox(real posX, real posY, real posZ){return  inXBounds(posX) && inYBounds(posY) && inZBounds(posZ); };
     bool inXBounds(real posX){ return posX<=maxX && posX>=minX; };
     bool inYBounds(real posY){ return posY<=maxY && posY>=minY; };
     bool inZBounds(real posZ){ return posZ<=maxZ && posZ>=minZ; };
-    int findNeighborWSB(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxWX(posX)  , getIdxSY(posY)  , getIdxBZ(posZ)  ); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
-    int findNeighborWST(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxWX(posX)  , getIdxSY(posY)  , getIdxBZ(posZ)+1); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
-    int findNeighborWNB(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxWX(posX)  , getIdxSY(posY)+1, getIdxBZ(posZ)  ); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
-    int findNeighborWNT(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxWX(posX)  , getIdxSY(posY)+1, getIdxBZ(posZ)+1); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
-    int findNeighborESB(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxWX(posX)+1, getIdxSY(posY)  , getIdxBZ(posZ)  ); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
-    int findNeighborEST(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxWX(posX)+1, getIdxSY(posY)  , getIdxBZ(posZ)+1); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
-    int findNeighborENB(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxWX(posX)+1, getIdxSY(posY)+1, getIdxBZ(posZ)  ); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
-    int findNeighborENT(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxWX(posX)+1, getIdxSY(posY)+1, getIdxBZ(posZ)+1); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
+    int findNeighborMMM(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxM00(posX)  , getIdx0M0(posY)  , getIdx00M(posZ)  ); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
+    int findNeighborMMP(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxM00(posX)  , getIdx0M0(posY)  , getIdx00M(posZ)+1); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
+    int findNeighborMPM(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxM00(posX)  , getIdx0M0(posY)+1, getIdx00M(posZ)  ); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
+    int findNeighborMPP(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxM00(posX)  , getIdx0M0(posY)+1, getIdx00M(posZ)+1); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
+    int findNeighborPMM(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxM00(posX)+1, getIdx0M0(posY)  , getIdx00M(posZ)  ); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
+    int findNeighborPMP(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxM00(posX)+1, getIdx0M0(posY)  , getIdx00M(posZ)+1); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
+    int findNeighborPPM(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxM00(posX)+1, getIdx0M0(posY)+1, getIdx00M(posZ)  ); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
+    int findNeighborPPP(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxM00(posX)+1, getIdx0M0(posY)+1, getIdx00M(posZ)+1); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
     int getIdxX(int linearIdx){ return linearIdx%nx;};
     int getIdxY(int linearIdx){ return (linearIdx/nx)%ny;};
     int getIdxZ(int linearIdx){ return linearIdx/(nx*ny); };
     real getX(int linearIdx){ return getIdxX(linearIdx)*deltaX+minX; };
     real getY(int linearIdx){ return getIdxY(linearIdx)*deltaY+minY; };
     real getZ(int linearIdx){ return getIdxZ(linearIdx)*deltaZ+minZ; };
-    int getIdxWX(real posX){ return (posX-minX)/deltaX; };
-    int getIdxSY(real posY){ return (posY-minY)/deltaY; };
-    int getIdxBZ(real posZ){ return (posZ-minZ)/deltaZ; };
+    int getIdxM00(real posX){ return (posX-minX)/deltaX; };
+    int getIdx0M0(real posY){ return (posY-minY)/deltaY; };
+    int getIdx00M(real posZ){ return (posZ-minZ)/deltaZ; };
     int getClosestIdxX(real posX){ int x = round((posX-minX)/deltaX); return x>nx ? nx : (x<0 ? 0 : x);};
     int getClosestIdxY(real posY){ int y = round((posY-minY)/deltaY); return y>ny ? ny : (y<0 ? 0 : y);};
     int getClosestIdxZ(real posZ){ int z = round((posZ-minZ)/deltaZ); return z>nz ? nz : (z<0 ? 0 : z);};
@@ -100,9 +100,9 @@ public:
 
     virtual ~FileCollection() = default;
 
-    virtual size_t getNumberOfQuantities()=0;
+    virtual size_t getNumberOfQuantities() = 0;
 
-    virtual FileType getFileType()=0;
+    virtual FileType getFileType() = 0;
 
 protected:
     std::string prefix;
@@ -118,8 +118,8 @@ public:
         findFiles();
     };
 
-    FileType getFileType(){ return FileType::VTK; };
-    size_t getNumberOfQuantities(){ return files[0][0][0].getNumberOfQuantities(); }
+    FileType getFileType() override{ return FileType::VTK; };
+    size_t getNumberOfQuantities() override{ return files[0][0][0].getNumberOfQuantities(); }
     
 
 private:
@@ -156,12 +156,12 @@ public:
     uint getNPointsRead(){return nPointsRead; };
     size_t getNumberOfQuantities(){ return nQuantities; };
     void setWritingOffset(uint offset){ this->writingOffset = offset; }
-    void getNeighbors(uint* neighborNT, uint* neighborNB, uint* neighborST, uint* neighborSN);
-    void getWeights(real* _weightsNT, real* _weightsNB, real* _weightsST, real* _weightsSB);
+    void getNeighbors(uint* neighbor0PP, uint* neighbor0PM, uint* neighbor0MP, uint* neighbor0MM);
+    void getWeights(real* _weights0PP, real* _weights0PM, real* _weights0MP, real* _weights0MM);
 
 public:
-    std::vector<uint> planeNeighborNT,  planeNeighborNB, planeNeighborST, planeNeighborSB;
-    std::vector<real> weightsNT, weightsNB, weightsST,  weightsSB;
+    std::vector<uint> planeNeighbor0PP,  planeNeighbor0PM, planeNeighbor0MP, planeNeighbor0MM;
+    std::vector<real> weights0PP, weights0PM, weights0MP,  weights0MM;
 
 protected:
     uint nPoints, nPointsRead, writingOffset;

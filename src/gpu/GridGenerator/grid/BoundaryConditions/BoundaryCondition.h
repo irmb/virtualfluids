@@ -337,9 +337,9 @@ public:
 class PrecursorBoundaryCondition : public gg::BoundaryCondition
 {
 public:
-    static SPtr<PrecursorBoundaryCondition> make(SPtr<TransientBCInputFileReader> reader, int nTRead, real velocityX, real velocityY, real velocityZ)
+    static SPtr<PrecursorBoundaryCondition> make(SPtr<TransientBCInputFileReader> reader, int timeStepsBetweenReads, real velocityX, real velocityY, real velocityZ)
     {
-        return SPtr<PrecursorBoundaryCondition>(new PrecursorBoundaryCondition(reader, nTRead, velocityX, velocityY, velocityZ));
+        return SPtr<PrecursorBoundaryCondition>(new PrecursorBoundaryCondition(reader, timeStepsBetweenReads, velocityX, velocityY, velocityZ));
     }
 
     SPtr<TransientBCInputFileReader> getReader(){ return reader; }
@@ -348,13 +348,13 @@ public:
     real getVelocityZ() { return velocityZ; }
 
 private:
-    PrecursorBoundaryCondition(SPtr<TransientBCInputFileReader> _reader, uint _nTRead, real vx, real vy, real vz) : reader(_reader), nTRead(_nTRead), velocityX(vx), velocityY(vy), velocityZ(vz) { };
+    PrecursorBoundaryCondition(SPtr<TransientBCInputFileReader> _reader, uint _timeStepsBetweenReads, real vx, real vy, real vz) : reader(_reader), timeStepsBetweenReads(_timeStepsBetweenReads), velocityX(vx), velocityY(vy), velocityZ(vz) { };
     virtual char getType() const override
     {
         return vf::gpu::BC_VELOCITY;
     }
 public:
-    uint nTRead; //!> read data every nth timestep
+    uint timeStepsBetweenReads; //!> read data every nth timestep
 
 private:
     real velocityX = 0.0;

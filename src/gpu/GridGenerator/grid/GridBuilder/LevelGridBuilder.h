@@ -1,28 +1,28 @@
 //=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
 //           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
 //
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
 //  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
+//  License as published by the Free Software Foundation, either version 3 of
 //  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 //  for more details.
-//  
+//
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
@@ -38,12 +38,16 @@
 #include <memory>
 #include <array>
 
+#include <lbm/constants/NumericConstants.h>
+
 #include "gpu/GridGenerator/global.h"
 
 #include "gpu/GridGenerator/grid/GridBuilder/GridBuilder.h"
 #include "gpu/GridGenerator/grid/Grid.h"
 #include "gpu/GridGenerator/grid/GridInterface.h"
 #include "gpu/GridGenerator/grid/NodeValues.h"
+
+using namespace vf::lbm::constant;
 
 struct Vertex;
 class  Grid;
@@ -64,8 +68,6 @@ enum class SideType;
 class TransientBCInputFileReader;
 class FileCollection;
 
-
-
 class LevelGridBuilder : public GridBuilder
 {
 protected:
@@ -84,8 +86,9 @@ public:
     GRIDGENERATOR_EXPORT void setPressureBoundaryCondition(SideType sideType, real rho);
     GRIDGENERATOR_EXPORT void setPeriodicBoundaryCondition(bool periodic_X, bool periodic_Y, bool periodic_Z);
     GRIDGENERATOR_EXPORT void setNoSlipBoundaryCondition(SideType sideType);
-    GRIDGENERATOR_EXPORT void setPrecursorBoundaryCondition(SideType sideType, SPtr<FileCollection> fileCollection, int nTRead, real velocityX=0.0f, real velocityY=0.0f, real velocityZ=0.0f,          
-                                                                std::vector<uint> fileLevelToGridLevelMap = {});
+    GRIDGENERATOR_EXPORT void setPrecursorBoundaryCondition(SideType sideType, SPtr<FileCollection> fileCollection, int timeStepsBetweenReads,
+                                                            real velocityX=c0o1, real velocityY=c0o1, real velocityZ=c0o1,
+                                                            std::vector<uint> fileLevelToGridLevelMap = {});
 
     GRIDGENERATOR_EXPORT void setEnableFixRefinementIntoTheWall(bool enableFixRefinementIntoTheWall);
 
@@ -103,7 +106,7 @@ public:
     GRIDGENERATOR_EXPORT virtual void getFluidNodeIndicesBorder(uint *fluidNodeIndices, const int level) const override;
 
     GRIDGENERATOR_EXPORT virtual void getNodeValues(real *xCoords, real *yCoords, real *zCoords,
-                                         uint *neighborX, uint *neighborY, uint *neighborZ, uint *neighborNegative, 
+                                         uint *neighborX, uint *neighborY, uint *neighborZ, uint *neighborNegative,
                                          uint *geo, const int level) const override;
     GRIDGENERATOR_EXPORT virtual void getDimensions(int &nx, int &ny, int &nz, const int level) const override;
 
@@ -113,12 +116,12 @@ public:
     GRIDGENERATOR_EXPORT virtual void getSlipQs(real* qs[27], int level) const override;
 
     GRIDGENERATOR_EXPORT uint getStressSize(int level) const override;
-    GRIDGENERATOR_EXPORT virtual void getStressValues(  real* normalX, real* normalY, real* normalZ, 
-                                                        real* vx,      real* vy,      real* vz, 
-                                                        real* vx1,     real* vy1,     real* vz1, 
+    GRIDGENERATOR_EXPORT virtual void getStressValues(  real* normalX, real* normalY, real* normalZ,
+                                                        real* vx,      real* vy,      real* vz,
+                                                        real* vx1,     real* vy1,     real* vz1,
                                                         int* indices, int* samplingIndices, int* samplingOffsets, real* z0, int level) const override;
     GRIDGENERATOR_EXPORT virtual void getStressQs(real* qs[27], int level) const override;
-        
+
     GRIDGENERATOR_EXPORT uint getVelocitySize(int level) const override;
     GRIDGENERATOR_EXPORT virtual void getVelocityValues(real* vx, real* vy, real* vz, int* indices, int level) const override;
     GRIDGENERATOR_EXPORT virtual void getVelocityQs(real* qs[27], int level) const override;
@@ -128,10 +131,10 @@ public:
     GRIDGENERATOR_EXPORT virtual void getPressureQs(real* qs[27], int level) const override;
 
     GRIDGENERATOR_EXPORT uint getPrecursorSize(int level) const override;
-    GRIDGENERATOR_EXPORT void getPrecursorValues(   uint* neighborNT, uint* neighborNB, uint* neighborST, uint* neighborSB, 
-                                                    real* weightsNT, real* weightsNB, real* weightsST, real* weightsSB, 
-                                                    int* indices, std::vector<SPtr<TransientBCInputFileReader>>& reader, 
-                                                    int& numberOfPrecursorNodes, size_t& numberOfQuantities, uint& nTRead,
+    GRIDGENERATOR_EXPORT void getPrecursorValues(   uint* neighbor0PP, uint* neighbor0PM, uint* neighbor0MP, uint* neighbor0MM,
+                                                    real* weights0PP, real* weights0PM, real* weights0MP, real* weights0MM,
+                                                    int* indices, std::vector<SPtr<TransientBCInputFileReader>>& reader,
+                                                    int& numberOfPrecursorNodes, size_t& numberOfQuantities, uint& timeStepsBetweenReads,
                                                     real& velocityX, real& velocityY, real& velocityZ, int level) const override;
     GRIDGENERATOR_EXPORT virtual void getPrecursorQs(real* qs[27], int level) const override;
 
@@ -147,11 +150,11 @@ public:
     GRIDGENERATOR_EXPORT SPtr<GeometryBoundaryCondition> getGeometryBoundaryCondition(uint level) const override;
 
 protected:
-    
+
 
     struct BoundaryConditions
     {
-		BoundaryConditions() = default;
+        BoundaryConditions() = default;
 
         std::vector<SPtr<SlipBoundaryCondition>> slipBoundaryConditions;
 
@@ -171,7 +174,7 @@ protected:
 
     std::vector<std::shared_ptr<Grid> > grids;
     std::vector<SPtr<BoundaryConditions> > boundaryConditions;
-    
+
     std::array<uint, 6> communicationProcesses;
 
     void checkLevel(int level);
@@ -211,10 +214,10 @@ public:
     // needed for CUDA Streams MultiGPU (Communication Hiding)
     void findFluidNodes(bool splitDomain) override;
 
-    void addFluidNodeIndicesMacroVars(std::vector<uint> fluidNodeIndicesMacroVars, uint level) override;
-    void addFluidNodeIndicesApplyBodyForce(std::vector<uint> fluidNodeIndicesApplyBodyForce, uint level) override;
-    void addFluidNodeIndicesAllFeatures(std::vector<uint> fluidNodeIndicesAllFeatures, uint level) override;
-    
+    void addFluidNodeIndicesMacroVars(const std::vector<uint>& fluidNodeIndicesMacroVars, uint level) override;
+    void addFluidNodeIndicesApplyBodyForce(const std::vector<uint>& fluidNodeIndicesApplyBodyForce, uint level) override;
+    void addFluidNodeIndicesAllFeatures(const std::vector<uint>& fluidNodeIndicesAllFeatures, uint level) override;
+
     void sortFluidNodeIndicesMacroVars(uint level) override;
     void sortFluidNodeIndicesApplyBodyForce(uint level) override;
     void sortFluidNodeIndicesAllFeatures(uint level) override;
@@ -228,4 +231,3 @@ public:
 };
 
 #endif
-

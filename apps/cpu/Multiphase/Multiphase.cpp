@@ -10,7 +10,7 @@ void run(string configname)
 {
     try {
 
-        //Sleep(20000);
+        //Sleep(30000);
 
         vf::basics::ConfigurationFile config;
         config.load(configname);
@@ -28,8 +28,8 @@ void run(string configname)
         double nuG             = config.getValue<double>("nuG");
         double densityRatio    = config.getValue<double>("densityRatio");
         double sigma           = config.getValue<double>("sigma");
-        int interfaceThickness = config.getValue<int>("interfaceThickness");
-        double radius          = config.getValue<double>("radius");
+        int interfaceWidth = config.getValue<int>("interfaceWidth");
+        //double radius          = config.getValue<double>("radius");
         double theta           = config.getValue<double>("contactAngle");
         double gr              = config.getValue<double>("gravity");
         double phiL            = config.getValue<double>("phi_L");
@@ -49,8 +49,8 @@ void run(string configname)
         double cpStep      = config.getValue<double>("cpStep");
         bool newStart      = config.getValue<bool>("newStart");
 
-        double beta  = 12 * sigma / interfaceThickness;
-        double kappa = 1.5 * interfaceThickness * sigma;
+        double beta = 12 * sigma / interfaceWidth;
+        double kappa = 1.5 * interfaceWidth * sigma;
 
         SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
         int myid                = comm->getProcessID();
@@ -85,9 +85,12 @@ void run(string configname)
 
         SPtr<LBMKernel> kernel;
 
-        kernel = SPtr<LBMKernel>(new MultiphaseScratchCumulantLBMKernel());
+        //kernel = SPtr<LBMKernel>(new MultiphaseScratchCumulantLBMKernel());
         //kernel = SPtr<LBMKernel>(new MultiphaseCumulantLBMKernel());
         //kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsCumulantLBMKernel());
+        //kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel());
+       // kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsPressureFilterLBMKernel());
+        kernel = SPtr<LBMKernel>(new MultiphasePressureFilterLBMKernel());
 
         kernel->setWithForcing(true);
         kernel->setForcingX1(0.0);
@@ -99,29 +102,43 @@ void run(string configname)
         kernel->setPhaseFieldRelaxation(tauH);
         kernel->setMobility(mob);
 
+        //nuL, nuG, densityRatio, beta, kappa, theta,
+
+        kernel->setCollisionFactorMultiphase(nuL, nuG);
+        kernel->setDensityRatio(densityRatio);
+        kernel->setMultiphaseModelParameters(beta, kappa);
+        kernel->setContactAngle(theta);
+        kernel->setInterfaceWidth(interfaceWidth);
+
         SPtr<BCProcessor> bcProc(new BCProcessor());
         // BCProcessorPtr bcProc(new ThinWallBCProcessor());
 
         kernel->setBCProcessor(bcProc);
 
         SPtr<Grid3D> grid(new Grid3D(comm));
-        // grid->setPeriodicX1(true);
-        // grid->setPeriodicX2(true);
-        // grid->setPeriodicX3(true);
+         //grid->setPeriodicX1(true);
+         //grid->setPeriodicX2(true);
+         //grid->setPeriodicX3(true);
+        grid->setGhostLayerWidth(2);
+
+       
+        SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::DIR_MMM, MetisPartitioner::RECURSIVE));
+
         //////////////////////////////////////////////////////////////////////////
         // restart
         SPtr<UbScheduler> rSch(new UbScheduler(cpStep, cpStart));
         //SPtr<MPIIORestartCoProcessor> rcp(new MPIIORestartCoProcessor(grid, rSch, pathname, comm));
-        //SPtr<MPIIOMigrationCoProcessor> rcp(new MPIIOMigrationCoProcessor(grid, rSch, pathname, comm));
-        SPtr<MPIIOMigrationBECoProcessor> rcp(new MPIIOMigrationBECoProcessor(grid, rSch, pathname, comm));
-        rcp->setNu(nuLB);
-        rcp->setNuLG(nuL, nuG);
-        rcp->setDensityRatio(densityRatio);
+        SPtr<MPIIOMigrationCoProcessor> rcp(new MPIIOMigrationCoProcessor(grid, rSch, metisVisitor, pathname, comm));
+        //SPtr<MPIIOMigrationBECoProcessor> rcp(new MPIIOMigrationBECoProcessor(grid, rSch, pathname, comm));
+        //rcp->setNu(nuLB);
+        //rcp->setNuLG(nuL, nuG);
+        //rcp->setDensityRatio(densityRatio);
 
         rcp->setLBMKernel(kernel);
         rcp->setBCProcessor(bcProc);
         //////////////////////////////////////////////////////////////////////////
-
+        // BC Adapter
+        //////////////////////////////////////////////////////////////////////////////
         mu::Parser fctF1;
         // fctF1.SetExpr("vy1*(1-((x1-x0)^2+(x3-z0)^2)/(R^2))");
         // fctF1.SetExpr("vy1*(1-(sqrt((x1-x0)^2+(x3-z0)^2)/R))^0.1");
@@ -137,9 +154,35 @@ void run(string configname)
         fctF2.SetExpr("vy1");
         fctF2.DefineConst("vy1", uLB);
 
-        double startTime = 500;
+        double startTime = 30;
         SPtr<BCAdapter> velBCAdapterF1(new MultiphaseVelocityBCAdapter(true, false, false, fctF1, phiH, 0.0, startTime));
         SPtr<BCAdapter> velBCAdapterF2(new MultiphaseVelocityBCAdapter(true, false, false, fctF2, phiH, startTime, endTime));
+
+        SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
+        noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseNoSlipBCAlgorithm()));
+
+        SPtr<BCAdapter> denBCAdapter(new DensityBCAdapter(rhoLB));
+        denBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseNonReflectingOutflowBCAlgorithm()));
+
+        mu::Parser fctPhi_F1;
+        fctPhi_F1.SetExpr("phiH");
+        fctPhi_F1.DefineConst("phiH", phiH);
+
+        mu::Parser fctPhi_F2;
+        fctPhi_F2.SetExpr("phiL");
+        fctPhi_F2.DefineConst("phiL", phiL);
+
+        mu::Parser fctvel_F2_init;
+        fctvel_F2_init.SetExpr("U");
+        fctvel_F2_init.DefineConst("U", 0);
+
+        velBCAdapterF1->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseVelocityBCAlgorithm()));
+        //////////////////////////////////////////////////////////////////////////////////
+        // BC visitor
+        MultiphaseBoundaryConditionsBlockVisitor bcVisitor;
+        bcVisitor.addBC(noSlipBCAdapter);
+        bcVisitor.addBC(denBCAdapter); //Ohne das BB?
+        bcVisitor.addBC(velBCAdapterF1);
 
         SPtr<D3Q27Interactor> inflowF1Int;
         SPtr<D3Q27Interactor> cylInt;
@@ -220,34 +263,6 @@ void run(string configname)
             GenBlocksGridVisitor genBlocks(gridCube);
             grid->accept(genBlocks);
 
-            // BC Adapter
-            //////////////////////////////////////////////////////////////////////////////
-            SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
-            noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseNoSlipBCAlgorithm()));
-
-            SPtr<BCAdapter> denBCAdapter(new DensityBCAdapter(rhoLB));
-            denBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseNonReflectingOutflowBCAlgorithm()));
-
-            mu::Parser fctPhi_F1;
-            fctPhi_F1.SetExpr("phiH");
-            fctPhi_F1.DefineConst("phiH", phiH);
-
-            mu::Parser fctPhi_F2;
-            fctPhi_F2.SetExpr("phiL");
-            fctPhi_F2.DefineConst("phiL", phiL);
-
-            mu::Parser fctvel_F2_init;
-            fctvel_F2_init.SetExpr("U");
-            fctvel_F2_init.DefineConst("U", 0);
-
-            velBCAdapterF1->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseVelocityBCAlgorithm()));
-            //////////////////////////////////////////////////////////////////////////////////
-            // BC visitor
-            MultiphaseBoundaryConditionsBlockVisitor bcVisitor;
-            bcVisitor.addBC(noSlipBCAdapter);
-            bcVisitor.addBC(denBCAdapter); //Ohne das BB?
-            bcVisitor.addBC(velBCAdapterF1);
-
             SPtr<WriteBlocksCoProcessor> ppblocks(new WriteBlocksCoProcessor(
                 grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
 
@@ -286,8 +301,7 @@ void run(string configname)
             cylInt->addBCAdapter(velBCAdapterF2);
             //SPtr<D3Q27Interactor> cyl2Int(new D3Q27Interactor(cylinder2, grid, noSlipBCAdapter, Interactor3D::SOLID));
 
-            SPtr<Grid3DVisitor> metisVisitor(
-                new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW));
+
             InteractorsHelper intHelper(grid, metisVisitor, true);
             intHelper.addInteractor(cylInt);
             intHelper.addInteractor(tubes);
@@ -335,8 +349,7 @@ void run(string configname)
                 UBLOG(logINFO, "Available memory per process = " << availMem << " bytes");
             }
 
-            MultiphaseSetKernelBlockVisitor kernelVisitor(kernel, nuL, nuG, densityRatio, beta, kappa, theta, availMem,
-                needMem);
+            MultiphaseSetKernelBlockVisitor kernelVisitor(kernel, nuL, nuG, availMem, needMem);
 
             grid->accept(kernelVisitor);
 
@@ -347,16 +360,56 @@ void run(string configname)
 
             intHelper.setBC();
 
-            grid->accept(bcVisitor);
-
             // initialization of distributions
             mu::Parser fct1;
             fct1.SetExpr("phiL");
             fct1.DefineConst("phiL", phiL);
-            MultiphaseInitDistributionsBlockVisitor initVisitor(densityRatio, interfaceThickness, radius);
+            //MultiphaseInitDistributionsBlockVisitor initVisitor(interfaceThickness);
+            MultiphaseVelocityFormInitDistributionsBlockVisitor initVisitor;
             initVisitor.setPhi(fct1);
             grid->accept(initVisitor);
+///////////////////////////////////////////////////////////////////////////////////////////
+            //{
+                // std::vector<std::vector<SPtr<Block3D>>> blockVector;
+                // int gridRank = comm->getProcessID();
+                // int minInitLevel = grid->getCoarsestInitializedLevel();
+                // int maxInitLevel = grid->getFinestInitializedLevel();
+                // blockVector.resize(maxInitLevel + 1);
+                // for (int level = minInitLevel; level <= maxInitLevel; level++) {
+                //    grid->getBlocks(level, gridRank, true, blockVector[level]);
+                //}
+                //    for (int level = minInitLevel; level <= maxInitLevel; level++) {
+                //    for (SPtr<Block3D> block : blockVector[level]) {
+                //        if (block) {
+                //            int ix1 = block->getX1();
+                //            int ix2 = block->getX2();
+                //            int ix3 = block->getX3();
+                //            int level = block->getLevel();
 
+                //            for (int dir = 0; dir < D3Q27System::ENDDIR; dir++) {
+                //                SPtr<Block3D> neighBlock = grid->getNeighborBlock(dir, ix1, ix2, ix3, level);
+
+                //                if (!neighBlock) {
+
+                //                }
+                //            }
+                //        }
+                //    }
+                //}
+            //    SPtr<Block3D> block = grid->getBlock(0, 0, 0, 0);
+            //    SPtr<LBMKernel> kernel = dynamicPointerCast<LBMKernel>(block->getKernel());
+            //    SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
+
+            //    for (int ix3 = 0; ix3 <= 13; ix3++) {
+            //        for (int ix2 = 0; ix2 <= 13; ix2++) {
+            //            for (int ix1 = 0; ix1 <= 13; ix1++) {
+            //                if (ix1 == 0 || ix2 == 0 || ix3 == 0 || ix1 == 13 || ix2 == 13 || ix3 == 13)
+            //                    bcArray->setUndefined(ix1, ix2, ix3);
+            //            }
+            //        }
+            //    }
+            //}
+            ////////////////////////////////////////////////////////////////////////////////////////////
             // boundary conditions grid
             {
                 SPtr<UbScheduler> geoSch(new UbScheduler(1));
@@ -388,11 +441,16 @@ void run(string configname)
                 UBLOG(logINFO, "Restart - end");
         }
 
-        TwoDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
-        grid->accept(setConnsVisitor);
+      //  TwoDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
+      //  grid->accept(setConnsVisitor);
 
-        //ThreeDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
-        //grid->accept(setConnsVisitor);
+       //ThreeDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
+
+        grid->accept(bcVisitor);
+
+        //ThreeDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
+        TwoDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
+        grid->accept(setConnsVisitor);
 
         SPtr<UbScheduler> visSch(new UbScheduler(outTime));
         SPtr<WriteMultiphaseQuantitiesCoProcessor> pp(new WriteMultiphaseQuantitiesCoProcessor(

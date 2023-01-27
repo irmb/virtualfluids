@@ -861,6 +861,10 @@ real Parameter::getScaledForceRatio(int level)
 {
     return this->getForceRatio()*(level+1);
 }
+real Parameter::getScaledStressRatio(int level)
+{
+    return this->getVelocityRatio()*this->getVelocityRatio();
+}
 void Parameter::setRealX(real RealX)
 {
     ic.RealX = RealX;

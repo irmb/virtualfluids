@@ -372,12 +372,12 @@ struct LBMSimulationParameter {
 
     ///////////////////////////////////////////////////////
     std::map<CollisionTemplate, uint*>    taggedFluidNodeIndices = {{CollisionTemplate::Default,        nullptr},
-                                                                    {CollisionTemplate::Border,         nullptr},
+                                                                    {CollisionTemplate::SubDomainBorder,nullptr},
                                                                     {CollisionTemplate::WriteMacroVars, nullptr},
                                                                     {CollisionTemplate::ApplyBodyForce, nullptr},
                                                                     {CollisionTemplate::AllFeatures,    nullptr}};
     std::map<CollisionTemplate, uint >  numberOfTaggedFluidNodes = {{CollisionTemplate::Default,        0},
-                                                                    {CollisionTemplate::Border,         0},
+                                                                    {CollisionTemplate::SubDomainBorder,0},
                                                                     {CollisionTemplate::WriteMacroVars, 0},
                                                                     {CollisionTemplate::ApplyBodyForce, 0},
                                                                     {CollisionTemplate::AllFeatures,    0}};
@@ -778,6 +778,8 @@ public:
     real getScaledDensityRatio(int level);
     //! \returns the pressure ratio in SI/LB units scaled to the respective level
     real getScaledPressureRatio(int level);
+    //! \returns the stress ratio in SI/LB units scaled to the respective level
+    real getScaledStressRatio(int level);
     //! \returns the time ratio in SI/LB units scaled to the respective level
     real getScaledTimeRatio(int level);
     //! \returns the length ratio in SI/LB units scaled to the respective level

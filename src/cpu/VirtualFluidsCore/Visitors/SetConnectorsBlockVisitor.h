@@ -38,7 +38,7 @@
 
 #include "Block3DVisitor.h"
 #include "D3Q27System.h"
-#include "Grid3DSystem.h"
+#include "D3Q27System.h"
 #include "Grid3D.h"
 #include "CreateTransmittersHelper.h"
 #include <mpi/Communicator.h>
@@ -46,8 +46,12 @@
 #include "OneDistributionFullVectorConnector.h"
 #include "TwoDistributionsFullDirectConnector.h"
 #include "TwoDistributionsFullVectorConnector.h"
+#include "TwoDistributionsDoubleGhostLayerFullDirectConnector.h"
+#include "TwoDistributionsDoubleGhostLayerFullVectorConnector.h"
 #include "ThreeDistributionsFullDirectConnector.h"
 #include "ThreeDistributionsFullVectorConnector.h"
+#include "ThreeDistributionsDoubleGhostLayerFullDirectConnector.h"
+#include "ThreeDistributionsDoubleGhostLayerFullVectorConnector.h"
 #include <basics/transmitter/TbTransmitterLocal.h>
 
 //! \brief  A class sets connectors between blocks.
@@ -66,13 +70,12 @@ protected:
     void setSameLevelConnectors(SPtr<Grid3D> grid, SPtr<Block3D> block);
     void setRemoteConnectors(SPtr<Block3D> sblock, SPtr<Block3D> tblock, int dir);
     std::shared_ptr<vf::mpi::Communicator> comm;
-    int dirs;
-    int gridRank;
+    int gridRank{0};
 };
 
 template <class T1, class T2>
 SetConnectorsBlockVisitor<T1, T2>::SetConnectorsBlockVisitor(std::shared_ptr<vf::mpi::Communicator> comm)
-    : Block3DVisitor(0, Grid3DSystem::MAXLEVEL), comm(comm)
+    : Block3DVisitor(0, D3Q27System::MAXLEVEL), comm(comm)
 {
 }
 //////////////////////////////////////////////////////////////////////////
@@ -111,7 +114,7 @@ void SetConnectorsBlockVisitor<T1, T2>::setSameLevelConnectors(SPtr<Grid3D> grid
         int ix3   = block->getX3();
         int level = block->getLevel();
 
-        for (int dir = 0; dir < D3Q27System::ENDDIR; dir++) {
+        for (int dir = D3Q27System::STARTDIR; dir <= D3Q27System::ENDDIR; dir++) {
             SPtr<Block3D> neighBlock = grid->getNeighborBlock(dir, ix1, ix2, ix3, level);
 
             if (neighBlock) {
@@ -123,7 +126,7 @@ void SetConnectorsBlockVisitor<T1, T2>::setSameLevelConnectors(SPtr<Grid3D> grid
                 } else if (blockRank != neighBlockRank && neighBlock->isActive()) {
                     setRemoteConnectors(block, neighBlock, dir);
 
-                    if (dir >= 0 && dir <= 5) {
+                    if (dir >= D3Q27System::DIR_P00 && dir <= D3Q27System::DIR_00M) {
                         int weight = block->getWeight(neighBlockRank);
                         weight++;
                         block->setWeight(neighBlockRank, weight);
@@ -157,6 +160,8 @@ void SetConnectorsBlockVisitor<T1, T2>::setRemoteConnectors(SPtr<Block3D> sblock
 
 using OneDistributionSetConnectorsBlockVisitor  = SetConnectorsBlockVisitor<OneDistributionFullDirectConnector, OneDistributionFullVectorConnector>;
 using TwoDistributionsSetConnectorsBlockVisitor = SetConnectorsBlockVisitor<TwoDistributionsFullDirectConnector, TwoDistributionsFullVectorConnector>;
+using TwoDistributionsDoubleGhostLayerSetConnectorsBlockVisitor = SetConnectorsBlockVisitor<TwoDistributionsDoubleGhostLayerFullDirectConnector, TwoDistributionsDoubleGhostLayerFullVectorConnector>;
 using ThreeDistributionsSetConnectorsBlockVisitor = SetConnectorsBlockVisitor<ThreeDistributionsFullDirectConnector, ThreeDistributionsFullVectorConnector>;
+using ThreeDistributionsDoubleGhostLayerSetConnectorsBlockVisitor = SetConnectorsBlockVisitor<ThreeDistributionsDoubleGhostLayerFullDirectConnector, ThreeDistributionsDoubleGhostLayerFullVectorConnector>;
 
 #endif // SETCONNECTORSBLOCKVISITOR_H

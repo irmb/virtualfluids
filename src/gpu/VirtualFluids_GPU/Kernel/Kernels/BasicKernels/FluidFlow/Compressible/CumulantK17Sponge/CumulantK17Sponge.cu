@@ -83,7 +83,7 @@ void CumulantK17Sponge<turbulenceModel>::runOnIndices( const unsigned int *indic
 				size_indices);
 			break;
 
-		case CollisionTemplate::Border:
+		case CollisionTemplate::SubDomainBorder:
 		case CollisionTemplate::AllFeatures:
 			LB_Kernel_CumulantK17Sponge < turbulenceModel, true, true  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>(
 				para->getParD(level)->omega,

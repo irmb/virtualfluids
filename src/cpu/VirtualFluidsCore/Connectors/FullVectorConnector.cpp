@@ -63,7 +63,7 @@ void FullVectorConnector::fillData()
 
     int index = 0;
     // EAST
-    if (sendDir == D3Q27System::E) {
+    if (sendDir == D3Q27System::DIR_P00) {
         for (int x3 = 1; x3 < maxX3; x3++) {
             for (int x2 = 1; x2 < maxX2; x2++) {
                 fillData(sdata, index, maxX1 - 1, x2, x3);
@@ -71,7 +71,7 @@ void FullVectorConnector::fillData()
         }
     }
     // WEST
-    else if (sendDir == D3Q27System::W) {
+    else if (sendDir == D3Q27System::DIR_M00) {
         for (int x3 = 1; x3 < maxX3; x3++) {
             for (int x2 = 1; x2 < maxX2; x2++) {
                 fillData(sdata, index, 1, x2, x3);
@@ -79,7 +79,7 @@ void FullVectorConnector::fillData()
         }
     }
     // NORTH
-    else if (sendDir == D3Q27System::N) {
+    else if (sendDir == D3Q27System::DIR_0P0) {
         for (int x3 = 1; x3 < maxX3; x3++) {
             for (int x1 = 1; x1 < maxX1; x1++) {
                 fillData(sdata, index, x1, maxX2 - 1, x3);
@@ -87,7 +87,7 @@ void FullVectorConnector::fillData()
         }
     }
     // SOUTH
-    else if (sendDir == D3Q27System::S) {
+    else if (sendDir == D3Q27System::DIR_0M0) {
         for (int x3 = 1; x3 < maxX3; x3++) {
             for (int x1 = 1; x1 < maxX1; x1++) {
                 fillData(sdata, index, x1, 1, x3);
@@ -95,7 +95,7 @@ void FullVectorConnector::fillData()
         }
     }
     // TOP
-    else if (sendDir == D3Q27System::T) {
+    else if (sendDir == D3Q27System::DIR_00P) {
         for (int x2 = 1; x2 < maxX2; x2++) {
             for (int x1 = 1; x1 < maxX1; x1++) {
                 fillData(sdata, index, x1, x2, maxX3 - 1);
@@ -103,7 +103,7 @@ void FullVectorConnector::fillData()
         }
     }
     // BOTTOM
-    else if (sendDir == D3Q27System::B) {
+    else if (sendDir == D3Q27System::DIR_00M) {
         for (int x2 = 1; x2 < maxX2; x2++) {
             for (int x1 = 1; x1 < maxX1; x1++) {
                 fillData(sdata, index, x1, x2, 1);
@@ -111,24 +111,24 @@ void FullVectorConnector::fillData()
         }
     }
     // NE NW SW SE
-    else if (sendDir == D3Q27System::NE || sendDir == D3Q27System::NW || sendDir == D3Q27System::SW ||
-             sendDir == D3Q27System::SE) {
+    else if (sendDir == D3Q27System::DIR_PP0 || sendDir == D3Q27System::DIR_MP0 || sendDir == D3Q27System::DIR_MM0 ||
+             sendDir == D3Q27System::DIR_PM0) {
         int x1 = 0;
         int x2 = 0;
         switch (sendDir) {
-            case D3Q27System::NE:
+            case D3Q27System::DIR_PP0:
                 x1 = maxX1 - 1;
                 x2 = maxX2 - 1;
                 break;
-            case D3Q27System::NW:
+            case D3Q27System::DIR_MP0:
                 x1 = 1;
                 x2 = maxX2 - 1;
                 break;
-            case D3Q27System::SW:
+            case D3Q27System::DIR_MM0:
                 x1 = 1;
                 x2 = 1;
                 break;
-            case D3Q27System::SE:
+            case D3Q27System::DIR_PM0:
                 x1 = maxX1 - 1;
                 x2 = 1;
                 break;
@@ -138,24 +138,24 @@ void FullVectorConnector::fillData()
         }
     }
     // TE TW BW BE
-    else if (sendDir == D3Q27System::TE || sendDir == D3Q27System::TW || sendDir == D3Q27System::BW ||
-             sendDir == D3Q27System::BE) {
+    else if (sendDir == D3Q27System::DIR_P0P || sendDir == D3Q27System::DIR_M0P || sendDir == D3Q27System::DIR_M0M ||
+             sendDir == D3Q27System::DIR_P0M) {
         int x1 = 0;
         int x3 = 0;
         switch (sendDir) {
-            case D3Q27System::TE:
+            case D3Q27System::DIR_P0P:
                 x1 = maxX1 - 1;
                 x3 = maxX3 - 1;
                 break;
-            case D3Q27System::TW:
+            case D3Q27System::DIR_M0P:
                 x1 = 1;
                 x3 = maxX3 - 1;
                 break;
-            case D3Q27System::BW:
+            case D3Q27System::DIR_M0M:
                 x1 = 1;
                 x3 = 1;
                 break;
-            case D3Q27System::BE:
+            case D3Q27System::DIR_P0M:
                 x1 = maxX1 - 1;
                 x3 = 1;
                 break;
@@ -165,24 +165,24 @@ void FullVectorConnector::fillData()
         }
     }
     // TN BN BS TS
-    else if (sendDir == D3Q27System::TN || sendDir == D3Q27System::BN || sendDir == D3Q27System::BS ||
-             sendDir == D3Q27System::TS) {
+    else if (sendDir == D3Q27System::DIR_0PP || sendDir == D3Q27System::DIR_0PM || sendDir == D3Q27System::DIR_0MM ||
+             sendDir == D3Q27System::DIR_0MP) {
         int x2 = 0;
         int x3 = 0;
         switch (sendDir) {
-            case D3Q27System::TN:
+            case D3Q27System::DIR_0PP:
                 x3 = maxX3 - 1;
                 x2 = maxX2 - 1;
                 break;
-            case D3Q27System::BN:
+            case D3Q27System::DIR_0PM:
                 x3 = 1;
                 x2 = maxX2 - 1;
                 break;
-            case D3Q27System::BS:
+            case D3Q27System::DIR_0MM:
                 x3 = 1;
                 x2 = 1;
                 break;
-            case D3Q27System::TS:
+            case D3Q27System::DIR_0MP:
                 x3 = maxX3 - 1;
                 x2 = 1;
                 break;
@@ -192,49 +192,49 @@ void FullVectorConnector::fillData()
         }
     }
     // TNE TNW TSW TSE BNE BNW BSW BSE
-    else if (sendDir == D3Q27System::TNE || sendDir == D3Q27System::TNW || sendDir == D3Q27System::TSW ||
-             sendDir == D3Q27System::TSE || sendDir == D3Q27System::BNE || sendDir == D3Q27System::BNW ||
-             sendDir == D3Q27System::BSW || sendDir == D3Q27System::BSE) {
+    else if (sendDir == D3Q27System::DIR_PPP || sendDir == D3Q27System::DIR_MPP || sendDir == D3Q27System::DIR_MMP ||
+             sendDir == D3Q27System::DIR_PMP || sendDir == D3Q27System::DIR_PPM || sendDir == D3Q27System::DIR_MPM ||
+             sendDir == D3Q27System::DIR_MMM || sendDir == D3Q27System::DIR_PMM) {
         int x1 = 0;
         int x2 = 0;
         int x3 = 0;
         switch (sendDir) {
-            case D3Q27System::TNE:
+            case D3Q27System::DIR_PPP:
                 x1 = maxX1 - 1;
                 x2 = maxX2 - 1;
                 x3 = maxX3 - 1;
                 break;
-            case D3Q27System::TNW:
+            case D3Q27System::DIR_MPP:
                 x1 = 1;
                 x2 = maxX2 - 1;
                 x3 = maxX3 - 1;
                 break;
-            case D3Q27System::TSW:
+            case D3Q27System::DIR_MMP:
                 x1 = 1;
                 x2 = 1;
                 x3 = maxX3 - 1;
                 break;
-            case D3Q27System::TSE:
+            case D3Q27System::DIR_PMP:
                 x1 = maxX1 - 1;
                 x2 = 1;
                 x3 = maxX3 - 1;
                 break;
-            case D3Q27System::BNE:
+            case D3Q27System::DIR_PPM:
                 x1 = maxX1 - 1;
                 x2 = maxX2 - 1;
                 x3 = 1;
                 break;
-            case D3Q27System::BNW:
+            case D3Q27System::DIR_MPM:
                 x1 = 1;
                 x2 = maxX2 - 1;
                 x3 = 1;
                 break;
-            case D3Q27System::BSW:
+            case D3Q27System::DIR_MMM:
                 x1 = 1;
                 x2 = 1;
                 x3 = 1;
                 break;
-            case D3Q27System::BSE:
+            case D3Q27System::DIR_PMM:
                 x1 = maxX1 - 1;
                 x2 = 1;
                 x3 = 1;
@@ -257,37 +257,37 @@ void FullVectorConnector::distributeData()
 
     int index = 0;
 
-    if (sendDir == D3Q27System::W) {
+    if (sendDir == D3Q27System::DIR_M00) {
         for (int x3 = 1; x3 < maxX3; x3++) {
             for (int x2 = 1; x2 < maxX2; x2++) {
                 distributeData(rdata, index, 0, x2, x3);
             }
         }
-    } else if (sendDir == D3Q27System::E) {
+    } else if (sendDir == D3Q27System::DIR_P00) {
         for (int x3 = 1; x3 < maxX3; x3++) {
             for (int x2 = 1; x2 < maxX2; x2++) {
                 distributeData(rdata, index, maxX1, x2, x3);
             }
         }
-    } else if (sendDir == D3Q27System::S) {
+    } else if (sendDir == D3Q27System::DIR_0M0) {
         for (int x3 = 1; x3 < maxX3; x3++) {
             for (int x1 = 1; x1 < maxX1; x1++) {
                 distributeData(rdata, index, x1, 0, x3);
             }
         }
-    } else if (sendDir == D3Q27System::N) {
+    } else if (sendDir == D3Q27System::DIR_0P0) {
         for (int x3 = 1; x3 < maxX3; x3++) {
             for (int x1 = 1; x1 < maxX1; x1++) {
                 distributeData(rdata, index, x1, maxX2, x3);
             }
         }
-    } else if (sendDir == D3Q27System::B) {
+    } else if (sendDir == D3Q27System::DIR_00M) {
         for (int x2 = 1; x2 < maxX2; x2++) {
             for (int x1 = 1; x1 < maxX1; x1++) {
                 distributeData(rdata, index, x1, x2, 0);
             }
         }
-    } else if (sendDir == D3Q27System::T) {
+    } else if (sendDir == D3Q27System::DIR_00P) {
         for (int x2 = 1; x2 < maxX2; x2++) {
             for (int x1 = 1; x1 < maxX1; x1++) {
                 distributeData(rdata, index, x1, x2, maxX3);
@@ -295,25 +295,25 @@ void FullVectorConnector::distributeData()
         }
     }
     // NE NW SW SE
-    else if (sendDir == D3Q27System::NE || sendDir == D3Q27System::NW || sendDir == D3Q27System::SW ||
-             sendDir == D3Q27System::SE) {
+    else if (sendDir == D3Q27System::DIR_PP0 || sendDir == D3Q27System::DIR_MP0 || sendDir == D3Q27System::DIR_MM0 ||
+             sendDir == D3Q27System::DIR_PM0) {
         int x1 = 0;
         int x2 = 0;
         switch (sendDir) // wenn sendir NE dann kommen werte von SW
         {
-            case D3Q27System::NE:
+            case D3Q27System::DIR_PP0:
                 x1 = maxX1;
                 x2 = maxX2;
                 break;
-            case D3Q27System::NW:
+            case D3Q27System::DIR_MP0:
                 x1 = 0;
                 x2 = maxX2;
                 break;
-            case D3Q27System::SW:
+            case D3Q27System::DIR_MM0:
                 x1 = 0;
                 x2 = 0;
                 break;
-            case D3Q27System::SE:
+            case D3Q27System::DIR_PM0:
                 x1 = maxX1;
                 x2 = 0;
                 break;
@@ -324,27 +324,27 @@ void FullVectorConnector::distributeData()
 
     }
     // TE TW BW BE
-    else if (sendDir == D3Q27System::TE || sendDir == D3Q27System::TW || sendDir == D3Q27System::BW ||
-             sendDir == D3Q27System::BE)
+    else if (sendDir == D3Q27System::DIR_P0P || sendDir == D3Q27System::DIR_M0P || sendDir == D3Q27System::DIR_M0M ||
+             sendDir == D3Q27System::DIR_P0M)
 
     {
         int x1 = 0;
         int x3 = 0;
         switch (sendDir) // wenn sendir NE dann kommen werte von SW
         {
-            case D3Q27System::TE:
+            case D3Q27System::DIR_P0P:
                 x1 = maxX1;
                 x3 = maxX3;
                 break;
-            case D3Q27System::TW:
+            case D3Q27System::DIR_M0P:
                 x1 = 0;
                 x3 = maxX3;
                 break;
-            case D3Q27System::BW:
+            case D3Q27System::DIR_M0M:
                 x1 = 0;
                 x3 = 0;
                 break;
-            case D3Q27System::BE:
+            case D3Q27System::DIR_P0M:
                 x1 = maxX1;
                 x3 = 0;
                 break;
@@ -354,24 +354,24 @@ void FullVectorConnector::distributeData()
         }
     }
     // TN BN BS TS
-    else if (sendDir == D3Q27System::TN || sendDir == D3Q27System::BN || sendDir == D3Q27System::BS ||
-             sendDir == D3Q27System::TS) {
+    else if (sendDir == D3Q27System::DIR_0PP || sendDir == D3Q27System::DIR_0PM || sendDir == D3Q27System::DIR_0MM ||
+             sendDir == D3Q27System::DIR_0MP) {
         int x2 = 0;
         int x3 = 0;
         switch (sendDir) {
-            case D3Q27System::TN:
+            case D3Q27System::DIR_0PP:
                 x3 = maxX3;
                 x2 = maxX2;
                 break;
-            case D3Q27System::BN:
+            case D3Q27System::DIR_0PM:
                 x3 = 0;
                 x2 = maxX2;
                 break;
-            case D3Q27System::BS:
+            case D3Q27System::DIR_0MM:
                 x3 = 0;
                 x2 = 0;
                 break;
-            case D3Q27System::TS:
+            case D3Q27System::DIR_0MP:
                 x3 = maxX3;
                 x2 = 0;
                 break;
@@ -381,50 +381,50 @@ void FullVectorConnector::distributeData()
         }
     }
     // TNE TNW TSW TSE BNE BNW BSW BSE
-    else if (sendDir == D3Q27System::TNE || sendDir == D3Q27System::TNW || sendDir == D3Q27System::TSW ||
-             sendDir == D3Q27System::TSE || sendDir == D3Q27System::BNE || sendDir == D3Q27System::BNW ||
-             sendDir == D3Q27System::BSW || sendDir == D3Q27System::BSE) {
+    else if (sendDir == D3Q27System::DIR_PPP || sendDir == D3Q27System::DIR_MPP || sendDir == D3Q27System::DIR_MMP ||
+             sendDir == D3Q27System::DIR_PMP || sendDir == D3Q27System::DIR_PPM || sendDir == D3Q27System::DIR_MPM ||
+             sendDir == D3Q27System::DIR_MMM || sendDir == D3Q27System::DIR_PMM) {
         int x1 = 0;
         int x2 = 0;
         int x3 = 0;
 
         switch (sendDir) {
-            case D3Q27System::TNE:
+            case D3Q27System::DIR_PPP:
                 x1 = maxX1;
                 x2 = maxX2;
                 x3 = maxX3;
                 break;
-            case D3Q27System::TNW:
+            case D3Q27System::DIR_MPP:
                 x1 = 0;
                 x2 = maxX2;
                 x3 = maxX3;
                 break;
-            case D3Q27System::TSW:
+            case D3Q27System::DIR_MMP:
                 x1 = 0;
                 x2 = 0;
                 x3 = maxX3;
                 break;
-            case D3Q27System::TSE:
+            case D3Q27System::DIR_PMP:
                 x1 = maxX1;
                 x2 = 0;
                 x3 = maxX3;
                 break;
-            case D3Q27System::BNE:
+            case D3Q27System::DIR_PPM:
                 x1 = maxX1;
                 x2 = maxX2;
                 x3 = 0;
                 break;
-            case D3Q27System::BNW:
+            case D3Q27System::DIR_MPM:
                 x1 = 0;
                 x2 = maxX2;
                 x3 = 0;
                 break;
-            case D3Q27System::BSW:
+            case D3Q27System::DIR_MMM:
                 x1 = 0;
                 x2 = 0;
                 x3 = 0;
                 break;
-            case D3Q27System::BSE:
+            case D3Q27System::DIR_PMM:
                 x1 = maxX1;
                 x2 = 0;
                 x3 = 0;

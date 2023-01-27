@@ -144,6 +144,7 @@
 #include <BoundaryConditions/MultiphaseNonReflectingOutflowBCAlgorithm.h>
 #include <BoundaryConditions/MultiphaseVelocityBCAdapter.h>
 #include <BoundaryConditions/MultiphaseVelocityBCAlgorithm.h>
+#include <BoundaryConditions/MultiphaseSlipBCAlgorithm.h> 
 
 #include <Connectors/Block3DConnector.h>
 //#include <Connectors/Block3DConnectorFactory.h>
@@ -161,6 +162,7 @@
 #include <Connectors/TwoDistributionsFullDirectConnector.h>
 #include <Connectors/TwoDistributionsFullVectorConnector.h>
 
+
 #include <Data/D3Q27EsoTwist3DSplittedVector.h>
 #include <Data/D3Q27EsoTwist3DSplittedVectorEx.h>
 #include <Data/DataSet3D.h>
@@ -173,7 +175,6 @@
 #include <Grid/Block3D.h>
 #include <Grid/Calculator.h>
 #include <Grid/Grid3D.h>
-#include <Grid/Grid3DSystem.h>
 
 #include <Interactors/D3Q27Interactor.h>
 #include <Interactors/D3Q27TriFaceMeshInteractor.h>
@@ -251,6 +252,11 @@
 #include <LBM/MultiphaseCumulantLBMKernel.h>
 #include <LBM/MultiphaseScratchCumulantLBMKernel.h>
 #include <LBM/MultiphaseTwoPhaseFieldsCumulantLBMKernel.h>
+#include <LBM/MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel.h>
+#include <LBM/MultiphaseTwoPhaseFieldsPressureFilterLBMKernel.h>
+#include <LBM/MultiphasePressureFilterLBMKernel.h>
+#include <LBM/MultiphasePressureFilterCompressibleAirLBMKernel.h>
+#include <MultiphaseSimpleVelocityBaseExternalPressureLBMKernel.h>
 
 
 
@@ -341,6 +347,7 @@
 #include <Visitors/MultiphaseSetKernelBlockVisitor.h>
 #include <Visitors/MultiphaseBoundaryConditionsBlockVisitor.h>
 #include <Visitors/MultiphaseInitDistributionsBlockVisitor.h>
+#include <Visitors/MultiphaseVelocityFormInitDistributionsBlockVisitor.h>
 #include <Visitors/SetInterpolationConnectorsBlockVisitor.h>
 
 #include <RefineAroundGbObjectHelper.h>

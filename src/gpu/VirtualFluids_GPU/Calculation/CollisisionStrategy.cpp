@@ -72,16 +72,16 @@ void CollisionAndExchange_streams::operator()(UpdateGrid27 *updateGrid, Paramete
     //! 1. run collision for nodes which are at the border of the gpus/processes, running with WriteMacroVars in case probes sample on these nodes
     //!    
     updateGrid->collisionUsingIndices(  level, t, 
-                                        para->getParD(level)->taggedFluidNodeIndices[CollisionTemplate::Border],
-                                        para->getParD(level)->numberOfTaggedFluidNodes[CollisionTemplate::Border], 
+                                        para->getParD(level)->taggedFluidNodeIndices[CollisionTemplate::SubDomainBorder],
+                                        para->getParD(level)->numberOfTaggedFluidNodes[CollisionTemplate::SubDomainBorder], 
                                         CollisionTemplate::WriteMacroVars,  
-                                        CudaStreamIndex::Border);
+                                        CudaStreamIndex::SubDomainBorder);
 
     //! 2. prepare the exchange between gpus (collect the send nodes for communication in a buffer on the gpu) and trigger bulk kernel execution when finished
     //!
-    updateGrid->prepareExchangeMultiGPU(level, CudaStreamIndex::Border);
+    updateGrid->prepareExchangeMultiGPU(level, CudaStreamIndex::SubDomainBorder);
     if (para->getUseStreams())
-        para->getStreamManager()->triggerStartBulkKernel(CudaStreamIndex::Border);
+        para->getStreamManager()->triggerStartBulkKernel(CudaStreamIndex::SubDomainBorder);
 
     //! 3. launch the collision kernel for bulk nodes. This includes nodes with \param tag Default, WriteMacroVars, ApplyBodyForce, 
     //!    or AllFeatures. All assigned tags are listed in \param allocatedBulkFluidNodeTags during initialization in Simulation::init
@@ -97,5 +97,5 @@ void CollisionAndExchange_streams::operator()(UpdateGrid27 *updateGrid, Paramete
                                             CudaStreamIndex::Bulk);
     }
     //! 4. exchange information between GPUs
-    updateGrid->exchangeMultiGPU(level, CudaStreamIndex::Border);
+    updateGrid->exchangeMultiGPU(level, CudaStreamIndex::SubDomainBorder);
 }

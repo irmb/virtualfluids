@@ -208,7 +208,6 @@ protected:
     bool hasDeviceQuantityArray;    //!> flag initiating memCopy in Point and PlaneProbe. Other probes are only based on thrust reduce functions and therefore dont need explict memCopy in interact()
     bool outputTimeSeries;          //!> flag initiating overwrite of output vtk files, skipping collection files and limiting the length of the written data to the current time step (currently only used for WallModelProbe)
     std::vector<std::string> fileNamesForCollectionFile;
-    std::vector<std::string> varNames;
 
     bool fileNameLU = true; //!> if true, written file name contains time step in LU, else is the number of the written probe files
 

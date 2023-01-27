@@ -413,7 +413,7 @@ void TimeAveragedValuesCoProcessor::calculateAverageValues(double timeSteps)
                                     (*av)(Vz, ix1, ix2, ix3) = uz;
                                 }
 
-                                // fluctuations
+                                // mean fluctuations
                                 if ((options & Fluctuations) == Fluctuations) {
                                     uxx = (*af)(Vxx, ix1, ix2, ix3) / timeSteps;
                                     uyy = (*af)(Vyy, ix1, ix2, ix3) / timeSteps;
@@ -431,7 +431,7 @@ void TimeAveragedValuesCoProcessor::calculateAverageValues(double timeSteps)
                                 }
 
                                 if ((options & Triplecorrelations) == Triplecorrelations) {
-                                    // triple-correlations
+                                    // mean triple-correlations
                                     (*at)(Vxxx, ix1, ix2, ix3) =
                                         (*at)(Vxxx, ix1, ix2, ix3) / timeSteps - 3.0 * uxx * ux + 2.0 * ux * ux * ux;
                                     (*at)(Vxxy, ix1, ix2, ix3) = (*at)(Vxxy, ix1, ix2, ix3) / timeSteps -

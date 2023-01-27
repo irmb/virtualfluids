@@ -1,4 +1,35 @@
-
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file ActuatorLine.cpp
+//! \ingroup ActuatorLine
+//! \author Henry Korb, Henrik Asmuth
+//=======================================================================================
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <string>
@@ -220,7 +251,7 @@ void multipleLevel(const std::string& configPath)
     const real epsilon = dx*exp2(-level)*2.0; // width of gaussian smearing
     const real density = 1.225f;
     const uint nBlades = 3;
-    const uint nBladeNodes = 404; // passt zu auflösung von 105 Knoten
+    const uint nBladeNodes = reference_diameter * 4 + 3; // passt zu auflösung von 105 Knoten
     VF_LOG_INFO("number of blade nodes ALM = {}", nBladeNodes);
     const real tipspeed_ratio = 7.5f; // tipspeed ratio = angular vel * radius / inflow vel
     const real omega = 2*tipspeed_ratio*velocity/reference_diameter;
