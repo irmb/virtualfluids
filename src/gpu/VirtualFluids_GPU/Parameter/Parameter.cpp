@@ -598,16 +598,16 @@ void Parameter::checkParameterValidityCumulantK17() const
     if (this->mainKernel != "CumulantK17")
         return;
 
-    real viscosity = this->parH[maxlevel]->vis;
-    real viscosityLimit = 1.0 / 42.0;
+    const real viscosity = this->parH[maxlevel]->vis;
+    const real viscosityLimit = 1.0 / 42.0;
     if (viscosity > viscosityLimit) {
         VF_LOG_WARNING("The viscosity (in LB units) at level {} is {:1.3g}. It is recommended to keep it smaller than {:1.3g} "
                        "for the CumulantK17 collision kernel.",
                        maxlevel, viscosity, viscosityLimit);
     }
 
-    real velocity = this->ic.u0;
-    real velocityLimit = 0.1;
+    const real velocity = this->ic.u0;
+    const real velocityLimit = 0.1;
     if (velocity > velocityLimit) {
         VF_LOG_WARNING("The velocity (in LB units) is {:1.4g}. It is recommended to keep it smaller than {:1.4g} for the "
                        "CumulantK17 collision kernel.",
