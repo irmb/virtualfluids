@@ -6,6 +6,7 @@
 #include "../RunLBMKernel.cuh"
 
 #include <lbm/BGK.h>
+#include <lbm/KernelParameter.h>
 
 
 namespace vf
