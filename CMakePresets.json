@@ -1,26 +1,36 @@
 {
-    "version": 2,
+    "version": 3,
     "cmakeMinimumRequired": {
         "major": 3,
-        "minor": 20,
+        "minor": 21,
         "patch": 0
     },
     "configurePresets": [
         {
             "name": "default",
-            "hidden": true,
-            "binaryDir": "${sourceDir}/build/"
+            "binaryDir": "build",
+            "hidden": true
         },
         {
             "name": "msvc",
             "hidden": true,
             "generator": "Visual Studio 16 2019",
-            "architecture": "x64"
+            "architecture": "x64",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+              }
         },
         {
             "name": "make",
             "hidden": true,
-            "generator": "Unix Makefiles"
+            "generator": "Unix Makefiles",
+            "condition": {
+                "type": "notEquals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+              }
         },
         {
             "name": "unit_tests",
@@ -50,34 +60,6 @@
             }
         },
         {
-            "name": "debug",
-            "hidden": true,
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug"
-            }
-        },
-        {
-            "name": "release",
-            "hidden": true,
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release"
-            }
-        },
-        {
-            "name": "min_size_rel",
-            "hidden": true,
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "MinSizeRel"
-            }
-        },
-        {
-            "name": "rel_with_deb_info",
-            "hidden": true,
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "RelWithDebInfo"
-            }
-        },
-        {
             "name": "gpu_numerical_tests",
             "inherits": [
                 "gpu",
@@ -91,7 +73,7 @@
             }
         },
         {
-            "name": "all_make",
+            "name": "make_all",
             "inherits": [
                 "cpu",
                 "gpu",
@@ -101,7 +83,25 @@
             "displayName": "all make configuration"
         },
         {
-            "name": "all_msvc",
+            "name": "make_cpu",
+            "inherits": [
+                "cpu",
+                "unit_tests",
+                "make"
+            ],
+            "displayName": "cpu make configuration"
+        },
+        {
+            "name": "make_gpu",
+            "inherits": [
+                "gpu",
+                "unit_tests",
+                "make"
+            ],
+            "displayName": "gpu make configuration"
+        },
+        {
+            "name": "msvc_all",
             "inherits": [
                 "cpu",
                 "gpu",
@@ -111,7 +111,25 @@
             "displayName": "all msvc configuration"
         },
         {
-            "name": "gpu_numerical_tests_make",
+            "name": "msvc_cpu",
+            "inherits": [
+                "cpu",
+                "unit_tests",
+                "msvc"
+            ],
+            "displayName": "cpu msvc configuration"
+        },
+        {
+            "name": "msvc_gpu",
+            "inherits": [
+                "gpu",
+                "unit_tests",
+                "msvc"
+            ],
+            "displayName": "gpu msvc configuration"
+        },
+        {
+            "name": "make_numerical_tests_gpu",
             "inherits": [
                 "gpu_numerical_tests",
                 "make"
@@ -119,144 +137,12 @@
             "displayName": "gpu numerical tests make configuration"
         },
         {
-            "name": "gpu_numerical_tests_msvc",
+            "name": "msvc_numerical_tests_gpu",
             "inherits": [
                 "msvc",
                 "gpu_numerical_tests"
             ],
             "displayName": "gpu numerical tests msvc configuration"
-        },
-        {
-            "name": "debug_make_gpu",
-            "displayName": "Debug GPU Make",
-            "inherits": [
-                "gpu",
-                "make",
-                "debug"
-            ]
-        },
-        {
-            "name": "release_make_gpu",
-            "displayName": "Release GPU Make",
-            "inherits": [
-                "gpu",
-                "make",
-                "release"
-            ]
-        },
-        {
-            "name": "min_size_rel_make_gpu",
-            "displayName": "MinSizeRel GPU Make",
-            "inherits": [
-                "gpu",
-                "make",
-                "min_size_rel"
-            ]
-        },
-        {
-            "name": "rel_with_deb_info_make_gpu",
-            "displayName": "RelWithDebInfo GPU Make",
-            "inherits": [
-                "gpu",
-                "make",
-                "rel_with_deb_info"
-            ]
-        },
-        {
-            "name": "debug_msvc_gpu",
-            "displayName": "Debug GPU MSVC",
-            "inherits": [
-                "gpu",
-                "msvc",
-                "debug"
-            ]
-        },
-        {
-            "name": "release_msvc_gpu",
-            "displayName": "Release GPU MSVC",
-            "inherits": [
-                "gpu",
-                "msvc",
-                "release"
-            ]
-        },
-        {
-            "name": "min_size_rel_msvc_gpu",
-            "displayName": "MinSizeRel GPU MSVC",
-            "inherits": [
-                "gpu",
-                "msvc",
-                "min_size_rel"
-            ]
-        },
-        {
-            "name": "rel_with_deb_info_msvc_gpu",
-            "displayName": "RelWithDebInfo GPU MSVC",
-            "inherits": [
-                "gpu",
-                "msvc",
-                "rel_with_deb_info"
-            ]
-        }
-    ],
-    "buildPresets": [
-        {
-            "name": "Default",
-            "hidden": true,
-            "configurePreset": "default",
-            "jobs": 4
-        },
-        {
-            "name": "GPU",
-            "hidden": true,
-            "configurePreset": "gpu",
-            "targets": [
-                "ActuatorLine",
-                "DrivenCavity",
-                "BoundaryLayer"
-            ],
-            "inherits": [
-                "Default"
-            ]
-        },
-        {
-            "name": "Release",
-            "hidden": true,
-            "configurePreset": "release"
-        },
-        {
-            "name": "Debug_Make_GPU",
-            "displayName": "Debug",
-            "description": "Compile GPU version with debug information",
-            "configurePreset": "debug_make_gpu",
-            "inherits": [
-                "GPU"
-            ]
-        },
-        {
-            "name": "MinSizeRel_Make_GPU",
-            "displayName": "MinSizeRel",
-            "configurePreset": "min_size_rel_make_gpu",
-            "inherits": [
-                "GPU"
-            ]
-        },
-        {
-            "name": "RelWithDebInfo_GPU",
-            "displayName": "RelWithDebInfo",
-            "configurePreset": "rel_with_deb_info_make_gpu",
-            "inherits": [
-                "GPU"
-            ]
-        },
-        {
-            "name": "Release_GPU",
-            "description": "Build release version of GPU",
-            "displayName": "Release GPU",
-            "configurePreset": "release_make_gpu",
-            "inherits": [
-                "GPU"
-            ]
         }
     ]
 }
