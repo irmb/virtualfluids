@@ -1,27 +1,58 @@
-/* Device code */
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file PressBCs27.cu
+//! \ingroup GPU
+//! \author Martin Schoenherr, Anna Wellmann
+//======================================================================================
 #include "LBM/LB.h"
 #include "lbm/constants/D3Q27.h"
 #include "lbm/constants/NumericConstants.h"
 #include "lbm/MacroscopicQuantities.h"
-#include "Kernel/Utilities/DistributionHelper.cuh"
-
-#include "KernelUtilities.h"
+#include "LBM/GPUHelperFunctions/KernelUtilities.h"
 
 using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
+using namespace vf::gpu;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-__global__ void QInflowScaleByPressDevice27(  real* rhoBC,
-                                           real* DD,
-                                           int* k_Q,
-                                           int* k_N,
-                                           int numberOfBCnodes,
-                                           real om1,
-                                           unsigned int* neighborX,
-                                           unsigned int* neighborY,
-                                           unsigned int* neighborZ,
-                                           unsigned long long numberOfLBnodes,
-                                           bool isEvenTimestep)
+__global__ void QInflowScaleByPressDevice27(
+    real* rhoBC,
+    real* DD,
+    int* k_Q,
+    int* k_N,
+    int numberOfBCnodes,
+    real om1,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index
@@ -468,17 +499,18 @@ __global__ void QInflowScaleByPressDevice27(  real* rhoBC,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-__global__ void QPressDeviceIncompNEQ27( real* rhoBC,
-                                       real* DD,
-                                       int* k_Q,
-                                       int* k_N,
-                                       int numberOfBCnodes,
-                                       real om1,
-                                       unsigned int* neighborX,
-                                       unsigned int* neighborY,
-                                       unsigned int* neighborZ,
-                                       unsigned long long numberOfLBnodes,
-                                       bool isEvenTimestep)
+__global__ void QPressDeviceIncompNEQ27(
+    real* rhoBC,
+    real* DD,
+    int* k_Q,
+    int* k_N,
+    int numberOfBCnodes,
+    real om1,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index
@@ -807,54 +839,49 @@ __global__ void QPressDeviceIncompNEQ27( real* rhoBC,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-__global__ void QPressDeviceNEQ27(real* rhoBC,
-                                             real* distribution,
-                                             int* bcNodeIndices,
-                                             int* bcNeighborIndices,
-                                             int numberOfBCnodes,
-                                             real omega1,
-                                             unsigned int* neighborX,
-                                             unsigned int* neighborY,
-                                             unsigned int* neighborZ,
-                                             unsigned long long numberOfLBnodes,
-                                             bool isEvenTimestep)
+__global__ void QPressDeviceNEQ27(
+    real* rhoBC,
+    real* distributions,
+    int* bcNodeIndices,
+    int* bcNeighborIndices,
+    int numberOfBCnodes,
+    real omega1,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep)
 {
-   //////////////////////////////////////////////////////////////////////////
+   ////////////////////////////////////////////////////////////////////////////////
    //! The pressure boundary condition is executed in the following steps
    //!
+
    ////////////////////////////////////////////////////////////////////////////////
    //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
    //!
-   const unsigned x = threadIdx.x;    // global x-index
-   const unsigned y = blockIdx.x;     // global y-index
-   const unsigned z = blockIdx.y;     // global z-index
+   const unsigned nodeIndex = getNodeIndex();
 
-   const unsigned nx = blockDim.x;
-   const unsigned ny = gridDim.x;
-
-   const unsigned k = nx*(ny*z + y) + x;
-
-   //////////////////////////////////////////////////////////////////////////
+   ////////////////////////////////////////////////////////////////////////////////
    //! - Run for all indices in size of boundary condition (numberOfBCnodes)
    //!
-   if(k < numberOfBCnodes)
+   if(nodeIndex < numberOfBCnodes)
    {
       //////////////////////////////////////////////////////////////////////////
       //! - Read distributions: style of reading and writing the distributions from/to stored arrays dependent on timestep is based on the esoteric twist algorithm \ref
       //! <a href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017), DOI:10.3390/computation5020019 ]</b></a>
       //!
       Distributions27 dist;
-      getPointersToDistributions(dist, distribution, numberOfLBnodes, isEvenTimestep);
+      getPointersToDistributions(dist, distributions, numberOfLBnodes, isEvenTimestep);
 
       ////////////////////////////////////////////////////////////////////////////////
       //! - Set local pressure
       //!
-      real rhoBClocal = rhoBC[k];
+      real rhoBClocal = rhoBC[nodeIndex];
 
       ////////////////////////////////////////////////////////////////////////////////
       //! - Set neighbor indices (necessary for indirect addressing)
       //!
-      unsigned int KQK  = bcNodeIndices[k];
+      unsigned int KQK  = bcNodeIndices[nodeIndex];
       unsigned int kzero= KQK;
       unsigned int ke   = KQK;
       unsigned int kw   = neighborX[KQK];
@@ -885,7 +912,7 @@ __global__ void QPressDeviceNEQ27(real* rhoBC,
       ////////////////////////////////////////////////////////////////////////////////
       //! - Set neighbor indices (necessary for indirect addressing) for neighboring node
       //!
-      unsigned int K1QK  = bcNeighborIndices[k];
+      unsigned int K1QK  = bcNeighborIndices[nodeIndex];
       unsigned int k1zero= K1QK;
       unsigned int k1e   = K1QK;
       unsigned int k1w   = neighborX[K1QK];
@@ -1110,16 +1137,17 @@ __global__ void QPressDeviceNEQ27(real* rhoBC,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-__global__ void LB_BC_Press_East27( int nx,
-                                               int ny,
-                                               int tz,
-                                               unsigned int* bcMatD,
-                                               unsigned int* neighborX,
-                                               unsigned int* neighborY,
-                                               unsigned int* neighborZ,
-                                               real* DD,
-                                               unsigned long long numberOfLBnodes,
-                                               bool isEvenTimestep)
+__global__ void LB_BC_Press_East27(
+    int nx,
+    int ny,
+    int tz,
+    unsigned int* bcMatD,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    real* DD,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep)
 {
    //thread-index
    int ty = blockIdx.x;
@@ -1419,17 +1447,18 @@ __global__ void LB_BC_Press_East27( int nx,
 
 
 //////////////////////////////////////////////////////////////////////////////
-__global__ void QPressDevice27(real* rhoBC,
-                                           real* DD,
-                                           int* k_Q,
-                                           real* QQ,
-                                           unsigned int numberOfBCnodes,
-                                           real om1,
-                                           unsigned int* neighborX,
-                                           unsigned int* neighborY,
-                                           unsigned int* neighborZ,
-                                           unsigned long long numberOfLBnodes,
-                                           bool isEvenTimestep)
+__global__ void QPressDevice27(
+    real* rhoBC,
+    real* DD,
+    int* k_Q,
+    real* QQ,
+    unsigned int numberOfBCnodes,
+    real om1,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep)
 {
    Distributions27 D;
    if (isEvenTimestep==true)
@@ -1902,20 +1931,21 @@ __global__ void QPressDevice27(real* rhoBC,
 
 
 //////////////////////////////////////////////////////////////////////////////
-__global__ void QPressDeviceAntiBB27(   real* rhoBC,
-                                       real* vx,
-                                       real* vy,
-                                       real* vz,
-                                       real* DD,
-                                       int* k_Q,
-                                       real* QQ,
-                                       int numberOfBCnodes,
-                                       real om1,
-                                       unsigned int* neighborX,
-                                       unsigned int* neighborY,
-                                       unsigned int* neighborZ,
-                                       unsigned long long numberOfLBnodes,
-                                       bool isEvenTimestep)
+__global__ void QPressDeviceAntiBB27(
+    real* rhoBC,
+    real* vx,
+    real* vy,
+    real* vz,
+    real* DD,
+    int* k_Q,
+    real* QQ,
+    int numberOfBCnodes,
+    real om1,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep)
 {
    Distributions27 D;
    if (isEvenTimestep==true)
@@ -2367,16 +2397,17 @@ __global__ void QPressDeviceAntiBB27(   real* rhoBC,
 
 
 //////////////////////////////////////////////////////////////////////////////
-__global__ void QPressDeviceFixBackflow27( real* rhoBC,
-                                                      real* DD,
-                                                      int* k_Q,
-                                                      int numberOfBCnodes,
-                                                      real om1,
-                                                      unsigned int* neighborX,
-                                                      unsigned int* neighborY,
-                                                      unsigned int* neighborZ,
-                                                      unsigned long long numberOfLBnodes,
-                                                      bool isEvenTimestep)
+__global__ void QPressDeviceFixBackflow27(
+    real* rhoBC,
+    real* DD,
+    int* k_Q,
+    int numberOfBCnodes,
+    real om1,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index
@@ -2558,16 +2589,17 @@ __global__ void QPressDeviceFixBackflow27( real* rhoBC,
 
 
 //////////////////////////////////////////////////////////////////////////////
-__global__ void QPressDeviceDirDepBot27(  real* rhoBC,
-                                                     real* DD,
-                                                     int* k_Q,
-                                                     int numberOfBCnodes,
-                                                     real om1,
-                                                     unsigned int* neighborX,
-                                                     unsigned int* neighborY,
-                                                     unsigned int* neighborZ,
-                                                     unsigned long long numberOfLBnodes,
-                                                     bool isEvenTimestep)
+__global__ void QPressDeviceDirDepBot27(
+    real* rhoBC,
+    real* DD,
+    int* k_Q,
+    int numberOfBCnodes,
+    real om1,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index
@@ -2802,30 +2834,32 @@ __host__ __device__ real computeOutflowDistribution(const real* const &f, const 
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-__global__ void QPressNoRhoDevice27( real* rhoBC,
-                                     real* distributions,
-                                     int* k_Q,
-                                     int* k_N,
-                                     int numberOfBCnodes,
-                                     real om1,
-                                     unsigned int* neighborX,
-                                     unsigned int* neighborY,
-                                     unsigned int* neighborZ,
-                                     unsigned long long numberOfLBnodes,
-                                     bool isEvenTimestep,
-                                     int direction)
+__global__ void QPressNoRhoDevice27(
+    real* rhoBC,
+    real* distributions,
+    int* k_Q,
+    int* k_N,
+    int numberOfBCnodes,
+    real om1,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep,
+    int direction)
 {
    ////////////////////////////////////////////////////////////////////////////////
+   //! - Get the node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
+   //!
+   const unsigned nodeIndex = getNodeIndex();
 
-
-   const unsigned k = vf::gpu::getNodeIndex();
    //////////////////////////////////////////////////////////////////////////
 
-   if(k>=numberOfBCnodes) return;
+   if(nodeIndex >= numberOfBCnodes) return;
 
    ////////////////////////////////////////////////////////////////////////////////
    //index
-   unsigned int KQK  = k_Q[k];
+   unsigned int KQK  = k_Q[nodeIndex];
    // unsigned int kzero= KQK;
    unsigned int ke   = KQK;
    unsigned int kw   = neighborX[KQK];
@@ -2855,7 +2889,7 @@ __global__ void QPressNoRhoDevice27( real* rhoBC,
    unsigned int kbsw = neighborZ[ksw];
    ////////////////////////////////////////////////////////////////////////////////
    //index1
-   unsigned int K1QK  = k_N[k];
+   unsigned int K1QK  = k_N[nodeIndex];
    //unsigned int k1zero= K1QK;
    unsigned int k1e   = K1QK;
    unsigned int k1w   = neighborX[K1QK];
@@ -3027,38 +3061,76 @@ __global__ void QPressNoRhoDevice27( real* rhoBC,
          break;
    }
 }
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 __host__ __device__ real computeOutflowDistribution(const real* const &f, const real* const &f1, const int dir, const real rhoCorrection, const real cs, const real weight)
 {
    return f1[dir  ] * cs + (c1o1 - cs) * f[dir  ] - weight *rhoCorrection;
 }
 
-__global__ void QPressZeroRhoOutflowDevice27(  real* rhoBC,
-                                     real* distributions,
-                                     int* k_Q,
-                                     int* k_N,
-                                     int numberOfBCnodes,
-                                     real om1,
-                                     unsigned int* neighborX,
-                                     unsigned int* neighborY,
-                                     unsigned int* neighborZ,
-                                     unsigned long long numberOfLBnodes,
-                                     bool isEvenTimestep,
-                                     int direction,
-                                     real densityCorrectionFactor)
+__global__ void QPressZeroRhoOutflowDevice27(
+    real* rhoBC,
+    real* distributions,
+    int* k_Q,
+    int* k_N,
+    int numberOfBCnodes,
+    real om1,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep,
+    int direction,
+    real densityCorrectionFactor)
 {
    ////////////////////////////////////////////////////////////////////////////////
-   const unsigned k = vf::gpu::getNodeIndex();
+   //! - Get the node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
+   //!
+   const unsigned nodeIndex = getNodeIndex();
 
    //////////////////////////////////////////////////////////////////////////
 
-   if(k>=numberOfBCnodes) return;
+   if( nodeIndex >= numberOfBCnodes ) return;
+
    ////////////////////////////////////////////////////////////////////////////////
    //index
 
-   uint k_000 = k_Q[k];
+   uint k_000 = k_Q[nodeIndex];
    uint k_M00 = neighborX[k_000];
    uint k_0M0 = neighborY[k_000];
    uint k_00M = neighborZ[k_000];
@@ -3069,7 +3141,7 @@ __global__ void QPressZeroRhoOutflowDevice27(  real* rhoBC,
 
    ////////////////////////////////////////////////////////////////////////////////
    //index of neighbor
-   uint kN_000 = k_N[k];
+   uint kN_000 = k_N[nodeIndex];
    uint kN_M00 = neighborX[k_000];
    uint kN_0M0 = neighborY[k_000];
    uint kN_00M = neighborZ[k_000];
@@ -3255,17 +3327,18 @@ __global__ void QPressZeroRhoOutflowDevice27(  real* rhoBC,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-__global__ void QPressDeviceOld27(real* rhoBC,
-                                             real* DD,
-                                             int* k_Q,
-                                             int* k_N,
-                                             int numberOfBCnodes,
-                                             real om1,
-                                             unsigned int* neighborX,
-                                             unsigned int* neighborY,
-                                             unsigned int* neighborZ,
-                                             unsigned long long numberOfLBnodes,
-                                             bool isEvenTimestep)
+__global__ void QPressDeviceOld27(
+    real* rhoBC,
+    real* DD,
+    int* k_Q,
+    int* k_N,
+    int numberOfBCnodes,
+    real om1,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index
@@ -3514,18 +3587,19 @@ __global__ void QPressDeviceOld27(real* rhoBC,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-__global__ void QPressDeviceEQZ27(real* rhoBC,
-                                             real* DD,
-                                             int* k_Q,
-                                             int* k_N,
-                                  real* kTestRE,
-                                             int numberOfBCnodes,
-                                             real om1,
-                                             unsigned int* neighborX,
-                                             unsigned int* neighborY,
-                                             unsigned int* neighborZ,
-                                             unsigned long long numberOfLBnodes,
-                                             bool isEvenTimestep)
+__global__ void QPressDeviceEQZ27(
+    real* rhoBC,
+    real* DD,
+    int* k_Q,
+    int* k_N,
+    real* kTestRE,
+    int numberOfBCnodes,
+    real om1,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index
@@ -4295,14 +4369,15 @@ __global__ void QPressDeviceEQZ27(real* rhoBC,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-__global__ void QPressDeviceZero27(	 real* DD,
-                                     int* k_Q,
-                                     unsigned int numberOfBCnodes,
-                                     unsigned int* neighborX,
-                                     unsigned int* neighborY,
-                                     unsigned int* neighborZ,
-                                     unsigned long long numberOfLBnodes,
-                                     bool isEvenTimestep)
+__global__ void QPressDeviceZero27(
+    real* DD,
+    int* k_Q,
+    unsigned int numberOfBCnodes,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index
@@ -4482,17 +4557,18 @@ __global__ void QPressDeviceZero27(	 real* DD,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-__global__ void QPressDeviceFake27(	 real* rhoBC,
-                                     real* DD,
-                                     int* k_Q,
-                                     int* k_N,
-                                     int numberOfBCnodes,
-                                     real om1,
-                                     unsigned int* neighborX,
-                                     unsigned int* neighborY,
-                                     unsigned int* neighborZ,
-                                     unsigned long long numberOfLBnodes,
-                                     bool isEvenTimestep)
+__global__ void QPressDeviceFake27(
+    real* rhoBC,
+    real* DD,
+    int* k_Q,
+    int* k_N,
+    int numberOfBCnodes,
+    real om1,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index
@@ -4756,17 +4832,18 @@ __global__ void QPressDeviceFake27(	 real* rhoBC,
 
 
 //////////////////////////////////////////////////////////////////////////
-__global__ void QPressDevice27_IntBB(real* rho,
-                                    real* DD,
-                                    int* k_Q,
-                                    real* QQ,
-                                    unsigned int numberOfBCnodes,
-                                    real om1,
-                                    unsigned int* neighborX,
-                                    unsigned int* neighborY,
-                                    unsigned int* neighborZ,
-                                    unsigned long long numberOfLBnodes,
-                                    bool isEvenTimestep)
+__global__ void QPressDevice27_IntBB(
+    real* rho,
+    real* DD,
+    int* k_Q,
+    real* QQ,
+    unsigned int numberOfBCnodes,
+    real om1,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep)
 {
    Distributions27 D;
    if (isEvenTimestep==true)

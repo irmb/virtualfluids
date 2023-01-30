@@ -75,7 +75,7 @@ clang_10:
     - export CXX=clang++
 
 ###############################################################################
-msvc_16:
+msvc_17:
   stage: build
 
   tags:
@@ -92,7 +92,7 @@ msvc_16:
     - git --version
     - $env:Path += ";C:\Program Files\CMake\bin\"
     - cmake --version
-    - $env:Path += ";C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin"
+    - $env:Path += ";C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin"
     - MSBuild.exe -version
 
   script:
@@ -180,14 +180,14 @@ gcc_9_unit_tests:
     - ctest
 
 ###############################################################################
-msvc_16_unit_tests:
+msvc_17_unit_tests:
   stage: test
 
   tags:
     - win
     - gpu
 
-  needs: ["msvc_16"]
+  needs: ["msvc_17"]
 
   before_script:
     - $env:Path += ";C:\Program Files\CMake\bin\"

@@ -1,21 +1,52 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file PrecursorWriter.cu
+//! \ingroup PreCollisionInteractor
+//! \author Henrik Asmuth, Henry Korb
+//======================================================================================
 #include "PrecursorWriter.h"
 #include "basics/writer/WbWriterVtkXmlImageBinary.h"
 
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
-#include <cuda/CudaGrid.h>
-#include "Kernel/Utilities/DistributionHelper.cuh"
+#include "cuda/CudaGrid.h"
+#include "LBM/GPUHelperFunctions/KernelUtilities.h"
 
-#include <Core/StringUtilities/StringUtil.h>
+#include "Core/StringUtilities/StringUtil.h"
 
 #include "Parameter/Parameter.h"
 #include "DataStructureInitializer/GridProvider.h"
 #include "GPU/CudaMemoryManager.h"
 
 using namespace vf::lbm::dir;
-
-
+using namespace vf::gpu;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //TODO check everything for multiple level
@@ -52,13 +83,16 @@ __global__ void fillArrayVelocities(const uint numberOfPrecursorNodes,
 
 
 {
-    const uint node = vf::gpu::getNodeIndex();
+    ////////////////////////////////////////////////////////////////////////////////
+    //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
+    //!
+    const unsigned nodeIndex = vf::gpu::getNodeIndex();
 
-    if(node>=numberOfPrecursorNodes) return;
+    if(nodeIndex>=numberOfPrecursorNodes) return;
 
-    precursorData[linearIdx(0u, node, numberOfPrecursorNodes)] = vx[indices[node]]*velocityRatio;
-    precursorData[linearIdx(1u, node, numberOfPrecursorNodes)] = vy[indices[node]]*velocityRatio;
-    precursorData[linearIdx(2u, node, numberOfPrecursorNodes)] = vz[indices[node]]*velocityRatio;
+    precursorData[linearIdx(0u, nodeIndex, numberOfPrecursorNodes)] = vx[indices[nodeIndex]]*velocityRatio;
+    precursorData[linearIdx(1u, nodeIndex, numberOfPrecursorNodes)] = vy[indices[nodeIndex]]*velocityRatio;
+    precursorData[linearIdx(2u, nodeIndex, numberOfPrecursorNodes)] = vz[indices[nodeIndex]]*velocityRatio;
 }
 
 
@@ -71,15 +105,19 @@ __global__ void fillArrayDistributions( uint numberOfPrecursorNodes,
                                         bool isEvenTimestep,
                                         unsigned long numberOfLBnodes)
 {
-    const uint node = vf::gpu::getNodeIndex();
+    ////////////////////////////////////////////////////////////////////////////////
+    //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
+    //!
+    const unsigned nodeIndex = vf::gpu::getNodeIndex();
 
-    if(node>=numberOfPrecursorNodes) return;
+    if(nodeIndex>=numberOfPrecursorNodes) return;
 
-    Distributions27 dist = vf::gpu::getDistributionReferences27(distributions, numberOfLBnodes, isEvenTimestep);
+    Distributions27 dist;
+    getPointersToDistributions(dist, distributions, numberOfLBnodes, isEvenTimestep);
     
     ////////////////////////////////////////////////////////////////////////////////
     // ! - Set neighbor indices (necessary for indirect addressing)
-    uint k_000 = indices[node];
+    uint k_000 = indices[nodeIndex];
     // uint k_M00 = neighborX[k_000];
     uint k_0M0 = neighborY[k_000];
     uint k_00M = neighborZ[k_000];
@@ -91,15 +129,15 @@ __global__ void fillArrayDistributions( uint numberOfPrecursorNodes,
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Get local distributions in PX directions
     //!
-    precursorData[linearIdx(PrecP00, node, numberOfPrecursorNodes)] = (dist.f[DIR_P00])[k_000];
-    precursorData[linearIdx(PrecPP0, node, numberOfPrecursorNodes)] = (dist.f[DIR_PP0])[k_000];
-    precursorData[linearIdx(PrecPM0, node, numberOfPrecursorNodes)] = (dist.f[DIR_PM0])[k_0M0];
-    precursorData[linearIdx(PrecP0P, node, numberOfPrecursorNodes)] = (dist.f[DIR_P0P])[k_000];
-    precursorData[linearIdx(PrecP0M, node, numberOfPrecursorNodes)] = (dist.f[DIR_P0M])[k_00M];
-    precursorData[linearIdx(PrecPPP, node, numberOfPrecursorNodes)] = (dist.f[DIR_PPP])[k_000];
-    precursorData[linearIdx(PrecPMP, node, numberOfPrecursorNodes)] = (dist.f[DIR_PMP])[k_0M0];
-    precursorData[linearIdx(PrecPPM, node, numberOfPrecursorNodes)] = (dist.f[DIR_PPM])[k_00M];
-    precursorData[linearIdx(PrecPMM, node, numberOfPrecursorNodes)] = (dist.f[DIR_PMM])[k_0MM];
+    precursorData[linearIdx(PrecP00, nodeIndex, numberOfPrecursorNodes)] = (dist.f[DIR_P00])[k_000];
+    precursorData[linearIdx(PrecPP0, nodeIndex, numberOfPrecursorNodes)] = (dist.f[DIR_PP0])[k_000];
+    precursorData[linearIdx(PrecPM0, nodeIndex, numberOfPrecursorNodes)] = (dist.f[DIR_PM0])[k_0M0];
+    precursorData[linearIdx(PrecP0P, nodeIndex, numberOfPrecursorNodes)] = (dist.f[DIR_P0P])[k_000];
+    precursorData[linearIdx(PrecP0M, nodeIndex, numberOfPrecursorNodes)] = (dist.f[DIR_P0M])[k_00M];
+    precursorData[linearIdx(PrecPPP, nodeIndex, numberOfPrecursorNodes)] = (dist.f[DIR_PPP])[k_000];
+    precursorData[linearIdx(PrecPMP, nodeIndex, numberOfPrecursorNodes)] = (dist.f[DIR_PMP])[k_0M0];
+    precursorData[linearIdx(PrecPPM, nodeIndex, numberOfPrecursorNodes)] = (dist.f[DIR_PPM])[k_00M];
+    precursorData[linearIdx(PrecPMM, nodeIndex, numberOfPrecursorNodes)] = (dist.f[DIR_PMM])[k_0MM];
 }
 
 
