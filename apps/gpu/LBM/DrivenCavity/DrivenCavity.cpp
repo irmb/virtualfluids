@@ -112,7 +112,7 @@ int main()
         // create grid
         //////////////////////////////////////////////////////////////////////////
 
-        real dx = L / real(nx);
+        const real dx = L / real(nx);
 
         gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L, 0.5 * L, 0.5 * L, 0.5 * L, dx);
 
