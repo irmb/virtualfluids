@@ -49,7 +49,7 @@ stages:
     - cd $CI_PROJECT_DIR/$BUILD_FOLDER
     - rm -r -f ./*
     - cmake .. -LAH
-      --preset=all_make
+      --preset=make_all
       -DBUILD_WARNINGS_AS_ERRORS=ON
       -DCMAKE_CUDA_ARCHITECTURES=60
     - make -j4
@@ -99,7 +99,7 @@ msvc_17:
     - cd $CI_PROJECT_DIR
     - md -force $env:BUILD_FOLDER
     - cd $env:BUILD_FOLDER
-    - cmake .. --preset=all_msvc -DCMAKE_CUDA_ARCHITECTURES=61 -DBUILD_WARNINGS_AS_ERRORS=ON
+    - cmake .. --preset=msvc_all -DCMAKE_CUDA_ARCHITECTURES=61 -DBUILD_WARNINGS_AS_ERRORS=ON
     - MSBuild.exe VirtualFluids.sln /property:Configuration=$env:BUILD_CONFIGURATION /verbosity:minimal /maxcpucount:4
 
   artifacts:
@@ -281,7 +281,7 @@ gpu_numerical_tests:
     - cd $CI_PROJECT_DIR/build
     - rm -r -f ./*
     - cmake ..
-      --preset=gpu_numerical_tests_make
+      --preset=make_numerical_tests_gpu
       -DCMAKE_CUDA_ARCHITECTURES=60
       -DPATH_NUMERICAL_TESTS=/tmp/test_data/numerical_tests_gpu
     - make -j4
@@ -352,7 +352,7 @@ clang_build_analyzer_clang_10:
     - mkdir -p $CI_PROJECT_DIR/build
     - cd $CI_PROJECT_DIR/build
     - cmake ..
-      --preset=all_make
+      --preset=make_all
       -DCMAKE_CUDA_ARCHITECTURES=60
       -DCMAKE_CXX_FLAGS=-ftime-trace
     - ClangBuildAnalyzer --start .
@@ -384,7 +384,7 @@ include_what_you_use_clang_10:
     - mkdir -p $CI_PROJECT_DIR/build
     - cd $CI_PROJECT_DIR/build
     - cmake ..
-      --preset=all_make
+      --preset=make_all
       -DCMAKE_CUDA_ARCHITECTURES=60
       -DBUILD_VF_INCLUDE_WHAT_YOU_USE=ON
     - make
@@ -461,7 +461,7 @@ gcov_gcc_9:
     - mkdir -p $CI_PROJECT_DIR/build
     - cd $CI_PROJECT_DIR/build
     - cmake ..
-      --preset=all_make
+      --preset=make_all
       -DCMAKE_CUDA_ARCHITECTURES=60
       -DBUILD_VF_COVERAGE=ON
     - make -j4

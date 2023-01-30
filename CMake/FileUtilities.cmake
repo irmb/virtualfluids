@@ -5,7 +5,7 @@
 ## After function call the files are stored in: MY_SRCS
 #################################################################################
 
-macro(includeAllFiles targetName file_path)
+macro(includeAllFiles folderName targetName file_path)
 	if(NOT DEFINED collectTestFiles)
 	    set(collectTestFiles ON)
 	endif()
@@ -14,11 +14,11 @@ macro(includeAllFiles targetName file_path)
         set(collectProductionFiles ON)
     endif()
 
-	includeFiles(${targetName} "${file_path}")
+	includeFiles(${folderName} ${targetName} "${file_path}")
 endmacro(includeAllFiles)
 
 
-macro(includeProductionFiles targetName file_path)
+macro(includeProductionFiles folderName targetName file_path)
 	if(NOT DEFINED collectTestFiles)
 	    set(collectTestFiles OFF)
 	endif()
@@ -27,12 +27,12 @@ macro(includeProductionFiles targetName file_path)
         set(collectProductionFiles ON)
     endif()
 
-	includeFiles(${targetName} "${file_path}")
+	includeFiles(${folderName}  ${targetName} "${file_path}")
 endmacro(includeProductionFiles)
 
 
 
-macro(includeTestFiles targetName file_paths)
+macro(includeTestFiles folderName file_paths)
 	if(NOT DEFINED collectTestFiles)
 		set(collectTestFiles ON)
 	endif()
@@ -41,13 +41,13 @@ macro(includeTestFiles targetName file_paths)
 		set(collectProductionFiles OFF)
 	endif()
 
-	includeFiles(${targetName} "${file_paths}")
+	includeFiles(${folderName} ${folderName} "${file_paths}")
 endmacro(includeTestFiles)
 
 
 
 
-macro(includeFiles targetName file_paths)
+macro(includeFiles folderName targetName file_paths)
 
 	foreach(file ${file_paths})
 
@@ -57,7 +57,7 @@ macro(includeFiles targetName file_paths)
 
 		collectFilesFrom(${file})
 		if (package_dir)
-		   setSourceGroupForFilesIn(${file} ${package_dir} ${targetName})
+		   setSourceGroupForFilesIn(${file} ${package_dir} ${targetName} ${folderName})
 		endif()
 
 	endforeach()
@@ -90,9 +90,9 @@ endmacro()
 
 
 
-macro(setSourceGroupForFilesIn file package_dir targetName)
+macro(setSourceGroupForFilesIn file package_dir targetName folderName)
 #input: target_name PACKAGE_SRCS
-	buildSourceGroup(${targetName} ${package_dir})
+	buildSourceGroup(${folderName} ${package_dir})
 
 	if(isAllTestSuite)
 		source_group(${targetName}\\${SOURCE_GROUP} FILES ${file})
@@ -105,20 +105,20 @@ endmacro(setSourceGroupForFilesIn)
 
 
 
-macro(buildSourceGroup targetName path)
-#input: targetName (e.g. lib name, exe name)
+macro(buildSourceGroup folderName path)
+#input: folderName (e.g. name of folder after src/)
 
 	unset(SOURCE_GROUP)
 	string(REPLACE "/" ";" folderListFromPath ${path})
-	set(findTargetName 0)
+	set(findFolderName 0)
 
 	foreach(folder ${folderListFromPath})
-		if(findTargetName)
+		if(findFolderName)
 			set(SOURCE_GROUP ${SOURCE_GROUP}\\${folder})
 		endif()
 
-		if(${folder} STREQUAL ${targetName})
-			SET(findTargetName 1)
+		if(${folder} STREQUAL ${folderName})
+			SET(findFolderName 1)
 		endif()
 	endforeach()
 
