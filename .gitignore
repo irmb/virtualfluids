@@ -40,3 +40,6 @@ stl/
 
 # Settings
 .gitconfig
+
+# User Settings
+CMakeUserPresets.json

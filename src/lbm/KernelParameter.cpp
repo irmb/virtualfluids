@@ -5,19 +5,14 @@
 #include "MacroscopicQuantities.h"
 
 
-namespace vf
+namespace vf::lbm
 {
-namespace lbm
-{
-
 
 
 inline __host__ __device__ real Distribution27::getDensity_() const
 {
     return getDensity(f);
 }
-
-
 
 __host__ __device__ real abs_internal(real value)
 {
@@ -29,5 +24,4 @@ __host__ __device__ real abs_internal(real value)
 }
 
 
-}
 }
