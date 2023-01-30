@@ -1,23 +1,56 @@
-/* Device code */
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file SlipBCs27.cu
+//! \ingroup GPU
+//! \author Martin Schoenherr, Anna Wellmann
+//======================================================================================
 #include "LBM/LB.h" 
 #include "lbm/constants/D3Q27.h"
 #include "lbm/constants/NumericConstants.h"
-#include "KernelUtilities.h"
+#include "LBM/GPUHelperFunctions/KernelUtilities.h"
 
 using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
+using namespace vf::gpu;
 
 //////////////////////////////////////////////////////////////////////////////
-__global__ void QSlipDevice27(real* DD, 
-                                         int* k_Q, 
-                                         real* QQ,
-                                         unsigned int numberOfBCnodes,
-                                         real om1, 
-                                         unsigned int* neighborX,
-                                         unsigned int* neighborY,
-                                         unsigned int* neighborZ,
-                                         unsigned long long numberOfLBnodes, 
-                                         bool isEvenTimestep)
+__global__ void QSlipDevice27(
+    real* DD, 
+    int* k_Q, 
+    real* QQ,
+    unsigned int numberOfBCnodes,
+    real om1, 
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes, 
+    bool isEvenTimestep)
 {
    Distributions27 D;
    if (isEvenTimestep==true)
@@ -659,32 +692,26 @@ __global__ void QSlipDevice27(real* DD,
 
 //////////////////////////////////////////////////////////////////////////////
 __global__ void QSlipDeviceComp27(
-                                    real* distributions, 
-                                    int* subgridDistanceIndices, 
-                                    real* subgridDistances,
-                                    unsigned int numberOfBCnodes,
-                                    real omega, 
-                                    unsigned int* neighborX,
-                                    unsigned int* neighborY,
-                                    unsigned int* neighborZ,
-                                    unsigned long long numberOfLBnodes, 
-                                    bool isEvenTimestep)
+    real* distributions, 
+    int* subgridDistanceIndices, 
+    real* subgridDistances,
+    unsigned int numberOfBCnodes,
+    real omega, 
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes, 
+    bool isEvenTimestep)
 {
    //! The slip boundary condition is executed in the following steps
    //!
+
    ////////////////////////////////////////////////////////////////////////////////
    //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
    //!
-   const unsigned  x = threadIdx.x;  // global x-index 
-   const unsigned  y = blockIdx.x;   // global y-index 
-   const unsigned  z = blockIdx.y;   // global z-index 
+   const unsigned nodeIndex = getNodeIndex();
 
-   const unsigned nx = blockDim.x;
-   const unsigned ny = gridDim.x;
-
-   const unsigned k = nx*(ny*z + y) + x;
-
-   if(k < numberOfBCnodes)
+   if(nodeIndex < numberOfBCnodes)
    {
       //////////////////////////////////////////////////////////////////////////
       //! - Read distributions: style of reading and writing the distributions from/to stored arrays dependent on timestep is based on the esoteric twist algorithm \ref
@@ -702,7 +729,7 @@ __global__ void QSlipDeviceComp27(
       ////////////////////////////////////////////////////////////////////////////////
       //! - Set neighbor indices (necessary for indirect addressing)
       //!
-      unsigned int indexOfBCnode  = subgridDistanceIndices[k];
+      unsigned int indexOfBCnode  = subgridDistanceIndices[nodeIndex];
       unsigned int kzero= indexOfBCnode;
       unsigned int ke   = indexOfBCnode;
       unsigned int kw   = neighborX[indexOfBCnode];
@@ -804,7 +831,7 @@ __global__ void QSlipDeviceComp27(
       bool y = false;
       bool z = false;
 
-      q = (subgridD.q[DIR_P00])[k];
+      q = (subgridD.q[DIR_P00])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)  // only update distribution for q between zero and one
       {
          VeloX = c0o1;
@@ -816,7 +843,7 @@ __global__ void QSlipDeviceComp27(
          (dist.f[DIR_M00])[kw] = getInterpolatedDistributionForVeloBC(q, f_E, f_W, feq, omega, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_M00])[k];
+      q = (subgridD.q[DIR_M00])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = c0o1;
@@ -828,7 +855,7 @@ __global__ void QSlipDeviceComp27(
          (dist.f[DIR_P00])[ke] = getInterpolatedDistributionForVeloBC(q, f_W, f_E, feq, omega, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_0P0])[k];
+      q = (subgridD.q[DIR_0P0])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloY = c0o1;
@@ -840,7 +867,7 @@ __global__ void QSlipDeviceComp27(
          (dist.f[DIR_0M0])[ks] = getInterpolatedDistributionForVeloBC(q, f_N, f_S, feq, omega, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_0M0])[k];
+      q = (subgridD.q[DIR_0M0])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloY = c0o1;
@@ -852,7 +879,7 @@ __global__ void QSlipDeviceComp27(
          (dist.f[DIR_0P0])[kn] = getInterpolatedDistributionForVeloBC(q, f_S, f_N, feq, omega, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_00P])[k];
+      q = (subgridD.q[DIR_00P])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloZ = c0o1;
@@ -864,7 +891,7 @@ __global__ void QSlipDeviceComp27(
          (dist.f[DIR_00M])[kb] = getInterpolatedDistributionForVeloBC(q, f_T, f_B, feq, omega, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_00M])[k];
+      q = (subgridD.q[DIR_00M])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloZ = c0o1;
@@ -876,7 +903,7 @@ __global__ void QSlipDeviceComp27(
          (dist.f[DIR_00P])[kt] = getInterpolatedDistributionForVeloBC(q, f_B, f_T, feq, omega, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_PP0])[k];
+      q = (subgridD.q[DIR_PP0])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -890,7 +917,7 @@ __global__ void QSlipDeviceComp27(
          (dist.f[DIR_MM0])[ksw] = getInterpolatedDistributionForVeloBC(q, f_NE, f_SW, feq, omega, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_MM0])[k];
+      q = (subgridD.q[DIR_MM0])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -904,7 +931,7 @@ __global__ void QSlipDeviceComp27(
          (dist.f[DIR_PP0])[kne] = getInterpolatedDistributionForVeloBC(q, f_SW, f_NE, feq, omega, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_PM0])[k];
+      q = (subgridD.q[DIR_PM0])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -918,7 +945,7 @@ __global__ void QSlipDeviceComp27(
          (dist.f[DIR_MP0])[knw] = getInterpolatedDistributionForVeloBC(q, f_SE, f_NW, feq, omega, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_MP0])[k];
+      q = (subgridD.q[DIR_MP0])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -932,7 +959,7 @@ __global__ void QSlipDeviceComp27(
          (dist.f[DIR_PM0])[kse] = getInterpolatedDistributionForVeloBC(q, f_NW, f_SE, feq, omega, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_P0P])[k];
+      q = (subgridD.q[DIR_P0P])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -946,7 +973,7 @@ __global__ void QSlipDeviceComp27(
          (dist.f[DIR_M0M])[kbw] = getInterpolatedDistributionForVeloBC(q, f_TE, f_BW, feq, omega, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_M0M])[k];
+      q = (subgridD.q[DIR_M0M])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
         VeloX = slipLength*vx1;
@@ -955,12 +982,12 @@ __global__ void QSlipDeviceComp27(
         if (z == true) VeloZ = c0o1;
 
          velocityLB = -vx1 - vx3;
-         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
+        feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
          velocityBC = -VeloX - VeloZ;
          (dist.f[DIR_P0P])[kte] = getInterpolatedDistributionForVeloBC(q, f_BW, f_TE, feq, omega, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_P0M])[k];
+      q = (subgridD.q[DIR_P0M])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -974,7 +1001,7 @@ __global__ void QSlipDeviceComp27(
          (dist.f[DIR_M0P])[ktw] = getInterpolatedDistributionForVeloBC(q, f_BE, f_TW, feq, omega, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_M0P])[k];
+      q = (subgridD.q[DIR_M0P])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -988,7 +1015,7 @@ __global__ void QSlipDeviceComp27(
          (dist.f[DIR_P0M])[kbe] = getInterpolatedDistributionForVeloBC(q, f_TW, f_BE, feq, omega, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_0PP])[k];
+      q = (subgridD.q[DIR_0PP])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloY = slipLength*vx2;
@@ -1002,7 +1029,7 @@ __global__ void QSlipDeviceComp27(
          (dist.f[DIR_0MM])[kbs] = getInterpolatedDistributionForVeloBC(q, f_TN, f_BS, feq, omega, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_0MM])[k];
+      q = (subgridD.q[DIR_0MM])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloY = slipLength*vx2;
@@ -1017,7 +1044,7 @@ __global__ void QSlipDeviceComp27(
       }
 
 
-      q = (subgridD.q[DIR_0PM])[k];
+      q = (subgridD.q[DIR_0PM])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloY = slipLength*vx2;
@@ -1031,7 +1058,7 @@ __global__ void QSlipDeviceComp27(
          (dist.f[DIR_0MP])[kts] = getInterpolatedDistributionForVeloBC(q, f_BN, f_TS, feq, omega, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_0MP])[k];
+      q = (subgridD.q[DIR_0MP])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloY = slipLength*vx2;
@@ -1045,7 +1072,7 @@ __global__ void QSlipDeviceComp27(
          (dist.f[DIR_0PM])[kbn] = getInterpolatedDistributionForVeloBC(q, f_TS, f_BN, feq, omega, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_PPP])[k];
+      q = (subgridD.q[DIR_PPP])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -1060,7 +1087,7 @@ __global__ void QSlipDeviceComp27(
          (dist.f[DIR_MMM])[kbsw] = getInterpolatedDistributionForVeloBC(q, f_TNE, f_BSW, feq, omega, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_MMM])[k];
+      q = (subgridD.q[DIR_MMM])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -1076,7 +1103,7 @@ __global__ void QSlipDeviceComp27(
       }
 
 
-      q = (subgridD.q[DIR_PPM])[k];
+      q = (subgridD.q[DIR_PPM])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -1091,7 +1118,7 @@ __global__ void QSlipDeviceComp27(
          (dist.f[DIR_MMP])[ktsw] = getInterpolatedDistributionForVeloBC(q, f_BNE, f_TSW, feq, omega, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_MMP])[k];
+      q = (subgridD.q[DIR_MMP])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -1106,7 +1133,7 @@ __global__ void QSlipDeviceComp27(
          (dist.f[DIR_PPM])[kbne] = getInterpolatedDistributionForVeloBC(q, f_TSW, f_BNE, feq, omega, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_PMP])[k];
+      q = (subgridD.q[DIR_PMP])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -1121,7 +1148,7 @@ __global__ void QSlipDeviceComp27(
          (dist.f[DIR_MPM])[kbnw] = getInterpolatedDistributionForVeloBC(q, f_TSE, f_BNW, feq, omega, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_MPM])[k];
+      q = (subgridD.q[DIR_MPM])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -1136,7 +1163,7 @@ __global__ void QSlipDeviceComp27(
          (dist.f[DIR_PMP])[ktse] = getInterpolatedDistributionForVeloBC(q, f_BNW, f_TSE, feq, omega, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_PMM])[k];
+      q = (subgridD.q[DIR_PMM])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -1151,7 +1178,7 @@ __global__ void QSlipDeviceComp27(
          (dist.f[DIR_MPP])[ktnw] = getInterpolatedDistributionForVeloBC(q, f_BSE, f_TNW, feq, omega, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_MPP])[k];
+      q = (subgridD.q[DIR_MPP])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -1169,34 +1196,53 @@ __global__ void QSlipDeviceComp27(
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //////////////////////////////////////////////////////////////////////////////
 __global__ void BBSlipDeviceComp27(
-                                    real* distributions, 
-                                    int* subgridDistanceIndices, 
-                                    real* subgridDistances,
-                                    unsigned int numberOfBCnodes,
-                                    real omega, 
-                                    unsigned int* neighborX,
-                                    unsigned int* neighborY,
-                                    unsigned int* neighborZ,
-                                    unsigned long long numberOfLBnodes, 
-                                    bool isEvenTimestep)
+    real* distributions, 
+    int* subgridDistanceIndices, 
+    real* subgridDistances,
+    unsigned int numberOfBCnodes,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes, 
+    bool isEvenTimestep)
 {
    //! The slip boundary condition is executed in the following steps
    //!
+
    ////////////////////////////////////////////////////////////////////////////////
    //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
    //!
-   const unsigned  x = threadIdx.x;  // global x-index 
-   const unsigned  y = blockIdx.x;   // global y-index 
-   const unsigned  z = blockIdx.y;   // global z-index 
+   const unsigned nodeIndex = getNodeIndex();
 
-   const unsigned nx = blockDim.x;
-   const unsigned ny = gridDim.x;
-
-   const unsigned k = nx*(ny*z + y) + x;
-
-   if(k < numberOfBCnodes)
+   if(nodeIndex < numberOfBCnodes)
    {
       //////////////////////////////////////////////////////////////////////////
       //! - Read distributions: style of reading and writing the distributions from/to stored arrays dependent on timestep is based on the esoteric twist algorithm \ref
@@ -1214,7 +1260,7 @@ __global__ void BBSlipDeviceComp27(
       ////////////////////////////////////////////////////////////////////////////////
       //! - Set neighbor indices (necessary for indirect addressing)
       //!
-      unsigned int indexOfBCnode  = subgridDistanceIndices[k];
+      unsigned int indexOfBCnode  = subgridDistanceIndices[nodeIndex];
       unsigned int kzero= indexOfBCnode;
       unsigned int ke   = indexOfBCnode;
       unsigned int kw   = neighborX[indexOfBCnode];
@@ -1316,7 +1362,7 @@ __global__ void BBSlipDeviceComp27(
       bool y = false;
       bool z = false;
 
-      q = (subgridD.q[DIR_P00])[k];
+      q = (subgridD.q[DIR_P00])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)  // only update distribution for q between zero and one
       {
          VeloX = c0o1;
@@ -1326,7 +1372,7 @@ __global__ void BBSlipDeviceComp27(
          (dist.f[DIR_M00])[kw] = getBounceBackDistributionForVeloBC(f_W, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_M00])[k];
+      q = (subgridD.q[DIR_M00])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = c0o1;
@@ -1336,7 +1382,7 @@ __global__ void BBSlipDeviceComp27(
          (dist.f[DIR_P00])[ke] = getBounceBackDistributionForVeloBC(f_E, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_0P0])[k];
+      q = (subgridD.q[DIR_0P0])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloY = c0o1;
@@ -1346,7 +1392,7 @@ __global__ void BBSlipDeviceComp27(
          (dist.f[DIR_0M0])[ks] = getBounceBackDistributionForVeloBC(f_S, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_0M0])[k];
+      q = (subgridD.q[DIR_0M0])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloY = c0o1;
@@ -1356,7 +1402,7 @@ __global__ void BBSlipDeviceComp27(
          (dist.f[DIR_0P0])[kn] = getBounceBackDistributionForVeloBC(f_N, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_00P])[k];
+      q = (subgridD.q[DIR_00P])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloZ = c0o1;
@@ -1366,7 +1412,7 @@ __global__ void BBSlipDeviceComp27(
          (dist.f[DIR_00M])[kb] = getBounceBackDistributionForVeloBC(f_B, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_00M])[k];
+      q = (subgridD.q[DIR_00M])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloZ = c0o1;
@@ -1376,7 +1422,7 @@ __global__ void BBSlipDeviceComp27(
          (dist.f[DIR_00P])[kt] = getBounceBackDistributionForVeloBC(f_T, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_PP0])[k];
+      q = (subgridD.q[DIR_PP0])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -1388,7 +1434,7 @@ __global__ void BBSlipDeviceComp27(
          (dist.f[DIR_MM0])[ksw] = getBounceBackDistributionForVeloBC(f_SW, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_MM0])[k];
+      q = (subgridD.q[DIR_MM0])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -1400,7 +1446,7 @@ __global__ void BBSlipDeviceComp27(
          (dist.f[DIR_PP0])[kne] = getBounceBackDistributionForVeloBC(f_NE, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_PM0])[k];
+      q = (subgridD.q[DIR_PM0])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -1412,7 +1458,7 @@ __global__ void BBSlipDeviceComp27(
          (dist.f[DIR_MP0])[knw] = getBounceBackDistributionForVeloBC(f_NW, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_MP0])[k];
+      q = (subgridD.q[DIR_MP0])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -1424,7 +1470,7 @@ __global__ void BBSlipDeviceComp27(
          (dist.f[DIR_PM0])[kse] = getBounceBackDistributionForVeloBC(f_SE, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_P0P])[k];
+      q = (subgridD.q[DIR_P0P])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -1436,7 +1482,7 @@ __global__ void BBSlipDeviceComp27(
          (dist.f[DIR_M0M])[kbw] = getBounceBackDistributionForVeloBC(f_BW, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_M0M])[k];
+      q = (subgridD.q[DIR_M0M])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
         VeloX = slipLength*vx1;
@@ -1444,11 +1490,11 @@ __global__ void BBSlipDeviceComp27(
         if (x == true) VeloX = c0o1;
         if (z == true) VeloZ = c0o1;
 
-         velocityBC = -VeloX - VeloZ;
-         (dist.f[DIR_P0P])[kte] = getBounceBackDistributionForVeloBC(f_TE, velocityBC, c1o54);
+        velocityBC = -VeloX - VeloZ;
+        (dist.f[DIR_P0P])[kte] = getBounceBackDistributionForVeloBC(f_TE, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_P0M])[k];
+      q = (subgridD.q[DIR_P0M])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -1460,7 +1506,7 @@ __global__ void BBSlipDeviceComp27(
          (dist.f[DIR_M0P])[ktw] = getBounceBackDistributionForVeloBC(f_TW, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_M0P])[k];
+      q = (subgridD.q[DIR_M0P])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -1472,7 +1518,7 @@ __global__ void BBSlipDeviceComp27(
          (dist.f[DIR_P0M])[kbe] = getBounceBackDistributionForVeloBC(f_BE, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_0PP])[k];
+      q = (subgridD.q[DIR_0PP])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloY = slipLength*vx2;
@@ -1484,7 +1530,7 @@ __global__ void BBSlipDeviceComp27(
          (dist.f[DIR_0MM])[kbs] = getBounceBackDistributionForVeloBC(f_BS, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_0MM])[k];
+      q = (subgridD.q[DIR_0MM])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloY = slipLength*vx2;
@@ -1497,7 +1543,7 @@ __global__ void BBSlipDeviceComp27(
       }
 
 
-      q = (subgridD.q[DIR_0PM])[k];
+      q = (subgridD.q[DIR_0PM])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloY = slipLength*vx2;
@@ -1509,7 +1555,7 @@ __global__ void BBSlipDeviceComp27(
          (dist.f[DIR_0MP])[kts] = getBounceBackDistributionForVeloBC(f_TS, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_0MP])[k];
+      q = (subgridD.q[DIR_0MP])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloY = slipLength*vx2;
@@ -1521,7 +1567,7 @@ __global__ void BBSlipDeviceComp27(
          (dist.f[DIR_0PM])[kbn] = getBounceBackDistributionForVeloBC(f_BN, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_PPP])[k];
+      q = (subgridD.q[DIR_PPP])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -1535,7 +1581,7 @@ __global__ void BBSlipDeviceComp27(
          (dist.f[DIR_MMM])[kbsw] = getBounceBackDistributionForVeloBC(f_TNE, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_MMM])[k];
+      q = (subgridD.q[DIR_MMM])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -1550,7 +1596,7 @@ __global__ void BBSlipDeviceComp27(
       }
 
 
-      q = (subgridD.q[DIR_PPM])[k];
+      q = (subgridD.q[DIR_PPM])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -1564,7 +1610,7 @@ __global__ void BBSlipDeviceComp27(
          (dist.f[DIR_MMP])[ktsw] = getBounceBackDistributionForVeloBC(f_TSW, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_MMP])[k];
+      q = (subgridD.q[DIR_MMP])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -1578,7 +1624,7 @@ __global__ void BBSlipDeviceComp27(
          (dist.f[DIR_PPM])[kbne] = getBounceBackDistributionForVeloBC(f_BNE, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_PMP])[k];
+      q = (subgridD.q[DIR_PMP])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -1592,7 +1638,7 @@ __global__ void BBSlipDeviceComp27(
          (dist.f[DIR_MPM])[kbnw] = getBounceBackDistributionForVeloBC(f_BNW, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_MPM])[k];
+      q = (subgridD.q[DIR_MPM])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -1606,7 +1652,7 @@ __global__ void BBSlipDeviceComp27(
          (dist.f[DIR_PMP])[ktse] = getBounceBackDistributionForVeloBC(f_TSE, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_PMM])[k];
+      q = (subgridD.q[DIR_PMM])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -1620,7 +1666,7 @@ __global__ void BBSlipDeviceComp27(
          (dist.f[DIR_MPP])[ktnw] = getBounceBackDistributionForVeloBC(f_TNW, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_MPP])[k];
+      q = (subgridD.q[DIR_MPP])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -1638,35 +1684,55 @@ __global__ void BBSlipDeviceComp27(
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ////////////////////////////////////////////////////////////////////////////
 __global__ void QSlipDeviceComp27TurbViscosity(
-                                    real* distributions, 
-                                    int* subgridDistanceIndices, 
-                                    real* subgridDistances,
-                                    unsigned int numberOfBCnodes,
-                                    real omega, 
-                                    unsigned int* neighborX,
-                                    unsigned int* neighborY,
-                                    unsigned int* neighborZ,
-                                    real* turbViscosity,
-                                    unsigned long long numberOfLBnodes, 
-                                    bool isEvenTimestep)
+    real* distributions, 
+    int* subgridDistanceIndices, 
+    real* subgridDistances,
+    unsigned int numberOfBCnodes,
+    real omega, 
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    real* turbViscosity,
+    unsigned long long numberOfLBnodes, 
+    bool isEvenTimestep)
 {
    //! The slip boundary condition is executed in the following steps
    //!
+
    ////////////////////////////////////////////////////////////////////////////////
    //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
    //!
-   const unsigned  x = threadIdx.x;  // global x-index 
-   const unsigned  y = blockIdx.x;   // global y-index 
-   const unsigned  z = blockIdx.y;   // global z-index 
+   const unsigned nodeIndex = getNodeIndex();
 
-   const unsigned nx = blockDim.x;
-   const unsigned ny = gridDim.x;
-
-   const unsigned k = nx*(ny*z + y) + x;
-
-   if(k < numberOfBCnodes)
+   if(nodeIndex < numberOfBCnodes)
    {
       //////////////////////////////////////////////////////////////////////////
       //! - Read distributions: style of reading and writing the distributions from/to stored arrays dependent on timestep is based on the esoteric twist algorithm \ref
@@ -1684,7 +1750,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
       ////////////////////////////////////////////////////////////////////////////////
       //! - Set neighbor indices (necessary for indirect addressing)
       //!
-      unsigned int indexOfBCnode  = subgridDistanceIndices[k];
+      unsigned int indexOfBCnode  = subgridDistanceIndices[nodeIndex];
       unsigned int kzero= indexOfBCnode;
       unsigned int ke   = indexOfBCnode;
       unsigned int kw   = neighborX[indexOfBCnode];
@@ -1791,7 +1857,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
       bool y = false;
       bool z = false;
 
-      q = (subgridD.q[DIR_P00])[k];
+      q = (subgridD.q[DIR_P00])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)  // only update distribution for q between zero and one
       {
          VeloX = c0o1;
@@ -1803,7 +1869,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          (dist.f[DIR_M00])[kw] = getInterpolatedDistributionForVeloBC(q, f_E, f_W, feq, om_turb, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_M00])[k];
+      q = (subgridD.q[DIR_M00])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = c0o1;
@@ -1815,7 +1881,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          (dist.f[DIR_P00])[ke] = getInterpolatedDistributionForVeloBC(q, f_W, f_E, feq, om_turb, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_0P0])[k];
+      q = (subgridD.q[DIR_0P0])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloY = c0o1;
@@ -1827,7 +1893,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          (dist.f[DIR_0M0])[ks] = getInterpolatedDistributionForVeloBC(q, f_N, f_S, feq, om_turb, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_0M0])[k];
+      q = (subgridD.q[DIR_0M0])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloY = c0o1;
@@ -1839,7 +1905,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          (dist.f[DIR_0P0])[kn] = getInterpolatedDistributionForVeloBC(q, f_S, f_N, feq, om_turb, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_00P])[k];
+      q = (subgridD.q[DIR_00P])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloZ = c0o1;
@@ -1851,7 +1917,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          (dist.f[DIR_00M])[kb] = getInterpolatedDistributionForVeloBC(q, f_T, f_B, feq, om_turb, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_00M])[k];
+      q = (subgridD.q[DIR_00M])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloZ = c0o1;
@@ -1863,7 +1929,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          (dist.f[DIR_00P])[kt] = getInterpolatedDistributionForVeloBC(q, f_B, f_T, feq, om_turb, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_PP0])[k];
+      q = (subgridD.q[DIR_PP0])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -1877,7 +1943,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          (dist.f[DIR_MM0])[ksw] = getInterpolatedDistributionForVeloBC(q, f_NE, f_SW, feq, om_turb, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_MM0])[k];
+      q = (subgridD.q[DIR_MM0])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -1891,7 +1957,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          (dist.f[DIR_PP0])[kne] = getInterpolatedDistributionForVeloBC(q, f_SW, f_NE, feq, om_turb, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_PM0])[k];
+      q = (subgridD.q[DIR_PM0])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -1905,7 +1971,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          (dist.f[DIR_MP0])[knw] = getInterpolatedDistributionForVeloBC(q, f_SE, f_NW, feq, om_turb, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_MP0])[k];
+      q = (subgridD.q[DIR_MP0])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -1919,7 +1985,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          (dist.f[DIR_PM0])[kse] = getInterpolatedDistributionForVeloBC(q, f_NW, f_SE, feq, om_turb, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_P0P])[k];
+      q = (subgridD.q[DIR_P0P])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -1933,7 +1999,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          (dist.f[DIR_M0M])[kbw] = getInterpolatedDistributionForVeloBC(q, f_TE, f_BW, feq, om_turb, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_M0M])[k];
+      q = (subgridD.q[DIR_M0M])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
         VeloX = slipLength*vx1;
@@ -1941,13 +2007,13 @@ __global__ void QSlipDeviceComp27TurbViscosity(
         if (x == true) VeloX = c0o1;
         if (z == true) VeloZ = c0o1;
 
-         velocityLB = -vx1 - vx3;
-         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
-         velocityBC = -VeloX - VeloZ;
-         (dist.f[DIR_P0P])[kte] = getInterpolatedDistributionForVeloBC(q, f_BW, f_TE, feq, om_turb, velocityBC, c1o54);
+        velocityLB = -vx1 - vx3;
+        feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
+        velocityBC = -VeloX - VeloZ;
+        (dist.f[DIR_P0P])[kte] = getInterpolatedDistributionForVeloBC(q, f_BW, f_TE, feq, om_turb, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_P0M])[k];
+      q = (subgridD.q[DIR_P0M])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -1961,7 +2027,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          (dist.f[DIR_M0P])[ktw] = getInterpolatedDistributionForVeloBC(q, f_BE, f_TW, feq, om_turb, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_M0P])[k];
+      q = (subgridD.q[DIR_M0P])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -1975,7 +2041,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          (dist.f[DIR_P0M])[kbe] = getInterpolatedDistributionForVeloBC(q, f_TW, f_BE, feq, om_turb, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_0PP])[k];
+      q = (subgridD.q[DIR_0PP])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloY = slipLength*vx2;
@@ -1989,7 +2055,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          (dist.f[DIR_0MM])[kbs] = getInterpolatedDistributionForVeloBC(q, f_TN, f_BS, feq, om_turb, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_0MM])[k];
+      q = (subgridD.q[DIR_0MM])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloY = slipLength*vx2;
@@ -2004,7 +2070,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
       }
 
 
-      q = (subgridD.q[DIR_0PM])[k];
+      q = (subgridD.q[DIR_0PM])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloY = slipLength*vx2;
@@ -2018,7 +2084,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          (dist.f[DIR_0MP])[kts] = getInterpolatedDistributionForVeloBC(q, f_BN, f_TS, feq, om_turb, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_0MP])[k];
+      q = (subgridD.q[DIR_0MP])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloY = slipLength*vx2;
@@ -2032,7 +2098,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          (dist.f[DIR_0PM])[kbn] = getInterpolatedDistributionForVeloBC(q, f_TS, f_BN, feq, om_turb, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_PPP])[k];
+      q = (subgridD.q[DIR_PPP])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -2047,7 +2113,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          (dist.f[DIR_MMM])[kbsw] = getInterpolatedDistributionForVeloBC(q, f_TNE, f_BSW, feq, om_turb, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_MMM])[k];
+      q = (subgridD.q[DIR_MMM])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -2063,7 +2129,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
       }
 
 
-      q = (subgridD.q[DIR_PPM])[k];
+      q = (subgridD.q[DIR_PPM])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -2078,7 +2144,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          (dist.f[DIR_MMP])[ktsw] = getInterpolatedDistributionForVeloBC(q, f_BNE, f_TSW, feq, om_turb, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_MMP])[k];
+      q = (subgridD.q[DIR_MMP])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -2093,7 +2159,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          (dist.f[DIR_PPM])[kbne] = getInterpolatedDistributionForVeloBC(q, f_TSW, f_BNE, feq, om_turb, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_PMP])[k];
+      q = (subgridD.q[DIR_PMP])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -2108,7 +2174,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          (dist.f[DIR_MPM])[kbnw] = getInterpolatedDistributionForVeloBC(q, f_TSE, f_BNW, feq, om_turb, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_MPM])[k];
+      q = (subgridD.q[DIR_MPM])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -2123,7 +2189,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          (dist.f[DIR_PMP])[ktse] = getInterpolatedDistributionForVeloBC(q, f_BNW, f_TSE, feq, om_turb, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_PMM])[k];
+      q = (subgridD.q[DIR_PMM])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -2138,7 +2204,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          (dist.f[DIR_MPP])[ktnw] = getInterpolatedDistributionForVeloBC(q, f_BSE, f_TNW, feq, om_turb, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_MPP])[k];
+      q = (subgridD.q[DIR_MPP])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -2154,37 +2220,59 @@ __global__ void QSlipDeviceComp27TurbViscosity(
       }
    }
 }
+////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ////////////////////////////////////////////////////////////////////////////
 __global__ void QSlipPressureDeviceComp27TurbViscosity(
-                                    real* distributions, 
-                                    int* subgridDistanceIndices, 
-                                    real* subgridDistances,
-                                    unsigned int numberOfBCnodes,
-                                    real omega, 
-                                    unsigned int* neighborX,
-                                    unsigned int* neighborY,
-                                    unsigned int* neighborZ,
-                                    real* turbViscosity,
-                                    unsigned long long numberOfLBnodes, 
-                                    bool isEvenTimestep)
+    real* distributions, 
+    int* subgridDistanceIndices, 
+    real* subgridDistances,
+    unsigned int numberOfBCnodes,
+    real omega, 
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    real* turbViscosity,
+    unsigned long long numberOfLBnodes, 
+    bool isEvenTimestep)
 {
    //! The slip boundary condition is executed in the following steps
    //!
    ////////////////////////////////////////////////////////////////////////////////
    //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
    //!
-   const unsigned  x = threadIdx.x;  // global x-index 
-   const unsigned  y = blockIdx.x;   // global y-index 
-   const unsigned  z = blockIdx.y;   // global z-index 
+   const unsigned nodeIndex = getNodeIndex();
 
-   const unsigned nx = blockDim.x;
-   const unsigned ny = gridDim.x;
-
-   const unsigned k = nx*(ny*z + y) + x;
-
-   if(k < numberOfBCnodes)
+   if(nodeIndex < numberOfBCnodes)
    {
       //////////////////////////////////////////////////////////////////////////
       //! - Read distributions: style of reading and writing the distributions from/to stored arrays dependent on timestep is based on the esoteric twist algorithm \ref
@@ -2202,7 +2290,7 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
       ////////////////////////////////////////////////////////////////////////////////
       //! - Set neighbor indices (necessary for indirect addressing)
       //!
-      unsigned int indexOfBCnode  = subgridDistanceIndices[k];
+      unsigned int indexOfBCnode  = subgridDistanceIndices[nodeIndex];
       unsigned int kzero= indexOfBCnode;
       unsigned int ke   = indexOfBCnode;
       unsigned int kw   = neighborX[indexOfBCnode];
@@ -2309,7 +2397,7 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
       bool y = false;
       bool z = false;
 
-      q = (subgridD.q[DIR_P00])[k];
+      q = (subgridD.q[DIR_P00])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)  // only update distribution for q between zero and one
       {
          VeloX = c0o1;
@@ -2321,7 +2409,7 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
          (dist.f[DIR_M00])[kw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_E, f_W, feq, om_turb, drho, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_M00])[k];
+      q = (subgridD.q[DIR_M00])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = c0o1;
@@ -2333,7 +2421,7 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
          (dist.f[DIR_P00])[ke] = getInterpolatedDistributionForVeloWithPressureBC(q, f_W, f_E, feq, om_turb, drho, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_0P0])[k];
+      q = (subgridD.q[DIR_0P0])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloY = c0o1;
@@ -2345,7 +2433,7 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
          (dist.f[DIR_0M0])[ks] = getInterpolatedDistributionForVeloWithPressureBC(q, f_N, f_S, feq, om_turb, drho, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_0M0])[k];
+      q = (subgridD.q[DIR_0M0])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloY = c0o1;
@@ -2357,7 +2445,7 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
          (dist.f[DIR_0P0])[kn] = getInterpolatedDistributionForVeloWithPressureBC(q, f_S, f_N, feq, om_turb, drho, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_00P])[k];
+      q = (subgridD.q[DIR_00P])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloZ = c0o1;
@@ -2369,7 +2457,7 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
          (dist.f[DIR_00M])[kb] = getInterpolatedDistributionForVeloWithPressureBC(q, f_T, f_B, feq, om_turb, drho, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_00M])[k];
+      q = (subgridD.q[DIR_00M])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloZ = c0o1;
@@ -2381,7 +2469,7 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
          (dist.f[DIR_00P])[kt] = getInterpolatedDistributionForVeloWithPressureBC(q, f_B, f_T, feq, om_turb, drho, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_PP0])[k];
+      q = (subgridD.q[DIR_PP0])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -2395,7 +2483,7 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
          (dist.f[DIR_MM0])[ksw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_NE, f_SW, feq, om_turb, drho, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_MM0])[k];
+      q = (subgridD.q[DIR_MM0])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -2409,7 +2497,7 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
          (dist.f[DIR_PP0])[kne] = getInterpolatedDistributionForVeloWithPressureBC(q, f_SW, f_NE, feq, om_turb, drho, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_PM0])[k];
+      q = (subgridD.q[DIR_PM0])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -2423,7 +2511,7 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
          (dist.f[DIR_MP0])[knw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_SE, f_NW, feq, om_turb, drho, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_MP0])[k];
+      q = (subgridD.q[DIR_MP0])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -2437,7 +2525,7 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
          (dist.f[DIR_PM0])[kse] = getInterpolatedDistributionForVeloWithPressureBC(q, f_NW, f_SE, feq, om_turb, drho, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_P0P])[k];
+      q = (subgridD.q[DIR_P0P])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -2451,7 +2539,7 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
          (dist.f[DIR_M0M])[kbw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_TE, f_BW, feq, om_turb, drho, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_M0M])[k];
+      q = (subgridD.q[DIR_M0M])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
         VeloX = slipLength*vx1;
@@ -2459,13 +2547,13 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
         if (x == true) VeloX = c0o1;
         if (z == true) VeloZ = c0o1;
 
-         velocityLB = -vx1 - vx3;
-         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
-         velocityBC = -VeloX - VeloZ;
-         (dist.f[DIR_P0P])[kte] = getInterpolatedDistributionForVeloWithPressureBC(q, f_BW, f_TE, feq, om_turb, drho, velocityBC, c1o54);
+        velocityLB = -vx1 - vx3;
+        feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
+        velocityBC = -VeloX - VeloZ;
+        (dist.f[DIR_P0P])[kte] = getInterpolatedDistributionForVeloWithPressureBC(q, f_BW, f_TE, feq, om_turb, drho, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_P0M])[k];
+      q = (subgridD.q[DIR_P0M])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -2479,7 +2567,7 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
          (dist.f[DIR_M0P])[ktw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_BE, f_TW, feq, om_turb, drho, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_M0P])[k];
+      q = (subgridD.q[DIR_M0P])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -2493,7 +2581,7 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
          (dist.f[DIR_P0M])[kbe] = getInterpolatedDistributionForVeloWithPressureBC(q, f_TW, f_BE, feq, om_turb, drho, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_0PP])[k];
+      q = (subgridD.q[DIR_0PP])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloY = slipLength*vx2;
@@ -2507,7 +2595,7 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
          (dist.f[DIR_0MM])[kbs] = getInterpolatedDistributionForVeloWithPressureBC(q, f_TN, f_BS, feq, om_turb, drho, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_0MM])[k];
+      q = (subgridD.q[DIR_0MM])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloY = slipLength*vx2;
@@ -2522,7 +2610,7 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
       }
 
 
-      q = (subgridD.q[DIR_0PM])[k];
+      q = (subgridD.q[DIR_0PM])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloY = slipLength*vx2;
@@ -2536,7 +2624,7 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
          (dist.f[DIR_0MP])[kts] = getInterpolatedDistributionForVeloWithPressureBC(q, f_BN, f_TS, feq, om_turb, drho, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_0MP])[k];
+      q = (subgridD.q[DIR_0MP])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloY = slipLength*vx2;
@@ -2550,7 +2638,7 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
          (dist.f[DIR_0PM])[kbn] = getInterpolatedDistributionForVeloWithPressureBC(q, f_TS, f_BN, feq, om_turb, drho, velocityBC, c1o54);
       }
 
-      q = (subgridD.q[DIR_PPP])[k];
+      q = (subgridD.q[DIR_PPP])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -2565,7 +2653,7 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
          (dist.f[DIR_MMM])[kbsw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_TNE, f_BSW, feq, om_turb, drho, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_MMM])[k];
+      q = (subgridD.q[DIR_MMM])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -2581,7 +2669,7 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
       }
 
 
-      q = (subgridD.q[DIR_PPM])[k];
+      q = (subgridD.q[DIR_PPM])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -2596,7 +2684,7 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
          (dist.f[DIR_MMP])[ktsw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_BNE, f_TSW, feq, om_turb, drho, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_MMP])[k];
+      q = (subgridD.q[DIR_MMP])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -2611,7 +2699,7 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
          (dist.f[DIR_PPM])[kbne] = getInterpolatedDistributionForVeloWithPressureBC(q, f_TSW, f_BNE, feq, om_turb, drho, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_PMP])[k];
+      q = (subgridD.q[DIR_PMP])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -2626,7 +2714,7 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
          (dist.f[DIR_MPM])[kbnw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_TSE, f_BNW, feq, om_turb, drho, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_MPM])[k];
+      q = (subgridD.q[DIR_MPM])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -2641,7 +2729,7 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
          (dist.f[DIR_PMP])[ktse] = getInterpolatedDistributionForVeloWithPressureBC(q, f_BNW, f_TSE, feq, om_turb, drho, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_PMM])[k];
+      q = (subgridD.q[DIR_PMM])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -2656,7 +2744,7 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
          (dist.f[DIR_MPP])[ktnw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_BSE, f_TNW, feq, om_turb, drho, velocityBC, c1o216);
       }
 
-      q = (subgridD.q[DIR_MPP])[k];
+      q = (subgridD.q[DIR_MPP])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = slipLength*vx1;
@@ -3378,19 +3466,20 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
 
 
 //////////////////////////////////////////////////////////////////////////////
-__global__ void QSlipGeomDeviceComp27(real* DD, 
-												 int* k_Q, 
-												 real* QQ,
-												 unsigned int  numberOfBCnodes,
-												 real om1, 
-												 real* NormalX,
-												 real* NormalY,
-												 real* NormalZ,
-												 unsigned int* neighborX,
-												 unsigned int* neighborY,
-												 unsigned int* neighborZ,
-												 unsigned long long numberOfLBnodes, 
-												 bool isEvenTimestep)
+__global__ void QSlipGeomDeviceComp27(
+    real* DD, 
+    int* k_Q, 
+    real* QQ,
+    unsigned int  numberOfBCnodes,
+    real om1, 
+    real* NormalX,
+    real* NormalY,
+    real* NormalZ,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes, 
+    bool isEvenTimestep)
 {
    Distributions27 D;
    if (isEvenTimestep==true)
@@ -4264,19 +4353,20 @@ __global__ void QSlipGeomDeviceComp27(real* DD,
 
 
 //////////////////////////////////////////////////////////////////////////////
-__global__ void QSlipNormDeviceComp27(real* DD, 
-												 int* k_Q, 
-												 real* QQ,
-												 unsigned int  numberOfBCnodes,
-												 real om1, 
-												 real* NormalX,
-												 real* NormalY,
-												 real* NormalZ,
-												 unsigned int* neighborX,
-												 unsigned int* neighborY,
-												 unsigned int* neighborZ,
-												 unsigned long long numberOfLBnodes, 
-												 bool isEvenTimestep)
+__global__ void QSlipNormDeviceComp27(
+    real* DD, 
+    int* k_Q, 
+    real* QQ,
+    unsigned int  numberOfBCnodes,
+    real om1, 
+    real* NormalX,
+    real* NormalY,
+    real* NormalZ,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes, 
+    bool isEvenTimestep)
 {
    Distributions27 D;
    if (isEvenTimestep==true)

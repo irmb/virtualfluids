@@ -43,28 +43,30 @@
 #include "LBM/LB.h"
 #include "lbm/constants/D3Q27.h"
 #include <lbm/constants/NumericConstants.h>
-#include "KernelUtilities.h"
+#include "LBM/GPUHelperFunctions/KernelUtilities.h"
 
 using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
+using namespace vf::gpu;
 
 //////////////////////////////////////////////////////////////////////////////
-__host__ __device__ __forceinline__ void iMEM(uint k, uint kN,
-                                                         real* _wallNormalX, real* _wallNormalY, real* _wallNormalZ,
-                                                         real* vx, real* vy, real* vz,
-                                                         real* vx_el,      real* vy_el,      real* vz_el,      //!>mean (temporally filtered) velocities at exchange location
-                                                         real* vx_w_mean,  real* vy_w_mean,  real* vz_w_mean,  //!>mean (temporally filtered) velocities at wall-adjactent node
-                                                         real  vx_w_inst,  real  vy_w_inst,  real  vz_w_inst,  //!>instantaneous velocities at wall-adjactent node
-                                                         real  rho,
-                                                         int* samplingOffset,
-                                                         real q,
-                                                         real forceFactor,                                     //!>e.g., 1.0 for simple-bounce back, or (1+q) for interpolated single-node bounce-back as in Geier et al (2015)
-                                                         real eps,                                             //!>filter constant in temporal averaging
-                                                         real* z0,                                             //!>aerodynamic roughness length
-                                                         bool  hasWallModelMonitor,
-                                                         real* u_star_monitor,
-                                                         real wallMomentumX, real wallMomentumY, real wallMomentumZ,
-                                                         real& wallVelocityX, real& wallVelocityY, real&wallVelocityZ)
+__host__ __device__ __forceinline__ void iMEM(
+    uint k, uint kN,
+    real* _wallNormalX, real* _wallNormalY, real* _wallNormalZ,
+    real* vx, real* vy, real* vz,
+    real* vx_el,      real* vy_el,      real* vz_el,      //!>mean (temporally filtered) velocities at exchange location
+    real* vx_w_mean,  real* vy_w_mean,  real* vz_w_mean,  //!>mean (temporally filtered) velocities at wall-adjactent node
+    real  vx_w_inst,  real  vy_w_inst,  real  vz_w_inst,  //!>instantaneous velocities at wall-adjactent node
+    real  rho,
+    int* samplingOffset,
+    real q,
+    real forceFactor,                                     //!>e.g., 1.0 for simple-bounce back, or (1+q) for interpolated single-node bounce-back as in Geier et al (2015)
+    real eps,                                             //!>filter constant in temporal averaging
+    real* z0,                                             //!>aerodynamic roughness length
+    bool  hasWallModelMonitor,
+    real* u_star_monitor,
+    real wallMomentumX, real wallMomentumY, real wallMomentumZ,
+    real& wallVelocityX, real& wallVelocityY, real&wallVelocityZ)
 {
       real wallNormalX = _wallNormalX[k];
       real wallNormalY = _wallNormalY[k];
@@ -136,37 +138,38 @@ __host__ __device__ __forceinline__ void iMEM(uint k, uint kN,
 }
 
 //////////////////////////////////////////////////////////////////////////////
-__global__ void QStressDeviceComp27(real* DD,
-											   int* k_Q,
-                                    int* k_N,
-											   real* QQ,
-                                    unsigned int numberOfBCnodes,
-                                    real om1,
-                                    real* turbViscosity,
-                                    real* vx,
-                                    real* vy,
-                                    real* vz,
-                                    real* normalX,
-                                    real* normalY,
-                                    real* normalZ,
-                                    real* vx_el,
-                                    real* vy_el,
-                                    real* vz_el,
-                                    real* vx_w_mean,
-                                    real* vy_w_mean,
-                                    real* vz_w_mean,
-                                    int* samplingOffset,
-                                    real* z0,
-                                    bool  hasWallModelMonitor,
-                                    real* u_star_monitor,
-                                    real* Fx_monitor,
-                                    real* Fy_monitor,
-                                    real* Fz_monitor,
-											   unsigned int* neighborX,
-                                    unsigned int* neighborY,
-                                    unsigned int* neighborZ,
-                                    unsigned long long numberOfLBnodes,
-                                    bool isEvenTimestep)
+__global__ void QStressDeviceComp27(
+    real* DD,
+    int* k_Q,
+    int* k_N,
+    real* QQ,
+    unsigned int numberOfBCnodes,
+    real om1,
+    real* turbViscosity,
+    real* vx,
+    real* vy,
+    real* vz,
+    real* normalX,
+    real* normalY,
+    real* normalZ,
+    real* vx_el,
+    real* vy_el,
+    real* vz_el,
+    real* vx_w_mean,
+    real* vy_w_mean,
+    real* vz_w_mean,
+    int* samplingOffset,
+    real* z0,
+    bool  hasWallModelMonitor,
+    real* u_star_monitor,
+    real* Fx_monitor,
+    real* Fy_monitor,
+    real* Fz_monitor,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep)
 {
 
    Distributions27 D;
