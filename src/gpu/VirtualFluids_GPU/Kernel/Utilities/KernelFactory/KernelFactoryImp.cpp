@@ -11,6 +11,7 @@
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK17Unified/CumulantK17Unified.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK17chim/CumulantK17CompChim.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK17/CumulantK17.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK17Sponge/CumulantK17Sponge.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK17Bulk/CumulantK17BulkComp.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantAll4/CumulantAll4CompSP27.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK18/CumulantK18Comp.h"
@@ -141,11 +142,30 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
                 break;
             default:
                 throw std::runtime_error("Unknown turbulence model!");
-            break;                                                              
-        }                                                                       
-        checkStrategy = FluidFlowCompStrategy::getInstance();       
+            break;
+        }
+        checkStrategy = FluidFlowCompStrategy::getInstance();
+    } else if (kernel == "CumulantK17Sponge") {
+        switch (para->getTurbulenceModel()) {
+            case TurbulenceModel::AMD:
+                newKernel = CumulantK17Sponge<TurbulenceModel::AMD>::getNewInstance(para, level);
+                break;
+            case TurbulenceModel::Smagorinsky:
+                newKernel = CumulantK17Sponge<TurbulenceModel::Smagorinsky>::getNewInstance(para, level);
+                break;
+            case TurbulenceModel::QR:
+                newKernel = CumulantK17Sponge<TurbulenceModel::QR>::getNewInstance(para, level);
+                break;
+            case TurbulenceModel::None:
+                newKernel = CumulantK17Sponge<TurbulenceModel::None>::getNewInstance(para, level);
+                break;
+            default:
+                throw std::runtime_error("Unknown turbulence model!");
+                break;
+        }
+        checkStrategy = FluidFlowCompStrategy::getInstance();
     } else if (kernel == "CumulantAll4CompSP27") {
-        newKernel     = CumulantAll4CompSP27::getNewInstance(para, level);
+        newKernel = CumulantAll4CompSP27::getNewInstance(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
     } else if (kernel == "CumulantK18Comp") {
         newKernel     = CumulantK18Comp::getNewInstance(para, level);
@@ -162,8 +182,8 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
     } else if (kernel == "CumulantK15SpongeComp") {                             //     /\      //
         newKernel     = CumulantK15SpongeComp::getNewInstance(para, level);     //	   ||
         checkStrategy = FluidFlowCompStrategy::getInstance();                   // compressible
-    }																			//===============
-	else if (  kernel == "BGKIncompSP27") {										// incompressible
+    }                                                                           //===============
+    else if (kernel == "BGKIncompSP27") {                                       // incompressible
         newKernel     = BGKIncompSP27::getNewInstance(para, level);				//	   ||
         checkStrategy = FluidFlowIncompStrategy::getInstance();                 //     \/
     } else if (kernel == "BGKPlusIncompSP27") {
@@ -181,11 +201,11 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
     } else if (kernel == "CumulantIsoIncompSP27") {
         newKernel     = CumulantIsoIncompSP27::getNewInstance(para, level);
         checkStrategy = FluidFlowIncompStrategy::getInstance();
-    } else if (kernel == "CumulantK15Incomp") {									//     /\      //
+    } else if (kernel == "CumulantK15Incomp") {                                 //     /\      //
         newKernel     = CumulantK15Incomp::getNewInstance(para, level);			//	   ||
         checkStrategy = FluidFlowIncompStrategy::getInstance();                 // incompressible
-    }																			//===============
-	else if (kernel == "PMCumulantOneCompSP27") {								// porous media
+    }                                                                           //===============
+    else if (kernel == "PMCumulantOneCompSP27") {                               // porous media
         newKernel     = PMCumulantOneCompSP27::getNewInstance(para, pm, level);	//	   ||
         checkStrategy = PMFluidFlowCompStrategy::getInstance();                 // porous media
     }                                                                           //===============
@@ -198,10 +218,10 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
     } else if (kernel == "WaleCumulantK15Comp") {
         newKernel     = WaleCumulantK15Comp::getNewInstance(para, level);
         checkStrategy = WaleFluidFlowCompStrategy::getInstance();
-    } else if (kernel == "WaleBySoniMalavCumulantK15Comp") {                    //     /\      //
+    } else if (kernel == "WaleBySoniMalavCumulantK15Comp") {                        //     /\      //
         newKernel     = WaleBySoniMalavCumulantK15Comp::getNewInstance(para, level);// ||
         checkStrategy = WaleFluidFlowCompStrategy::getInstance();               // wale model
-    }                                                                          //===============
+    }                                                                           //===============
     else {
         throw std::runtime_error("KernelFactory does not know the KernelType.");
     }

@@ -34,6 +34,8 @@ class Timer
     float getElapsedTime(){ return this->elapsedTime; }
     float getTotalElapsedTime(){ return this->totalElapsedTime; }
 
+    float startStopGetElapsed();
+
     private:
     
     cudaEvent_t start_t, stop_t;

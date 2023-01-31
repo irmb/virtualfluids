@@ -25,6 +25,13 @@ void Timer::stopTimer()
         this->totalElapsedTime += this->elapsedTime;
 }
 
+float Timer::startStopGetElapsed()
+{
+    this->stopTimer();
+    this->startTimer();
+    return this->elapsedTime;
+}
+
 void Timer::resetTimer()
 {
         this->elapsedTime = 0.0;
