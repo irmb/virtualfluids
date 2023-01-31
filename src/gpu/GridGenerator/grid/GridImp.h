@@ -343,8 +343,6 @@ private:
 
     void allocateQs();
 
-    void findFluidNodeIndicesBorder();
-
 public:
     void findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks) override;
     void findCommunicationIndex(uint index, real coordinate, real limit, int direction);
@@ -361,6 +359,7 @@ public:
     void repairCommunicationIndices(int direction) override;
 
     void findFluidNodeIndices(bool splitDomain) override;
+    void findFluidNodeIndicesBorder() override;
 
     uint getNumberOfFluidNodes() const override;
     void getFluidNodeIndices(uint *fluidNodeIndices) const override;

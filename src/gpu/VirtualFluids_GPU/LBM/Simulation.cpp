@@ -370,8 +370,8 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     //////////////////////////////////////////////////////////////////////////
     // Write Initialized Files
     //////////////////////////////////////////////////////////////////////////
-    // VF_LOG_INFO("Write initialized Files ...");
-    // dataWriter->writeInit(para, cudaMemoryManager);
+    VF_LOG_INFO("Write initialized Files ...");
+    dataWriter->writeInit(para, cudaMemoryManager);
     if (para->getCalcParticles())
         copyAndPrintParticles(para.get(), cudaMemoryManager.get(), 0, true);
     VF_LOG_INFO("... done.");
@@ -461,10 +461,6 @@ void Simulation::run()
     ////////////////////////////////////////////////////////////////////////////////
     // Time loop
     ////////////////////////////////////////////////////////////////////////////////
-
-    puts("\n\n\n\n\n\n");
-    VF_LOG_INFO("Start Simulation \n");
-
     for(timestep=para->getTimestepStart();timestep<=para->getTimestepEnd();timestep++)
     {
         this->updateGrid27->updateGrid(0, timestep);

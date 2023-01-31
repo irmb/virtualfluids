@@ -17,8 +17,6 @@ class BoundaryConditionFactory;
 class GridScalingFactory;
 class TurbulenceModelFactory;
 class UpdateGrid27;
-class Timer;
-
 using CollisionStrategy = std::function<void (UpdateGrid27* updateGrid, Parameter* para, int level, unsigned int t)>;
 using RefinementStrategy = std::function<void (UpdateGrid27* updateGrid, Parameter* para, int level)>;
 
@@ -86,8 +84,6 @@ private:
     std::shared_ptr<GridScalingKernelManager> gridScalingKernelManager;
     //! \property tmFactory is a shared pointer to an object of TurbulenceModelFactory
     std::shared_ptr<TurbulenceModelFactory> tmFactory;
-
-    Timer* timer = nullptr;
 };
 
 #endif

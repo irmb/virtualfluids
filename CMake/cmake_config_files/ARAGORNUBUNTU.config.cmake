@@ -13,6 +13,5 @@ set(GPU_APP "apps/gpu/LBM/")
 list(APPEND USER_APPS 
     "${GPU_APP}DrivenCavityMultiGPU"
     "${GPU_APP}SphereScaling"
-    "${GPU_APP}ActuatorLine"
     # "${GPU_APP}MusselOyster"
     )

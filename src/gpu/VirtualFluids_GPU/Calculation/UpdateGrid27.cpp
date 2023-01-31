@@ -13,13 +13,8 @@
 #include "CollisionStrategy.h"
 #include "RefinementStrategy.h"
 
-#include "Output/Timer.h"
-
 void UpdateGrid27::updateGrid(int level, unsigned int t)
 {
-
-    timer->startTimer();
-
     //////////////////////////////////////////////////////////////////////////
 
     if (level != para->getFine()) {
@@ -27,26 +22,17 @@ void UpdateGrid27::updateGrid(int level, unsigned int t)
         updateGrid(level + 1, t);
     }
 
-
     //////////////////////////////////////////////////////////////////////////
-    std::cout << "updateGrid: level = " << level << ", t = " << t << std::endl;
-
     
     interactWithProbes(level, t);
-            std::cout << " interactWithProbes, " << timer->startStopGetElapsed() << std::endl;
 
     //////////////////////////////////////////////////////////////////////////
 
     collision(this, para.get(), level, t);
 
-            std::cout << " collision, " << timer->startStopGetElapsed() << std::endl;
-
     //////////////////////////////////////////////////////////////////////////
 
     postCollisionBC(level, t);
-
-                std::cout << " postCollisionBC, " << timer->startStopGetElapsed() << std::endl;
-
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -59,15 +45,9 @@ void UpdateGrid27::updateGrid(int level, unsigned int t)
 
     calcTurbulentViscosity(level);
 
-    
-                    std::cout << " calcTurbulentViscosity, " << timer->startStopGetElapsed() << std::endl;
-
     //////////////////////////////////////////////////////////////////////////
 
     this->preCollisionBC(level, t);
-
-                        std::cout << " preCollisionBC, " << timer->startStopGetElapsed() << std::endl;
-
 
     //////////////////////////////////////////////////////////////////////////
     if( level != para->getFine() )
@@ -75,18 +55,9 @@ void UpdateGrid27::updateGrid(int level, unsigned int t)
         refinement(this, para.get(), level);
     }
 
-    
-                        std::cout << " refinement, " << timer->startStopGetElapsed() << std::endl;
-
     //////////////////////////////////////////////////////////////////////////
     
     interactWithActuators(level, t);
-
-                            std::cout << " interactWithActuators, " << timer->startStopGetElapsed() << std::endl;
-                                std::cout << "total time, " << timer->getTotalElapsedTime() << std::endl;
-                                timer->resetTimer();
-
-
 
 }
 
@@ -420,6 +391,4 @@ UpdateGrid27::UpdateGrid27(SPtr<Parameter> para, vf::gpu::Communicator &comm, SP
     this->bcKernelManager = std::make_shared<BCKernelManager>(para, bcFactory);
     this->adKernelManager = std::make_shared<ADKernelManager>(para);
     this->gridScalingKernelManager = std::make_shared<GridScalingKernelManager>(para, scalingFactory);
-        timer = new Timer("ALM blade performance");
-    timer->initTimer();
 }

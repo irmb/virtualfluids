@@ -1,31 +1,31 @@
 ##################################################
 #informations for Writing
 ##################################################
-Path = /work/y0078217/Results/ActuatorLine105
+Path = .
 ##################################################
 #informations for reading
 ##################################################
 GridPath=.
 ##################################################
 ReferenceDiameter=126
-NodesPerDiameter=105
+NodesPerDiameter=32
 Velocity=9
 ##################################################
-tStartOut=0
-tOut=1
-tEnd=1
+tStartOut=100
+tOut=100
+tEnd=1000
 ##################################################
 
-# tStartTmpAveraging=100
-# tStartAveraging=100
-# tAveraging=100
-# tTmpAveraging=100
-# tStartOutProbe=100
-# tOutProbe=100
+tStartTmpAveraging=100
+tStartAveraging=100
+tAveraging=100
+tTmpAveraging=100
+tStartOutProbe=100
+tOutProbe=100
 
 ##################################################
-TurbulenceModel = None
-# SGSconstant = 0.3333333
+#TurbulenceModel = QR
+#SGSconstant = 0.3333333
 #
 #QuadricLimiterP = 100000.0
 #QuadricLimiterM = 100000.0
