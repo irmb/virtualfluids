@@ -10,7 +10,6 @@ using namespace vf::lbm::constant;
 
 class Parameter;
 class GridProvider;
-class Timer;
 using namespace vf::lbm::constant;
 
 class ActuatorFarm : public PreCollisionInteractor
@@ -193,8 +192,6 @@ private:
     uint numberOfNodes;
     real forceRatio, factorGaussian, invEpsilonSqrd, invDeltaX;
     int streamIndex;
-
-    Timer* bladeTimer = nullptr;
 };
 
 #endif
