@@ -72,7 +72,7 @@ public:
 
     virtual SideType whoAmI() const = 0;
 
-    std::vector<real> getNormal();
+    std::vector<real> getNormal() const;
 
 protected:
     void addIndices(SPtr<Grid> grid, SPtr<gg::BoundaryCondition> boundaryCondition, std::string coord, real constant,
@@ -84,11 +84,13 @@ protected:
 
     void setQs(SPtr<Grid> grid, SPtr<gg::BoundaryCondition> boundaryCondition, uint index, bool nodeIsDifferentBC);
 
-private:
-    static uint getIndex(SPtr<Grid> grid, std::string coord, real constant, real v1, real v2);
-
     virtual void correctNeighborForPeriodicBoundaries(Grid *grid, real x, real y, real z, real *coords, real neighborX,
                                                       real neighborY, real neighborZ) const;
+
+    virtual bool isAlignedWithNormal(Grid *grid, int dir) const;
+
+private:
+    static uint getIndex(SPtr<Grid> grid, std::string coord, real constant, real v1, real v2);
 };
 
 class Geometry : public Side

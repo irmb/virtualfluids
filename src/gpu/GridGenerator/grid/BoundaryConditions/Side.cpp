@@ -40,7 +40,7 @@
 
 using namespace gg;
 
-std::vector<real> Side::getNormal()
+std::vector<real> Side::getNormal() const
 {
     std::vector<real> normal;
     if(this->getCoordinate()==X_INDEX)
@@ -153,18 +153,17 @@ void Side::setQs(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uin
 
         real coords[3] = {x,y,z};
 
-        real neighborX = x + grid->getDirection()[dir * DIMENSION + 0] * grid->getDelta();
+        real neighborX = x + grid->getDirection()[dir * DIMENSION + 0] * grid->getDelta(); // coordinate of neighbor
         real neighborY = y + grid->getDirection()[dir * DIMENSION + 1] * grid->getDelta();
         real neighborZ = z + grid->getDirection()[dir * DIMENSION + 2] * grid->getDelta();
 
         correctNeighborForPeriodicBoundaries(grid.get(), x, y, z, coords, neighborX, neighborY, neighborZ);
 
         //! Only setting q's that partially point in the Side-normal direction
-        bool alignedWithNormal = (this->getNormal()[0]*grid->getDirection()[dir * DIMENSION + 0]+
-                                  this->getNormal()[1]*grid->getDirection()[dir * DIMENSION + 1]+
-                                  this->getNormal()[2]*grid->getDirection()[dir * DIMENSION + 2] ) > 0;
+        bool alignedWithNormal = this->isAlignedWithNormal(grid.get(), dir);
 
         uint neighborIndex = grid->transCoordToIndex( neighborX, neighborY, neighborZ );
+
         if((grid->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_OUT_OF_GRID_BOUNDARY ||
             grid->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_OUT_OF_GRID          ||
             grid->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_SOLID)               &&
@@ -175,6 +174,13 @@ void Side::setQs(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uin
     }
 
     boundaryCondition->qs.push_back(qNode);
+}
+
+bool Side::isAlignedWithNormal(Grid *grid, int dir) const
+{
+    return (this->getNormal()[0] * grid->getDirection()[dir * DIMENSION + 0] +
+            this->getNormal()[1] * grid->getDirection()[dir * DIMENSION + 1] +
+            this->getNormal()[2] * grid->getDirection()[dir * DIMENSION + 2]) > 0;
 }
 
 void Side::correctNeighborForPeriodicBoundaries(Grid *grid, real x, real y, real z, real *coords, real neighborX,
