@@ -32,6 +32,8 @@ r"""
 ! \author Henry Korb
 =======================================================================================
 """
+from __future__ import annotations
+
 class Logger:
     @staticmethod
     def change_log_path(path: str) -> None: ...

@@ -32,7 +32,10 @@ r"""
 ! \author Henry Korb
 =======================================================================================
 """
-from typing import Any, List
+
+from __future__ import annotations
+
+from typing import List
 
 from typing import overload
 import pyfluids.bindings.basics
@@ -40,6 +43,9 @@ import pyfluids.bindings.gpu
 
 class BoundingBox:
     def __init__(self, min_x: float, max_x: float, min_y: float, max_y: float, min_z: float, max_z: float) -> None: ...
+
+class Object:
+    def __init__(self, *args, **kwargs) -> None: ...
 
 class Conglomerate(Object):
     def __init__(self, *args, **kwargs) -> None: ...
@@ -85,9 +91,6 @@ class MultipleGridBuilder(LevelGridBuilder):
     def get_number_of_levels(self) -> int: ...
     @staticmethod
     def make_shared(grid_factory: GridFactory) -> MultipleGridBuilder: ...
-
-class Object:
-    def __init__(self, *args, **kwargs) -> None: ...
 
 class Sphere(Object):
     def __init__(self, *args, **kwargs) -> None: ...

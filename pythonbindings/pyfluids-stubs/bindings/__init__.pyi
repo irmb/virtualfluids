@@ -32,6 +32,8 @@ r"""
 ! \author Henry Korb
 =======================================================================================
 """
+from . import basics as basics, gpu as gpu, lbm as lbm, logger as logger
+
 class ostream_redirect:
     def __init__(self, stdout: bool = ..., stderr: bool = ...) -> None: ...
     def __enter__(self) -> None: ...

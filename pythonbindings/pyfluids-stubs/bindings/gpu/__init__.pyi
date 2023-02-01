@@ -37,7 +37,7 @@ from typing import Any, Callable, ClassVar, List, Optional
 from typing import overload
 import numpy
 import pyfluids.bindings.basics
-import pyfluids.bindings.gpu.grid_generator as grid_generator
+from . import grid_generator as grid_generator, probes as probes
 
 class ActuatorFarm(PreCollisionInteractor):
     def __init__(self, number_of_blades_per_turbine: int, density: float, number_of_nodes_per_blade: int, epsilon: float, level: int, delta_t: float, delta_x: float, use_host_arrays: bool) -> None: ...

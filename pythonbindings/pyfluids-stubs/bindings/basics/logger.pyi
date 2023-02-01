@@ -32,7 +32,9 @@ r"""
 ! \author Henry Korb
 =======================================================================================
 """
-from typing import Any, ClassVar
+from __future__ import annotations
+
+from typing import ClassVar
 
 log: None
 
@@ -62,7 +64,7 @@ class Logger:
     @staticmethod
     def enable_printed_rank_numbers(print: bool) -> None: ...
     @staticmethod
-    def set_debug_level(level: int) -> None: ...
+    def set_debug_level(level: Level) -> None: ...
     @staticmethod
     def time_stamp(time_stemp: TimeStamp) -> None: ...
 

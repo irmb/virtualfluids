@@ -1,7 +1,7 @@
 import sys
 from pathlib import Path
-from typing import List
 
+from setuptools import find_namespace_packages
 import skbuild
 
 """
@@ -25,26 +25,7 @@ or install via pip:
 package_name = "pyfluids"
 target = "python_bindings"
 src_dir = "pythonbindings"
-stub_package = package_name+"-stubs"
 
-stub_dir = Path(src_dir)/stub_package
-
-
-def add_subfiles(dir_path: Path, suffix: str, root_dir: Path) -> List[str]:
-    files = []
-    for f in dir_path.iterdir():
-        if f.is_dir():
-            files.extend(add_subfiles(f, suffix, root_dir))
-        if f.is_file():
-            if f.suffix != suffix:
-                continue
-            files.append(str(f.relative_to(root_dir)))
-    return files
-
-def add_directory(dir_path: Path, suffix: str):
-    return add_subfiles(dir_path, suffix, dir_path)
-
-stub_files = add_directory(stub_dir, ".pyi")
 
 # hack to get config-args for installation with pip>21
 cmake_args = []
@@ -62,11 +43,10 @@ cmake_args += [
 
 skbuild.setup(
     name=package_name,
-    packages=[package_name, "pymuparser", "pyfluids-stubs"],
+    packages=find_namespace_packages(src_dir),
     package_dir={"": src_dir},
     cmake_args=cmake_args,
     cmake_install_target=target,
-    package_data={  "pyfluids": ["py.typed"],
-                    "pyfluids-stubs": stub_files},
+    package_data={package_name: ["py.typed"]},
     include_package_data=True,
 )
