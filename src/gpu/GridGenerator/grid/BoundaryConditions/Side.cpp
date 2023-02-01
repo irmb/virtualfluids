@@ -61,7 +61,16 @@ void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition
         {
             const uint index = getIndex(grid, coord, constant, v1, v2);
 
-            if ((index != INVALID_INDEX) && (   grid->getFieldEntry(index) == vf::gpu::FLUID
+            if(index == INVALID_INDEX)
+                continue;
+
+            bool nodeIsDifferentBC = (grid->getFieldEntry(index)  == vf::gpu::BC_PRESSURE
+                                            ||  grid->getFieldEntry(index)  == vf::gpu::BC_VELOCITY
+                                            ||  grid->getFieldEntry(index)  == vf::gpu::BC_NOSLIP
+                                            ||  grid->getFieldEntry(index)  == vf::gpu::BC_SLIP
+                                            ||  grid->getFieldEntry(index)  == vf::gpu::BC_STRESS);
+
+            if (   grid->getFieldEntry(index) == vf::gpu::FLUID
                                             ||  grid->getFieldEntry(index) == vf::gpu::FLUID_CFC
                                             ||  grid->getFieldEntry(index) == vf::gpu::FLUID_CFF
                                             ||  grid->getFieldEntry(index) == vf::gpu::FLUID_FCC
@@ -69,18 +78,14 @@ void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition
                                             ||  grid->getFieldEntry(index) == vf::gpu::FLUID_FCF
 
                                             //! Enforce overlap of BCs on edge nodes
-                                            ||  grid->getFieldEntry(index)  == vf::gpu::BC_PRESSURE
-                                            ||  grid->getFieldEntry(index)  == vf::gpu::BC_VELOCITY
-                                            ||  grid->getFieldEntry(index)  == vf::gpu::BC_NOSLIP
-                                            ||  grid->getFieldEntry(index)  == vf::gpu::BC_SLIP
-                                            ||  grid->getFieldEntry(index)  == vf::gpu::BC_STRESS ))
+                                            || nodeIsDifferentBC )
             {
                 grid->setFieldEntry(index, boundaryCondition->getType());
                 boundaryCondition->indices.push_back(index);
                 setPressureNeighborIndices(boundaryCondition, grid, index);
                 setStressSamplingIndices(boundaryCondition, grid, index);
 
-                setQs(grid, boundaryCondition, index);
+                setQs(grid, boundaryCondition, index, nodeIsDifferentBC);
 
                 boundaryCondition->patches.push_back(0);
             }
@@ -136,7 +141,7 @@ void Side::setStressSamplingIndices(SPtr<BoundaryCondition> boundaryCondition, S
     }
 }
 
-void Side::setQs(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uint index)
+void Side::setQs(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uint index, bool nodeIsDifferentBC)
 {
 
     std::vector<real> qNode(grid->getEndDirection() + 1);
