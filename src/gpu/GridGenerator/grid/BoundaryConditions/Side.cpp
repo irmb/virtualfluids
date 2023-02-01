@@ -152,26 +152,9 @@ void Side::setQs(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uin
         real neighborY = y + grid->getDirection()[dir * DIMENSION + 1] * grid->getDelta();
         real neighborZ = z + grid->getDirection()[dir * DIMENSION + 2] * grid->getDelta();
 
-        // correct neighbor coordinates in case of periodic boundaries
-        if( grid->getPeriodicityX() && grid->getFieldEntry( grid->transCoordToIndex( neighborX, y, z ) ) == vf::gpu::STOPPER_OUT_OF_GRID_BOUNDARY )
-        {
-            if( neighborX > x ) neighborX = grid->getFirstFluidNode( coords, 0, grid->getStartX() );
-            else                neighborX = grid->getLastFluidNode ( coords, 0, grid->getEndX() );
-        }
+        correctNeighborForPeriodicBoundaries(grid.get(), x, y, z, coords, neighborX, neighborY, neighborZ);
 
-        if( grid->getPeriodicityY() && grid->getFieldEntry( grid->transCoordToIndex( x, neighborY, z ) ) == vf::gpu::STOPPER_OUT_OF_GRID_BOUNDARY )
-        {
-            if( neighborY > y ) neighborY = grid->getFirstFluidNode( coords, 1, grid->getStartY() );
-            else                neighborY = grid->getLastFluidNode ( coords, 1, grid->getEndY() );
-        }
-
-        if( grid->getPeriodicityZ() && grid->getFieldEntry( grid->transCoordToIndex( x, y, neighborZ ) ) == vf::gpu::STOPPER_OUT_OF_GRID_BOUNDARY )
-        {
-            if( neighborZ > z ) neighborZ = grid->getFirstFluidNode( coords, 2, grid->getStartZ() );
-            else                neighborZ = grid->getLastFluidNode ( coords, 2, grid->getEndZ() );
-        }
-
-        //! Only seting q's that partially point in the Side-normal direction
+        //! Only setting q's that partially point in the Side-normal direction
         bool alignedWithNormal = (this->getNormal()[0]*grid->getDirection()[dir * DIMENSION + 0]+
                                   this->getNormal()[1]*grid->getDirection()[dir * DIMENSION + 1]+
                                   this->getNormal()[2]*grid->getDirection()[dir * DIMENSION + 2] ) > 0;
@@ -187,6 +170,35 @@ void Side::setQs(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uin
     }
 
     boundaryCondition->qs.push_back(qNode);
+}
+
+void Side::correctNeighborForPeriodicBoundaries(Grid *grid, real x, real y, real z, real *coords, real neighborX,
+                                          real neighborY, real neighborZ) const
+{
+    // correct neighbor coordinates in case of periodic boundaries
+    if (grid->getPeriodicityX() &&
+        grid->getFieldEntry(grid->transCoordToIndex(neighborX, y, z)) == vf::gpu::STOPPER_OUT_OF_GRID_BOUNDARY) {
+        if (neighborX > x)
+            neighborX = grid->getFirstFluidNode(coords, 0, grid->getStartX());
+        else
+            neighborX = grid->getLastFluidNode(coords, 0, grid->getEndX());
+    }
+
+    if (grid->getPeriodicityY() &&
+        grid->getFieldEntry(grid->transCoordToIndex(x, neighborY, z)) == vf::gpu::STOPPER_OUT_OF_GRID_BOUNDARY) {
+        if (neighborY > y)
+            neighborY = grid->getFirstFluidNode(coords, 1, grid->getStartY());
+        else
+            neighborY = grid->getLastFluidNode(coords, 1, grid->getEndY());
+    }
+
+    if (grid->getPeriodicityZ() &&
+        grid->getFieldEntry(grid->transCoordToIndex(x, y, neighborZ)) == vf::gpu::STOPPER_OUT_OF_GRID_BOUNDARY) {
+        if (neighborZ > z)
+            neighborZ = grid->getFirstFluidNode(coords, 2, grid->getStartZ());
+        else
+            neighborZ = grid->getLastFluidNode(coords, 2, grid->getEndZ());
+    }
 }
 
 uint Side::getIndex(SPtr<Grid> grid, std::string coord, real constant, real v1, real v2)

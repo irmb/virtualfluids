@@ -86,6 +86,9 @@ protected:
 
 private:
     static uint getIndex(SPtr<Grid> grid, std::string coord, real constant, real v1, real v2);
+
+    virtual void correctNeighborForPeriodicBoundaries(Grid *grid, real x, real y, real z, real *coords, real neighborX,
+                                                      real neighborY, real neighborZ) const;
 };
 
 class Geometry : public Side
