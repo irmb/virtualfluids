@@ -50,8 +50,7 @@ cmake_args += [
         "-DBUILD_VF_UNIT_TESTS:BOOL=OFF",
         "-DBUILD_WARNINGS_AS_ERRORS=OFF",
     ]
-print(find_stub_subpackages(stub_dir))
-print(find_packages(where=src_dir))
+
 skbuild.setup(
     name=package_name,
     packages=find_packages()+find_stub_subpackages(stub_dir),
