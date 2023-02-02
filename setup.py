@@ -19,7 +19,7 @@ or install via pip:
 import sys
 from pathlib import Path
 
-from setuptools import find_packages
+from setuptools import find_namespace_packages
 import skbuild
 
 package_name = "pyfluids"
@@ -53,7 +53,7 @@ cmake_args += [
 
 skbuild.setup(
     name=package_name,
-    packages=find_packages()+find_stub_subpackages(stub_dir),
+    packages=find_namespace_packages()+find_stub_subpackages(stub_dir),
     package_dir={"": src_dir},
     cmake_args=cmake_args,
     cmake_install_target=target,
