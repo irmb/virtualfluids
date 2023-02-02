@@ -1,6 +1,5 @@
 #include "Side.h"
 #include "PointerDefinitions.h"
-#include "basics/tests/testUtilities.h"
 
 #include "gpu/GridGenerator/grid/BoundaryConditions/BoundaryCondition.h"
 #include "grid/GridImp.h"
@@ -14,6 +13,9 @@
 #include <memory>
 #include <ostream>
 #include <vector>
+
+using namespace vf::gpu;
+using namespace vf::lbm::dir;
 
 class SideForTest : public Side
 {
@@ -35,12 +37,12 @@ private:
         return POSITIVE_DIR;
     }
 
+    // all directions with a positive x component are aligned with the normal (! depends on order in D3Q27.h !)
+    
+    std::vector<bool> alignedWithPX = {false, true, false, false, false, false, false, true, false, true, false, true, false, true, false, false, false, false, false, true, false, true, false, true, false, true, false};
     bool isAlignedWithNormal(Grid * /*grid*/, int dir) const override
     {
-        if (dir == vf::lbm::dir::DIR_P00 || dir == vf::lbm::dir::DIR_PP0 || dir == vf::lbm::dir::DIR_PM0)
-            return true;
-        else
-            return false;
+        return alignedWithPX[dir];
     }
 
     void addIndices(std::vector<SPtr<Grid>> grid, uint level, SPtr<gg::BoundaryCondition> boundaryCondition) override
@@ -49,7 +51,7 @@ private:
 
     int getCoordinate() const override
     {
-        return -1;
+        return X_INDEX;
     }
 
     SideType whoAmI() const override
@@ -60,9 +62,11 @@ private:
 
 class GridDouble : public GridImp
 {
-    private:
-    int dir[9]  = {-1,-1,-1,-1,-1,-1,-1,-1,-1};
-    int* directions = dir;
+private:
+    int dir[1] = { -1 };
+
+    int *directions = dir;
+
 public:
     void transIndexToCoords(uint index, real &x, real &y, real &z) const override
     {
@@ -83,23 +87,31 @@ public:
 
     char getFieldEntry(uint /*matrixIndex*/) const override
     {
-        return vf::gpu::STOPPER_OUT_OF_GRID_BOUNDARY;
+        return STOPPER_OUT_OF_GRID_BOUNDARY;
     }
 
-    int getEndDirection() const override{
-        return 9;
+    int getEndDirection() const override
+    {
+        return 10;
     }
-      int* getDirection() const override{
+
+    int *getDirection() const override
+    {
         return directions;
-     };
+    };
 };
 
-class BoundaryConditionSpy: public gg::BoundaryCondition{
-    public:
-        char getType() const override {return 't';};
-       const std::vector<std::vector<real>>& getQs(){
+class BoundaryConditionSpy : public gg::BoundaryCondition
+{
+public:
+    char getType() const override
+    {
+        return 't';
+    };
+    const std::vector<std::vector<real>> &getQs()
+    {
         return this->qs;
-       }
+    }
 };
 
 TEST(SideTest, setQs)
@@ -113,17 +125,20 @@ TEST(SideTest, setQs)
 
     bool nodeIsDifferentBC = false;
     side.setQs(grid, bc, index, nodeIsDifferentBC);
-    auto qs = bc->getQs()[0];
+    auto qsFirstBC = bc->getQs()[0];
 
-    std::vector<real> expectedDefault = {-1, 0.5, -1, -1, -1, -1, -1, 0.5, -1, 0.5};
-    EXPECT_THAT(qs, testing::Eq(expectedDefault));
+    std::vector<real> expectedFirstBC = { -1, 0.5, -1, -1, -1, -1, -1, 0.5, -1, 0.5, -1 };
+    EXPECT_THAT(qsFirstBC, testing::Eq(expectedFirstBC));
 
     // node already has different BC
 
     nodeIsDifferentBC = true;
     side.setQs(grid, bc, index, nodeIsDifferentBC);
-    qs = bc->getQs()[0];
-    
-    std::vector<real> expectedPreviousQ = {-1, 0.5, -1, -1, -1, -1, -1, -1, -1, 0.5};
-    EXPECT_THAT(qs, testing::Eq(expectedPreviousQ));
+    auto qsPreviousQ = bc->getQs()[0];
+
+    std::vector<real> expectedPreviousQ = { -1, 0.5, -1, -1, -1, -1, -1, -1, -1, 0.5, -1 };
+    EXPECT_THAT(qsPreviousQ, testing::Eq(expectedPreviousQ));
+
+    // the 7th entry (DIR_PP0) is different
+    EXPECT_TRUE(qsFirstBC[7] != qsPreviousQ[7]);
 }
