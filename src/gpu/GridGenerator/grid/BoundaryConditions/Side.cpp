@@ -77,7 +77,7 @@ void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition
                                             ||  grid->getFieldEntry(index) == vf::gpu::FLUID_FCC
                                             ||  grid->getFieldEntry(index) == vf::gpu::FLUID_FCF
                                             ||  grid->getFieldEntry(index) == vf::gpu::FLUID_FCF
-                                            //! Enforce overlap of BCs on edge nodes
+                                            // Overlap of BCs on edge nodes
                                             || nodeIsDifferentBC )
             {
                 grid->setFieldEntry(index, boundaryCondition->getType());

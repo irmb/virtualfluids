@@ -33,7 +33,6 @@
 #ifndef SIDE_H
 #define SIDE_H
 
-#include <map>
 #include <string>
 #include <vector>
 
