@@ -37,6 +37,7 @@
 #include "grid/NodeValues.h"
 
 #include "utilities/math/Math.h"
+#include <vector>
 
 using namespace gg;
 
@@ -85,12 +86,14 @@ void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition
                 setPressureNeighborIndices(boundaryCondition, grid, index);
                 setStressSamplingIndices(boundaryCondition, grid, index);
 
-                setQs(grid, boundaryCondition, index, nodeIsDifferentBC);
+                setQs(grid, boundaryCondition, index);
 
                 boundaryCondition->patches.push_back(0);
             }
         }
     }
+
+    grid->getBCAlreadySet().push_back(this->whoAmI());
 }
 
 void Side::setPressureNeighborIndices(SPtr<BoundaryCondition> boundaryCondition, SPtr<Grid> grid, const uint index)
@@ -141,7 +144,7 @@ void Side::setStressSamplingIndices(SPtr<BoundaryCondition> boundaryCondition, S
     }
 }
 
-void Side::setQs(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uint index, bool nodeIsDifferentBC)
+void Side::setQs(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uint index)
 {
 
     std::vector<real> qNode(grid->getEndDirection() + 1);
@@ -160,27 +163,47 @@ void Side::setQs(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uin
         correctNeighborForPeriodicBoundaries(grid.get(), x, y, z, coords, neighborX, neighborY, neighborZ);
 
         //! Only setting q's that partially point in the Side-normal direction
-        bool alignedWithNormal = this->isAlignedWithNormal(grid.get(), dir);
+        bool alignedWithNormal = this->isAlignedWithMyNormal(grid.get(), dir);
 
-        uint neighborIndex = grid->transCoordToIndex( neighborX, neighborY, neighborZ );
+        uint neighborIndex = grid->transCoordToIndex(neighborX, neighborY, neighborZ);
 
-        if((grid->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_OUT_OF_GRID_BOUNDARY ||
-            grid->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_OUT_OF_GRID          ||
-            grid->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_SOLID)               &&
-            alignedWithNormal )
+        bool neighborIsStopper =
+            grid->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_OUT_OF_GRID_BOUNDARY ||
+            grid->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_OUT_OF_GRID ||
+            grid->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_SOLID;
+
+        if ( neighborIsStopper && alignedWithNormal) {
             qNode[dir] = 0.5;
-        else
+        } else {
             qNode[dir] = -1.0;
+        }
+
+        // reset diagonals in case they were set by another bc
+        if (qNode[dir] == 0.5 && grid->getBCAlreadySet().size() > 0 && neighborIsStopper) {
+            for (int i = 0; i < (int)grid->getBCAlreadySet().size(); i++) {
+                SideType otherDir = grid->getBCAlreadySet()[i];
+                std::vector<real> otherNormal = normals.at(otherDir);
+                if (isAlignedWithNormal(grid.get(), dir, otherNormal)) {
+                    qNode[dir] = -1.0;
+                }
+            }
+        }
     }
 
     boundaryCondition->qs.push_back(qNode);
 }
 
-bool Side::isAlignedWithNormal(Grid *grid, int dir) const
+bool Side::isAlignedWithMyNormal(Grid *grid, int dir) const
 {
-    return (this->getNormal()[0] * grid->getDirection()[dir * DIMENSION + 0] +
-            this->getNormal()[1] * grid->getDirection()[dir * DIMENSION + 1] +
-            this->getNormal()[2] * grid->getDirection()[dir * DIMENSION + 2]) > 0;
+    std::vector<real> normal = this->getNormal();
+    return isAlignedWithNormal(grid, dir, normal);
+}
+
+bool Side::isAlignedWithNormal(Grid *grid, int dir, std::vector<real> &normal) const
+{
+    return (normal[0] * grid->getDirection()[dir * DIMENSION + 0] +
+            normal[1] * grid->getDirection()[dir * DIMENSION + 1] +
+            normal[2] * grid->getDirection()[dir * DIMENSION + 2]) > 0;
 }
 
 void Side::correctNeighborForPeriodicBoundaries(Grid *grid, real x, real y, real z, real *coords, real neighborX,

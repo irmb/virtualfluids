@@ -33,6 +33,7 @@
 #ifndef SIDE_H
 #define SIDE_H
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -59,8 +60,6 @@ enum class SideType
     MX, PX, MY, PY, MZ, PZ, GEOMETRY
 };
 
-
-
 class Side
 {
 public:
@@ -82,15 +81,23 @@ protected:
 
     static void setStressSamplingIndices(SPtr<gg::BoundaryCondition> boundaryCondition, SPtr<Grid> grid, const uint index);
 
-    void setQs(SPtr<Grid> grid, SPtr<gg::BoundaryCondition> boundaryCondition, uint index, bool nodeIsDifferentBC);
+    void setQs(SPtr<Grid> grid, SPtr<gg::BoundaryCondition> boundaryCondition, uint index);
 
     virtual void correctNeighborForPeriodicBoundaries(Grid *grid, real x, real y, real z, real *coords, real neighborX,
                                                       real neighborY, real neighborZ) const;
 
-    virtual bool isAlignedWithNormal(Grid *grid, int dir) const;
+    virtual bool isAlignedWithMyNormal(Grid *grid, int dir) const;
+    bool isAlignedWithNormal(Grid *grid, int dir, std::vector<real>& normal) const;
 
 private:
     static uint getIndex(SPtr<Grid> grid, std::string coord, real constant, real v1, real v2);
+
+protected:
+    std::map<SideType, std::vector<real>> normals = {
+        { SideType::MX, { NEGATIVE_DIR, 0.0, 0.0 } }, { SideType::PX, { POSITIVE_DIR, 0.0, 0.0 } },
+        { SideType::MY, { 0.0, NEGATIVE_DIR, 0.0 } }, { SideType::PY, { 0.0, POSITIVE_DIR, 0.0 } },
+        { SideType::MZ, { 0.0, 0.0, NEGATIVE_DIR } }, { SideType::PZ, { 0.0, 0.0, POSITIVE_DIR } }
+    };
 };
 
 class Geometry : public Side

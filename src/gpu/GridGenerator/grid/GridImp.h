@@ -34,6 +34,7 @@
 #define GRID_IMP_H
 
 #include <array>
+#include <vector>
 
 #include "Core/LbmOrGks.h"
 
@@ -51,6 +52,7 @@ class GridInterface;
 class Object;
 class BoundingBox;
 class TriangularMeshDiscretizationStrategy;
+
 
 #ifdef __GNUC__
     #ifndef __clang__
@@ -135,6 +137,8 @@ private:
 
     bool enableFixRefinementIntoTheWall;
 
+    std::vector<SideType> bcAlreadySet; // use enum class SideType for access
+
 protected:
     Field field;
     int *neighborIndexX, *neighborIndexY, *neighborIndexZ, *neighborIndexNegative;
@@ -184,6 +188,8 @@ public:
     void setInnerRegionFromFinerGrid(bool innerRegionFromFinerGrid) override;
 
     void setNumberOfLayers(uint numberOfLayers) override;
+
+    std::vector<SideType>& getBCAlreadySet() override;
 
 public:
     Distribution distribution;
