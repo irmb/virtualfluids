@@ -1,1 +1,1 @@
-from . import bindings
+from . import bindings as bindings

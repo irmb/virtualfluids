@@ -34,11 +34,13 @@ r"""
 """
 from __future__ import annotations
 
+
 class Logger:
     @staticmethod
     def change_log_path(path: str) -> None: ...
     @staticmethod
     def initialize_logger() -> None: ...
+
 
 def vf_log_critical(message: str) -> None: ...
 def vf_log_debug(message: str) -> None: ...
