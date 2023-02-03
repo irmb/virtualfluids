@@ -71,7 +71,7 @@ public:
 
     virtual SideType whoAmI() const = 0;
 
-    std::vector<real> getNormal() const;
+    std::array<real, 3> getNormal() const;
 
 protected:
     void addIndices(SPtr<Grid> grid, SPtr<gg::BoundaryCondition> boundaryCondition, std::string coord, real constant,
@@ -87,14 +87,14 @@ protected:
                                                       real& neighborY, real& neighborZ) const;
 
     virtual bool isAlignedWithMyNormal(const Grid *grid, int dir) const;
-    bool isAlignedWithNormal(const Grid *grid, int dir, const std::vector<real>& normal) const;
+    bool isAlignedWithNormal(const Grid *grid, int dir, const std::array<real, 3>& normal) const;
 
 private:
     static uint getIndex(SPtr<Grid> grid, std::string coord, real constant, real v1, real v2);
     void resetDiagonalsInCaseOfOtherBC(Grid *grid, std::vector<real>& qNode, int dir, bool neighborIsStopper);
 
 protected:
-    const std::map<SideType, std::vector<real>> normals = {
+    const std::map<SideType, const std::array<real,3>> normals = {
         { SideType::MX, { NEGATIVE_DIR, 0.0, 0.0 } }, { SideType::PX, { POSITIVE_DIR, 0.0, 0.0 } },
         { SideType::MY, { 0.0, NEGATIVE_DIR, 0.0 } }, { SideType::PY, { 0.0, POSITIVE_DIR, 0.0 } },
         { SideType::MZ, { 0.0, 0.0, NEGATIVE_DIR } }, { SideType::PZ, { 0.0, 0.0, POSITIVE_DIR } }

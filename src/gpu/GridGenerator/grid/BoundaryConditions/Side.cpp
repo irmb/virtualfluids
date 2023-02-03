@@ -41,9 +41,9 @@
 
 using namespace gg;
 
-std::vector<real> Side::getNormal() const
+std::array<real, 3> Side::getNormal() const
 {
-    std::vector<real> normal;
+    std::array<real, 3> normal;
     if(this->getCoordinate()==X_INDEX)
         normal = {(real)this->getDirection(), 0.0, 0.0};
     if(this->getCoordinate()==Y_INDEX)
@@ -183,7 +183,7 @@ void Side::resetDiagonalsInCaseOfOtherBC(Grid *grid, std::vector<real>& qNode, i
     if (qNode[dir] == 0.5 && grid->getBCAlreadySet().size() > 0 && neighborIsStopper) {
         for (int i = 0; i < (int)grid->getBCAlreadySet().size(); i++) {
             SideType otherDir = grid->getBCAlreadySet()[i];
-            std::vector<real> otherNormal = normals.at(otherDir);
+            auto otherNormal = normals.at(otherDir);
             if (isAlignedWithNormal(grid, dir, otherNormal)) {
                 qNode[dir] = -1.0;
             }
@@ -193,11 +193,11 @@ void Side::resetDiagonalsInCaseOfOtherBC(Grid *grid, std::vector<real>& qNode, i
 
 bool Side::isAlignedWithMyNormal(const Grid *grid, int dir) const
 {
-    std::vector<real> normal = this->getNormal();
+    std::array<real, 3> normal = this->getNormal();
     return isAlignedWithNormal(grid, dir, normal);
 }
 
-bool Side::isAlignedWithNormal(const Grid *grid, int dir, const std::vector<real> &normal) const
+bool Side::isAlignedWithNormal(const Grid *grid, int dir, const std::array<real, 3> &normal) const
 {
     return (normal[0] * grid->getDirection()[dir * DIMENSION + 0] +
             normal[1] * grid->getDirection()[dir * DIMENSION + 1] +
