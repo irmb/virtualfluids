@@ -137,7 +137,7 @@ private:
 
     bool enableFixRefinementIntoTheWall;
 
-    std::vector<SideType> bcAlreadySet; // use enum class SideType for access
+    std::vector<SideType> bcAlreadySet;
 
 protected:
     Field field;
