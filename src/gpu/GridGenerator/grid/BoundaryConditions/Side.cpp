@@ -92,7 +92,9 @@ void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition
         }
     }
 
-    grid->getBCAlreadySet().push_back(this->whoAmI());
+    auto currentBCSide = this->whoAmI();
+    if(currentBCSide != SideType::GEOMETRY)
+        grid->getBCAlreadySet().push_back(currentBCSide);
 }
 
 void Side::setPressureNeighborIndices(SPtr<BoundaryCondition> boundaryCondition, SPtr<Grid> grid, const uint index)

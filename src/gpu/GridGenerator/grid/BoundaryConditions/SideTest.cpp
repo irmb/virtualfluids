@@ -6,8 +6,10 @@
 #include "lbm/constants/D3Q27.h"
 #include "gmock/gmock.h"
 #include <algorithm>
+#include <gtest/gtest.h>
 #include <iostream>
 #include <memory>
+#include <stdexcept>
 #include <vector>
 
 using namespace vf::gpu;
@@ -184,6 +186,13 @@ TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesAreNotInfluencedByOppositeNodes)
     auto qsPreviousQ = bc->getQs()[0];
 
     EXPECT_THAT(qsPreviousQ, testing::Eq(expectedFirstBC));
+}
+
+TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesGeometryAlreadySet_Throws)
+{
+    grid->getBCAlreadySet().push_back(SideType::GEOMETRY);
+
+    EXPECT_THROW(side.setQs(grid, bc, index), std::out_of_range);
 }
 
 TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesAreSetOnlyOnce_setBcPX)
