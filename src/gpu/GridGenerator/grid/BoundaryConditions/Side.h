@@ -83,17 +83,18 @@ protected:
 
     void setQs(SPtr<Grid> grid, SPtr<gg::BoundaryCondition> boundaryCondition, uint index);
 
-    virtual void correctNeighborForPeriodicBoundaries(Grid *grid, real x, real y, real z, real *coords, real neighborX,
-                                                      real neighborY, real neighborZ) const;
+    virtual void correctNeighborForPeriodicBoundaries(const Grid *grid, real x, real y, real z, real *coords, real& neighborX,
+                                                      real& neighborY, real& neighborZ) const;
 
-    virtual bool isAlignedWithMyNormal(Grid *grid, int dir) const;
-    bool isAlignedWithNormal(Grid *grid, int dir, std::vector<real>& normal) const;
+    virtual bool isAlignedWithMyNormal(const Grid *grid, int dir) const;
+    bool isAlignedWithNormal(const Grid *grid, int dir, const std::vector<real>& normal) const;
 
 private:
     static uint getIndex(SPtr<Grid> grid, std::string coord, real constant, real v1, real v2);
+    void resetDiagonalsInCaseOfOtherBC(Grid *grid, std::vector<real>& qNode, int dir, bool neighborIsStopper);
 
 protected:
-    std::map<SideType, std::vector<real>> normals = {
+    const std::map<SideType, std::vector<real>> normals = {
         { SideType::MX, { NEGATIVE_DIR, 0.0, 0.0 } }, { SideType::PX, { POSITIVE_DIR, 0.0, 0.0 } },
         { SideType::MY, { 0.0, NEGATIVE_DIR, 0.0 } }, { SideType::PY, { 0.0, POSITIVE_DIR, 0.0 } },
         { SideType::MZ, { 0.0, 0.0, NEGATIVE_DIR } }, { SideType::PZ, { 0.0, 0.0, POSITIVE_DIR } }

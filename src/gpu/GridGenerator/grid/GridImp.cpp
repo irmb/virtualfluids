@@ -720,6 +720,12 @@ void GridImp::setNonStopperOutOfGridCellTo(uint index, char type)
     }
 }
 
+bool GridImp::nodeHasBC(uint index) const
+{
+    return (getFieldEntry(index) == vf::gpu::BC_PRESSURE || getFieldEntry(index) == vf::gpu::BC_VELOCITY ||
+            getFieldEntry(index) == vf::gpu::BC_NOSLIP   || getFieldEntry(index) == vf::gpu::BC_SLIP     ||
+            getFieldEntry(index) == vf::gpu::BC_STRESS);
+}
 
 void GridImp::setPeriodicity(bool periodicityX, bool periodicityY, bool periodicityZ)
 {
@@ -743,17 +749,17 @@ void GridImp::setPeriodicityZ(bool periodicity)
     this->periodicityZ = periodicity;
 }
 
-bool GridImp::getPeriodicityX()
+bool GridImp::getPeriodicityX() const
 {
     return this->periodicityX;
 }
 
-bool GridImp::getPeriodicityY()
+bool GridImp::getPeriodicityY() const
 {
     return this->periodicityY;
 }
 
-bool GridImp::getPeriodicityZ()
+bool GridImp::getPeriodicityZ() const
 {
     return this->periodicityZ;
 }

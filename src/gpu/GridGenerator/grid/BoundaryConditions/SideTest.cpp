@@ -28,8 +28,8 @@ public:
     SideType mySide = SideType::PX;
 
 private:
-    void correctNeighborForPeriodicBoundaries(Grid *grid, real x, real y, real z, real *coords, real neighborX,
-                                              real neighborY, real neighborZ) const override
+    void correctNeighborForPeriodicBoundaries(const Grid *grid, real x, real y, real z, real *coords, real& neighborX,
+                                              real& neighborY, real& neighborZ) const override
     {
     }
 

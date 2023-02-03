@@ -94,6 +94,7 @@ private:
     bool nodeInPreviousCellIs(int index, char type) const;
     bool nodeInCellIs(Cell& cell, char type) const override;
 
+
     uint getXIndex(real x) const;
     uint getYIndex(real y) const;
     uint getZIndex(real z) const;
@@ -153,9 +154,9 @@ public:
     void setPeriodicityY(bool periodicity) override;
     void setPeriodicityZ(bool periodicity) override;
 
-    bool getPeriodicityX() override;
-    bool getPeriodicityY() override;
-    bool getPeriodicityZ() override;
+    bool getPeriodicityX() const override;
+    bool getPeriodicityY() const override;
+    bool getPeriodicityZ() const override;
 
     void setEnableFixRefinementIntoTheWall(bool enableFixRefinementIntoTheWall) override;
 
@@ -226,6 +227,7 @@ public:
     bool nodeInNextCellIs(int index, char type) const;
     bool hasAllNeighbors(uint index) const;
     bool hasNeighborOfType(uint index, char type) const;
+    bool nodeHasBC(uint index) const override;
     bool cellContainsOnly(Cell &cell, char type) const;
     bool cellContainsOnly(Cell &cell, char typeA, char typeB) const;
 

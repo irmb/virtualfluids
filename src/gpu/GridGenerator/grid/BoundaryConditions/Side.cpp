@@ -65,12 +65,6 @@ void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition
             if(index == INVALID_INDEX)
                 continue;
 
-            bool nodeIsDifferentBC = (grid->getFieldEntry(index)  == vf::gpu::BC_PRESSURE
-                                            ||  grid->getFieldEntry(index)  == vf::gpu::BC_VELOCITY
-                                            ||  grid->getFieldEntry(index)  == vf::gpu::BC_NOSLIP
-                                            ||  grid->getFieldEntry(index)  == vf::gpu::BC_SLIP
-                                            ||  grid->getFieldEntry(index)  == vf::gpu::BC_STRESS);
-
             if (   grid->getFieldEntry(index) == vf::gpu::FLUID
                                             ||  grid->getFieldEntry(index) == vf::gpu::FLUID_CFC
                                             ||  grid->getFieldEntry(index) == vf::gpu::FLUID_CFF
@@ -78,7 +72,7 @@ void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition
                                             ||  grid->getFieldEntry(index) == vf::gpu::FLUID_FCF
                                             ||  grid->getFieldEntry(index) == vf::gpu::FLUID_FCF
                                             // Overlap of BCs on edge nodes
-                                            || nodeIsDifferentBC )
+                                            || grid->nodeHasBC(index) )
             {
                 grid->setFieldEntry(index, boundaryCondition->getType());
                 boundaryCondition->indices.push_back(index);
@@ -92,7 +86,7 @@ void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition
         }
     }
 
-    auto currentBCSide = this->whoAmI();
+    const auto currentBCSide = this->whoAmI();
     if(currentBCSide != SideType::GEOMETRY)
         grid->addBCalreadySet(currentBCSide);
 }
@@ -147,7 +141,6 @@ void Side::setStressSamplingIndices(SPtr<BoundaryCondition> boundaryCondition, S
 
 void Side::setQs(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uint index)
 {
-
     std::vector<real> qNode(grid->getEndDirection() + 1);
 
     for (int dir = 0; dir <= grid->getEndDirection(); dir++)
@@ -163,16 +156,15 @@ void Side::setQs(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uin
 
         correctNeighborForPeriodicBoundaries(grid.get(), x, y, z, coords, neighborX, neighborY, neighborZ);
 
-        //! Only setting q's that partially point in the Side-normal direction
-        bool alignedWithNormal = this->isAlignedWithMyNormal(grid.get(), dir);
+        const uint neighborIndex = grid->transCoordToIndex(neighborX, neighborY, neighborZ);
 
-        uint neighborIndex = grid->transCoordToIndex(neighborX, neighborY, neighborZ);
-
-        bool neighborIsStopper =
+        const bool neighborIsStopper =
             grid->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_OUT_OF_GRID_BOUNDARY ||
             grid->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_OUT_OF_GRID ||
             grid->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_SOLID;
 
+        //! Only setting q's that partially point in the Side-normal direction
+        const bool alignedWithNormal = this->isAlignedWithMyNormal(grid.get(), dir);
         if ( neighborIsStopper && alignedWithNormal) {
             qNode[dir] = 0.5;
         } else {
@@ -180,35 +172,40 @@ void Side::setQs(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uin
         }
 
         // reset diagonals in case they were set by another bc
-        if (qNode[dir] == 0.5 && grid->getBCAlreadySet().size() > 0 && neighborIsStopper) {
-            for (int i = 0; i < (int)grid->getBCAlreadySet().size(); i++) {
-                SideType otherDir = grid->getBCAlreadySet()[i];
-                std::vector<real> otherNormal = normals.at(otherDir);
-                if (isAlignedWithNormal(grid.get(), dir, otherNormal)) {
-                    qNode[dir] = -1.0;
-                }
-            }
-        }
+        resetDiagonalsInCaseOfOtherBC(grid.get(), qNode, dir, neighborIsStopper);
     }
 
     boundaryCondition->qs.push_back(qNode);
 }
 
-bool Side::isAlignedWithMyNormal(Grid *grid, int dir) const
+void Side::resetDiagonalsInCaseOfOtherBC(Grid *grid, std::vector<real>& qNode, int dir, bool neighborIsStopper)
+{
+    if (qNode[dir] == 0.5 && grid->getBCAlreadySet().size() > 0 && neighborIsStopper) {
+        for (int i = 0; i < (int)grid->getBCAlreadySet().size(); i++) {
+            SideType otherDir = grid->getBCAlreadySet()[i];
+            std::vector<real> otherNormal = normals.at(otherDir);
+            if (isAlignedWithNormal(grid, dir, otherNormal)) {
+                qNode[dir] = -1.0;
+            }
+        }
+    }
+}
+
+bool Side::isAlignedWithMyNormal(const Grid *grid, int dir) const
 {
     std::vector<real> normal = this->getNormal();
     return isAlignedWithNormal(grid, dir, normal);
 }
 
-bool Side::isAlignedWithNormal(Grid *grid, int dir, std::vector<real> &normal) const
+bool Side::isAlignedWithNormal(const Grid *grid, int dir, const std::vector<real> &normal) const
 {
     return (normal[0] * grid->getDirection()[dir * DIMENSION + 0] +
             normal[1] * grid->getDirection()[dir * DIMENSION + 1] +
             normal[2] * grid->getDirection()[dir * DIMENSION + 2]) > 0;
 }
 
-void Side::correctNeighborForPeriodicBoundaries(Grid *grid, real x, real y, real z, real *coords, real neighborX,
-                                          real neighborY, real neighborZ) const
+void Side::correctNeighborForPeriodicBoundaries(const Grid *grid, real x, real y, real z, real *coords, real &neighborX,
+                                                real &neighborY, real &neighborZ) const
 {
     // correct neighbor coordinates in case of periodic boundaries
     if (grid->getPeriodicityX() &&
