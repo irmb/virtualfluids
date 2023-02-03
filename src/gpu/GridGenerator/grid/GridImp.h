@@ -190,8 +190,8 @@ public:
 
     void setNumberOfLayers(uint numberOfLayers) override;
 
-    virtual std::vector<SideType> getBCAlreadySet();
-    virtual void addBCalreadySet(SideType side);
+    std::vector<SideType> getBCAlreadySet() override;
+    void addBCalreadySet(SideType side) override;
 
 public:
     Distribution distribution;
