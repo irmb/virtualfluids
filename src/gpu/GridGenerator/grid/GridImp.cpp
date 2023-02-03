@@ -2188,10 +2188,14 @@ void GridImp::getFluidNodeIndicesAllFeatures(uint *_fluidNodeIndicesAllFeatures)
 }
 
 
-std::vector<SideType>& GridImp::getBCAlreadySet() {
+std::vector<SideType> GridImp::getBCAlreadySet() {
     return this->bcAlreadySet;
 }
 
+void GridImp::addBCalreadySet(SideType side)
+{
+    this->bcAlreadySet.push_back(side);
+}
 
 
 void GridImp::print() const

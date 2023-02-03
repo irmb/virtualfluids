@@ -194,7 +194,8 @@ public:
     virtual void getFluidNodeIndicesApplyBodyForce(uint *fluidNodeIndicesApplyBodyForce) const = 0;
     virtual void getFluidNodeIndicesAllFeatures(uint *fluidNodeIndicesAllFeatures) const = 0;
 
-    virtual std::vector<SideType>& getBCAlreadySet() = 0;
+    virtual std::vector<SideType> getBCAlreadySet() = 0;
+    virtual void addBCalreadySet(SideType side) = 0;
 };
 
 #endif

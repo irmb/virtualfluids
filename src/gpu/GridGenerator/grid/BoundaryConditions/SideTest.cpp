@@ -131,7 +131,7 @@ TEST(SideTest, setQs2D_DiagonalEdgeNodesAreSetOnlyOnce)
     // node already has BC in PY direction
 
     bc->resetQVector();
-    grid->getBCAlreadySet().push_back(SideType::PY);
+    grid->addBCalreadySet(SideType::PY);
 
     side.setQs(grid, bc, index);
     auto qsPreviousQ = bc->getQs()[0];
@@ -180,7 +180,7 @@ TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesAreNotInfluencedByOppositeNodes)
     // node already has BC in MX direction, does not change anything
 
     bc->resetQVector();
-    grid->getBCAlreadySet().push_back(SideType::MX);
+    grid->addBCalreadySet(SideType::MX);
 
     side.setQs(grid, bc, index);
     auto qsPreviousQ = bc->getQs()[0];
@@ -190,7 +190,7 @@ TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesAreNotInfluencedByOppositeNodes)
 
 TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesGeometryAlreadySet_Throws)
 {
-    grid->getBCAlreadySet().push_back(SideType::GEOMETRY);
+    grid->addBCalreadySet(SideType::GEOMETRY);
 
     EXPECT_THROW(side.setQs(grid, bc, index), std::out_of_range);
 }
@@ -217,7 +217,7 @@ TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesAreSetOnlyOnce_setBcPX)
 
     bc->resetQVector();
     grid->getBCAlreadySet().clear();
-    grid->getBCAlreadySet().push_back(SideType::PY);
+    grid->addBCalreadySet(SideType::PY);
 
     side.setQs(grid, bc, index);
     auto qsPreviousQ = bc->getQs()[0];
@@ -235,7 +235,7 @@ TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesAreSetOnlyOnce_setBcPX)
 
     bc->resetQVector();
     grid->getBCAlreadySet().clear();
-    grid->getBCAlreadySet().push_back(SideType::MY);
+    grid->addBCalreadySet(SideType::MY);
 
     side.setQs(grid, bc, index);
     qsPreviousQ = bc->getQs()[0];
@@ -254,7 +254,7 @@ TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesAreSetOnlyOnce_setBcPX)
 
     bc->resetQVector();
     grid->getBCAlreadySet().clear();
-    grid->getBCAlreadySet().push_back(SideType::PZ);
+    grid->addBCalreadySet(SideType::PZ);
 
     side.setQs(grid, bc, index);
     qsPreviousQ = bc->getQs()[0];
@@ -273,7 +273,7 @@ TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesAreSetOnlyOnce_setBcPX)
 
     bc->resetQVector();
     grid->getBCAlreadySet().clear();
-    grid->getBCAlreadySet().push_back(SideType::MZ);
+    grid->addBCalreadySet(SideType::MZ);
 
     side.setQs(grid, bc, index);
     qsPreviousQ = bc->getQs()[0];
@@ -292,8 +292,8 @@ TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesAreSetOnlyOnce_setBcPX)
 
     bc->resetQVector();
     grid->getBCAlreadySet().clear();
-    grid->getBCAlreadySet().push_back(SideType::PY);
-    grid->getBCAlreadySet().push_back(SideType::MZ);
+    grid->addBCalreadySet(SideType::PY);
+    grid->addBCalreadySet(SideType::MZ);
 
     side.setQs(grid, bc, index);
     auto qsTwoPreviousQs = bc->getQs()[0];
@@ -309,8 +309,8 @@ TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesAreSetOnlyOnce_setBcPX)
 
     bc->resetQVector();
     grid->getBCAlreadySet().clear();
-    grid->getBCAlreadySet().push_back(SideType::PY);
-    grid->getBCAlreadySet().push_back(SideType::PZ);
+    grid->addBCalreadySet(SideType::PY);
+    grid->addBCalreadySet(SideType::PZ);
 
     side.setQs(grid, bc, index);
     qsTwoPreviousQs = bc->getQs()[0];
@@ -327,8 +327,8 @@ TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesAreSetOnlyOnce_setBcPX)
 
     bc->resetQVector();
     grid->getBCAlreadySet().clear();
-    grid->getBCAlreadySet().push_back(SideType::MY);
-    grid->getBCAlreadySet().push_back(SideType::PZ);
+    grid->addBCalreadySet(SideType::MY);
+    grid->addBCalreadySet(SideType::PZ);
 
     side.setQs(grid, bc, index);
     qsTwoPreviousQs = bc->getQs()[0];
@@ -345,8 +345,8 @@ TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesAreSetOnlyOnce_setBcPX)
 
     bc->resetQVector();
     grid->getBCAlreadySet().clear();
-    grid->getBCAlreadySet().push_back(SideType::MY);
-    grid->getBCAlreadySet().push_back(SideType::MZ);
+    grid->addBCalreadySet(SideType::MY);
+    grid->addBCalreadySet(SideType::MZ);
 
     side.setQs(grid, bc, index);
     qsTwoPreviousQs = bc->getQs()[0];
@@ -384,7 +384,7 @@ TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesAreSetOnlyOnce_setBcMX)
     // node already has BC in PY direction
 
     bc->resetQVector();
-    grid->getBCAlreadySet().push_back(SideType::PY);
+    grid->addBCalreadySet(SideType::PY);
 
     side.setQs(grid, bc, index);
     auto qsPreviousQ = bc->getQs()[0];
@@ -402,7 +402,7 @@ TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesAreSetOnlyOnce_setBcMX)
 
     bc->resetQVector();
     grid->getBCAlreadySet().clear();
-    grid->getBCAlreadySet().push_back(SideType::MY);
+    grid->addBCalreadySet(SideType::MY);
 
     side.setQs(grid, bc, index);
     qsPreviousQ = bc->getQs()[0];
@@ -421,7 +421,7 @@ TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesAreSetOnlyOnce_setBcMX)
 
     bc->resetQVector();
     grid->getBCAlreadySet().clear();
-    grid->getBCAlreadySet().push_back(SideType::PZ);
+    grid->addBCalreadySet(SideType::PZ);
 
     side.setQs(grid, bc, index);
     qsPreviousQ = bc->getQs()[0];
@@ -440,7 +440,7 @@ TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesAreSetOnlyOnce_setBcMX)
 
     bc->resetQVector();
     grid->getBCAlreadySet().clear();
-    grid->getBCAlreadySet().push_back(SideType::MZ);
+    grid->addBCalreadySet(SideType::MZ);
 
     side.setQs(grid, bc, index);
     qsPreviousQ = bc->getQs()[0];
@@ -459,8 +459,8 @@ TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesAreSetOnlyOnce_setBcMX)
 
     bc->resetQVector();
     grid->getBCAlreadySet().clear();
-    grid->getBCAlreadySet().push_back(SideType::PY);
-    grid->getBCAlreadySet().push_back(SideType::MZ);
+    grid->addBCalreadySet(SideType::PY);
+    grid->addBCalreadySet(SideType::MZ);
 
     side.setQs(grid, bc, index);
     auto qsTwoPreviousQs = bc->getQs()[0];
@@ -476,8 +476,8 @@ TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesAreSetOnlyOnce_setBcMX)
 
     bc->resetQVector();
     grid->getBCAlreadySet().clear();
-    grid->getBCAlreadySet().push_back(SideType::PY);
-    grid->getBCAlreadySet().push_back(SideType::PZ);
+    grid->addBCalreadySet(SideType::PY);
+    grid->addBCalreadySet(SideType::PZ);
 
     side.setQs(grid, bc, index);
     qsTwoPreviousQs = bc->getQs()[0];
@@ -494,8 +494,8 @@ TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesAreSetOnlyOnce_setBcMX)
 
     bc->resetQVector();
     grid->getBCAlreadySet().clear();
-    grid->getBCAlreadySet().push_back(SideType::MY);
-    grid->getBCAlreadySet().push_back(SideType::PZ);
+    grid->addBCalreadySet(SideType::MY);
+    grid->addBCalreadySet(SideType::PZ);
 
     side.setQs(grid, bc, index);
     qsTwoPreviousQs = bc->getQs()[0];
@@ -512,8 +512,8 @@ TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesAreSetOnlyOnce_setBcMX)
 
     bc->resetQVector();
     grid->getBCAlreadySet().clear();
-    grid->getBCAlreadySet().push_back(SideType::MY);
-    grid->getBCAlreadySet().push_back(SideType::MZ);
+    grid->addBCalreadySet(SideType::MY);
+    grid->addBCalreadySet(SideType::MZ);
 
     side.setQs(grid, bc, index);
     qsTwoPreviousQs = bc->getQs()[0];
@@ -551,7 +551,7 @@ TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesAreSetOnlyOnce_setBcMZ)
     // node already has BC in MY direction
 
     bc->resetQVector();
-    grid->getBCAlreadySet().push_back(SideType::MY);
+    grid->addBCalreadySet(SideType::MY);
 
     side.setQs(grid, bc, index);
     auto qsPreviousQ = bc->getQs()[0];
@@ -569,7 +569,7 @@ TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesAreSetOnlyOnce_setBcMZ)
 
     bc->resetQVector();
     grid->getBCAlreadySet().clear();
-    grid->getBCAlreadySet().push_back(SideType::PY);
+    grid->addBCalreadySet(SideType::PY);
 
     side.setQs(grid, bc, index);
     qsPreviousQ = bc->getQs()[0];
@@ -588,7 +588,7 @@ TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesAreSetOnlyOnce_setBcMZ)
 
     bc->resetQVector();
     grid->getBCAlreadySet().clear();
-    grid->getBCAlreadySet().push_back(SideType::PX);
+    grid->addBCalreadySet(SideType::PX);
 
     side.setQs(grid, bc, index);
     qsPreviousQ = bc->getQs()[0];
@@ -607,7 +607,7 @@ TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesAreSetOnlyOnce_setBcMZ)
 
     bc->resetQVector();
     grid->getBCAlreadySet().clear();
-    grid->getBCAlreadySet().push_back(SideType::MX);
+    grid->addBCalreadySet(SideType::MX);
 
     side.setQs(grid, bc, index);
     qsPreviousQ = bc->getQs()[0];
@@ -626,8 +626,8 @@ TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesAreSetOnlyOnce_setBcMZ)
 
     bc->resetQVector();
     grid->getBCAlreadySet().clear();
-    grid->getBCAlreadySet().push_back(SideType::MY);
-    grid->getBCAlreadySet().push_back(SideType::PX);
+    grid->addBCalreadySet(SideType::MY);
+    grid->addBCalreadySet(SideType::PX);
 
     side.setQs(grid, bc, index);
     auto qsTwoPreviousQs = bc->getQs()[0];
@@ -643,8 +643,8 @@ TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesAreSetOnlyOnce_setBcMZ)
 
     bc->resetQVector();
     grid->getBCAlreadySet().clear();
-    grid->getBCAlreadySet().push_back(SideType::MY);
-    grid->getBCAlreadySet().push_back(SideType::MX);
+    grid->addBCalreadySet(SideType::MY);
+    grid->addBCalreadySet(SideType::MX);
 
     side.setQs(grid, bc, index);
     qsTwoPreviousQs = bc->getQs()[0];
@@ -661,8 +661,8 @@ TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesAreSetOnlyOnce_setBcMZ)
 
     bc->resetQVector();
     grid->getBCAlreadySet().clear();
-    grid->getBCAlreadySet().push_back(SideType::PY);
-    grid->getBCAlreadySet().push_back(SideType::PX);
+    grid->addBCalreadySet(SideType::PY);
+    grid->addBCalreadySet(SideType::PX);
 
     side.setQs(grid, bc, index);
     qsTwoPreviousQs = bc->getQs()[0];
@@ -679,8 +679,8 @@ TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesAreSetOnlyOnce_setBcMZ)
 
     bc->resetQVector();
     grid->getBCAlreadySet().clear();
-    grid->getBCAlreadySet().push_back(SideType::PY);
-    grid->getBCAlreadySet().push_back(SideType::MX);
+    grid->addBCalreadySet(SideType::PY);
+    grid->addBCalreadySet(SideType::MX);
 
     side.setQs(grid, bc, index);
     qsTwoPreviousQs = bc->getQs()[0];
@@ -718,7 +718,7 @@ TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesAreSetOnlyOnce_setBcPZ)
     // node already has BC in MY direction
 
     bc->resetQVector();
-    grid->getBCAlreadySet().push_back(SideType::MY);
+    grid->addBCalreadySet(SideType::MY);
 
     side.setQs(grid, bc, index);
     auto qsPreviousQ = bc->getQs()[0];
@@ -736,7 +736,7 @@ TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesAreSetOnlyOnce_setBcPZ)
 
     bc->resetQVector();
     grid->getBCAlreadySet().clear();
-    grid->getBCAlreadySet().push_back(SideType::PY);
+    grid->addBCalreadySet(SideType::PY);
 
     side.setQs(grid, bc, index);
     qsPreviousQ = bc->getQs()[0];
@@ -755,7 +755,7 @@ TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesAreSetOnlyOnce_setBcPZ)
 
     bc->resetQVector();
     grid->getBCAlreadySet().clear();
-    grid->getBCAlreadySet().push_back(SideType::PX);
+    grid->addBCalreadySet(SideType::PX);
 
     side.setQs(grid, bc, index);
     qsPreviousQ = bc->getQs()[0];
@@ -774,7 +774,7 @@ TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesAreSetOnlyOnce_setBcPZ)
 
     bc->resetQVector();
     grid->getBCAlreadySet().clear();
-    grid->getBCAlreadySet().push_back(SideType::MX);
+    grid->addBCalreadySet(SideType::MX);
 
     side.setQs(grid, bc, index);
     qsPreviousQ = bc->getQs()[0];
@@ -793,8 +793,8 @@ TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesAreSetOnlyOnce_setBcPZ)
 
     bc->resetQVector();
     grid->getBCAlreadySet().clear();
-    grid->getBCAlreadySet().push_back(SideType::MY);
-    grid->getBCAlreadySet().push_back(SideType::PX);
+    grid->addBCalreadySet(SideType::MY);
+    grid->addBCalreadySet(SideType::PX);
 
     side.setQs(grid, bc, index);
     auto qsTwoPreviousQs = bc->getQs()[0];
@@ -810,8 +810,8 @@ TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesAreSetOnlyOnce_setBcPZ)
 
     bc->resetQVector();
     grid->getBCAlreadySet().clear();
-    grid->getBCAlreadySet().push_back(SideType::MY);
-    grid->getBCAlreadySet().push_back(SideType::MX);
+    grid->addBCalreadySet(SideType::MY);
+    grid->addBCalreadySet(SideType::MX);
 
     side.setQs(grid, bc, index);
     qsTwoPreviousQs = bc->getQs()[0];
@@ -828,8 +828,8 @@ TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesAreSetOnlyOnce_setBcPZ)
 
     bc->resetQVector();
     grid->getBCAlreadySet().clear();
-    grid->getBCAlreadySet().push_back(SideType::PY);
-    grid->getBCAlreadySet().push_back(SideType::PX);
+    grid->addBCalreadySet(SideType::PY);
+    grid->addBCalreadySet(SideType::PX);
 
     side.setQs(grid, bc, index);
     qsTwoPreviousQs = bc->getQs()[0];
@@ -846,8 +846,8 @@ TEST_F(SideTestBC, setQs3D_DiagonalEdgeNodesAreSetOnlyOnce_setBcPZ)
 
     bc->resetQVector();
     grid->getBCAlreadySet().clear();
-    grid->getBCAlreadySet().push_back(SideType::PY);
-    grid->getBCAlreadySet().push_back(SideType::MX);
+    grid->addBCalreadySet(SideType::PY);
+    grid->addBCalreadySet(SideType::MX);
 
     side.setQs(grid, bc, index);
     qsTwoPreviousQs = bc->getQs()[0];
