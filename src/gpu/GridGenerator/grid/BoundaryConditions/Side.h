@@ -36,6 +36,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <array>
 
 #include "gpu/GridGenerator/global.h"
 
