@@ -32,12 +32,13 @@
 //=======================================================================================
 
 #include "DataTypes.h"
-#include "Kernel/Utilities/DistributionHelper.cuh"
-#include "Kernel/Utilities/ChimeraTransformation.h"
-#include "Kernel/Utilities/ScalingHelperFunctions.h"
+#include "LBM/GPUHelperFunctions/KernelUtilities.h"
+#include "LBM/GPUHelperFunctions/ChimeraTransformation.h"
+#include "LBM/GPUHelperFunctions/ScalingUtilities.h"
 
 using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
+using namespace vf::gpu;
 
 //////////////////////////////////////////////////////////////////////////
 //! \brief Calculate the interpolated distributions on the fine destination nodes
@@ -239,13 +240,13 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
     OffCF offsetCF)
 {
     ////////////////////////////////////////////////////////////////////////////////
-    //! - Get the thread index coordinates from threadId_100, blockId_100, blockDim and gridDim.
+    //! - Get the node index coordinates from threadId_100, blockId_100, blockDim and gridDim.
     //!
-    const unsigned k_thread = vf::gpu::getNodeIndex();
+    const unsigned nodeIndex = getNodeIndex();
 
     //////////////////////////////////////////////////////////////////////////
     //! - Return for non-interface node
-    if (k_thread >= numberOfInterfaceNodes)
+    if (nodeIndex >= numberOfInterfaceNodes)
         return;
 
     //////////////////////////////////////////////////////////////////////////
@@ -254,8 +255,9 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
     //! href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017),
     //! DOI:10.3390/computation5020019 ]</b></a>
     //!
-    Distributions27 distFine   = vf::gpu::getDistributionReferences27(distributionsFine,   numberOfLBnodesFine,   true);
-    Distributions27 distCoarse = vf::gpu::getDistributionReferences27(distributionsCoarse, numberOfLBnodesCoarse, isEvenTimestep);
+    Distributions27 distFine, distCoarse;
+    getPointersToDistributions(distFine, distributionsFine, numberOfLBnodesFine, true);
+    getPointersToDistributions(distCoarse, distributionsCoarse, numberOfLBnodesCoarse, isEvenTimestep);
 
     ////////////////////////////////////////////////////////////////////////////////
     //! - declare local variables for source nodes
@@ -291,7 +293,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
     // source node BSW = MMM
     ////////////////////////////////////////////////////////////////////////////////
     // index of the base node and its neighbors
-    unsigned int k_base_000 = indicesCoarseMMM[k_thread];
+    unsigned int k_base_000 = indicesCoarseMMM[nodeIndex];
     unsigned int k_base_M00 = neighborXcoarse [k_base_000];
     unsigned int k_base_0M0 = neighborYcoarse [k_base_000];
     unsigned int k_base_00M = neighborZcoarse [k_base_000];
@@ -756,9 +758,9 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
     ////////////////////////////////////////////////////////////////////////////////
     //! - Set the relative position of the offset cell {-1, 0, 1}
     //!
-    real xoff    = offsetCF.xOffCF[k_thread];
-    real yoff    = offsetCF.yOffCF[k_thread];
-    real zoff    = offsetCF.zOffCF[k_thread];
+    real xoff    = offsetCF.xOffCF[nodeIndex];
+    real yoff    = offsetCF.yOffCF[nodeIndex];
+    real zoff    = offsetCF.zOffCF[nodeIndex];
 
     real xoff_sq = xoff * xoff;
     real yoff_sq = yoff * yoff;
@@ -899,7 +901,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
     real z = -c1o4;
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // index of the base node and its neighbors
-    k_base_000 = indicesFineMMM[k_thread];
+    k_base_000 = indicesFineMMM[nodeIndex];
     k_base_M00 = neighborXfine [k_base_000];
     k_base_0M0 = neighborYfine [k_base_000];
     k_base_00M = neighborZfine [k_base_000];

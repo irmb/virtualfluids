@@ -38,21 +38,20 @@
 //! required options are switched on ( \param writeMacroscopicVariables and/or \param applyBodyForce) in order to minimize memory accesses. The default
 //! refers to the plain cumlant kernel (CollisionTemplate::Default).
 //! Nodes are added to subsets (taggedFluidNodes) in Simulation::init using a corresponding tag with different values of CollisionTemplate. These subsets
-//! are provided by the utilized PostCollisionInteractiors depending on they specifc requirements (e.g. writeMacroscopicVariables for probes).
+//! are provided by the utilized PostCollisionInteractiors depending on they specific requirements (e.g. writeMacroscopicVariables for probes).
 
 //=======================================================================================
-/* Device code */
 #include "LBM/LB.h"
 #include "lbm/constants/D3Q27.h"
-#include <lbm/constants/NumericConstants.h>
-#include "Kernel/Utilities/DistributionHelper.cuh"
+#include "lbm/constants/NumericConstants.h"
+#include "LBM/GPUHelperFunctions/KernelUtilities.h"
+#include "LBM/GPUHelperFunctions/ChimeraTransformation.h"
 
 #include "GPU/TurbulentViscosityInlines.cuh"
 
 using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
-#include "Kernel/Utilities/ChimeraTransformation.h"
-
+using namespace vf::gpu;
 
 ////////////////////////////////////////////////////////////////////////////////
 template<TurbulenceModel turbulenceModel, bool writeMacroscopicVariables, bool applyBodyForce>
@@ -90,16 +89,16 @@ __global__ void LB_Kernel_CumulantK17(
     ////////////////////////////////////////////////////////////////////////////////
     //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
     //!
-    const unsigned kThread = vf::gpu::getNodeIndex();
+    const unsigned nodeIndex = getNodeIndex();
 
     //////////////////////////////////////////////////////////////////////////
     // run for all indices in size_Mat and fluid nodes
-    if (kThread >= numberOfFluidNodes)
+    if (nodeIndex >= numberOfFluidNodes)
         return;
     ////////////////////////////////////////////////////////////////////////////////
     //! - Get the node index from the array containing all indices of fluid nodes
     //!
-    const unsigned k_000 = fluidNodeIndices[kThread];
+    const unsigned k_000 = fluidNodeIndices[nodeIndex];
 
     //////////////////////////////////////////////////////////////////////////
     //! - Read distributions: style of reading and writing the distributions from/to stored arrays dependent on
@@ -107,7 +106,8 @@ __global__ void LB_Kernel_CumulantK17(
     //! href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017),
     //! DOI:10.3390/computation5020019 ]</b></a>
     //!
-    Distributions27 dist = vf::gpu::getDistributionReferences27(distributions, numberOfLBnodes, isEvenTimestep);
+    Distributions27 dist;
+    getPointersToDistributions(dist, distributions, numberOfLBnodes, isEvenTimestep);
 
     ////////////////////////////////////////////////////////////////////////////////
     //! - Set neighbor indices (necessary for indirect addressing)

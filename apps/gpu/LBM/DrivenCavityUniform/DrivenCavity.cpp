@@ -79,13 +79,13 @@ int main()
         //////////////////////////////////////////////////////////////////////////
         // Simulation parameters
         //////////////////////////////////////////////////////////////////////////
-        std::string path("./output/DrivenCavity");
+        std::string path("./output/DrivenCavity_uniform");
         std::string simulationName("LidDrivenCavity");
 
         const real L = 1.0;
         const real Re = 1000.0;
         const real velocity = 1.0;
-        const real velocityLB = 0.05; // LB units
+        const real dt = (real)0.5e-3;
         const uint nx = 64;
 
         const uint timeStepOut = 1000;
@@ -112,11 +112,11 @@ int main()
         // create grid
         //////////////////////////////////////////////////////////////////////////
 
-        const real dx = L / real(nx);
+        real dx = L / real(nx);
 
         gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L, 0.5 * L, 0.5 * L, 0.5 * L, dx);
 
-        gridBuilder->addGrid(new Cuboid(-0.25, -0.25, -0.25, 0.25, 0.25, 0.25), 1); // add fine grid
+        // gridBuilder->addGrid(new Cuboid(-0.25, -0.25, -0.25, 0.25, 0.25, 0.25), 1); // add fine grid
         GridScalingFactory scalingFactory = GridScalingFactory();
         scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
@@ -128,7 +128,7 @@ int main()
         // compute parameters in lattice units
         //////////////////////////////////////////////////////////////////////////
 
-        const real dt  = velocityLB / velocity * dx;
+        const real velocityLB = velocity * dt / dx; // LB units
 
         const real vxLB = velocityLB / sqrt(2.0); // LB units
         const real vyLB = velocityLB / sqrt(2.0); // LB units
