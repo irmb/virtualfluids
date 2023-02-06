@@ -559,7 +559,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
     // z = 0.;
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // index of the destination node and its neighbors
-    k_000 = indicesCoarse000[k_thread];
+    k_000 = indicesCoarse000[nodeIndex];
     k_M00 = neighborXcoarse [k_000];
     k_0M0 = neighborYcoarse [k_000];
     k_00M = neighborZcoarse [k_000];
