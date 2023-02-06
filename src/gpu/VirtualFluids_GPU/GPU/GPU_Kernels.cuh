@@ -936,6 +936,17 @@ __global__ void QSlipNormDeviceComp27(real* DD,
                                                  unsigned long long numberOfLBnodes,
                                                  bool isEvenTimestep);
 
+__global__ void BBSlipDeviceComp27(
+    real* distributions,
+    int* subgridDistanceIndices,
+    real* subgridDistances,
+    unsigned int numberOfBCnodes,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep);
+
 // Stress BCs (wall model)
 __global__ void QStressDeviceComp27(real* DD,
                                                int* k_Q,

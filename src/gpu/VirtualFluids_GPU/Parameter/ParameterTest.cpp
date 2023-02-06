@@ -1,4 +1,3 @@
-#include <gmock/gmock.h>
 #include "basics/tests/testUtilities.h"
 
 #include <filesystem>
@@ -7,7 +6,6 @@
 
 #include "Parameter.h"
 #include "basics/config/ConfigurationFile.h"
-
 
 TEST(ParameterTest, passingEmptyFileWithoutPath_ShouldNotThrow)
 {
@@ -37,7 +35,9 @@ TEST(ParameterTest, check_all_Parameter_CanBePassedToConstructor)
 
     // test optional parameter
     EXPECT_THAT(para.getOutputPath(), testing::Eq("/output/path/"));
-    EXPECT_THAT(para.getGridPath(), testing::Eq("/path/to/grid/")); // ... all grid files (e.g. multi-gpu/ multi-level) could be tested as well
+    EXPECT_THAT(
+        para.getGridPath(),
+        testing::Eq("/path/to/grid/")); // ... all grid files (e.g. multi-gpu/ multi-level) could be tested as well
     EXPECT_THAT(para.getgeoVec(), testing::Eq("/path/to/grid/geoVec.dat"));
     EXPECT_THAT(para.getMaxDev(), testing::Eq(2));
     EXPECT_THAT(para.getDevices(), testing::ElementsAreArray({ 2, 3 }));
@@ -163,7 +163,7 @@ TEST(ParameterTest, setGridPathOverridesDefaultGridPath)
     Parameter para(2, 1);
     para.setGridPath("gridPathTest");
 
-    EXPECT_THAT( para.getGridPath(), testing::Eq("gridPathTest/1/"));
+    EXPECT_THAT(para.getGridPath(), testing::Eq("gridPathTest/1/"));
     EXPECT_THAT(para.getConcentration(), testing::Eq("gridPathTest/1/conc.dat"));
 }
 
@@ -177,9 +177,8 @@ TEST(ParameterTest, setGridPathOverridesConfigFile)
     auto para = Parameter(2, 0, &config);
     para.setGridPath("gridPathTest");
 
-    EXPECT_THAT( para.getGridPath(), testing::Eq("gridPathTest/0/"));
+    EXPECT_THAT(para.getGridPath(), testing::Eq("gridPathTest/0/"));
     EXPECT_THAT(para.getConcentration(), testing::Eq("gridPathTest/0/conc.dat"));
-
 }
 
 TEST(ParameterTest, userMissedSlash)
@@ -189,7 +188,6 @@ TEST(ParameterTest, userMissedSlash)
 
     EXPECT_THAT(para.getGridPath(), testing::Eq("gridPathTest/"));
     EXPECT_THAT(para.getConcentration(), testing::Eq("gridPathTest/conc.dat"));
-
 }
 
 TEST(ParameterTest, userMissedSlashMultiGPU)
@@ -199,4 +197,87 @@ TEST(ParameterTest, userMissedSlashMultiGPU)
 
     EXPECT_THAT(para.getGridPath(), testing::Eq("gridPathTest/0/"));
     EXPECT_THAT(para.getConcentration(), testing::Eq("gridPathTest/0/conc.dat"));
+}
+
+class ParameterTestCumulantK17 : public testing::Test
+{
+protected:
+    void SetUp() override
+    {
+    }
+
+    bool stdoutContainsWarning()
+    {
+        std::string output = testing::internal::GetCapturedStdout();
+        return output.find("warning") != std::string::npos;
+    }
+
+    Parameter para;
+};
+
+TEST_F(ParameterTestCumulantK17, CumulantK17_VelocityIsTooHigh_expectWarning)
+{
+
+    para.setVelocityLB(0.11);
+    para.setMainKernel("CumulantK17");
+    testing::internal::CaptureStdout();
+
+    para.initLBMSimulationParameter();
+
+    EXPECT_TRUE(stdoutContainsWarning());
+}
+
+TEST_F(ParameterTestCumulantK17, CumulantK17_VelocityIsOk_expectNoWarning)
+{
+    para.setVelocityLB(0.09);
+    para.setMainKernel("CumulantK17");
+    testing::internal::CaptureStdout();
+
+    para.initLBMSimulationParameter();
+
+    EXPECT_FALSE(stdoutContainsWarning());
+}
+
+TEST_F(ParameterTestCumulantK17, NotCumulantK17_VelocityIsTooHigh_expectNoWarning)
+{
+    para.setVelocityLB(42);
+    para.setMainKernel("K");
+    testing::internal::CaptureStdout();
+
+    para.initLBMSimulationParameter();
+
+    EXPECT_FALSE(stdoutContainsWarning());
+}
+
+TEST_F(ParameterTestCumulantK17, CumulantK17_ViscosityIsTooHigh_expectWarning)
+{
+    para.setViscosityLB(0.024);
+    para.setMainKernel("CumulantK17");
+    testing::internal::CaptureStdout();
+
+    para.initLBMSimulationParameter();
+
+    EXPECT_TRUE(stdoutContainsWarning());
+}
+
+TEST_F(ParameterTestCumulantK17, CumulantK17_ViscosityIsOk_expectNoWarning)
+{
+    para.setViscosityLB(0.023);
+    para.setMainKernel("CumulantK17");
+    testing::internal::CaptureStdout();
+
+    para.initLBMSimulationParameter();
+
+    EXPECT_FALSE(stdoutContainsWarning());
+}
+
+TEST_F(ParameterTestCumulantK17, NotCumulantK17_ViscosityIsTooHigh_expectNoWarning)
+{
+    para.setViscosityLB(10);
+    para.setMainKernel("K");
+    testing::internal::CaptureStdout();
+
+    para.initLBMSimulationParameter();
+
+    EXPECT_FALSE(stdoutContainsWarning());
 }
