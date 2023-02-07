@@ -93,9 +93,9 @@ protected:
 private:
     static uint getIndex(SPtr<Grid> grid, std::string coord, real constant, real v1, real v2);
     void resetDiagonalsInCaseOfOtherBC(Grid *grid, std::vector<real>& qNode, int dir, const std::array<real, 3> &coordinates) const;
-    std::array<real, 3> getNeighborCoordinates(Grid* grid, const std::array<real, 3> &coordinates, int direction) const;
-    bool neighborNormalToSideIsAStopper(Grid *grid, const std::array<real, 3> &coordinates,
-                                                                SideType side) const;
+    std::array<real, 3> getNeighborCoordinates(Grid *grid, const std::array<real, 3> &coordinates,
+                                               uint direction) const;
+    bool neighborNormalToSideIsAStopper(Grid *grid, const std::array<real, 3> &coordinates, SideType side) const;
 
 protected:
     const std::map<SideType, const std::array<real, 3>> normals = {
