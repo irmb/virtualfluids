@@ -78,7 +78,7 @@ protected:
 
 public:
     static SPtr<GridImp> makeShared(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, std::string d3Qxx, uint level);
-    virtual ~GridImp() = default;
+    ~GridImp() override = default;
 
 private:
     void initalNumberOfNodesAndSize();
@@ -268,6 +268,8 @@ public:
     static void getGridInterface(uint *gridInterfaceList, const uint *oldGridInterfaceList, uint size);
 
     bool isSparseIndexInFluidNodeIndicesBorder(uint &sparseIndex) const override;
+    
+    bool isStopperForBC(uint index) const override;
 
     int *getNeighborsX() const override;
     int* getNeighborsY() const override;
@@ -285,7 +287,7 @@ public:
     void print() const;
 
 public:
-    virtual void findSparseIndices(SPtr<Grid> fineGrid) override;
+    void findSparseIndices(SPtr<Grid> fineGrid) override;
 
     void findForGridInterfaceNewIndices(SPtr<GridImp> fineGrid);
     void updateSparseIndices();

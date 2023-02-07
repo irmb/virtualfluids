@@ -39,6 +39,7 @@
 #include <array>
 
 #include "gpu/GridGenerator/global.h"
+#include "lbm/constants/D3Q27.h"
 
 #define X_INDEX 0
 #define Y_INDEX 1
@@ -84,21 +85,28 @@ protected:
 
     void setQs(SPtr<Grid> grid, SPtr<gg::BoundaryCondition> boundaryCondition, uint index);
 
-    virtual void correctNeighborForPeriodicBoundaries(const Grid *grid, real x, real y, real z, real *coords, real& neighborX,
-                                                      real& neighborY, real& neighborZ) const;
+    virtual void correctNeighborForPeriodicBoundaries(const Grid *grid, std::array<real, 3>& coords, std::array<real, 3>& neighbors) const;
 
     virtual bool isAlignedWithMyNormal(const Grid *grid, int dir) const;
     bool isAlignedWithNormal(const Grid *grid, int dir, const std::array<real, 3>& normal) const;
 
 private:
     static uint getIndex(SPtr<Grid> grid, std::string coord, real constant, real v1, real v2);
-    void resetDiagonalsInCaseOfOtherBC(Grid *grid, std::vector<real>& qNode, int dir, bool neighborIsStopper);
+    void resetDiagonalsInCaseOfOtherBC(Grid *grid, std::vector<real>& qNode, int dir, const std::array<real, 3> &coordinates) const;
+    std::array<real, 3> getNeighborCoordinates(Grid* grid, const std::array<real, 3> &coordinates, int direction) const;
+    bool neighborNormalToSideIsAStopper(Grid *grid, const std::array<real, 3> &coordinates,
+                                                                SideType side) const;
 
 protected:
-    const std::map<SideType, const std::array<real,3>> normals = {
+    const std::map<SideType, const std::array<real, 3>> normals = {
         { SideType::MX, { NEGATIVE_DIR, 0.0, 0.0 } }, { SideType::PX, { POSITIVE_DIR, 0.0, 0.0 } },
         { SideType::MY, { 0.0, NEGATIVE_DIR, 0.0 } }, { SideType::PY, { 0.0, POSITIVE_DIR, 0.0 } },
         { SideType::MZ, { 0.0, 0.0, NEGATIVE_DIR } }, { SideType::PZ, { 0.0, 0.0, POSITIVE_DIR } }
+    };
+    const std::map<SideType, size_t> sideToD3Q27 = {
+        { SideType::MX, vf::lbm::dir::DIR_M00 }, { SideType::PX, vf::lbm::dir::DIR_P00 },
+        { SideType::MY, vf::lbm::dir::DIR_0M0 }, { SideType::PY, vf::lbm::dir::DIR_0P0 },
+        { SideType::MZ, vf::lbm::dir::DIR_00M }, { SideType::PZ, vf::lbm::dir::DIR_00P }
     };
 };
 

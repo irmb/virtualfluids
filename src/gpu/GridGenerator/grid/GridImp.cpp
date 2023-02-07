@@ -2211,3 +2211,10 @@ void GridImp::print() const
     if(this->gridInterface)
         this->gridInterface->print();
 }
+
+bool GridImp::isStopperForBC(uint index) const
+{
+    return (this->getFieldEntry(index) == vf::gpu::STOPPER_OUT_OF_GRID_BOUNDARY ||
+            this->getFieldEntry(index) == vf::gpu::STOPPER_OUT_OF_GRID ||
+            this->getFieldEntry(index) == vf::gpu::STOPPER_SOLID);
+}

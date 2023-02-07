@@ -37,6 +37,7 @@
 #include "grid/NodeValues.h"
 
 #include "utilities/math/Math.h"
+#include <array>
 #include <vector>
 
 using namespace gg;
@@ -143,47 +144,63 @@ void Side::setQs(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uin
 {
     std::vector<real> qNode(grid->getEndDirection() + 1);
 
-    for (int dir = 0; dir <= grid->getEndDirection(); dir++)
-    {
-        real x,y,z;
-        grid->transIndexToCoords( index, x, y, z );
+    for (int dir = 0; dir <= grid->getEndDirection(); dir++) {
+        real x, y, z;
+        grid->transIndexToCoords(index, x, y, z);
 
-        real coords[3] = {x,y,z};
+        std::array<real, 3> coords = { x, y, z };
+        std::array<real, 3> neighborCoords = getNeighborCoordinates(grid.get(), coords, dir);
 
-        real neighborX = x + grid->getDirection()[dir * DIMENSION + 0] * grid->getDelta(); // coordinate of neighbor
-        real neighborY = y + grid->getDirection()[dir * DIMENSION + 1] * grid->getDelta();
-        real neighborZ = z + grid->getDirection()[dir * DIMENSION + 2] * grid->getDelta();
+        correctNeighborForPeriodicBoundaries(grid.get(), coords, neighborCoords);
 
-        correctNeighborForPeriodicBoundaries(grid.get(), x, y, z, coords, neighborX, neighborY, neighborZ);
-
-        const uint neighborIndex = grid->transCoordToIndex(neighborX, neighborY, neighborZ);
-
-        const bool neighborIsStopper =
-            grid->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_OUT_OF_GRID_BOUNDARY ||
-            grid->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_OUT_OF_GRID ||
-            grid->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_SOLID;
+        const uint neighborIndex = grid->transCoordToIndex(neighborCoords[0], neighborCoords[1], neighborCoords[2]);
 
         //! Only setting q's that partially point in the Side-normal direction
         const bool alignedWithNormal = this->isAlignedWithMyNormal(grid.get(), dir);
-        if ( neighborIsStopper && alignedWithNormal) {
+        if (grid->isStopperForBC(neighborIndex) && alignedWithNormal) {
             qNode[dir] = 0.5;
         } else {
             qNode[dir] = -1.0;
         }
 
         // reset diagonals in case they were set by another bc
-        resetDiagonalsInCaseOfOtherBC(grid.get(), qNode, dir, neighborIsStopper);
+        resetDiagonalsInCaseOfOtherBC(grid.get(), qNode, dir, coords);
     }
 
     boundaryCondition->qs.push_back(qNode);
 }
 
-void Side::resetDiagonalsInCaseOfOtherBC(Grid *grid, std::vector<real>& qNode, int dir, bool neighborIsStopper)
+std::array<real, 3> Side::getNeighborCoordinates(Grid *grid, const std::array<real, 3> &coordinates, int direction) const
 {
-    if (qNode[dir] == 0.5 && grid->getBCAlreadySet().size() > 0 && neighborIsStopper) {
+    return { coordinates[0] + grid->getDirection()[direction * DIMENSION + 0] * grid->getDelta(),
+             coordinates[1] + grid->getDirection()[direction * DIMENSION + 1] * grid->getDelta(),
+             coordinates[2] + grid->getDirection()[direction * DIMENSION + 2] * grid->getDelta() };
+}
+
+bool Side::neighborNormalToSideIsAStopper(Grid *grid, const std::array<real, 3> &coordinates, SideType side) const
+{
+    const auto neighborCoords = getNeighborCoordinates(grid, coordinates, sideToD3Q27.at(side));
+    const auto neighborIndex = grid->transCoordToIndex(neighborCoords[0], neighborCoords[1], neighborCoords[2]);
+    return grid->isStopperForBC(neighborIndex);
+}
+
+void Side::resetDiagonalsInCaseOfOtherBC(Grid *grid, std::vector<real> &qNode, int dir,
+                                         const std::array<real, 3> &coordinates) const
+{
+    // When to reset a diagonal q to -1:
+    // - it is normal to another boundary condition which was already set
+    // - and it actually is influenced by the other bc:
+    //   We check if its neighbor in the regular direction to the other bc is a stopper. If it is a stopper, it is influenced by the other bc.
+
+    if (qNode[dir] == 0.5 && grid->getBCAlreadySet().size() > 0) {
         for (int i = 0; i < (int)grid->getBCAlreadySet().size(); i++) {
             SideType otherDir = grid->getBCAlreadySet()[i];
-            auto otherNormal = normals.at(otherDir);
+
+            // only reset normals for nodes on edges and corners, not on faces
+            if (!neighborNormalToSideIsAStopper(grid, coordinates, otherDir))
+                continue;
+
+            const auto otherNormal = normals.at(otherDir);
             if (isAlignedWithNormal(grid, dir, otherNormal)) {
                 qNode[dir] = -1.0;
             }
@@ -204,32 +221,31 @@ bool Side::isAlignedWithNormal(const Grid *grid, int dir, const std::array<real,
             normal[2] * grid->getDirection()[dir * DIMENSION + 2]) > 0;
 }
 
-void Side::correctNeighborForPeriodicBoundaries(const Grid *grid, real x, real y, real z, real *coords, real &neighborX,
-                                                real &neighborY, real &neighborZ) const
+void Side::correctNeighborForPeriodicBoundaries(const Grid *grid, std::array<real, 3>& coords, std::array<real, 3>& neighborCoords) const
 {
     // correct neighbor coordinates in case of periodic boundaries
     if (grid->getPeriodicityX() &&
-        grid->getFieldEntry(grid->transCoordToIndex(neighborX, y, z)) == vf::gpu::STOPPER_OUT_OF_GRID_BOUNDARY) {
-        if (neighborX > x)
-            neighborX = grid->getFirstFluidNode(coords, 0, grid->getStartX());
+        grid->getFieldEntry(grid->transCoordToIndex(neighborCoords[0], coords[1], coords[2])) == vf::gpu::STOPPER_OUT_OF_GRID_BOUNDARY) {
+        if (neighborCoords[0] > coords[0])
+            neighborCoords[0] = grid->getFirstFluidNode(coords.data(), 0, grid->getStartX());
         else
-            neighborX = grid->getLastFluidNode(coords, 0, grid->getEndX());
+            neighborCoords[0] = grid->getLastFluidNode(coords.data(), 0, grid->getEndX());
     }
 
     if (grid->getPeriodicityY() &&
-        grid->getFieldEntry(grid->transCoordToIndex(x, neighborY, z)) == vf::gpu::STOPPER_OUT_OF_GRID_BOUNDARY) {
-        if (neighborY > y)
-            neighborY = grid->getFirstFluidNode(coords, 1, grid->getStartY());
+        grid->getFieldEntry(grid->transCoordToIndex(coords[0], neighborCoords[1], coords[2])) == vf::gpu::STOPPER_OUT_OF_GRID_BOUNDARY) {
+        if (neighborCoords[1] > coords[1])
+            neighborCoords[1] = grid->getFirstFluidNode(coords.data(), 1, grid->getStartY());
         else
-            neighborY = grid->getLastFluidNode(coords, 1, grid->getEndY());
+            neighborCoords[1] = grid->getLastFluidNode(coords.data(), 1, grid->getEndY());
     }
 
     if (grid->getPeriodicityZ() &&
-        grid->getFieldEntry(grid->transCoordToIndex(x, y, neighborZ)) == vf::gpu::STOPPER_OUT_OF_GRID_BOUNDARY) {
-        if (neighborZ > z)
-            neighborZ = grid->getFirstFluidNode(coords, 2, grid->getStartZ());
+        grid->getFieldEntry(grid->transCoordToIndex(coords[0], coords[1], neighborCoords[2])) == vf::gpu::STOPPER_OUT_OF_GRID_BOUNDARY) {
+        if (neighborCoords[2] > coords[2])
+            neighborCoords[2] = grid->getFirstFluidNode(coords.data(), 2, grid->getStartZ());
         else
-            neighborZ = grid->getLastFluidNode(coords, 2, grid->getEndZ());
+            neighborCoords[2] = grid->getLastFluidNode(coords.data(), 2, grid->getEndZ());
     }
 }
 

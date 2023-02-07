@@ -85,6 +85,8 @@ public:
     virtual void getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf) const = 0;
     virtual bool isSparseIndexInFluidNodeIndicesBorder(uint &sparseIndex) const = 0;
 
+    virtual bool isStopperForBC(uint index) const = 0;
+
     virtual int *getNeighborsX() const = 0;
     virtual int *getNeighborsY() const = 0;
     virtual int *getNeighborsZ() const = 0;
