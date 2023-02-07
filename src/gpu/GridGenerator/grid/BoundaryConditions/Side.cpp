@@ -38,6 +38,7 @@
 
 #include "utilities/math/Math.h"
 #include <array>
+#include <cstddef>
 #include <vector>
 
 using namespace gg;
@@ -149,7 +150,7 @@ void Side::setQs(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uin
         grid->transIndexToCoords(index, x, y, z);
 
         std::array<real, 3> coords = { x, y, z };
-        std::array<real, 3> neighborCoords = getNeighborCoordinates(grid.get(), coords, (uint)dir);
+        std::array<real, 3> neighborCoords = getNeighborCoordinates(grid.get(), coords, (size_t)dir);
 
         correctNeighborForPeriodicBoundaries(grid.get(), coords, neighborCoords);
 
@@ -170,7 +171,7 @@ void Side::setQs(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uin
     boundaryCondition->qs.push_back(qNode);
 }
 
-std::array<real, 3> Side::getNeighborCoordinates(Grid *grid, const std::array<real, 3> &coordinates, uint direction) const
+std::array<real, 3> Side::getNeighborCoordinates(Grid *grid, const std::array<real, 3> &coordinates, size_t direction) const
 {
     return { coordinates[0] + grid->getDirection()[direction * DIMENSION + 0] * grid->getDelta(),
              coordinates[1] + grid->getDirection()[direction * DIMENSION + 1] * grid->getDelta(),

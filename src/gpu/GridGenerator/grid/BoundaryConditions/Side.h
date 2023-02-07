@@ -33,6 +33,7 @@
 #ifndef SIDE_H
 #define SIDE_H
 
+#include <cstddef>
 #include <string>
 #include <vector>
 #include <map>
@@ -94,7 +95,7 @@ private:
     static uint getIndex(SPtr<Grid> grid, std::string coord, real constant, real v1, real v2);
     void resetDiagonalsInCaseOfOtherBC(Grid *grid, std::vector<real>& qNode, int dir, const std::array<real, 3> &coordinates) const;
     std::array<real, 3> getNeighborCoordinates(Grid *grid, const std::array<real, 3> &coordinates,
-                                               uint direction) const;
+                                               size_t direction) const;
     bool neighborNormalToSideIsAStopper(Grid *grid, const std::array<real, 3> &coordinates, SideType side) const;
 
 protected:
