@@ -164,8 +164,8 @@ int main()
         gridBuilder->setNoSlipBoundaryCondition(SideType::MX);
         gridBuilder->setNoSlipBoundaryCondition(SideType::PY);
         gridBuilder->setNoSlipBoundaryCondition(SideType::MY);
-        gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, vyLB, 0.0);
         gridBuilder->setNoSlipBoundaryCondition(SideType::MZ);
+        gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, vyLB, 0.0);
 
         BoundaryConditionFactory bcFactory;
 
