@@ -88,7 +88,12 @@ public:
     {
         throw UbException(UB_EXARGS, "not implemented for " + (std::string) typeid(*this).name());
     }
-
+    virtual std::string writeLinesWithLineData(const std::string & /*filename*/, std::vector<UbTupleFloat3> & /*nodes*/,
+                                               std::vector<UbTupleInt2> & /*lines*/, std::vector<std::string> & /*datanames*/,
+                                               std::vector<std::vector<float>> & /*celldata*/)
+    {
+        throw UbException(UB_EXARGS, "not implemented for " + (std::string) typeid(*this).name());
+    }
     //////////////////////////////////////////////////////////////////////////
     // triangles
     // cell numbering:
