@@ -63,7 +63,7 @@ inline void writeQLines(LBMSimulationParameter *parH, QforBoundaryConditions &bo
                 continue;
             }
 
-            const auto positionNeighbor = getNeighborIndex(parH, (uint)nodeIndex, direction);
+            const auto positionNeighbor = getNeighborIndex(parH, (uint)nodeIndex, (int)direction);
 
             std::array<double, 3> neighborCoords = { parH->coordinateX[positionNeighbor],
                                                      parH->coordinateY[positionNeighbor],
