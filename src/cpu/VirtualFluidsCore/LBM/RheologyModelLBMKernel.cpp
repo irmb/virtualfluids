@@ -41,7 +41,8 @@
 
 #define PROOF_CORRECTNESS
 
-using namespace UbMath;
+//using namespace UbMath;
+using namespace vf::lbm::constant;
 
 RheologyModelLBMKernel::RheologyModelLBMKernel() : forcingX1(0), forcingX2(0), forcingX3(0)
 {
@@ -510,12 +511,12 @@ void RheologyModelLBMKernel::calculate(int step)
 						real dyuy = dxux + collFactorF * c3o2 * mxxMyy;
 						real dzuz = dxux + collFactorF * c3o2 * mxxMzz;
 
-						real Dxy = -three * collFactorF * mfbba;
-						real Dxz = -three * collFactorF * mfbab;
-						real Dyz = -three * collFactorF * mfabb;
+						real Dxy = -c3o1 * collFactorF * mfbba;
+						real Dxz = -c3o1 * collFactorF * mfbab;
+						real Dyz = -c3o1 * collFactorF * mfabb;
 						////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 						//non Newtonian fluid collision factor
-						real shearRate = sqrt(c2 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) / (rho + one);
+						real shearRate = sqrt(c2o1 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) / (rho + c1o1);
 						collFactorF = getRheologyCollFactor(collFactorF, shearRate, rho);
 						////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

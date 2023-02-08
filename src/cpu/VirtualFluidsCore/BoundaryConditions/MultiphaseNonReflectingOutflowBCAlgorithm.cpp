@@ -70,8 +70,9 @@ void MultiphaseNonReflectingOutflowBCAlgorithm::addDistributionsH2(SPtr<Distribu
 void MultiphaseNonReflectingOutflowBCAlgorithm::applyBC()
 {
     using namespace D3Q27System;
-    using namespace UbMath;
+//    using namespace UbMath;
     using namespace vf::lbm::dir;
+    using namespace vf::lbm::constant;
 
     real f[ENDF + 1];
     real ftemp[ENDF + 1];

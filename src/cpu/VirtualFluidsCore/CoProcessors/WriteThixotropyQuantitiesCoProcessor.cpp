@@ -248,7 +248,7 @@ void WriteThixotropyQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 					//LBMReal omega = Rheology::getHerschelBulkleyCollFactor(collFactor, shearRate, rho);
 					//LBMReal omega = Rheology::getPowellEyringCollFactor(collFactor, shearRate, rho);
 					real omega = Rheology::getBinghamCollFactor(collFactor, shearRate, rho);
-					real viscosity = (omega == 0) ? 0 : UbMath::c1o3 * (UbMath::c1/omega-UbMath::c1o2);
+					real viscosity = (omega == 0) ? 0 : vf::lbm::constant::c1o3 * (vf::lbm::constant::c1o1/omega- vf::lbm::constant::c1o2);
 
 					
 					data[index++].push_back(viscosity);

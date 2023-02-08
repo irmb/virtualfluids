@@ -46,7 +46,8 @@
 
 //#define PROOF_CORRECTNESS
 
-using namespace UbMath;
+//using namespace UbMath;
+using namespace vf::lbm::constant;
 
 //////////////////////////////////////////////////////////////////////////
 CumulantK17LBMKernelUnified::CumulantK17LBMKernelUnified()

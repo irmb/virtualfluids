@@ -45,6 +45,7 @@
 #include "D3Q27System.h"
 #include <Block3D.h>
 #include <Communicator.h>
+#include "UbMath.h"
 
 using namespace std;
 

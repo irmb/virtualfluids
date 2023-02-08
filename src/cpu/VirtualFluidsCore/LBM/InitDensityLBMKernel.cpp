@@ -3,8 +3,10 @@
 #include "BCProcessor.h"
 #include "DataSet3D.h"
 #include "BCArray3D.h"
+#include "lbm/constants/NumericConstants.h"
 
-using namespace UbMath;
+//using namespace UbMath;
+using namespace vf::lbm::constant;
 
 InitDensityLBMKernel::InitDensityLBMKernel()
 {

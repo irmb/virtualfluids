@@ -39,6 +39,7 @@
 #include "DataSet3D.h"
 #include "LBMKernel.h"
 #include <cmath>
+#include "UbMath.h"
 
 #define PROOF_CORRECTNESS
 
@@ -92,7 +93,9 @@ SPtr<LBMKernel> MultiphasePressureFilterCompressibleAirLBMKernel::clone()
 }
 //////////////////////////////////////////////////////////////////////////
 void  MultiphasePressureFilterCompressibleAirLBMKernel::forwardInverseChimeraWithKincompressible(real& mfa, real& mfb, real& mfc, real vv, real v2, real Kinverse, real K, real oneMinusRho) {
-	using namespace UbMath;
+//	using namespace UbMath;
+	using namespace vf::lbm::constant;
+
 	real m2 = mfa + mfc;
 	real m1 = mfc - mfa;
 	real m0 = m2 + mfb;
@@ -100,14 +103,16 @@ void  MultiphasePressureFilterCompressibleAirLBMKernel::forwardInverseChimeraWit
 	m0 *= Kinverse;
 	m0 += oneMinusRho;
 	mfb = (m1 * Kinverse - m0 * vv) * K;
-	mfc = ((m2 - c2 * m1 * vv) * Kinverse + v2 * m0) * K;
+	mfc = ((m2 - c2o1 * m1 * vv) * Kinverse + v2 * m0) * K;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void  MultiphasePressureFilterCompressibleAirLBMKernel::backwardInverseChimeraWithKincompressible(real& mfa, real& mfb, real& mfc, real vv, real v2, real Kinverse, real K, real oneMinusRho) {
-	using namespace UbMath;
+//	using namespace UbMath;
+	using namespace vf::lbm::constant;
+
 	real m0 = (((mfc - mfb) * c1o2 + mfb * vv) * Kinverse + (mfa * Kinverse + oneMinusRho) * (v2 - vv) * c1o2) * K;
-	real m1 = (((mfa - mfc) - c2 * mfb * vv) * Kinverse + (mfa * Kinverse + oneMinusRho) * (-v2)) * K;
+	real m1 = (((mfa - mfc) - c2o1 * mfb * vv) * Kinverse + (mfa * Kinverse + oneMinusRho) * (-v2)) * K;
 	mfc = (((mfc + mfb) * c1o2 + mfb * vv) * Kinverse + (mfa * Kinverse + oneMinusRho) * (v2 + vv) * c1o2) * K;
 	mfa = m0;
 	mfb = m1;
@@ -116,19 +121,23 @@ void  MultiphasePressureFilterCompressibleAirLBMKernel::backwardInverseChimeraWi
 
 ////////////////////////////////////////////////////////////////////////////////
 void  MultiphasePressureFilterCompressibleAirLBMKernel::forwardChimera(real& mfa, real& mfb, real& mfc, real vv, real v2) {
-	using namespace UbMath;
+//	using namespace UbMath;
+	using namespace vf::lbm::constant;
+
 	real m1 = (mfa + mfc) + mfb;
 	real m2 = mfc - mfa;
-	mfc = (mfc + mfa) + (v2 * m1 - c2 * vv * m2);
+	mfc = (mfc + mfa) + (v2 * m1 - c2o1 * vv * m2);
 	mfb = m2 - vv * m1;
 	mfa = m1;
 }
 
 
 void  MultiphasePressureFilterCompressibleAirLBMKernel::backwardChimera(real& mfa, real& mfb, real& mfc, real vv, real v2) {
-	using namespace UbMath;
+//	using namespace UbMath;
+	using namespace vf::lbm::constant;
+
 	real ma = (mfc + mfa * (v2 - vv)) * c1o2 + mfb * (vv - c1o2);
-	real mb = ((mfa - mfc) - mfa * v2) - c2 * mfb * vv;
+	real mb = ((mfa - mfc) - mfa * v2) - c2o1 * mfb * vv;
 	mfc = (mfc + mfa * (v2 + vv)) * c1o2 + mfb * (vv + c1o2);
 	mfb = mb;
 	mfa = ma;
@@ -138,14 +147,15 @@ void  MultiphasePressureFilterCompressibleAirLBMKernel::backwardChimera(real& mf
 void MultiphasePressureFilterCompressibleAirLBMKernel::calculate(int step)
 {
 	using namespace D3Q27System;
-	using namespace UbMath;
+//	using namespace UbMath;
 	using namespace vf::lbm::dir;
+	using namespace vf::lbm::constant;
 
 	forcingX1 = 0.0;
 	forcingX2 = 0.0;
 	forcingX3 = 0.0;
 
-	real oneOverInterfaceScale = c4 / interfaceWidth; //1.0;//1.5;
+	real oneOverInterfaceScale = c4o1 / interfaceWidth; //1.0;//1.5;
 														 /////////////////////////////////////
 
 	localDistributionsF    = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getLocalDistributions();
@@ -291,9 +301,9 @@ void MultiphasePressureFilterCompressibleAirLBMKernel::calculate(int step)
 								int zzz = zz + x3;
 
 								if (!bcArray->isSolid(xxx, yyy, zzz) && !bcArray->isUndefined(xxx, yyy, zzz)) {
-									sum+= 64.0/(216.0*(c1+c3*abs(xx))* (c1 + c3 * abs(yy))* (c1 + c3 * abs(zz)))*(*pressureOld)(xxx, yyy, zzz);
+									sum+= 64.0/(216.0*(c1o1+c3o1*abs(xx))* (c1o1 + c3o1 * abs(yy))* (c1o1 + c3o1 * abs(zz)))*(*pressureOld)(xxx, yyy, zzz);
 								}
-								else{ sum+= 64.0 / (216.0 * (c1 + c3 * abs(xx)) * (c1 + c3 * abs(yy)) * (c1 + c3 * abs(zz))) * (*pressureOld)(x1, x2, x3);
+								else{ sum+= 64.0 / (216.0 * (c1o1 + c3o1 * abs(xx)) * (c1o1 + c3o1 * abs(yy)) * (c1o1 + c3o1 * abs(zz))) * (*pressureOld)(x1, x2, x3);
 								}
 
 
@@ -394,7 +404,7 @@ void MultiphasePressureFilterCompressibleAirLBMKernel::calculate(int step)
 					//LBMReal rho = rhoL + (rhoH - rhoL) * phi[REST] + (one - phi[REST]) * (*pressure)(x1, x2, x3) * three; //compressible
 
 					real m0, m1, m2;
-					real rhoRef=c1;
+					real rhoRef=c1o1;
 
 					real vvx = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
 						(((mfcba - mfabc) + (mfcbc - mfaba)) + ((mfcab - mfacb) + (mfccb - mfaab))) +
@@ -414,44 +424,44 @@ void MultiphasePressureFilterCompressibleAirLBMKernel::calculate(int step)
 							int yyy = x2 + dir1;
 							int zzz = x3 + dir2;
 							if (!bcArray->isSolid(x1-1, yyy, zzz) && !bcArray->isUndefined(x1-1, yyy, zzz)) {
-								gradPx -= (*pressure)(x1 - 1, yyy, zzz) * c2o9 / ((c1 + c3 * abs(dir1)) * (c1 + c3 * abs(dir2)));
+								gradPx -= (*pressure)(x1 - 1, yyy, zzz) * c2o9 / ((c1o1 + c3o1 * abs(dir1)) * (c1o1 + c3o1 * abs(dir2)));
 							}
 							else {
-								gradPx -= (*pressure)(x1, x2, x3) * c2o9 / ((c1 + c3 * abs(dir1)) * (c1 + c3 * abs(dir2)));
+								gradPx -= (*pressure)(x1, x2, x3) * c2o9 / ((c1o1 + c3o1 * abs(dir1)) * (c1o1 + c3o1 * abs(dir2)));
 							}
 							if (!bcArray->isSolid(x1 + 1, yyy, zzz) && !bcArray->isUndefined(x1 + 1, yyy, zzz)) {
-								gradPx += (*pressure)(x1 + 1, yyy, zzz) * c2o9 / ((c1 + c3 * abs(dir1)) * (c1 + c3 * abs(dir2)));
+								gradPx += (*pressure)(x1 + 1, yyy, zzz) * c2o9 / ((c1o1 + c3o1 * abs(dir1)) * (c1o1 + c3o1 * abs(dir2)));
 							}
 							else {
-								gradPx += (*pressure)(x1, x2, x3) * c2o9 / ((c1 + c3 * abs(dir1)) * (c1 + c3 * abs(dir2)));
+								gradPx += (*pressure)(x1, x2, x3) * c2o9 / ((c1o1 + c3o1 * abs(dir1)) * (c1o1 + c3o1 * abs(dir2)));
 							}
 
 							int xxx = x1 + dir1;
 							if (!bcArray->isSolid(xxx, x2-1, zzz) && !bcArray->isUndefined(xxx, x2-1, zzz)) {
-								gradPy -= (*pressure)(xxx, x2-1, zzz) * c2o9 / ((c1 + c3 * abs(dir1)) * (c1 + c3 * abs(dir2)));
+								gradPy -= (*pressure)(xxx, x2-1, zzz) * c2o9 / ((c1o1 + c3o1 * abs(dir1)) * (c1o1 + c3o1 * abs(dir2)));
 							}
 							else {
-								gradPy -= (*pressure)(x1, x2, x3) * c2o9 / ((c1 + c3 * abs(dir1)) * (c1 + c3 * abs(dir2)));
+								gradPy -= (*pressure)(x1, x2, x3) * c2o9 / ((c1o1 + c3o1 * abs(dir1)) * (c1o1 + c3o1 * abs(dir2)));
 							}
 							if (!bcArray->isSolid(xxx, x2+1, zzz) && !bcArray->isUndefined(xxx, x2+1, zzz)) {
-								gradPy += (*pressure)(xxx, x2+1, zzz) * c2o9 / ((c1 + c3 * abs(dir1)) * (c1 + c3 * abs(dir2)));
+								gradPy += (*pressure)(xxx, x2+1, zzz) * c2o9 / ((c1o1 + c3o1 * abs(dir1)) * (c1o1 + c3o1 * abs(dir2)));
 							}
 							else {
-								gradPy += (*pressure)(x1, x2, x3) * c2o9 / ((c1 + c3 * abs(dir1)) * (c1 + c3 * abs(dir2)));
+								gradPy += (*pressure)(x1, x2, x3) * c2o9 / ((c1o1 + c3o1 * abs(dir1)) * (c1o1 + c3o1 * abs(dir2)));
 							}
 
 							yyy = x2 + dir2;
 							if (!bcArray->isSolid(xxx, yyy, x3-1) && !bcArray->isUndefined(xxx, yyy, x3-1)) {
-								gradPz -= (*pressure)(xxx, yyy, x3-1) * c2o9 / ((c1 + c3 * abs(dir1)) * (c1 + c3 * abs(dir2)));
+								gradPz -= (*pressure)(xxx, yyy, x3-1) * c2o9 / ((c1o1 + c3o1 * abs(dir1)) * (c1o1 + c3o1 * abs(dir2)));
 							}
 							else {
-								gradPz -= (*pressure)(x1, x2, x3) * c2o9 / ((c1 + c3 * abs(dir1)) * (c1 + c3 * abs(dir2)));
+								gradPz -= (*pressure)(x1, x2, x3) * c2o9 / ((c1o1 + c3o1 * abs(dir1)) * (c1o1 + c3o1 * abs(dir2)));
 							}
 							if (!bcArray->isSolid(xxx, yyy, x3+1) && !bcArray->isUndefined(xxx, yyy, x3+1)) {
-								gradPz += (*pressure)(xxx, yyy, x3+1) * c2o9 / ((c1 + c3 * abs(dir1)) * (c1 + c3 * abs(dir2)));
+								gradPz += (*pressure)(xxx, yyy, x3+1) * c2o9 / ((c1o1 + c3o1 * abs(dir1)) * (c1o1 + c3o1 * abs(dir2)));
 							}
 							else {
-								gradPz += (*pressure)(x1, x2, x3) * c2o9 / ((c1 + c3 * abs(dir1)) * (c1 + c3 * abs(dir2)));
+								gradPz += (*pressure)(x1, x2, x3) * c2o9 / ((c1o1 + c3o1 * abs(dir1)) * (c1o1 + c3o1 * abs(dir2)));
 							}
 
 						}
@@ -781,9 +791,9 @@ void MultiphasePressureFilterCompressibleAirLBMKernel::calculate(int step)
 					real CUMbcb = mfbcb - ((mfaca + c1o3) * mfbab + 2. * mfbba * mfabb);
 					real CUMbbc = mfbbc - ((mfaac + c1o3) * mfbba + 2. * mfbab * mfabb);
 
-					real CUMcca = mfcca - ((mfcaa * mfaca + 2. * mfbba * mfbba) + c1o3 * (mfcaa + mfaca) * oMdrho + c1o9 * (oMdrho - c1) * oMdrho);
-					real CUMcac = mfcac - ((mfcaa * mfaac + 2. * mfbab * mfbab) + c1o3 * (mfcaa + mfaac) * oMdrho + c1o9 * (oMdrho - c1) * oMdrho);
-					real CUMacc = mfacc - ((mfaac * mfaca + 2. * mfabb * mfabb) + c1o3 * (mfaac + mfaca) * oMdrho + c1o9 * (oMdrho - c1) * oMdrho);
+					real CUMcca = mfcca - ((mfcaa * mfaca + 2. * mfbba * mfbba) + c1o3 * (mfcaa + mfaca) * oMdrho + c1o9 * (oMdrho - c1o1) * oMdrho);
+					real CUMcac = mfcac - ((mfcaa * mfaac + 2. * mfbab * mfbab) + c1o3 * (mfcaa + mfaac) * oMdrho + c1o9 * (oMdrho - c1o1) * oMdrho);
+					real CUMacc = mfacc - ((mfaac * mfaca + 2. * mfabb * mfabb) + c1o3 * (mfaac + mfaca) * oMdrho + c1o9 * (oMdrho - c1o1) * oMdrho);
 
 					//Cum 5.
 					real CUMbcc = mfbcc - (mfaac * mfbca + mfaca * mfbac + 4. * mfabb * mfbbb + 2. * (mfbab * mfacb + mfbba * mfabc)) - c1o3 * (mfbca + mfbac) * oMdrho;
@@ -817,9 +827,9 @@ void MultiphasePressureFilterCompressibleAirLBMKernel::calculate(int step)
 					real dyuy =  dxux + collFactorM * c3o2 * mxxMyy;
 					real dzuz =  dxux + collFactorM * c3o2 * mxxMzz;
 
-					real Dxy = -three * collFactorM * mfbba;
-					real Dxz = -three * collFactorM * mfbab;
-					real Dyz = -three * collFactorM * mfabb;
+					real Dxy = -c3o1 * collFactorM * mfbba;
+					real Dxz = -c3o1 * collFactorM * mfbab;
+					real Dyz = -c3o1 * collFactorM * mfabb;
 
 					//relax
 					mxxPyyPzz += OxxPyyPzz * (/*mfaaa*/ - mxxPyyPzz) - 3. * (1. - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
@@ -880,12 +890,12 @@ void MultiphasePressureFilterCompressibleAirLBMKernel::calculate(int step)
 					mfbac = (-mxyyMxzz + mxyyPxzz) * c1o2;
 
 					//4.
-					CUMacc = -O4 * (one / collFactorM - c1o2) * (dyuy + dzuz) * c2o3 * A + (one - O4) * (CUMacc);
-					CUMcac = -O4 * (one / collFactorM - c1o2) * (dxux + dzuz) * c2o3 * A + (one - O4) * (CUMcac);
-					CUMcca = -O4 * (one / collFactorM - c1o2) * (dyuy + dxux) * c2o3 * A + (one - O4) * (CUMcca);
-					CUMbbc = -O4 * (one / collFactorM - c1o2) * Dxy * c1o3 * BB + (one - O4) * (CUMbbc);
-					CUMbcb = -O4 * (one / collFactorM - c1o2) * Dxz * c1o3 * BB + (one - O4) * (CUMbcb);
-					CUMcbb = -O4 * (one / collFactorM - c1o2) * Dyz * c1o3 * BB + (one - O4) * (CUMcbb);
+					CUMacc = -O4 * (c1o1 / collFactorM - c1o2) * (dyuy + dzuz) * c2o3 * A + (c1o1 - O4) * (CUMacc);
+					CUMcac = -O4 * (c1o1 / collFactorM - c1o2) * (dxux + dzuz) * c2o3 * A + (c1o1 - O4) * (CUMcac);
+					CUMcca = -O4 * (c1o1 / collFactorM - c1o2) * (dyuy + dxux) * c2o3 * A + (c1o1 - O4) * (CUMcca);
+					CUMbbc = -O4 * (c1o1 / collFactorM - c1o2) * Dxy * c1o3 * BB + (c1o1 - O4) * (CUMbbc);
+					CUMbcb = -O4 * (c1o1 / collFactorM - c1o2) * Dxz * c1o3 * BB + (c1o1 - O4) * (CUMbcb);
+					CUMcbb = -O4 * (c1o1 / collFactorM - c1o2) * Dyz * c1o3 * BB + (c1o1 - O4) * (CUMcbb);
 
 					//5.
 					CUMbcc += O5 * (-CUMbcc);
@@ -905,9 +915,9 @@ void MultiphasePressureFilterCompressibleAirLBMKernel::calculate(int step)
 					mfbcb = CUMbcb + ((mfaca + c1o3) * mfbab + 2. * mfbba * mfabb);
 					mfbbc = CUMbbc + ((mfaac + c1o3) * mfbba + 2. * mfbab * mfabb);
 
-					mfcca = CUMcca + (mfcaa * mfaca + 2. * mfbba * mfbba) + c1o3 * (mfcaa + mfaca) * oMdrho + c1o9 * (oMdrho - c1) * oMdrho;
-					mfcac = CUMcac + (mfcaa * mfaac + 2. * mfbab * mfbab) + c1o3 * (mfcaa + mfaac) * oMdrho + c1o9 * (oMdrho - c1) * oMdrho;
-					mfacc = CUMacc + (mfaac * mfaca + 2. * mfabb * mfabb) + c1o3 * (mfaac + mfaca) * oMdrho + c1o9 * (oMdrho - c1) * oMdrho;
+					mfcca = CUMcca + (mfcaa * mfaca + 2. * mfbba * mfbba) + c1o3 * (mfcaa + mfaca) * oMdrho + c1o9 * (oMdrho - c1o1) * oMdrho;
+					mfcac = CUMcac + (mfcaa * mfaac + 2. * mfbab * mfbab) + c1o3 * (mfcaa + mfaac) * oMdrho + c1o9 * (oMdrho - c1o1) * oMdrho;
+					mfacc = CUMacc + (mfaac * mfaca + 2. * mfabb * mfabb) + c1o3 * (mfaac + mfaca) * oMdrho + c1o9 * (oMdrho - c1o1) * oMdrho;
 
 					//5.
 					mfbcc = CUMbcc + (mfaac * mfbca + mfaca * mfbac + 4. * mfabb * mfbbb + 2. * (mfbab * mfacb + mfbba * mfabc)) + c1o3 * (mfbca + mfbac) * oMdrho;
@@ -937,9 +947,9 @@ void MultiphasePressureFilterCompressibleAirLBMKernel::calculate(int step)
 					mfaba = -mfaba;
 					mfaab = -mfaab;
 					//////////////////////////////////////////////////////////////////////////////////////
-					mfbaa += c1o3 * (c1 / collFactorM - c1o2) * rhoToPhi * (2 * dxux * dX1_phi + Dxy * dX2_phi + Dxz * dX3_phi) / (rho);
-					mfaba += c1o3 * (c1 / collFactorM - c1o2) * rhoToPhi * (Dxy * dX1_phi + 2 * dyuy * dX2_phi + Dyz * dX3_phi) / (rho);
-					mfaab += c1o3 * (c1 / collFactorM - c1o2) * rhoToPhi * (Dxz * dX1_phi + Dyz * dX2_phi + 2 * dyuy * dX3_phi) / (rho);
+					mfbaa += c1o3 * (c1o1 / collFactorM - c1o2) * rhoToPhi * (2 * dxux * dX1_phi + Dxy * dX2_phi + Dxz * dX3_phi) / (rho);
+					mfaba += c1o3 * (c1o1 / collFactorM - c1o2) * rhoToPhi * (Dxy * dX1_phi + 2 * dyuy * dX2_phi + Dyz * dX3_phi) / (rho);
+					mfaab += c1o3 * (c1o1 / collFactorM - c1o2) * rhoToPhi * (Dxz * dX1_phi + Dyz * dX2_phi + 2 * dyuy * dX3_phi) / (rho);
 					////////////////////////////////////////////////////////////////////////////////////
 					//back
 					////////////////////////////////////////////////////////////////////////////////////
@@ -1254,7 +1264,7 @@ void MultiphasePressureFilterCompressibleAirLBMKernel::calculate(int step)
 								(((mfbac + mfbca) + (mfbaa + mfbcc)) + ((mfabc + mfcba) + (mfaba + mfcbc)) + ((mfacb + mfcab) + (mfaab + mfccb))) +
 								((mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc))) + mfbbb;
 						////////////////////////////////////////////////////////////////////////////////////
-						real oneMinusRho = c1- concentration;
+						real oneMinusRho = c1o1 - concentration;
 
 						real cx =
 							((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
@@ -1282,39 +1292,39 @@ void MultiphasePressureFilterCompressibleAirLBMKernel::calculate(int step)
 						//!
 						////////////////////////////////////////////////////////////////////////////////////
 						// Z - Dir
-						forwardInverseChimeraWithKincompressible(mfaaa, mfaab, mfaac, cz, cz2, c36, c1o36, oneMinusRho);
-						forwardInverseChimeraWithKincompressible(mfaba, mfabb, mfabc, cz, cz2, c9, c1o9, oneMinusRho);
-						forwardInverseChimeraWithKincompressible(mfaca, mfacb, mfacc, cz, cz2, c36, c1o36, oneMinusRho);
-						forwardInverseChimeraWithKincompressible(mfbaa, mfbab, mfbac, cz, cz2, c9, c1o9, oneMinusRho);
+						forwardInverseChimeraWithKincompressible(mfaaa, mfaab, mfaac, cz, cz2, c36o1, c1o36, oneMinusRho);
+						forwardInverseChimeraWithKincompressible(mfaba, mfabb, mfabc, cz, cz2, c9o1, c1o9, oneMinusRho);
+						forwardInverseChimeraWithKincompressible(mfaca, mfacb, mfacc, cz, cz2, c36o1, c1o36, oneMinusRho);
+						forwardInverseChimeraWithKincompressible(mfbaa, mfbab, mfbac, cz, cz2, c9o1, c1o9, oneMinusRho);
 						forwardInverseChimeraWithKincompressible(mfbba, mfbbb, mfbbc, cz, cz2, c9o4, c4o9, oneMinusRho);
-						forwardInverseChimeraWithKincompressible(mfbca, mfbcb, mfbcc, cz, cz2, c9, c1o9, oneMinusRho);
-						forwardInverseChimeraWithKincompressible(mfcaa, mfcab, mfcac, cz, cz2, c36, c1o36, oneMinusRho);
-						forwardInverseChimeraWithKincompressible(mfcba, mfcbb, mfcbc, cz, cz2, c9, c1o9, oneMinusRho);
-						forwardInverseChimeraWithKincompressible(mfcca, mfccb, mfccc, cz, cz2, c36, c1o36, oneMinusRho);
+						forwardInverseChimeraWithKincompressible(mfbca, mfbcb, mfbcc, cz, cz2, c9o1, c1o9, oneMinusRho);
+						forwardInverseChimeraWithKincompressible(mfcaa, mfcab, mfcac, cz, cz2, c36o1, c1o36, oneMinusRho);
+						forwardInverseChimeraWithKincompressible(mfcba, mfcbb, mfcbc, cz, cz2, c9o1, c1o9, oneMinusRho);
+						forwardInverseChimeraWithKincompressible(mfcca, mfccb, mfccc, cz, cz2, c36o1, c1o36, oneMinusRho);
 
 						////////////////////////////////////////////////////////////////////////////////////
 						// Y - Dir
-						forwardInverseChimeraWithKincompressible(mfaaa, mfaba, mfaca, cy, cy2, c6, c1o6, oneMinusRho);
+						forwardInverseChimeraWithKincompressible(mfaaa, mfaba, mfaca, cy, cy2, c6o1, c1o6, oneMinusRho);
 						forwardChimera(mfaab, mfabb, mfacb, cy, cy2);
-						forwardInverseChimeraWithKincompressible(mfaac, mfabc, mfacc, cy, cy2, c18, c1o18, oneMinusRho);
+						forwardInverseChimeraWithKincompressible(mfaac, mfabc, mfacc, cy, cy2, c18o1, c1o18, oneMinusRho);
 						forwardInverseChimeraWithKincompressible(mfbaa, mfbba, mfbca, cy, cy2, c3o2, c2o3, oneMinusRho);
 						forwardChimera(mfbab, mfbbb, mfbcb, cy, cy2);
 						forwardInverseChimeraWithKincompressible(mfbac, mfbbc, mfbcc, cy, cy2, c9o2, c2o9, oneMinusRho);
-						forwardInverseChimeraWithKincompressible(mfcaa, mfcba, mfcca, cy, cy2, c6, c1o6, oneMinusRho);
+						forwardInverseChimeraWithKincompressible(mfcaa, mfcba, mfcca, cy, cy2, c6o1, c1o6, oneMinusRho);
 						forwardChimera(mfcab, mfcbb, mfccb, cy, cy2);
-						forwardInverseChimeraWithKincompressible(mfcac, mfcbc, mfccc, cy, cy2, c18, c1o18, oneMinusRho);
+						forwardInverseChimeraWithKincompressible(mfcac, mfcbc, mfccc, cy, cy2, c18o1, c1o18, oneMinusRho);
 
 						////////////////////////////////////////////////////////////////////////////////////
 						// X - Dir
-						forwardInverseChimeraWithKincompressible(mfaaa, mfbaa, mfcaa, cx, cx2, c1, c1, oneMinusRho);
+						forwardInverseChimeraWithKincompressible(mfaaa, mfbaa, mfcaa, cx, cx2, c1o1, c1o1, oneMinusRho);
 						forwardChimera(mfaba, mfbba, mfcba, cx, cx2);
-						forwardInverseChimeraWithKincompressible(mfaca, mfbca, mfcca, cx, cx2, c3, c1o3, oneMinusRho);
+						forwardInverseChimeraWithKincompressible(mfaca, mfbca, mfcca, cx, cx2, c3o1, c1o3, oneMinusRho);
 						forwardChimera(mfaab, mfbab, mfcab, cx, cx2);
 						forwardChimera(mfabb, mfbbb, mfcbb, cx, cx2);
 						forwardChimera(mfacb, mfbcb, mfccb, cx, cx2);
-						forwardInverseChimeraWithKincompressible(mfaac, mfbac, mfcac, cx, cx2, c3, c1o3, oneMinusRho);
+						forwardInverseChimeraWithKincompressible(mfaac, mfbac, mfcac, cx, cx2, c3o1, c1o3, oneMinusRho);
 						forwardChimera(mfabc, mfbbc, mfcbc, cx, cx2);
-						forwardInverseChimeraWithKincompressible(mfacc, mfbcc, mfccc, cx, cx2, c3, c1o9, oneMinusRho);
+						forwardInverseChimeraWithKincompressible(mfacc, mfbcc, mfccc, cx, cx2, c3o1, c1o9, oneMinusRho);
 
 						////////////////////////////////////////////////////////////////////////////////////
 						//! - experimental Cumulant ... to be published ... hopefully
@@ -1333,34 +1343,34 @@ void MultiphasePressureFilterCompressibleAirLBMKernel::calculate(int step)
 						real Mccb = mfccb - mfaab * c1o9;
 
 						// collision of 1st order moments
-						cx = cx * (c1 - omegaD) + omegaD * vvx * concentration +
-							normX1 * (c1 - 0.5 * omegaD) * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * c1o3 * oneOverInterfaceScale;
-						cy = cy * (c1 - omegaD) + omegaD * vvy * concentration +
-							normX2 * (c1 - 0.5 * omegaD) * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * c1o3 * oneOverInterfaceScale;
-						cz = cz * (c1 - omegaD) + omegaD * vvz * concentration +
-							normX3 * (c1 - 0.5 * omegaD) * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * c1o3 * oneOverInterfaceScale;
+						cx = cx * (c1o1 - omegaD) + omegaD * vvx * concentration +
+							normX1 * (c1o1 - 0.5 * omegaD) * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * c1o3 * oneOverInterfaceScale;
+						cy = cy * (c1o1 - omegaD) + omegaD * vvy * concentration +
+							normX2 * (c1o1 - 0.5 * omegaD) * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * c1o3 * oneOverInterfaceScale;
+						cz = cz * (c1o1 - omegaD) + omegaD * vvz * concentration +
+							normX3 * (c1o1 - 0.5 * omegaD) * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * c1o3 * oneOverInterfaceScale;
 
 						cx2 = cx * cx;
 						cy2 = cy * cy;
 						cz2 = cz * cz;
 
 						// equilibration of 2nd order moments
-						mfbba = zeroReal;
-						mfbab = zeroReal;
-						mfabb = zeroReal;
+						mfbba = c0o1;
+						mfbab = c0o1;
+						mfabb = c0o1;
 
 						mfcaa = c1o3 * concentration;
 						mfaca = c1o3 * concentration;
 						mfaac = c1o3 * concentration;
 
 						// equilibration of 3rd order moments
-						Mabc = zeroReal;
-						Mbca = zeroReal;
-						Macb = zeroReal;
-						Mcba = zeroReal;
-						Mcab = zeroReal;
-						Mbac = zeroReal;
-						mfbbb = zeroReal;
+						Mabc = c0o1;
+						Mbca = c0o1;
+						Macb = c0o1;
+						Mcba = c0o1;
+						Mcab = c0o1;
+						Mbac = c0o1;
+						mfbbb = c0o1;
 
 						// from linearized orthogonalization 3rd order central moments to central moments
 						mfabc = Mabc + mfaba * c1o3;
@@ -1375,14 +1385,14 @@ void MultiphasePressureFilterCompressibleAirLBMKernel::calculate(int step)
 						mfcac = c1o9 * concentration;
 						mfcca = c1o9 * concentration;
 
-						mfcbb = zeroReal;
-						mfbcb = zeroReal;
-						mfbbc = zeroReal;
+						mfcbb = c0o1;
+						mfbcb = c0o1;
+						mfbbc = c0o1;
 
 						// equilibration of 5th order moments
-						Mcbc = zeroReal;
-						Mbcc = zeroReal;
-						Mccb = zeroReal;
+						Mcbc = c0o1;
+						Mbcc = c0o1;
+						Mccb = c0o1;
 
 						// from linearized orthogonalization 5th order central moments to central moments
 						mfcbc = Mcbc + mfaba * c1o9;
@@ -1400,39 +1410,39 @@ void MultiphasePressureFilterCompressibleAirLBMKernel::calculate(int step)
 						//!
 						////////////////////////////////////////////////////////////////////////////////////
 						// X - Dir
-						backwardInverseChimeraWithKincompressible(mfaaa, mfbaa, mfcaa, cx, cx2, c1, c1, oneMinusRho);
+						backwardInverseChimeraWithKincompressible(mfaaa, mfbaa, mfcaa, cx, cx2, c1o1, c1o1, oneMinusRho);
 						backwardChimera(mfaba, mfbba, mfcba, cx, cx2);
-						backwardInverseChimeraWithKincompressible(mfaca, mfbca, mfcca, cx, cx2, c3, c1o3, oneMinusRho);
+						backwardInverseChimeraWithKincompressible(mfaca, mfbca, mfcca, cx, cx2, c3o1, c1o3, oneMinusRho);
 						backwardChimera(mfaab, mfbab, mfcab, cx, cx2);
 						backwardChimera(mfabb, mfbbb, mfcbb, cx, cx2);
 						backwardChimera(mfacb, mfbcb, mfccb, cx, cx2);
-						backwardInverseChimeraWithKincompressible(mfaac, mfbac, mfcac, cx, cx2, c3, c1o3, oneMinusRho);
+						backwardInverseChimeraWithKincompressible(mfaac, mfbac, mfcac, cx, cx2, c3o1, c1o3, oneMinusRho);
 						backwardChimera(mfabc, mfbbc, mfcbc, cx, cx2);
-						backwardInverseChimeraWithKincompressible(mfacc, mfbcc, mfccc, cx, cx2, c9, c1o9, oneMinusRho);
+						backwardInverseChimeraWithKincompressible(mfacc, mfbcc, mfccc, cx, cx2, c9o1, c1o9, oneMinusRho);
 
 						////////////////////////////////////////////////////////////////////////////////////
 						// Y - Dir
-						backwardInverseChimeraWithKincompressible(mfaaa, mfaba, mfaca, cy, cy2, c6, c1o6, oneMinusRho);
+						backwardInverseChimeraWithKincompressible(mfaaa, mfaba, mfaca, cy, cy2, c6o1, c1o6, oneMinusRho);
 						backwardChimera(mfaab, mfabb, mfacb, cy, cy2);
-						backwardInverseChimeraWithKincompressible(mfaac, mfabc, mfacc, cy, cy2, c18, c1o18, oneMinusRho);
+						backwardInverseChimeraWithKincompressible(mfaac, mfabc, mfacc, cy, cy2, c18o1, c1o18, oneMinusRho);
 						backwardInverseChimeraWithKincompressible(mfbaa, mfbba, mfbca, cy, cy2, c3o2, c2o3, oneMinusRho);
 						backwardChimera(mfbab, mfbbb, mfbcb, cy, cy2);
 						backwardInverseChimeraWithKincompressible(mfbac, mfbbc, mfbcc, cy, cy2, c9o2, c2o9, oneMinusRho);
-						backwardInverseChimeraWithKincompressible(mfcaa, mfcba, mfcca, cy, cy2, c6, c1o6, oneMinusRho);
+						backwardInverseChimeraWithKincompressible(mfcaa, mfcba, mfcca, cy, cy2, c6o1, c1o6, oneMinusRho);
 						backwardChimera(mfcab, mfcbb, mfccb, cy, cy2);
-						backwardInverseChimeraWithKincompressible(mfcac, mfcbc, mfccc, cy, cy2, c18, c1o18, oneMinusRho);
+						backwardInverseChimeraWithKincompressible(mfcac, mfcbc, mfccc, cy, cy2, c18o1, c1o18, oneMinusRho);
 
 						////////////////////////////////////////////////////////////////////////////////////
 						// Z - Dir
-						backwardInverseChimeraWithKincompressible(mfaaa, mfaab, mfaac, cz, cz2, c36, c1o36, oneMinusRho);
-						backwardInverseChimeraWithKincompressible(mfaba, mfabb, mfabc, cz, cz2, c9, c1o9, oneMinusRho);
-						backwardInverseChimeraWithKincompressible(mfaca, mfacb, mfacc, cz, cz2, c36, c1o36, oneMinusRho);
-						backwardInverseChimeraWithKincompressible(mfbaa, mfbab, mfbac, cz, cz2, c9, c1o9, oneMinusRho);
+						backwardInverseChimeraWithKincompressible(mfaaa, mfaab, mfaac, cz, cz2, c36o1, c1o36, oneMinusRho);
+						backwardInverseChimeraWithKincompressible(mfaba, mfabb, mfabc, cz, cz2, c9o1, c1o9, oneMinusRho);
+						backwardInverseChimeraWithKincompressible(mfaca, mfacb, mfacc, cz, cz2, c36o1, c1o36, oneMinusRho);
+						backwardInverseChimeraWithKincompressible(mfbaa, mfbab, mfbac, cz, cz2, c9o1, c1o9, oneMinusRho);
 						backwardInverseChimeraWithKincompressible(mfbba, mfbbb, mfbbc, cz, cz2, c9o4, c4o9, oneMinusRho);
-						backwardInverseChimeraWithKincompressible(mfbca, mfbcb, mfbcc, cz, cz2, c9, c1o9, oneMinusRho);
-						backwardInverseChimeraWithKincompressible(mfcaa, mfcab, mfcac, cz, cz2, c36, c1o36, oneMinusRho);
-						backwardInverseChimeraWithKincompressible(mfcba, mfcbb, mfcbc, cz, cz2, c9, c1o9, oneMinusRho);
-						backwardInverseChimeraWithKincompressible(mfcca, mfccb, mfccc, cz, cz2, c36, c1o36, oneMinusRho);
+						backwardInverseChimeraWithKincompressible(mfbca, mfbcb, mfbcc, cz, cz2, c9o1, c1o9, oneMinusRho);
+						backwardInverseChimeraWithKincompressible(mfcaa, mfcab, mfcac, cz, cz2, c36o1, c1o36, oneMinusRho);
+						backwardInverseChimeraWithKincompressible(mfcba, mfcbb, mfcbc, cz, cz2, c9o1, c1o9, oneMinusRho);
+						backwardInverseChimeraWithKincompressible(mfcca, mfccb, mfccc, cz, cz2, c36o1, c1o36, oneMinusRho);
 
 
 

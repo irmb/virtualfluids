@@ -1,15 +1,16 @@
 #include "CompressibleOffsetMomentsInterpolationProcessor.h"
 #include "D3Q27System.h"
 
-using namespace UbMath;
+//using namespace UbMath;
+using namespace vf::lbm::constant;
 
 CompressibleOffsetMomentsInterpolationProcessor::CompressibleOffsetMomentsInterpolationProcessor()
     
 {
    this->bulkViscosity = 0.0;
    this->shearViscosity = 0.0;
-   this->OxxPyyPzzC = one;
-   this->OxxPyyPzzF = one;
+   this->OxxPyyPzzC = c1o1;
+   this->OxxPyyPzzF = c1o1;
 }
 //////////////////////////////////////////////////////////////////////////
 CompressibleOffsetMomentsInterpolationProcessor::CompressibleOffsetMomentsInterpolationProcessor(real omegaC, real omegaF)
@@ -17,8 +18,8 @@ CompressibleOffsetMomentsInterpolationProcessor::CompressibleOffsetMomentsInterp
 {
    this->bulkViscosity = 0.0;
    this->shearViscosity = 0.0;
-   this->OxxPyyPzzC = one;
-   this->OxxPyyPzzF = one;
+   this->OxxPyyPzzC = c1o1;
+   this->OxxPyyPzzF = c1o1;
 }
 //////////////////////////////////////////////////////////////////////////
 CompressibleOffsetMomentsInterpolationProcessor::~CompressibleOffsetMomentsInterpolationProcessor()
@@ -49,8 +50,8 @@ void CompressibleOffsetMomentsInterpolationProcessor::setOmegas( real omegaC, re
    }
    else
    {
-      this->OxxPyyPzzC = one;
-      this->OxxPyyPzzF = one;
+      this->OxxPyyPzzC = c1o1;
+      this->OxxPyyPzzF = c1o1;
    }
 }
 //////////////////////////////////////////////////////////////////////////
@@ -96,11 +97,11 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcMoments(const real* co
    
    press = drho; //interpolate rho!
 
-   kxy   = -3.*omega*((((f[DIR_MMP]+f[DIR_PPM])-(f[DIR_MPP]+f[DIR_PMM]))+((f[DIR_MMM]+f[DIR_PPP])-(f[DIR_MPM]+f[DIR_PMP])))+((f[DIR_MM0]+f[DIR_PP0])-(f[DIR_MP0]+f[DIR_PM0]))/(one + drho)-(vx1*vx2));// might not be optimal MG 25.2.13
-   kyz   = -3.*omega*((((f[DIR_MMM]+f[DIR_PPP])-(f[DIR_PMP]+f[DIR_MPM]))+((f[DIR_PMM]+f[DIR_MPP])-(f[DIR_MMP]+f[DIR_PPM])))+((f[DIR_0MM]+f[DIR_0PP])-(f[DIR_0MP]+f[DIR_0PM]))/(one + drho)-(vx2*vx3));
-   kxz   = -3.*omega*((((f[DIR_MPM]+f[DIR_PMP])-(f[DIR_MMP]+f[DIR_PPM]))+((f[DIR_MMM]+f[DIR_PPP])-(f[DIR_PMM]+f[DIR_MPP])))+((f[DIR_M0M]+f[DIR_P0P])-(f[DIR_M0P]+f[DIR_P0M]))/(one + drho)-(vx1*vx3));
-   kxxMyy = -3./2.*omega*((((f[DIR_M0M]+f[DIR_P0P])-(f[DIR_0MM]+f[DIR_0PP]))+((f[DIR_M0P]+f[DIR_P0M])-(f[DIR_0MP]+f[DIR_0PM])))+((f[DIR_M00]+f[DIR_P00])-(f[DIR_0M0]+f[DIR_0P0]))/(one + drho)-(vx1*vx1-vx2*vx2));
-   kxxMzz = -3./2.*omega*((((f[DIR_MP0]+f[DIR_PM0])-(f[DIR_0MM]+f[DIR_0PP]))+((f[DIR_MM0]+f[DIR_PP0])-(f[DIR_0MP]+f[DIR_0PM])))+((f[DIR_M00]+f[DIR_P00])-(f[DIR_00M]+f[DIR_00P]))/(one + drho)-(vx1*vx1-vx3*vx3));
+   kxy   = -3.*omega*((((f[DIR_MMP]+f[DIR_PPM])-(f[DIR_MPP]+f[DIR_PMM]))+((f[DIR_MMM]+f[DIR_PPP])-(f[DIR_MPM]+f[DIR_PMP])))+((f[DIR_MM0]+f[DIR_PP0])-(f[DIR_MP0]+f[DIR_PM0]))/(c1o1 + drho)-(vx1*vx2));// might not be optimal MG 25.2.13
+   kyz   = -3.*omega*((((f[DIR_MMM]+f[DIR_PPP])-(f[DIR_PMP]+f[DIR_MPM]))+((f[DIR_PMM]+f[DIR_MPP])-(f[DIR_MMP]+f[DIR_PPM])))+((f[DIR_0MM]+f[DIR_0PP])-(f[DIR_0MP]+f[DIR_0PM]))/(c1o1 + drho)-(vx2*vx3));
+   kxz   = -3.*omega*((((f[DIR_MPM]+f[DIR_PMP])-(f[DIR_MMP]+f[DIR_PPM]))+((f[DIR_MMM]+f[DIR_PPP])-(f[DIR_PMM]+f[DIR_MPP])))+((f[DIR_M0M]+f[DIR_P0P])-(f[DIR_M0P]+f[DIR_P0M]))/(c1o1 + drho)-(vx1*vx3));
+   kxxMyy = -3./2.*omega*((((f[DIR_M0M]+f[DIR_P0P])-(f[DIR_0MM]+f[DIR_0PP]))+((f[DIR_M0P]+f[DIR_P0M])-(f[DIR_0MP]+f[DIR_0PM])))+((f[DIR_M00]+f[DIR_P00])-(f[DIR_0M0]+f[DIR_0P0]))/(c1o1 + drho)-(vx1*vx1-vx2*vx2));
+   kxxMzz = -3./2.*omega*((((f[DIR_MP0]+f[DIR_PM0])-(f[DIR_0MM]+f[DIR_0PP]))+((f[DIR_MM0]+f[DIR_PP0])-(f[DIR_0MP]+f[DIR_0PM])))+((f[DIR_M00]+f[DIR_P00])-(f[DIR_00M]+f[DIR_00P]))/(c1o1 + drho)-(vx1*vx1-vx3*vx3));
 }
 //////////////////////////////////////////////////////////////////////////
 void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedCoefficiets(const D3Q27ICell& icell, real omega, real eps_new)
@@ -488,6 +489,7 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedNodeCF(rea
 {
    using namespace D3Q27System;
    using namespace vf::lbm::dir;
+   using namespace vf::lbm::constant;
 
    real eps_new = 0.5;
    real o = omega;
@@ -499,65 +501,65 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedNodeCF(rea
    real vx2  = b0 + 0.25*( xs*bx + ys*by + zs*bz) + 0.0625*(bxx + xs*ys*bxy + xs*zs*bxz + byy + ys*zs*byz + bzz) + 0.015625*(xs*ys*zs*bxyz);
    real vx3  = c0 + 0.25*( xs*cx + ys*cy + zs*cz) + 0.0625*(cxx + xs*ys*cxy + xs*zs*cxz + cyy + ys*zs*cyz + czz) + 0.015625*(xs*ys*zs*cxyz);
 
-   real mfcbb = zeroReal;
-   real mfabb = zeroReal;
-   real mfbcb = zeroReal;
-   real mfbab = zeroReal;
-   real mfbbc = zeroReal;
-   real mfbba = zeroReal;
-   real mfccb = zeroReal;
-   real mfaab = zeroReal;
-   real mfcab = zeroReal;
-   real mfacb = zeroReal;
-   real mfcbc = zeroReal;
-   real mfaba = zeroReal;
-   real mfcba = zeroReal;
-   real mfabc = zeroReal;
-   real mfbcc = zeroReal;
-   real mfbaa = zeroReal;
-   real mfbca = zeroReal;
-   real mfbac = zeroReal;
-   real mfbbb = zeroReal;
-   real mfccc = zeroReal;
-   real mfaac = zeroReal;
-   real mfcac = zeroReal;
-   real mfacc = zeroReal;
-   real mfcca = zeroReal;
-   real mfaaa = zeroReal;
-   real mfcaa = zeroReal;
-   real mfaca = zeroReal;
+   real mfcbb = c0o1;
+   real mfabb = c0o1;
+   real mfbcb = c0o1;
+   real mfbab = c0o1;
+   real mfbbc = c0o1;
+   real mfbba = c0o1;
+   real mfccb = c0o1;
+   real mfaab = c0o1;
+   real mfcab = c0o1;
+   real mfacb = c0o1;
+   real mfcbc = c0o1;
+   real mfaba = c0o1;
+   real mfcba = c0o1;
+   real mfabc = c0o1;
+   real mfbcc = c0o1;
+   real mfbaa = c0o1;
+   real mfbca = c0o1;
+   real mfbac = c0o1;
+   real mfbbb = c0o1;
+   real mfccc = c0o1;
+   real mfaac = c0o1;
+   real mfcac = c0o1;
+   real mfacc = c0o1;
+   real mfcca = c0o1;
+   real mfaaa = c0o1;
+   real mfcaa = c0o1;
+   real mfaca = c0o1;
 
    mfaaa = press; // if drho is interpolated directly
 
    real vx1Sq = vx1*vx1;
    real vx2Sq = vx2*vx2;
    real vx3Sq = vx3*vx3;
-   real oMdrho = one;
+   real oMdrho = c1o1;
 
    //2.f
 
    // linear combinations
-   real mxxPyyPzz = mfaaa - c2o3*(ax + by + two*axx*x + bxy*x + axy*y + two*byy*y + axz*z + byz*z + bxyz*x*z + axyz*y*z + cz - cxz*x + cyz*y + cxyz*x*y + two*czz*z)*eps_new / oP* (one + press);
-   real mxxMyy    = -c2o3*(ax - by + kxxMyyAverage + two*axx*x - bxy*x + axy*y - two*byy*y + axz*z - byz*z - bxyz*x*z + axyz*y*z)*eps_new/o * (one + press);
-   real mxxMzz    = -c2o3*(ax - cz + kxxMzzAverage + two*axx*x - cxz*x + axy*y - cyz*y - cxyz*x*y + axz*z - two*czz*z + axyz*y*z)*eps_new/o * (one + press);
+   real mxxPyyPzz = mfaaa - c2o3*(ax + by + c2o1 *axx*x + bxy*x + axy*y + c2o1 *byy*y + axz*z + byz*z + bxyz*x*z + axyz*y*z + cz - cxz*x + cyz*y + cxyz*x*y + c2o1 *czz*z)*eps_new / oP* (c1o1 + press);
+   real mxxMyy    = -c2o3*(ax - by + kxxMyyAverage + c2o1 *axx*x - bxy*x + axy*y - c2o1 *byy*y + axz*z - byz*z - bxyz*x*z + axyz*y*z)*eps_new/o * (c1o1 + press);
+   real mxxMzz    = -c2o3*(ax - cz + kxxMzzAverage + c2o1 *axx*x - cxz*x + axy*y - cyz*y - cxyz*x*y + axz*z - c2o1 *czz*z + axyz*y*z)*eps_new/o * (c1o1 + press);
 
-   mfabb     = -c1o3 * (bz + cy + kyzAverage + bxz*x + cxy*x + byz*y + two*cyy*y + bxyz*x*y + two*bzz*z + cyz*z + cxyz*x*z)*eps_new/o * (one + press);
-   mfbab     = -c1o3 * (az + cx + kxzAverage + axz*x + two*cxx*x + ayz*y + cxy*y + axyz*x*y + two*azz*z + cxz*z + cxyz*y*z)*eps_new/o * (one + press);
-   mfbba     = -c1o3 * (ay + bx + kxyAverage + axy*x + two*bxx*x + two*ayy*y + bxy*y + ayz*z + bxz*z + axyz*x*z + bxyz*y*z)*eps_new/o * (one + press);
+   mfabb     = -c1o3 * (bz + cy + kyzAverage + bxz*x + cxy*x + byz*y + c2o1 *cyy*y + bxyz*x*y + c2o1 *bzz*z + cyz*z + cxyz*x*z)*eps_new/o * (c1o1 + press);
+   mfbab     = -c1o3 * (az + cx + kxzAverage + axz*x + c2o1 *cxx*x + ayz*y + cxy*y + axyz*x*y + c2o1 *azz*z + cxz*z + cxyz*y*z)*eps_new/o * (c1o1 + press);
+   mfbba     = -c1o3 * (ay + bx + kxyAverage + axy*x + c2o1 *bxx*x + c2o1 *ayy*y + bxy*y + ayz*z + bxz*z + axyz*x*z + bxyz*y*z)*eps_new/o * (c1o1 + press);
 
    // linear combinations back
    mfcaa = c1o3 * (mxxMyy +       mxxMzz + mxxPyyPzz) ;
-   mfaca = c1o3 * (-two * mxxMyy +       mxxMzz + mxxPyyPzz) ;
-   mfaac = c1o3 * (mxxMyy - two * mxxMzz + mxxPyyPzz) ;
+   mfaca = c1o3 * (-c2o1 * mxxMyy +       mxxMzz + mxxPyyPzz) ;
+   mfaac = c1o3 * (mxxMyy - c2o1 * mxxMzz + mxxPyyPzz) ;
 
    //three
-   mfbbb = zeroReal;
-   real mxxyPyzz = zeroReal;
-   real mxxyMyzz = zeroReal;
-   real mxxzPyyz = zeroReal;
-   real mxxzMyyz = zeroReal;
-   real mxyyPxzz =  zeroReal;
-   real mxyyMxzz = zeroReal;
+   mfbbb = c0o1;
+   real mxxyPyzz = c0o1;
+   real mxxyMyzz = c0o1;
+   real mxxzPyyz = c0o1;
+   real mxxzMyyz = c0o1;
+   real mxyyPxzz = c0o1;
+   real mxyyMxzz = c0o1;
 
    // linear combinations back
    mfcba = (mxxyMyzz + mxxyPyzz) * c1o2;
@@ -583,22 +585,22 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedNodeCF(rea
    //mit 1, 0, 1/3, 0, 0, 0, 1/3, 0, 1/9   Konditionieren
    ////////////////////////////////////////////////////////////////////////////////////
    // Z - Dir
-   real m0 =  mfaac * c1o2 +      mfaab * (vx3 - c1o2) + (mfaaa + one * oMdrho) * (vx3Sq - vx3) * c1o2;
-   real m1 = -mfaac        - two * mfaab *  vx3         +  mfaaa                * (one - vx3Sq)              - one * oMdrho * vx3Sq;
-   real m2 =  mfaac * c1o2 +      mfaab * (vx3 + c1o2) + (mfaaa + one * oMdrho) * (vx3Sq + vx3) * c1o2;
+   real m0 =  mfaac * c1o2 +      mfaab * (vx3 - c1o2) + (mfaaa + c1o1 * oMdrho) * (vx3Sq - vx3) * c1o2;
+   real m1 = -mfaac        - c2o1 * mfaab *  vx3         +  mfaaa                * (c1o1 - vx3Sq)              - c1o1 * oMdrho * vx3Sq;
+   real m2 =  mfaac * c1o2 +      mfaab * (vx3 + c1o2) + (mfaaa + c1o1 * oMdrho) * (vx3Sq + vx3) * c1o2;
    mfaaa = m0;
    mfaab = m1;
    mfaac = m2;
    ////////////////////////////////////////////////////////////////////////////////////
    m0 =  mfabc * c1o2 +      mfabb * (vx3 - c1o2) + mfaba * (vx3Sq - vx3) * c1o2;
-   m1 = -mfabc        - two * mfabb *  vx3         + mfaba * (one - vx3Sq);
+   m1 = -mfabc        - c2o1 * mfabb *  vx3         + mfaba * (c1o1 - vx3Sq);
    m2 =  mfabc * c1o2 +      mfabb * (vx3 + c1o2) + mfaba * (vx3Sq + vx3) * c1o2;
    mfaba = m0;
    mfabb = m1;
    mfabc = m2;
    ////////////////////////////////////////////////////////////////////////////////////
    m0 =  mfacc * c1o2 +      mfacb * (vx3 - c1o2) + (mfaca + c1o3 * oMdrho) * (vx3Sq - vx3) * c1o2;
-   m1 = -mfacc        - two * mfacb *  vx3         +  mfaca                  * (one - vx3Sq)              - c1o3 * oMdrho * vx3Sq;
+   m1 = -mfacc        - c2o1 * mfacb *  vx3         +  mfaca                  * (c1o1 - vx3Sq)              - c1o3 * oMdrho * vx3Sq;
    m2 =  mfacc * c1o2 +      mfacb * (vx3 + c1o2) + (mfaca + c1o3 * oMdrho) * (vx3Sq + vx3) * c1o2;
    mfaca = m0;
    mfacb = m1;
@@ -606,21 +608,21 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedNodeCF(rea
    ////////////////////////////////////////////////////////////////////////////////////
    ////////////////////////////////////////////////////////////////////////////////////
    m0 =  mfbac * c1o2 +      mfbab * (vx3 - c1o2) + mfbaa * (vx3Sq - vx3) * c1o2;
-   m1 = -mfbac        - two * mfbab *  vx3         + mfbaa * (one - vx3Sq);
+   m1 = -mfbac        - c2o1 * mfbab *  vx3         + mfbaa * (c1o1 - vx3Sq);
    m2 =  mfbac * c1o2 +      mfbab * (vx3 + c1o2) + mfbaa * (vx3Sq + vx3) * c1o2;
    mfbaa = m0;
    mfbab = m1;
    mfbac = m2;
    /////////b//////////////////////////////////////////////////////////////////////////
    m0 =  mfbbc * c1o2 +      mfbbb * (vx3 - c1o2) + mfbba * (vx3Sq - vx3) * c1o2;
-   m1 = -mfbbc        - two * mfbbb *  vx3         + mfbba * (one - vx3Sq);
+   m1 = -mfbbc        - c2o1 * mfbbb *  vx3         + mfbba * (c1o1 - vx3Sq);
    m2 =  mfbbc * c1o2 +      mfbbb * (vx3 + c1o2) + mfbba * (vx3Sq + vx3) * c1o2;
    mfbba = m0;
    mfbbb = m1;
    mfbbc = m2;
    /////////b//////////////////////////////////////////////////////////////////////////
    m0 =  mfbcc * c1o2 +      mfbcb * (vx3 - c1o2) + mfbca * (vx3Sq - vx3) * c1o2;
-   m1 = -mfbcc        - two * mfbcb *  vx3         + mfbca * (one - vx3Sq);
+   m1 = -mfbcc        - c2o1 * mfbcb *  vx3         + mfbca * (c1o1 - vx3Sq);
    m2 =  mfbcc * c1o2 +      mfbcb * (vx3 + c1o2) + mfbca * (vx3Sq + vx3) * c1o2;
    mfbca = m0;
    mfbcb = m1;
@@ -628,21 +630,21 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedNodeCF(rea
    ////////////////////////////////////////////////////////////////////////////////////
    ////////////////////////////////////////////////////////////////////////////////////
    m0 =  mfcac * c1o2 +      mfcab * (vx3 - c1o2) + (mfcaa + c1o3 * oMdrho) * (vx3Sq - vx3) * c1o2;
-   m1 = -mfcac        - two * mfcab *  vx3         +  mfcaa                  * (one - vx3Sq)              - c1o3 * oMdrho * vx3Sq;
+   m1 = -mfcac        - c2o1 * mfcab *  vx3         +  mfcaa                  * (c1o1 - vx3Sq)              - c1o3 * oMdrho * vx3Sq;
    m2 =  mfcac * c1o2 +      mfcab * (vx3 + c1o2) + (mfcaa + c1o3 * oMdrho) * (vx3Sq + vx3) * c1o2;
    mfcaa = m0;
    mfcab = m1;
    mfcac = m2;
    /////////c//////////////////////////////////////////////////////////////////////////
    m0 =  mfcbc * c1o2 +      mfcbb * (vx3 - c1o2) + mfcba * (vx3Sq - vx3) * c1o2;
-   m1 = -mfcbc        - two * mfcbb *  vx3         + mfcba * (one - vx3Sq);
+   m1 = -mfcbc        - c2o1 * mfcbb *  vx3         + mfcba * (c1o1 - vx3Sq);
    m2 =  mfcbc * c1o2 +      mfcbb * (vx3 + c1o2) + mfcba * (vx3Sq + vx3) * c1o2;
    mfcba = m0;
    mfcbb = m1;
    mfcbc = m2;
    /////////c//////////////////////////////////////////////////////////////////////////
    m0 =  mfccc * c1o2 +      mfccb * (vx3 - c1o2) + (mfcca + c1o9 * oMdrho) * (vx3Sq - vx3) * c1o2;
-   m1 = -mfccc        - two * mfccb *  vx3         +  mfcca                  * (one - vx3Sq)              - c1o9 * oMdrho * vx3Sq;
+   m1 = -mfccc        - c2o1 * mfccb *  vx3         +  mfcca                  * (c1o1 - vx3Sq)              - c1o9 * oMdrho * vx3Sq;
    m2 =  mfccc * c1o2 +      mfccb * (vx3 + c1o2) + (mfcca + c1o9 * oMdrho) * (vx3Sq + vx3) * c1o2;
    mfcca = m0;
    mfccb = m1;
@@ -653,21 +655,21 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedNodeCF(rea
    ////////////////////////////////////////////////////////////////////////////////////
    // Y - Dir
    m0 =  mfaca * c1o2 +      mfaba * (vx2 - c1o2) + (mfaaa + c1o6 * oMdrho) * (vx2Sq - vx2) * c1o2;
-   m1 = -mfaca        - two * mfaba *  vx2         +  mfaaa                  * (one - vx2Sq)              - c1o6 * oMdrho * vx2Sq;
+   m1 = -mfaca        - c2o1 * mfaba *  vx2         +  mfaaa                  * (c1o1 - vx2Sq)              - c1o6 * oMdrho * vx2Sq;
    m2 =  mfaca * c1o2 +      mfaba * (vx2 + c1o2) + (mfaaa + c1o6 * oMdrho) * (vx2Sq + vx2) * c1o2;
    mfaaa = m0;
    mfaba = m1;
    mfaca = m2;
    ////////////////////////////////////////////////////////////////////////////////////
    m0 =  mfacb * c1o2 +      mfabb * (vx2 - c1o2) + (mfaab + c2o3 * oMdrho) * (vx2Sq - vx2) * c1o2;
-   m1 = -mfacb        - two * mfabb *  vx2         +  mfaab                  * (one - vx2Sq)              - c2o3 * oMdrho * vx2Sq;
+   m1 = -mfacb        - c2o1 * mfabb *  vx2         +  mfaab                  * (c1o1 - vx2Sq)              - c2o3 * oMdrho * vx2Sq;
    m2 =  mfacb * c1o2 +      mfabb * (vx2 + c1o2) + (mfaab + c2o3 * oMdrho) * (vx2Sq + vx2) * c1o2;
    mfaab = m0;
    mfabb = m1;
    mfacb = m2;
    ////////////////////////////////////////////////////////////////////////////////////
    m0 =  mfacc * c1o2 +      mfabc * (vx2 - c1o2) + (mfaac + c1o6 * oMdrho) * (vx2Sq - vx2) * c1o2;
-   m1 = -mfacc        - two * mfabc *  vx2         +  mfaac                  * (one - vx2Sq)              - c1o6 * oMdrho * vx2Sq;
+   m1 = -mfacc        - c2o1 * mfabc *  vx2         +  mfaac                  * (c1o1 - vx2Sq)              - c1o6 * oMdrho * vx2Sq;
    m2 =  mfacc * c1o2 +      mfabc * (vx2 + c1o2) + (mfaac + c1o6 * oMdrho) * (vx2Sq + vx2) * c1o2;
    mfaac = m0;
    mfabc = m1;
@@ -675,21 +677,21 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedNodeCF(rea
    ////////////////////////////////////////////////////////////////////////////////////
    ////////////////////////////////////////////////////////////////////////////////////
    m0 =  mfbca * c1o2 +      mfbba * (vx2 - c1o2) + mfbaa * (vx2Sq - vx2) * c1o2;
-   m1 = -mfbca        - two * mfbba *  vx2         + mfbaa * (one - vx2Sq);
+   m1 = -mfbca        - c2o1 * mfbba *  vx2         + mfbaa * (c1o1 - vx2Sq);
    m2 =  mfbca * c1o2 +      mfbba * (vx2 + c1o2) + mfbaa * (vx2Sq + vx2) * c1o2;
    mfbaa = m0;
    mfbba = m1;
    mfbca = m2;
    /////////b//////////////////////////////////////////////////////////////////////////
    m0 =  mfbcb * c1o2 +      mfbbb * (vx2 - c1o2) + mfbab * (vx2Sq - vx2) * c1o2;
-   m1 = -mfbcb        - two * mfbbb *  vx2         + mfbab * (one - vx2Sq);
+   m1 = -mfbcb        - c2o1 * mfbbb *  vx2         + mfbab * (c1o1 - vx2Sq);
    m2 =  mfbcb * c1o2 +      mfbbb * (vx2 + c1o2) + mfbab * (vx2Sq + vx2) * c1o2;
    mfbab = m0;
    mfbbb = m1;
    mfbcb = m2;
    /////////b//////////////////////////////////////////////////////////////////////////
    m0 =  mfbcc * c1o2 +      mfbbc * (vx2 - c1o2) + mfbac * (vx2Sq - vx2) * c1o2;
-   m1 = -mfbcc        - two * mfbbc *  vx2         + mfbac * (one - vx2Sq);
+   m1 = -mfbcc        - c2o1 * mfbbc *  vx2         + mfbac * (c1o1 - vx2Sq);
    m2 =  mfbcc * c1o2 +      mfbbc * (vx2 + c1o2) + mfbac * (vx2Sq + vx2) * c1o2;
    mfbac = m0;
    mfbbc = m1;
@@ -697,21 +699,21 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedNodeCF(rea
    ////////////////////////////////////////////////////////////////////////////////////
    ////////////////////////////////////////////////////////////////////////////////////
    m0 =  mfcca * c1o2 +      mfcba * (vx2 - c1o2) + (mfcaa + c1o18 * oMdrho) * (vx2Sq - vx2) * c1o2;
-   m1 = -mfcca        - two * mfcba *  vx2         +  mfcaa                   * (one - vx2Sq)              - c1o18 * oMdrho * vx2Sq;
+   m1 = -mfcca        - c2o1 * mfcba *  vx2         +  mfcaa                   * (c1o1 - vx2Sq)              - c1o18 * oMdrho * vx2Sq;
    m2 =  mfcca * c1o2 +      mfcba * (vx2 + c1o2) + (mfcaa + c1o18 * oMdrho) * (vx2Sq + vx2) * c1o2;
    mfcaa = m0;
    mfcba = m1;
    mfcca = m2;
    /////////c//////////////////////////////////////////////////////////////////////////
    m0 =  mfccb * c1o2 +      mfcbb * (vx2 - c1o2) + (mfcab + c2o9 * oMdrho) * (vx2Sq - vx2) * c1o2;
-   m1 = -mfccb        - two * mfcbb *  vx2         +  mfcab                  * (one - vx2Sq)              - c2o9 * oMdrho * vx2Sq;
+   m1 = -mfccb        - c2o1 * mfcbb *  vx2         +  mfcab                  * (c1o1 - vx2Sq)              - c2o9 * oMdrho * vx2Sq;
    m2 =  mfccb * c1o2 +      mfcbb * (vx2 + c1o2) + (mfcab + c2o9 * oMdrho) * (vx2Sq + vx2) * c1o2;
    mfcab = m0;
    mfcbb = m1;
    mfccb = m2;
    /////////c//////////////////////////////////////////////////////////////////////////
    m0 =  mfccc * c1o2 +      mfcbc * (vx2 - c1o2) + (mfcac + c1o18 * oMdrho) * (vx2Sq - vx2) * c1o2;
-   m1 = -mfccc        - two * mfcbc *  vx2         +  mfcac                   * (one - vx2Sq)              - c1o18 * oMdrho * vx2Sq;
+   m1 = -mfccc        - c2o1 * mfcbc *  vx2         +  mfcac                   * (c1o1 - vx2Sq)              - c1o18 * oMdrho * vx2Sq;
    m2 =  mfccc * c1o2 +      mfcbc * (vx2 + c1o2) + (mfcac + c1o18 * oMdrho) * (vx2Sq + vx2) * c1o2;
    mfcac = m0;
    mfcbc = m1;
@@ -722,21 +724,21 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedNodeCF(rea
    ////////////////////////////////////////////////////////////////////////////////////
    // X - Dir
    m0 =  mfcaa * c1o2 +      mfbaa * (vx1 - c1o2) + (mfaaa + c1o36 * oMdrho) * (vx1Sq - vx1) * c1o2;
-   m1 = -mfcaa        - two * mfbaa *  vx1         +  mfaaa                   * (one - vx1Sq)              - c1o36 * oMdrho * vx1Sq;
+   m1 = -mfcaa        - c2o1 * mfbaa *  vx1         +  mfaaa                   * (c1o1 - vx1Sq)              - c1o36 * oMdrho * vx1Sq;
    m2 =  mfcaa * c1o2 +      mfbaa * (vx1 + c1o2) + (mfaaa + c1o36 * oMdrho) * (vx1Sq + vx1) * c1o2;
    mfaaa = m0;
    mfbaa = m1;
    mfcaa = m2;
    ////////////////////////////////////////////////////////////////////////////////////
    m0 =  mfcba * c1o2 +      mfbba * (vx1 - c1o2) + (mfaba + c1o9 * oMdrho) * (vx1Sq - vx1) * c1o2;
-   m1 = -mfcba        - two * mfbba *  vx1         +  mfaba                  * (one - vx1Sq)              - c1o9 * oMdrho * vx1Sq;
+   m1 = -mfcba        - c2o1 * mfbba *  vx1         +  mfaba                  * (c1o1 - vx1Sq)              - c1o9 * oMdrho * vx1Sq;
    m2 =  mfcba * c1o2 +      mfbba * (vx1 + c1o2) + (mfaba + c1o9 * oMdrho) * (vx1Sq + vx1) * c1o2;
    mfaba = m0;
    mfbba = m1;
    mfcba = m2;
    ////////////////////////////////////////////////////////////////////////////////////
    m0 =  mfcca * c1o2 +      mfbca * (vx1 - c1o2) + (mfaca + c1o36 * oMdrho) * (vx1Sq - vx1) * c1o2;
-   m1 = -mfcca        - two * mfbca *  vx1         +  mfaca                   * (one - vx1Sq)              - c1o36 * oMdrho * vx1Sq;
+   m1 = -mfcca        - c2o1 * mfbca *  vx1         +  mfaca                   * (c1o1 - vx1Sq)              - c1o36 * oMdrho * vx1Sq;
    m2 =  mfcca * c1o2 +      mfbca * (vx1 + c1o2) + (mfaca + c1o36 * oMdrho) * (vx1Sq + vx1) * c1o2;
    mfaca = m0;
    mfbca = m1;
@@ -744,21 +746,21 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedNodeCF(rea
    ////////////////////////////////////////////////////////////////////////////////////
    ////////////////////////////////////////////////////////////////////////////////////
    m0 =  mfcab * c1o2 +      mfbab * (vx1 - c1o2) + (mfaab + c1o9 * oMdrho) * (vx1Sq - vx1) * c1o2;
-   m1 = -mfcab        - two * mfbab *  vx1         +  mfaab                  * (one - vx1Sq)              - c1o9 * oMdrho * vx1Sq;
+   m1 = -mfcab        - c2o1 * mfbab *  vx1         +  mfaab                  * (c1o1 - vx1Sq)              - c1o9 * oMdrho * vx1Sq;
    m2 =  mfcab * c1o2 +      mfbab * (vx1 + c1o2) + (mfaab + c1o9 * oMdrho) * (vx1Sq + vx1) * c1o2;
    mfaab = m0;
    mfbab = m1;
    mfcab = m2;
    ///////////b////////////////////////////////////////////////////////////////////////
    m0 =  mfcbb * c1o2 +      mfbbb * (vx1 - c1o2) + (mfabb + c4o9 * oMdrho) * (vx1Sq - vx1) * c1o2;
-   m1 = -mfcbb        - two * mfbbb *  vx1         +  mfabb                  * (one - vx1Sq)              - c4o9 * oMdrho * vx1Sq;
+   m1 = -mfcbb        - c2o1 * mfbbb *  vx1         +  mfabb                  * (c1o1 - vx1Sq)              - c4o9 * oMdrho * vx1Sq;
    m2 =  mfcbb * c1o2 +      mfbbb * (vx1 + c1o2) + (mfabb + c4o9 * oMdrho) * (vx1Sq + vx1) * c1o2;
    mfabb = m0;
    mfbbb = m1;
    mfcbb = m2;
    ///////////b////////////////////////////////////////////////////////////////////////
    m0 =  mfccb * c1o2 +      mfbcb * (vx1 - c1o2) + (mfacb + c1o9 * oMdrho) * (vx1Sq - vx1) * c1o2;
-   m1 = -mfccb        - two * mfbcb *  vx1         +  mfacb                  * (one - vx1Sq)              - c1o9 * oMdrho * vx1Sq;
+   m1 = -mfccb        - c2o1 * mfbcb *  vx1         +  mfacb                  * (c1o1 - vx1Sq)              - c1o9 * oMdrho * vx1Sq;
    m2 =  mfccb * c1o2 +      mfbcb * (vx1 + c1o2) + (mfacb + c1o9 * oMdrho) * (vx1Sq + vx1) * c1o2;
    mfacb = m0;
    mfbcb = m1;
@@ -766,21 +768,21 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedNodeCF(rea
    ////////////////////////////////////////////////////////////////////////////////////
    ////////////////////////////////////////////////////////////////////////////////////
    m0 =  mfcac * c1o2 +      mfbac * (vx1 - c1o2) + (mfaac + c1o36 * oMdrho) * (vx1Sq - vx1) * c1o2;
-   m1 = -mfcac        - two * mfbac *  vx1         +  mfaac                   * (one - vx1Sq)              - c1o36 * oMdrho * vx1Sq;
+   m1 = -mfcac        - c2o1 * mfbac *  vx1         +  mfaac                   * (c1o1 - vx1Sq)              - c1o36 * oMdrho * vx1Sq;
    m2 =  mfcac * c1o2 +      mfbac * (vx1 + c1o2) + (mfaac + c1o36 * oMdrho) * (vx1Sq + vx1) * c1o2;
    mfaac = m0;
    mfbac = m1;
    mfcac = m2;
    ///////////c////////////////////////////////////////////////////////////////////////
    m0 =  mfcbc * c1o2 +      mfbbc * (vx1 - c1o2) + (mfabc + c1o9 * oMdrho) * (vx1Sq - vx1) * c1o2;
-   m1 = -mfcbc        - two * mfbbc *  vx1         +  mfabc                  * (one - vx1Sq)              - c1o9 * oMdrho * vx1Sq;
+   m1 = -mfcbc        - c2o1 * mfbbc *  vx1         +  mfabc                  * (c1o1 - vx1Sq)              - c1o9 * oMdrho * vx1Sq;
    m2 =  mfcbc * c1o2 +      mfbbc * (vx1 + c1o2) + (mfabc + c1o9 * oMdrho) * (vx1Sq + vx1) * c1o2;
    mfabc = m0;
    mfbbc = m1;
    mfcbc = m2;
    ///////////c////////////////////////////////////////////////////////////////////////
    m0 =  mfccc * c1o2 +      mfbcc * (vx1 - c1o2) + (mfacc + c1o36 * oMdrho) * (vx1Sq - vx1) * c1o2;
-   m1 = -mfccc        - two * mfbcc *  vx1         +  mfacc                   * (one - vx1Sq)              - c1o36 * oMdrho * vx1Sq;
+   m1 = -mfccc        - c2o1 * mfbcc *  vx1         +  mfacc                   * (c1o1 - vx1Sq)              - c1o36 * oMdrho * vx1Sq;
    m2 =  mfccc * c1o2 +      mfbcc * (vx1 + c1o2) + (mfacc + c1o36 * oMdrho) * (vx1Sq + vx1) * c1o2;
    mfacc = m0;
    mfbcc = m1;
@@ -945,70 +947,70 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedNodeFC(rea
    //bulk viscosity
    real oP = OxxPyyPzzC;
 
-   real mfcbb = zeroReal;
-   real mfabb = zeroReal;
-   real mfbcb = zeroReal;
-   real mfbab = zeroReal;
-   real mfbbc = zeroReal;
-   real mfbba = zeroReal;
-   real mfccb = zeroReal;
-   real mfaab = zeroReal;
-   real mfcab = zeroReal;
-   real mfacb = zeroReal;
-   real mfcbc = zeroReal;
-   real mfaba = zeroReal;
-   real mfcba = zeroReal;
-   real mfabc = zeroReal;
-   real mfbcc = zeroReal;
-   real mfbaa = zeroReal;
-   real mfbca = zeroReal;
-   real mfbac = zeroReal;
-   real mfbbb = zeroReal;
-   real mfccc = zeroReal;
-   real mfaac = zeroReal;
-   real mfcac = zeroReal;
-   real mfacc = zeroReal;
-   real mfcca = zeroReal;
-   real mfaaa = zeroReal;
-   real mfcaa = zeroReal;
-   real mfaca = zeroReal;
+   real mfcbb = c0o1;
+   real mfabb = c0o1;
+   real mfbcb = c0o1;
+   real mfbab = c0o1;
+   real mfbbc = c0o1;
+   real mfbba = c0o1;
+   real mfccb = c0o1;
+   real mfaab = c0o1;
+   real mfcab = c0o1;
+   real mfacb = c0o1;
+   real mfcbc = c0o1;
+   real mfaba = c0o1;
+   real mfcba = c0o1;
+   real mfabc = c0o1;
+   real mfbcc = c0o1;
+   real mfbaa = c0o1;
+   real mfbca = c0o1;
+   real mfbac = c0o1;
+   real mfbbb = c0o1;
+   real mfccc = c0o1;
+   real mfaac = c0o1;
+   real mfcac = c0o1;
+   real mfacc = c0o1;
+   real mfcca = c0o1;
+   real mfaaa = c0o1;
+   real mfcaa = c0o1;
+   real mfaca = c0o1;
 
    mfaaa = press; // if drho is interpolated directly
 
    real vx1Sq = vx1*vx1;
    real vx2Sq = vx2*vx2;
    real vx3Sq = vx3*vx3;
-   real oMdrho = one;
+   real oMdrho = c1o1;
    //oMdrho = one - mfaaa;
 
    //2.f
    // linear combinations
 
 /////////////////////////
-   real mxxPyyPzz = mfaaa    -c2o3*(ax+by+cz)*eps_new/oP*(one+press);
+   real mxxPyyPzz = mfaaa    -c2o3*(ax+by+cz)*eps_new/oP*(c1o1 +press);
 
-   real mxxMyy    = -c2o3*((ax - by)+kxxMyyAverage)*eps_new/o * (one + press);
-   real mxxMzz    = -c2o3*((ax - cz)+kxxMzzAverage)*eps_new/o * (one + press);
+   real mxxMyy    = -c2o3*((ax - by)+kxxMyyAverage)*eps_new/o * (c1o1 + press);
+   real mxxMzz    = -c2o3*((ax - cz)+kxxMzzAverage)*eps_new/o * (c1o1 + press);
 
-   mfabb     = -c1o3 * ((bz + cy)+kyzAverage)*eps_new/o * (one + press);
-   mfbab     = -c1o3 * ((az + cx)+kxzAverage)*eps_new/o * (one + press);
-   mfbba     = -c1o3 * ((ay + bx)+kxyAverage)*eps_new/o * (one + press);
+   mfabb     = -c1o3 * ((bz + cy)+kyzAverage)*eps_new/o * (c1o1 + press);
+   mfbab     = -c1o3 * ((az + cx)+kxzAverage)*eps_new/o * (c1o1 + press);
+   mfbba     = -c1o3 * ((ay + bx)+kxyAverage)*eps_new/o * (c1o1 + press);
 
    ////////////////////////
    // linear combinations back
    mfcaa = c1o3 * (mxxMyy +       mxxMzz + mxxPyyPzz);
-   mfaca = c1o3 * (-two * mxxMyy +       mxxMzz + mxxPyyPzz);
-   mfaac = c1o3 * (mxxMyy - two * mxxMzz + mxxPyyPzz);
+   mfaca = c1o3 * (-c2o1 * mxxMyy +       mxxMzz + mxxPyyPzz);
+   mfaac = c1o3 * (mxxMyy - c2o1 * mxxMzz + mxxPyyPzz);
 
    //three
-   mfbbb = zeroReal;
+   mfbbb = c0o1;
 
-   real mxxyPyzz = zeroReal;
-   real mxxyMyzz = zeroReal;
-   real mxxzPyyz = zeroReal;
-   real mxxzMyyz = zeroReal;
-   real mxyyPxzz = zeroReal;
-   real mxyyMxzz = zeroReal;
+   real mxxyPyzz = c0o1;
+   real mxxyMyzz = c0o1;
+   real mxxzPyyz = c0o1;
+   real mxxzMyyz = c0o1;
+   real mxyyPxzz = c0o1;
+   real mxyyMxzz = c0o1;
 
    // linear combinations back
    mfcba = (mxxyMyzz + mxxyPyzz) * c1o2;
@@ -1032,22 +1034,22 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedNodeFC(rea
    //mit 1, 0, 1/3, 0, 0, 0, 1/3, 0, 1/9   Konditionieren
    ////////////////////////////////////////////////////////////////////////////////////
    // Z - Dir
-   real m0 =  mfaac * c1o2 +      mfaab * (vx3 - c1o2) + (mfaaa + one * oMdrho) * (vx3Sq - vx3) * c1o2;
-   real m1 = -mfaac        - two * mfaab *  vx3         +  mfaaa                * (one - vx3Sq)              - one * oMdrho * vx3Sq;
-   real m2 =  mfaac * c1o2 +      mfaab * (vx3 + c1o2) + (mfaaa + one * oMdrho) * (vx3Sq + vx3) * c1o2;
+   real m0 =  mfaac * c1o2 +      mfaab * (vx3 - c1o2) + (mfaaa + c1o1 * oMdrho) * (vx3Sq - vx3) * c1o2;
+   real m1 = -mfaac        - c2o1 * mfaab *  vx3         +  mfaaa                * (c1o1 - vx3Sq)              - c1o1 * oMdrho * vx3Sq;
+   real m2 =  mfaac * c1o2 +      mfaab * (vx3 + c1o2) + (mfaaa + c1o1 * oMdrho) * (vx3Sq + vx3) * c1o2;
    mfaaa = m0;
    mfaab = m1;
    mfaac = m2;
    ////////////////////////////////////////////////////////////////////////////////////
    m0 =  mfabc * c1o2 +      mfabb * (vx3 - c1o2) + mfaba * (vx3Sq - vx3) * c1o2;
-   m1 = -mfabc        - two * mfabb *  vx3         + mfaba * (one - vx3Sq);
+   m1 = -mfabc        - c2o1 * mfabb *  vx3         + mfaba * (c1o1 - vx3Sq);
    m2 =  mfabc * c1o2 +      mfabb * (vx3 + c1o2) + mfaba * (vx3Sq + vx3) * c1o2;
    mfaba = m0;
    mfabb = m1;
    mfabc = m2;
    ////////////////////////////////////////////////////////////////////////////////////
    m0 =  mfacc * c1o2 +      mfacb * (vx3 - c1o2) + (mfaca + c1o3 * oMdrho) * (vx3Sq - vx3) * c1o2;
-   m1 = -mfacc        - two * mfacb *  vx3         +  mfaca                  * (one - vx3Sq)              - c1o3 * oMdrho * vx3Sq;
+   m1 = -mfacc        - c2o1 * mfacb *  vx3         +  mfaca                  * (c1o1 - vx3Sq)              - c1o3 * oMdrho * vx3Sq;
    m2 =  mfacc * c1o2 +      mfacb * (vx3 + c1o2) + (mfaca + c1o3 * oMdrho) * (vx3Sq + vx3) * c1o2;
    mfaca = m0;
    mfacb = m1;
@@ -1055,21 +1057,21 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedNodeFC(rea
    ////////////////////////////////////////////////////////////////////////////////////
    ////////////////////////////////////////////////////////////////////////////////////
    m0 =  mfbac * c1o2 +      mfbab * (vx3 - c1o2) + mfbaa * (vx3Sq - vx3) * c1o2;
-   m1 = -mfbac        - two * mfbab *  vx3         + mfbaa * (one - vx3Sq);
+   m1 = -mfbac        - c2o1 * mfbab *  vx3         + mfbaa * (c1o1 - vx3Sq);
    m2 =  mfbac * c1o2 +      mfbab * (vx3 + c1o2) + mfbaa * (vx3Sq + vx3) * c1o2;
    mfbaa = m0;
    mfbab = m1;
    mfbac = m2;
    /////////b//////////////////////////////////////////////////////////////////////////
    m0 =  mfbbc * c1o2 +      mfbbb * (vx3 - c1o2) + mfbba * (vx3Sq - vx3) * c1o2;
-   m1 = -mfbbc        - two * mfbbb *  vx3         + mfbba * (one - vx3Sq);
+   m1 = -mfbbc        - c2o1 * mfbbb *  vx3         + mfbba * (c1o1 - vx3Sq);
    m2 =  mfbbc * c1o2 +      mfbbb * (vx3 + c1o2) + mfbba * (vx3Sq + vx3) * c1o2;
    mfbba = m0;
    mfbbb = m1;
    mfbbc = m2;
    /////////b//////////////////////////////////////////////////////////////////////////
    m0 =  mfbcc * c1o2 +      mfbcb * (vx3 - c1o2) + mfbca * (vx3Sq - vx3) * c1o2;
-   m1 = -mfbcc        - two * mfbcb *  vx3         + mfbca * (one - vx3Sq);
+   m1 = -mfbcc        - c2o1 * mfbcb *  vx3         + mfbca * (c1o1 - vx3Sq);
    m2 =  mfbcc * c1o2 +      mfbcb * (vx3 + c1o2) + mfbca * (vx3Sq + vx3) * c1o2;
    mfbca = m0;
    mfbcb = m1;
@@ -1077,21 +1079,21 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedNodeFC(rea
    ////////////////////////////////////////////////////////////////////////////////////
    ////////////////////////////////////////////////////////////////////////////////////
    m0 =  mfcac * c1o2 +      mfcab * (vx3 - c1o2) + (mfcaa + c1o3 * oMdrho) * (vx3Sq - vx3) * c1o2;
-   m1 = -mfcac        - two * mfcab *  vx3         +  mfcaa                  * (one - vx3Sq)              - c1o3 * oMdrho * vx3Sq;
+   m1 = -mfcac        - c2o1 * mfcab *  vx3         +  mfcaa                  * (c1o1 - vx3Sq)              - c1o3 * oMdrho * vx3Sq;
    m2 =  mfcac * c1o2 +      mfcab * (vx3 + c1o2) + (mfcaa + c1o3 * oMdrho) * (vx3Sq + vx3) * c1o2;
    mfcaa = m0;
    mfcab = m1;
    mfcac = m2;
    /////////c//////////////////////////////////////////////////////////////////////////
    m0 =  mfcbc * c1o2 +      mfcbb * (vx3 - c1o2) + mfcba * (vx3Sq - vx3) * c1o2;
-   m1 = -mfcbc        - two * mfcbb *  vx3         + mfcba * (one - vx3Sq);
+   m1 = -mfcbc        - c2o1 * mfcbb *  vx3         + mfcba * (c1o1 - vx3Sq);
    m2 =  mfcbc * c1o2 +      mfcbb * (vx3 + c1o2) + mfcba * (vx3Sq + vx3) * c1o2;
    mfcba = m0;
    mfcbb = m1;
    mfcbc = m2;
    /////////c//////////////////////////////////////////////////////////////////////////
    m0 =  mfccc * c1o2 +      mfccb * (vx3 - c1o2) + (mfcca + c1o9 * oMdrho) * (vx3Sq - vx3) * c1o2;
-   m1 = -mfccc        - two * mfccb *  vx3         +  mfcca                  * (one - vx3Sq)              - c1o9 * oMdrho * vx3Sq;
+   m1 = -mfccc        - c2o1 * mfccb *  vx3         +  mfcca                  * (c1o1 - vx3Sq)              - c1o9 * oMdrho * vx3Sq;
    m2 =  mfccc * c1o2 +      mfccb * (vx3 + c1o2) + (mfcca + c1o9 * oMdrho) * (vx3Sq + vx3) * c1o2;
    mfcca = m0;
    mfccb = m1;
@@ -1102,21 +1104,21 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedNodeFC(rea
    ////////////////////////////////////////////////////////////////////////////////////
    // Y - Dir
    m0 =  mfaca * c1o2 +      mfaba * (vx2 - c1o2) + (mfaaa + c1o6 * oMdrho) * (vx2Sq - vx2) * c1o2;
-   m1 = -mfaca        - two * mfaba *  vx2         +  mfaaa                  * (one - vx2Sq)              - c1o6 * oMdrho * vx2Sq;
+   m1 = -mfaca        - c2o1 * mfaba *  vx2         +  mfaaa                  * (c1o1 - vx2Sq)              - c1o6 * oMdrho * vx2Sq;
    m2 =  mfaca * c1o2 +      mfaba * (vx2 + c1o2) + (mfaaa + c1o6 * oMdrho) * (vx2Sq + vx2) * c1o2;
    mfaaa = m0;
    mfaba = m1;
    mfaca = m2;
    ////////////////////////////////////////////////////////////////////////////////////
    m0 =  mfacb * c1o2 +      mfabb * (vx2 - c1o2) + (mfaab + c2o3 * oMdrho) * (vx2Sq - vx2) * c1o2;
-   m1 = -mfacb        - two * mfabb *  vx2         +  mfaab                  * (one - vx2Sq)              - c2o3 * oMdrho * vx2Sq;
+   m1 = -mfacb        - c2o1 * mfabb *  vx2         +  mfaab                  * (c1o1 - vx2Sq)              - c2o3 * oMdrho * vx2Sq;
    m2 =  mfacb * c1o2 +      mfabb * (vx2 + c1o2) + (mfaab + c2o3 * oMdrho) * (vx2Sq + vx2) * c1o2;
    mfaab = m0;
    mfabb = m1;
    mfacb = m2;
    ////////////////////////////////////////////////////////////////////////////////////
    m0 =  mfacc * c1o2 +      mfabc * (vx2 - c1o2) + (mfaac + c1o6 * oMdrho) * (vx2Sq - vx2) * c1o2;
-   m1 = -mfacc        - two * mfabc *  vx2         +  mfaac                  * (one - vx2Sq)              - c1o6 * oMdrho * vx2Sq;
+   m1 = -mfacc        - c2o1 * mfabc *  vx2         +  mfaac                  * (c1o1 - vx2Sq)              - c1o6 * oMdrho * vx2Sq;
    m2 =  mfacc * c1o2 +      mfabc * (vx2 + c1o2) + (mfaac + c1o6 * oMdrho) * (vx2Sq + vx2) * c1o2;
    mfaac = m0;
    mfabc = m1;
@@ -1124,21 +1126,21 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedNodeFC(rea
    ////////////////////////////////////////////////////////////////////////////////////
    ////////////////////////////////////////////////////////////////////////////////////
    m0 =  mfbca * c1o2 +      mfbba * (vx2 - c1o2) + mfbaa * (vx2Sq - vx2) * c1o2;
-   m1 = -mfbca        - two * mfbba *  vx2         + mfbaa * (one - vx2Sq);
+   m1 = -mfbca        - c2o1 * mfbba *  vx2         + mfbaa * (c1o1 - vx2Sq);
    m2 =  mfbca * c1o2 +      mfbba * (vx2 + c1o2) + mfbaa * (vx2Sq + vx2) * c1o2;
    mfbaa = m0;
    mfbba = m1;
    mfbca = m2;
    /////////b//////////////////////////////////////////////////////////////////////////
    m0 =  mfbcb * c1o2 +      mfbbb * (vx2 - c1o2) + mfbab * (vx2Sq - vx2) * c1o2;
-   m1 = -mfbcb        - two * mfbbb *  vx2         + mfbab * (one - vx2Sq);
+   m1 = -mfbcb        - c2o1 * mfbbb *  vx2         + mfbab * (c1o1 - vx2Sq);
    m2 =  mfbcb * c1o2 +      mfbbb * (vx2 + c1o2) + mfbab * (vx2Sq + vx2) * c1o2;
    mfbab = m0;
    mfbbb = m1;
    mfbcb = m2;
    /////////b//////////////////////////////////////////////////////////////////////////
    m0 =  mfbcc * c1o2 +      mfbbc * (vx2 - c1o2) + mfbac * (vx2Sq - vx2) * c1o2;
-   m1 = -mfbcc        - two * mfbbc *  vx2         + mfbac * (one - vx2Sq);
+   m1 = -mfbcc        - c2o1 * mfbbc *  vx2         + mfbac * (c1o1 - vx2Sq);
    m2 =  mfbcc * c1o2 +      mfbbc * (vx2 + c1o2) + mfbac * (vx2Sq + vx2) * c1o2;
    mfbac = m0;
    mfbbc = m1;
@@ -1146,21 +1148,21 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedNodeFC(rea
    ////////////////////////////////////////////////////////////////////////////////////
    ////////////////////////////////////////////////////////////////////////////////////
    m0 =  mfcca * c1o2 +      mfcba * (vx2 - c1o2) + (mfcaa + c1o18 * oMdrho) * (vx2Sq - vx2) * c1o2;
-   m1 = -mfcca        - two * mfcba *  vx2         +  mfcaa                   * (one - vx2Sq)              - c1o18 * oMdrho * vx2Sq;
+   m1 = -mfcca        - c2o1 * mfcba *  vx2         +  mfcaa                   * (c1o1 - vx2Sq)              - c1o18 * oMdrho * vx2Sq;
    m2 =  mfcca * c1o2 +      mfcba * (vx2 + c1o2) + (mfcaa + c1o18 * oMdrho) * (vx2Sq + vx2) * c1o2;
    mfcaa = m0;
    mfcba = m1;
    mfcca = m2;
    /////////c//////////////////////////////////////////////////////////////////////////
    m0 =  mfccb * c1o2 +      mfcbb * (vx2 - c1o2) + (mfcab + c2o9 * oMdrho) * (vx2Sq - vx2) * c1o2;
-   m1 = -mfccb        - two * mfcbb *  vx2         +  mfcab                  * (one - vx2Sq)              - c2o9 * oMdrho * vx2Sq;
+   m1 = -mfccb        - c2o1 * mfcbb *  vx2         +  mfcab                  * (c1o1 - vx2Sq)              - c2o9 * oMdrho * vx2Sq;
    m2 =  mfccb * c1o2 +      mfcbb * (vx2 + c1o2) + (mfcab + c2o9 * oMdrho) * (vx2Sq + vx2) * c1o2;
    mfcab = m0;
    mfcbb = m1;
    mfccb = m2;
    /////////c//////////////////////////////////////////////////////////////////////////
    m0 =  mfccc * c1o2 +      mfcbc * (vx2 - c1o2) + (mfcac + c1o18 * oMdrho) * (vx2Sq - vx2) * c1o2;
-   m1 = -mfccc        - two * mfcbc *  vx2         +  mfcac                   * (one - vx2Sq)              - c1o18 * oMdrho * vx2Sq;
+   m1 = -mfccc        - c2o1 * mfcbc *  vx2         +  mfcac                   * (c1o1 - vx2Sq)              - c1o18 * oMdrho * vx2Sq;
    m2 =  mfccc * c1o2 +      mfcbc * (vx2 + c1o2) + (mfcac + c1o18 * oMdrho) * (vx2Sq + vx2) * c1o2;
    mfcac = m0;
    mfcbc = m1;
@@ -1171,21 +1173,21 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedNodeFC(rea
    ////////////////////////////////////////////////////////////////////////////////////
    // X - Dir
    m0 =  mfcaa * c1o2 +      mfbaa * (vx1 - c1o2) + (mfaaa + c1o36 * oMdrho) * (vx1Sq - vx1) * c1o2;
-   m1 = -mfcaa        - two * mfbaa *  vx1         +  mfaaa                   * (one - vx1Sq)              - c1o36 * oMdrho * vx1Sq;
+   m1 = -mfcaa        - c2o1 * mfbaa *  vx1         +  mfaaa                   * (c1o1 - vx1Sq)              - c1o36 * oMdrho * vx1Sq;
    m2 =  mfcaa * c1o2 +      mfbaa * (vx1 + c1o2) + (mfaaa + c1o36 * oMdrho) * (vx1Sq + vx1) * c1o2;
    mfaaa = m0;
    mfbaa = m1;
    mfcaa = m2;
    ////////////////////////////////////////////////////////////////////////////////////
    m0 =  mfcba * c1o2 +      mfbba * (vx1 - c1o2) + (mfaba + c1o9 * oMdrho) * (vx1Sq - vx1) * c1o2;
-   m1 = -mfcba        - two * mfbba *  vx1         +  mfaba                  * (one - vx1Sq)              - c1o9 * oMdrho * vx1Sq;
+   m1 = -mfcba        - c2o1 * mfbba *  vx1         +  mfaba                  * (c1o1 - vx1Sq)              - c1o9 * oMdrho * vx1Sq;
    m2 =  mfcba * c1o2 +      mfbba * (vx1 + c1o2) + (mfaba + c1o9 * oMdrho) * (vx1Sq + vx1) * c1o2;
    mfaba = m0;
    mfbba = m1;
    mfcba = m2;
    ////////////////////////////////////////////////////////////////////////////////////
    m0 =  mfcca * c1o2 +      mfbca * (vx1 - c1o2) + (mfaca + c1o36 * oMdrho) * (vx1Sq - vx1) * c1o2;
-   m1 = -mfcca        - two * mfbca *  vx1         +  mfaca                   * (one - vx1Sq)              - c1o36 * oMdrho * vx1Sq;
+   m1 = -mfcca        - c2o1 * mfbca *  vx1         +  mfaca                   * (c1o1 - vx1Sq)              - c1o36 * oMdrho * vx1Sq;
    m2 =  mfcca * c1o2 +      mfbca * (vx1 + c1o2) + (mfaca + c1o36 * oMdrho) * (vx1Sq + vx1) * c1o2;
    mfaca = m0;
    mfbca = m1;
@@ -1193,21 +1195,21 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedNodeFC(rea
    ////////////////////////////////////////////////////////////////////////////////////
    ////////////////////////////////////////////////////////////////////////////////////
    m0 =  mfcab * c1o2 +      mfbab * (vx1 - c1o2) + (mfaab + c1o9 * oMdrho) * (vx1Sq - vx1) * c1o2;
-   m1 = -mfcab        - two * mfbab *  vx1         +  mfaab                  * (one - vx1Sq)              - c1o9 * oMdrho * vx1Sq;
+   m1 = -mfcab        - c2o1 * mfbab *  vx1         +  mfaab                  * (c1o1 - vx1Sq)              - c1o9 * oMdrho * vx1Sq;
    m2 =  mfcab * c1o2 +      mfbab * (vx1 + c1o2) + (mfaab + c1o9 * oMdrho) * (vx1Sq + vx1) * c1o2;
    mfaab = m0;
    mfbab = m1;
    mfcab = m2;
    ///////////b////////////////////////////////////////////////////////////////////////
    m0 =  mfcbb * c1o2 +      mfbbb * (vx1 - c1o2) + (mfabb + c4o9 * oMdrho) * (vx1Sq - vx1) * c1o2;
-   m1 = -mfcbb        - two * mfbbb *  vx1         +  mfabb                  * (one - vx1Sq)              - c4o9 * oMdrho * vx1Sq;
+   m1 = -mfcbb        - c2o1 * mfbbb *  vx1         +  mfabb                  * (c1o1 - vx1Sq)              - c4o9 * oMdrho * vx1Sq;
    m2 =  mfcbb * c1o2 +      mfbbb * (vx1 + c1o2) + (mfabb + c4o9 * oMdrho) * (vx1Sq + vx1) * c1o2;
    mfabb = m0;
    mfbbb = m1;
    mfcbb = m2;
    ///////////b////////////////////////////////////////////////////////////////////////
    m0 =  mfccb * c1o2 +      mfbcb * (vx1 - c1o2) + (mfacb + c1o9 * oMdrho) * (vx1Sq - vx1) * c1o2;
-   m1 = -mfccb        - two * mfbcb *  vx1         +  mfacb                  * (one - vx1Sq)              - c1o9 * oMdrho * vx1Sq;
+   m1 = -mfccb        - c2o1 * mfbcb *  vx1         +  mfacb                  * (c1o1 - vx1Sq)              - c1o9 * oMdrho * vx1Sq;
    m2 =  mfccb * c1o2 +      mfbcb * (vx1 + c1o2) + (mfacb + c1o9 * oMdrho) * (vx1Sq + vx1) * c1o2;
    mfacb = m0;
    mfbcb = m1;
@@ -1215,21 +1217,21 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedNodeFC(rea
    ////////////////////////////////////////////////////////////////////////////////////
    ////////////////////////////////////////////////////////////////////////////////////
    m0 =  mfcac * c1o2 +      mfbac * (vx1 - c1o2) + (mfaac + c1o36 * oMdrho) * (vx1Sq - vx1) * c1o2;
-   m1 = -mfcac        - two * mfbac *  vx1         +  mfaac                   * (one - vx1Sq)              - c1o36 * oMdrho * vx1Sq;
+   m1 = -mfcac        - c2o1 * mfbac *  vx1         +  mfaac                   * (c1o1 - vx1Sq)              - c1o36 * oMdrho * vx1Sq;
    m2 =  mfcac * c1o2 +      mfbac * (vx1 + c1o2) + (mfaac + c1o36 * oMdrho) * (vx1Sq + vx1) * c1o2;
    mfaac = m0;
    mfbac = m1;
    mfcac = m2;
    ///////////c////////////////////////////////////////////////////////////////////////
    m0 =  mfcbc * c1o2 +      mfbbc * (vx1 - c1o2) + (mfabc + c1o9 * oMdrho) * (vx1Sq - vx1) * c1o2;
-   m1 = -mfcbc        - two * mfbbc *  vx1         +  mfabc                  * (one - vx1Sq)              - c1o9 * oMdrho * vx1Sq;
+   m1 = -mfcbc        - c2o1 * mfbbc *  vx1         +  mfabc                  * (c1o1 - vx1Sq)              - c1o9 * oMdrho * vx1Sq;
    m2 =  mfcbc * c1o2 +      mfbbc * (vx1 + c1o2) + (mfabc + c1o9 * oMdrho) * (vx1Sq + vx1) * c1o2;
    mfabc = m0;
    mfbbc = m1;
    mfcbc = m2;
    ///////////c////////////////////////////////////////////////////////////////////////
    m0 =  mfccc * c1o2 +      mfbcc * (vx1 - c1o2) + (mfacc + c1o36 * oMdrho) * (vx1Sq - vx1) * c1o2;
-   m1 = -mfccc        - two * mfbcc *  vx1         +  mfacc                   * (one - vx1Sq)              - c1o36 * oMdrho * vx1Sq;
+   m1 = -mfccc        - c2o1 * mfbcc *  vx1         +  mfacc                   * (c1o1 - vx1Sq)              - c1o36 * oMdrho * vx1Sq;
    m2 =  mfccc * c1o2 +      mfbcc * (vx1 + c1o2) + (mfacc + c1o36 * oMdrho) * (vx1Sq + vx1) * c1o2;
    mfacc = m0;
    mfbcc = m1;

@@ -41,7 +41,9 @@
 
 #define PROOF_CORRECTNESS
 
-using namespace UbMath;
+//using namespace UbMath;
+using namespace vf::lbm::constant
+;
 
 //////////////////////////////////////////////////////////////////////////
 CumulantK17LBMKernel::CumulantK17LBMKernel()
@@ -202,8 +204,8 @@ void CumulantK17LBMKernel::calculate(int step)
                                     (((mfbac + mfbca) + (mfbaa + mfbcc)) + ((mfabc + mfcba) + (mfaba + mfcbc)) + ((mfacb + mfcab) + (mfaab + mfccb))) +
                                     ((mfabb + mfcbb) + (mfbab + mfbcb)) + (mfbba + mfbbc)) + mfbbb;
 
-                    real rho = c1 + drho;
-                    real OOrho = c1 / rho;
+                    real rho = c1o1 + drho;
+                    real OOrho = c1o1 / rho;
                     ////////////////////////////////////////////////////////////////////////////////////
                     real vvx = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
                                    (((mfcba - mfabc) + (mfcbc - mfaba)) + ((mfcab - mfacb) + (mfccb - mfaab))) +
@@ -256,39 +258,39 @@ void CumulantK17LBMKernel::calculate(int step)
                     //!
                     ////////////////////////////////////////////////////////////////////////////////////
                     // Z - Dir
-                    forwardInverseChimeraWithK(mfaaa, mfaab, mfaac, vvz, vz2, c36, c1o36);
-                    forwardInverseChimeraWithK(mfaba, mfabb, mfabc, vvz, vz2, c9, c1o9);
-                    forwardInverseChimeraWithK(mfaca, mfacb, mfacc, vvz, vz2, c36, c1o36);
-                    forwardInverseChimeraWithK(mfbaa, mfbab, mfbac, vvz, vz2, c9, c1o9);
+                    forwardInverseChimeraWithK(mfaaa, mfaab, mfaac, vvz, vz2, c36o1, c1o36);
+                    forwardInverseChimeraWithK(mfaba, mfabb, mfabc, vvz, vz2, c9o1, c1o9);
+                    forwardInverseChimeraWithK(mfaca, mfacb, mfacc, vvz, vz2, c36o1, c1o36);
+                    forwardInverseChimeraWithK(mfbaa, mfbab, mfbac, vvz, vz2, c9o1, c1o9);
                     forwardInverseChimeraWithK(mfbba, mfbbb, mfbbc, vvz, vz2, c9o4, c4o9);
-                    forwardInverseChimeraWithK(mfbca, mfbcb, mfbcc, vvz, vz2, c9, c1o9);
-                    forwardInverseChimeraWithK(mfcaa, mfcab, mfcac, vvz, vz2, c36, c1o36);
-                    forwardInverseChimeraWithK(mfcba, mfcbb, mfcbc, vvz, vz2, c9, c1o9);
-                    forwardInverseChimeraWithK(mfcca, mfccb, mfccc, vvz, vz2, c36, c1o36);
+                    forwardInverseChimeraWithK(mfbca, mfbcb, mfbcc, vvz, vz2, c9o1, c1o9);
+                    forwardInverseChimeraWithK(mfcaa, mfcab, mfcac, vvz, vz2, c36o1, c1o36);
+                    forwardInverseChimeraWithK(mfcba, mfcbb, mfcbc, vvz, vz2, c9o1, c1o9);
+                    forwardInverseChimeraWithK(mfcca, mfccb, mfccc, vvz, vz2, c36o1, c1o36);
 
                     ////////////////////////////////////////////////////////////////////////////////////
                     // Y - Dir
-                    forwardInverseChimeraWithK(mfaaa, mfaba, mfaca, vvy, vy2, c6, c1o6);
+                    forwardInverseChimeraWithK(mfaaa, mfaba, mfaca, vvy, vy2, c6o1, c1o6);
                     forwardChimera(mfaab, mfabb, mfacb, vvy, vy2);
-                    forwardInverseChimeraWithK(mfaac, mfabc, mfacc, vvy, vy2, c18, c1o18);
+                    forwardInverseChimeraWithK(mfaac, mfabc, mfacc, vvy, vy2, c18o1, c1o18);
                     forwardInverseChimeraWithK(mfbaa, mfbba, mfbca, vvy, vy2, c3o2, c2o3);
                     forwardChimera(mfbab, mfbbb, mfbcb, vvy, vy2);
                     forwardInverseChimeraWithK(mfbac, mfbbc, mfbcc, vvy, vy2, c9o2, c2o9);
-                    forwardInverseChimeraWithK(mfcaa, mfcba, mfcca, vvy, vy2, c6, c1o6);
+                    forwardInverseChimeraWithK(mfcaa, mfcba, mfcca, vvy, vy2, c6o1, c1o6);
                     forwardChimera(mfcab, mfcbb, mfccb, vvy, vy2);
-                    forwardInverseChimeraWithK(mfcac, mfcbc, mfccc, vvy, vy2, c18, c1o18);
+                    forwardInverseChimeraWithK(mfcac, mfcbc, mfccc, vvy, vy2, c18o1, c1o18);
 
                     ////////////////////////////////////////////////////////////////////////////////////
                     // X - Dir
-                    forwardInverseChimeraWithK(mfaaa, mfbaa, mfcaa, vvx, vx2, c1, c1);
+                    forwardInverseChimeraWithK(mfaaa, mfbaa, mfcaa, vvx, vx2, c1o1, c1o1);
                     forwardChimera(mfaba, mfbba, mfcba, vvx, vx2);
-                    forwardInverseChimeraWithK(mfaca, mfbca, mfcca, vvx, vx2, c3, c1o3);
+                    forwardInverseChimeraWithK(mfaca, mfbca, mfcca, vvx, vx2, c3o1, c1o3);
                     forwardChimera(mfaab, mfbab, mfcab, vvx, vx2);
                     forwardChimera(mfabb, mfbbb, mfcbb, vvx, vx2);
                     forwardChimera(mfacb, mfbcb, mfccb, vvx, vx2);
-                    forwardInverseChimeraWithK(mfaac, mfbac, mfcac, vvx, vx2, c3, c1o3);
+                    forwardInverseChimeraWithK(mfaac, mfbac, mfcac, vvx, vx2, c3o1, c1o3);
                     forwardChimera(mfabc, mfbbc, mfcbc, vvx, vx2);
-                    forwardInverseChimeraWithK(mfacc, mfbcc, mfccc, vvx, vx2, c9, c1o9);
+                    forwardInverseChimeraWithK(mfacc, mfbcc, mfccc, vvx, vx2, c9o1, c1o9);
 
                     ////////////////////////////////////////////////////////////////////////////////////
                     //! - Setting relaxation rates for non-hydrodynamic cumulants (default values). Variable names and equations according to
@@ -304,29 +306,29 @@ void CumulantK17LBMKernel::calculate(int step)
                     //!
                     ////////////////////////////////////////////////////////////
                     //2.
-                    real OxxPyyPzz = c1;
+                    real OxxPyyPzz = c1o1;
                     ////////////////////////////////////////////////////////////
                     //3.
-                    real OxyyPxzz = c8  * (-c2 + omega) * ( c1 + c2*omega) / (-c8 - c14*omega + c7*omega*omega);
-                    real OxyyMxzz = c8  * (-c2 + omega) * (-c7 + c4*omega) / (c56 - c50*omega + c9*omega*omega);
-                    real Oxyz     = c24 * (-c2 + omega) * (-c2 - c7*omega + c3*omega*omega) / (c48 + c152*omega - c130*omega*omega + c29*omega*omega*omega);
+                    real OxyyPxzz = c8o1 * (-c2o1 + omega) * ( c1o1 + c2o1 *omega) / (-c8o1 - c14o1 *omega + c7o1 *omega*omega);
+                    real OxyyMxzz = c8o1 * (-c2o1 + omega) * (-c7o1 + c4o1 *omega) / (c56o1 - c50o1 *omega + c9o1 *omega*omega);
+                    real Oxyz     = c24o1 * (-c2o1 + omega) * (-c2o1 - c7o1 *omega + c3o1 *omega*omega) / (c48o1 + c152o1 *omega - c130o1 *omega*omega + c29o1 *omega*omega*omega);
                     ////////////////////////////////////////////////////////////
                     //4.
-                    real O4 = c1;
+                    real O4 = c1o1;
                     ////////////////////////////////////////////////////////////
                     //5.
-                    real O5 = c1;
+                    real O5 = c1o1;
                     ////////////////////////////////////////////////////////////
                     //6.
-                    real O6 = c1;
+                    real O6 = c1o1;
 
                     ////////////////////////////////////////////////////////////////////////////////////
                     //! - A and B: parameters for fourth order convergence of the diffusion term according to Eq. (115) and (116)
                     //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05.040 ]</b></a>
                     //! with simplifications assuming \f$\omega_2 = 1.0\f$ (modify for different bulk viscosity).
                     //!
-                    real A = (c4 + c2*omega - c3*omega*omega) / (c2 - c7*omega + c5*omega*omega);
-                    real B = (c4 + c28*omega - c14*omega*omega) / (c6 - c21*omega + c15*omega*omega);
+                    real A = (c4o1 + c2o1 *omega - c3o1 *omega*omega) / (c2o1 - c7o1 *omega + c5o1 *omega*omega);
+                    real B = (c4o1 + c28o1 *omega - c14o1 *omega*omega) / (c6o1 - c21o1 *omega + c15o1 *omega*omega);
 
                     ////////////////////////////////////////////////////////////////////////////////////
                     //! - Compute cumulants from central moments according to Eq. (20)-(23) in
@@ -334,30 +336,30 @@ void CumulantK17LBMKernel::calculate(int step)
                     //!
                     ////////////////////////////////////////////////////////////
                     //4.
-                    real CUMcbb = mfcbb - ((mfcaa + c1o3) * mfabb + c2 * mfbba * mfbab) * OOrho;
-                    real CUMbcb = mfbcb - ((mfaca + c1o3) * mfbab + c2 * mfbba * mfabb) * OOrho;
-                    real CUMbbc = mfbbc - ((mfaac + c1o3) * mfbba + c2 * mfbab * mfabb) * OOrho;
+                    real CUMcbb = mfcbb - ((mfcaa + c1o3) * mfabb + c2o1 * mfbba * mfbab) * OOrho;
+                    real CUMbcb = mfbcb - ((mfaca + c1o3) * mfbab + c2o1 * mfbba * mfabb) * OOrho;
+                    real CUMbbc = mfbbc - ((mfaac + c1o3) * mfbba + c2o1 * mfbab * mfabb) * OOrho;
 
-                    real CUMcca = mfcca - (((mfcaa * mfaca + c2 * mfbba * mfbba) + c1o3 * (mfcaa + mfaca)) * OOrho - c1o9 * (drho * OOrho));
-                    real CUMcac = mfcac - (((mfcaa * mfaac + c2 * mfbab * mfbab) + c1o3 * (mfcaa + mfaac)) * OOrho - c1o9 * (drho * OOrho));
-                    real CUMacc = mfacc - (((mfaac * mfaca + c2 * mfabb * mfabb) + c1o3 * (mfaac + mfaca)) * OOrho - c1o9 * (drho * OOrho));
+                    real CUMcca = mfcca - (((mfcaa * mfaca + c2o1 * mfbba * mfbba) + c1o3 * (mfcaa + mfaca)) * OOrho - c1o9 * (drho * OOrho));
+                    real CUMcac = mfcac - (((mfcaa * mfaac + c2o1 * mfbab * mfbab) + c1o3 * (mfcaa + mfaac)) * OOrho - c1o9 * (drho * OOrho));
+                    real CUMacc = mfacc - (((mfaac * mfaca + c2o1 * mfabb * mfabb) + c1o3 * (mfaac + mfaca)) * OOrho - c1o9 * (drho * OOrho));
                     ////////////////////////////////////////////////////////////
                     //5.
-                    real CUMbcc = mfbcc - ((mfaac * mfbca + mfaca * mfbac + c4 * mfabb * mfbbb + c2 * (mfbab * mfacb + mfbba * mfabc)) + c1o3 * (mfbca + mfbac)) * OOrho;
-                    real CUMcbc = mfcbc - ((mfaac * mfcba + mfcaa * mfabc + c4 * mfbab * mfbbb + c2 * (mfabb * mfcab + mfbba * mfbac)) + c1o3 * (mfcba + mfabc)) * OOrho;
-                    real CUMccb = mfccb - ((mfcaa * mfacb + mfaca * mfcab + c4 * mfbba * mfbbb + c2 * (mfbab * mfbca + mfabb * mfcba)) + c1o3 * (mfacb + mfcab)) * OOrho;
+                    real CUMbcc = mfbcc - ((mfaac * mfbca + mfaca * mfbac + c4o1 * mfabb * mfbbb + c2o1 * (mfbab * mfacb + mfbba * mfabc)) + c1o3 * (mfbca + mfbac)) * OOrho;
+                    real CUMcbc = mfcbc - ((mfaac * mfcba + mfcaa * mfabc + c4o1 * mfbab * mfbbb + c2o1 * (mfabb * mfcab + mfbba * mfbac)) + c1o3 * (mfcba + mfabc)) * OOrho;
+                    real CUMccb = mfccb - ((mfcaa * mfacb + mfaca * mfcab + c4o1 * mfbba * mfbbb + c2o1 * (mfbab * mfbca + mfabb * mfcba)) + c1o3 * (mfacb + mfcab)) * OOrho;
                     ////////////////////////////////////////////////////////////
                     //6.
-                    real CUMccc = mfccc + ((-c4 * mfbbb * mfbbb
+                    real CUMccc = mfccc + ((-c4o1 * mfbbb * mfbbb
                                                - (mfcaa * mfacc + mfaca * mfcac + mfaac * mfcca)
-                                               - c4 * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
-                                               - c2 * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb)) * OOrho
-                                              + (c4 * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
-                                                 + c2 * (mfcaa * mfaca * mfaac)
-                                                 + c16 * mfbba * mfbab * mfabb) * OOrho * OOrho
+                                               - c4o1 * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
+                                               - c2o1 * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb)) * OOrho
+                                              + (c4o1 * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
+                                                 + c2o1 * (mfcaa * mfaca * mfaac)
+                                                 + c16o1 * mfbba * mfbab * mfabb) * OOrho * OOrho
                                               - c1o3 * (mfacc + mfcac + mfcca) * OOrho
                                               - c1o9 * (mfcaa + mfaca + mfaac) * OOrho
-                                              + (c2 * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
+                                              + (c2o1 * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
                                                  + (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa) + c1o3 * (mfaac + mfaca + mfcaa)) * OOrho * OOrho * c2o3
                                               + c1o27 * ((drho * drho - drho) * OOrho * OOrho));
 
@@ -389,9 +391,9 @@ void CumulantK17LBMKernel::calculate(int step)
                     //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015), DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
                     //! Note that the division by rho is omitted here as we need rho times the gradients later.
                     //!
-                    real Dxy = -c3 * omega * mfbba;
-                    real Dxz = -c3 * omega * mfbab;
-                    real Dyz = -c3 * omega * mfabb;
+                    real Dxy = -c3o1 * omega * mfbba;
+                    real Dxz = -c3o1 * omega * mfbab;
+                    real Dyz = -c3o1 * omega * mfabb;
                     real dxux = c1o2 * (-omega) * (mxxMyy + mxxMzz) + c1o2 * OxxPyyPzz * (mfaaa - mxxPyyPzz);
                     real dyuy = dxux + omega * c3o2 * mxxMyy;
                     real dzuz = dxux + omega * c3o2 * mxxMzz;
@@ -399,9 +401,9 @@ void CumulantK17LBMKernel::calculate(int step)
                     //! - Relaxation of second order cumulants with correction terms according to Eq. (33)-(35) in
                     //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05.040 ]</b></a>
                     //!
-                    mxxPyyPzz += OxxPyyPzz * (mfaaa - mxxPyyPzz) - c3 * (c1 - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
-                    mxxMyy += omega * (-mxxMyy) - c3 * (c1 + c1o2 * (-omega)) * (vx2 * dxux - vy2 * dyuy);
-                    mxxMzz += omega * (-mxxMzz) - c3 * (c1 + c1o2 * (-omega)) * (vx2 * dxux - vz2 * dzuz);
+                    mxxPyyPzz += OxxPyyPzz * (mfaaa - mxxPyyPzz) - c3o1 * (c1o1 - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
+                    mxxMyy += omega * (-mxxMyy) - c3o1 * (c1o1 + c1o2 * (-omega)) * (vx2 * dxux - vy2 * dyuy);
+                    mxxMzz += omega * (-mxxMzz) - c3o1 * (c1o1 + c1o2 * (-omega)) * (vx2 * dxux - vz2 * dzuz);
 
                     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                     ////no correction
@@ -420,19 +422,19 @@ void CumulantK17LBMKernel::calculate(int step)
                     //! - Relaxation of third order cumulants including limiter according to Eq. (116)-(123)
                     //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05.040 ]</b></a>
                     //!
-                    wadjust = Oxyz + (c1 - Oxyz) * abs(mfbbb) / (abs(mfbbb) + qudricLimitD);
+                    wadjust = Oxyz + (c1o1 - Oxyz) * abs(mfbbb) / (abs(mfbbb) + qudricLimitD);
                     mfbbb += wadjust * (-mfbbb);
-                    wadjust = OxyyPxzz + (c1 - OxyyPxzz) * abs(mxxyPyzz) / (abs(mxxyPyzz) + qudricLimitP);
+                    wadjust = OxyyPxzz + (c1o1 - OxyyPxzz) * abs(mxxyPyzz) / (abs(mxxyPyzz) + qudricLimitP);
                     mxxyPyzz += wadjust * (-mxxyPyzz);
-                    wadjust = OxyyMxzz + (c1 - OxyyMxzz) * abs(mxxyMyzz) / (abs(mxxyMyzz) + qudricLimitM);
+                    wadjust = OxyyMxzz + (c1o1 - OxyyMxzz) * abs(mxxyMyzz) / (abs(mxxyMyzz) + qudricLimitM);
                     mxxyMyzz += wadjust * (-mxxyMyzz);
-                    wadjust = OxyyPxzz + (c1 - OxyyPxzz) * abs(mxxzPyyz) / (abs(mxxzPyyz) + qudricLimitP);
+                    wadjust = OxyyPxzz + (c1o1 - OxyyPxzz) * abs(mxxzPyyz) / (abs(mxxzPyyz) + qudricLimitP);
                     mxxzPyyz += wadjust * (-mxxzPyyz);
-                    wadjust = OxyyMxzz + (c1 - OxyyMxzz) * abs(mxxzMyyz) / (abs(mxxzMyyz) + qudricLimitM);
+                    wadjust = OxyyMxzz + (c1o1 - OxyyMxzz) * abs(mxxzMyyz) / (abs(mxxzMyyz) + qudricLimitM);
                     mxxzMyyz += wadjust * (-mxxzMyyz);
-                    wadjust = OxyyPxzz + (c1 - OxyyPxzz) * abs(mxyyPxzz) / (abs(mxyyPxzz) + qudricLimitP);
+                    wadjust = OxyyPxzz + (c1o1 - OxyyPxzz) * abs(mxyyPxzz) / (abs(mxyyPxzz) + qudricLimitP);
                     mxyyPxzz += wadjust * (-mxyyPxzz);
-                    wadjust = OxyyMxzz + (c1 - OxyyMxzz) * abs(mxyyMxzz) / (abs(mxyyMxzz) + qudricLimitM);
+                    wadjust = OxyyMxzz + (c1o1 - OxyyMxzz) * abs(mxyyMxzz) / (abs(mxyyMxzz) + qudricLimitM);
                     mxyyMxzz += wadjust * (-mxyyMxzz);
                     //////////////////////////////////////////////////////////////////////////
                     // no limiter
@@ -448,8 +450,8 @@ void CumulantK17LBMKernel::calculate(int step)
                     //! - Compute inverse linear combinations of second and third order cumulants
                     //!
                     mfcaa = c1o3 * (mxxMyy + mxxMzz + mxxPyyPzz);
-                    mfaca = c1o3 * (-c2 * mxxMyy + mxxMzz + mxxPyyPzz);
-                    mfaac = c1o3 * (mxxMyy - c2 * mxxMzz + mxxPyyPzz);
+                    mfaca = c1o3 * (-c2o1 * mxxMyy + mxxMzz + mxxPyyPzz);
+                    mfaac = c1o3 * (mxxMyy - c2o1 * mxxMzz + mxxPyyPzz);
 
                     mfcba = (mxxyMyzz + mxxyPyzz) * c1o2;
                     mfabc = (-mxxyMyzz + mxxyPyzz) * c1o2;
@@ -465,12 +467,12 @@ void CumulantK17LBMKernel::calculate(int step)
                     //! - Relax fourth order cumulants to modified equilibrium for fourth order convergence of diffusion according to Eq. (43)-(48)
                     //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05.040 ]</b></a>
                     //!
-                    CUMacc = -O4 * (c1 / omega - c1o2) * (dyuy + dzuz) * c2o3 * A + (c1 - O4) * (CUMacc);
-                    CUMcac = -O4 * (c1 / omega - c1o2) * (dxux + dzuz) * c2o3 * A + (c1 - O4) * (CUMcac);
-                    CUMcca = -O4 * (c1 / omega - c1o2) * (dyuy + dxux) * c2o3 * A + (c1 - O4) * (CUMcca);
-                    CUMbbc = -O4 * (c1 / omega - c1o2) * Dxy * c1o3 * B + (c1 - O4) * (CUMbbc);
-                    CUMbcb = -O4 * (c1 / omega - c1o2) * Dxz * c1o3 * B + (c1 - O4) * (CUMbcb);
-                    CUMcbb = -O4 * (c1 / omega - c1o2) * Dyz * c1o3 * B + (c1 - O4) * (CUMcbb);
+                    CUMacc = -O4 * (c1o1 / omega - c1o2) * (dyuy + dzuz) * c2o3 * A + (c1o1 - O4) * (CUMacc);
+                    CUMcac = -O4 * (c1o1 / omega - c1o2) * (dxux + dzuz) * c2o3 * A + (c1o1 - O4) * (CUMcac);
+                    CUMcca = -O4 * (c1o1 / omega - c1o2) * (dyuy + dxux) * c2o3 * A + (c1o1 - O4) * (CUMcca);
+                    CUMbbc = -O4 * (c1o1 / omega - c1o2) * Dxy * c1o3 * B + (c1o1 - O4) * (CUMbbc);
+                    CUMbcb = -O4 * (c1o1 / omega - c1o2) * Dxz * c1o3 * B + (c1o1 - O4) * (CUMbcb);
+                    CUMcbb = -O4 * (c1o1 / omega - c1o2) * Dyz * c1o3 * B + (c1o1 - O4) * (CUMcbb);
 
                     //////////////////////////////////////////////////////////////////////////
                     //5.
@@ -489,32 +491,32 @@ void CumulantK17LBMKernel::calculate(int step)
 
                     //////////////////////////////////////////////////////////////////////////
                     //4.
-                    mfcbb = CUMcbb + c1o3 * ((c3 * mfcaa + c1) * mfabb + c6 * mfbba * mfbab) * OOrho;
-                    mfbcb = CUMbcb + c1o3 * ((c3 * mfaca + c1) * mfbab + c6 * mfbba * mfabb) * OOrho;
-                    mfbbc = CUMbbc + c1o3 * ((c3 * mfaac + c1) * mfbba + c6 * mfbab * mfabb) * OOrho;
+                    mfcbb = CUMcbb + c1o3 * ((c3o1 * mfcaa + c1o1) * mfabb + c6o1 * mfbba * mfbab) * OOrho;
+                    mfbcb = CUMbcb + c1o3 * ((c3o1 * mfaca + c1o1) * mfbab + c6o1 * mfbba * mfabb) * OOrho;
+                    mfbbc = CUMbbc + c1o3 * ((c3o1 * mfaac + c1o1) * mfbba + c6o1 * mfbab * mfabb) * OOrho;
 
-                    mfcca = CUMcca + (((mfcaa * mfaca + c2 * mfbba * mfbba) * c9 + c3 * (mfcaa + mfaca)) * OOrho - (drho * OOrho)) * c1o9;
-                    mfcac = CUMcac + (((mfcaa * mfaac + c2 * mfbab * mfbab) * c9 + c3 * (mfcaa + mfaac)) * OOrho - (drho * OOrho)) * c1o9;
-                    mfacc = CUMacc + (((mfaac * mfaca + c2 * mfabb * mfabb) * c9 + c3 * (mfaac + mfaca)) * OOrho - (drho * OOrho)) * c1o9;
+                    mfcca = CUMcca + (((mfcaa * mfaca + c2o1 * mfbba * mfbba) * c9o1 + c3o1 * (mfcaa + mfaca)) * OOrho - (drho * OOrho)) * c1o9;
+                    mfcac = CUMcac + (((mfcaa * mfaac + c2o1 * mfbab * mfbab) * c9o1 + c3o1 * (mfcaa + mfaac)) * OOrho - (drho * OOrho)) * c1o9;
+                    mfacc = CUMacc + (((mfaac * mfaca + c2o1 * mfabb * mfabb) * c9o1 + c3o1 * (mfaac + mfaca)) * OOrho - (drho * OOrho)) * c1o9;
 
                     //////////////////////////////////////////////////////////////////////////
                     //5.
-                    mfbcc = CUMbcc + c1o3 * (c3 * (mfaac * mfbca + mfaca * mfbac + c4 * mfabb * mfbbb + c2 * (mfbab * mfacb + mfbba * mfabc)) + (mfbca + mfbac)) * OOrho;
-                    mfcbc = CUMcbc + c1o3 * (c3 * (mfaac * mfcba + mfcaa * mfabc + c4 * mfbab * mfbbb + c2 * (mfabb * mfcab + mfbba * mfbac)) + (mfcba + mfabc)) * OOrho;
-                    mfccb = CUMccb + c1o3 * (c3 * (mfcaa * mfacb + mfaca * mfcab + c4 * mfbba * mfbbb + c2 * (mfbab * mfbca + mfabb * mfcba)) + (mfacb + mfcab)) * OOrho;
+                    mfbcc = CUMbcc + c1o3 * (c3o1 * (mfaac * mfbca + mfaca * mfbac + c4o1 * mfabb * mfbbb + c2o1 * (mfbab * mfacb + mfbba * mfabc)) + (mfbca + mfbac)) * OOrho;
+                    mfcbc = CUMcbc + c1o3 * (c3o1 * (mfaac * mfcba + mfcaa * mfabc + c4o1 * mfbab * mfbbb + c2o1 * (mfabb * mfcab + mfbba * mfbac)) + (mfcba + mfabc)) * OOrho;
+                    mfccb = CUMccb + c1o3 * (c3o1 * (mfcaa * mfacb + mfaca * mfcab + c4o1 * mfbba * mfbbb + c2o1 * (mfbab * mfbca + mfabb * mfcba)) + (mfacb + mfcab)) * OOrho;
 
                     //////////////////////////////////////////////////////////////////////////
                     //6.
-                    mfccc = CUMccc - ((-c4 * mfbbb * mfbbb
+                    mfccc = CUMccc - ((-c4o1 * mfbbb * mfbbb
                                        - (mfcaa * mfacc + mfaca * mfcac + mfaac * mfcca)
-                                       - c4 * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
-                                       - c2 * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb)) * OOrho
-                                      + (c4 * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
-                                         + c2 * (mfcaa * mfaca * mfaac)
-                                         + c16 * mfbba * mfbab * mfabb) * OOrho * OOrho
+                                       - c4o1 * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
+                                       - c2o1 * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb)) * OOrho
+                                      + (c4o1 * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
+                                         + c2o1 * (mfcaa * mfaca * mfaac)
+                                         + c16o1 * mfbba * mfbab * mfabb) * OOrho * OOrho
                                       - c1o3 * (mfacc + mfcac + mfcca) * OOrho
                                       - c1o9 * (mfcaa + mfaca + mfaac) * OOrho
-                                      + (c2 * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
+                                      + (c2o1 * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
                                          + (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa) + c1o3 * (mfaac + mfaca + mfcaa)) * OOrho * OOrho * c2o3
                                       + c1o27 * ((drho * drho - drho) * OOrho * OOrho));
 
@@ -536,39 +538,39 @@ void CumulantK17LBMKernel::calculate(int step)
                     //!
                     ////////////////////////////////////////////////////////////////////////////////////
                     // X - Dir
-                    backwardInverseChimeraWithK(mfaaa, mfbaa, mfcaa, vvx, vx2, c1, c1);
+                    backwardInverseChimeraWithK(mfaaa, mfbaa, mfcaa, vvx, vx2, c1o1, c1o1);
                     backwardChimera(mfaba, mfbba, mfcba, vvx, vx2);
-                    backwardInverseChimeraWithK(mfaca, mfbca, mfcca, vvx, vx2, c3, c1o3);
+                    backwardInverseChimeraWithK(mfaca, mfbca, mfcca, vvx, vx2, c3o1, c1o3);
                     backwardChimera(mfaab, mfbab, mfcab, vvx, vx2);
                     backwardChimera(mfabb, mfbbb, mfcbb, vvx, vx2);
                     backwardChimera(mfacb, mfbcb, mfccb, vvx, vx2);
-                    backwardInverseChimeraWithK(mfaac, mfbac, mfcac, vvx, vx2, c3, c1o3);
+                    backwardInverseChimeraWithK(mfaac, mfbac, mfcac, vvx, vx2, c3o1, c1o3);
                     backwardChimera(mfabc, mfbbc, mfcbc, vvx, vx2);
-                    backwardInverseChimeraWithK(mfacc, mfbcc, mfccc, vvx, vx2, c9, c1o9);
+                    backwardInverseChimeraWithK(mfacc, mfbcc, mfccc, vvx, vx2, c9o1, c1o9);
 
                     ////////////////////////////////////////////////////////////////////////////////////
                     // Y - Dir
-                    backwardInverseChimeraWithK(mfaaa, mfaba, mfaca, vvy, vy2, c6, c1o6);
+                    backwardInverseChimeraWithK(mfaaa, mfaba, mfaca, vvy, vy2, c6o1, c1o6);
                     backwardChimera(mfaab, mfabb, mfacb, vvy, vy2);
-                    backwardInverseChimeraWithK(mfaac, mfabc, mfacc, vvy, vy2, c18, c1o18);
+                    backwardInverseChimeraWithK(mfaac, mfabc, mfacc, vvy, vy2, c18o1, c1o18);
                     backwardInverseChimeraWithK(mfbaa, mfbba, mfbca, vvy, vy2, c3o2, c2o3);
                     backwardChimera(mfbab, mfbbb, mfbcb, vvy, vy2);
                     backwardInverseChimeraWithK(mfbac, mfbbc, mfbcc, vvy, vy2, c9o2, c2o9);
-                    backwardInverseChimeraWithK(mfcaa, mfcba, mfcca, vvy, vy2, c6, c1o6);
+                    backwardInverseChimeraWithK(mfcaa, mfcba, mfcca, vvy, vy2, c6o1, c1o6);
                     backwardChimera(mfcab, mfcbb, mfccb, vvy, vy2);
-                    backwardInverseChimeraWithK(mfcac, mfcbc, mfccc, vvy, vy2, c18, c1o18);
+                    backwardInverseChimeraWithK(mfcac, mfcbc, mfccc, vvy, vy2, c18o1, c1o18);
 
                     ////////////////////////////////////////////////////////////////////////////////////
                     // Z - Dir
-                    backwardInverseChimeraWithK(mfaaa, mfaab, mfaac, vvz, vz2, c36, c1o36);
-                    backwardInverseChimeraWithK(mfaba, mfabb, mfabc, vvz, vz2, c9, c1o9);
-                    backwardInverseChimeraWithK(mfaca, mfacb, mfacc, vvz, vz2, c36, c1o36);
-                    backwardInverseChimeraWithK(mfbaa, mfbab, mfbac, vvz, vz2, c9, c1o9);
+                    backwardInverseChimeraWithK(mfaaa, mfaab, mfaac, vvz, vz2, c36o1, c1o36);
+                    backwardInverseChimeraWithK(mfaba, mfabb, mfabc, vvz, vz2, c9o1, c1o9);
+                    backwardInverseChimeraWithK(mfaca, mfacb, mfacc, vvz, vz2, c36o1, c1o36);
+                    backwardInverseChimeraWithK(mfbaa, mfbab, mfbac, vvz, vz2, c9o1, c1o9);
                     backwardInverseChimeraWithK(mfbba, mfbbb, mfbbc, vvz, vz2, c9o4, c4o9);
-                    backwardInverseChimeraWithK(mfbca, mfbcb, mfbcc, vvz, vz2, c9, c1o9);
-                    backwardInverseChimeraWithK(mfcaa, mfcab, mfcac, vvz, vz2, c36, c1o36);
-                    backwardInverseChimeraWithK(mfcba, mfcbb, mfcbc, vvz, vz2, c9, c1o9);
-                    backwardInverseChimeraWithK(mfcca, mfccb, mfccc, vvz, vz2, c36, c1o36);
+                    backwardInverseChimeraWithK(mfbca, mfbcb, mfbcc, vvz, vz2, c9o1, c1o9);
+                    backwardInverseChimeraWithK(mfcaa, mfcab, mfcac, vvz, vz2, c36o1, c1o36);
+                    backwardInverseChimeraWithK(mfcba, mfcbb, mfcbc, vvz, vz2, c9o1, c1o9);
+                    backwardInverseChimeraWithK(mfcca, mfccb, mfccc, vvz, vz2, c36o1, c1o36);
                     ////////////////////////////////////////////////////////////////////////////////////
 
                     //////////////////////////////////////////////////////////////////////////

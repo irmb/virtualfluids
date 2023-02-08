@@ -8,7 +8,8 @@
 
 #define PROOF_CORRECTNESS
 
-using namespace UbMath;
+//using namespace UbMath; 
+using namespace vf::lbm::constant;
 
 //////////////////////////////////////////////////////////////////////////
 ThixotropyExpLBMKernel::ThixotropyExpLBMKernel()
@@ -568,11 +569,11 @@ void ThixotropyExpLBMKernel::calculate(int step)
 						real dyuy = dxux + collFactorF * c3o2 * mxxMyy;
 						real dzuz = dxux + collFactorF * c3o2 * mxxMzz;
 
-						real Dxy =-three*collFactorF*mfbba;
-                  real Dxz =-three*collFactorF*mfbab;
-                  real Dyz =-three*collFactorF*mfabb;
+						real Dxy =-c3o1*collFactorF*mfbba;
+						real Dxz =-c3o1*collFactorF*mfbab;
+						real Dyz =-c3o1*collFactorF*mfabb;
 
-						real gammaDot = sqrt(dxux * dxux + dyuy * dyuy + dzuz * dzuz + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) / (rho + one);
+						real gammaDot = sqrt(dxux * dxux + dyuy * dyuy + dzuz * dzuz + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) / (rho + c1o1);
 						//collFactorF = BinghamModel::getBinghamCollFactor(collFactorF, gammaDot, rho);
 
 						//relax
@@ -1021,7 +1022,7 @@ void ThixotropyExpLBMKernel::calculate(int step)
 
 						//collFactorF = (collFactorF < 0.5) ? 0.5 : collFactorF;
 
-						real dlambda = one / theta - alpha * lambda * gammaDot;
+						real dlambda = c1o1 / theta - alpha * lambda * gammaDot;
 
 
 						//////////////////////////////////////////////////////////////////////////

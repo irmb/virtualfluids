@@ -8,7 +8,8 @@
 
 #define PROOF_CORRECTNESS
 
-using namespace UbMath;
+//using namespace UbMath;
+using namespace vf::lbm::constant;
 
 //////////////////////////////////////////////////////////////////////////
 ThixotropyLBMKernel::ThixotropyLBMKernel()
@@ -233,7 +234,7 @@ void ThixotropyLBMKernel::calculate(int step)
 
 						real eta0 = (1/collFactor-c1o2)*c1o3;
 						real eta = (1 + lambda)* eta0;
-						collFactorF = one/(3*eta/(rho+one)+c1o2);
+						collFactorF = c1o1 /(3*eta/(rho+ c1o1)+c1o2);
 						//collFactorF = collFactor;
 
 						//forcing 
@@ -568,9 +569,9 @@ void ThixotropyLBMKernel::calculate(int step)
 						real dyuy = dxux + collFactorF * c3o2 * mxxMyy;
 						real dzuz = dxux + collFactorF * c3o2 * mxxMzz;
 
-						real Dxy =-three*collFactorF*mfbba;
-                  real Dxz =-three*collFactorF*mfbab;
-                  real Dyz =-three*collFactorF*mfabb;
+						real Dxy =-c3o1 *collFactorF*mfbba;
+						real Dxz =-c3o1*collFactorF*mfbab;
+						real Dyz =-c3o1*collFactorF*mfabb;
 
 						//relax
 						mxxPyyPzz += OxxPyyPzz*(mfaaa - mxxPyyPzz) - 3. * (1. - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
@@ -1012,9 +1013,9 @@ void ThixotropyLBMKernel::calculate(int step)
 						//LBMReal theta = 60 * 1.28172e+06;
 						//LBMReal alpha = 0.005;// *10.0;
 
-						real gammaDot = sqrt(dxux * dxux + dyuy * dyuy + dzuz * dzuz + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) / (rho + one);
+						real gammaDot = sqrt(dxux * dxux + dyuy * dyuy + dzuz * dzuz + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) / (rho + c1o1);
 
-						real dlambda = one / theta - alpha * lambda * gammaDot;
+						real dlambda = c1o1 / theta - alpha * lambda * gammaDot;
 
 						//LBMReal dlambda = one / (T*pow(lambda,m)) - alpha * lambda * gammaDot;
 

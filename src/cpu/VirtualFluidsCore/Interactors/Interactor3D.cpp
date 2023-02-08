@@ -34,7 +34,7 @@
 #include "Interactor3D.h"
 
 #include "UbException.h"
-#include <basics/utilities/UbMath.h>
+//#include <basics/utilities/UbMath.h>
 #include <fstream>
 #include <geometry3d/GbCuboid3D.h>
 

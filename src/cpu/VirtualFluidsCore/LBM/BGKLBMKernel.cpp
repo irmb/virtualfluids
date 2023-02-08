@@ -6,6 +6,7 @@
 #include "D3Q27System.h"
 #include "DataSet3D.h"
 #include "Block3D.h"
+#include "lbm/constants/NumericConstants.h"
 
 #define PROOF_CORRECTNESS
 
@@ -40,8 +41,9 @@ SPtr<LBMKernel> BGKLBMKernel::clone()
 void BGKLBMKernel::calculate(int step)
 {
     using namespace D3Q27System;
-    using namespace UbMath;
-    using namespace vf::lbm::dir;
+ //   using namespace UbMath;
+   using namespace vf::lbm::constant;
+   using namespace vf::lbm::dir;
 
     // initializing of forcing stuff
     if (withForcing) {

@@ -5,10 +5,13 @@
 #include "DataSet3D.h"
 #include "BCProcessor.h"
 #include "BCArray3D.h"
+#include "lbm/constants/NumericConstants.h"
+
+using namespace vf::lbm::constant;
+//using namespace UbMath;
 
 //#define PROOF_CORRECTNESS
 
-using namespace UbMath;
 
 //////////////////////////////////////////////////////////////////////////
 LBMKernelETD3Q27BGK::LBMKernelETD3Q27BGK() 

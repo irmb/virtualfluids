@@ -90,8 +90,8 @@ void D3Q27Interactor::initRayVectors()
     using namespace vf::lbm::dir;
 
     int fdir;
-    real c1oS2 = UbMath::one_over_sqrt2;
-    real c1oS3 = UbMath::one_over_sqrt3;
+    real c1oS2 = vf::lbm::constant::one_over_sqrt2;
+    real c1oS3 = vf::lbm::constant::one_over_sqrt3;
     fdir         = DIR_P00;
     rayX1[fdir]  = 1.0;
     rayX2[fdir]  = 0.0;
@@ -330,19 +330,19 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
             throw UbException(
                 UB_EXARGS, "fuer den bei LB nicht vorkommenden Fall deltaX1!=deltaX2!=deltaX3  nicht implementiert ");
 
-        vector<real> distNeigh(D3Q27System::FENDDIR + 1, UbMath::sqrt2 * deltaX1);
+        vector<real> distNeigh(D3Q27System::FENDDIR + 1, vf::lbm::constant::sqrt2 * deltaX1);
         distNeigh[DIR_P00] = distNeigh[DIR_M00] = distNeigh[DIR_0P0] = deltaX1;
         distNeigh[DIR_0M0] = distNeigh[DIR_00P] = distNeigh[DIR_00M] = deltaX1;
         distNeigh[DIR_PP0] = distNeigh[DIR_MP0] = distNeigh[DIR_MM0] =
-            distNeigh[DIR_PM0]             = UbMath::sqrt2 * deltaX1;
+            distNeigh[DIR_PM0]             = vf::lbm::constant::sqrt2 * deltaX1;
         distNeigh[DIR_P0P] = distNeigh[DIR_0PP] = distNeigh[DIR_M0P] =
-            distNeigh[DIR_0MP]             = UbMath::sqrt2 * deltaX1;
+            distNeigh[DIR_0MP]             = vf::lbm::constant::sqrt2 * deltaX1;
         distNeigh[DIR_P0M] = distNeigh[DIR_0PM] = distNeigh[DIR_M0M] =
-            distNeigh[DIR_0MM]             = UbMath::sqrt2 * deltaX1;
+            distNeigh[DIR_0MM]             = vf::lbm::constant::sqrt2 * deltaX1;
         distNeigh[DIR_PPP] = distNeigh[DIR_MPP] = distNeigh[DIR_PMP] =
-            distNeigh[DIR_MMP]              = UbMath::sqrt3 * deltaX1;
+            distNeigh[DIR_MMP]              = vf::lbm::constant::sqrt3 * deltaX1;
         distNeigh[DIR_PPM] = distNeigh[DIR_MPM] = distNeigh[DIR_PMM] =
-            distNeigh[DIR_MMM]              = UbMath::sqrt3 * deltaX1;
+            distNeigh[DIR_MMM]              = vf::lbm::constant::sqrt3 * deltaX1;
         real q;
         bool pointOnBoundary = false;
 
