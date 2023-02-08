@@ -109,10 +109,20 @@ int main()
         auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
 
         //////////////////////////////////////////////////////////////////////////
-        // create grid
+        // compute parameters in lattice units
         //////////////////////////////////////////////////////////////////////////
 
         const real dx = L / real(nx);
+        const real dt  = velocityLB / velocity * dx;
+
+        const real vxLB = velocityLB / sqrt(2.0); // LB units
+        const real vyLB = velocityLB / sqrt(2.0); // LB units
+
+        const real viscosityLB = nx * velocityLB / Re; // LB units
+
+        //////////////////////////////////////////////////////////////////////////
+        // create grid
+        //////////////////////////////////////////////////////////////////////////
 
         gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L, 0.5 * L, 0.5 * L, 0.5 * L, dx);
 
@@ -123,17 +133,6 @@ int main()
         gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
         gridBuilder->buildGrids(LbmOrGks::LBM, false);
-
-        //////////////////////////////////////////////////////////////////////////
-        // compute parameters in lattice units
-        //////////////////////////////////////////////////////////////////////////
-
-        const real dt  = velocityLB / velocity * dx;
-
-        const real vxLB = velocityLB / sqrt(2.0); // LB units
-        const real vyLB = velocityLB / sqrt(2.0); // LB units
-
-        const real viscosityLB = nx * velocityLB / Re; // LB units
 
         //////////////////////////////////////////////////////////////////////////
         // set parameters
