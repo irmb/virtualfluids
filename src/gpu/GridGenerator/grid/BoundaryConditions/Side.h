@@ -67,7 +67,8 @@ class Side
 {
 public:
     virtual ~Side() = default;
-    virtual void addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<gg::BoundaryCondition> boundaryCondition) = 0;
+    virtual void addIndices(const std::vector<SPtr<Grid>> &grid, uint level,
+                            SPtr<gg::BoundaryCondition> boundaryCondition) = 0;
 
     virtual int getCoordinate() const = 0;
     virtual int getDirection() const = 0;
@@ -114,7 +115,7 @@ protected:
 class Geometry : public Side
 {
 public:
-    void addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<gg::BoundaryCondition> boundaryCondition) override;
+    void addIndices(const std::vector<SPtr<Grid>> &grid, uint level, SPtr<gg::BoundaryCondition> boundaryCondition) override;
 
     int getCoordinate() const override
     {
@@ -135,7 +136,7 @@ public:
 class MX : public Side
 {
 public:
-    void addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<gg::BoundaryCondition> boundaryCondition) override;
+    void addIndices(const std::vector<SPtr<Grid>> &grid, uint level, SPtr<gg::BoundaryCondition> boundaryCondition) override;
 
     int getCoordinate() const override
     {
@@ -156,7 +157,7 @@ public:
 class PX : public Side
 {
 public:
-    void addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<gg::BoundaryCondition> boundaryCondition) override;
+    void addIndices(const std::vector<SPtr<Grid>> &grid, uint level, SPtr<gg::BoundaryCondition> boundaryCondition) override;
 
     int getCoordinate() const override
     {
@@ -178,7 +179,7 @@ public:
 class MY : public Side
 {
 public:
-    void addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<gg::BoundaryCondition> boundaryCondition) override;
+    void addIndices(const std::vector<SPtr<Grid>> &grid, uint level, SPtr<gg::BoundaryCondition> boundaryCondition) override;
 
     int getCoordinate() const override
     {
@@ -199,7 +200,7 @@ public:
 class PY : public Side
 {
 public:
-    void addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<gg::BoundaryCondition> boundaryCondition) override;
+    void addIndices(const std::vector<SPtr<Grid>> &grid, uint level, SPtr<gg::BoundaryCondition> boundaryCondition) override;
 
     int getCoordinate() const override
     {
@@ -221,7 +222,7 @@ public:
 class MZ : public Side
 {
 public:
-    void addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<gg::BoundaryCondition> boundaryCondition) override;
+    void addIndices(const std::vector<SPtr<Grid>> &grid, uint level, SPtr<gg::BoundaryCondition> boundaryCondition) override;
 
     int getCoordinate() const override
     {
@@ -242,7 +243,7 @@ public:
 class PZ : public Side
 {
 public:
-    void addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<gg::BoundaryCondition> boundaryCondition) override;
+    void addIndices(const std::vector<SPtr<Grid>> &grid, uint level, SPtr<gg::BoundaryCondition> boundaryCondition) override;
 
     int getCoordinate() const override
     {
