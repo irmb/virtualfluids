@@ -278,7 +278,7 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->addCoarseGrid( xGridMin,  0.0,  0.0,
                                 xGridMax,  L_y,  L_z, dx);
-    if(true)// Add refinement
+    if(false)// Add refinement
     {
         gridBuilder->setNumberOfLayers(4,0);
         real xMaxRefinement = readPrecursor? xGridMax-H: xGridMax;   //Stop refinement some distance before outlet if domain ist not periodic
@@ -351,7 +351,7 @@ void multipleLevel(const std::string& configPath)
 
     bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
     bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressPressureBounceBack);
-    bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipBounceBack); 
+    bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipCompressibleTurbulentViscosity); 
     bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflective);
     bcFactory.setPrecursorBoundaryCondition(useDistributions ? BoundaryConditionFactory::PrecursorBC::DistributionsPrecursor : BoundaryConditionFactory::PrecursorBC::VelocityPrecursor);
     para->setOutflowPressureCorrectionFactor(0.0); 
