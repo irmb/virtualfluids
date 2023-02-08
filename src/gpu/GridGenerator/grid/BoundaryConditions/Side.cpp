@@ -159,7 +159,7 @@ void Side::setQs(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uin
         //! Only setting q's that partially point in the Side-normal direction
         const bool alignedWithNormal = this->isAlignedWithMyNormal(grid.get(), dir);
         if (grid->isStopperForBC(neighborIndex) && alignedWithNormal) {
-            qNode[dir] = 0.5;
+            qNode[dir] = q;
         } else {
             qNode[dir] = -1.0;
         }
