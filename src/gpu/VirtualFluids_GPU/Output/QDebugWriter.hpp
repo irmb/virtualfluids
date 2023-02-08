@@ -13,8 +13,6 @@
 #include <basics/writer/WbWriterVtkXmlBinary.h>
 #include "Core/StringUtilities/StringUtil.h"
 
-//using namespace std;
-
 namespace QDebugWriter
 {
     void writeQValues(QforBoundaryConditions &Q, int* k, int kq, const std::string &name)

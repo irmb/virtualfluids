@@ -7,7 +7,7 @@
 # build VirtualFluids accordingly to our specific test scenario.
 # in this case adding -DUSER_APPS="apps/gpu/LBM/DrivenCavity to the cmake command is not necessary, because the DrivenCavity is added to VirtualFluids by default.
 mkdir -p build
-cmake -B build --preset=release_make_gpu -DCMAKE_CUDA_ARCHITECTURES=75 #-DUSER_APPS="apps/gpu/LBM/DrivenCavity"
+cmake -B build --preset=make_gpu -DCMAKE_BUILD_TYPE=Release -DCMAKE_CUDA_ARCHITECTURES=75 #-DUSER_APPS="apps/gpu/LBM/DrivenCavity"
 cmake --build build --parallel 8
 
 # execute VirtualFluids
