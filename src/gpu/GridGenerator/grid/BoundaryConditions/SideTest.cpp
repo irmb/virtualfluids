@@ -21,7 +21,8 @@ class SideTestSpecificSubclass : public Side
 public:
     void setQs(SPtr<Grid> grid, SPtr<gg::BoundaryCondition> boundaryCondition, uint index)
     {
-        Side::setQs(grid, boundaryCondition, index);
+        real q = 0.5;
+        Side::setQs(grid, boundaryCondition, index, q);
     };
     int sideDirection = POSITIVE_DIR;
     int coordinateDirection = X_INDEX;
@@ -37,7 +38,7 @@ private:
         return sideDirection;
     }
 
-    void addIndices(std::vector<SPtr<Grid>> grid, uint level, SPtr<gg::BoundaryCondition> boundaryCondition) override
+    void addIndices(std::vector<SPtr<Grid>> grid, uint level, SPtr<gg::BoundaryCondition> boundaryCondition, real q) override
     {
     }
 
