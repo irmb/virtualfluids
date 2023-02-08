@@ -344,8 +344,8 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->setStressBoundaryCondition(SideType::MZ,
                                             0.0, 0.0, 1.0,              // wall normals
-                                            samplingOffset, z0, dx,     // wall model settinng
-                                            0.5f);                      // q
+                                            samplingOffset, z0, dx);    // wall model settinng
+
     para->setHasWallModelMonitor(true);   
     gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0f,  0.0f, -1.0f); 
 
