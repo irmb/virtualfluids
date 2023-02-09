@@ -34,6 +34,8 @@
 #include <basics/writer/WbWriterVtkXmlASCII.h>
 #include <basics/writer/WbWriterVtkXmlBinary.h>
 #include <cstring>
+#include <fstream>
+#include <string>
 
 using namespace std;
 
@@ -154,12 +156,13 @@ string WbWriterVtkXmlBinary::writeParallelFile(const string &filename, vector<st
 
     return vtkfilename;
 }
+
 /*===============================================================================*/
-string WbWriterVtkXmlBinary::writeLines(const string &filename, vector<UbTupleFloat3> &nodes,
-                                        vector<UbTupleInt2> &lines)
+
+// helper functions
+
+ofstream createFileStream(std::string vtkfilename)
 {
-    string vtkfilename = filename + getFileExtension();
-    UBLOG(logDEBUG1, "WbWriterVtkXmlBinary::writeLines to " << vtkfilename << " - start");
 
     ofstream out(vtkfilename.c_str(), ios::out | ios::binary);
     if (!out) {
@@ -172,89 +175,199 @@ string WbWriterVtkXmlBinary::writeLines(const string &filename, vector<UbTupleFl
         if (!out)
             throw UbException(UB_EXARGS, "couldn't open file " + vtkfilename);
     }
+    return out;
+}
 
-    int nofNodes = (int)nodes.size();
-    int nofCells = (int)lines.size();
-
-    int bytesPerByteVal      = 4; //==sizeof(int)
-    int bytesPoints          = 3 /*x1/x2/x3        */ * nofNodes * sizeof(float);
-    int bytesCellConnectivty = 2 /*nodes per line */ * nofCells * sizeof(int);
-    int bytesCellOffsets     = 1 /*offset per line */ * nofCells * sizeof(int);
-    int bytesCellTypes       = 1 /*type of line */ * nofCells * sizeof(unsigned char);
-
-    int offset = 0;
-    // VTK FILE
+void writeVtkHeader(ofstream &out, int numberOfNodes, int numberOfCells)
+{
     out << "<?xml version=\"1.0\"?>\n";
     out << "<VTKFile type=\"UnstructuredGrid\" version=\"0.1\" byte_order=\"LittleEndian\" >"
         << "\n";
     out << "   <UnstructuredGrid>"
         << "\n";
-    out << "      <Piece NumberOfPoints=\"" << nofNodes << "\" NumberOfCells=\"" << nofCells << "\">\n";
+    out << "      <Piece NumberOfPoints=\"" << numberOfNodes << "\" NumberOfCells=\"" << numberOfCells << "\">\n";
+}
 
-    // POINTS SECTION
+int writePointHeader(ofstream &out, int offset, int bytesPerByteVal, int bytesPoints)
+{
     out << "         <Points>\n";
     out << "            <DataArray type=\"Float32\" NumberOfComponents=\"3\" format=\"appended\" offset=\"" << offset
         << "\"  />\n";
     out << "         </Points>\n";
     offset += (bytesPerByteVal + bytesPoints);
+    return offset;
+}
 
-    // CELLS SECTION
+int writeCellHeader(ofstream &out, int offset, int bytesPerByteVal, int bytesCellConnectivity, int bytesCellOffsets,
+                    int bytesCellTypes)
+{
     out << "         <Cells>\n";
     out << "            <DataArray type=\"Int32\" Name=\"connectivity\" format=\"appended\" offset=\"" << offset
         << "\" />\n";
-    offset += (bytesPerByteVal + bytesCellConnectivty);
+    offset += (bytesPerByteVal + bytesCellConnectivity);
     out << "            <DataArray type=\"Int32\" Name=\"offsets\" format=\"appended\" offset=\"" << offset
         << "\" />\n";
     offset += (bytesPerByteVal + bytesCellOffsets);
     out << "            <DataArray type=\"UInt8\" Name=\"types\" format=\"appended\" offset=\"" << offset << "\" />\n ";
     offset += (bytesPerByteVal + bytesCellTypes);
     out << "         </Cells>\n";
+    return offset;
+}
 
+int writeDataHeader(ofstream &out, vector<string> &datanames, int offset, int bytesPerByteVal, int bytesScalarData)
+{
+    out << "         <CellData>\n";
+    for (size_t s = 0; s < datanames.size(); ++s) {
+        out << "            <DataArray type=\"Float32\" Name=\"" << datanames[s] << "\" format=\"appended\" offset=\""
+            << offset << "\" /> \n";
+        offset += (bytesPerByteVal + bytesScalarData);
+    }
+    out << "         </CellData>\n";
+    return offset;
+}
+
+void writeAppendDataHeader(ofstream &out)
+{
     out << "      </Piece>\n";
     out << "   </UnstructuredGrid>\n";
-
-    // AppendedData SECTION
     out << "   <AppendedData encoding=\"raw\">\n";
     out << "_";
+}
 
-    // POINTS SECTION
+void writePoints(ofstream &out, int bytesPerByteVal, int bytesPoints, vector<UbTupleFloat3> &nodes)
+{
     out.write((char *)&bytesPoints, bytesPerByteVal);
-    for (int n = 0; n < nofNodes; n++) {
+    for (int n = 0; n < (int)nodes.size(); n++) {
         out.write((char *)&val<1>(nodes[n]), sizeof(float));
         out.write((char *)&val<2>(nodes[n]), sizeof(float));
         out.write((char *)&val<3>(nodes[n]), sizeof(float));
     }
+}
 
-    // CELLS SECTION
-    // cellConnectivity
-    out.write((char *)&bytesCellConnectivty, bytesPerByteVal);
-    for (int c = 0; c < nofCells; c++) {
-        out.write((char *)&val<1>(lines[c]), sizeof(int));
-        out.write((char *)&val<2>(lines[c]), sizeof(int));
+void writeCellConnectivity(ofstream &out, int bytesPerByteVal, int bytesCellConnectivity, vector<UbTupleInt2> &cells)
+{
+    out.write((char *)&bytesCellConnectivity, bytesPerByteVal);
+    for (int c = 0; c < (int)cells.size(); c++) {
+        out.write((char *)&val<1>(cells[c]), sizeof(int));
+        out.write((char *)&val<2>(cells[c]), sizeof(int));
     }
+}
 
-    // cellOffsets
+void writeCellOffsets(ofstream &out, int bytesPerByteVal, int bytesCellOffsets, int numberOfCells)
+{
     out.write((char *)&bytesCellOffsets, bytesPerByteVal);
     int itmp;
-    for (int c = 1; c <= nofCells; c++) {
+    for (int c = 1; c <= numberOfCells; c++) {
         itmp = 2 * c;
         out.write((char *)&itmp, sizeof(int));
     }
+}
 
-    // cellTypes
+void writeCellTypes(ofstream &out, int bytesPerByteVal, int bytesCellTypes, int numberOfCells)
+{
     out.write((char *)&bytesCellTypes, bytesPerByteVal);
     unsigned char vtkCellType = 3;
-    for (int c = 0; c < nofCells; c++) {
+    for (int c = 0; c < numberOfCells; c++) {
         out.write((char *)&vtkCellType, sizeof(unsigned char));
     }
+}
+
+void writeCellData(ofstream &out, int bytesPerByteVal, int bytesScalarData, vector<string> &datanames,
+                   vector<vector<float>> &celldata)
+{
+    for (size_t s = 0; s < datanames.size(); ++s) {
+        out.write((char *)&bytesScalarData, bytesPerByteVal);
+        for (size_t d = 0; d < celldata[s].size(); ++d) {
+            // loake kopie machen, da in celldata "doubles" sind
+            float tmp = (float)celldata[s][d];
+            out.write((char *)&tmp, sizeof(float));
+        }
+    }
+}
+
+void writeEndOfFile(ofstream &out)
+{
     out << "\n</AppendedData>\n";
     out << "</VTKFile>";
     out << endl;
     out.close();
+}
+
+/*===============================================================================*/
+string WbWriterVtkXmlBinary::writeLines(const string &filename, vector<UbTupleFloat3> &nodes,
+                                        vector<UbTupleInt2> &lines)
+{
+    string vtkfilename = filename + getFileExtension();
+    UBLOG(logDEBUG1, "WbWriterVtkXmlBinary::writeLines to " << vtkfilename << " - start");
+
+    ofstream out = createFileStream(vtkfilename);
+
+    int nofNodes = (int)nodes.size();
+    int nofCells = (int)lines.size();
+
+    int bytesPerByteVal = 4; //==sizeof(int)
+    int bytesPoints = 3 /*x1/x2/x3        */ * nofNodes * sizeof(float);
+    int bytesCellConnectivity = 2 /*nodes per line */ * nofCells * sizeof(int);
+    int bytesCellOffsets = 1 /*offset per line */ * nofCells * sizeof(int);
+    int bytesCellTypes = 1 /*type of line */ * nofCells * sizeof(unsigned char);
+
+    int offset = 0;
+
+    writeVtkHeader(out, nofNodes, nofCells);
+    offset = writePointHeader(out, offset, bytesPerByteVal, bytesPoints);
+    writeCellHeader(out, offset, bytesPerByteVal, bytesCellConnectivity, bytesCellOffsets, bytesCellTypes);
+    writeAppendDataHeader(out);
+
+    writePoints(out, bytesPerByteVal, bytesPoints, nodes);
+    writeCellConnectivity(out, bytesPerByteVal, bytesCellConnectivity, lines);
+    writeCellOffsets(out, bytesPerByteVal, bytesCellOffsets, nofCells);
+    writeCellTypes(out, bytesPerByteVal, bytesCellTypes, nofCells);
+    writeEndOfFile(out);
     UBLOG(logDEBUG1, "WbWriterVtkXmlBinary::writeLines to " << vtkfilename << " - end");
 
     return vtkfilename;
 }
+
+/*===============================================================================*/
+string WbWriterVtkXmlBinary::writeLinesWithLineData(const string &filename, vector<UbTupleFloat3> &nodes,
+                                                    vector<UbTupleInt2> &lines, vector<string> &datanames,
+                                                    vector<vector<float>> &celldata)
+{
+    string vtkfilename = filename + getFileExtension();
+    UBLOG(logDEBUG1, "WbWriterVtkXmlBinary::writeLinesWithLineData to " << vtkfilename << " - start");
+
+    ofstream out = createFileStream(vtkfilename);
+
+    int nofNodes = (int)nodes.size();
+    int nofCells = (int)lines.size();
+
+    int bytesPerByteVal = 4; //==sizeof(int)
+    int bytesPoints = 3 /*x1/x2/x3        */ * nofNodes * sizeof(float);
+    int bytesCellConnectivity = 2 /*nodes per line */ * nofCells * sizeof(int);
+    int bytesCellOffsets = 1 /*offset per line */ * nofCells * sizeof(int);
+    int bytesCellTypes = 1 /*type of line */ * nofCells * sizeof(unsigned char);
+    int bytesScalarData = 1 /*scalar        */ * nofCells * sizeof(float);
+
+    int offset = 0;
+
+    writeVtkHeader(out, nofNodes, nofCells);
+    offset = writePointHeader(out, offset, bytesPerByteVal, bytesPoints);
+    offset = writeCellHeader(out, offset, bytesPerByteVal, bytesCellConnectivity, bytesCellOffsets, bytesCellTypes);
+    writeDataHeader(out, datanames, offset, bytesPerByteVal, bytesScalarData);
+    writeAppendDataHeader(out);
+
+    writePoints(out, bytesPerByteVal, bytesPoints, nodes);
+    writeCellConnectivity(out, bytesPerByteVal, bytesCellConnectivity, lines);
+    writeCellOffsets(out, bytesPerByteVal, bytesCellOffsets, nofCells);
+    writeCellTypes(out, bytesPerByteVal, bytesCellTypes, nofCells);
+    writeCellData(out, bytesPerByteVal, bytesScalarData, datanames, celldata);
+    writeEndOfFile(out);
+
+    UBLOG(logDEBUG1, "WbWriterVtkXmlBinary::writeLinesWithLineData to " << vtkfilename << " - end");
+
+    return vtkfilename;
+}
+
 /*===============================================================================*/
 // std::string WbWriterVtkXmlBinary::writeLinesWithNodeData(const string& filename,vector<UbTupleFloat3 >& nodes,
 // vector<UbTupleInt2 >& lines, std::vector< std::string >& datanames, std::vector< std::vector< double > >& nodedata)
@@ -276,7 +389,7 @@ string WbWriterVtkXmlBinary::writeLines(const string &filename, vector<UbTupleFl
 //
 //   int bytesPerByteVal      = 4; //==sizeof(int)
 //   int bytesPoints          = 3 /*x1/x2/x3        */ * nofNodes * sizeof(float);
-//   int bytesCellConnectivty = 2 /*nodes per line  */ * nofCells * sizeof(int  );
+//   int bytesCellConnectivity = 2 /*nodes per line  */ * nofCells * sizeof(int  );
 //   int bytesCellOffsets     = 1 /*offset per line */ * nofCells * sizeof(int  );
 //   int bytesCellTypes       = 1 /*type of line    */ * nofCells * sizeof(unsigned char);
 //   int bytesScalarData      = 1 /*scalar          */ * nofNodes * sizeof(float);
@@ -296,7 +409,7 @@ string WbWriterVtkXmlBinary::writeLines(const string &filename, vector<UbTupleFl
 //   //CELLS SECTION
 //   out<<"         <Cells>\n";
 //   out<<"            <DataArray type=\"Int32\" Name=\"connectivity\" format=\"appended\" offset=\""<< offset <<"\"
-//   />\n"; offset += (bytesPerByteVal + bytesCellConnectivty); out<<"            <DataArray type=\"Int32\"
+//   />\n"; offset += (bytesPerByteVal + bytesCellConnectivity); out<<"            <DataArray type=\"Int32\"
 //   Name=\"offsets\" format=\"appended\" offset=\""<< offset <<"\" />\n"; offset += (bytesPerByteVal +
 //   bytesCellOffsets); out<<"            <DataArray type=\"UInt8\" Name=\"types\" format=\"appended\" offset=\""<<
 //   offset <<"\" />\n "; offset += (bytesPerByteVal + bytesCellTypes); out<<"         </Cells>\n";
@@ -328,7 +441,7 @@ string WbWriterVtkXmlBinary::writeLines(const string &filename, vector<UbTupleFl
 //
 //   //CELLS SECTION
 //   //cellConnectivity
-//   out.write( (char*)&bytesCellConnectivty, bytesPerByteVal );
+//   out.write( (char*)&bytesCellConnectivity, bytesPerByteVal );
 //   for(int c=0; c<nofCells; c++)
 //   {
 //      out.write( (char*)&val<1>(lines[c]), sizeof(int) );
@@ -397,7 +510,7 @@ string WbWriterVtkXmlBinary::writeTriangles(const string &filename, vector<UbTup
 
     int bytesPerByteVal      = 4; //==sizeof(int)
     int bytesPoints          = 3 /*x1/x2/x3 - coord    */ * nofNodes * sizeof(float);
-    int bytesCellConnectivty = 3 /*nodes per triangle  */ * nofCells * sizeof(int);
+    int bytesCellConnectivity = 3 /*nodes per triangle  */ * nofCells * sizeof(int);
     int bytesCellOffsets     = 1 /*offset per triangle */ * nofCells * sizeof(int);
     int bytesCellTypes       = 1 /*type of triangle    */ * nofCells * sizeof(unsigned char);
 
@@ -421,7 +534,7 @@ string WbWriterVtkXmlBinary::writeTriangles(const string &filename, vector<UbTup
     out << "         <Cells>\n";
     out << "            <DataArray type=\"Int32\" Name=\"connectivity\" format=\"appended\" offset=\"" << offset
         << "\" />\n";
-    offset += (bytesPerByteVal + bytesCellConnectivty);
+    offset += (bytesPerByteVal + bytesCellConnectivity);
     out << "            <DataArray type=\"Int32\" Name=\"offsets\" format=\"appended\" offset=\"" << offset
         << "\" />\n";
     offset += (bytesPerByteVal + bytesCellOffsets);
@@ -446,7 +559,7 @@ string WbWriterVtkXmlBinary::writeTriangles(const string &filename, vector<UbTup
 
     // CELLS SECTION
     // cellConnectivity
-    out.write((char *)&bytesCellConnectivty, bytesPerByteVal);
+    out.write((char *)&bytesCellConnectivity, bytesPerByteVal);
     for (int c = 0; c < nofCells; c++) {
         out.write((char *)&val<1>(triangles[c]), sizeof(int));
         out.write((char *)&val<2>(triangles[c]), sizeof(int));
@@ -502,7 +615,7 @@ string WbWriterVtkXmlBinary::writeTrianglesWithNodeData(const string &filename, 
 
     int bytesPerByteVal      = 4; //==sizeof(int)
     int bytesPoints          = 3 /*x1/x2/x3        */ * nofNodes * sizeof(float);
-    int bytesCellConnectivty = 3 /*nodes per tri   */ * nofCells * sizeof(int);
+    int bytesCellConnectivity = 3 /*nodes per tri   */ * nofCells * sizeof(int);
     int bytesCellOffsets     = 1 /*offset per tri  */ * nofCells * sizeof(int);
     int bytesCellTypes       = 1 /*type of tri     */ * nofCells * sizeof(unsigned char);
     int bytesScalarData      = 1 /*scalar          */ * nofNodes * sizeof(float);
@@ -527,7 +640,7 @@ string WbWriterVtkXmlBinary::writeTrianglesWithNodeData(const string &filename, 
     out << "         <Cells>\n";
     out << "            <DataArray type=\"Int32\" Name=\"connectivity\" format=\"appended\" offset=\"" << offset
         << "\" />\n";
-    offset += (bytesPerByteVal + bytesCellConnectivty);
+    offset += (bytesPerByteVal + bytesCellConnectivity);
     out << "            <DataArray type=\"Int32\" Name=\"offsets\" format=\"appended\" offset=\"" << offset
         << "\" />\n";
     offset += (bytesPerByteVal + bytesCellOffsets);
@@ -561,7 +674,7 @@ string WbWriterVtkXmlBinary::writeTrianglesWithNodeData(const string &filename, 
 
     // CELLS SECTION
     // cellConnectivity
-    out.write((char *)&bytesCellConnectivty, bytesPerByteVal);
+    out.write((char *)&bytesCellConnectivity, bytesPerByteVal);
     for (int c = 0; c < nofCells; c++) {
         out.write((char *)&val<1>(cells[c]), sizeof(int));
         out.write((char *)&val<2>(cells[c]), sizeof(int));
@@ -625,7 +738,7 @@ string WbWriterVtkXmlBinary::writeQuads(const string &filename, vector<UbTupleFl
 
     int bytesPerByteVal      = 4; //==sizeof(int)
     int bytesPoints          = 3 /*x1/x2/x3        */ * nofNodes * sizeof(float);
-    int bytesCellConnectivty = 4 /*nodes per quad  */ * nofCells * sizeof(int);
+    int bytesCellConnectivity = 4 /*nodes per quad  */ * nofCells * sizeof(int);
     int bytesCellOffsets     = 1 /*offset per quad */ * nofCells * sizeof(int);
     int bytesCellTypes       = 1 /*type of quad    */ * nofCells * sizeof(unsigned char);
 
@@ -649,7 +762,7 @@ string WbWriterVtkXmlBinary::writeQuads(const string &filename, vector<UbTupleFl
     out << "         <Cells>\n";
     out << "            <DataArray type=\"Int32\" Name=\"connectivity\" format=\"appended\" offset=\"" << offset
         << "\" />\n";
-    offset += (bytesPerByteVal + bytesCellConnectivty);
+    offset += (bytesPerByteVal + bytesCellConnectivity);
     out << "            <DataArray type=\"Int32\" Name=\"offsets\" format=\"appended\" offset=\"" << offset
         << "\" />\n";
     offset += (bytesPerByteVal + bytesCellOffsets);
@@ -674,7 +787,7 @@ string WbWriterVtkXmlBinary::writeQuads(const string &filename, vector<UbTupleFl
 
     // CELLS SECTION
     // cellConnectivity
-    out.write((char *)&bytesCellConnectivty, bytesPerByteVal);
+    out.write((char *)&bytesCellConnectivity, bytesPerByteVal);
     for (int c = 0; c < nofCells; c++) {
         out.write((char *)&val<1>(cells[c]), sizeof(int));
         out.write((char *)&val<2>(cells[c]), sizeof(int));
@@ -730,7 +843,7 @@ string WbWriterVtkXmlBinary::writeQuadsWithNodeData(const string &filename, vect
 
     int bytesPerByteVal      = 4; //==sizeof(int)
     int bytesPoints          = 3 /*x1/x2/x3        */ * nofNodes * sizeof(float);
-    int bytesCellConnectivty = 4 /*nodes per quad  */ * nofCells * sizeof(int);
+    int bytesCellConnectivity = 4 /*nodes per quad  */ * nofCells * sizeof(int);
     int bytesCellOffsets     = 1 /*offset per quad */ * nofCells * sizeof(int);
     int bytesCellTypes       = 1 /*type of quad    */ * nofCells * sizeof(unsigned char);
     int bytesScalarData      = 1 /*scalar          */ * nofNodes * sizeof(float);
@@ -755,7 +868,7 @@ string WbWriterVtkXmlBinary::writeQuadsWithNodeData(const string &filename, vect
     out << "         <Cells>\n";
     out << "            <DataArray type=\"Int32\" Name=\"connectivity\" format=\"appended\" offset=\"" << offset
         << "\" />\n";
-    offset += (bytesPerByteVal + bytesCellConnectivty);
+    offset += (bytesPerByteVal + bytesCellConnectivity);
     out << "            <DataArray type=\"Int32\" Name=\"offsets\" format=\"appended\" offset=\"" << offset
         << "\" />\n";
     offset += (bytesPerByteVal + bytesCellOffsets);
@@ -789,7 +902,7 @@ string WbWriterVtkXmlBinary::writeQuadsWithNodeData(const string &filename, vect
 
     // CELLS SECTION
     // cellConnectivity
-    out.write((char *)&bytesCellConnectivty, bytesPerByteVal);
+    out.write((char *)&bytesCellConnectivity, bytesPerByteVal);
     for (int c = 0; c < nofCells; c++) {
         out.write((char *)&val<1>(cells[c]), sizeof(int));
         out.write((char *)&val<2>(cells[c]), sizeof(int));
@@ -855,7 +968,7 @@ string WbWriterVtkXmlBinary::writeQuadsWithCellData(const string &filename, vect
 
     int bytesPerByteVal      = 4; //==sizeof(int)
     int bytesPoints          = 3 /*x1/x2/x3        */ * nofNodes * sizeof(float);
-    int bytesCellConnectivty = 4 /*nodes per quad  */ * nofCells * sizeof(int);
+    int bytesCellConnectivity = 4 /*nodes per quad  */ * nofCells * sizeof(int);
     int bytesCellOffsets     = 1 /*offset per quad */ * nofCells * sizeof(int);
     int bytesCellTypes       = 1 /*type of quad    */ * nofCells * sizeof(unsigned char);
     int bytesScalarData      = 1 /*scalar          */ * nofCells * sizeof(float);
@@ -880,7 +993,7 @@ string WbWriterVtkXmlBinary::writeQuadsWithCellData(const string &filename, vect
     out << "         <Cells>\n";
     out << "            <DataArray type=\"Int32\" Name=\"connectivity\" format=\"appended\" offset=\"" << offset
         << "\" />\n";
-    offset += (bytesPerByteVal + bytesCellConnectivty);
+    offset += (bytesPerByteVal + bytesCellConnectivity);
     out << "            <DataArray type=\"Int32\" Name=\"offsets\" format=\"appended\" offset=\"" << offset
         << "\" />\n";
     offset += (bytesPerByteVal + bytesCellOffsets);
@@ -914,7 +1027,7 @@ string WbWriterVtkXmlBinary::writeQuadsWithCellData(const string &filename, vect
 
     // CELLS SECTION
     // cellConnectivity
-    out.write((char *)&bytesCellConnectivty, bytesPerByteVal);
+    out.write((char *)&bytesCellConnectivity, bytesPerByteVal);
     for (int c = 0; c < nofCells; c++) {
         out.write((char *)&val<1>(cells[c]), sizeof(int));
         out.write((char *)&val<2>(cells[c]), sizeof(int));
@@ -984,7 +1097,7 @@ string WbWriterVtkXmlBinary::writeQuadsWithNodeAndCellData(const string &filenam
 
     int bytesPerByteVal      = 4; //==sizeof(int)
     int bytesPoints          = 3 /*x1/x2/x3        */ * nofNodes * sizeof(float);
-    int bytesCellConnectivty = 4 /*nodes per quad  */ * nofCells * sizeof(int);
+    int bytesCellConnectivity = 4 /*nodes per quad  */ * nofCells * sizeof(int);
     int bytesCellOffsets     = 1 /*offset per quad */ * nofCells * sizeof(int);
     int bytesCellTypes       = 1 /*type of quad    */ * nofCells * sizeof(unsigned char);
     int bytesScalarDataPoint = 1 /*scalar          */ * nofNodes * sizeof(float);
@@ -1010,7 +1123,7 @@ string WbWriterVtkXmlBinary::writeQuadsWithNodeAndCellData(const string &filenam
     out << "         <Cells>\n";
     out << "            <DataArray type=\"Int32\" Name=\"connectivity\" format=\"appended\" offset=\"" << offset
         << "\" />\n";
-    offset += (bytesPerByteVal + bytesCellConnectivty);
+    offset += (bytesPerByteVal + bytesCellConnectivity);
     out << "            <DataArray type=\"Int32\" Name=\"offsets\" format=\"appended\" offset=\"" << offset
         << "\" />\n";
     offset += (bytesPerByteVal + bytesCellOffsets);
@@ -1052,7 +1165,7 @@ string WbWriterVtkXmlBinary::writeQuadsWithNodeAndCellData(const string &filenam
 
     // CELLS SECTION
     // cellConnectivity
-    out.write((char *)&bytesCellConnectivty, bytesPerByteVal);
+    out.write((char *)&bytesCellConnectivity, bytesPerByteVal);
     for (int c = 0; c < nofCells; c++) {
         out.write((char *)&val<1>(cells[c]), sizeof(int));
         out.write((char *)&val<2>(cells[c]), sizeof(int));
@@ -1128,7 +1241,7 @@ string WbWriterVtkXmlBinary::writeOctsWithCellData(const string &filename, vecto
 
     int bytesPerByteVal      = 4; //==sizeof(int)
     int bytesPoints          = 3 /*x1/x2/x3      */ * nofNodes * sizeof(float);
-    int bytesCellConnectivty = 8 /*nodes per oct */ * nofCells * sizeof(int);
+    int bytesCellConnectivity = 8 /*nodes per oct */ * nofCells * sizeof(int);
     int bytesCellOffsets     = 1 /*offset per oct*/ * nofCells * sizeof(int);
     int bytesCellTypes       = 1 /*type of oct   */ * nofCells * sizeof(unsigned char);
     int bytesScalarData      = 1 /*scalar        */ * nofCells * sizeof(float);
@@ -1153,7 +1266,7 @@ string WbWriterVtkXmlBinary::writeOctsWithCellData(const string &filename, vecto
     out << "         <Cells>\n";
     out << "            <DataArray type=\"Int32\" Name=\"connectivity\" format=\"appended\" offset=\"" << offset
         << "\" />\n";
-    offset += (bytesPerByteVal + bytesCellConnectivty);
+    offset += (bytesPerByteVal + bytesCellConnectivity);
     out << "            <DataArray type=\"Int32\" Name=\"offsets\" format=\"appended\" offset=\"" << offset
         << "\" />\n";
     offset += (bytesPerByteVal + bytesCellOffsets);
@@ -1187,7 +1300,7 @@ string WbWriterVtkXmlBinary::writeOctsWithCellData(const string &filename, vecto
 
     // CELLS SECTION
     // cellConnectivity
-    out.write((char *)&bytesCellConnectivty, bytesPerByteVal);
+    out.write((char *)&bytesCellConnectivity, bytesPerByteVal);
     for (int c = 0; c < nofCells; c++) {
         out.write((char *)&val<1>(cells[c]), sizeof(int));
         out.write((char *)&val<2>(cells[c]), sizeof(int));
@@ -1257,7 +1370,7 @@ string WbWriterVtkXmlBinary::writeOctsWithNodeData(const string &filename, vecto
 
     int bytesPerByteVal      = 4; //==sizeof(int)
     int bytesPoints          = 3 /*x1/x2/x3      */ * nofNodes * sizeof(float);
-    int bytesCellConnectivty = 8 /*nodes per oct */ * nofCells * sizeof(int);
+    int bytesCellConnectivity = 8 /*nodes per oct */ * nofCells * sizeof(int);
     int bytesCellOffsets     = 1 /*offset per oct*/ * nofCells * sizeof(int);
     int bytesCellTypes       = 1 /*type of oct   */ * nofCells * sizeof(unsigned char);
     int bytesScalarData      = 1 /*scalar        */ * nofNodes * sizeof(double);
@@ -1282,7 +1395,7 @@ string WbWriterVtkXmlBinary::writeOctsWithNodeData(const string &filename, vecto
     out << "         <Cells>\n";
     out << "            <DataArray type=\"Int32\" Name=\"connectivity\" format=\"appended\" offset=\"" << offset
         << "\" />\n";
-    offset += (bytesPerByteVal + bytesCellConnectivty);
+    offset += (bytesPerByteVal + bytesCellConnectivity);
     out << "            <DataArray type=\"Int32\" Name=\"offsets\" format=\"appended\" offset=\"" << offset
         << "\" />\n";
     offset += (bytesPerByteVal + bytesCellOffsets);
@@ -1316,7 +1429,7 @@ string WbWriterVtkXmlBinary::writeOctsWithNodeData(const string &filename, vecto
 
     // CELLS SECTION
     // cellConnectivity
-    out.write((char *)&bytesCellConnectivty, bytesPerByteVal);
+    out.write((char *)&bytesCellConnectivity, bytesPerByteVal);
     for (int c = 0; c < nofCells; c++) {
         out.write((char *)&val<1>(cells[c]), sizeof(int));
         out.write((char *)&val<2>(cells[c]), sizeof(int));
@@ -1386,7 +1499,7 @@ string WbWriterVtkXmlBinary::writeOcts(const string &filename, vector<UbTupleFlo
 
     int bytesPerByteVal      = 4; //==sizeof(int)
     int bytesPoints          = 3 /*x1/x2/x3      */ * nofNodes * sizeof(float);
-    int bytesCellConnectivty = 8 /*nodes per oct */ * nofCells * sizeof(int);
+    int bytesCellConnectivity = 8 /*nodes per oct */ * nofCells * sizeof(int);
     int bytesCellOffsets     = 1 /*offset per oct*/ * nofCells * sizeof(int);
     int bytesCellTypes       = 1 /*type of oct   */ * nofCells * sizeof(unsigned char);
     // int bytesScalarData      = 1 /*scalar        */ * nofNodes * sizeof(float);
@@ -1411,7 +1524,7 @@ string WbWriterVtkXmlBinary::writeOcts(const string &filename, vector<UbTupleFlo
     out << "         <Cells>\n";
     out << "            <DataArray type=\"Int32\" Name=\"connectivity\" format=\"appended\" offset=\"" << offset
         << "\" />\n";
-    offset += (bytesPerByteVal + bytesCellConnectivty);
+    offset += (bytesPerByteVal + bytesCellConnectivity);
     out << "            <DataArray type=\"Int32\" Name=\"offsets\" format=\"appended\" offset=\"" << offset
         << "\" />\n";
     offset += (bytesPerByteVal + bytesCellOffsets);
@@ -1436,7 +1549,7 @@ string WbWriterVtkXmlBinary::writeOcts(const string &filename, vector<UbTupleFlo
 
     // CELLS SECTION
     // cellConnectivity
-    out.write((char *)&bytesCellConnectivty, bytesPerByteVal);
+    out.write((char *)&bytesCellConnectivity, bytesPerByteVal);
     for (int c = 0; c < nofCells; c++) {
         out.write((char *)&val<1>(cells[c]), sizeof(int));
         out.write((char *)&val<2>(cells[c]), sizeof(int));
@@ -1491,7 +1604,7 @@ std::string WbWriterVtkXmlBinary::writeNodes(const std::string &filename, std::v
 
     int bytesPerByteVal      = 4; //==sizeof(int)
     int bytesPoints          = 3 /*x1/x2/x3        */ * nofNodes * sizeof(float);
-    int bytesCellConnectivty = 1 /*nodes per cell  */ * nofNodes * sizeof(int);
+    int bytesCellConnectivity = 1 /*nodes per cell  */ * nofNodes * sizeof(int);
     int bytesCellOffsets     = 1 /*offset per cell */ * nofNodes * sizeof(int);
     int bytesCellTypes       = 1 /*type of line    */ * nofNodes * sizeof(unsigned char);
 
@@ -1515,7 +1628,7 @@ std::string WbWriterVtkXmlBinary::writeNodes(const std::string &filename, std::v
     out << "         <Cells>\n";
     out << "            <DataArray type=\"Int32\" Name=\"connectivity\" format=\"appended\" offset=\"" << offset
         << "\" />\n";
-    offset += (bytesPerByteVal + bytesCellConnectivty);
+    offset += (bytesPerByteVal + bytesCellConnectivity);
     out << "            <DataArray type=\"Int32\" Name=\"offsets\" format=\"appended\" offset=\"" << offset
         << "\" />\n";
     offset += (bytesPerByteVal + bytesCellOffsets);
@@ -1540,7 +1653,7 @@ std::string WbWriterVtkXmlBinary::writeNodes(const std::string &filename, std::v
 
     // CELLS SECTION
     // cellConnectivity
-    out.write((char *)&bytesCellConnectivty, bytesPerByteVal);
+    out.write((char *)&bytesCellConnectivity, bytesPerByteVal);
     for (int c = 0; c < nofNodes; c++)
         out.write((char *)&c, sizeof(int));
 
@@ -1586,7 +1699,7 @@ std::string WbWriterVtkXmlBinary::writeNodesWithNodeData(const std::string &file
 
     int bytesPerByteVal      = 4; //==sizeof(int)
     int bytesPoints          = 3 /*x1/x2/x3       */ * nofNodes * sizeof(float);
-    int bytesCellConnectivty = 1 /*nodes per cell */ * nofNodes * sizeof(int);
+    int bytesCellConnectivity = 1 /*nodes per cell */ * nofNodes * sizeof(int);
     int bytesCellOffsets     = 1 /*offset per cell*/ * nofNodes * sizeof(int);
     int bytesCellTypes       = 1 /*type of oct    */ * nofNodes * sizeof(unsigned char);
     int bytesScalarData      = 1 /*scalar         */ * nofNodes * sizeof(double);
@@ -1611,7 +1724,7 @@ std::string WbWriterVtkXmlBinary::writeNodesWithNodeData(const std::string &file
     out << "         <Cells>\n";
     out << "            <DataArray type=\"Int32\" Name=\"connectivity\" format=\"appended\" offset=\"" << offset
         << "\" />\n";
-    offset += (bytesPerByteVal + bytesCellConnectivty);
+    offset += (bytesPerByteVal + bytesCellConnectivity);
     out << "            <DataArray type=\"Int32\" Name=\"offsets\" format=\"appended\" offset=\"" << offset
         << "\" />\n";
     offset += (bytesPerByteVal + bytesCellOffsets);
@@ -1645,7 +1758,7 @@ std::string WbWriterVtkXmlBinary::writeNodesWithNodeData(const std::string &file
 
     // CELLS SECTION
     // cellConnectivity
-    out.write((char *)&bytesCellConnectivty, bytesPerByteVal);
+    out.write((char *)&bytesCellConnectivity, bytesPerByteVal);
     for (int c = 0; c < nofNodes; c++)
         out.write((char *)&c, sizeof(int));
 
