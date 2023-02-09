@@ -53,7 +53,7 @@ cmake_args += [
 
 skbuild.setup(
     name=package_name,
-    packages=find_namespace_packages()+find_stub_subpackages(stub_dir),
+    packages=find_namespace_packages(where=src_dir)+find_stub_subpackages(stub_dir),
     package_dir={"": src_dir},
     cmake_args=cmake_args,
     cmake_install_target=target,
