@@ -234,6 +234,30 @@ gcc_9_python_hpc_test:
   script:
     - hpc-rocket launch --watch Python/SlurmTests/poiseuille/rocket.yml
 
+###############################################################################
+multigpu_hpc_test:
+  image: python:latest
+  stage: test
+
+  rules:
+    - if: $REMOTE_USER && $REMOTE_HOST && $PRIVATE_KEY && $CI_PIPELINE_SOURCE == "schedule"
+      when: always
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - when: manual
+      allow_failure: true
+
+  before_script:
+    - pip install hpc-rocket
+    - pip install "fieldcompare[all]"
+
+  script:
+    - hpc-rocket launch --watch regression-tests/multigpu_test/rocket.yml
+    - git clone --depth 1 --filter=blob:none --sparse https://github.com/irmb/test_data
+    - cd test_data
+    - git sparse-checkout set regression_tests/gpu/DrivenCavity_4GPU_2Levels
+    - cd ..
+    - fieldcompare dir output/results test_data/regression_tests/gpu/DrivenCavity_4GPU_2Levels --include-files "*.vtu"
 
 ###############################################################################
 ##                            Benchmark                                      ##

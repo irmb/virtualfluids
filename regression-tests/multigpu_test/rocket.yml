@@ -1,0 +1,48 @@
+host: $REMOTE_HOST
+user: $REMOTE_USER
+password: $PASSWORD
+
+copy:
+  - from: regression-tests/multigpu_test/slurm.job
+    to: multigpu_test/slurm.job
+    overwrite: true
+
+  - from: "CMake/"
+    to: "multigpu_test/CMake/"
+    overwrite: true
+
+  - from: "3rdParty/"
+    to: "multigpu_test/3rdParty/"
+    overwrite: true
+
+  - from: "CMakeLists.txt"
+    to: "multigpu_test/CMakeLists.txt"
+    overwrite: true
+
+  - from: "gpu.cmake"
+    to: "multigpu_test/gpu.cmake"
+    overwrite: true
+
+  - from: "src/"
+    to: "multigpu_test/src/"
+    overwrite: true
+
+  - from: "CMakePresets.json"
+    to: "multigpu_test/CMakePresets.json"
+    overwrite: true
+
+  - from: "apps/gpu/LBM/"
+    to: "multigpu_test/apps/gpu/LBM/"
+    overwrite: true
+
+collect:
+  - from: multigpu_test/output/
+    to: output/results/
+    overwrite: true
+
+  - from: multigpu_test/slurmMultiGPU.out
+    to: output/slurmMultiGPU.out
+    overwrite: true
+
+sbatch: multigpu_test/slurm.job
+continue_if_job_fails: true
