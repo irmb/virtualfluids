@@ -166,6 +166,7 @@ void multipleLevel(const std::string& configPath)
     scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
 	gridBuilder->setPeriodicBoundaryCondition(false, false, false);
+    gridBuilder->setPeriodicShiftOnXBoundaryInYDirection(L_y/10);
 
 	gridBuilder->buildGrids(lbmOrGks, false); // buildGrids() has to be called before setting the BCs!!!!
 
