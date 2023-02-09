@@ -315,7 +315,7 @@ string WbWriterVtkXmlBinary::writeLines(const string &filename, vector<UbTupleFl
 
     writeVtkHeader(out, nofNodes, nofCells);
     offset = writePointHeader(out, offset, bytesPerByteVal, bytesPoints);
-    offset = writeCellHeader(out, offset, bytesPerByteVal, bytesCellConnectivity, bytesCellOffsets, bytesCellTypes);
+    writeCellHeader(out, offset, bytesPerByteVal, bytesCellConnectivity, bytesCellOffsets, bytesCellTypes);
     writeAppendDataHeader(out);
 
     writePoints(out, bytesPerByteVal, bytesPoints, nodes);
@@ -353,7 +353,7 @@ string WbWriterVtkXmlBinary::writeLinesWithLineData(const string &filename, vect
     writeVtkHeader(out, nofNodes, nofCells);
     offset = writePointHeader(out, offset, bytesPerByteVal, bytesPoints);
     offset = writeCellHeader(out, offset, bytesPerByteVal, bytesCellConnectivity, bytesCellOffsets, bytesCellTypes);
-    offset = writeDataHeader(out, datanames, offset, bytesPerByteVal, bytesScalarData);
+    writeDataHeader(out, datanames, offset, bytesPerByteVal, bytesScalarData);
     writeAppendDataHeader(out);
 
     writePoints(out, bytesPerByteVal, bytesPoints, nodes);

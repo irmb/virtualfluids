@@ -84,7 +84,7 @@ inline void writeQLines(LBMSimulationParameter *parH, QforBoundaryConditions &bo
 }
 } // namespace
 
-inline void writeQLinesDebug(Parameter *para, QforBoundaryConditions &boundaryQ, uint level, std::string fileName)
+inline void writeQLinesDebug(Parameter *para, QforBoundaryConditions &boundaryQ, uint level, const std::string& fileName)
 {
     const auto filePath = para->getFName() + "_" + fileName + ".vtk";
     auto writer = WbWriterVtkXmlBinary::getInstance();

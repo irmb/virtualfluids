@@ -37,7 +37,7 @@ private:
         return sideDirection;
     }
 
-    void addIndices(std::vector<SPtr<Grid>> grid, uint level, SPtr<gg::BoundaryCondition> boundaryCondition) override
+    void addIndices(const std::vector<SPtr<Grid>> &grid, uint level, SPtr<gg::BoundaryCondition> boundaryCondition) override
     {
     }
 
