@@ -1,0 +1,29 @@
+#!/bin/bash -l
+
+#SBATCH --partition=gpu01_queue
+#SBATCH --nodes=1
+#SBATCH --time=10:00:00
+#SBATCH --job-name=Cavity4GPU
+#SBATCH --ntasks-per-node=4
+#SBATCH --gres=gpu:4
+#SBATCH --output=multigpu_test/slurmMultiGPU.out
+##SBATCH --exclusive
+
+module purge 
+module load comp/ccache/4.1 # loads comp/gcc/9.3.0 
+module load mpi/openmpi/4.0.5_gcc_9.3/openmpi 
+module load cuda/11.3
+module load comp/git/2.27.0
+PATH=/home/irmb/tools/cmake-3.20.3-linux-x86_64/bin:$PATH
+
+module list
+
+cd multigpu_test
+mkdir -p build
+cd build
+cmake .. -DBUILD_VF_GPU=ON -DCMAKE_CUDA_ARCHITECTURES=60 -DUSER_APPS="apps/gpu/LBM/DrivenCavityMultiGPU"
+make -j 16
+cd ..
+mkdir -p output
+
+mpirun -np 4 "./build/bin/DrivenCavityMultiGPU" "configPhoenix4GPU.txt"
