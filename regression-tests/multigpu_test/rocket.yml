@@ -1,6 +1,6 @@
-host: $REMOTE_HOST
-user: $REMOTE_USER
-password: $PASSWORD
+host: $PHOENIX_REMOTE_HOST
+user: $PHOENIX_REMOTE_USER
+private_keyfile: $PHOENIX_PRIVATE_KEY
 
 copy:
   - from: regression-tests/multigpu_test/slurm.job
