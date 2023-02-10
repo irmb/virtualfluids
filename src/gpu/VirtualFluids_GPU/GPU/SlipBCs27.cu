@@ -55,67 +55,6 @@ __global__ void QSlipDevice27(
 {
    Distributions27 D = vf::gpu::getDistributionReferences27(DD, numberOfLBnodes, isEvenTimestep);
 
-   // Distributions27 D;
-   // if (isEvenTimestep==true)
-   // {
-   //    D.f[DIR_P00   ] = &DD[DIR_P00   *size_Mat];
-   //    D.f[DIR_M00   ] = &DD[DIR_M00   *size_Mat];
-   //    D.f[DIR_0P0   ] = &DD[DIR_0P0   *size_Mat];
-   //    D.f[DIR_0M0   ] = &DD[DIR_0M0   *size_Mat];
-   //    D.f[DIR_00P   ] = &DD[DIR_00P   *size_Mat];
-   //    D.f[DIR_00M   ] = &DD[DIR_00M   *size_Mat];
-   //    D.f[DIR_PP0  ] = &DD[DIR_PP0  *size_Mat];
-   //    D.f[DIR_MM0  ] = &DD[DIR_MM0  *size_Mat];
-   //    D.f[DIR_PM0  ] = &DD[DIR_PM0  *size_Mat];
-   //    D.f[DIR_MP0  ] = &DD[DIR_MP0  *size_Mat];
-   //    D.f[DIR_P0P  ] = &DD[DIR_P0P  *size_Mat];
-   //    D.f[DIR_M0M  ] = &DD[DIR_M0M  *size_Mat];
-   //    D.f[DIR_P0M  ] = &DD[DIR_P0M  *size_Mat];
-   //    D.f[DIR_M0P  ] = &DD[DIR_M0P  *size_Mat];
-   //    D.f[DIR_0PP  ] = &DD[DIR_0PP  *size_Mat];
-   //    D.f[DIR_0MM  ] = &DD[DIR_0MM  *size_Mat];
-   //    D.f[DIR_0PM  ] = &DD[DIR_0PM  *size_Mat];
-   //    D.f[DIR_0MP  ] = &DD[DIR_0MP  *size_Mat];
-   //    D.f[DIR_000] = &DD[DIR_000*size_Mat];
-   //    D.f[DIR_PPP ] = &DD[DIR_PPP *size_Mat];
-   //    D.f[DIR_MMP ] = &DD[DIR_MMP *size_Mat];
-   //    D.f[DIR_PMP ] = &DD[DIR_PMP *size_Mat];
-   //    D.f[DIR_MPP ] = &DD[DIR_MPP *size_Mat];
-   //    D.f[DIR_PPM ] = &DD[DIR_PPM *size_Mat];
-   //    D.f[DIR_MMM ] = &DD[DIR_MMM *size_Mat];
-   //    D.f[DIR_PMM ] = &DD[DIR_PMM *size_Mat];
-   //    D.f[DIR_MPM ] = &DD[DIR_MPM *size_Mat];
-   // } 
-   // else
-   // {
-   //    D.f[DIR_M00   ] = &DD[DIR_P00   *size_Mat];
-   //    D.f[DIR_P00   ] = &DD[DIR_M00   *size_Mat];
-   //    D.f[DIR_0M0   ] = &DD[DIR_0P0   *size_Mat];
-   //    D.f[DIR_0P0   ] = &DD[DIR_0M0   *size_Mat];
-   //    D.f[DIR_00M   ] = &DD[DIR_00P   *size_Mat];
-   //    D.f[DIR_00P   ] = &DD[DIR_00M   *size_Mat];
-   //    D.f[DIR_MM0  ] = &DD[DIR_PP0  *size_Mat];
-   //    D.f[DIR_PP0  ] = &DD[DIR_MM0  *size_Mat];
-   //    D.f[DIR_MP0  ] = &DD[DIR_PM0  *size_Mat];
-   //    D.f[DIR_PM0  ] = &DD[DIR_MP0  *size_Mat];
-   //    D.f[DIR_M0M  ] = &DD[DIR_P0P  *size_Mat];
-   //    D.f[DIR_P0P  ] = &DD[DIR_M0M  *size_Mat];
-   //    D.f[DIR_M0P  ] = &DD[DIR_P0M  *size_Mat];
-   //    D.f[DIR_P0M  ] = &DD[DIR_M0P  *size_Mat];
-   //    D.f[DIR_0MM  ] = &DD[DIR_0PP  *size_Mat];
-   //    D.f[DIR_0PP  ] = &DD[DIR_0MM  *size_Mat];
-   //    D.f[DIR_0MP  ] = &DD[DIR_0PM  *size_Mat];
-   //    D.f[DIR_0PM  ] = &DD[DIR_0MP  *size_Mat];
-   //    D.f[DIR_000] = &DD[DIR_000*size_Mat];
-   //    D.f[DIR_PPP ] = &DD[DIR_MMM *size_Mat];
-   //    D.f[DIR_MMP ] = &DD[DIR_PPM *size_Mat];
-   //    D.f[DIR_PMP ] = &DD[DIR_MPM *size_Mat];
-   //    D.f[DIR_MPP ] = &DD[DIR_PMM *size_Mat];
-   //    D.f[DIR_PPM ] = &DD[DIR_MMP *size_Mat];
-   //    D.f[DIR_MMM ] = &DD[DIR_PPP *size_Mat];
-   //    D.f[DIR_PMM ] = &DD[DIR_MPP *size_Mat];
-   //    D.f[DIR_MPM ] = &DD[DIR_PMP *size_Mat];
-   // }
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 
    const unsigned  y = blockIdx.x;   // Globaler y-Index 
