@@ -136,7 +136,6 @@ __host__ __device__ __forceinline__ void iMEM(
       wallVelocityX = clipVx > -clipVx? min(clipVx, max(-clipVx, -3.0*F_x*forceFactor)): max(clipVx, min(-clipVx, -3.0*F_x*forceFactor));
       wallVelocityY = clipVy > -clipVy? min(clipVy, max(-clipVy, -3.0*F_y*forceFactor)): max(clipVy, min(-clipVy, -3.0*F_y*forceFactor));
       wallVelocityZ = clipVz > -clipVz? min(clipVz, max(-clipVz, -3.0*F_z*forceFactor)): max(clipVz, min(-clipVz, -3.0*F_z*forceFactor));
-      if(u_star > 2.0 || u_star < -2.0 || u_star!=u_star) printf("@k = %u, q=%f \t , u_star=%f \t, u_el=%f, z=%f \n", k, q, u_star, _vx_el, z);
 }
 
 
