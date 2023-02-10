@@ -75,14 +75,13 @@ void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition
                                             ||  grid->getFieldEntry(index) == vf::gpu::FLUID_FCF
                                             // Overlap of BCs on edge nodes
                                             || grid->nodeHasBC(index) )
-            {
+            {   
                 grid->setFieldEntry(index, boundaryCondition->getType());
                 boundaryCondition->indices.push_back(index);
                 setPressureNeighborIndices(boundaryCondition, grid, index);
                 setStressSamplingIndices(boundaryCondition, grid, index);
-
+                // if(grid->getFieldEntry(index)==26) printf("index = %u, v1 = %f, v2 = %f, field entry=%u \n", index, v1, v2, grid->getFieldEntry(index) );
                 setQs(grid, boundaryCondition, index);
-
                 boundaryCondition->patches.push_back(0);
             }
         }
