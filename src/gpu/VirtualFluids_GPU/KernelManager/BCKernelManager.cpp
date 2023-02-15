@@ -38,6 +38,7 @@
 
 #include "BCKernelManager.h"
 #include "Factories/BoundaryConditionFactory.h"
+#include "GridGenerator/TransientBCSetter/TransientBCSetter.h"
 #include "Calculation/Cp.h"
 #include "Calculation/DragLift.h"
 #include "GPU/GPU_Interface.h"
@@ -51,6 +52,7 @@ BCKernelManager::BCKernelManager(SPtr<Parameter> parameter, BoundaryConditionFac
     this->pressureBoundaryConditionPre  = bcFactory->getPressureBoundaryConditionPre();
     this->geometryBoundaryConditionPost = bcFactory->getGeometryBoundaryConditionPost();
     this->stressBoundaryConditionPost   = bcFactory->getStressBoundaryConditionPost();
+    this->precursorBoundaryConditionPost = bcFactory->getPrecursorBoundaryConditionPost();
 
     checkBoundaryCondition(this->velocityBoundaryConditionPost, this->para->getParD(0)->velocityBC,
                            "velocityBoundaryConditionPost");
@@ -64,6 +66,8 @@ BCKernelManager::BCKernelManager(SPtr<Parameter> parameter, BoundaryConditionFac
                            "geometryBoundaryConditionPost");
     checkBoundaryCondition(this->stressBoundaryConditionPost, this->para->getParD(0)->stressBC,
                            "stressBoundaryConditionPost");
+    checkBoundaryCondition(this->precursorBoundaryConditionPost, this->para->getParD(0)->precursorBC,
+                           "precursorBoundaryConditionPost");
 }
 
 void BCKernelManager::runVelocityBCKernelPre(const int level) const
@@ -386,4 +390,42 @@ void BCKernelManager::runNoSlipBCKernelPost(const int level) const{
     {
         noSlipBoundaryConditionPost(para->getParD(level).get(), &(para->getParD(level)->noSlipBC));
     }
+}
+
+void BCKernelManager::runPrecursorBCKernelPost(int level, uint t, CudaMemoryManager* cudaMemoryManager)
+{
+    if(para->getParH(level)->precursorBC.numberOfBCnodes == 0) return;
+
+    uint t_level = para->getTimeStep(level, t, true);
+
+    uint lastTime =    (para->getParD(level)->precursorBC.nPrecursorReads-2)*para->getParD(level)->precursorBC.timeStepsBetweenReads; // timestep currently loaded into last arrays
+    uint currentTime = (para->getParD(level)->precursorBC.nPrecursorReads-1)*para->getParD(level)->precursorBC.timeStepsBetweenReads; // timestep currently loaded into current arrays
+    uint nextTime =     para->getParD(level)->precursorBC.nPrecursorReads   *para->getParD(level)->precursorBC.timeStepsBetweenReads; // timestep currently loaded into next arrays
+    
+    if(t_level>=currentTime)
+    {
+        //cycle time
+        lastTime = currentTime;
+        currentTime = nextTime;
+        nextTime += para->getParD(level)->precursorBC.timeStepsBetweenReads;
+
+        //cycle pointers
+        real* tmp = para->getParD(level)->precursorBC.last;
+        para->getParD(level)->precursorBC.last = para->getParD(level)->precursorBC.current;
+        para->getParD(level)->precursorBC.current = para->getParD(level)->precursorBC.next;
+        para->getParD(level)->precursorBC.next = tmp;
+
+        real loadTime = nextTime*pow(2,-level)*para->getTimeRatio();
+
+        for(auto reader : para->getParH(level)->transientBCInputFileReader)
+        {   
+            reader->getNextData(para->getParH(level)->precursorBC.next, para->getParH(level)->precursorBC.numberOfPrecursorNodes, loadTime);
+        }
+        cudaMemoryManager->cudaCopyPrecursorData(level);
+        para->getParD(level)->precursorBC.nPrecursorReads++;
+        para->getParH(level)->precursorBC.nPrecursorReads++;  
+    }
+    
+    real tRatio = real(t_level-lastTime)/para->getParD(level)->precursorBC.timeStepsBetweenReads;
+    precursorBoundaryConditionPost(para->getParD(level).get(), &para->getParD(level)->precursorBC, tRatio, para->getVelocityRatio());
 }

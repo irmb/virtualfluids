@@ -54,6 +54,8 @@ class ConfigurationFile;
 }
 class CudaStreamManager;
 
+class TransientBCInputFileReader;
+
 //! \struct LBMSimulationParameter
 //! \brief struct holds and manages the LB-parameter of the simulation
 //! \brief For this purpose it holds structures and pointer for host and device data, respectively.
@@ -65,15 +67,77 @@ struct LBMSimulationParameter {
     //////////////////////////////////////////////////////////////////////////
     //! \brief stores the number of threads per GPU block
     uint numberofthreads;
+    //! \brief store all distribution functions for the D3Q27
+    Distributions27 distributions;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the type for every lattice node (f.e. fluid node)
+    uint *typeOfGridNode;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief store the neighbors in +X, +Y, +Z, and in diagonal negative direction
+    //! \brief this information is important because we use an indirect addressing scheme
+    uint *neighborX, *neighborY, *neighborZ, *neighborInverse;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief store the coordinates for every lattice node
+    real *coordinateX, *coordinateY, *coordinateZ;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief store the macroscopic values (velocity, density, pressure)
+    //! \brief for every lattice node
+    real *velocityX, *velocityY, *velocityZ, *rho, *pressure;
+    //! \brief stores the value for omega
+    real omega;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the number of nodes (based on indirect addressing scheme)
+    unsigned long long numberOfNodes;
+    //! \brief stores the size of the memory consumption for real/int values of the arrays (e.g. coordinates, velocity)
+    unsigned long long memSizeRealLBnodes, memSizeLonglongLBnodes;
+
+
+
+
+
+
+    //////////////////////////////////////////////////////////////////////////
+    // DEPRECATED
+    //////////////////////////////////////////////////////////////////////////
 
     // distributions///////////
     // Distributions19 d0;
     Distributions27 d0;  // DEPRECATED: distribution functions for full matrix (not sparse)
-    //! \brief store all distribution functions for the D3Q27
-    Distributions27 distributions;
+
+    // typeOfGridNode (formerly known as "geo") /////////////////////
+    int *geo; // DEPRECATED: typeOfGridNode for full matrix (not sparse)
+
+    // k///////////////////////
+    unsigned int *k; // DEPRECATED: index for full matrix
+
+    // memsize/////////////////
+    //unsigned int mem_size_real_yz;
+    //unsigned int mem_size_bool;
+    //unsigned int mem_size_int;
+    //unsigned int mem_size_real;
+
+    //////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+    //////////////////////////////////////////////////////////////////////////
+    // additional logic 
+    //////////////////////////////////////////////////////////////////////////
 
     // distributions F3////////
     Distributions6 g6;
+
+    unsigned int size_Array_SP;
+
+
+    // memsizeSP/////////////////
+
+
+
+    //////////////////////////////////////////////////////////////////////////
+
 
     // advection diffusion //////////////////
     //! \brief store all distribution functions for the D3Q7 advection diffusion field
@@ -104,22 +168,6 @@ struct LBMSimulationParameter {
     real cStartx, cStarty, cStartz;
     real cFx, cFy, cFz;
 
-    // typeOfGridNode (formerly known as "geo") /////////////////////
-    int *geo; // DEPRECATED: typeOfGridNode for full matrix (not sparse)
-    //! \brief stores the type for every lattice node (f.e. fluid node)
-    unsigned int *typeOfGridNode;
-
-    // k///////////////////////
-    unsigned int *k; // DEPRECATED: index for full matrix
-
-    // neighbor///////////////////////////////////////////////////////////////
-    //! \brief store the neighbors in +X, +Y, +Z, and in diagonal negative direction
-    //! \brief this information is important because we use an indirect addressing scheme
-    uint *neighborX, *neighborY, *neighborZ, *neighborInverse;
-
-    // coordinates////////////////////////////////////////////////////////////
-    //! \brief store the coordinates for every lattice node
-    real *coordinateX, *coordinateY, *coordinateZ;
 
     // body forces////////////
     real *forceX_SP, *forceY_SP, *forceZ_SP;
@@ -138,11 +186,6 @@ struct LBMSimulationParameter {
 
     // macroscopic values//////
     // real *vx, *vy, *vz, *rho;  // DEPRECATED: macroscopic values for full matrix
-    //! \brief store the macroscopic values (velocity, density, pressure)
-    //! \brief for every lattice node
-    real *velocityX, *velocityY, *velocityZ, *rho, *pressure;
-    //! \brief stores the value for omega
-    real omega;
     //! \brief stores the value for viscosity (on level 0)
     real vis;
 
@@ -163,11 +206,6 @@ struct LBMSimulationParameter {
     unsigned int size_Mat;
     unsigned int sizePlaneXY, sizePlaneYZ, sizePlaneXZ;
 
-    // size of sparse matrix//////////
-    //! \brief stores the number of nodes (based on indirect addressing scheme)
-    unsigned int numberOfNodes;
-    unsigned int size_Array_SP;
-
     // size of Plane btw. 2 GPUs//////
     unsigned int sizePlaneSB, sizePlaneRB, startB, endB;
     unsigned int sizePlaneST, sizePlaneRT, startT, endT;
@@ -180,16 +218,6 @@ struct LBMSimulationParameter {
     unsigned int sizePlanePressOUT, startPOUT;
     bool isSetPress;
 
-    // memsizeSP/////////////////
-    //! \brief stores the size of the memory consumption for real/int values of the arrays (e.g. coordinates, velocity)
-    unsigned int mem_size_real_SP;
-    unsigned int mem_size_int_SP;
-
-    // memsize/////////////////
-    unsigned int mem_size_real;
-    unsigned int mem_size_int;
-    unsigned int mem_size_bool;
-    unsigned int mem_size_real_yz;
 
     // print///////////////////
     unsigned int startz, endz;
@@ -218,16 +246,16 @@ struct LBMSimulationParameter {
     OffsetFC offFCBulk;
     unsigned int mem_size_kCF_off;
     unsigned int mem_size_kFC_off;
-
-    // BC's////////////////////
+    
     //! \brief stores the boundary condition data
     QforBoundaryConditions noSlipBC, velocityBC, outflowBC, slipBC, stressBC, pressureBC;
     //! \brief number of lattice nodes for the boundary conditions
-    unsigned int numberOfNoSlipBCnodesRead, numberOfVeloBCnodesRead, numberOfOutflowBCnodesRead, numberOfSlipBCnodesRead, numberOfStressBCnodesRead, numberOfPressureBCnodesRead;
+    unsigned int numberOfNoSlipBCnodesRead, numberOfVeloBCnodesRead, numberOfOutflowBCnodesRead, numberOfSlipBCnodesRead, numberOfStressBCnodesRead, numberOfPressureBCnodesRead, numberOfPrecursorBCnodesRead;
 
     QforBoundaryConditions QpressX0, QpressX1, QpressY0, QpressY1, QpressZ0, QpressZ1; // DEPRECATED
     QforBoundaryConditions propellerBC;
     QforBoundaryConditions geometryBC;
+    QforPrecursorBoundaryConditions precursorBC;
     QforBoundaryConditions geometryBCnormalX, geometryBCnormalY, geometryBCnormalZ;
     QforBoundaryConditions inflowBCnormalX, inflowBCnormalY, inflowBCnormalZ;
     QforBoundaryConditions outflowBCnormalX, outflowBCnormalY, outflowBCnormalZ;
@@ -235,6 +263,8 @@ struct LBMSimulationParameter {
     unsigned int kInletQread, kOutletQread;  // DEPRECATED
 
     WallModelParameters wallModel;
+    std::vector<SPtr<TransientBCInputFileReader>> transientBCInputFileReader;
+    real outflowPressureCorrectionFactor;
 
     // testRoundoffError
     Distributions27 kDistTestRE;
@@ -367,10 +397,19 @@ struct LBMSimulationParameter {
     std::vector<EdgeNodePositions> edgeNodesYtoZ;
 
     ///////////////////////////////////////////////////////
-    uint *fluidNodeIndices;
-    uint numberOfFluidNodes;
-    uint *fluidNodeIndicesBorder;
-    uint numberOfFluidNodesBorder;
+    std::map<CollisionTemplate, uint*>    taggedFluidNodeIndices = {{CollisionTemplate::Default,        nullptr},
+                                                                    {CollisionTemplate::SubDomainBorder,nullptr},
+                                                                    {CollisionTemplate::WriteMacroVars, nullptr},
+                                                                    {CollisionTemplate::ApplyBodyForce, nullptr},
+                                                                    {CollisionTemplate::AllFeatures,    nullptr}};
+    std::map<CollisionTemplate, uint >  numberOfTaggedFluidNodes = {{CollisionTemplate::Default,        0},
+                                                                    {CollisionTemplate::SubDomainBorder,0},
+                                                                    {CollisionTemplate::WriteMacroVars, 0},
+                                                                    {CollisionTemplate::ApplyBodyForce, 0},
+                                                                    {CollisionTemplate::AllFeatures,    0}};
+
+    std::vector<CollisionTemplate> allocatedBulkFluidNodeTags = {};
+
 };
 
 //! \brief Class for LBM-parameter management
@@ -471,6 +510,7 @@ public:
     void setpressBcPos(std::string pressBcPos);
     void setpressBcQs(std::string pressBcQs);
     void setpressBcValue(std::string pressBcValue);
+    void setOutflowPressureCorrectionFactor(real correctionFactor);
     void setpressBcValues(std::string pressBcValues);
     void setvelBcQs(std::string velBcQs);
     void setvelBcValues(std::string velBcValues);
@@ -527,7 +567,6 @@ public:
     void setUseWale(bool useWale);
     void setTurbulenceModel(TurbulenceModel turbulenceModel);
     void setUseTurbulentViscosity(bool useTurbulentViscosity);
-    void setUseAMD(bool useAMD);
     void setSGSConstant(real SGSConstant);
     void setHasWallModelMonitor(bool hasWallModelMonitor);
     void setUseInitNeq(bool useInitNeq);
@@ -726,10 +765,10 @@ public:
     unsigned int getPressOutID();
     unsigned int getPressInZ();
     unsigned int getPressOutZ();
-    unsigned int getMemSizereal(int level);
-    unsigned int getMemSizeInt(int level);
-    unsigned int getMemSizeBool(int level);
-    unsigned int getMemSizerealYZ(int level);
+//    unsigned int getMemSizereal(int level);    //DEPRECATED: related to full matrix
+//    unsigned int getMemSizeInt(int level);     //DEPRECATED: related to full matrix
+//    unsigned int getMemSizeBool(int level);    //DEPRECATED: related to full matrix
+//    unsigned int getMemSizerealYZ(int level);  //DEPRECATED: related to full matrix
     unsigned int getSizeMat(int level);
     unsigned int getTimestepStart();
     unsigned int getTimestepInit();
@@ -765,6 +804,8 @@ public:
     real getScaledDensityRatio(int level);
     //! \returns the pressure ratio in SI/LB units scaled to the respective level
     real getScaledPressureRatio(int level);
+    //! \returns the stress ratio in SI/LB units scaled to the respective level
+    real getScaledStressRatio(int level);
     //! \returns the time ratio in SI/LB units scaled to the respective level
     real getScaledTimeRatio(int level);
     //! \returns the length ratio in SI/LB units scaled to the respective level
@@ -853,6 +894,7 @@ public:
     std::string getOutflowBoundaryNormalX();
     std::string getOutflowBoundaryNormalY();
     std::string getOutflowBoundaryNormalZ();
+    real getOutflowPressureCorrectionFactor();
     // CUDA random number
     curandState *getRandomState();
     // Kernel
@@ -895,6 +937,8 @@ private:
     void initDefaultLBMkernelAllLevels();
 
     void setPathAndFilename(std::string fname);
+
+    void checkParameterValidityCumulantK17() const;
 
 private:
     bool compOn{ false };

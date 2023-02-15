@@ -75,20 +75,20 @@ void PointProbe::findPoints(Parameter* para, GridProvider* gridProvider, std::ve
 {
 
     real dx = abs(para->getParH(level)->coordinateX[1]-para->getParH(level)->coordinateX[para->getParH(level)->neighborX[1]]);
-    for(uint j=1; j<para->getParH(level)->numberOfNodes; j++ )
+    for(size_t pos = 1; pos < para->getParH(level)->numberOfNodes; pos++ )
     {    
         for(uint point=0; point<this->pointCoordsX.size(); point++)
         {
             real pointCoordX = this->pointCoordsX[point];
             real pointCoordY = this->pointCoordsY[point];
             real pointCoordZ = this->pointCoordsZ[point];
-            real distX = pointCoordX-para->getParH(level)->coordinateX[j];
-            real distY = pointCoordY-para->getParH(level)->coordinateY[j];
-            real distZ = pointCoordZ-para->getParH(level)->coordinateZ[j];
+            real distX = pointCoordX-para->getParH(level)->coordinateX[pos];
+            real distY = pointCoordY-para->getParH(level)->coordinateY[pos];
+            real distZ = pointCoordZ-para->getParH(level)->coordinateZ[pos];
             if( distX <=dx && distY <=dx && distZ <=dx &&
                 distX >0.f && distY >0.f && distZ >0.f)
             {
-                probeIndices_level.push_back(j);
+                probeIndices_level.push_back((int)pos);
                 distX_level.push_back( distX/dx );
                 distY_level.push_back( distY/dx );
                 distZ_level.push_back( distZ/dx );
@@ -140,4 +140,14 @@ void PointProbe::addProbePointsFromXNormalPlane(real pos_x, real pos0_y, real po
     }
     printf("Added %u  points \n",  n_y*n_z);
 
+}
+
+void PointProbe::getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider)
+{
+    for(int level=0; level<=para->getMaxLevel(); level++)
+    {
+        SPtr<ProbeStruct> probeStruct = this->getProbeStruct(level);
+        std::vector<uint> probeIndices( probeStruct->pointIndicesH, probeStruct->pointIndicesH+probeStruct->nIndices);
+        gridProvider->tagFluidNodeIndices( probeIndices, CollisionTemplate::WriteMacroVars, level);
+    }
 }

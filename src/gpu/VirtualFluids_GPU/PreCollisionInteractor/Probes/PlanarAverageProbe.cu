@@ -15,6 +15,7 @@
 #include "Parameter/Parameter.h"
 #include "DataStructureInitializer/GridProvider.h"
 #include "GPU/CudaMemoryManager.h"
+#include "GPU/GPU_Interface.h"
 
 #include <algorithm>
 
@@ -235,7 +236,7 @@ void PlanarAverageProbe::findPoints(Parameter* para, GridProvider* gridProvider,
                                 }
 
     // Find all points along the normal direction
-    for(uint j=1; j<para->getParH(level)->numberOfNodes; j++ )
+    for(size_t j = 1; j < para->getParH(level)->numberOfNodes; j++ )
     {
         if(para->getParH(level)->typeOfGridNode[j] == GEO_FLUID)
         {   
@@ -250,16 +251,16 @@ void PlanarAverageProbe::findPoints(Parameter* para, GridProvider* gridProvider,
     std::sort(pointCoordsNormal->begin(), pointCoordsNormal->end());
     
     // Find all pointCoords in the first plane 
-    for(uint j=1; j<para->getParH(level)->numberOfNodes; j++ )
+    for(size_t pos = 1; pos < para->getParH(level)->numberOfNodes; pos++ )
     {
-        if( para->getParH(level)->typeOfGridNode[j] == GEO_FLUID && pointCoordsNormal_par[j] == pointCoordsNormal->at(0)) 
+        if( para->getParH(level)->typeOfGridNode[pos] == GEO_FLUID && pointCoordsNormal_par[pos] == pointCoordsNormal->at(0)) 
         {
             //not needed in current state, might become relevant for two-point correlations
             // pointCoordsNormal->push_back( pointCoordsNormal_par[j] ); 
             // pointCoordsInplane1->push_back( pointCoordsInplane1_par[j] );
             // pointCoordsInplane2->push_back( pointCoordsInplane2_par[j] );
 
-            probeIndices_level.push_back(j);
+            probeIndices_level.push_back((int)pos);
         }
     }
 }
@@ -268,6 +269,23 @@ void PlanarAverageProbe::findPoints(Parameter* para, GridProvider* gridProvider,
 
 void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, uint t_level, int level)
 {   
+    // Compute macroscopic variables in entire domain
+    CalcMacCompSP27(
+        para->getParD(level)->velocityX, 
+        para->getParD(level)->velocityY, 
+        para->getParD(level)->velocityZ,
+        para->getParD(level)->rho, 
+        para->getParD(level)->pressure, 
+        para->getParD(level)->typeOfGridNode,
+        para->getParD(level)->neighborX, 
+        para->getParD(level)->neighborY,
+        para->getParD(level)->neighborZ, 
+        para->getParD(level)->numberOfNodes,
+        para->getParD(level)->numberofthreads, 
+        para->getParD(level)->distributions.f[0],
+        para->getParD(level)->isEvenTimestep);
+    getLastCudaError("In PlanarAverageProbe Kernel CalcMacSP27 execution failed");
+
     // Definition of normal and inplane directions for moveIndices kernels
     uint *neighborNormal, *neighborInplane1, *neighborInplane2;
     if( this->planeNormal == 'x' )

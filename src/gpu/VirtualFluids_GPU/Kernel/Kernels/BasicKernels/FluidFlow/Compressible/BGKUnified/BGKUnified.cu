@@ -6,6 +6,7 @@
 #include "../RunLBMKernel.cuh"
 
 #include <lbm/BGK.h>
+#include <lbm/KernelParameter.h>
 
 
 namespace vf
@@ -31,15 +32,16 @@ BGKUnified::BGKUnified(std::shared_ptr<Parameter> para, int level)
 
 void BGKUnified::run()
 {
-    GPUKernelParameter kernelParameter{ para->getParD(level)->omega,
-                                                 para->getParD(level)->typeOfGridNode,
-                                                 para->getParD(level)->neighborX,
-                                                 para->getParD(level)->neighborY,
-                                                 para->getParD(level)->neighborZ,
-                                                 para->getParD(level)->distributions.f[0],
-                                                 (int)para->getParD(level)->numberOfNodes,
-                                                 nullptr, /* forces not used in bgk kernel */
-                                                 para->getParD(level)->isEvenTimestep };
+    GPUKernelParameter kernelParameter{
+        para->getParD(level)->omega,
+        para->getParD(level)->typeOfGridNode,
+        para->getParD(level)->neighborX,
+        para->getParD(level)->neighborY,
+        para->getParD(level)->neighborZ,
+        para->getParD(level)->distributions.f[0],
+        (int)para->getParD(level)->numberOfNodes,
+        nullptr, /* forces not used in bgk kernel */
+        para->getParD(level)->isEvenTimestep };
 
     auto lambda = [] __device__(lbm::KernelParameter parameter) {
         return lbm::bgk(parameter);

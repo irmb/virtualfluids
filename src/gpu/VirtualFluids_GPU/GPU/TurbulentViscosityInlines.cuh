@@ -53,8 +53,8 @@ __inline__ __device__ real calcTurbulentViscosityQR(real C, real dxux, real dyuy
         //! Second invariant of the strain-rate tensor
         real Q = c1o2*( dxux*dxux + dyuy*dyuy + dzuz*dzuz ) + c1o4*( Dxy*Dxy + Dxz*Dxz + Dyz*Dyz);
         //! Third invariant of the strain-rate tensor (determinant)
-        real R = - dxux*dyuy*dzuz - c1o4*( Dxy*Dxz*Dyz + dxux*Dyz*Dyz + dyuy*Dxz*Dxz + dzuz*Dxy*Dxy );
-        
+        // real R = - dxux*dyuy*dzuz - c1o4*( Dxy*Dxz*Dyz + dxux*Dyz*Dyz + dyuy*Dxz*Dxz + dzuz*Dxy*Dxy );
+        real R = - dxux*dyuy*dzuz + c1o4*( -Dxy*Dxz*Dyz + dxux*Dyz*Dyz + dyuy*Dxz*Dxz + dzuz*Dxy*Dxy );
         return C * max(R, c0o1) / Q;
 }
 

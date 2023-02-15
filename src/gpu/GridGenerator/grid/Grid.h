@@ -47,6 +47,7 @@ struct Triangle;
 class GridInterface;
 class Object;
 class BoundingBox;
+enum class SideType;
 
 class GRIDGENERATOR_EXPORT Grid
 {
@@ -83,6 +84,8 @@ public:
 
     virtual void getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf) const = 0;
     virtual bool isSparseIndexInFluidNodeIndicesBorder(uint &sparseIndex) const = 0;
+
+    virtual bool isStopperForBC(uint index) const = 0;
 
     virtual int *getNeighborsX() const = 0;
     virtual int *getNeighborsY() const = 0;
@@ -133,9 +136,9 @@ public:
     virtual void setPeriodicityY(bool periodicity) = 0;
     virtual void setPeriodicityZ(bool periodicity) = 0;
 
-    virtual bool getPeriodicityX() = 0;
-    virtual bool getPeriodicityY() = 0;
-    virtual bool getPeriodicityZ() = 0;
+    virtual bool getPeriodicityX() const = 0;
+    virtual bool getPeriodicityY() const = 0;
+    virtual bool getPeriodicityZ() const = 0;
 
     virtual void setEnableFixRefinementIntoTheWall(bool enableFixRefinementIntoTheWall) = 0;
 
@@ -170,6 +173,11 @@ public:
 
     virtual void repairCommunicationIndices(int direction) = 0;
 
+    virtual bool nodeHasBC(uint index) const = 0;
+
+    virtual std::vector<SideType> getBCAlreadySet() = 0;
+    virtual void addBCalreadySet(SideType side) = 0;
+
     // needed for CUDA Streams 
     virtual void findFluidNodeIndices(bool onlyBulk) = 0;
     virtual uint getNumberOfFluidNodes() const = 0;
@@ -178,6 +186,20 @@ public:
     virtual void findFluidNodeIndicesBorder() = 0;
     virtual uint getNumberOfFluidNodesBorder() const = 0;
     virtual void getFluidNodeIndicesBorder(uint *fluidNodeIndicesBorder) const = 0;
+
+    virtual void addFluidNodeIndicesMacroVars(std::vector<uint> _fluidNodeIndicesMacroVars) = 0;
+    virtual void addFluidNodeIndicesApplyBodyForce(std::vector<uint> _fluidNodeIndicesApplyBodyForce) = 0;
+    virtual void addFluidNodeIndicesAllFeatures(std::vector<uint> _fluidNodeIndicesAllFeatures) = 0;
+    virtual void sortFluidNodeIndicesMacroVars() = 0;
+    virtual void sortFluidNodeIndicesApplyBodyForce() = 0;
+    virtual void sortFluidNodeIndicesAllFeatures() = 0;
+
+    virtual uint getNumberOfFluidNodeIndicesMacroVars() const = 0;
+    virtual uint getNumberOfFluidNodeIndicesApplyBodyForce() const = 0;
+    virtual uint getNumberOfFluidNodeIndicesAllFeatures() const = 0; 
+    virtual void getFluidNodeIndicesMacroVars(uint *fluidNodeIndicesMacroVars) const = 0;
+    virtual void getFluidNodeIndicesApplyBodyForce(uint *fluidNodeIndicesApplyBodyForce) const = 0;
+    virtual void getFluidNodeIndicesAllFeatures(uint *fluidNodeIndicesAllFeatures) const = 0;
 };
 
 #endif

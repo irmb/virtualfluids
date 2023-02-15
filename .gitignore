@@ -9,8 +9,10 @@ buildGCC
 _skbuild/
 dist/
 *.egg-info/
-__pycache__/
+**/__pycache__/
 .venv/
+pythonbindings/pyfluids/bindings*
+pythonbindings/pymuparser/bindings*
 
 # IDE
 .vscode/
@@ -39,3 +41,6 @@ stl/
 
 # Settings
 .gitconfig
+
+# User Settings
+CMakeUserPresets.json

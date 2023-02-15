@@ -1,28 +1,28 @@
 //=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
 //           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
 //
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
 //  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
+//  License as published by the Free Software Foundation, either version 3 of
 //  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 //  for more details.
-//  
+//
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
@@ -37,8 +37,23 @@
 #include "grid/NodeValues.h"
 
 #include "utilities/math/Math.h"
+#include <array>
+#include <cstddef>
+#include <vector>
 
 using namespace gg;
+
+std::array<real, 3> Side::getNormal() const
+{
+    std::array<real, 3> normal;
+    if(this->getCoordinate()==X_INDEX)
+        normal = {(real)this->getDirection(), 0.0, 0.0};
+    if(this->getCoordinate()==Y_INDEX)
+        normal = {0.0, (real)this->getDirection(), 0.0};
+    if(this->getCoordinate()==Z_INDEX)
+        normal = {0.0, 0.0, (real)this->getDirection()};
+    return normal;
+}
 
 void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, std::string coord, real constant,
                       real startInner, real endInner, real startOuter, real endOuter)
@@ -49,11 +64,17 @@ void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition
         {
             const uint index = getIndex(grid, coord, constant, v1, v2);
 
-            if ((index != INVALID_INDEX) && (  grid->getFieldEntry(index) == vf::gpu::FLUID
-                                            || grid->getFieldEntry(index) == vf::gpu::FLUID_CFC
-                                            || grid->getFieldEntry(index) == vf::gpu::FLUID_CFF
-                                            || grid->getFieldEntry(index) == vf::gpu::FLUID_FCC
-                                            || grid->getFieldEntry(index) == vf::gpu::FLUID_FCF ))
+            if(index == INVALID_INDEX)
+                continue;
+
+            if (   grid->getFieldEntry(index) == vf::gpu::FLUID
+                                            ||  grid->getFieldEntry(index) == vf::gpu::FLUID_CFC
+                                            ||  grid->getFieldEntry(index) == vf::gpu::FLUID_CFF
+                                            ||  grid->getFieldEntry(index) == vf::gpu::FLUID_FCC
+                                            ||  grid->getFieldEntry(index) == vf::gpu::FLUID_FCF
+                                            ||  grid->getFieldEntry(index) == vf::gpu::FLUID_FCF
+                                            // Overlap of BCs on edge nodes
+                                            || grid->nodeHasBC(index) )
             {
                 grid->setFieldEntry(index, boundaryCondition->getType());
                 boundaryCondition->indices.push_back(index);
@@ -64,9 +85,12 @@ void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition
 
                 boundaryCondition->patches.push_back(0);
             }
-
         }
     }
+
+    const auto currentBCSide = this->whoAmI();
+    if(currentBCSide != SideType::GEOMETRY)
+        grid->addBCalreadySet(currentBCSide);
 }
 
 void Side::setPressureNeighborIndices(SPtr<BoundaryCondition> boundaryCondition, SPtr<Grid> grid, const uint index)
@@ -119,50 +143,111 @@ void Side::setStressSamplingIndices(SPtr<BoundaryCondition> boundaryCondition, S
 
 void Side::setQs(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uint index)
 {
-
     std::vector<real> qNode(grid->getEndDirection() + 1);
 
-    for (int dir = 0; dir <= grid->getEndDirection(); dir++)
-    {
-        real x,y,z;
-        grid->transIndexToCoords( index, x, y, z );
+    for (int dir = 0; dir <= grid->getEndDirection(); dir++) {
+        real x, y, z;
+        grid->transIndexToCoords(index, x, y, z);
 
-        real coords[3] = {x,y,z};
+        std::array<real, 3> coords = { x, y, z };
+        std::array<real, 3> neighborCoords = getNeighborCoordinates(grid.get(), coords, (size_t)dir);
 
-        real neighborX = x + grid->getDirection()[dir * DIMENSION + 0] * grid->getDelta();
-        real neighborY = y + grid->getDirection()[dir * DIMENSION + 1] * grid->getDelta();
-        real neighborZ = z + grid->getDirection()[dir * DIMENSION + 2] * grid->getDelta();
+        correctNeighborForPeriodicBoundaries(grid.get(), coords, neighborCoords);
 
-        // correct neighbor coordinates in case of periodic boundaries
-        if( grid->getPeriodicityX() && grid->getFieldEntry( grid->transCoordToIndex( neighborX, y, z ) ) == vf::gpu::STOPPER_OUT_OF_GRID_BOUNDARY )
-        {
-            if( neighborX > x ) neighborX = grid->getFirstFluidNode( coords, 0, grid->getStartX() );
-            else                neighborX = grid->getLastFluidNode ( coords, 0, grid->getEndX() );
-        }
+        const uint neighborIndex = grid->transCoordToIndex(neighborCoords[0], neighborCoords[1], neighborCoords[2]);
 
-        if( grid->getPeriodicityY() && grid->getFieldEntry( grid->transCoordToIndex( x, neighborY, z ) ) == vf::gpu::STOPPER_OUT_OF_GRID_BOUNDARY )
-        {
-            if( neighborY > y ) neighborY = grid->getFirstFluidNode( coords, 1, grid->getStartY() );
-            else                neighborY = grid->getLastFluidNode ( coords, 1, grid->getEndY() );
-        }
-
-        if( grid->getPeriodicityZ() && grid->getFieldEntry( grid->transCoordToIndex( x, y, neighborZ ) ) == vf::gpu::STOPPER_OUT_OF_GRID_BOUNDARY )
-        {
-            if( neighborZ > z ) neighborZ = grid->getFirstFluidNode( coords, 2, grid->getStartZ() );
-            else                neighborZ = grid->getLastFluidNode ( coords, 2, grid->getEndZ() );
-        }
-
-        uint neighborIndex = grid->transCoordToIndex( neighborX, neighborY, neighborZ );
-        if( grid->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_OUT_OF_GRID_BOUNDARY ||
-            grid->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_OUT_OF_GRID ||
-            grid->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_SOLID )
+        //! Only setting q's that partially point in the Side-normal direction
+        const bool alignedWithNormal = this->isAlignedWithMyNormal(grid.get(), dir);
+        if (grid->isStopperForBC(neighborIndex) && alignedWithNormal) {
             qNode[dir] = 0.5;
-        else
+        } else {
             qNode[dir] = -1.0;
+        }
 
+        // reset diagonals in case they were set by another bc
+        resetDiagonalsInCaseOfOtherBC(grid.get(), qNode, dir, coords);
     }
 
     boundaryCondition->qs.push_back(qNode);
+}
+
+std::array<real, 3> Side::getNeighborCoordinates(Grid *grid, const std::array<real, 3> &coordinates, size_t direction) const
+{
+    return { coordinates[0] + grid->getDirection()[direction * DIMENSION + 0] * grid->getDelta(),
+             coordinates[1] + grid->getDirection()[direction * DIMENSION + 1] * grid->getDelta(),
+             coordinates[2] + grid->getDirection()[direction * DIMENSION + 2] * grid->getDelta() };
+}
+
+bool Side::neighborNormalToSideIsAStopper(Grid *grid, const std::array<real, 3> &coordinates, SideType side) const
+{
+    const auto neighborCoords = getNeighborCoordinates(grid, coordinates, sideToD3Q27.at(side));
+    const auto neighborIndex = grid->transCoordToIndex(neighborCoords[0], neighborCoords[1], neighborCoords[2]);
+    return grid->isStopperForBC(neighborIndex);
+}
+
+void Side::resetDiagonalsInCaseOfOtherBC(Grid *grid, std::vector<real> &qNode, int dir,
+                                         const std::array<real, 3> &coordinates) const
+{
+    // When to reset a diagonal q to -1:
+    // - it is normal to another boundary condition which was already set
+    // - and it actually is influenced by the other bc:
+    //   We check if its neighbor in the regular direction to the other bc is a stopper. If it is a stopper, it is influenced by the other bc.
+
+    if (qNode[dir] == 0.5 && grid->getBCAlreadySet().size() > 0) {
+        for (int i = 0; i < (int)grid->getBCAlreadySet().size(); i++) {
+            SideType otherDir = grid->getBCAlreadySet()[i];
+
+            // only reset normals for nodes on edges and corners, not on faces
+            if (!neighborNormalToSideIsAStopper(grid, coordinates, otherDir))
+                continue;
+
+            const auto otherNormal = normals.at(otherDir);
+            if (isAlignedWithNormal(grid, dir, otherNormal)) {
+                qNode[dir] = -1.0;
+            }
+        }
+    }
+}
+
+bool Side::isAlignedWithMyNormal(const Grid *grid, int dir) const
+{
+    std::array<real, 3> normal = this->getNormal();
+    return isAlignedWithNormal(grid, dir, normal);
+}
+
+bool Side::isAlignedWithNormal(const Grid *grid, int dir, const std::array<real, 3> &normal) const
+{
+    return (normal[0] * grid->getDirection()[dir * DIMENSION + 0] +
+            normal[1] * grid->getDirection()[dir * DIMENSION + 1] +
+            normal[2] * grid->getDirection()[dir * DIMENSION + 2]) > 0;
+}
+
+void Side::correctNeighborForPeriodicBoundaries(const Grid *grid, std::array<real, 3>& coords, std::array<real, 3>& neighborCoords) const
+{
+    // correct neighbor coordinates in case of periodic boundaries
+    if (grid->getPeriodicityX() &&
+        grid->getFieldEntry(grid->transCoordToIndex(neighborCoords[0], coords[1], coords[2])) == vf::gpu::STOPPER_OUT_OF_GRID_BOUNDARY) {
+        if (neighborCoords[0] > coords[0])
+            neighborCoords[0] = grid->getFirstFluidNode(coords.data(), 0, grid->getStartX());
+        else
+            neighborCoords[0] = grid->getLastFluidNode(coords.data(), 0, grid->getEndX());
+    }
+
+    if (grid->getPeriodicityY() &&
+        grid->getFieldEntry(grid->transCoordToIndex(coords[0], neighborCoords[1], coords[2])) == vf::gpu::STOPPER_OUT_OF_GRID_BOUNDARY) {
+        if (neighborCoords[1] > coords[1])
+            neighborCoords[1] = grid->getFirstFluidNode(coords.data(), 1, grid->getStartY());
+        else
+            neighborCoords[1] = grid->getLastFluidNode(coords.data(), 1, grid->getEndY());
+    }
+
+    if (grid->getPeriodicityZ() &&
+        grid->getFieldEntry(grid->transCoordToIndex(coords[0], coords[1], neighborCoords[2])) == vf::gpu::STOPPER_OUT_OF_GRID_BOUNDARY) {
+        if (neighborCoords[2] > coords[2])
+            neighborCoords[2] = grid->getFirstFluidNode(coords.data(), 2, grid->getStartZ());
+        else
+            neighborCoords[2] = grid->getLastFluidNode(coords.data(), 2, grid->getEndZ());
+    }
 }
 
 uint Side::getIndex(SPtr<Grid> grid, std::string coord, real constant, real v1, real v2)
@@ -177,7 +262,7 @@ uint Side::getIndex(SPtr<Grid> grid, std::string coord, real constant, real v1, 
 }
 
 
-void Geometry::addIndices(std::vector<SPtr<Grid> > grids, uint level, SPtr<BoundaryCondition> boundaryCondition)
+void Geometry::addIndices(const std::vector<SPtr<Grid>> &grids, uint level, SPtr<BoundaryCondition> boundaryCondition)
 {
     auto geometryBoundaryCondition = std::dynamic_pointer_cast<GeometryBoundaryCondition>(boundaryCondition);
 
@@ -190,7 +275,7 @@ void Geometry::addIndices(std::vector<SPtr<Grid> > grids, uint level, SPtr<Bound
 
         for (int dir = 0; dir <= grids[level]->getEndDirection(); dir++)
         {
-			const real q = grids[level]->getQValue(index, dir);
+            const real q = grids[level]->getQValue(index, dir);
 
             qNode[dir] = q;
 
@@ -218,7 +303,7 @@ void Geometry::addIndices(std::vector<SPtr<Grid> > grids, uint level, SPtr<Bound
 
 
 
-void MX::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCondition> boundaryCondition)
+void MX::addIndices(const std::vector<SPtr<Grid>> &grid, uint level, SPtr<BoundaryCondition> boundaryCondition)
 {
     real startInner = grid[level]->getStartY();
     real endInner = grid[level]->getEndY();
@@ -234,7 +319,7 @@ void MX::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCond
 
 }
 
-void PX::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCondition> boundaryCondition)
+void PX::addIndices(const std::vector<SPtr<Grid>> &grid, uint level, SPtr<BoundaryCondition> boundaryCondition)
 {
     real startInner = grid[level]->getStartY();
     real endInner = grid[level]->getEndY();
@@ -249,7 +334,7 @@ void PX::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCond
     Side::addIndices(grid[level], boundaryCondition, "x", coordinateNormal, startInner, endInner, startOuter, endOuter);
 }
 
-void MY::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCondition> boundaryCondition)
+void MY::addIndices(const std::vector<SPtr<Grid>> &grid, uint level, SPtr<BoundaryCondition> boundaryCondition)
 {
     real startInner = grid[level]->getStartX();
     real endInner = grid[level]->getEndX();
@@ -265,7 +350,7 @@ void MY::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCond
 }
 
 
-void PY::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCondition> boundaryCondition)
+void PY::addIndices(const std::vector<SPtr<Grid>> &grid, uint level, SPtr<BoundaryCondition> boundaryCondition)
 {
     real startInner = grid[level]->getStartX();
     real endInner = grid[level]->getEndX();
@@ -281,7 +366,7 @@ void PY::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCond
 }
 
 
-void MZ::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCondition> boundaryCondition)
+void MZ::addIndices(const std::vector<SPtr<Grid>> &grid, uint level, SPtr<BoundaryCondition> boundaryCondition)
 {
     real startInner = grid[level]->getStartX();
     real endInner = grid[level]->getEndX();
@@ -296,7 +381,7 @@ void MZ::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCond
     Side::addIndices(grid[level], boundaryCondition, "z", coordinateNormal, startInner, endInner, startOuter, endOuter);
 }
 
-void PZ::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCondition> boundaryCondition)
+void PZ::addIndices(const std::vector<SPtr<Grid>> &grid, uint level, SPtr<BoundaryCondition> boundaryCondition)
 {
     real startInner = grid[level]->getStartX();
     real endInner = grid[level]->getEndX();
@@ -307,6 +392,6 @@ void PZ::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCond
     real coordinateNormal = grid[level]->getEndZ() - grid[level]->getDelta();
 
     if( coordinateNormal < grid[0]->getEndZ() - grid[0]->getDelta() ) return;
-    
+
     Side::addIndices(grid[level], boundaryCondition, "z", coordinateNormal, startInner, endInner, startOuter, endOuter);
 }

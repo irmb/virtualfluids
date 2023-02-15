@@ -38,6 +38,7 @@
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
 #include "LBM/LB.h"
+#include "LBM/GPUHelperFunctions/KernelUtilities.h"
 
 using namespace vf::lbm::constant;
 
@@ -52,34 +53,31 @@ __host__ __device__ __forceinline__ void calcDerivatives(const uint& k, uint& kM
     dvz = ((fluidP ? vz[kP] : vz[k])-(fluidM ? vz[kM] : vz[k]))*div;
 }
 
-__global__ void calcAMD(real* vx,
-                        real* vy,
-                        real* vz,
-                        real* turbulentViscosity,
-                        uint* neighborX,
-                        uint* neighborY,
-                        uint* neighborZ,
-                        uint* neighborWSB,
-                        uint* typeOfGridNode,
-                        uint size_Mat,
-                        real SGSConstant)
+__global__ void calcAMD(
+    real* vx,
+    real* vy,
+    real* vz,
+    real* turbulentViscosity,
+    uint* neighborX,
+    uint* neighborY,
+    uint* neighborZ,
+    uint* neighborWSB,
+    uint* typeOfGridNode,
+    unsigned long long numberOfLBnodes,
+    real SGSConstant)
 {
+    ////////////////////////////////////////////////////////////////////////////////
+    //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
+    //!
+    const unsigned nodeIndex = vf::gpu::getNodeIndex();
 
-    const uint x = threadIdx.x; 
-    const uint y = blockIdx.x; 
-    const uint z = blockIdx.y; 
+    if(nodeIndex >= numberOfLBnodes) return;
+    if(typeOfGridNode[nodeIndex] != GEO_FLUID) return;
 
-    const uint nx = blockDim.x;
-    const uint ny = gridDim.x;
-
-    const uint k = nx*(ny*z + y) + x;
-    if(k >= size_Mat) return;
-    if(typeOfGridNode[k] != GEO_FLUID) return;
-
-    uint kPx = neighborX[k];
-    uint kPy = neighborY[k];
-    uint kPz = neighborZ[k];
-    uint kMxyz = neighborWSB[k];
+    uint kPx = neighborX[nodeIndex];
+    uint kPy = neighborY[nodeIndex];
+    uint kPz = neighborZ[nodeIndex];
+    uint kMxyz = neighborWSB[nodeIndex];
     uint kMx = neighborZ[neighborY[kMxyz]];
     uint kMy = neighborZ[neighborX[kMxyz]];
     uint kMz = neighborY[neighborX[kMxyz]];
@@ -88,9 +86,9 @@ __global__ void calcAMD(real* vx,
          dvydx, dvydy, dvydz,
          dvzdx, dvzdy, dvzdz;
 
-    calcDerivatives(k, kMx, kPx, typeOfGridNode, vx, vy, vz, dvxdx, dvydx, dvzdx);
-    calcDerivatives(k, kMy, kPy, typeOfGridNode, vx, vy, vz, dvxdy, dvydy, dvzdy);
-    calcDerivatives(k, kMz, kPz, typeOfGridNode, vx, vy, vz, dvxdz, dvydz, dvzdz);
+    calcDerivatives(nodeIndex, kMx, kPx, typeOfGridNode, vx, vy, vz, dvxdx, dvydx, dvzdx);
+    calcDerivatives(nodeIndex, kMy, kPy, typeOfGridNode, vx, vy, vz, dvxdy, dvydy, dvzdy);
+    calcDerivatives(nodeIndex, kMz, kPz, typeOfGridNode, vx, vy, vz, dvxdz, dvydz, dvzdz);
 
     real denominator =  dvxdx*dvxdx + dvydx*dvydx + dvzdx*dvzdx + 
                         dvxdy*dvxdy + dvydy*dvydy + dvzdy*dvzdy +
@@ -102,7 +100,7 @@ __global__ void calcAMD(real* vx,
                         (dvxdx*dvzdx + dvxdy*dvzdy + dvxdz*dvzdz) * (dvxdz+dvzdx) + 
                         (dvydx*dvzdx + dvydy*dvzdy + dvydz*dvzdz) * (dvydz+dvzdy);
 
-    turbulentViscosity[k] = max(c0o1,-SGSConstant*enumerator)/denominator;
+    turbulentViscosity[nodeIndex] = denominator != c0o1 ? max(c0o1,-SGSConstant*enumerator)/denominator : c0o1;
 }
 
 void calcTurbulentViscosityAMD(Parameter* para, int level)

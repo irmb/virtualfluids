@@ -1,0 +1,39 @@
+##################################################
+#informations for Writing
+##################################################
+Path = .
+##################################################
+#informations for reading
+##################################################
+GridPath = .
+##################################################
+Devices = 0 
+##################################################
+tStartOut           = 0
+tOut                = 100000
+tEnd                = 300000
+##################################################
+tStartAveraging     = 0
+tStartTmpAveraging  = 100000
+tAveraging          = 200
+tStartOutProbe      = 0
+tOutProbe           = 1000 
+##################################################
+Ma = 0.1
+nz = 96 
+
+bodyForce = true
+SGSconstant = 0.333
+TurbulenceModel = QR
+
+QuadricLimiterP = 100000.0
+QuadricLimiterM = 100000.0
+QuadricLimiterD = 100000.0
+
+##################################################
+readPrecursor = false
+nTimestepsReadPrecursor = 1
+precursorFile = precursor/Precursor
+
+##################################################
+turbineDiameter = 126.0

@@ -1,4 +1,35 @@
-
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file ActuatorLine.cpp
+//! \ingroup ActuatorLine
+//! \author Henry Korb, Henrik Asmuth
+//=======================================================================================
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <string>
@@ -28,12 +59,14 @@
 #include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
 #include "GridGenerator/grid/BoundaryConditions/Side.h"
+#include "GridGenerator/grid/BoundaryConditions/BoundaryCondition.h"
+
 #include "GridGenerator/grid/GridFactory.h"
 
 #include "GridGenerator/io/SimulationFileWriter/SimulationFileWriter.h"
 #include "GridGenerator/io/GridVTKWriter/GridVTKWriter.h"
-#include "GridGenerator/io/STLReaderWriter/STLReader.h"
-#include "GridGenerator/io/STLReaderWriter/STLWriter.h"
+#include "GridGenerator/TransientBCSetter/TransientBCSetter.h"
+
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -44,10 +77,12 @@
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
-#include "VirtualFluids_GPU/PreCollisionInteractor/ActuatorLine.h"
+#include "VirtualFluids_GPU/PreCollisionInteractor/ActuatorFarm.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PointProbe.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlaneProbe.h"
 #include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
+#include "VirtualFluids_GPU/TurbulenceModels/TurbulenceModelFactory.h"
+#include "VirtualFluids_GPU/Factories/GridScalingFactory.h"
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 
@@ -63,26 +98,10 @@
 
 LbmOrGks lbmOrGks = LBM;
 
-const real reference_diameter = 126.0; // diameter in m
-
-const real L_x = 10*reference_diameter;
-const real L_y = 6*reference_diameter;
-const real L_z = 6*reference_diameter;
-
-const real viscosity = 1.56e-5;
-
-const real velocity  = 9.0;
-
-const real mach = 0.1;
-
-const uint nodes_per_diameter = 16;
-
 std::string path(".");
 
 std::string simulationName("ActuatorLine");
 
-const float tOut = 100;
-const float tEnd = 280; // total time of simulation in s
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -98,30 +117,59 @@ void multipleLevel(const std::string& configPath)
     vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();
 
     auto gridFactory = GridFactory::make();
-    gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    vf::basics::ConfigurationFile config;
+    config.load(configPath);
+
+    const real reference_diameter = config.getValue<real>("ReferenceDiameter");
+    const uint nodes_per_diameter = config.getValue<uint>("NodesPerDiameter");
+    const real velocity = config.getValue<real>("Velocity");
+
+
+    const real L_x = 24*reference_diameter;
+    const real L_y = 6*reference_diameter;
+    const real L_z = 6*reference_diameter;
+
+    const real viscosity = 1.56e-5;
+
+    const real mach = 0.1;
+
+
+    const float tStartOut   = config.getValue<real>("tStartOut");
+    const float tOut        = config.getValue<real>("tOut");
+    const float tEnd        = config.getValue<real>("tEnd"); // total time of simulation
+
+    const float tStartAveraging     =  config.getValue<real>("tStartAveraging");
+    const float tStartTmpAveraging  =  config.getValue<real>("tStartTmpAveraging");
+    const float tAveraging          =  config.getValue<real>("tAveraging");
+    const float tStartOutProbe      =  config.getValue<real>("tStartOutProbe");
+    const float tOutProbe           =  config.getValue<real>("tOutProbe");
+        
+    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNummberOfProcess(), communicator.getPID(), &config);
+    BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
+    GridScalingFactory scalingFactory  = GridScalingFactory();
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	const real dx = reference_diameter/real(nodes_per_diameter);
 
+    real turbPos[3] = {3*reference_diameter, 3*reference_diameter, 3*reference_diameter};
+
 	gridBuilder->addCoarseGrid(0.0, 0.0, 0.0,
 							   L_x,  L_y,  L_z, dx);
+
+    gridBuilder->setNumberOfLayers(4,0);
+    gridBuilder->addGrid( new Cuboid(   turbPos[0]-1.5*reference_diameter,  turbPos[1]-1.5*reference_diameter,  turbPos[2]-1.5*reference_diameter, 
+                                        turbPos[0]+10.0*reference_diameter, turbPos[1]+1.5*reference_diameter,  turbPos[2]+1.5*reference_diameter) , 1 );
+    para->setMaxLevel(2);
+    scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
 	gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
 	gridBuilder->buildGrids(lbmOrGks, false); // buildGrids() has to be called before setting the BCs!!!!
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    vf::basics::ConfigurationFile config;
-    config.load(configPath);
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////^
-    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNummberOfProcess(), communicator.getPID(), &config);
-    BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     const real dt = dx * mach / (sqrt(3) * velocity);
 
@@ -140,14 +188,11 @@ void multipleLevel(const std::string& configPath)
 
     para->setPrintFiles(true);
 
-    para->setMaxLevel(1);
-
-
     para->setVelocityLB(velocityLB);
     para->setViscosityLB(viscosityLB);
     para->setVelocityRatio( dx / dt );
     para->setViscosityRatio( dx*dx/dt );
-    para->setMainKernel("CumulantK17CompChim");
+    para->setMainKernel("CumulantK17");
 
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)0.0;
@@ -156,13 +201,15 @@ void multipleLevel(const std::string& configPath)
         vz  = (real)0.0;
     });
 
+    para->setTimestepStartOut( uint(tStartOut/dt) );
     para->setTimestepOut( uint(tOut/dt) );
     para->setTimestepEnd( uint(tEnd/dt) );
 
     para->setIsBodyForce( true );
-
+    para->setUseStreams( true );
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     gridBuilder->setVelocityBoundaryCondition(SideType::MX,  velocityLB,  0.0, 0.0);
 
     gridBuilder->setVelocityBoundaryCondition(SideType::MY,  velocityLB,  0.0, 0.0);
@@ -172,42 +219,52 @@ void multipleLevel(const std::string& configPath)
     gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
 
     bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityAndPressureCompressible);
-    bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::PressureNonEquilibriumCompressible);
+    bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflective);
+
+    SPtr<TurbulenceModelFactory> tmFactory = std::make_shared<TurbulenceModelFactory>(para);
+    tmFactory->readConfigFile(config);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    real turbPos[3] = {3*reference_diameter, 3*reference_diameter, 3*reference_diameter};
-    real epsilon = 5.f; // width of gaussian smearing
-    real density = 1.225f;
-    int level = 0;
-    uint nBlades = 3;
-    uint nBladeNodes = 32;
+    int level = 1; // grid level at which the turbine samples velocities and distributes forces
+    const real epsilon = dx*exp2(-level)*1.5; // width of gaussian smearing
+    const real density = 1.225f;
+    const uint nBlades = 3;
+    const uint nBladeNodes = 32;
+    const real tipspeed_ratio = 7.5f; // tipspeed ratio = angular vel * radius / inflow vel
+    const real omega = 2*tipspeed_ratio*velocity/reference_diameter;
+    
 
-    SPtr<ActuatorLine> actuator_line =SPtr<ActuatorLine>( new ActuatorLine(nBlades, density, nBladeNodes, epsilon, turbPos[0], turbPos[1], turbPos[2], reference_diameter, level, dt, dx) );
-    para->addActuator( actuator_line );
+    SPtr<ActuatorFarm> actuator_farm = std::make_shared<ActuatorFarm>(nBlades, density, nBladeNodes, epsilon, level, dt, dx, true);
+    std::vector<real> bladeRadii;
+    real dr = reference_diameter/(nBladeNodes*2);
+    for(uint node=0; node<nBladeNodes; node++){ bladeRadii.emplace_back(dr*(node+1)); }
+    actuator_farm->addTurbine(turbPos[0], turbPos[1], turbPos[2], reference_diameter, omega, 0, 0, bladeRadii);
+    para->addActuator( actuator_farm );
 
-    SPtr<PointProbe> pointProbe = SPtr<PointProbe>( new PointProbe("pointProbe", para->getOutputPath(), 100, 1, 500, 100) );
-    std::vector<real> probeCoordsX = {reference_diameter,2*reference_diameter,5*reference_diameter};
-    std::vector<real> probeCoordsY = {3*reference_diameter,3*reference_diameter,3*reference_diameter};
-    std::vector<real> probeCoordsZ = {3*reference_diameter,3*reference_diameter,3*reference_diameter};
-    pointProbe->addProbePointsFromList(probeCoordsX, probeCoordsY, probeCoordsZ);
-    // pointProbe->addProbePointsFromXNormalPlane(2*D, 0.0, 0.0, L_y, L_z, (uint)L_y/dx, (uint)L_z/dx);
 
-    pointProbe->addStatistic(Statistic::Means);
-    pointProbe->addStatistic(Statistic::Variances);
-    para->addProbe( pointProbe );
+    // SPtr<PointProbe> pointProbe = std::make_shared<PointProbe>("pointProbe", para->getOutputPath(), 100, 1, 500, 100);
+    // std::vector<real> probeCoordsX = {reference_diameter,2*reference_diameter,5*reference_diameter};
+    // std::vector<real> probeCoordsY = {3*reference_diameter,3*reference_diameter,3*reference_diameter};
+    // std::vector<real> probeCoordsZ = {3*reference_diameter,3*reference_diameter,3*reference_diameter};
+    // pointProbe->addProbePointsFromList(probeCoordsX, probeCoordsY, probeCoordsZ);
+    // // pointProbe->addProbePointsFromXNormalPlane(2*D, 0.0, 0.0, L_y, L_z, (uint)L_y/dx, (uint)L_z/dx);
 
-    SPtr<PlaneProbe> planeProbe = SPtr<PlaneProbe>( new PlaneProbe("planeProbe", para->getOutputPath(), 100, 500, 100, 100) );
-    planeProbe->setProbePlane(5*reference_diameter, 0, 0, dx, L_y, L_z);
-    planeProbe->addStatistic(Statistic::Means);
-    para->addProbe( planeProbe );
+    // pointProbe->addStatistic(Statistic::Means);
+    // pointProbe->addStatistic(Statistic::Variances);
+    // para->addProbe( pointProbe );
+
+    // SPtr<PlaneProbe> planeProbe = std::make_shared<PlaneProbe>("planeProbe", para->getOutputPath(), 100, 500, 100, 100);
+    // planeProbe->setProbePlane(5*reference_diameter, 0, 0, dx, L_y, L_z);
+    // planeProbe->addStatistic(Statistic::Means);
+    // para->addProbe( planeProbe );
 
 
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
 
     auto gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
 
-    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory);
+    Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory, tmFactory, &scalingFactory);
     sim.run();
 }
 

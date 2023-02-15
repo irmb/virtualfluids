@@ -43,6 +43,7 @@
 
 #include <basics/config/ConfigurationFile.h>
 
+#include "Logger.h"
 #include "Parameter/CudaStreamManager.h"
 
 Parameter::Parameter() : Parameter(1, 0, {}) {}
@@ -65,6 +66,8 @@ Parameter::Parameter(int numberOfProcesses, int myId, std::optional<const vf::ba
     initGridPaths();
     initGridBasePoints();
     initDefaultLBMkernelAllLevels();
+
+    this->cudaStreamManager = std::make_unique<CudaStreamManager>();
 }
 
 Parameter::~Parameter() = default;
@@ -500,10 +503,10 @@ void Parameter::initLBMSimulationParameter()
         parH[i]->sizePlaneXY      = parH[i]->nx * parH[i]->ny;
         parH[i]->sizePlaneYZ      = parH[i]->ny * parH[i]->nz;
         parH[i]->sizePlaneXZ      = parH[i]->nx * parH[i]->nz;
-        parH[i]->mem_size_real    = sizeof(real) * parH[i]->size_Mat;
-        parH[i]->mem_size_int     = sizeof(unsigned int) * parH[i]->size_Mat;
-        parH[i]->mem_size_bool    = sizeof(bool) * parH[i]->size_Mat;
-        parH[i]->mem_size_real_yz = sizeof(real) * parH[i]->ny * parH[i]->nz;
+//        parH[i]->mem_size_real    = sizeof(real) * parH[i]->size_Mat;         //DEPRECATED: related to full matrix
+//        parH[i]->mem_size_int     = sizeof(unsigned int) * parH[i]->size_Mat; //DEPRECATED: related to full matrix
+//        parH[i]->mem_size_bool    = sizeof(bool) * parH[i]->size_Mat;         //DEPRECATED: related to full matrix
+//        parH[i]->mem_size_real_yz = sizeof(real) * parH[i]->ny * parH[i]->nz; //DEPRECATED: related to full matrix
         parH[i]->isEvenTimestep        = true;
         parH[i]->startz           = parH[i]->gridNZ * ic.myProcessId;
         parH[i]->endz             = parH[i]->gridNZ * ic.myProcessId + parH[i]->gridNZ;
@@ -568,10 +571,10 @@ void Parameter::initLBMSimulationParameter()
         parD[i]->sizePlaneXY      = parH[i]->sizePlaneXY;
         parD[i]->sizePlaneYZ      = parH[i]->sizePlaneYZ;
         parD[i]->sizePlaneXZ      = parH[i]->sizePlaneXZ;
-        parD[i]->mem_size_real    = sizeof(real) * parD[i]->size_Mat;
-        parD[i]->mem_size_int     = sizeof(unsigned int) * parD[i]->size_Mat;
-        parD[i]->mem_size_bool    = sizeof(bool) * parD[i]->size_Mat;
-        parD[i]->mem_size_real_yz = sizeof(real) * parD[i]->ny * parD[i]->nz;
+        //parD[i]->mem_size_real    = sizeof(real) * parD[i]->size_Mat;          //DEPRECATED: related to full matrix
+        //parD[i]->mem_size_int     = sizeof(unsigned int) * parD[i]->size_Mat;  //DEPRECATED: related to full matrix
+        //parD[i]->mem_size_bool    = sizeof(bool) * parD[i]->size_Mat;          //DEPRECATED: related to full matrix
+        //parD[i]->mem_size_real_yz = sizeof(real) * parD[i]->ny * parD[i]->nz;  //DEPRECATED: related to full matrix
         parD[i]->isEvenTimestep        = parH[i]->isEvenTimestep;
         parD[i]->startz           = parH[i]->startz;
         parD[i]->endz             = parH[i]->endz;
@@ -585,6 +588,30 @@ void Parameter::initLBMSimulationParameter()
         parD[i]->distX            = parH[i]->distX;
         parD[i]->distY            = parH[i]->distY;
         parD[i]->distZ            = parH[i]->distZ;
+    }
+
+    checkParameterValidityCumulantK17();
+}
+
+void Parameter::checkParameterValidityCumulantK17() const
+{
+    if (this->mainKernel != "CumulantK17")
+        return;
+
+    const real viscosity = this->parH[maxlevel]->vis;
+    const real viscosityLimit = 1.0 / 42.0;
+    if (viscosity > viscosityLimit) {
+        VF_LOG_WARNING("The viscosity (in LB units) at level {} is {:1.3g}. It is recommended to keep it smaller than {:1.3g} "
+                       "for the CumulantK17 collision kernel.",
+                       maxlevel, viscosity, viscosityLimit);
+    }
+
+    const real velocity = this->ic.u0;
+    const real velocityLimit = 0.1;
+    if (velocity > velocityLimit) {
+        VF_LOG_WARNING("The velocity (in LB units) is {:1.4g}. It is recommended to keep it smaller than {:1.4g} for the "
+                       "CumulantK17 collision kernel.",
+                       velocity, velocityLimit);
     }
 }
 
@@ -829,7 +856,7 @@ real Parameter::getLengthRatio()
 }
 real Parameter::getForceRatio()
 {
-    return this->getDensityRatio() * this->getVelocityRatio()/this->getTimeRatio();
+    return (this->getDensityRatio()+1.0) * this->getVelocityRatio()/this->getTimeRatio();
 }
 real Parameter::getScaledViscosityRatio(int level)
 {
@@ -859,6 +886,10 @@ real Parameter::getScaledForceRatio(int level)
 {
     return this->getForceRatio()*(level+1);
 }
+real Parameter::getScaledStressRatio(int level)
+{
+    return this->getVelocityRatio()*this->getVelocityRatio();
+}
 void Parameter::setRealX(real RealX)
 {
     ic.RealX = RealX;
@@ -882,6 +913,10 @@ void Parameter::setPressInZ(unsigned int PressInZ)
 void Parameter::setPressOutZ(unsigned int PressOutZ)
 {
     ic.PressOutZ = PressOutZ;
+}
+void Parameter::setOutflowPressureCorrectionFactor(real pressBCrhoCorrectionFactor)
+{
+    ic.outflowPressureCorrectionFactor = pressBCrhoCorrectionFactor;
 }
 void Parameter::setMaxDev(int maxdev)
 {
@@ -1607,7 +1642,7 @@ void Parameter::setOutflowBoundaryNormalZ(std::string outflowNormalZ)
 void Parameter::setMainKernel(std::string kernel)
 {
     this->mainKernel = kernel;
-    if (kernel.find("Stream") != std::string::npos || kernel.find("Redesigned") != std::string::npos)
+    if ( kernel.find("CumulantK17") != std::string::npos )
         this->kernelNeedsFluidNodeIndicesToRun = true;
 }
 void Parameter::setMultiKernelOn(bool isOn)
@@ -1720,22 +1755,22 @@ unsigned int Parameter::getSizeMat(int level)
 {
     return parH[level]->size_Mat;
 }
-unsigned int Parameter::getMemSizereal(int level)
-{
-    return parH[level]->mem_size_real;
-}
-unsigned int Parameter::getMemSizeInt(int level)
-{
-    return parH[level]->mem_size_int;
-}
-unsigned int Parameter::getMemSizeBool(int level)
-{
-    return parH[level]->mem_size_bool;
-}
-unsigned int Parameter::getMemSizerealYZ(int level)
-{
-    return parH[level]->mem_size_real_yz;
-}
+//unsigned int Parameter::getMemSizereal(int level)      //DEPRECATED: related to full matrix
+//{
+//    return parH[level]->mem_size_real;
+//}
+//unsigned int Parameter::getMemSizeInt(int level)     //DEPRECATED: related to full matrix
+//{
+//    return parH[level]->mem_size_int;
+//}
+//unsigned int Parameter::getMemSizeBool(int level)    //DEPRECATED: related to full matrix
+//{
+//    return parH[level]->mem_size_bool;
+//}
+//unsigned int Parameter::getMemSizerealYZ(int level)  //DEPRECATED: related to full matrix
+//{
+//    return parH[level]->mem_size_real_yz;
+//}
 int Parameter::getFine()
 {
     return fine;
@@ -1915,6 +1950,10 @@ unsigned int Parameter::getPressInZ()
 unsigned int Parameter::getPressOutZ()
 {
     return ic.PressOutZ;
+}
+real Parameter::getOutflowPressureCorrectionFactor()
+{
+    return ic.outflowPressureCorrectionFactor;
 }
 int Parameter::getMaxDev()
 {
@@ -2657,8 +2696,7 @@ void Parameter::setUseStreams(bool useStreams)
     if (useStreams) {
         if (this->getNumprocs() != 1) {
             this->useStreams = useStreams;
-            this->cudaStreamManager = std::make_unique<CudaStreamManager>();
-            return;
+            return; 
         } else {
             std::cout << "Can't use streams with only one process!" << std::endl;
         }

@@ -3,6 +3,7 @@
 #include "Parameter/Parameter.h"
 
 #include <basics/utilities/UbFileInputASCII.h>
+
 using namespace vf::lbm::dir;
 
 //////////////////////////////////////////////////////////////////////////
@@ -169,7 +170,7 @@ void PositionReader::definePropellerQs(Parameter* para)
 	//////////////////////////////////////////////////////////////////
 	for(uint u=0; u<para->getParH(para->getFine())->propellerBC.numberOfBCnodes; u++)
 	{
-		for (int dir = DIR_P00; dir<=DIR_MMM; dir++)
+		for (size_t dir = DIR_P00; dir<=DIR_MMM; dir++)
 		{
 			if ((dir==DIR_P00)  || 
 				(dir==DIR_PP0) || (dir==DIR_PM0) || (dir==DIR_P0P) || (dir==DIR_P0M) ||

@@ -19,34 +19,29 @@ std::shared_ptr<GridProvider> GridProvider::makeGridReader(FILEFORMAT format, st
     return std::shared_ptr<GridProvider>(new GridReader(format, para, cudaMemoryManager));
 }
 
-void GridProvider::setNumberOfNodes(const int numberOfNodes, const int level) const
+void GridProvider::setNumberOfNodes(uint numberOfNodes, int level) const
 {
-    para->getParH(level)->numberOfNodes = numberOfNodes;
-    para->getParD(level)->numberOfNodes = numberOfNodes;
-    para->getParH(level)->mem_size_real_SP = sizeof(real) * para->getParH(level)->numberOfNodes;
-    para->getParH(level)->mem_size_int_SP = sizeof(uint) * para->getParH(level)->numberOfNodes;
-    para->getParD(level)->mem_size_real_SP = sizeof(real) * para->getParD(level)->numberOfNodes;
-    para->getParD(level)->mem_size_int_SP = sizeof(uint) * para->getParD(level)->numberOfNodes;
+    para->getParH(level)->numberOfNodes          = (unsigned long long)numberOfNodes;
+    para->getParD(level)->numberOfNodes          = (unsigned long long)numberOfNodes;
+    para->getParH(level)->memSizeRealLBnodes     = sizeof(real) * para->getParH(level)->numberOfNodes;
+    para->getParD(level)->memSizeRealLBnodes     = sizeof(real) * para->getParD(level)->numberOfNodes;
+    para->getParH(level)->memSizeLonglongLBnodes = sizeof(unsigned long long) * para->getParH(level)->numberOfNodes;
+    para->getParD(level)->memSizeLonglongLBnodes = sizeof(unsigned long long) * para->getParD(level)->numberOfNodes;
 }
 
-void GridProvider::setNumberOfFluidNodes(const int numberOfNodes, const int level) const
+void GridProvider::setNumberOfTaggedFluidNodes(uint numberOfNodes, CollisionTemplate tag, int level) const
 {
-    para->getParH(level)->numberOfFluidNodes = numberOfNodes;
-    para->getParD(level)->numberOfFluidNodes = numberOfNodes;
+    para->getParH(level)->numberOfTaggedFluidNodes[tag] = numberOfNodes;
+    para->getParD(level)->numberOfTaggedFluidNodes[tag] = numberOfNodes;
 }
 
-void GridProvider::setNumberOfFluidNodesBorder(const int numberOfNodes, const int level) const {
-    para->getParH(level)->numberOfFluidNodesBorder = numberOfNodes;
-    para->getParD(level)->numberOfFluidNodesBorder = numberOfNodes;
-}
-
-void GridProvider::setInitalNodeValues(const int numberOfNodes, const int level) const
+void GridProvider::setInitalNodeValues(uint numberOfNodes, int level) const
 {
-    for (int j = 1; j <= numberOfNodes; j++)
+    for (uint pos = 1; pos <= numberOfNodes; pos++)
     {
-        const real coordX = para->getParH(level)->coordinateX[j];
-        const real coordY = para->getParH(level)->coordinateY[j];
-        const real coordZ = para->getParH(level)->coordinateZ[j];
+        const real coordX = para->getParH(level)->coordinateX[pos];
+        const real coordY = para->getParH(level)->coordinateY[pos];
+        const real coordZ = para->getParH(level)->coordinateZ[pos];
 
         real rho, vx, vy, vz;
 
@@ -63,40 +58,40 @@ void GridProvider::setInitalNodeValues(const int numberOfNodes, const int level)
             vz  = real(0.0);
         }
 
-        para->getParH(level)->rho[j] = rho; 
-        para->getParH(level)->velocityX[j]  = vx; 
-        para->getParH(level)->velocityY[j]  = vy;
-        para->getParH(level)->velocityZ[j]  = vz; 
+        para->getParH(level)->rho[pos] = rho; 
+        para->getParH(level)->velocityX[pos]  = vx; 
+        para->getParH(level)->velocityY[pos]  = vy;
+        para->getParH(level)->velocityZ[pos]  = vz; 
 
         //////////////////////////////////////////////////////////////////////////
 
         if (para->getCalcMedian()) {
-            para->getParH(level)->vx_SP_Med[j] = 0.0f;
-            para->getParH(level)->vy_SP_Med[j] = 0.0f;
-            para->getParH(level)->vz_SP_Med[j] = 0.0f;
-            para->getParH(level)->rho_SP_Med[j] = 0.0f;
-            para->getParH(level)->press_SP_Med[j] = 0.0f;
+            para->getParH(level)->vx_SP_Med[pos] = 0.0f;
+            para->getParH(level)->vy_SP_Med[pos] = 0.0f;
+            para->getParH(level)->vz_SP_Med[pos] = 0.0f;
+            para->getParH(level)->rho_SP_Med[pos] = 0.0f;
+            para->getParH(level)->press_SP_Med[pos] = 0.0f;
         }
         if (para->getUseWale()) {
-            para->getParH(level)->turbViscosity[j] = 0.0f;
+            para->getParH(level)->turbViscosity[pos] = 0.0f;
             //Debug
-            para->getParH(level)->gSij[j] = 0.0f;
-            para->getParH(level)->gSDij[j] = 0.0f;
-            para->getParH(level)->gDxvx[j] = 0.0f;
-            para->getParH(level)->gDyvx[j] = 0.0f;
-            para->getParH(level)->gDzvx[j] = 0.0f;
-            para->getParH(level)->gDxvy[j] = 0.0f;
-            para->getParH(level)->gDyvy[j] = 0.0f;
-            para->getParH(level)->gDzvy[j] = 0.0f;
-            para->getParH(level)->gDxvz[j] = 0.0f;
-            para->getParH(level)->gDyvz[j] = 0.0f;
-            para->getParH(level)->gDzvz[j] = 0.0f;
+            para->getParH(level)->gSij[pos] = 0.0f;
+            para->getParH(level)->gSDij[pos] = 0.0f;
+            para->getParH(level)->gDxvx[pos] = 0.0f;
+            para->getParH(level)->gDyvx[pos] = 0.0f;
+            para->getParH(level)->gDzvx[pos] = 0.0f;
+            para->getParH(level)->gDxvy[pos] = 0.0f;
+            para->getParH(level)->gDyvy[pos] = 0.0f;
+            para->getParH(level)->gDzvy[pos] = 0.0f;
+            para->getParH(level)->gDxvz[pos] = 0.0f;
+            para->getParH(level)->gDyvz[pos] = 0.0f;
+            para->getParH(level)->gDzvz[pos] = 0.0f;
         }
 
         if (para->getIsBodyForce()) {
-            para->getParH(level)->forceX_SP[j] = 0.0f;
-            para->getParH(level)->forceY_SP[j] = 0.0f;
-            para->getParH(level)->forceZ_SP[j] = 0.0f;
+            para->getParH(level)->forceX_SP[pos] = 0.0f;
+            para->getParH(level)->forceY_SP[pos] = 0.0f;
+            para->getParH(level)->forceZ_SP[pos] = 0.0f;
         }
     }
 
