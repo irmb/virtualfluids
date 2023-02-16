@@ -635,10 +635,10 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
     // invert scaleCF blocks
     if (block->hasInterpolationFlagCF()) {
         if (block->hasInterpolationFlagFC() && twoTypeOfConnectorsCheck) {
-            for (int i = DIR_P00; i <= DIR_MMM; i++) {
+            for (int i = (int)DIR_P00; i <= (int)DIR_MMM; i++) {
                 UBLOG(logINFO, "FC in dir=" << i << " " << block->hasInterpolationFlagFC(i));
             }
-            for (int i = DIR_P00; i <= DIR_MMM; i++) {
+            for (int i = (int)DIR_P00; i <= (int)DIR_MMM; i++) {
                 UBLOG(logINFO, "CF in dir=" << i << " " << block->hasInterpolationFlagCF(i));
             }
             throw UbException(UB_EXARGS, "block " + block->toString() + " has CF and FC");
