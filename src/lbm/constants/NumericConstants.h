@@ -1,6 +1,7 @@
 #ifndef REAL_CONSTANT_H
 #define REAL_CONSTANT_H
 
+#include <cmath>
 
 namespace vf::lbm::constant
 {
@@ -121,10 +122,10 @@ static constexpr double c2Pi = 6.28318530717;
 static constexpr double cPio180 = 1.74532925199e-2;
 static constexpr double c180oPi = 57.2957795131;
 
-static const double one_over_sqrt2 = 1.0 / sqrt(2.0); // 0.707106781
-static const double one_over_sqrt3 = 1.0 / sqrt(3.0); // 0.577350269
-static const double sqrt2 = sqrt(2.0);       // 1.4142135
-static const double sqrt3 = sqrt(3.0);       // 1.7320508
+static constexpr double one_over_sqrt2 = 1.0 / sqrt(2.0); // 0.707106781
+static constexpr double one_over_sqrt3 = 1.0 / sqrt(3.0); // 0.577350269
+static constexpr double sqrt2 = sqrt(2.0);       // 1.4142135
+static constexpr double sqrt3 = sqrt(3.0);       // 1.7320508
 
 #else
 static constexpr float c1o2 = 0.5f;
