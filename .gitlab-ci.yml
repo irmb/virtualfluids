@@ -257,8 +257,8 @@ regression_test_4gpu:
     - cd test_data
     - git sparse-checkout set regression_tests/gpu/DrivenCavity_4GPU_2Levels regression_tests/gpu/SphereScaling_4GPU_2Levels
     - cd ..
-    - fieldcompare dir output/4GPU test_data/regression_tests/gpu/DrivenCavity_4GPU_2Levels --include-files "*.vtu"
-    - fieldcompare dir output/4GPU test_data/regression_tests/gpu/SphereScaling_4GPU_2Levels --include-files "*.vtu"
+    - fieldcompare dir output/4GPU test_data/regression_tests/gpu/DrivenCavity_4GPU_2Levels --include-files "DrivenCavityMultiGPU*.vtu"
+    - fieldcompare dir output/4GPU test_data/regression_tests/gpu/SphereScaling_4GPU_2Levels --include-files "SphereScaling*.vtu"
 
 ###############################################################################
 ##                            Benchmark                                      ##
