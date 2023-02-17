@@ -243,6 +243,11 @@ static constexpr double c2Pi = 6.2831853071f;
 static constexpr float cPio180 = 1.74532925199e-2f;
 static constexpr float c180oPi = 57.2957795131f;
 
+static const float one_over_sqrt2 = 1.0 / sqrtf(2.0); // 0.707106781
+static const float one_over_sqrt3 = 1.0 / sqrtf(3.0); // 0.577350269
+static const float sqrt2 = sqrtf(2.0);                // 1.4142135
+static const float sqrt3 = sqrtf(3.0);                // 1.7320508
+
 #endif
 
 }
