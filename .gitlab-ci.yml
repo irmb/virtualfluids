@@ -255,9 +255,10 @@ regression_test_4gpu:
     - hpc-rocket launch --watch regression-tests/multigpu_test/rocket4GPU.yml
     - git clone --depth 1 --filter=blob:none --sparse https://github.com/irmb/test_data
     - cd test_data
-    - git sparse-checkout set regression_tests/gpu/DrivenCavity_4GPU_2Levels
+    - git sparse-checkout set regression_tests/gpu/DrivenCavity_4GPU_2Levels regression_tests/gpu/SphereScaling_4GPU_2Levels
     - cd ..
     - fieldcompare dir output/4GPU test_data/regression_tests/gpu/DrivenCavity_4GPU_2Levels --include-files "*.vtu"
+    - fieldcompare dir output/4GPU test_data/regression_tests/gpu/SphereScaling_4GPU_2Levels --include-files "*.vtu"
 
 ###############################################################################
 ##                            Benchmark                                      ##

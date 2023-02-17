@@ -97,11 +97,13 @@ void multipleLevel(std::filesystem::path& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     bool useGridGenerator   = true;
-    bool useLevels          = true;
+    bool useLevels = true;
     std::string scalingType = "strong"; // "strong" // "weak"
 
-    const std::string outPath("output/" +  para->getNumprocs() + "GPUs/"););
+    const std::string outPath("output/" + std::to_string(para->getNumprocs()) + "GPU/");
     const std::string simulationName("SphereScaling");
+    const std::string gridPath = "./output/grids/";
+    const std::string stlPath("./stl/SphereScaling/");
 
     if (para->getNumprocs() == 1) {
         para->useReducedCommunicationAfterFtoC = false;
@@ -109,10 +111,9 @@ void multipleLevel(std::filesystem::path& configPath)
     if (scalingType != "weak" && scalingType != "strong")
         std::cerr << "unknown scaling type" << std::endl;
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    std::string gridPath(gridPathParent); // only for GridGenerator, for GridReader the gridPath needs to be set in the config file
 
     real dxGrid      = (real)1.0;
-    real vxLB        = (real)0.0005; // LB units
+    real vxLB        = (real)0.005;  // LB units
     real viscosityLB = 0.001;        //(vxLB * dxGrid) / Re;
 
     para->setVelocityLB(vxLB);
