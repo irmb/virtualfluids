@@ -41,7 +41,7 @@ namespace communicator
     {
         py::class_<vf::gpu::Communicator, std::unique_ptr<vf::gpu::Communicator, py::nodelete>>(parentModule, "Communicator")
         .def_static("get_instance", &vf::gpu::Communicator::getInstance, py::return_value_policy::reference)
-        .def("get_number_of_process", &vf::gpu::Communicator::getNummberOfProcess)
+        .def("get_number_of_process", &vf::gpu::Communicator::getNumberOfProcess)
         .def("get_pid", &vf::gpu::Communicator::getPID);
     }
 }

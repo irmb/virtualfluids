@@ -146,7 +146,7 @@ void multipleLevel(const std::string& configPath)
     const float tStartOutProbe      =  config.getValue<real>("tStartOutProbe");
     const float tOutProbe           =  config.getValue<real>("tOutProbe");
         
-    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNummberOfProcess(), communicator.getPID(), &config);
+    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNumberOfProcess(), communicator.getPID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
     GridScalingFactory scalingFactory  = GridScalingFactory();
 
