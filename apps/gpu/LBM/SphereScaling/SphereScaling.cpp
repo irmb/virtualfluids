@@ -103,7 +103,7 @@ void multipleLevel(std::filesystem::path& configPath)
 
     vf::basics::ConfigurationFile config;
     config.load(configPath.string());
-    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNummberOfProcess(), communicator.getPID(), &config);
+    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNumberOfProcess(), communicator.getPID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
     GridScalingFactory scalingFactory = GridScalingFactory();
 
@@ -214,7 +214,7 @@ void multipleLevel(std::filesystem::path& configPath)
             real overlap = (real)8.0 * dxGrid;
             gridBuilder->setNumberOfLayers(10, 8);
 
-            if (communicator.getNummberOfProcess() == 2) {
+            if (communicator.getNumberOfProcess() == 2) {
                 real zSplit = 0.5 * sideLengthCube;
 
                 if (scalingType == "weak") {
@@ -288,7 +288,7 @@ void multipleLevel(std::filesystem::path& configPath)
                 // gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
                 //////////////////////////////////////////////////////////////////////////
 
-            } else if (communicator.getNummberOfProcess() == 4) {
+            } else if (communicator.getNumberOfProcess() == 4) {
                 real ySplit = 0.5 * sideLengthCube;
                 real zSplit = 0.5 * sideLengthCube;
 
@@ -404,7 +404,7 @@ void multipleLevel(std::filesystem::path& configPath)
                 gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0); // set pressure BC after velocity BCs
                 // gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
                 //////////////////////////////////////////////////////////////////////////
-            } else if (communicator.getNummberOfProcess() == 8) {
+            } else if (communicator.getNumberOfProcess() == 8) {
                 real xSplit = 0.5 * sideLengthCube;
                 real ySplit = 0.5 * sideLengthCube;
                 real zSplit = 0.5 * sideLengthCube;
