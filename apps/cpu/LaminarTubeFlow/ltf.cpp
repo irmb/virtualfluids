@@ -355,7 +355,7 @@ void run(string configname)
 int main(int argc, char *argv[])
 {
     try {
-        vf::logging::Logger::initalizeLogger();
+        vf::logging::Logger::initializeLogger();
 
         VF_LOG_INFO("Starting VirtualFluids...");
 

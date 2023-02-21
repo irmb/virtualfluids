@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
 
         vf::logging::Logger::changeLogPath("output/vflog_process" +
                                            std::to_string(vf::gpu::Communicator::getInstance().getPID()) + ".txt");
-        vf::logging::Logger::initalizeLogger();
+        vf::logging::Logger::initializeLogger();
 
         //////////////////////////////////////////////////////////////////////////
         // setup gridGenerator

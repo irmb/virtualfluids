@@ -778,7 +778,7 @@ int main( int argc, char* argv[])
 {
     try
     {
-        vf::logging::Logger::initalizeLogger();
+        vf::logging::Logger::initializeLogger();
 
         // assuming that the config files is stored parallel to this file.
         std::filesystem::path filePath = __FILE__;
