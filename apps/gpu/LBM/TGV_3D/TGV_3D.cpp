@@ -124,7 +124,7 @@ uint gpuIndex = 0;
 bool useLimiter = false;
 bool useWale = false;
 
-std::string kernel( "CumulantK17Comp" );
+std::string kernel( "CumulantK17" );
 
 //std::string path("F:/Work/Computations/out/TaylorGreen3DNew/"); //LEGOLAS
 std::string path("D:/out/TGV_3D/"); //TESLA03
