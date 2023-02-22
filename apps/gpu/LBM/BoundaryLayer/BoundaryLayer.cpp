@@ -126,12 +126,12 @@ void multipleLevel(const std::string& configPath)
     vf::basics::ConfigurationFile config;
     config.load(configPath);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////^
-    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNummberOfProcess(), communicator.getPID(), &config);
+    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNumberOfProcess(), communicator.getPID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
     GridScalingFactory scalingFactory  = GridScalingFactory();
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    const int  nProcs = communicator.getNummberOfProcess();
+    const int  nProcs = communicator.getNumberOfProcess();
     const uint procID = vf::gpu::Communicator::getInstance().getPID();
     std::vector<uint> devices(10);
     std::iota(devices.begin(), devices.end(), 0);
@@ -454,7 +454,7 @@ int main( int argc, char* argv[])
     {
         try
         {
-            vf::logging::Logger::initalizeLogger();
+            vf::logging::Logger::initializeLogger();
 
             if( argc > 1){ path = argv[1]; }
 
