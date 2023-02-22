@@ -93,7 +93,7 @@ void multipleLevel(std::filesystem::path& configPath)
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const std::string outPath("output/");
+    const std::string outPath("output/" + std::to_string(para->getNumprocs()) + "GPU/");
     const std::string gridPath = "output/";
     std::string simulationName("DrivenCavityMultiGPU");
 
