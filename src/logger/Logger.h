@@ -33,7 +33,7 @@
 
 // VirtualFluids is using the spdlog logger https://github.com/gabime/spdlog
 #include <spdlog/spdlog.h>
-// To initialize spdlog initalizeLogger() must be called.
+// To initialize spdlog initializeLogger() must be called.
 // spdlog supports 5 log level, which can be changed at runtime e.g.:
 // spdlog::set_level(spdlog::level::debug)
 // The default log level is set to trace. Supported levels: trace < debug < info < warning < critical
@@ -58,7 +58,7 @@ namespace vf::logging
     {
     public:
         // initalizing the above named logger
-        static void initalizeLogger();
+        static void initializeLogger();
 
         // changing the path of the log files
         static void changeLogPath(const std::string& path);

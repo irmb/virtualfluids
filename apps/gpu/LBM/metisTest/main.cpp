@@ -66,7 +66,7 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
 	Communicator* comm = Communicator::getInstanz();
 
 	para->setMaxDev(StringUtil::toInt(input->getValue("NumberOfDevices")));
-	para->setNumprocs(comm->getNummberOfProcess());
+	para->setNumprocs(comm->getNumberOfProcess());
 	para->setDevices(StringUtil::toUintVector(input->getValue("Devices")));
 	para->setMyID(comm->getPID());
 	

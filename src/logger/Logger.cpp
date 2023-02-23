@@ -10,7 +10,7 @@ namespace vf::logging
 
     std::string Logger::logPath = {"logs/"};
 
-    void Logger::initalizeLogger() 
+    void Logger::initializeLogger() 
     {
         updateDefaultLogger();
 
