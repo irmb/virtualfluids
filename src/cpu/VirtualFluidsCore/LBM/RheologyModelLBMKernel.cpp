@@ -41,7 +41,8 @@
 
 #define PROOF_CORRECTNESS
 
-using namespace UbMath;
+//using namespace UbMath;
+using namespace vf::lbm::constant;
 
 RheologyModelLBMKernel::RheologyModelLBMKernel() : forcingX1(0), forcingX2(0), forcingX3(0)
 {
@@ -130,61 +131,61 @@ void RheologyModelLBMKernel::calculate(int step)
 						// a b c
 						//-1 0 1
 
-						LBMReal mfcbb = (*this->localDistributionsF)(D3Q27System::ET_E, x1, x2, x3);
-						LBMReal mfbcb = (*this->localDistributionsF)(D3Q27System::ET_N, x1, x2, x3);
-						LBMReal mfbbc = (*this->localDistributionsF)(D3Q27System::ET_T, x1, x2, x3);
-						LBMReal mfccb = (*this->localDistributionsF)(D3Q27System::ET_NE, x1, x2, x3);
-						LBMReal mfacb = (*this->localDistributionsF)(D3Q27System::ET_NW, x1p, x2, x3);
-						LBMReal mfcbc = (*this->localDistributionsF)(D3Q27System::ET_TE, x1, x2, x3);
-						LBMReal mfabc = (*this->localDistributionsF)(D3Q27System::ET_TW, x1p, x2, x3);
-						LBMReal mfbcc = (*this->localDistributionsF)(D3Q27System::ET_TN, x1, x2, x3);
-						LBMReal mfbac = (*this->localDistributionsF)(D3Q27System::ET_TS, x1, x2p, x3);
-						LBMReal mfccc = (*this->localDistributionsF)(D3Q27System::ET_TNE, x1, x2, x3);
-						LBMReal mfacc = (*this->localDistributionsF)(D3Q27System::ET_TNW, x1p, x2, x3);
-						LBMReal mfcac = (*this->localDistributionsF)(D3Q27System::ET_TSE, x1, x2p, x3);
-						LBMReal mfaac = (*this->localDistributionsF)(D3Q27System::ET_TSW, x1p, x2p, x3);
+						real mfcbb = (*this->localDistributionsF)(D3Q27System::ET_E, x1, x2, x3);
+						real mfbcb = (*this->localDistributionsF)(D3Q27System::ET_N, x1, x2, x3);
+						real mfbbc = (*this->localDistributionsF)(D3Q27System::ET_T, x1, x2, x3);
+						real mfccb = (*this->localDistributionsF)(D3Q27System::ET_NE, x1, x2, x3);
+						real mfacb = (*this->localDistributionsF)(D3Q27System::ET_NW, x1p, x2, x3);
+						real mfcbc = (*this->localDistributionsF)(D3Q27System::ET_TE, x1, x2, x3);
+						real mfabc = (*this->localDistributionsF)(D3Q27System::ET_TW, x1p, x2, x3);
+						real mfbcc = (*this->localDistributionsF)(D3Q27System::ET_TN, x1, x2, x3);
+						real mfbac = (*this->localDistributionsF)(D3Q27System::ET_TS, x1, x2p, x3);
+						real mfccc = (*this->localDistributionsF)(D3Q27System::ET_TNE, x1, x2, x3);
+						real mfacc = (*this->localDistributionsF)(D3Q27System::ET_TNW, x1p, x2, x3);
+						real mfcac = (*this->localDistributionsF)(D3Q27System::ET_TSE, x1, x2p, x3);
+						real mfaac = (*this->localDistributionsF)(D3Q27System::ET_TSW, x1p, x2p, x3);
 
-						LBMReal mfabb = (*this->nonLocalDistributionsF)(D3Q27System::ET_W, x1p, x2, x3);
-						LBMReal mfbab = (*this->nonLocalDistributionsF)(D3Q27System::ET_S, x1, x2p, x3);
-						LBMReal mfbba = (*this->nonLocalDistributionsF)(D3Q27System::ET_B, x1, x2, x3p);
-						LBMReal mfaab = (*this->nonLocalDistributionsF)(D3Q27System::ET_SW, x1p, x2p, x3);
-						LBMReal mfcab = (*this->nonLocalDistributionsF)(D3Q27System::ET_SE, x1, x2p, x3);
-						LBMReal mfaba = (*this->nonLocalDistributionsF)(D3Q27System::ET_BW, x1p, x2, x3p);
-						LBMReal mfcba = (*this->nonLocalDistributionsF)(D3Q27System::ET_BE, x1, x2, x3p);
-						LBMReal mfbaa = (*this->nonLocalDistributionsF)(D3Q27System::ET_BS, x1, x2p, x3p);
-						LBMReal mfbca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BN, x1, x2, x3p);
-						LBMReal mfaaa = (*this->nonLocalDistributionsF)(D3Q27System::ET_BSW, x1p, x2p, x3p);
-						LBMReal mfcaa = (*this->nonLocalDistributionsF)(D3Q27System::ET_BSE, x1, x2p, x3p);
-						LBMReal mfaca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BNW, x1p, x2, x3p);
-						LBMReal mfcca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BNE, x1, x2, x3p);
+						real mfabb = (*this->nonLocalDistributionsF)(D3Q27System::ET_W, x1p, x2, x3);
+						real mfbab = (*this->nonLocalDistributionsF)(D3Q27System::ET_S, x1, x2p, x3);
+						real mfbba = (*this->nonLocalDistributionsF)(D3Q27System::ET_B, x1, x2, x3p);
+						real mfaab = (*this->nonLocalDistributionsF)(D3Q27System::ET_SW, x1p, x2p, x3);
+						real mfcab = (*this->nonLocalDistributionsF)(D3Q27System::ET_SE, x1, x2p, x3);
+						real mfaba = (*this->nonLocalDistributionsF)(D3Q27System::ET_BW, x1p, x2, x3p);
+						real mfcba = (*this->nonLocalDistributionsF)(D3Q27System::ET_BE, x1, x2, x3p);
+						real mfbaa = (*this->nonLocalDistributionsF)(D3Q27System::ET_BS, x1, x2p, x3p);
+						real mfbca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BN, x1, x2, x3p);
+						real mfaaa = (*this->nonLocalDistributionsF)(D3Q27System::ET_BSW, x1p, x2p, x3p);
+						real mfcaa = (*this->nonLocalDistributionsF)(D3Q27System::ET_BSE, x1, x2p, x3p);
+						real mfaca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BNW, x1p, x2, x3p);
+						real mfcca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BNE, x1, x2, x3p);
 
-						LBMReal mfbbb = (*this->zeroDistributionsF)(x1, x2, x3);
+						real mfbbb = (*this->zeroDistributionsF)(x1, x2, x3);
 
-						LBMReal m0, m1, m2;
+						real m0, m1, m2;
 
-						LBMReal rho = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca)
+						real rho = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca)
 							+ (mfaab + mfacb + mfcab + mfccb) + (mfaba + mfabc + mfcba + mfcbc) + (mfbaa + mfbac + mfbca + mfbcc)
 							+ (mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc) + mfbbb;
 
-						LBMReal vvx = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
+						real vvx = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
 							(((mfcba - mfabc) + (mfcbc - mfaba)) + ((mfcab - mfacb) + (mfccb - mfaab))) +
 							(mfcbb - mfabb));
-						LBMReal vvy = ((((mfccc - mfaaa) + (mfaca - mfcac)) + ((mfacc - mfcaa) + (mfcca - mfaac))) +
+						real vvy = ((((mfccc - mfaaa) + (mfaca - mfcac)) + ((mfacc - mfcaa) + (mfcca - mfaac))) +
 							(((mfbca - mfbac) + (mfbcc - mfbaa)) + ((mfacb - mfcab) + (mfccb - mfaab))) +
 							(mfbcb - mfbab));
-						LBMReal vvz = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfacc - mfcaa) + (mfaac - mfcca))) +
+						real vvz = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfacc - mfcaa) + (mfaac - mfcca))) +
 							(((mfbac - mfbca) + (mfbcc - mfbaa)) + ((mfabc - mfcba) + (mfcbc - mfaba))) +
 							(mfbbc - mfbba));
 
-						LBMReal collFactorF = collFactor;
+						real collFactorF = collFactor;
 
 						//forcing 
 						///////////////////////////////////////////////////////////////////////////////////////////
 						if (withForcing)
 						{
-							muX1 = static_cast<double>(x1 - 1 + ix1 * maxX1);
-							muX2 = static_cast<double>(x2 - 1 + ix2 * maxX2);
-							muX3 = static_cast<double>(x3 - 1 + ix3 * maxX3);
+							muX1 = static_cast<real>(x1 - 1 + ix1 * maxX1);
+							muX2 = static_cast<real>(x2 - 1 + ix2 * maxX2);
+							muX3 = static_cast<real>(x3 - 1 + ix3 * maxX3);
 
 							forcingX1 = muForcingX1.Eval();
 							forcingX2 = muForcingX2.Eval();
@@ -195,7 +196,7 @@ void RheologyModelLBMKernel::calculate(int step)
 							vvz += forcingX3 * deltaT * 0.5; // Z
 						}
 						///////////////////////////////////////////////////////////////////////////////////////////               
-						LBMReal oMdrho;
+						real oMdrho;
 
 						oMdrho = mfccc + mfaaa;
 						m0 = mfaca + mfcac;
@@ -223,15 +224,15 @@ void RheologyModelLBMKernel::calculate(int step)
 						m0 += mfbbb; //hat gefehlt
 						oMdrho = 1. - (oMdrho + m0);
 
-						LBMReal vx2;
-						LBMReal vy2;
-						LBMReal vz2;
+						real vx2;
+						real vy2;
+						real vz2;
 						vx2 = vvx * vvx;
 						vy2 = vvy * vvy;
 						vz2 = vvz * vvz;
 						////////////////////////////////////////////////////////////////////////////////////
-						LBMReal wadjust;
-						LBMReal qudricLimit = 0.01;
+						real wadjust;
+						real qudricLimit = 0.01;
 						////////////////////////////////////////////////////////////////////////////////////
 						//Hin
 						////////////////////////////////////////////////////////////////////////////////////
@@ -462,33 +463,33 @@ void RheologyModelLBMKernel::calculate(int step)
 						////////////////////////////////////////////////////////////////////////////////////
 						// Cumulants
 						////////////////////////////////////////////////////////////////////////////////////
-						LBMReal OxxPyyPzz = 1.; //omega2 or bulk viscosity
-						LBMReal OxyyPxzz = 1.;//-s9;//2+s9;//
+						real OxxPyyPzz = 1.; //omega2 or bulk viscosity
+						real OxyyPxzz = 1.;//-s9;//2+s9;//
 											  //LBMReal OxyyMxzz  = 1.;//2+s9;//
-						LBMReal O4 = 1.;
-						LBMReal O5 = 1.;
-						LBMReal O6 = 1.;
+						real O4 = 1.;
+						real O5 = 1.;
+						real O6 = 1.;
 
 						//Cum 4.
 						//LBMReal CUMcbb = mfcbb - ((mfcaa + c1o3 * oMdrho) * mfabb + 2. * mfbba * mfbab); // till 18.05.2015
 						//LBMReal CUMbcb = mfbcb - ((mfaca + c1o3 * oMdrho) * mfbab + 2. * mfbba * mfabb); // till 18.05.2015
 						//LBMReal CUMbbc = mfbbc - ((mfaac + c1o3 * oMdrho) * mfbba + 2. * mfbab * mfabb); // till 18.05.2015
 
-						LBMReal CUMcbb = mfcbb - ((mfcaa + c1o3) * mfabb + 2. * mfbba * mfbab);
-						LBMReal CUMbcb = mfbcb - ((mfaca + c1o3) * mfbab + 2. * mfbba * mfabb);
-						LBMReal CUMbbc = mfbbc - ((mfaac + c1o3) * mfbba + 2. * mfbab * mfabb);
+						real CUMcbb = mfcbb - ((mfcaa + c1o3) * mfabb + 2. * mfbba * mfbab);
+						real CUMbcb = mfbcb - ((mfaca + c1o3) * mfbab + 2. * mfbba * mfabb);
+						real CUMbbc = mfbbc - ((mfaac + c1o3) * mfbba + 2. * mfbab * mfabb);
 
-						LBMReal CUMcca = mfcca - ((mfcaa * mfaca + 2. * mfbba * mfbba) + c1o3 * (mfcaa + mfaca) * oMdrho + c1o9 * (oMdrho - 1) * oMdrho);
-						LBMReal CUMcac = mfcac - ((mfcaa * mfaac + 2. * mfbab * mfbab) + c1o3 * (mfcaa + mfaac) * oMdrho + c1o9 * (oMdrho - 1) * oMdrho);
-						LBMReal CUMacc = mfacc - ((mfaac * mfaca + 2. * mfabb * mfabb) + c1o3 * (mfaac + mfaca) * oMdrho + c1o9 * (oMdrho - 1) * oMdrho);
+						real CUMcca = mfcca - ((mfcaa * mfaca + 2. * mfbba * mfbba) + c1o3 * (mfcaa + mfaca) * oMdrho + c1o9 * (oMdrho - 1) * oMdrho);
+						real CUMcac = mfcac - ((mfcaa * mfaac + 2. * mfbab * mfbab) + c1o3 * (mfcaa + mfaac) * oMdrho + c1o9 * (oMdrho - 1) * oMdrho);
+						real CUMacc = mfacc - ((mfaac * mfaca + 2. * mfabb * mfabb) + c1o3 * (mfaac + mfaca) * oMdrho + c1o9 * (oMdrho - 1) * oMdrho);
 
 						//Cum 5.
-						LBMReal CUMbcc = mfbcc - (mfaac * mfbca + mfaca * mfbac + 4. * mfabb * mfbbb + 2. * (mfbab * mfacb + mfbba * mfabc)) - c1o3 * (mfbca + mfbac) * oMdrho;
-						LBMReal CUMcbc = mfcbc - (mfaac * mfcba + mfcaa * mfabc + 4. * mfbab * mfbbb + 2. * (mfabb * mfcab + mfbba * mfbac)) - c1o3 * (mfcba + mfabc) * oMdrho;
-						LBMReal CUMccb = mfccb - (mfcaa * mfacb + mfaca * mfcab + 4. * mfbba * mfbbb + 2. * (mfbab * mfbca + mfabb * mfcba)) - c1o3 * (mfacb + mfcab) * oMdrho;
+						real CUMbcc = mfbcc - (mfaac * mfbca + mfaca * mfbac + 4. * mfabb * mfbbb + 2. * (mfbab * mfacb + mfbba * mfabc)) - c1o3 * (mfbca + mfbac) * oMdrho;
+						real CUMcbc = mfcbc - (mfaac * mfcba + mfcaa * mfabc + 4. * mfbab * mfbbb + 2. * (mfabb * mfcab + mfbba * mfbac)) - c1o3 * (mfcba + mfabc) * oMdrho;
+						real CUMccb = mfccb - (mfcaa * mfacb + mfaca * mfcab + 4. * mfbba * mfbbb + 2. * (mfbab * mfbca + mfabb * mfcba)) - c1o3 * (mfacb + mfcab) * oMdrho;
 
 						//Cum 6.
-						LBMReal CUMccc = mfccc + ((-4. * mfbbb * mfbbb
+						real CUMccc = mfccc + ((-4. * mfbbb * mfbbb
 							- (mfcaa * mfacc + mfaca * mfcac + mfaac * mfcca)
 							- 4. * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
 							- 2. * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb))
@@ -502,20 +503,20 @@ void RheologyModelLBMKernel::calculate(int step)
 
 						//2.
 						// linear combinations
-						LBMReal mxxPyyPzz = mfcaa + mfaca + mfaac;
-						LBMReal mxxMyy = mfcaa - mfaca;
-						LBMReal mxxMzz = mfcaa - mfaac;
+						real mxxPyyPzz = mfcaa + mfaca + mfaac;
+						real mxxMyy = mfcaa - mfaca;
+						real mxxMzz = mfcaa - mfaac;
 
-						LBMReal dxux = -c1o2 * collFactorF * (mxxMyy + mxxMzz) + c1o2 * OxxPyyPzz * (mfaaa - mxxPyyPzz);
-						LBMReal dyuy = dxux + collFactorF * c3o2 * mxxMyy;
-						LBMReal dzuz = dxux + collFactorF * c3o2 * mxxMzz;
+						real dxux = -c1o2 * collFactorF * (mxxMyy + mxxMzz) + c1o2 * OxxPyyPzz * (mfaaa - mxxPyyPzz);
+						real dyuy = dxux + collFactorF * c3o2 * mxxMyy;
+						real dzuz = dxux + collFactorF * c3o2 * mxxMzz;
 
-						LBMReal Dxy = -three * collFactorF * mfbba;
-						LBMReal Dxz = -three * collFactorF * mfbab;
-						LBMReal Dyz = -three * collFactorF * mfabb;
+						real Dxy = -c3o1 * collFactorF * mfbba;
+						real Dxz = -c3o1 * collFactorF * mfbab;
+						real Dyz = -c3o1 * collFactorF * mfabb;
 						////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 						//non Newtonian fluid collision factor
-						LBMReal shearRate = sqrt(c2 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) / (rho + one);
+						real shearRate = sqrt(c2o1 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) / (rho + c1o1);
 						collFactorF = getRheologyCollFactor(collFactorF, shearRate, rho);
 						////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -535,14 +536,14 @@ void RheologyModelLBMKernel::calculate(int step)
 
 						//3.
 						// linear combinations
-						LBMReal mxxyPyzz = mfcba + mfabc;
-						LBMReal mxxyMyzz = mfcba - mfabc;
+						real mxxyPyzz = mfcba + mfabc;
+						real mxxyMyzz = mfcba - mfabc;
 
-						LBMReal mxxzPyyz = mfcab + mfacb;
-						LBMReal mxxzMyyz = mfcab - mfacb;
+						real mxxzPyyz = mfcab + mfacb;
+						real mxxzMyyz = mfcab - mfacb;
 
-						LBMReal mxyyPxzz = mfbca + mfbac;
-						LBMReal mxyyMxzz = mfbca - mfbac;
+						real mxyyPxzz = mfbca + mfbac;
+						real mxyyMxzz = mfbca - mfbac;
 
 						//relax
 						wadjust = OxyyMxzz + (1. - OxyyMxzz) * fabs(mfbbb) / (fabs(mfbbb) + qudricLimit);
@@ -837,11 +838,11 @@ void RheologyModelLBMKernel::calculate(int step)
 						//proof correctness
 						//////////////////////////////////////////////////////////////////////////
 #ifdef  PROOF_CORRECTNESS
-						LBMReal rho_post = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca)
+						real rho_post = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca)
 							+ (mfaab + mfacb + mfcab + mfccb) + (mfaba + mfabc + mfcba + mfcbc) + (mfbaa + mfbac + mfbca + mfbcc)
 							+ (mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc) + mfbbb;
 						//LBMReal dif = fabs(rho - rho_post);
-						LBMReal dif = rho - rho_post;
+						real dif = rho - rho_post;
 #ifdef SINGLEPRECISION
 						if (dif > 10.0E-7 || dif < -10.0E-7)
 #else
@@ -913,7 +914,7 @@ void RheologyModelLBMKernel::calculate(int step)
 //	return kernel;
 //}
 
-double RheologyModelLBMKernel::getCalculationTime()
+real RheologyModelLBMKernel::getCalculationTime()
 {
    return timer.getTotalTime();
 }

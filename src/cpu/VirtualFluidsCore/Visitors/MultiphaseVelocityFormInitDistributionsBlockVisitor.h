@@ -45,7 +45,7 @@
 class MultiphaseVelocityFormInitDistributionsBlockVisitor : public Block3DVisitor
 {
 public:
-	typedef std::numeric_limits<LBMReal> D3Q27RealLim;
+	typedef std::numeric_limits<real> D3Q27RealLim;
 
 public:
 	MultiphaseVelocityFormInitDistributionsBlockVisitor();
@@ -75,13 +75,13 @@ public:
 	void setPressure(const std::string& muParserString);
 
 	//////////////////////////////////////////////////////////////////////////
-	void setVx1( LBMReal vx1 );
-	void setVx2( LBMReal vx2 );
-	void setVx3( LBMReal vx3 );
-	void setRho( LBMReal rho );
-	void setPhi( LBMReal rho );
-	void setNu( LBMReal nu );
-	void setPressure(LBMReal pres);
+	void setVx1( real vx1 );
+	void setVx2( real vx2 );
+	void setVx3( real vx3 );
+	void setRho( real rho );
+	void setPhi( real rho );
+	void setNu( real nu );
+	void setPressure(real pres);
 
 	void visit(SPtr<Grid3D> grid, SPtr<Block3D> block);
 
@@ -96,7 +96,7 @@ private:
 	mu::Parser muPhi;
 	mu::Parser muPressure;
 
-	LBMReal nu;
+	real nu;
 };
 
 #endif //D3Q27INITDISTRIBUTIONSPATCHVISITOR_H

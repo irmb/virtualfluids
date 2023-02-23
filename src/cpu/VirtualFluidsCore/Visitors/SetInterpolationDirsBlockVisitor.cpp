@@ -11,6 +11,8 @@ SetInterpolationDirsBlockVisitor::SetInterpolationDirsBlockVisitor(std::vector<i
 //////////////////////////////////////////////////////////////////////////
 void SetInterpolationDirsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 {
+    using namespace vf::lbm::dir;
+
     int ix1, ix2, ix3, level;
     ix1   = block->getX1();
     ix2   = block->getX2();

@@ -34,7 +34,7 @@
 #include "Interactor3D.h"
 
 #include "UbException.h"
-#include <basics/utilities/UbMath.h>
+//#include <basics/utilities/UbMath.h>
 #include <fstream>
 #include <geometry3d/GbCuboid3D.h>
 
@@ -68,44 +68,44 @@ Interactor3D::Interactor3D(SPtr<GbObject3D> geoObject3D, SPtr<Grid3D> grid, int 
 //////////////////////////////////////////////////////////////////////////
 Interactor3D::~Interactor3D() = default;
 //////////////////////////////////////////////////////////////////////////
-bool Interactor3D::arePointsInsideGeoObject(double minX1, double minX2, double minX3, double maxX1, double maxX2,
-                                            double maxX3, double delta)
+bool Interactor3D::arePointsInsideGeoObject(real minX1, real minX2, real minX3, real maxX1, real maxX2,
+                                            real maxX3, real delta)
 {
     bool result = true;
-    for (double ix3 = minX3; ix3 <= maxX3; ix3 += delta)
-        for (double ix2 = minX2; ix2 <= maxX2; ix2 += delta)
-            for (double ix1 = minX1; ix1 <= maxX1; ix1 += delta)
+    for (real ix3 = minX3; ix3 <= maxX3; ix3 += delta)
+        for (real ix2 = minX2; ix2 <= maxX2; ix2 += delta)
+            for (real ix1 = minX1; ix1 <= maxX1; ix1 += delta)
                 result = result && this->geoObject3D->isPointInGbObject3D(ix1, ix2, ix3);
 
     return result;
 }
 //////////////////////////////////////////////////////////////////////////
-bool Interactor3D::arePointsOutsideGeoObject(double minX1, double minX2, double minX3, double maxX1, double maxX2,
-                                             double maxX3, double delta)
+bool Interactor3D::arePointsOutsideGeoObject(real minX1, real minX2, real minX3, real maxX1, real maxX2,
+                                             real maxX3, real delta)
 {
     bool result = true;
-    for (double ix3 = minX3; ix3 <= maxX3; ix3 += delta)
-        for (double ix2 = minX2; ix2 <= maxX2; ix2 += delta)
-            for (double ix1 = minX1; ix1 <= maxX1; ix1 += delta)
+    for (real ix3 = minX3; ix3 <= maxX3; ix3 += delta)
+        for (real ix2 = minX2; ix2 <= maxX2; ix2 += delta)
+            for (real ix1 = minX1; ix1 <= maxX1; ix1 += delta)
                 result = result && (!this->geoObject3D->isPointInGbObject3D(ix1, ix2, ix3));
 
     return result;
 }
 //////////////////////////////////////////////////////////////////////////
-bool Interactor3D::arePointsCuttingGeoObject(double minX1, double minX2, double minX3, double maxX1, double maxX2,
-                                             double maxX3, double delta)
+bool Interactor3D::arePointsCuttingGeoObject(real minX1, real minX2, real minX3, real maxX1, real maxX2,
+                                             real maxX3, real delta)
 {
     bool result = true;
-    for (double ix3 = minX3; ix3 <= maxX3; ix3 += delta)
-        for (double ix2 = minX2; ix2 <= maxX2; ix2 += delta)
-            for (double ix1 = minX1; ix1 <= maxX1; ix1 += delta)
+    for (real ix3 = minX3; ix3 <= maxX3; ix3 += delta)
+        for (real ix2 = minX2; ix2 <= maxX2; ix2 += delta)
+            for (real ix1 = minX1; ix1 <= maxX1; ix1 += delta)
                 result = result || this->geoObject3D->isPointInGbObject3D(ix1, ix2, ix3);
 
     return result;
 }
 //////////////////////////////////////////////////////////////////////////
-bool Interactor3D::isBlockOutsideGeoObject(double minX1, double minX2, double minX3, double maxX1, double maxX2,
-                                           double maxX3, double delta)
+bool Interactor3D::isBlockOutsideGeoObject(real minX1, real minX2, real minX3, real maxX1, real maxX2,
+                                           real maxX3, real delta)
 {
     switch (accuracy) {
             // simple duff
@@ -144,8 +144,8 @@ bool Interactor3D::isBlockOutsideGeoObject(double minX1, double minX2, double mi
     }
 }
 //////////////////////////////////////////////////////////////////////////
-bool Interactor3D::isBlockInsideGeoObject(double minX1, double minX2, double minX3, double maxX1, double maxX2,
-                                          double maxX3, double delta)
+bool Interactor3D::isBlockInsideGeoObject(real minX1, real minX2, real minX3, real maxX1, real maxX2,
+                                          real maxX3, real delta)
 {
     switch (accuracy) {
             // simple duff
@@ -184,8 +184,8 @@ bool Interactor3D::isBlockInsideGeoObject(double minX1, double minX2, double min
     }
 }
 //////////////////////////////////////////////////////////////////////////
-bool Interactor3D::isBlockCuttingGeoObject(double minX1, double minX2, double minX3, double maxX1, double maxX2,
-                                           double maxX3, double delta)
+bool Interactor3D::isBlockCuttingGeoObject(real minX1, real minX2, real minX3, real maxX1, real maxX2,
+                                           real maxX3, real delta)
 {
     switch (accuracy) {
             // simple duff
@@ -226,9 +226,9 @@ bool Interactor3D::isBlockCuttingGeoObject(double minX1, double minX2, double mi
 //////////////////////////////////////////////////////////////////////////
 void Interactor3D::setSolidBlock(SPtr<Block3D> block)
 {
-    double minX1, minX2, minX3, maxX1, maxX2, maxX3;
+    real minX1, minX2, minX3, maxX1, maxX2, maxX3;
 
-    double deltaX               = grid.lock()->getDeltaX(block);
+    real deltaX               = grid.lock()->getDeltaX(block);
     UbTupleDouble3 blockLengths = grid.lock()->getBlockLengths(block);
     UbTupleDouble3 org          = grid.lock()->getBlockWorldCoordinates(block);
     UbTupleDouble3 nodeOffset   = grid.lock()->getNodeOffset(block);
@@ -257,9 +257,9 @@ void Interactor3D::setSolidBlock(SPtr<Block3D> block)
 //////////////////////////////////////////////////////////////////////////
 void Interactor3D::setBCBlock(SPtr<Block3D> block)
 {
-    double minX1, minX2, minX3, maxX1, maxX2, maxX3;
+    real minX1, minX2, minX3, maxX1, maxX2, maxX3;
 
-    double deltaX               = grid.lock()->getDeltaX(block);
+    real deltaX               = grid.lock()->getDeltaX(block);
     UbTupleDouble3 blockLengths = grid.lock()->getBlockLengths(block);
     UbTupleDouble3 org          = grid.lock()->getBlockWorldCoordinates(block);
     UbTupleDouble3 nodeOffset   = grid.lock()->getNodeOffset(block);
@@ -298,7 +298,7 @@ void Interactor3D::updateBlocks()
     }
 }
 //////////////////////////////////////////////////////////////////////////
-void Interactor3D::updateInteractor(const double & /*timeStep*/)
+void Interactor3D::updateInteractor(const real & /*timeStep*/)
 {
     UB_THROW(UbException("Interactor3D::updateInteractor - toDo"));
 }

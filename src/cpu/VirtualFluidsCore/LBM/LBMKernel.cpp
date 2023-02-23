@@ -53,22 +53,22 @@ void LBMKernel::setBCProcessor(SPtr<BCProcessor> bcp) { bcProcessor = bcp; }
 //////////////////////////////////////////////////////////////////////////
 SPtr<BCProcessor> LBMKernel::getBCProcessor() const { return bcProcessor; }
 //////////////////////////////////////////////////////////////////////////
-void LBMKernel::setCollisionFactor(double collFactor) { this->collFactor = collFactor; }
+void LBMKernel::setCollisionFactor(real collFactor) { this->collFactor = collFactor; }
 //////////////////////////////////////////////////////////////////////////
-double LBMKernel::getCollisionFactor() const { return collFactor; }
+real LBMKernel::getCollisionFactor() const { return collFactor; }
 //////////////////////////////////////////////////////////////////////////
-void LBMKernel::setForcingX1(LBMReal forcingX1)
+void LBMKernel::setForcingX1(real forcingX1)
 {
     this->muForcingX1.SetExpr(UbSystem::toString(forcingX1, LBMRealLim::digits10));
     this->checkFunction(muForcingX1);
 }
 //////////////////////////////////////////////////////////////////////////
-void LBMKernel::setForcingX2(LBMReal forcingX2)
+void LBMKernel::setForcingX2(real forcingX2)
 {
     this->muForcingX2.SetExpr(UbSystem::toString(forcingX2, LBMRealLim::digits10));
     this->checkFunction(muForcingX2);
 }
-void LBMKernel::setForcingX3(LBMReal forcingX3)
+void LBMKernel::setForcingX3(real forcingX3)
 {
     this->muForcingX3.SetExpr(UbSystem::toString(forcingX3, LBMRealLim::digits10));
     this->checkFunction(muForcingX3);
@@ -111,7 +111,7 @@ void LBMKernel::setForcingX3(const std::string &muParserString)
 //////////////////////////////////////////////////////////////////////////
 void LBMKernel::checkFunction(mu::Parser fct)
 {
-    double x1 = 1.0, x2 = 1.0, x3 = 1.0, dt = 1.0, nue = 1.0, rho = 1.0;
+    real x1 = 1.0, x2 = 1.0, x3 = 1.0, dt = 1.0, nue = 1.0, rho = 1.0;
     fct.DefineVar("x1", &x1);
     fct.DefineVar("x2", &x2);
     fct.DefineVar("x3", &x3);
@@ -141,9 +141,9 @@ void LBMKernel::setIndex(int x1, int x2, int x3)
 //////////////////////////////////////////////////////////////////////////
 SPtr<DataSet3D> LBMKernel::getDataSet() const { return this->dataSet; }
 //////////////////////////////////////////////////////////////////////////
-LBMReal LBMKernel::getDeltaT() const { return this->deltaT; }
+real LBMKernel::getDeltaT() const { return this->deltaT; }
 //////////////////////////////////////////////////////////////////////////
-void LBMKernel::setDeltaT(LBMReal dt) { deltaT = dt; }
+void LBMKernel::setDeltaT(real dt) { deltaT = dt; }
 //////////////////////////////////////////////////////////////////////////
 bool LBMKernel::getCompressible() const { return compressible; }
 //////////////////////////////////////////////////////////////////////////
@@ -188,49 +188,49 @@ bool LBMKernel::isInsideOfDomain(const int &x1, const int &x2, const int &x3) co
 }
 //////////////////////////////////////////////////////////////////////////
 
-void LBMKernel::setCollisionFactorMultiphase(double collFactorL, double collFactorG)
+void LBMKernel::setCollisionFactorMultiphase(real collFactorL, real collFactorG)
 {
     this->collFactorL = collFactorL;
     this->collFactorG = collFactorG;
 }
 //////////////////////////////////////////////////////////////////////////
-double LBMKernel::getCollisionFactorL() const { return collFactorL; }
+real LBMKernel::getCollisionFactorL() const { return collFactorL; }
 //////////////////////////////////////////////////////////////////////////
-double LBMKernel::getCollisionFactorG() const { return collFactorG; }
+real LBMKernel::getCollisionFactorG() const { return collFactorG; }
 //////////////////////////////////////////////////////////////////////////
-void LBMKernel::setDensityRatio(double densityRatio) { this->densityRatio = densityRatio; }
+void LBMKernel::setDensityRatio(real densityRatio) { this->densityRatio = densityRatio; }
 //////////////////////////////////////////////////////////////////////////
-double LBMKernel::getDensityRatio() const { return densityRatio; }
+real LBMKernel::getDensityRatio() const { return densityRatio; }
 //////////////////////////////////////////////////////////////////////////
-void LBMKernel::setMultiphaseModelParameters(LBMReal beta, LBMReal kappa)
+void LBMKernel::setMultiphaseModelParameters(real beta, real kappa)
 {
     this->beta  = beta;
     this->kappa = kappa;
 }
 //////////////////////////////////////////////////////////////////////////
-void LBMKernel::getMultiphaseModelParameters(LBMReal &beta, LBMReal &kappa)
+void LBMKernel::getMultiphaseModelParameters(real &beta, real &kappa)
 {
     beta  = this->beta;
     kappa = this->kappa;
 }
 //////////////////////////////////////////////////////////////////////////
-void LBMKernel::setContactAngle(double contactAngle) { this->contactAngle = contactAngle; }
+void LBMKernel::setContactAngle(real contactAngle) { this->contactAngle = contactAngle; }
 //////////////////////////////////////////////////////////////////////////
-double LBMKernel::getContactAngle() const { return contactAngle; }
+real LBMKernel::getContactAngle() const { return contactAngle; }
 //////////////////////////////////////////////////////////////////////////
-void LBMKernel::setPhiL(double phiL) { this->phiL = phiL; }
+void LBMKernel::setPhiL(real phiL) { this->phiL = phiL; }
 //////////////////////////////////////////////////////////////////////////
-void LBMKernel::setPhiH(double phiH) { this->phiH = phiH; }
+void LBMKernel::setPhiH(real phiH) { this->phiH = phiH; }
 //////////////////////////////////////////////////////////////////////////
-double LBMKernel::getPhiL() const { return phiL; }
+real LBMKernel::getPhiL() const { return phiL; }
 //////////////////////////////////////////////////////////////////////////
-double LBMKernel::getPhiH() const { return phiH; }
+real LBMKernel::getPhiH() const { return phiH; }
 //////////////////////////////////////////////////////////////////////////
-void LBMKernel::setPhaseFieldRelaxation(double tauH) { this->tauH = tauH; }
+void LBMKernel::setPhaseFieldRelaxation(real tauH) { this->tauH = tauH; }
 //////////////////////////////////////////////////////////////////////////
-double LBMKernel::getPhaseFieldRelaxation() const { return tauH; }
+real LBMKernel::getPhaseFieldRelaxation() const { return tauH; }
 //////////////////////////////////////////////////////////////////////////
-void LBMKernel::setMobility(double mob) { this->mob = mob; }
+void LBMKernel::setMobility(real mob) { this->mob = mob; }
 //////////////////////////////////////////////////////////////////////////
-void LBMKernel::setInterfaceWidth(double w) { this->interfaceWidth = w; }
+void LBMKernel::setInterfaceWidth(real w) { this->interfaceWidth = w; }
 //////////////////////////////////////////////////////////////////////////

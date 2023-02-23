@@ -39,6 +39,7 @@
 
 #include "UbSystem.h"
 #include "UbTuple.h"
+#include "lbm/constants/D3Q27.h"
 
 class Block3D;
 class Grid3D;
@@ -57,8 +58,8 @@ public:
     Interactor3D(SPtr<GbObject3D> geoObject3D, SPtr<Grid3D> grid, int type, Interactor3D::Accuracy a);
 
     virtual ~Interactor3D();
-    virtual void initInteractor(const double &timestep = 0) = 0;
-    virtual void updateInteractor(const double &timestep = 0) = 0;
+    virtual void initInteractor(const real &timestep = 0) = 0;
+    virtual void updateInteractor(const real &timestep = 0) = 0;
 
     void setSolidBlock(SPtr<Block3D> block);
     void setBCBlock(SPtr<Block3D> block);
@@ -96,27 +97,27 @@ protected:
     //! detect that points are inside object
     //! \param min/max coordinates of bounding box
     //! \param delta is delta x
-    bool arePointsInsideGeoObject(double minX1, double minX2, double minX3, double maxX1, double maxX2, double maxX3,
-                                  double delta);
+    bool arePointsInsideGeoObject(real minX1, real minX2, real minX3, real maxX1, real maxX2, real maxX3,
+                                  real delta);
 
     //! detect that points aren't inside object
     //! \param min/max coordinates of bounding box
     //! \param delta is delta x
-    bool arePointsOutsideGeoObject(double minX1, double minX2, double minX3, double maxX1, double maxX2, double maxX3,
-                                   double delta);
+    bool arePointsOutsideGeoObject(real minX1, real minX2, real minX3, real maxX1, real maxX2, real maxX3,
+                                   real delta);
 
     //! detect that points are cutting object
     //! \param min/max coordinates of bounding box
     //! \param delta is delta x
-    bool arePointsCuttingGeoObject(double minX1, double minX2, double minX3, double maxX1, double maxX2, double maxX3,
-                                   double delta);
+    bool arePointsCuttingGeoObject(real minX1, real minX2, real minX3, real maxX1, real maxX2, real maxX3,
+                                   real delta);
 
-    bool isBlockOutsideGeoObject(double minX1, double minX2, double minX3, double maxX1, double maxX2, double maxX3,
-                                 double delta);
-    bool isBlockInsideGeoObject(double minX1, double minX2, double minX3, double maxX1, double maxX2, double maxX3,
-                                double delta);
-    bool isBlockCuttingGeoObject(double minX1, double minX2, double minX3, double maxX1, double maxX2, double maxX3,
-                                 double delta);
+    bool isBlockOutsideGeoObject(real minX1, real minX2, real minX3, real maxX1, real maxX2, real maxX3,
+                                 real delta);
+    bool isBlockInsideGeoObject(real minX1, real minX2, real minX3, real maxX1, real maxX2, real maxX3,
+                                real delta);
+    bool isBlockCuttingGeoObject(real minX1, real minX2, real minX3, real maxX1, real maxX2, real maxX3,
+                                 real delta);
 
     void updateBlocks();
 

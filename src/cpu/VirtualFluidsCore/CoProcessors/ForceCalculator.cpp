@@ -20,20 +20,20 @@ ForceCalculator::~ForceCalculator() = default;
 Vector3D ForceCalculator::getForces(int x1, int x2, int x3, SPtr<DistributionArray3D> distributions,
                                     SPtr<BoundaryConditions> bc, const Vector3D &boundaryVelocity) const
 {
-    double forceX1 = 0;
-    double forceX2 = 0;
-    double forceX3 = 0;
+    real forceX1 = 0;
+    real forceX2 = 0;
+    real forceX3 = 0;
     if (bc) {
         for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
             if (bc->hasNoSlipBoundaryFlag(fdir) || bc->hasVelocityBoundaryFlag(fdir)) {
                 const int invDir  = D3Q27System::INVDIR[fdir];
-                const double f    = distributions->getDistributionInvForDirection(x1, x2, x3, invDir);
-                const double fnbr = distributions->getDistributionInvForDirection(
+                const real f    = distributions->getDistributionInvForDirection(x1, x2, x3, invDir);
+                const real fnbr = distributions->getDistributionInvForDirection(
                     x1 + D3Q27System::DX1[invDir], x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir], fdir);
 
-                double correction[3] = { 0.0, 0.0, 0.0 };
+                real correction[3] = { 0.0, 0.0, 0.0 };
                 if (bc->hasVelocityBoundaryFlag(fdir)) {
-                    const double forceTerm = f - fnbr;
+                    const real forceTerm = f - fnbr;
                     correction[0]          = forceTerm * boundaryVelocity[0];
                     correction[1]          = forceTerm * boundaryVelocity[1];
                     correction[2]          = forceTerm * boundaryVelocity[2];
@@ -60,9 +60,9 @@ void ForceCalculator::calculateForces(std::vector<SPtr<D3Q27Interactor>> interac
 
     for (const auto &interactor : interactors) {
         for (const auto &t : interactor->getBcNodeIndicesMap()) {
-            double forceX1 = 0.0;
-            double forceX2 = 0.0;
-            double forceX3 = 0.0;
+            real forceX1 = 0.0;
+            real forceX2 = 0.0;
+            real forceX3 = 0.0;
 
             SPtr<Block3D> block                     = t.first;
             SPtr<ILBMKernel> kernel                 = block->getKernel();
@@ -86,8 +86,8 @@ void ForceCalculator::calculateForces(std::vector<SPtr<D3Q27Interactor>> interac
             }
             // if we have got discretization with more level
             // deltaX is LBM deltaX and equal LBM deltaT
-            double deltaX = LBMSystem::getDeltaT(block->getLevel()); // grid->getDeltaT(block);
-            double deltaXquadrat = deltaX * deltaX;
+            real deltaX = LBMSystem::getDeltaT(block->getLevel()); // grid->getDeltaT(block);
+            real deltaXquadrat = deltaX * deltaX;
             forceX1 *= deltaXquadrat;
             forceX2 *= deltaXquadrat;
             forceX3 *= deltaXquadrat;
@@ -104,12 +104,12 @@ void ForceCalculator::calculateForces(std::vector<SPtr<D3Q27Interactor>> interac
 
 void ForceCalculator::gatherGlobalForces()
 {
-    std::vector<double>
+    std::vector<real>
         values; // intel compiler 17 dasn't support this { forceX1global , forceX2global, forceX3global };
     values.push_back(forceX1global);
     values.push_back(forceX2global);
     values.push_back(forceX3global);
-    std::vector<double> rvalues = comm->gather(values);
+    std::vector<real> rvalues = comm->gather(values);
 
     if (comm->isRoot()) {
         forceX1global = 0.0;

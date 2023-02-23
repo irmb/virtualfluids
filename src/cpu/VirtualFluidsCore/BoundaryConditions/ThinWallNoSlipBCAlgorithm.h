@@ -53,6 +53,6 @@ protected:
 
 private:
     int pass;
-    LBMReal fTemp[D3Q27System::ENDF + 1];
+    real fTemp[D3Q27System::ENDF + 1];
 };
 #endif // ThinWallNoSlipBCAlgorithm_h__

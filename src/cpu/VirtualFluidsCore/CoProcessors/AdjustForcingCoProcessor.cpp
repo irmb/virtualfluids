@@ -13,7 +13,7 @@
 #include <SetForcingBlockVisitor.h>
 
 AdjustForcingCoProcessor::AdjustForcingCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
-                                                   SPtr<IntegrateValuesHelper> integrateValues, double vTarged,
+                                                   SPtr<IntegrateValuesHelper> integrateValues, real vTarged,
                                                    std::shared_ptr<vf::mpi::Communicator> comm)
 
     : CoProcessor(grid, s), path(path), integrateValues(integrateValues), comm(comm), vx1Targed(vTarged)
@@ -71,13 +71,13 @@ AdjustForcingCoProcessor::AdjustForcingCoProcessor(SPtr<Grid3D> grid, SPtr<UbSch
 }
 
 //////////////////////////////////////////////////////////////////////////
-void AdjustForcingCoProcessor::process(double step)
+void AdjustForcingCoProcessor::process(real step)
 {
     if (scheduler->isDue(step))
         collectData(step);
 }
 //////////////////////////////////////////////////////////////////////////
-void AdjustForcingCoProcessor::collectData(double step)
+void AdjustForcingCoProcessor::collectData(real step)
 {
     //////////////////////////////////////////////////////////////////////////////////////////////////
     // temporary solution
@@ -104,7 +104,7 @@ void AdjustForcingCoProcessor::collectData(double step)
 
     if (root) {
         cellsVolume = integrateValues->getCellsVolume();
-        double vx1  = integrateValues->getVx1();
+        real vx1  = integrateValues->getVx1();
         vx1Average  = (vx1 / cellsVolume);
 
         //////////////////////////////////////////////////////////////////////////

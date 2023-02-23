@@ -19,20 +19,20 @@ class TurbulenceIntensityCoProcessor : public CoProcessor
 public:
     TurbulenceIntensityCoProcessor(SPtr<Grid3D> grid, const std::string &path, WbWriter *const writer,
                                    SPtr<UbScheduler> s, std::shared_ptr<vf::mpi::Communicator> comm);
-    void process(double step) override;
+    void process(real step) override;
 
 protected:
-    void collectData(double step);
+    void collectData(real step);
     void addData(const SPtr<Block3D> block);
     void clearData();
-    void calculateAverageValues(double timeStep);
+    void calculateAverageValues(real timeStep);
 
 private:
     void init();
     std::vector<UbTupleFloat3> nodes;
     std::vector<UbTupleUInt8> cells;
     std::vector<std::string> datanames;
-    std::vector<std::vector<double>> data;
+    std::vector<std::vector<real>> data;
     std::vector<std::vector<SPtr<Block3D>>> blockVector;
     int minInitLevel;
     int maxInitLevel;

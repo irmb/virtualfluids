@@ -203,8 +203,8 @@ void MPIIOCoProcessor::writeBlocks(int step)
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename);
 
-    double start {0.};
-    double finish {0.};
+    real start {0.};
+    real finish {0.};
     MPI_Offset write_offset = (MPI_Offset)(size * sizeof(int));
 
     if (comm->isRoot()) {
@@ -242,8 +242,8 @@ void MPIIOCoProcessor::readBlocks(int step)
                            << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
     
-    double start {0.};
-    double finish {0.};
+    real start {0.};
+    real finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 

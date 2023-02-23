@@ -30,6 +30,8 @@ ENDIF()
 
 vf_add_library(BUILDTYPE static PUBLIC_LINK basics muparser ${VF_LIBRARIES} PRIVATE_LINK lbm mpi logger)
 
+vf_add_tests()
+
 vf_get_library_name(library_name)
 
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/BoundaryConditions)

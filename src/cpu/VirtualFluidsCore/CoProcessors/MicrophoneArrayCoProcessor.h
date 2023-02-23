@@ -27,14 +27,14 @@ public:
     ~MicrophoneArrayCoProcessor() override;
 
     //! calls collectData.
-    void process(double step) override;
+    void process(real step) override;
 
     //! add microphone
     bool addMicrophone(Vector3D coords);
 
 protected:
-    void collectData(double step);
-    void writeFile(double step);
+    void collectData(real step);
+    void writeFile(real step);
 
 private:
     std::string path;
@@ -52,7 +52,7 @@ private:
     int count;
     int micID;
 
-    using CalcMacrosFct = void (*)(const LBMReal *const &, LBMReal &, LBMReal &, LBMReal &, LBMReal &);
+    using CalcMacrosFct = void (*)(const real *const &, real &, real &, real &, real &);
     CalcMacrosFct calcMacros;
 };
 

@@ -22,10 +22,10 @@ namespace Utilities
          return false;
    }
 
-   //convert from double to int
-   static int cint(double x)
+   //convert from real to int
+   static int cint(real x)
    {
-      double intpart;
+      real intpart;
       if (modf(x,&intpart)>=.5)
          return static_cast<int> (floor(x)+1);
       else
@@ -34,7 +34,7 @@ namespace Utilities
 
    //create new mu parser for duct parabolic profile
    //inflow in X
-   static mu::Parser getDuctParaboloidX(double Cy, double Hy, double Cz, double Hz, double V)
+   static mu::Parser getDuctParaboloidX(real Cy, real Hy, real Cz, real Hz, real V)
    {
       mu::Parser fct;
       fct.SetExpr("V*(((-(x2-Cy)^2.0+(Hy/2.0)^2.0)/(Hy/2.0)^2.0)*((-(x3-Cz)^2.0+(Hz/2.0)^2.0)/(Hz/2.0)^2.0))" );
@@ -46,7 +46,7 @@ namespace Utilities
       return fct;
    }
    //inflow in Y
-   static mu::Parser getDuctParaboloidY(double Cx, double Hx, double Cz, double Hz, double V)
+   static mu::Parser getDuctParaboloidY(real Cx, real Hx, real Cz, real Hz, real V)
    {
       mu::Parser fct;
       fct.SetExpr("V*(((-(x1-Cx)^2.0+(Hx/2.0)^2.0)/(Hx/2.0)^2.0)*((-(x3-Cz)^2.0+(Hz/2.0)^2.0)/(Hz/2.0)^2.0))" );
@@ -58,7 +58,7 @@ namespace Utilities
       return fct;
    }
    //inflow in Z
-   static mu::Parser getDuctParaboloidZ(double Cx, double Hx, double Cy, double Hy, double V)
+   static mu::Parser getDuctParaboloidZ(real Cx, real Hx, real Cy, real Hy, real V)
    {
       mu::Parser fct;
       fct.SetExpr("V*(((-(x1-Cx)^2.0+(Hx/2.0)^2.0)/(Hx/2.0)^2.0)*((-(x2-Cy)^2.0+(Hy/2.0)^2.0)/(Hy/2.0)^2.0))" );
@@ -85,11 +85,11 @@ namespace Utilities
       return hash;
    }
    //linear interpolation
-   static double linear_interpolation1D(double x0, double y0, double x1, double y1, double x)
+   static real linear_interpolation1D(real x0, real y0, real x1, real y1, real x)
    {
-      double a = (y1 - y0) / (x1 - x0);
-      double b = -a*x0 + y0;
-      double y = a * x + b;
+      real a = (y1 - y0) / (x1 - x0);
+      real b = -a*x0 + y0;
+      real y = a * x + b;
       return y;
    }
 }

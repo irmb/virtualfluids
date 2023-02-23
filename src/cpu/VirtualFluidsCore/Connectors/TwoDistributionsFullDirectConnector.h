@@ -55,21 +55,21 @@ protected:
     inline void exchangeData(int x1From, int x2From, int x3From, int x1To, int x2To, int x3To) override;
 
 private:
-	CbArray4D <LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributionsFromf;
-	CbArray4D <LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsFromf;
-	CbArray3D <LBMReal, IndexerX3X2X1>::CbArray3DPtr   zeroDistributionsFromf;
+	CbArray4D <real, IndexerX4X3X2X1>::CbArray4DPtr localDistributionsFromf;
+	CbArray4D <real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsFromf;
+	CbArray3D <real, IndexerX3X2X1>::CbArray3DPtr   zeroDistributionsFromf;
 
-	CbArray4D <LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributionsTof;
-	CbArray4D <LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsTof;
-	CbArray3D <LBMReal, IndexerX3X2X1>::CbArray3DPtr   zeroDistributionsTof;
+	CbArray4D <real, IndexerX4X3X2X1>::CbArray4DPtr localDistributionsTof;
+	CbArray4D <real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsTof;
+	CbArray3D <real, IndexerX3X2X1>::CbArray3DPtr   zeroDistributionsTof;
 
-	CbArray4D <LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributionsFromh;
-	CbArray4D <LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsFromh;
-	CbArray3D <LBMReal, IndexerX3X2X1>::CbArray3DPtr   zeroDistributionsFromh;
+	CbArray4D <real, IndexerX4X3X2X1>::CbArray4DPtr localDistributionsFromh;
+	CbArray4D <real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsFromh;
+	CbArray3D <real, IndexerX3X2X1>::CbArray3DPtr   zeroDistributionsFromh;
 
-	CbArray4D <LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributionsToh;
-	CbArray4D <LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsToh;
-	CbArray3D <LBMReal, IndexerX3X2X1>::CbArray3DPtr   zeroDistributionsToh;
+	CbArray4D <real, IndexerX4X3X2X1>::CbArray4DPtr localDistributionsToh;
+	CbArray4D <real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsToh;
+	CbArray3D <real, IndexerX3X2X1>::CbArray3DPtr   zeroDistributionsToh;
 
 	SPtr<EsoTwist3D>  fFrom, hFrom;
 	SPtr<EsoTwist3D>  fTo, hTo;

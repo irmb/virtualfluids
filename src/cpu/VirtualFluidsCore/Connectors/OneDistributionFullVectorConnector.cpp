@@ -12,57 +12,59 @@ OneDistributionFullVectorConnector::OneDistributionFullVectorConnector(SPtr<Bloc
 //////////////////////////////////////////////////////////////////////////
 void OneDistributionFullVectorConnector::init()
 {
+    using namespace vf::lbm::dir;
+
     FullVectorConnector::init();
     
     fDis = dynamicPointerCast<EsoTwist3D>(block.lock()->getKernel()->getDataSet()->getFdistributions());
 
     int anz = 27;
     switch (sendDir) {
-        case D3Q27System::DIR_000:
+        case DIR_000:
             UB_THROW(UbException(UB_EXARGS, "ZERO not allowed"));
             break;
-        case D3Q27System::DIR_P00:
-        case D3Q27System::DIR_M00:
+        case DIR_P00:
+        case DIR_M00:
             sender->getData().resize(maxX2 * maxX3 * anz, 0.0);
             break;
-        case D3Q27System::DIR_0P0:
-        case D3Q27System::DIR_0M0:
+        case DIR_0P0:
+        case DIR_0M0:
             sender->getData().resize(maxX1 * maxX3 * anz, 0.0);
             break;
-        case D3Q27System::DIR_00P:
-        case D3Q27System::DIR_00M:
+        case DIR_00P:
+        case DIR_00M:
             sender->getData().resize(maxX1 * maxX2 * anz, 0.0);
             break;
 
-        case D3Q27System::DIR_PP0:
-        case D3Q27System::DIR_MM0:
-        case D3Q27System::DIR_PM0:
-        case D3Q27System::DIR_MP0:
+        case DIR_PP0:
+        case DIR_MM0:
+        case DIR_PM0:
+        case DIR_MP0:
             sender->getData().resize(maxX3 * anz, 0.0);
             break;
 
-        case D3Q27System::DIR_P0P:
-        case D3Q27System::DIR_M0M:
-        case D3Q27System::DIR_P0M:
-        case D3Q27System::DIR_M0P:
+        case DIR_P0P:
+        case DIR_M0M:
+        case DIR_P0M:
+        case DIR_M0P:
             sender->getData().resize(maxX2 * anz, 0.0);
             break;
 
-        case D3Q27System::DIR_0PP:
-        case D3Q27System::DIR_0MM:
-        case D3Q27System::DIR_0PM:
-        case D3Q27System::DIR_0MP:
+        case DIR_0PP:
+        case DIR_0MM:
+        case DIR_0PM:
+        case DIR_0MP:
             sender->getData().resize(maxX1 * anz, 0.0);
             break;
 
-        case D3Q27System::DIR_PPP:
-        case D3Q27System::DIR_MMM:
-        case D3Q27System::DIR_PPM:
-        case D3Q27System::DIR_MMP:
-        case D3Q27System::DIR_PMP:
-        case D3Q27System::DIR_MPM:
-        case D3Q27System::DIR_PMM:
-        case D3Q27System::DIR_MPP:
+        case DIR_PPP:
+        case DIR_MMM:
+        case DIR_PPM:
+        case DIR_MMP:
+        case DIR_PMP:
+        case DIR_MPM:
+        case DIR_PMM:
+        case DIR_MPP:
             sender->getData().resize(anz, 0.0);
             break;
 

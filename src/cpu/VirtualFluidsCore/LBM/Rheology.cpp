@@ -33,13 +33,13 @@
 #include "Rheology.h"
 
 SPtr<Rheology> Rheology::instance = SPtr<Rheology>();
-LBMReal Rheology::tau0 = 0;
-LBMReal Rheology::k = 0;
-LBMReal Rheology::n = 1;
-LBMReal Rheology::omegaMin = 0;
-LBMReal Rheology::beta = 0;
-LBMReal Rheology::c = 0;
-LBMReal Rheology::mu0 = 0;
+real Rheology::tau0 = 0;
+real Rheology::k = 0;
+real Rheology::n = 1;
+real Rheology::omegaMin = 0;
+real Rheology::beta = 0;
+real Rheology::c = 0;
+real Rheology::mu0 = 0;
 
 //////////////////////////////////////////////////////////////////////////
 SPtr<Rheology> Rheology::getInstance()
@@ -49,66 +49,66 @@ SPtr<Rheology> Rheology::getInstance()
    return instance;
 }
 
-void Rheology::setYieldStress(LBMReal yieldStress)
+void Rheology::setYieldStress(real yieldStress)
 {
 	tau0 = yieldStress;
 }
-LBMReal Rheology::getYieldStress() const
+real Rheology::getYieldStress() const
 {
 	return tau0;
 }
-void Rheology::setViscosityParameter(LBMReal kParameter)
+void Rheology::setViscosityParameter(real kParameter)
 {
 	k = kParameter;
 }
-LBMReal Rheology::getViscosityParameter() const
+real Rheology::getViscosityParameter() const
 {
 	return k;
 }
-void Rheology::setPowerIndex(LBMReal index)
+void Rheology::setPowerIndex(real index)
 {
 	n = index;
 }
-LBMReal Rheology::getPowerIndex() const
+real Rheology::getPowerIndex() const
 {
 	return n;
 }
 
-void Rheology::setOmegaMin(LBMReal omega)
+void Rheology::setOmegaMin(real omega)
 {
 	omegaMin = omega;
 }
-LBMReal Rheology::getOmegaMin() const
+real Rheology::getOmegaMin() const
 {
 	return omegaMin;
 }
 
-void Rheology::setBeta(LBMReal PowellEyringBeta)
+void Rheology::setBeta(real PowellEyringBeta)
 {
 	beta = PowellEyringBeta;
 }
 
-LBMReal Rheology::getBeta() const
+real Rheology::getBeta() const
 {
 	return beta;
 }
 
-void Rheology::setC(LBMReal PowellEyringC)
+void Rheology::setC(real PowellEyringC)
 {
 	c = PowellEyringC;
 }
 
-LBMReal Rheology::getC() const
+real Rheology::getC() const
 {
 	return c;
 }
 
-void Rheology::setMu0(LBMReal mu)
+void Rheology::setMu0(real mu)
 {
 	mu0 = mu;
 }
 
-LBMReal Rheology::getMu0() const
+real Rheology::getMu0() const
 {
 	return mu0;
 }

@@ -50,6 +50,8 @@ TwoDistributionsDoubleGhostLayerFullVectorConnector::TwoDistributionsDoubleGhost
 //////////////////////////////////////////////////////////////////////////
 void TwoDistributionsDoubleGhostLayerFullVectorConnector::init()
 {
+   using namespace vf::lbm::dir;
+
    FullVectorConnector::init();
 
    fDis = dynamicPointerCast<EsoTwist3D>(block.lock()->getKernel()->getDataSet()->getFdistributions());
@@ -59,37 +61,37 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::init()
    int anz = 2*27+1;
    switch (sendDir)
    {
-   case D3Q27System::DIR_000: UB_THROW(UbException(UB_EXARGS, "ZERO not allowed")); break;
-   case D3Q27System::DIR_P00:
-   case D3Q27System::DIR_M00: sender->getData().resize(maxX2*maxX3*anz*2, 0.0);   break;
-   case D3Q27System::DIR_0P0:
-   case D3Q27System::DIR_0M0: sender->getData().resize(maxX1*maxX3*anz*2, 0.0);   break;
-   case D3Q27System::DIR_00P:
-   case D3Q27System::DIR_00M: sender->getData().resize(maxX1*maxX2*anz*2, 0.0);   break;
+   case DIR_000: UB_THROW(UbException(UB_EXARGS, "ZERO not allowed")); break;
+   case DIR_P00:
+   case DIR_M00: sender->getData().resize(maxX2*maxX3*anz*2, 0.0);   break;
+   case DIR_0P0:
+   case DIR_0M0: sender->getData().resize(maxX1*maxX3*anz*2, 0.0);   break;
+   case DIR_00P:
+   case DIR_00M: sender->getData().resize(maxX1*maxX2*anz*2, 0.0);   break;
 
-   case D3Q27System::DIR_PP0:
-   case D3Q27System::DIR_MM0:
-   case D3Q27System::DIR_PM0:
-   case D3Q27System::DIR_MP0:  sender->getData().resize(maxX3*anz*4, 0.0);   break;
+   case DIR_PP0:
+   case DIR_MM0:
+   case DIR_PM0:
+   case DIR_MP0:  sender->getData().resize(maxX3*anz*4, 0.0);   break;
 
-   case D3Q27System::DIR_P0P:
-   case D3Q27System::DIR_M0M:
-   case D3Q27System::DIR_P0M:
-   case D3Q27System::DIR_M0P:  sender->getData().resize(maxX2*anz*4, 0.0);   break;
+   case DIR_P0P:
+   case DIR_M0M:
+   case DIR_P0M:
+   case DIR_M0P:  sender->getData().resize(maxX2*anz*4, 0.0);   break;
 
-   case D3Q27System::DIR_0PP:
-   case D3Q27System::DIR_0MM:
-   case D3Q27System::DIR_0PM:
-   case D3Q27System::DIR_0MP:  sender->getData().resize(maxX1*anz*4, 0.0);   break;
+   case DIR_0PP:
+   case DIR_0MM:
+   case DIR_0PM:
+   case DIR_0MP:  sender->getData().resize(maxX1*anz*4, 0.0);   break;
 
-   case D3Q27System::DIR_PPP:
-   case D3Q27System::DIR_MMM:
-   case D3Q27System::DIR_PPM:
-   case D3Q27System::DIR_MMP:
-   case D3Q27System::DIR_PMP:
-   case D3Q27System::DIR_MPM:
-   case D3Q27System::DIR_PMM:
-   case D3Q27System::DIR_MPP:  sender->getData().resize(anz*8, 0.0);   break;
+   case DIR_PPP:
+   case DIR_MMM:
+   case DIR_PPM:
+   case DIR_MMP:
+   case DIR_PMP:
+   case DIR_MPM:
+   case DIR_PMM:
+   case DIR_MPP:  sender->getData().resize(anz*8, 0.0);   break;
 
    default: UB_THROW(UbException(UB_EXARGS, "unknown sendDir"));
    }
@@ -103,6 +105,8 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::fillSendVectors()
 ////////////////////////////////////////////////////////////////////////
 void TwoDistributionsDoubleGhostLayerFullVectorConnector::fillData()
 {
+    using namespace vf::lbm::dir;
+
     ////////////////////////////////////////////////////////////
     // relation between ghost layer and regular nodes
     // maxX1m3 maxX1m2 ... minX1p2 minX1p3 - regular nodes
@@ -137,7 +141,7 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::fillData()
 
     int index = 0;
     // EAST
-    if (sendDir == D3Q27System::DIR_P00) {
+    if (sendDir == DIR_P00) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             for (int x2 = minX2p2; x2 <= maxX2m2; x2++) {
                 fillData(sdata, index, maxX1m3, x2, x3);
@@ -146,7 +150,7 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::fillData()
         }
     }
     // WEST
-    else if (sendDir == D3Q27System::DIR_M00) {
+    else if (sendDir == DIR_M00) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             for (int x2 = minX2p2; x2 <= maxX2m2; x2++) {
                 fillData(sdata, index, minX1p3, x2, x3);
@@ -155,7 +159,7 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::fillData()
         }
     }
     // NORTH
-    else if (sendDir == D3Q27System::DIR_0P0) {
+    else if (sendDir == DIR_0P0) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             for (int x1 = minX1p2; x1 <= maxX1m2; x1++) {
                 fillData(sdata, index, x1, maxX2m3, x3);
@@ -164,7 +168,7 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::fillData()
         }
     }
     // SOUTH
-    else if (sendDir == D3Q27System::DIR_0M0) {
+    else if (sendDir == DIR_0M0) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             for (int x1 = minX1p2; x1 <= maxX1m2; x1++) {
                 fillData(sdata, index, x1, minX2p3, x3);
@@ -174,7 +178,7 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::fillData()
     }
 
     // TOP
-    else if (sendDir == D3Q27System::DIR_00P) {
+    else if (sendDir == DIR_00P) {
         for (int x2 = minX2p2; x2 <= maxX2m2; x2++) {
             for (int x1 = minX1p2; x1 <= maxX1m2; x1++) {
                 fillData(sdata, index, x1, x2, maxX3m3);
@@ -183,7 +187,7 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::fillData()
         }
     }
     // BOTTOM
-    else if (sendDir == D3Q27System::DIR_00M) {
+    else if (sendDir == DIR_00M) {
         for (int x2 = minX2p2; x2 <= maxX2m2; x2++) {
             for (int x1 = minX1p2; x1 <= maxX1m2; x1++) {
                 fillData(sdata, index, x1, x2, minX3p3);
@@ -192,7 +196,7 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::fillData()
         }
     }
     // NORTHEAST
-    else if (sendDir == D3Q27System::DIR_PP0) {
+    else if (sendDir == DIR_PP0) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             fillData(sdata, index, maxX1m3, maxX2m3, x3);
             fillData(sdata, index, maxX1m2, maxX2m2, x3);
@@ -201,7 +205,7 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::fillData()
         }
     }
     // NORTHWEST
-    else if (sendDir == D3Q27System::DIR_MP0) {
+    else if (sendDir == DIR_MP0) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             fillData(sdata, index, minX1p3, maxX2m3, x3);
             fillData(sdata, index, minX1p2, maxX2m2, x3);
@@ -210,7 +214,7 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::fillData()
         }
     }
     // SOUTHWEST
-    else if (sendDir == D3Q27System::DIR_MM0) {
+    else if (sendDir == DIR_MM0) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             fillData(sdata, index, minX1p3, minX2p3, x3);
             fillData(sdata, index, minX1p2, minX2p2, x3);
@@ -219,70 +223,70 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::fillData()
         }
     }
     // SOUTHEAST
-    else if (sendDir == D3Q27System::DIR_PM0) {
+    else if (sendDir == DIR_PM0) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             fillData(sdata, index, maxX1m3, minX2p3, x3);
             fillData(sdata, index, maxX1m2, minX2p2, x3);
             fillData(sdata, index, maxX1m3, minX2p2, x3);
             fillData(sdata, index, maxX1m2, minX2p3, x3);
         }
-    } else if (sendDir == D3Q27System::DIR_P0P)
+    } else if (sendDir == DIR_P0P)
         for (int x2 = minX2p2; x2 <= maxX2m2; x2++) {
             fillData(sdata, index, maxX1m3, x2, maxX3m3);
             fillData(sdata, index, maxX1m2, x2, maxX3m2);
             fillData(sdata, index, maxX1m3, x2, maxX3m2);
             fillData(sdata, index, maxX1m2, x2, maxX3m3);
         }
-    else if (sendDir == D3Q27System::DIR_M0M)
+    else if (sendDir == DIR_M0M)
         for (int x2 = minX2p2; x2 <= maxX2m2; x2++) {
             fillData(sdata, index, minX1p3, x2, minX3p3);
             fillData(sdata, index, minX1p2, x2, minX3p2);
             fillData(sdata, index, minX1p3, x2, minX3p2);
             fillData(sdata, index, minX1p2, x2, minX3p3);
         }
-    else if (sendDir == D3Q27System::DIR_P0M)
+    else if (sendDir == DIR_P0M)
         for (int x2 = minX2p2; x2 <= maxX2m2; x2++) {
             fillData(sdata, index, maxX1m3, x2, minX3p3);
             fillData(sdata, index, maxX1m2, x2, minX3p2);
             fillData(sdata, index, maxX1m3, x2, minX3p2);
             fillData(sdata, index, maxX1m2, x2, minX3p3);
         }
-    else if (sendDir == D3Q27System::DIR_M0P)
+    else if (sendDir == DIR_M0P)
         for (int x2 = minX2p2; x2 <= maxX2m2; x2++) {
             fillData(sdata, index, minX1p3, x2, maxX3m3);
             fillData(sdata, index, minX1p2, x2, maxX3m2);
             fillData(sdata, index, minX1p3, x2, maxX3m2);
             fillData(sdata, index, minX1p2, x2, maxX3m3);
         }
-    else if (sendDir == D3Q27System::DIR_0PP)
+    else if (sendDir == DIR_0PP)
         for (int x1 = minX1p2; x1 <= maxX1m2; x1++) {
             fillData(sdata, index, x1, maxX2m3, maxX3m3);
             fillData(sdata, index, x1, maxX2m2, maxX3m2);
             fillData(sdata, index, x1, maxX2m3, maxX3m2);
             fillData(sdata, index, x1, maxX2m2, maxX3m3);
         }
-    else if (sendDir == D3Q27System::DIR_0MM)
+    else if (sendDir == DIR_0MM)
         for (int x1 = minX1p2; x1 <= maxX1m2; x1++) {
             fillData(sdata, index, x1, minX2p3, minX3p3);
             fillData(sdata, index, x1, minX2p2, minX3p2);
             fillData(sdata, index, x1, minX2p3, minX3p2);
             fillData(sdata, index, x1, minX2p2, minX3p3);
         }
-    else if (sendDir == D3Q27System::DIR_0PM)
+    else if (sendDir == DIR_0PM)
         for (int x1 = minX1p2; x1 <= maxX1m2; x1++) {
             fillData(sdata, index, x1, maxX2m3, minX3p3);
             fillData(sdata, index, x1, maxX2m2, minX3p2);
             fillData(sdata, index, x1, maxX2m3, minX3p2);
             fillData(sdata, index, x1, maxX2m2, minX3p3);
         }
-    else if (sendDir == D3Q27System::DIR_0MP)
+    else if (sendDir == DIR_0MP)
         for (int x1 = minX1p2; x1 <= maxX1m2; x1++) {
             fillData(sdata, index, x1, minX2p3, maxX3m3);
             fillData(sdata, index, x1, minX2p2, maxX3m2);
             fillData(sdata, index, x1, minX2p3, maxX3m2);
             fillData(sdata, index, x1, minX2p2, maxX3m3);
         }
-    else if (sendDir == D3Q27System::DIR_MMP) {
+    else if (sendDir == DIR_MMP) {
         fillData(sdata, index, minX1p3, minX2p3, maxX3m3);
         fillData(sdata, index, minX1p2, minX2p2, maxX3m2);
         fillData(sdata, index, minX1p3, minX2p2, maxX3m2);
@@ -291,7 +295,7 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::fillData()
         fillData(sdata, index, minX1p3, minX2p3, maxX3m2);
         fillData(sdata, index, minX1p3, minX2p2, maxX3m3);
         fillData(sdata, index, minX1p2, minX2p3, maxX3m3);
-    } else if (sendDir == D3Q27System::DIR_PMP) {
+    } else if (sendDir == DIR_PMP) {
         fillData(sdata, index, maxX1m3, minX1p3, maxX3m3);
         fillData(sdata, index, maxX1m2, minX1p2, maxX3m2);
         fillData(sdata, index, maxX1m3, minX1p2, maxX3m2);
@@ -300,7 +304,7 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::fillData()
         fillData(sdata, index, maxX1m3, minX1p3, maxX3m2);
         fillData(sdata, index, maxX1m3, minX1p2, maxX3m3);
         fillData(sdata, index, maxX1m2, minX1p3, maxX3m3);
-    } else if (sendDir == D3Q27System::DIR_MPP) {
+    } else if (sendDir == DIR_MPP) {
         fillData(sdata, index, minX1p3, maxX2m3, maxX3m3);
         fillData(sdata, index, minX1p2, maxX2m2, maxX3m2);
         fillData(sdata, index, minX1p3, maxX2m2, maxX3m2);
@@ -309,7 +313,7 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::fillData()
         fillData(sdata, index, minX1p3, maxX2m3, maxX3m2);
         fillData(sdata, index, minX1p3, maxX2m2, maxX3m3);
         fillData(sdata, index, minX1p2, maxX2m3, maxX3m3);
-    } else if (sendDir == D3Q27System::DIR_PPP) {
+    } else if (sendDir == DIR_PPP) {
         fillData(sdata, index, maxX1m3, maxX2m3, maxX3m3);
         fillData(sdata, index, maxX1m2, maxX2m2, maxX3m2);
         fillData(sdata, index, maxX1m3, maxX2m2, maxX3m2);
@@ -318,7 +322,7 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::fillData()
         fillData(sdata, index, maxX1m3, maxX2m3, maxX3m2);
         fillData(sdata, index, maxX1m3, maxX2m2, maxX3m3);
         fillData(sdata, index, maxX1m2, maxX2m3, maxX3m3);
-    } else if (sendDir == D3Q27System::DIR_MMM) {
+    } else if (sendDir == DIR_MMM) {
         fillData(sdata, index, minX1p3, minX2p3, minX3p3);
         fillData(sdata, index, minX1p2, minX2p2, minX3p2);
         fillData(sdata, index, minX1p3, minX2p2, minX3p2);
@@ -327,7 +331,7 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::fillData()
         fillData(sdata, index, minX1p3, minX2p3, minX3p2);
         fillData(sdata, index, minX1p3, minX2p2, minX3p3);
         fillData(sdata, index, minX1p2, minX2p3, minX3p3);
-    } else if (sendDir == D3Q27System::DIR_PMM) {
+    } else if (sendDir == DIR_PMM) {
         fillData(sdata, index, maxX1m3, minX2p3, minX3p3);
         fillData(sdata, index, maxX1m2, minX2p2, minX3p2);
         fillData(sdata, index, maxX1m3, minX2p2, minX3p2);
@@ -336,7 +340,7 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::fillData()
         fillData(sdata, index, maxX1m3, minX2p3, minX3p2);
         fillData(sdata, index, maxX1m3, minX2p2, minX3p3);
         fillData(sdata, index, maxX1m2, minX2p3, minX3p3);
-    } else if (sendDir == D3Q27System::DIR_MPM) {
+    } else if (sendDir == DIR_MPM) {
         fillData(sdata, index, minX1p3, maxX2m3, minX3p3);
         fillData(sdata, index, minX1p2, maxX2m2, minX3p2);
         fillData(sdata, index, minX1p3, maxX2m2, minX3p2);
@@ -345,7 +349,7 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::fillData()
         fillData(sdata, index, minX1p3, maxX2m3, minX3p2);
         fillData(sdata, index, minX1p3, maxX2m2, minX3p3);
         fillData(sdata, index, minX1p2, maxX2m3, minX3p3);
-    } else if (sendDir == D3Q27System::DIR_PPM) {
+    } else if (sendDir == DIR_PPM) {
         fillData(sdata, index, maxX1m3, maxX2m3, minX3p3);
         fillData(sdata, index, maxX1m2, maxX2m2, minX3p2);
         fillData(sdata, index, maxX1m3, maxX2m2, minX3p2);
@@ -366,6 +370,8 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::distributeReceiveVecto
 ////////////////////////////////////////////////////////////////////////
 void TwoDistributionsDoubleGhostLayerFullVectorConnector::distributeData()
 {
+    using namespace vf::lbm::dir;
+
     vector_type &rdata = receiver->getData();
 
     int index = 0;
@@ -399,7 +405,7 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::distributeData()
     int maxX3m2 = maxX3 - 2;
     //int maxX3m3 = maxX3 - 3;
 
-    if (sendDir == D3Q27System::DIR_M00) {
+    if (sendDir == DIR_M00) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             for (int x2 = minX2p2; x2 <= maxX2m2; x2++) {
                 distributeData(rdata, index, minX1, x2, x3);
@@ -407,7 +413,7 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::distributeData()
             }
         }
     }
-    else if (sendDir == D3Q27System::DIR_P00) {
+    else if (sendDir == DIR_P00) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             for (int x2 = minX2p2; x2 <= maxX2m2; x2++) {
                 distributeData(rdata, index, maxX1, x2, x3);
@@ -415,7 +421,7 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::distributeData()
             }
         }
     }
-    else if (sendDir == D3Q27System::DIR_0M0) {
+    else if (sendDir == DIR_0M0) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             for (int x1 = minX1p2; x1 <= maxX1m2; x1++) {
                 distributeData(rdata, index, x1, minX2, x3);
@@ -423,7 +429,7 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::distributeData()
             }
         }
     }
-    else if (sendDir == D3Q27System::DIR_0P0) {
+    else if (sendDir == DIR_0P0) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             for (int x1 = minX1p2; x1 <= maxX1m2; x1++) {
                 distributeData(rdata, index, x1, maxX2, x3);
@@ -431,7 +437,7 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::distributeData()
             }
         }
     }
-    else if (sendDir == D3Q27System::DIR_00M) {
+    else if (sendDir == DIR_00M) {
         for (int x2 = minX2p2; x2 <= maxX2m2; x2++) {
             for (int x1 = minX1p2; x1 <= maxX1m2; x1++) {
                 distributeData(rdata, index, x1, x2, minX3);
@@ -439,7 +445,7 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::distributeData()
             }
         }
     }
-    else if (sendDir == D3Q27System::DIR_00P) {
+    else if (sendDir == DIR_00P) {
         for (int x2 = minX2p2; x2 <= maxX2m2; x2++) {
             for (int x1 = minX1p2; x1 <= maxX1m2; x1++) {
                 distributeData(rdata, index, x1, x2, maxX3);
@@ -447,7 +453,7 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::distributeData()
             }
         }
     }
-    else if (sendDir == D3Q27System::DIR_MM0) {
+    else if (sendDir == DIR_MM0) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             distributeData(rdata, index, minX1, minX2, x3);
             distributeData(rdata, index, minX1p1, minX2p1, x3);
@@ -455,7 +461,7 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::distributeData()
             distributeData(rdata, index, minX1p1, minX2, x3);
         }
     }
-    else if (sendDir == D3Q27System::DIR_PM0) {
+    else if (sendDir == DIR_PM0) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             distributeData(rdata, index, maxX1, minX2, x3);
             distributeData(rdata, index, maxX1m1, minX2p1, x3);
@@ -463,7 +469,7 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::distributeData()
             distributeData(rdata, index, maxX1m1, minX2, x3);
         }
     }
-    else if (sendDir == D3Q27System::DIR_PP0) {
+    else if (sendDir == DIR_PP0) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             distributeData(rdata, index, maxX1, maxX2, x3);
             distributeData(rdata, index, maxX1m1, maxX2m1, x3);
@@ -471,70 +477,70 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::distributeData()
             distributeData(rdata, index, maxX1m1, maxX2, x3);
         }
     }
-    else if (sendDir == D3Q27System::DIR_MP0) {
+    else if (sendDir == DIR_MP0) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             distributeData(rdata, index, minX1, maxX2, x3);
             distributeData(rdata, index, minX1p1, maxX2m1, x3);
             distributeData(rdata, index, minX1, maxX2m1, x3);
             distributeData(rdata, index, minX1p1, maxX2, x3);
         }
-    } else if (sendDir == D3Q27System::DIR_M0M)
+    } else if (sendDir == DIR_M0M)
         for (int x2 = minX2p2; x2 <= maxX2m2; x2++) {
             distributeData(rdata, index, minX1, x2, minX3);
             distributeData(rdata, index, minX1p1, x2, minX3p1);
             distributeData(rdata, index, minX1, x2, minX3p1);
             distributeData(rdata, index, minX1p1, x2, minX3);
         }
-    else if (sendDir == D3Q27System::DIR_P0P)
+    else if (sendDir == DIR_P0P)
         for (int x2 = minX2p2; x2 <= maxX2m2; x2++) {
             distributeData(rdata, index, maxX1, x2, maxX3);
             distributeData(rdata, index, maxX1m1, x2, maxX3m1);
             distributeData(rdata, index, maxX1, x2, maxX3m1);
             distributeData(rdata, index, maxX1m1, x2, maxX3);
         }
-    else if (sendDir == D3Q27System::DIR_M0P)
+    else if (sendDir == DIR_M0P)
         for (int x2 = minX2p2; x2 <= maxX2m2; x2++) {
             distributeData(rdata, index, minX1, x2, maxX3);
             distributeData(rdata, index, minX1p1, x2, maxX3m1);
             distributeData(rdata, index, minX1, x2, maxX3m1);
             distributeData(rdata, index, minX1p1, x2, maxX3);
         }
-    else if (sendDir == D3Q27System::DIR_P0M)
+    else if (sendDir == DIR_P0M)
         for (int x2 = minX2p2; x2 <= maxX2m2; x2++) {
             distributeData(rdata, index, maxX1, x2, minX3);
             distributeData(rdata, index, maxX1m1, x2, minX3p1);
             distributeData(rdata, index, maxX1, x2, minX3p1);
             distributeData(rdata, index, maxX1m1, x2, minX3);
         }
-    else if (sendDir == D3Q27System::DIR_0MM)
+    else if (sendDir == DIR_0MM)
         for (int x1 = minX1p2; x1 <= maxX1m2; x1++) {
             distributeData(rdata, index, x1, minX2, minX3);
             distributeData(rdata, index, x1, minX2p1, minX3p1);
             distributeData(rdata, index, x1, minX2, minX3p1);
             distributeData(rdata, index, x1, minX2p1, minX3);
         }
-    else if (sendDir == D3Q27System::DIR_0PP)
+    else if (sendDir == DIR_0PP)
         for (int x1 = minX1p2; x1 <= maxX1m2; x1++) {
             distributeData(rdata, index, x1, maxX2, maxX3);
             distributeData(rdata, index, x1, maxX2m1, maxX3m1);
             distributeData(rdata, index, x1, maxX2, maxX3m1);
             distributeData(rdata, index, x1, maxX2m1, maxX3);
         }
-    else if (sendDir == D3Q27System::DIR_0MP)
+    else if (sendDir == DIR_0MP)
         for (int x1 = minX1p2; x1 <= maxX1m2; x1++) {
             distributeData(rdata, index, x1, minX2, maxX3);
             distributeData(rdata, index, x1, minX2p1, maxX3m1);
             distributeData(rdata, index, x1, minX2, maxX3m1);
             distributeData(rdata, index, x1, minX2p1, maxX3);
         }
-    else if (sendDir == D3Q27System::DIR_0PM)
+    else if (sendDir == DIR_0PM)
         for (int x1 = minX1p2; x1 <= maxX1m2; x1++) {
             distributeData(rdata, index, x1, maxX2, minX3);
             distributeData(rdata, index, x1, maxX2m1, minX3p1);
             distributeData(rdata, index, x1, maxX2, minX3p1);
             distributeData(rdata, index, x1, maxX2m1, minX3);
         }
-    else if (sendDir == D3Q27System::DIR_PPM) {
+    else if (sendDir == DIR_PPM) {
         distributeData(rdata, index, maxX1, maxX2, minX3);
         distributeData(rdata, index, maxX1m1, maxX2m1, minX3p1);
         distributeData(rdata, index, maxX1, maxX2m1, minX3p1);
@@ -543,7 +549,7 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::distributeData()
         distributeData(rdata, index, maxX1, maxX2, minX3p1);
         distributeData(rdata, index, maxX1, maxX2m1, minX3);
         distributeData(rdata, index, maxX1m1, maxX2, minX3);
-    } else if (sendDir == D3Q27System::DIR_MPM) {
+    } else if (sendDir == DIR_MPM) {
         distributeData(rdata, index, minX1, maxX2, minX3);
         distributeData(rdata, index, minX1p1, maxX2m1, minX3p1);
         distributeData(rdata, index, minX1, maxX2m1, minX3p1);
@@ -552,7 +558,7 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::distributeData()
         distributeData(rdata, index, minX1, maxX2, minX3p1);
         distributeData(rdata, index, minX1, maxX2m1, minX3);
         distributeData(rdata, index, minX1p1, maxX2, minX3);
-    } else if (sendDir == D3Q27System::DIR_PMM) {
+    } else if (sendDir == DIR_PMM) {
         distributeData(rdata, index, maxX1, minX2, minX3);
         distributeData(rdata, index, maxX1m1, minX2p1, minX3p1);
         distributeData(rdata, index, maxX1, minX2p1, minX3p1);
@@ -561,7 +567,7 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::distributeData()
         distributeData(rdata, index, maxX1, minX2, minX3p1);
         distributeData(rdata, index, maxX1, minX2p1, minX3);
         distributeData(rdata, index, maxX1m1, minX2, minX3);
-    } else if (sendDir == D3Q27System::DIR_MMM) {
+    } else if (sendDir == DIR_MMM) {
         distributeData(rdata, index, minX1, minX2, minX3);
         distributeData(rdata, index, minX1p1, minX2p1, minX3p1);
         distributeData(rdata, index, minX1, minX2p1, minX3p1);
@@ -570,7 +576,7 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::distributeData()
         distributeData(rdata, index, minX1, minX2, minX3p1);
         distributeData(rdata, index, minX1, minX2p1, minX3);
         distributeData(rdata, index, minX1p1, minX2, minX3);
-    } else if (sendDir == D3Q27System::DIR_PPP) {
+    } else if (sendDir == DIR_PPP) {
         distributeData(rdata, index, maxX1, maxX2, maxX3);
         distributeData(rdata, index, maxX1m1, maxX2m1, maxX3m1);
         distributeData(rdata, index, maxX1, maxX2m1, maxX3m1);
@@ -579,7 +585,7 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::distributeData()
         distributeData(rdata, index, maxX1, maxX2, maxX3m1);
         distributeData(rdata, index, maxX1, maxX2m1, maxX3);
         distributeData(rdata, index, maxX1m1, maxX2, maxX3);
-    } else if (sendDir == D3Q27System::DIR_MPP) {
+    } else if (sendDir == DIR_MPP) {
         distributeData(rdata, index, minX1, maxX2, maxX3);
         distributeData(rdata, index, minX1p1, maxX2m1, maxX3m1);
         distributeData(rdata, index, minX1, maxX2m1, maxX3m1);
@@ -588,7 +594,7 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::distributeData()
         distributeData(rdata, index, minX1, maxX2, maxX3m1);
         distributeData(rdata, index, minX1, maxX2m1, maxX3);
         distributeData(rdata, index, minX1p1, maxX2, maxX3);
-    } else if (sendDir == D3Q27System::DIR_PMP) {
+    } else if (sendDir == DIR_PMP) {
         distributeData(rdata, index, maxX1, minX2, maxX3);
         distributeData(rdata, index, maxX1m1, minX2p1, maxX3m1);
         distributeData(rdata, index, maxX1, minX2p1, maxX3m1);
@@ -597,7 +603,7 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::distributeData()
         distributeData(rdata, index, maxX1, minX2, maxX3m1);
         distributeData(rdata, index, maxX1, minX2p1, maxX3);
         distributeData(rdata, index, maxX1m1, minX2, maxX3);
-    } else if (sendDir == D3Q27System::DIR_MMP) {
+    } else if (sendDir == DIR_MMP) {
         distributeData(rdata, index, minX1, minX2, maxX3);
         distributeData(rdata, index, minX1p1, minX2p1, maxX3m1);
         distributeData(rdata, index, minX1, minX2p1, maxX3m1);

@@ -14,7 +14,7 @@ class InitDistributionsWithInterpolationGridVisitor : public Grid3DVisitor
 {
 public:
     InitDistributionsWithInterpolationGridVisitor(SPtr<Grid3D> oldGrid, SPtr<InterpolationProcessor> iProcessor,
-                                                  LBMReal nu);
+                                                  real nu);
     ~InitDistributionsWithInterpolationGridVisitor() override;
     void visit(SPtr<Grid3D> grid) override;
 
@@ -28,7 +28,7 @@ private:
 
     SPtr<Grid3D> newGrid;
     SPtr<Grid3D> oldGrid;
-    LBMReal nu;
+    real nu;
 
     SPtr<InterpolationProcessor> iProcessor;
 };

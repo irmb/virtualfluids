@@ -8,7 +8,7 @@ TimeDependentBCCoProcessor::TimeDependentBCCoProcessor(SPtr<Grid3D> grid, SPtr<U
 //////////////////////////////////////////////////////////////////////////
 TimeDependentBCCoProcessor::~TimeDependentBCCoProcessor() = default;
 //////////////////////////////////////////////////////////////////////////
-void TimeDependentBCCoProcessor::process(double step)
+void TimeDependentBCCoProcessor::process(real step)
 {
     if (scheduler->isDue(step)) {
         for (SPtr<Interactor3D> inter : interactors)

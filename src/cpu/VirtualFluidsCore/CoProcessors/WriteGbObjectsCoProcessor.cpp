@@ -14,7 +14,7 @@ WriteGbObjectsCoProcessor::WriteGbObjectsCoProcessor(SPtr<Grid3D> grid, SPtr<UbS
 //////////////////////////////////////////////////////////////////////////
 WriteGbObjectsCoProcessor::~WriteGbObjectsCoProcessor() = default;
 //////////////////////////////////////////////////////////////////////////
-void WriteGbObjectsCoProcessor::process(double step)
+void WriteGbObjectsCoProcessor::process(real step)
 {
     if (scheduler->isDue(step))
         collectData(step);
@@ -22,7 +22,7 @@ void WriteGbObjectsCoProcessor::process(double step)
 //////////////////////////////////////////////////////////////////////////
 void WriteGbObjectsCoProcessor::addGbObject(SPtr<GbObject3D> object) { objects.push_back(object); }
 //////////////////////////////////////////////////////////////////////////
-void WriteGbObjectsCoProcessor::collectData(double step)
+void WriteGbObjectsCoProcessor::collectData(real step)
 {
     std::vector<UbTupleFloat3> nodes;
     std::vector<UbTupleInt3> triangles;

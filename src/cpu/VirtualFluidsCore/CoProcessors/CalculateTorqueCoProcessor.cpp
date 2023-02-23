@@ -41,7 +41,7 @@ CalculateTorqueCoProcessor::~CalculateTorqueCoProcessor()
 
 }
 //////////////////////////////////////////////////////////////////////////
-void CalculateTorqueCoProcessor::process( double step )
+void CalculateTorqueCoProcessor::process( real step )
 {
    if(scheduler->isDue(step) )
       collectData(step);
@@ -49,7 +49,7 @@ void CalculateTorqueCoProcessor::process( double step )
    UBLOG(logDEBUG3, "D3Q27ForcesCoProcessor::update:" << step);
 }
 //////////////////////////////////////////////////////////////////////////
-void CalculateTorqueCoProcessor::collectData( double step )
+void CalculateTorqueCoProcessor::collectData( real step )
 {
    calculateForces();
 
@@ -84,20 +84,20 @@ void CalculateTorqueCoProcessor::calculateForces()
 
    for(SPtr<D3Q27Interactor> interactor : interactors)
    {
-      double x1Centre = interactor->getGbObject3D()->getX1Centroid();
-      double x2Centre = interactor->getGbObject3D()->getX2Centroid();
-      double x3Centre = interactor->getGbObject3D()->getX3Centroid();
+      real x1Centre = interactor->getGbObject3D()->getX1Centroid();
+      real x2Centre = interactor->getGbObject3D()->getX2Centroid();
+      real x3Centre = interactor->getGbObject3D()->getX3Centroid();
 
       for(BcNodeIndicesMap::value_type t : interactor->getBcNodeIndicesMap())
       {
-         double torqueX1 = 0.0;
-         double torqueX2 = 0.0;
-         double torqueX3 = 0.0;
+         real torqueX1 = 0.0;
+         real torqueX2 = 0.0;
+         real torqueX3 = 0.0;
 
          SPtr<Block3D> block = t.first;
          std::set< std::vector<int> >& transNodeIndicesSet = t.second;
 
-         double deltaX = grid->getDeltaX(block);
+         real deltaX = grid->getDeltaX(block);
 
          SPtr<ILBMKernel> kernel = block->getKernel();
 
@@ -126,14 +126,14 @@ void CalculateTorqueCoProcessor::calculateForces()
             {
                SPtr<BoundaryConditions> bc = bcArray->getBC(x1,x2,x3);
                UbTupleDouble3 forceVec     = getForces(x1,x2,x3,distributions,bc);
-               double Fx                   = val<1>(forceVec);
-               double Fy                   = val<2>(forceVec);
-               double Fz                   = val<3>(forceVec);
+               real Fx                   = val<1>(forceVec);
+               real Fy                   = val<2>(forceVec);
+               real Fz                   = val<3>(forceVec);
 
                Vector3D worldCoordinates = grid->getNodeCoordinates(block, x1, x2, x3);
-               double rx                 = (worldCoordinates[0] - x1Centre) / deltaX;
-               double ry                 = (worldCoordinates[1] - x2Centre) / deltaX;
-               double rz                 = (worldCoordinates[2] - x3Centre) / deltaX;
+               real rx                 = (worldCoordinates[0] - x1Centre) / deltaX;
+               real ry                 = (worldCoordinates[1] - x2Centre) / deltaX;
+               real rz                 = (worldCoordinates[2] - x3Centre) / deltaX;
 
                torqueX1 += ry * Fz - rz * Fy;
                torqueX2 += rz * Fx - rx * Fz;
@@ -148,8 +148,8 @@ void CalculateTorqueCoProcessor::calculateForces()
          torqueX3global += torqueX3;
       }
    }
-   std::vector<double> values;
-   std::vector<double> rvalues;
+   std::vector<real> values;
+   std::vector<real> rvalues;
    values.push_back(torqueX1global);
    values.push_back(torqueX2global);
    values.push_back(torqueX3global);
@@ -174,16 +174,16 @@ UbTupleDouble3 CalculateTorqueCoProcessor::getForces(int x1, int x2, int x3,  SP
 {
    UbTupleDouble3 force(0.0,0.0,0.0);
 
-   LBMReal fs[D3Q27System::ENDF + 1];
+   real fs[D3Q27System::ENDF + 1];
    distributions->getDistributionInv(fs, x1, x2, x3);
    
    if(bc)
    {
       //references to tuple "force"
-      double& forceX1 = val<1>(force);
-      double& forceX2 = val<2>(force);
-      double& forceX3 = val<3>(force);
-      double f,  fnbr;
+      real& forceX1 = val<1>(force);
+      real& forceX2 = val<2>(force);
+      real& forceX3 = val<3>(force);
+      real f,  fnbr;
 
       for(int fdir=D3Q27System::FSTARTDIR; fdir<=D3Q27System::FENDDIR; fdir++)
       {

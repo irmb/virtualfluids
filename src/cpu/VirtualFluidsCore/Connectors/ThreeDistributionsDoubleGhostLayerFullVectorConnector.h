@@ -68,21 +68,21 @@ protected:
    inline void distributeData(vector_type &rdata, int &index, int x1, int x2, int x3) override;
 
 private:
-   CbArray4D <LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions;
-   CbArray4D <LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions;
-   CbArray3D <LBMReal, IndexerX3X2X1>::CbArray3DPtr   zeroDistributions;
+   CbArray4D <real, IndexerX4X3X2X1>::CbArray4DPtr localDistributions;
+   CbArray4D <real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions;
+   CbArray3D <real, IndexerX3X2X1>::CbArray3DPtr   zeroDistributions;
 
    SPtr<EsoTwist3D>  fDis;
 
-   CbArray4D <LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localHdistributions;
-   CbArray4D <LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalHdistributions;
-   CbArray3D <LBMReal, IndexerX3X2X1>::CbArray3DPtr   zeroHdistributions;
+   CbArray4D <real, IndexerX4X3X2X1>::CbArray4DPtr localHdistributions;
+   CbArray4D <real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalHdistributions;
+   CbArray3D <real, IndexerX3X2X1>::CbArray3DPtr   zeroHdistributions;
 
    SPtr<EsoTwist3D>  hDis;
 
-   CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localH2distributions;
-   CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalH2distributions;
-   CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr zeroH2distributions;
+   CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localH2distributions;
+   CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalH2distributions;
+   CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroH2distributions;
 
    SPtr<EsoTwist3D> h2Dis;
 

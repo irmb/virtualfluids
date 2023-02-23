@@ -51,7 +51,7 @@
 class InitThixotropyBlockVisitor : public Block3DVisitor
 {
 public:
-	typedef std::numeric_limits<LBMReal> D3Q27RealLim;
+	typedef std::numeric_limits<real> D3Q27RealLim;
 
 public:
 	InitThixotropyBlockVisitor();
@@ -98,7 +98,7 @@ public:
 	//void setf1(LBMReal f1);
 	//void setf2(LBMReal f2);
 	//void setf3(LBMReal f3);
-	void setLambda(LBMReal lambda);
+	void setLambda(real lambda);
 	//void setD(LBMReal D);
 
 	//void initialize(double* f, double x1, double x2, double x3, double vx1, double vx2, double vx3, double rho, UbTupleDouble3 coords, double dx, double o, bool NSE);
@@ -107,7 +107,7 @@ public:
 
 protected:
 	void checkFunction(mu::Parser fct);
-	typedef void(*CalcFeqsFct)(LBMReal* const& /*feq[27]*/, const LBMReal& /*(d)rho*/, const LBMReal& /*vx1*/, const LBMReal& /*vx2*/, const LBMReal& /*vx3*/);
+	typedef void(*CalcFeqsFct)(real* const& /*feq[27]*/, const real& /*(d)rho*/, const real& /*vx1*/, const real& /*vx2*/, const real& /*vx3*/);
 
 private:
 	mu::Parser muVx1;

@@ -48,10 +48,10 @@ public:
 	WriteThixotropyQuantitiesCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, WbWriter* const writer, SPtr<LBMUnitConverter> conv, std::shared_ptr<vf::mpi::Communicator> comm);
 	~WriteThixotropyQuantitiesCoProcessor() = default;
 
-   void process(double step) override;
+   void process(real step) override;
 
 protected:
-   void collectData(double step);
+   void collectData(real step);
    void addDataMQ(SPtr<Block3D> block);
    void clearData();
 
@@ -60,7 +60,7 @@ private:
    std::vector<UbTupleFloat3> nodes;
    std::vector<UbTupleUInt8> cells;
    std::vector<std::string> datanames;
-   std::vector<std::vector<double> > data; 
+   std::vector<std::vector<real> > data; 
    std::string path;
    WbWriter* writer;
    SPtr<LBMUnitConverter> conv;

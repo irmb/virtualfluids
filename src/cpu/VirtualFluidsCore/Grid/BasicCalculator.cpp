@@ -67,7 +67,7 @@ void BasicCalculator::calculate()
 
 #ifdef TIMING
         UbTimer timer;
-        double time[6];
+        real time[6];
 #endif
 
         for (calcStep = startTimeStep; calcStep <= numberOfTimeSteps; calcStep++) {
@@ -147,7 +147,7 @@ void BasicCalculator::calculate()
             if (additionalGhostLayerUpdateScheduler->isDue(calcStep)) {
                 exchangeBlockData(straightStartLevel, maxInitLevel);
             }
-            coProcess((double)(calcStep));
+            coProcess((real)(calcStep));
             // now ghost nodes have actual values
         }
         UBLOG(logDEBUG1, "OMPCalculator::calculate() - stoped");

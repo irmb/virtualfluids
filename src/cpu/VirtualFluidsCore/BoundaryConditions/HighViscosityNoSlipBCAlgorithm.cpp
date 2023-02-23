@@ -55,10 +55,10 @@ void HighViscosityNoSlipBCAlgorithm::addDistributions(SPtr<DistributionArray3D> 
 //////////////////////////////////////////////////////////////////////////
 void HighViscosityNoSlipBCAlgorithm::applyBC()
 {
-    LBMReal f[D3Q27System::ENDF + 1];
-    LBMReal feq[D3Q27System::ENDF + 1];
+    real f[D3Q27System::ENDF + 1];
+    real feq[D3Q27System::ENDF + 1];
     distributions->getDistribution(f, x1, x2, x3);
-    LBMReal rho, vx1, vx2, vx3;
+    real rho, vx1, vx2, vx3;
     calcMacrosFct(f, rho, vx1, vx2, vx3);
     calcFeqFct(feq, rho, vx1, vx2, vx3);
 
@@ -66,8 +66,8 @@ void HighViscosityNoSlipBCAlgorithm::applyBC()
         if (bcPtr->hasNoSlipBoundaryFlag(fDir)) {
             // quadratic bounce back
             const int invDir = D3Q27System::INVDIR[fDir];
-            LBMReal q        = bcPtr->getQ(invDir);
-            LBMReal fReturn =
+            real q        = bcPtr->getQ(invDir);
+            real fReturn =
                 (f[invDir] + q * f[fDir] + q * collFactor * (feq[invDir] - f[invDir] + feq[fDir] - f[fDir])) /
                 (1.0 + q);
             distributions->setDistributionInvForDirection(fReturn, x1 + D3Q27System::DX1[invDir],

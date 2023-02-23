@@ -120,7 +120,7 @@ void Simulation::run()
 
     auto metisVisitor = std::make_shared<MetisPartitioningGridVisitor>(communicator,
                                                                        MetisPartitioningGridVisitor::LevelBased,
-                                                                       D3Q27System::DIR_00M, MetisPartitioner::RECURSIVE);
+                                                                       vf::lbm::dir::DIR_00M, MetisPartitioner::RECURSIVE);
 
     InteractorsHelper intHelper(grid, metisVisitor);
     for (auto const &interactor : interactors)
