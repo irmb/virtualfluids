@@ -235,7 +235,7 @@ gcc_9_python_hpc_test:
     - hpc-rocket launch --watch Python/SlurmTests/poiseuille/rocket.yml
 
 ###############################################################################
-multigpu_hpc_test:
+regression_test_4gpu:
   image: python:latest
   stage: test
 
@@ -252,12 +252,13 @@ multigpu_hpc_test:
     - pip install "fieldcompare[all]"
 
   script:
-    - hpc-rocket launch --watch regression-tests/multigpu_test/rocket.yml
+    - hpc-rocket launch --watch regression-tests/multigpu_test/rocket4GPU.yml
     - git clone --depth 1 --filter=blob:none --sparse https://github.com/irmb/test_data
     - cd test_data
-    - git sparse-checkout set regression_tests/gpu/DrivenCavity_4GPU_2Levels
+    - git sparse-checkout set regression_tests/gpu/DrivenCavity_4GPU_2Levels regression_tests/gpu/SphereScaling_4GPU_2Levels
     - cd ..
-    - fieldcompare dir output/results test_data/regression_tests/gpu/DrivenCavity_4GPU_2Levels --include-files "*.vtu"
+    - fieldcompare dir output/4GPU test_data/regression_tests/gpu/DrivenCavity_4GPU_2Levels --include-files "DrivenCavityMultiGPU*.vtu"
+    - fieldcompare dir output/4GPU test_data/regression_tests/gpu/SphereScaling_4GPU_2Levels --include-files "SphereScaling*.vtu"
 
 ###############################################################################
 ##                            Benchmark                                      ##

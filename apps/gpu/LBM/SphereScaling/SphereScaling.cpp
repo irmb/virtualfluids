@@ -65,28 +65,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-//          U s e r    s e t t i n g s
-//
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// Phoenix
-// const std::string outPath("/work/y0078217/Results/SphereScalingResults/");
-// const std::string gridPathParent = "/work/y0078217/Grids/GridSphereScaling/";
-// const std::string simulationName("SphereScaling");
-// const std::string stlPath("/home/y0078217/STL/Sphere/");
-
-// Relative Paths
-const std::string outPath("./output/SphereScalingResults/");
-const std::string gridPathParent = "./output/grids/SphereScalingResults/";
-const std::string simulationName("SphereScaling");
-const std::string stlPath("./stl/SphereScaling/");
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void multipleLevel(std::filesystem::path& configPath)
 {
@@ -119,10 +97,13 @@ void multipleLevel(std::filesystem::path& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     bool useGridGenerator   = true;
-    bool useLevels          = true;
+    bool useLevels = true;
     std::string scalingType = "strong"; // "strong" // "weak"
-    // para->setUseStreams(true);                        // set in config
-    // para->useReducedCommunicationAfterFtoC = true;    // set in config
+
+    const std::string outPath("output/" + std::to_string(para->getNumprocs()) + "GPU/");
+    const std::string simulationName("SphereScaling");
+    const std::string gridPath = "./output/grids/";
+    const std::string stlPath("./stl/SphereScaling/");
 
     if (para->getNumprocs() == 1) {
         para->useReducedCommunicationAfterFtoC = false;
@@ -130,10 +111,9 @@ void multipleLevel(std::filesystem::path& configPath)
     if (scalingType != "weak" && scalingType != "strong")
         std::cerr << "unknown scaling type" << std::endl;
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    std::string gridPath(gridPathParent); // only for GridGenerator, for GridReader the gridPath needs to be set in the config file
 
     real dxGrid      = (real)1.0;
-    real vxLB        = (real)0.0005; // LB units
+    real vxLB        = (real)0.005;  // LB units
     real viscosityLB = 0.001;        //(vxLB * dxGrid) / Re;
 
     para->setVelocityLB(vxLB);
@@ -142,13 +122,8 @@ void multipleLevel(std::filesystem::path& configPath)
     para->setViscosityRatio((real)0.058823529);
     para->setDensityRatio((real)998.0);
 
-
-    // para->setTimestepOut(10);
-    // para->setTimestepEnd(10);
-
     para->setCalcDragLift(false);
     para->setUseWale(false);
-
 
     para->setOutputPrefix(simulationName);
     if (para->getOutputPath() == "output/") {para->setOutputPath(outPath);}
@@ -159,12 +134,8 @@ void multipleLevel(std::filesystem::path& configPath)
     else
         para->setMaxLevel(1);
 
-    // para->setMainKernel("CumulantK17CompChim");
-    para->setMainKernel("CumulantK17CompChimStream");
-    //para->setMainKernel("CumulantK17CompChimRedesigned");
-    scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleRhoSq);
-
-
+    para->setMainKernel("CumulantK17");
+    scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

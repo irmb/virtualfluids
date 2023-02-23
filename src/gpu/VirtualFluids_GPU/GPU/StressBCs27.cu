@@ -42,6 +42,7 @@
 
 #include "LBM/LB.h"
 #include "lbm/constants/D3Q27.h"
+#include "Kernel/Utilities/DistributionHelper.cuh"
 #include <lbm/constants/NumericConstants.h>
 #include "LBM/GPUHelperFunctions/KernelUtilities.h"
 
@@ -107,7 +108,7 @@ __host__ __device__ __forceinline__ void iMEM(
       real _vz_w = vz_w_inst-vDotN_w*wallNormalZ;
 
       //Compute wall shear stress tau_w via MOST
-      real z = (real)samplingOffset[k] + 0.5; //assuming q=0.5, could be replaced by wall distance via wall normal
+      real z = (real)samplingOffset[k] + q; //assuming q=0.5, could be replaced by wall distance via wall normal
       real kappa = 0.4;
       real u_star = vMag_el*kappa/(log(z/z0[k]));
       if(hasWallModelMonitor) u_star_monitor[k] = u_star;
@@ -136,6 +137,7 @@ __host__ __device__ __forceinline__ void iMEM(
       wallVelocityY = clipVy > -clipVy? min(clipVy, max(-clipVy, -3.0*F_y*forceFactor)): max(clipVy, min(-clipVy, -3.0*F_y*forceFactor));
       wallVelocityZ = clipVz > -clipVz? min(clipVz, max(-clipVz, -3.0*F_z*forceFactor)): max(clipVz, min(-clipVz, -3.0*F_z*forceFactor));
 }
+
 
 //////////////////////////////////////////////////////////////////////////////
 __global__ void QStressDeviceComp27(
@@ -172,67 +174,8 @@ __global__ void QStressDeviceComp27(
     bool isEvenTimestep)
 {
 
-   Distributions27 D;
-   if (isEvenTimestep==true)//get right array of post coll f's
-   {
-      D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-      D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
-      D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
-      D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
-      D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
-      D.f[DIR_00M] = &DD[DIR_00M * numberOfLBnodes];
-      D.f[DIR_PP0] = &DD[DIR_PP0 * numberOfLBnodes];
-      D.f[DIR_MM0] = &DD[DIR_MM0 * numberOfLBnodes];
-      D.f[DIR_PM0] = &DD[DIR_PM0 * numberOfLBnodes];
-      D.f[DIR_MP0] = &DD[DIR_MP0 * numberOfLBnodes];
-      D.f[DIR_P0P] = &DD[DIR_P0P * numberOfLBnodes];
-      D.f[DIR_M0M] = &DD[DIR_M0M * numberOfLBnodes];
-      D.f[DIR_P0M] = &DD[DIR_P0M * numberOfLBnodes];
-      D.f[DIR_M0P] = &DD[DIR_M0P * numberOfLBnodes];
-      D.f[DIR_0PP] = &DD[DIR_0PP * numberOfLBnodes];
-      D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
-      D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
-      D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-      D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
-      D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
-      D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
-      D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
-      D.f[DIR_MPP] = &DD[DIR_MPP * numberOfLBnodes];
-      D.f[DIR_PPM] = &DD[DIR_PPM * numberOfLBnodes];
-      D.f[DIR_MMM] = &DD[DIR_MMM * numberOfLBnodes];
-      D.f[DIR_PMM] = &DD[DIR_PMM * numberOfLBnodes];
-      D.f[DIR_MPM] = &DD[DIR_MPM * numberOfLBnodes];
-   }
-   else
-   {
-      D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-      D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
-      D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
-      D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
-      D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
-      D.f[DIR_00P] = &DD[DIR_00M * numberOfLBnodes];
-      D.f[DIR_MM0] = &DD[DIR_PP0 * numberOfLBnodes];
-      D.f[DIR_PP0] = &DD[DIR_MM0 * numberOfLBnodes];
-      D.f[DIR_MP0] = &DD[DIR_PM0 * numberOfLBnodes];
-      D.f[DIR_PM0] = &DD[DIR_MP0 * numberOfLBnodes];
-      D.f[DIR_M0M] = &DD[DIR_P0P * numberOfLBnodes];
-      D.f[DIR_P0P] = &DD[DIR_M0M * numberOfLBnodes];
-      D.f[DIR_M0P] = &DD[DIR_P0M * numberOfLBnodes];
-      D.f[DIR_P0M] = &DD[DIR_M0P * numberOfLBnodes];
-      D.f[DIR_0MM] = &DD[DIR_0PP * numberOfLBnodes];
-      D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
-      D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
-      D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-      D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
-      D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
-      D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
-      D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
-      D.f[DIR_MPP] = &DD[DIR_PMM * numberOfLBnodes];
-      D.f[DIR_PPM] = &DD[DIR_MMP * numberOfLBnodes];
-      D.f[DIR_MMM] = &DD[DIR_PPP * numberOfLBnodes];
-      D.f[DIR_PMM] = &DD[DIR_MPP * numberOfLBnodes];
-      D.f[DIR_MPM] = &DD[DIR_PMP * numberOfLBnodes];
-   }
+   Distributions27 D = vf::gpu::getDistributionReferences27(DD, numberOfLBnodes, isEvenTimestep);
+
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index
    const unsigned  y = blockIdx.x;   // Globaler y-Index
@@ -362,66 +305,8 @@ __global__ void QStressDeviceComp27(
 
       real om_turb = om1 / (c1o1 + c3o1*om1*max(c0o1, turbViscosity[k_Q[k]]));
       //////////////////////////////////////////////////////////////////////////
-      if (isEvenTimestep==false)      //get adress where incoming f's should be written to
-      {
-         D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
-         D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
-         D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
-         D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
-         D.f[DIR_00M] = &DD[DIR_00M * numberOfLBnodes];
-         D.f[DIR_PP0] = &DD[DIR_PP0 * numberOfLBnodes];
-         D.f[DIR_MM0] = &DD[DIR_MM0 * numberOfLBnodes];
-         D.f[DIR_PM0] = &DD[DIR_PM0 * numberOfLBnodes];
-         D.f[DIR_MP0] = &DD[DIR_MP0 * numberOfLBnodes];
-         D.f[DIR_P0P] = &DD[DIR_P0P * numberOfLBnodes];
-         D.f[DIR_M0M] = &DD[DIR_M0M * numberOfLBnodes];
-         D.f[DIR_P0M] = &DD[DIR_P0M * numberOfLBnodes];
-         D.f[DIR_M0P] = &DD[DIR_M0P * numberOfLBnodes];
-         D.f[DIR_0PP] = &DD[DIR_0PP * numberOfLBnodes];
-         D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
-         D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
-         D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
-         D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
-         D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
-         D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
-         D.f[DIR_MPP] = &DD[DIR_MPP * numberOfLBnodes];
-         D.f[DIR_PPM] = &DD[DIR_PPM * numberOfLBnodes];
-         D.f[DIR_MMM] = &DD[DIR_MMM * numberOfLBnodes];
-         D.f[DIR_PMM] = &DD[DIR_PMM * numberOfLBnodes];
-         D.f[DIR_MPM] = &DD[DIR_MPM * numberOfLBnodes];
-      }
-      else
-      {
-         D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
-         D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
-         D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
-         D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
-         D.f[DIR_00P] = &DD[DIR_00M * numberOfLBnodes];
-         D.f[DIR_MM0] = &DD[DIR_PP0 * numberOfLBnodes];
-         D.f[DIR_PP0] = &DD[DIR_MM0 * numberOfLBnodes];
-         D.f[DIR_MP0] = &DD[DIR_PM0 * numberOfLBnodes];
-         D.f[DIR_PM0] = &DD[DIR_MP0 * numberOfLBnodes];
-         D.f[DIR_M0M] = &DD[DIR_P0P * numberOfLBnodes];
-         D.f[DIR_P0P] = &DD[DIR_M0M * numberOfLBnodes];
-         D.f[DIR_M0P] = &DD[DIR_P0M * numberOfLBnodes];
-         D.f[DIR_P0M] = &DD[DIR_M0P * numberOfLBnodes];
-         D.f[DIR_0MM] = &DD[DIR_0PP * numberOfLBnodes];
-         D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
-         D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
-         D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
-         D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
-         D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
-         D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
-         D.f[DIR_MPP] = &DD[DIR_PMM * numberOfLBnodes];
-         D.f[DIR_PPM] = &DD[DIR_MMP * numberOfLBnodes];
-         D.f[DIR_MMM] = &DD[DIR_PPP * numberOfLBnodes];
-         D.f[DIR_PMM] = &DD[DIR_MPP * numberOfLBnodes];
-         D.f[DIR_MPM] = &DD[DIR_PMP * numberOfLBnodes];
-      }
+
+      D = vf::gpu::getDistributionReferences27(DD, numberOfLBnodes, !isEvenTimestep);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //Compute incoming f's with zero wall velocity
       ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -437,7 +322,8 @@ __global__ void QStressDeviceComp27(
       {
          velocityLB = vx1;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
-         f_W_in = getInterpolatedDistributionForNoSlipBC(q, f_E, f_W, feq, om_turb);
+         // f_W_in = getInterpolatedDistributionForNoSlipBC(q, f_E, f_W, feq, om_turb);
+         f_W_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_E, f_W, feq, om_turb, drho, c2o27);
          wallMomentumX += f_E+f_W_in;
       }
 
@@ -446,7 +332,8 @@ __global__ void QStressDeviceComp27(
       {
          velocityLB = -vx1;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
-         f_E_in = getInterpolatedDistributionForNoSlipBC(q, f_W, f_E, feq, om_turb);
+         // f_E_in = getInterpolatedDistributionForNoSlipBC(q, f_W, f_E, feq, om_turb);
+         f_E_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_W, f_E, feq, om_turb, drho, c2o27);
          wallMomentumX -= f_W+f_E_in;
       }
 
@@ -455,7 +342,8 @@ __global__ void QStressDeviceComp27(
       {
          velocityLB = vx2;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
-         f_S_in = getInterpolatedDistributionForNoSlipBC(q, f_N, f_S, feq, om_turb);
+         // f_S_in = getInterpolatedDistributionForNoSlipBC(q, f_N, f_S, feq, om_turb);
+         f_S_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_N, f_S, feq, om_turb, drho, c2o27);
          wallMomentumY += f_N+f_S_in;
       }
 
@@ -464,7 +352,8 @@ __global__ void QStressDeviceComp27(
       {
          velocityLB = -vx2;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
-         f_N_in = getInterpolatedDistributionForNoSlipBC(q, f_S, f_N, feq, om_turb);
+         // f_N_in = getInterpolatedDistributionForNoSlipBC(q, f_S, f_N, feq, om_turb);
+         f_N_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_S, f_N, feq, om_turb, drho, c2o27);
          wallMomentumY -= f_S+f_N_in;
       }
 
@@ -473,7 +362,8 @@ __global__ void QStressDeviceComp27(
       {
          velocityLB = vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
-         f_B_in = getInterpolatedDistributionForNoSlipBC(q, f_T, f_B, feq, om_turb);
+         // f_B_in = getInterpolatedDistributionForNoSlipBC(q, f_T, f_B, feq, om_turb);
+         f_B_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_T, f_B, feq, om_turb, drho, c2o27);
          wallMomentumZ += f_T+f_B_in;
       }
 
@@ -482,7 +372,8 @@ __global__ void QStressDeviceComp27(
       {
          velocityLB = -vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
-         f_T_in = getInterpolatedDistributionForNoSlipBC(q, f_B, f_T, feq, om_turb);
+         // f_T_in = getInterpolatedDistributionForNoSlipBC(q, f_B, f_T, feq, om_turb);
+         f_T_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_B, f_T, feq, om_turb, drho, c2o27);
          wallMomentumZ -= f_B+f_T_in;
       }
 
@@ -491,7 +382,8 @@ __global__ void QStressDeviceComp27(
       {
          velocityLB = vx1 + vx2;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
-         f_SW_in = getInterpolatedDistributionForNoSlipBC(q, f_NE, f_SW, feq, om_turb);
+         // f_SW_in = getInterpolatedDistributionForNoSlipBC(q, f_NE, f_SW, feq, om_turb);
+         f_SW_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_NE, f_SW, feq, om_turb, drho, c2o27);
          wallMomentumX += f_NE+f_SW_in;
          wallMomentumY += f_NE+f_SW_in;
       }
@@ -501,7 +393,8 @@ __global__ void QStressDeviceComp27(
       {
          velocityLB = -vx1 - vx2;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
-         f_NE_in = getInterpolatedDistributionForNoSlipBC(q, f_SW, f_NE, feq, om_turb);
+         // f_NE_in = getInterpolatedDistributionForNoSlipBC(q, f_SW, f_NE, feq, om_turb);
+         f_NE_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_SW, f_NE, feq, om_turb, drho, c1o54);
          wallMomentumX -= f_SW+f_NE_in;
          wallMomentumY -= f_SW+f_NE_in;
       }
@@ -511,7 +404,8 @@ __global__ void QStressDeviceComp27(
       {
          velocityLB = vx1 - vx2;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
-         f_NW_in = getInterpolatedDistributionForNoSlipBC(q, f_SE, f_NW, feq, om_turb);
+         // f_NW_in = getInterpolatedDistributionForNoSlipBC(q, f_SE, f_NW, feq, om_turb);
+         f_NW_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_SE, f_NW, feq, om_turb, drho, c1o54);
          wallMomentumX += f_SE+f_NW_in;
          wallMomentumY -= f_SE+f_NW_in;
       }
@@ -521,7 +415,8 @@ __global__ void QStressDeviceComp27(
       {
          velocityLB = -vx1 + vx2;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
-         f_SE_in = getInterpolatedDistributionForNoSlipBC(q, f_NW, f_SE, feq, om_turb);
+         // f_SE_in = getInterpolatedDistributionForNoSlipBC(q, f_NW, f_SE, feq, om_turb);
+         f_SE_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_NW, f_SE, feq, om_turb, drho, c1o54);
          wallMomentumX -= f_NW+f_SE_in;
          wallMomentumY += f_NW+f_SE_in;
       }
@@ -531,7 +426,8 @@ __global__ void QStressDeviceComp27(
       {
          velocityLB = vx1 + vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
-         f_BW_in = getInterpolatedDistributionForNoSlipBC(q, f_TE, f_BW, feq, om_turb);
+         // f_BW_in = getInterpolatedDistributionForNoSlipBC(q, f_TE, f_BW, feq, om_turb);
+         f_BW_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_TE, f_BW, feq, om_turb, drho, c1o54);
          wallMomentumX += f_TE+f_BW_in;
          wallMomentumZ += f_TE+f_BW_in;
       }
@@ -541,7 +437,8 @@ __global__ void QStressDeviceComp27(
       {
          velocityLB = -vx1 - vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
-         f_TE_in = getInterpolatedDistributionForNoSlipBC(q, f_BW, f_TE, feq, om_turb);
+         // f_TE_in = getInterpolatedDistributionForNoSlipBC(q, f_BW, f_TE, feq, om_turb);
+         f_TE_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_BW, f_TE, feq, om_turb, drho, c1o54);
          wallMomentumX -= f_BW+f_TE_in;
          wallMomentumZ -= f_BW+f_TE_in;
       }
@@ -551,7 +448,8 @@ __global__ void QStressDeviceComp27(
       {
          velocityLB = vx1 - vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
-         f_TW_in = getInterpolatedDistributionForNoSlipBC(q, f_BE, f_TW, feq, om_turb);
+         // f_TW_in = getInterpolatedDistributionForNoSlipBC(q, f_BE, f_TW, feq, om_turb);
+         f_TW_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_BE, f_TW, feq, om_turb, drho, c1o54);
          wallMomentumX += f_BE+f_TW_in;
          wallMomentumZ -= f_BE+f_TW_in;
       }
@@ -561,7 +459,8 @@ __global__ void QStressDeviceComp27(
       {
          velocityLB = -vx1 + vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
-         f_BE_in = getInterpolatedDistributionForNoSlipBC(q, f_TW, f_BE, feq, om_turb);
+         // f_BE_in = getInterpolatedDistributionForNoSlipBC(q, f_TW, f_BE, feq, om_turb);
+         f_BE_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_TW, f_BE, feq, om_turb, drho, c1o54);
          wallMomentumX -= f_TW+f_BE_in;
          wallMomentumZ += f_TW+f_BE_in;
       }
@@ -571,7 +470,8 @@ __global__ void QStressDeviceComp27(
       {
          velocityLB = vx2 + vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
-         f_BS_in = getInterpolatedDistributionForNoSlipBC(q, f_TN, f_BS, feq, om_turb);
+         // f_BS_in = getInterpolatedDistributionForNoSlipBC(q, f_TN, f_BS, feq, om_turb);
+         f_BS_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_TN, f_BS, feq, om_turb, drho, c1o54);
          wallMomentumY += f_TN+f_BS_in;
          wallMomentumZ += f_TN+f_BS_in;
       }
@@ -581,7 +481,8 @@ __global__ void QStressDeviceComp27(
       {
          velocityLB = -vx2 - vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
-         f_TN_in = getInterpolatedDistributionForNoSlipBC(q, f_BS, f_TN, feq, om_turb);
+         // f_TN_in = getInterpolatedDistributionForNoSlipBC(q, f_BS, f_TN, feq, om_turb);
+         f_TN_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_BS, f_TN, feq, om_turb, drho, c1o54);
          wallMomentumY -= f_BS+f_TN_in;
          wallMomentumZ -= f_BS+f_TN_in;
       }
@@ -591,7 +492,8 @@ __global__ void QStressDeviceComp27(
       {
          velocityLB = vx2 - vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
-         f_TS_in = getInterpolatedDistributionForNoSlipBC(q, f_BN, f_TS, feq, om_turb);
+         // f_TS_in = getInterpolatedDistributionForNoSlipBC(q, f_BN, f_TS, feq, om_turb);
+         f_TS_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_BN, f_TS, feq, om_turb, drho, c1o54);
          wallMomentumY += f_BN+f_TS_in;
          wallMomentumZ -= f_BN+f_TS_in;
       }
@@ -601,7 +503,8 @@ __global__ void QStressDeviceComp27(
       {
          velocityLB = -vx2 + vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
-         f_BN_in = getInterpolatedDistributionForNoSlipBC(q, f_TS, f_BN, feq, om_turb);
+         // f_BN_in = getInterpolatedDistributionForNoSlipBC(q, f_TS, f_BN, feq, om_turb);
+         f_BN_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_TS, f_BN, feq, om_turb, drho, c1o54);
          wallMomentumY -= f_TS+f_BN_in;
          wallMomentumZ += f_TS+f_BN_in;
       }
@@ -611,7 +514,8 @@ __global__ void QStressDeviceComp27(
       {
          velocityLB = vx1 + vx2 + vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
-         f_BSW_in = getInterpolatedDistributionForNoSlipBC(q, f_TNE, f_BSW, feq, om_turb);
+         // f_BSW_in = getInterpolatedDistributionForNoSlipBC(q, f_TNE, f_BSW, feq, om_turb);
+         f_BSW_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_TNE, f_BSW, feq, om_turb, drho, c1o216);
          wallMomentumX += f_TNE+f_BSW_in;
          wallMomentumY += f_TNE+f_BSW_in;
          wallMomentumZ += f_TNE+f_BSW_in;
@@ -622,7 +526,8 @@ __global__ void QStressDeviceComp27(
       {
          velocityLB = -vx1 - vx2 - vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
-         f_TNE_in = getInterpolatedDistributionForNoSlipBC(q, f_BSW, f_TNE, feq, om_turb);
+         // f_TNE_in = getInterpolatedDistributionForNoSlipBC(q, f_BSW, f_TNE, feq, om_turb);
+         f_TNE_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_BSW, f_TNE, feq, om_turb, drho, c1o216);
          wallMomentumX -= f_BSW+f_TNE_in;
          wallMomentumY -= f_BSW+f_TNE_in;
          wallMomentumZ -= f_BSW+f_TNE_in;
@@ -633,7 +538,8 @@ __global__ void QStressDeviceComp27(
       {
          velocityLB = vx1 + vx2 - vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
-         f_TSW_in = getInterpolatedDistributionForNoSlipBC(q, f_BNE, f_TSW, feq, om_turb);
+         // f_TSW_in = getInterpolatedDistributionForNoSlipBC(q, f_BNE, f_TSW, feq, om_turb);
+         f_TSW_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_BNE, f_TSW, feq, om_turb, drho, c1o216);
          wallMomentumX += f_BNE+f_TSW_in;
          wallMomentumY += f_BNE+f_TSW_in;
          wallMomentumZ -= f_BNE+f_TSW_in;
@@ -644,7 +550,8 @@ __global__ void QStressDeviceComp27(
       {
          velocityLB = -vx1 - vx2 + vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
-         f_BNE_in = getInterpolatedDistributionForNoSlipBC(q, f_TSW, f_BNE, feq, om_turb);
+         // f_BNE_in = getInterpolatedDistributionForNoSlipBC(q, f_TSW, f_BNE, feq, om_turb);
+         f_BNE_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_TSW, f_BNE, feq, om_turb, drho, c1o216);
          wallMomentumX -= f_TSW+f_BNE_in;
          wallMomentumY -= f_TSW+f_BNE_in;
          wallMomentumZ += f_TSW+f_BNE_in;
@@ -655,7 +562,8 @@ __global__ void QStressDeviceComp27(
       {
          velocityLB = vx1 - vx2 + vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
-         f_BNW_in = getInterpolatedDistributionForNoSlipBC(q, f_TSE, f_BNW, feq, om_turb);
+         // f_BNW_in = getInterpolatedDistributionForNoSlipBC(q, f_TSE, f_BNW, feq, om_turb);
+         f_BNW_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_TSE, f_BNW, feq, om_turb, drho, c1o216);
          wallMomentumX += f_TSE+f_BNW_in;
          wallMomentumY -= f_TSE+f_BNW_in;
          wallMomentumZ += f_TSE+f_BNW_in;
@@ -666,7 +574,8 @@ __global__ void QStressDeviceComp27(
       {
          velocityLB = -vx1 + vx2 - vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
-         f_TSE_in = getInterpolatedDistributionForNoSlipBC(q, f_BNW, f_TSE, feq, om_turb);
+         // f_TSE_in = getInterpolatedDistributionForNoSlipBC(q, f_BNW, f_TSE, feq, om_turb);
+         f_TSE_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_BNW, f_TSE, feq, om_turb, drho, c1o216);
          wallMomentumX -= f_BNW+f_TSE_in;
          wallMomentumY += f_BNW+f_TSE_in;
          wallMomentumZ -= f_BNW+f_TSE_in;
@@ -677,7 +586,8 @@ __global__ void QStressDeviceComp27(
       {
          velocityLB = vx1 - vx2 - vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
-         f_TNW_in = getInterpolatedDistributionForNoSlipBC(q, f_BSE, f_TNW, feq, om_turb);
+         // f_TNW_in = getInterpolatedDistributionForNoSlipBC(q, f_BSE, f_TNW, feq, om_turb);
+         f_TNW_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_BSE, f_TNW, feq, om_turb, drho, c1o216);
          wallMomentumX += f_BSE+f_TNW_in;
          wallMomentumY -= f_BSE+f_TNW_in;
          wallMomentumZ -= f_BSE+f_TNW_in;
@@ -688,7 +598,8 @@ __global__ void QStressDeviceComp27(
       {
          velocityLB = -vx1 + vx2 + vx3;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
-         f_BSE_in = getInterpolatedDistributionForNoSlipBC(q, f_TNW, f_BSE, feq, om_turb);
+         // f_BSE_in = getInterpolatedDistributionForNoSlipBC(q, f_TNW, f_BSE, feq, om_turb);
+         f_BSE_in = getInterpolatedDistributionForNoSlipWithPressureBC(q, f_TNW, f_BSE, feq, om_turb, drho, c1o216);
          wallMomentumX -= f_TNW+f_BSE_in;
          wallMomentumY += f_TNW+f_BSE_in;
          wallMomentumZ += f_TNW+f_BSE_in;
@@ -699,7 +610,7 @@ __global__ void QStressDeviceComp27(
       // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       real VeloX=0.0, VeloY=0.0, VeloZ=0.0;
 
-      q = 0.5f;
+      q = q_dirB[k];
       real eps = 0.001f;
 
       iMEM( k, k_N[k],
@@ -974,67 +885,9 @@ __global__ void BBStressDevice27( real* DD,
                                              unsigned long long numberOfLBnodes,
                                              bool isEvenTimestep)
 {
-   Distributions27 D;
-   if (isEvenTimestep==true)
-   {
-      D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-      D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
-      D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
-      D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
-      D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
-      D.f[DIR_00M] = &DD[DIR_00M * numberOfLBnodes];
-      D.f[DIR_PP0] = &DD[DIR_PP0 * numberOfLBnodes];
-      D.f[DIR_MM0] = &DD[DIR_MM0 * numberOfLBnodes];
-      D.f[DIR_PM0] = &DD[DIR_PM0 * numberOfLBnodes];
-      D.f[DIR_MP0] = &DD[DIR_MP0 * numberOfLBnodes];
-      D.f[DIR_P0P] = &DD[DIR_P0P * numberOfLBnodes];
-      D.f[DIR_M0M] = &DD[DIR_M0M * numberOfLBnodes];
-      D.f[DIR_P0M] = &DD[DIR_P0M * numberOfLBnodes];
-      D.f[DIR_M0P] = &DD[DIR_M0P * numberOfLBnodes];
-      D.f[DIR_0PP] = &DD[DIR_0PP * numberOfLBnodes];
-      D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
-      D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
-      D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-      D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
-      D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
-      D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
-      D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
-      D.f[DIR_MPP] = &DD[DIR_MPP * numberOfLBnodes];
-      D.f[DIR_PPM] = &DD[DIR_PPM * numberOfLBnodes];
-      D.f[DIR_MMM] = &DD[DIR_MMM * numberOfLBnodes];
-      D.f[DIR_PMM] = &DD[DIR_PMM * numberOfLBnodes];
-      D.f[DIR_MPM] = &DD[DIR_MPM * numberOfLBnodes];
-   }
-   else
-   {
-      D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-      D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
-      D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
-      D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
-      D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
-      D.f[DIR_00P] = &DD[DIR_00M * numberOfLBnodes];
-      D.f[DIR_MM0] = &DD[DIR_PP0 * numberOfLBnodes];
-      D.f[DIR_PP0] = &DD[DIR_MM0 * numberOfLBnodes];
-      D.f[DIR_MP0] = &DD[DIR_PM0 * numberOfLBnodes];
-      D.f[DIR_PM0] = &DD[DIR_MP0 * numberOfLBnodes];
-      D.f[DIR_M0M] = &DD[DIR_P0P * numberOfLBnodes];
-      D.f[DIR_P0P] = &DD[DIR_M0M * numberOfLBnodes];
-      D.f[DIR_M0P] = &DD[DIR_P0M * numberOfLBnodes];
-      D.f[DIR_P0M] = &DD[DIR_M0P * numberOfLBnodes];
-      D.f[DIR_0MM] = &DD[DIR_0PP * numberOfLBnodes];
-      D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
-      D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
-      D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-      D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
-      D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
-      D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
-      D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
-      D.f[DIR_MPP] = &DD[DIR_PMM * numberOfLBnodes];
-      D.f[DIR_PPM] = &DD[DIR_MMP * numberOfLBnodes];
-      D.f[DIR_MMM] = &DD[DIR_PPP * numberOfLBnodes];
-      D.f[DIR_PMM] = &DD[DIR_MPP * numberOfLBnodes];
-      D.f[DIR_MPM] = &DD[DIR_PMP * numberOfLBnodes];
-   }
+
+   Distributions27 D = vf::gpu::getDistributionReferences27(DD, numberOfLBnodes, isEvenTimestep);
+
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index
    const unsigned  y = blockIdx.x;   // Globaler y-Index
@@ -1162,66 +1015,8 @@ __global__ void BBStressDevice27( real* DD,
                  (f_T - f_B)) / (c1o1 + drho);
 
       //////////////////////////////////////////////////////////////////////////
-      if (isEvenTimestep==false)
-      {
-         D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
-         D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
-         D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
-         D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
-         D.f[DIR_00M] = &DD[DIR_00M * numberOfLBnodes];
-         D.f[DIR_PP0] = &DD[DIR_PP0 * numberOfLBnodes];
-         D.f[DIR_MM0] = &DD[DIR_MM0 * numberOfLBnodes];
-         D.f[DIR_PM0] = &DD[DIR_PM0 * numberOfLBnodes];
-         D.f[DIR_MP0] = &DD[DIR_MP0 * numberOfLBnodes];
-         D.f[DIR_P0P] = &DD[DIR_P0P * numberOfLBnodes];
-         D.f[DIR_M0M] = &DD[DIR_M0M * numberOfLBnodes];
-         D.f[DIR_P0M] = &DD[DIR_P0M * numberOfLBnodes];
-         D.f[DIR_M0P] = &DD[DIR_M0P * numberOfLBnodes];
-         D.f[DIR_0PP] = &DD[DIR_0PP * numberOfLBnodes];
-         D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
-         D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
-         D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
-         D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
-         D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
-         D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
-         D.f[DIR_MPP] = &DD[DIR_MPP * numberOfLBnodes];
-         D.f[DIR_PPM] = &DD[DIR_PPM * numberOfLBnodes];
-         D.f[DIR_MMM] = &DD[DIR_MMM * numberOfLBnodes];
-         D.f[DIR_PMM] = &DD[DIR_PMM * numberOfLBnodes];
-         D.f[DIR_MPM] = &DD[DIR_MPM * numberOfLBnodes];
-      }
-      else
-      {
-         D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
-         D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
-         D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
-         D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
-         D.f[DIR_00P] = &DD[DIR_00M * numberOfLBnodes];
-         D.f[DIR_MM0] = &DD[DIR_PP0 * numberOfLBnodes];
-         D.f[DIR_PP0] = &DD[DIR_MM0 * numberOfLBnodes];
-         D.f[DIR_MP0] = &DD[DIR_PM0 * numberOfLBnodes];
-         D.f[DIR_PM0] = &DD[DIR_MP0 * numberOfLBnodes];
-         D.f[DIR_M0M] = &DD[DIR_P0P * numberOfLBnodes];
-         D.f[DIR_P0P] = &DD[DIR_M0M * numberOfLBnodes];
-         D.f[DIR_M0P] = &DD[DIR_P0M * numberOfLBnodes];
-         D.f[DIR_P0M] = &DD[DIR_M0P * numberOfLBnodes];
-         D.f[DIR_0MM] = &DD[DIR_0PP * numberOfLBnodes];
-         D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
-         D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
-         D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
-         D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
-         D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
-         D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
-         D.f[DIR_MPP] = &DD[DIR_PMM * numberOfLBnodes];
-         D.f[DIR_PPM] = &DD[DIR_MMP * numberOfLBnodes];
-         D.f[DIR_MMM] = &DD[DIR_PPP * numberOfLBnodes];
-         D.f[DIR_PMM] = &DD[DIR_MPP * numberOfLBnodes];
-         D.f[DIR_MPM] = &DD[DIR_PMP * numberOfLBnodes];
-      }
+
+      D = vf::gpu::getDistributionReferences27(DD, numberOfLBnodes, !isEvenTimestep);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       real f_E_in,  f_W_in,  f_N_in,  f_S_in,  f_T_in,  f_B_in,   f_NE_in,  f_SW_in,  f_SE_in,  f_NW_in,  f_TE_in,  f_BW_in,  f_BE_in,
          f_TW_in, f_TN_in, f_BS_in, f_BN_in, f_TS_in, f_TNE_in, f_TSW_in, f_TSE_in, f_TNW_in, f_BNE_in, f_BSW_in, f_BSE_in, f_BNW_in;
@@ -1445,7 +1240,7 @@ __global__ void BBStressDevice27( real* DD,
       // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       real VeloX=0.0, VeloY=0.0, VeloZ=0.0;
 
-      q = 0.5f;
+      q = q_dirB[k];
       real eps = 0.001f;
 
       iMEM( k, k_N[k],
@@ -1721,67 +1516,8 @@ __global__ void BBStressPressureDevice27( real* DD,
                                              unsigned long long numberOfLBnodes,
                                              bool isEvenTimestep)
 {
-   Distributions27 D;
-   if (isEvenTimestep==true)
-   {
-      D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-      D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
-      D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
-      D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
-      D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
-      D.f[DIR_00M] = &DD[DIR_00M * numberOfLBnodes];
-      D.f[DIR_PP0] = &DD[DIR_PP0 * numberOfLBnodes];
-      D.f[DIR_MM0] = &DD[DIR_MM0 * numberOfLBnodes];
-      D.f[DIR_PM0] = &DD[DIR_PM0 * numberOfLBnodes];
-      D.f[DIR_MP0] = &DD[DIR_MP0 * numberOfLBnodes];
-      D.f[DIR_P0P] = &DD[DIR_P0P * numberOfLBnodes];
-      D.f[DIR_M0M] = &DD[DIR_M0M * numberOfLBnodes];
-      D.f[DIR_P0M] = &DD[DIR_P0M * numberOfLBnodes];
-      D.f[DIR_M0P] = &DD[DIR_M0P * numberOfLBnodes];
-      D.f[DIR_0PP] = &DD[DIR_0PP * numberOfLBnodes];
-      D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
-      D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
-      D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-      D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
-      D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
-      D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
-      D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
-      D.f[DIR_MPP] = &DD[DIR_MPP * numberOfLBnodes];
-      D.f[DIR_PPM] = &DD[DIR_PPM * numberOfLBnodes];
-      D.f[DIR_MMM] = &DD[DIR_MMM * numberOfLBnodes];
-      D.f[DIR_PMM] = &DD[DIR_PMM * numberOfLBnodes];
-      D.f[DIR_MPM] = &DD[DIR_MPM * numberOfLBnodes];
-   }
-   else
-   {
-      D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-      D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
-      D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
-      D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
-      D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
-      D.f[DIR_00P] = &DD[DIR_00M * numberOfLBnodes];
-      D.f[DIR_MM0] = &DD[DIR_PP0 * numberOfLBnodes];
-      D.f[DIR_PP0] = &DD[DIR_MM0 * numberOfLBnodes];
-      D.f[DIR_MP0] = &DD[DIR_PM0 * numberOfLBnodes];
-      D.f[DIR_PM0] = &DD[DIR_MP0 * numberOfLBnodes];
-      D.f[DIR_M0M] = &DD[DIR_P0P * numberOfLBnodes];
-      D.f[DIR_P0P] = &DD[DIR_M0M * numberOfLBnodes];
-      D.f[DIR_M0P] = &DD[DIR_P0M * numberOfLBnodes];
-      D.f[DIR_P0M] = &DD[DIR_M0P * numberOfLBnodes];
-      D.f[DIR_0MM] = &DD[DIR_0PP * numberOfLBnodes];
-      D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
-      D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
-      D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-      D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
-      D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
-      D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
-      D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
-      D.f[DIR_MPP] = &DD[DIR_PMM * numberOfLBnodes];
-      D.f[DIR_PPM] = &DD[DIR_MMP * numberOfLBnodes];
-      D.f[DIR_MMM] = &DD[DIR_PPP * numberOfLBnodes];
-      D.f[DIR_PMM] = &DD[DIR_MPP * numberOfLBnodes];
-      D.f[DIR_MPM] = &DD[DIR_PMP * numberOfLBnodes];
-   }
+   Distributions27 D = vf::gpu::getDistributionReferences27(DD, numberOfLBnodes, isEvenTimestep);
+
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index
    const unsigned  y = blockIdx.x;   // Globaler y-Index
@@ -1909,66 +1645,8 @@ __global__ void BBStressPressureDevice27( real* DD,
                  (f_T - f_B)) / (c1o1 + drho);
 
       //////////////////////////////////////////////////////////////////////////
-      if (isEvenTimestep==false)
-      {
-         D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
-         D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
-         D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
-         D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
-         D.f[DIR_00M] = &DD[DIR_00M * numberOfLBnodes];
-         D.f[DIR_PP0] = &DD[DIR_PP0 * numberOfLBnodes];
-         D.f[DIR_MM0] = &DD[DIR_MM0 * numberOfLBnodes];
-         D.f[DIR_PM0] = &DD[DIR_PM0 * numberOfLBnodes];
-         D.f[DIR_MP0] = &DD[DIR_MP0 * numberOfLBnodes];
-         D.f[DIR_P0P] = &DD[DIR_P0P * numberOfLBnodes];
-         D.f[DIR_M0M] = &DD[DIR_M0M * numberOfLBnodes];
-         D.f[DIR_P0M] = &DD[DIR_P0M * numberOfLBnodes];
-         D.f[DIR_M0P] = &DD[DIR_M0P * numberOfLBnodes];
-         D.f[DIR_0PP] = &DD[DIR_0PP * numberOfLBnodes];
-         D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
-         D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
-         D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
-         D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
-         D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
-         D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
-         D.f[DIR_MPP] = &DD[DIR_MPP * numberOfLBnodes];
-         D.f[DIR_PPM] = &DD[DIR_PPM * numberOfLBnodes];
-         D.f[DIR_MMM] = &DD[DIR_MMM * numberOfLBnodes];
-         D.f[DIR_PMM] = &DD[DIR_PMM * numberOfLBnodes];
-         D.f[DIR_MPM] = &DD[DIR_MPM * numberOfLBnodes];
-      }
-      else
-      {
-         D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
-         D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
-         D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
-         D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
-         D.f[DIR_00P] = &DD[DIR_00M * numberOfLBnodes];
-         D.f[DIR_MM0] = &DD[DIR_PP0 * numberOfLBnodes];
-         D.f[DIR_PP0] = &DD[DIR_MM0 * numberOfLBnodes];
-         D.f[DIR_MP0] = &DD[DIR_PM0 * numberOfLBnodes];
-         D.f[DIR_PM0] = &DD[DIR_MP0 * numberOfLBnodes];
-         D.f[DIR_M0M] = &DD[DIR_P0P * numberOfLBnodes];
-         D.f[DIR_P0P] = &DD[DIR_M0M * numberOfLBnodes];
-         D.f[DIR_M0P] = &DD[DIR_P0M * numberOfLBnodes];
-         D.f[DIR_P0M] = &DD[DIR_M0P * numberOfLBnodes];
-         D.f[DIR_0MM] = &DD[DIR_0PP * numberOfLBnodes];
-         D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
-         D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
-         D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
-         D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
-         D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
-         D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
-         D.f[DIR_MPP] = &DD[DIR_PMM * numberOfLBnodes];
-         D.f[DIR_PPM] = &DD[DIR_MMP * numberOfLBnodes];
-         D.f[DIR_MMM] = &DD[DIR_PPP * numberOfLBnodes];
-         D.f[DIR_PMM] = &DD[DIR_MPP * numberOfLBnodes];
-         D.f[DIR_MPM] = &DD[DIR_PMP * numberOfLBnodes];
-      }
+      D = vf::gpu::getDistributionReferences27(DD, numberOfLBnodes, !isEvenTimestep);
+
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       real f_E_in,  f_W_in,  f_N_in,  f_S_in,  f_T_in,  f_B_in,   f_NE_in,  f_SW_in,  f_SE_in,  f_NW_in,  f_TE_in,  f_BW_in,  f_BE_in,
          f_TW_in, f_TN_in, f_BS_in, f_BN_in, f_TS_in, f_TNE_in, f_TSW_in, f_TSE_in, f_TNW_in, f_BNE_in, f_BSW_in, f_BSE_in, f_BNW_in;
@@ -2192,7 +1870,7 @@ __global__ void BBStressPressureDevice27( real* DD,
       // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       real VeloX=0.0, VeloY=0.0, VeloZ=0.0;
 
-      q = 0.5f;
+      q = q_dirB[k];
       real eps = 0.001f;
 
       iMEM( k, k_N[k],

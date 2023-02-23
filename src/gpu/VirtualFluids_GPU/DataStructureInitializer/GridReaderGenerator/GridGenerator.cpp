@@ -1002,7 +1002,7 @@ void GridGenerator::allocArrays_BoundaryQs()
             unsigned int sizeQ = para->getParH(i)->stressBC.numberOfBCnodes;
             QforBoundaryConditions &Q = para->getParH(i)->stressBC;
             getPointersToBoundaryConditions(Q, QQ, sizeQ);
-
+            
             builder->getStressQs(Q.q27, i);
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             cudaMemoryManager->cudaCopyStressBC(i);
