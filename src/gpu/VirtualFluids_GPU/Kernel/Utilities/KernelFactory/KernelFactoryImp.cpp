@@ -223,10 +223,10 @@ std::shared_ptr<ADKernel> KernelFactoryImp::makeAdvDifKernel(std::shared_ptr<Par
         checkStrategy = ADMod7CompStrategy::getInstance();
     } else if (kernel == "ADIncomp27") {
         newKernel     = ADIncomp27::getNewInstance(para, level);
-        checkStrategy = ADMod7CompStrategy::getInstance();
+        checkStrategy = ADMod7IncompStrategy::getInstance();
     } else if (kernel == "ADIncomp7") {
         newKernel     = ADIncomp7::getNewInstance(para, level);
-        checkStrategy = ADMod7CompStrategy::getInstance();
+        checkStrategy = ADMod7IncompStrategy::getInstance();
     } else {
         throw std::runtime_error("KernelFactory does not know the KernelType.");
     }
