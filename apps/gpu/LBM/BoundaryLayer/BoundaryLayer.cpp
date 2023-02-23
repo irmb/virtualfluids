@@ -95,18 +95,12 @@
 #include "utilities/communication.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 std::string path(".");
 
 std::string simulationName("BoundaryLayer");
 
 using namespace vf::lbm::constant;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 void multipleLevel(const std::string& configPath)
 {
@@ -284,7 +278,7 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->addCoarseGrid( xGridMin,  0.0,  0.0,
                                 xGridMax,  L_y,  L_z, dx);
-    if(true)// Add refinement
+    if(false)// Add refinement
     {
         gridBuilder->setNumberOfLayers(4,0);
         real xMaxRefinement = readPrecursor? xGridMax-H: xGridMax;   //Stop refinement some distance before outlet if domain ist not periodic
@@ -350,13 +344,14 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->setStressBoundaryCondition(SideType::MZ,
                                             0.0, 0.0, 1.0,              // wall normals
-                                            samplingOffset, z0, dx);     // wall model settinng
+                                            samplingOffset, z0, dx);    // wall model settinng
+
     para->setHasWallModelMonitor(true);   
     gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0f,  0.0f, -1.0f); 
 
     bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
     bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressPressureBounceBack);
-    bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipBounceBack); 
+    bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipCompressibleTurbulentViscosity); 
     bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflective);
     bcFactory.setPrecursorBoundaryCondition(useDistributions ? BoundaryConditionFactory::PrecursorBC::DistributionsPrecursor : BoundaryConditionFactory::PrecursorBC::VelocityPrecursor);
     para->setOutflowPressureCorrectionFactor(0.0); 
