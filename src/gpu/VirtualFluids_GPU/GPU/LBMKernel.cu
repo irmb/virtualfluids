@@ -2657,12 +2657,11 @@ void BBSlipDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryCondit
     dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
     dim3 threads(parameterDevice->numberofthreads, 1, 1 );
 
-    QSlipDeviceComp27<<< grid, threads >>> (
+    BBSlipDeviceComp27<<< grid, threads >>> (
         parameterDevice->distributions.f[0],
         boundaryCondition->k,
         boundaryCondition->q27[0],
         boundaryCondition->numberOfBCnodes,
-        parameterDevice->omega,
         parameterDevice->neighborX,
         parameterDevice->neighborY,
         parameterDevice->neighborZ,

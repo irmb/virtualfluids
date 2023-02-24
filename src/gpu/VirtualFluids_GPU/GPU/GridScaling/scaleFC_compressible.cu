@@ -31,12 +31,13 @@
 //! \author Martin Schoenherr, Anna Wellmann
 //=======================================================================================
 
-#include "Kernel/Utilities/DistributionHelper.cuh"
-#include "Kernel/Utilities/ChimeraTransformation.h"
-#include "Kernel/Utilities/ScalingHelperFunctions.h"
+#include "LBM/GPUHelperFunctions/ChimeraTransformation.h"
+#include "LBM/GPUHelperFunctions/KernelUtilities.h"
+#include "LBM/GPUHelperFunctions/ScalingUtilities.h"
 
 using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
+using namespace vf::gpu;
 
 //////////////////////////////////////////////////////////////////////////
 //! \brief Interpolate from fine to coarse
@@ -67,13 +68,13 @@ template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
     OffFC offsetFC)
 {
     ////////////////////////////////////////////////////////////////////////////////
-    //! - Get the thread index coordinates from threadIdx, blockIdx, blockDim and gridDim.
+    //! - Get the node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
     //!
-    const unsigned k_thread = vf::gpu::getNodeIndex();
+    const unsigned nodeIndex = getNodeIndex();
 
     //////////////////////////////////////////////////////////////////////////
     //! - Return for non-interface node
-    if (k_thread >= numberOfInterfaceNodes)
+    if (nodeIndex >= numberOfInterfaceNodes)
         return;
 
     //////////////////////////////////////////////////////////////////////////
@@ -82,8 +83,9 @@ template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
     //! href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017),
     //! DOI:10.3390/computation5020019 ]</b></a>
     //!
-    Distributions27 distFine   = vf::gpu::getDistributionReferences27(distributionsFine,   numberOfLBnodesFine,   true);
-    Distributions27 distCoarse = vf::gpu::getDistributionReferences27(distributionsCoarse, numberOfLBnodesCoarse, isEvenTimestep);
+    Distributions27 distFine, distCoarse;
+    getPointersToDistributions(distFine, distributionsFine, numberOfLBnodesFine, true);
+    getPointersToDistributions(distCoarse, distributionsCoarse, numberOfLBnodesCoarse, isEvenTimestep);
 
     ////////////////////////////////////////////////////////////////////////////////
     //! - declare local variables for source nodes
@@ -119,7 +121,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
     // source node BSW = MMM
     //////////////////////////////////////////////////////////////////////////
     // index of the base node and its neighbors
-    unsigned int k_base_000 = indicesFineMMM[k_thread];
+    unsigned int k_base_000 = indicesFineMMM[nodeIndex];
     unsigned int k_base_M00 = neighborXfine [k_base_000];
     unsigned int k_base_0M0 = neighborYfine [k_base_000];
     unsigned int k_base_00M = neighborZfine [k_base_000];
@@ -296,19 +298,6 @@ template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
     real c_000, c_100, c_010, c_001, c_200, c_020, c_002, c_110, c_101, c_011;
     real d_000, d_100, d_010, d_001, d_110, d_101, d_011;
 
-    //a_000 = (-kxxMyyFromfcNEQ_PPM - kxxMyyFromfcNEQ_PPP + kxxMyyFromfcNEQ_MPM + kxxMyyFromfcNEQ_MPP -
-    //        kxxMyyFromfcNEQ_PMM - kxxMyyFromfcNEQ_PMP + kxxMyyFromfcNEQ_MMM + kxxMyyFromfcNEQ_MMP -
-    //        kxxMzzFromfcNEQ_PPM - kxxMzzFromfcNEQ_PPP + kxxMzzFromfcNEQ_MPM + kxxMzzFromfcNEQ_MPP -
-    //        kxxMzzFromfcNEQ_PMM - kxxMzzFromfcNEQ_PMP + kxxMzzFromfcNEQ_MMM + kxxMzzFromfcNEQ_MMP -
-    //        c2o1 * kxyFromfcNEQ_PPM - c2o1 * kxyFromfcNEQ_PPP - c2o1 * kxyFromfcNEQ_MPM - c2o1 * kxyFromfcNEQ_MPP +
-    //        c2o1 * kxyFromfcNEQ_PMM + c2o1 * kxyFromfcNEQ_PMP + c2o1 * kxyFromfcNEQ_MMM + c2o1 * kxyFromfcNEQ_MMP +
-    //        c2o1 * kxzFromfcNEQ_PPM - c2o1 * kxzFromfcNEQ_PPP + c2o1 * kxzFromfcNEQ_MPM - c2o1 * kxzFromfcNEQ_MPP +
-    //        c2o1 * kxzFromfcNEQ_PMM - c2o1 * kxzFromfcNEQ_PMP + c2o1 * kxzFromfcNEQ_MMM - c2o1 * kxzFromfcNEQ_MMP +
-    //        c8o1 * vx1_PPM + c8o1 * vx1_PPP + c8o1 * vx1_MPM + c8o1 * vx1_MPP + c8o1 * vx1_PMM + c8o1 * vx1_PMP +
-    //        c8o1 * vx1_MMM + c8o1 * vx1_MMP + c2o1 * vx2_PPM + c2o1 * vx2_PPP - c2o1 * vx2_MPM - c2o1 * vx2_MPP -
-    //        c2o1 * vx2_PMM - c2o1 * vx2_PMP + c2o1 * vx2_MMM + c2o1 * vx2_MMP - c2o1 * vx3_PPM + c2o1 * vx3_PPP +
-    //        c2o1 * vx3_MPM - c2o1 * vx3_MPP - c2o1 * vx3_PMM + c2o1 * vx3_PMP + c2o1 * vx3_MMM - c2o1 * vx3_MMP) /
-    //        c64o1;
     a_000 = c1o64 * (
             c2o1 * (
             ((kxyFromfcNEQ_MMM - kxyFromfcNEQ_PPP) + (kxyFromfcNEQ_MMP - kxyFromfcNEQ_PPM)) + ((kxyFromfcNEQ_PMM - kxyFromfcNEQ_MPP) + (kxyFromfcNEQ_PMP - kxyFromfcNEQ_MPM)) + 
@@ -320,21 +309,6 @@ template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
             ((kxxMyyFromfcNEQ_MPP - kxxMyyFromfcNEQ_PMM) + (kxxMyyFromfcNEQ_MPM - kxxMyyFromfcNEQ_PMP)) +
             ((kxxMzzFromfcNEQ_MMM - kxxMzzFromfcNEQ_PPP) + (kxxMzzFromfcNEQ_MMP - kxxMzzFromfcNEQ_PPM)) + 
             ((kxxMzzFromfcNEQ_MPP - kxxMzzFromfcNEQ_PMM) + (kxxMzzFromfcNEQ_MPM - kxxMzzFromfcNEQ_PMP)));
-
-    //b_000 = (c2o1 * kxxMyyFromfcNEQ_PPM + c2o1 * kxxMyyFromfcNEQ_PPP + c2o1 * kxxMyyFromfcNEQ_MPM +
-    //        c2o1 * kxxMyyFromfcNEQ_MPP - c2o1 * kxxMyyFromfcNEQ_PMM - c2o1 * kxxMyyFromfcNEQ_PMP -
-    //        c2o1 * kxxMyyFromfcNEQ_MMM - c2o1 * kxxMyyFromfcNEQ_MMP - kxxMzzFromfcNEQ_PPM - kxxMzzFromfcNEQ_PPP -
-    //        kxxMzzFromfcNEQ_MPM - kxxMzzFromfcNEQ_MPP + kxxMzzFromfcNEQ_PMM + kxxMzzFromfcNEQ_PMP +
-    //        kxxMzzFromfcNEQ_MMM + kxxMzzFromfcNEQ_MMP - c2o1 * kxyFromfcNEQ_PPM - c2o1 * kxyFromfcNEQ_PPP +
-    //        c2o1 * kxyFromfcNEQ_MPM + c2o1 * kxyFromfcNEQ_MPP - c2o1 * kxyFromfcNEQ_PMM - c2o1 * kxyFromfcNEQ_PMP +
-    //        c2o1 * kxyFromfcNEQ_MMM + c2o1 * kxyFromfcNEQ_MMP + c2o1 * kyzFromfcNEQ_PPM - c2o1 * kyzFromfcNEQ_PPP +
-    //        c2o1 * kyzFromfcNEQ_MPM - c2o1 * kyzFromfcNEQ_MPP + c2o1 * kyzFromfcNEQ_PMM - c2o1 * kyzFromfcNEQ_PMP +
-    //        c2o1 * kyzFromfcNEQ_MMM - c2o1 * kyzFromfcNEQ_MMP + c2o1 * vx1_PPM + c2o1 * vx1_PPP - c2o1 * vx1_MPM -
-    //        c2o1 * vx1_MPP - c2o1 * vx1_PMM - c2o1 * vx1_PMP + c2o1 * vx1_MMM + c2o1 * vx1_MMP + c8o1 * vx2_PPM +
-    //        c8o1 * vx2_PPP + c8o1 * vx2_MPM + c8o1 * vx2_MPP + c8o1 * vx2_PMM + c8o1 * vx2_PMP + c8o1 * vx2_MMM +
-    //        c8o1 * vx2_MMP - c2o1 * vx3_PPM + c2o1 * vx3_PPP - c2o1 * vx3_MPM + c2o1 * vx3_MPP + c2o1 * vx3_PMM -
-    //        c2o1 * vx3_PMP + c2o1 * vx3_MMM - c2o1 * vx3_MMP) /
-    //        c64o1;
     b_000 = c1o64 * (
             c2o1 * (
             ((kxxMyyFromfcNEQ_PPP - kxxMyyFromfcNEQ_MMM) + (kxxMyyFromfcNEQ_PPM - kxxMyyFromfcNEQ_MMP)) + 
@@ -348,21 +322,6 @@ template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
             c8o1 * (((vx2_PPP + vx2_MMM) + (vx2_PPM + vx2_MMP)) + ((vx2_MPP + vx2_PMM) + (vx2_MPM + vx2_PMP))) + 
             ((kxxMzzFromfcNEQ_MMM - kxxMzzFromfcNEQ_PPP) + (kxxMzzFromfcNEQ_MMP - kxxMzzFromfcNEQ_PPM)) +
             ((kxxMzzFromfcNEQ_PMM - kxxMzzFromfcNEQ_MPP) + (kxxMzzFromfcNEQ_PMP - kxxMzzFromfcNEQ_MPM)));
-
-    //c_000 = (kxxMyyFromfcNEQ_PPM - kxxMyyFromfcNEQ_PPP + kxxMyyFromfcNEQ_MPM - kxxMyyFromfcNEQ_MPP +
-    //        kxxMyyFromfcNEQ_PMM - kxxMyyFromfcNEQ_PMP + kxxMyyFromfcNEQ_MMM - kxxMyyFromfcNEQ_MMP -
-    //        c2o1 * kxxMzzFromfcNEQ_PPM + c2o1 * kxxMzzFromfcNEQ_PPP - c2o1 * kxxMzzFromfcNEQ_MPM +
-    //        c2o1 * kxxMzzFromfcNEQ_MPP - c2o1 * kxxMzzFromfcNEQ_PMM + c2o1 * kxxMzzFromfcNEQ_PMP -
-    //        c2o1 * kxxMzzFromfcNEQ_MMM + c2o1 * kxxMzzFromfcNEQ_MMP - c2o1 * kxzFromfcNEQ_PPM -
-    //        c2o1 * kxzFromfcNEQ_PPP + c2o1 * kxzFromfcNEQ_MPM + c2o1 * kxzFromfcNEQ_MPP - c2o1 * kxzFromfcNEQ_PMM -
-    //        c2o1 * kxzFromfcNEQ_PMP + c2o1 * kxzFromfcNEQ_MMM + c2o1 * kxzFromfcNEQ_MMP - c2o1 * kyzFromfcNEQ_PPM -
-    //        c2o1 * kyzFromfcNEQ_PPP - c2o1 * kyzFromfcNEQ_MPM - c2o1 * kyzFromfcNEQ_MPP + c2o1 * kyzFromfcNEQ_PMM +
-    //        c2o1 * kyzFromfcNEQ_PMP + c2o1 * kyzFromfcNEQ_MMM + c2o1 * kyzFromfcNEQ_MMP - c2o1 * vx1_PPM +
-    //        c2o1 * vx1_PPP + c2o1 * vx1_MPM - c2o1 * vx1_MPP - c2o1 * vx1_PMM + c2o1 * vx1_PMP + c2o1 * vx1_MMM -
-    //        c2o1 * vx1_MMP - c2o1 * vx2_PPM + c2o1 * vx2_PPP - c2o1 * vx2_MPM + c2o1 * vx2_MPP + c2o1 * vx2_PMM -
-    //        c2o1 * vx2_PMP + c2o1 * vx2_MMM - c2o1 * vx2_MMP + c8o1 * vx3_PPM + c8o1 * vx3_PPP + c8o1 * vx3_MPM +
-    //        c8o1 * vx3_MPP + c8o1 * vx3_PMM + c8o1 * vx3_PMP + c8o1 * vx3_MMM + c8o1 * vx3_MMP) /
-    //        c64o1;
     c_000 = c1o64 * ( 
             c2o1 * (
             ((kxxMzzFromfcNEQ_PPP - kxxMzzFromfcNEQ_MMM) + (kxxMzzFromfcNEQ_MMP - kxxMzzFromfcNEQ_PPM)) + 
@@ -377,23 +336,10 @@ template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
             ((kxxMyyFromfcNEQ_MMM - kxxMyyFromfcNEQ_PPP) + (kxxMyyFromfcNEQ_PPM - kxxMyyFromfcNEQ_MMP)) + 
             ((kxxMyyFromfcNEQ_PMM - kxxMyyFromfcNEQ_MPP) + (kxxMyyFromfcNEQ_MPM - kxxMyyFromfcNEQ_PMP)));
 
-    //a_100  = (vx1_PPM + vx1_PPP - vx1_MPM - vx1_MPP + vx1_PMM + vx1_PMP - vx1_MMM - vx1_MMP) / c4o1;
     a_100 = c1o4 * (((vx1_PPP - vx1_MMM) + (vx1_PPM - vx1_MMP)) + ((vx1_PMM - vx1_MPP) + (vx1_PMP - vx1_MPM)));
-
-    //b_100  = (vx2_PPM + vx2_PPP - vx2_MPM - vx2_MPP + vx2_PMM + vx2_PMP - vx2_MMM - vx2_MMP) / c4o1;
     b_100 = c1o4 * (((vx2_PPP - vx2_MMM) + (vx2_PPM - vx2_MMP)) + ((vx2_PMM - vx2_MPP) + (vx2_PMP - vx2_MPM)));
-
-    //c_100  = (vx3_PPM + vx3_PPP - vx3_MPM - vx3_MPP + vx3_PMM + vx3_PMP - vx3_MMM - vx3_MMP) / c4o1;
     c_100 = c1o4 * (((vx3_PPP - vx3_MMM) + (vx3_PPM - vx3_MMP)) + ((vx3_PMM - vx3_MPP) + (vx3_PMP - vx3_MPM)));
 
-    //a_200 = (kxxMyyFromfcNEQ_PPM + kxxMyyFromfcNEQ_PPP - kxxMyyFromfcNEQ_MPM - kxxMyyFromfcNEQ_MPP +
-    //        kxxMyyFromfcNEQ_PMM + kxxMyyFromfcNEQ_PMP - kxxMyyFromfcNEQ_MMM - kxxMyyFromfcNEQ_MMP +
-    //        kxxMzzFromfcNEQ_PPM + kxxMzzFromfcNEQ_PPP - kxxMzzFromfcNEQ_MPM - kxxMzzFromfcNEQ_MPP +
-    //        kxxMzzFromfcNEQ_PMM + kxxMzzFromfcNEQ_PMP - kxxMzzFromfcNEQ_MMM - kxxMzzFromfcNEQ_MMP + c2o1 * vx2_PPM +
-    //        c2o1 * vx2_PPP - c2o1 * vx2_MPM - c2o1 * vx2_MPP - c2o1 * vx2_PMM - c2o1 * vx2_PMP + c2o1 * vx2_MMM +
-    //        c2o1 * vx2_MMP - c2o1 * vx3_PPM + c2o1 * vx3_PPP + c2o1 * vx3_MPM - c2o1 * vx3_MPP - c2o1 * vx3_PMM +
-    //        c2o1 * vx3_PMP + c2o1 * vx3_MMM - c2o1 * vx3_MMP) /
-    //        c16o1;
     a_200 = c1o16 * ( 
             c2o1 * (
             ((vx2_PPP + vx2_MMM) + (vx2_PPM - vx2_MPP)) + ((vx2_MMP - vx2_PMM) - (vx2_MPM + vx2_PMP)) + 
@@ -402,54 +348,25 @@ template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
             ((kxxMyyFromfcNEQ_PMM - kxxMyyFromfcNEQ_MPP) + (kxxMyyFromfcNEQ_PMP - kxxMyyFromfcNEQ_MPM)) + 
             ((kxxMzzFromfcNEQ_PPP - kxxMzzFromfcNEQ_MMM) + (kxxMzzFromfcNEQ_PPM - kxxMzzFromfcNEQ_MMP)) + 
             ((kxxMzzFromfcNEQ_PMM - kxxMzzFromfcNEQ_MPP) + (kxxMzzFromfcNEQ_PMP - kxxMzzFromfcNEQ_MPM)));
-
-    //b_200 = (kxyFromfcNEQ_PPM + kxyFromfcNEQ_PPP - kxyFromfcNEQ_MPM - kxyFromfcNEQ_MPP + kxyFromfcNEQ_PMM +
-    //        kxyFromfcNEQ_PMP - kxyFromfcNEQ_MMM - kxyFromfcNEQ_MMP - c2o1 * vx1_PPM - c2o1 * vx1_PPP +
-    //        c2o1 * vx1_MPM + c2o1 * vx1_MPP + c2o1 * vx1_PMM + c2o1 * vx1_PMP - c2o1 * vx1_MMM - c2o1 * vx1_MMP) /
-    //        c8o1;
     b_200 = c1o8 * (
             c2o1 * (
             -((vx1_PPP + vx1_MMM) + (vx1_PPM + vx1_MMP)) + ((vx1_MPP + vx1_PMM) + (vx1_MPM + vx1_PMP))) +
             ((kxyFromfcNEQ_PPP - kxyFromfcNEQ_MMM) + (kxyFromfcNEQ_PPM - kxyFromfcNEQ_MMP)) + 
             ((kxyFromfcNEQ_PMM - kxyFromfcNEQ_MPP) + (kxyFromfcNEQ_PMP - kxyFromfcNEQ_MPM)));
-
-    //c_200 = (kxzFromfcNEQ_PPM + kxzFromfcNEQ_PPP - kxzFromfcNEQ_MPM - kxzFromfcNEQ_MPP + kxzFromfcNEQ_PMM +
-    //         kxzFromfcNEQ_PMP - kxzFromfcNEQ_MMM - kxzFromfcNEQ_MMP + c2o1 * vx1_PPM - c2o1 * vx1_PPP - c2o1 * vx1_MPM +
-    //         c2o1 * vx1_MPP + c2o1 * vx1_PMM - c2o1 * vx1_PMP - c2o1 * vx1_MMM + c2o1 * vx1_MMP) /
-    //        c8o1;
     c_200 = c1o8 * (
             c2o1 * (
             ((vx1_PPM + vx1_MMP) - (vx1_PPP + vx1_MMM)) + ((vx1_MPP + vx1_PMM) - (vx1_MPM + vx1_PMP))) +
             ((kxzFromfcNEQ_PPP - kxzFromfcNEQ_MMM) + (kxzFromfcNEQ_PPM - kxzFromfcNEQ_MMP)) + 
             ((kxzFromfcNEQ_PMM - kxzFromfcNEQ_MPP) + (kxzFromfcNEQ_PMP - kxzFromfcNEQ_MPM)));
 
-    //a_010 = (vx1_PPM + vx1_PPP + vx1_MPM + vx1_MPP - vx1_PMM - vx1_PMP - vx1_MMM - vx1_MMP) / c4o1;
     a_010 = c1o4 * (((vx1_PPP - vx1_MMM) + (vx1_PPM - vx1_MMP)) + ((vx1_MPP - vx1_PMM) + (vx1_MPM - vx1_PMP)));
-
-    //b_010 = (vx2_PPM + vx2_PPP + vx2_MPM + vx2_MPP - vx2_PMM - vx2_PMP - vx2_MMM - vx2_MMP) / c4o1;
     b_010 = c1o4 * (((vx2_PPP - vx2_MMM) + (vx2_PPM - vx2_MMP)) + ((vx2_MPP - vx2_PMM) + (vx2_MPM - vx2_PMP)));
-
-    //c_010 = (vx3_PPM + vx3_PPP + vx3_MPM + vx3_MPP - vx3_PMM - vx3_PMP - vx3_MMM - vx3_MMP) / c4o1;
     c_010 = c1o4 * (((vx3_PPP - vx3_MMM) + (vx3_PPM - vx3_MMP)) + ((vx3_MPP - vx3_PMM) + (vx3_MPM - vx3_PMP)));
 
-    //a_020 = (kxyFromfcNEQ_PPM + kxyFromfcNEQ_PPP + kxyFromfcNEQ_MPM + kxyFromfcNEQ_MPP - kxyFromfcNEQ_PMM -
-    //        kxyFromfcNEQ_PMP - kxyFromfcNEQ_MMM - kxyFromfcNEQ_MMP - c2o1 * vx2_PPM - c2o1 * vx2_PPP +
-    //        c2o1 * vx2_MPM + c2o1 * vx2_MPP + c2o1 * vx2_PMM + c2o1 * vx2_PMP - c2o1 * vx2_MMM - c2o1 * vx2_MMP) /
-    //        c8o1;
     a_020 = c1o8 * (
             c2o1 * (-((vx2_PPP + vx2_MMM) + (vx2_MMP + vx2_PPM)) + ((vx2_MPP + vx2_PMM) + (vx2_MPM + vx2_PMP))) +
             ((kxyFromfcNEQ_PPP - kxyFromfcNEQ_MMM) + (kxyFromfcNEQ_PPM - kxyFromfcNEQ_MMP)) + 
             ((kxyFromfcNEQ_MPP - kxyFromfcNEQ_PMM) + (kxyFromfcNEQ_MPM - kxyFromfcNEQ_PMP)));
-
-    //b_020 = (-c2o1 * kxxMyyFromfcNEQ_PPM - c2o1 * kxxMyyFromfcNEQ_PPP - c2o1 * kxxMyyFromfcNEQ_MPM -
-    //        c2o1 * kxxMyyFromfcNEQ_MPP + c2o1 * kxxMyyFromfcNEQ_PMM + c2o1 * kxxMyyFromfcNEQ_PMP +
-    //        c2o1 * kxxMyyFromfcNEQ_MMM + c2o1 * kxxMyyFromfcNEQ_MMP + kxxMzzFromfcNEQ_PPM + kxxMzzFromfcNEQ_PPP +
-    //        kxxMzzFromfcNEQ_MPM + kxxMzzFromfcNEQ_MPP - kxxMzzFromfcNEQ_PMM - kxxMzzFromfcNEQ_PMP -
-    //        kxxMzzFromfcNEQ_MMM - kxxMzzFromfcNEQ_MMP + c2o1 * vx1_PPM + c2o1 * vx1_PPP - c2o1 * vx1_MPM -
-    //        c2o1 * vx1_MPP - c2o1 * vx1_PMM - c2o1 * vx1_PMP + c2o1 * vx1_MMM + c2o1 * vx1_MMP - c2o1 * vx3_PPM +
-    //        c2o1 * vx3_PPP - c2o1 * vx3_MPM + c2o1 * vx3_MPP + c2o1 * vx3_PMM - c2o1 * vx3_PMP + c2o1 * vx3_MMM -
-    //        c2o1 * vx3_MMP) /
-    //        c16o1;
     b_020 = c1o16 * (
             c2o1 * (
             ((kxxMyyFromfcNEQ_MMM - kxxMyyFromfcNEQ_PPP) + (kxxMyyFromfcNEQ_MMP - kxxMyyFromfcNEQ_PPM)) +
@@ -458,52 +375,23 @@ template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
             ((vx3_PPP + vx3_MMM) - (vx3_PPM + vx3_MMP)) + ((vx3_MPP + vx3_PMM) - (vx3_MPM + vx3_PMP))) +
             ((kxxMzzFromfcNEQ_PPP - kxxMzzFromfcNEQ_MMM) + (kxxMzzFromfcNEQ_PPM - kxxMzzFromfcNEQ_MMP)) + 
             ((kxxMzzFromfcNEQ_MPP - kxxMzzFromfcNEQ_PMM) + (kxxMzzFromfcNEQ_MPM - kxxMzzFromfcNEQ_PMP)));
-
-    //c_020 = (kyzFromfcNEQ_PPM + kyzFromfcNEQ_PPP + kyzFromfcNEQ_MPM + kyzFromfcNEQ_MPP - kyzFromfcNEQ_PMM -
-    //         kyzFromfcNEQ_PMP - kyzFromfcNEQ_MMM - kyzFromfcNEQ_MMP + c2o1 * vx2_PPM - c2o1 * vx2_PPP + c2o1 * vx2_MPM -
-    //         c2o1 * vx2_MPP - c2o1 * vx2_PMM + c2o1 * vx2_PMP - c2o1 * vx2_MMM + c2o1 * vx2_MMP) /
-    //        c8o1;
     c_020 = c1o8 * (
             c2o1 * (((vx2_MMP + vx2_PPM) - (vx2_PPP + vx2_MMM)) + ((vx2_PMP + vx2_MPM) - (vx2_MPP + vx2_PMM))) +
             ((kyzFromfcNEQ_PPP - kyzFromfcNEQ_MMM) + (kyzFromfcNEQ_PPM - kyzFromfcNEQ_MMP)) +
             ((kyzFromfcNEQ_MPP - kyzFromfcNEQ_PMM) + (kyzFromfcNEQ_MPM - kyzFromfcNEQ_PMP)));
 
-    //a_001  = (-vx1_PPM + vx1_PPP - vx1_MPM + vx1_MPP - vx1_PMM + vx1_PMP - vx1_MMM + vx1_MMP) / c4o1;
     a_001 = c1o4 * (((vx1_PPP - vx1_MMM) + (vx1_MMP - vx1_PPM)) + ((vx1_MPP - vx1_PMM) + (vx1_PMP - vx1_MPM)));
-
-    //b_001  = (-vx2_PPM + vx2_PPP - vx2_MPM + vx2_MPP - vx2_PMM + vx2_PMP - vx2_MMM + vx2_MMP) / c4o1;
     b_001 = c1o4 * (((vx2_PPP - vx2_MMM) + (vx2_MMP - vx2_PPM)) + ((vx2_MPP - vx2_PMM) + (vx2_PMP - vx2_MPM)));
-
-    //c_001  = (-vx3_PPM + vx3_PPP - vx3_MPM + vx3_MPP - vx3_PMM + vx3_PMP - vx3_MMM + vx3_MMP) / c4o1;
     c_001 = c1o4 * (((vx3_PPP - vx3_MMM) + (vx3_MMP - vx3_PPM)) + ((vx3_MPP - vx3_PMM) + (vx3_PMP - vx3_MPM)));
 
-    //a_002 = (-kxzFromfcNEQ_PPM + kxzFromfcNEQ_PPP - kxzFromfcNEQ_MPM + kxzFromfcNEQ_MPP - kxzFromfcNEQ_PMM +
-    //        kxzFromfcNEQ_PMP - kxzFromfcNEQ_MMM + kxzFromfcNEQ_MMP + c2o1 * vx3_PPM - c2o1 * vx3_PPP -
-    //        c2o1 * vx3_MPM + c2o1 * vx3_MPP + c2o1 * vx3_PMM - c2o1 * vx3_PMP - c2o1 * vx3_MMM + c2o1 * vx3_MMP) /
-    //        c8o1;
     a_002 = c1o8 * (
             c2o1 * (((vx3_PPM + vx3_MMP) - (vx3_PPP + vx3_MMM)) + ((vx3_MPP + vx3_PMM) - (vx3_PMP + vx3_MPM))) +
                     ((kxzFromfcNEQ_PPP - kxzFromfcNEQ_MMM) + (kxzFromfcNEQ_MMP - kxzFromfcNEQ_PPM)) +
                     ((kxzFromfcNEQ_PMP - kxzFromfcNEQ_MPM) + (kxzFromfcNEQ_MPP - kxzFromfcNEQ_PMM)));
-
-    //b_002 = (-kyzFromfcNEQ_PPM + kyzFromfcNEQ_PPP - kyzFromfcNEQ_MPM + kyzFromfcNEQ_MPP - kyzFromfcNEQ_PMM +
-    //         kyzFromfcNEQ_PMP - kyzFromfcNEQ_MMM + kyzFromfcNEQ_MMP + c2o1 * vx3_PPM - c2o1 * vx3_PPP + c2o1 * vx3_MPM -
-    //         c2o1 * vx3_MPP - c2o1 * vx3_PMM + c2o1 * vx3_PMP - c2o1 * vx3_MMM + c2o1 * vx3_MMP) /
-    //        c8o1;
     b_002 = c1o8 * (
             c2o1 * (((vx3_PPM + vx3_MMP) - (vx3_PPP + vx3_MMM)) + ((vx3_MPM + vx3_PMP) - (vx3_PMM + vx3_MPP))) + 
                     ((kyzFromfcNEQ_PPP - kyzFromfcNEQ_MMM) + (kyzFromfcNEQ_MMP - kyzFromfcNEQ_PPM)) + 
                     ((kyzFromfcNEQ_PMP - kyzFromfcNEQ_MPM) + (kyzFromfcNEQ_MPP - kyzFromfcNEQ_PMM)));
-
-    //c_002 = (-kxxMyyFromfcNEQ_PPM + kxxMyyFromfcNEQ_PPP - kxxMyyFromfcNEQ_MPM + kxxMyyFromfcNEQ_MPP -
-    //        kxxMyyFromfcNEQ_PMM + kxxMyyFromfcNEQ_PMP - kxxMyyFromfcNEQ_MMM + kxxMyyFromfcNEQ_MMP +
-    //        c2o1 * kxxMzzFromfcNEQ_PPM - c2o1 * kxxMzzFromfcNEQ_PPP + c2o1 * kxxMzzFromfcNEQ_MPM -
-    //        c2o1 * kxxMzzFromfcNEQ_MPP + c2o1 * kxxMzzFromfcNEQ_PMM - c2o1 * kxxMzzFromfcNEQ_PMP +
-    //        c2o1 * kxxMzzFromfcNEQ_MMM - c2o1 * kxxMzzFromfcNEQ_MMP - c2o1 * vx1_PPM + c2o1 * vx1_PPP +
-    //        c2o1 * vx1_MPM - c2o1 * vx1_MPP - c2o1 * vx1_PMM + c2o1 * vx1_PMP + c2o1 * vx1_MMM - c2o1 * vx1_MMP -
-    //        c2o1 * vx2_PPM + c2o1 * vx2_PPP - c2o1 * vx2_MPM + c2o1 * vx2_MPP + c2o1 * vx2_PMM - c2o1 * vx2_PMP +
-    //        c2o1 * vx2_MMM - c2o1 * vx2_MMP) /
-    //        c16o1;
     c_002 = c1o16 * (
             c2o1 * (
             ((kxxMzzFromfcNEQ_MMM - kxxMzzFromfcNEQ_PPP) + (kxxMzzFromfcNEQ_PPM - kxxMzzFromfcNEQ_MMP)) + 
@@ -513,23 +401,14 @@ template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
             ((kxxMyyFromfcNEQ_PPP - kxxMyyFromfcNEQ_MMM) + (kxxMyyFromfcNEQ_MMP - kxxMyyFromfcNEQ_PPM)) +
             ((kxxMyyFromfcNEQ_PMP - kxxMyyFromfcNEQ_MPM) + (kxxMyyFromfcNEQ_MPP - kxxMyyFromfcNEQ_PMM)));
 
-    //a_110 = (vx1_PPM + vx1_PPP - vx1_MPM - vx1_MPP - vx1_PMM - vx1_PMP + vx1_MMM + vx1_MMP) / c2o1;
-    //b_110 = (vx2_PPM + vx2_PPP - vx2_MPM - vx2_MPP - vx2_PMM - vx2_PMP + vx2_MMM + vx2_MMP) / c2o1;
-    //c_110 = (vx3_PPM + vx3_PPP - vx3_MPM - vx3_MPP - vx3_PMM - vx3_PMP + vx3_MMM + vx3_MMP) / c2o1;
     a_110 = c1o2 * (((vx1_PPP + vx1_MMM) + (vx1_MMP + vx1_PPM)) - ((vx1_MPM + vx1_PMP) + (vx1_PMM + vx1_MPP)));
     b_110 = c1o2 * (((vx2_PPP + vx2_MMM) + (vx2_MMP + vx2_PPM)) - ((vx2_MPM + vx2_PMP) + (vx2_PMM + vx2_MPP)));
     c_110 = c1o2 * (((vx3_PPP + vx3_MMM) + (vx3_MMP + vx3_PPM)) - ((vx3_MPM + vx3_PMP) + (vx3_PMM + vx3_MPP)));
 
-    //a_101 = (-vx1_PPM + vx1_PPP + vx1_MPM - vx1_MPP - vx1_PMM + vx1_PMP + vx1_MMM - vx1_MMP) / c2o1;
-    //b_101 = (-vx2_PPM + vx2_PPP + vx2_MPM - vx2_MPP - vx2_PMM + vx2_PMP + vx2_MMM - vx2_MMP) / c2o1;
-    //c_101 = (-vx3_PPM + vx3_PPP + vx3_MPM - vx3_MPP - vx3_PMM + vx3_PMP + vx3_MMM - vx3_MMP) / c2o1;
     a_101 = c1o2 * (((vx1_PPP + vx1_MMM) - (vx1_MMP + vx1_PPM)) + ((vx1_MPM + vx1_PMP) - (vx1_PMM + vx1_MPP)));
     b_101 = c1o2 * (((vx2_PPP + vx2_MMM) - (vx2_MMP + vx2_PPM)) + ((vx2_MPM + vx2_PMP) - (vx2_PMM + vx2_MPP)));
     c_101 = c1o2 * (((vx3_PPP + vx3_MMM) - (vx3_MMP + vx3_PPM)) + ((vx3_MPM + vx3_PMP) - (vx3_PMM + vx3_MPP)));
     
-    //a_011 = (-vx1_PPM + vx1_PPP - vx1_MPM + vx1_MPP + vx1_PMM - vx1_PMP + vx1_MMM - vx1_MMP) / c2o1;
-    //b_011 = (-vx2_PPM + vx2_PPP - vx2_MPM + vx2_MPP + vx2_PMM - vx2_PMP + vx2_MMM - vx2_MMP) / c2o1;
-    //c_011 = (-vx3_PPM + vx3_PPP - vx3_MPM + vx3_MPP + vx3_PMM - vx3_PMP + vx3_MMM - vx3_MMP) / c2o1;
     a_011 = c1o2 * (((vx1_PPP + vx1_MMM) - (vx1_MMP + vx1_PPM)) + ((vx1_PMM + vx1_MPP) - (vx1_MPM + vx1_PMP)));
     b_011 = c1o2 * (((vx2_PPP + vx2_MMM) - (vx2_MMP + vx2_PPM)) + ((vx2_PMM + vx2_MPP) - (vx2_MPM + vx2_PMP)));
     c_011 = c1o2 * (((vx3_PPP + vx3_MMM) - (vx3_MMP + vx3_PPM)) + ((vx3_PMM + vx3_MPP) - (vx3_MPM + vx3_PMP)));
@@ -545,9 +424,9 @@ template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
     ////////////////////////////////////////////////////////////////////////////////
     //! - Set the relative position of the offset cell {-1, 0, 1}
     //!
-    real xoff    = offsetFC.xOffFC[k_thread];
-    real yoff    = offsetFC.yOffFC[k_thread];
-    real zoff    = offsetFC.zOffFC[k_thread];
+    real xoff    = offsetFC.xOffFC[nodeIndex];
+    real yoff    = offsetFC.yOffFC[nodeIndex];
+    real zoff    = offsetFC.zOffFC[nodeIndex];
      
     real xoff_sq = xoff * xoff;
     real yoff_sq = yoff * yoff;
@@ -558,27 +437,13 @@ template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
     //! 
     real LaplaceRho = 
         ((xoff != c0o1) || (yoff != c0o1) || (zoff != c0o1))
-        ? c0o1 : c0o1;
-//        : -c3o1 * (a_100 * a_100 + b_010 * b_010 + c_001 * c_001) - c6o1 * (b_100 * a_010 + c_100 * a_001 + c_010 * b_001);
-    // d_000 = ( drho_PPM + drho_PPP + drho_MPM + drho_MPP + drho_PMM + drho_PMP + drho_MMM + drho_MMP - c2o1 * LaplaceRho) * c1o8;
+        ? c0o1 : -c3o1 * (a_100 * a_100 + b_010 * b_010 + c_001 * c_001) - c6o1 * (b_100 * a_010 + c_100 * a_001 + c_010 * b_001);
     d_000 =  c1o8 * ((((drho_PPP + drho_MMM) + (drho_PPM + drho_MMP)) + ((drho_PMM + drho_MPP) + (drho_PMP + drho_MPM))) - c2o1 * LaplaceRho);
-
-    // d_100 = ( drho_PPM + drho_PPP - drho_MPM - drho_MPP + drho_PMM + drho_PMP - drho_MMM - drho_MMP) * c1o4;
     d_100 = c1o4 * (((drho_PPP - drho_MMM) + (drho_PPM - drho_MMP)) + ((drho_PMM - drho_MPP) + (drho_PMP - drho_MPM)));
-
-    // d_010 = ( drho_PPM + drho_PPP + drho_MPM + drho_MPP - drho_PMM - drho_PMP - drho_MMM - drho_MMP) * c1o4;
     d_010 = c1o4 * (((drho_PPP - drho_MMM) + (drho_PPM - drho_MMP)) + ((drho_MPP - drho_PMM) + (drho_MPM - drho_PMP)));
-
-    // d_001 = (-drho_PPM + drho_PPP - drho_MPM + drho_MPP - drho_PMM + drho_PMP - drho_MMM + drho_MMP) * c1o4;
     d_001 = c1o4 * (((drho_PPP - drho_MMM) + (drho_MMP - drho_PPM)) + ((drho_MPP - drho_PMM) + (drho_PMP - drho_MPM)));
-
-    // d_110 = ( drho_PPM + drho_PPP - drho_MPM - drho_MPP - drho_PMM - drho_PMP + drho_MMM + drho_MMP) * c1o2;
     d_110 = c1o2 * (((drho_PPP + drho_MMM) + (drho_PPM + drho_MMP)) - ((drho_PMM + drho_MPP) + (drho_PMP + drho_MPM)));
-
-    // d_101 = (-drho_PPM + drho_PPP + drho_MPM - drho_MPP - drho_PMM + drho_PMP + drho_MMM - drho_MMP) * c1o2;
     d_101 = c1o2 * (((drho_PPP + drho_MMM) - (drho_PPM + drho_MMP)) + ((drho_PMP + drho_MPM) - (drho_PMM + drho_MPP)));
-
-    // d_011 = (-drho_PPM + drho_PPP - drho_MPM + drho_MPP + drho_PMM - drho_PMP + drho_MMM - drho_MMP) * c1o2;
     d_011 = c1o2 * (((drho_PPP + drho_MMM) - (drho_PPM + drho_MMP)) + ((drho_PMM + drho_MPP) - (drho_PMP + drho_MPM)));
 
 
@@ -694,7 +559,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
     // z = 0.;
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // index of the destination node and its neighbors
-    k_000 = indicesCoarse000[k_thread];
+    k_000 = indicesCoarse000[nodeIndex];
     k_M00 = neighborXcoarse [k_000];
     k_0M0 = neighborYcoarse [k_000];
     k_00M = neighborZcoarse [k_000];

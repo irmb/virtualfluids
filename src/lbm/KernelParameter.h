@@ -11,9 +11,7 @@
 #include <basics/Core/DataTypes.h>
 
 
-namespace vf
-{
-namespace lbm
+namespace vf::lbm
 {
 
 struct Distribution27
@@ -35,9 +33,6 @@ struct KernelParameter
 };
 
 
-
-
-}
 }
 
 #endif
