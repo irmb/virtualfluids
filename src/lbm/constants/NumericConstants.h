@@ -123,10 +123,10 @@ static constexpr double c10eM30 = 1e-30;
 static constexpr double c10eM10 = 1e-10;
 static constexpr double smallSingle = 0.0000000002;
 
-static constexpr double cPi = 3.1415926535;
-static constexpr double c2Pi = 6.28318530717;
-static constexpr double cPio180 = 1.74532925199e-2;
-static constexpr double c180oPi = 57.2957795131;
+static const double cPi = 4.0 * std::atan(1.0);// 3.1415926535;
+static const double c2Pi = 2.0 * cPi;// 6.28318530717;
+static const double cPio180 = cPi / 180.0;// 1.74532925199e-2;
+static const double c180oPi = 180.0 / cPi;// 57.2957795131;
 
 static const double one_over_sqrt2 = 1.0 / sqrt(2.0); // 0.707106781
 static const double one_over_sqrt3 = 1.0 / sqrt(3.0); // 0.577350269
@@ -244,10 +244,10 @@ static constexpr float c10eM30 = 1e-30f;
 static constexpr float c10eM10 = 1e-10f;
 static constexpr float smallSingle = 0.0000000002f;
 
-static constexpr float cPi = 3.1415926535f;
-static constexpr double c2Pi = 6.2831853071f;
-static constexpr float cPio180 = 1.74532925199e-2f;
-static constexpr float c180oPi = 57.2957795131f;
+static const float cPi = 4.0f * std::atan(1.0f);// 3.1415926535f;
+static const double c2Pi = 2.0f * cPi;// 6.2831853071f;
+static const float cPio180 = cPi / 180.0f;// 1.74532925199e-2f;
+static const float c180oPi = 180.0f / cPi;// 57.2957795131f;
 
 static const float one_over_sqrt2 = 1.0 / sqrtf(2.0); // 0.707106781
 static const float one_over_sqrt3 = 1.0 / sqrtf(3.0); // 0.577350269
