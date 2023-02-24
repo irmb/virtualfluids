@@ -44,6 +44,7 @@
 class Parameter;
 class CudaMemoryManager;
 class GridScalingFactory;
+enum class CudaStreamIndex;
 struct LBMSimulationParameter;
 struct CUstream_st;
 
@@ -62,14 +63,14 @@ public:
     //! \throws std::runtime_error when the user forgets to specify a scaling function
     GridScalingKernelManager(SPtr<Parameter> parameter, GridScalingFactory *gridScalingFactory);
 
-    //! \brief calls the device function of the fine to coarse grid interpolation kernel
-    void runFineToCoarseKernelLB(const int level, InterpolationCellFC *icellFC, OffFC &offFC, int streamIndex) const;
+    //! \brief calls the device function of the fine to coarse grid interpolation kernelH
+    void runFineToCoarseKernelLB(const int level, InterpolationCellFC *icellFC, OffFC &offFC, CudaStreamIndex streamIndex) const;
 
     //! \brief calls the device function of the fine to coarse grid interpolation kernel (advection diffusion)
     void runFineToCoarseKernelAD(const int level) const;
 
     //! \brief calls the device function of the coarse to fine grid interpolation kernel
-    void runCoarseToFineKernelLB(const int level, InterpolationCellCF *icellCF, OffCF &offCF, int streamIndex) const;
+    void runCoarseToFineKernelLB(const int level, InterpolationCellCF *icellCF, OffCF &offCF, CudaStreamIndex streamIndex) const;
 
     //! \brief calls the device function of the coarse to fine grid interpolation kernel (advection diffusion)
     void runCoarseToFineKernelAD(const int level) const;

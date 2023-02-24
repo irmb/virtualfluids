@@ -30,19 +30,19 @@ public:
    //! Constructor
    CalculateTorqueCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, std::shared_ptr<vf::mpi::Communicator> comm);
 	virtual ~CalculateTorqueCoProcessor();             
-	void process(double step); 
+	void process(real step); 
    void addInteractor(SPtr<D3Q27Interactor> interactor);
 protected:
-	void collectData(double step);
+	void collectData(real step);
    void calculateForces();
    UbTupleDouble3 getForces(int x1, int x2, int x3, SPtr<DistributionArray3D> distributions, SPtr<BoundaryConditions> bc);
 private:
    std::string path;
    std::shared_ptr<vf::mpi::Communicator> comm;
    std::vector<SPtr<D3Q27Interactor> > interactors;
-   double torqueX1global;
-   double torqueX2global;
-   double torqueX3global;
+   real torqueX1global;
+   real torqueX2global;
+   real torqueX3global;
 };
 
 

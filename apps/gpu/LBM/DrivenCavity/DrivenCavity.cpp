@@ -85,7 +85,7 @@ int main()
         const real L = 1.0;
         const real Re = 1000.0;
         const real velocity = 1.0;
-        const real dt = (real)0.5e-3;
+        const real velocityLB = 0.05; // LB units
         const uint nx = 64;
 
         const uint timeStepOut = 1000;
@@ -109,10 +109,20 @@ int main()
         auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
 
         //////////////////////////////////////////////////////////////////////////
-        // create grid
+        // compute parameters in lattice units
         //////////////////////////////////////////////////////////////////////////
 
-        real dx = L / real(nx);
+        const real dx = L / real(nx);
+        const real dt  = velocityLB / velocity * dx;
+
+        const real vxLB = velocityLB / sqrt(2.0); // LB units
+        const real vyLB = velocityLB / sqrt(2.0); // LB units
+
+        const real viscosityLB = nx * velocityLB / Re; // LB units
+
+        //////////////////////////////////////////////////////////////////////////
+        // create grid
+        //////////////////////////////////////////////////////////////////////////
 
         gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L, 0.5 * L, 0.5 * L, 0.5 * L, dx);
 
@@ -123,17 +133,6 @@ int main()
         gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
         gridBuilder->buildGrids(LbmOrGks::LBM, false);
-
-        //////////////////////////////////////////////////////////////////////////
-        // compute parameters in lattice units
-        //////////////////////////////////////////////////////////////////////////
-
-        const real velocityLB = velocity * dt / dx; // LB units
-
-        const real vxLB = velocityLB / sqrt(2.0); // LB units
-        const real vyLB = velocityLB / sqrt(2.0); // LB units
-
-        const real viscosityLB = nx * velocityLB / Re; // LB units
 
         //////////////////////////////////////////////////////////////////////////
         // set parameters
@@ -154,7 +153,7 @@ int main()
         para->setTimestepOut(timeStepOut);
         para->setTimestepEnd(timeStepEnd);
 
-        para->setMainKernel("CumulantK17CompChimRedesigned");
+        para->setMainKernel("CumulantK17");
 
         //////////////////////////////////////////////////////////////////////////
         // set boundary conditions
@@ -164,8 +163,8 @@ int main()
         gridBuilder->setNoSlipBoundaryCondition(SideType::MX);
         gridBuilder->setNoSlipBoundaryCondition(SideType::PY);
         gridBuilder->setNoSlipBoundaryCondition(SideType::MY);
-        gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, vyLB, 0.0);
         gridBuilder->setNoSlipBoundaryCondition(SideType::MZ);
+        gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, vyLB, 0.0);
 
         BoundaryConditionFactory bcFactory;
 

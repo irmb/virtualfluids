@@ -66,7 +66,7 @@ void LiggghtsCouplingCoProcessor::setSpheresOnLattice()
         if (excludeFlag)
             continue;
 
-        double x[3], v[3], omega[3];
+        double x[3] = { 0, 0, 0 }, v[3] = { 0, 0, 0 }, omega[3] = { 0, 0, 0 };
         double r;
         int id = wrapper.lmp->atom->tag[iS];
 
@@ -194,7 +194,7 @@ double LiggghtsCouplingCoProcessor::calcSolidFraction(double const dx_, double c
         return 1;
 
     double const r_sq = r_ * r_;
-    double dx_sq[slicesPerDim], dy_sq[slicesPerDim], dz_sq[slicesPerDim];
+    double dx_sq[slicesPerDim] = { 0, 0, 0, 0, 0 }, dy_sq[slicesPerDim] = { 0, 0, 0, 0, 0 }, dz_sq[slicesPerDim] = { 0, 0, 0, 0, 0 };
 
     // pre-calculate d[xyz]_sq for efficiency
     for (int i = 0; i < slicesPerDim; i++) {
@@ -255,13 +255,13 @@ void LiggghtsCouplingCoProcessor::getForcesFromLattice()
     if (nPart == 0)
         return; // no particles - no work
 
-    if (nPart > x_lb.size()) {
-        for (int iPart = 0; iPart < x_lb.size(); iPart++) {
+    if (nPart > (int)x_lb.size()) {
+        for (int iPart = 0; iPart < (int)x_lb.size(); iPart++) {
             x_lb[iPart][0] = wrapper.lmp->atom->x[iPart][0];
             x_lb[iPart][1] = wrapper.lmp->atom->x[iPart][1];
             x_lb[iPart][2] = wrapper.lmp->atom->x[iPart][2];
         }
-        for (int iPart = x_lb.size(); iPart < nPart; iPart++) {
+        for (int iPart = (int)x_lb.size(); iPart < nPart; iPart++) {
             std::array<double, 3> ar = {wrapper.lmp->atom->x[iPart][0],
                                         wrapper.lmp->atom->x[iPart][1],
                                         wrapper.lmp->atom->x[iPart][2]};
@@ -277,12 +277,12 @@ void LiggghtsCouplingCoProcessor::getForcesFromLattice()
         }
     }
 
-    if (n_force > force.size()) {
-        for (int i = 0; i < force.size(); i++) {
+    if (n_force > (int)force.size()) {
+        for (int i = 0; i < (int)force.size(); i++) {
             force[i]  = 0;
             torque[i] = 0;
         }
-        for (int i = force.size(); i < n_force; i++) {
+        for (int i = (int)force.size(); i < n_force; i++) {
             force.push_back(0.);
             torque.push_back(0.);
         }
@@ -367,17 +367,17 @@ void LiggghtsCouplingCoProcessor::SumForceTorque3D(ParticleData::ParticleDataArr
                         // minimum image convention, needed if
                         // (1) PBC are used and
                         // (2) both ends of PBC lie on the same processor
-                        if (dx > nx / 2)
+                        if ((int)dx > nx / 2)
                             dx -= nx;
-                        else if (dx < -nx / 2)
+                        else if ((int)dx < -nx / 2)
                             dx += nx;
-                        if (dy > ny / 2)
+                        if ((int)dy > ny / 2)
                             dy -= ny;
-                        else if (dy < -ny / 2)
+                        else if ((int)dy < -ny / 2)
                             dy += ny;
-                        if (dz > nz / 2)
+                        if ((int)dz > nz / 2)
                             dz -= nz;
-                        else if (dz < -nz / 2)
+                        else if ((int)dz < -nz / 2)
                             dz += nz;
 
                         double const forceX = (*particleData)(ix1, ix2, ix3)->hydrodynamicForce[0];

@@ -35,6 +35,7 @@
 #define D3Q27BCFUNCTION_H
 
 #include <basics/utilities/UbInfinity.h>
+#include "lbm/constants/D3Q27.h"
 
 #include <muParser.h>
 
@@ -42,21 +43,21 @@
 class BCFunction
 {
 public:
-    static const double INFTIMEDEPENDENT;
-    static const double INFCONST;
+    static const real INFTIMEDEPENDENT;
+    static const real INFCONST;
 
 public:
     BCFunction() : starttime(-Ub::inf), endtime(-Ub::inf) {}
-    BCFunction(const mu::Parser &function, const double &starttime, const double &endtime)
+    BCFunction(const mu::Parser &function, const real &starttime, const real &endtime)
         : function(function), starttime(starttime), endtime(endtime)
     {
     }
-    BCFunction(const std::string &functionstring, const double &starttime, const double &endtime)
+    BCFunction(const std::string &functionstring, const real &starttime, const real &endtime)
         : starttime(starttime), endtime(endtime)
     {
         this->setFunction(functionstring);
     }
-    BCFunction(const double &velocity, const double &starttime, const double &endtime)
+    BCFunction(const real &velocity, const real &starttime, const real &endtime)
         : starttime(starttime), endtime(endtime)
     {
         this->setFunction(velocity);
@@ -64,19 +65,19 @@ public:
 
     void setFunction(const mu::Parser &function) { this->function = function; }
     void setFunction(const std::string &functionstring) { this->function.SetExpr(functionstring); }
-    void setFunction(const double &constVelocity)
+    void setFunction(const real &constVelocity)
     {
         std::stringstream dummy;
         dummy << constVelocity;
         function.SetExpr(dummy.str());
     }
-    void setStartTime(const double &starttime) { this->starttime = starttime; }
-    void setEndTime(const double &endtime) { this->endtime = endtime; }
+    void setStartTime(const real &starttime) { this->starttime = starttime; }
+    void setEndTime(const real &endtime) { this->endtime = endtime; }
 
     mu::Parser &getFunction() { return function; }
     const mu::Parser &getFunction() const { return function; }
-    const double &getStartTime() const { return starttime; }
-    const double &getEndTime() const { return endtime; }
+    const real &getStartTime() const { return starttime; }
+    const real &getEndTime() const { return endtime; }
 
     std::string toString() const
     {
@@ -109,8 +110,8 @@ public:
 
 protected:
     mu::Parser function;
-    double starttime;
-    double endtime;
+    real starttime;
+    real endtime;
 
 private:
 };

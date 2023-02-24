@@ -23,10 +23,10 @@ public:
     InSituVTKCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &configFile,
                          SPtr<LBMUnitConverter> conv);
     virtual ~InSituVTKCoProcessor();
-    void process(double step);
+    void process(real step);
 
 protected:
-    void collectData(double step);
+    void collectData(real step);
     void addData(SPtr<Block3D> block);
     void readConfigFile(const std::string &configFile);
 

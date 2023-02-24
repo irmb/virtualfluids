@@ -66,6 +66,7 @@
 #include <string>
 #include <vector>
 #include "Grid3D.h"
+#include "lbm/constants/D3Q27.h"
 
 //////////////////////////////////////////////////////////////////////////
 // MemoryUtil
@@ -179,8 +180,8 @@ static std::string toString(SPtr<Grid3D> grid, int numberOfProcesses)
     unsigned long long numberOfNodesPerBlockWithGhostLayer = numberOfBlocks * (val<1>(blockNx) + ghostLayer) *
                                                              (val<2>(blockNx) + ghostLayer) *
                                                              (val<3>(blockNx) + ghostLayer);
-    double needMemAll = double(numberOfNodesPerBlockWithGhostLayer*(27*sizeof(double)+sizeof(int)+sizeof(float)*4));
-    double needMem = needMemAll / double(numberOfProcesses);
+    real needMemAll = real(numberOfNodesPerBlockWithGhostLayer*(27*sizeof(real)+sizeof(int)+sizeof(real)*4));
+    real needMem = needMemAll / real(numberOfProcesses);
     
     std::ostringstream out;
     out << "Grid information:" << std::endl;
@@ -197,7 +198,7 @@ static std::string toString(SPtr<Grid3D> grid, int numberOfProcesses)
     }
     out << "# Necessary memory  = " << needMemAll << " bytes" << std::endl;
     out << "# Necessary memory per process = " << needMem << " bytes" << std::endl;
-    out << "# Available memory per process = " << (double)getTotalPhysMem() << " bytes" << std::endl;
+    out << "# Available memory per process = " << (real)getTotalPhysMem() << " bytes" << std::endl;
     out << "###################################################" << std::endl;
 
     return out.str();

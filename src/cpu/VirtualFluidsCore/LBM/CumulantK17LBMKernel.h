@@ -55,27 +55,27 @@ public:
     ~CumulantK17LBMKernel() = default;
     void calculate(int step) override;
     SPtr<LBMKernel> clone() override;
-    double getCalculationTime() override { return .0; }
+    real getCalculationTime() override { return .0; }
 
 protected:
-    inline void forwardInverseChimeraWithK(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2, LBMReal Kinverse, LBMReal K);
-    inline void backwardInverseChimeraWithK(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2, LBMReal Kinverse, LBMReal K);
-    inline void forwardChimera(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2);
-    inline void backwardChimera(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2);
+    inline void forwardInverseChimeraWithK(real& mfa, real& mfb, real& mfc, real vv, real v2, real Kinverse, real K);
+    inline void backwardInverseChimeraWithK(real& mfa, real& mfb, real& mfc, real vv, real v2, real Kinverse, real K);
+    inline void forwardChimera(real& mfa, real& mfb, real& mfc, real vv, real v2);
+    inline void backwardChimera(real& mfa, real& mfb, real& mfc, real vv, real v2);
 
     virtual void initDataSet();
-    LBMReal f[D3Q27System::ENDF + 1];
+    real f[D3Q27System::ENDF + 1];
 
-    CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions;
-    CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions;
-    CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr restDistributions;
+    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributions;
+    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions;
+    CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr restDistributions;
 
     mu::value_type muX1, muX2, muX3;
     mu::value_type muDeltaT;
     mu::value_type muNu;
-    LBMReal forcingX1;
-    LBMReal forcingX2;
-    LBMReal forcingX3;
+    real forcingX1;
+    real forcingX2;
+    real forcingX3;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -84,17 +84,18 @@ protected:
 //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05.040 ]</b></a>
 //! Modified for lower round-off errors.
 ////////////////////////////////////////////////////////////////////////////////
-inline void CumulantK17LBMKernel::forwardInverseChimeraWithK(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2, LBMReal Kinverse, LBMReal K)
+inline void CumulantK17LBMKernel::forwardInverseChimeraWithK(real& mfa, real& mfb, real& mfc, real vv, real v2, real Kinverse, real K)
 {
-    using namespace UbMath;
-    LBMReal m2 = mfa + mfc;
-    LBMReal m1 = mfc - mfa;
-    LBMReal m0 = m2 + mfb;
+//    using namespace UbMath;
+    using namespace vf::lbm::constant;
+    real m2 = mfa + mfc;
+    real m1 = mfc - mfa;
+    real m0 = m2 + mfb;
     mfa = m0;
     m0 *= Kinverse;
-    m0 += c1;
+    m0 += c1o1;
     mfb = (m1 * Kinverse - m0 * vv) * K;
-    mfc = ((m2 - c2 * m1 * vv) * Kinverse + v2 * m0) * K;
+    mfc = ((m2 - c2o1 * m1 * vv) * Kinverse + v2 * m0) * K;
 }
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief backward chimera transformation \ref backwardInverseChimeraWithK
@@ -102,12 +103,14 @@ inline void CumulantK17LBMKernel::forwardInverseChimeraWithK(LBMReal& mfa, LBMRe
 //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05.040 ]</b></a>
 //! ] Modified for lower round-off errors.
 ////////////////////////////////////////////////////////////////////////////////
-inline void CumulantK17LBMKernel::backwardInverseChimeraWithK(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2, LBMReal Kinverse, LBMReal K)
+inline void CumulantK17LBMKernel::backwardInverseChimeraWithK(real& mfa, real& mfb, real& mfc, real vv, real v2, real Kinverse, real K)
 {
-    using namespace UbMath;
-    LBMReal m0 = (((mfc - mfb) * c1o2 + mfb * vv) * Kinverse + (mfa * Kinverse + c1) * (v2 - vv) * c1o2) * K;
-    LBMReal m1 = (((mfa - mfc) - c2 * mfb * vv) * Kinverse + (mfa * Kinverse + c1) * (-v2)) * K;
-    mfc = (((mfc + mfb) * c1o2 + mfb * vv) * Kinverse + (mfa * Kinverse + c1) * (v2 + vv) * c1o2) * K;
+//    using namespace UbMath;
+    using namespace vf::lbm::constant;
+ 
+    real m0 = (((mfc - mfb) * c1o2 + mfb * vv) * Kinverse + (mfa * Kinverse + c1o1) * (v2 - vv) * c1o2) * K;
+    real m1 = (((mfa - mfc) - c2o1 * mfb * vv) * Kinverse + (mfa * Kinverse + c1o1) * (-v2)) * K;
+    mfc = (((mfc + mfb) * c1o2 + mfb * vv) * Kinverse + (mfa * Kinverse + c1o1) * (v2 + vv) * c1o2) * K;
     mfa = m0;
     mfb = m1;
 }
@@ -118,12 +121,14 @@ inline void CumulantK17LBMKernel::backwardInverseChimeraWithK(LBMReal& mfa, LBMR
 //! for \f$ K_{abc}=0 \f$. This is to avoid unnessary floating point operations.
 //! Modified for lower round-off errors.
 ////////////////////////////////////////////////////////////////////////////////
-inline void CumulantK17LBMKernel::forwardChimera(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2)
+inline void CumulantK17LBMKernel::forwardChimera(real& mfa, real& mfb, real& mfc, real vv, real v2)
 {
-    using namespace UbMath;
-    LBMReal m1 = (mfa + mfc) + mfb;
-    LBMReal m2 = mfc - mfa;
-    mfc = (mfc + mfa) + (v2 * m1 - c2 * vv * m2);
+//    using namespace UbMath;
+    using namespace vf::lbm::constant;
+    
+    real m1 = (mfa + mfc) + mfb;
+    real m2 = mfc - mfa;
+    mfc = (mfc + mfa) + (v2 * m1 - c2o1 * vv * m2);
     mfb = m2 - vv * m1;
     mfa = m1;
 }
@@ -134,11 +139,13 @@ inline void CumulantK17LBMKernel::forwardChimera(LBMReal& mfa, LBMReal& mfb, LBM
 //! for \f$ K_{abc}=0 \f$. This is to avoid unnessary floating point operations.
 //! Modified for lower round-off errors.
 ////////////////////////////////////////////////////////////////////////////////
-inline void CumulantK17LBMKernel::backwardChimera(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2)
+inline void CumulantK17LBMKernel::backwardChimera(real& mfa, real& mfb, real& mfc, real vv, real v2)
 {
-    using namespace UbMath;
-    LBMReal ma = (mfc + mfa * (v2 - vv)) * c1o2 + mfb * (vv - c1o2);
-    LBMReal mb = ((mfa - mfc) - mfa * v2) - c2 * mfb * vv;
+//    using namespace UbMath;
+    using namespace vf::lbm::constant;
+
+    real ma = (mfc + mfa * (v2 - vv)) * c1o2 + mfb * (vv - c1o2);
+    real mb = ((mfa - mfc) - mfa * v2) - c2o1 * mfb * vv;
     mfc = (mfc + mfa * (v2 + vv)) * c1o2 + mfb * (vv + c1o2);
     mfb = mb;
     mfa = ma;

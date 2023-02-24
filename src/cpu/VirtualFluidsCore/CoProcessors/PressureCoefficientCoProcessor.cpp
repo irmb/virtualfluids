@@ -23,7 +23,7 @@ PressureCoefficientCoProcessor::PressureCoefficientCoProcessor(SPtr<Grid3D> grid
 //////////////////////////////////////////////////////////////////////////
 PressureCoefficientCoProcessor::~PressureCoefficientCoProcessor() = default;
 //////////////////////////////////////////////////////////////////////////
-void PressureCoefficientCoProcessor::process(double step)
+void PressureCoefficientCoProcessor::process(real step)
 {
     if (scheduler->isDue(step))
         collectData(step);
@@ -31,7 +31,7 @@ void PressureCoefficientCoProcessor::process(double step)
     UBLOG(logDEBUG3, "D3Q27ForcesCoProcessor::update:" << step);
 }
 //////////////////////////////////////////////////////////////////////////
-void PressureCoefficientCoProcessor::collectData(double step)
+void PressureCoefficientCoProcessor::collectData(real step)
 {
     calculateRho();
 
@@ -42,10 +42,10 @@ void PressureCoefficientCoProcessor::collectData(double step)
 //////////////////////////////////////////////////////////////////////////
 void PressureCoefficientCoProcessor::calculateRho()
 {
-    LBMReal f[D3Q27System::ENDF + 1];
-    LBMReal vx1, vx2, vx3, rho;
-    std::vector<double> values;
-    std::vector<double> rvalues;
+    real f[D3Q27System::ENDF + 1];
+    real vx1, vx2, vx3, rho;
+    std::vector<real> values;
+    std::vector<real> rvalues;
 
     for (SPtr<D3Q27Interactor> interactor : interactors) {
         typedef std::map<SPtr<Block3D>, std::set<std::vector<int>>> TransNodeIndicesMap;
@@ -60,7 +60,7 @@ void PressureCoefficientCoProcessor::calculateRho()
             UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);
             //         UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
             UbTupleDouble3 nodeOffset = grid->getNodeOffset(block);
-            double dx                 = grid->getDeltaX(block);
+            real dx                 = grid->getDeltaX(block);
 
             if (kernel->getCompressible()) {
                 calcMacros = &D3Q27System::calcCompMacroscopicValues;
@@ -89,9 +89,9 @@ void PressureCoefficientCoProcessor::calculateRho()
                         x1, x2,
                         x3)) // es kann sein, dass der node von einem anderen interactor z.B. als solid gemarkt wurde!!!
                 {
-                    double cx1 = val<1>(org) - val<1>(nodeOffset) + x1 * dx;
-                    double cx2 = val<2>(org) - val<2>(nodeOffset) + x2 * dx;
-                    double cx3 = val<3>(org) - val<3>(nodeOffset) + x3 * dx;
+                    real cx1 = val<1>(org) - val<1>(nodeOffset) + x1 * dx;
+                    real cx2 = val<2>(org) - val<2>(nodeOffset) + x2 * dx;
+                    real cx3 = val<3>(org) - val<3>(nodeOffset) + x3 * dx;
                     if (plane->isPointInGbObject3D(cx1, cx2, cx3)) {
                         distributions->getDistribution(f, x1, x2, x3);
                         calcMacros(f, rho, vx1, vx2, vx3);
@@ -172,7 +172,7 @@ void PressureCoefficientCoProcessor::writeValues(int step)
                 throw UbException(UB_EXARGS, "couldn't open file " + fname);
         }
 
-        out.write((char *)&outValues[0], outValues.size() * sizeof(double));
+        out.write((char *)&outValues[0], outValues.size() * sizeof(real));
 
         out.close();
 
@@ -193,7 +193,7 @@ void PressureCoefficientCoProcessor::readValues(int step)
         int length = (int)in.tellg();
         in.seekg(0, in.beg);
 
-        outValues.resize(length / sizeof(double));
+        outValues.resize(length / sizeof(real));
 
         in.read((char *)&outValues[0], length);
 

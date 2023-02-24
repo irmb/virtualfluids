@@ -13,7 +13,7 @@
 
 using namespace std;
 
-SpongeLayerBlockVisitor::SpongeLayerBlockVisitor(SPtr<GbCuboid3D> boundingBox, SPtr<LBMKernel> kernel, double nue,
+SpongeLayerBlockVisitor::SpongeLayerBlockVisitor(SPtr<GbCuboid3D> boundingBox, SPtr<LBMKernel> kernel, real nue,
                                                  int dir)
     : Block3DVisitor(0, D3Q27System::MAXLEVEL), boundingBox(boundingBox), kernel(kernel), nue(nue), dir(dir)
 {
@@ -23,6 +23,8 @@ SpongeLayerBlockVisitor::~SpongeLayerBlockVisitor() = default;
 //////////////////////////////////////////////////////////////////////////
 void SpongeLayerBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 {
+    using namespace vf::lbm::dir;
+
     if (!boundingBox) {
         UB_THROW(UbException(UB_EXARGS, "The bounding box isn't set!"));
     }
@@ -33,15 +35,15 @@ void SpongeLayerBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
         UbTupleDouble3 org          = grid->getBlockWorldCoordinates(block);
         UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
 
-        double minX1 = val<1>(org);
-        double minX2 = val<2>(org);
-        double minX3 = val<3>(org);
-        double maxX1 = val<1>(org) + val<1>(blockLengths);
-        double maxX2 = val<2>(org) + val<2>(blockLengths);
-        double maxX3 = val<3>(org) + val<3>(blockLengths);
+        real minX1 = val<1>(org);
+        real minX2 = val<2>(org);
+        real minX3 = val<3>(org);
+        real maxX1 = val<1>(org) + val<1>(blockLengths);
+        real maxX2 = val<2>(org) + val<2>(blockLengths);
+        real maxX3 = val<3>(org) + val<3>(blockLengths);
 
         if (boundingBox->isCellInsideGbObject3D(minX1, minX2, minX3, maxX1, maxX2, maxX3)) {
-            LBMReal collFactor = LBMSystem::calcCollisionFactor(nue, block->getLevel());
+            real collFactor = LBMSystem::calcCollisionFactor(nue, block->getLevel());
             kernel->setCollisionFactor(collFactor);
             kernel->setIndex(block->getX1(), block->getX2(), block->getX3());
             kernel->setDeltaT(LBMSystem::getDeltaT(block->getLevel()));
@@ -63,35 +65,35 @@ void SpongeLayerBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
             }
             newKernel->setBCProcessor(bcProc);
 
-            double oldCollFactor = newKernel->getCollisionFactor();
+            real oldCollFactor = newKernel->getCollisionFactor();
 
             UbTupleInt3 ixMin = grid->getBlockIndexes(boundingBox->getX1Minimum(), boundingBox->getX2Minimum(),
                                                       boundingBox->getX3Minimum());
             UbTupleInt3 ixMax = grid->getBlockIndexes(boundingBox->getX1Maximum(), boundingBox->getX2Maximum(),
                                                       boundingBox->getX3Maximum());
 
-            double newCollFactor;
+            real newCollFactor;
 
-            if (dir == D3Q27System::DIR_P00) {
+            if (dir == DIR_P00) {
                 int ibX1      = block->getX1();
                 int ibMax     = val<1>(ixMax) - val<1>(ixMin) + 1;
-                double index  = (double)(ibX1 - val<1>(ixMin) + 1);
-                newCollFactor = oldCollFactor - (oldCollFactor - 1.0) / (double)(ibMax)*index;
-            } else if (dir == D3Q27System::DIR_M00) {
+                real index  = (real)(ibX1 - val<1>(ixMin) + 1);
+                newCollFactor = oldCollFactor - (oldCollFactor - 1.0) / (real)(ibMax)*index;
+            } else if (dir == DIR_M00) {
                 int ibX1      = block->getX1();
                 int ibMax     = val<1>(ixMax) - val<1>(ixMin) + 1;
-                double index  = (double)(ibX1 - val<1>(ixMin) + 1);
-                newCollFactor = (oldCollFactor - 1.0) / (double)(ibMax)*index;
-            } else if (dir == D3Q27System::DIR_00P) {
+                real index  = (real)(ibX1 - val<1>(ixMin) + 1);
+                newCollFactor = (oldCollFactor - 1.0) / (real)(ibMax)*index;
+            } else if (dir == DIR_00P) {
                 int ibX3      = block->getX3();
                 int ibMax     = val<3>(ixMax) - val<3>(ixMin) + 1;
-                double index  = (double)(ibX3 - val<3>(ixMin) + 1);
-                newCollFactor = oldCollFactor - (oldCollFactor - 1.0) / (double)(ibMax)*index;
-            } else if (dir == D3Q27System::DIR_00M) {
+                real index  = (real)(ibX3 - val<3>(ixMin) + 1);
+                newCollFactor = oldCollFactor - (oldCollFactor - 1.0) / (real)(ibMax)*index;
+            } else if (dir == DIR_00M) {
                 int ibX3      = block->getX3();
                 int ibMax     = val<3>(ixMax) - val<3>(ixMin) + 1;
-                double index  = (double)(ibX3 - val<3>(ixMin) + 1);
-                newCollFactor = (oldCollFactor - 1.0) / (double)(ibMax)*index;
+                real index  = (real)(ibX3 - val<3>(ixMin) + 1);
+                newCollFactor = (oldCollFactor - 1.0) / (real)(ibMax)*index;
             } else
                 UB_THROW(UbException(UB_EXARGS, "Problem: no orthogonal sponge layer!"));
 

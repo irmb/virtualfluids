@@ -72,7 +72,7 @@ void WriteMacroscopicQuantitiesPlusMassCoProcessor::init()
 {}
 
 //////////////////////////////////////////////////////////////////////////
-void WriteMacroscopicQuantitiesPlusMassCoProcessor::process(double step)
+void WriteMacroscopicQuantitiesPlusMassCoProcessor::process(real step)
 {
     if (scheduler->isDue(step))
         collectData(step);
@@ -81,7 +81,7 @@ void WriteMacroscopicQuantitiesPlusMassCoProcessor::process(double step)
 }
 
 //////////////////////////////////////////////////////////////////////////
-void WriteMacroscopicQuantitiesPlusMassCoProcessor::collectData(double step)
+void WriteMacroscopicQuantitiesPlusMassCoProcessor::collectData(real step)
 {
     int istep = static_cast<int>(step);
 
@@ -143,7 +143,7 @@ void WriteMacroscopicQuantitiesPlusMassCoProcessor::clearData()
 //////////////////////////////////////////////////////////////////////////
 void WriteMacroscopicQuantitiesPlusMassCoProcessor::addDataMQ(SPtr<Block3D> block)
 {
-    double level   = (double)block->getLevel();
+    real level   = (real)block->getLevel();
 
     // Diese Daten werden geschrieben:
     datanames.resize(0);
@@ -162,8 +162,8 @@ void WriteMacroscopicQuantitiesPlusMassCoProcessor::addDataMQ(SPtr<Block3D> bloc
     SPtr<ILBMKernel> kernel                 = block->getKernel();
     SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
     SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
-    LBMReal f[D3Q27System::ENDF + 1];
-    LBMReal vx1, vx2, vx3, rho;
+    real f[D3Q27System::ENDF + 1];
+    real vx1, vx2, vx3, rho;
 
     // knotennummerierung faengt immer bei 0 an!
     int SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;

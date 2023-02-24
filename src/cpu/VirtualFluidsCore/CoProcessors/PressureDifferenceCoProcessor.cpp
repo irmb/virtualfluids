@@ -17,8 +17,8 @@
 
 PressureDifferenceCoProcessor::PressureDifferenceCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
                                                              const std::string &path, SPtr<IntegrateValuesHelper> h1,
-                                                             SPtr<IntegrateValuesHelper> h2, LBMReal rhoReal,
-                                                             LBMReal uReal, LBMReal uLB, std::shared_ptr<vf::mpi::Communicator> comm)
+                                                             SPtr<IntegrateValuesHelper> h2, real rhoReal,
+                                                             real uReal, real uLB, std::shared_ptr<vf::mpi::Communicator> comm)
 
     : CoProcessor(grid, s), path(path), h1(h1), h2(h2), comm(comm)
 {
@@ -71,13 +71,13 @@ PressureDifferenceCoProcessor::PressureDifferenceCoProcessor(SPtr<Grid3D> grid, 
 //////////////////////////////////////////////////////////////////////////
 PressureDifferenceCoProcessor::~PressureDifferenceCoProcessor() = default;
 //////////////////////////////////////////////////////////////////////////
-void PressureDifferenceCoProcessor::process(double step)
+void PressureDifferenceCoProcessor::process(real step)
 {
     if (scheduler->isDue(step))
         collectData(step);
 }
 //////////////////////////////////////////////////////////////////////////
-void PressureDifferenceCoProcessor::collectData(double step)
+void PressureDifferenceCoProcessor::collectData(real step)
 {
     h1->calculateMQ();
     h2->calculateMQ();
@@ -85,13 +85,13 @@ void PressureDifferenceCoProcessor::collectData(double step)
     if (comm->getProcessID() == comm->getRoot()) {
         int istep = static_cast<int>(step);
         std::ofstream ostr;
-        double nn1  = h1->getNumberOfFluidsNodes();
-        double nn2  = h2->getNumberOfFluidsNodes();
-        double rho1 = h1->getRho();
-        double rho2 = h2->getRho();
-        double p1_1 = (rho1 / nn1) * factor1;
-        double p1_2 = (rho2 / nn2) * factor1;
-        double dp1  = p1_1 - p1_2;
+        real nn1  = h1->getNumberOfFluidsNodes();
+        real nn2  = h2->getNumberOfFluidsNodes();
+        real rho1 = h1->getRho();
+        real rho2 = h2->getRho();
+        real p1_1 = (rho1 / nn1) * factor1;
+        real p1_2 = (rho2 / nn2) * factor1;
+        real dp1  = p1_1 - p1_2;
 
         // double press1 = h1->getPress();
         // double press2 = h2->getPress();

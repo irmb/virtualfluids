@@ -44,7 +44,7 @@
 #include <utility>
 
 //////////////////////////////////////////////////////////////////////////
-SetKernelBlockVisitor::SetKernelBlockVisitor(SPtr<LBMKernel> kernel, LBMReal nue, double availMem, double needMem,
+SetKernelBlockVisitor::SetKernelBlockVisitor(SPtr<LBMKernel> kernel, real nue, real availMem, real needMem,
                                              SetKernelBlockVisitor::Action action)
     : Block3DVisitor(0, D3Q27System::MAXLEVEL), kernel(std::move(kernel)), nue(nue), action(action), dataSetFlag(true)
 {
@@ -53,7 +53,7 @@ SetKernelBlockVisitor::SetKernelBlockVisitor(SPtr<LBMKernel> kernel, LBMReal nue
     }
 }
 
-SetKernelBlockVisitor::SetKernelBlockVisitor(SPtr<LBMKernel> kernel, LBMReal nue, int numberOfProcesses,
+SetKernelBlockVisitor::SetKernelBlockVisitor(SPtr<LBMKernel> kernel, real nue, int numberOfProcesses,
                                              SetKernelBlockVisitor::Action action)
     : Block3DVisitor(0, D3Q27System::MAXLEVEL), kernel(std::move(kernel)), nue(nue), action(action), dataSetFlag(true),
       numberOfProcesses(numberOfProcesses)
@@ -66,7 +66,7 @@ void SetKernelBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
     throwExceptionIfNotEnoughMemory(grid);
 
     if (kernel && (block->getRank() == grid->getRank())) {
-        LBMReal collFactor = LBMSystem::calcCollisionFactor(nue, block->getLevel());
+        real collFactor = LBMSystem::calcCollisionFactor(nue, block->getLevel());
         kernel->setCollisionFactor(collFactor);
         kernel->setIndex(block->getX1(), block->getX2(), block->getX3());
         kernel->setDeltaT(LBMSystem::getDeltaT(block->getLevel()));
@@ -122,7 +122,7 @@ void SetKernelBlockVisitor::throwExceptionIfNotEnoughMemory(const SPtr<Grid3D> &
         throw UbException(UB_EXARGS, "SetKernelBlockVisitor: Not enough memory!!!");
 }
 
-double SetKernelBlockVisitor::getRequiredPhysicalMemory(const SPtr<Grid3D> &grid) const
+real SetKernelBlockVisitor::getRequiredPhysicalMemory(const SPtr<Grid3D> &grid) const
 {
     unsigned long long numberOfNodesPerBlockWithGhostLayer;
     auto numberOfBlocks = (unsigned long long)grid->getNumberOfBlocks();
@@ -133,7 +133,7 @@ double SetKernelBlockVisitor::getRequiredPhysicalMemory(const SPtr<Grid3D> &grid
                                           (val<2>(blockNx) + ghostLayer) * (val<3>(blockNx) + ghostLayer);
 
     auto needMemAll =
-        double(numberOfNodesPerBlockWithGhostLayer * (27 * sizeof(double) + sizeof(int) + sizeof(float) * 4));
+        real(numberOfNodesPerBlockWithGhostLayer * (27 * sizeof(real) + sizeof(int) + sizeof(float) * 4));
 
-    return needMemAll / double(numberOfProcesses);
+    return needMemAll / real(numberOfProcesses);
 }

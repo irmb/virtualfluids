@@ -13,11 +13,10 @@ git clone https://github.com/irmb/test_data regression-tests/reference_data
 #    by cloning our meshio patch and fieldcompare into a venv
 python3 -m venv .venv
 source .venv/bin/activate
-pip install rich
-pip install git+https://github.com/soerenPeters/meshio@update-pyproject-version
-pip install git+https://gitlab.com/dglaeser/fieldcompare
+pip install fieldcompare
 
 # 3. Running the specific tests
+./regression-tests/driven_cavity_uniform_test.sh
 ./regression-tests/driven_cavity_test.sh
 
 

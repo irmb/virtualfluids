@@ -19,7 +19,7 @@ public:
     ~MPIIOCoProcessor() override;
 
     //! Each timestep writes the grid into the files
-    void process(double step) override = 0;
+    void process(real step) override = 0;
 
     //! Writes the blocks of the grid into the file cpBlocks.bin
     void writeBlocks(int step);

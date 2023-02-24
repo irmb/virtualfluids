@@ -97,25 +97,25 @@ void InitDistributionsBlockVisitor::setRho(const std::string &muParserString)
     this->checkFunction(muRho);
 }
 //////////////////////////////////////////////////////////////////////////
-void InitDistributionsBlockVisitor::setVx1(LBMReal vx1)
+void InitDistributionsBlockVisitor::setVx1(real vx1)
 {
     this->muVx1.SetExpr(UbSystem::toString(vx1, D3Q27RealLim::digits10));
     this->checkFunction(muVx1);
 }
 //////////////////////////////////////////////////////////////////////////
-void InitDistributionsBlockVisitor::setVx2(LBMReal vx2)
+void InitDistributionsBlockVisitor::setVx2(real vx2)
 {
     this->muVx2.SetExpr(UbSystem::toString(vx2, D3Q27RealLim::digits10));
     this->checkFunction(muVx2);
 }
 //////////////////////////////////////////////////////////////////////////
-void InitDistributionsBlockVisitor::setVx3(LBMReal vx3)
+void InitDistributionsBlockVisitor::setVx3(real vx3)
 {
     this->muVx3.SetExpr(UbSystem::toString(vx3, D3Q27RealLim::digits10));
     this->checkFunction(muVx3);
 }
 //////////////////////////////////////////////////////////////////////////
-void InitDistributionsBlockVisitor::setRho(LBMReal rho)
+void InitDistributionsBlockVisitor::setRho(real rho)
 {
     this->muRho.SetExpr(UbSystem::toString(rho, D3Q27RealLim::digits10));
     this->checkFunction(muRho);
@@ -124,10 +124,11 @@ void InitDistributionsBlockVisitor::setRho(LBMReal rho)
 void InitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D> block)
 {
    using namespace D3Q27System;
+   using namespace vf::lbm::dir;
 
    if(!block) UB_THROW( UbException(UB_EXARGS,"block is not exist") );
 
-   double dx = grid->getDeltaX(block);
+   real dx = grid->getDeltaX(block);
 
    //define vars for functions
    mu::value_type x1,x2,x3;
@@ -136,11 +137,11 @@ void InitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D>
    this->muVx3.DefineVar("x1",&x1); this->muVx3.DefineVar("x2",&x2); this->muVx3.DefineVar("x3",&x3);
    this->muRho.DefineVar("x1",&x1); this->muRho.DefineVar("x2",&x2); this->muRho.DefineVar("x3",&x3);
 
-    using CalcFeqsFct = void (*)(LBMReal *const & /*feq[27]*/, const LBMReal & /*(d)rho*/, const LBMReal & /*vx1*/,
-                                 const LBMReal & /*vx2*/, const LBMReal & /*vx3*/);
+    using CalcFeqsFct = void (*)(real *const & /*feq[27]*/, const real & /*(d)rho*/, const real & /*vx1*/,
+                                 const real & /*vx2*/, const real & /*vx3*/);
     CalcFeqsFct calcFeqsFct = NULL;
    
-   LBMReal vx1, vx2, vx3, rho;
+   real vx1, vx2, vx3, rho;
 
    int gridRank = grid->getRank();
    int blockRank = block->getRank();
@@ -159,9 +160,9 @@ void InitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D>
       SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
       SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();  
 
-      LBMReal o  = kernel->getCollisionFactor();
+      real o  = kernel->getCollisionFactor();
 
-      LBMReal f[D3Q27System::ENDF+1];
+      real f[D3Q27System::ENDF+1];
 
       for(std::size_t ix3=0; ix3<bcArray->getNX3(); ix3++)
          for(std::size_t ix2=0; ix2<bcArray->getNX2(); ix2++)
@@ -178,73 +179,73 @@ void InitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D>
                rho = muRho.Eval();
 
                //x-derivative
-               double deltaX=dx*0.5;
+               real deltaX=dx*0.5;
                x1 = coords[0]+deltaX;
-               double vx1Plusx1 = muVx1.Eval();
-               double vx2Plusx1 = muVx2.Eval();
-               double vx3Plusx1 = muVx3.Eval();
+               real vx1Plusx1 = muVx1.Eval();
+               real vx2Plusx1 = muVx2.Eval();
+               real vx3Plusx1 = muVx3.Eval();
 
                x1 = coords[0]-deltaX;
-               double vx1Minusx1 = muVx1.Eval();
-               double vx2Minusx1 = muVx2.Eval();
-               double vx3Minusx1 = muVx3.Eval();
+               real vx1Minusx1 = muVx1.Eval();
+               real vx2Minusx1 = muVx2.Eval();
+               real vx3Minusx1 = muVx3.Eval();
 
                //y-derivative
                x1 = coords[0];
                x2 = coords[1]+deltaX;
-               double vx1Plusx2 = muVx1.Eval();
-               double vx2Plusx2 = muVx2.Eval();
-               double vx3Plusx2 = muVx3.Eval();
+               real vx1Plusx2 = muVx1.Eval();
+               real vx2Plusx2 = muVx2.Eval();
+               real vx3Plusx2 = muVx3.Eval();
 
                x2 = coords[1]-deltaX;
-               double vx1Minusx2 = muVx1.Eval();
-               double vx2Minusx2 = muVx2.Eval();
-               double vx3Minusx2 = muVx3.Eval();
+               real vx1Minusx2 = muVx1.Eval();
+               real vx2Minusx2 = muVx2.Eval();
+               real vx3Minusx2 = muVx3.Eval();
 
                //z-derivative
                x2 = coords[1];
                x3 = coords[2]+deltaX;
-               double vx1Plusx3 = muVx1.Eval();
-               double vx2Plusx3 = muVx2.Eval();
-               double vx3Plusx3 = muVx3.Eval();
+               real vx1Plusx3 = muVx1.Eval();
+               real vx2Plusx3 = muVx2.Eval();
+               real vx3Plusx3 = muVx3.Eval();
 
                x3 = coords[2]-deltaX;
-               double vx1Minusx3 = muVx1.Eval();
-               double vx2Minusx3 = muVx2.Eval();
-               double vx3Minusx3 = muVx3.Eval();
+               real vx1Minusx3 = muVx1.Eval();
+               real vx2Minusx3 = muVx2.Eval();
+               real vx3Minusx3 = muVx3.Eval();
 
-               double ax=(vx1Plusx1-vx1Minusx1)/(2.0*deltaX)*dx;
-               double bx=(vx2Plusx1-vx2Minusx1)/(2.0*deltaX)*dx;
-               double cx=(vx3Plusx1-vx3Minusx1)/(2.0*deltaX)*dx;
+               real ax=(vx1Plusx1-vx1Minusx1)/(2.0*deltaX)*dx;
+               real bx=(vx2Plusx1-vx2Minusx1)/(2.0*deltaX)*dx;
+               real cx=(vx3Plusx1-vx3Minusx1)/(2.0*deltaX)*dx;
 
-               double ay=(vx1Plusx2-vx1Minusx2)/(2.0*deltaX)*dx;
-               double by=(vx2Plusx2-vx2Minusx2)/(2.0*deltaX)*dx;
-               double cy=(vx3Plusx2-vx3Minusx2)/(2.0*deltaX)*dx;
+               real ay=(vx1Plusx2-vx1Minusx2)/(2.0*deltaX)*dx;
+               real by=(vx2Plusx2-vx2Minusx2)/(2.0*deltaX)*dx;
+               real cy=(vx3Plusx2-vx3Minusx2)/(2.0*deltaX)*dx;
 
-               double az=(vx1Plusx3-vx1Minusx3)/(2.0*deltaX)*dx;
-               double bz=(vx2Plusx3-vx2Minusx3)/(2.0*deltaX)*dx;
-               double cz=(vx3Plusx3-vx3Minusx3)/(2.0*deltaX)*dx;
-               double eps_new=1.0;
-               LBMReal op = 1.;
+               real az=(vx1Plusx3-vx1Minusx3)/(2.0*deltaX)*dx;
+               real bz=(vx2Plusx3-vx2Minusx3)/(2.0*deltaX)*dx;
+               real cz=(vx3Plusx3-vx3Minusx3)/(2.0*deltaX)*dx;
+               real eps_new=1.0;
+               real op = 1.;
 
-               LBMReal feq[27];
+               real feq[27];
 
                calcFeqsFct(feq,rho,vx1,vx2,vx3);
 
-               double f_E    = eps_new *((5.*ax*o + 5.*by*o + 5.*cz*o - 8.*ax*op + 4.*by*op + 4.*cz*op)/(54.*o*op));
-               double f_N    = f_E + eps_new *((2.*(ax - by))/(9.*o));
-               double f_T    = f_E + eps_new *((2.*(ax - cz))/(9.*o));
-               double f_NE   = eps_new *(-(5.*cz*o + 3.*(ay + bx)*op - 2.*cz*op + ax*(5.*o + op) + by*(5.*o + op))/(54.*o*op));
-               double f_SE   = f_NE + eps_new *((  ay + bx )/(9.*o));
-               double f_TE   = eps_new *(-(5.*cz*o + by*(5.*o - 2.*op) + 3.*(az + cx)*op + cz*op + ax*(5.*o + op))/(54.*o*op));
-               double f_BE   = f_TE + eps_new *((  az + cx )/(9.*o));
-               double f_TN   = eps_new *(-(5.*ax*o + 5.*by*o + 5.*cz*o - 2.*ax*op + by*op + 3.*bz*op + 3.*cy*op + cz*op)/(54.*o*op));
-               double f_BN   = f_TN + eps_new *((  bz + cy )/(9.*o));
-               double f_ZERO = eps_new *((5.*(ax + by + cz))/(9.*op));
-               double f_TNE  = eps_new *(-(ay + az + bx + bz + cx + cy)/(72.*o));
-               double f_TSW  = - eps_new *((ay + bx)/(36.*o)) - f_TNE;
-               double f_TSE  = - eps_new *((az + cx)/(36.*o)) - f_TNE;
-               double f_TNW  = - eps_new *((bz + cy)/(36.*o)) - f_TNE;
+               real f_E    = eps_new *((5.*ax*o + 5.*by*o + 5.*cz*o - 8.*ax*op + 4.*by*op + 4.*cz*op)/(54.*o*op));
+               real f_N    = f_E + eps_new *((2.*(ax - by))/(9.*o));
+               real f_T    = f_E + eps_new *((2.*(ax - cz))/(9.*o));
+               real f_NE   = eps_new *(-(5.*cz*o + 3.*(ay + bx)*op - 2.*cz*op + ax*(5.*o + op) + by*(5.*o + op))/(54.*o*op));
+               real f_SE   = f_NE + eps_new *((  ay + bx )/(9.*o));
+               real f_TE   = eps_new *(-(5.*cz*o + by*(5.*o - 2.*op) + 3.*(az + cx)*op + cz*op + ax*(5.*o + op))/(54.*o*op));
+               real f_BE   = f_TE + eps_new *((  az + cx )/(9.*o));
+               real f_TN   = eps_new *(-(5.*ax*o + 5.*by*o + 5.*cz*o - 2.*ax*op + by*op + 3.*bz*op + 3.*cy*op + cz*op)/(54.*o*op));
+               real f_BN   = f_TN + eps_new *((  bz + cy )/(9.*o));
+               real f_ZERO = eps_new *((5.*(ax + by + cz))/(9.*op));
+               real f_TNE  = eps_new *(-(ay + az + bx + bz + cx + cy)/(72.*o));
+               real f_TSW  = - eps_new *((ay + bx)/(36.*o)) - f_TNE;
+               real f_TSE  = - eps_new *((az + cx)/(36.*o)) - f_TNE;
+               real f_TNW  = - eps_new *((bz + cy)/(36.*o)) - f_TNE;
 
 
                f[DIR_P00]    = f_E    + feq[DIR_P00];
@@ -297,7 +298,7 @@ void InitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D>
 //////////////////////////////////////////////////////////////////////////
 void InitDistributionsBlockVisitor::checkFunction(mu::Parser fct)
 {
-    double x1 = 1.0, x2 = 1.0, x3 = 1.0;
+    real x1 = 1.0, x2 = 1.0, x3 = 1.0;
     fct.DefineVar("x1", &x1);
     fct.DefineVar("x2", &x2);
     fct.DefineVar("x3", &x3);

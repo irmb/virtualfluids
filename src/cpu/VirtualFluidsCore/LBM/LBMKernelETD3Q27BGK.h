@@ -14,21 +14,21 @@ public:
    ~LBMKernelETD3Q27BGK() override;
    void calculate(int step)override;
    SPtr<LBMKernel> clone()override;
-   double getCalculationTime() override;
+   real getCalculationTime() override;
 
 private:
    void initDataSet();
    //void collideAllCompressible();
    //void collideAllIncompressible();
 
-   CbArray4D<LBMReal,IndexerX4X3X2X1>::CbArray4DPtr localDistributions;
-   CbArray4D<LBMReal,IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions;
-   CbArray3D<LBMReal,IndexerX3X2X1>::CbArray3DPtr   zeroDistributions;
+   CbArray4D<real,IndexerX4X3X2X1>::CbArray4DPtr localDistributions;
+   CbArray4D<real,IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions;
+   CbArray3D<real,IndexerX3X2X1>::CbArray3DPtr   zeroDistributions;
 
    mu::value_type muX1,muX2,muX3;
-   LBMReal forcingX1;
-   LBMReal forcingX2;
-   LBMReal forcingX3;
+   real forcingX1;
+   real forcingX2;
+   real forcingX3;
 
 
 };

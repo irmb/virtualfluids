@@ -64,12 +64,12 @@ public:
                                        WbWriter *const writer, std::shared_ptr<vf::mpi::Communicator> comm);
     ~WriteBoundaryConditionsCoProcessor() override = default;
 
-    void process(double step) override;
+    void process(real step) override;
 
 protected:
     //! Collect data for VTK-file
     //! \param step is a time step
-    void collectData(double step);
+    void collectData(real step);
     void addDataGeo(SPtr<Block3D> block);
     void clearData();
 
@@ -77,7 +77,7 @@ private:
     std::vector<UbTupleFloat3> nodes;
     std::vector<UbTupleUInt8> cells;
     std::vector<std::string> datanames;
-    std::vector<std::vector<double>> data;
+    std::vector<std::vector<real>> data;
     std::string path;
     WbWriter *writer;
     std::vector<std::vector<SPtr<Block3D>>> blockVector;

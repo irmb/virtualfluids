@@ -104,6 +104,8 @@ void SetConnectorsBlockVisitor<T1, T2>::visit(SPtr<Grid3D> grid, SPtr<Block3D> b
 template <class T1, class T2>
 void SetConnectorsBlockVisitor<T1, T2>::setSameLevelConnectors(SPtr<Grid3D> grid, SPtr<Block3D> block)
 {
+    using namespace vf::lbm::dir;
+
     UBLOG(logDEBUG5, "SetConnectorsBlockVisitor::setSameLevelConnectors() - start");
     int blockRank = block->getRank();
     if (gridRank == blockRank && block->isActive()) {
@@ -114,7 +116,7 @@ void SetConnectorsBlockVisitor<T1, T2>::setSameLevelConnectors(SPtr<Grid3D> grid
         int ix3   = block->getX3();
         int level = block->getLevel();
 
-        for (int dir = D3Q27System::STARTDIR; dir <= D3Q27System::ENDDIR; dir++) {
+        for (int dir = D3Q27System::FSTARTDIR; dir <= D3Q27System::FENDDIR; dir++) { 
             SPtr<Block3D> neighBlock = grid->getNeighborBlock(dir, ix1, ix2, ix3, level);
 
             if (neighBlock) {
@@ -126,7 +128,7 @@ void SetConnectorsBlockVisitor<T1, T2>::setSameLevelConnectors(SPtr<Grid3D> grid
                 } else if (blockRank != neighBlockRank && neighBlock->isActive()) {
                     setRemoteConnectors(block, neighBlock, dir);
 
-                    if (dir >= D3Q27System::DIR_P00 && dir <= D3Q27System::DIR_00M) {
+                    if (dir >= (int)DIR_P00 && dir <= (int)DIR_00M) {
                         int weight = block->getWeight(neighBlockRank);
                         weight++;
                         block->setWeight(neighBlockRank, weight);

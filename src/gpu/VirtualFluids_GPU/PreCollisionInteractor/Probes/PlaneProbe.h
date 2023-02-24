@@ -54,7 +54,7 @@ public:
     ): Probe(_probeName, 
              _outputPath,
              _tStartAvg, 
-             0,
+             _tStartAvg+1,
              _tAvg,
              _tStartOut, 
              _tOut,
@@ -71,6 +71,8 @@ public:
         this->deltaY = _deltaY; 
         this->deltaZ = _deltaZ; 
     }
+
+    void getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider) override;
 
 private:
     bool isAvailableStatistic(Statistic _variable) override;

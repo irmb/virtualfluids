@@ -71,7 +71,7 @@ void WriteThixotropyQuantitiesCoProcessor::init()
 
 }
 //////////////////////////////////////////////////////////////////////////
-void WriteThixotropyQuantitiesCoProcessor::process(double step)
+void WriteThixotropyQuantitiesCoProcessor::process(real step)
 {
 	if (scheduler->isDue(step))
 		collectData(step);
@@ -79,7 +79,7 @@ void WriteThixotropyQuantitiesCoProcessor::process(double step)
 	UBLOG(logDEBUG3, "WriteThixotropyQuantitiesCoProcessor::update:" << step);
 }
 //////////////////////////////////////////////////////////////////////////
-void WriteThixotropyQuantitiesCoProcessor::collectData(double step)
+void WriteThixotropyQuantitiesCoProcessor::collectData(real step)
 {
 	int istep = static_cast<int>(step);
 	//ConcentrationSum = 0;
@@ -144,7 +144,7 @@ void WriteThixotropyQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 {
 	UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);;
 	UbTupleDouble3 nodeOffset = grid->getNodeOffset(block);
-	double         dx = grid->getDeltaX(block);
+	real         dx = grid->getDeltaX(block);
 
 	//double level = (double)block->getLevel();
 	//double blockID = (double)block->getGlobalID();
@@ -174,8 +174,8 @@ void WriteThixotropyQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
    SPtr<DistributionArray3D> distributionsF = kernel->getDataSet()->getFdistributions(); 
 	//SPtr<DistributionArray3D> distributionsH = kernel->getDataSet()->getHdistributions();
 	//LBMReal collFactorF = staticPointerCast<ThixotropyExpLBMKernel>(kernel)->getCollisionFactorF();
-	LBMReal collFactor = kernel->getCollisionFactor();
-	LBMReal f[D3Q27System::ENDF + 1];
+	real collFactor = kernel->getCollisionFactor();
+	real f[D3Q27System::ENDF + 1];
 	//LBMReal h[D3Q27System::ENDF + 1];
 	//LBMReal viscosity=0; // lambda, gammaDot;
 	
@@ -243,12 +243,12 @@ void WriteThixotropyQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 					//data[index++].push_back(collFactorF);
 
 					distributionsF->getDistribution(f, ix1, ix2, ix3);
-					LBMReal rho = D3Q27System::getDensity(f);
-					LBMReal shearRate = D3Q27System::getShearRate(f, collFactor);
+					real rho = D3Q27System::getDensity(f);
+					real shearRate = D3Q27System::getShearRate(f, collFactor);
 					//LBMReal omega = Rheology::getHerschelBulkleyCollFactor(collFactor, shearRate, rho);
 					//LBMReal omega = Rheology::getPowellEyringCollFactor(collFactor, shearRate, rho);
-					LBMReal omega = Rheology::getBinghamCollFactor(collFactor, shearRate, rho);
-					LBMReal viscosity = (omega == 0) ? 0 : UbMath::c1o3 * (UbMath::c1/omega-UbMath::c1o2);
+					real omega = Rheology::getBinghamCollFactor(collFactor, shearRate, rho);
+					real viscosity = (omega == 0) ? 0 : vf::lbm::constant::c1o3 * (vf::lbm::constant::c1o1/omega- vf::lbm::constant::c1o2);
 
 					
 					data[index++].push_back(viscosity);

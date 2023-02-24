@@ -42,15 +42,15 @@ void RheologyNoSlipBCAlgorithm::addDistributions(SPtr<DistributionArray3D> distr
 //////////////////////////////////////////////////////////////////////////
 void RheologyNoSlipBCAlgorithm::applyBC()
 {
-   LBMReal f[D3Q27System::ENDF + 1];
-   LBMReal feq[D3Q27System::ENDF + 1];
+   real f[D3Q27System::ENDF + 1];
+   real feq[D3Q27System::ENDF + 1];
    distributions->getDistribution(f, x1, x2, x3);
-   LBMReal rho, vx1, vx2, vx3;
+   real rho, vx1, vx2, vx3;
    calcMacrosFct(f, rho, vx1, vx2, vx3);
    calcFeqFct(feq, rho, vx1, vx2, vx3);
 
-   LBMReal shearRate = D3Q27System::getShearRate(f, collFactor);
-   LBMReal collFactorF = getRheologyCollFactor(collFactor, shearRate, rho);
+   real shearRate = D3Q27System::getShearRate(f, collFactor);
+   real collFactorF = getRheologyCollFactor(collFactor, shearRate, rho);
 
    for (int fDir = D3Q27System::FSTARTDIR; fDir <= D3Q27System::FENDDIR; fDir++)
    {
@@ -58,8 +58,8 @@ void RheologyNoSlipBCAlgorithm::applyBC()
       {
          //quadratic bounce back
          const int invDir = D3Q27System::INVDIR[fDir];
-         LBMReal q = bcPtr->getQ(invDir);
-         LBMReal fReturn =(f[invDir] + q * f[fDir] + q * collFactorF * (feq[invDir] - f[invDir] + feq[fDir] - f[fDir])) / (1.0 + q);
+         real q = bcPtr->getQ(invDir);
+         real fReturn =(f[invDir] + q * f[fDir] + q * collFactorF * (feq[invDir] - f[invDir] + feq[fDir] - f[fDir])) / (1.0 + q);
          distributions->setDistributionInvForDirection(fReturn, x1 + D3Q27System::DX1[invDir], x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir], invDir);
       }
    }

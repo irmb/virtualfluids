@@ -110,6 +110,8 @@ void MetisPartitioningGridVisitor::distributePartitionData(SPtr<Grid3D> grid, Pa
 //////////////////////////////////////////////////////////////////////////
 void MetisPartitioningGridVisitor::buildMetisGraphLevelIntersected(SPtr<Grid3D> grid, int nofSegments, PartLevel level)
 {
+    using namespace vf::lbm::dir;
+
     int edges                       = 0;
     const int edgeWeight            = 1;
     const int edgeWeightChildFactor = 8;
@@ -133,7 +135,7 @@ void MetisPartitioningGridVisitor::buildMetisGraphLevelIntersected(SPtr<Grid3D> 
             // the weights of the vertices are 2^level of grid (1, 2, 4, 8 .....) 1<<level
             metis.vwgt.push_back((idx_t)(1 << block->getLevel()));
 
-            for (int dir = D3Q27System::DIR_P00; dir <= numOfDirs; dir++) {
+            for (int dir = (int)DIR_P00; dir <= numOfDirs; dir++) {
                 SPtr<Block3D> neighBlock = grid->getNeighborBlock(dir, block);
                 if (neighBlock) {
                     if (this->getPartitionCondition(neighBlock, level)) {
@@ -169,6 +171,8 @@ void MetisPartitioningGridVisitor::buildMetisGraphLevelIntersected(SPtr<Grid3D> 
 //////////////////////////////////////////////////////////////////////////
 void MetisPartitioningGridVisitor::buildMetisGraphLevelBased(SPtr<Grid3D> grid, int nofSegments, PartLevel level)
 {
+    using namespace vf::lbm::dir;
+
     int minInitLevel = grid->getCoarsestInitializedLevel();
     int maxInitLevel = grid->getFinestInitializedLevel();
 
@@ -200,7 +204,7 @@ void MetisPartitioningGridVisitor::buildMetisGraphLevelBased(SPtr<Grid3D> grid, 
             metis.xadj.push_back(edges);
             metis.vwgt.push_back(vertexWeight);
 
-            for (int dir = D3Q27System::DIR_P00; dir <= numOfDirs; dir++) {
+            for (int dir = (int)DIR_P00; dir <= numOfDirs; dir++) {
                 SPtr<Block3D> neighBlock = grid->getNeighborBlock(dir, block);
                 if (neighBlock) {
                     if (this->getPartitionCondition(neighBlock, level)) {
@@ -256,11 +260,13 @@ void MetisPartitioningGridVisitor::clear()
 int MetisPartitioningGridVisitor::getEdgeWeight(int dir)
 {
     using namespace D3Q27System;
-    if (dir <= DIR_00M) {
+    using namespace vf::lbm::dir;
+
+    if (dir <= (int)DIR_00M) {
         return 100;
-    } else if (dir >= DIR_PP0 && dir <= DIR_0MP) {
+    } else if (dir >= (int)DIR_PP0 && dir <= (int)DIR_0MP) {
         return 10;
-    } else if (dir >= DIR_PPP) {
+    } else if (dir >= (int)DIR_PPP) {
         return 1;
     }
 

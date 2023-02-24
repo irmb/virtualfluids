@@ -51,13 +51,13 @@ public:
     virtual ~MultiphasePressureFilterLBMKernel(void) = default;
     void calculate(int step) override;
     SPtr<LBMKernel> clone() override;
-    double getCalculationTime() override { return .0; }
+    real getCalculationTime() override { return .0; }
 
-    void setPhaseFieldBC(LBMReal bc)
+    void setPhaseFieldBC(real bc)
     {
         phaseFieldBC = bc;
     }
-    LBMReal getPhaseFieldBC()
+    real getPhaseFieldBC()
     {
         return phaseFieldBC;
     }
@@ -68,44 +68,44 @@ protected:
 
     void initForcing();
 
-    void forwardInverseChimeraWithKincompressible(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2, LBMReal Kinverse, LBMReal K, LBMReal oneMinusRho);
-    void backwardInverseChimeraWithKincompressible(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2, LBMReal Kinverse, LBMReal K, LBMReal oneMinusRho);
-    void forwardChimera(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2);
-    void backwardChimera(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2);
+    void forwardInverseChimeraWithKincompressible(real& mfa, real& mfb, real& mfc, real vv, real v2, real Kinverse, real K, real oneMinusRho);
+    void backwardInverseChimeraWithKincompressible(real& mfa, real& mfb, real& mfc, real vv, real v2, real Kinverse, real K, real oneMinusRho);
+    void forwardChimera(real& mfa, real& mfb, real& mfc, real vv, real v2);
+    void backwardChimera(real& mfa, real& mfb, real& mfc, real vv, real v2);
 
-    CbArray4D<LBMReal,IndexerX4X3X2X1>::CbArray4DPtr localDistributionsF;
-    CbArray4D<LBMReal,IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsF;
-    CbArray3D<LBMReal,IndexerX3X2X1>::CbArray3DPtr   zeroDistributionsF;
+    CbArray4D<real,IndexerX4X3X2X1>::CbArray4DPtr localDistributionsF;
+    CbArray4D<real,IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsF;
+    CbArray3D<real,IndexerX3X2X1>::CbArray3DPtr   zeroDistributionsF;
 
-    CbArray4D<LBMReal,IndexerX4X3X2X1>::CbArray4DPtr localDistributionsH1;
-    CbArray4D<LBMReal,IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsH1;
-    CbArray3D<LBMReal,IndexerX3X2X1>::CbArray3DPtr   zeroDistributionsH1;
+    CbArray4D<real,IndexerX4X3X2X1>::CbArray4DPtr localDistributionsH1;
+    CbArray4D<real,IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsH1;
+    CbArray3D<real,IndexerX3X2X1>::CbArray3DPtr   zeroDistributionsH1;
 
-    CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr pressureOld;
+    CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr pressureOld;
 
-    CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr phaseField;
-    CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr divU; 
+    CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr phaseField;
+    CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr divU; 
 
-    LBMReal h  [D3Q27System::ENDF+1];
-    LBMReal phi[D3Q27System::ENDF+1];
+    real h  [D3Q27System::ENDF+1];
+    real phi[D3Q27System::ENDF+1];
 
-    LBMReal gradX1_phi();
-    LBMReal gradX2_phi();
-    LBMReal gradX3_phi();
+    real gradX1_phi();
+    real gradX2_phi();
+    real gradX3_phi();
     void computePhasefield();
-    void findNeighbors(CbArray3D<LBMReal,IndexerX3X2X1>::CbArray3DPtr ph /*Phase-Field*/, int x1, int x2, int x3);
+    void findNeighbors(CbArray3D<real,IndexerX3X2X1>::CbArray3DPtr ph /*Phase-Field*/, int x1, int x2, int x3);
 
-    LBMReal nabla2_phi();
+    real nabla2_phi();
 
     mu::value_type muX1,muX2,muX3;
     mu::value_type muDeltaT;
     mu::value_type muNu;
     mu::value_type muRho;
-    LBMReal forcingX1;
-    LBMReal forcingX2;
-    LBMReal forcingX3;
+    real forcingX1;
+    real forcingX2;
+    real forcingX3;
 
-    LBMReal phaseFieldBC { 0.0 }; // if 0.0 then light fluid on the wall, else if 1.0 havy fluid
+    real phaseFieldBC { 0.0 }; // if 0.0 then light fluid on the wall, else if 1.0 havy fluid
 };
 
 #endif

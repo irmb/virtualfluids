@@ -19,7 +19,7 @@
 //   }
 //}
 //////////////////////////////////////////////////////////////////////////
-MultiphaseSetKernelBlockVisitor::MultiphaseSetKernelBlockVisitor(SPtr<LBMKernel> kernel, LBMReal nuL, LBMReal nuG, double availMem, double needMem, MultiphaseSetKernelBlockVisitor::Action action /*= SetKernelBlockVisitor::New*/) :
+MultiphaseSetKernelBlockVisitor::MultiphaseSetKernelBlockVisitor(SPtr<LBMKernel> kernel, real nuL, real nuG, real availMem, real needMem, MultiphaseSetKernelBlockVisitor::Action action /*= SetKernelBlockVisitor::New*/) :
 	Block3DVisitor(0, D3Q27System::MAXLEVEL), kernel(kernel), nuL(nuL), nuG(nuG), action(action), dataSetFlag(true)
 {
 	if (needMem > availMem)
@@ -32,8 +32,8 @@ void MultiphaseSetKernelBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> blo
 {
 	if(kernel && (block->getRank() == grid->getRank()))
 	{
-		LBMReal collFactorL = LBMSystem::calcCollisionFactor(nuL, block->getLevel());
-		LBMReal collFactorG = LBMSystem::calcCollisionFactor(nuG, block->getLevel());
+		real collFactorL = LBMSystem::calcCollisionFactor(nuL, block->getLevel());
+		real collFactorG = LBMSystem::calcCollisionFactor(nuG, block->getLevel());
 		kernel->setCollisionFactorMultiphase(collFactorL, collFactorG);
 
 		kernel->setIndex(block->getX1(), block->getX2(), block->getX3());

@@ -45,7 +45,7 @@ __global__ void CalcConc27(
 	uint* neighborX,
 	uint* neighborY,
 	uint* neighborZ,
-	uint size_Mat,
+	unsigned long long numberOfLBnodes,
 	real* distributionsAD,
 	bool isEvenTimestep)
 {
@@ -67,7 +67,7 @@ __global__ void CalcConc27(
 
    //////////////////////////////////////////////////////////////////////////
    // run for all indices in size_Mat and fluid nodes
-   if ((k < size_Mat) && (typeOfGridNode[k] == GEO_FLUID))
+   if ((k < numberOfLBnodes) && (typeOfGridNode[k] == GEO_FLUID))
    {
       //////////////////////////////////////////////////////////////////////////
       //! - Read distributions: style of reading and writing the distributions from/to stored arrays dependent on timestep is based on the esoteric twist algorithm \ref
@@ -76,63 +76,63 @@ __global__ void CalcConc27(
       Distributions27 distAD;
       if (isEvenTimestep)
       {
-         distAD.f[DIR_P00   ] = &distributionsAD[DIR_P00   *size_Mat];
-         distAD.f[DIR_M00   ] = &distributionsAD[DIR_M00   *size_Mat];
-         distAD.f[DIR_0P0   ] = &distributionsAD[DIR_0P0   *size_Mat];
-         distAD.f[DIR_0M0   ] = &distributionsAD[DIR_0M0   *size_Mat];
-         distAD.f[DIR_00P   ] = &distributionsAD[DIR_00P   *size_Mat];
-         distAD.f[DIR_00M   ] = &distributionsAD[DIR_00M   *size_Mat];
-         distAD.f[DIR_PP0  ] = &distributionsAD[DIR_PP0  *size_Mat];
-         distAD.f[DIR_MM0  ] = &distributionsAD[DIR_MM0  *size_Mat];
-         distAD.f[DIR_PM0  ] = &distributionsAD[DIR_PM0  *size_Mat];
-         distAD.f[DIR_MP0  ] = &distributionsAD[DIR_MP0  *size_Mat];
-         distAD.f[DIR_P0P  ] = &distributionsAD[DIR_P0P  *size_Mat];
-         distAD.f[DIR_M0M  ] = &distributionsAD[DIR_M0M  *size_Mat];
-         distAD.f[DIR_P0M  ] = &distributionsAD[DIR_P0M  *size_Mat];
-         distAD.f[DIR_M0P  ] = &distributionsAD[DIR_M0P  *size_Mat];
-         distAD.f[DIR_0PP  ] = &distributionsAD[DIR_0PP  *size_Mat];
-         distAD.f[DIR_0MM  ] = &distributionsAD[DIR_0MM  *size_Mat];
-         distAD.f[DIR_0PM  ] = &distributionsAD[DIR_0PM  *size_Mat];
-         distAD.f[DIR_0MP  ] = &distributionsAD[DIR_0MP  *size_Mat];
-         distAD.f[DIR_000] = &distributionsAD[DIR_000*size_Mat];
-         distAD.f[DIR_PPP ] = &distributionsAD[DIR_PPP *size_Mat];
-         distAD.f[DIR_MMP ] = &distributionsAD[DIR_MMP *size_Mat];
-         distAD.f[DIR_PMP ] = &distributionsAD[DIR_PMP *size_Mat];
-         distAD.f[DIR_MPP ] = &distributionsAD[DIR_MPP *size_Mat];
-         distAD.f[DIR_PPM ] = &distributionsAD[DIR_PPM *size_Mat];
-         distAD.f[DIR_MMM ] = &distributionsAD[DIR_MMM *size_Mat];
-         distAD.f[DIR_PMM ] = &distributionsAD[DIR_PMM *size_Mat];
-         distAD.f[DIR_MPM ] = &distributionsAD[DIR_MPM *size_Mat];
+         distAD.f[DIR_P00] = &distributionsAD[DIR_P00 * numberOfLBnodes];
+         distAD.f[DIR_M00] = &distributionsAD[DIR_M00 * numberOfLBnodes];
+         distAD.f[DIR_0P0] = &distributionsAD[DIR_0P0 * numberOfLBnodes];
+         distAD.f[DIR_0M0] = &distributionsAD[DIR_0M0 * numberOfLBnodes];
+         distAD.f[DIR_00P] = &distributionsAD[DIR_00P * numberOfLBnodes];
+         distAD.f[DIR_00M] = &distributionsAD[DIR_00M * numberOfLBnodes];
+         distAD.f[DIR_PP0] = &distributionsAD[DIR_PP0 * numberOfLBnodes];
+         distAD.f[DIR_MM0] = &distributionsAD[DIR_MM0 * numberOfLBnodes];
+         distAD.f[DIR_PM0] = &distributionsAD[DIR_PM0 * numberOfLBnodes];
+         distAD.f[DIR_MP0] = &distributionsAD[DIR_MP0 * numberOfLBnodes];
+         distAD.f[DIR_P0P] = &distributionsAD[DIR_P0P * numberOfLBnodes];
+         distAD.f[DIR_M0M] = &distributionsAD[DIR_M0M * numberOfLBnodes];
+         distAD.f[DIR_P0M] = &distributionsAD[DIR_P0M * numberOfLBnodes];
+         distAD.f[DIR_M0P] = &distributionsAD[DIR_M0P * numberOfLBnodes];
+         distAD.f[DIR_0PP] = &distributionsAD[DIR_0PP * numberOfLBnodes];
+         distAD.f[DIR_0MM] = &distributionsAD[DIR_0MM * numberOfLBnodes];
+         distAD.f[DIR_0PM] = &distributionsAD[DIR_0PM * numberOfLBnodes];
+         distAD.f[DIR_0MP] = &distributionsAD[DIR_0MP * numberOfLBnodes];
+         distAD.f[DIR_000] = &distributionsAD[DIR_000 * numberOfLBnodes];
+         distAD.f[DIR_PPP] = &distributionsAD[DIR_PPP * numberOfLBnodes];
+         distAD.f[DIR_MMP] = &distributionsAD[DIR_MMP * numberOfLBnodes];
+         distAD.f[DIR_PMP] = &distributionsAD[DIR_PMP * numberOfLBnodes];
+         distAD.f[DIR_MPP] = &distributionsAD[DIR_MPP * numberOfLBnodes];
+         distAD.f[DIR_PPM] = &distributionsAD[DIR_PPM * numberOfLBnodes];
+         distAD.f[DIR_MMM] = &distributionsAD[DIR_MMM * numberOfLBnodes];
+         distAD.f[DIR_PMM] = &distributionsAD[DIR_PMM * numberOfLBnodes];
+         distAD.f[DIR_MPM] = &distributionsAD[DIR_MPM * numberOfLBnodes];
       }
       else
       {
-         distAD.f[DIR_M00   ] = &distributionsAD[DIR_P00   *size_Mat];
-         distAD.f[DIR_P00   ] = &distributionsAD[DIR_M00   *size_Mat];
-         distAD.f[DIR_0M0   ] = &distributionsAD[DIR_0P0   *size_Mat];
-         distAD.f[DIR_0P0   ] = &distributionsAD[DIR_0M0   *size_Mat];
-         distAD.f[DIR_00M   ] = &distributionsAD[DIR_00P   *size_Mat];
-         distAD.f[DIR_00P   ] = &distributionsAD[DIR_00M   *size_Mat];
-         distAD.f[DIR_MM0  ] = &distributionsAD[DIR_PP0  *size_Mat];
-         distAD.f[DIR_PP0  ] = &distributionsAD[DIR_MM0  *size_Mat];
-         distAD.f[DIR_MP0  ] = &distributionsAD[DIR_PM0  *size_Mat];
-         distAD.f[DIR_PM0  ] = &distributionsAD[DIR_MP0  *size_Mat];
-         distAD.f[DIR_M0M  ] = &distributionsAD[DIR_P0P  *size_Mat];
-         distAD.f[DIR_P0P  ] = &distributionsAD[DIR_M0M  *size_Mat];
-         distAD.f[DIR_M0P  ] = &distributionsAD[DIR_P0M  *size_Mat];
-         distAD.f[DIR_P0M  ] = &distributionsAD[DIR_M0P  *size_Mat];
-         distAD.f[DIR_0MM  ] = &distributionsAD[DIR_0PP  *size_Mat];
-         distAD.f[DIR_0PP  ] = &distributionsAD[DIR_0MM  *size_Mat];
-         distAD.f[DIR_0MP  ] = &distributionsAD[DIR_0PM  *size_Mat];
-         distAD.f[DIR_0PM  ] = &distributionsAD[DIR_0MP  *size_Mat];
-         distAD.f[DIR_000] = &distributionsAD[DIR_000*size_Mat];
-         distAD.f[DIR_PPP ] = &distributionsAD[DIR_MMM *size_Mat];
-         distAD.f[DIR_MMP ] = &distributionsAD[DIR_PPM *size_Mat];
-         distAD.f[DIR_PMP ] = &distributionsAD[DIR_MPM *size_Mat];
-         distAD.f[DIR_MPP ] = &distributionsAD[DIR_PMM *size_Mat];
-         distAD.f[DIR_PPM ] = &distributionsAD[DIR_MMP *size_Mat];
-         distAD.f[DIR_MMM ] = &distributionsAD[DIR_PPP *size_Mat];
-         distAD.f[DIR_PMM ] = &distributionsAD[DIR_MPP *size_Mat];
-         distAD.f[DIR_MPM ] = &distributionsAD[DIR_PMP *size_Mat];
+         distAD.f[DIR_M00] = &distributionsAD[DIR_P00 * numberOfLBnodes];
+         distAD.f[DIR_P00] = &distributionsAD[DIR_M00 * numberOfLBnodes];
+         distAD.f[DIR_0M0] = &distributionsAD[DIR_0P0 * numberOfLBnodes];
+         distAD.f[DIR_0P0] = &distributionsAD[DIR_0M0 * numberOfLBnodes];
+         distAD.f[DIR_00M] = &distributionsAD[DIR_00P * numberOfLBnodes];
+         distAD.f[DIR_00P] = &distributionsAD[DIR_00M * numberOfLBnodes];
+         distAD.f[DIR_MM0] = &distributionsAD[DIR_PP0 * numberOfLBnodes];
+         distAD.f[DIR_PP0] = &distributionsAD[DIR_MM0 * numberOfLBnodes];
+         distAD.f[DIR_MP0] = &distributionsAD[DIR_PM0 * numberOfLBnodes];
+         distAD.f[DIR_PM0] = &distributionsAD[DIR_MP0 * numberOfLBnodes];
+         distAD.f[DIR_M0M] = &distributionsAD[DIR_P0P * numberOfLBnodes];
+         distAD.f[DIR_P0P] = &distributionsAD[DIR_M0M * numberOfLBnodes];
+         distAD.f[DIR_M0P] = &distributionsAD[DIR_P0M * numberOfLBnodes];
+         distAD.f[DIR_P0M] = &distributionsAD[DIR_M0P * numberOfLBnodes];
+         distAD.f[DIR_0MM] = &distributionsAD[DIR_0PP * numberOfLBnodes];
+         distAD.f[DIR_0PP] = &distributionsAD[DIR_0MM * numberOfLBnodes];
+         distAD.f[DIR_0MP] = &distributionsAD[DIR_0PM * numberOfLBnodes];
+         distAD.f[DIR_0PM] = &distributionsAD[DIR_0MP * numberOfLBnodes];
+         distAD.f[DIR_000] = &distributionsAD[DIR_000 * numberOfLBnodes];
+         distAD.f[DIR_PPP] = &distributionsAD[DIR_MMM * numberOfLBnodes];
+         distAD.f[DIR_MMP] = &distributionsAD[DIR_PPM * numberOfLBnodes];
+         distAD.f[DIR_PMP] = &distributionsAD[DIR_MPM * numberOfLBnodes];
+         distAD.f[DIR_MPP] = &distributionsAD[DIR_PMM * numberOfLBnodes];
+         distAD.f[DIR_PPM] = &distributionsAD[DIR_MMP * numberOfLBnodes];
+         distAD.f[DIR_MMM] = &distributionsAD[DIR_PPP * numberOfLBnodes];
+         distAD.f[DIR_PMM] = &distributionsAD[DIR_MPP * numberOfLBnodes];
+         distAD.f[DIR_MPM] = &distributionsAD[DIR_PMP * numberOfLBnodes];
       }
 	  ////////////////////////////////////////////////////////////////////////////////
 	  //! - Set neighbor indices (necessary for indirect addressing)
@@ -166,33 +166,33 @@ __global__ void CalcConc27(
 	  ////////////////////////////////////////////////////////////////////////////////
 	  //! - Set local distributions
 	  //!
-	  real mfcbb = (distAD.f[DIR_P00   ])[ke  ];
-	  real mfabb = (distAD.f[DIR_M00   ])[kw  ];
-	  real mfbcb = (distAD.f[DIR_0P0   ])[kn  ];
-	  real mfbab = (distAD.f[DIR_0M0   ])[ks  ];
-	  real mfbbc = (distAD.f[DIR_00P   ])[kt  ];
-	  real mfbba = (distAD.f[DIR_00M   ])[kb  ];
-	  real mfccb = (distAD.f[DIR_PP0  ])[kne ];
-	  real mfaab = (distAD.f[DIR_MM0  ])[ksw ];
-	  real mfcab = (distAD.f[DIR_PM0  ])[kse ];
-	  real mfacb = (distAD.f[DIR_MP0  ])[knw ];
-	  real mfcbc = (distAD.f[DIR_P0P  ])[kte ];
-	  real mfaba = (distAD.f[DIR_M0M  ])[kbw ];
-	  real mfcba = (distAD.f[DIR_P0M  ])[kbe ];
-	  real mfabc = (distAD.f[DIR_M0P  ])[ktw ];
-	  real mfbcc = (distAD.f[DIR_0PP  ])[ktn ];
-	  real mfbaa = (distAD.f[DIR_0MM  ])[kbs ];
-	  real mfbca = (distAD.f[DIR_0PM  ])[kbn ];
-	  real mfbac = (distAD.f[DIR_0MP  ])[kts ];
+	  real mfcbb = (distAD.f[DIR_P00])[ke  ];
+	  real mfabb = (distAD.f[DIR_M00])[kw  ];
+	  real mfbcb = (distAD.f[DIR_0P0])[kn  ];
+	  real mfbab = (distAD.f[DIR_0M0])[ks  ];
+	  real mfbbc = (distAD.f[DIR_00P])[kt  ];
+	  real mfbba = (distAD.f[DIR_00M])[kb  ];
+	  real mfccb = (distAD.f[DIR_PP0])[kne ];
+	  real mfaab = (distAD.f[DIR_MM0])[ksw ];
+	  real mfcab = (distAD.f[DIR_PM0])[kse ];
+	  real mfacb = (distAD.f[DIR_MP0])[knw ];
+	  real mfcbc = (distAD.f[DIR_P0P])[kte ];
+	  real mfaba = (distAD.f[DIR_M0M])[kbw ];
+	  real mfcba = (distAD.f[DIR_P0M])[kbe ];
+	  real mfabc = (distAD.f[DIR_M0P])[ktw ];
+	  real mfbcc = (distAD.f[DIR_0PP])[ktn ];
+	  real mfbaa = (distAD.f[DIR_0MM])[kbs ];
+	  real mfbca = (distAD.f[DIR_0PM])[kbn ];
+	  real mfbac = (distAD.f[DIR_0MP])[kts ];
 	  real mfbbb = (distAD.f[DIR_000])[k   ];
-	  real mfccc = (distAD.f[DIR_PPP ])[ktne];
-	  real mfaac = (distAD.f[DIR_MMP ])[ktsw];
-	  real mfcac = (distAD.f[DIR_PMP ])[ktse];
-	  real mfacc = (distAD.f[DIR_MPP ])[ktnw];
-	  real mfcca = (distAD.f[DIR_PPM ])[kbne];
-	  real mfaaa = (distAD.f[DIR_MMM ])[kbsw];
-	  real mfcaa = (distAD.f[DIR_PMM ])[kbse];
-	  real mfaca = (distAD.f[DIR_MPM ])[kbnw];
+	  real mfccc = (distAD.f[DIR_PPP])[ktne];
+	  real mfaac = (distAD.f[DIR_MMP])[ktsw];
+	  real mfcac = (distAD.f[DIR_PMP])[ktse];
+	  real mfacc = (distAD.f[DIR_MPP])[ktnw];
+	  real mfcca = (distAD.f[DIR_PPM])[kbne];
+	  real mfaaa = (distAD.f[DIR_MMM])[kbsw];
+	  real mfcaa = (distAD.f[DIR_PMM])[kbse];
+	  real mfaca = (distAD.f[DIR_MPM])[kbnw];
       //////////////////////////////////////////////////////////////////////////
 	  //! - Calculate concentration using pyramid summation for low round-off errors as in Eq. (J1)-(J3) \ref
 	  //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015), DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
@@ -229,30 +229,30 @@ __global__ void CalcConc7( real* Conc,
                                           unsigned int* neighborX,
                                           unsigned int* neighborY,
                                           unsigned int* neighborZ,
-                                          unsigned int size_Mat,
+                                          unsigned long long numberOfLBnodes,
                                           real* DD7,
                                           bool isEvenTimestep)
 {
    Distributions7 D7;
    if (isEvenTimestep==true)
    {
-      D7.f[0] = &DD7[0*size_Mat];
-      D7.f[1] = &DD7[1*size_Mat];
-      D7.f[2] = &DD7[2*size_Mat];
-      D7.f[3] = &DD7[3*size_Mat];
-      D7.f[4] = &DD7[4*size_Mat];
-      D7.f[5] = &DD7[5*size_Mat];
-      D7.f[6] = &DD7[6*size_Mat];
+      D7.f[0] = &DD7[0*numberOfLBnodes];
+      D7.f[1] = &DD7[1*numberOfLBnodes];
+      D7.f[2] = &DD7[2*numberOfLBnodes];
+      D7.f[3] = &DD7[3*numberOfLBnodes];
+      D7.f[4] = &DD7[4*numberOfLBnodes];
+      D7.f[5] = &DD7[5*numberOfLBnodes];
+      D7.f[6] = &DD7[6*numberOfLBnodes];
    } 
    else
    {
-      D7.f[0] = &DD7[0*size_Mat];
-      D7.f[2] = &DD7[1*size_Mat];
-      D7.f[1] = &DD7[2*size_Mat];
-      D7.f[4] = &DD7[3*size_Mat];
-      D7.f[3] = &DD7[4*size_Mat];
-      D7.f[6] = &DD7[5*size_Mat];
-      D7.f[5] = &DD7[6*size_Mat];
+      D7.f[0] = &DD7[0*numberOfLBnodes];
+      D7.f[2] = &DD7[1*numberOfLBnodes];
+      D7.f[1] = &DD7[2*numberOfLBnodes];
+      D7.f[4] = &DD7[3*numberOfLBnodes];
+      D7.f[3] = &DD7[4*numberOfLBnodes];
+      D7.f[6] = &DD7[5*numberOfLBnodes];
+      D7.f[5] = &DD7[6*numberOfLBnodes];
    }
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -265,7 +265,7 @@ __global__ void CalcConc7( real* Conc,
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if(k<size_Mat)
+   if(k<numberOfLBnodes)
    {
       //////////////////////////////////////////////////////////////////////////
       //index
@@ -327,63 +327,63 @@ __global__ void CalcConc7( real* Conc,
 //    Distributions27 D27;
 //    if (isEvenTimestep==true)
 //    {
-//       D27.f[DIR_P00   ] = &DD27[DIR_P00   *size_Mat];
-//       D27.f[DIR_M00   ] = &DD27[DIR_M00   *size_Mat];
-//       D27.f[DIR_0P0   ] = &DD27[DIR_0P0   *size_Mat];
-//       D27.f[DIR_0M0   ] = &DD27[DIR_0M0   *size_Mat];
-//       D27.f[DIR_00P   ] = &DD27[DIR_00P   *size_Mat];
-//       D27.f[DIR_00M   ] = &DD27[DIR_00M   *size_Mat];
-//       D27.f[DIR_PP0  ] = &DD27[DIR_PP0  *size_Mat];
-//       D27.f[DIR_MM0  ] = &DD27[DIR_MM0  *size_Mat];
-//       D27.f[DIR_PM0  ] = &DD27[DIR_PM0  *size_Mat];
-//       D27.f[DIR_MP0  ] = &DD27[DIR_MP0  *size_Mat];
-//       D27.f[DIR_P0P  ] = &DD27[DIR_P0P  *size_Mat];
-//       D27.f[DIR_M0M  ] = &DD27[DIR_M0M  *size_Mat];
-//       D27.f[DIR_P0M  ] = &DD27[DIR_P0M  *size_Mat];
-//       D27.f[DIR_M0P  ] = &DD27[DIR_M0P  *size_Mat];
-//       D27.f[DIR_0PP  ] = &DD27[DIR_0PP  *size_Mat];
-//       D27.f[DIR_0MM  ] = &DD27[DIR_0MM  *size_Mat];
-//       D27.f[DIR_0PM  ] = &DD27[DIR_0PM  *size_Mat];
-//       D27.f[DIR_0MP  ] = &DD27[DIR_0MP  *size_Mat];
-//       D27.f[DIR_000] = &DD27[DIR_000*size_Mat];
-//       D27.f[DIR_PPP ] = &DD27[DIR_PPP *size_Mat];
-//       D27.f[DIR_MMP ] = &DD27[DIR_MMP *size_Mat];
-//       D27.f[DIR_PMP ] = &DD27[DIR_PMP *size_Mat];
-//       D27.f[DIR_MPP ] = &DD27[DIR_MPP *size_Mat];
-//       D27.f[DIR_PPM ] = &DD27[DIR_PPM *size_Mat];
-//       D27.f[DIR_MMM ] = &DD27[DIR_MMM *size_Mat];
-//       D27.f[DIR_PMM ] = &DD27[DIR_PMM *size_Mat];
-//       D27.f[DIR_MPM ] = &DD27[DIR_MPM *size_Mat];
+//       D27.f[DIR_P00] = &DD27[DIR_P00 * size_Mat];
+//       D27.f[DIR_M00] = &DD27[DIR_M00 * size_Mat];
+//       D27.f[DIR_0P0] = &DD27[DIR_0P0 * size_Mat];
+//       D27.f[DIR_0M0] = &DD27[DIR_0M0 * size_Mat];
+//       D27.f[DIR_00P] = &DD27[DIR_00P * size_Mat];
+//       D27.f[DIR_00M] = &DD27[DIR_00M * size_Mat];
+//       D27.f[DIR_PP0] = &DD27[DIR_PP0 * size_Mat];
+//       D27.f[DIR_MM0] = &DD27[DIR_MM0 * size_Mat];
+//       D27.f[DIR_PM0] = &DD27[DIR_PM0 * size_Mat];
+//       D27.f[DIR_MP0] = &DD27[DIR_MP0 * size_Mat];
+//       D27.f[DIR_P0P] = &DD27[DIR_P0P * size_Mat];
+//       D27.f[DIR_M0M] = &DD27[DIR_M0M * size_Mat];
+//       D27.f[DIR_P0M] = &DD27[DIR_P0M * size_Mat];
+//       D27.f[DIR_M0P] = &DD27[DIR_M0P * size_Mat];
+//       D27.f[DIR_0PP] = &DD27[DIR_0PP * size_Mat];
+//       D27.f[DIR_0MM] = &DD27[DIR_0MM * size_Mat];
+//       D27.f[DIR_0PM] = &DD27[DIR_0PM * size_Mat];
+//       D27.f[DIR_0MP] = &DD27[DIR_0MP * size_Mat];
+//       D27.f[DIR_000] = &DD27[DIR_000 * size_Mat];
+//       D27.f[DIR_PPP] = &DD27[DIR_PPP * size_Mat];
+//       D27.f[DIR_MMP] = &DD27[DIR_MMP * size_Mat];
+//       D27.f[DIR_PMP] = &DD27[DIR_PMP * size_Mat];
+//       D27.f[DIR_MPP] = &DD27[DIR_MPP * size_Mat];
+//       D27.f[DIR_PPM] = &DD27[DIR_PPM * size_Mat];
+//       D27.f[DIR_MMM] = &DD27[DIR_MMM * size_Mat];
+//       D27.f[DIR_PMM] = &DD27[DIR_PMM * size_Mat];
+//       D27.f[DIR_MPM] = &DD27[DIR_MPM * size_Mat];
 //    }
 //    else
 //    {
-//       D27.f[DIR_M00   ] = &DD27[DIR_P00   *size_Mat];
-//       D27.f[DIR_P00   ] = &DD27[DIR_M00   *size_Mat];
-//       D27.f[DIR_0M0   ] = &DD27[DIR_0P0   *size_Mat];
-//       D27.f[DIR_0P0   ] = &DD27[DIR_0M0   *size_Mat];
-//       D27.f[DIR_00M   ] = &DD27[DIR_00P   *size_Mat];
-//       D27.f[DIR_00P   ] = &DD27[DIR_00M   *size_Mat];
-//       D27.f[DIR_MM0  ] = &DD27[DIR_PP0  *size_Mat];
-//       D27.f[DIR_PP0  ] = &DD27[DIR_MM0  *size_Mat];
-//       D27.f[DIR_MP0  ] = &DD27[DIR_PM0  *size_Mat];
-//       D27.f[DIR_PM0  ] = &DD27[DIR_MP0  *size_Mat];
-//       D27.f[DIR_M0M  ] = &DD27[DIR_P0P  *size_Mat];
-//       D27.f[DIR_P0P  ] = &DD27[DIR_M0M  *size_Mat];
-//       D27.f[DIR_M0P  ] = &DD27[DIR_P0M  *size_Mat];
-//       D27.f[DIR_P0M  ] = &DD27[DIR_M0P  *size_Mat];
-//       D27.f[DIR_0MM  ] = &DD27[DIR_0PP  *size_Mat];
-//       D27.f[DIR_0PP  ] = &DD27[DIR_0MM  *size_Mat];
-//       D27.f[DIR_0MP  ] = &DD27[DIR_0PM  *size_Mat];
-//       D27.f[DIR_0PM  ] = &DD27[DIR_0MP  *size_Mat];
-//       D27.f[DIR_000] = &DD27[DIR_000*size_Mat];
-//       D27.f[DIR_MMM ] = &DD27[DIR_PPP *size_Mat];
-//       D27.f[DIR_PPM ] = &DD27[DIR_MMP *size_Mat];
-//       D27.f[DIR_MPM ] = &DD27[DIR_PMP *size_Mat];
-//       D27.f[DIR_PMM ] = &DD27[DIR_MPP *size_Mat];
-//       D27.f[DIR_MMP ] = &DD27[DIR_PPM *size_Mat];
-//       D27.f[DIR_PPP ] = &DD27[DIR_MMM *size_Mat];
-//       D27.f[DIR_MPP ] = &DD27[DIR_PMM *size_Mat];
-//       D27.f[DIR_PMP ] = &DD27[DIR_MPM *size_Mat];
+//       D27.f[DIR_M00] = &DD27[DIR_P00 * size_Mat];
+//       D27.f[DIR_P00] = &DD27[DIR_M00 * size_Mat];
+//       D27.f[DIR_0M0] = &DD27[DIR_0P0 * size_Mat];
+//       D27.f[DIR_0P0] = &DD27[DIR_0M0 * size_Mat];
+//       D27.f[DIR_00M] = &DD27[DIR_00P * size_Mat];
+//       D27.f[DIR_00P] = &DD27[DIR_00M * size_Mat];
+//       D27.f[DIR_MM0] = &DD27[DIR_PP0 * size_Mat];
+//       D27.f[DIR_PP0] = &DD27[DIR_MM0 * size_Mat];
+//       D27.f[DIR_MP0] = &DD27[DIR_PM0 * size_Mat];
+//       D27.f[DIR_PM0] = &DD27[DIR_MP0 * size_Mat];
+//       D27.f[DIR_M0M] = &DD27[DIR_P0P * size_Mat];
+//       D27.f[DIR_P0P] = &DD27[DIR_M0M * size_Mat];
+//       D27.f[DIR_M0P] = &DD27[DIR_P0M * size_Mat];
+//       D27.f[DIR_P0M] = &DD27[DIR_M0P * size_Mat];
+//       D27.f[DIR_0MM] = &DD27[DIR_0PP * size_Mat];
+//       D27.f[DIR_0PP] = &DD27[DIR_0MM * size_Mat];
+//       D27.f[DIR_0MP] = &DD27[DIR_0PM * size_Mat];
+//       D27.f[DIR_0PM] = &DD27[DIR_0MP * size_Mat];
+//       D27.f[DIR_000] = &DD27[DIR_000 * size_Mat];
+//       D27.f[DIR_MMM] = &DD27[DIR_PPP * size_Mat];
+//       D27.f[DIR_PPM] = &DD27[DIR_MMP * size_Mat];
+//       D27.f[DIR_MPM] = &DD27[DIR_PMP * size_Mat];
+//       D27.f[DIR_PMM] = &DD27[DIR_MPP * size_Mat];
+//       D27.f[DIR_MMP] = &DD27[DIR_PPM * size_Mat];
+//       D27.f[DIR_PPP] = &DD27[DIR_MMM * size_Mat];
+//       D27.f[DIR_MPP] = &DD27[DIR_PMM * size_Mat];
+//       D27.f[DIR_PMP] = &DD27[DIR_MPM * size_Mat];
 //    }
 //    ////////////////////////////////////////////////////////////////////////////////
 //    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -432,20 +432,20 @@ __global__ void CalcConc7( real* Conc,
 
 //       if(geoD[k] == GEO_FLUID)
 //       {
-//          Conc[k]    =   (D27.f[DIR_P00   ])[ke  ]+ (D27.f[DIR_M00   ])[kw  ]+ 
-//                         (D27.f[DIR_0P0   ])[kn  ]+ (D27.f[DIR_0M0   ])[ks  ]+
-//                         (D27.f[DIR_00P   ])[kt  ]+ (D27.f[DIR_00M   ])[kb  ]+
-//                         (D27.f[DIR_PP0  ])[kne ]+ (D27.f[DIR_MM0  ])[ksw ]+
-//                         (D27.f[DIR_PM0  ])[kse ]+ (D27.f[DIR_MP0  ])[knw ]+
-//                         (D27.f[DIR_P0P  ])[kte ]+ (D27.f[DIR_M0M  ])[kbw ]+
-//                         (D27.f[DIR_P0M  ])[kbe ]+ (D27.f[DIR_M0P  ])[ktw ]+
-//                         (D27.f[DIR_0PP  ])[ktn ]+ (D27.f[DIR_0MM  ])[kbs ]+
-//                         (D27.f[DIR_0PM  ])[kbn ]+ (D27.f[DIR_0MP  ])[kts ]+
+//          Conc[k]    =   (D27.f[DIR_P00])[ke  ]+ (D27.f[DIR_M00])[kw  ]+ 
+//                         (D27.f[DIR_0P0])[kn  ]+ (D27.f[DIR_0M0])[ks  ]+
+//                         (D27.f[DIR_00P])[kt  ]+ (D27.f[DIR_00M])[kb  ]+
+//                         (D27.f[DIR_PP0])[kne ]+ (D27.f[DIR_MM0])[ksw ]+
+//                         (D27.f[DIR_PM0])[kse ]+ (D27.f[DIR_MP0])[knw ]+
+//                         (D27.f[DIR_P0P])[kte ]+ (D27.f[DIR_M0M])[kbw ]+
+//                         (D27.f[DIR_P0M])[kbe ]+ (D27.f[DIR_M0P])[ktw ]+
+//                         (D27.f[DIR_0PP])[ktn ]+ (D27.f[DIR_0MM])[kbs ]+
+//                         (D27.f[DIR_0PM])[kbn ]+ (D27.f[DIR_0MP])[kts ]+
 //                         (D27.f[DIR_000])[kzero]+ 
-//                         (D27.f[DIR_PPP ])[ktne]+ (D27.f[DIR_MMP ])[ktsw]+
-//                         (D27.f[DIR_PMP ])[ktse]+ (D27.f[DIR_MPP ])[ktnw]+
-//                         (D27.f[DIR_PPM ])[kbne]+ (D27.f[DIR_MMM ])[kbsw]+
-//                         (D27.f[DIR_PMM ])[kbse]+ (D27.f[DIR_MPM ])[kbnw];
+//                         (D27.f[DIR_PPP])[ktne]+ (D27.f[DIR_MMP])[ktsw]+
+//                         (D27.f[DIR_PMP])[ktse]+ (D27.f[DIR_MPP])[ktnw]+
+//                         (D27.f[DIR_PPM])[kbne]+ (D27.f[DIR_MMM])[kbsw]+
+//                         (D27.f[DIR_PMM])[kbse]+ (D27.f[DIR_MPM])[kbnw];
 //       }
 //    }   
 // }
@@ -476,30 +476,30 @@ __global__ void GetPlaneConc7(real* Conc,
 											unsigned int* neighborX,
 											unsigned int* neighborY,
 											unsigned int* neighborZ,
-											unsigned int size_Mat,
+											unsigned long long numberOfLBnodes,
 											real* DD7,
 											bool isEvenTimestep)
 {
    Distributions7 D7;
    if (isEvenTimestep==true)
    {
-      D7.f[0] = &DD7[0*size_Mat];
-      D7.f[1] = &DD7[1*size_Mat];
-      D7.f[2] = &DD7[2*size_Mat];
-      D7.f[3] = &DD7[3*size_Mat];
-      D7.f[4] = &DD7[4*size_Mat];
-      D7.f[5] = &DD7[5*size_Mat];
-      D7.f[6] = &DD7[6*size_Mat];
+      D7.f[0] = &DD7[0*numberOfLBnodes];
+      D7.f[1] = &DD7[1*numberOfLBnodes];
+      D7.f[2] = &DD7[2*numberOfLBnodes];
+      D7.f[3] = &DD7[3*numberOfLBnodes];
+      D7.f[4] = &DD7[4*numberOfLBnodes];
+      D7.f[5] = &DD7[5*numberOfLBnodes];
+      D7.f[6] = &DD7[6*numberOfLBnodes];
    } 
    else
    {
-      D7.f[0] = &DD7[0*size_Mat];
-      D7.f[2] = &DD7[1*size_Mat];
-      D7.f[1] = &DD7[2*size_Mat];
-      D7.f[4] = &DD7[3*size_Mat];
-      D7.f[3] = &DD7[4*size_Mat];
-      D7.f[6] = &DD7[5*size_Mat];
-      D7.f[5] = &DD7[6*size_Mat];
+      D7.f[0] = &DD7[0*numberOfLBnodes];
+      D7.f[2] = &DD7[1*numberOfLBnodes];
+      D7.f[1] = &DD7[2*numberOfLBnodes];
+      D7.f[4] = &DD7[3*numberOfLBnodes];
+      D7.f[3] = &DD7[4*numberOfLBnodes];
+      D7.f[6] = &DD7[5*numberOfLBnodes];
+      D7.f[5] = &DD7[6*numberOfLBnodes];
    }
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -581,70 +581,70 @@ __global__ void GetPlaneConc27(real* Conc,
 											 unsigned int* neighborX,
 											 unsigned int* neighborY,
 											 unsigned int* neighborZ,
-											 unsigned int size_Mat,
+											 unsigned long long numberOfLBnodes,
 											 real* DD27,
 											 bool isEvenTimestep)
 {
    Distributions27 D27;
    if (isEvenTimestep==true)
    {
-      D27.f[DIR_P00   ] = &DD27[DIR_P00   *size_Mat];
-      D27.f[DIR_M00   ] = &DD27[DIR_M00   *size_Mat];
-      D27.f[DIR_0P0   ] = &DD27[DIR_0P0   *size_Mat];
-      D27.f[DIR_0M0   ] = &DD27[DIR_0M0   *size_Mat];
-      D27.f[DIR_00P   ] = &DD27[DIR_00P   *size_Mat];
-      D27.f[DIR_00M   ] = &DD27[DIR_00M   *size_Mat];
-      D27.f[DIR_PP0  ] = &DD27[DIR_PP0  *size_Mat];
-      D27.f[DIR_MM0  ] = &DD27[DIR_MM0  *size_Mat];
-      D27.f[DIR_PM0  ] = &DD27[DIR_PM0  *size_Mat];
-      D27.f[DIR_MP0  ] = &DD27[DIR_MP0  *size_Mat];
-      D27.f[DIR_P0P  ] = &DD27[DIR_P0P  *size_Mat];
-      D27.f[DIR_M0M  ] = &DD27[DIR_M0M  *size_Mat];
-      D27.f[DIR_P0M  ] = &DD27[DIR_P0M  *size_Mat];
-      D27.f[DIR_M0P  ] = &DD27[DIR_M0P  *size_Mat];
-      D27.f[DIR_0PP  ] = &DD27[DIR_0PP  *size_Mat];
-      D27.f[DIR_0MM  ] = &DD27[DIR_0MM  *size_Mat];
-      D27.f[DIR_0PM  ] = &DD27[DIR_0PM  *size_Mat];
-      D27.f[DIR_0MP  ] = &DD27[DIR_0MP  *size_Mat];
-      D27.f[DIR_000] = &DD27[DIR_000*size_Mat];
-      D27.f[DIR_PPP ] = &DD27[DIR_PPP *size_Mat];
-      D27.f[DIR_MMP ] = &DD27[DIR_MMP *size_Mat];
-      D27.f[DIR_PMP ] = &DD27[DIR_PMP *size_Mat];
-      D27.f[DIR_MPP ] = &DD27[DIR_MPP *size_Mat];
-      D27.f[DIR_PPM ] = &DD27[DIR_PPM *size_Mat];
-      D27.f[DIR_MMM ] = &DD27[DIR_MMM *size_Mat];
-      D27.f[DIR_PMM ] = &DD27[DIR_PMM *size_Mat];
-      D27.f[DIR_MPM ] = &DD27[DIR_MPM *size_Mat];
+      D27.f[DIR_P00] = &DD27[DIR_P00 * numberOfLBnodes];
+      D27.f[DIR_M00] = &DD27[DIR_M00 * numberOfLBnodes];
+      D27.f[DIR_0P0] = &DD27[DIR_0P0 * numberOfLBnodes];
+      D27.f[DIR_0M0] = &DD27[DIR_0M0 * numberOfLBnodes];
+      D27.f[DIR_00P] = &DD27[DIR_00P * numberOfLBnodes];
+      D27.f[DIR_00M] = &DD27[DIR_00M * numberOfLBnodes];
+      D27.f[DIR_PP0] = &DD27[DIR_PP0 * numberOfLBnodes];
+      D27.f[DIR_MM0] = &DD27[DIR_MM0 * numberOfLBnodes];
+      D27.f[DIR_PM0] = &DD27[DIR_PM0 * numberOfLBnodes];
+      D27.f[DIR_MP0] = &DD27[DIR_MP0 * numberOfLBnodes];
+      D27.f[DIR_P0P] = &DD27[DIR_P0P * numberOfLBnodes];
+      D27.f[DIR_M0M] = &DD27[DIR_M0M * numberOfLBnodes];
+      D27.f[DIR_P0M] = &DD27[DIR_P0M * numberOfLBnodes];
+      D27.f[DIR_M0P] = &DD27[DIR_M0P * numberOfLBnodes];
+      D27.f[DIR_0PP] = &DD27[DIR_0PP * numberOfLBnodes];
+      D27.f[DIR_0MM] = &DD27[DIR_0MM * numberOfLBnodes];
+      D27.f[DIR_0PM] = &DD27[DIR_0PM * numberOfLBnodes];
+      D27.f[DIR_0MP] = &DD27[DIR_0MP * numberOfLBnodes];
+      D27.f[DIR_000] = &DD27[DIR_000 * numberOfLBnodes];
+      D27.f[DIR_PPP] = &DD27[DIR_PPP * numberOfLBnodes];
+      D27.f[DIR_MMP] = &DD27[DIR_MMP * numberOfLBnodes];
+      D27.f[DIR_PMP] = &DD27[DIR_PMP * numberOfLBnodes];
+      D27.f[DIR_MPP] = &DD27[DIR_MPP * numberOfLBnodes];
+      D27.f[DIR_PPM] = &DD27[DIR_PPM * numberOfLBnodes];
+      D27.f[DIR_MMM] = &DD27[DIR_MMM * numberOfLBnodes];
+      D27.f[DIR_PMM] = &DD27[DIR_PMM * numberOfLBnodes];
+      D27.f[DIR_MPM] = &DD27[DIR_MPM * numberOfLBnodes];
    }
    else
    {
-      D27.f[DIR_M00   ] = &DD27[DIR_P00   *size_Mat];
-      D27.f[DIR_P00   ] = &DD27[DIR_M00   *size_Mat];
-      D27.f[DIR_0M0   ] = &DD27[DIR_0P0   *size_Mat];
-      D27.f[DIR_0P0   ] = &DD27[DIR_0M0   *size_Mat];
-      D27.f[DIR_00M   ] = &DD27[DIR_00P   *size_Mat];
-      D27.f[DIR_00P   ] = &DD27[DIR_00M   *size_Mat];
-      D27.f[DIR_MM0  ] = &DD27[DIR_PP0  *size_Mat];
-      D27.f[DIR_PP0  ] = &DD27[DIR_MM0  *size_Mat];
-      D27.f[DIR_MP0  ] = &DD27[DIR_PM0  *size_Mat];
-      D27.f[DIR_PM0  ] = &DD27[DIR_MP0  *size_Mat];
-      D27.f[DIR_M0M  ] = &DD27[DIR_P0P  *size_Mat];
-      D27.f[DIR_P0P  ] = &DD27[DIR_M0M  *size_Mat];
-      D27.f[DIR_M0P  ] = &DD27[DIR_P0M  *size_Mat];
-      D27.f[DIR_P0M  ] = &DD27[DIR_M0P  *size_Mat];
-      D27.f[DIR_0MM  ] = &DD27[DIR_0PP  *size_Mat];
-      D27.f[DIR_0PP  ] = &DD27[DIR_0MM  *size_Mat];
-      D27.f[DIR_0MP  ] = &DD27[DIR_0PM  *size_Mat];
-      D27.f[DIR_0PM  ] = &DD27[DIR_0MP  *size_Mat];
-      D27.f[DIR_000] = &DD27[DIR_000*size_Mat];
-      D27.f[DIR_MMM ] = &DD27[DIR_PPP *size_Mat];
-      D27.f[DIR_PPM ] = &DD27[DIR_MMP *size_Mat];
-      D27.f[DIR_MPM ] = &DD27[DIR_PMP *size_Mat];
-      D27.f[DIR_PMM ] = &DD27[DIR_MPP *size_Mat];
-      D27.f[DIR_MMP ] = &DD27[DIR_PPM *size_Mat];
-      D27.f[DIR_PPP ] = &DD27[DIR_MMM *size_Mat];
-      D27.f[DIR_MPP ] = &DD27[DIR_PMM *size_Mat];
-      D27.f[DIR_PMP ] = &DD27[DIR_MPM *size_Mat];
+      D27.f[DIR_M00] = &DD27[DIR_P00 * numberOfLBnodes];
+      D27.f[DIR_P00] = &DD27[DIR_M00 * numberOfLBnodes];
+      D27.f[DIR_0M0] = &DD27[DIR_0P0 * numberOfLBnodes];
+      D27.f[DIR_0P0] = &DD27[DIR_0M0 * numberOfLBnodes];
+      D27.f[DIR_00M] = &DD27[DIR_00P * numberOfLBnodes];
+      D27.f[DIR_00P] = &DD27[DIR_00M * numberOfLBnodes];
+      D27.f[DIR_MM0] = &DD27[DIR_PP0 * numberOfLBnodes];
+      D27.f[DIR_PP0] = &DD27[DIR_MM0 * numberOfLBnodes];
+      D27.f[DIR_MP0] = &DD27[DIR_PM0 * numberOfLBnodes];
+      D27.f[DIR_PM0] = &DD27[DIR_MP0 * numberOfLBnodes];
+      D27.f[DIR_M0M] = &DD27[DIR_P0P * numberOfLBnodes];
+      D27.f[DIR_P0P] = &DD27[DIR_M0M * numberOfLBnodes];
+      D27.f[DIR_M0P] = &DD27[DIR_P0M * numberOfLBnodes];
+      D27.f[DIR_P0M] = &DD27[DIR_M0P * numberOfLBnodes];
+      D27.f[DIR_0MM] = &DD27[DIR_0PP * numberOfLBnodes];
+      D27.f[DIR_0PP] = &DD27[DIR_0MM * numberOfLBnodes];
+      D27.f[DIR_0MP] = &DD27[DIR_0PM * numberOfLBnodes];
+      D27.f[DIR_0PM] = &DD27[DIR_0MP * numberOfLBnodes];
+      D27.f[DIR_000] = &DD27[DIR_000 * numberOfLBnodes];
+      D27.f[DIR_MMM] = &DD27[DIR_PPP * numberOfLBnodes];
+      D27.f[DIR_PPM] = &DD27[DIR_MMP * numberOfLBnodes];
+      D27.f[DIR_MPM] = &DD27[DIR_PMP * numberOfLBnodes];
+      D27.f[DIR_PMM] = &DD27[DIR_MPP * numberOfLBnodes];
+      D27.f[DIR_MMP] = &DD27[DIR_PPM * numberOfLBnodes];
+      D27.f[DIR_PPP] = &DD27[DIR_MMM * numberOfLBnodes];
+      D27.f[DIR_MPP] = &DD27[DIR_PMM * numberOfLBnodes];
+      D27.f[DIR_PMP] = &DD27[DIR_MPM * numberOfLBnodes];
    }
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -693,20 +693,20 @@ __global__ void GetPlaneConc27(real* Conc,
 
       if(geoD[k] == GEO_FLUID)
       {
-         Conc[k]    =   (D27.f[DIR_P00   ])[ke  ]+ (D27.f[DIR_M00   ])[kw  ]+ 
-                        (D27.f[DIR_0P0   ])[kn  ]+ (D27.f[DIR_0M0   ])[ks  ]+
-                        (D27.f[DIR_00P   ])[kt  ]+ (D27.f[DIR_00M   ])[kb  ]+
-                        (D27.f[DIR_PP0  ])[kne ]+ (D27.f[DIR_MM0  ])[ksw ]+
-                        (D27.f[DIR_PM0  ])[kse ]+ (D27.f[DIR_MP0  ])[knw ]+
-                        (D27.f[DIR_P0P  ])[kte ]+ (D27.f[DIR_M0M  ])[kbw ]+
-                        (D27.f[DIR_P0M  ])[kbe ]+ (D27.f[DIR_M0P  ])[ktw ]+
-                        (D27.f[DIR_0PP  ])[ktn ]+ (D27.f[DIR_0MM  ])[kbs ]+
-                        (D27.f[DIR_0PM  ])[kbn ]+ (D27.f[DIR_0MP  ])[kts ]+
+         Conc[k]    =   (D27.f[DIR_P00])[ke  ]+ (D27.f[DIR_M00])[kw  ]+ 
+                        (D27.f[DIR_0P0])[kn  ]+ (D27.f[DIR_0M0])[ks  ]+
+                        (D27.f[DIR_00P])[kt  ]+ (D27.f[DIR_00M])[kb  ]+
+                        (D27.f[DIR_PP0])[kne ]+ (D27.f[DIR_MM0])[ksw ]+
+                        (D27.f[DIR_PM0])[kse ]+ (D27.f[DIR_MP0])[knw ]+
+                        (D27.f[DIR_P0P])[kte ]+ (D27.f[DIR_M0M])[kbw ]+
+                        (D27.f[DIR_P0M])[kbe ]+ (D27.f[DIR_M0P])[ktw ]+
+                        (D27.f[DIR_0PP])[ktn ]+ (D27.f[DIR_0MM])[kbs ]+
+                        (D27.f[DIR_0PM])[kbn ]+ (D27.f[DIR_0MP])[kts ]+
                         (D27.f[DIR_000])[kzero]+ 
-                        (D27.f[DIR_PPP ])[ktne]+ (D27.f[DIR_MMP ])[ktsw]+
-                        (D27.f[DIR_PMP ])[ktse]+ (D27.f[DIR_MPP ])[ktnw]+
-                        (D27.f[DIR_PPM ])[kbne]+ (D27.f[DIR_MMM ])[kbsw]+
-                        (D27.f[DIR_PMM ])[kbse]+ (D27.f[DIR_MPM ])[kbnw];
+                        (D27.f[DIR_PPP])[ktne]+ (D27.f[DIR_MMP])[ktsw]+
+                        (D27.f[DIR_PMP])[ktse]+ (D27.f[DIR_MPP])[ktnw]+
+                        (D27.f[DIR_PPM])[kbne]+ (D27.f[DIR_MMM])[kbsw]+
+                        (D27.f[DIR_PMM])[kbse]+ (D27.f[DIR_MPM])[kbnw];
       }
    }   
 }

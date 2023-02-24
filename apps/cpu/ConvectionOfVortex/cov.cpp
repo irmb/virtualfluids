@@ -8,13 +8,15 @@ using namespace std;
 
 void run()
 {
+    using namespace vf::lbm::dir;
+
    try
    {
       SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       int    numOfThreads = 4;
-      double availMem = 5e9;
+      real availMem = 5e9;
 
       
 
@@ -24,11 +26,11 @@ void run()
 
       string  pathname = "d:/temp/ConvectionOfVortex_0.003_4th";
       int     endTime = 10000;
-      double  outTime = 10;
-      LBMReal dx =  0.003;
-      LBMReal rhoLB = 0.0;
-      LBMReal nuLB = 8.66025e-6;
-      double yFactor = 1.0;
+      real  outTime = 10;
+      real dx =  0.003;
+      real rhoLB = 0.0;
+      real nuLB = 8.66025e-6;
+      real yFactor = 1.0;
 
       //string  pathname = "d:/temp/ConvectionOfVortex_0.003_square";
       //int     endTime = 20;
@@ -79,13 +81,13 @@ void run()
       int refineLevel = 1;
 
       //bounding box
-      double g_minX1 = -0.045;
-      double g_minX2 = -0.015/yFactor;
-      double g_minX3 = -0.06;
+      real g_minX1 = -0.045;
+      real g_minX2 = -0.015/yFactor;
+      real g_minX3 = -0.06;
 
-      double g_maxX1 = 0.045;
-      double g_maxX2 = 0.015/yFactor;
-      double g_maxX3 = 0.06;
+      real g_maxX1 = 0.045;
+      real g_maxX2 = 0.015/yFactor;
+      real g_maxX3 = 0.06;
 
       vector<int>  blocknx(3);
       blocknx[0] = 10;
@@ -97,7 +99,7 @@ void run()
       if (myid == 0) GbSystem3D::writeGeoObject(gridCube.get(), pathname + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
 
 
-      double blockLength = blocknx[0] * dx;
+      real blockLength = blocknx[0] * dx;
 
       SPtr<Grid3D> grid(new Grid3D(comm));
       grid->setDeltaX(dx);
@@ -150,7 +152,7 @@ void run()
       if (myid==0) GbSystem3D::writeGeoObject(geoOutflow4.get(), pathname+"/geo/geoOutflow4", WbWriterVtkXmlASCII::getInstance());
       SPtr<D3Q27Interactor> outflowIntr4 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow4, grid, outflowBCAdapter, Interactor3D::SOLID));
 
-      SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::DIR_00M));
+      SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, DIR_00M));
       InteractorsHelper intHelper(grid, metisVisitor);
       //intHelper.addInteractor(outflowIntr1);
       //intHelper.addInteractor(outflowIntr2);
@@ -183,8 +185,8 @@ void run()
       unsigned long long numberOfNodesPerBlock = (unsigned long long)(blocknx[0])* (unsigned long long)(blocknx[1])* (unsigned long long)(blocknx[2]);
       unsigned long long numberOfNodes = numberOfBlocks * numberOfNodesPerBlock;
       unsigned long long numberOfNodesPerBlockWithGhostLayer = numberOfBlocks * (blocknx[0] + ghostLayer) * (blocknx[1] + ghostLayer) * (blocknx[2] + ghostLayer);
-      double needMemAll = double(numberOfNodesPerBlockWithGhostLayer*(27 * sizeof(double) + sizeof(int) + sizeof(float) * 4));
-      double needMem = needMemAll / double(comm->getNumberOfProcesses());
+      real needMemAll = real(numberOfNodesPerBlockWithGhostLayer*(27 * sizeof(real) + sizeof(int) + sizeof(float) * 4));
+      real needMem = needMemAll / real(comm->getNumberOfProcesses());
 
       if (myid == 0)
       {
@@ -224,7 +226,7 @@ void run()
 
       intHelper.setBC();
 
-      double Ma = 0.005;
+      real Ma = 0.005;
 
       mu::Parser initRho, initVx1, initVx2; 
       initRho.SetExpr("rhoLB + (-(rho0*epsilon^2)/2) * exp(1-(scaleFactor*(x1^2+x3^2))/R^2) + (1/(2*gamma*rho0)) * ((-(rho0*epsilon^2)/2) * exp(1-(scaleFactor*(x1^2+x3^2))/R^2))^2");

@@ -1,34 +1,47 @@
 {
-    "version": 2,
+    "version": 3,
     "cmakeMinimumRequired": {
         "major": 3,
-        "minor": 20,
+        "minor": 21,
         "patch": 0
     },
     "configurePresets": [
         {
             "name": "default",
+            "binaryDir": "build",
+            "hidden": true
+        },
+        {
+            "name": "msvc",
             "hidden": true,
-            "binaryDir": "${sourceDir}/build/",
+            "generator": "Visual Studio 17 2022",
+            "architecture": "x64",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+              }
+        },
+        {
+            "name": "make",
+            "hidden": true,
+            "generator": "Unix Makefiles",
+            "condition": {
+                "type": "notEquals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+              }
+        },
+        {
+            "name": "unit_tests",
+            "hidden": true,
             "cacheVariables": {
                 "BUILD_VF_UNIT_TESTS": "ON"
             }
         },
         {
-            "name": "default_make",
+            "name": "cpu",
             "inherits": "default",
-            "hidden": true,
-            "generator": "Unix Makefiles"
-        },
-        {
-            "name": "default_msvc",
-            "inherits": "default",
-            "hidden": true,
-            "generator": "Visual Studio 16 2019",
-            "architecture": "x64"
-        },
-        {
-            "name": "default_cpu",
             "hidden": true,
             "description": "CPU build of VirtualFluids",
             "cacheVariables": {
@@ -37,7 +50,8 @@
             }
         },
         {
-            "name": "default_gpu",
+            "name": "gpu",
+            "inherits": "default",
             "hidden": true,
             "description": "GPU build of VirtualFluids",
             "cacheVariables": {
@@ -46,9 +60,10 @@
             }
         },
         {
-            "name": "default_gpu_numerical_tests",
+            "name": "gpu_numerical_tests",
             "inherits": [
-                "default_gpu"
+                "gpu",
+                "unit_tests"
             ],
             "hidden": true,
             "description": "GPU numerical tests of VirtualFluids",
@@ -58,78 +73,74 @@
             }
         },
         {
-            "name": "default_all",
-            "hidden": true,
-            "description": "All build of VirtualFluids",
+            "name": "make_all",
             "inherits": [
-                "default_cpu",
-                "default_gpu"
-            ],
-            "cacheVariables": {
-                "BUILD_VF_DOUBLE_ACCURACY": "ON"
-            }
-        },
-        {
-            "name": "cpu_make",
-            "inherits": [
-                "default_make",
-                "default_cpu"
-            ],
-            "displayName": "cpu make configuration"
-        },
-        {
-            "name": "cpu_msvc",
-            "inherits": [
-                "default_msvc",
-                "default_cpu"
-            ],
-            "displayName": "cpu msvc configuration"
-        },
-        {
-            "name": "gpu_make",
-            "inherits": [
-                "default_make",
-                "default_gpu"
-            ],
-            "displayName": "gpu make configuration"
-        },
-        {
-            "name": "gpu_msvc",
-            "inherits": [
-                "default_msvc",
-                "default_gpu"
-            ],
-            "displayName": "gpu msvc configuration"
-        },
-        {
-            "name": "all_make",
-            "inherits": [
-                "default_make",
-                "default_all"
+                "cpu",
+                "gpu",
+                "unit_tests",
+                "make"
             ],
             "displayName": "all make configuration"
         },
         {
-            "name": "all_msvc",
+            "name": "make_cpu",
             "inherits": [
-                "default_msvc",
-                "default_all"
+                "cpu",
+                "unit_tests",
+                "make"
+            ],
+            "displayName": "cpu make configuration"
+        },
+        {
+            "name": "make_gpu",
+            "inherits": [
+                "gpu",
+                "unit_tests",
+                "make"
+            ],
+            "displayName": "gpu make configuration"
+        },
+        {
+            "name": "msvc_all",
+            "inherits": [
+                "cpu",
+                "gpu",
+                "unit_tests",
+                "msvc"
             ],
             "displayName": "all msvc configuration"
         },
         {
-            "name": "gpu_numerical_tests_make",
+            "name": "msvc_cpu",
             "inherits": [
-                "default_make",
-                "default_gpu_numerical_tests"
+                "cpu",
+                "unit_tests",
+                "msvc"
+            ],
+            "displayName": "cpu msvc configuration"
+        },
+        {
+            "name": "msvc_gpu",
+            "inherits": [
+                "gpu",
+                "unit_tests",
+                "msvc"
+            ],
+            "displayName": "gpu msvc configuration"
+        },
+        {
+            "name": "make_numerical_tests_gpu",
+            "inherits": [
+                "gpu_numerical_tests",
+                "make"
             ],
             "displayName": "gpu numerical tests make configuration"
         },
         {
-            "name": "gpu_numerical_tests_msvc",
+            "name": "msvc_numerical_tests_gpu",
             "inherits": [
-                "default_msvc",
-                "default_gpu_numerical_tests"
+                "msvc",
+                "gpu_numerical_tests"
             ],
             "displayName": "gpu numerical tests msvc configuration"
         }

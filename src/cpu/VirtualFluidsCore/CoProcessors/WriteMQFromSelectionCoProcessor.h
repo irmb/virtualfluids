@@ -27,10 +27,10 @@ public:
                                     std::shared_ptr<vf::mpi::Communicator> comm);
     ~WriteMQFromSelectionCoProcessor() override = default;
 
-    void process(double step) override;
+    void process(real step) override;
 
 protected:
-    void collectData(double step);
+    void collectData(real step);
     void addDataMQ(SPtr<Block3D> block);
     void clearData();
 
@@ -38,7 +38,7 @@ private:
     void init();
     std::vector<UbTupleFloat3> nodes;
     std::vector<std::string> datanames;
-    std::vector<std::vector<double>> data;
+    std::vector<std::vector<real>> data;
     std::string path;
     WbWriter *writer;
     SPtr<LBMUnitConverter> conv;
@@ -50,7 +50,7 @@ private:
     std::shared_ptr<vf::mpi::Communicator> comm;
     SPtr<GbObject3D> gbObject;
 
-    using CalcMacrosFct = void (*)(const LBMReal *const &, LBMReal &, LBMReal &, LBMReal &, LBMReal &);
+    using CalcMacrosFct = void (*)(const real *const &, real &, real &, real &, real &);
     CalcMacrosFct calcMacros;
 };
 

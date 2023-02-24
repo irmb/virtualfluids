@@ -1,7 +1,7 @@
 ###############################################################################
 ##                       VirtualFluids CI Pipeline                           ##
 ###############################################################################
-image: git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu20_04:1.3
+image: git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu20_04:1.4
 
 stages:
   - build
@@ -49,7 +49,7 @@ stages:
     - cd $CI_PROJECT_DIR/$BUILD_FOLDER
     - rm -r -f ./*
     - cmake .. -LAH
-      --preset=all_make
+      --preset=make_all
       -DBUILD_WARNINGS_AS_ERRORS=ON
       -DCMAKE_CUDA_ARCHITECTURES=60
     - make -j4
@@ -75,7 +75,7 @@ clang_10:
     - export CXX=clang++
 
 ###############################################################################
-msvc_16:
+msvc_17:
   stage: build
 
   tags:
@@ -92,14 +92,14 @@ msvc_16:
     - git --version
     - $env:Path += ";C:\Program Files\CMake\bin\"
     - cmake --version
-    - $env:Path += ";C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin"
+    - $env:Path += ";C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin"
     - MSBuild.exe -version
 
   script:
     - cd $CI_PROJECT_DIR
     - md -force $env:BUILD_FOLDER
     - cd $env:BUILD_FOLDER
-    - cmake .. --preset=all_msvc -DCMAKE_CUDA_ARCHITECTURES=61 -DBUILD_WARNINGS_AS_ERRORS=ON
+    - cmake .. --preset=msvc_all -DCMAKE_CUDA_ARCHITECTURES=61 -DBUILD_WARNINGS_AS_ERRORS=ON
     - MSBuild.exe VirtualFluids.sln /property:Configuration=$env:BUILD_CONFIGURATION /verbosity:minimal /maxcpucount:4
 
   artifacts:
@@ -126,33 +126,44 @@ gcc_9_python:
     paths:
       - build/
       - dist/
+      - _skbuild/
 
   before_script:
     - export CCACHE_BASEDIR=$CI_PROJECT_DIR
     - export CCACHE_DIR=$CI_PROJECT_DIR/cache
 
   script:
-    - python3 setup.py bdist_wheel build_ext --build-temp=build
+    - python3 setup.py bdist_wheel build_ext --build-temp=_skbuild -- -DBUILD_VF_CPU=ON -DBUILD_VF_DOUBLE_ACCURACY=ON -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_CUDA_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache
 
 ###############################################################################
 ##                            Container Upload                               ##
 ###############################################################################
-build_singularity_image:
+build_poiseuille_test_container:
+  image: 
+    name: quay.io/singularity/singularity:v3.10.2
+    entrypoint: [""]
+
   stage: container_upload
 
-  needs:
-    - gcc_9_python
+  rules:
+    - if: $REMOTE_USER && $REMOTE_HOST && $PRIVATE_KEY && $CI_PIPELINE_SOURCE == "schedule"
+      when: always
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - when: manual
+      allow_failure: true
 
   tags:
     - linux
     - privileged
 
-  rules:
-    - if: $CI_COMMIT_TAG
+  artifacts:
+    expire_in: 1 hrs
+    paths:
+      - Containers/PoiseuilleTestContainer.sif
 
   script:
-    - singularity build Containers/VirtualFluidsPython.sif Containers/VirtualFluidsPython.def
-    - singularity push --docker-username "${CI_REGISTRY_USER}" --docker-password "${CI_REGISTRY_PASSWORD}" Containers/VirtualFluidsPython.sif oras://"$CI_REGISTRY_IMAGE"/"$CI_PROJECT_NAME":"$CI_COMMIT_TAG"
+    - singularity build "Containers/PoiseuilleTestContainer.sif" "Python/SlurmTests/poiseuille/PoiseuilleTestContainer.def"
 
 ###############################################################################
 ##                                Tests                                      ##
@@ -169,14 +180,14 @@ gcc_9_unit_tests:
     - ctest
 
 ###############################################################################
-msvc_16_unit_tests:
+msvc_17_unit_tests:
   stage: test
 
   tags:
     - win
     - gpu
 
-  needs: ["msvc_16"]
+  needs: ["msvc_17"]
 
   before_script:
     - $env:Path += ";C:\Program Files\CMake\bin\"
@@ -201,6 +212,52 @@ gcc_9_python_bindings_test:
   script:
     - python3 -m unittest discover -s Python -v
 
+
+###############################################################################
+gcc_9_python_hpc_test:
+  image: python:latest
+  stage: test
+
+  needs: ["build_poiseuille_test_container"]
+
+  rules:
+    - if: $REMOTE_USER && $REMOTE_HOST && $PRIVATE_KEY && $CI_PIPELINE_SOURCE == "schedule"
+      when: always
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - when: manual
+      allow_failure: true
+
+  before_script:
+    - pip install hpc-rocket
+
+  script:
+    - hpc-rocket launch --watch Python/SlurmTests/poiseuille/rocket.yml
+
+###############################################################################
+multigpu_hpc_test:
+  image: python:latest
+  stage: test
+
+  rules:
+    - if: $REMOTE_USER && $REMOTE_HOST && $PRIVATE_KEY && $CI_PIPELINE_SOURCE == "schedule"
+      when: always
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - when: manual
+      allow_failure: true
+
+  before_script:
+    - pip install hpc-rocket
+    - pip install "fieldcompare[all]"
+
+  script:
+    - hpc-rocket launch --watch regression-tests/multigpu_test/rocket.yml
+    - git clone --depth 1 --filter=blob:none --sparse https://github.com/irmb/test_data
+    - cd test_data
+    - git sparse-checkout set regression_tests/gpu/DrivenCavity_4GPU_2Levels
+    - cd ..
+    - fieldcompare dir output/results test_data/regression_tests/gpu/DrivenCavity_4GPU_2Levels --include-files "*.vtu"
 
 ###############################################################################
 ##                            Benchmark                                      ##
@@ -248,7 +305,7 @@ gpu_numerical_tests:
     - cd $CI_PROJECT_DIR/build
     - rm -r -f ./*
     - cmake ..
-      --preset=gpu_numerical_tests_make
+      --preset=make_numerical_tests_gpu
       -DCMAKE_CUDA_ARCHITECTURES=60
       -DPATH_NUMERICAL_TESTS=/tmp/test_data/numerical_tests_gpu
     - make -j4
@@ -319,8 +376,7 @@ clang_build_analyzer_clang_10:
     - mkdir -p $CI_PROJECT_DIR/build
     - cd $CI_PROJECT_DIR/build
     - cmake ..
-      -DBUILD_VF_CPU=ON
-      -DBUILD_VF_GPU=ON
+      --preset=make_all
       -DCMAKE_CUDA_ARCHITECTURES=60
       -DCMAKE_CXX_FLAGS=-ftime-trace
     - ClangBuildAnalyzer --start .
@@ -352,8 +408,7 @@ include_what_you_use_clang_10:
     - mkdir -p $CI_PROJECT_DIR/build
     - cd $CI_PROJECT_DIR/build
     - cmake ..
-      -DBUILD_VF_CPU=ON
-      -DBUILD_VF_GPU=ON
+      --preset=make_all
       -DCMAKE_CUDA_ARCHITECTURES=60
       -DBUILD_VF_INCLUDE_WHAT_YOU_USE=ON
     - make
@@ -430,7 +485,7 @@ gcov_gcc_9:
     - mkdir -p $CI_PROJECT_DIR/build
     - cd $CI_PROJECT_DIR/build
     - cmake ..
-      --preset=all_make
+      --preset=make_all
       -DCMAKE_CUDA_ARCHITECTURES=60
       -DBUILD_VF_COVERAGE=ON
     - make -j4
@@ -473,6 +528,7 @@ clang-tidy:
     - cd $CI_PROJECT_DIR/build
     - cmake ..
       -DBUILD_VF_CPU=ON
+      -DBUILD_VF_DOUBLE_ACCURACY=ON
       -DBUILD_VF_GPU=OFF
     - python3 ../utilities/filterCompileCommands.py compile_commands.json
     - run-clang-tidy -quiet > clangtidy.txt
@@ -604,26 +660,3 @@ sonar-scanner:
   script:
     - cd $CI_PROJECT_DIR
     - sonar-scanner -X -Dsonar.verbose=true -Dsonar.login=$SONAR_SECURITY_TOKEN
-
-###############################################################################
-##                              Release                                      ##
-###############################################################################
-create_release:
-  stage: release
-
-  image: registry.gitlab.com/gitlab-org/release-cli:latest
-
-  needs: ["build_singularity_image"]
-
-  rules:
-    - if: $CI_COMMIT_TAG
-
-  script:
-    - echo "Creating release with tag $CI_COMMIT_TAG"
-    - release-cli create --name "VirtualFluids $CI_COMMIT_TAG" \
-      --description "VirtualFluids CFD Simulator" \
-      --tag-name "$CI_COMMIT_TAG" \
-      --ref "$CI_COMMIT_SHA" \
-      --job-token "$CI_JOB_TOKEN" \
-      --assets-link="{'name':'VirtualFluidsSingularityImage_OpenMPI','url':'','type':'other','filepath':'Containers/VirtualFluidsOpenMPI.sif'}"
-    - build/bin/basicsTests

@@ -93,6 +93,9 @@ public:
     // nodedata);
     // FIXME: hides function in base class
 
+    std::string writeLinesWithLineData(const std::string &filename, std::vector<UbTupleFloat3> &nodes, std::vector<UbTupleInt2> &lines,
+                                       std::vector<std::string> &datanames, std::vector<std::vector<float>> &celldata) override;
+
     //////////////////////////////////////////////////////////////////////////
     // triangles
     //                    2

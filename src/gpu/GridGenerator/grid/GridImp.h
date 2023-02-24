@@ -34,6 +34,7 @@
 #define GRID_IMP_H
 
 #include <array>
+#include <vector>
 
 #include "Core/LbmOrGks.h"
 
@@ -51,6 +52,7 @@ class GridInterface;
 class Object;
 class BoundingBox;
 class TriangularMeshDiscretizationStrategy;
+
 
 #ifdef __GNUC__
     #ifndef __clang__
@@ -76,7 +78,7 @@ protected:
 
 public:
     static SPtr<GridImp> makeShared(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, std::string d3Qxx, uint level);
-    virtual ~GridImp() = default;
+    ~GridImp() override = default;
 
 private:
     void initalNumberOfNodesAndSize();
@@ -91,6 +93,7 @@ private:
 
     bool nodeInPreviousCellIs(int index, char type) const;
     bool nodeInCellIs(Cell& cell, char type) const override;
+
 
     uint getXIndex(real x) const;
     uint getYIndex(real y) const;
@@ -115,8 +118,11 @@ private:
 
     int *sparseIndices;
 
-    std::vector<uint> fluidNodeIndices;
-    std::vector<uint> fluidNodeIndicesBorder;
+    std::vector<uint> fluidNodeIndices;                 // run on CollisionTemplate::Default
+    std::vector<uint> fluidNodeIndicesBorder;           // run on subdomain border nodes (CollisionTemplate::SubDomainBorder)
+    std::vector<uint> fluidNodeIndicesMacroVars;        // run on CollisionTemplate::MacroVars
+    std::vector<uint> fluidNodeIndicesApplyBodyForce;   // run on CollisionTemplate::ApplyBodyForce
+    std::vector<uint> fluidNodeIndicesAllFeatures;      // run on CollisionTemplate::AllFeatures
 
 	uint *qIndices;     //maps from matrix index to qIndex
 	real *qValues;
@@ -132,6 +138,8 @@ private:
 
     bool enableFixRefinementIntoTheWall;
 
+    std::vector<SideType> bcAlreadySet;
+
 protected:
     Field field;
     int *neighborIndexX, *neighborIndexY, *neighborIndexZ, *neighborIndexNegative;
@@ -146,9 +154,9 @@ public:
     void setPeriodicityY(bool periodicity) override;
     void setPeriodicityZ(bool periodicity) override;
 
-    bool getPeriodicityX() override;
-    bool getPeriodicityY() override;
-    bool getPeriodicityZ() override;
+    bool getPeriodicityX() const override;
+    bool getPeriodicityY() const override;
+    bool getPeriodicityZ() const override;
 
     void setEnableFixRefinementIntoTheWall(bool enableFixRefinementIntoTheWall) override;
 
@@ -181,6 +189,9 @@ public:
     void setInnerRegionFromFinerGrid(bool innerRegionFromFinerGrid) override;
 
     void setNumberOfLayers(uint numberOfLayers) override;
+
+    std::vector<SideType> getBCAlreadySet() override;
+    void addBCalreadySet(SideType side) override;
 
 public:
     Distribution distribution;
@@ -216,6 +227,7 @@ public:
     bool nodeInNextCellIs(int index, char type) const;
     bool hasAllNeighbors(uint index) const;
     bool hasNeighborOfType(uint index, char type) const;
+    bool nodeHasBC(uint index) const override;
     bool cellContainsOnly(Cell &cell, char type) const;
     bool cellContainsOnly(Cell &cell, char typeA, char typeB) const;
 
@@ -256,6 +268,8 @@ public:
     static void getGridInterface(uint *gridInterfaceList, const uint *oldGridInterfaceList, uint size);
 
     bool isSparseIndexInFluidNodeIndicesBorder(uint &sparseIndex) const override;
+    
+    bool isStopperForBC(uint index) const override;
 
     int *getNeighborsX() const override;
     int* getNeighborsY() const override;
@@ -273,7 +287,7 @@ public:
     void print() const;
 
 public:
-    virtual void findSparseIndices(SPtr<Grid> fineGrid) override;
+    void findSparseIndices(SPtr<Grid> fineGrid) override;
 
     void findForGridInterfaceNewIndices(SPtr<GridImp> fineGrid);
     void updateSparseIndices();
@@ -364,6 +378,19 @@ public:
     uint getNumberOfFluidNodesBorder() const override;
     void getFluidNodeIndicesBorder(uint *fluidNodeIndicesBorder) const override;
 
+    void addFluidNodeIndicesMacroVars(std::vector<uint> _fluidNodeIndicesMacroVars) override;
+    void addFluidNodeIndicesApplyBodyForce(std::vector<uint> _fluidNodeIndicesApplyBodyForce) override;
+    void addFluidNodeIndicesAllFeatures(std::vector<uint> _fluidNodeIndicesAllFeatures) override;
+    void sortFluidNodeIndicesMacroVars() override;
+    void sortFluidNodeIndicesApplyBodyForce() override;
+    void sortFluidNodeIndicesAllFeatures() override;
+
+    uint getNumberOfFluidNodeIndicesMacroVars() const override;
+    uint getNumberOfFluidNodeIndicesApplyBodyForce() const override;
+    uint getNumberOfFluidNodeIndicesAllFeatures() const override; 
+    void getFluidNodeIndicesMacroVars(uint *fluidNodeIndicesMacroVars) const override;
+    void getFluidNodeIndicesApplyBodyForce(uint *fluidNodeIndicesApplyBodyForce) const override;
+    void getFluidNodeIndicesAllFeatures(uint *fluidNodeIndicesAllFeatures) const override;
 
 public:
     struct CommunicationIndices {

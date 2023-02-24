@@ -68,18 +68,20 @@ void MultiphaseVelocityBCAlgorithm::addDistributionsH2(SPtr<DistributionArray3D>
 //////////////////////////////////////////////////////////////////////////
 void MultiphaseVelocityBCAlgorithm::applyBC()
 {
-   LBMReal f[D3Q27System::ENDF+1];
-   LBMReal h[D3Q27System::ENDF+1];
-   LBMReal h2[D3Q27System::ENDF + 1];
-   LBMReal feq[D3Q27System::ENDF+1];
-   LBMReal heq[D3Q27System::ENDF+1];
-   LBMReal htemp[D3Q27System::ENDF+1];
+    using namespace vf::lbm::dir;
+
+   real f[D3Q27System::ENDF+1];
+   real h[D3Q27System::ENDF+1];
+   real h2[D3Q27System::ENDF + 1];
+   real feq[D3Q27System::ENDF+1];
+   real heq[D3Q27System::ENDF+1];
+   real htemp[D3Q27System::ENDF+1];
    
    distributions->getDistributionInv(f, x1, x2, x3);
    distributionsH->getDistributionInv(h, x1, x2, x3);
    if (distributionsH2)
        distributionsH2->getDistributionInv(h2, x1, x2, x3);
-   LBMReal phi, vx1, vx2, vx3, p1, phiBC;
+   real phi, vx1, vx2, vx3, p1, phiBC;
    
    D3Q27System::calcDensity(h, phi);
 
@@ -98,12 +100,12 @@ void MultiphaseVelocityBCAlgorithm::applyBC()
    int nx3 = x3;
 
    //flag points in direction of fluid
-   if      (bcPtr->hasVelocityBoundaryFlag(D3Q27System::DIR_P00)) { nx1 -= 1; }
-   else if (bcPtr->hasVelocityBoundaryFlag(D3Q27System::DIR_M00)) { nx1 += 1; }
-   else if (bcPtr->hasVelocityBoundaryFlag(D3Q27System::DIR_0P0)) { nx2 -= 1; }
-   else if (bcPtr->hasVelocityBoundaryFlag(D3Q27System::DIR_0M0)) { nx2 += 1; }
-   else if (bcPtr->hasVelocityBoundaryFlag(D3Q27System::DIR_00P)) { nx3 -= 1; }
-   else if (bcPtr->hasVelocityBoundaryFlag(D3Q27System::DIR_00M)) { nx3 += 1; }
+   if      (bcPtr->hasVelocityBoundaryFlag(DIR_P00)) { nx1 -= 1; }
+   else if (bcPtr->hasVelocityBoundaryFlag(DIR_M00)) { nx1 += 1; }
+   else if (bcPtr->hasVelocityBoundaryFlag(DIR_0P0)) { nx2 -= 1; }
+   else if (bcPtr->hasVelocityBoundaryFlag(DIR_0M0)) { nx2 += 1; }
+   else if (bcPtr->hasVelocityBoundaryFlag(DIR_00P)) { nx3 -= 1; }
+   else if (bcPtr->hasVelocityBoundaryFlag(DIR_00M)) { nx3 += 1; }
    //else UB_THROW(UbException(UB_EXARGS, "Danger...no orthogonal BC-Flag on velocity boundary..."));
    
    phiBC = bcPtr->getBoundaryPhaseField();
@@ -129,14 +131,14 @@ void MultiphaseVelocityBCAlgorithm::applyBC()
       {
          const int invDir = D3Q27System::INVDIR[fdir];
          //LBMReal q = bcPtr->getQ(invDir);// m+m q=0 stabiler
-         LBMReal velocity = bcPtr->getBoundaryVelocity(invDir);
+         real velocity = bcPtr->getBoundaryVelocity(invDir);
 		 //16.03.2021 quick fix for velocity BC
-         LBMReal fReturn = f[invDir] - velocity;
+         real fReturn = f[invDir] - velocity;
          //LBMReal fReturn = ((1.0-q)/(1.0+q))*((f[invDir]-feq[invDir])/(1.0-collFactor)+feq[invDir])+((q*(f[invDir]+f[fdir])-velocity)/(1.0+q));
         // distributions->setDistributionForDirection(fReturn, x1+D3Q27System::DX1[invDir], x2+D3Q27System::DX2[invDir], x3+D3Q27System::DX3[invDir], fdir);//no delay BB
          distributions->setDistributionForDirection(fReturn, x1, x2, x3, invDir);//delay BB  
 
-         LBMReal hReturn = htemp[invDir] + h[invDir] - heq[invDir] - velocity*phi;
+         real hReturn = htemp[invDir] + h[invDir] - heq[invDir] - velocity*phi;
          distributionsH->setDistributionForDirection(hReturn, x1, x2, x3, invDir);//delay BB  
          if (distributionsH2) {
              fReturn = h2[invDir] ;

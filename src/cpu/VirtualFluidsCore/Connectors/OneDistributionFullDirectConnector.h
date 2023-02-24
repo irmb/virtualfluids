@@ -54,13 +54,13 @@ protected:
     inline void exchangeData(int x1From, int x2From, int x3From, int x1To, int x2To, int x3To) override;
 
 private:
-    CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributionsFrom;
-    CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsFrom;
-    CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr zeroDistributionsFrom;
+    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributionsFrom;
+    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsFrom;
+    CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributionsFrom;
 
-    CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributionsTo;
-    CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsTo;
-    CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr zeroDistributionsTo;
+    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributionsTo;
+    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsTo;
+    CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributionsTo;
 
     SPtr<EsoTwist3D> fFrom;
     SPtr<EsoTwist3D> fTo;

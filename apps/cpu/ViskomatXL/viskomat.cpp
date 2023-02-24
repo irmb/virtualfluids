@@ -8,6 +8,8 @@ using namespace std;
 
 void bflow(string configname)
 {
+    using namespace vf::lbm::dir;
+
    try
    {
       vf::basics::ConfigurationFile   config;
@@ -18,21 +20,21 @@ void bflow(string configname)
       string          geoFile = config.getValue<string>("geoFile");
       int             numOfThreads = config.getValue<int>("numOfThreads");
       vector<int>     blocknx = config.getVector<int>("blocknx");
-      vector<double>  boundingBox = config.getVector<double>("boundingBox");
-      double          endTime = config.getValue<double>("endTime");
-      double          outTime = config.getValue<double>("outTime");
-      double          availMem = config.getValue<double>("availMem");
+      vector<real>  boundingBox = config.getVector<real>("boundingBox");
+      real          endTime = config.getValue<real>("endTime");
+      real          outTime = config.getValue<real>("outTime");
+      real          availMem = config.getValue<real>("availMem");
       int             refineLevel = config.getValue<int>("refineLevel");
       bool            logToFile = config.getValue<bool>("logToFile");
-      double          restartStep = config.getValue<double>("restartStep");
-      double          deltax = config.getValue<double>("deltax");
-      double          cpStep = config.getValue<double>("cpStep");
-      double          cpStart = config.getValue<double>("cpStart");
+      real          restartStep = config.getValue<real>("restartStep");
+      real          deltax = config.getValue<real>("deltax");
+      real          cpStep = config.getValue<real>("cpStep");
+      real          cpStart = config.getValue<real>("cpStart");
       bool            newStart = config.getValue<bool>("newStart");
-      double          OmegaLB = config.getValue<double>("OmegaLB");
-      double          tau0 = config.getValue<double>("tau0");
-      double          N = config.getValue<double>("N");
-      double          mu = config.getValue<double>("mu");
+      real          OmegaLB = config.getValue<real>("OmegaLB");
+      real          tau0 = config.getValue<real>("tau0");
+      real          N = config.getValue<real>("N");
+      real          mu = config.getValue<real>("mu");
 
 
       vf::basics::ConfigurationFile   viscosity;
@@ -58,22 +60,22 @@ void bflow(string configname)
          }
       }
 
-      LBMReal rhoLB = 0.0;
+      real rhoLB = 0.0;
 
       //double N  = 70; //rpm
-      double Omega = 2 * UbMath::PI / 60.0 * N; //rad/s
+      real Omega = 2 * UbMath::PI / 60.0 * N; //rad/s
       //double mu    = 5; //Pa s
-      double R     = 0.165 / 2.0; //m
-      double rho = 2150;//  970; //kg/m^3
-      double Re    = Omega * R * R * rho / mu;
+      real R     = 0.165 / 2.0; //m
+      real rho = 2150;// 970; //kg/m^3
+      real Re    = Omega * R * R * rho / mu;
 
       //double nuLB = OmegaLB * R * 1e3 * R * 1e3 / Re;
 
-      double dx = deltax * 1e-3;
-      double nuLB = OmegaLB * (R / dx)*(R / dx) / Re;
+      real dx = deltax * 1e-3;
+      real nuLB = OmegaLB * (R / dx)*(R / dx) / Re;
 
-      double Bm = tau0/(mu*Omega);
-      double tau0LB = Bm*nuLB*OmegaLB;
+      real Bm = tau0/(mu*Omega);
+      real tau0LB = Bm*nuLB*OmegaLB;
 
 
       //double dx = 1.0 * 1e-3;
@@ -89,14 +91,14 @@ void bflow(string configname)
 
       //bounding box
 
-      double g_minX1 = boundingBox[0];
-      double g_maxX1 = boundingBox[1];
+      real g_minX1 = boundingBox[0];
+      real g_maxX1 = boundingBox[1];
 
-      double g_minX2 = boundingBox[2];
-      double g_maxX2 = boundingBox[3];
+      real g_minX2 = boundingBox[2];
+      real g_maxX2 = boundingBox[3];
       
-      double g_minX3 = boundingBox[4];
-      double g_maxX3 = boundingBox[5];
+      real g_minX3 = boundingBox[4];
+      real g_maxX3 = boundingBox[5];
 
       SPtr<Rheology> thix = Rheology::getInstance();
       //thix->setPowerIndex(n);
@@ -191,7 +193,7 @@ void bflow(string configname)
 
       ////////////////////////////////////////////
       //METIS
-      SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::DIR_MMM, MetisPartitioner::RECURSIVE));
+      SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, DIR_MMM, MetisPartitioner::RECURSIVE));
       ////////////////////////////////////////////
       //////////////////////////////////////////////////////////////////////////
       //restart
@@ -255,7 +257,7 @@ void bflow(string configname)
           g_maxX2 + deltax, g_maxX3 + deltax));
       if (myid == 0) GbSystem3D::writeGeoObject(wallXmin.get(), outputPath + "/geo/wallXmin", WbWriterVtkXmlASCII::getInstance());
 
-      GbCuboid3DPtr wallXmax(new GbCuboid3D(g_maxX1, g_minX2 - deltax, g_minX3 - deltax, g_maxX1 +  (double)blocknx[0]*deltax,
+      GbCuboid3DPtr wallXmax(new GbCuboid3D(g_maxX1, g_minX2 - deltax, g_minX3 - deltax, g_maxX1 +  (real)blocknx[0]*deltax,
           g_maxX2 + deltax, g_maxX3 + deltax));
       if (myid == 0) GbSystem3D::writeGeoObject(wallXmax.get(), outputPath + "/geo/wallXmax", WbWriterVtkXmlASCII::getInstance());
 
@@ -326,8 +328,8 @@ void bflow(string configname)
          unsigned long nodb = (blocknx[0]) * (blocknx[1]) * (blocknx[2]);
          unsigned long nod = nob * (blocknx[0]) * (blocknx[1]) * (blocknx[2]);
          unsigned long nodg = nob * (blocknx[0] + gl) * (blocknx[1] + gl) * (blocknx[1] + gl);
-         double needMemAll = double(nodg * (27 * sizeof(double) + sizeof(int) + sizeof(float) * 4));
-         double needMem = needMemAll / double(comm->getNumberOfProcesses());
+         real needMemAll = real(nodg * (27 * sizeof(real) + sizeof(int) + sizeof(float) * 4));
+         real needMem = needMemAll / real(comm->getNumberOfProcesses());
 
          if (myid == 0)
          {

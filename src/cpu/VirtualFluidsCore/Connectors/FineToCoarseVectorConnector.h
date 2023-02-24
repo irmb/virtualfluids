@@ -87,7 +87,7 @@ public:
     bool isInterpolationConnectorCF() override { return false; }
     bool isInterpolationConnectorFC() override { return true; }
 
-    double getSendRecieveTime();
+    real getSendRecieveTime();
 
     void prepareForSendX1() override {}
     void prepareForSendX2() override {}
@@ -115,8 +115,8 @@ protected:
 
     CFconnectorType connType;
 
-    void writeICellCtoData(vector_type &data, int &index, LBMReal *icellC);
-    void writeNodeToVector(vector_type &data, int &index, LBMReal *inode);
+    void writeICellCtoData(vector_type &data, int &index, real *icellC);
+    void writeNodeToVector(vector_type &data, int &index, real *inode);
     //void getLocalMinMax(int &minX1, int &minX2, int &minX3, int &maxX1, int &maxX2, int &maxX3);
     void getLocalMinMax(int &minX1, int &minX2, int &minX3, int &maxX1, int &maxX2, int &maxX3,
                         CFconnectorType connType);
@@ -128,7 +128,7 @@ protected:
                                  const int &lMaxX1, const int &lMaxX2, const int &lMaxX3, vector_type &data,
                                  int &index);
     void readICellFfromData(vector_type &data, int &index, D3Q27ICell &icellF);
-    void readNodeFromVector(vector_type &data, int &index, LBMReal *inode);
+    void readNodeFromVector(vector_type &data, int &index, real *inode);
     void getLocalOffsets(const int &gMax, int &oMin);
     void getLocalMins(int &minX1, int &minX2, int &minX3, const int &oMinX1, const int &oMinX2, const int &oMinX3);
 
@@ -144,16 +144,18 @@ FineToCoarseVectorConnector<VectorTransmitter>::FineToCoarseVectorConnector(SPtr
     : Block3DConnector(sendDir), block(block), sender(sender), receiver(receiver), iprocessor(iprocessor),
       connType(connType)
 {
-    if (!(sendDir == D3Q27System::DIR_P00 || sendDir == D3Q27System::DIR_M00 || sendDir == D3Q27System::DIR_0P0 ||
-          sendDir == D3Q27System::DIR_0M0 || sendDir == D3Q27System::DIR_00P || sendDir == D3Q27System::DIR_00M ||
-          sendDir == D3Q27System::DIR_PP0 || sendDir == D3Q27System::DIR_MM0 || sendDir == D3Q27System::DIR_PM0 ||
-          sendDir == D3Q27System::DIR_MP0 || sendDir == D3Q27System::DIR_P0P || sendDir == D3Q27System::DIR_M0M ||
-          sendDir == D3Q27System::DIR_P0M || sendDir == D3Q27System::DIR_M0P || sendDir == D3Q27System::DIR_0PP ||
-          sendDir == D3Q27System::DIR_0MM || sendDir == D3Q27System::DIR_0PM || sendDir == D3Q27System::DIR_0MP
+    using namespace vf::lbm::dir;
 
-          || sendDir == D3Q27System::DIR_PPP || sendDir == D3Q27System::DIR_MPP || sendDir == D3Q27System::DIR_PMP ||
-          sendDir == D3Q27System::DIR_MMP || sendDir == D3Q27System::DIR_PPM || sendDir == D3Q27System::DIR_MPM ||
-          sendDir == D3Q27System::DIR_PMM || sendDir == D3Q27System::DIR_MMM
+    if (!(sendDir == DIR_P00 || sendDir == DIR_M00 || sendDir == DIR_0P0 ||
+          sendDir == DIR_0M0 || sendDir == DIR_00P || sendDir == DIR_00M ||
+          sendDir == DIR_PP0 || sendDir == DIR_MM0 || sendDir == DIR_PM0 ||
+          sendDir == DIR_MP0 || sendDir == DIR_P0P || sendDir == DIR_M0M ||
+          sendDir == DIR_P0M || sendDir == DIR_M0P || sendDir == DIR_0PP ||
+          sendDir == DIR_0MM || sendDir == DIR_0PM || sendDir == DIR_0MP
+
+          || sendDir == DIR_PPP || sendDir == DIR_MPP || sendDir == DIR_PMP ||
+          sendDir == DIR_MMP || sendDir == DIR_PPM || sendDir == DIR_MPM ||
+          sendDir == DIR_PMM || sendDir == DIR_MMM
 
           )) {
         throw UbException(UB_EXARGS, "invalid constructor for this direction");
@@ -224,13 +226,14 @@ template <typename VectorTransmitter>
 void FineToCoarseVectorConnector<VectorTransmitter>::init()
 {
     using namespace D3Q27System;
+    using namespace vf::lbm::dir;
 
     bMaxX1 = (int)block.lock()->getKernel()->getDataSet()->getFdistributions()->getNX1();
     bMaxX2 = (int)block.lock()->getKernel()->getDataSet()->getFdistributions()->getNX2();
     bMaxX3 = (int)block.lock()->getKernel()->getDataSet()->getFdistributions()->getNX3();
 
     int sendSize      = 0;
-    LBMReal initValue = -999.0;
+    real initValue = -999.0;
 
     int sendDataPerNode = 27 /*f*/;
     int iCellSize       = 1; // size of interpolation cell
@@ -286,6 +289,7 @@ template <typename VectorTransmitter>
 void FineToCoarseVectorConnector<VectorTransmitter>::fillSendVectors()
 {
     using namespace D3Q27System;
+    using namespace vf::lbm::dir;
 
     SPtr<DistributionArray3D> fFrom = block.lock()->getKernel()->getDataSet()->getFdistributions();
     int maxX1                       = (int)fFrom->getNX1();
@@ -790,13 +794,13 @@ void FineToCoarseVectorConnector<VectorTransmitter>::fillSendVector(SPtr<Distrib
                                                                     const int &lMaxX3, vector_type &data, int &index)
 {
     int ix1, ix2, ix3;
-    LBMReal xoff, yoff, zoff;
+    real xoff, yoff, zoff;
     SPtr<BCArray3D> bcArray = block.lock()->getKernel()->getBCProcessor()->getBCArray();
 
     for (ix3 = lMinX3; ix3 < lMaxX3; ix3 += 2) {
         for (ix2 = lMinX2; ix2 < lMaxX2; ix2 += 2) {
             for (ix1 = lMinX1; ix1 < lMaxX1; ix1 += 2) {
-                LBMReal icellC[27];
+                real icellC[27];
                 D3Q27ICell icellF;
 
                 int howManySolids = iprocessor->iCellHowManySolids(bcArray, ix1, ix2, ix3);
@@ -827,7 +831,7 @@ void FineToCoarseVectorConnector<VectorTransmitter>::fillSendVector(SPtr<Distrib
 }
 //////////////////////////////////////////////////////////////////////////
 template <typename VectorTransmitter>
-void FineToCoarseVectorConnector<VectorTransmitter>::writeICellCtoData(vector_type &data, int &index, LBMReal *icellC)
+void FineToCoarseVectorConnector<VectorTransmitter>::writeICellCtoData(vector_type &data, int &index, real *icellC)
 {
     for (int i = D3Q27System::STARTF; i < D3Q27System::ENDF + 1; i++) {
         data[index++] = icellC[i];
@@ -849,6 +853,7 @@ template <typename VectorTransmitter>
 void FineToCoarseVectorConnector<VectorTransmitter>::distributeReceiveVectors()
 {
     using namespace D3Q27System;
+    using namespace vf::lbm::dir;
 
     SPtr<DistributionArray3D> fTo = block.lock()->getKernel()->getDataSet()->getFdistributions();
     int maxX1                     = (int)fTo->getNX1();
@@ -1145,7 +1150,7 @@ void FineToCoarseVectorConnector<VectorTransmitter>::readICellFfromData(vector_t
 }
 //////////////////////////////////////////////////////////////////////////
 template <typename VectorTransmitter>
-void FineToCoarseVectorConnector<VectorTransmitter>::readNodeFromVector(vector_type &data, int &index, LBMReal *inode)
+void FineToCoarseVectorConnector<VectorTransmitter>::readNodeFromVector(vector_type &data, int &index, real *inode)
 {
     for (int i = D3Q27System::STARTF; i < D3Q27System::ENDF + 1; i++) {
         inode[i] = data[index++];
@@ -1157,6 +1162,8 @@ void FineToCoarseVectorConnector<VectorTransmitter>::getLocalMinMax(int &minX1, 
                                                                     int &maxX2, int &maxX3)
 {
     using namespace D3Q27System;
+    using namespace vf::lbm::dir;
+    
     int TminX1 = minX1;
     int TminX2 = minX2;
     int TminX3 = minX3;
@@ -1298,6 +1305,8 @@ void FineToCoarseVectorConnector<VectorTransmitter>::getLocalMinMax(int &minX1, 
                                                                     CFconnectorType /*connType*/)
 {
     using namespace D3Q27System;
+    using namespace vf::lbm::dir;
+
     int TminX1 = minX1;
     int TminX2 = minX2;
     int TminX3 = minX3;
@@ -1447,6 +1456,7 @@ void FineToCoarseVectorConnector<VectorTransmitter>::getLocalMins(int &minX1, in
                                                                   const int &oMinX2, const int &oMinX3)
 {
     using namespace D3Q27System;
+    using namespace vf::lbm::dir;
 
     switch (sendDir) {
         case DIR_P00:
@@ -1545,7 +1555,7 @@ void FineToCoarseVectorConnector<VectorTransmitter>::getLocalMins(int &minX1, in
 }
 //////////////////////////////////////////////////////////////////////////
 template <typename VectorTransmitter>
-double FineToCoarseVectorConnector<VectorTransmitter>::getSendRecieveTime()
+real FineToCoarseVectorConnector<VectorTransmitter>::getSendRecieveTime()
 {
     return 0;
 }
