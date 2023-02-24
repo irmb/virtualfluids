@@ -261,6 +261,32 @@ regression_test_4gpu:
     - fieldcompare dir output/4GPU test_data/regression_tests/gpu/SphereScaling_4GPU_2Levels --include-files "SphereScaling*.vtu"
 
 ###############################################################################
+regression_test_8gpu:
+  image: python:latest
+  stage: test
+
+  rules:
+    - if: $REMOTE_USER && $REMOTE_HOST && $PRIVATE_KEY && $CI_PIPELINE_SOURCE == "schedule"
+      when: always
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - when: manual
+      allow_failure: true
+
+  before_script:
+    - pip install hpc-rocket
+    - pip install "fieldcompare[all]"
+
+  script:
+    - hpc-rocket launch --watch regression-tests/multigpu_test/rocket8GPU.yml
+    - git clone --depth 1 --filter=blob:none --sparse https://github.com/irmb/test_data
+    - cd test_data
+    - git sparse-checkout set regression_tests/gpu/DrivenCavity_8GPU_2Levels regression_tests/gpu/SphereScaling_8GPU_2Levels
+    - cd ..
+    - fieldcompare dir output/8GPU test_data/regression_tests/gpu/DrivenCavity_8GPU_2Levels --include-files "DrivenCavityMultiGPU*.vtu"
+    - fieldcompare dir output/8GPU test_data/regression_tests/gpu/SphereScaling_8GPU_2Levels --include-files "SphereScaling*.vtu"
+
+###############################################################################
 ##                            Benchmark                                      ##
 ###############################################################################
 nvidia_test:
