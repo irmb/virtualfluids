@@ -1,7 +1,6 @@
 #ifndef KERNEL_TYPES_H
 #define KERNEL_TYPES_H
 
-#include "Calculation/PorousMedia.h"
 namespace vf::CollisionKernel::Compressible {
     static const std::string BGK = "BGKCompSP27";
     static const std::string BGKUnified = "BGKUnified";
