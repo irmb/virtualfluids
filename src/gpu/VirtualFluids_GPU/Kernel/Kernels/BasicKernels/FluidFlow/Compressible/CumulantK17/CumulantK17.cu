@@ -126,7 +126,7 @@ CumulantK17<turbulenceModel>::CumulantK17(std::shared_ptr<Parameter> para, int l
 
     myPreProcessorTypes.push_back(InitCompSP27);
 
-    myKernelGroup = BasicKernel;
+    
 
     this->cudaGrid = vf::cuda::CudaGrid(para->getParD(level)->numberofthreads, para->getParD(level)->numberOfNodes);
     this->kernelUsesFluidNodeIndices = true;

@@ -50,5 +50,5 @@ CumulantK15Comp::CumulantK15Comp(std::shared_ptr<Parameter> para, int level)
 
 	myPreProcessorTypes.push_back(InitCompSP27);
 
-	myKernelGroup = BasicKernel;
+	
 }

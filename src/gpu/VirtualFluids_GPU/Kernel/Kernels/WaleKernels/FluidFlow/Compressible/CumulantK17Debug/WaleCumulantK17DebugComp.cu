@@ -70,7 +70,7 @@ WaleCumulantK17DebugComp::WaleCumulantK17DebugComp(std::shared_ptr<Parameter> pa
 
 	myPreProcessorTypes.push_back(InitCompSP27);
 
-	myKernelGroup = BasicWaleKernel;
+	
 }
 
 WaleCumulantK17DebugComp::WaleCumulantK17DebugComp()

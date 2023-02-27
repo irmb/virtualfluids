@@ -37,5 +37,5 @@ CumulantK20Comp::CumulantK20Comp(std::shared_ptr<Parameter> para, int level)
 	myPreProcessorTypes.push_back(InitCompSP27);
 	myPreProcessorTypes.push_back(InitF3);
 
-	myKernelGroup = F3Kernel;
+	
 }

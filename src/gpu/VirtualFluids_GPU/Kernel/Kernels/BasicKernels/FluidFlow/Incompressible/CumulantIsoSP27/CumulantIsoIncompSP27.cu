@@ -35,7 +35,7 @@ CumulantIsoIncompSP27::CumulantIsoIncompSP27(std::shared_ptr<Parameter> para, in
 
 	myPreProcessorTypes.push_back(InitSP27);
 
-	myKernelGroup = BasicKernel;
+	
 }
 
 CumulantIsoIncompSP27::CumulantIsoIncompSP27()
