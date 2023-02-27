@@ -49,6 +49,7 @@
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
 #include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
+#include "VirtualFluids_GPU/Kernel/Utilities/KernelTypes.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -160,8 +161,7 @@ void multipleLevel(std::filesystem::path &configPath)
     std::cout << "Write result files to " << para->getFName() << std::endl;
 
     para->setUseStreams(useStreams);
-    // para->setMainKernel("CumulantK17CompChim");
-    para->setMainKernel("CumulantK17CompChimStream");
+    para->setMainKernel(vf::CollisionKernel::Compressible::CumulantK17);
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     

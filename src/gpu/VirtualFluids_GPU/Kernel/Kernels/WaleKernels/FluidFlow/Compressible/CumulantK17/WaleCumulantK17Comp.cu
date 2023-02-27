@@ -60,7 +60,7 @@ WaleCumulantK17Comp::WaleCumulantK17Comp(std::shared_ptr<Parameter> para, int le
 
 	myPreProcessorTypes.push_back(InitCompSP27);
 
-	myKernelGroup = BasicWaleKernel;
+	
 }
 
 WaleCumulantK17Comp::WaleCumulantK17Comp()

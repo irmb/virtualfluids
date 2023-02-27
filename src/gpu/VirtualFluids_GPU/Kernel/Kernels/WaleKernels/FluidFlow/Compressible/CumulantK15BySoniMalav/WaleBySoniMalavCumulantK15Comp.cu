@@ -58,7 +58,7 @@ WaleBySoniMalavCumulantK15Comp::WaleBySoniMalavCumulantK15Comp(std::shared_ptr<P
 
 	myPreProcessorTypes.push_back(InitCompSP27);
 
-	myKernelGroup = BasicWaleKernel;
+	
 }
 
 WaleBySoniMalavCumulantK15Comp::WaleBySoniMalavCumulantK15Comp()
