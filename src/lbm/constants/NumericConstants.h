@@ -16,16 +16,10 @@ static constexpr double c3o4 = 0.75;
 static constexpr double c1o6 = (1.0 / 6.0);// 0.166666666666667;
 static constexpr double c1o7 = (1.0 / 7.0);// 0.142857142857143;
 static constexpr double c1o8 = 0.125;
-<<<<<<< Updated upstream
-static constexpr double c1o9 = 0.111111111111111;
-static constexpr double c2o9 = 0.222222222222222;
-static constexpr double c4o9 = 0.444444444444444;
-static constexpr double c4o10 = 0.4;
-=======
 static constexpr double c1o9 = (1.0 / 9.0);// 0.111111111111111;
 static constexpr double c2o9 = (2.0 / 9.0);// 0.222222222222222;
 static constexpr double c4o9 = (4.0 / 9.0);// 0.444444444444444;
->>>>>>> Stashed changes
+static constexpr double c4o10 = 0.4;
 static constexpr double c1o10 = 0.1;
 static constexpr double c1o12 = (1.0 / 12.0);// 0.083333333333333;
 static constexpr double c1o16 = (1.0 / 16.0);// 0.0625;
