@@ -89,6 +89,7 @@
 #include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
 #include "VirtualFluids_GPU/Factories/GridScalingFactory.h"
 #include "VirtualFluids_GPU/TurbulenceModels/TurbulenceModelFactory.h"
+#include "VirtualFluids_GPU/Kernel/Utilities/KernelTypes.h"
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 
@@ -236,7 +237,7 @@ void multipleLevel(const std::string& configPath)
     bool useStreams = (nProcs > 1 ? true: false);
     // useStreams=false;
     para->setUseStreams(useStreams);
-    para->setMainKernel("CumulantK17");
+    para->setMainKernel(vf::CollisionKernel::Compressible::CumulantK17);
     para->setIsBodyForce( config.getValue<bool>("bodyForce") );
 
     para->setTimestepStartOut(uint(tStartOut/dt) );
