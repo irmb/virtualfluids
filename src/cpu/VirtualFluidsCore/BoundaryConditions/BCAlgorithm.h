@@ -69,9 +69,9 @@ public:
     static const char RheologyPowellEyringModelNoSlipBCAlgorithm           = 18;
     static const char RheologyBinghamModelVelocityBCAlgorithm              = 19;
     static const char MultiphaseNoSlipBCAlgorithm                  = 20;
-    static const char MultiphaseVelocityBCAlgorithm = 21;
-
-
+    static const char MultiphaseVelocityBCAlgorithm                      = 21;
+    static const char NonReflectingInflowBCAlgorithm = 22;
+    static const char NonReflectingOutflowBCAlgorithmWithRelaxation = 23;
 
 public:
     BCAlgorithm() = default;

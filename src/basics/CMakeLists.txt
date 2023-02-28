@@ -21,4 +21,8 @@ IF(MSVC)
     target_compile_definitions(${library_name} PUBLIC NOMINMAX) # Disable Min/Max-Macros
 ENDIF(MSVC)
 
+if(BUILD_USE_BOOST)
+    target_link_libraries(${library_name} PRIVATE Boost::boost)
+endif()
+
 vf_add_tests()
