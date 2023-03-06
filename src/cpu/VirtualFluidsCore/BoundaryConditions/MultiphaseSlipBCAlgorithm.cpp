@@ -101,7 +101,7 @@ void MultiphaseSlipBCAlgorithm::applyBC()
          const int invDir = D3Q27System::INVDIR[fdir];
          real q = bcPtr->getQ(invDir);// m+m q=0 stabiler
          //vx3=0;
-         real velocity = 0.0;
+         real velocity = vf::lbm::constant::c0o1;
          switch (invDir)
          {
          case DIR_P00: velocity = (vf::lbm::constant::c4o9*(+vx1)); break;      //(2/cs^2)(=6)*rho_0(=1 bei imkompr)*wi*u*ei mit cs=1/sqrt(3)
@@ -132,7 +132,7 @@ void MultiphaseSlipBCAlgorithm::applyBC()
          case DIR_MPP: velocity = (vf::lbm::constant::c1o36*(-vx1+vx2+vx3)); break;
          default: throw UbException(UB_EXARGS, "unknown error");
          }
-         real fReturn = ((1.0-q)/(1.0+q))*((f[invDir]-feq[invDir])/(1.0-collFactor)+feq[invDir])+((q*(f[invDir]+f[fdir])-velocity*rho)/(1.0+q));
+         real fReturn = ((vf::lbm::constant::c1o1-q)/(vf::lbm::constant::c1o1+q))*((f[invDir]-feq[invDir])/(vf::lbm::constant::c1o1-collFactor)+feq[invDir])+((q*(f[invDir]+f[fdir])-velocity*rho)/(vf::lbm::constant::c1o1+q));
          distributions->setDistributionForDirection(fReturn, x1+D3Q27System::DX1[invDir], x2+D3Q27System::DX2[invDir], x3+D3Q27System::DX3[invDir], fdir);
 
 		 //real hReturn = ((1.0-q)/(1.0+q))*((h[invDir]-heq[invDir])/(1.0-collFactorPh)+heq[invDir])+((q/(1.0+q))*(h[invDir]+h[fdir]));

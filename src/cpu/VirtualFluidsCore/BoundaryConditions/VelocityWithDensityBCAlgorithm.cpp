@@ -92,7 +92,7 @@ void VelocityWithDensityBCAlgorithm::applyBC()
                 // if q=1
                 // LBMReal fReturn = ((q*(f[fdir] + f[invDir]) - velocity*rho) / (1.0 +
                 // q))-drho*D3Q27System::WEIGTH[invDir];
-                real fReturn = (f[fdir] + f[invDir] - velocity * rho) / 2.0 - drho * D3Q27System::WEIGTH[invDir];
+                real fReturn = (f[fdir] + f[invDir] - velocity * rho) / vf::lbm::constant::c2o1 - drho * D3Q27System::WEIGTH[invDir];
 
                 distributions->setDistributionForDirection(fReturn, nX1, nX2, nX3, invDir);
             }

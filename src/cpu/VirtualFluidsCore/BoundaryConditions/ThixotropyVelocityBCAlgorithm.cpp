@@ -39,7 +39,7 @@ ThixotropyVelocityBCAlgorithm::ThixotropyVelocityBCAlgorithm()
 	BCAlgorithm::type = BCAlgorithm::ThixotropyVelocityBCAlgorithm;
 	BCAlgorithm::preCollision = false;
 	BCAlgorithm::thixotropy = true;
-	lambdaBC = 0.0;
+	lambdaBC = vf::lbm::constant::c0o1;
 }
 //////////////////////////////////////////////////////////////////////////
 ThixotropyVelocityBCAlgorithm::~ThixotropyVelocityBCAlgorithm()
@@ -84,7 +84,7 @@ void ThixotropyVelocityBCAlgorithm::applyBC()
 	calcMacrosFct(f, drho, vx1, vx2, vx3);
 	calcFeqFct(feq, drho, vx1, vx2, vx3);
 
-	rho = 1.0 + drho * compressibleFactor;
+	rho = vf::lbm::constant::c1o1 + drho * compressibleFactor;
 
 	//calcDiffusionMacrosFctPost(h, concentration, fl1, fl2, fl3, m100, collFactor);
 	real lambda = D3Q27System::getDensity(h);
@@ -127,7 +127,7 @@ void ThixotropyVelocityBCAlgorithm::applyBC()
 			const int invDir = D3Q27System::INVDIR[fdir];
 			real q = bcPtr->getQ(invDir);// m+m q=0 stabiler
 			real velocity = bcPtr->getBoundaryVelocity(invDir);
-			real fReturn = ((1.0 - q) / (1.0 + q)) * ((f[invDir] - feq[invDir]) / (1.0 - collFactor) + feq[invDir]) + ((q * (f[invDir] + f[fdir]) - velocity * rho) / (1.0 + q));
+			real fReturn = ((vf::lbm::constant::c1o1 - q) / (vf::lbm::constant::c1o1 + q)) * ((f[invDir] - feq[invDir]) / (vf::lbm::constant::c1o1 - collFactor) + feq[invDir]) + ((q * (f[invDir] + f[fdir]) - velocity * rho) / (vf::lbm::constant::c1o1 + q));
 			distributions->setDistributionForDirection(fReturn, x1 + D3Q27System::DX1[invDir], x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir], fdir);
 
 			real htemp = D3Q27System::getCompFeqForDirection(fdir, lambda, vx1, vx2, vx3);

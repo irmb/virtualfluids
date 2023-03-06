@@ -89,7 +89,7 @@ void MultiphaseVelocityBCAlgorithm::applyBC()
    vx1=bcPtr->getBoundaryVelocityX1();
    vx2 = bcPtr->getBoundaryVelocityX2();
    vx3 = bcPtr->getBoundaryVelocityX3();
-   p1 = 0.0;
+   p1 = vf::lbm::constant::c0o1;
    D3Q27System::calcMultiphaseFeqVB(feq, p1, vx1, vx2, vx3);
    D3Q27System::calcMultiphaseHeq(heq, phi, vx1, vx2, vx3);
 

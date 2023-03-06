@@ -59,17 +59,17 @@ void SlipBCAdapter::adaptBC(const D3Q27Interactor &interactor, SPtr<BoundaryCond
         throw UbException(UB_EXARGS, "derzeit nur fuer Cubes valide");
 
     if (bc->hasSlipBoundaryFlag(DIR_P00))
-        bc->setNormalVector(1.0, 0.0, 0.0);
+        bc->setNormalVector(vf::lbm::constant::c1o1, vf::lbm::constant::c0o1, vf::lbm::constant::c0o1);
     else if (bc->hasSlipBoundaryFlag(DIR_M00))
-        bc->setNormalVector(-1.0, 0.0, 0.0);
+        bc->setNormalVector(-vf::lbm::constant::c1o1, vf::lbm::constant::c0o1, vf::lbm::constant::c0o1);
     else if (bc->hasSlipBoundaryFlag(DIR_0P0))
-        bc->setNormalVector(0.0, 1.0, 0.0);
+        bc->setNormalVector(vf::lbm::constant::c0o1, vf::lbm::constant::c1o1, vf::lbm::constant::c0o1);
     else if (bc->hasSlipBoundaryFlag(DIR_0M0))
-        bc->setNormalVector(0.0, -1.0, 0.0);
+        bc->setNormalVector(vf::lbm::constant::c0o1, -vf::lbm::constant::c1o1, vf::lbm::constant::c0o1);
     else if (bc->hasSlipBoundaryFlag(DIR_00P))
-        bc->setNormalVector(0.0, 0.0, 1.0);
+        bc->setNormalVector(vf::lbm::constant::c0o1, vf::lbm::constant::c0o1, vf::lbm::constant::c1o1);
     else if (bc->hasSlipBoundaryFlag(DIR_00M))
-        bc->setNormalVector(0.0, 0.0, -1.0);
+        bc->setNormalVector(vf::lbm::constant::c0o1, vf::lbm::constant::c0o1, -vf::lbm::constant::c1o1);
 
     bc->setBcAlgorithmType(algorithmType);
 }

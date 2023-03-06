@@ -67,7 +67,7 @@ void SimpleSlipBCAlgorithm::applyBC()
    calcMacrosFct(f, drho, vx1, vx2, vx3);
    calcFeqFct(feq, drho, vx1, vx2, vx3);
 
-   rho = 1.0 + drho * compressibleFactor;
+   rho = vf::lbm::constant::c1o1 + drho * compressibleFactor;
 
    UbTupleFloat3 normale = bcPtr->getNormalVector();
    real amp = vx1*val<1>(normale)+vx2*val<2>(normale)+vx3*val<3>(normale);
@@ -82,7 +82,7 @@ void SimpleSlipBCAlgorithm::applyBC()
       {
          //quadratic bounce back
          const int invDir = D3Q27System::INVDIR[fdir];
-         real velocity = 0.0;
+         real velocity = vf::lbm::constant::c0o1;
          switch (invDir)
          {
          case DIR_P00: velocity = (vf::lbm::constant::c4o9*(+vx1)); break;      //(2/cs^2)(=6)*rho_0(=1 bei imkompr)*wi*u*ei mit cs=1/sqrt(3)

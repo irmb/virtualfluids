@@ -69,7 +69,7 @@ void HighViscosityNoSlipBCAlgorithm::applyBC()
             real q        = bcPtr->getQ(invDir);
             real fReturn =
                 (f[invDir] + q * f[fDir] + q * collFactor * (feq[invDir] - f[invDir] + feq[fDir] - f[fDir])) /
-                (1.0 + q);
+                (vf::lbm::constant::c1o1 + q);
             distributions->setDistributionInvForDirection(fReturn, x1 + D3Q27System::DX1[invDir],
                                                           x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir],
                                                           invDir);

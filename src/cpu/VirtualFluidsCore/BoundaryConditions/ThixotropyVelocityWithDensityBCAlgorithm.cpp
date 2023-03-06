@@ -76,7 +76,7 @@ void ThixotropyVelocityWithDensityBCAlgorithm::applyBC()
    real rho, vx1, vx2, vx3, drho;
    calcMacrosFct(f, drho, vx1, vx2, vx3);
    
-   rho = 1.0+drho*compressibleFactor;
+   rho = vf::lbm::constant::c1o1+drho*compressibleFactor;
   
    ///////////////////////////////////////////////////////////////////
    // Rheology
@@ -116,7 +116,7 @@ void ThixotropyVelocityWithDensityBCAlgorithm::applyBC()
             const int invDir = D3Q27System::INVDIR[fdir];
             real velocity = bcPtr->getBoundaryVelocity(fdir);
 
-            real fReturn = (f[fdir] + f[invDir] - velocity*rho) / 2.0 - drho*D3Q27System::WEIGTH[invDir];
+            real fReturn = (f[fdir] + f[invDir] - velocity*rho) / vf::lbm::constant::c2o1 - drho*D3Q27System::WEIGTH[invDir];
             distributions->setDistributionForDirection(fReturn, nX1, nX2, nX3, invDir);
          }
       }

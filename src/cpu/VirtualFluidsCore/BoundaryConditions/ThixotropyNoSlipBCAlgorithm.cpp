@@ -91,8 +91,8 @@ void ThixotropyNoSlipBCAlgorithm::applyBC()
 			//quadratic bounce back
 			const int invDir = D3Q27System::INVDIR[fdir];
 			real q = bcPtr->getQ(invDir);
-			real fReturnf = ((1.0 - q) / (1.0 + q))*((f[invDir] - feq[invDir]) / (1.0 - collFactor) + feq[invDir]) + ((q / (1.0 + q))*(f[invDir] + f[fdir]));
-			real fReturnh = ((1.0 - q) / (1.0 + q))*((h[invDir] - heq[invDir]) / (1.0 - collFactor) + heq[invDir]) + ((q / (1.0 + q))*(h[invDir] + h[fdir]));
+			real fReturnf = ((vf::lbm::constant::c1o1 - q) / (vf::lbm::constant::c1o1 + q))*((f[invDir] - feq[invDir]) / (vf::lbm::constant::c1o1 - collFactor) + feq[invDir]) + ((q / (vf::lbm::constant::c1o1 + q))*(f[invDir] + f[fdir]));
+			real fReturnh = ((vf::lbm::constant::c1o1 - q) / (vf::lbm::constant::c1o1 + q))*((h[invDir] - heq[invDir]) / (vf::lbm::constant::c1o1 - collFactor) + heq[invDir]) + ((q / (vf::lbm::constant::c1o1 + q))*(h[invDir] + h[fdir]));
 
 			distributions->setDistributionForDirection(fReturnf, x1 + D3Q27System::DX1[invDir], x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir], fdir);
 			distributionsH->setDistributionForDirection(fReturnh, x1 + D3Q27System::DX1[invDir], x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir], fdir);

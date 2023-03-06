@@ -33,6 +33,7 @@
 #include "DensityBCAdapter.h"
 #include "basics/utilities/UbInfinity.h"
 #include "basics/utilities/UbLogger.h"
+#include "lbm/constants/NumericConstants.h"
 
 using namespace std;
 /*==========================================================*/
@@ -62,11 +63,11 @@ DensityBCAdapter::DensityBCAdapter(const mu::Parser &function, const real &start
 /*==========================================================*/
 void DensityBCAdapter::init()
 {
-    this->timeStep = 0.0;
+    this->timeStep = vf::lbm::constant::c0o1;
 
-    this->x1 = 0.0;
-    this->x2 = 0.0;
-    this->x3 = 0.0;
+    this->x1 = vf::lbm::constant::c0o1;
+    this->x2 = vf::lbm::constant::c0o1;
+    this->x3 = vf::lbm::constant::c0o1;
 
     this->tmpDensityFunction = NULL;
 
@@ -184,7 +185,7 @@ real DensityBCAdapter::getDensity(const real &x1, const real &x2, const real &x3
     this->timeStep = timeStep;
 
     if (!tmpDensityFunction)
-        return 0.0;
+        return vf::lbm::constant::c0o1;
 
     return tmpDensityFunction->Eval();
 }
