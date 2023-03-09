@@ -114,9 +114,20 @@ struct LBMSimulationParameter {
     //////////////////////////////////////////////////////////////////////////
     //! \brief stores the precursor boundary condition data
     QforPrecursorBoundaryConditions precursorBC;
+
     //////////////////////////////////////////////////////////////////////////
     //! \brief sets a uniform forcing on each fluid node in all three spatial dimensions
     real *forcing;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores parameters for a wall model
+    WallModelParameters wallModel;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief allows reading values for a boundary condition from a file
+    std::vector<SPtr<TransientBCInputFileReader>> transientBCInputFileReader;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief can be used for pressure correction at outflow boundary condition
+    real outflowPressureCorrectionFactor;
+    //////////////////////////////////////////////////////////////////////////
 
 
     //////////////////////////////////////////////////////////////////////////
@@ -306,10 +317,6 @@ struct LBMSimulationParameter {
     OffsetFC offFCBulk;
     unsigned int mem_size_kCF_off;
     unsigned int mem_size_kFC_off;
-    
-    WallModelParameters wallModel;
-    std::vector<SPtr<TransientBCInputFileReader>> transientBCInputFileReader;
-    real outflowPressureCorrectionFactor;
 
     // testRoundoffError
     Distributions27 kDistTestRE;
