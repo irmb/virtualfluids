@@ -115,7 +115,7 @@ struct LBMSimulationParameter {
     //! \brief stores the precursor boundary condition data
     QforPrecursorBoundaryConditions precursorBC;
     //////////////////////////////////////////////////////////////////////////
-    //! \brief sets the forcing uniform on every fluid node in all three space dimensions
+    //! \brief sets a uniform forcing on each fluid node in all three spatial dimensions
     real *forcing;
 
 
