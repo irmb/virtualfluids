@@ -37,7 +37,7 @@ void initTemperatur(Parameter* para, CudaMemoryManager* cudaMemoryManager, int l
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      CalcMacThS7(para->getParD(lev)->Conc, 
+      CalcMacThS7(para->getParD(lev)->concentration, 
                   para->getParD(lev)->typeOfGridNode,       
                   para->getParD(lev)->neighborX, 
                   para->getParD(lev)->neighborY, 
@@ -68,13 +68,13 @@ void initTemperatur(Parameter* para, CudaMemoryManager* cudaMemoryManager, int l
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       CalcConcentration27(
                      para->getParD(lev)->numberofthreads,
-                     para->getParD(lev)->Conc,
+                     para->getParD(lev)->concentration,
                      para->getParD(lev)->typeOfGridNode,
                      para->getParD(lev)->neighborX,
                      para->getParD(lev)->neighborY,
                      para->getParD(lev)->neighborZ,
                      para->getParD(lev)->numberOfNodes,
-                     para->getParD(lev)->distributionsAD27.f[0],
+                     para->getParD(lev)->distributionsAD.f[0],
                      para->getParD(lev)->isEvenTimestep);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    }

@@ -2519,24 +2519,24 @@ void CudaMemoryManager::cudaFreePorousMedia(PorousMedia* pm, int lev)
 void CudaMemoryManager::cudaAllocConcentration(int lev)
 {
     //Host
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->Conc), parameter->getParH(lev)->memSizeRealLBnodes));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->concentration), parameter->getParH(lev)->memSizeRealLBnodes));
     //Device
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->Conc), parameter->getParD(lev)->memSizeRealLBnodes));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->concentration), parameter->getParD(lev)->memSizeRealLBnodes));
     //////////////////////////////////////////////////////////////////////////
     double tmp = (double)parameter->getParH(lev)->memSizeRealLBnodes;
     setMemsizeGPU(tmp, false);
 }
 void CudaMemoryManager::cudaCopyConcentrationDeviceToHost(int lev)
 {
-    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->Conc, parameter->getParD(lev)->Conc,  parameter->getParH(lev)->memSizeRealLBnodes , cudaMemcpyDeviceToHost));
+    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->concentration, parameter->getParD(lev)->concentration,  parameter->getParH(lev)->memSizeRealLBnodes , cudaMemcpyDeviceToHost));
 }
 void CudaMemoryManager::cudaCopyConcentrationHostToDevice(int lev)
 {
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->Conc, parameter->getParH(lev)->Conc, parameter->getParH(lev)->memSizeRealLBnodes, cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->concentration, parameter->getParH(lev)->concentration, parameter->getParH(lev)->memSizeRealLBnodes, cudaMemcpyHostToDevice));
 }
 void CudaMemoryManager::cudaFreeConcentration(int lev)
 {
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->Conc));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->concentration));
 }
 //////////////////////////////////////////////////////////////////////////
 void CudaMemoryManager::cudaAllocTempFs(int lev)
@@ -2548,7 +2548,7 @@ void CudaMemoryManager::cudaAllocTempFs(int lev)
     }
     else if (parameter->getDiffMod() == 27)
     {
-        checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->distributionsAD27.f[0]), parameter->getDiffMod()*parameter->getParH(lev)->memSizeRealLBnodes));
+        checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->distributionsAD.f[0]), parameter->getDiffMod()*parameter->getParH(lev)->memSizeRealLBnodes));
     }
     //////////////////////////////////////////////////////////////////////////
     double tmp = (double)(parameter->getDiffMod() * parameter->getParH(lev)->memSizeRealLBnodes);
